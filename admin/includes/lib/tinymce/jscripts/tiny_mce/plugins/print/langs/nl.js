@@ -1,3 +1,5 @@
 // UK lang variables
 
-tinyMCELang['lang_print_desc'] = 'Afdrukken';
+tinyMCE.addToLang('',{
+print_desc : 'Afdrukken'
+});

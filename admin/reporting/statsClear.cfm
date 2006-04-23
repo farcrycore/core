@@ -4,17 +4,20 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/reporting/statsClear.cfm,v 1.5 2005/09/20 05:42:22 guy Exp $
-$Author: guy $
-$Date: 2005/09/20 05:42:22 $
-$Name: milestone_3-0-0 $
-$Revision: 1.5 $
+$Header: /cvs/farcry/farcry_core/admin/reporting/statsClear.cfm,v 1.5.2.1 2006/03/24 01:05:36 daniela Exp $
+$Author: daniela $
+$Date: 2006/03/24 01:05:36 $
+$Name: milestone_3-0-1 $
+$Revision: 1.5.2.1 $
 
 || DESCRIPTION || 
 Rebuilds statistics tables
 
 || DEVELOPER ||
 Brendan Sisson (brendan@daemon.com.au)
+
+|| TO DO ||
+i18n for drop down menu
 
 || ATTRIBUTES ||
 in: 
@@ -43,24 +46,25 @@ out:
 <cfset aPurgeDates = ArrayNew(1)>
 <cfset aPurgeDates[1] = StructNew()>
 <cfset aPurgeDates[1].purgeDate = DateAdd('w',-1,nowDate)>
-<cfset aPurgeDates[1].purgelabel = "older than One week">
+<cfset aPurgeDates[1].purgelabel = "Older than one week">
 
 <cfset aPurgeDates[2] = StructNew()>
 <cfset aPurgeDates[2].purgeDate = DateAdd('m',-1,nowDate)>
-<cfset aPurgeDates[2].purgelabel = "older than One month">
+<cfset aPurgeDates[2].purgelabel = "Older than one month">
 
 <cfset aPurgeDates[3] = StructNew()>
 <cfset aPurgeDates[3].purgeDate = DateAdd('q',-1,nowDate)>
-<cfset aPurgeDates[3].purgelabel = "older than One quater">
+<cfset aPurgeDates[3].purgelabel = "Older than one quarter">
 
 <cfset aPurgeDates[4] = StructNew()>
 <cfset aPurgeDates[4].purgeDate = DateAdd('m',-6,nowDate)>
-<cfset aPurgeDates[4].purgelabel = "older than Six months">
+<cfset aPurgeDates[4].purgelabel = "Older than six months">
 
 <cfset aPurgeDates[5] = StructNew()>
 <cfset aPurgeDates[5].purgeDate = DateAdd('y',-1,nowDate)>
-<cfset aPurgeDates[5].purgelabel = "older than One year">
+<cfset aPurgeDates[5].purgelabel = "Older than one year">
 <!--- // purge dates defaults --->
+
 
 <!--- set up page header --->
 <cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
@@ -73,6 +77,8 @@ function doSubmit(objForm)
 	return window.confirm("Are you sure you wish to delete statistices " + objForm.purgedate[objForm.purgedate.selectedIndex].text + ".");
 }
 </script>
+
+
 <form name="editform" action="#cgi.script_name#?#cgi.query_string#" method="post" class="f-wrap-1 wider f-bg-long" onsubmit="return doSubmit(document.editform);">
 	<fieldset>
 		<div class="req"><b>*</b>Required</div>
@@ -93,20 +99,6 @@ function doSubmit(objForm)
 	<input type="Submit" name="Submit" value="#application.adminBundle[session.dmProfile.locale].OK#" class="f-submit">
 	</div>
 </form></cfoutput>
-	<!--- <cfoutput><h3>#application.adminBundle[session.dmProfile.locale].clearStatsLog#</h3></cfoutput>
-	
-	<!--- drop tables and recreate --->
-	<cfscript>
-		deployRet = application.factory.oStats.deploy(bDropTable="1");
-	</cfscript>
-	
-	<cfoutput>
-	<ul class="nomarker highlight">
-	<li>#deployRet.message#...</li>
-	</ul>
-	</cfoutput><cfflush>
-	
-	<cfoutput><h4 class="success">#application.adminBundle[session.dmProfile.locale].allDone#</h4></cfoutput> --->
 <cfelse>
 	<admin:permissionError>
 </cfif>

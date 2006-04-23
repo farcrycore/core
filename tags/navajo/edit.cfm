@@ -5,11 +5,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/navajo/edit.cfm,v 1.29 2005/08/02 02:27:12 geoff Exp $
-$Author: geoff $
-$Date: 2005/08/02 02:27:12 $
-$Name: milestone_3-0-0 $
-$Revision: 1.29 $
+$Header: /cvs/farcry/farcry_core/tags/navajo/edit.cfm,v 1.29.2.1 2005/11/30 06:08:50 guy Exp $
+$Author: guy $
+$Date: 2005/11/30 06:08:50 $
+$Name: milestone_3-0-1 $
+$Revision: 1.29.2.1 $
 
 || DESCRIPTION || 
 $Description: $
@@ -109,7 +109,7 @@ if (structCount(stObj))
 	checkForLockRet=oLocking.checkForLock(objectid=attributes.objectid);
 	if (checkForLockRet.bSuccess)
 	{
-		lockRet = oLocking.lock(objectid=attributes.objectid,typename=url.typename);
+		lockRet = oLocking.lock(objectid=attributes.objectid,typename=attributes.typename);
 		if (lockRet.bSuccess)
 		{
 			oType.edit(objectid=attributes.objectid);

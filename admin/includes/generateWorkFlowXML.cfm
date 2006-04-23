@@ -1,5 +1,5 @@
 <cfparam name="content_status" default="pending">
-<cfparam name="lcontent_type" default="all">
+<cfparam name="lcontent_type" default="All">
 <cfparam name="maxReturnRecords" default="5">
 <cfsetting showdebugoutput="false">
 
@@ -10,8 +10,14 @@
 	<cfset stForm.lcontent_type = lcontent_type>
 	<cfset stForm.content_status = content_status>
 	<cfset stForm.maxReturnRecords = maxReturnRecords>
+	<!--- we will filter by user if content_status is 'draft' --->
+	<cfif content_status IS 'draft'>
+		<cfset stForm.lastupdatedby = session.dmProfile.username>
+	</cfif>
+	<cfset oWorkflow = createObject("component","#application.packagepath#.farcry.workflow")>
+	<cfset returnstruct = structNew()> 
+	<cfset returnstruct = oWorkFlow.getObjectsPendingApproval(stForm)>
 
-	<cfset returnstruct = application.factory.oWorkFlow.getObjectsPendingApproval(stForm)>
 	<cfset jsonstruct = structNew()>
 	<cfset jsonstruct.bsuccess = returnstruct.bSuccess>
 	<cfset jsonstruct.message = JSStringFormat(returnstruct.message)>
@@ -28,11 +34,9 @@
 			<cfset jsonstruct.aItems[iCounter]['datetimelastupdated'] = JSStringFormat(DateFormat(returnstruct.qList.datetimelastupdated,"dddd dd mmmm yyyy")& " " & TimeFormat(returnstruct.qList.datetimelastupdated,"full"))>
 			<cfset jsonstruct.aItems[iCounter]['createdby_email'] = JSStringFormat(returnstruct.qList.createdby_email)>
 			<!--- <cfset jsonstruct.aItems[iCounter]['editurl'] = "#application.url.farcry#/conjuror/invocation.cfm?objectid=#returnstruct.qList.objectid#&typename=#returnstruct.qList.typename#&method=renderobjectoverview"> --->
-			<cfif returnstruct.qList.typename EQ "dmHtml">
-				<cfset jsonstruct.aItems[iCounter]['editurl'] = "#application.url.farcry#/editTabOverView.cfm?objectid=#returnstruct.qList.objectid#">
-			<cfelse>
-				<cfset jsonstruct.aItems[iCounter]['editurl'] = "#application.url.farcry#/conjuror/invocation.cfm?objectid=#returnstruct.qList.objectid#&typename=#returnstruct.qList.typename#">
-			</cfif>
+			
+			<cfset jsonstruct.aItems[iCounter]['editurl'] = "#application.url.farcry#/edittabOverview.cfm?objectid=#returnstruct.qList.objectid#">
+			
 			<cfset iCounter = iCounter + 1>
 		</cfloop>
 	</cfif>

@@ -1,5 +1,11 @@
 // NL lang variables
 
-tinyMCELang['lang_insert_flash']      = 'Invoegen / wijzigen Flash Movie';
-tinyMCELang['lang_insert_flash_file'] = 'Flash-Bestand (.swf)';
-tinyMCELang['lang_insert_flash_size'] = 'Grootte';
+tinyMCE.addToLang('flash',{
+title : 'Flash bestand invoegen/bewerken',
+desc : 'Flash bestand invoegen/bewerken',
+file : 'Flash bestand (.swf)',
+size : 'Grootte',
+list : 'Flash bestanden',
+props : 'Flash eigenschappen',
+general : 'Algemeen'
+});

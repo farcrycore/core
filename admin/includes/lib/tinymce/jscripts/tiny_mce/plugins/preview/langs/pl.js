@@ -1,4 +1,7 @@
-﻿// PL lang variables
+// PL lang variables
+// fixed by Wooya
+// http://www.musion.prv.pl
 
-
-tinyMCELang['lang_preview_desc'] = 'Podgląd';
+tinyMCE.addToLang('',{
+preview_desc : 'Podgl�d'
+});

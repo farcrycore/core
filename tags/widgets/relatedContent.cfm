@@ -27,7 +27,7 @@
 	<script language="javascript">
 	function showWindowRelatedItems_#attributes.fieldName#()
 	{
-		var url = "/farcry/includes/relatedlist.cfm?lRelatedTypeName=#lRelatedTypeName#&primaryObjectID=#primaryObjectID#&fieldName=#attributes.fieldName#&bPLPStorage=#attributes.bPLPStorage#";
+		var url = "#application.url.farcry#/includes/relatedlist.cfm?lRelatedTypeName=#lRelatedTypeName#&primaryObjectID=#primaryObjectID#&fieldName=#attributes.fieldName#&bPLPStorage=#attributes.bPLPStorage#";
 		var options = "width="+680+",height="+530+",status=no,toolbar=no,directories=no,menubar=no,location=no,resizable=yes,left=20,top=20,scrollbars=yes";
 		var hwnd = open(url, "_winrelated", options);
 	}

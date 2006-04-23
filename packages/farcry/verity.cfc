@@ -7,7 +7,7 @@ $License: Released Under the "Common Public License 1.0", http://www.opensource.
 $Header: /cvs/farcry/farcry_core/packages/farcry/verity.cfc,v 1.6 2005/09/08 15:56:45 tom Exp $
 $Author: tom $
 $Date: 2005/09/08 15:56:45 $
-$Name: milestone_3-0-0 $
+$Name: milestone_3-0-1 $
 $Revision: 1.6 $
 
 || DESCRIPTION ||

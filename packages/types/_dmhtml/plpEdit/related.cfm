@@ -5,11 +5,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmhtml/plpEdit/related.cfm,v 1.13 2005/09/01 00:45:46 gstewart Exp $
-$Author: gstewart $
-$Date: 2005/09/01 00:45:46 $
-$Name: milestone_3-0-0 $
-$Revision: 1.13 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmhtml/plpEdit/related.cfm,v 1.13.2.1 2006/01/27 03:57:08 paul Exp $
+$Author: paul $
+$Date: 2006/01/27 03:57:08 $
+$Name: milestone_3-0-1 $
+$Revision: 1.13.2.1 $
 
 || DESCRIPTION || 
 $Description: dmHTML PLP for edit handler - Related Links Step $
@@ -34,7 +34,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 <cfoutput>
 <form action="#cgi.script_name#?#cgi.query_string#" method="post" name="editform">
 	<fieldset></cfoutput>
-	<widgets:relatedContent lRelatedTypeName="dmHtml,dmNews,dmEvents,dmFacts,dmLink">
+	<widgets:relatedContent lRelatedTypeName="dmHTML,dmNews,dmEvents,dmFacts,dmLink">
 	<cfoutput></fieldset>		
 	<input style="display:none;" type="submit" name="buttonSubmit" value="submit" />
 	<input type="hidden" name="plpAction" value="" />

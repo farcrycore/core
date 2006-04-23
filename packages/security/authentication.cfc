@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/security/authentication.cfc,v 1.40 2005/10/28 03:25:13 paul Exp $
-$Author: paul $
-$Date: 2005/10/28 03:25:13 $
-$Name: milestone_3-0-0 $
-$Revision: 1.40 $
+$Header: /cvs/farcry/farcry_core/packages/security/authentication.cfc,v 1.40.2.7 2006/03/08 01:55:51 geoff Exp $
+$Author: geoff $
+$Date: 2006/03/08 01:55:51 $
+$Name: milestone_3-0-1 $
+$Revision: 1.40.2.7 $
 
 || DESCRIPTION || 
 $Description: authentication cfc $
@@ -16,10 +16,6 @@ $Description: authentication cfc $
 
 || DEVELOPER ||
 $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
-
-|| ATTRIBUTES ||
-$in: $
-$out:$
 --->
 
 <cfcomponent displayName="Authentication" hint="Security authentication functions">
@@ -198,7 +194,7 @@ $out:$
 		<cfargument name="userdirectory" required="true" hint="user directory user belongs to" default="clientud">
 		<cfargument name="dsn" required="true">
 		
-		
+		<cfset var stUD = getUserDirectory()>
 		<!--- get username --->
 		<cfset stUser = getUser(userid=arguments.userid,userdirectory=arguments.userdirectory)>
 			
@@ -329,14 +325,16 @@ $out:$
 	<cfreturn aUsers>
 	</cffunction>
 	
-	<cffunction name="getMultipleGroups" hint="Gets groups, filtered by userlogin, userdirectory." output="No">
+	<cffunction name="getMultipleGroups" hint="Gets array of groups, filtered by userlogin, userdirectory." output="false" returntype="array">
 		<cfargument name="userlogin" >
 		<cfargument name="userdirectory" required="true">
-		<cfargument name="bInvert" required="false" default="0" >
+		<cfargument name="bInvert" required="false" default="0" hint="Flag to get groups userlogin is not a member of. (CRACK! GB)">
 		
-				
+		<cfset var aGroups=arraynew(1)>
+		
+		<cftry>
+		<!--- need to catch if this fails; does if userdirectory missing (which can happen in multi-userdirectory scenarios) --->
 		<cfscript>
-			
 			ud = trim(arguments.userDirectory);
 			//grab the user directorires object
 			stUd = getUserDirectory();
@@ -470,9 +468,12 @@ $out:$
 					break;	
 				}					
 			}//end switch	
-					
 		</cfscript>
-		
+
+		<cfcatch>
+			<cftrace type="error" category="farcry.authentication" var="cfcatch.Message">
+		</cfcatch>
+		</cftry>		
 		<cfreturn aGroups>
 		
 	</cffunction> 
@@ -492,25 +493,36 @@ $out:$
 		<cfreturn stUser>
 	</cffunction>
 	
-	<cffunction name="getUser" hint="Retreives user info from the datastore" returntype="struct" output="No">
-		<cfargument name="userDirectory" required="true">
+	<cffunction name="getUser" hint="Retreives user info from the datastore" returntype="struct" output="true">
+		<cfargument name="userDirectory" required="true" type="string" hint="Datasource name for userdirectory.">
 		<cfargument name="userlogin" required="false">
 		<cfargument name="userid" required="false">
 				
-		<cfset stUD = getUserDirectory()>
-
+		<cfset var stUD = getUserDirectory()>
+		<cfset var qUser = querynew("userId, userLogin, userPassword, userStatus, userNotes")>
+		<cfset var stUser = structNew()>
 
 		<!--- check that we are searching daemon userdirectories only --->
-		<cfswitch expression="#stUd[Userdirectory].type#">
+		<cfswitch expression="#stUd[arguments.Userdirectory].type#">
 			<cfcase value="Daemon">
 				<!--- search for the user --->
+				<cftry>
 				<cfquery name="qUser" datasource="#stUd[Userdirectory].datasource#" >
-					SELECT * 
+					SELECT	userId, userLogin, userPassword, userStatus, userNotes
 					FROM 	#application.dbowner#dmUser<cfif isDefined("arguments.userLogin")>
-					WHERE 	UPPER(UserLogin) = <cfqueryparam value="#ucase(userLogin)#" cfsqltype="CF_SQL_VARCHAR"></cfif><cfif isDefined("arguments.userId")>
-					WHERE 	userId = <cfqueryparam value="#userId#" cfsqltype="CF_SQL_VARCHAR"></cfif>
+					WHERE 	UPPER(UserLogin) = <cfqueryparam value="#ucase(arguments.userLogin)#" cfsqltype="CF_SQL_VARCHAR"></cfif><cfif isDefined("arguments.userId")>
+					WHERE 	userId = <cfqueryparam value="#arguments.userId#" cfsqltype="CF_SQL_VARCHAR"></cfif>
 					ORDER BY UserLogin ASC
 				</cfquery>
+
+				<cfcatch>
+					<!--- likely failed cos userdirectory a dud --->
+					<cftrace type="warning" category="authentication" var="cfcatch.message">
+					<!--- <cfdump var="#cfcatch#">
+					<cfabort> --->
+					<!--- <cfdump var="#quser#">  --->
+				</cfcatch>
+				</cftry>
 				<!--- if we got a user convert it to a struct --->
 				<cfscript>
 				stUser = structnew();
@@ -522,9 +534,10 @@ $out:$
 					stUser.userPassword = qUser.userPassword;
 					stUser.userStatus = qUser.userStatus;
 					stUser.userNotes = qUser.userNotes;
-					stUser.userDirectory = Userdirectory;
+					stUser.userDirectory = arguments.Userdirectory;
 				}
 				</cfscript>
+				
 			</cfcase>
 			<cfcase value="ADSI">
 				<cfscript>
@@ -548,9 +561,9 @@ $out:$
 	</cffunction>
 		
 	
-	<cffunction name="getUserDirectory" hint="Gets all the userdirectories filtered by type and returns them to caller scope." output="No">
-		<cfargument name="lFilterTypes" required="false">
-		<cfargument name="UDScope" required="false" default="#Application.dmSec.UserDirectory#"> 
+	<cffunction name="getUserDirectory" hint="Gets all the userdirectories filtered by type and returns them as a structure." output="false" returntype="struct">
+		<cfargument name="lFilterTypes" required="false" hint="List of user directory types to filter on." type="string" />
+		<cfargument name="UDScope" required="false" default="#Application.dmSec.UserDirectory#" type="struct" hint="Structure of userdirectories. Defaults to aplication.dmsec.userdirectory" /> 
 		<cfset localUD = duplicate( arguments.UDScope)>
 
 		<cfif isDefined("arguments.lFilterTypes")>
@@ -589,6 +602,7 @@ $out:$
 					
 			<!--- loop through each user directory --->
 			<cfloop index="ud" list="#structKeyList(stUD)#">
+			<cftrace type="information" var="ud">
 				<cfswitch expression="#stUD[ud].type#">
 					<cfcase value="ADSI">
 						<cfset lPolicyGroupIDs = "">
@@ -739,6 +753,7 @@ $out:$
 								<!--- map the groups to policy groups --->
 														
 								<!--- set the session login information --->
+								
 								<cflock timeout="45" throwontimeout="No" type="EXCLUSIVE" scope="SESSION">
 									<cfscript>
 										session.dmSec.authentication = duplicate( stUser );
@@ -791,6 +806,13 @@ $out:$
 					</cfdefaultcase>
 				</cfswitch>
 			</cfloop>
+
+<!--- 
+<cfdump var="#session#">
+// overrides policy mapping if they are missing.. debugging only GB
+<cfset session.dmsec.authentication.lpolicygroupids="1,2,3,4,5,6,7,8,9">
+<cfabort />
+ --->
 		
 			<!--- we've been through all our userdirectories here, so if we haven't logged in throw a spaz --->
 			<cfif not bHasLoggedIn and not isdefined("logged")>
@@ -843,7 +865,10 @@ $out:$
 			{	username =  session.dmSec.authentication.userlogin;
 				structDelete(session.dmSec, "authentication");
 				structDelete(session, "dmProfile");
+				// remove editing preferences
 				structDelete(session,"genericadmin");
+				structDelete(session,"typeadmin");
+				// audit logout
 				if (arguments.bAudit)
 				{
 					oAudit = createObject("component","#application.packagepath#.farcry.audit");

@@ -5,7 +5,7 @@ Copyright Daemon Pty Limited 2002 (http://www.daemon.com.au/)
 $Header: /cvs/farcry/farcry_core/packages/rules/ruleChildLinks.cfc,v 1.28 2005/07/19 03:59:21 pottery Exp $
 $Author: pottery $
 $Date: 2005/07/19 03:59:21 $
-$Name: milestone_3-0-0 $
+$Name: milestone_3-0-1 $
 $Revision: 1.28 $
 
 Contributors:

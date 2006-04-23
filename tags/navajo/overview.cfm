@@ -6,11 +6,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/navajo/overview.cfm,v 1.115 2005/10/28 03:47:33 paul Exp $
+$Header: /cvs/farcry/farcry_core/tags/navajo/overview.cfm,v 1.115.2.1 2006/02/16 01:21:33 paul Exp $
 $Author: paul $
-$Date: 2005/10/28 03:47:33 $
-$Name: milestone_3-0-0 $
-$Revision: 1.115 $
+$Date: 2006/02/16 01:21:33 $
+$Name: milestone_3-0-1 $
+$Revision: 1.115.2.1 $
 
 || DESCRIPTION || 
 $Description: Javascript tree$
@@ -1352,21 +1352,21 @@ o.bShowDisabled = 1;
 	approveMenu['ApproveItem'] = o;
 	o.text = "#application.adminBundle[session.dmProfile.locale].approve#";
 	o.js = "menuOption_Approve(\\'approved\\')";
-	o.jsvalidate = "((hasPermission( lastSelectedId, #PermNavApprove# )>=0 || (hasPermission(lastSelectedId,#PermNavApproveOwn#) >=0 && objects[lastSelectedId]['ATTR_LASTUPDATEDBY'].toLowerCase() == '#lCase(stUser.userlogin)#')) && (objects[lastSelectedId]['STATUS'] == 'draft' || objects[lastSelectedId]['STATUS'] == 'pending'))?1:0";
+	o.jsvalidate = "((hasPermission( lastSelectedId, #PermNavApprove# )> 0 || (hasPermission(lastSelectedId,#PermNavApproveOwn#) >0 && objects[lastSelectedId]['ATTR_LASTUPDATEDBY'].toLowerCase() == '#lCase(stUser.userlogin)#')) && (objects[lastSelectedId]['STATUS'] == 'draft' || objects[lastSelectedId]['STATUS'] == 'pending'))?1:0";
 	o.bShowDisabled = 1;
 	
 	o = new Object();
 	approveMenu['ApproveDraft'] = o;
 	o.text = "#application.adminBundle[session.dmProfile.locale].approveDraft#";
 	o.js = "menuOption_Approve(\\'approved\\')";
-    o.jsvalidate = "( hasPermission(lastSelectedId, #PermNavApprove#)>=0 && (hasDraft(lastSelectedId) && objects[lastSelectedId]['DRAFTSTATUS'] == 'pending') )?1:0";
+    o.jsvalidate = "( hasPermission(lastSelectedId, #PermNavApprove#)>0 && (hasDraft(lastSelectedId) && objects[lastSelectedId]['DRAFTSTATUS'] == 'pending') )?1:0";
 	o.bShowDisabled = 1;
 
 	o = new Object();
 	approveMenu['ApproveBranch'] = o;
 	o.text = "#application.adminBundle[session.dmProfile.locale].approveBranch#";
 	o.js = "menuOption_ApproveBranch(\\'approved\\')";
-	o.jsvalidate = "(hasPermission( lastSelectedId, #PermNavApprove# )>=0 && (objects[lastSelectedId]['STATUS'] == 'draft' || objects[lastSelectedId]['STATUS'] == 'pending') && objects[lastSelectedId]['TYPENAME'].toLowerCase() == '#lCase(attributes.nodetype)#')?1:0";
+	o.jsvalidate = "(hasPermission( lastSelectedId, #PermNavApprove# )>0 && (objects[lastSelectedId]['STATUS'] == 'draft' || objects[lastSelectedId]['STATUS'] == 'pending') && objects[lastSelectedId]['TYPENAME'].toLowerCase() == '#lCase(attributes.nodetype)#')?1:0";
 	o.bShowDisabled = 1;
 
 	function menuOption_Approve(status) {

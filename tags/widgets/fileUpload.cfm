@@ -10,13 +10,17 @@
 
 <cfset previewURL = attributes.previewURL> <!--- specific url of where item stored --->
 <cfif previewURL EQ ""> <!--- set to default if not passed in --->
-	<cfif attributes.uploadType EQ "file">
-		<cfparam name="attributes.fieldLabel" default="#application.adminBundle[session.dmProfile.locale].fileLabel#">	
-		<cfset previewUrl = "#application.url.webroot#/files/">
-	<cfelse>
-		<cfparam name="attributes.fieldLabel" default="#application.adminBundle[session.dmProfile.locale].imageLabel#">
-		<cfset previewUrl = "#application.url.webroot#/images/">
-	</cfif>
+    <cfif attributes.uploadType EQ "file">
+        <cfparam name="attributes.fieldLabel" default="#application.adminBundle[session.dmProfile.locale].fileLabel#">  
+        <cfset previewUrl = "#application.url.webroot#/files/">
+    <cfelseif attributes.uploadType EQ "flash">
+        <cfparam name="attributes.fieldLabel" default="#application.adminBundle[session.dmProfile.locale].fileLabel#">
+        <cfset flashPath = replaceNoCase(application.config.file.folderpath_flash, "\", "/", "ALL")>
+        <cfset previewUrl = application.url.webroot & replaceNoCase(flashPath, application.path.project & "/www", "", "ALL") & "/">
+    <cfelse>
+        <cfparam name="attributes.fieldLabel" default="#application.adminBundle[session.dmProfile.locale].imageLabel#">
+        <cfset previewUrl = "#application.url.webroot#/images/">
+    </cfif>
 </cfif>
 
 <cfset fileFieldPrefix = attributes.fileFieldPrefix>
@@ -25,15 +29,15 @@
 <cfset overWriteLabel = attributes.overWriteLabel>
 <cfset output = caller.output>
 <cfif IsStruct(output) AND NOT StructIsEmpty(output)> <!--- called from a plp editform plp --->
-	<cfset fieldValue = output[fileFieldPrefix]>
+    <cfset fieldValue = output[fileFieldPrefix]>
 <cfelse>
-	<cfset fieldValue = attributes.fieldValue>
+    <cfset fieldValue = attributes.fieldValue>
 </cfif>
 
 <cfimport taglib="/farcry/farcry_core/tags/navajo" prefix="nj">
 <cfif fileFieldPrefix NEQ ""><cfoutput>
 <label for="#fileFieldPrefix#_file_upload"><b>#fieldLabel#</b>
-	<input type="file" name="#fileFieldPrefix#_file_upload" id="#fileFieldPrefix#_file_upload"><br />
+    <input type="file" name="#fileFieldPrefix#_file_upload" id="#fileFieldPrefix#_file_upload"><br />
 </label>
 <cfif fieldValue NEQ ""> <!--- shows current file --->
 <nj:getFileIcon filename="#fieldValue#" r_stIcon="fileicon">

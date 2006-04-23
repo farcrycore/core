@@ -1,41 +1,43 @@
 // Canadian French lang variables by Virtuelcom   last modification: 2005-06-15
 
-tinyMCELang['lang_table_desc'] = 'Insérer un nouveau tableau';
-tinyMCELang['lang_table_insert_row_before_desc'] = 'Insérer une ligne avant';
-tinyMCELang['lang_table_insert_row_after_desc'] = 'Insérer une ligne après';
-tinyMCELang['lang_table_delete_row_desc'] = 'Supprimer la ligne';
-tinyMCELang['lang_table_insert_col_before_desc'] = 'Insérer une colonne avant';
-tinyMCELang['lang_table_insert_col_after_desc'] = 'Insérer une colonne après';
-tinyMCELang['lang_table_delete_col_desc'] = 'Supprimer la colonne';
-tinyMCELang['lang_insert_table_title'] = 'Insérer/Modifier le tableau';
-tinyMCELang['lang_insert_table_width'] = 'Largeur';
-tinyMCELang['lang_insert_table_height'] = 'Hauteur';
-tinyMCELang['lang_insert_table_cols'] = 'Colonnes';
-tinyMCELang['lang_insert_table_rows'] = 'Lignes';
-tinyMCELang['lang_insert_table_cellspacing'] = 'Cellspacing';
-tinyMCELang['lang_insert_table_cellpadding'] = 'Cellpadding';
-tinyMCELang['lang_insert_table_border'] = 'Bordure';
-tinyMCELang['lang_insert_table_align'] = 'Alignement';
-tinyMCELang['lang_insert_table_align_default'] = 'Défaut';
-tinyMCELang['lang_insert_table_align_left'] = 'Gauche';
-tinyMCELang['lang_insert_table_align_right'] = 'Droit';
-tinyMCELang['lang_insert_table_align_middle'] = 'Milieu';
-tinyMCELang['lang_insert_table_class'] = 'Classe CSS';
-tinyMCELang['lang_table_row_title'] = 'Propriétés de ligne';
-tinyMCELang['lang_table_cell_title'] = 'Propriétés de cellule';
-tinyMCELang['lang_table_row_desc'] = 'Propriétés de ligne';
-tinyMCELang['lang_table_cell_desc'] = 'Propriétés de cellule';
-tinyMCELang['lang_insert_table_valign'] = 'Alignement vertical';
-tinyMCELang['lang_insert_table_align_top'] = 'Haut';
-tinyMCELang['lang_insert_table_align_bottom'] = 'Bas';
-tinyMCELang['lang_table_props_desc'] = 'Table properties';
-tinyMCELang['lang_table_bordercolor'] = 'Border color';
-tinyMCELang['lang_table_bgcolor'] = 'Bg color';
-tinyMCELang['lang_table_merge_cells_title'] = 'Merge table cells';
-tinyMCELang['lang_table_split_cells_desc'] = 'Split table cells';
-tinyMCELang['lang_table_merge_cells_desc'] = 'Merge table cells';
-tinyMCELang['lang_table_cut_row_desc'] = 'Cut table row';
-tinyMCELang['lang_table_copy_row_desc'] = 'Copy table row';
-tinyMCELang['lang_table_paste_row_before_desc'] = 'Paste table row before';
-tinyMCELang['lang_table_paste_row_after_desc'] = 'Paste table row after';
-tinyMCELang['lang_table_insert_desc'] = 'Insert a new table';
+tinyMCE.addToLang('',{
+table_desc : 'Insérer un nouveau tableau',
+table_insert_row_before_desc : 'Insérer une ligne avant',
+table_insert_row_after_desc : 'Insérer une ligne après',
+table_delete_row_desc : 'Supprimer la ligne',
+table_insert_col_before_desc : 'Insérer une colonne avant',
+table_insert_col_after_desc : 'Insérer une colonne après',
+table_delete_col_desc : 'Supprimer la colonne',
+insert_table_title : 'Insérer/Modifier le tableau',
+insert_table_width : 'Largeur',
+insert_table_height : 'Hauteur',
+insert_table_cols : 'Colonnes',
+insert_table_rows : 'Lignes',
+insert_table_cellspacing : 'Cellspacing',
+insert_table_cellpadding : 'Cellpadding',
+insert_table_border : 'Bordure',
+insert_table_align : 'Alignement',
+insert_table_align_default : 'Défaut',
+insert_table_align_left : 'Gauche',
+insert_table_align_right : 'Droit',
+insert_table_align_middle : 'Milieu',
+insert_table_class_name : 'Classe CSS',
+table_row_title : 'Propriétés de ligne',
+table_cell_title : 'Propriétés de cellule',
+table_row_desc : 'Propriétés de ligne',
+table_cell_desc : 'Propriétés de cellule',
+insert_table_valign : 'Alignement vertical',
+insert_table_align_top : 'Haut',
+insert_table_align_bottom : 'Bas',
+table_props_desc : 'Table properties',
+table_bordercolor : 'Border color',
+table_bgcolor : 'Bg color',
+table_merge_cells_title : 'Merge table cells',
+table_split_cells_desc : 'Split table cells',
+table_merge_cells_desc : 'Merge table cells',
+table_cut_row_desc : 'Cut table row',
+table_copy_row_desc : 'Copy table row',
+table_paste_row_before_desc : 'Paste table row before',
+table_paste_row_after_desc : 'Paste table row after',
+table_insert_desc : 'Insert a new table'
+});

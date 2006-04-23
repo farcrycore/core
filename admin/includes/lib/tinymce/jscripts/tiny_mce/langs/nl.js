@@ -1,39 +1,42 @@
 // NL lang variables thanks to "Meint Post"
+// Updates by (2.0) Mark van der Sanden
 
-tinyMCELang['lang_bold_desc'] = 'Vet';
-tinyMCELang['lang_italic_desc'] = 'Schuin';
-tinyMCELang['lang_underline_desc'] = 'Onderstrepen';
-tinyMCELang['lang_striketrough_desc'] = 'Doorhalen';
-tinyMCELang['lang_justifyleft_desc'] = 'Links uitlijnen';
-tinyMCELang['lang_justifycenter_desc'] = 'Centreren';
-tinyMCELang['lang_justifyright_desc'] = 'Rechts uitlijnen';
-tinyMCELang['lang_justifyfull_desc'] = 'Volledig uitlijnen';
-tinyMCELang['lang_bullist_desc'] = 'Ongeordende lijst';
-tinyMCELang['lang_numlist_desc'] = 'Geordende lijst';
-tinyMCELang['lang_outdent_desc'] = 'Uitspringen';
-tinyMCELang['lang_indent_desc'] = 'Inspringen';
-tinyMCELang['lang_undo_desc'] = 'Ongedaan maken';
-tinyMCELang['lang_redo_desc'] = 'Opnieuw uitvoeren';
-tinyMCELang['lang_link_desc'] = 'Link invoegen';
-tinyMCELang['lang_unlink_desc'] = 'Link verwijderen';
-tinyMCELang['lang_image_desc'] = 'Afbeelding invoegen';
-tinyMCELang['lang_cleanup_desc'] = 'Slordige code verbeteren';
-tinyMCELang['lang_focus_alert'] = 'Verplaats de focus naar de editor voor het uitvoeren van dit commado.';
-tinyMCELang['lang_edit_confirm'] = 'Wilt u de WYSIWYG mode voor deze textarea gebruiken?';
-tinyMCELang['lang_insert_link_title'] = 'Link invoegen/bewerken';
-tinyMCELang['lang_insert'] = 'Invoegen';
-tinyMCELang['lang_update'] = 'Bewerken';
-tinyMCELang['lang_cancel'] = 'Afbreken';
-tinyMCELang['lang_insert_link_url'] = 'URL link';
-tinyMCELang['lang_insert_link_target'] = 'Bestemming';
-tinyMCELang['lang_insert_link_target_same'] = 'Open link in hetzelfde venster';
-tinyMCELang['lang_insert_link_target_blank'] = 'Open link in een nieuw venster';
-tinyMCELang['lang_insert_image_title'] = 'Afbeelding invoegen/bewerken';
-tinyMCELang['lang_insert_image_src'] = 'Afbeelding';
-tinyMCELang['lang_insert_image_alt'] = 'Beschrijving';
-tinyMCELang['lang_help_desc'] = 'Help';
-tinyMCELang['lang_bold_img'] = "bold.gif";
-tinyMCELang['lang_italic_img'] = "italic.gif";
-tinyMCELang['lang_underline_img'] = "underline.gif";
-tinyMCELang['lang_clipboard_msg'] = 'Copy/Cut/Paste is not available in Mozilla and Firefox.\nDo you want more information about this issue?';
-tinyMCELang['lang_popup_blocked'] = 'Sorry, but we have noticed that your popup-blocker has disabled a window that provides application functionality. You will need to disable popup blocking on this site in order to fully utilize this tool.';
+tinyMCE.addToLang('',{
+bold_desc : 'Vet (Ctrl+B)',
+italic_desc : 'Cursief (Ctrl+I)',
+underline_desc : 'Onderstrepen (Ctrl+U)',
+striketrough_desc : 'Doorhalen',
+justifyleft_desc : 'Links uitlijnen',
+justifycenter_desc : 'Centreren',
+justifyright_desc : 'Rechts uitlijnen',
+justifyfull_desc : 'Volledig uitlijnen',
+bullist_desc : 'Opsommingstekens',
+numlist_desc : 'Genummerde lijst',
+outdent_desc : 'Inspringen verkleinen',
+indent_desc : 'Inspringen vergroten',
+undo_desc : 'Ongedaan maken (Ctrl+Z)',
+redo_desc : 'Opnieuw (Ctrl+Y)',
+link_desc : 'Hyperlink invoegen/bewerken',
+unlink_desc : 'Hyperlink verwijderen',
+image_desc : 'Afbeelding invoegen',
+cleanup_desc : 'Code opschonen',
+focus_alert : 'Klik op de tekst in de editor voor het uitvoeren van dit commando.',
+edit_confirm : 'Wilt u de WYSIWYG modus voor deze textarea gebruiken?',
+insert_link_title : 'Hyperlink invoegen/bewerken',
+insert : 'OK',
+update : 'Toepassen',
+cancel : 'Annuleren',
+insert_link_url : 'URL link',
+insert_link_target : 'Bestemming',
+insert_link_target_same : 'Open link in hetzelfde venster',
+insert_link_target_blank : 'Open link in een nieuw venster',
+insert_image_title : 'Afbeelding invoegen/bewerken',
+insert_image_src : 'Afbeelding',
+insert_image_alt : 'Beschrijving',
+help_desc : 'Help',
+bold_img : "bold.gif",
+italic_img : "italic.gif",
+underline_img : "underline.gif",
+clipboard_msg : 'Kopiëren/knippen/plakken is niet beschikbaar in Mozilla en Firefox.\nWilt u meer informatie over deze kwestie?',
+popup_blocked : 'Uw browser heeft zojuist geweigerd een popup-venster te tonen. Waarschijnlijk gebruikt u een poup-blocker die voor deze editor te streng omgaat met popups. Om het venster toch te tonen, zult u uw popup-blocker zo in moeten stellen dat het popups van deze website toestaat.'
+});

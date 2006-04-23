@@ -1,64 +1,76 @@
 // NL lang variables
 
-tinyMCELang['lang_theme_style_select'] = 'Stijlen';
-tinyMCELang['lang_theme_code_desc'] = 'Toon/bewerk HTML broncode';
-tinyMCELang['lang_theme_code_title'] = 'HTML broncode editor';
-tinyMCELang['lang_theme_code_wordwrap'] = 'Word wrap';
-tinyMCELang['lang_theme_sub_desc'] = 'Subscript';
-tinyMCELang['lang_theme_sup_desc'] = 'Superscript';
-tinyMCELang['lang_theme_hr_desc'] = 'Invoegen horizontale lijn';
-tinyMCELang['lang_theme_removeformat_desc'] = 'Verwijder opmaak';
-tinyMCELang['lang_theme_custom1_desc'] = 'Uw eigen omschrijving hier';
-tinyMCELang['lang_insert_image_border'] = 'Omranding (pixels)';
-tinyMCELang['lang_insert_image_dimensions'] = 'Afmetingen (Leeg: Originele afm.)';
-tinyMCELang['lang_insert_image_vspace'] = 'Verticale marge (pixels)';
-tinyMCELang['lang_insert_image_hspace'] = 'Horizontale marge (pixels)';
-tinyMCELang['lang_insert_image_align'] = 'Uitlijning';
-tinyMCELang['lang_insert_image_align_default'] = 'Standaard';
-tinyMCELang['lang_insert_image_align_baseline'] = 'Basislijn';
-tinyMCELang['lang_insert_image_align_top'] = 'Boven';
-tinyMCELang['lang_insert_image_align_middle'] = 'Midden';
-tinyMCELang['lang_insert_image_align_bottom'] = 'Onder';
-tinyMCELang['lang_insert_image_align_texttop'] = 'TextTop';
-tinyMCELang['lang_insert_image_align_absmiddle'] = 'Absoluut Midden';
-tinyMCELang['lang_insert_image_align_absbottom'] = 'Absoluut Onder';
-tinyMCELang['lang_insert_image_align_left'] = 'Links';
-tinyMCELang['lang_insert_image_align_right'] = 'Rechts';
-tinyMCELang['lang_insert_image_delta_height'] = 0;
-tinyMCELang['lang_theme_font_size'] = '-- Font size --';
-tinyMCELang['lang_theme_fontdefault'] = '-- Font family --';
-tinyMCELang['lang_theme_block'] = '-- Format --';
-tinyMCELang['lang_theme_paragraph'] = 'Paragraaf';
-tinyMCELang['lang_theme_div'] = 'Div';
-tinyMCELang['lang_theme_address'] = 'Adres';
-tinyMCELang['lang_theme_pre'] = 'voorgeformatteerd';
-tinyMCELang['lang_theme_h1'] = 'Titel 1';
-tinyMCELang['lang_theme_h2'] = 'Titel 2';
-tinyMCELang['lang_theme_h3'] = 'Titel 3';
-tinyMCELang['lang_theme_h4'] = 'Titel 4';
-tinyMCELang['lang_theme_h5'] = 'Titel 5';
-tinyMCELang['lang_theme_h6'] = 'Titel 6';
-tinyMCELang['lang_theme_colorpicker_title'] = 'Kies een kleur';
-tinyMCELang['lang_theme_colorpicker_apply'] = 'Toepassen';
-tinyMCELang['lang_theme_forecolor_desc'] = 'Selecteer voorgrondkleur';
-tinyMCELang['lang_theme_backcolor_desc'] = 'Select background color';
-tinyMCELang['lang_theme_charmap_title'] = 'Kies een bijzonder karakter';
-tinyMCELang['lang_theme_charmap_desc'] = 'Voeg een bijzonder karakter in';
-tinyMCELang['lang_theme_preview_desc'] = 'Toon de pagina in een nieuw venster';
-tinyMCELang['lang_theme_visualaid_desc'] = 'Toon/verberg hulplijnen';
-tinyMCELang['lang_insert_anchor_title'] = 'Anker toevoegen/wijzigen';
-tinyMCELang['lang_insert_anchor_name'] = 'Anker naam';
-tinyMCELang['lang_theme_anchor_desc'] = 'Anker toevoegen/wijzigen';
-tinyMCELang['lang_theme_insert_link_titlefield'] = 'Titel';
-tinyMCELang['lang_theme_clipboard_msg'] = 'Copy/Cut/Paste is not available in Mozilla and Firefox.\nDo you want more information about this issue?';
-tinyMCELang['lang_theme_path'] = 'Path';
-tinyMCELang['lang_cut_desc'] = 'Cut';
-tinyMCELang['lang_copy_desc'] = 'Copy';
-tinyMCELang['lang_paste_desc'] = 'Paste';
-tinyMCELang['lang_link_list'] = 'Link list';
-tinyMCELang['lang_image_list'] = 'Image list';
-tinyMCELang['lang_browse'] = 'Browse';
-tinyMCELang['lang_image_props_desc'] = 'Image properties';
-tinyMCELang['lang_newdocument_desc'] = 'New document';
-tinyMCELang['lang_class'] = 'CSS-Stijl';
-tinyMCELang['lang_newdocument'] = 'Are you sure you want clear all contents?';
+tinyMCE.addToLang('',{
+theme_style_select : '-- Stijlen --',
+theme_code_desc : 'HTML bron bewerken',
+theme_code_title : 'HTML code-editor',
+theme_code_wordwrap : 'Terugloop',
+theme_sub_desc : 'Subscript',
+theme_sup_desc : 'Superscript',
+theme_hr_desc : 'Horizontale lijn invoegen',
+theme_removeformat_desc : 'Opmaak verwijderen',
+theme_custom1_desc : 'Tik hier een omschrijving',
+insert_image_border : 'Rand',
+insert_image_dimensions : 'Afmetingen',
+insert_image_vspace : 'Verticale marge',
+insert_image_hspace : 'Horizontale marge',
+insert_image_align : 'Uitlijning',
+insert_image_align_default : '-- geen --',
+insert_image_align_baseline : 'Basislijn',
+insert_image_align_top : 'Boven',
+insert_image_align_middle : 'Midden',
+insert_image_align_bottom : 'Onder',
+insert_image_align_texttop : 'Bovenkant tekst',
+insert_image_align_absmiddle : 'Absoluut midden',
+insert_image_align_absbottom : 'Absoluut onder',
+insert_image_align_left : 'Links',
+insert_image_align_right : 'Rechts',
+theme_font_size : '-- Lettergrootte --',
+theme_fontdefault : '-- Lettertype --',
+theme_block : '-- Paragraaf --',
+theme_paragraph : 'Paragraaf',
+theme_div : 'Blok',
+theme_address : 'Adres',
+theme_pre : 'Opgemaakt',
+theme_h1 : 'Kop 1',
+theme_h2 : 'Kop 2',
+theme_h3 : 'Kop 3',
+theme_h4 : 'Kop 4',
+theme_h5 : 'Kop 5',
+theme_h6 : 'Kop 6',
+theme_colorpicker_title : 'Selecteer een kleur',
+theme_colorpicker_apply : 'Toepassen',
+theme_forecolor_desc : 'Een tekstkleur selecteren',
+theme_backcolor_desc : 'Een achtergrondkleur selecteren',
+theme_charmap_title : 'Speciale tekens invoegen',
+theme_charmap_desc : 'Speciale tekens invoegen',
+theme_visualaid_desc : 'Onzichtbare elementen en hulplijnen aan/uit',
+insert_anchor_title : 'Bladwijzer invoegen/bewerken',
+insert_anchor_name : 'Bladwijzer naam',
+theme_anchor_desc : 'Bladwijzer invoegen/bewerken',
+theme_insert_link_titlefield : 'titel',
+theme_clipboard_msg : 'Kopi&euml;ren/Knippen/Plakken is uit veiligheidsoverwegingen niet direct beschikbaar in Mozilla en Firefox.\nWilt u meer informatie over deze kwestie?',
+theme_path : 'Pad',
+cut_desc : 'Knippen',
+copy_desc : 'Kopiëren',
+paste_desc : 'Plakken',
+link_list : 'Hyperlinklijst',
+image_list : 'Afbeeldinglijst',
+browse : 'Bladeren',
+image_props_desc : 'Eigenschappen van afbeelding',
+newdocument_desc : 'Nieuw document',
+class_name : 'Stijl',
+newdocument : 'Weet u zeker dat u de hele inhoud wilt wissen?',
+about_title : 'Over TinyMCE',
+about : 'Over',
+license : 'Licentie',
+plugins : 'Plugins',
+plugin : 'Plugin',
+author : 'Author',
+version : 'Versie',
+loaded_plugins : 'Ingeladen plugins',
+help : 'Help',
+not_set : '-- geen --',
+close : 'Sluiten',
+toolbar_focus : 'Ga naar werkbalk knoppen - Alt+Q, Ga naar editor - Alt-Z, Ga naar pad - Alt-X'
+});

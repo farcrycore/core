@@ -7,7 +7,7 @@ $License: Released Under the "Common Public License 1.0", http://www.opensource.
 $Header: /cvs/farcry/farcry_core/admin/install/_installForm.cfm,v 1.36 2005/08/19 05:22:13 guy Exp $
 $Author: guy $
 $Date: 2005/08/19 05:22:13 $
-$Name: milestone_3-0-0 $
+$Name: milestone_3-0-1 $
 $Revision: 1.36 $
 
 || DESCRIPTION ||

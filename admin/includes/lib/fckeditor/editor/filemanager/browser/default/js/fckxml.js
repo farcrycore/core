@@ -1,6 +1,6 @@
-/*
+﻿/*
  * FCKeditor - The text editor for internet
- * Copyright (C) 2003-2004 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2005 Frederico Caldeira Knabben
  * 
  * Licensed under the terms of the GNU Lesser General Public License:
  * 		http://www.opensource.org/licenses/lgpl-license.php
@@ -8,14 +8,13 @@
  * For further information visit:
  * 		http://www.fckeditor.net/
  * 
+ * "Support Open Source software. What about a donation today?"
+ * 
  * File Name: fckxml.js
  * 	Defines the FCKXml object that is used for XML data calls
  * 	and XML processing.
  * 	This script is shared by almost all pages that compose the 
  * 	File Browser frameset.
- * 
- * Version:  2.0 RC2
- * Modified: 2004-11-26 23:55:13
  * 
  * File Authors:
  * 		Frederico Caldeira Knabben (fredck@fckeditor.net)
@@ -49,7 +48,7 @@ FCKXml.prototype.LoadUrl = function( urlToCall, asyncFunctionPointer )
 			if ( oXmlHttp.readyState == 4 )
 			{
 				oFCKXml.DOMDocument = oXmlHttp.responseXML ;
-				if ( oXmlHttp.status == 200 )
+				if ( oXmlHttp.status == 200 || oXmlHttp.status == 304 )
 					asyncFunctionPointer( oFCKXml ) ;
 				else
 					alert( 'XML request error: ' + oXmlHttp.statusText + ' (' + oXmlHttp.status + ')' ) ;
@@ -61,7 +60,7 @@ FCKXml.prototype.LoadUrl = function( urlToCall, asyncFunctionPointer )
 	
 	if ( ! bAsync )
 	{
-		if ( oXmlHttp.status == 200 )
+		if ( oXmlHttp.status == 200 || oXmlHttp.status == 304 )
 			this.DOMDocument = oXmlHttp.responseXML ;
 		else
 		{

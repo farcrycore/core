@@ -1,5 +1,6 @@
-// Simplified Chinese lang variables contributed by cube316 (cube316@gmail.com)
-//请访问 http://www.cube316.net/ 以获取TinyMCE的中文支持
+// Simplified Chinese lang variables contributed by tom_cat (thomaswangyang@gmail.com)
 
-tinyMCELang['lang_fullscreen_title'] = '全屏模式'
-tinyMCELang['lang_fullscreen_desc'] = '切换全屏模式'
+tinyMCE.addToLang('',{
+fullscreen_title : '全屏模式',
+fullscreen_desc : '切换全屏模式'
+});

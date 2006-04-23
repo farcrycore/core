@@ -1,3 +1,5 @@
 // UK lang variables
 
-tinyMCELang['lang_preview_desc'] = 'Pré-visualização';
+tinyMCE.addToLang('',{
+preview_desc : 'Pré-visualização'
+});

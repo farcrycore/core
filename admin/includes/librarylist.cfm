@@ -1,5 +1,8 @@
 <cfimport taglib="/farcry/fourq/tags/" prefix="q4">
 <cfimport taglib="/farcry/farcry_core/tags/widgets/" prefix="widgets">
+<cfparam name="searchText" default="">
+<cfparam name="searchField" default="">
+<cfparam name="bSearchFormSubmitted" default="No">
 <cfset objplp = CreateObject("component","#application.packagepath#.farcry.plpUtilities")>
 <cfif bFormSubmission EQ "true">
 	<cfset objTypes = CreateObject("component","#application.packagepath#.types.types")>
@@ -38,10 +41,15 @@ window.close();
 </cfif> --->
 		
 
+<!--- filter by keyword --->
+<cfset aKeywordField = ArrayNew(1)>
+<cfset ArrayAppend(aKeywordField,"label")>
+<cfset ArrayAppend(aKeywordField,"createdBy")>
+<cfset ArrayAppend(aKeywordField,"objectid")>
 <cfif librarytype EQ "dmFile">
-	<cfset displayLibraryType = "File">
+	<cfset displayLibraryType = "file">
 <cfelse>
-	<cfset displayLibraryType = "Image">
+	<cfset displayLibraryType = "image">
 </cfif>
 
 <!--- get all child categories --->
@@ -53,7 +61,14 @@ window.close();
 	<cfset lCategoryids = objCategories.getCategoryBranchAsList(categoryID)>
 	<cfset qReturn = objCategories.getData(lCategoryids,librarytype)>
 </cfif>
-
+	
+<cfif bSearchFormSubmitted AND searchField NEQ "" AND trim(searchText) NEQ "">
+	<cfquery dbtype="query" name="qReturn">
+	SELECT	*
+	FROM	qReturn
+	WHERE	#searchField# LIKE '%#trim(searchText)#%'
+	</cfquery>
+</cfif>
 
 <cfquery dbtype="query" name="qLibraryList">
 SELECT	DISTINCT *
@@ -67,7 +82,7 @@ WHERE	UPPER(status) = 'APPROVED'
 <cfset stPageination.qList = qLibraryList>
 <cfset stPageination.currentpage = currentpage>
 <cfset stPageination.maxRow = 10>
-<cfset stPageination.urlParameters = "libraryType=#libraryType#&primaryObjectID=#primaryObjectID#&categoryID=#categoryID#">
+<cfset stPageination.urlParameters = "libraryType=#libraryType#&primaryObjectID=#primaryObjectID#&categoryID=#categoryID#&searchText=#searchText#&bSearchFormSubmitted=#bSearchFormSubmitted#&searchField=#searchField#">
 <cfset stPageination.urlParametersWithOutFilter = "libraryType=#libraryType#&primaryObjectID=#primaryObjectID#">
 <cfset strRefreshUrl = cgi.script_name & "?#stPageination.urlParameters#">
 
@@ -75,7 +90,6 @@ WHERE	UPPER(status) = 'APPROVED'
 
 <cfoutput>
 <body class="popup #displayLibraryType#browse">
-<form action="library.cfm" method="post">
 <h1>Browse for #displayLibraryType#s...</h1>
 <div class="tab-container">
 	<ul class="tabs">
@@ -84,28 +98,43 @@ WHERE	UPPER(status) = 'APPROVED'
 	</ul>
 	<div class="tab-panes">
 		<div id="utility">
-		<h2>Browse by category</h2>
-<widgets:categoryAssociation typeName="#librarytype#" lSelectedCategoryID="#categoryID#" naviagtionURL="#stPageination.urlParametersWithOutFilter#">
-		<!--- #fDisplayCategory(qListCategory,stPageination.urlParametersWithOutFilter,categoryID)# --->
-<ul>
-	<li><cfif categoryID EQ ""><strong>[Unassigned]</strong><cfelse>
-		<a href="#cgi.script_name#?#stPageination.urlParametersWithOutFilter#">[Unassigned]</a></cfif>
-	</li>
-</ul>
-		<!--- <h3>Search</h3>
-		<input value="Enter keyword(s)" type="text" size="15" />
-		<input type="submit" value="Go" /> --->
-		</div>		
+			<h2>Browse by category</h2></cfoutput>
+			<widgets:categoryAssociation typeName="#librarytype#" lSelectedCategoryID="#categoryID#" naviagtionURL="#stPageination.urlParametersWithOutFilter#"><cfoutput>
+			<ul>
+				<li><cfif categoryID EQ ""><strong>[Unassigned]</strong><cfelse>
+					<a href="#cgi.script_name#?#stPageination.urlParametersWithOutFilter#">[Unassigned]</a></cfif>
+				</li>
+			</ul>
+
+			<h3>Search</h3>
+			<form name="frmSearch" id="frmSearch" action="library.cfm" method="post">
+				<select name="searchField" id="searchField"><cfloop index="i" from="1" to="#ArrayLen(aKeywordField)#">
+					<option value="#aKeywordField[i]#"<cfif searchField EQ aKeywordField[i]> selected="selected"</cfif>>#aKeywordField[i]#</option></cfloop>
+				</select><br />
+				<input value="#searchText#" name="searchText" id="searchText" type="text" size="15" />
+				<input type="hidden" name="categoryID" value="#categoryID#">
+				<input type="submit" name="buttonSearch" id="buttonSearch" value="Go" />
+				<input type="hidden" name="libraryType" value="#libraryType#">
+				<input type="hidden" name="primaryObjectID" value="#primaryObjectID#">
+				<input type="hidden" name="bSearchFormSubmitted" value="Yes">
+			</form>
+		</div>
+
+		<form name="frmLibrary" id="frmLibrary" action="library.cfm" method="post">
 		<div id="content">
-		<cfset fDisplayPagination(stPageination)>
-<cfif libraryType EQ "dmImage">
+			<fieldset>
+			<div class="utilBar"></cfoutput>
+				<cfset fDisplayPagination(stPageination)><cfoutput>
+			</div>
+			</fieldset>
+			<cfif libraryType EQ "dmImage">
 			<div class="thumbNailsWrap">
 				<ul><cfloop query="qLibraryList" startrow="#stPageination.startRow#" endrow="#stPageination.startRow+stPageination.maxRow-1#">
 				<li>
 					<label for="libcheck#qLibraryList.currentrow#"><input type="checkbox" id="libcheck#qLibraryList.currentrow#" name="lLibrarySelection" value="#qLibraryList.objectid#" />
 					<span>
-					<cfif qLibraryList.thumbnail NEQ ""><widgets:imageDisplay objectid="#qLibraryList.objectid#" alt="#qLibraryList.alt#">
-						<!--- <img src="#application.url.webroot#/images/#qLibraryList.thumbnail#" alt="#qLibraryList.alt#" /> --->
+					<cfif qLibraryList.thumbnail NEQ "">
+						<widgets:imageDisplay objectid="#qLibraryList.objectid#" alt="#qLibraryList.alt#">
 					<cfelse>
 						<img src="../images/no_thumbnail.gif" alt="currently no thumbnail" />
 					</cfif>
@@ -114,27 +143,28 @@ WHERE	UPPER(status) = 'APPROVED'
 				</li>
 				</cfloop>
 				</ul>				
-			</div>
-<cfelse>
+			</div><cfelse>
 			<div class="filesWrap">
+				<fieldset>
 				<ul><cfloop query="qLibraryList" startrow="#stPageination.startRow#" endrow="#stPageination.startRow+stPageination.maxRow-1#">
 				<li><label for="libcheck#qLibraryList.currentrow#"><input type="checkbox" id="libcheck#qLibraryList.currentrow#" name="lLibrarySelection" value="#qLibraryList.objectid#">#qLibraryList.title#</label></li></cfloop>
-				</ul>				
+				</ul>
+			</div></cfif>
+			<fieldset>
+			<div class="utilBar">
+				</cfoutput><cfset fDisplayPagination(stPageination)><cfoutput>
 			</div>
-</cfif>
-		<cfset fDisplayPagination(stPageination)>
-		</div>		
-		<div class="f-submit-wrap">
-			<!--- <input type="submit" value="Insert &amp; add another" class="f-submit f-submitsecondary" tabindex="12" /> --->
-			<cfif qLibraryList.recordCount GT 0>
+			</fieldset>
+		</div>
+		<div class="f-submit-wrap"><cfif qLibraryList.recordCount GT 0>
 			<input type="submit" value="Insert" class="f-submit" tabindex="12" /></cfif>
 			<input type="button" name="buttoncancel" class="f-submit" value="Cancel" onclick="window.close();">
 		</div>
-	</div>	
+		<input type="hidden" name="bFormSubmission" value="true">
+		<input type="hidden" name="libraryType" value="#libraryType#">
+		<input type="hidden" name="primaryObjectID" value="#primaryObjectID#">
+	</form>
+	</div>
 </div>
-<input type="hidden" name="bFormSubmission" value="true">
-<input type="hidden" name="libraryType" value="#libraryType#">
-<input type="hidden" name="primaryObjectID" value="#primaryObjectID#">
-</form>
 </body>
 </cfoutput>

@@ -1,7 +1,11 @@
-// French lang variables by Laurent Dran
+// Traduit par Normand Lamoureux le 2005-11-12
 
-tinyMCELang['lang_insert_flash']      = 'Ins&eacute;rer / &eacute;diter une animation Flash';
-tinyMCELang['lang_insert_flash_file'] = 'Fichier-Flash (.swf)';
-tinyMCELang['lang_insert_flash_size'] = 'Taille';
-tinyMCELang['lang_insert_flash_list'] = 'Fichiers Flash';
-tinyMCELang['lang_flash_props'] = 'Flash properties';
+tinyMCE.addToLang('flash',{
+title : 'Gestionnaire d\'animation Flash',
+desc : 'Insérer une animation Flash',
+file : 'Fichier Flash (.swf)',
+size : 'Taille',
+list : 'Fichiers Flash',
+props : 'Propriétés Flash',
+general : 'Général'
+});

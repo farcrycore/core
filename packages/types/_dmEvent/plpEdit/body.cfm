@@ -5,11 +5,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmEvent/plpEdit/body.cfm,v 1.18 2005/08/16 06:20:25 pottery Exp $
-$Author: pottery $
-$Date: 2005/08/16 06:20:25 $
-$Name: milestone_3-0-0 $
-$Revision: 1.18 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmEvent/plpEdit/body.cfm,v 1.18.2.1 2006/01/25 12:37:08 geoff Exp $
+$Author: geoff $
+$Date: 2006/01/25 12:37:08 $
+$Name: milestone_3-0-1 $
+$Revision: 1.18.2.1 $
 
 || DESCRIPTION || 
 $Description: body step for dmNews plp. Displays text editor with option to toggle to plain html text area. $
@@ -43,38 +43,28 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 <cfif NOT thisstep.isComplete>
 
 <widgets:plpWrapper>
-
 <cfoutput>
-<form action="#cgi.script_name#?#cgi.query_string#" method="post" name="editform">
-	<fieldset>
-	<input type="hidden" name="bBodySubmit" value="1"/>
-	<!--- <h1>#output.label#</h1> --->
-	<!--- <h4>#application.adminBundle[session.dmProfile.locale].body#</h4> --->
-	
-	<!--- display texteditor (config specified) --->
-	<widgets:richTextEditor value="#output.body#">
-	
-	<div class="relateditems-wrap r-i-images">
-	<widgets:bodyInsertItem typename="dmImage">
-	</div>
-	
-	<div class="relateditems-wrap r-i-files">
-	<widgets:bodyInsertItem typename="dmFile">
-	</div>
+<form action="#cgi.script_name#?#cgi.query_string#" name="editform" method="post"></cfoutput>
 
-	<div class="relateditems-wrap">
-	<widgets:bodyInserttemplate typename="#output.typename#">
-	</div>
-		
-	<div class="teaser-wrap">
+	<widgets:richTextEditor value="#output.body#">
+
+	<cfoutput><div class="relateditems-wrap r-i-images"></cfoutput>
+	<widgets:bodyInsertItem typename="dmImage">
+	<cfoutput></div></cfoutput>
+
+	<cfoutput><div class="relateditems-wrap r-i-files"></cfoutput>
+	<widgets:bodyInsertItem typename="dmFile">
+	<cfoutput></div></cfoutput>
+	
+	<cfoutput><div class="teaser-wrap"></cfoutput>
 	<widgets:teaser>
-	</div>
-</fieldset>	
+	<cfoutput></div></cfoutput>
+	<cfoutput>
 	<input type="hidden" name="plpAction" value="" />
 	<input type="hidden" name="bBodySubmit" value="1" />
 	<input style="display:none;" type="submit" name="buttonSubmit" value="submit" />
-</form></cfoutput>
-
+</form>
+</cfoutput>
 </widgets:plpWrapper>
 
 <cfelse>

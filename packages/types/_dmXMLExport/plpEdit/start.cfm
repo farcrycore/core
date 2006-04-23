@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmXMLExport/plpEdit/start.cfm,v 1.9 2005/09/02 05:11:44 guy Exp $
-$Author: guy $
-$Date: 2005/09/02 05:11:44 $
-$Name: milestone_3-0-0 $
-$Revision: 1.9 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmXMLExport/plpEdit/start.cfm,v 1.9.2.1 2006/03/21 05:03:26 jason Exp $
+$Author: jason $
+$Date: 2006/03/21 05:03:26 $
+$Name: milestone_3-0-1 $
+$Revision: 1.9.2.1 $
 
 || DESCRIPTION || 
 First step of dmXMLExport plp. 
@@ -40,7 +40,7 @@ Brendan Sisson (brendan@daemon.com.au)
 <p id="fading1" class="fade"><span class="error">#errormessage#</span></p>
 </cfif>
 	<label for="Title"><b>#application.adminBundle[session.dmProfile.locale].titleLabel#</b>
-		<input type="text" name="Title" id="Title" value="#output.Title#" maxlength="255" /><br />
+		<input type="text" name="Title" id="Title" value="#output.Title#" maxlength="255" size="45" /><br />
 	</label>
 
 	<label for="description"><b>#application.adminBundle[session.dmProfile.locale].description#</b>
@@ -48,23 +48,23 @@ Brendan Sisson (brendan@daemon.com.au)
 	</label>
 
 	<label for="language"><b>#application.adminBundle[session.dmProfile.locale].languageLabel#</b>
-		<input type="text" name="language" id="language" value="#output.language#" maxlength="255" /><br />
+		<input type="text" name="language" id="language" value="#output.language#" maxlength="255" size="45" /><br />
 	</label>
 
 	<label for="creator"><b>#application.adminBundle[session.dmProfile.locale].creatorLabel#</b>
-		<input type="text" name="creator" id="creator" value="#output.creator#" maxlength="255" /><br />
+		<input type="text" name="creator" id="creator" value="#output.creator#" maxlength="255" size="45" /><br />
 	</label>
 
 	<label for="rights"><b>#application.adminBundle[session.dmProfile.locale].rightsLabel#</b>
-		<input type="text" name="rights" id="rights" value="#output.rights#" maxlength="255" /><br />
+		<input type="text" name="rights" id="rights" value="#output.rights#" maxlength="255" size="45" /><br />
 	</label>
 
 	<label for="generatorAgent"><b>#application.adminBundle[session.dmProfile.locale].generatorAgentLabel#</b>
-		<input type="text" name="generatorAgent" id="generatorAgent" value="#output.generatorAgent#" maxlength="255" /><br />
+		<input type="text" name="generatorAgent" id="generatorAgent" value="#output.generatorAgent#" maxlength="255" size="45" /><br />
 	</label>
 
 	<label for="errorReportsTo"><b>#application.adminBundle[session.dmProfile.locale].errorReportsEmailLabel#</b>
-		<input type="text" name="errorReportsTo" id="errorReportsTo" value="#output.errorReportsTo#" maxlength="255" /><br />
+		<input type="text" name="errorReportsTo" id="errorReportsTo" value="#output.errorReportsTo#" maxlength="255" size="45" /><br />
 	</label>
 
 	<label for="updatePeriod"><b>#application.adminBundle[session.dmProfile.locale].updatePeriodLabel#</b>
@@ -82,7 +82,7 @@ Brendan Sisson (brendan@daemon.com.au)
 	</label>
 
 	<label for="updateBase"><b>#application.adminBundle[session.dmProfile.locale].updateBaseDateLabel#</b>
-		<input type="text" name="updateBase" id="updateBase" value="#output.updateBase#" maxlength="255" /><br />
+		<input type="text" name="updateBase" id="updateBase" value="#output.updateBase#" maxlength="255" size="45" /><br />
 	</label>
 
 	<label for="contentType"><b>#application.adminBundle[session.dmProfile.locale].contentType#</b>

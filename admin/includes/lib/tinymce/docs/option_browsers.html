@@ -1,5 +1,5 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title>Option: browsers</title>
 <link href="css/screen.css" rel="stylesheet" type="text/css" />
@@ -12,7 +12,7 @@
 
 <div class="content">
 	<p>
-		This option should contain a comma separated list of supported browsers. This enables you to for example disable the editor while running on Safari. The default value of this option is: msie,gecko,safari and since the support for Safari is very limited a warning message will appear until a better version is released. The possible values of this option is msie, gecko and safari.
+		This option should contain a comma separated list of supported browsers. This enables you to for example disable the editor while running on Safari. The default value of this option is: msie,gecko,safari,opera and since the support for Safari is very limited a warning message will appear until a better version is released. The possible values of this option is msie, gecko and safari.
 	</p>
 
 	<div class="separator"></div>
@@ -22,7 +22,7 @@
 <pre>
 tinyMCE.init({
 	...
-	<strong>browsers : "msie,gecko"</strong>
+	<strong>browsers : "msie,gecko,opera"</strong>
 });
 </pre>
 	</div>

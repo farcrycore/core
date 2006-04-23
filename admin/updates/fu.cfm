@@ -4,22 +4,30 @@
 <!--- re/create the FU table --->
 <cftry>
 	<cfquery name="qCheck" datasource="#application.dsn#" maxrows="1">
-	SELECT objectid FROM #application.dbOwner#refFriendlyURL
+	SELECT objectid FROM #application.dbOwner#reffriendlyURL
 	</cfquery>
 	
-	<!--- <cfquery name="qDrop" datasource="#application.dsn#" maxrows="1">
-	DROP TABLE #application.dbOwner#refFriendlyURL
-	</cfquery> --->
+	<cfquery name="qDrop" datasource="#application.dsn#" maxrows="1">
+	DROP TABLE #application.dbOwner#URL
+	</cfquery> 
 
 	<cfcatch> <!--- only create table if one doesnt exist --->
 		<cfquery name="qCreateFUTable" datasource="#application.dsn#">
-		CREATE TABLE #application.dbOwner#refFriendlyURL ( 
+		CREATE TABLE #application.dbOwner#reffriendlyURL ( 
 			objectid    		varchar(50) NOT NULL,
 			refobjectid 		varchar(50) NOT NULL,
+			<cfswitch expression="#application.dbtype#">
+			<cfcase value="ODBC">
+			friendlyurl	varchar(8000) NULL,
+			query_string varchar(8000) NULL,
+			datetimelastupdated datetime NULL,
+			</cfcase>
+			<cfdefaultcase>
 			friendlyurl 		text NULL,
-			query_string		text NULL,<cfif application.dbtype EQ "ODBC">
-			datetimelastupdated datetime NULL,<cfelse>
-			datetimelastupdated timestamp NULL,</cfif>
+			query_string		text NULL,
+			datetimelastupdated timestamp NULL,
+			</cfdefaultcase>
+			</cfswitch>
 			status      		numeric NULL 
 			)
 		</cfquery>
@@ -64,7 +72,7 @@
 				<cfset friendlyURL = ReplaceNoCase(friendlyURL,cgi.server_name,"")>
 				<cftry>
 					<cfquery name="qCreateFUTable" datasource="#application.dsn#">
-					INSERT INTO #application.dbOwner#refFriendlyURL(objectid, refObjectID, friendlyURL, datetimelastupdated, status)
+					INSERT INTO #application.dbOwner#URL(objectid, refObjectID, friendlyURL, datetimelastupdated, status)
 					VALUES (<cfqueryparam value="#createUUID()#" cfsqltype="cf_sql_varchar">,<cfqueryparam value="#refObjectID#" cfsqltype="cf_sql_varchar">,<cfqueryparam value="#friendlyURL#" cfsqltype="cf_sql_varchar">,<cfqueryparam value="#CreateODBCDateTime(now())#" cfsqltype="cf_sql_timestamp">,1)
 					</cfquery>
 					<cfset iCounter_Success = iCounter_Success + 1>
@@ -96,7 +104,7 @@
 </cfif>
 
 <cfsetting enablecfoutputonly="false"><cfoutput>
-Create Table Success: #application.dbOwner#refFriendlyURL<br />
+Create Table Success: #application.dbOwner#URL<br />
 <cfif FUFileLocation NEQ "">
 --------------------------------------------------------------<br />
 FriendlyUrl Migrated: #FUFileLocation#<br />

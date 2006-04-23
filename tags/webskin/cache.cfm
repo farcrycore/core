@@ -5,11 +5,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/webskin/cache.cfm,v 1.12 2004/08/22 05:11:30 geoff Exp $
-$Author: geoff $
-$Date: 2004/08/22 05:11:30 $
-$Name: milestone_2-3-2 $
-$Revision: 1.12 $
+$Header: /cvs/farcry/farcry_core/tags/webskin/cache.cfm,v 1.12.4.5 2006/01/22 23:49:39 gstewart Exp $
+$Author: gstewart $
+$Date: 2006/01/22 23:49:39 $
+$Name: milestone_3-0-1 $
+$Revision: 1.12.4.5 $
 
 || DESCRIPTION || 
 $Description: Content caches blocks of code. This tag will handle cache nesting.$
@@ -77,6 +77,7 @@ r_output			: optional, return variable to put the cached content into.
 	</cfif>
 
 	<cfif request.mode.flushcache OR attributes.flushcache>
+		<cfsavecontent variable="jsScript">
 		<cfset cacheread = false>
 		<cfif len(attributes.cacheBlockName)>
 			<cfinvoke component="#application.packagepath#.farcry.cache" method="cacheFlush">
@@ -84,7 +85,7 @@ r_output			: optional, return variable to put the cached content into.
 			</cfinvoke>
 		</cfif>
 		<cfif request.cachedcontentblocknumber eq 1>
-			<cfoutput><script>window.defaultStatus="caches flushed:";</script></cfoutput>
+			<cfoutput><script>window.defaultStatus='caches flushed:';</script></cfoutput>
 		</cfif>
 		<cfif len(attributes.cacheBlockName)>
 			<cfset tempoutput = "*" & trim(attributes.cacheBlockName)>
@@ -94,7 +95,9 @@ r_output			: optional, return variable to put the cached content into.
 		<cfif len(tempoutput) gt 10>
 			<cfset tempoutput = left(tempoutput, 10) & "..">
 		</cfif>
-		<cfoutput><script>window.defaultStatus=window.defaultStatus + '<cfif request.cachedcontentblocknumber neq 1>,</cfif> #tempoutput#';</script></cfoutput>
+			<cfoutput><script>window.defaultStatus=window.defaultStatus + '<cfif request.cachedcontentblocknumber neq 1>,</cfif> #tempoutput#';</script></cfoutput>
+		</cfsavecontent>
+		<cfhtmlhead text="#jsScript#">
 	<cfelse>
 		<cfset cacheread = true>
 	</cfif>

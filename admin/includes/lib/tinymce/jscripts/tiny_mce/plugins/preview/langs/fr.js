@@ -1,3 +1,6 @@
 // French lang variables by Laurent Dran
+// Modifié par Normand Lamoureux le 2005-11-12
 
-tinyMCELang['lang_preview_desc'] = 'Pr&eacute;visualisation';
+tinyMCE.addToLang('',{
+preview_desc : 'Prévisualisation'
+});

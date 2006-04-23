@@ -1,14 +1,24 @@
 /* Import plugin specific language pack */
-//tinyMCE.importPluginLanguagePack('contextmenu', 'en,zh_cn,cs,fa,fr_ca,fr,de');
+//tinyMCE.importPluginLanguagePack('contextmenu', 'en,zh_cn,cs,fa,fr_ca,fr,de,nb');
 if (!tinyMCE.settings['contextmenu_skip_plugin_css'])
-	tinyMCE.loadCSS(tinyMCE.baseURL + "/plugins/contextmenu/contextmenu.css");
+	tinyMCE.loadCSS(tinyMCE.baseURL + "/plugins/contextmenu/css/contextmenu.css");
 
 // Global contextmenu class instance
 var TinyMCE_contextmenu_contextMenu = null;
 
+function TinyMCE_contextmenu_getInfo() {
+	return {
+		longname : 'Context menus',
+		author : 'Moxiecode Systems',
+		authorurl : 'http://tinymce.moxiecode.com',
+		infourl : 'http://tinymce.moxiecode.com/tinymce/docs/plugin_contextmenu.html',
+		version : tinyMCE.majorVersion + "." + tinyMCE.minorVersion
+	};
+};
+
 function TinyMCE_contextmenu_initInstance(inst) {
-	// Is not working on MSIE 5.0
-	if (tinyMCE.isMSIE5_0)
+	// Is not working on MSIE 5.0 or Opera no contextmenu event
+	if (tinyMCE.isMSIE5_0 && tinyMCE.isOpera)
 		return;
 
 	// Add hide event handles
@@ -42,6 +52,8 @@ function TinyMCE_contextmenu_onContextMenu(e) {
 	if ((body = tinyMCE.getParentElement(elm, "body")) != null) {
 		for (var n in tinyMCE.instances) {
 			var inst = tinyMCE.instances[n];
+			if (!tinyMCE.isInstance(inst))
+				continue;
 
 			if (body == inst.getBody()) {
 				targetInst = inst;
@@ -87,10 +99,10 @@ function TinyMCE_contextmenu_showContextMenu(e, inst) {
 					contextMenu.addSeparator();
 
 					// If flash
-					if (tinyMCE.getAttrib(elm, 'name', '').indexOf('mce_plugin_flash') == 0)
+					if (tinyMCE.getAttrib(elm, 'class').indexOf('mceItemFlash') == 0)
 						contextMenu.addItem(tinyMCE.baseURL + "/plugins/flash/images/flash.gif", "$lang_flash_props", "mceFlash");
 					else
-						contextMenu.addItem(tinyMCE.baseURL + "/themes/" + theme + "/images/image.gif", "$lang_image_props_desc", "mceImage");
+						contextMenu.addItem(tinyMCE.baseURL + "/themes/" + theme + "/images/image.gif", "$lang_image_props_desc", typeof(TinyMCE_advimage_getControlHTML) != "undefined" ? "mceAdvImage" : "mceImage");
 					break;
 
 				case "TABLE":
@@ -109,28 +121,35 @@ function TinyMCE_contextmenu_showContextMenu(e, inst) {
 						contextMenu.addItem(tinyMCE.baseURL + "/themes/" + theme + "/images/paste.gif", "$lang_table_paste_row_before_desc", "mceTablePasteRowBefore", "", inst.tableRowClipboard == null);
 						contextMenu.addItem(tinyMCE.baseURL + "/themes/" + theme + "/images/paste.gif", "$lang_table_paste_row_after_desc", "mceTablePasteRowAfter", "", inst.tableRowClipboard == null);
 
-/*						contextMenu.addItem(tinyMCE.baseURL + "/themes/" + theme + "/images/left.gif", "$lang_justifyleft_desc", "JustifyLeft", "", false);
-						contextMenu.addItem(tinyMCE.baseURL + "/themes/" + theme + "/images/center.gif", "$lang_justifycenter_desc", "JustifyCenter", "", false);
-						contextMenu.addItem(tinyMCE.baseURL + "/themes/" + theme + "/images/right.gif", "$lang_justifyright_desc", "JustifyRight", "", false);
-						contextMenu.addItem(tinyMCE.baseURL + "/themes/" + theme + "/images/full.gif", "$lang_justifyfull_desc", "JustifyFull", "", false);*/
+/*						contextMenu.addItem(tinyMCE.baseURL + "/themes/" + theme + "/images/justifyleft.gif", "$lang_justifyleft_desc", "JustifyLeft", "", false);
+						contextMenu.addItem(tinyMCE.baseURL + "/themes/" + theme + "/images/justifycenter.gif", "$lang_justifycenter_desc", "JustifyCenter", "", false);
+						contextMenu.addItem(tinyMCE.baseURL + "/themes/" + theme + "/images/justifyright.gif", "$lang_justifyright_desc", "JustifyRight", "", false);
+						contextMenu.addItem(tinyMCE.baseURL + "/themes/" + theme + "/images/justifyfull.gif", "$lang_justifyfull_desc", "JustifyFull", "", false);*/
 						contextMenu.addSeparator();
-						contextMenu.addItem(tinyMCE.baseURL + "/plugins/table/images/table.gif", "$lang_table_insert_desc", "mceInsertTable", "insert");
+						contextMenu.addItem(tinyMCE.baseURL + "/plugins/table/images/table.gif", "$lang_table_desc", "mceInsertTable", "insert");
 						contextMenu.addItem(tinyMCE.baseURL + "/plugins/table/images/table.gif", "$lang_table_props_desc", "mceInsertTable");
 						contextMenu.addItem(tinyMCE.baseURL + "/plugins/table/images/table_cell_props.gif", "$lang_table_cell_desc", "mceTableCellProps");
+						contextMenu.addItem(tinyMCE.baseURL + "/plugins/table/images/table_delete.gif", "$lang_table_del", "mceTableDelete");
 						contextMenu.addSeparator();
 						contextMenu.addItem(tinyMCE.baseURL + "/plugins/table/images/table_row_props.gif", "$lang_table_row_desc", "mceTableRowProps");
-						contextMenu.addItem(tinyMCE.baseURL + "/plugins/table/images/table_insert_row_before.gif", "$lang_table_insert_row_before_desc", "mceTableInsertRowBefore");
-						contextMenu.addItem(tinyMCE.baseURL + "/plugins/table/images/table_insert_row_after.gif", "$lang_table_insert_row_after_desc", "mceTableInsertRowAfter");
+						contextMenu.addItem(tinyMCE.baseURL + "/plugins/table/images/table_insert_row_before.gif", "$lang_table_row_before_desc", "mceTableInsertRowBefore");
+						contextMenu.addItem(tinyMCE.baseURL + "/plugins/table/images/table_insert_row_after.gif", "$lang_table_row_after_desc", "mceTableInsertRowAfter");
 						contextMenu.addItem(tinyMCE.baseURL + "/plugins/table/images/table_delete_row.gif", "$lang_table_delete_row_desc", "mceTableDeleteRow");
 						contextMenu.addSeparator();
-						contextMenu.addItem(tinyMCE.baseURL + "/plugins/table/images/table_insert_col_before.gif", "$lang_table_insert_col_before_desc", "mceTableInsertColBefore");
-						contextMenu.addItem(tinyMCE.baseURL + "/plugins/table/images/table_insert_col_after.gif", "$lang_table_insert_col_after_desc", "mceTableInsertColAfter");
+						contextMenu.addItem(tinyMCE.baseURL + "/plugins/table/images/table_insert_col_before.gif", "$lang_table_col_before_desc", "mceTableInsertColBefore");
+						contextMenu.addItem(tinyMCE.baseURL + "/plugins/table/images/table_insert_col_after.gif", "$lang_table_col_after_desc", "mceTableInsertColAfter");
 						contextMenu.addItem(tinyMCE.baseURL + "/plugins/table/images/table_delete_col.gif", "$lang_table_delete_col_desc", "mceTableDeleteCol");
 						contextMenu.addSeparator();
 						contextMenu.addItem(tinyMCE.baseURL + "/plugins/table/images/table_split_cells.gif", "$lang_table_split_cells_desc", "mceTableSplitCells", "", (colspan == "1" && rowspan == "1"));
 						contextMenu.addItem(tinyMCE.baseURL + "/plugins/table/images/table_merge_cells.gif", "$lang_table_merge_cells_desc", "mceTableMergeCells", "", false);
 					}
 					break;
+			}
+		}  else {
+			// Add table specific
+			if (typeof(TinyMCE_table_getControlHTML) != "undefined") {
+				contextMenu.addSeparator();
+				contextMenu.addItem(tinyMCE.baseURL + "/plugins/table/images/table.gif", "$lang_table_desc", "mceInsertTable", "insert");
 			}
 		}
 
@@ -144,8 +163,6 @@ function TinyMCE_contextmenu_showContextMenu(e, inst) {
 
 function TinyMCE_contextmenu_hideContextMenu() {
 	TinyMCE_contextmenu_contextMenu.hide();
-
-	return true;
 }
 
 function TinyMCE_contextmenu_commandHandler(command, value) {
@@ -196,11 +213,11 @@ function ContextMenu(settings) {
 	this.html = "";
 
 	// IE Popup
-	if (tinyMCE.isMSIE && !tinyMCE.isMSIE5_0) {
+	if (tinyMCE.isMSIE && !tinyMCE.isMSIE5_0 && !tinyMCE.isOpera) {
 		this.pop = window.createPopup();
 		doc = this.pop.document;
 		doc.open();
-		doc.write('<html><head><link href="' + tinyMCE.baseURL + '/plugins/contextmenu/contextmenu.css" rel="stylesheet" type="text/css" /></head><body unselectable="yes" class="contextMenuIEPopup"></body></html>');
+		doc.write('<html><head><link href="' + tinyMCE.baseURL + '/plugins/contextmenu/css/contextmenu.css" rel="stylesheet" type="text/css" /></head><body unselectable="yes" class="contextMenuIEPopup"></body></html>');
 		doc.close();
 	}
 };
@@ -259,7 +276,7 @@ ContextMenu.prototype.show = function(x, y) {
 
 	this.contextMenuDiv.innerHTML = html;
 
-	if (tinyMCE.isMSIE && !tinyMCE.isMSIE5_0) {
+	if (tinyMCE.isMSIE && !tinyMCE.isMSIE5_0 && !tinyMCE.isOpera) {
 		var width, height;
 
 		// Get dimensions
@@ -281,7 +298,7 @@ ContextMenu.prototype.show = function(x, y) {
 };
 
 ContextMenu.prototype.hide = function() {
-	if (tinyMCE.isMSIE && !tinyMCE.isMSIE5_0)
+	if (tinyMCE.isMSIE && !tinyMCE.isMSIE5_0 && !tinyMCE.isOpera)
 		this.pop.hide();
 	else
 		this.contextMenuDiv.style.display = "none";

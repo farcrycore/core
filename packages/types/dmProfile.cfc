@@ -1,29 +1,21 @@
 <!--- 
-|| BEGIN FUSEDOC ||
-
-|| Copyright ||
-Daemon Pty Limited 1995-2002
-http://www.daemon.com.au
+|| LEGAL ||
+$Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
+$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/dmProfile.cfc,v 1.20 2005/07/29 07:30:36 guy Exp $
-$Author: guy $
-$Date: 2005/07/29 07:30:36 $
-$Name: milestone_3-0-0 $
-$Revision: 1.20 $
+$Header: /cvs/farcry/farcry_core/packages/types/dmProfile.cfc,v 1.20.2.1 2006/01/09 09:34:59 geoff Exp $
+$Author: geoff $
+$Date: 2006/01/09 09:34:59 $
+$Name: milestone_3-0-1 $
+$Revision: 1.20.2.1 $
 
 || DESCRIPTION || 
-dmProfile object CFC
+$Description: Generic member/user profile object $
 
 || DEVELOPER ||
-Peter Alexandrou (suspiria@daemon.com.au)
-
-|| ATTRIBUTES ||
-none
-
-|| END FUSEDOC ||
+$Developer: Geoff Bowers (modius@daemon.com.au) $
 --->
-
 <cfcomponent extends="types" displayName="Profiles" hint="FarCry User Profile.  Authentication and authorisation handled seperately by associated user directory model.">
 
     <!--- required properties --->	
@@ -52,15 +44,43 @@ none
         stObj = this.getData(arguments.objectID);
         </cfscript>
 
-	    <cfinclude template="_dmProfile/edit.cfm">
+	    <cfinclude template="_dmProfile/edit.cfm" />
     </cffunction>
 
-    <cffunction name="createProfile" access="PUBLIC" hint="Create new profile object using existing dmSec information">
-        <cfargument name="stProperties" type="struct" required="yes">
+    <cffunction name="createProfile" access="PUBLIC" hint="Create new profile object using existing dmSec information. Returns newly created profile as a struct." returntype="struct" output="false">
+        <cfargument name="stProperties" type="struct" required="yes" />
+		<cfset var stuser=arguments.stProperties>
+		<cfset var stProfile=structNew()>
+		<cfset var stResult=structNew()>
+		<cfset var stobj=structNew()>
 
-        <cfinclude template="_dmProfile/createProfile.cfm">
+        <cfscript>
+		// if userlogin missing use user name (bwd compatability hack)
+		if (NOT structkeyexists(stuser, "userlogin") OR NOT structkeyexists(stuser, "userdirectory")) {
+			stuser.userLogin=stuser.username;
+			stuser.userdirectory="CLIENTUD";
+		}
+		stProfile.objectID = createUUID();
+		stProfile.label = stUser.userLogin;
+		stProfile.userName = stUser.userLogin;
+		stProfile.userDirectory = stUser.userDirectory;
+		stProfile.emailAddress = '';
+		stProfile.bReceiveEmail = 1;
+		stProfile.bActive = 1;
+		stProfile.lastupdatedby = stUser.userLogin;
+		stProfile.datetimelastupdated = now();
+		stProfile.createdby = stUser.userLogin;
+		stProfile.datetimecreated = now();
+		stProfile.locked = 0;
+		stProfile.lockedBy = "";
+		
+		stResult = createData(stProperties=stProfile, User=stUser.userLogin);
+		
+		if (stResult.bSuccess) 
+			stObj = getProfile(userName=stUser.userLogin);
+		</cfscript>
 
-        <cfreturn stObj>
+        <cfreturn stObj />
     </cffunction>
 
     <cffunction name="getProfile" access="PUBLIC" hint="Retrieve profile data for given username">
@@ -71,16 +91,6 @@ none
         <cfreturn stObj>
     </cffunction>
 	
-<!--- 	
-TODO: permanently remove this method if appropriate; 20050523GB  
-	<cffunction name="display" access="public" output="true">
-		<cfargument name="objectid" required="yes" type="UUID">
-		
-		<!--- getData for object edit --->
-		<cfset stObj = this.getData(arguments.objectid)>
-		<cfinclude template="_dmProfile/display.cfm">
-	</cffunction>
- --->	
 	<cffunction name="displaySummary" access="public" output="false" returntype="string">
 		<cfargument name="objectid" required="yes" type="UUID">
 		

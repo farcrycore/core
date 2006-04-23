@@ -90,7 +90,7 @@
 	<cfcase value="draft"> <!--- DRAFT STATUS --->
 		<!--- check user can edit --->
 		<cfif stPermissions.iEdit EQ 1>
-<a href="edittabedit.cfm?objectid=#stObject.objectid#">#application.adminBundle[session.dmProfile.locale].editObj#</a><br />
+<a href="edittabEdit.cfm?objectid=#stObject.objectid#">#application.adminBundle[session.dmProfile.locale].editObj#</a><br />
 <a onclick="confirmRestore('#parentid#','#stObject.objectid#');" href="javascript:void(0);">#application.adminBundle[session.dmProfile.locale].restoreLiveObj#</a><br />
 		</cfif>
 		<!--- Check user can request approval --->

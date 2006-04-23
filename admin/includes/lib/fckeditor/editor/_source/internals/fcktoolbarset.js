@@ -1,6 +1,6 @@
-/*
+﻿/*
  * FCKeditor - The text editor for internet
- * Copyright (C) 2003-2004 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2005 Frederico Caldeira Knabben
  * 
  * Licensed under the terms of the GNU Lesser General Public License:
  * 		http://www.opensource.org/licenses/lgpl-license.php
@@ -8,12 +8,11 @@
  * For further information visit:
  * 		http://www.fckeditor.net/
  * 
+ * "Support Open Source software. What about a donation today?"
+ * 
  * File Name: fcktoolbarset.js
  * 	Defines the FCKToolbarSet object that is used to load and draw the 
  * 	toolbar.
- * 
- * Version:  2.0 RC2
- * Modified: 2004-11-23 19:53:19
  * 
  * File Authors:
  * 		Frederico Caldeira Knabben (fredck@fckeditor.net)
@@ -25,6 +24,12 @@ document.getElementById( 'ExpandHandle' ).title		= FCKLang.ToolbarExpand ;
 document.getElementById( 'CollapseHandle' ).title	= FCKLang.ToolbarCollapse ;
 
 FCKToolbarSet.Toolbars = new Array() ;
+
+// Array of toolbat items that are active only on WYSIWYG mode.
+FCKToolbarSet.ItemsWysiwygOnly = new Array() ;
+
+// Array of toolbar items that are sensitive to the cursor position.
+FCKToolbarSet.ItemsContextSensitive = new Array() ;
 
 FCKToolbarSet.Expand = function()
 {
@@ -78,37 +83,77 @@ FCKToolbarSet.Load = function( toolbarSetName )
 	
 	for ( var x = 0 ; x < ToolbarSet.length ; x++ ) 
 	{
-		var oToolbar = new FCKToolbar() ;
+		var oToolbarItems = ToolbarSet[x] ;
 		
-		for ( var j = 0 ; j < ToolbarSet[x].length ; j++ ) 
+		var oToolbar ;
+		
+		if ( typeof( oToolbarItems ) == 'string' )
 		{
-			var sItem = ToolbarSet[x][j] ;
-			
-			if ( sItem == '-')
-				oToolbar.AddSeparator() ;
-			else
-			{
-				var oItem = FCKToolbarItems.GetItem( sItem ) ;
-				if ( oItem )
-					oToolbar.AddItem( oItem ) ;
-			}
+			if ( oToolbarItems == '/' )
+				oToolbar = new FCKToolbarBreak() ;
 		}
-		
-		oToolbar.AddTerminator() ;
-		
+		else
+		{
+			oToolbar = new FCKToolbar() ;
+			
+			for ( var j = 0 ; j < oToolbarItems.length ; j++ ) 
+			{
+				var sItem = oToolbarItems[j] ;
+				
+				if ( sItem == '-')
+					oToolbar.AddSeparator() ;
+				else
+				{
+					var oItem = FCKToolbarItems.GetItem( sItem ) ;
+					if ( oItem )
+					{
+						oToolbar.AddItem( oItem ) ;
+
+						if ( !oItem.SourceView )
+							this.ItemsWysiwygOnly[this.ItemsWysiwygOnly.length] = oItem ;
+						
+						if ( oItem.ContextSensitive )
+							this.ItemsContextSensitive[this.ItemsContextSensitive.length] = oItem ;
+					}
+				}
+			}
+			
+			oToolbar.AddTerminator() ;
+		}
+
 		this.Toolbars[ this.Toolbars.length ] = oToolbar ;
 	}
-	
-	this.Redraw() ;
 }
 
-FCKToolbarSet.Redraw = function()
+FCKToolbarSet.RefreshModeState = function()
 {
+	if ( FCK.EditMode == FCK_EDITMODE_WYSIWYG )
+	{
+		// Enable all buttons that are available on WYSIWYG mode only.
+		for ( var i = 0 ; i < FCKToolbarSet.ItemsWysiwygOnly.length ; i++ )
+			FCKToolbarSet.ItemsWysiwygOnly[i].Enable() ;
+
+		// Refresh the buttons state.
+		FCKToolbarSet.RefreshItemsState() ;
+	}
+	else
+	{
+		// Refresh the buttons state.
+		FCKToolbarSet.RefreshItemsState() ;
+
+		// Disable all buttons that are available on WYSIWYG mode only.
+		for ( var i = 0 ; i < FCKToolbarSet.ItemsWysiwygOnly.length ; i++ )
+			FCKToolbarSet.ItemsWysiwygOnly[i].Disable() ;
+	}	
 }
 
 FCKToolbarSet.RefreshItemsState = function()
 {
-	
+
+	for ( var i = 0 ; i < FCKToolbarSet.ItemsContextSensitive.length ; i++ )
+		FCKToolbarSet.ItemsContextSensitive[i].RefreshState() ;
+/*
+	TODO: Delete this commented block on stable version.
 	for ( var i = 0 ; i < FCKToolbarSet.Toolbars.length ; i++ )
 	{
 		var oToolbar = FCKToolbarSet.Toolbars[i] ;
@@ -117,5 +162,5 @@ FCKToolbarSet.RefreshItemsState = function()
 			oToolbar.Items[j].RefreshState() ;
 		}
 	}
+*/
 }
-

@@ -5,11 +5,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmnavigation/edit.cfm,v 1.46 2005/10/17 06:33:50 guy Exp $
-$Author: guy $
-$Date: 2005/10/17 06:33:50 $
-$Name: milestone_3-0-0 $
-$Revision: 1.46 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmnavigation/edit.cfm,v 1.46.2.1 2006/03/21 05:03:26 jason Exp $
+$Author: jason $
+$Date: 2006/03/21 05:03:26 $
+$Name: milestone_3-0-1 $
+$Revision: 1.46.2.1 $
 
 || DESCRIPTION || 
 $Description: Navigation node edit method. Displays edit form and updates object on submission. $
@@ -134,7 +134,7 @@ parent['content'].location.href = "#cancelCompleteURL#"
 <p id="fading1" class="fade"><span class="error">#errormessage#</span></p><br />
 </cfif>
 	<label for="title"><b>#application.adminBundle[session.dmProfile.locale].titleLabel#<span class="req">*</span></b>
-		<input type="text" name="title" id="title" value="#title#" maxlength="255" /><br />
+		<input type="text" name="title" id="title" value="#title#" maxlength="255" size="45" /><br />
 	</label>
 	<display:OpenLayer title="#application.adminBundle[session.dmProfile.locale].advancedOptions#" isClosed="Yes" border="no">
 	<label for="externalLink"><b>#application.adminBundle[session.dmProfile.locale].symbolicLinkLabel#</b>
@@ -145,11 +145,11 @@ parent['content'].location.href = "#cancelCompleteURL#"
 	</label><br />
 
 	<label for="lNavIDAlias"><b>#application.adminBundle[session.dmProfile.locale].navAliases#</b>
-		<input type="text" name="lNavIDAlias" id="lNavIDAlias" value="#lNavIDAlias#" maxlength="255" /><br />
+		<input type="text" name="lNavIDAlias" id="lNavIDAlias" value="#lNavIDAlias#" maxlength="255" size="45" /><br />
 	</label><br />
 	
 	<label for="fu"><b>Friendly URL:</b>
-		<input type="text" name="fu" id="fu" value="#fu#" maxlength="255" /><br />
+		<input type="text" name="fu" id="fu" value="#fu#" maxlength="255" size="45" /><br />
 	</label><br />
 	</display:OpenLayer>
 </fieldset>

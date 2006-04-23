@@ -1,63 +1,77 @@
 // SE lang variables
 
-tinyMCELang['lang_theme_style_select'] = 'Stilar';
-tinyMCELang['lang_theme_code_desc'] = 'Editera HTML-koden';
-tinyMCELang['lang_theme_code_title'] = 'HTML-k&auml;llkodseditor';
-tinyMCELang['lang_theme_code_wordwrap'] = 'Automatiskt radbyte';
-tinyMCELang['lang_theme_sub_desc'] = 'Neds&auml;nkt text';
-tinyMCELang['lang_theme_sup_desc'] = 'Upph&ouml;jd text';
-tinyMCELang['lang_theme_hr_desc'] = 'S&auml;tt in horisontell linje';
-tinyMCELang['lang_theme_removeformat_desc'] = 'Ta bort formatering';
-tinyMCELang['lang_theme_custom1_desc'] = 'Din specialbeskriving h&auml;r';
-tinyMCELang['lang_insert_image_border'] = 'Ram';
-tinyMCELang['lang_insert_image_dimensions'] = 'Dimensioner';
-tinyMCELang['lang_insert_image_vspace'] = 'Vertikalt tomrum';
-tinyMCELang['lang_insert_image_hspace'] = 'Horisontellt tomrum';
-tinyMCELang['lang_insert_image_align'] = 'Justering';
-tinyMCELang['lang_insert_image_align_default'] = 'Ingen';
-tinyMCELang['lang_insert_image_align_baseline'] = 'Bottenlinjen';
-tinyMCELang['lang_insert_image_align_top'] = 'L&auml;ngst upp';
-tinyMCELang['lang_insert_image_align_middle'] = 'Mitten';
-tinyMCELang['lang_insert_image_align_bottom'] = 'L&auml;ngst ner';
-tinyMCELang['lang_insert_image_align_texttop'] = 'Textens top';
-tinyMCELang['lang_insert_image_align_absmiddle'] = 'Absoluta mitten';
-tinyMCELang['lang_insert_image_align_absbottom'] = 'Absolut l&auml;ngst ner';
-tinyMCELang['lang_insert_image_align_left'] = 'V&auml;nster';
-tinyMCELang['lang_insert_image_align_right'] = 'H&ouml;ger';
-tinyMCELang['lang_insert_image_delta_width'] = 30;
-tinyMCELang['lang_insert_image_delta_height'] = 10;
-tinyMCELang['lang_theme_font_size'] = '-- Fontstorlek --';
-tinyMCELang['lang_theme_fontdefault'] = '-- Font familj --';
-tinyMCELang['lang_theme_block'] = '-- Stycke --';
-tinyMCELang['lang_theme_div'] = 'Div';
-tinyMCELang['lang_theme_address'] = 'Adress';
-tinyMCELang['lang_theme_pre'] = 'F&ouml;rformatterad';
-tinyMCELang['lang_theme_h1'] = 'Rubrik 1';
-tinyMCELang['lang_theme_h2'] = 'Rubrik 2';
-tinyMCELang['lang_theme_h3'] = 'Rubrik 3';
-tinyMCELang['lang_theme_h4'] = 'Rubrik 4';
-tinyMCELang['lang_theme_h5'] = 'Rubrik 5';
-tinyMCELang['lang_theme_h6'] = 'Rubrik 6';
-tinyMCELang['lang_theme_colorpicker_title'] = 'Välj en färg';
-tinyMCELang['lang_theme_colorpicker_apply'] = 'Verkställ';
-tinyMCELang['lang_theme_forecolor_desc'] = 'Välj förgrundsfärg';
-tinyMCELang['lang_theme_backcolor_desc'] = 'Välj bakgrundsfärg';
-tinyMCELang['lang_theme_charmap_title'] = 'Välj specialtecken';
-tinyMCELang['lang_theme_charmap_desc'] = 'Sätt in specialtecken';
-tinyMCELang['lang_theme_visualaid_desc'] = 'Slå av/på osynliga element';
-tinyMCELang['lang_insert_anchor_title'] = 'Skapa/redigera ankare';
-tinyMCELang['lang_insert_anchor_name'] = 'Ankarnamn';
-tinyMCELang['lang_theme_anchor_desc'] = 'Skapa/redigera ankare';
-tinyMCELang['lang_theme_insert_link_titlefield'] = 'Titel';
-tinyMCELang['lang_theme_clipboard_msg'] = 'Klipput/Kopiera/Klistra fungerar inte Mozilla och Firefox. Vill du veta mer om detta?';
-tinyMCELang['lang_theme_path'] = 'S&ouml;kv&auml;g';
-tinyMCELang['lang_cut_desc'] = 'Klipp ut';
-tinyMCELang['lang_copy_desc'] = 'Kopiera';
-tinyMCELang['lang_paste_desc'] = 'Klistra in';
-tinyMCELang['lang_link_list'] = 'L&auml;nkar';
-tinyMCELang['lang_image_list'] = 'Bilder';
-tinyMCELang['lang_browse'] = 'Bl&auml;ddra';
-tinyMCELang['lang_image_props_desc'] = 'Bild egenskaper';
-tinyMCELang['lang_newdocument_desc'] = 'Nytt dokument';
-tinyMCELang['lang_class'] = 'Stil';
-tinyMCELang['lang_newdocument'] = 'Är du säker på att du vill tömma hela redigerings ytan?';
+tinyMCE.addToLang('',{
+theme_style_select : '-- Stilar --',
+theme_code_desc : 'Editera HTML-koden',
+theme_code_title : 'HTML-k&auml;llkodseditor',
+theme_code_wordwrap : 'Automatiskt radbyte',
+theme_sub_desc : 'Neds&auml;nkt text',
+theme_sup_desc : 'Upph&ouml;jd text',
+theme_hr_desc : 'S&auml;tt in horisontell linje',
+theme_removeformat_desc : 'Ta bort formatering',
+theme_custom1_desc : 'Din specialbeskriving h&auml;r',
+insert_image_border : 'Ram',
+insert_image_dimensions : 'Dimensioner',
+insert_image_vspace : 'Vertikalt tomrum',
+insert_image_hspace : 'Horisontellt tomrum',
+insert_image_align : 'Justering',
+insert_image_align_default : 'Ingen',
+insert_image_align_baseline : 'Bottenlinjen',
+insert_image_align_top : 'L&auml;ngst upp',
+insert_image_align_middle : 'Mitten',
+insert_image_align_bottom : 'L&auml;ngst ner',
+insert_image_align_texttop : 'Textens top',
+insert_image_align_absmiddle : 'Absoluta mitten',
+insert_image_align_absbottom : 'Absolut l&auml;ngst ner',
+insert_image_align_left : 'V&auml;nster',
+insert_image_align_right : 'H&ouml;ger',
+insert_image_delta_width : 30,
+insert_image_delta_height : 10,
+theme_font_size : '-- Fontstorlek --',
+theme_fontdefault : '-- Font familj --',
+theme_block : '-- Stycke --',
+theme_paragraph : 'Paragraf',
+theme_div : 'Div',
+theme_address : 'Adress',
+theme_pre : 'F&ouml;rformatterad',
+theme_h1 : 'Rubrik 1',
+theme_h2 : 'Rubrik 2',
+theme_h3 : 'Rubrik 3',
+theme_h4 : 'Rubrik 4',
+theme_h5 : 'Rubrik 5',
+theme_h6 : 'Rubrik 6',
+theme_colorpicker_title : 'V&auml;lj en f&auml;rg',
+theme_colorpicker_apply : 'Verkst&auml;ll',
+theme_forecolor_desc : 'V&auml;lj f&ouml;rgrundsf&auml;rg',
+theme_backcolor_desc : 'V&auml;lj bakgrundsf&auml;rg',
+theme_charmap_title : 'V&auml;lj specialtecken',
+theme_charmap_desc : 'S&auml;tt in specialtecken',
+theme_visualaid_desc : 'Sl&aring; av/p&aring; osynliga element',
+insert_anchor_title : 'Skapa/redigera ankare',
+insert_anchor_name : 'Ankarnamn',
+theme_anchor_desc : 'Skapa/redigera ankare',
+theme_insert_link_titlefield : 'Titel',
+theme_clipboard_msg : 'Klipput/Kopiera/Klistra fungerar inte Mozilla och Firefox. Vill du veta mer om detta?',
+theme_path : 'S&ouml;kv&auml;g',
+cut_desc : 'Klipp ut',
+copy_desc : 'Kopiera',
+paste_desc : 'Klistra in',
+link_list : 'L&auml;nkar',
+image_list : 'Bilder',
+browse : 'Bl&auml;ddra',
+image_props_desc : 'Bild egenskaper',
+newdocument_desc : 'Nytt dokument',
+class_name : 'Stil',
+newdocument : '&Auml;r du s&auml;ker p&aring; att du vill t&ouml;mma hela redigerings ytan?',
+about_title : 'Om TinyMCE',
+about : 'Om',
+license : 'Licens',
+plugins : 'Insticksprogram',
+plugin : 'Insticksprogram',
+author : 'Utvecklare',
+version : 'Version',
+loaded_plugins : 'Laddade insticksprogram',
+help : 'Hj&auml;lp',
+not_set : '-- Inte satt --',
+close : 'St&auml;ng'
+});

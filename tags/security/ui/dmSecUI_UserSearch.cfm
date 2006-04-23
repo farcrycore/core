@@ -12,7 +12,7 @@ http://www.daemon.com.au/
 $Header: /cvs/farcry/farcry_core/tags/security/ui/dmSecUI_UserSearch.cfm,v 1.9 2005/08/17 06:50:52 pottery Exp $
 $Author: pottery $
 $Date: 2005/08/17 06:50:52 $
-$Name: milestone_3-0-0 $
+$Name: milestone_3-0-1 $
 $Revision: 1.9 $
 
 || DESCRIPTION || 

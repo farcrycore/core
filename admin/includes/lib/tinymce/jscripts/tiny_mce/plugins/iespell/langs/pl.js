@@ -1,4 +1,8 @@
-ï»¿// PL lang variables
+// PL lang variables
+// fixed by Wooya
+// http://www.mfusion.prv.pl
 
-tinyMCELang['lang_iespell_desc'] = 'Uruchom sprawdzanie pisowni';
-tinyMCELang['lang_iespell_download'] = "Nie wykryto pluginu, kliknij aby przejÅ›Ä‡ do strony z pluginami."
+tinyMCE.addToLang('',{
+iespell_desc : 'Uruchom sprawdzanie pisowni',
+iespell_download : "Nie wykryto pluginu, kliknij aby przej¶æ do strony z pluginami."
+});

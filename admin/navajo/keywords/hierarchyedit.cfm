@@ -5,11 +5,11 @@ $License: Released Under the "Common Public License 1.0", http://www.opensource.
 
 || VERSION CONTROL ||
 
-$Header: /cvs/farcry/farcry_core/admin/navajo/keywords/hierarchyedit.cfm,v 1.17 2005/08/09 03:54:40 geoff Exp $
-$Author: geoff $
-$Date: 2005/08/09 03:54:40 $
-$Name: milestone_3-0-0 $
-$Revision: 1.17 $
+$Header: /cvs/farcry/farcry_core/admin/navajo/keywords/hierarchyedit.cfm,v 1.17.2.1 2006/01/16 22:55:42 gstewart Exp $
+$Author: gstewart $
+$Date: 2006/01/16 22:55:42 $
+$Name: milestone_3-0-1 $
+$Revision: 1.17.2.1 $
 
 || DESCRIPTION || 
 $Description: Displays category tree $
@@ -84,7 +84,7 @@ $out:$
 
 <cfoutput>
 <div>
-	<iframe name="cattreeframe" width="250" height="100%" id="cattreeframe" style="display:inline;" src="#application.url.farcry#/navajo/keywords/tree.cfm" scrolling="No" frameborder="0"></iframe>
+	<iframe name="cattreeframe" width="100%" height="100%" id="cattreeframe" style="display:inline;" src="#application.url.farcry#/navajo/keywords/tree.cfm" scrolling="Yes" frameborder="0"></iframe>
 	<iframe style="display:inline;" width="400" height="100%" name="cateditframe" id="cateditframe" src="#application.url.farcry#/navajo/keywords/overview.cfm" scrolling="Auto" frameborder="0"></iframe> 
 </div>
 </body>

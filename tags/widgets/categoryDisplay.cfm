@@ -17,7 +17,7 @@
 <cfset startLevel = 0>
 <cfset iCounter = 0>
 <cfloop index="i" from="1" to="#qNav.recordcount#">
-	<cfset iParentObjectID = qNav.parentID[i]>
+	<cfset iParentObjectID = trim(qNav.parentID[i])>
 	<cfset iCurrentObjectID = qNav.objectID[i]>
 	<!--- <cfset bCollapsable = application.factory.otree.getDescendants(iCurrentObjectID).recordcount> --->
 	<cfif qNav.nRight[i] EQ (qNav.nLeft[i] + 1)>

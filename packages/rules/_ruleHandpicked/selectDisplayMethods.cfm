@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/rules/_ruleHandpicked/selectDisplayMethods.cfm,v 1.15 2005/09/08 01:49:27 guy Exp $
-$Author: guy $
-$Date: 2005/09/08 01:49:27 $
-$Name: milestone_3-0-0 $
-$Revision: 1.15 $
+$Header: /cvs/farcry/farcry_core/packages/rules/_ruleHandpicked/selectDisplayMethods.cfm,v 1.15.2.2 2005/12/28 05:55:36 paul Exp $
+$Author: paul $
+$Date: 2005/12/28 05:55:36 $
+$Name: milestone_3-0-1 $
+$Revision: 1.15.2.2 $
 
 || DESCRIPTION || 
 $Description: ruleHandpicked PLP - choose teaser handler (teaser.cfm) $
@@ -59,17 +59,18 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
 
 <cfsetting enablecfoutputonly="false">
 <widgets:plpWrapperContainer><cfoutput>
+
 <script type="text/javascript">
 #output.objectJS#
 function overviewHeader()
 {
 	var html = "<table><tr>";
-	html += "<th>#application.adminBundle[session.dmProfile.locale].Label#</th>";
-	html += "<th>#application.adminBundle[session.dmProfile.locale].ObjTypeLabel#</th>";
-	html += "<th>#application.adminBundle[session.dmProfile.locale].displayMethodLabel#</th>";
-	html += "<th>#application.adminBundle[session.dmProfile.locale].delete#</th>";
-	html += "<th>#application.adminBundle[session.dmProfile.locale].move#</th>";
-	html += "</tr>";
+	html += "<th>#application.adminBundle[session.dmProfile.locale].Label#<\/th>";
+	html += "<th>#application.adminBundle[session.dmProfile.locale].ObjTypeLabel#<\/th>";
+	html += "<th>#application.adminBundle[session.dmProfile.locale].displayMethodLabel#<\/th>";
+	html += "<th>#application.adminBundle[session.dmProfile.locale].delete#<\/th>";
+	html += "<th>#application.adminBundle[session.dmProfile.locale].move#<\/th>";
+	html += "<\/tr>";
 	return html;	
 }
 
@@ -93,14 +94,13 @@ function deleteObject(id)
 
 function renderNode(arrayName,index,radio)
 {
-	//var html = '<table width=\'100%\' border=\'1\'><tr>';
 	var html = '<tr>';
-	html += "<td>"+arrayName[index].label+"</td>";
-	html += "<td>"+arrayName[index].typename+"</td>";
-	html += "<td id='select_"+index+"'><strong>"+arrayName[index].selecthtml+"</strong></td>";
-	html += "<td align=\"center\"><img src=\"#application.url.farcry#/images/no.gif\"/ onclick=\"deleteObject('"+arrayName[index].objectid+"')\"></td";
-	html += "<td align=\"center\"><input value=\""+index+"\" type=\"radio\" name=\"" + radio + "\"></td>";
-	html += "</tr>"
+	html += "<td>"+arrayName[index].label+"<\/td>";
+	html += "<td>"+arrayName[index].typename+"<\/td>";
+	html += "<td id='select_"+index+"'><strong>"+arrayName[index].selecthtml+"<\/strong><\/td>";
+	html += "<td align=\"center\"><img src=\"#application.url.farcry#/images/no.gif\" onclick=\"deleteObject('"+arrayName[index].objectid+"')\;\"><\/td>";
+	html += "<td align=\"center\"><input value=\""+index+"\" type=\"radio\" name=\"" + radio + "\"><\/td>";
+	html += "<\/tr>"
 	return html;
 }
 
@@ -110,13 +110,13 @@ function buildOverview()
 	var objectsEM = document.getElementById('objectsOverview');
 	var overviewHTML = overviewHeader();
 	if (!aWDDX.length)
-		overviewHTML = "<table><tr><td colspan=\"5\" align=\"center\"><strong>#application.adminBundle[session.dmProfile.locale].noObjSelected#</strong></td></tr></table>";
+		overviewHTML = "<table><tr><td colspan=\"5\" align=\"center\"><strong>#application.adminBundle[session.dmProfile.locale].noObjSelected#<\/strong><\/td><\/tr><\/table>";
 	else
 	{	
 		for(var i = 0;i < aWDDX.length;i++)
 			overviewHTML += renderNode(aWDDX,i,'seq');
 	}
-	overviewHTML += "</table>";
+	overviewHTML += "<\/table>";
 	objectsEM.innerHTML = overviewHTML;	
 }
 
@@ -252,18 +252,18 @@ function doSubmit(objForm){
 	<fieldset>
 		<h3>#application.adminBundle[session.dmProfile.locale].selectObjDisplayMethod#</h3>
 	</fieldset>
-	<input type="hidden" name="wddx" value="">			
-	<table border="0" width="100%">
+	<input type="hidden" name="wddx" value="" />
+	<table border="0" width="100%" style="border: 0! important;">
 	<tr>
-		<td width="400"><div id="objectsOverview"></div>
-		</td>	
+		<td><div id="objectsOverview"></div></td>	
 		<td valign="middle" align="center">
-			<input type="button" class="normalbttnstyle" value="&uarr;" onClick="reArrange(aWDDX,getSelectedIndex(document.forms['editform'].seq),getSelectedIndex(document.forms['editform'].seq) -1,getSeqIndex('seq')-1)"><br />
-			<input type="button" class="normalbttnstyle" value="&darr;" onClick="reArrange(aWDDX,getSelectedIndex(document.forms['editform'].seq),getSelectedIndex(document.forms['editform'].seq) +1,getSeqIndex('seq')+1)"><br />
+			<input type="button" class="normalbttnstyle" value="&uarr;" onclick="reArrange(aWDDX,getSelectedIndex(document.forms['editform'].seq),getSelectedIndex(document.forms['editform'].seq) -1,getSeqIndex('seq')-1);" /><br />
+			<input type="button" class="normalbttnstyle" value="&darr;" onclick="reArrange(aWDDX,getSelectedIndex(document.forms['editform'].seq),getSelectedIndex(document.forms['editform'].seq) +1,getSeqIndex('seq')+1);" /><br />
 		</td>
 	</tr>
 	</table>
-	<input type="hidden" name="ruleid" value="#output.objectid#">
+	&nbsp; <!--- added this nbsp to stop totally bizarre behaviour in IE ---> 
+	<input type="hidden" name="ruleid" value="#output.objectid#" />
 	<input type="hidden" name="plpAction" value="" />
 	<input style="display:none;" type="submit" name="buttonSubmit" value="submit" />
 </form>	

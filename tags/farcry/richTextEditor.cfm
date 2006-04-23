@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/farcry/richTextEditor.cfm,v 1.22 2005/08/09 03:54:39 geoff Exp $
-$Author: geoff $
-$Date: 2005/08/09 03:54:39 $
-$Name: milestone_3-0-0 $
-$Revision: 1.22 $
+$Header: /cvs/farcry/farcry_core/tags/farcry/richTextEditor.cfm,v 1.22.2.1 2005/11/29 03:12:39 guy Exp $
+$Author: guy $
+$Date: 2005/11/29 03:12:39 $
+$Name: milestone_3-0-1 $
+$Revision: 1.22.2.1 $
 
 || DESCRIPTION || 
 $Description: Displays an editor for long text input. Based on config settings unless in toggle mode which will display a basic html text area$
@@ -26,10 +26,33 @@ $out:$
 <cfimport taglib="/farcry/farcry_core/tags/farcry" prefix="tags">
 <cfinclude template="/farcry/farcry_core/admin/includes/utilityFunctions.cfm">
 <cfparam name="attributes.textareaname" default="body">
+<cfparam name="attributes.fieldLabel" default="">
 
 <cfif isDefined('caller.output.#attributes.textareaname#') AND not isDefined('attribute.value')>
 	<cfset attributes.value = caller.output[attributes.textareaname]>
 </cfif>
+
+<cfif attributes.fieldLabel NEQ ""><cfoutput><b>#attributes.fieldLabel#</b></cfoutput></cfif>
+
+
+<!--- TODO: temporary hack 20051123 GB --->
+<cfparam name="session.toggleTextArea" default="0">
+<cfif isDefined("form.togglechange") AND form.togglechange>
+	<cfset session.toggleTextArea = 1>
+<cfelseif isDefined("togglechange") AND NOT togglechange>
+	<cfset session.toggleTextArea = 0>
+</cfif>
+
+<cfoutput>
+<cfif session.toggleTextArea>
+<input type="hidden" name="togglechange" value="0">
+<input type="checkbox" name="toggletext" value="1" checked onclick="javascript:document.forms.editform.plpAction.value='none';document.forms.editform.buttonSubmit.click();">Toggle textarea<br />
+<cfelse>
+<input type="hidden" name="togglechange" value="1">
+<input type="checkbox" name="toggletext" value="1" onclick="javascript:document.forms.editform.plpAction.value='none';document.forms.editform.buttonSubmit.click();">Toggle textarea<br />
+</cfif>
+</cfoutput>
+<!--- /end temporary hack 20051123 GB --->
 
 <!--- check if toggled to text area otherwise use config defined editor --->
 <cfif isdefined("session.toggleTextArea") and session.toggleTextArea eq 1>
@@ -38,12 +61,12 @@ $out:$
 		<script language="JavaScript">
 		function insertHTML(html,field)
 		{
-			document.editform.#attributes.textareaname#.value = editform.#attributes.textareaname#.value + (html);
+			document.editform.#attributes.textareaname#.value = document.editform.#attributes.textareaname#.value + (html);
 		}
 		</script>
 	</cfoutput>
 	<!--- display text area --->
-	<cfoutput><textarea name="#attributes.textareaname#" cols="60" rows="20">#htmlEditFormat(attributes.value)#</textarea></cfoutput>
+	<cfoutput><textarea name="#attributes.textareaname#" id="#attributes.textareaname#" cols="60" rows="20">#htmlEditFormat(attributes.value)#</textarea></cfoutput>
 
 <cfelse>
 
@@ -66,6 +89,7 @@ $out:$
 			<tags:soEditor_pro
 				form="editform"
 				field="#attributes.textareaname#"
+				id="#attributes.textareaname#"
 				scriptpath="#application.url.farcry#/siteobjects/soeditor/pro/"
 				html="#attributes.value#"
 				width="#application.config.soEditorPro.width#"
@@ -173,6 +197,7 @@ $out:$
 			<tags:soEditor_lite
 				form="editform"
 				field="#attributes.textareaname#"
+				id = "#attributes.textareaname#"
 				scriptpath="#application.url.farcry#/siteobjects/soeditor/lite/"
 				html="#attributes.value#"
 				width="#application.config.soEditor.width#"
@@ -277,15 +302,15 @@ $out:$
 
 			<!--- javascript for inserting images etc --->
 			<cfoutput>
-				<script language="JavaScript">
-				function insertHTML( html,field )
+				<script type="text/javascript">
+				function insertHTML(html,field )
 				{
-					editform.#attributes.textareaname#.value = editform.#attributes.textareaname#.value + (html);
+					document.editform.#attributes.textareaname#.value = document.editform.#attributes.textareaname#.value + (html);
 				}
 				</script>
 			</cfoutput>
 			<!--- display text area --->
-			<cfoutput><textarea name="#attributes.textareaname#" cols="60" rows="20">#attributes.value#</textarea></cfoutput>
+			<cfoutput><textarea name="#attributes.textareaname#" id="#attributes.textareaname#" cols="60" rows="20">#attributes.value#</textarea></cfoutput>
 		</cfcase>
 
 		<cfcase value="htmlArea">
@@ -332,7 +357,7 @@ $out:$
 			
 			<cfset uniqueId = replace(createUUID(),'-','','all')>
 			<!--- display text area --->
-			<cfoutput><div id="htmlareawrapper"><textarea name="#attributes.textareaname#" id="#uniqueID#">#attributes.value#</textarea></div></cfoutput>
+			<cfoutput><div id="htmlareawrapper"><textarea id="#attributes.textareaname#" name="#attributes.textareaname#" id="#uniqueID#">#attributes.value#</textarea></div></cfoutput>
 
 
 			<!--- javascript for inserting images etc --->
@@ -483,7 +508,7 @@ $out:$
 	        <param name="startupscreentextcolor" value="#application.config.eoPro.startupscreentextcolor#">
 	        <!-- End - Applet Layout params -->
 			</applet>
-			<textarea name="#attributes.textareaname#" cols="1" rows="1" style="visibility:hidden;">#attributes.value#</textarea>
+			<textarea name="#attributes.textareaname#" id="#attributes.textareaname#" cols="1" rows="1" style="visibility:hidden;">#attributes.value#</textarea>
 			</cfoutput>
 			<cfif application.config.general.richTextEditor IS "eoPro">
 	
@@ -548,8 +573,142 @@ $out:$
 				 
 			 </cfoutput>
 		</cfcase>
+		<cfcase value="tinymce">
+			<!--- load TinyMCE --->
+			<cfsavecontent variable="tinyMCEjs">
+				<cfoutput>
+				<!-- // load tinyMCE and set preferences // -->
+				<script type="text/javascript" src="#application.url.farcry#/includes/lib/tinymce/jscripts/tiny_mce/tiny_mce.js"></script>
+				<script type="text/javascript">
+				tinyMCE.init({
+					mode : "exact",
+					elements : "#attributes.textareaname#",<cfif NOT ListFindNoCase("none,default", application.config.tinyMCE.insertimage_callback) AND application.config.tinyMCE.insertimage_callback NEQ "">
+					insertimage_callback : "#application.config.tinyMCE.insertimage_callback#",</cfif><cfif NOT ListFindNoCase("none,default", application.config.tinyMCE.file_browser_callback) AND application.config.tinyMCE.file_browser_callback NEQ "">
+					file_browser_callback : "#application.config.tinyMCE.file_browser_callback#",</cfif>
+					#application.config.tinyMCE.tinyMCE_config#
+				});
+				</script>
+				
+				<script type="text/javascript">
+					//returns the selected text from the editor
+					function TinyMCE_getSelectedText(){
+					     var inst = tinyMCE.selectedInstance;
+					   
+					     if (tinyMCE.isMSIE) {
+					    var doc = inst.getDoc();
+					    var rng = doc.selection.createRange();
+					    selectedText = rng.text;
+					     } else {
+					    var sel = inst.contentWindow.getSelection();
+					   
+					    if (sel && sel.toString){
+					                    selectedText = sel.toString();
+					    }else{
+					       selectedText = '';
+					    }
+					    }
+					    return selectedText;
+					} 					
+					
+					function insertHTML( html ) {	
+					 	//Are we inserting an image or anchor?
+					 	if(html.indexOf('<img') == -1) {
+					 		//Is there selected text in the editor?
+					 		if(TinyMCE_getSelectedText().length != 0) {
+								var Pattern = />[\S\s]+<\/a>$/i;
+								var match = Pattern.exec(html);
+								//Did we get a pattern match?					 		
+								if(match != null) {
+									//Replace the original anchor with the selection
+									html = html.replace(Pattern, '>{$selection}</a>');
+									//Replace rather than insert
+								 	tinyMCE.execInstanceCommand('#attributes.textareaname#','mceReplaceContent',false,html);
+								}
+								else
+								 	tinyMCE.execInstanceCommand('#attributes.textareaname#','mceInsertContent',false,html);
+					 	 	}
+					 	 	else
+							 	tinyMCE.execInstanceCommand('#attributes.textareaname#','mceInsertContent',false,html);
+						}
+					 	else
+						 	tinyMCE.execInstanceCommand('#attributes.textareaname#','mceInsertContent',false,html);
+					}
+
+				</script>
+				</cfoutput>
+			</cfsavecontent>				
+			<cfhtmlhead text="#tinyMCEjs#">
+			<cfoutput>
+			<textarea id="#attributes.textareaname#" name="#attributes.textareaname#" cols="50" rows="15">#attributes.value#</textarea>
+			</cfoutput>
+		</cfcase>
+		
+		<!--- Default Editor --->
+		<cfdefaultcase>
+			<!--- load TinyMCE --->
+			<cfsavecontent variable="tinyMCEjs">
+				<cfoutput>
+					<!-- // load tinyMCE and set preferences // -->
+					<script type="text/javascript" src="#application.url.farcry#/includes/lib/tinymce/jscripts/tiny_mce/tiny_mce.js"></script>
+					<script type="text/javascript">
+					tinyMCE.init({
+						mode : "exact",
+						elements : "#attributes.textareaname#",
+						insertimage_callback : "showWindowdmImage",
+						file_browser_callback : "showWindowdmFile"
+					});
+					</script>
+					<script type="text/javascript">
+						//returns the selected text from the editor
+						function TinyMCE_getSelectedText(){
+						     var inst = tinyMCE.selectedInstance;
+						   
+						     if (tinyMCE.isMSIE) {
+						    var doc = inst.getDoc();
+						    var rng = doc.selection.createRange();
+						    selectedText = rng.text;
+						     } else {
+						    var sel = inst.contentWindow.getSelection();
+						   
+						    if (sel && sel.toString){
+						                    selectedText = sel.toString();
+						    }else{
+						       selectedText = '';
+						    }
+						    }
+						    return selectedText;
+						} 					
+						
+						function insertHTML( html ) {	
+						 	//Are we inserting an image or anchor?
+						 	if(html.indexOf('<img') == -1) {
+						 		//Is there selected text in the editor?
+						 		if(TinyMCE_getSelectedText().length != 0) {
+									var Pattern = />[\S\s]+<\/a>$/i;
+									var match = Pattern.exec(html);
+									//Did we get a pattern match?					 		
+									if(match != null) {
+										//Replace the original anchor with the selection
+										html = html.replace(Pattern, '>{$selection}</a>');
+										//Replace rather than insert
+									 	tinyMCE.execInstanceCommand('#attributes.textareaname#','mceReplaceContent',false,html);
+									}
+									else
+									 	tinyMCE.execInstanceCommand('#attributes.textareaname#','mceInsertContent',false,html);
+						 	 	}
+						 	 	else
+								 	tinyMCE.execInstanceCommand('#attributes.textareaname#','mceInsertContent',false,html);
+							}
+						 	else
+							 	tinyMCE.execInstanceCommand('#attributes.textareaname#','mceInsertContent',false,html);
+						}
+					</script>
+				</cfoutput>
+			</cfsavecontent>				
+			<cfhtmlhead text="#tinyMCEjs#">
+			<cfoutput><textarea id="#attributes.textareaname#" name="#attributes.textareaname#" cols="50" rows="15">#attributes.value#</textarea></cfoutput>
+		</cfdefaultcase>>
 
 	</cfswitch>
 </cfif>
-
 <cfsetting enablecfoutputonly="no">

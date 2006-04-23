@@ -9,7 +9,7 @@ http://www.daemon.com.au
 $Header: /cvs/farcry/farcry_core/packages/types/_dmProfile/getProfile.cfm,v 1.10 2005/08/15 06:03:00 guy Exp $
 $Author: guy $
 $Date: 2005/08/15 06:03:00 $
-$Name: milestone_3-0-0 $
+$Name: milestone_3-0-1 $
 $Revision: 1.10 $
 
 || DESCRIPTION || 

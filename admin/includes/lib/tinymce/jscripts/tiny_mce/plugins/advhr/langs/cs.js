@@ -1,6 +1,14 @@
-// UK lang variables
+/**
+ * Czech lang variables 
+ * encoding: utf-8
+ *  
+ * $Id: cs.js,v 1.1.2.2 2005/12/03 01:11:57 geoff Exp $ 
+ */  
 
-tinyMCELang['lang_insert_advhr_desc']    = 'Vloit/editovat vodorovnı oddìlovaè'
-tinyMCELang['lang_insert_advhr_width']   = 'Šíøka';
-tinyMCELang['lang_insert_advhr_size']    = 'Vıška';
-tinyMCELang['lang_insert_advhr_noshade'] = 'Nestínovat';
+tinyMCE.addToLang('',{
+insert_advhr_desc : 'VloÅ¾it/editovat vodorovnÃ½ oddÄ›lovaÄ',
+insert_advhr_width : 'Å Ã­Å™ka',
+insert_advhr_size : 'VÃ½Å¡ka',
+insert_advhr_noshade : 'NestÃ­novat'
+});
+

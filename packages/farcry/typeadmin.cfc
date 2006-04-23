@@ -106,7 +106,7 @@ environment references (might be nice to clean these up)
 	<cfargument name="daterange_field">
 	<cfargument name="daterange">
 	<cfset variables.prefs.filter_daterange = ListAppend(variables.prefs.filter_daterange,"#arguments.daterange_field#^#arguments.daterange#","~")>
-	<cfoutput>variables.prefs.filter_daterange: #variables.prefs.filter_daterange#<br /></cfoutput>
+	<!--- <cfoutput>variables.prefs.filter_daterange: #variables.prefs.filter_daterange#<br /></cfoutput> --->
 </cffunction>
 
 <cffunction name="deleteDateRangeFilter" returntype="void">
@@ -218,7 +218,7 @@ environment references (might be nice to clean these up)
 	</cfif>
 	
 	<!--- filter by keyword --->
-	<cfset aKeyword = ListToArray(prefs.filter_lkeywords)>
+	<cfset aKeyword = ListToArray(prefs.filter_lkeywords,"~")>
 	<cfif ArrayLen(aKeyword)>
 		<cfquery dbtype="query" name="recordset">
 		SELECT	*
@@ -473,15 +473,16 @@ environment references (might be nice to clean these up)
 		<cfsavecontent variable="keywordsFilterList">
 			<cfoutput><ul></cfoutput>
 			<cfloop list="#session.typeadmin[attributes.typename].Filter_lkeywords#" index="i" delimiters="~">
-				<cfoutput><li><strong>#ListFirst(i,"^")# : </strong>#ListLast(i,"^")# <a href="#cgi.SCRIPT_NAME#?killKeyword=#i#">Remove</a></li></cfoutput>
+				<cfoutput><li><strong>#ListFirst(i,"^")# : </strong>#ListLast(i,"^")# <a href="#cgi.SCRIPT_NAME#?<cfif len(CGI.QUERY_STRING)>#CGI.QUERY_STRING#&</cfif>killKeyword=#i#">Remove</a></li></cfoutput>
 		</cfloop>
 			<cfoutput></ul></cfoutput>
 		</cfsavecontent>
 	</cfif>		
 
 	<!--- filter by keyword --->
-	<cfset lSearchableFieldTypes = "nstring,string">
-	<cfset lSearchableFieldName_exclude = "objectid,navigation">
+	<!--- todo: accept atributes from typeadmin.cfm --->
+	<cfset lSearchableFieldTypes = "nstring,string,uuid">
+	<cfset lSearchableFieldName_exclude = "navigation">
 	<cfloop collection="#application.types[attributes.typename].stprops#" item="field">
 		<cfif ListFindNoCase(lSearchableFieldTypes,application.types[attributes.typename].stprops[field].metadata.type) AND NOT ListFindNoCase(lSearchableFieldName_exclude, field)>
 			<cfset ArrayAppend(aKeywordField,field)>
@@ -491,11 +492,12 @@ environment references (might be nice to clean these up)
 	<cfset ArraySort(aKeywordField,"textnocase","asc")>
 	<cfsavecontent variable="panel"><cfoutput>
 		<cfif isDefined("keywordsFilterList")>#keywordsFilterList#</cfif>
-		<!--- <label> --->
-		<b>Categories:</b>
+		<!--- todo: i18n --->
+		<b>Properties:</b>
 			<select name="keywords_field" id="keywords_field"><cfloop index="i" from="1" to="#Arraylen(aKeywordField)#">
-				<option value="#aKeywordField[i]#">#LCase(aKeywordField[i])#</option></cfloop>
+				<option value="#aKeywordField[i]#"<cfif aKeywordField[i] eq "label"> SELECTED</cfif>>#LCase(aKeywordField[i])#</option></cfloop>
 			</select>
+		<!--- todo: i18n --->
 		<b>Keywords:</b>
 			<input type="text" name="keywords" id="keywords" />
 		<!--- </label> --->

@@ -1,20 +1,28 @@
-// CZ lang variables
+/**
+ * Czech lang variables 
+ * encoding: utf-8
+ *  
+ * $Id: cs.js,v 1.1.2.2 2005/12/03 01:11:59 geoff Exp $ 
+ */  
 
-tinyMCELang['lang_insert_link_target_same'] = 'Otevøít ve stejném oknì/rámu';
-tinyMCELang['lang_insert_link_target_parent'] = 'Otevøít v rodièovském oknì/rámu';
-tinyMCELang['lang_insert_link_target_top'] = 'Otevøít v nejvyšším rámu (pøepíše všechny rámy)';
-tinyMCELang['lang_insert_link_target_blank'] = 'Otevøít v novém oknì';
-tinyMCELang['lang_insert_link_target_named'] = 'Otevøít v oknì';
-tinyMCELang['lang_insert_link_popup'] = 'JS-Popup';
-tinyMCELang['lang_insert_link_popup_url'] = 'Popup URL';
-tinyMCELang['lang_insert_link_popup_name'] = 'Název okna';
-tinyMCELang['lang_insert_link_popup_return'] = 'insert \'return false\'';
-tinyMCELang['lang_insert_link_popup_scrollbars'] = 'Ukázat posuvníky';
-tinyMCELang['lang_insert_link_popup_statusbar'] = 'Ukázat stavovı øádek';
-tinyMCELang['lang_insert_link_popup_toolbar'] = 'Ukázat ovl. lištu';
-tinyMCELang['lang_insert_link_popup_menubar'] = 'Ukázat menu';
-tinyMCELang['lang_insert_link_popup_location'] = 'Ukázat lištu umístìní';
-tinyMCELang['lang_insert_link_popup_resizable'] = 'Promìnná velikost okna';
-tinyMCELang['lang_insert_link_popup_size'] = 'Velikost';
-tinyMCELang['lang_insert_link_popup_position'] = 'Umístìní (X/Y)';
-tinyMCELang['lang_insert_link_popup_missingtarget'] = 'Vlote název cíle nebo vyberte jinou volbu.';
+tinyMCE.addToLang('',{
+insert_link_target_same : 'OtevÅ™Ã­t ve stejnÃ©m oknÄ›/rÃ¡mu',
+insert_link_target_parent : 'OtevÅ™Ã­t v rodiÄovskÃ©m oknÄ›/rÃ¡mu',
+insert_link_target_top : 'OtevÅ™Ã­t v nejvyÅ¡Å¡Ã­m rÃ¡mu (pÅ™epÃ­Å¡e vÅ¡echny rÃ¡my)',
+insert_link_target_blank : 'OtevÅ™Ã­t v novÃ©m oknÄ›',
+insert_link_target_named : 'OtevÅ™Ã­t v oknÄ›',
+insert_link_popup : 'JS-Popup',
+insert_link_popup_url : 'Popup URL',
+insert_link_popup_name : 'NÃ¡zev okna',
+insert_link_popup_return : 'VloÅ¾it \'return false\'',
+insert_link_popup_scrollbars : 'UkÃ¡zat posuvnÃ­ky',
+insert_link_popup_statusbar : 'UkÃ¡zat stavovÃ½ Å™Ã¡dek',
+insert_link_popup_toolbar : 'UkÃ¡zat ovlÃ¡dacÃ­ liÅ¡tu',
+insert_link_popup_menubar : 'UkÃ¡zat menu',
+insert_link_popup_location : 'UkÃ¡zat liÅ¡tu umÃ­stÄ›nÃ­',
+insert_link_popup_resizable : 'PromÄ›nnÃ¡ velikost okna',
+insert_link_popup_size : 'Velikost',
+insert_link_popup_position : 'UmÃ­stÄ›nÃ­ (X/Y)',
+insert_link_popup_missingtarget : 'VloÅ¾te nÃ¡zev cÃ­le nebo vyberte jinou volbu.'
+});
+

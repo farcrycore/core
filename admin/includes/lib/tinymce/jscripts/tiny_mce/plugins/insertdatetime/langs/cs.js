@@ -1,8 +1,18 @@
-// CS lang variables
+/**
+ * Czech lang variables 
+ * encoding: utf-8
+ *  
+ * $Id: cs.js,v 1.1.2.2 2005/12/03 01:11:57 geoff Exp $ 
+ */  
 
-tinyMCELang['lang_insertdate_desc'] = 'Vloit datum';
-tinyMCELang['lang_inserttime_desc'] = 'Vloit èas';
-tinyMCELang['lang_inserttime_months_long'] = new Array('Leden','Únor','Bøezen','Duben','Kvìten','Èerven','Èervenec','Srpen','Záøí','Øíjen','Listopad','Prosinec');
-tinyMCELang['lang_inserttime_months_short'] = new Array('Led','Úno','Bøe','Dub','Kvì','Èrv','Èvc','Srp','Záø','Øíj','Lis','Pro');
-tinyMCELang['lang_inserttime_day_long'] = new Array('Nedìle','Pondìlí','Úterı','Støeda','Ètvrtek','Pátek','Sobota','Nedìle');
-tinyMCELang['lang_inserttime_day_short'] = new Array('Ne','Po','Út','St','Èt','Pá','So','Ne');
+tinyMCE.addToLang('',{
+insertdate_def_fmt : '%Y-%m-%d',
+inserttime_def_fmt : '%H:%M:%S',
+insertdate_desc : 'VloÅ¾it datum',
+inserttime_desc : 'VloÅ¾it Äas',
+inserttime_months_long : new Array('Leden','Ãšnor','BÅ™ezen','Duben','KvÄ›ten','ÄŒerven','ÄŒervenec','Srpen','ZÃ¡Å™Ã­','Å˜Ã­jen','Listopad','Prosinec'),
+inserttime_months_short : new Array('Led','Ãšno','BÅ™e','Dub','KvÄ›','ÄŒrv','ÄŒvc','Srp','ZÃ¡Å™','Å˜Ã­j','Lis','Pro'),
+inserttime_day_long : new Array('NedÄ›le','PondÄ›lÃ­','ÃšterÃ½','StÅ™eda','ÄŒtvrtek','PÃ¡tek','Sobota','NedÄ›le'),
+inserttime_day_short : new Array('Ne','Po','Ãšt','St','ÄŒt','PÃ¡','So','Ne')
+});
+

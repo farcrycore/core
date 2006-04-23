@@ -1,7 +1,7 @@
 <cfsetting enablecfoutputonly="yes" />
 
 <cfif isDefined("request.ver") and request.ver>
-	<cfoutput><!-- _genericNav $Revision: 1.2 $ --></cfoutput>
+	<cfoutput><!-- _genericNav $Revision: 1.2.2.4 $ --></cfoutput>
 </cfif>
 
 	<!---  Description:	Revised code of the original generic Nav to add classes to the path of the nav and code tidy up 
@@ -23,15 +23,17 @@
 <cfparam name="attributes.startLevel" default="2">
 <cfparam name="attributes.id" default="">
 <cfparam name="attributes.bFirst" default="0">
+<cfparam name="attributes.bLast" default="0">
 <cfparam name="attributes.bActive" default="0">
 <cfparam name="attributes.bIncludeHome" default="0">
 <cfparam name="attributes.sectionObjectID" default="#request.navID#">
 <cfparam name="attributes.functionMethod" default="getDescendants">
 <cfparam name="attributes.functionArgs" default="depth=attributes.depth">
-<cfparam name="attributes.functionMethod" default="getDescendants">
 <cfparam name="attributes.bDump" default="0">
 <cfparam name="attributes.class" default="">
+<cfparam name="attributes.style" default="">
 <cfparam name="request.sectionObjectID" default="#request.navID#">
+<cfparam name="attributes.diplayStyle" default="unorderedList">
 
 
 <cfif application.config.plugins.fu>
@@ -40,16 +42,37 @@
 <!--- // get navigation items --->
 <cfset o = createObject("component", "#application.packagepath#.farcry.tree")>
 <cfset navFilter=arrayNew(1)>
-<cfset navfilter[1]="status IN (#listQualify(request.mode.lvalidstatus, "'")#)">
+<cfset navfilter[1]="status IN (#listQualify(request.mode.lvalidstatus, '''')#)">
 <cfset qNav = evaluate("o."&attributes.functionMethod&"(objectid=attributes.navID, lColumns='externallink', "&attributes.functionArgs&", afilter=navFilter)")>
+
 <!--- // get ansestors of attributes.navID --->
-<cfset qAncestors = o.getAncestors(request.navID)>
+<cfset qAncestors = o.getAncestors(attributes.navID)>
 <cfset lAncestors = valuelist(qAncestors.objectid)>
+
+<cfif attributes.bLast>
+	<!--- here we get the most right nav so we can add a last class to it if needed --->
+	<cfquery name="qMaxRight" dbtype="query">
+		select max(nRight) as maxRight from qNav
+	</cfquery>
+</cfif>
 <cffunction name="dump">
 	<cfargument name="arg">
 	<cfdump var="#arg#">
 	<cfabort/>
 </cffunction>
+<cfif attributes.diplayStyle EQ "aLink">
+	<cfloop query="qNav">
+		<cfif application.config.plugins.fu>
+			<cfset strhref = fu.getFU(qNav.objectid)>
+		<cfelse>
+			<cfset strhref = application.url.conjurer & "?objectid=" & qNav.objectid>
+		</cfif>
+		<cfif qNav.currentRow GT 1>
+			<cfoutput> | </cfoutput>		
+		</cfif>
+		<cfoutput><a href="#strhref#" title="#qNav.objectName#">#qNav.objectName#</a></cfoutput>
+	</cfloop>
+<cfelse>
 <cfscript>
 	// initialise counters
 	currentlevel=0; // nLevel counter
@@ -77,10 +100,13 @@
 			if(i eq 1 and attributes.bFirst){
 				itemclass=itemclass & 'first ';
 			}
+			//this means it is the last column in nav
+			if(attributes.bLast and qNav.nRight[i] eq qMaxRight.maxRight){
+				itemclass=itemclass & 'last ';
+			}
 			if(attributes.bActive and trim(qNav.ObjectID[i]) eq request.sectionObjectID or listfind(lAncestors, trim(qNav.ObjectID[i]))){
 				itemclass=itemclass & 'active ';
 			}
-			
 			// update counters
 			previouslevel=currentlevel;
 			currentlevel=qNav.nLevel[i];
@@ -94,6 +120,9 @@
 				}
 				if(len(attributes.class)){
 					writeOutput(" class=""#attributes.class#""");
+				}
+				if(len(attributes.style)){
+					writeOutput(" style=""#attributes.style#""");
 				}
 				writeOutput(">");
 				//include home if requested
@@ -133,4 +162,5 @@
 	// end of data, close open items and lists
 	writeOutput(repeatString("</li></ul>",ul));
 </cfscript>
+</cfif>
 <cfsetting enablecfoutputonly="no" />

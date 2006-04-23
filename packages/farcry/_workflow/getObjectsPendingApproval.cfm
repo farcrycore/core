@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_workflow/getObjectsPendingApproval.cfm,v 1.25 2005/09/29 03:18:58 guy Exp $
-$Author: guy $
-$Date: 2005/09/29 03:18:58 $
-$Name: milestone_3-0-0 $
-$Revision: 1.25 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_workflow/getObjectsPendingApproval.cfm,v 1.25.2.5 2006/02/10 06:11:45 paul Exp $
+$Author: paul $
+$Date: 2006/02/10 06:11:45 $
+$Name: milestone_3-0-1 $
+$Revision: 1.25.2.5 $
 
 || DESCRIPTION || 
 $Description: get obejcts pending approval$
@@ -38,6 +38,7 @@ $out:$
 	<cfset stLocal.lcontent_type = arguments.stForm.lcontent_type>
 </cfif>
 
+
 <!--- Get all objects types that have status option [genrate SQL] --->
 <cfset stLocal.iCounter = 0>
 <cfloop index="stLocal.type" list="#stLocal.lcontent_type#">
@@ -47,22 +48,34 @@ $out:$
 			<cfset stLocal.sql = stLocal.sql & " UNION ">
 		</cfif>
 		<cfif structKeyExists(application.types[stLocal.type].stProps,"VersionID")>
-			<cfset stLocal.sql = stLocal.sql & "SELECT t_#stLocal.iCounter#.objectID, t_#stLocal.iCounter#.label as title, t_#stLocal.iCounter#.createdby, p_#stLocal.iCounter#.emailAddress as createdby_email, t_#stLocal.iCounter#.datetimelastUpdated, t_#stLocal.iCounter#.versionID, '#stLocal.type#' as typename FROM #application.dbowner##stLocal.type# t_#stLocal.iCounter#, #application.dbowner#dmProfile p_#stLocal.iCounter# WHERE p_#stLocal.iCounter#.userName = t_#stLocal.iCounter#.createdBy AND t_#stLocal.iCounter#.status = '#arguments.stForm.content_status#'">
+			<cfset stLocal.sql = stLocal.sql & "SELECT t_#stLocal.iCounter#.objectID, t_#stLocal.iCounter#.label as title, t_#stLocal.iCounter#.createdby,t_#stLocal.iCounter#.lastupdatedby, p_#stLocal.iCounter#.emailAddress as createdby_email, t_#stLocal.iCounter#.datetimelastUpdated, t_#stLocal.iCounter#.versionID, '#stLocal.type#' as typename FROM #application.dbowner##stLocal.type# t_#stLocal.iCounter#, #application.dbowner#dmProfile p_#stLocal.iCounter# WHERE p_#stLocal.iCounter#.userName = t_#stLocal.iCounter#.lastupdatedBy  AND   t_#stLocal.iCounter#.status = '#arguments.stForm.content_status#'">
+
 		<cfelse>
-			<cfset stLocal.sql = stLocal.sql & "SELECT t_#stLocal.iCounter#.objectID, t_#stLocal.iCounter#.label as title, t_#stLocal.iCounter#.createdby, p_#stLocal.iCounter#.emailAddress as createdby_email, t_#stLocal.iCounter#.datetimelastUpdated,'' as versionID, '#stLocal.type#' as typename FROM #application.dbowner##stLocal.type# t_#stLocal.iCounter#, #application.dbowner#dmProfile p_#stLocal.iCounter# WHERE p_#stLocal.iCounter#.userName = t_#stLocal.iCounter#.createdBy AND t_#stLocal.iCounter#.status = '#arguments.stForm.content_status#'">
+			<cfset stLocal.sql = stLocal.sql & "SELECT t_#stLocal.iCounter#.objectID, t_#stLocal.iCounter#.label as title,t_#stLocal.iCounter#.lastupdatedby, t_#stLocal.iCounter#.createdby, p_#stLocal.iCounter#.emailAddress as createdby_email, t_#stLocal.iCounter#.datetimelastUpdated,'' as versionID, '#stLocal.type#' as typename FROM #application.dbowner##stLocal.type# t_#stLocal.iCounter#, #application.dbowner#dmProfile p_#stLocal.iCounter# WHERE p_#stLocal.iCounter#.userName = t_#stLocal.iCounter#.lastupdatedBy AND  t_#stLocal.iCounter#.status = '#arguments.stForm.content_status#'">
 		</cfif>	
 	</cfif>
 	<cfset stLocal.iCounter = stLocal.iCounter + 1>
 </cfloop>
 
-<cftry>
+
+ <cftry> 
 	<!--- returns all pending objects --->
 	<cfquery name="stLocal.qList_unordered" datasource="#application.dsn#">
 	#preserveSingleQuotes(stLocal.sql)#
 	</cfquery>
+	
 	<cfquery name="stLocal.qList" dbtype="query">
-	SELECT	* FROM stLocal.qList_unordered ORDER BY datetimelastUpdated DESC
+	SELECT	* FROM stLocal.qList_unordered
+	<cfif  structKeyExists(arguments.stForm,"lastupdatedby")> <!--- If lastupdatedby has been provided in args - we want to filter by lastupdatedby --->
+	WHERE lastupdatedby = '#arguments.stForm.lastupdatedby#'	
+	</cfif>
+	ORDER BY datetimelastUpdated DESC
 	</cfquery>
+	
+	<!--- <cfdump var="#stLocal.qList#"> --->
+	
+	
+	
 
 	<cfset stLocal.lColumns = stLocal.qList.columnList>
 	<cfset stReturn.qList = QueryNew("#stLocal.lColumns#")>
@@ -107,7 +120,13 @@ $out:$
 				<cfif StructKeyExists(application.permission.policyGroup,stLocal.permissionName)>
 					<cfset stLocal.bCanApprove = request.dmSec.oAuthorisation.checkPermission(permissionName=stLocal.permissionName,reference="PolicyGroup")>				
 				<cfelse>
-					<cfset stLocal.bCanApprove = 0>
+					<!--- Try again minus the assumption were trimming to chars --->
+					<cfset stLocal.permissionName = "#stLocal.qList.typename#Approve">
+					<cfif StructKeyExists(application.permission.policyGroup,stLocal.permissionName)>
+						<cfset stLocal.bCanApprove = request.dmSec.oAuthorisation.checkPermission(permissionName=stLocal.permissionName,reference="PolicyGroup")>				
+					<cfelse>	
+						<cfset stLocal.bCanApprove = 0>
+					</cfif>	
 				</cfif>
 			</cfif>
 
@@ -131,7 +150,7 @@ $out:$
 							t.versionID,
 							'#stLocal.qList.typename#' as typename
 					FROM 	#application.dbowner##stLocal.qList.typename# t, #application.dbowner#dmProfile p 
-					WHERE 	p.userName = t.createdBy
+					WHERE 	p.userName = t.lastupdatedBy
 						AND t.status = 'pending'
 						AND t.versionID = '#stLocal.qList.objectID#'
 					</cfquery>

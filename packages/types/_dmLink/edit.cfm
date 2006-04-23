@@ -5,11 +5,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmLink/edit.cfm,v 1.20 2005/09/07 03:16:53 daniela Exp $
-$Author: daniela $
-$Date: 2005/09/07 03:16:53 $
-$Name: milestone_3-0-0 $
-$Revision: 1.20 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmLink/edit.cfm,v 1.20.2.1 2005/11/29 03:29:29 paul Exp $
+$Author: paul $
+$Date: 2005/11/29 03:29:29 $
+$Name: milestone_3-0-1 $
+$Revision: 1.20.2.1 $
 
 || DESCRIPTION || 
 $Description: dmLink Edit Handler $
@@ -66,8 +66,10 @@ $in: url.killplp (optional)$
 	<cfset stoutput.label = stoutput.title>
 	<!--- update timestamp as wizard may have been active for some time --->
 	<cfset stoutput.datetimelastupdated = now()>
-	<!--- remove content item lock --->
-	<cfset setlock(locked="false")>
+	
+	<cfset stOutput.locked = 0>
+	<cfset stOutput.lockedby = ''>
+	
 	<!--- update content item --->
 	<cfset setData(stProperties=stoutput)>
 	

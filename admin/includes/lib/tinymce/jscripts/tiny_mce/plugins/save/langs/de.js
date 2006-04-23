@@ -1,3 +1,5 @@
 // DE lang variables 
 
-tinyMCELang['lang_save_desc'] = 'Speichern'; 
+tinyMCE.addToLang('',{
+save_desc : 'Speichern'
+});

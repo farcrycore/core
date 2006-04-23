@@ -1,10 +1,9 @@
 <!--- 
-
  FriendlyURL Management Component
 
  Created: Thu May 1  14:19:20 2003
  $Revision 0.2$
- Modified: $Date: 2005/10/21 07:20:38 $
+ Modified: $Date: 2006/03/02 02:26:29 $
 
  Author: Spike
  E-mail: spike@spike@spike.org.uk
@@ -30,31 +29,13 @@
 	
 	<cffunction name="init" hint="Initializes the component.">
 		<cfset instance = structNew()>	
-		<!--- <cfset dataClass = createObject("java", "FriendlyURLData")>
-      	<cfset dataObject = dataClass.getInstance()> --->
 	</cffunction>
 
-	<cffunction name="getErrorTemplate" access="public" returntype="string" hint="Returns the value currently used for the error template." output="No">
-		<cfreturn dataObject.getErrorURL()>
-	</cffunction>
-
-	<!--- <cffunction name="setErrorTemplate" access="public" returntype="boolean" hint="Sets the value for the error template and writes the map file to disk." output="No">
-		<cfargument name="errorTemplate" type="string" required="Yes">
-		<cfset dataObject.setErrorURL(arguments.errorTemplate)>
-		<cfreturn true>
-	</cffunction> --->		
-	
-	<!--- <cffunction name="getURLVar" access="public" returntype="string" hint="Retrieves the name of the url variable that contains the friendly url." output="No">
-		<cfreturn dataObject.getURLVar()>
-	</cffunction> --->
-
-	<!--- <cffunction name="setURLVar" access="public" returntype="boolean" hint="Sets the name for the url variable and writes the map file to disk" output="No">
-		<cfargument name="URLVar" type="string" required="Yes">
-		<cfset dataObject.setURLVar(arguments.URLVar)>
-		<cfreturn true>
-	</cffunction> --->
-	
-	<cffunction name="setMapping" access="public" returntype="boolean" hint="Sets the value for a mapping and writes the mapfile to disk. This can be a new or existing mapping." output="yes">
+	<cffunction name="setMapping" access="private" returntype="boolean" hint="Writes FU to the database and updates the application.fu scopes. This can be a new or existing mapping." output="false">
+<!--- 	
+		TODO: 	this is a bastardisation of servlet FU (2.3) and rewrite engine FU (3.0)
+				remove all servlet related code.. its rubbish now GB 20060117
+ --->	
 		<cfargument name="alias" required="yes" type="string">
 		<cfargument name="mapping" required="yes" type="string">
 		<cfargument name="querystring" required="no" type="string" default="">
@@ -106,27 +87,7 @@
 			WHERE	refObjectID = <cfqueryparam value="#stLocal.refObjectID#" cfsqltype="cf_sql_varchar">
 				AND status = <cfqueryparam value="#stLocal.status#" cfsqltype="cf_sql_integer">
 			</cfquery>
-<!--- 
-			<cfquery datasource="#application.dsn#" name="qNoExisting">
-			SELECT	objectid
-			FROM	#application.dbowner#reffriendlyURL
-			WHERE	friendlyurl = <cfqueryparam value="#stLocal.friendlyURL#" cfsqltype="cf_sql_varchar">
-			</cfquery>
-			
-			<cfset stLocal.iCounter = 0>
-			<cfloop condition="qNoExisting.recordcount NEQ 0">
-				<cfset stLocal.iCounter = stLocal.iCounter + 1>
-				<cfquery datasource="#application.dsn#" name="qNoExisting">
-				SELECT	objectid
-				FROM	#application.dbowner#reffriendlyURL
-				WHERE	friendlyurl = <cfqueryparam value="#stLocal.friendlyURL#-#stLocal.iCounter#" cfsqltype="cf_sql_varchar">
-				</cfquery>			
-			</cfloop>
 
-			<cfif stLocal.iCounter>
-				<cfset stLocal.friendlyURL = "#stLocal.friendlyURL#-#stLocal.iCounter#">
-			</cfif>
- --->
 			<!--- create the new friendly url --->
 			<cfquery datasource="#application.dsn#" name="qInsert">
 			INSERT	INTO #application.dbowner#reffriendlyURL(
@@ -149,6 +110,8 @@
 			<cfset application.FU.mappings[stLocal.friendlyURL] = StructNew()>
 			<cfset application.FU.mappings[stLocal.friendlyURL].refobjectid = stLocal.refObjectID>
 			<cfset application.FU.mappings[stLocal.friendlyURL].query_string = stLocal.querystring>
+			<!--- fu lookup --->
+			<cfset application.FU.lookup[stLocal.refobjectid] = stLocal.friendlyURL>
 		</cfif>
 
 		<cfreturn true>
@@ -168,7 +131,7 @@
 		<cfreturn true>
 	</cffunction>
 	
-	<cffunction name="fGetFUData" access="public" returntype="struct" hint="Sets the name for the url variable and writes the map file to disk" output="yes">
+	<cffunction name="fGetFUData" access="public" returntype="struct" hint="Returns a structure of internal data based on the FU passed in." output="false">
 		<cfargument name="friendlyURL" type="string" required="Yes">
 		<cfset var stReturn = StructNew()>
 		<cfset var stLocal = StructNew()>
@@ -178,15 +141,16 @@
 		<cfset stReturn.query_string = "">
 		<cfset stReturn.redirectFUURL = "">
 
+		<!--- correct internal var for presence/absence of trailing slash in URL --->
 		<cfif Right(arguments.friendlyURL,1) EQ "/">
 			<cfset stLocal.strFriendlyURL_WSlash = arguments.friendlyURL>
-			<cfset stLocal.strFriendlyURL = arguments.friendlyURL & Left(arguments.friendlyURL,Len(arguments.friendlyURL)-1)>
+			<cfset stLocal.strFriendlyURL = Left(arguments.friendlyURL,Len(arguments.friendlyURL)-1)>
 		<cfelse>
 			<cfset stLocal.strFriendlyURL_WSlash = arguments.friendlyURL & "/">
 			<cfset stLocal.strFriendlyURL = arguments.friendlyURL>
 		</cfif>
-		
-		<!--- check if the FU exists inthe applictaion scope [currently active] --->
+
+		<!--- check if the FU exists in the applictaion scope [currently active] --->
 		<cfif StructKeyExists(application.FU.mappings,stLocal.strFriendlyURL)>
 			<cfset stReturn.refObjectID = application.FU.mappings[stLocal.strFriendlyURL].refObjectID>
 			<cfset stReturn.query_string = application.FU.mappings[stLocal.strFriendlyURL].query_string>
@@ -194,23 +158,35 @@
 			<cfset stReturn.refObjectID = application.FU.mappings[stLocal.strFriendlyURL_WSlash].refObjectID>
 			<cfset stReturn.query_string = application.FU.mappings[stLocal.strFriendlyURL_WSlash].query_string>
 		<cfelse> <!--- check in database [retired] .: redirect --->
+
 			<cfquery datasource="#application.dsn#" name="qGet">
 			SELECT	refobjectid
 			FROM	#application.dbowner#reffriendlyURL
-			WHERE	friendlyURL = <cfqueryparam value="#arguments.friendlyURL#" cfsqltype="cf_sql_varchar">
+			WHERE	friendlyURL = <cfqueryparam value="#stLocal.strFriendlyURL#" cfsqltype="cf_sql_varchar">
+				OR 	friendlyURL = <cfqueryparam value="#stLocal.strFriendlyURL_WSlash#" cfsqltype="cf_sql_varchar">
+			ORDER BY status DESC
 			</cfquery>
 
 			<cfif qGet.recordCount>
 				<!--- get the new friendly url for the retired friendly url --->
 				<cfquery datasource="#application.dsn#" name="qGetRedirectFU">
-				SELECT	friendlyURL
+				SELECT	refobjectid, friendlyURL, query_string, status
 				FROM	#application.dbowner#reffriendlyURL
 				WHERE	refobjectid = <cfqueryparam value="#qGet.refobjectid#" cfsqltype="cf_sql_varchar">
-						AND status = 1
+				ORDER BY status DESC
 				</cfquery>
 
 				<cfif qGetRedirectFU.recordCount>
-					<cfset stReturn.redirectFUURL = "http://" & cgi.server_name & qGetRedirectFU.friendlyURL>
+					<cfif qGetRedirectFU.status EQ 1 OR qGetRedirectFU.status EQ 2>
+						<cfset stReturn.refObjectID = qGetRedirectFU.refObjectID>
+						<cfset stReturn.query_string = qGetRedirectFU.query_string>
+						<!--- add to applicatiuon scope --->
+						<cfset application.FU.mappings[qGetRedirectFU.friendlyURL] = StructNew()>
+						<cfset application.FU.mappings[qGetRedirectFU.friendlyURL].refObjectID = qGetRedirectFU.refObjectID>
+						<cfset application.FU.mappings[qGetRedirectFU.friendlyURL].query_string = qGetRedirectFU.query_string>
+					<cfelse>
+						<cfset stReturn.redirectFUURL = "http://" & cgi.server_name & qGetRedirectFU.friendlyURL>
+					</cfif>
 				<cfelse>
 					<cfset stReturn.bSuccess = 0>
 					<cfset stReturn.message = "Sorry your requested page could not be found.">
@@ -238,12 +214,6 @@
 		
 		<cfreturn stFU>
 	</cffunction>
-	
-	
-	<!--- <cffunction name="getMappings" access="public" returntype="struct" hint="Retrieves all current mappings" output="No">
-		<cfreturn dataObject.getMappings()>
-	</cffunction> --->
-	
 	
 	<!--- FarCry Specific Functions --->
 	<cffunction name="deleteAll" access="public" returntype="boolean" hint="Deletes all mappings and writes the map file to disk" output="No">
@@ -295,99 +265,86 @@
 		<cfreturn true>
 	</cffunction>
 	
-   <cffunction name="updateAppScope" access="public" hint="Updates the application scope with the FU mappings" output="yes">
-
+   <cffunction name="refreshApplicationScope" access="public" hint="Updates the fu application scope with all the persistent FU mappings from the database." output="false">
 		<cfset var stTemp = StructNew()>
-
-		<!--- retrieve list of all FU that is not retired --->
-		<cfquery name="qListFU" datasource="#application.dsn#">
-		SELECT	friendlyurl, refobjectid, query_string
-		FROM	#application.dbowner#reffriendlyURL
-		WHERE	status > 0
-		</cfquery>
-
-		<cfset stTemp = QueryToStructOfStructures(qListFU, "friendlyurl")>
-		<!--- load mappings to app scope --->
-		<cfset application.FU.mappings = stTemp>
-	</cffunction>
-
-
-	<cffunction name="QueryToStructOfStructures" returntype="struct" hint="converts query to a struct">
-		<cfargument name="theQuery" required="Yes" type="query">
-		<cfargument name="primaryKey" required="Yes" type="string">
+		<cfset var stLocal = StructNew()>
+		<cfset stLocal.bSuccess = 1>
+		<cfset stLocal.message = "FU scopes updated.">
 		
-		<!--- 
-		 * Converts a query object into a structure of structures accessible by its primary key.
-		 * 
-		 * @param theQuery 	 The query you want to convert to a structure of structures. 
-		 * @param primaryKey 	 Query column to use as the primary key. 
-		 * @return Returns a structure. 
-		 * @author Shawn Seley (shawnse@aol.com) 
-		 * @version 1, March 27, 2002 
-		 --->
-		 
-		<cfset var theStructure  = structnew()>
+		<!--- initialise fu scopes --->
+		<cfset application.FU.mappings = StructNew()>
+		<cfset application.FU.lookup = StructNew()>
+		
+		<cftry>
+			<!--- retrieve list of all FU that is not retired --->
+			<cfquery name="stLocal.qListFU" datasource="#application.dsn#">
+			SELECT	friendlyurl, refobjectid, query_string
+			FROM	#application.dbowner#reffriendlyURL
+			WHERE	status > 0
+			</cfquery>
+			
+			<!--- load mappings to application scope --->
+			<cfloop query="stLocal.qListFU">
+				<!--- fu mappings --->
+				<cfset application.FU.mappings[stLocal.qListFU.friendlyURL] = StructNew()>
+				<cfset application.FU.mappings[stLocal.qListFU.friendlyURL].refobjectid = stLocal.qListFU.refObjectID>
+				<cfset application.FU.mappings[stLocal.qListFU.friendlyURL].query_string = stLocal.qListFU.query_string>
+				<!--- fu lookup --->
+				<cfset application.FU.lookup[stLocal.qListFU.refobjectid] = stLocal.qListFU.friendlyurl>
+			</cfloop>
 
-		<!--- remove primary key from cols listing --->
-		<cfset var cols = ListToArray(ListDeleteAt(arguments.theQuery.columnlist, ListFindNoCase(arguments.theQuery.columnlist, arguments.primaryKey)))>
-		<cfset var row = 1>
-		<cfset var thisRow = "">
-		<cfset var col = 1>
-
-		<cfscript>
-		for(row = 1; row LTE arguments.theQuery.recordcount; row = row + 1){
-			thisRow = structnew();
-		  	for(col = 1; col LTE arraylen(cols); col = col + 1){
-		    	thisRow[cols[col]] = arguments.theQuery[cols[col]][row];
-		  	}
-		  	theStructure[arguments.theQuery[arguments.primaryKey][row]] = duplicate(thisRow);
-		}
-		</cfscript>
-
-		  <cfreturn theStructure>
+			<cfcatch>
+				
+				<cfset stLocal.bSuccess = 0>
+				<cfset stLocal.message = "#cfcatch.message#: #cfcatch.detail#">
+			</cfcatch>
+		</cftry>
+	
+		<cfreturn stlocal>
 	</cffunction>
 
-   <cffunction name="createFUAlias" access="public" returntype="string" hint="Creates the FU Alias for a given objectid" output="yes">
+   <cffunction name="createFUAlias" access="public" returntype="string" hint="Creates the FU Alias for a given objectid" output="no">
 		<cfargument name="objectid" required="Yes">
 		<cfargument name="bIncludeSelf" required="no" default="1">
-				
+
 		<cfset var stLocal = StructNew()>
 		<cfset stLocal.qListAncestors = request.factory.oTree.getAncestors(objectid=arguments.objectid,bIncludeSelf=arguments.bIncludeSelf)>
 		<cfset stLocal.returnString = "">
-		
-		<!--- remove root & home --->
-		<cfquery dbtype="query" name="stLocal.qListNav">
-		SELECT 	objectID
-		FROM 	stLocal.qListAncestors
-		WHERE 	nLevel >= 2
-		ORDER BY nLevel
-		</cfquery>
 
-		<cfset stLocal.lNavID = ValueList(stLocal.qListNav.objectid)>
-		<cfset stLocal.lNavID = ListQualify(stLocal.lNavID,"'")>
-
-		<cfif stLocal.lNavID NEQ "" AND arguments.objectid NEQ application.navid.home>
-			<!--- optimisation: get all dmnavgiation data to avoid a getData() call --->
-			<cfquery name="stLocal.qListNavAlias" datasource="#application.dsn#">
-		    SELECT	objectid, label, fu 
-		    FROM	#application.dbowner#dmNavigation
-		    WHERE	objectid IN (#preserveSingleQuotes(stLocal.lNavID)#)
+		<cfif stLocal.qListAncestors.RecordCount>
+			<!--- remove root & home --->
+			<cfquery dbtype="query" name="stLocal.qListNav">
+			SELECT 	objectID
+			FROM 	stLocal.qListAncestors
+			WHERE 	nLevel >= 2
+			ORDER BY nLevel
 			</cfquery>
-	
-			<cfloop query="stLocal.qListNavAlias">
-				<cfset stLocal.returnString = ListAppend(stLocal.returnString,trim(stLocal.qListNavAlias.label))>
-<!--- 				
-TODO: decide where FU's are built up using the dmNavigation FU attribute or dmNavigation label
-				<!--- check if has FU if so use it --->
-				<cfif trim(stLocal.qListNavAlias.fu) NEQ "">
-					<cfset stLocal.returnString = ListAppend(stLocal.returnString,trim(stLocal.qListNavAlias.fu))>
-				<cfelse> <!--- no FU so use label --->
-					<cfset stLocal.returnString = ListAppend(stLocal.returnString,trim(stLocal.qListNavAlias.label))>
-				</cfif>
- --->
-			</cfloop>
-		</cfif>
+			
+			<cfset stLocal.lNavID = ValueList(stLocal.qListNav.objectid)>
+			<cfset stLocal.lNavID = ListQualify(stLocal.lNavID,"'")>
 
+			<cfif stLocal.lNavID NEQ "" AND arguments.objectid NEQ application.navid.home>
+				<!--- optimisation: get all dmnavgiation data to avoid a getData() call --->
+				<cfquery name="stLocal.qListNavAlias" datasource="#application.dsn#">
+			    SELECT	dm.objectid, dm.label, dm.fu 
+			    FROM	#application.dbowner#dmNavigation dm
+			    JOIN #application.dbowner#nested_tree_objects nto on dm.objectid = nto.objectid
+			    WHERE	dm.objectid IN (#preserveSingleQuotes(stLocal.lNavID)#)
+			    ORDER by nto.nlevel ASC
+				</cfquery>
+		
+				<cfloop query="stLocal.qListNavAlias">
+					<!--- check if has FU if so use it --->
+					<cfif trim(stLocal.qListNavAlias.fu) NEQ "">
+						<cfset stLocal.returnString = ListAppend(stLocal.returnString,trim(stLocal.qListNavAlias.fu))>
+					<cfelse> <!--- no FU so use label --->
+						<cfset stLocal.returnString = ListAppend(stLocal.returnString,trim(stLocal.qListNavAlias.label))>
+					</cfif>
+				</cfloop>
+				
+			</cfif>
+		</cfif>
+		
 		<!--- change delimiter --->
 		<cfset stLocal.returnString = listChangeDelims(stLocal.returnString,"/") />
 		<!--- remove spaces --->
@@ -396,7 +353,7 @@ TODO: decide where FU's are built up using the dmNavigation FU attribute or dmNa
 			<cfset stLocal.returnString = stLocal.returnString & "/">
 		</cfif>
 
-   		<cfreturn stLocal.returnString>
+   		<cfreturn lcase(stLocal.returnString)>
 	</cffunction>	
 	
 	<cffunction name="createAndSetFUAlias" access="public" returntype="string" hint="Creates and sets an the FU mapping for a given dmNavigation object. Returns the generated friendly URL." output="No">
@@ -439,7 +396,7 @@ TODO: decide where FU's are built up using the dmNavigation FU attribute or dmNa
 		<!--- create fu for home--->
 		<!--- <cfset createAndSetFUAlias(objectid=application.navid.home) /> --->
 
-		<cfset updateAppScope() />
+		<cfset refreshApplicationScope() />
 		<cfreturn true />
 	</cffunction>
 	
@@ -452,55 +409,63 @@ TODO: decide where FU's are built up using the dmNavigation FU attribute or dmNa
 		<cfset var dom = "">
 		<!--- replace spaces in title --->
 		<cfset var newAlias = replace(arguments.alias,' ','-',"all")>
+		<!--- replace duplicate dashes with a single dash --->
+		<cfset newAlias = REReplace(newAlias,"-+","-","all")>
 		<!--- remove illegal characters in titles --->
-		<cfset newAlias = reReplaceNoCase(newAlias,'[,:\?##ï¿½ï¿½]','',"all")>
+		<cfset newAlias = reReplaceNoCase(newAlias,'[,:\?##ï¿½ï¿½®™]','',"all")>
 		<!--- change & to "and" in title --->
 		<cfset newAlias = reReplaceNoCase(newAlias,'[&]','and',"all")>
 		<!--- prepend fu url pattern and add suffix --->
 		<cfset newAlias = application.config.fusettings.urlpattern & newAlias & application.config.fusettings.suffix>
 		<cfset newAlias = ReplaceNocase(newAlias,"//","/","All")>
 		<cfset newAlias = LCase(newAlias)>
-		<cfset newAlias = ReReplaceNoCase(newAlias,"[^a-z0-9/]","-","all")>
-		<cfset newAlias = ReReplaceNoCase(newAlias,"--","-","all")>
-		
+		<cfset newAlias = ReReplaceNoCase(newAlias,"[^a-z0-9/]"," ","all")>
+		<cfset newAlias = ReReplaceNoCase(newAlias,"  "," ","all")>
+		<cfset newAlias = Trim(newAlias)>
+		<cfset newAlias = ReReplaceNoCase(newAlias," ","-","all")>		
 		<!--- loop over domains and set fu ---> 
 		<!--- <cfloop list="#application.config.fusettings.domains#" index="dom"> --->
 			<cfset setMapping(alias=newAlias,mapping="#application.url.conjurer#?objectid=#arguments.objectid#",querystring=arguments.querystring,bPermantLink=bPermantLink)>
 		<!--- </cfloop> --->
 		<!--- <cfset updateAppScope()> --->
+		<cflog application="true" file="futrace" text="fu.setfu">
 	</cffunction>
 	
 	<cffunction name="getFU" access="public" returntype="string" hint="Retrieves fu for a real url, returns original ufu if non existent." output="yes">
 		<cfargument name="objectid" required="yes" type="string" hint="objectid of object to link to">
-		<cfargument name="dom" required="yes" type="string" default="#cgi.server_name#">
-		<cfset var fuURL = "http://#dom##application.url.conjurer#?objectid=#arguments.objectid#">
+		<!--- <cfargument name="dom" required="yes" type="string" default="#cgi.server_name#"> --->
 		
+		<!--- set base URL --->
+		<cfset var fuURL = "#application.url.webroot##application.url.conjurer#?objectid=#arguments.objectid#">
+		
+		<!--- if FU mappings are not in memory load them into memory.. --->
+		<!--- TODO: wrong place for this! GB 20060117 --->
 		<cfif NOT isDefined("application.FU.mappings")>
-			<cfset updateAppScope()>
+			<cfset refreshApplicationScope()>
 		</cfif>
 		
-		<!--- get friendly url based on the objectid --->
-		<cfquery datasource="#application.dsn#" name="qGet">
-		SELECT	friendlyURL, refobjectid, query_string
-		FROM	#application.dbowner#reffriendlyURL
-		WHERE	refobjectid = <cfqueryparam value="#arguments.objectid#" cfsqltype="cf_sql_varchar">
-			AND status != 0
-		</cfquery>
-
-		<cfif qGet.recordCount>
-			<cfset fuURL = "http://#dom##qGet.friendlyURL#">
+		<!--- look up in memory cache --->
+		<cfif structKeyExists(application.fu.lookup, arguments.objectid)>
+			<cfset fuURL = application.fu.lookup[arguments.objectid]>
+		
+		<!--- if not in cache check the database --->
+		<cfelse>
+		<!--- <cftrace inline="true" text="fu db lookup!"> --->
+			<!--- get friendly url based on the objectid --->
+			<cfquery datasource="#application.dsn#" name="qGet">
+			SELECT	friendlyURL, refobjectid, query_string
+			FROM	#application.dbowner#reffriendlyURL
+			WHERE
+				refobjectid = <cfqueryparam value="#arguments.objectid#" cfsqltype="cf_sql_varchar">
+				AND status != 0
+			</cfquery>
+			<cfif qGet.recordCount>
+				<cfset fuURL = "#qGet.friendlyURL#">
+			</cfif>
 		</cfif>
 		
 		<cfreturn fuURL>
 	</cffunction>
-<!--- 
-	<cffunction name="hasFU" access="public" returntype="boolean" hint="Returns whether an FU has been set for the given objectid" output="No">
-	   <cfargument name="objectid" required="yes" hint="Objectid of object" />
-	   <cfset var fu = getFU(objectid=arguments.objectid) />
-	   <!--- if getFU() returned a string containing "objectid" then we should return false --->
-	   <cfreturn not listContains(fu,"objectid") />
-	</cffunction>
- --->
 
 	<cffunction name="fListFriendlyURL" access="public" returntype="struct" hint="returns a query of FU for a particular objectid" output="No">
 		<cfargument name="objectid" required="yes" hint="Objectid of object" />

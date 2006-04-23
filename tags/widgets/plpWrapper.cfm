@@ -141,7 +141,7 @@ $out:$
 		<cfoutput>
 				</ul>
 			</div>
-			
+
 			<div id="plp-content">
 		</cfoutput>
 	</cfcase>
@@ -163,5 +163,14 @@ $out:$
 	</cfcase>
 <!--- /PLP Wrapper End --->
 </cfswitch>
+
+<!--- confirm cancel function --->
+<cfoutput>
+	<script type="text/javascript">
+		function fPLPCancelConfirm(){
+			return window.confirm("Changes made will not be saved.\nDo you still wish to Cancel?");
+		}
+	</script>
+</cfoutput>
 
 <cfsetting enablecfoutputonly="no">

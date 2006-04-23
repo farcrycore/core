@@ -6,7 +6,7 @@ Copyright Daemon Pty Limited 2002 (http://www.daemon.com.au/)
 $Header: /cvs/farcry/farcry_core/tags/webskin/relatedLinks.cfm,v 1.7 2003/10/14 23:54:53 brendan Exp $
 $Author: brendan $
 $Date: 2003/10/14 23:54:53 $
-$Name: b201 $
+$Name: milestone_3-0-1 $
 $Revision: 1.7 $
 
 Contributors:

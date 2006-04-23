@@ -1,41 +1,77 @@
 // FI lang variables by Urho Konttori from Absolutions
+// Updated by Tuomo Aura, Ateco.fi
 
-tinyMCELang['lang_table_desc'] = 'Lis‰‰ uusi taulu';
-tinyMCELang['lang_table_insert_row_before_desc'] = 'Lis‰‰ rivi edelle';
-tinyMCELang['lang_table_insert_row_after_desc'] = 'Lis‰‰ rivi j‰lkeen';
-tinyMCELang['lang_table_delete_row_desc'] = 'Posita rivi';
-tinyMCELang['lang_table_insert_col_before_desc'] = 'Lis‰‰ sarake edelle';
-tinyMCELang['lang_table_insert_col_after_desc'] = 'Lis‰‰ sarake j‰lkeen';
-tinyMCELang['lang_table_delete_col_desc'] = 'Poista sarake';
-tinyMCELang['lang_insert_table_title'] = 'Lis‰‰/muokkaa taulua';
-tinyMCELang['lang_insert_table_width'] = 'Leveys';
-tinyMCELang['lang_insert_table_height'] = 'Korkeus';
-tinyMCELang['lang_insert_table_cols'] = 'Sarakkeet';
-tinyMCELang['lang_insert_table_rows'] = 'Rivit';
-tinyMCELang['lang_insert_table_cellspacing'] = 'Solujen v‰li';
-tinyMCELang['lang_insert_table_cellpadding'] = 'Solun reunan ja sis‰llˆn v‰li';
-tinyMCELang['lang_insert_table_border'] = 'Reuna';
-tinyMCELang['lang_insert_table_align'] = 'Asettelu';
-tinyMCELang['lang_insert_table_align_default'] = 'Oletus';
-tinyMCELang['lang_insert_table_align_left'] = 'Vasen';
-tinyMCELang['lang_insert_table_align_right'] = 'Oikea';
-tinyMCELang['lang_insert_table_align_middle'] = 'Keskelle';
-tinyMCELang['lang_insert_table_delta_height'] = 20;
-tinyMCELang['lang_table_row_title'] = 'Table row properties';
-tinyMCELang['lang_table_cell_title'] = 'Table cell properties';
-tinyMCELang['lang_table_row_desc'] = 'Table row properties';
-tinyMCELang['lang_table_cell_desc'] = 'Table cell properties';
-tinyMCELang['lang_insert_table_valign'] = 'Vertical alignment';
-tinyMCELang['lang_insert_table_align_top'] = 'Top';
-tinyMCELang['lang_insert_table_align_bottom'] = 'Bottom';
-tinyMCELang['lang_table_props_desc'] = 'Table properties';
-tinyMCELang['lang_table_bordercolor'] = 'Border color';
-tinyMCELang['lang_table_bgcolor'] = 'Bg color';
-tinyMCELang['lang_table_merge_cells_title'] = 'Merge table cells';
-tinyMCELang['lang_table_split_cells_desc'] = 'Split table cells';
-tinyMCELang['lang_table_merge_cells_desc'] = 'Merge table cells';
-tinyMCELang['lang_table_cut_row_desc'] = 'Cut table row';
-tinyMCELang['lang_table_copy_row_desc'] = 'Copy table row';
-tinyMCELang['lang_table_paste_row_before_desc'] = 'Paste table row before';
-tinyMCELang['lang_table_paste_row_after_desc'] = 'Paste table row after';
-tinyMCELang['lang_table_insert_desc'] = 'Insert a new table';
+tinyMCE.addToLang('table',{
+general_tab : 'Yleiset',
+advanced_tab : 'Edistyneemm&auml;t',
+general_props : 'Yleisasetukset',
+advanced_props : 'Edistyneemm&auml;t asetukset',
+desc : 'Lis&auml;&auml; uusi taulukko',
+row_before_desc : 'Lis&auml;&auml; rivi edelle',
+row_after_desc : 'Lis&auml;&auml; rivi j&auml;lkeen',
+delete_row_desc : 'Poista rivi',
+col_before_desc : 'Lis&auml;&auml; sarake edelle',
+col_after_desc : 'Lis&auml;&auml; sarake j&auml;lkeen',
+delete_col_desc : 'Poista sarake',
+rowtype : 'Row in table part',
+title : 'Lis&auml;&auml;/Muokkaa taulukkoa',
+width : 'Leveys',
+height : 'Korkeus',
+cols : 'Saraketta',
+rows : 'Rivi&auml;',
+cellspacing : 'Cellspacing',
+cellpadding : 'Cellpadding',
+border : 'Reuna',
+align : 'Asettelu',
+align_default : 'Oletus',
+align_left : 'Vasen',
+align_right : 'Oikea',
+align_middle : 'Keskelle',
+row_title : 'Rivin ominaisuudet',
+cell_title : 'Sarakkeen ominaisuudet',
+cell_type : 'Solun tyyppi',
+row_desc : 'Rivin ominaisuudet',
+cell_desc : 'Solun ominaisuudet',
+valign : 'Pystysuora asettelu',
+align_top : 'Yl&auml;reuna',
+align_bottom : 'Alareuna',
+props_desc : 'Taulukon ominaisuudet',
+bordercolor : 'Reunan v&auml;ri',
+bgcolor : 'Taustav&auml;ri',
+merge_cells_title : 'Yhdist&auml; taulukon solut',
+split_cells_desc : 'Erota taulukon solut',
+merge_cells_desc : 'Yhdist&auml; taulukon solut',
+cut_row_desc : 'Leikkaa taulukon rivi',
+copy_row_desc : 'Kopioi taulukon rivi',
+paste_row_before_desc : 'Liit&auml; taulukon rivi edelle',
+paste_row_after_desc : 'Liit&auml; taulukon rivi j&auml;lkeen',
+id : 'Id',
+style: 'Tyyli',
+langdir : 'Kielen suunta',
+langcode : 'Kielikoodi',
+mime : 'Kohteen MIME-tyyppi',
+ltr : 'Vasemmalta oikealle',
+rtl : 'Oikealta vasemmalle',
+bgimage : 'Taustakuva',
+summary : 'Yhteenveto',
+td : "Data",
+th : "Otsikko",
+cell_cell : 'P&auml;ivit&auml; kyseinen solu',
+cell_row : 'P&auml;ivit&auml; kaikki solut riviss&auml;',
+cell_all : 'P&auml;ivit&auml; kaikki solut taulukossa',
+row_row : 'P&auml;ivit&auml; kyseinen rivi',
+row_odd : 'P&auml;ivit&auml; parittomat rivit',
+row_even : 'P&auml;ivit&auml; parilliset rivit',
+row_all : 'P&auml;ivit&auml; kaikki rivit',
+thead : 'Table Head',
+tbody : 'Table Body',
+tfoot : 'Table Foot',
+del : 'Poista taulukko',
+scope : 'Scope',
+row : 'Rivi',
+col : 'Sarake',
+rowgroup : 'Riviryhm&auml;',
+colgroup : 'Sarakeryhm&auml;',
+missing_scope: 'Are you sure you want to continue without specifying a scope for this table header cell. Without it, it may be difficult for some users with disabilities to understand the content or data displayed of the table.',
+cellprops_delta_width : 50
+});

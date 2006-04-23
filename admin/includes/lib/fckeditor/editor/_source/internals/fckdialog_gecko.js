@@ -1,6 +1,6 @@
-/*
+﻿/*
  * FCKeditor - The text editor for internet
- * Copyright (C) 2003-2004 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2005 Frederico Caldeira Knabben
  * 
  * Licensed under the terms of the GNU Lesser General Public License:
  * 		http://www.opensource.org/licenses/lgpl-license.php
@@ -8,22 +8,22 @@
  * For further information visit:
  * 		http://www.fckeditor.net/
  * 
+ * "Support Open Source software. What about a donation today?"
+ * 
  * File Name: fckdialog_gecko.js
  * 	Dialog windows operations. (Gecko specific implementations)
- * 
- * Version:  2.0 RC2
- * Modified: 2004-12-20 00:48:06
  * 
  * File Authors:
  * 		Frederico Caldeira Knabben (fredck@fckeditor.net)
  */
 
-FCKDialog.Show = function( dialogInfo, dialogName, pageUrl, dialogWidth, dialogHeight, parentWindow )
+FCKDialog.Show = function( dialogInfo, dialogName, pageUrl, dialogWidth, dialogHeight, parentWindow, resizable )
 {
-	var iTop  = (screen.height - dialogHeight) / 2 ;
-	var iLeft = (screen.width  - dialogWidth)  / 2 ;
+	var iTop  = (FCKConfig.ScreenHeight - dialogHeight) / 2 ;
+	var iLeft = (FCKConfig.ScreenWidth  - dialogWidth)  / 2 ;
 
-	var sOption  = "location=no,menubar=no,resizable=no,toolbar=no,dependent=yes,dialog=yes,minimizable=no,modal=yes,alwaysRaised=yes" +
+	var sOption  = "location=no,menubar=no,toolbar=no,dependent=yes,dialog=yes,minimizable=no,modal=yes,alwaysRaised=yes" +
+		",resizable="  + ( resizable ? 'yes' : 'no' ) +
 		",width="  + dialogWidth +
 		",height=" + dialogHeight +
 		",top="  + iTop +
@@ -32,7 +32,14 @@ FCKDialog.Show = function( dialogInfo, dialogName, pageUrl, dialogWidth, dialogH
 	if ( !parentWindow )
 		parentWindow = window ;
 	
-	var oWindow = parentWindow.open( '', 'FCKEditorDialog_' + dialogName, sOption, true ) ;
+	var oWindow = parentWindow.open( '', 'FCKeditorDialog_' + dialogName, sOption, true ) ;
+	
+	if ( !oWindow )
+	{
+		alert( FCKLang.DialogBlocked ) ;
+		return ;
+	}
+		
 	oWindow.moveTo( iLeft, iTop ) ;
 	oWindow.resizeTo( dialogWidth, dialogHeight ) ;
 	oWindow.focus() ;
@@ -47,27 +54,45 @@ FCKDialog.Show = function( dialogInfo, dialogName, pageUrl, dialogWidth, dialogH
 	
 	this.Window = oWindow ;
 	
-	window.top.captureEvents( Event.CLICK | Event.MOUSEDOWN | Event.MOUSEUP | Event.FOCUS ) ;
-	window.top.parent.addEventListener( 'mousedown', this.CheckFocus, true ) ;
-	window.top.parent.addEventListener( 'mouseup', this.CheckFocus, true ) ;
-	window.top.parent.addEventListener( 'click', this.CheckFocus, true ) ;
-	window.top.parent.addEventListener( 'focus', this.CheckFocus, true ) ;		
+	// Try/Catch must be used to avoit an error when using a frameset 
+	// on a different domain: 
+	// "Permission denied to get property Window.releaseEvents".
+	try
+	{
+		window.top.captureEvents( Event.CLICK | Event.MOUSEDOWN | Event.MOUSEUP | Event.FOCUS ) ;
+		window.top.parent.addEventListener( 'mousedown', this.CheckFocus, true ) ;
+		window.top.parent.addEventListener( 'mouseup', this.CheckFocus, true ) ;
+		window.top.parent.addEventListener( 'click', this.CheckFocus, true ) ;
+		window.top.parent.addEventListener( 'focus', this.CheckFocus, true ) ;
+	}
+	catch (e)
+	{}
 }
 
 FCKDialog.CheckFocus = function()
 {
-	if ( FCKDialog.Window && !FCKDialog.Window.closed )
-	{
-		FCKDialog.Window.focus() ;
+	// It is strange, but we have to check the FCKDialog existence to avoid a 
+	// random error: "FCKDialog is not defined".
+	if ( typeof( FCKDialog ) != "object" )
 		return false ;
-	}
+	
+	if ( FCKDialog.Window && !FCKDialog.Window.closed )
+		FCKDialog.Window.focus() ;
 	else
 	{
-		window.top.releaseEvents(Event.CLICK | Event.MOUSEDOWN | Event.MOUSEUP | Event.FOCUS) ;
-		window.top.parent.removeEventListener( 'onmousedown', FCKDialog.CheckFocus, true ) ;
-		window.top.parent.removeEventListener( 'mouseup', FCKDialog.CheckFocus, true ) ;
-		window.top.parent.removeEventListener( 'click', FCKDialog.CheckFocus, true ) ;
-		window.top.parent.removeEventListener( 'onfocus', FCKDialog.CheckFocus, true ) ;
+		// Try/Catch must be used to avoit an error when using a frameset 
+		// on a different domain: 
+		// "Permission denied to get property Window.releaseEvents".
+		try
+		{
+			window.top.releaseEvents(Event.CLICK | Event.MOUSEDOWN | Event.MOUSEUP | Event.FOCUS) ;
+			window.top.parent.removeEventListener( 'onmousedown', FCKDialog.CheckFocus, true ) ;
+			window.top.parent.removeEventListener( 'mouseup', FCKDialog.CheckFocus, true ) ;
+			window.top.parent.removeEventListener( 'click', FCKDialog.CheckFocus, true ) ;
+			window.top.parent.removeEventListener( 'onfocus', FCKDialog.CheckFocus, true ) ;
+		}
+		catch (e)
+		{}
 	}
+	return false ;
 }
-

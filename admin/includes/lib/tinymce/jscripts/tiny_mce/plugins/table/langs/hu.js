@@ -1,41 +1,75 @@
-// HU lang variables, Edited by 2XP (2xp@dino.hu)
+// HU lang variables
 
-tinyMCELang['lang_table_desc'] = '&#218;j t&#225;bl&#225;zat beilleszt&#233;se';
-tinyMCELang['lang_table_insert_row_before_desc'] = 'Sor beilleszt&#233;se el&#233;';
-tinyMCELang['lang_table_insert_row_after_desc'] = 'Sor beilleszt&#233;se ut&#225;na';
-tinyMCELang['lang_table_delete_row_desc'] = 'Sor t&#246;rl&#233;se';
-tinyMCELang['lang_table_insert_col_before_desc'] = 'Oszlop beillszt&#233;se el&#233;';
-tinyMCELang['lang_table_insert_col_after_desc'] = 'Oszlop beilleszt&#233;se ut&#225;na';
-tinyMCELang['lang_table_delete_col_desc'] = 'Oszlop elt&#225;vol&#237;t&#225;sa';
-tinyMCELang['lang_insert_table_title'] = 'T&#225;bla beilleszt&#233;se/m&#243;dos&#237;t&#225;sa';
-tinyMCELang['lang_insert_table_width'] = 'Sz&#233;less&#233;g';
-tinyMCELang['lang_insert_table_height'] = 'Magass&#225;g';
-tinyMCELang['lang_insert_table_cols'] = 'Oszlopok';
-tinyMCELang['lang_insert_table_rows'] = 'Sorok';
-tinyMCELang['lang_insert_table_cellspacing'] = 'Cellspacing';
-tinyMCELang['lang_insert_table_cellpadding'] = 'Cellpadding';
-tinyMCELang['lang_insert_table_border'] = 'Keret';
-tinyMCELang['lang_insert_table_align'] = 'Igaz&#237;t&#225;s';
-tinyMCELang['lang_insert_table_align_default'] = 'Alap&#233;rtelmezett';
-tinyMCELang['lang_insert_table_align_left'] = 'Balra';
-tinyMCELang['lang_insert_table_align_right'] = 'Jobbra';
-tinyMCELang['lang_insert_table_align_middle'] = 'K&#246;z&#233;pre';
-tinyMCELang['lang_insert_table_class'] = 'Class';
-tinyMCELang['lang_table_row_title'] = 'Table row properties';
-tinyMCELang['lang_table_cell_title'] = 'Table cell properties';
-tinyMCELang['lang_table_row_desc'] = 'Table row properties';
-tinyMCELang['lang_table_cell_desc'] = 'Table cell properties';
-tinyMCELang['lang_insert_table_valign'] = 'Vertical alignment';
-tinyMCELang['lang_insert_table_align_top'] = 'Top';
-tinyMCELang['lang_insert_table_align_bottom'] = 'Bottom';
-tinyMCELang['lang_table_props_desc'] = 'Table properties';
-tinyMCELang['lang_table_bordercolor'] = 'Border color';
-tinyMCELang['lang_table_bgcolor'] = 'Bg color';
-tinyMCELang['lang_table_merge_cells_title'] = 'Merge table cells';
-tinyMCELang['lang_table_split_cells_desc'] = 'Split table cells';
-tinyMCELang['lang_table_merge_cells_desc'] = 'Merge table cells';
-tinyMCELang['lang_table_cut_row_desc'] = 'Cut table row';
-tinyMCELang['lang_table_copy_row_desc'] = 'Copy table row';
-tinyMCELang['lang_table_paste_row_before_desc'] = 'Paste table row before';
-tinyMCELang['lang_table_paste_row_after_desc'] = 'Paste table row after';
-tinyMCELang['lang_table_insert_desc'] = 'Insert a new table';
+tinyMCE.addToLang('table',{
+general_tab : 'Általános',
+advanced_tab : 'Haladó',
+general_props : 'Általános beállítások',
+advanced_props : 'Haladó beállítások',
+desc : 'Új táblázat beszúrása',
+row_before_desc : 'Sor beszúrása elé',
+row_after_desc : 'Sor beszúrása mögé',
+delete_row_desc : 'Sor törlése',
+col_before_desc : 'Oszlop beszúrása elé',
+col_after_desc : 'Oszlop beszúrása mögé',
+delete_col_desc : 'Oszlop törlése',
+rowtype : 'Sor a táblázatrészben',
+title : 'Táblázat beszúrása/módosítása',
+width : 'Hosszúság',
+height : 'Szélesség',
+cols : 'Oszlopok',
+rows : 'Sorok',
+cellspacing : 'Cellaköz',
+cellpadding : 'Cellakitöltés',
+border : 'Keret',
+align : 'Elhelyezkedés',
+align_default : 'alapértelmezett',
+align_left : 'Bal',
+align_right : 'Jobb',
+align_middle : 'Közép',
+row_title : 'Táblázat sor tulajdonságai',
+cell_title : 'Táblázat cella tulajdonságai',
+cell_type : 'Cella típus',
+row_desc : 'Táblázat sor tulajdonságai',
+cell_desc : 'Táblázat cella tulajdonságai',
+valign : 'Függõleges elhelyezkedés',
+align_top : 'Felül',
+align_bottom : 'Alul',
+props_desc : 'Táblázat tulajdonságai',
+bordercolor : 'Keret szín',
+bgcolor : 'Háttér szín',
+merge_cells_title : 'Tábla celláinak egyesítése',
+split_cells_desc : 'Tábla celláinak felosztása',
+merge_cells_desc : 'Tábla celláinak egyesítése',
+cut_row_desc : 'Táblázat sor kivágása',
+copy_row_desc : 'Táblázat sor másolása',
+paste_row_before_desc : 'Táblázat sor beillesztése elé',
+paste_row_after_desc : 'Táblázat sor beillesztése mögé',
+id : 'Azonodító',
+style: 'Stílus',
+langdir : 'Szövegpozíció',
+langcode : 'Szöveg kód',
+mime : 'Cél MIME típus',
+ltr : 'Balról jobbra',
+rtl : 'Jobbról balra',
+bgimage : 'Háttérkép',
+summary : 'Összefoglaló',
+td : "Adat",
+th : "Fejléc",
+cell_cell : 'Aktuális cella frissítése',
+cell_row : 'Minden cella frissítése a sorban',
+cell_all : 'Minden cella frissítése a táblában',
+row_row : 'Aktuális sor frissítése',
+row_odd : 'Páratlan sorok frissítése a táblában',
+row_even : 'páros sorok frissítése a táblában',
+row_all : 'Minden sor frissítése a táblában',
+thead : 'Táblázat fejléc',
+tbody : 'Táblázat test',
+tfoot : 'Tálázat lábléc',
+del : 'Tábla törlése',
+scope : 'Scope',
+row : 'Row',
+col : 'Col',
+rowgroup : 'Row Group',
+colgroup : 'Col Group',
+missing_scope: 'Are you sure you want to continue without specifying a scope for this table header cell. Without it, it may be difficult for some users with disabilities to understand the content or data displayed of the table.'
+});

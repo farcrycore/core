@@ -1,6 +1,6 @@
-/*
+﻿/*
  * FCKeditor - The text editor for internet
- * Copyright (C) 2003-2004 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2005 Frederico Caldeira Knabben
  * 
  * Licensed under the terms of the GNU Lesser General Public License:
  * 		http://www.opensource.org/licenses/lgpl-license.php
@@ -8,11 +8,10 @@
  * For further information visit:
  * 		http://www.fckeditor.net/
  * 
+ * "Support Open Source software. What about a donation today?"
+ * 
  * File Name: ar.js
  * 	Arabic language file.
- * 
- * Version:  2.0 RC2
- * Modified: 2004-11-24 23:37:18
  * 
  * File Authors:
  * 		Abdul-Aziz Abdul-Kareem Al-Oraij (http://aziz.oraij.com)
@@ -41,8 +40,11 @@ RemoveFormat		: "إزالة التنسيقات",
 InsertLinkLbl		: "رابط",
 InsertLink			: "إدراج/تحرير رابط",
 RemoveLink			: "إزالة رابط",
+Anchor				: "إدراج/تحرير إشارة مرجعية",
 InsertImageLbl		: "صورة",
 InsertImage			: "إدراج/تحرير صورة",
+InsertFlashLbl		: "فلاش",
+InsertFlash			: "إدراج/تحرير فيلم فلاش",
 InsertTableLbl		: "جدول",
 InsertTable			: "إدراج/تحرير جدول",
 InsertLineLbl		: "خط فاصل",
@@ -81,6 +83,20 @@ BGColor				: "لون الخلفية",
 Source				: "شفرة المصدر",
 Find				: "بحث",
 Replace				: "استبدال",
+SpellCheck			: "تدقيق إملائي",
+UniversalKeyboard	: "لوحة المفاتيح العالمية",
+PageBreakLbl		: "Page Break",	//MISSING
+PageBreak			: "Insert Page Break",	//MISSING
+
+Form			: "نموذج",
+Checkbox		: "خانة اختيار",
+RadioButton		: "زر خيار",
+TextField		: "مربع نص",
+Textarea		: "ناحية نص",
+HiddenField		: "إدراج حقل خفي",
+Button			: "زر ضغط",
+SelectionField	: "قائمة منسدلة",
+ImageButton		: "زر صورة",
 
 // Context Menu
 EditLink			: "تحرير رابط",
@@ -92,9 +108,22 @@ InsertCell			: "إدراج خلية",
 DeleteCells			: "حذف خلايا",
 MergeCells			: "دمج خلايا",
 SplitCell			: "تقسيم خلية",
+TableDelete			: "Delete Table",	//MISSING
 CellProperties		: "خصائص الخلية",
 TableProperties		: "خصائص الجدول",
 ImageProperties		: "خصائص الصورة",
+FlashProperties		: "خصائص فيلم الفلاش",
+
+AnchorProp			: "خصائص الإشارة المرجعية",
+ButtonProp			: "خصائص زر الضغط",
+CheckboxProp		: "خصائص خانة الاختيار",
+HiddenFieldProp		: "خصائص الحقل الخفي",
+RadioButtonProp		: "خصائص زر الخيار",
+ImageButtonProp		: "خصائص زر الصورة",
+TextFieldProp		: "خصائص مربع النص",
+SelectionFieldProp	: "خصائص القائمة المنسدلة",
+TextareaProp		: "خصائص ناحية النص",
+FormProp			: "خصائص النموذج",
 
 FontFormats			: "عادي;منسّق;دوس;العنوان 1;العنوان  2;العنوان  3;العنوان  4;العنوان  5;العنوان  6",
 
@@ -107,12 +136,19 @@ UnknownToolbarItem	: "عنصر شريط أدوات غير معروف \"%1\"",
 UnknownCommand		: "أمر غير معروف \"%1\"",
 NotImplemented		: "لم يتم دعم هذا الأمر",
 UnknownToolbarSet	: "لم أتمكن من العثور على طقم الأدوات \"%1\" ",
+NoActiveX			: "You browser's security settings could limit some features of the editor. You must enable the option \"Run ActiveX controls and plug-ins\". You may experience errors and notice missing features.",	//MISSING
+BrowseServerBlocked : "The resources browser could not be opened. Make sure that all popup blockers are disabled.",	//MISSING
+DialogBlocked		: "It was not possible to open the dialog window. Make sure all popup blockers are disabled.",	//MISSING
 
 // Dialogs
 DlgBtnOK			: "موافق",
 DlgBtnCancel		: "إلغاء الأمر",
 DlgBtnClose			: "إغلاق",
+DlgBtnBrowseServer	: "تصفح الخادم",
 DlgAdvancedTag		: "متقدم",
+DlgOpOther			: "&lt;أخرى&gt;",
+DlgInfoTab			: "معلومات",
+DlgAlertUrl			: "الرجاء كتابة عنوان الإنترنت",
 
 // General Dialogs Labels
 DlgGenNotSet		: "&lt;بدون تحديد&gt;",
@@ -137,7 +173,6 @@ DlgImgInfoTab		: "معلومات الصورة",
 DlgImgBtnUpload		: "أرسلها للخادم",
 DlgImgURL			: "موقع الصورة",
 DlgImgUpload		: "رفع",
-DlgImgBtnBrowse		: "تصفح صور الموقع",
 DlgImgAlt			: "الوصف",
 DlgImgWidth			: "العرض",
 DlgImgHeight		: "الارتفاع",
@@ -157,9 +192,18 @@ DlgImgAlignRight	: "يمين",
 DlgImgAlignTextTop	: "أعلى النص",
 DlgImgAlignTop		: "أعلى",
 DlgImgPreview		: "معاينة",
-DlgImgMsgWrongExt	: "عفواً، لا يسمح برفع الملفات غير المطابقة لأنواع الملفات التالية:\n\n" + FCKConfig.ImageUploadAllowedExtensions + "\n\n تم تجاهل العملية.",
-DlgImgAlertSelect	: "فضلاً اختر صورة ليتم رفعها.",
 DlgImgAlertUrl		: "فضلاً اكتب الموقع الذي توجد عليه هذه الصورة.",
+DlgImgLinkTab		: "الرابط",
+
+// Flash Dialog
+DlgFlashTitle		: "خصائص فيلم الفلاش",
+DlgFlashChkPlay		: "تشغيل تلقائي",
+DlgFlashChkLoop		: "تكرار",
+DlgFlashChkMenu		: "تمكين قائمة فيلم الفلاش",
+DlgFlashScale		: "الحجم",
+DlgFlashScaleAll	: "إظهار الكل",
+DlgFlashScaleNoBorder	: "بلا حدود",
+DlgFlashScaleFit	: "ضبط تام",
 
 // Link Dialog
 DlgLnkWindowTitle	: "ارتباط تشعبي",
@@ -173,7 +217,6 @@ DlgLnkTypeEMail		: "بريد إلكتروني",
 DlgLnkProto			: "البروتوكول",
 DlgLnkProtoOther	: "&lt;أخرى&gt;",
 DlgLnkURL			: "الموقع",
-DlgLnkBtnBrowse		: "تصفح الموقع",
 DlgLnkAnchorSel		: "اختر علامة مرجعية",
 DlgLnkAnchorByName	: "حسب اسم العلامة",
 DlgLnkAnchorById	: "حسب تعريف العنصر",
@@ -191,7 +234,7 @@ DlgLnkTargetBlank	: "إطار جديد (_blank)",
 DlgLnkTargetParent	: "الإطار الأصل (_parent)",
 DlgLnkTargetSelf	: "نفس الإطار (_self)",
 DlgLnkTargetTop		: "صفحة كاملة (_top)",
-DlgLnkTargetFrame	: "اسم الإطار المستهدف",
+DlgLnkTargetFrameName	: "اسم الإطار الهدف",
 DlgLnkPopWinName	: "تسمية النافذة المنبثقة",
 DlgLnkPopWinFeat	: "خصائص النافذة المنبثقة",
 DlgLnkPopResize		: "قابلة للتحجيم",
@@ -206,9 +249,6 @@ DlgLnkPopWidth		: "العرض",
 DlgLnkPopHeight		: "الارتفاع",
 DlgLnkPopLeft		: "التمركز لليسار",
 DlgLnkPopTop		: "التمركز للأعلى",
-
-DlgLnkMsgWrongExtA	: "عفواً، لا يسمح برفع الملفات غير المطابقة لأنواع الملفات التالية:\n\n"  + FCKConfig.LinkUploadAllowedExtensions + "\n\n تم تجاهل العملية.",
-DlgLnkMsgWrongExtD	: "عفواً، لا يسمح برفع الملفات ذات أنواع الملفات التالية:\n\n" + FCKConfig.LinkUploadDeniedExtensions + "\n\n تم تجاهل العملية.",
 
 DlnLnkMsgNoUrl		: "فضلاً أدخل عنوان الموقع الذي يشير إليه الرابط",
 DlnLnkMsgNoEMail	: "فضلاً أدخل عنوان البريد الإلكتروني",
@@ -243,6 +283,7 @@ DlgTableHeight		: "الارتفاع",
 DlgTableCellSpace	: "تباعد الخلايا",
 DlgTableCellPad		: "المسافة البادئة",
 DlgTableCaption		: "الوصف",
+DlgTableSummary		: "Summary",	//MISSING
 
 // Table Cell Dialog
 DlgCellTitle		: "خصائص الخلية",
@@ -293,14 +334,148 @@ PasteErrorCopy	: "الإعدادات الأمنية للمتصفح الذي تس
 PasteAsText		: "لصق كنص بسيط",
 PasteFromWord	: "لصق من وورد",
 
-DlgPasteMsg		: "لم يتمكن المحرر من القيام باللصق تلقائياً، نظراً <STRONG>لإعدادت متصفحك الأمنية</STRONG>.<BR>فضلاً إلصق داخل المربع التالي باستخدام لوحة المفاتيح (<STRONG>Ctrl+V</STRONG>) ثم اضغط <STRONG>موافق</STRONG>.",
+DlgPasteMsg2	: "الصق داخل الصندوق باستخدام زرّي (<STRONG>Ctrl+V</STRONG>) في لوحة المفاتيح، ثم اضغط زر  <STRONG>موافق</STRONG>.",
+DlgPasteIgnoreFont		: "تجاهل تعريفات أسماء الخطوط",
+DlgPasteRemoveStyles	: "إزالة تعريفات الأنماط",
+DlgPasteCleanBox		: "نظّف محتوى الصندوق",
+
 
 // Color Picker
 ColorAutomatic	: "تلقائي",
 ColorMoreColors	: "ألوان إضافية...",
 
+// Document Properties
+DocProps		: "خصائص الصفحة",
+
+// Anchor Dialog
+DlgAnchorTitle		: "خصائص إشارة مرجعية",
+DlgAnchorName		: "اسم الإشارة المرجعية",
+DlgAnchorErrorName	: "الرجاء كتابة اسم الإشارة المرجعية",
+
+// Speller Pages Dialog
+DlgSpellNotInDic		: "ليست في القاموس",
+DlgSpellChangeTo		: "التغيير إلى",
+DlgSpellBtnIgnore		: "تجاهل",
+DlgSpellBtnIgnoreAll	: "تجاهل الكل",
+DlgSpellBtnReplace		: "تغيير",
+DlgSpellBtnReplaceAll	: "تغيير الكل",
+DlgSpellBtnUndo			: "تراجع",
+DlgSpellNoSuggestions	: "- لا توجد اقتراحات -",
+DlgSpellProgress		: "جاري التدقيق إملائياً",
+DlgSpellNoMispell		: "تم إكمال التدقيق الإملائي: لم يتم العثور على أي أخطاء إملائية",
+DlgSpellNoChanges		: "تم إكمال التدقيق الإملائي: لم يتم تغيير أي كلمة",
+DlgSpellOneChange		: "تم إكمال التدقيق الإملائي: تم تغيير كلمة واحدة فقط",
+DlgSpellManyChanges		: "تم إكمال التدقيق الإملائي: تم تغيير %1 كلمات\كلمة",
+
+IeSpellDownload			: "المدقق الإملائي (الإنجليزي) غير مثبّت. هل تود تحميله الآن؟",
+
+// Button Dialog
+DlgButtonText	: "القيمة/التسمية",
+DlgButtonType	: "نوع الزر",
+
+// Checkbox and Radio Button Dialogs
+DlgCheckboxName		: "الاسم",
+DlgCheckboxValue	: "القيمة",
+DlgCheckboxSelected	: "محدد",
+
+// Form Dialog
+DlgFormName		: "الاسم",
+DlgFormAction	: "اسم الملف",
+DlgFormMethod	: "الأسلوب",
+
+// Select Field Dialog
+DlgSelectName		: "الاسم",
+DlgSelectValue		: "القيمة",
+DlgSelectSize		: "الحجم",
+DlgSelectLines		: "الأسطر",
+DlgSelectChkMulti	: "السماح بتحديدات متعددة",
+DlgSelectOpAvail	: "الخيارات المتاحة",
+DlgSelectOpText		: "النص",
+DlgSelectOpValue	: "القيمة",
+DlgSelectBtnAdd		: "إضافة",
+DlgSelectBtnModify	: "تعديل",
+DlgSelectBtnUp		: "تحريك لأعلى",
+DlgSelectBtnDown	: "تحريك لأسفل",
+DlgSelectBtnSetValue : "اجعلها محددة",
+DlgSelectBtnDelete	: "إزالة",
+
+// Textarea Dialog
+DlgTextareaName	: "الاسم",
+DlgTextareaCols	: "الأعمدة",
+DlgTextareaRows	: "الصفوف",
+
+// Text Field Dialog
+DlgTextName			: "الاسم",
+DlgTextValue		: "القيمة",
+DlgTextCharWidth	: "العرض بالأحرف",
+DlgTextMaxChars		: "عدد الحروف الأقصى",
+DlgTextType			: "نوع المحتوى",
+DlgTextTypeText		: "نص",
+DlgTextTypePass		: "كلمة مرور",
+
+// Hidden Field Dialog
+DlgHiddenName	: "الاسم",
+DlgHiddenValue	: "القيمة",
+
+// Bulleted List Dialog
+BulletedListProp	: "خصائص التعداد النقطي",
+NumberedListProp	: "خصائص التعداد الرقمي",
+DlgLstType			: "النوع",
+DlgLstTypeCircle	: "دائرة",
+DlgLstTypeDisc		: "Disc",	//MISSING
+DlgLstTypeSquare	: "مربع",
+DlgLstTypeNumbers	: "أرقام (1، 2، 3)َ",
+DlgLstTypeLCase		: "حروف صغيرة (a, b, c)َ",
+DlgLstTypeUCase		: "حروف كبيرة (A, B, C)َ",
+DlgLstTypeSRoman	: "ترقيم روماني صغير (i, ii, iii)َ",
+DlgLstTypeLRoman	: "ترقيم روماني كبير (I, II, III)َ",
+
+// Document Properties Dialog
+DlgDocGeneralTab	: "عام",
+DlgDocBackTab		: "الخلفية",
+DlgDocColorsTab		: "الألوان والهوامش",
+DlgDocMetaTab		: "المعرّفات الرأسية",
+
+DlgDocPageTitle		: "عنوان الصفحة",
+DlgDocLangDir		: "اتجاه اللغة",
+DlgDocLangDirLTR	: "اليسار لليمين (LTR)",
+DlgDocLangDirRTL	: "اليمين لليسار (RTL)",
+DlgDocLangCode		: "رمز اللغة",
+DlgDocCharSet		: "ترميز الحروف",
+DlgDocCharSetOther	: "ترميز حروف آخر",
+
+DlgDocDocType		: "ترويسة نوع  الصفحة",
+DlgDocDocTypeOther	: "ترويسة نوع  صفحة أخرى",
+DlgDocIncXHTML		: "تضمين   إعلانات‏ لغة XHTMLَ",
+DlgDocBgColor		: "لون الخلفية",
+DlgDocBgImage		: "رابط الصورة الخلفية",
+DlgDocBgNoScroll	: "جعلها علامة مائية",
+DlgDocCText			: "النص",
+DlgDocCLink			: "الروابط",
+DlgDocCVisited		: "المزارة",
+DlgDocCActive		: "النشطة",
+DlgDocMargins		: "هوامش الصفحة",
+DlgDocMaTop			: "علوي",
+DlgDocMaLeft		: "أيسر",
+DlgDocMaRight		: "أيمن",
+DlgDocMaBottom		: "سفلي",
+DlgDocMeIndex		: "الكلمات الأساسية (مفصولة بفواصل)َ",
+DlgDocMeDescr		: "وصف الصفحة",
+DlgDocMeAuthor		: "الكاتب",
+DlgDocMeCopy		: "المالك",
+DlgDocPreview		: "معاينة",
+
+// Templates Dialog
+Templates			: "القوالب",
+DlgTemplatesTitle	: "قوالب المحتوى",
+DlgTemplatesSelMsg	: "اختر القالب الذي تود وضعه في المحرر <br>(سيتم فقدان المحتوى الحالي):",
+DlgTemplatesLoading	: "جاري تحميل قائمة القوالب، الرجاء الانتظار...",
+DlgTemplatesNoTpl	: "(لم يتم تعريف أي قالب)",
+
 // About Dialog
-DlgAboutVersion	: "الإصدار",
-DlgAboutLicense	: "مرخّص بحسب قانون  GNU LGPL",
-DlgAboutInfo	: "لمزيد من المعلومات تفضل بزيارة"
+DlgAboutAboutTab	: "نبذة",
+DlgAboutBrowserInfoTab	: "معلومات متصفحك",
+DlgAboutVersion		: "الإصدار",
+DlgAboutLicense		: "مرخّص بحسب قانون  GNU LGPL",
+DlgAboutInfo		: "لمزيد من المعلومات تفضل بزيارة"
 }

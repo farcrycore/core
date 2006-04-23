@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/dynamic/export.cfm,v 1.6 2005/08/09 03:54:39 geoff Exp $
-$Author: geoff $
-$Date: 2005/08/09 03:54:39 $
-$Name: milestone_3-0-0 $
-$Revision: 1.6 $
+$Header: /cvs/farcry/farcry_core/admin/dynamic/export.cfm,v 1.6.2.1 2006/03/21 04:43:09 jason Exp $
+$Author: jason $
+$Date: 2006/03/21 04:43:09 $
+$Name: milestone_3-0-1 $
+$Revision: 1.6.2.1 $
 
 || DESCRIPTION || 
 $Description: Export Edit Handler $
@@ -133,7 +133,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au) $
 				<!--- send xml file details --->
 				<tr>
 					<td nowrap class="FormLabel">#application.adminBundle[session.dmProfile.locale].sendTo#</span></td>
-					<td width="100%"><input type="text" name="sendTo" class="formtextbox" maxlength="255"></td>
+					<td width="100%"><input type="text" name="sendTo" class="formtextbox" maxlength="255" size="45"></td>
 				</tr>
 				<!--- export type --->
 				<tr>

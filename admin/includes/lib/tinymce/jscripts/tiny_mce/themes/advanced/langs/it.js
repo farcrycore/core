@@ -1,62 +1,64 @@
 // Variabili di lingua IT - fabrix.xm@lombardiacom.it
 
-tinyMCELang['lang_theme_style_select'] = 'Stili';
-tinyMCELang['lang_theme_code_desc'] = 'Edita il sorgente HTML';
-tinyMCELang['lang_theme_code_title'] = 'Editor Sorgente HTML';
-tinyMCELang['lang_theme_code_wordwrap'] = 'Word wrap';
-tinyMCELang['lang_theme_sub_desc'] = 'Pedice';
-tinyMCELang['lang_theme_sup_desc'] = 'Apice';
-tinyMCELang['lang_theme_hr_desc'] = 'Inserisce linea orizzontale';
-tinyMCELang['lang_theme_removeformat_desc'] = 'Rimuovi formattazione';
-tinyMCELang['lang_theme_custom1_desc'] = 'Scrivi qui la tua descrizione personalizzata';
-tinyMCELang['lang_insert_image_border'] = 'Bordo';
-tinyMCELang['lang_insert_image_dimensions'] = 'Dimensioni';
-tinyMCELang['lang_insert_image_vspace'] = 'Spazio verticale';
-tinyMCELang['lang_insert_image_hspace'] = 'Spazio orizzontale';
-tinyMCELang['lang_insert_image_align'] = 'Allineamento';
-tinyMCELang['lang_insert_image_align_default'] = 'Default';
-tinyMCELang['lang_insert_image_align_baseline'] = 'Baseline';
-tinyMCELang['lang_insert_image_align_top'] = 'Superiore';
-tinyMCELang['lang_insert_image_align_middle'] = 'Centrale';
-tinyMCELang['lang_insert_image_align_bottom'] = 'Inferiore';
-tinyMCELang['lang_insert_image_align_texttop'] = 'TextTop';
-tinyMCELang['lang_insert_image_align_absmiddle'] = 'Centro assoluto';
-tinyMCELang['lang_insert_image_align_absbottom'] = 'Inferiore assoluto';
-tinyMCELang['lang_insert_image_align_left'] = 'Sinistra';
-tinyMCELang['lang_insert_image_align_right'] = 'Destra';
-tinyMCELang['lang_theme_font_size'] = '-- Font size --';
-tinyMCELang['lang_theme_fontdefault'] = '-- Font family --';
-tinyMCELang['lang_theme_block'] = '-- Format --';
-tinyMCELang['lang_theme_paragraph'] = 'Paragrafo';
-tinyMCELang['lang_theme_div'] = 'Div';
-tinyMCELang['lang_theme_address'] = 'Indirizzo';
-tinyMCELang['lang_theme_pre'] = 'Preformattato';
-tinyMCELang['lang_theme_h1'] = 'Intestazione 1';
-tinyMCELang['lang_theme_h2'] = 'Intestazione 2';
-tinyMCELang['lang_theme_h3'] = 'Intestazione 3';
-tinyMCELang['lang_theme_h4'] = 'Intestazione 4';
-tinyMCELang['lang_theme_h5'] = 'Intestazione 5';
-tinyMCELang['lang_theme_h6'] = 'Intestazione 6';
-tinyMCELang['lang_theme_colorpicker_title'] = 'Seleziona un colore';
-tinyMCELang['lang_theme_colorpicker_apply'] = 'Appplica';
-tinyMCELang['lang_theme_forecolor_desc'] = 'Seleziona il colore';
-tinyMCELang['lang_theme_backcolor_desc'] = 'Select background color';
-tinyMCELang['lang_theme_charmap_title'] = 'Seleziona un carattere custom';
-tinyMCELang['lang_theme_charmap_desc'] = 'Inserisci un carattere custom';
-tinyMCELang['lang_theme_visualaid_desc'] = 'Mostra/nascondi linee guida e elementi invisibili';
-tinyMCELang['lang_insert_anchor_title'] = 'Inserisci/modifica &agrave;ncora';
-tinyMCELang['lang_insert_anchor_name'] = 'Nome &agrave;ncora';
-tinyMCELang['lang_theme_anchor_desc'] = 'Inserisci/modifica &agrave;ncora';
-tinyMCELang['lang_theme_insert_link_titlefield'] = 'Titolo';
-tinyMCELang['lang_theme_clipboard_msg'] = 'Copy/Cut/Paste is not available in Mozilla and Firefox.\nDo you want more information about this issue?';
-tinyMCELang['lang_theme_path'] = 'Path';
-tinyMCELang['lang_cut_desc'] = 'Cut';
-tinyMCELang['lang_copy_desc'] = 'Copy';
-tinyMCELang['lang_paste_desc'] = 'Paste';
-tinyMCELang['lang_link_list'] = 'Link list';
-tinyMCELang['lang_image_list'] = 'Image list';
-tinyMCELang['lang_browse'] = 'Browse';
-tinyMCELang['lang_image_props_desc'] = 'Image properties';
-tinyMCELang['lang_newdocument_desc'] = 'New document';
-tinyMCELang['lang_class'] = 'Classe'; 
-tinyMCELang['lang_newdocument'] = 'Are you sure you want clear all contents?';
+tinyMCE.addToLang('',{
+theme_style_select : 'Stili',
+theme_code_desc : 'Edita il sorgente HTML',
+theme_code_title : 'Editor Sorgente HTML',
+theme_code_wordwrap : 'Word wrap',
+theme_sub_desc : 'Pedice',
+theme_sup_desc : 'Apice',
+theme_hr_desc : 'Inserisci linea orizzontale',
+theme_removeformat_desc : 'Rimuovi formattazione',
+theme_custom1_desc : 'Scrivi qui la tua descrizione personalizzata',
+insert_image_border : 'Bordo',
+insert_image_dimensions : 'Dimensioni',
+insert_image_vspace : 'Spazio verticale',
+insert_image_hspace : 'Spazio orizzontale',
+insert_image_align : 'Allineamento',
+insert_image_align_default : 'Default',
+insert_image_align_baseline : 'Baseline',
+insert_image_align_top : 'Superiore',
+insert_image_align_middle : 'Centrale',
+insert_image_align_bottom : 'Inferiore',
+insert_image_align_texttop : 'TextTop',
+insert_image_align_absmiddle : 'Centro assoluto',
+insert_image_align_absbottom : 'Inferiore assoluto',
+insert_image_align_left : 'Sinistra',
+insert_image_align_right : 'Destra',
+theme_font_size : '-- Font size --',
+theme_fontdefault : '-- Font family --',
+theme_block : '-- Format --',
+theme_paragraph : 'Paragrafo',
+theme_div : 'Div',
+theme_address : 'Indirizzo',
+theme_pre : 'Preformattato',
+theme_h1 : 'Intestazione 1',
+theme_h2 : 'Intestazione 2',
+theme_h3 : 'Intestazione 3',
+theme_h4 : 'Intestazione 4',
+theme_h5 : 'Intestazione 5',
+theme_h6 : 'Intestazione 6',
+theme_colorpicker_title : 'Seleziona un colore',
+theme_colorpicker_apply : 'Applica',
+theme_forecolor_desc : 'Seleziona il colore',
+theme_backcolor_desc : 'Seleziona il colore di sfondo',
+theme_charmap_title : 'Seleziona un carattere custom',
+theme_charmap_desc : 'Inserisci un carattere custom',
+theme_visualaid_desc : 'Mostra/nascondi linee guida e elementi invisibili',
+insert_anchor_title : 'Inserisci/modifica &agrave;ncora',
+insert_anchor_name : 'Nome &agrave;ncora',
+theme_anchor_desc : 'Inserisci/modifica &agrave;ncora',
+theme_insert_link_titlefield : 'Titolo',
+theme_clipboard_msg : 'Copia, Taglia e Incolla non sono disponibili in Mozilla e Firefox.\nVuoi maggiori dettegli su questo problema?',
+theme_path : 'Percorso',
+cut_desc : 'Taglia',
+copy_desc : 'Copia',
+paste_desc : 'Incolla',
+link_list : 'Lista link',
+image_list : 'Lista immagini',
+browse : 'Sfoglia',
+image_props_desc : 'Proprietà dell\'immagine',
+newdocument_desc : 'Nuovo documento',
+class_name : 'Classe', 
+newdocument : 'Sicuro di voler cancellare l\'intero contenuto?'
+});

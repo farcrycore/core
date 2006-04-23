@@ -1,61 +1,70 @@
-// CZ lang variables thanks to "Pavel Nov·k", repaired by Josef Klimosz
+/**
+ * Czech lang variables 
+ * encoding: utf-8
+ *  
+ * $Id: cs.js,v 1.1.2.2 2005/12/03 01:11:58 geoff Exp $ 
+ */  
 
-tinyMCELang['lang_theme_style_select'] = 'Styly';
-tinyMCELang['lang_theme_code_desc'] = 'Zobrazit HTML';
-tinyMCELang['lang_theme_code_title'] = 'Editace HTML';
-tinyMCELang['lang_theme_code_wordwrap'] = 'Bez dÏlenÌ slov';
-tinyMCELang['lang_theme_sub_desc'] = 'DolnÌ index';
-tinyMCELang['lang_theme_sup_desc'] = 'HornÌ index';
-tinyMCELang['lang_theme_hr_desc'] = 'Vloûit vodorovn˝ oddÏlovaË';
-tinyMCELang['lang_theme_removeformat_desc'] = 'Zruöit form·tov·nÌ';
-tinyMCELang['lang_theme_custom1_desc'] = 'Libovoln˝ popisek';
-tinyMCELang['lang_insert_image_border'] = 'R·meËek';
-tinyMCELang['lang_insert_image_dimensions'] = 'RozmÏry';
-tinyMCELang['lang_insert_image_vspace'] = 'Vertik·lnÌ okraj';
-tinyMCELang['lang_insert_image_hspace'] = 'Horizont·lnÌ okraj';
-tinyMCELang['lang_insert_image_align'] = 'Zarovn·nÌ';
-tinyMCELang['lang_insert_image_align_default'] = 'V˝chozÌ';
-tinyMCELang['lang_insert_image_align_baseline'] = 'Na ˙Ëa¯Ì';
-tinyMCELang['lang_insert_image_align_top'] = 'Nahoru';
-tinyMCELang['lang_insert_image_align_middle'] = 'Na st¯ed';
-tinyMCELang['lang_insert_image_align_bottom'] = 'Dol˘';
-tinyMCELang['lang_insert_image_align_texttop'] = 'NejvyööÌ bod textu';
-tinyMCELang['lang_insert_image_align_absmiddle'] = 'St¯ed ¯·dku';
-tinyMCELang['lang_insert_image_align_absbottom'] = 'Spodek ¯·dku';
-tinyMCELang['lang_insert_image_align_left'] = 'Vlevo';
-tinyMCELang['lang_insert_image_align_right'] = 'Vpravo';
-tinyMCELang['lang_theme_font_size'] = '-- Font size --';
-tinyMCELang['lang_theme_fontdefault'] = '-- Font family --';
-tinyMCELang['lang_theme_block'] = '-- Format --';
-tinyMCELang['lang_theme_paragraph'] = 'Odstavec';
-tinyMCELang['lang_theme_div'] = 'Div';
-tinyMCELang['lang_theme_address'] = 'Adresa';
-tinyMCELang['lang_theme_pre'] = 'P¯edform·t';
-tinyMCELang['lang_theme_h1'] = 'Nadpis 1';
-tinyMCELang['lang_theme_h2'] = 'Nadpis 2';
-tinyMCELang['lang_theme_h3'] = 'Nadpis 3';
-tinyMCELang['lang_theme_h4'] = 'Nadpis 4';
-tinyMCELang['lang_theme_h5'] = 'Nadpis 5';
-tinyMCELang['lang_theme_h6'] = 'Nadpis 6';
-tinyMCELang['lang_theme_colorpicker_title'] = 'V˝bÏr barvy';
-tinyMCELang['lang_theme_colorpicker_apply'] = 'Vybrat';
-tinyMCELang['lang_theme_forecolor_desc'] = 'Barva pop¯edÌ';
-tinyMCELang['lang_theme_backcolor_desc'] = 'Barva pozadÌ';
-tinyMCELang['lang_theme_charmap_title'] = 'V˝bÏr uûiv. znaku';
-tinyMCELang['lang_theme_charmap_desc'] = 'Vloûit znak';
-tinyMCELang['lang_theme_visualaid_desc'] = 'Zapnout znaËky/neviditelnÈ prvky';
-tinyMCELang['lang_insert_anchor_title'] = 'VloûenÌ/editace z·loûky';
-tinyMCELang['lang_insert_anchor_name'] = 'N·zev';
-tinyMCELang['lang_theme_anchor_desc'] = 'Vloûit/editovat z·loûku';
-tinyMCELang['lang_theme_insert_link_titlefield'] = 'N·zev';
-tinyMCELang['lang_theme_clipboard_msg'] = 'Copy/Cut/Paste nenÌ pouûitelnÈ v Mozille a Firefoxu.\nChcete vÌce informacÌ o tomto problÈmu?';
-tinyMCELang['lang_theme_path'] = 'Cesta';
-tinyMCELang['lang_cut_desc'] = 'Vyjmout';
-tinyMCELang['lang_copy_desc'] = 'KopÌrovat';
-tinyMCELang['lang_paste_desc'] = 'Vloûit';
-tinyMCELang['lang_link_list'] = 'Seznam';
-tinyMCELang['lang_image_list'] = 'Seznam';
-tinyMCELang['lang_browse'] = 'Browse';
-tinyMCELang['lang_image_props_desc'] = 'Vlastnosti obr·zku';
-tinyMCELang['lang_newdocument_desc'] = 'Nov˝ dokument';
-tinyMCELang['lang_newdocument'] = 'Are you sure you want clear all contents?';
+
+tinyMCE.addToLang('',{
+theme_style_select : 'Styly',
+theme_code_desc : 'Zobrazit HTML',
+theme_code_title : 'Editace HTML',
+theme_code_wordwrap : 'Bez dƒõlen√≠ slov',
+theme_sub_desc : 'Doln√≠ index',
+theme_sup_desc : 'Horn√≠ index',
+theme_hr_desc : 'Vlo≈æit vodorovn√Ω oddƒõlovaƒç',
+theme_removeformat_desc : 'Zru≈°it form√°tov√°n√≠',
+theme_custom1_desc : 'Libovoln√Ω popisek',
+insert_image_border : 'R√°meƒçek',
+insert_image_dimensions : 'Rozmƒõry',
+insert_image_vspace : 'Vertik√°ln√≠ okraj',
+insert_image_hspace : 'Horizont√°ln√≠ okraj',
+insert_image_align : 'Zarovn√°n√≠',
+insert_image_align_default : 'V√Ωchoz√≠',
+insert_image_align_baseline : 'Na √∫ƒça≈ô√≠',
+insert_image_align_top : 'Nahoru',
+insert_image_align_middle : 'Na st≈ôed',
+insert_image_align_bottom : 'Dol≈Ø',
+insert_image_align_texttop : 'Nejvy≈°≈°√≠ bod textu',
+insert_image_align_absmiddle : 'St≈ôed ≈ô√°dku',
+insert_image_align_absbottom : 'Spodek ≈ô√°dku',
+insert_image_align_left : 'Vlevo',
+insert_image_align_right : 'Vpravo',
+theme_font_size : '-- Velikost textu --',
+theme_fontdefault : '-- P√≠smo --',
+theme_block : '-- Form√°t --',
+theme_paragraph : 'Odstavec',
+theme_div : 'Div',
+theme_address : 'Adresa',
+theme_pre : 'P≈ôedform√°t',
+theme_h1 : 'Nadpis 1',
+theme_h2 : 'Nadpis 2',
+theme_h3 : 'Nadpis 3',
+theme_h4 : 'Nadpis 4',
+theme_h5 : 'Nadpis 5',
+theme_h6 : 'Nadpis 6',
+theme_colorpicker_title : 'V√Ωbƒõr barvy',
+theme_colorpicker_apply : 'Vybrat',
+theme_forecolor_desc : 'Barva pop≈ôed√≠',
+theme_backcolor_desc : 'Barva pozad√≠',
+theme_charmap_title : 'V√Ωbƒõr znaku',
+theme_charmap_desc : 'Vlo≈æit znak',
+theme_visualaid_desc : 'Zapnout znaƒçky/neviditeln√© prvky',
+insert_anchor_title : 'Vlo≈æen√≠/editace z√°lo≈æky',
+insert_anchor_name : 'N√°zev',
+theme_anchor_desc : 'Vlo≈æit/editovat z√°lo≈æku',
+theme_insert_link_titlefield : 'N√°zev',
+theme_clipboard_msg : 'Funkce Kop√≠rovat/vyjmout/vlo≈æit nejsou pou≈æiteln√© v Mozille a Firefoxu.\nChcete v√≠ce informac√≠ o tomto probl√©mu?',
+theme_path : 'Cesta',
+cut_desc : 'Vyjmout',
+copy_desc : 'Kop√≠rovat',
+paste_desc : 'Vlo≈æit',
+link_list : 'Seznam',
+image_list : 'Seznam',
+browse : 'Proch√°zet',
+image_props_desc : 'Vlastnosti obr√°zku',
+newdocument_desc : 'Nov√Ω dokument',
+newdocument : 'Jste si opravdu jist√Ω(√°), ≈æe chcete vymazat ve≈°ker√Ω obsah?'
+});
+

@@ -1,6 +1,6 @@
-/*
+﻿/*
  * FCKeditor - The text editor for internet
- * Copyright (C) 2003-2004 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2005 Frederico Caldeira Knabben
  * 
  * Licensed under the terms of the GNU Lesser General Public License:
  * 		http://www.opensource.org/licenses/lgpl-license.php
@@ -8,13 +8,13 @@
  * For further information visit:
  * 		http://www.fckeditor.net/
  * 
+ * "Support Open Source software. What about a donation today?"
+ * 
  * File Name: da.js
  * 	Danish language file.
  * 
- * Version:  2.0 RC2
- * Modified: 2004-12-21 01:38:30
- * 
  * File Authors:
+ * 		Jørgen Nordstrøm (jn@FirstWeb.dk)
  * 		Jesper Michelsen (jm@i-deVision.dk)
  */
 
@@ -22,6 +22,9 @@ var FCKLang =
 {
 // Language direction : "ltr" (left to right) or "rtl" (right to left).
 Dir					: "ltr",
+
+ToolbarCollapse		: "Sammenfold Værktøjskasse",
+ToolbarExpand		: "Udvid Værktøjskasse",
 
 // Toolbar Items and Context Menu
 Save				: "Gem",
@@ -36,16 +39,19 @@ Print				: "Udskriv",
 SelectAll			: "Vælg alt",
 RemoveFormat		: "Slet formatering",
 InsertLinkLbl		: "Link",
-InsertLink			: "Indsæt/rediger Link",
+InsertLink			: "Indsæt/Rediger Link",
 RemoveLink			: "Slet Link",
-InsertImageLbl		: "Billede",
-InsertImage			: "Indsæt/rediger billede",
+Anchor				: "Insert/Rediger Anker",
+InsertImageLbl		: "Indsæt Billed",
+InsertImage			: "Indsæt/Rediger Billed",
+InsertFlashLbl		: "Flash",
+InsertFlash			: "Indsæt/rediger Flash",
 InsertTableLbl		: "Table",
-InsertTable			: "Indsæt/rediger tabel",
+InsertTable			: "Indsæt/Rediger Tabel",
 InsertLineLbl		: "Linie",
-InsertLine			: "Indsæt horisontal linie",
-InsertSpecialCharLbl: "Special karakter",
-InsertSpecialChar	: "Indslt special karakter",
+InsertLine			: "Indsæt horisontal Linie",
+InsertSpecialCharLbl: "Special Karakter",
+InsertSpecialChar	: "Indsæt Special Karakter",
 InsertSmileyLbl		: "Smiley",
 InsertSmiley		: "Indsæt Smiley",
 About				: "Om FCKeditor",
@@ -59,14 +65,14 @@ LeftJustify			: "Venstrestillet",
 CenterJustify		: "Centreret",
 RightJustify		: "Højrestillet",
 BlockJustify		: "Lige margener",
-DecreaseIndent		: "Forøg indrykning",
-IncreaseIndent		: "Formindsk indrykning",
+DecreaseIndent		: "Formindsk indrykning",
+IncreaseIndent		: "Forøg indrykning",
 Undo				: "Fortryd",
 Redo				: "Anuller fortryd",
-NumberedListLbl		: "Opstilling med tal",
-NumberedList		: "Indsæt/slet opstilling med tal",
-BulletedListLbl		: "Opstilling med punkttegn",
-BulletedList		: "Indsæt/slet opstilling med punkttegn",
+NumberedListLbl		: "Tal opstilling",
+NumberedList		: "Indsæt/Slet Tal opstilling",
+BulletedListLbl		: "Punkttegn opstilling",
+BulletedList		: "Indsæt/Slet Punkttegn opstilling",
 ShowTableBorders	: "Vis tabel kanter",
 ShowDetails			: "Vis detaljer",
 Style				: "Typografi",
@@ -78,6 +84,20 @@ BGColor				: "Baggrundsfarve",
 Source				: "Kilde",
 Find				: "Søg",
 Replace				: "Erstat",
+SpellCheck			: "Stavekontrol",
+UniversalKeyboard	: "Universalt Tastatur",
+PageBreakLbl		: "Page Break",	//MISSING
+PageBreak			: "Insert Page Break",	//MISSING
+
+Form			: "Indsæt Form",
+Checkbox		: "Indsæt Afkrydsningsboks",
+RadioButton		: "Indsæt Radioknap",
+TextField		: "Indsæt Tekstfelt",
+Textarea		: "Indsæt Tekstboks",
+HiddenField		: "Indsæt Skjultfelt",
+Button			: "Indsæt Knap",
+SelectionField	: "Indsæt Valgfelt",
+ImageButton		: "Indsæt Billedknap",
 
 // Context Menu
 EditLink			: "Rediger link",
@@ -89,9 +109,22 @@ InsertCell			: "Indsæt celle",
 DeleteCells			: "Slet celle",
 MergeCells			: "Flet celler",
 SplitCell			: "Opdel celler",
-CellProperties		: "Celleegenskaber",
-TableProperties		: "Tabelegenskaber",
-ImageProperties		: "Billedegenskaber",
+TableDelete			: "Delete Table",	//MISSING
+CellProperties		: "Celle egenskaber",
+TableProperties		: "Tabel egenskaber",
+ImageProperties		: "Billed egenskaber",
+FlashProperties		: "Flash egenskaber",
+
+AnchorProp			: "Anker egenskaber",
+ButtonProp			: "Knap egenskaber",
+CheckboxProp		: "Afkrydsningsboks egenskaber",
+HiddenFieldProp		: "Skjultfelt egenskaber",
+RadioButtonProp		: "Radioknap egenskaber",
+ImageButtonProp		: "Billedknap egenskaber",
+TextFieldProp		: "Tekstfelt egenskaber",
+SelectionFieldProp	: "Valgfelt egenskaber",
+TextareaProp		: "Tekstboks egenskaber",
+FormProp			: "Form egenskaber",
 
 FontFormats			: "Normal;Formateret;Adresse;Overskrift 1;Overskrift 2;Overskrift 3;Overskrift 4;Overskrift 5;Overskrift 6",
 
@@ -104,12 +137,19 @@ UnknownToolbarItem	: "Ukendt værktøjslinje objekt \"%1\"",
 UnknownCommand		: "Ukendt kommando navn \"%1\"",
 NotImplemented		: "Kommandoen er ikke implementeret",
 UnknownToolbarSet	: "Værktøjslinjen \"%1\" eksisterer ikke",
+NoActiveX			: "Din browsers sikkerhedsindstillinger kan begrænse nogle af editorens muligheder. Du skal slå \"Kør ActiveX-objekter og plug-ins\" til. Du vil måske opleve fejl og manglende muligheder.",
+BrowseServerBlocked : "The resources browser could not be opened. Make sure that all popup blockers are disabled.",	//MISSING
+DialogBlocked		: "It was not possible to open the dialog window. Make sure all popup blockers are disabled.",	//MISSING
 
 // Dialogs
 DlgBtnOK			: "OK",
 DlgBtnCancel		: "Anuller",
 DlgBtnClose			: "Luk",
+DlgBtnBrowseServer	: "Gennemse Server",
 DlgAdvancedTag		: "Avanceret",
+DlgOpOther			: "&lt;Andet&gt;",
+DlgInfoTab			: "Info",
+DlgAlertUrl			: "Indtast URL",
 
 // General Dialogs Labels
 DlgGenNotSet		: "&lt;ikke sat&gt;",
@@ -134,7 +174,6 @@ DlgImgInfoTab		: "Billed info",
 DlgImgBtnUpload		: "Send til serveren",
 DlgImgURL			: "URL",
 DlgImgUpload		: "Upload",
-DlgImgBtnBrowse		: "Gennemse server",
 DlgImgAlt			: "Alternativ tekst",
 DlgImgWidth			: "Bredde",
 DlgImgHeight		: "Højde",
@@ -154,9 +193,18 @@ DlgImgAlignRight	: "Højre",
 DlgImgAlignTextTop	: "Tekst top",
 DlgImgAlignTop		: "Top",
 DlgImgPreview		: "Vis eksempel",
-DlgImgMsgWrongExt	: "Der kan kun uploades følgende filtyper:\n\n" + FCKConfig.ImageUploadAllowedExtensions + "\n\nOperation canceled.",
-DlgImgAlertSelect	: "Vælg det billede der skal uploades",
 DlgImgAlertUrl		: "Indtast stien til billedet",
+DlgImgLinkTab		: "Link",
+
+// Flash Dialog
+DlgFlashTitle		: "Flash egenskaber",
+DlgFlashChkPlay		: "Automatisk afspilning",
+DlgFlashChkLoop		: "Gentagelse",
+DlgFlashChkMenu		: "Vis Flash menu",
+DlgFlashScale		: "Skalér",
+DlgFlashScaleAll	: "Vis alt",
+DlgFlashScaleNoBorder	: "Ingen ramme",
+DlgFlashScaleFit	: "Tilpas størrelse",
 
 // Link Dialog
 DlgLnkWindowTitle	: "Link",
@@ -170,7 +218,6 @@ DlgLnkTypeEMail		: "Email",
 DlgLnkProto			: "Protokol",
 DlgLnkProtoOther	: "&lt;anden&gt;",
 DlgLnkURL			: "URL",
-DlgLnkBtnBrowse		: "Gennemse serveren",
 DlgLnkAnchorSel		: "Vælg et anker",
 DlgLnkAnchorByName	: "Efter anker navn",
 DlgLnkAnchorById	: "Efter element Id",
@@ -188,7 +235,7 @@ DlgLnkTargetBlank	: "Nyt vindue (_blank)",
 DlgLnkTargetParent	: "Overliggende vindue (_parent)",
 DlgLnkTargetSelf	: "Samme vindue (_self)",
 DlgLnkTargetTop		: "Øverste vindue (_top)",
-DlgLnkTargetFrame	: "Målrammens navn",
+DlgLnkTargetFrameName	: "Visnings vinduets navn",
 DlgLnkPopWinName	: "Popup vinduets navn",
 DlgLnkPopWinFeat	: "Popup vinduets egenskaber",
 DlgLnkPopResize		: "Skalering",
@@ -204,8 +251,9 @@ DlgLnkPopHeight		: "Højde",
 DlgLnkPopLeft		: "Position fra venstre",
 DlgLnkPopTop		: "Position fra toppen",
 
-DlgLnkMsgWrongExtA	: "Kun de følgende filtyper kan uploades:\n\n" + FCKConfig.LinkUploadAllowedExtensions + "\n\nOperation canceled.",
-DlgLnkMsgWrongExtD	: "Følgende filtyper kan ikke uploades:\n\n" + FCKConfig.LinkUploadDeniedExtensions + "\n\nOperation canceled.",
+DlnLnkMsgNoUrl		: "Indtast link URL",
+DlnLnkMsgNoEMail	: "Indtast e-mail addressen",
+DlnLnkMsgNoAnchor	: "Vælg Anker",
 
 // Color Dialog
 DlgColorTitle		: "Vælg farve",
@@ -236,6 +284,7 @@ DlgTableHeight		: "Højde",
 DlgTableCellSpace	: "Afstand mellem celler",
 DlgTableCellPad		: "Celle margin",
 DlgTableCaption		: "Titel",
+DlgTableSummary		: "Summary",	//MISSING
 
 // Table Cell Dialog
 DlgCellTitle		: "Celle egenskaber",
@@ -286,14 +335,148 @@ PasteErrorCopy	: "Din browsers sikkerhedsindstillinger tillader ikke editoren at
 PasteAsText		: "Indsæt som ren tekst",
 PasteFromWord	: "Indsæt fra Word",
 
-DlgPasteMsg		: "Editoren kunne ikke indsætte teksten automatisk på grund af din browsers <STRONG>sikkerhedsindstillinger</STRONG>.<BR>Indsæt i stedet teksten i den følgende boks ved hjælp af tastaturet (<STRONG>Ctrl+V</STRONG>) og klik <STRONG>OK</STRONG>.",
+DlgPasteMsg2	: "Indsæt i boksen herunder (<STRONG>Ctrl+V</STRONG>) og klik <STRONG>OK</STRONG>.",
+DlgPasteIgnoreFont		: "Ignorer font definitioner",
+DlgPasteRemoveStyles	: "Fjern typografi definitioner",
+DlgPasteCleanBox		: "Slet indhold",
+
 
 // Color Picker
 ColorAutomatic	: "Automatisk",
 ColorMoreColors	: "Flere farver...",
 
+// Document Properties
+DocProps		: "Dokument egenskaber",
+
+// Anchor Dialog
+DlgAnchorTitle		: "Anker egenskaber",
+DlgAnchorName		: "Anker navn",
+DlgAnchorErrorName	: "Indtast Anker navn",
+
+// Speller Pages Dialog
+DlgSpellNotInDic		: "Findes ikke i ordbogen",
+DlgSpellChangeTo		: "Ændre til",
+DlgSpellBtnIgnore		: "Ignorere",
+DlgSpellBtnIgnoreAll	: "Ignorere alle",
+DlgSpellBtnReplace		: "Udskift",
+DlgSpellBtnReplaceAll	: "Udskift alle",
+DlgSpellBtnUndo			: "Tilbage",
+DlgSpellNoSuggestions	: "- Intet forslag -",
+DlgSpellProgress		: "Stavekontrolen arbejder...",
+DlgSpellNoMispell		: "Stavekontrol færdig: Ingen fejl fundet",
+DlgSpellNoChanges		: "Stavekontrol færdig: Ingen ord ændret",
+DlgSpellOneChange		: "Stavekontrol færdig: Et ord ændret",
+DlgSpellManyChanges		: "Stavekontrol færdig: %1 ord ændret",
+
+IeSpellDownload			: "Stavekontrol ikke installeret. Vil du hente den nu?",
+
+// Button Dialog
+DlgButtonText	: "Tekst (Værdi)",
+DlgButtonType	: "Type",
+
+// Checkbox and Radio Button Dialogs
+DlgCheckboxName		: "Navn",
+DlgCheckboxValue	: "Værdi",
+DlgCheckboxSelected	: "Valgt",
+
+// Form Dialog
+DlgFormName		: "Navn",
+DlgFormAction	: "Handling",
+DlgFormMethod	: "Metod",
+
+// Select Field Dialog
+DlgSelectName		: "Navn",
+DlgSelectValue		: "Værdi",
+DlgSelectSize		: "Størrelse",
+DlgSelectLines		: "linier",
+DlgSelectChkMulti	: "Tillad flere valg",
+DlgSelectOpAvail	: "Valgmulighedder",
+DlgSelectOpText		: "Tekst",
+DlgSelectOpValue	: "Værdi",
+DlgSelectBtnAdd		: "Tilføj",
+DlgSelectBtnModify	: "Ændre",
+DlgSelectBtnUp		: "Op",
+DlgSelectBtnDown	: "Ned",
+DlgSelectBtnSetValue : "Sæt som udvalgt",
+DlgSelectBtnDelete	: "Slet",
+
+// Textarea Dialog
+DlgTextareaName	: "Navn",
+DlgTextareaCols	: "Kolonne",
+DlgTextareaRows	: "Række",
+
+// Text Field Dialog
+DlgTextName			: "Navn",
+DlgTextValue		: "Værdi",
+DlgTextCharWidth	: "Synligt antal bogstaver",
+DlgTextMaxChars		: "Maximum antal bogstaver",
+DlgTextType			: "Type",
+DlgTextTypeText		: "Tekst",
+DlgTextTypePass		: "Kodeord",
+
+// Hidden Field Dialog
+DlgHiddenName	: "Navn",
+DlgHiddenValue	: "Værdi",
+
+// Bulleted List Dialog
+BulletedListProp	: "Punkttegnopstilling egenskaber",
+NumberedListProp	: "Talopstilling egenskaber",
+DlgLstType			: "Type",
+DlgLstTypeCircle	: "Cirkel",
+DlgLstTypeDisc		: "Flade",
+DlgLstTypeSquare	: "Firkant",
+DlgLstTypeNumbers	: "Nummereret (1, 2, 3)",
+DlgLstTypeLCase		: "Små bogstaver (a, b, c)",
+DlgLstTypeUCase		: "Store bogstaver (A, B, C)",
+DlgLstTypeSRoman	: "Små Romertal (i, ii, iii)",
+DlgLstTypeLRoman	: "Store Romertal (I, II, III)",
+
+// Document Properties Dialog
+DlgDocGeneralTab	: "Generelt",
+DlgDocBackTab		: "Baggrund",
+DlgDocColorsTab		: "Farver og Margin",
+DlgDocMetaTab		: "Meta Information",
+
+DlgDocPageTitle		: "Side Titel",
+DlgDocLangDir		: "Sprog",
+DlgDocLangDirLTR	: "Venstre Til Højre (LTR)",
+DlgDocLangDirRTL	: "Højre Til Venstre (RTL)",
+DlgDocLangCode		: "Landekode",
+DlgDocCharSet		: "Karakter sæt kode",
+DlgDocCharSetOther	: "Anden karakter sæt kode",
+
+DlgDocDocType		: "Dokument type kategori",
+DlgDocDocTypeOther	: "Anden dokument type kategori",
+DlgDocIncXHTML		: "Inkludere XHTML deklartion",
+DlgDocBgColor		: "Baggrundsfarve",
+DlgDocBgImage		: "Baggrundsbilled URL",
+DlgDocBgNoScroll	: "Ikke scrollbar baggrund",
+DlgDocCText			: "Tekst",
+DlgDocCLink			: "Link",
+DlgDocCVisited		: "Besøgt link",
+DlgDocCActive		: "Aktivt link",
+DlgDocMargins		: "Side margin",
+DlgDocMaTop			: "Top",
+DlgDocMaLeft		: "Venstre",
+DlgDocMaRight		: "Højre",
+DlgDocMaBottom		: "Bund",
+DlgDocMeIndex		: "Dokument index nøgleord (komma sepereret)",
+DlgDocMeDescr		: "Dokument beskrivelse",
+DlgDocMeAuthor		: "Forfatter",
+DlgDocMeCopy		: "Copyright",
+DlgDocPreview		: "Vis",
+
+// Templates Dialog
+Templates			: "Skabeloner",
+DlgTemplatesTitle	: "Indholdsskabeloner",
+DlgTemplatesSelMsg	: "Vælg den skabelon, som skal åbnes i editoren<br>(Nuværende indhold vil blive overskrevet):",
+DlgTemplatesLoading	: "Henter liste over skabeloner. Vent venligst...",
+DlgTemplatesNoTpl	: "(Der er ikke defineret nogen skabelon)",
+
 // About Dialog
-DlgAboutVersion	: "version",
-DlgAboutLicense	: "Licenseret under vilkårene for GNU Lesser General Public License",
-DlgAboutInfo	: "For yderligere informationer gå til"
+DlgAboutAboutTab	: "About",
+DlgAboutBrowserInfoTab	: "Browser Info",
+DlgAboutVersion		: "version",
+DlgAboutLicense		: "Licens under vilkår for GNU Lesser General Public License",
+DlgAboutInfo		: "For yderlig information gå til"
 }

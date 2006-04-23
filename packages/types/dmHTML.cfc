@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/dmHTML.cfc,v 1.23 2005/09/29 00:02:26 gstewart Exp $
-$Author: gstewart $
-$Date: 2005/09/29 00:02:26 $
-$Name: milestone_3-0-0 $
-$Revision: 1.23 $
+$Header: /cvs/farcry/farcry_core/packages/types/dmHTML.cfc,v 1.23.2.1 2005/12/02 05:13:46 guy Exp $
+$Author: guy $
+$Date: 2005/12/02 05:13:46 $
+$Name: milestone_3-0-1 $
+$Revision: 1.23.2.1 $
 
 || DESCRIPTION || 
 $Description: dmHTML Content Type. Forms the basis of the content framework of the site.  HTML objects include containers and static information. $
@@ -18,7 +18,7 @@ $TODO: <whatever todo's needed -- can be inline also>$
 $Developer: Geoff Bowers (modius@daemon.com.au) $
 --->
 
-<cfcomponent extends="types" displayname="HTML Page" hint="Forms the basis of the content framework of the site.  HTML objects include containers and static information." bSchedule="1" bUseInTree="1">
+<cfcomponent extends="types" displayname="HTML Page" hint="Forms the basis of the content framework of the site.  HTML objects include containers and static information." bSchedule="1" bUseInTree="1" bFriendly="1">
 <!------------------------------------------------------------------------
 type properties
 ------------------------------------------------------------------------->	

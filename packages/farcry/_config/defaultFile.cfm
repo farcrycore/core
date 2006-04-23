@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_config/defaultFile.cfm,v 1.7 2005/08/09 03:54:39 geoff Exp $
-$Author: geoff $
-$Date: 2005/08/09 03:54:39 $
-$Name: milestone_3-0-0 $
-$Revision: 1.7 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_config/defaultFile.cfm,v 1.7.2.2 2005/11/28 04:06:54 suspiria Exp $
+$Author: suspiria $
+$Date: 2005/11/28 04:06:54 $
+$Name: milestone_3-0-1 $
+$Revision: 1.7.2.2 $
 
 || DESCRIPTION || 
 $Description: deploys file config file $
@@ -31,26 +31,28 @@ stConfig.fileSize = 1024000; // bytes
 stConfig.fileType = "application/msword,application/pdf,application/vnd.ms-excel"; // extension
 stConfig.archiveFiles = "false";
 stConfig.bAllowOverwrite = "false";
+stConfig.insertHTML = "*fileTitle*";
+stConfig.folderpath_flash = application.path.defaultFilePath;
 </cfscript>
 
 <cfwddx action="CFML2WDDX" input="#stConfig#" output="wConfig">
 
 <cftry>
-	<cfquery datasource="#arguments.dsn#" name="qDelete">
-		delete from #application.dbowner#config
-		where configname = '#arguments.configName#'
-	</cfquery>
-	
-	<cfquery datasource="#arguments.dsn#" name="qUpdate">
-		INSERT INTO #application.dbowner#config
-		(configName, wConfig)
-		VALUES
-		('#arguments.configName#', '#wConfig#')
-	</cfquery>
-	
-	<cfset stStatus.message = "#arguments.configName# created successfully">
-	<cfcatch>
-		<cfset stStatus.message = cfcatch.message>
-		<cfset stStatus.detail = cfcatch.detail>
-	</cfcatch>
+    <cfquery datasource="#arguments.dsn#" name="qDelete">
+        delete from #application.dbowner#config
+        where configname = '#arguments.configName#'
+    </cfquery>
+    
+    <cfquery datasource="#arguments.dsn#" name="qUpdate">
+        INSERT INTO #application.dbowner#config
+        (configName, wConfig)
+        VALUES
+        ('#arguments.configName#', '#wConfig#')
+    </cfquery>
+    
+    <cfset stStatus.message = "#arguments.configName# created successfully">
+    <cfcatch>
+        <cfset stStatus.message = cfcatch.message>
+        <cfset stStatus.detail = cfcatch.detail>
+    </cfcatch>
 </cftry>

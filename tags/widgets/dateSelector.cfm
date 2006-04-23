@@ -1,4 +1,34 @@
 <cfsetting enablecfoutputonly="true">
+<!--- 
+|| LEGAL ||
+$Copyright: Daemon Pty Limited 1995-2006, http://www.daemon.com.au $
+$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
+
+|| VERSION CONTROL ||
+$Header: /cvs/farcry/farcry_core/tags/widgets/dateSelector.cfm,v 1.13.2.1 2006/01/26 11:36:12 geoff Exp $
+$Author: geoff $
+$Date: 2006/01/26 11:36:12 $
+$Name: milestone_3-0-1 $
+$Revision: 1.13.2.1 $
+
+|| DESCRIPTION || 
+$Description: date selection widget $
+$TODO: needs major overhaul by the looks! Claiming ownership... GB 20050126 
+issues include.. 
+ - toggle to turn date off rooted, defaults to now() when re-edited
+ - date picker control just plain nasty
+ - dates not within control range default to now() uber nasty
+ - caller scope references need to be removed
+ - crack like #attributes.fieldNamePrefix#Date needs to be replaced with just the property name
+ - JS needs to be put in the HTML/HEAD of document
+$
+
+|| DEVELOPER ||
+$Developer: Geoff Bowers (modius@daemon.com.au)$
+
+|| ATTRIBUTES ||
+$in: attribute -- description $
+--->
 <cfparam name="attributes.fieldNamePrefix" default="">
 <cfparam name="caller.output" default="">
 <cfparam name="attributes.fieldLabel" default="#attributes.fieldNamePrefix# Date:">
@@ -10,8 +40,22 @@
 
 <cfset localeMonths = application.thisCalendar.getMonths(session.dmProfile.locale)>
 <cfset output = caller.output>
-<cfset startYear = attributes.startYear>
+
+<!--- interim crack in here to guess at proper fieldname GB --->
+<cfif isDefined("output.#attributes.fieldNamePrefix#Date")>
+	<cfset attributes.fieldname=evaluate("output.#attributes.fieldNamePrefix#Date")>
+</cfif>
+
+<!--- set the range limits for years --->
+<cfif isDefined("attributes.fieldname") AND isDate(attributes.fieldname) AND year(attributes.fieldname) lte attributes.startYear>
+	<cfset startYear = year(attributes.fieldname)-3>
+<cfelse>
+	<cfset startYear = attributes.startYear>
+</cfif>
 <cfset endYear = attributes.endYear>
+
+
+<!--- set the default expiry date to now() --->
 <cfset defaultExpiryDate = now()>
 
 <cfif IsStruct(output) AND NOT StructIsEmpty(caller.output)>
@@ -127,5 +171,6 @@ function doToggle#fieldNamePrefix#(){
 }
 </script>
 	</cfif>
-</cfoutput></cfif>
+</cfoutput>
+</cfif> <!--- /fieldNamePrefix NEQ "" --->
 <cfsetting enablecfoutputonly="false">

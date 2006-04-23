@@ -36,9 +36,6 @@
 			</menu>
 		</subsection>
 		<subsection id="contentUtilities" permission="MainNavAdminTab" label="application.adminBundle[session.dmProfile.locale].ContentUtilities" labelType="evaluate" sidebar="content/sidebar.cfm" content="inc/content_overview.html">
-			<menu id="contentreporting" label="application.adminBundle[session.dmProfile.locale].ContentUtilitiesReporting" labelType="evaluate">
-				<menuitem id="rptownedby" label="application.adminBundle[session.dmProfile.locale].ContentUtilitiesOwnedBy" labelType="evaluate" link="/reporting/statsOwnedBy.cfm" />
-			</menu>
 			<menu id="export" label="application.adminBundle[session.dmProfile.locale].Export" labelType="evaluate">
 				<menuitem id="exportrss" label="application.adminBundle[session.dmProfile.locale].RssFeeds" labelType="evaluate" link="/content/xmlfeedlist.cfm" />
 				<menuitem id="exportgeneral" label="application.adminBundle[session.dmProfile.locale].Export" labelType="evaluate" link="/content/export.cfm" />
@@ -54,6 +51,15 @@
 				<menuitem id="quickcategorybuilder" label="application.adminBundle[session.dmProfile.locale].CatTreeQuickBuilder" labelType="evaluate" link="/admin/quickBuilderCat.cfm" />
 				<menuitem id="bulkimageupload" label="application.adminBundle[session.dmProfile.locale].BulkImageUpload" labelType="evaluate" link="/admin/bulkImageUpload.cfm" />
 				<menuitem id="bulkfileupload" label="application.adminBundle[session.dmProfile.locale].BulkFileUpload" labelType="evaluate" link="/admin/bulkFileUpload.cfm" />
+			</menu>
+			<!-- todo: i18n resource bundle update required -->
+			<menu id="archiveutils" label="Archive Utilities" labelType="value">
+				<menuitem id="archiveall" label="All Archived Content" labelType="value" link="/content/dmarchive.cfm" />
+				<menuitem id="archivedeleted" label="Deleted Archived Content" labelType="value" link="/content/dmarchivedeleted.cfm" />
+				<menuitem id="archivedeleted" label="Archived Media Assets" labelType="value" link="/content/dmarchivemedia.cfm" />
+			</menu>			
+			<menu id="contentreporting" label="application.adminBundle[session.dmProfile.locale].ContentUtilitiesReporting" labelType="evaluate">
+				<menuitem id="rptownedby" label="application.adminBundle[session.dmProfile.locale].ContentUtilitiesOwnedBy" labelType="evaluate" link="/reporting/statsOwnedBy.cfm" />
 			</menu>
 		</subsection>
 	</section>
@@ -83,6 +89,7 @@
 			</menu>
 			<menu id="menufumanagement" label="application.adminBundle[session.dmProfile.locale].ManageURLs" labelType="evaluate">
 				<menuitem id="fumanagement" label="application.adminBundle[session.dmProfile.locale].ManageURLs" labelType="evaluate" link="/admin/manageFU.cfm" />
+				<menuitem id="furebuild" label="Rebuild Friendly URLs" link="/admin/rebuildFU.cfm" />
 				<!-- <menuitem id="fureset" label="application.adminBundle[session.dmProfile.locale].ResetURLs" labelType="evaluate" link="/admin/resetFU.cfm" /> -->
 			</menu>
 		</subsection>
@@ -107,8 +114,11 @@
 				<menuitem id="fix tree levels" label="application.adminBundle[session.dmProfile.locale].FixTreeLevels" labelType="evaluate" link="/admin/fixtree.cfm" />
 				<menuitem id="remove rogue tree data" label="application.adminBundle[session.dmProfile.locale].RemoveRogueTreeData" labelType="evaluate" link="/admin/cleanTree.cfm" />
 				-->
+				<!-- todo: i18n resource bundle update required -->
 				<menuitem id="rebuildtree" label="Rebuild Tree Metadata" link="/admin/rebuildTree.cfm" />
 				<menuitem id="fixrefObjects" label="Fix RefObjects Table" link="/admin/fixRefObjects.cfm" />
+				<menuitem id="reattachnodes" label="Reattach Orphan Folders" link="/admin/reattachnodes.cfm" />
+				<menuitem id="reattachnodescategory" label="Reattach Orphan Categories" link="/admin/reattachnodescategory.cfm" />
 			</menu>
 		</subsection>
 	</section>
@@ -182,7 +192,9 @@
 				<menuitem id="permissioncreate" label="application.adminBundle[session.dmProfile.locale].CreatePermission" labelType="evaluate" link="/security/policy/permissions_editform.cfm" />
 				<menuitem id="permissionrebuild" label="application.adminBundle[session.dmProfile.locale].RebuildPermissions" labelType="evaluate" link="/security/policy/permissions_rebuild.cfm" />
 				<menuitem id="permissionmap" label="application.adminBundle[session.dmProfile.locale].PermissionsMap" labelType="evaluate" link="/security/policy/permissions_map.cfm" />
+				<!-- todo: i18n updates -->
 				<menuitem id="permissionmap" label="Old Permission Map" labelType="text" link="/security/redirect.cfm?tag=permissionsMap" />
+				<menuitem id="webtoppermissionmap" label="Webtop Permission Map" labelType="text" link="/security/policy/webtoppermissions.cfm" />
 			</menu>
 		</subsection>
 	</section>

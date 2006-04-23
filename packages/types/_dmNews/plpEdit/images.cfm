@@ -6,11 +6,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmNews/plpEdit/images.cfm,v 1.21 2005/08/17 06:50:52 pottery Exp $
-$Author: pottery $
-$Date: 2005/08/17 06:50:52 $
-$Name: milestone_3-0-0 $
-$Revision: 1.21 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmNews/plpEdit/images.cfm,v 1.21.2.1 2006/03/21 05:03:26 jason Exp $
+$Author: jason $
+$Date: 2006/03/21 05:03:26 $
+$Name: milestone_3-0-1 $
+$Revision: 1.21.2.1 $
 
 || DESCRIPTION || 
 $Description: Adds images as associated objects$
@@ -539,7 +539,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 			
 			<tr>
 				<td colspan="2" nowrap><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].titleLabel#</span></td>
-				<td nowrap width="100%"><input type="text" name="title" value="" class="FormTextBox" maxlength="255"></td>
+				<td nowrap width="100%"><input type="text" name="title" value="" class="FormTextBox" maxlength="255" size="45"></td>
 			</tr>
 		
 			<tr valign="top">

@@ -1,62 +1,75 @@
 // HU lang variables
-// Edited by 2XP (2xp@dino.hu)
 
-tinyMCELang['lang_theme_style_select'] = 'St&#237;lusok';
-tinyMCELang['lang_theme_code_desc'] = 'HTML k&#243;d szerkeszt&#233;se';
-tinyMCELang['lang_theme_code_title'] = 'HTML k&#243;dszerkezt&#245;';
-tinyMCELang['lang_theme_code_wordwrap'] = 'Word wrap';
-tinyMCELang['lang_theme_sub_desc'] = 'Als&#243; index';
-tinyMCELang['lang_theme_sup_desc'] = 'Fels&#245; index';
-tinyMCELang['lang_theme_hr_desc'] = 'V&#237;zszintes vonal beilleszt&#233;se';
-tinyMCELang['lang_theme_removeformat_desc'] = 'Form&#225;z&#225;s elt&#225;vol&#237;t&#225;sa';
-tinyMCELang['lang_theme_custom1_desc'] = 'Az &#214;n &#225;ltal kiv&#225;lasztott le&#237;r&#225;s';
-tinyMCELang['lang_insert_image_border'] = 'Keret';
-tinyMCELang['lang_insert_image_dimensions'] = 'M&#233;retek';
-tinyMCELang['lang_insert_image_vspace'] = 'F&#252;gg&#245;leges t&#233;rk&#246;z';
-tinyMCELang['lang_insert_image_hspace'] = 'V&#237;zszintes t&#233;rk&#246;z';
-tinyMCELang['lang_insert_image_align'] = 'Igaz&#237;t&#233;s';
-tinyMCELang['lang_insert_image_align_default'] = 'Alap&#233;rtelmezett';
-tinyMCELang['lang_insert_image_align_baseline'] = 'Alapvonalra';
-tinyMCELang['lang_insert_image_align_top'] = 'Fel&#252;lre';
-tinyMCELang['lang_insert_image_align_middle'] = 'K&#246;z&#233;pre';
-tinyMCELang['lang_insert_image_align_bottom'] = 'Alulra';
-tinyMCELang['lang_insert_image_align_texttop'] = 'TextTop';
-tinyMCELang['lang_insert_image_align_absmiddle'] = 'Abszol&#250;t k&#246;z&#233;pre';
-tinyMCELang['lang_insert_image_align_absbottom'] = 'Abszol&#250;t alulra';
-tinyMCELang['lang_insert_image_align_left'] = 'Balra';
-tinyMCELang['lang_insert_image_align_right'] = 'Jobbra';
-tinyMCELang['lang_theme_font_size'] = '-- Font size --';
-tinyMCELang['lang_theme_fontdefault'] = '-- Font family --';
-tinyMCELang['lang_theme_block'] = '-- Format --';
-tinyMCELang['lang_theme_paragraph'] = 'Paragraph';
-tinyMCELang['lang_theme_div'] = 'Div';
-tinyMCELang['lang_theme_address'] = 'Address';
-tinyMCELang['lang_theme_pre'] = 'Preformatted';
-tinyMCELang['lang_theme_h1'] = 'Heading 1';
-tinyMCELang['lang_theme_h2'] = 'Heading 2';
-tinyMCELang['lang_theme_h3'] = 'Heading 3';
-tinyMCELang['lang_theme_h4'] = 'Heading 4';
-tinyMCELang['lang_theme_h5'] = 'Heading 5';
-tinyMCELang['lang_theme_h6'] = 'Heading 6';
-tinyMCELang['lang_theme_colorpicker_title'] = 'Select a color';
-tinyMCELang['lang_theme_colorpicker_apply'] = 'Apply';
-tinyMCELang['lang_theme_forecolor_desc'] = 'Select forecolor';
-tinyMCELang['lang_theme_backcolor_desc'] = 'Select background color';
-tinyMCELang['lang_theme_charmap_title'] = 'Select custom character';
-tinyMCELang['lang_theme_charmap_desc'] = 'Insert custom character';
-tinyMCELang['lang_theme_visualaid_desc'] = 'Toggle guidelines/invisible elements';
-tinyMCELang['lang_insert_anchor_title'] = 'Insert/edit anchor';
-tinyMCELang['lang_insert_anchor_name'] = 'Anchor name';
-tinyMCELang['lang_theme_anchor_desc'] = 'Insert/edit anchor';
-tinyMCELang['lang_theme_insert_link_titlefield'] = 'Title';
-tinyMCELang['lang_theme_clipboard_msg'] = 'Copy/Cut/Paste is not available in Mozilla and Firefox.\nDo you want more information about this issue?';
-tinyMCELang['lang_theme_path'] = 'Path';
-tinyMCELang['lang_cut_desc'] = 'Cut';
-tinyMCELang['lang_copy_desc'] = 'Copy';
-tinyMCELang['lang_paste_desc'] = 'Paste';
-tinyMCELang['lang_link_list'] = 'Link list';
-tinyMCELang['lang_image_list'] = 'Image list';
-tinyMCELang['lang_browse'] = 'Browse';
-tinyMCELang['lang_image_props_desc'] = 'Image properties';
-tinyMCELang['lang_newdocument_desc'] = 'New document';
-tinyMCELang['lang_newdocument'] = 'Are you sure you want clear all contents?';
+tinyMCE.addToLang('',{
+theme_style_select : '-- Stílusok --',
+theme_code_desc : 'HTML forrás szerkesztése',
+theme_code_title : 'HTML forrás szerkesztõ',
+theme_code_wordwrap : 'Sortördelés',
+theme_sub_desc : 'Alsóindex',
+theme_sup_desc : 'Felsõindex',
+theme_hr_desc : 'Vizszíntes vonal beszúrása',
+theme_removeformat_desc : 'Formázás eltávolítása',
+theme_custom1_desc : 'Az egyéni leírásod jön ide',
+insert_image_border : 'Keret',
+insert_image_dimensions : 'Kiterjedés',
+insert_image_vspace : 'Függõleges terület',
+insert_image_hspace : 'Vizszintes terület',
+insert_image_align : 'Elhelyezkedés',
+insert_image_align_default : '-- Nincs beállítva --',
+insert_image_align_baseline : 'Baseline',
+insert_image_align_top : 'Felül',
+insert_image_align_middle : 'Középen',
+insert_image_align_bottom : 'Alul',
+insert_image_align_texttop : 'Szövegfelett',
+insert_image_align_absmiddle : 'Abszolút közép',
+insert_image_align_absbottom : 'Abszolút alatt',
+insert_image_align_left : 'Balra',
+insert_image_align_right : 'Jobbra',
+theme_font_size : '-- Betûméret --',
+theme_fontdefault : '-- Betûcsalád --',
+theme_block : '-- Formátum --',
+theme_paragraph : 'Bekezdés',
+theme_div : 'Div',
+theme_address : 'Cím',
+theme_pre : 'Elõreformázott',
+theme_h1 : 'Fejléc 1',
+theme_h2 : 'Fejléc 2',
+theme_h3 : 'Fejléc 3',
+theme_h4 : 'Fejléc 4',
+theme_h5 : 'Fejléc 5',
+theme_h6 : 'Fejléc 6',
+theme_colorpicker_title : 'Színválasztás',
+theme_colorpicker_apply : 'Alkalmaz',
+theme_forecolor_desc : 'Szövegszín választás',
+theme_backcolor_desc : 'Háttérszín választás',
+theme_charmap_title : 'Egyéni karakter választás',
+theme_charmap_desc : 'Egyéni karakter beszúrás',
+theme_visualaid_desc : 'Sorjelölõk/láthatatlan elemek kapcsolása',
+insert_anchor_title : 'Horgony nbeillesztése/szerkesztése',
+insert_anchor_name : 'Horgony név',
+theme_anchor_desc : 'Horgony nbeillesztése/szerkesztése',
+theme_insert_link_titlefield : 'Cím',
+theme_clipboard_msg : 'A Másolás/Kivágás/Beillesztés nem elérhetõ Mozillában and Firefox-ban.\nSzeretnél több információt errõl a problémáról?',
+theme_path : 'Útvonal',
+cut_desc : 'Kivágás',
+copy_desc : 'Másolás',
+paste_desc : 'Beillesztés',
+link_list : 'Link lista',
+image_list : 'Kép lista',
+browse : 'Tallózás',
+image_props_desc : 'Kép tulajdonságai',
+newdocument_desc : 'Új dokumentum',
+class_name : 'Osztály',
+newdocument : 'Biztos hogy törölni akarod az összes tartalmat?',
+about_title : 'TinyMCE névjegye',
+about : 'Névjegy',
+license : 'Licensz',
+plugins : 'Bõvítmények',
+plugin : 'Bõvítmény',
+author : 'Szerzõ',
+version : 'Verzió',
+loaded_plugins : 'Betöltött bõvítmények',
+help : 'Súgó',
+not_set : '-- Nincs beállítva --',
+close : 'Bezárás'
+});

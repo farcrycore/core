@@ -7,7 +7,7 @@ $License: Released Under the "Common Public License 1.0", http://www.opensource.
 $Header: /cvs/farcry/farcry_core/packages/types/dmXMLExport.cfc,v 1.6 2003/09/22 07:04:33 brendan Exp $
 $Author: brendan $
 $Date: 2003/09/22 07:04:33 $
-$Name: b201 $
+$Name: milestone_3-0-1 $
 $Revision: 1.6 $
 
 || DESCRIPTION || 

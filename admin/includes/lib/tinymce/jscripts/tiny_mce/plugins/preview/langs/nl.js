@@ -1,3 +1,5 @@
 // UK lang variables
 
-tinyMCELang['lang_preview_desc'] = 'Voorbeeld';
+tinyMCE.addToLang('',{
+preview_desc : 'Voorbeeld'
+});

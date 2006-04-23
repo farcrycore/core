@@ -1,5 +1,6 @@
-// Simplified Chinese lang variables contributed by cube316 (cube316@gmail.com)
-//请访问 http://www.cube316.net/ 以获取TinyMCE的中文支持
+// Simplified Chinese lang variables contributed by tom_cat (thomaswangyang@gmail.com)
 
-tinyMCELang['lang_directionality_ltr_desc'] = '从左往右的方向'
-tinyMCELang['lang_directionality_rtl_desc'] = '从右往左的方向';
+tinyMCE.addToLang('',{
+directionality_ltr_desc : '方向从左往右',
+directionality_rtl_desc : '方向从右往左'
+});

@@ -1,19 +1,21 @@
 // SE lang variables
 
-tinyMCELang['lang_searchreplace_search_desc'] = 'Sök';
-tinyMCELang['lang_searchreplace_searchnext_desc'] = 'Sök igen';
-tinyMCELang['lang_searchreplace_replace_desc'] = 'Sök/Ersätt';
-tinyMCELang['lang_searchreplace_notfound'] = 'Sökningen är slutförd. Söksträngen kunde inte hittas.';
-tinyMCELang['lang_searchreplace_search_title'] = 'Sök';
-tinyMCELang['lang_searchreplace_replace_title'] = 'Sök/Ersätt';
-tinyMCELang['lang_searchreplace_allreplaced'] = 'Alla träffar på söksträngen ersattes';
-tinyMCELang['lang_searchreplace_findwhat'] = 'Sök på';
-tinyMCELang['lang_searchreplace_replacewith'] = 'Ersätt med';
-tinyMCELang['lang_searchreplace_direction'] = 'Sökriktning';
-tinyMCELang['lang_searchreplace_up'] = 'Uppåt';
-tinyMCELang['lang_searchreplace_down'] = 'Neråt';
-tinyMCELang['lang_searchreplace_case'] = 'Matcha gemener/VERSALER';
-tinyMCELang['lang_searchreplace_findnext'] = 'Sök&nbsp;nästa';
-tinyMCELang['lang_searchreplace_replace'] = 'Ersätt';
-tinyMCELang['lang_searchreplace_replaceall'] = 'Ersätt&nbsp;alla';
-tinyMCELang['lang_searchreplace_cancel'] = 'Avbryt';
+tinyMCE.addToLang('',{
+searchreplace_search_desc : 'S&ouml;k',
+searchreplace_searchnext_desc : 'S&ouml;k igen',
+searchreplace_replace_desc : 'S&ouml;k/Ers&auml;tt',
+searchreplace_notfound : 'S&ouml;kningen &auml;r slutf&ouml;rd. S&ouml;kstr&auml;ngen kunde inte hittas.',
+searchreplace_search_title : 'S&ouml;k',
+searchreplace_replace_title : 'S&ouml;k/Ers&auml;tt',
+searchreplace_allreplaced : 'Alla tr&auml;ffar p&aring; s&ouml;kstr&auml;ngen ersattes',
+searchreplace_findwhat : 'S&ouml;k p&aring;',
+searchreplace_replacewith : 'Ers&auml;tt med',
+searchreplace_direction : 'S&ouml;kriktning',
+searchreplace_up : 'Upp&aring;t',
+searchreplace_down : 'Ner&aring;t',
+searchreplace_case : 'Matcha gemener/VERSALER',
+searchreplace_findnext : 'S&ouml;k&nbsp;n&auml;sta',
+searchreplace_replace : 'Ers&auml;tt',
+searchreplace_replaceall : 'Ers&auml;tt&nbsp;alla',
+searchreplace_cancel : 'Avbryt'
+});

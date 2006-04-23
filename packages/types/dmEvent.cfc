@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/dmEvent.cfc,v 1.11 2005/10/05 23:42:42 guy Exp $
+$Header: /cvs/farcry/farcry_core/packages/types/dmEvent.cfc,v 1.11.2.1 2005/12/02 05:13:46 guy Exp $
 $Author: guy $
-$Date: 2005/10/05 23:42:42 $
-$Name: milestone_3-0-0 $
-$Revision: 1.11 $
+$Date: 2005/12/02 05:13:46 $
+$Name: milestone_3-0-1 $
+$Revision: 1.11.2.1 $
 
 || DESCRIPTION || 
 $Description: dmEvent Type $
@@ -17,7 +17,7 @@ $Description: dmEvent Type $
 $Developer: Brendan Sisson (brendan@daemon.com.au) $
 
 --->
-<cfcomponent extends="farcry.farcry_core.packages.types.versions" displayname="Events" hint="Dynamic events data" bSchedule="1">
+<cfcomponent extends="farcry.farcry_core.packages.types.versions" displayname="Events" hint="Dynamic events data" bSchedule="1" bFriendly="1">
 <!------------------------------------------------------------------------
 type properties
 ------------------------------------------------------------------------->	

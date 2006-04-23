@@ -6,7 +6,7 @@
 
 <!--- rule object properties --->
 <cfproperty name="title" type="string" hint="Title for text dispay" required="no" default="">
-<cfproperty name="text" type="string" hint="text to be displayed" required="yes" default="">
+<cfproperty name="text" type="longchar" hint="text to be displayed" required="yes" default="">
 
 <!--- pseudo import tag library --->
 <cfimport prefix="q4" taglib="/farcry/fourq/tags">

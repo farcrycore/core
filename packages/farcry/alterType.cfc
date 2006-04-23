@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/alterType.cfc,v 1.57 2005/10/28 01:27:03 paul Exp $
+$Header: /cvs/farcry/farcry_core/packages/farcry/alterType.cfc,v 1.57.2.2 2005/12/30 01:07:10 paul Exp $
 $Author: paul $
-$Date: 2005/10/28 01:27:03 $
-$Name: milestone_3-0-0 $
-$Revision: 1.57 $
+$Date: 2005/12/30 01:07:10 $
+$Name: milestone_3-0-1 $
+$Revision: 1.57.2.2 $
 
 || DESCRIPTION || 
 $Description: alter type/rule cfc $
@@ -66,12 +66,22 @@ $out:$
 	<cfargument name="property" required="true">
 	<cfargument name="scope" required="false" default="types">
 
-    <cfif application[arguments.scope][arguments.typename].bCustomType>
-      <cfset typeInstance = createObject("component", "#application.custompackagepath#.#arguments.scope#.#arguments.typename#")>
-    <cfelse>
-      <cfset typeInstance = createObject("component", "#application.packagepath#.#arguments.scope#.#arguments.typename#")>  
-    </cfif>  
     
+	<cfswitch expression="#arguments.scope#">
+
+		<cfcase value="rules">
+			<cfset typeInstance = createObject("component", "#application.rules[arguments.typename].rulepath#")>
+		</cfcase>
+
+		<cfcase value="types">
+			<cfset typeInstance = createObject("component", "#application.types[arguments.typename].typepath#")>
+		</cfcase>
+		
+		<cfdefaultcase>
+			<cfthrow type="AlterType" message="Unknown scope passed to deployArrayProperty"  >
+		</cfdefaultcase>
+
+	</cfswitch>
 
 	<cfset typeInstance.deployArrayTable(bTestRun='0',parent='#application.dbowner##arguments.typename#',property=arguments.property)>
 	
@@ -568,7 +578,7 @@ $out:$
 					<th>&nbsp;</th>
 				</tr>
 				<cfloop collection="#arguments.stCFC#" item="key">
-				<form name="CFCForm" action="" method="post">
+				<form name="CFCForm" action="#cgi.SCRIPT_NAME#" method="post">
 				<tr>
 				<cfif NOT arguments.stCFC[key].bPropertyExists>
 					<td>
@@ -663,7 +673,7 @@ $out:$
 				</script>
 				
 				<cfloop collection="#arguments.stDB#" item="key">
-				<form name="#arguments.typename#_#key#_DBForm" action="" method="post">
+				<form name="#arguments.typename#_#key#_DBForm" action="#cgi.SCRIPT_NAME#" method="post">
 				<tr>
 				<cfif NOT arguments.stDB[key].bPropertyExists>
 					<td>

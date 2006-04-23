@@ -9,7 +9,7 @@
 <cfset stFriendlyURL.querystring = attributes.querystring>
 
 <cfset objFU = CreateObject("component","#Application.packagepath#.farcry.fu")>
-<cfset objNavigation = CreateObject("component","#Application.packagepath#.types.dmnavigation")>
+<cfset objNavigation = CreateObject("component","#Application.packagepath#.types.dmNavigation")>
 <cfif stFriendlyURL.objectid NEQ "">
 	<!---
 	The stFriendlyURL.friendlyURL can be what ever you want just as long as it starts with #application.config.fusettings.urlpattern#

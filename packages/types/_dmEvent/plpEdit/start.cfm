@@ -5,11 +5,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmEvent/plpEdit/start.cfm,v 1.19 2005/09/06 22:30:41 daniela Exp $
-$Author: daniela $
-$Date: 2005/09/06 22:30:41 $
-$Name: milestone_3-0-0 $
-$Revision: 1.19 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmEvent/plpEdit/start.cfm,v 1.19.2.1 2006/03/21 05:03:26 jason Exp $
+$Author: jason $
+$Date: 2006/03/21 05:03:26 $
+$Name: milestone_3-0-1 $
+$Revision: 1.19.2.1 $
 
 || DESCRIPTION || 
 $Description: dmEvent Edit PLP - Start Step $
@@ -85,15 +85,15 @@ $Developer: Brendan Sisson (brendan@daemon.com.au) $
 	<cfif errormessage NEQ "">
 		<p id="fading1" class="fade"><span class="error">#errormessage#</span></p>
 	</cfif>
-	<form action="#cgi.script_name#?#cgi.query_string#" class="f-wrap-1 f-bg-short" name="editform" method="post">
+	<form action="#cgi.script_name#?#cgi.query_string#" class="f-wrap-1 wider f-bg-short" name="editform" method="post">
 		<fieldset>
 			<div class="req"><b>*</b>Required</div>
 			<label for="title"><b>#application.adminBundle[session.dmProfile.locale].titleLabel#<span class="req">*</span></b>
-				<input type="text" name="title" id="title" value="#output.title#" maxlength="255" /><br />
+				<input type="text" name="title" id="title" value="#output.title#" maxlength="255" size="45" /><br />
 			</label>
 	
 			<label for="Location"><b>#application.adminBundle[session.dmProfile.locale].locationLabel#</b>
-				<input type="text" name="Location" id="Location" value="#output.Location#" maxlength="255" /><br />
+				<input type="text" name="Location" id="Location" value="#output.Location#" maxlength="255" size="45" /><br />
 			</label>
 </cfoutput>
 			<widgets:dateSelector fieldNamePrefix="publish" fieldlabel="#application.adminBundle[session.dmProfile.locale].goLiveLabel#">

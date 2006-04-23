@@ -1,6 +1,6 @@
-/*
+﻿/*
  * FCKeditor - The text editor for internet
- * Copyright (C) 2003-2004 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2005 Frederico Caldeira Knabben
  * 
  * Licensed under the terms of the GNU Lesser General Public License:
  * 		http://www.opensource.org/licenses/lgpl-license.php
@@ -8,11 +8,10 @@
  * For further information visit:
  * 		http://www.fckeditor.net/
  * 
+ * "Support Open Source software. What about a donation today?"
+ * 
  * File Name: fckcontextmenuseparator.js
  * 	FCKContextMenuSeparator Class: represents a separator in the toolbar.
- * 
- * Version:  2.0 RC2
- * Modified: 2004-05-31 23:07:47
  * 
  * File Authors:
  * 		Frederico Caldeira Knabben (fredck@fckeditor.net)
@@ -31,9 +30,11 @@ FCKContextMenuSeparator.prototype.CreateTableRow = function( targetTable )
 	var oCell = this._Row.insertCell(-1) ;
 	oCell.className = 'CM_Icon' ;
 	
+	var oDoc = targetTable.ownerDocument || targetTable.document ;
+	
 	oCell = this._Row.insertCell(-1) ;
 	oCell.className = 'CM_Label' ;
-	oCell.innerHTML = '<div></div>' ;
+	oCell.appendChild( oDoc.createElement( 'DIV' ) ).className = 'CM_Separator_Line' ;
 }
 
 FCKContextMenuSeparator.prototype.SetVisible = function( isVisible )

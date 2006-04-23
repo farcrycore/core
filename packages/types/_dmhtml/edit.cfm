@@ -5,11 +5,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmhtml/edit.cfm,v 1.35 2005/09/29 23:29:38 gstewart Exp $
-$Author: gstewart $
-$Date: 2005/09/29 23:29:38 $
-$Name: milestone_3-0-0 $
-$Revision: 1.35 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmhtml/edit.cfm,v 1.35.2.6 2006/02/10 01:03:43 paul Exp $
+$Author: paul $
+$Date: 2006/02/10 01:03:43 $
+$Name: milestone_3-0-1 $
+$Revision: 1.35.2.6 $
 
 || DESCRIPTION || 
 $Description: dmHTML Edit Handler $
@@ -46,6 +46,28 @@ $in: url.killplp (optional)$
 	<cfset setlock(locked="true")>
 </cfif>
 
+<!--- todo maybe this can be a global function so can be used to clean other content types  --->
+<!--- was this only to address tinyMCE issues? GB
+removed as its affecting legitimate anchor references 20051209 GB
+<cfscript>
+function fcleanBody(myString){
+	beginHREF = 0;   
+	do {    
+  		beginHREF = FindNoCase(" href", myString,beginHREF+1);
+  		if (not beginHREF) break;
+			endHREF = Find(">",myString,beginHREF);
+			hrefString = Mid(myString, beginHREF, endHREF - beginHREF);
+			if (FindNoCase("##",hrefString)) {
+				x = MID(hrefString, Find("##", hrefString,0) ,len(hrefString));
+				x = " href=" & """" & x;
+				myString = ReplaceNoCase(myString,hrefString,x,"ALL");
+			}
+	}
+	while (beginHREF gt 0); 
+	return myString;
+}
+</cfscript>
+ --->
 
 <widgets:plp
 	owner="#session.dmSec.authentication.userlogin#_#stObj.objectID#"
@@ -74,9 +96,18 @@ $in: url.killplp (optional)$
 	<cfset stoutput.label = stoutput.title>
 	<!--- update timestamp as wizard may have been active for some time --->
 	<cfset stoutput.datetimelastupdated = now()>
-	
+ 	<!--- x = REReplaceNoCase(myString, "(<a href)([[:ascii:]]*?)(\x23)([[:ascii:]]*?)>","<href=""##\4 >" , "ALL"); --->
+	<!--- REReplaceNoCase(stoutput.body, "(<a href)([[:ascii:]]*?)(\x23)([[:ascii:]])>","<href=""##\4 >" , "ALL") --->
+	<!--- <a[^>]*?href="[^?]*?"[^>]*?> --->
+
+<!--- 
+	see function call above, removed for now 20051209 GB
+	<cfset stoutput.body = fcleanBody(stoutput.body)>
+ --->
+	<cfset setlock(locked="0",stObj=stOutput)>
 	<!--- remove content item lock --->
 	<cfset stoutput.locked=0>
+	<cfset stoutput.lockedby=0>
 	<!--- update content item --->
 	<cfset setData(stProperties=stoutput)>
 
@@ -118,8 +149,9 @@ $in: url.killplp (optional)$
 		<cfoutput>
 			<script type="text/javascript">
 				// if sidebar overtree exists rebuild JS tree
-				if(parent['sidebar'].frames['sideTree'])
+				/*if(parent['sidebar'].frames['sideTree'])
 					parent['sidebar'].frames['sideTree'].location= parent['sidebar'].frames['sideTree'].location;
+					*/
 				// redirect to cancelcompleteURL
 				parent['content'].location.href = "#cancelCompleteURL#";
 			</script>

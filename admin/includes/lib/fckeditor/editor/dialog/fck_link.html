@@ -1,7 +1,6 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <!--
  * FCKeditor - The text editor for internet
- * Copyright (C) 2003-2004 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2005 Frederico Caldeira Knabben
  * 
  * Licensed under the terms of the GNU Lesser General Public License:
  * 		http://www.opensource.org/licenses/lgpl-license.php
@@ -9,22 +8,22 @@
  * For further information visit:
  * 		http://www.fckeditor.net/
  * 
+ * "Support Open Source software. What about a donation today?"
+ * 
  * File Name: fck_link.html
  * 	Link dialog window.
- * 
- * Version:  2.0 RC2
- * Modified: 2004-11-30 10:33:35
  * 
  * File Authors:
  * 		Frederico Caldeira Knabben (fredck@fckeditor.net)
 -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <html>
 	<head>
 		<title>Link Properties</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<meta name="robots" content="noindex, nofollow" />
-		<script src="js/fck_dialog_common.js" type="text/javascript"></script>
-		<script src="js/fck_link.js" type="text/javascript"></script>
+		<script src="common/fck_dialog_common.js" type="text/javascript"></script>
+		<script src="fck_link/fck_link.js" type="text/javascript"></script>
 	</head>
 	<body scroll="no" style="OVERFLOW: hidden">
 		<div id="divInfo" style="DISPLAY: none">
@@ -37,7 +36,7 @@
 			<br />
 			<br />
 			<div id="divLinkTypeUrl">
-				<table cellspacing="0" cellpadding="0" width="100%" border="0">
+				<table cellspacing="0" cellpadding="0" width="100%" border="0" dir="ltr">
 					<tr>
 						<td nowrap="nowrap">
 							<span fckLang="DlgLnkProto">Protocol</span><br />
@@ -58,7 +57,7 @@
 				</table>
 				<br />
 				<div id="divBrowseServer">
-				<input type="button" value="Browse Server" fckLang="DlgLnkBtnBrowse" onclick="BrowseServer();" />
+				<input type="button" value="Browse Server" fckLang="DlgBtnBrowseServer" onclick="BrowseServer();" />
 				</div>
 			</div>
 			<div id="divLinkTypeAnchor" style="DISPLAY: none" align="center">
@@ -100,12 +99,12 @@
 			</div>
 		</div>
 		<div id="divUpload" style="DISPLAY: none">
-			<form method="post" target="UploadWindow" enctype="multipart/form-data" action="">
+			<form id="frmUpload" method="post" target="UploadWindow" enctype="multipart/form-data" action="" onsubmit="return CheckUpload();">
 				<span fckLang="DlgLnkUpload">Upload</span><br />
-				<input style="WIDTH: 100%" type="file" size="40" /><br />
+				<input id="txtUploadFile" style="WIDTH: 100%" type="file" size="40" name="NewFile" /><br />
 				<br />
-				<input id="btnUpload" onclick="uploadFile();" type="button" value="Send it to the Server"
-					fckLang="DlgLnkBtnUpload" />
+				<input id="btnUpload" type="submit" value="Send it to the Server" fckLang="DlgLnkBtnUpload" />
+				<iframe name="UploadWindow" style="DISPLAY: none" src="../fckblank.html"></iframe> 
 			</form>
 		</div>
 		<div id="divTarget" style="DISPLAY: none">
@@ -125,7 +124,7 @@
 					</td>
 					<td>&nbsp;</td>
 					<td id="tdTargetFrame" nowrap="nowrap" width="100%">
-						<span fckLang="DlgLnkTargetFrame">Target Frame Name</span><br />
+						<span fckLang="DlgLnkTargetFrameName">Target Frame Name</span><br />
 						<input id="txtTargetFrame" style="WIDTH: 100%" type="text" onkeyup="OnTargetNameChange();"
 							onchange="OnTargetNameChange();" />
 					</td>

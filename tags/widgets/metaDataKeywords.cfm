@@ -14,7 +14,7 @@
 <cfoutput>
 <cfif attributes.bKeyword>
 <label for="metakeywords"><b>#attributes.fieldLabelKeywords#</b>
-	<input type="text" name="#attributes.fieldNameKeywords#" id="metakeywords" value="#attributes.FieldValueKeywords#" maxlength="255" /><br />
+	<input type="text" name="#attributes.fieldNameKeywords#" id="metakeywords" value="#attributes.FieldValueKeywords#" maxlength="255" size="45" /><br />
 </label></cfif>
 <cfif attributes.bExtendedMetadata>
 <label for="extendedmetadata" style="width:360px"><b>#attributes.fieldLabelExtendedMetadata#</b>

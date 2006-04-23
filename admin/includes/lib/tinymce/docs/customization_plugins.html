@@ -1,5 +1,5 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title>Customization - Creating a plugin</title>
 <link href="css/screen.css" rel="stylesheet" type="text/css" />
@@ -22,6 +22,17 @@ The example below has three functions, these are explained in greater detail bel
 <p>
 <div class="example">
 <pre>
+function TinyMCE_<span class="marked">yourplugin</span>_getInfo() {
+	// Should return info about the plugin to be presented in about dialog
+	return {
+		longname : 'Some plugin name',
+		author : 'Your name',
+		authorurl : 'http://www.yoursite.com',
+		infourl : 'http://www.yoursite.com/docs/..',
+		version : '1.0'
+	};
+};
+
 function TinyMCE_<span class="marked">yourplugin</span>_initInstance(inst) {
 	// Gets executed when a editor instance is initialized
 }

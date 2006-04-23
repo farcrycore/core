@@ -4,11 +4,11 @@
 $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmEmail/plpEdit/start.cfm,v 1.5 2005/09/02 06:27:37 guy Exp $
-$Author: guy $
-$Date: 2005/09/02 06:27:37 $
-$Name: milestone_3-0-0 $
-$Revision: 1.5 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmEmail/plpEdit/start.cfm,v 1.5.2.1 2006/03/21 05:03:26 jason Exp $
+$Author: jason $
+$Date: 2006/03/21 05:03:26 $
+$Name: milestone_3-0-1 $
+$Revision: 1.5.2.1 $
 
 || DESCRIPTION || 
 $Description: dmEmail -- Start PLP Step $
@@ -35,7 +35,7 @@ $Developer: Brendan Sisson (brendan@dameon.com.au) $
 	<cfset aPolicyGroups = oAuthorisation.getAllPolicyGroups()>
 <widgets:plpWrapper>
 	<cfoutput>
-	<form action="#cgi.script_name#?#cgi.query_string#" name="editform" class="f-wrap-1 f-bg-short" method="post">
+	<form action="#cgi.script_name#?#cgi.query_string#" name="editform" class="f-wrap-1 wider f-bg-short" method="post">
 	
 	<div class="FormSubTitle">#output.label#</div>
 	<div class="FormTitle">#application.adminBundle[session.dmProfile.locale].generalInfo#</div>
@@ -44,7 +44,7 @@ $Developer: Brendan Sisson (brendan@dameon.com.au) $
 	<!--- email subject --->
 	<tr>
 		<td nowrap class="FormLabel">#application.adminBundle[session.dmProfile.locale].subjLabel# </span></td>
-		<td width="100%"><input type="text" name="Title" value="#output.Title#" class="formtextbox" maxlength="255"></td>
+		<td width="100%"><input type="text" name="Title" value="#output.Title#" class="formtextbox" maxlength="255" size="45"></td>
 	</tr>
 	<tr>
 		<td colspan="2">&nbsp;</td>
@@ -63,7 +63,7 @@ $Developer: Brendan Sisson (brendan@dameon.com.au) $
 	<!--- from address for email --->
 	<tr>
 		<td nowrap class="FormLabel">#application.adminBundle[session.dmProfile.locale].fromEmailLabel# </span></td>
-		<td width="100%"><input type="text" name="fromEmail" value="#output.fromEmail#" class="formtextbox" maxlength="255"></td>
+		<td width="100%"><input type="text" name="fromEmail" value="#output.fromEmail#" class="formtextbox" maxlength="255" size="45"></td>
 	</tr>
 	</table>
 	</div>

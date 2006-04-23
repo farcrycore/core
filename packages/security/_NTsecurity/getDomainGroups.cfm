@@ -9,7 +9,7 @@ http://www.daemon.com.au
 $Header: /cvs/farcry/farcry_core/packages/security/_NTsecurity/getDomainGroups.cfm,v 1.2 2003/09/10 23:27:33 brendan Exp $
 $Author: brendan $
 $Date: 2003/09/10 23:27:33 $
-$Name: b201 $
+$Name: milestone_3-0-1 $
 $Revision: 1.2 $
 
 || DESCRIPTION || 

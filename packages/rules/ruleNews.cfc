@@ -128,25 +128,7 @@
 		<cfset var endrow = 1>
 		
 		<cfparam name="request.mode.lValidStatus" default="approved">
-
-		<cfif application.dbtype eq "mysql">
-			<!--- create temp table for status --->
-			<cfquery datasource="#arguments.dsn#" name="temp">
-				DROP TABLE IF EXISTS tblTemp1
-			</cfquery>
-			<cfquery datasource="#arguments.dsn#" name="temp2">
-				create temporary table `tblTemp1`
-					(
-					`Status`  VARCHAR(50) NOT NULL
-					)
-			</cfquery>
-			<cfloop list="#request.mode.lValidStatus#" index="i">
-				<cfquery datasource="#arguments.dsn#" name="temp3">
-					INSERT INTO tblTemp1 (Status)
-					VALUES ('#replace(i,"'","","all")#')
-				</cfquery>
-			</cfloop>
-		</cfif>
+		
 		<!--- If Archive: Get Maximum Rows in New Table --->
 		<cfif stObj.bArchive>
 			<cfquery datasource="#arguments.dsn#" name="qGetNewsCount">
@@ -166,7 +148,7 @@
 						<!--- must match all categories --->
 						<cfquery datasource="#arguments.dsn#" name="qGetNews" maxrows="#maximumRows#">
 							SELECT DISTINCT type.objectID, type.publishDate, type.label
-							    FROM tblTemp1, dmNews type, refCategories refCat1
+							    FROM dmNews type, refCategories refCat1
 							<!--- if more than one category make join for each --->
 							<cfif listLen(stObj.metadata) gt 1>
 								<cfloop from="2" to="#listlen(stObj.metadata)#" index="i">
@@ -179,7 +161,7 @@
 									AND refCat#i#.categoryID = '#listGetAt(stObj.metadata,i)#'
 									AND refCat#i#.objectId = type.objectId
 								</cfloop>
-								AND type.status = tblTemp1.Status
+								AND type.status IN ('#ListChangeDelims(request.mode.lValidStatus,"','",",")#')
 								AND publishdate <= #now()#
 								AND expirydate >= #now()#
 							ORDER BY type.publishDate DESC, type.label ASC
@@ -188,10 +170,10 @@
 						<!--- doesn't need to match all categories --->
 						<cfquery datasource="#arguments.dsn#" name="qGetNews" maxrows="#maximumRows#">
 							SELECT DISTINCT type.objectID, type.publishDate, type.label
-							FROM tblTemp1, refCategories refCat, dmNews type
+							FROM refCategories refCat, dmNews type
 							WHERE refCat.objectID = type.objectID
 								AND refCat.categoryID IN ('#ListChangeDelims(stObj.metadata,"','",",")#')
-								AND type.status = tblTemp1.Status
+								AND type.status IN ('#ListChangeDelims(request.mode.lValidStatus,"','",",")#')
 								AND publishdate <= #now()#
 								AND expirydate >= #now()#
 							ORDER BY type.publishDate DESC, type.label ASC
@@ -208,7 +190,7 @@
 							<!--- if more than one category make join for each --->
 							<cfif listLen(stObj.metadata) gt 1>
 								<cfloop from="2" to="#listlen(stObj.metadata)#" index="i">
-									inner join refcategories refcat#i# on refcat#i-1#.objectid = refcat#i#.objectid
+									inner join refCategories refcat#i# on refcat#i-1#.objectid = refcat#i#.objectid
 								</cfloop>
 							</cfif>
 							JOIN dmNews type ON refcat1.objectID = type.objectID
@@ -241,29 +223,14 @@
 			</cfswitch>
 		<cfelse>
 			<!--- don't filter on categories --->
-			<cfswitch expression="#application.dbtype#">
-				<cfcase value="mysql">
-					<cfquery datasource="#arguments.dsn#" name="qGetNews" maxrows="#maximumRows#">
-						SELECT *
-						FROM #application.dbowner#dmNews news, tblTemp1
-						WHERE news.status = tblTemp1.Status
-							AND publishdate <= #now()#
-							AND expirydate >= #now()#
-						ORDER BY publishDate DESC
-					</cfquery>
-				</cfcase>
-
-				<cfdefaultcase>
-					<cfquery datasource="#arguments.dsn#" name="qGetNews" maxrows="#maximumRows#">
-						SELECT *
-						FROM #application.dbowner#dmNews
-						WHERE status IN ('#ListChangeDelims(request.mode.lValidStatus,"','",",")#')
-							AND publishdate <= #now()#
-							AND expirydate >= #now()#
-						ORDER BY publishDate DESC
-					</cfquery>
-				</cfdefaultcase>
-			</cfswitch>
+			<cfquery datasource="#arguments.dsn#" name="qGetNews" maxrows="#maximumRows#">
+				SELECT *
+				FROM #application.dbowner#dmNews
+				WHERE status IN ('#ListChangeDelims(request.mode.lValidStatus,"','",",")#')
+					AND publishdate <= #now()#
+					AND expirydate >= #now()#
+				ORDER BY publishDate DESC
+			</cfquery>
 		</cfif>
 		<cfif len(trim(stObj.intro)) AND qGetNews.recordCount>
 			<cfset tmp = arrayAppend(request.aInvocations,stObj.intro)>
@@ -279,7 +246,6 @@
 				</cfscript>
 			</cfloop>
 		<cfelse>
-			
 			<cfparam name="url.pgno" default="1">
 			<!--- Get Number of Pages --->
 			<cfset iNumberOfPages = Ceiling(qGetNews.recordcount / stobj.numitems)>
@@ -301,16 +267,27 @@
 				<!--- save pagination output to variable --->
 				<cfsavecontent variable="pageNums">
 					<cfoutput>
-					<div align="center" class="newsArchive">
-					<cfif url.pgno NEQ 1>
-						<a class="newsArchive" href="#Application.URL.conjurer#?objectID=#url.objectID#&pgno=#(url.pgno-1)#">Previous Page</a>&nbsp;&nbsp;
-					</cfif>
-					<cfloop index="i" from="1" to="#iNumberOfPages#">
-					<cfif i NEQ url.pgno><a class="newsArchive" href="#Application.URL.conjurer#?objectID=#url.objectID#&pgno=#i#"></cfif>#i#<cfif i NEQ url.pgno></a></cfif>
-					</cfloop>
-					<cfif url.pgno NEQ iNumberOfPages>
-						&nbsp;&nbsp;<a class="newsArchive" href="#Application.URL.conjurer#?objectID=#url.objectID#&pgno=#(url.pgno+1)#">Next Page</a>
-					</cfif>
+					<div class="pagination">
+					<p>
+						<cfif url.pgno EQ 1>
+							<span><strong>Previous</strong></span> 
+						<cfelse>
+							<a href="#Application.URL.conjurer#?objectID=#url.objectID#&pgno=#(url.pgno-1)#"><strong>Previous</strong></a>
+						</cfif>
+						<cfloop index="i" from="1" to="#iNumberOfPages#">
+							<cfif i NEQ url.pgno>
+								<a href="#Application.URL.conjurer#?objectID=#url.objectID#&pgno=#i#">#i#</a> 
+							<cfelse>
+								<span>#i#</span>
+							</cfif>
+						</cfloop>
+						<cfif url.pgno EQ iNumberOfPages>
+							<span><strong>Next</strong></span>
+						<cfelse>
+							<a href="#Application.URL.conjurer#?objectID=#url.objectID#&pgno=#(url.pgno+1)#"><strong>Next</strong></a>
+						</cfif>
+					</p>
+					<h4>Page #url.pgno# of #iNumberOfPages#</h4>
 					</div>
 					<br>
 					</cfoutput>
@@ -336,16 +313,27 @@
 				<cfsavecontent variable="pageNums2">
 					<cfoutput>
 					<br>
-					<div align="center" class="newsArchive">
-					<cfif url.pgno NEQ 1>
-						<a class="newsArchive" href="#Application.URL.conjurer#?objectID=#url.objectID#&pgno=#(url.pgno-1)#">Previous Page</a>&nbsp;&nbsp;
-					</cfif>
-					<cfloop index="i" from="1" to="#iNumberOfPages#">
-					<cfif i NEQ url.pgno><a class="newsArchive" href="#Application.URL.conjurer#?objectID=#url.objectID#&pgno=#i#"></cfif>#i#<cfif i NEQ url.pgno></a></cfif>
-					</cfloop>
-					<cfif url.pgno NEQ iNumberOfPages>
-						&nbsp;&nbsp;<a class="newsArchive" href="#Application.URL.conjurer#?objectID=#url.objectID#&pgno=#(url.pgno+1)#">Next Page</a>
-					</cfif>
+					<div class="pagination">
+					<p>
+						<cfif url.pgno EQ 1>
+							<span><strong>Previous</strong></span> 
+						<cfelse>
+							<a href="#Application.URL.conjurer#?objectID=#url.objectID#&pgno=#(url.pgno-1)#"><strong>Previous</strong></a>
+						</cfif>
+						<cfloop index="i" from="1" to="#iNumberOfPages#">
+							<cfif i NEQ url.pgno>
+								<a href="#Application.URL.conjurer#?objectID=#url.objectID#&pgno=#i#">#i#</a> 
+							<cfelse>
+								<span>#i#</span>
+							</cfif>
+						</cfloop>
+						<cfif url.pgno EQ iNumberOfPages>
+							<span><strong>Next</strong></span>
+						<cfelse>
+							<a href="#Application.URL.conjurer#?objectID=#url.objectID#&pgno=#(url.pgno+1)#"><strong>Next</strong></a>
+						</cfif>
+					</p>
+					<h4>Page #url.pgno# of #iNumberOfPages#</h4>
 					</div>
 					</cfoutput>
 				</cfsavecontent>

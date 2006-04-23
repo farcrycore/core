@@ -1,38 +1,40 @@
 // KO lang variables by Setzer Gabbiani
 
-tinyMCELang['lang_bold_desc'] = 'ÁøÇÏ°Ô';
-tinyMCELang['lang_italic_desc'] = '±â¿ïÀÓ';
-tinyMCELang['lang_underline_desc'] = '¹ØÁÙ';
-tinyMCELang['lang_striketrough_desc'] = '°¡·ÎÁÙ';
-tinyMCELang['lang_justifyleft_desc'] = '¿ŞÂÊ Á¤·Ä';
-tinyMCELang['lang_justifycenter_desc'] = '°¡¿îµ¥ Á¤·Ä';
-tinyMCELang['lang_justifyright_desc'] = '¿À¸¥ÂÊ Á¤·Ä';
-tinyMCELang['lang_justifyfull_desc'] = '¾çÂÊ Á¤·Ä';
-tinyMCELang['lang_bullist_desc'] = '¸ñÂ÷ ¸Å±â±â';
-tinyMCELang['lang_numlist_desc'] = '¹øÈ£ ¸Å±â±â';
-tinyMCELang['lang_outdent_desc'] = '³»¾î¾²±â';
-tinyMCELang['lang_indent_desc'] = 'µé¿©¾²±â';
-tinyMCELang['lang_undo_desc'] = '½ÇÇàÃë¼Ò';
-tinyMCELang['lang_redo_desc'] = 'Àç½ÇÇà';
-tinyMCELang['lang_link_desc'] = '¸µÅ© ³Ö±â/°íÄ¡±â';
-tinyMCELang['lang_unlink_desc'] = '¸µÅ© ÇØÁ¦';
-tinyMCELang['lang_image_desc'] = '±×¸² ³Ö±â/°íÄ¡±â';
-tinyMCELang['lang_cleanup_desc'] = 'ÄÚµå¸¦ ±ò²ûÇÏ°Ô';
-tinyMCELang['lang_focus_alert'] = 'ÀÌ ¸í·ÉÀ» ½ÇÇàÇÏ±â Àü¿¡ ¹İµå½Ã ¿¡µğÅÍ ³»ÀÇ ¾îµò°¡¿¡ Ä¿¼­°¡ ÀÖ¾î¾ß ÇÕ´Ï´Ù.';
-tinyMCELang['lang_edit_confirm'] = 'ÀÌ ÅØ½ºÆ® ¹Ú½º¿¡¼­ HTML ¿¡µğÅÍ¸¦ »ç¿ëÇÏ±æ ¿øÇÏ½Ê´Ï±î?';
-tinyMCELang['lang_insert_link_title'] = '¸µÅ© ³Ö±â/°íÄ¡±â';
-tinyMCELang['lang_insert'] = '»ğÀÔ';
-tinyMCELang['lang_update'] = '»ğÀÔ';
-tinyMCELang['lang_cancel'] = 'Ãë¼Ò';
-tinyMCELang['lang_insert_link_url'] = 'URL ¸µÅ©';
-tinyMCELang['lang_insert_link_target'] = 'Å¸°Ù';
-tinyMCELang['lang_insert_link_target_same'] = '°°Àº Ã¢¿¡¼­ ¸µÅ© ¿­±â';
-tinyMCELang['lang_insert_link_target_blank'] = '»õ Ã¢¿¡¼­ ¸µÅ© ¿­±â';
-tinyMCELang['lang_insert_image_title'] = '±×¸² ³Ö±â/°íÄ¡±â';
-tinyMCELang['lang_insert_image_src'] = '±×¸² URL';
-tinyMCELang['lang_insert_image_alt'] = '±×¸² ¼³¸í';
-tinyMCELang['lang_help_desc'] = 'µµ¿ò¸»';
-tinyMCELang['lang_bold_img'] = "bold.gif";
-tinyMCELang['lang_italic_img'] = "italic.gif";
-tinyMCELang['lang_underline_img'] = "underline.gif";
-tinyMCELang['lang_popup_blocked'] = 'Sorry, but we have noticed that your popup-blocker has disabled a window that provides application functionality. You will need to disable popup blocking on this site in order to fully utilize this tool.';
+tinyMCE.addToLang('',{
+bold_desc : 'ÁøÇÏ°Ô',
+italic_desc : '±â¿ïÀÓ',
+underline_desc : '¹ØÁÙ',
+striketrough_desc : '°¡·ÎÁÙ',
+justifyleft_desc : '¿ŞÂÊ Á¤·&Auml;',
+justifycenter_desc : '°¡¿îµ¥ Á¤·&Auml;',
+justifyright_desc : '¿À¸¥ÂÊ Á¤·&Auml;',
+justifyfull_desc : '¾çÂÊ Á¤·&Auml;',
+bullist_desc : '¸ñÂ÷ ¸&Aring;±â±â',
+numlist_desc : '¹øÈ£ ¸&Aring;±â±â',
+outdent_desc : '³»¾î¾²±â',
+indent_desc : 'µé¿©¾²±â',
+undo_desc : '½ÇÇàÃë¼Ò',
+redo_desc : 'Àç½ÇÇà',
+link_desc : '¸µ&Aring;© ³&Ouml;±â/°í&Auml;¡±â',
+unlink_desc : '¸µ&Aring;© ÇØÁ¦',
+image_desc : '±×¸² ³&Ouml;±â/°í&Auml;¡±â',
+cleanup_desc : '&Auml;Úµ&aring;¸¦ ±ò²ûÇÏ°Ô',
+focus_alert : 'ÀÌ ¸í·ÉÀ» ½ÇÇàÇÏ±â Àü¿¡ ¹İµ&aring;½Ã ¿¡µğ&Aring;Í ³»ÀÇ ¾îµò°¡¿¡ &Auml;¿¼­°¡ À&Ouml;¾î¾ß ÇÕ´Ï´Ù.',
+edit_confirm : 'ÀÌ &Aring;Ø½ºÆ® ¹Ú½º¿¡¼­ HTML ¿¡µğ&Aring;Í¸¦ »ç¿ëÇÏ±æ ¿øÇÏ½Ê´Ï±î?',
+insert_link_title : '¸µ&Aring;© ³&Ouml;±â/°í&Auml;¡±â',
+insert : '»ğÀÔ',
+update : '»ğÀÔ',
+cancel : 'Ãë¼Ò',
+insert_link_url : 'URL ¸µ&Aring;©',
+insert_link_target : '&Aring;¸°Ù',
+insert_link_target_same : '°°Àº Ã¢¿¡¼­ ¸µ&Aring;© ¿­±â',
+insert_link_target_blank : '»õ Ã¢¿¡¼­ ¸µ&Aring;© ¿­±â',
+insert_image_title : '±×¸² ³&Ouml;±â/°í&Auml;¡±â',
+insert_image_src : '±×¸² URL',
+insert_image_alt : '±×¸² ¼³¸í',
+help_desc : 'µµ¿ò¸»',
+bold_img : "bold.gif",
+italic_img : "italic.gif",
+underline_img : "underline.gif",
+popup_blocked : 'Sorry, but we have noticed that your popup-blocker has disabled a window that provides application functionality. You will need to disable popup blocking on this site in order to fully utilize this tool.'
+});

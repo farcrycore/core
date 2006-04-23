@@ -1,3 +1,5 @@
 // IT lang variables
 
-tinyMCELang['lang_preview_desc'] = 'Anteprima';
+tinyMCE.addToLang('',{
+preview_desc : 'Anteprima'
+});

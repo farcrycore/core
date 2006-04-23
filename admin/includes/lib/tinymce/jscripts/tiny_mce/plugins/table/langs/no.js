@@ -1,41 +1,75 @@
-// NO lang variables
+// NO lang variables by Knut B. Jacobsen
 
-tinyMCELang['lang_table_desc'] = 'Opprett/endre tabell';
-tinyMCELang['lang_table_insert_row_before_desc'] = 'Opprett rad før';
-tinyMCELang['lang_table_insert_row_after_desc'] = 'Opprett rad etter';
-tinyMCELang['lang_table_delete_row_desc'] = 'Fjern rad';
-tinyMCELang['lang_table_insert_col_before_desc'] = 'Opprett kolonne før';
-tinyMCELang['lang_table_insert_col_after_desc'] = 'Opprett kolonne etter';
-tinyMCELang['lang_table_delete_col_desc'] = 'Fjern kolonne';
-tinyMCELang['lang_insert_table_title'] = 'Opprett/endre tabell';
-tinyMCELang['lang_insert_table_width'] = 'Bredde';
-tinyMCELang['lang_insert_table_height'] = 'Høyde';
-tinyMCELang['lang_insert_table_cols'] = 'Kolonner';
-tinyMCELang['lang_insert_table_rows'] = 'Rader';
-tinyMCELang['lang_insert_table_cellspacing'] = 'Celle-mellomrom';
-tinyMCELang['lang_insert_table_cellpadding'] = 'Celle-padding';
-tinyMCELang['lang_insert_table_border'] = 'Rammebredde';
-tinyMCELang['lang_insert_table_align'] = 'Justering';
-tinyMCELang['lang_insert_table_align_default'] = 'Ingen';
-tinyMCELang['lang_insert_table_align_left'] = 'Venstre';
-tinyMCELang['lang_insert_table_align_right'] = 'Høyre';
-tinyMCELang['lang_insert_table_align_middle'] = 'Midten';
-tinyMCELang['lang_insert_table_class'] = 'Stil';
-tinyMCELang['lang_table_row_title'] = 'Table row properties';
-tinyMCELang['lang_table_cell_title'] = 'Table cell properties';
-tinyMCELang['lang_table_row_desc'] = 'Table row properties';
-tinyMCELang['lang_table_cell_desc'] = 'Table cell properties';
-tinyMCELang['lang_insert_table_valign'] = 'Vertical alignment';
-tinyMCELang['lang_insert_table_align_top'] = 'Top';
-tinyMCELang['lang_insert_table_align_bottom'] = 'Bottom';
-tinyMCELang['lang_table_props_desc'] = 'Table properties';
-tinyMCELang['lang_table_bordercolor'] = 'Border color';
-tinyMCELang['lang_table_bgcolor'] = 'Bg color';
-tinyMCELang['lang_table_merge_cells_title'] = 'Merge table cells';
-tinyMCELang['lang_table_split_cells_desc'] = 'Split table cells';
-tinyMCELang['lang_table_merge_cells_desc'] = 'Merge table cells';
-tinyMCELang['lang_table_cut_row_desc'] = 'Cut table row';
-tinyMCELang['lang_table_copy_row_desc'] = 'Copy table row';
-tinyMCELang['lang_table_paste_row_before_desc'] = 'Paste table row before';
-tinyMCELang['lang_table_paste_row_after_desc'] = 'Paste table row after';
-tinyMCELang['lang_table_insert_desc'] = 'Insert a new table';
+tinyMCE.addToLang('table',{
+general_tab : 'Generell',
+advanced_tab : 'Avansert',
+general_props : 'Generelle egenskaper',
+advanced_props : 'Avanserte egenskaper',
+desc : 'Opprett/endre tabell',
+row_before_desc : 'Opprett rad foran',
+row_after_desc : 'Opprett rad etter',
+delete_row_desc : 'Fjern rad',
+col_before_desc : 'Opprett kolonne foran',
+col_after_desc : 'Opprett kolonne etter',
+delete_col_desc : 'Fjern kolonne',
+rowtype : 'Rad i tabell',
+title : 'Opprett/endre tabell',
+width : 'Bredde',
+height : 'H&oslash;yde',
+cols : 'Kolonner',
+rows : 'Rader',
+cellspacing : 'Celle mellomrom',
+cellpadding : 'Celle fylling',
+border : 'Rammebredde',
+align : 'Justering',
+align_default : 'Ingen',
+align_left : 'Venstre',
+align_right : 'H&oslash;yre',
+align_middle : 'Midtstilt',
+row_title : 'tabell rad egenskaper',
+cell_title : 'tabell celle egenskaper',
+cell_type : 'Celle type',
+row_desc : 'tabell rad egenskaper',
+cell_desc : 'tabell celle egenskaper',
+valign : 'Vertikal justering',
+align_top : 'Topp',
+align_bottom : 'Bunn',
+props_desc : 'tabell egenskaper',
+bordercolor : 'Rammefarge',
+bgcolor : 'Bakgrunnsfarge',
+merge_cells_title : 'Sl&aring; sammen tabell celler',
+split_cells_desc : 'Splitt tabell celler',
+merge_cells_desc : 'Sl&aring; sammen tabell celler',
+cut_row_desc : 'Fjern tabell rad',
+copy_row_desc : 'Kopier tabell rad',
+paste_row_before_desc : 'Lim inn tabell rad foran',
+paste_row_after_desc : 'Lim inn tabell rad etter',
+id : 'Id',
+style: 'Stil',
+langdir : 'Spr&aring;k retning',
+langcode : 'Spr&aring;k kode',
+mime : 'M&aring;lets MIME type',
+ltr : 'Venstre mot h&oslash;yre',
+rtl : 'H&oslash;re mot venstre',
+bgimage : 'Bakgrunnsbilde',
+summary : 'Sum',
+td : "Data",
+th : "Overskrift",
+cell_cell : 'Oppdater valgt celle',
+cell_row : 'Oppdater alle celler i raden',
+cell_all : 'Oppdater alle celler i tabellen',
+row_row : 'Oppdater valgt rad',
+row_odd : 'Oppdater ulike rader i tabellen',
+row_even : 'Oppdater even rader i tabellen',
+row_all : 'Oppdater alle rader i tabellen',
+thead : 'Tabell Hode',
+tbody : 'Tabell Kropp',
+tfoot : 'Tabell Fot',
+del : 'Slett tabell',
+scope : 'Scope',
+row : 'Row',
+col : 'Col',
+rowgroup : 'Row Group',
+colgroup : 'Col Group',
+missing_scope: 'Are you sure you want to continue without specifying a scope for this table header cell. Without it, it may be difficult for some users with disabilities to understand the content or data displayed of the table.'
+});

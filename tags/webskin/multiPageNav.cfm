@@ -7,7 +7,7 @@ $License: Released Under the "Common Public License 1.0", http://www.opensource.
 $Header: /cvs/farcry/farcry_core/tags/webskin/multiPageNav.cfm,v 1.4 2004/04/12 12:11:39 brendan Exp $
 $Author: brendan $
 $Date: 2004/04/12 12:11:39 $
-$Name: milestone_2-2-1 $
+$Name: milestone_3-0-1 $
 $Revision: 1.4 $
 
 || DESCRIPTION || 

@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_config/defaultTinyMCE.cfm,v 1.1 2005/09/07 22:41:17 tom Exp $
-$Author: tom $
-$Date: 2005/09/07 22:41:17 $
-$Name: milestone_3-0-0 $
-$Revision: 1.1 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_config/defaultTinyMCE.cfm,v 1.1.2.3 2005/11/23 01:21:20 guy Exp $
+$Author: guy $
+$Date: 2005/11/23 01:21:20 $
+$Name: milestone_3-0-1 $
+$Revision: 1.1.2.3 $
 
 || DESCRIPTION || 
 $Description: deploys tinyMCE config file $
@@ -32,7 +32,6 @@ theme : "advanced",
 width: "100%",
 height: "400",
 plugins : "table,advhr,advlink,preview,zoom,searchreplace,print,contextmenu,paste,directionality,fullscreen",
-theme_advanced_buttons1_add : "fontselect,fontsizeselect",
 theme_advanced_buttons2_add : "separator,forecolor,backcolor",
 theme_advanced_buttons2_add_before: "cut,copy,paste,pastetext,pasteword,separator,search,replace,separator",
 theme_advanced_buttons3_add_before : "tablecontrols,separator",
@@ -43,7 +42,11 @@ theme_advanced_path_location : "bottom",
 theme_advanced_disable : "hr",
 theme_advanced_resize_horizontal : false,
 theme_advanced_resizing : true,
+theme_advanced_styles : "style one=style_one;style two=style_two",
+content_css : "/css/main.css",
 inline_styles : true,
+relative_urls : false,
+remove_script_host : true,
 
 //Extended HTML/XHTML Support
 valid_elements : ""
@@ -309,6 +312,8 @@ valid_elements : ""
 
 <cfscript>
 stConfig.tinyMCE_Config = tinyMCEConfig;
+stConfig.insertimage_callback = "showWindowdmImage";
+stConfig.file_browser_callback = "showWindowdmFile";
 </cfscript>
 
 <cfwddx action="CFML2WDDX" input="#stConfig#" output="wConfig">

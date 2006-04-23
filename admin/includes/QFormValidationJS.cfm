@@ -20,9 +20,5 @@ if(objTitle){
 	objTitle.validateNotEmpty("#application.adminBundle[session.dmProfile.locale].pleaseEnterTitle#");
 }
 
-function fPLPCancelConfirm()
-{
-	return window.confirm("Changes made will not be save.\nDo you still wish to Cancel?");
-}
 //-->
 </script></cfoutput>

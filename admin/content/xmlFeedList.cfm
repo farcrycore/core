@@ -5,7 +5,7 @@
 <cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
 <cfimport taglib="/farcry/farcry_core/tags/widgets/" prefix="widgets">
 
-<cfset editobjectURL = "#application.url.farcry#/conjuror/invocation.cfm?objectid=##recordset.objectID[recordset.currentrow]##&typename=dmnews">
+<cfset editobjectURL = "#application.url.farcry#/conjuror/invocation.cfm?objectid=##recordset.objectID[recordset.currentrow]##&typename=dmNews">
 
 <!--- set up page header --->
 <admin:header title="RSS Feeds" writingDir="#session.writingDir#" userLanguage="#session.userLanguage#" onload="setupPanes('container1');">

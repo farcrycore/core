@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/dmImage.cfc,v 1.23 2005/10/29 12:20:34 geoff Exp $
-$Author: geoff $
-$Date: 2005/10/29 12:20:34 $
-$Name: milestone_3-0-0 $
-$Revision: 1.23 $
+$Header: /cvs/farcry/farcry_core/packages/types/dmImage.cfc,v 1.23.2.6 2006/02/14 06:48:47 paul Exp $
+$Author: paul $
+$Date: 2006/02/14 06:48:47 $
+$Name: milestone_3-0-1 $
+$Revision: 1.23.2.6 $
 
 || DESCRIPTION || 
 $Description: dmImage type $
@@ -65,18 +65,26 @@ type properties
 	<!--- get object details --->
 	<cfset var stObj = getData(arguments.objectid)>
 	<cfset var stReturn = StructNew()>
+	<cfset var relatedTable = "">
 
 	<cfset stReturn.bSuccess = true>
 	<cfset stReturn.message = "">
 		
 	<cfset stLocal.errormessage = "">
 	<!--- check if image is associated with any content items --->
-	<cfset stLocal.lrelatedContentTypes = "dmNews,dmNavigation,dmHtml,dmEvent">
+	<cfset stLocal.lrelatedContentTypes = "dmNews,dmNavigation,dmHTML,dmEvent">
 
 	<cfloop index="stLocal.relatedContentType" list="#stLocal.lrelatedContentTypes#">
+		
+		<cfif stLocal.relatedContentType IS "dmNews">
+			<cfset relatedTable = "#application.dbowner##stLocal.relatedContentType#_aObjectIds">
+		<cfelse>	
+			<cfset relatedTable = "#application.dbowner##stLocal.relatedContentType#_aObjectIDs">
+		</cfif>
+		
 		<cfquery name="stLocal.qCheck" datasource="#application.dsn#">
 		SELECT	objectid
-		FROM	#application.dbowner##stLocal.relatedContentType#_aobjectids
+		FROM	#relatedTable#
 		WHERE	data = '#arguments.objectid#'
 		</cfquery>
 
@@ -155,7 +163,12 @@ type properties
 	<cfargument name="filePath" type="string" hint="file path of thumbnail" required="true">
 	<cfargument name="fileName" type="string" hint="file name of thumbnail" required="true">
 	
-	<cfset imagePath="">
+	<cfif Len(application.url.webroot) AND application.url.webroot NEQ "/" >
+		<cfset imagePath= application.url.webroot >
+	<cfelse>
+		<cfset imagePath= "" >
+	</cfif>
+
 	<cfif len(filePath) and len(fileName)>
 		<!--- change all backslashes to forward slashes --->
 		<cfset filePath = replace(filePath, "\", "/", "all")>
@@ -179,39 +192,12 @@ type properties
 	<cfreturn imagePath>
 </cffunction>
 
-<cffunction name="setFriendlyURL" access="public" returntype="struct" hint="the default set friendly url for an object." output="false">
+<!--- TODO: Is this needed anymore? The argument doesn't even match the super's arg. TL 20060214 --->
+<cffunction name="setFriendlyURL" access="public" returntype="struct" hint="Files do not have FUs; method always returns false." output="false">
 	<cfargument name="stProperties" required="true" type="struct">
-	
-	<cfset var stLocal = structnew()>
-	<cfset stLocal.returnstruct = StructNew()>
-	<cfset stLocal.returnstruct.bSuccess = 1>
-	<cfset stLocal.returnstruct.message = "">
-	
-	<cfset stLocal.stFriendlyURL = StructNew()>
-	<cfset stLocal.stFriendlyURL.objectid = arguments.stProperties.objectid>
-	<cfset stLocal.stFriendlyURL.friendlyURL = "">
-	<cfset stLocal.stFriendlyURL.querystring = "">
-	<!--- 
-			<cfset stLocal.objFU = CreateObject("component","#Application.packagepath#.farcry.fu")>
-			<!--- used to retrieve default of where item is in tree --->
-			<cfset stLocal.objNavigation = CreateObject("component","#Application.packagepath#.types.dmnavigation")>
-	
-			<!--- This determines the friendly url by where it sits in the navigation node  --->
-			<cfset stLocal.qNavigation = stLocal.objNavigation.getParent(arguments.stProperties.objectid)>
-	
-			<cfif stLocal.qNavigation.recordcount>
-				<cfset stLocal.stFriendlyURL.friendlyURL = stLocal.objFU.createFUAlias(stLocal.qNavigation.objectid)>
-			<cfelse> <!--- generate friendly url based on content type --->
-				<cfif StructkeyExists(application.types[arguments.stProperties.typename],"displayName")>
-					<cfset stLocal.stFriendlyURL.friendlyURL = "/#application.types[arguments.stProperties.typename].displayName#">
-				<cfelse>
-					<cfset stLocal.stFriendlyURL.friendlyURL = "/#ListLast(application.types[arguments.stProperties.typename].name,'.')#">
-				</cfif>
-			</cfif>
-	
-			<cfset stLocal.stFriendlyURL.friendlyURL = stLocal.stFriendlyURL.friendlyURL & "/#arguments.stProperties.label#">
-			<cfset stLocal.objFU.setFU(stLocal.stFriendlyURL.objectid, stLocal.stFriendlyURL.friendlyURL, stLocal.stFriendlyURL.querystring)>
-	 --->
-	<cfreturn stLocal.returnstruct>
+	<cfset var stReturn = StructNew()>
+	<cfset stReturn.bSuccess = 0>
+	<cfset stReturn.message = "File content type cannot have friendly url.">
+	<cfreturn stReturn>
 </cffunction>
 </cfcomponent>

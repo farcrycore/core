@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_config/defaultImage.cfm,v 1.7 2005/08/09 03:54:39 geoff Exp $
-$Author: geoff $
-$Date: 2005/08/09 03:54:39 $
-$Name: milestone_3-0-0 $
-$Revision: 1.7 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_config/defaultImage.cfm,v 1.7.2.2 2005/11/17 01:31:39 guy Exp $
+$Author: guy $
+$Date: 2005/11/17 01:31:39 $
+$Name: milestone_3-0-1 $
+$Revision: 1.7.2.2 $
 
 || DESCRIPTION || 
 $Description: deploys image config file $
@@ -35,6 +35,7 @@ stConfig.archiveFiles = "false";
 stConfig.bAllowOverwrite = "false";
 stConfig.thumbnailWidth = 80;
 stConfig.thumbnailHeight = 80;
+stConfig.insertHTML = "<a href='*imagefile*' target='_blank'><img src='*thumbnail*' border=0 alt='*alt*'></a>";
 </cfscript>
 
 <cfwddx action="CFML2WDDX" input="#stConfig#" output="wConfig">

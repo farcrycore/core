@@ -5,11 +5,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/install/index.cfm,v 1.58 2005/09/13 00:00:15 geoff Exp $
-$Author: geoff $
-$Date: 2005/09/13 00:00:15 $
-$Name: milestone_3-0-0 $
-$Revision: 1.58 $
+$Header: /cvs/farcry/farcry_core/admin/install/index.cfm,v 1.58.2.1 2005/11/29 04:04:28 paul Exp $
+$Author: paul $
+$Date: 2005/11/29 04:04:28 $
+$Name: milestone_3-0-1 $
+$Revision: 1.58.2.1 $
 
 || DESCRIPTION || 
 $Description: Installation scripts for FarCry$
@@ -119,6 +119,9 @@ $out:$
     application.path.project = newProjectPath;
 	application.url.webroot = form.appMapping;
 	application.url.farcry = form.farcryMapping;
+    application.path.defaultImagePath = "#application.path.project#/www/images";
+    application.path.defaultFilepath = "#application.path.project#/www/files";
+	
 	
     // CF datasources
     if (form.appDSN eq "createnew") {

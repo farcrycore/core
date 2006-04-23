@@ -7,10 +7,12 @@
 		<cfinvokeargument name="categoryLabel" value="#url.objectname#"/>
 		<cfinvokeargument name="parentID" value="#url.parentObjectID#"/>
 		<cfinvokeargument name="dsn" value="#application.dsn#"/>
-	</cfinvoke>
-	
+	</cfinvoke> 
+	<cfoutput>
 	<script>
-		parent.document.location.reload();
+		parent.document.location.href = parent.document.location.href;
+
 	</script>
+	</cfoutput>	
 	
 </cfif>

@@ -111,26 +111,7 @@
 		<cfargument name="dsn" required="false" type="string" default="#application.dsn#">
 		<cfparam name="request.mode.lValidStatus" default="approved">
 		<cfset stObj = this.getData(arguments.objectid)> 
-		
-		<cfif application.dbtype eq "mysql">
-			<!--- create temp table for status --->
-			<cfquery datasource="#arguments.dsn#" name="temp">
-				DROP TABLE IF EXISTS tblTemp1
-			</cfquery>
-			<cfquery datasource="#arguments.dsn#" name="temp2">
-				create temporary table `tblTemp1`
-					(
-					`Status`  VARCHAR(50) NOT NULL
-					)
-			</cfquery>
-			<cfloop list="#request.mode.lValidStatus#" index="i">
-				<cfquery datasource="#arguments.dsn#" name="temp3">
-					INSERT INTO tblTemp1 (Status) 
-					VALUES ('#replace(i,"'","","all")#')
-				</cfquery>
-			</cfloop>
-		</cfif>
-		
+
 		<!--- If Archive: Get Maximum Rows in New Table --->
 		<cfif stObj.bArchive>	
 			<cfquery datasource="#arguments.dsn#" name="qGetCount">
@@ -151,7 +132,7 @@
 						<!--- must match all categories --->
 						<cfquery datasource="#arguments.dsn#" name="qGetLinks" maxrows="#maximumRows#">
 							SELECT DISTINCT type.objectID, type.label
-							    FROM tblTemp1, dmLink type, refCategories refCat1
+							    FROM dmLink type, refCategories refCat1
 							<!--- if more than one category make join for each --->
 							<cfif listLen(stObj.metadata) gt 1>
 								<cfloop from="2" to="#listlen(stObj.metadata)#" index="i">
@@ -164,22 +145,21 @@
 									AND refCat#i#.categoryID = '#listGetAt(stObj.metadata,i)#'
 									AND refCat#i#.objectId = type.objectId
 								</cfloop>
-								AND type.status = tblTemp1.Status
+								AND type.status IN ('#ListChangeDelims(request.mode.lValidStatus,"','",",")#')
 							ORDER BY type.label ASC
 						</cfquery>
 					<cfelse>
 						<!--- doesn't need to match all categories --->
 						<cfquery datasource="#arguments.dsn#" name="qGetLinks" maxrows="#maximumRows#">
 							SELECT DISTINCT type.objectID, type.label
-							FROM tblTemp1, refCategories refCat, dmLink type
+							FROM refCategories refCat, dmLink type
 							WHERE refCat.objectID = type.objectID
 								AND refCat.categoryID IN ('#ListChangeDelims(stObj.metadata,"','",",")#')
-								AND type.status = tblTemp1.Status
+								AND type.status IN ('#ListChangeDelims(request.mode.lValidStatus,"','",",")#')
 							ORDER BY type.label ASC
 						</cfquery>
 					</cfif>
 				</cfcase>
-
 				<cfdefaultcase>
 					<cfif stObj.bMatchAllKeywords>
 						<!--- must match all categories --->
@@ -189,7 +169,7 @@
 							<!--- if more than one category make join for each --->
 							<cfif listLen(stObj.metadata) gt 1>
 								<cfloop from="2" to="#listlen(stObj.metadata)#" index="i">
-									inner join refcategories refcat#i# on refcat#i-1#.objectid = refcat#i#.objectid
+									inner join refCategories refcat#i# on refcat#i-1#.objectid = refcat#i#.objectid
 								</cfloop>
 							</cfif>
 							JOIN dmLink type ON refcat1.objectID = type.objectID
@@ -218,25 +198,12 @@
 			</cfswitch>
 		<cfelse>
 			<!--- don't filter on categories --->
-			<cfswitch expression="#application.dbtype#">
-				<cfcase value="mysql">
-					<cfquery datasource="#arguments.dsn#" name="qGetLinks" maxrows="#maximumRows#">
-						SELECT *
-						FROM #application.dbowner#dmLink link, tblTemp1
-						WHERE link.status = tblTemp1.Status
-						ORDER BY label
-					</cfquery>
-				</cfcase>
-
-				<cfdefaultcase>
-					<cfquery datasource="#arguments.dsn#" name="qGetLinks" maxrows="#maximumRows#">
-						SELECT *
-						FROM #application.dbowner#dmLink
-						WHERE status IN ('#ListChangeDelims(request.mode.lValidStatus,"','",",")#')
-						ORDER BY label
-					</cfquery>
-				</cfdefaultcase>
-			</cfswitch>
+			<cfquery datasource="#arguments.dsn#" name="qGetLinks" maxrows="#maximumRows#">
+				SELECT *
+				FROM #application.dbowner#dmLink
+				WHERE status IN ('#ListChangeDelims(request.mode.lValidStatus,"','",",")#')
+				ORDER BY label
+			</cfquery>
 		</cfif>
 	
 		<cfif NOT stObj.bArchive>

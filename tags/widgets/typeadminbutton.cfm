@@ -8,7 +8,7 @@ $License: Released Under the "Common Public License 1.0", http://www.opensource.
 $Header: /cvs/farcry/farcry_core/tags/widgets/typeadminbutton.cfm,v 1.4 2005/08/02 04:44:28 geoff Exp $
 $Author: geoff $
 $Date: 2005/08/02 04:44:28 $
-$Name: milestone_3-0-0 $
+$Name: milestone_3-0-1 $
 $Revision: 1.4 $
 
 || DESCRIPTION || 

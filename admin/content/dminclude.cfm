@@ -18,7 +18,7 @@ $Developer: Guy Phanvongsa (guy@daemon.com.au) $
 <admin:header title="Includes Admin" writingDir="#session.writingDir#" userLanguage="#session.userLanguage#" onload="setupPanes('container1');">
 
 <widgets:typeadmin 
-	typename="dminclude"
+	typename="dmInclude"
 	permissionset="news"
 	title="Includes Administration"
 	bdebug="0">

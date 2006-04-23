@@ -5,11 +5,11 @@ $Copyright: Daemon Pty Limited 1995-2005, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/index.cfm,v 1.102 2005/10/26 00:37:45 guy Exp $
-$Author: guy $
-$Date: 2005/10/26 00:37:45 $
-$Name: milestone_3-0-0 $
-$Revision: 1.102 $
+$Header: /cvs/farcry/farcry_core/admin/index.cfm,v 1.102.2.1 2006/04/09 02:43:35 geoff Exp $
+$Author: geoff $
+$Date: 2006/04/09 02:43:35 $
+$Name: milestone_3-0-1 $
+$Revision: 1.102.2.1 $
 
 || DESCRIPTION || 
 $Description: FarCry Admin Central Index. 
@@ -113,7 +113,7 @@ $Developer: Pete Ottery (pot@daemon.com.au)$
 	</div>
 	
 	<div id="footer">
-		<p>Copyright &copy; Daemon 1997-#year(now())#, #application.adminBundle[session.dmProfile.locale].buildDetails#</p>
+		<p>Copyright &copy; Daemon 1997-#year(now())#, #createObject("component", "#application.packagepath#.farcry.sysinfo").getVersionTagline()#</p>
 	</div>
 </cfoutput>
 

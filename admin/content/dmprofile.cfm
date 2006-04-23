@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2005, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/content/dmprofile.cfm,v 1.1 2005/06/18 11:45:48 geoff Exp $
-$Author: geoff $
-$Date: 2005/06/18 11:45:48 $
-$Name: milestone_3-0-0 $
-$Revision: 1.1 $
+$Header: /cvs/farcry/farcry_core/admin/content/dmprofile.cfm,v 1.1.2.1 2006/01/04 08:05:18 paul Exp $
+$Author: paul $
+$Date: 2006/01/04 08:05:18 $
+$Name: milestone_3-0-1 $
+$Revision: 1.1.2.1 $
 
 || DESCRIPTION ||
 $Description: Generic type administration. $
@@ -25,7 +25,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 <admin:header title="Profile Admin" writingDir="#session.writingDir#" userLanguage="#session.userLanguage#" onload="setupPanes('container1');">
 
 <widgets:typeadmin 
-	typename="dmprofile"
+	typename="dmProfile"
 	permissionset="news"
 	bdebug="0">
 </widgets:typeadmin>

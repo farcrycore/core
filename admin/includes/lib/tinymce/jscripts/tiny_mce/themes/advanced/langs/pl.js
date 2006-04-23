@@ -1,62 +1,79 @@
-// UK lang variables
+// PL lang variables
+// fixed by Wooya
+// http://www.mfusion.prv.pl
+// fixed by lemiel 14.11.2005
 
-tinyMCELang['lang_theme_style_select'] = 'Styl';
-tinyMCELang['lang_theme_code_desc'] = 'Edytuj zrÃ³dlo html';
-tinyMCELang['lang_theme_code_title'] = 'Edytor zrÃ³dla html';
-tinyMCELang['lang_theme_code_wordwrap'] = 'Zwijanie wierszy';
-tinyMCELang['lang_theme_sub_desc'] = 'Nadpisywanie';
-tinyMCELang['lang_theme_sup_desc'] = 'Podpisywanie';
-tinyMCELang['lang_theme_hr_desc'] = 'Wstaw pozioma linie';
-tinyMCELang['lang_theme_removeformat_desc'] = 'Usun formatowanie';
-tinyMCELang['lang_theme_custom1_desc'] = 'Wstaw wlasny opis';
-tinyMCELang['lang_insert_image_border'] = 'Ramka';
-tinyMCELang['lang_insert_image_dimensions'] = 'Wymiary';
-tinyMCELang['lang_insert_image_vspace'] = 'VSpace';
-tinyMCELang['lang_insert_image_hspace'] = 'HSpace';
-tinyMCELang['lang_insert_image_align'] = 'Otaczanie';
-tinyMCELang['lang_insert_image_align_default'] = 'Domyslne';
-tinyMCELang['lang_insert_image_align_baseline'] = 'GlÃ³wne';
-tinyMCELang['lang_insert_image_align_top'] = 'GÃ³rne';
-tinyMCELang['lang_insert_image_align_middle'] = 'Srodkowe';
-tinyMCELang['lang_insert_image_align_bottom'] = 'Dolne';
-tinyMCELang['lang_insert_image_align_texttop'] = 'Tekst powyzej';
-tinyMCELang['lang_insert_image_align_absmiddle'] = 'Absolutny srodek';
-tinyMCELang['lang_insert_image_align_absbottom'] = 'Absolutny dÃ³l';
-tinyMCELang['lang_insert_image_align_left'] = 'Lewe';
-tinyMCELang['lang_insert_image_align_right'] = 'Prawe';
-tinyMCELang['lang_theme_font_size'] = '-- Font size --';
-tinyMCELang['lang_theme_fontdefault'] = '-- Font family --';
-tinyMCELang['lang_theme_block'] = '-- Format --';
-tinyMCELang['lang_theme_paragraph'] = '-- Paragraf --';
-tinyMCELang['lang_theme_div'] = 'Div';
-tinyMCELang['lang_theme_address'] = 'Adres';
-tinyMCELang['lang_theme_pre'] = 'Preformatowanie';
-tinyMCELang['lang_theme_h1'] = 'NaglÃ³wek 1';
-tinyMCELang['lang_theme_h2'] = 'NaglÃ³wek 2';
-tinyMCELang['lang_theme_h3'] = 'NaglÃ³wek 3';
-tinyMCELang['lang_theme_h4'] = 'NaglÃ³wek 4';
-tinyMCELang['lang_theme_h5'] = 'NaglÃ³wek 5';
-tinyMCELang['lang_theme_h6'] = 'NaglÃ³wek 6';
-tinyMCELang['lang_theme_colorpicker_title'] = 'Wybierz kolor';
-tinyMCELang['lang_theme_colorpicker_apply'] = 'Wybierz';
-tinyMCELang['lang_theme_forecolor_desc'] = 'Wybierz kolor tekstu';
-tinyMCELang['lang_theme_backcolor_desc'] = 'Wybierz kolor tla';
-tinyMCELang['lang_theme_charmap_title'] = 'Wybierz znak';
-tinyMCELang['lang_theme_charmap_desc'] = 'Wstaw znak';
-tinyMCELang['lang_theme_visualaid_desc'] = 'Toggle guidelines/invisible elements';
-tinyMCELang['lang_insert_anchor_title'] = 'Kotwica';
-tinyMCELang['lang_insert_anchor_name'] = 'Nazwa kotwicy';
-tinyMCELang['lang_theme_anchor_desc'] = 'Wstaw/Edytuj kotwice';
-tinyMCELang['lang_theme_insert_link_titlefield'] = 'Tytul';
-tinyMCELang['lang_theme_clipboard_msg'] = 'Kopiuj/Edytuj/Wklej nie jest dostepne w przegladarkach Mozilla and Firefox.\nPotrzebujesz wiecej informacji na ten temat?';
-tinyMCELang['lang_theme_path'] = 'Sciezka';
-tinyMCELang['lang_cut_desc'] = 'Wytnij';
-tinyMCELang['lang_copy_desc'] = 'Kopiuj';
-tinyMCELang['lang_paste_desc'] = 'Wklej';
-tinyMCELang['lang_link_list'] = 'Lista linkÃ³w';
-tinyMCELang['lang_image_list'] = 'Lista obrazkÃ³w';
-tinyMCELang['lang_browse'] = 'Przegladaj';
-tinyMCELang['lang_image_props_desc'] = 'Wlasciwosci obrazka';
-tinyMCELang['lang_newdocument_desc'] = 'New document';
-tinyMCELang['lang_class'] = 'Klasa';
-tinyMCELang['lang_newdocument'] = 'Are you sure you want clear all contents?';
+tinyMCE.addToLang('',{
+theme_style_select : 'Styl',
+theme_code_desc : 'Edytuj zródd³o html',
+theme_code_title : 'Edytor zród³a html',
+theme_code_wordwrap : 'Zawijanie wierszy',
+theme_sub_desc : 'Nadpisywanie',
+theme_sup_desc : 'Podpisywanie',
+theme_hr_desc : 'Wstaw poziom± liniê',
+theme_removeformat_desc : 'Usuñ formatowanie',
+theme_custom1_desc : 'Wstaw w³asny opis',
+insert_image_border : 'Ramka',
+insert_image_dimensions : 'Wymiary',
+insert_image_vspace : 'Pionowy odstêp',
+insert_image_hspace : 'Poziomy odstêp',
+insert_image_align : 'Otaczanie',
+insert_image_align_default : 'Domy¶lne',
+insert_image_align_baseline : 'Do linii bazowej',
+insert_image_align_top : 'Górne',
+insert_image_align_middle : '¦rodkowe',
+insert_image_align_bottom : 'Dolne',
+insert_image_align_texttop : 'Tekst powy¿ej',
+insert_image_align_absmiddle : 'Absolutny ¶rodek',
+insert_image_align_absbottom : 'Absolutny dó³',
+insert_image_align_left : 'Lewe',
+insert_image_align_right : 'Prawe',
+theme_font_size : '-- Rozmiar czcionki --',
+theme_fontdefault : '-- Rodzina czcionki --',
+theme_block : '-- Format --',
+theme_paragraph : '-- Paragraf --',
+theme_div : 'Div',
+theme_address : 'Adres',
+theme_pre : 'Preformatowanie',
+theme_h1 : 'Nag³ówek 1',
+theme_h2 : 'Nag³ówek 2',
+theme_h3 : 'Nag³ówek 3',
+theme_h4 : 'Nag³ówek 4',
+theme_h5 : 'Nag³ówek 5',
+theme_h6 : 'Nag³ówek 6',
+theme_colorpicker_title : 'Wybierz kolor',
+theme_colorpicker_apply : 'Wybierz',
+theme_forecolor_desc : 'Wybierz kolor tekstu',
+theme_backcolor_desc : 'Wybierz kolor t³a',
+theme_charmap_title : 'Wybierz znak',
+theme_charmap_desc : 'Wstaw znak',
+theme_visualaid_desc : 'Prze³±cz linie prowadz±ce/niewidoczne elementy',
+insert_anchor_title : 'Kotwica',
+insert_anchor_name : 'Nazwa kotwicy',
+theme_anchor_desc : 'Wstaw/Edytuj kotwicê',
+theme_insert_link_titlefield : 'Tytu³',
+theme_clipboard_msg : 'Kopiuj/Edytuj/Wklej nie jest dostêpne w przegl±darkach Mozilla i Firefox.\nPotrzebujesz wiêcej informacji na ten temat?',
+theme_path : 'Œcie¿ka',
+cut_desc : 'Wytnij',
+copy_desc : 'Kopiuj',
+paste_desc : 'Wklej',
+link_list : 'Lista linków',
+image_list : 'Lista obrazków',
+browse : 'Przegl±daj',
+image_props_desc : 'W³a¶ciwosci obrazka',
+newdocument_desc : 'Nowy dokument',
+class_name : 'Klasa',
+newdocument : 'Czy jeste¶ pewien, ¿e chcesz wyczy¶ciæ zawarto¶æ tego dokumentu?',
+about_title : 'O TinyMCE ...',
+about : 'O ...',
+license : 'Licencja',
+plugins : 'Pluginy',
+plugin : 'Plugin',
+author : 'Autor',
+version : 'Wersja',
+loaded_plugins : 'Za³adowane pluginy',
+help : 'Pomoc',
+not_set : '-- Nie wybrano --',
+close : 'Zamknij',
+toolbar_focus : 'Skocz do przycisków narzêdzi - Alt+Q, Skocz do edytora - Alt-Z, Skocz do ¶cie¿ki elementu - Alt-X'
+});

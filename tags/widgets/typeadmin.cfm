@@ -5,11 +5,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/widgets/typeadmin.cfm,v 1.38 2005/10/14 02:36:22 guy Exp $
-$Author: guy $
-$Date: 2005/10/14 02:36:22 $
-$Name: milestone_3-0-0 $
-$Revision: 1.38 $
+$Header: /cvs/farcry/farcry_core/tags/widgets/typeadmin.cfm,v 1.38.2.5 2006/03/15 04:03:40 jason Exp $
+$Author: jason $
+$Date: 2006/03/15 04:03:40 $
+$Name: milestone_3-0-1 $
+$Revision: 1.38.2.5 $
 
 || DESCRIPTION || 
 $Description: Generic administration screen for content types. $
@@ -85,6 +85,7 @@ If you are providing a data subset that needs to be protected disable the catego
 <!--- attributes.query type="query" CF7 specific --->
 <cfparam name="attributes.defaultorderby" default="datetimelastupdated" type="string">
 <cfparam name="attributes.defaultorder" default="desc" type="string">
+<cfparam name="attributes.id" default="#attributes.typename#" type="string">
 
 <!--- admin configuration options --->
 <cfparam name="attributes.numitems" default="#application.config.general.GENERICADMINNUMITEMS#" type="numeric">
@@ -92,7 +93,6 @@ If you are providing a data subset that needs to be protected disable the catego
 
 <!--- validation checks --->
 <cfparam name="errormessage" default="">
-
 <!--- SESSION parameters: 
 	gather specific filter settings and required parameters 
 
@@ -103,9 +103,15 @@ If you are providing a data subset that needs to be protected disable the catego
 	 - session.dmSec.authentication.userDirectory
 --->
 <!--- grab or create typeadmin prefs structure in session cache --->
+<!--- remove all filters --->
+<cfif isDefined("URL.killFilter")>
+	<cfset session.typeadmin = StructNew()>
+</cfif>
+
 <cfparam name="session.typeadmin" default="#structnew()#" type="struct">
-<cfif NOT structKeyExists(session.typeadmin, attributes.typename)>
-	<cfset structInsert(session.typeadmin, attributes.typename, structnew())>
+
+<cfif NOT structKeyExists(session.typeadmin, attributes.id)>
+	<cfset structInsert(session.typeadmin, attributes.id, structnew())>
 </cfif>
 
 <cfif NOT structKeyExists(application.types[attributes.typename], attributes.permissionset)>
@@ -156,12 +162,12 @@ user --->
 <!--- DATERANGE --->
 <cfif isDefined("form.button_Filter_DateRange")>
 	<cfif form.daterange NEQ "" AND ListLen(form.daterange,"-") LTE 2>
-		<cfif NOT IsDate(ListFirst(form.daterange,"-"))>
+		<cfif NOT IsDate(trim(ListFirst(form.daterange,"-")))>
 			<cfset errormessage = errormessage & "From date #ListFirst(form.daterange,'-')# is an incorrect date format please enter yyyy/mm/dd.<br />">
 		</cfif>
 
 		<cfif ListLen(form.daterange,"-") EQ 2>
-			<cfif NOT IsDate(ListLast(form.daterange,"-"))>
+			<cfif NOT IsDate(trim(ListLast(form.daterange,"-")))>
 				<cfset errormessage = errormessage & "To date #ListLast(form.daterange,'-')# is an incorrect date format please enter yyyy/mm/dd.<br />">
 			</cfif>
 		</cfif>
@@ -175,9 +181,9 @@ user --->
 </cfif>
 
 <!--- remove all filters --->
-<cfif isDefined("URL.killFilter")>
+<!--- <cfif isDefined("URL.killFilter")>
 	<cfset oTypeAdmin.deleteAllFilter()>
-</cfif>
+</cfif> --->
 
 <!--- get default grid data --->
 <cfset aDefaultColumns=oTypeAdmin.getDefaultColumns()>
@@ -295,21 +301,25 @@ if (isDefined("form.unlock") AND isDefined("form.objectid")) {
 </cfscript>
 <!--- 
 // custom: custom button action
- - todo: option that allows for no passed objectid
- --->
-<cfif NOT structisempty(form) AND isDefined("form.objectid")>
-<cfloop collection="#form#" item="fieldname">
-<!--- match for custom button action --->
-<cfif reFind("CB.*", fieldname) AND NOT reFind("CB.*_DATA", fieldname)>
-	<cfset wcustomdata=evaluate("form.#fieldname#_data")>
-	<cfwddx action="wddx2cfml" input="#wcustomdata#" output="stcustomdata">
-	<cfif len(stcustomdata.method)>
-		<cflocation url="#application.url.farcry#/conjuror/invocation.cfm?objectid=#form.objectID#&typename=#attributes.typename#&ref=typeadmin&method=#stcustomdata.method#" addtoken="false">
-	<cfelse>
-		<cflocation url="#stcustomdata.url#" addtoken="false">
+--->
+<cfif NOT structisempty(form)>
+	<cfif NOT isDefined("form.objectid")>
+		<cfscript>
+			form.objectid = createUUID();
+		</cfscript>
 	</cfif>
-</cfif>
-</cfloop>
+	<cfloop collection="#form#" item="fieldname">
+		<!--- match for custom button action --->
+		<cfif reFind("CB.*", fieldname) AND NOT reFind("CB.*_DATA", fieldname)>
+			<cfset wcustomdata=evaluate("form.#fieldname#_data")>
+			<cfwddx action="wddx2cfml" input="#wcustomdata#" output="stcustomdata">
+			<cfif len(stcustomdata.method)>
+				<cflocation url="#application.url.farcry#/conjuror/invocation.cfm?objectid=#form.objectID#&typename=#attributes.typename#&ref=typeadmin&method=#stcustomdata.method#" addtoken="false">
+			<cfelse>
+				<cflocation url="#stcustomdata.url#" addtoken="false">
+			</cfif>
+		</cfif>
+	</cfloop>
 </cfif>
 
 <!----------------------------------------------
@@ -396,10 +406,14 @@ if (isDefined("form.unlock") AND isDefined("form.objectid")) {
 		</div>
 	</cfoutput>
 </cfif>
+
 <cfoutput>
 	</div>
 	<p>Displaying <strong>#startrow#-#endrow#</strong> of <strong>#recordset.recordcount#</strong> results.
-	<cfif attributes.bFilterCategories OR attributes.bFilterProperties OR attributes.bFilterDateRange> <strong>Current Filter</strong>: <cfif isDefined("categoryFilterDisplay")>Category (#categoryFilterDisplay#), </cfif> <a href="#cgi.SCRIPT_NAME#?#cgi.QUERY_STRING#&killFilter">Remove All Filters</a></cfif></p>
+	<cfif attributes.bFilterCategories OR attributes.bFilterProperties OR attributes.bFilterDateRange><cfif session.typeadmin[attributes.typename].filter_daterange NEQ "" OR session.typeadmin[attributes.typename].filter_lKeywords NEQ "" OR session.typeadmin[attributes.typename].lCategoryIDs NEQ "">
+		<strong>Filters Applied</strong> | <a href="#cgi.SCRIPT_NAME#?#cgi.QUERY_STRING#&killFilter">Remove All Filters</a><cfelse>
+		<strong>No Filters Applied</strong></cfif></cfif>
+	</p>
 </div>
 <!--- collapse filter containing div --->
 <script type="text/javascript">setupPanes('container1');</script>
@@ -485,6 +499,7 @@ oAuthorisation=request.dmsec.oAuthorisation;
 
 <!--- generate grid records --->
 <cfif recordset.recordcount eq 0>
+	<!--- todo: i18n update --->
 	<cfoutput><tr><td colspan="#arraylen(attributes.aColumns)#" style="text-align: center;">No content items available.</td></tr></cfoutput>
 <cfelse>
 <cfloop query="recordset" startrow="#startrow#" endrow="#endrow#">
@@ -492,27 +507,33 @@ oAuthorisation=request.dmsec.oAuthorisation;
 	<tr#iif(recordset.currentrow mod 2, de(" class=""alt"""), de(""))#></cfoutput>
 	<cfloop from="1" to="#arraylen(attributes.aColumns)#" index="i">
 		<cfset showMultipleVersionIdicator = "">
-		<cfif recordset.bHasMultipleVersion AND attributes.aColumns[i].title EQ "label">
+		<cfif isDefined("recordset.bHasMultipleVersion") AND recordset.bHasMultipleVersion AND attributes.aColumns[i].title EQ "label">
 			<cfset showMultipleVersionIdicator = " *">
 		</cfif>
-	<cfswitch expression="#attributes.aColumns[i].columntype#">
-		<cfcase value="evaluate">
-			<cfoutput>
-			<td <cfif len(attributes.aColumns[i].style)>style="#attributes.aColumns[i].style#"</cfif>>#evaluate(attributes.aColumns[i].value)##showMultipleVersionIdicator#</td></cfoutput>
-		</cfcase>
-		<cfcase value="expression">
-			<cfoutput>
-			<td <cfif len(attributes.aColumns[i].style)>style="#attributes.aColumns[i].style#"</cfif>>#evaluate(DE(attributes.aColumns[i].value))##showMultipleVersionIdicator#</td></cfoutput>
-		</cfcase>
-		<cfcase value="value">
-			<cfoutput>
-			<td <cfif len(attributes.aColumns[i].style)>style="#attributes.aColumns[i].style#"</cfif>>#evaluate("recordset.#attributes.aColumns[i].value#")##showMultipleVersionIdicator#</td></cfoutput>
-		</cfcase>
-		<cfdefaultcase>
-			<cfoutput>
-			<td>#attributes.aColumns[i].value##showMultipleVersionIdicator#</td></cfoutput>
-		</cfdefaultcase>
+		<cftry>
+		<cfswitch expression="#attributes.aColumns[i].columntype#">
+			<cfcase value="evaluate">
+				<cfoutput>
+				<td <cfif len(attributes.aColumns[i].style)>style="#attributes.aColumns[i].style#"</cfif>>#evaluate(attributes.aColumns[i].value)##showMultipleVersionIdicator#</td></cfoutput>
+			</cfcase>
+			<cfcase value="expression">
+				<cfoutput>
+				<td <cfif len(attributes.aColumns[i].style)>style="#attributes.aColumns[i].style#"</cfif>>#evaluate(DE(attributes.aColumns[i].value))##showMultipleVersionIdicator#</td></cfoutput>
+			</cfcase>
+			<cfcase value="value">
+				<cfoutput>
+				<td <cfif len(attributes.aColumns[i].style)>style="#attributes.aColumns[i].style#"</cfif>>#evaluate("recordset.#attributes.aColumns[i].value#")##showMultipleVersionIdicator#</td></cfoutput>
+			</cfcase>
+			<cfdefaultcase>
+				<cfoutput>
+				<td>#attributes.aColumns[i].value##showMultipleVersionIdicator#</td></cfoutput>
+			</cfdefaultcase>
 		</cfswitch>
+		<cfcatch>
+			<!--- catch awkward data fizzles --->
+				<cfoutput>--fizzle--</td></cfoutput>
+		</cfcatch>
+		</cftry>
 	</cfloop>
 	<cfoutput>
 	</tr></cfoutput>

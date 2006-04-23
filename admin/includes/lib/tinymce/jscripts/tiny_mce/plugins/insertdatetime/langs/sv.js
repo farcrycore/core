@@ -1,8 +1,12 @@
 // SE lang variables
 
-tinyMCELang['lang_insertdate_desc'] = 'Klistra in datum';
-tinyMCELang['lang_inserttime_desc'] = 'Klistra in tid';
-tinyMCELang['lang_inserttime_months_long'] = new Array("Januari", "Februari", "Mars", "April", "Maj", "Juni", "Juli", "Augusti", "September", "Oktober", "November", "December");
-tinyMCELang['lang_inserttime_months_short'] = new Array("Jan","Feb", "Mar", "Apr", "Maj", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dec");
-tinyMCELang['lang_inserttime_day_long'] = new Array("Söndag", "Måndag", "Tisdag", "Onsdag", "Torsdag", "Fredag", "Lördag", "Söndag");
-tinyMCELang['lang_inserttime_day_short'] = new Array("Sön", "Mån", "Tis", "Ons", "Tor", "Fre", "Lör", "Sön");
+tinyMCE.addToLang('',{
+insertdate_def_fmt : '%Y-%m-%d',
+inserttime_def_fmt : '%H:%M:%S',
+insertdate_desc : 'Klistra in datum',
+inserttime_desc : 'Klistra in tid',
+inserttime_months_long  : new Array("Januari", "Februari", "Mars", "April", "Maj", "Juni", "Juli", "Augusti", "September", "Oktober", "November", "December"),
+inserttime_months_short  : new Array("Jan","Feb", "Mar", "Apr", "Maj", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dec"),
+inserttime_day_long  : new Array("S&ouml;ndag", "M&aring;ndag", "Tisdag", "Onsdag", "Torsdag", "Fredag", "L&ouml;rdag", "S&ouml;ndag"),
+inserttime_day_short  : new Array("S&ouml;n", "M&aring;n", "Tis", "Ons", "Tor", "Fre", "L&ouml;r", "S&ouml;n")
+});

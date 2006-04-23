@@ -6,7 +6,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $Header: /cvs/farcry/farcry_core/packages/types/_dmEmail/edit.cfm,v 1.8 2005/09/02 05:11:44 guy Exp $
 $Author: guy $
 $Date: 2005/09/02 05:11:44 $
-$Name: milestone_3-0-0 $
+$Name: milestone_3-0-1 $
 $Revision: 1.8 $
 
 || DESCRIPTION || 

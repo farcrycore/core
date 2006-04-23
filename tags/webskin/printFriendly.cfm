@@ -7,7 +7,7 @@ $License: Released Under the "Common Public License 1.0", http://www.opensource.
 $Header: /cvs/farcry/farcry_core/tags/webskin/printFriendly.cfm,v 1.2 2003/09/25 23:28:09 brendan Exp $
 $Author: brendan $
 $Date: 2003/09/25 23:28:09 $
-$Name: b201 $
+$Name: milestone_3-0-1 $
 $Revision: 1.2 $
 
 || DESCRIPTION || 

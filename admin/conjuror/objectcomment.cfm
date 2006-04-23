@@ -7,7 +7,7 @@ $License: Released Under the "Common Public License 1.0", http://www.opensource.
 $Header: /cvs/farcry/farcry_core/admin/conjuror/objectcomment.cfm,v 1.2 2005/07/14 23:49:33 guy Exp $
 $Author: guy $
 $Date: 2005/07/14 23:49:33 $
-$Name: milestone_3-0-0 $
+$Name: milestone_3-0-1 $
 $Revision: 1.2 $
 
 || DESCRIPTION || 

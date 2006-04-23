@@ -1,6 +1,11 @@
-ï»¿// PL lang variables
+// PL lang variables
+// fixed by Wooya
+// http://www.mfusion.prv.pl
+// fixed by lemiel 14.11.2005
 
-tinyMCELang['lang_insert_advhr_desc']    = 'Wstaw/Edytuj poziomÄ… liniÄ™'
-tinyMCELang['lang_insert_advhr_width']   = 'SzerokoÅ›Ä‡';
-tinyMCELang['lang_insert_advhr_size']    = 'WysokoÅ›Ä‡';
-tinyMCELang['lang_insert_advhr_noshade'] = 'Brak cienia';
+tinyMCE.addToLang('',{
+insert_advhr_desc : 'Wstaw/Edytuj poziom± liniê',
+insert_advhr_width : 'Szeroko¶æ',
+insert_advhr_size : 'Wysoko¶æ',
+insert_advhr_noshade : 'Brak cienia'
+});

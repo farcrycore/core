@@ -1,11 +1,23 @@
 /* Import plugin specific language pack */
-tinyMCE.importPluginLanguagePack('advhr', 'en,de,sv,zh_cn,cs,fa,fr_ca,fr,pl,pt_br,nl');
+tinyMCE.importPluginLanguagePack('advhr', 'en,de,sv,zh_cn,cs,fa,fr_ca,fr,pl,pt_br,nl,da,he,nb,hu,ru,ru_KOI8-R,ru_UTF-8,nn,fi,es,cy,is,zh_tw,zh_tw_utf8,sk');
+
+function TinyMCE_advhr_getInfo() {
+	return {
+		longname : 'Advanced HR',
+		author : 'Moxiecode Systems',
+		authorurl : 'http://tinymce.moxiecode.com',
+		infourl : 'http://tinymce.moxiecode.com/tinymce/docs/plugin_advhr.html',
+		version : tinyMCE.majorVersion + "." + tinyMCE.minorVersion
+	};
+};
 
 function TinyMCE_advhr_getControlHTML(control_name) {
     switch (control_name) {
         case "advhr":
-            return '<img id="{$editor_id}_advhr" src="{$pluginurl}/images/advhr.gif" title="{$lang_insert_advhr_desc}" width="20" height="20" class="mceButtonNormal" onmouseover="tinyMCE.switchClass(this,\'mceButtonOver\');" onmouseout="tinyMCE.restoreClass(this);" onmousedown="tinyMCE.restoreAndSwitchClass(this,\'mceButtonDown\');" onclick="tinyMCE.execInstanceCommand(\'{$editor_id}\',\'mceAdvancedHr\');" />';
+			var cmd = 'tinyMCE.execInstanceCommand(\'{$editor_id}\',\'mceAdvancedHr\');return false;';
+            return '<a href="javascript:' + cmd + '" onclick="' + cmd + '" target="_self" onmousedown="return false;"><img id="{$editor_id}_advhr" src="{$pluginurl}/images/advhr.gif" title="{$lang_insert_advhr_desc}" width="20" height="20" class="mceButtonNormal" onmouseover="tinyMCE.switchClass(this,\'mceButtonOver\');" onmouseout="tinyMCE.restoreClass(this);" onmousedown="tinyMCE.restoreAndSwitchClass(this,\'mceButtonDown\');" /></a>';
     }
+
     return "";
 }
 
@@ -17,9 +29,14 @@ function TinyMCE_advhr_execCommand(editor_id, element, command, user_interface, 
     switch (command) {
         case "mceAdvancedHr":
             var template = new Array();
+
             template['file']   = '../../plugins/advhr/rule.htm'; // Relative to theme
             template['width']  = 270;
             template['height'] = 180;
+
+			template['width']  += tinyMCE.getLang('lang_advhr_delta_width', 0);
+			template['height'] += tinyMCE.getLang('lang_advhr_delta_height', 0);
+
             var size = "", width = "", noshade = "";
             if (tinyMCE.selectedElement != null && tinyMCE.selectedElement.nodeName.toLowerCase() == "hr"){
                 tinyMCE.hrElement = tinyMCE.selectedElement;
@@ -33,7 +50,7 @@ function TinyMCE_advhr_execCommand(editor_id, element, command, user_interface, 
                 if (tinyMCE.isMSIE) {
                     tinyMCE.execInstanceCommand(editor_id, 'mceInsertContent', false,'<hr />');
                 } else {
-                    tinyMCE.openWindow(template, {editor_id : editor_id, size : size, width : width, noshade : noshade, mceDo : 'insert'});
+                    tinyMCE.openWindow(template, {editor_id : editor_id, inline : "yes", size : size, width : width, noshade : noshade, mceDo : 'insert'});
                 }
             }
                     

@@ -7,7 +7,7 @@ $License: Released Under the "Common Public License 1.0", http://www.opensource.
 $Header: /cvs/farcry/farcry_core/admin/install/_installFarcry.cfm,v 1.43 2005/09/07 22:40:25 tom Exp $
 $Author: tom $
 $Date: 2005/09/07 22:40:25 $
-$Name: milestone_3-0-0 $
+$Name: milestone_3-0-1 $
 $Revision: 1.43 $
 
 || DESCRIPTION || 

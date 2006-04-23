@@ -5,11 +5,11 @@ $Copyright: Daemon Pty Limited 1995-2005, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmCSS/edit.cfm,v 1.34 2005/10/11 00:50:06 daniela Exp $
-$Author: daniela $
-$Date: 2005/10/11 00:50:06 $
-$Name: milestone_3-0-0 $
-$Revision: 1.34 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmCSS/edit.cfm,v 1.34.2.1 2006/03/21 05:03:26 jason Exp $
+$Author: jason $
+$Date: 2006/03/21 05:03:26 $
+$Name: milestone_3-0-1 $
+$Revision: 1.34.2.1 $
 
 || DESCRIPTION || 
 $Description: CSS Stylesheet reference edit handler$
@@ -145,7 +145,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 	<fieldset>
 <h3>#application.adminBundle[session.dmProfile.locale].generalInfo#: <span class="highlight">#stObj.title#</span></h3>
 		<label for="title"><b>#application.adminBundle[session.dmProfile.locale].titleLabel#</b>
-			<input type="text" name="title" id="title" value="#title#" maxlength="255" /><br />
+			<input type="text" name="title" id="title" value="#title#" maxlength="255" size="45" /><br />
 		</label>
 
 		<widgets:fileUpload fileFieldPrefix="css" fieldLabel="Upload CSS:" uploadType="file" fieldValue="#stObj.filename#" previewURL="/css/" bShowPreview="0">

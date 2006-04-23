@@ -1,63 +1,78 @@
 // Canadian French lang variables by Virtuelcom
 // Modify by Laurent Dran 13-02-2006
+// Modifié par Normand Lamoureux le 2005-11-12
 
-tinyMCELang['lang_theme_style_select'] = 'Styles';
-tinyMCELang['lang_theme_code_desc'] = 'Modifier le code source HTML';
-tinyMCELang['lang_theme_code_title'] = '&Eacute;diteur de code source HTML';
-tinyMCELang['lang_theme_code_wordwrap'] = 'Word wrap';
-tinyMCELang['lang_theme_sub_desc'] = 'Souscrit';
-tinyMCELang['lang_theme_sup_desc'] = 'Indice sup&eacute;rieur';
-tinyMCELang['lang_theme_hr_desc'] = 'Ins&eacute;rer un s&eacute;parateur horizontal';
-tinyMCELang['lang_theme_removeformat_desc'] = 'Supprimer le formattage';
-tinyMCELang['lang_theme_custom1_desc'] = 'Votre description personnalis&eacute;e ici';
-tinyMCELang['lang_insert_image_border'] = 'Bordure';
-tinyMCELang['lang_insert_image_dimensions'] = 'Dimensions';
-tinyMCELang['lang_insert_image_vspace'] = 'VSpace';
-tinyMCELang['lang_insert_image_hspace'] = 'HSpace';
-tinyMCELang['lang_insert_image_align'] = 'Alignement';
-tinyMCELang['lang_insert_image_align_default'] = 'D&eacute;faut';
-tinyMCELang['lang_insert_image_align_baseline'] = 'Baseline';
-tinyMCELang['lang_insert_image_align_top'] = 'Haut';
-tinyMCELang['lang_insert_image_align_middle'] = 'Milieu';
-tinyMCELang['lang_insert_image_align_bottom'] = 'Bas';
-tinyMCELang['lang_insert_image_align_texttop'] = 'TextTop';
-tinyMCELang['lang_insert_image_align_absmiddle'] = 'Milieu absolu';
-tinyMCELang['lang_insert_image_align_absbottom'] = 'Bas absolu';
-tinyMCELang['lang_insert_image_align_left'] = 'Gauche';
-tinyMCELang['lang_insert_image_align_right'] = 'Droit';
-tinyMCELang['lang_theme_font_size'] = '-- Font size --';
-tinyMCELang['lang_theme_fontdefault'] = '-- Font family --';
-tinyMCELang['lang_theme_block'] = '-- Format --';
-tinyMCELang['lang_theme_paragraph'] = 'Paragraphe';
-tinyMCELang['lang_theme_div'] = 'Div';
-tinyMCELang['lang_theme_address'] = 'Addresse';
-tinyMCELang['lang_theme_pre'] = 'Pr&eacute;formatt&eacute;';
-tinyMCELang['lang_theme_h1'] = 'Ent&ecirc;te 1';
-tinyMCELang['lang_theme_h2'] = 'Ent&ecirc;te 2';
-tinyMCELang['lang_theme_h3'] = 'Ent&ecirc;te 3';
-tinyMCELang['lang_theme_h4'] = 'Ent&ecirc;te 4';
-tinyMCELang['lang_theme_h5'] = 'Ent&ecirc;te 5';
-tinyMCELang['lang_theme_h6'] = 'Ent&ecirc;te 6';
-tinyMCELang['lang_theme_colorpicker_title'] = 'Choisir une couleur';
-tinyMCELang['lang_theme_colorpicker_apply'] = 'Appliquer';
-tinyMCELang['lang_theme_forecolor_desc'] = 'Choisir la couleur d\'avant plan';
-tinyMCELang['lang_theme_backcolor_desc'] = 'Choisir la couleur de fond';
-tinyMCELang['lang_theme_charmap_title'] = 'S&eacute;lectionner un charact&egrave;re sp&eacute;cial';
-tinyMCELang['lang_theme_charmap_desc'] = 'Ins&eacute;rer un charact&egrave;re sp&eacute;cial';
-tinyMCELang['lang_theme_visualaid_desc'] = 'Active/D&eacute;sactive les lignes guides et les &eacute;l&eacute;ments invisibles';
-tinyMCELang['lang_insert_anchor_title'] = 'Ins&eacute;rer/Modifier une ancre';
-tinyMCELang['lang_insert_anchor_name'] = 'Nom de l\'ancre';
-tinyMCELang['lang_theme_anchor_desc'] = 'Ins&eacute;rer/Modifier une ancre';
-tinyMCELang['lang_theme_insert_link_titlefield'] = 'Titre';
-tinyMCELang['lang_theme_clipboard_msg'] = 'Copier/Couper/Coller ne sont pas disponibles pour Mozilla et Firefox.\nVoulez vous plus d\'informations à ce sujet?';
-tinyMCELang['lang_theme_path'] = 'Chemin';
-tinyMCELang['lang_cut_desc'] = 'Couper';
-tinyMCELang['lang_copy_desc'] = 'Copier';
-tinyMCELang['lang_paste_desc'] = 'Coller';
-tinyMCELang['lang_link_list'] = 'Lien de la liste';
-tinyMCELang['lang_image_list'] = 'Image de la liste';
-tinyMCELang['lang_browse'] = 'Naviguer';
-tinyMCELang['lang_image_props_desc'] = 'Image properties';
-tinyMCELang['lang_newdocument_desc'] = 'New document';
-tinyMCELang['lang_class'] = 'Classe CSS';
-tinyMCELang['lang_newdocument'] = 'Are you sure you want clear all contents?';
+tinyMCE.addToLang('',{
+theme_style_select : '-- Style --',
+theme_code_desc : 'Afficher le code source',
+theme_code_title : 'Édititon du code source',
+theme_code_wordwrap : 'Retour à la ligne automatique',
+theme_sub_desc : 'Indice',
+theme_sup_desc : 'Exposant',
+theme_hr_desc : 'Insérer une règle horizontale ordinaire',
+theme_removeformat_desc : 'Supprimer le formattage',
+theme_custom1_desc : 'Votre description personnalisée ici',
+insert_image_border : 'Bordure',
+insert_image_dimensions : 'Dimensions',
+insert_image_vspace : 'Espacement vertical',
+insert_image_hspace : 'Espacement horizontal',
+insert_image_align : 'Alignement',
+insert_image_align_default : '-- Indéfini --',
+insert_image_align_baseline : 'Ligne de base',
+insert_image_align_top : 'Haut',
+insert_image_align_middle : 'Milieu',
+insert_image_align_bottom : 'Bas',
+insert_image_align_texttop : 'Haut du texte',
+insert_image_align_absmiddle : 'Milieu absolu',
+insert_image_align_absbottom : 'Bas absolu',
+insert_image_align_left : 'En flottement à gauche',
+insert_image_align_right : 'En flottement à droite',
+theme_font_size : '-- Taille --',
+theme_fontdefault : '-- Police --',
+theme_block : '-- Bloc de texte --',
+theme_paragraph : 'Paragraphe',
+theme_div : 'Div',
+theme_address : 'Infos sur l\'auteur',
+theme_pre : 'Texte préformaté',
+theme_h1 : 'Titre de niveau 1',
+theme_h2 : 'Titre de niveau 2',
+theme_h3 : 'Titre de niveau 3',
+theme_h4 : 'Titre de niveau 4',
+theme_h5 : 'Titre de niveau 5',
+theme_h6 : 'Titre de niveau 6',
+theme_colorpicker_title : 'Choisir une couleur',
+theme_colorpicker_apply : 'Appliquer',
+theme_forecolor_desc : 'Couleur du texte',
+theme_backcolor_desc : 'Couleur d\'arrière-plan',
+theme_charmap_title : 'Sélectionner un charactère spécial',
+theme_charmap_desc : 'Insérer un charactère spécial',
+theme_visualaid_desc : 'Activer/Désactiver les lignes guides et les éléments invisibles',
+insert_anchor_title : 'Gestionnaire d\'ancre',
+insert_anchor_name : 'Nom de l\'ancre',
+theme_anchor_desc : 'Insérer/Modifier une ancre',
+theme_insert_link_titlefield : 'Info-bulle',
+theme_clipboard_msg : 'Pour des raisons de sécurité, les fonctions « Copier », « Couper » et « Coller »\nne sont pas disponibles dans Mozilla et Firefox.\n\n\nVoulez-vous plus d\'information à ce sujet?\n',
+theme_path : 'Élément(s) en cours ',
+cut_desc : 'Couper',
+copy_desc : 'Copier',
+paste_desc : 'Coller',
+link_list : 'Lien de la liste',
+image_list : 'Image de la liste',
+browse : 'Naviguer',
+image_props_desc : 'Propriétés de l\'image',
+newdocument_desc : 'Nouveau document',
+class_name : 'Classe CSS',
+newdocument : 'Êtes-vous sûr de vouloir supprimer tout le contenu ?',
+about_title : 'À propos de TinyMCE',
+about : 'À propos',
+license : 'License',
+plugins : 'Extensions',
+plugin : 'Extension',
+author : 'Auteur',
+version : 'Version',
+loaded_plugins : 'Extensions installées',
+help : 'Aide',
+not_set : '-- Indéfini --',
+close : 'Fermer',
+toolbar_focus : 'Atteindre la barre d\'outils (Alt+Q), Atteindre l\'éditeur (Alt-Z), Atteindre l\'élément en cours (Alt-X)'
+});

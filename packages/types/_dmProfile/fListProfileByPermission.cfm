@@ -6,11 +6,11 @@ Daemon Pty Limited 1995-2002
 http://www.daemon.com.au
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmProfile/fListProfileByPermission.cfm,v 1.2 2005/10/25 06:54:47 guy Exp $
-$Author: guy $
-$Date: 2005/10/25 06:54:47 $
-$Name: milestone_3-0-0 $
-$Revision: 1.2 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmProfile/fListProfileByPermission.cfm,v 1.2.2.1 2006/02/17 06:54:39 paul Exp $
+$Author: paul $
+$Date: 2006/02/17 06:54:39 $
+$Name: milestone_3-0-1 $
+$Revision: 1.2.2.1 $
 
 || DESCRIPTION || 
 dmProfile get data handler
@@ -30,12 +30,12 @@ none
 <cfset stLocal.lObjectID = stLocal.returnstruct.lObjectIDs>
 
 <cfquery name="stLocal.qList" datasource="#application.dsn#">
-SELECT	p.username, p.objectID, p.firstname, p.lastName
-FROM 	#application.dbowner#dmProfile p, #application.dbowner#dmUser u
-WHERE 	p.username = u.userlogin
-		AND p.bActive = 1
-		AND u.userid IN (#stLocal.lObjectID#)
-ORDER BY p.lastName, p.firstname
+SELECT p.userName, p.ObjectID, p.firstName, p.lastName 
+FROM #application.dbowner#dmProfile p, #application.dbowner#dmUser u
+WHERE p.userName = u.userLogin
+	AND p.bActive = 1
+	AND u.userId IN (#stLocal.lObjectID#)
+ORDER BY p.lastName, p.firstName
 </cfquery>
 
 <cfset stReturn.queryObject = stLocal.qList>

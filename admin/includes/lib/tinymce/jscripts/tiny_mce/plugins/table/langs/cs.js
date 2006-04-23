@@ -1,41 +1,49 @@
-// CZ lang variables thanks to "Pavel Nov·k"
+/**
+ * Czech lang variables 
+ * encoding: utf-8
+ *  
+ * $Id: cs.js,v 1.1.2.2 2005/12/03 01:11:58 geoff Exp $ 
+ */  
 
-tinyMCELang['lang_table_desc'] = 'Vloûit novou tabulku';
-tinyMCELang['lang_table_insert_row_before_desc'] = 'Vloûit ¯·dek p¯ed';
-tinyMCELang['lang_table_insert_row_after_desc'] = 'Vloûit ¯·dek po';
-tinyMCELang['lang_table_delete_row_desc'] = 'Smazat ¯·dek';
-tinyMCELang['lang_table_insert_col_before_desc'] = 'Vloûit sloupec p¯ed';
-tinyMCELang['lang_table_insert_col_after_desc'] = 'Vloûit sloupec po';
-tinyMCELang['lang_table_delete_col_desc'] = 'Odstranit sloupec';
-tinyMCELang['lang_insert_table_title'] = 'Vloûit/upravit tabulku';
-tinyMCELang['lang_insert_table_width'] = 'äÌ¯ka';
-tinyMCELang['lang_insert_table_height'] = 'V˝öka';
-tinyMCELang['lang_insert_table_cols'] = 'Sloupce';
-tinyMCELang['lang_insert_table_rows'] = 'ÿ·dky';
-tinyMCELang['lang_insert_table_cellspacing'] = 'VnÏjöÌ okraj bunÏk';
-tinyMCELang['lang_insert_table_cellpadding'] = 'Vnit¯nÌ okraj bunÏk';
-tinyMCELang['lang_insert_table_border'] = 'R·meËek';
-tinyMCELang['lang_insert_table_align'] = 'Zarovn·nÌ';
-tinyMCELang['lang_insert_table_align_default'] = 'V˝chozÌ';
-tinyMCELang['lang_insert_table_align_left'] = 'Vlevo';
-tinyMCELang['lang_insert_table_align_right'] = 'Vpravo';
-tinyMCELang['lang_insert_table_align_middle'] = 'Na st¯ed';
-tinyMCELang['lang_insert_table_class'] = 'Class';
-tinyMCELang['lang_table_row_title'] = 'Table row properties';
-tinyMCELang['lang_table_cell_title'] = 'Table cell properties';
-tinyMCELang['lang_table_row_desc'] = 'Table row properties';
-tinyMCELang['lang_table_cell_desc'] = 'Table cell properties';
-tinyMCELang['lang_insert_table_valign'] = 'Vertical alignment';
-tinyMCELang['lang_insert_table_align_top'] = 'Top';
-tinyMCELang['lang_insert_table_align_bottom'] = 'Bottom';
-tinyMCELang['lang_table_props_desc'] = 'Table properties';
-tinyMCELang['lang_table_bordercolor'] = 'Border color';
-tinyMCELang['lang_table_bgcolor'] = 'Bg color';
-tinyMCELang['lang_table_merge_cells_title'] = 'Merge table cells';
-tinyMCELang['lang_table_split_cells_desc'] = 'Split table cells';
-tinyMCELang['lang_table_merge_cells_desc'] = 'Merge table cells';
-tinyMCELang['lang_table_cut_row_desc'] = 'Cut table row';
-tinyMCELang['lang_table_copy_row_desc'] = 'Copy table row';
-tinyMCELang['lang_table_paste_row_before_desc'] = 'Paste table row before';
-tinyMCELang['lang_table_paste_row_after_desc'] = 'Paste table row after';
-tinyMCELang['lang_table_insert_desc'] = 'Insert a new table';
+tinyMCE.addToLang('',{
+table_desc : 'Vlo≈æit novou tabulku',
+table_insert_row_before_desc : 'Vlo≈æit ≈ô√°dek p≈ôed',
+table_insert_row_after_desc : 'Vlo≈æit ≈ô√°dek po',
+table_delete_row_desc : 'Smazat ≈ô√°dek',
+table_insert_col_before_desc : 'Vlo≈æit sloupec p≈ôed',
+table_insert_col_after_desc : 'Vlo≈æit sloupec po',
+table_delete_col_desc : 'Odstranit sloupec',
+insert_table_title : 'Vlo≈æit/upravit tabulku',
+insert_table_width : '≈†√≠≈ôka',
+insert_table_height : 'V√Ω≈°ka',
+insert_table_cols : 'Sloupce',
+insert_table_rows : '≈ò√°dky',
+insert_table_cellspacing : 'Vnƒõj≈°√≠ okraj bunƒõk',
+insert_table_cellpadding : 'Vnit≈ôn√≠ okraj bunƒõk',
+insert_table_border : 'R√°meƒçek',
+insert_table_align : 'Zarovn√°n√≠',
+insert_table_align_default : 'V√Ωchoz√≠',
+insert_table_align_left : 'Vlevo',
+insert_table_align_right : 'Vpravo',
+insert_table_align_middle : 'Na st≈ôed',
+insert_table_class : 'T≈ô√≠da',
+table_row_title : 'Vlastnosti ≈ô√°dku',
+table_cell_title : 'Vlastnosti bu≈àky',
+table_row_desc : 'Vlastnosti ≈ô√°dku',
+table_cell_desc : 'Vlastnosti ≈ô√°dku',
+insert_table_valign : 'Vertik√°ln√≠ zarovn√°n√≠',
+insert_table_align_top : 'Nahoru',
+insert_table_align_bottom : 'Dol≈Ø',
+table_props_desc : 'Vlastnosti tabulky',
+table_bordercolor : 'Barva r√°meƒçku',
+table_bgcolor : 'Barva pozad√≠',
+table_merge_cells_title : 'Slouƒçit bu≈àky',
+table_split_cells_desc : 'Rozdƒõlit bu≈àky',
+table_merge_cells_desc : 'Slouƒçit bu≈àky',
+table_cut_row_desc : 'Vyjmout ≈ô√°dek',
+table_copy_row_desc : 'Kop√≠rovat ≈ô√°dek',
+table_paste_row_before_desc : 'Vlo≈æit ≈ô√°dek p≈ôed',
+table_paste_row_after_desc : 'Vlo≈æit ≈ô√°dek za',
+table_insert_desc : 'Vlo≈æit tabulku'
+});
+

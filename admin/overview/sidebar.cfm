@@ -6,7 +6,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-<title>FarCry</title>
+<title>FarCry: Overview Sidebar</title>
 <style type="text/css" title="default" media="screen">@import url(../css/main.css);</style>
 </cfoutput>
 	<cfif session.firstLogin>
@@ -30,6 +30,10 @@
 <cfscript>
 	// display profile details
 	oProfile = createObject("component", application.types.dmProfile.typePath);
+	// if profile is dead for user, create one and set to session scope
+	if (NOT StructKeyExists(session.dmProfile,"firstname"))
+		session.dmprofile=oProfile.createprofile(session.dmprofile);
+	// display profile summary for overview
 	writeoutput(oProfile.displaySummary(session.dmProfile.objectID));
 </cfscript>
 

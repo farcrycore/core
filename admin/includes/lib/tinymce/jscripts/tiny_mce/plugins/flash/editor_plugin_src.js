@@ -1,15 +1,26 @@
 /* Import plugin specific language pack */
-tinyMCE.importPluginLanguagePack('flash', 'en,de,sv,zh_cn,cs,fa,fr_ca,fr,pl,pt_br,nl');
+tinyMCE.importPluginLanguagePack('flash', 'en,de,sv,zh_cn,cs,fa,fr_ca,fr,pl,pt_br,nl,da,he,nb,hu,ru,ru_KOI8-R,ru_UTF-8,nn,es,cy,is,zh_tw,zh_tw_utf8,sk,pt_br');
+
+function TinyMCE_flash_getInfo() {
+	return {
+		longname : 'Flash',
+		author : 'Moxiecode Systems',
+		authorurl : 'http://tinymce.moxiecode.com',
+		infourl : 'http://tinymce.moxiecode.com/tinymce/docs/plugin_flash.html',
+		version : tinyMCE.majorVersion + "." + tinyMCE.minorVersion
+	};
+};
 
 function TinyMCE_flash_initInstance(inst) {
 	if (!tinyMCE.settings['flash_skip_plugin_css'])
-		tinyMCE.importCSS(inst.getDoc(), tinyMCE.baseURL + "/plugins/flash/flash.css");
+		tinyMCE.importCSS(inst.getDoc(), tinyMCE.baseURL + "/plugins/flash/css/content.css");
 }
 
 function TinyMCE_flash_getControlHTML(control_name) {
     switch (control_name) {
         case "flash":
-            return '<img id="{$editor_id}_flash" src="{$pluginurl}/images/flash.gif" title="{$lang_insert_flash}" width="20" height="20" class="mceButtonNormal" onmouseover="tinyMCE.switchClass(this,\'mceButtonOver\');" onmouseout="tinyMCE.restoreClass(this);" onmousedown="tinyMCE.restoreAndSwitchClass(this,\'mceButtonDown\');tinyMCE.execInstanceCommand(\'{$editor_id}\',\'mceFlash\');" />';
+			var cmd = 'tinyMCE.execInstanceCommand(\'{$editor_id}\',\'mceFlash\');return false;';
+            return '<a href="javascript:' + cmd + '" onclick="' + cmd + '" target="_self" onmousedown="return false;"><img id="{$editor_id}_flash" src="{$pluginurl}/images/flash.gif" title="{$lang_flash_desc}" width="20" height="20" class="mceButtonNormal" onmouseover="tinyMCE.switchClass(this,\'mceButtonOver\');" onmouseout="tinyMCE.restoreClass(this);" onmousedown="tinyMCE.restoreAndSwitchClass(this,\'mceButtonDown\');" /></a>';
     }
 
     return "";
@@ -40,7 +51,7 @@ function TinyMCE_flash_parseAttributes(attribute_string) {
 			if (pos != -1)
 				attributeName = attributeName.substring(pos+1);
 
-			attributes[attributeName.toLowerCase()] = attributeValue.substring(1).toLowerCase();
+			attributes[attributeName.toLowerCase()] = attributeValue.substring(1);
 
 			attributeName = "";
 			attributeValue = "";
@@ -61,10 +72,6 @@ function TinyMCE_flash_parseAttributes(attribute_string) {
 }
 
 function TinyMCE_flash_execCommand(editor_id, element, command, user_interface, value) {
-	function getAttrib(elm, name) {
-		return elm.getAttribute(name) ? elm.getAttribute(name) : "";
-	}
-
     // Handle commands
     switch (command) {
         case "mceFlash":
@@ -74,25 +81,31 @@ function TinyMCE_flash_execCommand(editor_id, element, command, user_interface, 
 			var focusElm = inst.getFocusElement();
 
             template['file']   = '../../plugins/flash/flash.htm'; // Relative to theme
-            template['width']  = 400;
-            template['height'] = 195;
+            template['width']  = 430;
+            template['height'] = 175;
+
+			template['width'] += tinyMCE.getLang('lang_flash_delta_width', 0);
+			template['height'] += tinyMCE.getLang('lang_flash_delta_height', 0);
 
 			// Is selection a image
             if (focusElm != null && focusElm.nodeName.toLowerCase() == "img") {
-				name = getAttrib(focusElm, 'name');
+				name = tinyMCE.getAttrib(focusElm, 'class');
 
-				if (name != 'mce_plugin_flash') // Not a Flash
+				if (name.indexOf('mceItemFlash') == -1) // Not a Flash
 					return true;
 
 				// Get rest of Flash items
-				swffile = getAttrib(focusElm, 'alt');
-				swffile = eval(tinyMCE.settings['urlconverter_callback'] + "(swffile, null, true);");
-				swfwidth = getAttrib(focusElm, 'width');
-				swfheight = getAttrib(focusElm, 'height');
+				swffile = tinyMCE.getAttrib(focusElm, 'alt');
+
+				if (tinyMCE.getParam('convert_urls'))
+					swffile = eval(tinyMCE.settings['urlconverter_callback'] + "(swffile, null, true);");
+
+				swfwidth = tinyMCE.getAttrib(focusElm, 'width');
+				swfheight = tinyMCE.getAttrib(focusElm, 'height');
 				action = "update";
             }
 
-            tinyMCE.openWindow(template, {editor_id : editor_id, swffile : swffile, swfwidth : swfwidth, swfheight : swfheight, action : action});
+            tinyMCE.openWindow(template, {editor_id : editor_id, inline : "yes", swffile : swffile, swfwidth : swfwidth, swfheight : swfheight, action : action});
 		return true;
    }
 
@@ -103,14 +116,19 @@ function TinyMCE_flash_execCommand(editor_id, element, command, user_interface, 
 function TinyMCE_flash_cleanup(type, content) {
 	switch (type) {
 		case "insert_to_editor_dom":
-			var imgs = content.getElementsByTagName("img");
-			for (var i=0; i<imgs.length; i++) {
-				if (tinyMCE.getAttrib(imgs[i], "name") == "mce_plugin_flash") {
-					var src = tinyMCE.getAttrib(imgs[i], "alt");
+			// Force relative/absolute
+			if (tinyMCE.getParam('convert_urls')) {
+				var imgs = content.getElementsByTagName("img");
+				for (var i=0; i<imgs.length; i++) {
+					if (tinyMCE.getAttrib(imgs[i], "class") == "mceItemFlash") {
+						var src = tinyMCE.getAttrib(imgs[i], "alt");
 
-					src = tinyMCE.convertRelativeToAbsoluteURL(tinyMCE.settings['base_href'], src);
+						if (tinyMCE.getParam('convert_urls'))
+							src = eval(tinyMCE.settings['urlconverter_callback'] + "(src, null, true);");
 
-					imgs[i].setAttribute('alt', src);
+						imgs[i].setAttribute('alt', src);
+						imgs[i].setAttribute('title', src);
+					}
 				}
 			}
 			break;
@@ -118,12 +136,14 @@ function TinyMCE_flash_cleanup(type, content) {
 		case "get_from_editor_dom":
 			var imgs = content.getElementsByTagName("img");
 			for (var i=0; i<imgs.length; i++) {
-				if (tinyMCE.getAttrib(imgs[i], "name") == "mce_plugin_flash") {
+				if (tinyMCE.getAttrib(imgs[i], "class") == "mceItemFlash") {
 					var src = tinyMCE.getAttrib(imgs[i], "alt");
 
-					src = eval(tinyMCE.settings['urlconverter_callback'] + "(src, null, true);");
+					if (tinyMCE.getParam('convert_urls'))
+						src = eval(tinyMCE.settings['urlconverter_callback'] + "(src, null, true);");
 
 					imgs[i].setAttribute('alt', src);
+					imgs[i].setAttribute('title', src);
 				}
 			}
 			break;
@@ -160,14 +180,39 @@ function TinyMCE_flash_cleanup(type, content) {
 				// Insert image
 				var contentAfter = content.substring(endPos);
 				content = content.substring(0, startPos);
-				content += '<img name="mce_plugin_flash" width="' + attribs["width"] + '" height="' + attribs["height"] + '"';
+				content += '<img width="' + attribs["width"] + '" height="' + attribs["height"] + '"';
 				content += ' src="' + (tinyMCE.getParam("theme_href") + '/images/spacer.gif') + '" title="' + attribs["src"] + '"';
-				content += ' alt="' + attribs["src"] + '" class="mce_plugin_flash" />' + content.substring(endPos);
+				content += ' alt="' + attribs["src"] + '" class="mceItemFlash" />' + content.substring(endPos);
 				content += contentAfter;
 				index++;
 
 				startPos++;
 			}
+
+			// Parse all embed tags and replace them with images from the embed data
+			var index = 0;
+			while ((startPos = content.indexOf('<embed', startPos)) != -1) {
+				if (index >= embedList.length)
+					break;
+
+				var attribs = embedList[index];
+
+				// Find end of embed
+				endPos = content.indexOf('>', startPos);
+				endPos += 9;
+
+				// Insert image
+				var contentAfter = content.substring(endPos);
+				content = content.substring(0, startPos);
+				content += '<img width="' + attribs["width"] + '" height="' + attribs["height"] + '"';
+				content += ' src="' + (tinyMCE.getParam("theme_href") + '/images/spacer.gif') + '" title="' + attribs["src"] + '"';
+				content += ' alt="' + attribs["src"] + '" class="mceItemFlash" />' + content.substring(endPos);
+				content += contentAfter;
+				index++;
+
+				startPos++;
+			}
+
 			break;
 
 		case "get_from_editor":
@@ -178,7 +223,7 @@ function TinyMCE_flash_cleanup(type, content) {
 				var attribs = TinyMCE_flash_parseAttributes(content.substring(startPos + 4, endPos));
 
 				// Is not flash, skip it
-				if (attribs['name'] != "mce_plugin_flash")
+				if (attribs['class'] != "mceItemFlash")
 					continue;
 
 				endPos += 2;
@@ -211,17 +256,13 @@ function TinyMCE_flash_cleanup(type, content) {
 }
 
 function TinyMCE_flash_handleNodeChange(editor_id, node, undo_index, undo_levels, visual_aid, any_selection) {
-	function getAttrib(elm, name) {
-		return elm.getAttribute(name) ? elm.getAttribute(name) : "";
-	}
-
 	tinyMCE.switchClassSticky(editor_id + '_flash', 'mceButtonNormal');
 
 	if (node == null)
 		return;
 
 	do {
-		if (node.nodeName.toLowerCase() == "img" && getAttrib(node, 'name').indexOf('mce_plugin_flash') == 0)
+		if (node.nodeName.toLowerCase() == "img" && tinyMCE.getAttrib(node, 'class').indexOf('mceItemFlash') == 0)
 			tinyMCE.switchClassSticky(editor_id + '_flash', 'mceButtonSelected');
 	} while ((node = node.parentNode));
 

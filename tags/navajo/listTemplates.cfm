@@ -21,7 +21,14 @@ by a regular expression match here???
 <cfparam name="attributes.path" default="#application.path.webskin#/#attributes.typename#">
 <cfparam name="attributes.r_qMethods" default="r_qMethods">
 
-<cfdirectory action="LIST" filter="#attributes.prefix#*.cfm" name="qTemplates" directory="#attributes.path#">
+<cfdirectory action="LIST" filter="*.cfm" name="qTemplates" directory="#attributes.path#">
+
+<!--- This is to overcome casesensitivity issues on mac/linux machines --->
+<cfquery name="qTemplates" dbtype="query">
+	SELECT *
+	FROM qTemplates
+	WHERE lower(qTemplates.name) LIKE '#lCase(attributes.prefix)#%'
+</cfquery>
 
 <cfset qMethods = queryNew("methodname, displayname")>
 

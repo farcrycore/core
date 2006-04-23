@@ -1,62 +1,101 @@
-// ES lang variables by Alvaro Velasco
+/**
+ * ES lang variables
+ * 
+ * Authors : Alvaro Velasco,
+ *           Adolfo Sanz De Diego (asanzdiego) <asanzdiego@yahoo.es>,
+ *           Carlos C Soto (eclipxe) <csoto@sia-solutions.com>
+ * Last Updated : October 17, 2005
+ * TinyMCE Version : 2.0RC3
+ */
 
-tinyMCELang['lang_theme_style_select'] = 'Estilos';
-tinyMCELang['lang_theme_code_desc'] = 'Editar codigo HTML';
-tinyMCELang['lang_theme_code_title'] = 'Editor codigo HTML';
-tinyMCELang['lang_theme_code_wordwrap'] = 'Word wrap';
-tinyMCELang['lang_theme_sub_desc'] = 'Subindice';
-tinyMCELang['lang_theme_sup_desc'] = 'Superindice';
-tinyMCELang['lang_theme_hr_desc'] = 'Insertar un separador horizontal';
-tinyMCELang['lang_theme_removeformat_desc'] = 'Quitar formato';
-tinyMCELang['lang_theme_custom1_desc'] = 'Tu descricion';
-tinyMCELang['lang_insert_image_border'] = 'Borde';
-tinyMCELang['lang_insert_image_dimensions'] = 'Dimensiones';
-tinyMCELang['lang_insert_image_vspace'] = 'Espacio vertical';
-tinyMCELang['lang_insert_image_hspace'] = 'Espacio horizontal';
-tinyMCELang['lang_insert_image_align'] = 'Alineamiento';
-tinyMCELang['lang_insert_image_align_default'] = 'Por defecto';
-tinyMCELang['lang_insert_image_align_baseline'] = 'Baseline';
-tinyMCELang['lang_insert_image_align_top'] = 'Superior';
-tinyMCELang['lang_insert_image_align_middle'] = 'Centro';
-tinyMCELang['lang_insert_image_align_bottom'] = 'Inferior';
-tinyMCELang['lang_insert_image_align_texttop'] = 'Alinear texto arriba';
-tinyMCELang['lang_insert_image_align_absmiddle'] = 'Centrado horizontal';
-tinyMCELang['lang_insert_image_align_absbottom'] = 'Centrado abajo';
-tinyMCELang['lang_insert_image_align_left'] = 'Izquierda';
-tinyMCELang['lang_insert_image_align_right'] = 'Derecha';
-tinyMCELang['lang_insert_image_delta_height'] = 10;
-tinyMCELang['lang_theme_font_size'] = '-- Font size --';
-tinyMCELang['lang_theme_fontdefault'] = '-- Font family --';
-tinyMCELang['lang_theme_block'] = '-- Format --';
-tinyMCELang['lang_theme_paragraph'] = 'Paragraph';
-tinyMCELang['lang_theme_div'] = 'Div';
-tinyMCELang['lang_theme_address'] = 'Address';
-tinyMCELang['lang_theme_pre'] = 'Preformatted';
-tinyMCELang['lang_theme_h1'] = 'Heading 1';
-tinyMCELang['lang_theme_h2'] = 'Heading 2';
-tinyMCELang['lang_theme_h3'] = 'Heading 3';
-tinyMCELang['lang_theme_h4'] = 'Heading 4';
-tinyMCELang['lang_theme_h5'] = 'Heading 5';
-tinyMCELang['lang_theme_h6'] = 'Heading 6';
-tinyMCELang['lang_theme_colorpicker_title'] = 'Select a color';
-tinyMCELang['lang_theme_colorpicker_apply'] = 'Apply';
-tinyMCELang['lang_theme_forecolor_desc'] = 'Select forecolor';
-tinyMCELang['lang_theme_backcolor_desc'] = 'Select background color';
-tinyMCELang['lang_theme_charmap_title'] = 'Select custom character';
-tinyMCELang['lang_theme_charmap_desc'] = 'Insert custom character';
-tinyMCELang['lang_theme_visualaid_desc'] = 'Toggle guidelines/invisible elements';
-tinyMCELang['lang_insert_anchor_title'] = 'Insert/edit anchor';
-tinyMCELang['lang_insert_anchor_name'] = 'Anchor name';
-tinyMCELang['lang_theme_anchor_desc'] = 'Insert/edit anchor';
-tinyMCELang['lang_theme_insert_link_titlefield'] = 'Title';
-tinyMCELang['lang_theme_clipboard_msg'] = 'Copy/Cut/Paste is not available in Mozilla and Firefox.\nDo you want more information about this issue?';
-tinyMCELang['lang_theme_path'] = 'Path';
-tinyMCELang['lang_cut_desc'] = 'Cut';
-tinyMCELang['lang_copy_desc'] = 'Copy';
-tinyMCELang['lang_paste_desc'] = 'Paste';
-tinyMCELang['lang_link_list'] = 'Link list';
-tinyMCELang['lang_image_list'] = 'Image list';
-tinyMCELang['lang_browse'] = 'Browse';
-tinyMCELang['lang_image_props_desc'] = 'Image properties';
-tinyMCELang['lang_newdocument_desc'] = 'New document';
-tinyMCELang['lang_newdocument'] = 'Are you sure you want clear all contents?';
+tinyMCE.addToLang('',{
+theme_style_select : '-- Estilos --',
+theme_code_desc : 'Editar código HTML',
+theme_code_title : 'Editor código HTML',
+theme_code_wordwrap : 'Ajuste de línea',
+theme_sub_desc : 'Subíndice',
+theme_sup_desc : 'Superíndice',
+theme_hr_desc : 'Insertar una barra horizontal',
+theme_removeformat_desc : 'Quitar formato',
+theme_custom1_desc : 'Tu descripción aquí',
+insert_image_border : 'Borde',
+insert_image_dimensions : 'Dimensiones',
+insert_image_vspace : 'Espacio vertical',
+insert_image_hspace : 'Espacio horizontal',
+insert_image_align : 'Alineación',
+insert_image_align_default : '-- Por defecto --',
+insert_image_align_baseline : 'Linea base',
+insert_image_align_top : 'Arriba',
+insert_image_align_middle : 'Centrado',
+insert_image_align_bottom : 'Abajo',
+insert_image_align_texttop : 'Texto arriba',
+insert_image_align_absmiddle : 'Centrado total',
+insert_image_align_absbottom : 'Abajo total',
+insert_image_align_left : 'Izquierda',
+insert_image_align_right : 'Derecha',
+theme_font_size : '-- Tamaño del texto --',
+theme_fontdefault : '-- Tipo de fuente --',
+theme_block : '-- Formato del texto --',
+theme_paragraph : 'Párrafo',
+theme_div : 'Capa',
+theme_address : 'Dirección',
+theme_pre : 'Preformateado',
+theme_h1 : 'Título 1',
+theme_h2 : 'Título 2',
+theme_h3 : 'Título 3',
+theme_h4 : 'Título 4',
+theme_h5 : 'Título 5',
+theme_h6 : 'Título 6',
+theme_colorpicker_title : 'Selecciona un color',
+theme_colorpicker_apply : 'Aplicar',
+theme_forecolor_desc : 'Selecciona un color para el texto',
+theme_backcolor_desc : 'Selecciona un color de fondo',
+theme_charmap_title : 'Selecciona un carácter especial',
+theme_charmap_desc : 'Inserta un carácter especial',
+theme_charmap_all_title : 'Todos',
+theme_charmap_all_desc : 'Todos los caracteres',
+theme_charmap_alpha_title : 'Alfabéticos',
+theme_charmap_alpha_desc : 'Caracteres alfabéticos',
+theme_charmap_arrows_title : 'Flechas',
+theme_charmap_arrows_desc : 'Caracteres de flechas',
+theme_charmap_greek_title : 'Griegos',
+theme_charmap_greek_desc : 'Caracteres Griegos',
+theme_charmap_math_title : 'Mathemáticos',
+theme_charmap_math_desc : 'Caracteres mathemáticos',
+theme_charmap_misc_title : 'Misceláneos',
+theme_charmap_misc_desc : 'Caracteres misceláneos',
+theme_charmap_money_title : 'Monedas',
+theme_charmap_money_desc : 'Caracteres de monedas',
+theme_charmap_quotaion_title : 'Comillas',
+theme_charmap_quotaion_desc : 'Caracteres de comillas',
+theme_visualaid_desc : 'Cambiar las líneas de ayuda por elementos invisibles',
+insert_anchor_title : 'Insertar/editar ancla',
+insert_anchor_name : 'Nombre del ancla',
+theme_anchor_desc : 'Insertar/editar ancla',
+theme_insert_link_titlefield : 'Título',
+theme_clipboard_msg : 'No se pueden utilizar los comandos Copiar / Cortar / Pegar en Mozilla y en Firefox.\r\nUse el teclado Copiar (Ctrl+C) / Cortar (Ctrl+X) / Pegar (Ctrl+V)\r\n¿Quieres obtener más información?',
+theme_path : 'Ruta',
+cut_desc : 'Cortar (Ctrl+X)',
+copy_desc : 'Copiar (Ctrl+C)',
+paste_desc : 'Pegar (Ctrl+V)',
+link_list : 'Lista de enlaces',
+image_list : 'Lista de imágenes',
+browse : 'Navegar',
+image_props_desc : 'Propiedades de la imagen',
+newdocument_desc : 'Nuevo documento',
+class_name : 'Clase',
+newdocument : '¿Estás seguro de que quieres borrar todo el contenido?',
+about_title : 'Acerca de TinyMCE',
+about : 'Acerca',
+license : 'Licencia',
+plugins : 'Plugins',
+plugin : 'Plugin',
+author : 'Autor',
+version : 'Versión',
+loaded_plugins : 'Plugins cargados',
+help : 'Ayuda',
+not_set : '-- Por defecto --',
+close : 'Cerrar',
+toolbar_focus : 'Saltar a la barra de herramientas - Alt+Q, Saltar al editor - Alt+Z, Saltar al elemento de la ruta - Alt+X',
+theme_advanced_anchor_delta_width : 20
+});

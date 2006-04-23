@@ -1,3 +1,5 @@
 // SE lang variables
 
-tinyMCELang['lang_preview_desc'] = 'Förhandsgranska';
+tinyMCE.addToLang('',{
+preview_desc : 'F&ouml;rhandsgranska'
+});

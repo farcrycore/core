@@ -37,38 +37,15 @@ pre {
 	background-color: #BBBBBB;
 }
 
-/* Default CSS class for links within the editor */
-
-.mceLink a:visited {
-	color: #666666;
-	text-decoration: underline;
-	font-size: 12px;
+thead {
+	background-color: #FFBBBB;
 }
 
-.mceLink a:active {
-	color: #666666;
-	text-decoration: underline;
-	font-size: 12px;
+tfoot {
+	background-color: #BBBBFF;
 }
 
-.mceLink a:hover {
-	color: #666666;
-	text-decoration: underline;
-	font-size: 12px;
-}
-
-.mceLink a:link {
-	color: #666666;
-	text-decoration: underline;
-	font-size: 12px;
-}
-
-.mceLink a {
-	color: #666666;
-	text-decoration: underline;
-	font-size: 12px;
-}
-
-.mceVisualAid {
-	border: 1px dashed #BBBBBB;
+th {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 13px;
 }

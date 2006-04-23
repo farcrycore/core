@@ -1,4 +1,5 @@
-﻿// PL lang variables
+// PL lang variables
 
-
-tinyMCELang['lang_save_desc'] = 'Zachowaj'; 
+tinyMCE.addToLang('',{
+save_desc : 'Zachowaj'
+});

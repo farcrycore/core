@@ -18,18 +18,16 @@ Creates a draft object
 	<q4:contentobjectget objectid="#url.objectId#" bactiveonly="False" r_stobject="stObject">
 	
 	<cfscript>
+	// copy live object content
 		stProps=structCopy(stObject);
+	// override those properties unique to DRAFT at start
 		stProps.objectid = createUUID();
 		stProps.lastupdatedby = session.dmSec.authentication.userlogin;
 		stProps.datetimelastupdated = Now();
+	// todo: not sure createdby/datetimecreated should be changed for DRAFT GB 20050126
 		stProps.createdby = session.dmSec.authentication.userlogin;
 		stProps.datetimecreated = Now();
-		// dmHTML specific props
-		//stProps.displayMethod = "display";
 		stProps.status = "draft";
-		//dmNews specific props
-		stProps.publishDate = now();
-		stProps.expiryDate = now();
 		stProps.versionID = URL.objectID;
 
 		// create the new OBJECT 

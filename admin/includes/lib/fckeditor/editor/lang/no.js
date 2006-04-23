@@ -1,6 +1,6 @@
-/*
+﻿/*
  * FCKeditor - The text editor for internet
- * Copyright (C) 2003-2004 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2005 Frederico Caldeira Knabben
  * 
  * Licensed under the terms of the GNU Lesser General Public License:
  * 		http://www.opensource.org/licenses/lgpl-license.php
@@ -8,14 +8,13 @@
  * For further information visit:
  * 		http://www.fckeditor.net/
  * 
+ * "Support Open Source software. What about a donation today?"
+ * 
  * File Name: no.js
  * 	Norwegian language file.
  * 
- * Version:  2.0 RC2
- * Modified: 2004-11-30 12:31:05
- * 
  * File Authors:
- * 		Martin Kronstad (www.siteman.no) (martin.kronstad@broadpark.no)
+ * 		Martin Kronstad (www.siteman.no) (martin.kronstad@gmail.com)
  */
 
 var FCKLang =
@@ -24,7 +23,7 @@ var FCKLang =
 Dir					: "ltr",
 
 ToolbarCollapse		: "Skjul verktøylinje",
-ToolbarExpand		: "Vis verktøylinje",	
+ToolbarExpand		: "Vis verktøylinje",
 
 // Toolbar Items and Context Menu
 Save				: "Lagre",
@@ -41,8 +40,11 @@ RemoveFormat		: "Fjern format",
 InsertLinkLbl		: "Lenke",
 InsertLink			: "Sett inn/Rediger lenke",
 RemoveLink			: "Fjern lenke",
+Anchor				: "Sett inn/Rediger anker",
 InsertImageLbl		: "Bilde",
 InsertImage			: "Sett inn/Rediger bilde",
+InsertFlashLbl		: "Flash",
+InsertFlash			: "Sett inn/Rediger Flash",
 InsertTableLbl		: "Tabell",
 InsertTable			: "Sett inn/Rediger tabell",
 InsertLineLbl		: "Linje",
@@ -58,14 +60,12 @@ Underline			: "Understrek",
 StrikeThrough		: "Gjennomstrek",
 Subscript			: "Senket skrift",
 Superscript			: "Hevet skrift",
-
 LeftJustify			: "Venstrejuster",
 CenterJustify		: "Midtjuster",
 RightJustify		: "Høyrejuster",
 BlockJustify		: "Blokkjuster",
 DecreaseIndent		: "Senk nivå",
 IncreaseIndent		: "Øk nivå",
-
 Undo				: "Angre",
 Redo				: "Gjør om",
 NumberedListLbl		: "Numrert liste",
@@ -83,6 +83,20 @@ BGColor				: "Bakgrunnsfarge",
 Source				: "Kilde",
 Find				: "Finn",
 Replace				: "Erstatt",
+SpellCheck			: "Stavekontroll",
+UniversalKeyboard	: "Universelt tastatur",
+PageBreakLbl		: "Sideskift",
+PageBreak			: "Sett inn sideskift",
+
+Form			: "Skjema",
+Checkbox		: "Sjekkboks",
+RadioButton		: "Radioknapp",
+TextField		: "Tekstfelt",
+Textarea		: "Tekstområde",
+HiddenField		: "Skjult felt",
+Button			: "Knapp",
+SelectionField	: "Dropdown meny",
+ImageButton		: "Bildeknapp",
 
 // Context Menu
 EditLink			: "Rediger lenke",
@@ -94,9 +108,22 @@ InsertCell			: "Sett inn celle",
 DeleteCells			: "Slett celler",
 MergeCells			: "Slå sammen celler",
 SplitCell			: "Splitt celler",
+TableDelete			: "Slett tabell",
 CellProperties		: "Celleegenskaper",
 TableProperties		: "Tabellegenskaper",
 ImageProperties		: "Bildeegenskaper",
+FlashProperties		: "Flash Egenskaper",
+
+AnchorProp			: "Ankeregenskaper",
+ButtonProp			: "Knappegenskaper",
+CheckboxProp		: "Sjekkboksegenskaper",
+HiddenFieldProp		: "Skjult felt egenskaper",
+RadioButtonProp		: "Radioknappegenskaper",
+ImageButtonProp		: "Bildeknappegenskaper",
+TextFieldProp		: "Tekstfeltegenskaper",
+SelectionFieldProp	: "Dropdown menyegenskaper",
+TextareaProp		: "Tekstfeltegenskaper",
+FormProp			: "Skjemaegenskaper",
 
 FontFormats			: "Normal;Formatert;Adresse;Tittel 1;Tittel 2;Tittel 3;Tittel 4;Tittel 5;Tittel 6",
 
@@ -109,12 +136,19 @@ UnknownToolbarItem	: "Ukjent menyvalg \"%1\"",
 UnknownCommand		: "Ukjent kommando \"%1\"",
 NotImplemented		: "Kommando ikke ennå implimentert",
 UnknownToolbarSet	: "Verktøylinjesett \"%1\" finnes ikke",
+NoActiveX			: "Din nettleser's sikkerhetsinstillinger kan begrense noen av funksjonene i redigeringsverktøyet. Du må aktivere \"Kjør ActiveXkontroller og plugins\". Du kan oppleve feil og advarsler om manglende funksjoner",
+BrowseServerBlocked : "Kunne ikke åpne dialogboksen for filarkiv. Pass på at du har slått av popupstoppere.",
+DialogBlocked		: "Kunne ikke åpne dialogboksen. Pass på at du har slått av popupstoppere.",
 
 // Dialogs
 DlgBtnOK			: "OK",
 DlgBtnCancel		: "Avbryt",
 DlgBtnClose			: "Lukk",
+DlgBtnBrowseServer	: "Bla igjennom server",
 DlgAdvancedTag		: "Avansert",
+DlgOpOther			: "&lt;Annet&gt;",
+DlgInfoTab			: "Info",
+DlgAlertUrl			: "Vennligst skriv inn URL'en",
 
 // General Dialogs Labels
 DlgGenNotSet		: "&lt;ikke satt&gt;",
@@ -139,7 +173,6 @@ DlgImgInfoTab		: "Bildeinformasjon",
 DlgImgBtnUpload		: "Send det til serveren",
 DlgImgURL			: "URL",
 DlgImgUpload		: "Last opp",
-DlgImgBtnBrowse		: "Bla igjennom serveren",
 DlgImgAlt			: "Alternativ tekst",
 DlgImgWidth			: "Bredde",
 DlgImgHeight		: "Høyde",
@@ -159,9 +192,18 @@ DlgImgAlignRight	: "Høyre",
 DlgImgAlignTextTop	: "Tekst topp",
 DlgImgAlignTop		: "Topp",
 DlgImgPreview		: "Forhåndsvis",
-DlgImgMsgWrongExt	: "Beklager, du kan kun laste opp følgende filtyper:\n\n" + FCKConfig.ImageUploadAllowedExtensions + "\n\noperasjon avbruyy.",
-DlgImgAlertSelect	: "Velg ett bilde du vil laste opp.",
 DlgImgAlertUrl		: "Vennligst skriv bildeurlen",
+DlgImgLinkTab		: "Lenke",
+
+// Flash Dialog
+DlgFlashTitle		: "Flash Egenskaper",
+DlgFlashChkPlay		: "Auto Spill",
+DlgFlashChkLoop		: "Loop",
+DlgFlashChkMenu		: "Slå på Flash meny",
+DlgFlashScale		: "Skaler",
+DlgFlashScaleAll	: "Vis alt",
+DlgFlashScaleNoBorder	: "Ingen ramme",
+DlgFlashScaleFit	: "Skaler til å passeExact Fit",
 
 // Link Dialog
 DlgLnkWindowTitle	: "Lenke",
@@ -175,7 +217,6 @@ DlgLnkTypeEMail		: "E-Post",
 DlgLnkProto			: "Protokoll",
 DlgLnkProtoOther	: "&lt;annet&gt;",
 DlgLnkURL			: "URL",
-DlgLnkBtnBrowse		: "Bla igjennom server",
 DlgLnkAnchorSel		: "Velg ett anker",
 DlgLnkAnchorByName	: "Anker etter navn",
 DlgLnkAnchorById	: "Element etter ID",
@@ -193,7 +234,7 @@ DlgLnkTargetBlank	: "Nytt vindu (_blank)",
 DlgLnkTargetParent	: "Foreldre vindu (_parent)",
 DlgLnkTargetSelf	: "Samme vindu (_self)",
 DlgLnkTargetTop		: "Hele vindu (_top)",
-DlgLnkTargetFrame	: "Målrammens navn",
+DlgLnkTargetFrameName	: "Målramme",
 DlgLnkPopWinName	: "Popup vindus navn",
 DlgLnkPopWinFeat	: "Popup vindus egenskaper",
 DlgLnkPopResize		: "Endre størrelse",
@@ -201,7 +242,6 @@ DlgLnkPopLocation	: "Adresselinje",
 DlgLnkPopMenu		: "Menylinje",
 DlgLnkPopScroll		: "Scrollbar",
 DlgLnkPopStatus		: "Statuslinje",
-
 DlgLnkPopToolbar	: "Verktøylinje",
 DlgLnkPopFullScrn	: "Full skjerm (IE)",
 DlgLnkPopDependent	: "Avhenging (Netscape)",
@@ -210,13 +250,9 @@ DlgLnkPopHeight		: "Høyde",
 DlgLnkPopLeft		: "Venstre posisjon",
 DlgLnkPopTop		: "Topp posisjon",
 
-DlgLnkMsgWrongExtA	: "Beklager , kun følgende filtyper er lov å laste opp:\n\n" + FCKConfig.LinkUploadAllowedExtensions + "\n\nOperasjon avbrutt.",
-DlgLnkMsgWrongExtD	: "Beklager, følgende filtyper er ikke lov å laste opp:\n\n" + FCKConfig.LinkUploadDeniedExtensions + "\n\nOperasjon avbrutt.",
-
-
-DlnLnkMsgNoUrl		: "Vennligst skriv inn lenkens url",		
-DlnLnkMsgNoEMail	: "Vennligst skriv inn e-postadressen",	
-DlnLnkMsgNoAnchor	: "Vennligst velg ett anker",		
+DlnLnkMsgNoUrl		: "Vennligst skriv inn lenkens url",
+DlnLnkMsgNoEMail	: "Vennligst skriv inn e-postadressen",
+DlnLnkMsgNoAnchor	: "Vennligst velg ett anker",
 
 // Color Dialog
 DlgColorTitle		: "Velg farge",
@@ -247,6 +283,7 @@ DlgTableHeight		: "Høyde",
 DlgTableCellSpace	: "Celle marg",
 DlgTableCellPad		: "Celle polstring",
 DlgTableCaption		: "Tittel",
+DlgTableSummary		: "Sammendrag",
 
 // Table Cell Dialog
 DlgCellTitle		: "Celle egenskaper",
@@ -271,7 +308,6 @@ DlgCellVerAlignBottom	: "Bunn",
 DlgCellVerAlignBaseline	: "Bunnlinje",
 DlgCellRowSpan		: "Radspenn",
 DlgCellCollSpan		: "Kolonnespenn",
-
 DlgCellBackColor	: "Bakgrunnsfarge",
 DlgCellBorderColor	: "Rammefarge",
 DlgCellBtnSelect	: "Velg...",
@@ -298,14 +334,148 @@ PasteErrorCopy	: "Din nettlesers sikkerhetsinstillinger tillater ikke automatisk
 PasteAsText		: "Lim inn som ren tekst",
 PasteFromWord	: "Lim inn fra word",
 
-DlgPasteMsg		: "Programmet kan ikke lime inn tekst på grunn av din nettlesers <STRONG>sikkerhetsinstillinger</STRONG>.<BR>Vennligst lim inn teksten i boksen nedenfor med tastatursnareveien. (<STRONG>Ctrl+V</STRONG>) og trykk <STRONG>OK</STRONG>.",
+DlgPasteMsg2	: "Vennligst lim inn i den følgende boksen med tastaturet (<STRONG>Ctrl+V</STRONG>) og trykk <STRONG>OK</STRONG>.",
+DlgPasteIgnoreFont		: "Ignorer fonter",
+DlgPasteRemoveStyles	: "Fjern stildefinisjoner",
+DlgPasteCleanBox		: "Tøm boksen",
+
 
 // Color Picker
 ColorAutomatic	: "Automatisk",
 ColorMoreColors	: "Flere farger...",
 
+// Document Properties
+DocProps		: "Dokumentegenskaper",
+
+// Anchor Dialog
+DlgAnchorTitle		: "Ankeregenskaper",
+DlgAnchorName		: "Ankernavn",
+DlgAnchorErrorName	: "Vennligst skriv inn ankernavnet",
+
+// Speller Pages Dialog
+DlgSpellNotInDic		: "Ikke i ordboken",
+DlgSpellChangeTo		: "Endre til",
+DlgSpellBtnIgnore		: "Ignorer",
+DlgSpellBtnIgnoreAll	: "Ignorer alle",
+DlgSpellBtnReplace		: "Erstatt",
+DlgSpellBtnReplaceAll	: "Erstatt alle",
+DlgSpellBtnUndo			: "Angre",
+DlgSpellNoSuggestions	: "- ingen forslag -",
+DlgSpellProgress		: "Stavekontroll pågår...",
+DlgSpellNoMispell		: "Stavekontroll fullført: ingen feilstavinger funnet",
+DlgSpellNoChanges		: "Stavekontroll fullført: ingen ord endret",
+DlgSpellOneChange		: "Stavekontroll fullført: Ett ord endret",
+DlgSpellManyChanges		: "Stavekontroll fullført: %1 ord endret",
+
+IeSpellDownload			: "Stavekontroll ikke installert, vil du laste den ned nå?",
+
+// Button Dialog
+DlgButtonText	: "Tekst",
+DlgButtonType	: "Type",
+
+// Checkbox and Radio Button Dialogs
+DlgCheckboxName		: "Navn",
+DlgCheckboxValue	: "Verdi",
+DlgCheckboxSelected	: "Valgt",
+
+// Form Dialog
+DlgFormName		: "Navn",
+DlgFormAction	: "Handling",
+DlgFormMethod	: "Metode",
+
+// Select Field Dialog
+DlgSelectName		: "Navn",
+DlgSelectValue		: "Verdi",
+DlgSelectSize		: "Størrelse",
+DlgSelectLines		: "Linjer",
+DlgSelectChkMulti	: "Tillat flervalg",
+DlgSelectOpAvail	: "Tilgjenglige alternativer",
+DlgSelectOpText		: "Tekst",
+DlgSelectOpValue	: "Verdi",
+DlgSelectBtnAdd		: "Legg til",
+DlgSelectBtnModify	: "Endre",
+DlgSelectBtnUp		: "Opp",
+DlgSelectBtnDown	: "Ned",
+DlgSelectBtnSetValue : "Sett som valgt",
+DlgSelectBtnDelete	: "Slett",
+
+// Textarea Dialog
+DlgTextareaName	: "Navn",
+DlgTextareaCols	: "Kolonner",
+DlgTextareaRows	: "Rader",
+
+// Text Field Dialog
+DlgTextName			: "Navn",
+DlgTextValue		: "verdi",
+DlgTextCharWidth	: "Tegnbredde",
+DlgTextMaxChars		: "Maks antall tegn",
+DlgTextType			: "Type",
+DlgTextTypeText		: "Tekst",
+DlgTextTypePass		: "Passord",
+
+// Hidden Field Dialog
+DlgHiddenName	: "Navn",
+DlgHiddenValue	: "Verdi",
+
+// Bulleted List Dialog
+BulletedListProp	: "Uordnet listeegenskaper",
+NumberedListProp	: "Ordnet listeegenskaper",
+DlgLstType			: "Type",
+DlgLstTypeCircle	: "Sirkel",
+DlgLstTypeDisc		: "Hel sirkel",
+DlgLstTypeSquare	: "Firkant",
+DlgLstTypeNumbers	: "Numre(1, 2, 3)",
+DlgLstTypeLCase		: "Små bokstaver (a, b, c)",
+DlgLstTypeUCase		: "Store bokstaver(A, B, C)",
+DlgLstTypeSRoman	: "Små romerske tall(i, ii, iii)",
+DlgLstTypeLRoman	: "Store romerske tall(I, II, III)",
+
+// Document Properties Dialog
+DlgDocGeneralTab	: "Generalt",
+DlgDocBackTab		: "Bakgrunn",
+DlgDocColorsTab		: "Farger og marginer",
+DlgDocMetaTab		: "Meta Data",
+
+DlgDocPageTitle		: "Sidetittel",
+DlgDocLangDir		: "Språkretning",
+DlgDocLangDirLTR	: "Venstre til høyre (LTR)",
+DlgDocLangDirRTL	: "Høyre til venstre (RTL)",
+DlgDocLangCode		: "Språkkode",
+DlgDocCharSet		: "Tegnsett",
+DlgDocCharSetOther	: "Annet tegnsett",
+
+DlgDocDocType		: "Dokumenttype header",
+DlgDocDocTypeOther	: "Annet dokumenttype header",
+DlgDocIncXHTML		: "Inkulder XHTML deklarasjon",
+DlgDocBgColor		: "Bakgrunnsfarge",
+DlgDocBgImage		: "Bakgrunnsbilde url",
+DlgDocBgNoScroll	: "Ikke scroll bakgrunnsbilde",
+DlgDocCText			: "Tekst",
+DlgDocCLink			: "Link",
+DlgDocCVisited		: "Besøkt lenke",
+DlgDocCActive		: "Aktiv lenke",
+DlgDocMargins		: "Sidemargin",
+DlgDocMaTop			: "Topp",
+DlgDocMaLeft		: "Venstre",
+DlgDocMaRight		: "Høyre",
+DlgDocMaBottom		: "Bunn",
+DlgDocMeIndex		: "Dokument nøkkelord (kommaseparert)",
+DlgDocMeDescr		: "Dokumentbeskrivelse",
+DlgDocMeAuthor		: "Forfatter",
+DlgDocMeCopy		: "Kopirett",
+DlgDocPreview		: "Forhåndsvising",
+
+// Templates Dialog
+Templates			: "Maler",
+DlgTemplatesTitle	: "Innholdsmaler",
+DlgTemplatesSelMsg	: "Velg malen du vil åpne<br>(innholdet du har skrevet blir tapt!):",
+DlgTemplatesLoading	: "Laster malliste. Vennligst vent...",
+DlgTemplatesNoTpl	: "(Ingen maler definert)",
+
 // About Dialog
-DlgAboutVersion	: "versjon",
-DlgAboutLicense	: "Lisensiert under GNU Lesser General Public License",
-DlgAboutInfo	: "Oversatt av Siteman DA<br /><a target=\"_blank\" href=\"http://www.siteman.no\">www.siteman.no</a><br /><br />For mer informasjon gå til"
+DlgAboutAboutTab	: "Om",
+DlgAboutBrowserInfoTab	: "Nettleserinfo",
+DlgAboutVersion		: "versjon",
+DlgAboutLicense		: "Lisensiert under GNU Lesser General Public License",
+DlgAboutInfo		: "Oversatt av Siteman DA<br /><a target=\"_blank\" href=\"http://www.siteman.no\">www.siteman.no</a><br /><br />For mer informasjon gå til"
 }

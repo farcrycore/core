@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/admin/bulkImageUpload.cfm,v 1.9 2005/09/15 03:10:33 guy Exp $
-$Author: guy $
-$Date: 2005/09/15 03:10:33 $
-$Name: milestone_3-0-0 $
-$Revision: 1.9 $
+$Header: /cvs/farcry/farcry_core/admin/admin/bulkImageUpload.cfm,v 1.9.2.1 2006/03/16 03:38:49 paul Exp $
+$Author: paul $
+$Date: 2006/03/16 03:38:49 $
+$Name: milestone_3-0-1 $
+$Revision: 1.9.2.1 $
 
 || DESCRIPTION || 
 $Description: Uploads a zip file containing images, creates navigation to match directory structure $
@@ -66,7 +66,7 @@ $out:$
 			//Get the data on the starting point in the tree
 			qStartingPointData = createObject("component", "#application.packagepath#.farcry.tree").getNode(objectid=application.navid.imageroot); 
 			//Set the floor for adding folders and images
-			//iBaseLevel = qStartingPointData.nLevel;
+			iBaseLevel = qStartingPointData.nLevel;
 			/*
 			Get a query object containing all descendants of the starting point. This query will be used as
 			a lookup table for folders. If the folder exists at the correct level than nothing will be done.

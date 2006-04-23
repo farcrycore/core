@@ -5,11 +5,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/webskin/sitemap.cfm,v 1.20 2005/10/28 05:45:24 guy Exp $
-$Author: guy $
-$Date: 2005/10/28 05:45:24 $
-$Name: milestone_3-0-0 $
-$Revision: 1.20 $
+$Header: /cvs/farcry/farcry_core/tags/webskin/sitemap.cfm,v 1.20.2.2 2006/02/15 23:13:19 gstewart Exp $
+$Author: gstewart $
+$Date: 2006/02/15 23:13:19 $
+$Name: milestone_3-0-1 $
+$Revision: 1.20.2.2 $
 
 || DESCRIPTION || 
 $Description: Farcry - Sitemap Include
@@ -36,7 +36,7 @@ $out: caller.r_navQuery - complete qNav query$
 <cfparam name="attributes.startPoint" default="#application.navid.home#">
 
 <cfif attributes.bDisplay>
-	<skin:genericnav navID="#attributes.startPoint#" depth="#attributes.depth#">
+	<skin:genericNav navID="#attributes.startPoint#" depth="#attributes.depth#">
 <cfelse>
 	<!--- return query to calling page --->
 	<cfset "caller.#attributes.r_navquery#" = qNav>
@@ -46,7 +46,7 @@ $out: caller.r_navQuery - complete qNav query$
 	strSQLNavStatus = listQualify(request.mode.lvalidstatus, "'");
 	navFilter=arrayNew(1);
 	navfilter[1]="status IN (#strSQLNavStatus#)";
-	navfilter[2]="(SELECT n.status FROM dmnavigation n WHERE n.objectid = ntm.parentid) IN (#strSQLNavStatus#)";    
+	navfilter[2]="(SELECT n.status FROM dmNavigation n WHERE n.objectid = ntm.parentid) IN (#strSQLNavStatus#)";    
 	qNav = request.factory.oTree.getDescendants(objectid=attributes.startPoint, depth=attributes.depth, afilter=navFilter, lcolumns="externallink");
 	lv0 = listFirst(listSort(valueList(qNav.nlevel),"numeric","asc")); //sort the value list and grab the first value as nlevel for plateau
 	depth = listFirst(listSort(valueList(qNav.nlevel),"numeric","asc")); // sort the value list and grab the first value as the default depth ie. plateau

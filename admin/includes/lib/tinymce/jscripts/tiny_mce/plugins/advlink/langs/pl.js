@@ -1,23 +1,49 @@
 // PL lang variables
+// fixed by Wooya
+// http://www.mfusion.prv.pl
+// fixed by lemiel 14.11.2005
 
-tinyMCELang['lang_insert_link_target_same'] = 'OtwÃ³rz w tym samym oknie';
-tinyMCELang['lang_insert_link_target_parent'] = 'Open in parent window / frame';
-tinyMCELang['lang_insert_link_target_top'] = 'Open in top frame (replaces all frames)';
-tinyMCELang['lang_insert_link_target_blank'] = 'OtwÃ³rz w nowym oknie';
-tinyMCELang['lang_insert_link_target_named'] = 'Open in the window';
-tinyMCELang['lang_insert_link_popup'] = 'JS-Popup';
-tinyMCELang['lang_insert_link_popup_url'] = 'Popup URL';
-tinyMCELang['lang_insert_link_popup_name'] = 'Window name';
-tinyMCELang['lang_insert_link_popup_return'] = 'insert \'return false\'';
-tinyMCELang['lang_insert_link_popup_scrollbars'] = 'Show scrollbars';
-tinyMCELang['lang_insert_link_popup_statusbar'] = 'Show statusbar';
-tinyMCELang['lang_insert_link_popup_toolbar'] = 'Show toolbars';
-tinyMCELang['lang_insert_link_popup_menubar'] = 'Show menubar';
-tinyMCELang['lang_insert_link_popup_location'] = 'Show locationbar';
-tinyMCELang['lang_insert_link_popup_resizable'] = 'Make window resizable';
-tinyMCELang['lang_insert_link_popup_size'] = 'Size';
-tinyMCELang['lang_insert_link_popup_position'] = 'Position (X/Y)';
-tinyMCELang['lang_insert_link_popup_missingtarget'] = 'Please insert a name for the target or choose another option.';
-tinyMCELang['lang_insert_link_url'] = 'Adres URL';
-tinyMCELang['lang_insert_link_target'] = 'Cel';
-
+tinyMCE.addToLang('advlink',{
+general_tab : 'G³ówne ustawienia',
+popup_tab : 'Okienko popup',
+events_tab : 'Zdarzenia',
+advanced_tab : 'Zaawansowane',
+general_props : 'G³ówne',
+popup_props : 'Ustawienia popup',
+event_props : 'Zdarzenia',
+advanced_props : 'Zaawansowane opcje',
+popup_opts : 'Opcje',
+anchor_names : 'Kotwice',
+target_same : 'Otwórz w tym oknie / ramce',
+target_parent : 'Otwórz w poprzednim oknie / ramce',
+target_top : 'Otwórz w g³ównej ramce (zamienia wszystkie ramki)',
+target_blank : 'Otwórz w nowym oknie',
+popup : 'Okienko popup Javascript',
+popup_url : 'URL dla popup',
+popup_name : 'Nazwa okna',
+popup_return : 'Wstaw \'return false\'',
+popup_scrollbars : 'Poka¿ paski przewijania',
+popup_statusbar : 'Poka¿ pasek statusu',
+popup_toolbar : 'Poka¿ pasek narzêdzi',
+popup_menubar : 'Poka¿ pasek menu',
+popup_location : 'Poka¿ pasek adresu',
+popup_resizable : 'Pozwalaj na zmianê wielko¶ci okna',
+popup_dependent : 'Zale¿ne (tylko Mozilla/Firefox)',
+popup_size : 'Rozmiar',
+popup_position : 'Pozycja (X/Y)',
+id : 'Id',
+style: 'Styl',
+classes : 'Klasa',
+target_name : 'Nazwa celu',
+langdir : 'Kierunek tekstu',
+target_langcode : 'Jêzyk celu',
+langcode : 'Kod jêzyka',
+encoding : 'Kodowanie znaków celu',
+mime : 'Typ MIME celu',
+rel : 'Zale¿no¶æ strony do celu',
+rev : 'Zale¿no¶æ celu do strony',
+tabindex : 'Indeks tabeli',
+accesskey : 'Klawisz dostêpu',
+ltr : 'Lewy do prawego',
+rtl : 'Prawy do lewego'
+});

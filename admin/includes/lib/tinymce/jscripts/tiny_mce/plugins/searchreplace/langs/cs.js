@@ -1,19 +1,27 @@
-// CS lang variables
+/**
+ * Czech lang variables 
+ * encoding: utf-8
+ *  
+ * $Id: cs.js,v 1.1.2.2 2005/12/03 01:11:58 geoff Exp $ 
+ */  
 
-tinyMCELang['lang_searchreplace_search_desc'] = 'Najdi';
-tinyMCELang['lang_searchreplace_searchnext_desc'] = 'Najdi znova';
-tinyMCELang['lang_searchreplace_replace_desc'] = 'Najdi/Nahradit';
-tinyMCELang['lang_searchreplace_notfound'] = 'Vyhled·vanÌ ukonc(eno. R(etezec nemusel b˝t nalezen.';
-tinyMCELang['lang_searchreplace_search_title'] = 'Najdi';
-tinyMCELang['lang_searchreplace_replace_title'] = 'Najdi/Nahradit';
-tinyMCELang['lang_searchreplace_allreplaced'] = 'Vöechny v˝skyty r(etezce byli zme(neny.';
-tinyMCELang['lang_searchreplace_findwhat'] = 'NajÌt';
-tinyMCELang['lang_searchreplace_replacewith'] = 'Nahradit';
-tinyMCELang['lang_searchreplace_direction'] = 'Sme(r';
-tinyMCELang['lang_searchreplace_up'] = 'Nahoru';
-tinyMCELang['lang_searchreplace_down'] = 'Dolu*';
-tinyMCELang['lang_searchreplace_case'] = 'Pr(esn· zhoda';
-tinyMCELang['lang_searchreplace_findnext'] = 'Najdi&nbsp;dalöÌ';
-tinyMCELang['lang_searchreplace_replace'] = 'Nahradit';
-tinyMCELang['lang_searchreplace_replaceall'] = 'Nahradit&nbsp;vöe';
-tinyMCELang['lang_searchreplace_cancel'] = 'Zruöit';
+tinyMCE.addToLang('',{
+searchreplace_search_desc : 'Najdi',
+searchreplace_searchnext_desc : 'Najdi znova',
+searchreplace_replace_desc : 'Najdi/Nahradit',
+searchreplace_notfound : 'Vyhled√°van√≠ ukonƒçeno. ≈òetƒõzec nemusel b√Ωt nalezen.',
+searchreplace_search_title : 'Najdi',
+searchreplace_replace_title : 'Najdi/Nahradit',
+searchreplace_allreplaced : 'V≈°echny v√Ωskyty ≈ôetƒõzce byly zmƒõnƒõny.',
+searchreplace_findwhat : 'Naj√≠t',
+searchreplace_replacewith : 'Nahradit',
+searchreplace_direction : 'Smƒõr',
+searchreplace_up : 'Nahoru',
+searchreplace_down : 'Dol≈Ø',
+searchreplace_case : 'P≈ôesn√° shoda',
+searchreplace_findnext : 'Najdi&nbsp;dal≈°√≠',
+searchreplace_replace : 'Nahradit',
+searchreplace_replaceall : 'Nahradit&nbsp;v≈°e',
+searchreplace_cancel : 'Zru≈°it'
+});
+

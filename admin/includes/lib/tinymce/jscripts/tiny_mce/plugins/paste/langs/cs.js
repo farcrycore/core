@@ -1,8 +1,16 @@
-// CS lang variables
+/**
+ * Czech lang variables 
+ * encoding: utf-8
+ *  
+ * $Id: cs.js,v 1.1.2.2 2005/12/03 01:11:59 geoff Exp $ 
+ */  
 
-tinyMCELang['lang_paste_text_desc'] = 'Vloûit neform·tovan˝ text';
-tinyMCELang['lang_paste_text_title'] = 'Pouûi CTRL+V na kl·vesnici pro vloûenÌ textu do okna.';
-tinyMCELang['lang_paste_text_linebreaks'] = 'Nechej pr(eruöenÌ r(·dku*';
-tinyMCELang['lang_paste_word_desc'] = 'Vloûit text z aplikace Word';
-tinyMCELang['lang_paste_word_title'] = 'Pouûi CTRL+V na kl·vesnici pro vloûenÌ textu do okna.';
-tinyMCELang['lang_selectall_desc'] = 'Oznac(it vöe';
+tinyMCE.addToLang('',{
+paste_text_desc : 'Vlo≈æit neform√°tovan√Ω text',
+paste_text_title : 'Pou≈æij CTRL + V na kl√°vesnici pro vlo≈æen√≠ textu do okna.',
+paste_text_linebreaks : 'Nechej p≈ôeru≈°en√≠ ≈ô√°dk≈Ø',
+paste_word_desc : 'Vlo≈æit text z aplikace Word',
+paste_word_title : 'Pou≈æij CTRL + V na kl√°vesnici pro vlo≈æen√≠ textu do okna.',
+selectall_desc : 'Oznaƒçit v≈°e'
+});
+

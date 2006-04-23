@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/admin/editRule.cfm,v 1.6 2005/08/09 03:54:39 geoff Exp $
-$Author: geoff $
-$Date: 2005/08/09 03:54:39 $
-$Name: milestone_3-0-0 $
-$Revision: 1.6 $
+$Header: /cvs/farcry/farcry_core/admin/admin/editRule.cfm,v 1.6.2.1 2006/02/14 02:55:28 tlucas Exp $
+$Author: tlucas $
+$Date: 2006/02/14 02:55:28 $
+$Name: milestone_3-0-1 $
+$Revision: 1.6.2.1 $
 
 || DESCRIPTION || 
 $Description: $
@@ -35,7 +35,7 @@ $out:$
 	{
 		o = createObject("component", application.rules[url.typename].rulePath);
 		if (url.typename eq "ruleHandpicked") {
-			o.update(objectid=URL.ruleid,cancelLocation="#application.url.farcry#/editTabRules.cfm?");
+			o.update(objectid=URL.ruleid,cancelLocation="#application.url.farcry#/edittabRules.cfm?");
 		} else {
 			o.update(objectid=URL.ruleid);
 		}

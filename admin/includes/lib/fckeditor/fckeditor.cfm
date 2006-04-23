@@ -1,13 +1,15 @@
 <cfsetting enablecfoutputonly="Yes">
 <!---
  * FCKeditor - The text editor for internet
- * Copyright (C) 2003-2004 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2005 Frederico Caldeira Knabben
  * 
  * Licensed under the terms of the GNU Lesser General Public License:
  * 		http://www.opensource.org/licenses/lgpl-license.php
  * 
  * For further information visit:
  * 		http://www.fckeditor.net/
+ * 
+ * "Support Open Source software. What about a donation today?"
  * 
  * File Name: fckeditor.cfm
  * 	ColdFusion integration. 
@@ -25,11 +27,9 @@
  * 		config="..." 
  * 	>
  * 
- * Version:  2.0 RC2
- * Modified: 2004-12-07 12:06:16
- * 
  * File Authors:
  * 		Hendrik Kramer (hk@lwd.de)
+ * 		Mark Woods (mark@thickpaddy.com)
 --->
 <!--- ::
 	 * 	Attribute validation
@@ -37,7 +37,7 @@
 <cfparam name="attributes.instanceName" type="string">
 <cfparam name="attributes.width" 		type="string" default="100%">
 <cfparam name="attributes.height" 		type="string" default="200">
-<cfparam name="attributes.toolbarSet" 	type="string" default="FarCryDefault">
+<cfparam name="attributes.toolbarSet" 	type="string" default="Default">
 <cfparam name="attributes.value" 		type="string" default="">
 <cfparam name="attributes.basePath" 	type="string" default="/fckeditor/">
 <cfparam name="attributes.checkBrowser" type="boolean" default="true">
@@ -67,7 +67,7 @@ if( attributes.checkBrowser )
 		}
 	}
 	// check for Gecko ( >= 20030210+ )
-	else if( find( "gecko", sAgent ) )
+	else if( find( "gecko/", sAgent ) )
 	{
 		// try to extract Gecko version date
 		stResult = reFind( "gecko/(200[3-9][0-1][0-9][0-3][0-9])", sAgent, 1, true );
@@ -103,7 +103,7 @@ else
 
 		// append toolbarset name to the url
 		if( len( attributes.toolbarSet ) )
-			sURL = sURL & "&Toolbar=" & attributes.toolbarSet;
+			sURL = sURL & "&amp;Toolbar=" & attributes.toolbarSet;
 
 		// create configuration string: Key1=Value1&Key2=Value2&... (Key/Value:HTML encoded)
 
@@ -114,9 +114,10 @@ else
 		 * changed 20041206 hk@lwd.de (improvements are welcome!)
 		 */
 		lConfigKeys = "";
-		lConfigKeys = lConfigKeys & "CustomConfigurationsPath,EditorAreaCSS,Debug,SkinPath,PluginsPath,AutoDetectLanguage,DefaultLanguage,EnableXHTML,EnableSourceXHTML";
-		lConfigKeys = lConfigKeys & ",GeckoUseSPAN,StartupFocus,ForcePasteAsPlainText,LinkShowTargets,LinkTargets,LinkDefaultTarget,ToolbarStartExpanded,ToolbarCanCollapse";
-		lConfigKeys = lConfigKeys & ",ToolbarSets,FontColors,FontNames,FontSizes,FontFormats,StylesXmlPath,LinkBrowser,LinkBrowserURL,LinkBrowserWindowWidth,LinkBrowserWindowHeight";
+		lConfigKeys = lConfigKeys & "CustomConfigurationsPath,EditorAreaCSS,DocType,BaseHref,FullPage,Debug,SkinPath,PluginsPath,AutoDetectLanguage,DefaultLanguage,ContentLangDirection,EnableXHTML,EnableSourceXHTML,ProcessHTMLEntities,IncludeLatinEntities,IncludeGreekEntities";
+		lConfigKeys = lConfigKeys & ",FillEmptyBlocks,FormatSource,FormatOutput,FormatIndentator,GeckoUseSPAN,StartupFocus,ForcePasteAsPlainText,ForceSimpleAmpersand,TabSpaces,ShowBorders,UseBROnCarriageReturn";
+		lConfigKeys = lConfigKeys & ",ToolbarStartExpanded,ToolbarCanCollapse,ToolbarSets,ContextMenu,FontColors,FontNames,FontSizes,FontFormats,StylesXmlPath,SpellChecker,IeSpellDownloadUrl,MaxUndoLevels";
+		lConfigKeys = lConfigKeys & ",LinkBrowser,LinkBrowserURL,LinkBrowserWindowWidth,LinkBrowserWindowHeight";
 		lConfigKeys = lConfigKeys & ",LinkUpload,LinkUploadURL,LinkUploadWindowWidth,LinkUploadWindowHeight,LinkUploadAllowedExtensions,LinkUploadDeniedExtensions";
 		lConfigKeys = lConfigKeys & ",ImageBrowser,ImageBrowserURL,ImageBrowserWindowWidth,ImageBrowserWindowHeight,SmileyPath,SmileyImages,SmileyColumns,SmileyWindowWidth,SmileyWindowHeight";
 		
@@ -127,27 +128,21 @@ else
 			iPos = listFindNoCase( lConfigKeys, key );
 			if( iPos GT 0 )
 			{
-				if( not len( sConfig ) )
-					sConfig = sConfig & "&";
+				if( len( sConfig ) )
+					sConfig = sConfig & "&amp;";
 	
 				fieldValue = attributes.config[key];
 				fieldName = listGetAt( lConfigKeys, iPos );
 				
-				// set all boolean possibilities in CFML to true/false values
-				if( isBoolean( fieldValue) and fieldValue )
-					fieldValue = "true";
-				else if( isBoolean( fieldValue) )
-					fieldValue = "false";
-			
-				sConfig = sConfig & HTMLEditFormat( fieldName ) & '=' & HTMLEditFormat( fieldValue );
+				sConfig = sConfig & urlEncodedFormat( fieldName ) & '=' & urlEncodedFormat( fieldValue );
 			}
 		}
 	</cfscript>
 
 	<cfoutput>
 	<div>
-	<input type="hidden" id="#attributes.instanceName#" name="#attributes.instanceName#" value="#HTMLEditFormat(attributes.value)#" />
-	<input type="hidden" id="#attributes.instanceName#___Config" value="#sConfig#" />
+	<input type="hidden" id="#attributes.instanceName#" name="#attributes.instanceName#" value="#HTMLEditFormat(attributes.value)#" style="display:none" />
+	<input type="hidden" id="#attributes.instanceName#___Config" value="#sConfig#" style="display:none" />
 	<iframe id="#attributes.instanceName#___Frame" src="#sURL#" width="#attributes.width#" height="#attributes.height#" frameborder="no" scrolling="no"></iframe>
 	</div>
 	</cfoutput>
@@ -169,7 +164,7 @@ else
 	<!--- Fixed Bug ##1075166. hk@lwd.de 20041206 --->
 	<cfoutput>
 	<div>
-	<textarea name="#attributes.instanceName#" rows="4" cols="40" style="WIDTH: #attributes.width#; HEIGHT: #attributes.height#" wrap="virtual">#HTMLEditFormat(attributes.value)#</textarea>
+	<textarea name="#attributes.instanceName#" rows="4" cols="40" style="WIDTH: #attributes.width#; HEIGHT: #attributes.height#">#HTMLEditFormat(attributes.value)#</textarea>
 	</div>
 	</cfoutput>	
 

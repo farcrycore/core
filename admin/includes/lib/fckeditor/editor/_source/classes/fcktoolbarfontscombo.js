@@ -1,6 +1,6 @@
-/*
+﻿/*
  * FCKeditor - The text editor for internet
- * Copyright (C) 2003-2004 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2005 Frederico Caldeira Knabben
  * 
  * Licensed under the terms of the GNU Lesser General Public License:
  * 		http://www.opensource.org/licenses/lgpl-license.php
@@ -8,19 +8,21 @@
  * For further information visit:
  * 		http://www.fckeditor.net/
  * 
+ * "Support Open Source software. What about a donation today?"
+ * 
  * File Name: fcktoolbarfontscombo.js
  * 	FCKToolbarPanelButton Class: Handles the Fonts combo selector.
- * 
- * Version:  2.0 RC2
- * Modified: 2004-11-19 07:50:38
  * 
  * File Authors:
  * 		Frederico Caldeira Knabben (fredck@fckeditor.net)
  */
 
-var FCKToolbarFontsCombo = function()
+var FCKToolbarFontsCombo = function( tooltip, style )
 {
-	this.Command =  FCKCommands.GetCommand( 'FontName' ) ;
+	this.Command	= FCKCommands.GetCommand( 'FontName' ) ;
+	this.Label		= this.GetLabel() ;
+	this.Tooltip	= tooltip ? tooltip : this.Label ;
+	this.Style		= style ? style : FCK_TOOLBARITEM_ICONTEXT ;
 }
 
 // Inherit from FCKToolbarSpecialCombo.
@@ -36,5 +38,5 @@ FCKToolbarFontsCombo.prototype.CreateItems = function( targetSpecialCombo )
 	var aFonts = FCKConfig.FontNames.split(';') ;
 	
 	for ( var i = 0 ; i < aFonts.length ; i++ )
-		this._Combo.AddItem( aFonts[i], '<span style="font-family: \'' + aFonts[i] + '\'; font-size: 12px;">' + aFonts[i] + '</span>' ) ;
+		this._Combo.AddItem( aFonts[i], '<font face="' + aFonts[i] + '" style="font-size: 12px">' + aFonts[i] + '</font>' ) ;
 }

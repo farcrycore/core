@@ -87,8 +87,68 @@ $Developer: Tyler Ham (tylerh@austin.utexas.edu)$
   
 <!--- {{{ PUBLIC functions --->
 
+<!--- {{{ public setPolicyGroup(policyGroupID) --->
+<cffunction name="setPolicyGroup" access="public" output="no"
+  hint="sets isAllowed attributes on each node if it allows access
+  to the specified policy group">
+  
+  <cfargument name="policyGroupID" type="numeric" required="yes"
+    hint="ID of the policy group to mark allowed nodes for">
+  
+  <cfargument name="overrideAllowed" type="boolean" default="false"
+    hint="if true, a parent node that is disallowed will cause all children
+    nodes to be disallowed, regardless of the permissions">
+  
+  <cfset var checkPermission = "">
+  <cfset var i = "">
+  
+  <!--- first, get permissions - we'll need to pass them down the chain --->
+  <cfset var permissions = getPermissions()>
+  
+  <!--- set isAllowed for the root node --->
+  <cfif StructKeyExists(this.stAttributes, "permission")>
+    <!--- check that any required permission on this node is allowed by the policy group --->
+    <cfquery name="checkPermission" dbtype="query">
+      SELECT *
+      FROM permissions
+      WHERE PolicyGroupID = <cfqueryparam value="#arguments.policyGroupID#" cfsqltype="cf_sql_numeric">
+        AND PermissionName = <cfqueryparam value="#this.stAttributes.permission#" cfsqltype="cf_sql_varchar">
+        AND Allowed = 1
+    </cfquery>
+    
+    <cfif checkPermission.RecordCount>
+      <cfset this.stAttributes.isAllowed = "true">
+    <cfelse>
+      <cfset this.stAttributes.isAllowed = "false">
+    </cfif>
+    
+  <cfelse>
+    <cfset this.stAttributes.isAllowed = "true">  <!--- allow by default --->
+    
+  </cfif>
+  
+  <!--- set policy group on children --->
+  <cfloop index="i" from="1" to="#ArrayLen(this.aSections)#">
+    <cfset this.aSections[i].setPolicyGroup(arguments.policyGroupID, permissions, arguments.overrideAllowed, this.stAttributes.isAllowed)>
+  </cfloop>
+  
+</cffunction>
+<!--- }}} public setPolicyGroup(policyGroupID) --->
 
-
+<!--- {{{ public transformLabels() --->
+<cffunction name="transformLabels" access="public" output="no"
+  hint="transforms the label attributes (if any) of nodes
+  depending on the labelType attribute (evaluate, expression, text)">
+  
+  <cfset var i = "">
+  
+  <!--- transform labels on children --->
+  <cfloop index="i" from="1" to="#ArrayLen(this.aSections)#">
+    <cfset this.aSections[i].transformLabels()>
+  </cfloop>
+  
+</cffunction>
+<!--- }}} public transformLabels() --->
 
 <!--- {{{ public init(WebtopXmlDoc) --->
 <cffunction name="init" access="public" output="no" returnType="WebtopRoot"
@@ -331,6 +391,45 @@ $Developer: Tyler Ham (tylerh@austin.utexas.edu)$
 </cffunction>
 <!--- }}} private mergeChild(WebtopSection child) --->
 
+
+<!--- {{{ private getPermissions() --->
+<cffunction name="getPermissions" access="private" output="no" returnType="query"
+  hint="returns a query mapping policy groups and their permissions"
+  hintReturnQuery="PolicyGroupID,PolicyGroupName,PermissionID,PermissionName,Allowed">
+  
+  <cfset var qReturn = QueryNew("PolicyGroupID,PolicyGroupName,PermissionID,PermissionName,Allowed")>
+  <cfset var oAuthorisation = request.dmSec.oAuthorisation>
+  <cfset var stObjectPermissions = oAuthorisation.getObjectPermission(reference="policyGroup",bUseCache=0)>
+  <cfset var policyGroupID = "">
+  <cfset var permissionID = "">
+  <cfset var pg = "">
+  <cfset var perm = "">
+  <cfset var allowed = 1>
+  
+  <cfloop index="policyGroupID" list="#StructKeyList(stObjectPermissions)#">
+    <cfset pg = oAuthorisation.getPolicyGroup(policyGroupID=policyGroupID)>
+    
+    <cfloop index="permissionID" list="#StructKeyList(stObjectPermissions[policyGroupID])#">
+      <cfset perm = oAuthorisation.getPermission(permissionID=permissionID)>
+      <cfset allowed = 1>
+      <cfif stObjectPermissions[policyGroupID][permissionID].a eq -1
+         or stObjectPermissions[policyGroupID][permissionID].a eq 0>
+        <cfset allowed = 0>
+      </cfif>
+      
+      <cfset QueryAddRow(qReturn)>
+      <cfset QuerySetCell(qReturn, "PolicyGroupID", policyGroupID)>
+      <cfset QuerySetCell(qReturn, "PolicyGroupName", pg.PolicyGroupName)>
+      <cfset QuerySetCell(qReturn, "PermissionID", permissionID)>
+      <cfset QuerySetCell(qReturn, "PermissionName", perm.PermissionName)>
+      <cfset QuerySetCell(qReturn, "Allowed", allowed)>
+    </cfloop>
+    
+  </cfloop>
+  
+  <cfreturn qReturn>
+</cffunction>
+<!--- }}} private getPermissions() --->
 
 <!--- }}} PRIVATE functions --->
 

@@ -7,7 +7,7 @@ $License: Released Under the "Common Public License 1.0", http://www.opensource.
 $Header: /cvs/farcry/farcry_core/packages/types/dmRedirect.cfc,v 1.2 2004/09/08 08:04:33 geoff Exp $
 $Author: geoff $
 $Date: 2004/09/08 08:04:33 $
-$Name: milestone_2-3-2 $
+$Name: milestone_3-0-1 $
 $Revision: 1.2 $
 
 || DESCRIPTION || 

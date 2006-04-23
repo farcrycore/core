@@ -1,6 +1,6 @@
-/*
+﻿/*
  * FCKeditor - The text editor for internet
- * Copyright (C) 2003-2004 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2005 Frederico Caldeira Knabben
  * 
  * Licensed under the terms of the GNU Lesser General Public License:
  * 		http://www.opensource.org/licenses/lgpl-license.php
@@ -8,11 +8,10 @@
  * For further information visit:
  * 		http://www.fckeditor.net/
  * 
+ * "Support Open Source software. What about a donation today?"
+ * 
  * File Name: fckstyledef_ie.js
  * 	FCKStyleDef Class: represents a single stylke definition. (IE specific)
- * 
- * Version:  2.0 RC2
- * Modified: 2004-11-22 11:09:44
  * 
  * File Authors:
  * 		Frederico Caldeira Knabben (fredck@fckeditor.net)
@@ -51,10 +50,19 @@ FCKStyleDef.prototype._AddAttributes = function( targetElement )
 {
 	for ( var a in this.Attributes )
 	{
-		if ( a.toLowerCase() == 'style' )
-			targetElement.style.cssText = this.Attributes[a] ;
-		else
-			targetElement.setAttribute( a, this.Attributes[a], 0 ) ;
+		switch ( a.toLowerCase() )
+		{
+			case 'style' :
+				targetElement.style.cssText = this.Attributes[a] ;
+				break ;
+				
+			case 'class' :
+				targetElement.setAttribute( 'className', this.Attributes[a], 0 ) ;
+				break ;
+				
+			default :
+				targetElement.setAttribute( a, this.Attributes[a], 0 ) ;
+		}
 	}
 }
 
@@ -66,10 +74,7 @@ FCKStyleDef.prototype._RemoveDuplicates = function( parent )
 		this._RemoveDuplicates( oChild ) ;
 		
 		if ( this.IsEqual( oChild ) )
-		{
-			oChild.insertAdjacentHTML( 'beforeBegin', oChild.innerHTML ) ;
-			oChild.parentElement.removeChild( oChild ) ;
-		}
+			FCKTools.RemoveOuterTags( oChild ) ;
 	}
 }
 

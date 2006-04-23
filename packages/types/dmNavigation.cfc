@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/dmNavigation.cfc,v 1.20 2005/10/11 07:14:52 guy Exp $
-$Author: guy $
-$Date: 2005/10/11 07:14:52 $
-$Name: milestone_3-0-0 $
-$Revision: 1.20 $
+$Header: /cvs/farcry/farcry_core/packages/types/dmNavigation.cfc,v 1.20.2.11 2006/03/08 00:32:13 paul Exp $
+$Author: paul $
+$Date: 2006/03/08 00:32:13 $
+$Name: milestone_3-0-1 $
+$Revision: 1.20.2.11 $
 
 || DESCRIPTION || 
 $Description: dmNavigation type $
@@ -22,7 +22,7 @@ $in: $
 $out:$
 --->
 
-<cfcomponent name="dmNavigation" extends="types" displayname="Navigation" hint="Navigation nodes are combined with the ntm_navigation table to build the site layout model for the FarCry CMS system." bUseInTree="1">
+<cfcomponent name="dmNavigation" extends="types" displayname="Navigation" hint="Navigation nodes are combined with the ntm_navigation table to build the site layout model for the FarCry CMS system." bUseInTree="1" bFriendly="1">
 <!------------------------------------------------------------------------
 type properties
 ------------------------------------------------------------------------->	
@@ -42,6 +42,7 @@ object methods
 	
 	<!--- getData for object edit --->
 	<cfset stObj = this.getData(arguments.objectid)>
+	
 	<cfinclude template="_dmnavigation/edit.cfm">
 </cffunction>
 
@@ -129,36 +130,132 @@ object methods
 	<cfset var stObj = getData(arguments.objectid)>
 	<cfset var stLocal = StructNew()>
 	<cfset stLocal.html = "">		
-	<cfinclude template="_dmNavigation/renderObjectOverview.cfm">
+	<cfinclude template="_dmnavigation/renderObjectOverview.cfm">
 	<cfreturn stLocal.html>
 
 </cffunction>
 
-<cffunction name="setFriendlyURL" access="public" returntype="struct" hint="the default set friendly url for an object." output="true">
-	<cfargument name="stProperties" required="true" type="struct">
+<cffunction name="setFriendlyURL" access="public" returntype="struct" hint="dmNavigation specific frienly url." output="false">
+	<cfargument name="objectid" required="false" default="#instance.stobj.objectid#" type="uuid" hint="Content item objectid.">
+	<cfset var stReturn = StructNew()>
+	<cfset var stobj = getdata(arguments.objectid)>
+	<cfset var stFriendlyURL = StructNew()>
+	<cfset var inav=0>
+	<cfset var objFU = CreateObject("component","#Application.packagepath#.farcry.fu")>
+	<cfset var objNavigation = CreateObject("component","#Application.packagepath#.types.dmNavigation")>
+	<cfset var qNavigation=querynew("objectid")>
 	
+	<!--- default return structure --->
+	<cfset stReturn.bSuccess = 1>
+	<cfset stReturn.message = "Set friendly URL for #arguments.objectid#.">
+
+	<!--- default stFriendlyURL structure --->
+	<cfset stFriendlyURL.objectid = stobj.objectid>
+	<cfset stFriendlyURL.friendlyURL = "">
+	<cfset stFriendlyURL.querystring = "">
+	
+	<cfset bExclude = 0>
+	<cfloop index="iNav" list="#stobj.lNavIDAlias#">
+		<cfif ListFindNoCase(application.config.fusettings.lExcludeNavAlias, iNav)>
+			<cfset bExclude = 1>
+			<cfbreak>
+		</cfif>
+	</cfloop>
+
+	<cfif bExclude EQ 0>
+		<!--- This determines the friendly url by where it sits in the navigation node  --->
+		<cfset stFriendlyURL.friendlyURL = objFU.createFUAlias(stobj.objectid,0)>
+		<cfif trim(stobj.fu) neq "">
+			<cfset stFriendlyURL.friendlyURL = stFriendlyURL.friendlyURL & stobj.fu>
+		<cfelse>
+			<cfset stFriendlyURL.friendlyURL = stFriendlyURL.friendlyURL & stobj.label>
+		</cfif>
+		<cfset objFU.setFU(stFriendlyURL.objectid, stFriendlyURL.friendlyURL, stFriendlyURL.querystring)>
+	</cfif>
+	<cfreturn stReturn>
+</cffunction>
+
+<cffunction name="fRebuildFriendlyURLs" access="public" returntype="struct" hint="Rebuilds friendly URLs" output="true">
 	<cfset var stLocal = structnew()>
 	<cfset stLocal.returnstruct = StructNew()>
 	<cfset stLocal.returnstruct.bSuccess = 1>
 	<cfset stLocal.returnstruct.message = "">
-
-	<cfset stLocal.stFriendlyURL = StructNew()>
-	<cfset stLocal.stFriendlyURL.objectid = arguments.stProperties.objectid>
-	<cfset stLocal.stFriendlyURL.friendlyURL = "">
-	<cfset stLocal.stFriendlyURL.querystring = "">
-
+	
+	<cfquery name="stLocal.qList" datasource="#application.dsn#">
+	SELECT	objectid, title as label, fu
+	FROM	#application.dbowner#dmNavigation
+	WHERE	label != '(incomplete)'
+		AND objectid != '#application.navid.root#'
+	</cfquery>
+			
+	<!--- used to retrieve default of where item is in tree --->
+	<cfset stLocal.objNavigation = CreateObject("component","#Application.packagepath#.types.dmNavigation")>
 	<cfset stLocal.objFU = CreateObject("component","#Application.packagepath#.farcry.fu")>
+	<cfset stLocal.stFriendlyURL = StructNew()>
+	<cfset stLocal.iCounterUnsuccess = 0>
+	<cftry>
+		<cfloop query="stLocal.qList">
+			<!--- This determines the friendly url by where it sits in the navigation node  --->
+			<cfset stLocal.stFriendlyURL.objectid = stLocal.qList.objectid>
+			<cfset stLocal.stFriendlyURL.querystring = "">
+			<cfset stLocal.stFriendlyURL.friendlyURL = stLocal.objFU.createFUAlias(stLocal.qList.objectid,0)>
+			<cfif trim(stLocal.qList.fu) neq "">
+				<cfset stLocal.stFriendlyURL.friendlyURL = stLocal.stFriendlyURL.friendlyURL & stLocal.qList.fu>
+			<cfelse>
+				<cfset stLocal.stFriendlyURL.friendlyURL = stLocal.stFriendlyURL.friendlyURL & stLocal.qList.label>
+			</cfif>
+		
+			<cfset stLocal.objFU.setFU(stLocal.stFriendlyURL.objectid, stLocal.stFriendlyURL.friendlyURL, stLocal.stFriendlyURL.querystring)>
+		</cfloop>
 
-	<!--- This determines the friendly url by where it sits in the navigation node  --->
-	<cfset stLocal.stFriendlyURL.friendlyURL = stLocal.objFU.createFUAlias(arguments.stProperties.objectid,0)>
-	<cfset stLocal.stFriendlyURL.friendlyURL = stLocal.stFriendlyURL.friendlyURL & "#arguments.stProperties.label#">
+		<cfcatch>
+			<cfset stLocal.iCounterUnsuccess = stLocal.iCounterUnsuccess + 1>
+		</cfcatch>
+	</cftry>
 
-	<cfset stLocal.objFU.setFU(stLocal.stFriendlyURL.objectid, stLocal.stFriendlyURL.friendlyURL, stLocal.stFriendlyURL.querystring)>
-	<cfif trim(arguments.stProperties.fu) NEQ ""> <!--- create an alternative FU based on fu --->
-		<cfset stLocal.stFriendlyURL.friendlyURL = arguments.stProperties.fu>
-		<cfset stLocal.objFU.setFU(stLocal.stFriendlyURL.objectid, stLocal.stFriendlyURL.friendlyURL, stLocal.stFriendlyURL.querystring,1)>
-	</cfif>
-
+	<cfset stLocal.iCounterSuccess = stLocal.qList.recordcount - stLocal.iCounterUnsuccess>
+	<cfset stLocal.returnstruct.message = "#stLocal.iCounterSuccess# navigation rebuilt successfully.<br />">
 	<cfreturn stLocal.returnstruct>
+</cffunction>
+
+<cffunction name="buildTreeCreateTypes" access="public" returntype="array" hint="Creates array of content types that can be created" output="false">
+	<cfargument name="lTypes" required="true" type="string">
+
+	<cfset var aReturn = ArrayNew(1)>
+	<cfset var aTypes = listToArray(arguments.lTypes)>
+
+	<!--- build core types first --->
+	<cfloop index="i" from="1" to="#arrayLen(aTypes)#">
+		<cfif structKeyExists(Application.types[aTypes[i]],"bUseInTree")
+			  AND Application.types[aTypes[i]].bUseInTree
+			  AND NOT (structKeyExists(Application.types[aTypes[i]],"bCustomType")
+					   AND Application.types[aTypes[i]].bCustomType)>
+			<cfset ArrayAppend(aReturn, descriptionStructForType(aTypes[i])) />
+		</cfif>
+	</cfloop>
+
+	<!--- then custom types --->
+	<cfloop index="i" from="1" to="#arrayLen(aTypes)#">
+		<cfif structKeyExists(Application.types[aTypes[i]],"bUseInTree")
+			  AND Application.types[aTypes[i]].bUseInTree
+			  AND structKeyExists(Application.types[aTypes[i]],"bCustomType")
+			  AND Application.types[aTypes[i]].bCustomType>
+			<cfset ArrayAppend(aReturn, descriptionStructForType(aTypes[i])) />
+		</cfif>
+	</cfloop>
+	
+	<cfreturn aReturn />
+</cffunction>
+
+<cffunction name="descriptionStructForType" access="private" returntype="struct">
+	<cfargument name="typeName" type="string" required="true" />
+	<cfset var stType = structNew()>
+	<cfset stType.typename = arguments.typeName />
+	<cfif structKeyExists(application.types[arguments.typename], "displayname")>
+		<cfset stType.description = application.types[arguments.typename].displayName />
+	<cfelse>
+		<cfset stType.description = arguments.typeName />
+	</cfif>
+	<cfreturn stType />
 </cffunction>
 </cfcomponent>

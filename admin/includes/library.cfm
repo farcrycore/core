@@ -25,7 +25,24 @@
 <!--- DataRequestor Object : used to retrieve xml data via javascript --->
 <script src="#application.url.farcry#/includes/lib/DataRequestor.js"></script>
 <!--- JSON javascript object --->
-<script src="#application.url.farcry#/includes/lib/json.js"></script></cfoutput>
+<script src="#application.url.farcry#/includes/lib/json.js"></script>
+
+<!--// load the qForm JavaScript API //-->
+	<script type="text/javascript" src="/farcry/includes/lib/qforms.js"></script>
+
+	<!--// you do not need the code below if you plan on just
+		   using the core qForm API methods. //-->
+	<!--// [start] initialize all default extension libraries  //-->
+	<script type="text/javascript">
+	<!--//
+	// specify the path where the "/qforms/" subfolder is located
+	qFormAPI.setLibraryPath("/farcry/includes/lib/");
+	// loads all default libraries
+	qFormAPI.include("*");
+	//-->
+	</script>
+
+</cfoutput>
 </head>
 <!--- show the library list --->
 <cfif librarySection EQ "list">

@@ -1,3 +1,5 @@
 // SE lang variables
 
-tinyMCELang['lang_print_desc'] = 'Skriv ut';
+tinyMCE.addToLang('',{
+print_desc : 'Skriv ut'
+});

@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_tree/getChildren.cfm,v 1.8 2005/10/28 03:44:39 paul Exp $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_tree/getChildren.cfm,v 1.8.2.1 2006/01/18 23:46:54 paul Exp $
 $Author: paul $
-$Date: 2005/10/28 03:44:39 $
-$Name: milestone_3-0-0 $
-$Revision: 1.8 $
+$Date: 2006/01/18 23:46:54 $
+$Name: milestone_3-0-1 $
+$Revision: 1.8.2.1 $
 
 || DESCRIPTION || 
 $Description: getChildren Function $
@@ -25,7 +25,7 @@ $out:$
 <cfsetting enablecfoutputonly="yes">
 
 <cfscript>
-sql = "select objectid, objectname from #arguments.dbowner#nested_tree_objects
+sql = "select objectid, objectname,nLeft,nRight,nLevel from #arguments.dbowner#nested_tree_objects
 		where parentid =  '#arguments.objectid#'
 		order by nleft";
 children = query(sql=sql, dsn=arguments.dsn);		

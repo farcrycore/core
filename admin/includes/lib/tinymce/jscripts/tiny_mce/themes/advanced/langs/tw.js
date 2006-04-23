@@ -1,89 +1,91 @@
 // TW lang variables contributed by Jim Kou
 
-tinyMCELang['lang_bold_desc'] = '²ÊÅé';
-tinyMCELang['lang_bold_img'] = "bold.gif";
-tinyMCELang['lang_bullist_desc'] = '²Å¸¹¶µ¥Ø';
-tinyMCELang['lang_cancel'] = '¨ú®ø';
-tinyMCELang['lang_cleanup_desc'] = '²M°£';
-tinyMCELang['lang_help_desc'] = '»²§U»¡©ú';
-tinyMCELang['lang_image_desc'] = '¹Ï¤ù';
-tinyMCELang['lang_indent_desc'] = 'ÁY±Æ';
-tinyMCELang['lang_insert'] = '·s¼W';
-tinyMCELang['lang_insert_anchor_name'] = '¼Ðµù¦WºÙ';
-tinyMCELang['lang_insert_anchor_title'] = '·s¼W¼Ðµù';
-tinyMCELang['lang_insert_image_align'] = '¹ï»ô';
-tinyMCELang['lang_insert_image_align_absbottom'] = '±j¨î»ô¤U';
-tinyMCELang['lang_insert_image_align_absmiddle'] = '±j¨î¸m¤¤';
-tinyMCELang['lang_insert_image_align_baseline'] = '°ò·Ç½u';
-tinyMCELang['lang_insert_image_align_bottom'] = '»ô¤U';
-tinyMCELang['lang_insert_image_align_default'] = '¼Ð·Ç';
-tinyMCELang['lang_insert_image_align_left'] = '»ô¥ª';
-tinyMCELang['lang_insert_image_align_middle'] = '¸m¤¤';
-tinyMCELang['lang_insert_image_align_right'] = '»ô¥k';
-tinyMCELang['lang_insert_image_align_texttop'] = '¤å¦r¤W¤è';
-tinyMCELang['lang_insert_image_align_top'] = '»ô¤W';
-tinyMCELang['lang_insert_image_alt'] = '¹Ï¤ù»¡©ú';
-tinyMCELang['lang_insert_image_border'] = '¥~®Ø';
-tinyMCELang['lang_insert_image_dimensions'] = '¤Ø¤o';
-tinyMCELang['lang_insert_image_hspace'] = '¤ô¥­¶¡»Ø';
-tinyMCELang['lang_insert_image_src'] = '¹Ï¤ù¨Ó·½';
-tinyMCELang['lang_insert_image_title'] = '·s¼W¹Ï¤ù';
-tinyMCELang['lang_insert_image_vspace'] = '««ª½¶¡»Ø';
-tinyMCELang['lang_insert_link_target'] = '¥Ø¼Ð';
-tinyMCELang['lang_insert_link_target_blank'] = 'Åã¥Ü©ó·sµøµ¡¤¤';
-tinyMCELang['lang_insert_link_target_same'] = 'Åã¥Ü©ó¦P¤@µøµ¡¤¤';
-tinyMCELang['lang_insert_link_title'] = '·s¼W¶W³sµ²';
-tinyMCELang['lang_insert_link_url'] = '¶W³sµ²';
-tinyMCELang['lang_italic_desc'] = '±×Åé';
-tinyMCELang['lang_italic_img'] = "italic.gif";
-tinyMCELang['lang_justifycenter_desc'] = '»ô¤¤';
-tinyMCELang['lang_justifyfull_desc'] = '¶ñº¡';
-tinyMCELang['lang_justifyleft_desc'] = '»ô¥ª';
-tinyMCELang['lang_justifyright_desc'] = '»ô¥k';
-tinyMCELang['lang_link_desc'] = '«Ø¥ß³sµ²';
-tinyMCELang['lang_numlist_desc'] = '¼Æ¦r¶µ¥Ø';
-tinyMCELang['lang_outdent_desc'] = '¥Y±Æ';
-tinyMCELang['lang_redo_desc'] = '­«°µ';
-tinyMCELang['lang_striketrough_desc'] = '§R°£½u';
-tinyMCELang['lang_theme_address'] = '¦a§}';
-tinyMCELang['lang_theme_anchor_desc'] = '¼Ðµù';
-tinyMCELang['lang_theme_charmap_desc'] = '¯S®í¦r¤¸';
-tinyMCELang['lang_theme_charmap_title'] = '¯S®í¦r¤¸²M³æ';
-tinyMCELang['lang_theme_code_desc'] = 'Åã¥Ü HTML ­ì©l½X';
-tinyMCELang['lang_theme_code_wordwrap'] = 'Word wrap';
-tinyMCELang['lang_theme_code_title'] = 'HTML ­ì©l½X';
-tinyMCELang['lang_theme_colorpicker_apply'] = 'ÅÜ§ó';
-tinyMCELang['lang_theme_colorpicker_title'] = 'ÃC¦â';
-tinyMCELang['lang_theme_font_size'] = '-- Font size --';
-tinyMCELang['lang_theme_fontdefault'] = '-- Font family --';
-tinyMCELang['lang_theme_block'] = '-- Format --';
-tinyMCELang['lang_theme_forecolor_desc'] = '¦r«¬ÃC¦â';
-tinyMCELang['lang_theme_backcolor_desc'] = 'Select background color';
-tinyMCELang['lang_theme_h1'] = '¼ÐÃD1';
-tinyMCELang['lang_theme_h2'] = '¼ÐÃD2';
-tinyMCELang['lang_theme_h3'] = '¼ÐÃD3';
-tinyMCELang['lang_theme_h4'] = '¼ÐÃD4';
-tinyMCELang['lang_theme_h5'] = '¼ÐÃD5';
-tinyMCELang['lang_theme_h6'] = '¼ÐÃD6';
-tinyMCELang['lang_theme_hr_desc'] = '·s¼W¾î½u';
-tinyMCELang['lang_theme_paragraph'] = '¬q¸¨';
-tinyMCELang['lang_theme_pre'] = '¤º©w®æ¦¡';
-tinyMCELang['lang_theme_removeformat_desc'] = '²M°£®æ¦¡³]©w';
-tinyMCELang['lang_theme_style_select'] = '¼Ë¦¡';
-tinyMCELang['lang_theme_sub_desc'] = '¤U¼Ð';
-tinyMCELang['lang_theme_sup_desc'] = '¤W¼Ð';
-tinyMCELang['lang_theme_visualaid_desc'] = 'Åã¥Ü/ÁôÂÃ«D¥i¨£ªº¤¸¯À';
-tinyMCELang['lang_underline_desc'] = '©³½u';
-tinyMCELang['lang_undo_desc'] = '´_­ì';
-tinyMCELang['lang_unlink_desc'] = '¨ú®ø³sµ²';
-tinyMCELang['lang_theme_clipboard_msg'] = 'Copy/Cut/Paste is not available in Mozilla and Firefox.\nDo you want more information about this issue?';
-tinyMCELang['lang_theme_path'] = 'Path';
-tinyMCELang['lang_cut_desc'] = 'Cut';
-tinyMCELang['lang_copy_desc'] = 'Copy';
-tinyMCELang['lang_paste_desc'] = 'Paste';
-tinyMCELang['lang_link_list'] = 'Link list';
-tinyMCELang['lang_image_list'] = 'Image list';
-tinyMCELang['lang_browse'] = 'Browse';
-tinyMCELang['lang_image_props_desc'] = 'Image properties';
-tinyMCELang['lang_newdocument_desc'] = 'New document';
-tinyMCELang['lang_newdocument'] = 'Are you sure you want clear all contents?';
+tinyMCE.addToLang('',{
+bold_desc : '²Ê&Aring;é',
+bold_img : "bold.gif",
+bullist_desc : '²&Aring;¸¹¶µ¥Ø',
+cancel : '¨ú®ø',
+cleanup_desc : '²M°£',
+help_desc : '»²§U»¡©ú',
+image_desc : '¹Ï¤ù',
+indent_desc : 'ÁY±Æ',
+insert : '·s¼W',
+insert_anchor_name : '¼Ðµù¦WºÙ',
+insert_anchor_title : '·s¼W¼Ðµù',
+insert_image_align : '¹ï»ô',
+insert_image_align_absbottom : '±j¨î»ô¤U',
+insert_image_align_absmiddle : '±j¨î¸m¤¤',
+insert_image_align_baseline : '°ò·Ç½u',
+insert_image_align_bottom : '»ô¤U',
+insert_image_align_default : '¼Ð·Ç',
+insert_image_align_left : '»ô¥ª',
+insert_image_align_middle : '¸m¤¤',
+insert_image_align_right : '»ô¥k',
+insert_image_align_texttop : '¤&aring;¦r¤W¤è',
+insert_image_align_top : '»ô¤W',
+insert_image_alt : '¹Ï¤ù»¡©ú',
+insert_image_border : '¥~®Ø',
+insert_image_dimensions : '¤Ø¤o',
+insert_image_hspace : '¤ô¥­¶¡»Ø',
+insert_image_src : '¹Ï¤ù¨Ó·½',
+insert_image_title : '·s¼W¹Ï¤ù',
+insert_image_vspace : '««ª½¶¡»Ø',
+insert_link_target : '¥Ø¼Ð',
+insert_link_target_blank : '&Aring;ã¥Ü©ó·sµøµ¡¤¤',
+insert_link_target_same : '&Aring;ã¥Ü©ó¦P¤@µøµ¡¤¤',
+insert_link_title : '·s¼W¶W³sµ²',
+insert_link_url : '¶W³sµ²',
+italic_desc : '±×&Aring;é',
+italic_img : "italic.gif",
+justifycenter_desc : '»ô¤¤',
+justifyfull_desc : '¶ñº¡',
+justifyleft_desc : '»ô¥ª',
+justifyright_desc : '»ô¥k',
+link_desc : '«Ø¥ß³sµ²',
+numlist_desc : '¼Æ¦r¶µ¥Ø',
+outdent_desc : '¥Y±Æ',
+redo_desc : '­«°µ',
+striketrough_desc : '§R°£½u',
+theme_address : '¦a§}',
+theme_anchor_desc : '¼Ðµù',
+theme_charmap_desc : '¯S®í¦r¤¸',
+theme_charmap_title : '¯S®í¦r¤¸²M³æ',
+theme_code_desc : '&Aring;ã¥Ü HTML ­ì©l½X',
+theme_code_wordwrap : 'Word wrap',
+theme_code_title : 'HTML ­ì©l½X',
+theme_colorpicker_apply : '&Aring;Ü§ó',
+theme_colorpicker_title : 'ÃC¦â',
+theme_font_size : '-- Font size --',
+theme_fontdefault : '-- Font family --',
+theme_block : '-- Format --',
+theme_forecolor_desc : '¦r«¬ÃC¦â',
+theme_backcolor_desc : 'Select background color',
+theme_h1 : '¼ÐÃD1',
+theme_h2 : '¼ÐÃD2',
+theme_h3 : '¼ÐÃD3',
+theme_h4 : '¼ÐÃD4',
+theme_h5 : '¼ÐÃD5',
+theme_h6 : '¼ÐÃD6',
+theme_hr_desc : '·s¼W¾î½u',
+theme_paragraph : '¬q¸¨',
+theme_pre : '¤º©w®æ¦¡',
+theme_removeformat_desc : '²M°£®æ¦¡³]©w',
+theme_style_select : '¼Ë¦¡',
+theme_sub_desc : '¤U¼Ð',
+theme_sup_desc : '¤W¼Ð',
+theme_visualaid_desc : '&Aring;ã¥Ü/ÁôÂÃ«D¥i¨£ªº¤¸¯À',
+underline_desc : '©³½u',
+undo_desc : '´_­ì',
+unlink_desc : '¨ú®ø³sµ²',
+theme_clipboard_msg : 'Copy/Cut/Paste is not available in Mozilla and Firefox.\nDo you want more information about this issue?',
+theme_path : 'Path',
+cut_desc : 'Cut',
+copy_desc : 'Copy',
+paste_desc : 'Paste',
+link_list : 'Link list',
+image_list : 'Image list',
+browse : 'Browse',
+image_props_desc : 'Image properties',
+newdocument_desc : 'New document',
+newdocument : 'Are you sure you want clear all contents?'
+});

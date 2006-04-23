@@ -1,9 +1,13 @@
-﻿// IR lang variables
+// IR lang variables
 // Persian (Farsi) language pack (for IRAN)
 // By: Morteza Zafari
 // Lost@LostLord.com
 // http://www.LostLord.com
 
-tinyMCELang['lang_dir'] = 'rtl';
-tinyMCELang['lang_insertdate_desc'] = 'افزودن تاریخ';
-tinyMCELang['lang_inserttime_desc'] = 'افزودن زمان';
+tinyMCE.addToLang('',{
+insertdate_def_fmt : '%Y-%m-%d',
+inserttime_def_fmt : '%H:%M:%S',
+dir : 'rtl',
+insertdate_desc : '?????? ?????',
+inserttime_desc : '?????? ????'
+});

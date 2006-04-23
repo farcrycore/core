@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/dmLink.cfc,v 1.11 2005/09/12 01:15:26 daniela Exp $
-$Author: daniela $
-$Date: 2005/09/12 01:15:26 $
-$Name: milestone_3-0-0 $
-$Revision: 1.11 $
+$Header: /cvs/farcry/farcry_core/packages/types/dmLink.cfc,v 1.11.2.1 2005/12/02 05:13:46 guy Exp $
+$Author: guy $
+$Date: 2005/12/02 05:13:46 $
+$Name: milestone_3-0-1 $
+$Revision: 1.11.2.1 $
 
 || DESCRIPTION || 
 $Description: dmLink type $
@@ -22,7 +22,7 @@ $in: $
 $out:$
 --->
 
-<cfcomponent extends="types" displayname="Link" hint="A way of linking to external pages" bSchedule="1" bUseInTree="1">
+<cfcomponent extends="types" displayname="Link" hint="A way of linking to external pages" bSchedule="1" bUseInTree="1" bFriendly="1">
 <!------------------------------------------------------------------------
 type properties
 ------------------------------------------------------------------------->

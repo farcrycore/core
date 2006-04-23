@@ -5,17 +5,21 @@
 	stStatus.status = false;
 </cfscript>
 
-<cftry>
-	<cftransaction>
-		<cfquery datasource="#arguments.dsn#">
-			DELETE FROM #application.dbowner#categories
-			WHERE categoryID = '#arguments.categoryID#'
-		</cfquery>
-		<cfquery datasource="#arguments.dsn#">
-			DELETE FROM #application.dbowner#refCategories
-			WHERE categoryID = '#arguments.categoryID#'	
-		</cfquery>
-	</cftransaction>
+<cfset qDesc = request.factory.oTree.getDescendants(objectid=arguments.categoryID,bIncludeSelf=1)>
+
+ <cftry>
+	<cftransaction> 
+		<cfif qDesc.recordcount>
+			<cfquery datasource="#arguments.dsn#">
+				DELETE FROM #application.dbowner#categories
+				WHERE categoryID IN (#quotedValueList(qDesc.objectid)#)
+			</cfquery>
+			<cfquery datasource="#arguments.dsn#">
+				DELETE FROM #application.dbowner#refCategories
+				WHERE categoryID IN (#quotedValueList(qDesc.objectid)#)
+			</cfquery>
+		</cfif>
+ 	</cftransaction> 
 	<!--- Insert into nested_tree_objects --->
 	<cfinvoke component="#application.packagepath#.farcry.tree" method="deleteBranch" objectID="#arguments.categoryID#" returnvariable="stReturn">
 	
@@ -23,11 +27,11 @@
 		stStatus.message = '#arguments.categoryID# deleted successfully';
 		stStatus.status = true;
 	</cfscript>
-	
+
 	<cfcatch type="any">
 		<cfscript>
 			stStatus.message = 'Deletion of #arguments.categoryID#  FAILED';
 			stStatus.status = false;
 		</cfscript>
 	</cfcatch>
-</cftry>
+</cftry> 

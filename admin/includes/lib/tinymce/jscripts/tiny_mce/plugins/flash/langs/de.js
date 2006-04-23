@@ -1,7 +1,11 @@
 // DE lang variables
 
-tinyMCELang['lang_insert_flash']      = 'Flash Movie einf&uuml;gen / bearbeiten';
-tinyMCELang['lang_insert_flash_file'] = 'Flash-Datei';
-tinyMCELang['lang_insert_flash_size'] = 'Gr&ouml;&szlig;e';
-tinyMCELang['lang_insert_flash_list'] = 'Flash Dateien';
-tinyMCELang['lang_flash_props'] = 'Flash properties';
+tinyMCE.addToLang('flash',{
+title : 'Flash-Datei einf&uuml;gen/bearbeiten',
+desc : 'Flash-Datei einf&uuml;gen/bearbeiten',
+file : 'Flash-Datei (.swf)',
+size : 'Gr&ouml;&szlig;e',
+list : 'Flash-Dateien',
+props : 'Flash-Eigenschaften',
+general : 'Allgemein'
+});

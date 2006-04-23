@@ -1,6 +1,6 @@
-/*
+﻿/*
  * FCKeditor - The text editor for internet
- * Copyright (C) 2003-2004 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2005 Frederico Caldeira Knabben
  * 
  * Licensed under the terms of the GNU Lesser General Public License:
  * 		http://www.opensource.org/licenses/lgpl-license.php
@@ -8,19 +8,25 @@
  * For further information visit:
  * 		http://www.fckeditor.net/
  * 
+ * "Support Open Source software. What about a donation today?"
+ * 
  * File Name: fcktoolbarfontformatcombo.js
  * 	FCKToolbarPanelButton Class: Handles the Fonts combo selector.
- * 
- * Version:  2.0 RC2
- * Modified: 2004-12-05 22:25:20
  * 
  * File Authors:
  * 		Frederico Caldeira Knabben (fredck@fckeditor.net)
  */
 
-var FCKToolbarFontFormatCombo = function()
+var FCKToolbarFontFormatCombo = function( tooltip, style )
 {
-	this.Command =  FCKCommands.GetCommand( 'FontFormat' ) ;
+	this.Command	= FCKCommands.GetCommand( 'FontFormat' ) ;
+	this.Label		= this.GetLabel() ;
+	this.Tooltip	= tooltip ? tooltip : this.Label ;
+	this.Style		= style ? style : FCK_TOOLBARITEM_ICONTEXT ;
+	
+	this.NormalLabel = 'Normal' ;
+	
+	this.PanelWidth = 190 ;
 }
 
 // Inherit from FCKToolbarSpecialCombo.
@@ -53,8 +59,40 @@ FCKToolbarFontFormatCombo.prototype.CreateItems = function( targetSpecialCombo )
 	
 	for ( var i = 0 ; i < aTags.length ; i++ )
 	{
-		if ( aTags[i] == 'div' && FCKBrowserInfo.IsGecko )
-			continue ;
-		this._Combo.AddItem( aTags[i], '<' + aTags[i] + '>' + oNames[aTags[i]] + '</' + aTags[i] + '>', oNames[aTags[i]] ) ;
+		// Support for DIV in Firefox has been reintroduced on version 2.2.
+//		if ( aTags[i] == 'div' && FCKBrowserInfo.IsGecko )
+//			continue ;
+		
+		var sTag	= aTags[i] ;
+		var sLabel	= oNames[sTag] ;
+		
+		if ( sTag == 'p' )
+			this.NormalLabel = sLabel ;
+		
+		this._Combo.AddItem( sTag, '<div class="BaseFont"><' + sTag + '>' + sLabel + '</' + sTag + '></div>', sLabel ) ;
+	}
+}
+
+if ( FCKBrowserInfo.IsIE )
+{
+	FCKToolbarFontFormatCombo.prototype.RefreshActiveItems = function( combo, value )
+	{
+//		FCKDebug.Output( 'FCKToolbarFontFormatCombo Value: ' + value ) ;
+
+		// IE returns normal for DIV and P, so to avoid confusion, we will not show it if normal.
+		if ( value == this.NormalLabel )
+		{
+			if ( combo.Label != '&nbsp;' )
+				combo.DeselectAll(true) ;
+		}
+		else
+		{
+			if ( this._LastValue == value )
+				return ;
+
+			combo.SelectItemByLabel( value, true ) ;
+		}
+
+		this._LastValue = value ;
 	}
 }

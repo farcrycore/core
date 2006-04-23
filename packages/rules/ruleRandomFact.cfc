@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/rules/ruleRandomFact.cfc,v 1.20 2005/07/21 02:27:24 guy Exp $
-$Author: guy $
-$Date: 2005/07/21 02:27:24 $
-$Name: milestone_3-0-0 $
-$Revision: 1.20 $
+$Header: /cvs/farcry/farcry_core/packages/rules/ruleRandomFact.cfc,v 1.20.2.2 2006/02/17 05:49:22 daniela Exp $
+$Author: daniela $
+$Date: 2006/02/17 05:49:22 $
+$Name: milestone_3-0-1 $
+$Revision: 1.20.2.2 $
 
 || DESCRIPTION || 
 Edit handler and execution handler for displaying Random Facts. Option show x number and reduce to specific categories. Fact 
@@ -39,7 +39,6 @@ out:
 		<cfimport taglib="/farcry/fourq/tags/" prefix="q4">
         <cfimport taglib="/farcry/farcry_core/tags/display/" prefix="display">				
         <cfimport taglib="/farcry/farcry_core/tags/widgets/" prefix="widgets">
-        
 
 		<cfparam name="form.bMatchAllKeywords" default="0">
 		<cfparam name="lSelectedCategoryID" default="">
@@ -117,26 +116,6 @@ out:
 		<cfparam name="request.mode.lValidStatus" default="approved">
 				
 		<cfset stObj = this.getData(arguments.objectid)> 
-		
-		<cfif application.dbtype eq "mysql">
-			<!--- create temp table for status --->
-			<cfquery datasource="#arguments.dsn#" name="temp">
-				DROP TABLE IF EXISTS tblTemp1
-			</cfquery>
-			<cfquery datasource="#arguments.dsn#" name="temp2">
-				create temporary table `tblTemp1`
-					(
-					`Status`  VARCHAR(50) NOT NULL
-					)
-			</cfquery>
-			<cfloop list="#request.mode.lValidStatus#" index="i">
-				<cfquery datasource="#arguments.dsn#" name="temp3">
-					INSERT INTO tblTemp1 (Status) 
-					VALUES ('#replace(i,"'","","all")#')
-				</cfquery>
-			</cfloop>
-		</cfif>
-		
 		<!--- check if filtering by categories --->
 		<cfif NOT trim(len(stObj.metadata)) EQ 0>
 			<!--- show by categories --->
@@ -146,7 +125,7 @@ out:
 						<!--- must match all categories --->
 						<cfquery datasource="#arguments.dsn#" name="qGetFacts">
 							SELECT DISTINCT type.objectID, type.label
-							    FROM tblTemp1, dmFacts type, refCategories refCat1
+							    FROM dmFacts type, refCategories refCat1
 							<!--- if more than one category make join for each --->
 							<cfif listLen(stObj.metadata) gt 1>
 								<cfloop from="2" to="#listlen(stObj.metadata)#" index="i">
@@ -159,7 +138,7 @@ out:
 									AND refCat#i#.categoryID = '#listGetAt(stObj.metadata,i)#'
 									AND refCat#i#.objectId = type.objectId
 								</cfloop>
-								AND type.status = tblTemp1.Status
+								AND type.status IN ('#ListChangeDelims(request.mode.lValidStatus,"','",",")#')
 							ORDER BY type.label ASC
 						</cfquery>
 					<cfelse>
@@ -184,7 +163,7 @@ out:
 							<!--- if more than one category make join for each --->
 							<cfif listLen(stObj.metadata) gt 1>
 								<cfloop from="2" to="#listlen(stObj.metadata)#" index="i">
-									inner join refcategories refcat#i# on refcat#i-1#.objectid = refcat#i#.objectid
+									inner join refCategories refcat#i# on refcat#i-1#.objectid = refcat#i#.objectid
 								</cfloop>
 							</cfif>
 							JOIN dmFacts type ON refcat1.objectID = type.objectID
@@ -213,25 +192,12 @@ out:
 			</cfswitch>
 		<cfelse>
 			<!--- don't filter on categories --->
-			<cfswitch expression="#application.dbtype#">
-				<cfcase value="mysql">
-					<cfquery datasource="#arguments.dsn#" name="qGetFacts">
-						SELECT *
-						FROM #application.dbowner#dmFacts fact, tblTemp1
-						WHERE fact.status = tblTemp1.Status
-						ORDER BY label
-					</cfquery>
-				</cfcase>
-
-				<cfdefaultcase>
-					<cfquery datasource="#arguments.dsn#" name="qGetFacts">
-						SELECT *
-						FROM #application.dbowner#dmFacts
-						WHERE status IN ('#ListChangeDelims(request.mode.lValidStatus,"','",",")#')
-						ORDER BY label
-					</cfquery>
-				</cfdefaultcase>
-			</cfswitch>
+			<cfquery datasource="#arguments.dsn#" name="qGetFacts">
+				SELECT *
+				FROM #application.dbowner#dmFacts
+				WHERE status IN ('#ListChangeDelims(request.mode.lValidStatus,"','",",")#')
+				ORDER BY label
+			</cfquery>
 		</cfif>
 	
 		<!--- if the intro text exists - append to aInvocations to be output as HTML --->

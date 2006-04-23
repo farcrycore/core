@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/navajo/display.cfm,v 1.46 2005/09/02 02:32:34 guy Exp $
-$Author: guy $
-$Date: 2005/09/02 02:32:34 $
-$Name: milestone_3-0-0 $
-$Revision: 1.46 $
+$Header: /cvs/farcry/farcry_core/tags/navajo/display.cfm,v 1.46.2.2 2006/03/17 06:45:42 geoff Exp $
+$Author: geoff $
+$Date: 2006/03/17 06:45:42 $
+$Name: milestone_3-0-1 $
+$Revision: 1.46.2.2 $
 
 || DESCRIPTION ||
 $Description: Primary controller for invoking the object to be rendered for the website.$
@@ -23,11 +23,17 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 <!--- optional attributes --->
 <cfparam name="attributes.method" default="display" type="string">
 <cfparam name="attributes.lmethods" default="display" type="string">
+<cfparam name="attributes.loginpath" default="#application.url.farcry#/login.cfm?returnUrl=#URLEncodedFormat(cgi.script_name&'?'&cgi.query_string)#" type="string">
 
 <cfimport taglib="/farcry/fourq/tags/" prefix="q4">
 <cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
 <cfparam name="request.bHideContextMenu" default="false">
 
+<!--- 
+todo: 	versioning object will be deprecated.. 
+		this needs to be *totally* revised.. ie. should never have been put here
+		20050317 GB
+ --->
 <cfif isDefined("URL.archiveid") AND findNoCase("archive.cfm",CGI.HTTP_REFERER)>  
 	<cfset oArchive = createObject("component","#application.packagepath#.farcry.versioning")>
 	<cfset qArchive = oArchive.getArchiveDetail(objectid=url.archiveid)>
@@ -79,6 +85,9 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
         <q4:contentobjectget objectid="#stObj.externalLink#" r_stobject="stObj">
     	<cftrace var="url.objectid" text="Setting navid to URL.objectid as external link is specified" />
 		<cfset request.navid = URL.objectid>
+		<!--- It is often useful to know the navid of the externalLink for use on the page that is being rendered --->
+		<cfset request.externalLinkNavid = stObj.objectid>
+		
 		
     </cfif>
 
@@ -202,7 +211,7 @@ the latter is the policy group for anonymous...
 <cfif iHasViewPermission NEQ 1>
 	<!--- log out the user --->
 	<cfset oAuthentication.logout()>
-	<cflocation url="#application.url.farcry#/login.cfm?returnUrl=#URLEncodedFormat(cgi.script_name&'?'&cgi.query_string)#" addtoken="No">
+	<cflocation url="#attributes.loginpath#" addtoken="No">
 	<cfabort>
 </cfif>
 

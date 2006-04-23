@@ -36,9 +36,9 @@ if(NOT isDefined("form.submit") AND bPLPStorage EQ "yes")
 </cfscript>
 
 <cfif librarytype EQ "dmFile">
-	<cfset displayLibraryType = "File">
+	<cfset displayLibraryType = "file">
 <cfelse>
-	<cfset displayLibraryType = "Image">
+	<cfset displayLibraryType = "image">
 </cfif>
 <cfsetting enablecfoutputonly="false">
 <cfoutput>

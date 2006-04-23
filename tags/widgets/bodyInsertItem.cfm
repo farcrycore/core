@@ -1,5 +1,6 @@
 <cfsetting enablecfoutputonly="true">
 <cfimport taglib="/farcry/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/farcry_core/tags/navajo" prefix="nj">
 <cfparam name="caller.output" default="#StructNew()#">
 <cfparam name="caller.delaObjectID" default="">
 <cfparam name="attributes.typename" default="dmImage">
@@ -13,10 +14,22 @@
 	<cfset strDisplayTypeName = "File">
 </cfif>
 
+<nj:listTemplates typename="#attributes.typename#" prefix="inserthtml" r_qMethods="qListTemplate">
+
+<cfdirectory directory="#application.path.project#\webskin\#typeName#" name="qListTemplates" filter="inserthtml*">
+<cfset aInsertHtmlTemplates = ArrayNew(1)>
+<cfloop query="qListTemplates">
+	<cfset stTemp = StructNew()>
+	<cfset stTemp.display_name = ListFirst(ListLast(qListTemplates.name,"_"),".")>
+	<cfset stTemp.template_name = qListTemplates.name>
+	<cfset ArrayAppend(aInsertHtmlTemplates, stTemp)>
+</cfloop>
+
 <!--- do all processing before entering html to avoid whitespace and have cleaner code --->
 <cfset aLibraryItem = ArrayNew(1)>
 <cfset aRelatedItemsIDs = ListToArray(relatedItems)>
 <cfset iCounter = 0>
+<cfset objImage = CreateObject("component","#application.types.dmImage.typepath#")>
 <cfloop index="i" from="1" to="#ArrayLen(aRelatedItemsIDs)#">
 	<!--- get object details --->
 	<q4:contentobjectget objectid="#aRelatedItemsIDs[i]#" r_stobject="stItem">
@@ -27,14 +40,47 @@
 					<cfset iCounter = iCounter + 1>
 					<cfset aLibraryItem[iCounter] = StructNew()>
 					<cfset aLibraryItem[iCounter].text = stItem.title>
+
+					<cfset imageurl_default = objImage.getURLImagePath(stItem.objectID,"original")>
+					<cfset imageurl_thumbnail = objImage.getURLImagePath(stItem.objectID,"thumb")>
+					<cfset imageurl_highres = objImage.getURLImagePath(stItem.objectID,"optimised")>
+
+					<!--- default thumbnail to original if it doesnt exist --->
+					<cfif trim(imageurl_thumbnail) EQ "">
+						<cfset imageurl_thumbnail = imageurl_default>
+					</cfif>
+
+					<!--- default highres to original if it doesnt exist --->						
+					<cfif trim(imageurl_highres) EQ "">
+						<cfset imageurl_highres = imageurl_default>
+					</cfif>
+							
+					<!--- get the image insert html config item (returns to insertHTML javascript funvction) --->
+					<cfset aLibraryItem[iCounter].value = Application.config.image.insertHTML>
+							
+					<!--- replace thumbnail with thumbnail image url --->
+					<cfset aLibraryItem[iCounter].value = replaceNoCase(aLibraryItem[iCounter].value,"*thumbnail*",imageurl_thumbnail,"all")>
+
+					<!--- replace original with original image url --->
+					<cfset aLibraryItem[iCounter].value = replaceNoCase(aLibraryItem[iCounter].value,"*imagefile*",imageurl_default,"all")>
+																	
+					<!--- replace high resolution with high resolution image url --->
+					<cfset aLibraryItem[iCounter].value = replaceNoCase(aLibraryItem[iCounter].value,"*optimisedImage*",imageurl_highres,"all")>
+
+					<!--- replace high resolution with high resolution image url --->
+					<cfset aLibraryItem[iCounter].value = replaceNoCase(aLibraryItem[iCounter].value,"*alt*",stItem.alt,"all")>
+					
+					<!--- this is returned to the generateLibraryXML file and sent to a javasecript function .: have to escape javascript --->
+					<cfset aLibraryItem[iCounter].value = "#stItem.objectID#|#aLibraryItem[iCounter].value#">
+							
 					<!--- check if hi res image exists --->
-					<cfif stItem.optimisedimage neq "">
+					<!--- <cfif stItem.optimisedimage neq "">
 						<!--- display normal image with link to high res image in new window --->
 						<cfset aLibraryItem[iCounter].value = "#stItem.objectID#|&lt;a href='#application.url.webroot#/images/#stItem.optimisedimage#' target='_blank'&gt;&lt;img src='#application.url.webroot#/images/#stItem.imagefile#' border=0 alt='#stItem.alt#'&gt;&lt;/a&gt;">
 					<cfelse>
 						<!--- display normal image --->
 						<cfset aLibraryItem[iCounter].value = "#stItem.objectID#|&lt;img src='#application.url.webroot#/images/#stItem.imagefile#' border=0 alt='#stItem.alt#'&gt;">
-					</cfif>
+					</cfif> --->
 				</cfif>
 			</cfcase>
 			
@@ -64,10 +110,19 @@
 
 <a href="##" onclick="return fUpdate#typeName#Position('up');" class="moveup"><strong>Move Up</strong></a>
 <a href="##" onclick="return fUpdate#typeName#Position('down');" class="movedown"><strong>Move Down</strong></a>
-
+<cfif qListTemplate.recordcount>
+<select name="l#typeName#_inserthtml" id="l#typeName#_inserthtml">
+	<option value="default">default</option><cfloop query="qListTemplate">
+	<option value="#qListTemplate.methodname#">#qListTemplate.displayname#</option></cfloop>
+</select>
+</cfif>
 <div class="f-submit-wrap">
 <input type="button" name="buttonFileDelete" value="Delete" class="f-submit f-delete" onclick="return fDelete#typeName#Item();" />
+<cfif qListTemplate.recordcount>
+<input type="button" name="buttonInsertInBody" value="Insert in body" class="f-submit" onclick="return get#typeName#TemplateValueInsert();" />
+<cfelse> <!--- use default insert html (from config) --->
 <input type="button" name="buttonInsertInBody" value="Insert in body" class="f-submit" onclick="return get#typeName#ValueInsert();" />
+</cfif>
 </div>
 
 <script type="text/javascript">
@@ -83,6 +138,47 @@ function get#typeName#ValueInsert()
 	else
 		insertHTML(strVal);
 	return false;
+}
+
+function get#typeName#TemplateValueInsert()
+{
+	objSelect = document.getElementById("l#typeName#Library");
+	if(objSelect.selectedIndex < 0){
+		alert("Please select a valid #strDisplayTypeName# to insert.");
+		return false;
+	}
+
+	tempStr = objSelect.options[objSelect.selectedIndex].value;
+	arVal = tempStr.split("|");
+
+	objSelectInsertHtml = document.getElementById("l#typeName#_inserthtml");
+	// insert the default
+	if(objSelectInsertHtml.selectedIndex <= 0){
+		insertHTML(arVal[1]);
+		return false;
+	}
+	else {
+		// get the insert html from the template
+		template_name = objSelectInsertHtml[objSelectInsertHtml.selectedIndex].value;
+		var req#typeName# = new DataRequestor();
+		strURL = "#application.url.farcry#/includes/generate_json.cfm";
+		req#typeName#.addArg(_GET,"objectid",arVal[0]);
+		req#typeName#.addArg(_GET,"typename","#typeName#");
+		req#typeName#.addArg(_GET,"templatename",template_name);
+		req#typeName#.onload = processReqChange#typeName#_inserthtml;
+		req#typeName#.onfail = function (status){alert("Sorry and error occured while retrieving insert html data [" + status + "]")};
+		req#typeName#.getURL(strURL,_RETURN_AS_TEXT);
+		
+//		strURL = "#application.url.farcry#/includes/generate_json.cfm?objectid=" + arVal[0] + "&typename=#typeName#&templatename=" + template_name;
+//		window.open(strURL,"_blank");
+	}
+}
+
+function processReqChange#typeName#_inserthtml(data, obj){
+	if(data){
+		str_inserthtml = JSON.parse(data);
+		insertHTML(str_inserthtml);
+	}
 }
 
 function doUpdate#typeName#(arItems)
@@ -185,8 +281,9 @@ function processReqChange#typeName#(data, obj)
 function showWindow#typeName#()
 {
 	var url = "#application.url.farcry#/includes/library.cfm?libraryType=#typeName#&primaryObjectID=#primaryObjectID#";
-	var options = "width="+680+",height="+530+",status=no,toolbar=no,directories=no,menubar=no,location=no,resizable=yes,left=20,top=20,scrollbars=yes";
+	var options = "width="+710+",height="+530+",status=no,toolbar=no,directories=no,menubar=no,location=no,resizable=yes,left=20,top=20,scrollbars=yes";
 	var hwnd = open(url, "_winlibrary", options);
+
 }
 </script>
 

@@ -6,11 +6,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/navajo/container_skins.cfm,v 1.1 2005/09/06 00:50:36 paul Exp $
-$Author: paul $
-$Date: 2005/09/06 00:50:36 $
-$Name: milestone_3-0-0 $
-$Revision: 1.1 $ 
+$Header: /cvs/farcry/farcry_core/admin/navajo/container_skins.cfm,v 1.1.2.1 2006/02/14 03:38:40 tlucas Exp $
+$Author: tlucas $
+$Date: 2006/02/14 03:38:40 $
+$Name: milestone_3-0-1 $
+$Revision: 1.1.2.1 $ 
 
 || DESCRIPTION || 
 $Description: Container management editing interface, this page is specifically for managing display methods for containers $
@@ -45,7 +45,7 @@ if (isDefined("form.formSubmitted"))
 		<cfif successmessage NEQ "">
 		<p id="fading2" class="fade"><span class="success">#successmessage#</span></p></cfif>
 	
-		<label for="reflectionid"><b>Relection:</b>
+		<label for="displayMethod"><b>Skin:</b>
 			<select name="displayMethod">
 			<option value="">None</option>
 			<cfloop query="qContainerSkins">

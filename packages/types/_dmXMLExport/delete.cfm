@@ -7,7 +7,7 @@ $License: Released Under the "Common Public License 1.0", http://www.opensource.
 $Header: /cvs/farcry/farcry_core/packages/types/_dmXMLExport/delete.cfm,v 1.1 2003/09/17 07:35:34 brendan Exp $
 $Author: brendan $
 $Date: 2003/09/17 07:35:34 $
-$Name: b201 $
+$Name: milestone_3-0-1 $
 $Revision: 1.1 $
 
 || DESCRIPTION || 

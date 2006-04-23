@@ -7,7 +7,7 @@ $License: Released Under the "Common Public License 1.0", http://www.opensource.
 $Header: /cvs/farcry/farcry_core/packages/farcry/_config/defaultGeneral.cfm,v 1.32 2005/10/13 09:14:53 geoff Exp $
 $Author: geoff $
 $Date: 2005/10/13 09:14:53 $
-$Name: milestone_3-0-0 $
+$Name: milestone_3-0-1 $
 $Revision: 1.32 $
 
 || DESCRIPTION || 

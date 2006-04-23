@@ -1,0 +1,188 @@
+/*
+ * FCKeditor - The text editor for internet
+ * Copyright (C) 2003-2006 Frederico Caldeira Knabben
+ * 
+ * Licensed under the terms of the GNU Lesser General Public License:
+ * 		http://www.opensource.org/licenses/lgpl-license.php
+ * 
+ * For further information visit:
+ * 		http://www.fckeditor.net/
+ * 
+ * "Support Open Source software. What about a donation today?"
+ * 
+ * File Name: fck_contextmenu.css
+ * 	Styles used by the context menu and panels.
+ * 
+ * File Authors:
+ * 		Paul Moers (mail@saulmade.nl)
+ * 		Frederico Caldeira Knabben (fredck@fckeditor.net)
+ */
+
+/*
+	### Basic Editor IFRAME Styles.
+*/
+
+body
+{
+	padding: 0px;
+	margin: 0px;
+}
+
+#eWysiwygCell, .Source
+{
+	border: #696969 1px solid;
+}
+
+#eSourceField
+{
+	border: none;
+	padding: 5px;
+	font-family: Monospace;
+}
+
+/* 
+	### Toolbar Styles
+*/
+
+.TB_Toolbar
+{
+    height: 27px;
+	background: #9EBEF5 url(images/toolbar.background.gif) repeat-x left top;
+	margin-bottom: 1px;
+}
+
+.TB_ToolbarSet
+{
+	background-color: #9EBEF5;
+	border: 1px solid #81A9E2;
+	border-width: 1px 1px 0px 0px;
+}
+
+.TB_ToolbarSet, .TB_ToolbarSet *
+{
+	font-size: 11px;
+	cursor: default;
+	font-family: 'Microsoft Sans Serif' , Tahoma, Arial, Verdana, Sans-Serif;
+}
+
+.TB_SideBorder
+{
+	background-color: #81A9E2;
+}
+
+.TB_Expand, .TB_Collapse
+{
+	padding: 2px 2px 2px 2px;
+	background-color: #9EBEF5;
+	border: 1px solid #696969;
+	border-width: 1px 1px 0px 1px;
+}
+
+.TB_Collapse
+{
+	background-color: #D9EAFD;
+}
+
+.TB_ExpandImg
+{
+	background-image: url(images/toolbar.expand.gif);
+	background-repeat: no-repeat;
+}
+
+.TB_CollapseImg
+{
+	background-image: url(images/toolbar.collapse.gif);
+	background-repeat: no-repeat;
+}
+
+.TB_Start img
+{
+    height: 26px;
+    width: 10px;
+}
+
+.TB_End img
+{
+	background-color: #9EBEF5;
+	height: 26px;
+    width: 12px;
+}
+
+.TB_Separator img
+{
+	height: 20px;
+    width: 5px;
+}
+
+.TB_Button_Off, .TB_Button_Disabled, .TB_Combo_Off, .TB_Combo_Disabled
+{
+	margin: 2px;
+	border-width: 0px;
+	height: 20px; /* This height notation MUST be here, else the opacity filter won't work for IE - the height is the height of your images + any padding/margin around them */
+}
+
+.TB_Button_On
+{
+	margin: 1px;
+	border: 1px #0a246a solid;
+	background-image: url('images/toolbar.itemhoverbackground.gif');
+}
+
+.TB_Button_Off, .TB_Combo_Off
+{
+	opacity: 0.85; /* Safari, Opera and Mozilla */
+	filter: alpha(opacity=85); /* IE */
+	/* -moz-opacity: 0.70; Mozilla (Old) */
+}
+
+.TB_Button_Disabled, .TB_Combo_Disabled
+{
+	opacity: 0.30; /* Safari, Opera and Mozilla */
+	filter: gray() alpha(opacity=30); /* IE */
+	/* -moz-opacity: 0.30; Mozilla (Old) */
+}
+
+/* the icon TD */
+.TB_Icon
+{
+}
+
+/* the icon img */
+.TB_Icon img
+{
+	margin: 2px;
+	width: 16px;
+	height: 16px;
+}
+
+.TB_ButtonArrow
+{
+	padding-right: 3px;
+}
+
+.TB_ButtonArrow img
+{
+	width: 5px;
+	height: 3px;
+}
+
+.TB_Text
+{
+	height: 16px;
+	padding-right: 5px;
+}
+
+.TB_ButtonType_Icon .TB_Text
+{
+	display: none;
+}
+
+.TB_ButtonType_Text .TB_Icon
+{
+	display: none;
+}
+
+.TB_ButtonType_Text .TB_Text
+{
+	padding-left: 5px;
+}

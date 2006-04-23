@@ -284,24 +284,55 @@
 			<!--- only add to  --->
 			<cfif NOT(StructIsEmpty(stLocal.stItem)) AND ListFindNoCase(arguments.lTypename,stLocal.stItem.typename)>
 				<cfset stLocal.arItems[stLocal.iCounter] = StructNew()>
-				<cfset stLocal.arItems[stLocal.iCounter].text = JSStringFormat(stLocal.stItem.label)>
+				<cfset stLocal.arItems[stLocal.iCounter].text = JSStringFormat(fReplaceBadCharacters(stLocal.stItem.label))>
 				<cfset stLocal.arItems[stLocal.iCounter].objectid = stLocal.stItem.objectID>
 				<cfswitch expression="#stLocal.stItem.typename#">
 					<cfcase value="dmImage">
 						<cfset stLocal.imageurl = stLocal.objImage.getURLImagePath(stLocal.stItem.objectID,"original")>
-						<cfif stLocal.stItem.optimisedimage neq "">
-							<cfset stLocal.imageurl_optimised = stLocal.objImage.getURLImagePath(stLocal.stItem.objectID,"optimised")>
-							<cfset stLocal.arItems[stLocal.iCounter].value = JSStringFormat("#stLocal.stItem.objectID#|<a href='#stLocal.imageurl_optimised#' target='_blank'><img src='#stLocal.imageurl#' border=0 alt='#stLocal.stItem.alt#'></a>")>
-						<cfelse>
-							<cfset stLocal.arItems[stLocal.iCounter].value = JSStringFormat("#stLocal.stItem.objectID#|<img src='#stLocal.imageurl#' border=0 alt='#stLocal.stItem.alt#'>")>
+						<cfset stLocal.imageurl_default = stLocal.objImage.getURLImagePath(stLocal.stItem.objectID,"original")>
+						<cfset stLocal.imageurl_thumbnail = stLocal.objImage.getURLImagePath(stLocal.stItem.objectID,"thumb")>
+						<cfset stLocal.imageurl_highres = stLocal.objImage.getURLImagePath(stLocal.stItem.objectID,"optimised")>
+
+						<!--- default thumbnail to original if it doesnt exist --->
+						<cfif trim(stLocal.imageurl_thumbnail) EQ "">
+							<cfset stLocal.imageurl_thumbnail = stLocal.imageurl_default>
 						</cfif>
+						<!--- default highres to original if it doesnt exist --->						
+						<cfif trim(stLocal.imageurl_highres) EQ "">
+							<cfset stLocal.imageurl_highres = stLocal.imageurl_default>
+						</cfif>
+						<!--- get the image insert html config item (returns to insertHTML javascript funvction) --->
+						<cfset stLocal.arItems[stLocal.iCounter].value = Application.config.image.insertHTML>
+
+						<!--- replace thumbnail with thumbnail image url --->
+						<cfset stLocal.arItems[stLocal.iCounter].value = replaceNoCase(stLocal.arItems[stLocal.iCounter].value,"*thumbnail*",stLocal.imageurl_thumbnail,"all")>
+
+						<!--- replace original with original image url --->
+						<cfset stLocal.arItems[stLocal.iCounter].value = replaceNoCase(stLocal.arItems[stLocal.iCounter].value,"*imagefile*",stLocal.imageurl_default,"all")>
+																		
+						<!--- replace high resolution with high resolution image url --->
+						<cfset stLocal.arItems[stLocal.iCounter].value = replaceNoCase(stLocal.arItems[stLocal.iCounter].value,"*optimisedImage*",stLocal.imageurl_highres,"all")>
+
+						<!--- replace high resolution with high resolution image url --->
+						<cfset stLocal.arItems[stLocal.iCounter].value = replaceNoCase(stLocal.arItems[stLocal.iCounter].value,"*alt*",stLocal.stItem.alt,"all")>
+						
+						<!--- this is returned to the generateLibraryXML file and sent to a javasecript function .: have to escape javascript --->
+						<cfset stLocal.arItems[stLocal.iCounter].value = JSStringFormat("#stLocal.stItem.objectID#|#stLocal.arItems[stLocal.iCounter].value#")>
 					</cfcase>
 		
 					<cfcase value="dmFile">
+						<cfset stLocal.strLinkTitle = application.config.file.inserthtml>
+						<cfset stLocal.strFileSizeKB = Round(stLocal.stItem.filesize/1024)>
+						<cfset stLocal.strFileSizeMB = Round(stLocal.strFileSizeKB/1024)>
+
+						<cfset stLocal.strLinkTitle = ReplaceNoCase(stLocal.strLinkTitle,"*fileTitle*", stLocal.stItem.title)>
+						<cfset stLocal.strLinkTitle = ReplaceNoCase(stLocal.strLinkTitle,"*fileSize_kb*", stLocal.strFileSizeKB)>
+						<cfset stLocal.strLinkTitle = ReplaceNoCase(stLocal.strLinkTitle,"*fileSize_mb*", stLocal.strFileSizeMB)>
+						
 						<cfif application.config.general.fileDownloadDirectLink eq "false">
-							<cfset stLocal.arItems[stLocal.iCounter].value = JSStringFormat("#stLocal.stItem.objectID#|<a href='#application.url.webroot#/download.cfm?DownloadFile=#stLocal.stItem.objectid#' target='_blank'>#stLocal.stItem.title#</a>")>
+							<cfset stLocal.arItems[stLocal.iCounter].value = JSStringFormat("#stLocal.stItem.objectID#|<a href='#application.url.webroot#/download.cfm?DownloadFile=#stLocal.stItem.objectid#' target='_blank'>#stLocal.strLinkTitle#</a>")>
 						<cfelse>
-							<cfset stLocal.arItems[stLocal.iCounter].value = JSStringFormat("#stLocal.stItem.objectID#|<a href='#application.url.webroot#/files/#stLocal.stItem.filename#' target='_blank'>#stLocal.stItem.title#</a>")>
+							<cfset stLocal.arItems[stLocal.iCounter].value = JSStringFormat("#stLocal.stItem.objectID#|<a href='#application.url.webroot#/files/#stLocal.stItem.filename#' target='_blank'>#stLocal.strLinkTitle#</a>")>
 						</cfif>
 					</cfcase>
 
@@ -313,5 +344,20 @@
 			</cfif>
 		</cfloop>
 		<cfreturn stLocal.arItems>
+	</cffunction>
+
+	<cffunction name="fReplaceBadCharacters" access="public" output="false" returntype="string" hint="replace bad cahracters with their html equivalent">
+		<cfargument name="inStr" type="string" required="true">
+		<cfset var stLocal = StructNew()>
+		<cfset stLocal.inStr = arguments.inStr>
+		<cfset stLocal.outStr = stLocal.inStr>
+		<cfset stLocal.lBadChars = "8482|&##8482,174|&##174,169|&##169">
+		<cfset stLocal.aBadChars = ListToArray(stLocal.lBadChars)>
+		<cfloop index="stLocal.i" from="1" to="#ArrayLen(stLocal.aBadChars)#">
+			<cfset stLocal.badChar = chr(ListFirst(stLocal.aBadChars[stLocal.i],"|"))>
+			<cfset stLocal.goodChar = ListLast(stLocal.aBadChars[stLocal.i],"|")>
+			<cfset stLocal.outStr = ReplaceNoCase(stLocal.outStr,stLocal.badChar,stLocal.goodChar,"all")>
+		</cfloop>
+		<cfreturn stLocal.outStr>
 	</cffunction>
 </cfcomponent>

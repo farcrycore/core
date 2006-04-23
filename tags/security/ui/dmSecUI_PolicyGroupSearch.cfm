@@ -12,7 +12,7 @@ http://www.daemon.com.au/
 $Header: /cvs/farcry/farcry_core/tags/security/ui/dmSecUI_PolicyGroupSearch.cfm,v 1.2 2004/07/15 02:03:27 brendan Exp $
 $Author: brendan $
 $Date: 2004/07/15 02:03:27 $
-$Name: milestone_2-3-2 $
+$Name: milestone_3-0-1 $
 $Revision: 1.2 $
 
 || DESCRIPTION || 

@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/edittabRules.cfm,v 1.9 2004/07/15 01:09:43 brendan Exp $
-$Author: brendan $
-$Date: 2004/07/15 01:09:43 $
-$Name: milestone_2-3-2 $
-$Revision: 1.9 $
+$Header: /cvs/farcry/farcry_core/admin/edittabRules.cfm,v 1.9.4.1 2006/02/14 02:55:28 tlucas Exp $
+$Author: tlucas $
+$Date: 2006/02/14 02:55:28 $
+$Name: milestone_3-0-1 $
+$Revision: 1.9.4.1 $
 
 || DESCRIPTION || 
 $DESCRIPTION: shows rules associated with this object $
@@ -74,7 +74,7 @@ function reinstateRuleListing()
 		o = createObject("component", application.rules[url.typename].rulePath);
 		if (url.typename eq "ruleHandpicked")
 		{
-			o.update(objectid=URL.ruleid,cancelLocation="#application.url.farcry#/editTabRules.cfm?");
+			o.update(objectid=URL.ruleid,cancelLocation="#application.url.farcry#/edittabRules.cfm?");
 		}
 		else
 			o.update(objectid=URL.ruleid);

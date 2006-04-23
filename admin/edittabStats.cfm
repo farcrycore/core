@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/edittabStats.cfm,v 1.19 2005/09/23 03:34:04 guy Exp $
-$Author: guy $
-$Date: 2005/09/23 03:34:04 $
-$Name: milestone_3-0-0 $
-$Revision: 1.19 $
+$Header: /cvs/farcry/farcry_core/admin/edittabStats.cfm,v 1.19.2.1 2006/02/14 02:55:28 tlucas Exp $
+$Author: tlucas $
+$Date: 2006/02/14 02:55:28 $
+$Name: milestone_3-0-1 $
+$Revision: 1.19.2.1 $
 
 || DESCRIPTION || 
 Shows view statistics for chosen object in a number of formats
@@ -80,7 +80,7 @@ out:
 			</cfif>
 					
 			<!--- display object title and breadcrumb --->
-			<cfoutput><h3><a href="#application.url.farcry#/edittaboverview.cfm?objectid=#url.objectId#">#title#</a></h3></cfoutput>
+			<cfoutput><h3><a href="#application.url.farcry#/edittabOverview.cfm?objectid=#url.objectId#">#title#</a></h3></cfoutput>
 			
 			<cfif stObj.typename eq "dmNavigation">
 			

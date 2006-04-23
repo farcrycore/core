@@ -1,6 +1,6 @@
-/*
+﻿/*
  * FCKeditor - The text editor for internet
- * Copyright (C) 2003-2004 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2005 Frederico Caldeira Knabben
  * 
  * Licensed under the terms of the GNU Lesser General Public License:
  * 		http://www.opensource.org/licenses/lgpl-license.php
@@ -8,14 +8,14 @@
  * For further information visit:
  * 		http://www.fckeditor.net/
  * 
+ * "Support Open Source software. What about a donation today?"
+ * 
  * File Name: pl.js
  * 	Polish language file.
  * 
- * Version:  2.0 RC2
- * Modified: 2004-12-20 01:16:06
- * 
  * File Authors:
  * 		Jakub Boesche (jboesche@gazeta.pl)
+ * 		Maciej Bochynski (maciej.bochynski@lubman.pl)
  */
 
 var FCKLang =
@@ -41,8 +41,11 @@ RemoveFormat		: "Usuń formatowanie",
 InsertLinkLbl		: "Hiperłącze",
 InsertLink			: "Wstaw/edytuj hiperłącze",
 RemoveLink			: "Usuń hiperłącze",
+Anchor				: "Wstaw/edytuj kotwicę",
 InsertImageLbl		: "Obrazek",
 InsertImage			: "Wstaw/edytuj obrazek",
+InsertFlashLbl		: "Flash",
+InsertFlash			: "Dodaj/Edytuj element Flash",
 InsertTableLbl		: "Tabela",
 InsertTable			: "Wstaw/edytuj tabelę",
 InsertLineLbl		: "Linia pozioma",
@@ -81,6 +84,20 @@ BGColor				: "Kolor tła",
 Source				: "Źródło dokumentu",
 Find				: "Znajdź",
 Replace				: "Zamień",
+SpellCheck			: "Sprawdź pisownię",
+UniversalKeyboard	: "Klawiatura Uniwersalna",
+PageBreakLbl		: "Page Break",	//MISSING
+PageBreak			: "Insert Page Break",	//MISSING
+
+Form			: "Formularz",
+Checkbox		: "Checkbox",
+RadioButton		: "Pole wyboru",
+TextField		: "Pole tekstowe",
+Textarea		: "Obszar tekstowy",
+HiddenField		: "Pole ukryte",
+Button			: "Przycisk",
+SelectionField	: "Lista wyboru",
+ImageButton		: "Przycisk obrazek",
 
 // Context Menu
 EditLink			: "Edytuj hiperłącze",
@@ -92,9 +109,22 @@ InsertCell			: "Wstaw komórkę",
 DeleteCells			: "Usuń komórki",
 MergeCells			: "Połącz komórki",
 SplitCell			: "Podziel komórkę",
+TableDelete			: "Delete Table",	//MISSING
 CellProperties		: "Właściwości komórki",
 TableProperties		: "Właściwości tabeli",
 ImageProperties		: "Właściwości obrazka",
+FlashProperties		: "Właściwości elementu Flash",
+
+AnchorProp			: "Właściwości kotwicy",
+ButtonProp			: "Właściwości przycisku",
+CheckboxProp		: "Checkbox - właściwości",
+HiddenFieldProp		: "Właściwości pola ukrytego",
+RadioButtonProp		: "Właściwości pola wyboru",
+ImageButtonProp		: "Właściwości przycisku obrazka",
+TextFieldProp		: "Właściwości pola tekstowego",
+SelectionFieldProp	: "Właściwości listy wyboru",
+TextareaProp		: "Właściwości obszaru tekstowego",
+FormProp			: "Właściwości formularza",
 
 FontFormats			: "Normalny;Tekst sformatowany;Adres;Nagłówek 1;Nagłówek 2;Nagłówek 3;Nagłówek 4;Nagłówek 5;Nagłówek 6",
 
@@ -107,12 +137,19 @@ UnknownToolbarItem	: "Nieznany element paska narzędzi \"%1\"",
 UnknownCommand		: "Nieznana komenda \"%1\"",
 NotImplemented		: "Komenda niezaimplementowana",
 UnknownToolbarSet	: "Pasek narzędzi \"%1\" nie istnieje",
+NoActiveX			: "Ustawienia zabezpieczeń twojej przeglądarki mogą ograniczyć niektóre funkcje edytora. Musisz włączyć opcję \"Uruchamianie formantów Activex i dodatków plugin\". W przeciwnym wypadku mogą pojawiać się błędy.",
+BrowseServerBlocked : "The resources browser could not be opened. Make sure that all popup blockers are disabled.",	//MISSING
+DialogBlocked		: "It was not possible to open the dialog window. Make sure all popup blockers are disabled.",	//MISSING
 
 // Dialogs
 DlgBtnOK			: "OK",
 DlgBtnCancel		: "Anuluj",
 DlgBtnClose			: "Zamknij",
+DlgBtnBrowseServer	: "Przeglądaj",
 DlgAdvancedTag		: "Zaawansowane",
+DlgOpOther			: "&lt;Inny&gt;",
+DlgInfoTab			: "Informacje",
+DlgAlertUrl			: "Proszę podać URL",
 
 // General Dialogs Labels
 DlgGenNotSet		: "&lt;nieustawione&gt;",
@@ -137,7 +174,6 @@ DlgImgInfoTab		: "Informacje o obrazku",
 DlgImgBtnUpload		: "Syślij",
 DlgImgURL			: "Adres URL",
 DlgImgUpload		: "Wyślij",
-DlgImgBtnBrowse		: "Przeglądaj",
 DlgImgAlt			: "Tekst zastępczy",
 DlgImgWidth			: "Szerokość",
 DlgImgHeight		: "Wysokość",
@@ -157,9 +193,18 @@ DlgImgAlignRight	: "Do prawej",
 DlgImgAlignTextTop	: "Do góry tekstu",
 DlgImgAlignTop		: "Do góry",
 DlgImgPreview		: "Podgląd",
-DlgImgMsgWrongExt	: "Niestety dozwolone są tylko następujące typy plików:\n\n" + FCKConfig.ImageUploadAllowedExtensions + "\n\nOperacja nie powiodła się.",
-DlgImgAlertSelect	: "Wybierz obrazek do wysłania.",
 DlgImgAlertUrl		: "Podaj adres obrazka.",
+DlgImgLinkTab		: "Link",
+
+// Flash Dialog
+DlgFlashTitle		: "Właściwości elementu Flash",
+DlgFlashChkPlay		: "Auto Odtwarzanie",
+DlgFlashChkLoop		: "Pętla",
+DlgFlashChkMenu		: "Włącz menu",
+DlgFlashScale		: "Skaluj",
+DlgFlashScaleAll	: "Pokaż wszystko",
+DlgFlashScaleNoBorder	: "Bez Ramki",
+DlgFlashScaleFit	: "Dokładne dopasowanie",
 
 // Link Dialog
 DlgLnkWindowTitle	: "Hiperłącze",
@@ -173,7 +218,6 @@ DlgLnkTypeEMail		: "Adres e-mail",
 DlgLnkProto			: "Protokół",
 DlgLnkProtoOther	: "&lt;inny&gt;",
 DlgLnkURL			: "Adres URL",
-DlgLnkBtnBrowse		: "Przeglądaj",
 DlgLnkAnchorSel		: "Wybierz etykietę",
 DlgLnkAnchorByName	: "Wg etykiety",
 DlgLnkAnchorById	: "Wg identyfikatora elementu",
@@ -191,7 +235,7 @@ DlgLnkTargetBlank	: "Nowe okno (_blank)",
 DlgLnkTargetParent	: "Okno nadrzędne (_parent)",
 DlgLnkTargetSelf	: "To samo okno (_self)",
 DlgLnkTargetTop		: "Okno najwyższe w hierarchii (_top)",
-DlgLnkTargetFrame	: "Nazwa ramki docelowej",
+DlgLnkTargetFrameName	: "Nazwa Ramki Docelowej",
 DlgLnkPopWinName	: "Nazwa wyskakującego okna",
 DlgLnkPopWinFeat	: "Właściwości wyskakującego okna",
 DlgLnkPopResize		: "Możliwa zmiana rozmiaru",
@@ -206,9 +250,6 @@ DlgLnkPopWidth		: "Szerokość",
 DlgLnkPopHeight		: "Wysokość",
 DlgLnkPopLeft		: "Pozycja w poziomie",
 DlgLnkPopTop		: "Pozycja w pionie",
-
-DlgLnkMsgWrongExtA	: "Dozwolone są tylko nastepujące typy plików:\n\n" + FCKConfig.LinkUploadAllowedExtensions + "\n\nOperacja nie powiodła się.",
-DlgLnkMsgWrongExtD	: "Niedozwolone typy plików:\n\n" + FCKConfig.LinkUploadDeniedExtensions + "\n\nOperacja nie powiodła się.",
 
 DlnLnkMsgNoUrl		: "Podaj adres URL",
 DlnLnkMsgNoEMail	: "Podaj adres e-mail",
@@ -243,6 +284,7 @@ DlgTableHeight		: "Wysokość",
 DlgTableCellSpace	: "Odstęp pomiędzy komórkami",
 DlgTableCellPad		: "Margines wewnętrzny komórek",
 DlgTableCaption		: "Tytuł",
+DlgTableSummary		: "Summary",	//MISSING
 
 // Table Cell Dialog
 DlgCellTitle		: "Właściwości komórki",
@@ -293,14 +335,148 @@ PasteErrorCopy	: "Ustawienia bezpieczeństwa Twojej przeglądarki nie pozwalają
 PasteAsText		: "Wklej jako czysty tekst",
 PasteFromWord	: "Wklej z Worda",
 
-DlgPasteMsg		: "Automatyczne wklejenie tekstu nie było możliwe z powodu <STRONG>restrykcyjnych</STRONG> ustawień bezpieczeństwa Twojej przeglądarki.<BR>Wklej tekst w poniższe pole używając skrótu klawiszowego (<STRONG>Ctrl+V</STRONG>) i wciśnij <STRONG>OK</STRONG>.",
+DlgPasteMsg2	: "Proszę wkleić w poniższym polu używając klawiaturowego skrótu (<STRONG>Ctrl+V</STRONG>) i kliknąć <STRONG>OK</STRONG>.",
+DlgPasteIgnoreFont		: "Ignoruj definicje 'Font Face'",
+DlgPasteRemoveStyles	: "Usuń definicje Stylów",
+DlgPasteCleanBox		: "Wyczyść",
+
 
 // Color Picker
 ColorAutomatic	: "Automatycznie",
 ColorMoreColors	: "Więcej kolorów...",
 
+// Document Properties
+DocProps		: "Właściwości dokumentu",
+
+// Anchor Dialog
+DlgAnchorTitle		: "Właściwości kotwicy",
+DlgAnchorName		: "Nazwa kotwicy",
+DlgAnchorErrorName	: "Wpisz nazwę kotwicy",
+
+// Speller Pages Dialog
+DlgSpellNotInDic		: "Słowa nie ma w słowniku",
+DlgSpellChangeTo		: "Zmień na",
+DlgSpellBtnIgnore		: "Ignoruj",
+DlgSpellBtnIgnoreAll	: "Ignoruj wszystkie",
+DlgSpellBtnReplace		: "Zmień",
+DlgSpellBtnReplaceAll	: "Zmień wszystkie",
+DlgSpellBtnUndo			: "Undo",
+DlgSpellNoSuggestions	: "- Brak sugestii -",
+DlgSpellProgress		: "Trwa sprawdzanie ...",
+DlgSpellNoMispell		: "Sprawdzanie zakończone: nie znaleziono błędów",
+DlgSpellNoChanges		: "Sprawdzanie zakończone: nie zmieniono żadnego słowa",
+DlgSpellOneChange		: "Sprawdzanie zakończone: zmieniono jedno słowo",
+DlgSpellManyChanges		: "Sprawdzanie zakończone: zmieniono %l słów",
+
+IeSpellDownload			: "Słownik nie jest zainstalowany. Chcesz go ściągnąć?",
+
+// Button Dialog
+DlgButtonText	: "Tekst (Wartość)",
+DlgButtonType	: "Typ",
+
+// Checkbox and Radio Button Dialogs
+DlgCheckboxName		: "Nazwa",
+DlgCheckboxValue	: "Wartość",
+DlgCheckboxSelected	: "Zaznaczony",
+
+// Form Dialog
+DlgFormName		: "Nazwa",
+DlgFormAction	: "Akcja",
+DlgFormMethod	: "Metoda",
+
+// Select Field Dialog
+DlgSelectName		: "Nazwa",
+DlgSelectValue		: "Wartość",
+DlgSelectSize		: "Rozmiar",
+DlgSelectLines		: "linii",
+DlgSelectChkMulti	: "Wielokrotny wybór",
+DlgSelectOpAvail	: "Dostępne opcje",
+DlgSelectOpText		: "Tekst",
+DlgSelectOpValue	: "Wartość",
+DlgSelectBtnAdd		: "Dodaj",
+DlgSelectBtnModify	: "Zmień",
+DlgSelectBtnUp		: "Do góry",
+DlgSelectBtnDown	: "Do dołu",
+DlgSelectBtnSetValue : "Ustaw wartość zaznaczoną",
+DlgSelectBtnDelete	: "Usuń",
+
+// Textarea Dialog
+DlgTextareaName	: "Nazwa",
+DlgTextareaCols	: "Kolumnu",
+DlgTextareaRows	: "Wiersze",
+
+// Text Field Dialog
+DlgTextName			: "Nazwa",
+DlgTextValue		: "Wartość",
+DlgTextCharWidth	: "Szerokość w znakach",
+DlgTextMaxChars		: "Max. szerokość",
+DlgTextType			: "Typ",
+DlgTextTypeText		: "Tekst",
+DlgTextTypePass		: "Hasło",
+
+// Hidden Field Dialog
+DlgHiddenName	: "Nazwa",
+DlgHiddenValue	: "Wartość",
+
+// Bulleted List Dialog
+BulletedListProp	: "Właściwości listy punktowanej",
+NumberedListProp	: "Właściwości listy numerowanej",
+DlgLstType			: "Typ",
+DlgLstTypeCircle	: "Koło",
+DlgLstTypeDisc		: "Dysk",
+DlgLstTypeSquare	: "Kwadrat",
+DlgLstTypeNumbers	: "Cyfry (1, 2, 3)",
+DlgLstTypeLCase		: "Małe litery (a, b, c)",
+DlgLstTypeUCase		: "Duże litery (A, B, C)",
+DlgLstTypeSRoman	: "Numeracja rzymska (i, ii, iii)",
+DlgLstTypeLRoman	: "Numeracja rzymska (I, II, III)",
+
+// Document Properties Dialog
+DlgDocGeneralTab	: "Ogólne",
+DlgDocBackTab		: "Tło",
+DlgDocColorsTab		: "Kolory i marginesy",
+DlgDocMetaTab		: "Meta Dane",
+
+DlgDocPageTitle		: "Tytuł strony",
+DlgDocLangDir		: "Kierunek pisania",
+DlgDocLangDirLTR	: "Od lewej do prawej (LTR)",
+DlgDocLangDirRTL	: "Od prawej do lewej (RTL)",
+DlgDocLangCode		: "Kod języka",
+DlgDocCharSet		: "Kodowanie znaków",
+DlgDocCharSetOther	: "Inne kodowanie znaków",
+
+DlgDocDocType		: "Nagłowek typu dokumentu",
+DlgDocDocTypeOther	: "Inny typ dokumentu",
+DlgDocIncXHTML		: "Dołącz deklarację XHTML",
+DlgDocBgColor		: "Kolor tła",
+DlgDocBgImage		: "Obrazek tła",
+DlgDocBgNoScroll	: "Tło nieruchome",
+DlgDocCText			: "Tekst",
+DlgDocCLink			: "Hiperłącze",
+DlgDocCVisited		: "Odwiedzane hiperłącze",
+DlgDocCActive		: "Aktywne hiperłącze",
+DlgDocMargins		: "Marginesy strony",
+DlgDocMaTop			: "Górny",
+DlgDocMaLeft		: "Lewy",
+DlgDocMaRight		: "Prawy",
+DlgDocMaBottom		: "Dolny",
+DlgDocMeIndex		: "Słowa kluczowe (oddzielone przecinkami)",
+DlgDocMeDescr		: "Opis dokumentu",
+DlgDocMeAuthor		: "Autor",
+DlgDocMeCopy		: "Copyright",
+DlgDocPreview		: "Podgląd",
+
+// Templates Dialog
+Templates			: "Sablony",
+DlgTemplatesTitle	: "Szablony zawartości",
+DlgTemplatesSelMsg	: "Wybierz szablon do otwarcia w edytorze<br>(obecna zawartość okna edytora zostanie utracona):",
+DlgTemplatesLoading	: "Ładowanie listy szablonów. Proszę czekać...",
+DlgTemplatesNoTpl	: "(Brak zdefiniowanych szablonów)",
+
 // About Dialog
-DlgAboutVersion	: "wersja",
-DlgAboutLicense	: "na licencji GNU Lesser General Public License",
-DlgAboutInfo	: "Więcej informacji uzyskasz pod adresem"
+DlgAboutAboutTab	: "O ...",
+DlgAboutBrowserInfoTab	: "O przeglądarce",
+DlgAboutVersion		: "wersja",
+DlgAboutLicense		: "na licencji GNU Lesser General Public License",
+DlgAboutInfo		: "Więcej informacji uzyskasz pod adresem"
 }

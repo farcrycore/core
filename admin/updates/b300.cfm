@@ -462,12 +462,12 @@ Adds suffix to ruleNews,ruleEvents<br />
 		<cfoutput><strong>done</strong></p></cfoutput><cfflush>
 	</cfif>
 
-	<!--- create new arelatedids table --->
-	<cfoutput><p><span class="frameMenuBullet">&raquo;</span> Creating new arelatedids table...</cfoutput><cfflush>
+	<!--- create new aRelatedIDs table --->
+	<cfoutput><p><span class="frameMenuBullet">&raquo;</span> Creating new aRelatedIDs table...</cfoutput><cfflush>
 	<cfset lTypeName = StructKeyList(application.types)>
 	<cfloop index="typeName" list="#lTypeName#">
-		<cfif StructKeyExists(application.types[typeName].stProps,"arelatedids")>
-	<cfoutput><li>Creating #typeName#_arelatedids</cfoutput><cfflush>
+		<cfif StructKeyExists(application.types[typeName].stProps,"aRelatedIDs")>
+	<cfoutput><li>Creating #typeName#_aRelatedIDs</cfoutput><cfflush>
 			<cftry>
 				<cfswitch expression="#application.dbtype#">
 					<cfcase value="ora">
@@ -475,7 +475,7 @@ Adds suffix to ruleNews,ruleEvents<br />
 					</cfcase>
 					<cfcase value="mysql">
 						<cfquery name="qCreateTable" datasource="#application.dsn#">
-						CREATE TABLE #application.dbowner##typeName#_arelatedids (
+						CREATE TABLE #application.dbowner##typeName#_aRelatedIDs (
 							data varchar(255) default NULL,
 						  	objectid varchar(50) default NULL,
 						  	seq decimal(10,0) default NULL
@@ -487,7 +487,7 @@ Adds suffix to ruleNews,ruleEvents<br />
 					</cfcase>
 					<cfdefaultcase>
 						<cfquery name="qCreateTable" datasource="#application.dsn#">
-						CREATE TABLE #application.dbowner##typeName#_arelatedids (
+						CREATE TABLE #application.dbowner##typeName#_aRelatedIDs (
 							data varchar(255) default NULL,
 						  	objectid varchar(50) default NULL,
 						  	seq decimal(10,0) default NULL
@@ -594,29 +594,29 @@ Adds suffix to ruleNews,ruleEvents<br />
 	</cftry>
 
 
-	<!--- Add source field to the dmnews table --->
-	<cfoutput><p><span class="frameMenuBullet">&raquo;</span> Adding source properties to dmnews...</p><ul></cfoutput><cfflush>
+	<!--- Add source field to the dmNews table --->
+	<cfoutput><p><span class="frameMenuBullet">&raquo;</span> Adding source properties to dmNews...</p><ul></cfoutput><cfflush>
 
 	<cftry>
 		<cfswitch expression="#application.dbtype#">
 			<cfcase value="ora">
 				<cfquery name="update" datasource="#application.dsn#">
-				ALTER TABLE #application.dbowner#dmnews ADD source VARCHAR2(255) NULL
+				ALTER TABLE #application.dbowner#dmNews ADD source VARCHAR2(255) NULL
 				</cfquery>
 			</cfcase>
 			<cfcase value="mysql">
 				<cfquery name="update" datasource="#application.dsn#">
-				ALTER TABLE #application.dbowner#dmnews ADD source VARCHAR(255) NULL
+				ALTER TABLE #application.dbowner#dmNews ADD source VARCHAR(255) NULL
 				</cfquery>
 			</cfcase>
 			<cfcase value="postgresql">
 				<cfquery name="update" datasource="#application.dsn#">
-				ALTER TABLE #application.dbowner#dmnews ADD source VARCHAR(255) NULL
+				ALTER TABLE #application.dbowner#dmNews ADD source VARCHAR(255) NULL
 				</cfquery>
 			</cfcase>
 			<cfdefaultcase>
 				<cfquery name="update" datasource="#application.dsn#">
-				ALTER TABLE #application.dbowner#dmnews ADD source VARCHAR(255) NULL
+				ALTER TABLE #application.dbowner#dmNews ADD source VARCHAR(255) NULL
 				</cfquery>
 			</cfdefaultcase>
 		</cfswitch>
@@ -624,40 +624,40 @@ Adds suffix to ruleNews,ruleEvents<br />
 	</cftry>
 
 	<!--- Add new 'reviewDate' column to dmFile --->
-	<cfoutput><p><span class="frameMenuBullet">&raquo;</span>  Add new 'reviewDate' column to dmDmHTML..</cfoutput><cfflush>
+	<cfoutput><p><span class="frameMenuBullet">&raquo;</span>  Add new 'reviewDate' column to dmdmHTML..</cfoutput><cfflush>
 	<cftry>
 		<cfset defaultdate = CreateODBCDate(CreateDate(2050,month(Now()),day(Now())))>
 		<cfswitch expression="#application.dbtype#">
 			<cfcase value="ora">
 				<cfquery name="update" datasource="#application.dsn#">
-				ALTER TABLE #application.dbowner#dmHtml ADD reviewDate date NULL
+				ALTER TABLE #application.dbowner#dmHTML ADD reviewDate date NULL
 				</cfquery>
 				<cfquery name="update" datasource="#application.dsn#">
-				UPDATE #application.dbowner#dmHtml SET reviewDate = #defaultdate# WHERE reviewDate IS NULL
+				UPDATE #application.dbowner#dmHTML SET reviewDate = #defaultdate# WHERE reviewDate IS NULL
 				</cfquery>
 			</cfcase>
 			<cfcase value="mysql">
 				<cfquery name="update" datasource="#application.dsn#">
-				ALTER TABLE #application.dbowner#dmHtml ADD reviewDate datetime NULL
+				ALTER TABLE #application.dbowner#dmHTML ADD reviewDate datetime NULL
 				</cfquery>
 				<cfquery name="update" datasource="#application.dsn#">
-				UPDATE #application.dbowner#dmHtml SET reviewDate = #defaultdate# WHERE reviewDate IS NULL
+				UPDATE #application.dbowner#dmHTML SET reviewDate = #defaultdate# WHERE reviewDate IS NULL
 				</cfquery>
 			</cfcase>
 			<cfcase value="postgresql">
 				<cfquery name="update" datasource="#application.dsn#">
-				ALTER TABLE #application.dbowner#dmHtml ADD reviewDate timestamp NULL
+				ALTER TABLE #application.dbowner#dmHTML ADD reviewDate timestamp NULL
 				</cfquery>
 				<cfquery name="update" datasource="#application.dsn#">
-				UPDATE #application.dbowner#dmHtml SET reviewDate = #defaultdate# WHERE reviewDate IS NULL
+				UPDATE #application.dbowner#dmHTML SET reviewDate = #defaultdate# WHERE reviewDate IS NULL
 				</cfquery>
 			</cfcase>
 			<cfdefaultcase>
 				<cfquery name="update" datasource="#application.dsn#">
-				ALTER TABLE #application.dbowner#dmHtml ADD reviewDate datetime NULL
+				ALTER TABLE #application.dbowner#dmHTML ADD reviewDate datetime NULL
 				</cfquery>
 				<cfquery name="update" datasource="#application.dsn#">
-				UPDATE #application.dbowner#dmHtml SET reviewDate = #defaultdate# WHERE reviewDate IS NULL
+				UPDATE #application.dbowner#dmHTML SET reviewDate = #defaultdate# WHERE reviewDate IS NULL
 				</cfquery>
 			</cfdefaultcase>
 		</cfswitch>
@@ -806,7 +806,7 @@ Adds suffix to ruleNews,ruleEvents<br />
 		<li type="square">Adds componentDocURL properties to general Config</li>
 		<li type="square">Adds reviewDate field to dmHTML</li>
 		<li type="square">Adds thumbnail image width and height</li>
-		<li type="square">Adds the source field to the dmnews table</li>
+		<li type="square">Adds the source field to the dmNews table</li>
 		<li type="square">Adds versionID to dmNews,dmHTML,dmEvents</li>
 		<li type="square">Adds TinyMCE Rich Text Editor Config</li>
 		<li type="square">Adds suffix to ruleNews,ruleEvents</li>

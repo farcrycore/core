@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_tree/getAncestors.cfm,v 1.15 2005/10/28 03:24:15 paul Exp $
-$Author: paul $
-$Date: 2005/10/28 03:24:15 $
-$Name: milestone_3-0-0 $
-$Revision: 1.15 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_tree/getAncestors.cfm,v 1.15.2.1 2006/02/24 04:50:20 tlucas Exp $
+$Author: tlucas $
+$Date: 2006/02/24 04:50:20 $
+$Name: milestone_3-0-1 $
+$Revision: 1.15.2.1 $
 
 || DESCRIPTION || 
 $Description: getAncestors Function $
@@ -59,7 +59,7 @@ $out:$
 		ancestors = query(sql=sql, dsn=arguments.dsn);
 	}
 	else 
-		ancestors = queryNew("objectid,parentid,typename,nleft,nright,nlevel,objectname");
+		ancestors = queryNew("objectid, objectname, nlevel");
 </cfscript>  
 
 <cfif arguments.bIncludeSelf>
@@ -67,10 +67,12 @@ $out:$
 	SELECT nlevel, objectid, objectname FROM #application.dbowner#nested_tree_objects
 	WHERE objectid = '#arguments.objectid#'
 	</cfquery>
-	<cfset queryAddRow(ancestors, 1)>
-	<cfset querySetCell(ancestors, "nlevel", qSelf.nlevel)>
-	<cfset querySetCell(ancestors, "objectid", qSelf.objectid)>
-	<cfset querySetCell(ancestors, "objectname", qSelf.objectname)>
+	<cfif qSelf.recordCount>
+		<cfset queryAddRow(ancestors, 1)>
+		<cfset querySetCell(ancestors, "nlevel", qSelf.nlevel)>
+		<cfset querySetCell(ancestors, "objectid", qSelf.objectid)>
+		<cfset querySetCell(ancestors, "objectname", qSelf.objectname)>
+	</cfif>
 </cfif>	
 
 <!--- reorder, to put this at the front of the query --->

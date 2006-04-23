@@ -11,11 +11,15 @@
 	<!--- default the preview on forst entry --->	
 	<cfset objType = CreateObject("component","#application.types[attributes.typename].typepath#")>
 	<cfset stObject = objType.getData(attributes.fieldValue)>
-	<cfswitch expression="#attributes.typename#">
-		<cfcase value="dmImage">
-			<cfset strPreviewvalue = objType.getURLImagePath(attributes.fieldValue,"thumb")>
-		</cfcase>
-	</cfswitch>
+	<cfif NOT StructIsEmpty(stObject)>
+		<cfswitch expression="#attributes.typename#">
+			<cfcase value="dmImage">
+				<cfset strPreviewvalue = objType.getURLImagePath(attributes.fieldValue,"thumb")>
+			</cfcase>
+		</cfswitch>
+	<cfelse> <!--- delete association as object does not exist --->
+		<cfset attributes.fieldValue = "">
+	</cfif>
 </cfif>
 
 
@@ -36,7 +40,7 @@
 <script type="text/javascript">
 function fObjectPicker_#attributes.fieldName#()
 {
-	var url = "/farcry/includes/objectPicker.cfm?typeName=#attributes.typeName#&fieldName=#attributes.fieldName#";
+	var url = "#application.url.farcry#/includes/objectPicker.cfm?typeName=#attributes.typeName#&fieldName=#attributes.fieldName#";
 	var options = "width="+680+",height="+530+",status=no,toolbar=no,directories=no,menubar=no,location=no,resizable=yes,left=20,top=20,scrollbars=yes";
 	var hwnd = open(url, "_winObjectPicker", options);
 }

@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/rules/container.cfc,v 1.41 2005/10/28 03:52:41 paul Exp $
+$Header: /cvs/farcry/farcry_core/packages/rules/container.cfc,v 1.41.2.1 2006/01/04 07:50:02 paul Exp $
 $Author: paul $
-$Date: 2005/10/28 03:52:41 $
-$Name: milestone_3-0-0 $
-$Revision: 1.41 $
+$Date: 2006/01/04 07:50:02 $
+$Name: milestone_3-0-1 $
+$Revision: 1.41.2.1 $
 
 || DESCRIPTION || 
 $Description: Core container management component. $
@@ -249,7 +249,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 		<!--- delete container from [refcontainers] for object content types --->
 		<cfquery name="qDelete" datasource="#application.dsn#">
 		DELETE
-		FROM	#application.dbowner#refcontainers
+		FROM	#application.dbowner#refContainers
 		WHERE	containerid = '#arguments.objectid#'
 		</cfquery>
 
@@ -384,7 +384,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 			<cfdefaultcase>
 				<cfquery name="qCreateTables" datasource="#arguments.dsn#">
 				if exists (select * from sysobjects where id = object_id(N'#application.dbowner#refContainers') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
-				drop table #application.dbowner#refcontainers
+				drop table #application.dbowner#refContainers
 		
 				-- return recordset to stop CF bombing out?!?
 				select count(*) as blah from sysobjects

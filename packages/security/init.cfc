@@ -7,7 +7,7 @@ $License: Released Under the "Common Public License 1.0", http://www.opensource.
 $Header: /cvs/farcry/farcry_core/packages/security/init.cfc,v 1.23 2005/09/16 07:25:39 guy Exp $
 $Author: guy $
 $Date: 2005/09/16 07:25:39 $
-$Name: milestone_3-0-0 $
+$Name: milestone_3-0-1 $
 $Revision: 1.23 $
 
 || DESCRIPTION || 

@@ -5,11 +5,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/conjuror/changestatus.cfm,v 1.3 2005/08/18 01:37:10 guy Exp $
-$Author: guy $
-$Date: 2005/08/18 01:37:10 $
-$Name: milestone_3-0-0 $
-$Revision: 1.3 $
+$Header: /cvs/farcry/farcry_core/admin/conjuror/changestatus.cfm,v 1.3.2.1 2006/02/24 00:31:42 paul Exp $
+$Author: paul $
+$Date: 2006/02/24 00:31:42 $
+$Name: milestone_3-0-1 $
+$Revision: 1.3.2.1 $
 
 || DESCRIPTION || 
 $Description: Change status summoner.  
@@ -100,9 +100,23 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	
 	<cfcase value="requestapproval">
 		<!--- set content item to pending --->
-		<cfif stobj.status neq "pending">
+		<cfif stobj.status neq "pending"> --->
 			<cfset stresult=oType.statustopending()>
-		</cfif>
+			
+			<cfinvoke component="#application.packagepath#.farcry.versioning" method="approveEmail_pending_dd">
+					<cfinvokeargument name="objectId" value="#stObj.objectid#"/>
+					<cfinvokeargument name="comment" value="#form.commentlog#"/>
+					<cfif isdefined("form.lApprovers") and len(form.lApprovers)>
+						<cfif listLen(form.lApprovers) gt 1 and listFind(form.lApprovers,"all")>
+							<cfinvokeargument name="lApprovers" value="all"/>
+						<cfelse>
+							<cfinvokeargument name="lApprovers" value="#form.lApprovers#"/>
+						</cfif>					
+					<cfelse>
+						<cfinvokeargument name="lApprovers" value="all"/>
+					</cfif>
+			</cfinvoke>
+		</cfif> 
 
 	</cfcase>
 	
@@ -138,6 +152,8 @@ get first content item for display options
 	<cfinvoke component="#application.packagepath#.farcry.workflow" method="getNewsApprovers" returnvariable="stApprovers">
 		<cfinvokeargument name="objectID" value="#listFirst(objectID)#"/>
 	</cfinvoke>
+	
+	
 	
 	<cfsavecontent variable="approvers">
 	<cfoutput>

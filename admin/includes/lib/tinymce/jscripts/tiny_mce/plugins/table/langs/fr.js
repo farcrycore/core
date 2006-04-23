@@ -1,41 +1,77 @@
 // French lang variables by Laurent Dran
+// Modifié par Normand Lamoureux le 2005-11-12
 
-tinyMCELang['lang_table_desc'] = 'Ins&eacute;rer un nouveau tableau';
-tinyMCELang['lang_table_insert_row_before_desc'] = 'Ins&eacute;rer une ligne avant';
-tinyMCELang['lang_table_insert_row_after_desc'] = 'Ins&eacute;rer une ligne apr&eacute;s';
-tinyMCELang['lang_table_delete_row_desc'] = 'Supprimer la ligne';
-tinyMCELang['lang_table_insert_col_before_desc'] = 'Ins&eacute;rer une colonne avant';
-tinyMCELang['lang_table_insert_col_after_desc'] = 'Ins&eacute;rer une colonne apr&eacute;s';
-tinyMCELang['lang_table_delete_col_desc'] = 'Supprimer la colonne';
-tinyMCELang['lang_insert_table_title'] = 'Ins&eacute;rer/Modifier le tableau';
-tinyMCELang['lang_insert_table_width'] = 'Largeur';
-tinyMCELang['lang_insert_table_height'] = 'Hauteur';
-tinyMCELang['lang_insert_table_cols'] = 'Colonnes';
-tinyMCELang['lang_insert_table_rows'] = 'Lignes';
-tinyMCELang['lang_insert_table_cellspacing'] = 'Cellspacing';
-tinyMCELang['lang_insert_table_cellpadding'] = 'Cellpadding';
-tinyMCELang['lang_insert_table_border'] = 'Bordure';
-tinyMCELang['lang_insert_table_align'] = 'Alignement';
-tinyMCELang['lang_insert_table_align_default'] = 'D&eacute;faut';
-tinyMCELang['lang_insert_table_align_left'] = 'Gauche';
-tinyMCELang['lang_insert_table_align_right'] = 'Droit';
-tinyMCELang['lang_insert_table_align_middle'] = 'Milieu';
-tinyMCELang['lang_insert_table_class'] = 'Classe CSS';
-tinyMCELang['lang_table_row_title'] = 'Propri&eacute;t&eacute;s de la rang&eacute;e';
-tinyMCELang['lang_table_cell_title'] = 'Propri&eacute;t&eacute;s de la cellule';
-tinyMCELang['lang_table_row_desc'] = 'Propri&eacute;t&eacute;s de la rang&eacute;e';
-tinyMCELang['lang_table_cell_desc'] = 'Propri&eacute;t&eacute;s de la cellule';
-tinyMCELang['lang_insert_table_valign'] = 'Alignement Vertical';
-tinyMCELang['lang_insert_table_align_top'] = 'Haut';
-tinyMCELang['lang_insert_table_align_bottom'] = 'Bas';
-tinyMCELang['lang_table_props_desc'] = 'Table properties';
-tinyMCELang['lang_table_bordercolor'] = 'Border color';
-tinyMCELang['lang_table_bgcolor'] = 'Bg color';
-tinyMCELang['lang_table_merge_cells_title'] = 'Merge table cells';
-tinyMCELang['lang_table_split_cells_desc'] = 'Split table cells';
-tinyMCELang['lang_table_merge_cells_desc'] = 'Merge table cells';
-tinyMCELang['lang_table_cut_row_desc'] = 'Cut table row';
-tinyMCELang['lang_table_copy_row_desc'] = 'Copy table row';
-tinyMCELang['lang_table_paste_row_before_desc'] = 'Paste table row before';
-tinyMCELang['lang_table_paste_row_after_desc'] = 'Paste table row after';
-tinyMCELang['lang_table_insert_desc'] = 'Insert a new table';
+tinyMCE.addToLang('table',{
+general_tab : 'Général',
+advanced_tab : 'Avancé',
+general_props : 'Propriétés générales',
+advanced_props : 'Propriétés avancées',
+desc : 'Insérer/Modifier un tableau',
+row_before_desc : 'Insérer une rangée avant',
+row_after_desc : 'Insérer une rangée après',
+delete_row_desc : 'Effacer la rangée',
+col_before_desc : 'Insérer une colonne avant',
+col_after_desc : 'Insérer une colonne après',
+delete_col_desc : 'Effacer la colonne',
+rowtype : 'Type de rangée',
+title : 'Gestionnaire de tableau',
+width : 'Largeur',
+height : 'Hauteur',
+cols : 'Colonnes',
+rows : 'Rangées',
+cellspacing : 'Entre les cellules',
+cellpadding : 'Marges intérieures',
+border : 'Bordures',
+align : 'Alignement horizontal',
+align_default : 'Par défault',
+align_left : 'À gauche',
+align_right : 'À droite',
+align_middle : 'Centré',
+row_title : 'Propriétés des rangées',
+cell_title : 'Propriétés des cellules',
+cell_type : 'Type',
+row_desc : 'Propriétés des rangées',
+cell_desc : 'Propriétés des cellules',
+valign : 'Alignement vertical',
+align_top : 'Haut',
+align_bottom : 'Bas',
+props_desc : 'Propriétés du tableau',
+bordercolor : 'Couleur des bordures',
+bgcolor : 'Couleur d\'arrière-plan',
+merge_cells_title : 'Fusionner les cellules',
+split_cells_desc : 'Scinder les cellules',
+merge_cells_desc : 'Fusionner les cellules',
+cut_row_desc : 'Éliminer la rangée',
+copy_row_desc : 'Copier la rangée',
+paste_row_before_desc : 'Coller la rangée avant',
+paste_row_after_desc : 'Coller la rangée après',
+id : 'Id',
+style: 'Style en ligne',
+langdir : 'Sens d\'écriture',
+langcode : 'Code de langue',
+mime : 'Type MIME de la cible',
+ltr : 'Vers la droite',
+rtl : 'Vers la gauche',
+bgimage : 'Image d\'arrière-plan',
+summary : 'Descriptif',
+td : "Donnée",
+th : "En-tête",
+cell_cell : 'Appliquer à la cellule',
+cell_row : 'Appliquer à toute la rangée',
+cell_all : 'Appliquer à tout le tableau',
+row_row : 'Appliquer à la rangée',
+row_odd : 'Appliquer aux rangées pair',
+row_even : 'Appliquer aux rangées impair',
+row_all : 'Appliquer à toutes les rangées',
+thead : 'En-tête',
+tbody : 'Corps',
+tfoot : 'Pied',
+del : 'Effacer le tableau',
+scope : 'Attribut scope',
+row : 'Rangée',
+col : 'Colonne',
+rowgroup : 'Groupe de rangées',
+colgroup : 'Groupe de colonnes',
+missing_scope: 'Les attributs scope rendraient votre tableau de données plus\naccessible à certains groupes d\'utilisateurs.\n\nÊtes-vous sûr de ne pas vouloir spécifier\nd\'attribut scope aux cellules d\'en-tête ?\n\n',
+cellprops_delta_width : 50
+});

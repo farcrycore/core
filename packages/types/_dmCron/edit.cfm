@@ -5,11 +5,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmCron/edit.cfm,v 1.14 2005/08/18 08:15:33 pottery Exp $
-$Author: pottery $
-$Date: 2005/08/18 08:15:33 $
-$Name: milestone_3-0-0 $
-$Revision: 1.14 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmCron/edit.cfm,v 1.14.2.1 2006/03/21 05:03:26 jason Exp $
+$Author: jason $
+$Date: 2006/03/21 05:03:26 $
+$Name: milestone_3-0-1 $
+$Revision: 1.14.2.1 $
 
 || DESCRIPTION || 
 $Description: dmCron edit handler$
@@ -103,7 +103,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 <p id="fading1" class="fade"><span class="error">#errormessage#</span></p>
 </cfif>
 	<label for="title"><b>#application.adminBundle[session.dmProfile.locale].titleLabel#</b>
-		<input type="text" name="title" id="title" value="#stObj.title#" maxlength="255" /><br />
+		<input type="text" name="title" id="title" value="#stObj.title#" maxlength="255" size="45" /><br />
 	</label>
 
 	<label for="description"><b>#application.adminBundle[session.dmProfile.locale].descLabel#</b>
@@ -117,7 +117,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 	</label>
 
 	<label for="parameters"><b>#application.adminBundle[session.dmProfile.locale].parametersLabel#</b>
-		<input type="text" name="parameters" id="parameters" value="#stObj.parameters#" maxlength="255" /><br />
+		<input type="text" name="parameters" id="parameters" value="#stObj.parameters#" maxlength="255" size="45" /><br />
 	</label>
 
 	<label for="frequency"><b>#application.adminBundle[session.dmProfile.locale].templateLabel#</b>

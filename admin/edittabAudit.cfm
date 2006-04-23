@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/edittabAudit.cfm,v 1.10 2005/09/23 04:23:25 guy Exp $
-$Author: guy $
-$Date: 2005/09/23 04:23:25 $
-$Name: milestone_3-0-0 $
-$Revision: 1.10 $
+$Header: /cvs/farcry/farcry_core/admin/edittabAudit.cfm,v 1.10.2.1 2006/02/14 02:55:28 tlucas Exp $
+$Author: tlucas $
+$Date: 2006/02/14 02:55:28 $
+$Name: milestone_3-0-1 $
+$Revision: 1.10.2.1 $
 
 || DESCRIPTION || 
 $DESCRIPTION: Displays an audit log for object$
@@ -96,7 +96,7 @@ $out:$
 		</tr>
 		</table>
 	</cfif>
-	<a href="<cfoutput>#application.url.farcry#/edittaboverview.cfm?objectid=#url.objectId#</cfoutput>">[BACK]</a>
+	<a href="<cfoutput>#application.url.farcry#/edittabOverview.cfm?objectid=#url.objectId#</cfoutput>">[BACK]</a>
 <cfelse>
 	<admin:permissionError>
 </cfif>

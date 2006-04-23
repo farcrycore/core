@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_verity/verityUpdate.cfm,v 1.8 2005/09/12 06:35:43 guy Exp $
-$Author: guy $
-$Date: 2005/09/12 06:35:43 $
-$Name: milestone_3-0-0 $
-$Revision: 1.8 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_verity/verityUpdate.cfm,v 1.8.2.3 2006/03/27 06:22:34 jason Exp $
+$Author: jason $
+$Date: 2006/03/27 06:22:34 $
+$Name: milestone_3-0-1 $
+$Revision: 1.8.2.3 $
 
 || DESCRIPTION || 
 $Description: updates verity collection$
@@ -91,10 +91,28 @@ $out:$
 			<cfoutput><span class="frameMenuBullet">&raquo;</span> #application.rB.formatRBString(application.adminBundle[session.dmProfile.locale].purgingDeadRecsFor,subS)#<p></cfoutput>
 			<cfflush />
 			
-			<cfloop query="q">
-				<cfindex action="DELETE" collection="#application.applicationname#_#key#" query="q" key="objectid">
+			<cfloop query="q">						
+				<cfindex action="DELETE" collection="#application.applicationname#_#key#" key="#objectid#">
 			</cfloop>
 		</cfif>
+		
+		<!--- final catchall to ensure any deleted items are also removed from archive --->
+		<cfquery datasource="#application.dsn#" name="qDelete">
+		SELECT DISTINCT archiveID AS objectid
+		FROM         dmArchive
+		WHERE     (archiveID NOT IN
+                          (SELECT     objectid
+                            FROM          refobjects))
+		</cfquery>
+		
+		<cflock name="verity" timeout="60">
+			<cfindex 
+				collection="#application.applicationname#_#key#" 
+		    	action="delete"
+				type="custom"
+				query="qDelete"
+    			key="objectid">
+		</cflock>
 	
 	<cfelse>
 		<cfif len(application.config.verity.contenttype[key].aprops.uncPath)>

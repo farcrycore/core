@@ -8,7 +8,7 @@ $License: Released Under the "Common Public License 1.0", http://www.opensource.
 $Header: /cvs/farcry/farcry_core/packages/farcry/_verity/deleteFromCollection.cfm,v 1.2 2005/07/25 09:37:33 geoff Exp $
 $Author: geoff $
 $Date: 2005/07/25 09:37:33 $
-$Name: milestone_3-0-0 $
+$Name: milestone_3-0-1 $
 $Revision: 1.2 $
 
 || DESCRIPTION || 

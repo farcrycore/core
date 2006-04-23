@@ -14,7 +14,7 @@
 <cfoutput>
 <label for="#attributes.fieldName#"><b>#attributes.fieldlabel#</b>
 <cfif errormessage NEQ "">
-	<input type="hidden" name="#attributes.fieldName#" value="attributes.selectedValue"><cfelse>
+	<input type="hidden" name="#attributes.fieldName#" value="#attributes.selectedValue#"><cfelse>
 	<select name="#attributes.fieldName#" id="#attributes.fieldName#"><cfloop query="qList">
 		<option value="#qList.objectid#"<cfif qList.objectID EQ attributes.selectedValue> selected="selected"</cfif>><cfif Trim(qList.lastName) EQ "" AND Trim(qList.firstName) EQ "">#qList.username#<cfelse>#qList.lastName#, #qList.firstName#</cfif>
 </option></cfloop>

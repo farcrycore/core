@@ -1,6 +1,6 @@
-/*
+﻿/*
  * FCKeditor - The text editor for internet
- * Copyright (C) 2003-2004 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2005 Frederico Caldeira Knabben
  * 
  * Licensed under the terms of the GNU Lesser General Public License:
  * 		http://www.opensource.org/licenses/lgpl-license.php
@@ -8,90 +8,49 @@
  * For further information visit:
  * 		http://www.fckeditor.net/
  * 
+ * "Support Open Source software. What about a donation today?"
+ * 
  * File Name: fcktoolbarbutton.js
  * 	FCKToolbarButton Class: represents a button in the toolbar.
- * 
- * Version:  2.0 RC2
- * Modified: 2004-11-16 00:40:01
  * 
  * File Authors:
  * 		Frederico Caldeira Knabben (fredck@fckeditor.net)
  */
 
-var FCKToolbarButton = function( commandName, label, tooltip, style, sourceView )
+var FCKToolbarButton = function( commandName, label, tooltip, style, sourceView, contextSensitive )
 {
-	this.Command	= FCKCommands.GetCommand( commandName ) ;
-	this.Label		= label ? label : commandName ;
-	this.Tooltip	= tooltip ? tooltip : ( label ? label : commandName) ;
-	this.Style		= style ? style : FCK_TOOLBARITEM_ONLYICON ;
-	this.SourceView	= sourceView ? true : false ;
-	this.IconPath	= FCKConfig.SkinPath + 'toolbar/button.' + commandName.toLowerCase() + '.gif' ;
-	this.State		= FCK_UNKNOWN ;
+	this.Command			= FCKCommands.GetCommand( commandName ) ;
+	this.Label				= label ? label : commandName ;
+	this.Tooltip			= tooltip ? tooltip : ( label ? label : commandName) ;
+	this.Style				= style ? style : FCK_TOOLBARITEM_ONLYICON ;
+	this.SourceView			= sourceView ? true : false ;
+	this.ContextSensitive	= contextSensitive ? true : false ;
+	this.IconPath			= FCKConfig.SkinPath + 'toolbar/' + commandName.toLowerCase() + '.gif' ;
+	this.State				= FCK_UNKNOWN ;
 }
 
 FCKToolbarButton.prototype.CreateInstance = function( parentToolbar )
 {
-/*
-	<td title="Bold" class="TB_Button_Off" unselectable="on" onmouseover="Button_OnMouseOver(this);" onmouseout="Button_OnMouseOut(this);">
-		<table class="TB_ButtonType_Icon" cellspacing="0" cellpadding="0" border="0">
-			<tr>
-				<td class="TB_Icon"><img src="icons/button.redo.gif" width="21" height="21"></td>
-				<td class="TB_Text" unselectable="on">Redo</td>
-			</tr>
-		</table>
-	</td>
-*/	
 	this.DOMDiv = document.createElement( 'div' ) ;
-	this.DOMDiv.className		= 'TB_Button_Off' ;
+	this.DOMDiv.className = 'TB_Button_Off' ;
 
-	this.DOMDiv.FCKToolbarButton	= this ;
+	this.DOMDiv.FCKToolbarButton = this ;
 	
-	this.DOMDiv.onmouseover = function()
-	{
-		if ( this.FCKToolbarButton.State != FCK_TRISTATE_DISABLED )
-		{
-			this.className = 'TB_Button_On' ;
-		}
-	}
+	var sHtml =
+		'<table title="' + this.Tooltip + '" cellspacing="0" cellpadding="0" border="0">' +
+			'<tr>' ;
 	
-	this.DOMDiv.onmouseout	= function()
-	{
-		if ( this.FCKToolbarButton.State != FCK_TRISTATE_DISABLED &&  this.FCKToolbarButton.State != FCK_TRISTATE_ON )
-		{
-			this.className = 'TB_Button_Off' ;
-		}
-	}
+	if ( this.Style != FCK_TOOLBARITEM_ONLYTEXT ) 
+		sHtml += '<td class="TB_Icon"><img src="' + this.IconPath + '" width="21" height="21"></td>' ;
 	
-	this.DOMDiv.onclick = function()
-	{
-		if ( this.FCKToolbarButton.State != FCK_TRISTATE_DISABLED )
-			this.FCKToolbarButton.Command.Execute() ;
-		return false ;
-	}
-
-	// Gets the correct CSS class to use for the specified style (param).
-	var sClass ;
-	switch ( this.Style )
-	{
-		case FCK_TOOLBARITEM_ONLYICON :
-			sClass = 'TB_ButtonType_Icon' ;
-			break ;
-		case FCK_TOOLBARITEM_ONLYTEXT :
-			sClass = 'TB_ButtonType_Text' ;
-			break ;
-		case FCK_TOOLBARITEM_ICONTEXT :
-			sClass = '' ;
-			break ;
-	}
-
-	this.DOMDiv.innerHTML = 
-		'<table title="' + this.Tooltip + '" class="' + sClass + '" cellspacing="0" cellpadding="0" border="0" unselectable="on">' +
-			'<tr>' +
-				'<td class="TB_Icon" unselectable="on"><img src="' + this.IconPath + '" width="21" height="21" unselectable="on"></td>' +
-				'<td class="TB_Text" unselectable="on">' + this.Label + '</td>' +
+	if ( this.Style != FCK_TOOLBARITEM_ONLYICON ) 
+		sHtml += '<td class="TB_Text" nowrap>' + this.Label + '</td>' ;
+	
+	sHtml +=	
 			'</tr>' +
 		'</table>' ;
 	
+	this.DOMDiv.innerHTML = sHtml ;
 
 	var oCell = parentToolbar.DOMRow.insertCell(-1) ;
 	oCell.appendChild( this.DOMDiv ) ;
@@ -101,13 +60,17 @@ FCKToolbarButton.prototype.CreateInstance = function( parentToolbar )
 
 FCKToolbarButton.prototype.RefreshState = function()
 {
+/*
+	TODO: Delete this comment block on stable version.
 	// Gets the actual state.
-	var eState ;
-	
-	if ( FCK.EditMode == FCK_EDITMODE_SOURCE && ! this.SourceView )
-		eState = FCK_TRISTATE_DISABLED ;
-	else
-		eState = this.Command.GetState() ;
+//	var eState ;
+
+//	if ( FCK.EditMode == FCK_EDITMODE_SOURCE && ! this.SourceView )
+//		eState = FCK_TRISTATE_DISABLED ;
+//	else
+*/
+	// Gets the actual state.
+	var eState = this.Command.GetState() ;
 	
 	// If there are no state changes than do nothing and return.
 	if ( eState == this.State ) return ;
@@ -119,12 +82,67 @@ FCKToolbarButton.prototype.RefreshState = function()
 	{
 		case FCK_TRISTATE_ON :
 			this.DOMDiv.className = 'TB_Button_On' ;
+
+			this.DOMDiv.onmouseover	= FCKToolbarButton_OnMouseOnOver ;
+			this.DOMDiv.onmouseout	= FCKToolbarButton_OnMouseOnOut ;
+			this.DOMDiv.onclick		= FCKToolbarButton_OnClick ;
+			
 			break ;
 		case FCK_TRISTATE_OFF :
 			this.DOMDiv.className = 'TB_Button_Off' ;
+
+			this.DOMDiv.onmouseover	= FCKToolbarButton_OnMouseOffOver ;
+			this.DOMDiv.onmouseout	= FCKToolbarButton_OnMouseOffOut ;
+			this.DOMDiv.onclick		= FCKToolbarButton_OnClick ;
+			
 			break ;
 		default :
-			this.DOMDiv.className = 'TB_Button_Disabled' ;
+			this.Disable() ;
 			break ;
 	}
+}
+
+function FCKToolbarButton_OnMouseOnOver()
+{
+	this.className = 'TB_Button_On TB_Button_On_Over' ;
+}
+
+function FCKToolbarButton_OnMouseOnOut()
+{
+	this.className = 'TB_Button_On' ;
+}
+	
+function FCKToolbarButton_OnMouseOffOver()
+{
+	this.className = 'TB_Button_On TB_Button_Off_Over' ;
+}
+
+function FCKToolbarButton_OnMouseOffOut()
+{
+	this.className = 'TB_Button_Off' ;
+}
+	
+function FCKToolbarButton_OnClick(e)
+{
+	this.FCKToolbarButton.Click(e) ;
+	return false ;
+}
+
+FCKToolbarButton.prototype.Click = function()
+{
+	this.Command.Execute() ;
+}
+
+FCKToolbarButton.prototype.Enable = function()
+{
+	this.RefreshState() ;
+}
+
+FCKToolbarButton.prototype.Disable = function()
+{
+	this.State = FCK_TRISTATE_DISABLED ;
+	this.DOMDiv.className = 'TB_Button_Disabled' ;
+	this.DOMDiv.onmouseover	= null ;
+	this.DOMDiv.onmouseout	= null ;
+	this.DOMDiv.onclick		= null ;
 }

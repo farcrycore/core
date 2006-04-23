@@ -1,39 +1,44 @@
 // PL lang variables
+// fixed by Wooya
+// http://www.mfusion.prv.pl
+// fixed by lemiel 26.10.2005
 
-tinyMCELang['lang_bold_desc'] = 'Pogrubienie';
-tinyMCELang['lang_italic_desc'] = 'Kursywa';
-tinyMCELang['lang_underline_desc'] = 'Podkreslenie';
-tinyMCELang['lang_striketrough_desc'] = 'Przekreslenie';
-tinyMCELang['lang_justifyleft_desc'] = 'Otaczanie z lewej';
-tinyMCELang['lang_justifycenter_desc'] = 'Wysrodkowanie';
-tinyMCELang['lang_justifyright_desc'] = 'Otaczanie z prawej';
-tinyMCELang['lang_justifyfull_desc'] = 'Justowanie';
-tinyMCELang['lang_bullist_desc'] = 'Lista nie numerowana';
-tinyMCELang['lang_numlist_desc'] = 'Lista numerowana';
-tinyMCELang['lang_outdent_desc'] = 'Zmniejsz wciecie';
-tinyMCELang['lang_indent_desc'] = 'Zwieksz wciecie';
-tinyMCELang['lang_undo_desc'] = 'Cofnij';
-tinyMCELang['lang_redo_desc'] = 'PonÃ³w';
-tinyMCELang['lang_link_desc'] = 'Wstaw/Edytuj link';
-tinyMCELang['lang_unlink_desc'] = 'Skasuj link';
-tinyMCELang['lang_image_desc'] = 'Wstaw/Edytuj obrazek';
-tinyMCELang['lang_cleanup_desc'] = 'Wyczysc niepotrzebny kod';
-tinyMCELang['lang_focus_alert'] = 'Musisz zaznaczyc cokolwiek przed uzyciem tej komendy.';
-tinyMCELang['lang_edit_confirm'] = 'Czy chcesz uzyc edytora WYSIWIG dla tego pola ?';
-tinyMCELang['lang_insert_link_title'] = 'Wstaw/Edytuj Link';
-tinyMCELang['lang_insert'] = 'Wstaw';
-tinyMCELang['lang_update'] = 'Zmien';
-tinyMCELang['lang_cancel'] = 'Wyjdz';
-tinyMCELang['lang_insert_link_url'] = 'Adres URL';
-tinyMCELang['lang_insert_link_target'] = 'Cel';
-tinyMCELang['lang_insert_link_target_same'] = 'OtwÃ³rz w tym samym oknie';
-tinyMCELang['lang_insert_link_target_blank'] = 'OtwÃ³rz w nowym oknie';
-tinyMCELang['lang_insert_image_title'] = 'Wstaw/Edytuj obrazek';
-tinyMCELang['lang_insert_image_src'] = 'Adres URL obrazka';
-tinyMCELang['lang_insert_image_alt'] = 'Opis obrazka';
-tinyMCELang['lang_help_desc'] = 'Pomoc';
-tinyMCELang['lang_bold_img'] = "bold.gif";
-tinyMCELang['lang_italic_img'] = "italic.gif";
-tinyMCELang['lang_underline_img'] = "underline.gif";
-tinyMCELang['lang_clipboard_msg'] = 'Kopiowanie/Wycinanie/Wklejanie nie jest obslugiwane w przegladarkach Mozilla and Firefox.\nPotrzebujesz wiecej informacji na ten temat?';
-tinyMCELang['lang_popup_blocked'] = 'Sorry, but we have noticed that your popup-blocker has disabled a window that provides application functionality. You will need to disable popup blocking on this site in order to fully utilize this tool.';
+tinyMCE.addToLang('',{
+bold_desc : 'Pogrubienie (Ctrl+B)',
+italic_desc : 'Pochylenie (Ctrl+I)',
+underline_desc : 'Podkre¶lenie (Ctrl+U)',
+striketrough_desc : 'Przekre¶lenie',
+justifyleft_desc : 'Wyrównaj do lewej',
+justifycenter_desc : 'Wyrównaj do ¶rodka',
+justifyright_desc : 'Wyrównaj do prawej',
+justifyfull_desc : 'Wyrównaj na ca³o¶ci',
+bullist_desc : 'Lista nienumerowana',
+numlist_desc : 'Lista numerowana',
+outdent_desc : 'Zmniejsz wciêcie',
+indent_desc : 'Zwiêksz wciêcie',
+undo_desc : 'Cofnij (Ctrl+Z)',
+redo_desc : 'Ponów (Ctrl+Y)',
+link_desc : 'Wstaw/edytuj link',
+unlink_desc : 'Usuñ link',
+image_desc : 'Wstaw/edytuj obrazek',
+cleanup_desc : 'Usuñ zbêdny kod',
+focus_alert : 'Instancja edytora musi byæ aktywna przed u¿yciem tego polecenia.',
+edit_confirm : 'Czy chcesz u¿yæ edytora WYSIWYG dla tego pola tekstowego?',
+insert_link_title : 'Wstaw/edytuj link',
+insert : 'Wstaw',
+update : 'Aktualizuj',
+cancel : 'Anuluj',
+insert_link_url : 'URL linku',
+insert_link_target : 'Cel',
+insert_link_target_same : 'Otwórz link w tym samym oknie',
+insert_link_target_blank : 'Otwórz link w nowym oknie',
+insert_image_title : 'Wstaw/edytuj obrazek',
+insert_image_src : 'URL obrazka',
+insert_image_alt : 'Opis obrazka',
+help_desc : 'Pomoc',
+bold_img : "bold.gif",
+italic_img : "italic.gif",
+underline_img : "underline.gif",
+clipboard_msg : 'Kopiuj/Wytnij/Wklej nie jest dostêpne dla przegl±darek Mozilla i Firefox.\nCzy chcesz uzyskaæ o tym wiêcej informacji?',
+popup_blocked : 'Niestety, ale odnotowano, ¿e Twoja przegl±darka ma w³±czon± blokadê okienek popup. Musisz wy³±czyæ opcjê blokowania okienek dla tej strony, aby TinyMCE móg³ pracowaæ z pe³n± funkcjonalno¶ci±.'
+});

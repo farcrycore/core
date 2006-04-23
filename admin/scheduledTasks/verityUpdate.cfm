@@ -6,11 +6,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/scheduledTasks/verityUpdate.cfm,v 1.5 2005/03/04 22:31:27 tom Exp $
-$Author: tom $
-$Date: 2005/03/04 22:31:27 $
-$Name: milestone_3-0-0 $
-$Revision: 1.5 $
+$Header: /cvs/farcry/farcry_core/admin/scheduledTasks/verityUpdate.cfm,v 1.5.2.1 2006/03/27 06:22:34 jason Exp $
+$Author: jason $
+$Date: 2006/03/27 06:22:34 $
+$Name: milestone_3-0-1 $
+$Revision: 1.5.2.1 $
 
 || DESCRIPTION ||
 $Description: Build and update FarCry related Verity collections. Manages
@@ -131,6 +131,26 @@ stCollections = application.config.verity.contenttype;
 			<cfloop query="q">
 				<cfindex action="DELETE" collection="#application.applicationname#_#key#" query="q" key="objectid">
 			</cfloop>
+			
+		<!--- final catchall to ensure any deleted items are also removed from archive --->
+		<cfquery datasource="#application.dsn#" name="qDelete">
+		SELECT DISTINCT archiveID AS objectid
+		FROM         dmArchive
+		WHERE     (archiveID NOT IN
+                          (SELECT     objectid
+                            FROM          refobjects))
+		</cfquery>
+		
+		<cflock name="verity" timeout="60">
+			<cfindex 
+				collection="#arguments.collection#" 
+		    	action="delete"
+				type="custom"
+				query="qDelete"
+    			key="objectid">
+		</cflock>
+
+				
 
 		<cfelse>
 			<cfif len(application.config.verity.contenttype[key].aprops.uncPath)>

@@ -7,7 +7,7 @@
 			<cfcase value="draft"> <!--- DRAFT STATUS --->
 				<!--- check user can edit --->
 				<cfif stPermissions.iEdit EQ 1>
-					<a href="edittabedit.cfm?objectid=#stObject.objectid#">#application.adminBundle[session.dmProfile.locale].editObj#</a><br /><cfif stObject.objectid NEQ stObject.objectid_previousversion>
+					<a href="edittabEdit.cfm?objectid=#stObject.objectid#">#application.adminBundle[session.dmProfile.locale].editObj#</a><br /><cfif stObject.objectid NEQ stObject.objectid_previousversion>
 					<a onclick="confirmRestore('#stObject.parentid#','#stObject.objectid#');" href="javascript:void(0);">#application.adminBundle[session.dmProfile.locale].restoreLiveObj#</a><br /></cfif>
 				</cfif>
 	
@@ -52,7 +52,7 @@
 			<cfcase value="pending"> <!--- PENDING STATUS --->
 				<!--- check user can edit --->
 				<cfif stPermissions.iEdit EQ 1 AND stObject.bAlwaysShowEdit EQ 1>
-					<a href="edittabedit.cfm?objectid=#stObject.objectid#">#application.adminBundle[session.dmProfile.locale].editObj#</a><br /><cfif stObject.objectid NEQ stObject.objectid_previousversion>
+					<a href="edittabEdit.cfm?objectid=#stObject.objectid#">#application.adminBundle[session.dmProfile.locale].editObj#</a><br /><cfif stObject.objectid NEQ stObject.objectid_previousversion>
 					<a onclick="confirmRestore('#stObject.parentid#','#stObject.objectid#');" href="javascript:void(0);">#application.adminBundle[session.dmProfile.locale].restoreLiveObj#</a><br /></cfif>
 				</cfif>
 				
@@ -66,7 +66,7 @@
 			<cfcase value="approved">	
 				<!--- check user can edit --->
 				<cfif stPermissions.iEdit EQ 1 AND stObject.bAlwaysShowEdit EQ 1>
-					<a href="edittabedit.cfm?objectid=#stObject.objectid#">#application.adminBundle[session.dmProfile.locale].editObj#</a><br /><cfif stObject.objectid NEQ stObject.objectid_previousversion>
+					<a href="edittabEdit.cfm?objectid=#stObject.objectid#">#application.adminBundle[session.dmProfile.locale].editObj#</a><br /><cfif stObject.objectid NEQ stObject.objectid_previousversion>
 					<a onclick="confirmRestore('#stObject.parentid#','#stObject.objectid#');" href="javascript:void(0);">#application.adminBundle[session.dmProfile.locale].restoreLiveObj#</a><br /></cfif>
 				</cfif>
 				
@@ -95,7 +95,7 @@
 	<cfelse>	<!--- content items without a status --->
 		<!--- check user can edit --->
 		<cfif stPermissions.iEdit EQ 1>
-				<a href="edittabedit.cfm?objectid=#stObject.objectid#">#application.adminBundle[session.dmProfile.locale].editObj#</a><br />
+				<a href="edittabEdit.cfm?objectid=#stObject.objectid#">#application.adminBundle[session.dmProfile.locale].editObj#</a><br />
 		</cfif>
 		
 		<!--- check user can delete --->
@@ -122,15 +122,20 @@
 		<cfset lAlltypes = ListAppend(lPreferredTypeSeq,lAlltypes)>
 		<cfset aTypesUseInTree = objType.buildTreeCreateTypes(lAllTypes)>
 		<cfloop index="i" from="1" to="#ArrayLen(aTypesUseInTree)#">
-	<a href="#application.url.farcry#/navajo/createObject.cfm?objectId=#stObject.objectid#&typename=#aTypesUseInTree[i].typename#">Create #aTypesUseInTree[i].description#</a><br />
+	<a href="#application.url.farcry#/conjuror/evocation.cfm?parenttype=dmNavigation&objectId=#stObject.objectid#&typename=#aTypesUseInTree[i].typename#">Create #aTypesUseInTree[i].description#</a><br />
 		</cfloop>	
 	</cfif>
 
 	<!--- preview object --->
 	<a href="#application.url.webroot#/index.cfm?objectid=#stObject.objectid#&flushcache=1&showdraft=1" target="_winPreview">#application.adminBundle[session.dmProfile.locale].preview#</a><br />
-								
-	</div><cfset tIconName = LCase(Right(stObject.typename,len(stObject.typename)-2))><cfoutput>
-	<img src="#application.url.farcry#/images/icons/#tIconName#.png" alt="alt text" class="icon" /></cfoutput>
+	
+	</div>
+	<cfset tIconName = LCase(Right(stObject.typename,len(stObject.typename)-2))>
+    <cfif fileExists(expandPath('images/icons/#tIconName#.png'))>
+        <cfoutput><img src="#application.url.farcry#/images/icons/#tIconName#.png" alt="alt text" class="icon" /></cfoutput>
+    <cfelse>
+        <cfoutput><img src="#application.url.farcry#/images/icons/custom.png" alt="alt text" class="icon" /></cfoutput>
+    </cfif>
 	
 	<dl class="dl-style1">
 	<dt>#application.adminBundle[session.dmProfile.locale].objTitleLabel#</dt>
@@ -163,24 +168,37 @@
 			<a href="navajo/unlock.cfm?objectid=#stObject.objectid#&typename=#stObject.typename#">[#application.adminBundle[session.dmProfile.locale].unlockUC#]</a>
 			</cfif><cfelse><!--- no locking --->
 			#application.adminBundle[session.dmProfile.locale].unlocked#</cfif>
-	</dd><cfif IsDefined("stObject.displaymethod")>
-	<dt>#application.adminBundle[session.dmProfile.locale].lastUpdatedLabel#</dt>
-	<dd>#application.thisCalendar.i18nDateFormat(stObject.datetimelastupdated,session.dmProfile.locale,application.mediumF)#</dd>
-	<dt>#application.adminBundle[session.dmProfile.locale].lastUpdatedByLabel#</dt>
-	<dd>#stObject.lastupdatedby#</dd>
-	<dt>#application.adminBundle[session.dmProfile.locale].currentStatusLabel#</dt>
-	<dd>#stObject.status#</dd>
-	<dt>#application.adminBundle[session.dmProfile.locale].templateLabel#</dt>
-	<dd>#stObject.displaymethod#</dd></cfif><cfif IsDefined("stObject.teaser")>
-	<dt>#application.adminBundle[session.dmProfile.locale].teaserLabel#</dt>
-	<dd>#stObject.teaser#</dd></cfif><cfif IsDefined("stObject.thumbnailimagepath") AND stObject.thumbnailimagepath NEQ "">
-	<dt>#application.adminBundle[session.dmProfile.locale].thumbnailLabel#</dt>
-	<dd><img src="#application.url.webroot#/images/#stObject.thumbnail#"></dd></cfif><cfif stPermissions.iDeveloperPermission eq 1>
-	<dt>ObjectID</dt>
-	<dd>#stObject.objectid#</dd></cfif>
+	</dd>
+	<cfif StructKeyExists(stObject, "datetimelastupdated")>
+		<dt>#application.adminBundle[session.dmProfile.locale].lastUpdatedLabel#</dt>
+		<dd>#application.thisCalendar.i18nDateFormat(stObject.datetimelastupdated,session.dmProfile.locale,application.mediumF)#</dd>
+	</cfif>
+	<cfif StructKeyExists(stObject, "lastupdatedby")>
+		<dt>#application.adminBundle[session.dmProfile.locale].lastUpdatedByLabel#</dt>
+		<dd>#stObject.lastupdatedby#</dd>
+	</cfif>
+	<cfif StructKeyExists(stObject, "status")>	
+		<dt>#application.adminBundle[session.dmProfile.locale].currentStatusLabel#</dt>
+		<dd>#stObject.status#</dd>
+	</cfif>
+	<cfif StructKeyExists(stObject, "displaymethod")>		
+		<dt>#application.adminBundle[session.dmProfile.locale].templateLabel#</dt>
+		<dd>#stObject.displaymethod#</dd>
+	</cfif>
+	<cfif StructKeyExists(stObject, "teaser")>
+		<dt>#application.adminBundle[session.dmProfile.locale].teaserLabel#</dt>
+		<dd>#stObject.teaser#</dd>
+	</cfif>
+	<cfif StructKeyExists(stObject, "thumbnailimagepath") AND stObject.thumbnailimagepath NEQ "">
+		<dt>#application.adminBundle[session.dmProfile.locale].thumbnailLabel#</dt>
+		<dd><img src="#application.url.webroot#/images/#stObject.thumbnail#"></dd>
+	</cfif>
+	<cfif stPermissions.iDeveloperPermission eq 1>
+		<dt>ObjectID</dt>
+		<dd>#stObject.objectid#</dd>
+	</cfif>
 	</dl>
-	<hr />
-	<ul>
+	<ul class="object-overview-actions">
 
 <!--- check user can edit Friendly URLs --->
 <cfif stPermissions.iEdit EQ 1 AND Application.config.plugins.fu AND StructKeyExists(stObject,"qListFriendlyURL")>
@@ -191,10 +209,10 @@
 		</li>
 </cfif>
 	<!--- view statistics --->
-	<li><a href="#application.url.farcry#/editTabStats.cfm?objectid=#stObject.objectid#">#application.adminBundle[session.dmProfile.locale].stats#</a></li>
+	<li><a href="#application.url.farcry#/edittabStats.cfm?objectid=#stObject.objectid#">#application.adminBundle[session.dmProfile.locale].stats#</a></li>
 
 	<!--- view audit --->
-	<li><a href="#application.url.farcry#/editTabAudit.cfm?objectid=#stObject.objectid#">#application.adminBundle[session.dmProfile.locale].audit#</a></li>
+	<li><a href="#application.url.farcry#/edittabAudit.cfm?objectid=#stObject.objectid#">#application.adminBundle[session.dmProfile.locale].audit#</a></li>
 	
 <cfif StructKeyExists(stObject,"commentLog")>
 		<!--- add comments --->
@@ -213,6 +231,8 @@
 		<cfif (stPermissions.iApprove eq 1 OR stPermissions.iApproveOwn EQ 1) AND StructKeyExists(stObject,"versionid")>
 		<!--- rollback content --->
 		<li><a href="#application.url.farcry#/archive.cfm?objectid=#stObject.objectid#" target="_self">Show Archive</a></li></cfif>
-	</ul></cfoutput>
+	</ul>
+	
+	<hr /></cfoutput>
 
 </cfsavecontent>

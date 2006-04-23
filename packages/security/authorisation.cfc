@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/security/authorisation.cfc,v 1.52 2005/10/28 03:15:43 paul Exp $
+$Header: /cvs/farcry/farcry_core/packages/security/authorisation.cfc,v 1.52.2.1 2006/02/17 06:48:41 paul Exp $
 $Author: paul $
-$Date: 2005/10/28 03:15:43 $
-$Name: milestone_3-0-0 $
-$Revision: 1.52 $
+$Date: 2006/02/17 06:48:41 $
+$Name: milestone_3-0-1 $
+$Revision: 1.52.2.1 $
 
 || DESCRIPTION || 
 $Description: authorisation cfc $
@@ -1112,14 +1112,17 @@ $out:$
 		<cfset stReturn.message = "">
 		<cfset stReturn.lObjectIDs = "">
 		<cftry>
+			
+		
 			<cfquery name="stLocal.qList" datasource="#stPolicyStore.datasource#">
-			SELECT  DISTINCT g.userid
-			FROM    dmpermissionbarnacle pb, dmPermission p, dmUserToGroup g
-			WHERE   p.permissionid = pb.permissionid
-			        AND pb.policyGroupID = g.groupID<cfif arguments.permissionID NEQ 0>
-					AND p.permissionid = <cfqueryparam value="#arguments.permissionID#" cfsqltype="cf_sql_integer"><cfelse>
-					AND p.permissionname = <cfqueryparam value="#arguments.permissionName#" cfsqltype="cf_sql_varchar"></cfif>
-			</cfquery>
+			    SELECT  DISTINCT g.userId
+			    FROM    dmPermissionBarnacle pb, dmPermission p, dmUserToGroup g
+			    WHERE   p.PermissionId = pb.PERMISSIONID
+			            AND pb.POLICYGROUPID = g.groupId<cfif arguments.permissionID NEQ 0>
+			            AND p.PermissionId = <cfqueryparam value="#arguments.permissionID#" cfsqltype="cf_sql_integer"><cfelse>
+			            AND p.PermissionName = <cfqueryparam value="#arguments.permissionName#" cfsqltype="cf_sql_varchar"></cfif>
+			</cfquery> 
+			
 
 			<cfset stReturn.lObjectIDs = ValueList(stLocal.qList.userid)>
 

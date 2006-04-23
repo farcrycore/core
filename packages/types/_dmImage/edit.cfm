@@ -5,11 +5,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmImage/edit.cfm,v 1.62 2005/10/25 03:12:07 guy Exp $
-$Author: guy $
-$Date: 2005/10/25 03:12:07 $
-$Name: milestone_3-0-0 $
-$Revision: 1.62 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmImage/edit.cfm,v 1.62.2.4 2006/02/15 05:17:22 gstewart Exp $
+$Author: gstewart $
+$Date: 2006/02/15 05:17:22 $
+$Name: milestone_3-0-1 $
+$Revision: 1.62.2.4 $
 
 || DESCRIPTION || 
 $Description: dmImage edit handler$
@@ -120,6 +120,11 @@ $Developer: Guy (guy@daemon.com.au)$
 				<cfset stFile.destinationDir = "#application.config.general.archivedirectory##stObj.typename#/">
 				<cfset stFile.destinationFileName = "#stObj.objectid#_original_#dateformat(Now(),'yyyymmdd')#_#timeformat(Now(),'HHMMSS')#.#ListLast(stFile.sourceFileName,'.')#">
 				<cfset archiveObject.fMoveFile(stFile)>
+			<cfelseif stObj.imageFile NEQ "">
+				<cftry>
+					<cffile action="delete" file="#stObj.originalImagepath#/#stObj.imageFile#">
+					<cfcatch></cfcatch>
+				</cftry>
 			</cfif>
 		</cfif>		
 	<cfelseif stobj.imageFile EQ "">
@@ -129,13 +134,32 @@ $Developer: Guy (guy@daemon.com.au)$
 
 	<!--- thumbnail upload/generation --->
 	<cfif (NOT error) AND (stProperties.imageFile NEQ "" AND stProperties.bAutoGenerateThumbnail) OR (IsDefined("form.thumbnail_file_upload") AND form.thumbnail_file_upload NEQ "")>
+
+		<!--- archive the image if it is overwritten (note this is done before because it retains the same thumbnail image name) --->
+		<cfif StructKeyExists(application.config.image,"archivefiles") AND application.config.image.archivefiles EQ "true" AND stObj.thumbnail NEQ "">
+			<cfset stFile.sourceDir = "#stObj.thumbnailImagePath#">
+			<cfset stFile.sourceFileName = "#stObj.thumbnail#">
+			<cfset stFile.destinationFileName = "#stObj.objectid#_#dateformat(Now(),'yyyymmdd')#_#timeformat(Now(),'HHMMSS')#.#ListLast(stFile.sourceFileName,'.')#">
+			<cfset stFile.destinationDir = "#application.config.general.archivedirectory##stObj.typename#/">
+			<cfset stFile.destinationFileName = "#stObj.objectid#_thumbnail_#dateformat(Now(),'yyyymmdd')#_#timeformat(Now(),'HHMMSS')#.#ListLast(stFile.sourceFileName,'.')#">
+			<cfset archiveObject.fMoveFile(stFile)>		
+		<cfelseif stObj.thumbnail NEQ "">
+			<cftry>
+				<cffile action="delete" file="#stObj.thumbnailImagePath#/#stObj.thumbnail#">
+				<cfcatch></cfcatch>
+			</cftry>
+		</cfif>
+		
 		<cfif stProperties.bAutoGenerateThumbnail>
 			<!--- create the thumbnail and default image --->
 			<cfset imageUtilsObj = CreateObject("component","#application.packagepath#.farcry.imageUtilities")>
 			<cfset originalImage = stProperties.originalImagePath & "\" & stProperties.imageFile>
-			<cfset returnstruct = imageUtilsObj.fCreatePresets("thumbnail",originalImage)>
-			<cfset stProperties.thumbnail = returnstruct.filename>
-			<cfset stProperties.thumbnailImagePath = returnstruct.path>	
+			<cfdirectory action="list" directory="#stProperties.originalImagePath#" filter="#stProperties.imageFile#" name="qList">
+			<cfif qList.recordCount>
+				<cfset returnstruct = imageUtilsObj.fCreatePresets("thumbnail",originalImage)>
+				<cfset stProperties.thumbnail = returnstruct.filename>
+				<cfset stProperties.thumbnailImagePath = returnstruct.path>	
+			</cfif>
 		<cfelse>
 			<!--- upload the thumbnail --->
 			<cfif len(imageAcceptList)>
@@ -146,16 +170,6 @@ $Developer: Guy (guy@daemon.com.au)$
 
 			<cfset stProperties.thumbnail = oForm.sanitiseFileName(cffile.ServerFile,cffile.ClientFileName,cffile.ServerDirectory)>
 			<cfset stProperties.thumbnailImagePath = cffile.ServerDirectory>
-		</cfif>
-
-		<!--- archive the image if it is overwritten --->
-		<cfif StructKeyExists(application.config.image,"archivefiles") AND application.config.image.archivefiles EQ "true" AND stObj.thumbnail NEQ "">
-			<cfset stFile.sourceDir = "#stObj.thumbnailImagePath#">
-			<cfset stFile.sourceFileName = "#stObj.thumbnail#">
-			<cfset stFile.destinationFileName = "#stObj.objectid#_#dateformat(Now(),'yyyymmdd')#_#timeformat(Now(),'HHMMSS')#.#ListLast(stFile.sourceFileName,'.')#">
-			<cfset stFile.destinationDir = "#application.config.general.archivedirectory##stObj.typename#/">
-			<cfset stFile.destinationFileName = "#stObj.objectid#_thumbnail_#dateformat(Now(),'yyyymmdd')#_#timeformat(Now(),'HHMMSS')#.#ListLast(stFile.sourceFileName,'.')#">
-			<cfset archiveObject.fMoveFile(stFile)>		
 		</cfif>
 	</cfif>
 
@@ -176,6 +190,11 @@ $Developer: Guy (guy@daemon.com.au)$
 			<cfset stFile.destinationDir = "#application.config.general.archivedirectory##stObj.typename#/">
 			<cfset stFile.destinationFileName = "#stObj.objectid#_optimised_#dateformat(Now(),'yyyymmdd')#_#timeformat(Now(),'HHMMSS')#.#ListLast(stFile.sourceFileName,'.')#">
 			<cfset archiveObject.fMoveFile(stFile)>		
+		<cfelseif stObj.optimisedImage NEQ "">
+			<cftry>
+				<cffile action="delete" file="#stObj.optimisedImagePath#/#stObj.optimisedImage#">
+				<cfcatch></cfcatch>
+			</cftry>
 		</cfif>
 		
 		<!--- set poperties to insert into database --->
@@ -220,7 +239,7 @@ window.close();<cfelse><cfset showform = 1></cfif>
 		parent['content'].location.href = "#application.url.farcry#/edittabOverview.cfm?objectid=#stObj.ObjectID#";
 	}
 	else
-		parent['content'].location.href = "#application.url.farcry#/content/#stObj.typename#.cfm";
+		parent['content'].location.href = "#application.url.farcry#/content/#lcase(stObj.typename)#.cfm";
 	</script></cfoutput>
 </cfif>		
 	<cfelse>

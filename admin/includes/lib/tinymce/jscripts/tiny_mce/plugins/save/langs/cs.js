@@ -1,3 +1,11 @@
-// UK lang variables
+/**
+ * Czech lang variables 
+ * encoding: utf-8
+ *  
+ * $Id: cs.js,v 1.1.2.2 2005/12/03 01:11:57 geoff Exp $ 
+ */  
 
-tinyMCELang['lang_save_desc'] = 'Uloûit'; 
+tinyMCE.addToLang('',{
+save_desc : 'Ulo≈æit'
+});
+

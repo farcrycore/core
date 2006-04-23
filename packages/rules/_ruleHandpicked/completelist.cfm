@@ -7,7 +7,7 @@ $License: Released Under the "Common Public License 1.0", http://www.opensource.
 $Header: /cvs/farcry/farcry_core/packages/rules/_ruleHandpicked/completelist.cfm,v 1.4 2005/07/13 07:44:50 guy Exp $
 $Author: guy $
 $Date: 2005/07/13 07:44:50 $
-$Name: milestone_3-0-0 $
+$Name: milestone_3-0-1 $
 $Revision: 1.4 $
 
 || DESCRIPTION || 

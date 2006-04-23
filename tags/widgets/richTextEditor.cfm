@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/widgets/richTextEditor.cfm,v 1.7 2005/10/06 23:37:30 daniela Exp $
-$Author: daniela $
-$Date: 2005/10/06 23:37:30 $
-$Name: milestone_3-0-0 $
-$Revision: 1.7 $
+$Header: /cvs/farcry/farcry_core/tags/widgets/richTextEditor.cfm,v 1.7.2.5 2006/02/28 23:49:10 tom Exp $
+$Author: tom $
+$Date: 2006/02/28 23:49:10 $
+$Name: milestone_3-0-1 $
+$Revision: 1.7.2.5 $
 
 || DESCRIPTION || 
 $Description: Displays an editor for long text input. Based on config settings unless in toggle mode which will display a basic html text area$
@@ -33,6 +33,27 @@ $out:$
 </cfif>
 
 <cfif attributes.fieldLabel NEQ ""><cfoutput><b>#attributes.fieldLabel#</b></cfoutput></cfif>
+
+
+<!--- TODO: temporary hack 20051123 GB --->
+<cfparam name="session.toggleTextArea" default="0">
+<cfif isDefined("form.togglechange") AND form.togglechange>
+	<cfset session.toggleTextArea = 1>
+<cfelseif isDefined("togglechange") AND NOT togglechange>
+	<cfset session.toggleTextArea = 0>
+</cfif>
+
+<cfoutput>
+<cfif session.toggleTextArea>
+<input type="hidden" name="togglechange" value="0">
+<input type="checkbox" name="toggletext" value="1" checked onclick="javascript:document.forms.editform.plpAction.value='none';document.forms.editform.buttonSubmit.click();">Toggle textarea<br />
+<cfelse>
+<input type="hidden" name="togglechange" value="1">
+<input type="checkbox" name="toggletext" value="1" onclick="javascript:document.forms.editform.plpAction.value='none';document.forms.editform.buttonSubmit.click();">Toggle textarea<br />
+</cfif>
+</cfoutput>
+<!--- /end temporary hack 20051123 GB --->
+
 <!--- check if toggled to text area otherwise use config defined editor --->
 <cfif isdefined("session.toggleTextArea") and session.toggleTextArea eq 1>
 	<!--- javascript for inserting images etc --->
@@ -388,30 +409,74 @@ $out:$
 		
 		<cfcase value="fckEditor">
 			<!--- load FCKEditor --->
+			<!--- load FCKEditor --->
 			<cfsavecontent variable="fckEditorScript">
 				<cfoutput>
-				<!-- // load FCKEditor and set preferences // -->
-				<script type="text/javascript" src="#application.url.farcry#/includes/lib/fckeditor/fckeditor.js"></script>
-				<!-- // finished loading FCKEditor //-->	
+				<!-- //
+				This function inserts HTML (<a> & <img>) into the
+				FCKEditor Instance. 
+				// -->	
 				<script type="text/javascript">
 					function insertHTML( html )
-					 {	
-					 	 	 var fck = FCKeditorAPI.GetInstance("#attributes.textareaname#");
-							 fck.InsertHtml(html,true) ; 
-							 
+					 {
+  						var FCK = FCKeditorAPI.GetInstance("#attributes.textareaname#");
+						var selText; 
+						var textRange; 
+						
+					 	//Are we inserting an image or anchor?
+					 	if(html.indexOf('<img') == -1)
+					 	{
+							if(document.all) //ie
+							{ 
+								textRange= FCK.EditorDocument.selection.createRange(); 
+								selText = textRange.text; 
+							}
+							else //gecko 
+								selText = FCK.EditorWindow.getSelection().toString(); 
+							
+						 	//alert(selText.length);
+						 	
+							if(selText.length != 0)
+							{
+								var Pattern = />[\S\s]+<\/a>$/i;
+								var match = Pattern.exec(html);
+								//Did we get a pattern match?					 		
+								if(match != null) {
+									//Replace the original anchor text with the selected text
+									html = html.replace(Pattern, '>'+selText+'</a>');
+									//Replace rather than insert
+									FCK.InsertHtml(html) ; 
+								}
+								else
+									FCK.InsertHtml(html) ; 
+							}
+							else
+							{
+								FCK.InsertHtml(html) ; 
+							}
+					 	}
+					 	else
+					 	{
+							FCK.InsertHtml(html) ; 
+					 	}
 					 } 
 				</script>
 				</cfoutput>
-			</cfsavecontent>				
+			</cfsavecontent>
+			
+			<!--- Write the script out to the HTML Head --->				
 			<cfhtmlhead text="#fckeditorscript#">	
+			
 			<cfscript>
- 	 			fckEditor = createObject("component", "/farcry/includes/lib/fckeditor/fckeditor");
+ 	 			fckEditor = createObject("component", "farcry.farcry_core.admin.includes.lib.fckeditor.fckeditor");
 				fckEditor.toolBarSet="#application.config.fckEditor.toolBarSet#";
 	 			fckEditor.instanceName="#attributes.textareaname#";
 	 			fckEditor.basePath="#application.url.farcry#/includes/lib/fckeditor/";
 	 			fckEditor.value="#attributes.value#";
  	 			fckEditor.width="#application.config.fckEditor.width#";
 	 			fckEditor.height="#application.config.fckEditor.height#";
+	 			fckEditor.Config["CustomConfigurationsPath"] = "#application.config.fckEditor.customConfigurationsPath#";
+	 			fckEditor.Config["SkinPath"] = "#fckEditor.basePath#editor/skins/#application.config.fckEditor.skin#/";
 		 		fckEditor.create(); // create instance now.
 			</cfscript>		
 		</cfcase>
@@ -561,9 +626,9 @@ $out:$
 				<script type="text/javascript">
 				tinyMCE.init({
 					mode : "exact",
-					elements : "#attributes.textareaname#",
-					insertimage_callback : "showWindowdmImage",
-					file_browser_callback : "showWindowdmFile",
+					elements : "#attributes.textareaname#",<cfif NOT ListFindNoCase("none,default", application.config.tinyMCE.insertimage_callback) AND application.config.tinyMCE.insertimage_callback NEQ "">
+					insertimage_callback : "#application.config.tinyMCE.insertimage_callback#",</cfif><cfif NOT ListFindNoCase("none,default", application.config.tinyMCE.file_browser_callback) AND application.config.tinyMCE.file_browser_callback NEQ "">
+					file_browser_callback : "#application.config.tinyMCE.file_browser_callback#",</cfif>
 					#application.config.tinyMCE.tinyMCE_config#
 				});
 				</script>
@@ -612,11 +677,14 @@ $out:$
 					 	else
 						 	tinyMCE.execInstanceCommand('#attributes.textareaname#','mceInsertContent',false,html);
 					}
+
 				</script>
 				</cfoutput>
 			</cfsavecontent>				
 			<cfhtmlhead text="#tinyMCEjs#">
-			<cfoutput><textarea id="#attributes.textareaname#" name="#attributes.textareaname#" cols="50" rows="15">#attributes.value#</textarea></cfoutput>
+			<cfoutput>
+			<textarea id="#attributes.textareaname#" name="#attributes.textareaname#" cols="50" rows="15">#attributes.value#</textarea>
+			</cfoutput>
 		</cfcase>
 		
 		<!--- Default Editor --->

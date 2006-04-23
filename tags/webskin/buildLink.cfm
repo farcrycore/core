@@ -5,11 +5,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/webskin/buildLink.cfm,v 1.16 2005/10/30 09:13:18 geoff Exp $
+$Header: /cvs/farcry/farcry_core/tags/webskin/buildLink.cfm,v 1.16.2.2 2006/01/26 06:49:20 geoff Exp $
 $Author: geoff $
-$Date: 2005/10/30 09:13:18 $
-$Name: milestone_3-0-0 $
-$Revision: 1.16 $
+$Date: 2006/01/26 06:49:20 $
+$Name: milestone_3-0-1 $
+$Revision: 1.16.2.2 $
 
 || DESCRIPTION || 
 $Description: Helps to construct a FarCry style link -- works out whether the links is a symlink or normal farcry link and checks for friendly url$
@@ -24,11 +24,13 @@ $in: title -- link text $
 $in: external -- external link for nav node $
 $in: class -- css class for link$
 $in: target -- target window for link$
+$in: xCode -- eXtra code to be placed inside the anchor tag $
 --->
 
 <cfif thistag.executionMode eq "Start">
+	<cfparam name="attributes.linktext" default="">
 	<cfparam name="attributes.target" default="_self">
-	<cfparam name="attributes.bShowTarget" default="true">
+	<cfparam name="attributes.bShowTarget" default="false">
 	<cfparam name="attributes.externallink" default="">
 	<cfparam name="attributes.class" default="">
 	<cfparam name="attributes.urlOnly" default="false">
@@ -114,7 +116,11 @@ $in: target -- target window for link$
 <cfelse>
 	<!--- Was only the URL requested? If so, we don't need to close any tags --->
 	<cfif attributes.urlOnly EQ false>
-		<cfset tagoutput=tagoutput & trim(thistag.generatedcontent) & '</a>'>
+		<cfif len(attributes.linktext)>
+			<cfset tagoutput=tagoutput & trim(attributes.linktext) & '</a>'>
+		<cfelse>
+			<cfset tagoutput=tagoutput & trim(thistag.generatedcontent) & '</a>'>
+		</cfif>
 	</cfif>
 
 	<!--- clean up whitespace --->

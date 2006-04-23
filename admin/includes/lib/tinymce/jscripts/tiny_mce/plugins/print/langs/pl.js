@@ -1,4 +1,5 @@
-﻿// PL lang variables
+// PL lang variables
 
-
-tinyMCELang['lang_print_desc'] = 'Drukuj';
+tinyMCE.addToLang('',{
+print_desc : 'Drukuj'
+});

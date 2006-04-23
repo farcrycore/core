@@ -1,21 +1,46 @@
-// Simplified Chinese lang variables contributed by cube316 (cube316@gmail.com)
-//请访问 http://www.cube316.net/ 以获取TinyMCE的中文支持
+// Simplified Chinese lang variables contributed by tom_cat (thomaswangyang@gmail.com)
 
-tinyMCELang['lang_insert_link_target_same'] = '在本窗口/框架中打开';
-tinyMCELang['lang_insert_link_target_parent'] = '在父窗口/框架中打开';
-tinyMCELang['lang_insert_link_target_top'] = '在根框架中打开（替换所有框架）';
-tinyMCELang['lang_insert_link_target_blank'] = '在新窗口中打开';
-tinyMCELang['lang_insert_link_target_named'] = '在此窗口中打开';
-tinyMCELang['lang_insert_link_popup'] = 'JavaScript弹出窗口';
-tinyMCELang['lang_insert_link_popup_url'] = '弹出窗口地址';
-tinyMCELang['lang_insert_link_popup_name'] = '窗口名称';
-tinyMCELang['lang_insert_link_popup_return'] = '插入 \'return false\'';
-tinyMCELang['lang_insert_link_popup_scrollbars'] = '显示滚动条';
-tinyMCELang['lang_insert_link_popup_statusbar'] = '显示状态栏';
-tinyMCELang['lang_insert_link_popup_toolbar'] = '显示工具栏';
-tinyMCELang['lang_insert_link_popup_menubar'] = '显示菜单栏';
-tinyMCELang['lang_insert_link_popup_location'] = '显示地址栏';
-tinyMCELang['lang_insert_link_popup_resizable'] = '可重定义窗口大小';
-tinyMCELang['lang_insert_link_popup_size'] = '尺寸';
-tinyMCELang['lang_insert_link_popup_position'] = '位置(X/Y)';
-tinyMCELang['lang_insert_link_popup_missingtarget'] = '请插入目标名称或者选择另外的选项。';
+tinyMCE.addToLang('advlink',{
+general_tab : '一般',
+popup_tab : '弹出',
+events_tab : '事件',
+advanced_tab : '高级',
+general_props : '一般属性',
+popup_props : '弹出属性',
+event_props : '事件属性',
+advanced_props : '高技属性',
+popup_opts : '选项',
+anchor_names : '锚点',
+target_same : '在当前窗口/框架中打开',
+target_parent : '在父窗口/框架中打开',
+target_top : '在顶端窗口/框架中打开',
+target_blank : '在新窗口中打开',
+popup : 'Javascript 弹出',
+popup_url : '弹出地址',
+popup_name : '弹出窗口名',
+popup_return : '插入 \'return false\'',
+popup_scrollbars : '显示滚动条',
+popup_statusbar : '显示状态条',
+popup_toolbar : '显示工具条',
+popup_menubar : '显示菜单条',
+popup_location : '显示地址条',
+popup_resizable : '窗口大小可变',
+popup_dependent : 'Dependent (仅限于 Mozilla/Firefox)',
+popup_size : '大小',
+popup_position : '位置 (X/Y)',
+id : '标识',
+style: '样式',
+classes : '类',
+target_name : '目标名称',
+langdir : '书写方向',
+target_langcode : '目标语言',
+langcode : '语言编码',
+encoding : '目标文字编码',
+mime : '目标 MIME 种类',
+rel : '页与目标的关系',
+rev : '目标与页的关系',
+tabindex : 'Tabindex',
+accesskey : 'Accesskey',
+ltr : '从左到右',
+rtl : '从右到左'
+});

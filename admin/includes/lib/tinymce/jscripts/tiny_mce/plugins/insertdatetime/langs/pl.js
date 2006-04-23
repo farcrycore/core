@@ -1,9 +1,15 @@
-ï»¿// PL lang variables
+// PL lang variables
+// fixed by Wooya
+// http://www.mfusion.prv.pl
+// fixed by lemiel 14.11.2005
 
-
-tinyMCELang['lang_insertdate_desc'] = 'Wstaw aktualnÄ… datÄ™';
-tinyMCELang['lang_inserttime_desc'] = 'Wstaw aktualny czas';
-tinyMCELang['lang_inserttime_months_long'] = new Array("StyczeÅ„", "Luty", "Marzec", "KwiecieÅ„", "Maj", "Czerwiec", "Lipiec", "SierpieÅ„", "WrzesieÅ„", "PaÅºdziernik", "Listopad", "GrudzieÅ„");
-tinyMCELang['lang_inserttime_months_short'] = new Array("Stcz", "Lut", "Mar", "Kwi", "Maj", "Czer", "Lip", "Sier", "Wrze", "PaÅº", "List", "Grudz");
-tinyMCELang['lang_inserttime_day_long'] = new Array("Niedziela", "PoniedziaÅ‚ek", "Wtorek", "Åšroda", "Czwartek", "PiÄ…tek", "Sobota", "Niedziela");
-tinyMCELang['lang_inserttime_day_short'] = new Array("Nie", "Pon", "Wto", "Åšro", "Czw", "Pia", "Sob", "Nie");
+tinyMCE.addToLang('',{
+insertdate_def_fmt : '%Y-%m-%d',
+inserttime_def_fmt : '%H:%M:%S',
+insertdate_desc : 'Wstaw aktualn± datê',
+inserttime_desc : 'Wstaw aktualny czas',
+inserttime_months_long : new Array("Styczeñ", "Luty", "Marzec", "Kwiecieñ", "Maj", "Czerwiec", "Lipiec", "Sierpieñ", "Wrzesieñ", "Pa¼dziernik", "Listopad", "Grudzieñ"),
+inserttime_months_short : new Array("Sty", "Lut", "Mar", "Kwi", "Maj", "Czer", "Lip", "Sier", "Wrze", "Pa¼", "List", "Grudz"),
+inserttime_day_long : new Array("Niedziela", "Poniedzia³ek", "Wtorek", "¦roda", "Czwartek", "Pi±tek", "Sobota", "Niedziela"),
+inserttime_day_short : new Array("Nie", "Pon", "Wto", "¦ro", "Czw", "Pi±", "Sob", "Nie")
+});

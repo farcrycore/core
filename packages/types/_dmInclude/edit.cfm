@@ -5,11 +5,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmInclude/edit.cfm,v 1.19 2005/10/28 07:22:51 guy Exp $
-$Author: guy $
-$Date: 2005/10/28 07:22:51 $
-$Name: milestone_3-0-0 $
-$Revision: 1.19 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmInclude/edit.cfm,v 1.19.2.1 2006/04/04 05:53:16 gstewart Exp $
+$Author: gstewart $
+$Date: 2006/04/04 05:53:16 $
+$Name: milestone_3-0-1 $
+$Revision: 1.19.2.1 $
 
 || DESCRIPTION || 
 $Description: dmInclude edit handler$
@@ -108,7 +108,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 			#application.adminBundle[session.dmProfile.locale].noIncludeFiles#</cfif><br />
 		</label>
 		</cfoutput>
-		<widgets:displayMethodSelector typeName="dmInclude">
+		<widgets:displayMethodSelector typeName="dmInclude" prefix="displayPage">
 		<cfoutput>
 		<label for="teaser"><b>#application.adminBundle[session.dmProfile.locale].teaserLabel#</b>
 			<textarea name="teaser" id="teaser">#stObj.teaser#</textarea><br />

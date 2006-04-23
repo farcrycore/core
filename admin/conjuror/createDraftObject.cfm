@@ -37,8 +37,6 @@ Creates a draft object
 		//stProps.displayMethod = "display";
 		stProps.status = "draft";
 		//dmNews specific props
-		stProps.publishDate = now();
-		stProps.expiryDate = now();
 		stProps.versionID = URL.objectID;
 
 		// create the new OBJECT 

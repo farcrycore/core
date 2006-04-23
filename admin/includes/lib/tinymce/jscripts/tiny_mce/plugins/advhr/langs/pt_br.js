@@ -1,6 +1,16 @@
-// pt_BR lang variables
-
-tinyMCELang['lang_insert_advhr_desc']    = 'Inserir / editar Linha Horizontal'
-tinyMCELang['lang_insert_advhr_width']   = 'Largura';
-tinyMCELang['lang_insert_advhr_size']    = 'Altura';
-tinyMCELang['lang_insert_advhr_noshade'] = 'Sem Sombra';
+/**
+ * pt_br lang variables
+ * Brazilian Portuguese
+ *
+ * Authors : ????
+ * Revision and modifications:
+ *           Marcio Barbosa (mpg) <mpg@mpg.com.br>
+ * Last Updated : November 26, 2005
+ * TinyMCE Version : 2.0RC4
+ */
+tinyMCE.addToLang('',{
+insert_advhr_desc : 'Inserir / editar Linha Horizontal',
+insert_advhr_width : 'Largura',
+insert_advhr_size : 'Altura',
+insert_advhr_noshade : 'Sem Sombra'
+});

@@ -4,11 +4,11 @@
 $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmEmail/plpEdit/options.cfm,v 1.4 2005/09/02 06:27:37 guy Exp $
-$Author: guy $
-$Date: 2005/09/02 06:27:37 $
-$Name: milestone_3-0-0 $
-$Revision: 1.4 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmEmail/plpEdit/options.cfm,v 1.4.2.1 2006/03/21 05:03:26 jason Exp $
+$Author: jason $
+$Date: 2006/03/21 05:03:26 $
+$Name: milestone_3-0-1 $
+$Revision: 1.4.2.1 $
 
 || DESCRIPTION || 
 $Description: dmEmail -- Start PLP Step $
@@ -35,7 +35,7 @@ $Developer: Brendan Sisson (brendan@dameon.com.au) $
 	<cfset aPolicyGroups = oAuthorisation.getAllPolicyGroups()>
 <widgets:plpWrapper>	
 	<cfoutput>
-	<form action="#cgi.script_name#?#cgi.query_string#" name="editform" class="f-wrap-1 f-bg-short" method="post">
+	<form action="#cgi.script_name#?#cgi.query_string#" name="editform" class="f-wrap-1 wider f-bg-short" method="post">
 	
 	<div class="FormSubTitle">#output.label#</div>
 	<div class="FormTitle">#application.adminBundle[session.dmProfile.locale].advancedOptions#</div>
@@ -44,12 +44,12 @@ $Developer: Brendan Sisson (brendan@dameon.com.au) $
 	<!--- Reply to address --->
 	<tr>
 		<td nowrap class="FormLabel">#application.adminBundle[session.dmProfile.locale].replyToLabel# </td>
-		<td width="100%"><input type="text" name="replyTo" value="#output.replyTo#" class="formtextbox" maxlength="255"></td>
+		<td width="100%"><input type="text" name="replyTo" value="#output.replyTo#" class="formtextbox" maxlength="255" size="45"></td>
 	</tr>
 	
 	<tr>
 		<td nowrap class="FormLabel">#application.adminBundle[session.dmProfile.locale].failToLabel# </td>
-		<td width="100%"><input type="text" name="failTo" value="#output.failTo#" class="formtextbox" maxlength="255"></td>
+		<td width="100%"><input type="text" name="failTo" value="#output.failTo#" class="formtextbox" maxlength="255" size="45"></td>
 	</tr>
 	<!--- from address for email --->
 	<tr>
@@ -58,7 +58,7 @@ $Developer: Brendan Sisson (brendan@dameon.com.au) $
 	</tr>
 	<tr>
 		<td nowrap class="FormLabel">#application.adminBundle[session.dmProfile.locale].charSetLabel# </td>
-		<td width="100%"><input type="text" name="charset" value="#output.charset#" class="formtextbox" maxlength="255"></td>
+		<td width="100%"><input type="text" name="charset" value="#output.charset#" class="formtextbox" maxlength="255" size="45"></td>
 	</tr>
 	</table>
 	</div>

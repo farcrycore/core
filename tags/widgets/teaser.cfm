@@ -43,7 +43,7 @@ function ftglTeaserImage(objSelect)
 		req.getURL(strURL,_RETURN_AS_TEXT);
 	}
 	else {
-		objImage.src = "../images/no_thumbnail.gif";
+		objImage.src = "#application.url.farcry#/images/no_thumbnail.gif";
 		objImage.alt = "currently no thumbnail";
 	}
 }
@@ -58,7 +58,7 @@ function doUpdateTeaserImage(arItems)
 {
 	var objImage = document.getElementById("teaserImage_preview");
 	var objSelect = document.getElementById("teaserImage");
-	var imgSrc = "../images/no_thumbnail.gif";
+	var imgSrc = "#application.url.farcry#/images/no_thumbnail.gif";
 	var imgAlt = "currently no thumbnail";
 	iObjectID = objSelect.options[objSelect.selectedIndex].value
 	objSelect.length = 1;
@@ -79,7 +79,7 @@ function fDisplayTeaserImage(arItem){
 		objImage.src = arItem[0]["value"];
 		objImage.alt = arItem[0]["text"];
 	}else{
-		objImage.src = "../images/no_thumbnail.gif";
+		objImage.src = "#application.url.farcry#/images/no_thumbnail.gif";
 		objImage.alt = "currently no thumbnail";
 	}
 }

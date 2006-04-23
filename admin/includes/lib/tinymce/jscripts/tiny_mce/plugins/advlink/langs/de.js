@@ -1,20 +1,47 @@
 // DE lang variables
 
-tinyMCELang['lang_insert_link_target_same'] = 'Im selben Frame &ouml;ffnen';
-tinyMCELang['lang_insert_link_target_parent'] = 'Im dar&uuml;ber liegenden Frame &ouml;ffnen';
-tinyMCELang['lang_insert_link_target_top']= 'Im obersten Frame &ouml;ffnen';
-tinyMCELang['lang_insert_link_target_blank']= 'In einem neuen Fenster &ouml;ffnen';
-tinyMCELang['lang_insert_link_target_named']= '&Ouml;ffnen im Fenster/Frame';
-tinyMCELang['lang_insert_link_popup'] = 'JS-Popup';
-tinyMCELang['lang_insert_link_popup_url'] = 'Popup URL';
-tinyMCELang['lang_insert_link_popup_name']= 'Fenstername';
-tinyMCELang['lang_insert_link_popup_return']= 'mit \'return false\'';
-tinyMCELang['lang_insert_link_popup_scrollbars']= 'Scrollbars anzeigen';
-tinyMCELang['lang_insert_link_popup_statusbar'] = 'Statusbar anzeigen';
-tinyMCELang['lang_insert_link_popup_toolbar'] = 'Toolbars anzeigen';
-tinyMCELang['lang_insert_link_popup_menubar'] = 'Menu anzeigen';
-tinyMCELang['lang_insert_link_popup_location']= 'Adresszeile anzeigen';
-tinyMCELang['lang_insert_link_popup_resizable'] = 'Gr&ouml;&szlig;e &auml;nderbar';
-tinyMCELang['lang_insert_link_popup_size']= 'Gr&ouml;&szlig;e';
-tinyMCELang['lang_insert_link_popup_position']= 'Position (X/Y)';
-tinyMCELang['lang_insert_link_popup_missingtarget'] = 'Bitte geben Sie einen Namen f&uuml;r das Ziel an oder w&auml;hlen Sie eine andere Option.';
+tinyMCE.addToLang('advlink',{
+general_tab : 'Allgemein',
+popup_tab : 'Popup',
+events_tab : 'JS-Events',
+advanced_tab : 'Erweitert',
+general_props : 'Allgemeine Eigenschaften',
+popup_props : 'Popup-Eigenschaften',
+event_props : 'Javascript-Events',
+advanced_props : 'Erweiterte Eigenschaften',
+popup_opts : 'Optionen',
+anchor_names : 'Anker',
+target_same : '_self - In diesem Fenster/Frame &ouml;ffnen',
+target_parent : '_parent - Im Eltern-Fenster/-Frame &ouml;ffnen',
+target_top : '_top - Im Fenster &ouml;ffnen (ersetzt alle Frames)',
+target_blank : '_blank - In neuem Fenster &ouml;ffnen',
+popup : 'Javascript-Popup',
+popup_url : 'Popup-URL',
+popup_name : 'Popup-Name',
+popup_return : 'Mit \'return false\' einf&uuml;gen',
+popup_scrollbars : 'Scrollleisten anzeigen',
+popup_statusbar : 'Statuszeilen anzeigen',
+popup_toolbar : 'Werkzeugleisten anzeigen',
+popup_menubar : 'Men&uuml;leiste anzeigen',
+popup_location : 'Adresszeile anzeigen',
+popup_resizable : 'Fenstergr&ouml;&szlig;e ver&auml;nderbar',
+popup_dependent : 'Abh&auml;ngiges Fenster (Nur Mozilla/Firefox)',
+popup_size : 'Gr&ouml;&szlig;e',
+popup_position : 'Position (X/Y)',
+id : 'ID',
+style: 'CSS-Stil',
+classes : 'CSS-Klassen',
+target_name : 'Zielname',
+langdir : 'Sprachrichtung',
+target_langcode : 'Zielsprache',
+langcode : 'Sprach-Code',
+encoding : 'Zeichenkodierung',
+mime : 'MIME-Typ',
+rel : 'Verh&auml;ltnis Seite zu Ziel',
+rev : 'Verh&auml;ltnis Ziel zu Seite',
+tabindex : 'Tabulator-Index',
+accesskey : 'Tastaturk&uuml;rzel',
+ltr : 'Von links nach rechts',
+rtl : 'Von rechts nach links',
+delta_width : 10
+});

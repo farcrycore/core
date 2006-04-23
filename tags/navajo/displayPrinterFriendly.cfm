@@ -14,7 +14,7 @@ http://www.daemon.com.au/
 $Header: /cvs/farcry/farcry_core/tags/navajo/displayPrinterFriendly.cfm,v 1.6 2004/07/15 02:03:00 brendan Exp $
 $Author: brendan $
 $Date: 2004/07/15 02:03:00 $
-$Name: milestone_2-3-2 $
+$Name: milestone_3-0-1 $
 $Revision: 1.6 $
 
 || DESCRIPTION || 

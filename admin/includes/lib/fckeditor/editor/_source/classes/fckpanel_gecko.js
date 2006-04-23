@@ -1,6 +1,6 @@
-/*
+﻿/*
  * FCKeditor - The text editor for internet
- * Copyright (C) 2003-2004 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2005 Frederico Caldeira Knabben
  * 
  * Licensed under the terms of the GNU Lesser General Public License:
  * 		http://www.opensource.org/licenses/lgpl-license.php
@@ -8,11 +8,10 @@
  * For further information visit:
  * 		http://www.fckeditor.net/
  * 
+ * "Support Open Source software. What about a donation today?"
+ * 
  * File Name: fckpanel_gecko.js
  * 	FCKPanel Class: Creates and manages floating panels in Gecko Browsers.
- * 
- * Version:  2.0 RC2
- * Modified: 2004-11-10 13:22:16
  * 
  * File Authors:
  * 		Frederico Caldeira Knabben (fredck@fckeditor.net)
@@ -20,36 +19,41 @@
 
 var FCKPanel = function( parentWindow )
 {
+	this.IsRTL			= false ;
+	this.IsContextMenu	= false ;
+	this._IsOpened		= false ;
+	
 	if ( parentWindow )
-		this.Window = parentWindow ;
+		this._Window = parentWindow ;
 	else
 	{
-		this.Window = window ;
+		this._Window = window ;
 
-		while ( this.Window != window.top && this.Window.parent.document.body.tagName != 'FRAMESET' )
+		while ( this._Window != window.top )
 		{
-			this.Window = this.Window.parent ;
+			// Try/Catch must be used to avoit an error when using a frameset
+			// on a different domain:
+			// "Permission denied to get property HTMLDocument.Body".
+			try
+			{
+				if ( this._Window.parent.document.body.tagName == 'FRAMESET' )
+					break ;
+			} catch (e) { break ; }
+
+			this._Window = this._Window.parent ;
 		}
 	}
-}
-
-FCKPanel.prototype.Create = function()
-{
-	this._IFrame = this.Window.document.body.appendChild( this.Window.document.createElement('IFRAME') ) ;
-	this._IFrame.src = 'about:blank' ;
-    this._IFrame.frameBorder		= '0';
-    this._IFrame.scrolling			= 'no' ;
-    this._IFrame.style.left			= '0px' ;
-	this._IFrame.style.top			= '0px' ;
-    this._IFrame.width				= 10 ;
-	this._IFrame.height				= 10 ;
-    this._IFrame.style.position		= 'absolute';
-	this._IFrame.style.visibility	= 'hidden' ;
 	
-	this._IFrame.IsFCKPanel	= true ;
-	this._IFrame.Panel		= this ;
+	var oIFrame = this._IFrame = this._Window.document.createElement('iframe') ; 
+	oIFrame.frameBorder			= '0';
+	oIFrame.scrolling			= 'no' ;
+	oIFrame.style.position		= 'absolute';
+	oIFrame.width = oIFrame.height = 0 ;
+	oIFrame.style.zIndex		= FCKConfig.FloatingPanelsZIndex ;
 
-	this.Document = this._IFrame.contentWindow.document ;
+	this._Window.document.body.appendChild( oIFrame ) ;
+	
+	this.Document = oIFrame.contentWindow.document ;
 
 	// Initialize the IFRAME document body.
 	this.Document.open() ;
@@ -59,116 +63,111 @@ FCKPanel.prototype.Create = function()
 	// Remove the default margins.
 	this.Document.body.style.margin = this.Document.body.style.padding = '0px' ;
 
-	// Add the defined Style Sheet to the document.
-	if ( this.StyleSheet )
-		FCKTools.AppendStyleSheet( this.Document, this.StyleSheet ) ;
+	this._IFrame.contentWindow.onblur = this.Hide ;
+	
+	oIFrame.contentWindow.Panel = this ;
 
 
-	this.OuterDiv = this.Document.body.appendChild( this.Document.createElement('DIV') ) ;
-	this.OuterDiv.style.cssFloat = 'left' ;
-
-	this.PanelDiv = this.OuterDiv.appendChild( this.Document.createElement('DIV') ) ;
+	// Create the main DIV that is used as the panel base.
+	this.PanelDiv = this.Document.body.appendChild( this.Document.createElement('DIV') ) ;
 	this.PanelDiv.className = 'FCK_Panel' ;
-
-	this.Created = true ;
+	
+	this.EnableContextMenu( false ) ;
+	this.SetDirection( FCKLang.Dir ) ;
 }
 
-FCKPanel.prototype.Show = function( panelX, panelY, relElement, width, height, autoSize  )
+FCKPanel.prototype.EnableContextMenu = function( enabled )
 {
-	if ( ! this.Created )
-		this.Create() ;
+	this.Document.oncontextmenu = enabled ? null : FCKTools.CancelEvent ;
+}
 
-	if ( width != null && autoSize && width < this.OuterDiv.offsetWidth )
-		this.PanelDiv.style.width = width ;
+FCKPanel.prototype.AppendStyleSheet = function( styleSheet )
+{
+	FCKTools.AppendStyleSheet( this.Document, styleSheet ) ;
+}
 
-	if ( height != null && autoSize && height < this.PanelDiv.offsetHeight )
-		this.PanelDiv.style.height = height + 'px' ;
+FCKPanel.prototype.SetDirection = function( dir )
+{
+	this.IsRTL = ( dir == 'rtl' ) ;
+	this.Document.dir = dir ;
 
-	var oPos = this.GetElementPosition( relElement ) ;
-	
-	panelX += oPos.X ;
-	panelY += oPos.Y ;
-	
-	if ( panelX + this.OuterDiv.offsetWidth > this.Window.innerWidth )
+	// The "float" property must be set so Firefox calculates the size correcly.
+	this.PanelDiv.style.cssFloat = ( dir == 'rtl' ? 'right' : 'left' ) ;
+}
+
+FCKPanel.prototype.Load = function()
+{
+	// This is a IE only need.
+}
+
+FCKPanel.prototype.Show = function( x, y, relElement, width, height )
+{
+	this.PanelDiv.style.width	= width ? width + 'px' : '' ;
+	this.PanelDiv.style.height	= height ? height + 'px' : '' ;
+
+	if ( !width )	this._IFrame.width	= 1 ;
+	if ( !height )	this._IFrame.height	= 1 ;
+
+	var oPos = FCKTools.GetElementPosition( relElement, this._Window ) ;
+
+	x += oPos.X ;
+	y += oPos.Y ;
+
+	if ( this.IsRTL )
 	{
-		// The following line aligns the panel to the other side of the refElement.
-		// panelX = oPos.X - ( this.PanelDiv.offsetWidth - relElement.offsetWidth ) ;
-		
-		panelX -= panelX + this.OuterDiv.offsetWidth - this.Window.innerWidth ;
+		if ( this.IsContextMenu )
+			x  = x - this.PanelDiv.offsetWidth + 1 ;
+		else if ( relElement )
+			x  = x + ( relElement.offsetWidth - this.PanelDiv.offsetWidth ) ;
 	}
+	else
+	{
+		if ( ( x + this.PanelDiv.offsetWidth ) > this._Window.document.body.clientWidth )
+			x -= x + this.PanelDiv.offsetWidth - this._Window.document.body.clientWidth ;
+	}
+	
+	if ( x < 0 )
+			x = 0 ;
 
 	// Set the context menu DIV in the specified location.
-	this._IFrame.style.left	= panelX + 'px' ;
-	this._IFrame.style.top	= panelY + 'px' ;
-
-	// Watch the "OnClick" event for all windows to close the Context Menu.
-	function SetOnClickListener( targetWindow, targetFunction )
-	{
-		if ( targetWindow == null || ( targetWindow.frameElement && targetWindow.frameElement.IsFCKPanel ) )
-			return ;
-
-		targetWindow.document.addEventListener( 'click', targetFunction, false ) ;
-		
-		for ( var i = 0 ; i < targetWindow.frames.length ; i++ )
-			SetOnClickListener( targetWindow.frames[i], targetFunction ) ;
-	}
-	SetOnClickListener( window.top, FCKPanelEventHandlers.OnDocumentClick ) ;
+	this._IFrame.style.left	= x + 'px' ;
+	this._IFrame.style.top	= y + 'px' ;
 	
-	this._IFrame.width	= this.OuterDiv.offsetWidth ;
-	this._IFrame.height = this.OuterDiv.offsetHeight ;
-
-	// Show it.
-	this._IFrame.style.visibility = '' ;
-}
-
-FCKPanel.prototype.GetElementPosition = function( el )
-{
-	// Initializes the Coordinates object that will be returned by the function.
-	var c = { X:0, Y:0 } ;
+	var iWidth	= this.PanelDiv.offsetWidth ;
+	var iHeight	= this.PanelDiv.offsetHeight ;
 	
-	// Loop throw the offset chain.
-	while ( el )
-	{
-		c.X += el.offsetLeft ;
-		c.Y += el.offsetTop ;
-		
-		if ( el.offsetParent == null && el.ownerDocument.defaultView != this.Window )
-			el = el.ownerDocument.defaultView.frameElement ;
-		else
-			el = el.offsetParent ;
-	}
-	
-	// Return the Coordinates object
-	return c ;
+	this._IFrame.width	= iWidth ;
+	this._IFrame.height = iHeight ;
+
+	// Move the focus to the IFRAME so we catch the "onblur".
+	this._IFrame.contentWindow.focus() ;
+
+	this._IsOpened = true ;
 }
 
 FCKPanel.prototype.Hide = function()
 {
-	this._IFrame.style.visibility = 'hidden' ;
-//	this._IFrame.style.left = this._IFrame.style.top = '0px' ;
+	var oPanel = this.Panel ? this.Panel : this ;
+	
+	if ( !oPanel._IsOpened )
+		return ;
+	
+	// It is better to set the sizes to 0, otherwise Firefox would have 
+	// rendering problems.
+	oPanel._IFrame.width = oPanel._IFrame.height = 0 ;
+	
+	if ( oPanel._OnHide )
+		oPanel._OnHide( oPanel ) ;
+
+	oPanel._IsOpened = false ;
 }
 
-var FCKPanelEventHandlers = new Object() ;
-
-FCKPanelEventHandlers.OnDocumentClick = function( e )
+FCKPanel.prototype.CheckIsOpened = function()
 {
-	var oWindow = e.target.ownerDocument.defaultView ;
-	
-	if ( ! oWindow.IsFCKPanel )
-	{
-		function RemoveOnClickListener( targetWindow )
-		{
-			if ( targetWindow == null )
-				return ;
+	return this._IsOpened ;
+}
 
-			if ( targetWindow.frameElement && targetWindow.frameElement.IsFCKPanel )
-				targetWindow.frameElement.Panel.Hide() ;
-			else
-				targetWindow.document.removeEventListener( 'click', FCKPanelEventHandlers.OnDocumentClick, false ) ;
-
-			for ( var i = 0 ; i < targetWindow.frames.length ; i++ )
-				RemoveOnClickListener( targetWindow.frames[i] ) ;
-		}
-		RemoveOnClickListener( window.top ) ;
-	}
+FCKPanel.prototype.AttachToOnHideEvent = function( targetFunction )
+{
+	this._OnHide = targetFunction ;
 }

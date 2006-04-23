@@ -933,7 +933,8 @@ function menuOption_Insert()
 {   
 	var nodename = prompt("Please enter new category name");
 	if (nodename)
-		frameopen( 'insert.cfm?objectname='+nodename+'&parentobjectId='+lastSelectedId, 'editFrame' );
+		frameopen( 'insert.cfm?objectname='+encodeURI(nodename)+'&parentobjectId='+lastSelectedId, 'editFrame' ); 
+
 }
 
 	

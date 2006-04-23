@@ -1,39 +1,78 @@
 // PL lang variables
+// fixed by Wooya
+// http://www.mfusion.prv.pl
 
-tinyMCELang['lang_table_desc'] = 'Wstaw nowa tabele';
-tinyMCELang['lang_table_insert_row_before_desc'] = 'Wstaw wiersz przed';
-tinyMCELang['lang_table_insert_row_after_desc'] = 'Wstaw wiersz po';
-tinyMCELang['lang_table_delete_row_desc'] = 'Skasuj wiersz';
-tinyMCELang['lang_table_insert_col_before_desc'] = 'Wstaw kolumne przed';
-tinyMCELang['lang_table_insert_col_after_desc'] = 'Wstaw kolumne po';
-tinyMCELang['lang_table_delete_col_desc'] = 'Skasuj kolumne';
-tinyMCELang['lang_insert_table_title'] = 'Wstaw/Modyfikuj tabele';
-tinyMCELang['lang_insert_table_width'] = 'Szerokosc';
-tinyMCELang['lang_insert_table_height'] = 'Wysokosc';
-tinyMCELang['lang_insert_table_cols'] = 'Kolumny';
-tinyMCELang['lang_insert_table_rows'] = 'Wiersze';
-tinyMCELang['lang_insert_table_cellspacing'] = 'Cellspacing';
-tinyMCELang['lang_insert_table_cellpadding'] = 'Cellpadding';
-tinyMCELang['lang_insert_table_border'] = 'Ramka';
-tinyMCELang['lang_insert_table_align'] = 'WyrÃ³wnanie';
-tinyMCELang['lang_insert_table_align_default'] = 'Domyslny';
-tinyMCELang['lang_insert_table_align_left'] = 'Do lewej';
-tinyMCELang['lang_insert_table_align_right'] = 'Do prawej';
-tinyMCELang['lang_insert_table_align_middle'] = 'Wycentrowanie';
-tinyMCELang['lang_insert_table_class'] = 'Klasa';
-tinyMCELang['lang_table_row_title'] = 'Wlasciwosci wiersza';
-tinyMCELang['lang_table_cell_title'] = 'Wlasciwosci komÃ³rki';
-tinyMCELang['lang_table_row_desc'] = 'Wlasciwosci wiersza';
-tinyMCELang['lang_table_cell_desc'] = 'Wlasciwosci komÃ³rki';
-tinyMCELang['lang_insert_table_valign'] = 'WyrÃ³wnanie pionowe';
-tinyMCELang['lang_insert_table_align_top'] = 'do gÃ³ry';
-tinyMCELang['lang_insert_table_align_bottom'] = 'do dolu';
-tinyMCELang['lang_table_props_desc'] = 'Wlasciwosci tabeli';
-tinyMCELang['lang_table_merge_cells_title'] = 'Merge table cells';
-tinyMCELang['lang_table_split_cells_desc'] = 'Split table cells';
-tinyMCELang['lang_table_merge_cells_desc'] = 'Merge table cells';
-tinyMCELang['lang_table_cut_row_desc'] = 'Cut table row';
-tinyMCELang['lang_table_copy_row_desc'] = 'Copy table row';
-tinyMCELang['lang_table_paste_row_before_desc'] = 'Paste table row before';
-tinyMCELang['lang_table_paste_row_after_desc'] = 'Paste table row after';
-tinyMCELang['lang_table_insert_desc'] = 'Insert a new table';
+tinyMCE.addToLang('table',{
+general_tab : 'G³ówne ustawienia',
+advanced_tab : 'Zaawansowane',
+general_props : 'G³ówne ustawienia',
+advanced_props : 'Zaawansowane ustawienia',
+desc : 'Wstawia now± tabelê',
+row_before_desc : 'Wstaw wiersz przed',
+row_after_desc : 'Wstaw wiersz za',
+delete_row_desc : 'Usuñ wiersz',
+col_before_desc : 'Wstaw kolumnê przed',
+col_after_desc : 'Wstaw kolumnê za',
+delete_col_desc : 'Usuñ kolumnê',
+rowtype : 'Wiersz w czê¶ci tabeli',
+title : 'Wstaw/Zmieñ tabelê',
+width : 'Szeroko¶æ',
+height : 'Wysoko¶æ',
+cols : 'Kolumn',
+rows : 'Wierszy',
+cellspacing : 'Odstêpy miêdzy komórkami',
+cellpadding : 'Margines wewn±trz komórek',
+border : 'Ramka',
+align : 'Wyrównanie',
+align_default : 'Domy¶lne',
+align_left : 'Lewo',
+align_right : 'Prawo',
+align_middle : '¦rodek',
+row_title : 'W³a¶ciwo¶ci wiersza',
+cell_title : 'W³a¶ciwo¶ci komórki',
+cell_type : 'Typ komórki',
+row_desc : 'W³a¶ciwo¶ci wiersza',
+cell_desc : 'W³a¶ciwo¶ci komórki',
+valign : 'Wyrównanie pionowe',
+align_top : 'Do góry',
+align_bottom : 'Do do³u',
+props_desc : 'W³a¶ciwo¶ci tabeli',
+bordercolor : 'Kolor ramki',
+bgcolor : 'Kolor t³a',
+merge_cells_title : 'Po³±cz komórki',
+split_cells_desc : 'Rozdziel komórki',
+merge_cells_desc : 'Po³±cz komórki',
+cut_row_desc : 'Wytnij wiersz',
+copy_row_desc : 'Kopiuj wiersz',
+paste_row_before_desc : 'Wklej wiersz przed',
+paste_row_after_desc : 'Wklej wiersz za',
+id : 'Id',
+style: 'Styl',
+langdir : 'Kierunek tekstu',
+langcode : 'Kod jêzyka',
+mime : 'Docelowy typ MIME',
+ltr : 'Lewy do prawego',
+rtl : 'Prawy do lewego',
+bgimage : 'Obrazek t³a',
+summary : 'Podsumowanie',
+td : "Dane",
+th : "Nag³ówek",
+cell_cell : 'Aktualizuj bie¿±c± komórkê',
+cell_row : 'Aktualizuj wszystkie komórki w wierszu',
+cell_all : 'Aktualizuj wszystkie komórki w tabeli',
+row_row : 'Aktualizuj bierz±c± komórkê',
+row_odd : 'Aktualizuj nieparzyste komórki w tabeli',
+row_even : 'Aktualizuj parzyste komórki w tabeli',
+row_all : 'Aktualizuj wszystkie komórki w tabeli',
+thead : 'Nag³ówek tabeli',
+tbody : 'Cia³o tabeli',
+tfoot : 'Stopka tabeli',
+del : 'Usuñ tabelê',
+scope : 'Zasiêg',
+row : 'Wiersz',
+col : 'Kolumna',
+rowgroup : 'Grupa wiersza',
+colgroup : 'Grupa kolumny',
+missing_scope: 'Czy jeste¶ pewien, ¿e chcesz kontynuowaæ bez sprecyzowania zasiêgu dla nag³ówka tej tabeli? Bez tego, niektórzy u¿ytkownicy mog± mieæ problem ze zrozumieniem zawarto¶ci tej tabeli, je¿eli maj± w³±czone jakie¶ ograniczenia w przegl±darkach.',
+cellprops_delta_width : 70
+});

@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/navajo/objectStatus_dd.cfm,v 1.24 2005/10/04 05:51:35 guy Exp $
-$Author: guy $
-$Date: 2005/10/04 05:51:35 $
-$Name: milestone_3-0-0 $
-$Revision: 1.24 $
+$Header: /cvs/farcry/farcry_core/tags/navajo/objectStatus_dd.cfm,v 1.24.2.1 2006/01/23 22:30:32 geoff Exp $
+$Author: geoff $
+$Date: 2006/01/23 22:30:32 $
+$Name: milestone_3-0-1 $
+$Revision: 1.24.2.1 $
 
 || DESCRIPTION || 
 $Description: Changes the status of objects to approved/draft/pending. Intended for use with dynamic data pages $
@@ -54,7 +54,7 @@ $out:$
 				<cfset attributes.objectId=stObj.objectid>
 			</cfif>
 
-			<!--- send out emails informing object has been approved ---><br /> 
+			<!--- send out emails informing object has been approved --->
 			<cfinvoke component="#application.packagepath#.farcry.versioning" method="approveEmail_approved_dd">
 				<cfinvokeargument name="objectId" value="#attributes.objectId#"/>
 				<cfinvokeargument name="comment" value="#attributes.commentlog#"/>
@@ -62,6 +62,35 @@ $out:$
 					<cfinvokeargument name="approveURL" value="#attributes.approveURL#"/>
 				</cfif>
 			</cfinvoke>
+			
+			<!--- 
+			// Set Friendly URL 
+			 - TODO: this is going to cause issues if the approval process fails or is not confirmed GB20060123
+			--->
+			<!--- versioned objects use parent live object for fu --->
+			<cfif StructKeyExists(stObj,"versionid") AND len(stobj.versionid)>
+				<cfset fuoid=stobj.versionid>
+			<!--- use objectid if no versionid --->
+			<cfelse>
+				<cfset fuoid=stobj.objectid>
+			</cfif>
+			
+			<!--- make sure objectid is not specifically excluded from FU --->
+			<cfset bExclude = 0>
+			<cfif ListFindNoCase(application.config.fusettings.lExcludeObjectIDs,fuoid)>
+				<cfset bExclude = 1>
+			</cfif>
+			
+			<!--- make sure content type requires friendly url --->
+			<cfif NOT StructKeyExists(application.types[stObj.typename],"bFriendly") OR NOT application.types[stObj.typename].bFriendly>
+				<cfset bExclude = 1>
+			</cfif> 
+			
+			<!--- set friendly url --->
+			<cfif NOT bExclude>
+				<cfset objTypes = CreateObject("component","#application.types[stObj.typename].typepath#")>
+				<cfset stresult_friendly = objTypes.setFriendlyURL(objectid=fuoid)>
+			</cfif>
 
 		<cfelseif trim(attributes.status) IS "draft">
 			<cfset status = 'draft'>

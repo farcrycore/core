@@ -1,4 +1,22 @@
 // NL lang variables
 
-tinyMCELang['lang_insert_emotions_title'] = 'Emotion invoegen';
-tinyMCELang['lang_emotions_desc'] = 'Smilie';
+tinyMCE.addToLang('emotions',{
+title : 'Emoticon invoegen',
+desc : 'Emoticons',
+cool : 'Cool',
+cry : 'Huilen',
+embarassed : 'Verlegen', // embarrassed
+foot_in_mouth : 'Eten in mond', // food in mouth?
+frown : 'Fronsen',
+innocent : 'Onschuldig',
+kiss : 'Kus',
+laughing : 'Lachend',
+money_mouth : 'Geldgezicht',
+sealed : 'Verzegeld',
+smile : 'Smile',
+surprised : 'Verbaasd',
+tongue_out : 'Tong uitstekend',
+undecided : 'Obepaald',
+wink : 'Knipoog',
+yell : 'Schreeuwen'
+});

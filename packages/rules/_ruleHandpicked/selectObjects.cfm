@@ -5,11 +5,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/rules/_ruleHandpicked/selectObjects.cfm,v 1.30 2005/09/29 02:59:09 gstewart Exp $
-$Author: gstewart $
-$Date: 2005/09/29 02:59:09 $
-$Name: milestone_3-0-0 $
-$Revision: 1.30 $
+$Header: /cvs/farcry/farcry_core/packages/rules/_ruleHandpicked/selectObjects.cfm,v 1.30.2.3 2006/01/29 08:09:28 geoff Exp $
+$Author: geoff $
+$Date: 2006/01/29 08:09:28 $
+$Name: milestone_3-0-1 $
+$Revision: 1.30.2.3 $
 
 || DESCRIPTION || 
 $Description: ruleHandpicked PLP - choose teaser handler (teaser.cfm) $
@@ -28,12 +28,13 @@ $Developer: Guy Phanvongsa (guy@daemon.com.au) $
 <cfparam name="output.labelsearch" default="">
 <cfparam name="output.labelsearchcondition" default="">
 <cfparam name="output.dmType" default="dmNews"> 
+<cfparam name="form.dmType" default="#output.dmType#"> 
 <cfparam name="formSubmitted" default="no">
 
 <!--- get the min/max date for items --->
 <cfquery name="q" datasource="#application.dsn#">
 SELECT	min(datetimecreated) as mindate, max(datetimecreated) as maxdate
-FROM 	#application.dbowner##output.dmType#
+FROM 	#application.dbowner##form.dmType#
 </cfquery>
 
 <!--- check if valid date --->
@@ -48,16 +49,14 @@ FROM 	#application.dbowner##output.dmType#
 <cfelse>
 	<cfset maxdate = q.maxdate>
 </cfif>
-<!--- // check if valid date --->
-<cfset output.startYear = year(minDate)>
-<cfset output.endYear = year(maxDate)>
+
 <cfif formSubmitted EQ "yes">
 	<!--- update plp data and move to next step --->
 	<cfloop index="formItem" list="#form.fieldNames#">
 		<cfset output[formItem] = form[formItem]>
 	</cfloop>
-	<cfset output.startDate = createDateTime(output.minYear,output.minMonth,output.minDay,0,0,0)>
-	<cfset output.endDate = createDateTime(output.maxYear,output.maxMonth,output.MaxDay,0,0,0)>
+	<cfset output.startDate = createDateTime(form.minYear,form.minMonth,form.minDay,0,0,0)>
+	<cfset output.endDate = createDateTime(form.maxYear,form.maxMonth,form.MaxDay,0,0,0)>
 <cfelse>
 	<cfset output.startDate = createDateTime(year(minDate),month(minDate),day(minDate),0,0,0)>
 	<cfset output.endDate = createDateTime(year(maxDate),month(maxDate),day(maxDate),0,0,0)>
@@ -69,7 +68,7 @@ FROM 	#application.dbowner##output.dmType#
 <cfset aTypes = ArrayNew(1)>
 <cfset i = 0>
 <cfloop item="type" collection="#application.types#">
-	<cfif StructKeyExists(application.types[type],"bSchedule")>
+	<cfif StructKeyExists(application.types[type],"bSchedule") AND application.types[type].bSchedule>
 		<cfset i = i + 1>
 		<cfset aTypes[i] = StructNew()>
 		<cfset aTypes[i].name = type>
@@ -242,9 +241,9 @@ function doSubmit(objForm){
 		</label>
 
 		<label for="labelStartDate"><b>#application.adminBundle[session.dmProfile.locale].dateRange#:</b>
-			#oForm.renderDateSelect(startYear=output.startyear,endyear=output.endyear,selectedDate=output.startDate,elementNamePrefix='min',bDisplayMonthAsString=1)#<br />
+			#oForm.renderDateSelect(startYear=year(output.startDate),endyear=year(output.endDate),selectedDate=output.startDate,elementNamePrefix='min',bDisplayMonthAsString=1)#<br />
 			<b>#application.adminBundle[session.dmProfile.locale].toLabel#</b>
-			#oForm.renderDateSelect(startYear=output.startyear,endyear=output.endyear,selectedDate=output.endDate,elementNamePrefix='max',bDisplayMonthAsString=1)#<br />
+			#oForm.renderDateSelect(startYear=year(output.startDate),endyear=year(output.endDate),selectedDate=output.endDate,elementNamePrefix='max',bDisplayMonthAsString=1)#<br />
 		</label>
 
 		<label><b>#application.adminBundle[session.dmProfile.locale].orderBy#</b>
@@ -261,17 +260,19 @@ function doSubmit(objForm){
 	<div class="f-submit-wrap">
 	<input type="Submit" name="filter" value="#application.adminBundle[session.dmProfile.locale].filter#" class="f-submit" />
 	</div>
-	
+
+	<div id="nextprev" style="width: 97%; float: left; text-align: right;">
+		<cfif thisPage GT 1>
+			<input type="image" src="#application.url.farcry#/images/treeImages/leftarrownormal.gif" value="#application.adminBundle[session.dmProfile.locale].prev#" name="prev"  onclick="pageNav=-1;document.editform.submit();;" style="vertical-align: bottom;">
+		</cfif>
+		Page 
+		<select name="thisPage" onchange="doSubmit(document.editform);">
+			<cfloop from="1" to="#numPages#" index="i">
+				<option value="#i#"<cfif i eq thisPage> selected="selected"</cfif>>#i#</option>
+			</cfloop>
+		</select> of #numPages#<cfif thisPage LT numpages> <input name="next" type="image" src="#application.url.farcry#/images/treeImages/rightarrownormal.gif" value="#application.adminBundle[session.dmProfile.locale].next#" onclick="pageNav=+1;document.editform.submit();" style="vertical-align: bottom;"></cfif>
+	</div>	
 	<table cellspacing="0" class="table-2">
-	<tr>
-	<td colspan="3" align="right"><cfif thisPage GT 1>
-			<input type="image" src="#application.url.farcry#/images/treeImages/leftarrownormal.gif" value="#application.adminBundle[session.dmProfile.locale].prev#" name="prev"  onclick="pageNav=-1;document.editform.submit();;" ></cfif>Page
-			<select name="thisPage" onchange="doSubmit(document.editform);"><cfloop from="1" to="#numPages#" index="i">
-				<option value="#i#"<cfif i eq thisPage> selected="selected"</cfif>>#i#</option></cfloop>
-			</select> of #numPages#<cfif thisPage LT numpages>
-			<input name="next" type="image" src="#application.url.farcry#/images/treeImages/rightarrownormal.gif" value="#application.adminBundle[session.dmProfile.locale].next#" onclick="pageNav=+1;document.editform.submit();"></cfif>		
-		</td>
-	</tr>
 	<tr>
 		<th>#application.adminBundle[session.dmProfile.locale].select#</th>
 		<th>#application.adminBundle[session.dmProfile.locale].label#</th>

@@ -5,11 +5,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmFile/edit.cfm,v 1.57 2005/09/23 07:06:24 guy Exp $
-$Author: guy $
-$Date: 2005/09/23 07:06:24 $
-$Name: milestone_3-0-0 $
-$Revision: 1.57 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmFile/edit.cfm,v 1.57.2.4 2006/03/08 00:18:18 paul Exp $
+$Author: paul $
+$Date: 2006/03/08 00:18:18 $
+$Name: milestone_3-0-1 $
+$Revision: 1.57.2.4 $
 
 || DESCRIPTION || 
 $Description: dmFile edit handler$
@@ -88,6 +88,11 @@ $Developer: Guy (guy@daemon.com.au)$
 				<cfset stFile.destinationDir = "#application.config.general.archivedirectory##stObj.typename#/">
 				<cfset stFile.destinationFileName = "#stObj.objectid#_#dateformat(Now(),'yyyymmdd')#_#timeformat(Now(),'HHMMSS')#.#ListLast(stFile.sourceFileName,'.')#">
 				<cfset archiveObject.fMoveFile(stFile)>
+			<cfelseif stObj.filename NEQ "">
+				<cftry>
+					<cffile action="delete" file="#stObj.filepath#/#stObj.filename#">
+					<cfcatch></cfcatch>
+				</cftry>
 			</cfif>
 
 			<cfset stProperties.filename = oForm.sanitiseFileName(file.ServerFile,file.ClientFileName,file.ServerDirectory)>
@@ -146,7 +151,8 @@ window.close();<cfelse><cfset showform = 1></cfif>
 		parent['content'].location.href = "#application.url.farcry#/edittabOverview.cfm?objectid=#stObj.ObjectID#";
 	}
 	else
-		parent['content'].location.href = "#application.url.farcry#/content/#stObj.typename#.cfm";
+		parent['content'].location.href = "#application.url.farcry#/content/#lcase(stObj.typename)#.cfm";
+
 	</script></cfoutput>
 		</cfif>
 	<cfelse>
@@ -170,7 +176,7 @@ function fCancelAction(){<cfif primaryObjectID NEQ "">
 		parent['content'].location.href = "#application.url.farcry#/edittabOverview.cfm?objectid=#stObj.ObjectID#";
 	}
 	else
-		parent['content'].location.href = "#application.url.farcry#/content/#stObj.typename#.cfm";</cfif>
+		parent['content'].location.href = "#application.url.farcry#/content/#lcase(stObj.typename)#.cfm";</cfif>
 }
 </script>	
 <form name="fileForm" action="" method="post" class="f-wrap-1 f-bg-long" enctype="multipart/form-data">

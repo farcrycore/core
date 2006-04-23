@@ -1,6 +1,6 @@
-/*
+﻿/*
  * FCKeditor - The text editor for internet
- * Copyright (C) 2003-2004 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2005 Frederico Caldeira Knabben
  * 
  * Licensed under the terms of the GNU Lesser General Public License:
  * 		http://www.opensource.org/licenses/lgpl-license.php
@@ -8,14 +8,15 @@
  * For further information visit:
  * 		http://www.fckeditor.net/
  * 
+ * "Support Open Source software. What about a donation today?"
+ * 
  * File Name: cs.js
  * 	Czech language file.
  * 
- * Version:  2.0 RC2
- * Modified: 2004-12-20 15:54:32
- * 
  * File Authors:
  * 		David Horák (david.horak@email.cz)
+ * 		Petr Plavjaník (plavjanik@gmail.com)
+ * 		Dave MacBlack (davemacblack@users.sourceforge.net)
  */
 
 var FCKLang =
@@ -41,8 +42,11 @@ RemoveFormat		: "Odstranit formátování",
 InsertLinkLbl		: "Odkaz",
 InsertLink			: "Vložit/změnit odkaz",
 RemoveLink			: "Odstranit odkaz",
+Anchor				: "Vložít/změnit záložku",
 InsertImageLbl		: "Obrázek",
 InsertImage			: "Vložit/změnit obrázek",
+InsertFlashLbl		: "Flash",
+InsertFlash			: "Vložit/Upravit Flash",
 InsertTableLbl		: "Tabulka",
 InsertTable			: "Vložit/změnit tabulku",
 InsertLineLbl		: "Linka",
@@ -70,7 +74,7 @@ NumberedListLbl		: "Číslování",
 NumberedList		: "Vložit/odstranit číslovaný seznam",
 BulletedListLbl		: "Odrážky",
 BulletedList		: "Vložit/odstranit odrážky",
-ShowTableBorders	: "Zobrzit okraje tabulek",
+ShowTableBorders	: "Zobrazit okraje tabulek",
 ShowDetails			: "Zobrazit podrobnosti",
 Style				: "Styl",
 FontFormat			: "Formát",
@@ -81,6 +85,20 @@ BGColor				: "Barva pozadí",
 Source				: "Zdroj",
 Find				: "Hledat",
 Replace				: "Nahradit",
+SpellCheck			: "Zkontrolovat pravopis",
+UniversalKeyboard	: "Univerzální klávesnice",
+PageBreakLbl		: "Page Break",	//MISSING
+PageBreak			: "Insert Page Break",	//MISSING
+
+Form			: "Formulář",
+Checkbox		: "Zaškrtávací políčko",
+RadioButton		: "Přepínač",
+TextField		: "Textové pole",
+Textarea		: "Textová oblast",
+HiddenField		: "Skryté pole",
+Button			: "Tlačítko",
+SelectionField	: "Seznam",
+ImageButton		: "Obrázkové tlačítko",
 
 // Context Menu
 EditLink			: "Změnit odkaz",
@@ -92,27 +110,47 @@ InsertCell			: "Vložit buňku",
 DeleteCells			: "Smazat buňky",
 MergeCells			: "Sloučit buňky",
 SplitCell			: "Rozdělit buňku",
+TableDelete			: "Delete Table",	//MISSING
 CellProperties		: "Vlastnosti buňky",
 TableProperties		: "Vlastnosti tabulky",
 ImageProperties		: "Vlastnosti obrázku",
+FlashProperties		: "Vlastnosti Flashe",
+
+AnchorProp			: "Vlastnosti záložky",
+ButtonProp			: "Vlastnosti tlačítka",
+CheckboxProp		: "Vlastnosti zaškrtávacího políčka",
+HiddenFieldProp		: "Vlastnosti skrytého pole",
+RadioButtonProp		: "Vlastnosti přepínače",
+ImageButtonProp		: "Vlastností obrázkového tlačítka",
+TextFieldProp		: "Vlastnosti textového pole",
+SelectionFieldProp	: "Vlastnosti seznamu",
+TextareaProp		: "Vlastnosti textové oblasti",
+FormProp			: "Vlastnosti formuláře",
 
 FontFormats			: "Normální;Formátovaný;Adresa;Nadpis 1;Nadpis 2;Nadpis 3;Nadpis 4;Nadpis 5;Nadpis 6",
 
 // Alerts and Messages
 ProcessingXHTML		: "Probíhá zpracování XHTML. Prosím čekejte...",
 Done				: "Hotovo",
-PasteWordConfirm	: "Jak je vidět, vkládaný text je kopírován z Wordu. Chceet jej před vložením vyčistit?",
+PasteWordConfirm	: "Jak je vidět, vkládaný text je kopírován z Wordu. Chcete jej před vložením vyčistit?",
 NotCompatiblePaste	: "Tento příkaz je dostupný pouze v Internet Exploreru verze 5.5 nebo vyšší. Chcete vložit text bez vyčištění?",
 UnknownToolbarItem	: "Neznámá položka panelu nástrojů \"%1\"",
 UnknownCommand		: "Neznámý příkaz \"%1\"",
 NotImplemented		: "Příkaz není implementován",
 UnknownToolbarSet	: "Panel nástrojů \"%1\" neexistuje",
+NoActiveX			: "You browser's security settings could limit some features of the editor. You must enable the option \"Run ActiveX controls and plug-ins\". You may experience errors and notice missing features.",
+BrowseServerBlocked : "The resources browser could not be opened. Make sure that all popup blockers are disabled.",	//MISSING
+DialogBlocked		: "It was not possible to open the dialog window. Make sure all popup blockers are disabled.",	//MISSING
 
 // Dialogs
 DlgBtnOK			: "OK",
 DlgBtnCancel		: "Storno",
 DlgBtnClose			: "Zavřít",
+DlgBtnBrowseServer	: "Vybrat na serveru",
 DlgAdvancedTag		: "Rozšířené",
+DlgOpOther			: "&lt;Ostatní&gt;",
+DlgInfoTab			: "Info",
+DlgAlertUrl			: "Prosím vložte URL",
 
 // General Dialogs Labels
 DlgGenNotSet		: "&lt;nenastaveno&gt;",
@@ -132,12 +170,11 @@ DlgGenLinkCharset	: "Přiřazená znaková sada",
 DlgGenStyle			: "Styl",
 
 // Image Dialog
-DlgImgTitle			: "Vlastosti obrázku",
+DlgImgTitle			: "Vlastnosti obrázku",
 DlgImgInfoTab		: "Informace o obrázku",
 DlgImgBtnUpload		: "Odeslat na server",
 DlgImgURL			: "URL",
 DlgImgUpload		: "Odeslat",
-DlgImgBtnBrowse		: "Procházet server",
 DlgImgAlt			: "Alternativní text",
 DlgImgWidth			: "Šířka",
 DlgImgHeight		: "Výška",
@@ -157,9 +194,18 @@ DlgImgAlignRight	: "Vpravo",
 DlgImgAlignTextTop	: "Na horní okraj textu",
 DlgImgAlignTop		: "Nahoru",
 DlgImgPreview		: "Náhled",
-DlgImgMsgWrongExt	: "Promiňte, na server je povoleno odesílat pouze tyto typy souborů:\n\n" + FCKConfig.ImageUploadAllowedExtensions + "\n\nAkce přerušena.",
-DlgImgAlertSelect	: "Vyberte prosím obrázek pro odeslání na server.",
 DlgImgAlertUrl		: "Zadejte prosím URL obrázku",
+DlgImgLinkTab		: "Odkaz",
+
+// Flash Dialog
+DlgFlashTitle		: "Vlastnosti Flashe",
+DlgFlashChkPlay		: "Automatické spuštění",
+DlgFlashChkLoop		: "Opakování",
+DlgFlashChkMenu		: "Nabídka Flash",
+DlgFlashScale		: "Zobrazit",
+DlgFlashScaleAll	: "Zobrazit vše",
+DlgFlashScaleNoBorder	: "Bez okraje",
+DlgFlashScaleFit	: "Přizpůsobit",
 
 // Link Dialog
 DlgLnkWindowTitle	: "Odkaz",
@@ -173,7 +219,6 @@ DlgLnkTypeEMail		: "E-Mail",
 DlgLnkProto			: "Protokol",
 DlgLnkProtoOther	: "&lt;jiný&gt;",
 DlgLnkURL			: "URL",
-DlgLnkBtnBrowse		: "Procházet server",
 DlgLnkAnchorSel		: "Vybrat kotvu",
 DlgLnkAnchorByName	: "Podle jména kotvy",
 DlgLnkAnchorById	: "Podle Id objektu",
@@ -191,7 +236,7 @@ DlgLnkTargetBlank	: "Nové okno (_blank)",
 DlgLnkTargetParent	: "Rodičovské okno (_parent)",
 DlgLnkTargetSelf	: "Stejné okno (_self)",
 DlgLnkTargetTop		: "Hlavní okno (_top)",
-DlgLnkTargetFrame	: "Název cílového rámce",
+DlgLnkTargetFrameName	: "Název cílového rámu",
 DlgLnkPopWinName	: "Název vyskakovacího okna",
 DlgLnkPopWinFeat	: "Vlastnosti vyskakovacího okna",
 DlgLnkPopResize		: "Měnitelná velikost",
@@ -206,9 +251,6 @@ DlgLnkPopWidth		: "Šířka",
 DlgLnkPopHeight		: "Výška",
 DlgLnkPopLeft		: "Levý okraj",
 DlgLnkPopTop		: "Horní okraj",
-
-DlgLnkMsgWrongExtA	: "Promiňte, na server je povoleno odesílat pouze tyto typy souborů:\n\n" + FCKConfig.LinkUploadAllowedExtensions + "\n\nAkce přerušena.",
-DlgLnkMsgWrongExtD	: "Promiňte, tyto typy souborů nejsou povoleny odesílat na server:\n\n" + FCKConfig.LinkUploadDeniedExtensions + "\n\nAkce přerušena.",
 
 DlnLnkMsgNoUrl		: "Zadejte prosím URL odkazu",
 DlnLnkMsgNoEMail	: "Zadejte prosím e-mailovou adresu",
@@ -243,6 +285,7 @@ DlgTableHeight		: "Výška",
 DlgTableCellSpace	: "Vzdálenost buněk",
 DlgTableCellPad		: "Odsazení obsahu",
 DlgTableCaption		: "Popis",
+DlgTableSummary		: "Summary",	//MISSING
 
 // Table Cell Dialog
 DlgCellTitle		: "Vlastnosti buňky",
@@ -268,7 +311,7 @@ DlgCellVerAlignBaseline	: "Na účaří",
 DlgCellRowSpan		: "Sloučené řádky",
 DlgCellCollSpan		: "Sloučené sloupce",
 DlgCellBackColor	: "Barva pozadí",
-DlgCellBorderColor	: "Rarva ohraničení",
+DlgCellBorderColor	: "Barva ohraničení",
 DlgCellBtnSelect	: "Výběr...",
 
 // Find Dialog
@@ -293,14 +336,148 @@ PasteErrorCopy	: "Bezpečnostní nastavení Vašeho prohlížeče nedovolují ed
 PasteAsText		: "Vložit jako čistý text",
 PasteFromWord	: "Vložit text z Wordu",
 
-DlgPasteMsg		: "<STRONG>Bezpečnostní nastavení</STRONG> Vašeho prohlížeče nedovolují editoru spustit funkci pro vložení textu ze schránky.<BR>Text ze schránky prosím vložte pomocí klávesnice do tohoto pole (<STRONG>Ctrl+V</STRONG>) a pak stiskněte tlačítko <STRONG>OK</STRONG>.",
+DlgPasteMsg2	: "Do následujícího pole vložte požadovaný obsah pomocí klávesnice (<STRONG>Ctrl+V</STRONG>) a stiskněte <STRONG>OK</STRONG>.",
+DlgPasteIgnoreFont		: "Ignorovat písmo",
+DlgPasteRemoveStyles	: "Odstranit styly",
+DlgPasteCleanBox		: "Vyčistit",
+
 
 // Color Picker
 ColorAutomatic	: "Automaticky",
 ColorMoreColors	: "Více barev...",
 
+// Document Properties
+DocProps		: "Vlastnosti dokumentu",
+
+// Anchor Dialog
+DlgAnchorTitle		: "Vlastnosti záložky",
+DlgAnchorName		: "Název záložky",
+DlgAnchorErrorName	: "Zadejte prosím název záložky",
+
+// Speller Pages Dialog
+DlgSpellNotInDic		: "Není ve slovníku",
+DlgSpellChangeTo		: "Změnit na",
+DlgSpellBtnIgnore		: "Přeskočit",
+DlgSpellBtnIgnoreAll	: "Přeskakovat vše",
+DlgSpellBtnReplace		: "Zaměnit",
+DlgSpellBtnReplaceAll	: "Zaměňovat vše",
+DlgSpellBtnUndo			: "Zpět",
+DlgSpellNoSuggestions	: "- žádné návrhy -",
+DlgSpellProgress		: "Probíhá kontrola pravopisu...",
+DlgSpellNoMispell		: "Kontrola pravopisu dokončena: Žádné pravopisné chyby nenalezeny",
+DlgSpellNoChanges		: "Kontrola pravopisu dokončena: Beze změn",
+DlgSpellOneChange		: "Kontrola pravopisu dokončena: Jedno slovo změněno",
+DlgSpellManyChanges		: "Kontrola pravopisu dokončena: %1 slov změněno",
+
+IeSpellDownload			: "Kontrola pravopisu není nainstalována. Chcete ji nyní stáhnout?",
+
+// Button Dialog
+DlgButtonText	: "Popisek",
+DlgButtonType	: "Typ",
+
+// Checkbox and Radio Button Dialogs
+DlgCheckboxName		: "Název",
+DlgCheckboxValue	: "Hodnota",
+DlgCheckboxSelected	: "Zaškrtnuto",
+
+// Form Dialog
+DlgFormName		: "Název",
+DlgFormAction	: "Akce",
+DlgFormMethod	: "Metoda",
+
+// Select Field Dialog
+DlgSelectName		: "Název",
+DlgSelectValue		: "Hodnota",
+DlgSelectSize		: "Velikost",
+DlgSelectLines		: "Řádků",
+DlgSelectChkMulti	: "Povolit mnohonásobné výběry",
+DlgSelectOpAvail	: "Dostupná nastavení",
+DlgSelectOpText		: "Text",
+DlgSelectOpValue	: "Hodnota",
+DlgSelectBtnAdd		: "Přidat",
+DlgSelectBtnModify	: "Změnit",
+DlgSelectBtnUp		: "Nahoru",
+DlgSelectBtnDown	: "Dolů",
+DlgSelectBtnSetValue : "Nastavit jako vybranou hodnotu",
+DlgSelectBtnDelete	: "Smazat",
+
+// Textarea Dialog
+DlgTextareaName	: "Název",
+DlgTextareaCols	: "Sloupců",
+DlgTextareaRows	: "Řádků",
+
+// Text Field Dialog
+DlgTextName			: "Název",
+DlgTextValue		: "Hodnota",
+DlgTextCharWidth	: "Šířka ve znacích",
+DlgTextMaxChars		: "Maximální počet znaků",
+DlgTextType			: "Typ",
+DlgTextTypeText		: "Text",
+DlgTextTypePass		: "Heslo",
+
+// Hidden Field Dialog
+DlgHiddenName	: "Název",
+DlgHiddenValue	: "Hodnota",
+
+// Bulleted List Dialog
+BulletedListProp	: "Vlastnosti odrážek",
+NumberedListProp	: "Vlastnosti číslovaného seznamu",
+DlgLstType			: "Typ",
+DlgLstTypeCircle	: "Kružnice",
+DlgLstTypeDisc		: "Kruh",
+DlgLstTypeSquare	: "Čtverec",
+DlgLstTypeNumbers	: "Čísla (1, 2, 3)",
+DlgLstTypeLCase		: "Malá písmena (a, b, c)",
+DlgLstTypeUCase		: "Velká písmena (A, B, C)",
+DlgLstTypeSRoman	: "Malé římská číslice (i, ii, iii)",
+DlgLstTypeLRoman	: "Velké římské číslice (I, II, III)",
+
+// Document Properties Dialog
+DlgDocGeneralTab	: "Obecné",
+DlgDocBackTab		: "Pozadí",
+DlgDocColorsTab		: "Barvy a okraje",
+DlgDocMetaTab		: "Metadata",
+
+DlgDocPageTitle		: "Titulek stránky",
+DlgDocLangDir		: "Směr jazyku",
+DlgDocLangDirLTR	: "Zleva do prava ",
+DlgDocLangDirRTL	: "Zprava doleva",
+DlgDocLangCode		: "Kód jazyku",
+DlgDocCharSet		: "Znaková sada",
+DlgDocCharSetOther	: "Další znaková sada",
+
+DlgDocDocType		: "Typ dokumentu",
+DlgDocDocTypeOther	: "Jiný typ dokumetu",
+DlgDocIncXHTML		: "Zahrnou deklarace XHTML",
+DlgDocBgColor		: "Barva pozadí",
+DlgDocBgImage		: "URL obrázku na pozadí",
+DlgDocBgNoScroll	: "Nerolovatelné pozadí",
+DlgDocCText			: "Text",
+DlgDocCLink			: "Odkaz",
+DlgDocCVisited		: "Navštívený odkaz",
+DlgDocCActive		: "Vybraný odkaz",
+DlgDocMargins		: "Okraje stránky",
+DlgDocMaTop			: "Horní",
+DlgDocMaLeft		: "Levý",
+DlgDocMaRight		: "Pravý",
+DlgDocMaBottom		: "Dolní",
+DlgDocMeIndex		: "Klíčová slova (oddělená čárkou)",
+DlgDocMeDescr		: "Popis dokumentu",
+DlgDocMeAuthor		: "Autor",
+DlgDocMeCopy		: "Autorská práva",
+DlgDocPreview		: "Náhled",
+
+// Templates Dialog
+Templates			: "Šablony",
+DlgTemplatesTitle	: "Šablony obsahu",
+DlgTemplatesSelMsg	: "Prosím zvolte šablonu pro otevření v editoru<br>(aktuální obsah editoru bude ztracen):",
+DlgTemplatesLoading	: "Nahrávám přeheld šablon. Prosím čekejte...",
+DlgTemplatesNoTpl	: "(Není definována žádná šablona)",
+
 // About Dialog
-DlgAboutVersion	: "verze",
-DlgAboutLicense	: "Licensed under the terms of the GNU Lesser General Public License",
-DlgAboutInfo	: "Více informací získáte na"
+DlgAboutAboutTab	: "O aplikaci",
+DlgAboutBrowserInfoTab	: "Informace o prohlížeči",
+DlgAboutVersion		: "verze",
+DlgAboutLicense		: "Licencováno pod GNU Lesser General Public License",
+DlgAboutInfo		: "Více informací získáte na"
 }

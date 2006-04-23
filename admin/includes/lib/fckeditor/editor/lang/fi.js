@@ -1,6 +1,6 @@
-/*
+﻿/*
  * FCKeditor - The text editor for internet
- * Copyright (C) 2003-2004 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2005 Frederico Caldeira Knabben
  * 
  * Licensed under the terms of the GNU Lesser General Public License:
  * 		http://www.opensource.org/licenses/lgpl-license.php
@@ -8,11 +8,10 @@
  * For further information visit:
  * 		http://www.fckeditor.net/
  * 
+ * "Support Open Source software. What about a donation today?"
+ * 
  * File Name: fi.js
  * 	Finnish language file.
- * 
- * Version:  2.0 RC2
- * Modified: 2004-11-29 12:38:11
  * 
  * File Authors:
  * 		Marko Korhonen (marko.korhonen@datafisher.com)
@@ -23,9 +22,12 @@ var FCKLang =
 // Language direction : "ltr" (left to right) or "rtl" (right to left).
 Dir					: "ltr",
 
+ToolbarCollapse		: "Piilota työkalurivi",
+ToolbarExpand		: "Näytä työkalurivi",
+
 // Toolbar Items and Context Menu
 Save				: "Tallenna",
-NewPage				: "Uusi sivu",
+NewPage				: "Tyhjennä",
 Preview				: "Esikatsele",
 Cut					: "Leikkaa",
 Copy				: "Kopioi",
@@ -38,8 +40,11 @@ RemoveFormat		: "Poista muotoilu",
 InsertLinkLbl		: "Linkki",
 InsertLink			: "Lisää linkki/muokkaa linkkiä",
 RemoveLink			: "Poista linkki",
+Anchor				: "Lisää ankkuri/muokkaa ankkuria",
 InsertImageLbl		: "Kuva",
 InsertImage			: "Lisää kuva/muokkaa kuvaa",
+InsertFlashLbl		: "Flash",
+InsertFlash			: "Lisää/muokkaa Flashia",
 InsertTableLbl		: "Taulu",
 InsertTable			: "Lisää taulu/muokkaa taulua",
 InsertLineLbl		: "Murtoviiva",
@@ -78,6 +83,20 @@ BGColor				: "Taustaväri",
 Source				: "Koodi",
 Find				: "Etsi",
 Replace				: "Korvaa",
+SpellCheck			: "Tarkista oikeinkirjoitus",
+UniversalKeyboard	: "Universaali näppäimistö",
+PageBreakLbl		: "Sivun vaihto",
+PageBreak			: "Lisää sivun vaihto",
+
+Form			: "Lomake",
+Checkbox		: "Valintaruutu",
+RadioButton		: "Radiopainike",
+TextField		: "Tekstikenttä",
+Textarea		: "Tekstilaatikko",
+HiddenField		: "Piilokenttä",
+Button			: "Painike",
+SelectionField	: "Valintakenttä",
+ImageButton		: "Kuvapainike",
 
 // Context Menu
 EditLink			: "Muokkaa linkkiä",
@@ -89,9 +108,22 @@ InsertCell			: "Lisää solu",
 DeleteCells			: "Poista solut",
 MergeCells			: "Yhdistä solut",
 SplitCell			: "Jaa solu",
+TableDelete			: "Poista taulu",
 CellProperties		: "Solun ominaisuudet",
 TableProperties		: "Taulun ominaisuudet",
 ImageProperties		: "Kuvan ominaisuudet",
+FlashProperties		: "Flash ominaisuudet",
+
+AnchorProp			: "Ankkurin ominaisuudet",
+ButtonProp			: "Painikkeen ominaisuudet",
+CheckboxProp		: "Valintaruudun ominaisuudet",
+HiddenFieldProp		: "Piilokentän ominaisuudet",
+RadioButtonProp		: "Radiopainikkeen ominaisuudet",
+ImageButtonProp		: "Kuvapainikkeen ominaisuudet",
+TextFieldProp		: "Tekstikentän ominaisuudet",
+SelectionFieldProp	: "Valintakentän ominaisuudet",
+TextareaProp		: "Tekstilaatikon ominaisuudet",
+FormProp			: "Lomakkeen ominaisuudet",
 
 FontFormats			: "Normaali;Muotoiltu;Osoite;Otsikko 1;Otsikko 2;Otsikko 3;Otsikko 4;Otsikko 5;Otsikko 6",
 
@@ -99,17 +131,24 @@ FontFormats			: "Normaali;Muotoiltu;Osoite;Otsikko 1;Otsikko 2;Otsikko 3;Otsikko
 ProcessingXHTML		: "Prosessoidaan XHTML:ää. Odota hetki...",
 Done				: "Valmis",
 PasteWordConfirm	: "Teksti, jonka haluat liittää, näyttää olevan kopioitu Wordista. Haluatko puhdistaa sen ennen liittämistä?",
-NotCompatiblePaste	: "This command is available for Internet Explorer version 5.5 or more. Do you want to paste without cleaning?",
-UnknownToolbarItem	: "Unknown toolbar item \"%1\"",
-UnknownCommand		: "Unknown command name \"%1\"",
-NotImplemented		: "Command not implemented",
-UnknownToolbarSet	: "Toolbar set \"%1\" doesn't exist",
+NotCompatiblePaste	: "Tämä komento toimii vain Internet Explorer 5.5:ssa tai uudemmassa. Haluatko liittää ilman puhdistusta?",
+UnknownToolbarItem	: "Tuntemanton työkalu \"%1\"",
+UnknownCommand		: "Tuntematon komento \"%1\"",
+NotImplemented		: "Komentoa ei ole liitetty sovellukseen",
+UnknownToolbarSet	: "Työkalukokonaisuus \"%1\" ei ole olemassa",
+NoActiveX			: "Selaimesi turvallisuusasetukset voivat rajoittaa joitain editorin ominaisuuksia. Sinun pitää ottaa käyttöön asetuksista \"Suorita ActiveX komponentit ja -plugin-laajennukset\". Saatat kohdata virheitä ja huomata puuttuvia ominaisuuksia.",
+BrowseServerBlocked : "Resurssiselainta ei voitu avata. Varmista, että ponnahdusikkunoiden estäjät eivät ole päällä.",
+DialogBlocked		: "Apuikkunaa ei voitu avaata. Varmista, että ponnahdusikkunoiden estäjät eivät ole päällä.",
 
 // Dialogs
 DlgBtnOK			: "OK",
 DlgBtnCancel		: "Peruuta",
 DlgBtnClose			: "Sulje",
+DlgBtnBrowseServer	: "Selaa palvelinta",
 DlgAdvancedTag		: "Lisäominaisuudet",
+DlgOpOther			: "Muut",
+DlgInfoTab			: "Info",
+DlgAlertUrl			: "Lisää URL",
 
 // General Dialogs Labels
 DlgGenNotSet		: "&lt;ei asetettu&gt;",
@@ -118,14 +157,14 @@ DlgGenLangDir		: "Kielen suunta",
 DlgGenLangDirLtr	: "Vasemmalta oikealle (LTR)",
 DlgGenLangDirRtl	: "Oikealta vasemmalle (RTL)",
 DlgGenLangCode		: "Kielikoodi",
-DlgGenAccessKey		: "Access Key",
+DlgGenAccessKey		: "Pikanäppäin",
 DlgGenName			: "Nimi",
-DlgGenTabIndex		: "Tab Index",
-DlgGenLongDescr		: "Long Description URL",
-DlgGenClass			: "Stylesheet Classes",
+DlgGenTabIndex		: "Tabulaattori indeksi",
+DlgGenLongDescr		: "Pitkän kuvauksen URL",
+DlgGenClass			: "Tyyliluokat",
 DlgGenTitle			: "Avustava otsikko",
-DlgGenContType		: "Advisory Content Type",
-DlgGenLinkCharset	: "Linked Resource Charset",
+DlgGenContType		: "Avustava sisällön tyyppi",
+DlgGenLinkCharset	: "Linkitetty kirjaimisto",
 DlgGenStyle			: "Tyyli",
 
 // Image Dialog
@@ -134,8 +173,7 @@ DlgImgInfoTab		: "Kuvan tiedot",
 DlgImgBtnUpload		: "Lähetä palvelimelle",
 DlgImgURL			: "Osoite",
 DlgImgUpload		: "Lisää kuva",
-DlgImgBtnBrowse		: "Selaa palvelinta",
-DlgImgAlt			: "Kuvateksti",
+DlgImgAlt			: "Vaihtoehtoinen teksti",
 DlgImgWidth			: "Leveys",
 DlgImgHeight		: "Korkeus",
 DlgImgLockRatio		: "Lukitse suhteet",
@@ -154,9 +192,18 @@ DlgImgAlignRight	: "Oikealle",
 DlgImgAlignTextTop	: "Ylös (teksti)",
 DlgImgAlignTop		: "Ylös",
 DlgImgPreview		: "Esikatselu",
-DlgImgMsgWrongExt	: "Vain seuraavat tiedostotyypit ovat sallittuja:\n\n" + FCKConfig.ImageUploadAllowedExtensions + "\n\nToiminto peruutettu.",
-DlgImgAlertSelect	: "Valitse kuva, jonka haluat lisätä.",
 DlgImgAlertUrl		: "Kirjoita kuvan osoite (URL)",
+DlgImgLinkTab		: "Linkki",
+
+// Flash Dialog
+DlgFlashTitle		: "Flash ominaisuudet",
+DlgFlashChkPlay		: "Automaattinen käynnistys",
+DlgFlashChkLoop		: "Toisto",
+DlgFlashChkMenu		: "Näytä Flash-valikko",
+DlgFlashScale		: "Levitä",
+DlgFlashScaleAll	: "Näytä kaikki",
+DlgFlashScaleNoBorder	: "Ei rajaa",
+DlgFlashScaleFit	: "Tarkka koko",
 
 // Link Dialog
 DlgLnkWindowTitle	: "Linkki",
@@ -170,7 +217,6 @@ DlgLnkTypeEMail		: "Sähköposti",
 DlgLnkProto			: "Protokolla",
 DlgLnkProtoOther	: "&lt;muu&gt;",
 DlgLnkURL			: "Osoite",
-DlgLnkBtnBrowse		: "Selaa palvelinta",
 DlgLnkAnchorSel		: "Valitse ankkuri",
 DlgLnkAnchorByName	: "Ankkurin nimen mukaan",
 DlgLnkAnchorById	: "Ankkurin ID:n mukaan",
@@ -188,7 +234,7 @@ DlgLnkTargetBlank	: "Uusi ikkuna (_blank)",
 DlgLnkTargetParent	: "Emoikkuna (_parent)",
 DlgLnkTargetSelf	: "Sama ikkuna (_self)",
 DlgLnkTargetTop		: "Päällimmäisin ikkuna (_top)",
-DlgLnkTargetFrame	: "Kohdekehyksen nimi",
+DlgLnkTargetFrameName	: "Kohdekehyksen nimi",
 DlgLnkPopWinName	: "Popup ikkunan nimi",
 DlgLnkPopWinFeat	: "Popup ikkunan ominaisuudet",
 DlgLnkPopResize		: "Venytettävä",
@@ -204,8 +250,9 @@ DlgLnkPopHeight		: "Korkeus",
 DlgLnkPopLeft		: "Vasemmalta (px)",
 DlgLnkPopTop		: "Ylhäältä (px)",
 
-DlgLnkMsgWrongExtA	: "Vain seuraavat tiedostotyypit ovat sallittuja:\n\n" + FCKConfig.LinkUploadAllowedExtensions + "\n\nToiminto peruutettu.",
-DlgLnkMsgWrongExtD	: "Seuraavat tiedostotyypit eivät ole sallittuja:\n\n" + FCKConfig.LinkUploadDeniedExtensions + "\n\nToiminto peruutettu.",
+DlnLnkMsgNoUrl		: "Linkille on kirjoitettava URL",
+DlnLnkMsgNoEMail	: "Kirjoita sähköpostiosoite",
+DlnLnkMsgNoAnchor	: "Valitse ankkuri",
 
 // Color Dialog
 DlgColorTitle		: "Valitse väri",
@@ -236,6 +283,7 @@ DlgTableHeight		: "Korkeus",
 DlgTableCellSpace	: "Solujen väli",
 DlgTableCellPad		: "Solujen sisennys",
 DlgTableCaption		: "Otsikko",
+DlgTableSummary		: "Yhteenveto",
 
 // Table Cell Dialog
 DlgCellTitle		: "Solun ominaisuudet",
@@ -286,14 +334,148 @@ PasteErrorCopy	: "Selaimesi turva-asetukset eivät salli editorin toteuttaa kopi
 PasteAsText		: "Liitä tekstinä",
 PasteFromWord	: "Liitä Wordista",
 
-DlgPasteMsg		: "Editori ei voinut toteuttaa liittämistä selaimesi <STRONG>turva-asetusten</STRONG> takia.<BR>Suorita liittäminen käyttäen näppäimistöä (<STRONG>Ctrl+V</STRONG>) ja valitse <STRONG>OK</STRONG>.",
+DlgPasteMsg2	: "Liitä painamalla (<STRONG>Ctrl+V</STRONG>) ja painamalla <STRONG>OK</STRONG>.",
+DlgPasteIgnoreFont		: "Jätä huomioimatta fonttimääritykset",
+DlgPasteRemoveStyles	: "Poista tyylimääritykset",
+DlgPasteCleanBox		: "Tyhjennä",
+
 
 // Color Picker
 ColorAutomatic	: "Automaattinen",
 ColorMoreColors	: "Lisää värejä...",
 
+// Document Properties
+DocProps		: "Dokumentin ominaisuudet",
+
+// Anchor Dialog
+DlgAnchorTitle		: "Ankkurin ominaisuudet",
+DlgAnchorName		: "Nimi",
+DlgAnchorErrorName	: "Ankkurille on kirjoitettava nimi",
+
+// Speller Pages Dialog
+DlgSpellNotInDic		: "Ei sanakirjassa",
+DlgSpellChangeTo		: "Vaihda",
+DlgSpellBtnIgnore		: "Jätä huomioimatta",
+DlgSpellBtnIgnoreAll	: "Jätä kaikki huomioimatta",
+DlgSpellBtnReplace		: "Korvaa",
+DlgSpellBtnReplaceAll	: "Korvaa kaikki",
+DlgSpellBtnUndo			: "Kumoa",
+DlgSpellNoSuggestions	: "Ei ehdotuksia",
+DlgSpellProgress		: "Tarkistus käynnissä...",
+DlgSpellNoMispell		: "Tarkistus valmis: Ei virheitä",
+DlgSpellNoChanges		: "Tarkistus valmis: Yhtään sanaa ei muutettu",
+DlgSpellOneChange		: "Tarkistus valmis: Yksi sana muutettiin",
+DlgSpellManyChanges		: "Tarkistus valmis: %1 sanaa muutettiin",
+
+IeSpellDownload			: "Oikeinkirjoituksen tarkistusta ei ole asennettu. Haluatko ladata sen nyt?",
+
+// Button Dialog
+DlgButtonText	: "Teksti (arvo)",
+DlgButtonType	: "Tyyppi",
+
+// Checkbox and Radio Button Dialogs
+DlgCheckboxName		: "Nimi",
+DlgCheckboxValue	: "Arvo",
+DlgCheckboxSelected	: "Valittu",
+
+// Form Dialog
+DlgFormName		: "Nimi",
+DlgFormAction	: "Toiminto",
+DlgFormMethod	: "Tapa",
+
+// Select Field Dialog
+DlgSelectName		: "Nimi",
+DlgSelectValue		: "Arvo",
+DlgSelectSize		: "Koko",
+DlgSelectLines		: "Rivit",
+DlgSelectChkMulti	: "Salli usea valinta",
+DlgSelectOpAvail	: "Ominaisuudet",
+DlgSelectOpText		: "Teksti",
+DlgSelectOpValue	: "Arvo",
+DlgSelectBtnAdd		: "Lisää",
+DlgSelectBtnModify	: "Muuta",
+DlgSelectBtnUp		: "Ylös",
+DlgSelectBtnDown	: "Alas",
+DlgSelectBtnSetValue : "Aseta valituksi",
+DlgSelectBtnDelete	: "Poista",
+
+// Textarea Dialog
+DlgTextareaName	: "Nimi",
+DlgTextareaCols	: "Sarakkeita",
+DlgTextareaRows	: "Rivejä",
+
+// Text Field Dialog
+DlgTextName			: "Nimi",
+DlgTextValue		: "Arvo",
+DlgTextCharWidth	: "Leveys",
+DlgTextMaxChars		: "Maksimi merkkimäärä",
+DlgTextType			: "Tyyppi",
+DlgTextTypeText		: "Teksti",
+DlgTextTypePass		: "Salasana",
+
+// Hidden Field Dialog
+DlgHiddenName	: "Nimi",
+DlgHiddenValue	: "Arvo",
+
+// Bulleted List Dialog
+BulletedListProp	: "Luettelon ominaisuudet",
+NumberedListProp	: "Numeroinnin ominaisuudet",
+DlgLstType			: "Tyyppi",
+DlgLstTypeCircle	: "Kehä",
+DlgLstTypeDisc		: "Ympyrä",
+DlgLstTypeSquare	: "Neliö",
+DlgLstTypeNumbers	: "Numerot (1, 2, 3)",
+DlgLstTypeLCase		: "Pienet kirjaimet (a, b, c)",
+DlgLstTypeUCase		: "Isot kirjaimet (A, B, C)",
+DlgLstTypeSRoman	: "Pienet roomalaiset numerot (i, ii, iii)",
+DlgLstTypeLRoman	: "Isot roomalaiset numerot (Ii, II, III)",
+
+// Document Properties Dialog
+DlgDocGeneralTab	: "Yleiset",
+DlgDocBackTab		: "Tausta",
+DlgDocColorsTab		: "Värit ja marginaalit",
+DlgDocMetaTab		: "Meta-tieto",
+
+DlgDocPageTitle		: "Sivun nimi",
+DlgDocLangDir		: "Kielen suunta",
+DlgDocLangDirLTR	: "Vasemmalta oikealle (LTR)",
+DlgDocLangDirRTL	: "Oikealta vasemmalle (RTL)",
+DlgDocLangCode		: "Kielikoodi",
+DlgDocCharSet		: "Merkistäkoodaus",
+DlgDocCharSetOther	: "Muu merkistäkoodaus",
+
+DlgDocDocType		: "Dokumentin tyyppi",
+DlgDocDocTypeOther	: "Muu dokumentin tyyppi",
+DlgDocIncXHTML		: "Lisää XHTML julistukset",
+DlgDocBgColor		: "Taustaväri",
+DlgDocBgImage		: "Taustakuva",
+DlgDocBgNoScroll	: "Paikallaanpysyvä tausta",
+DlgDocCText			: "Teksti",
+DlgDocCLink			: "Linkki",
+DlgDocCVisited		: "Vierailtu linkki",
+DlgDocCActive		: "Aktiivinen linkki",
+DlgDocMargins		: "Sivun marginaalit",
+DlgDocMaTop			: "Ylä",
+DlgDocMaLeft		: "Vasen",
+DlgDocMaRight		: "Oikea",
+DlgDocMaBottom		: "Ala",
+DlgDocMeIndex		: "Hakusanat (pilkulla erotettuna)",
+DlgDocMeDescr		: "Kuvaus",
+DlgDocMeAuthor		: "Tekijä",
+DlgDocMeCopy		: "Tekijänoikeudet",
+DlgDocPreview		: "Esikatselu",
+
+// Templates Dialog
+Templates			: "Pohjat",
+DlgTemplatesTitle	: "Sisältöpohjat",
+DlgTemplatesSelMsg	: "Valitse pohja editoriin<br>(aiempi sisältö menetetään):",
+DlgTemplatesLoading	: "Ladataan listaa pohjista. Hetkinen...",
+DlgTemplatesNoTpl	: "(Ei määriteltyjä pohjia)",
+
 // About Dialog
-DlgAboutVersion	: "versio",
-DlgAboutLicense	: "Lisenssi: GNU Lesser General Public License",
-DlgAboutInfo	: "Lisää tietoa osoitteesta"
+DlgAboutAboutTab	: "Editorista",
+DlgAboutBrowserInfoTab	: "Selaimen tiedot",
+DlgAboutVersion		: "versio",
+DlgAboutLicense		: "Lisenssi: GNU Lesser General Public License",
+DlgAboutInfo		: "Lisää tietoa osoitteesta"
 }

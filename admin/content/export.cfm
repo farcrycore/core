@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/content/export.cfm,v 1.5 2005/08/18 08:15:32 pottery Exp $
-$Author: pottery $
-$Date: 2005/08/18 08:15:32 $
-$Name: milestone_3-0-0 $
-$Revision: 1.5 $
+$Header: /cvs/farcry/farcry_core/admin/content/export.cfm,v 1.5.2.1 2006/03/21 04:42:46 jason Exp $
+$Author: jason $
+$Date: 2006/03/21 04:42:46 $
+$Name: milestone_3-0-1 $
+$Revision: 1.5.2.1 $
 
 || DESCRIPTION || 
 $Description: Export Edit Handler $
@@ -117,7 +117,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au) $
 		</label>
 		
 		<label for="sendTo"><b>#application.adminBundle[session.dmProfile.locale].sendTo#</b>
-			<input type="text" name="sendTo" id="sendTo" value="#sendTo#" maxlength="255" /><br />
+			<input type="text" name="sendTo" id="sendTo" value="#sendTo#" maxlength="255" size="45" /><br />
 		</label>
 
 		<label for="exportType"><b>#application.adminBundle[session.dmProfile.locale].exportAs#</b>
@@ -239,7 +239,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au) $
 				<!--- send xml file details --->
 				<tr>
 					<td nowrap class="FormLabel">#application.adminBundle[session.dmProfile.locale].sendTo#</span></td>
-					<td width="100%"><input type="text" name="sendTo" class="formtextbox" maxlength="255"></td>
+					<td width="100%"><input type="text" name="sendTo" class="formtextbox" maxlength="255" size="45"></td>
 				</tr>
 				<!--- export type --->
 				<tr>

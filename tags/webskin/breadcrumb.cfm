@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/webskin/breadcrumb.cfm,v 1.18 2004/04/12 12:10:50 brendan Exp $
-$Author: brendan $
-$Date: 2004/04/12 12:10:50 $
-$Name: milestone_2-2-1 $
-$Revision: 1.18 $
+$Header: /cvs/farcry/farcry_core/tags/webskin/breadcrumb.cfm,v 1.18.6.2 2006/01/20 01:23:48 gstewart Exp $
+$Author: gstewart $
+$Date: 2006/01/20 01:23:48 $
+$Name: milestone_3-0-1 $
+$Revision: 1.18.6.2 $
 
 || DESCRIPTION || 
 builds a breadcrumb for the page
@@ -29,7 +29,7 @@ out:
 <cfimport taglib="/farcry/farcry_core/tags/webskin" prefix="skin">
 
 <cfparam name="attributes.separator" default=" &raquo; ">
-<cfparam name="attributes.here" default="here">
+<cfparam name="attributes.here" default="">
 <cfparam name="attributes.linkClass" default="">
 <cfif structKeyExists(request,"navid")>
 	<cfparam name="attributes.objectid" default="#request.navid#">
@@ -61,21 +61,23 @@ out:
 	
 	<!--- output prefix HTML --->
 	<cfoutput>#attributes.prefix#</cfoutput>
-	
 	<!--- output breadcrumb --->
+	<cfset iCount = 1>
 	<cfloop query="qCrumb">
-		<skin:buildLink objectid="#qCrumb.objectid#" class="#attributes.linkClass#"><cfoutput>#trim(qCrumb.objectName)#</cfoutput></skin:buildLink><cfoutput>#attributes.separator#</cfoutput>
+		<skin:buildLink objectid="#qCrumb.objectid#" class="#attributes.linkClass#"><cfoutput>#trim(qCrumb.objectName)#</cfoutput></skin:buildLink><cfif iCount neq qCrumb.recordCount><cfoutput>#attributes.separator#</cfoutput></cfif>
+		<cfset iCount = iCount + 1>
 	</cfloop>
 	<cfif attributes.includeSelf>
-		<skin:buildLink objectid="#attributes.objectid#" class="#attributes.linkClass#"><cfoutput>#stSelf.title#</cfoutput></skin:buildLink><cfoutput>#attributes.separator#</cfoutput>
+		<cfoutput>#attributes.separator#</cfoutput><skin:buildLink objectid="#attributes.objectid#" class="#attributes.linkClass#"><cfoutput>#stSelf.title#</cfoutput></skin:buildLink>
+	</cfif>
+	<cfif len(attributes.here)>
+		<cfoutput>#attributes.separator##attributes.here#</cfoutput>
 	</cfif>
 <cfelse>
 	<!--- output home only --->
-	<cfoutput>#attributes.prefix# <a href="#application.url.webroot#/" class="#attributes.linkClass#">Home</a>#attributes.separator#</cfoutput>
+	<cfoutput>#attributes.prefix# <a href="#application.url.webroot#/" class="#attributes.linkClass#">Home</a></cfoutput>
 
 </cfif>
-
-<cfoutput>#attributes.here#</cfoutput>
 
 <!--- output suffix HTML --->
 <cfoutput>#attributes.suffix#</cfoutput>

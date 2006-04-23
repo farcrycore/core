@@ -1,3 +1,5 @@
 // KO lang variables
 
-tinyMCELang['lang_preview_desc'] = '미리보기';
+tinyMCE.addToLang('',{
+preview_desc : '미리보기'
+});

@@ -161,7 +161,7 @@
 							<!--- if more than one category make join for each --->
 							<cfif listLen(stObj.metadata) gt 1>
 								<cfloop from="2" to="#listlen(stObj.metadata)#" index="i">
-									inner join refcategories refcat#i# on refcat#i-1#.objectid = refcat#i#.objectid
+									inner join refCategories refcat#i# on refcat#i-1#.objectid = refcat#i#.objectid
 								</cfloop>
 							</cfif>
 							JOIN dmEvent type ON refcat1.objectID = type.objectID

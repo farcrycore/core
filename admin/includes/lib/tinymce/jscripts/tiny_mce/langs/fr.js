@@ -1,39 +1,43 @@
 // FR lang variables by Pat Boens
 // Modify by Laurent Dran
-tinyMCELang['lang_bold_desc'] = 'Gras';
-tinyMCELang['lang_italic_desc'] = 'Italique';
-tinyMCELang['lang_underline_desc'] = 'Soulign&eacute;';
-tinyMCELang['lang_striketrough_desc'] = 'Barré';
-tinyMCELang['lang_justifyleft_desc'] = 'Aligner &agrave; gauche';
-tinyMCELang['lang_justifycenter_desc'] = 'Aligner au centre';
-tinyMCELang['lang_justifyright_desc'] = 'Aligner &agrave; droite';
-tinyMCELang['lang_justifyfull_desc'] = 'Justifier';
-tinyMCELang['lang_bullist_desc'] = 'Liste désordonn&eacute;e (puces)';
-tinyMCELang['lang_numlist_desc'] = 'Liste ordonn&eacute;e (num&eacute;ros)';
-tinyMCELang['lang_outdent_desc'] = 'Diminuer le retrait';
-tinyMCELang['lang_indent_desc'] = 'Augmenter le retrait';
-tinyMCELang['lang_undo_desc'] = 'D&eacute;faire';
-tinyMCELang['lang_redo_desc'] = 'Refaire';
-tinyMCELang['lang_link_desc'] = 'Ins&eacute;rer/éditer le lien';
-tinyMCELang['lang_unlink_desc'] = 'Enlever le lien';
-tinyMCELang['lang_image_desc'] = 'Ins&eacute;rer/éditer une image';
-tinyMCELang['lang_cleanup_desc'] = 'Nettoyer le code';
-tinyMCELang['lang_focus_alert'] = 'Une instance de l\&eacute;diteur doit avoir le focus avant d\'utiliser cette commande.';
-tinyMCELang['lang_edit_confirm'] = 'Voulez-vous utiliser le mode WYSIWYG pour cette zone de texte (textarea) ?';
-tinyMCELang['lang_insert_link_title'] = 'Insertion/&eacute;dition lien';
-tinyMCELang['lang_insert'] = 'Insertion';
-tinyMCELang['lang_update'] = 'Insertion';
-tinyMCELang['lang_cancel'] = 'Annuler';
-tinyMCELang['lang_insert_link_url'] = 'Lien URL';
-tinyMCELang['lang_insert_link_target'] = 'Cible';
-tinyMCELang['lang_insert_link_target_same'] = 'Ouvrir le lien dans la même fen&ecirc;tre';
-tinyMCELang['lang_insert_link_target_blank'] = 'Ouvrir le lien dans une nouvelle fen&ecirc;tre';
-tinyMCELang['lang_insert_image_title'] = 'Insertion/&eacute;dition d\'une image';
-tinyMCELang['lang_insert_image_src'] = 'URL de l\'image';
-tinyMCELang['lang_insert_image_alt'] = 'Description de l\'image';
-tinyMCELang['lang_help_desc'] = 'Aide';
-tinyMCELang['lang_bold_img'] = "bold.gif";
-tinyMCELang['lang_italic_img'] = "italic.gif";
-tinyMCELang['lang_underline_img'] = "underline.gif";
-tinyMCELang['lang_clipboard_msg'] = 'Copier/Couper/Coller ne sont pas disponibles pour Mozilla et Firefox.\nVoulez vous plus d\'informatios à ce sujet?';
-tinyMCELang['lang_popup_blocked'] = 'Sorry, but we have noticed that your popup-blocker has disabled a window that provides application functionality. You will need to disable popup blocking on this site in order to fully utilize this tool.';
+// Modifié par Normand Lamoureux le 2005-11-12
+
+tinyMCE.addToLang('',{
+bold_desc : 'Gras',
+italic_desc : 'Italique',
+underline_desc : 'Souligné',
+striketrough_desc : 'Barré',
+justifyleft_desc : 'Aligner à gauche',
+justifycenter_desc : 'Centrer',
+justifyright_desc : 'Aligner à droite',
+justifyfull_desc : 'Justifier',
+bullist_desc : 'Liste à puces',
+numlist_desc : 'Liste numérotée',
+outdent_desc : 'Diminuer le retrait',
+indent_desc : 'Augmenter le retrait',
+undo_desc : 'Annuler',
+redo_desc : 'Restaurer',
+link_desc : 'Insérer/Modifier un lien',
+unlink_desc : 'Supprimer le lien',
+image_desc : 'Insérer/Modifier une image',
+cleanup_desc : 'Nettoyer le code',
+focus_alert : 'Une instance de l\éditeur doit avoir le focus avant d\'utiliser cette commande.',
+edit_confirm : 'Voulez-vous utiliser le mode WYSIWYG pour cette zone d\'édition de texte ?',
+insert_link_title : 'Gestionnaire d\'hyperlien',
+insert : 'Insérer',
+update : 'Appliquer',
+cancel : 'Annuler',
+insert_link_url : 'Lien URL',
+insert_link_target : 'Cible',
+insert_link_target_same : 'Ouvrir dans la même fenêtre',
+insert_link_target_blank : 'Ouvrir dans une nouvelle fenêtre',
+insert_image_title : 'Gestionnaire d\'image',
+insert_image_src : 'URL de l\'image',
+insert_image_alt : 'Équivalent textuel',
+help_desc : 'Aide',
+bold_img : "bold_fr.gif",
+italic_img : "italic.gif",
+underline_img : "underline_fr.gif",
+clipboard_msg : 'Pour des raisons de sécurité, les fonctions « Copier », « Couper » et « Coller »\nne sont pas disponibles dans Mozilla et Firefox.\n\n\nVoulez-vous plus d\'information à ce sujet?\n',
+popup_blocked : 'Désolé, mais votre bloqueur de pop-up empêche le fonctionnement normal de l\'application.\n\n\nPour utiliser cet outil, veuillez régler votre navigateur pour qu\'il accepte les pop-up de ce site.'
+});

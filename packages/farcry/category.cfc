@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/category.cfc,v 1.46 2005/10/28 04:10:51 paul Exp $
-$Author: paul $
-$Date: 2005/10/28 04:10:51 $
-$Name: milestone_3-0-0 $
-$Revision: 1.46 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/category.cfc,v 1.46.2.2 2006/02/02 00:34:33 geoff Exp $
+$Author: geoff $
+$Date: 2006/02/02 00:34:33 $
+$Name: milestone_3-0-1 $
+$Revision: 1.46.2.2 $
 
 || DESCRIPTION || 
 $Description: Set of functions to perform metadata characterisation $
@@ -184,9 +184,6 @@ WHERE 1=1
 ORDER BY #arguments.orderBy# #arguments.orderDirection#</cfoutput>
 				</cfsavecontent>
 	
-				<cfloop from="1" to="#listlen(arguments.lCategoryIDs)#" index="i">
-					<cfset stLocal.strFilter = stLocal.strFilter & " AND refCat#i#.categoryID = '#listGetAt(arguments.lCategoryIDs,i)#' AND refCat#i#.objectId = type.objectId">
-				</cfloop>
 			<cfelse>
 				<cfsavecontent variable="strSQL"><cfoutput>
 SELECT type.*
@@ -564,7 +561,7 @@ ORDER BY #arguments.orderBy# #arguments.orderDirection#</cfoutput>
 
 		<cfquery datasource="#application.dsn#" name="stLocal.qList">
 		SELECT	l.*
-		FROM	#arguments.typename# l <cfif stLocal.lcategories NEQ "" AND stLocal.bRootNode EQ 0>, refcategories c
+		FROM	#arguments.typename# l <cfif stLocal.lcategories NEQ "" AND stLocal.bRootNode EQ 0>, refCategories c
 		WHERE	c.objectid = l.objectid
 				AND c.categoryid IN (#preservesinglequotes(stLocal.lcategories)#)</cfif>		
 		</cfquery>

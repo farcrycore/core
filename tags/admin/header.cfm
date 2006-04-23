@@ -6,18 +6,17 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/admin/header.cfm,v 1.36 2005/07/25 07:50:57 guy Exp $
-$Author: guy $
-$Date: 2005/07/25 07:50:57 $
-$Name: milestone_3-0-0 $
-$Revision: 1.36 $
+$Header: /cvs/farcry/farcry_core/tags/admin/header.cfm,v 1.36.2.1 2006/03/14 06:29:26 geoff Exp $
+$Author: geoff $
+$Date: 2006/03/14 06:29:26 $
+$Name: milestone_3-0-1 $
+$Revision: 1.36.2.1 $
 
 || DESCRIPTION || 
 $Description: Admin header$
 $TODO: additional attributes.onLoad not clearly defined -- should be param'd and documented GB 20031116 $
 
 || DEVELOPER ||
-$Developer: Brendan Sisson (brendan@daemon.com.au)$
 $Developer: Geoff Bowers (modius@daemon.com.au)$
 
 || ATTRIBUTES ||
@@ -71,8 +70,6 @@ $in: [bCacheControl] output cache control headers; default true. $
 		<script src="#application.url.farcry#/includes/lib/DataRequestor.js"></script>
 		<!--- JSON javascript object --->
 		<script src="#application.url.farcry#/includes/lib/json.js"></script>
-		<!--- MTA javascript object --->
-		<script src="#application.url.farcry#/js/mta.js"></script>		
 		<style type="text/css" title="default" media="screen">@import url(#application.url.farcry#/css/main.css);</style>
 		<style type="text/css" title="default" media="screen">@import url(#application.url.farcry#/css/tabs.css);</style>
 		<script type="text/javascript" src="#application.url.farcry#/js/tables.js"></script>

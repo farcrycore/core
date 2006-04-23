@@ -43,17 +43,44 @@
 					<q4:contentobjectget objectid="#aObjects[i]#" r_stobject="stItem">
 					<cfif ListFindNoCase(libraryType,stItem.typename)>
 						<cfset arOptions[iCounter] = StructNew()>
+						<!--- replace potentially unsafe chars --->
+						<cfset stItem.label = objplp.fReplaceBadCharacters(stItem.label)>
 						<cfset arOptions[iCounter].text = stItem.label>
 						<cfset arOptions[iCounter].objectID = stItem.objectID>
 						<cfif libraryType EQ "dmImage">
-							<cfset imageurl = objImage.getURLImagePath(stItem.objectID,"original")>
-							<cfif stItem.optimisedimage neq "">
-								<cfset imageurl_optimised = objImage.getURLImagePath(stItem.objectID,"optimised")>
-								<cfset arOptions[iCounter].value = JSStringFormat("#stItem.objectID#|<a href='#imageurl_optimised#' target='_blank'><img src='#imageurl#' border=0 alt='#stItem.alt#'></a>")>
-							<cfelse>
-								<cfset arOptions[iCounter].value = JSStringFormat("#stItem.objectID#|<img src='#imageurl#' border=0 alt='#stItem.alt#'>")>
+
+							<cfset imageurl_default = objImage.getURLImagePath(stItem.objectID,"original")>
+							<cfset imageurl_thumbnail = objImage.getURLImagePath(stItem.objectID,"thumb")>
+							<cfset imageurl_highres = objImage.getURLImagePath(stItem.objectID,"optimised")>
+	
+							<!--- default thumbnail to original if it doesnt exist --->
+							<cfif trim(imageurl_thumbnail) EQ "">
+								<cfset imageurl_thumbnail = imageurl_default>
 							</cfif>
+							<!--- default highres to original if it doesnt exist --->						
+							<cfif trim(imageurl_highres) EQ "">
+								<cfset imageurl_highres = imageurl_default>
+							</cfif>
+							<!--- get the image insert html config item (returns to insertHTML javascript funvction) --->
+							<cfset arOptions[iCounter].value = Application.config.image.insertHTML>
+	
+							<!--- replace thumbnail with thumbnail image url --->
+							<cfset arOptions[iCounter].value = replaceNoCase(arOptions[iCounter].value,"*thumbnail*",imageurl_thumbnail,"all")>
+	
+							<!--- replace original with original image url --->
+							<cfset arOptions[iCounter].value = replaceNoCase(arOptions[iCounter].value,"*imagefile*",imageurl_default,"all")>
+																			
+							<!--- replace high resolution with high resolution image url --->
+							<cfset arOptions[iCounter].value = replaceNoCase(arOptions[iCounter].value,"*optimisedImage*",imageurl_highres,"all")>
+	
+							<!--- replace high resolution with high resolution image url --->
+							<cfset arOptions[iCounter].value = replaceNoCase(arOptions[iCounter].value,"*alt*",stItem.alt,"all")>
+							
+							<!--- this is returned to the generateLibraryXML file and sent to a javasecript function .: have to escape javascript --->
+							<cfset arOptions[iCounter].value = JSStringFormat("#stItem.objectID#|#arOptions[iCounter].value#")>
+
 						<cfelseif libraryType EQ "dmFile">
+							<cfset stItem.title = objplp.fReplaceBadCharacters(stItem.title)>
 							<cfif application.config.general.fileDownloadDirectLink eq "false">
 								<cfset arOptions[iCounter].value = JSStringFormat("#stItem.objectID#|<a href='#application.url.webroot#/download.cfm?DownloadFile=#stItem.objectid#' target='_blank'>#stItem.title#</a>")>
 							<cfelse>
@@ -90,6 +117,7 @@
 			<!--- do noting --->
 		</cfdefaultcase>
 	</cfswitch>
+
 	<cfcontent type="text/plain"><cfoutput>
 #jsonencode(arOptions)#</cfoutput>
 </cfif>

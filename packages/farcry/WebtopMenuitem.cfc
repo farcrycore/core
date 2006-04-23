@@ -31,6 +31,101 @@ $Developer: Tyler Ham (tylerh@austin.utexas.edu)$
   
 <!--- {{{ PACKAGE functions --->
 
+<!--- {{{ package setPolicyGroup(policyGroupID, qPermissions) --->
+<cffunction name="setPolicyGroup" access="package" output="no"
+  hint="sets isAllowed attributes on each node if it allows access
+  to the specified policy group">
+  
+  <cfargument name="policyGroupID" type="numeric" required="yes"
+    hint="ID of the policy group to mark allowed nodes for">
+  
+  <cfargument name="qPermissions" type="query" required="yes"
+    hint="permission map query">
+  
+  <cfargument name="overrideAllowed" type="boolean" required="yes"
+    hint="if true, a parent node that is disallowed will cause all children
+    nodes to be disallwoed, regardless of the permissions">
+  
+  <cfargument name="parentIsAllowed" type="boolean" required="yes"
+    hint="indicates if the parent permission is allowed">
+  
+  <cfset var checkPermission = "">
+  <cfset var i = "">
+  <cfset var permissions = arguments.qPermissions>
+  
+  <!--- set isAllowed for the root node --->
+  <cfif StructKeyExists(this.stAttributes, "permission")>
+    <!--- check that any required permission on this node is allowed by the policy group --->
+    <cfquery name="checkPermission" dbtype="query">
+      SELECT *
+      FROM permissions
+      WHERE PolicyGroupID = <cfqueryparam value="#arguments.policyGroupID#" cfsqltype="cf_sql_numeric">
+        AND PermissionName = <cfqueryparam value="#this.stAttributes.permission#" cfsqltype="cf_sql_varchar">
+        AND Allowed = 1
+    </cfquery>
+    
+    <cfif checkPermission.RecordCount>
+      <cfset this.stAttributes.isAllowed = "true">
+    <cfelse>
+      <cfset this.stAttributes.isAllowed = "false">
+    </cfif>
+    
+  <cfelse>
+    <cfset this.stAttributes.isAllowed = "true">  <!--- allow by default --->
+    
+  </cfif>
+  
+  <!--- override isAllowed if necessary --->
+  <cfif this.stAttributes.isAllowed
+    and arguments.overrideAllowed 
+    and (not arguments.parentIsAllowed)>
+    <cfset this.stAttributes.isAllowed = "false">
+  </cfif>
+  
+</cffunction>
+<!--- }}} package setPolicyGroup(policyGroupID, qPermissions) --->
+
+<!--- {{{ package transformLabels() --->
+<cffunction name="transformLabels" access="package" output="no"
+  hint="transforms the label attributes (if any) of nodes
+  depending on the labelType attribute (evaluate, expression, text)">
+  
+  <cfset var i = "">
+  
+  <cfset this.stAttributes.transformedLabel = "">
+  
+  <cfif StructKeyExists(this.stAttributes, "label")>
+    <cfset this.stAttributes.transformedLabel = this.stAttributes.label>
+  </cfif>
+  
+  <cfif StructKeyExists(this.stAttributes, "labelType")>
+    <cftry>
+      <cfswitch expression="#this.stAttributes.labelType#">
+        <cfcase value="evaluate">
+          <cfset this.stAttributes.transformedLabel = Evaluate(this.stAttributes.label)>
+        </cfcase>
+        
+        <cfcase value="expression">
+          <cfset this.stAttributes.transformedLabel = Evaluate(this.stAttributes.label)>
+        </cfcase>
+        
+        <cfcase value="text">
+          <!--- let transformedLabel just equal label (it already does) --->
+        </cfcase>
+        
+        <cfdefaultcase>
+          <!--- let transformedLabel just equal label (it already does) --->
+        </cfdefaultcase>
+      </cfswitch>
+      
+      <cfcatch>
+        <cfset this.stAttributes.transformedLabel = "*** #this.stAttributes.label# ***">
+      </cfcatch>
+    </cftry>
+  </cfif>
+  
+</cffunction>
+<!--- }}} package transformLabels() --->
 
 <!--- {{{ package init(MenuitemXmlElement) --->
 <cffunction name="init" access="package" output="no" returnType="WebtopMenuitem"

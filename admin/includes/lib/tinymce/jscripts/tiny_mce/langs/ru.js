@@ -1,41 +1,43 @@
-// Russian translation by Roman Filippov
-// romanf@terrahost.ca
-// www.hunox.ca
+// Russian windows-1251 translation by Vladimir Vitkovsky
+// admin@transport.su
+// www.webgui.uanet.biz
 
-tinyMCELang['lang_bold_desc'] = 'Полужирный';
-tinyMCELang['lang_italic_desc'] = 'Курсив';
-tinyMCELang['lang_underline_desc'] = 'Подчеркивание';
-tinyMCELang['lang_striketrough_desc'] = 'Перечеркивание';
-tinyMCELang['lang_justifyleft_desc'] = 'Вырвнивание влево';
-tinyMCELang['lang_justifycenter_desc'] = 'Вырвнивание по центру';
-tinyMCELang['lang_justifyright_desc'] = 'Вырвнивание вправо';
-tinyMCELang['lang_justifyfull_desc'] = 'Вырвнивание равномерно';
-tinyMCELang['lang_bullist_desc'] = 'Маркированный список';
-tinyMCELang['lang_numlist_desc'] = 'Нумерованный список';
-tinyMCELang['lang_outdent_desc'] = 'Уменьшить отступ';
-tinyMCELang['lang_indent_desc'] = 'Увеличить отспут';
-tinyMCELang['lang_undo_desc'] = 'Отменить';
-tinyMCELang['lang_redo_desc'] = 'Вернуть';
-tinyMCELang['lang_link_desc'] = 'Вставить/изменить ссылку';
-tinyMCELang['lang_unlink_desc'] = 'Убрать ссылку';
-tinyMCELang['lang_image_desc'] = 'Вставить/изменить изображение';
-tinyMCELang['lang_cleanup_desc'] = 'Вычистить грязный код';
-tinyMCELang['lang_focus_alert'] = 'Вы должны находится в поле редактора перед использованием данной команды.';
-tinyMCELang['lang_edit_confirm'] = 'Хотите ли Вы воспользоваться WYSIWYG редактором для этого поля ввода?';
-tinyMCELang['lang_insert_link_title'] = 'Вставить/изменить ссылку';
-tinyMCELang['lang_insert'] = 'Вставить';
-tinyMCELang['lang_update'] = 'Вставить';
-tinyMCELang['lang_cancel'] = 'Отменить';
-tinyMCELang['lang_insert_link_url'] = 'Адрес';
-tinyMCELang['lang_insert_link_target'] = 'Открыть в...:';
-tinyMCELang['lang_insert_link_target_same'] = 'том же окне';
-tinyMCELang['lang_insert_link_target_blank'] = 'новом окне';
-tinyMCELang['lang_insert_image_title'] = 'Вставить/изменить изображение';
-tinyMCELang['lang_insert_image_src'] = 'Адрес';
-tinyMCELang['lang_insert_image_alt'] = 'Описание';
-tinyMCELang['lang_help_desc'] = 'Помощь';
-tinyMCELang['lang_bold_img'] = "bold_ru.gif";
-tinyMCELang['lang_italic_img'] = "italic_ru.gif";
-tinyMCELang['lang_underline_img'] = "underline_ru.gif";
-tinyMCELang['lang_clipboard_msg'] = 'Copy/Cut/Paste is not available in Mozilla and Firefox.\nDo you want more information about this issue?';
-tinyMCELang['lang_popup_blocked'] = 'Sorry, but we have noticed that your popup-blocker has disabled a window that provides application functionality. You will need to disable popup blocking on this site in order to fully utilize this tool.';
+tinyMCE.addToLang('',{
+bold_desc : 'Полужирный',
+italic_desc : 'Курсив',
+underline_desc : 'Подчеркнутый',
+striketrough_desc : 'Перечеркнутый',
+justifyleft_desc : 'Выравнивание влево',
+justifycenter_desc : 'Выравнивание по центру',
+justifyright_desc : 'Выравнивание вправо',
+justifyfull_desc : 'Равномерное заполнение',
+bullist_desc : 'Маркированный список',
+numlist_desc : 'Нумерованный список',
+outdent_desc : 'Уменьшить отступ',
+indent_desc : 'Увеличить отспут',
+undo_desc : 'Отменить',
+redo_desc : 'Вернуть',
+link_desc : 'Вставить/изменить ссылку',
+unlink_desc : 'Убрать ссылку',
+image_desc : 'Вставить/изменить изображение',
+cleanup_desc : 'Подчистить избыточный код',
+focus_alert : 'Для использования данной команды Вы должны находится в поле редактора.',
+edit_confirm : 'Хотите ли Вы редактировать в визуальном (WYSIWYG) режиме?',
+insert_link_title : 'Вставить/изменить ссылку',
+insert : 'Вставить',
+update : 'Применить',
+cancel : 'Отменить',
+insert_link_url : 'Адрес ссылки',
+insert_link_target : 'Открыть в...:',
+insert_link_target_same : 'том же окне',
+insert_link_target_blank : 'новом окне',
+insert_image_title : 'Вставить/изменить изображение',
+insert_image_src : 'Адрес картинки',
+insert_image_alt : 'Описание картинки',
+help_desc : 'Помощь',
+bold_img : "bold_ru.gif",
+italic_img : "italic_ru.gif",
+underline_img : "underline_ru.gif",
+clipboard_msg : 'Копировать/Вырезать/Вставить недоступны для Mozilla и Firefox.\nХотите узнать об этом подробнее?',
+popup_blocked : 'Извините, но в Вашем браузере заблокированы всплывающие окна. Для того, чтобы иметь возможность воспользоваться всеми возможностями редактора, необходимо отключить блокировку всплывающих окон для этого сайта.'
+});

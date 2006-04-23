@@ -1,20 +1,23 @@
-Ôªø// PL lang variables
+// PL lang variables
+// fixed by Wooya
+// http://www.mfusion.prv.pl
 
-
-tinyMCELang['lang_searchreplace_search_desc'] = 'Znajd≈∫';
-tinyMCELang['lang_searchreplace_searchnext_desc'] = 'Znajd≈∫ ponownie';
-tinyMCELang['lang_searchreplace_replace_desc'] = 'Znajd≈∫/ZastƒÖp';
-tinyMCELang['lang_searchreplace_notfound'] = 'Uko≈Ñczono wyszukiwanie. Poszukiwana fraza nie zosta≈Ça odnaleziona.';
-tinyMCELang['lang_searchreplace_search_title'] = 'Znajd≈∫';
-tinyMCELang['lang_searchreplace_replace_title'] = 'Znajd≈∫/ZastƒÖp';
-tinyMCELang['lang_searchreplace_allreplaced'] = 'Wszystkie wystƒÖpienia poszukiwanej frazy zosta≈Çy zastƒÖpione. ';
-tinyMCELang['lang_searchreplace_findwhat'] = 'Znajd≈∫';
-tinyMCELang['lang_searchreplace_replacewith'] = 'ZastƒÖp';
-tinyMCELang['lang_searchreplace_direction'] = 'Kierunek';
-tinyMCELang['lang_searchreplace_up'] = 'Do g√≥ry';
-tinyMCELang['lang_searchreplace_down'] = 'Do do≈Çu';
-tinyMCELang['lang_searchreplace_case'] = 'Wielko≈õƒá liter';
-tinyMCELang['lang_searchreplace_findnext'] = 'Znajd≈∫&nbsp;nastƒôpny';
-tinyMCELang['lang_searchreplace_replace'] = 'ZastƒÖp';
-tinyMCELang['lang_searchreplace_replaceall'] = 'ZastƒÖp&nbsp;wszystkie';
-tinyMCELang['lang_searchreplace_cancel'] = 'Wyjd≈∫';
+tinyMCE.addToLang('',{
+searchreplace_search_desc : 'Znajdº',
+searchreplace_searchnext_desc : 'Znajdº ponownie',
+searchreplace_replace_desc : 'Znajdº/Zast±p',
+searchreplace_notfound : 'UkoÒczono wyszukiwanie. Poszukiwana fraza nie zosta≥a odnaleziona.',
+searchreplace_search_title : 'Znajdº',
+searchreplace_replace_title : 'Znajdº/Zast±p',
+searchreplace_allreplaced : 'Wszystkie wyst±pienia poszukiwanej frazy zosta≥y zast±pione. ',
+searchreplace_findwhat : 'Znajdº',
+searchreplace_replacewith : 'Zast±p',
+searchreplace_direction : 'Kierunek',
+searchreplace_up : 'Do gÛry',
+searchreplace_down : 'Do do≥u',
+searchreplace_case : 'Wielko∂Ê liter',
+searchreplace_findnext : 'Znajdº&nbsp;nastÍpny',
+searchreplace_replace : 'Zast±p',
+searchreplace_replaceall : 'Zast±p&nbsp;wszystkie',
+searchreplace_cancel : 'Wyjdº'
+});

@@ -1,6 +1,6 @@
 /* 
 -------------------------------------------------------------------
-version:	20-10-05
+version:	18-01-06
 author:		pete ottery | daemon | pottery at daemon dot com dot au 
 			please speak to pete before making changes to this file 
 -------------------------------------------------------------------
@@ -207,13 +207,14 @@ body.popup #content {margin:0;background:transparent;padding:0}
 .utilBar input {padding: 2px 4px;_padding: 2px 0;background:#f5f5f5;color:#369;border: 1px solid #ddd;border-left: 1px solid #999;border-bottom: 1px solid #999;cursor:pointer}
 .utilBar input:hover {background:#E4ECF6;border: 1px solid #369}
 
-.thumbNailsWrap ul {height: 18em}
+.thumbNailsWrap ul {margin: 1em 0;_margin-top:0;_height:1%;overflow:auto;_overflow:visible}
 
-.thumbNailsWrap li {position:relative;float:left;width:90px;height:9.2em;background:#fff;border: 1px solid #ccc;margin: 0 10px 10px 0;display:inline;padding:2px;font-size:86%}
-.thumbNailsWrap li img {display:block}
-.thumbNailsWrap li input {position:absolute;top:71px;right:3px}
-.thumbNailsWrap li label {padding:0}
-.thumbNailsWrap li span {display:block;width:83px;height:83px;padding:3px;border-bottom: 1px solid #eee}
+.thumbNailsWrap li {padding:3px;position:relative;float:left;width:85px;_height:105px;min-height:105px;background:#fff;border: 1px solid #ccc;margin: 0 5px 5px 0;display:block;font-size:86%}
+.thumbNailsWrap li img {display:block;width:70px;height:70px}
+.thumbNailsWrap li input {position:absolute;top:0;right:-1px}
+.thumbNailsWrap li label {}
+.thumbNailsWrap li label input {border:none}
+.thumbNailsWrap li span {display:block;width:100%;border-bottom: 1px solid #eee}
 .thumbNailsWrap li p {margin:2px;line-height:1.3}
 
 .filesWrap ul {position:static;margin: 1em 0}
@@ -221,23 +222,25 @@ body.popup #content {margin:0;background:transparent;padding:0}
 .filesWrap li {padding-left:0;margin: 0 0 -2px;border-bottom: 1px solid #f1f1f1;background:none}
 .filesWrap li label {margin:0;padding:0}
 
-body.Filebrowse form.f-wrap-1, body.Imagebrowse form.f-wrap-1 {width:35em}
+body.filebrowse form.f-wrap-1, body.imagebrowse form.f-wrap-1 {width:35em}
 
-body.Imagebrowse .tab-panes, body.Filebrowse .tab-panes {padding: 15px 10px 0;background:#f1f1f1 url("images/wizard_bg.gif") repeat-y 125px 0}
-body.Imagebrowse #utility, body.Filebrowse #utility {float:left;width:160px;font-size:92%}
-body.Imagebrowse #utility p, body.Filebrowse #utility p {font-size:92%}
-body.Imagebrowse #utility li, body.Filebrowse #utility li {background-color:#f1f1f1;font-size:100%}
-body.Imagebrowse #utility form, body.Filebrowse #utility form {margin-bottom: 15px}
-body.Imagebrowse #content, body.Filebrowse #content {margin-left:190px;height:auto}
-body.Imagebrowse form.f-wrap-1 .f-submit-wrap, body.Filebrowse form.f-wrap-1 .f-submit-wrap {padding: 5px;clear:both;margin: 0;text-align:center}
+body.imagebrowse .tab-panes, body.filebrowse .tab-panes {padding: 15px 10px 0;background:#f1f1f1 url("images/wizard_bg.gif") repeat-y 125px 0}
+body.imagebrowse #utility, body.filebrowse #utility {float:left;width:160px;font-size:92%;position:relative}
+body.imagebrowse #utility p, body.filebrowse #utility p {font-size:92%}
+body.imagebrowse #utility li, body.filebrowse #utility li {background-color:#f1f1f1;font-size:100%}
+body.imagebrowse #utility form, body.filebrowse #utility form {margin-bottom: 15px}
+body.imagebrowse #content, body.filebrowse #content {margin-left:190px;height:auto}
+body.imagebrowse .f-submit-wrap, body.filebrowse .f-submit-wrap {padding: 5px;clear:both;margin: 1em 0 1em 185px;text-align:left;_margin-top:0}
+body.imagebrowse form.f-wrap-1 .f-submit-wrap, body.filebrowse form.f-wrap-1 .f-submit-wrap {padding: 5px;clear:both;margin: 0;text-align:center}
 
+body.imagebrowse .utilBar {float:none;margin: 0 0 1em}
 
-body.Imagebrowse .f-checkbox-wrap ul, body.Filebrowse .f-checkbox-wrap ul {margin:0}
-body.Imagebrowse .f-checkbox-wrap ul li, body.Filebrowse .f-checkbox-wrap ul li {border-bottom: 1px solid #F1F1F1}
-body.Imagebrowse form.f-wrap-1 fieldset.f-checkbox-wrap label, body.Filebrowse form.f-wrap-1 fieldset.f-checkbox-wrap label {margin: 0 0 -2px}
-body.Imagebrowse form.f-wrap-1 fieldset.f-checkbox-wrap label, body.Filebrowse form.f-wrap-1 fieldset.f-checkbox-wrap label {float:none;width:auto}
-body.Imagebrowse form.f-wrap-1 label, body.Filebrowse form.f-wrap-1 label {border-bottom: none}
-body.Imagebrowse form.f-wrap-1 h3, body.Filebrowse form.f-wrap-1 h3 {font-size:115%}
+body.imagebrowse .f-checkbox-wrap ul, body.filebrowse .f-checkbox-wrap ul {margin:0}
+body.imagebrowse .f-checkbox-wrap ul li, body.filebrowse .f-checkbox-wrap ul li {border-bottom: 1px solid #F1F1F1}
+body.imagebrowse form.f-wrap-1 fieldset.f-checkbox-wrap label, body.filebrowse form.f-wrap-1 fieldset.f-checkbox-wrap label {margin: 0 0 -2px}
+body.imagebrowse form.f-wrap-1 fieldset.f-checkbox-wrap label, body.filebrowse form.f-wrap-1 fieldset.f-checkbox-wrap label {float:none;width:auto}
+body.imagebrowse form.f-wrap-1 label, body.filebrowse form.f-wrap-1 label {border-bottom: none}
+body.imagebrowse form.f-wrap-1 h3, body.filebrowse form.f-wrap-1 h3 {font-size:115%}
 
 /* =PLP WRAP */
 
@@ -334,6 +337,8 @@ body.Imagebrowse form.f-wrap-1 h3, body.Filebrowse form.f-wrap-1 h3 {font-size:1
 .gen-admin-action img {margin: 0 10px -7px 0}
 .utilBar label {display:inline}
 .gen-admin-filterby input.f-submit {margin-right:15px}
+
+ul.object-overview-actions {margin-right: 130px}
 
 /* =ALL BLUE LEFT HAND COL */
 body.iframed-home a:link {color:#fff} 

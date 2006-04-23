@@ -135,26 +135,7 @@
 		<cfargument name="dsn" required="false" type="string" default="#application.dsn#">
 		<cfparam name="request.mode.lValidStatus" default="approved">
 		<cfset stObj = this.getData(arguments.objectid)> 
-		
-		<cfif application.dbtype eq "mysql">
-			<!--- create temp table for status --->
-			<cfquery datasource="#arguments.dsn#" name="temp">
-				DROP TABLE IF EXISTS tblTemp1
-			</cfquery>
-			<cfquery datasource="#arguments.dsn#" name="temp2">
-				create temporary table `tblTemp1`
-					(
-					`Status`  VARCHAR(50) NOT NULL
-					)
-			</cfquery>
-			<cfloop list="#request.mode.lValidStatus#" index="i">
-				<cfquery datasource="#arguments.dsn#" name="temp3">
-					INSERT INTO tblTemp1 (Status) 
-					VALUES ('#replace(i,"'","","all")#')
-				</cfquery>
-			</cfloop>
-		</cfif>
-		
+
 		<!--- If Archive: Get Maximum Rows in New Table --->
 		<cfif stObj.bArchive>	
 			<cfquery datasource="#arguments.dsn#" name="qGetCount">
@@ -166,7 +147,7 @@
 		<cfelse>
 			<cfset maximumRows = stObj.numItems>
 		</cfif>
-		
+
 		<!--- check if filtering by categories --->
 		<cfif NOT trim(len(stObj.metadata)) EQ 0>
 			<!--- show by categories --->
@@ -176,7 +157,7 @@
 						<!--- must match all categories --->
 						<cfquery datasource="#arguments.dsn#" name="qGetEvents" maxrows="#maximumRows#">
 							SELECT DISTINCT type.objectID, type.publishDate,type.startDate, type.label
-							    FROM tblTemp1, dmEvent type, refCategories refCat1
+							    FROM dmEvent type, refCategories refCat1
 							<!--- if more than one category make join for each --->
 							<cfif listLen(stObj.metadata) gt 1>
 								<cfloop from="2" to="#listlen(stObj.metadata)#" index="i">
@@ -189,7 +170,7 @@
 									AND refCat#i#.categoryID = '#listGetAt(stObj.metadata,i)#'
 									AND refCat#i#.objectId = type.objectId
 								</cfloop>
-								AND type.status = tblTemp1.Status
+								AND type.status IN ('#ListChangeDelims(request.mode.lValidStatus,"','",",")#')
 								AND publishdate <= #now()#
 								AND expirydate >= #now()#
 							ORDER BY type.startDate ASC, type.label ASC
@@ -198,10 +179,10 @@
 						<!--- doesn't need to match all categories --->
 						<cfquery datasource="#arguments.dsn#" name="qGetEvents" maxrows="#maximumRows#">
 							SELECT DISTINCT type.objectID, type.publishDate,type.startDate, type.label
-							FROM tblTemp1, refCategories refCat, dmEvent type
+							FROM refCategories refCat, dmEvent type
 							WHERE refCat.objectID = type.objectID
 								AND refCat.categoryID IN ('#ListChangeDelims(stObj.metadata,"','",",")#')
-								AND type.status = tblTemp1.Status
+								AND type.status IN ('#ListChangeDelims(request.mode.lValidStatus,"','",",")#')
 								AND publishdate <= #now()#
 								AND expirydate >= #now()#
 							ORDER BY type.startDate ASC, type.label ASC
@@ -218,7 +199,7 @@
 							<!--- if more than one category make join for each --->
 							<cfif listLen(stObj.metadata) gt 1>
 								<cfloop from="2" to="#listlen(stObj.metadata)#" index="i">
-									inner join refcategories refcat#i# on refcat#i-1#.objectid = refcat#i#.objectid
+									inner join refCategories refcat#i# on refcat#i-1#.objectid = refcat#i#.objectid
 								</cfloop>
 							</cfif>
 							JOIN dmEvent type ON refcat1.objectID = type.objectID
@@ -251,29 +232,14 @@
 			</cfswitch>
 		<cfelse>
 			<!--- don't filter on categories --->
-			<cfswitch expression="#application.dbtype#">
-				<cfcase value="mysql">
-					<cfquery datasource="#arguments.dsn#" name="qGetEvents" maxrows="#maximumRows#">
-						SELECT *
-						FROM #application.dbowner#dmEvent events, tblTemp1
-						WHERE events.status = tblTemp1.Status
-							AND publishdate <= #now()#
-							AND expirydate >= #now()#
-						ORDER BY startDate ASC
-					</cfquery>
-				</cfcase>
-
-				<cfdefaultcase>
-					<cfquery datasource="#arguments.dsn#" name="qGetEvents" maxrows="#maximumRows#">
-						SELECT *
-						FROM #application.dbowner#dmEvent
-						WHERE status IN ('#ListChangeDelims(request.mode.lValidStatus,"','",",")#')
-							AND publishdate <= #now()#
-							AND expirydate >= #now()#
-						ORDER BY startDate ASC
-					</cfquery>
-				</cfdefaultcase>
-			</cfswitch>
+			<cfquery datasource="#arguments.dsn#" name="qGetEvents" maxrows="#maximumRows#">
+				SELECT *
+				FROM #application.dbowner#dmEvent events
+				WHERE status IN ('#ListChangeDelims(request.mode.lValidStatus,"','",",")#')		
+					AND publishdate <= #now()#
+					AND expirydate >= #now()#
+				ORDER BY startDate ASC
+			</cfquery>
 		</cfif>
 		<cfif len(trim(stObj.intro)) AND qGetEvents.recordCount>
 			<cfset tmp = arrayAppend(request.aInvocations,stObj.intro)>
@@ -312,16 +278,27 @@
 				<!--- save pagination output to variable --->
 				<cfsavecontent variable="pageNums">
 					<cfoutput>
-					<div align="center" class="newsArchive">
-					<cfif url.pgno NEQ 1>
-						<a class="newsArchive" href="#Application.URL.conjurer#?objectID=#url.objectID#&pgno=#(url.pgno-1)#">Previous Page</a>&nbsp;&nbsp;
-					</cfif>
-					<cfloop index="i" from="1" to="#iNumberOfPages#">
-					<cfif i NEQ url.pgno></cfif><a class="newsArchive" href="#Application.URL.conjurer#?objectID=#url.objectID#&pgno=#i#">#i#</a><cfif i NEQ url.pgno><a class="newsArchive" href="#Application.URL.conjurer#?objectID=#url.objectID#&pgno=#i#"></a></cfif>
-					</cfloop>
-					<cfif url.pgno NEQ iNumberOfPages>
-						&nbsp;&nbsp;<a class="newsArchive" href="#Application.URL.conjurer#?objectID=#url.objectID#&pgno=#(url.pgno+1)#">Next Page</a>
-					</cfif>
+					<div class="pagination">
+					<p>
+						<cfif url.pgno EQ 1>
+							<span><strong>Previous</strong></span> 
+						<cfelse>
+							<a href="#Application.URL.conjurer#?objectID=#url.objectID#&pgno=#(url.pgno-1)#"><strong>Previous</strong></a>
+						</cfif>
+						<cfloop index="i" from="1" to="#iNumberOfPages#">
+							<cfif i NEQ url.pgno>
+								<a href="#Application.URL.conjurer#?objectID=#url.objectID#&pgno=#i#">#i#</a> 
+							<cfelse>
+								<span>#i#</span>
+							</cfif>
+						</cfloop>
+						<cfif url.pgno EQ iNumberOfPages>
+							<span><strong>Next</strong></span>
+						<cfelse>
+							<a href="#Application.URL.conjurer#?objectID=#url.objectID#&pgno=#(url.pgno+1)#"><strong>Next</strong></a>
+						</cfif>
+					</p>
+					<h4>Page #url.pgno# of #iNumberOfPages#</h4>
 					</div>
 					<br>
 					</cfoutput>
@@ -347,17 +324,28 @@
 				<cfsavecontent variable="pageNums2">
 					<cfoutput>
 					<br>
-					<div align="center" class="newsArchive">
-					<cfif url.pgno NEQ 1>
-						<a class="newsArchive" href="#Application.URL.conjurer#?objectID=#url.objectID#&pgno=#(url.pgno-1)#">Previous Page</a>&nbsp;&nbsp;
-					</cfif>
-					<cfloop index="i" from="1" to="#iNumberOfPages#">
-					<cfif i NEQ url.pgno></cfif><a class="newsArchive" href="#Application.URL.conjurer#?objectID=#url.objectID#&pgno=#i#">#i#</a><cfif i NEQ url.pgno><a class="newsArchive" href="#Application.URL.conjurer#?objectID=#url.objectID#&pgno=#i#"></a></cfif>
-					</cfloop>
-					<cfif url.pgno NEQ iNumberOfPages>
-						&nbsp;&nbsp;<a class="newsArchive" href="#Application.URL.conjurer#?objectID=#url.objectID#&pgno=#(url.pgno+1)#">Next Page</a>
-					</cfif>
-					</div>				
+					<div class="pagination">
+					<p>
+						<cfif url.pgno EQ 1>
+							<span><strong>Previous</strong></span> 
+						<cfelse>
+							<a href="#Application.URL.conjurer#?objectID=#url.objectID#&pgno=#(url.pgno-1)#"><strong>Previous</strong></a>
+						</cfif>
+						<cfloop index="i" from="1" to="#iNumberOfPages#">
+							<cfif i NEQ url.pgno>
+								<a href="#Application.URL.conjurer#?objectID=#url.objectID#&pgno=#i#">#i#</a> 
+							<cfelse>
+								<span>#i#</span>
+							</cfif>
+						</cfloop>
+						<cfif url.pgno EQ iNumberOfPages>
+							<span><strong>Next</strong></span>
+						<cfelse>
+							<a href="#Application.URL.conjurer#?objectID=#url.objectID#&pgno=#(url.pgno+1)#"><strong>Next</strong></a>
+						</cfif>
+					</p>
+					<h4>Page #url.pgno# of #iNumberOfPages#</h4>
+					</div>		
 					</cfoutput>
 				</cfsavecontent>
 				<!--- append pagination output to Invocations array --->

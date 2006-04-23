@@ -1,41 +1,43 @@
 // Greek lang variables by Jacaranda Bill
 
-tinyMCELang['lang_table_desc'] = 'Εισαγωγή πίνακα';
-tinyMCELang['lang_table_insert_row_before_desc'] = 'Εισαγωγή γραμμής επάνω';
-tinyMCELang['lang_table_insert_row_after_desc'] = 'Εισαγωγή γραμμής κάτω';
-tinyMCELang['lang_table_delete_row_desc'] = 'Διαγραφή γραμμής';
-tinyMCELang['lang_table_insert_col_before_desc'] = 'Εισαγωγή στήλης αριστερά';
-tinyMCELang['lang_table_insert_col_after_desc'] = 'Εισαγωγή στήλης δεξιά';
-tinyMCELang['lang_table_delete_col_desc'] = 'Διαγραφή στήλης';
-tinyMCELang['lang_insert_table_title'] = 'Εισαγωγή/Διόρθωση πίνακα';
-tinyMCELang['lang_insert_table_width'] = 'Πλάτος';
-tinyMCELang['lang_insert_table_height'] = 'Ύψος';
-tinyMCELang['lang_insert_table_cols'] = 'Στήλες';
-tinyMCELang['lang_insert_table_rows'] = 'Γραμμές';
-tinyMCELang['lang_insert_table_cellspacing'] = 'Διάστιχο';
-tinyMCELang['lang_insert_table_cellpadding'] = 'Γέμισμα';
-tinyMCELang['lang_insert_table_border'] = 'Περίγραμμα';
-tinyMCELang['lang_insert_table_align'] = 'Στοίχιση';
-tinyMCELang['lang_insert_table_align_default'] = 'Προκαθ.';
-tinyMCELang['lang_insert_table_align_left'] = 'Αριστερά';
-tinyMCELang['lang_insert_table_align_right'] = 'Δεξιά';
-tinyMCELang['lang_insert_table_align_middle'] = 'Στο κέντρο';
-tinyMCELang['lang_insert_table_class'] = 'Κλάση';
-tinyMCELang['lang_table_row_title'] = 'Table row properties';
-tinyMCELang['lang_table_cell_title'] = 'Table cell properties';
-tinyMCELang['lang_table_row_desc'] = 'Table row properties';
-tinyMCELang['lang_table_cell_desc'] = 'Table cell properties';
-tinyMCELang['lang_insert_table_valign'] = 'Vertical alignment';
-tinyMCELang['lang_insert_table_align_top'] = 'Top';
-tinyMCELang['lang_insert_table_align_bottom'] = 'Bottom';
-tinyMCELang['lang_table_props_desc'] = 'Table properties';
-tinyMCELang['lang_table_bordercolor'] = 'Border color';
-tinyMCELang['lang_table_bgcolor'] = 'Bg color';
-tinyMCELang['lang_table_merge_cells_title'] = 'Merge table cells';
-tinyMCELang['lang_table_split_cells_desc'] = 'Split table cells';
-tinyMCELang['lang_table_merge_cells_desc'] = 'Merge table cells';
-tinyMCELang['lang_table_cut_row_desc'] = 'Cut table row';
-tinyMCELang['lang_table_copy_row_desc'] = 'Copy table row';
-tinyMCELang['lang_table_paste_row_before_desc'] = 'Paste table row before';
-tinyMCELang['lang_table_paste_row_after_desc'] = 'Paste table row after';
-tinyMCELang['lang_table_insert_desc'] = 'Insert a new table';
+tinyMCE.addToLang('',{
+table_desc : '&Aring;ισαγωγή πίνακα',
+table_insert_row_before_desc : '&Aring;ισαγωγή γραμμής &aring;πάνω',
+table_insert_row_after_desc : '&Aring;ισαγωγή γραμμής κάτω',
+table_delete_row_desc : '&Auml;ιαγρα&ouml;ή γραμμής',
+table_insert_col_before_desc : '&Aring;ισαγωγή στήλης αριστ&aring;ρά',
+table_insert_col_after_desc : '&Aring;ισαγωγή στήλης &auml;&aring;ξιά',
+table_delete_col_desc : '&Auml;ιαγρα&ouml;ή στήλης',
+insert_table_title : '&Aring;ισαγωγή/&Auml;ιόρθωση πίνακα',
+insert_table_width : 'Πλάτος',
+insert_table_height : 'Ύψος',
+insert_table_cols : 'Στήλ&aring;ς',
+insert_table_rows : 'Γραμμές',
+insert_table_cellspacing : '&Auml;ιάστιχο',
+insert_table_cellpadding : 'Γέμισμα',
+insert_table_border : 'Π&aring;ρίγραμμα',
+insert_table_align : 'Στοίχιση',
+insert_table_align_default : 'Προκαθ.',
+insert_table_align_left : 'Αριστ&aring;ρά',
+insert_table_align_right : '&Auml;&aring;ξιά',
+insert_table_align_middle : 'Στο κέντρο',
+insert_table_class : 'Κλάση',
+table_row_title : 'Table row properties',
+table_cell_title : 'Table cell properties',
+table_row_desc : 'Table row properties',
+table_cell_desc : 'Table cell properties',
+insert_table_valign : 'Vertical alignment',
+insert_table_align_top : 'Top',
+insert_table_align_bottom : 'Bottom',
+table_props_desc : 'Table properties',
+table_bordercolor : 'Border color',
+table_bgcolor : 'Bg color',
+table_merge_cells_title : 'Merge table cells',
+table_split_cells_desc : 'Split table cells',
+table_merge_cells_desc : 'Merge table cells',
+table_cut_row_desc : 'Cut table row',
+table_copy_row_desc : 'Copy table row',
+table_paste_row_before_desc : 'Paste table row before',
+table_paste_row_after_desc : 'Paste table row after',
+table_insert_desc : 'Insert a new table'
+});

@@ -1,6 +1,6 @@
-/*
+﻿/*
  * FCKeditor - The text editor for internet
- * Copyright (C) 2003-2004 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2005 Frederico Caldeira Knabben
  * 
  * Licensed under the terms of the GNU Lesser General Public License:
  * 		http://www.opensource.org/licenses/lgpl-license.php
@@ -8,11 +8,10 @@
  * For further information visit:
  * 		http://www.fckeditor.net/
  * 
+ * "Support Open Source software. What about a donation today?"
+ * 
  * File Name: fcktools_ie.js
  * 	Utility functions. (IE version).
- * 
- * Version:  2.0 RC2
- * Modified: 2004-11-18 00:54:37
  * 
  * File Authors:
  * 		Frederico Caldeira Knabben (fredck@fckeditor.net)
@@ -46,4 +45,54 @@ FCKTools.RemoveOuterTags = function( e )
 {
 	e.insertAdjacentHTML( 'beforeBegin', e.innerHTML ) ;
 	e.parentNode.removeChild( e ) ;
+}
+
+FCKTools.CreateXmlObject = function( object )
+{
+	var aObjs ;
+	
+	switch ( object )
+	{
+		case 'XmlHttp' :
+			aObjs = [ 'MSXML2.XmlHttp', 'Microsoft.XmlHttp' ] ;
+			break ;
+				
+		case 'DOMDocument' :
+			aObjs = [ 'MSXML2.DOMDocument', 'Microsoft.XmlDom' ] ;
+			break ;
+	}
+
+	for ( var i = 0 ; i < 2 ; i++ )
+	{
+		try { return new ActiveXObject( aObjs[i] ) ; }
+		catch (e) 
+		{}
+	}
+	
+	if ( FCKLang.NoActiveX )
+	{
+		alert( FCKLang.NoActiveX ) ;
+		FCKLang.NoActiveX = null ;
+	}
+}
+
+FCKTools.DisableSelection = function( element )
+{
+	element.unselectable = 'on' ;
+
+	var e, i = 0 ;
+	while ( e = element.all[ i++ ] )
+	{
+		switch ( e.tagName )
+		{
+			case 'IFRAME' :
+			case 'TEXTAREA' :
+			case 'INPUT' :
+			case 'SELECT' :
+				/* Ignore the above tags */
+				break ;
+			default :
+				e.unselectable = 'on' ;
+		}
+	}
 }

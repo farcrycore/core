@@ -7,7 +7,7 @@ $License: Released Under the "Common Public License 1.0", http://www.opensource.
 $Header: /cvs/farcry/farcry_core/packages/rules/_ruleHandpicked/selectType.cfm,v 1.5 2004/07/30 08:34:40 phastings Exp $
 $Author: phastings $
 $Date: 2004/07/30 08:34:40 $
-$Name: milestone_2-3-2 $
+$Name: milestone_3-0-1 $
 $Revision: 1.5 $
 
 || DESCRIPTION || 

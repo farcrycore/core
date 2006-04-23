@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/tree.cfc,v 1.49 2005/10/28 04:19:30 paul Exp $
-$Author: paul $
-$Date: 2005/10/28 04:19:30 $
-$Name: milestone_3-0-0 $
-$Revision: 1.49 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/tree.cfc,v 1.49.2.2 2005/12/04 03:26:16 jason Exp $
+$Author: jason $
+$Date: 2005/12/04 03:26:16 $
+$Name: milestone_3-0-1 $
+$Revision: 1.49.2.2 $
 
 || DESCRIPTION ||
 $Description: nested tree cfc $
@@ -502,6 +502,7 @@ ORDER BY ntm.nleft</cfoutput>
 	 		#arguments.dbOwner#dmNavigation_aObjectIDs o INNER JOIN 
         	refObjects r ON r.objectid = o.data 
 		WHERE  o.objectid IN ('#ListChangeDelims(arguments.lNodeIds,"','",",")#')
+		ORDER BY seq
 	</cfquery>
 	<cfloop query="q">
 		<cfset sTypePath = evaluate("application.types.#q.TypeName#.typePath")>
@@ -543,6 +544,7 @@ ORDER BY ntm.nleft</cfoutput>
 	<cfargument name="nLeft" required="yes" type="numeric">
 	<cfargument name="nLevel" required="yes" type="numeric">	
 	<cfargument name="dsn" required="yes" type="string" default="#application.dsn#">
+	<cfargument name="dbowner" required="false" type="string" default="#application.dbowner#">
 	<cfset var nRight = 0>
 	<cfset var nNewLeft = 0>
 	<cfset var nReturn = "">

@@ -1,5 +1,6 @@
 // Greek lang variables by Jacaranda Bill
 
-tinyMCELang['lang_insert_emotions_title'] = 'Εισαγωγή ενός εικονιδίου emoticon';
-tinyMCELang['lang_emotions_desc'] = 'Εικονίδια emoticons';
-
+tinyMCE.addToLang('',{
+insert_emotions_title : '&Aring;ισαγωγή &aring;νός &aring;ικονι&auml;ίου emoticon',
+emotions_desc : '&Aring;ικονί&auml;ια emoticons'
+});

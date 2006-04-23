@@ -7,7 +7,7 @@ $License: Released Under the "Common Public License 1.0", http://www.opensource.
 $Header: /cvs/farcry/farcry_core/admin/build.txt,v 1.67 2004/07/15 23:47:50 brendan Exp $
 $Author: brendan $
 $Date: 2004/07/15 23:47:50 $
-$Name: milestone_2-3-2 $
+$Name: milestone_3-0-1 $
 $Revision: 1.67 $
 
 || DESCRIPTION || 

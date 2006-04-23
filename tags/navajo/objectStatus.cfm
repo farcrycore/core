@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/navajo/objectStatus.cfm,v 1.47 2005/09/09 05:50:31 guy Exp $
-$Author: guy $
-$Date: 2005/09/09 05:50:31 $
-$Name: milestone_3-0-0 $
-$Revision: 1.47 $
+$Header: /cvs/farcry/farcry_core/tags/navajo/objectStatus.cfm,v 1.47.2.5 2006/01/23 22:30:32 geoff Exp $
+$Author: geoff $
+$Date: 2006/01/23 22:30:32 $
+$Name: milestone_3-0-1 $
+$Revision: 1.47.2.5 $
 
 || DESCRIPTION || 
 $Description: changes status of tree item $
@@ -60,7 +60,7 @@ function deSelectAll()
 <h3><cfif isDefined("URL.draftObjectID")>#application.adminBundle[session.dmProfile.locale].objStatusRequest#<cfelse>#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].setObjStatus,"#url.status#")#</cfif></h3>
 	<fieldset>
 		<label for="commentLog"><b>#application.adminBundle[session.dmProfile.locale].addCommentsLabel#</b>
-			<textarea name="commentLog" id="commentLog"></textarea><br />
+			<textarea name="commentLog" id="commentLog" cols="80" rows="10"></textarea><br />
 		</label>
 		<!--- if requesting approval, list approvers --->
 		<cfif url.status eq "requestApproval">
@@ -124,8 +124,36 @@ function deSelectAll()
 					<cfinvokeargument name="objectId" value="#stObj.objectID#"/>
 					<cfinvokeargument name="comment" value="#form.commentlog#"/>
 				</cfinvoke>
-	
+
+				<!--- 
+				// Set Friendly URL 
+				 - TODO: this is going to cause issues if the approval process fails or is not confirmed GB20060123
+				--->
+				<!--- versioned objects use parent live object for fu --->
+				<cfif StructKeyExists(stObj,"versionid") AND len(stobj.versionid)>
+					<cfset fuoid=stobj.versionid>
+				<!--- use objectid if no versionid --->
+				<cfelse>
+					<cfset fuoid=stobj.objectid>
+				</cfif>
 				
+				<!--- make sure objectid is not specifically excluded from FU --->
+				<cfset bExclude = 0>
+				<cfif ListFindNoCase(application.config.fusettings.lExcludeObjectIDs,fuoid)>
+					<cfset bExclude = 1>
+				</cfif>
+				
+				<!--- make sure content type requires friendly url --->
+				<cfif NOT StructKeyExists(application.types[stObj.typename],"bFriendly") OR NOT application.types[stObj.typename].bFriendly>
+					<cfset bExclude = 1>
+				</cfif> 
+				
+				<!--- set friendly url --->
+				<cfif NOT bExclude>
+					<cfset objTypes = CreateObject("component","#application.types[stObj.typename].typepath#")>
+					<cfset stresult_friendly = objTypes.setFriendlyURL(objectid=fuoid)>
+				</cfif>
+
 			<cfelseif url.status eq "draft">
 				<cfset status = 'draft'>
 				<cfset permission = "approve,canApproveOwnContent">
@@ -248,6 +276,7 @@ function deSelectAll()
 		
 			<cfloop list="#keyList#" index="key">
 				<q4:contentobjectget objectId="#key#" r_stObject="stObj">
+				<cfif NOT structIsEmpty(stObj)>
 				<cfif stObj.label NEQ "(incomplete)"> <!--- incompletet items check .: dont send incomplete items live --->
 					<!--- prepare date fields --->
 					<cfloop collection="#stObj#" item="field">
@@ -292,6 +321,7 @@ function deSelectAll()
 						</cfif>
 					</cfif>
 				</cfif> <!--- // incomplete items check  --->
+				</cfif>
 			</cfloop>
 		</cfloop>
 

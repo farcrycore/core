@@ -1,6 +1,6 @@
-/*
+﻿/*
  * FCKeditor - The text editor for internet
- * Copyright (C) 2003-2004 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2005 Frederico Caldeira Knabben
  * 
  * Licensed under the terms of the GNU Lesser General Public License:
  * 		http://www.opensource.org/licenses/lgpl-license.php
@@ -8,12 +8,11 @@
  * For further information visit:
  * 		http://www.fckeditor.net/
  * 
+ * "Support Open Source software. What about a donation today?"
+ * 
  * File Name: fcklanguagemanager.js
  * 	Defines the FCKLanguageManager object that is used for language 
  * 	operations.
- * 
- * Version:  2.0 RC2
- * Modified: 2004-12-17 08:12:36
  * 
  * File Authors:
  * 		Frederico Caldeira Knabben (fredck@fckeditor.net)
@@ -35,8 +34,6 @@ FCKLanguageManager.GetActiveLanguage = function()
 			// Firefox 1.0 PR has a bug: it doens't support the "language" property.
 			return FCKConfig.DefaultLanguage ;
 		}
-
-		FCKDebug.Output( 'Navigator Language = ' + sUserLang ) ;
 		
 		// Some language codes are set in 5 characters, 
 		// like "pt-br" for Brasilian Portuguese.
@@ -60,15 +57,17 @@ FCKLanguageManager.GetActiveLanguage = function()
 
 FCKLanguageManager.TranslateElements = function( targetDocument, tag, propertyToSet )
 {
-	var aInputs = targetDocument.getElementsByTagName(tag) ;
-	for ( var i = 0 ; i < aInputs.length ; i++ )
+	var e = targetDocument.getElementsByTagName(tag) ;
+
+	for ( var i = 0 ; i < e.length ; i++ )
 	{
-		var oAtt = aInputs[i].attributes['fckLang'] ;
-		if ( oAtt )
+		var sKey = e[i].getAttribute( 'fckLang' ) ;
+		
+		if ( sKey )
 		{
-			var s = FCKLang[ oAtt.value ] ;
+			var s = FCKLang[ sKey ] ;
 			if ( s ) 
-				eval( 'aInputs[i].' + propertyToSet + ' = s' ) ;
+				eval( 'e[i].' + propertyToSet + ' = s' ) ;
 		}
 	}
 }
@@ -91,7 +90,6 @@ FCKLanguageManager.ActiveLanguage.Code = FCKLanguageManager.GetActiveLanguage() 
 FCKLanguageManager.ActiveLanguage.Name = FCKLanguageManager.AvailableLanguages[ FCKLanguageManager.ActiveLanguage.Code ] ;
 
 FCK.Language = FCKLanguageManager ;
-
 
 // Load the language file and start the editor.
 LoadLanguageFile() ;

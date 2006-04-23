@@ -1,6 +1,6 @@
 <!--
  * FCKeditor - The text editor for internet
- * Copyright (C) 2003-2004 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2005 Frederico Caldeira Knabben
  * 
  * Licensed under the terms of the GNU Lesser General Public License:
  * 		http://www.opensource.org/licenses/lgpl-license.php
@@ -8,11 +8,10 @@
  * For further information visit:
  * 		http://www.fckeditor.net/
  * 
+ * "Support Open Source software. What about a donation today?"
+ * 
  * File Name: frmcreatefolder.html
  * 	Page used to create new folders in the current folder.
- * 
- * Version:  2.0 RC2
- * Modified: 2004-11-27 00:04:24
  * 
  * File Authors:
  * 		Frederico Caldeira Knabben (fredck@fckeditor.net)
@@ -21,8 +20,7 @@
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-		<meta name="vs_targetSchema" content="http://schemas.microsoft.com/intellisense/ie5">
-		<link href="Browser.css" type="text/css" rel="stylesheet">
+		<link href="browser.css" type="text/css" rel="stylesheet">
 		<script type="text/javascript" src="js/common.js"></script>
 		<script language="javascript">
 
@@ -53,6 +51,10 @@ function CreateFolder()
 
 function CreateFolderCallBack( fckXml )
 {
+	if ( oConnector.CheckError( fckXml ) == 0 )
+		window.parent.frames['frmResourcesList'].Refresh() ;
+	
+	/*
 	// Get the current folder path.
 	var oNode = fckXml.SelectSingleNode( 'Connector/Error' ) ;
 	var iErrorNumber = parseInt( oNode.attributes.getNamedItem('number').value ) ;
@@ -78,6 +80,7 @@ function CreateFolderCallBack( fckXml )
 			alert( 'Error creating folder. Error number: ' + iErrorNumber ) ;
 			break ;
 	}
+	*/
 }
 
 window.onload = function()

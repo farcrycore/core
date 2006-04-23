@@ -1,63 +1,65 @@
 // KO lang variables
 
-tinyMCELang['lang_theme_style_select'] = '½ºÅ¸ÀÏ';
-tinyMCELang['lang_theme_code_desc'] = 'HTML ¼Ò½º °íÄ¡±â';
-tinyMCELang['lang_theme_code_title'] = 'HTML ¼Ò½º ÆíÁý±â';
-tinyMCELang['lang_theme_code_wordwrap'] = 'Word wrap';
-tinyMCELang['lang_theme_code_save'] = 'ÀúÀå';
-tinyMCELang['lang_theme_sub_desc'] = '¾Æ·¡Ã·ÀÚ';
-tinyMCELang['lang_theme_sup_desc'] = 'À§Ã·ÀÚ';
-tinyMCELang['lang_theme_hr_desc'] = '°¡·ÎÁÙ ³Ö±â';
-tinyMCELang['lang_theme_removeformat_desc'] = '¼Ó¼º Áö¿ì±â';
-tinyMCELang['lang_theme_custom1_desc'] = 'Your custom description here';
-tinyMCELang['lang_insert_image_border'] = 'Å×µÎ¸®';
-tinyMCELang['lang_insert_image_dimensions'] = 'Å©±â';
-tinyMCELang['lang_insert_image_vspace'] = '¼¼·Î ¿©¹é';
-tinyMCELang['lang_insert_image_hspace'] = '°¡·Î ¿©¹é';
-tinyMCELang['lang_insert_image_align'] = 'Á¤·Ä';
-tinyMCELang['lang_insert_image_align_default'] = '±âº»°ª';
-tinyMCELang['lang_insert_image_align_baseline'] = 'Baseline';
-tinyMCELang['lang_insert_image_align_top'] = 'Top';
-tinyMCELang['lang_insert_image_align_middle'] = 'Middle';
-tinyMCELang['lang_insert_image_align_bottom'] = 'Bottom';
-tinyMCELang['lang_insert_image_align_texttop'] = 'TextTop';
-tinyMCELang['lang_insert_image_align_absmiddle'] = 'Absolute Middle';
-tinyMCELang['lang_insert_image_align_absbottom'] = 'Absolute Bottom';
-tinyMCELang['lang_insert_image_align_left'] = 'Left';
-tinyMCELang['lang_insert_image_align_right'] = 'Right';
-tinyMCELang['lang_theme_font_size'] = '-- Font size --';
-tinyMCELang['lang_theme_fontdefault'] = '-- Font family --';
-tinyMCELang['lang_theme_block'] = '-- Format --';
-tinyMCELang['lang_theme_paragraph'] = '´Ü¶ô';
-tinyMCELang['lang_theme_div'] = 'Div';
-tinyMCELang['lang_theme_address'] = 'ÁÖ¼Ò';
-tinyMCELang['lang_theme_pre'] = '¼­½Ä ÀÖÀ½';
-tinyMCELang['lang_theme_h1'] = 'Á¦¸ñ 1';
-tinyMCELang['lang_theme_h2'] = 'Á¦¸ñ 2';
-tinyMCELang['lang_theme_h3'] = 'Á¦¸ñ 3';
-tinyMCELang['lang_theme_h4'] = 'Á¦¸ñ 4';
-tinyMCELang['lang_theme_h5'] = 'Á¦¸ñ 5';
-tinyMCELang['lang_theme_h6'] = 'Á¦¸ñ 6';
-tinyMCELang['lang_theme_colorpicker_title'] = '»ö»ó ¼±ÅÃ';
-tinyMCELang['lang_theme_colorpicker_apply'] = 'Àû¿ë';
-tinyMCELang['lang_theme_forecolor_desc'] = '±ÛÀÚ »ö»ó';
-tinyMCELang['lang_theme_backcolor_desc'] = 'Select background color';
-tinyMCELang['lang_theme_charmap_title'] = 'Select custom character';
-tinyMCELang['lang_theme_charmap_desc'] = 'Insert custom character';
-tinyMCELang['lang_theme_visualaid_desc'] = 'Toggle guidelines/invisible elements';
-tinyMCELang['lang_insert_anchor_title'] = '¾ÞÄ¿ ³Ö±â/°íÄ¡±â';
-tinyMCELang['lang_insert_anchor_name'] = '¾ÞÄ¿ ÀÌ¸§';
-tinyMCELang['lang_theme_anchor_desc'] = '¾ÞÄ¿ ³Ö±â/°íÄ¡±â';
-tinyMCELang['lang_theme_insert_link_titlefield'] = 'Á¦¸ñ';
-tinyMCELang['lang_theme_clipboard_msg'] = 'Copy/Cut/Paste is not available in Mozilla and Firefox.\nDo you want more information about this issue?';
-tinyMCELang['lang_theme_path'] = 'Path';
-tinyMCELang['lang_cut_desc'] = 'Cut';
-tinyMCELang['lang_copy_desc'] = 'Copy';
-tinyMCELang['lang_paste_desc'] = 'Paste';
-tinyMCELang['lang_link_list'] = 'Link list';
-tinyMCELang['lang_image_list'] = 'Image list';
-tinyMCELang['lang_browse'] = 'Browse';
-tinyMCELang['lang_image_props_desc'] = 'Image properties';
-tinyMCELang['lang_newdocument_desc'] = 'New document';
-tinyMCELang['lang_class'] = 'Å¬·¡½º';
-tinyMCELang['lang_newdocument'] = 'Are you sure you want clear all contents?';
+tinyMCE.addToLang('',{
+theme_style_select : '½º&Aring;¸ÀÏ',
+theme_code_desc : 'HTML ¼Ò½º °í&Auml;¡±â',
+theme_code_title : 'HTML ¼Ò½º ÆíÁý±â',
+theme_code_wordwrap : 'Word wrap',
+theme_code_save : 'ÀúÀ&aring;',
+theme_sub_desc : '¾Æ·¡Ã·ÀÚ',
+theme_sup_desc : 'À§Ã·ÀÚ',
+theme_hr_desc : '°¡·ÎÁÙ ³&Ouml;±â',
+theme_removeformat_desc : '¼Ó¼º Á&ouml;¿ì±â',
+theme_custom1_desc : 'Your custom description here',
+insert_image_border : '&Aring;×µÎ¸®',
+insert_image_dimensions : '&Aring;©±â',
+insert_image_vspace : '¼¼·Î ¿©¹é',
+insert_image_hspace : '°¡·Î ¿©¹é',
+insert_image_align : 'Á¤·&Auml;',
+insert_image_align_default : '±âº»°ª',
+insert_image_align_baseline : 'Baseline',
+insert_image_align_top : 'Top',
+insert_image_align_middle : 'Middle',
+insert_image_align_bottom : 'Bottom',
+insert_image_align_texttop : 'TextTop',
+insert_image_align_absmiddle : 'Absolute Middle',
+insert_image_align_absbottom : 'Absolute Bottom',
+insert_image_align_left : 'Left',
+insert_image_align_right : 'Right',
+theme_font_size : '-- Font size --',
+theme_fontdefault : '-- Font family --',
+theme_block : '-- Format --',
+theme_paragraph : '´Ü¶ô',
+theme_div : 'Div',
+theme_address : 'Á&Ouml;¼Ò',
+theme_pre : '¼­½&Auml; À&Ouml;À½',
+theme_h1 : 'Á¦¸ñ 1',
+theme_h2 : 'Á¦¸ñ 2',
+theme_h3 : 'Á¦¸ñ 3',
+theme_h4 : 'Á¦¸ñ 4',
+theme_h5 : 'Á¦¸ñ 5',
+theme_h6 : 'Á¦¸ñ 6',
+theme_colorpicker_title : '»&ouml;»ó ¼±&Aring;Ã',
+theme_colorpicker_apply : 'Àû¿ë',
+theme_forecolor_desc : '±ÛÀÚ »&ouml;»ó',
+theme_backcolor_desc : 'Select background color',
+theme_charmap_title : 'Select custom character',
+theme_charmap_desc : 'Insert custom character',
+theme_visualaid_desc : 'Toggle guidelines/invisible elements',
+insert_anchor_title : '¾Þ&Auml;¿ ³&Ouml;±â/°í&Auml;¡±â',
+insert_anchor_name : '¾Þ&Auml;¿ ÀÌ¸§',
+theme_anchor_desc : '¾Þ&Auml;¿ ³&Ouml;±â/°í&Auml;¡±â',
+theme_insert_link_titlefield : 'Á¦¸ñ',
+theme_clipboard_msg : 'Copy/Cut/Paste is not available in Mozilla and Firefox.\nDo you want more information about this issue?',
+theme_path : 'Path',
+cut_desc : 'Cut',
+copy_desc : 'Copy',
+paste_desc : 'Paste',
+link_list : 'Link list',
+image_list : 'Image list',
+browse : 'Browse',
+image_props_desc : 'Image properties',
+newdocument_desc : 'New document',
+class_name : '&Aring;¬·¡½º',
+newdocument : 'Are you sure you want clear all contents?'
+});

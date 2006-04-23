@@ -99,17 +99,22 @@ Pseudo:
 
 <!--- get object instance --->
 <cfset oType = createObject("component", application.types[typename].typePath)>
-<cfset returnStruct = oType.getData(objectid=URL.objectid)>
-
-<cfif StructKeyExists(returnStruct, "versionid") AND StructKeyExists(returnStruct, "status") AND ListContains("approved,pending",returnStruct.status)>
-	<!--- any pending/approve items should go to overview --->
-	<cflocation url="#application.url.farcry#/edittaboverview.cfm?objectid=#URL.objectid#">
-	<cfabort>
+<cfif ListLen(url.objectid) GT 1>
+	<admin:header>
+		<cfset evaluate("oType.#method#(objectid='#objectid#')")>
+	<admin:footer> 
 <cfelse>
-	<!--- go to edit --->
-<admin:header>
-	<cfset evaluate("oType.#method#(objectid='#objectid#')")>
-<admin:footer>
+	<cfset returnStruct = oType.getData(objectid=URL.objectid)>
+	<cfif StructKeyExists(returnStruct, "versionid") AND StructKeyExists(returnStruct, "status") AND ListContains("approved,pending",returnStruct.status)>
+		<!--- any pending/approve items should go to overview --->
+		<cflocation url="#application.url.farcry#/edittabOverview.cfm?objectid=#URL.objectid#">
+		<cfabort>
+	<cfelse>
+		<!--- go to edit --->
+		<admin:header>
+			<cfset evaluate("oType.#method#(objectid='#objectid#')")>
+		<admin:footer> 
+	</cfif> 
 </cfif>
 
 <cfsetting enablecfoutputonly="No">

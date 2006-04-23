@@ -1,6 +1,9 @@
 // French lang variables by Laurent Dran
+// Modifié par Normand Lamoureux le 2005-11-12
 
-tinyMCELang['lang_insert_advhr_desc']    = 'Ins&eacute;rer / &eacute;diter une R&#269;gle Horizontale'
-tinyMCELang['lang_insert_advhr_width']   = 'Largeur';
-tinyMCELang['lang_insert_advhr_size']    = 'Hauteur';
-tinyMCELang['lang_insert_advhr_noshade'] = 'Sans ombre';
+tinyMCE.addToLang('',{
+insert_advhr_desc : 'Insérer une règle horizontale stylée',
+insert_advhr_width : 'Largeur',
+insert_advhr_size : 'Hauteur',
+insert_advhr_noshade : 'Sans ombre'
+});
