@@ -1,8 +1,8 @@
-<cfimport taglib="/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/fourq/tags/" prefix="q4">
 		
 		<cfif NOT isDefined("stArgs.typename")>
-			<cfinvoke component="fourq.fourq" returnvariable="thisTypename" method="findType" objectID="#ObjectId#">
-			<cfset typename = thisTypename>	
+			<cfinvoke component="farcry.fourq.fourq" returnvariable="thisTypename" method="findType" objectID="#stArgs.ObjectId#">
+			<cfset typename = thisTypename> 					
 		</cfif>
 		<cfset typename = "#application.packagepath#.types.#typename#">
 		<q4:contentobjectget ObjectId="#objectId#" r_stObjects="stObject" typename="#typename#"> 
@@ -20,7 +20,14 @@
 			stRules.bDraftVersionExists = false;
 			stRules.bLiveVersionExists = false;
 			stRules.draftObjectID = "";//this objectID (if exists) of the draft object
-			stRules.status = stObject.status; //draft,pending,approved?
+			// check if status is part of object
+			if (NOT structKeyExists(stObject,"versionID"))
+				stRules.status = false; 	
+			else
+			{	
+				stRules.status = stObject.status; //draft,pending,approved?
+			}
+			stRules.bDeleteDraft = false;
 			
 			
 			// if property doesn't exist - the versioning is not an issue
@@ -73,13 +80,17 @@
 		<!--- Now check to see if a draft version exists --->
 		<cfif stRules.status IS "Approved" and structKeyExists(stObject,"versionID")>
 			<cfquery datasource="#application.dsn#" name="qHasDraft">
-				SELECT objectID from #stObject.typename# where versionID = '#objectID#' 
+				SELECT objectID,status from #application.dbowner##stObject.typename# where versionID = '#objectID#' 
 			</cfquery>
 			<cfif qHasDraft.recordcount GT 1>
 				<cfthrow extendedinfo="Multiple draft children returned" message="Multiple draft error">
 			<cfelseif qHasDraft.recordcount eq 1>
-				<cfset stRules.bDraftVersionExists = true>
-				<cfset stRules.bDecline = false>
-				<cfset stRules.draftObjectID = qHasDraft.objectID>				
+				<cfscript>
+					stRules.bDraftVersionExists = true;
+					stRules.bDecline = false;
+					stRules.draftObjectID = qHasDraft.objectID;
+					stRules.draftStatus = qHasDraft.status;
+					stRules.bDeleteDraft = true; 
+				</cfscript>
 			</cfif> 
 		</cfif>

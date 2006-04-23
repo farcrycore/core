@@ -11,6 +11,9 @@
 
 
 <cfdump var="#application.types#" label="application.types" expand="no">
+<p></p>
+<span class="formtitle">COAPI Rules MetaData</span><p></p>
+<cfdump var="#application.rules#" label="application.rules" expand="no">
 
 
 </body>

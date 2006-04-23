@@ -1,8 +1,8 @@
 
 
 <cfsetting enablecfoutputonly="Yes">
-<cfimport taglib="/fourq/tags/" prefix="q4">
-<cfimport taglib="/farcry/tags/navajo/" prefix="nj">
+<cfimport taglib="/farcry/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
 
  
 <cfparam name="url.objectId">
@@ -11,23 +11,25 @@
 
 
 <!--- set up page header --->
-<cfimport taglib="/farcry/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
 <admin:header>
 
 
-<cfoutput><span class="FormTitle">Set object status to #url.status#</span><p></p></cfoutput>
+<cfoutput><span class="FormTitle">
+<cfif isDefined("URL.draftObjectID")>
+	Set object status for underlying draft object to 'request'
+<cfelse>	
+	Set object status to #url.status#
+</cfif>	
+</span><p></p></cfoutput>
 
 <cfinvoke component="#application.packagepath#.farcry.versioning" method="getVersioningRules" objectID="#url.objectID#" returnvariable="stRules">
 
 <cfset changestatus = true>
 
-<cfif isdefined("form.cancel")>
-	<script>
-		window.close();
-	</script>
-</cfif>
-
+<!--- show comment form --->
 <cfif not isdefined("form.commentLog") and listlen(attributes.lObjectIDs) eq 1>
+	<!--- get object details --->
 	<q4:contentobjectget objectid="#attributes.lobjectIDs#" r_stobject="stObj">
 	<cfif isdefined("stObj.status")>
 		<cfoutput>
@@ -35,11 +37,11 @@
 			<span class="formLabel">Add your comments:</span><br>
 			<textarea rows="8" cols="50"  name="commentLog"></textarea><br>
 			<input type="submit" name="submit" value="Submit" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';">
-			<input type="submit" name="Cancel" value="Cancel" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';" onClick="window.close();"></div>     
+			<input type="button" name="Cancel" value="Cancel" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';" onClick="location.href='../edittabOverview.cfm?objectid=#attributes.lobjectIDs#';"></div>     
+			<!--- display existing comments --->
 			<cfif structKeyExists(stObj,"commentLog")>
 				<cfif len(trim(stObj.commentLog)) AND structKeyExists(stObj,"commentLog")>
 					<p></p><span class="formTitle">Previous Comments</span><P></P>
-					<!--- <textarea cols="58" rows="12">#stObj.commentLog#</textarea> --->
 					#htmlcodeformat(stObj.commentLog)#
 				</cfif>
 			</cfif>
@@ -55,6 +57,7 @@
 		
 		<q4:contentobjectget objectId="#attributes.objectId#" r_stObject="stObj">
 		
+		
 		<cfif not structkeyexists(stObj, "status")>
 			<cfoutput><script> alert("This object type has no approval process attached to it.");
 				               window.close();
@@ -69,16 +72,20 @@
 			<cfset permission = "approve">
 			<cfset active = 1>
 			<!--- send out emails informing object has been approved --->
-			<cf_approveEmail status="approve" objectId="#stObj.objectID#">
+			<cfinvoke component="#application.packagepath#.farcry.versioning" method="approveEmail_approved">
+				<cfinvokeargument name="objectId" value="#stObj.objectID#"/>
+				<cfinvokeargument name="comment" value="#form.commentlog#"/>
+			</cfinvoke>
+
 			
 		<cfelseif url.status eq "draft">
 			<cfset status = 'draft'>
-			<cfif stObj.status eq "approved">
-				<cfset permission = "approve">
-			<cfelse>
-				<cfset permission = "requestApproval">
-			</cfif>
-			
+			<cfset permission = "approve">
+			<!--- send out emails informing object has been sent back to draft --->
+			<cfinvoke component="#application.packagepath#.farcry.versioning" method="approveEmail_draft">
+				<cfinvokeargument name="objectId" value="#stObj.objectID#"/>
+				<cfinvokeargument name="comment" value="#form.commentlog#"/>
+			</cfinvoke>
 			<cfset active = 0>
 			
 		<cfelseif url.status eq "requestApproval">
@@ -86,14 +93,27 @@
 			<cfset permission = "requestApproval">
 			<cfset active = 0>
 			<!--- send out emails informing object needs approval --->
-			<cf_approveEmail status="request" objectId="#stObj.objectID#">
+			<cfif isDefined("URL.draftObjectID")>
+				<cfinvoke component="#application.packagepath#.farcry.versioning" method="approveEmail_pending">
+					<cfinvokeargument name="objectId" value="#URL.draftObjectID#"/>
+					<cfinvokeargument name="comment" value="#form.commentlog#"/>
+				</cfinvoke>
+			<cfelse>
+				<cfinvoke component="#application.packagepath#.farcry.versioning" method="approveEmail_pending">
+					<cfinvokeargument name="objectId" value="#stObj.objectID#"/>
+					<cfinvokeargument name="comment" value="#form.commentlog#"/>
+				</cfinvoke>
+			</cfif>
+			
 	
 		<cfelse>
 			<cfoutput><b>Unknown status passed. (#url.status#)<b><br></cfoutput><cfabort>
 		</cfif>
+		<cfscript>
+			oAuthorisation = request.dmsec.oAuthorisation;
+			iState = oAuthorisation.checkInheritedPermission(permissionName=permission,objectid=stNav.objectId);	
+		</cfscript>
 		
-		<cf_dmSec2_PermissionCheck reference1="dmNavigation" permissionName="#permission#" objectId="#stNav.objectId#" r_iState="iState">
-			
 		<cfif iState neq 1>
 			<cfoutput><script> alert("You don't have approval permission on the subnode #stNav.title#");
 				               window.close();
@@ -101,12 +121,14 @@
 		</cfif>
 		
 		<cfif url.status eq "approve">
-			<cf_dmSec2_PermissionCheck reference1="dmNavigation" permissionName="CanApproveOwnContent" objectId="#stNav.objectId#" r_iState="iState">
+			<cfscript>
+				iState = oAuthorisation.checkInheritedPermission(permissionName="CanApproveOwnContent",objectid=stNav.objectId);	
+			</cfscript>
 		
 			<cfif iState neq 1>
 	
 				<cfif request.bLoggedIn>
-					<cfif request.stLoggedInUser.canonicalName eq stObj.attr_lastUpdatedBy>
+					<cfif session.dmSec.authentication.canonicalName eq stObj.attr_lastUpdatedBy>
 						<cfoutput>
 						<script>
 							alert("You don't have permission to approve your own content on #stNav.title#");
@@ -136,7 +158,7 @@
 			<cfif isArray(stObj.aObjectIds)>
 				<cfset keyList = listAppend(keyList,arrayToList(stObj.aObjectIds))>
 			</cfif>
-			<cfinvoke  component="fourq.utils.tree.tree" method="getDescendants" returnvariable="qGetDescendants">
+			<cfinvoke  component="#application.packagepath#.farcry.tree" method="getDescendants" returnvariable="qGetDescendants">
 				<cfinvokeargument name="dsn" value="#application.dsn#"/>
 				<cfinvokeargument name="objectid" value="#attributes.objectID#"/>
 			</cfinvoke>
@@ -149,8 +171,12 @@
 				</cfif>	
 			</cfloop>
 		<cfelse>  <!--- else - just get the objectIDS in this nodes aObjects array --->
-			<cfset keyList = attributes.objectID>
-			<cfif isArray(stObj.aObjectIds)>
+			<cfif isDefined("URL.draftObjectID")>
+				<cfset keyList = URL.draftObjectID>
+			<cfelse>	
+				<cfset keyList = attributes.objectID>
+			</cfif>	
+			<cfif isdefined("stObj.aObjectIds") and isArray(stObj.aObjectIds)>
 				<cfset keyList = listAppend(keyList,arrayToList(stObj.aObjectIds))>
 			</cfif>
 		</cfif>
@@ -169,32 +195,37 @@
 				//only if the comment log exists - do we actually append the entry
 				if (isDefined("FORM.commentLog")) {
 					if (structkeyexists(stObj, "commentLog")){
-						buildLog =  "#chr(13)##chr(10)##request.stLoggedInUser.canonicalName#" & "(#dateformat(now(),'dd/mm/yyyy')# #timeformat(now(), 'HH:mm:ss')#):#chr(13)##chr(10)#     Status changed: #stobj.status# -> #status##chr(13)##chr(10)# #FORM.commentLog#";
+						buildLog =  "#chr(13)##chr(10)##session.dmSec.authentication.canonicalName#" & "(#dateformat(now(),'dd/mm/yyyy')# #timeformat(now(), 'HH:mm:ss')#):#chr(13)##chr(10)#     Status changed: #stobj.status# -> #status##chr(13)##chr(10)# #FORM.commentLog#";
 						stObj.commentLog = buildLog & "#chr(10)##chr(13)#" & stObj.commentLog;
 						}
 				}
 				stObj.status = status;	
 			</cfscript>
+			
 			<cfinvoke component="#application.packagepath#.farcry.versioning" method="getVersioningRules" objectID="#key#" returnvariable="stRules">
-			<cfif stRules.bLiveVersionExists> <!--- Then we want to swap live/draft and archive current live --->
+			
+			<cfif stRules.bLiveVersionExists and url.status eq "approved">
+				 <!--- Then we want to swap live/draft and archive current live --->
 				<cfinvoke component="#application.packagepath#.farcry.versioning" method="sendObjectLive" objectID="#key#"  stDraftObject="#stObj#" returnvariable="stRules">
+				<cfset returnObjectID=stObj.objectid>
 			<cfelse>
+				<!--- a normal page, no underlying object --->
 				<q4:contentobjectdata objectid="#stObj.objectID#" typename="#application.packagepath#.types.#stObj.typename#"
 				 stProperties="#stObj#">
-				
+				 <cfif stObj.typename neq "dmImage" and stObj.typename neq "dmFile">
+				 	<cfset returnObjectId= url.objectid>
+				 </cfif>
 			</cfif>
 		</cfloop>
-		
-	
-
-		<cfif isdefined("request.noArchiving") and request.noArchiving eq false and active eq 1>
-			<nj:archiveContent objectid="#stObj.objectID#">
-		</cfif>
 		
 	</cfloop>
 	
 	<nj:updateTree ObjectId="#stNav.objectId#">
-	<cfoutput><script>window.close();</script></cfoutput>
+	
+	<cfoutput><script>
+		if( window.opener && window.opener.parent )	window.close();
+		else location.href = '#application.url.farcry#/edittabOverview.cfm?objectid=#returnObjectID#';
+	</script></cfoutput>
 
 </cfif>                                                                                
 <cfoutput>

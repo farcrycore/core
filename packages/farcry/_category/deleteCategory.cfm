@@ -8,16 +8,16 @@
 <cftry>
 	<cftransaction>
 		<cfquery datasource="#stArgs.dsn#">
-			DELETE FROM categories
+			DELETE FROM #application.dbowner#categories
 			WHERE categoryID = '#stArgs.categoryID#'
 		</cfquery>
 		<cfquery datasource="#stArgs.dsn#">
-			DELETE FROM refCategories
+			DELETE FROM #application.dbowner#refCategories
 			WHERE categoryID = '#stArgs.categoryID#'	
 		</cfquery>
 	</cftransaction>
 	<!--- Insert into nested_tree_objects --->
-	<cfinvoke component="fourq.utils.tree.tree" method="deleteBranch" objectID="#stArgs.categoryID#" returnvariable="stReturn">
+	<cfinvoke component="#application.packagepath#.farcry.tree" method="deleteBranch" objectID="#stArgs.categoryID#" returnvariable="stReturn">
 	
 	<cfscript>
 		stStatus.message = '#stArgs.categoryID# deleted successfully';

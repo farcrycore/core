@@ -1,13 +1,34 @@
-<!--- 
-secondary navigation tag
- - builds a query with 2nd nav info
-
-Environment
-request.navid
-
---->
-
 <cfsetting enablecfoutputonly="Yes">
+<!--- 
+|| BEGIN DAEMONDOC||
+
+|| Copyright ||
+Daemon Pty Limited 1995-2003
+http://www.daemon.com.au
+
+|| VERSION CONTROL ||
+$Header: /cvs/farcry/farcry_core/tags/webskin/secondaryNav.cfm,v 1.8 2003/03/18 01:53:37 brendan Exp $
+$Author: brendan $
+$Date: 2003/03/18 01:53:37 $
+$Name: b131 $
+$Revision: 1.8 $
+
+|| DESCRIPTION || 
+Builds a query with secondary navigation info
+
+|| DEVELOPER ||
+Brendan Sisson (brendan@daemon.com.au)
+
+|| ATTRIBUTES ||
+in: 
+	navid (uuid of current object)
+	bInclueParent (do you want to show the parent?)
+	r_navQuery (name of variable to return to)
+	bDisplay (display basic navigation or have you got custom code?)
+out:
+
+|| END DAEMONDOC||
+--->
 
 <cfparam name="attributes.navid" default="#request.navid#">
 <cfparam name="attributes.bIncludeParent" default="true">
@@ -16,205 +37,113 @@ request.navid
 
 <cfscript>
 // invoke tree component
-o = createObject("component", "fourq.utils.tree.tree");
-	qChildren = o.getChildren(objectid=attributes.navid);
-	qAncestors = o.getAncestors(objectid=attributes.navid, bIncludeSelf=true);
-
-// is location a leaf node?
-if (qChildren.recordCount eq 0) {
-	bLeaf = true;
-	if (qAncestors.objectid[qAncestors.recordcount-2] eq application.navid.root)
-		attributes.bIncludeParent = false;
-} else {
-	bLeaf = false;
-	if (qAncestors.objectid[qAncestors.recordcount-1] eq application.navid.root)
-		attributes.bIncludeParent = false;
-}
-
-// build navigation query
-q2ndNav = queryNew("objectid, label, bHeld, bParent, bSibling, bChild, pos");
-menupos = 1;
-
-if (bLeaf) {
-	if (attributes.bIncludeParent) {
-		// include grandparent
-		queryAddRow(q2ndNav, 1);
-		querySetCell(q2ndNav, "objectid", qAncestors.objectid[qAncestors.recordcount-2]);
-		querySetCell(q2ndNav, "label", qAncestors.objectname[qAncestors.recordcount-2]);
-		querySetCell(q2ndNav, "bHeld", 0);
-		querySetCell(q2ndNav, "bParent", 1);
-		querySetCell(q2ndNav, "bSibling", 0);
-		querySetCell(q2ndNav, "bChild", 0);
-		querySetCell(q2ndNav, "pos", menupos);
-		menupos = menupos+1;
-	}
-	// include parent as intermediary node
-	queryAddRow(q2ndNav, 1);
-	querySetCell(q2ndNav, "objectid", qAncestors.objectid[qAncestors.recordcount-1]);
-	querySetCell(q2ndNav, "label", qAncestors.objectname[qAncestors.recordcount-1]);
-	querySetCell(q2ndNav, "bHeld", 0);
-	querySetCell(q2ndNav, "bParent", 0);
-	querySetCell(q2ndNav, "bSibling", 1);
-	querySetCell(q2ndNav, "bChild", 0);
-	querySetCell(q2ndNav, "pos", menupos);
-	menupos = menupos+1;
-	
-	// include self as child
-	queryAddRow(q2ndNav, 1);
-	querySetCell(q2ndNav, "objectid", qAncestors.objectid[qAncestors.recordcount]);
-	querySetCell(q2ndNav, "label", qAncestors.objectname[qAncestors.recordcount]);
-	querySetCell(q2ndNav, "bHeld", 1);
-	querySetCell(q2ndNav, "bParent", 0);
-	querySetCell(q2ndNav, "bSibling", 0);
-	querySetCell(q2ndNav, "bChild", 1);
-	querySetCell(q2ndNav, "pos", menupos);
-	menupos = menupos+1;
-	
-	// include siblings as children
-	qSiblings = o.getSiblings(objectid=qAncestors.objectid[qAncestors.recordcount]);
-	
-	for (i=1; i lte qSiblings.recordCount; i=i+1) {
-	queryAddRow(q2ndNav, 1);
-	querySetCell(q2ndNav, "objectid", qSiblings.objectid[i]);
-	querySetCell(q2ndNav, "label", qSiblings.objectname[i]);
-	querySetCell(q2ndNav, "bHeld", 0);
-	querySetCell(q2ndNav, "bParent", 0);
-	querySetCell(q2ndNav, "bSibling", 0);
-	querySetCell(q2ndNav, "bChild", 1);
-	querySetCell(q2ndNav, "pos", menupos);
-	menupos = menupos+1;
-	}
-
-	// include siblings of parent as uncles
-	//make sure parent is not home
-	if (qAncestors.objectid[qAncestors.recordcount-1] neq application.navid.home) {
-		qSiblings = o.getSiblings(objectid=qAncestors.objectid[qAncestors.recordcount-1]);
-		
-		for (i=1; i lte qSiblings.recordCount; i=i+1) {
-		queryAddRow(q2ndNav, 1);
-		querySetCell(q2ndNav, "objectid", qSiblings.objectid[i]);
-		querySetCell(q2ndNav, "label", qSiblings.objectname[i]);
-		querySetCell(q2ndNav, "bHeld", 0);
-		querySetCell(q2ndNav, "bParent", 0);
-		querySetCell(q2ndNav, "bSibling", 1);
-		querySetCell(q2ndNav, "bChild", 0);
-		querySetCell(q2ndNav, "pos", menupos);
-		menupos = menupos+1;
-		}
-	}
-	
-} else {
-	if (attributes.bIncludeParent) {
-		// include parent
-		queryAddRow(q2ndNav, 1);
-		querySetCell(q2ndNav, "objectid", qAncestors.objectid[qAncestors.recordcount-1]);
-		querySetCell(q2ndNav, "label", qAncestors.objectname[qAncestors.recordcount-1]);
-		querySetCell(q2ndNav, "bHeld", 0);
-		querySetCell(q2ndNav, "bParent", 1);
-		querySetCell(q2ndNav, "bSibling", 0);
-		querySetCell(q2ndNav, "bChild", 0);
-		querySetCell(q2ndNav, "pos", menupos);
-		menupos = menupos+1;
-	}
-	// include self at sibling level
-	queryAddRow(q2ndNav, 1);
-	querySetCell(q2ndNav, "objectid", qAncestors.objectid[qAncestors.recordcount]);
-	querySetCell(q2ndNav, "label", qAncestors.objectname[qAncestors.recordcount]);
-	querySetCell(q2ndNav, "bHeld", 1);
-	querySetCell(q2ndNav, "bParent", 0);
-	querySetCell(q2ndNav, "bSibling", 1);
-	querySetCell(q2ndNav, "bChild", 0);
-	querySetCell(q2ndNav, "pos", menupos);
-	menupos = menupos+1;
-	
-	// include children
-	for (i=1; i lte qChildren.recordCount; i=i+1) {
-	queryAddRow(q2ndNav, 1);
-	querySetCell(q2ndNav, "objectid", qChildren.objectid[i]);
-	querySetCell(q2ndNav, "label", qChildren.objectname[i]);
-	querySetCell(q2ndNav, "bHeld", 0);
-	querySetCell(q2ndNav, "bParent", 0);
-	querySetCell(q2ndNav, "bSibling", 0);
-	querySetCell(q2ndNav, "bChild", 1);
-	querySetCell(q2ndNav, "pos", menupos);
-	menupos = menupos+1;
-	}
-	
-	// include siblings
-	qSiblings = o.getSiblings(objectid=attributes.navid);
-
-	for (i=1; i lte qSiblings.recordCount; i=i+1) {
-	queryAddRow(q2ndNav, 1);
-	querySetCell(q2ndNav, "objectid", qSiblings.objectid[i]);
-	querySetCell(q2ndNav, "label", qSiblings.objectname[i]);
-	querySetCell(q2ndNav, "bHeld", 0);
-	querySetCell(q2ndNav, "bParent", 0);
-	querySetCell(q2ndNav, "bSibling", 1);
-	querySetCell(q2ndNav, "bChild", 0);
-	querySetCell(q2ndNav, "pos", menupos);
-	menupos = menupos+1;
-	}
-
-}
+o = createObject("component", "#application.packagepath#.farcry.tree");
+qSecondaryNav = o.getSecondaryNav(objectid=attributes.navid);
 </cfscript>
 
-<!--- check the status of all the nav nodes --->
+<!--- Get status of Nav Items --->
 <cfquery datasource="#application.dsn#" name="qStatus">
-SELECT 
-	objectid, status
-FROM
-	dmNavigation
-WHERE
-	objectID IN (#QuotedValueList(q2ndNav.objectid)#)
+SELECT objectid, status FROM #application.dbowner#dmNavigation
+WHERE objectID IN (#QuotedValueList(qSecondaryNav.objectid)#)
 </cfquery>
 
-
+<!--- Add status of Nav Items to Secondary Nav query--->
 <cfquery dbtype="query" name="q2ndNavStatus">
-SELECT 
-	q2ndNav.BCHILD, 
-	q2ndNav.BHELD, 
-	q2ndNav.BPARENT, 
-	q2ndNav.BSIBLING, 
-	q2ndNav.LABEL, 
-	q2ndNav.OBJECTID, 
-	q2ndNav.POS, 
+SELECT qSecondaryNav.NLEFT, 
+	qSecondaryNav.NLEVEL, 
+	qSecondaryNav.OBJECTNAME, 
+	qSecondaryNav.OBJECTID, 
 	qStatus.STATUS
-FROM
-	qStatus, q2ndNav
-WHERE
-	qStatus.objectID = q2ndNav.objectID
-ORDER BY q2ndNav.pos
+FROM qStatus, qSecondaryNav
+WHERE qStatus.objectID = qSecondaryNav.objectID
+ORDER BY qSecondaryNav.nLeft
 </cfquery>
 
-<!--- <cfdump var="#q2ndNav#" label="q2ndNav"> --->
-<!--- <cfdump var="#qancestors#" label="ancestors"> --->
-<!--- <cfdump var="#q2ndNavStatus#" label="q2ndNavStatus"> --->
 
+
+<!--- Get Level of Current Object --->
+<cfquery dbtype="query" name="qCurrentLevel">
+SELECT qSecondaryNav.NLEVEL
+FROM qSecondaryNav
+WHERE qSecondaryNav.ObjectID = '#attributes.navID#'
+</cfquery>
+
+<!--- Find out if Leaf Node or not --->
+<cfquery dbtype="query" name="qLeaf">
+SELECT qSecondaryNav.NLEVEL
+FROM qSecondaryNav
+WHERE qSecondaryNav.NLEVEL > #qCurrentLevel.NLEVEL#
+</cfquery>
+
+<!--- show basic secondary nav --->
 <cfif attributes.bDisplay>
+	<!--- loop over each nav item and display appropriately --->
 	<cfloop query="q2ndNavStatus">
 		<cfscript>
-			if (request.mode.lvalidstatus contains q2ndNavStatus.status) {
-				class="";
-				if (q2ndNavStatus.bParent)
-					class="secNavParent";
-				
-				if (q2ndNavStatus.bSibling)
-					class="secNavSibling";
-				
-				if (q2ndNavStatus.bChild)
-					class="secNavChild";
-				
-				if (q2ndNavStatus.bheld)
-					class=class & "Held";
-				writeoutput('<div class="#class#"><a href="#application.url.conjurer#?objectid=#q2ndNavStatus.objectid#">#q2ndNavStatus.label#</a></div>');
+			class="";
+			bShow="yes";
+			if (request.mode.lvalidstatus contains q2ndNavStatus.status AND q2ndNavStatus.NLEVEL NEQ 0) {
+				// Not Leaf
+				if (qLeaf.recordcount GT 0) {	
+					// parent
+					if (q2ndNavStatus.NLEVEL EQ (qCurrentLevel.nlevel - 1) AND (attributes.bIncludeParent)) {
+						class="secNavParent";
+					// siblings
+					} else if (q2ndNavStatus.NLEVEL EQ qCurrentLevel.nlevel) {
+						class="secNavSibling";
+					// Children
+					} else if (q2ndNavStatus.NLEVEL EQ qCurrentLevel.nlevel + 1) {
+						class="secNavChild";
+					}
+					// self
+					if (q2ndNavStatus.ObjectID EQ attributes.navID) {
+						class=class & "Held";
+					}
+				// Leaf
+				} else {
+					if (qCurrentLevel.NLEVEL GT 2) {
+						// self as child
+						if (q2ndNavStatus.ObjectID EQ attributes.navID) {
+							class="secNavChildHeld";
+						// grandparent
+						} else if (q2ndNavStatus.NLEVEL EQ (qCurrentLevel.nlevel - 2) AND (attributes.bIncludeParent)) {
+							class="secNavParent";
+						// parent as intermediary node
+						} else if (q2ndNavStatus.NLEVEL EQ (qCurrentLevel.nlevel - 1)) {
+							class="secNavSibling";
+						// siblings as children
+						} else if (q2ndNavStatus.NLEVEL EQ qCurrentLevel.nlevel) {
+							class="secNavChild";
+						}
+					} else {
+						// Top Level Navigation (Under Home level)
+						// If same level as home and not home, don't show
+						if (q2ndNavStatus.NLEVEL EQ (qCurrentLevel.nlevel - 1) AND (q2ndNavStatus.ObjectID NEQ application.navID.home)) {
+							bShow = "no";
+						// show home as parent
+						} else if (q2ndNavStatus.ObjectID EQ application.navID.home) {
+							class="secNavParent";
+						} else {
+							class="secNavSibling";
+						}
+						if (q2ndNavStatus.ObjectID EQ attributes.navID) {
+							class=class & "Held";
+						}
+					}
+				}
+				if (bShow EQ "yes") {
+					writeoutput('<div class="#class#"><a href="#application.url.conjurer#?objectid=#q2ndNavStatus.objectid#">#q2ndNavStatus.objectName#</a></div>');	
+				}
 			}
 		</cfscript>
 	</cfloop>
 </cfif>
-   
+
 <!--- return query object to calling page --->
 <cfif len(attributes.r_navquery)>
-	<cfset setVariable("caller.#attributes.r_navquery#", q2ndNav)>
+	<cfset setVariable("caller.#attributes.r_navquery#", q2ndNavStatus)>
+    <cfset setVariable("caller.r_CurrentLevel", qCurrentLevel)>
+	<cfset setVariable("caller.r_Leaf", qLeaf)>
 </cfif>
 
 <cfsetting enablecfoutputonly="No">

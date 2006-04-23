@@ -1,9 +1,10 @@
-
-<cfimport taglib="/fourq/tags/" prefix="q4">
-<cfimport taglib="/farcry/tags/container/" prefix="dm">
+<cfimport taglib="/farcry/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/farcry_core/tags/container/" prefix="dm">
 
 <cfparam name="attributes.label" default="">
 <cfparam name="attributes.objectID" default="">
+<cfparam name="attributes.preHTML" default="">
+<cfparam name="attributes.postHTML" default="">
 <cfparam name="request.mode" default="false">
 
 
@@ -37,20 +38,14 @@
 
 <!--- display edit widget --->
 
-<cfif request.mode.design>
+<cfif request.mode.design and request.mode.showcontainers gt 0>
 	<dm:containerControl objectID="#containerID#" label="#attributes.label#" mode="design">
 </cfif>	
 
 <q4:contentObjectGet typename="#application.packagepath#.rules.container" objectID="#containerID#" r_stObject="stObj">  
 
 <cfif arrayLen(stObj.aRules)>
+    <cfif attributes.preHTML neq ""><cfoutput>#attributes.preHTML#</cfoutput></cfif>
 	<cfinvoke component="#application.packagepath#.rules.container" method="populate" aRules="#stObj.aRules#"/>
+    <cfif attributes.postHTML neq ""><cfoutput>#attributes.postHTML#</cfoutput></cfif>
 </cfif>
-
-	
-	
-
-
-
-
-

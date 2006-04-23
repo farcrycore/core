@@ -1,18 +1,42 @@
+<!--- 
+|| LEGAL ||
+$Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
+$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
+
+|| VERSION CONTROL ||
+$Header: /cvs/farcry/farcry_core/packages/rules/ruleXMLFeed.cfc,v 1.6 2003/07/24 06:04:37 geoff Exp $
+$Author: geoff $
+$Date: 2003/07/24 06:04:37 $
+$Name: b131 $
+$Revision: 1.6 $
+
+|| DESCRIPTION || 
+$Description: Publishing rule to pull, parse and display external RSS feeds.  Is dependent on the rss.cfc component. $
+$TODO: add application scope cacheing to query$
+
+|| DEVELOPER ||
+$Developer: Geoff Bowers (modius@daemon.com.au) $
+--->
+<!--- <cfsetting enablecfoutputonly="Yes"> --->
 <cfcomponent displayname="XML Feed Publishing Rule" extends="rules" hint="Displays an XML feed within a container">
 
+<!--- rule object properties --->
 <cfproperty name="feedName" type="string" hint="A useful name for this feed" required="No" default="">
 <cfproperty name="XMLFeedURL" type="string" hint="The location of the feed (URL)" required="yes" default="">
 <cfproperty name="intro" type="string" hint="An introduction to this feed" required="no" default="">
 <cfproperty name="maxRecords" type="numeric" hint="The maximum number of records to return to the user" required="no" default="20">
+
+<!--- pseudo contructor --->
+<cfimport prefix="q4" taglib="/farcry/fourq/tags">
+<!--- /pseudo contructor --->
 	
-	<cffunction access="public" name="update" output="true">
+	<cffunction access="public" name="update" output="true" hint="Edit handler for the rule." >
 		<cfargument name="objectID" required="Yes" type="uuid" default="">
 		<cfargument name="label" required="no" type="string" default="">
-		<cfimport taglib="/fourq/tags/" prefix="q4">
-		<cfimport taglib="/farcry/tags/navajo/" prefix="nj">
+		<cfset var stObj = getData(arguments.objectid)> 
+		
+		<cfsetting enablecfoutputonly="Yes">
 
-		<cfset stObj = this.getData(arguments.objectid)> 
-				
 		<cfif isDefined("form.updateRuleXMLFeed")>
 			<cfscript>
 				stObj.feedName = form.feedName;
@@ -23,12 +47,16 @@
 			<q4:contentobjectdata typename="#application.packagepath#.rules.ruleXMLFeed" stProperties="#stObj#" objectID="#stObj.objectID#">
 			<cfset message = "Update Successful">
 		</cfif>
+
 		<cfif isDefined("message")>
-			<div align="center"><strong>#message#</strong></div>
+			<cfoutput><div align="center"><strong>#message#</strong></div></cfoutput>
 		</cfif>			
+
+		<cfoutput>
 		<form action="" method="post">
-		<table width="100%" >
 		<input type="hidden" name="ruleID" value="#stObj.objectID#">
+		
+		<table width="100%">
 		<tr>
 			<td align="right">
 				<strong>Feed Name</strong>
@@ -47,12 +75,11 @@
 		</tr>
 		<tr>
 			<td align="right" >
-				<strong>Max number of records to return</strong>
+				<strong>Max number of items to display</strong>
 			</td>		
 			<td>
 				<select name="maxRecords">
-				<cfloop from="1" to="200" index="i">
-					<option value="#i#" <cfif i EQ stObj.maxRecords>Selected</cfif>>#i#</option>
+				<cfloop from="1" to="50" index="i"><option value="#i#" <cfif i EQ stObj.maxRecords>Selected</cfif>>#i#</option>
 				</cfloop>
 				</select>
 			</td>
@@ -71,118 +98,78 @@
 		</table>
 		
 		</form>
+		
+		<div style="width: 80%; padding: 30px 30px;">
+		<h3>Preview Output</h3>
+		#execute(objectid)#
+		</div>
+		</cfoutput>
+		
+		<cfsetting enablecfoutputonly="No">
+		
 	</cffunction> 
 	
-
-	<cffunction access="public" name="execute" output="true">
+	<cffunction access="public" name="execute" output="false">
 		<cfargument name="objectID" required="Yes" type="uuid" default="">
 		<cfargument name="dsn" required="false" type="string" default="#application.dsn#">
-		<!--- assumes existance of request.navid  --->
-		<cfparam name="request.navid">
-		<cfparam name="cfhttp.filecontent" default="">
+		<cfset var stObj = getData(arguments.objectid)> 
+		<cfset var html = "">
+		<cfset var aItems = "">
+		<cfset var count = "">
+		<cfset var rss = "">
 		
-		<cfset stObj = this.getData(arguments.objectid)> 
-		
+		<cfsetting enablecfoutputonly="Yes">
 		<cftry>
+			<!--- go get the feed --->
 			<cfhttp url="#stObj.xmlFeedURL#" method="get" throwonerror="yes" timeout="10" />
 			<cfcatch>
 				<!--- Do nothing just at the moment --->
+				<cfset cfhttp.filecontent="">
 			</cfcatch>
 		</cftry>
 				
 		<cftry>
-			<cfset qXMLContent = parseRDF(cfhttp.filecontent)>
-			<cfif qXMLContent.recordCount GT 0>
-			<cfset html = "<table class='table'><tr><td>#stObj.intro#</td></tr>">
-			<cfoutput query="qXMLContent" maxrows="#stObj.maxRecords#">
-				<cfscript>
-				html = html & '<tr>';
-				html = html & '<td><a href="'&qXMLContent.link&'">'&qXMLContent.title&'</a>&nbsp' & dateformat(qXMLContent.datetimecreated,"dd-mmm-yyyy")&'<br>';
-				html = html & qXMLContent.excerpt & '</td></tr>';
-				</cfscript>
+			<cfscript>
+				rss=createobject("component", "#application.packagepath#.farcry.rss");
+				aItems=rss.getItemsAsArray(cfhttp.filecontent);
+				count=arrayLen(aItems);
+				if (count gt stobj.maxrecords)
+					count=stobj.maxrecords;
+			</cfscript>
+
+			<cfsavecontent variable="html">
+			<cfoutput>
+			<div class="xmlfeed">
+			#stObj.intro#
 			</cfoutput>
-			<cfset html = html & "</table>">
-			<cfset tmp = arrayAppend(request.aInvocations,html)>
-			</cfif>
+
+			<cfloop from="1" to="#count#" index="i">
+			<cfoutput>
+			<div class="xmlitem">
+			<a href="#aItems[i].link#">#aItems[i].title#</a> #dateformat(aItems[i]["dc:date"],"dd-mmm-yyyy")# <br />
+			#aItems[i].description#
+			</div>
+			</cfoutput>
+			</cfloop>
+
+			<cfoutput></div></cfoutput>
+			</cfsavecontent>
+			
 			<cfcatch>
 				<!--- Do Nada at the moment --->
+				<cfset html="<!-- #cfcatch.detail# -->">
 			</cfcatch>
 		</cftry>
 		
+		<cfif isDefined("request.aInvocations")>
+		<!--- update the containers aInvocations --->
+			<cfset arrayAppend(request.aInvocations,html)>
+		<cfelse>
+		<!--- return output as a string --->
+			<cfreturn html>
+		</cfif>
+		<cfsetting enablecfoutputonly="No">
 	</cffunction> 
-
-	<cffunction name="HTMLStripper" hint="Strips HTML from a string">
-	<cfargument name="string" type="string" hint="The String to be stripped" required="true">
-	<cfscript>
-		modsummary = REReplaceNoCase(string, "<[^>]*>", "", "all");
-		// need a regex to strip incomplete HTML from end of summary.  this will do for now GB
-		modsummary = REreplacenocase(modsummary, "<table .*$", "", "all");
-		modsummary = REreplacenocase(modsummary, "<a .*$", "", "all");
-		modsummary = REreplacenocase(modsummary, "<td .*$", "", "all");
-		modsummary = REreplacenocase(modsummary, "<tr .*$", "", "all");
-		modsummary = REreplacenocase(modsummary, "<img .*$", "", "all");
-		modsummary = REreplacenocase(modsummary, "<font .*$", "", "all");
-		modsummary = REreplacenocase(modsummary, "<p .*$", "", "all");
-		modsummary = REreplacenocase(modsummary, "/images.*>", "", "all");
-		modsummary = REreplacenocase(modsummary, "<$", "", "all");
-		modsummary = replacenocase(modsummary, "&nbsp;", " ", "all");
-		modsummary = replacenocase(modsummary, "&##160;", " ", "all"); //nbsp
-		modsummary = replacenocase(modsummary, "&amp;", "&", "all");
-		modsummary = replacenocase(modsummary, "&##8217;", "'", "all"); // smart apost
-		modsummary = replacenocase(modsummary, "&##174;", "(R)", "all"); // rego
-		modsummary = replacenocase(modsummary, "&##8482;", "(tm)", "all"); // tm
 	
-	</cfscript>
-	<cfreturn modSummary>
-	</cffunction>
-
-	
-	<cffunction name="parseRDF">
-	<cfargument name="xmlFeedRaw" required="Yes">
-	<cfargument name="blogid" required="No" default="wide">
-	
-	<cfset var xmlFeed = xmlParse(arguments.xmlFeedRaw)>
-	<cfset var aItems = ArrayNew(1)>
-	<cfset var ItemDate = "">
-	<cfset var q = QueryNew("itemid, title, excerpt, link,datetimecreated")>
-	
-	<!--- convert array result into qFeed query format --->
-	<cfscript>
-	aItems = xmlFeed['rdf:RDF'].XMLChildren;
-	 for (i=1; i LTE ArrayLen(aItems); i=i+1) {
-	// loop over item entries to build feed
-		 if (aItems[i].XmlName eq "item") {
-		QueryAddRow(q);
-		QuerySetCell(q, "itemid", "NULL"); // do we need this? set to NULL for now
-		for (j=1; j LTE ArrayLen(aItems[i].XmlChildren); j=j+1) {
-			switch(aItems[i].XmlChildren[j].XmlName) {
-			case "title": {
-			  QuerySetCell(q, "title", aItems[i].XmlChildren[j].xmltext);
-			  break; }
-			case "description": {
-			  QuerySetCell(q, "excerpt", 
-			  left(HTMLStripper(aItems[i].XmlChildren[j].xmltext), "500"));
-			  break; }
-			case "link": {
-				QuerySetCell(q, "link", aItems[i].XmlChildren[j].xmltext);
-				break; }
-			case "dc:subject": {
-				break; }
-			case "dc:creator": {
-				break; }
-			case "dc:date": {
-				itemdate = aItems[i].XmlChildren[j].xmltext;
-				itemdate = left(itemdate, 10);
-				itemdate = createODBCDate(itemdate);
-				QuerySetCell(q, "datetimecreated", itemdate);
-				break; }
-	  		}
-			}
-			}
-			}
-	</cfscript>
-	<cfreturn q>
-	</cffunction>
-
-
 </cfcomponent>
+

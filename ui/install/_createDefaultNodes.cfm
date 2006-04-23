@@ -1,0 +1,244 @@
+<!--- import fourQ tag library --->
+<cfimport taglib="/farcry/fourq/tags/" prefix="q4">
+
+<cfscript>
+// create default home page
+stHTML = structNew();
+stHTML.aObjectIDs = arrayNew(1);
+stHTML.aRelatedIDs = arrayNew(1);
+stHTML.aTeaserImageIDs = arrayNew(1);
+stHTML.body = '<P>Built from the ground up on the revolutionary ColdFusion MX server platform, <strong>farcry</strong> is the affordable, powerful site management solution that is quick to implement, and intuitive to use.</P><P><strong>farcry</strong> offers the advanced features of high-end site-management solutions, including sophisticated container management, publishing rules, version control and integrated search, at a small fraction of the cost.</P>';
+stHTML.commentLog = '';
+stHTML.createdBy = 'farcry';
+stHTML.datetimeCreated = now();
+stHTML.datetimeLastUpdated = now();
+stHTML.displayMethod = 'displaypageLanding';
+stHTML.label = 'farcry - changing content management forever';
+stHTML.lastUpdatedBy = 'farcry';
+stHTML.metaKeywords = '';
+stHTML.objectID = createUUID();
+stHTML.status = 'approved';
+stHTML.teaser = 'Built from the ground up on the revolutionary ColdFusion MX server platform, <strong>farcry</strong> is the affordable, powerful site management solution that is quick to implement, and intuitive to use.';
+stHTML.title = 'farcry - changing content management forever';
+stHTML.typeName = 'dmHTML';
+stHTML.versionID = '';
+stHTML.extendedmetadata = '';
+
+// create 2nd level page
+stHTML2 = structNew();
+stHTML2.aObjectIDs = arrayNew(1);
+stHTML2.aRelatedIDs = arrayNew(1);
+stHTML2.aTeaserImageIDs = arrayNew(1);
+stHTML2.body = '<p>Each mailing list is available via email (obviously), a web based interface and NNTP (a newsgroup or USENET interface). Instructions for leaving every list are clearly given in the footer of every post.&nbsp; DIGEST and other options are available.&nbsp; Please refer to the web based interface for a full list of configuration options.&nbsp; Visitors are allowed, but you must join the list to post.</p><h3>farcry-dev (public)</h3><p><a href="mailto:farcry-dev@lists.daemon.com.au">farcry-dev@lists.daemon.com.au</a> <br>Aimed at managing support for FarCry open source developers.&nbsp; Anyone making enquiries about modifying or extending or deploying the code base should be referred to this list.</p><ul><li>To join the mailing list, email: <a href="mailto:join-farcry-dev@lists.daemon.com.au">join-farcry-dev@lists.daemon.com.au</a><li>Web based interface: <a href="http://lists.daemon.com.au/cgi-bin/lyris.pl?enter=farcry-dev">http://lists.daemon.com.au/cgi-bin/lyris.pl?enter=farcry-dev</a><li>NNTP interface: <a href="news://lists.daemon.com.au/farcry-dev">news://lists.daemon.com.au/<u><font color=##0000ff>farcry-dev</a></font></u></li></ul><h3>farcry-user (public)</h3><p><a href="mailto:farcry-user@lists.daemon.com.au">farcry-user@lists.daemon.com.au</a> <br>Aimed at managing support for FarCry open source users.&nbsp; Anyone making enquiries about adding, editing or managing content should be referred to this list. </p><ul><li>To join the mailing list, email: <a href="mailto:join-farcry-user@lists.daemon.com.au">join-farcry-user@lists.daemon.com.au</a><li>Web based interface: <a href="http://lists.daemon.com.au/cgi-bin/lyris.pl?enter=farcry-user">http://lists.daemon.com.au/cgi-bin/lyris.pl?enter=farcry-user</a><li>NNTP interface: <a href="news://lists.daemon.com.au/farcry-user">news://lists.daemon.com.au/<u><font color=##0000ff>farcry-user</a></font></u></li></ul>';
+stHTML2.commentLog = '';
+stHTML2.createdBy = 'farcry';
+stHTML2.datetimeCreated = now();
+stHTML2.datetimeLastUpdated = now();
+stHTML2.displayMethod = 'displaypageLanding';
+stHTML2.label = 'FarCry Support';
+stHTML2.lastUpdatedBy = 'farcry';
+stHTML2.metaKeywords = '';
+stHTML2.objectID = createUUID();
+stHTML2.status = 'approved';
+stHTML2.teaser = 'An example page';
+stHTML2.title = 'FarCry Support';
+stHTML2.typeName = 'dmHTML';
+stHTML2.versionID = '';
+stHTML2.extendedmetadata = '';
+
+stCSS = structNew();
+stCSS.createdBy = 'farcry';
+stCSS.datetimeCreated = now();
+stCSS.datetimeLastUpdated = now();
+stCSS.description = 'Default stylesheet for farCry content management system.';
+stCSS.fileName = 'dmStyle.css';
+stCSS.label = 'Default Styles';
+stCSS.lastUpdatedBy = 'farcry';
+stCSS.objectID = createUUID();
+stCSS.title = 'Default Styles';
+stCSS.typeName = 'dmCSS';
+
+stSearch = structNew();
+stSearch.commentLog = '';
+stSearch.createdBy = 'farcry';
+stSearch.datetimeCreated = now();
+stSearch.datetimeLastUpdated = now();
+stSearch.displayMethod = 'displayDefault';
+stSearch.include = '_search.cfm';
+stSearch.label = 'Search';
+stSearch.lastUpdatedBy = 'farcry';
+stSearch.objectID = createUUID();
+stSearch.status = 'approved';
+stSearch.teaser = '';
+stSearch.title = 'Search';
+stSearch.typeName = 'dmInclude';
+</cfscript>
+
+<!--- create default HTML page & CCS styles --->
+<q4:contentobjectcreate typename="#application.packagepath#.types.#stHTML.typeName#" stProperties="#stHTML#" bAudit="false">
+<q4:contentobjectcreate typename="#application.packagepath#.types.#stHTML2.typeName#" stProperties="#stHTML2#" bAudit="false">
+<q4:contentobjectcreate typename="#application.packagepath#.types.#stCSS.typeName#" stProperties="#stCSS#" bAudit="false">
+<q4:contentobjectcreate typename="#application.packagepath#.types.#stSearch.typeName#" stProperties="#stSearch#" bAudit="false">
+
+<cfscript>
+// create root nav node
+o_dmNav = createObject("component", "#application.packagepath#.types.dmNavigation");
+o_farcrytree = createObject("component", "#application.packagepath#.farcry.tree");
+
+// define default navigation nodes
+stRootNode = structNew();
+stRootNode.objectID = createUUID();
+stRootNode.aObjectIDs = arrayNew(1);
+stRootNode.aObjectIDs[1] = stCSS.objectID;
+stRootNode.status = 'approved';
+stRootNode.ExternalLink = '';
+stRootNode.target = '';
+stRootNode.options = '';
+stRootNode.lNavIDAlias = 'root';
+stRootNode.title = 'Root';
+stRootNode.createdBy = 'farcry';
+stRootNode.label = 'Root';
+stRootNode.datetimecreated = now();
+stRootNode.datetimelastupdated = now();
+stRootNode.lastupdatedby = 'farcry';
+
+stHomeNode = structNew();
+stHomeNode.objectID = createUUID();
+stHomeNode.aObjectIDs = arrayNew(1);
+stHomeNode.aObjectIDs[1] = stHTML.objectID;
+stHomeNode.status = 'approved';
+stHomeNode.ExternalLink = '';
+stHomeNode.target = '';
+stHomeNode.options = '';
+stHomeNode.lNavIDAlias = 'home';
+stHomeNode.title = 'Home';
+stHomeNode.createdBy = 'farcry';
+stHomeNode.label = 'Home';
+stHomeNode.datetimecreated = now();
+stHomeNode.datetimelastupdated = now();
+stHomeNode.lastupdatedby = 'farcry';
+
+stHomeNode2 = structNew();
+stHomeNode2.objectID = createUUID();
+stHomeNode2.aObjectIDs = arrayNew(1);
+stHomeNode2.aObjectIDs[1] = stHTML2.objectID;
+stHomeNode2.status = 'approved';
+stHomeNode2.ExternalLink = '';
+stHomeNode2.target = '';
+stHomeNode2.options = '';
+stHomeNode2.lNavIDAlias = '';
+stHomeNode2.title = 'Support';
+stHomeNode2.createdBy = 'farcry';
+stHomeNode2.label = 'Support';
+stHomeNode2.datetimecreated = now();
+stHomeNode2.datetimelastupdated = now();
+stHomeNode2.lastupdatedby = 'farcry';
+
+stUtilNode = structNew();
+stUtilNode.objectID = createUUID();
+stUtilNode.status = 'draft';
+stUtilNode.ExternalLink = '';
+stUtilNode.target = '';
+stUtilnode.options = '';
+stUtilNode.lNavIDAlias = 'hidden';
+stUtilNode.title = 'Utility';
+stUtilNode.createdBy = 'farcry';
+stUtilNode.label = 'Utility';
+stUtilNode.datetimecreated = now();
+stUtilNode.datetimelastupdated = now();
+stUtilNode.lastupdatedby = 'farcry';
+
+stSearchNode = structNew();
+stSearchNode.objectID = createUUID();
+stSearchNode.aObjectIDs = arrayNew(1);
+stSearchNode.aObjectIDs[1] = stSearch.objectID;
+stSearchNode.status = 'approved';
+stSearchNode.ExternalLink = '';
+stSearchNode.target = '';
+stSearchNode.options = '';
+stSearchNode.lNavIDAlias = 'search';
+stSearchNode.title = 'Search';
+stSearchNode.createdBy = 'farcry';
+stSearchNode.label = 'Search';
+stSearchNode.datetimecreated = now();
+stSearchNode.datetimelastupdated = now();
+stSearchNode.lastupdatedby = 'farcry';
+
+stFooterNode = structNew();
+stFooterNode.objectID = createUUID();
+stFooterNode.status = 'approved';
+stFooterNode.ExternalLink = '';
+stFooterNode.target = '';
+stFooterNode.options = '';
+stFooterNode.lNavIDAlias = 'footer';
+stFooterNode.title = 'Footer';
+stFooterNode.createdBy = 'farcry';
+stFooterNode.label = 'Footer';
+stFooterNode.datetimecreated = now();
+stFooterNode.datetimelastupdated = now();
+stFooterNode.lastupdatedby = 'farcry';
+
+stImageNode = structNew();
+stImageNode.objectID = createUUID();
+stImageNode.status = 'draft';
+stImageNode.ExternalLink = '';
+stImageNode.target = '';
+stImageNode.options = '';
+stImageNode.lNavIDAlias = 'imageroot';
+stImageNode.title = 'Images';
+stImageNode.createdBy = 'farcry';
+stImageNode.label = 'Images';
+stImageNode.datetimecreated = now();
+stImageNode.datetimelastupdated = now();
+stImageNode.lastupdatedby = 'farcry';
+
+stFileNode = structNew();
+stFileNode.objectID = createUUID();
+stFileNode.status = 'draft';
+stFileNode.ExternalLink = '';
+stFileNode.target = '';
+stFileNode.options = '';
+stFileNode.lNavIDAlias = 'fileroot';
+stFileNode.title = 'Files';
+stFileNode.createdBy = 'farcry';
+stFileNode.label = 'Files';
+stFileNode.datetimecreated = now();
+stFileNode.datetimelastupdated = now();
+stFileNode.lastupdatedby = 'farcry';
+
+stTrashNode = structNew();
+stTrashNode.objectID = createUUID();
+stTrashNode.status = 'draft';
+stTrashNode.ExternalLink = '';
+stTrashNode.target = '';
+stTrashNode.options = '';
+stTrashNode.lNavIDAlias = 'rubbish';
+stTrashNode.title = 'Trash';
+stTrashNode.createdBy = 'farcry';
+stTrashNode.label = 'Trash';
+stTrashNode.datetimecreated = now();
+stTrashNode.datetimelastupdated = now();
+stTrashNode.lastupdatedby = 'farcry';
+
+// create nodes
+o_dmNav.createData(dsn=application.dsn,stProperties=stRootNode,bAudit=false);
+o_dmNav.createData(dsn=application.dsn,stProperties=stHomeNode,bAudit=false);
+o_dmNav.createData(dsn=application.dsn,stProperties=stHomeNode2,bAudit=false);
+o_dmNav.createData(dsn=application.dsn,stProperties=stUtilNode,bAudit=false);
+o_dmNav.createData(dsn=application.dsn,stProperties=stSearchNode,bAudit=false);
+o_dmNav.createData(dsn=application.dsn,stProperties=stFooterNode,baudit=false);
+o_dmNav.createData(dsn=application.dsn,stProperties=stImageNode,bAudit=false);
+o_dmNav.createData(dsn=application.dsn,stProperties=stFileNode,bAudit=false);
+o_dmNav.createData(dsn=application.dsn,stProperties=stTrashNode,bAudit=false);
+
+// attach created nodes
+o_farCryTree.setRootNode(dsn=application.dsn,objectID=stRootNode.objectID,objectName='Root',typeName='dmNavigation');
+o_farCryTree.setYoungest(dsn=application.dsn,parentID=stRootNode.objectID,objectID=stHomeNode.objectID,objectName=stHomeNode.title,typeName='dmNavigation');
+o_farCryTree.setYoungest(dsn=application.dsn,parentID=stHomeNode.objectID,objectID=stHomeNode2.objectID,objectName=stHomeNode2.title,typeName='dmNavigation');
+o_farCryTree.setYoungest(dsn=application.dsn,parentID=stRootNode.objectID,objectID=stUtilNode.objectID,objectName=stUtilNode.title,typeName='dmNavigation');
+o_farCryTree.setYoungest(dsn=application.dsn,parentID=stUtilNode.objectID,objectID=stSearchNode.objectID,objectName=stSearchNode.title,typeName='dmNavigation');
+o_farCryTree.setYoungest(dsn=application.dsn,parentID=stUtilNode.objectID,objectID=stFooterNode.objectID,objectName=stFooterNode.title,typeName='dmNavigation');
+o_farCryTree.setYoungest(dsn=application.dsn,parentID=stRootNode.objectID,objectID=stImageNode.objectID,objectName=stImageNode.title,typeName='dmNavigation');
+o_farCryTree.setYoungest(dsn=application.dsn,parentID=stRootNode.objectID,objectID=stFileNode.objectID,objectName=stFileNode.title,typeName='dmNavigation');
+o_farCryTree.setYoungest(dsn=application.dsn,parentID=stRootNode.objectID,objectID=stTrashNode.objectID,objectName=stTrashNode.title,typeName='dmNavigation');
+</cfscript>

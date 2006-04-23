@@ -2,13 +2,13 @@
 
 
 <cfquery datasource="#stArgs.dsn#">
-	DELETE FROM refCategories WHERE objectID = '#stArgs.objectID#'	
+	DELETE FROM #application.dbowner#refCategories WHERE objectID = '#stArgs.objectID#'	
 </cfquery>	
 
 <cfloop list="#stArgs.lCategoryIDs#" index="i">
 	<cftransaction>
 	<cfquery datasource="#stArgs.dsn#">
-			INSERT INTO refCategories (categoryID,objectID) 
+			INSERT INTO #application.dbowner#refCategories (categoryID,objectID) 
 			VALUES ('#i#', '#stArgs.objectID#')
 		</cfquery>
 	</cftransaction>

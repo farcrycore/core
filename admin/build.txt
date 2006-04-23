@@ -1,0 +1,165 @@
+<!--- 
+|| LEGAL ||
+$Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
+$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
+
+|| VERSION CONTROL ||
+$Header: /cvs/farcry/farcry_core/admin/build.txt,v 1.50 2003/07/28 01:31:41 brendan Exp $
+$Author: brendan $
+$Date: 2003/07/28 01:31:41 $
+$Name: b131 $
+$Revision: 1.50 $
+
+|| DESCRIPTION || 
+$DESCRIPTION:$
+$TODO:  $ 
+
+|| DEVELOPER ||
+$DEVELOPER:Brendan Sisson (brendan@daemon.com.au)$
+
+|| ATTRIBUTES ||
+$in:$ 
+$out:$
+--->
+
+b131:
+- fix for handpicked rule submission via drop down
+- added check for external file collections in build collections page
+- added dmXMLExport object
+- updated ruleXMLFeed to accept multiple formats
+- fix for moveBranch code
+- permissions fix for container view
+
+b130:
+- fix for hardcoded image paths in COAPI admin area
+- fix for "move to bottom" in tree
+
+b129:
+- linux mods
+- permission fix for move branch
+- allow for multiple installs
+- dmLink availabe in hand picked rule
+- added verity external file collection option
+- removed hardcoded FarCry site title and replaced with config variable
+- fix for lastUpdatedBy field when updating dmHTML object
+- fix for drag & drop onto dmHTML objects
+- fix for deleting dmProfile session scope on logout
+- fix for delete underlying draft dmHTML object from edit tab
+- new rule for display dmLink objects
+
+b128:
+- fix for insert file into body from tree (was using wrong path)
+- mozilla compatability in admin (hide divs, teaaser counter)
+- added cancelLocation to plps
+- added default display handler for dmProfile
+- modified display names for types
+- moved dump.cfm into tags/farcry
+- added dmEvent object and rules
+
+b127:
+- import CSS fix for friendly URLs
+- new update script deployer
+- move browser and OS functions into stats.cfc
+- increased browser detection
+- Friendly URLs config file
+- Friendly URLs support
+- fix for MySQL manage user groups (Scott Mebberson)
+- fix for Clear Stats
+
+b126:
+- minor bug fixes for beta release
+
+b125:
+- Unicode support
+- dmLink object
+- repair property for COAPI Types
+- browser detection for stats
+
+b124:
+- fix for approval emails for dmNavigation
+- fix for deploy stats table
+- added eWedbEditPro support
+
+b123:
+- added geoLocator.cfc
+- added countries table for locale stats
+- fix for site map
+- removed domain field in installer
+- new categorisation tree
+- fix for ruleXMLFeed (spike)
+- MySQL ruleNews
+- MySQL ruleRandomFact
+- fix for admin to use application.config.general.SiteTitle in titles etc (Neil Robertson-Rav)
+- fix for user details not accepting ' (Paul Harrison)
+
+
+b122:
+- added friendly urls support
+- added referer stats
+- added locale stats
+- added os stats
+- added geoLocator support
+- modifications to genericAdmin setup
+- added extendedMetaData property to dmHTML
+- moved plps under types
+- fix for delete categories
+
+b121:
+- added browser stats
+- added scope dumper
+- added session stats
+- added session paths
+- added stats summary
+- added stats for MySQL
+- fix for tree/getBloodLine
+- fix for styles in genericAdmin
+- added stats option for genericAdmin
+- added new icons for genericAdmin
+- installer fix for "/" appMapping
+- fix for insert image when not root of webserver
+- fix for mysql deploy types
+- fix for mysql manage user groups
+- fix date checking in lock and unlock code
+- fix dynamic data approval so it can handle custom objects with date properties
+- fix for thumbnail preview in object overview for dmImage
+- fix for preview draft pages in tree
+- moved form.cfc out of fourq and into farcry
+
+b120:
+- improvements to Installer
+- user update fix
+- security table check fix (Gary Menzel)
+
+b119:
+- fix for mysql coapi schema 
+- fix for removal of permissions on dmNavigation delete
+- fix for permission check on overview page for dmNavigation pending
+- fix for default file and image paths
+- fix for authorisation.cfc 
+- fix for comment on object
+- removed option to delete or send to trash for home or root nodes
+- installer improvements
+- fix for verity collection build
+
+b118:
+- modified tree code to work with mysql
+- new windows installer
+
+b117:
+- fix for mysql installer
+
+b116:
+- mysql changes
+
+b115:
+- new mappings setup
+
+b114:
+- dmSec now components
+
+b113:
+- stats for downloads
+- stats for tree branches
+- insert flash objects
+- new float menu
+- general bug fixes

@@ -1,25 +1,34 @@
-<!--
+<!--- Copyright (c) 2002 SiteObjects, Inc. --->
 
-  SourceSafe: $Header: /cvs/farcry/farcry_core/admin/siteobjects/soeditor/lite/table.htm,v 1.1.1.1 2002/09/27 06:54:04 petera Exp $
+<!---
+
+  SourceSafe: $Header: /cvs/farcry/farcry_core/admin/siteobjects/soeditor/lite/table.htm,v 1.3 2003/03/05 00:46:19 brendan Exp $
   Date Created: 12/12/2001
-  Author: Don Bellamy
+  Author: James Alexander
   Project: soEditor
   Description: Displays table dialog for soEditor
 
--->
+--->
 
 <html>
 <head><title>soEditor: Table</title>
 <?xml:namespace prefix="so" />
 <link rel="stylesheet" type="text/css" href="sotoolbar.css"></link>
 <style>
-  body, .button{background: #d4d0c8;font: 8pt/8pt Tahoma;margin:0px;}
-  body {padding:5px;}   
+  body {padding:5px;background: #d4d0c8;font: 8pt/8pt Tahoma;margin:0px;}
+  fieldset { padding-top:10px;padding-right:15px;padding-left:15px;border-width:1px;border-style:solid;border-color:#808080; }   
+  legend { font:8pt Tahoma;font-weight:bold;color:#000000; }
+  .button {
+    width:50px;
+    height:10px;
+    font:10pt Tahoma;
+    border:1px solid #808080;
+    cursor:default;
+  }
+  .controls {width:100%;text-align:right;margin-top:15px}
   .text {font: 8pt/8pt Tahoma;padding:5px 0px 5px 0px;}
   .inputs {padding-right:15px;}
-  .controls {width:100%;text-align:right;margin-top:5px;margin-right:3px}
   input {font: 8pt/8pt Tahoma;}
-  fieldset {padding:15px;}   
 </style>
 <script language="JScript">
   function isInt() {
@@ -71,6 +80,9 @@
     case "style":
       tbStyle.value = window.dialogArguments["style"];
       break;     
+    case "align":
+      tbAlign.value = window.dialogArguments["align"];
+      break;
     }
   }
 </script>
@@ -84,13 +96,31 @@
   arr["width"] = tbWidth.value;
   arr["height"] = tbHeight.value;
   arr["bgcolor"] = tbBGColor.value;
-  arr["style"] = tbStyle.value;  
+  arr["style"] = tbStyle.value;
+  arr["align"] = tbAlign.value;  
   window.returnValue = arr;
   window.close();
 </script>
+<script language="JScript">
+  //m_over method for the buttons
+  function m_over(button) {
+    button.style.backgroundColor = "#B6BDD2";
+    button.style.borderColor = "#0A246A";
+  }
+  //m_out method for the buttons
+  function m_out(button) {
+    button.style.backgroundColor = "#D4D0C8";
+    button.style.borderColor = "#808080";
+  }
+  //m_down method for the buttons
+  function m_down(button) {
+    button.style.backgroundColor = "#8592b5";
+    button.style.borderColor = "#0A246A";
+  }
+</script>
 </head>
 <body scroll="no">
-<fieldset title="Table Properties"><legend>Table Properties</legend>
+<fieldset><legend>Table Properties</legend>
 <table cellspacing="3" style="margin:10px;">
 <tr>
   <td class="text">Rows:</td>
@@ -116,11 +146,18 @@
   <td class="inputs"><input name="tbHeight" type="text" size="3" maxlength="4" onkeypress="event.returnValue=(isInt() || event.keyCode == 37);" onblur="if(this.value == '') setDefault(this);"></td>  
 </tr>
 <tr>
+  <td class="text">Align:</td>
+  <td class="inputs"><select name="tbAlign" style="font:8pt Tahoma;"><option value=""></option><option value="left">Left</option><option value="center">Center</option><option value="right">Right</option></select></td>
+</tr>
+<tr>
   <td class="text">Style:</td>
   <td class="inputs" colspan="3"><input name="tbStyle" type="text" maxlength="255" style="width:175px"></td>  
 </tr>
 </table>
 </fieldset>
-<div class="controls"><input id="OK" class="button" type="button" value="     OK     "> <input class="button" type="button" value="  Cancel  " onclick="window.close();"></div>
+<div class="controls">
+  <span id="OK" onmouseover="m_over(this);" onmouseout="m_out(this);" onmousedown="m_down(this);" class="button" style="padding:3px,15px,3px,5px;">OK</span>
+  <span onmouseover="m_over(this);" onmouseout="m_out(this);" onmousedown="m_down(this);" onclick="window.close();" class="button" style="padding:3px,5px,3px,5px;">Cancel</span>
+</div>
 </body>
 </html>

@@ -1,163 +1,149 @@
-<cfimport taglib="/farcry/tags/navajo/" prefix="nj">
-<cfimport taglib="/fourq/tags/" prefix="q4">
-
 <cfsetting enablecfoutputonly="Yes">
+<!--- 
+|| LEGAL ||
+$Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
+$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
+|| VERSION CONTROL ||
+$Header: /cvs/farcry/farcry_core/tags/navajo/moveInternal.cfm,v 1.8 2003/05/03 07:52:07 geoff Exp $
+$Author: geoff $
+$Date: 2003/05/03 07:52:07 $
+$Name: b131 $
+$Revision: 1.8 $
 
-<!---
-Guilty Parties : Nick Shearer (nick@daemon.com.au)
-DAte : 13th November 2000
+|| DESCRIPTION || 
+$Description: $
+$TODO: $
 
-Description: moves a navigation node up or down
+|| DEVELOPER ||
+$Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au)$
+$Developer: Brendan Sisson (brendan@daemon.com.au)$
 
-Usage
------
-takes objectID
-	
-Details
--------
-checks the status of the current node, 
+|| ATTRIBUTES ||
+$in: url.objectId$
+$in: url.direction$
+$out:$
+--->
+<!--- set long timeout for template to prevent data-corruption on incomplete tree.moveBranch() --->
+<cfsetting requesttimeout="90">
 
-Revisions
----------
- --->
+<cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
+<cfimport taglib="/farcry/fourq/tags/" prefix="q4">
+<cfinclude template="/farcry/farcry_core/admin/includes/cfFunctionWrappers.cfm">
 
 <cfparam name="url.objectId">
 <cfparam name="url.direction">
-
-<cfoutput>
-<html>
-<body>
-<link rel="stylesheet" type="text/css" href="#application.url.farcry#/navajo/navajo_popup.css">
-</cfoutput>
 
 <q4:contentobjectget objectId="#url.objectId#" r_stObject="stobj">
 
 <cfscript>
 	typename = stObj.typename;
+	oTree = createObject("component","#application.packagepath#.farcry.tree");
+	oNav = createObject("component", "#application.packagepath#.types.dmNavigation");
+	if (stObj.typename IS 'dmNavigation')
+	{
+		qGetParent = oTree.getParentID(objectID = stObj.objectID);
+		parentObjectID = qGetParent.parentID;	
+	}
+	else
+	{
+	// likely to be a parent object with aObjects property (eg. dmHTML, dmNews)
+		qGetParent = oNav.getParent(objectid=stObj.objectID);
+		parentObjectID = qGetParent.objectID;
+	}	
+	//get permissions for this action
+	//iState = request.dmsec.oAuthorisation.checkInheritedPermission(permissionName="Edit",objectid=parentobjectid,bThrowOnError=1);	
+	iState = 1; //temp till i implement cfc dmsec
 </cfscript>
 
-<!--- check permission to move --->
-<nj:GetNavigation objectId="#url.objectId#" r_objectId="navid">
+<!--- get parent object --->
+<q4:contentobjectget objectId="#parentObjectId#" r_stObject="stParentObject">
 
-<cf_dmSec2_PermissionCheck
-	reference1="dmNavigation"
-	permissionName="Edit"
-	objectid="#navid#"
-	r_iState="iState">
+<cftry>
+<!--- exclusive lock tree.moveBranch() to prevent corruption --->
+<cflock name="moveBranchNTM" type="EXCLUSIVE" timeout="3" throwontimeout="Yes">
+
+<cfscript>
+	if (iState NEQ 1)
+		writeoutput("<script>alert('You do not have permission to modify the node.');</script>");
+	else		
+	{
+		if(len(parentObjectID))
+		{
+			if(stObj.typename IS "dmnavigation")
+			{
+				qGetChildren = oTree.getChildren(dsn=application.dsn,objectid=parentObjectID);
+				bottom = qGetChildren.recordCount;
+				for(i=1;i LTE qGetChildren.recordCount;i = i + 1)
+				{
+					if (qGetChildren.objectid[i] IS stObj.objectID)
+					{
+						thisPosition = i;
+						break;
+					}
+				}
+				
+				//get the new position
+				if( url.direction is "up" AND thisPosition NEQ 1)
+					newPosition = thisPosition - 1;
+				else if( url.direction is "down" AND thisPosition LT bottom)
+					newPosition = thisPosition + 1;
+				else if ( url.direction is "top" )
+					newPosition = 1;
+				else if( url.direction eq "bottom" )	
+					newPosition = bottom;
+				//make the move	
+				oTree.moveBranch(dsn=application.dsn,objectid=stobj.objectid,parentid=parentobjectid,pos=newposition);				
+				updateTree(objectID =parentObjectID);
+			}
+			else		
+			{
+				
+				key = "aObjectIds";
+			
+				// find the position of the object within the parent that we are moving 
+				pos = ListFind(ArrayToList(stParentObject[key]), stobj.objectID);
+			
+				//  find the objects new position 
+				if( url.direction EQ "up" AND pos NEQ 1)
+				{
+					newPos = pos - 1;
+					arraySwap( stParentObject[key], pos, newPos );
+				}
+				else if( url.direction eq "down" AND (pos lt ArrayLen(stParentObject[key])) )
+				{
+					newPos = pos + 1;
+					arraySwap( stParentObject[key], pos, newPos );
+				}
+				else if ( url.direction eq "top" )
+				{
+					newPos = 1;
+					arrayDeleteAt( stParentObject[key], pos );
+					arrayInsertAt( stParentObject[key], newPos, url.objectID );
+				}
+				else if( url.direction eq "bottom" )
+				{
+					arrayDeleteAt( stParentObject[key], pos );
+					arrayAppend( stParentObject[key], url.objectID );
+				}
+				//update the object
+				stParentObject.datetimecreated = createODBCDate("#datepart('yyyy',stNavParent.datetimecreated)#-#datepart('m',stNavParent.datetimecreated)#-#datepart('d',stNavParent.datetimecreated)#");
+				stParentObject.datetimelastupdated = createODBCDate(now());
 	
-<cfoutput>
-	#URL.direction#
-</cfoutput>	
-
-	
-<cfif iState neq 1>	
-	<cfoutput><script>alert("You do not have permission to modify the node.");</script></cfoutput>
-<cfelse>
-	<!--- get the parent node --->
-	<nj:TreeGetRelations
-		get="parents"
-		typename="#stObj.typename#"
-		bInclusive="0"
-		objectId="#stobj.objectId#"
-		r_lObjectIds="navIdParent"
-		r_stObject="stNavParent"
-		>
-		<!--- <nj:TreeGetRelations typename="#srcObj.typename#" objectId="#URL.srcObjectID#" get="parents" r_lObjectIds="ParentID" bInclusive="1"> --->
-	<cfif len(navIdParent)>
-		<cfif stObj.typename IS "dmNavigation">
-		
-
-		<!--- get the number of children at this level --->
-		<cfinvoke  component="fourq.utils.tree.tree" method="getChildren" returnvariable="qGetChildren">
-			<cfinvokeargument name="dsn" value="#application.dsn#"/>
-			<cfinvokeargument name="objectid" value="#navIDParent#"/>
-		</cfinvoke>
-		<cfset bottom = qGetChildren.recordCount>
-		<!--- Find the current position in the tree --->
-		<cfloop query="qGetChildren">
-			<cfif qGetChildren.objectID IS URL.objectID>
-				<cfset thisPosition = qGetChildren.currentrow>
-				<cfbreak>
-			</cfif> 
-		</cfloop> 
-		<!--- lets get the new position  --->
-		<cfscript>
-			if( url.direction EQ "up" AND thisPosition NEQ 1)
-				newPosition = thisPosition - 1;
-			else if( url.direction eq "down" AND thisPosition LT bottom)
-				newPosition = thisPosition + 1;
-			else if ( url.direction eq "top" )
-				newPosition = 1;
-			else if( url.direction eq "bottom" )	
-				newPosition = bottom;
-		</cfscript>
-		<!--- Now do the Move - ya jackass!! --->
-		
-		<cfinvoke component="fourq.utils.tree.tree" method="moveBranch" returnvariable="moveBranchRet">
-			<cfinvokeargument name="dsn" value="#application.dsn#"/>
-			<cfinvokeargument name="objectid" value="#URL.objectID#"/>
-			<cfinvokeargument name="parentid" value="#navIDParent#"/>
-			<cfinvokeargument name="pos" value="#newPosition#"/>
-		</cfinvoke>
-		
-			<nj:UpdateTree objectId="#navIDParent#">
-		
-		
-		<cfelse>
-		<cfscript>
-		if( stobj.typename IS "dmNavigation") 
-			key = "aNavChild"; else key = "aObjectIds";
-		
-		// find the position of the object within the parent that we are moving 
-		pos = ListFind(ArrayToList(stNavParent[key]), stobj.objectID);
-	
-		//  find the objects new position 
-		if( url.direction EQ "up" AND pos NEQ 1)
-		{
-			newPos = pos - 1;
-			arraySwap( stNavParent[key], pos, newPos );
+				contentobjectdata(objectid="#parentObjectID#", typename="#application.packagepath#.types.#stParentObject.typename#", stProperties="#stParentObject#");
+				updateTree(objectID =parentObjectID);
+			}
 		}
-		else if( url.direction eq "down" AND (pos lt ArrayLen(stNavParent[key])) )
-		{
-			newPos = pos + 1;
-			arraySwap( stNavParent[key], pos, newPos );
-		}
-		else if ( url.direction eq "top" )
-		{
-			newPos = 1;
-			arrayDeleteAt( stNavParent[key], pos );
-			arrayInsertAt( stNavParent[key], newPos, url.objectID );
-		}
-		else if( url.direction eq "bottom" )
-		{
-			arrayDeleteAt( stNavParent[key], pos );
-			arrayAppend( stNavParent[key], url.objectID );
-		}
-		</cfscript>
-		</cfif>
-		<cfscript>
-			stNavParent.datetimecreated = createODBCDate("#datepart('yyyy',stNavParent.datetimecreated)#-#datepart('m',stNavParent.datetimecreated)#-#datepart('d',stNavParent.datetimecreated)#");
-			stNavParent.datetimelastupdated = createODBCDate(now());
-	</cfscript>
-		<!--- update the parent object --->
-		<q4:contentobjectdata objectid="#stNavParent.objectID#"	
-	typename="#application.packagepath#.types.#stNavParent.typename#" stProperties="#stNavParent#">
-		
-		<!--- <cfa_contentobjectData objectId="#stNavParent.objectId#">
-			<cfa_contentobjectproperty name="#key#" value="#stNavParent[key]#">
-		</cfa_contentobjectData> --->
-		
-		<!--- update the tree frame --->
-		<nj:UpdateTree objectId="#navid#" complete="0">
-	</cfif>
-</cfif>
+	}	
+</cfscript>
 
-<cfoutput>
-<script>window.close();</script>
+</cflock>
+	<cfcatch>
+		<h2>moveBranch Lockout</h2>
+		<p>Another editor is currently modifying the hierarchy.  Please refresh the site overview tree and try again.</p>
+		<cfabort>
+	</cfcatch>
+</cftry>
 
-</body>
-</html>
-</cfoutput>
 
 <cfsetting enablecfoutputonly="No">

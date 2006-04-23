@@ -1,5 +1,5 @@
 <cfsetting enablecfoutputonly="yes">
-<cfimport taglib="/fourq/tags" prefix="q4">
+<cfimport taglib="/farcry/fourq/tags" prefix="q4">
 <!--- deleteObjects.cfm
 
 Description : 
@@ -19,13 +19,29 @@ Intended for use with daemon dynamic data.
 	<cfexit>
 </cfif>
 
-
 <!--- Now loop through the list and delete object --->
 <cfloop list="#attributes.lObjectIDs#" index="i">
-	<q4:contentobjectdelete objectID="#i#" typename="#application.packagepath#.types.#attributes.typename#">
+	<q4:contentobjectget objectID="#i#" r_stobject="stObj">
+	<cfset errorFlag = false>
+	<!--- delete actual file --->
+	<cfswitch expression="#attributes.typename#">
+		<cfcase value="dmFile">
+			<cftry>
+				<cffile action="delete" file="#application.defaultFilePath#/#stObj.filename#">
+				<cfcatch type="any"></cfcatch>
+			</cftry>
+		</cfcase>
+		<cfcase value="dmImage">
+			<cftry>
+				<cffile action="delete" file="#application.defaultImagePath#/#stObj.filename#">
+				<cfcatch type="any"></cfcatch>
+			</cftry>
+		</cfcase>
+	</cfswitch>
+	<q4:contentobjectdelete objectID="#i#">
+	<cfset "caller.#attributes.rMsg#" = "#listLen(attributes.lObjectIds)# object(s) deleted"> 
 </cfloop>
 
-<cfset "caller.#attributes.rMsg#" = "#listLen(attributes.lObjectIds)# object(s) deleted"> 
 
 
 

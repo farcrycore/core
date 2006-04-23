@@ -22,7 +22,7 @@
 </tr>
 </cfoutput>
 <cfloop query="qDir">
-<cfset componentName = left(qDir.name, len(qDir.name)-4)>
+<cfset componentName = application.dbowner & left(qDir.name, len(qDir.name)-4)>
 <cfset bDeployed=true>
 
 <!--- test if they have been deployed --->

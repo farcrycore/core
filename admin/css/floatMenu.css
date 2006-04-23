@@ -1,0 +1,50 @@
+/* floater menu */
+
+/* position IDs */
+#master	{position:absolute; width: 200px; top: 10px; left: -140px; z-index:2; visibility:visible;}
+#menu	{position:absolute; width: 8px; top: 0px; left: 140px; z-index:5; visibility:visible;}
+#top	{position:absolute; width: 140px; top: 0px; left: 0px; z-index:5; visibility:visible;}
+#screen	{position:absolute; width: 140px; top: 6px; left: 0px; z-index:5; visibility:visible;}
+#screenlinks {position:absolute; width: 140px; top: 6px; left: 0px; z-index:5; visibility:visible; padding-left:0px;}
+
+/* menu styles */
+.floatertitle{
+	text-align: center;
+	margin-bottom: 3px;
+	font: bold 100% verdana, Geneva, Arial, Helvetica, sans-serif;
+}
+
+.floaterLink {
+	color: #000;
+	width: 95%;
+	padding: 1px 5px 1px 5px;
+	font-weight: normal;
+	line-height: 20px;
+	background-color: #FFF;
+	border: 1px solid #FFF;
+
+}
+
+a:link.floaterLink {
+	color : #000;
+}
+
+a:visited.floaterLink {
+	color : #000;
+}
+
+a:active.floaterLink {
+	text-decoration: none;
+	color: #000;
+}
+
+a:hover.floaterLink {
+	text-decoration: none;
+	color: #000;
+	background-color: #C1D2EE;
+	border: 1px solid #8A867A;
+}
+
+ div.floaterItems {
+	font: 70% Verdana, Geneva, Arial, Helvetica, sans-serif;
+} 

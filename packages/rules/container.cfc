@@ -1,7 +1,7 @@
 
-<cfcomponent extends="fourq.fourq">
+<cfcomponent extends="farcry.fourq.fourq">
 	<cfproperty name="objectID" hint="Primary Key" type="uuid">
-	<cfproperty name="label" hint="Name of the container"  type="string">
+	<cfproperty name="label" hint="Name of the container"  type="nstring">
 	<cfproperty name="aRules" hint="Array of UUIDs" type="array"> 
 
 	<cffunction name="getContainer" access="public" returntype="query" hint="Retrieve container instance by label lookup.">
@@ -12,7 +12,7 @@
 			
 		<cfquery name="qGetContainer" datasource="#arguments.dsn#">
 			SELECT *
-			FROM container 
+			FROM #application.dbowner#container 
 			WHERE 
 			<cfif isDefined("arguments.objectID")>
 				objectID = '#objectID#'
@@ -28,14 +28,35 @@
 		
 		<cfset request.aInvocations = arrayNew(1)>
 		<cfloop from="1" to="#arrayLen(arguments.aRules)#" index="i">
-			<cfinvoke component="fourq.fourq" returnvariable="rule" method="findType" objectID="#arguments.aRules[i]#">
-			<cfinvoke objectID="#arguments.aRules[i]#" component="#application.packagepath#.rules.#rule#" method="execute"/>
-					
+			 <cftry> 
+				
+				<cfinvoke component="farcry.fourq.fourq" returnvariable="rule" method="findType" objectID="#arguments.aRules[i]#">
+				
+				<!--- Is this a custom rule? or not? --->
+				<cfif NOT evaluate("application.rules." & rule & ".bCustomRule")>
+					<cfinvoke objectID="#arguments.aRules[i]#" component="#application.packagepath#.rules.#rule#" method="execute"/>
+				<cfelse>
+					<cfinvoke objectID="#arguments.aRules[i]#" component="#application.custompackagepath#.rules.#rule#" method="execute"/>										
+				</cfif>					
+			  	<cfcatch type="any">
+					<!--- show error if debugging --->
+					<cfif isdefined("url.debug")>
+						<cfdump var="#cfcatch#">
+					</cfif>
+					<!--- Output a HTML Comment for debugging purposes --->
+					<cfoutput>
+						<!-- container failed on ruleID: #arguments.aRules[i]# (#rule#) 
+						<br> 
+						#cfcatch.Detail#<br>#cfcatch.Message#
+					 	-->
+					 </cfoutput>
+				</cfcatch>
+			</cftry>  
 		</cfloop>		 
 		<cfloop from="1" to="#arrayLen(request.aInvocations)#" index="i">
 			<cfif isStruct(request.aInvocations[i])>
 				<cfscript>
-					o = createObject("component", "#application.packagepath#.types.#request.aInvocations[i].typename#");
+					o = createObject("component", "#request.aInvocations[i].typename#");
 					o.getDisplay(request.aInvocations[i].objectID, request.aInvocations[i].method);	
 				</cfscript>
 			<cfelse>
@@ -46,6 +67,7 @@
 				</cfoutput>	
 			</cfif>	
 		</cfloop>
+		
 	</cffunction>
 	
 </cfcomponent>

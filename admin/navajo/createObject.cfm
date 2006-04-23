@@ -1,6 +1,1 @@
-<cfimport taglib="/farcry/tags/navajo" prefix="nj">
-<cfsetting enablecfoutputonly="Yes">
-
-<nj:CreateObject>
-
-<cfsetting enablecfoutputonly="No">
+<cfinclude template="/farcry/farcry_core/ui/navajo/createObject.cfm">

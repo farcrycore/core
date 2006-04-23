@@ -1,3 +1,9 @@
+<!------------------------------------------------------------------------ 
+DEPRECATED
+This tag has been moved to ../tags/webskin
+TODO:
+Update all project modules to use the webskin location!!!
+------------------------------------------------------------------------->
 <!--- 
 breadcrumb tag
  - builds a breadcrumb for the page
@@ -16,7 +22,7 @@ request.navid
 
 <cfscript>
 // get navigation elements
-	o = createObject("component", "fourq.utils.tree.tree");
+	o = createObject("component", "#application.packagepath#.farcry.tree");
 	qAncestors = o.getAncestors(objectid=request.navid);
 </cfscript>
 

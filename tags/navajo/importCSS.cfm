@@ -1,3 +1,8 @@
+<!------------------------------------------------------------------------
+DEPRECATED
+pls use ../tags/webskin/importCSS.cfm instead
+------------------------------------------------------------------------->
+
 <!--- 
 importCSS
 tag for importing all CSS stylesheet objects for an object based on 
@@ -8,14 +13,14 @@ its navigation node
 <cfif IsDefined("request.navid")>
 <cfscript>
 // get navigation elements to root
-o = createObject("component", "fourq.utils.tree.tree");
+o = createObject("component", "#application.packagepath#.farcry.tree");
 qAncestors = o.getAncestors(objectid=request.navid);
 // loop through and determine which ones have CSS objects
 </cfscript>
 
 <cfquery datasource="#application.dsn#" name="qCSS">
 SELECT dmCSS.objectid, dmCSS.filename
-FROM dmCSS, dmNavigation_aObjectIDs
+FROM #application.dbowner#dmCSS, #application.dbowner#dmNavigation_aObjectIDs
 WHERE 
 	dmCSS.objectid = dmNavigation_aObjectIDs.data
 	AND dmNavigation_aObjectIDs.objectid IN (#quotedValueList(qAncestors.objectid)#)

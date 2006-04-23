@@ -4,11 +4,11 @@
 || Copyright ||
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/display/OpenLayer.cfm,v 1.1.1.1 2002/09/27 06:54:04 petera Exp $
+$Header: /cvs/farcry/farcry_core/tags/display/OpenLayer.cfm,v 1.2 2002/09/27 07:28:38 petera Exp $
 $Author: petera $
-$Date: 2002/09/27 06:54:04 $
-$Name: b100 $
-$Revision: 1.1.1.1 $
+$Date: 2002/09/27 07:28:38 $
+$Name: b131 $
+$Revision: 1.2 $
 
 || DESCRIPTION || 
 Wraps its content with an collapse-expand-layer... 
@@ -38,7 +38,7 @@ Wraps its content with an collapse-expand-layer...
   
 || HISTORY ||
 $Log: OpenLayer.cfm,v $
-Revision 1.1.1.1  2002/09/27 06:54:04  petera
+Revision 1.2  2002/09/27 07:28:38  petera
 no message
 
 Revision 1.2  2002/08/22 07:32:06  geoff

@@ -1,176 +1,101 @@
+<!--- 
+|| LEGAL ||
+$Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
+$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
+
+|| VERSION CONTROL ||
+$Header: /cvs/farcry/farcry_core/tags/navajo/floatMenu.cfm,v 1.15 2003/05/29 03:42:13 paul Exp $
+$Author: paul $
+$Date: 2003/05/29 03:42:13 $
+$Name: b131 $
+$Revision: 1.15 $
+
+|| DESCRIPTION || 
+$Description: FarCry DHTML Float Menu$
+$TODO: $
+
+|| DEVELOPER ||
+$Developer: Stephen 'Spike' Milligan (spike@spike.org.uk)$
+
+|| ATTRIBUTES ||
+$in: $
+$out:$
+--->
+
 <cfsetting enablecfoutputonly="Yes">
-<!--- begin: build the floatMenu --->
-<cfoutput>
-<link type="text/css" rel="stylesheet" href="#application.url.farcry#/css/admin.css">
 
-<script language = "javascript">
-<!--
-var ie = document.all ? 1 : 0
-var ns = document.layers ? 1 : 0
+<cfimport taglib="/farcry/farcry_core/tags/farcry/" prefix="farcry">
 
-if(ie){
-document.write('<style type="text/css">')
-document.write("##screen	{filter:Alpha(Opacity=30);}")
-document.write("</style>")
-}
-
-if(ns){
-document.write('<style type="text/css">')
-document.write("##master	{clip:rect(0,150,250,0);}")
-document.write("</style>")
-}
-
-//-->
-</script>
-<script language = "javascript">
-<!--
-var ie = document.all ? 1 : 0
-var ns = document.layers ? 1 : 0
-
-var master = new Object("element")
-master.curLeft = -140;	master.curTop = 10;
-master.gapLeft = 0;		master.gapTop = 0;
-master.timer = null;
-
-function moveAlong(layerName, paceLeft, paceTop, fromLeft, fromTop){
-clearTimeout(eval(layerName).timer)
-
-if(eval(layerName).curLeft != fromLeft){
-     if((Math.max(eval(layerName).curLeft, fromLeft) - Math.min(eval(layerName).curLeft, fromLeft)) < paceLeft){eval(layerName).curLeft = fromLeft}
-else if(eval(layerName).curLeft < fromLeft){eval(layerName).curLeft = eval(layerName).curLeft + paceLeft}
-else if(eval(layerName).curLeft > fromLeft){eval(layerName).curLeft = eval(layerName).curLeft - paceLeft}
-if(ie){document.all[layerName].style.left = eval(layerName).curLeft}
-if(ns){document[layerName].left = eval(layerName).curLeft}
-}
-
-if(eval(layerName).curTop != fromTop){
-     if((Math.max(eval(layerName).curTop, fromTop) - Math.min(eval(layerName).curTop, fromTop)) < paceTop){eval(layerName).curTop = fromTop}
-else if(eval(layerName).curTop < fromTop){eval(layerName).curTop = eval(layerName).curTop + paceTop}
-else if(eval(layerName).curTop > fromTop){eval(layerName).curTop = eval(layerName).curTop - paceTop}
-if(ie){document.all[layerName].style.top = eval(layerName).curTop}
-if(ns){document[layerName].top = eval(layerName).curTop}
-}
-
-eval(layerName).timer=setTimeout('moveAlong("'+layerName+'",'+paceLeft+','+paceTop+','+fromLeft+','+fromTop+')',30)
-}
-
-function setPace(layerName, fromLeft, fromTop, motionSpeed){
-	eval(layerName).gapLeft = (Math.max(eval(layerName).curLeft, fromLeft) - Math.min(eval(layerName).curLeft, fromLeft))/motionSpeed
-	eval(layerName).gapTop = (Math.max(eval(layerName).curTop, fromTop) - Math.min(eval(layerName).curTop, fromTop))/motionSpeed
-
-moveAlong(layerName, eval(layerName).gapLeft, eval(layerName).gapTop, fromLeft, fromTop)
-}
-
-var expandState = 0
-
-function expand(){
-	if(expandState == 0){
-		setPace("master", 0, 10, 5); 
-		if(ie){
-			document.menutop.src = "farcry/images/floatMenuOn1.gif"
-		}; 
-		expandState = 1;
-	} else {
-		setPace("master", -140, 10, 10); 
-		if(ie){
-			document.menutop.src = "farcry/images/floatMenuOff1.gif"
-		}; 
-		expandState = 0;
-	}
-}
-//-->
-</script>
-
-<div id="master">
-
-<div id="menu">
-<table border="0" width="8" cellspacing="0" cellpadding="0">
-<tr><td width="100%"><a href="javascript:expand()" onfocus="this.blur()"><img name="menutop" border="0" src="farcry/images/floatMenuOff1.gif" width="8" height="50"></a></td></tr>
-</table>
-</div>
-
-<div id="top">
-<table border="0" width="140" cellspacing="0" cellpadding="0">
-<tr><td width="100%"><img border="0" src="farcry/images/floatMenuTop.gif" width="140" height="6"></td></tr>
-</table>
-</div>
-
-<div id="screenlinks">
-<table border="0" width="140" cellspacing="0" cellpadding="5" style="border : thin outset Gray;">
-<tr><td width="100%">
-
-<table border="0" width="100%" bgcolor="##808080" cellspacing="0" cellpadding="0">
-<tr><td width="100%">
-
-<table border="0" width="100%" cellspacing="1" cellpadding="5">
-<tr><td width="100%" bgcolor="##FFFFFF">
-
-<!--- begin: menu contents --->
-<div class="floatertitle">:: FarCry ::</div>
-
-<!--- Admin Options --->
-<div>
-<cfif iAdmin eq 1>
-	<a class="floaterLink" href="#application.url.conjurer#<cf_URLGenerator objectID="#url.ObjectID#">&designmode=<cfif isDefined("url.designMode") and (url.designmode eq "1")>0<cfelse>1</cfif>">Toggle View</a><br>
-	
-	<!--- flushcache --->
-	<a class="floaterLink" href="#application.url.conjurer#<cf_URLGenerator objectID="#url.ObjectID#">&flushcache=1&showdraft=0">Flush Cache</a><br>
-		
-	<!--- showdraft toggle --->
-	<cfif isDefined("request.mode.showdraft") AND request.mode.showdraft eq 0>
-	<a class="floaterLink" href="#application.url.conjurer#<cf_URLGenerator objectID="#url.ObjectID#&flushcache=1&showdraft=1"><cfif isDefined("url.designMode") and (url.designmode eq "1")>&designmode=1</cfif>">Show Draft</a><br>
-	<cfelse>
-	<a class="floaterLink" href="#application.url.conjurer#<cf_URLGenerator objectID="#url.ObjectID#&flushcache=1&showdraft=0"><cfif isDefined("url.designMode") and (url.designmode eq "1")>&designmode=1</cfif>">Hide Draft</a><br>
-	</cfif>
-	
-	<a class="floaterLink" href="##" onClick="window.open('#application.url.farcry#/index.cfm','Admin');">Admin Page</a><br>
-</cfif>
-
-<!--- designmode header toggle --->
-<cfif isdefined("session.designmodedisplay") and session.designmodedisplay>
-<a class="floaterLink" href="#application.url.conjurer#<cf_URLGenerator objectID="#url.ObjectID#">&designmodeheader=0<cfif isDefined("url.designMode") and (url.designmode eq "1")>&designmode=1</cfif>">Toggle Header</a><br>
-
+<!--- Design Mode --->
+<cfset aItems = arrayNew(1)>
+<cfset aItems[arrayLen(aItems)+1] = structNew()>
+<cfset aItems[arrayLen(aItems)].icon = "design.gif">
+<!--- check current design mode state --->
+<cfif isDefined("request.mode.design") and (request.mode.design eq "1")>
+	<cfset aItems[arrayLen(aItems)].href = "#application.url.conjurer#?objectID=#url.ObjectID#&designmode=0">
+	<cfset aItems[arrayLen(aItems)].text = "Hide design">
 <cfelse>
-<a class="floaterLink" href="#application.url.conjurer#<cf_URLGenerator objectID="#url.ObjectID#">&designmodeheader=1<cfif isDefined("url.designMode") and (url.designmode eq "1")>&designmode=1</cfif>">Toggle Header</a><br>
+	<cfset aItems[arrayLen(aItems)].href = "#application.url.conjurer#?objectID=#url.ObjectID#&designmode=1">
+	<cfset aItems[arrayLen(aItems)].text = "Show design">
 </cfif>
 
-<!--- comment --->
-<cfif iCanCommentOnContent eq 1>
-<a class="floaterLink" href="##" onClick="window.open('#application.url.farcry#/navajo/commentOnContent.cfm?objectid=#stobj.objectid#', '_blank','width=500,height=400,menubar=no,toolbars=no,resize=yes', false);">Comment</a><br>
+<!--- Show latest mode --->
+<cfset aItems[arrayLen(aItems)+1] = structNew()>
+<cfset aItems[arrayLen(aItems)].icon = "cache.gif">
+<!--- check current cache state --->
+<cfif isDefined("request.mode.flushcache") AND request.mode.flushcache eq 0>
+	<cfset aItems[arrayLen(aItems)].href = "#application.url.conjurer#?objectID=#url.ObjectID#&flushcache=1">
+	<cfset aItems[arrayLen(aItems)].text = "Show latest">
+<cfelse>
+	<cfset aItems[arrayLen(aItems)].href = "#application.url.conjurer#?objectID=#url.ObjectID#&flushcache=0">
+	<cfset aItems[arrayLen(aItems)].text = "Show cached">
 </cfif>
 
-<!--- logout --->
-<a class="floaterLink" style="color:red" href="#cgi.script_name#?logout=1&#cgi.query_string#">Logout</a><br>
-</div>
-<!--- end: menu contents --->
+<!--- Show Draft mode --->
+<cfset aItems[arrayLen(aItems)+1] = structNew()>
+<cfset aItems[arrayLen(aItems)].icon = "draft.gif">
+<!--- check current state of draft mode --->
+<cfif isDefined("request.mode.showdraft") AND request.mode.showdraft eq 0>
+	<cfset aItems[arrayLen(aItems)].href = "#application.url.conjurer#?objectID=#url.ObjectID#&flushcache=1&showdraft=1">
+	<cfset aItems[arrayLen(aItems)].text = "Show draft">
+<cfelse>
+	<cfset aItems[arrayLen(aItems)].href = "#application.url.conjurer#?objectID=#url.ObjectID#&flushcache=0&showdraft=0">
+	<cfset aItems[arrayLen(aItems)].text = "Hide draft">
+</cfif>
 
-</td></tr>
-</table>
+<cfset aItems[arrayLen(aItems)+1] = structNew()>
+<cfset aItems[arrayLen(aItems)].text = "Admin Page">
+<cfset aItems[arrayLen(aItems)].href = "#application.url.farcry#/index.cfm">
+<cfset aItems[arrayLen(aItems)].icon = "admin.gif">
+<cfset aItems[arrayLen(aItems)].target = "_blank">
 
-</td></tr>
-</table>
+<cfset aItems[arrayLen(aItems)+1] = structNew()>
+<cfset aItems[arrayLen(aItems)].text = "Edit Page">
+<cfset aItems[arrayLen(aItems)].href = "#application.url.farcry#/index.cfm?section=site&rootobjectid=#request.navid#">
+<cfset aItems[arrayLen(aItems)].icon = "edit.gif">
+<cfset aItems[arrayLen(aItems)].target = "_blank">
 
-</td></tr>
-</table>
-</div>
 
-</div>
+<cfset aItems[arrayLen(aItems)+1] = structNew()>
+<cfset aItems[arrayLen(aItems)].text = "Logout">
+<cfset aItems[arrayLen(aItems)].href = "#application.url.conjurer#?objectID=#url.ObjectID#&logout=1">
+<cfset aItems[arrayLen(aItems)].icon = "logout.gif">
 
-<script language = "javascript">
-<!--
-if(ie){var sidemenu = document.all.master;}
-if(ns){var sidemenu = document.master;}
+<cfscript>
+	oAuth = request.dmsec.oAuthorisation;
+	isDeveloper = oAuth.checkPermission(permissionname="developer",reference="policygroup");
+	if (isDeveloper EQ 1)
+	{
+		 aItems[arrayLen(aItems)+1] = structNew();
+		 aItems[arrayLen(aItems)].text = "Refresh App Scope";
+		 aItems[arrayLen(aItems)].href = "#application.url.conjurer#?objectID=#url.ObjectID#&updateapp=1";
+	}	 
 
-function FixY(){
-if(ie){sidemenu.style.top = document.body.scrollTop+10}
-if(ns){sidemenu.top = window.pageYOffset+10}
-}
+		
+</cfscript>
 
-setInterval("FixY()",100);
-//-->
-</script>
-</cfoutput>
-<!--- end: build the floatMenu --->
+
+<!--- show menu --->
+<farcry:floater imagedir="#application.url.farcry#/images/floater/" aItems="#aItems#" prefix="dmfloat" useContextMenu="true">
+
 <cfsetting enablecfoutputonly="No">
-
-

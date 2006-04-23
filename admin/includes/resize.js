@@ -1,3 +1,5 @@
+
+
 moving = new Boolean(false);
 
 function resizerdown()

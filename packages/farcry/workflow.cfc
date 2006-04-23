@@ -1,13 +1,4 @@
 <cfcomponent>
-	<cffunction name="getUserDetails" access="public" returntype="query" hint="Returns all user details">
-		<cfargument name="userId" type="string" required="true">
-				
-		<cfset stArgs = arguments> <!--- hack to make arguments available to included file --->
-		<cfinclude template="_workflow/getUserDetails.cfm">
-		
-		<cfreturn qUser>
-	</cffunction>
-	
 	<cffunction name="getObjectsPendingApproval" access="public" returntype="struct" hint="Returns all objects pending approval by user">
 		<cfargument name="userLogin" type="string" required="yes">
 		
@@ -25,13 +16,22 @@
 		<cfreturn stPendingNews>
 	</cffunction>
 	
-	<cffunction name="getObjectApprovers" access="public" returntype="query" hint="Returns all users that can approve pending objects">
-		<cfargument name="objectId" type="uuid" required="yes">
+	<cffunction name="getObjectApprovers" access="public" returntype="struct" hint="Returns all users that can approve pending objects">
+		<cfargument name="objectID" type="UUID" required="yes">
 		
 		<cfset stArgs = arguments> <!--- hack to make arguments available to included file --->
 		<cfinclude template="_workflow/getObjectApprovers.cfm">
 		
-		<cfreturn qGetUsers>
+		<cfreturn stApprovers>
+	</cffunction>
+	
+	<cffunction name="getNewsApprovers" access="public" returntype="struct" hint="Returns all users that can approve pending news objects">
+		<cfargument name="objectID" type="UUID" required="yes">
+		
+		<cfset stArgs = arguments> <!--- hack to make arguments available to included file --->
+		<cfinclude template="_workflow/getNewsApprovers.cfm">
+		
+		<cfreturn stApprovers>
 	</cffunction>
 	
 	<cffunction name="getUserDraftObjects" access="public" returntype="query" hint="Returns all draft objects for logged in user">

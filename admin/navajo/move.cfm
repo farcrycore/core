@@ -1,6 +1,1 @@
-<cfsetting enablecfoutputonly="Yes">
-<cfimport taglib="/farcry/tags/navajo/" prefix="nj">
-
-<nj:move>
-
-<cfsetting enablecfoutputonly="No">
+<cfinclude template="/farcry/farcry_core/ui/navajo/move.cfm">

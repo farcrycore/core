@@ -1,6 +1,6 @@
 <cfsetting enablecfoutputonly="Yes">
-<cfimport taglib="/fourq/tags/" prefix="q4">
-<cfimport taglib="/farcry/tags/navajo/" prefix="nj">
+<cfimport taglib="/farcry/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
 
 <cfparam name="attributes.objectId">
 <cfparam name="attributes.r_objectId" default="">
@@ -29,7 +29,7 @@
 	<cfset parentId=attributes.objectId>
 	<q4:contentobjectGetMultiple bActive="0" lObjectIds="#attributes.ObjectId#" r_stObjects="stType">
 	<cfloop condition="isNav neq -1">
-		<nj:TreeGetRelations 
+		<nj:treeGetRelations 
 			typename="#stType[attributes.objectID].typename#"
 			objectId="#parentId#"
 			get="parents"

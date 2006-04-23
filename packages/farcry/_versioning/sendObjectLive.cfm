@@ -1,5 +1,5 @@
-<cfimport taglib="/fourq/tags/" prefix="q4">
-		<cfimport taglib="/farcry/tags/navajo/" prefix="nj">
+<cfimport taglib="/farcry/fourq/tags/" prefix="q4">
+		<cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
 		<!--- TODO - no where near enough error checking in this CFC --->
 		<cfscript>
 			stResult = structNew();
@@ -8,7 +8,7 @@
 		</cfscript>
 
 		<cfif NOT isDefined("typename")>
-			<cfinvoke component="fourq.fourq" returnvariable="thisTypename" method="findType" objectID="#ObjectId#">
+			<cfinvoke component="farcry.fourq.fourq" returnvariable="thisTypename" method="findType" objectID="#ObjectId#">
 			<cfset typename = thisTypename>	
 		</cfif>
 		<cfset typename = "#application.packagepath#.types.#typename#">

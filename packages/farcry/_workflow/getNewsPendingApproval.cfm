@@ -2,25 +2,30 @@
 <cfset stPendingNews = structNew()>
 
 <!--- check if user can approve news items --->
-<cf_dmSec_PermissionCheck permissionName="NewsApprove" reference1="PolicyGroup" r_iState="iObjectDeletePermission">
+<cfscript>
+	iObjectDeletePermission = request.dmSec.oAuthorisation.checkPermission(permissionName="NewsApprove",reference="PolicyGroup");
+</cfscript>
+
 		
-<cfif iObjectDeletePermission>
+<cfif iObjectDeletePermission eq 1>
 	<!--- get all news items pending approval --->
 	<cfquery name="qGetNews" datasource="#application.dsn#">
-		select * from dmNews, dmUser
-		where status= 'pending' and dmNews.createdBy = dmUser.userLogin
+    SELECT * FROM #application.dbowner#dmNews WHERE status = 'pending'
 	</cfquery>
 	
 	<cfif qGetNews.recordcount gt 0>
 		<cfloop query="qGetNews">
 			<!--- Create structure for news details to be outputted later --->
-			<cfset stPendingNews[qGetNews.ObjectId] = structNew()>
-			<cfset stPendingNews[qGetNews.ObjectId]["objectTitle"] = qGetNews.title>
-			<cfset stPendingNews[qGetNews.ObjectId]["objectCreatedBy"] = qGetNews.createdBy>
-			<cfset stPendingNews[qGetNews.ObjectId]["objectCreatedByEmail"] = qGetNews.userEmail>
-			<cfset stPendingNews[qGetNews.ObjectId]["objectLastUpdate"] = qGetNews.dateTimeLastUpdated>
+            <cfscript>
+            o_profile = createObject("component", "#application.packagepath#.types.dmProfile");
+            stProfile = o_profile.getProfile(userName=qGetNews.createdBy);
+
+			stPendingNews[qGetNews.objectID] = structNew();
+			stPendingNews[qGetNews.objectID]["objectTitle"] = qGetNews.title;
+			stPendingNews[qGetNews.objectID]["objectCreatedBy"] = qGetNews.createdBy;
+			stPendingNews[qGetNews.objectID]["objectCreatedByEmail"] = stProfile.emailAddress;
+			stPendingNews[qGetNews.objectID]["objectLastUpdate"] = qGetNews.dateTimeLastUpdated;
+            </cfscript>
 		</cfloop>
 	</cfif>
 </cfif>
-				
-				

@@ -1,9 +1,30 @@
-<cfimport taglib="/fourq/tags/" prefix="q4">
-<cfimport taglib="/farcry/tags/navajo/" prefix="nj">
-<cfoutput>
-	<link type="text/css" rel="stylesheet" href="#application.url.farcry#/css/admin.css"> 
-</cfoutput>
+<!--- 
+|| LEGAL ||
+$Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
+$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
+|| VERSION CONTROL ||
+$Header: /cvs/farcry/farcry_core/packages/types/_dmInclude/edit.cfm,v 1.11 2003/07/15 07:04:15 brendan Exp $
+$Author: brendan $
+$Date: 2003/07/15 07:04:15 $
+$Name: b131 $
+$Revision: 1.11 $
+
+|| DESCRIPTION || 
+$Description: edit handler$
+$TODO: $
+
+|| DEVELOPER ||
+$Developer: Brendan Sisson (brendan@daemon.com.au)$
+
+|| ATTRIBUTES ||
+$in: $
+$out:$
+--->
+<cfsetting enablecfoutputonly="yes">
+
+<cfimport taglib="/farcry/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
 
 <cfif isDefined("FORM.submit")> <!--- perform the update --->
 	
@@ -17,6 +38,9 @@
 		//TODO MUST sort out this date stuff. Can't just keep overwriting datetime created
 		stProperties.datetimelastupdated = Now();
 		stProperties.lastupdatedby = session.dmSec.authentication.userlogin;
+		//unlock object
+		stProperties.locked = 0;
+		stProperties.lockedBy = "";
 	</cfscript>
 
 	<q4:contentobjectdata
@@ -25,28 +49,28 @@
 	 objectid="#stObj.ObjectID#"
 	>
 	
-	<cfoutput>
-		<span class="FormTitle">INCLUDE UPDATE SUCCESSFUL</span><br>
-		<input type="button" value="Close" class="normalBttnStyle" onClick="location.href='#application.url.farcry#/navajo/complete.cfm';">  
-	</cfoutput>
-	
-	<nj:TreeGetRelations 
+	<!--- get parent to update tree --->	
+	<nj:treeGetRelations 
 			typename="#stObj.typename#"
 			objectId="#stObj.ObjectID#"
 			get="parents"
 			r_lObjectIds="ParentID"
 			bInclusive="1">
-	<nj:updateTree objectId="#parentID#" complete="0">
 	
-
-<cfelseif isDefined("FORM.cancel")> <!--- update was cancelled --->
-	<br>
-	<span class="FormTitle">Operation has been cancelled</span>
+	<!--- update tree --->
+	<nj:updateTree objectId="#parentID#">
+	
+	<!--- reload overview page --->
+	<cfoutput>
+		<script language="JavaScript">
+			parent['editFrame'].location.href = '#application.url.farcry#/edittabOverview.cfm?objectid=#stObj.ObjectID#';
+		</script>
+	</cfoutput>
 	
 <cfelse> <!--- Show the form --->
 	<cfoutput>
 	<br>
-	<span class="FormTitle">#stObj.title#</span>
+	<span class="FormTitle">#stObj.title#</span><p></p>
 
 	
 	<form action="" method="post" enctype="multipart/form-data" name="fileForm">
@@ -62,13 +86,13 @@
    		<td width="100%" class="FormLabel">
 		</cfoutput>
 			<cfif qGetIncludes.recordCount>
-			<select name="include">
+			<cfoutput><select name="include"></cfoutput>
 			<cfoutput query="qGetIncludes">
 				<option value="#include#" <cfif qGetIncludes.include eq stObj.include>SELECTED</cfif>>#include#</option>
 			</cfoutput>
 			</select>
 			<cfelse>
-				NO INCLUDE FILES AVAILABLE
+				<cfoutput>NO INCLUDE FILES AVAILABLE</cfoutput>
 			</cfif>
 			<cfoutput>
 		</td>
@@ -96,11 +120,17 @@
 	<tr>
 		<td colspan="2" align="center">
 			<input type="submit" value="OK" name="submit" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';">
-			<input type="Button" value="Cancel" name="Cancel" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';" onClick="location.href='#application.url.farcry#/navajo/complete.cfm';">
+			<input type="Button" value="Cancel" name="Cancel" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';" onClick="location.href='#application.url.farcry#/unlock.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#';parent.synchTab('editFrame','activesubtab','subtab','siteEditOverview');parent.synchTitle('Overview')">
 		</td>
 	</tr>		
 	</table>
 	
 	</form>
+	<script>
+		//bring focus to title
+		document.fileForm.title.focus();
+	</script>
 	</cfoutput>
 </cfif>	
+
+<cfsetting enablecfoutputonly="no">

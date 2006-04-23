@@ -425,25 +425,88 @@ var colWidth = initColWidth;
 
 </CFOUTPUT>
 
-<CFQUERY NAME="GetTables" DATASOURCE="#Attributes.dsn#" DBTYPE="ODBC">
-SELECT 	dbo.sysobjects.name AS TableName, 
-	 	dbo.syscolumns.Name AS ColumnName, 
-	 	dbo.syscolumns.length,
-	 	dbo.syscolumns.isnullable,
-		dbo.systypes.name AS Type
-FROM 		dbo.sysobjects 
-INNER JOIN 	dbo.syscolumns 
-ON 		(dbo.sysobjects.id = dbo.syscolumns.id)
-INNER JOIN 	dbo.systypes
-ON		(dbo.syscolumns.xtype = dbo.systypes.xtype)
-WHERE 	dbo.sysobjects.xtype = 'U'
-AND 		dbo.sysobjects.name <> 'dtproperties'
-GROUP BY 	dbo.sysobjects.name,
-		dbo.syscolumns.name,
-		dbo.syscolumns.length,
-		dbo.syscolumns.isnullable,
-		dbo.systypes.name
-</CFQUERY>
+<cfswitch expression="#application.dbtype#">
+<cfcase value="ora">
+	<CFQUERY NAME="GetTables" DATASOURCE="#Attributes.dsn#">
+		SELECT 	ut.TABLE_NAME AS TableName, 
+				uc.COLUMN_NAME AS ColumnName, 
+				uc.DATA_LENGTH AS length,
+				uc.NULLABLE AS isnullable,
+				uc.DATA_TYPE AS Type
+		FROM 		#application.dbowner#USER_TABLES ut
+		INNER JOIN USER_TAB_COLUMNS uc	ON 	(ut.TABLE_NAME = uc.TABLE_NAME)
+		GROUP BY 	ut.TABLE_NAME,
+					uc.COLUMN_NAME,
+				uc.DATA_LENGTH,
+				uc.NULLABLE,
+				uc.DATA_TYPE
+	</cfquery>			
+</cfcase>
+
+<cfcase value="mysql">
+	<!--- Get all tables in database--->	
+	<cfquery name="getMySQLTables" datasource="#Attributes.dsn#">
+	SHOW TABLES
+	</cfquery>
+	<!--- Create new query to be filled with db metadata--->					
+	<cfset GetTables = queryNew("TableName,ColumnName,length,isnullable,Type")>	
+	<cfloop query="getMySQLTables">
+		<!--- Get tablename --->
+		<cfset myTable = GetMySQLTables[columnlist][currentrow]>
+		<!--- Get column details of each table--->	
+		<cfquery name="GetMySQLColumns" datasource="#Attributes.dsn#">
+		SHOW COLUMNS FROM #myTable#
+		</cfquery>
+		<!--- Loop thru columns --->
+		<cfloop query="GetMySQLColumns">
+			<cfif find("(",type)>
+				<cfset openbracket = find("(",GetMySQLColumns.type)>
+				<cfset closebracket = find(")",GetMySQLColumns.type)>
+				<cfset myLength = mid(GetMySQLColumns.type,openbracket+1,closebracket-(openbracket+1))>
+				<cfset myType = left(GetMySQLColumns.type,openbracket-1)>
+			<cfelse>
+				<cfset myType = GetMySQLColumns.type>
+				<cfif GetMySQLColumns.type eq "datetime">
+					<cfset myLength=8>
+				<cfelseif GetMySQLColumns.type is "text">
+					<cfset myLength=16>
+				<cfelse>
+					<cfset myLength=4>
+				</cfif>
+			</cfif>
+			<!--- Fill column details into created query--->
+			<cfset temp = queryAddRow(GetTables)>
+			<cfset temp = QuerySetCell(GetTables, "TableName", myTable)>
+			<cfset temp = QuerySetCell(GetTables, "ColumnName", GetMySQLColumns.field)>
+			<cfset temp = QuerySetCell(GetTables, "length", myLength)>
+			<cfset temp = QuerySetCell(GetTables, "isnullable", yesnoformat(GetMySQLColumns.null))>
+			<cfset temp = QuerySetCell(GetTables, "Type", myType)>
+		</cfloop>	
+	</cfloop>	
+</cfcase>
+
+<cfdefaultcase>
+	<CFQUERY NAME="GetTables" DATASOURCE="#Attributes.dsn#">
+	SELECT 	dbo.sysobjects.name AS TableName, 
+			dbo.syscolumns.Name AS ColumnName, 
+			dbo.syscolumns.length,
+			dbo.syscolumns.isnullable,
+			dbo.systypes.name AS Type
+	FROM 		dbo.sysobjects 
+	INNER JOIN 	dbo.syscolumns 
+	ON 		(dbo.sysobjects.id = dbo.syscolumns.id)
+	INNER JOIN 	dbo.systypes
+	ON		(dbo.syscolumns.xtype = dbo.systypes.xusertype)
+	WHERE 	dbo.sysobjects.xtype = 'U'
+	AND 		dbo.sysobjects.name <> 'dtproperties'
+	GROUP BY 	dbo.sysobjects.name,
+			dbo.syscolumns.name,
+			dbo.syscolumns.length,
+			dbo.syscolumns.isnullable,
+			dbo.systypes.name
+	</CFQUERY>
+</cfdefaultcase>
+</cfswitch>
 
 <CFOUTPUT QUERY="getTables" GROUP="TableName">
 
@@ -451,7 +514,7 @@ GROUP BY 	dbo.sysobjects.name,
 //Start window
 addWindow("tbl_#getTables.TableName#")
 </script>
-	
+
 	<TABLE BORDER="1" cellpadding="3" CELLSPACING="0" ID="tbl_#getTables.TableName#">
 		<TR>
 			<TH STYLE="font-size: 12px; font-weight: bold;">

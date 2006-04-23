@@ -1,3 +1,1 @@
-<cfimport taglib="/farcry/tags/navajo/" prefix="nj">
-
-<nj:CommentOnObject>
+<cfinclude template="/farcry/farcry_core/ui/navajo/commentOnContent.cfm">

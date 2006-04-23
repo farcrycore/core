@@ -1,0 +1,39 @@
+/* These are the mozilla specific styles used for the tabs in the admin area*/
+
+div.tabMain {
+  width:98%;
+}
+
+div.tabTitle {
+  width:106%;
+ } 
+
+
+iframe.tabContent {
+  height: 100%;
+}
+
+#resizer {
+	
+	top: 13.2%;
+	width:2px;
+	height: 98%;
+	left:27.8%;
+}
+
+#background {
+		height: 87%;
+}	
+	
+#column1 {
+	width: 26%;
+	height:98%;
+}
+		
+#column2 {
+	width: 73%;
+	height:98%;
+}
+
+/*  ######## End Tab Styles ######## */
+

@@ -1,9 +1,14 @@
 <cfsetting enablecfoutputonly="Yes">
-<cfimport taglib="/fourq/tags/" prefix="q4">
-<cfimport taglib="/farcry/tags/navajo/" prefix="nj">
+<cfimport taglib="/farcry/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
 
 
-<cf_dmSec2_PermissionCheck permissionName="ModifyPermissions" reference1="PolicyGroup" r_iState="iState">
+<cfscript>
+oAuthorisation = request.dmsec.oAuthorisation;
+oAuthentication = request.dmsec.oAuthentication;
+iState = oAuthorisation.checkPermission(permissionName="ModifyPermissions",reference="PolicyGroup");	
+</cfscript>
+
 
 <cfif iState neq 1>
 	<cfoutput>
@@ -41,36 +46,40 @@
 	</cfif>
 	
 	<!--- get the objects type, so we can get it's name --->
+	<cfscript>
+		stObjectPermissions = oAuthorisation.collateObjectPermissions(objectid=url.objectid);
+	</cfscript>
 	
-	<cfif isDefined("url.overideType")>
-		<cf_dmSec2_ObjectPermissionCollate objectid="#url.objectId#" overideType="#url.overideType#" r_stObjectPermissions="stObjectPermissions">
-	<cfelse>
-		<cf_dmSec2_ObjectPermissionCollate objectid="#url.objectId#" r_stObjectPermissions="stObjectPermissions">
-	</cfif>
 <cfelse>
 	<cfset typeName=url.reference1>
 	<cfset stObj.label=url.reference1>
+	<cfscript>
+		stObjectPermissions = oAuthorisation.getObjectPermission(reference=url.reference1);
+	</cfscript>
 	
-	<cf_dmSec_ObjectPermission reference1="#url.reference1#" r_stObjectPermissions="stObjectPermissions">
+
 </cfif>
 
-<!--- set up the permissions translation table --->
-<cf_dmSec_PermissionGetMultiple r_aPermissions="aPermissions" type="#typeName#">
-
-<cfset stPermissions=StructNew()>
-<cfloop index="i" from="1" to="#arrayLen(aPermissions)#">
-	<cfset stPermissions[aPermissions[i].permissionId]=aPermissions[i].permissionName>
-</cfloop>
-
-<cf_dmSec_arrayToList array="#aPermissions#" key="permissionId" r_list="lPermissionIds">
+<cfscript>
+	//set up the permissions translation table 
+	aPermissions = oAuthorisation.getAllPermissions(permissionType=typename);
+	stPermissions=StructNew();
+	for(i=1;i LTE arrayLen(aPermissions);i = i + 1)
+	{	
+		stPermissions[aPermissions[i].permissionId]=aPermissions[i].permissionName;
+	}
+	lPermissionIds = oAuthorisation.arrayKeyToList(key="permissionID",array=aPermissions);
+			
+</cfscript>
 
 <cfoutput>
 <span class="formtitle">Permissions on #stObj.label#(#typeName#)</span><p>
 
-<!--- gets all the groups ie siteadmin,sysadmin etc --->
-<cf_dmsec_PolicyGroupGetMultiple r_aPolicyGroups="aPolicyGroups">
-<!--- <cfdump var="#aPolicyGroups#"> --->
-<cf_dmSec_arrayToList array="#aPolicyGroups#" key="policyGroupId" r_list="lPolicyGroupIds">
+<cfscript>
+// gets all the groups ie siteadmin,sysadmin etc 
+aPolicyGroups = oAuthorisation.getAllPolicyGroups();
+lPolicyGroupIds = oAuthentication.arrayKeyToList(array=aPolicyGroups,key='policyGroupId');
+</cfscript>
 
 <script>
 
@@ -140,7 +149,9 @@
 	<span class="formlabel">Policy Group:&nbsp;</span>
 	<select name="selectGroup" onChange="selectPolicyGroup(this.options[this.selectedIndex].value)"></cfoutput>
 	<cfloop index="PolicyGroupId" list="#lPolicyGroupIds#">
-		<cf_dmSec_PolicyGroupGet policyGroupId="#PolicyGroupId#" r_stPolicyGroup="stPG">
+		<cfscript>
+			stPG=oAuthorisation.getPolicyGroup(policyGroupId=policyGroupId);
+		</cfscript>
 		<cfoutput><option value="#PolicyGroupId#">#stPG.policyGroupName# </cfoutput>
 	</cfloop>
 	<cfoutput></select>
@@ -215,24 +226,13 @@
 				if ( state eq "Yes" ) state=1;
 				if ( state eq "No" ) state=-1;
 				if ( state eq "Inherit" ) state=0;
+				if (isDefined("url.objectId"))
+					request.dmSec.oAuthorisation.createPermissionBarnacle(PolicyGroupId=PolicyGroupId,PermissionId=PermissionId,Reference=url.objectId,status=state);	
+				else
+					request.dmSec.oAuthorisation.createPermissionBarnacle(PolicyGroupId=PolicyGroupId,PermissionId=PermissionId,Reference=url.reference1,status=state);	
 			</cfscript>
 
-			<cfif isDefined("url.objectId")>
-			
-				<cf_dmSec_PermissionBarnacleCreate
-					PolicyGroupId="#PolicyGroupId#"
-					PermissionId="#PermissionId#"
-					Reference1="#url.objectId#"
-					state="#State#">
-			<cfelse>
-				<cf_dmSec_PermissionBarnacleCreate
-					PolicyGroupId="#PolicyGroupId#"
-					PermissionId="#PermissionId#"
-					Reference1="#url.reference1#"
-					state="#State#">
-				
-			</cfif>
-					
+		
 		</cfif>
 		
 		<cfoutput>.</cfoutput><cfflush>
@@ -242,12 +242,14 @@
 	<cfoutput><br><br>Updating Permission Cache (This may take a moment)</cfoutput>
 	<cfflush>
 	
-	<cfif isDefined("url.objectId")>
-		<cf_dmSec_ObjectPermissionCacheUpdate objectId="#url.objectId#">
-	<cfelse>
-		<cf_dmSec_ObjectPermissionCacheUpdate reference1="#url.reference1#">
-	</cfif>
-	
+	<cfscript>
+		oAuthorisation = request.dmSec.oAuthorisation;
+		if (isDefined("url.objectId"))
+			oAuthorisation.updateObjectPermissionCache(objectid=url.objectid);
+		else
+			oAuthorisation.updateObjectPermissionCache(reference=url.reference1);
+	</cfscript>
+
 	<!--- rewrite the permissions cache file, I think this really can take a long time on huge systems --->	
 	<cflock timeout="45" throwontimeout="No" type="READONLY" scope="SERVER">
 	<cfif isDefined("server.dmsec.#application.applicationname#.dmSecSCache")>

@@ -1,12 +1,35 @@
-<cfimport taglib="/fourq/tags/" prefix="q4">
-<cfimport taglib="/farcry/tags/navajo/" prefix="nj">
-<cfoutput>
-	<link type="text/css" rel="stylesheet" href="#application.url.farcry#/css/admin.css"> 
-</cfoutput>
+<!--- 
+|| LEGAL ||
+$Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
+$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
+|| VERSION CONTROL ||
+$Header: /cvs/farcry/farcry_core/packages/types/_dmImage/edit.cfm,v 1.17 2003/07/15 07:04:15 brendan Exp $
+$Author: brendan $
+$Date: 2003/07/15 07:04:15 $
+$Name: b131 $
+$Revision: 1.17 $
+
+|| DESCRIPTION || 
+$Description: edit handler$
+$TODO: $
+
+|| DEVELOPER ||
+$Developer: Brendan Sisson (brendan@daemon.com.au)$
+
+|| ATTRIBUTES ||
+$in: $
+$out:$
+--->
+<cfsetting enablecfoutputonly="yes">
+
+<cfimport taglib="/farcry/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
+
+<cfset showform=1>
 
 <cfif isDefined("FORM.submit")> <!--- perform the update --->
-		
+	<cfset showform=0>	
 	<cfscript>
 		stProperties = structNew();
 		stProperties.title = form.title;
@@ -19,37 +42,72 @@
 		stProperties.datetimelastupdated = Now();
 		stProperties.datetimecreated = Now();
 		stProperties.lastupdatedby = session.dmSec.authentication.userlogin;
+		//unlock object
+		stProperties.locked = 0;
+		stProperties.lockedBy = "";
 	</cfscript>
+	
 	<!--- upload the original file 	--->
+	<cfset imageAcceptList = application.config.image.imagetype> 
+	
 	<!--- TODO - need some more error checking here on uploadFile method return --->
 	<cfif trim(len(form.imageFile)) NEQ 0>
-		<cfinvoke component="fourq.utils.form.fileupload" method="uploadFile" returnvariable="stReturn" formfield="imagefile" destination="#application.defaultImagePath#"> 
-		<cfif not stReturn.bSuccess>
-			<cfdump var="#stReturn#"><cfabort>
+		<!--- upload new file (if accept list not specified in config, accept everything) --->
+		<cfif len(application.config.image.imagetype)>
+			<cfinvoke component="#application.packagepath#.farcry.form" method="uploadFile" returnvariable="stReturn" formfield="imagefile" destination="#application.defaultImagePath#" accept="#imageAcceptList#"> 
+		<cfelse>
+			<cfinvoke component="#application.packagepath#.farcry.form" method="uploadFile" returnvariable="stReturn" formfield="imagefile" destination="#application.defaultImagePath#"> 
 		</cfif>
-		<cfscript>
-			stProperties.imageFile = stReturn.ServerFile;
-			stProperties.originalImagePath = stReturn.ServerDirectory;
-		</cfscript>
+		
+		<cfif stReturn.bsuccess>
+			<cfscript>
+				stProperties.imageFile = stReturn.ServerFile;
+				stProperties.originalImagePath = stReturn.ServerDirectory;
+			</cfscript>
+		<cfelse>
+			<cfoutput><strong>ERROR:</strong> #stReturn.message#<p>
+			Image types that are accepted: #imageAcceptList# <p></p></cfoutput>
+			<cfset error=1>
+		</cfif>
 	</cfif>
 	
 	<cfif trim(len(FORM.optimisedImage)) NEQ 0 >
-		<cfinvoke component="fourq.utils.form.fileupload" method="uploadFile" returnvariable="stReturn" formfield="optimisedImage" destination="#application.defaultImagePath#"> 
-			
-		<cfscript>
-			stProperties.optimisedimage = stReturn.ServerFile;
-			stProperties.optimisedImagePath = stReturn.ServerDirectory;
-		</cfscript>
-	</cfif>
-	<cfif trim(len(FORM.thumbnailImage)) NEQ 0>
-		<cfinvoke component="fourq.utils.form.fileupload" method="uploadFile" returnvariable="stReturn" formfield="thumbnailImage" destination="#application.defaultImagePath#"> 
-		<cfif NOT stReturn.bSuccess>
-			<!--- Log the error here --->
+		<!--- upload new file (if accept list not specified in config, accept everything) --->
+		<cfif len(application.config.image.imagetype)>
+			<cfinvoke component="#application.packagepath#.farcry.form" method="uploadFile" returnvariable="stReturn" formfield="optimisedImage" destination="#application.defaultImagePath#" accept="#imageAcceptList#"> 
 		<cfelse>
+			<cfinvoke component="#application.packagepath#.farcry.form" method="uploadFile" returnvariable="stReturn" formfield="optimisedImage" destination="#application.defaultImagePath#"> 
+		</cfif>
+		
+		<cfif stReturn.bsuccess>
+			<cfscript>
+				stProperties.optimisedimage = stReturn.ServerFile;
+				stProperties.optimisedImagePath = stReturn.ServerDirectory;
+			</cfscript>
+		<cfelse>
+			<cfoutput><strong>ERROR:</strong> #stReturn.message#<p>
+			Image types that are accepted: #imageAcceptList# <p></p></cfoutput>
+			<cfset error=1>
+		</cfif>
+	</cfif>
+	
+	<cfif trim(len(FORM.thumbnailImage)) NEQ 0>
+		<!--- upload new file (if accept list not specified in config, accept everything) --->
+		<cfif len(application.config.image.imagetype)>
+			<cfinvoke component="#application.packagepath#.farcry.form" method="uploadFile" returnvariable="stReturn" formfield="thumbnailImage" destination="#application.defaultImagePath#" accept="#imageAcceptList#"> 
+		<cfelse>
+			<cfinvoke component="#application.packagepath#.farcry.form" method="uploadFile" returnvariable="stReturn" formfield="thumbnailImage" destination="#application.defaultImagePath#"> 
+		</cfif>
+		
+		<cfif stReturn.bsuccess>
 			<cfscript>
 				stProperties.thumbnail = stReturn.ServerFile;
 				stProperties.thumbnailImagePath = stReturn.ServerDirectory;
 			</cfscript>
+		<cfelse>
+			<cfoutput><strong>ERROR:</strong> #stReturn.message#<p>
+			Image types that are accepted: #imageAcceptList# <p></p></cfoutput>
+			<cfset error=1>
 		</cfif>
 	</cfif>
 	
@@ -60,25 +118,33 @@
 	 objectid="#stObj.ObjectID#"
 	>
 	
-
-	<cfoutput>
-		<span class="FormTitle">IMAGE UPDATE SUCCESSFUL</span><br>
-		<input type="button" value="Close" class="normalBttnStyle" onClick="location.href='#application.url.farcry#/navajo/complete.cfm';">  
-	</cfoutput>
-	
-	<nj:TreeGetRelations 
+	<cfif not isdefined("error")>
+		<!--- get parent to update tree --->
+		<nj:treeGetRelations 
 			typename="#stObj.typename#"
 			objectId="#stObj.ObjectID#"
 			get="parents"
 			r_lObjectIds="ParentID"
 			bInclusive="1">
-	<nj:updateTree objectId="#parentID#" complete="0">
-<cfelseif isDefined("FORM.cancel")> <!--- update was cancelled --->
+		
+		<!--- update tree --->
+		<nj:updateTree objectId="#parentID#">
+		
+		<!--- reload overview page --->
+		<cfoutput>
+			<script language="JavaScript">
+				parent['editFrame'].location.href = '#application.url.farcry#/edittabOverview.cfm?objectid=#stObj.ObjectID#';
+			</script>
+		</cfoutput>
+		
+	<cfelse>
+		<cfset showform=1>
+	</cfif>
+		
+</cfif>
 
-	<span class="FormTitle">Operation has been cancelled</span>
-	
-<cfelse> <!--- Show the form --->
-
+ <!--- Show the form --->
+<cfif showform>
 
 	<cfoutput>
 	<form action="" method="post" enctype="multipart/form-data" name="imageForm">
@@ -101,13 +167,6 @@
 				<textarea type="text" name="alt" class="FormTextArea" rows="4">#stObj.alt#</textarea>
 			</td>
 		</tr>
-	
-		<!--- <tr>
-			<td nowrap><span class="FormLabel">Caption</span></td>
-			<td nowrap>
-				<input type="text" name="caption" value="#stObj.caption#" class="FormTextBox">
-			</td>
-		</tr> --->
 	
 		<tr valign="top">
 			<td nowrap>&nbsp;</td>
@@ -144,10 +203,10 @@
 		</td>
 		<nj:getFileIcon filename="#stObj.imagefile#" r_stIcon="fileicon"> 
 		<td>
-			<img src="#application.url.farcry#/navajo/nimages/#fileicon#">
+			<img src="#application.url.farcry#/images/treeImages/#fileicon#">
 		</td>
 		<td>
-			<a href="#application.url.conjurer#?objectid=#stObj.objectid#" target="_blank">
+			<a href="#application.url.webroot#/images/#stObj.imagefile#" target="_blank">
 				<span class="FormLabel">PREVIEW</span>
 			</a>
 		</td>
@@ -181,10 +240,10 @@
 		</td>
 		<nj:getFileIcon filename="#stObj.thumbnail#" r_stIcon="fileicon"> 
 		<td>
-			<img src="#application.url.farcry#/navajo/nimages/#fileicon#">
+			<img src="#application.url.farcry#/images/treeImages/#fileicon#">
 		</td>
 		<td>
-			<a href="#stObj.thumbnailImagePath#\#stObj.thumbnail#" target="_blank">
+			<a href="#application.url.webroot#/images/#stObj.thumbnail#" target="_blank">
 				<span class="FormLabel">PREVIEW</span>
 			</a>
 		</td>
@@ -217,10 +276,10 @@
 		</td>
 		<nj:getFileIcon filename="#stObj.optimisedimage#" r_stIcon="fileicon"> 
 		<td>
-			<img src="#application.url.farcry#/navajo/nimages/#fileicon#">
+			<img src="#application.url.farcry#/images/treeImages/#fileicon#">
 		</td>
 		<td>
-			<a href="#stObj.optimisedImagePath#\#stObj.optimisedimage#" target="_blank">
+			<a href="#application.url.webroot#/images/#stObj.optimisedimage#" target="_blank">
 				<span class="FormLabel">PREVIEW</span>
 			</a>
 		</td>
@@ -233,11 +292,17 @@
 	<tr>
 		<td colspan="2" align="center">
 			<input type="submit" value="OK" name="submit" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';">
-			<input type="submit" value="Cancel" name="Cancel" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';">
+			<input type="Button" value="Cancel" name="Cancel" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';" onClick="location.href='#application.url.farcry#/unlock.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#';parent.synchTab('editFrame','activesubtab','subtab','siteEditOverview');parent.synchTitle('Overview')">
 		</td>
 	</tr>
 			
-		</table>
-		</form>
+	</table>
+	</form>
+	<script>
+		//bring focus to title
+		document.imageForm.title.focus();
+	</script>	
 	</cfoutput>
 </cfif>	
+
+<cfsetting enablecfoutputonly="no">

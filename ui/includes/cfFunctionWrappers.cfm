@@ -1,0 +1,96 @@
+<cfimport taglib="/farcry/fourq/tags/" prefix="q4">
+
+
+
+<cffunction name="contentobjectget" hint="wrapper to the fourq tag - contentobjectget">
+	<cfargument name="objectID" required="true" type="uuid">
+	<cfargument name="typename" required="false">
+	<cfset var stObj = structNew()>
+	<q4:contentobjectget objectId="#arguments.ObjectId#" bActiveOnly="0" r_stObject="stObj">
+	<cfreturn stObj>
+</cffunction>
+
+<cffunction name="contentobjectdata">
+	<cfargument name="objectid" required="true">
+	<cfargument name="typename" required="true">
+	<cfargument name="stProperties" required="true">
+	
+	<q4:contentobjectdata objectid="#arguments.objectID#" typename="arguments.typename" stProperties="#arguments.stProperties#">
+</cffunction>
+
+
+<cffunction name="throwerror" hint="a wrapper for cfthrowerror">
+	<cfargument name="detail" required="true" hint="Error detail">
+	<cfargument name="errorcode" required="false">
+
+	<cfthrow detail="#arguments.detail#"  errorcode="#arguments.errorcode#">
+</cffunction>
+
+<cffunction name="query" hint="a wrappr for cfquery tag for use in cfscript">
+	<cfargument name="sql" type="string" required="true">
+	<cfargument name="dsn" type="string" required="false" default="#application.dsn#">
+		
+	<cfquery name="q" datasource="#arguments.dsn#">
+		#preserveSingleQuotes(arguments.sql)#
+	</cfquery>
+	
+	<!--- This is so we always return a query object - ie update statements may not return a result --->
+	<cftry>
+		<cfif q.recordcount>
+			<!--- blah --->
+		</cfif>	
+		<cfcatch>
+			<cfset q = queryNew('acoloumn')>
+		</cfcatch>
+
+	</cftry>
+	
+	<cfreturn q>
+</cffunction>
+
+<cffunction name="queryofquery" hint="a wrapper for cfquery of queries for use in cfscript">
+	<cfargument name="sql" type="string" required="true">
+	<cfargument name="maxrows" type="string" required="false">
+	
+	 <cfif isDefined("arguments.maxrows")>
+	 	<cfquery name="q" dbtype="query" maxrows="#arguments.maxrows#">
+			#preserveSingleQuotes(arguments.sql)#
+		</cfquery>
+	<cfelse>		
+		<cfquery name="q" dbtype="query" >
+			#preserveSingleQuotes(arguments.sql)#
+		</cfquery>
+	</cfif>	
+	<cfreturn q>
+</cffunction>
+
+<cffunction name="dump" hint="wrapper for cfdump">
+	<cfargument name="object" required="true">
+	<!--- reset dump variable in request scope to try cf into thinking it hasn't already dumped on the page --->
+	<cfset request.cfdumpinited = false>
+	<cfdump var="#arguments.object#">
+</cffunction>
+
+<cffunction name="abort" hint="wrapper for cfdump">
+	<cfabort>
+</cffunction>
+
+<cffunction name="location" hint="wrapper for cflocation">
+	<cfargument name="url" required="true">
+	<cfargument name="addtoken" required="false" default="no">
+	
+	<cflocation url="#arguments.url#" addtoken="#arguments.addtoken#">
+
+</cffunction>
+
+<cffunction name="updateTree">
+	<cfargument name="objectid" required="true">
+	<cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
+	<nj:updateTree objectId="#arguments.objectid#">
+</cffunction>
+
+<cffunction name="trace">
+	<cfargument name="var">
+	
+	<cftrace inline="no" var="#arguments.var#">
+</cffunction>

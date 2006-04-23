@@ -1,81 +1,44 @@
-<cfimport taglib="/fourq/tags" prefix="q4">
-
-<cfsetting enablecfoutputonly="No">
 <!--- 
-|| BEGIN FUSEDOC ||
-
-|| Copyright ||
-Daemon Pty Limited 1995-2001
-http://www.daemon.com.au/
+|| LEGAL ||
+$Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
+$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/navajo/treeGetRelations.cfm,v 1.1.1.1 2002/09/27 06:54:04 petera Exp $
-$Author: petera $
-$Date: 2002/09/27 06:54:04 $
-$Name: b100 $
-$Revision: 1.1.1.1 $
+$Header: /cvs/farcry/farcry_core/tags/navajo/treeGetRelations.cfm,v 1.10 2003/07/15 07:04:15 brendan Exp $
+$Author: brendan $
+$Date: 2003/07/15 07:04:15 $
+$Name: b131 $
+$Revision: 1.10 $
 
 || DESCRIPTION || 
-Takes an object and gets it relations.
 
-Relies upon the deployment of NTM stored procs and fourq.utils.tree.tree component
+$Description: Takes an object and gets it relations. Relies upon the deployment of NTM stored procs and #application.packagepath#.farcry.tree component $
+$TODO: $
+
+
+Relies upon the deployment of NTM stored procs and #application.packagepath#.farcry.tree component
 
 || USAGE ||
-<nj:TreeGetRelations
+<nj:treeGetRelations
 	objectId="0"
 	get="Children"
 	r_lObjectIds="lObjectIds"
 	bInclusive="1">
 
 || DEVELOPER ||
-Matt Dawson (mad@daemon.com.au)
+$Developer: Matt Dawson (mad@daemon.com.au)$
 
 || ATTRIBUTES ||
--> [attributes.objectId]: objectId to work from
--> [attributes.get]: what type of relationship to get [ ancestors, children, descendants ] 
-                     where:
-                          ancestors are all the parent nodes with child this
-						  children are first level descendants of aNavChidlren
-						  descendants are all nodes under objectId using aNavChidlren
-						  parents... (what is this? how is it different to ancestors?)
-						  root... (new for farcry, gets rootnode for typename)
--> [attributes.typename] typename for tree
--> [attributes.bInclusive]: whether to include the current node
-<- [attributes.r_stObjects]: Objects found as structure
-<- [attributes.r_lObjectIds]: Objects found as list of ids
-
-|| HISTORY ||
-$Log: treeGetRelations.cfm,v $
-Revision 1.1.1.1  2002/09/27 06:54:04  petera
-no message
-
-Revision 1.8  2002/09/16 06:28:09  geoff
-updated deprecated application.fourq.packagpath with application.packagepath
-
-Revision 1.7  2002/09/10 04:53:47  geoff
-no message
-
-Revision 1.6  2002/08/23 00:36:52  geoff
-no message
-
-Revision 1.5  2002/08/22 00:09:38  geoff
-no message
-
-Revision 1.4  2002/07/18 04:39:44  geoff
-no message
-
-Revision 1.3  2002/07/16 07:24:48  geoff
-*** empty log message ***
-
-Revision 1.2  2002/07/09 04:36:41  geoff
-no message
-
-Revision 1.1.1.1  2002/06/27 07:30:11  geoff
-Geoff's initial build
-
-
-|| END FUSEDOC ||
+$in: [attributes.objectId]: objectId to work from$
+$in: [attributes.get]: what type of relationship to get [ ancestors, children, descendants ] :$
+$in: [attributes.typename] typename for tree$
+$in: [attributes.bInclusive]: whether to include the current node$
+$out:[attributes.r_stObjects]: Objects found as structure$
+$out:[attributes.r_lObjectIds]: Objects found as list of ids$
 --->
+
+<cfsetting enablecfoutputonly="yes">
+<cfimport taglib="/farcry/fourq/tags" prefix="q4">
 
 <cfparam name="attributes.objectId" default="">
 <cfparam name="attributes.lobjectIds" default="#attributes.objectId#">
@@ -109,7 +72,7 @@ select * from nested_tree_objects
 <cfdump var="#q#">
  ---> 
 <cfif attributes.get eq "root">
-	<cfinvoke component="fourq.utils.tree.tree" method="getRootNode" typename="#attributes.typename#" returnvariable="qRoot">
+	<cfinvoke component="#application.packagepath#.farcry.tree" method="getRootNode" typename="#attributes.typename#" returnvariable="qRoot">
 <!--- <cfdump var="#qRoot#"> --->
 <cfset lObjectIds = qRoot.ObjectID>
 </cfif>
@@ -120,13 +83,15 @@ TODO
 not too elegant
 need to call tag or fourq function that has status as an option somehow
 --->
+<cfif attributes.typename eq "">
+	<cfset attributes.typename = "dmnavigation">
+</cfif>
 <cfif attributes.typename is "dmNavigation">
-	<cfinvoke component="fourq.utils.tree.tree" method="getChildren" objectid="#attributes.objectid#" returnvariable="qChildren">
+	<cfinvoke component="#application.packagepath#.farcry.tree" method="getChildren" objectid="#attributes.objectid#" returnvariable="qChildren">
 <cfelse>	
-	
 	<cfquery name="qChildren" datasource="#application.dsn#">
-		select a.data AS objectID, b.title AS objectname from #attributes.typename#_aObjectIds a
-		JOIN #attributes.typename# b ON a.data = b.objectID
+		select a.data AS objectID, b.title AS objectname from #application.dbowner##attributes.typename#_aObjectIDs a
+		JOIN #application.dbowner##attributes.typename# b ON a.data = b.objectID
 	    where a.objectID =  '#attributes.objectID#'
 	</cfquery>
 </cfif>
@@ -138,7 +103,7 @@ this should be a COAPI call and *not* a straight SQL shortcut
 --->
 
 <cfquery datasource="#application.dsn#" name="qObjects">
-	SELECT objectid FROM #attributes.typename#
+	SELECT objectid FROM #application.dbowner##attributes.typename#
 	WHERE
 	objectid IN (<cfif qChildren.recordCount GT 0>#QuotedValueList(qChildren.objectid)#</cfif><cfif attributes.bInclusive><cfif qChildren.recordCount GT 0>,</cfif>'#attributes.objectid#'</cfif>)
 	<cfif len(attributes.lstatus)>
@@ -224,51 +189,16 @@ this should be a COAPI call and *not* a straight SQL shortcut
 	Otherwise we have to look up the parent somehow.
 	The parent could be either a dmNavigation or dmHTML object
  --->	
-	<cfinvoke component="fourq.utils.tree.tree" method="getAncestors" objectid="#attributes.objectid#" returnvariable="qAncestors" typename="dmNavigation">
+	<cfinvoke component="#application.packagepath#.farcry.tree" method="getAncestors" objectid="#attributes.objectid#" returnvariable="qAncestors" typename="dmNavigation">
 	<!--- <cfdump var="#qAncestors#" label="qAncestors"> --->
 	<cfset lobjectIDs="#ValueList(qAncestors.objectid)#">
 
-<!--- 	<cfthrow errorcode="navajo" detail="nj2TreeGetRelations:: Not implemented yet, get='#attributes.get#'.">
-	<!--- ancestors --->
-	<cfset thisObjectId = attributes.objectId>
-	<cfset recordCount=1>
-	
-	<cfloop condition="recordCount eq 1">
-		<!--- loop while get navchildren has nav parent, sql --->
-		<cfquery name="qGetParent" datasource="#request.cfa.datasource.dsn#">
-			SELECT p1.objectId FROM properties p1, properties p2
-			WHERE p1.objectId = p2.objectId
-				AND (p1.propertyname like 'ANAVCHILD%' OR p1.propertyname like 'AOBJECTIDS%')
-				AND p1.chardata = <cfqueryparam value="#thisObjectId#" cfsqltype="CF_SQL_VARCHAR">
-				AND p2.propertyname = 'VERSIONID'
-				AND p2.chardata is NULL
-		</cfquery>
-		
-		<cfif qGetParent.recordCount eq 0>
-		<cfquery name="qGetParent" datasource="#request.cfa.datasource.dsn#">
-		SELECT p1.objectId FROM properties p1
-			WHERE (p1.propertyname like 'ANAVCHILD%' OR p1.propertyname like 'AOBJECTIDS%')
-				AND p1.chardata = <cfqueryparam value="#thisObjectId#" cfsqltype="CF_SQL_VARCHAR">
-		</cfquery>
-		</cfif>
-	
-		<!--- throw spaz if more than one parent, ordered by level--->
-		<cfif qGetParent.recordCount gt 1>
-			<cfthrow errorcode="navajo" detail="nj2TreeGetRelations:: Object has more than one parent, objectId='#attributes.objectId#'.">
-		</cfif>
-		
-		<cfset thisObjectId = qGetParent.objectId>
-		
-		<cfset lObjectIds=ListAppend(lObjectIds, thisObjectId)>
-		
-		<cfset recordCount=qGetParent.recordCount>
-	</cfloop>
- --->	
+
 	<cfelseif attributes.get eq "descendants">
 	<!--- descendants --->
 	<!--- loop while get children, non ordered list/stobjects --->
 	
-		<cfinvoke  component="fourq.utils.tree.tree" method="getDescendants" returnvariable="getDescendantsRet">
+		<cfinvoke  component="#application.packagepath#.farcry.tree" method="getDescendants" returnvariable="getDescendantsRet">
 		<cfinvokeargument name="dsn" value="#application.dsn#"/>
 		<cfinvokeargument name="objectid" value="#attributes.objectid#"/>
 	</cfinvoke>
@@ -277,14 +207,14 @@ this should be a COAPI call and *not* a straight SQL shortcut
 	<cfif attributes.typename is "dmNavigation">
 		<!--- TODO - invocation of getParentID is barfing.  Ask geoff if ok to mod stored proc. 
 		Do cfquery  for time being --->
-<!--- 		<cfinvoke component="fourq.utils.tree.tree" method="getParentID" objectid="#attributes.objectid#" returnvariable="qGetParent"> --->
+<!--- 		<cfinvoke component="#application.packagepath#.farcry.tree" method="getParentID" objectid="#attributes.objectid#" returnvariable="qGetParent"> --->
 		<cfquery name="qGetParent" datasource="#application.dsn#">
-			select  parentid AS objectID from nested_tree_objects 
+			select  parentid AS objectID from #application.dbowner#nested_tree_objects 
 		    where objectid  = '#attributes.objectid#'
 		</cfquery>	
 	<cfelse>	
 		<!--- TODO - MAJOR hack here.  --->
-		<!--- This is the list of #typename#_aObjectIds tables that we look
+		<!--- This is the list of #typename#_aObjectIDs tables that we look
 		 for the parent. This list is in ascending search order --->
 		<cfset searchList = "dmNavigation,dmHTML">
 		<cfset loop = true>
@@ -292,7 +222,7 @@ this should be a COAPI call and *not* a straight SQL shortcut
 		<cfloop condition="loop">
 				
 			<cfquery name="qGetParent" datasource="#application.dsn#">
-				SELECT objectID FROM #listGetAt(searchlist,listIndex)#_aObjectIds 
+				SELECT objectID FROM #application.dbowner##listGetAt(searchlist,listIndex)#_aObjectIDs 
 				WHERE data = '#attributes.objectID#'	
 			</cfquery>	
 			<cfif qGetParent.recordCount GT 0>
@@ -306,29 +236,12 @@ this should be a COAPI call and *not* a straight SQL shortcut
 	</cfif>	
 		<!--- TODO - err must devise strategy to get parents of non dmNavigation Nodes --->
 			
-	
-	<!--- parents OLD CODE--->
-<!--- 	<cfquery name="qGetParent" datasource="#request.cfa.datasource.dsn#">
-		SELECT p1.objectId FROM properties p1, properties p2
-			WHERE p1.objectId = p2.objectId
-				AND (p1.propertyname like 'ANAVCHILD%' OR p1.propertyname like 'AOBJECTIDS%')
-				AND p1.chardata = <cfqueryparam value="#attributes.objectId#" cfsqltype="CF_SQL_VARCHAR">
-				AND p2.propertyname = 'VERSIONID'
-				AND p2.chardata is NULL
-	</cfquery>
-	
-	<cfif qGetParent.recordCount eq 0>
-		<cfquery name="qGetParent" datasource="#request.cfa.datasource.dsn#">
-		SELECT p1.objectId FROM properties p1
-			WHERE (p1.propertyname like 'ANAVCHILD%' OR p1.propertyname like 'AOBJECTIDS%')
-				AND p1.chardata = <cfqueryparam value="#attributes.objectId#" cfsqltype="CF_SQL_VARCHAR">
-		</cfquery>
-	</cfif>
- --->
+
+
  	<!--- throw spaz if more than one parent, ordered by level--->
-	<cfif qGetParent.recordCount gt 1>
+	<!--- <cfif qGetParent.recordCount gt 1>
 		<cfthrow errorcode="navajo" detail="nj2TreeGetRelations:: Object has more than one parent, objectId='#attributes.objectId#'.">
-	</cfif>
+	</cfif> --->
 	
 	<cfset lObjectIds=qGetParent.objectId>
 	

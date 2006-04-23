@@ -1,29 +1,19 @@
-<cfsetting enablecfoutputonly="Yes">
-<cfimport taglib="/farcry/tags/admin/" prefix="admin">
+<!--- 
+|| LEGAL ||
+$Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
+$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
-<admin:header title="Verity: Build Indices">
+|| VERSION CONTROL ||
+$Header: /cvs/farcry/farcry_core/admin/admin/verityOptimise.cfm,v 1.4 2003/04/16 07:15:05 geoff Exp $
+$Author: geoff $
+$Date: 2003/04/16 07:15:05 $
+$Name: b131 $
+$Revision: 1.4 $
 
-<!--------------------------------------------------------------------
-Optimisation Routine For CFMX 
---------------------------------------------------------------------->
-<cfoutput><h3>Optimising Collections</h3></cfoutput>
+|| DESCRIPTION || 
+$Description: Workaround for the CFIMPORT bug (still going strong in Updater3) $
 
-<!--- get system Verity information --->		
-<cffile action="READ" variable="wVerityMX" file="C:\CFusionMX\lib\neo-verity.xml">
-<cfwddx action="WDDX2CFML" input="#wVerityMX#" output="verityMX">
-
-<!--- optimising collections --->
-<h3>Optimising Collections</h3>
-<cfloop collection="#veritymx[3]#" item="key">
-	<CFCOLLECTION ACTION="optimize" COLLECTION="#key#">
-	<cfoutput>
-	#key#: optimised...<br>
-	</cfoutput>
-	<cfflush>
-</cfloop>
-
-<cfoutput><p>All done.</p></cfoutput>
-
-<admin:footer>
-<cfsetting enablecfoutputonly="No">
-
+|| DEVELOPER ||
+$Developer: Geoff Bowers (modius@daemon.com.au) $
+--->
+<cfinclude template="/farcry/farcry_core/ui/admin/verityOptimise.cfm">

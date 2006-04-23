@@ -4,17 +4,13 @@
 
 <!--- Get all objects types that have status option --->
 <cfloop list="#stArgs.objectTypes#" index="i">
-		
-		<!--- Get all objects that have status of pending --->
-		<cfquery name="qGetObjects" datasource="#application.dsn#">
-			select objectID,title, datetimelastUpdated
-			From #i#, dmUser
-			WHERE status = 'Draft'
-				and (dmUser.userLogin = createdby or dmUser.userLogin = lastupdatedby)
-				and dmUser.userLogin = '#stArgs.userLogin#'
-				order by datetimelastUpdated desc
-		</cfquery>
-		
+		<cfif i eq "dmHTML">
+		   <cfset sql = "SELECT objectID, title, versionID, datetimelastUpdated FROM #application.dbowner##i# WHERE status = 'draft' AND rtrim(versionID) = '' AND (createdby = '#stArgs.userLogin#' OR lastupdatedby = '#stArgs.userLogin#') ORDER BY datetimelastUpdated DESC">
+        <cfelse>
+		   <cfset sql = "SELECT objectID, title, '' as versionID, datetimelastUpdated FROM #application.dbowner##i# WHERE status = 'draft' AND (createdby = '#stArgs.userLogin#' OR lastupdatedby = '#stArgs.userLogin#') ORDER BY datetimelastUpdated DESC">
+        </cfif>
+
+        <cfquery name="qGetObjects" datasource="#application.dsn#">#preserveSingleQuotes(sql)#</cfquery>
 				
 		<!--- Create structure for object details to be outputted later --->
 		<cfif qGetObjects.recordcount gt 0>
@@ -34,8 +30,8 @@
 				<cfif i eq "dmHTML">
 					<!--- get object parent --->
 					<cfquery name="qGetParent" datasource="#application.dsn#">
-						SELECT objectid FROM dmNavigation_aObjectIds 
-						WHERE data = '#objectId#'	
+					SELECT objectID FROM #application.dbowner#dmNavigation_aObjectIDs
+					WHERE data = '#objectID#'
 					</cfquery>
 					<cfset temp = querySetCell(qDraftObjects,"objectParent", qGetParent.objectid,rowCounter)>
 				<cfelse>
@@ -46,8 +42,6 @@
 </cfloop>
 
 <cfquery name="qDraftObjects2" dbtype="query">
-	select * 
-	from qDraftObjects
-	order by objectLastUpdated desc
-	
+SELECT * FROM qDraftObjects
+ORDER BY objectLastUpdated DESC
 </cfquery>

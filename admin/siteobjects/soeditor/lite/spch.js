@@ -9,10 +9,10 @@ var schema_url 		= "";
 var spp_langs		= "";
 
 var service_host = "http://www.spellchecker.net/spellcheck/";
-var customerid = "you_need_one_of_these"; //get one here http://www.spellchecker.net/signup/index.htm
+var customerid = ""; //get one here http://www.spellchecker.net/signup/index.htm
 var schema = "7";
 
-var bnr = "1";
+var bnr = "0";
 var c_lang = "";
 var ci_lang = "";
 

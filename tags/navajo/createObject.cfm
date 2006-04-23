@@ -1,8 +1,32 @@
-<cfsetting enablecfoutputonly="Yes">
-<cfimport taglib="/fourq/tags/" prefix="q4">
-<cfimport taglib="/farcry/tags/navajo/" prefix="nj">
-<link rel="stylesheet" type="text/css" href="../../www/farcry/navajo/navajo_popup.css">
+<!--- 
+|| LEGAL ||
+$Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
+$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
+|| VERSION CONTROL ||
+$Header: /cvs/farcry/farcry_core/tags/navajo/createObject.cfm,v 1.11 2003/07/10 02:07:06 brendan Exp $
+$Author: brendan $
+$Date: 2003/07/10 02:07:06 $
+$Name: b131 $
+$Revision: 1.11 $
+
+|| DESCRIPTION || 
+$Description: creates an instance of an type object and returns to edit handler$
+$TODO: make more generic. There is some type specific code here for defaulting properties. Should build instance by using type specified fields/defaults$
+
+|| DEVELOPER ||
+$Developer: Brendan Sisson (brendan@daemon.com.au)$
+
+|| ATTRIBUTES ||
+$in: $
+$out:$
+--->
+
+<cfsetting enablecfoutputonly="Yes">
+
+<cfimport taglib="/farcry/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
+<link rel="stylesheet" type="text/css" href="../../www/farcry/navajo/navajo_popup.css">
 
 <cfparam name="url.objectId" default="">
 
@@ -13,25 +37,21 @@
 
 <cfif len(url.objectId)>
 	<q4:contentobjectget  objectid="#url.objectId#" bactiveonly="False" r_stobject="stParent">
-		<!--- permission check for objects --->
+	<!--- permission check for objects --->
 	<nj:getNavigation objectId="#stParent.objectID#" bInclusive="1" r_stObject="bob" r_ObjectId="objectId">
-
 	
 	<Cfif len(objectId)>
-	<cf_dmSec2_PermissionCheck
-		permissionName="Create"
-		objectId="#objectId#"
-		reference1="dmNavigation"
-		bThrowOnError="1">
-	<cfset parentNavigationId=objectId>
+		<!--- <cfscript>
+			oAuthorisation = request.dmSec.oAuthorisation;
+			iObjectCreatePermission = oAuthorisation.checkPermission(permissionName="Create",reference="dmNavigation",bThrowOnError=1);
+		</cfscript> --->	
+		
+		
+		<cfset parentNavigationId=objectId>
 	</CFIF>
 	
 <cfelse>
-	<!---cf_dmSec2_PermissionCheck
-		permissionName="Create"
-		objectId="#objectId#"
-		bThrowOnError="1"--->
-		<cfset temp=1>
+	<cfset temp=1>
 </cfif>
 
 <!--- make sure parent can hold an object before doing anything... --->	
@@ -47,6 +67,7 @@
 		stProps=structNew();
 		stProps.objectid = createUUID();
 		stProps.label = "(incomplete)";
+		stProps.title = "";
 		stProps.lastupdatedby = session.dmSec.authentication.userlogin;
 		stProps.datetimelastupdated = Now();
 		stProps.createdby = session.dmSec.authentication.userlogin;
@@ -60,10 +81,12 @@
 		stProps.expiryDate = now();
 	</cfscript>
 	
-	<!--- Get the typename of the new object we are editing --->
-		
 	<!--- create the new OBJECT --->
-	<q4:contentobjectcreate typename="#application.packagepath#.types.#URL.typename#" stproperties="#stProps#" r_objectid="NewObjID">
+	<cfif application.types['#url.typename#'].bCustomType>
+		<q4:contentobjectcreate typename="#application.custompackagepath#.types.#URL.typename#" stproperties="#stProps#" r_objectid="NewObjID">
+	<Cfelse>
+		<q4:contentobjectcreate typename="#application.packagepath#.types.#URL.typename#" stproperties="#stProps#" r_objectid="NewObjID">
+	</cfif>
 			
 	<!--- update parent object  --->
 	<cfif len(url.objectId) AND not (arraytolist(stParent.aObjectIds) contains NewObjID)>
@@ -74,9 +97,13 @@
 				<cfoutput><b>Cannot create navigation nodes in objects!</b></cfoutput>
 				<cfabort>
 			<cfelse>
-				<!--- <cfset noPurpose = arrayAppend(stParent.aNavChild, NewObjID)> --->
-					<!--- Insert this node into the tree --->
-					<cfinvoke component="fourq.utils.tree.tree" method="setChild" objectName = "#stProps.label#"	 typename = "#typename#" parentID="#stParent.objectID#"	 objectID="#newObjID#"	 pos = "1" returnvariable="stReturn">
+				<!--- Insert this node into the tree --->
+				<cfscript>
+					oTree = createobject("component","#application.packagepath#.farcry.tree");
+					qChildren = oTree.getChildren(objectid=stParent.objectID,typename=stParent.typename);
+					position = qChildren.recordCount + 1;
+					streturn = oTree.setChild(objectName=stProps.label,typename=typename,parentID=stParent.objectID,objectID=newObjId,pos=position);
+				</cfscript>
 
 			</cfif>
 		<cfelse>
@@ -95,15 +122,17 @@
 		
 		<cfif len(stParent.objectID)>
 			<!--- Refresh the tree --->
-			<nj:UpdateTree objectId="#stParent.objectID#" complete="0">
+			<nj:updateTree objectId="#stParent.objectID#" complete="0">
 		</cfif>
 	</cfif>
-	<cfoutput>
+	
 	<!--- Now that we know its type and new objectID go and edit the object now --->
-	<script>
-		window.location="#application.url.farcry#/Navajo/edit.cfm?objectId=#NewObjID#&type=#URL.typename#<cfif isDefined('url.finishUrl')>&finishUrl=#url.finishUrl#</cfif>";
-	</script>
+	<cfoutput>
+		<script>
+			window.location="#application.url.farcry#/navajo/edit.cfm?objectId=#NewObjID#&type=#URL.typename#<cfif isDefined('url.finishUrl')>&finishUrl=#url.finishUrl#</cfif>";
+		</script>
 	</cfoutput>
+	
 </cfif>
 
 <cfsetting enablecfoutputonly="No">

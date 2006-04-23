@@ -1,6 +1,4 @@
-<cfimport taglib="/farcry/tags/navajo" prefix="nj">
-<cfsetting enablecfoutputonly="Yes">
+<!--- Dirty hack to work around cfimport bug where
+cfimport is called from a file under the webroot --->
 
-<nj:Permissions>
-
-<cfsetting enablecfoutputonly="No">
+<cfinclude template="/farcry/farcry_core/ui/navajo/permissions.cfm">

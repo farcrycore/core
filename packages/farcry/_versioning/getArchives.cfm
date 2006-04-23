@@ -1,5 +1,5 @@
 		<cfscript>
-			sql = "select * from dmArchive where archiveID = '#objectID#' order by datetimecreated DESC";
+			sql = "select * from #application.dbowner#dmArchive where archiveID = '#stArgs.objectID#' order by datetimecreated DESC";
 		</cfscript>
 		
 		<cfquery datasource="#application.dsn#" name="qArchives">

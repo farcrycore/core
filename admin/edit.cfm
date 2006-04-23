@@ -1,7 +1,1 @@
-
-<cfsetting enablecfoutputonly="Yes">
-<cfimport taglib="/farcry/tags/navajo" prefix="nj">
-
-<nj:edit>
-	  
-<cfsetting enablecfoutputonly="No">
+<cfinclude template="/farcry/farcry_core/ui/edit.cfm">

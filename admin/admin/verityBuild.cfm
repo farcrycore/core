@@ -1,67 +1,19 @@
-<cfsetting enablecfoutputonly="Yes">
-<cfimport taglib="/farcry/tags/admin/" prefix="admin">
+<!--- 
+|| LEGAL ||
+$Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
+$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
-<admin:header title="Verity: Build Indices">
+|| VERSION CONTROL ||
+$Header: /cvs/farcry/farcry_core/admin/admin/verityBuild.cfm,v 1.7 2003/04/16 07:15:05 geoff Exp $
+$Author: geoff $
+$Date: 2003/04/16 07:15:05 $
+$Name: b131 $
+$Revision: 1.7 $
 
-<cfscript>
-oConfig = createObject("component", "#application.packagepath#.farcry.config");
-if (NOT isDefined("application.config.verity"))
-	application.config.verity = oConfig.getConfig("verity");
-stCollections = application.config.verity.contenttype;
-</cfscript>		
+|| DESCRIPTION || 
+$Description: Workaround for the CFIMPORT bug (still going strong in Updater3) $
 
-<!--- get system Verity information --->		
-<cffile action="READ" variable="wVerityMX" file="C:\CFusionMX\lib\neo-verity.xml">
-<cfwddx action="WDDX2CFML" input="#wVerityMX#" output="verityMX">
-
-<!--- <cfdump var="#verityMX#">
-<cfabort> --->
-
-<!--- build indices... --->
-<cfoutput><h3>Building Collections</h3></cfoutput>
-<cfloop collection="#stCollections#" item="key">
-
-	<!--- does the collection exist? --->
-	<cfif NOT structKeyExists(veritymx[3], key)>
-		<!--- if not, create colection --->
-		<cfoutput>Creating #key#...<br></cfoutput>
-		<cfflush />
-		<cfcollection action="CREATE" collection="#key#" path="C:\CFusionMX\verity\collections" language="English">
-		<!--- clear lastupdated, if it exists --->
-		<cfset structDelete(stCollections[key], "lastupdated")>
-	</cfif>
-
-	<!--- build index --->
-	<cfquery datasource="#application.dsn#" name="q">
-	SELECT *
-	FROM #key#
-	WHERE 1 = 1
-	<cfif structKeyExists(stCollections[key], "lastupdated")>
-		AND datetimelastupdated > #stCollections[key].lastupdated#
-	</cfif>
-	<cfif structKeyExists(application.types[key].stProps, "status")>
-		AND status = 'approved'
-	</cfif>
-	</cfquery>
-	
-	<cfoutput>Updating #q.recordCount# records for #key#...(#arrayToList(application.config.verity.contenttype[key].aprops)#)<br></cfoutput>
-	<cfflush />
-	<cfindex action="UPDATE" query="q" body="#arrayToList(application.config.verity.contenttype[key].aprops)#" key="objectid" title="label" collection="#key#">
-	
-	<!--- update config file with lastupdated --->
-	<cfset stCollections[key].lastupdated = now()>
-</cfloop>
-
-<cfscript>
-application.config.verity.contenttype = stCollections;
-oConfig.setConfig(configName="verity",stConfig=application.config.verity);
-</cfscript>
-
-<cfoutput>
-<p>Verity config updated.</p>
-<p>All done.</p>
-</cfoutput>
-
-<admin:footer>
-<cfsetting enablecfoutputonly="No">
-
+|| DEVELOPER ||
+$Developer: Geoff Bowers (modius@daemon.com.au) $
+--->
+<cfinclude template="/farcry/farcry_core/ui/admin/verityBuild.cfm">

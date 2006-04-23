@@ -1,0 +1,1 @@
+<cfinclude template="/farcry/farcry_core/ui/admin/statsVisitorPathDetail.cfm">

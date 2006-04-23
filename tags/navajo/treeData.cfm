@@ -1,5 +1,28 @@
-<cfimport taglib="/fourq/tags" prefix="q4">
-<cfimport taglib="/farcry/tags/navajo/" prefix="nj">
+<cfimport taglib="/farcry/fourq/tags" prefix="q4">
+<cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
+
+
+<cffunction name="checkForDraft" hint="checks to see if object has a draft version">
+	<cfargument name="stObject" required="true">
+		<cfquery datasource="#application.dsn#" name="qHasDraft">
+			SELECT objectID,status from #application.dbowner##stObject.typename# where versionID = '#stObject.objectID#' 
+		</cfquery>
+		<cfif qHasDraft.recordcount EQ 1 >
+			<cfscript>
+				result = structNew();
+				result.objectID = qHasDraft.objectID;
+				result.status = qHasDraft.status;
+			</cfscript>
+		<cfelse>
+			<cfscript>
+				result = structNew();
+				result.objectID = 0;
+				result.status = 'na';
+			</cfscript>
+		</cfif>
+		<cfreturn result>
+</cffunction>		
+	
 
 <cffunction name="mungeobjects">
 <!--- this is crack - if you have to smoke it talk to grb first --->
@@ -21,7 +44,7 @@
 		
 		// if navigation item smoke the object up with some aNavChild entries
 		if (typename is "dmNavigation") { 
-			onav = createObject("component", "fourq.utils.tree.tree");
+			onav = createObject("component", "#application.packagepath#.farcry.tree");
 			qChildren = onav.getChildren(objectid=key);
 			stObjs['#key#'].aNavChild = ListToArray(ValueList(qChildren.ObjectID));
 			if (NOT ArrayLen(stObjs['#key#'].aNavChild))
@@ -29,7 +52,20 @@
 			if (NOT ArrayLen(stObjs['#key#'].aObjectIDs))
 				stObjs['#key#'].aObjectIDs = ""; // tree seems to barf on empty array	
 		 }
-		 		
+		 if (StructKeyExists(stObjs['#key#'], "VERSIONID") AND StructKeyExists(stObjs['#key#'], "STATUS"))
+		 {
+		 	if (stObjs['#key#'].status IS "approved")
+			{
+				draftObject = checkForDraft(stObjs['#key#']);
+				if (draftObject.objectID NEQ 0)
+				{
+					SetVariable("stObjs['#key#'].BHASDRAFT",1);
+					SetVariable("stObjs['#key#'].DRAFTOBJECTID",draftObject.objectID);
+					SetVariable("stObjs['#key#'].DRAFTSTATUS",draftObject.status);
+				}
+			}
+		}	
+	 		
 		 	
 		</cfscript>
 	</cfloop>
@@ -51,11 +87,11 @@ Daemon Pty Limited 1995-2001
 http://www.daemon.com.au/
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/navajo/treeData.cfm,v 1.1.1.1 2002/09/27 06:54:04 petera Exp $
-$Author: petera $
-$Date: 2002/09/27 06:54:04 $
-$Name: b100 $
-$Revision: 1.1.1.1 $
+$Header: /cvs/farcry/farcry_core/tags/navajo/treeData.cfm,v 1.10 2003/04/09 08:04:59 spike Exp $
+$Author: spike $
+$Date: 2003/04/09 08:04:59 $
+$Name: b131 $
+$Revision: 1.10 $
 
 || DESCRIPTION || 
 Retrieves object(s) [and relations] information and returns it in js format.
@@ -73,7 +109,31 @@ Matt Dawson (mad@daemon.com.au)
 
 || HISTORY ||
 $Log: treeData.cfm,v $
-Revision 1.1.1.1  2002/09/27 06:54:04  petera
+Revision 1.10  2003/04/09 08:04:59  spike
+Major update to remove need for multiple ColdFusion and webserver mappings.
+
+Revision 1.9  2003/04/08 08:47:39  paul
+CFC security updates
+
+Revision 1.8  2003/02/10 04:01:24  geoff
+Updates to inlcude application.dbowner vars in <cfquery>
+
+Revision 1.7  2003/01/20 00:49:38  pete
+changed request.stLoggedInUser to session.dmSec.authentication
+
+Revision 1.6  2002/10/30 23:26:45  brendan
+removed call to application.fourq.packagepath
+
+Revision 1.5  2002/10/29 01:32:32  brendan
+modified draft object id fields
+
+Revision 1.4  2002/10/16 07:20:57  brendan
+moved tree code out of fourq and into farcry_core
+
+Revision 1.3  2002/09/30 08:44:19  geoff
+versioning updates for live objs (ph)
+
+Revision 1.17  2002/09/30 07:38:59  geoff
 no message
 
 Revision 1.16  2002/09/12 07:11:11  geoff
@@ -141,7 +201,7 @@ Geoff's initial build
 
 <cfloop index="objectId" list="#attributes.lObjectIds#">
 	<cfif len(objectId) eq 35 OR objectId eq '0'>
-	<cfinvoke component="fourq.fourq" returnvariable="thisTypename" method="findType" objectID="#ObjectId#">
+	<cfinvoke component="farcry.fourq.fourq" returnvariable="thisTypename" method="findType" objectID="#ObjectId#">
 	
 	<!--- get all objects that pertain to get --->
 
@@ -168,7 +228,7 @@ Geoff's initial build
 <!--- 	
 	TODO
 	need to implement bActive 
-	lookup objectids without typename... otherwise tree will just be navids (typename="#application.fourq.packagepath#.types.dmNavigation")
+	lookup objectids without typename... otherwise tree will just be navids (typename="#application.packagepath#.types.dmNavigation")
 --->
 	
 	
@@ -217,7 +277,7 @@ lAllowTypes list
 		
 		<cfif isArray(stAllObjects[objId].aObjectIDs) AND arrayLen(stAllObjects[objId].aObjectIDs) GT 0>
 			<cfloop from="#arrayLen(stAllObjects[objId].aObjectIDs)#" to="1" index="i" step="-1">
-				<cfinvoke component="fourq.fourq" method="findType" returnvariable="rTypeName" objectID="#stAllObjects[objID].aObjectIds[i]#">
+				<cfinvoke component="farcry.fourq.fourq" method="findType" returnvariable="rTypeName" objectID="#stAllObjects[objID].aObjectIds[i]#">
 				
 				<cfif NOT listContainsNoCase(lAllowTypes,rTypeName) AND stAllObjects[objID].typename IS "dmHTML">			 <cfset tmp = arrayDeleteAt(stAllObjects[objID].aObjectIds,i)> 
 				</cfif>
@@ -239,6 +299,7 @@ lAllowTypes list
 
 
 <!--- convert to wddx and return --->
+
 <nj:WDDXToJavascript input="#stAllObjects#" output="jsout" toplevelvariable="#attributes.topLevelVariable#">
 
 <!--- Generate the permissions data and append to jsout --->
@@ -254,13 +315,17 @@ work out suitable solution for reserved names like "typename"
 	<cfif stAllObjects[objId].typename IS "dmNavigation">
 	
 	<!--- this may be slow, might have to pull from cache myself --->
-	<cf_dmSec2_ObjectPermissionCollate objectId="#objId#" r_stObjectPermissions="stObjectPermissions">
+	<cfscript>
+		oAuthorisation = request.dmSec.oAuthorisation;
+		stObjectPermissions = oAuthorisation.collateObjectPermissions(objectID=objID);
+	</cfscript>
+	
 	<cfscript>
 	mergePerms=StructNew();
 	
-	for( i=1; i lte ListLen( request.stLoggedInUser.lPolicyGroupIds); i=i+1 )
+	for( i=1; i lte ListLen( session.dmSec.authentication.lPolicyGroupIds); i=i+1 )
 	{
-		policyGroupId=ListGetAt(request.stLoggedInUser.lPolicyGroupIds,i);
+		policyGroupId=ListGetAt(session.dmSec.authentication.lPolicyGroupIds,i);
 		
 		if( structKeyExists( stObjectPermissions, policyGroupId) )
 			stPolicyGroup = stObjectPermissions[policyGroupId];

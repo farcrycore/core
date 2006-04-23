@@ -4,7 +4,7 @@ default display method
 --------------------------------------------------------------------->
 <cfscript>
 // get navigation elements
-	o = createObject("component", "fourq.utils.tree.tree");
+	o = createObject("component", "#application.packagepath#.farcry.tree");
 	// getChildren for application.navid.home
 	qPrimary = o.getChildren(objectid=application.navid.home);
 	qSecondary = o.getChildren(objectid=request.navid);

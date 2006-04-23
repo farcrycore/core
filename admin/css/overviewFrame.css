@@ -3,7 +3,7 @@ div {
 	font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;
 }
 
-td {
+#tree td {
 	border : none;
 	border-collapse : collapse;
 	font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;
@@ -13,7 +13,7 @@ td {
 	vertical-align : middle;
 }
 
-.icontext menutext {
+.icontext  {
 	cursor : hand;
 	font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;
 	font-size : 9px;

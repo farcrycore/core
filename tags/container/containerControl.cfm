@@ -31,7 +31,7 @@ function popUpWindow(URLStr, left, top, width, height)
 <cfoutput>
 <cfset Attributes.label = reReplaceNoCase(attributes.label,"$*.*_","")>
 <div class="widget">
-	<a href="javascript:void(0)" onClick="popUpWindow('#application.url.farcry#/navajo/editContainer.cfm?containerID=#attributes.objectID#',100,200,600,600);"><img border="0" src="#application.url.farcry#/navajo/nimages/containeredit.gif" alt="Edit Container Content"></a><strong>&nbsp;Container Label : #attributes.label#</strong><br>
+	<a href="javascript:void(0)" onClick="popUpWindow('#application.url.farcry#/navajo/editContainer.cfm?containerID=#attributes.objectID#',100,200,600,600);"><img border="0" src="#application.url.farcry#/images/treeImages/containeredit.gif" alt="Edit Container Content"></a><strong>&nbsp;Container Label : #attributes.label#</strong><br>
 </div>	
 </cfoutput>	
 

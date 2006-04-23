@@ -1,6 +1,6 @@
 <cfsetting enablecfoutputonly="Yes">
-<cfimport taglib="/fourq/tags" prefix="q4">
-<cfimport taglib="/farcry/tags/navajo" prefix="nj">
+<cfimport taglib="/farcry/fourq/tags" prefix="q4">
+<cfimport taglib="/farcry/farcry_core/tags/navajo" prefix="nj">
 
 <q4:contentobjectget objectid="#url.objectID#" r_stobject="stObj">
 <!--- Futzing the typeid here --->
@@ -15,18 +15,16 @@
 </cfif>
 
 <cfif len(permObjectId)>
+	<cfscript>
+		oAuthorisation = request.dmSec.oAuthorisation;
+		iObjectCreatePermission = oAuthorisation.checkInheritedPermission(permissionName="Edit",objectID=permObjectID,bThrowOnError=1);
+	</cfscript>
 
-<cf_dmSec2_PermissionCheck
-	permissionName="Edit"
-	objectid="#permObjectId#"
-	bThrowOnError="1"
-	reference1="dmNavigation">
 <cfelse>
-<cf_dmSec2_PermissionCheck
-	permissionName="RootNodeManagement"
-	reference1="PolicyGroup"
-	bThrowOnError="1"
->
+	<cfscript>
+		oAuthorisation = request.dmSec.oAuthorisation;
+		iObjectCreatePermission = oAuthorisation.checkPermission(permissionName="RootNodeManagement",reference="PolicyGroup",bThrowOnError=1);
+	</cfscript>
 </cfif>
 
 <cfif structCount(stObj)>

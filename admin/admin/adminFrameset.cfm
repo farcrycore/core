@@ -7,7 +7,6 @@
 <head>
 	<title>#application.applicationName# Administration</title>
 	<link href="#application.url.farcry#/css/admin.css" rel="stylesheet" type="text/css">
-	
 </head>
 
 <FRAMESET COLS="270, *">

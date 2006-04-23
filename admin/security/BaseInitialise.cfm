@@ -1,31 +1,17 @@
-<Cfset stPolicyGroup = structNew()>
-<cfset stPolicyGroup.policygroupname="SysAdmin">
+<cfscript>
+oAuthorisation = createObject("component", "#application.securitypackagepath#.authorisation");
+</cfscript>
 
 <cftry>
-<cf_dmSec_PolicyGroup action="create" stPolicyGroup="#stPolicyGroup#">
-<cfcatch type="Any">
-</cfcatch>
+    <cfscript>
+    oAuthorisation.createPolicyGroup(policyGroupName=stPolicyGroup.policyGroupName);
+    </cfscript>
+<cfcatch type="Any"></cfcatch>
 </cftry>
 
-<cf_dmSec_PermissionBarnacleCreate
-	PermissionName="Admin"
-	PermissionType="PolicyGroup"
-	PolicyGroupName="SysAdmin"
-	state="1"
-	Reference1="PolicyGroup">
-	
-<cf_dmSec_PermissionBarnacleCreate
-	PermissionName="ModifyPermissions"
-	PermissionType="PolicyGroup"
-	PolicyGroupName="SysAdmin"
-	state="1"
-	Reference1="PolicyGroup">
-	
-<cf_dmSec_PermissionBarnacleCreate
-	PermissionName="SecurityManagement"
-	PermissionType="PolicyGroup"
-	PolicyGroupName="SysAdmin"
-	state="1"
-	Reference1="PolicyGroup">
-
-<cf_dmSec_ObjectPermissionCacheUpdate reference1="PolicyGroup">
+<cfscript>
+oAuthorisation.createPermissionBarnacle(PermissionName="Admin",	PermissionType="PolicyGroup",PolicyGroupName="SysAdmin",status="1",	Reference="PolicyGroup");
+oAuthorisation.createPermissionBarnacle(PermissionName="SecurityManagement",PermissionType="PolicyGroup",PolicyGroupName="SysAdmin",status="1",	Reference="PolicyGroup");
+oAuthorisation.createPermissionBarnacle(PermissionName="ModifyPermissions",PermissionType="PolicyGroup",PolicyGroupName="SysAdmin",status="1",	Reference="PolicyGroup");
+oAuthorisation.updateObjectPermissionCache(reference="policyGroup");
+</cfscript>

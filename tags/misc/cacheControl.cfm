@@ -7,11 +7,11 @@ Daemon Pty Limited 1995-2001
 http://www.daemon.com.au/
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/misc/cacheControl.cfm,v 1.1.1.1 2002/09/27 06:54:04 petera Exp $
+$Header: /cvs/farcry/farcry_core/tags/misc/cacheControl.cfm,v 1.2 2002/09/27 07:28:46 petera Exp $
 $Author: petera $
-$Date: 2002/09/27 06:54:04 $
-$Name: b100 $
-$Revision: 1.1.1.1 $
+$Date: 2002/09/27 07:28:46 $
+$Name: b131 $
+$Revision: 1.2 $
 
 || DESCRIPTION || 
 Sets html cache header parameters for web pages.
@@ -30,7 +30,7 @@ Matt Dawson (mad@daemon.com.au)
 
 || HISTORY ||
 $Log: cacheControl.cfm,v $
-Revision 1.1.1.1  2002/09/27 06:54:04  petera
+Revision 1.2  2002/09/27 07:28:46  petera
 no message
 
 Revision 1.1  2002/08/22 07:24:08  geoff

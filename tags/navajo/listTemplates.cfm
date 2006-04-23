@@ -16,7 +16,7 @@ by a regular expression match here???
 
 <cfparam name="attributes.typename">
 <cfparam name="attributes.prefix" default="display">
-<cfparam name="attributes.path" default="#application.path.webskin#\#attributes.typename#">
+<cfparam name="attributes.path" default="#application.path.webskin#/#attributes.typename#">
 <cfparam name="attributes.r_qMethods" default="r_qMethods">
 
 <cfdirectory action="LIST" filter="#attributes.prefix#*.cfm" name="qTemplates" directory="#attributes.path#">
@@ -27,7 +27,7 @@ by a regular expression match here???
 <!--- TODO
 must be able to do this more neatly with a regEX, especially if we 
 want more than one bit of template metadata --->
-	<cffile action="READ" file="#application.path.webskin#\#attributes.typename#\#qTemplates.name#" variable="template">
+	<cffile action="READ" file="#application.path.webskin#/#attributes.typename#/#qTemplates.name#" variable="template">
 
 	<cfset pos = findNoCase('@@displayname:', template)>
 	<cfif pos eq 0>
@@ -47,6 +47,13 @@ want more than one bit of template metadata --->
 <cfdump var="#qTemplates#">
 <cfdump var="#qMethods#">
  --->
-<cfset setVariable("caller.#attributes.r_qMethods#", qMethods)>
+<!--- Reorder List --->
+<cfquery name="qOrderedMethods" dbtype="query">
+SELECT *
+FROM qMethods
+ORDER BY DisplayName
+</cfquery>
+
+<cfset setVariable("caller.#attributes.r_qMethods#", qOrderedMethods)>
 
 
