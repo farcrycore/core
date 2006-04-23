@@ -1,3 +1,4 @@
+<cfprocessingDirective pageencoding="utf-8">
 
 	<cffunction name="arrayKeyToList">
 		<cfargument name="array" required="true">

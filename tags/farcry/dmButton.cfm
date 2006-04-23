@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/farcry/dmButton.cfm,v 1.1 2003/03/20 22:43:36 brendan Exp $
+$Header: /cvs/farcry/farcry_core/tags/farcry/dmButton.cfm,v 1.2 2004/07/15 02:02:18 brendan Exp $
 $Author: brendan $
-$Date: 2003/03/20 22:43:36 $
-$Name: b201 $
-$Revision: 1.1 $
+$Date: 2004/07/15 02:02:18 $
+$Name: milestone_2-3-2 $
+$Revision: 1.2 $
 
 || DESCRIPTION || 
 Displays a button on the screen with mouse over color changes.
@@ -28,6 +28,8 @@ in: [Attributes.disabled]: optional (False) : if the button should be disabled o
 out:
 --->
 <cfsetting enablecfoutputonly="yes">
+
+<cfprocessingDirective pageencoding="utf-8">
 
 <cfif ISDEFINED("ATTRIBUTES.Name") and ISDEFINED("ATTRIBUTES.Value")>
 	<cfparam name="ATTRIBUTES.Type" default="Submit">

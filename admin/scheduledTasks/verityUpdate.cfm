@@ -1,4 +1,4 @@
-<!--- @@displayname: Verity Update --->
+++<!--- @@displayname: Verity Update --->
 
 <!---
 || LEGAL ||
@@ -6,11 +6,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/scheduledTasks/verityUpdate.cfm,v 1.3 2003/11/05 00:03:17 brendan Exp $
-$Author: brendan $
-$Date: 2003/11/05 00:03:17 $
-$Name: milestone_2-2-1 $
-$Revision: 1.3 $
+$Header: /cvs/farcry/farcry_core/admin/scheduledTasks/verityUpdate.cfm,v 1.4.2.1 2005/03/04 22:29:03 tom Exp $
+$Author: tom $
+$Date: 2005/03/04 22:29:03 $
+$Name: milestone_2-3-2 $
+$Revision: 1.4.2.1 $
 
 || DESCRIPTION ||
 $Description: Build and update FarCry related Verity collections. Manages
@@ -21,6 +21,8 @@ front of collection names. $
 $Developer: Geoff Bowers (modius@daemon.com.au) $
 --->
 <cfsetting enablecfoutputonly="Yes" requestTimeout="600">
+
+<cfprocessingDirective pageencoding="utf-8">
 
 <cfscript>
 // get Verity config information
@@ -45,7 +47,7 @@ stCollections = application.config.verity.contenttype;
 </cfloop>
 
 <!--- build indices... --->
-<cfoutput><span class="FormTitle">Building Collections</span><p></p></cfoutput>
+<cfoutput><span class="FormTitle">#application.adminBundle[application.config.general.locale].buildingCollections#</span><p></p></cfoutput>
 
 <!--- Empty aIndices Array --->
 <cfset aIndices = ArrayNew(1)>
@@ -72,7 +74,7 @@ stCollections = application.config.verity.contenttype;
 		--->
 		<cfif NOT structKeyExists(stVerity, "#application.applicationname#_#key#")>
 			<!--- if not, create colection --->
-			<cfoutput><span class="frameMenuBullet">&raquo;</span> Creating <strong>#key#</strong>...<br></cfoutput>
+			<cfoutput><span class="frameMenuBullet">&raquo;</span> #application.rb.formatRBString(application.adminBundle[application.config.general.locale].creatingKey,"#key#")#<br></cfoutput>
 			<cfflush />
 			<cfcollection action="CREATE" collection="#application.applicationname#_#key#" path="#application.config.general.verityStoragePath#" language="English">
 			<!--- clear lastupdated, if it exists --->
@@ -94,7 +96,12 @@ stCollections = application.config.verity.contenttype;
 				</cfif>
 			</cfquery>
 
-			<cfoutput><span class="frameMenuBullet">&raquo;</span> Updating #q.recordCount# records for #key#...(#arrayToList(application.config.verity.contenttype[key].aprops)#)<br></cfoutput>
+			<cfoutput>
+			<span class="frameMenuBullet">&raquo;</span> 
+			<cfset subS=listToArray('#q.recordCount#,#key#,#arrayToList(application.config.verity.contenttype[key].aprops)#')>
+			#application.rb.formatRBString(application.adminBundle[application.config.general.locale].updatingRecsFor,subS)#
+			<br>
+			</cfoutput>
 			<cfflush />
 
 			<!--- update collection --->
@@ -113,7 +120,12 @@ stCollections = application.config.verity.contenttype;
 				</cfif>
 			</cfquery>
 
-			<cfoutput><span class="frameMenuBullet">&raquo;</span> Purging #q.recordCount# dead records for #key#...(#arrayToList(application.config.verity.contenttype[key].aprops)#)<p></cfoutput>
+			<cfoutput>
+			<span class="frameMenuBullet">&raquo;</span> 
+			<cfset subS=listToArray('#q.recordCount#, #key#, #arrayToList(application.config.verity.contenttype[key].aprops)#')>
+			#application.rb.formatRBString(application.adminBundle[application.config.general.locale].purgingDeadRecsFor,subS)#
+			<p>
+			</cfoutput>
 			<cfflush />
 
 			<cfloop query="q">
@@ -129,7 +141,11 @@ stCollections = application.config.verity.contenttype;
 					<cfset filter= ".*">
 				</cfif>
 
-				<cfoutput><span class="frameMenuBullet">&raquo;</span> Updating #key#...(#application.config.verity.contenttype[key].aprops.uncPath#)<p></cfoutput>
+				<cfoutput>
+				<span class="frameMenuBullet">&raquo;</span> 
+				<cfset subS=listToArray('#key#, #application.config.verity.contenttype[key].aprops.uncPath#')>
+				#application.rb.formatRBString(application.adminBundle[application.config.general.locale].updatingKey,subS)#
+				<p></cfoutput>
 				<cfflush />
 
 				<cfindex action="UPDATE" type="PATH" key="#application.config.verity.contenttype[key].aprops.uncPath#" collection="#application.applicationname#_#key#" recurse="#application.config.verity.contenttype[key].aprops.recursive#" extensions="#filter#">
@@ -150,7 +166,7 @@ stCollections = application.config.verity.contenttype;
 </cfscript>
 
 <cfoutput>
-<p>Verity config updated.</p>
-<p>All done.</p>
+<p>#application.adminBundle[application.config.general.locale].verityConfigUpdated#</p>
+<p>#application.adminBundle[application.config.general.locale].allDone#</p>
 </cfoutput>
 

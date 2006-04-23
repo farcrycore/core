@@ -1,4 +1,7 @@
 <cfsetting enablecfoutputonly="Yes">
+
+<cfprocessingDirective pageencoding="utf-8">
+
 <!--- 
 || BEGIN FUSEDOC ||
 
@@ -7,11 +10,11 @@ Daemon Pty Limited 1995-2001
 http://www.daemon.com.au/
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/security/ui/dmSec_Select.cfm,v 1.2 2003/04/09 08:04:59 spike Exp $
-$Author: spike $
-$Date: 2003/04/09 08:04:59 $
-$Name: b201 $
-$Revision: 1.2 $
+$Header: /cvs/farcry/farcry_core/tags/security/ui/dmSec_Select.cfm,v 1.3 2004/07/15 02:03:27 brendan Exp $
+$Author: brendan $
+$Date: 2004/07/15 02:03:27 $
+$Name: milestone_2-3-2 $
+$Revision: 1.3 $
 
 || DESCRIPTION || 
 Generates a html for selectlist dropdown from a structure.
@@ -25,6 +28,9 @@ Matt Dawson (mad@daemon.com.au)
 
 || HISTORY ||
 $Log: dmSec_Select.cfm,v $
+Revision 1.3  2004/07/15 02:03:27  brendan
+i18n updates
+
 Revision 1.2  2003/04/09 08:04:59  spike
 Major update to remove need for multiple ColdFusion and webserver mappings.
 
@@ -69,7 +75,7 @@ first import
 		</cfloop>
 		
 	<cfelse>
-		<dmsec:dmSec_throw errorCode="dmSec_Parameters" lExtra="You must specify aValues or stValues for dmSec_Select">
+		<dmsec:dmSec_throw errorCode="dmSec_Parameters" lExtra="#application.adminBundle[session.dmProfile.locale].missingdmSec_SelectValue#">
 		
 	</cfif>
 	

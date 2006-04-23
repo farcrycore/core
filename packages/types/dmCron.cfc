@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/dmCron.cfc,v 1.4 2003/12/07 22:29:08 brendan Exp $
-$Author: brendan $
-$Date: 2003/12/07 22:29:08 $
-$Name: milestone_2-2-1 $
-$Revision: 1.4 $
+$Header: /cvs/farcry/farcry_core/packages/types/dmCron.cfc,v 1.5 2004/07/26 07:48:40 phastings Exp $
+$Author: phastings $
+$Date: 2004/07/26 07:48:40 $
+$Name: milestone_2-3-2 $
+$Revision: 1.5 $
 
 || DESCRIPTION || 
 $Description: dmCron Type (scheduled tasks) $
@@ -63,7 +63,7 @@ object methods
 	
 	<cfloop query="qCore">
 		<cfset queryAddRow(qTemplates, 1)>
-		<cfset querySetCell(qTemplates, "displayname", "#displayname# (core)")>
+		<cfset querySetCell(qTemplates, "displayname", "#displayname# #application.adminBundle[session.dmProfile.locale].core#")>
 		<cfset querySetCell(qTemplates, "path", "/farcry/farcry_core/admin/scheduledTasks/#methodName#.cfm")>
 	</cfloop>
 	
@@ -74,7 +74,7 @@ object methods
 			<!--- ignore cvs file --->
 			<cfif methodName neq "_donotdelete">
 				<cfset queryAddRow(qTemplates, 1)>
-				<cfset querySetCell(qTemplates, "displayname", "#displayname# (custom)")>
+				<cfset querySetCell(qTemplates, "displayname", "#displayname# #application.adminBundle[session.dmProfile.locale].custom#")>
 				<cfset querySetCell(qTemplates, "path", "/farcry/#application.applicationName#/system/dmCron/#methodName#.cfm")>
 			</cfif>
 		</cfloop>

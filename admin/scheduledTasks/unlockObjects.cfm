@@ -1,9 +1,11 @@
+<cfprocessingDirective pageencoding="utf-8">
+
 <!--- @@displayname: Unlock Objects --->
 
-<html>
+<cfoutput><html dir="#session.writingDir#" lang="#session.userLanguage#"></cfoutput>
 <head>
 <title>Untitled Document</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta content="text/html; charset=UTF-8" http-equiv="content-type">
 </head>
 
 <body>

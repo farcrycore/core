@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmhtml/plpEdit/related.cfm,v 1.4 2003/12/10 04:48:21 brendan Exp $
-$Author: brendan $
-$Date: 2003/12/10 04:48:21 $
-$Name: milestone_2-2-1 $
-$Revision: 1.4 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmhtml/plpEdit/related.cfm,v 1.7.2.2 2005/04/20 03:43:18 paul Exp $
+$Author: paul $
+$Date: 2005/04/20 03:43:18 $
+$Name: milestone_2-3-2 $
+$Revision: 1.7.2.2 $
 
 || DESCRIPTION || 
 $Description: dmHTML PLP for edit handler - Related Links Step $
@@ -17,6 +17,8 @@ $TODO: clean up whispace management & formatting, add external links option 2003
 || DEVELOPER ||
 $Developer: Geoff Bowers (modius@daemon.com.au) $
 --->
+<cfprocessingDirective pageencoding="utf-8">
+
 <cfoutput>
 	<link type="text/css" rel="stylesheet" href="#application.url.farcry#/css/admin.css"> 
 </cfoutput>
@@ -64,8 +66,6 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 </script>
 </cfoutput>
 
-
-
 <cfimport taglib="/farcry/farcry_core/tags/farcry" prefix="tags">
 <cfimport taglib="/farcry/fourq/tags" prefix="q4">
 
@@ -79,11 +79,12 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 
 <cfoutput>
 <div class="FormSubTitle">#output.label#</div>
-<div class="FormTitle">Related Objects</div>
+<div class="FormTitle">#application.adminBundle[session.dmProfile.locale].relatedObjects#</div>
 <div class="FormTable">
 
-<!--- <IE:Download ID="oDownload" STYLE="behavior:url(##default##download)" /> --->
-		<script>
+
+<script>
+	var selectedIndex = 0;
 		
 	function insertObjId( objId )
 	{
@@ -113,20 +114,72 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 		{	
 			if( lObjIds.length == 0 )
 			{
-				document.getElementById("relatedPages").innerHTML="No related nodes...";
+				document.getElementById("relatedPages").innerHTML="#application.adminBundle[session.dmProfile.locale].noRelatedNodes#";
 				return;
 			}
 			// download behaviour to get all these object ids
 			serverPut(lObjIds);
-	//oDownload.startDownload("#application.url.farcry#/navajo/getNodeData.cfm?lObjectIds="+lObjIds, downloadComplete );
+		}
+		
+		function getSelectedIndex(radio)
+		{
+			for(var i = 0;i < radio.length;i++)
+			{
+				if(radio[i].checked)
+					return i;
+			}
+		}
+		
+		function getSeqIndex(radioName)
+		{	
+			var emRadio = document.getElementsByName(radioName);
+			for (var i = 0; i < emRadio.length; i++)
+			{
+			if (emRadio[i].checked)
+				return i;
+			}
+		}
+
+		function selectRadioIndex(radioName,index)
+		{
+			var emRadio = document.getElementsByName(radioName);
+			for (var i = 0; i < emRadio.length; i++)
+			{
+				if ([i]==index)
+					emRadio[i].checked = true;
+			}
 			
 		}
+		
+		function reArrange(from,to,seq,radioName)
+		{
+			
+			var relatedIds=document.forms['editform'].aRelated.value;
+			var ari = relatedIds.split( "," );	
+			//return if illegal to destination
+			if (to >= ari.length) return;
+			if (to < 0) return;
+			selectedIndex = to;
+				
+			//do the switcheroo
+			var tmpuuid = ari[to];
+			ari[to] = ari[from];
+			ari[from] = tmpuuid;
+			
+			//reset the form val to reflect reorder
+			document.forms['editform'].aRelated.value = ari.join(",");
+			//refresh display
+			drawNode(document.forms['editform'].aRelated.value,seq);
+			//set the selected index of radio to reflect new position
+		  	return true;
+		}
+		
 		
 		function downloadComplete( s )
 		{
 			eval(s);
-			
-			outData="<table cellpadding=3 border=0><tr><Td colspan=3><b>Currently Related Pages</b></td></tr>";
+			outData = "<table><tr><td>";
+			outData+="<table cellpadding=4 border=0><tr><td colspan=3><b>#application.adminBundle[session.dmProfile.locale].currentlyRelatedPages#</b></td></tr>";
 			
 			var relatedIds=document.forms['editform'].aRelated.value;
 			var ari = relatedIds.split( "," );
@@ -138,21 +191,31 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 				
 				if( theData )
 				{
-					outData += "<tr><td><span class='frameMenuBullet'>&raquo;</span> "+theData['title']+"</td><Td><input type='button' value='Preview' ";
+					outData += "<tr><td><span class='frameMenuBullet'>&raquo;</span> "+theData['title']+"</td><Td><input type='button' value='#application.adminBundle[session.dmProfile.locale].preview#' ";
 					outData += "onclick=\"window.open('#application.url.webroot#/index.cfm?objectId="+theData['objectid']+"');\"></td>";
-					outData += "<td><input type=button value='Remove' onclick=\"";
+					outData += "<td><input type=button value='#application.adminBundle[session.dmProfile.locale].remove#' onclick=\"";
 					outData += "removeRelated('"+theData['objectid']+"')";
-					outData += "\"></td></tr>";
+					outData += "\"></td>";
+					outData +="<td><input type='radio' name='seq' value='" + objId + "'></td>";
+					outData +="</tr>";
 				}
 			}
 			outData += "</table>";
+			outData+="</td><td>";
+			if(ari.length > 1)
+			{
+				outData+="<input type=\"button\" class=\"normalbttnstyle\" value=\"&uarr;\" onClick=\"reArrange(getSelectedIndex(document.forms['editform'].seq),getSelectedIndex(document.forms['editform'].seq) -1,getSeqIndex('seq')-1,'seq');\"><br>";
+				outData+="<input type=\"button\" class=\"normalbttnstyle\" value=\"&darr;\" onClick=\"reArrange(getSelectedIndex(document.forms['editform'].seq),getSelectedIndex(document.forms['editform'].seq) +1,getSeqIndex('seq')+1,'seq');\"><br>";
+			}
+			outData+="</td></tr></table>"
 			
 			var e=document.getElementById("relatedPages");
 			e.innerHTML = outData;
+			selectRadioIndex('seq',selectedIndex);
 		}
 		
 		</script>
-		Insert <a href="" onclick="alert('Right click on the node in the tree then select insert.');return false;">?</a> related articles from the FarCry Tree here...<br>
+		#application.adminBundle[session.dmProfile.locale].insertRelatedArticles#<br>
 		
 		<STYLE TYPE="text/css">
 		##idServer { 
@@ -165,11 +228,9 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	</STYLE>
 
 		<IFRAME WIDTH="100" HEIGHT="1" NAME="idServer" ID="idServer" 
-		 FRAMEBORDER="0" FRAMESPACING="0" MARGINWIDTH="0" MARGINHEIGHT="0">
+		 FRAMEBORDER="0" FRAMESPACING="0" MARGINWIDTH="0" MARGINHEIGHT="0" SRC="null">
 			<ILAYER NAME="idServer" WIDTH="400" HEIGHT="100" VISIBILITY="Hide" ID="idServer">
-			<P>This page uses a hidden frame and requires either Microsoft 
-			Internet Explorer v4.0 (or higher) or Netscape Navigator v4.0 (or 
-			higher.)</P>
+			<P>#application.adminBundle[session.dmProfile.locale].browserReqBlurb#</P>
 			</ILAYER>
 		</IFRAME>
 		<input type="hidden" name="aRelated" value="#arrayToList(output.aRelatedIDs)#">
@@ -179,11 +240,18 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 		
 	<cfoutput>
 		<br>
-		<div id="relatedPages"><h3>Currently Related Pages</h3>Loading Data...</div>
+		<div id="relatedPages">
+			#application.adminBundle[session.dmProfile.locale].loadingCurrentlyRelatedPages#
+			
 		</div>
-		<script>
-		drawNode( '#StructKeyList(r_stObjects)#' );
-		</script>
+	</div>
+
+		
+					<script>
+					drawNode( '#StructKeyList(r_stObjects)#' );
+					</script>
+		
+
 	</div>
 	
 	<p></p>
@@ -196,9 +264,6 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 </cfform>
 	
 <cfelse>
-<!--- 
-TODO
-get tree working --->
 	<cfparam name="form.aRelated" default="">
 	<cfset output.aRelatedIDs = ListToArray( form.aRelated )>
 

@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/dmNews.cfc,v 1.11 2003/12/11 03:46:48 paul Exp $
-$Author: paul $
-$Date: 2003/12/11 03:46:48 $
-$Name: milestone_2-2-1 $
-$Revision: 1.11 $
+$Header: /cvs/farcry/farcry_core/packages/types/dmNews.cfc,v 1.11.6.1 2005/05/24 04:46:08 gstewart Exp $
+$Author: gstewart $
+$Date: 2005/05/24 04:46:08 $
+$Name: milestone_2-3-2 $
+$Revision: 1.11.6.1 $
 
 || DESCRIPTION || 
 $Description: dmNews Type $
@@ -43,6 +43,8 @@ object methods
 	<cfinclude template="_dmNews/edit.cfm">
 </cffunction>
 
-
+<cffunction name="renderObjectOverview" hint="just over riding edit overview for now">
+	<cfargument name = "ObjectId">
+</cffunction>
 </cfcomponent>
 

@@ -6,11 +6,11 @@ Daemon Pty Limited 1995-2003
 http://www.daemon.com.au
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/admin/cacheSummary.cfm,v 1.6 2003/09/03 01:50:31 brendan Exp $
+$Header: /cvs/farcry/farcry_core/admin/admin/cacheSummary.cfm,v 1.7 2004/07/15 01:10:24 brendan Exp $
 $Author: brendan $
-$Date: 2003/09/03 01:50:31 $
-$Name: b201 $
-$Revision: 1.6 $
+$Date: 2004/07/15 01:10:24 $
+$Name: milestone_2-3-2 $
+$Revision: 1.7 $
 
 || DESCRIPTION || 
 Displays a summary of cache blocks
@@ -27,6 +27,8 @@ out:
 
 <cfsetting enablecfoutputonly="yes">
 
+<cfprocessingDirective pageencoding="utf-8">
+
 <!--- check permissions --->
 <cfscript>
 	iGeneralTab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="AdminGeneralTab");
@@ -34,7 +36,7 @@ out:
 
 <!--- set up page header --->
 <cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
-<admin:header>
+<admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 <cfif iGeneralTab eq 1>
 	<!--- clean selected blocks --->
@@ -53,7 +55,7 @@ out:
 	</cfif>
 	
 	<!--- display form --->
-	<cfoutput><span class="Formtitle">Content Cache Summary</span><p></p></cfoutput>
+	<cfoutput><span class="Formtitle">#application.adminBundle[session.dmProfile.locale].contentCacheSummary#</span><p></p></cfoutput>
 	
 	<!--- block caches --->
 	<!--- check a block cache exists --->
@@ -63,11 +65,11 @@ out:
 		<form action="" method="post" name="BlockForm">
 		<table cellpadding="5" cellspacing="0" border="1" style="margin-left:30px;">
 		<tr class="dataheader">
-			<td>Block</td>
-			<td align="center">Number of Caches</td>
-			<td align="center">Expired Caches</td>
-			<td align="center">Clean</td>
-			<td align="center">Flush</td>
+			<td>#application.adminBundle[session.dmProfile.locale].Block#</td>
+			<td align="center">#application.adminBundle[session.dmProfile.locale].numberCaches#</td>
+			<td align="center">#application.adminBundle[session.dmProfile.locale].expiredCaches#</td>
+			<td align="center">#application.adminBundle[session.dmProfile.locale].clean#</td>
+			<td align="center">#application.adminBundle[session.dmProfile.locale].flush#</td>
 		</tr>
 		</cfoutput>
 		
@@ -128,7 +130,7 @@ out:
 		</form>
 		</cfoutput>
 	<cfelse>
-		<cfoutput>No block caches at this time.</cfoutput>
+		<cfoutput>#application.adminBundle[session.dmProfile.locale].noBlockCachesNow#</cfoutput>
 	</cfif>
 
 <cfelse>

@@ -1,4 +1,7 @@
 <cfsetting enablecfoutputonly="Yes">
+
+<cfprocessingDirective pageencoding="utf-8">
+
 <cfimport taglib="/farcry/fourq/tags" prefix="q4">
 
 <q4:contentobjectgetmultiple bActiveOnly="0" lObjectIds="#url.lObjectIds#" r_stObjects="stObjs">

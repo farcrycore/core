@@ -1,5 +1,6 @@
-
 <cfsetting enablecfoutputonly="Yes">
+
+<cfprocessingDirective pageencoding="utf-8">
 
 <!--- 
 || BEGIN DAEMONDOC||
@@ -9,11 +10,11 @@ Daemon Pty Limited 1995-2003
 http://www.daemon.com.au
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/security/securityMenuFrame.cfm,v 1.14 2004/04/27 18:39:35 tom Exp $
-$Author: tom $
-$Date: 2004/04/27 18:39:35 $
-$Name: milestone_2-2-1 $
-$Revision: 1.14 $
+$Header: /cvs/farcry/farcry_core/admin/security/securityMenuFrame.cfm,v 1.15 2004/07/15 01:52:20 brendan Exp $
+$Author: brendan $
+$Date: 2004/07/15 01:52:20 $
+$Name: milestone_2-3-2 $
+$Revision: 1.15 $
 
 || DESCRIPTION || 
 Displays menu items for security section in Farcry. If user has user security permissions, defaults to user tab, otherwise default to audit tab.
@@ -38,11 +39,12 @@ out: none
 <cfoutput>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 
-<html>
+<html dir="#session.writingDir#" lang="#session.userLanguage#">
 <head>
 	<title>securityMenuFrame</title>
 	<misc:cacheControl>
 	<LINK href="../css/overviewFrame.css" rel="stylesheet" type="text/css">
+	<meta content="text/html; charset=UTF-8" http-equiv="content-type">
 </head>
 
 <body>
@@ -55,40 +57,40 @@ out: none
 		<cfcase value="security">
 			<!--- permission check --->
 			<cfif iSecurityTab eq 1>	
-				<div class="frameMenuTitle">Setup</div>
-				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="../security/redirect.cfm?tag=TestSecuritySetup" class="frameMenuItem" target="editFrame">Test Security Setup</a></div>
-				<div class="frameMenuTitle">Users</div>
-				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="../security/redirect.cfm?tag=UserSearch" class="frameMenuItem" target="editFrame">Search for User</a></div>
-				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="../security/redirect.cfm?tag=UserCreateEdit" class="frameMenuItem" target="editFrame">Create a User</a></div>
-				<div class="frameMenuTitle">Groups</div>
-				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="../security/redirect.cfm?tag=GroupSearch" class="frameMenuItem" target="editFrame">Search for Group</a></div>
-				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="../security/redirect.cfm?tag=GroupCreateEdit" class="frameMenuItem" target="editFrame">Create a Group</a></div>	
+				<div class="frameMenuTitle">#application.adminBundle[session.dmProfile.locale].setup#</div>
+				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="../security/redirect.cfm?tag=TestSecuritySetup" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].testSecuritySetup#</a></div>
+				<div class="frameMenuTitle">#application.adminBundle[session.dmProfile.locale].users#</div>
+				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="../security/redirect.cfm?tag=UserSearch" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].searchForUser#</a></div>
+				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="../security/redirect.cfm?tag=UserCreateEdit" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].createAUser#</a></div>
+				<div class="frameMenuTitle">#application.adminBundle[session.dmProfile.locale].groups#</div>
+				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="../security/redirect.cfm?tag=GroupSearch" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].searchForGroup#</a></div>
+				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="../security/redirect.cfm?tag=GroupCreateEdit" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].createGroup#</a></div>	
 			</cfif>
 		</cfcase>
 		
 		<cfcase value="policy">
 			<!--- permission check --->
 			<cfif iPolicyTab eq 1>	
-				<div class="frameMenuTitle">Setup</div>
-				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="../security/redirect.cfm?tag=TestPolicySetup" class="frameMenuItem" target="editFrame">Test Policy Setup</a></div>
+				<div class="frameMenuTitle">#application.adminBundle[session.dmProfile.locale].setup#</div>
+				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="../security/redirect.cfm?tag=TestPolicySetup" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].testPolicySetup#</a></div>
 				
-				<div class="frameMenuTitle">Policy Groups</div>
-				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="../security/redirect.cfm?tag=PolicyGroupSearch" class="frameMenuItem" target="editFrame">Policy Groups</a></div>
-				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="../navajo/permissions.cfm?reference1=PolicyGroup" class="frameMenuItem" target="editFrame">Policy Group Permissions</a></div>
-				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="../security/redirect.cfm?tag=PolicyGroupCreateEdit" class="frameMenuItem" target="editFrame">Create a Policy Group</a></div>
-				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="../security/redirect.cfm?tag=PolicyGroupCopy" class="frameMenuItem" target="editFrame">Copy a Policy Group</a></div>
-				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="../security/redirect.cfm?tag=PolicyGroupMappingSearch" class="frameMenuItem" target="editFrame">Show Policy Group Mappings</a></div>
-				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="../security/redirect.cfm?tag=PolicyGroupMap" class="frameMenuItem" target="editFrame">Map Policy Group</a></div>
+				<div class="frameMenuTitle">#application.adminBundle[session.dmProfile.locale].policyGroups#</div>
+				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="../security/redirect.cfm?tag=PolicyGroupSearch" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].policyGroups#</a></div>
+				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="../navajo/permissions.cfm?reference1=PolicyGroup" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].policyGroupPermissions#</a></div>
+				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="../security/redirect.cfm?tag=PolicyGroupCreateEdit" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].createPolicyGroup#</a></div>
+				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="../security/redirect.cfm?tag=PolicyGroupCopy" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].copyPolicyGroup#</a></div>
+				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="../security/redirect.cfm?tag=PolicyGroupMappingSearch" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].showPolicyGroupMappings#</a></div>
+				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="../security/redirect.cfm?tag=PolicyGroupMap" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].mapPolicyGroup#</a></div>
 				
-				<div class="frameMenuTitle">Permissions</div>
-				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="../security/redirect.cfm?tag=PermissionSearch" class="frameMenuItem" target="editFrame">Permissions</a></div>
-				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="../security/redirect.cfm?tag=PermissionCreateEdit" class="frameMenuItem" target="editFrame">Create a Permission</a></div>		
-				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="../security/redirect.cfm?tag=reInitPermissionsCache" class="frameMenuItem" target="editFrame">Rebuild Permissions</a></div>		
-				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="../security/redirect.cfm?tag=permissionsMap" class="frameMenuItem" target="editFrame">Permissions Map</a></div>		
+				<div class="frameMenuTitle">#application.adminBundle[session.dmProfile.locale].permissions#</div>
+				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="../security/redirect.cfm?tag=PermissionSearch" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].permissions#</a></div>
+				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="../security/redirect.cfm?tag=PermissionCreateEdit" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].createPermission#</a></div>		
+				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="../security/redirect.cfm?tag=reInitPermissionsCache" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].rebuildPermissions#</a></div>		
+				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="../security/redirect.cfm?tag=permissionsMap" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].permissionsMap#</a></div>		
 			</cfif>
 		</cfcase>
 	</cfswitch>
-	
+
 
 </div>
 

@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/build.txt,v 1.66.2.1 2004/07/27 21:02:52 tom Exp $
-$Author: tom $
-$Date: 2004/07/27 21:02:52 $
-$Name: milestone_2-2-1 $
-$Revision: 1.66.2.1 $
+$Header: /cvs/farcry/farcry_core/admin/build.txt,v 1.67 2004/07/15 23:47:50 brendan Exp $
+$Author: brendan $
+$Date: 2004/07/15 23:47:50 $
+$Name: milestone_2-3-2 $
+$Revision: 1.67 $
 
 || DESCRIPTION || 
 $DESCRIPTION:$
@@ -21,6 +21,9 @@ $DEVELOPER:Brendan Sisson (brendan@daemon.com.au)$
 $in:$ 
 $out:$
 --->
+
+b230:
+- localisation of admin area
 
 b220:
 - copy branch

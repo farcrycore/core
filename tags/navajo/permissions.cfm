@@ -1,5 +1,7 @@
 <cfsetting enablecfoutputonly="Yes" requesttimeout="240">
 
+<cfprocessingDirective pageencoding="utf-8">
+
 <cfimport taglib="/farcry/fourq/tags/" prefix="q4">
 <cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
 
@@ -13,13 +15,13 @@ iState = oAuthorisation.checkPermission(permissionName="ModifyPermissions",refer
 
 <cfif iState neq 1>
 	<cfoutput>
-		<b>You don't have permission to manage permissions.</b>
+		<b>#application.adminBundle[session.dmProfile.locale].noManagePermission#</b>
 	</cfoutput>
 	<cfabort>
 </cfif>
 
 <cfoutput>
-<html>
+<html dir="#session.writingDir#" lang="#session.userLanguage#">
 <link href="#application.url.farcry#/css/admin.css" rel="stylesheet" type="text/css">
 
 <body onLoad="window.focus();">
@@ -36,7 +38,7 @@ iState = oAuthorisation.checkPermission(permissionName="ModifyPermissions",refer
 	</cfscript>
 	
 	<cfif not isstruct(stobj) OR StructIsEmpty(stobj)>
-	<cfoutput>Object no longer exists</cfoutput>
+	<cfoutput>#application.adminBundle[session.dmProfile.locale].objNotExists#</cfoutput>
 	<cfaborT>
 	</cfif>
 	
@@ -68,7 +70,7 @@ iState = oAuthorisation.checkPermission(permissionName="ModifyPermissions",refer
 </cfscript>
 
 <cfoutput>
-<span class="formtitle">Permissions on #stObj.label#(#typeName#)</span><p>
+<span class="formtitle">#application.adminBundle[session.dmProfile.locale].permissionsOn# #stObj.label#(#typeName#)</span><p>
 
 <cfscript>
 // gets all the groups ie siteadmin,sysadmin etc 
@@ -144,7 +146,7 @@ lPolicyGroupIds = oAuthentication.arrayKeyToList(array=aPolicyGroups,key='policy
 <cfoutput>
 	<form action="" method="POST">
 	
-	<span class="formlabel">Policy Group:&nbsp;</span>
+	<span class="formlabel">#application.adminBundle[session.dmProfile.locale].policyGroupLabel#&nbsp;</span>
 	<select name="selectGroup" onChange="selectPolicyGroup(this.options[this.selectedIndex].value)"></cfoutput>
 	<cfloop index="PolicyGroupId" list="#lPolicyGroupIds#">
 		<cfscript>
@@ -156,7 +158,7 @@ lPolicyGroupIds = oAuthentication.arrayKeyToList(array=aPolicyGroups,key='policy
 	
 	&nbsp;
 	
-	<input type="Submit" name="Submit" value="Update">
+	<input type="Submit" name="Submit" value="#application.adminBundle[session.dmProfile.locale].UpdateLC#">
 	<br>
 	<br>
 	
@@ -168,10 +170,10 @@ lPolicyGroupIds = oAuthentication.arrayKeyToList(array=aPolicyGroups,key='policy
 	
 	<table cellpadding="5" cellspacing="0" border="1" style="margin-left:30px;">
 	<tr class="dataheader">
-		<td>Permission</td>
-		<td>State</td>
+		<td>#application.adminBundle[session.dmProfile.locale].permission#</td>
+		<td>#application.adminBundle[session.dmProfile.locale].state#</td>
 		<cfif isDefined("url.objectId")>
-			<td>Inherited</td>
+			<td>#application.adminBundle[session.dmProfile.locale].inherited#</td>
 		</cfif>
 	</tr>
 	
@@ -209,7 +211,7 @@ lPolicyGroupIds = oAuthentication.arrayKeyToList(array=aPolicyGroups,key='policy
 </cfoutput>
 
 <cfelse>
-	<cfoutput>Update Permissions</cfoutput>
+	<cfoutput>#application.adminBundle[session.dmProfile.locale].updatePermission#</cfoutput>
 	<cfflush>
 	
 	<cfloop index="field" list="#form.fieldnames#">
@@ -236,7 +238,7 @@ lPolicyGroupIds = oAuthentication.arrayKeyToList(array=aPolicyGroups,key='policy
 	</cfloop>
 	
 	<!--- update the cache --->
-	<cfoutput><br><br>Updating Permission Cache (This may take a moment)</cfoutput>
+	<cfoutput><br><br>#application.adminBundle[session.dmProfile.locale].updatingPermissionsCache#</cfoutput>
 	<cfflush>
 	
 	<cfscript>
@@ -257,7 +259,7 @@ lPolicyGroupIds = oAuthentication.arrayKeyToList(array=aPolicyGroups,key='policy
 	</cflock>
 	<cffile action="WRITE" file="#application.path.project#/permissionCache.wddx" output="#temp#">
 	
-	<cfoutput><br><br>** Complete! **</cfoutput><cfflush>
+	<cfoutput><br><br>#application.adminBundle[session.dmProfile.locale].reallyComplete#</cfoutput><cfflush>
 	
 	<cfoutput>
 		<cfif isDefined("url.objectId")>

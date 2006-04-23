@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/navajo/overview.cfm,v 1.90.2.2 2004/10/14 01:11:25 paul Exp $
-$Author: paul $
-$Date: 2004/10/14 01:11:25 $
-$Name: milestone_2-2-1 $
-$Revision: 1.90.2.2 $
+$Header: /cvs/farcry/farcry_core/tags/navajo/overview.cfm,v 1.98.2.2 2005/02/17 17:21:24 spike Exp $
+$Author: spike $
+$Date: 2005/02/17 17:21:24 $
+$Name: milestone_2-3-2 $
+$Revision: 1.98.2.2 $
 
 || DESCRIPTION || 
 $Description: Javascript tree$
@@ -26,6 +26,7 @@ $out:$
 --->
 
 <cfsetting enablecfoutputonly="No">
+<cfprocessingDirective pageencoding="utf-8">
 <cfinclude template="/farcry/farcry_core/admin/includes/cfFunctionWrappers.cfm">
 <cfimport taglib="/farcry/farcry_core/tags/navajo" prefix="nj">
 
@@ -223,7 +224,7 @@ if(not isDefined("url.insertonly"))
 	typename="#attributes.nodetype#"
 	get="Children"
 	topLevelVariable="objects"
-	lStripFields="ORIGINALIMAGEPATH,OPTIMISEDIMAGEPATH,THUMBNAILIMAGEPATH,lNavidAlias,teaserimage,extendedmetadata,externallink,teaserimage,metakeywords,displayMethod,objecthistory,teaser,body,PATH,commentlog"
+	lStripFields="ORIGINALIMAGEPATH,OPTIMISEDIMAGEPATH,THUMBNAILIMAGEPATH,lNavidAlias,teaserimage,extendedmetadata,teaserimage,metakeywords,displayMethod,objecthistory,teaser,body,PATH,commentlog"
 	r_javascript="jscode">
 
 <cfset imageRoot = "nimages">
@@ -279,7 +280,7 @@ if(not isDefined("url.insertonly"))
 <script>
 var localWin = window;
 var editFlag = false;
-var copyNodeId = '';//holds the uuid of the objectid to be cut or copied
+var copyNodeId = '';
 var pasteAction = ''//may be a cut or copy
 
 function popupopen( strURL,b,c )
@@ -298,7 +299,7 @@ function frameopen( a,b )
 	{
 		if( b == 'editFrame' && parent[b].location.href.toLowerCase().indexOf( "edit.cfm" ) != -1 )
 		{
-			alert("You are currently editing an object.\nPlease complete or cancel editing before doing anything else.\n" );
+			alert("#application.adminBundle[session.dmProfile.locale].currentlyEditingObj#" );
 		}
 		else
 		{
@@ -315,6 +316,7 @@ var rootIds = '#rootObjectId#';
 var lastSelectedId = '';
 var aSelectedIds = new Array();
 var zoom=#attributes.zoom#;
+var bEnableDragAndDrop = true;
 
 
 //pre load images
@@ -376,7 +378,6 @@ function renderObjectToDiv( objId, divId )
 	
 }
 
-
 function renderObject( objId )
 {
 	var thisObject = objects[objId];
@@ -411,7 +412,7 @@ function renderObject( objId )
 			drag += " ondragover=\"if(dragTypeId.toLowerCase()=='dmimage' || dragTypeId.toLowerCase()=='dmfile') dragOver();\" ";
 			
 				
-		elData+="<table  class=\"tableNode\" "+contextMenu+">\n<tr><td class=\"iconText\">"+getToggleImage(objId)+
+		elData+="<table class=\"tableNode\" "+contextMenu+">\n<tr><td class=\"iconText\">"+getToggleImage(objId)+
 					"<div id=\"non\""+jsHighlight+" style=\"display:inline\" "+drag+jsHighlight+">"+getTypeImage(objId)+"</div>\n</td>"+
 					"<td valign=\"middle\" class=\"iconText\">"+
 					"\n<div id=\""+objId+"_text\" "+jsHighlight+">"+getObjectTitle(objId)+
@@ -428,46 +429,61 @@ function renderObject( objId )
 var dragObjectId='';
 var dragTypeId='';
 
+function enableDragAndDrop()
+{
+	bEnableDragAndDrop = true;
+}
+
+function disableDragAndDrop()
+{
+	bEnableDragAndDrop = false;
+}
+
 function startDrag( aDragObjectId, aDragTypeId )
 {	
-    // store the source of the object into a string acting as a dummy object so we don't ruin the original object: 
+    <!--- store the source of the object into a string acting as a dummy object so we don't ruin the original object: --->
 	dragObjectId = aDragObjectId;
 	dragTypeId = aDragTypeId;
 	
-    // post the data for Windows: 
+    <!--- post the data for Windows: --->
     var dragData = window.event.dataTransfer;
 
-    // set the type of data for the clipboard: 
+    <!--- set the type of data for the clipboard: --->
 	dragData.setData('Text', dragObjectId);
 	
-    // allow only dragging that involves moving the object: 
+    <!--- allow only dragging that involves moving the object: --->
     dragData.effectAllowed = 'linkMove';
 
- 	// use the special 'move' cursor when dragging: 
+    <!--- use the special 'move' cursor when dragging: --->
     dragData.dropEffect = 'move';
 }
 
 function dragOver()
 {
-	// tell onOverDrag handler not to do anything: 
+	<!--- tell onOverDrag handler not to do anything: --->
 	window.event.returnValue = false;
 }
 
 function dropDrag( aDropObjectId )
 {	
-	// eliminate default action of ondrop so we can customize: 
+	if(!bEnableDragAndDrop)
+	{
+		alert("#application.adminBundle[session.dmProfile.locale].branchLockoutBlurb#");
+		return false;
+	}
+	<!--- eliminate default action of ondrop so we can customize: --->
 	//double checking here - shouldn't ever need to though
 	if (objects[dragObjectId]['TYPENAME'] == 'dmHTML' && objects[aDropObjectId]['TYPENAME'].toLowerCase() != '#lCase(attributes.nodetype)#')
 	{
-		alert('You may only drag a HTML object to a Navigation node');
+		alert('#application.adminBundle[session.dmProfile.locale].canOnlyDragHTMLObj#');
 		window.event.returnValue = false;
 		return;
 	}
 	//check for equal dest/parent objectid
-	
+			
 	if(aDropObjectId == getParentObject(dragObjectId)['OBJECTID'])
 	{
-		alert('Object parent and destination parent cannot be the same');
+		alert('#application.adminBundle[session.dmProfile.locale].parentDestinationSame#');
 		return;
 	}
 	
@@ -477,13 +493,14 @@ function dropDrag( aDropObjectId )
 		permcheck = "hasPermission( aDropObjectId, #PermNavCreate# ) > 0";
 	
 	if (eval(permcheck))
-	{	if( dragObjectId != aDropObjectId && confirm('Are you sure you wish to move this object?'))
-		{			
+	{	if( dragObjectId != aDropObjectId && confirm('#application.adminBundle[session.dmProfile.locale].confirmMoveObj#'))
+		{		
+			disableDragAndDrop();	
 			popupopen('#application.url.farcry#/navajo/move.cfm?srcObjectId='+dragObjectId+'&destObjectId='+aDropObjectId,'NavajoExt','#smallPopupFeatures#');
 		}
 	}	
 	else
-		alert('You do not have permission to move objects to this node');	
+		alert('#application.adminBundle[session.dmProfile.locale].noNodePermission#');	
 	
 	window.event.returnValue = false;
 }
@@ -521,9 +538,9 @@ function getObjectTitle( objId )
 {
 	var thisObject = objects[objId];
 	
-	if( !thisObject || !thisObject['TITLE'] ) return "undefined";
+	if( !thisObject || !thisObject['LABEL'] ) return "undefined";
 	
-	return thisObject['TITLE'];
+	return thisObject['LABEL'];
 }
 
 function getToggleImage( objId )
@@ -595,6 +612,14 @@ function getTypeImage( objId )
 	
 	if( na && customIconMapType[na] ) cm = customIconMapType[na][st];
 	
+	var el = thisObject['EXTERNALLINK'];
+	if (el)  {
+		el=el.toLowerCase();
+	}
+	
+	if (el && customIconMapType['externallink']) {
+		cm = customIconMapType['externallink'][st];
+	}
 	var alt = "Current Status: "+thisObject['STATUS']+" Created By: "+thisObject['ATTR_CREATEDBY']+" on "+thisObject['ATTR_DATETIMECREATED']+
 			"Last Updated By: "+thisObject['ATTR_LASTUPDATEDBY']+" on "+thisObject['ATTR_DATETIMELASTUPDATED'];
 			
@@ -669,7 +694,7 @@ function getParentObject( objId )
 	
 	if( !theNode ) return '0';
 	
-	//if this is a nav node search aNavChild else search aObjectIds 
+	<!--- if this is a nav node search aNavChild else search aObjectIds --->
 	searchKey="AOBJECTIDS";
 	
 	if( theNode['TYPENAME'].toLowerCase()=='#lCase(attributes.nodetype)#' ) searchKey="ANAVCHILD";
@@ -1024,7 +1049,7 @@ objectMenu.menuInfo.name = "ObjectMenu";
 <cfoutput>
 o = new Object();
 objectMenu['Insert'] = o;
-o.text = "Insert";
+o.text = "#application.adminBundle[session.dmProfile.locale].insert#";
 o.js = "menuOption_Insert()";
 o.jsvalidate = "(parent['editFrame'].insertObjId || parent['editFrame'].insertObjIds || parent['editFrame'].insertHTML)?1:0";
 o.bShowDisabled = 1;
@@ -1032,49 +1057,68 @@ o.bSeperator = 0;
 
 function menuOption_Insert()
 {
+	<cfparam name="url.lPermittedInsertTypes" default="">
+
 	// get object
 	var theNode = objects[ lastSelectedId ];
 	var p = parent['editFrame'];
+	var permittedInsertTypeNames = '#url.lPermittedInsertTypes#';
+	
+
+	if(permittedInsertTypeNames.length > 0 
+			&& !listContainsNoCase(permittedInsertTypeNames,theNode['TYPENAME'])) {
+				var msg = 'You are not permitted to insert ' + theNode['TYPENAME'] + ' items.';
+			if (permittedInsertTypeNames.split().length > 1) {
+				msg += 'You can only insert items in the following list: \n' + permittedInsertTypeNames;
+			} else {
+				msg += 'You can only insert '+ permittedInsertTypeNames + ' items';
+			}
+			alert(msg);
+			return;
+	}
 	
 	if( p.insertaObjIds ) p.insertaObjIds( aSelectedIds );
 	else if( p.insertObjId ) p.insertObjId( lastSelectedId );
-	else switch( theNode['TYPENAME'] )
+    else switch( theNode['TYPENAME'] )
 	{
-		<cfparam name="application.config.overviewTree.bUseHiResInsert" default="0">
+			<cfparam name="application.config.overviewTree.bUseHiResInsert" default="0">
 		case "dmImage":
-			if (theNode['OPTIMISEDIMAGE'] && theNode['OPTIMISEDIMAGE'].length && #application.config.overviewTree.bUseHiResInsert#)	
-			{
-			<cfif isDefined("application.config.overviewTree.insertJSdmImageHiRes")>
-				p.insertHTML("#evaluate(DE(application.config.overviewTree.insertJSdmImageHiRes))#");
-			<cfelse>
- 				p.insertHTML("<img alt='"+theNode['ALT']+"' src='#application.url.webroot#/images/"+theNode['OPTIMISEDIMAGE']+"'>");
-			</cfif>
-				
-			}
-			else
-			{
-			<cfif isDefined("application.config.overviewTree.insertJSdmImage")>
-				p.insertHTML("#evaluate(DE(application.config.overviewTree.insertJSdmImage))#");
-			<cfelse>
- 				p.insertHTML( "<img alt='"+theNode['ALT']+"' src='#application.url.webroot#/images/"+theNode['IMAGEFILE']+"'>" );
-			</cfif>
-			}
+			
+				if (theNode['OPTIMISEDIMAGE'] && theNode['OPTIMISEDIMAGE'].length && #application.config.overviewTree.bUseHiResInsert#)	
+				{
+				<cfif isDefined("application.config.overviewTree.insertJSdmImageHiRes")>
+					p.insertHTML("#evaluate(DE(application.config.overviewTree.insertJSdmImageHiRes))#");
+				<cfelse>
+	 				p.insertHTML("<img alt='"+theNode['ALT']+"' src='#application.url.webroot#/images/"+theNode['OPTIMISEDIMAGE']+"'>");
+				</cfif>
+					
+				}
+				else
+				{
+				<cfif isDefined("application.config.overviewTree.insertJSdmImage")>
+					p.insertHTML("#evaluate(DE(application.config.overviewTree.insertJSdmImage))#");
+				<cfelse>
+	 				p.insertHTML( "<img alt='"+theNode['ALT']+"' src='#application.url.webroot#/images/"+theNode['IMAGEFILE']+"'>" );
+				</cfif>
+				}
 			break;		
 		
 		case "dmFile":
-			<cfif isDefined("application.config.overviewTree.insertJSdmFile")>
-				p.insertHTML("#evaluate(DE(application.config.overviewTree.insertJSdmFile))#");
-			<cfelse>
-				p.insertHTML( "<a href='#application.url.webroot#/download.cfm?DownloadFile="+lastSelectedId+"' target='_blank'>"+theNode['TITLE']+"</a>" );
-			</cfif>
+		
+				<cfif isDefined("application.config.overviewTree.insertJSdmFile")>
+					p.insertHTML("#evaluate(DE(application.config.overviewTree.insertJSdmFile))#");
+				<cfelse>
+					p.insertHTML( "<a href='#application.url.webroot#/download.cfm?DownloadFile="+lastSelectedId+"' target='_blank'>"+theNode['TITLE']+"</a>" );
+				</cfif>
 			break;		
 			
 		case "dmFlash":
-			<cfif isDefined("application.config.overviewTree.insertJSdmFlash")>
-			p.insertHTML("#evaluate(DE(application.config.overviewTree.insertJSdmFlash))#");
-			<cfelse>
-			p.insertHTML( "<OBJECT classid='clsid:D27CDB6E-AE6D-11cf-96B8-444553540000' codebase='http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab##version="+theNode['FLASHVERSION']+"' WIDTH='"+theNode['FLASHWIDTH']+"'  HEIGHT='"+theNode['FLASHHEIGHT']+"'  ALIGN='"+theNode['FLASHALIGN']+"'><PARAM NAME='movie' VALUE='http://#CGI.SERVER_NAME#:#CGI.SERVER_PORT##application.url.webroot#/files/"+theNode['FLASHMOVIE']+"'><PARAM NAME='quality' VALUE='"+theNode['FLASHQUALITY']+"'><PARAM NAME='play' VALUE='"+theNode['FLASHPLAY']+"'><PARAM NAME='menu' VALUE='"+theNode['FLASHMENU']+"'><PARAM NAME='loop' VALUE='"+theNode['FLASHLOOP']+"'><PARAM NAME='FlashVars' VALUE='"+theNode['FLASHPARAMS']+"'><EMBED SRC='http://#CGI.SERVER_NAME#:#CGI.SERVER_PORT#/#application.url.webroot#/files/"+theNode['FLASHMOVIE']+"' QUALITY='"+theNode['FLASHQUALITY']+"' WIDTH='"+theNode['FLASHWIDTH']+"' HEIGHT='"+theNode['FLASHHEIGHT']+"' FLASHVARS='"+theNode['FLASHPARAMS']+"' ALIGN='"+theNode['FLASHALIGN']+"' MENU='"+theNode['FLASHMENU']+"' PLAY='"+theNode['FLASHPLAY']+"' LOOP='"+theNode['FLASHLOOP']+"' TYPE='application/x-shockwave-flash' PLUGINSPAGE='http://www.macromedia.com/go/getflashplayer'></EMBED></OBJECT>" );
-			</cfif>
+		
+				<cfif isDefined("application.config.overviewTree.insertJSdmFlash")>
+				p.insertHTML("#evaluate(DE(application.config.overviewTree.insertJSdmFlash))#");
+				<cfelse>
+				p.insertHTML( "<OBJECT classid='clsid:D27CDB6E-AE6D-11cf-96B8-444553540000' codebase='http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab##version="+theNode['FLASHVERSION']+"' WIDTH='"+theNode['FLASHWIDTH']+"'  HEIGHT='"+theNode['FLASHHEIGHT']+"'  ALIGN='"+theNode['FLASHALIGN']+"'><PARAM NAME='movie' VALUE='http://#CGI.SERVER_NAME#:#CGI.SERVER_PORT##application.url.webroot#/files/"+theNode['FLASHMOVIE']+"'><PARAM NAME='quality' VALUE='"+theNode['FLASHQUALITY']+"'><PARAM NAME='play' VALUE='"+theNode['FLASHPLAY']+"'><PARAM NAME='menu' VALUE='"+theNode['FLASHMENU']+"'><PARAM NAME='loop' VALUE='"+theNode['FLASHLOOP']+"'><PARAM NAME='FlashVars' VALUE='"+theNode['FLASHPARAMS']+"'><EMBED SRC='http://#CGI.SERVER_NAME#:#CGI.SERVER_PORT#/#application.url.webroot#/files/"+theNode['FLASHMOVIE']+"' QUALITY='"+theNode['FLASHQUALITY']+"' WIDTH='"+theNode['FLASHWIDTH']+"' HEIGHT='"+theNode['FLASHHEIGHT']+"' FLASHVARS='"+theNode['FLASHPARAMS']+"' ALIGN='"+theNode['FLASHALIGN']+"' MENU='"+theNode['FLASHMENU']+"' PLAY='"+theNode['FLASHPLAY']+"' LOOP='"+theNode['FLASHLOOP']+"' TYPE='application/x-shockwave-flash' PLUGINSPAGE='http://www.macromedia.com/go/getflashplayer'></EMBED></OBJECT>" );
+				</cfif>
 			break;
 			
 		default:
@@ -1086,6 +1130,17 @@ function menuOption_Insert()
 			break;
 	}
 } 
+
+function listContainsNoCase(list,item) {
+	var listItems = list.toLowerCase().split(',');
+	for (i=0;i<listItems.length;i++) {
+		if (listItems[i] == item.toLowerCase()) {
+			return true;
+		}
+	}
+	return false;
+}
+
 </cfoutput>
 <cfelse>
 <cfoutput>
@@ -1094,7 +1149,7 @@ function menuOption_Insert()
 
 o = new Object();
 objectMenu['Edit'] = o;
-o.text = "Edit";
+o.text = "#application.adminBundle[session.dmProfile.locale].Edit#";
 o.js = "menuOption_Edit();";
 o.jsvalidate = "hasPermission( lastSelectedId, #PermNavEdit# );";
 o.bShowDisabled = "1";
@@ -1110,7 +1165,7 @@ function menuOption_Edit()
 
 o = new Object();
 objectMenu['Copy'] = o;
-o.text = "Copy";
+o.text = "#application.adminBundle[session.dmProfile.locale].copy#";
 o.js = "menuOption_Copy();";
 o.jsvalidate = "(objects[lastSelectedId]['TYPENAME'].toLowerCase() == '#lCase(attributes.nodetype)#')?1:0";
 o.bShowDisabled = "0";
@@ -1121,6 +1176,7 @@ function menuOption_Copy()
 	pasteAction = 'copy';
 	return true;
 }
+
 
 o = new Object();
 objectMenu['Cut'] = o;
@@ -1137,20 +1193,19 @@ function menuOption_Cut()
 }
 
 
-
 o = new Object();
 objectMenu['Paste'] = o;
-o.text = "Paste";
+o.text = "#application.adminBundle[session.dmProfile.locale].Paste#";
 o.js = "menuOption_Paste();";
-o.jsvalidate = "(hasPermission(lastSelectedId, #PermNavCreate#) == 1 && (copyNodeId.length == 35 && objects[lastSelectedId]['TYPENAME'].toLowerCase() == '#lCase(attributes.nodetype)#'))?1:0";
+o.jsvalidate = "(copyNodeId.length == 35 && objects[lastSelectedId]['TYPENAME'].toLowerCase() == '#lCase(attributes.nodetype)#')?1:0";
 o.bShowDisabled = "1";
 
 function menuOption_Paste()
 {
 	var pasteMsg = '';
+	
 	if(copyNodeId == lastSelectedId)
 	{
-		alert("Source and destination nodes cannot be the same");
 		return false;
 	}
 	if (objects[copyNodeId]['TYPENAME'].toLowerCase() == '#lCase(attributes.nodetype)#')
@@ -1173,7 +1228,7 @@ function menuOption_Paste()
 
 o = new Object();
 objectMenu['Preview'] = o;
-o.text = "Preview";
+o.text = "#application.adminBundle[session.dmProfile.locale].preview#";
 o.js = "menuOption_Preview()";
 o.jsvalidate = "hasPermission( lastSelectedId, #PermNavView# );";
 o.bShowDisabled = 1;
@@ -1186,7 +1241,7 @@ function menuOption_Preview()
 
 o = new Object();
 objectMenu['Preview Draft'] = o;
-o.text = "Preview Draft";
+o.text = "#application.adminBundle[session.dmProfile.locale].previewDraft#";
 o.js = "menuOption_PreviewDraft()";
 o.jsvalidate = "hasDraft(lastSelectedId);";
 o.bShowDisabled = 1;
@@ -1207,7 +1262,7 @@ function menuOption_PreviewDraft()
 
 o = new Object();
 objectMenu['Move'] = o;
-o.text = "Move";
+o.text = "#application.adminBundle[session.dmProfile.locale].move#";
 o.submenu = "Move";
 o.jsvalidate = "((objects[lastSelectedId]['TYPENAME'].toLowerCase()=='#lCase(attributes.nodetype)#' && hasPermission(getParentObject(lastSelectedId)['OBJECTID'], #PermNavEdit# ) && countNodes(getParentObject(lastSelectedId)['OBJECTID']) > 1) || (hasPermission(getParentObject(lastSelectedId)['OBJECTID'], #PermNavEdit# ) && countObjects(getParentObject(lastSelectedId)['OBJECTID']) > 1))?1:0";
 
@@ -1222,14 +1277,14 @@ o.bSeperator = 0;
 
 	o = new Object();
 	moveMenu['MoveUp'] = o;
-	o.text = "Move Up";
+	o.text = "#application.adminBundle[session.dmProfile.locale].moveUp#";
 	o.js = "menuOption_MoveInternal(\\'up\\');";
 	o.jsvalidate = "objectIndex(lastSelectedId)>0||nodeIndex(lastSelectedId)>0";
 	o.bShowDisabled = 1;
 	
 	o = new Object();
 	moveMenu['MoveDown'] = o;
-	o.text = "Move Down";
+	o.text = "#application.adminBundle[session.dmProfile.locale].moveDown#";
 	o.js = "menuOption_MoveInternal(\\'down\\');";
 	o.jsvalidate = 	"(objectIndex(lastSelectedId)!=-1 && objectIndex(lastSelectedId)+1 < countObjects(getParentObject(lastSelectedId)['OBJECTID'])) || "+
 					"(nodeIndex(lastSelectedId)!=-1 && nodeIndex(lastSelectedId)+1 < countNodes(getParentObject(lastSelectedId)['OBJECTID']))";
@@ -1238,14 +1293,14 @@ o.bSeperator = 0;
 	
 	o = new Object();
 	moveMenu['MoveToTop'] = o;
-	o.text = "Move To Top";
+	o.text = "#application.adminBundle[session.dmProfile.locale].moveToTop#";
 	o.js = "menuOption_MoveInternal(\\'top\\');";
 	o.jsvalidate = "objectIndex(lastSelectedId)>0||nodeIndex(lastSelectedId)>0";
 	o.bShowDisabled = 1;
 	
 	o = new Object();
 	moveMenu['MoveToBottom'] = o;
-	o.text = "Move To Bottom";
+	o.text = "#application.adminBundle[session.dmProfile.locale].moveToBottom#";
 	o.js = "menuOption_MoveInternal(\\'bottom\\');";
 	o.jsvalidate = "(objectIndex(lastSelectedId)!=-1 && objectIndex(lastSelectedId)+1 < countObjects(getParentObject(lastSelectedId)['OBJECTID'])) || "+
 					"(nodeIndex(lastSelectedId)!=-1 && nodeIndex(lastSelectedId)+1 < countNodes(getParentObject(lastSelectedId)['OBJECTID']))";
@@ -1258,7 +1313,7 @@ o.bSeperator = 0;
 
 o = new Object();
 objectMenu['Create'] = o;
-o.text = "Create";
+o.text = "#application.adminBundle[session.dmProfile.locale].create#";
 o.submenu = "Create";
 o.jsvalidate = "((hasPermission( lastSelectedId, #PermNavCreate# ) >=0) &&  (objects[lastSelectedId]['TYPENAME'].toLowerCase()=='#lcase(attributes.nodetype)#'))";
 o.bShowDisabled = 1;
@@ -1312,7 +1367,7 @@ function menuOption_CreatePopup( id )
 
 o = new Object();
 objectMenu['Approve'] = o;
-o.text = "Status";
+o.text = "#application.adminBundle[session.dmProfile.locale].status#";
 o.submenu = "Approve";
 o.jsvalidate = "(objects[lastSelectedId]['STATUS'] && (objects[lastSelectedId]['TYPENAME'].toLowerCase() == '#lCase(attributes.nodetype)#' || objects[lastSelectedId]['TYPENAME'] == 'dmHTML'))?1:0";
 o.bShowDisabled = 1;
@@ -1323,21 +1378,21 @@ o.bShowDisabled = 1;
 
 	o = new Object();
 	approveMenu['ApproveItem'] = o;
-	o.text = "Approve";
+	o.text = "#application.adminBundle[session.dmProfile.locale].approve#";
 	o.js = "menuOption_Approve(\\'approved\\')";
 	o.jsvalidate = "((hasPermission( lastSelectedId, #PermNavApprove# )>=0 || (hasPermission(lastSelectedId,#PermNavApproveOwn#) >=0 && objects[lastSelectedId]['ATTR_LASTUPDATEDBY'].toLowerCase() == '#lCase(stUser.userlogin)#')) && (objects[lastSelectedId]['STATUS'] == 'draft' || objects[lastSelectedId]['STATUS'] == 'pending'))?1:0";
 	o.bShowDisabled = 1;
 	
 	o = new Object();
 	approveMenu['ApproveDraft'] = o;
-	o.text = "Approve Draft";
+	o.text = "#application.adminBundle[session.dmProfile.locale].approveDraft#";
 	o.js = "menuOption_Approve(\\'approved\\')";
     o.jsvalidate = "( hasPermission(lastSelectedId, #PermNavApprove#)>=0 && (hasDraft(lastSelectedId) && objects[lastSelectedId]['DRAFTSTATUS'] == 'pending') )?1:0";
 	o.bShowDisabled = 1;
 
 	o = new Object();
 	approveMenu['ApproveBranch'] = o;
-	o.text = "Approve Branch";
+	o.text = "#application.adminBundle[session.dmProfile.locale].approveBranch#";
 	o.js = "menuOption_ApproveBranch(\\'approved\\')";
 	o.jsvalidate = "(hasPermission( lastSelectedId, #PermNavApprove# )>=0 && (objects[lastSelectedId]['STATUS'] == 'draft' || objects[lastSelectedId]['STATUS'] == 'pending') && objects[lastSelectedId]['TYPENAME'].toLowerCase() == '#lCase(attributes.nodetype)#')?1:0";
 	o.bShowDisabled = 1;
@@ -1353,14 +1408,14 @@ o.bShowDisabled = 1;
 	}
 
 	function menuOption_ApproveBranch( status ) {
-		if( confirm('This action will send all objects in this branch to status of ' + status + '. Are you sure you wish to do this?'))
+		if( confirm('#application.adminBundle[session.dmProfile.locale].confirmStatusChange#' + status))
 			//popupopen( 'approve.cfm?approveBranch=1&objectId='+lastSelectedId+'&status='+status, '_blank', '#smallpopupfeatures#' );
 			frameopen( '#application.url.farcry#/navajo/approve.cfm?approveBranch=1&objectId='+lastSelectedId+'&status='+status, 'editFrame' );
 	}
 	
 	o = new Object();
 	approveMenu['Request'] = o;
-	o.text = "Request";
+	o.text = "#application.adminBundle[session.dmProfile.locale].request#";
 	o.js = "menuOption_Approve(\\'requestApproval\\')";
 	o.jsvalidate = "(hasPermission( lastSelectedId, #PermNavRequestApprove# )>=0 && ((objects[lastSelectedId]['STATUS'] == 'draft') || (objects[lastSelectedId]['DRAFTOBJECTID'] && objects[lastSelectedId]['DRAFTSTATUS']=='draft')) )?1:0";
 	o.bShowDisabled = 1;
@@ -1368,28 +1423,28 @@ o.bShowDisabled = 1;
 	
 	o = new Object();
 	approveMenu['RequestBranch'] = o;
-	o.text = "Request Approval for Branch";
+	o.text = "#application.adminBundle[session.dmProfile.locale].requestApprovalForBranch#";
 	o.js = "menuOption_ApproveBranch(\\'requestApproval\\')";
 	o.jsvalidate = "(hasPermission( lastSelectedId, #PermNavRequestApprove# )>=0 && (objects[lastSelectedId]['STATUS'] == 'draft') && objects[lastSelectedId]['TYPENAME'].toLowerCase() == '#lCase(attributes.nodetype)#')?1:0";
 	o.bShowDisabled = 1;
 	
 	o = new Object();
 	approveMenu['Decline'] = o;
-	o.text = "Decline Draft";
+	o.text = "#application.adminBundle[session.dmProfile.locale].declineDraft#";
 	o.js = "menuOption_Approve(\\'draft\\')";
     o.jsvalidate = "( hasPermission(lastSelectedId, #PermNavApprove#)>=0 && (hasDraft(lastSelectedId) && objects[lastSelectedId]['DRAFTSTATUS'] == 'pending') )?1:0";
 	o.bShowDisabled = 1;
 
 	o = new Object();
 	approveMenu['Cancel'] = o;
-	o.text = "Send To Draft";
+	o.text = "#application.adminBundle[session.dmProfile.locale].sendToDraft#";
 	o.js = "menuOption_Approve(\\'draft\\')";
 	o.jsvalidate = "((hasPermission( lastSelectedId, #PermNavApprove# )>=0 || (hasPermission(lastSelectedId,#PermNavApproveOwn#) >=0 && objects[lastSelectedId]['ATTR_LASTUPDATEDBY'].toLowerCase() == '#lCase(stUser.userlogin)#'))&& !hasDraft(lastSelectedId) && (objects[lastSelectedId]['STATUS'] == 'approved' || objects[lastSelectedId]['STATUS'] == 'pending'))?1:0";
 	o.bShowDisabled = 1;
 	
 	o = new Object();
 	approveMenu['CancelBranch'] = o;
-	o.text = "Send Branch To Draft";
+	o.text = "#application.adminBundle[session.dmProfile.locale].sendBranch2Draft#";
 	o.js = "menuOption_ApproveBranch(\\'draft\\')";
 	o.jsvalidate = "((hasPermission( lastSelectedId, #PermNavApprove# )>=0 || (hasPermission(lastSelectedId,#PermNavApproveOwn#) >=0 && objects[lastSelectedId]['ATTR_LASTUPDATEDBY'].toLowerCase() == '#lCase(stUser.userlogin)#')) && (objects[lastSelectedId]['STATUS'] == 'approved' || objects[lastSelectedId]['STATUS'] == 'pending') && objects[lastSelectedId]['TYPENAME'].toLowerCase() == '#lCase(attributes.nodetype)#')?1:0";
 	o.bShowDisabled = 1;
@@ -1397,7 +1452,7 @@ o.bShowDisabled = 1;
 	
 o = new Object();
 objectMenu['Insert'] = o;
-o.text = "Insert";
+o.text = "#application.adminBundle[session.dmProfile.locale].insert#";
 o.js = "menuOption_Insert()";
 o.jsvalidate = "(parent['editFrame'].insertObjId || parent['editFrame'].insertObjIds || parent['editFrame'].insertHTML)?1:0";
 o.bShowDisabled = 1;
@@ -1462,7 +1517,7 @@ function menuOption_Insert()
 
 o = new Object();
 objectMenu['Permissions'] = o;
-o.text = "Permissions";
+o.text = "#application.adminBundle[session.dmProfile.locale].permissions#";
 o.js = "menuOption_Permissions()";
 o.jsvalidate = "(#iModifyPermissionsState# > -1 && objects[lastSelectedId]['TYPENAME'].toLowerCase()=='#lcase(attributes.nodetype)#')?1:0";
 o.bShowDisabled = 1;
@@ -1475,7 +1530,7 @@ function menuOption_Permissions()
 
 o = new Object();
 objectMenu['Dump'] = o;
-o.text = "Dump";
+o.text = "#application.adminBundle[session.dmProfile.locale].dump#";
 o.js = "menuOption_Dump();";
 o.jsvalidate = "#iDeveloperState#";
 o.bShowDisabled = 0;
@@ -1488,7 +1543,7 @@ function menuOption_Dump()
 
 o = new Object();
 objectMenu['Delete'] = o;
-o.text = "Delete";
+o.text = "#application.adminBundle[session.dmProfile.locale].delete#";
 o.js = "menuOption_Delete()"; //  && countObjects(lastSelectedId) <=0  && countNodes(lastSelectedId) <=0
 o.jsvalidate = "hasPermission( lastSelectedId, #PermNavDelete# )";
 o.bShowDisabled = 1;
@@ -1497,13 +1552,13 @@ o.bSeperator = 0;
 function menuOption_Delete()
 {
 	// if( confirm('Are you sure you wish to delete this object(s)?') ) popupopen( 'delete.cfm?objectId='+lastSelectedId, '_blank', '#smallpopupfeatures#' );
-	if( confirm('Are you sure you wish to delete this object(s)?') )
+	if( confirm('#application.adminBundle[session.dmProfile.locale].confirmDeleteAllObj#') )
 		frameopen('#application.url.farcry#/navajo/delete.cfm?objectId='+lastSelectedId,'editFrame');
 }
 
 o = new Object();
 objectMenu['Trash'] = o;
-o.text = "Send To Trash";
+o.text = "#application.adminBundle[session.dmProfile.locale].sendToTrash#";
 o.js = "menuOption_Trash()"; 
 o.jsvalidate = "hasPermission( lastSelectedId, #PermSendToTrash# );";
 o.bShowDisabled = 0;
@@ -1511,13 +1566,13 @@ o.bSeperator = 0;
 
 function menuOption_Trash()
 {
-	if( confirm('Are you sure you wish to send this object to the trash?') ) popupopen( '#application.url.farcry#/navajo/move.cfm?srcObjectId='+lastSelectedId+'&destObjectId=#application.navid.rubbish#', '_blank', '#smallpopupfeatures#' );
+	if( confirm('#application.adminBundle[session.dmProfile.locale].confirmSendToTrash#') ) popupopen( '#application.url.farcry#/navajo/move.cfm?srcObjectId='+lastSelectedId+'&destObjectId=#application.navid.rubbish#', '_blank', '#smallpopupfeatures#' );
 }
 
 
 o = new Object();
 objectMenu['EmptyTrash'] = o;
-o.text = "Empty Trash";
+o.text = "#application.adminBundle[session.dmProfile.locale].emptyTrash#";
 o.js = "menuOption_EmptyTrash()"; 
 o.jsvalidate = "(hasPermission( lastSelectedId, #PermNavDelete#) > 0 && lastSelectedId == '#application.navid.rubbish#')?1:0";
 o.bShowDisabled = 0;
@@ -1525,14 +1580,14 @@ o.bSeperator = 0;
 
 function menuOption_EmptyTrash()
 {
-	if( confirm('Are you sure you wish to delete all objects in the trash?') ) popupopen( '#application.url.farcry#/navajo/treeEmptyTrash.cfm', '_blank', '#smallpopupfeatures#' );
+	if( confirm('#application.adminBundle[session.dmProfile.locale].confirmDeleteTrash#') ) popupopen( '#application.url.farcry#/navajo/treeEmptyTrash.cfm', '_blank', '#smallpopupfeatures#' );
 }
 
 
 
 o = new Object();
 objectMenu['Zoom'] = o;
-o.text = "Zoom In/Zoom Out";
+o.text = "#application.adminBundle[session.dmProfile.locale].zoom#";
 o.js = "menuOption_Zoom()"; 
 o.jsvalidate = "objects[lastSelectedId]['TYPENAME'].toLowerCase()=='#lcase(attributes.nodetype)#'?1:0";
 o.bShowDisabled = 0;
@@ -1925,7 +1980,7 @@ document.body.onclick = documentClick;
 </STYLE>
 
 <IFRAME WIDTH="100" HEIGHT="1" NAME="idServer" ID="idServer" 
-	 FRAMEBORDER="0" FRAMESPACING="0" MARGINWIDTH="0" MARGINHEIGHT="0">
+	 FRAMEBORDER="0" FRAMESPACING="0" MARGINWIDTH="0" MARGINHEIGHT="0" SRC="null">
 		<ILAYER NAME="idServer" WIDTH="400" HEIGHT="100" VISIBILITY="Hide" 
 		 ID="idServer">
 		<P>This page uses a hidden frame and requires either Microsoft 

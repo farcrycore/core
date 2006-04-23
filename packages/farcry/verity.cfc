@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/verity.cfc,v 1.3 2003/11/05 00:03:17 brendan Exp $
-$Author: brendan $
-$Date: 2003/11/05 00:03:17 $
-$Name: milestone_2-2-1 $
-$Revision: 1.3 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/verity.cfc,v 1.4 2004/08/21 13:38:25 geoff Exp $
+$Author: geoff $
+$Date: 2004/08/21 13:38:25 $
+$Name: milestone_2-3-2 $
+$Revision: 1.4 $
 
 || DESCRIPTION ||
 $Description: verity search cfc $
@@ -35,7 +35,7 @@ $out:$
 	<cffunction name="deleteCollection" returnType="struct" output="no" hint="Deletes a verity collection">
 		<cfargument name="collection" required="yes" hint="Name of collection to be deleted">
 
-		<cfset stMessage = structNew()>
+		<cfset var stMessage = structNew()>
 
 		<cftry>
 			<cfcollection action="delete" collection="#arguments.collection#">
@@ -63,7 +63,7 @@ $out:$
 	<cffunction name="optimiseCollection" returnType="struct" output="no" hint="Optimises a verity collection">
 		<cfargument name="collection" required="yes" hint="Name of collection to be optimised">
 
-		<cfset stMessage = structNew()>
+		<cfset var stMessage = structNew()>
 
 		<cftry>
 			<cfcollection action="optimize" collection="#arguments.collection#">
@@ -86,7 +86,10 @@ $out:$
 	</cffunction>
 
 	<cffunction name="listCollections" output="no" returntype="query" hint="Lists active collections for farcry site">
-
+		<cfset var qVerity="">
+		<cfset var qCollections="">
+		<cfset var qCollectionList="">
+		
 		<!--- get system Verity information --->
 		<cfcollection action="LIST" name="qVerity">
 

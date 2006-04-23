@@ -1,3 +1,5 @@
+<cfprocessingDirective pageencoding="utf-8">
+
 <!--- unlock object --->
 <cfinvoke component="#application.packagepath#.farcry.locking" method="unlock" returnvariable="unlockRet">
 	<cfinvokeargument name="objectId" value="#url.objectid#"/>

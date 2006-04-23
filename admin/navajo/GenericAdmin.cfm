@@ -1,14 +1,17 @@
 <cfsetting enablecfoutputonly="Yes">
+
+<cfprocessingDirective pageencoding="utf-8">
+
 <!--- 
 || LEGAL ||
 $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/navajo/GenericAdmin.cfm,v 1.25 2004/04/14 06:51:37 brendan Exp $
+$Header: /cvs/farcry/farcry_core/admin/navajo/GenericAdmin.cfm,v 1.26 2004/07/15 01:51:08 brendan Exp $
 $Author: brendan $
-$Date: 2004/04/14 06:51:37 $
-$Name: milestone_2-2-1 $
+$Date: 2004/07/15 01:51:08 $
+$Name: milestone_2-3-2 $
 
 || DESCRIPTION || 
 $Description: calls generic admin for all types. $
@@ -27,8 +30,7 @@ $in: [url.typename]: object type $
 
 <cfif not IsDefined("url.typename")>
 	<cfoutput>
-	<h3>Error: Typename not present in URL scope</h3>
-	<p>You must specify a typename parameter in order for generic administration to work.</p>
+	#application.adminBundle[session.dmProfile.locale].errorMissingTypeName#
 	</cfoutput>
 	<cfabort>
 </cfif>
@@ -75,13 +77,13 @@ $in: [url.typename]: object type $
 	//select
 	
 	st.columnType = 'expression'; 
-	st.heading = 'Select';
+	st.heading = '#application.adminBundle[session.dmProfile.locale].select#';
 	st.value = "<input type=""checkbox"" name=""objectid"" value=""##recordset.objectid##"">";
 	st.align = 'center';
 	arrayAppend(stGrid.aTable,st);
 	
 	st = structNew();
-	st.heading = 'Edit';
+	st.heading = '#application.adminBundle[session.dmProfile.locale].edit#';
 	st.align = "center";
 	st.columnType = 'eval'; 
 	editobjectURL = "#application.url.farcry#/navajo/edit.cfm?objectid=##recordset.objectID[recordset.currentrow]##&type=#stGrid.typename#";	
@@ -89,21 +91,21 @@ $in: [url.typename]: object type $
 	arrayAppend(stGrid.aTable,st);
 	
 	st = structNew();
-	st.heading = 'View';
+	st.heading = '#application.adminBundle[session.dmProfile.locale].view#';
 	st.align = "center";
 	st.columnType = 'expression'; 
 	st.value = "<a href=""#application.url.webroot#/index.cfm?objectID=##recordset.objectID##&flushcache=1"" target=""_blank""><img src=""#application.url.farcry#/images/treeImages/preview.gif"" border=""0""></a>";
 	arrayAppend(stGrid.aTable,st);
 	
 	st = structNew();
-	st.heading = 'Stats';
+	st.heading = '#application.adminBundle[session.dmProfile.locale].stats#';
 	st.align = 'center';
 	st.columnType = 'expression'; 
 	st.value = "<a href=""javascript:void(0);"" onclick=""window.open('#application.url.farcry#/edittabStats.cfm?objectid=##recordset.objectid##','Stats','scrollbars,height=600,width=620');""><img src=""#application.url.farcry#/images/treeImages/stats.gif"" border=""0""></a>";
 	arrayAppend(stGrid.aTable,st);
 	
 	st = structNew();
-	st.heading = 'Label';
+	st.heading = '#application.adminBundle[session.dmProfile.locale].label#';
 	st.columnType = 'eval'; 
 	editobjectURL = "#application.url.farcry#/navajo/edit.cfm?objectid=##recordset.objectID[recordset.currentrow]##&type=#stGrid.typename#";	
 	st.value = "iif(iObjectEditPermission eq 1,DE(iif(locked and lockedby neq '#session.dmSec.authentication.userlogin#_#session.dmSec.authentication.userDirectory#',DE('##replace(recordset.label[recordset.currentrow],'####','','all')##'),DE('<a href=''#editObjectURL#''>##replace(recordset.label[recordset.currentrow],'####','','all')##</a>'))),DE('##replace(recordset.label[recordset.currentrow],'####','','all')##'))";
@@ -111,20 +113,20 @@ $in: [url.typename]: object type $
 	arrayAppend(stGrid.aTable,st);
 	
 	st = structNew();
-	st.heading = 'Status';
+	st.heading = '#application.adminBundle[session.dmProfile.locale].status#';
 	st.columnType = 'expression'; //this will default to objectid of row. 
 	st.value = "##status##";
 	st.align = "center";
 	arrayAppend(stGrid.aTable,st);
 		
 	st = structNew();
-	st.heading = 'Last updated';
+	st.heading = '#application.adminBundle[session.dmProfile.locale].lastUpdated#';
 	st.columnType = 'eval'; //this will default to objectid of row. 
-	st.value = "dateformat('##datetimelastupdated##','dd-mmm-yyyy')";
+	st.value = "application.thisCalendar.i18nDateFormat('##datetimelastupdated##',session.dmProfile.locale,application.mediumF)";
 	arrayAppend(stGrid.aTable,st);
 	
 	st = structNew();
-	st.heading = 'By';
+	st.heading = '#application.adminBundle[session.dmProfile.locale].by#';
 	st.columnType = 'expression'; //this will default to objectid of row. 
 	st.value = "##lastupdatedby##";
 	st.align = 'center';
@@ -133,16 +135,16 @@ $in: [url.typename]: object type $
 	if (typename IS 'dmnews')
 	{
 	st = structNew();
-	st.heading = 'Publish Date';
+	st.heading = '#application.adminBundle[session.dmProfile.locale].publishDate#';
 	st.columnType = 'eval'; //this will default to objectid of row. 
-	st.value = "dateformat('##publishdate##','dd-mmm-yyyy')";
+	st.value = "application.thisCalendar.i18nDateFormat('##publishdate##',session.dmProfile.locale,application.mediumF)";
 	arrayAppend(stGrid.aTable,st);
 	
 	}
 </cfscript>	
 
 <!--- set up page header --->
-<admin:header>
+<admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 <!--- javascript routines used to integrate global image and file libraries --->
 <cfoutput>

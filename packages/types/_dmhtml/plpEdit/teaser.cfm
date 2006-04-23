@@ -1,15 +1,17 @@
 <cfsetting enablecfoutputonly="yes">
+
+<cfprocessingDirective pageencoding="utf-8">
 <!--- 
 || LEGAL ||
 $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmhtml/plpEdit/teaser.cfm,v 1.5 2003/08/20 00:37:02 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmhtml/plpEdit/teaser.cfm,v 1.6 2004/07/15 02:00:49 brendan Exp $
 $Author: brendan $
-$Date: 2003/08/20 00:37:02 $
-$Name: b201 $
-$Revision: 1.5 $
+$Date: 2004/07/15 02:00:49 $
+$Name: milestone_2-3-2 $
+$Revision: 1.6 $
 
 || DESCRIPTION || 
 $Description: teaser step for dmHTML plp. $
@@ -34,14 +36,14 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 	<cfoutput><form action="#cgi.script_name#?#cgi.query_string#" name="editform" method="post">
 			
 		<div class="FormSubTitle">#output.label#</div>
-		<div class="FormTitle">Teaser</div>	
+		<div class="FormTitle">#application.adminBundle[session.dmProfile.locale].teaser#</div>	
 		<div class="FormTable">
 		<table class="BorderTable" width="400" align="center">
 		<tr>
-			<td width="100"><span class="FormLabel">Teaser Image:</span></td>
+			<td width="100"><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].teaserImage#</span></td>
 			<td width="300">
 				<select name="teaserImage">
-					<option value="">None</option>
+					<option value="">#application.adminBundle[session.dmProfile.locale].none#</option>
 					</cfoutput>
 					<cfloop from="1" to="#arrayLen(aRelatedItems)#" index="id">
 						<!--- get the objectType --->
@@ -58,7 +60,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 			</td>
 		</tr>
 		<tr>
-			<td colspan="2"><span class="FormLabel">Teaser</span><br><tags:countertext formname="editform" fieldname="teaser" fieldvalue="#output.teaser#" counter="#application.config.general.teaserLimit#"></td>
+			<td colspan="2"><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].teaser#</span><br><tags:countertext formname="editform" fieldname="teaser" fieldvalue="#output.teaser#" counter="#application.config.general.teaserLimit#"></td>
 		</tr>										
 	</table>
 	</div>

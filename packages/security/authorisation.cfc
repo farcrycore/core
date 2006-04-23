@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/security/authorisation.cfc,v 1.37.2.2 2005/03/23 10:33:18 geoff Exp $
-$Author: geoff $
-$Date: 2005/03/23 10:33:18 $
-$Name: milestone_2-2-1 $
-$Revision: 1.37.2.2 $
+$Header: /cvs/farcry/farcry_core/packages/security/authorisation.cfc,v 1.41.2.3 2005/05/09 06:27:46 guy Exp $
+$Author: guy $
+$Date: 2005/05/09 06:27:46 $
+$Name: milestone_2-3-2 $
+$Revision: 1.41.2.3 $
 
 || DESCRIPTION || 
 $Description: authorisation cfc $
@@ -22,6 +22,7 @@ $in: $
 $out:$
 --->
 
+
 <cfcomponent displayName="Authorisation" hint="User authorisation">
 	<cfinclude template="/farcry/farcry_core/admin/includes/cfFunctionWrappers.cfm">
 	<cfinclude template="/farcry/farcry_core/admin/includes/utilityFunctions.cfm">
@@ -32,7 +33,12 @@ $out:$
 		<cfargument name="objectid" required="true">
 		<cfargument name="typename" required="false" default="dmNavigation">
 			<cfscript>
-								
+				if (NOT structKeyExists(request,'factory')) {				
+					return;
+				}
+				if (NOT structKeyExists(request.factory,'oTree')) {
+					return;
+				}
 				qAncestors = request.factory.oTree.getAncestors(objectid=arguments.objectid,typename=arguments.typename);
 				lObjectIds = valueList(qAncestors.objectID);
 				
@@ -174,7 +180,7 @@ $out:$
 				if(stLoggedInUser.bLoggedIn)
 					arguments.lPolicyGroupIds = stLoggedInUser.lPolicyGroupIDs;
 				else
-					arguments.lPolicyGroupIds = application.dmsec.ldefaultpolicygroups;
+					arguments.lPolicyGroupIds = application.dmsec.ldefaultpolicygroups;	
 			}
 			
 			if (isDefined("arguments.objectid"))
@@ -210,8 +216,10 @@ $out:$
 		<cfreturn bHasPermission>	
 			
 	</cffunction>
-	
-	
+
+
+
+
 	
 	<cffunction name="createPermission" hint="Creates a new permission in the datastore" output="No">
 		<cfargument name="permissionID" required="false" default="-1" hint="Note that permissionID is only handed in during installtation of farcry">
@@ -248,13 +256,16 @@ $out:$
 					case "postgresql":
 					{
 						sql = "
-						INSERT INTO #application.dbowner##stPolicyStore.permissionTable# ( permissionid,permissionName,permissionNotes,permissionType";
-						sql = sql & ")";
+						INSERT INTO #stPolicyStore.permissionTable# ( permissionName,permissionNotes,permissionType";
+						if (arguments.permissionID NEQ -1)
+							sql = sql & ",permissionId)";
+						else
+							sql = sql & ")";
+						sql = sql & " VALUES ('#arguments.permissionName#','#arguments.permissionNotes#','#arguments.permissionType#'";
 						if (arguments.permissionId neq -1)
-							sql = sql & " VALUES (#arguments.permissionId#,'#arguments.permissionName#','#arguments.permissionNotes#','#arguments.permissionType#'";
-						else 
-							sql = sql & " VALUES (DMPERMISSION_SEQ.nextval,'#arguments.permissionName#','#arguments.permissionNotes#','#arguments.permissionType#'";
-						sql = sql & ")";
+							sql = sql & ",#arguments.permissionId#)";
+						else
+							sql = sql & ")";
 						break;	
 					} 
 					case "mysql":
@@ -560,7 +571,7 @@ $out:$
 					oAudit.logActivity(auditType="dmSec.deletePolicyGroup", username=Stuser.userlogin, location=cgi.remote_host, note="#stPolicyGroup.policyGroupName# deleted");	
 		</cfscript>
 	</cffunction>
-	
+		
 	<cffunction name="deletePolicyGroupMapping" output="No">
 		<cfargument name="groupname" required="true">
 		<cfargument name="userdirectory" required="true">
@@ -593,7 +604,7 @@ $out:$
 		<cfscript>
 			stPolicyStore = getPolicyStore();
 			sql = "SELECT * FROM #application.dbowner##stPolicyStore.permissionTable# WHERE ";
-			if (isDefined("arguments.permissionName"))
+			if (isDefined("arguments.permissionName") AND isDefined("arguments.permissionType"))
 				sql = sql & "upper(permissionName) = '#ucase(arguments.permissionName)#' AND upper(permissiontype) = '#ucase(arguments.permissionType)#'";
 			else
 				sql = sql & "permissionid = '#arguments.permissionID#'";
@@ -848,7 +859,7 @@ $out:$
 			// check that the permissions aren't already cached 
 			if (arguments.bUseCache)
 			{
-				if (isDefined("server.dmSec.#application.applicationname#.dmSecSCache") AND StructKeyExists(server.dmSec[application.applicationname].dmSecSCache,arguments.Reference))
+				if (isDefined("server.dmSec") AND StructKeyExists(server.dmSec,application.applicationname) AND isStruct(server.dmSec[application.applicationname]) AND StructKeyExists(server.dmSec[application.applicationname],"dmSecSCache") AND isStruct(server.dmSec[application.applicationname].dmSecSCache) AND StructKeyExists(server.dmSec[application.applicationname].dmSecSCache, arguments.Reference))
 					stObjectPermissions = duplicate(server.dmSec[application.applicationname].dmSecSCache[arguments.Reference]);
 			}
 
@@ -963,10 +974,9 @@ $out:$
 		
 			
 				//cache the permission 
-				if (not isDefined("server.dmSec.#application.applicationname#.dmSecSCache"))
+				if (NOT isDefined("server.dmSec") OR NOT StructKeyExists(server.dmSec,application.applicationname) OR NOT isStruct(server.dmSec[application.applicationname]) OR NOT StructKeyExists(server.dmSec[application.applicationname], "dmSecSCache"))                       
 					server.dmSec[application.applicationname].dmSecSCache = StructNew();
 			 	server.dmSec[application.applicationname].dmSecSCache[arguments.Reference]=duplicate(stObjectPermissions);
-	
 			}	
 	
 		</cfscript>

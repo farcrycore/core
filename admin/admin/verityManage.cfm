@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/admin/verityManage.cfm,v 1.7 2003/09/23 08:05:17 brendan Exp $
+$Header: /cvs/farcry/farcry_core/admin/admin/verityManage.cfm,v 1.9 2005/02/02 01:18:19 brendan Exp $
 $Author: brendan $
-$Date: 2003/09/23 08:05:17 $
-$Name: b201 $
-$Revision: 1.7 $
+$Date: 2005/02/02 01:18:19 $
+$Name: milestone_2-3-2 $
+$Revision: 1.9 $
 
 || DESCRIPTION || 
 $Description: Manages verity collections. Options to update/optimise/delete collections $
@@ -19,18 +19,20 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 
 <cfsetting enablecfoutputonly="Yes" requestTimeout="600">
 
+<cfprocessingDirective pageencoding="utf-8">
+
 <!--- check permissions --->
 <cfscript>
 	iSearchTab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="AdminSearchTab");
 </cfscript>
 
 <cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
-<admin:header title="Verity: Manage Collections">
+<admin:header title="#application.adminBundle[session.dmProfile.locale].manageVerityCollections#" writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 <cfif iSearchTab eq 1>
 	<cfparam name="url.action" default="">
 	
-	<cfoutput><span class="FormTitle">Manage Collections</span><p></p></cfoutput>
+	<cfoutput><span class="FormTitle">#application.adminBundle[session.dmProfile.locale].manageCollections#</span><p></p></cfoutput>
 	
 	<cfswitch expression="#url.action#">
 	
@@ -42,7 +44,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 			<cfelse>
 				<cfoutput><span class="frameMenuBullet">&raquo;</span> <span class="error">#stSuccess.message#</span></cfoutput>
 			</cfif>
-			<cfoutput><p></p><span class="frameMenuBullet">&raquo;</span> <a href="#application.url.farcry#/admin/verityManage.cfm">Manage Collections</a></cfoutput>
+			<cfoutput><p></p><span class="frameMenuBullet">&raquo;</span> <a href="#application.url.farcry#/admin/verityManage.cfm">#application.adminBundle[session.dmProfile.locale].manageCollections#</a></cfoutput>
 		</cfcase>	
 		
 		<!--- optimise collection --->
@@ -54,14 +56,14 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 			<cfelse>
 				<cfoutput><span class="frameMenuBullet">&raquo;</span> <span class="error">#stSuccess.message#</span></cfoutput>
 			</cfif>
-			<cfoutput><p></p><span class="frameMenuBullet">&raquo;</span> <a href="#application.url.farcry#/admin/verityManage.cfm">Manage Collections</a></cfoutput>
+			<cfoutput><p></p><span class="frameMenuBullet">&raquo;</span> <a href="#application.url.farcry#/admin/verityManage.cfm">#application.adminBundle[session.dmProfile.locale].manageCollections#</a></cfoutput>
 		</cfcase>
 		
 		<!--- update collection --->
 		<cfcase value="update">
-			<cfoutput><span class="frameMenuBullet">&raquo;</span> Updating...<p></p></cfoutput><cfflush>
+			<cfoutput><span class="frameMenuBullet">&raquo;</span> #application.adminBundle[session.dmProfile.locale].updating#<p></p></cfoutput><cfflush>
 			<cfset application.factory.oVerity.updateCollection(url.collection)>
-			<cfoutput><p></p><span class="frameMenuBullet">&raquo;</span> <a href="#application.url.farcry#/admin/verityManage.cfm">Manage Collections</a></cfoutput>
+			<cfoutput><p></p><span class="frameMenuBullet">&raquo;</span> <a href="#application.url.farcry#/admin/verityManage.cfm">#application.adminBundle[session.dmProfile.locale].manageCollections#</a></cfoutput>
 		</cfcase>
 		
 		<!--- list collections --->
@@ -73,11 +75,11 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 				<cfoutput>
 				<table cellpadding="5" cellspacing="0" border="1"  style="margin-left:30px;">
 				<tr>
-					<th class="dataheader">Collection</td>
-					<th class="dataheader">Last Updated</td>
-					<th class="dataheader">Update</td>					
-					<th class="dataheader">Optimise</td>
-					<th class="dataheader">Delete</td>
+					<th class="dataheader">#application.adminBundle[session.dmProfile.locale].collection#</td>
+					<th class="dataheader">#application.adminBundle[session.dmProfile.locale].lastUpdatedLC#</td>
+					<th class="dataheader">#application.adminBundle[session.dmProfile.locale].update#</td>					
+					<th class="dataheader">#application.adminBundle[session.dmProfile.locale].optimize#</td>
+					<th class="dataheader">#application.adminBundle[session.dmProfile.locale].delete#</td>
 				</tr>
 				
 				<!--- loop over collections --->
@@ -85,9 +87,9 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 					<tr class="#IIF(qCollections.currentRow MOD 2, de("dataOddRow"), de("dataEvenRow"))#">
 						<td>#name#</td>
 						<td align="center">#lastUpdated#</td>
-						<td align="center"><cfif lastupdated neq "n/a"><a href="#application.url.farcry#/admin/verityManage.cfm?action=update&collection=#name#">update</a><cfelse>n/a</cfif></td>
-						<td align="center"><cfif lastupdated neq "n/a"><a href="#application.url.farcry#/admin/verityManage.cfm?action=optimise&collection=#name#">optimise</a><cfelse>n/a</cfif></td>
-						<td align="center"><a href="#application.url.farcry#/admin/verityManage.cfm?action=delete&collection=#name#" onClick="return confirm('Are you sure you want to delete this collection?');">delete</a></td>
+						<td align="center"><cfif lastupdated neq "n/a"><a href="#application.url.farcry#/admin/verityManage.cfm?action=update&collection=#name#">#application.adminBundle[session.dmProfile.locale].update#</a><cfelse>#application.adminBundle[session.dmProfile.locale].notAvailable#</cfif></td>
+						<td align="center"><cfif lastupdated neq "n/a"><a href="#application.url.farcry#/admin/verityManage.cfm?action=optimise&collection=#name#">#application.adminBundle[session.dmProfile.locale].optimize#</a><cfelse>#application.adminBundle[session.dmProfile.locale].notAvailable#</cfif></td>
+						<td align="center"><a href="#application.url.farcry#/admin/verityManage.cfm?action=delete&collection=#name#" onClick="return confirm('#application.adminBundle[session.dmProfile.locale].confirmDeleteCollection#');">#application.adminBundle[session.dmProfile.locale].delete#</a></td>
 					</tr>
 				</cfloop>
 				
@@ -96,7 +98,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 				
 			<!--- no collections - display error message with option to build collections --->
 			<cfelse>
-				<cfoutput>There are no verity collections for this site. <a href="#application.url.farcry#/admin/verityBuild.cfm">Build collections now</a></cfoutput>
+				<cfoutput>#application.adminBundle[session.dmProfile.locale].noVerityCollections# <a href="#application.url.farcry#/admin/verityBuild.cfm">#application.adminBundle[session.dmProfile.locale].buildCollectionsNow#</a></cfoutput>
 			</cfif>				
 			
 		</cfdefaultcase>

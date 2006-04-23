@@ -1,16 +1,16 @@
-<!---
+<!--- 
 || LEGAL ||
 $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
-$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
+$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/farcry/richTextEditor.cfm,v 1.11 2004/07/02 05:02:37 paul Exp $
-$Author: paul $
-$Date: 2004/07/02 05:02:37 $
-$Name: milestone_2-2-1 $
-$Revision: 1.11 $
+$Header: /cvs/farcry/farcry_core/tags/farcry/richTextEditor.cfm,v 1.17.2.1 2005/06/15 00:27:44 guy Exp $
+$Author: guy $
+$Date: 2005/06/15 00:27:44 $
+$Name: milestone_2-3-2 $
+$Revision: 1.17.2.1 $
 
-|| DESCRIPTION ||
+|| DESCRIPTION || 
 $Description: Displays an editor for long text input. Based on config settings unless in toggle mode which will display a basic html text area$
 $TODO: $
 
@@ -42,7 +42,7 @@ $out:$
 		</script>
 	</cfoutput>
 	<!--- display text area --->
-	<cfoutput><textarea name="#attributes.textareaname#" cols="60" rows="20">#attributes.value#</textarea></cfoutput>
+	<cfoutput><textarea name="#attributes.textareaname#" cols="60" rows="20">#htmlEditFormat(attributes.value)#</textarea></cfoutput>
 
 <cfelse>
 
@@ -288,17 +288,13 @@ $out:$
 		<cfcase value="htmlArea">
 			<cfset uniqueId = replace(createUUID(),'-','','all')>
 			<!--- display text area --->
-			<cfoutput><div id="htmlareawrapper"><textarea name="#attributes.textareaname#" id="#uniqueID#" cols="60" rows="20" style="width: 595px; ">#attributes.value#</textarea></div></cfoutput>
+			<cfoutput><div id="htmlareawrapper"><textarea name="#attributes.textareaname#" id="#uniqueID#">#attributes.value#</textarea></div></cfoutput>
 
 
 			<!--- javascript for inserting images etc --->
 			<cfoutput>
 				<script language="JavaScript">
-				function insertHTML( html,field )
-				{
-					richEditor#uniqueID#.setHTML(richEditor#uniqueID#.getHTML()+html);
-				}
-
+				
 				/*
 				var config = new HTMLArea.Config();
 				config.toolbar = [
@@ -306,154 +302,175 @@ $out:$
 					,#application.config.htmlarea.Toolbar2#
 					];
 				*/
-
-				richEditor#uniqueID# = HTMLArea.replace("#uniqueID#",config);
+				
+				config.height = "#application.config.htmlArea.height#";
+				config.width = "#application.config.htmlArea.width#";
+			
+				 var editor#attributes.textareaname# = new HTMLArea("#uniqueid#",config);
+				 window.onload = function()
+				  {
+			      	
+			      	<cfif len(application.config.htmlArea.pageStyle)>
+        		  	editor#attributes.textareaname#.config.pageStyle = "@import url(#application.config.htmlArea.pageStyle#);";
+        		  	</cfif>
+			      	// editor.registerPlugin(CSS);
+			      	<cfif isBoolean(application.config.htmlArea.useContextMenu) AND application.config.htmlArea.useContextMenu>
+				  	editor#attributes.textareaname#.registerPlugin(ContextMenu);
+				  	</cfif>
+				  	<cfif isBoolean(application.config.htmlArea.useTableOperations) AND application.config.htmlArea.useTableOperations>
+				  	editor#attributes.textareaname#.registerPlugin(TableOperations);
+				  	</cfif>
+        		  	editor#attributes.textareaname#.generate();
+      			  }
+								
+				function insertHTML( html )
+				{	//TODO this focuse editor produces the undesirable side effect that images are inserted
+					//at the top of the page. However this is better than when inserting from the tree having them inserted at the top of the tree frame. 
+					//Will have to devote some more time to sussing this later.
+					editor#attributes.textareaname#.focusEditor();
+					editor#attributes.textareaname#.insertHTML(html);
+				}
 				</script>
 			</cfoutput>
+
 		</cfcase>
 
 		<cfcase value="eopro">
-		<cfoutput>
-		<script language="javascript">
-		<!--
-
-			function scriptForm_onsubmit()
-			{
-				document.editform.#attributes.textareaname#.value = document.MyEditor.getHTMLData("http://");
-				document.editform.submit();
-
-			}
-
-		   //-------------------------------------------------------------------------//
-		   //The CSS-Data can not be loaded before HTMLData is completely loaded.
-		   //Thats why "ONEDITORLOADED" and "ONDATALOADED" is used below
-		   //-------------------------------------------------------------------------//
-		   //This function is called when the applet has finished loading
-
-			function loadData()
-			{
-			   document.MyEditor.setHTMLData("http://", document.editform.#attributes.textareaname#.value)
-
-			}
-
-		   //This function is called when the editor has finished the loading of HTMLData
-			function setstyle()
-			{
-				document.MyEditor.setStyleSheet( document.editform.CSSText.value)
-			}
-
-			function insertHTML( html,field )
-			{
-				document.MyEditor.insertHTMLData("http://", html);
-				//editform.#attributes.textareaname#.value = editform.#attributes.textareaname#.value + (html);
-			}
-
-
-
-		//-->
-		</script>
-
-
-		<applet code="com.realobjects.eop.applet.EditorApplet" height="#application.config.eoPro.height#" id="editor" codebase="#application.config.eoPro.codebase#" name="MyEditor" width="#application.config.eoPro.width#" archive="edit-on-pro-signed.jar,tidy.jar,ssce.jar" mayscript>
-        <param name="cabbase" value="#application.config.eoPro.cabbase#">
-        <param name="locale" value="#application.config.eoPro.locale#">
-        <param name="help"   value="#application.config.eoPro.help#">
-        <param name="configurl"  value="#application.config.eoPro.configURL#">
-        <param name="toolbarurl" value="#application.config.eoPro.toolbarurl#">
-        <param name="sourceview" value="#application.config.eoPro.sourceview#">
-        <param name="sourceviewwordwrap" value="#application.config.eoPro.sourceviewwordwrap#">
-        <param name="bodyonly"  value="#application.config.eoPro.bodyonly#">
-        <param name="smartindent" value="#application.config.eoPro.smartindent#">
-        <param name="multipleundoredo" value="#application.config.eoPro.multipleundoredo#">
-        <param name="oldfontstylemode" value="#application.config.eoPro.oldfontstylemode#">
-        <param name="nbspfill" value="#application.config.eoPro.nbspfill#">
-        <param name="customcolorsenabled" value="#application.config.eoPro.customcolorsenabled#">
-        <param name="tablenbspfill" value="#application.config.eoPro.tablenbspfill#">
-        <param name="inserttext_html" value="#application.config.eoPro.inserttext_html#">
-        <param name="oneditorloaded" value="#application.config.eoPro.oneditorloaded#">
-        <param name="ondataloaded" value="#application.config.eoPro.ondataloaded#">
-        <!-- Applet Layout params -->
-        <param name="windowfacecolor" value="#application.config.eoPro.windowfacecolor#">
-        <param name="tabpaneactivecolor" value="#application.config.eoPro.tabpaneactivecolor#">
-        <param name="windowhighlightcolor" value="#application.config.eoPro.windowhighlightcolor#">
-        <param name="lightedgecolor" value="#application.config.eoPro.lightedgecolor#">
-        <param name="darkedgecolor" value="#application.config.eoPro.darkedgecolor#">
-        <param name="innertextcolor" value="#application.config.eoPro.innertextcolor#">
-        <param name="startupscreenbackgroundcolor" value="#application.config.eoPro.startupscreenbackgroundcolor#">
-        <param name="startupscreentextcolor" value="#application.config.eoPro.startupscreentextcolor#">
-        <!-- End - Applet Layout params -->
-		</applet>
-		<textarea name="#attributes.textareaname#" cols="1" rows="1" style="visibility:hidden;">#attributes.value#</textarea>
-		</cfoutput>
-		<cfif application.config.general.richTextEditor IS "eoPro">
-
-    			<!--This hidden textarea field will receive the CSSData on submitting the form. Needed by RealObjects eoPro-->
-				<cfset cssText = "">
-
-				<cfif fileExists(expandPath(application.config.eoPro.defaultcss))>
-					<cffile action="read" file="#expandPath(application.config.eoPro.defaultcss)#" variable="cssText">
-				</cfif>
-				<!--- <cfset cssText = "h1{color:red}"> --->
-				<cfoutput>
-		    	<textarea name="CSSText" cols="1" rows="1" style="visibility:hidden;">#CSSText#</textarea>
-				</cfoutput>
-
-
-		</cfif>
+			<cfoutput>
+			<script language="javascript">
+			<!--
+	
+				function scriptForm_onsubmit()
+				{
+					document.editform.#attributes.textareaname#.value = document.MyEditor.getHTMLData("http://");
+					document.editform.submit();
+	
+				}
+	
+			   //-------------------------------------------------------------------------//
+			   //The CSS-Data can not be loaded before HTMLData is completely loaded.
+			   //Thats why "ONEDITORLOADED" and "ONDATALOADED" is used below
+			   //-------------------------------------------------------------------------//
+			   //This function is called when the applet has finished loading
+	
+				function loadData()
+				{
+				   document.MyEditor.setHTMLData("http://", document.editform.#attributes.textareaname#.value)
+	
+				}
+	
+			   //This function is called when the editor has finished the loading of HTMLData
+				function setstyle()
+				{
+					document.MyEditor.setStyleSheet( document.editform.CSSText.value)
+				}
+	
+				function insertHTML( html,field )
+				{
+					document.MyEditor.insertHTMLData("http://", html);
+					//editform.#attributes.textareaname#.value = editform.#attributes.textareaname#.value + (html);
+				}
+	
+	
+	
+			//-->
+			</script>
+	
+	
+			<applet code="com.realobjects.eop.applet.EditorApplet" height="#application.config.eoPro.height#" id="editor" codebase="#application.config.eoPro.codebase#" name="MyEditor" width="#application.config.eoPro.width#" archive="edit-on-pro-signed.jar,tidy.jar,ssce.jar" mayscript>
+	        <param name="cabbase" value="#application.config.eoPro.cabbase#">
+	        <param name="locale" value="#application.config.eoPro.locale#">
+	        <param name="help"   value="#application.config.eoPro.help#">
+	        <param name="configurl"  value="#application.config.eoPro.configURL#">
+	        <param name="toolbarurl" value="#application.config.eoPro.toolbarurl#">
+	        <param name="sourceview" value="#application.config.eoPro.sourceview#">
+	        <param name="sourceviewwordwrap" value="#application.config.eoPro.sourceviewwordwrap#">
+	        <param name="bodyonly"  value="#application.config.eoPro.bodyonly#">
+	        <param name="smartindent" value="#application.config.eoPro.smartindent#">
+	        <param name="multipleundoredo" value="#application.config.eoPro.multipleundoredo#">
+	        <param name="oldfontstylemode" value="#application.config.eoPro.oldfontstylemode#">
+	        <param name="nbspfill" value="#application.config.eoPro.nbspfill#">
+	        <param name="customcolorsenabled" value="#application.config.eoPro.customcolorsenabled#">
+	        <param name="tablenbspfill" value="#application.config.eoPro.tablenbspfill#">
+	        <param name="inserttext_html" value="#application.config.eoPro.inserttext_html#">
+	        <param name="oneditorloaded" value="#application.config.eoPro.oneditorloaded#">
+	        <param name="ondataloaded" value="#application.config.eoPro.ondataloaded#">
+	        <!-- Applet Layout params -->
+	        <param name="windowfacecolor" value="#application.config.eoPro.windowfacecolor#">
+	        <param name="tabpaneactivecolor" value="#application.config.eoPro.tabpaneactivecolor#">
+	        <param name="windowhighlightcolor" value="#application.config.eoPro.windowhighlightcolor#">
+	        <param name="lightedgecolor" value="#application.config.eoPro.lightedgecolor#">
+	        <param name="darkedgecolor" value="#application.config.eoPro.darkedgecolor#">
+	        <param name="innertextcolor" value="#application.config.eoPro.innertextcolor#">
+	        <param name="startupscreenbackgroundcolor" value="#application.config.eoPro.startupscreenbackgroundcolor#">
+	        <param name="startupscreentextcolor" value="#application.config.eoPro.startupscreentextcolor#">
+	        <!-- End - Applet Layout params -->
+			</applet>
+			<textarea name="#attributes.textareaname#" cols="1" rows="1" style="visibility:hidden;">#attributes.value#</textarea>
+			</cfoutput>
+			<cfif application.config.general.richTextEditor IS "eoPro">
+	
+	    			<!--This hidden textarea field will receive the CSSData on submitting the form. Needed by RealObjects eoPro-->
+					<cfset cssText = "">
+	
+					<cfif fileExists(expandPath(application.config.eoPro.defaultcss))>
+						<cffile action="read" file="#expandPath(application.config.eoPro.defaultcss)#" variable="cssText">
+					</cfif>
+					<!--- <cfset cssText = "h1{color:red}"> --->
+					<cfoutput>
+			    	<textarea name="CSSText" cols="1" rows="1" style="visibility:hidden;">#CSSText#</textarea>
+					</cfoutput>
+	
+	
+			</cfif>
 		</cfcase>
 		
 		<cfcase value="eoPro4">
-		<cfoutput>
-			<script type="text/javascript" src="#application.config.eoPro4.codebase#/editonpro.js"></script>
-			<script type="text/javascript">
-				eop = new editOnPro(#application.config.eoPro4.width#, #application.config.eoPro4.height#, "myEditor", "myId", "eop");
-				eop.setCodebase("#application.config.eoPro4.codebase#");
-   				eop.setConfigURL("#application.config.eoPro4.configURL#")
-   				eop.setUIConfigURL("#application.config.eoPro4.UIConfigURL#");
-   				eop.setStartUpScreenTextColor("#application.config.eoPro4.StartUpScreenTextColor#");
-   				eop.setStartUpScreenBackgroundColor("#application.config.eoPro4.StartUpScreenBackgroundColor#");
-   				/*eop.setImageBase(document.URL);*/
-   				eop.setLookAndFeel("#application.config.eoPro4.LookAndFeel#");
-				
-				function scriptForm_onsubmit()
-   				{
-			       document.editform.#attributes.textareaname#.value = eop.getHTMLData();
-			       document.editform.submit();
-			    }  
-				
-				function insertHTML(html,field)
-				{
-					eop.insertHTMLData(html);
-    			    eop.pumpEvents();
-				}
-				
-				eop.loadEditor();
-			</script>
-			 <textarea name="#attributes.textareaname#" cols="1" rows="1" style="visibility:hidden;"><cfoutput>#HtmlEditFormat(attributes.value)#</cfoutput></textarea>
-	    	 <!--This hidden textarea field will receive the CSSData on submitting the form.-->
-			 <cfset cssText = "">
-			 <cfif fileExists(expandPath(application.config.eoPro4.defaultcss))>
-				<cffile action="read" file="#expandPath(application.config.eoPro4.defaultcss)#" variable="cssText">
-			 </cfif>
-	    	 <textarea name="CSSText" cols="1" rows="1" style="visibility:hidden;"><cfoutput>#HtmlEditFormat(CSSText)#</cfoutput></textarea>
-			 <script>
-			 	eop.setHTMLData(document.editform.#attributes.textareaname#.value);
-	          	eop.setStyleSheet(document.editform.CSSText.value);
-    	      	eop.pumpEvents();
-			 </script>
-			 <!--onClickEvent used through farcry type edit plps. --->
-			 <cfif isDefined("caller.onClickEvent")>
-			 	<cfset caller.onClickEvent =  "scriptForm_onsubmit();">
-			 </cfif>
-			 
-		 </cfoutput>
-
-		
-			
-		
+			<cfoutput>
+				<script type="text/javascript" src="#application.config.eoPro4.codebase#/editonpro.js"></script>
+				<script type="text/javascript">
+					eop = new editOnPro(#application.config.eoPro4.width#, #application.config.eoPro4.height#, "myEditor", "myId", "eop");
+					eop.setCodebase("#application.config.eoPro4.codebase#");
+	   				eop.setConfigURL("#application.config.eoPro4.configURL#")
+	   				eop.setUIConfigURL("#application.config.eoPro4.UIConfigURL#");
+	   				eop.setStartUpScreenTextColor("#application.config.eoPro4.StartUpScreenTextColor#");
+	   				eop.setStartUpScreenBackgroundColor("#application.config.eoPro4.StartUpScreenBackgroundColor#");
+	   				/*eop.setImageBase(document.URL);*/
+	   				eop.setLookAndFeel("#application.config.eoPro4.LookAndFeel#");
+					
+					function scriptForm_onsubmit()
+	   				{
+				       document.editform.#attributes.textareaname#.value = eop.getHTMLData();
+				       document.editform.submit();
+				    }  
+					
+					function insertHTML(html,field)
+					{
+						eop.insertHTMLData(html);
+	    			    eop.pumpEvents();
+					}
+					
+					eop.loadEditor();
+				</script>
+				 <textarea name="#attributes.textareaname#" cols="1" rows="1" style="visibility:hidden;"><cfoutput>#HtmlEditFormat(attributes.value)#</cfoutput></textarea>
+		    	 <!--This hidden textarea field will receive the CSSData on submitting the form.-->
+				 <cfset cssText = "">
+				 <cfif fileExists(expandPath(application.config.eoPro4.defaultcss))>
+					<cffile action="read" file="#expandPath(application.config.eoPro4.defaultcss)#" variable="cssText">
+				 </cfif>
+		    	 <textarea name="CSSText" cols="1" rows="1" style="visibility:hidden;"><cfoutput>#HtmlEditFormat(CSSText)#</cfoutput></textarea>
+				 <script>
+				 	eop.setHTMLData(document.editform.#attributes.textareaname#.value);
+		          	eop.setStyleSheet(document.editform.CSSText.value);
+	    	      	eop.pumpEvents();
+				 </script>
+				 <!--onClickEvent used through farcry type edit plps. --->
+				 <cfif isDefined("caller.onClickEvent")>
+				 	<cfset caller.onClickEvent =  "scriptForm_onsubmit();">
+				 </cfif>
+				 
+			 </cfoutput>
 		</cfcase>
-		
-
 
 	</cfswitch>
 </cfif>

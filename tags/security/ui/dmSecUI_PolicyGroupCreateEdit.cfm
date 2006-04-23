@@ -1,4 +1,7 @@
 <cfsetting enablecfoutputonly="Yes">
+
+<cfprocessingDirective pageencoding="utf-8">
+
 <!--- 
 || BEGIN FUSEDOC ||
 
@@ -7,11 +10,11 @@ Daemon Pty Limited 1995-2001
 http://www.daemon.com.au/
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/security/ui/dmSecUI_PolicyGroupCreateEdit.cfm,v 1.1 2003/04/08 08:52:20 paul Exp $
-$Author: paul $
-$Date: 2003/04/08 08:52:20 $
-$Name: b201 $
-$Revision: 1.1 $
+$Header: /cvs/farcry/farcry_core/tags/security/ui/dmSecUI_PolicyGroupCreateEdit.cfm,v 1.2 2004/07/15 02:03:27 brendan Exp $
+$Author: brendan $
+$Date: 2004/07/15 02:03:27 $
+$Name: milestone_2-3-2 $
+$Revision: 1.2 $
 
 || DESCRIPTION || 
 Interface for creating and editing policy groups.
@@ -25,6 +28,9 @@ Matt Dawson (mad@daemon.com.au)
 
 || HISTORY ||
 $Log: dmSecUI_PolicyGroupCreateEdit.cfm,v $
+Revision 1.2  2004/07/15 02:03:27  brendan
+i18n updates
+
 Revision 1.1  2003/04/08 08:52:20  paul
 CFC security updates
 
@@ -57,7 +63,7 @@ no message
 	if(isDefined("form.Delete"))
 	{
 		oAuthorisation.deletePolicyGroup(policygroupid=form.policygroupid);
-		writeoutput("<span style='color:green;'>OK:</span>Policy group '#form.policyGroupName#' has been deleted.<p></p>");
+		writeoutput("#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].policyGroupDeleted,'#form.policyGroupName#')#<p></p>");
 		stObj=structNew();
 		stObj.PolicyGroupId=-1;
 		stObj.PolicyGroupName="";
@@ -73,7 +79,7 @@ no message
 				stresult=oAuthorisation.updatePolicyGroup(policyGroupID=form.policyGroupID,policyGroupName=form.policyGroupName,policyGroupNotes=form.policyGroupNotes);
 			if (stResult.bSuccess)
 			{	
-				writeoutput("<span style='color:green;'>OK:</span> Policy Group Update/Create success<p></p>");
+				writeoutput("#application.adminBundle[session.dmProfile.locale].policyGroupChangeOK#<p></p>");
 				stObj = oAuthorisation.getPolicyGroup(policyGroupName=form.PolicyGroupName);
 			}
 			else
@@ -97,9 +103,9 @@ no message
 
 
 <cfif stObj.PolicyGroupId eq -1 >
-	<cfoutput><span class="formtitle">Create Policy Group</span><p></p></cfoutput>
+	<cfoutput><span class="formtitle">#application.adminBundle[session.dmProfile.locale].createPolicyGroup#</span><p></p></cfoutput>
 <cfelse>
-	<cfoutput><span class="formtitle">Edit Policy Group</span><p></p></cfoutput>
+	<cfoutput><span class="formtitle">#application.adminBundle[session.dmProfile.locale].editPolicyGroup#</span><p></p></cfoutput>
 </cfif>
 
 <cfoutput>
@@ -115,7 +121,7 @@ no message
 	</tr>
 	<tr>
 		<td>
-			<span class="formlabel">Policy Group Name:</span><br>
+			<span class="formlabel">#application.adminBundle[session.dmProfile.locale].policyGroupNameLabel#</span><br>
 			<input type="text" size="32" maxsize="32" name="PolicyGroupName" value="#stObj.PolicyGroupName#">	
 		</td>
 	</tr>
@@ -124,7 +130,7 @@ no message
 	</tr>
 	<tr>
 		<td>
-			<span class="formlabel">Policy Group Notes:</span><br>
+			<span class="formlabel">#application.adminBundle[session.dmProfile.locale].policyGroupNotesLabel#</span><br>
 			<Textarea name="PolicyGroupNotes" cols="40" rows="4">#stObj.PolicyGroupNotes#</textarea>
 		</td>
 	</tr>
@@ -134,10 +140,10 @@ no message
 	<tr>
 		<td>
 			<cfif stObj.PolicyGroupId eq -1>
-				<input type="submit" name="Submit" value="Create Policy Group"><br>
+				<input type="submit" name="Submit" value="#application.adminBundle[session.dmProfile.locale].createPolicyGroup#"><br>
 			<cfelse>
-				<input type="submit" name="Submit" value="Update Policy Group">&nbsp;&nbsp;&nbsp;&nbsp;
-				<input type="submit" name="Delete" value="Delete Policy Group" onclick="return confirm('Are you sure you want to delete this policy group?');">
+				<input type="submit" name="Submit" value="#application.adminBundle[session.dmProfile.locale].updatePolicyGroup#">&nbsp;&nbsp;&nbsp;&nbsp;
+				<input type="submit" name="Delete" value="#application.adminBundle[session.dmProfile.locale].deletePolicyGroup#" onclick="return confirm('#application.adminBundle[session.dmProfile.locale].confirmPolicyGroupDelete#');">
 			</cfif>
 		</td>
 	</tr>
@@ -149,8 +155,5 @@ no message
 </form>
 
 </cfoutput>
-
-
-
 
 <cfsetting enablecfoutputonly="No">

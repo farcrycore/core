@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/navajo/keywords/tree.cfm,v 1.2 2003/05/16 01:47:32 brendan Exp $
-$Author: brendan $
-$Date: 2003/05/16 01:47:32 $
-$Name: b201 $
-$Revision: 1.2 $
+$Header: /cvs/farcry/farcry_core/admin/navajo/keywords/tree.cfm,v 1.4 2004/08/19 04:34:53 paul Exp $
+$Author: paul $
+$Date: 2004/08/19 04:34:53 $
+$Name: milestone_2-3-2 $
+$Revision: 1.4 $
 
 || DESCRIPTION || 
 $Description: Displays category tree $
@@ -21,10 +21,10 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au)$
 $in: $
 $out:$
 --->
+<cfprocessingDirective pageencoding="utf-8">
 
-<cfoutput><div id="tree"></cfoutput>
 <cfscript>
 	oCat = createObject("component","#application.packagepath#.farcry.category");
 	oCat.displayTree();
 </cfscript>
-<cfoutput></div></cfoutput>
+

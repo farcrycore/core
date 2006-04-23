@@ -14,6 +14,8 @@ this could be a special comment in the template itself picked up
 by a regular expression match here???
  --->
 
+<cfprocessingDirective pageencoding="utf-8">
+
 <cfparam name="attributes.typename">
 <cfparam name="attributes.prefix" default="display">
 <cfparam name="attributes.path" default="#application.path.webskin#/#attributes.typename#">

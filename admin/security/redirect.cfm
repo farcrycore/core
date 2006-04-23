@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/security/redirect.cfm,v 1.6 2003/09/03 04:06:55 brendan Exp $
+$Header: /cvs/farcry/farcry_core/admin/security/redirect.cfm,v 1.7 2004/07/15 01:52:20 brendan Exp $
 $Author: brendan $
-$Date: 2003/09/03 04:06:55 $
-$Name: b201 $
-$Revision: 1.6 $
+$Date: 2004/07/15 01:52:20 $
+$Name: milestone_2-3-2 $
+$Revision: 1.7 $
 
 || DESCRIPTION || 
 $Description: Security tags redirect $
@@ -21,6 +21,9 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 $in: $
 $out:$
 --->
+
+<cfprocessingDirective pageencoding="utf-8">
+
 <!--- check permissions --->
 <cfscript>
 	iSecurityTab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="SecurityUserManagementTab");
@@ -29,7 +32,7 @@ $out:$
 
 <!--- set up page header --->
 <cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
-<admin:header>
+<admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 <cfif iSecurityTab eq 1 or iSecurityTab eq 1>
 

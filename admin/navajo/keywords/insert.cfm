@@ -1,3 +1,4 @@
+<cfprocessingDirective pageencoding="utf-8">
 
 <cfset URL.objectName = replace(URL.objectname,"'","''","ALL")>
 <cfif isDefined("URL.parentObjectID") AND isDefined("URL.objectname")>

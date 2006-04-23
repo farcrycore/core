@@ -2,11 +2,11 @@
 audit.cfc (fourQ COAPI)
 Copyright Daemon Pty Limited 2002 (http://www.daemon.com.au/)
 
-$Header: /cvs/farcry/farcry_core/packages/farcry/audit.cfc,v 1.8 2004/05/20 04:41:25 brendan Exp $
-$Author: brendan $
-$Date: 2004/05/20 04:41:25 $
-$Name: milestone_2-2-1 $
-$Revision: 1.8 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/audit.cfc,v 1.8.4.1 2005/04/11 02:43:05 paul Exp $
+$Author: paul $
+$Date: 2005/04/11 02:43:05 $
+$Name: milestone_2-3-2 $
+$Revision: 1.8.4.1 $
 
 Released Under the "Common Public License 1.0"
 http://www.opensource.org/licenses/cpl.php
@@ -22,9 +22,9 @@ for the fourQ COAPI
 
 <cffunction name="deployAudit" hint="Deploy table structure for audit subsystem." returntype="struct">
 	<!--- arguments --->
-	<cfargument name="dsn" default="#application.dsn#" type="variableName" required="No">
+	<cfargument name="dsn" default="#application.dsn#" type="string" required="No">
 	<cfargument name="bDropTable" default="false" type="boolean" required="No">
-	<cfargument name="dbtype" default="#application.dbtype#" type="variableName" required="No">
+	<cfargument name="dbtype" default="#application.dbtype#" type="string" required="No">
 	<cfargument name="dbowner" type="string" required="false" default="#ucase(application.dbowner)#">
 	<!--- local vars --->
 	<cfset var stStatus = StructNew()>
@@ -189,7 +189,7 @@ for the fourQ COAPI
 	<cfargument name="location" type="string" required="No" default="">
 	<cfargument name="note" type="string" required="No" default="">
 	<cfargument name="dbowner" type="string" required="false" default="#ucase(application.dbowner)#">
-	<cfargument name="dsn" default="#application.dsn#" type="variableName" required="No">
+	<cfargument name="dsn" default="#application.dsn#" type="string" required="No">
 	<!--- local vars --->
 	<cfset var datetimestamp = Now()>
 	<cfset var bSuccess = true>
@@ -219,7 +219,7 @@ need a bunch of functions to get audit data here
 	<cfargument name="auditType" required="No" type="string">
 	<cfargument name="maxRows" required="No" type="numeric" default="100">
 	<cfargument name="ordering" required="No" type="string" default="desc">
-	<cfargument name="dsn" default="#application.dsn#" type="variableName" required="No">
+	<cfargument name="dsn" default="#application.dsn#" type="string" required="No">
 	<cfargument name="dbowner" type="string" required="false" default="#ucase(application.dbowner)#">
 	<!--- local vars --->
 	<cfset var qLog = "">
@@ -253,7 +253,7 @@ need a bunch of functions to get audit data here
 </cffunction> 
 
 <cffunction name="getAuditUsers" hint="Returns a query of users in audit log" returntype="query">
-	<cfargument name="dsn" default="#application.dsn#" type="variableName" required="No">
+	<cfargument name="dsn" default="#application.dsn#" type="string" required="No">
 	<cfargument name="dbowner" type="string" required="false" default="#ucase(application.dbowner)#">
 	<!--- local vars --->
 	<cfset var qLog = "">
@@ -268,7 +268,7 @@ need a bunch of functions to get audit data here
 </cffunction> 
 
 <cffunction name="getAuditActivities" hint="Returns a query of activities in audit log" returntype="query">	
-	<cfargument name="dsn" default="#application.dsn#" type="variableName" required="No">
+	<cfargument name="dsn" default="#application.dsn#" type="string" required="No">
 	<cfargument name="dbowner" type="string" required="false" default="#ucase(application.dbowner)#">
 	<!--- local vars --->
 	<cfset var qLog = "">
@@ -285,8 +285,8 @@ need a bunch of functions to get audit data here
 <cffunction name="getUserActivityDaily" hint="Return a query of audit entries for user logins over time." returntype="query">
 	<!--- arguments --->
 	<cfargument name="day" required="No" type="date" default="#Now()#">
-	<cfargument name="dsn" default="#application.dsn#" type="variableName" required="No">
-	<cfargument name="dbtype" default="#application.dbtype#" type="variableName" required="No">
+	<cfargument name="dsn" default="#application.dsn#" type="string" required="No">
+	<cfargument name="dbtype" default="#application.dbtype#" type="string" required="No">
 	<cfargument name="dbowner" type="string" required="false" default="#ucase(application.dbowner)#">
 	<!--- local vars --->
 	<cfset var qLog = "">	
@@ -372,8 +372,8 @@ need a bunch of functions to get audit data here
 <cffunction name="getUserActivityWeekly" hint="Return a query of audit entries for user logins over time." returntype="query">
 	<!--- arguments --->
 	<cfargument name="day" required="No" type="date" default="#Now()#">
-	<cfargument name="dsn" default="#application.dsn#" type="variableName" required="No">
-	<cfargument name="dbtype" default="#application.dbtype#" type="variableName" required="No">
+	<cfargument name="dsn" default="#application.dsn#" type="string" required="No">
+	<cfargument name="dbtype" default="#application.dbtype#" type="string" required="No">
 	<cfargument name="dbowner" type="string" required="false" default="#ucase(application.dbowner)#">
 	<!--- local vars --->
 	<cfset var qLog = "">

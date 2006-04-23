@@ -4,11 +4,12 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmImage/edit.cfm,v 1.23 2004/06/27 22:59:39 brendan Exp $
-$Author: brendan $
-$Date: 2004/06/27 22:59:39 $
-$Name: milestone_2-2-1 $
-$Revision: 1.23 $
+
+$Header: /cvs/farcry/farcry_core/packages/types/_dmImage/edit.cfm,v 1.29 2004/12/06 19:12:48 tom Exp $
+$Author: tom $
+$Date: 2004/12/06 19:12:48 $
+$Name: milestone_2-3-2 $
+$Revision: 1.29 $
 
 || DESCRIPTION || 
 $Description: edit handler$
@@ -22,6 +23,8 @@ $in: $
 $out:$
 --->
 <cfsetting enablecfoutputonly="yes">
+
+<cfprocessingDirective pageencoding="utf-8"><br>
 
 <cfimport taglib="/farcry/fourq/tags/" prefix="q4">
 <cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
@@ -47,6 +50,8 @@ $out:$
 		//unlock object
 		stProperties.locked = 0;
 		stProperties.lockedBy = "";
+		oForm = createObject("component","#application.packagepath#.farcry.form");
+		imageAcceptList = application.config.image.imagetype;
 	</cfscript>
 	
 	<!--- set accept list --->
@@ -61,13 +66,13 @@ $out:$
 				<cftry>
 					<!--- same name so upload new image overwriting the existing one --->
 					<cfif len(imageAcceptList)>
-						<cffile action="upload" filefield="imagefile" destination="#application.defaultImagePath#" accept="#imageAcceptList#" nameconflict="OVERWRITE"> 
+						<cffile action="upload" filefield="imagefile" destination="#application.path.defaultImagePath#" accept="#imageAcceptList#" nameconflict="OVERWRITE"> 
 					<cfelse>
-						<cffile action="upload" filefield="imagefile" destination="#application.defaultImagePath#" nameconflict="OVERWRITE"> 
+						<cffile action="upload" filefield="imagefile" destination="#application.path.defaultImagePath#" nameconflict="OVERWRITE"> 
 					</cfif>
 					
 					<cfcatch>
-						<cfoutput><p><strong>ERROR:</strong> #cfcatch.message# </p></cfoutput>
+						<cfoutput><p>#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].cfCatchErrorMsg,'#cfcatch.message#')#</p></cfoutput>
 						<cfset error=1>
 					</cfcatch>
 				</cftry>
@@ -75,15 +80,15 @@ $out:$
 				<!--- different name so upload new image making it unique --->
 				<cftry>
 					<cfif len(imageAcceptList)>
-						<cffile action="upload" filefield="imagefile" destination="#application.defaultImagePath#" accept="#imageAcceptList#" nameconflict="MAKEUNIQUE"> 
+						<cffile action="upload" filefield="imagefile" destination="#application.path.defaultImagePath#" accept="#imageAcceptList#" nameconflict="MAKEUNIQUE"> 
 					<cfelse>
-						<cffile action="upload" filefield="imagefile" destination="#application.defaultImagePath#" nameconflict="MAKEUNIQUE"> 
+						<cffile action="upload" filefield="imagefile" destination="#application.path.defaultImagePath#" nameconflict="MAKEUNIQUE"> 
 					</cfif>
 					<!--- rename to overwrite existing one --->
 					<cffile action="RENAME" source="#file.ServerDirectory#/#file.serverfile#" destination="#file.ServerDirectory#/#stObj.imageFile#">
 					
 					<cfcatch>
-						<cfoutput><p><strong>ERROR:</strong> #cfcatch.message# </p></cfoutput>
+						<cfoutput><p>#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].cfCatchErrorMsg,'#cfcatch.message#')#</p></cfoutput>
 						<cfset error=1>
 					</cfcatch>
 				</cftry>
@@ -96,9 +101,9 @@ $out:$
 				<!--- upload new file (if accept list not specified in config, accept everything) --->
 				<cftry>
 					<cfif len(imageAcceptList)>
-						<cffile action="upload" filefield="imagefile" destination="#application.defaultImagePath#" accept="#imageAcceptList#"> 
+						<cffile action="upload" filefield="imagefile" destination="#application.path.defaultImagePath#" accept="#imageAcceptList#"> 
 					<cfelse>
-						<cffile action="upload" filefield="imagefile" destination="#application.defaultImagePath#"> 
+						<cffile action="upload" filefield="imagefile" destination="#application.path.defaultImagePath#"> 
 					</cfif>
 					
 					<!--- add image values to object data --->
@@ -106,19 +111,20 @@ $out:$
 					<cfset stProperties.originalImagePath = file.ServerDirectory>
 					
 					<cfcatch>
-						<cfoutput><p><strong>ERROR:</strong> #cfcatch.message# </p></cfoutput>
+						<cfoutput><p>#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].cfCatchErrorMsg,'#cfcatch.message#')#</p></cfoutput>
 						<cfset error=1>
 					</cfcatch>
 				</cftry>
 			<cfelse>
 				<!--- filename already in use by another image object --->
-				<cfoutput><p><strong>ERROR:</strong> Filename already in use</p>
-				<p>The file <strong>#stCheckDefault.fileName#</strong> is in use by another image in the system. Please re-name and then try again.</p></cfoutput>
+				<cfoutput>#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].fileNameInUse,'#stCheckDefault.fileName#')#</cfoutput>
 				<cfset error=1>
 			</cfif>
 		</cfif>
 	</cfif>
+
 	
+
 	<!--- check optimised image has been passed in from form --->
 	<cfif trim(len(form.optimisedImage)) NEQ 0>	
 		<!--- check if it's a new image --->
@@ -128,13 +134,13 @@ $out:$
 				<cftry>
 					<!--- same name so upload new image overwriting the existing one --->
 					<cfif len(imageAcceptList)>
-						<cffile action="upload" filefield="optimisedImage" destination="#application.defaultImagePath#" accept="#imageAcceptList#" nameconflict="OVERWRITE"> 
+						<cffile action="upload" filefield="optimisedImage" destination="#application.path.defaultImagePath#" accept="#imageAcceptList#" nameconflict="OVERWRITE"> 
 					<cfelse>
-						<cffile action="upload" filefield="optimisedImage" destination="#application.defaultImagePath#" nameconflict="OVERWRITE"> 
+						<cffile action="upload" filefield="optimisedImage" destination="#application.path.defaultImagePath#" nameconflict="OVERWRITE"> 
 					</cfif>
 					
 					<cfcatch>
-						<cfoutput><p><strong>ERROR:</strong> #cfcatch.message# </p></cfoutput>
+						<cfoutput><p>#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].cfCatchErrorMsg,'#cfcatch.message#')#</p></cfoutput>
 						<cfset error=1>
 					</cfcatch>
 				</cftry>
@@ -142,15 +148,15 @@ $out:$
 				<!--- different name so upload new image making it unique --->
 				<cftry>
 					<cfif len(imageAcceptList)>
-						<cffile action="upload" filefield="optimisedImage" destination="#application.defaultImagePath#" accept="#imageAcceptList#" nameconflict="MAKEUNIQUE"> 
+						<cffile action="upload" filefield="optimisedImage" destination="#application.path.defaultImagePath#" accept="#imageAcceptList#" nameconflict="MAKEUNIQUE"> 
 					<cfelse>
-						<cffile action="upload" filefield="optimisedImage" destination="#application.defaultImagePath#" nameconflict="MAKEUNIQUE"> 
+						<cffile action="upload" filefield="optimisedImage" destination="#application.path.defaultImagePath#" nameconflict="MAKEUNIQUE"> 
 					</cfif>
 					<!--- rename to overwrite existing one --->
 					<cffile action="RENAME" source="#file.ServerDirectory#/#file.serverfile#" destination="#file.ServerDirectory#/#stObj.optimisedImage#">
 					
 					<cfcatch>
-						<cfoutput><p><strong>ERROR:</strong> #cfcatch.message# </p></cfoutput>
+						<cfoutput><p>#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].cfCatchErrorMsg,'#cfcatch.message#')#</p></cfoutput>
 						<cfset error=1>
 					</cfcatch>
 				</cftry>
@@ -163,9 +169,9 @@ $out:$
 				<!--- upload new file (if accept list not specified in config, accept everything) --->
 				<cftry>
 					<cfif len(imageAcceptList)>
-						<cffile action="upload" filefield="optimisedImage" destination="#application.defaultImagePath#" accept="#imageAcceptList#"> 
+						<cffile action="upload" filefield="optimisedImage" destination="#application.path.defaultImagePath#" accept="#imageAcceptList#"> 
 					<cfelse>
-						<cffile action="upload" filefield="optimisedImage" destination="#application.defaultImagePath#"> 
+						<cffile action="upload" filefield="optimisedImage" destination="#application.path.defaultImagePath#"> 
 					</cfif>
 					
 					<!--- add image values to object data --->
@@ -173,14 +179,13 @@ $out:$
 					<cfset stProperties.optimisedImagePath = file.ServerDirectory>
 					
 					<cfcatch>
-						<cfoutput><p><strong>ERROR:</strong> #cfcatch.message# </p></cfoutput>
+						<cfoutput><p>#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].cfCatchErrorMsg,'#cfcatch.message#')#</p></cfoutput>
 						<cfset error=1>
 					</cfcatch>
 				</cftry>
 			<cfelse>
 				<!--- filename already in use by another image object --->
-				<cfoutput><p><strong>ERROR:</strong> Filename already in use</p>
-				<p>The file <strong>#stCheckOptimised.fileName#</strong> is in use by another image in the system. Please re-name and then try again.</p></cfoutput>
+				<cfoutput>#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].fileNameInUse,'#stCheckOptimised.fileName#')#</cfoutput>
 				<cfset error=1>
 			</cfif>
 		</cfif>
@@ -195,13 +200,13 @@ $out:$
 				<cftry>
 					<!--- same name so upload new image overwriting the existing one --->
 					<cfif len(imageAcceptList)>
-						<cffile action="upload" filefield="thumbnailImage" destination="#application.defaultImagePath#" accept="#imageAcceptList#" nameconflict="OVERWRITE"> 
+						<cffile action="upload" filefield="thumbnailImage" destination="#application.path.defaultImagePath#" accept="#imageAcceptList#" nameconflict="OVERWRITE"> 
 					<cfelse>
-						<cffile action="upload" filefield="thumbnailImage" destination="#application.defaultImagePath#" nameconflict="OVERWRITE"> 
+						<cffile action="upload" filefield="thumbnailImage" destination="#application.path.defaultImagePath#" nameconflict="OVERWRITE"> 
 					</cfif>
 					
 					<cfcatch>
-						<cfoutput><p><strong>ERROR:</strong> #cfcatch.message# </p></cfoutput>
+						<cfoutput><p>#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].cfCatchErrorMsg,'#cfcatch.message#')#</p></cfoutput>
 						<cfset error=1>
 					</cfcatch>
 				</cftry>
@@ -209,15 +214,15 @@ $out:$
 				<!--- different name upload new image making it unique --->
 				<cftry>
 					<cfif len(imageAcceptList)>
-						<cffile action="upload" filefield="thumbnailImage" destination="#application.defaultImagePath#" accept="#imageAcceptList#" nameconflict="MAKEUNIQUE"> 
+						<cffile action="upload" filefield="thumbnailImage" destination="#application.path.defaultImagePath#" accept="#imageAcceptList#" nameconflict="MAKEUNIQUE"> 
 					<cfelse>
-						<cffile action="upload" filefield="thumbnailImage" destination="#application.defaultImagePath#" nameconflict="MAKEUNIQUE"> 
+						<cffile action="upload" filefield="thumbnailImage" destination="#application.path.defaultImagePath#" nameconflict="MAKEUNIQUE"> 
 					</cfif>
 					<!--- rename to overwrite existing one --->
 					<cffile action="RENAME" source="#file.ServerDirectory#/#file.serverfile#" destination="#file.ServerDirectory#/#stObj.thumbnail#">
 					
 					<cfcatch>
-						<cfoutput><p><strong>ERROR:</strong> #cfcatch.message# </p></cfoutput>
+						<cfoutput><p>#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].cfCatchErrorMsg,'#cfcatch.message#')#</p></cfoutput>
 						<cfset error=1>
 					</cfcatch>
 				</cftry>
@@ -230,9 +235,9 @@ $out:$
 				<!--- upload new file (if accept list not specified in config, accept everything) --->
 				<cftry>
 					<cfif len(imageAcceptList)>
-						<cffile action="upload" filefield="thumbnailImage" destination="#application.defaultImagePath#" accept="#imageAcceptList#"> 
+						<cffile action="upload" filefield="thumbnailImage" destination="#application.path.defaultImagePath#" accept="#imageAcceptList#"> 
 					<cfelse>
-						<cffile action="upload" filefield="thumbnailImage" destination="#application.defaultImagePath#"> 
+						<cffile action="upload" filefield="thumbnailImage" destination="#application.path.defaultImagePath#"> 
 					</cfif>
 					
 					<!--- add image values to object data --->
@@ -240,14 +245,13 @@ $out:$
 					<cfset stProperties.thumbnailImagePath = file.ServerDirectory>
 					
 					<cfcatch>
-						<cfoutput><p><strong>ERROR:</strong> #cfcatch.message# </p></cfoutput>
+						<cfoutput><p>#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].cfCatchErrorMsg,'#cfcatch.message#')#</p></cfoutput>
 						<cfset error=1>
 					</cfcatch>
 				</cftry>
 			<cfelse>
 				<!--- filename already in use by another image object --->
-				<cfoutput><p><strong>ERROR:</strong> Filename already in use</p>
-				<p>The file <strong>#stCheckThumb.fileName#</strong> is in use by another image in the system. Please re-name and then try again.</p></cfoutput>
+				<cfoutput>#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].filenameInUse,'#stCheckThumb.fileName#')#</cfoutput>
 				<cfset error=1>
 			</cfif>
 		</cfif>
@@ -292,18 +296,18 @@ $out:$
 		<br>
 		<table class="FormTable">
 		<tr>
-			<td colspan="2"><span class="FormSubHeading">Image Details</span></th>
+			<td colspan="2"><span class="FormSubHeading">#application.adminBundle[session.dmProfile.locale].imageDetails#</span></th>
 		</tr>		
 		
 		<tr>
-			<td nowrap><span class="FormLabel">Title:</span></td>
+			<td nowrap><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].titleLabel#</span></td>
 			<td nowrap width="100%">
 				<input type="text" name="title" value="#stObj.title#" class="FormTextBox">
 			</td>
 		</tr>
 	
 		<tr valign="top">
-			<td nowrap><span class="FormLabel">Alternate text:</span></td>
+			<td nowrap><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].alternateTextLabel#</span></td>
 			<td nowrap>
 				<textarea type="text" name="alt" class="FormTextArea" rows="4">#stObj.alt#</textarea>
 			</td>
@@ -312,16 +316,16 @@ $out:$
 		<tr valign="top">
 			<td nowrap>&nbsp;</td>
 			<td nowrap>		
-				<span class="FormLabel">Width:&nbsp;</span><input  class="FormTextBox" style="width:40px" type="text" name="width" value="#stObj.width#">
-				<span class="FormLabel">Height:&nbsp;</span><input class="FormTextBox" style="width:40px" type="text" name="height" value="#stObj.height#">
+				<span class="FormLabel">#application.adminBundle[session.dmProfile.locale].widthLabel#&nbsp;</span><input  class="FormTextBox" style="width:40px" type="text" name="width" value="#stObj.width#">
+				<span class="FormLabel">#application.adminBundle[session.dmProfile.locale].heightLabel#&nbsp;</span><input class="FormTextBox" style="width:40px" type="text" name="height" value="#stObj.height#">
 			</td>
 		</tr>	
 		<tr>
-			<td colspan="2"><span class="FormSubHeading">Image Files</span></th>
+			<td colspan="2"><span class="FormSubHeading">#application.adminBundle[session.dmProfile.locale].imageFiles#</span></th>
 		</tr>	
 			
 		<tr valign="middle">
-			<td nowrap><span class="FormLabel">Default Image</span></td>
+			<td nowrap><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].defaultImage#</span></td>
 			<td nowrap width="100%">
 				<input type="file" name="imageFile" class="FormFileBox">&nbsp;&nbsp;
 			</td>
@@ -329,18 +333,18 @@ $out:$
 		
 		<tr><td colspan="2">
 		<cfif not len(stObj.imagefile)>
-			<span class="FormSubHeading">[No file uploaded]</span>
+			<span class="FormSubHeading">[#application.adminBundle[session.dmProfile.locale].noFileUploaded#]</span>
 		<cfelse>
 		
 		<table>
 		<tr>
 			<td colspan="3" style="font-size:7pt;">
-				<span class="FormLabel">Uploading a new file will overwrite this file</span>
+				<span class="FormLabel">#application.adminBundle[session.dmProfile.locale].newFileOverwriteThisFile#</span>
 			</td>
 		</tr>
 		<tr>
 		<td>
-			<span class="FormLabel">Existing Default Image :</span> 
+			<span class="FormLabel">#application.adminBundle[session.dmProfile.locale].existingDefaultImageLabel#</span> 
 		</td>
 		<nj:getFileIcon filename="#stObj.imagefile#" r_stIcon="fileicon"> 
 		<td>
@@ -348,7 +352,7 @@ $out:$
 		</td>
 		<td>
 			<a href="#application.url.webroot#/images/#stObj.imagefile#" target="_blank">
-				<span class="FormLabel">PREVIEW</span>
+				<span class="FormLabel">#application.adminBundle[session.dmProfile.locale].previewUC#</span>
 			</a>
 		</td>
 		</tr>
@@ -358,7 +362,7 @@ $out:$
 		</tr>	
 	
 		<tr valign="middle">
-			<td nowrap><span class="FormLabel">Thumbnail</span></td>
+			<td nowrap><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].thumbnail#</span></td>
 			<td nowrap>
 				<input type="file" name="thumbnailImage" class="FormFileBox">
 			</td>
@@ -366,18 +370,18 @@ $out:$
 		
 		<tr><td colspan="2">
 		<cfif not len(stObj.thumbnail)>
-			<span class="FormSubHeading">[No thumbnail image uploaded]</span>
+			<span class="FormSubHeading">[#application.adminBundle[session.dmProfile.locale].noThumbnailImageUploaded#]</span>
 		<cfelse>
 		
 		<table>
 		<tr>
 			<td colspan="3" style="font-size:7pt;">
-				<span class="FormLabel">Uploading a new file will overwrite this file</span>
+				<span class="FormLabel">#application.adminBundle[session.dmProfile.locale].newFileOverwriteThisFile#</span>
 			</td>
 		</tr>
 		<tr>
 		<td>
-			<span class="FormLabel">Existing Thumbnail Image :</span> 
+			<span class="FormLabel">#application.adminBundle[session.dmProfile.locale].existingThumbnailImageLabel#</span> 
 		</td>
 		<nj:getFileIcon filename="#stObj.thumbnail#" r_stIcon="fileicon"> 
 		<td>
@@ -385,7 +389,7 @@ $out:$
 		</td>
 		<td>
 			<a href="#application.url.webroot#/images/#stObj.thumbnail#" target="_blank">
-				<span class="FormLabel">PREVIEW</span>
+				<span class="FormLabel">#application.adminBundle[session.dmProfile.locale].previewUC#</span>
 			</a>
 		</td>
 		</tr>
@@ -395,25 +399,25 @@ $out:$
 		</tr>	
 	
 		<tr valign="middle">
-			<td nowrap><span class="FormLabel">Highres</span></td>
+			<td nowrap><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].Highres#</span></td>
 			<td nowrap>
 				<input type="file" name="optimisedImage" class="FormFileBox">
 			</td>
 		</tr>
 		<tr><td colspan="2">
 		<cfif not len(stObj.optimisedimage)>
-			<span class="FormSubHeading">[No optimised image uploaded]</span>
+			<span class="FormSubHeading">[#application.adminBundle[session.dmProfile.locale].noOptimisedImgUploaded#]</span>
 		<cfelse>
 		
 		<table>
 		<tr>
 			<td colspan="3" style="font-size:7pt;">
-				<span class="FormLabel">Uploading a new file will overwrite this file</span>
+				<span class="FormLabel">#application.adminBundle[session.dmProfile.locale].newFileOverwriteThisFile#</span>
 			</td>
 		</tr>
 		<tr>
 		<td>
-			<span class="FormLabel">Existing Thumbnail Image :</span> 
+			<span class="FormLabel">#application.adminBundle[session.dmProfile.locale].existingThumbnailImageLabel#</span> 
 		</td>
 		<nj:getFileIcon filename="#stObj.optimisedimage#" r_stIcon="fileicon"> 
 		<td>
@@ -421,7 +425,7 @@ $out:$
 		</td>
 		<td>
 			<a href="#application.url.webroot#/images/#stObj.optimisedimage#" target="_blank">
-				<span class="FormLabel">PREVIEW</span>
+				<span class="FormLabel">#application.adminBundle[session.dmProfile.locale].previewUC#</span>
 			</a>
 		</td>
 		</tr>
@@ -432,8 +436,8 @@ $out:$
 			
 	<tr>
 		<td colspan="2" align="center">
-			<input type="submit" value="OK" name="submit" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';">
-			<input type="Button" value="Cancel" name="Cancel" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';" onClick="location.href='#application.url.farcry#/unlock.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#';parent.synchTab('editFrame','activesubtab','subtab','siteEditOverview');parent.synchTitle('Overview')">
+			<input type="submit" value="#application.adminBundle[session.dmProfile.locale].OK#" name="submit" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';">
+			<input type="Button" value="#application.adminBundle[session.dmProfile.locale].cancel#" name="Cancel" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';" onClick="location.href='#application.url.farcry#/unlock.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#';parent.synchTab('editFrame','activesubtab','subtab','siteEditOverview');parent.synchTitle('Overview')">
 		</td>
 	</tr>
 			
@@ -443,7 +447,7 @@ $out:$
 	<SCRIPT LANGUAGE="JavaScript">
 		<!--//
 		objForm = new qForm("imageForm");
-		objForm.title.validateNotNull("Please enter a title");
+		objForm.title.validateNotNull("#application.adminBundle[session.dmProfile.locale].pleaseEnterTitle#");
 		objForm.alt.validateLengthLT(255);
 			
 		//bring focus to title

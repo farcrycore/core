@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/admin/diagTreeNodes.cfm,v 1.14 2003/12/08 05:28:38 paul Exp $
-$Author: paul $
-$Date: 2003/12/08 05:28:38 $
-$Name: milestone_2-2-1 $
-$Revision: 1.14 $
+$Header: /cvs/farcry/farcry_core/admin/admin/diagTreeNodes.cfm,v 1.16 2004/09/29 04:39:01 brendan Exp $
+$Author: brendan $
+$Date: 2004/09/29 04:39:01 $
+$Name: milestone_2-3-2 $
+$Revision: 1.16 $
 
 || DESCRIPTION || 
 $Description: Looks for orphaned nodes in the nested tree table and they gives option to attach them to nav node in tree$
@@ -25,6 +25,8 @@ $out:$
 <!--- set long timeout for template to prevent data-corruption on incomplete tree.moveBranch() --->
 <cfsetting enablecfoutputonly="Yes" requesttimeout="90">
 
+<cfprocessingDirective pageencoding="utf-8">
+
 <!--- check permissions --->
 <cfscript>
 	iCOAPITab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="AdminCOAPITab");
@@ -32,7 +34,7 @@ $out:$
 
 <!--- set up page header --->
 <cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
-<admin:header>
+<admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 <cfif iCOAPITab eq 1>
 
@@ -65,7 +67,7 @@ $out:$
 		</cfdefaultcase>
 	</cfswitch>
 	
-	<cfoutput><span class="formtitle">Diagnostics :: Orphaned Nodes</span><p></p></cfoutput>
+	<cfoutput><span class="formtitle">#application.adminBundle[session.dmProfile.locale].diagOrphanNotes#</span><p></p></cfoutput>
 	
 	<!--- if requested, attach orphans to navnode in tree --->
 	<cfif isDefined("form.objectid")>
@@ -81,23 +83,21 @@ $out:$
 			<cfoutput>#listlen(form.objectid)# nav node orphan<cfif qOrphans.recordCount neq 1>s</cfif> attached to #form.navalias#.</cfoutput>
 		</cflock>
 			<cfcatch>
-				<h2>moveBranch Lockout</h2>
-				<p>Another editor is currently modifying the hierarchy.  Please refresh the site overview tree and try again.</p>
+				<cfoutput><h2>#application.adminBundle[session.dmProfile.locale].moveBranchLockout#</h2>
+				<p>#application.adminBundle[session.dmProfile.locale].branchLockoutBlurb#</p></cfoutput>
 				<cfabort>
 			</cfcatch>
 		</cftry>
 		
 	<cfelse>
 		<cfoutput>
-			Use this function if your nested tree ever gets objects with no parents.
-	        It will give all your orphaned objects parents again. 
-			You may want to make a backup of your database before fixing the tree. 
+			#application.adminBundle[session.dmProfile.locale].noParentNestedTreeBlurb#
 			<p></p>
 		</cfoutput>
 		
 		<cfif qOrphans.recordcount>
 			<!--- show orphaned nodes --->
-			<cfoutput>Current Orphaned Nodes:<p></p></cfoutput>
+			<cfoutput>#application.adminBundle[session.dmProfile.locale].currentOrphanedNodes#<p></p></cfoutput>
 			<!--- <cfdump var="#qOrphans#" label="Orphaned Nodes"> --->
 			<!--- show form to attach orphans to a known node --->
 			<cfoutput><p></p>
@@ -105,9 +105,10 @@ $out:$
 				<table cellpadding="5" cellspacing="0" border="1">
 				<tr class="dataheader">
 					<td>&nbsp;</td>
-					<td align="center"><strong>Object ID</strong></td>
-					<td align="center"><strong>Parent ID</strong></td>
-					<td align="center"><strong>Title</strong></td>
+					<!--- 18n: can these be localized?  --->
+					<td align="center"><strong>#application.adminBundle[session.dmProfile.locale].objID#</strong></td>
+					<td align="center"><strong>#application.adminBundle[session.dmProfile.locale].parentID#</strong></td>
+					<td align="center"><strong>#application.adminBundle[session.dmProfile.locale].title#</strong></td>
 				</tr>
 				<cfloop query="qOrphans">
 					<tr class="#IIF(qOrphans.currentRow MOD 2, de("dataOddRow"), de("dataEvenRow"))#">
@@ -128,7 +129,7 @@ $out:$
 			</form>
 			</cfoutput>
 		<cfelse>
-			<cfoutput>There are no orphans at the moment.</cfoutput>
+			<cfoutput>#application.adminBundle[session.dmProfile.locale].noOrphansNow#</cfoutput>
 		</cfif>
 		
 	</cfif>

@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/form.cfc,v 1.11 2004/06/29 07:01:48 paul Exp $
-$Author: paul $
-$Date: 2004/06/29 07:01:48 $
-$Name: milestone_2-2-1 $
-$Revision: 1.11 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/form.cfc,v 1.16 2004/12/22 04:32:36 brendan Exp $
+$Author: brendan $
+$Date: 2004/12/22 04:32:36 $
+$Name: milestone_2-3-2 $
+$Revision: 1.16 $
 
 || DESCRIPTION ||
 $Description: form cfc $
@@ -49,7 +49,7 @@ $out:$
 
 	<cffunction name="uploadFile" hint="Uploads a file">
 		<cfargument name="formField" hint="The name of the field that contains the file to be uploaded" required="true"   type="string">
-		<cfargument name="destination" hint="Directory file is to be uploaded to - must pass in absolute path" type="string" default="#application.defaultImagePath#">
+		<cfargument name="destination" hint="Directory file is to be uploaded to - must pass in absolute path" type="string" default="#application.path.defaultImagePath#">
 		<cfargument name="nameconflict" hint="File write behavior" type="string" default="#application.config.general.fileNameConflict#">
 		<cfargument  name="accept" hint="File types to accept" type="string" default="">
 
@@ -312,7 +312,7 @@ $out:$
 			</STYLE>
 
 			<IFRAME WIDTH="100" HEIGHT="1" NAME="#arguments.iframeID#" ID="#arguments.iframeID#"
-				 FRAMEBORDER="0" FRAMESPACING="0" MARGINWIDTH="0" MARGINHEIGHT="0">
+				 FRAMEBORDER="0" FRAMESPACING="0" MARGINWIDTH="0" MARGINHEIGHT="0" SRC="null">
 					<ILAYER NAME="#arguments.iframeID#" WIDTH="400" HEIGHT="100" VISIBILITY="Hide"
 					 ID="#arguments.iframeID#">
 					<P>This page uses a hidden frame and requires either Microsoft
@@ -323,6 +323,34 @@ $out:$
 		</cfoutput>
 		</cfsavecontent>
 		<cfreturn html>
+	</cffunction>
+	
+	<cffunction name="HTMLSafe" hint="Coverts special characters to character entities, making a string safe for display in HTML." output="false" returntype="string">
+		<cfargument name="string" type="string" required="true" hint="string to convert">
+		
+		<cfscript>
+			/**
+			 * Coverts special characters to character entities, making a string safe for display in HTML.
+			 * 
+			 * @param string 	 String to format. (Required)
+			 * @return Returns a string. 
+			 * @author Gyrus (gyrus@norlonto.net) 
+			 * @version 1, April 30, 2003 
+			 */
+		
+			// Initialise
+			var badChars = """,#Chr(161)#,#Chr(162)#,#Chr(163)#,#Chr(164)#,#Chr(165)#,#Chr(166)#,#Chr(167)#,#Chr(168)#,#Chr(169)#,#Chr(170)#,#Chr(171)#,#Chr(172)#,#Chr(173)#,#Chr(174)#,#Chr(175)#,#Chr(176)#,#Chr(177)#,#Chr(178)#,#Chr(179)#,#Chr(180)#,#Chr(181)#,#Chr(182)#,#Chr(183)#,#Chr(184)#,#Chr(185)#,#Chr(186)#,#Chr(187)#,#Chr(188)#,#Chr(189)#,#Chr(190)#,#Chr(191)#,#Chr(215)#,#Chr(247)#,#Chr(192)#,#Chr(193)#,#Chr(194)#,#Chr(195)#,#Chr(196)#,#Chr(197)#,#Chr(198)#,#Chr(199)#,#Chr(200)#,#Chr(201)#,#Chr(202)#,#Chr(203)#,#Chr(204)#,#Chr(205)#,#Chr(206)#,#Chr(207)#,#Chr(208)#,#Chr(209)#,#Chr(210)#,#Chr(211)#,#Chr(212)#,#Chr(213)#,#Chr(214)#,#Chr(216)#,#Chr(217)#,#Chr(218)#,#Chr(219)#,#Chr(220)#,#Chr(221)#,#Chr(222)#,#Chr(223)#,#Chr(224)#,#Chr(225)#,#Chr(226)#,#Chr(227)#,#Chr(228)#,#Chr(229)#,#Chr(230)#,#Chr(231)#,#Chr(232)#,#Chr(233)#,#Chr(234)#,#Chr(235)#,#Chr(236)#,#Chr(237)#,#Chr(238)#,#Chr(239)#,#Chr(240)#,#Chr(241)#,#Chr(242)#,#Chr(243)#,#Chr(244)#,#Chr(245)#,#Chr(246)#,#Chr(248)#,#Chr(249)#,#Chr(250)#,#Chr(251)#,#Chr(252)#,#Chr(253)#,#Chr(254)#,#Chr(255)#";
+			var goodChars = "&quot;,&iexcl;,&cent;,&pound;,&curren;,&yen;,&brvbar;,&sect;,&uml;,&copy;,&ordf;,&laquo;,&not;,&shy;,&reg;,&macr;,&deg;,&plusmn;,²,³,&acute;,&micro;,&para;,&middot;,&cedil;,¹,&ordm;,&raquo;,¼,½,¾,&iquest;,&times;,&divide;,&Agrave;,&Aacute;,&Acirc;;,&Atilde;,&Auml;,&Aring;,&AElig;,&Ccedil;,&Egrave;,&Eacute;,&Ecirc;,&Euml;,&Igrave;,&Iacute;,&Icirc;,&Iuml;,&ETH;,&Ntilde;,&Ograve;,&Oacute;,&Ocirc;,&Otilde;,&Ouml;,&Oslash;,&Ugrave;,&Uacute;,&Ucirc;,&Uuml;,&Yacute;,&THORN;,&szlig;,&agrave;,&aacute;,&acirc;,&atilde;,&auml;,&aring;,&aelig;,&ccedil;,&egrave;,&eacute;,&ecirc;,&euml;,&igrave;,&iacute;,&icirc;,&iuml;,&eth;,&ntilde;,&ograve;,&oacute;,&ocirc;,&otilde;,&ouml;,&oslash;,&ugrave;,&uacute;,&ucirc;,&uuml;,&yacute;,&thorn;,&yuml;;,&##338;,&##339;,&##352;,&##353;,&##376;,&##710;,&##732;,&##8206;,&##8207;,&##8211;,&##8212;,&##8216;,&##8217;,&##8218;,&##8220;,&##8221;,&##8222;,&##8224;,&##8225;,&##8240;,&##8249;,&##8250;,&##8364;,<sup><small>TM</small></sup>";
+		
+			// MX/Unicode matches
+			badChars = "#badChars#,#Chr(338)#,#Chr(339)#,#Chr(352)#,#Chr(353)#,#Chr(376)#,#Chr(710)#,#Chr(8211)#,#Chr(8212)#,#Chr(8216)#,#Chr(8217)#,#Chr(8218)#,#Chr(8220)#,#Chr(8221)#,#Chr(8222)#,#Chr(8224)#,#Chr(8225)#,#Chr(8240)#,#Chr(8249)#,#Chr(8250)#,#Chr(8364)#,#Chr(8482)#";
+			
+			// Return immediately if blank string
+			if (NOT Len(Trim(string))) return string;
+			
+			// Do replacing
+			return ReplaceList(string, badChars, goodChars);		
+		</cfscript>
 	</cffunction>
 
 </cfcomponent>

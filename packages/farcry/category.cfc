@@ -4,12 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/category.cfc,v 1.21 2004/06/21 03:49:11 paul Exp $
-$Author: paul $
-$Date: 2004/06/21 03:49:11 $
-
-$Name: milestone_2-2-1 $
-$Revision: 1.21 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/category.cfc,v 1.26 2004/12/16 04:49:56 brendan Exp $
+$Author: brendan $
+$Date: 2004/12/16 04:49:56 $
+$Name: milestone_2-3-2 $
+$Revision: 1.26 $
 
 || DESCRIPTION || 
 $Description: Set of functions to perform metadata characterisation $
@@ -27,8 +26,8 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 		<cftry>
 		<cfquery name="q" datasource="#arguments.dsn#">
 			SELECT categoryid,alias
-			FROM categories
-			WHERE alias IS NOT null OR alias <> '';
+			FROM #application.dbowner#categories
+			WHERE alias IS NOT null OR alias <> ''
 		</cfquery>
 		<cfloop query="q">
 			<cfscript>
@@ -95,10 +94,21 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 	</cffunction>	
 	
 	
-	<cffunction name="getCategoryBranch" access="public" hint="Pull all category Ids from nested Tree Objects" returntype="string" >
-		<cfargument name="lCategoryIDs" required="true" hint="list of category Ids" >
+	<cffunction name="setAlias" access="public" returntype="void" output="false">
+		<cfargument name="categoryid" type="uuid" required="true" />
+		<cfargument name="alias" type="string" required="true" />
+		<cfargument name="dsn" required="false" type="string" default="#application.dsn#">
+		<cfargument name="dbowner" required="false" type="string" default="#application.dbowner#">
+		
+		<cfquery datasource="#application.dsn#" name="setAlias">
+			UPDATE #application.dbowner#categories
+			SET alias = '#arguments.alias#'
+			WHERE categoryid = '#arguments.categoryid#'
+		</cfquery>
 		
 	</cffunction>
+	
+
 
 	<cffunction name="displayTree" access="public" output="true">
 		<cfargument name="rootobjectID" type="uuid" required="false">
@@ -119,7 +129,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 		<cfargument name="categoryID" type="uuid" required="true">
 		<cfargument name="categoryLabel" type="string" required="true" hint="label of category">
 		<cfargument name="parentID" type="uuid" required="true" hint="UUID of parent">
-		<cfargument name="dsn" type="string" required="true" hint="Database DSN">
+		<cfargument name="dsn" type="string" required="false" default="#application.dsn#" hint="Database DSN">
 		
 		<cfset var qChildren = ''>
 		<cfset var stStatus = structNew()>
@@ -192,6 +202,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 	
 	<cffunction name="getCategoryByName" returntype="query" access="public" hint="Returns category info" output="No">
 		<cfargument name="name" required="true" type="string" hint="Name of the category you want returned">
+		<cfargument name="typename" required="false" default="categories" type="string" hint="nested_tree_objects typename to match">
 		<cfargument name="dsn" required="no" default="#application.dsn#">
 		<cfargument name="dbowner" required="no" default="#application.dbowner#">
 		
@@ -201,6 +212,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 			SELECT *
 			FROM #arguments.dbowner#nested_tree_objects
 			WHERE objectname = <cfqueryparam cfsqltype="CF_SQL_VARCHAR" value="#arguments.name#">
+			AND typename = <cfqueryparam cfsqltype="CF_SQL_VARCHAR" value="#arguments.typename#">
 		</cfquery>		
 				
 		<cfreturn qCategory>  
@@ -217,8 +229,8 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 	</cffunction>  
 	
 	<cffunction name="getTreeData">
-		<cfargument name="ObjectId">
-		<cfargument name="topLevelVariable" required="No" default="objects">
+		<cfargument name="ObjectId" type="uuid" required="true">
+		<cfargument name="topLevelVariable" type="string" required="No" default="objects">
 		<cfargument name="dsn" type="string" required="No" default="#application.dsn#" hint="Database DSN">
 		
 		<cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
@@ -227,7 +239,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 			jsout = "";
 			stAllObjects = structNew();
 		</cfscript>
-						
+
 		<cfscript>
 			qDescendants =request.factory.oTree.getDescendants(dsn=arguments.dsn,objectid=arguments.objectid);
 		</cfscript>
@@ -259,7 +271,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 			sttmp.aObjectids = arrayNew(1);
 			sttmp.status = 'approved';
 			stObjects[qDescendants.objectid] = duplicate(sttmp);
-		</cfscript>		
+		</cfscript>
 		</cfloop>
 	
 		
@@ -299,6 +311,28 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 		</cfoutput>
 	
 	</cffunction>
+	
+	
+	<cffunction name="getCategoryId" returnType="string" access="public" output="false">
+		<cfargument name="categoryName" required="true" type="string" />
+		<cfargument name="parentid" required="true" type="uuid" />
+		<cfargument name="dsn" type="string" required="false" default="#application.dsn#" />
+		<cfargument name="dbowner" type="string" required="false" default="#application.dbowner#" />
 		
+		<cfset var qCheckCategoryName = "">
+		<cfset var qBranchExtents = "">
+
+		<cfquery datasource="#arguments.dsn#" name="qCheckCategoryName">
+			SELECT objectid
+			FROM #arguments.dbowner#nested_tree_objects
+			WHERE lower(objectname) = '#lcase(arguments.categoryName)#'
+			AND parentid = '#arguments.parentid#'
+			AND typeName = 'categories'
+		</cfquery>
+		
+		<cfreturn qCheckCategoryName.objectid>
+		
+	</cffunction>
+	
 	
 </cfcomponent>

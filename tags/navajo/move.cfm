@@ -1,15 +1,17 @@
 <cfsetting enablecfoutputonly="Yes">
+
+<cfprocessingDirective pageencoding="utf-8">
 <!--- 
 || LEGAL ||
 $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/navajo/move.cfm,v 1.28 2004/05/21 07:31:05 paul Exp $
+$Header: /cvs/farcry/farcry_core/tags/navajo/move.cfm,v 1.31 2004/10/28 11:02:05 paul Exp $
 $Author: paul $
-$Date: 2004/05/21 07:31:05 $
-$Name: milestone_2-2-1 $
-$Revision: 1.28 $
+$Date: 2004/10/28 11:02:05 $
+$Name: milestone_2-3-2 $
+$Revision: 1.31 $
 
 || DESCRIPTION || 
 
@@ -44,23 +46,11 @@ $out:$
 <cfset lExclude = "dmImage,dmFile">
 
 <cfif listContainsNoCase(lExclude,destObj.typename)>
-	<cfoutput><h3>File or Image objects may not have objects dragged beneath them </h3>
-	<div align="center"> <input type="button" value="Close" class="normalBttnStyle" onClick="window.close();" ></div>
+	<cfoutput><h3>#application.adminBundle[session.dmProfile.locale].cantDragObjectsBelowFileImage# </h3>
+	<div align="center"> <input type="button" value="#application.adminBundle[session.dmProfile.locale].close#" class="normalBttnStyle" onClick="window.close();" ></div>
 	</cfoutput>
 	<cfabort>
 </cfif>
-
-<!-- This may very well end up in dmHTML type -->
-<cffunction name="getHTMLParent" hint="gets the dmHTML parent for a file or image asset. Returns empty query if no parent found">
-	<cfargument name="objectid" required="true">
-	<cfset var q = ''>
-	<cfquery name="q" datasource="#application.dsn#">
-		SELECT * FROM #application.dbowner#dmHTML_aObjectIds
-		WHERE data = '#arguments.objectid#'
-	</cfquery>
-	<cfreturn q>
-</cffunction>
-
 
 <cfscript>
 	oAudit = createObject("component","#application.packagepath#.farcry.audit");
@@ -75,27 +65,7 @@ $out:$
 		destNavObjectID = qGetparent.parentID;
 		
 	}	
-	else if (listContainsNoCase("dmFile,dmImage",srcObj.typename))
-	{
-		trace(var=srcObj.typename,text='Determining parent type');
-		//first check to see if it sits under a nav object
-		oNav = createObject("component", application.types.dmNavigation.typePath);
-		qGetParent = oNav.getParent(objectid=srcObj.objectID);
-		//if we find nothing = search html objects for parents
-		if(NOT qGetParent.recordCount)
-			qGetParent = getHTMLParent(objectid=srcObj.objectID);
-		if(qGetParent.recordCount GT 1)	
-			throwerror("Multiple parents found");
-		if(qGetParent.recordCount LT 1)		
-			throwerror("No parents found");
-		srcParentObjectID = qGetParent.objectID;
-		destNavObjectID = destObj.objectId;
-		//now we need to find destination parent
-		qGetParent = oNav.getParent(objectid=destObj.objectID);
-		destParentObjectID = qGetParent.objectID;
-	}
-	else
-	{	
+	else{	
 		oNav = createObject("component", application.types.dmNavigation.typePath);
 		qGetParent = oNav.getParent(objectid=srcObj.objectID);
 		srcParentObjectID = qGetParent.objectID;
@@ -127,7 +97,7 @@ $out:$
 <cfif url.srcObjectId eq url.destObjectId OR ListFind( lAncestorIds, url.srcObjectId )>
 	<cfoutput>
 		<script>
-		parent.alert("Destination node cannot be a child of or same as the Source node!");
+		parent.alert("#application.adminBundle[session.dmProfile.locale].destinationNodeCantBeChild#");
 		window.close();
 		</script>
 	</cfoutput>
@@ -141,7 +111,7 @@ $out:$
  	<cftry> 
 	<!--- exclusive lock tree.moveBranch() to prevent corruption --->
 	
-	<cflock name="moveBranchNTM" type="EXCLUSIVE" timeout="3" throwontimeout="Yes">
+	<cflock scope="Application"  type="EXCLUSIVE" timeout="1" throwontimeout="Yes">
 		<cfscript>
 			if (application.config.plugins.fu)
 			{
@@ -177,15 +147,20 @@ $out:$
 	</cflock>
 		 <cfcatch>
 		 	<cfdump var="#cfcatch#">
-			<h2>moveBranch Lockout</h2>
-			<p>Another editor is currently modifying the hierarchy.  Please refresh the site overview tree and try again.</p>
+		 	<cfoutput>
+			<h2>#application.adminBundle[session.dmProfile.locale].moveBranchLockout#</h2>
+			<p>#application.adminBundle[session.dmProfile.locale].branchLockoutBlurb#</p>
+			<script>
+				top['frames']['treeFrame'].alert("#application.adminBundle[session.dmProfile.locale].branchLockoutBlurb#");
+				top['frames']['treeFrame'].enableDragAndDrop();
+			</script>
+			</cfoutput>
 			<cfabort>
 		</cfcatch>
 	</cftry> 
 	
 <cfelse>
 	<cfset key="AOBJECTIDS">
-	<cftrace var="#key#" text="Search key set to aObjectids">
 </cfif>
 
 <!--- remove srcnav from its parent --->
@@ -197,8 +172,8 @@ $out:$
 	</cfloop>
 
 	<cfscript>
+		srcObjParent.datetimecreated = createODBCDate("#datepart('yyyy',srcObjParent.datetimecreated)#-#datepart('m',srcObjParent.datetimecreated)#-#datepart('d',srcObjparent.datetimecreated)#");
 		srcObjParent.datetimelastupdated = createODBCDate(now());
-		structDelete(srcObjParent,"datetimecreated");
 		// update the parent object instance
 		oType = createobject("component", application.types[srcObjParent.typename].typePath);
 		oType.setData(stProperties=srcObjParent,auditNote="Child moved");	
@@ -206,7 +181,7 @@ $out:$
 </cfif>
 <!--- add src nav to dest nav --->
 <cfscript>
-	structDelete(destObj,"datetimecreated");
+	destObj.datetimecreated = createODBCDate("#datepart('yyyy',destObj.datetimecreated)#-#datepart('m',destObj.datetimecreated)#-#datepart('d',destObj.datetimecreated)#");
 	destObj.datetimelastupdated = createODBCDate(now());
 	if (NOT srcObj.typename IS "dmNavigation")
 		arrayAppend( destObj[key], srcObj.objectId);
@@ -231,8 +206,8 @@ $out:$
 	<script>
 		srcobjid='#URL.srcObjectID#';	
 		destNavObjectId ='#destObj.objectid#';	
-
 		top['frames']['treeFrame'].updateTree(src=srcobjid,dest=destNavObjectId,srcobj='#url.srcObjectid#');
+		top['frames']['treeFrame'].enableDragAndDrop();
 	</script>
 	
 </cfoutput>

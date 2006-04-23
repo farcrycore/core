@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/admin/bulkImageUpload.cfm,v 1.1.2.2 2004/09/14 17:24:51 tom Exp $
+$Header: /cvs/farcry/farcry_core/admin/admin/bulkImageUpload.cfm,v 1.5.2.1 2005/06/21 17:48:26 tom Exp $
 $Author: tom $
-$Date: 2004/09/14 17:24:51 $
-$Name: milestone_2-2-1 $
-$Revision: 1.1.2.2 $
+$Date: 2005/06/21 17:48:26 $
+$Name: milestone_2-3-2 $
+$Revision: 1.5.2.1 $
 
 || DESCRIPTION || 
 $Description: Uploads a zip file containing images, creates navigation to match directory structure $
@@ -24,13 +24,15 @@ $out:$
 
 <cfsetting enablecfoutputonly="yes">
 
+<cfprocessingDirective pageencoding="utf-8">
+
 <cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
 <cfimport taglib="/farcry/farcry_core/tags/farcry/" prefix="farcry">
 <cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
 <cfinclude template="/farcry/farcry_core/admin/includes/cfFunctionWrappers.cfm">
 <cfinclude template="/farcry/farcry_core/admin/includes/utilityFunctions.cfm">
 
-<admin:header>
+<admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 <!--- check permissions --->
 <cfscript>
 	iDeveloperPermission = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="developer");
@@ -44,21 +46,16 @@ $out:$
 		</style>
 		</cfoutput>
 		<cfif not len(trim(form.zipFile))>
-			<cfoutput><strong>Error:</strong> No Zip file specified</cfoutput>
+			<cfoutput>#application.adminBundle[session.dmProfile.locale].noZipSpecified#</cfoutput>
 			<cfabort>
 		</cfif>
-		<cfoutput><b>Uploading zip file...</b></cfoutput>
+		<cfoutput><b>#application.adminBundle[session.dmProfile.locale].uploadingZip#</b></cfoutput>
 		<cfflush>
-		<cffile action="upload" filefield="zipFile" destination="#application.defaultFilePath#" accept="application/x-zip-compressed,application/zip" nameconflict="#application.config.general.fileNameConflict#"> 
-		<cfoutput><span class="success">Done<br></span></cfoutput>
+		<cffile action="upload" filefield="zipFile" destination="#application.path.defaultFilePath#" accept="application/x-zip-compressed,application/zip" nameconflict="#application.config.general.fileNameConflict#"> 
+		<cfoutput><span class="success">#application.adminBundle[session.dmProfile.locale].Done#<br></span></cfoutput>
 		<cfflush>
 		<cfscript>
-			//Figure out slash type based on OS
-			slashtype = "\";
-			if(not findNoCase("windows",server.os.name)){
-				slashtype = "/";		
-			}
-			zipFilePath = application.defaultFilePath & slashtype & file.serverFile;
+			zipFilePath = application.defaultFilePath & "/" & file.serverFile;
 			//list of image mime types that can be uploaded
 			imageAcceptList = application.config.image.imagetype;
 			zipFile = createObject("java", "java.util.zip.ZipFile");
@@ -76,50 +73,58 @@ $out:$
 			*/ 
 			qStartPointDescendants = createObject("component", "#application.packagepath#.farcry.tree").getDescendants(objectid=qStartingPointData.objectId);
 			//Loop through all entries in the zip file
-			while(entries.hasMoreElements()){
+			while(entries.hasMoreElements()) {
 				entry = entries.nextElement();
-				//We only want entries that contain a filename
+				navigationParentId = qStartingPointData.objectId;
+				//create the directories
+				if(not structKeyExists(form,"bCreateDirectories") and listLen(entry.getName(), "/")){
+					//Loop over all directories in the path and make sure  they exist
+					//If they don't exist create them.
+					for(i=1;i lte listLen(entry.getName(), "/");i=i+1){
+						folderName = listGetAt(entry, i, "/");
+						//If it's a filename then don't make a folder out of it
+						if(not REFind("\....",folderName)){
+							//writeOutput(entry.getName() & "||" & navigationParentId & "<br>");
+							sql = "select objectId from qStartPointDescendants where objectName = '#folderName#' and nLevel = " & iBaseLevel+i & " and parentId = '#navigationParentId#'";
+							q = queryofquery(sql);
+							if(not q.recordcount){
+								//Setup the struct of properties for the new dmNavigation node
+								writeOutput("<em>Creating dmNavigation Node (#folderName#)</em><br>");
+								flush();
+								stProps=structNew();
+								stProps.objectid = createUUID();
+								stProps.label = folderName;
+								stProps.title = folderName;
+								stProps.lastupdatedby = session.dmSec.authentication.userlogin;
+								stProps.datetimelastupdated = Now();
+								stProps.createdby = session.dmSec.authentication.userlogin;
+								stProps.datetimecreated = Now();
+								//create the new dmNavigation object
+								oNav = createobject("component", application.types.dmNavigation.typePath);
+								stNewObj = oNav.createData(stProperties=stProps);
+								//Add the new object into the tree
+								createObject("component", "#application.packagepath#.farcry.tree").setYoungest(parentID=navigationParentID,objectID=stProps.objectID,objectName=stProps.label,typeName='dmNavigation');
+								//set the navigationParentId for the next folder in the list
+								navigationParentId = stNewObj.objectid;
+								//Now update the query with this new descendant info
+								qStartPointDescendants = createObject("component", "#application.packagepath#.farcry.tree").getDescendants(objectid=qStartingPointData.objectId);
+							}
+							else
+								navigationParentId = q.objectId;
+						}
+					}
+				}
+				
+				//Is it an image? If so evaluate it for upload
 				if (not entry.isDirectory()){
 					sFileName = getFileFromPath(entry.getName());
-					sFilePath = application.defaultimagepath;
-					navigationParentId = qStartingPointData.objectId;
-					//do we have a mime type match?
+					sFilePath = application.defaultfilepath;
 					oFile = createObject("component", "#application.packagepath#.farcry.file");
+					//do we have a mime type match?
+					sFileMimeType = oFile.getMimeType(sFileName);
 					//If the MIME Type of the image matches any list item in the image accept list
-					if(listFindNoCase(imageAcceptList, oFile.getMimeType(sFileName))){	
-						if(not structKeyExists(form,"bCreateDirectories") and listLen(entry.getName(), "/")){
-							for(i=1;i lt listLen(entry.getName(), "/");i=i+1){
-								folderName = listGetAt(entry, i, "/");
-									
-								sql = "select objectId from qStartPointDescendants where objectName = '#folderName#' and nLevel = " & iBaseLevel+i & " and parentId = '#navigationParentId#'";
-								q = queryofquery(sql);
-								if(not q.recordcount){
-									//Setup the struct of properties for the new dmNavigation node
-									writeOutput("<em>Creating dmNavigation Node (#folderName#)</em><br>");
-									flush();
-									stProps=structNew();
-									stProps.objectid = createUUID();
-									stProps.label = folderName;
-									stProps.title = folderName;
-									stProps.lastupdatedby = session.dmSec.authentication.userlogin;
-									stProps.datetimelastupdated = Now();
-									stProps.createdby = session.dmSec.authentication.userlogin;
-									stProps.datetimecreated = Now();
-									//create the new dmNavigation object
-									oNav = createobject("component", application.types.dmNavigation.typePath);
-									stNewObj = oNav.createData(stProperties=stProps);
-									//Add the new object into the tree
-									createObject("component", "#application.packagepath#.farcry.tree").setYoungest(parentID=navigationParentID,objectID=stProps.objectID,objectName=stProps.label,typeName='dmNavigation');
-									//set the navigationParentId for the next folder in the list
-									navigationParentId = stNewObj.objectid;
-									//Now update the query with this new descendant info
-									qStartPointDescendants = createObject("component", "#application.packagepath#.farcry.tree").getDescendants(objectid=qStartingPointData.objectId);
-								}
-								else
-									navigationParentId = q.objectId;
-								
-							}
-						}
+					//if accept list not specified in config, accept everything
+					if(listFindNoCase(imageAcceptList, sFileMimeType) OR NOT Len(Trim(imageAcceptList))){						//placeholder for the original filename
 						//placeholder for the original filename
 						sDefaultFileName = sFileName;
 						//check to see if the image already exists if it does then make the name unique
@@ -128,7 +133,7 @@ $out:$
 							iLoopNum = incrementValue(iLoopNum);
 							sFileName = insert(iLoopNum,sDefaultFileName,len(listFirst(sDefaultFileName,".")));
 						}
-						sAbsolutePath = sFilePath & slashtype & sFileName;
+						sAbsolutePath = sFilePath & "/" & sFileName;
 						//Write the image file to disk
 						filOutStream = createObject("java","java.io.FileOutputStream");					
 						filOutStream.init(sAbsolutePath);
@@ -162,7 +167,7 @@ $out:$
 						stImageProps.alt = "Image " & sFileName;
 						//If imageJ is installed use it to get the Height and Width of the Original Image
 						if(structKeyExists(form,"imageJInstalled")and form.imageJInstalled){
-							imagePath = stImageProps.originalImagePath & slashtype & stImageProps.imageFile;
+							imagePath = stImageProps.originalImagePath & "\" & stImageProps.imageFile;
 							oFarcryImage = createObject("component","#application.packagepath#.farcry.image");
 							oFarcryImage.open(imagePath);
 							stImageDetails = oFarcryImage.getDetails();
@@ -214,16 +219,17 @@ $out:$
 						oParentNav.setData(stProperties=stParent);
 					}
 					else
-						writeOutput("<span class=""fail"">Skipping &quot;#entry.getName()#&quot;. Not an acceptable image MIME type</span><br>");
+						writeOutput("<span class=""fail"">Skipping &quot;#entry.getName()#&quot;. Not an acceptable image MIME type (#sFileMimeType#)</span><br>");
 						flush();
 					
 				}
 			}
 			zipFile.close();
 		</cfscript>
+		
 		<!--- Cleanup the uploaded zip file --->
 		<cffile action="delete" file="#zipFilePath#">
-		<cfoutput><span class="success"><strong>Done</strong></span><br></cfoutput>
+		<cfoutput><span class="success"><strong>#application.adminBundle[session.dmProfile.locale].Done#</strong></span><br></cfoutput>
 
 	<cfelse>
 		<!--- Get all of the nodes under the imageRoot --->
@@ -234,16 +240,16 @@ $out:$
 		
 		<!--- Show the form --->
 		<cfoutput>
-		<div class="formTitle">IMAGE BULK UPLOAD</div>
+		<div class="formTitle">#application.adminBundle[session.dmProfile.locale].bulkImageUpload#</div>
 		
 		<p>
 		<form action="" method="POST" name="imageForm" enctype="multipart/form-data">
 		<table border="0" cellpadding="3" cellspacing="0">
 			<tr>
-				<td>Recreate image structure within:</td>
+				<td>#application.adminBundle[session.dmProfile.locale].recreateImageStructure#</td>
 				<td>
 					<select name="startPoint">
-					<option value="#application.navid.imageroot#">Image Root</option>
+					<option value="#application.navid.imageroot#">#application.adminBundle[session.dmProfile.locale].imageRoot#</option>
 					<cfloop query="qNodes">
 					<option value="#qNodes.objectId#" <cfif qNodes.objectId eq application.navid.imageroot>selected</cfif>>#RepeatString("&nbsp;&nbsp;|", qNodes.nlevel)#- #qNodes.objectName#</option>
 					</cfloop>
@@ -251,14 +257,14 @@ $out:$
 				</td>
 			</tr>
 			<tr>
-				<td>Zip File(.zip):</td>
+				<td>#application.adminBundle[session.dmProfile.locale].zipFile#</td>
 				<td>
 					<input type="File" size=25 accept="application/x-zip-compressed" name="zipFile">
 				</td>
 			</tr>
 			<tr>
 				<td colspan=2>
-					<input type="checkbox" name="bCreateDirectories" value=0> Don't create dmNavigation nodes
+					<input type="checkbox" name="bCreateDirectories" value=0> #application.adminBundle[session.dmProfile.locale].noCreateNavigationNodes#
 				</td>
 			</tr>
 			<tr>
@@ -276,7 +282,7 @@ $out:$
 						//writeOutput(javaVersion & "<br>");
 						}
 						catch(Any e){
-							javaVersion = "unknown";			
+							javaVersion = "#application.adminBundle[session.dmProfile.locale].unknown#";			
 						}
 					</cfscript>
 					<cfif not find(javaVersion,"1.4.2")>
@@ -285,22 +291,19 @@ $out:$
 								oTest = createObject("java","ij.io.Opener");
 							</cfscript>
 							<input type="checkbox" name="bCreateThumbnails" value=0> 
-							Create thumbnails for images. Fix the
+							#application.adminBundle[session.dmProfile.locale].createThumbnails#
 							<select name="resizeType" size=1>
-								<option value="auto">Auto</option>
-								<option value="width">Width</option>
-								<option value="height">Height</option>
+								<option value="auto">#application.adminBundle[session.dmProfile.locale].auto#</option>
+								<option value="width">#application.adminBundle[session.dmProfile.locale].fixWidth#</option>
+								<option value="height">#application.adminBundle[session.dmProfile.locale].fixHeight#</option>
 							</select>
 							at
 							<input type="text" size="3" maxlength="3" name="resizeValue">px
 							<input type="hidden" name="imageJInstalled" value=1>
 							<cfcatch type="Object">
 							<span style="color:##FF0000;">
-							<strong>PSST! </strong> If you download and install <a href="http://rsb.info.nih.gov/ij/download/zips/ij129.zip">imageJ</a><br>
-							this utility can thumbnail your images as well as<br>
-							calculate width and height. Download the<br>
-							<a href="http://rsb.info.nih.gov/ij/download/zips/ij129.zip">ImageJ .zip file</a> and extract ij.jar to your<br>
-							JRE's &quot;\lib&quot; directory and restart.</span>
+							#application.adminBundle[session.dmProfile.locale].downloadIJBlurb#
+							</span>
 							</cfcatch>
 						</cftry>
 					<cfelse>
@@ -309,8 +312,7 @@ $out:$
 								oTest = createObject("java","ij.io.Opener");
 							</cfscript>
 							<span style="color:##FF0000;">
-							<strong>! Warning:</strong> You have ImageJ installed with JRE 1.4.2. There is a known bug in JRE 1.4.2 that causes ImageJ
-							to crash. Image thumbnailing will be disabled in this utility to protect your system.
+							#application.adminBundle[session.dmProfile.locale].jreWarningBlurb#
 							</span>
 							<input type="hidden" name="imageJInstalled" value=0>
 							<cfcatch type="Object"></cfcatch>
@@ -321,7 +323,7 @@ $out:$
 			<tr>
 				<td>&nbsp;</td>
 				<td>
-					<input type="submit" value="Upload Images" name="submit" />
+					<input type="submit" value="#application.adminBundle[session.dmProfile.locale].uploadImages#" name="submit" />
 				</td>
 			</tr>
 		</table>
@@ -331,27 +333,15 @@ $out:$
 		//bring focus to title
 		document.imageForm.zipFile.focus();
 		objForm = new qForm("imageForm");
-		objForm.zipFile.validateNotNull("You must specify a Zip file");
+		objForm.zipFile.validateNotNull("#application.adminBundle[session.dmProfile.locale].missingZipFile#");
 			//-->
 		</SCRIPT>
 		</form>
 		<p>
-		    <strong>Instructions:</strong>
+		    <strong>#application.adminBundle[session.dmProfile.locale].instructions#</strong>
 		</p>
-		<p>
-		    This utility will quickly upload multiple images into Farcry
-		</p>
-		<p>
-		    You will need to supply a .zip file that contains the images to be uploaded.
-			Images and Directories contained in the .zip file will be recreated within
-			Farcry under the selected node.
-		</p>
-		<p>
-			<em>In addition, if you have ImageJ installed with <strong>JRE 1.41</strong> or lower you will have
-			the option to create a thumbnail for each image. Also, the height and width
-			properties for each image will be calculated.</em>
-		</p>
-		<p><em>Your current JRE version: #javaVersion#</em></p>
+		#application.adminBundle[session.dmProfile.locale].uploadImagesBlurb#
+		<p><em>#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].currentJRE,"#javaVersion#")#</em></p>
 		</cfoutput>
 	</cfif>
 <cfelse>

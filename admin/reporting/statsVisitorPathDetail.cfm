@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/reporting/statsVisitorPathDetail.cfm,v 1.4 2003/12/10 23:41:33 brendan Exp $
+$Header: /cvs/farcry/farcry_core/admin/reporting/statsVisitorPathDetail.cfm,v 1.5 2004/07/15 01:51:48 brendan Exp $
 $Author: brendan $
-$Date: 2003/12/10 23:41:33 $
-$Name: milestone_2-2-1 $
-$Revision: 1.4 $
+$Date: 2004/07/15 01:51:48 $
+$Name: milestone_2-3-2 $
+$Revision: 1.5 $
 
 || DESCRIPTION || 
 $Description: Displays path taken by visitor during session$
@@ -24,6 +24,8 @@ $out:$
 
 <cfsetting enablecfoutputonly="yes">
 
+<cfprocessingDirective pageencoding="utf-8">
+
 <!--- check permissions --->
 <cfscript>
 	iStatsTab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="ReportingStatsTab");
@@ -31,7 +33,7 @@ $out:$
 
 <!--- set up page header --->
 <cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
-<admin:header>
+<admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 <cfif iStatsTab eq 1>
 	<cfimport taglib="/farcry/farcry_core/tags/webskin/" prefix="skin">
@@ -43,7 +45,7 @@ $out:$
 	</cfscript>
 	
 	<cfoutput>
-	<br><div class="formtitle">Visitor Path</div>
+	<br><div class="formtitle">#application.adminBundle[session.dmProfile.locale].visitorPath#</div>
 	</cfoutput>
 	
 	<cfloop query="qVisitorPath">

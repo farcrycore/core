@@ -1,3 +1,5 @@
+<cfprocessingDirective pageencoding="utf-8">
+
 <cfimport taglib="/farcry/fourq/tags/" prefix="q4">
 
 
@@ -66,6 +68,50 @@
 	<cfreturn q>
 </cffunction>
 
+<cffunction name="queryofquery2" hint="a wrapper for cfquery of queries for use in cfscript - cmfx 7 compatible">
+	<cfargument name="selectclause" type="string" required="true">
+	<cfargument name="tablename"  type="query" required="true">
+	<cfargument name="whereclause" type="string" required="false">
+	<cfargument name="orderbyclause" type="string" required="false">	
+	<cfargument name="maxrows" type="string" required="false">
+	
+	<cfset var q = ''>
+	<cfset var sql = "">
+	<cfsavecontent variable="sql">
+		<cfoutput>
+		#arguments.selectclause#
+		FROM arguments.tablename
+		<cfif isDefined("arguments.whereclause")>
+			#arguments.whereclause#
+		</cfif>
+		<cfif isDefined("arguments.orderbyclause")>
+			#arguments.orderbyclause#
+		</cfif>
+		</cfoutput>
+	</cfsavecontent>
+		
+	
+	<cftry>
+		<cfif isDefined("arguments.maxrows")>
+		 	<cfquery name="q" dbtype="query" maxrows="#arguments.maxrows#">
+			#preserveSingleQuotes(sql)#
+			</cfquery>
+		<cfelse>		
+			<cfquery name="q" dbtype="query" >
+			#preserveSingleQuotes(sql)#
+			</cfquery>
+		</cfif>
+		<cfcatch>
+			<cfdump var="#cfcatch#">
+		</cfcatch>
+	</cftry>
+		
+	<cfreturn q>
+</cffunction>
+
+
+
+
 
 <cffunction name="dump" hint="wrapper for cfdump">
 	<cfargument name="object" required="true">
@@ -100,9 +146,8 @@
 
 <cffunction name="trace">
 	<cfargument name="var">
-	<cfargument name="text" required="false" default=""> 
 	
-	<cftrace inline="no" var="#arguments.var#" text="#arguments.text#">
+	<cftrace inline="no" var="#arguments.var#">
 </cffunction>
 
 

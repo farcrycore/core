@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_types/delete.cfm,v 1.9 2004/06/24 01:30:11 paul Exp $
+$Header: /cvs/farcry/farcry_core/packages/types/_types/delete.cfm,v 1.12 2004/10/05 03:44:38 paul Exp $
 $Author: paul $
-$Date: 2004/06/24 01:30:11 $
-$Name: milestone_2-2-1 $
-$Revision: 1.9 $
+$Date: 2004/10/05 03:44:38 $
+$Name: milestone_2-3-2 $
+$Revision: 1.12 $
 
 || DESCRIPTION || 
 $Description: Generic delete method. Checks for associated objects and deletes them, deletes actual object and deletes object from any verity collection if needed$
@@ -42,8 +42,11 @@ $out:$
 			objType = findType(stObj.aObjectIds[i]);
 			
 			// delete associated object
-			oType = createObject("component", application.types[objType].typePath);
-			oType.delete(stObj.aObjectIds[i]);
+			if(structKeyExists(application.types,objtype))
+			{
+				oType = createObject("component", application.types[objType].typePath);
+				oType.delete(stObj.aObjectIds[i]);
+			}	
 			
 		}
 	}
@@ -66,7 +69,7 @@ $out:$
 		collectionName = application.applicationname & "_" & stObj.typename;
 		application.factory.oVerity.deleteFromCollection(collection=collectionName,objectid=stObj.objectid);
 	}
-
+	
 	// if this objecttype is used in tree, then it may have been used as a related link in dmHTML_aRelatedIDs 
 	if (structKeyExists(application.types[stObj.typename],"bUseInTree"))
 	{
@@ -77,10 +80,4 @@ $out:$
 		}
 	
 	}
-		
 	</cfscript>
-	
-	
-		
-	
-	

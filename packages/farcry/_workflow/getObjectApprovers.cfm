@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_workflow/getObjectApprovers.cfm,v 1.16 2003/11/05 04:46:09 tom Exp $
-$Author: tom $
-$Date: 2003/11/05 04:46:09 $
-$Name: milestone_2-2-1 $
-$Revision: 1.16 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_workflow/getObjectApprovers.cfm,v 1.16.6.1 2005/05/24 04:49:25 gstewart Exp $
+$Author: gstewart $
+$Date: 2005/05/24 04:49:25 $
+$Name: milestone_2-3-2 $
+$Revision: 1.16.6.1 $
 
 || DESCRIPTION || 
 $DESCRIPTION: Gets a list of approvers for a navigatio node$
@@ -44,13 +44,16 @@ $out:$
 	get="parents"
 	r_lObjectIds="ParentID"
 	bInclusive="1">
-	
+
+<cfscript>
+oAuthorisation = request.dmsec.oAuthorisation;
+stObjectPermissions = oAuthorisation.collateObjectPermissions(objectid=stObj.Objectid,  typename=stObj.typename);
+</cfscript>
 <!--- if parent returned --->
 <cfif len(ParentID)>
 	
 	<!--- Get policy groups for that object --->
 	<cfscript>
-		oAuthorisation = request.dmsec.oAuthorisation;
 		stObjectPermissions = oAuthorisation.collateObjectPermissions(objectid=ParentID);
 	</cfscript>
 	

@@ -5,11 +5,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmNews/edit.cfm,v 1.19 2004/06/17 04:48:41 geoff Exp $
-$Author: geoff $
-$Date: 2004/06/17 04:48:41 $
-$Name: milestone_2-2-1 $
-$Revision: 1.19 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmNews/edit.cfm,v 1.24 2004/10/04 03:53:00 paul Exp $
+$Author: paul $
+$Date: 2004/10/04 03:53:00 $
+$Name: milestone_2-3-2 $
+$Revision: 1.24 $
 
 || DESCRIPTION || 
 $Description: dmNews Edit Handler $
@@ -59,7 +59,7 @@ $in: url.killplp (optional)$
 		{
 			parent.document.getElementById(em.childNodes[i].id).style.display = 'none';	
 		}
-		parent.document.getElementById('DynamicFileTab').style.display ='inline';
+		parent.document.getElementById('DynamicFileTab').style.display ='inline';				parent.document.getElementById('DynamicSiteTab').style.display ='inline';
 		parent.document.getElementById('DynamicImageTab').style.display ='inline';
 	</script>
 
@@ -71,7 +71,7 @@ $in: url.killplp (optional)$
 		{
 			parent.document.getElementById(em.childNodes[i].id).style.display = 'inline';	
 		}
-		parent.document.getElementById('DynamicFileTab').style.display ='none';
+		parent.document.getElementById('DynamicFileTab').style.display ='none';		parent.document.getElementById('DynamicSiteTab').style.display ='none';		
 		parent.document.getElementById('DynamicImageTab').style.display ='none';
 	</script>
 

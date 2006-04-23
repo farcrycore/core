@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/install/_installForm.cfm,v 1.33 2004/05/20 04:41:25 brendan Exp $
+$Header: /cvs/farcry/farcry_core/admin/install/_installForm.cfm,v 1.34 2004/12/20 03:29:57 brendan Exp $
 $Author: brendan $
-$Date: 2004/05/20 04:41:25 $
-$Name: milestone_2-2-1 $
-$Revision: 1.33 $
+$Date: 2004/12/20 03:29:57 $
+$Name: milestone_2-3-2 $
+$Revision: 1.34 $
 
 || DESCRIPTION ||
 $Description: Installation form for FarCry$
@@ -68,6 +68,10 @@ function verifyForm() {
         alert('You cannot have a - in your site name');
         formObj.siteName.focus();
         return false;	
+    } else if ('0123456789'.indexOf(siteName.charAt(0),0)!=-1) {
+        alert("Your site name can't begin with a number");
+        formObj.siteName.focus();
+        return false;
     } else
         return true;
 }

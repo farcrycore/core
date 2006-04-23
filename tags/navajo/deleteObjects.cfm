@@ -1,4 +1,5 @@
 <cfsetting enablecfoutputonly="yes">
+<cfprocessingDirective pageencoding="utf-8">
 <cfimport taglib="/farcry/fourq/tags" prefix="q4">
 <!--- deleteObjects.cfm
 
@@ -15,7 +16,7 @@ Intended for use with daemon dynamic data.
 
 
 <cfif len(attributes.lObjectIDs) eq 0>
-	<cfset "caller.#attributes.rMsg#" = "No objects were selected for deletion">
+	<cfset "caller.#attributes.rMsg#" = "#application.adminBundle[session.dmProfile.locale].noObjSelectedForDeletion#">
 	<cfexit>
 </cfif>
 
@@ -27,19 +28,19 @@ Intended for use with daemon dynamic data.
 	<cfswitch expression="#attributes.typename#">
 		<cfcase value="dmFile">
 			<cftry>
-				<cffile action="delete" file="#application.defaultFilePath#/#stObj.filename#">
+				<cffile action="delete" file="#application.path.defaultFilePath#/#stObj.filename#">
 				<cfcatch type="any"></cfcatch>
 			</cftry>
 		</cfcase>
 		<cfcase value="dmImage">
 			<cftry>
-				<cffile action="delete" file="#application.defaultImagePath#/#stObj.filename#">
+				<cffile action="delete" file="#application.path.defaultImagePath#/#stObj.filename#">
 				<cfcatch type="any"></cfcatch>
 			</cftry>
 		</cfcase>
 	</cfswitch>
 	<q4:contentobjectdelete objectID="#i#">
-	<cfset "caller.#attributes.rMsg#" = "#listLen(attributes.lObjectIds)# object(s) deleted"> 
+	<cfset "caller.#attributes.rMsg#" = "#application.rB.formatRBString(application.adminBundle[session.dmProfile.locale].objectsDeleted,listLen(attributes.lObjectIds))#"> 
 </cfloop>
 
 

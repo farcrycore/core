@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/navajo/floatMenu.cfm,v 1.15 2003/05/29 03:42:13 paul Exp $
-$Author: paul $
-$Date: 2003/05/29 03:42:13 $
-$Name: b201 $
-$Revision: 1.15 $
+$Header: /cvs/farcry/farcry_core/tags/navajo/floatMenu.cfm,v 1.17 2004/07/15 02:03:00 brendan Exp $
+$Author: brendan $
+$Date: 2004/07/15 02:03:00 $
+$Name: milestone_2-3-2 $
+$Revision: 1.17 $
 
 || DESCRIPTION || 
 $Description: FarCry DHTML Float Menu$
@@ -24,6 +24,8 @@ $out:$
 
 <cfsetting enablecfoutputonly="Yes">
 
+<cfprocessingDirective pageencoding="utf-8">
+
 <cfimport taglib="/farcry/farcry_core/tags/farcry/" prefix="farcry">
 
 <!--- Design Mode --->
@@ -33,10 +35,10 @@ $out:$
 <!--- check current design mode state --->
 <cfif isDefined("request.mode.design") and (request.mode.design eq "1")>
 	<cfset aItems[arrayLen(aItems)].href = "#application.url.conjurer#?objectID=#url.ObjectID#&designmode=0">
-	<cfset aItems[arrayLen(aItems)].text = "Hide design">
+	<cfset aItems[arrayLen(aItems)].text = "#application.adminBundle[session.dmProfile.locale].hidedesign#">
 <cfelse>
 	<cfset aItems[arrayLen(aItems)].href = "#application.url.conjurer#?objectID=#url.ObjectID#&designmode=1">
-	<cfset aItems[arrayLen(aItems)].text = "Show design">
+	<cfset aItems[arrayLen(aItems)].text = "#application.adminBundle[session.dmProfile.locale].showdesign#">
 </cfif>
 
 <!--- Show latest mode --->
@@ -45,10 +47,10 @@ $out:$
 <!--- check current cache state --->
 <cfif isDefined("request.mode.flushcache") AND request.mode.flushcache eq 0>
 	<cfset aItems[arrayLen(aItems)].href = "#application.url.conjurer#?objectID=#url.ObjectID#&flushcache=1">
-	<cfset aItems[arrayLen(aItems)].text = "Show latest">
+	<cfset aItems[arrayLen(aItems)].text = "#application.adminBundle[session.dmProfile.locale].showlatest#">
 <cfelse>
 	<cfset aItems[arrayLen(aItems)].href = "#application.url.conjurer#?objectID=#url.ObjectID#&flushcache=0">
-	<cfset aItems[arrayLen(aItems)].text = "Show cached">
+	<cfset aItems[arrayLen(aItems)].text = "#application.adminBundle[session.dmProfile.locale].showcached#">
 </cfif>
 
 <!--- Show Draft mode --->
@@ -57,27 +59,27 @@ $out:$
 <!--- check current state of draft mode --->
 <cfif isDefined("request.mode.showdraft") AND request.mode.showdraft eq 0>
 	<cfset aItems[arrayLen(aItems)].href = "#application.url.conjurer#?objectID=#url.ObjectID#&flushcache=1&showdraft=1">
-	<cfset aItems[arrayLen(aItems)].text = "Show draft">
+	<cfset aItems[arrayLen(aItems)].text = "#application.adminBundle[session.dmProfile.locale].showDraft#">
 <cfelse>
 	<cfset aItems[arrayLen(aItems)].href = "#application.url.conjurer#?objectID=#url.ObjectID#&flushcache=0&showdraft=0">
-	<cfset aItems[arrayLen(aItems)].text = "Hide draft">
+	<cfset aItems[arrayLen(aItems)].text = "#application.adminBundle[session.dmProfile.locale].hideDraft#">
 </cfif>
 
 <cfset aItems[arrayLen(aItems)+1] = structNew()>
-<cfset aItems[arrayLen(aItems)].text = "Admin Page">
+<cfset aItems[arrayLen(aItems)].text = "#application.adminBundle[session.dmProfile.locale].adminPage#">
 <cfset aItems[arrayLen(aItems)].href = "#application.url.farcry#/index.cfm">
 <cfset aItems[arrayLen(aItems)].icon = "admin.gif">
 <cfset aItems[arrayLen(aItems)].target = "_blank">
 
 <cfset aItems[arrayLen(aItems)+1] = structNew()>
-<cfset aItems[arrayLen(aItems)].text = "Edit Page">
+<cfset aItems[arrayLen(aItems)].text = "#application.adminBundle[session.dmProfile.locale].editPage#">
 <cfset aItems[arrayLen(aItems)].href = "#application.url.farcry#/index.cfm?section=site&rootobjectid=#request.navid#">
 <cfset aItems[arrayLen(aItems)].icon = "edit.gif">
 <cfset aItems[arrayLen(aItems)].target = "_blank">
 
 
 <cfset aItems[arrayLen(aItems)+1] = structNew()>
-<cfset aItems[arrayLen(aItems)].text = "Logout">
+<cfset aItems[arrayLen(aItems)].text = "#application.adminBundle[session.dmProfile.locale].logout#">
 <cfset aItems[arrayLen(aItems)].href = "#application.url.conjurer#?objectID=#url.ObjectID#&logout=1">
 <cfset aItems[arrayLen(aItems)].icon = "logout.gif">
 
@@ -87,13 +89,18 @@ $out:$
 	if (isDeveloper EQ 1)
 	{
 		 aItems[arrayLen(aItems)+1] = structNew();
-		 aItems[arrayLen(aItems)].text = "Refresh App Scope";
+		 aItems[arrayLen(aItems)].text = "#application.adminBundle[session.dmProfile.locale].refreshAppScope#";
 		 aItems[arrayLen(aItems)].href = "#application.url.conjurer#?objectID=#url.ObjectID#&updateapp=1";
 	}	 
-
-		
 </cfscript>
 
+<!--- This include allows advance developers to manipulate the aItems array before rendering the floater menu. --->
+<cftry>
+	<cfinclude template="/farcry/#application.applicationname#/system/floatMenu/_customItems.cfm">
+	<cfcatch>
+		<!--- do nothing --->
+	</cfcatch>
+</cftry>
 
 <!--- show menu --->
 <farcry:floater imagedir="#application.url.farcry#/images/floater/" aItems="#aItems#" prefix="dmfloat" useContextMenu="true">

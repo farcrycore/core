@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmNews/plpEdit/metadata.cfm,v 1.7.2.1 2004/10/15 00:02:22 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmNews/plpEdit/metadata.cfm,v 1.9 2004/07/16 05:52:27 brendan Exp $
 $Author: brendan $
-$Date: 2004/10/15 00:02:22 $
-$Name: milestone_2-2-1 $
-$Revision: 1.7.2.1 $
+$Date: 2004/07/16 05:52:27 $
+$Name: milestone_2-3-2 $
+$Revision: 1.9 $
 
 || DESCRIPTION || 
 $Description: dmNews Edit PLP - Categorisation Step $
@@ -17,6 +17,8 @@ $TODO: Clean-up whitespace management & formatting 20030503 GB$
 || DEVELOPER ||
 $Developer: Geoff Bowers (modius@daemon.com.au) $
 --->
+<cfprocessingDirective pageencoding="utf-8">
+
 <cfimport taglib="/farcry/farcry_core/tags/farcry" prefix="tags">
 
 <cfif isDefined("form.bSubmitted")>
@@ -41,7 +43,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 
 
 <cfoutput><div class="FormSubTitle">#output.label#</div>
-<div class="FormTitle">Categories</div>
+<div class="FormTitle">#application.adminBundle[session.dmProfile.locale].categories#</div>
 
 <div class="FormTableClear">
 <form action="#cgi.script_name#?#cgi.query_string#" method="post" name="editform">
@@ -67,5 +69,3 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 <cfelse>	
 	<tags:plpUpdateOutput>
 </cfif>
-
-

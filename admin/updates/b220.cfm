@@ -7,7 +7,6 @@ Updates dmFile objects with a default documentDate value<br/>
 Updates file config with archiveFiles attribute<br/>
 Deploys new htmlArea config<br/>
 Deploys new editOnPro v4.xx config<br/>
-Converts existing Handpicked Rule instances<br/>
 --->
 
 <html>
@@ -20,9 +19,7 @@ Converts existing Handpicked Rule instances<br/>
 <body style="margin-left:20px;margin-top:20px;">
 
 <cfif isdefined("form.submit")>
-	<cfinclude template="/farcry/farcry_core/admin/includes/cfFunctionWrappers.cfm">
-	<cfinclude template="/farcry/farcry_core/admin/includes/utilityFunctions.cfm">
-
+	
 	<!--- Add new 'fileSize' column to dmFile --->
 	<cfoutput><p><span class="frameMenuBullet">&raquo;</span>  Add new 'fileSize' column to dmFile..</cfoutput><cfflush>
 	<cftry>
@@ -159,6 +156,12 @@ Converts existing Handpicked Rule instances<br/>
 				documentDate datetime NULL 
 			</cfquery>
 		</cfcase>
+		<cfcase value="postgresql">
+			<cfquery name="update" datasource="#application.dsn#">
+				ALTER TABLE #application.dbowner#dmFile ADD
+				documentDate timestamp NULL 
+			</cfquery>
+		</cfcase>
 		<cfdefaultcase>
 			<cfquery name="update" datasource="#application.dsn#">
 				ALTER TABLE #application.dbowner#dmFile ADD
@@ -271,34 +274,6 @@ Converts existing Handpicked Rule instances<br/>
 		<cfoutput><span class="frameMenuBullet">&raquo;</span> Application scope updated successfully.<p></p></cfoutput><cfflush>
 	</cfif>
 	
-	<cfoutput><p><span class="frameMenuBullet">&raquo;</span> Converting Handpicked Rule instances...</cfoutput><cfflush>
-	
-	<cfscript>
-		sql = "select objectid,objectWDDX from #application.dbowner#ruleHandpicked";
-		qRules = query(sql);
-		writeOutput("Updating #qRules.recordcount# Handpicked Rules");
-		flush();
-		oHandpickedRule = createObject("component","#application.packagepath#.rules.ruleHandpicked");
-		for(i=1;i lte qRules.recordcount;i=i+1){
-			aObjectWDDX = oHandpickedRule.wddx2cfml(qRules.objectWDDX[i]);
-			//dump(aObjectWDDX);
-			//dump(qRules.objectid[i]);
-			for(j=1;j lte arrayLen(aObjectWDDX);j=j+1){
-				if(listlen(aObjectWDDX[j].typename,'.') gt 1){
-					aObjectWDDX[j].typename = listlast(aObjectWDDX[j].typename,'.');	
-				}
-			}	
-			//dump(aObjectWDDX);
-			stProperties = structNew();
-			stProperties.objectId = qRules.objectid[i];
-			stProperties.objectWDDX = oHandpickedRule.cfml2wddx(aObjectWDDX);
-			oHandpickedRule.setData(stProperties);
-			writeOutput(".");
-			flush();
-		}
-	</cfscript>
-			
-	<cfoutput> done</p></cfoutput><cfflush>
 
 <cfelse>
 	<cfoutput>
@@ -310,7 +285,6 @@ Converts existing Handpicked Rule instances<br/>
 		<li type="square">Adds new 'alias' column to categories</li>		
 		<li type="square">Updates file config with archiveFiles attribute</li>
 		<li type="square">Deploys new htmlArea config</li>
-		<li type="square">Converts existing Handpicked Rule instances</li>
 	</ul>
 	</p>
 	<form action="" method="post">

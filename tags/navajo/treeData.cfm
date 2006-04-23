@@ -1,3 +1,4 @@
+<cfprocessingDirective pageencoding="utf-8">
 <cfimport taglib="/farcry/fourq/tags" prefix="q4">
 <cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
 <cfparam name="attributes.nodetype" default="dmNavigation"> 
@@ -86,11 +87,11 @@ Daemon Pty Limited 1995-2001
 http://www.daemon.com.au/
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/navajo/treeData.cfm,v 1.16 2004/05/21 07:32:02 paul Exp $
-$Author: paul $
-$Date: 2004/05/21 07:32:02 $
-$Name: milestone_2-2-1 $
-$Revision: 1.16 $
+$Header: /cvs/farcry/farcry_core/tags/navajo/treeData.cfm,v 1.18 2004/08/07 09:17:51 geoff Exp $
+$Author: geoff $
+$Date: 2004/08/07 09:17:51 $
+$Name: milestone_2-3-2 $
+$Revision: 1.18 $
 
 || DESCRIPTION || 
 Retrieves object(s) [and relations] information and returns it in js format.
@@ -108,8 +109,11 @@ Matt Dawson (mad@daemon.com.au)
 
 || HISTORY ||
 $Log: treeData.cfm,v $
-Revision 1.16  2004/05/21 07:32:02  paul
-Stopped filtering dmImage,dmFile assets as dmHTMl children.
+Revision 1.18  2004/08/07 09:17:51  geoff
+Removed some very old Spectra COAPI integration code, and added support for fourq.getdata() bshallow option.  This should improve tree performance by not retrieving longtext field properties for objects in the tree.
+
+Revision 1.17  2004/07/15 02:03:00  brendan
+i18n updates
 
 Revision 1.15  2003/12/01 05:41:30  paul
 Removed reference to oTree in app scope and instatiated on this page instead. Seemed to fix weirdness.
@@ -188,7 +192,7 @@ moved tree code out of fourq and into farcry_core
 	</cfscript>
 		
 	
-	<q4:contentobjectGetMultiple bActive="0" lObjectIds="#lObjectIds#" r_stObjects="stNewObjects">
+	<q4:contentobjectGetMultiple bActive="0" lObjectIds="#lObjectIds#" r_stObjects="stNewObjects" bshallow="true">
 
 	<!--- begin: munge object structure to reflect f# --->
 	<cfset stNewobjects = mungeobjects(stNewObjects)>
@@ -223,13 +227,10 @@ moved tree code out of fourq and into farcry_core
 </cfif>	
 </cfloop>
 
-<!---
-
- This cfloop block basically blocks all children of dmHTML objects, and filters the tree by the
+<!--- This cfloop block basically blocks all children of dmHTML objects, and filters the tree by the
 lAllowTypes list
-
  --->
-<cfset lAllowTypes = "dmHTML,#attributes.nodetype#,dmInclude,dmImage,dmFile">
+<cfset lAllowTypes = "dmHTML,#attributes.nodetype#,dmInclude">
 <cfloop collection="#stAllObjects#" item="objID">
 	<cfoutput>
 	<cfif structKeyExists(stAllObjects[objId], "aObjectIds" )  AND stAllObjects[objID].typename IS "dmHTML">
@@ -237,10 +238,12 @@ lAllowTypes list
 		<cfif isArray(stAllObjects[objId].aObjectIDs) AND arrayLen(stAllObjects[objId].aObjectIDs) GT 0>
 			<cfloop from="#arrayLen(stAllObjects[objId].aObjectIDs)#" to="1" index="i" step="-1">
 				<cfinvoke component="farcry.fourq.fourq" method="findType" returnvariable="rTypeName" objectID="#stAllObjects[objID].aObjectIds[i]#">
-				<cfif NOT listContainsNoCase(lAllowTypes,rTypeName)>
+				
+				<cfif NOT listContainsNoCase(lAllowTypes,rTypeName) AND stAllObjects[objID].typename IS "dmHTML">
 					 <cfset tmp = arrayDeleteAt(stAllObjects[objID].aObjectIds,i)> 
 				</cfif>
 			</cfloop>
+				
 		</cfif>
 		<cfif isArray(stAllObjects[objID].aObjectIds)>
 			<cfif NOT arrayLen(stAllObjects[objID].aObjectIDs)>

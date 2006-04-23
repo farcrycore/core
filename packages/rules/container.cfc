@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/rules/container.cfc,v 1.23.2.4 2005/03/22 07:12:07 jason Exp $
-$Author: jason $
-$Date: 2005/03/22 07:12:07 $
-$Name: milestone_2-2-1 $
-$Revision: 1.23.2.4 $
+$Header: /cvs/farcry/farcry_core/packages/rules/container.cfc,v 1.33.2.1 2005/04/12 07:18:49 paul Exp $
+$Author: paul $
+$Date: 2005/04/12 07:18:49 $
+$Name: milestone_2-3-2 $
+$Revision: 1.33.2.1 $
 
 || DESCRIPTION || 
 $Description: Core container management component. $
@@ -23,8 +23,24 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	<cfproperty name="aRules" hint="Array of rule objects to be managed by this container." type="array"> 
 	<cfproperty name="bShared" hint="Flags whether or not this container is to be shared amongst various objects and scheduled by publishing rule." type="boolean" default="0">
 	<cfproperty name="mirrorID" hint="The UUID of a shared container to be used instead of this container; a mirror container if you like." type="UUID" default="">
+	<cfproperty name="displayMethod" hint="The webskin that will encapsulate container content" type="nstring" default="">
 	
 	<cfinclude template="/farcry/farcry_core/admin/includes/cfFunctionWrappers.cfm">
+	
+	<cffunction name="getDisplay" hint="Gets webskins for container content">
+		<cfargument name="containerBody" required="true">
+		<cfargument name="template" required="true">
+		
+		<cfset variables.containerBody = arguments.containerBody>
+		<cftry>
+			<cfinclude template="/farcry/#application.applicationname#/webskin/container/#template#.cfm">
+			
+			<cfcatch>
+				<cfdump var="#cfcatch#">
+			</cfcatch>
+		</cftry>
+		
+	</cffunction>	
 	
 	<cffunction name="createData" access="public" returntype="any" output="false" hint="Creates an instance of a container object.">
 		<cfargument name="stProperties" type="struct" required="true" hint="Structure of properties for the new container instance.">
@@ -128,14 +144,18 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 				{
 					//get the data on the container I might delete
 					containerData = super.getData(qDestCon.containerid[index]);
+					
 					/*
 					If I find the objectid of the destination object in the container label
 					then I will delete the container because it is a unique container and is only
 					used in the destination object. However if the container label does not contain
 					the destination object's objectid then is is a global container and therefore
 					should not be removed because it *was not copied* to begin with.
-					*/ 
-					if(find(qDestCon.objectid[index],containerData.label))
+<
+					*/
+					 
+					//First verify that getData() returned a record by checking for the existance of LABEL
+					if(structKeyExists(containerData,"label") AND find(qDestCon.objectid[index],containerData.label))
 					{		
 						//delete all rule data from this container
 						deleteContainerRules(containerid=qDestCon.containerid[index]);
@@ -144,6 +164,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 						//delete the refContainers entry for this container
 						deleteRefContainerData(containerid=qDestCon.containerid[index],dsn=arguments.dsn);
 					}
+
 				}
 			}	
 			
@@ -200,14 +221,17 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 					the source object's objectid then is is a global container and therefore
 					should not be removed because it *was not copied* to begin with.
 					*/ 
-					if(find(qSrcCon.objectid[index],containerData.label))
-					{		
-						//delete all rule data from this container
-						deleteContainerRules(containerid=qSrcCon.containerid[index]);
-						//delete the container
-						super.deleteData(qSrcCon.containerid[index]);
-						//delete the RefContainers record for this container
-						deleteRefContainerData(containerid=qSrcCon.containerid[index], dsn=arguments.dsn);
+					if(not structIsEmpty(containerData))
+					{
+						if(find(qSrcCon.objectid[index],containerData.label))
+						{		
+							//delete all rule data from this container
+							deleteContainerRules(containerid=qSrcCon.containerid[index]);
+							//delete the container
+							super.deleteData(qSrcCon.containerid[index]);
+							//delete the RefContainers record for this container
+							deleteRefContainerData(containerid=qSrcCon.containerid[index], dsn=arguments.dsn);
+						}
 					}
 				}
 			}	
@@ -442,6 +466,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 				</cfcatch>
 			</cftry>  
 		</cfloop>		 
+		
 		<cfloop from="1" to="#arrayLen(request.aInvocations)#" index="i">
 			<cfif isStruct(request.aInvocations[i])>
 				<cfscript>

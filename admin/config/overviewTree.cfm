@@ -1,3 +1,5 @@
+<cfprocessingDirective pageencoding="utf-8">
+
 	<cfif isDefined("form.submit")>
 		<cfscript>
 			st = structNew();
@@ -12,8 +14,7 @@
 			st.insertJSdmFlash = form.insertJSdmFlash;
 			st.editHandler = "/farcry/farcry_core/admin/config/overviewTree.cfm";
 			application.config.overviewTree = duplicate(st);
-		</cfscript>
-		
+		</cfscript>		
 	
 		<cfinvoke component="#application.packagepath#.farcry.config" method="setConfig" returnvariable="setConfigRet">
 			<cfinvokeargument name="configName" value="overviewTree"/>
@@ -24,22 +25,16 @@
 		
 	</cfif>
 	<cfoutput>
-	<p>These javascript snippets will be used when inserting content from the Site Tree into the HTML editor.</p>
-	<ul>
-		<li style="margin-bottom:0.5em;"><code>theNode</code> - an associate array of the selected object's properties. <em>(note: array keys are in uppercase)</em><br /> e.g. <code>theNode['LABEL']</code></li>
-		<li style="margin-bottom:0.5em;"><code>lastSelectedId</code> - the objectid of the selected object</li>
-	</ul>
 	<form action="" method="post">
 		<table>
 			<tr>
 				<td valign="top">
-					dmHTML Insert
+					#application.adminBundle[session.dmProfile.locale].dmHTMLInsert#
 				</td>
 				<td>
-					<textarea  rows="2" cols="100" style="font-size:1.3em;width:90%;" name="insertJSdmHTML">#application.config.overviewTree.insertJSdmHTML#</textarea> 
+					<textarea  rows="1" cols="100" style="font-size:0.98em;width:100%;" name="insertJSdmHTML">#application.config.overviewTree.insertJSdmHTML#</textarea> 
 				</td>
 			</tr>
-			
 			<tr>
 				<td valign="top">
 					Use High Res Image if Available?
@@ -56,41 +51,37 @@
 					</div>
 				</td>
 			</tr>
-			
-			
 			<tr>
 				<td valign="top">
-					dmFile Insert
+					#application.adminBundle[session.dmProfile.locale].dmFileInsert#
 				</td>
 				<td>
-					<textarea  rows="2" cols="100" style="font-size:1.3em;width:90%;" name="insertJSdmFile">#application.config.overviewTree.insertJSdmFile#</textarea> 
+					<textarea  rows="1" cols="100" style="font-size:0.98em;width:100%;" name="insertJSdmFile">#application.config.overviewTree.insertJSdmFile#</textarea> 
 				</td>
 			</tr>
 			<tr>
 				<td valign="top">
-					dmFlash Insert
+					#application.adminBundle[session.dmProfile.locale].dmFlashInsert#
 				</td>
 				<td>
-					<textarea  rows="2" cols="100" style="font-size:1.3em;width:90%;" name="insertJSdmFlash">#application.config.overviewTree.insertJSdmFlash#</textarea> 
+					<textarea  rows="1" cols="100" style="font-size:0.98em;width:100%;" name="insertJSdmFlash">#application.config.overviewTree.insertJSdmFlash#</textarea> 
 				</td>
 			</tr>
 			<tr>
 				<td valign="top">
-					dmImage Insert
+					#application.adminBundle[session.dmProfile.locale].dmImageInsert#
 				</td>
 				<td>
-					<textarea  rows="2" cols="100" style="font-size:1.3em;width:90%;" name="insertJSdmImage">#application.config.overviewTree.insertJSdmImage#</textarea> 
+					<textarea  rows="1" cols="100" style="font-size:0.98em;width:100%;" name="insertJSdmImage">#application.config.overviewTree.insertJSdmImage#</textarea> 
 				</td>
 			</tr>
 			<tr>
 				<td colspan="2" align="center">
-					<input type="submit" name="submit" value="Update">
+					<input type="submit" name="submit" value="#application.adminBundle[session.dmProfile.locale].update#">
 				</td>
 			</tr>
-			
-		
+					
 		</table>
 	</form>
 	</cfoutput>
-
 

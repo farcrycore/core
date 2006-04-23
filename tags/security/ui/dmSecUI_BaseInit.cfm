@@ -1,3 +1,5 @@
+<cfprocessingDirective pageencoding="utf-8">
+
 <Cfset stPolicyGroup = structNew()>
 <cfset stPolicyGroup.policygroupname="SysAdmin">
 

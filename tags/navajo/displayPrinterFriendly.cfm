@@ -1,4 +1,5 @@
 <cfsetting enablecfoutputonly="Yes">
+<cfprocessingDirective pageencoding="utf-8">
 <cfimport taglib="/farcry/fourq/tags/" prefix="q4">
 <cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
 
@@ -10,11 +11,11 @@ Daemon Pty Limited 1995-2001
 http://www.daemon.com.au/
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/navajo/displayPrinterFriendly.cfm,v 1.5 2003/08/12 02:05:49 brendan Exp $
+$Header: /cvs/farcry/farcry_core/tags/navajo/displayPrinterFriendly.cfm,v 1.6 2004/07/15 02:03:00 brendan Exp $
 $Author: brendan $
-$Date: 2003/08/12 02:05:49 $
-$Name: b201 $
-$Revision: 1.5 $
+$Date: 2004/07/15 02:03:00 $
+$Name: milestone_2-3-2 $
+$Revision: 1.6 $
 
 || DESCRIPTION || 
 
@@ -29,6 +30,9 @@ Brendan Sisson (brendan@daemon.com.au)
 
 || HISTORY ||
 $Log: displayPrinterFriendly.cfm,v $
+Revision 1.6  2004/07/15 02:03:00  brendan
+i18n updates
+
 Revision 1.5  2003/08/12 02:05:49  brendan
 cgi.http_host variable used to show current page
 
@@ -95,7 +99,7 @@ no message
 	<!--- if request.navid is not set, then no valid objects available for 
 	this node. --->
 	<cfif NOT isDefined("request.navid")>
-		<cfabort showerror="Error: This navigation node has no viewable content attached. If you believe that some content should exist at this point it is more than likely that it is in DRAFT and needs to be approved..">
+		<cfabort showerror="#application.adminBundle[session.dmProfile.locale].errorNavNodeNoContent#">
 	</cfif>
 
 <!--- else get the navigation point from the URL --->
@@ -239,7 +243,7 @@ the latter is the policy group for anonymous...
 	
 		
 <cfelse>
-	<cfabort showerror="Error: COAPI returned a malformed or empty object instance.">
+	<cfabort showerror="#application.adminBundle[session.dmProfile.locale].badCOAPI#">
 </cfif> 
 <!--- end: of if object exists... --->
 

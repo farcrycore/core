@@ -1,14 +1,13 @@
-<html>
+<cfoutput><html dir="#session.writingDir#" lang="#session.userLanguage#"></cfoutput>
 <head>
 <title>Untitled Document</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta content="text/html; charset=UTF-8" http-equiv="content-type">
 <LINK href="../css/admin.css" rel="stylesheet" type="text/css">
-
 </head>
 
 <body>
 
-<div>This is the admin home page.</div>
+<div><cfoutput>#application.adminBundle[session.dmProfile.locale].adminHomePage#</cfoutput></div>
 
 </body>
 </html>

@@ -1,8 +1,9 @@
 <cfsetting enablecfoutputonly="Yes">
+<cfprocessingDirective pageencoding="utf-8">
 <cfimport taglib="/farcry/fourq/tags" prefix="q4">
 <cfparam name="url.lObjectIds" default="#attributes.lObjectIDs#">
 <cfoutput>
-<HTML>
+<html dir="#session.writingDir#" lang="#session.userLanguage#">
 
 <link rel="stylesheet" type="text/css" href="navajo_popup.css">
 

@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/dmHTML.cfc,v 1.18 2004/06/28 07:56:11 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/types/dmHTML.cfc,v 1.21 2004/08/16 04:32:55 brendan Exp $
 $Author: brendan $
-$Date: 2004/06/28 07:56:11 $
-$Name: milestone_2-2-1 $
-$Revision: 1.18 $
+$Date: 2004/08/16 04:32:55 $
+$Name: milestone_2-3-2 $
+$Revision: 1.21 $
 
 || DESCRIPTION || 
 $Description: dmHTML Content Type. Forms the basis of the content framework of the site.  HTML objects include containers and static information. $
@@ -60,11 +60,10 @@ object methods
 	
 	<cfset var q = ''>
 	<cfquery name="q" datasource="#arguments.dsn#">
-		DELETE FROM #application.dbowner#dmHTML_aRelatedIds
+		DELETE FROM #application.dbowner#dmHTML_aRelatedIDs
 		WHERE objectid = '#arguments.objectid#'
 	</cfquery>
 	
 </cffunction>
-
 </cfcomponent>
 

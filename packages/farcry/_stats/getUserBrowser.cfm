@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_stats/getUserBrowser.cfm,v 1.7 2004/06/02 00:48:37 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_stats/getUserBrowser.cfm,v 1.10 2004/12/20 02:59:10 brendan Exp $
 $Author: brendan $
-$Date: 2004/06/02 00:48:37 $
-$Name: milestone_2-2-1 $
-$Revision: 1.7 $
+$Date: 2004/12/20 02:59:10 $
+$Name: milestone_2-3-2 $
+$Revision: 1.10 $
 
 || DESCRIPTION || 
 $Description: get users browser $
@@ -24,6 +24,7 @@ $out:$
 
 <cfscript>
 	browserName="Unknown: ";
+	Variables.user_agent = cgi.http_user_agent;
 	if (Len(user_agent))
 	{
 		browserVersion=user_agent;
@@ -98,7 +99,8 @@ $out:$
 						if (FindNoCase("Firefox/",user_agent)) {
 							// Firefox Browsers (by Mozilla)
 							browserName = "Firefox";
-							browserVersion = Val(RemoveChars(user_agent,1,FindNoCase("Firefox/",user_agent)+7));
+							//browserVersion = Val(RemoveChars(user_agent,1,FindNoCase("Firefox/",user_agent)+7));
+							browserVersion = ListGetAt(RemoveChars(user_agent,1,FindNoCase("Firefox/",user_agent)+7),1," ");
 						} else if (FindNoCase("Firebird/",user_agent)) {
 							// Firebird Browsers (now replaced by FireFox)
 							browserName = "Firebird";

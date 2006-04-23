@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmCSS/edit.cfm,v 1.23 2004/02/04 06:36:19 paul Exp $
-$Author: paul $
-$Date: 2004/02/04 06:36:19 $
-$Name: milestone_2-2-1 $
-$Revision: 1.23 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmCSS/edit.cfm,v 1.26 2005/02/02 04:11:37 brendan Exp $
+$Author: brendan $
+$Date: 2005/02/02 04:11:37 $
+$Name: milestone_2-3-2 $
+$Revision: 1.26 $
 
 || DESCRIPTION || 
 $Description: edit handler$
@@ -21,13 +21,13 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 $in: $
 $out:$
 --->
-<cfsetting enablecfoutputonly="yes">
+<cfsetting enablecfoutputonly="yes" />
 
-<cfimport taglib="/farcry/fourq/tags/" prefix="q4">
-<cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
+<cfimport taglib="/farcry/fourq/tags/" prefix="q4" />
+<cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj" />
 
 <cfoutput>
-	<link type="text/css" rel="stylesheet" href="#application.url.farcry#/css/admin.css"> 
+	<link type="text/css" rel="stylesheet" href="#application.url.farcry#/css/admin.css" />
 </cfoutput>
 
 <cfif isDefined("FORM.submit")> <!--- perform the update --->
@@ -39,12 +39,19 @@ $out:$
 		stProperties.label = form.title;
 		stProperties.description = form.description;
 		stProperties.filename = form.filename;
-					
+		stProperties.mediaType = form.mediaType;
+
 		stProperties.datetimelastupdated = Now();
 		stProperties.lastupdatedby = session.dmSec.authentication.userlogin;
 		//unlock object
 		stProperties.locked = 0;
 		stProperties.lockedBy = "";
+
+	    if (isDefined("form.bThisNodeOnly")){
+			stProperties.bThisNodeOnly = 1;
+    	}else{
+			stProperties.bThisNodeOnly = 0;
+		}
 	</cfscript>
 	
 	<!--- check for file to upload --->
@@ -99,6 +106,30 @@ $out:$
 
 
 	<cfoutput>
+	<!--- javascript to populate text box from multiselect box --->
+	<script type="text/javascript">
+	  if (typeof Array.prototype.push == "undefined")
+	  {
+	    Array.prototype.push = function()
+	    {
+	      var i=0;
+	      b = this.length
+	      a = arguments;
+	      for(i;i<a.length;i++)this[b+i]=a[i];
+	      return this.length
+	    }
+	  }
+	  function addSelections(s,t) {
+	    var selectedArray = [];
+	    var o = s.options;
+	    for (var i = 0; i < o.length; i++) {
+	      if (o[i].selected) {
+	        selectedArray.push(o[i].value);
+	      }
+	    }
+	    t.value = selectedArray.join(", ");
+	  }
+	</script>
 	<form action="" method="post" enctype="multipart/form-data" name="fileForm">
 		
 	<table align="left" border="0" width="80%" >
@@ -110,7 +141,7 @@ $out:$
 	
 	<tr>
   		<td width="20" align="right"><span class="FormLabel">Title:</span></td>
-   	 	<td align="left"><input type="text" name="title" value="#stObj.title#" style="width:250px;" class="FormTextBox"></td>
+   	 	<td align="left"><input type="text" name="title" value="#stObj.title#" style="width:250px;" class="FormTextBox" /></td>
 	</tr>
 	<tr>
 		<td colspan="2" >&nbsp;</td>
@@ -119,13 +150,47 @@ $out:$
 	<tr>
 		<td align="right" ><span class="FormLabel">Upload File</span></td>
 		<td>
-			<input type="hidden" name="filename" value="#stObj.filename#">
-			<input type="file" name="cssFile" class="FormFileBox">&nbsp;&nbsp;
+			<input type="hidden" name="filename" value="#stObj.filename#" />
+			<input type="file" name="cssFile" class="FormFileBox" />&nbsp;&nbsp;
 		</td>
 	</tr>
 	<tr>
 		<td colspan="2" >&nbsp;</td>
 	</tr>
+
+	<tr>
+		<td align="right" ><span class="FormLabel">Use CSS in this node only</span></td>
+		<td>
+			<input type="checkbox" name="bThisNodeOnly" value="1"<cfif stObj.bThisNodeOnly neq ''><cfif stObj.bThisNodeOnly>checked="checked"</cfif></cfif> />
+			This node's children will not inherit this CSS object.
+		</td>
+	</tr>
+	<tr>
+		<td colspan="2" >&nbsp;</td>
+	</tr>
+
+	<tr>
+		<td align="right" ><span class="FormLabel">Media Type</span></td>
+		<td>
+			<select id="selectBoxMediaType" name="selectBoxMediaType" multiple="multiple" onchange="addSelections(this,document.getElementById('textBoxMediaType'));">
+				<option value="all">all</option>
+				<option value="aural">aural</option>
+				<option value="braille">braille</option>
+				<option value="embossed">embossed</option>
+				<option value="handheld">handheld</option>
+				<option value="print">print</option>
+				<option value="projection">projection</option>
+				<option value="screen">screen</option>
+				<option value="tty">tty</option>
+				<option value="tv">tv</option>
+			</select>
+			<input type="text" name="mediaType" value="#stObj.mediaType#" id="textBoxMediaType" />
+		</td>
+	</tr>
+	<tr>
+		<td colspan="2" >&nbsp;</td>
+	</tr>
+
 	<tr>
   		<td align="right" valign="top"><span class="FormLabel">Description:</span></td>
    	 	<td><textarea cols="50" rows="4" name="description" class="FormTextArea">#stObj.description#</textarea></td>
@@ -144,17 +209,18 @@ $out:$
 
 	<tr>
 		<td colspan="2" align="center">
-			<input type="submit" value="OK" name="submit" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';">
-			<input type="button" value="Cancel" name="Cancel" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';" onClick="location.href='#application.url.farcry#/unlock.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#';parent.synchTab('editFrame','activesubtab','subtab','siteEditOverview');parent.synchTitle('Overview')">
+			<input type="submit" value="OK" name="submit" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';" />
+			<input type="button" value="Cancel" name="Cancel" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';" onClick="location.href='#application.url.farcry#/unlock.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#';parent.synchTab('editFrame','activesubtab','subtab','siteEditOverview');parent.synchTitle('Overview')" />
 		</td>
 	</tr>		
 	</table>
 	
 	</form>
+	<br/>
 	<script>
 		//bring focus to title
 		document.fileForm.title.focus();
 	</script>
 	</cfoutput>
 	
-<cfsetting enablecfoutputonly="no">
+<cfsetting enablecfoutputonly="no" />

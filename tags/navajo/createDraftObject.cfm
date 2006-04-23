@@ -1,7 +1,6 @@
+<cfprocessingDirective pageencoding="utf-8">
 <!--- createDraftObject.cfm 
-
 Creates a draft object
-
 --->
 
 <cfsetting enablecfoutputonly="no">

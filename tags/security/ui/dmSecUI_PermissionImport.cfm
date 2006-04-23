@@ -1,16 +1,18 @@
 <cfsetting enablecfoutputonly="Yes">
 
+<cfprocessingDirective pageencoding="utf-8">
+
 <cfif not isDefined("form.submit")>
 
 <cfoutput>
 	<br>
-	<span class="formtitle">Import Permissions</span><p></p>
+	<span class="formtitle">#application.adminBundle[session.dmProfile.locale].importPermissions#</span><p></p>
 	<form
 		name="importPermissionsForm.cfm"
 		action=""
 		method="Post"
 		enctype="multipart/form-data"
-		onSubmit="if ( document.all.clearOldPermissions.checked ) return confirm('Are you sure you want to clear all previous permissions before importing?');">
+		onSubmit="if ( document.all.clearOldPermissions.checked ) return confirm('#application.adminBundle[session.dmProfile.locale].confirmClearPermissions#');">
 		<table class="formtable">
 		<tr>
 			<td rowspan="10">&nbsp;</td>
@@ -20,9 +22,9 @@
 		</tr>
 		<tr>
 			<td>
-			<span class="formlabel">Filename:</span>  <input type="file" name="filename"><p>
+			<span class="formlabel">#application.adminBundle[session.dmProfile.locale].filenameLabel#</span>  <input type="file" name="filename"><p>
 			<input type="checkbox" name="clearOldPermissions">Clear all permissions before import<br><br>
-			<input type="submit" name="submit" value="Import Data">
+			<input type="submit" name="submit" value="#application.adminBundle[session.dmProfile.locale].importData#">
 			</td>
 		</tr>
 		<tr>
@@ -41,16 +43,16 @@
 	
 	
 	<cfif isDefined("form.clearOldPermissions")>
-		<cfoutput>Deleting old permissions</cfoutput>
+		<cfoutput>#application.adminBundle[session.dmProfile.locale].deletingOldPermissions#</cfoutput>
 
 		<cfquery name="qDelete" datasource="#stPolicyStore.datasource#" dbtype="ODBC">
 		DELETE FROM #application.dbowner#dmPermission
 		</cfquery>
 		
-		<cfoutput> - complete<bR></cfoutput>
+		<cfoutput> #application.adminBundle[session.dmProfile.locale].complete#<bR></cfoutput>
 	</cfif>
 	
-	<cfoutput>Importing new permissions</cfoutput>
+	<cfoutput>#application.adminBundle[session.dmProfile.locale].importingNewPermissions#</cfoutput>
 	
 	<cffile action="UPLOAD" filefield="filename" destination="#application.path.project#/" nameconflict="OVERWRITE">
 	<cffile action="READ" file="#cffile.serverDirectory#/#cffile.serverFile#" variable="qPermissionsWDDX">
@@ -97,7 +99,7 @@
 	</cftry>
 
 	
-	<cfoutput> - complete<bR></cfoutput>
+	<cfoutput>#application.adminBundle[session.dmProfile.locale].complete#<bR></cfoutput>
 	
 </cfif>
 

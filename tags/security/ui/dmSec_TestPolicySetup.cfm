@@ -1,5 +1,7 @@
 <cfsetting enablecfoutputonly="Yes">
 
+<cfprocessingDirective pageencoding="utf-8">
+
 <!--- 
 || BEGIN FUSEDOC ||
 
@@ -8,11 +10,11 @@ Daemon Pty Limited 1995-2001
 http://www.daemon.com.au/
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/security/ui/dmSec_TestPolicySetup.cfm,v 1.4 2004/06/16 23:25:24 brendan Exp $
+$Header: /cvs/farcry/farcry_core/tags/security/ui/dmSec_TestPolicySetup.cfm,v 1.6 2004/07/15 03:52:45 brendan Exp $
 $Author: brendan $
-$Date: 2004/06/16 23:25:24 $
-$Name: milestone_2-2-1 $
-$Revision: 1.4 $
+$Date: 2004/07/15 03:52:45 $
+$Name: milestone_2-3-2 $
+$Revision: 1.6 $
 
 || DESCRIPTION || 
 Shows the userdirectory and policy store setup.
@@ -28,14 +30,10 @@ Matt Dawson (mad@daemon.com.au)
 --->
 <cfoutput>
 
-<span class="formtitle">Security Setup</span><p></p>
+<span class="formtitle">#application.adminBundle[session.dmProfile.locale].securitySetup#</span><p></p>
 
 <cfif not IsDefined("Application.dmSec")>
-	<span style="color:red;">Error:</span> Security not initialised.<br>
-	The structure 'dmsec' was not found in the security structure.<br>
-	This structure is needed with the following attributes:<br>
-	<li>PolicyStore: structure describing the policy store.<br>
-	<li>UserDirectory: structure(s) describing userdirectories.<br>
+	#application.adminBundle[session.dmProfile.locale].securityNotInit#
 <cfelse>
 	<cfscript>
 		oAuthorisation = request.dmsec.oAuthorisation;
@@ -48,24 +46,23 @@ Matt Dawson (mad@daemon.com.au)
 
 	<cfif isDefined("form.verify")>
 		
-	<h3>Testing setup</h3>
-	<h4>Policy Tests</h4>
+	<h3>#application.adminBundle[session.dmProfile.locale].testingSetup#</h3>
+	<h4>#application.adminBundle[session.dmProfile.locale].policyTests#</h4>
 	<!--- Check the policy store configuration is set in the security structure --->
 	<table border=0 cellpadding=0 cellspacing=0>
 	<tr>
 	<td>&nbsp;&nbsp;</td>
 	<td>
-		<span style="color:green;">OK:</span> PolicyStore attribute exists.<br>
+		#application.adminBundle[session.dmProfile.locale].policyStoreExists#<br>
 		
 		<!--- Test the datasource parameter exists --->
 		<cfif not isDefined("stPolicyStore.datasource")>
 		
-			<span style="color:red;">Error:</span> Policy Store Datasource attribute not found.<br>
-			The structure 'policyStore.datasource' was not found in the security structure.<br>
+			#application.adminBundle[session.dmProfile.locale].policyStoreNotExists#<br>
 			
 		<cfelse>
 		
-			<span style="color:green;">OK:</span> PolicyStore Datasource attribute exists.<br>
+			#application.adminBundle[session.dmProfile.locale].policyStoreOK#<br>
 			
 			<!--- Test the odbc connection works --->
 			<cftry>
@@ -91,9 +88,9 @@ Matt Dawson (mad@daemon.com.au)
 			
 			</cftry>
 			
-			<span style="color:green;">OK:</span> PolicyStore Datasource '#stPolicyStore.datasource#' connection success.<br>
+			#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].policyStoreDSconnectedOK,"#stPolicyStore.datasource#")#<br>
 			
-			<a href="?tag=CreatePolicyStoreTables" onClick="return confirm('Are you sure you wish to recreate you policy tables?');">Create PolicyStore Tables</a><br>
+			<a href="?tag=CreatePolicyStoreTables" onClick="return confirm('#application.adminBundle[session.dmProfile.locale].confirmRecreatePolicyTables#');">#application.adminBundle[session.dmProfile.locale].createPolicyStoreTables#</a><br>
 			<br>
 			<!--- Test policy store tables --->
 			<cfimport taglib="/farcry/farcry_core/tags/security/ui/" prefix="dmsec">
@@ -127,7 +124,7 @@ Matt Dawson (mad@daemon.com.au)
 	</cfif>
 
 	<br>
-	<input type="Submit" name="Verify" value="Verify Policy Setup">&nbsp;<input type="Submit" name="View" value="View Setup"><br>
+	<input type="Submit" name="Verify" value="#application.adminBundle[session.dmProfile.locale].verifyPolicySetup#">&nbsp;<input type="Submit" name="View" value="#application.adminBundle[session.dmProfile.locale].viewSetup#"><br>
 	<br>
 	</form>
 </cfif>

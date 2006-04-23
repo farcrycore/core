@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmFlash/edit.cfm,v 1.14 2004/06/02 03:55:47 brendan Exp $
-$Author: brendan $
-$Date: 2004/06/02 03:55:47 $
-$Name: milestone_2-2-1 $
-$Revision: 1.14 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmFlash/edit.cfm,v 1.16 2004/12/06 19:03:10 tom Exp $
+$Author: tom $
+$Date: 2004/12/06 19:03:10 $
+$Name: milestone_2-3-2 $
+$Revision: 1.16 $
 
 || DESCRIPTION || 
 $Description: edit handler$
@@ -22,6 +22,8 @@ $in: $
 $out:$
 --->
 <cfsetting enablecfoutputonly="yes">
+
+<cfprocessingDirective pageencoding="utf-8">
 
 <cfimport taglib="/farcry/fourq/tags/" prefix="q4">
 <cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
@@ -60,20 +62,20 @@ $out:$
 		
 		<cfif len(stobj.flashmovie)>
 			 <cftry> 
-				<cffile action="DELETE" file="#application.defaultFilePath#\#stObj.flashMovie#">  
+				<cffile action="DELETE" file="#application.path.defaultFilePath#\#stObj.flashMovie#">  
 				 <cfcatch>
 				</cfcatch>			
 			</cftry> 
 		</cfif>
 		<cftry>
-			<cffile action="upload" nameconflict="OVERWRITE" filefield="flashMovie" destination="#application.defaultFilePath#"> 
+			<cffile action="upload" nameconflict="OVERWRITE" filefield="flashMovie" destination="#application.path.defaultFilePath#"> 
 			<cfscript>
 				oForm = createObject("component","#application.packagepath#.farcry.form");
 				stProperties.flashMovie = oForm.sanitiseFileName(file.ServerFile,file.ClientFileName,file.ServerDirectory);
 			</cfscript>
 			<cfcatch>
-				<cfoutput><strong>ERROR:</strong> #cfcatch.message#<p>
-				File type needs to be a flash movie (.swf) <p></p></cfoutput>
+				<cfoutput><strong>#application.adminBundle[session.dmProfile.locale].cfcatchErrorMsg#<p>
+				#application.adminBundle[session.dmProfile.locale].fileMustBeFlash# <p></p></cfoutput>
 				<cfset error=1>
 			</cfcatch>
 		</cftry>
@@ -114,14 +116,14 @@ $out:$
 	<table class="FormTable">
 	<!--- movie title --->
 	<tr>
-  		<td><span class="FormLabel">Title:</span></td>
+  		<td><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].titleLabel#</span></td>
    	 	<td><input type="text" name="title" value="#stObj.title#" class="FormTextBox"></td>
 	</tr>
 	
 	<!--- display method --->
 	<nj:listTemplates typename="dmFlash" prefix="display" r_qMethods="qMethods">
 	<tr>
-		<td nowrap class="FormLabel">Display Method:</td>
+		<td nowrap class="FormLabel">#application.adminBundle[session.dmProfile.locale].displayMethodLabel#</td>
 		<td width="100%" class="FormLabel">
 		<select name="DisplayMethod" size="1">
 		</cfoutput>
@@ -130,7 +132,7 @@ $out:$
 			<option value="#qMethods.methodname#" <cfif qMethods.methodname eq stObj.displaymethod>SELECTED</cfif>>#qMethods.displayname#</option>
 			</cfoutput>
 		<cfelse>
-			<cfoutput><option value="none">None</cfoutput>
+			<cfoutput><option value="none">#application.adminBundle[session.dmProfile.locale].none#</cfoutput>
 		</cfif>
 		<cfoutput>
 		</select>
@@ -142,33 +144,33 @@ $out:$
 		<td colspan="2">&nbsp;</td>
 	</tr>
 	<tr>	
-  	 <td><span class="FormLabel">File:</span></td>
+  	 <td><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].fileLabel#</span></td>
    	 <td><input type="file" name="flashMovie" class="FormFileBox"></td>
 	</tr>
 	
 	<tr>
 		<td colspan="2">
 		<cfif not len(stObj.flashMovie)>
-			<span class="FormSubHeading">[No file uploaded]</span>
+			<span class="FormSubHeading">[#application.adminBundle[session.dmProfile.locale].noFileUploaded#]</span>
 		<cfelse>
 		
 		<table>
 		<tr>
 			<td colspan="3" style="font-size:7pt;">
-				<span class="FormLabel">Uploading a new file will overwrite this file</span>
+				<span class="FormLabel">#application.adminBundle[session.dmProfile.locale].newFileOverwriteThisFile#</span>
 			</td>
 		</tr>
 		<tr>
 		<td>
-			<span class="FormLabel">Existing File :</span> 
+			<span class="FormLabel">#application.adminBundle[session.dmProfile.locale].existingFileLabel#</span> 
 		</td>
 		<nj:getFileIcon filename="#stObj.flashMovie#" r_stIcon="fileicon"> 
 		<td>
 			<img src="#application.url.farcry#/images/treeImages/#fileicon#">
 		</td>
 		<td>
-			<a href="#application.defaultFilePath#\#stObj.flashMovie#" target="_blank">
-				<span class="FormLabel">PREVIEW</span>
+			<a href="#application.path.defaultFilePath#\#stObj.flashMovie#" target="_blank">
+				<span class="FormLabel">#application.adminBundle[session.dmProfile.locale].previewUC#</span>
 			</a>
 		</td>
 		</tr>
@@ -180,63 +182,63 @@ $out:$
 	
 	<!--- flash movie params --->
 	<tr>
-  		<td><span class="FormLabel">Height:</span></td>
+  		<td><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].heightLabel#</span></td>
    	 	<td><input type="text" name="height" value="#stObj.flashHeight#" size="4"></td>
 	</tr>
 	<tr>
-  		<td><span class="FormLabel">Width:</span></td>
+  		<td><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].widthLabel#</span></td>
    	 	<td><input type="text" name="width" value="#stObj.flashWidth#" size="4"></td>
 	</tr>
 	<tr>
-  		<td><span class="FormLabel">Flash Version:</span></td>
+  		<td><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].flashVersionLabel#</span></td>
    	 	<td><input type="text" name="flashVersion" value="#stObj.flashVersion#" size="10"></td>
 	</tr>
 	<tr>
-  		<td valign="top"><span class="FormLabel">Flash Parameters:</span></td>
+  		<td valign="top"><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].flashParametersLabel#</span></td>
    	 	<td><textarea cols="30" rows="4" name="flashParams" class="FormTextArea">#stObj.flashParams#</textarea></td>
 	</tr>
 	<tr>
-  		<td><span class="FormLabel">Alignment:</span></td>
+  		<td><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].alignmentLabel#</span></td>
    	 	<td>
 		<select name="align">
-			<option value="left" <cfif stObj.flashalign eq "left">selected</cfif>>Left</option>
-			<option value="center" <cfif stObj.flashalign eq "center">selected</cfif>>Center</option>
-			<option value="right" <cfif stObj.flashalign eq "right">selected</cfif>>Right</option>
-			<option value="Top" <cfif stObj.flashalign eq "Top">selected</cfif>>Top</option>
-			<option value="Bottom" <cfif stObj.flashalign eq "Bottom">selected</cfif>>Bottom</option>
+			<option value="left" <cfif stObj.flashalign eq "left">selected</cfif>>#application.adminBundle[session.dmProfile.locale].left#</option>
+			<option value="center" <cfif stObj.flashalign eq "center">selected</cfif>>#application.adminBundle[session.dmProfile.locale].center#</option>
+			<option value="right" <cfif stObj.flashalign eq "right">selected</cfif>>#application.adminBundle[session.dmProfile.locale].right#</option>
+			<option value="Top" <cfif stObj.flashalign eq "Top">selected</cfif>>#application.adminBundle[session.dmProfile.locale].top#</option>
+			<option value="Bottom" <cfif stObj.flashalign eq "Bottom">selected</cfif>>#application.adminBundle[session.dmProfile.locale].bottom#</option>
 		</select></td>
 	</tr>
 	<tr>
-  		<td><span class="FormLabel">Quality:</span></td>
+  		<td><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].qualityLabel#</span></td>
    	 	<td>
 		<select name="quality">
-			<option value="low" <cfif stObj.flashQuality eq "low">selected</cfif>>Low</option>
-			<option value="medium" <cfif stObj.flashQuality eq "medium">selected</cfif>>Medium</option>
-			<option value="high" <cfif stObj.flashQuality eq "high">selected</cfif>>High</option>
-			<option value="best" <cfif stObj.flashQuality eq "best">selected</cfif>>Best</option>
-			<option value="autoHigh" <cfif stObj.flashQuality eq "autoHigh">selected</cfif>>autoHigh</option>
-			<option value="autoLow" <cfif stObj.flashQuality eq "autoLow">selected</cfif>>autoLow</option>
+			<option value="low" <cfif stObj.flashQuality eq "low">selected</cfif>>#application.adminBundle[session.dmProfile.locale].low#</option>
+			<option value="medium" <cfif stObj.flashQuality eq "medium">selected</cfif>>#application.adminBundle[session.dmProfile.locale].medium#</option>
+			<option value="high" <cfif stObj.flashQuality eq "high">selected</cfif>>#application.adminBundle[session.dmProfile.locale].high#</option>
+			<option value="best" <cfif stObj.flashQuality eq "best">selected</cfif>>#application.adminBundle[session.dmProfile.locale].best#</option>
+			<option value="autoHigh" <cfif stObj.flashQuality eq "autoHigh">selected</cfif>>#application.adminBundle[session.dmProfile.locale].autoHigh#</option>
+			<option value="autoLow" <cfif stObj.flashQuality eq "autoLow">selected</cfif>>#application.adminBundle[session.dmProfile.locale].autoLow#</option>
 		</select></td>
 	</tr>
 	<tr>
-  		<td><span class="FormLabel">Background Colour:</span></td>
+  		<td><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].backgroundColorLabel#</span></td>
    	 	<td><input type="text" name="bgcolor" value="#stObj.flashBgcolor#" size="9" maxlength="7"></td>
 	</tr>
 	<tr>
-  		<td><span class="FormLabel">Automatic Play:</span></td>
-   	 	<td><input type="radio" name="play" value="1" <cfif stObj.flashPlay>checked</cfif>>True <input type="radio" name="play" value="0" <cfif not stObj.flashPlay>checked</cfif>>False </td>
+  		<td><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].automaticPlayLabel#</span></td>
+   	 	<td><input type="radio" name="play" value="1" <cfif stObj.flashPlay>checked</cfif>>#application.adminBundle[session.dmProfile.locale].trueTxt# <input type="radio" name="play" value="0" <cfif not stObj.flashPlay>checked</cfif>>#application.adminBundle[session.dmProfile.locale].falseTxt# </td>
 	</tr>
 	<tr>
-  		<td><span class="FormLabel">Loop:</span></td>
-   	 	<td><input type="radio" name="loop" value="1" <cfif stObj.flashLoop>checked</cfif>>True <input type="radio" name="loop" value="0" <cfif not stObj.flashLoop>checked</cfif>>False </td>
+  		<td><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].loopLabel#</span></td>
+   	 	<td><input type="radio" name="loop" value="1" <cfif stObj.flashLoop>checked</cfif>>#application.adminBundle[session.dmProfile.locale].trueTxt# <input type="radio" name="loop" value="0" <cfif not stObj.flashLoop>checked</cfif>>#application.adminBundle[session.dmProfile.locale].falseTxt# </td>
 	</tr>
 	<tr>
-  		<td><span class="FormLabel">Show Menu:</span></td>
-   	 	<td><input type="radio" name="menu" value="1" <cfif stObj.flashMenu>checked</cfif>>True <input type="radio" name="menu" value="0" <cfif not stObj.flashMenu>checked</cfif>>False </td>
+  		<td><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].showMenuLabel#</span></td>
+   	 	<td><input type="radio" name="menu" value="1" <cfif stObj.flashMenu>checked</cfif>>#application.adminBundle[session.dmProfile.locale].trueTxt# <input type="radio" name="menu" value="0" <cfif not stObj.flashMenu>checked</cfif>>#application.adminBundle[session.dmProfile.locale].falseTxt# </td>
 	</tr>
 	
 	<tr>
-  		<td valign="top"><span class="FormLabel">Teaser:</span></td>
+  		<td valign="top"><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].teaserLabel#</span></td>
 	   	<td>
 			<textarea cols="30" rows="4" name="teaser" class="FormTextArea">#stObj.teaser#</textarea>
 		</td>
@@ -245,8 +247,8 @@ $out:$
 	<!--- submit buttons --->
 	<tr>
 		<td colspan="2" align="center">
-			<input type="submit" value="OK" name="submit" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';">
-			<input type="Button" value="Cancel" name="Cancel" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';" onClick="location.href='#application.url.farcry#/unlock.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#';parent.synchTab('editFrame','activesubtab','subtab','siteEditOverview');parent.synchTitle('Overview')">
+			<input type="submit" value="#application.adminBundle[session.dmProfile.locale].OK#" name="submit" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';">
+			<input type="Button" value="#application.adminBundle[session.dmProfile.locale].Cancel#" name="Cancel" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';" onClick="location.href='#application.url.farcry#/unlock.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#';parent.synchTab('editFrame','activesubtab','subtab','siteEditOverview');parent.synchTitle('Overview')">
 		</td>
 	</tr>		
 	</table>
@@ -256,10 +258,10 @@ $out:$
 		//bring focus to title
 		document.fileForm.title.focus();
 		objForm = new qForm("fileForm");
-		objForm.title.validateNotNull("Please enter a title");
-		objForm.height.validateNotNull("Please enter height");
-		objForm.width.validateNotNull("Please enter width");
-		objForm.flashVersion.validateNotNull("Please enter flash version");
+		objForm.title.validateNotNull("#application.adminBundle[session.dmProfile.locale].pleaseEnterTitle#");
+		objForm.height.validateNotNull("#application.adminBundle[session.dmProfile.locale].pleaseEnterHeight#");
+		objForm.width.validateNotNull("#application.adminBundle[session.dmProfile.locale].pleaseEnterWidth#");
+		objForm.flashVersion.validateNotNull("#application.adminBundle[session.dmProfile.locale].pleaseEnterFlashVer#");
 	</script>
 	</cfoutput>
 </cfif>	

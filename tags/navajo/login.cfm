@@ -1,5 +1,7 @@
 <cfsetting enablecfoutputonly="Yes">
 
+<cfprocessingDirective pageencoding="utf-8">
+
 <cfimport taglib="/farcry/fourq/tags" prefix="q4">
 
 <cfoutput>
@@ -66,6 +68,20 @@
 		<!--- turn on admin permissions --->
 		<cfset request.mode.bAdmin = 1>
 		<cfset session.dmSec.authentication.bAdmin = 1>
+		
+		<!--- i18n: admin bits --->
+		<cfif NOT structKeyExists(application.adminBundle, session.dmProfile.locale)>
+			<!--- <cfset application.adminBundle[session.dmProfile.locale]=application.rB.getResourceBundle("farcry.admin",session.dmProfile.locale,true)> --->
+			<cfset application.adminBundle[session.dmProfile.locale]=application.rB.getResourceBundle("#application.path.core#/packages/resources/admin.properties",session.dmProfile.locale,false)>
+		</cfif>
+		<!--- i18n: find out this locale's writing system direction using our special psychic powers --->
+		<cfif application.i18nUtils.isBIDI(session.dmProfile.locale)>
+			<cfset session.writingDir="rtl">
+		<cfelse>
+			<cfset session.writingDir="ltr">
+		</cfif>	
+		<!--- i18n: final bit, grab user language from locale, tarts up html tag --->
+		<cfset session.userLanguage=left(session.dmProfile.locale,2)>
 	</cfif>
 
 	<!--- relocate to original location --->

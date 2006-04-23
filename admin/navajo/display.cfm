@@ -1,4 +1,6 @@
-<cfabort showerror="Error: The farcry/navajo/display.cfm invoking page has been deprecated.  You must use the template defined by application.url.conjurer (in most instances this will simply be index.cfm under the webroot).">
+<cfprocessingDirective pageencoding="utf-8">
+
+<cfabort showerror="#application.adminBundle[session.dmProfile.locale].depreciatedDisplay#.">
 <!--- 
 <cfsetting enablecfoutputonly="Yes">
 <cfimport taglib="/farcry/farcry_core/tags/navajo" prefix="nj">

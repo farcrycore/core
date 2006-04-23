@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/edittabRules.cfm,v 1.8 2003/11/06 00:12:53 tom Exp $
-$Author: tom $
-$Date: 2003/11/06 00:12:53 $
-$Name: milestone_2-2-1 $
-$Revision: 1.8 $
+$Header: /cvs/farcry/farcry_core/admin/edittabRules.cfm,v 1.9 2004/07/15 01:09:43 brendan Exp $
+$Author: brendan $
+$Date: 2004/07/15 01:09:43 $
+$Name: milestone_2-3-2 $
+$Revision: 1.9 $
 
 || DESCRIPTION || 
 $DESCRIPTION: shows rules associated with this object $
@@ -22,11 +22,13 @@ $in:$
 $out:$
 --->
 
+<cfprocessingDirective pageencoding="utf-8">
+
 <!--- set up page header --->
 <cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
 <cfimport taglib="/farcry/fourq/tags/" prefix="q4">
 <cfparam name="URL.action" default="">
-<admin:header>
+<admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 <cfoutput>
 <script language="JavaScript">
 function executeRuleUpdate(typename,ruleid)
@@ -95,7 +97,7 @@ function reinstateRuleListing()
 		}
 		oCon.setData(stProperties=stCon,dsn=application.dsn);
 	</cfscript>
-	<div align="center" class="formtitle">Publishing rule has been deleted.</div>
+	<div align="center" class="formtitle"><cfoutput>#application.adminBundle[session.dmProfile.locale].publishingRuleDeleted#</cfoutput></div>
 		
 </cfcase>
 
@@ -122,9 +124,9 @@ function reinstateRuleListing()
 				<span class="FormTitle" style="margin-left:30px;">#q.label#</span><br>
 				<table cellpadding="5" cellspacing="0" border="1" style="margin-left:30px;margin-top:5px" width="400">
 				<tr class="dataheader">
-					<td align="center"><strong>Rule Type</strong></td>
-					<td align="center" width="75"><strong>Edit</strong></td>
-					<td align="center" width="75"><strong>Delete</strong></td>
+					<td align="center"><strong>#application.adminBundle[session.dmProfile.locale].ruleType#</strong></td>
+					<td align="center" width="75"><strong>#application.adminBundle[session.dmProfile.locale].edit#</strong></td>
+					<td align="center" width="75"><strong>#application.adminBundle[session.dmProfile.locale].delete#</strong></td>
 				</tr>
 					<cfloop from="1" to="#arrayLen(stCon.aRules)#" index="i">
 					<cfscript>
@@ -135,11 +137,11 @@ function reinstateRuleListing()
 							#typename#
 						</td>			
 						<td align="center">
-							<a onclick="executeRuleUpdate('#typename#','#stCon.aRules[i]#')" href="javascript:void(0);">Edit</a> 
+							<a onclick="executeRuleUpdate('#typename#','#stCon.aRules[i]#')" href="javascript:void(0);">#application.adminBundle[session.dmProfile.locale].edit#</a> 
 							<!--- <a href="#cgi.script_name#?action=edit&ruleid=#stCon.aRules[i]#&typename=#typename#">Edit</a> --->
 						</td>
 						<td align="center">
-							<a href="#cgi.script_name#?action=delete&ruleid=#stCon.aRules[i]#&containerid=#stCon.objectid#&typename=#typename#">Delete</a>
+							<a href="#cgi.script_name#?action=delete&ruleid=#stCon.aRules[i]#&containerid=#stCon.objectid#&typename=#typename#">#application.adminBundle[session.dmProfile.locale].delete#</a>
 						</td>
 					</tr>
 					</cfloop>
@@ -153,11 +155,10 @@ function reinstateRuleListing()
 </div>
 <cfoutput>
 <div id="editruleframe" style="display:none">
-	<span id="editrulemsg"></span>. <a onclick="reinstateRuleListing()" href="javascript:void(0)">Return to rule listing</a>
+	<span id="editrulemsg"></span>. <a onclick="reinstateRuleListing()" href="javascript:void(0)">#application.adminBundle[session.dmProfile.locale].returnRuleList#</a>
 	<iframe name="ruleFrame" id="ruleFrame" src="#application.url.farcry#/admin/editrule.cfm" frameborder="0" width="100%" height="100%"></iframe>
 </div>
 </cfoutput>
-
 
 
 <!--- setup footer --->

@@ -5,11 +5,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/install/index.cfm,v 1.53 2004/01/19 04:47:41 brendan Exp $
+$Header: /cvs/farcry/farcry_core/admin/install/index.cfm,v 1.54 2005/02/04 05:21:27 brendan Exp $
 $Author: brendan $
-$Date: 2004/01/19 04:47:41 $
-$Name: milestone_2-2-1 $
-$Revision: 1.53 $
+$Date: 2005/02/04 05:21:27 $
+$Name: milestone_2-3-2 $
+$Revision: 1.54 $
 
 || DESCRIPTION || 
 $Description: Installation scripts for FarCry$
@@ -206,7 +206,7 @@ $out:$
 </cfif>
 
 <cfoutput>
-<p><font size="1">copyright &copy; 2003 . <a href="http://www.daemon.com.au" target="_blank">Daemon Internet Consultants</a></font></p>
+<p><font size="1">copyright &copy; 2003 - #year(now())#. <a href="http://www.daemon.com.au" target="_blank">Daemon Internet Consultants</a></font></p>
 
 </div>
 

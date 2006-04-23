@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/edittabOverview.cfm,v 1.34 2004/01/12 07:35:46 paul Exp $
-$Author: paul $
-$Date: 2004/01/12 07:35:46 $
-$Name: milestone_2-2-1 $
-$Revision: 1.34 $
+$Header: /cvs/farcry/farcry_core/admin/edittabOverview.cfm,v 1.36 2004/12/22 04:32:36 brendan Exp $
+$Author: brendan $
+$Date: 2004/12/22 04:32:36 $
+$Name: milestone_2-3-2 $
+$Revision: 1.36 $
 
 || DESCRIPTION || 
 $DESCRIPTION: Dispalys summary and options for editing/approving/previewing etc for selected object$
@@ -22,6 +22,9 @@ $DEVELOPER:Paul Harrison (harrisonp@cbs.curtin.edu.au)$
 $in:$ 
 $out:$
 --->
+
+<cfprocessingDirective pageencoding="utf-8">
+
 <!--- set up page header --->
 <cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
 <cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
@@ -38,7 +41,7 @@ $out:$
 </cfscript>
 
 
-<admin:header>
+<admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 <cfif iOverviewTab eq 1>
 	<cfoutput>
@@ -58,12 +61,10 @@ $out:$
 </STYLE>
 
 <IFRAME WIDTH="100" HEIGHT="1" NAME="idServer" ID="idServer" 
-	 FRAMEBORDER="0" FRAMESPACING="0" MARGINWIDTH="0" MARGINHEIGHT="0">
+	 FRAMEBORDER="0" FRAMESPACING="0" MARGINWIDTH="0" MARGINHEIGHT="0" SRC="null">
 		<ILAYER NAME="idServer" WIDTH="400" HEIGHT="100" VISIBILITY="Hide" 
 		 ID="idServer">
-		<P>This page uses a hidden frame and requires either Microsoft 
-		Internet Explorer v4.0 (or higher) or Netscape Navigator v4.0 (or 
-		higher.)</P>
+		<P><cfoutput>#application.adminBundle[session.dmProfile.locale].browserReqBlurb#</cfoutput></P>
 		</ILAYER>
 </IFRAME>
 

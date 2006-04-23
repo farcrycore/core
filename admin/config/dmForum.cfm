@@ -1,3 +1,5 @@
+<cfprocessingDirective pageencoding="utf-8">
+
 <cfscript>
 	aPolicyGroup = request.dmsec.oAuthorisation.getAllPolicyGroups();
 </cfscript>
@@ -10,7 +12,7 @@
 		application.config.Forum.lPolicyGroupIds = form.lPolicyGroupIds;
 	</cfscript>
 	<cfoutput>
-		<strong>Update complete</strong><br/>
+		<strong>#application.adminBundle[session.dmProfile.locale].updateComplete#</strong><br/>
 	</cfoutput>
 <cfelse>
 	<cfoutput>
@@ -18,7 +20,7 @@
 	<table>
 		<tr>
 			<td valign="top">
-			Forum Administrators :
+			#application.adminBundle[session.dmProfile.locale].forumAdmins#
 			</td>
 			<td>
 			<select name="lPolicyGroupIds" size="3" multiple>
@@ -30,7 +32,7 @@
 		</tr>
 		<tr>
 			<td colspan="2" align="center">
-				<input type="Submit" name="submit" value="update">
+				<input type="Submit" name="submit" value="#application.adminBundle[session.dmProfile.locale].update#">
 			</td>
 		</tr>
 	</table>	

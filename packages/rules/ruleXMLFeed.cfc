@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/rules/ruleXMLFeed.cfc,v 1.8 2004/06/16 23:25:24 brendan Exp $
-$Author: brendan $
-$Date: 2004/06/16 23:25:24 $
-$Name: milestone_2-2-1 $
-$Revision: 1.8 $
+$Header: /cvs/farcry/farcry_core/packages/rules/ruleXMLFeed.cfc,v 1.11 2004/07/26 09:13:14 phastings Exp $
+$Author: phastings $
+$Date: 2004/07/26 09:13:14 $
+$Name: milestone_2-3-2 $
+$Revision: 1.11 $
 
 || DESCRIPTION || 
 $Description: Publishing rule to pull, parse and display external RSS feeds.  Is dependent on the rss.cfc component. $
@@ -45,7 +45,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 				stObj.maxRecords = form.maxRecords;
 			</cfscript>
 			<q4:contentobjectdata typename="#application.rules.ruleXMLFeed.rulePath#" stProperties="#stObj#" objectID="#stObj.objectID#">
-			<cfset message = "Update Successful">
+			<cfset message = "#application.adminBundle[session.dmProfile.locale].updateSuccessful#">
 		</cfif>
 
 		<cfif isDefined("message")>
@@ -59,7 +59,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 		<table width="100%">
 		<tr>
 			<td align="right">
-				<strong>Feed Name</strong>
+				<strong>#application.adminBundle[session.dmProfile.locale].feedName#</strong>
 			</td>
 			<td>
 				<input class="field" type="text" name="feedName" value="#stObj.feedName#">
@@ -67,7 +67,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 		</tr>
 		<tr>
 			<td align="right" >
-				<strong>XML Feed Intro</strong>
+				<strong>#application.adminBundle[session.dmProfile.locale].xmlFeedIntro#</strong>
 			</td>
 			<td>
 				<textarea  class="field" cols="50" name="intro" rows="5">#stObj.intro#</textarea>
@@ -75,7 +75,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 		</tr>
 		<tr>
 			<td align="right" >
-				<strong>Max number of items to display</strong>
+				<strong>#application.adminBundle[session.dmProfile.locale].maxItemsToDisplay#</strong>
 			</td>		
 			<td>
 				<select name="maxRecords">
@@ -86,21 +86,21 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 		</tr>
 		<tr>
 			<td align="right" >
-				<strong>XML Feed Location</strong>
+				<strong>#application.adminBundle[session.dmProfile.locale].xmlFeedLocation#</strong>
 			</td>
 			<td>
 				<input  class="field" type="text" name="xmlFeedURL" size="50" value="#stObj.xmlFeedURL#">
 			</td>
 		</tr>
 		<tr>
-			<td colspan="2" align="center"><input class="normalbttnstyle" type="submit" value="go" name="updateRuleXMLFeed"></td>
+			<td colspan="2" align="center"><input class="normalbttnstyle" type="submit" value="#application.adminBundle[session.dmProfile.locale].go#" name="updateRuleXMLFeed"></td>
 		</tr>
 		</table>
 		
 		</form>
 		
 		<div style="width: 80%; padding: 30px 30px;">
-		<h3>Preview Output</h3>
+		<h3>#application.adminBundle[session.dmProfile.locale].previewOutput#</h3>
 		#execute(objectid)#
 		</div>
 		</cfoutput>
@@ -146,7 +146,9 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 			<cfloop from="1" to="#count#" index="i">
 			<cfoutput>
 			<div class="xmlitem">
-			<a href="#aItems[i].link#">#aItems[i].title#</a> #dateformat(aItems[i]["dc:date"],"dd-mmm-yyyy")# <br />
+			<a href="#aItems[i].link#">#aItems[i].title#</a> #application.thisCalendar.i18nDateFormat(aItems[i]["dc:date"],session.dmProfile.locale,application.longF)# 
+			<!--- #dateformat(aItems[i]["dc:date"],"dd-mmm-yyyy")#  --->
+			<br />
 			#aItems[i].description#
 			</div>
 			</cfoutput>

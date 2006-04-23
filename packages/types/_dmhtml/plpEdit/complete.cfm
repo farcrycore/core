@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmhtml/plpEdit/complete.cfm,v 1.2 2003/05/03 04:00:57 geoff Exp $
-$Author: geoff $
-$Date: 2003/05/03 04:00:57 $
-$Name: b201 $
-$Revision: 1.2 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmhtml/plpEdit/complete.cfm,v 1.3 2004/07/15 02:00:49 brendan Exp $
+$Author: brendan $
+$Date: 2004/07/15 02:00:49 $
+$Name: milestone_2-3-2 $
+$Revision: 1.3 $
 
 || DESCRIPTION || 
 $Description: dmHTML PLP for edit handler - Completion Step $
@@ -21,5 +21,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 ok this is the PLP complete step.  This is here to do any last minute 
 cleanup of the output scope before setting the PLP as completed. 
 --->
+
+<cfprocessingDirective pageencoding="utf-8">
 
 <cfset bComplete = true>

@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/dmEvent.cfc,v 1.6 2003/09/19 07:44:33 brendan Exp $
-$Author: brendan $
-$Date: 2003/09/19 07:44:33 $
-$Name: b201 $
-$Revision: 1.6 $
+$Header: /cvs/farcry/farcry_core/packages/types/dmEvent.cfc,v 1.6.6.1 2005/05/24 04:47:35 gstewart Exp $
+$Author: gstewart $
+$Date: 2005/05/24 04:47:35 $
+$Name: milestone_2-3-2 $
+$Revision: 1.6.6.1 $
 
 || DESCRIPTION || 
 $Description: dmEvent Type $
@@ -45,6 +45,8 @@ object methods
 	<cfset stObj = getData(arguments.objectid)>
 	<cfinclude template="_dmEvent/edit.cfm">
 </cffunction>
-
+<cffunction name="renderObjectOverview" hint="just over riding edit overview for now">
+	<cfargument name = "ObjectId">
+</cffunction>
 </cfcomponent>
 

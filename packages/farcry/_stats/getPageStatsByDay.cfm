@@ -1,14 +1,19 @@
+<!-- Revision: 2005-05-25 // Friedrich Dimmel
+	changes: PostgreSQL queries corrected.
+	1) HH24 instead of hh
+-->
+
 <!--- 
 || LEGAL ||
 $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_stats/getPageStatsByDay.cfm,v 1.14 2004/05/20 04:41:25 brendan Exp $
-$Author: brendan $
-$Date: 2004/05/20 04:41:25 $
-$Name: milestone_2-2-1 $
-$Revision: 1.14 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_stats/getPageStatsByDay.cfm,v 1.14.4.1 2005/05/30 02:49:46 guy Exp $
+$Author: guy $
+$Date: 2005/05/30 02:49:46 $
+$Name: milestone_2-3-2 $
+$Revision: 1.14.4.1 $
 
 || DESCRIPTION || 
 $Description: get object stats $
@@ -43,19 +48,23 @@ $out:$
 
 <cfcase value="postgresql">
 	<!--- This should work, but I'm not sure if this function is even used? KS --->
+<!---
+	adapted by Friedrich Dimmel (friedrich.dimmel@siemens.com)
+	Didn't work. PostgreSQL uses HH24 instead of hh.
+--->
 	<cfquery datasource="#arguments.dsn#" name="qGetPageStatsByDay">
-		select distinct hour, TO_CHAR(fq.logdatetime,'hh') as loginhour, count(fq.logId) as count_views
+		SELECT DISTINCT hour, TO_CHAR(fq.logdatetime,'HH24') as loginhour, count(fq.logId) as count_views
 		from #application.dbowner#statsHours
-		left join (
-				select * from stats
-				where 1 = 1 
+		LEFT JOIN (
+				SELECT * FROM stats
+				WHERE 1 = 1
 				<cfif not arguments.showAll>
-					and pageid = '#arguments.pageId#'
+					AND pageid = '#arguments.pageId#'
 				</cfif>
-		)fq on TO_CHAR(fq.logdatetime,'hh')::integer = statsHours.hour
-		and fq.logdatetime = '#dateFormat(arguments.day, "yyyy-mm-dd")#'
-		group by hour, TO_CHAR(fq.logdatetime,'hh')
-		order by 1 
+		) fq ON TO_CHAR(fq.logdatetime,'HH24') = statsHours.hour
+		AND TO_CHAR(fq.logdatetime,'DD' ) = '#DateFormat(arguments.day, "dd")#' AND TO_CHAR(fq.logdatetime, 'MM') = '#DateFormat(arguments.day, "mm")#' AND TO_CHAR(fq.logdatetime,'YYYY') = '#DateFormat(arguments.day, "yyyy")#'
+		GROUP BY hour, TO_CHAR(fq.logdatetime,'HH24')
+		ORDER BY 1 
 	</cfquery>	
 </cfcase>
 

@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/navajo/treeGetRelations.cfm,v 1.15 2003/12/08 05:44:50 paul Exp $
-$Author: paul $
-$Date: 2003/12/08 05:44:50 $
-$Name: milestone_2-2-1 $
-$Revision: 1.15 $
+$Header: /cvs/farcry/farcry_core/tags/navajo/treeGetRelations.cfm,v 1.17 2004/08/07 09:17:51 geoff Exp $
+$Author: geoff $
+$Date: 2004/08/07 09:17:51 $
+$Name: milestone_2-3-2 $
+$Revision: 1.17 $
 
 || DESCRIPTION || 
 
@@ -38,6 +38,7 @@ $out:[attributes.r_lObjectIds]: Objects found as list of ids$
 --->
 
 <cfsetting enablecfoutputonly="yes">
+<cfprocessingDirective pageencoding="utf-8">
 <cfimport taglib="/farcry/fourq/tags" prefix="q4">
 
 <cfparam name="attributes.objectId" default="">
@@ -191,26 +192,6 @@ this should be a COAPI call and *not* a straight SQL shortcut
 
 </cfloop>
 
-
-<!--------------------------------------------------------------------
-Filter results by type
-TODO
-change to typenames as opposed to Spectra TypeIDs
---------------------------------------------------------------------->
-<cfif len(attributes.lTypeIds)>
-<!--- temp break --->
-<cfthrow errorcode="navajo" detail="treeGetRelations: ltypeids attribute is not yet implemented for fourq.">
-
-<cfquery name="qFilter" datasource="#request.cfa.datasource.dsn#">
-SELECT o.objectId
-	FROM objects o
-	WHERE o.typeId IN ('#ListChangeDelims(attributes.lTypeIds,"','",",")#')
-	AND o.objectId IN ('#ListChangeDelims(lObjectIds,"','",",")#')
-</cfquery>
-<cfset lObjectIds = ValueList(qFilter.objectId )>
-</CFIF>
-
-
 <!--------------------------------------------------------------------
 Build return result structures
 --------------------------------------------------------------------->
@@ -223,7 +204,7 @@ Build return result structures
 </cfif>
 
 <cfif len(attributes.r_stObjects)>
-	<q4:contentobjectGetMultiple lObjectIds="#lObjectIds#" r_stObjects="stObjects" typename="#application.types[attributes.typename].typePath#">
+	<q4:contentobjectGetMultiple lObjectIds="#lObjectIds#" r_stObjects="stObjects" typename="#application.types[attributes.typename].typePath#" bshallow="true">
 	<cfset "caller.#attributes.r_stObjects#" = stObjects>
 </cfif>
 

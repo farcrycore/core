@@ -327,6 +327,42 @@ CONSTRAINT PK_STATSSEARCH PRIMARY KEY (LOGID))
 			
 		</cfcase>
 	
+		<cfcase value="postgresql">
+			<cftry>
+			<cfquery datasource="#application.dsn#" name="qDrop">
+				DROP TABLE #application.dbowner#statsSearch
+			</cfquery>
+			<cfcatch>
+				<cftrace text="Error trying to drop statSearch table (#cfcatch.message#)">
+			</cfcatch>			
+			</cftry>
+			<!--- create the stats --->
+			<cfscript>
+				sql = "CREATE TABLE #application.dbowner#statsSearch (
+LOGID VARCHAR(50) NOT NULL ,
+SEARCHSTRING VARCHAR(255) NOT NULL ,
+LCOLLECTIONS TEXT ,
+RESULTS INTEGER NOT NULL,
+REMOTEIP VARCHAR(50) NOT NULL,
+LOGDATETIME TIMESTAMP NOT NULL,
+REFERER TEXT,
+LOCALE VARCHAR(100) NOT NULL,
+CONSTRAINT PK_STATSSEARCH PRIMARY KEY (LOGID))
+";		
+			</cfscript>
+			
+			<cfquery datasource="#application.dsn#" name="qCreate">
+				#sql#
+			</cfquery>
+			<cfscript>
+				sql = "CREATE INDEX #application.dbowner#IDX_STATSSEARCH ON statsSearch(searchString,logdatetime)";
+			</cfscript>
+			<cfquery datasource="#application.dsn#" name="qCreate">
+				#sql#
+			</cfquery>
+			
+		</cfcase>
+	
 		<cfdefaultcase>
 		
 			<cfquery datasource="#application.dsn#" name="qDrop">

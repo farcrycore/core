@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_versioning/approveEmail_approved_dd.cfm,v 1.8.4.1 2004/11/25 00:34:59 paul Exp $
-$Author: paul $
-$Date: 2004/11/25 00:34:59 $
-$Name: milestone_2-2-1 $
-$Revision: 1.8.4.1 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_versioning/approveEmail_approved_dd.cfm,v 1.9 2004/11/19 23:18:53 tom Exp $
+$Author: tom $
+$Date: 2004/11/19 23:18:53 $
+$Name: milestone_2-3-2 $
+$Revision: 1.9 $
 
 || DESCRIPTION || 
 $Description: sends email for approved news type objects $
@@ -47,7 +47,7 @@ stProfile = o_profile.getProfile(userName=stObj.lastupdatedby);
 <cfmail to="#stProfile.emailAddress#" from="#fromEmail#" subject="#application.config.general.sitetitle# - Object Approved">
 Hi <cfif len(stProfile.firstName) gt 0>#stProfile.firstName#<cfelse>#stProfile.userName#</cfif>,
 
-Your object "<cfif stObj.label neq "">#stObj.label#<cfelse>undefined</cfif>" has been approved.
+Your object "<cfif isDefined("stObj.title") and len(trim(stObj.title))>#stObj.title#<cfelseif isDefined("stObj.label") and len(trim(stObj.label))>#stObj.label#<cfelse>undefined</cfif>" has been approved.
 
 <cfif arguments.comment neq "">
 Comments added on status change:

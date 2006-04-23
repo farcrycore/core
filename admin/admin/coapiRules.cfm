@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/admin/coapiRules.cfm,v 1.8 2003/09/03 01:50:31 brendan Exp $
+$Header: /cvs/farcry/farcry_core/admin/admin/coapiRules.cfm,v 1.13 2004/12/22 04:32:36 brendan Exp $
 $Author: brendan $
-$Date: 2003/09/03 01:50:31 $
-$Name: b201 $
-$Revision: 1.8 $
+$Date: 2004/12/22 04:32:36 $
+$Name: milestone_2-3-2 $
+$Revision: 1.13 $
 
 || DESCRIPTION || 
 $Description: Managemnt interface for rules$
@@ -22,24 +22,21 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
 $in: $
 $out:$
 --->
-
 <cfsetting enablecfoutputonly="Yes">
+<cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/fourq/tags/" prefix="q4">
+
+<cfprocessingDirective pageencoding="utf-8">
 
 <!--- check permissions --->
 <cfscript>
 	iCOAPITab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="AdminCOAPITab");
 </cfscript>
 
-<cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
-
-<admin:header title="COAPI Rules">
+<admin:header title="#application.adminBundle[session.dmProfile.locale].COAPIrules#" writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 <cfif iCOAPITab eq 1>	
-	<cfimport taglib="/farcry/fourq/tags/" prefix="q4">
-
-	<cfoutput>
-		<span class="formtitle">Rule Classes</span><p></p>
-	</cfoutput>
+	<cfoutput><div class="formtitle">#application.adminBundle[session.dmProfile.locale].ruleClasses#</div></cfoutput>
 	
 	<cfparam name="FORM.action" default="">
 	
@@ -75,7 +72,7 @@ $out:$
 			 }	
 			 case "renameproperty":
 			 {
-			 	alterType.alterPropertyName(typename=form.typename,srcColumn=form.property,destColumn=form.renameto);
+			 	alterType.alterPropertyName(typename=form.typename,srcColumn=form.property,destColumn=form.renameto,colType=form.colType,colLength=form.colLength);
 				alterType.refreshCFCAppData(typename=form.typename,scope='rules');
 				break;
 			 }
@@ -96,7 +93,7 @@ $out:$
 	</cfscript>
 	
 	<cfoutput>
-	
+	<!--- TODO: what is this??  Can we remove it?? GB --->
 	<script>
 		function updateReport(html,divID){
 			em = document.getElementById(divID);
@@ -106,17 +103,14 @@ $out:$
 	
 	<table cellpadding="5" cellspacing="0" border="1"  style="margin-left:30px;">
 	<tr>
-		<th class="dataheader">Integrity</th>
-		<th class="dataheader">Component</th>
-		<th class="dataheader">Deployed</th>
-		<th class="dataheader">Deploy</th>
+		<th class="dataheader">#application.adminBundle[session.dmProfile.locale].integrity#</th>
+		<th class="dataheader">#application.adminBundle[session.dmProfile.locale].component#</th>
+		<th class="dataheader">#application.adminBundle[session.dmProfile.locale].deployed#</th>
+		<th class="dataheader">#application.adminBundle[session.dmProfile.locale].deploy#</th>
 	</tr>
 	</cfoutput>
 	
 	<cfloop collection="#application.Rules#" item="componentName">
-	
-		<cfoutput>
-	
 		<cfscript>
 			if (structKeyExists(stTypes,componentname))
 				stConflicts = alterType.compareDBToCFCMetadata(typename=componentname,stDB=stTypes['#componentname#'],scope='rules');
@@ -124,18 +118,19 @@ $out:$
 				stConflicts['#componentname#'] = structNew();
 		</cfscript>
 		
-		
+		<cfoutput>		
 		<tr <cfif alterType.isCFCConflict(stConflicts=stConflicts,typename=componentName)>style='background-color:##ccc;color:black;'</cfif>>
 			<td align="center">
-		
+				<!--- i18n:  yes/no images? check vs x ok across all locales?  --->
 				<cfif alterType.isCFCConflict(stConflicts=stConflicts,typename=componentName)>
-					<img src="#application.url.farcry#/images/no.gif"> See Below
+					<img src="#application.url.farcry#/images/no.gif"> #application.adminBundle[session.dmProfile.locale].seeBelow#
 				<cfelse>
 					<img src="#application.url.farcry#/images/yes.gif">
 				</cfif>
 			</td>
 			<td>#componentName#</td>
 			<td align="center">
+				<!--- i18n:  yes/no images? check vs x ok across all locales?  --->
 				<cfif alterType.isCFCDeployed(typename=componentName)>
 					<img src="#application.url.farcry#/images/yes.gif">
 				<cfelse>
@@ -145,9 +140,9 @@ $out:$
 			
 			<td align="center">
 				<cfif NOT alterType.isCFCDeployed(typename=componentName)>
-					<a href="#CGI.SCRIPT_NAME#?deploy=#componentName#">Deploy</a>
+					<a href="#CGI.SCRIPT_NAME#?deploy=#componentName#">#application.adminBundle[session.dmProfile.locale].Deploy#</a>
 				<cfelse>
-					NA
+					#application.adminBundle[session.dmProfile.locale].notAvailable#
 				</cfif>
 			</td>
 		</tr>
@@ -171,13 +166,12 @@ $out:$
 	<cfoutput>
 	</table>
 	
+	<!--- TODO: what is this??  Can we remove it?? GB --->
 	<IFRAME WIDTH="400" HEIGHT="400" NAME="idServer" ID="idServer" 
-		 FRAMEBORDER="1" FRAMESPACING="0" MARGINWIDTH="0" MARGINHEIGHT="0" style="display:none">
+		 FRAMEBORDER="1" FRAMESPACING="0" MARGINWIDTH="0" MARGINHEIGHT="0" style="display:none" SRC="null">
 			<ILAYER NAME="idServer" WIDTH="400" HEIGHT="100" VISIBILITY="Hide" 
 			 ID="idServer">
-			<P>This page uses a hidden frame and requires either Microsoft 
-			Internet Explorer v4.0 (or higher) or Netscape Navigator v4.0 (or 
-			higher.)</P>
+			<P>#application.adminBundle[session.dmProfile.locale].browserReqBlurb#</P>
 			</ILAYER>
 	</IFRAME>
 	</cfoutput>

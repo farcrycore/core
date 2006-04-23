@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/security/authentication.cfc,v 1.26.2.1 2004/10/21 21:56:07 tom Exp $
-$Author: tom $
-$Date: 2004/10/21 21:56:07 $
-$Name: milestone_2-2-1 $
-$Revision: 1.26.2.1 $
+$Header: /cvs/farcry/farcry_core/packages/security/authentication.cfc,v 1.33.2.1 2005/05/19 01:54:54 gstewart Exp $
+$Author: gstewart $
+$Date: 2005/05/19 01:54:54 $
+$Name: milestone_2-3-2 $
+$Revision: 1.33.2.1 $
 
 || DESCRIPTION || 
 $Description: authentication cfc $
@@ -139,21 +139,21 @@ $out:$
 				<cftransaction>
 				<cfswitch expression="#application.dbtype#">
 					<cfcase value="ora">
-						<cfquery datasource="#application.dsn#">
+						<cfquery datasource="#stUd[Userdirectory].datasource#">
 							INSERT INTO #application.dbowner#dmUser (userid, userLogin,userPassword,userNotes,userStatus )
 							VALUES (DMUSER_SEQ.nextval,'#arguments.UserLogin#','#userPassword#',<cfqueryparam cfsqltype="CF_SQL_VARCHAR" value="#arguments.userNotes#">,'#arguments.userstatus#')
 						</cfquery> 
 					</cfcase>
 					
 					<cfdefaultcase>
-						<cfquery datasource="#application.dsn#">
+						<cfquery datasource="#stUd[Userdirectory].datasource#">
 							INSERT INTO #application.dbowner#dmUser ( userLogin,userPassword,userNotes,userStatus )
 							VALUES ('#arguments.UserLogin#','#userPassword#',<cfqueryparam cfsqltype="CF_SQL_VARCHAR" value="#arguments.userNotes#">,'#arguments.userstatus#')
 						</cfquery> 	
 					</cfdefaultcase>
 				</cfswitch>
 				
-				<cfquery datasource="#application.dsn#" name="q">
+				<cfquery datasource="#stUd[Userdirectory].datasource#" name="q">
 					select max(userID) as thisUserID FROM #application.dbowner#dmUser
 				</cfquery>
 				</cftransaction>	
@@ -816,7 +816,7 @@ $out:$
 	<cffunction name="logout" access="public" hint="Logs the user out of the system" output="No">
 		<cfargument name="bAudit" type="boolean" required="false" default="false" >
 		<cfargument name="note" type="string" required="false" default="REFERRER #CGI.HTTP_REFERER#">
-				
+		<cflock timeout=20 scope="Session" type="Exclusive">		
 		<cfscript>
 			bLoggedIn=0;
 			if( isDefined("session.dmSec") AND isDefined("session.dmSec.authentication") )
@@ -825,6 +825,7 @@ $out:$
 			{	username =  session.dmSec.authentication.userlogin;
 				structDelete(session.dmSec, "authentication");
 				structDelete(session, "dmProfile");
+				structDelete(session,"genericadmin");
 				if (arguments.bAudit)
 				{
 					oAudit = createObject("component","#application.packagepath#.farcry.audit");
@@ -832,6 +833,7 @@ $out:$
 				}
 			}		
 		</cfscript>
+		</cflock>
 	</cffunction>
 	
 	<cffunction name="removeUserFromGroup" output="No">
@@ -919,7 +921,7 @@ $out:$
 				<cfset userPassword = arguments.userPassword>
 			</cfif>
 			
-			<cfquery datasource="#application.dsn#">
+			<cfquery datasource="#stUd[Userdirectory].datasource#">
 				UPDATE #application.dbowner#dmUser SET
 				userLogin='#arguments.UserLogin#',userPassword='#userPassword#',userNotes=<cfqueryparam cfsqltype="CF_SQL_VARCHAR" value="#arguments.usernotes#">,userStatus='#arguments.userStatus#'
 				WHERE userId='#arguments.userId#'

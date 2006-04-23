@@ -1,14 +1,18 @@
 <cfsetting enablecfoutputonly="Yes">
+
+<cfprocessingDirective pageencoding="utf-8">
+
 <cfimport taglib="/farcry/farcry_core/tags/misc/" prefix="misc">
 
 <cfoutput>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 
-<html>
+<html dir="#session.writingDir#" lang="#session.userLanguage#">
 <head>
 	<title>adminMenuFrame</title>
 	<misc:cacheControl>
 	<LINK href="../css/overviewFrame.css" rel="stylesheet" type="text/css">
+	<meta content="text/html; charset=UTF-8" http-equiv="content-type">
 </head>
 
 <body>
@@ -39,6 +43,7 @@
 				<cfcase value="menuitem">
 					<cfset label = xmlSearch(MenuElements[i],"label")>
 					<cfset link = xmlSearch(MenuElements[i],"link")>
+					<cfparam name="link[1].xmlAttributes.bAppendApproval" default="1">
 					<cfscript>
 						//if there is a permission, then check it exists
 						if(structKeyExists(menuElements[i].xmlAttributes,"permission"))
@@ -49,13 +54,19 @@
 						else
 							bHasPerm = 1; //For the sake of backwards compatability, will assume that if no permission set - then everyone can see this menuitem
 						href = link[1].xmltext;
+						bAppend = link[1].xmlAttributes.bAppendApproval;
 						parentURL = application.config.general.adminServer;
 						parentURL = parentURL & "#application.url.farcry#/index.cfm?section=customAdmin&parenttabindex=#url.parentTabIndex#&subtabindex=#url.subtabindex#&defaultPage=#link[1].xmltext#";
-						if(findnocase(".cfm?",href))
-							append = "&";
-						else
-							append = "?";
-						href = href & append & "approveURL=#URLEncodedFormat(parentURL)#";
+						append = '';
+						//perhaps some users will want to overide this default behavior of appendin an approve URL - check for bAppendApproval
+						if(bAppend)
+						{
+							if(findnocase(".cfm?",href))
+								append = "&";
+							else
+								append = "?";
+							href = href & append & "approveURL=#URLEncodedFormat(parentURL)#";
+						}	
 					</cfscript>
 					<cfif bHasPerm GT 0>
 					<div class="frameMenuItem">

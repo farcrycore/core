@@ -1,7 +1,9 @@
+<cfprocessingDirective pageencoding="utf-8">
+
 <cfimport taglib="/farcry/fourq/tags/" prefix="q4">
 
 
-<cfset 	resultmsg = "Draft object restoration was unsuccessful, please advise your systems administrator">
+<cfset 	resultmsg = "#application.adminBundle[session.dmProfile.locale].draftObjRestoreFailed#">
 
 <cftry>
 
@@ -35,7 +37,7 @@
 				stObj.datetimelastupdated = createODBCDateTime(now());
 				o = createObject('component',application.types[stobj.typename].typepath);
 				o.setData(stProperties=stObj,auditNote='Live object data restored to draft',bAudit=true);
-				resultmsg = 'Live object data has been successfully restored to draft';
+				resultmsg = '#application.adminBundle[session.dmProfile.locale].liveObjRestoredOK#';
 			</cfscript>
 		</cfif>
 	</cfif>

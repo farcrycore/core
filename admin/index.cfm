@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/index.cfm,v 1.70 2004/06/27 23:48:57 brendan Exp $
-$Author: brendan $
-$Date: 2004/06/27 23:48:57 $
-$Name: milestone_2-2-1 $
-$Revision: 1.70 $
+$Header: /cvs/farcry/farcry_core/admin/index.cfm,v 1.77 2004/11/30 17:06:03 tom Exp $
+$Author: tom $
+$Date: 2004/11/30 17:06:03 $
+$Name: milestone_2-3-2 $
+$Revision: 1.77 $
 
 || DESCRIPTION || 
 $Description: Landing page for Farcry. Works out which section to display and associated pages according to permissions. $
@@ -22,9 +22,9 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au)$
 $in: $
 $out:$
 --->
-
 <cfsetting enablecfoutputonly="Yes">
 
+<cfprocessingdirective pageencoding="utf-8" />
 
 <!--- set up page header --->
 <cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
@@ -39,16 +39,16 @@ $out:$
 <!--- ### User Session Details ### --->
 <cfoutput>
 <div class="countDown">
-	Logged in as: <strong>#session.dmSec.authentication.userlogin#</strong><br>	
-	<form style="display:inline"><input type="hidden" id="timer" name="timer" value=""><span class="counter" type="text" id="clock" name="clock">#application.config.general.sessionTimeOut#:00 remaining in session</span> </form>
+	#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].loggedInAs,'#session.dmSec.authentication.userlogin#')#<br>	
+	<form style="display:inline"><input type="hidden" id="timer" name="timer" value=""><span class="counter" type="text" id="clock" name="clock">#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].sessionTimeRemaining,'#application.config.general.sessionTimeOut#')#</span> </form>
 </div>
 </cfoutput>
 
 <!--- #### Header ###  --->
 <cfoutput>
 <div id="Header">
-<span class="title" onclick="location.href='index.cfm'" onmouseover="style.cursor='hand'" title="#application.config.general.siteTitle# | Home">#application.config.general.siteTitle#</span><br />
-<span class="description" onclick="location.href='index.cfm'" onmouseover="style.cursor='hand'" title="#application.config.general.siteTitle# | Home">#application.config.general.siteTagLine#</span>
+<span class="title" onclick="location.href='index.cfm'" onmouseover="style.cursor='hand'" title="#application.config.general.siteTitle# | #application.adminBundle[session.dmProfile.locale].Home#">#application.config.general.siteTitle#</span><br />
+<span class="description" onclick="location.href='index.cfm'" onmouseover="style.cursor='hand'" title="#application.config.general.siteTitle# | #application.adminBundle[session.dmProfile.locale].Home#">#application.config.general.siteTagLine#</span>
 </cfoutput>
 		
 		<cfscript>
@@ -71,30 +71,30 @@ $out:$
 			<admin:tabs>
 				<cfif iMyFarcryTab eq 1>
 					<cfif url.section eq "home">
-						<admin:tabitem class="activetab tabhome" href="#application.url.farcry#/index.cfm?section=Home" target="_top" title="My #application.config.general.siteTitle#" text="My #application.config.general.siteTitle#">
+						<admin:tabitem class="activetab" href="#application.url.farcry#/index.cfm?section=Home" target="_top" title="#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].myAppName,'#application.config.general.siteTitle#')#" text="#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].myAppName,'#application.config.general.siteTitle#')#">
 					<cfelse>
-						<admin:tabitem class="tab tabhome" href="#application.url.farcry#/index.cfm?section=Home" target="_top" title="My #application.config.general.siteTitle#" text="My #application.config.general.siteTitle#">
+						<admin:tabitem class="tab" href="#application.url.farcry#/index.cfm?section=Home" target="_top" title="#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].myAppName,'#application.config.general.siteTitle#')#" text="#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].myAppName,'#application.config.general.siteTitle#')#">
 					</cfif>
 				</cfif>
 				<cfif iSiteTab eq 1>
 					<cfif url.section eq "site">
-							<admin:tabitem class="activetab tabsite" href="#application.url.farcry#/index.cfm?section=Site" target="_top" title="Site Tree" text="Site">
+							<admin:tabitem class="activetab" href="#application.url.farcry#/index.cfm?section=Site" target="_top" title="#application.adminBundle[session.dmProfile.locale].siteTree#" text="#application.adminBundle[session.dmProfile.locale].Site#">
 						<cfelse>
-							<admin:tabitem class="tab tabsite" href="#application.url.farcry#/index.cfm?section=Site" target="_top" title="Site Tree" text="Site">
+							<admin:tabitem class="tab" href="#application.url.farcry#/index.cfm?section=Site" target="_top" title="#application.adminBundle[session.dmProfile.locale].siteTree#" text="#application.adminBundle[session.dmProfile.locale].Site#">
 					</cfif>
 				</cfif>
 				<cfif iContentTab eq 1>
 					<cfif url.section eq "dynamic">
-						<admin:tabitem class="activetab tabdynamic" href="#application.url.farcry#/index.cfm?section=Dynamic" target="_top" title="Content" text="Content">
+						<admin:tabitem class="activetab" href="#application.url.farcry#/index.cfm?section=Dynamic" target="_top" title="#application.adminBundle[session.dmProfile.locale].content#" text="#application.adminBundle[session.dmProfile.locale].content#">
 					<cfelse>
-						<admin:tabitem class="tab tabdynamic" href="#application.url.farcry#/index.cfm?section=Dynamic" target="_top" title="Content" text="Content">
+						<admin:tabitem class="tab" href="#application.url.farcry#/index.cfm?section=Dynamic" target="_top" title="#application.adminBundle[session.dmProfile.locale].content#" text="#application.adminBundle[session.dmProfile.locale].content#">
 					</cfif>
 				</cfif>
 				<cfif iAdminTab eq 1>
 					<cfif url.section eq "admin">
-						<admin:tabitem class="activetab tabadmin" href="#application.url.farcry#/index.cfm?section=Admin" target="_top" title="Administration Area" text="Admin">
+						<admin:tabitem class="activetab" href="#application.url.farcry#/index.cfm?section=Admin" target="_top" title="#application.adminBundle[session.dmProfile.locale].adminArea#" text="#application.adminBundle[session.dmProfile.locale].admin#">
 					<cfelse>
-						<admin:tabitem class="tab tabadmin" href="#application.url.farcry#/index.cfm?section=Admin" target="_top" title="Administration Area" text="Admin">
+						<admin:tabitem class="tab" href="#application.url.farcry#/index.cfm?section=Admin" target="_top" title="#application.adminBundle[session.dmProfile.locale].adminArea#" text="#application.adminBundle[session.dmProfile.locale].admin#">
 					</cfif>
 				</cfif>
 				<!--- 
@@ -116,9 +116,9 @@ $out:$
 					<cfif iCustomAdminTab eq 1>
 		
 						<cfif url.section eq "customadmin" AND URL.parenttabindex EQ i>
-							<admin:tabitem class="activetab tabcustom" href="#application.url.farcry#/index.cfm?section=customAdmin&parenttabindex=#i#" target="_top" title="Administration Area" text="#application.customAdminXML.customtabs.parenttab[i].xmltext#">
+							<admin:tabitem class="activetab" href="#application.url.farcry#/index.cfm?section=customAdmin&parenttabindex=#i#" target="_top" title="#application.adminBundle[session.dmProfile.locale].adminArea#" text="#application.customAdminXML.customtabs.parenttab[i].xmltext#">
 						<cfelse>
-							<admin:tabitem class="tab tabcustom" href="#application.url.farcry#/index.cfm?section=customAdmin&parenttabindex=#i#" target="_top" title="Administration Area" text="#application.customAdminXML.customtabs.parenttab[i].xmltext#">
+							<admin:tabitem class="tab" href="#application.url.farcry#/index.cfm?section=customAdmin&parenttabindex=#i#" target="_top" title="#application.adminBundle[session.dmProfile.locale].adminArea#" text="#application.customAdminXML.customtabs.parenttab[i].xmltext#">
 						</cfif>
 					
 					</cfif>
@@ -131,28 +131,28 @@ $out:$
 					
 				<cfif iSecurityTab eq 1>
 					<cfif url.section eq "security">
-						<admin:tabitem class="activetab tabsecurity" href="#application.url.farcry#/index.cfm?section=Security" target="_top" title="Security Area" text="Security">
+						<admin:tabitem class="activetab" href="#application.url.farcry#/index.cfm?section=Security" target="_top" title="#application.adminBundle[session.dmProfile.locale].securityArea#" text="#application.adminBundle[session.dmProfile.locale].security#">
 					<cfelse>
-						<admin:tabitem class="tab tabsecurity" href="#application.url.farcry#/index.cfm?section=Security" target="_top" title="Security Area" text="Security">
+						<admin:tabitem class="tab" href="#application.url.farcry#/index.cfm?section=Security" target="_top" title="#application.adminBundle[session.dmProfile.locale].securityArea#" text="#application.adminBundle[session.dmProfile.locale].security#">
 					</cfif>
 				</cfif>
 				
 				<cfif iReportingTab eq 1>
 					<cfif url.section eq "reporting">
-						<admin:tabitem class="activetab tabreporting" href="#application.url.farcry#/index.cfm?section=Reporting" target="_top" title="Reporting Area" text="Reporting">
+						<admin:tabitem class="activetab" href="#application.url.farcry#/index.cfm?section=Reporting" target="_top" title="#application.adminBundle[session.dmProfile.locale].reportingArea#" text="#application.adminBundle[session.dmProfile.locale].reporting#">
 					<cfelse>
-						<admin:tabitem class="tab tabreporting" href="#application.url.farcry#/index.cfm?section=Reporting" target="_top" title="Reporting Area" text="Reporting">
+						<admin:tabitem class="tab" href="#application.url.farcry#/index.cfm?section=Reporting" target="_top" title="#application.adminBundle[session.dmProfile.locale].reportingArea#" text="#application.adminBundle[session.dmProfile.locale].reporting#">
 					</cfif>
 				</cfif>
 				<cfif iHelpTab eq 1>
 					<cfif url.section eq "help">
-						<admin:tabitem class="activetab tabhelp" href="#application.url.farcry#/index.cfm?section=Help" target="_top" title="Help Area" text="Help">
+						<admin:tabitem class="activetab" href="#application.url.farcry#/index.cfm?section=Help" target="_top" title="#application.adminBundle[session.dmProfile.locale].helpArea#" text="#application.adminBundle[session.dmProfile.locale].help#">
 					<cfelse>
-						<admin:tabitem class="tab tabhelp" href="#application.url.farcry#/index.cfm?section=Help" target="_top" title="Help Area" text="Help">
+						<admin:tabitem class="tab" href="#application.url.farcry#/index.cfm?section=Help" target="_top" title="#application.adminBundle[session.dmProfile.locale].helpArea#" text="#application.adminBundle[session.dmProfile.locale].help#">
 					</cfif>
 				</cfif>
-				<admin:tabitem class="tab tabviewsite" href="#application.url.webroot#/" target="_blank" title="viewSite" text="View Site">
-				<admin:tabitem class="tab tablogout" href="#application.url.farcry#/index.cfm?logout=1" target="_top" title="Logout" text="Logout">
+				<admin:tabitem class="tab" href="#application.url.webroot#/" target="_blank" title="viewSite" text="#application.adminBundle[session.dmProfile.locale].viewSite#">
+				<admin:tabitem class="tab" href="#application.url.farcry#/index.cfm?logout=1" target="_top" title="#application.adminBundle[session.dmProfile.locale].logout#" text="#application.adminBundle[session.dmProfile.locale].logout#">
 			</admin:tabs>
 		<cfoutput></div>
 </div>
@@ -221,16 +221,17 @@ $out:$
 							</cfscript>
 														
 							<cfif iContentTab eq 1>	
-								<admin:tabitem class="activesubtab" href="dynamic/dynamicMenuFrame.cfm?type=general" target="treeFrame" text="Types" onclick="synchTab('treeFrame','activesubtab','subtab','DynamicTab')" id="DynamicTab">
+								<admin:tabitem class="activesubtab" href="dynamic/dynamicMenuFrame.cfm?type=general" target="treeFrame" text="#application.adminBundle[session.dmProfile.locale].types#" onclick="synchTab('treeFrame','activesubtab','subtab','DynamicTab')" id="DynamicTab">
 							</cfif>
 							<cfif iContentExportTab eq 1>
-								<admin:tabitem class="subtab" href="dynamic/dynamicMenuFrame.cfm?type=export" target="treeFrame" text="Export" onclick="synchTab('treeFrame','activesubtab','subtab','ExportTab')" id="ExportTab">
+								<admin:tabitem class="subtab" href="dynamic/dynamicMenuFrame.cfm?type=export" target="treeFrame" text="#application.adminBundle[session.dmProfile.locale].export#" onclick="synchTab('treeFrame','activesubtab','subtab','ExportTab')" id="ExportTab">
 							</cfif>
 							<cfif iContentCategorisationTab eq 1>
-								<admin:tabitem class="subtab" href="dynamic/dynamicMenuFrame.cfm?type=categorisation" target="treeFrame" text="Categorisation" onclick="synchTab('treeFrame','activesubtab','subtab','DynamicCategorisationTab')" id="DynamicCategorisationTab">
+								<admin:tabitem class="subtab" href="dynamic/dynamicMenuFrame.cfm?type=categorisation" target="treeFrame" text="#application.adminBundle[session.dmProfile.locale].categorization#" onclick="synchTab('treeFrame','activesubtab','subtab','DynamicCategorisationTab')" id="DynamicCategorisationTab">
 							</cfif>
-							<admin:tabitem class="subtab" style="display:none" href="navajo/overview_frame.cfm?rootobjectid=#application.navid.fileroot#&insertonly=1" target="treeFrame" text="Files" onclick="synchTab('treeFrame','activesubtab','subtab','DynamicFileTab')" id="DynamicFileTab">
-							<admin:tabitem class="subtab" style="display:none" href="navajo/overview_frame.cfm?rootobjectid=#application.navid.imageroot#&insertonly=1" target="treeFrame" text="Images" onclick="synchTab('treeFrame','activesubtab','subtab','DynamicImageTab')" id="DynamicImageTab">
+							<admin:tabitem class="subtab" style="display:none" href="navajo/overview_frame.cfm?rootobjectid=#application.navid.fileroot#&insertonly=1" target="treeFrame" text="#application.adminBundle[session.dmProfile.locale].files#" onclick="synchTab('treeFrame','activesubtab','subtab','DynamicFileTab')" id="DynamicFileTab">
+							<admin:tabitem class="subtab" style="display:none" href="navajo/overview_frame.cfm?rootobjectid=#application.navid.imageroot#&insertonly=1" target="treeFrame" text="#application.adminBundle[session.dmProfile.locale].images#" onclick="synchTab('treeFrame','activesubtab','subtab','DynamicImageTab')" id="DynamicImageTab">
+							<admin:tabitem class="subtab" style="display:none" href="navajo/overview_frame.cfm?rootobjectid=#application.navid.home#&insertonly=1" target="treeFrame" text="#application.adminBundle[session.dmProfile.locale].Site#" onclick="synchTab('treeFrame','activesubtab','subtab','DynamicSiteTab')" id="DynamicSiteTab">
 						</cfcase>
 						
 						<!--- Show tabs for the admin view --->
@@ -243,10 +244,10 @@ $out:$
 							</cfscript>
 							
 							<cfif iAdminGeneralTab eq 1>
-								<admin:tabitem class="activesubtab" href="admin/adminMenuFrame.cfm?type=General" target="treeFrame" text="General" onclick="synchTab('treeFrame','activesubtab','subtab','AdminGeneralTab')" id="AdminGeneralTab">
+								<admin:tabitem class="activesubtab" href="admin/adminMenuFrame.cfm?type=General" target="treeFrame" text="#application.adminBundle[session.dmProfile.locale].general#" onclick="synchTab('treeFrame','activesubtab','subtab','AdminGeneralTab')" id="AdminGeneralTab">
 							</cfif>
 							<cfif iAdminSearchTab eq 1>
-								<admin:tabitem class="subtab" href="admin/adminMenuFrame.cfm?type=Search" target="treeFrame" text="Search" onclick="synchTab('treeFrame','activesubtab','subtab','AdminSearchTab')" id="AdminSearchTab">
+								<admin:tabitem class="subtab" href="admin/adminMenuFrame.cfm?type=Search" target="treeFrame" text="#application.adminBundle[session.dmProfile.locale].search#" onclick="synchTab('treeFrame','activesubtab','subtab','AdminSearchTab')" id="AdminSearchTab">
 							</cfif>
 							<cfif iAdminCOAPITab eq 1>
 								<admin:tabitem class="subtab" href="admin/adminMenuFrame.cfm?type=COAPI" target="treeFrame" text="COAPI" onclick="synchTab('treeFrame','activesubtab','subtab','AdminCOAPITab')" id="AdminCOAPITab">
@@ -289,7 +290,7 @@ $out:$
 										if (structKeyExists(tabElements[i].xmlattributes,"href")) //perhaps user wants to render a URL in the tree frame
 											customhref = tabElements[i].xmlattributes.href;
 										else	
-											customhref = 'admin/customadminMenuframe.cfm?subtabindex=#i#&parenttabindex=#URL.PARENTTABINDEX#';
+											customhref = 'admin/customadminMenuFrame.cfm?subtabindex=#i#&parenttabindex=#URL.PARENTTABINDEX#';
 									</cfscript>
 									<cfif iCustomTab eq 1>
 										<admin:tabitem class="#IIF(i EQ URL.subtabindex ,DE('activesubtab'),DE('subtab'))#" href="#customhref#" target="treeFrame" text="#tabElements[i].xmltext#" onclick="synchTab('treeFrame','activesubtab','subtab','AdminGeneralTab#i#')" id="AdminGeneralTab#i#">
@@ -309,10 +310,10 @@ $out:$
 							</cfscript>
 
 							<cfif iSecurityUserManagementTab eq 1>
-								<admin:tabitem class="activesubtab" href="security/securityMenuFrame.cfm?type=security" target="treeFrame" text="Security" onclick="synchTab('treeFrame','activesubtab','subtab','securityTab')" id="securityTab">
+								<admin:tabitem class="activesubtab" href="security/securityMenuFrame.cfm?type=security" target="treeFrame" text="#application.adminBundle[session.dmProfile.locale].Security#" onclick="synchTab('treeFrame','activesubtab','subtab','securityTab')" id="securityTab">
 							</cfif>
 							<cfif iSecurityPolicyManagementTab eq 1>
-								<admin:tabitem class="subtab" href="security/securityMenuFrame.cfm?type=policy" target="treeFrame" text="Policy" onclick="synchTab('treeFrame','activesubtab','subtab','policyTab')" id="policyTab">
+								<admin:tabitem class="subtab" href="security/securityMenuFrame.cfm?type=policy" target="treeFrame" text="#application.adminBundle[session.dmProfile.locale].policy#" onclick="synchTab('treeFrame','activesubtab','subtab','policyTab')" id="policyTab">
 							</cfif>
 						</cfcase>
 						
@@ -325,17 +326,17 @@ $out:$
 							</cfscript>
 
 							<cfif iReportingStatsTab eq 1>
-								<admin:tabitem class="activesubtab" href="reporting/reportingMenuFrame.cfm?type=stats" target="treeFrame" text="Statistics" onclick="synchTab('treeFrame','activesubtab','subtab','statsTab')" id="statsTab">
+								<admin:tabitem class="activesubtab" href="reporting/reportingMenuFrame.cfm?type=stats" target="treeFrame" text="#application.adminBundle[session.dmProfile.locale].statistics#" onclick="synchTab('treeFrame','activesubtab','subtab','statsTab')" id="statsTab">
 							</cfif>
 							<cfif iReportingAuditTab eq 1>
-								<admin:tabitem class="subtab" href="reporting/reportingMenuFrame.cfm?type=audit" target="treeFrame" text="Audit" onclick="synchTab('treeFrame','activesubtab','subtab','auditTab')" id="auditTab">
+								<admin:tabitem class="subtab" href="reporting/reportingMenuFrame.cfm?type=audit" target="treeFrame" text="#application.adminBundle[session.dmProfile.locale].audit#" onclick="synchTab('treeFrame','activesubtab','subtab','auditTab')" id="auditTab">
 							</cfif>
 						</cfcase>
 						
 						<!--- Show tabs for the help view --->
 						<cfcase value="help">
 							<cfif iHelpTab eq 1> --->
-								<admin:tabitem class="activesubtab" href="help/helpMenuFrame.cfm?type=general" target="treeFrame" text="Help" onclick="synchTab('treeFrame','activesubtab','subtab','statsTab')" id="helpTab">
+								<admin:tabitem class="activesubtab" href="help/helpMenuFrame.cfm?type=general" target="treeFrame" text="#application.adminBundle[session.dmProfile.locale].help#" onclick="synchTab('treeFrame','activesubtab','subtab','statsTab')" id="helpTab">
 							</cfif>
 							
 						</cfcase>
@@ -358,7 +359,7 @@ $out:$
 						<cfoutput>
 						<form name="zoom" style="display:inline;">
 							<select name="QuickZoom" onChange="reloadTreeFrame()" class="field">
-								<option value="0">-- Quick Zoom --</option>
+								<option value="0">#application.adminBundle[session.dmProfile.locale].quickZoom#</option>
 						</cfoutput>
 								<!--- check user has permission to see root node --->
 								<cfscript>
@@ -402,10 +403,10 @@ $out:$
 						<!--- If admin permission show uuid search bar --->
 						<cfoutput>
 						<cfif iAdminTab eq 1>
-							<span style="position: absolute; top:5px; right:55px;"><form name="searchTree" method="post"><input type="text" name="searchUUID" value="UUID" style="display:inline;width:40px;" onFocus="document.searchTree.searchUUID.value=''"> <input type="submit" value="Find" onClick="window.frames.treeFrame.location.href = 'navajo/overview_frame.cfm?rootobjectid=' + document.searchTree.searchUUID.value; return false;"></form></span>
+							<span style="position: absolute; top:5px; right:55px;"><form name="searchTree" method="post"><input type="text" name="searchUUID" value="UUID" style="display:inline;width:40px;" onFocus="document.searchTree.searchUUID.value=''"> <input type="submit" value="#application.adminBundle[session.dmProfile.locale].find#" onClick="window.frames.treeFrame.location.href = 'navajo/overview_frame.cfm?rootobjectid=' + document.searchTree.searchUUID.value; return false;"></form></span>
 						</cfif>
-						<span style="position: absolute; top:8px; right:30px;"><a href="javascript:void(0);" onClick="javascript:window.open('legend.cfm','','width=350,height=500,scrollbars=yes,left=200,top=5');"><img src="images/legend.jpg" alt="Legend" border="0"></a></span>
-						<span style="position: absolute; top:8px; right:5px;"><a href="javascript:window.frames.treeFrame.location.reload();"><img src="images/refresh.gif" alt="Refresh Tree" border="0"></a></span>
+						<span style="position: absolute; top:8px; right:30px;"><a href="javascript:void(0);" onClick="javascript:window.open('legend.cfm','','width=350,height=500,scrollbars=yes,left=200,top=5');"><img src="images/legend.jpg" alt="#application.adminBundle[session.dmProfile.locale].legend#" border="0"></a></span>
+						<span style="position: absolute; top:8px; right:5px;"><a href="javascript:window.frames.treeFrame.location.reload();"><img src="images/refresh.gif" alt="#application.adminBundle[session.dmProfile.locale].refreshTree#" border="0"></a></span>
 						</cfoutput>
 					</cfif>
 				<cfoutput></div>
@@ -476,27 +477,27 @@ $out:$
 						</cfscript>
 												
 						<cfif iObjectOverviewTab eq 1>
-							<admin:tabitem class="activesubtab" href="edittabOverview.cfm?objectid=" target="editFrame" text="Overview" title="Overview" id="siteEditOverview" style="visibility: hidden" onclick="synchTab('editFrame','activesubtab','subtab','siteEditOverview');synchTitle('Overview')">
+							<admin:tabitem class="activesubtab" href="edittabOverview.cfm?objectid=" target="editFrame" text="#application.adminBundle[session.dmProfile.locale].overview#" title="#application.adminBundle[session.dmProfile.locale].overview#" id="siteEditOverview" style="visibility: hidden" onclick="synchTab('editFrame','activesubtab','subtab','siteEditOverview');synchTitle('#application.adminBundle[session.dmProfile.locale].Overview#')">
 						</cfif>
 						<cfif iObjectEditTab eq 1>
-							<admin:tabitem class="subtab" href="edittabEdit.cfm?objectid=" target="editFrame" text="Edit" title="Edit this item" id="siteEditEdit" style="visibility: hidden" onclick="synchTab('editFrame','activesubtab','subtab','siteEditEdit');synchTitle('Edit')">	
+							<admin:tabitem class="subtab" href="edittabEdit.cfm?objectid=" target="editFrame" text="#application.adminBundle[session.dmProfile.locale].edit#" title="#application.adminBundle[session.dmProfile.locale].editItem#" id="siteEditEdit" style="visibility: hidden" onclick="synchTab('editFrame','activesubtab','subtab','siteEditEdit');synchTitle('#application.adminBundle[session.dmProfile.locale].Edit#')">	
 						</cfif>	
 						<cfif iObjectArchiveTab eq 1>
-							<admin:tabitem class="subtab" href="edittabArchive.cfm?objectid=" target="editFrame" text="Archive" title="View archive" id="siteEditArchive" style="visibility: hidden" onclick="synchTab('editFrame','activesubtab','subtab','siteEditArchive');synchTitle('Archive')">
+							<admin:tabitem class="subtab" href="edittabArchive.cfm?objectid=" target="editFrame" text="#application.adminBundle[session.dmProfile.locale].archive#" title="#application.adminBundle[session.dmProfile.locale].viewArchive#" id="siteEditArchive" style="visibility: hidden" onclick="synchTab('editFrame','activesubtab','subtab','siteEditArchive');synchTitle('#application.adminBundle[session.dmProfile.locale].Archive#')">
 						</cfif>
 						<cfif iObjectAuditTab eq 1>
-							<admin:tabitem class="subtab" href="edittabAudit.cfm?objectid=" target="editFrame" text="Audit" title="View audit information" id="siteEditAudit" style="visibility: hidden" onclick="synchTab('editFrame','activesubtab','subtab','siteEditAudit');synchTitle('Audit')">
+							<admin:tabitem class="subtab" href="edittabAudit.cfm?objectid=" target="editFrame" text="#application.adminBundle[session.dmProfile.locale].audit#" title="#application.adminBundle[session.dmProfile.locale].viewAuditInfo#" id="siteEditAudit" style="visibility: hidden" onclick="synchTab('editFrame','activesubtab','subtab','siteEditAudit');synchTitle('#application.adminBundle[session.dmProfile.locale].Audit#')">
 						</cfif>
 						<cfif iObjectStatsTab eq 1>
-							<admin:tabitem class="subtab" href="edittabStats.cfm?objectid=" target="editFrame" text="Stats" title="Statistics" id="siteEditStats" style="visibility: hidden" onclick="synchTab('editFrame','activesubtab','subtab','siteEditStats');synchTitle('Stats')">
+							<admin:tabitem class="subtab" href="edittabStats.cfm?objectid=" target="editFrame" text="#application.adminBundle[session.dmProfile.locale].stats#" title="#application.adminBundle[session.dmProfile.locale].statistics#" id="siteEditStats" style="visibility: hidden" onclick="synchTab('editFrame','activesubtab','subtab','siteEditStats');synchTitle('#application.adminBundle[session.dmProfile.locale].Stats#')">
 						</cfif>
-						<admin:tabitem class="subtab" href="edittabRules.cfm?objectid=" target="editFrame" text="Publishing Rules" title="Publishing Rules" id="siteEditRules" style="display: none" onclick="synchTab('editFrame','activesubtab','subtab','siteEditRules');synchTitle('Publishing Rules')">
+						<admin:tabitem class="subtab" href="edittabRules.cfm?objectid=" target="editFrame" text="#application.adminBundle[session.dmProfile.locale].publishingRules#" title="#application.adminBundle[session.dmProfile.locale].publishingRules#" id="siteEditRules" style="display: none" onclick="synchTab('editFrame','activesubtab','subtab','siteEditRules');synchTitle('#application.adminBundle[session.dmProfile.locale].publishingRules#')">
 						<cfif iObjectDumpTab eq 1>
-							<admin:tabitem class="subtab" href="edittabDump.cfm?objectid=" target="editFrame" text="Dump" title="Dump object properties" id="siteEditDump" style="visibility: hidden" onclick="synchTab('editFrame','activesubtab','subtab','siteEditDump');synchTitle('Dump')">
+							<admin:tabitem class="subtab" href="edittabDump.cfm?objectid=" target="editFrame" text="#application.adminBundle[session.dmProfile.locale].dump#" title="#application.adminBundle[session.dmProfile.locale].dumpObjProperties#" id="siteEditDump" style="visibility: hidden" onclick="synchTab('editFrame','activesubtab','subtab','siteEditDump');synchTitle('#application.adminBundle[session.dmProfile.locale].Dump#')">
 						</cfif>
 					</cfcase>
 					<cfdefaultcase>
-						<admin:tabitem class="activesubtab" href="##top" target="_self" text="Default">
+						<admin:tabitem class="activesubtab" href="##top" target="_self" text="#application.adminBundle[session.dmProfile.locale].default#">
 					</cfdefaultcase>
 				</cfswitch>
 			</admin:tabs>
@@ -531,7 +532,7 @@ $out:$
 							
 						
 				</script>
-				<a href="##" id="contract" onclick="toggleColumn(this.id);"><img src="images/contract.gif" alt="Expand to full width" border="0" /></a><a href="##"  id="expand" style="display='none';" onclick="toggleColumn(this.id);"><img src="images/expand.gif" alt="Restore layout" border="0" /></a>
+				<a href="##" id="contract" onclick="toggleColumn(this.id);"><img src="images/contract.gif" alt="Expand to full width" border="0" /></a><a href="##"  id="expand" style="display='none';" onclick="toggleColumn(this.id);"><img src="images/expand.gif" alt="#application.adminBundle[session.dmProfile.locale].restoreLayout#" border="0" /></a>
 		
 				<div id="DisplayTitle"></div>
 			</div>

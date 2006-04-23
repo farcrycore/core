@@ -1,15 +1,17 @@
 <cfsetting enablecfoutputonly="Yes">
+
+<cfprocessingDirective pageencoding="utf-8">
 <!--- 
 || LEGAL ||
 $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmhtml/plpEdit/start.cfm,v 1.7 2003/09/09 09:23:14 paul Exp $
-$Author: paul $
-$Date: 2003/09/09 09:23:14 $
-$Name: b201 $
-$Revision: 1.7 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmhtml/plpEdit/start.cfm,v 1.8 2004/07/15 02:00:49 brendan Exp $
+$Author: brendan $
+$Date: 2004/07/15 02:00:49 $
+$Name: milestone_2-3-2 $
+$Revision: 1.8 $
 
 || DESCRIPTION || 
 $Description: dmHTML PLP - Start Step $
@@ -30,31 +32,31 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	<form action="#cgi.script_name#?#cgi.query_string#" method="post" name="editform">
 	
 	<div class="FormSubTitle">#output.label#</div>
-	<div class="FormTitle">General Info</div>
+	<div class="FormTitle">#application.adminBundle[session.dmProfile.locale].generalInfo#</div>
 	<div class="FormTable">
 	<table width="400" border="0" cellspacing="0" cellpadding="5">
 	<tr>
-		<td nowrap class="FormLabel">Title:</td>
+		<td nowrap class="FormLabel">#application.adminBundle[session.dmProfile.locale].titleLabel#</td>
 		<td width="100%"><input type="text" name="title" value="#output.Title#" maxlength="255" class="FormTextBox"></td>
 	</tr>
 	<tr>
-		<td nowrap class="FormLabel">Keywords:</td>
+		<td nowrap class="FormLabel">#application.adminBundle[session.dmProfile.locale].keywordsLabel#</td>
 		<td width="100%"><input type="text" name="metakeywords" value="#output.metakeywords#" maxlength="255"  class="FormTextBox"></td>
 	</tr>
 	<tr>
-		<td nowrap class="FormLabel" valign="top">Extended Metadata
-		<a href="javascript:void(0);" id="yesLink" onClick="document.getElementById('noLink').style.display='inline';this.style.display='none';document.getElementById('metadatacell').style.display='none';" style="display:<cfif len(trim(output.extendedmetadata))>inline<cfelse>none</cfif>;"><img src="#application.url.farcry#/images/yes.gif" border="0" alt="Extended Metadata"></a>	
-		<a href="javascript:void(0);" id="noLink" onClick="this.style.display='none';document.getElementById('yesLink').style.display='inline';document.getElementById('metadatacell').style.display='inline';" style="display:<cfif NOT len(trim(output.extendedmetadata))>inline<cfelse>none</cfif>;"><img src="#application.url.farcry#/images/no.gif" border="0" alt="No extended metadata"></a>
+		<td nowrap class="FormLabel" valign="top">#application.adminBundle[session.dmProfile.locale].extendedMetadata#
+		<a href="javascript:void(0);" id="yesLink" onClick="document.getElementById('noLink').style.display='inline';this.style.display='none';document.getElementById('metadatacell').style.display='none';" style="display:<cfif len(trim(output.extendedmetadata))>inline<cfelse>none</cfif>;"><img src="#application.url.farcry#/images/yes.gif" border="0" alt="#application.adminBundle[session.dmProfile.locale].extendedMetadata#"></a>	
+		<a href="javascript:void(0);" id="noLink" onClick="this.style.display='none';document.getElementById('yesLink').style.display='inline';document.getElementById('metadatacell').style.display='inline';" style="display:<cfif NOT len(trim(output.extendedmetadata))>inline<cfelse>none</cfif>;"><img src="#application.url.farcry#/images/no.gif" border="0" alt="#application.adminBundle[session.dmProfile.locale].noExtendedMetadata#"></a>
 		</td>
 		<td id="metadatacell" style="display:<cfif len(trim(output.extendedmetadata))>inline<cfelse>none</cfif>;" width="100%"><textarea name="extendedmetadata" rows="10" cols="50" class="FormTextBox" wrap="off">#output.extendedmetadata#</textarea><br>
-* typically this will be inserted unaltered into the HEAD section of your templates</td>
+#application.adminBundle[session.dmProfile.locale].insertedInHeadBlurb#</td>
 	</tr>
 	</cfoutput>
 	<!--- get the templates for this type --->
 	<nj:listTemplates typename="dmHTML" prefix="displaypage" r_qMethods="qMethods">
 	<cfoutput>
 	<tr>
-		<td nowrap class="FormLabel">Display Method:</td>
+		<td nowrap class="FormLabel">#application.adminBundle[session.dmProfile.locale].displayMethodLabel#</td>
 		<td width="100%" class="FormLabel">
 		<select name="DisplayMethod" size="1">
 		</cfoutput>
@@ -78,7 +80,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 		</cfoutput>
 		<cfelse>
 		<cfoutput>
-		There are no comments available.
+		#application.adminBundle[session.dmProfile.locale].noComments#
 		</cfoutput>
 		</cfif>
 	</display:OpenLayer>
@@ -93,15 +95,17 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	<display:OpenLayer width="100%" title="Archived Versions" isClosed="Yes" border="no">
 		
 		<cfif NOT qGetArchives.recordCount>
-			<cfoutput>No records returned</cfoutput>
+			<cfoutput>#application.adminBundle[session.dmProfile.locale].noRecsReturned#</cfoutput>
 		<cfelse>
 			<table width="100%" border="0" cellspacing="1" bgcolor="##999999">
+			<cfoutput>
 	        <tr> 
-    	      <td class="rowsHeader"> View </td>
-	          <td class="rowsHeader"> Label </td>
-    	      <td class="rowsHeader"> Archive Date </td>
-	          <td class="rowsHeader"> By </td>
+    	      <td class="rowsHeader"> #application.adminBundle[session.dmProfile.locale].view# </td>
+	          <td class="rowsHeader"> #application.adminBundle[session.dmProfile.locale].label# </td>
+    	      <td class="rowsHeader"> #application.adminBundle[session.dmProfile.locale].archiveDate# </td>
+	          <td class="rowsHeader"> #application.adminBundle[session.dmProfile.locale].by# </td>
     	    </tr>	
+			</cfoutput>
 			<tr>
 			<cfoutput query="qGetArchives" > 
 			<cfscript>
@@ -115,7 +119,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 		             <a href="#previewURL#">#label#</a>
 				</td>
             	<td class="rows"> 
-              		#dateFormat(dateTimeCreated,"dd-mmm-yyyy")#
+              		#application.thisCalendar.i18nDateFormat(dateTimeCreated,session.dmProfile.locale,application.mediumF)#
 				</td>
             	<td class="rows"> 
               		#lastUpdatedBy# 
@@ -140,7 +144,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	//bring focust to title
 	document.editform.title.focus();
 	objForm = new qForm("editform");
-	objForm.title.validateNotNull("Please enter a title");
+	objForm.title.validateNotNull("#application.adminBundle[session.dmProfile.locale].pleaseEnterTitle#");
 		//-->
 	</SCRIPT>
 	</form>

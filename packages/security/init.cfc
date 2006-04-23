@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/security/init.cfc,v 1.19 2004/05/20 04:41:25 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/security/init.cfc,v 1.21 2004/12/09 05:19:09 brendan Exp $
 $Author: brendan $
-$Date: 2004/05/20 04:41:25 $
-$Name: milestone_2-2-1 $
-$Revision: 1.19 $
+$Date: 2004/12/09 05:19:09 $
+$Name: milestone_2-3-2 $
+$Revision: 1.21 $
 
 || DESCRIPTION || 
 $Description: authorisation cfc $
@@ -410,7 +410,7 @@ $out:$
 					(`groupid` INT (11) UNSIGNED NOT NULL AUTO_INCREMENT, 
 					 `groupName` VARCHAR (64) DEFAULT '0' NOT NULL, 
 					 `groupNotes` VARCHAR (255) DEFAULT '0', 
-					 PRIMARY KEY(`groupid`,`groupName`)) 
+					 PRIMARY KEY(`groupid`)) 
 				</cfquery>
 				<cfquery name="qCreateTable_dmUser" datasource="#arguments.datasource#" dbtype="ODBC">
 					CREATE TABLE `#application.dbowner#dmUser` 
@@ -419,7 +419,7 @@ $out:$
 					 `userNotes` VARCHAR (255) DEFAULT '0', 
 					 `userPassword` VARCHAR (32) DEFAULT '0' NOT NULL, 
 					 `userStatus` TINYINT (3) UNSIGNED DEFAULT '0' NOT NULL, 
-					 PRIMARY KEY(`userId`,`userLogin`)) 
+					 PRIMARY KEY(`userId`)) 
 				</cfquery>
 				<cfquery name="qCreateTable_dmUserToGroup" datasource="#arguments.datasource#" dbtype="ODBC">
 					CREATE TABLE `#application.dbowner#dmUserToGroup` 
@@ -651,8 +651,11 @@ $out:$
 							PermissionNotes VARCHAR(256) NULL ,
 							PermissionType VARCHAR(256) NOT NULL
 						)
-					</cfquery>	
-
+					</cfquery>
+					<!--- update permission sequence --->	
+					<cfquery name="update" datasource="#application.dsn#">
+						SELECT setval('#application.dbowner#dmPermission_PermissionId_seq', 500);
+					</cfquery>
 				</cfcase>
 				
 				<cfcase value="mysql">

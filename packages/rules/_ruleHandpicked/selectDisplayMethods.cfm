@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/rules/_ruleHandpicked/selectDisplayMethods.cfm,v 1.8.2.1 2004/12/15 05:52:22 brendan Exp $
-$Author: brendan $
-$Date: 2004/12/15 05:52:22 $
-$Name: milestone_2-2-1 $
-$Revision: 1.8.2.1 $
+$Header: /cvs/farcry/farcry_core/packages/rules/_ruleHandpicked/selectDisplayMethods.cfm,v 1.11.2.1 2005/06/27 07:26:28 guy Exp $
+$Author: guy $
+$Date: 2005/06/27 07:26:28 $
+$Name: milestone_2-3-2 $
+$Revision: 1.11.2.1 $
 
 || DESCRIPTION || 
 $Description: ruleHandpicked PLP - choose teaser handler (teaser.cfm) $
@@ -16,6 +16,7 @@ $Description: ruleHandpicked PLP - choose teaser handler (teaser.cfm) $
 || DEVELOPER ||
 $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
 --->
+<cfprocessingDirective pageencoding="utf-8">
 
 <cfimport taglib="/farcry/farcry_core/tags/farcry" prefix="tags">
 <cfimport taglib="/farcry/farcry_core/tags/navajo" prefix="nj">
@@ -76,18 +77,18 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
 function overviewHeader()
 {
 	var html = "<table><tr>";
-	html += "<th>Label</th>";
-	html += "<th>Object Type</th>";
-	html += "<th>Display Method</th>";
-	html += "<th>Delete</th>";
-	html += "<th>Move</th>";
+	html += "<th>#application.adminBundle[session.dmProfile.locale].Label#</th>";
+	html += "<th>#application.adminBundle[session.dmProfile.locale].ObjTypeLabel#</th>";
+	html += "<th>#application.adminBundle[session.dmProfile.locale].displayMethodLabel#</th>";
+	html += "<th>#application.adminBundle[session.dmProfile.locale].delete#</th>";
+	html += "<th>#application.adminBundle[session.dmProfile.locale].move#</th>";
 	html += "</tr>";
 	return html;	
 }
 
 function deleteObject(id)
 {
-	if(confirm("Are you sure you wish to remove this object?"))
+	if(confirm("#application.adminBundle[session.dmProfile.locale].confirmRemoveObj#"))
 	{	
 		for (var i = 0;i < aWDDX.length;i++)
 		{
@@ -122,7 +123,7 @@ function buildOverview()
 	var objectsEM = document.getElementById('objectsOverview');
 	var overviewHTML = overviewHeader();
 	if (!aWDDX.length)
-		overviewHTML = "<table><tr><td colspan=\"5\" align=\"center\"><strong>No objects selected</strong></td></tr></table>";
+		overviewHTML = "<table><tr><td colspan=\"5\" align=\"center\"><strong>#application.adminBundle[session.dmProfile.locale].noObjSelected#</strong></td></tr></table>";
 	else
 	{	
 		for(var i = 0;i < aWDDX.length;i++)
@@ -256,10 +257,10 @@ function resetMethodSelections()
 	
 </script>
 
-<form action="" name="editform" method="post">
+<form action="#cgi.script_name#?#cgi.query_string#<cfif NOT isDefined('url.ruleid')>&ruleid=#output.objectid#</cfif>" name="editform" method="post">
 	<input type="hidden" name="wddx" value="">
 		
-	<div class="FormTitle">Select Display Methods and Arrange Objects</div>
+	<div class="FormTitle">#application.adminBundle[session.dmProfile.locale].selectObjDisplayMethod#</div>
 	<div class="FormTable" align="center" style="width:500px">
 			
 	<table border="0">

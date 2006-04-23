@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/rules/ruleHandpicked.cfc,v 1.21.2.1 2004/12/17 07:41:50 paul Exp $
+$Header: /cvs/farcry/farcry_core/packages/rules/ruleHandpicked.cfc,v 1.23 2004/12/17 07:35:26 paul Exp $
 $Author: paul $
-$Date: 2004/12/17 07:41:50 $
-$Name: milestone_2-2-1 $
-$Revision: 1.21.2.1 $
+$Date: 2004/12/17 07:35:26 $
+$Name: milestone_2-3-2 $
+$Revision: 1.23 $
 
 || DESCRIPTION || 
 $Description: Hand-pick and display individual object instances with a specified displayTeaser* handler. Restricted to those components with metadata bScheduled=true. $
@@ -88,9 +88,9 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 				redirection="server"
 				r_bPLPIsComplete="bComplete">
 
-				<farcry:plpstep name="Select Objects" template="selectObjects.cfm">
-				<farcry:plpstep name="Display Methods And Arrange" template="selectDisplayMethods.cfm">
-				<farcry:plpstep name="Complete" template="complete.cfm">
+				<farcry:plpstep name="#application.adminBundle[session.dmProfile.locale].selectObjects#" template="selectObjects.cfm">
+				<farcry:plpstep name="#application.adminBundle[session.dmProfile.locale].displayMethodsArrange#" template="selectDisplayMethods.cfm">
+				<farcry:plpstep name="#application.adminBundle[session.dmProfile.locale].completeUC#" template="complete.cfm">
 			</farcry:plp>
 		
 		<cfif isDefined("bComplete") AND bComplete>
@@ -104,13 +104,14 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 			</cfloop>
 			<cfwddx action="cfml2wddx" input="#aWDDX#" output="stOutput.objectwddx">
 		</cfif>
+		
 		<cfscript>	
 				stProperties = Duplicate(stOutput);
 				this.setData(stProperties=stProperties);
 		</cfscript>
-			<div class="FormTitle" align="center">Action Complete - Object Updated 
+			<div class="FormTitle" align="center">#application.adminBundle[session.dmProfile.locale].actionComplete#
 				<form action="" method="post">
-					<input type="submit" class="normalbttnstyle" value="continue">
+					<input type="submit" class="normalbttnstyle" value="#application.adminBundle[session.dmProfile.locale].continue#">
 				</form>
 			</div>
 		</cfif>	

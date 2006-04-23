@@ -40,7 +40,7 @@
 			<q4:contentobjectdata typename="#application.rules.ruleNews.rulePath#" stProperties="#stObj#" objectID="#stObj.objectID#">
 			<!--- Now assign the metadata --->
 
-			<cfset message = "Update Successful">
+			<cfset message = "#application.adminBundle[session.dmProfile.locale].updateSuccessful#">
 		</cfif>
 
 		<cfif isDefined("message")>
@@ -53,7 +53,7 @@
 		<input type="hidden" name="ruleID" value="#stObj.objectID#">
 		<tr>
 			<td width="20%" colspan="1" align="right">
-			<b>Display method: </b>
+			<b>#application.adminBundle[session.dmProfile.locale].displayMethodLabel# </b>
 			</td>
 			<td>
 			<select name="displayMethod" size="1" class="field">
@@ -65,30 +65,30 @@
 		</tr>
 		<tr>
 				<td align="right">
-					<b>Intro:</b>
+					<b>#application.adminBundle[session.dmProfile.locale].introLabel#</b>
 				</td>
 				<td>
 					<textarea rows="5" cols="50" name="intro">#stObj.intro#</textarea>
 				</td>
 		</tr>
 		<tr>
-			<td align="right"><b>Items per page</b></td>
+			<td align="right"><b>#application.adminBundle[session.dmProfile.locale].itemsPerPage#</b></td>
 			<td> <input type="text" name="numItems" value="#stObj.numItems#" size="3"></td>
 		</tr>
 		<tr>
-			<td colspan="2"><b>Display as an Archive?</b> <input type="checkbox" name="bArchive" value="1" <cfif stObj.bArchive>checked</cfif>></td>
+			<td colspan="2"><b>#application.adminBundle[session.dmProfile.locale].displayAsArchive#</b> <input type="checkbox" name="bArchive" value="1" <cfif stObj.bArchive>checked</cfif>></td>
 		</tr>
 		<tr>
-			<td colspan="2"><b>How many pages would you like in the archive at most?</b>  <input type="text" name="numPages" value="#stObj.numPages#" size="3"></td>
+			<td colspan="2"><b>#application.adminBundle[session.dmProfile.locale].maxArchivePages#</b>  <input type="text" name="numPages" value="#stObj.numPages#" size="3"></td>
 		</tr>
 		</table>
 
         <br><br>
 
-		<display:OpenLayer width="400" title="Restrict By Categories" titleFont="Verdana" titleSize="7.5" isClosed="#isClosed#" border="no">
+		<display:OpenLayer width="400" title="#application.adminBundle[session.dmProfile.locale].restrictByCategories#" titleFont="Verdana" titleSize="7.5" isClosed="#isClosed#" border="no">
 		<table align="center" border="0">
         <tr>
-            <td><b>Does the content need to match ALL the selected Keywords?</b> <input type="checkbox" name="bMatchAllKeywords" value="1" <cfif stObj.bMatchAllKeywords>checked</cfif>></td>
+            <td><b>#application.adminBundle[session.dmProfile.locale].contentNeedToMatchKeywords#</b> <input type="checkbox" name="bMatchAllKeywords" value="1" <cfif stObj.bMatchAllKeywords>checked</cfif>></td>
         </tr>
         <tr>
             <td>&nbsp;</td>
@@ -103,7 +103,7 @@
 		</tr>
     	</table>
 		</display:OpenLayer>
-		<div align="center"><input class="normalbttnstyle" type="submit" value="go" name="updateRuleNews"></div>
+		<div align="center"><input class="normalbttnstyle" type="submit" value="#application.adminBundle[session.dmProfile.locale].go#" name="updateRuleNews"></div>
 		</form>
 
 	</cffunction>

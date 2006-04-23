@@ -1,4 +1,4 @@
-
+<cfprocessingDirective pageencoding="utf-8">
 <cfinclude template="/farcry/farcry_core/admin/includes/utilityFunctions.cfm">
 <cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
 

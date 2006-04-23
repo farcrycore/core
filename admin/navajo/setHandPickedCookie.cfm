@@ -1,4 +1,4 @@
-
+<cfprocessingDirective pageencoding="utf-8">
 
 <cfparam name="URL.objectID" default="">
 <cfparam name="URL.cookiename" default="">
@@ -17,7 +17,7 @@
 	</cfscript>
 </cfcase>
 <cfcase value="remove">
-	
+	<!--- i18n: no idea --->
 	<cfscript>
 		writeoutput('gape - ' & listFind(lObjectIDs,URL.objectID) & '<br>' );
 		lObjectIDs = listDeleteAt(lObjectIDs,listFind(lObjectIDs,URL.objectID));

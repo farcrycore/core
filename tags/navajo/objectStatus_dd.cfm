@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/navajo/objectStatus_dd.cfm,v 1.20 2004/03/29 23:57:32 brendan Exp $
-$Author: brendan $
-$Date: 2004/03/29 23:57:32 $
-$Name: milestone_2-2-1 $
-$Revision: 1.20 $
+$Header: /cvs/farcry/farcry_core/tags/navajo/objectStatus_dd.cfm,v 1.21.2.1 2005/05/24 04:42:54 gstewart Exp $
+$Author: gstewart $
+$Date: 2005/05/24 04:42:54 $
+$Name: milestone_2-3-2 $
+$Revision: 1.21.2.1 $
 
 || DESCRIPTION || 
 $Description: Changes the status of objects to approved/draft/pending. Intended for use with dynamic data pages $
@@ -23,6 +23,7 @@ $out:$
 --->
 
 <cfsetting enablecfoutputonly="Yes">
+<cfprocessingDirective pageencoding="utf-8">
 <cfimport taglib="/farcry/fourq/tags/" prefix="q4">
 <cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
 
@@ -37,7 +38,7 @@ $out:$
 		<cfif not structkeyexists(stObj, "status")>
 			<cfoutput>
 			<script>
-				 alert("This object type has no approval process attached to it.");
+				 alert("#application.adminBundle[session.dmProfile.locale].objNoApprovalProcess#");
 			</script>
 			</cfoutput>
 			<cfexit>
@@ -47,8 +48,13 @@ $out:$
 			<cfset status = "approved">
 			<cfset permission = "approve">
 			<cfset active = 1>
-
-			<!--- send out emails informing object has been approved --->
+			
+			<cfinvoke component="#application.packagepath#.farcry.versioning" method="getVersioningRules" objectID="#attributes.objectID#" returnvariable="stRules">
+			<cfif stRules.BLIVEVERSIONEXISTS>
+				<cfinvoke component="#application.packagepath#.farcry.versioning" method="sendObjectLive" objectID="#attributes.objectID#"  stDraftObject="#stObj#" returnvariable="stRules">
+				<cfset attributes.objectId=stObj.objectid>
+			</cfif>
+			<!--- send out emails informing object has been approved ---><br /> 
 			<cfinvoke component="#application.packagepath#.farcry.versioning" method="approveEmail_approved_dd">
 				<cfinvokeargument name="objectId" value="#attributes.objectId#"/>
 				<cfinvokeargument name="comment" value="#attributes.commentlog#"/>
@@ -94,7 +100,7 @@ $out:$
 				</cfif>	
 			</cfinvoke>
 		<cfelse>
-			<cfthrow errorcode="navajo" message="Unknown status passed">
+			<cfthrow errorcode="navajo" message="#application.adminBundle[session.dmProfile.locale].passedUnknownStatus#">
 		</cfif>
 		
 		<!--- prepare date fields --->

@@ -14,8 +14,8 @@ application.dbowner = "dbo.";
 application.path.core = replaceNoCase(getCurrentTemplatePath(), "\farcry_core\admin\migration\Application.cfm", "") & "\farcry_core";
 application.path.project = replaceNoCase(getCurrentTemplatePath(), "\farcry_core\admin\migration\Application.cfm", "") & "\integralMX";
 
-application.defaultFilePath = application.path.project & "\www\files";
-application.defaultImagePath = application.path.project & "\www\images";
+application.path.defaultFilePath = application.path.project & "\www\files";
+application.path.defaultImagePath = application.path.project & "\www\images";
 
 // application Packages path
 application.packagepath = "farcry.farcry_core.packages";

@@ -1,5 +1,7 @@
 <cfsetting enablecfoutputonly="Yes">
 
+<cfprocessingDirective pageencoding="utf-8">
+
 <cfscript>
 	oAuthorisation = request.dmsec.oAuthorisation;
 	stPolicyStore = oAuthorisation.getPolicyStore();

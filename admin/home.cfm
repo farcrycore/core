@@ -4,42 +4,35 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/home.cfm,v 1.50 2004/06/27 23:54:55 brendan Exp $
-$Author: brendan $
-$Date: 2004/06/27 23:54:55 $
-$Name: milestone_2-2-1 $
-$Revision: 1.50 $
+$Header: /cvs/farcry/farcry_core/admin/home.cfm,v 1.54.2.4 2005/06/29 05:26:58 guy Exp $
+$Author: guy $
+$Date: 2005/06/29 05:26:58 $
+$Name: milestone_2-3-2 $
+$Revision: 1.54.2.4 $
 
 || DESCRIPTION || 
 $Description: The home page for farcry. Shows profile information, statistics, latest pages, pages waiting approval etc $
-$TODO: $
 
 || DEVELOPER ||
 $Developer: Brendan Sisson (brendan@daemon.com.au)$
 $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au)$
-
-|| ATTRIBUTES ||
-$in: $
-$out:$
 --->
-
+<cfprocessingDirective pageencoding="utf-8">
 <cfsetting enablecfoutputonly="Yes" requestTimeOut="200">
 
-<cftry> 
-	<!--- try and see if the file can be loaded --->
+<!--- check for customised myFarCry home page --->
+<cfif fileexists(application.path.project & "/customadmin/home.cfm")>
     <cfinclude template="/farcry/#application.applicationName#/customadmin/home.cfm">
-    
-	<cfcatch> <!--- nope - so use the default one --->
-	
+<cfelse>
 		<!--- set up page header --->
 		<cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
-		<admin:header>
+		<admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 		
 		<cfif session.firstLogin>
 		    <cfoutput>
 		    <script language="JavaScript">
 		    profileWin = window.open('edit.cfm?objectID=#session.dmProfile.objectID#&type=dmProfile','edit_profile','width=385,height=385,left=200,top=100');
-		    alert('This is the first time you\'ve logged into #application.config.general.siteTitle#. Please complete the following profile form with your details.');
+		    alert('#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].firstTimeLoginBlurb,"#application.config.general.siteTitle#")#');
 		    profileWin.focus();
 		    </script>
 		    </cfoutput>
@@ -51,17 +44,17 @@ $out:$
 			<!--- #### left column #### --->
 			<td valign="top" width="33%">
 				<!--- user profile stuff --->
-				<span class="formTitle">Your Profile</span>
+				<span class="formTitle">#application.adminBundle[session.dmProfile.locale].yourProfile#</span>
 		        <p>
 				</cfoutput>
-				<cfoutput>
+				
 				<cfscript>
 					// display profile details
 					oProfile = createObject("component", application.types.dmProfile.typePath);
 					writeoutput(oProfile.displaySummary(session.dmProfile.objectID));
 				</cfscript>
 		
-		        <br>
+		        <cfoutput><br>
 		        <hr width="100%" size="1" color="##000000" noshade>
 				<p></p></cfoutput>
 				
@@ -69,30 +62,33 @@ $out:$
 						
 				<!--- get all status breakdown --->
 				<cfinvoke component="#application.packagepath#.farcry.workflow" method="getStatusBreakdown" returnvariable="stStatus"></cfinvoke>
-				<cfoutput><span class="formTitle">Object Status Breakdown</span><p style="margin-left: 5%;">
-				<cfchart 
-					format="flash" 
-					chartHeight="100" 
-					chartWidth="250" 
-					scaleFrom="0" 
-					showXGridlines = "no" 
-					showYGridlines = "no"
-					showBorder = "no"
-					font="arialunicodeMS"
-					fontsize="10" fontbold="no" fontitalic="no" 
-					labelFormat = "percent"
-					show3D = "yes" rotated="no" sortxaxis="yes"
-					showLegend = "yes" 
-					tipStyle = "MouseOver" showmarkers="no" pieslicestyle="solid">
-					
-					<cfchartseries type="pie" colorlist="##eeeeee,##483D8B,##778899">
-						<cfloop collection="#stStatus#" item="i">
-							<cfchartdata item="#i#" value="#stStatus[i]#">
-						</cfloop>
-					</cfchartseries>
-				</cfchart>
-				
-				<p></p>
+				<cfoutput><span class="formTitle">#application.adminBundle[session.dmProfile.locale].objStatusBreakdown#</span><p style="margin-left: 5%;">
+					<cftry>
+<cfchart 
+	format="flash" 
+	chartHeight="100" 
+	chartWidth="250" 
+	scaleFrom="0" 
+	showXGridlines = "no" 
+	showYGridlines = "no"
+	showBorder = "no"
+	font="arialunicodeMS"
+	fontsize="10" fontbold="no" fontitalic="no" 
+	labelFormat = "percent"
+	show3D = "yes" rotated="no" sortxaxis="yes"
+	showLegend = "yes" 
+	tipStyle = "MouseOver" showmarkers="no" pieslicestyle="solid">
+	<!--- i18n: slip in localized words for obj status: Draft, Pending & Approved --->
+	<cfchartseries type="pie" colorlist="##eeeeee,##483D8B,##778899">
+		<cfloop collection="#stStatus#" item="i">
+			<cfchartdata item="#application.adminBundle[session.dmProfile.locale][i]#" value="#stStatus[i]#">
+		</cfloop>
+	</cfchartseries>
+</cfchart>
+						<cfcatch type="any"><!--- chart can not be rendered ---></cfcatch>
+					</cftry>				
+				</cfoutput>
+				<cfoutput><p></p>
 				<hr width="100%" size="1" color="##000000" noshade>
 				<p></p></cfoutput>
 				
@@ -101,41 +97,48 @@ $out:$
 					<cfinvokeargument name="breakdown" value="7,14,21"/>
 				</cfinvoke>
 				
-				<cfoutput><span class="formTitle">Object Age Breakdown</span><p style="margin-left: 5%;">
-				<cfchart 
-					format="flash" 
-					chartHeight="100" 
-					chartWidth="250" 
-					scaleFrom="0" 
-					showXGridlines = "no" 
-					showYGridlines = "no"
-					showBorder = "no"
-					font="arialunicodeMS"
-					fontsize="10" fontbold="no" fontitalic="no" 
-					labelFormat = "percent"
-					show3D = "yes" rotated="no" sortxaxis="yes"
-					showLegend = "yes" 
-					tipStyle = "MouseOver" showmarkers="no" pieslicestyle="solid">
-					
-					<cfchartseries type="pie" colorlist="##eeeeee,##483D8B,##778899,##aeaeae">
-						<cfloop collection="#stAge#" item="i">
-							<!--- check if last segment ie > last defined date --->
-							<cfif not isNumeric(i)>
-								<cfchartdata item="#i# days" value="#stAge[i]#">
-							<cfelse>
-								<cfchartdata item="Last #i# days" value="#stAge[i]#">
-							</cfif>
-						</cfloop>
-					</cfchartseries>
-				</cfchart>
-				<p></p>
+				<cfoutput><span class="formTitle">#application.adminBundle[session.dmProfile.locale].objAgeBreakdown#</span><p style="margin-left: 5%;">
+					<cftry>
+<cfchart
+	format="flash" 
+	chartHeight="100" 
+	chartWidth="250" 
+	scaleFrom="0" 
+	showXGridlines = "no" 
+	showYGridlines = "no"
+	showBorder = "no"
+	font="arialunicodeMS"
+	fontsize="10" fontbold="no" fontitalic="no" 
+	labelFormat = "percent"
+	show3D = "yes" rotated="no" sortxaxis="yes"
+	showLegend = "yes" 
+	tipStyle = "MouseOver" showmarkers="no" pieslicestyle="solid">
+	
+	<cfchartseries type="pie" colorlist="##eeeeee,##483D8B,##778899,##aeaeae">
+		<cfloop collection="#stAge#" item="i">
+			<!--- check if last segment ie > last defined date --->
+			<cfif not isNumeric(i)>
+				<cfset tD=application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].numberDays,i)>
+				<cfchartdata item="#tD#" value="#stAge[i]#">
+			<cfelse>
+				<cfset tD=application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].numberlastDays,i)>
+				<cfchartdata item="#tD#" value="#stAge[i]#">
+			</cfif>
+		</cfloop>
+	</cfchartseries>
+</cfchart>
+						<cfcatch type="any"><!--- chart can not be rendered ---></cfcatch>
+					</cftry>
+				</cfoutput>
+				<cfoutput><p></p>
 				<hr width="100%" size="1" color="##000000" noshade>
 				<p></p>
 				
 				<!--- FarCry Build Details --->
-				<div class="formTitle">FarCry Build Details</div>
+				<div class="formTitle">#application.adminBundle[session.dmProfile.locale].buildDetails#</div>
 				</cfoutput>
 				
+				<cftry>
 				<!--- Read core build text file --->
 				<cffile action="read" file="#application.path.core#/admin/build.txt" variable="buildFile">
 				
@@ -154,12 +157,17 @@ $out:$
 				<cfset stFourQBuild = reFindNoCase('(\Name:[^\$]+\$)',fourqBuildFile,1,true)>
 				<cfset substrFourq = mid(fourqBuildFile,stFourQBuild.pos[1],stFourQBuild.len[1])>
 				<cfset fourqResult = reReplaceNoCase(substrFourq,'(\Name:)([^\$]+)(\$)','\2')>
-				
-				
+					<cfcatch>
+					<!--- if we can't read the files, then show unknown for now 050323GB --->
+						<cfset result="Unknown">
+						<cfset fourqResult="Unknown">
+						<cftrace type="warning" var="cfcatch.Detail">
+					</cfcatch>
+				</cftry>
 				<!--- display build details --->
 				<cfoutput>
-				FarCry: <cfif len(result) gt 2>#result#<cfelse>unknown</cfif><br>
-				FourQ: <cfif len(fourqResult) gt 2>#fourqResult#<cfelse>unknown</cfif>
+				FarCry: <cfif len(result) gt 2>#result#<cfelse>#application.adminBundle[session.dmProfile.locale].unknown#</cfif><br>
+				FourQ: <cfif len(fourqResult) gt 2>#fourqResult#<cfelse>#application.adminBundle[session.dmProfile.locale].unknown#</cfif>
 				
 			</td></cfoutput>
 			
@@ -175,20 +183,20 @@ $out:$
 		
 				<!--- display objects needing approval --->
 				<cfif not structIsEmpty(stPendingObjects)>
-					<span class="formTitle">Objects Pending Your Approval</span>
+					<span class="formTitle">#application.adminBundle[session.dmProfile.locale].objPendingApproval#</span>
 					
 					<table width="100%" cellpadding="5" cellspacing="1" border="0" style="margin-left:0px;margin-top:10px;border:1px solid ##000;">
 					<tr class="dataheader">
-						<td width="100%"><strong>OBJECT</strong></td>
-						<td nowrap align="center"><strong>CREATED BY</strong></td>
-						<td nowrap align="center"><strong>LAST UPDATED</strong></td>
+						<td width="100%"><strong>#application.adminBundle[session.dmProfile.locale].object#</strong></td>
+						<td nowrap align="center"><strong>#application.adminBundle[session.dmProfile.locale].createdBy#</strong></td>
+						<td nowrap align="center"><strong>#application.adminBundle[session.dmProfile.locale].lastUpdated#</strong></td>
 					</tr>
 		            <cfset currentrow = 1>
 					<cfloop collection="#stPendingObjects#" item="i">
 						<tr class="#IIF(currentrow MOD 2, de("dataOddRow"), de("dataEvenRow"))#">
 							<td><span class="frameMenuBullet">&raquo;</span> <cfoutput><a href="index.cfm?section=site&rootobjectid=#stPendingObjects[i]["parentObject"]#">#stPendingObjects[i]["objectTitle"]#</cfoutput></td>
 							<td><cfoutput><cfif stPendingObjects[i]["objectCreatedByEmail"] neq ""><a href="mailto:#stPendingObjects[i]["objectCreatedByEmail"]#" title="#stPendingObjects[i]["objectCreatedByEmail"]#"></cfif>#stPendingObjects[i]["objectCreatedBy"]#<cfif stPendingObjects[i]["objectCreatedByEmail"] neq ""></a></cfif></cfoutput></td>
-							<td valign="top" align="center"><cfoutput>#dateformat(stPendingObjects[i]["objectLastUpdate"],"dd-mmm-yyyy")#</cfoutput></td>
+							<td valign="top" align="center"><cfoutput>#application.thisCalendar.i18nDateFormat(stPendingObjects[i]["objectLastUpdate"],session.dmProfile.locale,application.longF)#</cfoutput></td>
 						</tr>
 		             <cfset currentrow = currentrow + 1>
 					</cfloop>
@@ -203,20 +211,20 @@ $out:$
 				<!--- display news pending approval --->
 				<cfoutput>
 				<cfif not structisempty(stPendingNews)>
-					<span class="formTitle">News Articles Pending Your Approval</span>
+					<span class="formTitle">#application.adminBundle[session.dmProfile.locale].newsPendingApproval#</span>
 					
 					<table width="100%" cellpadding="5" cellspacing="1" border="0" style="margin-left:0px;margin-top:10px;border:1px solid ##000;">
 					<tr class="dataheader">
-						<td width="100%"><strong>OBJECT</strong></td>
-						<td nowrap align="center"><strong>CREATED BY</strong></td>
-						<td nowrap align="center"><strong>LAST UPDATED</strong></td>
+						<td width="100%"><strong>#application.adminBundle[session.dmProfile.locale].object#</strong></td>
+						<td nowrap align="center"><strong>#application.adminBundle[session.dmProfile.locale].createdBy#</strong></td>
+						<td nowrap align="center"><strong>#application.adminBundle[session.dmProfile.locale].lastUpdated#</strong></td>
 					</tr>
 		            <cfset currentrow = 1>
 					<cfloop collection="#stPendingNews#" item="i">
 						<tr class="#IIF(currentrow MOD 2, de("dataOddRow"), de("dataEvenRow"))#">
 							<td><span class="frameMenuBullet">&raquo;</span> <a href="index.cfm?section=dynamic&objectid=#i#&status=pending">#stPendingNews[i]["objectTitle"]#</td>
 							<td><cfif stPendingNews[i]["objectCreatedByEmail"] neq ""><a href="mailto:#stPendingNews[i]["objectCreatedByEmail"]#" title="#stPendingNews[i]["objectCreatedByEmail"]#"></cfif>#stPendingNews[i]["objectCreatedBy"]#<cfif stPendingNews[i]["objectCreatedByEmail"] neq ""></a></cfif></td>
-							<td valign="top" align="center">#dateformat(stPendingNews[i]["objectLastUpdate"],"dd-mmm-yyyy")#</td>
+							<td valign="top" align="center">#application.thisCalendar.i18nDateFormat(stPendingNews[i]["objectLastUpdate"],session.dmProfile.locale,application.longF)#</td>
 						</tr>
 		            <cfset currentrow = currentrow + 1>
 					</cfloop>
@@ -233,13 +241,13 @@ $out:$
 				<!--- display all draft objects --->
 				<cfoutput>
 				<cfif qDraftObjects.recordcount gt 0>
-					<span class="formTitle">Objects you have in draft</span>
+					<span class="formTitle">#application.adminBundle[session.dmProfile.locale].draftObjects#</span>
 					
 					<table width="100%" cellpadding="5" cellspacing="1" border="0" style="margin-left:0px;margin-top:10px;border:1px solid ##000;">
 					<tr class="dataheader">
-						<td width="!00%"><strong>OBJECT</strong></td>
-						<td nowrap align="center"><strong>TYPE</strong></td>
-						<td nowrap align="center"><strong>LAST UPDATED</strong></td>
+						<td width="!00%"><strong>#application.adminBundle[session.dmProfile.locale].object#</strong></td>
+						<td nowrap align="center"><strong>#application.adminBundle[session.dmProfile.locale].type#</strong></td>
+						<td nowrap align="center"><strong>#application.adminBundle[session.dmProfile.locale].lastUpdated#</strong></td>
 					</tr>
 					<cfparam name="url.draftEndRow" default="5">
 					<cfloop query="qDraftObjects" startrow="1" endrow="#url.draftEndRow#">
@@ -250,15 +258,15 @@ $out:$
 								<td><span class="frameMenuBullet">&raquo;</span> <a href="index.cfm?section=site&rootobjectid=#objectParent#">#objectTitle#</td>
 							</cfif>
 							<td valign="top">#objectType#</td>
-							<td valign="top" align="center">#dateformat(objectLastUpdated,"dd-mmm-yyyy")#</td>
+							<td valign="top" align="center">#application.thisCalendar.i18nDateFormat(objectLastUpdated,session.dmProfile.locale,application.longF)#</td>
 						</tr>
 					</cfloop>
 					</table>
 					<!--- show link to all draftObjects --->
 					<cfif qDraftObjects.recordcount gt url.draftEndRow>
-						<div align="left" style="margin-left:7px;margin-top:5px;"><span class="frameMenuBullet" >&raquo;</span> <a href="index.cfm?draftEndRow=#qDraftObjects.recordcount#">Show All</a></div>
+						<div align="left" style="margin-left:7px;margin-top:5px;"><span class="frameMenuBullet" >&raquo;</span> <a href="index.cfm?draftEndRow=#qDraftObjects.recordcount#">#application.adminBundle[session.dmProfile.locale].showAll#</a></div>
 					<cfelseif url.draftEndRow neq 5>
-						<div align="left" style="margin-left:7px;margin-top:5px;"><span class="frameMenuBullet" >&raquo;</span> <a href="index.cfm?draftEndRow=5">Show most recent 5</a></div>
+						<div align="left" style="margin-left:7px;margin-top:5px;"><span class="frameMenuBullet" >&raquo;</span> <a href="index.cfm?draftEndRow=5">#application.adminBundle[session.dmProfile.locale].showRecent5#</a></div>
 					</cfif>
 				 <p>
 				</cfif>
@@ -272,13 +280,13 @@ $out:$
 				<!--- display all locked objects --->
 				<cfoutput>
 				<cfif qLockedObjects.recordcount gt 0>
-					<span class="formTitle">Objects you have locked</span>
+					<span class="formTitle">#application.adminBundle[session.dmProfile.locale].lockedObjects#</span>
 					
 					<table width="100%" cellpadding="5" cellspacing="1" border="0" style="margin-left:0px;margin-top:10px;border:1px solid ##000;">
 					<tr class="dataheader">
-						<td width="!00%"><strong>OBJECT</strong></td>
-						<td nowrap align="center"><strong>TYPE</strong></td>
-						<td nowrap align="center"><strong>LAST UPDATED</strong></td>
+						<td width="!00%"><strong>#application.adminBundle[session.dmProfile.locale].object#</strong></td>
+						<td nowrap align="center"><strong>#application.adminBundle[session.dmProfile.locale].type#</strong></td>
+						<td nowrap align="center"><strong>#application.adminBundle[session.dmProfile.locale].lastUpdated#</strong></td>
 						<td>&nbsp;</td>
 					</tr>
 					<cfparam name="url.lockedEndRow" default="5">
@@ -294,16 +302,16 @@ $out:$
 								</cfif>
 							</cfif>
 							<td valign="top">#objectType#</td>
-							<td valign="top" align="center">#dateformat(objectLastUpdated,"dd-mmm-yyyy")#</td>
-							<td valign="top" align="center"><a href="navajo/unlock.cfm?objectid=#objectid#&typename=#objectType#&return=home">[unlock]</a></td>
+							<td valign="top" align="center">#application.thisCalendar.i18nDateFormat(objectLastUpdated,session.dmProfile.locale,application.longF)#</td>
+							<td valign="top" align="center"><a href="navajo/unlock.cfm?objectid=#objectid#&typename=#objectType#&return=home">[#application.adminBundle[session.dmProfile.locale].unlock#]</a></td>
 						</tr>
 					</cfloop>
 					</table>
 					<!--- show link to all locked Objects --->
 					<cfif qLockedObjects.recordcount gt url.lockedEndRow>
-						<div align="left" style="margin-left:7px;margin-top:5px;"><span class="frameMenuBullet" >&raquo;</span> <a href="index.cfm?lockedEndRow=<cfoutput>#qLockedObjects.recordcount#</cfoutput>">Show All</div>
+						<div align="left" style="margin-left:7px;margin-top:5px;"><span class="frameMenuBullet" >&raquo;</span> <a href="index.cfm?lockedEndRow=<cfoutput>#qLockedObjects.recordcount#</cfoutput>">#application.adminBundle[session.dmProfile.locale].showAll#</div>
 					<cfelseif url.lockedEndRow neq 5>
-						<div align="left" style="margin-left:7px;margin-top:5px;"><span class="frameMenuBullet" >&raquo;</span> <a href="index.cfm?lockedEndRow=5">Show most recent 5</div>
+						<div align="left" style="margin-left:7px;margin-top:5px;"><span class="frameMenuBullet" >&raquo;</span> <a href="index.cfm?lockedEndRow=5">#application.adminBundle[session.dmProfile.locale].showRecent5#</div>
 					</cfif>
 				</cfif>
 				<p>&nbsp;</p>
@@ -321,21 +329,21 @@ $out:$
 				<!--- display recent HTML objects --->
 				<cfoutput>
 				<cfif structCount(stRecentHTMLObjects) gt 0>
-					<span class="formTitle">Recently Added Pages</span>
+					<span class="formTitle">#application.adminBundle[session.dmProfile.locale].recentlyAddedPages#</span>
 					
 					<table width="100%" cellpadding="5" cellspacing="1" border="0" style="margin-left:0px;margin-top:10px;border:1px solid ##000;">
 					<tr class="dataheader">
-						<td width="100%"><strong>PAGE</strong></td>
-						<td nowrap align="center"><strong>CREATED BY</strong></td>
-						<td nowrap align="center"><strong>DATE CREATED</strong></td>
+						<td width="100%"><strong>#application.adminBundle[session.dmProfile.locale].page#</strong></td>
+						<td nowrap align="center"><strong>#application.adminBundle[session.dmProfile.locale].createdBy#</strong></td>
+						<td nowrap align="center"><strong>#application.adminBundle[session.dmProfile.locale].dateCreated#</strong></td>
 					</tr>
 		            <cfset currentrow = 1>
 		    		<cfloop collection="#stRecentHTMLObjects#" item="item">
 		                <cfset stRecentObj = stRecentHTMLObjects[item]>
 					<tr class="#IIF(currentrow MOD 2, de("dataOddRow"), de("dataEvenRow"))#">
-						<td><span class="frameMenuBullet">&raquo;</span> <cfoutput><a href="index.cfm?section=site&rootobjectid=#stRecentObj.objectParent#"><cfif stRecentObj.title neq "">#stRecentObj.title#<cfelse><em>undefined</em></cfif></cfoutput></td>
+						<td><span class="frameMenuBullet">&raquo;</span> <cfoutput><a href="index.cfm?section=site&rootobjectid=#stRecentObj.objectParent#"><cfif stRecentObj.title neq "">#stRecentObj.title#<cfelse><em>#application.adminBundle[session.dmProfile.locale].undefined#</em></cfif></cfoutput></td>
 						<td valign="top"><cfoutput><cfif stRecentObj.userEmail neq ""><a href="mailto:#stRecentObj.userEmail#" title="#stRecentObj.userEmail#"></cfif>#stRecentObj.createdBy#<cfif stRecentObj.userEmail neq ""></a></cfif></cfoutput></td>
-						<td valign="top" align="center"><cfoutput>#dateformat(stRecentObj.dateTimeCreated,"dd-mmm-yyyy")#</cfoutput></td>
+						<td valign="top" align="center"><cfoutput>#application.thisCalendar.i18nDateFormat(stRecentObj.dateTimeCreated,session.dmProfile.locale,application.longF)#</cfoutput></td>
 					</tr>
 		                <cfset currentrow = currentrow + 1>
 					</cfloop>
@@ -352,27 +360,30 @@ $out:$
 				
 				
 				<!--- display recent News objects --->
-				<cfoutput>
 				<cfif structCount(stRecentNewsObjects) gt 0>
-					<span class="formTitle">Recently Added News Articles</span>
+					<cfoutput>
+					<span class="formTitle">#application.adminBundle[session.dmProfile.locale].recentNewsArticles#</span>
 					
 					<table width="100%" cellpadding="5" cellspacing="1" border="0" style="margin-left:0px;margin-top:10px;border:1px solid ##000;">
 					<tr class="dataheader">
-						<td width="100%"><strong>NEWS ARTICLE</strong></td>
-						<td nowrap align="center"><strong>CREATED BY</strong></td>
-						<td nowrap align="center"><strong>DATE CREATED</strong></td>
+						<td width="100%"><strong>#application.adminBundle[session.dmProfile.locale].newsArticle#</strong></td>
+						<td nowrap align="center"><strong>#application.adminBundle[session.dmProfile.locale].createdBy#</strong></td>
+						<td nowrap align="center"><strong>#application.adminBundle[session.dmProfile.locale].dateCreated#</strong></td>
 					</tr>
+					</cfoutput>
 		            <cfset currentrow = 1>
 					<cfloop collection="#stRecentNewsObjects#" item="item">
 		                <cfset stRecentObj = stRecentNewsObjects[item]>
+					<cfoutput>
 					<tr class="#IIF(currentrow MOD 2, de("dataOddRow"), de("dataEvenRow"))#">
-						<td><span class="frameMenuBullet">&raquo;</span> <cfoutput><a href="index.cfm?section=dynamic&objectid=#stRecentObj.objectid#&status=all"><cfif stRecentObj.title neq "">#stRecentObj.title#<cfelse><em>undefined</em></cfif></cfoutput></td>
-						<td valign="top"><cfoutput><cfif stRecentObj.userEmail neq ""><a href="mailto:#stRecentObj.userEmail#" title="#stRecentObj.userEmail#"></cfif>#stRecentObj.createdBy#<cfif stRecentObj.userEmail neq ""></a></cfif></cfoutput></td>
-						<td valign="top" align="center"><cfoutput>#dateformat(stRecentObj.dateTimeCreated,"dd-mmm-yyyy")#</cfoutput></td>
+						<td><span class="frameMenuBullet">&raquo;</span> <a href="index.cfm?section=dynamic&objectid=#stRecentObj.objectid#&status=all"><cfif stRecentObj.title neq "">#stRecentObj.title#<cfelse><em>#application.adminBundle[session.dmProfile.locale].undefined#</em></cfif></td>
+						<td valign="top"><cfif stRecentObj.userEmail neq ""><a href="mailto:#stRecentObj.userEmail#" title="#stRecentObj.userEmail#"></cfif>#stRecentObj.createdBy#<cfif stRecentObj.userEmail neq ""></a></cfif></td>
+						<td valign="top" align="center">#application.thisCalendar.i18nDateFormat(stRecentObj.dateTimeCreated,session.dmProfile.locale,application.longF)#</td>
 					</tr>
+					</cfoutput>
 		            <cfset currentrow = currentrow + 1>
 					</cfloop>
-					</table>
+					<cfoutput></table></cfoutput>
 				</cfif>
 				
 				<!--- site usage graph --->
@@ -381,34 +392,38 @@ $out:$
 				</cfscript>
 				
 				<cfif qStats.Max gt 0>
-		
-					<cfoutput><p></p><span class="formTitle">Site Usage in the last month</span><p style="margin-left: 5%;">
-			    		<div align="center"><cfchart 
-						format="flash" 
-						chartHeight="300" 
-						chartWidth="300" 
-						scaleFrom="0" 
-						showXGridlines = "yes" 
-						showYGridlines = "yes"
-						seriesPlacement="default"
-						showBorder = "no"
-						font="arialunicodeMS"
-						fontsize="10" fontbold="no" fontitalic="no" 
-						labelFormat = "number"
-						xAxisTitle = "Date" 
-						yAxisTitle = "Total Views Per Day" 
-						show3D = "yes"
-						xOffset = "0.15" 
-						yOffset = "0.15"
-						rotated = "no" 
-						showLegend = "yes" 
-						tipStyle = "MouseOver"
-						gridlines = "#qStats.max#">
-					<cfchartseries type="line" query="qStats.qGetPageStats" itemcolumn="viewday" valuecolumn="count_views" serieslabel="Views in the last month" paintstyle="shade"></cfchartseries>
-		
-				</cfchart></div></cfoutput>
-		
+					<cfoutput><p></p><span class="formTitle">#application.adminBundle[session.dmProfile.locale].siteUsageLastMonth#</span><p style="margin-left: 5%;">
+			    		<div align="center">
+						<cftry>
+<cfchart 
+	format="flash" 
+	chartHeight="300" 
+	chartWidth="300" 
+	scaleFrom="0"
+	scaleTo="#qStats.max*1.1#" 
+	showXGridlines = "yes" 
+	showYGridlines = "yes"
+	seriesPlacement="default"
+	showBorder = "no"
+	font="arialunicodeMS"
+	fontsize="10" fontbold="no" fontitalic="no" 
+	labelFormat = "number"
+	xAxisTitle = "#application.adminBundle[session.dmProfile.locale].date#" 
+	yAxisTitle = "#application.adminBundle[session.dmProfile.locale].totalViews#" 
+	show3D = "yes"
+	xOffset = "0.15" 
+	yOffset = "0.15"
+	rotated = "no" 
+	showLegend = "no" 
+	tipStyle = "MouseOver">
+		<cfchartseries type="line" query="qStats.qGetPageStats" itemcolumn="viewday" valuecolumn="count_views" serieslabel="#application.adminBundle[session.dmProfile.locale].viewsInLastMonth#" paintstyle="shade"></cfchartseries>
+</cfchart>
+							<cfcatch type="any"><!--- graph can not be rendered ---></cfcatch>
+						</cftry>
+						</div></cfoutput>
 		        </cfif>
+		
+		<cfoutput>
 			</td>
 		</tr>
 		</table>
@@ -417,21 +432,15 @@ $out:$
 		##idServer { position:relative;width: 1px;height: 1px;clip:rect(0px 1px 1px 0px);display:none;}
 		</STYLE>
 		<IFRAME WIDTH="100" HEIGHT="1" NAME="idServer" ID="idServer" 
-			 FRAMEBORDER="0" FRAMESPACING="0" MARGINWIDTH="0" MARGINHEIGHT="0">
+			 FRAMEBORDER="0" FRAMESPACING="0" MARGINWIDTH="0" MARGINHEIGHT="0" SRC="null">
 				<ILAYER NAME="idServer" WIDTH="400" HEIGHT="100" VISIBILITY="Hide" 
 				 ID="idServer">
-				<P>This page uses a hidden frame and requires either Microsoft 
-				Internet Explorer v4.0 (or higher) or Netscape Navigator v4.0 (or 
-				higher.)</P>
+				<P>#application.adminBundle[session.dmProfile.locale].browserReqBlurb#</P>
 				</ILAYER>
 		</IFRAME>
-		
 		</cfoutput>
 		
 		<!--- setup footer --->
 		<admin:footer>
-
-	</cfcatch>
-</cftry>
-
+</cfif>
 <cfsetting enablecfoutputonly="No">

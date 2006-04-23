@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/config.cfc,v 1.23 2004/07/02 05:01:52 paul Exp $
-$Author: paul $
-$Date: 2004/07/02 05:01:52 $
-$Name: milestone_2-2-1 $
-$Revision: 1.23 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/config.cfc,v 1.25 2004/09/08 08:02:41 geoff Exp $
+$Author: geoff $
+$Date: 2004/09/08 08:02:41 $
+$Name: milestone_2-3-2 $
+$Revision: 1.25 $
 
 || DESCRIPTION || 
 $Description: config cfc $
@@ -76,6 +76,7 @@ $out:$
     <cfargument name="dsn" type="string" default="#application.dsn#" required="true" hint="Database DSN">
 	<cfset var q = "">
 		
+	<cftry>
 	<cfquery datasource="#arguments.dsn#" name="q">
 		SELECT wConfig FROM #application.dbowner#config
 		WHERE upper(configName) = '#ucase(arguments.configName)#'
@@ -85,21 +86,31 @@ $out:$
 		<cfwddx action="WDDX2CFML" input="#q.wConfig#" output="stConfig">
 	<cfelse>
 		<cfset stConfig = structNew()>
+		<cftrace category="farcry.config" type="warning" text="#arguments.configname# failed to load.">
 	</cfif>
+	<cfcatch>
+		<!--- something has gone wrong!  return empty struct --->
+		<cfset stConfig = structNew()>
+		<cftrace category="farcry.config" type="warning" var="cfcatch.message" text="#arguments.configname# failed to load.">
+	</cfcatch>
+	</cftry>
 	
 	<cfreturn stConfig>
 </cffunction>
 
 <cffunction name="setConfig" returntype="struct">
-    <cfargument name="dsn" type="string" default="#application.dsn#" required="true" hint="Database DSN">
 	<cfargument name="configName" required="Yes" type="string">
 	<cfargument name="stConfig" required="Yes" type="struct">
+	<cfargument name="dsn" type="string" default="#application.dsn#" required="no" hint="Database DSN">
+	<cfargument name="dbowner" type="string" default="#application.dbowner#" required="no" hint="Database dbowner">
 	<cfset var stStatus = StructNew()>
+	<cfset var wConfig="">
+	<cfset var qUpdate="">
 		
 	<cfwddx action="CFML2WDDX" input="#arguments.stConfig#" output="wConfig">
 	
 	<cfquery datasource="#arguments.dsn#" name="qUpdate">
-		UPDATE #application.dbowner#config
+		UPDATE #arguments.dbowner#config
 		SET
 		wConfig = '#wConfig#'
 		WHERE 
@@ -219,7 +230,6 @@ $out:$
 	
 	<cfreturn stStatus>
 </cffunction>
-
 
 <cffunction name="defaultFU">
     <cfargument name="dsn" type="string" default="#application.dsn#" required="true" hint="Database DSN">

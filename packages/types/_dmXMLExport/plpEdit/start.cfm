@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmXMLExport/plpEdit/start.cfm,v 1.3 2003/09/22 07:04:33 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmXMLExport/plpEdit/start.cfm,v 1.4 2004/07/16 05:47:17 brendan Exp $
 $Author: brendan $
-$Date: 2003/09/22 07:04:33 $
-$Name: b201 $
-$Revision: 1.3 $
+$Date: 2004/07/16 05:47:17 $
+$Name: milestone_2-3-2 $
+$Revision: 1.4 $
 
 || DESCRIPTION || 
 First step of dmXMLExport plp. 
@@ -17,6 +17,8 @@ First step of dmXMLExport plp.
 Brendan Sisson (brendan@daemon.com.au)
 --->
 <cfsetting enablecfoutputonly="yes">
+
+<cfprocessingDirective pageencoding="utf-8">
 
 <cfimport taglib="/farcry/farcry_core/tags/farcry" prefix="tags">
 <cfimport taglib="/farcry/farcry_core/tags/navajo" prefix="nj">
@@ -32,71 +34,71 @@ Brendan Sisson (brendan@daemon.com.au)
 	<cfoutput><form action="#cgi.script_name#?#cgi.query_string#" name="editform" method="post" enctype="multipart/form-data">
 	
 	<div class="FormSubTitle">#output.label#</div>
-	<div class="FormTitle">General Info</div>
+	<div class="FormTitle">#application.adminBundle[session.dmProfile.locale].generalInfo#</div>
 	
 	<div class="FormTable">	
 		<table class="BorderTable" width="400" align="center">
 		<!--- title --->
 		<tr>
-			<td nowrap class="FormLabel">Title:</span></td>
+			<td nowrap class="FormLabel">#application.adminBundle[session.dmProfile.locale].titleLabel#</span></td>
 			<td width="100%"><input type="text" name="Title" value="#output.Title#" class="formtextbox" maxlength="255"></td>
 		</tr>
 		<!--- description --->
 		<tr>
-			<td nowrap class="FormLabel" valign="top">Description:</span></td>
+			<td nowrap class="FormLabel" valign="top">#application.adminBundle[session.dmProfile.locale].descLabel#</span></td>
 			<td width="100%"><textarea name="description">#output.description#</textarea></td>
 		</tr>
 		<!--- language --->
 		<tr>
-			<td nowrap class="FormLabel">Language:</span></td>
+			<td nowrap class="FormLabel">#application.adminBundle[session.dmProfile.locale].languageLabel#</span></td>
 			<td width="100%"><input type="text" name="language" value="#output.language#" class="formtextbox" maxlength="255"></td>
 		</tr>
 		<!--- creator --->
 		<tr>
-			<td nowrap class="FormLabel">Creator: </span></td>
+			<td nowrap class="FormLabel">#application.adminBundle[session.dmProfile.locale].creatorLabel# </span></td>
 			<td width="100%"><input type="text" name="creator" value="#output.creator#" class="formtextbox" maxlength="255"></td>
 		</tr>
 		<!--- rights --->
 		<tr>
-			<td nowrap class="FormLabel">Rights: </span></td>
+			<td nowrap class="FormLabel">#application.adminBundle[session.dmProfile.locale].rightsLabel# </span></td>
 			<td width="100%"><input type="text" name="rights" value="#output.rights#" class="formtextbox" maxlength="255"></td>
 		</tr>
 		<!--- generatorAgent --->
 		<tr>
-			<td nowrap class="FormLabel">Generator Agent: </span></td>
+			<td nowrap class="FormLabel">#application.adminBundle[session.dmProfile.locale].generatorAgentLabel# </span></td>
 			<td width="100%"><input type="text" name="generatorAgent" value="#output.generatorAgent#" class="formtextbox" maxlength="255"></td>
 		</tr>
 		<!--- errorReportsTo --->
 		<tr>
-			<td nowrap class="FormLabel">Error Reports Email: </span></td>
+			<td nowrap class="FormLabel">#application.adminBundle[session.dmProfile.locale].errorReportsEmailLabel# </span></td>
 			<td width="100%"><input type="text" name="errorReportsTo" value="#output.errorReportsTo#" class="formtextbox" maxlength="255"></td>
 		</tr>
 		<!--- updatePeriod --->
 		<tr>
-			<td nowrap class="FormLabel">Update Period: </span></td>
+			<td nowrap class="FormLabel">#application.adminBundle[session.dmProfile.locale].updatePeriodLabel# </span></td>
 			<td width="100%">
 				<select name="updatePeriod">
-					<option value="hourly" <cfif output.updatePeriod eq "hourly">selected</cfif>>Hourly
-					<option value="daily" <cfif output.updatePeriod eq "daily">selected</cfif>>Daily
-					<option value="weekly" <cfif output.updatePeriod eq "weekly">selected</cfif>>Weekly
-					<option value="monthly" <cfif output.updatePeriod eq "monthly">selected</cfif>>Monthly
-					<option value="yearly" <cfif output.updatePeriod eq "yearly">selected</cfif>>Yearly
+					<option value="hourly" <cfif output.updatePeriod eq "hourly">selected</cfif>>#application.adminBundle[session.dmProfile.locale].Hourly#
+					<option value="daily" <cfif output.updatePeriod eq "daily">selected</cfif>>#application.adminBundle[session.dmProfile.locale].Daily#
+					<option value="weekly" <cfif output.updatePeriod eq "weekly">selected</cfif>>#application.adminBundle[session.dmProfile.locale].Weekly#
+					<option value="monthly" <cfif output.updatePeriod eq "monthly">selected</cfif>>#application.adminBundle[session.dmProfile.locale].Monthly#
+					<option value="yearly" <cfif output.updatePeriod eq "yearly">selected</cfif>>#application.adminBundle[session.dmProfile.locale].Yearly#
 				</select>
 			</td>
 		</tr>
 		<!--- updateFrequency --->
 		<tr>
-			<td nowrap class="FormLabel">Update Frequency: </span></td>
+			<td nowrap class="FormLabel">#application.adminBundle[session.dmProfile.locale].updateFrequencyLabel# </span></td>
 			<td width="100%"><input type="text" name="updateFrequency" value="#output.updateFrequency#" maxlength="5" size="5"></td>
 		</tr>
 		<!--- updateBase --->
 		<tr>
-			<td nowrap class="FormLabel">Update Base Date: </span></td>
+			<td nowrap class="FormLabel">#application.adminBundle[session.dmProfile.locale].updateBaseDateLabel# </span></td>
 			<td width="100%"><input type="text" name="updateBase" value="#output.updateBase#" class="formtextbox" maxlength="255"></td>
 		</tr>
 		<!--- contentType --->
 		<tr>
-			<td nowrap class="FormLabel">Content Type: </span></td>
+			<td nowrap class="FormLabel">#application.adminBundle[session.dmProfile.locale].contentType# </span></td>
 			<td width="100%">
 				<select name="contentType">
 					<!--- loop over types structure in memory -- populated on application init --->
@@ -108,12 +110,12 @@ Brendan Sisson (brendan@daemon.com.au)
 		</tr>
 		<!--- numberOfItems --->
 		<tr>
-			<td nowrap class="FormLabel">Max Number of Items: </span></td>
+			<td nowrap class="FormLabel">#application.adminBundle[session.dmProfile.locale].maxItemsLabel# </span></td>
 			<td width="100%"><input type="text" name="numberOfItems" value="#output.numberOfItems#" maxlength="5" size="5"></td>
 		</tr>
 		<!--- xml File details --->
 		<tr>
-			<td nowrap class="FormLabel">Export File: </span></td>
+			<td nowrap class="FormLabel">#application.adminBundle[session.dmProfile.locale].exportFileLabel# </span></td>
 			<td width="100%"><input type="text" name="xmlFile" value="#output.xmlFile#" class="formtextbox" maxlength="255"></td>
 		</tr>
 		<tr>
@@ -132,9 +134,9 @@ Brendan Sisson (brendan@daemon.com.au)
 		<!--//
 		document.editform.Title.focus();
 		objForm = new qForm("editform");
-		objForm.Title.validateNotNull("Please enter a title");
-		objForm.updateFrequency.validateNotNull("Please enter an update frequency");
-		objForm.errorReportsTo.validateNotNull("Please enter an error reports email address");
+		objForm.Title.validateNotNull("#application.adminBundle[session.dmProfile.locale].pleaseEnterTitle#");
+		objForm.updateFrequency.validateNotNull("#application.adminBundle[session.dmProfile.locale].pleaseEnterUpdateFrequency#");
+		objForm.errorReportsTo.validateNotNull("#application.adminBundle[session.dmProfile.locale].pleaseEnterErrorEmail#");
 		//-->
 	</SCRIPT>
 	

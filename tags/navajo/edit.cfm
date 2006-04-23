@@ -4,14 +4,14 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/navajo/edit.cfm,v 1.22.2.1 2004/08/17 06:10:32 brendan Exp $
+$Header: /cvs/farcry/farcry_core/tags/navajo/edit.cfm,v 1.26 2005/01/17 04:57:33 brendan Exp $
 $Author: brendan $
-$Date: 2004/08/17 06:10:32 $
-$Name: milestone_2-2-1 $
-$Revision: 1.22.2.1 $
+$Date: 2005/01/17 04:57:33 $
+$Name: milestone_2-3-2 $
+$Revision: 1.26 $
 
 || DESCRIPTION || 
-$Description: General edit conjurer template.$
+$Description: $
 $TODO: This legacy code needs to be revisited 
 -- should have a more generic object invocation methodology GB$
 
@@ -23,9 +23,15 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au)$
 $in: url.Objectid$
 $out:$
 --->
+
 <cfsetting enablecfoutputonly="yes">
+<cfprocessingDirective pageencoding="utf-8">
 <cfinclude template="/farcry/farcry_core/admin/includes/utilityFunctions.cfm">
 <cfinclude template="/farcry/farcry_core/admin/includes/cfFunctionWrappers.cfm">
+<!--- Legacy support for old pages referring to URL.type--->
+<cfif isDefined("URL.type") AND NOT isDefined("URL.typename")>
+	<cfset URL.typename = URL.type>
+</cfif>
 
 <!--- enforce some validation --->
 <cfparam name="url.objectid" type="uuid">
@@ -50,7 +56,7 @@ $out:$
 	bHasPermission = request.dmsec.oAuthorisation.checkInheritedPermission(permissionName='edit',objectid=URL.objectid);
 </cfscript>
 <cfif NOT bHasPermission GTE 0>
-	<h1>You do not have permission to edit this object</h1>
+	<h1><cfoutput>#application.adminBundle[session.dmProfile.locale].noEditPermissions#</cfoutput></h1>
 	<cfabort>
 </cfif>
 
@@ -77,7 +83,7 @@ $out:$
 		//Log this activity against live object
 		oAuthentication = request.dmSec.oAuthentication;	
 		stuser = oAuthentication.getUserAuthenticationData();
-		application.factory.oaudit.logActivity(objectid="#url.objectid#",auditType="delete", username=StUser.userlogin, location=cgi.remote_host, note="Deleted Draft Object (#stObj.title#)");
+		application.factory.oaudit.logActivity(objectid="#url.objectid#",auditType="delete", username=StUser.userlogin, location=cgi.remote_host, note="Deleted Draft Object (#stObj.label#)");
 	</cfscript>
 	<!--- get parent for update tree --->
 	<cf_getNavigation objectId="#url.ObjectId#" bInclusive="1" r_stObject="stNav" r_ObjectId="navIdSrcPerm">

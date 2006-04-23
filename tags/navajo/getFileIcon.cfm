@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/navajo/getFileIcon.cfm,v 1.8 2003/07/14 05:46:27 brendan Exp $
+$Header: /cvs/farcry/farcry_core/tags/navajo/getFileIcon.cfm,v 1.9 2004/07/15 02:03:00 brendan Exp $
 $Author: brendan $
-$Date: 2003/07/14 05:46:27 $
-$Name: b201 $
-$Revision: 1.8 $
+$Date: 2004/07/15 02:03:00 $
+$Name: milestone_2-3-2 $
+$Revision: 1.9 $
 
 || DESCRIPTION || 
 $Description: Works out which icon to use for attachments$
@@ -23,6 +23,8 @@ $out:$
 --->
 
 <cfsetting enablecfoutputonly="yes">
+
+<cfprocessingDirective pageencoding="utf-8">
 
 <cfset theFileName=attributes.filename>
 <cfset suffix="default">

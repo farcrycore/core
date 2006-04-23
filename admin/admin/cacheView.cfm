@@ -6,11 +6,11 @@ Daemon Pty Limited 1995-2003
 http://www.daemon.com.au
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/admin/cacheView.cfm,v 1.4 2003/09/03 01:50:31 brendan Exp $
+$Header: /cvs/farcry/farcry_core/admin/admin/cacheView.cfm,v 1.5 2004/07/15 01:10:24 brendan Exp $
 $Author: brendan $
-$Date: 2003/09/03 01:50:31 $
-$Name: b201 $
-$Revision: 1.4 $
+$Date: 2004/07/15 01:10:24 $
+$Name: milestone_2-3-2 $
+$Revision: 1.5 $
 
 || DESCRIPTION || 
 Displays the details of cache
@@ -27,6 +27,8 @@ out:
 
 <cfsetting enablecfoutputonly="yes">
 
+<cfprocessingDirective pageencoding="utf-8">
+
 <!--- check permissions --->
 <cfscript>
 	iGeneralTab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="AdminGeneralTab");
@@ -34,7 +36,7 @@ out:
 
 <!--- set up page header --->
 <cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
-<admin:header>
+<admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 <cfif iGeneralTab eq 1>
 

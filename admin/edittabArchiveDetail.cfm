@@ -1,9 +1,11 @@
+<cfprocessingDirective pageencoding="utf-8">
+
 <!--- set up page header --->
 <cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
-<admin:header>
+<admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 <br>
-<span class="FormTitle">Archive</span>
+<span class="FormTitle"><cfoutput>#application.adminBundle[session.dmProfile.locale].archive#</cfoutput></span>
 <p></p>
 
 <cfinvoke 

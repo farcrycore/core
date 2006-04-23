@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/admin/tabitem.cfm,v 1.1 2003/03/20 21:35:03 brendan Exp $
+$Header: /cvs/farcry/farcry_core/tags/admin/tabitem.cfm,v 1.2 2004/07/15 02:01:35 brendan Exp $
 $Author: brendan $
-$Date: 2003/03/20 21:35:03 $
-$Name: b201 $
-$Revision: 1.1 $
+$Date: 2004/07/15 02:01:35 $
+$Name: milestone_2-3-2 $
+$Revision: 1.2 $
 
 || DESCRIPTION || 
 Sets attributes for tab
@@ -21,6 +21,8 @@ in: onclick, id, style, target, title
 out:
 --->
 <cfsetting enablecfoutputonly="Yes">
+
+<cfprocessingDirective pageencoding="utf-8">
 
 <cfparam name="attributes.onclick" default="">
 <cfparam name="attributes.id" default="">

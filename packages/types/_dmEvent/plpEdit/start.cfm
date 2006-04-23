@@ -5,11 +5,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmEvent/plpEdit/start.cfm,v 1.9 2004/07/08 07:25:38 paul Exp $
-$Author: paul $
-$Date: 2004/07/08 07:25:38 $
-$Name: milestone_2-2-1 $
-$Revision: 1.9 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmEvent/plpEdit/start.cfm,v 1.11 2004/07/21 11:11:16 brendan Exp $
+$Author: brendan $
+$Date: 2004/07/21 11:11:16 $
+$Name: milestone_2-3-2 $
+$Revision: 1.11 $
 
 || DESCRIPTION || 
 $Description: dmEvent Edit PLP - Start Step $
@@ -17,6 +17,10 @@ $Description: dmEvent Edit PLP - Start Step $
 || DEVELOPER ||
 $Developer: Brendan Sisson (brendan@daemon.com.au) $
 --->
+<cfprocessingDirective pageencoding="utf-8">
+
+<cfset localeMonths=application.thisCalendar.getMonths(session.dmProfile.locale)>
+
 <cfimport taglib="/farcry/farcry_core/tags/farcry" prefix="tags">
 <cfimport taglib="/farcry/farcry_core/tags/navajo" prefix="nj">
 <cfimport taglib="/farcry/farcry_core/tags/display/" prefix="display">
@@ -66,7 +70,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au) $
 <cfif dateDiff('n', output.publishDate,output.expiryDate) gte 0 and dateDiff('n', output.startDate,output.endDate) GTE 0 >
 	<tags:plpNavigationMove>		
 <cfelse>
-	<cfoutput><div style="color:red;">ERROR. Expiry or End dates cannot be before Publish or Start Dates<p></p></div></cfoutput>
+	<cfoutput><div style="color:red;"><p>#application.adminBundle[session.dmProfile.locale].errEndBeforeStartDate#</p></div></cfoutput>
 </cfif>
 
 
@@ -75,22 +79,22 @@ $Developer: Brendan Sisson (brendan@daemon.com.au) $
 	<cfoutput><form action="#cgi.script_name#?#cgi.query_string#" name="editform" method="post">
 	
 	<div class="FormSubTitle">#output.label#</div>
-	<div class="FormTitle">General Info</div>
+	<div class="FormTitle">#application.adminBundle[session.dmProfile.locale].generalInfo#</div>
 	<div class="FormTable" style="width:550px;">
 	<table class="BorderTable" width="auto;" align="center">
 	<tr>
-		<td nowrap class="FormLabel">Title: </span></td>
+		<td nowrap class="FormLabel">#application.adminBundle[session.dmProfile.locale].titleLabel# </span></td>
 		<td><input type="text" name="Title" value="#output.Title#" class="formtextbox" maxlength="255"></td>
 	</tr>
 	<tr>
-		<td nowrap class="FormLabel">Location: </span></td>
+		<td nowrap class="FormLabel">#application.adminBundle[session.dmProfile.locale].locationLabel# </span></td>
 		<td><input type="text" name="Location" value="#output.Location#" class="formtextbox" maxlength="255"></td>
 	</tr>
 	<!--- get the templates for this type --->
 	<nj:listTemplates typename="dmEvent" prefix="displayPage" r_qMethods="qMethods">
 	<cfoutput>
 	<tr>
-		<td nowrap><span class="FormLabel">Display Method:</span></td>
+		<td nowrap><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].displayMethodLabel#</span></td>
 		<td><span class="FormLabel">
 		<select name="DisplayMethod" size="1" class="formfield">
 		</cfoutput>
@@ -106,7 +110,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au) $
 		<td colspan="2">&nbsp;</td>
 	</tr>
 	<tr>
-		<td nowrap class="FormLabel">Publish Date:(go live)</td>
+		<td nowrap class="FormLabel">#application.adminBundle[session.dmProfile.locale].goLiveLabel#</td>
 		<td >
 			<table>
 				<tr>
@@ -120,7 +124,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au) $
 					<td>
 						<select name="publishMonth" class="formfield">
 							<cfloop from="1" to="12" index="i">
-								<option value="#i#" <cfif i IS month(output.publishDate)>selected</cfif>>#monthAsString(i)#</option>
+								<option value="#i#" <cfif i IS month(output.publishDate)>selected</cfif>>#localeMonths[i]#</option>
 							</cfloop>
 						</select>
 					</td>
@@ -139,14 +143,14 @@ $Developer: Brendan Sisson (brendan@daemon.com.au) $
 					<td>
 						<select name="publishHour" class="formfield">
 							<cfloop from="0" to="23" index="i">
-								<option value="#i#" <cfif hour(output.publishDate) IS i>selected</cfif>>#i# hrs</option>						
+								<option value="#i#" <cfif hour(output.publishDate) IS i>selected</cfif>>#i# #application.adminBundle[session.dmProfile.locale].hrs#</option>						
 							</cfloop>
 						</select>
 					</td>
 					<td>
 						<select name="publishMinutes" class="formfield">
 							<cfloop from="0" to="45" index="i" step="15">
-								<option value="#i#" <cfif minute(output.publishDate) IS i>selected</cfif>>#i# mins</option>						
+								<option value="#i#" <cfif minute(output.publishDate) IS i>selected</cfif>>#i# #application.adminBundle[session.dmProfile.locale].mins#</option>						
 							</cfloop>
 						</select>
 					</td>	
@@ -156,12 +160,12 @@ $Developer: Brendan Sisson (brendan@daemon.com.au) $
 	</tr>
 	<tr>
 		<td nowrap>
-			<span class="FormLabel">Expiry Date:</span>
+			<span class="FormLabel">#application.adminBundle[session.dmProfile.locale].expiryDateLabel#</span>
 			<!--- show links to for no expiry/yes expiry date --->
 			<input type="hidden" name="noExpire" value="<cfif 2050 is year(output.expiryDate)>1<cfelse>0</cfif>">
 		 	<div style="display:inline">
-				<a href="##" id="noLink" onClick="document.getElementById('noLink').style.visibility='hidden';document.getElementById('yesLink').style.visibility='visible';noExpire.value='1';document.getElementById('expire').style.visibility='hidden';" style="position:absolute;<cfif 2050 is year(output.expiryDate)>visibility:hidden</cfif>"><img src="#application.url.farcry#/images/no.gif" border="0" alt="No Expiry Date"></a>
-				<a href="##" id="yesLink" onClick="document.getElementById('noLink').style.visibility='visible';document.getElementById('yesLink').style.visibility='hidden';noExpire.value='0';expiryYear.value='#year(now())#';document.getElementById('expire').style.visibility='visible';" style="position:absolute;<cfif not 2050 is year(output.expiryDate)>visibility:hidden</cfif>"><img src="#application.url.farcry#/images/yes.gif" border="0" alt="Has Expiry Date"></a>
+				<a href="##" id="noLink" onClick="document.getElementById('noLink').style.visibility='hidden';document.getElementById('yesLink').style.visibility='visible';editform.noExpire.value='1';document.getElementById('expire').style.visibility='hidden';" style="position:absolute;<cfif 2050 is year(output.expiryDate)>visibility:hidden</cfif>"><img src="#application.url.farcry#/images/no.gif" border="0" alt="No Expiry Date"></a>
+				<a href="##" id="yesLink" onClick="document.getElementById('noLink').style.visibility='visible';document.getElementById('yesLink').style.visibility='hidden';editform.noExpire.value='0';editform.expiryYear.value='#year(now())#';document.getElementById('expire').style.visibility='visible';" style="position:absolute;<cfif not 2050 is year(output.expiryDate)>visibility:hidden</cfif>"><img src="#application.url.farcry#/images/yes.gif" border="0" alt="Has Expiry Date"></a>
 			</div>
 		</td>
 		<td >
@@ -177,7 +181,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au) $
 					<td>
 						<select name="expiryMonth" class="formfield">
 							<cfloop from="1" to="12" index="i">
-								<option value="#i#" <cfif i IS month(output.expiryDate)>selected</cfif>>#monthAsString(i)#</option>
+								<option value="#i#" <cfif i IS month(output.expiryDate)>selected</cfif>>#LocaleMonths[i]#</option>
 							</cfloop>
 						</select>
 					</td>
@@ -200,14 +204,14 @@ $Developer: Brendan Sisson (brendan@daemon.com.au) $
 					<td>
 						<select name="expiryHour" class="formfield">
 							<cfloop from="0" to="23" index="i">
-								<option value="#i#" <cfif hour(output.expiryDate) IS i>selected</cfif>>#i# hrs</option>						
+								<option value="#i#" <cfif hour(output.expiryDate) IS i>selected</cfif>>#i# #application.adminBundle[session.dmProfile.locale].hrs#</option>						
 							</cfloop>
 						</select>
 					</td>
 					<td>
 						<select name="expiryMinutes" class="formfield">
 							<cfloop from="0" to="45" index="i" step="15">
-								<option value="#i#" <cfif minute(output.expiryDate) IS i>selected</cfif>>#i# mins</option>						
+								<option value="#i#" <cfif minute(output.expiryDate) IS i>selected</cfif>>#i# #application.adminBundle[session.dmProfile.locale].mins#</option>						
 							</cfloop>
 						</select>
 					</td>
@@ -219,7 +223,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au) $
 		<td colspan="2"><hr></td>
 	</tr>
 	<tr>
-		<td nowrap class="FormLabel">Event Start Date:</td>
+		<td nowrap class="FormLabel">#application.adminBundle[session.dmProfile.locale].eventStartDate#</td>
 		<td >
 			<table>
 				<tr>
@@ -233,7 +237,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au) $
 					<td>
 						<select name="startMonth" class="formfield">
 							<cfloop from="1" to="12" index="i">
-								<option value="#i#" <cfif i IS month(output.startDate)>selected</cfif>>#monthAsString(i)#</option>
+								<option value="#i#" <cfif i IS month(output.startDate)>selected</cfif>>#localeMonths[i]#</option>
 							</cfloop>
 						</select>
 					</td>
@@ -252,14 +256,14 @@ $Developer: Brendan Sisson (brendan@daemon.com.au) $
 					<td>
 						<select name="startHour" class="formfield">
 							<cfloop from="0" to="23" index="i">
-								<option value="#i#" <cfif hour(output.startDate) IS i>selected</cfif>>#i# hrs</option>						
+								<option value="#i#" <cfif hour(output.startDate) IS i>selected</cfif>>#i# #application.adminBundle[session.dmProfile.locale].hrs#</option>						
 							</cfloop>
 						</select>
 					</td>
 					<td>
 						<select name="startMinutes" class="formfield">
 							<cfloop from="0" to="45" index="i" step="15">
-								<option value="#i#" <cfif minute(output.startDate) IS i>selected</cfif>>#i# mins</option>						
+								<option value="#i#" <cfif minute(output.startDate) IS i>selected</cfif>>#i# #application.adminBundle[session.dmProfile.locale].mins#</option>						
 							</cfloop>
 						</select>
 					</td>	
@@ -269,7 +273,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au) $
 	</tr>
 	<tr>
 		<td nowrap>
-			<span class="FormLabel">Event End Date:</span>
+			<span class="FormLabel">#application.adminBundle[session.dmProfile.locale].eventEndDateLabel#</span>
 			<!--- show links to for no expiry/yes expiry date --->
 			<input type="hidden" name="noEventExpire" value="<cfif 2050 is year(output.endDate)>1<cfelse>0</cfif>">
 		 	<div style="display:inline">
@@ -290,7 +294,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au) $
 					<td>
 						<select name="endMonth" class="formfield">
 							<cfloop from="1" to="12" index="i">
-								<option value="#i#" <cfif i IS month(output.endDate)>selected</cfif>>#monthAsString(i)#</option>
+								<option value="#i#" <cfif i IS month(output.endDate)>selected</cfif>>#localeMonths[i]#</option>
 							</cfloop>
 						</select>
 					</td>
@@ -313,14 +317,14 @@ $Developer: Brendan Sisson (brendan@daemon.com.au) $
 					<td>
 						<select name="endHour" class="formfield">
 							<cfloop from="0" to="23" index="i">
-								<option value="#i#" <cfif hour(output.endDate) IS i>selected</cfif>>#i# hrs</option>						
+								<option value="#i#" <cfif hour(output.endDate) IS i>selected</cfif>>#i# #application.adminBundle[session.dmProfile.locale].hrs#</option>						
 							</cfloop>
 						</select>
 					</td>
 					<td>
 						<select name="endMinutes" class="formfield">
 							<cfloop from="0" to="45" index="i" step="15">
-								<option value="#i#" <cfif minute(output.endDate) IS i>selected</cfif>>#i# mins</option>						
+								<option value="#i#" <cfif minute(output.endDate) IS i>selected</cfif>>#i# #application.adminBundle[session.dmProfile.locale].mins#</option>						
 							</cfloop>
 						</select>
 					</td>
@@ -339,7 +343,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au) $
 	<!--//
 	document.editform.Title.focus();
 	objForm = new qForm("editform");
-	objForm.Title.validateNotNull("Please enter a title");
+	objForm.Title.validateNotNull("#application.adminBundle[session.dmProfile.locale].pleaseEnterTitle#");
 		//-->
 	</SCRIPT>
 	</form></cfoutput>

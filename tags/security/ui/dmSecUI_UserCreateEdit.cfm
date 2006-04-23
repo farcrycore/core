@@ -1,16 +1,17 @@
-
 <cfsetting enablecfoutputonly="Yes">
+
+<cfprocessingDirective pageencoding="utf-8">
 <!--- 
 || LEGAL ||
 $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/security/ui/dmSecUI_UserCreateEdit.cfm,v 1.7 2003/12/08 00:25:13 brendan Exp $
+$Header: /cvs/farcry/farcry_core/tags/security/ui/dmSecUI_UserCreateEdit.cfm,v 1.8 2004/07/15 02:03:27 brendan Exp $
 $Author: brendan $
-$Date: 2003/12/08 00:25:13 $
-$Name: milestone_2-2-1 $
-$Revision: 1.7 $
+$Date: 2004/07/15 02:03:27 $
+$Name: milestone_2-3-2 $
+$Revision: 1.8 $
 
 || DESCRIPTION || 
 $Description: Interface for creating and editing users.$
@@ -89,7 +90,7 @@ $out:$
 	</cftry>
 	
 	<cfif noError>
-		<cfoutput><span style="color:green;">OK:</span> User Update/Create success<p></p></cfoutput>
+		<cfoutput>#application.adminBundle[session.dmProfile.locale].userChangeOK#<p></p></cfoutput>
 		<!--- Now grab the user --->
 		<cfscript>
 			stObj = oAuthentication.getUser(userlogin=form.userlogin,userdirectory=form.userdirectory);
@@ -112,8 +113,7 @@ $out:$
 	</cfscript>
 	
 	<cfif StructIsEmpty(stObj)>
-		<dmSec:dmSec_throw errorcode="dmSec_UserGetUnableToFind" lExtra="#url.userLogin#,#url.userDirectory#">
-		
+		<dmSec:dmSec_throw errorcode="dmSec_UserGetUnableToFind" lExtra="#url.userLogin#,#url.userDirectory#">	
 	</cfif>
 
 <cfelse>
@@ -130,9 +130,9 @@ $out:$
 </cfif>
 
 <cfif stObj.userId eq -1 >
-	<cfoutput><span class="formtitle">Create User</span><p></cfoutput>
+	<cfoutput><span class="formtitle">#application.adminBundle[session.dmProfile.locale].createUser#</span><p></cfoutput>
 <cfelse>
-	<cfoutput><span class="formtitle">Edit User</span><p></cfoutput>
+	<cfoutput><span class="formtitle">#application.adminBundle[session.dmProfile.locale].editUser#</span><p></cfoutput>
 </cfif>
 
 <cfoutput>
@@ -164,7 +164,7 @@ function generateRandomPassword()
 <tr>
 	
 	<cfif stObj.userId eq -1>
-		<td><span class="formlabel">Select a user directory to create the user in.</span></td>
+		<td><span class="formlabel">#application.adminBundle[session.dmProfile.locale].selectUserDirCreateUser#</span></td>
 		<td>
 		<select name="UserDirectory" class="formselectlist">
 			<cfloop index="i" list="#structKeyList(stUd)#">
@@ -173,7 +173,7 @@ function generateRandomPassword()
 		</select>
 		</td>
 	<cfelse>
-		<td><span class="formlabel">UserDirectory:</span></td>
+		<td><span class="formlabel">#application.adminBundle[session.dmProfile.locale].userDirectoryLabel#</span></td>
 		<td>#stObj.UserDirectory#<input type="hidden" name="UserDirectory" value="#stObj.UserDirectory#"></td>
 	</cfif>
 	
@@ -184,7 +184,7 @@ function generateRandomPassword()
 <input type="hidden" name="UserId" value="#stObj.userId#"> 
 <!--- User Details --->
 <tr>
-	<td><span class="formlabel">User Login:</span></td>
+	<td><span class="formlabel">#application.adminBundle[session.dmProfile.locale].userLoginLabel#</span></td>
 	<td>
 	<cfif stObj.userId eq -1 OR stUd[stObj.UserDirectory].type neq 'Custom'>
 		<input type="text" size="32" maxsize="32" name="userLogin" value="#stObj.userLogin#">
@@ -198,7 +198,7 @@ function generateRandomPassword()
 </tr>
 <cfif stObj.userId eq -1 OR stUd[stObj.UserDirectory].type neq 'Custom'>
 	<tr>
-		<td valign="top"><span class="formlabel">User Notes:</span></td>
+		<td valign="top"><span class="formlabel">#application.adminBundle[session.dmProfile.locale].userNotes#</span></td>
 		<td><Textarea name="userNotes" class="formtextarea" rows="5">#stObj.userNotes#</textarea></td>
 	</tr>
 	<tr>
@@ -207,10 +207,10 @@ function generateRandomPassword()
 </cfif>
 
 <tr>
-	<td valign="top"><span class="formlabel">User Password:</span></td>
+	<td valign="top"><span class="formlabel">#application.adminBundle[session.dmProfile.locale].userPasswordLabel#</span></td>
 	<td>
 		<input type="text" maxsize="32" name="userPassword" value="#stObj.userPassword#">
-		<input type="button" onClick="generateRandomPassword()" value="Generate Random Password" style="width:150px;">
+		<input type="button" onClick="generateRandomPassword()" value="#application.adminBundle[session.dmProfile.locale].genRandomPassword#" style="width:150px;">
 	</td>
 </tr>
 <tr>
@@ -218,12 +218,12 @@ function generateRandomPassword()
 </tr>
 <cfif stObj.userId eq -1 OR stUd[stObj.UserDirectory].type neq 'Custom'>
 	<tr>
-		<td><span class="formlabel">User Status:</span></td>
+		<td><span class="formlabel">#application.adminBundle[session.dmProfile.locale].userStatusLabel#</span></td>
 		<td>
 		<select name="userStatus" class="formselectlist">
-			<option value="4" <cfif stObj.userStatus eq 4>selected</cfif>>Active
+			<option value="4" <cfif stObj.userStatus eq 4>selected</cfif>>#application.adminBundle[session.dmProfile.locale].active#
 			<!--- <option value="1" <cfif stObj.userStatus eq 1>selected</cfif>>Blacklisted --->
-			<option value="2" <cfif stObj.userStatus eq 2>selected</cfif>>Disabled
+			<option value="2" <cfif stObj.userStatus eq 2>selected</cfif>>#application.adminBundle[session.dmProfile.locale].disabled#
 			<!--- <option value="3" <cfif stObj.userStatus eq 3>selected</cfif>>Pending Approval --->
 		</select>
 		</td>
@@ -234,13 +234,13 @@ function generateRandomPassword()
 </cfif>
 <tr>
 	<cfif stObj.userId eq -1>
-	<td colspan="2"><input type="submit" name="Submit" value="Create User"><br></td>
+	<td colspan="2"><input type="submit" name="Submit" value="#application.adminBundle[session.dmProfile.locale].createUser#"><br></td>
 	<cfelse>
 		<cfscript>
 			aUserGroups = oAuthentication.getMultipleGroups(userLogin="#stObj.userLogin#", userDirectory="#stObj.userdirectory#");
 		</cfscript>
 		
-		<td><span class="formlabel">Member of Groups:</span></td>
+		<td><span class="formlabel">#application.adminBundle[session.dmProfile.locale].memberOfGroupsLabel#</span></td>
 		<td>
 		<cfif arrayLen(aUserGroups) neq 0>
 			<cfloop index="i" from="1" to="#arrayLen(aUserGroups)#">
@@ -253,8 +253,8 @@ function generateRandomPassword()
 		</td>		
 		<p></p>
 		<input type="hidden" name="deleteuser" value="0">
-		<input type="submit" name="Submit" value="Update User">
-		<input type="button" name="delete" value="Delete User" onClick="if(confirm('Are you sure you wish to delete this user?')){document.user.deleteuser.value=1;user.submit();}">
+		<input type="submit" name="Submit" value="#application.adminBundle[session.dmProfile.locale].updateUser#">
+		<input type="button" name="delete" value="#application.adminBundle[session.dmProfile.locale].deleteUser#" onClick="if(confirm('#application.adminBundle[session.dmProfile.locale].confirmDeleteUser#')){document.user.deleteuser.value=1;user.submit();}">
 		
 	</cfif>
 	</td>
@@ -266,9 +266,9 @@ function generateRandomPassword()
 	<SCRIPT LANGUAGE="JavaScript">
 	<!--//
 	objForm = new qForm("user");
-	objForm.userLogin.validateNotNull("Please enter a user name");
-	objForm.userPassword.validateNotNull("Please enter a password");
-	objForm.userPassword.validatePassword(null, '1','32',"Please enter a valid password");
+	objForm.userLogin.validateNotNull("#application.adminBundle[session.dmProfile.locale].enterUserName#");
+	objForm.userPassword.validateNotNull("#application.adminBundle[session.dmProfile.locale].enterPassword#");
+	objForm.userPassword.validatePassword(null, '1','32',"#application.adminBundle[session.dmProfile.locale].enterValidPassword#");
 	//-->
 	</SCRIPT>
 </form>
@@ -276,8 +276,7 @@ function generateRandomPassword()
 <cfif stObj.userId neq -1>
 	<form action="?tag=UserGroups&userLogin=#stObj.userLogin#&userdirectory=#stobj.userdirectory#" method="POST" style="display:inline">
 	<tr>
-		<td><input type="submit" name="GroupManage" value="Manage Groups"></td>
-
+		<td><input type="submit" name="GroupManage" value="#application.adminBundle[session.dmProfile.locale].manageGroups#"></td>
 	</tr>
 	<tr>
 		<td colspan="2">&nbsp;</td>

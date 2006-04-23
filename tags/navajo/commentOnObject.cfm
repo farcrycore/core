@@ -1,10 +1,11 @@
+<cfprocessingDirective pageencoding="utf-8">
 <!--- set up page header --->
 <cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
 <cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
 <cfimport taglib="/farcry/fourq/tags/" prefix="q4">
 <admin:header>
 
-<div class="FormTitle">Add Comment</div>
+<div class="FormTitle"><cfoutput>#application.adminBundle[session.dmProfile.locale].addComment#</cfoutput></div>
 <cfparam name="url.objectid" type="UUID">
 
 <cfif isdefined("form.cancel")>
@@ -33,7 +34,7 @@
 
 <cfif not isstruct(stNav) or not structcount(stNav)>
 	<cfoutput>
-		<script>alert("cannot comment on this object from the website");
+		<script>alert("#application.adminBundle[session.dmProfile.locale].cantCommentOnObject#");
 		window.close();
 		</script>
 	</cfoutput>
@@ -56,11 +57,11 @@
 			<div><textarea cols="58" rows="3" name="commentLog"></textarea></div>
 			<div>
 			<input type="hidden" name="objectid" value="#stObj.objectid#">			
-			<input type="submit" name="submit" value="Submit" width="80" style="width:80;" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';" onclick="">
-			<input type="submit" name="cancel" value="Cancel" width="80" style="width:80;" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';" onclick="">
+			<input type="submit" name="submit" value="#application.adminBundle[session.dmProfile.locale].submitUC#" width="80" style="width:80;" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';" onclick="">
+			<input type="submit" name="cancel" value="#application.adminBundle[session.dmProfile.locale].cancel#" width="80" style="width:80;" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';" onclick="">
 			</div>
 			<cfif len(trim(stObj.commentLog))>
-				</div><h4>Previous Comment Log</h4><textarea cols="58" rows="12">#stObj.commentLog#</textarea></div>
+				</div><h4>#application.adminBundle[session.dmProfile.locale].prevCommentLog#</h4><textarea cols="58" rows="12">#stObj.commentLog#</textarea></div>
 			</cfif>
 			</form>
 		</cfoutput>
@@ -70,7 +71,7 @@
 			stObj.datetimecreated = createODBCDate("#datepart('yyyy',stObj.datetimecreated)#-#datepart('m',stObj.datetimecreated)#-#datepart('d',stObj.datetimecreated)#");
 			//only if the comment log exists - do we actually append the entry
 			if (structkeyexists(stObj, "commentLog")){
-				buildLog =  "#chr(13)##chr(10)##session.dmSec.authentication.canonicalName#" & "(#dateformat(now(),'dd/mm/yyyy')# #timeformat(now(), 'HH:mm:ss')#):#chr(13)##chr(10)# #FORM.commentLog#";
+				buildLog =  "#chr(13)##chr(10)##session.dmSec.authentication.canonicalName#" & "(#application.thisCalendar.i18nDateFormat(now(),session.dmProfile.locale,application.mediumF)# #application.thisCalendar.i18nTimeFormat(now(),session.dmProfile.locale,application.mediumF)#:#chr(13)##chr(10)# #FORM.commentLog#";
 				stObj.commentLog = buildLog & "#chr(10)##chr(13)#" & stObj.commentLog;
 				}
 			// update the OBJECT	
@@ -96,7 +97,7 @@
 	<cfif isdefined("form.windowClose")>
 		<cfoutput>
 			<script>
-				alert("You Cannot Comment On This Content");
+				alert("#application.adminBundle[session.dmProfile.locale].cantCommentOnContent#");
 				window.close();
 			</script>
 		</cfoutput>

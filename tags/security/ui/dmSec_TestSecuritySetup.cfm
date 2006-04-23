@@ -1,5 +1,7 @@
 <cfsetting enablecfoutputonly="Yes">
 
+<cfprocessingDirective pageencoding="utf-8">
+
 <!--- 
 || BEGIN FUSEDOC ||
 
@@ -8,11 +10,11 @@ Daemon Pty Limited 1995-2001
 http://www.daemon.com.au/
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/security/ui/dmSec_TestSecuritySetup.cfm,v 1.4 2004/06/16 23:25:24 brendan Exp $
+$Header: /cvs/farcry/farcry_core/tags/security/ui/dmSec_TestSecuritySetup.cfm,v 1.6 2004/07/15 03:52:45 brendan Exp $
 $Author: brendan $
-$Date: 2004/06/16 23:25:24 $
-$Name: milestone_2-2-1 $
-$Revision: 1.4 $
+$Date: 2004/07/15 03:52:45 $
+$Name: milestone_2-3-2 $
+$Revision: 1.6 $
 
 || DESCRIPTION || 
 Shows the userdirectory and policy store setup.
@@ -39,29 +41,29 @@ Matt Dawson (mad@daemon.com.au)
 
 <cfif isDefined("form.verify")>
 	
-	<h3>Testing setup</h3>
+	<h3>#application.adminBundle[session.dmProfile.locale].testingSetup#</h3>
 	
-	<h4>Security Tests</h4>
+	<h4>#application.adminBundle[session.dmProfile.locale].securityTests#</h4>
 	
 	<table border=0 cellpadding=0 cellspacing=0>
 	<tr>
 	<td>&nbsp;&nbsp;</td>
 	<td>
-	<span style="color:green;">OK:</span> UserDirectory attribute exists.<br>
+	#application.adminBundle[session.dmProfile.locale].userDirExists#<br>
 	
 	<cfloop index="udName" list="#StructKeyList(stUd)#">
-		<h5>Testing UserDirectory '#udName#'.</h5>
+		<h5>#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].testingUserDir,"#udName#")#</h5>
 	
 		<cfswitch expression="#stUd[udName].type#">
 		<cfcase value="Daemon">
 		
 			<cfif not isDefined("stUd.#udName#.datasource")>
 		
-				<span style="color:red;">Error:</span> UserDirectory '#udName#' Datasource attribute not found.<br>
+				application.rb.formatRBString(userDirNotFound,"#udName#")<br>
 			
 			<cfelse>
 			
-				<span style="color:green;">OK:</span> UserDirectory Datasource attribute exists.<br>
+				#application.adminBundle[session.dmProfile.locale].userDirOK#<br>
 				
 				<!--- Test the odbc connection works --->
 				<cfswitch expression="#application.dbType#">
@@ -79,9 +81,9 @@ Matt Dawson (mad@daemon.com.au)
 					</cfdefaultcase>
 				
 				</cfswitch>
-					
-				<span style="color:green;">OK:</span> UserDirectory Datasource '#stUd[udName].datasource#' connection success.<br>
-				<a href="?tag=CreateSecurityTables&userDirectory=#udName#" onClick="return confirm('Are you sure you wish to recreate you security tables?');">Create Security Tables</a><br>
+				
+				#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].userDirConnectedOK,"#stUd[udName].datasource#")#<br>
+				<a href="?tag=CreateSecurityTables&userDirectory=#udName#" onClick="return confirm('#application.adminBundle[session.dmProfile.locale].confirmCreateSecurityTables#');">#application.adminBundle[session.dmProfile.locale].createSecurityTables#</a><br>
 				<br>
 				<cfimport taglib="/farcry/farcry_core/tags/security/ui/" prefix="dmsec">
 				<!--- Test the correct tables are in the user Directory --->
@@ -105,10 +107,10 @@ Matt Dawson (mad@daemon.com.au)
 		
 		<cfcase value="ADSI">
 			<cfif not isDefined("stUd.#udName#.domain")>
-				<span style="color:red;">Error:</span> UserDirectory '#udName#' Domain attribute not found.<br>
+				#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].userDirDomainNotFound,"#udName#")#<br>
 			
 			<cfelse>
-				<span style="color:green;">OK:</span> UserDirectory '#udName#' Domain attribute exists.<br>
+				#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].userDirDomainOK,"#udName#")#<br>
 				
 				<!--- test the connection by downloading all Active Directory groups --->
 				<cfscript>
@@ -117,17 +119,18 @@ Matt Dawson (mad@daemon.com.au)
                 </cfscript>
 
 				<cfif arrayLen(aGroups)>
-                    <span style="color:green;">OK:</span> ADSI connection('#udName#') to domain '#stUd[udName].domain#' success.<br>
+					<cfset subS=listToArray('#udName#,#stUd[udName].domain#')>
+                    #application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].adsiConnectionOK,subS)#<br>
                 <cfelse>
-                    <span style="color:red;">Error:</span> ADSI connection('#udName#') to domain '#stUd[udName].domain#' failed.<br>
+					<cfset subS=listToArray('#udName#,#stUd[udName].domain#')>
+                    #application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].adsiConnectionFailed,subS)#.<br>
                 </cfif>
 			</cfif>
 					
 		</cfcase>
 		
 		<cfdefaultcase>
-		
-			<span style="color:Orange;">Warning:</span> Unknown user directory type.<br>
+			#application.adminBundle[session.dmProfile.locale].userDirUnknownType#<br>
 		</cfdefaultcase>
 		</cfswitch>
 		
@@ -143,7 +146,7 @@ Matt Dawson (mad@daemon.com.au)
 </cfif>
 
 <br><br>
-<input type="Submit" name="Verify" value="Verify Setup">&nbsp;<input type="Submit" name="View" value="View Setup"><br>
+<input type="Submit" name="Verify" value="#application.adminBundle[session.dmProfile.locale].verifySetup#">&nbsp;<input type="Submit" name="View" value="#application.adminBundle[session.dmProfile.locale].viewSetup#"><br>
 <br>
 </form>
 

@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/farcry/floater.cfm,v 1.9 2003/09/19 06:02:28 brendan Exp $
-$Author: brendan $
-$Date: 2003/09/19 06:02:28 $
-$Name: b201 $
-$Revision: 1.9 $
+$Header: /cvs/farcry/farcry_core/tags/farcry/floater.cfm,v 1.10 2004/08/04 00:45:51 paul Exp $
+$Author: paul $
+$Date: 2004/08/04 00:45:51 $
+$Name: milestone_2-3-2 $
+$Revision: 1.10 $
 
 || DESCRIPTION || 
 $Description: FarCry DHTML Float Menu$
@@ -409,6 +409,7 @@ function #attributes.prefix#removeContextMenu() {
 	else {
 		document.body.oncontextmenu = #attributes.prefix#doNothing;
 	}
+	document.body.oncontextmenu = #attributes.prefix#doNothing;
 	#attributes.prefix#HideMenu();
 }
 

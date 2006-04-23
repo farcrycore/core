@@ -1,4 +1,7 @@
 <cfsetting enablecfoutputonly="Yes">
+
+<cfprocessingDirective pageencoding="utf-8">
+
 <!--- 
 || BEGIN FUSEDOC ||
 
@@ -7,11 +10,11 @@ Daemon Pty Limited 1995-2001
 http://www.daemon.com.au/
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/security/ui/dmSecUI_GroupSearch.cfm,v 1.1 2003/04/08 08:52:20 paul Exp $
-$Author: paul $
-$Date: 2003/04/08 08:52:20 $
-$Name: b201 $
-$Revision: 1.1 $
+$Header: /cvs/farcry/farcry_core/tags/security/ui/dmSecUI_GroupSearch.cfm,v 1.3 2004/07/30 04:55:55 brendan Exp $
+$Author: brendan $
+$Date: 2004/07/30 04:55:55 $
+$Name: milestone_2-3-2 $
+$Revision: 1.3 $
 
 || DESCRIPTION || 
 UI for searching for groups.
@@ -25,6 +28,12 @@ Matt Dawson (mad@daemon.com.au)
 
 || HISTORY ||
 $Log: dmSecUI_GroupSearch.cfm,v $
+Revision 1.3  2004/07/30 04:55:55  brendan
+i18n mods
+
+Revision 1.2  2004/07/15 02:03:27  brendan
+i18n updates
+
 Revision 1.1  2003/04/08 08:52:20  paul
 CFC security updates
 
@@ -55,7 +64,7 @@ no message
 
 <cfparam name="form.lUserDirectory" default="">
 
-<cfoutput><span class="formtitle">Group Search</span><p></cfoutput>
+<cfoutput><span class="formtitle">#application.adminBundle[session.dmProfile.locale].groupSearch#</span><p></cfoutput>
 
 <!--- User directory selection --->
 <cfscript>
@@ -89,7 +98,7 @@ else
 	<td>&nbsp;</td>
 </tr>
 <tr>
-	<td><span class="formlabel">Select a user directory to search in.</span></td>
+	<td><span class="formlabel">#application.adminBundle[session.dmProfile.locale].selectSearchUserDir#</span></td>
 </tr>
 <tr>
 	<td>
@@ -104,16 +113,17 @@ else
 	<td>&nbsp;</td>
 </tr>
 <tr>
-	<td><span class="formlabel">Enter a fragment of the group name:</span></td>
+	<td><span class="formlabel">#application.adminBundle[session.dmProfile.locale].groupNameFragment#</span></td>
 </tr>
 <tr>
 	<td>
 	<input type="text" name="fragment" value="#stobj.fragment#">
+	<!--- i18n: problematic --->
 	<cfset lLocations="Starts with,Contains,Ends with">
 	<select name="fragmentLocation">
-		<cfloop index="location" list="#lLocations#">
-		<option value="#location#" <cfif location eq stobj.fragmentLocation>selected</cfif>>#location#
-		</cfloop>
+		<option value="Starts with" <cfif stobj.fragmentLocation eq "Starts with">selected</cfif>>#application.adminBundle[session.dmProfile.locale].startsWith#
+		<option value="Contains" <cfif stobj.fragmentLocation eq "Contains">selected</cfif>>#application.adminBundle[session.dmProfile.locale].containsLabel#
+		<option value="Ends with" <cfif stobj.fragmentLocation eq "Ends with">selected</cfif>>#application.adminBundle[session.dmProfile.locale].endsWith#
 	</select>
 	</td>
 </tr>
@@ -121,7 +131,7 @@ else
 	<td>&nbsp;</td>
 </tr>
 <tr>
-	<td><input type="Submit" name="Submit" Value="Search"></td>
+	<td><input type="Submit" name="Submit" Value="#application.adminBundle[session.dmProfile.locale].search#"></td>
 </tr>
 <tr>
 	<td>&nbsp;</td>

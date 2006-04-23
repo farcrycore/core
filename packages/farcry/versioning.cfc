@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/versioning.cfc,v 1.8 2004/01/20 02:13:03 paul Exp $
-$Author: paul $
-$Date: 2004/01/20 02:13:03 $
-$Name: milestone_2-2-1 $
-$Revision: 1.8 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/versioning.cfc,v 1.10 2004/08/14 18:59:52 spike Exp $
+$Author: spike $
+$Date: 2004/08/14 18:59:52 $
+$Name: milestone_2-3-2 $
+$Revision: 1.10 $
 
 || DESCRIPTION || 
 $Description: versioning cfc $
@@ -24,6 +24,7 @@ $out:$
 
 <cfcomponent displayName="Object Versioning" hint="Functions to handle versioning of objects">
 
+<cfinclude template="/farcry/farcry_core/admin/includes/cfFunctionWrappers.cfm">
 	
 	<cffunction name="archiveObject" access="public" returntype="struct" hint="Archives any farcry object">
 		<cfargument name="objectID" type="uuid" required="true">
@@ -37,7 +38,8 @@ $out:$
 	<cffunction name="sendObjectLive" access="public" returntype="struct" hint="Sends a versioned object with draft live.Archives existing live object if it exists and deletes old live object">
 		<cfargument name="objectID" type="uuid" required="true">
 		<cfargument name="stDraftObject"  type="struct" required="true" hint="the draft stuct to be updated">
-		<cfargument name="typename" type="string" required="false">
+		<cfargument name="typename" type="string" required="false" hint="Providing typename avoids a type-lookup from the objectid, offering a slight performance increase.">
+		<cfargument name="bCopyDraftContainers" type="boolean" required="false" default="true" hint="Containers configured for the draft object will be copied when the object is sent live.">
 		
  		<cfinclude template="_versioning/sendObjectLive.cfm">
 		

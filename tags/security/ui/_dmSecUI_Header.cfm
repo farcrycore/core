@@ -1,4 +1,7 @@
 <cfsetting enablecfoutputonly="Yes">
+
+<cfprocessingDirective pageencoding="utf-8">
+
 <!--- 
 || BEGIN FUSEDOC ||
 
@@ -7,11 +10,11 @@ Daemon Pty Limited 1995-2001
 http://www.daemon.com.au/
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/security/ui/_dmSecUI_Header.cfm,v 1.1 2003/04/08 08:52:20 paul Exp $
-$Author: paul $
-$Date: 2003/04/08 08:52:20 $
-$Name: b201 $
-$Revision: 1.1 $
+$Header: /cvs/farcry/farcry_core/tags/security/ui/_dmSecUI_Header.cfm,v 1.2 2004/07/15 02:03:27 brendan Exp $
+$Author: brendan $
+$Date: 2004/07/15 02:03:27 $
+$Name: milestone_2-3-2 $
+$Revision: 1.2 $
 
 || DESCRIPTION || 
 
@@ -24,6 +27,9 @@ Matt Dawson (mad@daemon.com.au)
 
 || HISTORY ||
 $Log: _dmSecUI_Header.cfm,v $
+Revision 1.2  2004/07/15 02:03:27  brendan
+i18n updates
+
 Revision 1.1  2003/04/08 08:52:20  paul
 CFC security updates
 
@@ -49,7 +55,7 @@ no message
 <cfset request.cfa.mode.debug = 1>
 
 <cfoutput>
-<html>
+<html dir="#session.writingDir#" lang="#session.userLanguage#">
 
 <style>
 table, body, input, select, textarea
@@ -68,7 +74,7 @@ a
 
 <table border="1" cellpadding="5" cellspacing="1" width="100%" height="100%">
 <tr height="1%">
-	<td colspan="2" bgcolor="##87CEEB" valign="middle" align="center" width="100%"><h2 style="display:inline;">Daemon Security Administration</h2></td>
+	<td colspan="2" bgcolor="##87CEEB" valign="middle" align="center" width="100%"><h2 style="display:inline;">#application.adminBundle[session.dmProfile.locale].daemonSecurityAdmin#</h2></td>
 </tr>
 
 <tr>

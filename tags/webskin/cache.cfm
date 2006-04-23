@@ -1,26 +1,22 @@
+<cfsetting enablecfoutputonly="Yes">
 <!--- 
-|| BEGIN FUSEDOC ||
-
-|| Copyright ||
-Daemon Pty Limited 1995-2001
-http://www.daemon.com.au/
+|| LEGAL ||
+$Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
+$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/webskin/cache.cfm,v 1.10 2003/11/28 01:07:07 brendan Exp $
-$Author: brendan $
-$Date: 2003/11/28 01:07:07 $
-$Name: milestone_2-2-1 $
-$Revision: 1.10 $
-
-|| PRIMARY DEVELOPER ||
-Aaron Shurmer (aaron@daemon.com.au)
-
-|| MODIFICATIONS ||
-Brendan Sisson (brendan@daemon.com.au) - modified to work on CFMX
+$Header: /cvs/farcry/farcry_core/tags/webskin/cache.cfm,v 1.12 2004/08/22 05:11:30 geoff Exp $
+$Author: geoff $
+$Date: 2004/08/22 05:11:30 $
+$Name: milestone_2-3-2 $
+$Revision: 1.12 $
 
 || DESCRIPTION || 
-Content caches blocks of code.
-This tag will handle cache nesting.
+$Description: Content caches blocks of code. This tag will handle cache nesting.$
+
+|| DEVELOPER ||
+$Developer: Brendan Sisson (brendan@daemon.com.au) $
+$Developer: Geoff Bowers (modius@deamon.com.au) $
 
 || USAGE ||
 <cfimport taglib="/farcry/farcry_core/tags/webskin" prefix="skin">
@@ -51,10 +47,8 @@ minutes				: optional, cache minutes.
 seconds				: optional, cache seconds.
 bSuppressDesign	    : optional, supresses design output
 r_output			: optional, return variable to put the cached content into.
-
-
-|| END FUSEDOC ||
 --->
+<cfparam name="attributes.flushcache" default="false" type="boolean">
 
 <cfif thistag.executionmode is "start">
 	<cfparam name="request.cachedcontentblocknumber" default="0">
@@ -82,7 +76,7 @@ r_output			: optional, return variable to put the cached content into.
 		</cfif>
 	</cfif>
 
-	<cfif request.mode.flushcache>
+	<cfif request.mode.flushcache OR attributes.flushcache>
 		<cfset cacheread = false>
 		<cfif len(attributes.cacheBlockName)>
 			<cfinvoke component="#application.packagepath#.farcry.cache" method="cacheFlush">

@@ -1,14 +1,21 @@
+<!-- Revision: 2005-05-25 // Friedrich Dimmel
+	changes: PostgreSQL queries corrected.
+ 	1) D instead of dy
+	2) swapped signs <= and >= to work correctly
+	3) moved sql-date functions out and into separate variables myDate / nextWeek	
+ --->
+
 <!--- 
 || LEGAL ||
 $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_stats/getBranchStatsByWeek.cfm,v 1.8 2004/05/20 04:41:25 brendan Exp $
-$Author: brendan $
-$Date: 2004/05/20 04:41:25 $
-$Name: milestone_2-2-1 $
-$Revision: 1.8 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_stats/getBranchStatsByWeek.cfm,v 1.8.4.1 2005/05/30 02:49:46 guy Exp $
+$Author: guy $
+$Date: 2005/05/30 02:49:46 $
+$Name: milestone_2-3-2 $
+$Revision: 1.8.4.1 $
 
 || DESCRIPTION || 
 $Description: gets stats for entire branch $
@@ -44,20 +51,24 @@ $out:$
 </cfcase>
 
 <cfcase value="postgresql">
-	<!--- THIS QUERY IS NOT COMPLETE - TODO --->
-	<cfquery datasource="#arguments.dsn#" name="qGetPageStatsByWeek">
-		select distinct day, statsDays.name,TO_CHAR(fq.logdatetime,'dy') as loginday, count(fq.logId) as count_logins
-		from #application.dbowner#statsDays
-		left join (
-			select * from stats
-				where 1 = 1
-				<cfif not arguments.showAll>
-					AND navid IN (<cfif qDescendants.recordcount>#QuotedValueList(qDescendants.objectid)#,</cfif>'#arguments.navid#')
-				</cfif>
-		)fq on UPPER(TO_CHAR(fq.logdatetime,'dy')) = UPPER(SUBSTR(statsDays.day,1,3))
-		 and (fq.logdatetime - TO_DATE('#arguments.day#','dd/mon/yy') <=0) and (TO_DATE('#dateadd('d','7',arguments.day)#','dd/mon/yy') - fq.logdatetime >=0))
-		group by day, statsDays.name, TO_CHAR(fq.logdatetime,'dy')
-		order by 1 
+<!---
+	adapted by Friedrich Dimmel (friedrich.dimmel@siemens.com)
+--->
+ 	<cfset thisWeek = DateFormat(arguments.day, "yyyy-mm-dd")>
+	<cfset nextWeek = DateFormat(DateAdd('d', '7', thisWeek), "yyyy-mm-dd")>
+ 	<cfquery datasource="#arguments.dsn#" name="qGetPageStatsByWeek">
+		SELECT DISTINCT day, statsDays.name, TO_CHAR(fq.logdatetime, 'D') AS loginday, COUNT(fq.logId) AS count_logins
+		FROM #application.dbowner#statsDays
+		LEFT JOIN (
+			SELECT * FROM stats
+			WHERE 1 = 1
+			<cfif not arguments.showAll>
+				AND navid IN (<cfif qDescendants.recordCount>#QuotedValueList(qDescendants.objectID)#,</cfif>'#arguments.navid#')
+			</cfif>
+		) fq ON (UPPER(TO_CHAR(fq.logdatetime, 'D')) = UPPER(SUBSTR(statsDays.day, 1, 3)))
+		AND (fq.logdatetime >= '#thisWeek#') AND ('#nextWeek#' >= fq.logdatetime)
+		GROUP BY day, statsDays.name, TO_CHAR(fq.logdatetime, 'D')
+		ORDER BY 1
 	</cfquery>
 </cfcase>
 

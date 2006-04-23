@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_file/getMimeTypes.cfm,v 1.1 2004/04/27 22:41:09 tom Exp $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_file/getMimeTypes.cfm,v 1.2 2004/11/16 00:44:48 tom Exp $
 $Author: tom $
-$Date: 2004/04/27 22:41:09 $
-$Name: milestone_2-2-1 $
-$Revision: 1.1 $
+$Date: 2004/11/16 00:44:48 $
+$Name: milestone_2-3-2 $
+$Revision: 1.2 $
 
 || DESCRIPTION || 
 $Description: Builds a structure of Mime Types $
@@ -110,11 +110,11 @@ $out:$
 	stMimeTypes.pgn="application/x-chess-pgn";
 	stMimeTypes.png="image/png";
 	stMimeTypes.pnm="image/x-portable-anymap";
-	stMimeTypes.pot="application/mspowerpoint";
+	stMimeTypes.pot="application/vnd.ms-powerpoint";
 	stMimeTypes.ppm="image/x-portable-pixmap";
-	stMimeTypes.pps="application/mspowerpoint";
-	stMimeTypes.ppt="application/mspowerpoint";
-	stMimeTypes.ppz="application/mspowerpoint";
+	stMimeTypes.pps="application/vnd.ms-powerpoint";
+	stMimeTypes.ppt="application/vnd.ms-powerpoint";
+	stMimeTypes.ppz="application/vnd.ms-powerpoint";
 	stMimeTypes.pre="application/x-freelance";
 	stMimeTypes.prt="application/pro_eng";
 	stMimeTypes.ps="application/postscript";

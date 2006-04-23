@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/install/_installFarcry.cfm,v 1.39 2004/06/16 06:22:43 brendan Exp $
+$Header: /cvs/farcry/farcry_core/admin/install/_installFarcry.cfm,v 1.40 2004/07/15 01:13:18 brendan Exp $
 $Author: brendan $
-$Date: 2004/06/16 06:22:43 $
-$Name: milestone_2-2-1 $
-$Revision: 1.39 $
+$Date: 2004/07/15 01:13:18 $
+$Name: milestone_2-3-2 $
+$Revision: 1.40 $
 
 || DESCRIPTION || 
 $Description: Installation scripts for FarCry database components $

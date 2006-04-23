@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/farcry/plpNavigationButtons.cfm,v 1.4 2003/09/11 03:26:32 paul Exp $
-$Author: paul $
-$Date: 2003/09/11 03:26:32 $
-$Name: b201 $
-$Revision: 1.4 $
+$Header: /cvs/farcry/farcry_core/tags/farcry/plpNavigationButtons.cfm,v 1.6 2004/07/16 01:33:35 brendan Exp $
+$Author: brendan $
+$Date: 2004/07/16 01:33:35 $
+$Name: milestone_2-3-2 $
+$Revision: 1.6 $
 
 || DESCRIPTION || 
 $Description: Displays plp navigation (previous/next.dropdown)$
@@ -24,6 +24,8 @@ $out:$
 
 <cfsetting enablecfoutputonly="yes">
 
+<cfprocessingDirective pageencoding="utf-8">
+
 <cfparam name="attributes.callingform" default="editform">
 <cfparam name="ATTRIBUTES.onClick" default="">
 <cfparam name="ATTRIBUTES.bDropDown" default="true">
@@ -37,9 +39,9 @@ $out:$
 
 	<!--- as long as we're not the first step, enable back button --->
 	<cfif Caller.thisstep.name NEQ CALLER.stPLP.Steps[1].name>
-		<cf_dmButton name="Back" value="&lt;&lt; Back" width="80" onClick="#ATTRIBUTES.onClick#">
+		<cf_dmButton name="Back" value="&lt;&lt; #application.adminBundle[session.dmProfile.locale].Back#" width="80" onClick="#ATTRIBUTES.onClick#">
 	<cfelse>
-		<cf_dmButton name="Back" value="&lt;&lt; Back" width="80" onClick="#ATTRIBUTES.onClick#" disabled="true">
+		<cf_dmButton name="Back" value="&lt;&lt; #application.adminBundle[session.dmProfile.locale].Back#" width="80" onClick="#ATTRIBUTES.onClick#" disabled="true">
 	</cfif>
 	
 	
@@ -55,22 +57,22 @@ $out:$
 	</cfif>
 
 <cfif Caller.thisstep.name NEQ CALLER.stPLP.Steps[#arraylen(CALLER.stPLP.Steps)# -1].name>
-	<cf_dmButton name="Submit" value="Next &gt;&gt;" width="80" onClick="#ATTRIBUTES.onClick#">
+	<cf_dmButton name="Submit" value="#application.adminBundle[session.dmProfile.locale].nextUC# &gt;&gt;" width="80" onClick="#ATTRIBUTES.onClick#">
 <cfelse>
-	<cf_dmButton name="Submit" value="Finish &gt;&gt;" width="80" onClick="#ATTRIBUTES.onClick#">
+	<cf_dmButton name="Submit" value="#application.adminBundle[session.dmProfile.locale].finish# &gt;&gt;" width="80" onClick="#ATTRIBUTES.onClick#">
 </cfif>
 	<cfoutput>
 	<br><br>
-	<cf_dmButton name="Save" value="Save" width="80">
+	<cf_dmButton name="Save" value="#application.adminBundle[session.dmProfile.locale].save#" width="80">
 
 	<cfif attributes.cancelEvent neq "">
-		<input type="button" value="Cancel" width="80" onClick="document.location.href='#attributes.cancelEvent#'" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';">
+		<input type="button" value="#application.adminBundle[session.dmProfile.locale].cancel#" width="80" onClick="document.location.href='#attributes.cancelEvent#'" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';">
 	<cfelse>
 		<!--- if dmHTML run synchTab function --->
 		<cfif isdefined("caller.output.typename") and caller.output.typename eq "dmHTML">
-			<cf_dmButton name="Cancel" value="Cancel" width="80" onClick="parent.synchTab('editFrame','activesubtab','subtab','siteEditOverview');parent.synchTitle('Overview')">
+			<cf_dmButton name="Cancel" value="#application.adminBundle[session.dmProfile.locale].cancel#" width="80" onClick="parent.synchTab('editFrame','activesubtab','subtab','siteEditOverview');parent.synchTitle('Overview')">
 		<cfelse>
-			<cf_dmButton name="Cancel" value="Cancel" width="80">
+			<cf_dmButton name="Cancel" value="#application.adminBundle[session.dmProfile.locale].cancel#" width="80">
 		</cfif>
 	</cfif>
 	

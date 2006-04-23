@@ -1,5 +1,6 @@
 <cfsetting enablecfoutputonly="Yes">
 
+<cfprocessingDirective pageencoding="utf-8">
 <!--- 
 || BEGIN FUSEDOC ||
 
@@ -8,11 +9,11 @@ Daemon Pty Limited 1995-2001
 http://www.daemon.com.au/
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/security/ui/dmSecUI_PolicyGroupMappingSearch.cfm,v 1.1 2003/04/08 08:52:20 paul Exp $
-$Author: paul $
-$Date: 2003/04/08 08:52:20 $
-$Name: b201 $
-$Revision: 1.1 $
+$Header: /cvs/farcry/farcry_core/tags/security/ui/dmSecUI_PolicyGroupMappingSearch.cfm,v 1.2 2004/07/15 02:03:27 brendan Exp $
+$Author: brendan $
+$Date: 2004/07/15 02:03:27 $
+$Name: milestone_2-3-2 $
+$Revision: 1.2 $
 
 || DESCRIPTION || 
 Shows all policy group mappings.
@@ -26,6 +27,9 @@ Matt Dawson (mad@daemon.com.au)
 
 || HISTORY ||
 $Log: dmSecUI_PolicyGroupMappingSearch.cfm,v $
+Revision 1.2  2004/07/15 02:03:27  brendan
+i18n updates
+
 Revision 1.1  2003/04/08 08:52:20  paul
 CFC security updates
 
@@ -79,15 +83,15 @@ no message
 
 
 <cfoutput>
-<span class="formtitle">Policy Group Mappings</span><p></p>
+<span class="formtitle">#application.adminBundle[session.dmProfile.locale].showPolicyGroupMappings#</span><p></p>
 
-<form action="" method="POST" onSubmit="return confirm('Are you sure you want to delete these mappings?');">
+<form action="" method="POST" onSubmit="return confirm('#application.adminBundle[session.dmProfile.locale].confirmDeleteMappings#');">
 <table cellpadding="5" cellspacing="0" border="1" style="margin-left:30px;">
 	<tr class="dataheader">
 		<td>&nbsp;</td>
-		<td>Policy Group Name</td>
-		<td>User Directory</td>
-		<td>External Group Name</td>
+		<td>#application.adminBundle[session.dmProfile.locale].policyGroupName#</td>
+		<td>#application.adminBundle[session.dmProfile.locale].userDirectory#</td>
+		<td>#application.adminBundle[session.dmProfile.locale].externalGroupName#</td>
 </tr>
 
 <cfloop index="i" from="1" to="#ArrayLen(aGroups)#">
@@ -100,7 +104,7 @@ no message
 </cfloop>
 
 <tr>
-	<td colspan=4 align=right><input name="submit" type="submit" value="Delete Mappings"></td>
+	<td colspan=4 align=right><input name="submit" type="submit" value="#application.adminBundle[session.dmProfile.locale].deleteMappings#"></td>
 </tr>
 </table>
 </form>

@@ -1,3 +1,5 @@
+<cfprocessingDirective pageencoding="utf-8">
+
 <cfimport taglib="/farcry/farcry_core/tags/navajo" prefix="nj">
 
 <cfsetting enablecfoutputonly="Yes" showdebugoutput="No">
@@ -8,7 +10,7 @@
 </cflock>
 
 <cftry>
-<cflock timeout="0" throwontimeout="Yes" name="refreshLockout_#sessionId#" type="EXCLUSIVE">
+<cflock timeout="0" throwontimeout="Yes" name="refreshLockout_#sessionID#" type="EXCLUSIVE">
 	
 	<cfset borderStyle="ridge thin">
 	<cfset smallPopupFeatures="width=400,height=300,menubar=no,toolbars=no">
@@ -16,16 +18,17 @@
 	<cfinclude template="_customIcons.cfm">
 	
 	<cfoutput>
-	<HTML>
+	<html dir="#session.writingDir#" lang="#session.userLanguage#">
 	<HEAD>
-	<TITLE>Overview Tree</TITLE>
+	<TITLE>#application.adminBundle[session.dmProfile.locale].overviewTree#</TITLE>
 	<!--- <cf_cachecontrol> --->
 	<LINK href="#application.url.farcry#/css/admin.css" rel="stylesheet" type="text/css">
 	<LINK href="#application.url.farcry#/css/overviewFrame.css" rel="stylesheet" type="text/css">
+	<meta content="text/html; charset=UTF-8" http-equiv="content-type">
 	</HEAD>
 		
 	<body>
-		<div class="FormTitle">Site Management</div>
+		<div class="FormTitle">#application.adminBundle[session.dmProfile.locale].siteManagement#</div>
 		
 		<div style="margin-left: 12px;" id="tree">
 			</cfoutput>
@@ -40,15 +43,7 @@
 
 	<cfcatch type="Lock">
 		<cfoutput>
-		<p>The system has detected the <b>Overview Tree</b> is already loading.</p>
-		
-		<p>The <b>Overview Tree</b> cannot be loaded more than once per user at a time.</p>
-		
-		<p>You are probably receiving this error because you have pushed the refresh button half way through loading.  Pressing the refresh button in the middle of loading can have a significant performance impact on the website as your previous requests must be serviced before your new requests.  Therefore, we have implemented this restriction.</p>
-
-		<p>You will now have to wait for your previous request to complete before you will be allowed to reload this screen.</p>
-		
-		<p><b>Please try again in 30 seconds.</b></p>
+		#application.adminBundle[session.dmProfile.locale].overviewTreeLoadingBlurb#
 		</cfoutput>
 	</cfcatch>
 </cftry>

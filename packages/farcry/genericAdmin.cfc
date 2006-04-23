@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/genericAdmin.cfc,v 1.14 2004/04/15 06:33:55 brendan Exp $
-$Author: brendan $
-$Date: 2004/04/15 06:33:55 $
-$Name: milestone_2-2-1 $
-$Revision: 1.14 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/genericAdmin.cfc,v 1.17 2004/09/02 04:38:29 paul Exp $
+$Author: paul $
+$Date: 2004/09/02 04:38:29 $
+$Name: milestone_2-3-2 $
+$Revision: 1.17 $
 
 || DESCRIPTION || 
 $Description: generic admin cfc $
@@ -29,7 +29,8 @@ $out:$
 <cffunction name="renderSearchFields" hint="Returns HTML for seach fields in generic Admin" returntype="string">
 	<cfargument name="criteria" required="Yes">
 	<cfargument name="typename" required="Yes">
-	<!--- default vals --->
+	<cfset var key = ''>
+		
 	<cfparam name="arguments.criteria.filter" default="">
 	<cfparam name="arguments.criteria.filterType" default="exactly">
 	<cfparam name="arguments.criteria.searchText" default="">
@@ -37,6 +38,33 @@ $out:$
 	<cfparam name="arguments.criteria.order" default="datetimecreated">
 	<cfparam name="arguments.criteria.orderDirection" default="desc">
 	<cfparam name="arguments.criteria.customfilter" default="">
+	
+	<!--- default vals --->
+	<!--- If they arrive at the page having not clicked filter - check for existance fo session filter vars and init arg vals --->
+	<cfif not isDefined("arguments.criteria.refine") AND sessionNameSpaceExists(arguments.typename)>
+		<cfloop collection="#session.genericAdmin[arguments.typename].filter#" item="key">
+			<cfif NOT key IS "clear">
+				 <cfif structKeyExists(arguments.criteria,key)>
+				 	<cfif arguments.criteria[key] IS session.genericAdmin[arguments.typename].filter[key]>
+				 		<cfset arguments.criteria[key] = session.genericAdmin[arguments.typename].filter[key]> 
+				 	</cfif>
+				 <cfelse>			 
+					 <cfset arguments.criteria[key] = session.genericAdmin[arguments.typename].filter[key]> 
+				 </cfif>					
+			</cfif>
+		</cfloop>
+	</cfif>
+	<!--- Init session vars --->
+	<cfif NOT sessionNameSpaceExists(arguments.typename)>
+		<cfset initNameSpace(arguments.typename)>
+	</cfif>
+	<cfloop collection="#arguments.criteria#" item="key">
+		<cfset session.genericAdmin[arguments.typename].filter[key] = arguments.criteria[key]>
+	</cfloop>	
+	
+	<cfif NOT isDefined("url.objectid") OR isDefined("arguments.criteria.refine")>
+		<cfset structDelete(session.genericAdmin[arguments.typename].filter,'objectid')>
+	</cfif>
 	
 	<cfif isdefined("arguments.criteria.clear")>
 		<cfset arguments.criteria.filter = "">
@@ -48,17 +76,17 @@ $out:$
 		<cfif structKeyExists(application.types['#arguments.typename#'].stProps,"status")>
 		<!--- show drop down to restrict by status --->
 		<div class="FormTableClear" style="margin-left:0;">
-			Object Status &nbsp; 
+			#application.adminBundle[session.dmProfile.locale].objStatus# &nbsp; 
 			<select class="text-cellheader" name="currentStatus" onChange="this.form.submit();">
-				<option value="draft" <cfif arguments.criteria.currentStatus IS "draft">selected</cfif>>draft
-				<option value="pending" <cfif arguments.criteria.currentStatus IS "pending">selected</cfif>>pending
-				<option value="approved" <cfif arguments.criteria.currentStatus IS "approved">selected</cfif>>approved
-				<option value="All" <cfif arguments.criteria.currentStatus IS "all">selected</cfif>>All
+				<option value="draft" <cfif arguments.criteria.currentStatus IS "draft">selected</cfif>>#application.adminBundle[session.dmProfile.locale].draftLC#</option>
+				<option value="pending" <cfif arguments.criteria.currentStatus IS "pending">selected</cfif>>#application.adminBundle[session.dmProfile.locale].pendingLC#</option>
+				<option value="approved" <cfif arguments.criteria.currentStatus IS "approved">selected</cfif>>#application.adminBundle[session.dmProfile.locale].approvedLC#</option>
+				<option value="All" <cfif arguments.criteria.currentStatus IS "all">selected</cfif>>#application.adminBundle[session.dmProfile.locale].all#</option>
 			</select>
 			</div>
 		</cfif>
 	
-		Filter: 
+		#application.adminBundle[session.dmProfile.locale].filterLabel# 
 		<select name="filter">
 			<!--- field types that can be filtered --->
 			<cfset fieldType = "string,nstring,date,UUID">
@@ -68,19 +96,19 @@ $out:$
 			<cfloop list="#listOfKeys#" index="property">
 				<!--- check if property is string --->
 				<cfif listFind(fieldType,application.types[arguments.typename].stProps[property].metadata.type)>
-					<option value="#property#" <cfif arguments.criteria.filter eq property>selected</cfif>>#property#
+					<option value="#property#" <cfif arguments.criteria.filter IS property>selected</cfif>>#property#</option>
 				</cfif>
 			</cfloop>
 		</select>
 		<!--- filter type exact match search or like --->
 		<select name="filterType">
-			<option value="exactly" <cfif arguments.criteria.filterType eq "exactly">selected</cfif>>Matches Exactly
-			<option value="contains" <cfif arguments.criteria.filterType eq "contains">selected</cfif>>Contains
+			<option value="exactly" <cfif arguments.criteria.filterType IS "exactly">selected</cfif>>#application.adminBundle[session.dmProfile.locale].matchesExactly#</option>
+			<option value="contains" <cfif arguments.criteria.filterType IS "contains">selected</cfif>>#application.adminBundle[session.dmProfile.locale].containsLabel#</option>
 		</select>
 		<!--- free text field --->
 		<input type="text" name="searchText" value="#arguments.criteria.searchText#">
 		
-		Order:
+		#application.adminBundle[session.dmProfile.locale].orderLabel#
 		<select name="order">
 		<!--- field types that can be filtered --->
 		<cfloop list="#listOfKeys#" index="property">
@@ -91,13 +119,13 @@ $out:$
 		</cfloop>
 		</select>
 		<select name="orderDirection">
-			<option <cfif arguments.criteria.orderDirection IS "asc">selected</cfif> value="asc">Ascending</option>
-			<option <cfif arguments.criteria.orderDirection IS "desc">selected</cfif> value="desc">Descending</option>
+			<option <cfif arguments.criteria.orderDirection IS "asc">selected</cfif> value="asc">#application.adminBundle[session.dmProfile.locale].ascending#</option>
+			<option <cfif arguments.criteria.orderDirection IS "desc">selected</cfif> value="desc">#application.adminBundle[session.dmProfile.locale].descending#</option>
 		</select>
 		<input type="hidden" name="customfilter" value="#arguments.criteria.customfilter#" >
 		<!--- submit buttons --->
-		<input type="submit" name="refine" value="Filter" class="normalbttnstyle" >
-		<input type="submit" name="clear" value="Clear" class="normalbttnstyle">
+		<input type="submit" name="refine" value="#application.adminBundle[session.dmProfile.locale].filter#" class="normalbttnstyle" >
+		<input type="submit" name="clear" value="#application.adminBundle[session.dmProfile.locale].clear#" class="normalbttnstyle">
 	</cfoutput>
 	</cfsavecontent>
 	<cfreturn html>
@@ -122,10 +150,69 @@ $out:$
 	<cfreturn stStatus>
 </cffunction>
 
+<cffunction name="sessionNameSpaceExists">
+	<cfargument name="typename" required="true">
+	<cfset bExists = false>
+	
+	<cfif structKeyExists(session,'genericAdmin')>
+		<cfif structKeyExists(session.genericAdmin,'#arguments.typename#')>
+			<cfif structKeyExists(session.genericAdmin[arguments.typename],'filter')>
+				<cfset bExists = true>
+			</cfif>
+		</cfif>
+	</cfif>
+		<cfreturn bExists>
+
+</cffunction>
+
+<cffunction name="initNameSpace">
+	<cfargument name="typename">
+	
+	<cfif not structKeyExists(session,'genericAdmin')>
+		<cfset session.genericAdmin = structNew()>
+	</cfif>
+	<cfif not structKeyExists(session.genericAdmin,arguments.typename)>
+		<cfset session.genericAdmin[arguments.typename] = structNew()>
+	</cfif>
+	<cfif not structKeyExists(session.genericAdmin[arguments.typename],'filter')>
+		<cfset session.genericAdmin[arguments.typename].filter = structNew()>
+	</cfif>
+	
+</cffunction>	
+
+
 <cffunction name="getObjects" access="remote" returntype="query" hint="Returns a query of objects to be displayed">
     <cfargument name="dsn" type="string" default="#application.dsn#" required="true" hint="Database DSN">
 	<cfargument name="typename" type="string" required="true" hint="Object type of objects to be displayed">
 	<cfargument name="criteria" type="struct" required="Yes">
+	
+	<cfif isdefined("arguments.criteria.clear")>
+		<cfset arguments.criteria.filter = "">
+		<cfset arguments.criteria.searchText = "">
+	</cfif>
+		
+	<cfif not isDefined("arguments.criteria.refine") AND sessionNameSpaceExists(arguments.typename)>
+		<cfif NOT isDefined("url.objectid") OR isDefined("arguments.criteria.refine")>
+			<cfset structDelete(session.genericAdmin[arguments.typename].filter,'objectid')>
+		</cfif>
+		<cfloop collection="#session.genericAdmin[arguments.typename].filter#" item="key">
+			<cfif NOT key IS "clear">
+				 <cfif structKeyExists(arguments.criteria,key)>
+				 	<cfif arguments.criteria[key] IS session.genericAdmin[arguments.typename].filter[key]>
+				 		<cfset arguments.criteria[key] = session.genericAdmin[arguments.typename].filter[key]> 
+				 	</cfif>
+				 <cfelse>			 
+					 <cfset arguments.criteria[key] = session.genericAdmin[arguments.typename].filter[key]> 
+				 </cfif>					
+			</cfif>
+		</cfloop>
+	</cfif>
+	
+		
+	<cfif NOT sessionNameSpaceExists(arguments.typename)>
+		<cfset initNameSpace(arguments.typename)>
+	</cfif>
+	
     	
 	<cfinclude template="_genericAdmin/getObjects.cfm">
 	

@@ -1,9 +1,16 @@
+<cfsetting enablecfoutputonly="No">
 
 <cfoutput>
+<html>
+<head>
 <LINK href="#application.url.farcry#/css/overviewFrame.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+<div id="tree">
 </cfoutput>
 
-<cfsetting enablecfoutputonly="No">
+
+
 
 <cfimport taglib="/farcry/farcry_core/tags/navajo" prefix="nj">
 
@@ -925,7 +932,7 @@ function menuOption_Edit()
 
 o = new Object();
 objectMenu['Insert'] = o;
-o.text = "Insert";
+o.text = "#application.adminBundle[session.dmProfile.locale].insert#";
 o.js = "menuOption_Insert()";
 o.jsvalidate = "1";
 o.bShowDisabled = 1;
@@ -954,7 +961,7 @@ function menuOption_CreatePopup( id )
 
 o = new Object();
 objectMenu['Delete'] = o;
-o.text = "Delete";
+o.text = "#application.adminBundle[session.dmProfile.locale].delete#";
 o.js = "menuOption_Delete()"; //  && countObjects(lastSelectedId) <=0  && countNodes(lastSelectedId) <=0
 o.jsvalidate = "(objects[lastSelectedId]['OBJECTID'] != '#rootobjectid#')?1:0";
 o.bShowDisabled = 1;
@@ -969,7 +976,7 @@ function menuOption_Delete()
 
 o = new Object();
 objectMenu['Move'] = o;
-o.text = "Move";
+o.text = "#application.adminBundle[session.dmProfile.locale].move#";
 o.submenu = "Move";
 o.jsvalidate = 1;
 
@@ -982,14 +989,14 @@ o.bSeperator = 0;
 
 	o = new Object();
 	moveMenu['MoveUp'] = o;
-	o.text = "Move Up";
+	o.text = "#application.adminBundle[session.dmProfile.locale].moveUp#";
 	o.js = "menuOption_MoveInternal(\\'up\\');";
 	o.jsvalidate = "objectIndex(lastSelectedId)>0||nodeIndex(lastSelectedId)>0";
 	o.bShowDisabled = 1;
 	
 	o = new Object();
 	moveMenu['MoveDown'] = o;
-	o.text = "Move Down";
+	o.text = "#application.adminBundle[session.dmProfile.locale].moveDown#";
 	o.js = "menuOption_MoveInternal(\\'down\\');";
 	o.jsvalidate = 	"(objectIndex(lastSelectedId)!=-1 && objectIndex(lastSelectedId)+1 < countObjects(getParentObject(lastSelectedId)['OBJECTID'])) || "+
 					"(nodeIndex(lastSelectedId)!=-1 && nodeIndex(lastSelectedId)+1 < countNodes(getParentObject(lastSelectedId)['OBJECTID']))";
@@ -998,14 +1005,14 @@ o.bSeperator = 0;
 	
 	o = new Object();
 	moveMenu['MoveToTop'] = o;
-	o.text = "Move To Top";
+	o.text = "#application.adminBundle[session.dmProfile.locale].moveToTop#";
 	o.js = "menuOption_MoveInternal(\\'top\\');";
 	o.jsvalidate = "objectIndex(lastSelectedId)>0||nodeIndex(lastSelectedId)>0";
 	o.bShowDisabled = 1;
 	
 	o = new Object();
 	moveMenu['MoveToBottom'] = o;
-	o.text = "Move To Bottom";
+	o.text = "#application.adminBundle[session.dmProfile.locale].moveToBottom#";
 	o.js = "menuOption_MoveInternal(\\'bottom\\');";
 	o.jsvalidate = "(objectIndex(lastSelectedId)!=-1 && objectIndex(lastSelectedId)+1 < countObjects(getParentObject(lastSelectedId)['OBJECTID'])) || "+
 					"(nodeIndex(lastSelectedId)!=-1 && nodeIndex(lastSelectedId)+1 < countNodes(getParentObject(lastSelectedId)['OBJECTID']))";
@@ -1013,7 +1020,7 @@ o.bSeperator = 0;
 	
 	function menuOption_MoveInternal( dir )
 	{
-		popupopen( '#application.url.farcry#/navajo/keywords/moveInternal.cfm?direction='+dir+'&objectId='+lastSelectedId, '_blank', '#smallpopupfeatures#' );
+		popupopen( '#application.url.farcry#/navajo/keywords/moveinternal.cfm?direction='+dir+'&objectId='+lastSelectedId, '_blank', '#smallpopupfeatures#' );
 	}
 
 
@@ -1152,6 +1159,7 @@ function popupObjectMenu(e)
 	
 	for( var menuItemId in data )
 	{
+		//alert(menuItemId);	
 		if( menuItemId != 'menuInfo' )
 		{
 			var o = data[ menuItemId ];
@@ -1364,7 +1372,7 @@ document.body.onclick = documentClick;
 </STYLE>
 
 <IFRAME WIDTH="100" HEIGHT="1" NAME="idServer" ID="idServer" 
-	 FRAMEBORDER="0" FRAMESPACING="0" MARGINWIDTH="0" MARGINHEIGHT="0">
+	 FRAMEBORDER="0" FRAMESPACING="0" MARGINWIDTH="0" MARGINHEIGHT="0" SRC="null">
 		<ILAYER NAME="idServer" WIDTH="400" HEIGHT="100" VISIBILITY="Hide" 
 		 ID="idServer">
 		<P>This page uses a hidden frame and requires either Microsoft 
@@ -1389,7 +1397,9 @@ document.body.onclick = documentClick;
 		toggleObject('#arguments.rootObjectId#');
 	</script>
 </cfif>
-
+</div>
+</body>
+</html>
 </cfoutput>
 
 <cfsetting enablecfoutputonly="No">

@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/navajo/delete.cfm,v 1.16 2003/12/08 05:28:22 paul Exp $
-$Author: paul $
-$Date: 2003/12/08 05:28:22 $
-$Name: milestone_2-2-1 $
-$Revision: 1.16 $
+$Header: /cvs/farcry/farcry_core/tags/navajo/delete.cfm,v 1.17 2004/07/15 02:03:00 brendan Exp $
+$Author: brendan $
+$Date: 2004/07/15 02:03:00 $
+$Name: milestone_2-3-2 $
+$Revision: 1.17 $
 
 || DESCRIPTION || 
 $Description: DELETE OBJECTS FROM TREE $
@@ -22,6 +22,8 @@ $in: <separate entry for each variable>$
 $out: <separate entry for each variable>$
 --->
 <cfsetting enablecfoutputonly="Yes">
+
+<cfprocessingDirective pageencoding="utf-8">
 
 <cfimport taglib="/farcry/fourq/tags/" prefix="q4">
 <cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">

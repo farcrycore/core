@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/container/containerControl.cfm,v 1.5 2004/06/14 00:48:42 paul Exp $
-$Author: paul $
-$Date: 2004/06/14 00:48:42 $
-$Name: milestone_2-2-1 $
-$Revision: 1.5 $
+$Header: /cvs/farcry/farcry_core/tags/container/containerControl.cfm,v 1.6 2004/07/15 02:01:48 brendan Exp $
+$Author: brendan $
+$Date: 2004/07/15 02:01:48 $
+$Name: milestone_2-3-2 $
+$Revision: 1.6 $
 
 || DESCRIPTION || 
 $Description: Edit widget for containers $
@@ -63,9 +63,3 @@ function popUpWindow(URLStr, left, top, width, height)
 	<a href="javascript:void(0)" onClick="popUpWindow('#application.url.farcry#/navajo/editContainer.cfm?containerID=#attributes.objectID#',100,200,600,600);"><img style="float:left; " border="0" src="#application.url.farcry#/images/treeImages/containeredit.gif" alt="Edit Container Content"></a><strong>&nbsp;Container Label : #attributes.label#</strong>
 </div>	
 </cfoutput>	
-
-
-
-
-
-

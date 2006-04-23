@@ -6,11 +6,11 @@ Daemon Pty Limited 1995-2002
 http://www.daemon.com.au
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/dmProfile.cfc,v 1.16 2003/11/28 08:42:43 paul Exp $
-$Author: paul $
-$Date: 2003/11/28 08:42:43 $
-$Name: milestone_2-2-1 $
-$Revision: 1.16 $
+$Header: /cvs/farcry/farcry_core/packages/types/dmProfile.cfc,v 1.17 2004/07/13 01:34:11 brendan Exp $
+$Author: brendan $
+$Date: 2004/07/13 01:34:11 $
+$Name: milestone_2-3-2 $
+$Revision: 1.17 $
 
 || DESCRIPTION || 
 dmProfile object CFC
@@ -40,6 +40,7 @@ none
     <cfproperty name="position" type="nstring" hint="Profile object position" required="no">
     <cfproperty name="department" type="nstring" hint="Profile object department" required="no">
 	<cfproperty name="notes" type="longchar" hint="Additional notes" required="no">
+	<cfproperty name="locale" type="string" hint="Profile object locale" required="yes" default="en_AU">
 		
     <!--- object methods --->
     <cffunction name="edit" access="PUBLIC" hint="dmProifle edit handler">

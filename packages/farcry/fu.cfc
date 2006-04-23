@@ -4,7 +4,7 @@
 
  Created: Thu May 1  14:19:20 2003
  $Revision 0.2$
- Modified: $Date: 2004/08/12 22:54:39 $
+ Modified: $Date: 2004/12/07 23:45:40 $
 
  Author: Spike
  E-mail: spike@spike@spike.org.uk
@@ -131,8 +131,17 @@
 		<cfreturn true>
 	</cffunction>
 	
-	<cffunction name="updateAppScope" access="public" hint="Updates the application scope with the FU mappings" output="No">
-		<cfset application.FU.mappings = getMappings()>
+	<cffunction name="updateAppScope" access="public" hint="Updates the application scope with the FU mappings" output="yes">
+		<cfset var stMappings = getMappings()>
+		<cfset var stTemp = structCopy(stMappings)>
+		<!--- loop over all mappings and remove any from other sites --->
+		<cfloop collection="#stMappings#" item="a">
+			<cfif not listFind(application.config.fusettings.domains,listFirst(a,'/'))>
+				<cfset structDelete(stTemp,a)>
+			</cfif>
+		</cfloop>
+		<!--- load mappings to app scope --->
+		<cfset application.FU.mappings = stTemp>
 	</cffunction>
 
 	<cffunction name="createFUAlias" access="public" returntype="string" hint="Creates the FU Alias for a given objectid">
@@ -162,7 +171,7 @@
 	</cffunction>	
 	
 	
-	<cffunction name="createAll" access="public" returntype="boolean" hint="Deletes old mappings and creates new entries for entire tree, and writes the map file to disk" output="No">
+	<cffunction name="createAll" access="public" returntype="boolean" hint="Deletes old mappings and creates new entries for entire tree, and writes the map file to disk" output="yes">
 		
 		<!--- get nav tree --->
 		<cfset var qNav = request.factory.oTree.getDescendants(objectid=application.navid.home, depth=50)>
@@ -209,9 +218,9 @@
 		
 		<cfset var dom = "">
 		<!--- replace spaces in title --->
-		<cfset  var newAlias = replace(arguments.alias,' ','-',"all")>
+		<cfset var newAlias = replace(arguments.alias,' ','-',"all")>
 		<!--- remove illegal characters in titles --->
-		<cfset newAlias = reReplaceNoCase(newAlias,'[:\?##™®]','',"all")>
+		<cfset newAlias = reReplaceNoCase(newAlias,'[:\?##ï¿½ï¿½]','',"all")>
 		<!--- change & to "and" in title --->
 		<cfset newAlias = reReplaceNoCase(newAlias,'[&]','and',"all")>
 				

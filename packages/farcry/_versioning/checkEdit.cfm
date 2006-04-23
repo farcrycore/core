@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_versioning/checkEdit.cfm,v 1.13 2003/11/25 02:01:45 paul Exp $
-$Author: paul $
-$Date: 2003/11/25 02:01:45 $
-$Name: milestone_2-2-1 $
-$Revision: 1.13 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_versioning/checkEdit.cfm,v 1.13.6.1 2005/05/24 04:41:41 gstewart Exp $
+$Author: gstewart $
+$Date: 2005/05/24 04:41:41 $
+$Name: milestone_2-3-2 $
+$Revision: 1.13.6.1 $
 
 || DESCRIPTION || 
 $Description: checks versioning before editing $
@@ -53,14 +53,14 @@ $out:$
 						Edit the DRAFT version of this object while retaining the LIVE version for  public viewing.
 						</li>
 						<br><br>
-						
-						<cfif arguments.stRules.bDeleteDraft AND request.dmSec.oAuthorisation.checkInheritedPermission(permissionName="delete",objectid="#parentNavID#") EQ 1>
-						<li type="square">
-						 <a href="edittabEdit.cfm?objectid=#URL.objectID#&deleteDraftObjectID=#arguments.stRules.draftObjectID#" onClick="return confirm('Are you sure you wish to delete this object?');" class="frameMenuItem">Delete draft object</a><br>
-						Delete the DRAFT version of this object. 
-						</li>
-						<br><br>
-	
+						<cfif not parentNavID eq "">
+							<cfif arguments.stRules.bDeleteDraft AND request.dmSec.oAuthorisation.checkInheritedPermission(permissionName="delete",objectid="#parentNavID#") EQ 1>
+							<li type="square">
+							 <a href="edittabEdit.cfm?objectid=#URL.objectID#&deleteDraftObjectID=#arguments.stRules.draftObjectID#" onClick="return confirm('Are you sure you wish to delete this object?');" class="frameMenuItem">Delete draft object</a><br>
+							Delete the DRAFT version of this object. 
+							</li>
+							<br><br>
+							</cfif>
 						</cfif>
 						<cfif arguments.stRules.draftStatus IS "pending">
 						<li type="square">

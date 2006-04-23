@@ -1,4 +1,7 @@
 <cfsetting enablecfoutputonly="Yes">
+
+<cfprocessingDirective pageencoding="utf-8">
+
 <!--- 
 || BEGIN FUSEDOC ||
 
@@ -7,11 +10,11 @@ Daemon Pty Limited 1995-2001
 http://www.daemon.com.au/
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/security/ui/dmSecUI_CreateSecurityTables.cfm,v 1.2 2003/09/22 03:45:38 brendan Exp $
+$Header: /cvs/farcry/farcry_core/tags/security/ui/dmSecUI_CreateSecurityTables.cfm,v 1.3 2004/07/15 02:03:27 brendan Exp $
 $Author: brendan $
-$Date: 2003/09/22 03:45:38 $
-$Name: b201 $
-$Revision: 1.2 $
+$Date: 2004/07/15 02:03:27 $
+$Name: milestone_2-3-2 $
+$Revision: 1.3 $
 
 || DESCRIPTION || 
 
@@ -25,6 +28,9 @@ Matt Dawson (mad@daemon.com.au)
 
 || HISTORY ||
 $Log: dmSecUI_CreateSecurityTables.cfm,v $
+Revision 1.3  2004/07/15 02:03:27  brendan
+i18n updates
+
 Revision 1.2  2003/09/22 03:45:38  brendan
 *nix mods
 
@@ -56,7 +62,7 @@ no message
 	if (stUd[userDirectory].type IS "Daemon")
 		oInit.initAuthenticationDatabase(datasource="#stUd[userDirectory].datasource#");
 	else
-		writeoutput("<span style='color:red;'>Error:</span> Cannot create non daemon security setups.");	
+		writeoutput("#application.adminBundle[session.dmProfile.locale].cantCreateNonDaemonSecurity#");	
 </cfscript>
 
 <cfsetting enablecfoutputonly="No">

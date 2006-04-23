@@ -4,11 +4,12 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/admin/coapiTypes.cfm,v 1.12 2003/09/18 08:22:42 paul Exp $
-$Author: paul $
-$Date: 2003/09/18 08:22:42 $
-$Name: b201 $
-$Revision: 1.12 $
+$Header: /cvs/farcry/farcry_core/admin/admin/coapiTypes.cfm,v 1.17 2004/12/22 04:32:36 brendan Exp $
+$Author: brendan $
+$Date: 2004/12/22 04:32:36 $
+
+$Name: milestone_2-3-2 $
+$Revision: 1.17 $
 
 || DESCRIPTION || 
 $Description: Managemnt interface for types$
@@ -24,6 +25,9 @@ $out:$
 --->
 
 <cfsetting enablecfoutputonly="Yes">
+
+<cfprocessingDirective pageencoding="utf-8">
+
 <cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
 
 <!--- check permissions --->
@@ -31,7 +35,7 @@ $out:$
 	iCOAPITab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="AdminCOAPITab");
 </cfscript>
 
-<admin:header title="COAPI Types">
+<admin:header title="COAPI Types" writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 <cfif iCOAPITab eq 1>	
 	<cfparam name="FORM.action" default="">
@@ -56,8 +60,17 @@ $out:$
 			 }
 			 case "deployproperty":
 			 {
-			 	alterType.addProperty(typename=form.typename,srcColumn=form.property,srcColumnType=alterType.getDataType(application.types[form.typename].stProps[form.property].metadata.type));
-				alterType.refreshCFCAppData(typename=form.typename);
+			 	propMetadata = application.types[form.typename].stProps[form.property].metadata;
+				//is the property nullable
+				isNullable = false;
+				if( isDefined('propMetadata.required') AND NOT propMetadata.required)
+					isNullable = true;
+				//do we have a default value
+				defaultVal = "";
+				if ( isDefined('propMetadata.default'))
+					defaultVal = propMetadata.default;				
+				alterType.addProperty(typename=form.typename,srcColumn=form.property,srcColumnType=alterType.getDataType(application.types[form.typename].stProps[form.property].metadata.type),bNull=isNullable,stDefault=defaultVal);
+			 	alterType.refreshCFCAppData(typename=form.typename);
 				break;
 			 }	
 			 case "deployarrayproperty":
@@ -68,7 +81,7 @@ $out:$
 			 }	
 			 case "renameproperty":
 			 {
-			 	alterType.alterPropertyName(typename=form.typename,srcColumn=form.property,destColumn=form.renameto);
+			 	alterType.alterPropertyName(typename=form.typename,srcColumn=form.property,destColumn=form.renameto,colType=form.colType,colLength=form.colLength);
 				alterType.refreshCFCAppData(typename=form.typename);
 				break;
 			 }
@@ -97,13 +110,13 @@ $out:$
 		}
 	</script>
 	
-	<span class="formtitle">Type Classes</span><p></p>
+	<span class="formtitle">#application.adminBundle[session.dmProfile.locale].typeClasses#</span><p></p>
 	<table cellpadding="5" cellspacing="0" border="1"  style="margin-left:30px;">
 	<tr>
-		<th class="dataheader">Integrity</th>
-		<th class="dataheader">Component</th>
-		<th class="dataheader">Deployed</th>
-		<th class="dataheader">Deploy</th>
+		<th class="dataheader">#application.adminBundle[session.dmProfile.locale].integrity#</th>
+		<th class="dataheader">#application.adminBundle[session.dmProfile.locale].component#</th>
+		<th class="dataheader">#application.adminBundle[session.dmProfile.locale].deployed#</th>
+		<th class="dataheader">#application.adminBundle[session.dmProfile.locale].deploy#</th>
 	</tr>
 	</cfoutput>
 	
@@ -124,7 +137,7 @@ $out:$
 			<td align="center">
 		
 				<cfif alterType.isCFCConflict(stConflicts=stConflicts,typename=componentName)>
-					<img src="#application.url.farcry#/images/no.gif"> See Below
+					<img src="#application.url.farcry#/images/no.gif"> #application.adminBundle[session.dmProfile.locale].seeBelow#
 				<cfelse>
 					<img src="#application.url.farcry#/images/yes.gif">
 				</cfif>
@@ -140,9 +153,9 @@ $out:$
 			
 			<td align="center">
 				<cfif NOT alterType.isCFCDeployed(typename=componentName)>
-					<a href="#CGI.SCRIPT_NAME#?deploy=#componentName#">Deploy</a>
+					<a href="#CGI.SCRIPT_NAME#?deploy=#componentName#">#application.adminBundle[session.dmProfile.locale].deploy#</a>
 				<cfelse>
-					NA
+					#application.adminBundle[session.dmProfile.locale].notAvailable#
 				</cfif>
 			</td>
 		</tr>
@@ -167,12 +180,10 @@ $out:$
 	</table>
 	
 	<IFRAME WIDTH="400" HEIGHT="400" NAME="idServer" ID="idServer" 
-		 FRAMEBORDER="1" FRAMESPACING="0" MARGINWIDTH="0" MARGINHEIGHT="0" style="display:none">
+		 FRAMEBORDER="1" FRAMESPACING="0" MARGINWIDTH="0" MARGINHEIGHT="0" style="display:none" SRC="null">
 			<ILAYER NAME="idServer" WIDTH="400" HEIGHT="100" VISIBILITY="Hide" 
 			 ID="idServer">
-			<P>This page uses a hidden frame and requires either Microsoft 
-			Internet Explorer v4.0 (or higher) or Netscape Navigator v4.0 (or 
-			higher.)</P>
+			<P>#application.adminBundle[session.dmProfile.locale].browserReqBlurb#</P>
 			</ILAYER>
 	</IFRAME>
 	</cfoutput>

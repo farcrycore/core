@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/reporting/reportingframeset.cfm,v 1.1 2003/09/01 01:28:33 brendan Exp $
+$Header: /cvs/farcry/farcry_core/admin/reporting/reportingframeset.cfm,v 1.2 2004/07/15 01:51:48 brendan Exp $
 $Author: brendan $
-$Date: 2003/09/01 01:28:33 $
-$Name: b201 $
-$Revision: 1.1 $
+$Date: 2004/07/15 01:51:48 $
+$Name: milestone_2-3-2 $
+$Revision: 1.2 $
 
 || DESCRIPTION || 
 $Description: Reporting tab frameset$
@@ -24,13 +24,16 @@ $out:$
 
 <cfsetting enablecfoutputonly="Yes">
 
+<cfprocessingDirective pageencoding="utf-8">
+
 <cfoutput>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 
-<html>
+<html dir="#session.writingDir#" lang="#session.userLanguage#">
 <head>
-	<title>#application.applicationname# Administration</title>
+	<title>#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].appNameAdministration,"#application.applicationname#")#</title>
 	<link href="#application.url.farcry#/css/admin.css" rel="stylesheet" type="text/css">
+	<meta content="text/html; charset=UTF-8" http-equiv="content-type">
 </head>
 
 <FRAMESET COLS="270, *">

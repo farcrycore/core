@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_stats/getPageStatsByDate.cfm,v 1.10.2.1 2004/08/18 06:49:40 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_stats/getPageStatsByDate.cfm,v 1.12 2004/12/01 04:46:43 brendan Exp $
 $Author: brendan $
-$Date: 2004/08/18 06:49:40 $
-$Name: milestone_2-2-1 $
-$Revision: 1.10.2.1 $
+$Date: 2004/12/01 04:46:43 $
+$Name: milestone_2-3-2 $
+$Revision: 1.12 $
 
 || DESCRIPTION || 
 $Description: get object stats $
@@ -68,20 +68,20 @@ $out:$
 	<cfcase value="postgresql">
 		<!--- This should work, but I'm not sure if this function is even used? KS --->
 		<cfquery name="qGetPageStats" datasource="#arguments.dsn#">
-		select to_char(logdatetime,'yyyy-mm-dd') as viewday,count(logId) as count_views
+		select to_char(logdatetime,'YYYY-MM-DD') as viewday,count(logId) as count_views
 		from #application.dbowner#stats
 		where 1=1 
 		<cfif isDefined("arguments.pageID")>
 		AND pageid = '#arguments.pageId#'
 		</cfif>
 		<cfif isDefined("arguments.before")>
-		AND logdatetime < '#dateFormat(arguments.before, "yyyy-mm-dd")#'
+		AND logdatetime < #arguments.before#
 		</cfif>
 		<cfif isDefined("arguments.after")>
-		AND logdatetime > '#dateFormat(arguments.after, "yyyy-mm-dd")#'
+		AND logdatetime > #arguments.after#
 		</cfif>
-		group by to_char(logdatetime,'yyyy-mm-dd')
-		order by to_char(logdatetime,'yyyy-mm-dd')
+		group by to_char(logdatetime,'YYYY-MM-DD')
+		order by to_char(logdatetime,'YYYY-MM-DD')
 		</cfquery>
 	</cfcase>
 	<cfdefaultcase>

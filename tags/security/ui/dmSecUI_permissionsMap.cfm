@@ -1,3 +1,4 @@
+<cfprocessingDirective pageencoding="utf-8">
 <cfparam name="form.action" default="" />
 <cfparam name="form.filterPolicyGroupId" default="" />
 <cfparam name="form.filterPermissionId" default="" />
@@ -43,43 +44,47 @@
 	qDesc = oTree.getDescendants(objectid='#application.navid.root#',dsn=application.dsn,bIncludeSelf=1);
 </cfscript>
 
-<cfoutput><p class="formtitle">Permissions Map</p></cfoutput>
+<cfoutput><p class="formtitle">#application.adminBundle[session.dmProfile.locale].permissionsMap#</p></cfoutput>
 
 <cfoutput>
     <form method="POST" action="" name="theForm">
         <input type="hidden" name="action" value="filter" />
-        Policy group:
+        #application.adminBundle[session.dmProfile.locale].policyGroupLabel#
         <select name="filterPolicyGroupId">
           <cfloop index="i" from="1" to="#arrayLen(aPolicyGroup)#">
             <option value="#aPolicyGroup[i].policyGroupId#" <cfif aPolicyGroup[i].policyGroupId eq form.filterPolicyGroupId>selected</cfif>>#aPolicyGroup[i].policyGroupName#</option>
           </cfloop>
         </select>
 
-        Permission:
+        #application.adminBundle[session.dmProfile.locale].permissionLabel#
         <select name="filterPermissionId">
           <cfloop index="i" from="1" to="#arrayLen(aPermissions)#">
             <option value="#aPermissions[i].permissionId#" <cfif aPermissions[i].permissionId eq form.filterPermissionId>selected</cfif>>#aPermissions[i].permissionName#</option>
           </cfloop>
         </select>
 
-        <input type="submit" value="Apply Filter" />
+        <input type="submit" value="#application.adminBundle[session.dmProfile.locale].applyFilter#" />
 
         <cfif bFilter>
-          <input type="button" value="Remove Filter" onClick="document.theForm.action.value = ''; document.theForm.submit()" />
+          <input type="button" value="#application.adminBundle[session.dmProfile.locale].removeFilter#" onClick="document.theForm.action.value = ''; document.theForm.submit()" />
         <cfelse>
-          (no filter applied)
+          #application.adminBundle[session.dmProfile.locale].noFilterAppled#
         </cfif>
     </form>
 </cfoutput>
     <p>
 	<table cellpadding="2" cellspacing="0" border="1" style="margin-left:30px;">
+	
 	<tr class="dataheader">
-		<td>Navigation Node</td>
+		<td><cfoutput>#application.adminBundle[session.dmProfile.locale].navigationNode#</cfoutput></td>
 		<cfif bFilter>
-		  <td>Allowed</td>
-          <td>Inherited</td>
+			<cfoutput>
+		  	<td>#application.adminBundle[session.dmProfile.locale].Allowed#</td>
+          	<td>#application.adminBundle[session.dmProfile.locale].inherited#</td>
+			</cfoutput>  
         </cfif>
 	</tr>
+	
     <cfoutput query="qDesc">
         <cfset permission = getPermission(qPerms, objectId) />
         <cfset bInherited = permission eq 0 />

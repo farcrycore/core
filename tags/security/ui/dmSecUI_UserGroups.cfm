@@ -1,4 +1,6 @@
 <cfsetting enablecfoutputonly="Yes">
+
+<cfprocessingDirective pageencoding="utf-8">
 <!--- 
 || BEGIN FUSEDOC ||
 
@@ -7,11 +9,11 @@ Daemon Pty Limited 1995-2001
 http://www.daemon.com.au/
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/security/ui/dmSecUI_UserGroups.cfm,v 1.1 2003/04/08 08:52:20 paul Exp $
-$Author: paul $
-$Date: 2003/04/08 08:52:20 $
-$Name: b201 $
-$Revision: 1.1 $
+$Header: /cvs/farcry/farcry_core/tags/security/ui/dmSecUI_UserGroups.cfm,v 1.3 2004/07/30 02:00:28 brendan Exp $
+$Author: brendan $
+$Date: 2004/07/30 02:00:28 $
+$Name: milestone_2-3-2 $
+$Revision: 1.3 $
 
 || DESCRIPTION || 
 Manage the groups a user belongs to.
@@ -27,6 +29,12 @@ Matt Dawson (mad@daemon.com.au)
 
 || HISTORY ||
 $Log: dmSecUI_UserGroups.cfm,v $
+Revision 1.3  2004/07/30 02:00:28  brendan
+i18n mods
+
+Revision 1.2  2004/07/15 02:03:27  brendan
+i18n updates
+
 Revision 1.1  2003/04/08 08:52:20  paul
 CFC security updates
 
@@ -68,7 +76,7 @@ no message
 	stUD = oAuthentication.getUserDirectory();
 </cfscript>
 
-<cfoutput><span class="formtitle">Manage User Groups (#userLogin#)</span><p></cfoutput>
+<cfoutput><span class="formtitle">#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].manageUserGroups,"#userLogin#")#</span><p></cfoutput>
 
 <cfif isDefined("form.Submit")>
 	<!--- update the groups this user is a member of --->
@@ -158,7 +166,7 @@ f = document.forms.userSearch;
 
 <tr>
 	<td>
-		<span class="formlabel">Member of:</span><br>
+		<span class="formlabel">#application.adminBundle[session.dmProfile.locale].memberOf#</span><br>
 		<select name="MemberOf" multiple size=10 style="width:140px;">
 			<cfloop index="i" from="1" to="#arrayLen(aUserGroups)#">
 				<option value="#aUserGroups[i].groupName#">#aUserGroups[i].groupName#
@@ -171,7 +179,7 @@ f = document.forms.userSearch;
 		<input type="Button" name="Remove" value="-&gt;&gt;" onClick="RemoveGroup();">
 	</td>
 	<td>
-		<span class="formlabel">Not a Member of:</span><br>
+		<span class="formlabel">#application.adminBundle[session.dmProfile.locale].memberNot#</span><br>
 		<select name="NotMemberOf" multiple size=10 style="width:140px;">
 			<cfloop index="i" from="1" to="#arrayLen(aNotUserGroups)#">
 				<option value="#aNotUserGroups[i].groupName#">#aNotUserGroups[i].groupName#
@@ -183,7 +191,7 @@ f = document.forms.userSearch;
 	<td colspan="3">&nbsp;</td>
 </tr>
 <tr>
-	<td colspan=3 align=center><input type="Submit" name="Submit" value="Update"></td>
+	<td colspan=3 align=center><input type="Submit" name="Submit" value="#application.adminBundle[session.dmProfile.locale].updateLC#"></td>
 </tr>
 <tr>
 	<td colspan="3">&nbsp;</td>

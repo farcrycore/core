@@ -1,13 +1,13 @@
-<html>
+<cfprocessingDirective pageencoding="utf-8">
+<cfoutput>
+<html dir="#session.writingDir#" lang="#session.userLanguage#">
 <head>
 <title>Untitled Document</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta content="text/html; charset=UTF-8" http-equiv="content-type">
 <LINK href="../css/admin.css" rel="stylesheet" type="text/css">
 </head>
-
 <body>
-
-<div>This is the security home page.</div>
-
+<div>#application.adminBundle[session.dmProfile.locale].securityHomePage#</div>
 </body>
 </html>
+</cfoutput>

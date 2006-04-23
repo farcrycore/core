@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/navajo/_customIcons.cfm,v 1.11 2003/12/15 07:43:15 paul Exp $
-$Author: paul $
-$Date: 2003/12/15 07:43:15 $
-$Name: milestone_2-2-1 $
-$Revision: 1.11 $
+$Header: /cvs/farcry/farcry_core/admin/navajo/_customIcons.cfm,v 1.12.2.1 2005/02/08 16:28:05 spike Exp $
+$Author: spike $
+$Date: 2005/02/08 16:28:05 $
+$Name: milestone_2-3-2 $
+$Revision: 1.12.2.1 $
 
 || DESCRIPTION || 
 $Description: Sets icons to images$
@@ -23,6 +23,8 @@ $out:$
 --->
 
 <cfsetting enablecfoutputonly="Yes">
+
+<cfprocessingDirective pageencoding="utf-8">
 
 <cfscript>
 nimages = "#application.url.farcry#/images/treeImages";
@@ -63,6 +65,11 @@ customIcons.Type.FileRoot = StructNew();
 customIcons.Type.FileRoot.draft = "#cimages#/floppyDisk.gif";
 customIcons.Type.FileRoot.pending = "#cimages#/floppyDisk.gif";
 customIcons.Type.FileRoot.approved = "#cimages#/floppyDisk.gif";
+
+customIcons.Type.externallink = StructNew();
+customIcons.Type.externallink.draft ="#cimages#/NavDraftExtLink.gif";
+customIcons.Type.externallink.pending ="#cimages#/NavPendingExtLink.gif";
+customIcons.Type.externallink.approved ="#cimages#/NavApprovedExtLink.gif";
 
 if( StructKeyExists( application.types, "dmNavigation" ) )
 {

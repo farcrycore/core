@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/farcry/statsLog.cfm,v 1.32 2003/11/28 04:05:57 brendan Exp $
+$Header: /cvs/farcry/farcry_core/tags/farcry/statsLog.cfm,v 1.35 2004/12/01 04:55:53 brendan Exp $
 $Author: brendan $
-$Date: 2003/11/28 04:05:57 $
-$Name: milestone_2-2-1 $
-$Revision: 1.32 $
+$Date: 2004/12/01 04:55:53 $
+$Name: milestone_2-3-2 $
+$Revision: 1.35 $
 
 || DESCRIPTION || 
 $Description: Logs visit of page including pageId, navid,ip address and user (if applicable) $
@@ -46,20 +46,19 @@ $out:$
 			<cfset session.startTime = now()>
 			
 			<!--- work out user's locale --->
-			<cfif application.config.plugins.geoLocator>
+			<cfif not isDefined("session.dmProfile.locale")>
 				<cfscript>
-					geoLocator=createObject("component", "#application.packagepath#.farcry.geoLocator");
-					bInit = geoLocator.init();
-					if (bInit) {
-						session.userLocale=geoLocator.findLocale(thisLanguage=CGI.http_accept_Language,thisip=cgi.REMOTE_ADDR); 
+					//geoLocator=createObject("component", "#application.packagepath#.farcry.geoLocator");
+					//bInit = application.factory.oGeoLocator.init();
+					if (application.bGeoLocatorInit) {
+						session.dmProfile.locale=application.factory.oGeoLocator.findLocale(thisLanguage=CGI.http_accept_Language,thisip=cgi.REMOTE_ADDR); 
 					} else {
-						session.userLocale=CGI.http_accept_Language;
+						session.dmProfile.locale=CGI.http_accept_Language;
 					}
 				</cfscript>
-			<cfelse>
-				<cfset session.userLocale = CGI.HTTP_ACCEPT_LANGUAGE>
 			</cfif>
 		</cfif>
+		
 		<!--- log page view --->
 		<cftry>
 			<cfscript>
@@ -76,7 +75,7 @@ $out:$
 				referer="Unknown";
 			
 			// log stats
-			application.factory.oStats.logEntry(pageId=request.stObj.objectid,navId=request.navid,remoteIP=session.remoteIP,sessionId=session.statsSession,browser=session.userBrowser,userid=userid,referer=referer,locale=session.userLocale,os=session.userOS);
+			application.factory.oStats.logEntry(pageId=request.stObj.objectid,navId=request.navid,remoteIP=session.remoteIP,sessionId=session.statsSession,browser=session.userBrowser,userid=userid,referer=referer,locale=session.dmProfile.locale,os=session.userOS);
 			</cfscript>
 			<cfcatch type="any"></cfcatch>
 		</cftry>

@@ -4,15 +4,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/navajo/editContainer.cfm,v 1.16 2004/01/14 23:47:32 tom Exp $
-$Author: tom $
-$Date: 2004/01/14 23:47:32 $
-$Name: milestone_2-2-1 $
-$Revision: 1.16 $ 
+$Header: /cvs/farcry/farcry_core/admin/navajo/editContainer.cfm,v 1.24.2.2 2005/06/27 07:26:29 guy Exp $
+$Author: guy $
+$Date: 2005/06/27 07:26:29 $
+$Name: milestone_2-3-2 $
+$Revision: 1.24.2.2 $ 
 
 || DESCRIPTION || 
-$Description:  $
-$TODO: This page started as a test harness for editing container rules - if you are reading this then this page has not actually been rewritten properly :)  PH$
+$Description: Container management editing interface. $
+$TODO: Still a lot of tidying up to do here GB/PH$
 
 || DEVELOPER ||
 $Developer: Geoff Bowers (modius@daemon.com.au) $
@@ -20,9 +20,12 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 --->
 <cfsetting enablecfoutputonly="Yes">
 
+<cfprocessingDirective pageencoding="utf-8">
+
 <!--- import tag libraries --->
 <cfimport taglib="/farcry/fourq/tags/" prefix="q4">
 <cfimport taglib="/farcry/farcry_core/tags/admin" prefix="farcry">
+<cfimport taglib="/farcry/farcry_core/tags/navajo" prefix="nj">
 <cfinclude template="/farcry/farcry_core/admin/includes/utilityFunctions.cfm">
 
 <!--- required parameters --->
@@ -33,204 +36,225 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 <cfparam name="form.dest" default="">
 
 <cfscript>
-	q4 = createObject("component","farcry.fourq.fourq");
+// instantiate components
 	oRules = createObject("component","#application.packagepath#.rules.rules");
-	//get the container data
 	oCon = createObject("component","#application.packagepath#.rules.container");
-	stObj = oCon.getData(objectid=URL.containerID);
+
+// begin: process form actions
+	// process mirror/reflection update
+	message="";
+	if (isDefined("form.mirrorAction")) {
+		if (isDefined("form.reflectionid") AND len(form.reflectionid)) {
+			oCon.setReflection(objectid=URL.containerID,mirrorid=form.reflectionid);
+		} else {
+			oCon.deleteReflection(objectid=URL.containerID);
+		}
+		// update form action information
+		message="<p><strong>Container Updated.</strong></p>";
+	}
 	
+	if (isDefined("form.skinAction"))
+	{
+		form.objectid=URL.containerid;
+		oCon.setData(form);
+		message = "<p><strong>Display method has been updated</strong></p>";
+	}
+// /end: process form actions
+
+	//get the container data
+	stObj = oCon.getData(objectid=URL.containerID);
+
+	// check for mirror, and set mode
+	// TODO: fix this, forcing to mirror view for prototype only
+	if (len(trim(stobj.mirrorid))) {
+		stMirror = oCon.getReflection(mirrorid=stobj.mirrorid, containerid=URL.containerid);
+		if (structkeyexists(stMirror, "objectid"))
+			URL.mode = "mirror";
+	}
+	
+	// TODO: move this to a new container.getActiveRules() method, perhaps? GB
 	qActiveRules = queryNew("objectID,typename");
 	for(index=1;index LTE arrayLen(stObj.aRules);index=index+1)
 	{
 		queryAddRow(qActiveRules,1);
-		ruletype = q4.findType(objectid=stObj.aRules[index]);
+		ruletype = oCon.findType(objectid=stObj.aRules[index]);
 		querySetCell(qActiveRules,"objectID",stObj.aRules[index]);
 		querySetCell(qActiveRules,"typename",ruletype);
 	}
+	
+	// if mode is update but no active rules set to configure
+	if (url.mode eq "update" AND qActiveRules.recordcount eq 0)
+		url.mode="configure";
 	
 	//gets all core and custom rules
 	qRules = oRules.getRules();
 </cfscript>
 
+<cfset bDisplaySkins = false>
+<cfif directoryExists("#application.path.project#/webskin/container")>
+	<nj:listTemplates typename="container" prefix="" r_qMethods="qContainerSkins">
+	<cfif qContainerSkins.recordCount>
+		<cfset bDisplaySkins = true>
+	</cfif>
+</cfif>
+
+
+
 <!--- //****************************************************************
 	Start Presentation & Output
 ******************************************************************// --->
 <cfoutput>
-<html>
+<html dir="#session.writingDir#" lang="#session.userLanguage#">
 <head>
+	<meta content="text/html; charset=UTF-8" http-equiv="content-type">
 	<link href="#application.url.farcry#/css/admin.css" rel="stylesheet" type="text/css">
 	<link href="#application.url.farcry#/css/tabs.css" rel="stylesheet" type="text/css">
 	<script type="text/javascript" src="../includes/synchtab.js"></script>
+	<cfinclude template="../includes/editcontainer_js.cfm">
 </head>
 <body>
 </cfoutput>
-<!---
-************************************************************************************
-	Javascript to handle ordering, selecting rules
-************************************************************************************
-$TODO: Move these Javascript functions to an external library and place call in the document HEAD -- GB$
- --->
-<cfoutput>
-<SCRIPT LANGUAGE="JavaScript">
-
-<!-- Begin
-sortitems = 1;  
-
-function moveindex(index,to) {
-var list = document.form.dest;
-var total = list.options.length-1;
-if (index == -1) return false;
-if (to == +1 && index == total) return false;
-if (to == -1 && index == 0) return false;
-var items = new Array;
-var values = new Array;
-for (i = total; i >= 0; i--) {
-	items[i] = list.options[i].text;
-	values[i] = list.options[i].value;
-}
-for (i = total; i >= 0; i--) {
-if (index == i) {
-	list.options[i + to] = new Option(items[i],values[i], 0, 1);
-	list.options[i] = new Option(items[i + to], values[i + to]);
-	i--;
-}
-else {
-	list.options[i] = new Option(items[i], values[i]);
-   }
-}
-list.focus();
-}
-
-function move(fbox,tbox)
-{	for(var i=0; i<fbox.options.length; i++) {
-		if(fbox.options[i].selected && fbox.options[i].value != "") {
-			var no = new Option();
-			no.value = fbox.options[i].value;
-			no.text = fbox.options[i].text;
-			tbox.options[tbox.options.length] = no;
-			//fbox.options[i].value = "";
-			//fbox.options[i].text = "";
-	   }
-	}
-	//BumpUp(fbox);
-}
-
-function takeoff(fbox,tbox)
-{	//alert(tempcount);
-	for(var i=0; i<fbox.options.length; i++) {
-		if(fbox.options[i].selected && fbox.options[i].value != "") {
-			var no = new Option();
-			no.value = fbox.options[i].value;
-			no.text = fbox.options[i].text;
-			tbox.options[tbox.options.length] = no;
-			fbox.options[i].value = "";
-			fbox.options[i].text = "";
-	   }
-	}
-	BumpUp(fbox);
-}
 
 
-function BumpUp(box)
-{
-	for(var i=0; i<box.options.length; i++)
-	{
-		if(box.options[i].value == "")
-		{
-			for(var j=i; j<box.options.length-1; j++) {
-				box.options[j].value = box.options[j+1].value;
-				box.options[j].text = box.options[j+1].text;
-			}
-		var ln = i;
-		break;
-   		}
-	}
-	if(ln < box.options.length)  {
-		box.options.length -= 1;
-		BumpUp(box);
-   }
-}
-
-function confirmDelete(){
-	var msg = "Are you sure you wish to delete this package ?";
-	if (confirm(msg))
-		return true;
-	else
-		return false;
-}				
-
-
-function selectAll(dest){
-	for (var i = 0; i < dest.options.length; i++) { 
-		dest.options[i].selected = true;
-	}
- }
- 
- function deleteRule(fbox)
- {
- 	if (confirm("Are you sure you wish to delete this rule instance?"))
-	{
-		 for(var i=0; i<fbox.options.length; i++)
-		 {
-			if(fbox.options[i].selected)
-			{
-				fbox.options[i].value = "";
-				fbox.options[i].text = "";
-		   }
-		}
-		BumpUp(fbox);	
-	}	
- }
- 
-// build rules structure
-oRules = new Object;
-<cfloop query="qRules">
-	oRules['#qRules.rulename#'] = new Object;
-	<cfif structKeyExists(application.rules['#qRules.rulename#'],'hint')>
-		oRules['#qRules.rulename#'].hint = '#application.rules[qRules.rulename].hint#';
-	<cfelse>
-		oRules['#qRules.rulename#'].hint = 	'';
-	</cfif>
-	
-</cfloop>
- 
-function renderHint(rulename)
-{	
-	document.getElementById('rulehint').innerHTML = oRules[rulename].hint;
-}	
- 
- 
-// End -->
-</script>
-</cfoutput>
-
-
-<!--- 
-************************************************************************
-This is the container header
-************************************************************************
- --->
+<!-------------------------------------------------------------- 
+    Begin: Container Tab Options
+--------------------------------------------------------------->
 <cfoutput>
 <div id="Header">
-	<span class="title">#application.config.general.siteTitle#</span><br/>
-	<span class="description">#application.config.general.siteTagLine#</span>
+	<span class="title">Container Management</span><br/>
+	<span class="description">You are editing: #removechars(stobj.label, 1, 36)#</span>
 	<div class="mainTabArea" align="right">
+</cfoutput>
+
 	<farcry:tabs>
-		<cfif URL.mode IS "update">
-			<farcry:tabitem class="activetab" href="#CGI.SCRIPT_NAME#?containerID=#URL.containerID#&mode=update" target="" text="Container Content">
-		<cfelse>
-			<farcry:tabitem class="tab" href="#CGI.SCRIPT_NAME#?containerID=#URL.containerID#&mode=update" target="" text="Container Content"></cfif>
-		<cfif URL.mode IS "configure">
-			<farcry:tabitem class="activetab" href="#CGI.SCRIPT_NAME#?mode=configure&containerID=#URL.containerID#" target="" text="Configure Rules List">
-		<cfelse>
-			<farcry:tabitem class="tab" href="#CGI.SCRIPT_NAME#?mode=configure&containerID=#URL.containerID#" target="" text="Configure Rules List">
+	<!--- i18n: need some bundle action for mirror/reflection --->
+	<cfswitch expression="#url.mode#">
+
+	<cfcase value="update">
+		<cfif NOT len(trim(stobj.mirrorid))>
+			<farcry:tabitem class="activetab" href="#CGI.SCRIPT_NAME#?containerID=#URL.containerID#&mode=update" target="" text="#application.adminBundle[session.dmProfile.locale].containerContent#">	
+			<cfif bDisplaySkins>
+			<farcry:tabitem class="tab" href="#CGI.SCRIPT_NAME#?mode=skin&containerID=#URL.containerID#" target="" text="Skin">
+			</cfif>
+			<farcry:tabitem class="tab" href="#CGI.SCRIPT_NAME#?mode=configure&containerID=#URL.containerID#" target="" text="#application.adminBundle[session.dmProfile.locale].configureRulesList#">
 		</cfif>
+		<cfif len(stobj.bshared) and stobj.bshared>
+			<!--- don't show reflection options for shared container --->
+		<cfelse>
+			<farcry:tabitem class="tab" href="#CGI.SCRIPT_NAME#?containerID=#URL.containerID#&mode=mirror" target="" text="Reflection">
+		</cfif>
+	</cfcase>
+	
+	<cfcase value="skin">
+		<cfif NOT len(trim(stobj.mirrorid))>
+			<farcry:tabitem class="tab" href="#CGI.SCRIPT_NAME#?containerID=#URL.containerID#&mode=update" target="" text="#application.adminBundle[session.dmProfile.locale].containerContent#">	
+			<cfif bDisplaySkins>
+			<farcry:tabitem class="activetab" href="#CGI.SCRIPT_NAME#?mode=skin&containerID=#URL.containerID#" target="" text="Skin">
+			</cfif>
+			<farcry:tabitem class="tab" href="#CGI.SCRIPT_NAME#?mode=configure&containerID=#URL.containerID#" target="" text="#application.adminBundle[session.dmProfile.locale].configureRulesList#">
+		</cfif>
+		<cfif len(stobj.bshared) and stobj.bshared>
+			<!--- don't show reflection options for shared container --->
+		<cfelse>
+			<farcry:tabitem class="tab" href="#CGI.SCRIPT_NAME#?containerID=#URL.containerID#&mode=mirror" target="" text="Reflection">
+		</cfif>
+	</cfcase>
+
+	<cfcase value="configure">
+		<cfif NOT len(trim(stobj.mirrorid))>
+			<farcry:tabitem class="tab" href="#CGI.SCRIPT_NAME#?containerID=#URL.containerID#&mode=update" target="" text="#application.adminBundle[session.dmProfile.locale].containerContent#">
+			<cfif bDisplaySkins>
+				<farcry:tabitem class="tab" href="#CGI.SCRIPT_NAME#?mode=skin&containerID=#URL.containerID#" target="" text="Skin">
+			</cfif>
+			<farcry:tabitem class="activetab" href="#CGI.SCRIPT_NAME#?mode=configure&containerID=#URL.containerID#" target="" text="#application.adminBundle[session.dmProfile.locale].configureRulesList#">
+		</cfif>
+		<cfif len(stobj.bshared) and stobj.bshared>
+			<!--- don't show reflection options for shared container --->
+		<cfelse>
+			<farcry:tabitem class="tab" href="#CGI.SCRIPT_NAME#?containerID=#URL.containerID#&mode=mirror" target="" text="Reflection">
+		</cfif>
+	</cfcase>
+
+	<cfcase value="mirror">
+		<cfif NOT len(trim(stobj.mirrorid))>
+			<farcry:tabitem class="tab" href="#CGI.SCRIPT_NAME#?containerID=#URL.containerID#&mode=update" target="" text="#application.adminBundle[session.dmProfile.locale].containerContent#">
+			<cfif bDisplaySkins>
+				<farcry:tabitem class="tab" href="#CGI.SCRIPT_NAME#?mode=skin&containerID=#URL.containerID#" target="" text="Skin">
+			</cfif>
+			<farcry:tabitem class="tab" href="#CGI.SCRIPT_NAME#?mode=configure&containerID=#URL.containerID#" target="" text="#application.adminBundle[session.dmProfile.locale].configureRulesList#">
+		</cfif>
+		<farcry:tabitem class="activetab" href="#CGI.SCRIPT_NAME#?containerID=#URL.containerID#&mode=mirror" target="" text="Reflection">
+	</cfcase>
+
+	</cfswitch>
 	</farcry:tabs>
+
+<cfoutput>
 	</div>
 </div>
 </cfoutput>
+<!-------------------------------------------------------------- 
+    /End: Container Tab Options
+--------------------------------------------------------------->
 
 <cfswitch expression="#URL.mode#"> 
+
+<cfcase value="mirror">
+	<!--- get shared container list for form --->
+	<cfset qReflections=oCon.getSharedContainers()>
+	
+	<cfoutput>
+	<div class="tabTitle" id="EditFrameTitle" align="center">
+	<!--- i18n: needs some bundle action for mirror --->
+	<cfif isDefined("stMirror.objectid")>This container is mirroring the content of another container:<br/> &nbsp; &raquo; #stmirror.label#<cfelse>This container is unique for this page.</cfif>
+	</div>
+	</cfoutput>
+
+	<cfoutput><div id="background"></cfoutput>
+
+	<cfoutput>
+	<!--- form action message --->
+	#message#
+	<p><strong>Mirrored Container Prototype:</strong> Choose a shared container to be used for this container instance.  This will override the unique container settings and use the mirrored container instead. Select NO REFLECTION to remove container mirroring.</p>	
+	
+	<form action="" method="post">
+	<fieldset>
+		<legend title="Container Reflection">Container Reflection</legend>
+		<select name="reflectionid">
+		<option value="">NO REFLECTION</option>
+		<cfloop query="qReflections">
+		<option value="#qReflections.objectid#" <cfif qreflections.objectid eq stobj.mirrorid>SELECTED</cfif>>#qReflections.label#</option></cfloop>
+		</select>
+	<input type="submit" name="mirrorAction" value="Update Reflection Details">
+	</fieldset>
+	</form>
+<!--- 	
+	<cfdump var="#stobj#" label="This Container">
+	<cfif isdefined("stMirror")><cfdump var="#stMirror#" label="The Mirrored Container"></cfif>
+ --->	
+ 	</div>
+	</cfoutput>
+</cfcase>
+
+<cfcase value="skin">
+	<cfoutput>
+	<fieldset>
+		<legend title="Container Reflection">Select a display method for this container</legend>
+	<form action="" method="post">
+	<select name="displayMethod">
+	<option value="">None</option>
+	</cfoutput>
+	<cfoutput query="qContainerSkins">
+		<option value="#qContainerSkins.methodname#" <cfif stObj.displayMethod IS qContainerSkins.methodName>selected</cfif>>#qContainerSkins.displayname#</option>
+	</cfoutput>
+	<cfoutput>
+	</select>
+	<input type="submit" name="skinAction" value="Update Display Method">
+	</form>
+	</fieldset>
+	</cfoutput>
+</cfcase>
+
 
 <cfcase value="update">
 	<!---
@@ -239,23 +263,25 @@ This is the container header
 	 ie. default to the first rule
 	--->
 	<cfscript>
-		if(arrayLen(stObj.aRules) GT 0 AND NOT isDefined("form.ruleID"))
+		if(arrayLen(stObj.aRules) GT 0 AND NOT isDefined("form.ruleID") AND NOT isDefined("url.ruleid"))
 			updateType = stObj.aRules[1];
 		else if(isDefined("form.ruleID"))
-			updateType = form.ruleID;	
+			updateType = form.ruleID;
+		else if(isDefined("url.ruleid"))
+			updateType = url.ruleid;
 	</cfscript>	
 
 	<cfoutput>
 	<div class="tabTitle" id="EditFrameTitle" align="center">
 		<form action="" method="post">
-			Active Rules For This Container 
+			#application.adminBundle[session.dmProfile.locale].containerActiveRules# 
 			<select name="ruleID" onChange="form.submit();" class="field">
 			<cfif arrayLen(stObj.aRules) GT 0>
 				<cfloop query="qActiveRules" >
-					<option value="#objectID#" <cfif updateType IS objectID>selected</cfif>><cfif structKeyExists(application.rules[typename],'displayname')>#evaluate("application.rules." & typename & ".displayname")#<cfelse>#typename#</cfif></option>	
+					<option value="#objectID#" <cfif updateType IS objectID>selected</cfif>>[#qActiveRules.currentrow#] <cfif structKeyExists(application.rules[typename],'displayname')>#evaluate("application.rules." & typename & ".displayname")#<cfelse>#typename#</cfif></option>	
 				</cfloop>
 			<cfelse>
-				<option>No rules Selected for this container</option>
+				<option>#application.adminBundle[session.dmProfile.locale].noContainerRules#</option>
 			</cfif>
 			</select>
 		</form>
@@ -267,6 +293,7 @@ This is the container header
 	*********************************************************************
 	--->
 	<cfif arrayLen(stObj.aRules) GT 0>
+
 		<!--- get the typename for the current rule --->
 		<cfquery dbtype="query" name="qGetRuleTypename">
 			SELECT typename FROM qActiveRules where objectID = '#updateType#'
@@ -276,9 +303,12 @@ This is the container header
 			Call the update method for the selected rule - this displays the form
 		*********************************************************************
 		 --->
-		<cfoutput><div id="background">
-			<cfinvoke component="#application.rules[qGetRuleTypename.typename].rulepath#" method="update" objectID="#updateType#">
-		</div></cfoutput>
+		<cfoutput><div id="background"></cfoutput>
+		<!--- TODO: these outputs are a whitespace nightmare.. 
+	   		but it appears some rules are not properly written and require this method to be 
+	   		wrapped in OUTPUTs to display.  We need to update the lot at some point. GB --->
+			<cfoutput><cfinvoke component="#application.rules[qGetRuleTypename.typename].rulepath#" method="update" objectID="#updateType#"></cfoutput>
+		<cfoutput></div></cfoutput>
 	</cfif>	
 </cfcase>
 <cfdefaultcase>
@@ -340,8 +370,8 @@ This is the container header
 			<table border="0" cellspacing="0" cellpadding="5" align="center">
 			<tr>
 				<td  align="center" valign="top">
-					<strong>Available Rule Types</strong><br>
-					<select name="source" size="8" style="font-size:7pt; border: 0px none;" onchange="renderHint(this.value);" >
+					<strong>#application.adminBundle[session.dmProfile.locale].availableRuleTypes#</strong><br>
+					<select name="source" size="12" style="font-size:7pt; border: 0px none;" onchange="renderHint(this.value);" >
 						<cfloop query="qRules">
 							<option value="#rulename#" ><cfif structKeyExists(application.rules[rulename],'displayname')>#evaluate("application.rules." & rulename & ".displayname")#<cfelse>#rulename#</cfif>
 						</cfloop>
@@ -351,8 +381,8 @@ This is the container header
 					<input type="button" name="B1" value="   >>>>    " class="normalBttnStyle"  onClick="move(this.form.source,this.form.dest)"><br><br>
 				</td>
 				<td valign="top" align="center">		
-						<strong>Active Rules</strong><br>
-						<select multiple name="dest" size="8"  style="font-size:7pt;">
+						<strong>#application.adminBundle[session.dmProfile.locale].activeRules#</strong><br>
+						<select multiple name="dest" size="12"  style="font-size:7pt;">
 						<cfloop query="qActiveRules">
 							<!--- need check here for displayname key --->
 							<option value="#qActiveRules.objectid#">#evaluate("application.rules." & typename & ".displayname")#
@@ -364,14 +394,14 @@ This is the container header
 					onClick="moveindex(this.form.dest.selectedIndex,-1)"><br><br>
 					<input class="normalBttnStyle"  type="button" value="&##8595;"
 					onClick="moveindex(this.form.dest.selectedIndex,+1)"><br><br>
-					<input class="normalBttnStyle"  type="button" value="Delete Rule"
+					<input class="normalBttnStyle"  type="button" value="#application.adminBundle[session.dmProfile.locale].deleteRule#"
 					 onClick="deleteRule(this.form.dest);">
 				</td>	
 			</tr>		
 			
 			<tr>
 				<td colspan="4" align="center">
-					<input class="normalbttnstyle" name="update" type="submit" value="Commit Changes" onclick="selectAll(this.form.dest);">
+					<input class="normalbttnstyle" name="update" type="submit" value="#application.adminBundle[session.dmProfile.locale].commitChanges#" onclick="selectAll(this.form.dest);">
 				</td>
 			</tr>
 			</table>
@@ -390,6 +420,9 @@ This is the container header
 </cfswitch>
 
 <cfoutput>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>Container ObjectID: #stobj.objectid#</p>
 </body>
 </html>
 </cfoutput>

@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmXMLExport/generate.cfm,v 1.14.4.2 2005/05/09 00:58:45 guy Exp $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmXMLExport/generate.cfm,v 1.16.2.1 2005/05/06 01:59:44 guy Exp $
 $Author: guy $
-$Date: 2005/05/09 00:58:45 $
-$Name: milestone_2-2-1 $
-$Revision: 1.14.4.2 $
+$Date: 2005/05/06 01:59:44 $
+$Name: milestone_2-3-2 $
+$Revision: 1.16.2.1 $
 
 || DESCRIPTION || 
 $Description: generates rss feed$
@@ -22,26 +22,10 @@ $in: $
 $out:$
 --->
 
-<cfscript>
-function high2ascii(str) {
-	while(1) {
-		p=REFind("[^[:ascii:]]",str);
-	    if(not p) break;
-	    	str = replace(str,mid(str,p,1),"&###asc(mid(str,p,1))#;","all");
-	}
-	return str;
-}
-</cfscript>
 <!--- get categories --->
 <cfobject component="#application.packagepath#.farcry.category" name="oCategories">
 <cfset lCategories = oCategories.getCategories(objectid=stObj.objectid,bReturnCategoryIDs="true")>
 
-<cfif application.types[stObj.contentType].bCustomType>
-	<cfset packagepath = application.custompackagepath>
-<cfelse>
-	<cfset packagepath = application.packagepath>
-</cfif>
-	
 <cfif len(lCategories)>
 	<!--- get objects in selected categories --->
 	<cfset qObjects = oCategories.getData(typename=stObj.contentType,lCategoryIDs=lCategories,dsn=application.dsn)>
@@ -81,7 +65,7 @@ function high2ascii(str) {
 	    <sy:updateBase>2000-01-01T12:00+00:00</sy:updateBase>
 		</cfoutput>
 		
-<cfif len(lCategories)>
+		<cfif len(lCategories)>
 			<cfloop query="qObjects">
 				<cfset bShow = 1>
 				<!--- check object is available for publishing --->
@@ -98,7 +82,7 @@ function high2ascii(str) {
 					<item>
 						<title>#xmlFormat(qObjects.label)#</title>
 						<link>http://#cgi.http_host##application.url.conjurer#?objectid=#qObjects.objectid#</link>
-						<description><cfif isdefined("qObjects.teaser") and len(qObjects.teaser)>#xmlFormat(high2ascii(qObjects.teaser))#<cfelseif isdefined("qObjects.body") and len(qObjects.body)>#xmlFormat(oRSS.HTMLStripper(high2ascii(left(qObjects.body,255))))#...</cfif></description>
+						<description><cfif isdefined("qObjects.teaser") and len(qObjects.teaser)>#xmlFormat(qObjects.teaser)#<cfelseif isdefined("qObjects.body") and len(qObjects.body)>#xmlFormat(oRSS.HTMLStripper(left(qObjects.body,255)))#...</cfif></description>
 						<guid isPermaLink="false">#qObjects.objectid#</guid>
 						<!--- <dc:subject>subject</dc:subject> --->
 						<dc:date>#dateFormat(qObjects.dateTimeLastUpdated,"yyyy-mm-dd")#T#timeFormat(qObjects.dateTimeLastUpdated,"hh:mm:ss")##numberFormat((stTimeZone.utcHourOffset * -1),"+00")#:#numberFormat(abs(stTimeZone.utcMinuteOffset),"00")#</dc:date>
@@ -123,7 +107,7 @@ function high2ascii(str) {
 					<item>
 						<title>#xmlFormat(stObjects[obj].label)#</title>
 						<link>http://#cgi.http_host##application.url.conjurer#?objectid=#obj#</link>
-						<description><cfif structKeyExists(stObjects[obj],"teaser") and len(stObjects[obj].teaser)>#xmlFormat(high2ascii(stObjects[obj].teaser))#<cfelseif structKeyExists(stObjects[obj],"body") and len(stObjects[obj].body)>#xmlFormat(oRSS.HTMLStripper(high2ascii(left(stObjects[obj].body,255))))#...</cfif></description>
+						<description><cfif structKeyExists(stObjects[obj],"teaser") and len(stObjects[obj].teaser)>#xmlFormat(stObjects[obj].teaser)#<cfelseif structKeyExists(stObjects[obj],"body") and len(stObjects[obj].body)>#xmlFormat(oRSS.HTMLStripper(left(stObjects[obj].body,255)))#...</cfif></description>
 						<guid isPermaLink="false">#obj#</guid>
 						<!--- <dc:subject>subject</dc:subject> --->
 						<dc:date>#dateFormat(stObjects[obj].dateTimeLastUpdated,"yyyy-mm-dd")#T#timeFormat(stObjects[obj].dateTimeLastUpdated,"hh:mm:ss")##numberFormat((stTimeZone.utcHourOffset * -1),"+00")#:#numberFormat(abs(stTimeZone.utcMinuteOffset),"00")#</dc:date>

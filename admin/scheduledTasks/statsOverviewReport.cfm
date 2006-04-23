@@ -6,11 +6,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/scheduledTasks/statsOverviewReport.cfm,v 1.3 2004/05/04 22:54:32 brendan Exp $
-$Author: brendan $
-$Date: 2004/05/04 22:54:32 $
-$Name: milestone_2-2-1 $
-$Revision: 1.3 $
+$Header: /cvs/farcry/farcry_core/admin/scheduledTasks/statsOverviewReport.cfm,v 1.4.2.1 2005/03/04 22:29:03 tom Exp $
+$Author: tom $
+$Date: 2005/03/04 22:29:03 $
+$Name: milestone_2-3-2 $
+$Revision: 1.4.2.1 $
 
 || DESCRIPTION || 
 $Description: Emails an overview report for site activity $
@@ -26,6 +26,8 @@ $out:$
 --->
 
 <!--- work out parameters --->
+<cfprocessingDirective pageencoding="utf-8">
+
 <cfsetting requestTimeout="600">
 
 <cfparam name="url.dateRange" default="ww">
@@ -42,8 +44,11 @@ $out:$
 	qSearches = application.factory.oStats.getSearchStatsMostPopular(dateRange=#url.dateRange#,maxRows=10);
 </cfscript>
 
-<cfmail to="#url.emailTo#" from="#application.config.general.adminEmail#" subject="#application.config.general.siteTitle# Statistics Report" type="HTML">
-<style >
+<cfset tS=application.rb.formatRBString(application.adminBundle[application.config.general.locale].emailStatReport,"#application.config.general.siteTitle#")>
+<cfmail to="#url.emailTo#" from="#application.config.general.adminEmail#" subject="#tS#" type="HTML">
+
+<cfoutput>
+<style>
 .dataOddRow {
 	background-color : ##ccc;
 	color: ##333;
@@ -69,16 +74,23 @@ table, td, div {
 }
 </style>
 
-<div class="formtitle">Statistics Overview Report - <cfif dateRange neq "all">#dateformat(dateAdd("#dateRange#",-1,now()),"dd-mmm-yyyy")# to #dateFormat(now(),"dd-mmm-yyyy")#<cfelse>All dates</cfif> (#numberformat(qSessions.sessions)# sessions)</div>
+<div class="formtitle">
+<cfif dateRange neq "all">
+	<cfset subS=listToArray('#application.thisCalendar.i18nDateFormat(dateAdd("#dateRange#",-1,now()),application.config.general.locale,application.fullF)#, #application.thisCalendar.i18nDateFormat(now(),application.config.general.locale,application.fullF)#, #numberformat(qSessions.sessions)#')>
+	#application.rb.formatRBString(application.adminBundle[application.config.general.locale].statsOverviewReport,subS)#
+<cfelse>
+	#application.rb.formatRBString(application.adminBundle[application.config.general.locale].allDatesOverviewReport,"#numberformat(qSessions.sessions)#")#
+</cfif> 
+</div>
 
 <!--- views --->
 <cfif qViews.recordcount>
 	<div class="formtitle" style="margin-left:30px;padding-bottom:5px;">Most Popular Pages</div>
 	<table cellpadding="5" cellspacing="0" border="1" width="500" style="margin-left:30px;">
 	<tr>
-		<th class="dataheader" align="left">Object</td>
-		<th class="dataheader">Views</td>
-		<th class="dataheader">Type</td>
+		<th class="dataheader" align="left">#application.adminBundle[application.config.general.locale].objectLC#</th>
+		<th class="dataheader">#application.adminBundle[application.config.general.locale].views#</th>
+		<th class="dataheader">#application.adminBundle[application.config.general.locale].typeLC#</th>
 	</tr>
 	
 	<!--- show stats with links to detail --->
@@ -96,12 +108,12 @@ table, td, div {
 
 <!--- locales --->
 <cfif qLocales.recordcount>
-	<div class="formtitle" style="margin-left:30px;padding-bottom:5px;">Most Popular Locales</div>
+	<div class="formtitle" style="margin-left:30px;padding-bottom:5px;">#application.adminBundle[application.config.general.locale].mostPopularLocales#</div>
 	<table cellpadding="5" cellspacing="0" border="1" width="500" style="margin-left:30px;">
 	<tr>
-		<th class="dataheader" align="left">Country</td>
-		<th class="dataheader">Language</td>
-		<th class="dataheader">Sessions</td>
+		<th class="dataheader" align="left">#application.adminBundle[application.config.general.locale].country#</th>
+		<th class="dataheader">#application.adminBundle[application.config.general.locale].language#</th>
+		<th class="dataheader">#application.adminBundle[application.config.general.locale].sessions#</th>
 	</tr>
 	
 	<!--- show stats with links to detail --->
@@ -119,11 +131,11 @@ table, td, div {
 
 <!--- browsers --->
 <cfif qBrowsers.recordcount>
-	<div class="formtitle" style="margin-left:30px;padding-bottom:5px;">Most Popular Browsers</div>
+	<div class="formtitle" style="margin-left:30px;padding-bottom:5px;">#application.adminBundle[application.config.general.locale].mostPopularBrowsers#</div>
 	<table cellpadding="5" cellspacing="0" border="1" width="500" style="margin-left:30px;">
 	<tr>
-		<th class="dataheader" align="left">Browser</td>
-		<th class="dataheader">Sessions</td>
+		<th class="dataheader" align="left">#application.adminBundle[application.config.general.locale].browser#</th>
+		<th class="dataheader">#application.adminBundle[application.config.general.locale].sessions#</th>
 	</tr>
 	
 	<!--- show stats with links to detail --->
@@ -140,11 +152,11 @@ table, td, div {
 
 <!--- operating systems --->
 <cfif qOs.recordcount>
-	<div class="formtitle" style="margin-left:30px;padding-bottom:5px;">Most Popular Operating Systems</div>
+	<div class="formtitle" style="margin-left:30px;padding-bottom:5px;">#application.adminBundle[application.config.general.locale].mostPopularOS#</div>
 	<table cellpadding="5" cellspacing="0" border="1" width="500" style="margin-left:30px;">
 	<tr>
-		<th class="dataheader" align="left">Operating System</td>
-		<th class="dataheader">Sessions</td>
+		<th class="dataheader" align="left">#application.adminBundle[application.config.general.locale].OS#</th>
+		<th class="dataheader">#application.adminBundle[application.config.general.locale].sessions#</th>
 	</tr>
 	
 	<!--- show stats with links to detail --->
@@ -161,11 +173,11 @@ table, td, div {
 
 <!--- referers --->
 <cfif qReferers.recordcount>
-	<div class="formtitle" style="margin-left:30px;padding-bottom:5px;">Most Popular Referers</div>
+	<div class="formtitle" style="margin-left:30px;padding-bottom:5px;">#application.adminBundle[application.config.general.locale].mostPopularReferers#</div>
 	<table cellpadding="5" cellspacing="0" border="1" width="500" style="margin-left:30px;">
 	<tr>
-		<th class="dataheader" align="left">Referer</td>
-		<th class="dataheader">Referals</td>
+		<th class="dataheader" align="left">#application.adminBundle[application.config.general.locale].referer#</th>
+		<th class="dataheader">#application.adminBundle[application.config.general.locale].referals#</th>
 	</tr>
 	
 	<!--- show stats with links to detail --->
@@ -182,11 +194,11 @@ table, td, div {
 
 <!--- searches --->
 <cfif qSearches.recordcount>
-	<div class="formtitle" style="margin-left:30px;padding-bottom:5px;">Most Popular Searches</div>
+	<div class="formtitle" style="margin-left:30px;padding-bottom:5px;">#application.adminBundle[application.config.general.locale].mostPopularSearches#</div>
 	<table cellpadding="5" cellspacing="0" border="1" width="500" style="margin-left:30px;">
 	<tr>
-		<th class="dataheader" align="left">Search String</td>
-		<th class="dataheader">Searches</td>
+		<th class="dataheader" align="left">#application.adminBundle[application.config.general.locale].searchString#</th>
+		<th class="dataheader">#application.adminBundle[application.config.general.locale].searches#</th>
 	</tr>
 	
 	<!--- show stats with links to detail --->
@@ -200,7 +212,8 @@ table, td, div {
 	</table>
 </cfif>
 <p>&nbsp;</p>
-
+</cfoutput>
 </cfmail>
-
-<cfoutput>Email sent</cfoutput>
+<cfoutput>
+#application.adminBundle[application.config.general.locale].emailSent#
+</cfoutput>

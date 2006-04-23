@@ -1,4 +1,6 @@
 <cfsetting enablecfoutputonly="Yes">
+
+<cfprocessingDirective pageencoding="utf-8">
 <!--- 
 || BEGIN FUSEDOC ||
 
@@ -7,11 +9,11 @@ Daemon Pty Limited 1995-2001
 http://www.daemon.com.au/
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/security/ui/dmSecUI_UserSearch.cfm,v 1.3 2003/07/10 02:35:15 brendan Exp $
+$Header: /cvs/farcry/farcry_core/tags/security/ui/dmSecUI_UserSearch.cfm,v 1.5 2004/07/30 04:55:55 brendan Exp $
 $Author: brendan $
-$Date: 2003/07/10 02:35:15 $
-$Name: b201 $
-$Revision: 1.3 $
+$Date: 2004/07/30 04:55:55 $
+$Name: milestone_2-3-2 $
+$Revision: 1.5 $
 
 || DESCRIPTION || 
 UI for searching for users.
@@ -25,6 +27,12 @@ Matt Dawson (mad@daemon.com.au)
 
 || HISTORY ||
 $Log: dmSecUI_UserSearch.cfm,v $
+Revision 1.5  2004/07/30 04:55:55  brendan
+i18n mods
+
+Revision 1.4  2004/07/15 02:03:27  brendan
+i18n updates
+
 Revision 1.3  2003/07/10 02:35:15  brendan
 linux mods
 
@@ -89,7 +97,7 @@ no message
 <cfimport taglib="/farcry/farcry_core/tags/security/ui" prefix="dmsec">
 <cfparam name="form.lUserDirectory" default="">
 
-<cfoutput><span class="formtitle">User Search</span><p></cfoutput>
+<cfoutput><span class="formtitle">#application.adminBundle[session.dmProfile.locale].userSearch#</span><p></cfoutput>
 
 <cfif isDefined("URL.msg")>
 	<cfoutput>#URL.msg#</cfoutput>
@@ -130,7 +138,7 @@ else
 	<td>&nbsp;</td>
 </tr>
 <tr>
-	<td><span class="formlabel">Select a user directory to search in.</span></td>
+	<td><span class="formlabel">#application.adminBundle[session.dmProfile.locale].selectSearchUserDir#</span></td>
 </tr>
 <tr>
 	<td>
@@ -145,16 +153,15 @@ else
 	<td>&nbsp;</td>
 </tr>
 <tr>
-	<td><span class="formlabel">Enter a fragment of the userLogin:</span></td>
+	<td><span class="formlabel">#application.adminBundle[session.dmProfile.locale].userLoginFragment#</span></td>
 </tr>
 <tr>
 	<td>
 	<input type="text" name="fragment" value="#stobj.fragment#" size="30">
-	<cfset lLocations="Starts with,Contains,Ends with">
 	<select name="fragmentLocation">
-		<cfloop index="location" list="#lLocations#">
-			<option value="#location#" <cfif location eq stobj.fragmentLocation>selected</cfif>>#location#
-		</cfloop>
+		<option value="Starts with" <cfif stobj.fragmentLocation eq "Starts with">selected</cfif>>#application.adminBundle[session.dmProfile.locale].startsWith#
+		<option value="Contains" <cfif stobj.fragmentLocation eq "Contains">selected</cfif>>#application.adminBundle[session.dmProfile.locale].containsLabel#
+		<option value="Ends with" <cfif stobj.fragmentLocation eq "Ends with">selected</cfif>>#application.adminBundle[session.dmProfile.locale].endsWith#
 	</select>
 	</td>
 </tr>
@@ -162,13 +169,13 @@ else
 	<td>&nbsp;</td>
 </tr>
 <tr>
-	<td><input type="checkbox" name="inactive" <cfif isdefined("form.submit") and isdefined("form.inactive")>checked</cfif>> Search inactive accounts</td>
+	<td><input type="checkbox" name="inactive" <cfif isdefined("form.submit") and isdefined("form.inactive")>checked</cfif>> #application.adminBundle[session.dmProfile.locale].searchInactiveAccounts#</td>
 </tr>
 <tr>
 	<td>&nbsp;</td>
 </tr>
 <tr>
-	<td><input type="Submit" name="Submit" Value="Search"></td>
+	<td><input type="Submit" name="Submit" Value="#application.adminBundle[session.dmProfile.locale].search#"></td>
 </tr>
 <tr>
 	<td>&nbsp;</td>
@@ -190,17 +197,17 @@ else
 	<cfset form.fragment=form.fragment&"%">
 </cfif>
 
-<cfset lStatus="<span style='color:orange;'>Blacklisted</span>,<span style='color:red;'>Disabled</span>,<span style='color:blue;'>Pending Approval</span>,<span style='color:green;'>Active</span>">
+<cfset lStatus="<span style='color:orange;'>#application.adminBundle[session.dmProfile.locale].blacklisted#</span>,<span style='color:red;'>#application.adminBundle[session.dmProfile.locale].disabled#</span>,<span style='color:blue;'>#application.adminBundle[session.dmProfile.locale].pendingApproval#</span>,<span style='color:green;'>#application.adminBundle[session.dmProfile.locale].Active#</span>">
 
 <!--- assuming a search on daemon user directories here --->
 <cfloop index="ud" list="#lUserDirectory#">
 
 <cfoutput>
-<span class="formtitle">Query Results: #ud#</span><p>
+<span class="formtitle">#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].queryResults,"#ud#")#</span><p>
 <table cellpadding="5" cellspacing="0" border="1" style="margin-left:30px;">
 <tr class="dataheader">
-	<td>Login name</td>
-	<td>Status</td>
+	<td>#application.adminBundle[session.dmProfile.locale].loginName#</td>
+	<td>#application.adminBundle[session.dmProfile.locale].status#</td>
 </tr>
 
 </cfoutput>	
@@ -243,7 +250,7 @@ else
 	</cfcase>
 	
 	<cfcase value="ADSI">
-		<cfoutput>Active Directory searching not supported</cfoutput>
+		<cfoutput>#application.adminBundle[session.dmProfile.locale].adSearchingNotSupported#</cfoutput>
 	</cfcase>
 
 	<cfdefaultcase>

@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmEvent/plpEdit/files.cfm,v 1.11.2.1 2004/09/21 16:18:33 tom Exp $
-$Author: tom $
-$Date: 2004/09/21 16:18:33 $
-$Name: milestone_2-2-1 $
-$Revision: 1.11.2.1 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmEvent/plpEdit/files.cfm,v 1.14.2.1 2005/06/09 23:19:06 guy Exp $
+$Author: guy $
+$Date: 2005/06/09 23:19:06 $
+$Name: milestone_2-3-2 $
+$Revision: 1.14.2.1 $
 
 || DESCRIPTION || 
 $Description: dmEvent Edit PLP - Adds files as associated objects.$
@@ -18,10 +18,13 @@ $TODO: $
 $Developer: Brendan Sisson (brendan@daemon.com.au)$
 --->
 <cfsetting enablecfoutputonly="yes">
+<cfprocessingDirective pageencoding="utf-8">
 
 <cfimport taglib="/farcry/fourq/tags/" prefix="q4">
 <cfimport taglib="/farcry/farcry_core/tags/farcry" prefix="tags">
 <cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
+
+<cfset localeMonths=application.thisCalendar.getMonths(session.dmProfile.locale)>
 
 <cfoutput>
 <script>
@@ -102,12 +105,12 @@ function removeUploadBtn()
 					<cffile action="upload"
 						filefield="filename" 
 						accept="#application.config.file.filetype#" 
-						destination="#application.defaultFilePath#" 
+						destination="#application.path.defaultFilePath#" 
 						nameconflict="#application.config.general.fileNameConflict#"> 
 					<cfcatch>
 						<cfoutput>
-							<strong>ERROR:</strong> #cfcatch.message#<p>
-							File types that are accepted: #application.config.file.filetype# <p></p>
+						<cfset subS=listToArray('#cfcatch.message#,#application.config.file.filetype#')>
+						<p>#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].acceptableFileTypes,subS)#</p>
 						</cfoutput>
 						<cfset error=1>
 					</cfcatch>
@@ -115,13 +118,13 @@ function removeUploadBtn()
 			<cfelse>
 				<cffile action="upload"
 					filefield="filename" 
-					destination="#application.defaultFilePath#" 
+					destination="#application.path.defaultFilePath#" 
 					nameconflict="#application.config.general.fileNameConflict#"> 
 			</cfif>
 			
 			<!--- delete existing file --->
-			<cfif fileExists("#application.defaultFilePath#/#form.filename_old#")>
-				<cffile action="delete" file="#application.defaultFilePath#/#form.filename_old#">
+			<cfif fileExists("#application.path.defaultFilePath#/#form.filename_old#")>
+				<cffile action="delete" file="#application.path.defaultFilePath#/#form.filename_old#">
 			</cfif>	
 			
 			<!--- update file details if saved without error --->
@@ -181,7 +184,7 @@ function removeUploadBtn()
 <cfif NOT thisstep.isComplete>
 
 <cfoutput><div class="FormSubTitle">#output.label#</div>
-<div class="FormTitle">Files</div></cfoutput>
+<div class="FormTitle">#application.adminBundle[session.dmProfile.locale].files#</div></cfoutput>
 
 <cfif (StructKeyExists(output, "aObjectIDs"))>
 	<cfset aFileArray = arrayNew(1)>
@@ -199,16 +202,16 @@ function removeUploadBtn()
 	<form action="" method="post">
 	<table class="borderTable" >
 	<tr>
-		<td colspan="5" align="center"><strong>Existing Files</strong></td> 
+		<td colspan="5" align="center"><strong>#application.adminBundle[session.dmProfile.locale].existingFiles#</strong></td> 
 	</tr>
 	<tr>
 		<td>&nbsp;
 			
 		</td>
-		<td align="center"><span class="FormLabel">Title</span></td>
-		<td align="center"><span class="FormLabel">Preview</span></td>
-		<td align="center"><span class="FormLabel">Edit</span></td>
-		<td align="center"><span class="FormLabel">Delete</span></td>
+		<td align="center"><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].title#</span></td>
+		<td align="center"><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].preview#</span></td>
+		<td align="center"><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].edit#</span></td>
+		<td align="center"><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].delete#</span></td>
 	</tr></cfoutput>
 	<cfloop from="1" to="#arrayLen(afileArray)#" index="i">
 		<q4:contentobjectget objectid="#aFileArray[i]#" bactiveonly="False" r_stobject="stThisFile">
@@ -223,11 +226,11 @@ function removeUploadBtn()
 			</td>
 			<td align="center">
 				<cfif len(trim(stThisFile.filename)) NEQ 0>
-				<a href="#application.url.webroot#/files/#stThisFile.filename#" target="_blank">
+				<a href="#application.url.conjurer#?objectid=#stThisFile.objectid#" target="_blank">
 					<img src="#application.url.farcry#/images/treeImages/preview.gif" border="0">
 				</a>
 				<cfelse>
-					<span class="FormLabel">[No file uploaded]</span>	
+					<span class="FormLabel">[#application.adminBundle[session.dmProfile.locale].noFileUploaded#]</span>	
 				</cfif>
 			</td>
 
@@ -244,7 +247,7 @@ function removeUploadBtn()
 	<cfoutput>
 	<tr>
 		<td colspan="4">&nbsp;</td>
-		<td><input name="deleteObject" type="submit" class="normalbttnstyle" value="delete"></td>
+		<td><input name="deleteObject" type="submit" class="normalbttnstyle" value="#application.adminBundle[session.dmProfile.locale].delete#"></td>
 	</tr>
 	</table>
 	</form>
@@ -253,7 +256,7 @@ function removeUploadBtn()
 	<cfoutput>
 		<table>
 			<tr>
-				<td><span class="FormLabel">No files have been added to this object</span></td>
+				<td><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].noFilesAddedToObj#</span></td>
 			</tr>
 		</table>
 	</cfoutput>	
@@ -263,7 +266,7 @@ function removeUploadBtn()
 <cfoutput>
 <div id="newfile" style="display:inline;">
 <p>
-<input type="button" class="normalbttnstyle" onClick="toggleForm('fileform','inline');" value="Upload New File">
+<input type="button" class="normalbttnstyle" onClick="toggleForm('fileform','inline');" value="#application.adminBundle[session.dmProfile.locale].uploadNewFile#">
 </p>
 </div></cfoutput>
 
@@ -274,14 +277,14 @@ function removeUploadBtn()
 	<cfoutput>
 	<div id="#i#_edit" style="display:none;">
 	<form action="" method="post" enctype="multipart/form-data" name="editFileForm_#i#">
-	<span class="FormTitle">Edit File</span>
+	<span class="FormTitle">#application.adminBundle[session.dmProfile.locale].editFile#</span>
 	<table>
 	<tr>
-  	 <td><span class="FormLabel">Title:</span></td>
+  	 <td><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].titleLabel#</span></td>
    	 <td><input type="text" name="filetitle" value="#stThisFile.title#" class="FormTextBox"></td>
 	</tr>
 	<tr>
-		<td nowrap class="FormLabel">Date Published:</td>
+		<td nowrap class="FormLabel">#application.adminBundle[session.dmProfile.locale].datePublishedLabel#</td>
 		<td >
 			<table>
 				<tr>
@@ -295,7 +298,7 @@ function removeUploadBtn()
 					<td>
 						<select name="publishMonth" class="formfield">
 							<cfloop from="1" to="12" index="a">
-								<option value="#a#" <cfif a IS month(stThisFile.documentDate)>selected</cfif>>#monthAsString(a)#</option>
+								<option value="#a#" <cfif a IS month(stThisFile.documentDate)>selected</cfif>>#localeMonths[a]#</option>
 							</cfloop>
 						</select>
 					</td>
@@ -314,14 +317,14 @@ function removeUploadBtn()
 					<td>
 						<select name="publishHour" class="formfield">
 							<cfloop from="0" to="23" index="a">
-								<option value="#a#" <cfif hour(stThisFile.documentDate) IS a>selected</cfif>>#a# hrs</option>						
+								<option value="#a#" <cfif hour(stThisFile.documentDate) IS a>selected</cfif>>#a# #application.adminBundle[session.dmProfile.locale].hrs#</option>						
 							</cfloop>
 						</select>
 					</td>
 					<td>
 						<select name="publishMinutes" class="formfield">
 							<cfloop from="0" to="45" index="a" step="15">
-								<option value="#a#" <cfif minute(stThisFile.documentDate) IS a>selected</cfif>>#a# mins</option>						
+								<option value="#a#" <cfif minute(stThisFile.documentDate) IS a>selected</cfif>>#a# #application.adminBundle[session.dmProfile.locale].mins#</option>						
 							</cfloop>
 						</select>
 					</td>	
@@ -330,25 +333,25 @@ function removeUploadBtn()
 		</td>
 	</tr>
 	<tr>	
-  	 <td valign="top" ><span class="FormLabel">File:</span> </td>
+  	 <td valign="top" ><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].fileLabel#</span> </td>
    	 <td>
 	 	<input type="file" name="filename" claass="FormFileBox">
 		<input type="hidden" name="filename_old" value="#stThisFile.filename#">
 		<cfif len(stThisFile.filename) NEQ 0>
-			<br>[file exists]
+			<br>[#application.adminBundle[session.dmProfile.locale].fileExists#]
 		</cfif>
 	 </td>
 	</tr>
 	
 	<tr>
-  	 <td valign="top"><span class="FormLabel">Description:</span></td>
+  	 <td valign="top"><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].descLabel#</span></td>
    	 <td><textarea cols="30" rows="4" name="description" class="FormTextArea">#stThisFile.description#</textarea></td>
 	</tr>
 	<tr>
 		<td colspan="2" align="center">
 			<input type="hidden" name="objectID" value="#stThisFile.objectID#">
-			<input type="Submit" name="editObject" value="Upload File" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';">
-			<input type="Button" name="Cancel" value="Cancel" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';" onclick="toggleForm('#i#_edit','none')"; >
+			<input type="Submit" name="editObject" value="#application.adminBundle[session.dmProfile.locale].uploadFile#" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';">
+			<input type="Button" name="Cancel" value="#application.adminBundle[session.dmProfile.locale].cancel#" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';" onclick="toggleForm('#i#_edit','none')"; >
 		</td>
 	</tr>
 		
@@ -357,7 +360,7 @@ function removeUploadBtn()
 		<SCRIPT LANGUAGE="JavaScript">
 		<!--//
 		objForm = new qForm("editFileForm_<cfoutput>#i#</cfoutput>");
-		objForm.filetitle.validateNotNull("Please enter a title");
+		objForm.filetitle.validateNotNull("#application.adminBundle[session.dmProfile.locale].pleaseEnterTitle#");
 			//-->
 		</SCRIPT>
 	</form>	
@@ -367,25 +370,25 @@ function removeUploadBtn()
 
 <!--- Upload new file DIV --->
 <cfoutput><div id="fileform" style="display:none">
-<span class="FormTitle">Upload File</span>
+<span class="FormTitle">#application.adminBundle[session.dmProfile.locale].uploadFile#</span>
 	
 <form action="" method="post" enctype="multipart/form-data" name="fileForm">
 	
 	<table border="0">
 	<tr>
-  	 <td><span class="FormLabel">Title:</span></td>
+  	 <td><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].titleLabel#</span></td>
    	 <td><input type="text" name="filetitle" value="" class="FormTextBox"></td>
 	</tr>
 	
 	<tr>	
-  		<td><span class="FormLabel">File: </span></td>
+  		<td><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].fileLabel#</span></td>
 	  	<td>
 	 		<input type="file" name="filename" class="FormFileBox">
 			<input type="hidden" name="filename_old" value="">
 		</td>
 	</tr>
 	<tr>
-		<td nowrap class="FormLabel">Date Published:</td>
+		<td nowrap class="FormLabel">#application.adminBundle[session.dmProfile.locale].datePublishedLabel#</td>
 		<td >
 			<table>
 				<tr>
@@ -399,7 +402,7 @@ function removeUploadBtn()
 					<td>
 						<select name="publishMonth" class="formfield">
 							<cfloop from="1" to="12" index="a">
-								<option value="#a#" <cfif a IS month(now())>selected</cfif>>#monthAsString(a)#</option>
+								<option value="#a#" <cfif a IS month(now())>selected</cfif>>#localeMonths[a]#</option>
 							</cfloop>
 						</select>
 					</td>
@@ -418,14 +421,14 @@ function removeUploadBtn()
 					<td>
 						<select name="publishHour" class="formfield">
 							<cfloop from="0" to="23" index="a">
-								<option value="#a#" <cfif hour(now()) IS a>selected</cfif>>#a# hrs</option>						
+								<option value="#a#" <cfif hour(now()) IS a>selected</cfif>>#a# #application.adminBundle[session.dmProfile.locale].hrs#</option>						
 							</cfloop>
 						</select>
 					</td>
 					<td>
 						<select name="publishMinutes" class="formfield">
 							<cfloop from="0" to="45" index="a" step="15">
-								<option value="#a#" <cfif minute(now()) IS a>selected</cfif>>#a# mins</option>						
+								<option value="#a#" <cfif minute(now()) IS a>selected</cfif>>#a# #application.adminBundle[session.dmProfile.locale].mins#</option>						
 							</cfloop>
 						</select>
 					</td>	
@@ -434,13 +437,13 @@ function removeUploadBtn()
 		</td>
 	</tr>
 	<tr>
-  		<td valign="top"><span class="FormLabel">Description:</span></td>
+  		<td valign="top"><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].descLabel#</span></td>
    	 	<td><textarea cols="30" rows="4" name="description" class="FormTextArea"></textarea></td>
 	</tr>
 	<tr>
 		<td colspan="2" align="center">
-			<input type="Submit" name="newObject" value="Upload File" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';">
-			<input type="Button" name="Cancel" value="Cancel" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';" onclick="toggleForm('fileform','none')"; >
+			<input type="Submit" name="newObject" value="#application.adminBundle[session.dmProfile.locale].uploadFile#" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';">
+			<input type="Button" name="Cancel" value="#application.adminBundle[session.dmProfile.locale].cancel#" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';" onclick="toggleForm('fileform','none')"; >
 		</td>
 	</tr>
 </table>
@@ -448,8 +451,8 @@ function removeUploadBtn()
 		<SCRIPT LANGUAGE="JavaScript">
 		<!--//
 		objForm2 = new qForm("fileForm");
-		objForm2.filetitle.validateNotNull("Please enter a title");
-		objForm2.filename.validateNotNull("Please enter a file");
+		objForm2.filetitle.validateNotNull("#application.adminBundle[session.dmProfile.locale].pleaseEnterTitle#");
+		objForm2.filename.validateNotNull("#application.adminBundle[session.dmProfile.locale].pleaseEnterTitle#");
 			//-->
 		</SCRIPT>
 	</form>	

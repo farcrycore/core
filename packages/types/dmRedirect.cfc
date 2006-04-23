@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/dmRedirect.cfc,v 1.1 2003/07/29 05:53:57 daniela Exp $
-$Author: daniela $
-$Date: 2003/07/29 05:53:57 $
-$Name: b201 $
-$Revision: 1.1 $
+$Header: /cvs/farcry/farcry_core/packages/types/dmRedirect.cfc,v 1.2 2004/09/08 08:04:33 geoff Exp $
+$Author: geoff $
+$Date: 2004/09/08 08:04:33 $
+$Name: milestone_2-3-2 $
+$Revision: 1.2 $
 
 || DESCRIPTION || 
 $Description: dmRedirect Type $
@@ -18,7 +18,7 @@ $Developer: Daniela Milton (daniela@daemon.com.au) $
 
 --->
 
-<cfcomponent extends="types" displayname="dmRedirect handler" hint="Holds redirect url information for user to resolve a refered link." bSchedule="1">
+<cfcomponent extends="types" displayname="dmRedirect handler" hint="Holds redirect url information for user to resolve a refered link.">
 
 <!------------------------------------------------------------------------
 	type properties

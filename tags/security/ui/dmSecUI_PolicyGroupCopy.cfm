@@ -1,4 +1,6 @@
 <cfsetting enablecfoutputonly="Yes">
+<cfprocessingDirective pageencoding="utf-8">
+
 <cfinclude template="/farcry/farcry_core/admin/includes/cfFunctionWrappers.cfm">
 <cfscript>
 	oAuthorisation = request.dmsec.oAuthorisation;
@@ -8,13 +10,13 @@
 <cfif isDefined("form.submit")>
 	<cfscript>
 		//create the new Policy Group
-		writeoutput("Creating new Policy Group...");
+		writeoutput("#application.adminBundle[session.dmProfile.locale].creatingNewPolicyGroup#");
 		flush();
 		typeName = "PolicyGroup";
 		stResult=oAuthorisation.createPolicyGroup(policyGroupName=form.policyGroupName,policyGroupNotes=form.policyGroupNotes);
 		if (stResult.bSuccess){
-			writeoutput("<span style='color:green;'>done</span><br>");
-			writeoutput("Copying Permissions Barnacle from source Policy Group...");
+			writeoutput("#application.adminBundle[session.dmProfile.locale].doneInGreen#<br>");
+			writeoutput("#application.adminBundle[session.dmProfile.locale].copyingPermissionBarnacle#");
 			flush();
 			stObj = oAuthorisation.getPolicyGroup(policyGroupName=form.PolicyGroupName);
 			//copy the permissions from the source Policy Group into the new Policy Group
@@ -23,21 +25,21 @@
 			for(iPermissionId in stPolicyGroupPermissions){
 				oAuthorisation.createPermissionBarnacle(PolicyGroupId=stObj.policyGroupId,PermissionId=iPermissionId,Reference=typeName,status=stPolicyGroupPermissions[iPermissionId].A);				
 			}
-			writeoutput("<span style='color:green;'>done</span><br>");
+			writeoutput("#application.adminBundle[session.dmProfile.locale].doneInGreen#br>");
 			flush();
-			writeoutput("Updating Permissions Cache...");
+			writeoutput("#application.adminBundle[session.dmProfile.locale].updatingPermissionsCache#");
 			oAuthorisation.updateObjectPermissionCache(reference=typeName);
 			flush();
-			writeoutput("<span style='color:green;'>done</span><br>");
+			writeoutput("#application.adminBundle[session.dmProfile.locale].doneInGreen#");
 			flush();
 		}
 		else{
-			writeoutput("<span style='color:red;'>Error:</span> " & stResult.message & "<p></p>");
+			writeoutput("#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].groupPolicyError,'#stResult.message#')#<p></p>");
 			flush();
 		}
 	</cfscript>
 	<cfif stResult.bSuccess>
-		<cfoutput>Rebuilding Permissions cache file...</cfoutput><cfflush>
+		<cfoutput>#application.adminBundle[session.dmProfile.locale].rebuildingPermissionsCache#</cfoutput><cfflush>
 		<cflock timeout="45" throwontimeout="No" type="READONLY" scope="SERVER">
 			<cfif isDefined("server.dmsec.#application.applicationname#.dmSecSCache")>
 				<cfwddx action="CFML2WDDX" input="#server.dmsec[application.applicationname].dmSecSCache#" output="temp" usetimezoneinfo="No">
@@ -47,7 +49,7 @@
 		</cflock>
 		<cffile action="WRITE" file="#application.path.project#/permissionCache.wddx" output="#temp#">
 		<cfoutput><span style="color:green;">done</span><br></cfoutput>
-		<cfoutput>** Complete! **<p></p></cfoutput><cfflush>
+		<cfoutput>#application.adminBundle[session.dmProfile.locale].reallyComplete#<p></p></cfoutput><cfflush>
 	</cfif>
 </cfif>
 
@@ -59,7 +61,7 @@
 
 <!--- <cfdump var="#stObjectPermissions#"> --->
 
-<cfoutput><span class="formtitle">COPY POLICY GROUP</span><p></p></cfoutput>
+<cfoutput><span class="formtitle">#application.adminBundle[session.dmProfile.locale].copyPolicyGroupUC#</span><p></p></cfoutput>
 <cfoutput>
 <form action="" method="POST">
 	<table class="formtable">
@@ -68,7 +70,7 @@
 		</tr>
 		<tr>
         	<td>
-				<span class="formlabel">Source Policy Group:&nbsp;</span>
+				<span class="formlabel">#application.adminBundle[session.dmProfile.locale].sourcePolicyGroupLabel#&nbsp;</span>
 				<select name="selectGroup"></cfoutput>
 				<cfloop index="PolicyGroupId" list="#lPolicyGroupIds#">
 					<cfscript>
@@ -84,7 +86,7 @@
 		</tr>
 		<tr>
 			<td>
-				<span class="formlabel">New Policy Group Name:</span><br>
+				<span class="formlabel">#application.adminBundle[session.dmProfile.locale].newPolicyGroupNameLabel#</span><br>
 				<input type="text" size="32" maxsize="32" name="PolicyGroupName" value="">	
 			</td>
 		</tr>
@@ -93,7 +95,7 @@
 		</tr>
 		<tr>
 			<td>
-				<span class="formlabel">New Policy Group Notes:</span><br>
+				<span class="formlabel">#application.adminBundle[session.dmProfile.locale].newPolicyGroupNotesLabel#</span><br>
 				<Textarea name="PolicyGroupNotes" cols="40" rows="4"></textarea>
 			</td>
 		</tr>
@@ -102,7 +104,7 @@
 		</tr>
 		<tr>
 			<td>
-				<input type="submit" name="Submit" value="Copy Policy Group"><br>
+				<input type="submit" name="Submit" value="#application.adminBundle[session.dmProfile.locale].copyPolicyGroupLC#"><br>
 			</td>
 		</tr>
 		<tr>

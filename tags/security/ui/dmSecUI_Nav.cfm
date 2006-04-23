@@ -1,4 +1,7 @@
 <cfsetting enablecfoutputonly="Yes">
+
+<cfprocessingDirective pageencoding="utf-8">
+
 <!--- 
 || BEGIN FUSEDOC ||
 
@@ -7,11 +10,11 @@ Daemon Pty Limited 1995-2001
 http://www.daemon.com.au/
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/security/ui/dmSecUI_Nav.cfm,v 1.1 2003/04/08 08:52:20 paul Exp $
-$Author: paul $
-$Date: 2003/04/08 08:52:20 $
-$Name: b201 $
-$Revision: 1.1 $
+$Header: /cvs/farcry/farcry_core/tags/security/ui/dmSecUI_Nav.cfm,v 1.2 2004/07/15 02:03:27 brendan Exp $
+$Author: brendan $
+$Date: 2004/07/15 02:03:27 $
+$Name: milestone_2-3-2 $
+$Revision: 1.2 $
 
 || DESCRIPTION || 
 
@@ -26,6 +29,9 @@ Matt Dawson (mad@daemon.com.au)
 
 || HISTORY ||
 $Log: dmSecUI_Nav.cfm,v $
+Revision 1.2  2004/07/15 02:03:27  brendan
+i18n updates
+
 Revision 1.1  2003/04/08 08:52:20  paul
 CFC security updates
 
@@ -54,37 +60,38 @@ no message
 <cfoutput>
 <nobr>
 <br>
-<b>Security Management</b><br>
-<i>Setup</i><br>
-<!--- Test the setup --->
-<a href="?tag=TestSecuritySetup">Test Security Setup</a><br>
+<b>#application.adminBundle[session.dmProfile.locale].securityManagement#</b><br>
+<i>#application.adminBundle[session.dmProfile.locale].setup#</i><br>
 <br>
-<i>Users</i><br>
+<!--- Test the setup --->
+<a href="?tag=TestSecuritySetup">#application.adminBundle[session.dmProfile.locale].testSecuritySetup#</a><br>
+<br>
+<i>#application.adminBundle[session.dmProfile.locale].users#</i><br>
 <!--- find a user --->
-<a href="?tag=UserSearch">Search for User</a><br>
+<a href="?tag=UserSearch"><br>#application.adminBundle[session.dmProfile.locale].searchForUser#</a><br>
 <!--- Create a user --->
-<a href="?tag=UserCreateEdit">Create a User</a><br>
+<a href="?tag=UserCreateEdit">#application.adminBundle[session.dmProfile.locale].createUser#</a><br>
 <br>
-<i>Groups</i><br>
-<a href="?tag=GroupSearch">Search for Group</a><br>
+<i>#application.adminBundle[session.dmProfile.locale].groups#</i><br>
+<a href="?tag=GroupSearch">#application.adminBundle[session.dmProfile.locale].searchForGroup#</a><br>
 <!--- Modify groups --->
-<a href="?tag=GroupCreateEdit">Create a Group</a><br>
+<a href="?tag=GroupCreateEdit">#application.adminBundle[session.dmProfile.locale].createAGroup#</a><br>
 <br>
-<b>Policy Management</b><br>
-<i>Setup</i><br>
+<b>#application.adminBundle[session.dmProfile.locale].policyManagement#</b><br>
+<i>#application.adminBundle[session.dmProfile.locale].Setup#</i><br>
 <!--- Test the setup --->
-<a href="?tag=TestPolicySetup">Test Policy Setup</a><br>
+<a href="?tag=TestPolicySetup">#application.adminBundle[session.dmProfile.locale].testPolicySetup#</a><br>
 <br>
-<i>Permission Groups</i><br>
+<i>#application.adminBundle[session.dmProfile.locale].permissionGroups#</i><br>
 <!--- Modify groups --->
-<a href="?tag=PolicyGroupSearch">Policy Groups</a><br>
-<a href="?tag=PolicyGroupCreateEdit">Create a Policy Group</a><br>
-<a href="?tag=PolicyGroupMappingSearch">Show Policy Group Mappings</a><br>
-<a href="?tag=PolicyGroupMap">Map Policy Group</a><br>
+<a href="?tag=PolicyGroupSearch">#application.adminBundle[session.dmProfile.locale].policyGroups#</a><br>
+<a href="?tag=PolicyGroupCreateEdit">#application.adminBundle[session.dmProfile.locale].createPolicyGroup#</a><br>
+<a href="?tag=PolicyGroupMappingSearch">#application.adminBundle[session.dmProfile.locale].showPolicyGroupMappings#</a><br>
+<a href="?tag=PolicyGroupMap">#application.adminBundle[session.dmProfile.locale].mapPolicyGroup#</a><br>
 <br>
-<i>Permissions</i><br>
-<a href="?tag=PermissionSearch">Permissions</a><br>
-<a href="?tag=PermissionCreateEdit">Create a Permission</a><br>
+<i>#application.adminBundle[session.dmProfile.locale].permissions#</i><br>
+<a href="?tag=PermissionSearch">#application.adminBundle[session.dmProfile.locale].permissions#</a><br>
+<a href="?tag=PermissionCreateEdit">#application.adminBundle[session.dmProfile.locale].createPermission#</a><br>
 <br>
 </nobr>
 </cfoutput>

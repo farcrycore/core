@@ -1,5 +1,7 @@
 <!--- check if underlying draft version, need to get details of approved object --->
 
+<cfprocessingDirective pageencoding="utf-8">
+
 <cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
 <cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
 <cfimport taglib="/farcry/fourq/tags/" prefix="q4">
@@ -26,7 +28,7 @@
 		iDeveloperPermission = oAuthorisation.checkPermission(reference="policyGroup",permissionName="developer");
 	</cfscript>
 			
-	<div class="FormTitle"><Cfoutput>#stobj.title#</Cfoutput></div>
+	<div class="FormTitle"><Cfoutput>#stobj.label#</Cfoutput></div>
 	<!--- ### check if underlying draft object ### --->
 	<cfif structKeyExists(stObj,"versionID") and structKeyExists(stObj,"status") and stobj.status eq "approved">
 		<!--- check for draft --->
@@ -41,24 +43,24 @@
 			<!--- main table --->
 			<table cellpadding="5" cellspacing="0" border="1" style="margin-bottom:30px" width="95%" align="center">
 			<tr class="dataheader">
-				<td>Overview - Draft Object</td>
-				<td>What would you like to do now?</td>
+				<td><cfoutput>#application.adminBundle[session.dmProfile.locale].draftObjOverview#</cfoutput></td>
+				<td><cfoutput>#application.adminBundle[session.dmProfile.locale].whatNow#</cfoutput></td>
 			</tr>
 			<tr class="overview<cfoutput>#stobjDraft.status#</cfoutput>">
 				<td width="50%" valign="top">
 					<!--- column 1 - overview --->
 					<table cellpadding="5" cellspacing="0" border="0">
 					<tr>
-						<td width="100"><strong>Object Title:</strong></td>
+						<td width="100"><strong><cfoutput>#application.adminBundle[session.dmProfile.locale].objTitleLabel#</cfoutput></strong></td>
 						<td>
-							<cfif stobjDraft.title neq "">
-								<Cfoutput>#stobjDraft.title#</Cfoutput>
+							<cfif stobjDraft.label neq "">
+								<Cfoutput>#stobjDraft.label#</Cfoutput>
 							<cfelse>
-								<i>undefined</i>
+								<i><cfoutput>#application.adminBundle[session.dmProfile.locale].undefined#</cfoutput></i>
 							</cfif></td>
 					</tr>
 					<tr>
-						<td><strong>Object Type:</strong></td>
+						<td><strong><cfoutput>#application.adminBundle[session.dmProfile.locale].objTypeLabel#</cfoutput></strong></td>
 						<td>
 							<cfif structKeyExists(application.types[stobjDraft.typename],"displayname")>
 								<Cfoutput>#application.types[stobjDraft.typename].displayname#</Cfoutput>
@@ -68,71 +70,71 @@
 						</td>
 					</tr>
 					<tr>
-						<td><strong>Created by:</strong></td>
+						<td><strong><cfoutput>#application.adminBundle[session.dmProfile.locale].createdByLabel#</cfoutput></strong></td>
 						<td><Cfoutput>#stobjDraft.createdby#</Cfoutput></td>
 					</tr>
 					<tr>
-						<td><strong>Date Created:</strong></td>
-						<td><Cfoutput>#dateformat(stobjDraft.datetimecreated)#</Cfoutput></td>
+						<td><strong><cfoutput>#application.adminBundle[session.dmProfile.locale].dateCreatedLabel#</cfoutput></strong></td>
+						<td><Cfoutput>#application.thisCalendar.i18nDateFormat(stobjDraft.datetimecreated,session.dmProfile.locale,application.shortF)#</Cfoutput></td>
 					</tr>
 					<tr>
-						<td><strong>Locking:</strong></td>
+						<td><strong><cfoutput>#application.adminBundle[session.dmProfile.locale].lockingLabel#</cfoutput></strong></td>
 						<td>
 							<cfif stobjDraft.locked and stobjDraft.lockedby eq "#session.dmSec.authentication.userlogin#_#session.dmSec.authentication.userDirectory#">
-								<!--- locked by current user --->				
-								<cfoutput><span style="color:red">Locked (#dateFormat(stobjDraft.dateTimeLastUpdated,"dd-mmm-yy")# #timeformat(stobjDraft.dateTimeLastUpdated, "hh:mm")#)</span> <a href="navajo/unlock.cfm?objectid=#stobjDraft.objectid#&typename=#stobjDraft.typename#">[UnLock]</a></cfoutput>
-							
+								<!--- locked by current user --->
+								<cfset tDT=application.thisCalendar.i18nDateTimeFormat(stobjDraft.dateTimeLastUpdated,session.dmProfile.locale,application.mediumF)>												
+								<cfoutput><span style="color:red">#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].locked,tDT)#</span> <a href="navajo/unlock.cfm?objectid=#stobjDraft.objectid#&typename=#stobjDraft.typename#">[#application.adminBundle[session.dmProfile.locale].unLock#]</a></cfoutput>
 							<cfelseif stobjDraft.locked>
 								<!--- locked by another user --->
-								<cfoutput><span style="color:red">Locked (#dateFormat(stobjDraft.dateTimeLastUpdated,"dd-mmm-yy")# #timeformat(stobjDraft.dateTimeLastUpdated, "hh:mm")#)</span> by #stobjDraft.lockedby#</cfoutput>
+								<cfset subS=listToArray('#application.thisCalendar.i18nDateFormat(stobjDraft.dateTimeLastUpdated,session.dmProfile.locale,application.mediumF)#,#stobjDraft.lockedby#')>
+								<cfoutput>#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].lockedBy,subS)#</cfoutput>
 								<!--- check if current user is a sysadmin so they can unlock --->
-								
 								
 								<cfif iDeveloperPermission eq 1>
 									<!--- show link to unlock --->
-									 <cfoutput><a href="navajo/unlock.cfm?objectid=#stobjDraft.objectid#&typename=#stobj.typename#">[UnLock]</a></cfoutput>
+									 <cfoutput><a href="navajo/unlock.cfm?objectid=#stobjDraft.objectid#&typename=#stobj.typename#">[#application.adminBundle[session.dmProfile.locale].unlockUC#]</a></cfoutput>
 								</cfif>
 							
 							<cfelse>
 								<!--- no locking --->
-								<cfoutput>Unlocked</cfoutput>
+								<cfoutput>#application.adminBundle[session.dmProfile.locale].unlocked#</cfoutput>
 							</cfif>
 						</td>
 					</tr>
 					<cfif IsDefined("stobjDraft.displaymethod")>
 					<tr>
-						<td><strong>Last Updated:</strong></td>
-						<td><Cfoutput>#dateformat(stobjDraft.datetimelastupdated)#</Cfoutput></td>
+						<td><strong><cfoutput>#application.adminBundle[session.dmProfile.locale].lastUpdatedLabel#</cfoutput></strong></td>
+						<td><Cfoutput>#application.thisCalendar.i18nDateFormat(stobjDraft.datetimelastupdated,session.dmProfile.locale,application.mediumF)#</Cfoutput></td>
 					</tr>
 					</cfif>
 					<cfif IsDefined("stobjDraft.displaymethod")>
 					<tr>
-						<td><strong>Last Updated By:</strong></td>
+						<td><strong><cfoutput>#application.adminBundle[session.dmProfile.locale].lastUpdatedByLabel#</cfoutput></strong></td>
 						<td><Cfoutput>#stobjDraft.lastupdatedby#</Cfoutput></td>
 					</tr>
 					</cfif>
 					<cfif IsDefined("stobjDraft.displaymethod")>
 					<tr>
-						<td><strong>Current Status:</strong></td>
+						<td><strong><cfoutput>#application.adminBundle[session.dmProfile.locale].currentStatusLabel#</cfoutput></strong></td>
 						<td><Cfoutput>#stobjDraft.status#</Cfoutput></td>
 					</tr>
 					</cfif>
 					<cfif IsDefined("stobjDraft.displaymethod")>
 					
 					<tr>
-						<td><strong>Template:</strong></td>
+						<td><strong><cfoutput>#application.adminBundle[session.dmProfile.locale].templateLabel#</cfoutput></strong></td>
 						<td><cfoutput>#stobjDraft.displaymethod#</cfoutput></td>
 					</tr>
 					</cfif>
 					<cfif IsDefined("stobjDraft.teaser") and stobj.teaser neq "">
 					<tr>
-						<td valign="top"><strong>Teaser:</strong></td>
+						<td valign="top"><strong><cfoutput>#application.adminBundle[session.dmProfile.locale].teaserLabel#</cfoutput></strong></td>
 						<td><cfoutput>#stobjDraft.teaser#</Cfoutput></td>
 					</tr>
 					</cfif>
 					<cfif IsDefined("stobjDraft.thumbnailimagepath") and stobjDraft.thumbnailimagepath neq "">
 					<tr>
-						<td valign="top"><strong>Thumbnail:</strong></td>
+						<td valign="top"><strong><cfoutput>#application.adminBundle[session.dmProfile.locale].thumbnailLabel#</cfoutput></strong></td>
 						<td><cfoutput><img src="#application.url.webroot#/images/#stobjDraft.thumbnail#" border="0"></Cfoutput></td>
 					</tr>
 					</cfif>
@@ -163,7 +165,7 @@
 								
 							<cfoutput>
 							
-							<strong>Edit/Change Status</strong><Br>
+							<strong>#application.adminBundle[session.dmProfile.locale].changeStatus#</strong><Br>
 							<!--- work out different options depending on object status --->
 							<cfscript>
 								iEdit = oAuthorisation.checkInheritedPermission(objectid="#parentid#",permissionName="edit");
@@ -183,8 +185,7 @@
 										<script>
 											function confirmRestore(navid,draftObjectID)
 											{
-												confirmmsg = "This will restore the current live objects data to this draft. The draft content will be replaced and any changes you have made lost. ";
-												confirmmsg = confirmmsg + "\nAre you sure you wish to do this?";
+												confirmmsg = "#application.adminBundle[session.dmProfile.locale].confirmRestoreLiveObjToDraft#";
 												if(confirm(confirmmsg))
 												{
 													strURL = "#application.url.farcry#/navajo/restoreDraft.cfm";
@@ -209,18 +210,18 @@
 											}
 											
 										</script>
-										<span class="frameMenuBullet">&raquo;</span> <a href="edittabEdit.cfm?objectid=#stobjDraft.objectid#" onClick="synchTab('editFrame','activesubtab','subtab','siteEditEdit');synchTitle('Edit')">Edit this object</a><BR>
-										<span class="frameMenuBullet">&raquo;</span> <a onclick="confirmRestore('#parentid#','#stobjDraft.objectid#');" href="javascript:void(0);">Restore live object over this draft</a><BR>																									
+										<span class="frameMenuBullet">&raquo;</span> <a href="edittabEdit.cfm?objectid=#stobjDraft.objectid#" onClick="synchTab('editFrame','activesubtab','subtab','siteEditEdit');synchTitle('Edit')">#application.adminBundle[session.dmProfile.locale].editObj#</a><BR>
+										<span class="frameMenuBullet">&raquo;</span> <a onclick="confirmRestore('#parentid#','#stobjDraft.objectid#');" href="javascript:void(0);">#application.adminBundle[session.dmProfile.locale].restoreLiveObj#</a><BR>																									
 									</Cfif>
 									
 									<!--- Check user can request approval --->
 									<cfif iRequest eq 1>
-										<cfoutput><span class="frameMenuBullet">&raquo;</span> <a href="#application.url.farcry#/navajo/approve.cfm?objectid=#stobjDraft.objectid#&status=requestapproval" class="frameMenuItem">Request Approval</a><br></cfoutput>
+										<cfoutput><span class="frameMenuBullet">&raquo;</span> <a href="#application.url.farcry#/navajo/approve.cfm?objectid=#stobjDraft.objectid#&status=requestapproval" class="frameMenuItem">#application.adminBundle[session.dmProfile.locale].requestApproval#</a><br></cfoutput>
 									</cfif>
 									
 									<!--- check user can approve object --->
 									<cfif iApprove eq 1 OR iApproveOwn EQ 1>
-										<cfoutput><span class="frameMenuBullet">&raquo;</span> <a href="#application.url.farcry#/navajo/approve.cfm?objectid=#stobjDraft.objectid#&status=approved" class="frameMenuItem">Send object Live</a><br></cfoutput>
+										<cfoutput><span class="frameMenuBullet">&raquo;</span> <a href="#application.url.farcry#/navajo/approve.cfm?objectid=#stobjDraft.objectid#&status=approved" class="frameMenuItem">#application.adminBundle[session.dmProfile.locale].sendObjLive#</a><br></cfoutput>
 									</cfif>
 								</cfcase>
 								
@@ -228,23 +229,23 @@
 									<!--- check user can approve object --->
 								
 									<cfif iApprove eq 1>
-										<cfoutput><span class="frameMenuBullet">&raquo;</span> <a href="#application.url.farcry#/navajo/approve.cfm?objectid=#stobjDraft.objectid#&status=approved" class="frameMenuItem">Send object Live</a><br></cfoutput>
+										<cfoutput><span class="frameMenuBullet">&raquo;</span> <a href="#application.url.farcry#/navajo/approve.cfm?objectid=#stobjDraft.objectid#&status=approved" class="frameMenuItem">#application.adminBundle[session.dmProfile.locale].sendObjLive#</a><br></cfoutput>
 										<!--- send back to draft --->
-										<cfoutput><span class="frameMenuBullet">&raquo;</span> <a href="#application.url.farcry#/navajo/approve.cfm?objectid=#stobjDraft.objectid#&status=draft" class="frameMenuItem">Send object back to draft</a><br></cfoutput>
+										<cfoutput><span class="frameMenuBullet">&raquo;</span> <a href="#application.url.farcry#/navajo/approve.cfm?objectid=#stobjDraft.objectid#&status=draft" class="frameMenuItem">#application.adminBundle[session.dmProfile.locale].sendBackToDraft#</a><br></cfoutput>
 									</cfif>
 								</cfcase>
 															
 							</cfswitch>
 							
-							<br><strong>General</strong><Br>
+							<br><strong>#application.adminBundle[session.dmProfile.locale].general#</strong><Br>
 							<!--- preview object --->
-							<cfoutput><span class="frameMenuBullet">&raquo;</span> <a href="#application.url.webroot#/index.cfm?objectid=#stobjDraft.objectid#&flushcache=1&showdraft=1" class="frameMenuItem" target="_blank">Preview</a><br></cfoutput>
+							<cfoutput><span class="frameMenuBullet">&raquo;</span> <a href="#application.url.webroot#/index.cfm?objectid=#stobjDraft.objectid#&flushcache=1&showdraft=1" class="frameMenuItem" target="_blank">#application.adminBundle[session.dmProfile.locale].preview#</a><br></cfoutput>
 												
 							<!--- ### general options not type related ### --->
 							<!--- add comments --->
-							<span class="frameMenuBullet">&raquo;</span> <a href="navajo/commentOnContent.cfm?objectid=#stobjDraft.objectid#">Add Comments</a><BR>
+							<span class="frameMenuBullet">&raquo;</span> <a href="navajo/commentOnContent.cfm?objectid=#stobjDraft.objectid#">#application.adminBundle[session.dmProfile.locale].addComments#</a><BR>
 	                        <!--- view comments --->
-	                        <span class="frameMenuBullet">&raquo;</span> <a href="##" onClick="commWin=window.open('#application.url.farcry#/navajo/viewComments.cfm?objectid=#stobjDraft.objectid#', 'commWin', 'width=400,height=450');commWin.focus();">View Comments</a><BR>
+	                        <span class="frameMenuBullet">&raquo;</span> <a href="##" onClick="commWin=window.open('#application.url.farcry#/navajo/viewComments.cfm?objectid=#stobjDraft.objectid#', 'commWin', 'width=400,height=450');commWin.focus();">#application.adminBundle[session.dmProfile.locale].viewComments#</a><BR>
 							
 							<!--- check user can dump --->
 							<cfscript>
@@ -253,13 +254,13 @@
 							</cfscript>
 			
 							<cfif iObjectDumpTab eq 1>
-								<span class="frameMenuBullet">&raquo;</span> <a href="edittabDump.cfm?objectid=#stobjDraft.objectid#">Dump</a><BR>
+								<span class="frameMenuBullet">&raquo;</span> <a href="edittabDump.cfm?objectid=#stobjDraft.objectid#">#application.adminBundle[session.dmProfile.locale].dump#</a><BR>
 							</cfif>
 							
 							<!--- check user can delete --->
 			
 							<cfif iDelete eq 1>
-								<span class="frameMenuBullet">&raquo;</span> <a href="edittabEdit.cfm?objectid=#stobj.objectid#&deleteDraftObjectID=#stobjDraft.ObjectID#" onClick="return confirm('Are you sure you wish to delete this object?');">Delete this draft version</a><BR>
+								<span class="frameMenuBullet">&raquo;</span> <a href="edittabEdit.cfm?objectid=#stobj.objectid#&deleteDraftObjectID=#stobjDraft.ObjectID#" onClick="return confirm('#application.adminBundle[session.dmProfile.locale].confirmDeleteObj#');">#application.adminBundle[session.dmProfile.locale].deleteDraftVersion#</a><BR>
 							</cfif>
 							</cfoutput>
 						</td>
@@ -274,24 +275,28 @@
 	<!--- main table --->
 	<table cellpadding="5" cellspacing="0" border="1" style="margin-top:10px" width="95%" align="center">
 	<tr class="dataheader">
-		<td>Overview</td>
-		<td>What would you like to do now?</td>
+	<cfoutput>	
+		<td>#application.adminBundle[session.dmProfile.locale].overview#</td>
+		<td>#application.adminBundle[session.dmProfile.locale].whatNow#</td>
+	</cfoutput>		
 	</tr>
-	<tr class="overview<cfif isdefined("stObj.status")><cfoutput>#stobj.status#</cfoutput><cfelse>Approved</cfif>">
+	<cfoutput>
+	<tr class="overview<cfif isdefined("stObj.status")>#stobj.status#<cfelse>approved</cfif>">
+	</cfoutput>
 		<td width="50%" valign="top">
 			<!--- column 1 - overview --->
 			<table cellpadding="5" cellspacing="0" border="0">
 			<tr>
-				<td width="100"><strong>Object Title:</strong></td>
+				<td width="100"><strong><cfoutput>#application.adminBundle[session.dmProfile.locale].objTitleLabel#</cfoutput></strong></td>
 				<td>
-					<cfif stobj.title neq "">
-						<Cfoutput>#stobj.title#</Cfoutput>
+					<cfif stobj.label neq "">
+						<Cfoutput>#stobj.label#</Cfoutput>
 					<cfelse>
-						<i>undefined</i>
+						<i><cfoutput>#application.adminBundle[session.dmProfile.locale].undefined#</cfoutput></i>
 					</cfif></td>
 			</tr>
 			<tr>
-				<td><strong>Object Type:</strong></td>
+				<td><strong><cfoutput>#application.adminBundle[session.dmProfile.locale].objTypeLabel#</cfoutput></strong></td>
 				<td>
 					<cfif structKeyExists(application.types[stobj.typename],"displayname")>
 						<Cfoutput>#application.types[stobj.typename].displayname#</Cfoutput>
@@ -301,73 +306,86 @@
 				</td>
 			</tr>
 			<tr>
-				<td><strong>Created by:</strong></td>
-				<td><Cfoutput>#stobj.createdby#</Cfoutput></tdC>
+				<td><strong><cfoutput>#application.adminBundle[session.dmProfile.locale].createdByLabel#</cfoutput></strong></td>
+				<td><Cfoutput>#stobj.createdby#</Cfoutput></td>
 			</tr>
 			<tr>
-				<td><strong>Date Created:</strong></td>
-				<td><Cfoutput>#dateformat(stobj.datetimecreated)#</Cfoutput></td>
+				<td><strong><cfoutput>#application.adminBundle[session.dmProfile.locale].dateCreatedLabel#</cfoutput></strong></td>
+				<td><Cfoutput>#application.thisCalendar.i18nDateFormat(stobj.datetimecreated,session.dmProfile.locale,application.mediumF)#</Cfoutput></td>
 			</tr>
 			<tr>
-				<td><strong>Locking:</strong></td>
+				<td><cfoutput><strong>#application.adminBundle[session.dmProfile.locale].lockingLabel#</strong></cfoutput></td>
 				<td>
 					<cfif stObj.locked and stObj.lockedby eq "#session.dmSec.authentication.userlogin#_#session.dmSec.authentication.userDirectory#">
-						<!--- locked by current user --->				
-						<cfoutput><span style="color:red">Locked (#dateFormat(stObj.dateTimeLastUpdated,"dd-mmm-yy")# #timeformat(stObj.dateTimeLastUpdated, "hh:mm")#)</span> <a href="navajo/unlock.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#">[UnLock]</a></cfoutput>
+						<!--- locked by current user --->
+						<cfset tDT=application.thisCalendar.i18nDateFormat(stObj.dateTimeLastUpdated,session.dmProfile.locale,application.mediumF)>				
+						<cfoutput><span style="color:red">#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].locked,tDT)#</span> <a href="navajo/unlock.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#">[#application.adminBundle[session.dmProfile.locale].unLock#]</a></cfoutput>
 					
 					<cfelseif stObj.locked>
 						<!--- locked by another user --->
-						<cfoutput><span style="color:red">Locked (#dateFormat(stObj.dateTimeLastUpdated,"dd-mmm-yy")# #timeformat(stObj.dateTimeLastUpdated, "hh:mm")#)</span> by #stobj.lockedby#</cfoutput>
+						<cfset subS=listToArray('#application.thisCalendar.i18nDateFormat(stObj.dateTimeLastUpdated,session.dmProfile.locale,application.mediumF)#,#stobj.lockedby#')>									
+						<cfoutput>#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].lockedBy,subS)#</cfoutput>
 						<cfscript>
 							iDeveloperPermission = oAuthorisation.checkPermission(reference="PolicyGroup",permissionName="Developer");
 						</cfscript>		
 						<!--- check if current user is a sysadmin so they can unlock --->
 						<cfif iDeveloperPermission eq 1>
 							<!--- show link to unlock --->
-							 <cfoutput><a href="navajo/unlock.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#">[UnLock]</a></cfoutput>
+							 <cfoutput><a href="navajo/unlock.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#">[#application.adminBundle[session.dmProfile.locale].unLock#]</a></cfoutput>
 						</cfif>
 					
 					<cfelse>
 						<!--- no locking --->
-						<cfoutput>Unlocked</cfoutput>
+						<cfoutput>#application.adminBundle[session.dmProfile.locale].Unlocked#</cfoutput>
 					</cfif>
 				</td>
 			</tr>
 			<cfif IsDefined("stobj.datetimelastupdated")>
 			<tr>
-				<td><strong>Last Updated:</strong></td>
-				<td><Cfoutput>#dateformat(stobj.datetimelastupdated)#</Cfoutput></td>
+			<cfoutput>
+				<td><strong>#application.adminBundle[session.dmProfile.locale].lastUpdatedLabel#</strong></td>
+				<td>#application.thisCalendar.i18nDateFormat(stobj.datetimelastupdated,session.dmProfile.locale,application.mediumF)#</td>
+			</cfoutput>	
 			</tr>
 			</cfif>
 			<cfif IsDefined("stobj.lastupdatedby")>
 			<tr>
-				<td><strong>Last Updated By:</strong></td>
-				<td><Cfoutput>#stobj.lastupdatedby#</Cfoutput></td>
+			<cfoutput>
+				<td><strong>#application.adminBundle[session.dmProfile.locale].lastUpdatedByLabel#</strong></td>
+				<td>#stobj.lastupdatedby#</td>
+			</cfoutput>	
 			</tr>
 			</cfif>
 			<cfif IsDefined("stobj.status")>
 			<tr>
-				<td><strong>Current Status:</strong></td>
-				<td><Cfoutput>#stobj.status#</Cfoutput></td>
+			<cfoutput>
+				<td><strong>#application.adminBundle[session.dmProfile.locale].currentStatusLabel#</strong></td>
+				<td>#stobj.status#</td>
+			</cfoutput>	
 			</tr>
 			</cfif>
 			<cfif IsDefined("stobj.displaymethod")>
-			
 			<tr>
-				<td><strong>Template:</strong></td>
-				<td><cfoutput>#stobj.displaymethod#</cfoutput></td>
+			<cfoutput>
+				<td><strong>#application.adminBundle[session.dmProfile.locale].templateLabel#</strong></td>
+				<td>#stobj.displaymethod#</td>
+			</cfoutput>	
 			</tr>
 			</cfif>
 			<cfif IsDefined("stobj.teaser") and stobj.teaser neq "">
 			<tr>
-				<td valign="top"><strong>Teaser:</strong></td>
-				<td><cfoutput>#stobj.teaser#</Cfoutput></td>
+			<cfoutput>
+				<td valign="top"><strong>#application.adminBundle[session.dmProfile.locale].teaserLabel#</strong></td>
+				<td>#stobj.teaser#</td>
+			</cfoutput>	
 			</tr>
 			</cfif>
 			<cfif IsDefined("stobj.thumbnailimagepath") and stobj.thumbnailimagepath neq "">
 			<tr>
-				<td valign="top"><strong>Thumbnail:</strong></td>
-				<td><cfoutput><img src="#application.url.webroot#/images/#stobj.thumbnail#" border="0"></Cfoutput></td>
+			<cfoutput>
+				<td valign="top"><strong>#application.adminBundle[session.dmProfile.locale].thumbnailLabel#</strong></td>
+				<td><img src="#application.url.webroot#/images/#stobj.thumbnail#" border="0"></td>
+			</cfoutput>	
 			</tr>
 			</cfif>
 			
@@ -384,13 +402,13 @@
 			<cfif stObj.typename IS "dmNavigation" AND iDeveloperPermission eq 1 >
 			<tr>
 				<td>
-					<strong>Nav Alias</strong>
+					<strong><cfoutput>#application.adminBundle[session.dmProfile.locale].navAlias#</cfoutput></strong>
 				</td>
 				<td>
 					<cfif len(stObj.LNAVIDALIAS)>
 						<cfoutput>#stObj.LNAVIDALIAS#</cfoutput>
 					<cfelse>
-						None Specified
+						<cfoutput>#application.adminBundle[session.dmProfile.locale].noneSpecified#</cfoutput>
 					</cfif>
 				</td>
 			</tr>
@@ -415,7 +433,11 @@
 							overviewHTML = renderOverview(stObj.objectid);
 						</cfscript>
 						<cfoutput>#overviewHTML#</cfoutput>
-						<cfcatch>You need to create a renderOverview method for this <cfoutput>#stObj.typename#<p></p></cfoutput></cfcatch>
+						<cfcatch>
+							<cfoutput>
+							#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].noRenderOverviewMethod,'#stObj.typename#')#
+							</cfoutput>
+						</cfcatch>
 					</cftry>
 				</td>
 			</tr>
@@ -425,13 +447,15 @@
 	</table>
 	
 	<!--- legend --->
+<cfoutput>	
 	<div style="margin-left:30px;margin-top:15px">
-		<strong>Legend</strong><p></p>
+		<strong>#application.adminBundle[session.dmProfile.locale].legend#</strong><p></p>
 		<!--- draft --->
-		<div class="overviewdraft" style="border:solid black thin;display:inline;"><img src="images/shim.gif" border="0" height="13" width="13" alt="Draft"></div><div style="display:inline;height:15px;margin-left:5px;margin-right:20px;vertical-align:middle">Draft</div><p></p>
+		<div class="overviewdraft" style="border:solid black thin;display:inline;"><img src="images/shim.gif" border="0" height="13" width="13" alt="#application.adminBundle[session.dmProfile.locale].draft#"></div><div style="display:inline;height:15px;margin-left:5px;margin-right:20px;vertical-align:middle">#application.adminBundle[session.dmProfile.locale].draft#</div><p></p>
 		<!--- pending approval --->
-		<div class="overviewpending" style="border:solid black thin;display:inline;"><img src="images/shim.gif" border="0" height="13" width="13" alt="Pending"></div><div style="display:inline;height:15px;margin-left:5px;margin-right:20px;vertical-align:middle">Pending Approval</div><p></p>
+		<div class="overviewpending" style="border:solid black thin;display:inline;"><img src="images/shim.gif" border="0" height="13" width="13" alt="#application.adminBundle[session.dmProfile.locale].Pending#"></div><div style="display:inline;height:15px;margin-left:5px;margin-right:20px;vertical-align:middle">#application.adminBundle[session.dmProfile.locale].pendingApproval#</div><p></p>
 		<!--- approved --->
-		<div class="overviewapproved" style="border:solid black thin;display:inline;"><img src="images/shim.gif" border="0" height="13" width="13" alt="Approved"></div><div style="display:inline;height:15px;margin-left:5px;vertical-align:middle">Approved/Live</div>
+		<div class="overviewapproved" style="border:solid black thin;display:inline;"><img src="images/shim.gif" border="0" height="13" width="13" alt="#application.adminBundle[session.dmProfile.locale].approved#"></div><div style="display:inline;height:15px;margin-left:5px;vertical-align:middle">#application.adminBundle[session.dmProfile.locale].approvedLive#</div>
 	</div>
+	</cfoutput>
 </cfsavecontent>

@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/admin/fixtree.cfm,v 1.18 2004/05/20 04:41:25 brendan Exp $
-$Author: brendan $
-$Date: 2004/05/20 04:41:25 $
-$Name: milestone_2-2-1 $
-$Revision: 1.18 $
+$Header: /cvs/farcry/farcry_core/admin/admin/fixtree.cfm,v 1.19.2.1 2005/05/11 23:56:52 guy Exp $
+$Author: guy $
+$Date: 2005/05/11 23:56:52 $
+$Name: milestone_2-3-2 $
+$Revision: 1.19.2.1 $
 
 || DESCRIPTION ||
 $Description: tree fixer. The commented out stuff is debug$
@@ -23,6 +23,8 @@ $out:$
 --->
 <cfsetting enablecfoutputonly="Yes" requesttimeout="600">
 
+<cfprocessingDirective pageencoding="utf-8">
+
 <!--- check permissions --->
 <cfscript>
 	iCOAPITab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="AdminCOAPITab");
@@ -30,7 +32,7 @@ $out:$
 
 <!--- set up page header --->
 <cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
-<admin:header>
+<admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 <cfif iCOAPITab eq 1>
 
@@ -142,7 +144,7 @@ $out:$
 		    <cfargument name="newlevel" type="numeric" required="yes" />
 		
 		    <cfquery name="qGetChildren_#newlevel#" datasource="#dsn#">
-		        select objectID, parentID, objectName from nested_tree_objects where parentid = '#parentid#'
+		        select objectID, parentID, objectName from nested_tree_objects where parentid = '#parentid#' order by nleft
 		    </cfquery>
 		
 		    <cfloop query="qGetChildren_#newlevel#">
@@ -263,15 +265,15 @@ $out:$
 	    <cfif form.debug eq 1>
 	        <!--- show debug only, don't fix tree --->
 	        <cfoutput>
-	        <div class="formtitle">Debug Complete</div>
-	        This is how the table would look if you ran this function without debug turned on:<p></cfoutput>
+	        <div class="formtitle">#application.adminBundle[session.dmProfile.locale].debugComplete#</div>
+	        #application.adminBundle[session.dmProfile.locale].showNoDebugLook#<p></cfoutput>
 	        <cfquery name="qDisplayIndentedTree" datasource="#dsn#">
 	            SELECT objectname as a_objectname, objectid as b_objectID, parentid as c_parentid,
 	            nleft as d_nleft, nright as e_nright, nlevel as f_nlevel
 	            FROM #temptablename#
 	            order by nleft
 	        </cfquery>
-	        <cfdump var="#qDisplayIndentedTree#" label="Nested Tree for #form.typename#">
+	        <cfdump var="#qDisplayIndentedTree#" label="#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].nestedTree,'#form.typename#')#">
 	    <cfelse>
 	        <!--- update the real table --->
 	        <cfswitch expression="#application.dbtype#">
@@ -311,8 +313,8 @@ $out:$
 	            from #temptablename#
 	        </cfquery>
 	        <cfoutput>
-	        <div class="formtitle">Tree fixed</div>
-	        The nested tree table has been updated for the typename <strong>#form.typename#</strong>.</cfoutput>
+	        <div class="formtitle">#application.adminBundle[session.dmProfile.locale].treeFixed#</div>
+	        #application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].nestedTreeTableUpdated,"#form.typename#")#</cfoutput>
 	    </cfif>
 	
 	<cfelse><!--- show the form --->
@@ -324,30 +326,27 @@ $out:$
 		
 	    <cfif qTypeNames.recordCount eq 0>
 	        <cfoutput>
-	            No items were found in your nested tree. This is bad.
+	            #application.adminBundle[session.dmProfile.locale].noTreeItemsBadBlurb#
 	        </cfoutput>
 	    <cfelse>
 			<!--- show form --->
 	        <cfset defaultType = 'dmNavigation' />
 	        <cfoutput>
-	            <div class="formtitle">Fix a nested tree</div>
+	            <div class="formtitle">#application.adminBundle[session.dmProfile.locale].fixNestedTree#</div>
 	            <p>
-	                Use this function if your nested tree ever gets confused about where its branches are supposed to live.
-	                It puts them all back together again, rebuilding the tree from the roots up.
-	                You may want to make a backup of your database before fixing the tree.
-	                Please be patient, this process can take a few minutes!
+	                #application.adminBundle[session.dmProfile.locale].nestedTreeFunctionBlurb#
 	            </p>
 	            <form action="fixtree.cfm" method="post">
-	                Enter a typename to fix the tree of:
+	                #application.adminBundle[session.dmProfile.locale].enterTreeTypeName#
 	                <select name="typename">
 	                    <cfloop query="qTypeNames">
 	                        <option value="#qTypeNames.typename#" <cfif qTypeNames.typename eq defaultType>selected</cfif>>#qTypeNames.typename#</option>
 	                    </cfloop>
 	                </select>
 	                <br /><br />
-	                <input type="checkbox" name="debug" value="1" checked>show debug only (don't fix the table)<br />
+	                <input type="checkbox" name="debug" value="1" checked>#application.adminBundle[session.dmProfile.locale].showDebugOnly#<br />
 	                <br />
-	                <input type="submit" name="submit" value="submit">
+	                <input type="submit" name="submit" value="#application.adminBundle[session.dmProfile.locale].submit#">
 	            </form>
 	
 	        </cfoutput>

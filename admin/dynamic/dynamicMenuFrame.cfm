@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/dynamic/dynamicMenuFrame.cfm,v 1.14 2004/01/19 06:14:19 brendan Exp $
-$Author: brendan $
-$Date: 2004/01/19 06:14:19 $
-$Name: milestone_2-2-1 $
-$Revision: 1.14 $
+$Header: /cvs/farcry/farcry_core/admin/dynamic/dynamicMenuFrame.cfm,v 1.16 2004/08/09 07:18:23 paul Exp $
+$Author: paul $
+$Date: 2004/08/09 07:18:23 $
+$Name: milestone_2-3-2 $
+$Revision: 1.16 $
 
 || DESCRIPTION || 
 $Description: Displays menu for dynamic tab $
@@ -24,8 +24,10 @@ $out:$
 --->
 
 <cfsetting enablecfoutputonly="Yes">
-<cfimport taglib="/farcry/farcry_core/tags/misc/" prefix="misc">
 
+<cfprocessingDirective pageencoding="utf-8">
+
+<cfimport taglib="/farcry/farcry_core/tags/misc/" prefix="misc">
 <!--- check permissions --->
 <cfscript>
 	iContentTab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="MainNavContentTab");
@@ -52,11 +54,12 @@ $out:$
 <cfoutput>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 
-<html>
+<html dir="#session.writingDir#" lang="#session.userLanguage#">
 <head>
 	<title>ContentMenuFrame</title>
 	<misc:cacheControl>
 	<LINK href="../css/overviewFrame.css" rel="stylesheet" type="text/css">
+	<meta content="text/html; charset=UTF-8" http-equiv="content-type">
 </head>
 
 <body>
@@ -67,18 +70,18 @@ $out:$
 		<cfcase value="general">
 			<!--- permission check --->
 			<cfif iContentTab eq 1>
-				<div class="frameMenuTitle">Dynamic Content</div>
+				<div class="frameMenuTitle">#application.adminBundle[session.dmProfile.locale].dynamicContent#</div>
 				<cfif iNews eq 1>
-					<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="#application.url.farcry#/navajo/GenericAdmin.cfm?typename=dmNews" class="frameMenuItem" target="editFrame">News</a></div>
+					<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="#application.url.farcry#/navajo/GenericAdmin.cfm?typename=dmNews" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].news#</a></div>
 				</cfif>
 				<cfif iFact eq 1>
-					<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="#application.url.farcry#/navajo/GenericAdmin.cfm?typename=dmFacts" class="frameMenuItem" target="editFrame">Facts</a></div>				
+					<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="#application.url.farcry#/navajo/GenericAdmin.cfm?typename=dmFacts" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].facts#</a></div>				
 				</cfif>
 				<cfif iLink eq 1>					
-					<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="#application.url.farcry#/navajo/GenericAdmin.cfm?typename=dmLink" class="frameMenuItem" target="editFrame">Links</a></div>				
+					<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="#application.url.farcry#/navajo/GenericAdmin.cfm?typename=dmLink" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].links#</a></div>				
 				</cfif>
 				<cfif iEvent eq 1>
-					<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="#application.url.farcry#/navajo/GenericAdmin.cfm?typename=dmEvent" class="frameMenuItem" target="editFrame">Events</a></div>				
+					<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="#application.url.farcry#/navajo/GenericAdmin.cfm?typename=dmEvent" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].events#</a></div>				
 				</cfif>
 			</cfif>
 		</cfcase>
@@ -86,17 +89,17 @@ $out:$
 		<cfcase value="export">
 			<!--- permission check --->
 			<cfif iExportTab eq 1>		
-				<div class="frameMenuTitle">Export</div>
-				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="xmlFeedList.cfm" class="frameMenuItem" target="editFrame">RSS Feeds</a></div>		
-				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="export.cfm" class="frameMenuItem" target="editFrame">Export</a></div>		
+				<div class="frameMenuTitle">#application.adminBundle[session.dmProfile.locale].export#</div>
+				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="xmlFeedList.cfm" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].RSSFeeds#</a></div>		
+				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="export.cfm" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].export#</a></div>		
 			</cfif>
 		</cfcase>
 		
 		<cfcase value="categorisation">
 			<!--- permission check --->
 			<cfif iCategorisationTab eq 1>
-				<div class="frameMenuTitle">Categorisation</div>
-				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="../navajo/keywords/hierarchyedit.cfm" class="frameMenuItem" target="editFrame">Manage Keywords</a></div>		
+				<div class="frameMenuTitle">#application.adminBundle[session.dmProfile.locale].categorization#</div>
+				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="../navajo/keywords/hierarchyedit.cfm" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].manageKeywords#</a></div>		
 			</cfif>
 		</cfcase>
 	</cfswitch>

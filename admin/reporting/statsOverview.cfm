@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/reporting/statsOverview.cfm,v 1.2 2003/09/20 23:58:51 brendan Exp $
+$Header: /cvs/farcry/farcry_core/admin/reporting/statsOverview.cfm,v 1.4 2004/12/01 06:21:29 brendan Exp $
 $Author: brendan $
-$Date: 2003/09/20 23:58:51 $
-$Name: b201 $
-$Revision: 1.2 $
+$Date: 2004/12/01 06:21:29 $
+$Name: milestone_2-3-2 $
+$Revision: 1.4 $
 
 || DESCRIPTION || 
 $Description: Displays an overview report for site activity $
@@ -24,6 +24,8 @@ $out:$
 
 <cfsetting enablecfoutputonly="yes">
 
+<cfprocessingDirective pageencoding="utf-8">
+
 <!--- check permissions --->
 <cfscript>
 	iStatsTab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="ReportingStatsTab");
@@ -31,7 +33,7 @@ $out:$
 
 <!--- set up page header --->
 <cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
-<admin:header>
+<admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 <cfif iStatsTab eq 1>
 	<cfparam name="form.dateRange" default="ww">
@@ -48,7 +50,14 @@ $out:$
 	</cfscript>
 	
 	<cfoutput>
-	<div class="formtitle">Statistics Overview Report - <cfif form.dateRange neq "all">#dateformat(dateAdd("#form.dateRange#",-1,now()),"dd-mmm-yyyy")# to #dateFormat(now(),"dd-mmm-yyyy")#<cfelse>All dates</cfif> (#numberformat(qSessions.sessions)# sessions)</div>
+	<div class="formtitle">
+	<cfif form.dateRange neq "all">
+	<cfset subS=listToArray('#application.thisCalendar.i18nDateFormat(dateAdd("#form.dateRange#",-1,now()),session.dmProfile.locale,application.longF)#--- #application.thisCalendar.i18nDateFormat(now(),session.dmProfile.locale,application.longF)#--- #numberformat(qSessions.sessions)#','---')>
+	#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].statsOverviewReport,subS)#
+	<cfelse>
+	#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].allDatesOverviewReport,"#numberformat(qSessions.sessions)#")#
+	</cfif> 
+	</div>
 	
 	<table cellpadding="5" cellspacing="0" border="0" style="margin-left:30px;">
 	<form action="" method="post">
@@ -57,15 +66,15 @@ $out:$
 		<!--- drop down for date --->
 		Date
 		<select name="dateRange">
-			<option value="all" <cfif form.dateRange eq "all">selected</cfif>>All Dates
-			<option value="d" <cfif form.dateRange eq "d">selected</cfif>>Today
-			<option value="ww" <cfif form.dateRange eq "ww">selected</cfif>>Last Week
-			<option value="m" <cfif form.dateRange eq "m">selected</cfif>>Last Month
-			<option value="q" <cfif form.dateRange eq "q">selected</cfif>>Last Quarter
-			<option value="yyyy" <cfif form.dateRange eq "yyyy">selected</cfif>>Last Year
+			<option value="all" <cfif form.dateRange eq "all">selected</cfif>>#application.adminBundle[session.dmProfile.locale].allDates#
+			<option value="d" <cfif form.dateRange eq "d">selected</cfif>>#application.adminBundle[session.dmProfile.locale].Today#
+			<option value="ww" <cfif form.dateRange eq "ww">selected</cfif>>#application.adminBundle[session.dmProfile.locale].lastWeek#
+			<option value="m" <cfif form.dateRange eq "m">selected</cfif>>#application.adminBundle[session.dmProfile.locale].lastMonth#
+			<option value="q" <cfif form.dateRange eq "q">selected</cfif>>#application.adminBundle[session.dmProfile.locale].lastQuarter#
+			<option value="yyyy" <cfif form.dateRange eq "yyyy">selected</cfif>>#application.adminBundle[session.dmProfile.locale].lastYear#
 		</select>
 		
-		<input type="submit" value="Update">
+		<input type="submit" value="#application.adminBundle[session.dmProfile.locale].Update#">
 		</td>
 	</tr>
 	</form>
@@ -74,12 +83,12 @@ $out:$
 	
 	<!--- views --->
 	<cfif qViews.recordcount>
-		<div class="formtitle" style="margin-left:30px;padding-bottom:5px;">Most Popular Pages</div>
+		<div class="formtitle" style="margin-left:30px;padding-bottom:5px;">#application.adminBundle[session.dmProfile.locale].mostPopularPages#</div>
 		<table cellpadding="5" cellspacing="0" border="1" width="500" style="margin-left:30px;">
 		<tr>
-			<th class="dataheader" align="left">Object</td>
-			<th class="dataheader">Views</td>
-			<th class="dataheader">Type</td>
+			<th class="dataheader" align="left">#application.adminBundle[session.dmProfile.locale].objectLC#</td>
+			<th class="dataheader">#application.adminBundle[session.dmProfile.locale].views#</td>
+			<th class="dataheader">#application.adminBundle[session.dmProfile.locale].typeLC#</td>
 		</tr>
 		
 		<!--- show stats with links to detail --->
@@ -97,12 +106,12 @@ $out:$
 	
 	<!--- locales --->
 	<cfif qLocales.recordcount>
-		<div class="formtitle" style="margin-left:30px;padding-bottom:5px;">Most Popular Locales</div>
+		<div class="formtitle" style="margin-left:30px;padding-bottom:5px;">#application.adminBundle[session.dmProfile.locale].mostPopularLocales#</div>
 		<table cellpadding="5" cellspacing="0" border="1" width="500" style="margin-left:30px;">
 		<tr>
-			<th class="dataheader" align="left">Country</td>
-			<th class="dataheader">Language</td>
-			<th class="dataheader">Sessions</td>
+			<th class="dataheader" align="left">#application.adminBundle[session.dmProfile.locale].country#</td>
+			<th class="dataheader">#application.adminBundle[session.dmProfile.locale].language#</td>
+			<th class="dataheader">#application.adminBundle[session.dmProfile.locale].sessions#</td>
 		</tr>
 		
 		<!--- show stats with links to detail --->
@@ -120,11 +129,11 @@ $out:$
 	
 	<!--- browsers --->
 	<cfif qBrowsers.recordcount>
-		<div class="formtitle" style="margin-left:30px;padding-bottom:5px;">Most Popular Browsers</div>
+		<div class="formtitle" style="margin-left:30px;padding-bottom:5px;">#application.adminBundle[session.dmProfile.locale].mostPopularBrowsers#</div>
 		<table cellpadding="5" cellspacing="0" border="1" width="500" style="margin-left:30px;">
 		<tr>
-			<th class="dataheader" align="left">Browser</td>
-			<th class="dataheader">Sessions</td>
+			<th class="dataheader" align="left">#application.adminBundle[session.dmProfile.locale].Browser#</td>
+			<th class="dataheader">#application.adminBundle[session.dmProfile.locale].Sessions#</td>
 		</tr>
 		
 		<!--- show stats with links to detail --->
@@ -141,11 +150,11 @@ $out:$
 	
 	<!--- operating systems --->
 	<cfif qOs.recordcount>
-		<div class="formtitle" style="margin-left:30px;padding-bottom:5px;">Most Popular Operating Systems</div>
+		<div class="formtitle" style="margin-left:30px;padding-bottom:5px;">#application.adminBundle[session.dmProfile.locale].mostPopularOS#</div>
 		<table cellpadding="5" cellspacing="0" border="1" width="500" style="margin-left:30px;">
 		<tr>
-			<th class="dataheader" align="left">Operating System</td>
-			<th class="dataheader">Sessions</td>
+			<th class="dataheader" align="left">#application.adminBundle[session.dmProfile.locale].OS#</td>
+			<th class="dataheader">#application.adminBundle[session.dmProfile.locale].Sessions#</td>
 		</tr>
 		
 		<!--- show stats with links to detail --->
@@ -165,8 +174,8 @@ $out:$
 		<div class="formtitle" style="margin-left:30px;padding-bottom:5px;">Most Popular Referers</div>
 		<table cellpadding="5" cellspacing="0" border="1" width="500" style="margin-left:30px;">
 		<tr>
-			<th class="dataheader" align="left">Referer</td>
-			<th class="dataheader">Referals</td>
+			<th class="dataheader" align="left">#application.adminBundle[session.dmProfile.locale].Referer#</td>
+			<th class="dataheader">#application.adminBundle[session.dmProfile.locale].Referals#</td>
 		</tr>
 		
 		<!--- show stats with links to detail --->
@@ -183,11 +192,11 @@ $out:$
 	
 	<!--- searches --->
 	<cfif qSearches.recordcount>
-		<div class="formtitle" style="margin-left:30px;padding-bottom:5px;">Most Popular Searches</div>
+		<div class="formtitle" style="margin-left:30px;padding-bottom:5px;">#application.adminBundle[session.dmProfile.locale].mostPopularSearches#</div>
 		<table cellpadding="5" cellspacing="0" border="1" width="500" style="margin-left:30px;">
 		<tr>
-			<th class="dataheader" align="left">Search String</td>
-			<th class="dataheader">Searches</td>
+			<th class="dataheader" align="left">#application.adminBundle[session.dmProfile.locale].searchString#</td>
+			<th class="dataheader">#application.adminBundle[session.dmProfile.locale].searches#</td>
 		</tr>
 		
 		<!--- show stats with links to detail --->

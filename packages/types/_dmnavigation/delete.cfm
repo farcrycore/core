@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmnavigation/delete.cfm,v 1.11 2003/12/19 01:26:48 paul Exp $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmnavigation/delete.cfm,v 1.11.6.2 2005/04/21 06:24:29 paul Exp $
 $Author: paul $
-$Date: 2003/12/19 01:26:48 $
-$Name: milestone_2-2-1 $
-$Revision: 1.11 $
+$Date: 2005/04/21 06:24:29 $
+$Name: milestone_2-3-2 $
+$Revision: 1.11.6.2 $
 
 || DESCRIPTION || 
 $Description: Specific delete method for dmNavigation. Deletes all descendants aswell as cleaning up verity collections$
@@ -29,7 +29,7 @@ $out:$
 	oNavigation = createObject("component", application.types.dmNavigation.typePath);
 	
 	// delete actual object
-	deleteData(objectid=stObj.objectId);
+	super.delete(stObj.objectId);
 	
 	// delete fu
 	if (application.config.plugins.fu) {
@@ -93,7 +93,7 @@ $out:$
 			oAuthorisation.deletePermissionBarnacle(objectid=qGetDescendants.objectId[loop0]);
 			
 			// delete descendant
-			deleteData(qGetDescendants.objectId[loop0]);	
+			super.delete(qGetDescendants.objectId[loop0]);	
 		
 		}
 	}

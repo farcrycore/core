@@ -1,14 +1,23 @@
+<!-- Revision: 2005-05-25 // Friedrich Dimmel
+	changes: PostgreSQL queries corrected.
+	1) HH24 instead of hh
+	2) DateFormat(arguments.day, "mm") etc. instead of DatePart("m", arguments.day) -> so we'll get the leading zero
+	3) on comparison of TO_CHAR(bla) = DateFormat(bla) use Single Quotes at CFMX expression. 
+		Postgres will remove leading zero without.
+-->
+
+
 <!--- 
 || LEGAL ||
 $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_stats/getBranchStatsByDay.cfm,v 1.10 2004/05/20 04:41:25 brendan Exp $
-$Author: brendan $
-$Date: 2004/05/20 04:41:25 $
-$Name: milestone_2-2-1 $
-$Revision: 1.10 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_stats/getBranchStatsByDay.cfm,v 1.10.4.1 2005/05/30 02:49:46 guy Exp $
+$Author: guy $
+$Date: 2005/05/30 02:49:46 $
+$Name: milestone_2-3-2 $
+$Revision: 1.10.4.1 $
 
 || DESCRIPTION || 
 $Description: get stats for entire branch $
@@ -47,20 +56,23 @@ $out:$
 </cfcase>
 
 <cfcase value="postgresql">
-	<cfquery datasource="#arguments.dsn#" name="qGetPageStatsByDay">
-		select distinct hour, TO_CHAR(fq.logdatetime,'hh') as loginhour, count(fq.logId) as count_views
+<!---
+	adapted by Friedrich Dimmel (friedrich.dimmel@siemens.com)
+--->
+ 	<cfquery datasource="#application.dsn#" name="qGetPageStatsByDay">
+		SELECT DISTINCT hour, TO_CHAR(fq.logdatetime,'HH24') as loginhour, count(fq.logId) as count_views
 		from #application.dbowner#statsHours
-		left join (
-				select * from stats
-				where 1 = 1
+		LEFT JOIN (
+				SELECT * FROM stats
+				WHERE 1 = 1
 				<cfif not arguments.showAll>
 					AND navid IN (<cfif qDescendants.recordcount>#QuotedValueList(qDescendants.objectid)#,</cfif>'#arguments.navid#')
 				</cfif>
-		)fq on TO_CHAR(fq.logdatetime,'hh') = statsHours.hour
-		and TO_CHAR(fq.logdatetime,'dd' ) = #DatePart("d", arguments.day)# and TO_CHAR(fq.logdatetime,'mm') = #DatePart("m", arguments.day)# and TO_CHAR(fq.logdatetime,'yyyy') = #DatePart("yyyy", arguments.day)#
-		group by hour, TO_CHAR(fq.logdatetime,'hh')
-		order by 1 
-	</cfquery>	
+		) fq ON TO_CHAR(fq.logdatetime,'HH24') = statsHours.hour
+		AND TO_CHAR(fq.logdatetime,'DD' ) = '#DateFormat(arguments.day, "dd")#' AND TO_CHAR(fq.logdatetime, 'MM') = '#DateFormat(arguments.day, "mm")#' AND TO_CHAR(fq.logdatetime,'YYYY') = '#DateFormat(arguments.day, "yyyy")#'
+		GROUP BY hour, TO_CHAR(fq.logdatetime,'HH24')
+		ORDER BY 1 
+	</cfquery>
 </cfcase>
 
 <cfcase value="mysql">

@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/navajo/display.cfm,v 1.40 2004/07/01 10:52:35 geoff Exp $
-$Author: geoff $
-$Date: 2004/07/01 10:52:35 $
-$Name: milestone_2-2-1 $
-$Revision: 1.40 $
+$Header: /cvs/farcry/farcry_core/tags/navajo/display.cfm,v 1.44.2.1 2005/02/14 15:44:02 spike Exp $
+$Author: spike $
+$Date: 2005/02/14 15:44:02 $
+$Name: milestone_2-3-2 $
+$Revision: 1.44.2.1 $
 
 || DESCRIPTION ||
 $Description: Primary controller for invoking the object to be rendered for the website.$
@@ -18,6 +18,8 @@ $TODO: This needs to be converted into a CFC! GB $
 $Developer: Geoff Bowers (modius@daemon.com.au)$
 --->
 <cfsetting enablecfoutputonly="Yes">
+<cfprocessingdirective pageencoding="utf-8" />
+
 <!--- optional attributes --->
 <cfparam name="attributes.method" default="display" type="string">
 <cfparam name="attributes.lmethods" default="display" type="string">
@@ -26,11 +28,22 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 <cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
 <cfparam name="request.bHideContextMenu" default="false">
 
+<cfif isDefined("URL.archiveid") AND findNoCase("edittabarchive.cfm",CGI.HTTP_REFERER)>  
+	<cfscript>
+		oArchive = createObject("component","#application.packagepath#.farcry.versioning");
+		qArchive = oArchive.getArchiveDetail(objectid=url.archiveid);
+	</cfscript>
+	<cfif qArchive.recordCount EQ 1>
+		<cfwddx action="wddx2cfml" input="#qArchive.objectWDDX#" output="stArchive">
+		<cfset URL.objectid = stArchive.objectid>
+	</cfif>
+</cfif>
+
 <!--- method for dealing with the missing url param... redirect to home page --->
 <cfif not isDefined("url.objectId")>
 	<cfif isDefined("application.navid.home")>
 		<cfset url.objectid = application.navid.home>
-		<cftrace var="application.navid.home" text="home UUID set">
+		<cftrace var="application.navid.home" text="home UUID set" />
 	<cfelse>
 		<cflocation url="#application.url.webroot#/" addtoken="No">
 	</cfif>
@@ -38,22 +51,31 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 
 <!--- grab the object we are displaying --->
 <cftry>
-
-	<q4:contentobjectget objectid="#url.ObjectID#" r_stobject="stObj">
-	<cftrace var="stobj.typename" text="object retrieved">
+	<cfif isDefined("stArchive")>
+		<cfset stObj = duplicate(stArchive)>
+	<cfelse>	
+		<q4:contentobjectget objectid="#url.ObjectID#" r_stobject="stObj">
+	</cfif>
+	
+	<cftrace var="stobj.typename" text="object retrieved" />
 
 	<!--- check that an appropriate result was returned from COAPI --->
 	<cfif NOT IsStruct(stObj) OR StructIsEmpty(stObj)>
-		<cfthrow message="Error: COAPI returned a malformed or empty object instance.">
+		<cfthrow message="#application.adminBundle[session.dmProfile.locale].badCOAPI#">
 	</cfif>
-	<CFCATCH type="Any">
-		<cflocation url="#application.url.webroot#/" addtoken="No">
+	<cfcatch type="Any">
+		<cfparam name="request.bSuppressDisplayErrors" type="boolean" default="true">
+		<cfif request.bSuppressDisplayErrors>
+			<cflocation url="#application.url.webroot#/" addtoken="No">
+		<cfelse>
+			<cfrethrow>
+		</cfif>
 		<!--- $TODO:
 		log this error if it occurs
 		or perhaps provide URL 404 type error for user$
 		--->
 		<cfabort>
-	</CFCATCH>
+	</cfcatch>
 </cftry>
 
 
@@ -62,7 +84,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 	<!--- check for sim link --->
     <cfif len(stObj.externalLink) gt 0>
         <q4:contentobjectget objectid="#stObj.externalLink#" r_stobject="stObj">
-    	<cftrace var="url.objectid" text="Setting navid to URL.objectid as external link is specified">
+    	<cftrace var="url.objectid" text="Setting navid to URL.objectid as external link is specified" />
 		<cfset request.navid = URL.objectid>
 		
     </cfif>
@@ -88,11 +110,11 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
     			<!--- set the navigation point for the child obj - unless its a symnolic link in which case wed have already set navid --->
 		
 				<cfif isDefined("URL.navid")>
-					<cftrace var="url.navid" text="URL.navid exists - setting request.navid = to url.navid">
+					<cftrace var="url.navid" text="URL.navid exists - setting request.navid = to url.navid" />
 					<cfset request.navid = URL.navID>
 				<cfelseif NOT isDefined("request.navid")>		
 	    			<cfset request.navid = stObj.objectID>
-	    			<cftrace var="stobj.objectid" text="URL.navid is not defined - setting to stObj.objectid">
+	    			<cftrace var="stobj.objectid" text="URL.navid is not defined - setting to stObj.objectid" />
 				</cfif>	
 				
     			<!--- reset stObj to appropriate object to be displayed --->
@@ -104,10 +126,10 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
     			<!--- set the navigation point for the child obj --->
     			<cfif isDefined("URL.navid")>
     				<cfset request.navid = URL.navid>
-    				<cftrace var="stobj.objectid" text="object type not CSS,URL.navid exists - setting navid = url.navid">
+    				<cftrace var="stobj.objectid" text="object type not CSS,URL.navid exists - setting navid = url.navid" />
     			<cfelse>
     				<cfset request.navid = stObj.objectID>		
-    				<cftrace var="stobj.objectid" text="object type not CSS - setting navid = stobj.objectid">
+    				<cftrace var="stobj.objectid" text="object type not CSS - setting navid = stobj.objectid" />
     			</cfif>
     			
     			<!--- reset stObj to appropriate object to be displayed --->
@@ -135,7 +157,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 <!--- else get the navigation point from the URL --->
 <cfelseif isDefined("url.navid")>
 	<!--- ie. this is a dynamic object looking for context --->
-	<cftrace var="url.navid" text="url.navid is defined for non dmNavigation object">
+	<cftrace var="url.navid" text="url.navid is defined for non dmNavigation object" />
 	<cfset request.navid = url.navid>
 
 <!--- otherwise get the navigation point for this object --->
@@ -151,7 +173,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 
 	<cfif isDefined("stNav.objectid") AND len(stNav.objectid)>
 		<cfset request.navid = stNav.objectID>
-		<cftrace var="stNav.objectid" text="url.navid is not defined, getNavigation called to find navid">
+		<cftrace var="stNav.objectid" text="url.navid is not defined, getNavigation called to find navid" />
 
 	<!--- otherwise, use the home node as a last resort --->
 	<cfelse>
@@ -209,7 +231,7 @@ the latter is the policy group for anonymous...
 
 <cfif attributes.method neq "display" AND attributes.lmethods contains attributes.method>
 	<!--- ie. if a method has been passed in deliberately and is allowed use this --->
-	<cftrace var="attributes.method" text="Passed in attribute method used">
+	<cftrace var="attributes.method" text="Passed in attribute method used" />
 	<q4:contentobject
 		typename="#application.types[stObj.typename].typePath#"
 		objectid="#stObj.ObjectID#"
@@ -217,16 +239,31 @@ the latter is the policy group for anonymous...
 	
 <cfelseif IsDefined("stObj.displayMethod") AND len(stObj.displayMethod)>
 	<!--- Invoke display method of page --->
-	<cftrace var="stObj.displayMethod" text="Object displayMethod used">
-
-	<cfscript>
-		o = createObject("component", application.types[stObj.typename].typePath);
-		o.getDisplay(objectid=stObj.ObjectID, template=stObj.displayMethod);
-	</cfscript>
+	<cftrace var="stObj.displayMethod" text="Object displayMethod used" />
+	
+	<cfif isDefined("stArchive")>
+		<cftry>
+				<cfinclude template="/farcry/#application.applicationname#/#application.path.handler#/#stObj.typename#/#stObj.displayMethod#.cfm">
+				<cfcatch>
+					<!--- check to see if the displayMethod template exists --->
+					<cfif NOT fileExists("#application.path.webskin#/#stObj.typename#/#stObj.displayMethod#.cfm")>
+						 <cfabort showerror="Error: Template not found [#application.path.webskin#/#stObj.typename#/#stObj.displayMethod#.cfm]."> 
+					<cfelse>
+						<cfif isdefined("url.debug")><cfset request.cfdumpinited = false><cfoutput>#cfcatch.message#<br />#cfcatch.detail#</cfoutput><cfdump var="#cfcatch#"></cfif>
+					</cfif>
+				</cfcatch>
+			</cftry>
+		
+	<cfelse>
+		<cfscript>
+			o = createObject("component", application.types[stObj.typename].typePath);
+			o.getDisplay(objectid=stObj.ObjectID, template=stObj.displayMethod);
+		</cfscript>
+	</cfif>
 
 <cfelse>
 	<!--- Invoke default display method of page --->
-	<cftrace text="Default display method used">
+	<cftrace text="Default display method used" />
 	<q4:contentobject
 		typename="#application.types[stObj.typename].typePath#"
 		objectid="#stObj.ObjectID#"
@@ -262,7 +299,13 @@ a whole new set of permission checks, have trapped any errors and suppressed GB 
 </cfif>
 <!--- end: logged in user? --->
 <cfcatch>
-<!--- suppress error --->
+<cfparam name="request.bSuppressDisplayErrors" type="boolean" default="true">
+		<cfif request.bSuppressDisplayErrors>		
+			<!--- suppress error --->
+		<cfelse>
+			<cfrethrow>
+		</cfif>
+
 </cfcatch>
 </cftry>
 <cfsetting enablecfoutputonly="No">

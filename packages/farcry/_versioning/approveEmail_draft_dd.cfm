@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_versioning/approveEmail_draft_dd.cfm,v 1.17.4.1 2004/11/25 02:46:09 paul Exp $
-$Author: paul $
-$Date: 2004/11/25 02:46:09 $
-$Name: milestone_2-2-1 $
-$Revision: 1.17.4.1 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_versioning/approveEmail_draft_dd.cfm,v 1.18 2004/11/19 23:18:53 tom Exp $
+$Author: tom $
+$Date: 2004/11/19 23:18:53 $
+$Name: milestone_2-3-2 $
+$Revision: 1.18 $
 
 || DESCRIPTION || 
 $Description: sends email for draft news like object $
@@ -47,7 +47,7 @@ stProfile = o_profile.getProfile(userName=stObj.lastupdatedby);
 <cfmail to="#stProfile.emailAddress#" from="#fromEmail#" subject="#application.config.general.sitetitle# - Object sent back to Draft">
 Hi <cfif len(stProfile.firstName) gt 0>#stProfile.firstName#<cfelse>#stProfile.userName#</cfif>,
 
-Your object "<cfif stObj.label neq "">#stObj.label#<cfelse>undefined</cfif>" has been sent back to draft.
+Your object "<cfif isDefined("stObj.title") and len(trim(stObj.title))>#stObj.title#<cfelseif isDefined("stObj.label") and len(trim(stObj.label))>#stObj.label#<cfelse>undefined</cfif>" has been sent back to draft.
 
 <cfif arguments.comment neq "">
 Comments added on status change:

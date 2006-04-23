@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_verity/verityUpdate.cfm,v 1.4 2004/04/01 02:26:55 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_verity/verityUpdate.cfm,v 1.6 2005/02/02 01:20:37 brendan Exp $
 $Author: brendan $
-$Date: 2004/04/01 02:26:55 $
-$Name: milestone_2-2-1 $
-$Revision: 1.4 $
+$Date: 2005/02/02 01:20:37 $
+$Name: milestone_2-3-2 $
+$Revision: 1.6 $
 
 || DESCRIPTION || 
 $Description: updates verity collection$
@@ -23,11 +23,13 @@ $in: $
 $out:$
 --->
 
+<cfprocessingDirective pageencoding="utf-8">
+
 <cfset key = replaceNoCase(arguments.collection,"#application.applicationName#_","")>
 
 <!--- check for existing collections with no app data --->
 <cfif not structKeyExists(application.config.verity.contenttype,"#key#") and not structKeyExists(application.config.verity.contenttype[key],"lastUpdated")>
-	<cfoutput>Please reset you verity config before trying to update.</cfoutput>
+	<cfoutput>#application.adminBundle[session.dmProfile.locale].resetVerity#</cfoutput>
 <cfelse>			
 	<!--- work out collection type --->
 	<cfif isArray(application.config.verity.contenttype[key].aprops)>
@@ -51,7 +53,8 @@ $out:$
 			</cfif>
 		</cfquery>
 		
-		<cfoutput><span class="frameMenuBullet">&raquo;</span> Updating #q.recordCount# records for #key#...(#arrayToList(application.config.verity.contenttype[key].aprops)#)<br></cfoutput>
+		<cfset subS=listToArray("#q.recordCount#, #key#,#arrayToList(application.config.verity.contenttype[key].aprops)#")>
+		<cfoutput><span class="frameMenuBullet">&raquo;</span> #application.rB.formatRBString(application.adminBundle[session.dmProfile.locale].updatingRecsFor,subS)#<br></cfoutput>
 		<cfflush />
 		
 		<!--- update collection --->	
@@ -67,8 +70,9 @@ $out:$
 				WHERE datetimelastupdated > #application.config.verity.contenttype[key].lastupdated#
 					AND upper(status) IN ('DRAFT','PENDING')
 			</cfquery>
-	
-			<cfoutput><span class="frameMenuBullet">&raquo;</span> Purging #q.recordCount# dead records for #key#...(#arrayToList(application.config.verity.contenttype[key].aprops)#)<p></cfoutput>
+			
+			<cfset subS=listToArray("#q.recordCount#, #key#, #arrayToList(application.config.verity.contenttype[key].aprops)#")>
+			<cfoutput><span class="frameMenuBullet">&raquo;</span> #application.rB.formatRBString(application.adminBundle[session.dmProfile.locale].purgingDeadRecsFor,subS)#<p></cfoutput>
 			<cfflush />
 			
 			<cfloop query="q">
@@ -84,8 +88,8 @@ $out:$
 			<cfelse>
 				<cfset filter= ".*">
 			</cfif>
-			
-			<cfoutput><span class="frameMenuBullet">&raquo;</span> Updating #key#...(#application.config.verity.contenttype[key].aprops.uncPath#)<p></cfoutput>
+			<cfset subS=listToArray("#key#,#application.config.verity.contenttype[key].aprops.uncPath#")>	
+			<cfoutput><span class="frameMenuBullet">&raquo;</span>#application.rB.formatRBString(application.adminBundle[session.dmProfile.locale].updatingKey,subS)# <p></cfoutput>
 			<cfflush />
 			
 			<cfindex action="UPDATE" type="PATH" key="#application.config.verity.contenttype[key].aprops.uncPath#" collection="#application.applicationname#_#key#" recurse="#application.config.verity.contenttype[key].aprops.recursive#" extensions="#filter#">
@@ -95,5 +99,5 @@ $out:$
 	<!--- reset lastupdated timestamp --->
 	<cfset application.config.verity.contenttype[replaceNoCase(arguments.collection,"#application.applicationName#_","")].lastUpdated = now()>
 	
-	<cfoutput><span class="frameMenuBullet">&raquo;</span> <strong>#arguments.collection#</strong> updated.<p></p></cfoutput>
+	<cfoutput><span class="frameMenuBullet">&raquo;</span> <strong></strong> #application.rB.formatRBString(application.adminBundle[session.dmProfile.locale].updated,"#arguments.collection#")#<p></p></cfoutput>
 </cfif>

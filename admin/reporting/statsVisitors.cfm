@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/reporting/statsVisitors.cfm,v 1.2 2003/09/03 01:50:31 brendan Exp $
+$Header: /cvs/farcry/farcry_core/admin/reporting/statsVisitors.cfm,v 1.3 2004/07/15 01:51:48 brendan Exp $
 $Author: brendan $
-$Date: 2003/09/03 01:50:31 $
-$Name: b201 $
-$Revision: 1.2 $
+$Date: 2004/07/15 01:51:48 $
+$Name: milestone_2-3-2 $
+$Revision: 1.3 $
 
 || DESCRIPTION || 
 Shows view statistics for chosen object in a number of formats
@@ -22,6 +22,8 @@ out:
 --->
 <cfsetting enablecfoutputonly="yes" requestTimeOut="600">
 
+<cfprocessingDirective pageencoding="utf-8">
+
 <!--- check permissions --->
 <cfscript>
 	iStatsTab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="ReportingStatsTab");
@@ -29,12 +31,15 @@ out:
 
 <!--- set up page header --->
 <cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
-<admin:header>
+<admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 <cfif iStatsTab eq 1>
+	<!--- i18n: get week starts for later use --->
+	<cfset weekStartDay=application.thisCalendar.weekStarts(session.dmProfile.locale)>
+
 	<cfimport taglib="/farcry/fourq/tags/" prefix="q4">
 	<cfoutput><br>
-	<span class="FormTitle">Sessions per hour over the last 3 days</span>
+	<span class="FormTitle">#application.adminBundle[session.dmProfile.locale].sessionPerHourLast3Days#</span>
 	<p></p></cfoutput>
 	
 	<!--- get page log entries --->
@@ -58,8 +63,8 @@ out:
 		fontsize="12"
 		font="arialunicodeMS" 
 		labelFormat = "number"
-		xAxisTitle = "Hour" 
-		yAxisTitle = "Number of Sessions" 
+		xAxisTitle = "#application.adminBundle[session.dmProfile.locale].Hour#" 
+		yAxisTitle = "#application.adminBundle[session.dmProfile.locale].sessionNumbers#" 
 		show3D = "yes"
 		xOffset = "0.15" 
 		yOffset = "0.15"
@@ -67,9 +72,9 @@ out:
 		showLegend = "yes" 
 		tipStyle = "MouseOver">
 		
-		<cfchartseries type="bar" query="q1" itemcolumn="hour" valuecolumn="count_Ip" serieslabel="Today" paintstyle="shade"></cfchartseries>
-		<cfchartseries type="bar" query="q2" itemcolumn="hour" valuecolumn="count_Ip" serieslabel="Yesterday" paintstyle="shade"></cfchartseries>
-		<cfchartseries type="bar" query="q3" itemcolumn="hour" valuecolumn="count_Ip" serieslabel="DayBefore" paintstyle="shade"></cfchartseries>
+		<cfchartseries type="bar" query="q1" itemcolumn="hour" valuecolumn="count_Ip" serieslabel="#application.adminBundle[session.dmProfile.locale].Today#" paintstyle="shade"></cfchartseries>
+		<cfchartseries type="bar" query="q2" itemcolumn="hour" valuecolumn="count_Ip" serieslabel="#application.adminBundle[session.dmProfile.locale].Yesterday#" paintstyle="shade"></cfchartseries>
+		<cfchartseries type="bar" query="q3" itemcolumn="hour" valuecolumn="count_Ip" serieslabel="#application.adminBundle[session.dmProfile.locale].DayBefore#" paintstyle="shade"></cfchartseries>
 	</cfchart>
 	</cfoutput>
 	
@@ -81,7 +86,7 @@ out:
 		<!--- loop over days in week --->
 		<cfloop from="1" to="7" index="day">
 			<!--- check if day is a sunday (ie start of weeek) --->
-			<cfif dayofweek(dateadd("d",-day,dateadd("ww",-queryWeek,now()))) eq 1>
+			<cfif dayofweek(dateadd("d",-day,dateadd("ww",-queryWeek,now()))) eq weekStartDay>
 				<!--- if it is sunday, set startdate for that week --->
 				<cfset "q#queryWeek#Date" = dateadd("d",-day,dateadd("ww",-queryWeek,now()))>
 			</cfif>
@@ -100,7 +105,7 @@ out:
 	
 	<cfoutput>
 	<p></p>
-	<div class="formtitle">Sessions per day over the last 4 weeks</div>
+	<div class="formtitle">#application.adminBundle[session.dmProfile.locale].sessionsPerDayLast4Weeks#</div>
 	<cfchart 
 		format="flash" 
 		chartHeight="400" 
@@ -113,18 +118,18 @@ out:
 		fontsize="12"
 		font="arialunicodeMS" 
 		labelFormat = "number"
-		xAxisTitle = "Day" 
-		yAxisTitle = "Number of Sessions" 
+		xAxisTitle = "#application.adminBundle[session.dmProfile.locale].Day#" 
+		yAxisTitle = "#application.adminBundle[session.dmProfile.locale].sessionNumbers#" 
 		show3D = "yes"
 		xOffset = "0.15" 
 		yOffset = "0.15"
 		rotated = "no" 
 		showLegend = "yes" 
 		tipStyle = "MouseOver">
-	<cfchartseries type="bar" query="q1" itemcolumn="name" valuecolumn="count_Ip" serieslabel="This Week" paintstyle="shade"></cfchartseries>
-	<cfchartseries type="bar" query="q2" itemcolumn="name" valuecolumn="count_Ip" serieslabel="Last Week" paintstyle="shade"></cfchartseries>
-	<cfchartseries type="bar" query="q3" itemcolumn="name" valuecolumn="count_Ip" serieslabel="2 Weeks Before" paintstyle="shade"></cfchartseries>
-	<cfchartseries type="bar" query="q4" itemcolumn="name" valuecolumn="count_Ip" serieslabel="3 Weeks Before" paintstyle="shade"></cfchartseries>
+	<cfchartseries type="bar" query="q1" itemcolumn="name" valuecolumn="count_Ip" serieslabel="#application.adminBundle[session.dmProfile.locale].thisWeek#" paintstyle="shade"></cfchartseries>
+	<cfchartseries type="bar" query="q2" itemcolumn="name" valuecolumn="count_Ip" serieslabel="#application.adminBundle[session.dmProfile.locale].lastWeek#" paintstyle="shade"></cfchartseries>
+	<cfchartseries type="bar" query="q3" itemcolumn="name" valuecolumn="count_Ip" serieslabel="#application.adminBundle[session.dmProfile.locale].twoWeeksBefore#" paintstyle="shade"></cfchartseries>
+	<cfchartseries type="bar" query="q4" itemcolumn="name" valuecolumn="count_Ip" serieslabel="#application.adminBundle[session.dmProfile.locale].threeWeeksBefore#" paintstyle="shade"></cfchartseries>
 	</cfchart>
 	</cfoutput>
 	
@@ -150,7 +155,10 @@ out:
 	
 	<cfoutput>
 	<p></p>
-	<div class="formtitle">Sessions per day between #dateformat(form.after,"dd/mmm/yyyy")# and #dateformat(form.before,"dd/mmm/yyyy")#</div>
+	<div class="formtitle">
+	<cfset subS=listToArray('#application.thisCalendar.i18nDateFormat(form.after,session.dmProfile.locale,application.fullF)#,#application.thisCalendar.i18nDateFormat(form.before,session.dmProfile.locale,application.fullF)#')>
+	#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].sessionsPerDayBetween,subS)#
+	</div>
 	<cfif q1.qGetPageStats.recordcount>
 		<!--- ouput graph --->
 		<cfchart 
@@ -165,8 +173,8 @@ out:
 			fontsize="12"
 			font="arialunicodeMS" 
 			labelFormat = "number"
-			xAxisTitle = "Date" 
-			yAxisTitle = "Number of Sessions" 
+			xAxisTitle = "#application.adminBundle[session.dmProfile.locale].Date#" 
+			yAxisTitle = "#application.adminBundle[session.dmProfile.locale].sessionNumbers#" 
 			show3D = "yes"
 			xOffset = "0.15" 
 			yOffset = "0.15"
@@ -174,17 +182,17 @@ out:
 			showLegend = "yes" 
 			tipStyle = "MouseOver"
 			gridlines = "#q1.max#">
-		<cfchartseries type="line" query="q1.qGetPageStats" itemcolumn="viewday" valuecolumn="count_Ip" serieslabel="Sessions between #dateformat(form.after,'dd/mmm/yyyy')# and #dateformat(form.before,'dd/mmm/yyyy')#" paintstyle="shade"></cfchartseries>
+		<cfchartseries type="line" query="q1.qGetPageStats" itemcolumn="viewday" valuecolumn="count_Ip" serieslabel="#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].sessionsPerDayBetween,subS)#" paintstyle="shade"></cfchartseries>
 		</cfchart>
 	<cfelse>
-		<cfoutput><div style="color:red">No statistics have been logged between these two dates.</div></cfoutput>
+		<cfoutput><div style="color:red">#application.adminBundle[session.dmProfile.locale].noStatsBetween#</div></cfoutput>
 	</cfif>
 	
 	<!--- show form to change date range --->
 	<div style="margin-left:30px;margin-top:20px;">
 	<form action="" method="post">
-		Between: <input type="text" name="after" value="#dateformat(form.after,"dd/mmm/yyyy")#">
-		and <input type="text" name="before" value="#dateformat(form.before,"dd/mmm/yyyy")#">
+		#application.adminBundle[session.dmProfile.locale].betweenLabel# <input type="text" name="after" value="#application.thisCalendar.i18nDateFormat(form.after,session.dmProfile.locale,application.fullF)#">
+		#application.adminBundle[session.dmProfile.locale].andLabel# <input type="text" name="before" value="#application.thisCalendar.i18nDateFormat(form.before,session.dmProfile.locale,application.fullF)#">
 		<input type="submit" value="Change Date Range">
 	</form>
 	</div>

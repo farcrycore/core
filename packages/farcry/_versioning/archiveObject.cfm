@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_versioning/archiveObject.cfm,v 1.2 2004/04/22 07:42:50 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_versioning/archiveObject.cfm,v 1.3 2005/01/17 04:57:05 brendan Exp $
 $Author: brendan $
-$Date: 2004/04/22 07:42:50 $
-$Name: milestone_2-2-1 $
-$Revision: 1.2 $
+$Date: 2005/01/17 04:57:05 $
+$Name: milestone_2-3-2 $
+$Revision: 1.3 $
 
 || DESCRIPTION || 
 $Description: Archives any farcry object $
@@ -46,7 +46,7 @@ $out:$
 	stProps.objectID = createUUID();
 	stProps.archiveID = stObj.objectID;
 	stProps.objectWDDX = stLiveWDDX;
-	stProps.label = stObj.title;
+	stProps.label = stObj.label;
 	//end dmArchive struct  
 	oArchive = createobject("component",application.types['dmArchive'].typepath);
 	oArchive.createData(stProperties=stProps);

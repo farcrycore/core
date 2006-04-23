@@ -4,11 +4,12 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/navajo/keywords/hierarchyedit.cfm,v 1.13 2004/04/27 03:15:29 paul Exp $
+
+$Header: /cvs/farcry/farcry_core/admin/navajo/keywords/hierarchyedit.cfm,v 1.16.2.1 2005/03/21 06:42:19 paul Exp $
 $Author: paul $
-$Date: 2004/04/27 03:15:29 $
-$Name: milestone_2-2-1 $
-$Revision: 1.13 $
+$Date: 2005/03/21 06:42:19 $
+$Name: milestone_2-3-2 $
+$Revision: 1.16.2.1 $
 
 || DESCRIPTION || 
 $Description: Displays category tree $
@@ -21,9 +22,15 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au)$
 $in: $
 $out:$
 --->
-
+<cfprocessingDirective pageencoding="utf-8">
 <cfoutput>
-	<link rel="stylesheet" type="text/css" href="#application.url.farcry#/css/admin.css">
+<html>
+	<head>
+		<link rel="stylesheet" type="text/css" href="#application.url.farcry#/css/admin.css">
+	</head>
+</html>
+<body>
+	
 </cfoutput>
 
 <cfscript>
@@ -60,9 +67,9 @@ $out:$
 			<cfinvoke component="#application.packagepath#.farcry.category" method="getHierarchies"  returnvariable="qHierarchies">
 
 			<form action="" method="post">
-			Existing Hierarchies:
+			<cfoutput>#application.adminBundle[session.dmProfile.locale].existingHierarchies#</cfoutput>
 			<select name="hierarchyID" class="formfield" onchange="showTree(this.value);">
-			<cfoutput><option value="#catRootObjectID#">Show All Hierarchies</cfoutput>
+			<cfoutput><option value="#catRootObjectID#">#application.adminBundle[session.dmProfile.locale].showAllHierarchies#</cfoutput>
 			<cfoutput query="qHierarchies">
 				<option value="#objectID#">#objectName#</option>
 			</cfoutput>
@@ -77,8 +84,10 @@ $out:$
 
 <cfoutput>
 <div>
-<iframe width="250" height="100%" id="cattreeframe" style="display:inline;" src="#application.url.farcry#/navajo/keywords/tree.cfm" scrolling="No" frameborder="0"></iframe>
-<iframe style="display:inline;" width="400" height="100%" id="cateditframe" src="#application.url.farcry#/navajo/keywords/overview.cfm" scrolling="Auto" frameborder="0"></iframe> 
+	<iframe name="cattreeframe" width="250" height="100%" id="cattreeframe" style="display:inline;" src="#application.url.farcry#/navajo/keywords/tree.cfm" scrolling="auto" frameborder="0"></iframe>
+	<iframe style="display:inline;" width="400" height="100%" name="cateditframe" id="cateditframe" src="#application.url.farcry#/navajo/keywords/overview.cfm" scrolling="Auto" frameborder="0"></iframe> 
 </div>
+</body>
+</html>
 </cfoutput>
 

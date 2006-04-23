@@ -1,4 +1,7 @@
 <cfsetting enablecfoutputonly="Yes">
+
+<cfprocessingDirective pageencoding="utf-8">
+
 <cfscript>
 	oAuthorisation = request.dmsec.oAuthorisation;
 	oAuthentication = request.dmsec.oAuthentication;
@@ -36,11 +39,10 @@
 				
 				<cfoutput>
 					<script>
-					
-					alert("You do not have permission to be in the security system.");
+					alert("#application.adminBundle[session.dmProfile.locale].noSecuritySysPermissions#");
 					this.location.reload();
 					</script>
-					<p>This page should automatically refresh when loaded, if not please hit the refresh key in your browser!</p>
+					<p>#application.adminBundle[session.dmProfile.locale].autoPageRefresh#</p>
 				</cfoutput>	
 				
 				<cfabort>

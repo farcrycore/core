@@ -117,7 +117,7 @@
         <cfscript>
         stObj.title = stData.title;
         stObj.filename = stData.file;
-        stObj.filePath = application.defaultFilePath;
+        stObj.filePath = application.path.defaultFilePath;
         stObj.description = stData.title;
         stObj.status = 'approved';
         stObj.typeName = qGetObject.typeName;
@@ -132,9 +132,9 @@
         stObj.imageFile = stData.filename;
         stObj.thumbnail = stData.thumbnailFilename;
         stObj.optimisedImage = stData.highResFilename;
-        stObj.originalImagePath = application.defaultImagePath;
-        if (stData.thumbnailFilename neq "") stObj.thumbnailImagePath = application.defaultImagePath;
-        if (stData.highResFilename neq "") stObj.optimisedImagePath = application.defaultImagePath;
+        stObj.originalImagePath = application.path.defaultImagePath;
+        if (stData.thumbnailFilename neq "") stObj.thumbnailImagePath = application.path.defaultImagePath;
+        if (stData.highResFilename neq "") stObj.optimisedImagePath = application.path.defaultImagePath;
         stObj.typeName = qGetObject.typeName;
         </cfscript>
     </cfcase>
@@ -147,9 +147,9 @@
         stObj.imageFile = stData.filename;
         stObj.thumbnail = stData.thumbnailFilename;
         stObj.optimisedImage = stData.highResFilename;
-        stObj.originalImagePath = application.defaultImagePath;
-        if (stData.thumbnailFilename neq "") stObj.thumbnailImagePath = application.defaultImagePath;
-        if (stData.highResFilename neq "") stObj.optimisedImagePath = application.defaultImagePath;
+        stObj.originalImagePath = application.path.defaultImagePath;
+        if (stData.thumbnailFilename neq "") stObj.thumbnailImagePath = application.path.defaultImagePath;
+        if (stData.highResFilename neq "") stObj.optimisedImagePath = application.path.defaultImagePath;
         stObj.typeName = "daemon_image";
         </cfscript>
     </cfcase>

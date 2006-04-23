@@ -3,13 +3,12 @@
 $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
-
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_category/deployCategories.cfm,v 1.11 2004/05/20 04:41:25 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_category/deployCategories.cfm,v 1.14 2004/12/15 10:15:51 brendan Exp $
 $Author: brendan $
-$Date: 2004/05/20 04:41:25 $
-$Name: milestone_2-2-1 $
-$Revision: 1.11 $
+$Date: 2004/12/15 10:15:51 $
+$Name: milestone_2-3-2 $
+$Revision: 1.14 $
 
 
 || DESCRIPTION ||
@@ -146,7 +145,8 @@ $out: <separate entry for each variable>$
 		CREATE TABLE #application.dbowner#categories
 		(
 			categoryID VARCHAR (50) NOT NULL,
-			categoryLabel VARCHAR (255) NOT NULL
+			categoryLabel VARCHAR (255) NOT NULL,
+			alias VARCHAR (50) NULL
 		)
 		</cfquery>
 		<cfquery datasource="#arguments.dsn#">
@@ -178,7 +178,16 @@ $out: <separate entry for each variable>$
 	</cftransaction>
 	</cfdefaultcase>
 	</cfswitch>
-	<cfinvoke component="#application.packagepath#.farcry.tree"	 method="setRootNode" objectName = "root" typename = "categories" objectID="#createUUID()#" returnvariable="stReturn">
+	
+	<cfset rootUUID = createUUID()>
+	<cfquery datasource="#application.dsn#" name="qUpdate">
+		insert into #application.dbowner#categories
+		(categoryid,alias,categorylabel)
+		values 
+		('#rootUUID#','root' ,'root')
+	</cfquery>
+	
+	<cfinvoke component="#application.packagepath#.farcry.tree"	 method="setRootNode" objectName = "root" typename = "categories" objectID="#rootUUID#" returnvariable="stReturn">
 	<cfscript> 
 		stStatus.status = true;
 		stStatus.message = stStatus.message & stReturn.message & '<br>' & 'categories, refCategory tables successfully created';

@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_tree/moveBranch.cfm,v 1.15 2003/09/10 12:21:48 brendan Exp $
-$Author: brendan $
-$Date: 2003/09/10 12:21:48 $
-$Name: b201 $
-$Revision: 1.15 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_tree/moveBranch.cfm,v 1.15.6.2 2005/04/28 02:34:09 paul Exp $
+$Author: paul $
+$Date: 2005/04/28 02:34:09 $
+$Name: milestone_2-3-2 $
+$Revision: 1.15.6.2 $
 
 || DESCRIPTION || 
 $Description: deleteBranch Function $
@@ -61,8 +61,7 @@ $out:$
 			bExpandDest = 0;
 		//also checking to see if destination is a descendant of sources parent, if so, we wont want to expand parentid of source		
 		qSourceParentDesc = getDescendants(objectid=source_parentid,dsn=arguments.dsn);
-		sql = "select objectid from qSourceParentDesc where objectid = '#arguments.parentid#'";
-		q = queryOfQuery(sql);
+		q = queryOfQuery2('select objectid',qSourceParentDesc,"where objectid = '#arguments.parentid#'");
 		if (q.recordCount)
 				bExpandDest = 0;
 			
@@ -81,14 +80,12 @@ $out:$
 		from nested_tree_objects
 		where nleft between #nleft# and #nright#
 		and typename = '#typename#'";
+	
 		
 		qBranchIDs = query(sql=sql, dsn=arguments.dsn);
-		
-	
+			
 		//check destination is not a descendant of the source node
-		sql = "
-			select count(*) AS ObjCount from qBranchIDs where objectid = '#arguments.parentid#'";
-		q = queryofquery(sql);	
+		q = queryofquery2("select count(*) AS ObjCount",qBranchIDs,"where objectid = '#arguments.parentid#'");	
 		
 		if (q.objCount GT 0)
 		{
@@ -142,9 +139,11 @@ $out:$
 		sql = "
 			update nested_tree_objects 				
 			set	nleft = (nleft - #count#)
-			where nleft > #nleft# and objectid not in
-			(#quotedValueList(qBranchIds.objectid)#)
+			where nleft > #nleft#
 			and typename = '#typename#'";
+		//to deal with scenarios where there are no children
+		if(qBranchIds.recordCount)	
+			sql = sql & "and objectid not in (#quotedValueList(qBranchIds.objectid)#)";
 		
 		query(sql=sql, dsn=arguments.dsn);	
 		arrayAppend(aSQL,sql);
@@ -152,9 +151,12 @@ $out:$
 		sql = "
 			update nested_tree_objects 				
 			set	nright = (nright - #count#)
-			where nright > #nleft# and objectid not in
-			(#quotedValueList(qBranchIds.objectid)#)
+			where nright > #nleft# 
 			and typename = '#typename#'";
+		//to deal with scenarios where there are no children
+		if(qBranchIds.recordCount)	
+			sql = sql & "and objectid not in (#quotedValueList(qBranchIds.objectid)#)";	
+					
 		query(sql=sql, dsn=arguments.dsn);
 		arrayAppend(aSQL,sql);	
 			
@@ -186,7 +188,7 @@ $out:$
 			while (minr GT 0)
 			{
 				sql = "select nright from qTemp";
-				q = queryofquery(sql);
+				q = queryofquery2("select nright",qTemp);
 				sql = "
 					select	min(nright) AS minr 
 					from nested_tree_objects where parentid = '#arguments.parentID#' and objectid <> '#arguments.objectid#'
@@ -208,9 +210,7 @@ $out:$
 			}//end while
 			// now get the nright hand value from the temp table that is directly before the position we want to insert the new 
 			// child at, and assign it (+1)to the var @dest_left
-			sql = "
-				select nright + 1 AS destLeft from qTemp where seq = #arguments.pos# - 1";
-			q = queryofquery(sql);	
+			q = queryofquery2("select nright + 1 AS destLeft",qTemp,"where seq = #arguments.pos# - 1");	
 			
 			dest_left = q.destLeft;
 		}//end if
@@ -223,8 +223,12 @@ $out:$
 		update nested_tree_objects 
 		set	nright = nright + #count#
 		where nright > #dest_left#
-		and objectid not in (#quotedValueList(qBranchIds.objectid)#)
 		and typename = '#typename#'";
+		
+		//to deal with scenarios where there are no children
+		if(qBranchIds.recordCount)	
+			sql = sql & "and objectid not in (#quotedValueList(qBranchIds.objectid)#)";
+		
 		//dump(sql);
 		query(sql=sql, dsn=arguments.dsn);
 		arrayAppend(aSQL,sql);
@@ -254,21 +258,30 @@ $out:$
 			update nested_tree_objects 				
 			set	nleft = nleft + #count#
 			where nleft >= #dest_left#
-			and objectid not in (#quotedValueList(qBranchIds.objectid)#)
 			and typename = '#typename#'";
+		
+		//to deal with scenarios where there are no children
+		if(qBranchIds.recordCount)	
+			sql = sql & "and objectid not in (#quotedValueList(qBranchIds.objectid)#)";	
+			
 		query(sql=sql, dsn=arguments.dsn);
 		arrayAppend(aSQL,sql);	
 	
 		// change the nlefts and nrights of the branch itself
 		diff = dest_left - nleft;
 		
-		sql = "
-			update nested_tree_objects 
-			set	nleft = (nleft + #diff#),
-			nright = (nright + #diff#)
-			where 	objectid in (#quotedValueList(qBranchIds.objectid)#)";  
-		query(sql=sql, dsn=arguments.dsn);
-		arrayAppend(aSQL,sql);
+		//to deal with scenarios where there are no children
+		if(qBranchIds.recordCount)	
+		{
+			sql = "
+				update nested_tree_objects 
+				set	nleft = (nleft + #diff#),
+				nright = (nright + #diff#)
+				where 	objectid in (#quotedValueList(qBranchIds.objectid)#)";  
+					
+			query(sql=sql, dsn=arguments.dsn);
+			arrayAppend(aSQL,sql);
+		}	
 		//Fixing a problem where when moving to bottom, the parent node nright value does not get correctly updated
 		if (source_parentid IS  arguments.parentid)
 		{   

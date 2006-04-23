@@ -1,19 +1,22 @@
-
 <cfsetting enablecfoutputonly="No">
+
+<cfprocessingDirective pageencoding="utf-8">
+
 <cfimport taglib="/farcry/farcry_core/tags/display/" prefix="display">
 
 <cfparam name="stargs.typename" default="dmXMLExport">
 
 <cfoutput>
-<HTML lang="en">
+<html dir="#session.writingDir#" lang="#session.userLanguage#">
 	
 <head>
-	<link type="text/css" rel="stylesheet" href="#application.url.farcry#/css/admin.css">  	
+	<link type="text/css" rel="stylesheet" href="#application.url.farcry#/css/admin.css">
+	<meta content="text/html; charset=UTF-8" http-equiv="content-type">
 </head>
 
 <body>
 
-<div class="FormSubTitle">RSS Feeds</div>
+<div class="FormSubTitle">#application.adminBundle[session.dmProfile.locale].rSSFeeds#</div>
 
 <cfscript>
 		o = createObject("component", application.types[stArgs.typename].typePath);
@@ -26,7 +29,7 @@ function editObject(objectID)
 }	
 
 function confirmDelete(objectID){
-	var msg = "Are you sure you wish to delete this item(s) ?";
+	var msg = "#application.adminBundle[session.dmProfile.locale].confirmDeleteItem#";
 	if (confirm(msg))
 	{	
 		return true;
@@ -105,7 +108,7 @@ function confirmDelete(objectID){
 		<td>
 		<table width="90%" cellspacing="0">
 			<tr>
-				<td>#recordSet.recordcount# items</td>
+				<td>#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].items,"#recordSet.recordcount#")#</td>
 				<td align="right" valign="middle">
 				<form action="" method="post" name="dynamicAdmin">
 					<cfif thisPage GT 1>
@@ -138,18 +141,18 @@ function confirmDelete(objectID){
 		<td>
 			<table cellpadding="5" cellspacing="0" border="1" width="90%">
 			<tr class="dataheader">
-				<td align="center"> Feed </td>
-				<td align="center" width="80"> Edit </td>
-				<td align="center" width="80"> Preview </td>
-				<td align="center" width="80"> Validate </td>
-				<td align="center" width="80"> Delete </td>
+				<td align="center"> #application.adminBundle[session.dmProfile.locale].feed# </td>
+				<td align="center" width="80"> #application.adminBundle[session.dmProfile.locale].edit# </td>
+				<td align="center" width="80"> #application.adminBundle[session.dmProfile.locale].preview# </td>
+				<td align="center" width="80"> #application.adminBundle[session.dmProfile.locale].validate# </td>
+				<td align="center" width="80"> #application.adminBundle[session.dmProfile.locale].delete# </td>
 			</tr>
          </cfoutput>
 		<cfif recordSet.recordCount EQ 0 >
 			<cfoutput>
 			<tr>
 				<td colspan="8" align="center">
-					<strong>No records recovered</strong>
+					<strong>#application.adminBundle[session.dmProfile.locale].noRecsRecovered#</strong>
 				</td>	
 			</tr>
 			</cfoutput>
@@ -166,16 +169,16 @@ function confirmDelete(objectID){
 				<td align="center">
 					<form action="" method="post" name="form_#recordset.objectid#">
 					<input type="hidden" name="objectid" value="#recordset.objectid#">
-					<input type="button" name="edit" value="Edit" onClick="location.href='#editObjectURL#';">
+					<input type="button" name="edit" value="#application.adminBundle[session.dmProfile.locale].edit#" onClick="location.href='#editObjectURL#';">
 				</td>
 				<td align="center">
-					<input type="button" name="preview" value="Preview" onClick="window.open('#previewURL#');">
+					<input type="button" name="preview" value="#application.adminBundle[session.dmProfile.locale].preview#" onClick="window.open('#previewURL#');">
 				</td>
 				<td align="center">
-					<input type="button" name="validate" value="Validate" onClick="window.open('#validateURL#');">
+					<input type="button" name="validate" value="#application.adminBundle[session.dmProfile.locale].validate#" onClick="window.open('#validateURL#');">
 				</td>
 				<td align="center">
-					<input type="submit" name="delete" value="Delete" onClick="return confirmDelete('#recordset.objectid#')">
+					<input type="submit" name="delete" value="#application.adminBundle[session.dmProfile.locale].delete#" onClick="return confirmDelete('#recordset.objectid#')">
 					</form>
 				</td>
 			  </tr>
@@ -195,7 +198,7 @@ function confirmDelete(objectID){
 				<!--- get permissions  --->
 					<form action="" method="post">
 					<cfset finishURL = URLEncodedFormat("#cgi.SCRIPT_NAME#?#CGI.QUERY_STRING#")>
-					<input type="button" value="Add" width="100" style="width:100;" class="normalbttnstyle" name="add" onClick="window.location='#application.url.farcry#/navajo/createObject.cfm?typename=#stArgs.typename#&finishURL=#finishURL#';" >
+					<input type="button" value="#application.adminBundle[session.dmProfile.locale].add#" width="100" style="width:100;" class="normalbttnstyle" name="add" onClick="window.location='#application.url.farcry#/navajo/createObject.cfm?typename=#stArgs.typename#&finishURL=#finishURL#';" >
 					</form>					
 				</td>
 				</tr>

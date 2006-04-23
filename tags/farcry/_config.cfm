@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/farcry/_config.cfm,v 1.42.2.1 2004/12/07 00:51:50 tom Exp $
-$Author: tom $
-$Date: 2004/12/07 00:51:50 $
-$Name: milestone_2-2-1 $
-$Revision: 1.42.2.1 $
+$Header: /cvs/farcry/farcry_core/tags/farcry/_config.cfm,v 1.45.2.5 2005/06/22 01:02:04 guy Exp $
+$Author: guy $
+$Date: 2005/06/22 01:02:04 $
+$Name: milestone_2-3-2 $
+$Revision: 1.45.2.5 $
 
 || DESCRIPTION || 
 $Description: included file for one-time initialisation of application constants $
@@ -46,14 +46,42 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 	<cfset application.customAdminXML="false">	
 </cfif>
 
-<!---
-Setup defaults for File and Image assets. These values might be set
+<!--- ########################################################################
+Setup defaults for File and Image assets. Either of these values *might* be set
 in the project code base in "_serverSpecificVars.cfm"
---->
-<cfparam name="application.defaultFilePath"
-		 default="#application.path.project#/www/files">
-<cfparam name="application.defaultImagePath"
-		 default="#application.path.project#/www/images">
+
+"application.default[File|Image]Path" is the pre b230 var that has been deprecated for
+"application.path.default[File|Image]Path". 
+
+Depending on the core version, either of both of these could be used so we'll
+test for the existance of each and act accordingly
+
+**These values can be set in the project codebase in _serverSpecificVars.cfm
+######################################################################### --->
+
+<!--- File path first --->
+<cfif structKeyExists(application.path, "defaultFilePath")>
+	<cfset application.defaultFilePath = application.path.defaultFilePath>
+<cfelseif structKeyExists(application, "defaultFilePath")>
+	<cfset application.path.defaultFilePath = application.defaultFilePath>
+<cfelse>
+	<!--- Defaults --->
+	<cfset application.path.defaultFilePath = "#application.path.project#/www/files">
+	<!--- Deprecated in b230; Use application.path.defaultFilePath instead --->
+	<cfset application.defaultFilePath = application.path.defaultFilePath>
+</cfif>		 
+
+<!--- Image Path --->
+<cfif structKeyExists(application.path, "defaultImagePath")>
+	<cfset application.defaultImagePath = application.path.defaultImagePath>
+<cfelseif structKeyExists(application, "defaultImagePath")>
+	<cfset application.path.defaultImagePath = application.defaultImagePath>
+<cfelse>
+	<!--- Defaults --->
+	<cfset application.path.defaultImagePath = "#application.path.project#/www/images">
+	<!--- Deprecated in b230; Use application.path.defaultImagePath instead --->
+	<cfset application.defaultImagePath = application.path.defaultImagePath>
+</cfif>
 
 <cfscript>
 	/* $TODO:
@@ -91,6 +119,7 @@ in the project code base in "_serverSpecificVars.cfm"
 	application.fourq.plpstorage = application.path.core & "/plps/plpstorage"; // deprecated
 	application.fourq.plppath = "/farcry/farcry_core/plps"; // deprecated
 
+
 	//initialise factory objects 
 	application.factory.oAudit = createObject("component","#application.packagepath#.farcry.audit");
 	application.factory.oTree = createObject("component","#application.packagepath#.farcry.tree");
@@ -104,6 +133,8 @@ in the project code base in "_serverSpecificVars.cfm"
 	application.factory.oGenericAdmin = createObject("component","#application.packagepath#.farcry.genericAdmin");
 	application.factory.oVerity = createObject("component","#application.packagepath#.farcry.verity");
 	application.factory.oCon = createObject("component","#application.packagepath#.rules.container");
+	application.factory.oGeoLocator = createObject("component","#application.packagepath#.farcry.geoLocator");
+	application.bGeoLocatorInit = application.factory.oGeoLocator.init();
 	try {
 		application.factory.oFU = createObject("component","#application.packagepath#.farcry.FU");
 	}

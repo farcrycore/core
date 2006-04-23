@@ -1,3 +1,4 @@
+<cfprocessingDirective pageencoding="utf-8">
 <cfparam name="attributes.toplevelvariable">
 <cfparam name="attributes.input">
 <cfparam name="attributes.output">

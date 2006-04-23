@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/farcry/dmSubmitButton.cfm,v 1.1 2003/03/20 22:43:36 brendan Exp $
+$Header: /cvs/farcry/farcry_core/tags/farcry/dmSubmitButton.cfm,v 1.2 2004/07/15 02:02:18 brendan Exp $
 $Author: brendan $
-$Date: 2003/03/20 22:43:36 $
-$Name: b201 $
-$Revision: 1.1 $
+$Date: 2004/07/15 02:02:18 $
+$Name: milestone_2-3-2 $
+$Revision: 1.2 $
 
 || DESCRIPTION || 
 Displays a form button
@@ -21,6 +21,8 @@ in: width,type,onClick,value,name
 out:
 --->
 <cfsetting enablecfoutputonly="yes">
+
+<cfprocessingDirective pageencoding="utf-8">
 
 <cfif ISDEFINED("ATTRIBUTES.Name") and ISDEFINED("ATTRIBUTES.Value")>
 	<cfparam name="ATTRIBUTES.Width" default="70">

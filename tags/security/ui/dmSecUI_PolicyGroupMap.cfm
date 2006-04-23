@@ -1,4 +1,6 @@
 <cfsetting enablecfoutputonly="Yes">
+
+<cfprocessingDirective pageencoding="utf-8">
 <!--- 
 || BEGIN FUSEDOC ||
 
@@ -7,11 +9,11 @@ Daemon Pty Limited 1995-2001
 http://www.daemon.com.au/
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/security/ui/dmSecUI_PolicyGroupMap.cfm,v 1.2 2003/04/09 08:04:59 spike Exp $
-$Author: spike $
-$Date: 2003/04/09 08:04:59 $
-$Name: b201 $
-$Revision: 1.2 $
+$Header: /cvs/farcry/farcry_core/tags/security/ui/dmSecUI_PolicyGroupMap.cfm,v 1.3 2004/07/15 02:03:27 brendan Exp $
+$Author: brendan $
+$Date: 2004/07/15 02:03:27 $
+$Name: milestone_2-3-2 $
+$Revision: 1.3 $
 
 || DESCRIPTION || 
 UI for mapping external groups to policy groups.
@@ -25,6 +27,9 @@ Matt Dawson (mad@daemon.com.au)
 
 || HISTORY ||
 $Log: dmSecUI_PolicyGroupMap.cfm,v $
+Revision 1.3  2004/07/15 02:03:27  brendan
+i18n updates
+
 Revision 1.2  2003/04/09 08:04:59  spike
 Major update to remove need for multiple ColdFusion and webserver mappings.
 
@@ -66,7 +71,7 @@ no message
 </cfscript>
 
 
-<cfoutput><span class="formtitle">Map a Policy Group</span><p></p></cfoutput>
+<cfoutput><span class="formtitle">#application.adminBundle[session.dmProfile.locale].mapAPolicyGroup#</span><p></p></cfoutput>
 
 <!--- stage 1, select a user directory --->
 <cfif not isDefined("url.step") OR url.step eq 1>
@@ -81,11 +86,11 @@ no message
 	</tr>
 	<tr>
 		<td>
-		<span class="formlabel">Please select a userdirectory that you wish to map groups from:</span><p>
+		<span class="formlabel">#application.adminBundle[session.dmProfile.locale].selectUserDirLabel#</span><p>
 	
 		<form action="?tag=#url.tag#&step=2&showerror=1" method="POST">
 			<dmsec:dmSec_Select name="userDirectory" stValues="#stUd#">
-			<input type="Submit" name="Next" value="Next">
+			<input type="Submit" name="Next" value="#application.adminBundle[session.dmProfile.locale].next#">
 		</form>
 		</td>
 	</tr>
@@ -119,14 +124,14 @@ no message
 	<tr>
 		<td>
 		<!--- get all the userdirectories groups and show as a drop down --->
-		<span class="formlabel">Please select a external group to map from:</span><br>
+		<span class="formlabel">#application.adminBundle[session.dmProfile.locale].selectExternalGroupLabel#</span><br>
 		<dmsec:dmSec_Select name="groupName" aValues="#aGroups#" ValueField="groupName" TextField="groupName"><br>
 		<p></p>
 		<!--- get all the policy stores groups and show as drop down --->
-		<span class="formlabel">Please select a policy group to map to:</span><br>
+		<span class="formlabel">#application.adminBundle[session.dmProfile.locale].selectPolicyGroupLabel#</span><br>
 		<dmsec:dmSec_Select name="policyGroupId" aValues="#aPolicyGroups#" ValueField="policyGroupId" TextField="policyGroupName"><br>
 		<p></p>
-		<input type="Submit" name="Map Group" value="Map Group">
+		<input type="Submit" name="Map Group" value="#application.adminBundle[session.dmProfile.locale].mapGroup#">
 		</td>
 	</tr>
 	<tr>
@@ -142,9 +147,9 @@ no message
 <cfscript>
 	stResult = oAuthorisation.createPolicyGroupMapping(groupname="#form.groupName#",userdirectory="#form.userdirectory#",policyGroupId="#form.policyGroupId#");
 	if (stResult.bSuccess)
-		msg = "<div style=""color:green;"">OK:</div> Policy group mapping added.<p></p>";
+		msg = "#application.adminBundle[session.dmProfile.locale].policyGroupMappingAdded#<p></p>";
 	else
-		msg = "<div style=""color:red;"">Failed:</div> Policy group mapping already exists.<p>";
+		msg = "#application.adminBundle[session.dmProfile.locale].policyGroupMappingExists#<p>";
 			
 </cfscript>
 

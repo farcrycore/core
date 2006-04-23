@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/admin/quickBuilder.cfm,v 1.5 2003/11/05 04:46:09 tom Exp $
-$Author: tom $
-$Date: 2003/11/05 04:46:09 $
-$Name: milestone_2-2-1 $
-$Revision: 1.5 $
+$Header: /cvs/farcry/farcry_core/admin/admin/quickBuilder.cfm,v 1.6 2004/07/15 01:10:24 brendan Exp $
+$Author: brendan $
+$Date: 2004/07/15 01:10:24 $
+$Name: milestone_2-3-2 $
+$Revision: 1.6 $
 
 || DESCRIPTION || 
 $Description: Quickly builds a navigation structure$
@@ -24,6 +24,8 @@ $out:$
 
 <cfsetting enablecfoutputonly="yes">
 
+<cfprocessingDirective pageencoding="utf-8">
+
 <cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
 <cfimport taglib="/farcry/farcry_core/tags/farcry/" prefix="farcry">
 <cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
@@ -31,7 +33,7 @@ $out:$
 <!--- character to indicate levels --->
 <cfset levelToken = "-" />
 
-<admin:header>
+<admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 <!--- check permissions --->
 <cfscript>
@@ -187,13 +189,15 @@ $out:$
 	    </cfscript>
 	
 	    <cfoutput>
-	        <div class="formTitle">NAVIGATION TREE QUICK BUILDER</div>
+	        <div class="formTitle">#application.adminBundle[session.dmProfile.locale].navTreeQuickBuilder#</div>
 	        <p>
-	            The following items have been created:
+	            #application.adminBundle[session.dmProfile.locale].followingItemsCreated#
 	        </p>
 	        <ul>
-	          <li>#arrayLen(items)# <strong>dmNavigation</strong> objects</li>
-	          <li>#arrayLen(htmlItems)# <strong>dmHTML</strong> objects</li>
+				<cfset subS=listToArray('#arrayLen(items)#,"dmNavigation"')>
+				<li>#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].objects,subS)#</li>
+				<cfset subS=listToArray('#arrayLen(htmlItems)#,"dmHTML"')>
+	          	<li>#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].objects,subS)#</li>
 	        </ul>
 	    </cfoutput>
 	<cfelse>
@@ -217,16 +221,16 @@ $out:$
 	        document.theForm.navaliaseslevel.disabled = !document.theForm.makenavaliases.checked;
 	    }
 	</script>
-	<div class="formTitle">NAVIGATION TREE QUICK BUILDER</div>
+	<div class="formTitle">#application.adminBundle[session.dmProfile.locale].navTreeQuickBuilder#</div>
 	
 	<p>
 	  <form action="" method="POST" name="theForm">
 	    <table border="0" cellpadding="3" cellspacing="0">
 	      <tr>
-	        <td>Create structure within:</td>
+	        <td>#application.adminBundle[session.dmProfile.locale].createStructureWithin#</td>
 	        <td>
 	          <select name="startPoint">
-	            <option value="#application.navid.root#">Root</option>
+	            <option value="#application.navid.root#">#application.adminBundle[session.dmProfile.locale].Root#</option>
 	            <cfloop query="qNodes">
 	                 <option value="#qNodes.objectId#" <cfif qNodes.objectId eq application.navid.home>selected</cfif>>#RepeatString("&nbsp;&nbsp;|", qNodes.nlevel)#- #qNodes.objectName#</option>
 	            </cfloop>
@@ -234,18 +238,18 @@ $out:$
 	        </td>
 	      </tr>
 	      <tr>
-	        <td>Status:</td>
+	        <td>#application.adminBundle[session.dmProfile.locale].status#</td>
 	        <td>
 	          <select name="status">
-	            <option value="draft">Draft</option>
-				<option value="approved">Approved</option>	            
+	            <option value="draft">#application.adminBundle[session.dmProfile.locale].draft#</option>
+				<option value="approved">#application.adminBundle[session.dmProfile.locale].approved#</option>	            
 	          </select>
 	        </td>
 	      </tr>
 	      <tr>
-	        <td>dmHTML Items:</td>
+	        <td>#application.adminBundle[session.dmProfile.locale].dmHTMLItems#</td>
 	        <td><input type="checkbox" name="makehtml" checked value="1" onClick="updateDisplayBox()" />
-	          Create dmHtml items with the same title as their dmNavigation node
+	          #application.adminBundle[session.dmProfile.locale].createdmHtmlItems#
 	        </td>
 	      </tr>
 	      <tr>
@@ -255,16 +259,16 @@ $out:$
 				<cfloop query="qDisplayTypes">
 					<option value="#qDisplayTypes.methodName#" <cfif qDisplayTypes.methodName eq "displayPageStandard">selected</cfif>>#qDisplayTypes.displayName#</option>
 				</cfloop>
-			  </select> (display method)
+			  </select> #application.adminBundle[session.dmProfile.locale].displayMethod#
 			  <script>updateDisplayBox()</script>
 			</td>
 	      </tr>
 	      <tr>
-	        <td>Nav Aliases:</td>
+	        <td>#application.adminBundle[session.dmProfile.locale].navAliases#</td>
 	        <td><input type="checkbox" name="makenavaliases" checked value="1" onClick="updateNavTreeDepthBox()" />
-	          Create nav aliases for navigation nodes down
+	          #application.adminBundle[session.dmProfile.locale].createNavAliases#
 	          <select name="navaliaseslevel">
-	            <option value="0">All</option>
+	            <option value="0">#application.adminBundle[session.dmProfile.locale].all#</option>
 	            <option value="1" selected >1</option>
 	            <option value="2">2</option>
 	            <option value="3">3</option>
@@ -272,16 +276,16 @@ $out:$
 	            <option value="5">5</option>
 	            <option value="6">6</option>
 	          </select>
-	          levels
+	          #application.adminBundle[session.dmProfile.locale].levels#
 			  <script>updateNavTreeDepthBox()</script>
 	        </td>
 	      </tr>
 	      <tr>
-	        <td>levelToken:</td>
+	        <td>#application.adminBundle[session.dmProfile.locale].levelToken#</td>
 	        <td><select><option>#levelToken#</option></select></td>
 	      </tr>
 	      <tr>
-	        <td valign="top">Structure:</td>
+	        <td valign="top">#application.adminBundle[session.dmProfile.locale].structure#</td>
 	        <td>
 	<textarea name="structure" rows="10" cols="40"></textarea>
 	        </td>
@@ -289,30 +293,19 @@ $out:$
 	      <tr>
 	        <td>&nbsp;</td>
 	        <td>
-	          <input type="submit" value="Build Site Structure" name="submit" />
+	          <input type="submit" value="#application.adminBundle[session.dmProfile.locale].buildSiteStructure#" name="submit" />
 	        </td>
 	      </tr>
 	    </table>
 	  </form>
 	</p>
-	
-	
+		
 	<p>
-	    <strong>Instructions:</strong>
+	    <strong>#application.adminBundle[session.dmProfile.locale].instructions#</strong>
 	</p>
+	#application.adminBundle[session.dmProfile.locale].quicklyBuildFarCrySiteBlurb#
 	<p>
-	    To quickly build a FarCry site structure, enter each node title on a new line.
-	    The hierarchy is determined by the characters in front of an item.
-	</p>
-	<p>
-	    Hierarchy can either descend (1 or more levels), ascend (1 level at most),
-	    or stay the same. To ascend one level, increase the number of levelToken occurrences on the item by 1
-	    compared to the previous item. To descend, keep the number of levelToken occurrences in front to be
-	    the same as a previous item on the same level you wish to go back to. To
-	    stay in the same level, keep the levelToken occurrences the same.
-	</p>
-	<p>
-	    <strong>Example:</strong>
+	    <strong>#application.adminBundle[session.dmProfile.locale].example#</strong>
 	</p>
 	<pre>
 	Item 1
@@ -325,7 +318,7 @@ $out:$
 	Item 3
 	</pre>
 	<p>
-	    For visual purposes spaces can be included between the item and the levelToken. Example:
+	    #application.adminBundle[session.dmProfile.locale].visualPurposesBlurb#
 	</p>
 	<pre>
 	Item 1

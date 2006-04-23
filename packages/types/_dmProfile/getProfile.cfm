@@ -6,11 +6,11 @@ Daemon Pty Limited 1995-2002
 http://www.daemon.com.au
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmProfile/getProfile.cfm,v 1.6.4.1 2005/01/13 04:32:33 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmProfile/getProfile.cfm,v 1.8 2005/01/13 04:31:07 brendan Exp $
 $Author: brendan $
-$Date: 2005/01/13 04:32:33 $
-$Name: milestone_2-2-1 $
-$Revision: 1.6.4.1 $
+$Date: 2005/01/13 04:31:07 $
+$Name: milestone_2-3-2 $
+$Revision: 1.8 $
 
 || DESCRIPTION || 
 dmProfile get data handler
@@ -26,7 +26,7 @@ none
 
 <cfquery name="qProfile" datasource="#application.dsn#">
 SELECT objectID FROM #application.dbowner#dmProfile
-WHERE userName = '#arguments.userName#'
+WHERE UPPER(userName) = '#UCase(arguments.userName)#'
 </cfquery>
 
 <cfif qProfile.recordCount>

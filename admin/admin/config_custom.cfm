@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/admin/config_custom.cfm,v 1.3 2003/09/17 07:19:00 brendan Exp $
+$Header: /cvs/farcry/farcry_core/admin/admin/config_custom.cfm,v 1.4 2004/07/15 01:10:24 brendan Exp $
 $Author: brendan $
-$Date: 2003/09/17 07:19:00 $
-$Name: b201 $
-$Revision: 1.3 $
+$Date: 2004/07/15 01:10:24 $
+$Name: milestone_2-3-2 $
+$Revision: 1.4 $
 
 || DESCRIPTION || 
 $Description: Manages custom config items$
@@ -23,6 +23,9 @@ $out:$
 --->
 
 <cfsetting enablecfoutputonly="Yes">
+
+<cfprocessingDirective pageencoding="utf-8">
+
 <cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
 
 <!--- check permissions --->
@@ -30,7 +33,7 @@ $out:$
 	iGeneralTab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="AdminGeneralTab");
 </cfscript>
 
-<admin:header title="Custom Config">
+<admin:header title="Custom Config" writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 <cfif iGeneralTab eq 1>	
 
@@ -42,7 +45,7 @@ $out:$
 	</cfscript>
 	
 	<cfoutput>
-	<span class="formtitle">Custom Config Types</span><p></p></cfoutput>
+	<span class="formtitle">#application.adminBundle[session.dmProfile.locale].customConfigTypes#</span><p></p></cfoutput>
 	
 	<cfif qConfigs.recordcount>
 		<cfoutput>
@@ -53,9 +56,9 @@ $out:$
 		<p></p>
 		<table cellpadding="5" cellspacing="0" border="1"  style="margin-left:30px;">
 		<tr>
-			<th class="dataheader">Config</th>
-			<th class="dataheader">Deployed</th>
-			<th class="dataheader">Deploy</th>
+			<th class="dataheader">#application.adminBundle[session.dmProfile.locale].config#</th>
+			<th class="dataheader">#application.adminBundle[session.dmProfile.locale].deployed#</th>
+			<th class="dataheader">#application.adminBundle[session.dmProfile.locale].deploy#</th>
 		</tr>
 		</cfoutput>
 		
@@ -76,9 +79,9 @@ $out:$
 				
 				<td align="center">
 					<cfif not structIsEmpty(stConfig)>
-						<a href="#CGI.SCRIPT_NAME#?deploy=#qConfigs.name#&type=redeploy">Restore Default</a>
+						<a href="#CGI.SCRIPT_NAME#?deploy=#qConfigs.name#&type=redeploy">#application.adminBundle[session.dmProfile.locale].restoreDefault#</a>
 					<cfelse>
-						<a href="#CGI.SCRIPT_NAME#?deploy=#qConfigs.name#&type=deploy">Deploy</a>
+						<a href="#CGI.SCRIPT_NAME#?deploy=#qConfigs.name#&type=deploy">#application.adminBundle[session.dmProfile.locale].deploy#</a>
 					</cfif>
 				</td>
 			</tr>
@@ -90,7 +93,7 @@ $out:$
 		</cfoutput>
 	
 	<cfelse>
-		<cfoutput>There are no custom configs at this time.</cfoutput>
+		<cfoutput>#application.adminBundle[session.dmProfile.locale].noCustomConfigNow#</cfoutput>
 	</cfif>
 
 <cfelse>

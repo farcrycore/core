@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_config/deployConfig.cfm,v 1.9 2004/06/02 00:48:51 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_config/deployConfig.cfm,v 1.12 2004/08/11 03:13:23 brendan Exp $
 $Author: brendan $
-$Date: 2004/06/02 00:48:51 $
-$Name: milestone_2-2-1 $
-$Revision: 1.9 $
+$Date: 2004/08/11 03:13:23 $
+$Name: milestone_2-3-2 $
+$Revision: 1.12 $
 
 || DESCRIPTION || 
 $Description: deploys all config files $
@@ -55,7 +55,7 @@ $out:$
 		<cfquery datasource="#arguments.dsn#" name="createConfig">
 			CREATE TABLE #application.dbowner#config
 				(
-				configName char(50) NOT NULL,
+				configName varchar(50) NOT NULL,
 				wConfig text NULL,
 				PRIMARY KEY (configName)
 				) 

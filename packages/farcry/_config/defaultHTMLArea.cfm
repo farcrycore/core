@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_config/defaultHTMLArea.cfm,v 1.1 2004/06/16 07:35:42 brendan Exp $
-$Author: brendan $
-$Date: 2004/06/16 07:35:42 $
-$Name: milestone_2-2-1 $
-$Revision: 1.1 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_config/defaultHTMLArea.cfm,v 1.4 2004/10/06 08:11:10 paul Exp $
+$Author: paul $
+$Date: 2004/10/06 08:11:10 $
+$Name: milestone_2-3-2 $
+$Revision: 1.4 $
 
 || DESCRIPTION || 
 $Description: deploys HTMLArea config file $
@@ -31,6 +31,11 @@ stConfig.Toolbar1 = "['formatblock', 'space', 'bold', 'italic', 'underline', 'se
 stConfig.Toolbar2 = "[ 'justifyleft', 'justifycenter', 'justifyright', 'justifyfull', 'separator', 'insertorderedlist', 'insertunorderedlist', 'outdent', 'indent', 'separator', 'inserthorizontalrule', 'createlink', 'inserttable', 'htmlmode', 'separator', 'popupeditor' ]";
 stConfig.URLPath = '/lib/htmlarea/';
 stConfig.lang = 'en';
+stConfig.useContextMenu = "No";
+stConfig.useTableOperations = "No";
+stConfig.pageStyle = "";
+stConfig.height = '400px';
+stConfig.width = '595px';
 </cfscript>
 
 <cfwddx action="CFML2WDDX" input="#stConfig#" output="wConfig">

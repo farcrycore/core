@@ -6,11 +6,11 @@ Daemon Pty Limited 1995-2003
 http://www.daemon.com.au
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/admin/cacheDetail.cfm,v 1.5 2003/09/03 01:50:31 brendan Exp $
+$Header: /cvs/farcry/farcry_core/admin/admin/cacheDetail.cfm,v 1.6 2004/07/15 01:10:24 brendan Exp $
 $Author: brendan $
-$Date: 2003/09/03 01:50:31 $
-$Name: b201 $
-$Revision: 1.5 $
+$Date: 2004/07/15 01:10:24 $
+$Name: milestone_2-3-2 $
+$Revision: 1.6 $
 
 || DESCRIPTION || 
 Displays cache details
@@ -27,6 +27,8 @@ out:
 
 <cfsetting enablecfoutputonly="yes">
 
+<cfprocessingDirective pageencoding="utf-8">
+
 <!--- check permissions --->
 <cfscript>
 	iGeneralTab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="AdminGeneralTab");
@@ -34,7 +36,7 @@ out:
 
 <!--- set up page header --->
 <cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
-<admin:header>
+<admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 <cfif iGeneralTab eq 1>
 	<!--- flush selected caches --->
@@ -46,7 +48,7 @@ out:
 	</cfif>
 	
 	<!--- display form --->
-	<cfoutput><span class="Formtitle">Content Cache Detail</span><p></p></cfoutput>
+	<cfoutput><span class="Formtitle">#application.adminBundle[session.dmProfile.locale].contentCacheDetail#</span><p></p></cfoutput>
 	
 	<!--- get individual caches from block--->
 	<cfif structkeyexists(server,"dm_CacheBlock")>
@@ -54,10 +56,10 @@ out:
 		<form action="" method="post" name="cacheForm">
 		<table cellpadding="5" cellspacing="0" border="1" style="margin-left:30px;">
 		<tr class="dataheader">
-			<td>Cache</td>
-			<td align="center">Timeout Period</td>
-			<td align="center">Will Expire</td>
-			<td align="center">Flush</td>
+			<td>#application.adminBundle[session.dmProfile.locale].cache#</td>
+			<td align="center">#application.adminBundle[session.dmProfile.locale].timeoutPeriod#</td>
+			<td align="center">#application.adminBundle[session.dmProfile.locale].willExpire#</td>
+			<td align="center">#application.adminBundle[session.dmProfile.locale].flush#</td>
 		</tr>
 		</cfoutput>
 		<!--- check there are caches to display --->
@@ -88,9 +90,10 @@ out:
 						<td align="center">#days#:#hours#:#minutes#:#seconds#</td>
 						<td align="center">
 							<cfif expire gt now()>
-								#timeformat(expire, "HH:mm:ss")# #dateformat(expire, "dddd, mmm d, yyyy")#
+								#application.thisCalendar.i18nTimeFormat(expire,session.dmProfile.locale,application.longF)# 
+								#application.thisCalendar.i18nDateFormat(expire,session.dmProfile.locale,application.fullF)#
 							<cfelse>
-								<span style="color:red;">expired!</span>
+								<span style="color:red;">#application.adminBundle[session.dmProfile.locale].expired#</span>
 							</cfif>
 						</td>
 						<td align="center"><input type="checkbox" value="#actualCacheName#" name="flush"></td>
@@ -101,14 +104,14 @@ out:
 			</cfloop>
 			<cfoutput>
 			<tr style="border: none;">
-				<td style="border-right: none;" colspan="3"><input type="button" value="Refresh" name="refresh" class="normalbttnstyle" onClick="forms.cacheForm.submitButton.name='refresh';forms.cacheForm.submitButton.click()"></td>
-				<td  style="border-left: none;" align="center"><input type="button" value="Flush" name="flush" class="normalbttnstyle" onClick="forms.cacheForm.submitButton.name='flush';forms.cacheForm.submitButton.click()"></td>
+				<td style="border-right: none;" colspan="3"><input type="button" value="#application.adminBundle[session.dmProfile.locale].refresh#" name="refresh" class="normalbttnstyle" onClick="forms.cacheForm.submitButton.name='refresh';forms.cacheForm.submitButton.click()"></td>
+				<td  style="border-left: none;" align="center"><input type="button" value="#application.adminBundle[session.dmProfile.locale].flush#" name="flush" class="normalbttnstyle" onClick="forms.cacheForm.submitButton.name='flush';forms.cacheForm.submitButton.click()"></td>
 			</tr>
 			</cfoutput>
 		<cfelse>
 			<cfoutput>
 			<tr>
-				<td colspan="5">No Caches to display.</td>
+				<td colspan="5">#application.adminBundle[session.dmProfile.locale].noCachesToDisplay#</td>
 			</tr>
 			</cfoutput>
 		</cfif>
@@ -119,11 +122,11 @@ out:
 		</form>
 		</cfoutput>
 	<cfelse>
-		<cfoutput>No caches at this time.</cfoutput>
+		<cfoutput>#application.adminBundle[session.dmProfile.locale].noCachesNow#</cfoutput>
 	</cfif>
 	
 	<!--- show link back to summary page --->
-	<cfoutput><p><span class="frameMenuBullet">&raquo;</span> <a href="cacheSummary.cfm">Return to Cache Summary page</a></p></cfoutput>
+	<cfoutput><p><span class="frameMenuBullet">&raquo;</span> <a href="cacheSummary.cfm">#application.adminBundle[session.dmProfile.locale].returnCacheSummaryPage#</a></p></cfoutput>
 
 <cfelse>
 	<admin:permissionError>

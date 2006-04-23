@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2004, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/rules/rules.cfc,v 1.11.2.1 2004/12/15 21:32:41 nmische Exp $
+$Header: /cvs/farcry/farcry_core/packages/rules/rules.cfc,v 1.14 2004/12/15 21:50:14 nmische Exp $
 $Author: nmische $
-$Date: 2004/12/15 21:32:41 $
-$Name: milestone_2-2-1 $
-$Revision: 1.11.2.1 $
+$Date: 2004/12/15 21:50:14 $
+$Name: milestone_2-3-2 $
+$Revision: 1.14 $
 
 || DESCRIPTION || 
 $Description: Abstract Rules Class $
@@ -64,7 +64,7 @@ $out:$
 		<cfoutput><p>#arguments[1]# : No execute method specified</cfoutput>
 	</cffunction>  
 	
-	<cffunction access="public" name="getRules" returntype="query" hint="returns a single column query (column name 'rulename') of available rules. Assumes that rule names are rule*.cfc">
+	<cffunction access="public" name="getRules" returntype="query" hint="Returns a two column query (rulename, bCustom) of available rules. Assumes that rule names are rule*.cfc">
 		
 		<cfset var qRules = queryNew("rulename,bCustom")>
 		<cfset var thisRow = 1>
@@ -95,20 +95,21 @@ $out:$
 		<cfreturn qRules>	
 	</cffunction>
 	
-	
-	
-	<cffunction name="setData" access="public" output="false" hint="Update the record for an objectID including array properties.  Pass in a structure of property values; arrays should be passed as an array.">
+	<cffunction name="setData" access="public" output="false" hint="Update the record for an objectID including array properties.  Pass in a structure of property values; arrays should be passed as an array." returntype="struct">
 		<cfargument name="stProperties" required="true">
 		<cfargument name="user" type="string" required="true" hint="Username for object creator" default="#session.dmSec.authentication.userlogin#">
-		<cfargument name="auditNote" type="string" required="true" hint="Note for audit trail" default="Updated">
+		<cfargument name="auditNote" type="string" required="true" hint="Note for audit trail" default="Updated publishing rule.">
 		<cfargument name="bAudit" type="boolean" required="No" default="1" hint="Pass in 0 if you wish no audit to take place">
 		<cfargument name="dsn" required="No" default="#application.dsn#"> 
-				
-		<cfset super.setData(arguments.stProperties,arguments.dsn)>
+		
+		<cfset var stReturn=structNew()>
+		
+		<cfset stReturn=super.setData(arguments.stProperties,arguments.dsn)>
 		<!--- log update --->
 		<cfif arguments.bAudit>
 			<cfset application.factory.oAudit.logActivity(auditType="Update", username=arguments.user, location=cgi.remote_host, note=arguments.auditNote,objectid=arguments.stProperties.objectid,dsn=arguments.dsn)>	
 		</cfif>
+		<cfreturn stReturn>
 	</cffunction>
 	
 	

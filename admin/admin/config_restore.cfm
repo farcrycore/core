@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/admin/config_restore.cfm,v 1.10 2004/06/16 04:55:15 brendan Exp $
+$Header: /cvs/farcry/farcry_core/admin/admin/config_restore.cfm,v 1.12 2004/07/15 03:52:45 brendan Exp $
 $Author: brendan $
-$Date: 2004/06/16 04:55:15 $
-$Name: milestone_2-2-1 $
-$Revision: 1.10 $
+$Date: 2004/07/15 03:52:45 $
+$Name: milestone_2-3-2 $
+$Revision: 1.12 $
 
 || DESCRIPTION || 
 $DESCRIPTION: restore default config settings$
@@ -24,6 +24,8 @@ $out:$
 
 <cfsetting enablecfoutputonly="yes">
 
+<cfprocessingDirective pageencoding="utf-8">
+
 <!--- check permissions --->
 <cfscript>
 	iGeneralTab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="AdminGeneralTab");
@@ -31,11 +33,11 @@ $out:$
 
 <!--- set up page header --->
 <cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
-<admin:header>
+<admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 <cfif iGeneralTab eq 1>
 
-	<span class="formHeader">Restore Default Config</span>
+	<span class="formHeader">#application.adminBundle[session.dmProfile.locale].restoreDefaultConfig#</span>
 	
 	<!--- drop tables and recreate --->
 	<cfinvoke component="#application.packagepath#.farcry.config" method="deployConfig" returnvariable="deployConfigRet">
@@ -111,7 +113,13 @@ $out:$
 	
 	<cfoutput><span class="frameMenuBullet">&raquo;</span> #stStatus.message#...<p></p></cfoutput><cfflush>
 	
-	<cfoutput>All done.</cfoutput>
+	<!--- setup default EOPro4 config --->
+	<cfinvoke component="#application.packagepath#.farcry.config" method="defaultEOPro4" returnvariable="stStatus">
+	</cfinvoke>
+	
+	<cfoutput><span class="frameMenuBullet">&raquo;</span> #stStatus.message#...<p></p></cfoutput><cfflush>
+	
+	<cfoutput>#application.adminBundle[session.dmProfile.locale].allDone#</cfoutput>
 
 <cfelse>
 	<admin:permissionError>

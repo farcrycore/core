@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmnavigation/edit.cfm,v 1.36 2003/12/08 05:28:38 paul Exp $
-$Author: paul $
-$Date: 2003/12/08 05:28:38 $
-$Name: milestone_2-2-1 $
-$Revision: 1.36 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmnavigation/edit.cfm,v 1.37.2.1 2005/02/15 02:46:12 brendan Exp $
+$Author: brendan $
+$Date: 2005/02/15 02:46:12 $
+$Name: milestone_2-3-2 $
+$Revision: 1.37.2.1 $
 
 || DESCRIPTION || 
 $Description: Navigation node edit method. Displays edit form and updates object on submission. $
@@ -24,6 +24,8 @@ $out:$
 
 <cfsetting enablecfoutputonly="yes">
 
+<cfprocessingDirective pageencoding="utf-8">
+
 <cfimport taglib="/farcry/fourq/tags" prefix="q4"> 
 <cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
 <cfimport taglib="/farcry/farcry_core/tags/display/" prefix="display">
@@ -34,7 +36,7 @@ $out:$
 </cfoutput>
 
 <cfif isDefined("FORM.submit")> 
-	<cfoutput><span class="frameMenuBullet">&raquo;</span> Saving Changes...<p></p></cfoutput><cfflush>
+	<cfoutput><p><span class="frameMenuBullet">&raquo;</span> #application.adminBundle[session.dmProfile.locale].savingChanges#</p></cfoutput><cfflush>
 	
 	<!--- perform the update --->
 	<cfscript>
@@ -54,10 +56,10 @@ $out:$
 		this.setData(stProperties=stProperties);
 	</cfscript>
 		
-	<cfoutput><span class="frameMenuBullet">&raquo;</span> Updating Tree...<p></p></cfoutput><cfflush>
+	<cfoutput><p><span class="frameMenuBullet">&raquo;</span> #application.adminBundle[session.dmProfile.locale].updatingTree#</p></cfoutput><cfflush>
 	<cfquery datasource="#application.dsn#">
 		UPDATE #application.dbowner#nested_tree_objects 
-		SET objectName = '#FORM.title#'
+		SET objectName = <cfqueryparam cfsqltype="cf_sql_varchar" value="#FORM.title#">
 		WHERE objectID = '#stObj.ObjectID#'
 	</cfquery>
 	
@@ -73,7 +75,7 @@ $out:$
 	
 	<!--- update fu --->
 	<cfif application.config.plugins.fu>
-		<cfoutput><span class="frameMenuBullet">&raquo;</span> Updating Friendly URLs...<p></p></cfoutput><cfflush>
+		<cfoutput><p><span class="frameMenuBullet">&raquo;</span> #application.adminBundle[session.dmProfile.locale].updatingFriendlyURLs#</p></cfoutput><cfflush>
 				
 		<!--- get current fu --->
 		<cfset fuUrl = application.factory.oFU.getFU(objectid=stObj.objectid)>
@@ -153,7 +155,7 @@ $out:$
 	
 	
 	<!--- Finally update Navids --->
-	<cfoutput><span class="frameMenuBullet">&raquo;</span> Updating Application Navids...<p></p></cfoutput><cfflush>
+	<cfoutput><p><span class="frameMenuBullet">&raquo;</span> #application.adminBundle[session.dmProfile.locale].updatingApplicationNavids#</p></cfoutput><cfflush>
 	<cfscript>
 	application.navid = getNavAlias();
 	</cfscript>
@@ -172,7 +174,7 @@ $out:$
 	<br>
 		<table class="FormTable">
 			<tr>
-				<td colspan="2" align="center"><span class="FormSubHeading">Navigation Node details</span></td>
+				<td colspan="2" align="center"><span class="FormSubHeading">#application.adminBundle[session.dmProfile.locale].navigationNodeDetails#</span></td>
 			</tr>
 			<tr>
 				<td colspan="2">
@@ -181,7 +183,7 @@ $out:$
 					<div class="FormTableClear" style="margin-bottom:0px;">
 						<table width="100%">
 						<tr>
-							<td><span class="FormLabel">Title:</span></td>
+							<td><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].titleLabel#</span></td>
 							<td width="100%"><input type="text" name="title" value="#stObj.title#" class="FormTextBox"></td>
 						</tr>
 						</table>
@@ -189,13 +191,13 @@ $out:$
 					
 					<!--- extra details (hidden initially) --->
 					<div class="FormTableClear" style="margin-top:0px;margin-bottom:0px">
-						<display:OpenLayer width="100%" title="Advanced Options" isClosed="Yes" border="no">
+						<display:OpenLayer width="100%" title="#application.adminBundle[session.dmProfile.locale].advancedOptions#" isClosed="Yes" border="no">
 						<table width="100%">
 						<tr>
-							<td><span class="FormLabel">Symbolic Link:</span></td>
+							<td><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].symbolicLinkLabel#</span></td>
 							<td>
 								<select name="externalLink">
-									<option value="">-- None --
+									<option value="">#application.adminBundle[session.dmProfile.locale].noneForSelect#</option>
 								<!--- loop over navid structure in memory -- populated on application init --->
 								<cfset aNavalias = listToArray(listSort(structKeyList(application.navid),'textnocase'))>
 								<cfloop from="1" to="#arraylen(aNavalias)#" index="i">
@@ -209,7 +211,7 @@ $out:$
 							</td>
 						</tr>
 						<tr valign="top">
-							<td nowrap><span class="FormLabel">Nav Aliases:</span></td>
+							<td nowrap><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].navAliases#</span></td>
 							<td nowrap><input type="text" name="lNavIDAlias" value="#stObj.lNavIDAlias#" class="FormTextBox"></td>
 						</tr>
 						</table>
@@ -221,8 +223,8 @@ $out:$
 						<table width="100%">
 						<tr>
 							<td colspan="2" align="center">
-								<input type="submit" value="OK" name="submit" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';">
-								<input type="button" value="Cancel" name="Cancel" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';" onClick="location.href='#application.url.farcry#/unlock.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#';parent.synchTab('editFrame','activesubtab','subtab','siteEditOverview');parent.synchTitle('Overview')">
+								<input type="submit" value="#application.adminBundle[session.dmProfile.locale].OK#" name="submit" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';">
+								<input type="button" value="#application.adminBundle[session.dmProfile.locale].cancel#" name="Cancel" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';" onClick="location.href='#application.url.farcry#/unlock.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#';parent.synchTab('editFrame','activesubtab','subtab','siteEditOverview');parent.synchTitle('Overview')">
 								
 							</td>
 						</tr>
@@ -236,6 +238,8 @@ $out:$
 	<script>
 		//bring focus to title
 		document.editform.title.focus();
+		objForm = new qForm("editform");
+		objForm.title.validateNotNull("#application.adminBundle[session.dmProfile.locale].pleaseEnterTitle#");
 	</script>
 	</cfoutput>
 </cfif>

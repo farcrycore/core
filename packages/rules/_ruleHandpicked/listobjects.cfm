@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/rules/_ruleHandpicked/listobjects.cfm,v 1.4 2003/09/24 05:20:10 paul Exp $
-$Author: paul $
-$Date: 2003/09/24 05:20:10 $
-$Name: b201 $
-$Revision: 1.4 $
+$Header: /cvs/farcry/farcry_core/packages/rules/_ruleHandpicked/listobjects.cfm,v 1.5 2004/07/30 08:34:40 phastings Exp $
+$Author: phastings $
+$Date: 2004/07/30 08:34:40 $
+$Name: milestone_2-3-2 $
+$Revision: 1.5 $
 
 || DESCRIPTION || 
 $Description: ruleHandpicked PLP - choose object instances (listobjects.cfm) $
@@ -18,6 +18,9 @@ $TODO: Clean up whitespace issues, revise formatting 20030503 GB$
 $Developer: Paul Harrison (paul@daemon.com.au) $
 $Developer: Geoff Bowers (modius@daemon.com.au) $
 --->
+
+<cfprocessingDirective pageencoding="utf-8">
+
 <cfparam name="output.orderby" default="label">
 <cfparam name="output.orderdir" default="asc">
 <cfparam name="output.lObjectids" default="">
@@ -133,14 +136,14 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 <cfoutput>
 	<cfif not listLen(output.lObjectIDs)>
 	<div class="FormTitle" align="center" >
-		No objects have been chosen for this rule.<br>
+		#application.adminBundle[session.dmProfile.locale].noRuleObjSelected#<br>
 		<a href="#CGI.SCRIPT_NAME#?containerID=#URL.containerID#&handpickaction=add&ruleid=#output.objectid#&typename=rulehandpicked">Add Articles</a>
 	</div>
 	<cfelse>	
 	
 	
 	<div class="FormTable" align="center" style="width:500px">
-	<a id="showintro" href="javascript:void(0);" onClick="toggleDiv('introdiv');">Show Intro</a>
+	<a id="showintro" href="javascript:void(0);" onClick="toggleDiv('introdiv');">#application.adminBundle[session.dmProfile.locale].showIntro#</a>
 	<div id="introdiv" align="center" style="display:none;">
 	<table width="100%" >
 	<tr>
@@ -156,23 +159,23 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	<tr>
 		<td colspan="4">
 			<div class="FormTitle" align="center" >
-				 Selected Objects
+				 #application.adminBundle[session.dmProfile.locale].selectedObj#
 			</div>
 		<table width="100%">
 			<tr><td>
 				<table width="100%">
 				<tr>
 					<td>
-						Label
+						#application.adminBundle[session.dmProfile.locale].Label#
 					</td>
 					<td>
-						Type
+						#application.adminBundle[session.dmProfile.locale].typeLC#
 					</td>
 					<td>
-						Display Method
+						#application.adminBundle[session.dmProfile.locale].displayMethodUC#
 					</td>
 					<td>
-						Select
+						#application.adminBundle[session.dmProfile.locale].Select#
 					</td>
 				</tr>
 				
@@ -205,7 +208,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 				<cfelse>
 					<tr>
 					<td colspan="4">
-						An object that was in this rule has been deleted from the datastore. This reference will be removed after you 'Apply Changes'
+						#application.adminBundle[session.dmProfile.locale].ruleDeletedBlurb#
 					</td>
 					</tr>
 					<cfset output.lObjectIds = listDeleteAt(output.lObjectIds,listFindNoCase(output.lObjectIds,objectid))>
@@ -218,8 +221,8 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 				</table>
 			</td>
 			<td valign="middle">
-				<input type="submit" value="&uarr;" name="moveup" class="normalbttnstyle" alt="Move Objects Up"><br>
-				<input type="submit" value="&darr;" name="movedown" class="normalbttnstyle" alt="Move Objects Down">
+				<input type="submit" value="&uarr;" name="moveup" class="normalbttnstyle" alt="#application.adminBundle[session.dmProfile.locale].moveObjUp#"><br>
+				<input type="submit" value="&darr;" name="movedown" class="normalbttnstyle" alt="#application.adminBundle[session.dmProfile.locale].moveObjDown#">
 			</td>
 			</tr>	
 		</table>
@@ -227,8 +230,8 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 		</table>	
 	</table>
 	
-	<input type="button" value="Add Objects" onClick="location.href='#CGI.SCRIPT_NAME#?containerID=#URL.containerID#&handpickaction=add&ruleid=#output.objectid#&typename=rulehandpicked'" class="normalbttnstyle">
-	<input type="submit" value="Apply Changes" name="submit" class="normalbttnstyle">
+	<input type="button" value="#application.adminBundle[session.dmProfile.locale].addObj#" onClick="location.href='#CGI.SCRIPT_NAME#?containerID=#URL.containerID#&handpickaction=add&ruleid=#output.objectid#&typename=rulehandpicked'" class="normalbttnstyle">
+	<input type="submit" value="#application.adminBundle[session.dmProfile.locale].applyChanges#" name="submit" class="normalbttnstyle">
 	
 	</div>
 

@@ -1,15 +1,17 @@
 <cfsetting enablecfoutputonly="Yes">
+
+<cfprocessingDirective pageencoding="utf-8">
 <!--- 
 || LEGAL ||
 $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/navajo/moveInternal.cfm,v 1.18 2003/12/08 05:43:06 paul Exp $
-$Author: paul $
-$Date: 2003/12/08 05:43:06 $
-$Name: milestone_2-2-1 $
-$Revision: 1.18 $
+$Header: /cvs/farcry/farcry_core/tags/navajo/moveInternal.cfm,v 1.19 2004/07/15 02:03:00 brendan Exp $
+$Author: brendan $
+$Date: 2004/07/15 02:03:00 $
+$Name: milestone_2-3-2 $
+$Revision: 1.19 $
 
 || DESCRIPTION || 
 $Description: $
@@ -68,7 +70,7 @@ $out:$
 
 <cfscript>
 	if (iState NEQ 1)
-		writeoutput("<script>alert('You do not have permission to modify the node.');</script>");
+		writeoutput("<script>alert('#application.adminBundle[session.dmProfile.locale].noModifyNodePermission#');</script>");
 	else		
 	{
 		if(len(parentObjectID))

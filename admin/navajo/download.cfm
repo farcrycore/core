@@ -1,4 +1,7 @@
 <cfsetting enablecfoutputonly="Yes">
+
+<cfprocessingDirective pageencoding="utf-8">
+
 <cfmodule template="#application.url.webroot#/download.cfm" DownloadFile="#url.downloadfile#">
 <!--- <cfimport taglib="/farcry/fourq/tags/" prefix="q4">
 

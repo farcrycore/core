@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/reporting/reportingMenuFrame.cfm,v 1.12 2004/01/07 23:30:17 brendan Exp $
+$Header: /cvs/farcry/farcry_core/admin/reporting/reportingMenuFrame.cfm,v 1.13 2004/07/15 01:51:48 brendan Exp $
 $Author: brendan $
-$Date: 2004/01/07 23:30:17 $
-$Name: milestone_2-2-1 $
-$Revision: 1.12 $
+$Date: 2004/07/15 01:51:48 $
+$Name: milestone_2-3-2 $
+$Revision: 1.13 $
 
 || DESCRIPTION || 
 $Description: Displays menu items for reporting section in Farcry. $
@@ -24,6 +24,8 @@ $out:$
 
 <cfsetting enablecfoutputonly="Yes">
 
+<cfprocessingDirective pageencoding="utf-8">
+
 <cfimport taglib="/farcry/farcry_core/tags/misc/" prefix="misc">
 
 <!--- check permissions --->
@@ -36,11 +38,12 @@ $out:$
 <cfoutput>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 
-<html>
+<html dir="#session.writingDir#" lang="#session.userLanguage#">
 <head>
 	<title>reportingMenuFrame</title>
 	<misc:cacheControl>
 	<LINK href="../css/overviewFrame.css" rel="stylesheet" type="text/css">
+	<meta content="text/html; charset=UTF-8" http-equiv="content-type">
 </head>
 
 <body>
@@ -53,30 +56,30 @@ $out:$
 		<cfcase value="stats">	
 			<!--- permission check --->
 			<cfif iStatsTab eq 1>
-				<div class="frameMenuTitle">General</div>
-				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="statsOverview.cfm" class="frameMenuItem" target="editFrame">Overview Report</a></div>
-				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="statsMostPopular.cfm" class="frameMenuItem" target="editFrame">View Summary</a></div>
-				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="statsReferer.cfm" class="frameMenuItem" target="editFrame">Referer Summary</a></div>
-				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="statsLocale.cfm" class="frameMenuItem" target="editFrame">Locale Summary</a></div>
-				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="statsOS.cfm" class="frameMenuItem" target="editFrame">Operating System Summary</a></div>
-				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="statsBrowsers.cfm" class="frameMenuItem" target="editFrame">Browser Summary</a></div>		
+				<div class="frameMenuTitle">#application.adminBundle[session.dmProfile.locale].general#</div>
+				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="statsOverview.cfm" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].overviewReport#</a></div>
+				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="statsMostPopular.cfm" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].viewSummary#</a></div>
+				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="statsReferer.cfm" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].refererSummary#</a></div>
+				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="statsLocale.cfm" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].localeSummary#</a></div>
+				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="statsOS.cfm" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].OSsummary#</a></div>
+				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="statsBrowsers.cfm" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].browserSummary#</a></div>		
 				
-				<div class="frameMenuTitle">Sessions</div>
-				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="statsVisitors.cfm" class="frameMenuItem" target="editFrame">Session Summary</a></div>
-				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="statsVisitorPaths.cfm" class="frameMenuItem" target="editFrame">Session Paths</a></div>
-				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="statsWhosOn.cfm" class="frameMenuItem" target="editFrame">Who's On Now</a></div>
+				<div class="frameMenuTitle">#application.adminBundle[session.dmProfile.locale].sessions#</div>
+				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="statsVisitors.cfm" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].sessionSummary#</a></div>
+				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="statsVisitorPaths.cfm" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].sessionPath#s</a></div>
+				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="statsWhosOn.cfm" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].whoOnNow#</a></div>
 				
-				<div class="frameMenuTitle">Search Engine Key Words</div>
+				<div class="frameMenuTitle">#application.adminBundle[session.dmProfile.locale].keyWordSearch#</div>
 				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="statsGoogle.cfm" class="frameMenuItem" target="editFrame">Google</a></div>
 				
-				<div class="frameMenuTitle">In-Site Searches</div>
-				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="statsSearches.cfm" class="frameMenuItem" target="editFrame">Recent Searches</a></div>
-				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="statsSearchesNoResults.cfm" class="frameMenuItem" target="editFrame">Searches Returning No Results</a></div>
-				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="statsSearchesMostPopular.cfm" class="frameMenuItem" target="editFrame">Most Popular Searches</a></div>
+				<div class="frameMenuTitle">#application.adminBundle[session.dmProfile.locale].inSiteSearches#</div>
+				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="statsSearches.cfm" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].recentSearches#</a></div>
+				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="statsSearchesNoResults.cfm" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].noResultSearches#</a></div>
+				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="statsSearchesMostPopular.cfm" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].mostPopularSearches#</a></div>
 				
 				<cfif iDeveloper eq 1>
-					<div class="frameMenuTitle">Maintenance</div>
-					<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="statsClear.cfm" class="frameMenuItem" target="editFrame" onClick="return confirm('Are you sure you wish to delete all Stats records?');">Clear Stats Log</a></div>
+					<div class="frameMenuTitle">#application.adminBundle[session.dmProfile.locale].maintenance#</div>
+					<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="statsClear.cfm" class="frameMenuItem" target="editFrame" onClick="return confirm('#application.adminBundle[session.dmProfile.locale].confirmDeleteAllRecs#');">#application.adminBundle[session.dmProfile.locale].clearStatsLog#</a></div>
 				</cfif>
 			</cfif>
 		</cfcase>
@@ -84,19 +87,18 @@ $out:$
 		<cfcase value="audit">
 			<!--- permission check --->
 			<cfif iAuditTab eq 1>
-				<div class="frameMenuTitle">Login Activity</div>
-				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="auditLogins.cfm" class="frameMenuItem" target="editFrame">All Logins</a></div>
-				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="auditFailedLogins.cfm" class="frameMenuItem" target="editFrame">Failed Logins</a></div>
-				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="auditUserActivity.cfm?graph=day" class="frameMenuItem" target="editFrame">Daily User Login Activity</a></div>
-				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="auditUserActivity.cfm?graph=week" class="frameMenuItem" target="editFrame">Weekly User Login Activity</a></div>
+				<div class="frameMenuTitle">#application.adminBundle[session.dmProfile.locale].loginActivity#</div>
+				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="auditLogins.cfm" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].allLogins#</a></div>
+				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="auditFailedLogins.cfm" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].failedLogins#</a></div>
+				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="auditUserActivity.cfm?graph=day" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].dailyUserLoginActivity#</a></div>
+				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="auditUserActivity.cfm?graph=week" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].weeklyUserLoginActivity#</a></div>
 				
-				<div class="frameMenuTitle">User Activitiy</div>
-				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="auditUser.cfm" class="frameMenuItem" target="editFrame">User Activity</a></div>
+				<div class="frameMenuTitle">#application.adminBundle[session.dmProfile.locale].userActivitiy#</div>
+				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="auditUser.cfm" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].userActivitiy#</a></div>
 			</cfif>
 		</cfcase>
 	</cfswitch>
 	
-
 </div>
 
 </body>

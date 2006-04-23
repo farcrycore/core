@@ -1,16 +1,18 @@
 <cfsetting enablecfoutputonly="Yes">
 
+<cfprocessingDirective pageencoding="utf-8">
+
 <!--- 
 || LEGAL ||
 $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/security/ui/dmSec_TableTest.cfm,v 1.2 2003/04/17 06:11:33 brendan Exp $
+$Header: /cvs/farcry/farcry_core/tags/security/ui/dmSec_TableTest.cfm,v 1.3 2004/07/15 02:03:27 brendan Exp $
 $Author: brendan $
-$Date: 2003/04/17 06:11:33 $
-$Name: b201 $
-$Revision: 1.2 $
+$Date: 2004/07/15 02:03:27 $
+$Name: milestone_2-3-2 $
+$Revision: 1.3 $
 
 || DESCRIPTION || 
 $Description: tests Security tables$
@@ -38,12 +40,17 @@ $out:$
 		SELECT #dmTableFields# FROM #dmTableName#
 	</cfquery>
 <cfcatch type="Database">
-	<cfoutput><span style="color:red;">Error:</span> Error occured whilst trying to access the #dmTableName# table.<br>
-	The error was: #cfcatch.message#
-	<cfif cfcatch.message contains 'S0002'>The #dmTableName# table is not defined.<br></cfif>
+	<cfoutput>
+	<cfif cfcatch.message contains 'S0002'>
+		<cfset subS=listToArray('#dmTableName#,#cfcatch.message#,#dmTableFields#')>
+		#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].errorS0002,subS)#
+		<br>
+	</cfif>
 
-	<cfif cfcatch.message contains 'S0022'>This is probably caused by an incorrect table definition.<br>
-	One or more of the following fields is missing: #dmTableFields#.<br>
+	<cfif cfcatch.message contains 'S0022'>
+		<cfset subS=listToArray('#dmTableName#,#cfcatch.message#,#dmTableFields#')>
+		#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].errorS0022,subS)#
+		<br>
 	</cfif>
 	</cfoutput>
 	<cfset hadErrors=1>
@@ -51,7 +58,7 @@ $out:$
 </cftry>
 
 <cfif hadErrors eq 0>
-	<cfoutput><span style="color:green;">OK:</span> Table #dmTableName# is correctly setup.<br></cfoutput>
+	<cfoutput>#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].tableSetupOK,"#dmTableName#")#<br></cfoutput>
 </cfif>
 
 <cfsetting enablecfoutputonly="No">

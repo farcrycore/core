@@ -1,4 +1,7 @@
 <cfsetting enablecfoutputonly="Yes">
+
+<cfprocessingDirective pageencoding="utf-8">
+
 <!--- 
 || BEGIN FUSEDOC ||
 
@@ -7,11 +10,11 @@ Daemon Pty Limited 1995-2001
 http://www.daemon.com.au/
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/security/ui/dmSecUI_PermissionCreateEdit.cfm,v 1.1 2003/04/08 08:52:20 paul Exp $
-$Author: paul $
-$Date: 2003/04/08 08:52:20 $
-$Name: b201 $
-$Revision: 1.1 $
+$Header: /cvs/farcry/farcry_core/tags/security/ui/dmSecUI_PermissionCreateEdit.cfm,v 1.2 2004/07/15 02:03:27 brendan Exp $
+$Author: brendan $
+$Date: 2004/07/15 02:03:27 $
+$Name: milestone_2-3-2 $
+$Revision: 1.2 $
 
 || DESCRIPTION || 
 Interface for creating and editing permissions.
@@ -25,6 +28,9 @@ Matt Dawson (mad@daemon.com.au)
 
 || HISTORY ||
 $Log: dmSecUI_PermissionCreateEdit.cfm,v $
+Revision 1.2  2004/07/15 02:03:27  brendan
+i18n updates
+
 Revision 1.1  2003/04/08 08:52:20  paul
 CFC security updates
 
@@ -99,9 +105,9 @@ no message
 </cfscript>
 
 <cfif stObj.PermissionId eq -1 >
-	<cfoutput><span class="formtitle">Create Permission</span><p></p></cfoutput>
+	<cfoutput><span class="formtitle">#application.adminBundle[session.dmProfile.locale].createPermission#</span><p></p></cfoutput>
 <cfelse>
-	<cfoutput><span class="formtitle">Edit Permission</span><p></p></cfoutput>
+	<cfoutput><span class="formtitle">#application.adminBundle[session.dmProfile.locale].editPermission#</span><p></p></cfoutput>
 </cfif>
 
 <cfoutput>
@@ -116,21 +122,21 @@ no message
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
-		<td><span class="formlabel">Permission Name:</span><br>
+		<td><span class="formlabel">#application.adminBundle[session.dmProfile.locale].permissionNameLabel#</span><br>
 		<input type="text" size="32" maxsize="32" name="PermissionName" value="#stObj.PermissionName#"></td>
 	</tr>
 	<tr>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
-		<td><span class="formlabel">Permission Notes:</span><br>
+		<td><span class="formlabel">#application.adminBundle[session.dmProfile.locale].permissionNotesLabel#</span><br>
 		<Textarea name="PermissionNotes" cols="40" rows="4">#stObj.PermissionNotes#</textarea></td>
 	</tr>
 	<tr>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
-		<td><span class="formlabel">Permission Type:</span><br>
+		<td><span class="formlabel">#application.adminBundle[session.dmProfile.locale].permissionTypeLabel#</span><br>
 		<input type="text" size="32" maxsize="32" name="PermissionType" value="#stObj.PermissionType#"></td>
 	</tr>
 	<tr>
@@ -139,10 +145,10 @@ no message
 	<tr>
 		<td>
 		<cfif stObj.PermissionId eq -1>
-			<input type="submit" name="Submit" value="Create Permission"><br>
+			<input type="submit" name="Submit" value="#application.adminBundle[session.dmProfile.locale].createPermission#"><br>
 		<cfelse>
-			<input type="submit" name="Submit" value="Update Permission">&nbsp;&nbsp;&nbsp;&nbsp;
-			<input type="submit" name="Delete" value="Delete Permission" onclick="return confirm('Are you sure you want to delete this Permission?');">
+			<input type="submit" name="Submit" value="#application.adminBundle[session.dmProfile.locale].updatePermission#">&nbsp;&nbsp;&nbsp;&nbsp;
+			<input type="submit" name="Delete" value="#application.adminBundle[session.dmProfile.locale].deletePermission#" onclick="return confirm('#application.adminBundle[session.dmProfile.locale].confirmDeletePermission#');">
 		</cfif>
 		</td>
 	</tr>
@@ -154,6 +160,5 @@ no message
 </form>
 
 </cfoutput>
-
 
 <cfsetting enablecfoutputonly="No">

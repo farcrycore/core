@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/admin/coapiSchema.cfm,v 1.4 2004/05/20 04:41:25 brendan Exp $
+$Header: /cvs/farcry/farcry_core/admin/admin/coapiSchema.cfm,v 1.5 2004/07/15 01:10:24 brendan Exp $
 $Author: brendan $
-$Date: 2004/05/20 04:41:25 $
-$Name: milestone_2-2-1 $
-$Revision: 1.4 $
+$Date: 2004/07/15 01:10:24 $
+$Name: milestone_2-3-2 $
+$Revision: 1.5 $
 
 || DESCRIPTION || 
 $Description: Displays the database schema$
@@ -25,16 +25,18 @@ $out:$
 
 <cfsetting enablecfoutputonly="Yes">
 
+<cfprocessingDirective pageencoding="utf-8">
+
 <!--- check permissions --->
 <cfscript>
 	iCOAPITab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="AdminCOAPITab");
 </cfscript>
 
 <cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
-<admin:header>
+<admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 <cfif iCOAPITab eq 1>
-	<cfoutput><span class="formtitle">COAPI Schema</span><p></p></cfoutput>
+	<cfoutput><span class="formtitle">#application.adminBundle[session.dmProfile.locale].COAPIschema#</span><p></p></cfoutput>
 	
 	<!--
 	This page was generated using the CF_DBSchema custom tag from Coldron.
@@ -613,7 +615,7 @@ $out:$
 	//Start window
 	addWindow("tbl_#getTables.TableName#")
 	</script>
-	
+	<!--- i18n: leaving these alone --->
 		<TABLE BORDER="1" cellpadding="3" CELLSPACING="0" ID="tbl_#getTables.TableName#">
 			<TR>
 				<TH STYLE="font-size: 12px; font-weight: bold;">

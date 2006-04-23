@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/dmFile.cfc,v 1.17.2.1 2004/07/27 22:57:10 tom Exp $
-$Author: tom $
-$Date: 2004/07/27 22:57:10 $
-$Name: milestone_2-2-1 $
-$Revision: 1.17.2.1 $
+$Header: /cvs/farcry/farcry_core/packages/types/dmFile.cfc,v 1.17 2004/04/25 10:31:06 paul Exp $
+$Author: paul $
+$Date: 2004/04/25 10:31:06 $
+$Name: milestone_2-3-2 $
+$Revision: 1.17 $
 
 || DESCRIPTION || 
 $Description: dmFile type $
@@ -136,36 +136,6 @@ type properties
 	</cflock>
 	
 	<cfreturn stResult>
-</cffunction>
-
-<cffunction name="checkForExisting" access="public" output="No" returntype="struct" hint="Checks to see if an existing file object already uses the given name">
-	<cfargument name="filename" required="yes" type="string" hint="Name of the new file being uploaded">
-	<cfargument name="dsn" required="no" type="string" default="#application.dsn#">
-	<cfargument name="dbowner" required="no" type="string" default="#application.dbowner#">
-	
-	<cfset var stCheck = structNew()>
-	<cfset var newFileName = "">
-	<cfset var qCheck = "">
-	
-	<!--- prepare filename --->
-	<cfset newFileName = listLast(replace(arguments.filename,"\","/","all"),"/")>
-	
-	<!--- check if existing objects use the same filename --->
-	<cfquery name="qCheck" datasource="#arguments.dsn#">
-		select objectid
-		from #arguments.dbowner#dmFile
-		where filename = '#newFileName#' 
-	</cfquery>
-	
-	<!--- if query returned an object it means another object is using the same filename --->
-	<cfif qCheck.recordcount>
-		<cfset stCheck.bExists = 1>
-		<cfset stCheck.fileName = newFileName>
-	<cfelse>
-		<cfset stCheck.bExists = 0>
-	</cfif>
-	
-	<cfreturn stCheck>
 </cffunction>
 
 </cfcomponent>

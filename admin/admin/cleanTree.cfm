@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/admin/cleanTree.cfm,v 1.4 2003/12/08 05:22:18 paul Exp $
-$Author: paul $
-$Date: 2003/12/08 05:22:18 $
-$Name: milestone_2-2-1 $
-$Revision: 1.4 $
+$Header: /cvs/farcry/farcry_core/admin/admin/cleanTree.cfm,v 1.5 2004/07/15 01:10:24 brendan Exp $
+$Author: brendan $
+$Date: 2004/07/15 01:10:24 $
+$Name: milestone_2-3-2 $
+$Revision: 1.5 $
 
 || DESCRIPTION || 
 $Description: tree cleaner. $
@@ -22,6 +22,8 @@ $out:$
 --->
 <cfsetting enablecfoutputonly="Yes" requesttimeout="600">
 
+<cfprocessingDirective pageencoding="utf-8">
+
 <!--- check permissions --->
 <cfscript>
 	iCOAPITab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="AdminCOAPITab");
@@ -29,7 +31,7 @@ $out:$
 
 <!--- set up page header --->
 <cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
-<admin:header>
+<admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 <cfif iCOAPITab eq 1>	
 	<cfif IsDefined("form.submit")><!--- process the form --->
@@ -90,20 +92,20 @@ $out:$
 		<cfif form.debug eq 1>
 			<!--- show debug only, don't fix tree --->
 			<cfoutput>
-			<div class="formtitle">Debug Complete</div>
-	        These are the objects that would be removed if run out of debug mode:<p></cfoutput>
+			<div class="formtitle">#application.adminBundle[session.dmProfile.locale].debugComplete#</div>
+	        #application.adminBundle[session.dmProfile.locale].objRemovedList#<p></cfoutput>
 	       	
 			<cfif qRogue.recordcount>
 				<!--- show dump --->
-	        	<cfdump var="#qRogue#" label="Rogue objects in tree"> 
+	        	<cfdump var="#qRogue#" label="#application.adminBundle[session.dmProfile.locale].rogueTreeObj#"> 
 				<cfoutput>
 				<form action="cleanTree.cfm" method="post">
-		            <input type="submit" name="submit" value="Remove these objects">
+		            <input type="submit" name="submit" value="#application.adminBundle[session.dmProfile.locale].removeObj#">
 		        </form>
 				</cfoutput>
 			<cfelse>
 				<!--- no rogue objects --->
-				<cfoutput>There are no rogue objects in your tree</cfoutput>
+				<cfoutput>#application.adminBundle[session.dmProfile.locale].noRogueTreeObj#</cfoutput>
 			</cfif>	
 	    <cfelse>                
 		   	<!--- delete rogue objects --->
@@ -116,21 +118,19 @@ $out:$
 				</cfquery>
 			</cfloop>
 	        <cfoutput>
-			<div class="formtitle">Tree fixed</div>
-			Rogue tree data has been removed.</cfoutput>
+			<div class="formtitle">#application.adminBundle[session.dmProfile.locale].treeFixed#</div>
+			#application.adminBundle[session.dmProfile.locale].rogueTreeDataRemoved#</cfoutput>
 	    </cfif>
 	<cfelse>
 		<!--- show the form --->
 	    <cfoutput>
-	        <div class="formtitle">Clean a nested tree</div>
-	        Use this function if your nested tree ever gets corrupted data.
-	        It loops through all tree nodes and looks for associated objects that may no longer exist and removes them. 
-			You may want to make a backup of your database before fixing the tree. 
-			Please be patient, this process can take a few minutes!<p></p>
+	        <div class="formtitle">#application.adminBundle[session.dmProfile.locale].cleanNestedTree#</div>
+	        #application.adminBundle[session.dmProfile.locale].nestedTreeBlurb#
+			<p></p>
 			
 	        <form action="cleanTree.cfm" method="post">
-	            <input type="checkbox" name="debug" value="1" checked>show debug only (don't fix the table)<p>
-	            <input type="submit" name="submit" value="submit">
+	            <input type="checkbox" name="debug" value="1" checked>#application.adminBundle[session.dmProfile.locale].showDebugOnly#<p>
+	            <input type="submit" name="submit" value="#application.adminBundle[session.dmProfile.locale].submit#">
 	        </form>
 	    </cfoutput>
 	</cfif>

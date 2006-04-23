@@ -2,11 +2,11 @@
 ruleChildLinks (FarCry Core)
 Copyright Daemon Pty Limited 2002 (http://www.daemon.com.au/)
 
-$Header: /cvs/farcry/farcry_core/packages/rules/ruleChildLinks.cfc,v 1.20 2004/05/22 06:19:51 paul Exp $
+$Header: /cvs/farcry/farcry_core/packages/rules/ruleChildLinks.cfc,v 1.25 2005/01/21 03:51:41 paul Exp $
 $Author: paul $
-$Date: 2004/05/22 06:19:51 $
-$Name: milestone_2-2-1 $
-$Revision: 1.20 $
+$Date: 2005/01/21 03:51:41 $
+$Name: milestone_2-3-2 $
+$Revision: 1.25 $
 
 Contributors:
 Paul Harrison (paul@daemon.com.au)
@@ -40,7 +40,7 @@ fails to display anything.
 				stObj.intro = form.intro; 
 			</cfscript>
 			<q4:contentobjectdata typename="#application.rules.ruleChildLinks.rulePath#" stProperties="#stObj#" objectID="#stObj.objectID#">
-			<cfset message = "Update Successful">
+			<cfset message = "#application.adminBundle[session.dmProfile.locale].updateSuccessful#">
 		</cfif>
 		<cfif isDefined("message")>
 			<div align="center"><strong>#message#</strong></div>
@@ -71,7 +71,7 @@ fails to display anything.
 		<input type="hidden" name="ruleID" value="#stObj.objectID#">
 		<tr>
 			<td colspan="2" align="center">
-			<b>Select display method for this publishing rule: </b><br>
+			<b>#application.adminBundle[session.dmProfile.locale].selectDisplayMethod#</b><br>
 			<select name="displayMethod" size="1" class="field">
 				<cfloop query="qGetUniqueTemplates">
 					<option value="#methodName#" <cfif methodName is stObj.displayMethod>selected</cfif> >#displayName#</option>
@@ -81,18 +81,18 @@ fails to display anything.
 		</tr>
 		<tr>
 			<td colspan="2" align="center" class="field"> 
-				<b>Intro Text</b><br>
+				<b>#application.adminBundle[session.dmProfile.locale].introText#</b><br>
 				<textarea rows="5" cols="50" name="intro">#stObj.intro#</textarea>
 			</td>
 		</tr>
 		<tr>
-			<td colspan="2" align="center"><input class="normalbttnstyle" type="submit" value="go" name="updateRuleChildLinks"></td>
+			<td colspan="2" align="center"><input class="normalbttnstyle" type="submit" value="#application.adminBundle[session.dmProfile.locale].go#" name="updateRuleChildLinks"></td>
 		</tr>
 		</table>
 		
 		</form>
 		<cfelse>
-			<div align="center">There must be at least 1 common display method in /webskin/dmInclude, /webskin/dmLink and /webskin/dmHTML to use this rule.</div>
+			<div align="center">#application.adminBundle[session.dmProfile.locale].atLeastOneCommonDisplay#</div>
 		
 		</cfif>
 			
@@ -121,7 +121,7 @@ fails to display anything.
 		
 		<cfif qGetChildren.recordcount GT 0>
 			
-			<!--- loop over children --->
+			<!--- loop over children --->	`
 			<cfloop query="qGetChildren">
 				<!--- get child nav details --->
 				<q4:contentobjectget objectid="#qGetChildren.objectID#" r_stobject="stCurrentNav">
@@ -141,7 +141,7 @@ fails to display anything.
 					<q4:contentobjectget objectid="#stCurrentNav.aObjectIds[idIndex]#" r_stobject="stObjTemp">
 					
 					<!--- request.lValidStatus is approved, or draft, pending, approved in SHOWDRAFT mode --->
-					<cfif StructKeyExists(stObjTemp,"status") AND ListContains(request.mode.lValidStatus, stObjTemp.status) AND listContains("dmHTML,dmInclude,dmLink", stObjTemp.typename)>
+					<cfif StructKeyExists(stObjTemp,"status") AND ListContains(request.mode.lValidStatus, stObjTemp.status) AND StructKeyExists(stObjTemp,"displayMethod")>
 					
 						<!--- if in draft mode grab underlying draft page --->			
 						<cfif IsDefined("stObjTemp.versionID") AND request.mode.showdraft>

@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmEvent/plpEdit/complete.cfm,v 1.1 2003/06/13 01:04:34 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmEvent/plpEdit/complete.cfm,v 1.2 2004/07/16 02:19:11 brendan Exp $
 $Author: brendan $
-$Date: 2003/06/13 01:04:34 $
-$Name: b201 $
-$Revision: 1.1 $
+$Date: 2004/07/16 02:19:11 $
+$Name: milestone_2-3-2 $
+$Revision: 1.2 $
 
 || DESCRIPTION || 
 $Description: dmEvent PLP -- Complete Step $
@@ -25,6 +25,8 @@ $out: $
 ok this is the PLP complete step.  This is here to do any last minute 
 cleanup of the output scope before setting the PLP as completed. 
 --->
+<cfprocessingDirective pageencoding="utf-8">
+
 <cfoutput>
 	<link type="text/css" rel="stylesheet" href="#application.url.farcry#/css/admin.css"> 
 </cfoutput>

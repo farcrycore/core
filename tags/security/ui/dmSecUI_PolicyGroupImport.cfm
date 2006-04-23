@@ -1,5 +1,7 @@
 <cfsetting enablecfoutputonly="Yes">
 
+<cfprocessingDirective pageencoding="utf-8">
+
 <cfif not isDefined("form.submit")>
 
 <cfoutput>
@@ -10,11 +12,11 @@
 	      enctype="multipart/form-data"
 	      name="importPolicyGroupsForm.cfm"
 	      id="importPolicyGroupsForm.cfm"
-	      onSubmit="if ( document.all.clearOldPolicyGroups.checked ) return confirm('Are you sure you want to clear all previous PolicyGroups before importing?');">
+	      onSubmit="if ( document.all.clearOldPolicyGroups.checked ) return confirm('#application.adminBundle[session.dmProfile.locale].confrmClearPolicyGroups#');">
 		
-		Filename:  <input type="file" name="filename"><br>
-		<input type="checkbox" name="clearOldPolicyGroups" value="off">Clear all PolicyGroups before import<br><br>
-		<input type="submit" name="submit" value="Import Data">
+		#application.adminBundle[session.dmProfile.locale].filenameLabel#  <input type="file" name="filename"><br>
+		<input type="checkbox" name="clearOldPolicyGroups" value="off">#application.adminBundle[session.dmProfile.locale].clearAllPolicyGroupsBeforeImport#<br><br>
+		<input type="submit" name="submit" value="#application.adminBundle[session.dmProfile.locale].importData#">
 	</form>
 </cfoutput>
 
@@ -26,13 +28,13 @@
 	</cfscript>
 	
 	<cfif isDefined("form.clearOldPolicyGroups")>
-		<cfoutput>Deleting old PolicyGroups</cfoutput>
+		<cfoutput>#application.adminBundle[session.dmProfile.locale].deletingOldPolicyGroups#</cfoutput>
 
 		<cfquery name="qDelete" datasource="#stPolicyStore.datasource#" dbtype="ODBC">
 		Delete FROM #application.dbowner#dmPolicyGroup
 		</cfquery>
 		
-		<cfoutput> - complete<bR></cfoutput>
+		<cfoutput>#application.adminBundle[session.dmProfile.locale].complete#<bR></cfoutput>
 	</cfif>
 	
 	<cftry>
@@ -43,7 +45,7 @@
 	</cfcatch>
 	</cftry>
 	
-	<cfoutput>Importing new PolicyGroups</cfoutput>
+	<cfoutput>#application.adminBundle[session.dmProfile.locale].importingNewPolicyGroups#</cfoutput>
 
 	<cffile action="UPLOAD" filefield="filename" destination="#application.RootDynamicPHY#" nameconflict="OVERWRITE">
 	<cffile action="READ" file="#cffile.serverDirectory#/#cffile.serverFile#" variable="qPolicyGroupsWDDX">

@@ -6,11 +6,11 @@ Daemon Pty Limited 1995-2002
 http://www.daemon.com.au
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmProfile/createProfile.cfm,v 1.6 2003/09/10 23:46:11 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmProfile/createProfile.cfm,v 1.7 2004/07/15 02:00:50 brendan Exp $
 $Author: brendan $
-$Date: 2003/09/10 23:46:11 $
-$Name: b201 $
-$Revision: 1.6 $
+$Date: 2004/07/15 02:00:50 $
+$Name: milestone_2-3-2 $
+$Revision: 1.7 $
 
 || DESCRIPTION || 
 dmProfile create handler
@@ -23,6 +23,7 @@ none
 
 || END FUSEDOC ||
 --->
+<cfprocessingDirective pageencoding="utf-8">
 
 <cfscript>
 stUser = arguments.stProperties;

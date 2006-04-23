@@ -6,11 +6,11 @@ Daemon Pty Limited 1995-2003
 http://www.daemon.com.au
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/includes/countdown.cfm,v 1.3 2004/03/30 02:54:36 paul Exp $
-$Author: paul $
-$Date: 2004/03/30 02:54:36 $
-$Name: milestone_2-2-1 $
-$Revision: 1.3 $
+$Header: /cvs/farcry/farcry_core/admin/includes/countdown.cfm,v 1.4 2004/07/15 01:12:50 brendan Exp $
+$Author: brendan $
+$Date: 2004/07/15 01:12:50 $
+$Name: milestone_2-3-2 $
+$Revision: 1.4 $
 
 || DESCRIPTION || 
 Session timeout counter. Counts down time remaining in a user's session before they are logged out.
@@ -24,6 +24,8 @@ out:
 
 || END DAEMONDOC||
 --->
+
+<cfprocessingDirective pageencoding="utf-8">
 
 <script>
 var timerID;

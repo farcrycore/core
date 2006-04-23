@@ -1,3 +1,4 @@
+<cfprocessingDirective pageencoding="utf-8">
 
 <cfinclude template="/farcry/farcry_core/admin/includes/cfFunctionWrappers.cfm">
 

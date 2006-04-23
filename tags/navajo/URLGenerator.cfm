@@ -1,3 +1,4 @@
+<cfprocessingDirective pageencoding="utf-8">
 <cfsilent> 
 
 <!--- URLGenerator

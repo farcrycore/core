@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/edittabArchive.cfm,v 1.8 2004/04/22 07:42:50 brendan Exp $
-$Author: brendan $
-$Date: 2004/04/22 07:42:50 $
-$Name: milestone_2-2-1 $
-$Revision: 1.8 $
+$Header: /cvs/farcry/farcry_core/admin/edittabArchive.cfm,v 1.10 2004/10/15 01:12:55 paul Exp $
+$Author: paul $
+$Date: 2004/10/15 01:12:55 $
+$Name: milestone_2-3-2 $
+$Revision: 1.10 $
 
 || DESCRIPTION || 
 $Description: shows archived objects $
@@ -22,6 +22,8 @@ $in: $
 $out:$
 --->
 
+<cfprocessingDirective pageencoding="utf-8">
+
 <!--- check permissions --->
 <cfscript>
 	iArchiveTab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="ObjectArchiveTab");
@@ -29,11 +31,11 @@ $out:$
 
 <!--- set up page header --->
 <cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
-<admin:header>
+<admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 <cfif iArchiveTab eq 1>
 	<br>
-	<span class="FormTitle">Archive</span>
+	<span class="FormTitle"><cfoutput>#application.adminBundle[session.dmProfile.locale].archive#</cfoutput></span>
 	<p></p>
 	
 	<!--- check if rollback is required --->
@@ -60,32 +62,39 @@ $out:$
 	<table cellpadding="5" cellspacing="0" border="0" style="margin-left:30px;">
 	<cfif getArchivesRet.recordcount gt 0>
 		<!--- setup table --->
+		<cfoutput>
 		<tr>
-			<td align="center"><strong>Date</strong></td>
-			<td align="center"><strong>Label</strong></td>
-			<td align="center"><strong>User</strong></td>
+			<td align="center"><strong>#application.adminBundle[session.dmProfile.locale].Date#</strong></td>
+			<td align="center"><strong>#application.adminBundle[session.dmProfile.locale].Label#</strong></td>
+			<td align="center"><strong>#application.adminBundle[session.dmProfile.locale].User#</strong></td>
+			<td>&nbsp;</td>
 			<td>&nbsp;</td>
 			<td>&nbsp;</td>
 		</tr>
+		</cfoutput>
 		<!--- loop over archives --->
 		<cfoutput query="getArchivesRet">
 		<tr>
-			<td>#dateformat(DATETIMELASTUPDATED, "dd-mmm-yyyy")# #timeformat(DATETIMELASTUPDATED)#</td>
+			<td>
+			#application.thisCalendar.i18nDateFormat(DATETIMELASTUPDATED,session.dmProfile.locale,application.longF)# 
+			#application.thisCalendar.i18nTimeFormat(DATETIMELASTUPDATED,session.dmProfile.locale,application.shortF)#
+			</td>
 			<td>#label#</td>
 			<td>#lastupdatedby#</td>
-			<td><a href="edittabArchiveDetail.cfm?archiveid=#objectid#">More Detail</a></td>
+			<td><a href="edittabArchiveDetail.cfm?archiveid=#objectid#">#application.adminBundle[session.dmProfile.locale].moreDetail#</a></td>
+			<td><a href="#application.url.conjurer#?archiveid=#objectid#" target="_blank">#application.adminBundle[session.dmProfile.locale].archivePreview#</a></td>
 			<td>
 				<a href="edittabArchive.cfm?objectid=#url.objectid#&archiveid=#objectid#">Rollback</a>
 				<!--- check if archive has been rolled back successfully --->
 				<cfif isdefined("url.archiveid") and stRollback.result and url.archiveId eq objectid>
-					<span style="color:Red">Successfully Rolled Back</span>
+					<span style="color:Red">#application.adminBundle[session.dmProfile.locale].rolledBackOK#</span>
 				</cfif>
 			</td>
 		</tr>
 		</cfoutput>
 	<cfelse>
 		<tr>
-			<td colspan="5">No archive recorded.</td>
+			<td colspan="6"><cfoutput>#application.adminBundle[session.dmProfile.locale].noArchiveRecorded#</cfoutput></td>
 		</tr>
 	</cfif>
 	</table>

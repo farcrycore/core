@@ -1,15 +1,14 @@
-<cfsetting enablecfoutputonly="Yes">
 <!--- 
 || LEGAL ||
 $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/dynamic/export.cfm,v 1.3 2003/11/05 04:46:09 tom Exp $
-$Author: tom $
-$Date: 2003/11/05 04:46:09 $
-$Name: milestone_2-2-1 $
-$Revision: 1.3 $
+$Header: /cvs/farcry/farcry_core/admin/dynamic/export.cfm,v 1.5 2004/10/25 08:54:04 paul Exp $
+$Author: paul $
+$Date: 2004/10/25 08:54:04 $
+$Name: milestone_2-3-2 $
+$Revision: 1.5 $
 
 || DESCRIPTION || 
 $Description: Export Edit Handler $
@@ -20,6 +19,9 @@ $Developer: Brendan Sisson (brendan@daemon.com.au) $
 
 || ATTRIBUTES ||
 --->
+<cfsetting enablecfoutputonly="Yes">
+
+<cfprocessingDirective pageencoding="utf-8">
 
 <!--- check permissions --->
 <cfscript>
@@ -28,17 +30,18 @@ $Developer: Brendan Sisson (brendan@daemon.com.au) $
 
 <!--- set up page header --->
 <cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
-<admin:header>
+<admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 <cfif iExportTab eq 1>
-	<cfoutput><span class="Formtitle">XML Export</span><p></p></cfoutput>
+	<cfoutput><span class="Formtitle">#application.adminBundle[session.dmProfile.locale].xmlExport#</span><p></p></cfoutput>
 
 	<cfset bShowForm=1>
 	
 	<!--- check valid email address --->
 	<cfif isdefined("form.submit")>		
 		<cfif (NOT REFindNoCase('^[A-Za-z0-9_\.\-]+@([A-Za-z0-9_\.\-]+\.)+[A-Za-z]{2,4}$', trim(form.sendTo)))>
-			<cfset message = "Please enter a valid email address">
+			<cfset subS=listToArray('#application.path.project#,#application.config.general.exportPath#')>
+			<cfset message = "#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].exportDirNotExists,subS)#">
 			<cfset bShowForm=1>
 		<cfelse>
 			<cfset bShowForm = 0>		
@@ -82,7 +85,10 @@ $Developer: Brendan Sisson (brendan@daemon.com.au) $
 				<cftry>
 					<!--- generate file --->
 					<cffile action="write" file="#filePath#" output="#toString(stExport)#" addnewline="no" nameconflict="OVERWRITE">
-					<cfcatch><cfoutput>#application.path.project#/#application.config.general.exportPath# directory doesn't exist. Please create before trying to export.</cfoutput></cfcatch>
+					<cfcatch>
+					<cfset subS=listToArray('#application.path.project#,#application.config.general.exportPath#')>			
+					<cfoutput>#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].exportDirNotExists,subS)#</cfoutput>
+					</cfcatch>
 				</cftry>
 
 			</cfcase>
@@ -90,11 +96,11 @@ $Developer: Brendan Sisson (brendan@daemon.com.au) $
 
 		<!--- send export file --->
 		<cfmail from="#form.sendTo#" to="#form.sendTo#" subject="#form.contentType# export" mimeattach="#filePath#">
-Export of #form.contentType# attached.		
+#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].exportAttached,"#form.contentType#")#		
 		</cfmail>
 		
 		<!--- success message --->
-		<cfoutput>Export file has been sent to #form.sendTo#</cfoutput>
+		<cfoutput>#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].exportFileSent,"#form.sendTo#")#</cfoutput>
 		
 	</cfif>
 	
@@ -112,7 +118,7 @@ Export of #form.contentType# attached.
 				<table class="BorderTable" width="400" align="center">
 				<!--- contentType --->
 				<tr>
-					<td nowrap class="FormLabel">Content Type: </span></td>
+					<td nowrap class="FormLabel">#application.adminBundle[session.dmProfile.locale].contentType# </span></td>
 					<td width="100%">
 						<!--- sort structure by Key name --->
 						<cfset listofKeys = structKeyList(application.types)>
@@ -127,12 +133,12 @@ Export of #form.contentType# attached.
 				</tr>
 				<!--- send xml file details --->
 				<tr>
-					<td nowrap class="FormLabel">Send To: </span></td>
+					<td nowrap class="FormLabel">#application.adminBundle[session.dmProfile.locale].sendTo#</span></td>
 					<td width="100%"><input type="text" name="sendTo" class="formtextbox" maxlength="255"></td>
 				</tr>
 				<!--- export type --->
 				<tr>
-					<td nowrap class="FormLabel">Export As: </span></td>
+					<td nowrap class="FormLabel">#application.adminBundle[session.dmProfile.locale].exportAs#</span></td>
 					<td width="100%">
 						<select name="exportType">
 							<option value="xml">XML
@@ -144,7 +150,7 @@ Export of #form.contentType# attached.
 				</tr>
 				</table>
 			</div>
-			<input type="submit" name="submit" value="Export" class="normalbttnstyle" style="margin-left:30px;">
+			<input type="submit" name="submit" value="#application.adminBundle[session.dmProfile.locale].export#" class="normalbttnstyle" style="margin-left:30px;">
 		</form>	
 		</cfoutput>
 	</cfif>

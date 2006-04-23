@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_genericAdmin/getObjects.cfm,v 1.14 2003/11/01 07:00:15 geoff Exp $
-$Author: geoff $
-$Date: 2003/11/01 07:00:15 $
-$Name: milestone_2-2-1 $
-$Revision: 1.14 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_genericAdmin/getObjects.cfm,v 1.15 2004/09/02 03:49:23 paul Exp $
+$Author: paul $
+$Date: 2004/09/02 03:49:23 $
+$Name: milestone_2-3-2 $
+$Revision: 1.15 $
 
 || DESCRIPTION || 
 $Description: get objects recordset for genericAdmin $
@@ -37,10 +37,13 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
 	// check if restricted by status 
 	if (isdefined("arguments.criteria.currentStatus"))
 	{
-		if (arguments.criteria.currentStatus IS "all")
-			sql = sql & " and type.status IN ('draft','approved','declined','pending')";
-		else
-			sql = sql & " and type.status = '#arguments.criteria.currentStatus#'";
+		if(structKeyExists(application.types[arguments.typename].stProps,'status'))
+		{
+			if (arguments.criteria.currentStatus IS "all")
+				sql = sql & " and type.status IN ('draft','approved','declined','pending')";
+			else
+				sql = sql & " and type.status = '#arguments.criteria.currentStatus#'";
+		}		
 	}
 	//check for filter --->
 	if (isdefined("arguments.criteria.filter") AND len(trim(arguments.criteria.searchtext)))

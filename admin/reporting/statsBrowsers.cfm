@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/reporting/statsBrowsers.cfm,v 1.3 2003/09/09 04:25:03 brendan Exp $
+$Header: /cvs/farcry/farcry_core/admin/reporting/statsBrowsers.cfm,v 1.4 2004/07/15 01:51:48 brendan Exp $
 $Author: brendan $
-$Date: 2003/09/09 04:25:03 $
-$Name: b201 $
-$Revision: 1.3 $
+$Date: 2004/07/15 01:51:48 $
+$Name: milestone_2-3-2 $
+$Revision: 1.4 $
 
 || DESCRIPTION || 
 Shows view statistics for browsers
@@ -22,6 +22,8 @@ out:
 --->
 <cfsetting enablecfoutputonly="yes" requestTimeOut="600">
 
+<cfprocessingDirective pageencoding="utf-8">
+
 <!--- check permissions --->
 <cfscript>
 	iStatsTab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="ReportingStatsTab");
@@ -29,7 +31,7 @@ out:
 
 <!--- set up page header --->
 <cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
-<admin:header>
+<admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 <cfif iStatsTab eq 1>
 
@@ -42,7 +44,7 @@ out:
 	</cfscript>
 	
 	<cfoutput><br>
-	<span class="FormTitle">Browser Usage</span>
+	<span class="FormTitle">#application.adminBundle[session.dmProfile.locale].browserUsage#</span>
 	<p></p></cfoutput>
 	
 	<cfif q1.recordcount>
@@ -55,33 +57,33 @@ out:
 			<tr>
 				<td width="450">
 				<!--- drop down for date --->
-				Date
+				#application.adminBundle[session.dmProfile.locale].Date#
 				<select name="dateRange">
-					<option value="all" <cfif form.dateRange eq "all">selected</cfif>>All Dates
-					<option value="d" <cfif form.dateRange eq "d">selected</cfif>>Today
-					<option value="ww" <cfif form.dateRange eq "ww">selected</cfif>>Last Week
-					<option value="m" <cfif form.dateRange eq "m">selected</cfif>>Last Month
-					<option value="q" <cfif form.dateRange eq "q">selected</cfif>>Last Quarter
-					<option value="yyyy" <cfif form.dateRange eq "yyyy">selected</cfif>>Last Year
+					<option value="all" <cfif form.dateRange eq "all">selected</cfif>>#application.adminBundle[session.dmProfile.locale].allDates#
+					<option value="d" <cfif form.dateRange eq "d">selected</cfif>>#application.adminBundle[session.dmProfile.locale].today#
+					<option value="ww" <cfif form.dateRange eq "ww">selected</cfif>>#application.adminBundle[session.dmProfile.locale].lastWeek#
+					<option value="m" <cfif form.dateRange eq "m">selected</cfif>>#application.adminBundle[session.dmProfile.locale].lastMonth#
+					<option value="q" <cfif form.dateRange eq "q">selected</cfif>>#application.adminBundle[session.dmProfile.locale].lastQuarter#
+					<option value="yyyy" <cfif form.dateRange eq "yyyy">selected</cfif>>#application.adminBundle[session.dmProfile.locale].lastYear#
 				</select>
 				
 				<!--- drop down for max rows --->
-					Rows
+					#application.adminBundle[session.dmProfile.locale].rows#
 					<select name="maxRows">
-						<option value="all" <cfif form.maxRows eq "all">selected</cfif>>All Rows
+						<option value="all" <cfif form.maxRows eq "all">selected</cfif>>#application.adminBundle[session.dmProfile.locale].allRows#
 						<cfloop from="10" to="200" step=10 index="rows">
 							<option value="#rows#" <cfif rows eq form.maxRows>selected</cfif>>#rows#
 						</cfloop>
 					</select>
-				<input type="submit" value="Update">
+				<input type="submit" value="#application.adminBundle[session.dmProfile.locale].update#">
 				</td>
 			</tr>
 			</form>
 			</table>
 			<table cellpadding="5" cellspacing="0" border="1"  style="margin-left:30px;">
 				<tr>
-					<th class="dataheader">Browser</td>
-					<th class="dataheader">Sessions</td>
+					<th class="dataheader">#application.adminBundle[session.dmProfile.locale].browser#</td>
+					<th class="dataheader">#application.adminBundle[session.dmProfile.locale].sessions#</td>
 				</tr>
 				
 				<!--- show stats with links to detail --->
@@ -107,7 +109,7 @@ out:
 				fontsize="10"
 				font="arialunicodeMS" 
 				labelFormat = "number"
-				yAxisTitle = "Browser Usage" 
+				yAxisTitle = "#application.adminBundle[session.dmProfile.locale].browserUsage#" 
 				show3D = "yes"
 				xOffset = "0.15" 
 				yOffset = "0.15"
@@ -116,14 +118,14 @@ out:
 				tipStyle = "MouseOver"
 				pieSliceStyle="solid">
 				
-				<cfchartseries type="pie" query="q1" itemcolumn="browser" valuecolumn="views" serieslabel="Today" paintstyle="shade"></cfchartseries>
+				<cfchartseries type="pie" query="q1" itemcolumn="browser" valuecolumn="views" serieslabel="#application.adminBundle[session.dmProfile.locale].today#" paintstyle="shade"></cfchartseries>
 			</cfchart>
 			</td>
 		</tr>
 		</table>
 		</cfoutput>
 	<cfelse>
-		<cfoutput>No stats recorded at this time</cfoutput>
+		<cfoutput>#application.adminBundle[session.dmProfile.locale].noStatsNow#</cfoutput>
 	</cfif>
 	
 <cfelse>

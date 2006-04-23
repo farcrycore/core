@@ -4,15 +4,14 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_types/renderOverview.cfm,v 1.10 2004/04/21 07:19:47 paul Exp $
-$Author: paul $
-$Date: 2004/04/21 07:19:47 $
-$Name: milestone_2-2-1 $
-$Revision: 1.10 $
+$Header: /cvs/farcry/farcry_core/packages/types/_types/renderOverview.cfm,v 1.12 2004/10/27 06:22:15 geoff Exp $
+$Author: geoff $
+$Date: 2004/10/27 06:22:15 $
+$Name: milestone_2-3-2 $
+$Revision: 1.12 $
 
 || DESCRIPTION || 
 $DESCRIPTION: Dispalys summary and options for editing/approving/previewing etc for selected object$
-$TODO: $ 
 
 || DEVELOPER ||
 $DEVELOPER:Brendan Sisson (brendan@daemon.com.au)$
@@ -21,6 +20,8 @@ $DEVELOPER:Brendan Sisson (brendan@daemon.com.au)$
 $in:$ 
 $out:$
 --->
+
+<cfprocessingDirective pageencoding="utf-8">
 
 <cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
 
@@ -48,7 +49,7 @@ $out:$
 </cfscript>
 
 <cfsavecontent variable="overviewHtml">
-<strong>Edit/Change Status</strong><br/>
+<strong><cfoutput>#application.adminBundle[session.dmProfile.locale].changeStatus#</cfoutput></strong><br/>
 
 <!--- check if object has status field --->
 <cfif structKeyExists(stobj,"status") and stObj.typename neq "dmFile" and stObj.typename neq "dmImage">
@@ -56,24 +57,24 @@ $out:$
 	<cfswitch expression="#stobj.status#">
 		<cfcase value="draft">
 			<Cfif iEdit eq 1>
-				<cfoutput><span class="frameMenuBullet">&raquo;</span> <a href="edittabEdit.cfm?objectid=#stObj.objectid#" onClick="synchTab('editFrame','activesubtab','subtab','siteEditEdit');synchTitle('Edit')">Edit this object</a><br/></cfoutput>
+				<cfoutput><span class="frameMenuBullet">&raquo;</span> <a href="edittabEdit.cfm?objectid=#stObj.objectid#" onClick="synchTab('editFrame','activesubtab','subtab','siteEditEdit');synchTitle('Edit')">#application.adminBundle[session.dmProfile.locale].editObj#</a><br/></cfoutput>
 			</Cfif>
 			
 			<!--- Check user can request approval --->			
 			<cfif iRequest eq 1>
-				<cfoutput><span class="frameMenuBullet">&raquo;</span> <a href="#application.url.farcry#/navajo/approve.cfm?objectid=#stObj.objectid#&status=requestapproval" class="frameMenuItem">Request Approval for this object</a><br/></cfoutput>
+				<cfoutput><span class="frameMenuBullet">&raquo;</span> <a href="#application.url.farcry#/navajo/approve.cfm?objectid=#stObj.objectid#&status=requestapproval" class="frameMenuItem">#application.adminBundle[session.dmProfile.locale].requestObjApproval#</a><br/></cfoutput>
 			</cfif>
 			
 			<!--- check user can approve object --->
 			<cfif iApprove eq 1 OR iApproveOwn EQ 1>
-				<cfoutput><span class="frameMenuBullet">&raquo;</span> <a href="#application.url.farcry#/navajo/approve.cfm?objectid=#stObj.objectid#&status=approved" class="frameMenuItem">Approve the object yourself</a><br/></cfoutput>
+				<cfoutput><span class="frameMenuBullet">&raquo;</span> <a href="#application.url.farcry#/navajo/approve.cfm?objectid=#stObj.objectid#&status=approved" class="frameMenuItem">#application.adminBundle[session.dmProfile.locale].approveObjYourself#</a><br/></cfoutput>
 			</cfif>
 		</cfcase>
 		
 		<cfcase value="pending">
 			<cfif iApprove eq 1>
-				<cfoutput><span class="frameMenuBullet">&raquo;</span> <a href="#application.url.farcry#/navajo/approve.cfm?objectid=#stObj.objectid#&status=approved" class="frameMenuItem">Approve the object yourself</a><br/></cfoutput>
-				<cfoutput><span class="frameMenuBullet">&raquo;</span> <a href="#application.url.farcry#/navajo/approve.cfm?objectid=#stObj.objectid#&status=draft" class="frameMenuItem">Send object back to draft</a><br/></cfoutput>
+				<cfoutput><span class="frameMenuBullet">&raquo;</span> <a href="#application.url.farcry#/navajo/approve.cfm?objectid=#stObj.objectid#&status=approved" class="frameMenuItem">>#application.adminBundle[session.dmProfile.locale].approveObjYourself#</a><br/></cfoutput>
+				<cfoutput><span class="frameMenuBullet">&raquo;</span> <a href="#application.url.farcry#/navajo/approve.cfm?objectid=#stObj.objectid#&status=draft" class="frameMenuItem">#application.adminBundle[session.dmProfile.locale].sendBackToDraft#</a><br/></cfoutput>
 			</cfif>
 		</cfcase>
 		
@@ -87,47 +88,47 @@ $out:$
 				<cfif qHasDraft.recordcount eq 0>
 					<!--- check user can edit --->
 					<Cfif iEdit eq 1>
-						<cfoutput><span class="frameMenuBullet">&raquo;</span> <a href="#application.url.farcry#/navajo/createDraftObject.cfm?objectID=#stObj.objectID#" class="frameMenuItem" onClick="synchTab('editFrame','activesubtab','subtab','siteEditEdit');synchTitle('Edit')">Create an editable draft version</a><br/></cfoutput>
+						<cfoutput><span class="frameMenuBullet">&raquo;</span> <a href="#application.url.farcry#/navajo/createDraftObject.cfm?objectID=#stObj.objectID#" class="frameMenuItem" onClick="synchTab('editFrame','activesubtab','subtab','siteEditEdit');synchTitle('Edit')">#application.adminBundle[session.dmProfile.locale].createEditableDraft#</a><br/></cfoutput>
 					</cfif>
 				</cfif>
 			</cfif>
 			
 			<cfif iApprove eq 1 OR iApproveOwn EQ 1>
-				<cfoutput><span class="frameMenuBullet">&raquo;</span> <a href="#application.url.farcry#/navajo/approve.cfm?objectid=#stObj.objectid#&status=draft" class="frameMenuItem">Send object back to draft</a> <cfif structKeyExists(stObj,"versionID") and qHasDraft.recordcount> (deleting above draft version)</cfif><br/></cfoutput>
+				<cfoutput><span class="frameMenuBullet">&raquo;</span> <a href="#application.url.farcry#/navajo/approve.cfm?objectid=#stObj.objectid#&status=draft" class="frameMenuItem">#application.adminBundle[session.dmProfile.locale].sendBackToDraft#</a> <cfif structKeyExists(stObj,"versionID") and qHasDraft.recordcount> #application.adminBundle[session.dmProfile.locale].deletingDraftVersion#</cfif><br/></cfoutput>
 			</cfif>
 			
 		</cfcase>
 	</cfswitch>
 <cfelse>
 	<Cfif iEdit eq 1>
-		<cfoutput><span class="frameMenuBullet">&raquo;</span> <a href="edittabEdit.cfm?objectid=#stObj.objectid#" onClick="synchTab('editFrame','activesubtab','subtab','siteEditEdit');synchTitle('Edit')">Edit this object</a><br/></cfoutput>
+		<cfoutput><span class="frameMenuBullet">&raquo;</span> <a href="edittabEdit.cfm?objectid=#stObj.objectid#" onClick="synchTab('editFrame','activesubtab','subtab','siteEditEdit');synchTitle('Edit')">#application.adminBundle[session.dmProfile.locale].editObj#</a><br/></cfoutput>
 	</Cfif>
 </cfif>
 
-<br/><strong>General</strong><br/>
+<cfoutput><br/><strong>#application.adminBundle[session.dmProfile.locale].general#</strong><br/></cfoutput>
 <!--- preview object --->
-<cfoutput><span class="frameMenuBullet">&raquo;</span> <a href="#application.url.webroot#/index.cfm?objectid=#stObj.objectid#&flushcache=1&showdraft=1" class="frameMenuItem" target="_blank">Preview</a><br/></cfoutput>
+<cfoutput><span class="frameMenuBullet">&raquo;</span> <a href="#application.url.webroot#/index.cfm?objectid=#stObj.objectid#&flushcache=1&showdraft=1" class="frameMenuItem" target="_blank"><cfoutput>#application.adminBundle[session.dmProfile.locale].Preview#</cfoutput></a><br/></cfoutput>
 
 
 <!--- add comments --->
-<span class="frameMenuBullet">&raquo;</span> <a href="navajo/commentOnContent.cfm?objectid=<cfoutput>#stObj.objectid#</cfoutput>">Add Comments</a><br/>
+<cfoutput><span class="frameMenuBullet">&raquo;</span> <a href="navajo/commentOnContent.cfm?objectid=#stObj.objectid#">#application.adminBundle[session.dmProfile.locale].addComments#</a><br/></cfoutput>
 <!--- view comments --->
-<span class="frameMenuBullet">&raquo;</span> <a href="##" onClick="commWin=window.open('<cfoutput>#application.url.farcry#/navajo/viewComments.cfm?objectid=#stObj.objectid#</cfoutput>', 'commWin', 'scrollbars=yes,width=400,height=450');commWin.focus();">View Comments</a><br/>
+<cfoutput><span class="frameMenuBullet">&raquo;</span> <a href="##" onClick="commWin=window.open('#application.url.farcry#/navajo/viewComments.cfm?objectid=#stObj.objectid#', 'commWin', 'scrollbars=yes,width=400,height=450');commWin.focus();">#application.adminBundle[session.dmProfile.locale].viewComments#</a><br/></cfoutput>
 
 
 <cfif iObjectDumpTab eq 1>
-	<span class="frameMenuBullet">&raquo;</span> <a href="edittabDump.cfm?objectid=<cfoutput>#stObj.objectid#</cfoutput>">Dump</a><br/>
+	<cfoutput><span class="frameMenuBullet">&raquo;</span> <a href="edittabDump.cfm?objectid=#stObj.objectid#">#application.adminBundle[session.dmProfile.locale].dump#</a><br/></cfoutput>
 </cfif>
 
 <cfif listContains(application.navid.home,stObj.objectid) eq 0 AND listContains(application.navid.root,stObj.objectid) eq 0>
 	<!--- check user can delete --->
 	<cfif iDelete eq 1>
-		<span class="frameMenuBullet">&raquo;</span> <a href="navajo/delete.cfm?ObjectId=<cfoutput>#stObj.objectId#</cfoutput>" onClick="return confirm('Are you sure you wish to delete this object?');">Delete</a><br/>
+		<cfoutput><span class="frameMenuBullet">&raquo;</span> <a href="navajo/delete.cfm?ObjectId=#stObj.objectId#" onClick="return confirm('#application.adminBundle[session.dmProfile.locale].confirmDeleteObj#');">#application.adminBundle[session.dmProfile.locale].delete#</a><br/></cfoutput>
 	</cfif>
 	
 	<!--- check user can move to trash --->
 	<cfif iTreeSendToTrash eq 1>
-		<cfoutput><span class="frameMenuBullet">&raquo;</span> <a href="navajo/move.cfm?srcObjectId=#stObj.objectId#&destObjectId=#application.navid.rubbish#" onclick="return confirm('Are you sure you wish to trash this object?');">Send to trash</a></br></cfoutput>
+		<cfoutput><span class="frameMenuBullet">&raquo;</span> <a href="navajo/move.cfm?srcObjectId=#stObj.objectId#&destObjectId=#application.navid.rubbish#" onclick="return confirm('#application.adminBundle[session.dmProfile.locale].confirmTrashObj#');">#application.adminBundle[session.dmProfile.locale].sendToTrash#</a></br></cfoutput>
 	</cfif>
 </cfif>
 </cfsavecontent>

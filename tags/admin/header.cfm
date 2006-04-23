@@ -1,17 +1,20 @@
 <cfsetting enablecfoutputonly="Yes">
-<!---
+
+<cfprocessingDirective pageencoding="utf-8">
+
+<!--- 
 || LEGAL ||
 $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
-$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
+$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/admin/header.cfm,v 1.17 2004/06/17 00:18:23 spike Exp $
-$Author: spike $
-$Date: 2004/06/17 00:18:23 $
-$Name: milestone_2-2-1 $
-$Revision: 1.17 $
+$Header: /cvs/farcry/farcry_core/tags/admin/header.cfm,v 1.21 2004/10/06 07:47:36 paul Exp $
+$Author: paul $
+$Date: 2004/10/06 07:47:36 $
+$Name: milestone_2-3-2 $
+$Revision: 1.21 $
 
-|| DESCRIPTION ||
+|| DESCRIPTION || 
 $Description: Admin header$
 $TODO: additional attributes.onLoad not clearly defined -- should be param'd and documented GB 20031116 $
 
@@ -27,13 +30,18 @@ $in: [bCacheControl] output cache control headers; default true. $
 
 <cfparam name="attributes.title" default="#application.config.general.siteTitle# :: Administration" type="string">
 <cfparam name="attributes.bCacheControl" default="true" type="boolean">
+<!--- i18n --->
+<cfparam name="attributes.writingDir" type="string" default="ltr">
+<cfparam name="attributes.userLanguage" type="string" default="en">
+
 <!--- additional attributes.onLoad not clearly defined -- should be param'd and documented --->
 
 <cfoutput>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
+<html dir="#attributes.writingDir#" lang="#attributes.userLanguage#">
 <head>
 	<title>#attributes.title#</title>
+	<meta content="text/html; charset=UTF-8" http-equiv="content-type">
 </cfoutput>
 
 <!--- apply cach control metadata as required --->
@@ -77,7 +85,7 @@ $in: [bCacheControl] output cache control headers; default true. $
 		//browser testing;
 		var ns6 = document.getElementById && ! document.all;
 		var ie5up = document.getElementById && document.all;  //ie5 ++
-
+		
 		function reloadTreeFrame(){
 			// reload tree if not -- quick zoom -- option
 			if (document.zoom.QuickZoom.options[document.zoom.QuickZoom.options.selectedIndex].value != '0') {
@@ -86,9 +94,10 @@ $in: [bCacheControl] output cache control headers; default true. $
 			}
 		}
 	</script>
-
+	
 	<!--- check for htmlarea --->
-	<cfif application.config.general.richTextEditor EQ 'htmlArea'>
+
+	<cfif application.config.general.richTextEditor IS 'htmlArea'>
 
 	<!-- // Load the HTMLEditor and set the preferences // -->
 	<script type="text/javascript">
@@ -106,15 +115,24 @@ $in: [bCacheControl] output cache control headers; default true. $
 						,#application.config.htmlarea.Toolbar2#
 					];
 	</script>
-
+	
+	<script type="text/javascript">
+	<cfif isBoolean(application.config.htmlArea.useContextMenu) AND application.config.htmlArea.useContextMenu>
+		HTMLArea.loadPlugin("ContextMenu");	          
+	</cfif>
+	 //HTMLArea.loadPlugin("CSS");
+	 <cfif isBoolean(application.config.htmlArea.useTableOperations) AND application.config.htmlArea.useTableOperations>
+	 HTMLArea.loadPlugin("TableOperations");
+	 </cfif>
+	</script>
 
 	<!-- // Finished loading HTMLEditor //-->
 	</cfif>
-
+	
 	<!--- qforms setup --->
 	<script type="text/javascript" src="<cfoutput>#application.url.farcry#</cfoutput>/includes/synchtab.js"></script>
 	<script type="text/javascript" src="<cfoutput>#application.url.farcry#</cfoutput>/includes/resize.js"></script>
-
+	
 	<!--// load the qForm JavaScript API //-->
 	<SCRIPT SRC="<cfoutput>#application.url.farcry#</cfoutput>/includes/lib/qforms.js"></SCRIPT>
 	<!--// you do not need the code below if you plan on just
@@ -134,5 +152,5 @@ $in: [bCacheControl] output cache control headers; default true. $
 <!--- set up javascript body functions if passed --->
 <body <cfif isdefined("attributes.onLoad")>onLoad="#attributes.onLoad#"</cfif>>
 </cfoutput>
-
+	
 <cfsetting enablecfoutputonly="No">

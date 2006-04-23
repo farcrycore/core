@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/admin/footer.cfm,v 1.2 2003/09/25 23:28:09 brendan Exp $
+$Header: /cvs/farcry/farcry_core/tags/admin/footer.cfm,v 1.3 2004/07/15 02:01:35 brendan Exp $
 $Author: brendan $
-$Date: 2003/09/25 23:28:09 $
-$Name: b201 $
-$Revision: 1.2 $
+$Date: 2004/07/15 02:01:35 $
+$Name: milestone_2-3-2 $
+$Revision: 1.3 $
 
 || DESCRIPTION || 
 $Description: Admin footer $
@@ -23,6 +23,8 @@ $out:$
 --->
 
 <cfsetting enablecfoutputonly="Yes">
+
+<cfprocessingDirective pageencoding="utf-8">
 
 <cfoutput>
 </body>

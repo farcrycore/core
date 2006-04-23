@@ -3,8 +3,8 @@
 	<cfquery name="qGetData" datasource="#arguments.dsn#">
 		SELECT type.*
 		FROM #application.dbowner#refObjects refObj 
-		JOIN #application.dbowner#refCategories refCat1 ON refObj.objectID = refCat1.objectID
-		JOIN #application.dbowner##arguments.typename# type ON refObj.objectID = type.objectID 
+		JOIN #application.dbowner#refCategories refCat1 ON refObj.objectid = refCat1.objectID
+		JOIN #application.dbowner##arguments.typename# type ON refObj.objectid = type.ObjectID 
 		<!--- if more than one category make join for each --->
 		<cfif listLen(arguments.lCategoryIDs) gt 1>
 			<cfloop from="2" to="#listlen(arguments.lCategoryIDs)#" index="i">
@@ -23,10 +23,9 @@
 	<cfquery name="qGetData" datasource="#arguments.dsn#">
 		SELECT type.*
 		FROM #application.dbowner#refObjects refObj 
-		JOIN #application.dbowner#refCategories refCat ON refObj.objectID = refCat.objectID
-		JOIN #application.dbowner##arguments.typename# type ON refObj.objectID = type.objectID  
-		WHERE refObj.typename = '#arguments.typename#' AND refCat.categoryID IN ('#ListChangeDelims(arguments.lCategoryIDs,"','",",")#')
+		JOIN #application.dbowner#refCategories refCat ON refObj.objectid = refCat.objectID
+		JOIN #application.dbowner##arguments.typename# type ON refObj.objectid = type.ObjectID  
+		WHERE refObj.typename = '#arguments.typename#' AND refCat.categoryid IN ('#ListChangeDelims(arguments.lCategoryIDs,"','",",")#')
 		ORDER BY #arguments.orderBy# #arguments.orderDirection#
 	</cfquery>
 </cfif>
-	

@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/navajo/objectStatus.cfm,v 1.36 2004/03/09 23:01:20 brendan Exp $
-$Author: brendan $
-$Date: 2004/03/09 23:01:20 $
-$Name: milestone_2-2-1 $
-$Revision: 1.36 $
+$Header: /cvs/farcry/farcry_core/tags/navajo/objectStatus.cfm,v 1.37.2.1 2005/05/23 02:03:22 gstewart Exp $
+$Author: gstewart $
+$Date: 2005/05/23 02:03:22 $
+$Name: milestone_2-3-2 $
+$Revision: 1.37.2.1 $
 
 || DESCRIPTION || 
 $Description: changes status of tree item $
@@ -24,9 +24,9 @@ $out:$
 --->
 
 <cfsetting enablecfoutputonly="Yes">
+<cfprocessingDirective pageencoding="utf-8">
 <cfimport taglib="/farcry/fourq/tags/" prefix="q4">
 <cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
-
  
 <cfparam name="url.objectId">
 <cfparam name="url.status" default="0">
@@ -38,13 +38,15 @@ $out:$
 <admin:header>
 
 
-<cfoutput><span class="FormTitle">
+<cfoutput>
+<span class="FormTitle">
 <cfif isDefined("URL.draftObjectID")>
-	Set object status for underlying draft object to 'request'
+	#application.adminBundle[session.dmProfile.locale].objStatusRequest#
 <cfelse>	
-	Set object status to #url.status#
+	#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].setObjStatus,"#url.status#")#
 </cfif>	
-</span><p></p></cfoutput>
+</span><p></p>
+</cfoutput>
 
 <cfinvoke component="#application.packagepath#.farcry.versioning" method="getVersioningRules" objectID="#url.objectID#" returnvariable="stRules">
 
@@ -76,16 +78,16 @@ $out:$
 	<cfif isdefined("stObj.status")>
 		<cfoutput>
 			<form name="form" action="" method="post">
-			<span class="formLabel">Add your comments:</span><br>
+			<span class="formLabel">#application.adminBundle[session.dmProfile.locale].addCommentsLabel#</span><br>
 			<textarea rows="8" cols="50"  name="commentLog"></textarea><br/>
 			
 			<!--- if requesting approval, list approvers --->
 			<cfif url.status eq "requestApproval">
 				
 			
-				<span class="formLabel">Request Approval From</span><br/>
+				<span class="formLabel">#application.adminBundle[session.dmProfile.locale].requestApprovalFrom#</span><br/>
 				
-				<input type="checkbox" onclick="if(this.checked)deSelectAll();" name="lApprovers" value="all" checked="true">All approvers<br/>
+				<input type="checkbox" onclick="if(this.checked)deSelectAll();" name="lApprovers" value="all" checked="true">#application.adminBundle[session.dmProfile.locale].allApprovers#<br/>
 				
 				<!--- get list of approvers for this object --->
 				<cfinvoke component="#application.packagepath#.farcry.workflow" method="getObjectApprovers" returnvariable="stApprovers">
@@ -101,12 +103,12 @@ $out:$
 				<p></p>
 			</cfif>
 			
-			<input type="submit" name="submit" value="Submit" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';">
-			<input type="button" name="Cancel" value="Cancel" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';" onClick="location.href='../edittabOverview.cfm?objectid=#attributes.lobjectIDs#';"></div>     
+			<input type="submit" name="submit" value="#application.adminBundle[session.dmProfile.locale].submitUC#" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';">
+			<input type="button" name="Cancel" value="#application.adminBundle[session.dmProfile.locale].cancel#" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';" onClick="location.href='../edittabOverview.cfm?objectid=#attributes.lobjectIDs#';"></div>     
 			<!--- display existing comments --->
 			<cfif structKeyExists(stObj,"commentLog")>
 				<cfif len(trim(stObj.commentLog)) AND structKeyExists(stObj,"commentLog")>
-					<p></p><span class="formTitle">Previous Comments</span><P></P>
+					<p></p><span class="formTitle">#application.adminBundle[session.dmProfile.locale].previousComments#</span><P></P>
 					#htmlcodeformat(stObj.commentLog)#
 				</cfif>
 			</cfif>
@@ -123,7 +125,7 @@ $out:$
 		
 		
 		<cfif not structkeyexists(stObj, "status")>
-			<cfoutput><script> alert("This object type has no approval process attached to it.");
+			<cfoutput><script> alert("#application.adminBundle[session.dmProfile.locale].objNoApprovalProcess#");
 				               window.close();
 			</script></cfoutput><cfabort>
 		</cfif>
@@ -180,27 +182,29 @@ $out:$
 			</cfinvoke>
 				
 		<cfelse>
-			<cfoutput><b>Unknown status passed. (#url.status#)<b><br></cfoutput><cfabort>
+			<cfoutput><b>#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].unknownStatusPassed,"#url.status#")#<b><br></cfoutput><cfabort>
 		</cfif>
 		
-		<cfscript>
-			oAuthorisation = request.dmsec.oAuthorisation;
-			oAuthentication = request.dmsec.oAuthentication;
-			stUser = oAuthentication.getUserAuthenticationData();
-			for(x = 1;x LTE listLen(permission);x=x+1)
-			{
-				iState = oAuthorisation.checkInheritedPermission(permissionName=listGetAt(permission,x),objectid=stNav.objectId);	
-				if(listGetAt(permission,x) IS "canApproveOwnContent" AND iState EQ 1 AND NOT stObj.lastUpdatedBy IS stUser.userLogin)
-					iState = 0;
-				if(iState EQ 1)
-					break;
-			}	
-		</cfscript>
-		
-		<cfif iState neq 1>
-			<cfoutput><script> alert("You don't have approval permission on the subnode #stNav.title#");
-				               window.close();
-			</script></cfoutput><cfabort>
+		<cfif isstruct(stNav)>
+			<cfscript>
+				oAuthorisation = request.dmsec.oAuthorisation;
+				oAuthentication = request.dmsec.oAuthentication;
+				stUser = oAuthentication.getUserAuthenticationData();
+				for(x = 1;x LTE listLen(permission);x=x+1)
+				{
+					iState = oAuthorisation.checkInheritedPermission(permissionName=listGetAt(permission,x),objectid=stNav.objectId);	
+					if(listGetAt(permission,x) IS "canApproveOwnContent" AND iState EQ 1 AND NOT stObj.lastUpdatedBy IS stUser.userLogin)
+						iState = 0;
+					if(iState EQ 1)
+						break;
+				}	
+			</cfscript>
+			
+			<cfif iState neq 1>
+				<cfoutput><script> alert("#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].nosubNodeApprovalPermission,"#stNav.title#")#");
+					               window.close();
+				</script></cfoutput><cfabort>
+			</cfif>
 		</cfif>
 		
 		<cfif url.status eq "approve">
@@ -214,7 +218,7 @@ $out:$
 					<cfif session.dmSec.authentication.canonicalName eq stObj.attr_lastUpdatedBy>
 						<cfoutput>
 						<script>
-							alert("You don't have permission to approve your own content on #stNav.title#");
+							alert("#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].canApproveOwnContent,stNav.title)#");
 							window.close();
 						</script>
 						</cfoutput>
@@ -223,7 +227,7 @@ $out:$
 				<cfelse>
 					<cfoutput>
 					<script>
-						alert("You aren't logged in");
+						alert("#application.adminBundle[session.dmProfile.locale].notLoggedIn#");
 						window.close();
 					</script>
 					</cfoutput>
@@ -311,8 +315,9 @@ $out:$
 		</cfloop>
 		
 	</cfloop>
-	
-	<nj:updateTree ObjectId="#stNav.objectId#">
+	<cfif isstruct(stNav)>
+	   <nj:updateTree ObjectId="#stNav.objectId#">
+	</cfif>
 	
 	<cfoutput><script>
 		if( window.opener && window.opener.parent )	window.close();

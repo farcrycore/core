@@ -1,3 +1,5 @@
+<cfprocessingDirective pageencoding="utf-8">
+
 <cflock name="moveBranchNTM" type="EXCLUSIVE" timeout="3" throwontimeout="Yes">
 	<cfscript>
 		request.factory.oTree.moveBranch(objectID=URL.srcObjectID,parentID=URL.destObjectID);

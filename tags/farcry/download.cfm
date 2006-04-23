@@ -1,16 +1,16 @@
-<!--- 
+<!---
 || LEGAL ||
 $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
-$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
+$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/farcry/download.cfm,v 1.12 2004/04/22 00:51:31 brendan Exp $
-$Author: brendan $
-$Date: 2004/04/22 00:51:31 $
-$Name: milestone_2-2-1 $
-$Revision: 1.12 $
+$Header: /cvs/farcry/farcry_core/tags/farcry/download.cfm,v 1.12.4.2 2005/06/10 02:26:55 suspiria Exp $
+$Author: suspiria $
+$Date: 2005/06/10 02:26:55 $
+$Name: milestone_2-3-2 $
+$Revision: 1.12.4.2 $
 
-|| DESCRIPTION || 
+|| DESCRIPTION ||
 $Description: Downloads a dmFile object$
 $TODO: $
 
@@ -33,8 +33,8 @@ $out:$
 <cfif isDefined("url.DownloadFile") and len(trim(url.DownloadFile))>
 
 	<q4:contentobjectget objectid="#url.DownloadFile#" r_stobject="stFile">
-	
-	
+
+
     <!--- work out file type --->
     <cfif stFile.typeName eq "dmImage">
         <cfset pos = find(".", stFile.imageFile)>
@@ -45,7 +45,15 @@ $out:$
     </cfif>
 
 	<!--- pick a mime type (if required) --->
-	<cfswitch expression="#lCase(suffix)#">						
+	<cfswitch expression="#lCase(suffix)#">
+
+		<cfcase value="mpg,mpeg">
+			<cfset mimeType = "video/mpeg">
+		</cfcase>
+
+		<cfcase value="avi">
+			<cfset mimeType = "video/x-msvideo">
+		</cfcase>
 
         <cfcase value="gif">
             <cfset mime = "image/gif">
@@ -62,13 +70,13 @@ $out:$
 		<cfcase value="pdf">
 			<cfset mime = "application/pdf">
 		</cfcase>
-		
+
 		<cfdefaultcase>
 			<cfset mime = "application/unknown">
 		</cfdefaultcase>
-	
+
 	</cfswitch>
-	
+
 	<!--- log download --->
 	<cfinvoke component="#application.packagepath#.farcry.stats" method="logEntry">
 		<cfinvokeargument name="pageId" value="#url.DownloadFile#"/>
@@ -83,33 +91,48 @@ $out:$
 		<cfif request.LoggedIn>
 			<cfinvokeargument name="userid" value="#session.dmSec.authentication.userlogin#"/>
 		<cfelse>
-			<cfinvokeargument name="userid" value="Anonymous"/>		
+			<cfinvokeargument name="userid" value="Anonymous"/>
 		</cfif>
 	</cfinvoke>
 
 	<!--- download --->
-    <cfif stFile.typeName eq "dmImage">
- 		<CFHEADER NAME="content-disposition" VALUE="inline; filename=#stFile.imageFile#">
-        <cfcontent type="#mime#" file="#stFile.originalImagePath#/#stFile.imageFile#" deletefile="No" reset="Yes">
-    <cfelse>
-		<cfheader name="Content-Disposition" VALUE="attachment;filename=#stFile.filename#">
-		<cfcontent type="#mime#" file="#application.defaultfilepath#/#stFile.filename#" deletefile="No" reset="Yes">
-    </cfif>
+    <cftry>
+	    <cfif stFile.typeName eq "dmImage">
+	 		<cfheader name="content-disposition" VALUE="inline; filename=#stFile.imageFile#">
+			<cfheader name="cache-control" value="">
+			<cfheader name="pragma" value="">
+	        <cfcontent type="#mime#" file="#stFile.originalImagePath#/#stFile.imageFile#" deletefile="No" reset="Yes">
+	    <cfelse>
+			<cfheader name="Content-Disposition" VALUE="attachment;filename=#stFile.filename#">
+			<cfheader name="cache-control" value="">
+			<cfheader name="pragma" value="">
+			<cfcontent type="#mime#" file="#application.defaultfilepath#/#stFile.filename#" deletefile="No" reset="Yes">
+	    </cfif>
+    <cfcatch><!--- prevent unnecessary log entries when user cancels download whilst it is in progress ---></cfcatch>
+    </cftry>
 	<cfabort>
 
 <!--- ext file --->
 <cfelseif isdefined("url.extFile") and isDefined("application.config.verity.contentType.extFiles.aProps.uncpath")>
-	
+
 	<!--- get filename --->
 	<cfset filename = replace(url.extFile,"\","/","all")>
 	<cfset fileName = listLast(filename,"/")>
-	
+
 	<!--- work out file type --->
  	<cfset pos = find(".", url.extFile)>
     <cfset suffix = removeChars(url.extFile, 1, pos)>
- 	
+
 	<!--- pick a mime type (if required) --->
-	<cfswitch expression="#lCase(suffix)#">						
+	<cfswitch expression="#lCase(suffix)#">
+
+		<cfcase value="mpg,mpeg">
+			<cfset mimeType = "video/mpeg">
+		</cfcase>
+
+		<cfcase value="avi">
+			<cfset mimeType = "video/x-msvideo">
+		</cfcase>
 
         <cfcase value="gif">
             <cfset mime = "image/gif">
@@ -126,18 +149,24 @@ $out:$
 		<cfcase value="pdf">
 			<cfset mime = "application/pdf">
 		</cfcase>
-		
+
 		<cfdefaultcase>
 			<cfset mime = "application/unknown">
 		</cfdefaultcase>
-	
+
 	</cfswitch>
-	
+
 	<!--- download file via unc path specified for external files --->
-	<CFHEADER NAME="content-disposition" VALUE="inline; filename=#url.extFile#">
+	<cfheader name="content-disposition" value="inline; filename=#url.extFile#">
+	<cfheader name="cache-control" value="">
+	<cfheader name="pragma" value="">
+
+    <cftry>
 	<cfcontent type="#mime#" file="#application.config.verity.contentType.extFiles.aProps.uncpath#/#fileName#" deletefile="No" reset="Yes">
+    <cfcatch><!--- prevent unnecessary log entries when user cancels download whilst it is in progress ---></cfcatch>
+    </cftry>
+    <cfabort>
+
 </cfif>
 
 <cfsetting enablecfoutputonly="No">
-
-

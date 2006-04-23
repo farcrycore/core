@@ -11,7 +11,7 @@
 	</cfif>
 </cfloop>
 <cfloop list="#structkeylist(session)#" index="a">
-	<cfif a neq "sessionid">
+	<cfif a neq "sessionid" and a neq "cfid">
 		<cfset selfdestruct = StructDelete(session,a)>
 	</cfif>
 </cfloop>

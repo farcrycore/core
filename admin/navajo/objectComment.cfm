@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/navajo/objectComment.cfm,v 1.16 2004/02/13 02:29:41 brendan Exp $
+$Header: /cvs/farcry/farcry_core/admin/navajo/objectComment.cfm,v 1.18 2005/01/17 21:51:27 brendan Exp $
 $Author: brendan $
-$Date: 2004/02/13 02:29:41 $
-$Name: milestone_2-2-1 $
-$Revision: 1.16 $
+$Date: 2005/01/17 21:51:27 $
+$Name: milestone_2-3-2 $
+$Revision: 1.18 $
 
 || DESCRIPTION || 
 $Description: add comments to genericadmin items $
@@ -23,9 +23,11 @@ $in: $
 $out:$
 --->
 
+<cfprocessingDirective pageencoding="utf-8">
+
 <!--- set up page header --->
 <cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
-<admin:header>
+<admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 <cfparam name="url.finishURL" default="#application.url.farcry#/navajo/GenericAdmin.cfm">
 
@@ -77,14 +79,14 @@ $out:$
 				<input type="hidden" name="approveURL" value="#URLEncodedFormat(url.approveURL)#">
 			</cfif>
 			
-			<span class="formTitle">Add your comments:</span><br>
+			<span class="formTitle">#application.adminBundle[session.dmProfile.locale].addComment#:</span><br>
 			<textarea rows="8" cols="50"  name="commentLog"></textarea><br>
 			
 			<!--- if requesting approval, list approvers --->
 			<cfif url.status eq "requestApproval">
-				<span class="formLabel">Request Approval From</span><br/>
+				<span class="formLabel">#application.adminBundle[session.dmProfile.locale].requestApprovalFrom#</span><br/>
 				
-				<input type="checkbox" onclick="if(this.checked)deSelectAll();" name="lApprovers" value="all" checked="true">All approvers<br/>
+				<input type="checkbox" onclick="if(this.checked)deSelectAll();" name="lApprovers" value="#application.adminBundle[session.dmProfile.locale].all#" checked="true">#application.adminBundle[session.dmProfile.locale].allApprovers#<br/>
 				
 				<!--- get list of approvers for this object --->
 				<cfinvoke component="#application.packagepath#.farcry.workflow" method="getNewsApprovers" returnvariable="stApprovers">
@@ -99,13 +101,13 @@ $out:$
 				<p></p>
 			</cfif>
 			
-			<input type="submit" name="submit" value="Submit" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';">
-			<input type="button" name="Cancel" value="Cancel" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';" onClick="location.href='#application.url.farcry#/navajo/GenericAdmin.cfm?typename=#stObj.typename#';"></div>     
+			<input type="submit" name="submit" value="#application.adminBundle[session.dmProfile.locale].submitUC#" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';">
+			<input type="button" name="Cancel" value="#application.adminBundle[session.dmProfile.locale].cancel#" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';" onClick="location.href='#application.url.farcry#/navajo/GenericAdmin.cfm?typename=#stObj.typename#';"></div>     
 			<cfif listlen(url.objectid) eq 1>
 				<!--- display existing comments --->
 				<cfif structKeyExists(stObj,"commentLog")>
 					<cfif len(trim(stObj.commentLog)) AND structKeyExists(stObj,"commentLog")>
-						<p></p><span class="formTitle">Previous Comments</span><P></P>
+						<p></p><span class="formTitle">#application.adminBundle[session.dmProfile.locale].prevCommentLog#</span><P></P>
 						#htmlcodeformat(stObj.commentLog)#
 					</cfif>
 				</cfif>

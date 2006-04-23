@@ -1,3 +1,4 @@
+<cfprocessingDirective pageencoding="utf-8">
 <cfscript>
 oAuthorisation = createObject("component", "#application.securitypackagepath#.authorisation");
 </cfscript>

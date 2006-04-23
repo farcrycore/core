@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/navajo/treeCopyNPaste.cfm,v 1.2 2004/04/25 10:32:21 paul Exp $
-$Author: paul $
-$Date: 2004/04/25 10:32:21 $
-$Name: milestone_2-2-1 $
-$Revision: 1.2 $
+$Header: /cvs/farcry/farcry_core/admin/navajo/treeCopyNPaste.cfm,v 1.3 2004/07/15 01:51:08 brendan Exp $
+$Author: brendan $
+$Date: 2004/07/15 01:51:08 $
+$Name: milestone_2-3-2 $
+$Revision: 1.3 $
 
 || DESCRIPTION || 
 $Description: $
@@ -21,6 +21,8 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au)$
 $in: $
 $out:$
 --->
+<cfprocessingDirective pageencoding="utf-8">
+
 <cfparam name="url.srcObjectId" >
 <cfparam name="url.destObjectId">
 <cfinclude template="/farcry/farcry_core/admin/includes/cfFunctionWrappers.cfm">

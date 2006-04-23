@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_versioning/approveEmail_pending_dd.cfm,v 1.17.4.1 2004/11/25 02:46:09 paul Exp $
-$Author: paul $
-$Date: 2004/11/25 02:46:09 $
-$Name: milestone_2-2-1 $
-$Revision: 1.17.4.1 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_versioning/approveEmail_pending_dd.cfm,v 1.18 2004/11/19 23:18:53 tom Exp $
+$Author: tom $
+$Date: 2004/11/19 23:18:53 $
+$Name: milestone_2-3-2 $
+$Revision: 1.18 $
 
 || DESCRIPTION || 
 $Description: sends email for pending news type object $
@@ -48,7 +48,7 @@ $out:$
 <cfmail to="#stApprovers[user].emailAddress#" from="#fromEmail#" subject="#application.config.general.sitetitle# - Object Approval Request">
 Hi <cfif len(stApprovers[user].firstName) gt 0>#stApprovers[user].firstName#<cfelse>#stApprovers[user].userName#</cfif>,
 
-Object "<cfif stObj.label neq "">#stObj.label#<cfelse>undefined</cfif>" is awaiting your approval.
+Object "<cfif isDefined("stObj.title") and len(trim(stObj.title))>#stObj.title#<cfelseif isDefined("stObj.label") and len(trim(stObj.label))>#stObj.label#<cfelse>undefined</cfif>" is awaiting your approval.
 
 You may approve/decline this object by browsing to the following location:
 

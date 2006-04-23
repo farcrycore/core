@@ -1,4 +1,7 @@
 <cfsetting enablecfoutputonly="Yes">
+
+<cfprocessingDirective pageencoding="utf-8">
+
 <!--- 
 || BEGIN FUSEDOC ||
 
@@ -7,11 +10,11 @@ Daemon Pty Limited 1995-2001
 http://www.daemon.com.au/
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/security/ui/dmSecUI_GroupCreateEdit.cfm,v 1.4 2003/12/08 00:25:13 brendan Exp $
+$Header: /cvs/farcry/farcry_core/tags/security/ui/dmSecUI_GroupCreateEdit.cfm,v 1.5 2004/07/15 02:03:27 brendan Exp $
 $Author: brendan $
-$Date: 2003/12/08 00:25:13 $
-$Name: milestone_2-2-1 $
-$Revision: 1.4 $
+$Date: 2004/07/15 02:03:27 $
+$Name: milestone_2-3-2 $
+$Revision: 1.5 $
 
 || DESCRIPTION || 
 Interface for creating and editing groups.
@@ -35,7 +38,7 @@ Matt Dawson (mad@daemon.com.au)
 	if (isDefined("form.delete"))
 	{
 		oAuthentication.deleteGroup(groupName=form.groupName,userDirectory=form.userDirectory);
-		writeoutput("<span style='color:green;'>OK:</span> Group '#form.groupName#' has been deleted.<p>");
+		writeoutput("#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].groupDeleted,'#form.groupName#')#<p>");
 		location(url='redirect.cfm?tag=GroupSearch&msg');
 	}
 	else
@@ -50,7 +53,7 @@ Matt Dawson (mad@daemon.com.au)
 			bSuccess = stResult.bSuccess;
 			if (stResult.bSuccess)
 			{	
-				writeoutput("<span style='color:green;'>OK:</span> Group Update/Create success<p>");
+				writeoutput("#application.adminBundle[session.dmProfile.locale].groupChangeOK#<p>");
 				stObj = oAuthentication.getGroup(groupName='#form.GroupName#', userDirectory='#form.UserDirectory#');
 			}
 			else
@@ -78,9 +81,9 @@ Matt Dawson (mad@daemon.com.au)
 
 
 <cfif stObj.GroupId eq -1 >
-	<cfoutput><span class="formtitle">Create Group</span><p></cfoutput>
+	<cfoutput><span class="formtitle">#application.adminBundle[session.dmProfile.locale].createGroup#</span><p></cfoutput>
 <cfelse>
-	<cfoutput><span class="formtitle">Edit Group</span><p></cfoutput>
+	<cfoutput><span class="formtitle">#application.adminBundle[session.dmProfile.locale].editGroup#</span><p></cfoutput>
 </cfif>
 
 <cfoutput>
@@ -95,14 +98,14 @@ Matt Dawson (mad@daemon.com.au)
 <tr>
 	<td>
 	<cfif stObj.GroupId eq -1>
-		<span class="formlabel">Select a user directory to create the group in.</span><br>
+		<span class="formlabel">#application.adminBundle[session.dmProfile.locale].selectUserDir#</span><br>
 		<select name="UserDirectory">
 			<cfloop index="i" list="#structKeyList(stUd)#">
 			<option value="#i#" <cfif stObj.userDirectory eq i>selected</cfif>>#i#
 			</cfloop>
 		</select>
 	<cfelse>
-		<span class="formlabel">UserDirectory:</span> #stObj.UserDirectory#
+		#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].userDir,"#stObj.UserDirectory#")#
 		<input type="hidden" name="UserDirectory" value="#stObj.UserDirectory#"> 
 	</cfif>
 	</td>
@@ -114,7 +117,7 @@ Matt Dawson (mad@daemon.com.au)
 <tr>
 	<td>
 	<!--- User Details --->
-	<span class="formlabel">Group Name:</span><br>
+	<span class="formlabel">#application.adminBundle[session.dmProfile.locale].groupNameLabel#</span><br>
 	<input type="text" size="32" maxsize="32" name="GroupName" value="#stObj.groupName#">
 	</td>
 </tr>
@@ -123,7 +126,7 @@ Matt Dawson (mad@daemon.com.au)
 </tr>
 <tr>
 	<td>
-	<span class="formlabel">Group Notes:</span><br>
+	<span class="formlabel">#application.adminBundle[session.dmProfile.locale].groupNotesLabel#</span><br>
 	<Textarea name="groupNotes" class="formtextarea" rows="4">#stObj.groupNotes#</textarea><br>
 	</td>
 </tr>
@@ -133,10 +136,10 @@ Matt Dawson (mad@daemon.com.au)
 <tr>
 	<td>
 	<cfif stObj.GroupId eq -1>
-		<input type="submit" name="Submit" value="Create Group"><br>
+		<input type="submit" name="Submit" value="#application.adminBundle[session.dmProfile.locale].createGroup#"><br>
 	<cfelse>
-		<input type="submit" name="Submit" value="Update Group">&nbsp;&nbsp;&nbsp;&nbsp;
-		<input type="submit" name="Delete" value="Delete Group" onclick="return confirm('Are you sure you want to delete this group?');">
+		<input type="submit" name="Submit" value="#application.adminBundle[session.dmProfile.locale].updateGroup#">&nbsp;&nbsp;&nbsp;&nbsp;
+		<input type="submit" name="Delete" value="#application.adminBundle[session.dmProfile.locale].deleteGroup#" onclick="return confirm('#application.adminBundle[session.dmProfile.locale].confirmGroupDelete#');">
 	</cfif>
 	</td>
 </tr>
@@ -148,13 +151,11 @@ Matt Dawson (mad@daemon.com.au)
 <SCRIPT LANGUAGE="JavaScript">
 <!--//
 objForm = new qForm("groupForm");
-objForm.GroupName.validateNotNull("Please enter a group name");
+objForm.GroupName.validateNotNull("#application.adminBundle[session.dmProfile.locale].enterGroupName#");
 //-->
 </SCRIPT>
 </form>
 
 </cfoutput>
-
-
 
 <cfsetting enablecfoutputonly="No">

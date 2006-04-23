@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/navajo/createObject.cfm,v 1.18 2003/12/08 05:28:13 paul Exp $
-$Author: paul $
-$Date: 2003/12/08 05:28:13 $
-$Name: milestone_2-2-1 $
-$Revision: 1.18 $
+$Header: /cvs/farcry/farcry_core/tags/navajo/createObject.cfm,v 1.19 2004/07/15 02:03:00 brendan Exp $
+$Author: brendan $
+$Date: 2004/07/15 02:03:00 $
+$Name: milestone_2-3-2 $
+$Revision: 1.19 $
 
 || DESCRIPTION || 
 $Description: creates an instance of an type object and returns to edit handler$
@@ -24,6 +24,8 @@ $out:$
 --->
 
 <cfsetting enablecfoutputonly="Yes">
+
+<cfprocessingDirective pageencoding="utf-8">
 
 <cfimport taglib="/farcry/fourq/tags/" prefix="q4">
 <cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
@@ -54,7 +56,7 @@ $out:$
 <!--- make sure parent can hold an object before doing anything... --->	
 <cfif len(url.objectId) AND not structKeyExists(stParent,"aObjectIds")>
 	<cfoutput>
-		You cannot create an object inside this object as it has no aObjectIds property.
+		#application.adminBundle[session.dmProfile.locale].noaObjectIds#
 	</cfoutput>
 	<cfabort>
 
@@ -89,7 +91,7 @@ $out:$
 		<cfif url.typename IS url.nodetype>
 			
 			<cfif NOT stParent.typename IS url.nodetype>
-				<cfoutput><b>Cannot create navigation nodes in objects!</b></cfoutput>
+				<cfoutput><b>#application.adminBundle[session.dmProfile.locale].cantCreateNavObj#</b></cfoutput>
 				<cfabort>
 			<cfelse>
 				<!--- Insert this node into the tree --->
