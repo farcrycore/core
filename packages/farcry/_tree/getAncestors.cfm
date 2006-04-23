@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_tree/getAncestors.cfm,v 1.12 2003/10/26 23:32:52 brendan Exp $
-$Author: brendan $
-$Date: 2003/10/26 23:32:52 $
-$Name: b201 $
-$Revision: 1.12 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_tree/getAncestors.cfm,v 1.13 2004/03/24 07:10:27 paul Exp $
+$Author: paul $
+$Date: 2004/03/24 07:10:27 $
+$Name: milestone_2-2-1 $
+$Revision: 1.13 $
 
 || DESCRIPTION || 
 $Description: getAncestors Function $
@@ -31,27 +31,25 @@ $out:$
 	if (qNode.recordCount EQ 1 AND isDefined('qNode.nlevel'))
 	{	rowindex=1;
 		parentID = qNode.parentID;	
-		nlevel = qNode.nlevel;
+		nlev = qNode.nlevel;
 		//new query object to hold the parentIDs of ancestors
 		qParentIDs = queryNew('parentID');
 		queryAddRow(qParentIDs,1);
 		querySetCell(qParentIDs,"parentID",parentID,rowindex);
 		if (len(qParentIDs.parentID[1]))
-			objectID = qParentIDs.parentID[1];	
-		while(nLevel GT 0)
+			objID = qParentIDs.parentID[1];	
+		while(nLev GT 0)
 		{			
-			sql = "select parentid
-			from nested_tree_objects
-			where objectid = '#objectid#'";
+			sql = "select parentid from nested_tree_objects	where objectid = '#objID#'";
 			q = query(sql=sql, dsn=arguments.dsn);
-			if (q.recordCount)
+			if (q.recordCount EQ 1)
 			{	
 				rowindex = rowindex + 1;
 				queryAddRow(qParentIDs,1);
 				querySetCell(qParentIDs,'parentID',q.parentID,rowindex);
 			}	
-			nLevel = nLevel - 1;
-			objectID = q.parentID;
+			nLev = nLev - 1;
+			objID = q.parentID;
 		}
 
 		sql = "select objectid, objectname, nlevel from nested_tree_objects where objectID IN (#quotedValueList(qParentIDs.parentID)#)";

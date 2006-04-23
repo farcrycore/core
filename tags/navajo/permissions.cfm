@@ -1,4 +1,5 @@
-<cfsetting enablecfoutputonly="Yes">
+<cfsetting enablecfoutputonly="Yes" requesttimeout="240">
+
 <cfimport taglib="/farcry/fourq/tags/" prefix="q4">
 <cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
 

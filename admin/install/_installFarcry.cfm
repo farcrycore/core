@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/install/_installFarcry.cfm,v 1.37 2004/01/19 06:14:19 brendan Exp $
+$Header: /cvs/farcry/farcry_core/admin/install/_installFarcry.cfm,v 1.39 2004/06/16 06:22:43 brendan Exp $
 $Author: brendan $
-$Date: 2004/01/19 06:14:19 $
-$Name: milestone_2-1-2 $
-$Revision: 1.37 $
+$Date: 2004/06/16 06:22:43 $
+$Name: milestone_2-2-1 $
+$Revision: 1.39 $
 
 || DESCRIPTION || 
 $Description: Installation scripts for FarCry database components $
@@ -89,6 +89,8 @@ o_config.defaultEOPro(dsn=application.dsn);
 o_config.defaultGeneral(dsn=application.dsn);
 o_config.defaultPlugins(dsn=application.dsn);
 o_config.defaultFU(dsn=application.dsn);
+o_config.defaultOverviewTree(dsn=application.dsn);
+o_config.defaultHTMLArea(dsn=application.dsn);
 if (stResult.bSuccess) writeOutput(successMsg);
 else writeOutput(failureMsg);
 </cfscript>
@@ -195,10 +197,10 @@ dotAnim();
 // create policy group mappings
 stResult = application.o_dmAuthorisation.createPolicyGroupMapping(groupname="SysAdmin",userDirectory="ClientUD",policyGroupID="1");
 stResult = application.o_dmAuthorisation.createPolicyGroupMapping(groupname="SiteAdmin",userDirectory="ClientUD",policyGroupID="2");
-stResult = application.o_dmAuthorisation.createPolicyGroupMapping(groupname="Contributors",userDirectory="ClientUD",policyGroupID="5");
-stResult = application.o_dmAuthorisation.createPolicyGroupMapping(groupname="News Contributor",userDirectory="ClientUD",policyGroupID="5");
+stResult = application.o_dmAuthorisation.createPolicyGroupMapping(groupname="Contributors",userDirectory="ClientUD",policyGroupID="4");
+stResult = application.o_dmAuthorisation.createPolicyGroupMapping(groupname="News Contributor",userDirectory="ClientUD",policyGroupID="4");
 stResult = application.o_dmAuthorisation.createPolicyGroupMapping(groupname="Member",userDirectory="ClientUD",policyGroupID="3");
-stResult = application.o_dmAuthorisation.createPolicyGroupMapping(groupname="Publishers",userDirectory="ClientUD",policyGroupID="6");
+stResult = application.o_dmAuthorisation.createPolicyGroupMapping(groupname="Publishers",userDirectory="ClientUD",policyGroupID="5");
 </cfscript>
 <cfoutput>#successMsg#</cfoutput>
 <cfflush> 

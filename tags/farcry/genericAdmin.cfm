@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/farcry/genericAdmin.cfm,v 1.62.2.2 2005/04/29 07:03:59 guy Exp $
-$Author: guy $
-$Date: 2005/04/29 07:03:59 $
-$Name: milestone_2-1-2 $
-$Revision: 1.62.2.2 $
+$Header: /cvs/farcry/farcry_core/tags/farcry/genericAdmin.cfm,v 1.64.2.1 2004/12/09 01:14:14 paul Exp $
+$Author: paul $
+$Date: 2004/12/09 01:14:14 $
+$Name: milestone_2-2-1 $
+$Revision: 1.64.2.1 $
 
 || DESCRIPTION || 
 $Description: generic admin for all types. If there is a display method called "display" on the type, it can be previewed.... $
@@ -33,6 +33,8 @@ $in: [stGrid]: optional, structure to specify grid for admin interface $
 
 $TODO: there shouldn't be anything scoped from outside of the tag! Make this an attribute GB031101 $
 --->
+
+
 <cfsetting enablecfoutputonly="No">
 <cfimport taglib="/farcry/farcry_core/tags/display/" prefix="display">
 <cfinclude template="/farcry/farcry_core/admin/includes/cfFunctionWrappers.cfm">
@@ -41,7 +43,7 @@ $TODO: there shouldn't be anything scoped from outside of the tag! Make this an 
 
 <!--- default general attributes --->
 <cfparam name="attributes.typename" type="string">
-<cfparam name="url.module" default="">
+<Cfparam name="url.module" default="">
 <cfparam name="attributes.user" default=""><!--- set this to a specific user and it will only get stuff that they created. --->
 <cfparam name="attributes.permissionType"><!--- --->
 <cfparam name="attributes.bDisplayCategories" default="true">
@@ -76,7 +78,8 @@ $TODO: there shouldn't be anything scoped from outside of the tag! Make this an 
 	}	
 	if (bDeprecated) 
 		oType = createObject("component","#application.packagepath#.farcry.genericAdmin");
-</cfscript>
+</cfscript>	
+
 
 <cfscript>
 
@@ -145,13 +148,15 @@ $TODO: there shouldn't be anything scoped from outside of the tag! Make this an 
 	st.value = "##lastupdatedby##";
 	st.align = 'center';
 	arrayAppend(stGrid.aTable,st);
+	
+	stGrid.aCustomButtons = arrayNew(1);
 			
 	// get permissions
 		
-
 </cfscript>
 <cfparam name="attributes.stGrid" default="#stGrid#">
 <cfset stGrid = attributes.stGrid>
+<cfparam name="stGrid.aCustomButtons" default="#arrayNew(1)#"> 
 <cfparam name="stgrid.permissionType" default="news">
 <cfif isDefined("attributes.finishURL")>
 	<cfset stGrid.finishURL = attributes.finishURL>
@@ -164,6 +169,12 @@ $TODO: there shouldn't be anything scoped from outside of the tag! Make this an 
 </cfif>
 <cfif isDefined("URL.objectid")><!--- yes referring to url params in this tag bad - in here for backwards compatability --->
 	<cfset form.objectid = URL.objectid>
+</cfif>
+
+<!--- dump objects --->
+<cfif isdefined("form.dump")>
+	<cf_dump lObjectIds = "#form.objectid#">
+	<cfset structDelete(form,"objectid")>
 </cfif>
 
 <cfparam name="stGrid.submit.create.onClick" default="window.location='#application.url.farcry#/navajo/createObject.cfm?typename=#attributes.typename#';">
@@ -187,6 +198,21 @@ $TODO: there shouldn't be anything scoped from outside of the tag! Make this an 
 
 <cfscript>
 //delete objects 
+
+if(isDefined("form.objectid"))
+{
+	o = createObject("component", application.types[attributes.typename].typePath);
+	for(i=1;i LTE arrayLen(stGrid.aCustomButtons);i=i+1)
+	{
+		
+		if(structKeyExists(form,stGrid.aCustomButtons[i].name))
+		{
+			evaluate("o." & stGrid.aCustomButtons[i].submitMethod & "(objectid='" & FORM.objectid & "')");
+			structDelete(form,'objectid');
+		}
+	}
+}
+
 
 if (isDefined("form.unlock") AND isDefined("form.objectid"))
 {
@@ -305,11 +331,6 @@ if (recordSet.recordCount GT 0)
 	thispage = 1;
 }
 </cfscript>
-
-<!--- dump objects --->
-<cfif isdefined("form.dump")>
-	<cf_dump lObjectIds = "#form.objectid#">
-</cfif>
 
 <!--- ### display page ### --->
 <cfoutput>
@@ -496,18 +517,31 @@ if (recordSet.recordCount GT 0)
 					</td>
 					</cfif>
 				</cfif>
-				<!--- <!--- dump objects  --->
+				<!--- dump objects  --->
 				<cfif iObjectDumpTab eq 1>
 				<td>
 					<input type="submit" name="dump" value="Dump" width="100" style="width:100;" class="normalbttnstyle">
 				</td>
-				</cfif> --->
+				</cfif>
 				<!--- check if there are locked objects --->
 				<cfif isdefined("bUnlock")>
 				<td>
 					<input type="Submit" name="unlock" value="Unlock" width="100" style="width:100;" class="normalbttnstyle" >					
 				</td>
 				</cfif>	
+				<cfloop from="1" to="#arrayLen(stGrid.aCustomButtons)#" index="i">
+				<td>
+					<!--- First check if they have permission to see this button --->
+					<cfif structKeyExists(stGrid.aCustomButtons[i],'permission')>
+						<cfset bCustomPerm = oAuthorisation.checkPermission(permissionName=stGrid.aCustomButtons[i].permission,reference="PolicyGroup")>
+					<cfelse> <!--- Just assume everyone can use it --->
+						<cfset bCustomPerm = 1>
+					</cfif>
+					<cfif bCustomPerm>
+						<input type="submit" name="#stGrid.aCustomButtons[i].name#" value="#stGrid.aCustomButtons[i].value#" class="normalbttnstyle">
+					</cfif>
+				</td>
+				</cfloop>
 			</tr>
 			<tr><td>&nbsp;</td></tr>					
 			</table>
@@ -541,4 +575,4 @@ if (recordSet.recordCount GT 0)
 		</td> 
 	</tr>
 </table>
-</cfoutput>
+</cfoutput>	

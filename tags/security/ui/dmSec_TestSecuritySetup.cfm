@@ -8,11 +8,11 @@ Daemon Pty Limited 1995-2001
 http://www.daemon.com.au/
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/security/ui/dmSec_TestSecuritySetup.cfm,v 1.3 2004/01/18 22:45:44 brendan Exp $
+$Header: /cvs/farcry/farcry_core/tags/security/ui/dmSec_TestSecuritySetup.cfm,v 1.4 2004/06/16 23:25:24 brendan Exp $
 $Author: brendan $
-$Date: 2004/01/18 22:45:44 $
-$Name: milestone_2-1-2 $
-$Revision: 1.3 $
+$Date: 2004/06/16 23:25:24 $
+$Name: milestone_2-2-1 $
+$Revision: 1.4 $
 
 || DESCRIPTION || 
 Shows the userdirectory and policy store setup.
@@ -64,10 +64,22 @@ Matt Dawson (mad@daemon.com.au)
 				<span style="color:green;">OK:</span> UserDirectory Datasource attribute exists.<br>
 				
 				<!--- Test the odbc connection works --->
-				<cfquery name="testODBC" datasource="#stUd[udName].datasource#" dbtype="ODBC">
-					SELECT 1;
-				</cfquery>
+				<cfswitch expression="#application.dbType#">
+					
+					<cfcase value="ora">
+						<cfquery name="testODBC" datasource="#stUd[udName].datasource#" dbtype="ODBC">
+							SELECT 1 FROM DUAL
+						</cfquery>
+					</cfcase>
+					
+					<cfdefaultcase>
+						<cfquery name="testODBC" datasource="#stUd[udName].datasource#" dbtype="ODBC">
+							SELECT 1;
+						</cfquery>
+					</cfdefaultcase>
 				
+				</cfswitch>
+					
 				<span style="color:green;">OK:</span> UserDirectory Datasource '#stUd[udName].datasource#' connection success.<br>
 				<a href="?tag=CreateSecurityTables&userDirectory=#udName#" onClick="return confirm('Are you sure you wish to recreate you security tables?');">Create Security Tables</a><br>
 				<br>

@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_versioning/approveEmail_draft.cfm,v 1.15 2004/01/14 21:03:51 brendan Exp $
-$Author: brendan $
-$Date: 2004/01/14 21:03:51 $
-$Name: milestone_2-1-2 $
-$Revision: 1.15 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_versioning/approveEmail_draft.cfm,v 1.15.4.1 2004/11/25 02:46:09 paul Exp $
+$Author: paul $
+$Date: 2004/11/25 02:46:09 $
+$Name: milestone_2-2-1 $
+$Revision: 1.15.4.1 $
 
 || DESCRIPTION || 
 $Description: sends email for draft object $
@@ -56,7 +56,7 @@ stProfile = o_profile.getProfile(userName=stObj.lastupdatedby);
 <cfmail to="#stProfile.emailAddress#" from="#fromEmail#" subject="#application.config.general.sitetitle# - Page sent back to Draft">
 Hi <cfif len(stProfile.firstName) gt 0>#stProfile.firstName#<cfelse>#stProfile.userName#</cfif>,
 
-Your page "<cfif stObj.title neq "">#stObj.title#<cfelse>undefined</cfif>" has been sent back to draft.
+Your page "<cfif stObj.label neq "">#stObj.label#<cfelse>undefined</cfif>" has been sent back to draft.
 
 <cfif arguments.comment neq "">
 Comments added on status change:

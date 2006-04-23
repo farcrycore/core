@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/security/authorisation.cfc,v 1.34.2.2 2004/03/01 00:57:09 brendan Exp $
-$Author: brendan $
-$Date: 2004/03/01 00:57:09 $
-$Name: milestone_2-1-2 $
-$Revision: 1.34.2.2 $
+$Header: /cvs/farcry/farcry_core/packages/security/authorisation.cfc,v 1.37.2.2 2005/03/23 10:33:18 geoff Exp $
+$Author: geoff $
+$Date: 2005/03/23 10:33:18 $
+$Name: milestone_2-2-1 $
+$Revision: 1.37.2.2 $
 
 || DESCRIPTION || 
 $Description: authorisation cfc $
@@ -171,7 +171,10 @@ $out:$
 			if (not isDefined("arguments.lPolicyGroupIds"))
 			{
 				stLoggedInUser = oAuthentication.getUserAuthenticationData();
-				arguments.lPolicyGroupIds = stLoggedInUser.lPolicyGroupIDs;
+				if(stLoggedInUser.bLoggedIn)
+					arguments.lPolicyGroupIds = stLoggedInUser.lPolicyGroupIDs;
+				else
+					arguments.lPolicyGroupIds = application.dmsec.ldefaultpolicygroups;
 			}
 			
 			if (isDefined("arguments.objectid"))
@@ -242,6 +245,18 @@ $out:$
 						sql = sql & ")";
 						break;	
 					}
+					case "postgresql":
+					{
+						sql = "
+						INSERT INTO #application.dbowner##stPolicyStore.permissionTable# ( permissionid,permissionName,permissionNotes,permissionType";
+						sql = sql & ")";
+						if (arguments.permissionId neq -1)
+							sql = sql & " VALUES (#arguments.permissionId#,'#arguments.permissionName#','#arguments.permissionNotes#','#arguments.permissionType#'";
+						else 
+							sql = sql & " VALUES (DMPERMISSION_SEQ.nextval,'#arguments.permissionName#','#arguments.permissionNotes#','#arguments.permissionType#'";
+						sql = sql & ")";
+						break;	
+					} 
 					case "mysql":
 					{
 						sql = "
@@ -311,7 +326,14 @@ $out:$
 							(DMPOLICYGROUP_SEQ.nextval,'#arguments.PolicyGroupName#','#arguments.PolicyGroupNotes#')";
 						break;	
 					}
-					
+					case "postgresql":
+					{
+						sql = "
+							INSERT INTO #application.dbowner##stPolicyStore.PolicyGroupTable# ( policyGroupName,policyGroupNotes )
+							VALUES
+							('#arguments.PolicyGroupName#','#arguments.PolicyGroupNotes#')";
+						break;	
+					}
 					case "mysql":
 					{
 						sql = "
@@ -551,8 +573,8 @@ $out:$
 			sql="
 				DELETE FROM #application.dbowner##stPolicyStore.ExternalGroupToPolicyGroupTable#
 				WHERE policyGroupId=#policyGroupId#
-				AND ExternalGroupUserDirectory='#userdirectory#'
-			    AND ExternalGroupName='#groupName#'";
+				AND upper(ExternalGroupUserDirectory)='#ucase(arguments.userdirectory)#'
+				AND upper(ExternalGroupName)='#ucase(arguments.groupName)#'";
 			query(sql=sql,dsn=stPolicyStore.datasource);
 			oAuthentication = createObject("component","#application.securitypackagepath#.authentication");	
 			oAudit = createObject("component","#application.packagepath#.farcry.audit");
@@ -713,9 +735,14 @@ $out:$
 				<cfloop list="#stGroups[groupName]#" index="groupUD">
 					<cfscript>
 					//get user directory details based on user directory type
-					stUD = application.dmSec.userDirectory[groupUD]; //TODO - this must be authorisation specific
+					if (structKeyExists(application.dmSec.userDirectory, groupUD))
+						stUD=application.dmSec.userDirectory[groupUD]; //TODO - this must be authorisation specific
+					else
+						stUD.type="unknown"; //means UD was available when mapping was set but access has been removed GB050321
 					switch(stUD.type) {
-						case "ADSI" : {
+						case "unknown" : {
+						break; //means UD was available when mapping was set but access has been removed GB050321
+						} case "ADSI" : {
 		                    o_NTsec = createObject("component", "#application.packagepath#.security.NTsecurity");
 					        aADUsers = o_NTsec.getGroupUsers(groupName=groupName, domain=stUD.domain);
 		
@@ -860,7 +887,19 @@ $out:$
 									AND upper(b.Reference1)='#ucase(arguments.reference)#'";
 							break;	
 						}
-						
+						case "postgresql":
+						{
+							sql = "
+							SELECT s.policyGroupId, s.permissionId, b.status FROM
+								(SELECT g.policyGroupId, p.permissionId FROM #application.dbowner##stPolicyStore.policyGroupTable# g
+								CROSS JOIN dmPermission p WHERE upper(p.PermissionType)='#ucase(permissionType)#' ) s
+								
+								LEFT OUTER JOIN #application.dbowner##stPolicyStore.permissionBarnacleTable# b
+									ON s.permissionId = b.permissionID
+									AND s.policyGroupId = b.policyGroupId
+									AND upper(b.Reference1)='#ucase(arguments.reference)#'";
+							break;	
+						}
 						case "mysql":
 						{
 							tempDropSQL = "DROP TABLE IF EXISTS tblTemp1";

@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_stats/getBranchStatsByDay.cfm,v 1.9 2003/12/08 05:39:55 paul Exp $
-$Author: paul $
-$Date: 2003/12/08 05:39:55 $
-$Name: milestone_2-1-2 $
-$Revision: 1.9 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_stats/getBranchStatsByDay.cfm,v 1.10 2004/05/20 04:41:25 brendan Exp $
+$Author: brendan $
+$Date: 2004/05/20 04:41:25 $
+$Name: milestone_2-2-1 $
+$Revision: 1.10 $
 
 || DESCRIPTION || 
 $Description: get stats for entire branch $
@@ -30,6 +30,23 @@ $out:$
 <!--- run the query to get counts of user activity by hour --->
 <cfswitch expression="#application.dbtype#">
 <cfcase value="ora">
+	<cfquery datasource="#arguments.dsn#" name="qGetPageStatsByDay">
+		select distinct hour, TO_CHAR(fq.logdatetime,'hh') as loginhour, count(fq.logId) as count_views
+		from #application.dbowner#statsHours
+		left join (
+				select * from stats
+				where 1 = 1
+				<cfif not arguments.showAll>
+					AND navid IN (<cfif qDescendants.recordcount>#QuotedValueList(qDescendants.objectid)#,</cfif>'#arguments.navid#')
+				</cfif>
+		)fq on TO_CHAR(fq.logdatetime,'hh') = statsHours.hour
+		and TO_CHAR(fq.logdatetime,'dd' ) = #DatePart("d", arguments.day)# and TO_CHAR(fq.logdatetime,'mm') = #DatePart("m", arguments.day)# and TO_CHAR(fq.logdatetime,'yyyy') = #DatePart("yyyy", arguments.day)#
+		group by hour, TO_CHAR(fq.logdatetime,'hh')
+		order by 1 
+	</cfquery>	
+</cfcase>
+
+<cfcase value="postgresql">
 	<cfquery datasource="#arguments.dsn#" name="qGetPageStatsByDay">
 		select distinct hour, TO_CHAR(fq.logdatetime,'hh') as loginhour, count(fq.logId) as count_views
 		from #application.dbowner#statsHours

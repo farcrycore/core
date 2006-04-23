@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_versioning/sendObjectLive.cfm,v 1.10 2003/11/20 04:28:54 paul Exp $
-$Author: paul $
-$Date: 2003/11/20 04:28:54 $
-$Name: milestone_2-1-2 $
-$Revision: 1.10 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_versioning/sendObjectLive.cfm,v 1.11.2.2 2004/07/16 11:26:30 geoff Exp $
+$Author: geoff $
+$Date: 2004/07/16 11:26:30 $
+$Name: milestone_2-2-1 $
+$Revision: 1.11.2.2 $
 
 || DESCRIPTION || 
 $Description: sends versioned object live $
@@ -57,7 +57,9 @@ $out:$
 		stProps.datetimelastupdated = createODBCDateTime(Now());
 		stProps.createdby = session.dmSec.authentication.userlogin;
 		stProps.datetimecreated = createODBCDateTime(Now());
-		stProps.label = stLiveObject.title;
+		// TODO: remove references to non-system attributes like TITLE from core
+		if (structkeyexists(stliveobject, "title"))
+			stProps.label = stLiveObject.title;
 		//end dmArchive struct  
 
 	</cfscript>
@@ -69,12 +71,16 @@ $out:$
 			oCon = createobject("component","#application.packagepath#.rules.container");
 			//copy draft containers to live
 			oCon.copyContainers(srcObjectID=arguments.stDraftObject.objectId,destObjectID=stLiveObject.objectID,bDeleteSrcData=1);
+			//this will copy categories from draft object to live
+			oCategory = createobject("component","#application.packagepath#.farcry.category");
+			oCategory.copyCategories(arguments.stDraftObject.objectid,stLiveObject.objectID);
 			//Archive the object
 			oArchive = createobject("component","#application.packagepath#.types.dmArchive");
 			oArchive.createData(stProperties=stProps);
 			
 			//delete the old draft
 			o.deleteData(objectid=arguments.stDraftObject.objectid);
+			oCategory.deleteAssignedCategories(objectid=stDraftObject.objectid);
 			
 			//need to set stDraft object to live for fourq update. Update datetimeLastUpdated and clear out versionID
 			arguments.stDraftObject.objectid = stLiveObject.objectID;

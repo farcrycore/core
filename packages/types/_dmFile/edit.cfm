@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmFile/edit.cfm,v 1.18.2.1 2004/10/12 01:04:42 brendan Exp $
-$Author: brendan $
-$Date: 2004/10/12 01:04:42 $
-$Name: milestone_2-1-2 $
-$Revision: 1.18.2.1 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmFile/edit.cfm,v 1.28 2004/04/25 10:31:06 paul Exp $
+$Author: paul $
+$Date: 2004/04/25 10:31:06 $
+$Name: milestone_2-2-1 $
+$Revision: 1.28 $
 
 || DESCRIPTION || 
 $Description: edit handler$
@@ -38,52 +38,59 @@ $out:$
 		stProperties.title = form.title;
 		stProperties.label = form.title;
 		stProperties.description = form.description;
+		stProperties.documentDate = createODBCDatetime('#form.publishYear#-#form.publishMonth#-#form.publishDay# #form.publishHour#:#form.publishMinutes#');
 	
 		//TODO - fix this - with createodbctime etc		
 		stProperties.datetimelastupdated = Now();
-		stProperties.datetimecreated = Now();
 		stProperties.lastupdatedby = session.dmSec.authentication.userlogin;
 		//unlock object
 		stProperties.locked = 0;
 		stProperties.lockedBy = "";
+		oForm = createObject("component","#application.packagepath#.farcry.form");
 	</cfscript>
 
 	<!--- upload the original file 	--->
 	<cfif trim(len(FORM.filename)) NEQ 0>
 		<!--- if accept list not specified in config, accept everything --->
+
 		<cfif len(application.config.file.filetype)>
-			<cfinvoke 
-				component="#application.packagepath#.farcry.form" 
-				method="uploadFile" 
-				destination="#application.defaultFilePath#" 
-				returnvariable="stReturn" 
-				formfield="filename" 
-				accept="#application.config.file.filetype#"/> 
+			<cftry>
+				<cffile action="upload"
+					filefield="filename" 
+					accept="#application.config.file.filetype#" 
+					destination="#application.defaultFilePath#" 
+					nameconflict="#application.config.general.fileNameConflict#"
+				> 
+				<cfcatch>
+					<cfoutput>
+						<strong>ERROR:</strong> #cfcatch.message#<p>
+						File types that are accepted: #application.config.file.filetype# <p></p>
+					</cfoutput>
+					<cfset error=1>
+				</cfcatch>
+			</cftry>
 		<cfelse>
-			<cfinvoke 
-				component="#application.packagepath#.farcry.form" 
-				method="uploadFile" 
-				destination="#application.defaultFilePath#" 
-				returnvariable="stReturn" 
-				formfield="filename" /> 
+			<cffile action="upload"
+				filefield="filename" 
+				destination="#application.defaultFilePath#"  nameconflict="#application.config.general.fileNameConflict#"
+			> 
 		</cfif>
-		
-		<cfif NOT stReturn.bSuccess>
-			<cfoutput><strong>ERROR:</strong> #stReturn.message#<p>
-			File types that are accepted: #application.config.file.filetype# <p></p></cfoutput>
-			<cfset error=1>
-		<cfelse>	
-			<cfscript>
-				stProperties.filename = stReturn.ServerFile;
-				stProperties.filepath = stReturn.ServerDirectory;
-			</cfscript>
-		</cfif>	
-		
+		<cfscript>
+			stProperties.filename = oForm.sanitiseFileName(file.ServerFile,file.ClientFileName,file.ServerDirectory);
+			stProperties.filepath = file.ServerDirectory;
+			stProperties.fileSize = file.fileSize;
+			stProperties.fileType = file.contentType;
+			stProperties.fileSubType = file.contentSubType;
+			stProperties.fileExt = file.serverFileExt;
+		</cfscript>
 	</cfif>
 	
 	<cfscript>
-		// update the OBJECT	
 		oType = createobject("component", application.types.dmFile.typePath);
+		// archive cuurent live file object 
+		if (application.config.file.archiveFiles)
+			oType.archiveObject(objectid=stProperties.objectid);
+		// update the OBJECT	
 		oType.setData(stProperties=stProperties);
 	</cfscript>
 	
@@ -124,7 +131,55 @@ $out:$
   	 <td><span class="FormLabel">Title:</span></td>
    	 <td><input type="text" name="title" value="#stObj.title#" class="FormTextBox"></td>
 	</tr>
-	
+	<tr>
+		<td nowrap class="FormLabel">Date Published:</td>
+		<td >
+			<table>
+				<tr>
+					<td>
+						<select name="publishDay" class="formfield">
+							<cfloop from="1" to="31" index="i">
+								<option value="#i#" <cfif i IS day(stObj.documentDate)>selected</cfif>>#i#</option>
+							</cfloop>
+						</select>	
+					</td>
+					<td>
+						<select name="publishMonth" class="formfield">
+							<cfloop from="1" to="12" index="i">
+								<option value="#i#" <cfif i IS month(stObj.documentDate)>selected</cfif>>#monthAsString(i)#</option>
+							</cfloop>
+						</select>
+					</td>
+					<td>
+						<cfscript>
+							thisYear = year(now());
+							startYear = 2000;
+							endYear = year(dateadd("yyyy",7,now()));	
+						</cfscript>
+						<select name="publishYear" class="formfield">
+							<cfloop from="#startYear#" to="#endYear#" index="i">
+								<option value="#i#" <cfif i IS year(stObj.documentDate)>selected</cfif>>#i#</option>
+							</cfloop>
+						</select>
+					</td>
+					<td>
+						<select name="publishHour" class="formfield">
+							<cfloop from="0" to="23" index="i">
+								<option value="#i#" <cfif hour(stObj.documentDate) IS i>selected</cfif>>#i# hrs</option>						
+							</cfloop>
+						</select>
+					</td>
+					<td>
+						<select name="publishMinutes" class="formfield">
+							<cfloop from="0" to="45" index="i" step="15">
+								<option value="#i#" <cfif minute(stObj.documentDate) IS i>selected</cfif>>#i# mins</option>						
+							</cfloop>
+						</select>
+					</td>	
+				</tr>
+			</table>
+		</td>
+	</tr>
 	<tr>	
   	 <td><span class="FormLabel">File:</span></td>
    	 <td><input type="file" name="filename" class="FormFileBox"></td>
@@ -159,25 +214,7 @@ $out:$
 		</cfif>
 		</td>
 	</tr>
-<!--- 	<tr>
-		<td>
-			<nj:getFileIcon filename="#stThisFile.filename#" r_stIcon="fileicon"> 	
-			<img src="#application.url.farcry#/images/treeImages/#fileicon#">
-		</td>
-		<td>
-			#left(stThisFile.title,50)#
-		</td>
-		<td align="center">
-			<cfif len(trim(stThisFile.filename)) NEQ 0>
-				<a href="#stThisFile.filePath#\#stThisFile.filename#" target="_blank">
-					<img src="#application.url.farcry#/images/treeImages/preview.gif" border="0">
-				</a>
-			<cfelse>
-					
-			</cfif>
-		</td>
-	</tr>	
- --->	
+
 	<tr>
   	 <td valign="top"><span class="FormLabel">Description:</span></td>
    	 <td><textarea cols="30" rows="4" name="description" class="FormTextArea">#stObj.description#</textarea></td>

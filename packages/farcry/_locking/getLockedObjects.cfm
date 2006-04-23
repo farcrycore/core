@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_locking/getLockedObjects.cfm,v 1.6 2004/01/11 21:56:13 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_locking/getLockedObjects.cfm,v 1.7 2004/03/24 22:37:27 brendan Exp $
 $Author: brendan $
-$Date: 2004/01/11 21:56:13 $
-$Name: milestone_2-1-2 $
-$Revision: 1.6 $
+$Date: 2004/03/24 22:37:27 $
+$Name: milestone_2-2-1 $
+$Revision: 1.7 $
 
 || DESCRIPTION || 
 $Description: returns all locked objects $
@@ -22,34 +22,28 @@ $in: $
 $out:$
 --->
 
-<!--- initialize query --->
-<cfset qLockedObjects = queryNew("objectId,objectTitle,createdBy,objectLastUpdated,objectType,objectParent")>
-<cfset rowCounter = 0>
-
 <!--- Loop through all objects that are locked by specified user --->
 <cfloop list="#arguments.types#" index="i">
 		
-	<cfset sql = "select distinct objectID,label, datetimelastUpdated From #application.dbowner##i# WHERE locked = 1 and lockedby = '#arguments.userlogin#' order by datetimelastUpdated desc">
-	
 	<cftry>
 		<cfquery name="qGetObjects" datasource="#application.dsn#">
-			#preserveSingleQuotes(sql)#
+			select distinct objectID,label, datetimelastUpdated 
+			From #application.dbowner##i# 
+			WHERE locked = 1 and lockedby = '#arguments.userlogin#' order by datetimelastUpdated desc
 		</cfquery>		
 				
 		<!--- Create structure for object details to be outputted later --->
 		<cfif qGetObjects.recordcount gt 0>
-			<cfset newRows = QueryAddRow(qLockedObjects,qGetObjects.recordcount)>
 			<cfloop query="qGetObjects">
-				<cfset rowCounter = rowCounter + 1>
-								
-				<cfset temp = querySetCell(qLockedObjects,"ObjectId", objectId,rowCounter)>
-				<cfif label neq "">
-					<cfset temp = querySetCell(qLockedObjects,"objectTitle", label,rowCounter)>
+				<cfset queryAddRow(qLockedObjects,1)>
+				<cfset querySetCell(qLockedObjects,"ObjectId", qGetObjects.objectId)>
+				<cfif qGetObjects.label neq "">
+					<cfset querySetCell(qLockedObjects,"objectTitle", qGetObjects.label)>
 				<cfelse>
-					<cfset temp = querySetCell(qLockedObjects,"objectTitle", "<em>undefined</em>",rowCounter)>
+					<cfset querySetCell(qLockedObjects,"objectTitle", "<em>undefined</em>")>
 				</cfif>
-				<cfset temp = querySetCell(qLockedObjects,"objectLastUpdated", datetimelastUpdated,rowCounter)>
-				<cfset temp = querySetCell(qLockedObjects,"objectType", I,rowCounter)>
+				<cfset querySetCell(qLockedObjects,"objectLastUpdated", qGetObjects.datetimelastUpdated)>
+				<cfset querySetCell(qLockedObjects,"objectType", I)>
 				
 				<cfif structKeyExists(application.types[i], "bUseInTree") and application.types[i].bUseInTree>
 					<!--- get object parent --->
@@ -57,9 +51,9 @@ $out:$
 						SELECT objectid FROM #application.dbowner#dmNavigation_aObjectIDs 
 						WHERE data = '#objectId#'	
 					</cfquery>
-					<cfset temp = querySetCell(qLockedObjects,"objectParent", qGetParent.objectid,rowCounter)>
+					<cfset querySetCell(qLockedObjects,"objectParent", qGetParent.objectid)>
 				<cfelse>
-					<cfset temp = querySetCell(qLockedObjects,"objectParent", 0,rowCounter)>
+					<cfset querySetCell(qLockedObjects,"objectParent", 0)>
 				</cfif>
 			</cfloop>
 		</cfif>

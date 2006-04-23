@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/config.cfc,v 1.20 2004/01/19 06:14:19 brendan Exp $
-$Author: brendan $
-$Date: 2004/01/19 06:14:19 $
-$Name: milestone_2-1-2 $
-$Revision: 1.20 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/config.cfc,v 1.23 2004/07/02 05:01:52 paul Exp $
+$Author: paul $
+$Date: 2004/07/02 05:01:52 $
+$Name: milestone_2-2-1 $
+$Revision: 1.23 $
 
 || DESCRIPTION || 
 $Description: config cfc $
@@ -211,12 +211,39 @@ $out:$
 	<cfreturn stStatus>
 </cffunction>
 
+<cffunction name="defaultEOPro4" hint="config for www.realobjects.com editOnPro v4.xx">
+    <cfargument name="dsn" type="string" default="#application.dsn#" required="true" hint="Database DSN">
+	<cfargument name="configName" required="No" type="string" default="eoPro4">
+	
+	<cfinclude template="_config/defaultEOPro4.cfm">
+	
+	<cfreturn stStatus>
+</cffunction>
+
 
 <cffunction name="defaultFU">
     <cfargument name="dsn" type="string" default="#application.dsn#" required="true" hint="Database DSN">
 	<cfargument name="configName" required="No" type="string" default="FUSettings">
 	
 	<cfinclude template="_config/defaultFU.cfm">
+	
+	<cfreturn stStatus>
+</cffunction>
+
+<cffunction name="defaultOverviewTree">
+    <cfargument name="dsn" type="string" default="#application.dsn#" required="true" hint="Database DSN">
+	<cfargument name="configName" required="No" type="string" default="overviewTree">
+	
+	<cfinclude template="_config/defaultOverviewTree.cfm">
+	
+	<cfreturn stStatus>
+</cffunction>
+
+<cffunction name="defaultHTMLArea">
+    <cfargument name="dsn" type="string" default="#application.dsn#" required="true" hint="Database DSN">
+	<cfargument name="configName" required="No" type="string" default="HTMLArea">
+	
+	<cfinclude template="_config/defaultHTMLArea.cfm">
 	
 	<cfreturn stStatus>
 </cffunction>

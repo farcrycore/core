@@ -5,11 +5,11 @@ $License: Released Under the "Common Public License 1.0", http://www.opensource.
 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_stats/deploy.cfm,v 1.20 2003/09/11 08:48:37 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_stats/deploy.cfm,v 1.21 2004/05/20 04:41:25 brendan Exp $
 $Author: brendan $
-$Date: 2003/09/11 08:48:37 $
-$Name: b201 $
-$Revision: 1.20 $
+$Date: 2004/05/20 04:41:25 $
+$Name: milestone_2-2-1 $
+$Revision: 1.21 $
 
 
 || DESCRIPTION ||
@@ -41,6 +41,11 @@ $out: stStatus			: struct to pass status report back to caller $
 		</cfquery>
 	</cfcase>
 	<cfcase value="mysql">
+		<cfquery datasource="#arguments.dsn#" name="qDropTemp">
+			drop table #application.dbowner#statsHours
+		</cfquery>
+	</cfcase>
+	<cfcase value="postgresql">
 		<cfquery datasource="#arguments.dsn#" name="qDropTemp">
 			drop table #application.dbowner#statsHours
 		</cfquery>
@@ -163,6 +168,70 @@ $out: stStatus			: struct to pass status report back to caller $
 		<cfquery datasource="#arguments.dsn#" name="qDrop">
 			drop table if exists statsDays
 		</cfquery>
+		<cfquery datasource="#arguments.dsn#" name="qCreate">
+			CREATE TABLE statsDays (
+				Day int NOT NULL ,
+				Name varchar (10) NOT NULL 
+			) 
+		</cfquery>
+		<cfquery datasource="#arguments.dsn#" name="qPop">					
+			insert into statsDays (day,name) values (1,'Sunday')
+		</cfquery>
+		<cfquery datasource="#arguments.dsn#" name="qPop">		
+			insert into statsDays (day,name) values (2,'Monday')
+		</cfquery>
+		<cfquery datasource="#arguments.dsn#" name="qPop">		
+			insert into statsDays (day,name) values (3,'Tuesday')
+		</cfquery>
+		<cfquery datasource="#arguments.dsn#" name="qPop">		
+			insert into statsDays (day,name) values (4,'Wednesday')
+		</cfquery>
+		<cfquery datasource="#arguments.dsn#" name="qPop">		
+			insert into statsDays (day,name) values (5,'Thursday')
+		</cfquery>
+		<cfquery datasource="#arguments.dsn#" name="qPop">		
+			insert into statsDays (day,name) values (6,'Friday')
+		</cfquery>
+		<cfquery datasource="#arguments.dsn#" name="qPop">		
+			insert into statsDays (day,name) values (7,'Saturday')
+		</cfquery>
+			
+	</cfcase>
+	<cfcase value="postgresql">
+		<cftry><cfquery datasource="#arguments.dsn#" name="qCreateTemp">
+			drop table #application.dbowner#statsHours 
+		</cfquery><cfcatch></cfcatch></cftry>
+		<cfquery datasource="#arguments.dsn#" name="qCreateTemp">
+			create table #application.dbowner#statsHours (
+				HOUR INTEGER NOT NULL PRIMARY KEY
+			)
+		</cfquery>
+		
+		<!--- populate table --->
+		<cfloop index="vHour" from="0" to="23">
+			<cfscript>
+				sql = "";			
+				sql = sql & "INSERT INTO statsHours (hour) VALUES (" & vhour & ")";			
+			</cfscript>
+			<cfquery datasource="#arguments.dsn#" name="qPopulateTemp">
+				#sql#
+			</cfquery>
+		</cfloop>
+		
+		<!--- make a dummy tblexists --->
+		<cftry>
+			<cfparam name="qCheck.tblExists" default="0">
+			<cfquery datasource="#arguments.dsn#" name="qCheck">
+				select count(*) as tblexists from stats	
+			</cfquery>
+			<cfcatch>
+				<!--- do nothing --->
+			</cfcatch>		
+		</cftry>
+		<!--- create the stats days table and populate it--->
+		<cftry><cfquery datasource="#arguments.dsn#" name="qDrop">
+			drop table statsDays
+		</cfquery><cfcatch></cfcatch></cftry>
 		<cfquery datasource="#arguments.dsn#" name="qCreate">
 			CREATE TABLE statsDays (
 				Day int NOT NULL ,
@@ -319,6 +388,42 @@ CONSTRAINT PK_STATS PRIMARY KEY (LOGID))
 			
 		</cfcase>
 	
+		<cfcase value="postgresql">
+			
+			<cftry><cfquery datasource="#arguments.dsn#" name="qDrop">
+				DROP TABLE #application.dbowner#stats
+			</cfquery><cfcatch></cfcatch></cftry>
+			
+			<!--- create the stats --->
+			<cfscript>
+				sql = "CREATE TABLE #application.dbowner#stats (
+LOGID VARCHAR(50) NOT NULL PRIMARY KEY,
+PAGEID VARCHAR(50) NOT NULL ,
+NAVID VARCHAR(50) NOT NULL , 
+USERID VARCHAR(50) NOT NULL ,
+REMOTEIP VARCHAR(50) NOT NULL,
+LOGDATETIME timestamp NOT NULL,
+SESSIONID VARCHAR(100) NOT NULL,
+BROWSER VARCHAR(100) NOT NULL,
+REFERER TEXT,
+LOCALE VARCHAR(100) NOT NULL,
+OS VARCHAR(50) NOT NULL)
+";
+				
+			</cfscript>
+			
+			<cfquery datasource="#arguments.dsn#" name="qCreate">
+				#sql#
+			</cfquery>
+			<cfscript>
+				sql = "CREATE INDEX #application.dbowner#IDX_STATS ON stats(pageid,logdatetime)";
+			</cfscript>
+			<cfquery datasource="#arguments.dsn#" name="qCreate">
+				#sql#
+			</cfquery>
+			
+		</cfcase>
+	
 		<cfdefaultcase>
 		
 			<cfquery datasource="#arguments.dsn#" name="qDrop">
@@ -377,6 +482,15 @@ CONSTRAINT PK_STATS PRIMARY KEY (LOGID))
 		</cfcase>
 		
 		<cfcase value="mysql">
+			<cfquery name="update" datasource="#application.dsn#">
+				create table #application.dbowner#statsCountries (
+					COUNTRY VARCHAR(255) NOT NULL,
+					ISOCODE CHAR (2) NOT NULL
+				)
+			</cfquery>
+		</cfcase>
+		
+		<cfcase value="postgresql">
 			<cfquery name="update" datasource="#application.dsn#">
 				create table #application.dbowner#statsCountries (
 					COUNTRY VARCHAR(255) NOT NULL,
@@ -1194,6 +1308,38 @@ CONSTRAINT PK_STATSSEARCH PRIMARY KEY (LOGID))
 		
 	</cfcase>
 
+	<cfcase value="postgresql">
+		
+		<cftry><cfquery datasource="#arguments.dsn#" name="qDrop">
+			DROP TABLE #application.dbowner#statsSearch
+		</cfquery><cfcatch></cfcatch></cftry>
+		
+		<!--- create the stats --->
+		<cfscript>
+			sql = "CREATE TABLE #application.dbowner#statsSearch (
+LOGID VARCHAR(50) NOT NULL PRIMARY KEY,
+SEARCHSTRING VARCHAR(255) NOT NULL ,
+LCOLLECTIONS TEXT ,
+RESULTS INT NOT NULL,
+REMOTEIP VARCHAR(50) NOT NULL,
+LOGDATETIME timestamp NOT NULL,
+REFERER TEXT,
+LOCALE VARCHAR(100) NOT NULL)
+";				
+		</cfscript>
+		
+		<cfquery datasource="#arguments.dsn#" name="qCreate">
+			#sql#
+		</cfquery>
+		<cfscript>
+			sql = "CREATE INDEX #application.dbowner#IDX_STATSSEARCH ON statsSearch(searchString,logdatetime)";
+		</cfscript>
+		<cfquery datasource="#arguments.dsn#" name="qCreate">
+			#sql#
+		</cfquery>
+		
+	</cfcase>
+	
 	<cfdefaultcase>
 	
 		<cfquery datasource="#arguments.dsn#" name="qDrop">

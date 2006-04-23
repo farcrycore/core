@@ -5,11 +5,11 @@ $License: Released Under the "Common Public License 1.0", http://www.opensource.
 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_category/deployCategories.cfm,v 1.9 2003/09/17 23:40:47 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_category/deployCategories.cfm,v 1.11 2004/05/20 04:41:25 brendan Exp $
 $Author: brendan $
-$Date: 2003/09/17 23:40:47 $
-$Name: b201 $
-$Revision: 1.9 $
+$Date: 2004/05/20 04:41:25 $
+$Name: milestone_2-2-1 $
+$Revision: 1.11 $
 
 
 || DESCRIPTION ||
@@ -66,6 +66,15 @@ $out: <separate entry for each variable>$
         	DROP TABLE IF EXISTS refCategories
 		</cfquery>
 	</cfcase>
+	<cfcase value="postgresql">
+		<cftry>
+      <cfquery datasource="#arguments.dsn#">
+        	DROP TABLE categories	
+		</cfquery><cfcatch></cfcatch></cftry>
+		<cftry><cfquery datasource="#arguments.dsn#">
+        	DROP TABLE refCategories
+		</cfquery><cfcatch></cfcatch></cftry>
+	</cfcase>
 	<cfdefaultcase>
 	<cftransaction>
 		<cfquery datasource="#arguments.dsn#">
@@ -102,6 +111,7 @@ $out: <separate entry for each variable>$
 			CREATE TABLE #application.dbowner#CATEGORIES
 			(
 			CATEGORYID VARCHAR2(50) NOT NULL,
+			ALIAS VARCHAR2(50) NULL,
 			CATEGORYLABEL VARCHAR2(255) NOT NULL
 			)
 		</cfquery>
@@ -119,6 +129,7 @@ $out: <separate entry for each variable>$
 		CREATE TABLE #application.dbowner#categories
 		(
 			categoryID VARCHAR(50) NOT NULL,
+			alias VARCHAR(50) NULL,
 			categoryLabel VARCHAR(255) NOT NULL
 		)
 		</cfquery>
@@ -130,6 +141,22 @@ $out: <separate entry for each variable>$
 		)
 		</cfquery>
 	</cfcase>
+	<cfcase value="postgresql">
+		<cfquery datasource="#arguments.dsn#">
+		CREATE TABLE #application.dbowner#categories
+		(
+			categoryID VARCHAR (50) NOT NULL,
+			categoryLabel VARCHAR (255) NOT NULL
+		)
+		</cfquery>
+		<cfquery datasource="#arguments.dsn#">
+		CREATE TABLE #application.dbowner#refCategories
+		(
+			categoryid VARCHAR (50) NOT NULL,
+			objectID VARCHAR (50) NOT NULL
+		)
+		</cfquery>
+	</cfcase>
 	<cfdefaultcase>
 	<cftransaction>
 	<!--- Create category and refCategories Tables --->
@@ -137,6 +164,7 @@ $out: <separate entry for each variable>$
 	CREATE TABLE #application.dbowner#categories
 	(
 		[categoryID] [VARCHAR] (50) NOT NULL,
+		[alias] [VARCHAR] (50) NULL,
 		[categoryLabel] [NVARCHAR] (512) NOT NULL
 	);
 	</cfquery>

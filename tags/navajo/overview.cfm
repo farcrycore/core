@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/navajo/overview.cfm,v 1.83 2003/12/19 01:12:55 paul Exp $
+$Header: /cvs/farcry/farcry_core/tags/navajo/overview.cfm,v 1.90.2.2 2004/10/14 01:11:25 paul Exp $
 $Author: paul $
-$Date: 2003/12/19 01:12:55 $
-$Name: milestone_2-1-2 $
-$Revision: 1.83 $
+$Date: 2004/10/14 01:11:25 $
+$Name: milestone_2-2-1 $
+$Revision: 1.90.2.2 $
 
 || DESCRIPTION || 
 $Description: Javascript tree$
@@ -160,6 +160,7 @@ $out:$
 		}
 		
 		// if IE then change the location of the IFRAME 
+		
 		if( document.all ){
 			// this loads the URL stored in the strURL variable into the 
 			// hidden frame
@@ -168,7 +169,8 @@ $out:$
 		// otherwise, change Netscape v6's IFRAME source file
 		} else if( document.getElementById ){
 			// this loads the URL stored in the strURL variable into the hidden frame
-			document.getElementById("idServer").contentDocument.location = strURL;
+			frames['idServer'].location.href = strURL;
+			//document.getElementById("idServer").contentDocument.location = strURL;
 
 		// otherwise, change Netscape v4's ILAYER source file
 		} else if( document.layers ){
@@ -176,7 +178,7 @@ $out:$
 			// hidden frame
 			document.idServer.src = strURL;
 		}
-	
+		
 		return true;
 	}
 
@@ -211,6 +213,7 @@ if(not isDefined("url.insertonly"))
 }	
 </cfscript>
 
+
 <!--- get all open nodes + root nodes --->
 <cfparam name="cookie.nodestatev2" default="">
 <cfset cookie.nodestatev2=listappend(cookie.nodestatev2,"0")>
@@ -220,7 +223,7 @@ if(not isDefined("url.insertonly"))
 	typename="#attributes.nodetype#"
 	get="Children"
 	topLevelVariable="objects"
-	lStripFields="ORIGINALIMAGEPATH,OPTIMISEDIMAGEPATH,THUMBNAILIMAGEPATH,OPTIMISEDIMAGE,height,width,alt,lNavidAlias,teaserimage,extendedmetadata,externallink,flashparams,flashheight,flashwidth,flashbgcolor,flashloop,flashmenu,flashplay,flashquality,flashversion,teaserimage,metakeywords,displayMethod,objecthistory,teaser,body,PATH,commentlog"
+	lStripFields="ORIGINALIMAGEPATH,OPTIMISEDIMAGEPATH,THUMBNAILIMAGEPATH,lNavidAlias,teaserimage,extendedmetadata,externallink,teaserimage,metakeywords,displayMethod,objecthistory,teaser,body,PATH,commentlog"
 	r_javascript="jscode">
 
 <cfset imageRoot = "nimages">
@@ -232,7 +235,7 @@ if(not isDefined("url.insertonly"))
 
 <!-------- PERMISSIONS ------------>
 <cfoutput>
-	<script>
+	<script language="javascript">
 		var aPerms = new Array();
 		<cfloop query="q">
 		aPerms[#q.currentrow#] = #q.permissionid#;
@@ -276,6 +279,8 @@ if(not isDefined("url.insertonly"))
 <script>
 var localWin = window;
 var editFlag = false;
+var copyNodeId = '';//holds the uuid of the objectid to be cut or copied
+var pasteAction = ''//may be a cut or copy
 
 function popupopen( strURL,b,c )
 {
@@ -371,6 +376,7 @@ function renderObjectToDiv( objId, divId )
 	
 }
 
+
 function renderObject( objId )
 {
 	var thisObject = objects[objId];
@@ -380,7 +386,7 @@ function renderObject( objId )
 	var elData="";
 	if (hasPermission(objId,#PermNavView#) >= 0)
 	{
-		if( rootIds.indexOf(objId)!=-1) elData += "<table class=tableNode><tr><td>";
+		if( rootIds.indexOf(objId)!=-1) elData += "<table class=\"tableNode\"><tr><td>";
 		else
 		{   
 			var parent = getParentObject( objId );
@@ -388,29 +394,29 @@ function renderObject( objId )
 			if( parentParent['OBJECTID'] 
 				&& (nodeIndex(parent['OBJECTID'])!=-1 && nodeIndex(parent['OBJECTID'])!=countNodes(parentParent['OBJECTID'])-1)
 				|| (objectIndex(parent['OBJECTID'])!=-1 && objectIndex(parent['OBJECTID'])!=countChildren(parentParent['OBJECTID'])-1) &&  countNodes(parent['OBJECTID']) > 1  )
-				elData += "<table id=\""+objId+"_table\" class=tableNode><tr><td style='background-image: url(\""+c.src+"\");background-repeat : repeat-y;'><img src='"+s.src+"' width="+zoom+" height="+zoom+"></td><td>";
+				elData += "<table id=\""+objId+"_table\" class=tableNode><tr><td style=\"background-image: url("+c.src+");background-repeat : repeat-y;\"><img src=\""+s.src+"\" width=\""+zoom+"\" height=\""+zoom+"\"></td><td>";
 			else
-				elData += "<table id=\""+objId+"_table\" class=tableNode><tr><td style='background-image: url(\"" + s.src +"\");background-repeat : repeat-y;'><img src='"+s.src+"' width="+zoom+" height="+zoom+"></td><td>";
+				elData += "<table id=\""+objId+"_table\" class=tableNode><tr><td style=\"background-image: url(" + s.src +");background-repeat : repeat-y;\"><img src=\""+s.src+"\" width=\""+zoom+"\" height=\""+zoom+"\"></td><td>";
 		}
 		
-		var jsHighlight=' onclick="highlightObjectClick(\''+objId+'\',event)" ';
+		var jsHighlight=" onclick=\"highlightObjectClick('"+objId+"',event)\" ";
 		
-		var contextMenu = ' oncontextmenu="if(!event.ctrlKey)highlightObjectClick(\''+objId+'\',event);popupObjectMenu(event);return false;" ';
-		var drag = " ondragstart='\startDrag(\""+objId+"\",\""+thisObject['TYPENAME']+"\")' ondrop='dropDrag(\""+objId+"\")' ";
+		var contextMenu = " oncontextmenu=\"if(!event.ctrlKey)highlightObjectClick('"+objId+"',event);popupObjectMenu(event);return false;\" ";
+		var drag = " ondragstart=\"startDrag('"+objId+"','"+thisObject['TYPENAME']+"')\" ondrop=\"dropDrag('"+objId+"')\" ";
 		
 		//objects can only be dropped under dmNavigation nodes
 		if( thisObject['TYPENAME'].toLowerCase()=="#lCase(attributes.nodetype)#" )
 			drag += " ondragover='dragOver()'";	
 		else if( thisObject['TYPENAME']=="dmHTML")
-			drag += " ondragover='if(dragTypeId.toLowerCase()==\"dmimage\" || dragTypeId.toLowerCase()==\"dmfile\") dragOver()' ";
+			drag += " ondragover=\"if(dragTypeId.toLowerCase()=='dmimage' || dragTypeId.toLowerCase()=='dmfile') dragOver();\" ";
 			
 				
-		elData+='<table class=\"tableNode\" '+contextMenu+'>\n<tr><td class=iconText>'+getToggleImage(objId)+
-					'<div id=\"non'+jsHighlight+'\" style="display:inline" '+drag+jsHighlight+'>'+getTypeImage(objId)+'</div>\n</td>'+
-					'<td valign=middle class=iconText>'+
-					'\n<div id="'+objId+'_text" '+jsHighlight+'>'+getObjectTitle(objId)+
-					'</div>\n</td></tr>\n</table>'+
-					'<div id="'+objId+'" style="display:none;">\n</div>\n';
+		elData+="<table  class=\"tableNode\" "+contextMenu+">\n<tr><td class=\"iconText\">"+getToggleImage(objId)+
+					"<div id=\"non\""+jsHighlight+" style=\"display:inline\" "+drag+jsHighlight+">"+getTypeImage(objId)+"</div>\n</td>"+
+					"<td valign=\"middle\" class=\"iconText\">"+
+					"\n<div id=\""+objId+"_text\" "+jsHighlight+">"+getObjectTitle(objId)+
+					"</div>\n</td></tr>\n</table>"+
+					"<div id=\""+objId+"\" style=\"display:none;\">\n</div>\n";
 		
 		elData += "</td></tr>\n</table>";
 		return elData;
@@ -424,32 +430,32 @@ var dragTypeId='';
 
 function startDrag( aDragObjectId, aDragTypeId )
 {	
-    <!--- store the source of the object into a string acting as a dummy object so we don't ruin the original object: --->
+    // store the source of the object into a string acting as a dummy object so we don't ruin the original object: 
 	dragObjectId = aDragObjectId;
 	dragTypeId = aDragTypeId;
 	
-    <!--- post the data for Windows: --->
+    // post the data for Windows: 
     var dragData = window.event.dataTransfer;
 
-    <!--- set the type of data for the clipboard: --->
+    // set the type of data for the clipboard: 
 	dragData.setData('Text', dragObjectId);
 	
-    <!--- allow only dragging that involves moving the object: --->
+    // allow only dragging that involves moving the object: 
     dragData.effectAllowed = 'linkMove';
 
-    <!--- use the special 'move' cursor when dragging: --->
+ 	// use the special 'move' cursor when dragging: 
     dragData.dropEffect = 'move';
 }
 
 function dragOver()
 {
-	<!--- tell onOverDrag handler not to do anything: --->
+	// tell onOverDrag handler not to do anything: 
 	window.event.returnValue = false;
 }
 
 function dropDrag( aDropObjectId )
 {	
-	<!--- eliminate default action of ondrop so we can customize: --->
+	// eliminate default action of ondrop so we can customize: 
 	//double checking here - shouldn't ever need to though
 	if (objects[dragObjectId]['TYPENAME'] == 'dmHTML' && objects[aDropObjectId]['TYPENAME'].toLowerCase() != '#lCase(attributes.nodetype)#')
 	{
@@ -458,7 +464,7 @@ function dropDrag( aDropObjectId )
 		return;
 	}
 	//check for equal dest/parent objectid
-			
+	
 	if(aDropObjectId == getParentObject(dragObjectId)['OBJECTID'])
 	{
 		alert('Object parent and destination parent cannot be the same');
@@ -542,7 +548,7 @@ function getToggleImage( objId )
 	scripting="";	
 	if( toggle!="Empty" ) scripting=" onclick=\"toggleObject('"+objId+"')\" ";
 	
-	return "<img id='"+objId+"_toggle' src='"+eval( 'toggle'+direction+toggle+'.src' )+"' width="+zoom+" height="+zoom+" "+scripting+">";
+	return "<img id='"+objId+"_toggle' src=\""+eval( 'toggle'+direction+toggle+'.src' )+"\" width=\""+zoom+"\" height=\""+zoom+"\" "+scripting+">";
 }
 
 function swapToggleImage( src )
@@ -589,11 +595,11 @@ function getTypeImage( objId )
 	
 	if( na && customIconMapType[na] ) cm = customIconMapType[na][st];
 	
-	var alt = "Current Status: "+thisObject['STATUS']+"\nCreated By: "+thisObject['ATTR_CREATEDBY']+" on "+thisObject['ATTR_DATETIMECREATED']+
-			"\nLast Updated By: "+thisObject['ATTR_LASTUPDATEDBY']+" on "+thisObject['ATTR_DATETIMELASTUPDATED'];
+	var alt = "Current Status: "+thisObject['STATUS']+" Created By: "+thisObject['ATTR_CREATEDBY']+" on "+thisObject['ATTR_DATETIMECREATED']+
+			"Last Updated By: "+thisObject['ATTR_LASTUPDATEDBY']+" on "+thisObject['ATTR_DATETIMELASTUPDATED'];
 			
 	
-	 return "<img src='"+cm+"' width="+zoom+" height="+zoom+" alt='"+alt+"'>"; 
+	 return "<img src=\""+cm+"\" width=\""+zoom+"\" height=\""+zoom+"\" alt=\""+alt+"\">"; 
 }
 
 function countChildren( objId )
@@ -663,7 +669,7 @@ function getParentObject( objId )
 	
 	if( !theNode ) return '0';
 	
-	<!--- if this is a nav node search aNavChild else search aObjectIds --->
+	//if this is a nav node search aNavChild else search aObjectIds 
 	searchKey="AOBJECTIDS";
 	
 	if( theNode['TYPENAME'].toLowerCase()=='#lCase(attributes.nodetype)#' ) searchKey="ANAVCHILD";
@@ -691,12 +697,13 @@ function toggleObject( objId )
 	var toggleImageEl = document.getElementById( objId+"_toggle" );
 	if(toggleImageEl)
 		toggleImageEl.src = swapToggleImage( toggleImageEl.src ); 
-		
+	
 	var el = document.getElementById( objId );
 	
 	if(el && (el.style.display=='none' || el.style.display=='') )
 	{
-		el.innerHTML = "<img src='"+loading.src+"' width="+(zoom-8)+" height="+(zoom-8)+"><span class=iconText>loading...</span>";
+		
+		el.innerHTML = "<img src=\""+loading.src+"\" width=\""+(zoom-8)+"\" height=\""+(zoom-8)+"\"><span class=\"iconText\">loading...</span>";
 		
 		allDefined=1;
 		
@@ -753,8 +760,8 @@ function toggleObject( objId )
 	{
 		storeState( objId, 0 );
 		el.style.display = "none";
-		if(ns6)
-			el.innerHTML='';
+		/*if(ns6)
+			el.innerHTML='';*/
 	}
 	
 }
@@ -762,7 +769,6 @@ function toggleObject( objId )
 function updateTree(src,dest,srcobjid)
 {	//alert('src parend is ' + src + ' dest parent is ' + dest);
 		
-	//thing = document.getElementById(srcobjid+'_shit').parentNode.removeChild(document.getElementById(srcobjid+'_shit'));
 	srcParent = getParentObject(src);
 		
 	if(objects[srcobjid]['TYPENAME'].toLowerCase() != 'dmnavigation')
@@ -792,19 +798,13 @@ function updateTree(src,dest,srcobjid)
 		}		
 		downloadRender(srcParent['OBJECTID']);		
 	}	
-	//alert(dest);
 	if(objects[dest])
 	{		
 		getObjectDataAndRender(dest);
 		downloadRender(dest);	
-		//toggleObject(dest);
-		//toggleObject(dest);	
 	}	
 	getObjectDataAndRender(srcParent['OBJECTID']);
 	downloadRender(srcParent['OBJECTID']);
-	//toggleObject(srcParent['OBJECTID']);
-	//toggleObject(srcParent['OBJECTID']);
-	
 
 }
 
@@ -880,7 +880,7 @@ function downloadRender( objectId )
 }
 
 function highlightObjectClick( id,e )
-{    
+{   
 	if( !e.ctrlKey )
 	{
 		// check if already in edit mode, if not show overview page	
@@ -1040,23 +1040,49 @@ function menuOption_Insert()
 	else if( p.insertObjId ) p.insertObjId( lastSelectedId );
 	else switch( theNode['TYPENAME'] )
 	{
+		<cfparam name="application.config.overviewTree.bUseHiResInsert" default="0">
 		case "dmImage":
-            if ( theNode['HIGHRESFILENAME'] )
-    			p.insertHTML( "<a href=\"javascript:popup=window.open('/dmfile/display_hires_image.cfm?objectID="+theNode['OBJECTID']+"', 'popup', 'width=270,height=270,channelmode=no,directories=no,fullscreen=no,location=no,menubar=no,resizable=yes,scrollbars=no,status=no,titlebar=no,toolbar=no', false); popup.focus();\"><img alt='"+theNode['ALT']+"' src='/images/"+theNode['FILENAME']+"'></a>" );
-            else
-				p.insertHTML( "<img alt='"+theNode['ALT']+"' src='#application.url.webroot#/images/"+theNode['IMAGEFILE']+"'>" );
-			break;
+			if (theNode['OPTIMISEDIMAGE'] && theNode['OPTIMISEDIMAGE'].length && #application.config.overviewTree.bUseHiResInsert#)	
+			{
+			<cfif isDefined("application.config.overviewTree.insertJSdmImageHiRes")>
+				p.insertHTML("#evaluate(DE(application.config.overviewTree.insertJSdmImageHiRes))#");
+			<cfelse>
+ 				p.insertHTML("<img alt='"+theNode['ALT']+"' src='#application.url.webroot#/images/"+theNode['OPTIMISEDIMAGE']+"'>");
+			</cfif>
+				
+			}
+			else
+			{
+			<cfif isDefined("application.config.overviewTree.insertJSdmImage")>
+				p.insertHTML("#evaluate(DE(application.config.overviewTree.insertJSdmImage))#");
+			<cfelse>
+ 				p.insertHTML( "<img alt='"+theNode['ALT']+"' src='#application.url.webroot#/images/"+theNode['IMAGEFILE']+"'>" );
+			</cfif>
+			}
+			break;		
 		
 		case "dmFile":
-			p.insertHTML( "<a href='#application.url.webroot#/download.cfm?DownloadFile="+lastSelectedId+"' target='_blank'>"+theNode['TITLE']+"</a>" );
-			break;
+			<cfif isDefined("application.config.overviewTree.insertJSdmFile")>
+				p.insertHTML("#evaluate(DE(application.config.overviewTree.insertJSdmFile))#");
+			<cfelse>
+				p.insertHTML( "<a href='#application.url.webroot#/download.cfm?DownloadFile="+lastSelectedId+"' target='_blank'>"+theNode['TITLE']+"</a>" );
+			</cfif>
+			break;		
 			
 		case "dmFlash":
+			<cfif isDefined("application.config.overviewTree.insertJSdmFlash")>
+			p.insertHTML("#evaluate(DE(application.config.overviewTree.insertJSdmFlash))#");
+			<cfelse>
 			p.insertHTML( "<OBJECT classid='clsid:D27CDB6E-AE6D-11cf-96B8-444553540000' codebase='http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab##version="+theNode['FLASHVERSION']+"' WIDTH='"+theNode['FLASHWIDTH']+"'  HEIGHT='"+theNode['FLASHHEIGHT']+"'  ALIGN='"+theNode['FLASHALIGN']+"'><PARAM NAME='movie' VALUE='http://#CGI.SERVER_NAME#:#CGI.SERVER_PORT##application.url.webroot#/files/"+theNode['FLASHMOVIE']+"'><PARAM NAME='quality' VALUE='"+theNode['FLASHQUALITY']+"'><PARAM NAME='play' VALUE='"+theNode['FLASHPLAY']+"'><PARAM NAME='menu' VALUE='"+theNode['FLASHMENU']+"'><PARAM NAME='loop' VALUE='"+theNode['FLASHLOOP']+"'><PARAM NAME='FlashVars' VALUE='"+theNode['FLASHPARAMS']+"'><EMBED SRC='http://#CGI.SERVER_NAME#:#CGI.SERVER_PORT#/#application.url.webroot#/files/"+theNode['FLASHMOVIE']+"' QUALITY='"+theNode['FLASHQUALITY']+"' WIDTH='"+theNode['FLASHWIDTH']+"' HEIGHT='"+theNode['FLASHHEIGHT']+"' FLASHVARS='"+theNode['FLASHPARAMS']+"' ALIGN='"+theNode['FLASHALIGN']+"' MENU='"+theNode['FLASHMENU']+"' PLAY='"+theNode['FLASHPLAY']+"' LOOP='"+theNode['FLASHLOOP']+"' TYPE='application/x-shockwave-flash' PLUGINSPAGE='http://www.macromedia.com/go/getflashplayer'></EMBED></OBJECT>" );
+			</cfif>
 			break;
 			
 		default:
+			<cfif isDefined("application.config.overviewTree.insertJSdmHTML")>
+			p.insertHTML("#evaluate(DE(application.config.overviewTree.insertJSdmHTML))#");
+			<cfelse>
 			p.insertHTML( "<a href='#application.url.webroot#/index.cfm?objectId="+lastSelectedId+"'>"+theNode['TITLE']+"</a>" );
+			</cfif>
 			break;
 	}
 } 
@@ -1081,6 +1107,69 @@ function menuOption_Edit()
 	showEditTabs('site',lastSelectedId,'edittabEdit');
 	
 }
+
+o = new Object();
+objectMenu['Copy'] = o;
+o.text = "Copy";
+o.js = "menuOption_Copy();";
+o.jsvalidate = "(objects[lastSelectedId]['TYPENAME'].toLowerCase() == '#lCase(attributes.nodetype)#')?1:0";
+o.bShowDisabled = "0";
+
+function menuOption_Copy()
+{
+	copyNodeId = lastSelectedId;
+	pasteAction = 'copy';
+	return true;
+}
+
+o = new Object();
+objectMenu['Cut'] = o;
+o.text = "Cut";
+o.js = "menuOption_Cut();";
+o.jsvalidate = "(objects[lastSelectedId]['TYPENAME'].toLowerCase() == '#lCase(attributes.nodetype)#')?1:0";
+o.bShowDisabled = "0";
+
+function menuOption_Cut()
+{
+	copyNodeId = lastSelectedId;
+	pasteAction = 'cut';
+	return true;
+}
+
+
+
+o = new Object();
+objectMenu['Paste'] = o;
+o.text = "Paste";
+o.js = "menuOption_Paste();";
+o.jsvalidate = "(hasPermission(lastSelectedId, #PermNavCreate#) == 1 && (copyNodeId.length == 35 && objects[lastSelectedId]['TYPENAME'].toLowerCase() == '#lCase(attributes.nodetype)#'))?1:0";
+o.bShowDisabled = "1";
+
+function menuOption_Paste()
+{
+	var pasteMsg = '';
+	if(copyNodeId == lastSelectedId)
+	{
+		alert("Source and destination nodes cannot be the same");
+		return false;
+	}
+	if (objects[copyNodeId]['TYPENAME'].toLowerCase() == '#lCase(attributes.nodetype)#')
+	{
+		if(pasteAction == 'copy')
+			pasteMsg = 'Do you wish to copy the node ' + getObjectTitle( copyNodeId ) + ' to ' + getObjectTitle( lastSelectedId );
+		else if(pasteAction == 'cut')
+			pasteMsg = 'Do you wish to cut and paste the node ' + getObjectTitle( copyNodeId ) + ' to ' + getObjectTitle( lastSelectedId );
+	}		
+	if (confirm(pasteMsg))
+	{
+		if(pasteAction == 'copy')
+			popupopen( '#application.url.farcry#/navajo/treeCopyNPaste.cfm?srcObjectId='+copyNodeId+'&destobjectId='+lastSelectedId, '_blank', '#smallpopupfeatures#' );
+		else if(pasteAction == 'cut')	
+			popupopen( '#application.url.farcry#/navajo/move.cfm?srcObjectId='+copyNodeId+'&destobjectId='+lastSelectedId, '_blank', '#smallpopupfeatures#' );
+	}	
+}
+
+
 
 o = new Object();
 objectMenu['Preview'] = o;
@@ -1324,23 +1413,49 @@ function menuOption_Insert()
 	else if( p.insertObjId ) p.insertObjId( lastSelectedId );
 	else switch( theNode['TYPENAME'] )
 	{
+		<cfparam name="application.config.overviewTree.bUseHiResInsert" default="0">
 		case "dmImage":
-            if ( theNode['HIGHRESFILENAME'] )
-    			p.insertHTML( "<a href=\"javascript:popup=window.open('/dmfile/display_hires_image.cfm?objectID="+theNode['OBJECTID']+"', 'popup', 'width=270,height=270,channelmode=no,directories=no,fullscreen=no,location=no,menubar=no,resizable=yes,scrollbars=no,status=no,titlebar=no,toolbar=no', false); popup.focus();\"><img alt='"+theNode['ALT']+"' src='/images/"+theNode['FILENAME']+"'></a>" );
-            else
-				p.insertHTML( "<img alt='"+theNode['ALT']+"' src='#application.url.webroot#/images/"+theNode['IMAGEFILE']+"'>" );
+			if (theNode['OPTIMISEDIMAGE'] && theNode['OPTIMISEDIMAGE'].length && #application.config.overviewTree.bUseHiResInsert#)	
+			{
+			<cfif isDefined("application.config.overviewTree.insertJSdmImageHiRes")>
+				p.insertHTML("#evaluate(DE(application.config.overviewTree.insertJSdmImageHiRes))#");
+			<cfelse>
+ 				p.insertHTML("<img alt='"+theNode['ALT']+"' src='#application.url.webroot#/images/"+theNode['OPTIMISEDIMAGE']+"'>");
+			</cfif>
+				
+			}
+			else
+			{
+			<cfif isDefined("application.config.overviewTree.insertJSdmImage")>
+				p.insertHTML("#evaluate(DE(application.config.overviewTree.insertJSdmImage))#");
+			<cfelse>
+ 				p.insertHTML( "<img alt='"+theNode['ALT']+"' src='#application.url.webroot#/images/"+theNode['IMAGEFILE']+"'>" );
+			</cfif>
+			}
 			break;
 		
 		case "dmFile":
-			p.insertHTML( "<a href='#application.url.webroot#/download.cfm?DownloadFile="+lastSelectedId+"' target='_blank'>"+theNode['TITLE']+"</a>" );
+			<cfif isDefined("application.config.overviewTree.insertJSdmFile")>
+				p.insertHTML("#evaluate(DE(application.config.overviewTree.insertJSdmFile))#");
+			<cfelse>
+				p.insertHTML( "<a href='#application.url.webroot#/download.cfm?DownloadFile="+lastSelectedId+"' target='_blank'>"+theNode['TITLE']+"</a>" );
+			</cfif>
 			break;
 			
 		case "dmFlash":
+			<cfif isDefined("application.config.overviewTree.insertJSdmFlash")>
+			p.insertHTML("#evaluate(DE(application.config.overviewTree.insertJSdmFlash))#");
+			<cfelse>
 			p.insertHTML( "<OBJECT classid='clsid:D27CDB6E-AE6D-11cf-96B8-444553540000' codebase='http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab##version="+theNode['FLASHVERSION']+"' WIDTH='"+theNode['FLASHWIDTH']+"'  HEIGHT='"+theNode['FLASHHEIGHT']+"'  ALIGN='"+theNode['FLASHALIGN']+"'><PARAM NAME='movie' VALUE='http://#CGI.SERVER_NAME#:#CGI.SERVER_PORT##application.url.webroot#/files/"+theNode['FLASHMOVIE']+"'><PARAM NAME='quality' VALUE='"+theNode['FLASHQUALITY']+"'><PARAM NAME='play' VALUE='"+theNode['FLASHPLAY']+"'><PARAM NAME='menu' VALUE='"+theNode['FLASHMENU']+"'><PARAM NAME='loop' VALUE='"+theNode['FLASHLOOP']+"'><PARAM NAME='FlashVars' VALUE='"+theNode['FLASHPARAMS']+"'><EMBED SRC='http://#CGI.SERVER_NAME#:#CGI.SERVER_PORT#/#application.url.webroot#/files/"+theNode['FLASHMOVIE']+"' QUALITY='"+theNode['FLASHQUALITY']+"' WIDTH='"+theNode['FLASHWIDTH']+"' HEIGHT='"+theNode['FLASHHEIGHT']+"' FLASHVARS='"+theNode['FLASHPARAMS']+"' ALIGN='"+theNode['FLASHALIGN']+"' MENU='"+theNode['FLASHMENU']+"' PLAY='"+theNode['FLASHPLAY']+"' LOOP='"+theNode['FLASHLOOP']+"' TYPE='application/x-shockwave-flash' PLUGINSPAGE='http://www.macromedia.com/go/getflashplayer'></EMBED></OBJECT>" );
+			</cfif>
 			break;
 			
 		default:
+			<cfif isDefined("application.config.overviewTree.insertJSdmHTML")>
+			p.insertHTML("#evaluate(DE(application.config.overviewTree.insertJSdmHTML))#");
+			<cfelse>
 			p.insertHTML( "<a href='#stOverview['menu']['insert']['dmHTML']#?objectId="+lastSelectedId+"'>"+theNode['TITLE']+"</a>" );
+			</cfif>
 			break;
 	}
 } 
@@ -1715,7 +1830,6 @@ function flutterDoAction() { eval( flutterAction ); }
 
 function documentClick()
 {
-	
 	var objectMenuDiv = document.getElementById( "ObjectMenu" );
 	objectMenuDiv.style.visibility = "hidden";
 	hideSubMenus();
@@ -1804,9 +1918,9 @@ document.body.onclick = documentClick;
 <STYLE TYPE="text/css">
 	##idServer { 
 		position:relative; 
-		width: 400px; 
-		height: 200px; 
-		display:none;
+		width: 0px; 
+		height: 0px; 
+		/*display:none;*/
 	}
 </STYLE>
 

@@ -9,11 +9,11 @@ Daemon Pty Limited 1995-2003
 http://www.daemon.com.au
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/security/securityMenuFrame.cfm,v 1.13 2003/10/28 00:59:07 brendan Exp $
-$Author: brendan $
-$Date: 2003/10/28 00:59:07 $
-$Name: b201 $
-$Revision: 1.13 $
+$Header: /cvs/farcry/farcry_core/admin/security/securityMenuFrame.cfm,v 1.14 2004/04/27 18:39:35 tom Exp $
+$Author: tom $
+$Date: 2004/04/27 18:39:35 $
+$Name: milestone_2-2-1 $
+$Revision: 1.14 $
 
 || DESCRIPTION || 
 Displays menu items for security section in Farcry. If user has user security permissions, defaults to user tab, otherwise default to audit tab.
@@ -76,6 +76,7 @@ out: none
 				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="../security/redirect.cfm?tag=PolicyGroupSearch" class="frameMenuItem" target="editFrame">Policy Groups</a></div>
 				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="../navajo/permissions.cfm?reference1=PolicyGroup" class="frameMenuItem" target="editFrame">Policy Group Permissions</a></div>
 				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="../security/redirect.cfm?tag=PolicyGroupCreateEdit" class="frameMenuItem" target="editFrame">Create a Policy Group</a></div>
+				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="../security/redirect.cfm?tag=PolicyGroupCopy" class="frameMenuItem" target="editFrame">Copy a Policy Group</a></div>
 				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="../security/redirect.cfm?tag=PolicyGroupMappingSearch" class="frameMenuItem" target="editFrame">Show Policy Group Mappings</a></div>
 				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="../security/redirect.cfm?tag=PolicyGroupMap" class="frameMenuItem" target="editFrame">Map Policy Group</a></div>
 				

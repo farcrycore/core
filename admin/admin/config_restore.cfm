@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/admin/config_restore.cfm,v 1.8 2004/01/19 06:14:19 brendan Exp $
+$Header: /cvs/farcry/farcry_core/admin/admin/config_restore.cfm,v 1.10 2004/06/16 04:55:15 brendan Exp $
 $Author: brendan $
-$Date: 2004/01/19 06:14:19 $
-$Name: milestone_2-1-2 $
-$Revision: 1.8 $
+$Date: 2004/06/16 04:55:15 $
+$Name: milestone_2-2-1 $
+$Revision: 1.10 $
 
 || DESCRIPTION || 
 $DESCRIPTION: restore default config settings$
@@ -95,6 +95,18 @@ $out:$
 	
 	<!--- setup default General config --->
 	<cfinvoke component="#application.packagepath#.farcry.config" method="defaultGeneral" returnvariable="stStatus">
+	</cfinvoke>
+	
+	<cfoutput><span class="frameMenuBullet">&raquo;</span> #stStatus.message#...<p></p></cfoutput><cfflush>
+	
+	<!--- setup default Overview tree config --->
+	<cfinvoke component="#application.packagepath#.farcry.config" method="defaultOverviewTree" returnvariable="stStatus">
+	</cfinvoke>
+	
+	<cfoutput><span class="frameMenuBullet">&raquo;</span> #stStatus.message#...<p></p></cfoutput><cfflush>
+	
+	<!--- setup default htmlarea config --->
+	<cfinvoke component="#application.packagepath#.farcry.config" method="defaultHTMLArea" returnvariable="stStatus">
 	</cfinvoke>
 	
 	<cfoutput><span class="frameMenuBullet">&raquo;</span> #stStatus.message#...<p></p></cfoutput><cfflush>

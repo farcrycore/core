@@ -7,6 +7,9 @@
 </cflock>
 <cfoutput>
 <script>
-	parent.updateTree(src='#srcParentObjectID#',dest='#url.destObjectid#');
+	srcobjid='#URL.srcObjectID#';	
+	destNavObjectId ='#url.destObjectId#';	
+	//parent.updateTree(src=srcobjid,dest=destNavObjectId,srcobj='#url.srcObjectid#');
+	parent.location.reload();
 </script>
 </cfoutput>

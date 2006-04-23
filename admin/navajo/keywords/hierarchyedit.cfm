@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/navajo/keywords/hierarchyedit.cfm,v 1.12 2003/12/08 05:40:06 paul Exp $
+$Header: /cvs/farcry/farcry_core/admin/navajo/keywords/hierarchyedit.cfm,v 1.13 2004/04/27 03:15:29 paul Exp $
 $Author: paul $
-$Date: 2003/12/08 05:40:06 $
-$Name: milestone_2-1-2 $
-$Revision: 1.12 $
+$Date: 2004/04/27 03:15:29 $
+$Name: milestone_2-2-1 $
+$Revision: 1.13 $
 
 || DESCRIPTION || 
 $Description: Displays category tree $
@@ -59,18 +59,15 @@ $out:$
 		<td>
 			<cfinvoke component="#application.packagepath#.farcry.category" method="getHierarchies"  returnvariable="qHierarchies">
 
-			
+			<form action="" method="post">
 			Existing Hierarchies:
 			<select name="hierarchyID" class="formfield" onchange="showTree(this.value);">
-				<cfoutput><option value="#catRootObjectID#">Show All Hierarchies</cfoutput>
+			<cfoutput><option value="#catRootObjectID#">Show All Hierarchies</cfoutput>
 			<cfoutput query="qHierarchies">
 				<option value="#objectID#">#objectName#</option>
 			</cfoutput>
 			</select> 
-			
 			</form>
-			
-			
 		</td>
 	</tr>
 	<tr>
@@ -80,7 +77,7 @@ $out:$
 
 <cfoutput>
 <div>
-<iframe width="300" height="100%" id="cattreeframe" style="display:inline" src="#application.url.farcry#/navajo/keywords/tree.cfm" scrolling="No" frameborder="0"></iframe>
+<iframe width="250" height="100%" id="cattreeframe" style="display:inline;" src="#application.url.farcry#/navajo/keywords/tree.cfm" scrolling="No" frameborder="0"></iframe>
 <iframe style="display:inline;" width="400" height="100%" id="cateditframe" src="#application.url.farcry#/navajo/keywords/overview.cfm" scrolling="Auto" frameborder="0"></iframe> 
 </div>
 </cfoutput>

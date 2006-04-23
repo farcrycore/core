@@ -18,7 +18,8 @@
 	<!--- make sure overview tab is selected --->
 	<script>
 		synchTab('editFrame','activesubtab','subtab','siteEditOverview');
-		synchTitle('Overview')
+		synchTitle('Overview');
+		synchTabLinks('site','<cfoutput>#stObj.objectid#</cfoutput>');
 	</script>
 	<cfscript>
 		oAuthorisation = request.dmSec.oAuthorisation;
@@ -27,7 +28,7 @@
 			
 	<div class="FormTitle"><Cfoutput>#stobj.title#</Cfoutput></div>
 	<!--- ### check if underlying draft object ### --->
-	<cfif structKeyExists(stObj,"versionID") and stobj.status eq "approved">
+	<cfif structKeyExists(stObj,"versionID") and structKeyExists(stObj,"status") and stobj.status eq "approved">
 		<!--- check for draft --->
 		<cfscript>
 			oVersioning = createObject("component", "#application.packagepath#.farcry.versioning");
@@ -55,6 +56,16 @@
 							<cfelse>
 								<i>undefined</i>
 							</cfif></td>
+					</tr>
+					<tr>
+						<td><strong>Object Type:</strong></td>
+						<td>
+							<cfif structKeyExists(application.types[stobjDraft.typename],"displayname")>
+								<Cfoutput>#application.types[stobjDraft.typename].displayname#</Cfoutput>
+							<cfelse>
+								<Cfoutput>#stobjDraft.typename#</Cfoutput>
+							</cfif>
+						</td>
 					</tr>
 					<tr>
 						<td><strong>Created by:</strong></td>
@@ -250,21 +261,14 @@
 							<cfif iDelete eq 1>
 								<span class="frameMenuBullet">&raquo;</span> <a href="edittabEdit.cfm?objectid=#stobj.objectid#&deleteDraftObjectID=#stobjDraft.ObjectID#" onClick="return confirm('Are you sure you wish to delete this object?');">Delete this draft version</a><BR>
 							</cfif>
-							
-
-		
-													
 							</cfoutput>
-							
 						</td>
 					</tr>
 					</table>
 				</td>
 			</tr>
 			</table>
-	
 		</cfif>
-
 	</cfif>
 		
 	<!--- main table --->
@@ -273,7 +277,7 @@
 		<td>Overview</td>
 		<td>What would you like to do now?</td>
 	</tr>
-	<tr class="overview<cfoutput>#stobj.status#</cfoutput>">
+	<tr class="overview<cfif isdefined("stObj.status")><cfoutput>#stobj.status#</cfoutput><cfelse>Approved</cfif>">
 		<td width="50%" valign="top">
 			<!--- column 1 - overview --->
 			<table cellpadding="5" cellspacing="0" border="0">
@@ -285,6 +289,16 @@
 					<cfelse>
 						<i>undefined</i>
 					</cfif></td>
+			</tr>
+			<tr>
+				<td><strong>Object Type:</strong></td>
+				<td>
+					<cfif structKeyExists(application.types[stobj.typename],"displayname")>
+						<Cfoutput>#application.types[stobj.typename].displayname#</Cfoutput>
+					<cfelse>
+						<Cfoutput>#stobj.typename#</Cfoutput>
+					</cfif>
+				</td>
 			</tr>
 			<tr>
 				<td><strong>Created by:</strong></td>
@@ -319,19 +333,19 @@
 					</cfif>
 				</td>
 			</tr>
-			<cfif IsDefined("stobj.displaymethod")>
+			<cfif IsDefined("stobj.datetimelastupdated")>
 			<tr>
 				<td><strong>Last Updated:</strong></td>
 				<td><Cfoutput>#dateformat(stobj.datetimelastupdated)#</Cfoutput></td>
 			</tr>
 			</cfif>
-			<cfif IsDefined("stobj.displaymethod")>
+			<cfif IsDefined("stobj.lastupdatedby")>
 			<tr>
 				<td><strong>Last Updated By:</strong></td>
 				<td><Cfoutput>#stobj.lastupdatedby#</Cfoutput></td>
 			</tr>
 			</cfif>
-			<cfif IsDefined("stobj.displaymethod")>
+			<cfif IsDefined("stobj.status")>
 			<tr>
 				<td><strong>Current Status:</strong></td>
 				<td><Cfoutput>#stobj.status#</Cfoutput></td>

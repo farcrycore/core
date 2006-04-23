@@ -5,11 +5,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/webskin/importCSS.cfm,v 1.9 2003/12/08 05:41:49 paul Exp $
-$Author: paul $
-$Date: 2003/12/08 05:41:49 $
-$Name: milestone_2-1-2 $
-$Revision: 1.9 $
+$Header: /cvs/farcry/farcry_core/tags/webskin/importCSS.cfm,v 1.10 2004/06/02 01:52:44 brendan Exp $
+$Author: brendan $
+$Date: 2004/06/02 01:52:44 $
+$Name: milestone_2-2-1 $
+$Revision: 1.10 $
 
 || DESCRIPTION || 
 Import CSS for templates based on site tree
@@ -48,12 +48,15 @@ out:
 		
 		<!--- append css to list --->
 		<cfif qCheck.recordcount>
-			<!--- if more than one item in list append --->
-			<cfif len(lCSS)>
-				<cfset lCSS = listappend(lCSS,qCheck.filename)>
-			<cfelse>
-				<cfset lCSS = qCheck.filename>
-			</cfif>
+			<!--- loop through all css under nav node --->
+			<cfloop query="qCheck">
+				<!--- if more than one item in list append --->
+				<cfif len(lCSS)>
+					<cfset lCSS = listappend(lCSS,qCheck.filename)>
+				<cfelse>
+					<cfset lCSS = qCheck.filename>
+				</cfif>
+			</cfloop>
 		</cfif>
 	</cfloop>
 </cfif>

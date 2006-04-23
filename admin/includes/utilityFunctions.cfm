@@ -115,6 +115,28 @@
 	<cfreturn arguments.theArray>
 	</cffunction>
 	
+	<cffunction name="QueryToStructureOfStructures" returntype="struct" hint="Converts a query object to an array of structures. Assumes objectid to be key">
+		<cfargument name="theQuery" required="true" hint="Assumes objectid to be key">
+		<cfset var stReturn = structNew()>
+		<cfset var row = 1>
+		<cfset var index = 1>
+		<cfscript>	
+		cols = ListtoArray(arguments.thequery.columnlist);
+		for(row = 1; row LTE arguments.theQuery.recordcount; row = row + 1)
+		{
+			st = structNew();
+			for(index=1; index LTE arraylen(cols); index=index+1)
+			{
+				st[cols[index]] = arguments.thequery[cols[index]][row];
+			}
+			streturn[theQuery.objectid[row]] = duplicate(st);
+		}
+	
+		</cfscript>
+		<cfreturn stReturn>
+	</cffunction>
+	
+	
 	<cffunction name="filterStructure" hint="Removes specified structure elements">
 		<cfargument name="st" required="Yes" hint="The structure to parse">
 		<cfargument name="lKeys" required="Yes" hint="A list of structure keys to delete">

@@ -4,7 +4,7 @@
 
  Created: Thu May 1  14:19:20 2003
  $Revision 0.2$
- Modified: $Date: 2003/12/17 23:08:26 $
+ Modified: $Date: 2004/08/12 22:54:39 $
 
  Author: Spike
  E-mail: spike@spike@spike.org.uk
@@ -91,7 +91,9 @@
 	
 	<!--- FarCry Specific Functions --->
 	<cffunction name="deleteAll" access="public" returntype="boolean" hint="Deletes all mappings and writes the map file to disk" output="No">
-		<cfset mappings= getMappings()>
+		<cfset var mappings = getMappings()>
+		<cfset var dom = "">
+		<cfset var i = "">
 		<!--- loop over all entries and delete those that match domain --->
 		
 		<!--- loop over all domains --->
@@ -108,6 +110,10 @@
 	
 	<cffunction name="deleteFU" access="public" returntype="boolean" hint="Deletes a mappings and writes the map file to disk" output="No">
 		<cfargument name="alias" required="yes" type="string" hint="old alias of object to delete">
+		
+		<cfset var mappings = "">
+		<cfset var dom = "">
+		<cfset var sFUKey = "">
 		
 		<cfif NOT isDefined("application.FU.mappings")>
 			<cfset application.FU.mappings = getMappings()>
@@ -131,9 +137,11 @@
 
 	<cffunction name="createFUAlias" access="public" returntype="string" hint="Creates the FU Alias for a given objectid">
 		<cfargument name="objectid" required="Yes">
-		<cfscript>
-			qAncestors = request.factory.oTree.getAncestors(objectid=arguments.objectid,bIncludeSelf=true);
-		</cfscript>
+		
+		<cfset var qCrumb = "">
+		<cfset var breadCrumb = "">
+		<cfset var qAncestors = request.factory.oTree.getAncestors(objectid=arguments.objectid,bIncludeSelf=true)>
+		
 		<!--- remove root & home --->
 		<cfquery dbtype="query" name="qCrumb">
 			SELECT objectName FROM qAncestors
@@ -155,6 +163,12 @@
 	
 	
 	<cffunction name="createAll" access="public" returntype="boolean" hint="Deletes old mappings and creates new entries for entire tree, and writes the map file to disk" output="No">
+		
+		<!--- get nav tree --->
+		<cfset var qNav = request.factory.oTree.getDescendants(objectid=application.navid.home, depth=50)>
+		<cfset var qAncestors = "">
+		<cfset var qCrumb = "">
+		<cfset var breadCrumb = "">
 				
 		<!--- remove existing fu's --->
 		<cfset deleteALL()>
@@ -162,8 +176,6 @@
 		<cfset setErrorTemplate("#application.url.webroot#")>
 		<!--- set nav variable --->
 		<cfset setURLVar("nav")>
-		<!--- get nav tree --->
-		<cfset qNav = request.factory.oTree.getDescendants(objectid=application.navid.home, depth=50)>
 		<!--- loop over nav tree and create friendly urls --->
 		<cfloop query="qNav">
 			<!--- get ancestors of object --->
@@ -194,11 +206,12 @@
 	<cffunction name="setFU" access="public" returntype="string" hint="Sets an fu" output="No">
 		<cfargument name="objectid" required="yes" type="UUID" hint="objectid of object to link to">
 		<cfargument name="alias" required="yes" type="string" hint="alias of object to link to">
-				
+		
+		<cfset var dom = "">
 		<!--- replace spaces in title --->
-		<cfset newAlias = replace(arguments.alias,' ','-',"all")>
+		<cfset  var newAlias = replace(arguments.alias,' ','-',"all")>
 		<!--- remove illegal characters in titles --->
-		<cfset newAlias = reReplaceNoCase(newAlias,'[:\?##]','',"all")>
+		<cfset newAlias = reReplaceNoCase(newAlias,'[:\?##™®]','',"all")>
 		<!--- change & to "and" in title --->
 		<cfset newAlias = reReplaceNoCase(newAlias,'[&]','and',"all")>
 				
@@ -213,10 +226,13 @@
 		<cfargument name="objectid" required="yes" type="UUID" hint="objectid of object to link to">
 		<cfargument name="dom" required="yes" type="string" default="#cgi.server_name#">
 		<cfscript>
-			fullUFU = application.url.conjurer & "?objectid=" & arguments.objectid;
+			var fullUFU = application.url.conjurer & "?objectid=" & arguments.objectid;
+			var fuURL = "";
+			var aFuKey = "";
+			
 			if(NOT isDefined("application.FU.mappings"))
 				updateAppScope();
-			fuURL = "";
+			
 			aFuKey = structFindValue(application.FU.mappings, fullUFU, "one");
 			if(arrayLen(aFuKey))
 				fuURL = "/" & listRest(aFuKey[1].key,'/');
@@ -226,9 +242,10 @@
 					// return ses url
 					fullUFU = "/go/objectid/" & arguments.objectid;
 					// if not root of webserver add additional url parameters
-					if (application.url.webroot neq "") {
+					if (application.url.webroot neq "")
 						fullUFU = fullUFU & "?indexfile=" & application.url.webroot & "/index.cfm";
-					}
+					else
+						fullUFU = fullUFU & application.config.fusettings.suffix;
 				}
 				fuURL = fullUFU;
 			}

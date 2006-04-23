@@ -8,7 +8,7 @@
 	lObjectIds="#url.lObjectIds#"
 	get="Children"
 	topLevelVariable="objects"
-	lStripFields="ORIGINALIMAGEPATH,OPTIMISEDIMAGEPATH,THUMBNAILIMAGEPATH,OPTIMISEDIMAGE,height,width,alt,lNavidAlias,teaserimage,extendedmetadata,externallink,flashparams,flashheight,flashwidth,flashbgcolor,flashloop,flashmenu,flashplay,flashquality,flashversion,teaserimage,metakeywords,displayMethod,objecthistory,teaser,body,PATH,commentlog"
+	lStripFields="ORIGINALIMAGEPATH,OPTIMISEDIMAGEPATH,THUMBNAILIMAGEPATH,lNavidAlias,teaserimage,extendedmetadata,externallink,teaserimage,metakeywords,displayMethod,objecthistory,teaser,body,PATH,commentlog"
 	r_javascript="jscode">
 
 

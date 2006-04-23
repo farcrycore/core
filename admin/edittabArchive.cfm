@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/edittabArchive.cfm,v 1.7 2003/09/11 01:26:52 brendan Exp $
+$Header: /cvs/farcry/farcry_core/admin/edittabArchive.cfm,v 1.8 2004/04/22 07:42:50 brendan Exp $
 $Author: brendan $
-$Date: 2003/09/11 01:26:52 $
-$Name: b201 $
-$Revision: 1.7 $
+$Date: 2004/04/22 07:42:50 $
+$Name: milestone_2-2-1 $
+$Revision: 1.8 $
 
 || DESCRIPTION || 
 $Description: shows archived objects $
@@ -38,7 +38,14 @@ $out:$
 	
 	<!--- check if rollback is required --->
 	<cfif isdefined("url.archiveid")>
-		<cfinvoke component="#application.packagepath#.farcry.versioning" method="rollbackArchive" objectID="#url.objectid#" archiveId="#url.archiveid#" returnvariable="stRollback">
+		
+		<!--- get type --->
+		<cfset oFourq = createObject("component","farcry.fourq.fourq")>
+		<cfset typename = oFourq.findType(url.objectid)>
+		<cfset oType = createObject("component",application.types[typename].typepath)>
+		
+		<!--- rollback arvhice --->
+		<cfset stRollback = oType.archiveRollback(objectID="#url.objectid#",archiveId="#url.archiveid#",typename=typename)>
 	</cfif>
 	
 	<!--- get archives --->

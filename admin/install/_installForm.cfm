@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/install/_installForm.cfm,v 1.30.2.1 2004/03/01 23:51:03 brendan Exp $
+$Header: /cvs/farcry/farcry_core/admin/install/_installForm.cfm,v 1.33 2004/05/20 04:41:25 brendan Exp $
 $Author: brendan $
-$Date: 2004/03/01 23:51:03 $
-$Name: milestone_2-1-2 $
-$Revision: 1.30.2.1 $
+$Date: 2004/05/20 04:41:25 $
+$Name: milestone_2-2-1 $
+$Revision: 1.33 $
 
 || DESCRIPTION ||
 $Description: Installation form for FarCry$
@@ -63,6 +63,10 @@ function verifyForm() {
 	} else if (dsn.indexOf('-')!=-1) {
         alert('You cannot have a - in your dsn');
         formObj.appDSN.focus();
+        return false;	
+	} else if (siteName.indexOf('-')!=-1) {
+        alert('You cannot have a - in your site name');
+        formObj.siteName.focus();
         return false;	
     } else
         return true;
@@ -146,7 +150,8 @@ function hideIIS(showAlert) {
 	        <option value="odbc"<cfif FORM.dbType eq "sql"> selected</cfif>>SQL Server</option>
 	        <option value="ora"<cfif FORM.dbType eq "oracle"> selected</cfif>>Oracle</option>
 	        <option value="mysql"<cfif FORM.dbType eq "mysql"> selected</cfif>>MySQL</option>
-	        </select>
+	        <option value="postgresql"<cfif FORM.dbType eq "postgresql"> selected</cfif>>PostgreSQL</option>
+			</select>
 			 <a href="##" onclick="window.open('help.cfm?topic=dbType','help','height=250,width=350')">?</a>
 	    </td>
 	</tr>

@@ -35,3 +35,26 @@ function synchTitle (newtitle)
 {
 	parent.document.getElementById('DisplayTitle').innerText = newtitle;
 }
+
+function synchTabLinks (tabType, objectid)
+{
+	var elList, i;
+	var curList, newList;
+   // Set current active link to non active
+ 
+  elList = parent.document.getElementsByTagName("A");
+  for (i = 0; i < elList.length; i++)
+
+    // Check if the id contains the tabtype and make tab visible	
+	if (elList[i].id)
+	{
+		
+		if (elList[i].id.indexOf(tabType)!= -1) 
+		{
+		   	// break href into 2 bits, one the file and one the object parameter
+			newList = new Array();
+			curList = elList[i].href.split("=");
+			elList[i].href = curList[0] + "=" + objectid; 
+		}
+	}
+}

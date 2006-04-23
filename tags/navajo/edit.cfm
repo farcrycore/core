@@ -4,15 +4,16 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/navajo/edit.cfm,v 1.20.2.1 2004/03/19 17:35:48 tom Exp $
-$Author: tom $
-$Date: 2004/03/19 17:35:48 $
-$Name: milestone_2-1-2 $
-$Revision: 1.20.2.1 $
+$Header: /cvs/farcry/farcry_core/tags/navajo/edit.cfm,v 1.22.2.1 2004/08/17 06:10:32 brendan Exp $
+$Author: brendan $
+$Date: 2004/08/17 06:10:32 $
+$Name: milestone_2-2-1 $
+$Revision: 1.22.2.1 $
 
 || DESCRIPTION || 
-$Description: $
-$TODO: $
+$Description: General edit conjurer template.$
+$TODO: This legacy code needs to be revisited 
+-- should have a more generic object invocation methodology GB$
 
 || DEVELOPER ||
 $Developer: Brendan Sisson (brendan@daemon.com.au)$
@@ -22,14 +23,27 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au)$
 $in: url.Objectid$
 $out:$
 --->
-
 <cfsetting enablecfoutputonly="yes">
 <cfinclude template="/farcry/farcry_core/admin/includes/utilityFunctions.cfm">
 <cfinclude template="/farcry/farcry_core/admin/includes/cfFunctionWrappers.cfm">
-<!--- Legacy support for old pages referring to URL.type--->
-<cfif isDefined("URL.type") AND NOT isDefined("URL.typename")>
-	<cfset URL.typename = URL.type>
-</cfif>
+
+<!--- enforce some validation --->
+<cfparam name="url.objectid" type="uuid">
+<cfparam name="url.typename" default="" type="string">
+
+<cfscript>
+	// Legacy support for old pages referring to URL.type
+	if (isDefined("URL.type"))
+		URL.typename = URL.type;
+	// auto-type lookup if required
+	if (NOT len(url.typename)) {
+		q4 = createObject("component", "farcry.fourq.fourq");
+		url.typename = q4.findType(objectid=url.objectid);
+		//its possible that missing objects will kill this so we only want to create object if we actually get a typename result
+		if (NOT len(url.typename))
+			abort();
+	}
+</cfscript>
 
 <!--- First check permissions --->
 <cfscript>
@@ -59,8 +73,7 @@ $out:$
 		oCon = createObject('component','#application.packagepath#.rules.container');
 		oCon.delete(objectid="#URL.deleteDraftObjectID#");
 		//Delete the copied draft object
-		oHTML = createObject("component", application.types.dmHTML.typePath);
-		oHTML.deletedata(objectId="#URL.deleteDraftObjectID#");
+		oType.deletedata(objectId="#URL.deleteDraftObjectID#");
 		//Log this activity against live object
 		oAuthentication = request.dmSec.oAuthentication;	
 		stuser = oAuthentication.getUserAuthenticationData();

@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/webskin/multiPageNav.cfm,v 1.2 2003/11/05 04:46:09 tom Exp $
-$Author: tom $
-$Date: 2003/11/05 04:46:09 $
-$Name: milestone_2-1-2 $
-$Revision: 1.2 $
+$Header: /cvs/farcry/farcry_core/tags/webskin/multiPageNav.cfm,v 1.4 2004/04/12 12:11:39 brendan Exp $
+$Author: brendan $
+$Date: 2004/04/12 12:11:39 $
+$Name: milestone_2-2-1 $
+$Revision: 1.4 $
 
 || DESCRIPTION || 
 $DESCRIPTION: Displays simple navigation for multi page branches$
@@ -47,22 +47,16 @@ $in: nextArrow (optional - value to use for next page arrow)$
 <cfparam name="attributes.previousArrow" default="&laquo;">
 <cfparam name="attributes.nextArrow" default="&raquo;">
 
-<!--- get nav parent details --->
-<cfscript>
-	o = createObject("component", application.types.dmNavigation.typePath);
-	qParent = o.getParent(objectid=attributes.objectid);
-</cfscript>
-<q4:contentobjectget objectID="#qParent.objectid#" r_stobject="stParent">
+<cffunction name="addPage" output="false">
+	<cfargument name="objectid" required="Yes" type="UUID">
 
-<!--- create query --->
-<cfset qPages = queryNew("objectid, title")>
-
-<!--- get all pages under nav parent --->
-<cfloop from="1" to="#arrayLen(stParent.aObjectIds)#" index="item">
-	<cfset error= false>
+	<cfset var error= false>
+	<cfset var bSuccess= false>
+	<cfset var stPage= "">
+	
 	<!--- get page details --->
 	<cftry>
-		<q4:contentobjectget objectID="#stParent.aObjectIds[item]#" r_stobject="stPage">
+		<q4:contentobjectget objectID="#arguments.objectid#" r_stobject="stPage">
 
 		<!--- check object exists --->
 		<cfcatch type="any">
@@ -71,13 +65,58 @@ $in: nextArrow (optional - value to use for next page arrow)$
 			<cfset error = true>
 		</cfcatch>
 	</cftry>
-	<cfif not error AND request.mode.lValidStatus CONTAINS stPage.Status>
+	<cfif stPage.typename eq "dmHTML" and not error AND request.mode.lValidStatus CONTAINS stPage.Status>
 		<!--- add row to query --->
-		<cfset temp = queryAddRow(qPages, 1)>
-		<cfset temp = querySetCell(qPages, "objectid", stParent.aObjectIds[item])>
-		<cfset temp = querySetCell(qPages, "title", stPage.title)>
+		<cfset queryAddRow(qPages, 1)>
+		<cfset querySetCell(qPages, "objectid", arguments.objectid)>
+		<cfset querySetCell(qPages, "title", stPage.title)>
+		<cfset bSuccess = true>
 	</cfif>
-</cfloop>
+	
+	<cfreturn bSuccess>
+</cffunction>
+
+<!--- get nav parent details --->
+<q4:contentobjectget objectID="#request.navid#" r_stobject="stParent">
+
+<!--- create query --->
+<cfset qPages = queryNew("objectid, title")>
+
+<!--- check if only next/previous required or all pages --->
+<cfif attributes.displayPageNumbers>
+	<!--- get all pages under nav parent --->
+	<cfloop from="1" to="#arrayLen(stParent.aObjectIds)#" index="item">
+		<!--- add item to page listing query --->
+		<cfset addPage(stParent.aObjectIds[item])>
+	</cfloop>	
+<cfelse>
+	<!--- just get next previous information. First work out current position --->
+	<cfloop from="1" to="#arrayLen(stParent.aObjectIds)#" index="item">
+		<cfif stParent.aObjectids[item] eq attributes.objectid>
+			<cfset current = item>
+			<cfbreak>
+		</cfif>
+	</cfloop>
+	<!--- try to add previous page --->
+	<cfloop from="#current-1#" to="1" index="prevItem" step="-1">
+		<cfset bSuccess = addPage(stParent.aObjectIds[prevItem])>
+		<cfif bSuccess>
+			<cfbreak>
+		</cfif>
+	</cfloop>
+	<!--- try to add current page --->
+	<cftry>
+		<cfset addPage(stParent.aObjectIds[current])>
+		<cfcatch></cfcatch>
+	</cftry>
+	<!--- try to add next page --->
+	<cfloop from="#current+1#" to="#arrayLen(stParent.aObjectIds)#" index="nextItem">
+		<cfset bSuccess = addPage(stParent.aObjectIds[nextItem])>
+		<cfif bSuccess>
+			<cfbreak>
+		</cfif>
+	</cfloop>
+</cfif>
 
 <!--- check if user wants links to be displayed or just returned in a query --->
 <cfif attributes.display>

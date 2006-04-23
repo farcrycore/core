@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/alterType.cfc,v 1.36 2003/12/09 00:39:31 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/farcry/alterType.cfc,v 1.38 2004/05/20 04:41:25 brendan Exp $
 $Author: brendan $
-$Date: 2003/12/09 00:39:31 $
-$Name: milestone_2-1-2 $
-$Revision: 1.36 $
+$Date: 2004/05/20 04:41:25 $
+$Name: milestone_2-2-1 $
+$Revision: 1.38 $
 
 || DESCRIPTION || 
 $Description: alter type/rule cfc $
@@ -256,7 +256,7 @@ $out:$
 			stPropTypes['email'] = duplicate(db);		
 			//longchar
 			db.type = 'CLOB';
-			db.length = 4000;
+			db.length = 32760;
 			stPropTypes['longchar'] = duplicate(db);	
 			break;
 			
@@ -302,6 +302,51 @@ $out:$
 			stPropTypes['email'] = duplicate(db);		
 			//longchar
 			db.type = 'TEXT';
+			db.length = 16;
+			stPropTypes['longchar'] = duplicate(db);	
+			break;
+		}
+		
+		case "postgresql":
+		{
+			//boolean	
+			db.type = 'int';
+			db.length = 4;
+			stPropTypes['boolean'] = duplicate(db);
+			//date
+			db.type = 'timestamp';
+			db.length = 8;
+			stPropTypes['date'] = duplicate(db);
+			//numeric
+			db.type = 'int';
+			db.length = 4;
+			stPropTypes['numeric'] = duplicate(db);
+			//string
+			db.type = 'varchar';
+			db.length = 255;
+			stPropTypes['string'] = duplicate(db);
+			//nstring
+			db.type = 'varchar';
+			db.length = 255;
+			stPropTypes['nstring'] = duplicate(db);
+			//uuid
+			db.type = 'varchar';
+			db.length = 50;
+			stPropTypes['uuid'] = duplicate(db);
+			//variablename
+			db.type = 'varchar';
+			db.length = 64;
+			stPropTypes['variablename'] = duplicate(db);
+			//color
+			db.type = 'varchar';
+			db.length = 20;
+			stPropTypes['color'] = duplicate(db);
+			//email
+			db.type = 'varchar';
+			db.length = 255;
+			stPropTypes['email'] = duplicate(db);		
+			//longchar
+			db.type = 'text';
 			db.length = 16;
 			stPropTypes['longchar'] = duplicate(db);	
 			break;
@@ -375,6 +420,14 @@ $out:$
 		select #qArrayTables1.columnlist# as name
 		from qArrayTables1
 		where upper(#qArrayTables1.columnlist#) like '#ucase(arguments.typename)#@_A%' escape '@'
+		</cfquery>	
+	</cfcase>
+	
+	<cfcase value="postgresql">		
+		<cfquery datasource="#application.dsn#" name="qArrayTables">
+		select tablename as name 
+      from pg_tables 
+      where upper(tablename) like '#ucase(arguments.typename)#@_A%' escape '@'
 		</cfquery>	
 	</cfcase>
 	
@@ -681,13 +734,25 @@ $out:$
 	<cfargument name="destColumn" required="true">
 	<cfargument name="dsn" default="#application.dsn#" required="false">
 	
-	<cfset srcObject = "#arguments.typename#.[#arguments.srcColumn#]">
+	<cfswitch expression="#application.dbtype#">
+		<cfcase value="postgresql">
+		  <cfquery datasource="#arguments.dsn#">
+			ALTER TABLE #arguments.typename#
+			RENAME #arguments.srcColumn# TO #arguments.destColumn#	
+		  </cfquery>
+		</cfcase>
+		<cfdefaultcase>
+		  <cfset srcObject = "#arguments.typename#.[#arguments.srcColumn#]">
+  
+		  <cfstoredproc procedure="sp_rename" datasource="#arguments.dsn#">
+			  <cfprocparam cfsqltype="cf_sql_varchar" type="in" value="#srcObject#">
+			  <cfprocparam cfsqltype="cf_sql_varchar" type="in" value="#destColumn#">
+			  <cfprocparam cfsqltype="cf_sql_varchar" type="in" value="COLUMN">
+		  </cfstoredproc>
+		</cfdefaultcase>
+	</cfswitch>
 	
-	<cfstoredproc procedure="sp_rename" datasource="#arguments.dsn#">
-		<cfprocparam cfsqltype="cf_sql_varchar" type="in" value="#srcObject#">
-		<cfprocparam cfsqltype="cf_sql_varchar" type="in" value="#destColumn#">
-		<cfprocparam cfsqltype="cf_sql_varchar" type="in" value="COLUMN">
-	</cfstoredproc>
+	
 </cffunction>
 
 <cffunction name="deleteProperty">
@@ -854,6 +919,55 @@ $out:$
 			</cfloop>				
 		</cfcase>
 		
+		<cfcase value="postgresql">
+         <cfquery name="getTableId" datasource="#application.dsn#">
+         SELECT c.oid,
+           n.nspname,
+           c.relname
+         FROM pg_catalog.pg_class c
+              LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+         WHERE pg_catalog.pg_table_is_visible(c.oid)
+               AND upper(c.relname) ~ upper('^#typename#$')
+         ORDER BY 2, 3;
+         </cfquery>
+         
+         <cfquery name="getColumns" datasource="#application.dsn#">
+         SELECT a.attname,
+           pg_catalog.format_type(a.atttypid, a.atttypmod) as thetype,
+           not a.attnotnull as isnullable
+         FROM pg_catalog.pg_attribute a
+         WHERE a.attrelid = '#getTableId.oid#' AND a.attnum > 0 AND NOT a.attisdropped
+         ORDER BY a.attnum
+         </cfquery>
+         
+         <cfset GetTables = queryNew("TableName,ColumnName,length,isnullable,type")>
+         <cfloop query="getColumns">
+            <cfset truelen = reReplaceNoCase(thetype, ".*\(([^\)]*)\).*", "\1")>
+            <cfif thetype contains "character varying">
+               <cfset truetype = "varchar">
+            <cfelseif thetype contains "text">
+               <cfset truetype = "text">
+               <cfset truelen = "16">
+            <cfelseif thetype contains "int">
+               <cfset truetype = "int">
+               <cfset truelen = "4">
+            <cfelseif thetype contains "timestamp">
+               <cfset truetype = "timestamp">
+               <cfset truelen = "8">
+            <cfelse>
+               <cfset truetype = "varchar">
+            </cfif>
+            
+            <cfset temp = queryAddRow(GetTables)>
+            <cfset temp = querySetCell(GetTables, "TableName", typename)>
+            <cfset temp = querySetCell(GetTables, "ColumnName", attname)>
+            <cfset temp = querySetCell(GetTables, "length", truelen)>
+            <cfset temp = querySetCell(GetTables, "isnullable", yesnoformat(isnullable))>
+            <cfset temp = querySetCell(GetTables, "type", truetype)>
+         </cfloop>
+         
+		</cfcase>
+		
 		<cfdefaultcase>
 			<CFQUERY NAME="GetTables" DATASOURCE="#application.dsn#">
 			SELECT dbo.sysobjects.name AS TableName, 
@@ -946,6 +1060,14 @@ $out:$
 		</cfquery>
 	</cfcase>
 
+	<cfcase value="postgresql">
+      <cfquery name="qTableExists" datasource="#application.dsn#">
+         select tablename from pg_tables
+         where  schemaname = 'public'
+         and    upper(tablename) = upper('#arguments.typename#')
+      </cfquery>
+   </cfcase>
+	
 	<cfdefaultcase>
 		<cfquery name="qTableExists" datasource="#application.dsn#">
 		SELECT 	dbo.sysobjects.name FROM dbo.sysobjects

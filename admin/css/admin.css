@@ -299,3 +299,9 @@ a.referer:hover {
 	color:#333;
 
 }
+
+#htmlareawrapper {
+	width: 600px;
+	margin-bottom: 20px;
+	border: 1px solid black;
+}

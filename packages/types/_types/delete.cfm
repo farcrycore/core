@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_types/delete.cfm,v 1.7 2003/11/05 04:46:09 tom Exp $
-$Author: tom $
-$Date: 2003/11/05 04:46:09 $
-$Name: milestone_2-1-2 $
-$Revision: 1.7 $
+$Header: /cvs/farcry/farcry_core/packages/types/_types/delete.cfm,v 1.9 2004/06/24 01:30:11 paul Exp $
+$Author: paul $
+$Date: 2004/06/24 01:30:11 $
+$Name: milestone_2-2-1 $
+$Revision: 1.9 $
 
 || DESCRIPTION || 
 $Description: Generic delete method. Checks for associated objects and deletes them, deletes actual object and deletes object from any verity collection if needed$
@@ -51,6 +51,10 @@ $out:$
 	// delete actual object
 	deleteData(stObj.objectId);
 
+	// delete categories
+	oCategories = createObject('component','#application.packagepath#.farcry.category');
+	oCategories.deleteAssignedCategories(objectid=stObj.objectid);
+	
 	oConfig = createObject("component", "#application.packagepath#.farcry.config");
 	if (NOT isDefined("application.config.verity"))
 		application.config.verity = oConfig.getConfig("verity");
@@ -62,7 +66,20 @@ $out:$
 		collectionName = application.applicationname & "_" & stObj.typename;
 		application.factory.oVerity.deleteFromCollection(collection=collectionName,objectid=stObj.objectid);
 	}
+
+	// if this objecttype is used in tree, then it may have been used as a related link in dmHTML_aRelatedIDs 
+	if (structKeyExists(application.types[stObj.typename],"bUseInTree"))
+	{
+		if (isBoolean(application.types[stObj.typename].bUseInTree) AND application.types[stObj.typename].bUseInTree)
+		{
+			oHTML = createObject("component",application.types['dmHTML'].typepath);
+			oHTML.deleteRelatedIds(objectid=stObj.objectid);
+		}
+	
+	}
+		
 	</cfscript>
+	
 	
 		
 	

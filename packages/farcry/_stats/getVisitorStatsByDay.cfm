@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_stats/getVisitorStatsByDay.cfm,v 1.6 2003/09/12 02:59:21 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_stats/getVisitorStatsByDay.cfm,v 1.7 2004/05/20 04:41:25 brendan Exp $
 $Author: brendan $
-$Date: 2003/09/12 02:59:21 $
-$Name: b201 $
-$Revision: 1.6 $
+$Date: 2004/05/20 04:41:25 $
+$Name: milestone_2-2-1 $
+$Revision: 1.7 $
 
 || DESCRIPTION || 
 $Description: get visitor stats $
@@ -32,6 +32,19 @@ $out:$
 				select * from stats
 		)fq on TO_CHAR(fq.logdatetime,'hh') = statsHours.hour
 		and TO_CHAR(fq.logdatetime,'dd' ) = #DatePart("d", arguments.day)# and TO_CHAR(fq.logdatetime,'mm') = #DatePart("m", arguments.day)# and TO_CHAR(fq.logdatetime,'yyyy') = #DatePart("yyyy", arguments.day)#
+		group by hour, TO_CHAR(fq.logdatetime,'hh')
+		order by 1 
+	</cfquery>	
+</cfcase>
+
+<cfcase value="postgresql">
+	<cfquery datasource="#arguments.dsn#" name="qGetPageStatsByDay">
+		select distinct hour, TO_CHAR(fq.logdatetime,'hh') as loginhour, count(distinct sessionId) as count_Ip
+		from #application.dbowner#statsHours
+		left join (
+				select * from stats
+		)fq on TO_CHAR(fq.logdatetime,'hh')::integer = statsHours.hour
+		and date_trunc('day', fq.logdatetime) = '#dateFormat(arguments.day, "yyyy-mm-dd")#'
 		group by hour, TO_CHAR(fq.logdatetime,'hh')
 		order by 1 
 	</cfquery>	

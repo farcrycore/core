@@ -7,7 +7,7 @@ $License: Released Under the "Common Public License 1.0", http://www.opensource.
 $Header: /cvs/farcry/farcry_core/packages/farcry/_workflow/getNewsApprovers.cfm,v 1.7 2003/11/05 04:46:09 tom Exp $
 $Author: tom $
 $Date: 2003/11/05 04:46:09 $
-$Name: milestone_2-1-2 $
+$Name: milestone_2-2-1 $
 $Revision: 1.7 $
 
 || DESCRIPTION || 

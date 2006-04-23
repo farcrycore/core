@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmnavigation/renderOverview.cfm,v 1.7 2003/12/18 07:27:45 paul Exp $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmnavigation/renderOverview.cfm,v 1.8 2004/04/21 07:19:47 paul Exp $
 $Author: paul $
-$Date: 2003/12/18 07:27:45 $
-$Name: milestone_2-1-2 $
-$Revision: 1.7 $
+$Date: 2004/04/21 07:19:47 $
+$Name: milestone_2-2-1 $
+$Revision: 1.8 $
 
 || DESCRIPTION || 
 $DESCRIPTION: Dispalys summary and options for editing/approving/previewing etc for selected object$
@@ -22,6 +22,7 @@ $in:$
 $out:$
 --->
 <cfinclude template="/farcry/farcry_core/admin/includes/cfFunctionWrappers.cfm">
+
 <!--- check permissions --->
 <cfscript>
 	oAuthentication = request.dmsec.oAuthentication;
@@ -145,18 +146,18 @@ $out:$
 <cfoutput><span class="frameMenuBullet">&raquo;</span> <a href="#application.url.webroot#/index.cfm?objectid=#stObj.objectid#&flushcache=1&showdraft=1" class="frameMenuItem" target="_blank">Preview</a><br></cfoutput>
 
 <cfif iObjectDumpTab eq 1>
-	<cfoutput><span class="frameMenuBullet">&raquo;</span> <a href="edittabDump.cfm?objectid=<cfoutput>#stObj.objectid#</cfoutput>">Dump</a><BR></cfoutput>
+	<cfoutput><span class="frameMenuBullet">&raquo;</span> <a href="edittabDump.cfm?objectid=#stObj.objectid#">Dump</a><BR></cfoutput>
 </cfif>
 
 <cfif listContains(application.navid.home,stObj.objectid) eq 0 AND listContains(application.navid.root,stObj.objectid) eq 0>
 	<!--- check user can delete --->
 	<cfif iDelete eq 1>
-		<cfoutput><span class="frameMenuBullet">&raquo;</span> <a href="navajo/delete.cfm?ObjectId=<cfoutput>#stObj.objectId#</cfoutput>" onClick="return confirm('Are you sure you wish to delete this object?');">Delete</a><BR></cfoutput>
+		<cfoutput><span class="frameMenuBullet">&raquo;</span> <a href="navajo/delete.cfm?ObjectId=#stObj.objectId#" onClick="return confirm('Are you sure you wish to delete this object?');">Delete</a><BR></cfoutput>
 	</cfif>
 	
 	<!--- check user can move to trash --->
 	<cfif iTreeSendToTrash eq 1>
-		<cfoutput><span class="frameMenuBullet">&raquo;</span> <a href="navajo/move.cfm?srcObjectId=<cfoutput>#stObj.objectId#&destObjectId=#application.navid.rubbish#</cfoutput>">Send to trash</a><BR></cfoutput>
+		<cfoutput><span class="frameMenuBullet">&raquo;</span> <a href="navajo/move.cfm?srcObjectId=#stObj.objectId#&destObjectId=#application.navid.rubbish#" onclick="return confirm('Are you sure you wish to trash this object?');">Send to trash</a><BR></cfoutput>
 	</cfif>
 </cfif>
 </cfsavecontent>

@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/navajo/objectStatus.cfm,v 1.31.2.3 2004/02/13 02:36:54 brendan Exp $
+$Header: /cvs/farcry/farcry_core/tags/navajo/objectStatus.cfm,v 1.36 2004/03/09 23:01:20 brendan Exp $
 $Author: brendan $
-$Date: 2004/02/13 02:36:54 $
-$Name: milestone_2-1-2 $
-$Revision: 1.31.2.3 $
+$Date: 2004/03/09 23:01:20 $
+$Name: milestone_2-2-1 $
+$Revision: 1.36 $
 
 || DESCRIPTION || 
 $Description: changes status of tree item $
@@ -280,7 +280,7 @@ $out:$
 			
 			<cfscript>
 				stObj.datetimelastupdated = createODBCDateTime(now());
-				
+
 				//only if the comment log exists - do we actually append the entry
 				if (isDefined("FORM.commentLog")) {
 					if (structkeyexists(stObj, "commentLog")){

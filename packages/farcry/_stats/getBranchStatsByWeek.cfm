@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_stats/getBranchStatsByWeek.cfm,v 1.7 2003/09/10 12:21:48 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_stats/getBranchStatsByWeek.cfm,v 1.8 2004/05/20 04:41:25 brendan Exp $
 $Author: brendan $
-$Date: 2003/09/10 12:21:48 $
-$Name: b201 $
-$Revision: 1.7 $
+$Date: 2004/05/20 04:41:25 $
+$Name: milestone_2-2-1 $
+$Revision: 1.8 $
 
 || DESCRIPTION || 
 $Description: gets stats for entire branch $
@@ -26,6 +26,24 @@ $out:$
 
 <cfswitch expression="#application.dbtype#"	>
 <cfcase value="ora">
+	<!--- THIS QUERY IS NOT COMPLETE - TODO --->
+	<cfquery datasource="#arguments.dsn#" name="qGetPageStatsByWeek">
+		select distinct day, statsDays.name,TO_CHAR(fq.logdatetime,'dy') as loginday, count(fq.logId) as count_logins
+		from #application.dbowner#statsDays
+		left join (
+			select * from stats
+				where 1 = 1
+				<cfif not arguments.showAll>
+					AND navid IN (<cfif qDescendants.recordcount>#QuotedValueList(qDescendants.objectid)#,</cfif>'#arguments.navid#')
+				</cfif>
+		)fq on UPPER(TO_CHAR(fq.logdatetime,'dy')) = UPPER(SUBSTR(statsDays.day,1,3))
+		 and (fq.logdatetime - TO_DATE('#arguments.day#','dd/mon/yy') <=0) and (TO_DATE('#dateadd('d','7',arguments.day)#','dd/mon/yy') - fq.logdatetime >=0))
+		group by day, statsDays.name, TO_CHAR(fq.logdatetime,'dy')
+		order by 1 
+	</cfquery>
+</cfcase>
+
+<cfcase value="postgresql">
 	<!--- THIS QUERY IS NOT COMPLETE - TODO --->
 	<cfquery datasource="#arguments.dsn#" name="qGetPageStatsByWeek">
 		select distinct day, statsDays.name,TO_CHAR(fq.logdatetime,'dy') as loginday, count(fq.logId) as count_logins

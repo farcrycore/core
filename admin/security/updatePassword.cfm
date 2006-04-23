@@ -6,7 +6,7 @@
 	
     <cfscript>
     o_user = createObject("component", "#application.packagepath#.security.user");
-    bUpdate = o_user.updatePassword(userID=session.dmSec.authentication.userID, newPassword=form.newPassword, newPassword2=form.newPassword2, dsn=application.dsn);
+    bUpdate = o_user.updatePassword(userID=session.dmSec.authentication.userID, oldPassword=form.oldPassword, newPassword=form.newPassword, newPassword2=form.newPassword2, dsn=application.dsn);
     </cfscript>
 
 	<cfif bUpdate>

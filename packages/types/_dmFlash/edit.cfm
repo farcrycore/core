@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmFlash/edit.cfm,v 1.12 2003/11/05 04:46:09 tom Exp $
-$Author: tom $
-$Date: 2003/11/05 04:46:09 $
-$Name: milestone_2-1-2 $
-$Revision: 1.12 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmFlash/edit.cfm,v 1.14 2004/06/02 03:55:47 brendan Exp $
+$Author: brendan $
+$Date: 2004/06/02 03:55:47 $
+$Name: milestone_2-2-1 $
+$Revision: 1.14 $
 
 || DESCRIPTION || 
 $Description: edit handler$
@@ -38,7 +38,7 @@ $out:$
 		stProperties.flashHeight = form.height;
 		stProperties.flashWidth = form.width;
 		stProperties.flashQuality = form.quality;
-		stProperties.flashAlign = form.quality;
+		stProperties.flashAlign = form.align;
 		stProperties.flashBgcolor = form.bgcolor;
 		stProperties.flashPlay = form.play;
 		stProperties.flashLoop = form.loop;
@@ -57,25 +57,26 @@ $out:$
 	<!--- upload the flash movie --->
 	<cfif trim(len(FORM.flashMovie)) NEQ 0>
 		<!--- try and delete current file if its there --->
+		
 		<cfif len(stobj.flashmovie)>
 			 <cftry> 
 				<cffile action="DELETE" file="#application.defaultFilePath#\#stObj.flashMovie#">  
 				 <cfcatch>
-			
 				</cfcatch>			
 			</cftry> 
 		</cfif>
-		<cfinvoke component="#application.packagepath#.farcry.form" method="uploadFile" returnvariable="stReturn" nameconflict="OVERWRITE" formfield="flashMovie" destination="#application.defaultFilePath#"> 
-		<cfif NOT stReturn.bSuccess>
-			<cfoutput><strong>ERROR:</strong> #stReturn.message#<p>
-			File type needs to be a flash movie (.swf) <p></p></cfoutput>
-			<cfset error=1>
-		<cfelse>	
+		<cftry>
+			<cffile action="upload" nameconflict="OVERWRITE" filefield="flashMovie" destination="#application.defaultFilePath#"> 
 			<cfscript>
-				stProperties.flashMovie = stReturn.ServerFile;
+				oForm = createObject("component","#application.packagepath#.farcry.form");
+				stProperties.flashMovie = oForm.sanitiseFileName(file.ServerFile,file.ClientFileName,file.ServerDirectory);
 			</cfscript>
-		</cfif>	
-		
+			<cfcatch>
+				<cfoutput><strong>ERROR:</strong> #cfcatch.message#<p>
+				File type needs to be a flash movie (.swf) <p></p></cfoutput>
+				<cfset error=1>
+			</cfcatch>
+		</cftry>
 	</cfif>
 	
 	<cfscript>
@@ -180,11 +181,11 @@ $out:$
 	<!--- flash movie params --->
 	<tr>
   		<td><span class="FormLabel">Height:</span></td>
-   	 	<td><input type="text" name="Height" value="#stObj.flashHeight#" size="4"></td>
+   	 	<td><input type="text" name="height" value="#stObj.flashHeight#" size="4"></td>
 	</tr>
 	<tr>
   		<td><span class="FormLabel">Width:</span></td>
-   	 	<td><input type="text" name="Width" value="#stObj.flashWidth#" size="4"></td>
+   	 	<td><input type="text" name="width" value="#stObj.flashWidth#" size="4"></td>
 	</tr>
 	<tr>
   		<td><span class="FormLabel">Flash Version:</span></td>
@@ -199,7 +200,7 @@ $out:$
    	 	<td>
 		<select name="align">
 			<option value="left" <cfif stObj.flashalign eq "left">selected</cfif>>Left</option>
-			<option value="left" <cfif stObj.flashalign eq "center">selected</cfif>>Center</option>
+			<option value="center" <cfif stObj.flashalign eq "center">selected</cfif>>Center</option>
 			<option value="right" <cfif stObj.flashalign eq "right">selected</cfif>>Right</option>
 			<option value="Top" <cfif stObj.flashalign eq "Top">selected</cfif>>Top</option>
 			<option value="Bottom" <cfif stObj.flashalign eq "Bottom">selected</cfif>>Bottom</option>
@@ -254,6 +255,11 @@ $out:$
 	<script>
 		//bring focus to title
 		document.fileForm.title.focus();
+		objForm = new qForm("fileForm");
+		objForm.title.validateNotNull("Please enter a title");
+		objForm.height.validateNotNull("Please enter height");
+		objForm.width.validateNotNull("Please enter width");
+		objForm.flashVersion.validateNotNull("Please enter flash version");
 	</script>
 	</cfoutput>
 </cfif>	

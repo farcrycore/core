@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmImage/display.cfm,v 1.4.2.1 2004/02/27 04:09:24 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmImage/display.cfm,v 1.5 2004/03/02 01:00:02 brendan Exp $
 $Author: brendan $
-$Date: 2004/02/27 04:09:24 $
-$Name: milestone_2-1-2 $
-$Revision: 1.4.2.1 $
+$Date: 2004/03/02 01:00:02 $
+$Name: milestone_2-2-1 $
+$Revision: 1.5 $
 
 || DESCRIPTION || 
 $Description: display handler$

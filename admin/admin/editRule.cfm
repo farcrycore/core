@@ -7,7 +7,7 @@ $License: Released Under the "Common Public License 1.0", http://www.opensource.
 $Header: /cvs/farcry/farcry_core/admin/admin/editRule.cfm,v 1.4 2004/01/08 22:42:24 brendan Exp $
 $Author: brendan $
 $Date: 2004/01/08 22:42:24 $
-$Name: milestone_2-1-2 $
+$Name: milestone_2-2-1 $
 $Revision: 1.4 $
 
 || DESCRIPTION || 

@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/navajo/display.cfm,v 1.34 2004/01/19 00:45:16 paul Exp $
-$Author: paul $
-$Date: 2004/01/19 00:45:16 $
-$Name: milestone_2-1-2 $
-$Revision: 1.34 $
+$Header: /cvs/farcry/farcry_core/tags/navajo/display.cfm,v 1.40 2004/07/01 10:52:35 geoff Exp $
+$Author: geoff $
+$Date: 2004/07/01 10:52:35 $
+$Name: milestone_2-2-1 $
+$Revision: 1.40 $
 
 || DESCRIPTION ||
 $Description: Primary controller for invoking the object to be rendered for the website.$
@@ -18,6 +18,10 @@ $TODO: This needs to be converted into a CFC! GB $
 $Developer: Geoff Bowers (modius@daemon.com.au)$
 --->
 <cfsetting enablecfoutputonly="Yes">
+<!--- optional attributes --->
+<cfparam name="attributes.method" default="display" type="string">
+<cfparam name="attributes.lmethods" default="display" type="string">
+
 <cfimport taglib="/farcry/fourq/tags/" prefix="q4">
 <cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
 <cfparam name="request.bHideContextMenu" default="false">
@@ -36,6 +40,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 <cftry>
 
 	<q4:contentobjectget objectid="#url.ObjectID#" r_stobject="stObj">
+	<cftrace var="stobj.typename" text="object retrieved">
 
 	<!--- check that an appropriate result was returned from COAPI --->
 	<cfif NOT IsStruct(stObj) OR StructIsEmpty(stObj)>
@@ -57,6 +62,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 	<!--- check for sim link --->
     <cfif len(stObj.externalLink) gt 0>
         <q4:contentobjectget objectid="#stObj.externalLink#" r_stobject="stObj">
+    	<cftrace var="url.objectid" text="Setting navid to URL.objectid as external link is specified">
 		<cfset request.navid = URL.objectid>
 		
     </cfif>
@@ -68,8 +74,8 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
     		<q4:contentobjectget objectid="#stObj.aObjectIds[idIndex]#" r_stobject="stObjTemp">
     		<!--- request.mode.lValidStatus is typically approved, or draft, pending, approved in SHOWDRAFT mode --->
     		<cfif StructKeyExists(stObjTemp,"status") AND ListContains(request.mode.lValidStatus, stObjTemp.status)>
-    			<!--- if in request.mode.showdraft=true mode grab underlying draft page (if it exists) --->
-    			<cfif IsDefined("stObjTemp.versionID") AND request.mode.showdraft>
+    			<!--- if in request.mode.showdraft=true mode grab underlying draft page (if it exists). Only display if user is loggedin --->
+    			<cfif IsDefined("stObjTemp.versionID") AND request.mode.showdraft AND request.loggedin>
     				<cfquery datasource="#application.dsn#" name="qHasDraft">
     					SELECT objectID,status from #application.dbowner##stObjTemp.typename# where versionID = '#stObjTemp.objectID#'
     				</cfquery>
@@ -82,9 +88,11 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
     			<!--- set the navigation point for the child obj - unless its a symnolic link in which case wed have already set navid --->
 		
 				<cfif isDefined("URL.navid")>
+					<cftrace var="url.navid" text="URL.navid exists - setting request.navid = to url.navid">
 					<cfset request.navid = URL.navID>
 				<cfelseif NOT isDefined("request.navid")>		
 	    			<cfset request.navid = stObj.objectID>
+	    			<cftrace var="stobj.objectid" text="URL.navid is not defined - setting to stObj.objectid">
 				</cfif>	
 				
     			<!--- reset stObj to appropriate object to be displayed --->
@@ -94,14 +102,21 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
     		<cfelseif stObjTemp.typename neq "dmCSS">
     			<!--- no status so just show object --->
     			<!--- set the navigation point for the child obj --->
-    			<cfset request.navid = stObj.objectID>
+    			<cfif isDefined("URL.navid")>
+    				<cfset request.navid = URL.navid>
+    				<cftrace var="stobj.objectid" text="object type not CSS,URL.navid exists - setting navid = url.navid">
+    			<cfelse>
+    				<cfset request.navid = stObj.objectID>		
+    				<cftrace var="stobj.objectid" text="object type not CSS - setting navid = stobj.objectid">
+    			</cfif>
+    			
     			<!--- reset stObj to appropriate object to be displayed --->
     			<cfset stObj = stObjTemp>
     			<!--- end loop now --->
     			<cfbreak>
     		</cfif>
     	</cfloop>
-
+	
     	<!--- if request.navid is not set, then no valid objects available for this node. --->
     	<cfif NOT isDefined("request.navid")>
     		<!--- check if object has status --->
@@ -120,15 +135,23 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 <!--- else get the navigation point from the URL --->
 <cfelseif isDefined("url.navid")>
 	<!--- ie. this is a dynamic object looking for context --->
+	<cftrace var="url.navid" text="url.navid is defined for non dmNavigation object">
 	<cfset request.navid = url.navid>
 
 <!--- otherwise get the navigation point for this object --->
 <cfelse>
+	<!--- If the user is not logged in and are trying to view a draft - request login --->
+	<cfif isDefined("stobj.status")>
+		<cfif stObj.status IS "DRAFT" AND NOT request.loggedin>
+			<cflocation url="#application.url.farcry#/login.cfm?returnUrl=#URLEncodedFormat(cgi.script_name&'?'&cgi.query_string)#&error=draft&showdraft=1" addtoken="No">
+		</cfif>
+	</cfif>
 	<nj:getNavigation objectId="#stObj.objectId#" r_stobject="stNav">
 	<!--- if the object is in the tree this will give us the node --->
 
 	<cfif isDefined("stNav.objectid") AND len(stNav.objectid)>
 		<cfset request.navid = stNav.objectID>
+		<cftrace var="stNav.objectid" text="url.navid is not defined, getNavigation called to find navid">
 
 	<!--- otherwise, use the home node as a last resort --->
 	<cfelse>
@@ -184,7 +207,15 @@ the latter is the policy group for anonymous...
 	// $TODO: refactor object calls... for now put stOBj into request$
 </cfscript>
 
-<cfif IsDefined("stObj.displayMethod") AND len(stObj.displayMethod)>
+<cfif attributes.method neq "display" AND attributes.lmethods contains attributes.method>
+	<!--- ie. if a method has been passed in deliberately and is allowed use this --->
+	<cftrace var="attributes.method" text="Passed in attribute method used">
+	<q4:contentobject
+		typename="#application.types[stObj.typename].typePath#"
+		objectid="#stObj.ObjectID#"
+		method="#attributes.method#">
+	
+<cfelseif IsDefined("stObj.displayMethod") AND len(stObj.displayMethod)>
 	<!--- Invoke display method of page --->
 	<cftrace var="stObj.displayMethod" text="Object displayMethod used">
 

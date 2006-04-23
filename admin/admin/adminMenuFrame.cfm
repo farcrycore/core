@@ -48,7 +48,9 @@
 					<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="scopeDump.cfm" class="frameMenuItem" target="editFrame">Scope Dump</a></div>
 					
 					<div class="frameMenuTitle">Quick Site Builder</div>
-				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="quickBuilder.cfm" class="frameMenuItem" target="editFrame">Quick Site Builder</a></div>
+					<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="quickBuilder.cfm" class="frameMenuItem" target="editFrame">Quick Site Builder</a></div>
+					<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="bulkImageUpload.cfm" class="frameMenuItem" target="editFrame">Bulk Image Upload</a></div>
+					<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="bulkFileUpload.cfm" class="frameMenuItem" target="editFrame">Bulk File Upload</a></div>
 				</cfif>	
 				
 				<div class="frameMenuTitle">Cache</div>

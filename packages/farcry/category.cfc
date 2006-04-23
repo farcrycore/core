@@ -4,11 +4,12 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/category.cfc,v 1.15 2004/01/19 00:45:16 paul Exp $
+$Header: /cvs/farcry/farcry_core/packages/farcry/category.cfc,v 1.21 2004/06/21 03:49:11 paul Exp $
 $Author: paul $
-$Date: 2004/01/19 00:45:16 $
-$Name: milestone_2-1-2 $
-$Revision: 1.15 $
+$Date: 2004/06/21 03:49:11 $
+
+$Name: milestone_2-2-1 $
+$Revision: 1.21 $
 
 || DESCRIPTION || 
 $Description: Set of functions to perform metadata characterisation $
@@ -18,18 +19,45 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 --->
 
 <cfcomponent displayname="category" hint="Set of functions to perform metadata characterisation">
+	
+	<cffunction name="getCatAliases" output="false" returntype="struct" hint="Returns a query of all categories that have an alias">
+		<cfargument name="dsn" type="string" default="#application.dsn#" required="false" hint="Database DSN">
+		<cfset var q = queryNew('categoryid,alias')>
+		<cfset var st = structNew()>
+		<cftry>
+		<cfquery name="q" datasource="#arguments.dsn#">
+			SELECT categoryid,alias
+			FROM categories
+			WHERE alias IS NOT null OR alias <> '';
+		</cfquery>
+		<cfloop query="q">
+			<cfscript>
+			if(len(q.Alias))
+			{
+				if (NOT StructKeyExists(st, alias))
+					st[trim(q.alias)] = q.categoryID;
+			}
+			</cfscript>
+		</cfloop>
+			<cfcatch>
+				<!--- then the 'alias' column prolly doesn't exist yet - do nothing --->
+			</cfcatch>
+		</cftry>
+		<cfreturn st>
+	</cffunction>
 
 	<cffunction name="getData" access="public" output="false" returntype="query" hint="">
 		<cfargument name="lCategoryIDs" type="string" required="true" hint="The list of categoryIDs you wish to match">
 		<cfargument name="typename" type="string" required="True"> 
+		<cfargument name="bMatchAll" type="boolean" required="false" default="0" hint="Does the object need to match all categories"> 
 		<cfargument name="dsn" type="string" default="#application.dsn#" required="false" hint="Database DSN">
 		<cfargument name="orderBy" type="string" required="False" default="dateTimeLastUpdated" hint="field to order by">
 		<cfargument name="orderDirection" type="string" required="False" default="desc" hint="order in which direction? descending or ascending">
 		
+		<cfset var qGetData = "">
 		<cfinclude template="_category/getData.cfm">
 		
-		<cfreturn getData>
-		
+		<cfreturn qGetData>
 	</cffunction>
 	
 	<cffunction name="deployCategories" access="public" output="false" returntype="struct" hint="Creates tables required for categorisation actions">
@@ -93,6 +121,10 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 		<cfargument name="parentID" type="uuid" required="true" hint="UUID of parent">
 		<cfargument name="dsn" type="string" required="true" hint="Database DSN">
 		
+		<cfset var qChildren = ''>
+		<cfset var stStatus = structNew()>
+		<cfset var position = 0>
+		
 		<cfinclude template="_category/addCategory.cfm">
 		
 		<cfreturn stStatus>
@@ -116,6 +148,25 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 		<cfreturn stStatus>
 	</cffunction>
 	
+	<cffunction name="copyCategories" access="public" hint="Copies categories from draft to live object or vice versa. Doesn't change the tree.">
+		<cfargument name="srcObjectID" required="Yes" type="UUID" hint="Source object whose category data is to be copied">
+		<cfargument name="destObjectID" required="Yes" type="UUID" hint="Destination object for copied category data">
+		<cfargument name="dsn" required="no" default="#application.dsn#">
+		<cfargument name="dbowner" required="no" default="#application.dbowner#">
+		
+		<cfset var qGetCategories= "">
+				
+		<!--- get categories in source object --->
+		<cfquery datasource="#arguments.dsn#" name="qGetCategories">
+			SELECT categoryID
+			FROM #arguments.dbowner#refCategories
+			WHERE objectID = '#arguments.srcObjectID#'
+		</cfquery> 
+		
+		<cfset assignCategories(objectid=arguments.destObjectID,lCategoryIDs=valueList(qGetCategories.categoryid))>
+
+	</cffunction>
+	
 	<cffunction name="getCategories" returntype="string" access="public" hint="Returns list of categories for a given content object instance" output="No">
 		<cfargument name="objectID" required="true" type="uuid">
 		<cfargument name="bReturnCategoryIDs" required="false" type="boolean" default="false" hint="Set flag to true if you want category objectids instead of category labels.">
@@ -125,10 +176,40 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 		<cfreturn lCategoryIDs>  
 	</cffunction>
 	
+	<cffunction name="deleteAssignedCategories" access="public" hint="Deletes categories assigned to an object" output="No">
+		<cfargument name="objectID" required="true" type="uuid">
+		<cfargument name="dsn" required="no" default="#application.dsn#">
+		<cfargument name="dbowner" required="no" default="#application.dbowner#">
+		
+		<cfset var qDeleteCategories = "">
+		
+		<!--- get categories in source object --->
+		<cfquery datasource="#arguments.dsn#" name="qDeleteCategories">
+			Delete FROM #arguments.dbowner#refCategories
+			WHERE objectID = '#arguments.objectID#'
+		</cfquery> 
+	</cffunction>
+	
+	<cffunction name="getCategoryByName" returntype="query" access="public" hint="Returns category info" output="No">
+		<cfargument name="name" required="true" type="string" hint="Name of the category you want returned">
+		<cfargument name="dsn" required="no" default="#application.dsn#">
+		<cfargument name="dbowner" required="no" default="#application.dbowner#">
+		
+		<cfset var qCategory = "">
+		
+		<cfquery name="qCategory" datasource="#arguments.dsn#">
+			SELECT *
+			FROM #arguments.dbowner#nested_tree_objects
+			WHERE objectname = <cfqueryparam cfsqltype="CF_SQL_VARCHAR" value="#arguments.name#">
+		</cfquery>		
+				
+		<cfreturn qCategory>  
+	</cffunction>
+	
 	<cffunction name="assignCategories" returntype="struct" access="public" hint="Insert or update refCategories with a particular objectID. To delete category - a blank list of category IDs may be passed in">
 		<cfargument name="objectID" type="uuid" required="true">
 		<cfargument name="lCategoryIDs" type="string" hint="List of category objectIDs">  
-		<cfargument name="dsn" type="string" required="true" hint="Database DSN">
+		<cfargument name="dsn" type="string" required="no" default="#application.dsn#" hint="Database DSN">
 		
 		<cfinclude template="_category/assignCategories.cfm">
 		

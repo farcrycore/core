@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/security/init.cfc,v 1.17.2.1 2004/02/18 02:51:29 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/security/init.cfc,v 1.19 2004/05/20 04:41:25 brendan Exp $
 $Author: brendan $
-$Date: 2004/02/18 02:51:29 $
-$Name: milestone_2-1-2 $
-$Revision: 1.17.2.1 $
+$Date: 2004/05/20 04:41:25 $
+$Name: milestone_2-2-1 $
+$Revision: 1.19 $
 
 || DESCRIPTION || 
 $Description: authorisation cfc $
@@ -281,7 +281,29 @@ $out:$
 					</cfcatch>
 				</cftry>
 			</cfcase>
-			
+			<cfcase value="postgresql">
+				<cftry>
+					<cfquery datasource="#application.dsn#">
+						DROP TABLE #application.dbowner#DMGROUP
+					</cfquery>
+					<cfquery datasource="#application.dsn#">
+						DROP TABLE #application.dbowner#DMUSER
+					</cfquery>
+					<cfquery datasource="#application.dsn#">
+						DROP TABLE #application.dbowner#DMUSERTOGROUP
+					</cfquery>
+					<cfquery datasource="#application.dsn#">
+						DROP #application.dbowner#SEQUENCE DMGROUP_SEQ
+					</cfquery>
+					<cfquery datasource="#application.dsn#">	
+						DROP SEQUENCE #application.dbowner#DMUSER_SEQ
+					</cfquery> 
+					
+					<cfcatch>
+						<cfoutput><b style="color:red;font-size:14pt"> #cfcatch.Detail#</b></cfoutput>
+					</cfcatch>
+				</cftry>
+			</cfcase>
 			<cfcase value="mysql">
 				<cfquery datasource="#arguments.datasource#">
 				DROP TABLE IF EXISTS #application.dbowner#dmGroup
@@ -350,6 +372,33 @@ $out:$
 					CREATE TABLE #application.dbowner#DMUSERTOGROUP (
 					USERID NUMBER NOT NULL ,
 					GROUPID NUMBER NOT NULL 
+					)
+				</cfquery>
+			
+			</cfcase>
+			
+			<cfcase value="postgresql">
+				<cfquery datasource="#arguments.datasource#">
+					CREATE TABLE #application.dbowner#dmGroup(
+					GROUPID bigserial NOT NULL primary key,
+					GROUPNAME VARCHAR(64) NOT NULL,
+					GROUPNOTES VARCHAR(256) NULL)
+				</cfquery>
+								
+				<cfquery datasource="#arguments.datasource#">			
+					CREATE TABLE #application.dbowner#dmUser(
+					USERID bigserial  NOT NULL primary key,
+					USERLOGIN VARCHAR(256) NOT NULL ,
+					USERNOTES VARCHAR(256) NULL ,
+					USERPASSWORD VARCHAR(32) NOT NULL ,
+					USERSTATUS VARCHAR(10) NULL)
+					
+				</cfquery>
+				
+				<cfquery datasource="#arguments.datasource#">
+					CREATE TABLE #application.dbowner#DMUSERTOGROUP (
+					USERID bigint NOT NULL ,
+					GROUPID bigint NOT NULL 
 					)
 				</cfquery>
 			
@@ -452,6 +501,26 @@ $out:$
 					</cftry>
 				</cfcase>
 				
+				<cfcase value="postgresql">
+					<cftry>
+						<cfquery datasource="#application.dsn#">
+							DROP TABLE #application.dbowner#dmExternalGroupToPolicyGroup
+						</cfquery>
+						<cfquery datasource="#application.dsn#">
+							DROP TABLE #application.dbowner#dmPolicyGroup
+						</cfquery>
+						<cfquery datasource="#application.dsn#">
+							DROP TABLE #application.dbowner#dmPermissionBarnacle
+						</cfquery>
+						<cfquery datasource="#application.dsn#">
+							DROP TABLE #application.dbowner#dmPermission
+						</cfquery>
+						<cfcatch>
+						
+						</cfcatch>
+					</cftry>
+				</cfcase>
+				
 				<cfcase value="mysql">
 					<cftry>
 						<cfquery datasource="#application.dsn#">
@@ -545,6 +614,45 @@ $out:$
 						</cfquery>
 						<cfcatch></cfcatch>
 					</cftry>
+				</cfcase>
+				
+				<cfcase value="postgresql">
+					<cfquery datasource="#application.dsn#">
+						CREATE TABLE #application.dbowner#dmExternalGroupToPolicyGroup
+						(
+							POLICYGROUPID bigint NOT NULL ,
+							EXTERNALGROUPUSERDIRECTORY VARCHAR(256) NOT NULL ,
+							EXTERNALGROUPNAME VARCHAR(256) NOT NULL 
+						)
+					</cfquery>	
+					<cfquery datasource="#application.dsn#">
+						CREATE TABLE #application.dbowner#dmPolicyGroup
+						(
+							PolicyGroupId bigserial NOT NULL primary key,
+							PolicyGroupName VARCHAR(50) NOT NULL,
+							PolicyGroupNotes VARCHAR(256) NULL
+						)
+						
+					</cfquery>	
+					<cfquery datasource="#application.dsn#">				
+						CREATE TABLE #application.dbowner#dmPermissionBarnacle
+						(
+							PERMISSIONID bigint NOT NULL ,
+							POLICYGROUPID bigint NOT NULL ,
+							REFERENCE1 VARCHAR(64) NOT NULL ,
+							STATUS bigint NOT NULL 
+						)
+					</cfquery>	
+					<cfquery datasource="#application.dsn#">				
+						CREATE TABLE #application.dbowner#dmPermission
+						(
+							PermissionId bigserial NOT NULL primary key,
+							PermissionName VARCHAR(64) NOT NULL ,
+							PermissionNotes VARCHAR(256) NULL ,
+							PermissionType VARCHAR(256) NOT NULL
+						)
+					</cfquery>	
+
 				</cfcase>
 				
 				<cfcase value="mysql">

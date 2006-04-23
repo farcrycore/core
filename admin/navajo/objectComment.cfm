@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/navajo/objectComment.cfm,v 1.14.2.3 2005/06/27 00:11:54 guy Exp $
-$Author: guy $
-$Date: 2005/06/27 00:11:54 $
-$Name: milestone_2-1-2 $
-$Revision: 1.14.2.3 $
+$Header: /cvs/farcry/farcry_core/admin/navajo/objectComment.cfm,v 1.16 2004/02/13 02:29:41 brendan Exp $
+$Author: brendan $
+$Date: 2004/02/13 02:29:41 $
+$Name: milestone_2-2-1 $
+$Revision: 1.16 $
 
 || DESCRIPTION || 
 $Description: add comments to genericadmin items $
@@ -41,8 +41,6 @@ $out:$
 	<cfelse>
 		<cfset returnLocation = form.finishURL>
 	</cfif>
-	<cfset returnLocation = urldecode(returnLocation)>
-
 	<cflocation url="#returnLocation#" addtoken="no">
 <cfelse>
 	<cfoutput>

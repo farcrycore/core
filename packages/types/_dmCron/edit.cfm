@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmCron/edit.cfm,v 1.4 2003/11/05 04:46:09 tom Exp $
-$Author: tom $
-$Date: 2003/11/05 04:46:09 $
-$Name: milestone_2-1-2 $
-$Revision: 1.4 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmCron/edit.cfm,v 1.4.4.1 2004/12/17 02:28:43 paul Exp $
+$Author: paul $
+$Date: 2004/12/17 02:28:43 $
+$Name: milestone_2-2-1 $
+$Revision: 1.4.4.1 $
 
 || DESCRIPTION || 
 $Description: edit handler$
@@ -185,8 +185,8 @@ $out:$
 			<!--- show links to for no expiry/yes expiry date --->
 			<input type="hidden" name="noExpire" value="<cfif 2050 is year(stObj.endDate)>1<cfelse>0</cfif>">
 		 	<div style="display:inline">
-				<a href="javascript:void(0);" id="noLink" onClick="document.getElementById('noLink').style.visibility='hidden';document.getElementById('yesLink').style.visibility='visible';noExpire.value='1';document.getElementById('expire').style.visibility='hidden';" style="position:absolute;<cfif 2050 is year(stObj.endDate)>visibility:hidden</cfif>"><img src="#application.url.farcry#/images/no.gif" border="0" alt="No End Date"></a>
-				<a href="javascript:void(0);" id="yesLink" onClick="document.getElementById('noLink').style.visibility='visible';document.getElementById('yesLink').style.visibility='hidden';noExpire.value='0';endYear.value='#year(now())#';document.getElementById('expire').style.visibility='visible';" style="position:absolute;<cfif not 2050 is year(stObj.endDate)>visibility:hidden</cfif>"><img src="#application.url.farcry#/images/yes.gif" border="0" alt="Has End Date"></a>
+				<a href="javascript:void(0);" id="noLink" onClick="document.getElementById('noLink').style.visibility='hidden';document.getElementById('yesLink').style.visibility='visible';document.forms['fileForm'].noExpire.value='1';document.getElementById('expire').style.visibility='hidden';" style="position:absolute;<cfif 2050 is year(stObj.endDate)>visibility:hidden</cfif>"><img src="#application.url.farcry#/images/no.gif" border="0" alt="No End Date"></a>
+				<a href="javascript:void(0);" id="yesLink" onClick="document.getElementById('noLink').style.visibility='visible';document.getElementById('yesLink').style.visibility='hidden';document.forms['fileForm'].noExpire.value='0';document.forms['fileForm'].endYear.value='#year(now())#';document.getElementById('expire').style.visibility='visible';" style="position:absolute;<cfif not 2050 is year(stObj.endDate)>visibility:hidden</cfif>"><img src="#application.url.farcry#/images/yes.gif" border="0" alt="Has End Date"></a>
 			</div>
 		</td>
 		<td>

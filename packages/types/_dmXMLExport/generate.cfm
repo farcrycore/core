@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmXMLExport/generate.cfm,v 1.14.2.3 2005/05/06 05:07:47 guy Exp $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmXMLExport/generate.cfm,v 1.14.4.2 2005/05/09 00:58:45 guy Exp $
 $Author: guy $
-$Date: 2005/05/06 05:07:47 $
-$Name: milestone_2-1-2 $
-$Revision: 1.14.2.3 $
+$Date: 2005/05/09 00:58:45 $
+$Name: milestone_2-2-1 $
+$Revision: 1.14.4.2 $
 
 || DESCRIPTION || 
 $Description: generates rss feed$
@@ -21,6 +21,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 $in: $
 $out:$
 --->
+
 <cfscript>
 function high2ascii(str) {
 	while(1) {
@@ -31,7 +32,6 @@ function high2ascii(str) {
 	return str;
 }
 </cfscript>
-
 <!--- get categories --->
 <cfobject component="#application.packagepath#.farcry.category" name="oCategories">
 <cfset lCategories = oCategories.getCategories(objectid=stObj.objectid,bReturnCategoryIDs="true")>
@@ -80,8 +80,8 @@ function high2ascii(str) {
 	    <sy:updateFrequency>#stObj.updateFrequency#</sy:updateFrequency>
 	    <sy:updateBase>2000-01-01T12:00+00:00</sy:updateBase>
 		</cfoutput>
-
-		<cfif len(lCategories)>
+		
+<cfif len(lCategories)>
 			<cfloop query="qObjects">
 				<cfset bShow = 1>
 				<!--- check object is available for publishing --->

@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/admin/fixtree.cfm,v 1.17 2003/11/28 02:33:34 paul Exp $
-$Author: paul $
-$Date: 2003/11/28 02:33:34 $
-$Name: milestone_2-1-2 $
-$Revision: 1.17 $
+$Header: /cvs/farcry/farcry_core/admin/admin/fixtree.cfm,v 1.18 2004/05/20 04:41:25 brendan Exp $
+$Author: brendan $
+$Date: 2004/05/20 04:41:25 $
+$Name: milestone_2-2-1 $
+$Revision: 1.18 $
 
 || DESCRIPTION ||
 $Description: tree fixer. The commented out stuff is debug$
@@ -85,6 +85,33 @@ $out:$
 					<cfcatch></cfcatch>
 				</cftry>
 	        </cfcase>
+	
+			<cfcase value="postgresql">
+         
+         	<cfset temptablename = "tbltemp_fixtree" />
+				
+				<cftry>
+		           	<cfquery name="qDelete" datasource="#dsn#">
+		              delete from #temptablename#
+		            </cfquery>
+					<cfcatch></cfcatch>
+	            </cftry>
+				
+				<cftry>
+		            <cfquery datasource="#dsn#" name="q">
+		                create temporary table #temptablename# (
+		                    objectName varchar(50),
+		                    objectID   varchar(35),
+		                    parentID   varchar(35),
+		                    nleft      int,
+		                    nright     int,
+		                    nlevel     int
+		                )
+		            </cfquery>
+					<cfcatch></cfcatch>
+				</cftry>
+         
+         	</cfcase>
 	
 	        <cfdefaultcase>
 	            <cfset temptablename = "####DoneIDs" />
@@ -172,6 +199,27 @@ $out:$
 	        </cfcase>
 			
 			 <cfcase value="ora">
+	
+	            <cfset nval = 0>
+	            <cfquery name="qGetRoots" datasource="#dsn#">
+	                select objectID, parentID, objectName from nested_tree_objects where parentid is null and typename = '#form.typename#'
+	            </cfquery>
+	            <cfloop query="qGetRoots">
+	                <cfset nval = nval + 1 />
+	                <cfquery name="qFixNode" datasource="#dsn#">
+	                    insert into #temptablename#
+	                    values ('#left(objectName, 50)#', '#objectID#', '#parentID#', #nval#, 0, 0)
+	                </cfquery>
+	                <cfset fixValuesWithParent(objectid, 1) />
+	                <cfset nval = nval + 1 />
+	                <cfquery name="qFixNode" datasource="#dsn#">
+	                    update #temptablename# set nright = #nval# where objectid = '#objectid#'
+	                </cfquery>
+	            </cfloop>
+	
+	        </cfcase>
+	
+			<cfcase value="postgresql">
 	
 	            <cfset nval = 0>
 	            <cfquery name="qGetRoots" datasource="#dsn#">

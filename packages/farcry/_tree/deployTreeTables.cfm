@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_tree/deployTreeTables.cfm,v 1.11 2003/09/24 06:09:49 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_tree/deployTreeTables.cfm,v 1.12 2004/05/20 04:41:25 brendan Exp $
 $Author: brendan $
-$Date: 2003/09/24 06:09:49 $
-$Name: b201 $
-$Revision: 1.11 $
+$Date: 2004/05/20 04:41:25 $
+$Name: milestone_2-2-1 $
+$Revision: 1.12 $
 
 || DESCRIPTION || 
 $Description: This tag installs all the tables that you need for nested tree model operations.
@@ -46,6 +46,29 @@ $out:$
 			NRIGHT INTEGER not null,
 			NLEVEL INTEGER not null,
 			CONSTRAINT PK_NESTEDTREE_UNIQUE PRIMARY KEY (OBJECTID))
+	</cfquery>
+	
+	<cfquery datasource="#arguments.dsn#">
+	 	CREATE INDEX IDX_NTO ON #application.dbowner#nested_tree_objects (nLeft, nRight)
+	</cfquery>
+</cfcase>	
+
+<cfcase value="postgresql">
+	
+	<cftry><cfquery name="dropExisting" datasource="#arguments.dsn#">
+		DROP TABLE #application.dbowner#nested_tree_objects
+	</cfquery><cfcatch></cfcatch></cftry>
+	
+	
+	<cfquery name="nested_tree_objects" datasource="#arguments.dsn#">
+		CREATE TABLE #application.dbowner#nested_tree_objects (
+			OBJECTID VARCHAR (50) not null primary key,
+			PARENTID VARCHAR (50) null,
+			OBJECTNAME VARCHAR(255) not null,
+			TYPENAME VARCHAR(255) not null,
+			NLEFT INTEGER not null,
+			NRIGHT INTEGER not null,
+			NLEVEL INTEGER not null)
 	</cfquery>
 	
 	<cfquery datasource="#arguments.dsn#">

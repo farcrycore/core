@@ -4,15 +4,14 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/container/container.cfm,v 1.10 2004/01/12 03:43:50 paul Exp $
-$Author: paul $
-$Date: 2004/01/12 03:43:50 $
-$Name: milestone_2-1-2 $
-$Revision: 1.10 $
+$Header: /cvs/farcry/farcry_core/tags/container/container.cfm,v 1.11.2.1 2004/10/18 05:55:40 geoff Exp $
+$Author: geoff $
+$Date: 2004/10/18 05:55:40 $
+$Name: milestone_2-2-1 $
+$Revision: 1.11.2.1 $
 
 || DESCRIPTION || 
 $Description: Displays containers$
-$TODO: $
 
 || DEVELOPER ||
 $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au)$
@@ -30,6 +29,7 @@ $out:$
 <cfparam name="attributes.objectID" default="#request.stobj.objectid#">
 <cfparam name="attributes.preHTML" default="">
 <cfparam name="attributes.postHTML" default="">
+<cfparam name="attributes.bShowIfEmpty" type="boolean" default="true">
 <cfparam name="request.mode" default="false">
 
 <cfif NOT len(attributes.label) AND NOT len(attributes.objectID)>
@@ -55,7 +55,7 @@ $out:$
 	} else {
 		containerID = qGetContainer.objectID;
 	}
-	stObj = oCon.getData(dsn=application.dsn,objectid=containerid);
+	stObjCon = oCon.getData(dsn=application.dsn,objectid=containerid);
 	
 	//this amounts to a check for the container in refObjects - will be phased out for next milestine release(post V2)
 	qRefCon = oCon.refContainerDataExists(objectid=attributes.objectid,containerid=containerid);
@@ -69,13 +69,25 @@ $out:$
 	<dm:containerControl objectID="#containerID#" label="#attributes.label#" mode="design">
 </cfif>	
 
-<cfscript>
-if (arrayLen(stObj.aRules))
-{
-	if(attributes.preHTML neq "")
-		writeoutput(attributes.preHTML);
-	oCon.populate(aRules=stObj.aRules);	
-	if (attributes.postHTML neq "")
-		writeoutput(attributes.postHTML);
-}
-</cfscript>
+
+<cfif arrayLen(stObjCon.aRules)>
+
+	<!--- delay the populate so we can see the content --->
+	<cfsavecontent variable="conOutput">
+		<cfscript>
+			oCon.populate(aRules=stObjCon.aRules);
+		</cfscript>
+	</cfsavecontent>
+
+	<!--- output if conOutput is not empty or the bShowIfEmpty attribute is set to true --->
+	<cfif len(trim(conOutput)) OR attributes.bShowIfEmpty>
+		<cfscript>
+			if(attributes.preHTML neq "")
+				writeoutput(attributes.preHTML);
+			writeoutput(conOutput);
+			if (attributes.postHTML neq "")
+				writeoutput(attributes.postHTML);
+		</cfscript>
+	</cfif>
+	
+</cfif>

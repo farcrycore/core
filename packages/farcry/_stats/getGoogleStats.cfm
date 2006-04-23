@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_stats/getGoogleStats.cfm,v 1.1.2.1 2004/03/02 18:39:20 tom Exp $
-$Author: tom $
-$Date: 2004/03/02 18:39:20 $
-$Name: milestone_2-1-2 $
-$Revision: 1.1.2.1 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_stats/getGoogleStats.cfm,v 1.1 2004/01/07 23:30:17 brendan Exp $
+$Author: brendan $
+$Date: 2004/01/07 23:30:17 $
+$Name: milestone_2-2-1 $
+$Revision: 1.1 $
 
 || DESCRIPTION || 
 $Description: Shows referers$
@@ -56,10 +56,10 @@ $out:$
 	<cfloop query="qRawStats">
 		<cfscript>
 			// based on  Matthew Fusfield's UDF (http://www.cflib.org/udf.cfm?ID=585)
-			StartPos=ReFindNoCase('q=.',qRawStats.referer);
+			StartPos=ReFindNoCase('q=.',referer);
 		
 			if (StartPos GT 0) {
-				EndString=mid(qRawStats.referer,StartPos+2,Len(qRawStats.referer));
+				EndString=mid(referer,StartPos+2,Len(referer));
 				Keywords=ReReplaceNoCase(EndString,'&.*','','ALL');
 				Keywords=URLDecode(Keywords);
 				}

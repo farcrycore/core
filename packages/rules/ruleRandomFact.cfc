@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/rules/ruleRandomFact.cfc,v 1.13.2.1 2004/04/22 23:13:55 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/rules/ruleRandomFact.cfc,v 1.15 2004/04/22 23:15:00 brendan Exp $
 $Author: brendan $
-$Date: 2004/04/22 23:13:55 $
-$Name: milestone_2-1-2 $
-$Revision: 1.13.2.1 $
+$Date: 2004/04/22 23:15:00 $
+$Name: milestone_2-2-1 $
+$Revision: 1.15 $
 
 || DESCRIPTION || 
 Edit handler and execution handler for displaying Random Facts. Option show x number and reduce to specific categories. Fact 
@@ -253,8 +253,8 @@ out:
 		</cfif>
 	
 		<!--- if the intro text exists - append to aInvocations to be output as HTML --->
-		<cfif len(stObj.intro)>
-			<cfoutput>#stObj.intro#<p></p></cfoutput>
+		<cfif len(stObj.intro) AND qGetFacts.recordCount>
+			<cfset tmp = arrayAppend(request.aInvocations,stObj.intro)>
 		</cfif>
 		
 		<!--- get random numbers --->
@@ -292,10 +292,12 @@ out:
 			<!--- check if fact is in random selection, if so display it --->
 			<cfif listfind(lRandom,currentrow)>
 				<cfscript>
-				o = createObject("component", application.types.dmFacts.typePath);
-				o.getDisplay(qGetFacts.ObjectID, stObj.displayMethod);	
+				 	stInvoke = structNew();
+					stInvoke.objectID = qGetFacts.objectID;
+					stInvoke.typename = application.types.dmFacts.typePath;
+					stInvoke.method = stObj.displayMethod;
+					arrayAppend(request.aInvocations,stInvoke);
 				</cfscript>
-				<cfoutput><p></p></cfoutput>
 			</cfif>
 		</cfloop>
 					

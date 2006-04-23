@@ -6,11 +6,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/scheduledTasks/emptyTrash.cfm,v 1.2 2004/07/15 01:52:11 brendan Exp $
+$Header: /cvs/farcry/farcry_core/admin/scheduledTasks/emptyTrash.cfm,v 1.1 2004/03/01 03:41:58 brendan Exp $
 $Author: brendan $
-$Date: 2004/07/15 01:52:11 $
-$Name: milestone_2-1-2 $
-$Revision: 1.2 $
+$Date: 2004/03/01 03:41:58 $
+$Name: milestone_2-2-1 $
+$Revision: 1.1 $
 
 || DESCRIPTION || 
 $Description: Deletes objects from the trash node older than a specified time $
@@ -24,7 +24,6 @@ $in: timePart - day (d) or week (ww) or month (mm) or quarter (q) or year (yyyy)
 $in: timeValue - number of days/weeks etc$
 $out:$
 --->
-<cfprocessingDirective pageencoding="utf-8">
 
 <cfinclude template="/farcry/farcry_core/admin/includes/cfFunctionWrappers.cfm">
 <cfinclude template="/farcry/farcry_core/admin/includes/utilityFunctions.cfm">

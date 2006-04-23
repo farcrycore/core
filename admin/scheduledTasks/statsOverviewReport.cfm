@@ -6,11 +6,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/scheduledTasks/statsOverviewReport.cfm,v 1.2 2003/09/20 23:58:51 brendan Exp $
+$Header: /cvs/farcry/farcry_core/admin/scheduledTasks/statsOverviewReport.cfm,v 1.3 2004/05/04 22:54:32 brendan Exp $
 $Author: brendan $
-$Date: 2003/09/20 23:58:51 $
-$Name: b201 $
-$Revision: 1.2 $
+$Date: 2004/05/04 22:54:32 $
+$Name: milestone_2-2-1 $
+$Revision: 1.3 $
 
 || DESCRIPTION || 
 $Description: Emails an overview report for site activity $
@@ -26,6 +26,7 @@ $out:$
 --->
 
 <!--- work out parameters --->
+<cfsetting requestTimeout="600">
 
 <cfparam name="url.dateRange" default="ww">
 <cfparam name="url.emailTo" default="brendan@daemon.com.au">

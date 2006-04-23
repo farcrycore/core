@@ -1,16 +1,16 @@
-<!--- 
+<!---
 || LEGAL ||
 $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
-$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
+$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/farcry/richTextEditor.cfm,v 1.8 2003/11/29 09:45:49 paul Exp $
+$Header: /cvs/farcry/farcry_core/tags/farcry/richTextEditor.cfm,v 1.11 2004/07/02 05:02:37 paul Exp $
 $Author: paul $
-$Date: 2003/11/29 09:45:49 $
-$Name: milestone_2-1-2 $
-$Revision: 1.8 $
+$Date: 2004/07/02 05:02:37 $
+$Name: milestone_2-2-1 $
+$Revision: 1.11 $
 
-|| DESCRIPTION || 
+|| DESCRIPTION ||
 $Description: Displays an editor for long text input. Based on config settings unless in toggle mode which will display a basic html text area$
 $TODO: $
 
@@ -26,6 +26,10 @@ $out:$
 <cfimport taglib="/farcry/farcry_core/tags/farcry" prefix="tags">
 <cfparam name="attributes.textareaname" default="body">
 
+<cfif isDefined('caller.output.#attributes.textareaname#') AND not isDefined('attribute.value')>
+	<cfset attributes.value = caller.output[attributes.textareaname]>
+</cfif>
+
 <!--- check if toggled to text area otherwise use config defined editor --->
 <cfif isdefined("session.toggleTextArea") and session.toggleTextArea eq 1>
 	<!--- javascript for inserting images etc --->
@@ -35,16 +39,16 @@ $out:$
 		{
 			editform.#attributes.textareaname#.value = editform.#attributes.textareaname#.value + (html);
 		}
-		</script> 
+		</script>
 	</cfoutput>
 	<!--- display text area --->
-	<cfoutput><textarea name="#attributes.textareaname#" cols="60" rows="20">#caller.output[attributes.textareaname]#</textarea></cfoutput>	
-	
+	<cfoutput><textarea name="#attributes.textareaname#" cols="60" rows="20">#attributes.value#</textarea></cfoutput>
+
 <cfelse>
-	
+
 	<!--- work out which editor to display --->
 	<cfswitch expression="#application.config.general.richTextEditor#">
-		
+
 		<cfcase value="soEditorPro">
 			<!--- javascript for inserting images etc --->
 			<cfoutput>
@@ -53,15 +57,15 @@ $out:$
 				{
 					soEditorbody.insertText(html, '', true,true);
 				}
-				</script> 
+				</script>
 			</cfoutput>
-			
+
 			<!--- display tag --->
-			<tags:soEditor_pro 
-				form="editform" 
-				field="#attributes.textareaname#" 
+			<tags:soEditor_pro
+				form="editform"
+				field="#attributes.textareaname#"
 				scriptpath="#application.url.farcry#/siteobjects/soeditor/pro/"
-				html="#caller.output[attributes.textareaname]#" 
+				html="#attributes.value#"
 				width="#application.config.soEditorPro.width#"
 				height="#application.config.soEditorPro.height#"
 				cols="#application.config.soEditorPro.cols#"
@@ -134,7 +138,7 @@ $out:$
 				baseCSS = "#application.config.soEditorPro.baseCSS#"
 				codeSweeper = "#application.config.soEditorPro.codeSweeper#"
 				cssList = "#application.config.soEditorPro.cssList#"
-				cssListLabels = "#application.config.soEditorPro.cssListLabels#" 
+				cssListLabels = "#application.config.soEditorPro.cssListLabels#"
 				cssField = "#application.config.soEditorPro.cssField#"
 				formButton = "#application.config.soEditorPro.formButton#"
 				genericForm = "#application.config.soEditorPro.genericForm#"
@@ -149,9 +153,9 @@ $out:$
 				textArea = "#application.config.soEditorPro.textArea#"
 				textBox = "#application.config.soEditorPro.textBox#">
 		</cfcase>
-		
+
 		<cfcase value="soEditor">
-		
+
 			<!--- javascript for inserting images etc --->
 			<cfoutput>
 				<script language="JavaScript">
@@ -159,15 +163,15 @@ $out:$
 				{
 					soEditorbody.insertText(html, '', true,true);
 				}
-				</script> 
+				</script>
 			</cfoutput>
-			
+
 			<!--- display tag --->
-			<tags:soEditor_lite 
-				form="editform" 
-				field="#attributes.textareaname#" 
+			<tags:soEditor_lite
+				form="editform"
+				field="#attributes.textareaname#"
 				scriptpath="#application.url.farcry#/siteobjects/soeditor/lite/"
-				html="#caller.output[attributes.textareaname]#"
+				html="#attributes.value#"
 				width="#application.config.soEditor.width#"
 				height="#application.config.soEditor.height#"
 				cols="#application.config.soEditor.cols#"
@@ -234,7 +238,7 @@ $out:$
 				details="#application.config.soEditor.details#"
 				anchor="false">
 		</cfcase>
-		
+
 		<cfcase value="eWebEditPro">
 			<!--- javascript for inserting images etc --->
 			<cfoutput>
@@ -243,7 +247,7 @@ $out:$
 				{
 					eWebEditPro.#application.config.eWebEditPro.editorName#.pasteHTML(html);
 				}
-				</script> 
+				</script>
 			</cfoutput>
 			<!---display tag--->
 			<tags:eWebEditPro3
@@ -253,7 +257,7 @@ $out:$
 				editorName="#application.config.eWebEditPro.alternativeEditorName#"
 				width="#application.config.eWebEditPro.width#"
 				height="#application.config.eWebEditPro.height#"
-				value="#caller.output[attributes.textareaname]#"
+				value="#attributes.value#"
 				license="#application.config.eWebEditPro.license#"
 				locale="#application.config.eWebEditPro.locale#"
 				config="#application.config.eWebEditPro.config#"
@@ -265,9 +269,9 @@ $out:$
 				onFocus="#application.config.eWebEditPro.onFocus#"
 				onBlur="#application.config.eWebEditPro.onBlur#">
 		</cfcase>
-		
+
 		<cfcase value="textArea">
-		
+
 			<!--- javascript for inserting images etc --->
 			<cfoutput>
 				<script language="JavaScript">
@@ -275,54 +279,81 @@ $out:$
 				{
 					editform.#attributes.textareaname#.value = editform.#attributes.textareaname#.value + (html);
 				}
-				</script> 
+				</script>
 			</cfoutput>
 			<!--- display text area --->
-			<cfoutput><textarea name="#attributes.textareaname#" cols="60" rows="20">#caller.output[attributes.textareaname]#</textarea></cfoutput>
+			<cfoutput><textarea name="#attributes.textareaname#" cols="60" rows="20">#attributes.value#</textarea></cfoutput>
 		</cfcase>
-		
+
+		<cfcase value="htmlArea">
+			<cfset uniqueId = replace(createUUID(),'-','','all')>
+			<!--- display text area --->
+			<cfoutput><div id="htmlareawrapper"><textarea name="#attributes.textareaname#" id="#uniqueID#" cols="60" rows="20" style="width: 595px; ">#attributes.value#</textarea></div></cfoutput>
+
+
+			<!--- javascript for inserting images etc --->
+			<cfoutput>
+				<script language="JavaScript">
+				function insertHTML( html,field )
+				{
+					richEditor#uniqueID#.setHTML(richEditor#uniqueID#.getHTML()+html);
+				}
+
+				/*
+				var config = new HTMLArea.Config();
+				config.toolbar = [
+					#application.config.htmlarea.Toolbar1#
+					,#application.config.htmlarea.Toolbar2#
+					];
+				*/
+
+				richEditor#uniqueID# = HTMLArea.replace("#uniqueID#",config);
+				</script>
+			</cfoutput>
+		</cfcase>
+
 		<cfcase value="eopro">
 		<cfoutput>
 		<script language="javascript">
 		<!--
-		
+
 			function scriptForm_onsubmit()
 			{
 				document.editform.#attributes.textareaname#.value = document.MyEditor.getHTMLData("http://");
 				document.editform.submit();
-			
+
 			}
-		
+
 		   //-------------------------------------------------------------------------//
 		   //The CSS-Data can not be loaded before HTMLData is completely loaded.
 		   //Thats why "ONEDITORLOADED" and "ONDATALOADED" is used below
 		   //-------------------------------------------------------------------------//
 		   //This function is called when the applet has finished loading
-		
+
 			function loadData()
 			{
 			   document.MyEditor.setHTMLData("http://", document.editform.#attributes.textareaname#.value)
-				
+
 			}
-		
+
 		   //This function is called when the editor has finished the loading of HTMLData
 			function setstyle()
 			{
 				document.MyEditor.setStyleSheet( document.editform.CSSText.value)
-			}	
-				
+			}
+
 			function insertHTML( html,field )
 			{
 				document.MyEditor.insertHTMLData("http://", html);
 				//editform.#attributes.textareaname#.value = editform.#attributes.textareaname#.value + (html);
 			}
-			
-		
-		
+
+
+
 		//-->
 		</script>
-				
-		
+
+
 		<applet code="com.realobjects.eop.applet.EditorApplet" height="#application.config.eoPro.height#" id="editor" codebase="#application.config.eoPro.codebase#" name="MyEditor" width="#application.config.eoPro.width#" archive="edit-on-pro-signed.jar,tidy.jar,ssce.jar" mayscript>
         <param name="cabbase" value="#application.config.eoPro.cabbase#">
         <param name="locale" value="#application.config.eoPro.locale#">
@@ -352,13 +383,13 @@ $out:$
         <param name="startupscreentextcolor" value="#application.config.eoPro.startupscreentextcolor#">
         <!-- End - Applet Layout params -->
 		</applet>
-		<textarea name="#attributes.textareaname#" cols="1" rows="1" style="visibility:hidden;">#caller.output[attributes.textareaname]#</textarea>
+		<textarea name="#attributes.textareaname#" cols="1" rows="1" style="visibility:hidden;">#attributes.value#</textarea>
 		</cfoutput>
 		<cfif application.config.general.richTextEditor IS "eoPro">
 
     			<!--This hidden textarea field will receive the CSSData on submitting the form. Needed by RealObjects eoPro-->
-				<cfset cssText = "">	
-				
+				<cfset cssText = "">
+
 				<cfif fileExists(expandPath(application.config.eoPro.defaultcss))>
 					<cffile action="read" file="#expandPath(application.config.eoPro.defaultcss)#" variable="cssText">
 				</cfif>
@@ -366,12 +397,64 @@ $out:$
 				<cfoutput>
 		    	<textarea name="CSSText" cols="1" rows="1" style="visibility:hidden;">#CSSText#</textarea>
 				</cfoutput>
-				
+
 
 		</cfif>
-		</cfcase>		
+		</cfcase>
 		
+		<cfcase value="eoPro4">
+		<cfoutput>
+			<script type="text/javascript" src="#application.config.eoPro4.codebase#/editonpro.js"></script>
+			<script type="text/javascript">
+				eop = new editOnPro(#application.config.eoPro4.width#, #application.config.eoPro4.height#, "myEditor", "myId", "eop");
+				eop.setCodebase("#application.config.eoPro4.codebase#");
+   				eop.setConfigURL("#application.config.eoPro4.configURL#")
+   				eop.setUIConfigURL("#application.config.eoPro4.UIConfigURL#");
+   				eop.setStartUpScreenTextColor("#application.config.eoPro4.StartUpScreenTextColor#");
+   				eop.setStartUpScreenBackgroundColor("#application.config.eoPro4.StartUpScreenBackgroundColor#");
+   				/*eop.setImageBase(document.URL);*/
+   				eop.setLookAndFeel("#application.config.eoPro4.LookAndFeel#");
+				
+				function scriptForm_onsubmit()
+   				{
+			       document.editform.#attributes.textareaname#.value = eop.getHTMLData();
+			       document.editform.submit();
+			    }  
+				
+				function insertHTML(html,field)
+				{
+					eop.insertHTMLData(html);
+    			    eop.pumpEvents();
+				}
+				
+				eop.loadEditor();
+			</script>
+			 <textarea name="#attributes.textareaname#" cols="1" rows="1" style="visibility:hidden;"><cfoutput>#HtmlEditFormat(attributes.value)#</cfoutput></textarea>
+	    	 <!--This hidden textarea field will receive the CSSData on submitting the form.-->
+			 <cfset cssText = "">
+			 <cfif fileExists(expandPath(application.config.eoPro4.defaultcss))>
+				<cffile action="read" file="#expandPath(application.config.eoPro4.defaultcss)#" variable="cssText">
+			 </cfif>
+	    	 <textarea name="CSSText" cols="1" rows="1" style="visibility:hidden;"><cfoutput>#HtmlEditFormat(CSSText)#</cfoutput></textarea>
+			 <script>
+			 	eop.setHTMLData(document.editform.#attributes.textareaname#.value);
+	          	eop.setStyleSheet(document.editform.CSSText.value);
+    	      	eop.pumpEvents();
+			 </script>
+			 <!--onClickEvent used through farcry type edit plps. --->
+			 <cfif isDefined("caller.onClickEvent")>
+			 	<cfset caller.onClickEvent =  "scriptForm_onsubmit();">
+			 </cfif>
+			 
+		 </cfoutput>
+
 		
+			
+		
+		</cfcase>
+		
+
+
 	</cfswitch>
 </cfif>
 

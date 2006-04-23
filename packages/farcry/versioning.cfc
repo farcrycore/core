@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/versioning.cfc,v 1.7 2003/09/18 01:25:11 brendan Exp $
-$Author: brendan $
-$Date: 2003/09/18 01:25:11 $
-$Name: b201 $
-$Revision: 1.7 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/versioning.cfc,v 1.8 2004/01/20 02:13:03 paul Exp $
+$Author: paul $
+$Date: 2004/01/20 02:13:03 $
+$Name: milestone_2-2-1 $
+$Revision: 1.8 $
 
 || DESCRIPTION || 
 $Description: versioning cfc $
@@ -23,6 +23,17 @@ $out:$
 --->
 
 <cfcomponent displayName="Object Versioning" hint="Functions to handle versioning of objects">
+
+	
+	<cffunction name="archiveObject" access="public" returntype="struct" hint="Archives any farcry object">
+		<cfargument name="objectID" type="uuid" required="true">
+		<cfargument name="typename" type="string" required="false">
+			
+ 		<cfinclude template="_versioning/archiveObject.cfm">
+		
+		<cfreturn stResult>
+	</cffunction>
+
 	<cffunction name="sendObjectLive" access="public" returntype="struct" hint="Sends a versioned object with draft live.Archives existing live object if it exists and deletes old live object">
 		<cfargument name="objectID" type="uuid" required="true">
 		<cfargument name="stDraftObject"  type="struct" required="true" hint="the draft stuct to be updated">

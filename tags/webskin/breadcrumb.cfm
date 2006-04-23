@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/webskin/breadcrumb.cfm,v 1.17 2003/12/08 05:23:55 paul Exp $
-$Author: paul $
-$Date: 2003/12/08 05:23:55 $
-$Name: milestone_2-1-2 $
-$Revision: 1.17 $
+$Header: /cvs/farcry/farcry_core/tags/webskin/breadcrumb.cfm,v 1.18 2004/04/12 12:10:50 brendan Exp $
+$Author: brendan $
+$Date: 2004/04/12 12:10:50 $
+$Name: milestone_2-2-1 $
+$Revision: 1.18 $
 
 || DESCRIPTION || 
 builds a breadcrumb for the page
@@ -71,7 +71,7 @@ out:
 	</cfif>
 <cfelse>
 	<!--- output home only --->
-	<cfoutput>#attributes.prefix# <a href="#application.url.webroot#" class="#attributes.linkClass#">Home</a>#attributes.separator#</cfoutput>
+	<cfoutput>#attributes.prefix# <a href="#application.url.webroot#/" class="#attributes.linkClass#">Home</a>#attributes.separator#</cfoutput>
 
 </cfif>
 

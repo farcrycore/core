@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/index.cfm,v 1.68.2.1 2005/04/29 03:12:04 guy Exp $
-$Author: guy $
-$Date: 2005/04/29 03:12:04 $
-$Name: milestone_2-1-2 $
-$Revision: 1.68.2.1 $
+$Header: /cvs/farcry/farcry_core/admin/index.cfm,v 1.70 2004/06/27 23:48:57 brendan Exp $
+$Author: brendan $
+$Date: 2004/06/27 23:48:57 $
+$Name: milestone_2-2-1 $
+$Revision: 1.70 $
 
 || DESCRIPTION || 
 $Description: Landing page for Farcry. Works out which section to display and associated pages according to permissions. $
@@ -25,6 +25,7 @@ $out:$
 
 <cfsetting enablecfoutputonly="Yes">
 
+
 <!--- set up page header --->
 <cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
 <admin:header onLoad="startTimer();">
@@ -39,7 +40,7 @@ $out:$
 <cfoutput>
 <div class="countDown">
 	Logged in as: <strong>#session.dmSec.authentication.userlogin#</strong><br>	
-	<form name="timer" style="display:inline"><input type=hidden name=timer value=""><input class="counter" type="text" name="clock" size="7" value="#application.config.general.sessionTimeOut#:00"> remaining in session</form>
+	<form style="display:inline"><input type="hidden" id="timer" name="timer" value=""><span class="counter" type="text" id="clock" name="clock">#application.config.general.sessionTimeOut#:00 remaining in session</span> </form>
 </div>
 </cfoutput>
 
@@ -70,30 +71,30 @@ $out:$
 			<admin:tabs>
 				<cfif iMyFarcryTab eq 1>
 					<cfif url.section eq "home">
-						<admin:tabitem class="activetab" href="#application.url.farcry#/index.cfm?section=Home" target="_top" title="My #application.config.general.siteTitle#" text="My #application.config.general.siteTitle#">
+						<admin:tabitem class="activetab tabhome" href="#application.url.farcry#/index.cfm?section=Home" target="_top" title="My #application.config.general.siteTitle#" text="My #application.config.general.siteTitle#">
 					<cfelse>
-						<admin:tabitem class="tab" href="#application.url.farcry#/index.cfm?section=Home" target="_top" title="My #application.config.general.siteTitle#" text="My #application.config.general.siteTitle#">
+						<admin:tabitem class="tab tabhome" href="#application.url.farcry#/index.cfm?section=Home" target="_top" title="My #application.config.general.siteTitle#" text="My #application.config.general.siteTitle#">
 					</cfif>
 				</cfif>
 				<cfif iSiteTab eq 1>
 					<cfif url.section eq "site">
-							<admin:tabitem class="activetab" href="#application.url.farcry#/index.cfm?section=Site" target="_top" title="Site Tree" text="Site">
+							<admin:tabitem class="activetab tabsite" href="#application.url.farcry#/index.cfm?section=Site" target="_top" title="Site Tree" text="Site">
 						<cfelse>
-							<admin:tabitem class="tab" href="#application.url.farcry#/index.cfm?section=Site" target="_top" title="Site Tree" text="Site">
+							<admin:tabitem class="tab tabsite" href="#application.url.farcry#/index.cfm?section=Site" target="_top" title="Site Tree" text="Site">
 					</cfif>
 				</cfif>
 				<cfif iContentTab eq 1>
 					<cfif url.section eq "dynamic">
-						<admin:tabitem class="activetab" href="#application.url.farcry#/index.cfm?section=Dynamic" target="_top" title="Content" text="Content">
+						<admin:tabitem class="activetab tabdynamic" href="#application.url.farcry#/index.cfm?section=Dynamic" target="_top" title="Content" text="Content">
 					<cfelse>
-						<admin:tabitem class="tab" href="#application.url.farcry#/index.cfm?section=Dynamic" target="_top" title="Content" text="Content">
+						<admin:tabitem class="tab tabdynamic" href="#application.url.farcry#/index.cfm?section=Dynamic" target="_top" title="Content" text="Content">
 					</cfif>
 				</cfif>
 				<cfif iAdminTab eq 1>
 					<cfif url.section eq "admin">
-						<admin:tabitem class="activetab" href="#application.url.farcry#/index.cfm?section=Admin" target="_top" title="Administration Area" text="Admin">
+						<admin:tabitem class="activetab tabadmin" href="#application.url.farcry#/index.cfm?section=Admin" target="_top" title="Administration Area" text="Admin">
 					<cfelse>
-						<admin:tabitem class="tab" href="#application.url.farcry#/index.cfm?section=Admin" target="_top" title="Administration Area" text="Admin">
+						<admin:tabitem class="tab tabadmin" href="#application.url.farcry#/index.cfm?section=Admin" target="_top" title="Administration Area" text="Admin">
 					</cfif>
 				</cfif>
 				<!--- 
@@ -115,9 +116,9 @@ $out:$
 					<cfif iCustomAdminTab eq 1>
 		
 						<cfif url.section eq "customadmin" AND URL.parenttabindex EQ i>
-							<admin:tabitem class="activetab" href="#application.url.farcry#/index.cfm?section=customAdmin&parenttabindex=#i#" target="_top" title="Administration Area" text="#application.customAdminXML.customtabs.parenttab[i].xmltext#">
+							<admin:tabitem class="activetab tabcustom" href="#application.url.farcry#/index.cfm?section=customAdmin&parenttabindex=#i#" target="_top" title="Administration Area" text="#application.customAdminXML.customtabs.parenttab[i].xmltext#">
 						<cfelse>
-							<admin:tabitem class="tab" href="#application.url.farcry#/index.cfm?section=customAdmin&parenttabindex=#i#" target="_top" title="Administration Area" text="#application.customAdminXML.customtabs.parenttab[i].xmltext#">
+							<admin:tabitem class="tab tabcustom" href="#application.url.farcry#/index.cfm?section=customAdmin&parenttabindex=#i#" target="_top" title="Administration Area" text="#application.customAdminXML.customtabs.parenttab[i].xmltext#">
 						</cfif>
 					
 					</cfif>
@@ -130,28 +131,28 @@ $out:$
 					
 				<cfif iSecurityTab eq 1>
 					<cfif url.section eq "security">
-						<admin:tabitem class="activetab" href="#application.url.farcry#/index.cfm?section=Security" target="_top" title="Security Area" text="Security">
+						<admin:tabitem class="activetab tabsecurity" href="#application.url.farcry#/index.cfm?section=Security" target="_top" title="Security Area" text="Security">
 					<cfelse>
-						<admin:tabitem class="tab" href="#application.url.farcry#/index.cfm?section=Security" target="_top" title="Security Area" text="Security">
+						<admin:tabitem class="tab tabsecurity" href="#application.url.farcry#/index.cfm?section=Security" target="_top" title="Security Area" text="Security">
 					</cfif>
 				</cfif>
 				
 				<cfif iReportingTab eq 1>
 					<cfif url.section eq "reporting">
-						<admin:tabitem class="activetab" href="#application.url.farcry#/index.cfm?section=Reporting" target="_top" title="Reporting Area" text="Reporting">
+						<admin:tabitem class="activetab tabreporting" href="#application.url.farcry#/index.cfm?section=Reporting" target="_top" title="Reporting Area" text="Reporting">
 					<cfelse>
-						<admin:tabitem class="tab" href="#application.url.farcry#/index.cfm?section=Reporting" target="_top" title="Reporting Area" text="Reporting">
+						<admin:tabitem class="tab tabreporting" href="#application.url.farcry#/index.cfm?section=Reporting" target="_top" title="Reporting Area" text="Reporting">
 					</cfif>
 				</cfif>
 				<cfif iHelpTab eq 1>
 					<cfif url.section eq "help">
-						<admin:tabitem class="activetab" href="#application.url.farcry#/index.cfm?section=Help" target="_top" title="Help Area" text="Help">
+						<admin:tabitem class="activetab tabhelp" href="#application.url.farcry#/index.cfm?section=Help" target="_top" title="Help Area" text="Help">
 					<cfelse>
-						<admin:tabitem class="tab" href="#application.url.farcry#/index.cfm?section=Help" target="_top" title="Help Area" text="Help">
+						<admin:tabitem class="tab tabhelp" href="#application.url.farcry#/index.cfm?section=Help" target="_top" title="Help Area" text="Help">
 					</cfif>
 				</cfif>
-				<admin:tabitem class="tab" href="#application.url.webroot#/" target="_blank" title="viewSite" text="View Site">
-				<admin:tabitem class="tab" href="#application.url.farcry#/index.cfm?logout=1" target="_top" title="Logout" text="Logout">
+				<admin:tabitem class="tab tabviewsite" href="#application.url.webroot#/" target="_blank" title="viewSite" text="View Site">
+				<admin:tabitem class="tab tablogout" href="#application.url.farcry#/index.cfm?logout=1" target="_top" title="Logout" text="Logout">
 			</admin:tabs>
 		<cfoutput></div>
 </div>

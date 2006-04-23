@@ -21,6 +21,12 @@
 			VALUES ('#arguments.categoryID#', '#arguments.categoryLabel#')
 		</cfquery>
 	</cfcase>
+	<cfcase value="postgresql">
+		<cfquery datasource="#arguments.dsn#">
+			INSERT INTO #application.dbowner#categories (categoryID,categoryLabel)
+			VALUES ('#arguments.categoryID#', '#arguments.categoryLabel#')
+		</cfquery>
+	</cfcase>
 	<cfdefaultcase>
 		<cfquery datasource="#arguments.dsn#">
 			INSERT INTO #application.dbowner#categories (categoryID,categoryLabel)
@@ -29,13 +35,11 @@
 	</cfdefaultcase>
 </cfswitch>
 
-   <!--- Insert into nested_tree_objects --->
-<cfinvoke component="#application.packagepath#.farcry.tree" 
-	method="setChild" dsn="#arguments.dsn#" objectName="#arguments.categoryLabel#" 
-	typename="categories" pos="1" parentID="#arguments.parentID#" objectID="#arguments.categoryID#" 
-	returnvariable="stReturn">
-	
 <cfscript>
+	qChildren = request.factory.oTree.getChildren(objectid=arguments.parentID,typename='categories');
+	position = qChildren.recordCount + 1;
+	stReturn = request.factory.oTree.setChild(objectName=arguments.categoryLabel,typename='categories',parentID=arguments.parentID,objectID=arguments.categoryID,pos=position);
+
 	stStatus.message = '#arguments.categoryLabel# successfully added';
 	stStatus.status = true;
 </cfscript>

@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_stats/getBranchStatsByDate.cfm,v 1.4 2003/12/08 05:38:44 paul Exp $
-$Author: paul $
-$Date: 2003/12/08 05:38:44 $
-$Name: milestone_2-1-2 $
-$Revision: 1.4 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_stats/getBranchStatsByDate.cfm,v 1.5 2004/05/20 04:41:25 brendan Exp $
+$Author: brendan $
+$Date: 2004/05/20 04:41:25 $
+$Name: milestone_2-2-1 $
+$Revision: 1.5 $
 
 || DESCRIPTION || 
 $Description: gets stats for entire branch $
@@ -30,6 +30,22 @@ $out:$
 <!--- get page log entries --->
 <cfswitch expression="#application.dbtype#">
 	<cfcase value="ora">
+		<cfquery name="qGetPageStats" datasource="#arguments.dsn#">
+		select to_char(logdatetime,'yyyy-mm-dd') as viewday,count(logId) as count_views
+		from #application.dbowner#stats
+		where 1=1 
+		AND navid IN (<cfif qDescendants.recordcount>#QuotedValueList(qDescendants.objectid)#,</cfif>'#arguments.navid#')
+		<cfif isDefined("arguments.before")>
+		AND logdatetime < #arguments.before#
+		</cfif>
+		<cfif isDefined("arguments.after")>
+		AND logdatetime > #arguments.after#
+		</cfif>
+		group by to_char(logdatetime,'yyyy-mm-dd')
+		order by to_char(logdatetime,'yyyy-mm-dd')
+		</cfquery>
+	</cfcase>
+	<cfcase value="postgresql">
 		<cfquery name="qGetPageStats" datasource="#arguments.dsn#">
 		select to_char(logdatetime,'yyyy-mm-dd') as viewday,count(logId) as count_views
 		from #application.dbowner#stats

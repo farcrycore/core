@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/rules/_ruleHandpicked/selectType.cfm,v 1.3 2003/07/10 02:07:06 brendan Exp $
-$Author: brendan $
-$Date: 2003/07/10 02:07:06 $
-$Name: b201 $
-$Revision: 1.3 $
+$Header: /cvs/farcry/farcry_core/packages/rules/_ruleHandpicked/selectType.cfm,v 1.4 2004/05/12 02:44:42 paul Exp $
+$Author: paul $
+$Date: 2004/05/12 02:44:42 $
+$Name: milestone_2-2-1 $
+$Revision: 1.4 $
 
 || DESCRIPTION || 
 $Description: ruleHandpicked PLP - select object type (selectType.cfm) $
@@ -20,7 +20,6 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 --->
 <cfparam name="output.dmType" default="dmNews">
 <cfparam name="output.intro" default="">
-<cfparam name="cookie.hp_#output.cleanObjectID#" default="#output.lObjectIDs#">
 
 <cfoutput>
 	<link type="text/css" rel="stylesheet" href="#application.url.farcry#/css/admin.css"> 

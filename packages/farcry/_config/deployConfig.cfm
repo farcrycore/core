@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_config/deployConfig.cfm,v 1.7 2003/09/24 06:09:49 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_config/deployConfig.cfm,v 1.9 2004/06/02 00:48:51 brendan Exp $
 $Author: brendan $
-$Date: 2003/09/24 06:09:49 $
-$Name: b201 $
-$Revision: 1.7 $
+$Date: 2004/06/02 00:48:51 $
+$Name: milestone_2-2-1 $
+$Revision: 1.9 $
 
 || DESCRIPTION || 
 $Description: deploys all config files $
@@ -58,6 +58,20 @@ $out:$
 				configName char(50) NOT NULL,
 				wConfig text NULL,
 				PRIMARY KEY (configName)
+				) 
+		</cfquery>
+	</cfcase>
+	<cfcase value="postgresql">
+		<cfif arguments.bDropTable>
+			<cftry><cfquery datasource="#arguments.dsn#" name="dropConfig">			
+				DROP TABLE #application.dbowner#config			
+			</cfquery><cfcatch></cfcatch></cftry>
+		</cfif>
+		<cfquery datasource="#arguments.dsn#" name="createConfig">
+			CREATE TABLE #application.dbowner#config
+				(
+				configName varchar(50) NOT NULL PRIMARY KEY,
+				wConfig text NULL
 				) 
 		</cfquery>
 	</cfcase>

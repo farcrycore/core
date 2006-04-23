@@ -37,6 +37,6 @@
 </cflock>
 <cfoutput>
 <script type="text/javascript">
-	parent.getObjectDataAndRender( '#parentObjectid#' );
+	parent.location.reload();
 </script>
 </cfoutput>

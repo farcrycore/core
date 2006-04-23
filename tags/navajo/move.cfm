@@ -5,11 +5,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/navajo/move.cfm,v 1.26 2003/12/08 05:42:58 paul Exp $
+$Header: /cvs/farcry/farcry_core/tags/navajo/move.cfm,v 1.28 2004/05/21 07:31:05 paul Exp $
 $Author: paul $
-$Date: 2003/12/08 05:42:58 $
-$Name: milestone_2-1-2 $
-$Revision: 1.26 $
+$Date: 2004/05/21 07:31:05 $
+$Name: milestone_2-2-1 $
+$Revision: 1.28 $
 
 || DESCRIPTION || 
 
@@ -50,6 +50,18 @@ $out:$
 	<cfabort>
 </cfif>
 
+<!-- This may very well end up in dmHTML type -->
+<cffunction name="getHTMLParent" hint="gets the dmHTML parent for a file or image asset. Returns empty query if no parent found">
+	<cfargument name="objectid" required="true">
+	<cfset var q = ''>
+	<cfquery name="q" datasource="#application.dsn#">
+		SELECT * FROM #application.dbowner#dmHTML_aObjectIds
+		WHERE data = '#arguments.objectid#'
+	</cfquery>
+	<cfreturn q>
+</cffunction>
+
+
 <cfscript>
 	oAudit = createObject("component","#application.packagepath#.farcry.audit");
 	//get all the descendants for source
@@ -63,7 +75,27 @@ $out:$
 		destNavObjectID = qGetparent.parentID;
 		
 	}	
-	else{	
+	else if (listContainsNoCase("dmFile,dmImage",srcObj.typename))
+	{
+		trace(var=srcObj.typename,text='Determining parent type');
+		//first check to see if it sits under a nav object
+		oNav = createObject("component", application.types.dmNavigation.typePath);
+		qGetParent = oNav.getParent(objectid=srcObj.objectID);
+		//if we find nothing = search html objects for parents
+		if(NOT qGetParent.recordCount)
+			qGetParent = getHTMLParent(objectid=srcObj.objectID);
+		if(qGetParent.recordCount GT 1)	
+			throwerror("Multiple parents found");
+		if(qGetParent.recordCount LT 1)		
+			throwerror("No parents found");
+		srcParentObjectID = qGetParent.objectID;
+		destNavObjectID = destObj.objectId;
+		//now we need to find destination parent
+		qGetParent = oNav.getParent(objectid=destObj.objectID);
+		destParentObjectID = qGetParent.objectID;
+	}
+	else
+	{	
 		oNav = createObject("component", application.types.dmNavigation.typePath);
 		qGetParent = oNav.getParent(objectid=srcObj.objectID);
 		srcParentObjectID = qGetParent.objectID;
@@ -153,6 +185,7 @@ $out:$
 	
 <cfelse>
 	<cfset key="AOBJECTIDS">
+	<cftrace var="#key#" text="Search key set to aObjectids">
 </cfif>
 
 <!--- remove srcnav from its parent --->
@@ -164,8 +197,8 @@ $out:$
 	</cfloop>
 
 	<cfscript>
-		srcObjParent.datetimecreated = createODBCDate("#datepart('yyyy',srcObjParent.datetimecreated)#-#datepart('m',srcObjParent.datetimecreated)#-#datepart('d',srcObjparent.datetimecreated)#");
 		srcObjParent.datetimelastupdated = createODBCDate(now());
+		structDelete(srcObjParent,"datetimecreated");
 		// update the parent object instance
 		oType = createobject("component", application.types[srcObjParent.typename].typePath);
 		oType.setData(stProperties=srcObjParent,auditNote="Child moved");	
@@ -173,7 +206,7 @@ $out:$
 </cfif>
 <!--- add src nav to dest nav --->
 <cfscript>
-	destObj.datetimecreated = createODBCDate("#datepart('yyyy',destObj.datetimecreated)#-#datepart('m',destObj.datetimecreated)#-#datepart('d',destObj.datetimecreated)#");
+	structDelete(destObj,"datetimecreated");
 	destObj.datetimelastupdated = createODBCDate(now());
 	if (NOT srcObj.typename IS "dmNavigation")
 		arrayAppend( destObj[key], srcObj.objectId);
@@ -198,8 +231,8 @@ $out:$
 	<script>
 		srcobjid='#URL.srcObjectID#';	
 		destNavObjectId ='#destObj.objectid#';	
-						
-		parent.updateTree(src=srcobjid,dest=destNavObjectId,srcobj='#url.srcObjectid#');
+
+		top['frames']['treeFrame'].updateTree(src=srcobjid,dest=destNavObjectId,srcobj='#url.srcObjectid#');
 	</script>
 	
 </cfoutput>

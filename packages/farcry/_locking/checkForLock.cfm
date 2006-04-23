@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_locking/checkForLock.cfm,v 1.5 2003/10/22 07:35:24 paul Exp $
-$Author: paul $
-$Date: 2003/10/22 07:35:24 $
-$Name: b201 $
-$Revision: 1.5 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_locking/checkForLock.cfm,v 1.6 2004/03/24 22:37:27 brendan Exp $
+$Author: brendan $
+$Date: 2004/03/24 22:37:27 $
+$Name: milestone_2-2-1 $
+$Revision: 1.6 $
 
 || DESCRIPTION || 
 $Description: checks if object is locked $
@@ -25,8 +25,6 @@ $out:$
 <cfsetting enablecfoutputonly="yes">
 
 <cfimport taglib="/farcry/fourq/tags" prefix="q4">
-
-<cfset stLock = structNew()>
 
 <!--- get object details --->
 <q4:contentobjectget objectID="#arguments.objectid#" r_stobject="stObj">

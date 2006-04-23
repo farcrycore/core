@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmImage/edit.cfm,v 1.20 2003/11/05 04:46:09 tom Exp $
-$Author: tom $
-$Date: 2003/11/05 04:46:09 $
-$Name: milestone_2-1-2 $
-$Revision: 1.20 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmImage/edit.cfm,v 1.23 2004/06/27 22:59:39 brendan Exp $
+$Author: brendan $
+$Date: 2004/06/27 22:59:39 $
+$Name: milestone_2-2-1 $
+$Revision: 1.23 $
 
 || DESCRIPTION || 
 $Description: edit handler$
@@ -29,96 +29,234 @@ $out:$
 <cfset showform=1>
 
 <cfif isDefined("FORM.submit")> <!--- perform the update --->
+	
 	<cfset showform=0>	
 	<cfscript>
+		oForm = createObject("component","#application.packagepath#.farcry.form");
+		
 		stProperties = structNew();
 		stProperties.objectid = stObj.objectid;
 		stProperties.title = form.title;
 		stProperties.label = form.title;
-		//stProperties.caption = form.caption;
 		stProperties.alt = form.alt;
 		stProperties.width = form.width;
 		stProperties.height = form.height;
 				
 		stProperties.datetimelastupdated = Now();
-		stProperties.datetimecreated = Now();
 		stProperties.lastupdatedby = session.dmSec.authentication.userlogin;
 		//unlock object
 		stProperties.locked = 0;
 		stProperties.lockedBy = "";
 	</cfscript>
 	
-	<!--- upload the original file 	--->
+	<!--- set accept list --->
 	<cfset imageAcceptList = application.config.image.imagetype> 
 	
-	<!--- TODO - need some more error checking here on uploadFile method return --->
-	<cfif trim(len(form.imageFile)) NEQ 0>
-		<!--- upload new file (if accept list not specified in config, accept everything) --->
-		<cfif len(application.config.image.imagetype)>
-			<cfinvoke component="#application.packagepath#.farcry.form" method="uploadFile" returnvariable="stReturn" formfield="imagefile" destination="#application.defaultImagePath#" accept="#imageAcceptList#"> 
+	<!--- check default image has been passed in from form --->
+	<cfif trim(len(form.imageFile)) NEQ 0>	
+		<!--- check if it's a new image --->
+		<cfif len(stObj.imageFile)>		
+			<!--- overwriting an existing image so check if new file has the same name as existing file--->
+			<cfif stObj.imageFile eq form.defaultImageFileName>
+				<cftry>
+					<!--- same name so upload new image overwriting the existing one --->
+					<cfif len(imageAcceptList)>
+						<cffile action="upload" filefield="imagefile" destination="#application.defaultImagePath#" accept="#imageAcceptList#" nameconflict="OVERWRITE"> 
+					<cfelse>
+						<cffile action="upload" filefield="imagefile" destination="#application.defaultImagePath#" nameconflict="OVERWRITE"> 
+					</cfif>
+					
+					<cfcatch>
+						<cfoutput><p><strong>ERROR:</strong> #cfcatch.message# </p></cfoutput>
+						<cfset error=1>
+					</cfcatch>
+				</cftry>
+			<cfelse>
+				<!--- different name so upload new image making it unique --->
+				<cftry>
+					<cfif len(imageAcceptList)>
+						<cffile action="upload" filefield="imagefile" destination="#application.defaultImagePath#" accept="#imageAcceptList#" nameconflict="MAKEUNIQUE"> 
+					<cfelse>
+						<cffile action="upload" filefield="imagefile" destination="#application.defaultImagePath#" nameconflict="MAKEUNIQUE"> 
+					</cfif>
+					<!--- rename to overwrite existing one --->
+					<cffile action="RENAME" source="#file.ServerDirectory#/#file.serverfile#" destination="#file.ServerDirectory#/#stObj.imageFile#">
+					
+					<cfcatch>
+						<cfoutput><p><strong>ERROR:</strong> #cfcatch.message# </p></cfoutput>
+						<cfset error=1>
+					</cfcatch>
+				</cftry>
+			</cfif>			
 		<cfelse>
-			<cfinvoke component="#application.packagepath#.farcry.form" method="uploadFile" returnvariable="stReturn" formfield="imagefile" destination="#application.defaultImagePath#"> 
-		</cfif>
-		
-		<cfif stReturn.bsuccess>
-			<cfscript>
-				stProperties.imageFile = stReturn.ServerFile;
-				stProperties.originalImagePath = stReturn.ServerDirectory;
-			</cfscript>
-		<cfelse>
-			<cfoutput><strong>ERROR:</strong> #stReturn.message#<p>
-			Image types that are accepted: #imageAcceptList# <p></p></cfoutput>
-			<cfset error=1>
+			<!--- new image so check if filename is already in use --->
+			<cfset stCheckDefault = checkForExisting(filename=form.defaultImageFileName)>
+			
+			<cfif not stCheckDefault.bExists>
+				<!--- upload new file (if accept list not specified in config, accept everything) --->
+				<cftry>
+					<cfif len(imageAcceptList)>
+						<cffile action="upload" filefield="imagefile" destination="#application.defaultImagePath#" accept="#imageAcceptList#"> 
+					<cfelse>
+						<cffile action="upload" filefield="imagefile" destination="#application.defaultImagePath#"> 
+					</cfif>
+					
+					<!--- add image values to object data --->
+					<cfset stProperties.imageFile = oForm.sanitiseFileName(file.ServerFile,file.ClientFileName,file.ServerDirectory)>
+					<cfset stProperties.originalImagePath = file.ServerDirectory>
+					
+					<cfcatch>
+						<cfoutput><p><strong>ERROR:</strong> #cfcatch.message# </p></cfoutput>
+						<cfset error=1>
+					</cfcatch>
+				</cftry>
+			<cfelse>
+				<!--- filename already in use by another image object --->
+				<cfoutput><p><strong>ERROR:</strong> Filename already in use</p>
+				<p>The file <strong>#stCheckDefault.fileName#</strong> is in use by another image in the system. Please re-name and then try again.</p></cfoutput>
+				<cfset error=1>
+			</cfif>
 		</cfif>
 	</cfif>
 	
-	<cfif trim(len(FORM.optimisedImage)) NEQ 0 >
-		<!--- upload new file (if accept list not specified in config, accept everything) --->
-		<cfif len(application.config.image.imagetype)>
-			<cfinvoke component="#application.packagepath#.farcry.form" method="uploadFile" returnvariable="stReturn" formfield="optimisedImage" destination="#application.defaultImagePath#" accept="#imageAcceptList#"> 
+	<!--- check optimised image has been passed in from form --->
+	<cfif trim(len(form.optimisedImage)) NEQ 0>	
+		<!--- check if it's a new image --->
+		<cfif len(stObj.optimisedImage)>		
+			<!--- overwriting an existing image so check if new file has the same name as existing file--->
+			<cfif stObj.optimisedImage eq form.optImageFileName>
+				<cftry>
+					<!--- same name so upload new image overwriting the existing one --->
+					<cfif len(imageAcceptList)>
+						<cffile action="upload" filefield="optimisedImage" destination="#application.defaultImagePath#" accept="#imageAcceptList#" nameconflict="OVERWRITE"> 
+					<cfelse>
+						<cffile action="upload" filefield="optimisedImage" destination="#application.defaultImagePath#" nameconflict="OVERWRITE"> 
+					</cfif>
+					
+					<cfcatch>
+						<cfoutput><p><strong>ERROR:</strong> #cfcatch.message# </p></cfoutput>
+						<cfset error=1>
+					</cfcatch>
+				</cftry>
+			<cfelse>
+				<!--- different name so upload new image making it unique --->
+				<cftry>
+					<cfif len(imageAcceptList)>
+						<cffile action="upload" filefield="optimisedImage" destination="#application.defaultImagePath#" accept="#imageAcceptList#" nameconflict="MAKEUNIQUE"> 
+					<cfelse>
+						<cffile action="upload" filefield="optimisedImage" destination="#application.defaultImagePath#" nameconflict="MAKEUNIQUE"> 
+					</cfif>
+					<!--- rename to overwrite existing one --->
+					<cffile action="RENAME" source="#file.ServerDirectory#/#file.serverfile#" destination="#file.ServerDirectory#/#stObj.optimisedImage#">
+					
+					<cfcatch>
+						<cfoutput><p><strong>ERROR:</strong> #cfcatch.message# </p></cfoutput>
+						<cfset error=1>
+					</cfcatch>
+				</cftry>
+			</cfif>			
 		<cfelse>
-			<cfinvoke component="#application.packagepath#.farcry.form" method="uploadFile" returnvariable="stReturn" formfield="optimisedImage" destination="#application.defaultImagePath#"> 
-		</cfif>
-		
-		<cfif stReturn.bsuccess>
-			<cfscript>
-				stProperties.optimisedimage = stReturn.ServerFile;
-				stProperties.optimisedImagePath = stReturn.ServerDirectory;
-			</cfscript>
-		<cfelse>
-			<cfoutput><strong>ERROR:</strong> #stReturn.message#<p>
-			Image types that are accepted: #imageAcceptList# <p></p></cfoutput>
-			<cfset error=1>
+			<!--- new image so check if filename is already in use --->
+			<cfset stCheckOptimised = checkForExisting(filename=form.optImageFileName)>
+			
+			<cfif not stCheckOptimised.bExists>
+				<!--- upload new file (if accept list not specified in config, accept everything) --->
+				<cftry>
+					<cfif len(imageAcceptList)>
+						<cffile action="upload" filefield="optimisedImage" destination="#application.defaultImagePath#" accept="#imageAcceptList#"> 
+					<cfelse>
+						<cffile action="upload" filefield="optimisedImage" destination="#application.defaultImagePath#"> 
+					</cfif>
+					
+					<!--- add image values to object data --->
+					<cfset stProperties.optimisedImage = oForm.sanitiseFileName(file.ServerFile,file.ClientFileName,file.ServerDirectory)>
+					<cfset stProperties.optimisedImagePath = file.ServerDirectory>
+					
+					<cfcatch>
+						<cfoutput><p><strong>ERROR:</strong> #cfcatch.message# </p></cfoutput>
+						<cfset error=1>
+					</cfcatch>
+				</cftry>
+			<cfelse>
+				<!--- filename already in use by another image object --->
+				<cfoutput><p><strong>ERROR:</strong> Filename already in use</p>
+				<p>The file <strong>#stCheckOptimised.fileName#</strong> is in use by another image in the system. Please re-name and then try again.</p></cfoutput>
+				<cfset error=1>
+			</cfif>
 		</cfif>
 	</cfif>
 	
-	<cfif trim(len(FORM.thumbnailImage)) NEQ 0>
-		<!--- upload new file (if accept list not specified in config, accept everything) --->
-		<cfif len(application.config.image.imagetype)>
-			<cfinvoke component="#application.packagepath#.farcry.form" method="uploadFile" returnvariable="stReturn" formfield="thumbnailImage" destination="#application.defaultImagePath#" accept="#imageAcceptList#"> 
+	<!--- check thumbnail image has been passed in from form --->
+	<cfif trim(len(form.thumbnailImage)) NEQ 0>	
+		<!--- check if it's a new image --->
+		<cfif len(stObj.thumbnail)>		
+			<!--- overwriting an existing image so check if new file has the same name as existing file--->
+			<cfif stObj.thumbnail eq form.thumbImageFileName>
+				<cftry>
+					<!--- same name so upload new image overwriting the existing one --->
+					<cfif len(imageAcceptList)>
+						<cffile action="upload" filefield="thumbnailImage" destination="#application.defaultImagePath#" accept="#imageAcceptList#" nameconflict="OVERWRITE"> 
+					<cfelse>
+						<cffile action="upload" filefield="thumbnailImage" destination="#application.defaultImagePath#" nameconflict="OVERWRITE"> 
+					</cfif>
+					
+					<cfcatch>
+						<cfoutput><p><strong>ERROR:</strong> #cfcatch.message# </p></cfoutput>
+						<cfset error=1>
+					</cfcatch>
+				</cftry>
+			<cfelse>
+				<!--- different name upload new image making it unique --->
+				<cftry>
+					<cfif len(imageAcceptList)>
+						<cffile action="upload" filefield="thumbnailImage" destination="#application.defaultImagePath#" accept="#imageAcceptList#" nameconflict="MAKEUNIQUE"> 
+					<cfelse>
+						<cffile action="upload" filefield="thumbnailImage" destination="#application.defaultImagePath#" nameconflict="MAKEUNIQUE"> 
+					</cfif>
+					<!--- rename to overwrite existing one --->
+					<cffile action="RENAME" source="#file.ServerDirectory#/#file.serverfile#" destination="#file.ServerDirectory#/#stObj.thumbnail#">
+					
+					<cfcatch>
+						<cfoutput><p><strong>ERROR:</strong> #cfcatch.message# </p></cfoutput>
+						<cfset error=1>
+					</cfcatch>
+				</cftry>
+			</cfif>			
 		<cfelse>
-			<cfinvoke component="#application.packagepath#.farcry.form" method="uploadFile" returnvariable="stReturn" formfield="thumbnailImage" destination="#application.defaultImagePath#"> 
-		</cfif>
-		
-		<cfif stReturn.bsuccess>
-			<cfscript>
-				stProperties.thumbnail = stReturn.ServerFile;
-				stProperties.thumbnailImagePath = stReturn.ServerDirectory;
-			</cfscript>
-		<cfelse>
-			<cfoutput><strong>ERROR:</strong> #stReturn.message#<p>
-			Image types that are accepted: #imageAcceptList# <p></p></cfoutput>
-			<cfset error=1>
+			<!--- new image so check if filename is already in use --->
+			<cfset stCheckThumb = checkForExisting(filename=form.thumbImageFileName)>
+			
+			<cfif not stCheckThumb.bExists>
+				<!--- upload new file (if accept list not specified in config, accept everything) --->
+				<cftry>
+					<cfif len(imageAcceptList)>
+						<cffile action="upload" filefield="thumbnailImage" destination="#application.defaultImagePath#" accept="#imageAcceptList#"> 
+					<cfelse>
+						<cffile action="upload" filefield="thumbnailImage" destination="#application.defaultImagePath#"> 
+					</cfif>
+					
+					<!--- add image values to object data --->
+					<cfset stProperties.thumbnail = oForm.sanitiseFileName(file.ServerFile,file.ClientFileName,file.ServerDirectory)>
+					<cfset stProperties.thumbnailImagePath = file.ServerDirectory>
+					
+					<cfcatch>
+						<cfoutput><p><strong>ERROR:</strong> #cfcatch.message# </p></cfoutput>
+						<cfset error=1>
+					</cfcatch>
+				</cftry>
+			<cfelse>
+				<!--- filename already in use by another image object --->
+				<cfoutput><p><strong>ERROR:</strong> Filename already in use</p>
+				<p>The file <strong>#stCheckThumb.fileName#</strong> is in use by another image in the system. Please re-name and then try again.</p></cfoutput>
+				<cfset error=1>
+			</cfif>
 		</cfif>
 	</cfif>
-	
-	<cfscript>
-		// update the OBJECT	
-		oType = createobject("component", application.types.dmImage.typePath);
-		oType.setData(stProperties=stProperties);
-	</cfscript>
 	
 	<cfif not isdefined("error")>
+		<!--- update the OBJECT --->
+		<cfset setData(stProperties=stProperties)>
+	
 		<!--- get parent to update tree --->
 		<nj:treeGetRelations 
 			typename="#stObj.typename#"
@@ -147,7 +285,10 @@ $out:$
 <cfif showform>
 
 	<cfoutput>
-	<form action="" method="post" enctype="multipart/form-data" name="imageForm">
+	<form action="" method="post" enctype="multipart/form-data" name="imageForm" onsubmit="document['forms']['imageForm'].defaultImageFileName.value = document['forms']['imageForm'].imageFile.value;document['forms']['imageForm'].thumbImageFileName.value = document['forms']['imageForm'].thumbnailImage.value;document['forms']['imageForm'].optImageFileName.value = document['forms']['imageForm'].optimisedImage.value;">
+		<input type="hidden" name="defaultImageFileName" value="">
+		<input type="hidden" name="thumbImageFileName" value="">
+		<input type="hidden" name="optImageFileName" value="">
 		<br>
 		<table class="FormTable">
 		<tr>
@@ -303,7 +444,7 @@ $out:$
 		<!--//
 		objForm = new qForm("imageForm");
 		objForm.title.validateNotNull("Please enter a title");
-		objForm.alt.validateLengthGT(512);
+		objForm.alt.validateLengthLT(255);
 			
 		//bring focus to title
 		document.imageForm.title.focus();//-->

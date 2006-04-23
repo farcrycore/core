@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmEvent/plpEdit/files.cfm,v 1.5 2003/11/05 04:46:09 tom Exp $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmEvent/plpEdit/files.cfm,v 1.11.2.1 2004/09/21 16:18:33 tom Exp $
 $Author: tom $
-$Date: 2003/11/05 04:46:09 $
-$Name: milestone_2-1-2 $
-$Revision: 1.5 $
+$Date: 2004/09/21 16:18:33 $
+$Name: milestone_2-2-1 $
+$Revision: 1.11.2.1 $
 
 || DESCRIPTION || 
 $Description: dmEvent Edit PLP - Adds files as associated objects.$
@@ -26,7 +26,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 <cfoutput>
 <script>
 var isIE=document.all?true:false;
-var layers = isIE?document.all.tags("DIV"):null;
+var layers = isIE?document.all.tags("DIV"):document.getElementsByTagName("DIV");
 selectedDiv = "fileform";
 function toggleForm(selectedDiv,display)
 {
@@ -42,7 +42,7 @@ function toggleForm(selectedDiv,display)
 function hideAll()
 {
 	for(var i=0;i<layers.length;i++){
-		if (layers[i].id != 'PLPMoveButtons')
+		if (layers[i].id != 'PLPButtons' && layers[i].id != 'PLPMoveButtons')
 			layers[i].style.display='none';
 	}	
 }
@@ -89,54 +89,58 @@ function removeUploadBtn()
 			stProperties.createdby = session.dmSec.authentication.userlogin;
 			stProperties.description = form.description;
 			stProperties.datetimelastupdated = Now();
+			stProperties.documentDate = createODBCDatetime('#form.publishYear#-#form.publishMonth#-#form.publishDay# #form.publishHour#:#form.publishMinutes#');
 			stProperties.lastupdatedby = session.dmSec.authentication.userlogin;
+			oForm = createObject("component","#application.packagepath#.farcry.form");
+			error = 0;
 		</cfscript>
 		
 		<!--- upload the original file 	--->
 		<cfif trim(len(FORM.filename)) NEQ 0 AND form.filename NEQ form.filename_old>
-			<!--- upload new file (if accept list not specified in config, accept everything) --->
 			<cfif len(application.config.file.filetype)>
-				<cfinvoke 
-					component="#application.packagepath#.farcry.form" 
-					method="uploadFile" 
-					destination="#application.defaultFilePath#" 
-					returnvariable="stReturn" 
-					formfield="filename" 
-					accept="#application.config.file.filetype#" /> 
+				<cftry>
+					<cffile action="upload"
+						filefield="filename" 
+						accept="#application.config.file.filetype#" 
+						destination="#application.defaultFilePath#" 
+						nameconflict="#application.config.general.fileNameConflict#"> 
+					<cfcatch>
+						<cfoutput>
+							<strong>ERROR:</strong> #cfcatch.message#<p>
+							File types that are accepted: #application.config.file.filetype# <p></p>
+						</cfoutput>
+						<cfset error=1>
+					</cfcatch>
+				</cftry>
 			<cfelse>
-				<cfinvoke 
-					component="#application.packagepath#.farcry.form" 
-					method="uploadFile" 
+				<cffile action="upload"
+					filefield="filename" 
 					destination="#application.defaultFilePath#" 
-					returnvariable="stReturn" 
-					formfield="filename" /> 
+					nameconflict="#application.config.general.fileNameConflict#"> 
 			</cfif>
 			
-			<cfif NOT stReturn.bSuccess>
-				<cfoutput><strong>ERROR:</strong> #stReturn.message#<p>
-				File types that are accepted: #application.config.file.filetype# <p></p></cfoutput>
-				<cfset error=1>
-			<cfelse>
-				<!--- delete old file --->
-				<cftry>
-					<cffile action="delete" file="#application.defaultFilePath#/#form.filename_old#">
-					<cfcatch type="any"></cfcatch>
-				</cftry>	
+			<!--- delete existing file --->
+			<cfif fileExists("#application.defaultFilePath#/#form.filename_old#")>
+				<cffile action="delete" file="#application.defaultFilePath#/#form.filename_old#">
+			</cfif>	
+			
+			<!--- update file details if saved without error --->
+			<cfif not error>
 				<cfscript>
-					stProperties.filename = stReturn.ServerFile;
-					stProperties.filepath = stReturn.ServerDirectory;
-					//test for this array existance
+					stProperties.filename = oForm.sanitiseFileName(file.ServerFile,file.ClientFileName,file.ServerDirectory);
+					stProperties.filepath = file.ServerDirectory;
+					stProperties.fileSize = file.fileSize;
+					stProperties.fileType = file.contentType;
+					stProperties.fileSubType = file.contentSubType;
+					stProperties.fileExt = file.serverFileExt;
 				</cfscript>
 			</cfif>
 		</cfif>
-		
-		<cfscript>
-			typeName = "dmFile";
-		</cfscript>
+				
 		<!--- if form.editfile exists - then an existing object is being edited - else must create new object --->
 		
 		<cfscript>
-			oType = createobject("component", application.types[typeName].typePath);
+			oType = createobject("component", application.types['dmFile'].typePath);
 			if (isdefined("form.editObject")) {
 				// update the OBJECT	
 				oType.setData(stProperties=stProperties);
@@ -219,7 +223,7 @@ function removeUploadBtn()
 			</td>
 			<td align="center">
 				<cfif len(trim(stThisFile.filename)) NEQ 0>
-				<a href="#stThisFile.filePath#\#stThisFile.filename#" target="_blank">
+				<a href="#application.url.webroot#/files/#stThisFile.filename#" target="_blank">
 					<img src="#application.url.farcry#/images/treeImages/preview.gif" border="0">
 				</a>
 				<cfelse>
@@ -276,7 +280,55 @@ function removeUploadBtn()
   	 <td><span class="FormLabel">Title:</span></td>
    	 <td><input type="text" name="filetitle" value="#stThisFile.title#" class="FormTextBox"></td>
 	</tr>
-	
+	<tr>
+		<td nowrap class="FormLabel">Date Published:</td>
+		<td >
+			<table>
+				<tr>
+					<td>
+						<select name="publishDay" class="formfield">
+							<cfloop from="1" to="31" index="a">
+								<option value="#a#" <cfif a IS day(stThisFile.documentDate)>selected</cfif>>#a#</option>
+							</cfloop>
+						</select>	
+					</td>
+					<td>
+						<select name="publishMonth" class="formfield">
+							<cfloop from="1" to="12" index="a">
+								<option value="#a#" <cfif a IS month(stThisFile.documentDate)>selected</cfif>>#monthAsString(a)#</option>
+							</cfloop>
+						</select>
+					</td>
+					<td>
+						<cfscript>
+							thisYear = year(now());
+							startYear = 2000;
+							endYear = year(dateadd("yyyy",7,now()));	
+						</cfscript>
+						<select name="publishYear" class="formfield">
+							<cfloop from="#startYear#" to="#endYear#" index="a">
+								<option value="#a#" <cfif a IS year(stThisFile.documentDate)>selected</cfif>>#a#</option>
+							</cfloop>
+						</select>
+					</td>
+					<td>
+						<select name="publishHour" class="formfield">
+							<cfloop from="0" to="23" index="a">
+								<option value="#a#" <cfif hour(stThisFile.documentDate) IS a>selected</cfif>>#a# hrs</option>						
+							</cfloop>
+						</select>
+					</td>
+					<td>
+						<select name="publishMinutes" class="formfield">
+							<cfloop from="0" to="45" index="a" step="15">
+								<option value="#a#" <cfif minute(stThisFile.documentDate) IS a>selected</cfif>>#a# mins</option>						
+							</cfloop>
+						</select>
+					</td>	
+				</tr>
+			</table>
+		</td>
+	</tr>
 	<tr>	
   	 <td valign="top" ><span class="FormLabel">File:</span> </td>
    	 <td>
@@ -332,7 +384,55 @@ function removeUploadBtn()
 			<input type="hidden" name="filename_old" value="">
 		</td>
 	</tr>
-	
+	<tr>
+		<td nowrap class="FormLabel">Date Published:</td>
+		<td >
+			<table>
+				<tr>
+					<td>
+						<select name="publishDay" class="formfield">
+							<cfloop from="1" to="31" index="a">
+								<option value="#a#" <cfif a IS day(now())>selected</cfif>>#a#</option>
+							</cfloop>
+						</select>	
+					</td>
+					<td>
+						<select name="publishMonth" class="formfield">
+							<cfloop from="1" to="12" index="a">
+								<option value="#a#" <cfif a IS month(now())>selected</cfif>>#monthAsString(a)#</option>
+							</cfloop>
+						</select>
+					</td>
+					<td>
+						<cfscript>
+							thisYear = year(now());
+							startYear = 2000;
+							endYear = year(dateadd("yyyy",7,now()));	
+						</cfscript>
+						<select name="publishYear" class="formfield">
+							<cfloop from="#startYear#" to="#endYear#" index="a">
+								<option value="#a#" <cfif a IS year(now())>selected</cfif>>#a#</option>
+							</cfloop>
+						</select>
+					</td>
+					<td>
+						<select name="publishHour" class="formfield">
+							<cfloop from="0" to="23" index="a">
+								<option value="#a#" <cfif hour(now()) IS a>selected</cfif>>#a# hrs</option>						
+							</cfloop>
+						</select>
+					</td>
+					<td>
+						<select name="publishMinutes" class="formfield">
+							<cfloop from="0" to="45" index="a" step="15">
+								<option value="#a#" <cfif minute(now()) IS a>selected</cfif>>#a# mins</option>						
+							</cfloop>
+						</select>
+					</td>	
+				</tr>
+			</table>
+		</td>
+	</tr>
 	<tr>
   		<td valign="top"><span class="FormLabel">Description:</span></td>
    	 	<td><textarea cols="30" rows="4" name="description" class="FormTextArea"></textarea></td>
@@ -354,7 +454,7 @@ function removeUploadBtn()
 		</SCRIPT>
 	</form>	
 </div>
-<div class="FormTableClear">
+<div id="PLPButtons" class="FormTableClear">
 <form action="#cgi.script_name#?#cgi.query_string#" method="post" name="editform"></cfoutput>
 	<tags:plpNavigationButtons>
 <cfoutput></form>

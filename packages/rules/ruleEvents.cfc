@@ -275,7 +275,7 @@
 				<cfset tmp = arrayAppend(request.aInvocations,stObj.intro)>
 			</cfif>
 			<!--- loop over display methods --->
-			<cfoutput query="qGetEvents">
+			<cfloop query="qGetEvents">
 				<cfscript>
 				 	stInvoke = structNew();
 					stInvoke.objectID = qGetEvents.objectID;
@@ -283,7 +283,7 @@
 					stInvoke.method = stObj.displayMethod;
 					arrayAppend(request.aInvocations,stInvoke);
 				</cfscript>
-			</cfoutput>
+			</cfloop>
 			
 		<cfelse>
 			<cfparam name="url.pgno" default="1">
@@ -304,46 +304,59 @@
 
 			<!--- Output Page Numbers --->
 			<cfif iNumberOfPages GT 1>
-				<cfoutput>
-				<div align="center" class="newsArchive">
-				<cfif url.pgno NEQ 1>
-					<a class="newsArchive" href="#Application.URL.conjurer#?objectID=#url.objectID#&pgno=#(url.pgno-1)#">Previous Page</a>&nbsp;&nbsp;
-				</cfif>
-				<cfloop index="i" from="1" to="#iNumberOfPages#">
-				<cfif i NEQ url.pgno></cfif><a class="newsArchive" href="#Application.URL.conjurer#?objectID=#url.objectID#&pgno=#i#">#i#</a><cfif i NEQ url.pgno><a class="newsArchive" href="#Application.URL.conjurer#?objectID=#url.objectID#&pgno=#i#"></a></cfif>
-				</cfloop>
-				<cfif url.pgno NEQ iNumberOfPages>
-					&nbsp;&nbsp;<a class="newsArchive" href="#Application.URL.conjurer#?objectID=#url.objectID#&pgno=#(url.pgno+1)#">Next Page</a>
-				</cfif>
-				</div>
-				<br>
-				</cfoutput>
+				<!--- save pagination output to variable --->
+				<cfsavecontent variable="pageNums">
+					<cfoutput>
+					<div align="center" class="newsArchive">
+					<cfif url.pgno NEQ 1>
+						<a class="newsArchive" href="#Application.URL.conjurer#?objectID=#url.objectID#&pgno=#(url.pgno-1)#">Previous Page</a>&nbsp;&nbsp;
+					</cfif>
+					<cfloop index="i" from="1" to="#iNumberOfPages#">
+					<cfif i NEQ url.pgno></cfif><a class="newsArchive" href="#Application.URL.conjurer#?objectID=#url.objectID#&pgno=#i#">#i#</a><cfif i NEQ url.pgno><a class="newsArchive" href="#Application.URL.conjurer#?objectID=#url.objectID#&pgno=#i#"></a></cfif>
+					</cfloop>
+					<cfif url.pgno NEQ iNumberOfPages>
+						&nbsp;&nbsp;<a class="newsArchive" href="#Application.URL.conjurer#?objectID=#url.objectID#&pgno=#(url.pgno+1)#">Next Page</a>
+					</cfif>
+					</div>
+					<br>
+					</cfoutput>
+				</cfsavecontent>
+				<!--- append pagination output to Invocations array --->
+				<cfset arrayAppend(request.aInvocations,pageNums)>
 			</cfif>
 			
 			<!--- Loop Through News and Display --->
 			<cfloop query="qGetEvents" startrow="#startrow#" endrow="#endrow#">
 				<cfscript>
-				o = createObject("component", application.types.dmEvent.typePath);
-				o.getDisplay(qGetEvents.ObjectID, stObj.displayMethod);	
+				 	stInvoke = structNew();
+					stInvoke.objectID = qGetEvents.objectID;
+					stInvoke.typename = application.types.dmEvent.typePath;
+					stInvoke.method = stObj.displayMethod;
+					arrayAppend(request.aInvocations,stInvoke);
 				</cfscript>
 			</cfloop>
 			
 			<!--- Output Page Numbers --->
 			<cfif iNumberOfPages GT 1>
-				<cfoutput>
-				<br>
-				<div align="center" class="newsArchive">
-				<cfif url.pgno NEQ 1>
-					<a class="newsArchive" href="#Application.URL.conjurer#?objectID=#url.objectID#&pgno=#(url.pgno-1)#">Previous Page</a>&nbsp;&nbsp;
-				</cfif>
-				<cfloop index="i" from="1" to="#iNumberOfPages#">
-				<cfif i NEQ url.pgno></cfif><a class="newsArchive" href="#Application.URL.conjurer#?objectID=#url.objectID#&pgno=#i#">#i#</a><cfif i NEQ url.pgno><a class="newsArchive" href="#Application.URL.conjurer#?objectID=#url.objectID#&pgno=#i#"></a></cfif>
-				</cfloop>
-				<cfif url.pgno NEQ iNumberOfPages>
-					&nbsp;&nbsp;<a class="newsArchive" href="#Application.URL.conjurer#?objectID=#url.objectID#&pgno=#(url.pgno+1)#">Next Page</a>
-				</cfif>
-				</div>				
-				</cfoutput>
+				<!--- save pagination output to variable --->
+				<cfsavecontent variable="pageNums2">
+					<cfoutput>
+					<br>
+					<div align="center" class="newsArchive">
+					<cfif url.pgno NEQ 1>
+						<a class="newsArchive" href="#Application.URL.conjurer#?objectID=#url.objectID#&pgno=#(url.pgno-1)#">Previous Page</a>&nbsp;&nbsp;
+					</cfif>
+					<cfloop index="i" from="1" to="#iNumberOfPages#">
+					<cfif i NEQ url.pgno></cfif><a class="newsArchive" href="#Application.URL.conjurer#?objectID=#url.objectID#&pgno=#i#">#i#</a><cfif i NEQ url.pgno><a class="newsArchive" href="#Application.URL.conjurer#?objectID=#url.objectID#&pgno=#i#"></a></cfif>
+					</cfloop>
+					<cfif url.pgno NEQ iNumberOfPages>
+						&nbsp;&nbsp;<a class="newsArchive" href="#Application.URL.conjurer#?objectID=#url.objectID#&pgno=#(url.pgno+1)#">Next Page</a>
+					</cfif>
+					</div>				
+					</cfoutput>
+				</cfsavecontent>
+				<!--- append pagination output to Invocations array --->
+				<cfset arrayAppend(request.aInvocations,pageNums2)>
 			</cfif>
 			
 		</cfif>

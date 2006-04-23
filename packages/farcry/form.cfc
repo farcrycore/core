@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/form.cfc,v 1.8 2003/10/20 06:14:03 brendan Exp $
-$Author: brendan $
-$Date: 2003/10/20 06:14:03 $
-$Name: b201 $
-$Revision: 1.8 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/form.cfc,v 1.11 2004/06/29 07:01:48 paul Exp $
+$Author: paul $
+$Date: 2004/06/29 07:01:48 $
+$Name: milestone_2-2-1 $
+$Revision: 1.11 $
 
 || DESCRIPTION ||
 $Description: form cfc $
@@ -25,13 +25,37 @@ $out:$
 
 <cfcomponent displayname="Form" hint="Manages common form functions">
 
+	<cffunction name="sanitiseFileName">
+		<cfargument name="serverfile" required="yes">
+		<cfargument name="clientfilename" required="yes"> 
+		<cfargument name="serverDirectory" required="yes">
+		<cfset var bResult = true>
+		<cfset var validName = arguments.serverfile>
+		<cfset var i = 1>
+		
+		<cfif refindnocase("[\$\^\s\%\*''""<>,\&?]",arguments.serverfile) gt 0>
+			<cfset validName = rereplace(arguments.serverfile,"[?\$\^\s\%\*''""<>,\&]","_","ALL")>
+				<!--- don't overwrite an existing filename --->
+			<cfset i = 1>
+			<cfloop condition="#fileexists('#file.ServerDirectory#/#validName#')#">
+			  <cfset validName = rereplace(arguments.clientfilename,"[?\$\^\s\%\*''""<>,\&]","_","ALL") & "#i#." & listlast(arguments.serverfile,".")>
+			  <cfset i = i + 1>
+			</cfloop>
+			<!--- rename file --->
+			<cffile action="rename" source="#arguments.ServerDirectory#/#arguments.serverfile#" destination="#arguments.ServerDirectory#/#validName#">
+		</cfif>
+		<cfreturn validName>
+	</cffunction>
+
 	<cffunction name="uploadFile" hint="Uploads a file">
 		<cfargument name="formField" hint="The name of the field that contains the file to be uploaded" required="true"   type="string">
 		<cfargument name="destination" hint="Directory file is to be uploaded to - must pass in absolute path" type="string" default="#application.defaultImagePath#">
 		<cfargument name="nameconflict" hint="File write behavior" type="string" default="#application.config.general.fileNameConflict#">
 		<cfargument  name="accept" hint="File types to accept" type="string" default="">
 
-		<cfset stReturn = structNew()>
+		<cfset var stReturn = structNew()>
+		<cfset var validName = ''>
+		<cfset var i = 1>
 		<cfset stReturn.bSuccess = false>
 
 		<cfif len(arguments.formField)>
@@ -91,7 +115,8 @@ $out:$
 		<cfargument name="lSelectedValues" required="No" default="" hint="The values which are selected by default">
 		<cfargument name="valueColumn" required="No" default="objectID" hint="This is the query column to evaluate for option values - should generally be objectID though">
 		<cfargument name="displayColumn" required="No" default="title" hint="This is the query column to evaluate for option displau values">
-
+		<cfset var html = ''>
+		
 		<cfsavecontent variable="html">
 			<cfoutput>
 			<table>
@@ -117,16 +142,23 @@ $out:$
 
 	<cffunction name="renderFileField" hint="Returns a file upload field - with a link to the file if it has been uploaded" >
 		<cfargument name="fieldname" required="Yes">
-		<cfargument name="filepath" required="Yes" hint="This assumes folder path relative to the application.defaultfilepath dir">
+		<cfargument name="filepath" required="Yes" default="" hint="This assumes folder path relative to the application.defaultfilepath dir">
 		<cfargument name="filename" required="No" default="">
-
+		<cfset var html = ''>
+		<cfset var path = "#application.defaultfilepath#/">
+		
+		<cfscript>
+			if(len(arguments.filepath))
+				path = path & "#arguments.filepath#/";
+			path = path & arguments.filename;	
+		</cfscript>
 		<cfsavecontent variable="html">
 		<cfoutput>
 			<table cellpadding="0" cellspacing="0">
 				<tr>
 					<td>
 						<input type="File" name="#arguments.fieldname#">
-						<cfif fileExists("#application.defaultfilepath#/#arguments.filepath#/#arguments.filename#")>
+						<cfif fileExists("#path#")>
 							<a href="/files/#arguments.filepath#/#arguments.filename#" target="_blank" >View Current File</a>
 						<cfelse>
 							No File currently Uploaded
@@ -146,6 +178,25 @@ $out:$
 		<cfargument name="selectedMonth" default="#month(now())#" required="No" hint="Current selected month">
 		<cfargument name="selectedday" default="#day(now())#" required="No" hint="Current selected day">
 		<cfargument name="elementNamePrefix" required="No" default="" hint="form element names are named day,month,and year - this argument will prefix those names">
+		<cfargument name="bDisplayMonthAsString" required="no" default="1" hint="Displays month as string as opposed to numerical equivalent">
+		<cfargument name="bDisplayTime" required="no" default="0" hint="Display hours and minutes as well as dd mm yyyy">
+		<cfargument name="selectedhour" default="#hour(now())#" required="No" hint="Current selected hour">
+		<cfargument name="selectedminute" default="#minute(now())#" required="No" hint="Current selected minute">
+		<cfargument name="selectedDate" required="No" hint="If this is provided, will override any other selections passed in">
+		<cfset var i = 1>
+		<cfset var html = ''>
+		
+		<cfif isDefined("arguments.selectedDate")>
+			<cfscript>
+				if(isDate(arguments.selectedDate))
+					arguments.selectedDay = day(arguments.selectedDate);
+					arguments.selectedYear = year(arguments.selectedDate);
+					arguments.selectedMonth = month(arguments.selectedDate);
+					arguments.selectedHour = hour(arguments.selectedDate);
+					arguments.selectedMinute = minute(arguments.selectedDate);
+			</cfscript>
+		</cfif>
+		
 
 		<cfsavecontent variable="html">
 			<cfoutput>
@@ -161,7 +212,7 @@ $out:$
 						<td>
 							<select name="#arguments.elementNamePrefix#month">
 								<cfloop from="1" to="12" index="i">
-									<option value="#i#" <cfif i IS arguments.selectedMonth>selected</cfif>>#monthAsString(i)#</option>
+									<option value="#i#" <cfif i IS arguments.selectedMonth>selected</cfif>><cfif NOT arguments.bDisplayMonthAsString>#i#<cfelse>#monthAsString(i)#</cfif></option>
 								</cfloop>
 							</select>
 						</td>
@@ -172,6 +223,22 @@ $out:$
 								</cfloop>
 							</select>
 						</td>
+						<cfif arguments.bDisplayTime>
+						<td>
+							<select name="#arguments.elementNamePrefix#hour">
+								<cfloop from="0" to="23" index="i">
+									<option value="#i#" <cfif i IS arguments.selectedHour>selected</cfif>>#i#</option>
+								</cfloop>
+							</select>
+						</td>
+						<td>
+							<select name="#arguments.elementNamePrefix#minute">
+								<cfloop from="0" to="59" index="i">
+									<option value="#i#" <cfif i IS arguments.selectedMinute>selected</cfif>>#i#</option>
+								</cfloop>
+							</select>
+						</td>
+						</cfif> 
 					</tr>
 				</table>
 			</cfoutput>
@@ -187,6 +254,7 @@ $out:$
 		<cfargument name="displayColumn" required="No" default="title" hint="This is the query column to evaluate for option displau values">
 		<cfargument name="defaultMsg" required="No" default="Please Make Selection" hint="This is the default mesage in the select box when no records are selected">
 		<cfargument name="onChangeJS" required="false" default="">
+		<cfset var html = ''>
 
 		<cfsavecontent variable="html">
 			<cfoutput>
@@ -208,6 +276,7 @@ $out:$
 		<cfargument name="value" required="false" hint="The value to display in this text field" default="">
 		<cfargument name="length" type="numeric"  required="false" default="250">
 		<cfargument name="size" type="numeric"  required="false" default="70">
+		<cfset var html = ''>
 		<cfsavecontent variable="html">
 			<cfoutput>
 				<input type="text" name="#arguments.name#" size="#arguments.size#" length="#arguments.length#" value="#arguments.value#">

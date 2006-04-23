@@ -6,11 +6,11 @@ Daemon Pty Limited 1995-2002
 http://www.daemon.com.au
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_versioning/rollbackArchive.cfm,v 1.9 2003/11/05 04:46:09 tom Exp $
-$Author: tom $
-$Date: 2003/11/05 04:46:09 $
-$Name: milestone_2-1-2 $
-$Revision: 1.9 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_versioning/rollbackArchive.cfm,v 1.10 2004/04/22 07:42:50 brendan Exp $
+$Author: brendan $
+$Date: 2004/04/22 07:42:50 $
+$Name: milestone_2-2-1 $
+$Revision: 1.10 $
 
 || DESCRIPTION || 
 Rolls back current object to selected archive version and creates an archive of current version.
@@ -39,53 +39,25 @@ ArchiveId - id of archive version which will be sent back to live
 	<cfset typename = thisTypename>	
 </cfif>
 
-<cfset typename = application.types[typename].typePath>
-
-<!--- get the current Live Object to archive --->
-<q4:contentobjectget ObjectId="#arguments.objectID#" r_stObject="stLiveObject" typename="#typename#"> 
-<!--- Convert current live object to WDDX --->
-<cfwddx input="#stLiveObject#" output="stLiveWDDX"  action="cfml2wddx">
-
-<cfscript>
-	//set up the dmArchive structure to save
-	dmArchiveType = 'dmArchive';
-	//typeID = Evaluate("application.#dmArchiveType#TypeID");
-	stProps = structNew();
-	stProps.objectID = createUUID();
-	stProps.archiveID = stLiveObject.objectID;
-	stProps.objectWDDX = stLiveWDDX;
-	stProps.lastupdatedby = session.dmSec.authentication.userlogin;
-	stProps.datetimelastupdated = Now();
-	stProps.createdby = session.dmSec.authentication.userlogin;
-	stProps.datetimecreated = Now();
-	stProps.label = stLiveObject.title;
-	stResult.result = true;
-	stRestult.message = 'Update Successful';
-</cfscript>
-
 <cflock name="archive_#arguments.archiveID#" timeout="50" type="exclusive">
 	<!--- Make the archive - type is dmArchive --->
-	<cfscript>
-		oType = createobject("component","#application.packagepath#.types.#dmArchiveType#");
-		stNewObj = oType.createData(stProperties=stProps);
-		archiveObjID = stNewObj.objectid;
-	</cfscript>	
+	<cfset oType = createObject("component",application.types[typename].typePath)>
+	<cfset stResult = oType.archiveObject(objectid=arguments.objectid,typename=typename)>
 		
 	<!--- retrieve archive version --->
 	<q4:contentobjectget ObjectId="#arguments.archiveID#" r_stObject="stArchive" typename="#application.types.dmArchive.typePath#"> 
 	
 	<!--- Convert wddx archive object --->
 	<cfwddx input="#stArchive.objectwddx#" output="stArchiveDetail"  action="wddx2cfml">
-	<cfset stArchiveDetail.objectid = stLiveObject.objectID>
+	<cfset stArchiveDetail.objectid = arguments.objectID>
+	<cfset stArchiveDetail.locked = 0>
+	<cfset stArchiveDetail.lockedBy = "">
 	
 	<!--- Update current live object with archive property values	 --->
-	<cfscript>
-		oContentType = createobject("component","#typename#");
-		oContentType.setData(stProperties=stArchiveDetail,auditNote='Archive rolled back');
-	</cfscript>
+	<cfset oType.setData(stProperties=stArchiveDetail,auditNote='Archive rolled back')>
 		
 	<!--- update tree --->
-	<nj:getNavigation objectId="#stLiveObject.objectID#" bInclusive="1" r_stObject="stNav" r_ObjectId="objectId">	
+	<nj:getNavigation objectId="#arguments.objectID#" bInclusive="1" r_stObject="stNav" r_ObjectId="objectId">	
 	<nj:updateTree ObjectId="#stNav.objectId#">
 						
 </cflock>	

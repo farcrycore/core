@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/security/authentication.cfc,v 1.20.2.1 2004/02/13 05:49:08 brendan Exp $
-$Author: brendan $
-$Date: 2004/02/13 05:49:08 $
-$Name: milestone_2-1-2 $
-$Revision: 1.20.2.1 $
+$Header: /cvs/farcry/farcry_core/packages/security/authentication.cfc,v 1.26.2.1 2004/10/21 21:56:07 tom Exp $
+$Author: tom $
+$Date: 2004/10/21 21:56:07 $
+$Name: milestone_2-2-1 $
+$Revision: 1.26.2.1 $
 
 || DESCRIPTION || 
 $Description: authentication cfc $
@@ -128,20 +128,27 @@ $out:$
 				stResult.message = "User already exists";
 			</cfscript>	
 		<cfelse>
+			<!--- check if ud uses password encryption --->
+			<cfif structKeyExists(Application.dmSec.UserDirectory[arguments.userDirectory],"bEncrypted") and Application.dmSec.UserDirectory[arguments.userDirectory].bEncrypted>
+				<cfset userPassword = hash(arguments.userPassword)>
+			<cfelse>
+				<cfset userPassword = arguments.userPassword>
+			</cfif>
+			
 			<cflock name="#createUUID()#" timeout="20">
 				<cftransaction>
 				<cfswitch expression="#application.dbtype#">
 					<cfcase value="ora">
 						<cfquery datasource="#application.dsn#">
 							INSERT INTO #application.dbowner#dmUser (userid, userLogin,userPassword,userNotes,userStatus )
-							VALUES (DMUSER_SEQ.nextval,'#arguments.UserLogin#','#arguments.userPassword#',<cfqueryparam cfsqltype="CF_SQL_VARCHAR" value="#arguments.userNotes#">,'#arguments.userstatus#')
+							VALUES (DMUSER_SEQ.nextval,'#arguments.UserLogin#','#userPassword#',<cfqueryparam cfsqltype="CF_SQL_VARCHAR" value="#arguments.userNotes#">,'#arguments.userstatus#')
 						</cfquery> 
 					</cfcase>
 					
 					<cfdefaultcase>
 						<cfquery datasource="#application.dsn#">
 							INSERT INTO #application.dbowner#dmUser ( userLogin,userPassword,userNotes,userStatus )
-							VALUES ('#arguments.UserLogin#','#arguments.userPassword#',<cfqueryparam cfsqltype="CF_SQL_VARCHAR" value="#arguments.userNotes#">,'#arguments.userstatus#')
+							VALUES ('#arguments.UserLogin#','#userPassword#',<cfqueryparam cfsqltype="CF_SQL_VARCHAR" value="#arguments.userNotes#">,'#arguments.userstatus#')
 						</cfquery> 	
 					</cfdefaultcase>
 				</cfswitch>
@@ -158,7 +165,7 @@ $out:$
 							oaudit.logActivity(auditType="dmSec.createuser", username=StUser.userlogin, location=cgi.remote_host, note="user #arguments.userlogin# created");
 				</cfscript>
 			</cflock>
-			<cfset	stResult.userid = q.thisUserID>
+			<cfset stResult.userid = q.thisUserID>
 		</cfif>			
 		
 	<cfreturn stResult>
@@ -188,12 +195,29 @@ $out:$
 	
 	<cffunction name="deleteUser" hint="Deletes a user from the datastore" returntype="struct" output="No">
 		<cfargument name="userid" required="true" hint="Unique userid of user to delete">
+		<cfargument name="userdirectory" required="true" hint="user directory user belongs to" default="clientud">
 		<cfargument name="dsn" required="true">
 		
+		
+		<!--- get username --->
+		<cfset stUser = getUser(userid=arguments.userid,userdirectory=arguments.userdirectory)>
+			
+		<!--- delete profile --->
+		<cfif structKeyExists(stUser,"userLogin")>
+			<cfquery name="qProfile" datasource="#stUd[arguments.userdirectory].datasource#">
+				select objectid from #application.dbowner#dmProfile 
+				where userName = <cfqueryparam value="#stUser.userLogin#" cfsqltype="CF_SQL_VARCHAR">
+			</cfquery>
+			<cfif qProfile.recordcount>
+				<cfset oProfile = createObject("component", application.types.dmProfile.typepath)>
+				<cfset oProfile.delete(objectid=qProfile.objectid)>
+			</cfif>
+		</cfif>
 		<cfscript>
+			//delete user
 			sql = "DELETE FROM #application.dbowner#dmUser where userID = #arguments.userid#";
 			query(sql=sql,dsn=arguments.dsn);
-			sql = "DELETE FROM #application.dbowner#dmUserToGroup where userID = #FORM.userid#";
+			sql = "DELETE FROM #application.dbowner#dmUserToGroup where userID = #arguments.userid#";
 			query(sql=sql,dsn=arguments.dsn);
 			stResult = structNew();
 			stResult.bSuccess = true;
@@ -275,17 +299,14 @@ $out:$
 			
 				<cfcase value="Daemon">
 					<!--- search for the user --->
+					<cfquery name="qUser" datasource="#stUd[ud].datasource#" >
+						SELECT * FROM #application.dbowner#dmUser
+							<cfif isDefined("arguments.userLogin")>WHERE upper(UserLogin) = <cfqueryparam value="#ucase(arguments.userLogin)#" cfsqltype="CF_SQL_VARCHAR"></cfif>
+							<cfif isDefined("arguments.userId")>WHERE userId = <cfqueryparam value="#arguments.userId#" cfsqltype="CF_SQL_VARCHAR"></cfif>
+							<cfif isDefined("arguments.fragment")>WHERE UserLogin like <cfqueryparam value="#ucase(arguments.fragment)#" cfsqltype="CF_SQL_VARCHAR"></cfif>
+						ORDER BY UserLogin ASC
+					</cfquery>
 					<cfscript>
-						sql = "
-						SELECT  * FROM #application.dbowner#dmUser ";
-						if (isDefined("arguments.userLogin"))
-							sql = sql & "WHERE upper(UserLogin) = '#ucase(arguments.userLogin)#' ";
-						else if (isDefined("arguments.userId"))
-							sql = sql & "WHERE UserId = '#arguments.userId#' ";
-						else if (isDefined("arguments.fragment"))
-							sql = sql & "WHERE upper(UserLogin) like '#ucase(arguments.fragment)#' ";
-						sql = sql & "ORDER BY UserLogin ASC";
-						qUser = query(sql=sql,dsn=stUd[ud].datasource);
 						for(i=1;i LTE qUser.recordCount;i = i+1)
 						{
 							thisRow = structnew();
@@ -357,6 +378,25 @@ $out:$
 								sql = sql & ") ORDER BY groupName";
 								break;
 							}
+							
+							case "postgresql":
+							{
+								sql = "
+								SELECT *
+								FROM dmGroup
+								WHERE groupId not in (SELECT g.groupId FROM dmGroup g ";
+								if (isDefined('arguments.userlogin'))
+								{
+									sql = sql & "
+									, dmUserToGroup ug, dmUser u
+									WHERE g.groupId = ug.groupid
+									AND upper(u.userLogin) ='#ucase(arguments.userLogin)#'
+									AND u.userId = ug.userId";
+								}	
+								sql = sql & ") ORDER BY groupName";
+								break;
+							}
+							
 							case "mysql":
 							{
 								tempSql = "SELECT g.groupId FROM dmGroup g ";
@@ -572,7 +612,7 @@ $out:$
 			
 								<cfif listLen(lGroups) gt 0 AND lGroups neq "false">
 									<!--- get the group mappings for this policy group on this user directory --->
-									aGroups = oAuthorisation.getMultiplePolicyGroupMappings(lgroupnames=lgroups,userdirectory=ud);
+									<cfset aGroups = oAuthorisation.getMultiplePolicyGroupMappings(lgroupnames=lgroups,userdirectory=ud)>
 	
 									<!--- loop through the mapped groups and check if the user is in them --->
 									<cfloop index="j" from="1" to="#arrayLen(aGroups)#">
@@ -676,7 +716,14 @@ $out:$
 								</cfif>
 							</cfif>
 							
-							<cfif trim(stUser.userpassword) IS trim(arguments.userpassword)>
+							<!--- check if UD has password encryption --->
+							<cfif structKeyExists(stUD[ud],"bEncrypted") and stUD[ud].bEncrypted>
+								<cfset userPassword = hash(arguments.userPassword)>
+							<cfelse>
+								<cfset userPassword = arguments.userPassword>
+							</cfif>
+							
+							<cfif trim(stUser.userpassword) IS trim(userPassword)>
 								
 								<!--- get the users groups --->
 								<cfscript>
@@ -860,9 +907,21 @@ $out:$
 		</cfscript>
 			
 		<cfif stResult.bSuccess>
+			<!--- check if ud uses password encryption --->
+			<cfif structKeyExists(Application.dmSec.UserDirectory[arguments.userDirectory],"bEncrypted") and Application.dmSec.UserDirectory[arguments.userDirectory].bEncrypted>
+				<!--- check if password has changed --->
+				<cfif arguments.userPassword neq stOriginalUser.userPassword>
+					<cfset userPassword = hash(arguments.userPassword)>
+				<cfelse>
+					<cfset userPassword = arguments.userPassword>
+				</cfif>
+			<cfelse>
+				<cfset userPassword = arguments.userPassword>
+			</cfif>
+			
 			<cfquery datasource="#application.dsn#">
 				UPDATE #application.dbowner#dmUser SET
-				userLogin='#arguments.UserLogin#',userPassword='#arguments.userPassword#',userNotes=<cfqueryparam cfsqltype="CF_SQL_VARCHAR" value="#arguments.usernotes#">,userStatus='#arguments.userStatus#'
+				userLogin='#arguments.UserLogin#',userPassword='#userPassword#',userNotes=<cfqueryparam cfsqltype="CF_SQL_VARCHAR" value="#arguments.usernotes#">,userStatus='#arguments.userStatus#'
 				WHERE userId='#arguments.userId#'
 			</cfquery> 
 			<cfscript>

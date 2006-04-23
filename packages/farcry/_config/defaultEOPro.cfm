@@ -7,7 +7,7 @@ $License: Released Under the "Common Public License 1.0", http://www.opensource.
 $Header: /cvs/farcry/farcry_core/packages/farcry/_config/defaultEOPro.cfm,v 1.1 2003/11/29 09:46:46 paul Exp $
 $Author: paul $
 $Date: 2003/11/29 09:46:46 $
-$Name: milestone_2-1-2 $
+$Name: milestone_2-2-1 $
 $Revision: 1.1 $
 
 || DESCRIPTION || 

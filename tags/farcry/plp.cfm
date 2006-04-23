@@ -238,32 +238,37 @@ TODO:
 	Include the Proper steps code.
 ///////////////////////////////////////////////////////////////
 --->
-<cftry>
+ <cftry> 
 
-<cfset output = duplicate(stPLP.plp.output)>
-	<cfinclude template="#attributes.stepDir#/#stPLP.plp.steps[stPLP.currentStep].template#">	
-<cfset stPLP.plp.output = duplicate(output)>
-<cfset request.stPLP = duplicate(stPLP)>
-
-	<cfcatch type="Any">
-<cfoutput>
-<fieldset style="">
-	<legend>PLP ERROR!</legend>
-	an error has occured with this plp.<br>
-	PLP Step: #stPLP.currentStep#<br>
-	PLP template: #attributes.stepDir#/#stPLP.plp.steps[stPLP.currentStep].template#
-	<br>
-	ColdFusion Error Data<hr>
-	<cfset request.cfdumpinited = false>
-	<cfdump var="#cfcatch#">
-</fieldset>
-</cfoutput>
+	<cfset output = duplicate(stPLP.plp.output)>
+		
+	<!--- Check if plpstep has a different stepDir --->
+	<cfif structKeyExists(stPLP.plp.steps[stPLP.currentStep],"stepDir")>
+		<cfset plpfilepath = "#stPLP.plp.steps[stPLP.currentStep].stepDir#/#stPLP.plp.steps[stPLP.currentStep].template#">
+	<cfelse>
+		<cfset plpfilepath = "#attributes.stepDir#/#stPLP.plp.steps[stPLP.currentStep].template#">
+	</cfif>
 	
+	<cfinclude template="#plpfilepath#">
+	
+	<cfset stPLP.plp.output = duplicate(output)>
+	<cfset request.stPLP = duplicate(stPLP)>
+
+	 <cfcatch type="Any">
+		<cfoutput>
+		<fieldset style="">
+		    <legend>PLP ERROR!</legend>
+		    an error has occured with this plp.<br>
+		    PLP Step: #stPLP.currentStep#<br>
+		    PLP template: #plpfilepath#	
+			<br>
+			ColdFusion Error Data<hr>
+			<cfset request.cfdumpinited = false>
+			<cfdump var="#cfcatch#">
+		</fieldset>
+		</cfoutput>
 	</cfcatch>
 </cftry>
-
-	
-	
 	
 <!--- 
 ///////////////////////////////////////////////////////////////

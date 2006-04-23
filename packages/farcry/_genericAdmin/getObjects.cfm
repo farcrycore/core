@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_genericAdmin/getObjects.cfm,v 1.14.2.1 2005/05/06 04:09:01 guy Exp $
-$Author: guy $
-$Date: 2005/05/06 04:09:01 $
-$Name: milestone_2-1-2 $
-$Revision: 1.14.2.1 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_genericAdmin/getObjects.cfm,v 1.14 2003/11/01 07:00:15 geoff Exp $
+$Author: geoff $
+$Date: 2003/11/01 07:00:15 $
+$Name: milestone_2-2-1 $
+$Revision: 1.14 $
 
 || DESCRIPTION || 
 $Description: get objects recordset for genericAdmin $
@@ -21,7 +21,6 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
 
 <cfparam name="arguments.criteria.order" default="datetimecreated">
 <cfparam name="arguments.criteria.orderDirection" default="desc">
-
 <cfscript>
 	sql = "select type.*";
 	// check if restricted by categories 
@@ -38,13 +37,10 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
 	// check if restricted by status 
 	if (isdefined("arguments.criteria.currentStatus"))
 	{
-		if(structKeyExists(application.types[arguments.typename].stProps,'status'))
-		{
-			if (arguments.criteria.currentStatus IS "all")
-				sql = sql & " and type.status IN ('draft','approved','declined','pending')";
-			else
-				sql = sql & " and type.status = '#arguments.criteria.currentStatus#'";
-		}
+		if (arguments.criteria.currentStatus IS "all")
+			sql = sql & " and type.status IN ('draft','approved','declined','pending')";
+		else
+			sql = sql & " and type.status = '#arguments.criteria.currentStatus#'";
 	}
 	//check for filter --->
 	if (isdefined("arguments.criteria.filter") AND len(trim(arguments.criteria.searchtext)))
@@ -64,7 +60,6 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
 	sql = sql & " ORDER BY type.#arguments.criteria.order# #arguments.criteria.orderDirection#";
 
 </cfscript>
-
 <cfquery name="qGetObjects" datasource="#arguments.dsn#">
 	#preserveSingleQuotes(sql)#
 </cfquery>

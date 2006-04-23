@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/tree.cfc,v 1.30 2004/01/05 03:36:41 paul Exp $
+$Header: /cvs/farcry/farcry_core/packages/farcry/tree.cfc,v 1.33 2004/03/24 08:35:15 paul Exp $
 $Author: paul $
-$Date: 2004/01/05 03:36:41 $
-$Name: milestone_2-1-2 $
-$Revision: 1.30 $
+$Date: 2004/03/24 08:35:15 $
+$Name: milestone_2-2-1 $
+$Revision: 1.33 $
 
 || DESCRIPTION ||
 $Description: nested tree cfc $
@@ -30,6 +30,15 @@ $out:$
 <cffunction name="deleteBranch" access="public" returntype="struct" hint="Delete a node and the branch beneath it." output="No">
 	<cfargument name="dsn" required="no" type="string" default="#application.dsn#">
 	<cfargument name="objectid" required="yes" type="UUID">
+	<cfset var stTmp = structNew()>
+	<cfset var stReturn = structNew()>
+	<cfset var sql = ''>
+	<cfset var q = ''>
+	<cfset var oldleft = ''>
+	<cfset var typename = ''>
+	<cfset var nLeftSql = ''>
+	<cfset var qNLeft = ''>
+	<cfset var count = ''>
 
 	<cfinclude template="_tree/deleteBranch.cfm">
 
@@ -59,10 +68,17 @@ $out:$
 	<cfargument name="bIncludeSelf" required="no" type="boolean" default="false">
 	<cfargument name="dsn" required="no" type="string" default="#application.dsn#">
 	<cfargument name="nLevel" required="no" type="numeric">
-	<cfset  parentID = ''>
-	<cfset  nlevel = -1>
+	<cfset var parentID = ''>
+	<cfset var qnode = ''>
+	<cfset var rowindex = 1>
+	<cfset var qParentIDs = ''>
+	<cfset var sql = ''>
+	<cfset var ancestors = ''>
+	<cfset var q = ''>
+	<cfset var objID = ''>
+	<cfset var nLev = -1>
+	<cfset var qSelf = ''>
 	
-
 	<cfinclude template="_tree/getAncestors.cfm">
 
 	<cfreturn qReturn>
@@ -73,6 +89,9 @@ $out:$
 <cffunction name="getChildren" access="public" returntype="query" hint="Get children of the specified node." output="No">
 	<cfargument name="dsn" required="yes" type="string" default="#application.dsn#">
 	<cfargument name="objectid" required="yes" type="UUID">
+	<cfset var sql = ''>
+	<cfset var qChildren = ''>
+	<cfset var qReturn = ''>
 
 	<cfinclude template="_tree/getChildren.cfm">
 
@@ -90,6 +109,8 @@ $out:$
 	<cfset var qreturn = "">
 	<cfset var sql = structNew()>
 	<cfset var nlevel = 34567890> <!--- unlikely that we should ever have a table this deep --->
+	<cfset var q = ''>
+	<cfset var i = 1>
 
 	<cfscript>
 	//get descendants of supplied object, optionally to a supplied depth (1 = 1 level down, etc)
@@ -173,6 +194,11 @@ $out:$
 	<cfargument name="objectid" required="yes" type="UUID">
 	<cfargument name="lColumns" required="no" type="string" default="">
 	<cfargument name="aFilter" required="no" type="array" default="#arrayNew(1)#">
+	<cfargument name="bIncludeSelf" required="no" type="boolean" default="0" hint="set this to 1 if you want to include the objectid you are passing">
+	
+	<cfset var qParent = ''>
+	<cfset var temp = ''>
+	<cfset var qReturn = ''>
 
 	<cfinclude template="_tree/getSiblings.cfm">
 
@@ -184,6 +210,7 @@ $out:$
 <cffunction name="getNode" access="public" returntype="query" hint="Gets any given node in the nested tree model" output="No">
 	<cfargument name="objectid" required="yes" type="UUID">
 	<cfargument name="dsn" required="yes" type="string" default="#application.dsn#">
+	<cfset var q = ''>
 
 	<cfquery name="q" datasource="#arguments.dsn#">
 		SELECT * from nested_tree_objects where objectid = '#arguments.objectid#'
@@ -195,6 +222,20 @@ $out:$
 <cffunction name="getSecondaryNav" access="public" returntype="query" hint="Get the Secondary Nav" output="No">
 	<cfargument name="dsn" required="yes" type="string" default="#application.dsn#">
 	<cfargument name="objectid" required="yes" type="UUID">
+	
+	<cfset var q = ''>
+	<cfset var nlevel = ''>
+	<cfset var sql = ''>
+	<cfset var nleft = ''>
+	<cfset var nright = ''>
+	<cfset var qReturn = ''>
+	<cfset var leaf = ''>
+	<cfset var qParent = ''>
+	<cfset var parent = ''>
+	<cfset var grandpa = ''>
+	<cfset var secondaryNav = ''>
+	
+	
 
 	<cfinclude template="_tree/getSecondaryNav.cfm">
 	<!---
@@ -211,6 +252,8 @@ $out:$
 <cffunction name="getParentID" access="public" returntype="query" hint="Get an objects parent ID in the NTM" output="No">
 	<cfargument name="objectid" type="string" required="true">
 	<cfargument name="dsn" required="false" default="#application.dsn#">
+	
+	<cfset var q = ''>
 
 	<cfquery datasource="#arguments.dsn#" name="q">
 		select parentid from nested_tree_objects
@@ -224,6 +267,8 @@ $out:$
 <cffunction name="getRootNode" access="public" returntype="query" hint="Get root node for the specified typename." output="No">
 	<cfargument name="dsn" required="yes" type="string" default="#application.dsn#">
 	<cfargument name="typename" required="yes" type="string">
+	<cfset var qRoot = ''>
+	<cfset var qReturn = ''>
 
 	<cfinclude template="_tree/getRootNode.cfm">
 	<cfreturn qReturn>
@@ -235,7 +280,32 @@ $out:$
 	<cfargument name="objectid" required="yes" type="UUID" hint="The object that is at the head of the branch to be moved.">
 	<cfargument name="parentid" required="yes" type="UUID" hint="The node to which it will be attached as a child. Note this function attaches the node as an only child or as the first child to the left of a group of siblings.">
 	<cfargument name="pos" required="false" default="1" type="numeric" hint="The position in the tree">
-
+	
+	<cfset var aSQL = arrayNew(1)>
+	<cfset var bExpandDest = 1>
+	<cfset var count = ''>
+	<cfset var destChildrenCount = ''>
+	<cfset var dest_left = ''>
+	<cfset var dest_parent_level = ''>
+	<cfset var diff = ''>	
+	<cfset var i = 1>
+	<cfset var minr = 1>
+	<cfset var nleft = ''>
+	<cfset var nright = ''>
+	<cfset var q = ''>
+	<cfset var qBranchIDs = ''>
+	<cfset var qChildren = ''>
+	<cfset var qDestDescendants = ''>
+	<cfset var qSourceParentDesc = ''>
+	<cfset var qTemp = ''>
+	<cfset var rowindex = 1>
+	<cfset var stTmp = structNew()>
+	<cfset var stReturn = structNew()>
+	<cfset var sql = ''>
+	<cfset var source_parentid = ''>
+	<cfset var typename = ''>
+	
+		
 	<cfinclude  template="_tree/moveBranch.cfm">
 
 	<cfreturn stReturn>
@@ -245,6 +315,9 @@ $out:$
 <cffunction name="numberOfNodesAtObjectLevel" hint="The number of nodes at the same level as an object" output="No">
 	<cfargument name="objectid" required="true" type="uuid">
     <cfargument name="dsn" required="no" type="string" default="#application.dsn#">
+	<cfset var q = ''>
+	<cfset var sql = ''>
+	<cfset var objCount = 0>
 
 	<cfscript>
 	sql = "select count(*) + 1 AS objCount from nested_tree_objects where parentid = '#arguments.objectid#'";
@@ -258,6 +331,9 @@ $out:$
 <cffunction name="rootNodeExists" hint="Checks to see if a root node of a given type already exists" output="No">
 	<cfargument name="typename" required="true">
     <cfargument name="dsn" required="false" type="string" default="#application.dsn#">
+	<cfset var bRootNodeExists = false>
+	<cfset var q = ''>
+	<cfset var sql = ''>
 
 	<cfscript>
 	bRootNodeExists = false;
@@ -275,6 +351,10 @@ $out:$
 	<cfargument name="objectid" required="yes" type="UUID">
 	<cfargument name="objectname" required="yes" type="string">
 	<cfargument name="typename" required="yes" type="string">
+	
+	<cfset var stTmp = structNew()>
+	<cfset var stReturn = structNew()>
+	<cfset var sql = ''>
 
 	<cfinclude template="_tree/setRootNode.cfm">
 
@@ -289,7 +369,17 @@ $out:$
 	<cfargument name="objectname" required="yes" type="string" hint="The child node object label.">
 	<cfargument name="typename" required="yes" type="string" hint="The child node object type.">
 	<cfargument name="pos" required="yes" type="numeric" hint="The position the new child node will take amongst the siblings. 1 = extreme left, 2 = second from left etc.">
-
+	
+	<cfset var rowindex = 1>	
+	<cfset var stTmp = structNew()>
+	<cfset var stReturn = structNew()>
+	<cfset var sql = ''>
+	<cfset var q = ''>
+	<cfset var qNrightSeq = ''>
+	<cfset var minr = 1>
+	<cfset var maxr = ''>
+	<cfset var plevel = ''>
+	
 	<cfinclude template="_tree/setChild.cfm">
 
 	<cfreturn stReturn>
@@ -301,6 +391,15 @@ $out:$
 	<cfargument name="objectid" required="yes" type="UUID">
 	<cfargument name="objectname" required="yes" type="string">
 	<cfargument name="typename" required="yes" type="string">
+	
+	<cfset var stTmp = structNew()>
+	<cfset var stReturn = structNew()>
+	<cfset var sql = ''>
+	<cfset var q = ''>
+	<cfset var tempsql = ''>
+	<cfset var tempResult = ''>
+	<cfset var pleft = ''>
+	<cfset var plevel = ''>
 
 	<cfinclude template="_tree/setOldest.cfm">
 
@@ -313,7 +412,14 @@ $out:$
 	<cfargument name="objectid" required="yes" type="UUID">
 	<cfargument name="objectname" required="yes" type="string">
 	<cfargument name="typename" required="yes" type="string">
-	<cfset var qChildren = queryNew('whatever')>
+
+	<cfset var qChildren = ''>
+	<cfset var stTmp = structNew()>
+	<cfset var stReturn = structNew()>
+	<cfset var sql = ''>
+	<cfset var q = ''>
+	<cfset var maxr = ''>
+	<cfset var plevel = ''>
 
 	<cfinclude template="_tree/setYoungest.cfm">
 
@@ -328,6 +434,13 @@ $out:$
 	<cfargument name="levelsabove" required="yes" type="numeric" default="2">
 	<cfargument name="levelsbelow" required="no" type="numeric" default="1">
 	<cfargument name="status" required="no" type="string" default=""><!--- if passed, will filter the joined table by the field in it named "status", by whatever value is passed in this param (so don't pass it if the table doesn't have a 'status' field)  --->
+	
+	<cfset var qTemp = ''>
+	<cfset var sql = ''>
+	<cfset var q = ''>
+	<cfset var vlObjectID = ''>
+	<cfset var bloodline = ''>
+	<cfset var qReturn = ''>
 
 	<cfinclude template="_tree/getBloodLine.cfm">
 	<cfreturn qReturn>

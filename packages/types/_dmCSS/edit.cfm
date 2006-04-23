@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmCSS/edit.cfm,v 1.22 2003/11/28 02:32:11 paul Exp $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmCSS/edit.cfm,v 1.23 2004/02/04 06:36:19 paul Exp $
 $Author: paul $
-$Date: 2003/11/28 02:32:11 $
-$Name: milestone_2-1-2 $
-$Revision: 1.22 $
+$Date: 2004/02/04 06:36:19 $
+$Name: milestone_2-2-1 $
+$Revision: 1.23 $
 
 || DESCRIPTION || 
 $Description: edit handler$
@@ -49,17 +49,17 @@ $out:$
 	
 	<!--- check for file to upload --->
 	<cfif trim(len(form.cssFile)) NEQ 0>
-		<cfinvoke component="#application.packagepath#.farcry.form" method="uploadFile" returnvariable="stReturn" formfield="cssFile" destination="#application.path.project#/www/css/" accept="text/css" nameConflict="Overwrite"> 
-		
-		<!--- check for error --->
-		<cfif not stReturn.bSuccess>
-			<div><span class="title">Error!</span><p></p>
-			<cfoutput>#stReturn.message#<p></p>
-			<span class="frameMenuBullet">&raquo;</span> <a href="#application.url.farcry#/edittabEdit.cfm?objectid=#objectid#">Return to edit form</a></cfoutput></div>
-			<cfabort>
-		</cfif>
+		<cftry>
+			<cffile action="upload" filefield="cssFile" destination="#application.path.project#/www/css/" accept="text/css" nameConflict="Overwrite"> 
+			<cfcatch>
+				<div><span class="title">Error!</span><p></p>
+				<cfoutput>#cfcatch.Message#<p></p>
+				<span class="frameMenuBullet">&raquo;</span> <a href="#application.url.farcry#/edittabEdit.cfm?objectid=#objectid#">Return to edit form</a></cfoutput></div>
+				<cfabort>
+			</cfcatch>
+		</cftry>
 		<cfscript>
-			stProperties.filename = stReturn.ServerFile;
+			stProperties.filename = file.ServerFile;
 		</cfscript>
 	<cfelse>
 		<cfif isdefined("cssContent")>

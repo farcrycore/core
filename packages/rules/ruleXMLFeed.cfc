@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/rules/ruleXMLFeed.cfc,v 1.7 2003/11/06 00:12:53 tom Exp $
-$Author: tom $
-$Date: 2003/11/06 00:12:53 $
-$Name: milestone_2-1-2 $
-$Revision: 1.7 $
+$Header: /cvs/farcry/farcry_core/packages/rules/ruleXMLFeed.cfc,v 1.8 2004/06/16 23:25:24 brendan Exp $
+$Author: brendan $
+$Date: 2004/06/16 23:25:24 $
+$Name: milestone_2-2-1 $
+$Revision: 1.8 $
 
 || DESCRIPTION || 
 $Description: Publishing rule to pull, parse and display external RSS feeds.  Is dependent on the rss.cfc component. $
@@ -22,7 +22,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 
 <!--- rule object properties --->
 <cfproperty name="feedName" type="string" hint="A useful name for this feed" required="No" default="">
-<cfproperty name="XMLFeedURL" type="string" hint="The location of the feed (URL)" required="yes" default="">
+<cfproperty name="XMLFeedURL" type="string" hint="The location of the feed (URL)" required="no" default="">
 <cfproperty name="intro" type="string" hint="An introduction to this feed" required="no" default="">
 <cfproperty name="maxRecords" type="numeric" hint="The maximum number of records to return to the user" required="no" default="20">
 

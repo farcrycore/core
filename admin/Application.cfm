@@ -11,6 +11,7 @@
 </cftry>
 
 <!--- check to see if the person has admin permissions --->
+
 <cfif NOT request.mode.bAdmin>
 	<!--- log the user out --->
 

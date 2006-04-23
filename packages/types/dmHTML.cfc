@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/dmHTML.cfc,v 1.15 2003/09/25 00:14:40 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/types/dmHTML.cfc,v 1.18 2004/06/28 07:56:11 brendan Exp $
 $Author: brendan $
-$Date: 2003/09/25 00:14:40 $
-$Name: b201 $
-$Revision: 1.15 $
+$Date: 2004/06/28 07:56:11 $
+$Name: milestone_2-2-1 $
+$Revision: 1.18 $
 
 || DESCRIPTION || 
 $Description: dmHTML Content Type. Forms the basis of the content framework of the site.  HTML objects include containers and static information. $
@@ -52,5 +52,19 @@ object methods
 	<cfset stObj = this.getData(arguments.objectid)>
 	<cfinclude template="_dmhtml/display.cfm">
 </cffunction>
+
+<cffunction name="deleteRelatedIds" hint="Deletes references to a given uuid in the dmHTML_relatedIds table">
+	<cfargument name="objectid" required="yes" type="uuid">
+	<cfargument name="dsn" required="no" default="#application.dsn#">
+	<cfargument name="dbowner" required="no" default="#application.dbowner#">
+	
+	<cfset var q = ''>
+	<cfquery name="q" datasource="#arguments.dsn#">
+		DELETE FROM #application.dbowner#dmHTML_aRelatedIds
+		WHERE objectid = '#arguments.objectid#'
+	</cfquery>
+	
+</cffunction>
+
 </cfcomponent>
 

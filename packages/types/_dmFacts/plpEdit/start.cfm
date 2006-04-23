@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmFacts/plpEdit/start.cfm,v 1.5 2003/09/18 07:47:56 paul Exp $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmFacts/plpEdit/start.cfm,v 1.6 2004/02/05 05:13:59 paul Exp $
 $Author: paul $
-$Date: 2003/09/18 07:47:56 $
-$Name: b201 $
-$Revision: 1.5 $
+$Date: 2004/02/05 05:13:59 $
+$Name: milestone_2-2-1 $
+$Revision: 1.6 $
 
 || DESCRIPTION || 
 First step of dmFact plp. Adds title, link, body and uploads image if needed.
@@ -27,23 +27,22 @@ Brendan Sisson (brendan@daemon.com.au)
 <!--- upload image --->
 <cfif isDefined("FORM.submit") or isdefined("form.save") or (isdefined("form.quicknav") and form.quicknav neq "")>
 	<cfif trim(len(form.image)) NEQ 0 AND form.image NEQ form.imageFile_old>
-		
 		<!--- upload new file --->
-		<cfinvoke component="#application.packagepath#.farcry.form" method="uploadFile" returnvariable="stReturn" formfield="image" destination="#application.defaultImagePath#" accept="#application.config.image.imagetype#"> 
-		
-		<cfif stReturn.bsuccess>
-			<!--- delete old file --->
-			<cftry>
+		<cfscript>
+			oForm = createObject("component","#application.packagepath#.farcry.form");
+		</cfscript>
+		<cftry>
+			<cffile action="upload" filefield="image" destination="#application.defaultImagePath#" accept="#application.config.image.imagetype#" nameconflict="#application.config.general.fileNameConflict#"> 
+			<cfif fileExists("#application.defaultImagePath#/#form.imageFile_old#")>
 				<cffile action="delete" file="#application.defaultImagePath#/#form.imageFile_old#">
-				<cfcatch type="any"></cfcatch>
-			</cftry>
-			
-			<cfset form.image = stReturn.ServerFile>
+			</cfif>			
+			<cfset form.image = oForm.sanitiseFileName(file.ServerFile,file.ClientFileName,file.ServerDirectory)>
 
-		<cfelse>
-			<cfoutput><strong>ERROR:</strong> #stReturn.message#<p>
-			Image types that are accepted: #application.config.image.imagetype# <p></p></cfoutput><cfabort>
-		</cfif>
+			<cfcatch>
+				<cfoutput><strong>ERROR:</strong> #stReturn.message#<p>
+				Image types that are accepted: #application.config.image.imagetype# <p></p></cfoutput><cfabort>
+			</cfcatch>
+		</cftry>
 	<cfelse>
 		<cfset form.image = form.imageFile_old>
 	</cfif>

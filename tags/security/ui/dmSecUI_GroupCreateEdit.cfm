@@ -10,7 +10,7 @@ http://www.daemon.com.au/
 $Header: /cvs/farcry/farcry_core/tags/security/ui/dmSecUI_GroupCreateEdit.cfm,v 1.4 2003/12/08 00:25:13 brendan Exp $
 $Author: brendan $
 $Date: 2003/12/08 00:25:13 $
-$Name: milestone_2-1-2 $
+$Name: milestone_2-2-1 $
 $Revision: 1.4 $
 
 || DESCRIPTION || 

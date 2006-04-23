@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/navajo/objectStatus_dd.cfm,v 1.15.2.4 2004/02/13 02:36:54 brendan Exp $
+$Header: /cvs/farcry/farcry_core/tags/navajo/objectStatus_dd.cfm,v 1.20 2004/03/29 23:57:32 brendan Exp $
 $Author: brendan $
-$Date: 2004/02/13 02:36:54 $
-$Name: milestone_2-1-2 $
-$Revision: 1.15.2.4 $
+$Date: 2004/03/29 23:57:32 $
+$Name: milestone_2-2-1 $
+$Revision: 1.20 $
 
 || DESCRIPTION || 
 $Description: Changes the status of objects to approved/draft/pending. Intended for use with dynamic data pages $
@@ -107,7 +107,6 @@ $out:$
 		<cfscript>
 		// update the structure data for object update
 		stObj.datetimelastupdated = now();
-					
 		//only if the comment log exists - do we actually append the entry
 		if (structkeyexists(stObj, "commentLog")){
 			buildLog =  "#chr(13)##chr(10)##session.dmSec.authentication.canonicalName#" & "(#dateformat(now(),'dd/mm/yyyy')# #timeformat(now(), 'HH:mm:ss')#):#chr(13)##chr(10)#     Status changed: #stobj.status# -> #status##chr(13)##chr(10)# #attributes.commentLog#";

@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/admin/coapiSchema.cfm,v 1.3 2003/10/27 23:56:42 brendan Exp $
+$Header: /cvs/farcry/farcry_core/admin/admin/coapiSchema.cfm,v 1.4 2004/05/20 04:41:25 brendan Exp $
 $Author: brendan $
-$Date: 2003/10/27 23:56:42 $
-$Name: b201 $
-$Revision: 1.3 $
+$Date: 2004/05/20 04:41:25 $
+$Name: milestone_2-2-1 $
+$Revision: 1.4 $
 
 || DESCRIPTION || 
 $Description: Displays the database schema$
@@ -522,6 +522,67 @@ $out:$
 			</cfloop>	
 		</cfloop>	
 	</cfcase>
+	
+	<cfcase value="postgresql">
+         <cfquery name="getAllTables" datasource="#Attributes.dsn#">
+            select tablename
+            from   pg_tables
+            where  schemaname = 'public'
+         </cfquery>
+         
+         <cfset GetTables = queryNew("TableName,ColumnName,length,isnullable,type")>
+         
+         <cfloop query="getAllTables">
+            <cfquery name="getTableId" datasource="#Attributes.dsn#">
+               SELECT c.oid,
+                 n.nspname,
+                 c.relname
+               FROM pg_catalog.pg_class c
+                    LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+               WHERE pg_catalog.pg_table_is_visible(c.oid)
+               AND upper(c.relname) ~ upper('^#tablename#$')
+               ORDER BY 2, 3;
+            </cfquery> 
+            
+            <cfquery name="getColumns" datasource="#Attributes.dsn#">
+               SELECT a.attname, 
+                 pg_catalog.format_type(a.atttypid, a.atttypmod) as thetype,
+                 not a.attnotnull as isnullable
+               FROM pg_catalog.pg_attribute a
+               WHERE a.attrelid = '#getTableId.oid#' AND a.attnum > 0 AND NOT a.attisdropped
+               ORDER BY a.attnum
+            </cfquery>
+            
+            <cfset currentTableName = tablename>
+            
+            <cfloop query="getColumns">
+               <cfset truelen = reReplaceNoCase(thetype, ".*\(([^\)]*)\).*", "\1")>
+               <cfif thetype contains "character varying">
+                  <cfset truetype = "varchar">
+               <cfelseif thetype contains "text">
+                  <cfset truetype = "text">
+                  <cfset truelen = "16">
+               <cfelseif thetype contains "int">
+                  <cfset truetype = "int">
+                  <cfset truelen = "4">
+               <cfelseif thetype contains "timestamp">
+                  <cfset truetype = "timestamp">
+                  <cfset truelen = "8">
+               <cfelse>
+                  <cfset truetype = "varchar">
+               </cfif>
+               
+               <cfset temp = queryAddRow(GetTables)>
+               <cfset temp = querySetCell(GetTables, "TableName", currentTablename)>
+               <cfset temp = querySetCell(GetTables, "ColumnName", attname)>
+               <cfset temp = querySetCell(GetTables, "length", truelen)>
+               <cfset temp = querySetCell(GetTables, "isnullable", yesnoformat(isnullable))>
+               <cfset temp = querySetCell(GetTables, "type", truetype)>
+            </cfloop>
+         
+         </cfloop>
+         
+		</cfcase>
 	
 	<cfdefaultcase>
 		<CFQUERY NAME="GetTables" DATASOURCE="#Attributes.dsn#">

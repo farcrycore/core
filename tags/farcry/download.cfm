@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/farcry/download.cfm,v 1.9.2.3 2004/04/22 00:50:55 brendan Exp $
+$Header: /cvs/farcry/farcry_core/tags/farcry/download.cfm,v 1.12 2004/04/22 00:51:31 brendan Exp $
 $Author: brendan $
-$Date: 2004/04/22 00:50:55 $
-$Name: milestone_2-1-2 $
-$Revision: 1.9.2.3 $
+$Date: 2004/04/22 00:51:31 $
+$Name: milestone_2-2-1 $
+$Revision: 1.12 $
 
 || DESCRIPTION || 
 $Description: Downloads a dmFile object$

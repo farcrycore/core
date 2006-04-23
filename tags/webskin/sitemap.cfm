@@ -5,11 +5,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/webskin/sitemap.cfm,v 1.11 2003/12/08 05:44:50 paul Exp $
-$Author: paul $
-$Date: 2003/12/08 05:44:50 $
-$Name: milestone_2-1-2 $
-$Revision: 1.11 $
+$Header: /cvs/farcry/farcry_core/tags/webskin/sitemap.cfm,v 1.12 2004/03/04 19:27:17 tom Exp $
+$Author: tom $
+$Date: 2004/03/04 19:27:17 $
+$Name: milestone_2-2-1 $
+$Revision: 1.12 $
 
 || DESCRIPTION || 
 $Description: Farcry - Sitemap Include
@@ -39,8 +39,8 @@ $out: caller.r_navQuery - complete qNav query$
 	navFilter=arrayNew(1);
 	navfilter[1]="status IN (#listQualify(request.mode.lvalidstatus, "'")#)";
 	qNav = request.factory.oTree.getDescendants(objectid=attributes.startPoint, depth=attributes.depth, afilter=navFilter, lcolumns="externallink");
-	lv0 = 2; // nlevel for plateau
-	depth = 2; // default depth ie. plateau
+	lv0 = listFirst(listSort(valueList(qNav.nlevel),"numeric","asc")); //sort the value list and grab the first value as nlevel for plateau
+	depth = listFirst(listSort(valueList(qNav.nlevel),"numeric","asc")); // sort the value list and grab the first value as the default depth ie. plateau
 </cfscript>
 
 <cfif attributes.bDisplay>

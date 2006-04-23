@@ -131,7 +131,7 @@ if( StructKeyExists( application.types, "dmNavigation" ) )
 	<cfset rootobjectid = arguments.rootobjectid>	
 <cfelse>
 	<cfscript>
-		qrootObjectID = request.factory.oTree.getRootNode(typename='categories',dsn=arguments.dsn);
+		qrootObjectID = request.factory.oTree.getRootNode(typename=arguments.typename,dsn=arguments.dsn);
 		rootObjectID = qrootObjectID.objectID;
 	</cfscript>
 </cfif>
@@ -139,7 +139,6 @@ if( StructKeyExists( application.types, "dmNavigation" ) )
 <cfoutput>
 	   <br>
 </cfoutput>
-
 <!--- get all open nodes + root nodes --->
 <cfparam name="cookie.nodestatev2" default="">
 <cfset cookie.nodestatev2=listappend(cookie.nodestatev2,"0")>
@@ -488,10 +487,33 @@ function swapToggleImage( src )
 	return src;
 }
 
-function updateTree(src,dest)
-{
-	getObjectDataAndRender(src);
-	getObjectDataAndRender(dest);
+function updateTree(src,dest,srcobjid)
+{	//alert('src parend is ' + src + ' dest parent is ' + dest);
+		
+	srcParent = getParentObject(src);
+		
+	
+	delete srcParent['ANAVCHILD'][nodeIndex(src)];
+	//insert into dest
+	if(objects[dest])
+	{
+		if(objects[dest]['ANAVCHILD'].length)
+			objects[dest]['ANAVCHILD'].unshift(src);
+		else
+			objects[dest]['ANAVCHILD'] = new Array(src);	
+	}		
+	downloadRender(srcParent['OBJECTID']);		
+		
+	if(objects[dest])
+	{		
+		parentId = getParentObject(dest)['OBJECTID'];
+		toggleObject(dest);
+		toggleObject(dest);
+		downloadRender(dest);	
+	}	
+	//getObjectDataAndRender(srcParent['OBJECTID']);
+	downloadRender(srcParent['OBJECTID']);
+
 }
 
 function getTypeImage( objId )
@@ -655,7 +677,8 @@ function toggleObject( objId )
 			{downloadRender( objId );}
 		else 
 		{
-			serverPut(objId);
+			downloadRender( objId );
+			//serverPut(objId);
 			//{oDownload.startDownload("updateTreeData.cfm?lObjectIds="+objId, downloadDone );
 		}
 				
@@ -911,9 +934,8 @@ function menuOption_Insert()
 {   
 	var nodename = prompt("Please enter new category name");
 	if (nodename)
-		frameopen( '#application.url.farcry#/navajo/keywords/insert.cfm?objectname='+nodename+'&parentobjectId='+lastSelectedId, 'editFrame' );
+		frameopen( 'insert.cfm?objectname='+nodename+'&parentobjectId='+lastSelectedId, 'editFrame' );
 }
-
 
 	
 		
@@ -1336,9 +1358,8 @@ document.body.onclick = documentClick;
 <STYLE TYPE="text/css">
 		##idServer { 
 			position:relative; 
-			width: 400px; 
-			height: 400px; 
-			display:none;
+			width: 0px; 
+			height: 0px; 
 		}
 </STYLE>
 

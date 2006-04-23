@@ -2,11 +2,11 @@
 audit.cfc (fourQ COAPI)
 Copyright Daemon Pty Limited 2002 (http://www.daemon.com.au/)
 
-$Header: /cvs/farcry/farcry_core/packages/farcry/audit.cfc,v 1.7 2003/11/25 00:18:07 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/farcry/audit.cfc,v 1.8 2004/05/20 04:41:25 brendan Exp $
 $Author: brendan $
-$Date: 2003/11/25 00:18:07 $
-$Name: milestone_2-1-2 $
-$Revision: 1.7 $
+$Date: 2004/05/20 04:41:25 $
+$Name: milestone_2-2-1 $
+$Revision: 1.8 $
 
 Released Under the "Common Public License 1.0"
 http://www.opensource.org/licenses/cpl.php
@@ -53,6 +53,14 @@ for the fourQ COAPI
 		    </cfif>
 		    <cfset temp = QueryAddColumn(qCheck,'tblExists',result)>
 		</cfcase> 
+		<cfcase value="postgresql">
+         <cfquery datasource="#arguments.dsn#" name="qCheck">
+            SELECT count(*) AS tblExists
+            FROM   PG_TABLES
+            WHERE  TABLENAME = 'fqaudit'
+            AND    SCHEMANAME = 'public'
+         </cfquery>
+		</cfcase>
 		<cfdefaultcase>
 			<cfquery datasource="#arguments.dsn#" name="qCheck">
 			SELECT count(*) AS tblExists FROM sysobjects 
@@ -111,6 +119,27 @@ for the fourQ COAPI
 				) 
 			</cfquery>
 		</cfcase>
+		<cfcase value="postgresql">
+         <cfif qCheck.tblExists>
+			<cfquery datasource="#arguments.dsn#" name="qDrop">
+				DROP TABLE fqAudit
+			</cfquery>
+			</cfif>
+			
+			<!--- create the audit tables --->
+			<cfquery datasource="#arguments.dsn#" name="qCreate">
+			CREATE TABLE #arguments.dbowner#FQAUDIT(
+				AUDITID VARCHAR(50) NOT NULL PRIMARY KEY,
+				OBJECTID VARCHAR(50) NULL,
+				DATETIMESTAMP TIMESTAMP NOT NULL,
+				USERNAME VARCHAR(255) NOT NULL ,
+				LOCATION VARCHAR(255) NULL ,
+				AUDITTYPE VARCHAR(50) NOT NULL ,
+				NOTE VARCHAR(255) NULL
+			) 
+						
+			</cfquery>
+        </cfcase>
 		<cfdefaultcase>
 			<cfif qCheck.tblExists>
 			<cfquery datasource="#arguments.dsn#" name="qDrop">
@@ -300,7 +329,25 @@ need a bunch of functions to get audit data here
 				order by 1 
 			</cfquery>
 	    </cfcase>    
-	    <cfdefaultcase>
+	    <cfcase value="postgresql">
+            <!------------------------------------------------------------------------------
+               I have no idea if this will work.. KDS20040212
+            ------------------------------------------------------------------------------->
+            <cfquery datasource="#arguments.dsn#" name="qLog">
+   			select distinct hour, date_part('h', fq.datetimestamp) as loginhour, count(fq.auditID) as count_logins
+   			from statsHours
+   			left join (
+   			        select * from #arguments.dbowner#fqaudit
+   			        where auditType = 'dmsec.login'
+   			)fq on date_part('h', fq.datetimestamp) = statsHours.hour
+   			and date_part('d', fq.datetimestamp) = #DatePart("d", arguments.day)# 
+   			and date_part('mon', fq.datetimestamp) = #DatePart("m", arguments.day)# 
+   			and date_part('y', fq.datetimestamp) = #DatePart("yyyy", arguments.day)#
+   			group by hour, date_part('h', fq.datetimestamp)
+   			order by 1 
+   			</cfquery>
+        </cfcase>
+		<cfdefaultcase>
 			<!--- run the query to get counts of user activity by hour --->
 			<cfquery datasource="#arguments.dsn#" name="qLog">
 			-- now join our hours table to the fqaudit table, to get the set we want. Note the query requires a day, month and year to be specified, for
@@ -366,7 +413,20 @@ need a bunch of functions to get audit data here
 				order by 1 
 			</cfquery>
 	    </cfcase>    
-	    <cfdefaultcase>
+	    <cfcase value="postgresql">
+            <cfquery datasource="#arguments.dsn#" name="qLog">
+   			select distinct day, statsDays.name,date_part('dow', fq.datetimestamp) as loginday, count(fq.auditID) as count_logins
+   			from statsDays
+   			left join (
+   			        select * from fqaudit
+   			        where auditType = 'dmsec.login'
+   			)fq on date_part('dow', fq.datetimestamp) = statsDays.day
+   			 and extract('day' from (fq.datetimestamp - '#dateFormat(arguments.day,"mm/dd/yyyy")#')) <=0 and extract('day' from (fq.datetimestamp - '#dateFormat(arguments.day,"mm/dd/yyyy")#')) >=0
+   			group by day, statsDays.name, date_part('dow', fq.datetimestamp)
+   			order by 1 
+   			</cfquery>
+        </cfcase>
+		<cfdefaultcase>
 			<!--- run the query to get counts of user activity by hour --->
 			<cfquery datasource="#arguments.dsn#" name="qLog">
 			-- now join our days table to the fqaudit table, to get the set we want. Note the query requires a day, month and year to be specified, for

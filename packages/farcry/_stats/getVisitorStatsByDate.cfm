@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_stats/getVisitorStatsByDate.cfm,v 1.3 2003/09/10 12:21:48 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_stats/getVisitorStatsByDate.cfm,v 1.4 2004/05/20 04:41:25 brendan Exp $
 $Author: brendan $
-$Date: 2003/09/10 12:21:48 $
-$Name: b201 $
-$Revision: 1.3 $
+$Date: 2004/05/20 04:41:25 $
+$Name: milestone_2-2-1 $
+$Revision: 1.4 $
 
 || DESCRIPTION || 
 $Description: get visitor stats $
@@ -35,6 +35,21 @@ $out:$
 		</cfif>
 		<cfif isDefined("arguments.after")>
 		AND logdatetime > #arguments.after#
+		</cfif>
+		group by to_char(logdatetime,'yyyy-mm-dd')
+		order by to_char(logdatetime,'yyyy-mm-dd')
+		</cfquery>
+	</cfcase>
+	<cfcase value="postgresql">
+		<cfquery name="qGetPageStats" datasource="#arguments.dsn#">
+		select to_char(logdatetime,'yyyy-mm-dd') as viewday,count(distinct sessionId) as count_Ip
+		from #application.dbowner#stats
+		where 1=1 
+		<cfif isDefined("arguments.before")>
+		AND logdatetime < '#dateFormat(arguments.before, "yyyy-mm-dd")#'
+		</cfif>
+		<cfif isDefined("arguments.after")>
+		AND logdatetime > '#dateFormat(arguments.after, "yyyy-mm-dd")#'
 		</cfif>
 		group by to_char(logdatetime,'yyyy-mm-dd')
 		order by to_char(logdatetime,'yyyy-mm-dd')

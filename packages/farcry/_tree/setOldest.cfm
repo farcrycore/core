@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_tree/setOldest.cfm,v 1.9 2003/09/12 02:59:21 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_tree/setOldest.cfm,v 1.10 2004/05/20 04:41:25 brendan Exp $
 $Author: brendan $
-$Date: 2003/09/12 02:59:21 $
-$Name: b201 $
-$Revision: 1.9 $
+$Date: 2004/05/20 04:41:25 $
+$Name: milestone_2-2-1 $
+$Revision: 1.10 $
 
 || DESCRIPTION || 
 $Description: setOldest Function $
@@ -77,6 +77,29 @@ $out:$
 					break;
 				}
 				
+				 case "postgresql":
+				{
+					tempsql = "select nleft from nested_tree_objects where objectid = '#arguments.parentid#' and typename = '#arguments.typename#'";
+					tempResult = query(sql=tempsql, dsn=arguments.dsn);
+					sql = "
+						update nested_tree_objects
+						set nright = nright + 2 
+						where nright > #tempResult.nleft#
+						and typename = '#arguments.typeName#'";
+					query(sql=sql, dsn=arguments.dsn);	
+					
+					tempsql = "select nleft from nested_tree_objects where objectid = '#arguments.parentid#' and typename = '#arguments.typename#'";
+					tempResult = query(sql=tempsql, dsn=arguments.dsn);
+					
+					sql = "
+						update nested_tree_objects
+						set nleft = nleft + 2
+						where nleft > #tempResult.nleft#
+						and typename = '#arguments.typeName#'";
+					query(sql=sql, dsn=arguments.dsn);	
+					break;
+				}
+				
 				default:
 				{
 					sql = "
@@ -119,6 +142,14 @@ $out:$
 				{
 					sql = "
 					insert nested_tree_objects (ObjectID, ParentID, ObjectName, TypeName, Nleft, Nright, Nlevel)
+					values ('#arguments.objectid#', '#arguments.parentid#', '#arguments.objectName#', '#arguments.typeName#', #pleft# + 1, #pleft# + 2,  #plevel# + 1)";	
+					break;
+				}
+				
+				case "postgresql":
+				{
+					sql = "
+					insert into nested_tree_objects (ObjectID, ParentID, ObjectName, TypeName, Nleft, Nright, Nlevel)
 					values ('#arguments.objectid#', '#arguments.parentid#', '#arguments.objectName#', '#arguments.typeName#', #pleft# + 1, #pleft# + 2,  #plevel# + 1)";	
 					break;
 				}

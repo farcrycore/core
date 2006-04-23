@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_tree/setYoungest.cfm,v 1.11 2004/01/05 03:36:41 paul Exp $
-$Author: paul $
-$Date: 2004/01/05 03:36:41 $
-$Name: milestone_2-1-2 $
-$Revision: 1.11 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_tree/setYoungest.cfm,v 1.12 2004/05/20 04:41:25 brendan Exp $
+$Author: brendan $
+$Date: 2004/05/20 04:41:25 $
+$Name: milestone_2-2-1 $
+$Revision: 1.12 $
 
 || DESCRIPTION || 
 $Description: setYoungest Function $
@@ -82,6 +82,14 @@ $out:$
 				{
 					sql = "
 					insert nested_tree_objects (ObjectID, ParentID, ObjectName, TypeName, Nleft, Nright, Nlevel)
+					values 	('#arguments.objectid#', '#arguments.parentid#', '#arguments.objectName#', '#arguments.typeName#', #maxr# + 1, #maxr# + 2,  #plevel# + 1)";
+					break;
+				}
+				
+				case "postgresql":
+				{
+					sql = "
+					insert into nested_tree_objects (ObjectID, ParentID, ObjectName, TypeName, Nleft, Nright, Nlevel)
 					values 	('#arguments.objectid#', '#arguments.parentid#', '#arguments.objectName#', '#arguments.typeName#', #maxr# + 1, #maxr# + 2,  #plevel# + 1)";
 					break;
 				}

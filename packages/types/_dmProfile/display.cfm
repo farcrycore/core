@@ -7,7 +7,7 @@ $License: Released Under the "Common Public License 1.0", http://www.opensource.
 $Header: /cvs/farcry/farcry_core/packages/types/_dmProfile/display.cfm,v 1.2 2003/11/23 23:57:26 brendan Exp $
 $Author: brendan $
 $Date: 2003/11/23 23:57:26 $
-$Name: milestone_2-1-2 $
+$Name: milestone_2-2-1 $
 $Revision: 1.2 $
 
 || DESCRIPTION || 

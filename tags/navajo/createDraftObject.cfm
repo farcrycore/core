@@ -44,6 +44,10 @@ Creates a draft object
 		//this will copy containers and there rules from live object to draft
 		oCon = createobject("component","#application.packagepath#.rules.container");
 		oCon.copyContainers(stObject.objectid,stProps.objectid);
+		
+		//this will copy categories from live object to draft
+		oCategory = createobject("component","#application.packagepath#.farcry.category");
+		oCategory.copyCategories(stObject.objectid,stProps.objectid);
 	</cfscript>
 
 	<cfoutput>

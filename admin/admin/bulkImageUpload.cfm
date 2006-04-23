@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/admin/bulkImageUpload.cfm,v 1.5 2004/12/06 19:03:10 tom Exp $
+$Header: /cvs/farcry/farcry_core/admin/admin/bulkImageUpload.cfm,v 1.1.2.2 2004/09/14 17:24:51 tom Exp $
 $Author: tom $
-$Date: 2004/12/06 19:03:10 $
-$Name: milestone_2-1-2 $
-$Revision: 1.5 $
+$Date: 2004/09/14 17:24:51 $
+$Name: milestone_2-2-1 $
+$Revision: 1.1.2.2 $
 
 || DESCRIPTION || 
 $Description: Uploads a zip file containing images, creates navigation to match directory structure $
@@ -24,15 +24,13 @@ $out:$
 
 <cfsetting enablecfoutputonly="yes">
 
-<cfprocessingDirective pageencoding="utf-8">
-
 <cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
 <cfimport taglib="/farcry/farcry_core/tags/farcry/" prefix="farcry">
 <cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
 <cfinclude template="/farcry/farcry_core/admin/includes/cfFunctionWrappers.cfm">
 <cfinclude template="/farcry/farcry_core/admin/includes/utilityFunctions.cfm">
 
-<admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
+<admin:header>
 <!--- check permissions --->
 <cfscript>
 	iDeveloperPermission = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="developer");
@@ -46,16 +44,21 @@ $out:$
 		</style>
 		</cfoutput>
 		<cfif not len(trim(form.zipFile))>
-			<cfoutput>#application.adminBundle[session.dmProfile.locale].noZipSpecified#</cfoutput>
+			<cfoutput><strong>Error:</strong> No Zip file specified</cfoutput>
 			<cfabort>
 		</cfif>
-		<cfoutput><b>#application.adminBundle[session.dmProfile.locale].uploadingZip#</b></cfoutput>
+		<cfoutput><b>Uploading zip file...</b></cfoutput>
 		<cfflush>
-		<cffile action="upload" filefield="zipFile" destination="#application.path.defaultFilePath#" accept="application/x-zip-compressed,application/zip" nameconflict="#application.config.general.fileNameConflict#"> 
-		<cfoutput><span class="success">#application.adminBundle[session.dmProfile.locale].Done#<br></span></cfoutput>
+		<cffile action="upload" filefield="zipFile" destination="#application.defaultFilePath#" accept="application/x-zip-compressed,application/zip" nameconflict="#application.config.general.fileNameConflict#"> 
+		<cfoutput><span class="success">Done<br></span></cfoutput>
 		<cfflush>
 		<cfscript>
-			zipFilePath = application.defaultFilePath & "/" & file.serverFile;
+			//Figure out slash type based on OS
+			slashtype = "\";
+			if(not findNoCase("windows",server.os.name)){
+				slashtype = "/";		
+			}
+			zipFilePath = application.defaultFilePath & slashtype & file.serverFile;
 			//list of image mime types that can be uploaded
 			imageAcceptList = application.config.image.imagetype;
 			zipFile = createObject("java", "java.util.zip.ZipFile");
@@ -125,7 +128,7 @@ $out:$
 							iLoopNum = incrementValue(iLoopNum);
 							sFileName = insert(iLoopNum,sDefaultFileName,len(listFirst(sDefaultFileName,".")));
 						}
-						sAbsolutePath = sFilePath & "/" & sFileName;
+						sAbsolutePath = sFilePath & slashtype & sFileName;
 						//Write the image file to disk
 						filOutStream = createObject("java","java.io.FileOutputStream");					
 						filOutStream.init(sAbsolutePath);
@@ -159,7 +162,7 @@ $out:$
 						stImageProps.alt = "Image " & sFileName;
 						//If imageJ is installed use it to get the Height and Width of the Original Image
 						if(structKeyExists(form,"imageJInstalled")and form.imageJInstalled){
-							imagePath = stImageProps.originalImagePath & "\" & stImageProps.imageFile;
+							imagePath = stImageProps.originalImagePath & slashtype & stImageProps.imageFile;
 							oFarcryImage = createObject("component","#application.packagepath#.farcry.image");
 							oFarcryImage.open(imagePath);
 							stImageDetails = oFarcryImage.getDetails();
@@ -220,7 +223,7 @@ $out:$
 		</cfscript>
 		<!--- Cleanup the uploaded zip file --->
 		<cffile action="delete" file="#zipFilePath#">
-		<cfoutput><span class="success"><strong>#application.adminBundle[session.dmProfile.locale].Done#</strong></span><br></cfoutput>
+		<cfoutput><span class="success"><strong>Done</strong></span><br></cfoutput>
 
 	<cfelse>
 		<!--- Get all of the nodes under the imageRoot --->
@@ -231,16 +234,16 @@ $out:$
 		
 		<!--- Show the form --->
 		<cfoutput>
-		<div class="formTitle">#application.adminBundle[session.dmProfile.locale].bulkImageUpload#</div>
+		<div class="formTitle">IMAGE BULK UPLOAD</div>
 		
 		<p>
 		<form action="" method="POST" name="imageForm" enctype="multipart/form-data">
 		<table border="0" cellpadding="3" cellspacing="0">
 			<tr>
-				<td>#application.adminBundle[session.dmProfile.locale].recreateImageStructure#</td>
+				<td>Recreate image structure within:</td>
 				<td>
 					<select name="startPoint">
-					<option value="#application.navid.imageroot#">#application.adminBundle[session.dmProfile.locale].imageRoot#</option>
+					<option value="#application.navid.imageroot#">Image Root</option>
 					<cfloop query="qNodes">
 					<option value="#qNodes.objectId#" <cfif qNodes.objectId eq application.navid.imageroot>selected</cfif>>#RepeatString("&nbsp;&nbsp;|", qNodes.nlevel)#- #qNodes.objectName#</option>
 					</cfloop>
@@ -248,14 +251,14 @@ $out:$
 				</td>
 			</tr>
 			<tr>
-				<td>#application.adminBundle[session.dmProfile.locale].zipFile#</td>
+				<td>Zip File(.zip):</td>
 				<td>
 					<input type="File" size=25 accept="application/x-zip-compressed" name="zipFile">
 				</td>
 			</tr>
 			<tr>
 				<td colspan=2>
-					<input type="checkbox" name="bCreateDirectories" value=0> #application.adminBundle[session.dmProfile.locale].noCreateNavigationNodes#
+					<input type="checkbox" name="bCreateDirectories" value=0> Don't create dmNavigation nodes
 				</td>
 			</tr>
 			<tr>
@@ -273,7 +276,7 @@ $out:$
 						//writeOutput(javaVersion & "<br>");
 						}
 						catch(Any e){
-							javaVersion = "#application.adminBundle[session.dmProfile.locale].unknown#";			
+							javaVersion = "unknown";			
 						}
 					</cfscript>
 					<cfif not find(javaVersion,"1.4.2")>
@@ -282,19 +285,22 @@ $out:$
 								oTest = createObject("java","ij.io.Opener");
 							</cfscript>
 							<input type="checkbox" name="bCreateThumbnails" value=0> 
-							#application.adminBundle[session.dmProfile.locale].createThumbnails#
+							Create thumbnails for images. Fix the
 							<select name="resizeType" size=1>
-								<option value="auto">#application.adminBundle[session.dmProfile.locale].auto#</option>
-								<option value="width">#application.adminBundle[session.dmProfile.locale].fixWidth#</option>
-								<option value="height">#application.adminBundle[session.dmProfile.locale].fixHeight#</option>
+								<option value="auto">Auto</option>
+								<option value="width">Width</option>
+								<option value="height">Height</option>
 							</select>
 							at
 							<input type="text" size="3" maxlength="3" name="resizeValue">px
 							<input type="hidden" name="imageJInstalled" value=1>
 							<cfcatch type="Object">
 							<span style="color:##FF0000;">
-							#application.adminBundle[session.dmProfile.locale].downloadIJBlurb#
-							</span>
+							<strong>PSST! </strong> If you download and install <a href="http://rsb.info.nih.gov/ij/download/zips/ij129.zip">imageJ</a><br>
+							this utility can thumbnail your images as well as<br>
+							calculate width and height. Download the<br>
+							<a href="http://rsb.info.nih.gov/ij/download/zips/ij129.zip">ImageJ .zip file</a> and extract ij.jar to your<br>
+							JRE's &quot;\lib&quot; directory and restart.</span>
 							</cfcatch>
 						</cftry>
 					<cfelse>
@@ -303,7 +309,8 @@ $out:$
 								oTest = createObject("java","ij.io.Opener");
 							</cfscript>
 							<span style="color:##FF0000;">
-							#application.adminBundle[session.dmProfile.locale].jreWarningBlurb#
+							<strong>! Warning:</strong> You have ImageJ installed with JRE 1.4.2. There is a known bug in JRE 1.4.2 that causes ImageJ
+							to crash. Image thumbnailing will be disabled in this utility to protect your system.
 							</span>
 							<input type="hidden" name="imageJInstalled" value=0>
 							<cfcatch type="Object"></cfcatch>
@@ -314,7 +321,7 @@ $out:$
 			<tr>
 				<td>&nbsp;</td>
 				<td>
-					<input type="submit" value="#application.adminBundle[session.dmProfile.locale].uploadImages#" name="submit" />
+					<input type="submit" value="Upload Images" name="submit" />
 				</td>
 			</tr>
 		</table>
@@ -324,15 +331,27 @@ $out:$
 		//bring focus to title
 		document.imageForm.zipFile.focus();
 		objForm = new qForm("imageForm");
-		objForm.zipFile.validateNotNull("#application.adminBundle[session.dmProfile.locale].missingZipFile#");
+		objForm.zipFile.validateNotNull("You must specify a Zip file");
 			//-->
 		</SCRIPT>
 		</form>
 		<p>
-		    <strong>#application.adminBundle[session.dmProfile.locale].instructions#</strong>
+		    <strong>Instructions:</strong>
 		</p>
-		#application.adminBundle[session.dmProfile.locale].uploadImagesBlurb#
-		<p><em>#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].currentJRE,"#javaVersion#")#</em></p>
+		<p>
+		    This utility will quickly upload multiple images into Farcry
+		</p>
+		<p>
+		    You will need to supply a .zip file that contains the images to be uploaded.
+			Images and Directories contained in the .zip file will be recreated within
+			Farcry under the selected node.
+		</p>
+		<p>
+			<em>In addition, if you have ImageJ installed with <strong>JRE 1.41</strong> or lower you will have
+			the option to create a thumbnail for each image. Also, the height and width
+			properties for each image will be calculated.</em>
+		</p>
+		<p><em>Your current JRE version: #javaVersion#</em></p>
 		</cfoutput>
 	</cfif>
 <cfelse>

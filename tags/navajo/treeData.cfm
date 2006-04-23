@@ -86,11 +86,11 @@ Daemon Pty Limited 1995-2001
 http://www.daemon.com.au/
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/navajo/treeData.cfm,v 1.15 2003/12/01 05:41:30 paul Exp $
+$Header: /cvs/farcry/farcry_core/tags/navajo/treeData.cfm,v 1.16 2004/05/21 07:32:02 paul Exp $
 $Author: paul $
-$Date: 2003/12/01 05:41:30 $
-$Name: milestone_2-1-2 $
-$Revision: 1.15 $
+$Date: 2004/05/21 07:32:02 $
+$Name: milestone_2-2-1 $
+$Revision: 1.16 $
 
 || DESCRIPTION || 
 Retrieves object(s) [and relations] information and returns it in js format.
@@ -108,6 +108,9 @@ Matt Dawson (mad@daemon.com.au)
 
 || HISTORY ||
 $Log: treeData.cfm,v $
+Revision 1.16  2004/05/21 07:32:02  paul
+Stopped filtering dmImage,dmFile assets as dmHTMl children.
+
 Revision 1.15  2003/12/01 05:41:30  paul
 Removed reference to oTree in app scope and instatiated on this page instead. Seemed to fix weirdness.
 
@@ -220,10 +223,13 @@ moved tree code out of fourq and into farcry_core
 </cfif>	
 </cfloop>
 
-<!--- This cfloop block basically blocks all children of dmHTML objects, and filters the tree by the
+<!---
+
+ This cfloop block basically blocks all children of dmHTML objects, and filters the tree by the
 lAllowTypes list
+
  --->
-<cfset lAllowTypes = "dmHTML,#attributes.nodetype#,dmInclude">
+<cfset lAllowTypes = "dmHTML,#attributes.nodetype#,dmInclude,dmImage,dmFile">
 <cfloop collection="#stAllObjects#" item="objID">
 	<cfoutput>
 	<cfif structKeyExists(stAllObjects[objId], "aObjectIds" )  AND stAllObjects[objID].typename IS "dmHTML">
@@ -231,12 +237,10 @@ lAllowTypes list
 		<cfif isArray(stAllObjects[objId].aObjectIDs) AND arrayLen(stAllObjects[objId].aObjectIDs) GT 0>
 			<cfloop from="#arrayLen(stAllObjects[objId].aObjectIDs)#" to="1" index="i" step="-1">
 				<cfinvoke component="farcry.fourq.fourq" method="findType" returnvariable="rTypeName" objectID="#stAllObjects[objID].aObjectIds[i]#">
-				
-				<cfif NOT listContainsNoCase(lAllowTypes,rTypeName) AND stAllObjects[objID].typename IS "dmHTML">
+				<cfif NOT listContainsNoCase(lAllowTypes,rTypeName)>
 					 <cfset tmp = arrayDeleteAt(stAllObjects[objID].aObjectIds,i)> 
 				</cfif>
 			</cfloop>
-				
 		</cfif>
 		<cfif isArray(stAllObjects[objID].aObjectIds)>
 			<cfif NOT arrayLen(stAllObjects[objID].aObjectIDs)>

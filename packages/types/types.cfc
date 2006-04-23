@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/types.cfc,v 1.33.2.1 2005/05/06 01:01:48 guy Exp $
-$Author: guy $
-$Date: 2005/05/06 01:01:48 $
-$Name: milestone_2-1-2 $
-$Revision: 1.33.2.1 $
+$Header: /cvs/farcry/farcry_core/packages/types/types.cfc,v 1.39 2004/07/11 13:52:23 geoff Exp $
+$Author: geoff $
+$Date: 2004/07/11 13:52:23 $
+$Name: milestone_2-2-1 $
+$Revision: 1.39 $
 
 || DESCRIPTION || 
 $Description: Component Types Abstract class for contenttypes package.  This class defines default handlers and system attributes.$
@@ -17,6 +17,7 @@ $TODO: $
 || DEVELOPER ||
 $Developer: Brendan Sisson (brendan@daemon.com.au) $
 $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
+$Developer: Geoff Bowers (modius@daemon.com.au) $
 
 || ATTRIBUTES ||
 $in: $
@@ -47,8 +48,10 @@ default handlers
 		<cfargument name="objectid" required="yes" type="UUID">
 		<cfargument name="template" required="yes" type="string">
 		<cfargument name="dsn" required="no" type="string" default="#application.dsn#">
+		
 		<!--- get the data for this instance --->
-		<cfset stObj = getData(objectid=arguments.objectID,dsn=arguments.dsn)>		
+		<cfset var stObj = getData(objectid=arguments.objectID,dsn=arguments.dsn)>		
+				
 		<cfif NOT structIsEmpty(stObj)> 
 			<cftry>
 				<cfinclude template="/farcry/#application.applicationname#/#application.path.handler#/#stObj.typename#/#arguments.template#.cfm">
@@ -66,8 +69,8 @@ default handlers
 
 	<cffunction name="display" access="public" returntype="any" output="Yes">
 		<cfargument name="objectid" required="yes" type="UUID">
+		<cfset var myObject = getData(arguments[1])>
 		<cfoutput><p>This is the default output of <strong>types.Display()</strong>:</p></cfoutput>
-		<cfset myObject = getData(arguments[1])>
 		<cfdump var="#myObject#">
 	</cffunction>
 	
@@ -77,6 +80,7 @@ default handlers
 		<cfargument name="auditNote" type="string" required="true" hint="Note for audit trail" default="Created">
 		
 		<cfscript>
+			var stNewObject = "";
 			if(NOT structKeyExists(arguments.stProperties,"objectid"))
 				arguments.stProperties.objectid = createUUID();
 			if(NOT structKeyExists(arguments.stProperties,"datetimecreated"))
@@ -117,8 +121,7 @@ default handlers
 			if(NOT structKeyExists(arguments.stProperties,"lastupdatedby"))
 				arguments.stProperties.lastupdatedby = arguments.user;	
 		</cfscript>				
-		
-		
+				
 		<cfset super.setData(arguments.stProperties,arguments.dsn)>
 		
 		<!--- log update --->
@@ -127,49 +130,153 @@ default handlers
 		</cfif>
 	</cffunction>
 	
-	<cffunction name="edit" access="public" output="false" returntype="struct">
-		<!--- 
-		Properties code not quite running yet... (driver -> Spike)
-		GB 20020518
-		<cfinclude template="_types/edit.cfm"> 
+<cffunction name="edit" access="public" displayname="Edit handler." hint="Default edit method for objects. Self posting form dynamically generated from the type metadata.  Calls farcry.locking for update.  Override as required." output="true">
+	<cfargument name="objectid" required="yes" type="UUID">
+	<!--- getData for object edit --->
+	<cfset var stObj=getData(arguments.objectid)>
+	<cfset var stProps=application.types[stobj.typename].stprops>
+	<cfset var displayname=application.types[stobj.typename].displayname>
+	<cfset var hint=application.types[stobj.typename].hint>
+
+	<cfsetting enablecfoutputonly="Yes">
+
+	<!--- update object with changes --->
+	<cfif isDefined("form.update")>
+		<cfscript>
+			stoutput=structNew();
+			stoutput=form;
+			stoutput.typename=stobj.typename;
+			if (isDefined("stoutput.title")) {
+				stoutput.label=stoutput.title; // match label with title
+			} else {
+				stoutput.label=displayname & ": " & dateFormat(now(), "dd-mmm-yy") & timeFormat(now(), "HH:mm");
+			}
+		</cfscript>
+		<!--- unlock object and save object --->
+		<cfinvoke component="#application.packagepath#.farcry.locking" method="unlock" returnvariable="unlockRet">
+			<cfinvokeargument name="stObj" value="#stOutput#"/>
+			<cfinvokeargument name="objectid" value="#stOutput.objectid#"/>
+			<cfinvokeargument name="typename" value="#stOutput.typename#"/>
+		</cfinvoke>
+		
+		<!--- all done in one window so relocate back to main page --->
+		<!--- <cflocation url="#application.url.farcry#/admin/customadmin.cfm?module=accounts/listprojects.cfm" addtoken="no"> --->
+		<cfoutput><b>Object updated!</b></cfoutput>
+	<cfelse>
+		<!--- render update form for object --->
+		<cfoutput>
+		<h3>#stobj.label#</h3>
+		<p>#displayname#: #hint#</p>
+		
+		<form name="edit" action="#CGI.SCRIPT_NAME#?#query_string#" method="post" class="form-columns">
+		<input type="hidden" name="update" value="true">
+		<input type="hidden" name="objectid" value="#stobj.objectid#">
+				
+		<cfloop collection="#stprops#" item="prop">
+		<cfset sttmp=stprops[prop]>
+		<cfif stprops[prop].origin neq "farcry.farcry_core.packages.types.types" AND NOT isarray(stobj[prop])>
+		<!--- #stprops[prop].origin# --->
+		<!--- <cfdump var="#stprops[prop]#"> --->
+		<DIV class="label"><LABEL for="#prop#"><cfif isDefined("sttmp.metadata.displayname") AND len(sttmp.metadata.displayname)>#stprops[prop].metadata.displayname#<cfelse>#prop#</cfif><cfif isDefined("sttmp.metadata.required") AND sttmp.metadata.required><SPAN class="required">*</SPAN></cfif></LABEL></DIV>
+		
+		<cfswitch expression="#stprops[prop].metadata.type#">
+		<cfcase value="nstring,string">
+		<DIV class="field"><INPUT type="text" class="textfield wide" name="#prop#" id="#prop#" value="#stobj[prop]#" maxlength="75" tabindex="110" /></DIV>
+		<BR class="clear-both"/>
+		</cfcase>
+
+		<cfcase value="longchar">
+		<DIV class="field"><TEXTAREA name="#prop#" id="#prop#" cols="45" rows="10" wrap="VIRTUAL" maxlength="2000" class="wide" tabindex="120">#stobj[prop]#</TEXTAREA></DIV>
+		<BR class="clear-both"/>
+		</cfcase>
+		
+		<cfdefaultcase>
+		<DIV class="field"><INPUT type="text" class="textfield wide" name="#prop#" id="#prop#" value="#stobj[prop]#" maxlength="75" tabindex="110" /></DIV>
+		<BR class="clear-both"/>
+		</cfdefaultcase>
+		</cfswitch>
+		</cfif>
+		</cfloop> 
+		
+		<P class="nav-right"><INPUT type="submit" name="Submit" value="Submit" class="submit" tabindex="190" /></P>
+		</FORM>
+		
+		<p>#stobj.typename#: #stobj.objectid#</p>
+		<!--- debugging output --->
+		<!--- reset dump variable in request scope 
+		<cfset request.cfdumpinited = false>
+		<cfdump var="#stprops#" expand="no" label="Complete Type Metadata.stprops">
+		<cfdump var="#stobj#" expand="no" label="Complete stObj">
 		--->
-		<cfthrow message="This is the default types.edit() handler.  You need to build an edit interface!">
-		<cfset stReturn = structNew()>
-		<cfreturn stReturn>
-	</cffunction>
+		</cfoutput>
+	</cfif>
+	
+	<cfsetting enablecfoutputonly="No">
+		
+</cffunction>
+
 	
 	<cffunction name="delete" access="public" hint="Basic delete method for all objects.">
 		<cfargument name="objectid" required="yes" type="UUID" hint="Object ID of the object being deleted">
 		<cfargument name="user" type="string" required="true" hint="Username for object creator" default="#session.dmSec.authentication.userlogin#">
 		<cfargument name="auditNote" type="string" required="true" hint="Note for audit trail" default="Deleted">
+		
 		<!--- get the data for this instance --->
-		<cfset stObj = getData(arguments.objectID)>		
+		<cfset var stObj = getData(arguments.objectID)>		
+		<cfset var lTypesWithContainers = "">
+		<cfset var oCon = "">
+		<cfset var i = "">
+		<cfset var objType = "">
+		<cfset var oType = "">
+		<cfset var oConfig = "">
+		<cfset var stCollections = "">
+		<cfset var collectionName = "">
+
 		<cfinclude template="_types/delete.cfm">
 		<cfset application.factory.oAudit.logActivity(auditType="Delete", username=arguments.user, location=cgi.remote_host, note=arguments.auditNote,objectid=arguments.objectid)>	
 	</cffunction>	
 	
 	<cffunction name="renderObjectOverview" access="public" hint="Renders entire object overiew" output="false">
 		<cfargument name="objectid" required="yes" type="UUID" hint="Object ID of the selected object">
-		<cfset var html = ''>
+			
 		<!--- get object details --->
-		<cfset stObj = getData(arguments.objectid)>
-		<!--- default status for objects that don't require status --->
-		<cfparam name="stobj.status" default="approved">
+		<cfset var stObj = getData(arguments.objectid)>
+		<cfset var html = ''>
 		
 		<cfinclude template="_types/renderObjectOverview.cfm">
 		
 		<cfreturn html>
 	</cffunction>
-	
+
 	
 	<cffunction name="renderOverview" access="public" hint="Renders options available on the overview page" output="false">
 		<cfargument name="objectid" required="yes" type="UUID" hint="Object ID of the selected object">
 		<!--- get object details --->
-		<cfset stObj = getData(arguments.objectid)>
+		<cfset var stObj = getData(arguments.objectid)>
+		<cfset var overviewHtml = ''>
 		
 		<cfinclude template="_types/renderOverview.cfm">
 		
-		<cfreturn html>
+		<cfreturn overviewHtml>
+	</cffunction>
+	
+	<cffunction name="archiveObject" access="public" returntype="struct" hint="Archives any farcry object">
+		<cfargument name="objectID" type="uuid" required="true">
+		<cfargument name="typename" type="string" required="false">
+			
+ 		<cfset var stResult = application.factory.oVersioning.archiveObject(objectid=arguments.objectid,typename=arguments.typename)>
+		
+		<cfreturn stResult>
+	</cffunction>
+	
+	<cffunction name="archiveRollback" access="public" returntype="struct" hint="Sends a archived object live and archives current version">
+		<cfargument name="objectID" type="uuid" required="true">
+		<cfargument name="archiveID"  type="uuid" required="true" hint="the archived object to be sent back live">
+		<cfargument name="typename" type="string" default="" required="false">
+		
+ 		<cfset var stResult = application.factory.oVersioning.rollbackArchive(objectid=arguments.objectid,typename=arguments.typename,archiveID=arguments.archiveID)>
+		
+		<cfreturn stResult>
 	</cffunction>
 </cfcomponent>
 

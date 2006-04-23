@@ -6,11 +6,11 @@ Daemon Pty Limited 1995-2003
 http://www.daemon.com.au
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/includes/countdown.cfm,v 1.2 2003/03/18 01:09:28 brendan Exp $
-$Author: brendan $
-$Date: 2003/03/18 01:09:28 $
-$Name: b201 $
-$Revision: 1.2 $
+$Header: /cvs/farcry/farcry_core/admin/includes/countdown.cfm,v 1.3 2004/03/30 02:54:36 paul Exp $
+$Author: paul $
+$Date: 2004/03/30 02:54:36 $
+$Name: milestone_2-2-1 $
+$Revision: 1.3 $
 
 || DESCRIPTION || 
 Session timeout counter. Counts down time remaining in a user's session before they are logged out.
@@ -33,7 +33,8 @@ var timerRunning = false;
 function startTimer()
 {
 	stopTimer();
-	document.timer.timer.value = "";
+	document.getElementById('timer').value = '';
+	//document.timer.timer.value = "";
 	showTime();
 }
 
@@ -46,12 +47,13 @@ function stopTimer()
 
 function showTime(ConfigDefault)
 {
- if ( document.timer.timer.value.length == 0 )
+	var em = document.getElementById('timer');
+	if ( !em.value.length)
 	{
 		var date = new Date();
-		document.timer.timer.value = date.getTime();
+		em.value = date.getTime();
 	}
-  var timeNow = parseInt( document.timer.timer.value );
+  var timeNow = parseInt( em.value );
   timeEnd = new Date( timeNow + <cfoutput>#application.config.general.sessionTimeOut#</cfoutput>*60000 );
   var timeRemainingString = "";
   var timeNow = new Date();
@@ -75,7 +77,7 @@ function showTime(ConfigDefault)
 
     timeRemainingString = minutes + ":" + seconds;
     timeOut = 1000;
-	document.timer.clock.value = timeRemainingString;
+	document.getElementById('clock').innerHTML = timeRemainingString + ' remaining in session';
 	timerID = setTimeout("showTime(<cfoutput>#application.config.general.sessionTimeOut#</cfoutput>)",1000);
   	timerRunning = true;
   }

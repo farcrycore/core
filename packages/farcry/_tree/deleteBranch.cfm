@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_tree/deleteBranch.cfm,v 1.10 2003/09/10 12:21:48 brendan Exp $
-$Author: brendan $
-$Date: 2003/09/10 12:21:48 $
-$Name: b201 $
-$Revision: 1.10 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_tree/deleteBranch.cfm,v 1.11 2004/03/24 08:35:15 paul Exp $
+$Author: paul $
+$Date: 2004/03/24 08:35:15 $
+$Name: milestone_2-2-1 $
+$Revision: 1.11 $
 
 || DESCRIPTION || 
 $Description: deleteBranch Function $
@@ -29,7 +29,7 @@ $out:$
 <cftry> 
 
 	<cfscript>
-	stReturn = structNew();
+	
 	//delete a node, and its descendants
 	//preserve old nleft for later
 	sql = "

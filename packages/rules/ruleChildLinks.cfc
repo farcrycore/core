@@ -2,11 +2,11 @@
 ruleChildLinks (FarCry Core)
 Copyright Daemon Pty Limited 2002 (http://www.daemon.com.au/)
 
-$Header: /cvs/farcry/farcry_core/packages/rules/ruleChildLinks.cfc,v 1.19 2003/12/10 01:30:34 brendan Exp $
-$Author: brendan $
-$Date: 2003/12/10 01:30:34 $
-$Name: milestone_2-1-2 $
-$Revision: 1.19 $
+$Header: /cvs/farcry/farcry_core/packages/rules/ruleChildLinks.cfc,v 1.20 2004/05/22 06:19:51 paul Exp $
+$Author: paul $
+$Date: 2004/05/22 06:19:51 $
+$Name: milestone_2-2-1 $
+$Revision: 1.20 $
 
 Contributors:
 Paul Harrison (paul@daemon.com.au)
@@ -121,7 +121,7 @@ fails to display anything.
 		
 		<cfif qGetChildren.recordcount GT 0>
 			
-			<!--- loop over children --->	`
+			<!--- loop over children --->
 			<cfloop query="qGetChildren">
 				<!--- get child nav details --->
 				<q4:contentobjectget objectid="#qGetChildren.objectID#" r_stobject="stCurrentNav">

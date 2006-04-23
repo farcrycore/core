@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_verity/verityUpdate.cfm,v 1.3.2.2 2004/04/01 02:37:51 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_verity/verityUpdate.cfm,v 1.4 2004/04/01 02:26:55 brendan Exp $
 $Author: brendan $
-$Date: 2004/04/01 02:37:51 $
-$Name: milestone_2-1-2 $
-$Revision: 1.3.2.2 $
+$Date: 2004/04/01 02:26:55 $
+$Name: milestone_2-2-1 $
+$Revision: 1.4 $
 
 || DESCRIPTION || 
 $Description: updates verity collection$

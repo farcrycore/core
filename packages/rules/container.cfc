@@ -1,16 +1,36 @@
+<!--- 
+|| LEGAL ||
+$Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
+$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
-<cfcomponent extends="farcry.fourq.fourq">
-	<cfproperty name="objectID" hint="Primary Key" type="uuid">
-	<cfproperty name="label" hint="Name of the container"  type="nstring">
-	<cfproperty name="aRules" hint="Array of UUIDs" type="array"> 
-	<cfproperty name="bShared" hint="Flags whether this container is to be shared amoungst various objects and scheduled by publishing rule" type="boolean"> 
+|| VERSION CONTROL ||
+$Header: /cvs/farcry/farcry_core/packages/rules/container.cfc,v 1.23.2.4 2005/03/22 07:12:07 jason Exp $
+$Author: jason $
+$Date: 2005/03/22 07:12:07 $
+$Name: milestone_2-2-1 $
+$Revision: 1.23.2.4 $
+
+|| DESCRIPTION || 
+$Description: Core container management component. $
+$TODO: $
+
+|| DEVELOPER ||
+$Developer: Geoff Bowers (modius@daemon.com.au) $
+--->
+<cfcomponent extends="farcry.fourq.fourq" displayname="Container Management" hint="Manages all core functions for container instance management." version="1.1">
+	<cfproperty name="objectID" hint="Container instance primary key." type="uuid">
+	<cfproperty name="label" hint="Label for the container instance."  type="nstring" default="(unspecified)">
+	<cfproperty name="aRules" hint="Array of rule objects to be managed by this container." type="array"> 
+	<cfproperty name="bShared" hint="Flags whether or not this container is to be shared amongst various objects and scheduled by publishing rule." type="boolean" default="0">
+	<cfproperty name="mirrorID" hint="The UUID of a shared container to be used instead of this container; a mirror container if you like." type="UUID" default="">
 	
 	<cfinclude template="/farcry/farcry_core/admin/includes/cfFunctionWrappers.cfm">
 	
-	<cffunction name="createData" access="public" returntype="any" output="false" hint="Creates an instance of an object">
-		<cfargument name="stProperties" type="struct" required="true" hint="Structure of properties for the new object instance">
-		<cfargument name="parentobjectid" type="string" required="No" default="" hint="The objectid of the object that this container is rendered to">
+	<cffunction name="createData" access="public" returntype="any" output="false" hint="Creates an instance of a container object.">
+		<cfargument name="stProperties" type="struct" required="true" hint="Structure of properties for the new container instance.">
+		<cfargument name="parentobjectid" type="string" required="No" default="" hint="The objectid of the object that instantiated the container.  Should only be set if the container is unique to that instance.  Will enable clean-up of unused containers when the parent-object is deleted.">
 		<cfargument name="dsn" type="string" required="false" default="#application.dsn#">
+		<cfset var stNewObject = structNew()>
 		
 		<cfscript>
 			stNewObject = super.createData(arguments.stProperties);
@@ -25,23 +45,34 @@
 		<cfargument name="objectid" required="Yes" type="UUID" hint="objectid of object that container belongs to">
 		<cfargument name="containerid" required="Yes" type="UUID" default="object id of container">
 		<cfargument name="dsn" required="No" default="#application.dsn#">
+		<cfset var q = ''>
+		<cfset var qExists = ''>
 		
-		<cfquery datasource="#application.dsn#" name="q">
-			INSERT INTO refContainers
-			(objectid,containerID)
-			VALUES
-			('#arguments.objectid#','#arguments.containerid#')
-		</cfquery> 
+		<cfset qExists = refContainerDataExists(containerid=arguments.containerid,objectid=arguments.objectid)>
+		<cfif NOT qExists.recordCount>
+			<cfquery datasource="#arguments.dsn#" name="q">
+				INSERT INTO refContainers
+				(objectid,containerID)
+				VALUES
+				('#arguments.objectid#','#arguments.containerid#')
+			</cfquery> 
+		</cfif>
 	</cffunction>
 	
 	<cffunction name="deleteRefContainerData" hint="Delete data in refContainers relevant to a particular object">
-		<cfargument name="objectid" required="Yes">
-		<cfargument name="dsn" required="No" default="#application.dsn#">
+		<cfargument name="objectid" required="false">
+		<cfargument name="containerid" required="false">
+		<cfargument name="dsn" required="false" default="#application.dsn#">
 				
-		<cfquery name="q" datasource="#arguments.dsn#">
+		<cfquery datasource="#arguments.dsn#">
 			DELETE 
 			FROM refContainers
-			WHERE objectid = '#arguments.objectid#'
+			WHERE
+			<cfif isDefined("arguments.objectid")>
+				OBJECTID = '#arguments.objectid#'
+			<cfelse>
+				CONTAINERID = '#arguments.containerid#'
+			</cfif>
 		</cfquery>
 	
 	</cffunction>
@@ -49,6 +80,9 @@
 	<cffunction name="deleteContainerRules" hint="deletes all rules that belong to a container">
 		<cfargument name="containerid" required="Yes" type="UUID" hint="Objectid of container">
 		<cfset var x = 1>
+		<cfset var st = structNew()>
+		<cfset var ruletype = ''>
+		<cfset var o = ''>
 		<cfscript>
 			st = getData(objectid=arguments.containerid);
 			if(NOT structIsEmpty(st))
@@ -76,26 +110,41 @@
 		<cfargument name="dsn" required="No" default="#application.dsn#">
 		<cfset var index = 1>
 		<cfset var x = 1>
+		<cfset var qSrcCon = ''>
+		<cfset var qDestCon = ''>
+		<cfset var aRules = arrayNew(1)>
+		<cfset var stRule = structNew()>
+		<cfset var containerData = ''>
 		
 		<cfscript>
-			
+			//Get the containers in the source object
 			qSrcCon = getContainersByObject(arguments.srcObjectId);
+			//Get the containers in the destination object
 			qDestCon = getContainersByObject(arguments.destObjectId);
 						
-			/*dump(qSrcCon,'qsrc');
-			dump(qDestCon,'qdest');*/
-			
 			if(arguments.bDeleteDestData)
 			{
 				for(index = 1;index LTE qDestCon.recordcount;index=index+1)
-				{	
-					//delete all rule data from this container
-					deleteContainerRules(containerid=qDestCon.containerid[index]);
-					//delete the container
-					super.deleteData(qDestCon.containerid[index]);
+				{
+					//get the data on the container I might delete
+					containerData = super.getData(qDestCon.containerid[index]);
+					/*
+					If I find the objectid of the destination object in the container label
+					then I will delete the container because it is a unique container and is only
+					used in the destination object. However if the container label does not contain
+					the destination object's objectid then is is a global container and therefore
+					should not be removed because it *was not copied* to begin with.
+					*/ 
+					if(find(qDestCon.objectid[index],containerData.label))
+					{		
+						//delete all rule data from this container
+						deleteContainerRules(containerid=qDestCon.containerid[index]);
+						//delete the container
+						super.deleteData(qDestCon.containerid[index]);
+						//delete the refContainers entry for this container
+						deleteRefContainerData(containerid=qDestCon.containerid[index],dsn=arguments.dsn);
+					}
 				}
-				//delete all refContainerData
-				deleteRefContainerData(arguments.destObjectID);
 			}	
 			
 						
@@ -126,9 +175,14 @@
 					st.label = replace(st.label,arguments.srcObjectId,arguments.destObjectId,"ALL");
 					st.objectid = createUUID();
 					//now we want to create this new container
-					createData(stProperties=st,dsn=arguments.dsn);
-					//and log a reference to it in refContainers
-					createDataRefContainer(objectid=arguments.destObjectid,containerid=st.objectid);
+					qGetContainer = getContainer(dsn=arguments.dsn,label=st.label);
+					
+					if(NOT qGetContainer.recordCount)
+					{
+						createData(stProperties=st,dsn=arguments.dsn);
+						//and log a reference to it in refContainers
+						createDataRefContainer(objectid=arguments.destObjectid,containerid=st.objectid);
+					}
 				}
 				
 			}
@@ -137,23 +191,36 @@
 			{
 				for(index = 1;index LTE qSrcCon.recordcount;index=index+1)
 				{	
-					//delete all rule data from this container
-					deleteContainerRules(containerid=qSrcCon.containerid[index]);
-					//delete the container
-					super.deleteData(qSrcCon.containerid[index]);
+					//get the data on the container I might delete
+					containerData = super.getData(qSrcCon.containerid[index]);
+					/*
+					If I find the objectid of the source object in the container label
+					then I will delete the container because it *is* a unique container and is only
+					used in the source object. However if the container label does not contain
+					the source object's objectid then is is a global container and therefore
+					should not be removed because it *was not copied* to begin with.
+					*/ 
+					if(find(qSrcCon.objectid[index],containerData.label))
+					{		
+						//delete all rule data from this container
+						deleteContainerRules(containerid=qSrcCon.containerid[index]);
+						//delete the container
+						super.deleteData(qSrcCon.containerid[index]);
+						//delete the RefContainers record for this container
+						deleteRefContainerData(containerid=qSrcCon.containerid[index], dsn=arguments.dsn);
+					}
 				}
-				deleteRefContainerData(arguments.srcObjectId);
 			}	
 			
 		</cfscript>
-		
-		
 	</cffunction>
-	
 	
 	<cffunction name="delete" hint="deletes all container data by objectid">
 		<cfargument name="objectid" required="Yes">
 		<cfargument name="dsn" required="No" default="#application.dsn#">
+		<cfset var qRefObjects = ''>
+		<cfset var qObjs = ''>
+		<cfset var index = 1>
 		
 		<cfscript>
 			qRefObjects = getContainersByObject(objectid=arguments.objectid,dsn=arguments.dsn);
@@ -178,6 +245,7 @@
 	<cffunction name="getDistinctObjectsByContainer">	
 		<cfargument name="lContainerIds" required="Yes" hint="value list (not quoted) of container ids">
 		<cfargument name="dsn" required="No" default="#application.dsn#">
+		<cfset var q = ''>
 		
 		<cfquery name="q" datasource="#application.dsn#">
 			SELECT distinct(objectid) 
@@ -193,6 +261,7 @@
 	<cffunction name="getObjectsByContainer" hint="gets all parent objects that a container may belong to" returntype="query">
 		<cfargument name="containerid" required="Yes">
 		<cfargument name="dsn" required="No" default="#application.dsn#">
+		<cfset var q = ''>
 		
 		<cfquery name="q" datasource="#arguments.dsn#">
 			SELECT *
@@ -207,6 +276,7 @@
 	<cffunction name="getContainersByObject" hint="gets all container objects that are attached to a particular object" returntype="query">
 		<cfargument name="objectid" required="Yes">
 		<cfargument name="dsn" required="No" default="#application.dsn#">
+		<cfset var q = ''>
 		
 		<cfquery name="q" datasource="#arguments.dsn#">
 			SELECT *
@@ -222,6 +292,7 @@
 		<cfargument name="containerid" required="Yes">
 		<cfargument name="objectid" required="Yes">
 		<cfargument name="dsn" required="No" default="#application.dsn#">
+		<cfset var q = ''>
 		
 		<cfquery name="q" datasource="#arguments.dsn#">
 			SELECT *
@@ -268,6 +339,17 @@
 					) 
 				</cfquery>	 
 			</cfcase>
+			<cfcase value="postgresql">
+				<cftry><cfquery datasource="#arguments.dsn#">
+					DROP TABLE #arguments.dbowner#refContainers
+				</cfquery><cfcatch></cfcatch></cftry>
+				<cfquery datasource="#arguments.dsn#">
+					CREATE TABLE #arguments.dbowner#refContainers 
+					(objectid VARCHAR (50) NOT NULL, 
+					 containerid VARCHAR (50) NOT NULL 
+					) 
+				</cfquery>	 
+			</cfcase>
 			<cfdefaultcase>
 				<cfquery name="qCreateTables" datasource="#arguments.dsn#">
 				if exists (select * from sysobjects where id = object_id(N'#application.dbowner#refContainers') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
@@ -292,6 +374,7 @@
 		<cfargument name="label" type="string" required="true">
 		<cfargument name="dsn" type="string" required="true">
 		<cfargument name="objectID" type="uuid" required="false">
+		<cfset var qGetContainer = ''>
 				
 			
 		<cfquery name="qGetContainer" datasource="#arguments.dsn#">
@@ -306,9 +389,35 @@
 		</cfquery>
 		<cfreturn qGetContainer>
 	</cffunction> 
+
+	<cffunction name="getContainerbylabel" access="public" returntype="struct" hint="Retrieve container instance by label lookup and return structure.">
+		<cfargument name="label" type="string" required="true">
+		<cfargument name="dsn" type="string" required="true">
+		<cfset var qGetContainer="">
+		<cfset var stReturn=structNew()>
+		<cfquery name="qGetContainer" datasource="#arguments.dsn#">
+			SELECT *
+			FROM #application.dbowner#container 
+			WHERE 
+			label = '#arguments.label#'
+		</cfquery>
+		<cfif qGetContainer.recordcount gt 0>
+		<!--- convert query to structure --->
+		<cfloop list="#qGetContainer.columnlist#" index="key">
+			<cfset stReturn[key]=Evaluate("qGetContainer.#key#")>
+		</cfloop>
+		</cfif>
+		<!--- returns empty structure if no result; like getData() --->
+		<cfreturn stReturn>
+	</cffunction> 
 	
 	<cffunction name="populate" access="public" hint="Gets Rule instances and execute them">
 		<cfargument name="aRules" type="array" required="true">
+		<cfset var i=1>
+		<cfset var o="">
+		<cfset var rule="">
+		
+		<cftrace type="warning" text="populating container" var="arguments.arules" />
 		
 		<cfset request.aInvocations = arrayNew(1)>
 		<cfset oFourq = createObject("component", "farcry.fourq.fourq")>
@@ -320,6 +429,7 @@
 					<!--- show error if debugging --->
 					<cfif isdefined("url.debug")>
 						<cfset request.cfdumpinited = false>
+						<cfoutput>#cfcatch.message#<br />#cfcatch.detail#</cfoutput>
 						<cfdump var="#cfcatch#">
 					</cfif>
 					<!--- Output a HTML Comment for debugging purposes --->
@@ -340,13 +450,68 @@
 				</cfscript>
 			<cfelse>
 				<cfoutput>
-					<p>
 					#request.aInvocations[i]#
-					</p>
 				</cfoutput>	
 			</cfif>	
 		</cfloop>
-		
 	</cffunction>
 	
+	<cffunction name="getSharedContainers" access="public" hint="Returns a query of containers with bShared true." returntype="query" output="false">
+		<cfset var qReturn="">
+		<cfquery datasource="#application.dsn#" name="qReturn">
+		SELECT * FROM container WHERE bshared = 1
+		ORDER BY label
+		</cfquery>
+		<cfreturn qReturn>
+	</cffunction>
+
+	<cffunction name="setReflection" access="public" hint="Updates container mirrorid property after validation." returntype="struct" output="false">
+		<cfargument name="objectid" required="true" type="uuid" hint="ObjectID for the container instance being updated.">
+		<cfargument name="mirrorid" required="true" type="uuid" hint="ObjectID for the container instance providing the reflection; that is, the shared container.">
+		<cfset var stMirror=getData(objectid=arguments.mirrorid)>
+		<cfset var stContainer=getData(objectid=arguments.objectid)>
+		<cfset stReturn=structNew()>
+		
+		<!--- // check that mirrorid container is shared --->
+		<cfif len(stMirror.bShared) AND NOT stMirror.bShared>
+			<cfthrow type="rules.container" message="Container not shared.  Only shared container instances may be mirrored.">
+		</cfif>
+		<!--- // check that objectid container is not shared --->
+		<cfif NOT len(stMirror.bShared) AND stContainer.bShared>
+			<cfthrow type="rules.container" message="Container is shared.  Shared container instances may not mirror other containers.">
+		</cfif>
+		<cfscript>
+			stprops.objectid=arguments.objectid;
+			stprops.mirrorid=arguments.mirrorid;
+			streturn=setdata(stproperties=stprops);
+			return(stReturn);
+		</cfscript>
+	</cffunction>
+	
+	<cffunction name="deleteReflection" access="public" hint="Deletes mirrorid for a specified container." returntype="struct" output="false">
+		<cfargument name="objectid" required="true" type="uuid" hint="ObjectID for the container instance being updated.">
+		<cfset var stReturn=structNew()>
+		<cfscript>
+			stprops.objectid=arguments.objectid;
+			stprops.mirrorid="";
+			streturn=setdata(stproperties=stprops);
+			return(stReturn);
+		</cfscript>
+	</cffunction>
+
+	<cffunction name="getReflection" access="public" hint="Gets the reflected container. If mirror container doesn't exist, method deletes reference." returntype="struct" output="false">
+		<cfargument name="containerid" required="true" type="uuid" hint="ObjectID for the primary container.">
+		<cfargument name="mirrorid" required="true" type="uuid" hint="ObjectID for the mirrored container instance to be retrieved.">
+		<cfset var stReturn=structNew()>
+
+		<cfscript>
+		// get mirrored container
+		stReturn=getdata(objectid=arguments.mirrorid);
+		// delete if it doesn't exist
+		if (structisempty(streturn))
+			deletereflection(objectid=containerid);
+		return(stReturn);
+		</cfscript>
+	</cffunction>
+
 </cfcomponent>

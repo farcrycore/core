@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/farcry/_config.cfm,v 1.41 2003/12/08 05:17:05 paul Exp $
-$Author: paul $
-$Date: 2003/12/08 05:17:05 $
-$Name: milestone_2-1-2 $
-$Revision: 1.41 $
+$Header: /cvs/farcry/farcry_core/tags/farcry/_config.cfm,v 1.42.2.1 2004/12/07 00:51:50 tom Exp $
+$Author: tom $
+$Date: 2004/12/07 00:51:50 $
+$Name: milestone_2-2-1 $
+$Revision: 1.42.2.1 $
 
 || DESCRIPTION || 
 $Description: included file for one-time initialisation of application constants $
@@ -46,6 +46,14 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 	<cfset application.customAdminXML="false">	
 </cfif>
 
+<!---
+Setup defaults for File and Image assets. These values might be set
+in the project code base in "_serverSpecificVars.cfm"
+--->
+<cfparam name="application.defaultFilePath"
+		 default="#application.path.project#/www/files">
+<cfparam name="application.defaultImagePath"
+		 default="#application.path.project#/www/images">
 
 <cfscript>
 	/* $TODO:
@@ -82,14 +90,6 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 		application.path.tempfiles = application.path.core & "/plps/tempfiles";
 	application.fourq.plpstorage = application.path.core & "/plps/plpstorage"; // deprecated
 	application.fourq.plppath = "/farcry/farcry_core/plps"; // deprecated
-
-	// assets 
-	/* $TODO: 
-	 - need to resolve how this would be overridden from project code base
-	 - /files assumes web server access to this dir -> what about secure filestores?$ */
-	application.defaultFilePath = expandPath("#application.url.webroot#/files");
-	application.defaultImagePath = expandpath("#application.url.webroot#/images");
-
 
 	//initialise factory objects 
 	application.factory.oAudit = createObject("component","#application.packagepath#.farcry.audit");
@@ -161,6 +161,13 @@ Build NavIDs from Navigation Nodes
 	// set up requested navid's application.navIds
 	oNav = createObject("component", application.types.dmNavigation.typePath);
 	application.navid = oNav.getNavAlias();
+</cfscript>
+
+<!--- Build catids from category nodes --->
+
+<cfscript>
+	oCat = createObject("component", "#application.packagepath#.farcry.category");
+	application.catid = oCat.getCatAliases();
 </cfscript>
 
 <!--- application.stTypes -- legacy code required in site overview tree --->

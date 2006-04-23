@@ -5,11 +5,10 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/navajo/GenericAdmin.cfm,v 1.22.2.3 2005/04/29 03:12:04 guy Exp $
-$Author: guy $
-$Date: 2005/04/29 03:12:04 $
-$Name: milestone_2-1-2 $
-$Revision: 1.22.2.3 $
+$Header: /cvs/farcry/farcry_core/admin/navajo/GenericAdmin.cfm,v 1.25 2004/04/14 06:51:37 brendan Exp $
+$Author: brendan $
+$Date: 2004/04/14 06:51:37 $
+$Name: milestone_2-2-1 $
 
 || DESCRIPTION || 
 $Description: calls generic admin for all types. $
@@ -21,6 +20,7 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
 || ATTRIBUTES ||
 $in: [url.typename]: object type $
 --->
+
 <!--- required variables --->
 <cfimport taglib="/farcry/farcry_core/tags/farcry/" prefix="farcry">
 <cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
@@ -60,7 +60,7 @@ $in: [url.typename]: object type $
 			permissionType = 'news';
 			break;
 				
-	}
+	}		
 	stGrid.permissionType = permissionType;
 	
 	// check for edit permission

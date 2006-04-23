@@ -5,11 +5,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmEvent/plpEdit/start.cfm,v 1.6 2003/12/24 06:04:30 paul Exp $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmEvent/plpEdit/start.cfm,v 1.9 2004/07/08 07:25:38 paul Exp $
 $Author: paul $
-$Date: 2003/12/24 06:04:30 $
-$Name: milestone_2-1-2 $
-$Revision: 1.6 $
+$Date: 2004/07/08 07:25:38 $
+$Name: milestone_2-2-1 $
+$Revision: 1.9 $
 
 || DESCRIPTION || 
 $Description: dmEvent Edit PLP - Start Step $
@@ -27,77 +27,71 @@ $Developer: Brendan Sisson (brendan@daemon.com.au) $
 <cfif isDefined("FORM.submit") or isdefined("form.save") or (isdefined("form.quicknav") and form.quicknav neq "")>
 	<cfscript>
 		//publish/expiry dates
-		publishDate = '#form.publishYear#-#form.publishMonth#-#form.publishDay# #form.publishHour#:#form.publishMinutes#';
+		publishDate = createDateTime(form.publishYear,form.publishMonth,form.publishDay,form.publishHour,form.publishMinutes,0);
 		output.publishDate = createODBCDatetime(publishDate);
 		// hack for no expiry. sets expiry year to 2050...the y2050 bug :)
 		if (form.noExpire) {
-			expiryDate = '2050-#form.expiryMonth#-#form.expiryDay# #form.expiryHour#:#form.expiryMinutes#';
+			expiryDate = createDateTime('2050',form.expiryMonth,form.expiryDay,form.expiryHour,form.expiryMinutes,0);
 			output.expiryDate = createODBCDatetime(expiryDate);
 		} else {
-			expiryDate = '#form.expiryYear#-#form.expiryMonth#-#form.expiryDay# #form.expiryHour#:#form.expiryMinutes#';
+			expiryDate = createDateTime(form.expiryYear,form.expiryMonth,form.expiryDay,form.expiryHour,form.expiryMinutes,0);
 			output.expiryDate = createODBCDatetime(expiryDate);
 		}
 		
 		//start/end dates
-		startDate = '#form.startYear#-#form.startMonth#-#form.startDay# #form.startHour#:#form.startMinutes#';
+		startDate = createDateTime(form.startYear,form.startMonth,form.startDay,form.startHour,form.startMinutes,0);
 		output.startDate = createODBCDatetime(startDate);
 		if (form.noEventExpire) {
-			endDate = '2050-#form.endMonth#-#form.endDay# #form.endHour#:#form.endMinutes#';
+			endDate = createDateTime('2050',form.endMonth,form.endDay,form.endHour,form.endMinutes,0);
 			output.endDate = createODBCDatetime(endDate);
 		} else {
-			endDate = '#form.endYear#-#form.endMonth#-#form.endDay# #form.endHour#:#form.endMinutes#';
+			endDate = createDateTime(form.endYear,form.endMonth,form.endDay,form.endHour,form.endMinutes,0);
 			output.endDate = createODBCDatetime(endDate);
 		}
 	</cfscript>
 </cfif>
-
-<cfif output.expiryDate gte output.publishDate and output.endDate gte output.startDate>
+<!--- default publish/expiry dates --->
+<cfscript>
+	if (not isDate(output.startDate))
+		output.startDate = createDateTime(year(now()),month(now()),day(now()),hour(now()),minute(now()),0);	
+	if (not isDate(output.endDate))
+		output.endDate = createDateTime(year(now()),month(now()),day(now()),hour(now()),minute(now()),0);	
+	if (not isDate(output.publishDate))
+		output.publishDate = createDateTime(year(now()),month(now()),day(now()),hour(now()),minute(now()),0);
+	if(output.expiryDate eq output.publishDate)		 
+		output.expiryDate = dateadd(application.config.general.newsExpiryType,application.config.general.newsExpiry,"#now()#");
+	
+	
+</cfscript>
+<cfif dateDiff('n', output.publishDate,output.expiryDate) gte 0 and dateDiff('n', output.startDate,output.endDate) GTE 0 >
 	<tags:plpNavigationMove>		
 <cfelse>
 	<cfoutput><div style="color:red;">ERROR. Expiry or End dates cannot be before Publish or Start Dates<p></p></div></cfoutput>
 </cfif>
 
-<!--- default publish/expiry dates --->
-<cfif len(output.publishDate ) eq 0>
-	<cfset output.publishDate = now()>
-</cfif>
-<cfif output.expiryDate eq output.publishDate>
-	<cfset output.expiryDate = dateadd(application.config.general.newsExpiryType,application.config.general.newsExpiry,"#now()#")>
-</cfif>
 
-<!--- default start/end dates --->
-<cfif len(output.startDate) eq 0>
-	<cfset output.startDate = now()>
-</cfif>
-<cfif len(output.endDate) eq 0>
-	<cfset output.endDate = now()>
-</cfif>
-
-<cfif output.endDate eq output.startDate>
-	<cfset output.endDate = dateadd(application.config.general.newsExpiryType,application.config.general.newsExpiry,"#now()#")>
-</cfif>
 	
 <cfif NOT thisstep.isComplete>
 	<cfoutput><form action="#cgi.script_name#?#cgi.query_string#" name="editform" method="post">
 	
 	<div class="FormSubTitle">#output.label#</div>
 	<div class="FormTitle">General Info</div>
-	<div class="FormTable" style="width:500px">
-	<table class="BorderTable" width="500" align="center">
+	<div class="FormTable" style="width:550px;">
+	<table class="BorderTable" width="auto;" align="center">
 	<tr>
 		<td nowrap class="FormLabel">Title: </span></td>
-		<td width="100%"><input type="text" name="Title" value="#output.Title#" class="formtextbox" maxlength="255"></td>
+		<td><input type="text" name="Title" value="#output.Title#" class="formtextbox" maxlength="255"></td>
 	</tr>
 	<tr>
 		<td nowrap class="FormLabel">Location: </span></td>
-		<td width="100%"><input type="text" name="Location" value="#output.Location#" class="formtextbox" maxlength="255"></td>
+		<td><input type="text" name="Location" value="#output.Location#" class="formtextbox" maxlength="255"></td>
 	</tr>
 	<!--- get the templates for this type --->
 	<nj:listTemplates typename="dmEvent" prefix="displayPage" r_qMethods="qMethods">
 	<cfoutput>
 	<tr>
 		<td nowrap><span class="FormLabel">Display Method:</span></td>
-		<td width="100%"><span class="FormLabel">
+		<td><span class="FormLabel">
 		<select name="DisplayMethod" size="1" class="formfield">
 		</cfoutput>
 		<cfloop query="qMethods">
@@ -105,7 +99,8 @@ $Developer: Brendan Sisson (brendan@daemon.com.au) $
 		</cfloop>
 		<cfoutput>
 		</select>
-		</span></td>
+		</span>
+		</td>
 	</tr>
 	<tr>
 		<td colspan="2">&nbsp;</td>

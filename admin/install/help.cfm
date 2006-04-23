@@ -30,6 +30,7 @@
 			<li>Microsoft SQL Server</li>
 			<li>MySQL</li>
 			<li>Oracle 8i+</li>
+			<li>PostgreSQL</li>
 		</ul>
 		This is required so the correct creation scripts are used.
 	</cfcase>
@@ -41,6 +42,7 @@
 			<li>Microsoft SQL Server - dbo.</li>
 			<li>MySQL - blank</li>
 			<li>Oracle 8i+ - username.</li>
+			<li>PostgreSQL - blank</li>
 		</ul>
 	</cfcase>
 

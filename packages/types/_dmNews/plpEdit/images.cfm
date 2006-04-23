@@ -5,15 +5,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmNews/plpEdit/images.cfm,v 1.8.2.1 2004/02/26 02:44:36 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmNews/plpEdit/images.cfm,v 1.15 2004/07/12 01:41:12 brendan Exp $
 $Author: brendan $
-$Date: 2004/02/26 02:44:36 $
-$Name: milestone_2-1-2 $
-$Revision: 1.8.2.1 $
+$Date: 2004/07/12 01:41:12 $
+$Name: milestone_2-2-1 $
+$Revision: 1.15 $
 
 || DESCRIPTION || 
-$Description: dmNews Edit PLP - Adds images as associated objects$
-$TODO: $
+$Description: Adds images as associated objects$
+$TODO: clean up formatting -- test in Mozilla 20030503 GB$
 
 || DEVELOPER ||
 $Developer: Brendan Sisson (brendan@daemon.com.au)$
@@ -22,10 +22,11 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 <cfimport taglib="/farcry/farcry_core/tags/farcry" prefix="tags">
 <cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
 
+
 <cfoutput>
 	<script>
 	var isIE=document.all?true:false;
-	var layers = isIE?document.all.tags("DIV"):null;
+	var layers = isIE?document.all.tags("DIV"):document.getElementsByTagName("DIV");
 	selectedDiv = "fileform";
 	function toggleForm(selectedDiv,display)
 	{
@@ -41,7 +42,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 	function hideAll()
 	{
 		for(var i=0;i<layers.length;i++){
-			if (layers[i].id != 'PLPMoveButtons')
+			if (layers[i].id != 'PLPButtons' && layers[i].id != 'PLPMoveButtons')
 				layers[i].style.display='none';
 		}	
 	}
@@ -87,89 +88,222 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 			stProperties.height = form.height;
 			stProperties.datetimelastupdated = Now();
 			stProperties.lastupdatedby = session.dmSec.authentication.userlogin;
-		</cfscript>
-		
-		<!--- upload the original file 	--->
-		<cfset imageAcceptList = application.config.image.imagetype>
-		 
-		<cfif trim(len(form.imageFile)) NEQ 0 AND form.imageFile NEQ form.imageFile_old>
-		
-		<!--- upload new file (if accept list not specified in config, accept everything) --->
-		<cfif len(application.config.image.imagetype)>
-			<cfinvoke component="#application.packagepath#.farcry.form" method="uploadFile" returnvariable="stReturn" formfield="imagefile" destination="#application.defaultImagePath#" accept="#imageAcceptList#"> 
-		<cfelse>
-			<cfinvoke component="#application.packagepath#.farcry.form" method="uploadFile" returnvariable="stReturn" formfield="imagefile" destination="#application.defaultImagePath#"> 
-		</cfif>
-		
-		<cfif stReturn.bsuccess>
-			<!--- delete old file --->
-			<cftry>
-				<cffile action="delete" file="#application.defaultImagePath#/#form.imageFile_old#">
-				<cfcatch type="any"></cfcatch>
-			</cftry>
 			
-			<cfscript>
-				stProperties.imageFile = stReturn.ServerFile;
-				stProperties.originalImagePath = stReturn.ServerDirectory;
-			</cfscript>
-		<cfelse>
-			<cfoutput><strong>ERROR:</strong> #stReturn.message#<p>
-			Image types that are accepted: #imageAcceptList# <p></p></cfoutput>
-		</cfif>
-	</cfif>
-	
-	<cfif trim(len(FORM.optimisedImage)) NEQ 0 AND form.optimisedImage NEQ form.optimisedImage_old>
-		<!--- upload new file (if accept list not specified in config, accept everything) --->
-		<cfif len(application.config.image.imagetype)>
-			<cfinvoke component="#application.packagepath#.farcry.form" method="uploadFile" returnvariable="stReturn" formfield="optimisedImage" destination="#application.defaultImagePath#" accept="#imageAcceptList#"> 
-		<cfelse>
-			<cfinvoke component="#application.packagepath#.farcry.form" method="uploadFile" returnvariable="stReturn" formfield="optimisedImage" destination="#application.defaultImagePath#"> 
-		</cfif>
-		
-		<cfif stReturn.bsuccess>	
-			<cfscript>
-				stProperties.optimisedImage = stReturn.ServerFile;
-				stProperties.optimisedImagePath = stReturn.ServerDirectory;
-			</cfscript>
-		<cfelse>
-			<cfoutput><strong>ERROR:</strong> #stReturn.message#<p>
-			Image types that are accepted: #imageAcceptList# <p></p></cfoutput>
-		</cfif>
-	</cfif>
-	
-	<cfif trim(len(FORM.thumbnailImage)) NEQ 0 AND form.thumbnailImage NEQ form.thumbnailImage_old>
-		<!--- upload new file (if accept list not specified in config, accept everything) --->
-		<cfif len(application.config.image.imagetype)>
-			<cfinvoke component="#application.packagepath#.farcry.form" method="uploadFile" returnvariable="stReturn" formfield="thumbnailImage" destination="#application.defaultImagePath#" accept="#imageAcceptList#"> 
-		<cfelse>
-			<cfinvoke component="#application.packagepath#.farcry.form" method="uploadFile" returnvariable="stReturn" formfield="thumbnailImage" destination="#application.defaultImagePath#"> 
-		</cfif>
-		
-		<cfif stReturn.bsuccess>
-			<cfscript>
-				stProperties.thumbnail = stReturn.ServerFile;
-				stProperties.thumbnailImagePath = stReturn.ServerDirectory;
-			</cfscript>
-		<cfelse>
-			<cfoutput><strong>ERROR:</strong> #stReturn.message#<p>
-			Image types that are accepted: #imageAcceptList# <p></p></cfoutput>
-		</cfif>
-	</cfif>
-
-		
-		<cfscript>
-			typeName = "dmImage";
+			oImage = createobject("component", application.types.dmImage.typePath);
+			oForm = createObject("component","#application.packagepath#.farcry.form");
+			imageAcceptList = application.config.image.imagetype;
 		</cfscript>
+
+		<!--- check default image has been passed in from form --->
+		<cfif trim(len(form.imageFile)) NEQ 0>	
+			<!--- check if it's a new image --->
+			<cfif len(form.imageFile_old)>		
+				<!--- overwriting an existing image so check if new file has the same name as existing file--->
+				<cfif form.imageFile_old eq form.defaultImageFileName>
+					<cftry>
+						<!--- same name so upload new image overwriting the existing one --->
+						<cfif len(imageAcceptList)>
+							<cffile action="upload" filefield="imagefile" destination="#application.defaultImagePath#" accept="#imageAcceptList#" nameconflict="OVERWRITE"> 
+						<cfelse>
+							<cffile action="upload" filefield="imagefile" destination="#application.defaultImagePath#" nameconflict="OVERWRITE"> 
+						</cfif>
+						
+						<cfcatch>
+							<cfoutput><p><strong>ERROR:</strong> #cfcatch.message# </p></cfoutput>
+							<cfset error=1>
+						</cfcatch>
+					</cftry>
+				<cfelse>
+					<!--- different name so upload new image making it unique --->
+					<cftry>
+						<cfif len(imageAcceptList)>
+							<cffile action="upload" filefield="imagefile" destination="#application.defaultImagePath#" accept="#imageAcceptList#" nameconflict="MAKEUNIQUE"> 
+						<cfelse>
+							<cffile action="upload" filefield="imagefile" destination="#application.defaultImagePath#" nameconflict="MAKEUNIQUE"> 
+						</cfif>
+						<!--- rename to overwrite existing one --->
+						<cffile action="RENAME" source="#file.ServerDirectory#/#file.serverfile#" destination="#file.ServerDirectory#/#form.imageFile_old#">
+						
+						<cfcatch>
+							<cfoutput><p><strong>ERROR:</strong> #cfcatch.message# </p></cfoutput>
+							<cfset error=1>
+						</cfcatch>
+					</cftry>
+				</cfif>			
+			<cfelse>
+				<!--- new image so check if filename is already in use --->
+				<cfset stCheckDefault = oImage.checkForExisting(filename=form.defaultImageFileName)>
+				
+				<cfif not stCheckDefault.bExists>
+					<!--- upload new file (if accept list not specified in config, accept everything) --->
+					<cftry>
+						<cfif len(imageAcceptList)>
+							<cffile action="upload" filefield="imagefile" destination="#application.defaultImagePath#" accept="#imageAcceptList#"> 
+						<cfelse>
+							<cffile action="upload" filefield="imagefile" destination="#application.defaultImagePath#"> 
+						</cfif>
+						
+						<!--- add image values to object data --->
+						<cfset stProperties.imageFile = oForm.sanitiseFileName(file.ServerFile,file.ClientFileName,file.ServerDirectory)>
+						<cfset stProperties.originalImagePath = file.ServerDirectory>
+						
+						<cfcatch>
+							<cfoutput><p><strong>ERROR:</strong> #cfcatch.message# </p></cfoutput>
+							<cfset error=1>
+						</cfcatch>
+					</cftry>
+				<cfelse>
+					<!--- filename already in use by another image object --->
+					<cfoutput><p><strong>ERROR:</strong> Filename already in use</p>
+					<p>The file <strong>#stCheckDefault.fileName#</strong> is in use by another image in the system. Please re-name and then try again.</p></cfoutput>
+					<cfset error=1>
+				</cfif>
+			</cfif>
+		</cfif>
+		
+		<!--- check optimised image has been passed in from form --->
+		<cfif trim(len(form.optimisedImage)) NEQ 0>	
+			<!--- check if it's a new image --->
+			<cfif len(form.optimisedImage_old)>		
+				<!--- overwriting an existing image so check if new file has the same name as existing file--->
+				<cfif form.optimisedImage_old eq form.optImageFileName>
+					<cftry>
+						<!--- same name so upload new image overwriting the existing one --->
+						<cfif len(imageAcceptList)>
+							<cffile action="upload" filefield="optimisedImage" destination="#application.defaultImagePath#" accept="#imageAcceptList#" nameconflict="OVERWRITE"> 
+						<cfelse>
+							<cffile action="upload" filefield="optimisedImage" destination="#application.defaultImagePath#" nameconflict="OVERWRITE"> 
+						</cfif>
+						
+						<cfcatch>
+							<cfoutput><p><strong>ERROR:</strong> #cfcatch.message# </p></cfoutput>
+							<cfset error=1>
+						</cfcatch>
+					</cftry>
+				<cfelse>
+					<!--- different name so upload new image making it unique --->
+					<cftry>
+						<cfif len(imageAcceptList)>
+							<cffile action="upload" filefield="optimisedImage" destination="#application.defaultImagePath#" accept="#imageAcceptList#" nameconflict="MAKEUNIQUE"> 
+						<cfelse>
+							<cffile action="upload" filefield="optimisedImage" destination="#application.defaultImagePath#" nameconflict="MAKEUNIQUE"> 
+						</cfif>
+						<!--- rename to overwrite existing one --->
+						<cffile action="RENAME" source="#file.ServerDirectory#/#file.serverfile#" destination="#file.ServerDirectory#/#form.optimisedImage_old#">
+						
+						<cfcatch>
+							<cfoutput><p><strong>ERROR:</strong> #cfcatch.message# </p></cfoutput>
+							<cfset error=1>
+						</cfcatch>
+					</cftry>
+				</cfif>			
+			<cfelse>
+				<!--- new image so check if filename is already in use --->
+				<cfset stCheckOptimised = oImage.checkForExisting(filename=form.optImageFileName)>
+				
+				<cfif not stCheckOptimised.bExists>
+					<!--- upload new file (if accept list not specified in config, accept everything) --->
+					<cftry>
+						<cfif len(imageAcceptList)>
+							<cffile action="upload" filefield="optimisedImage" destination="#application.defaultImagePath#" accept="#imageAcceptList#"> 
+						<cfelse>
+							<cffile action="upload" filefield="optimisedImage" destination="#application.defaultImagePath#"> 
+						</cfif>
+						
+						<!--- add image values to object data --->
+						<cfset stProperties.optimisedImage = oForm.sanitiseFileName(file.ServerFile,file.ClientFileName,file.ServerDirectory)>
+						<cfset stProperties.optimisedImagePath = file.ServerDirectory>
+						
+						<cfcatch>
+							<cfoutput><p><strong>ERROR:</strong> #cfcatch.message# </p></cfoutput>
+							<cfset error=1>
+						</cfcatch>
+					</cftry>
+				<cfelse>
+					<!--- filename already in use by another image object --->
+					<cfoutput><p><strong>ERROR:</strong> Filename already in use</p>
+					<p>The file <strong>#stCheckOptimised.fileName#</strong> is in use by another image in the system. Please re-name and then try again.</p></cfoutput>
+					<cfset error=1>
+				</cfif>
+			</cfif>
+		</cfif>
+		
+		<!--- check thumbnail image has been passed in from form --->
+		<cfif trim(len(form.thumbnailImage)) NEQ 0>	
+			<!--- check if it's a new image --->
+			<cfif len(form.thumbnailImage_old)>		
+				<!--- overwriting an existing image so check if new file has the same name as existing file--->
+				<cfif form.thumbnailImage_old eq form.thumbImageFileName>
+					<cftry>
+						<!--- same name so upload new image overwriting the existing one --->
+						<cfif len(imageAcceptList)>
+							<cffile action="upload" filefield="thumbnailImage" destination="#application.defaultImagePath#" accept="#imageAcceptList#" nameconflict="OVERWRITE"> 
+						<cfelse>
+							<cffile action="upload" filefield="thumbnailImage" destination="#application.defaultImagePath#" nameconflict="OVERWRITE"> 
+						</cfif>
+						
+						<cfcatch>
+							<cfoutput><p><strong>ERROR:</strong> #cfcatch.message# </p></cfoutput>
+							<cfset error=1>
+						</cfcatch>
+					</cftry>
+				<cfelse>
+					<!--- different name upload new image making it unique --->
+					<cftry>
+						<cfif len(imageAcceptList)>
+							<cffile action="upload" filefield="thumbnailImage" destination="#application.defaultImagePath#" accept="#imageAcceptList#" nameconflict="MAKEUNIQUE"> 
+						<cfelse>
+							<cffile action="upload" filefield="thumbnailImage" destination="#application.defaultImagePath#" nameconflict="MAKEUNIQUE"> 
+						</cfif>
+						<!--- rename to overwrite existing one --->
+						<cffile action="RENAME" source="#file.ServerDirectory#/#file.serverfile#" destination="#file.ServerDirectory#/#form.thumbnailImage_old#">
+						
+						<cfcatch>
+							<cfoutput><p><strong>ERROR:</strong> #cfcatch.message# </p></cfoutput>
+							<cfset error=1>
+						</cfcatch>
+					</cftry>
+				</cfif>			
+			<cfelse>
+				<!--- new image so check if filename is already in use --->
+				<cfset stCheckThumb = oImage.checkForExisting(filename=form.thumbImageFileName)>
+				
+				<cfif not stCheckThumb.bExists>
+					<!--- upload new file (if accept list not specified in config, accept everything) --->
+					<cftry>
+						<cfif len(imageAcceptList)>
+							<cffile action="upload" filefield="thumbnailImage" destination="#application.defaultImagePath#" accept="#imageAcceptList#"> 
+						<cfelse>
+							<cffile action="upload" filefield="thumbnailImage" destination="#application.defaultImagePath#"> 
+						</cfif>
+						
+						<!--- add image values to object data --->
+						<cfset stProperties.thumbnail = oForm.sanitiseFileName(file.ServerFile,file.ClientFileName,file.ServerDirectory)>
+						<cfset stProperties.thumbnailImagePath = file.ServerDirectory>
+						
+						<cfcatch>
+							<cfoutput><p><strong>ERROR:</strong> #cfcatch.message# </p></cfoutput>
+							<cfset error=1>
+						</cfcatch>
+					</cftry>
+				<cfelse>
+					<!--- filename already in use by another image object --->
+					<cfoutput><p><strong>ERROR:</strong> Filename already in use</p>
+					<p>The file <strong>#stCheckThumb.fileName#</strong> is in use by another image in the system. Please re-name and then try again.</p></cfoutput>
+					<cfset error=1>
+				</cfif>
+			</cfif>
+		</cfif>
+
 		<!--- if form.editfile exists - then an existing object is being edited - else must create new object --->
 		
 		<cfscript>
-			oType = createobject("component", application.types[typeName].typePath);
 			if (isdefined("form.editObject")) {
 				// update the OBJECT	
-				oType.setData(stProperties=stProperties);
+				oImage.setData(stProperties=stProperties);
 			} else {
 				// create the new OBJECT
-				stNewObj = oType.createData(stProperties=stProperties);
+				stNewObj = oImage.createData(stProperties=stProperties);
 				NewObjID = stNewObj.objectid;
 			}
 		</cfscript>
@@ -179,13 +313,11 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 			<!--- delete them from the database --->
 			<nj:deleteObjects lObjectIDs="#form.objectID#" typename="dmImage" rMsg="msg">
 			<cfloop list="#form.objectID#" index="objectID">
-				<cfoutput>
 				<cfloop index="i" from="#arrayLen(output.aObjectIds)#" to="1" step="-1">
 					<cfif output.aObjectIds[i] is objectId>
 						<cfset ArrayDeleteAt(output.aObjectIds, i )>
 					</cfif>
-				</cfloop> 
-				</cfoutput>
+				</cfloop>
 			</cfloop>
 		<cfelse>
 			<cfset msg = "No objects were selected for deletion">	
@@ -206,279 +338,279 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 
 <cfif NOT thisstep.isComplete>
 
-<cfif (StructKeyExists(output, "aObjectIDs"))>
-	<cfset aFileArray = arrayNew(1)>
-	<cfloop from="1" to="#arrayLen(output.aObjectIds)#" index="i">
-		<!--- get the objectType --->
-		<cfinvoke component="farcry.fourq.fourq" returnvariable="typename" method="findType" objectID="#output.aObjectIds[i]#">
-		<cfif typename IS "dmImage">
-			<cfscript>
-				arrayAppend(aFileArray,output.aObjectIds[i]);
-			</cfscript>
-		</cfif>
-	</cfloop>
-	<cfif arrayLen(aFileArray) GT 0>
-	<cfoutput>
-	<form action="" method="post">
-	<table class="borderTable" >
-	<tr>
-		<td colspan="5" align="center"><span class="FormSubTitle">Existing Images</span></td> 
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td align="center"><span class="FormLabel">Title</span></td>
-		<td><span class="FormLabel">Preview</span></td>
-		<td align="center"><span class="FormLabel">Edit</span></td>
-		<td align="center"><span class="FormLabel">Delete</span></td>
-	</tr></cfoutput>
-	<cfloop from="1" to="#arrayLen(afileArray)#" index="i">
-		<q4:contentobjectget objectid="#aFileArray[i]#" bactiveonly="False" r_stobject="stThisFile">
-		<cfoutput>
-		<tr>
-			<td></cfoutput>
-				<!---$ole: check to see if any images exist$ --->
-				<cfif len(trim(stThisFile.imagefile)) NEQ 0>
-					<nj:getFileIcon filename="#stThisFile.imagefile#" r_stIcon="fileicon"> 	
-				<cfelseif len(trim(stThisFile.thumbnail)) NEQ 0>
-					<nj:getFileIcon filename="#stThisFile.thumbnail#" r_stIcon="fileicon"> 	
-				<cfelseif len(trim(stThisFile.optimisedImage)) NEQ 0>
-					<nj:getFileIcon filename="#stThisFile.optimisedImage#" r_stIcon="fileicon"> 
-				</cfif>
-				<cfif isDefined("fileicon")>
-					<cfoutput><img src="#application.url.farcry#/images/treeImages/#fileicon#"></cfoutput>
-				<cfelse>
-					<cfoutput><img src="#application.url.farcry#/images/treeImages/unknown.gif"></cfoutput>
-				</cfif>
+	<cfif (StructKeyExists(output, "aObjectIDs"))>
+		<cfset aFileArray = arrayNew(1)>
+		<cfloop from="1" to="#arrayLen(output.aObjectIds)#" index="i">
+			<!--- get the objectType --->
+			<cfinvoke component="farcry.fourq.fourq" returnvariable="typename" method="findType" objectID="#output.aObjectIds[i]#">
+			<cfif typename IS "dmImage">
+				<cfscript>
+					arrayAppend(aFileArray,output.aObjectIds[i]);
+				</cfscript>
+			</cfif>
+		</cfloop>
+		<cfif arrayLen(aFileArray) GT 0>
 			<cfoutput>
-			</td>
-			<td><span class="FormLabel">#left(stThisFile.title,50)#</span></td>
-			<td align="center"></cfoutput>
-				<!---$ole: check to see if any images exist to preview$ --->
-				<cfif len(trim(stThisFile.imagefile)) NEQ 0 OR len(trim(stThisFile.thumbnail)) NEQ 0 OR len(trim(stThisFile.optimisedImage)) NEQ 0>
-					<cfoutput><a href="#application.url.conjurer#?objectid=#stThisFile.objectid#" target="_blank"><img src="#application.url.farcry#/images/treeImages/preview.gif" border="0"></a></cfoutput>
-				 <cfelse>
-					<cfoutput><span class="FormLabel">[No image uploaded]</span></cfoutput>
-				</cfif> 
-				<cfoutput>
-			</td>
-			<td align="center">
-				<a href="javascript:void(0);" onClick="hideAll();toggleForm('#i#_edit','inline');">
-					<img src="#application.url.farcry#/images/treeImages/edit.gif" border="0">
-				</a>
-			</td>
-			<td align="center">
-				<input type="checkbox" name="objectID" value="#stThisFile.objectID#">
-			</td>
-		</tr></cfoutput>
-	</cfloop>
-	<cfoutput>
-	<tr>
-		<td colspan="4">&nbsp;</td>
-		<td><input name="deleteObject" type="submit" class="normalbttnstyle" value="delete"></td>
-	</tr>
-	</table>
-	</form>
-	</cfoutput>
-	<cfelse>
-	<cfoutput>
-		<table>
+			<form action="" method="post" name="test">
+			<table class="borderTable" >
 			<tr>
-				<td>
-					<span class="FormLabel">No images have been added to this object</span>
+				<td colspan="5" align="center"><span class="FormSubTitle">Existing Images</span></td> 
+			</tr>
+			<tr>
+				<td>&nbsp;</td>
+				<td align="center"><span class="FormLabel">Title</span></td>
+				<td><span class="FormLabel">Preview</span></td>
+				<td align="center"><span class="FormLabel">Edit</span></td>
+				<td align="center"><span class="FormLabel">Delete</span></td>
+			</tr></cfoutput>
+			<cfloop from="1" to="#arrayLen(afileArray)#" index="i">
+				<q4:contentobjectget objectid="#aFileArray[i]#" bactiveonly="False" r_stobject="stThisFile">
+				<cfoutput><tr>
+					<td></cfoutput>
+						<!---$ole: check to see if any images exist$ --->
+						<cfif len(trim(stThisFile.imagefile)) NEQ 0>
+							<nj:getFileIcon filename="#stThisFile.imagefile#" r_stIcon="fileicon"> 	
+						<cfelseif len(trim(stThisFile.thumbnail)) NEQ 0>
+							<nj:getFileIcon filename="#stThisFile.thumbnail#" r_stIcon="fileicon"> 	
+						<cfelseif len(trim(stThisFile.optimisedImage)) NEQ 0>
+							<nj:getFileIcon filename="#stThisFile.optimisedImage#" r_stIcon="fileicon"> 
+						</cfif>
+						<cfif isDefined("fileicon")>
+							<cfoutput><img src="#application.url.farcry#/images/treeImages/#fileicon#"></cfoutput>
+						<cfelse>
+							<cfoutput><img src="#application.url.farcry#/images/treeImages/unknown.gif"></cfoutput>
+						</cfif>
+						<cfoutput>
+					</td>
+					<td><span class="FormLabel">#left(stThisFile.title,50)#</span></td>
+					<td align="center"></cfoutput>
+						<!---$ole: check to see if any images exist to preview$ --->
+						<cfif len(trim(stThisFile.imagefile)) NEQ 0 OR len(trim(stThisFile.thumbnail)) NEQ 0 OR len(trim(stThisFile.optimisedImage)) NEQ 0>
+							<cfoutput><a href="#application.url.conjurer#?objectid=#stThisFile.objectid#" target="_blank"><img src="#application.url.farcry#/images/treeImages/preview.gif" border="0"></a></cfoutput>
+						 <cfelse>
+							<cfoutput><span class="FormLabel">[No image uploaded]</span></cfoutput>
+						</cfif> 
+					<cfoutput>
+					</td>
+					<td align="center">
+						<a href="javascript:void(0);" onClick="hideAll();toggleForm('#i#_edit','inline');">
+							<img src="#application.url.farcry#/images/treeImages/edit.gif" border="0">
+						</a>
+					</td>
+					<td align="center">
+						<input type="checkbox" name="objectID" value="#stThisFile.objectID#">
+					</td>
+				</tr></cfoutput>
+			</cfloop>
+			<cfoutput>
+			<tr>
+				<td colspan="4">&nbsp;</td>
+				<td><input name="deleteObject" type="submit" class="normalbttnstyle" value="delete"></td>
+			</tr>
+			</table>
+			</form>
+			</cfoutput>
+		<cfelse>
+			<cfoutput>
+				<table>
+					<tr>
+						<td>
+							<span class="FormLabel">No images have been added to this object</span>
+						</td>
+					</tr>
+				</table>
+			</cfoutput>	
+		</cfif>
+	</cfif>
+
+	<cfoutput>
+	<div id="newfile" style="display:inline;">
+	<p>
+	<input type="button" class="normalbttnstyle" onClick="toggleForm('fileform','inline');" value="Upload New Image">
+	</p>
+	</div></cfoutput>
+	<!--- Output the file edit divs --->
+	<cfif arrayLen(aFileArray) GT 0>
+		<cfloop from="1" to="#arrayLen(afileArray)#" index="i">
+			<q4:contentobjectget objectid="#aFileArray[i]#" bactiveonly="False" r_stobject="stThisFile">
+			<cfoutput>
+			<div id="#i#_edit" style="display:none;">
+				<form action="" method="post" enctype="multipart/form-data" name="editImageForm_#i#" onsubmit="document['forms']['editImageForm_#i#'].defaultImageFileName.value = document['forms']['editImageForm_#i#'].imageFile.value;document['forms']['editImageForm_#i#'].thumbImageFileName.value = document['forms']['editImageForm_#i#'].thumbnailImage.value;document['forms']['editImageForm_#i#'].optImageFileName.value = document['forms']['editImageForm_#i#'].optimisedImage.value;">
+				<input type="hidden" name="defaultImageFileName" value="">
+				<input type="hidden" name="thumbImageFileName" value="">
+				<input type="hidden" name="optImageFileName" value="">
+				<table cellspacing="2" cellpadding="1" border="0" width="400" align="center">
+				<tr>
+					<td colspan="3"><span class="FormSubHeading">Image Details</span></td>
+				</tr>		
+				
+				<tr>
+					<td colspan="2" nowrap><span class="FormLabel">Title:</span></td>
+					<td nowrap width="100%"><input type="text" name="title" value="#stThisFile.title#" Class="FormTextBox"></td>
+				</tr>
+			
+				<tr valign="top">
+					<td colspan="2" nowrap><span class="FormLabel">Alternate text:</span></td>
+					<td nowrap><textarea type="text" name="alt" class="FormTextArea" rows="4">#stThisFile.alt#</textarea></td>
+				</tr>
+			
+				<tr valign="top">
+					<td colspan="2" nowrap>&nbsp;</td>
+					<td nowrap align="center">		
+						<span class="FormLabel">Width:&nbsp;</span><input style="width:40px" type="text" name="width" value="#stThisFile.width#">
+						<span class="FormLabel">Height:&nbsp;</span><input style="width:40px" type="text" name="height" value="#stThisFile.height#">
+					</td>
+				</tr>	
+				<tr>
+					<td colspan="3"><span class="FormSubHeading">Image Files</td>
+				</tr>	
+					
+				<tr valign="middle">
+					<td nowrap><span class="FormLabel">Default Image</span></td>
+					<td>&nbsp;</td>
+					<td nowrap width="100%">
+						<input type="file" name="imageFile" class="FormFileBox">&nbsp;&nbsp;
+						<input type="hidden" name="imageFile_old" value="#stThisFile.imageFile#">
+						<cfif len(trim(stThisFile.imageFile))>
+							<br><span class="FormLabel">[ file exists ]</span>
+						</cfif>
+					</td>
+				</tr>
+			
+				<tr valign="middle">
+					<td colspan="2" nowrap><span class="FormLabel">Thumbnail</span></td>
+					<td nowrap>
+						<input type="file" name="thumbnailImage" class="FormFileBox">
+						<input type="hidden" name="thumbnailImage_old" value="#stThisFile.thumbnail#">
+						<cfif len(trim(stThisFile.thumbnail))>
+							<br><span class="FormLabel">[ file exists ]</span>
+						</cfif>
+					</td>
+				</tr>
+			
+				<tr valign="middle">
+					<td colspan="2" nowrap>
+						<span class="FormLabel">Highres</span>
+					</td>
+					<td nowrap>
+						<input type="file" name="optimisedImage" class="FormFileBox">
+						<input type="hidden" name="optimisedImage_old" value="#stThisFile.optimisedImage#">
+						<cfif len(trim(stThisFile.optimisedImage))>
+							<br><span class="FormLabel">[ file exists ]</span>
+						</cfif>
+					</td>
+				</tr>
+			
+			<tr>
+				<td colspan="3" align="center">
+					<input type="hidden" name="objectID" value="#stThisFile.objectID#">
+					<input type="submit" name="editObject" value="OK" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';">
+					<input type="Button" value="Cancel" name="Cancel" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';" onClick="hideAll();toggleForm('fileform','none')";>
 				</td>
 			</tr>
-		</table>
-	</cfoutput>	
-	</cfif>
-</cfif>
-
-<cfoutput>
-<div id="newfile" style="display:inline;">
-<p>
-<input type="button" class="normalbttnstyle" onClick="toggleForm('fileform','inline');" value="Upload New Image">
-</p>
-</div></cfoutput>
-
-<!--- Output the file edit divs --->
-<cfif arrayLen(aFileArray) GT 0>
-<cfloop from="1" to="#arrayLen(afileArray)#" index="i">
-	<q4:contentobjectget objectid="#aFileArray[i]#" bactiveonly="False" r_stobject="stThisFile">
-	<cfoutput>
-	<div id="#i#_edit" style="display:none;">
-		<form action="" method="post" enctype="multipart/form-data" name="editImageForm_#i#">
-		
-		<table cellspacing="2" cellpadding="1" border="0" width="400" align="center">
-		<tr>
-			<td colspan="3"><span class="FormSubHeading">Image Details</span></td>
-		</tr>		
-		
-		<tr>
-			<td colspan="2" nowrap><span class="FormLabel">Title:</span></td>
-			<td nowrap width="100%"><input type="text" name="title" value="#stThisFile.title#" Class="FormTextBox"></td>
-		</tr>
-	
-		<tr valign="top">
-			<td colspan="2" nowrap><span class="FormLabel">Alternate text:</span></td>
-			<td nowrap><textarea type="text" name="alt" class="FormTextArea" rows="4">#stThisFile.alt#</textarea></td>
-		</tr>
-		
-		<tr valign="top">
-			<td colspan="2" nowrap>&nbsp;</td>
-			<td nowrap align="center">		
-				<span class="FormLabel">Width:&nbsp;</span><input style="width:40px" type="text" name="width" value="#stThisFile.width#">
-				<span class="FormLabel">Height:&nbsp;</span><input style="width:40px" type="text" name="height" value="#stThisFile.height#">
-			</td>
-		</tr>	
-		<tr>
-			<td colspan="3"><span class="FormSubHeading">Image Files</td>
-		</tr>	
-			
-		<tr valign="middle">
-			<td nowrap><span class="FormLabel">Default Image</span></td>
-			<td>&nbsp;</td>
-			<td nowrap width="100%">
-				<input type="file" name="imageFile" class="FormFileBox">&nbsp;&nbsp;
-				<input type="hidden" name="imageFile_old" value="#stThisFile.imageFile#">
-				<cfif NOT len(trim(stThisFile.imageFile)) EQ 0>
-					<br><span class="FormLabel">[ file exists ]</span>
-				</cfif>
-			</td>
-		</tr>
-	
-		<tr valign="middle">
-			<td colspan="2" nowrap><span class="FormLabel">Thumbnail</span></td>
-			<td nowrap>
-				<input type="file" name="thumbnailImage" class="FormFileBox">
-				<input type="hidden" name="thumbnailImage_old" value="#stThisFile.thumbnail#">
-				<cfif NOT len(trim(stThisFile.thumbnail)) EQ 0>
-					<br><span class="FormLabel">[ file exists ]</span>
-				</cfif>
-			</td>
-		</tr>
-	
-		<tr valign="middle">
-			<td colspan="2" nowrap>
-				<span class="FormLabel">Highres</span>
-			</td>
-			<td nowrap>
-				<input type="file" name="optimisedImage" class="FormFileBox">
-				<input type="hidden" name="optimisedImage_old" value="#stThisFile.optimisedImage#">
-				<cfif NOT len(trim(stThisFile.optimisedImage)) EQ 0>
-					<br><span class="FormLabel">[ file exists ]</span>
-				</cfif>
-			</td>
-		</tr>
-	
-	<tr>
-		<td colspan="3" align="center">
-			<input type="hidden" name="objectID" value="#stThisFile.objectID#">
-			<input type="submit" name="editObject" value="OK" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';">
-			<input type="Button" value="Cancel" name="Cancel" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';" onClick="hideAll();toggleForm('fileform','none')";>
-		</td>
-	</tr>
-			
-		</table>
-		<!--- form validation --->
+			</table>
+			<!--- form validation --->
 			<SCRIPT LANGUAGE="JavaScript">
 			<!--//
 			objForm = new qForm("editImageForm_<cfoutput>#i#</cfoutput>");
 			objForm.title.validateNotNull("Please enter a title");
-			objForm.alt.validateLengthGT(512);
+			objForm.alt.validateLengthLT(255);
 			objForm.width.validateNumeric("Width must be numeric");
 			objForm.height.validateNumeric("Height must be numeric");
 				//-->
 			</SCRIPT>
-		</form>
+			</form>
+		
+			</div></cfoutput>
+			</cfloop>
+	</cfif>
 
-</div></cfoutput>
-	</cfloop>
-</cfif>
-
-<!--- Upload new file DIV --->
-<cfoutput><div id="fileform" style="display:none">
-<span class="FormTitle">Upload Image</span>
-	
-	<form action="" method="post" enctype="multipart/form-data" name="imageForm">
+	<!--- Upload new file DIV --->
+	<cfoutput>
+	<div id="fileform" style="display:none">
+	<span class="FormTitle">Upload Image</span>
 		
-		<table cellspacing="2" cellpadding="1" border="0" width="400" align="center">
-		<tr>
-			<td colspan="3"><span class="FormSubHeading">Image Details</span></td>
-		</tr>		
+		<form action="" method="post" enctype="multipart/form-data" name="imageForm" onsubmit="document['forms']['imageForm'].defaultImageFileName.value = document['forms']['imageForm'].imageFile.value;document['forms']['imageForm'].thumbImageFileName.value = document['forms']['imageForm'].thumbnailImage.value;document['forms']['imageForm'].optImageFileName.value = document['forms']['imageForm'].optimisedImage.value;">
+			<input type="hidden" name="defaultImageFileName" value="">
+			<input type="hidden" name="thumbImageFileName" value="">
+			<input type="hidden" name="optImageFileName" value="">
+			<table cellspacing="2" cellpadding="1" border="0" width="400" align="center">
+			<tr>
+				<td colspan="3"><span class="FormSubHeading">Image Details</span></td>
+			</tr>		
+			
+			<tr>
+				<td colspan="2" nowrap><span class="FormLabel">Title:</span></td>
+				<td nowrap width="100%"><input type="text" name="title" value="" class="FormTextBox" maxlength="255"></td>
+			</tr>
 		
-		<tr>
-			<td colspan="2" nowrap><span class="FormLabel">Title:</span></td>
-			<td nowrap width="100%"><input type="text" name="title" value="" class="FormTextBox"></td>
-		</tr>
-	
-		<tr valign="top">
-			<td colspan="2" nowrap><span class="FormLabel">Alternate text:</span></td>
-			<td nowrap><textarea type="text" name="alt" class="FormTextArea" rows="4"></textarea></td>
-		</tr>
+			<tr valign="top">
+				<td colspan="2" nowrap><span class="FormLabel">Alternate text:</span></td>
+				<td nowrap><textarea type="text" name="alt" class="FormTextArea" rows="4"></textarea></td>
+			</tr>
+				
+			<tr valign="top">
+				<td colspan="2" nowrap>&nbsp;</td>
+				<td nowrap align="center">		
+					<span class="FormLabel">Width:&nbsp;</span><input style="width:40px" type="text" name="width" value="">
+					<span class="FormLabel">Height:&nbsp;</span><input style="width:40px" type="text" name="height" value="">
+				</td>
+			</tr>	
+			<tr>
+				<td colspan="3"><span class="FormSubHeading">Image Files</span></td>
+			</tr>	
+				
+			<tr valign="middle">
+				<td nowrap><span class="FormLabel">Default Image</span></td>
+				<td>&nbsp;</td>
+				<td nowrap width="100%">
+					<input type="file" name="imageFile" class="FormFileBox">&nbsp;&nbsp;
+					<input type="hidden" name="imageFile_old" value="">
+				</td>
+			</tr>
 		
-		<tr valign="top">
-			<td colspan="2" nowrap>&nbsp;</td>
-			<td nowrap align="center">		
-				<span class="FormLabel">Width:&nbsp;</span><input style="width:40px" type="text" name="width" value="">
-				<span class="FormLabel">Height:&nbsp;</span><input style="width:40px" type="text" name="height" value="">
-			</td>
-		</tr>	
+			<tr valign="middle">
+				<td colspan="2" nowrap><span class="FormLabel">Thumbnail</span></td>
+				<td nowrap>
+					<input type="file" name="thumbnailImage" class="FormFileBox">
+					<input type="hidden" name="thumbnailImage_old" value="">
+				</td>
+			</tr>
+		
+			<tr valign="middle">
+				<td colspan="2" nowrap><span class="FormLabel">Highres</span></td>
+				<td nowrap>
+					<input type="file" name="optimisedImage" class="FormFileBox">
+					<input type="hidden" name="optimisedImage_old" value="">
+				</td>
+			</tr>
+				
 		<tr>
-			<td colspan="3"><span class="FormSubHeading">Image Files</span></td>
-		</tr>	
-			
-		<tr valign="middle">
-			<td nowrap><span class="FormLabel">Default Image</span></td>
-			<td>&nbsp;</td>
-			<td nowrap width="100%">
-				<input type="file" name="imageFile" class="FormFileBox">&nbsp;&nbsp;
-				<input type="hidden" name="imageFile_old" value="">
+			<td colspan="3" align="center">
+				<input type="submit" name="newObject" value="OK"  class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';">
+				<input type="button" value="Cancel" name="Cancel" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';"  onclick="toggleForm('fileform','none')"; >
 			</td>
 		</tr>
-	
-		<tr valign="middle">
-			<td colspan="2" nowrap><span class="FormLabel">Thumbnail</span></td>
-			<td nowrap>
-				<input type="file" name="thumbnailImage" class="FormFileBox">
-				<input type="hidden" name="thumbnailImage_old" value="">
-			</td>
-		</tr>
-	
-		<tr valign="middle">
-			<td colspan="2" nowrap><span class="FormLabel">Highres</span></td>
-			<td nowrap>
-				<input type="file" name="optimisedImage" class="FormFileBox">
-				<input type="hidden" name="optimisedImage_old" value="">
-			</td>
-		</tr>
-			
-	<tr>
-		<td colspan="3" align="center">
-			<input type="submit" name="newObject" value="OK"  class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';">
-			<input type="button" value="Cancel" name="Cancel" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';"  onclick="toggleForm('fileform','none')"; >
-		</td>
-	</tr>
-			
 		</table>
 		<!--- form validation --->
 			<SCRIPT LANGUAGE="JavaScript">
 			<!--//
 			objForm2 = new qForm("imageForm");
-			objForm2.alt.validateLengthGT(512);
 			objForm2.title.validateNotNull("Please enter a title");
+			objForm2.alt.validateLengthLT(255);
 			objForm2.width.validateNumeric("Width must be numeric");
 			objForm2.height.validateNumeric("Height must be numeric");
 				//-->
 			</SCRIPT>
 		</form>
-</div>
-<div class="FormTableClear">
-<form action="#cgi.script_name#?#cgi.query_string#" method="post" name="editform"></cfoutput>
-	<tags:plpNavigationButtons>
-<cfoutput></form>
-</div>
-
-</cfoutput>
-<cfelse>		
+	</div>
+	<div id="PLPButtons" class="FormTableClear">
+	<form action="#cgi.script_name#?#cgi.query_string#" method="post" name="editform">
+		<tags:plpNavigationButtons>
+	</form>
+	</div></cfoutput>
+	
+<cfelse>	
 	<tags:plpUpdateOutput>
 </cfif>
 

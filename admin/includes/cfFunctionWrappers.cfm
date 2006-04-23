@@ -1,7 +1,6 @@
 <cfimport taglib="/farcry/fourq/tags/" prefix="q4">
 
 
-
 <cffunction name="contentobjectget" hint="wrapper to the fourq tag - contentobjectget">
 	<cfargument name="objectID" required="true" type="uuid">
 	<cfargument name="typename" required="false">
@@ -29,6 +28,7 @@
 <cffunction name="query" hint="a wrapper for cfquery tag for use in cfscript">
 	<cfargument name="sql" type="string" required="true">
 	<cfargument name="dsn" type="string" required="false" default="#application.dsn#">
+	<cfset var q = ''>
 		
 	<cfquery name="q" datasource="#arguments.dsn#">
 		#preserveSingleQuotes(arguments.sql)#
@@ -52,6 +52,7 @@
 <cffunction name="queryofquery" hint="a wrapper for cfquery of queries for use in cfscript">
 	<cfargument name="sql" type="string" required="true">
 	<cfargument name="maxrows" type="string" required="false">
+	<cfset var q = ''>
 	
 	 <cfif isDefined("arguments.maxrows")>
 	 	<cfquery name="q" dbtype="query" maxrows="#arguments.maxrows#">
@@ -99,8 +100,9 @@
 
 <cffunction name="trace">
 	<cfargument name="var">
+	<cfargument name="text" required="false" default=""> 
 	
-	<cftrace inline="no" var="#arguments.var#">
+	<cftrace inline="no" var="#arguments.var#" text="#arguments.text#">
 </cffunction>
 
 
