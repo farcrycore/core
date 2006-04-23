@@ -1,0 +1,818 @@
+/*  
+BHPSteel Corporate Website
+
+Pallette:
+greys
+	e0e8f7
+	ebebeb
+	cccccc
+	999999
+	666666
+black & white	
+colours
+	ff9900 (orange)
+	3366cc (blue)
+	ff6633 (pale red)
+*/
+
+/* 
+// Basic HTML Selectors //
+*/
+body {
+	color: #000;
+	font-family: Verdana, arial, helvetica, sans-serif;
+	font-size: 9pt;
+	
+	/* Scrollbar properties are only supported by Internet Explorer 5.5  
+	scrollbar-3dlight-color : DarkGray;
+	scrollbar-arrow-color : DarkGray;
+	scrollbar-base-color : DimGray;
+	scrollbar-darkshadow-color : Black;
+	scrollbar-face-color : DimGray;
+	scrollbar-highlight-color : DarkGray;
+	scrollbar-shadow-color : DarkGray;
+	scrollbar-track-color : Gray;*/
+	}
+
+a {
+	font-family : Verdana, Helvetica, sans-serif;
+	font-weight : normal;
+    font-size : 9pt;
+	color : #3366CC;
+}
+
+a:visited {
+	font-family : Verdana, Helvetica, sans-serif;
+	font-weight : normal;
+    font-size : 9pt;
+	color : #3399FF;
+}
+
+p, td {
+	color: #000;
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 9pt;
+	}
+
+ul, ol {
+	color: #000;
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 12px;
+	line-height: 18px;
+
+	}
+
+li ul, li ol {
+	color: #000;
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 12px;
+	line-height: 18px;
+	margin-top: 10px;
+	margin-bottom: 20px; 	
+}
+
+pre {
+	color: #000;
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 12px;
+	line-height: 22px;
+	margin-top: 20px;
+	margin-bottom: 10px; 
+	}
+
+
+	
+
+/* 
+// Heading Styles //
+note: weird ie5win bug: all line-height to font-size ratios must agree or box gets pushed around. 
+*/
+h1, .pageHeading {
+    font-weight : bold;
+    font-size : 13pt;
+    font-family : Verdana, Helvetica, sans-serif; /* spec is 13pt */
+    color : #FF6633;
+    text-decoration : none;
+	visible: false; /* ektron */
+}
+
+.navHeading {
+    font-size : 8.5pt;
+    font-weight : bolder;
+    font-family : Verdana, Helvetica, sans-serif;
+    color : #FF6633;
+    visible: false; /* ektron */
+}
+
+.transDocsHeading {
+    font-size : 7.5pt;
+    font-weight : bolder;
+    font-family : Verdana, Helvetica, sans-serif;
+    color : #FF6633;
+    visible: false; /* ektron */
+}
+
+h2, .subHeading, .teaserHeader, a:visited.teaserHeader {
+	font-family : Verdana, Helvetica, sans-serif;
+    font-weight : bold;
+    font-size : 9pt;
+    color : #FF6633;
+	text-decoration: none;
+	visible: false; /* ektron */
+}
+
+/* should be heading selector (H4?)*/
+h3, .paraHeading, {
+	font-family : Verdana, Helvetica, sans-serif;
+    font-size : 9pt;
+    font-weight : bold;
+    color : #000;
+    text-decoration : none;
+	visible: false; /* ektron */
+}
+
+/* 
+// Classes //
+ektron note... 
+all classes must have visible: false; or they will appear in the ektron editor window
+any classes that should be on <P> muyst specifically specify the selector
+eg. p.authornote
+*/
+
+/* primary navigation */
+a.mPrimary{
+	background-color: #ff9900;
+	font-size: 10px;
+	color: #000;
+	font-weight : bold;
+	font-family : Verdana, Arial, Helvetica, sans-serif;
+	text-decoration : none;
+	visible: false; /* ektron */
+}
+
+.mPrimary {
+	background-color: #ff9900;
+	font-size: 10px;
+	color: #000;
+	font-weight : bold;
+	font-family : Verdana, Arial, Helvetica, sans-serif;
+	text-decoration : none;
+	visible: false; /* ektron */
+}
+
+a.mPrimaryOn {
+	background-color: #ff6633;
+	font-size: 10px;
+	color: #fff;
+	font-weight : bold;
+	font-family : Verdana, Arial, Helvetica, sans-serif;
+	text-decoration : none;
+	visible: false; /* ektron */
+}
+
+.mPrimaryOn {
+	background-color: #ff6633;
+	font-size: 10px;
+	color: #fff;
+	font-weight : bold;
+	font-family : Verdana, Arial, Helvetica, sans-serif;
+	visible: false; /* ektron */
+}
+
+a.mPrimaryOff {
+	background-color: #ff9900;
+	font-size: 10px;
+	color: #000;
+	font-weight : bold;
+	font-family : Verdana, Arial, Helvetica, sans-serif;
+	text-decoration : none;
+	visible: false; /* ektron */
+}
+
+.mPrimaryOff {
+	background-color: #ff9900;
+	font-size: 10px;
+	color: #000;
+	font-weight : bold;
+	font-family : Verdana, Arial, Helvetica, sans-serif;
+	text-decoration : none;
+	visible: false; /* ektron */
+}
+
+/* secondary navigation */
+.lhsNavTable {
+	visible: false; /* ektron */
+}
+
+.secMenuTitle { 
+	background-color: #ff6633;
+	font-size: 11px;
+	font-weight: bold;
+	color: #ffffff;
+	text-decoration : none;
+	font-family : Arial, Helvetica, sans-serif;
+	border-top : 1px solid #666;
+	padding: 3px 3px 3px 10px;
+	visible: false; /* ektron */
+}
+
+a.secMenuTitleB,  a:visited.secMenuTitleB  {
+	background-color: #ff6633;
+	font-size: 11px;
+	font-weight: bold;
+	color: #ffffff;
+	text-decoration : none;
+	font-family : Arial, Helvetica, sans-serif;
+	padding: 3px 3px 3px 10px;
+	visible: false; /* ektron */
+}
+
+a:hover.secMenuTitle {
+	background-color: #ff6633;
+	font-size: 11px;
+	font-weight: bold;
+	color: #000;
+	text-decoration : none;
+	font-family : Arial, Helvetica, sans-serif;
+	padding: 3px 3px 3px 10px;
+}
+
+a:hover.secMenuTitleB {
+	background-color: #ff6633;
+	font-size: 11px;
+	font-weight: bold;
+	color: #000;
+	text-decoration : none;
+	font-family : Arial, Helvetica, sans-serif;
+	padding: 3px 3px 3px 10px;
+}
+
+.secMenu_ns {
+	font-size:11px;
+	font-weight : bolder;
+	color: #3366cc;
+	font-family : Arial, Helvetica, sans-serif;
+	text-decoration : none;
+	visible: false; /* ektron */
+}
+
+a.secMenu_ns {
+	font-size:11px;
+	font-weight : bolder;
+	color: #3366cc;
+	font-family : Arial, Helvetica, sans-serif;
+	text-decoration : none;
+	visible: false; /* ektron */
+}
+
+a:visited.secMenu_ns {
+	font-size:11px;
+	font-weight : bolder;
+	color: #3366cc;
+	font-family : Arial, Helvetica, sans-serif;
+	text-decoration : none;
+	visible: false; /* ektron */
+}
+
+.secMenu { 
+	background-color: #e0e8f7;
+	font-size:11px;
+	font-weight : bolder;
+	color: #3366cc;
+	font-family : Arial, Helvetica, sans-serif;
+	padding: 1px 3px 1px 10px;
+	visible: false; /* ektron */
+
+}
+
+.secMenuOver { 
+	background-color:  #99b3e6;
+	font-size:11px;
+	font-weight : bolder;
+	color: #fff;
+	font-family : Arial, Helvetica, sans-serif;
+	padding: 3px 3px 3px 10px;
+	cursor : hand;
+	visible: false; /* ektron */
+}
+
+.secMenuHiLite, a:visited.secMenuHiLite { 
+	background-color: #EBEBEB;
+	font-size: 11px;
+	font-weight: bold;
+	color: #666;
+	cursor : hand;
+	font-family : Arial, Helvetica, sans-serif;
+    text-decoration : none;
+	padding: 1px 3px 1px 10px;
+	visible: false; /* ektron */
+}
+
+.secSubTitle, a:visited.secSubTitle { 
+	background-color: #99b3e6;
+	font-size: 11px;
+	font-weight: bold;
+	color: #3366cc;
+	font-family : Arial, Helvetica, sans-serif;
+	padding: 1px 3px 1px 10px;
+	visible: false; /* ektron */
+}
+
+a.secSub_ns, a:visited.secSub_ns { 
+	background-color: #EBEBEB;
+	font-size: 11px;
+	font-weight: bold;
+	color: #666;
+	font-family : Arial, Helvetica, sans-serif;
+	padding : 1px 3px 1px 0px;
+	text-decoration: none;
+	cursor : hand;
+	visible: false; /* ektron */
+}
+
+.secSub { 
+	background-color: #EBEBEB;
+	font-size: 11px;
+	font-weight: bold;
+	color: #666;
+	font-family : Arial, Helvetica, sans-serif;
+	padding : 1px 3px 1px 0px;
+	cursor : hand;
+	visible: false; /* ektron */
+}
+
+.secSubOver { 
+	background-color: #EBEBEB;
+	font-size: 11px;
+	font-weight: bold;
+	color: #ff6633;
+	font-family : Arial, Helvetica, sans-serif;
+	padding : 1px 3px 1px 0px;
+	cursor : hand;
+	visible: false; /* ektron */
+	}
+
+.secSubOverB { 
+	background-color: #EBEBEB;
+	font-size: 11px;
+	font-weight: bold;
+	color: #ff6633;
+	font-family : Arial, Helvetica, sans-serif;
+	padding : 1px 3px 1px 0px;
+	cursor : hand;
+	visible: false; /* ektron */
+	}
+	
+	.secSubOverC { 
+	background-color: #EBEBEB;
+	font-size: 11px;
+	font-weight: bold;
+	color: #3366cc;
+	font-family : Arial, Helvetica, sans-serif;
+	padding : 1px 3px 1px 0px;
+	cursor : hand;
+	visible: false; /* ektron */
+	}
+	
+	
+.secSubB { 
+	background-color: #EBEBEB;
+	font-size: 11px;
+	font-weight: bold;
+	color: #666;
+	font-family : Arial, Helvetica, sans-serif;
+	padding: 1px 3px 1px 0px;
+	cursor : hand;
+	visible: false; /* ektron */
+}
+
+.secSubC { 
+	background-color: #EBEBEB;
+	font-size: 11px;
+	font-weight: bold;
+	color: #3366cc;
+	font-family : Arial, Helvetica, sans-serif;
+	padding: 1px 3px 1px 0px;
+	cursor : hand;
+	visible: false; /* ektron */
+}
+
+
+.secSubHiLite { 
+	background-color: #99b3e6;
+	font-size: 11px;
+	font-weight: bold;
+	text-indent: 10px;
+	color: #fff;
+	font-family : Arial, Helvetica, sans-serif;
+	padding: 1px 3px 1px 10px;
+	visible: false; /* ektron */
+}
+
+.secSubHiLiteB { 
+	background-color: #99b3e6;
+	font-size: 11px;
+	font-weight: bold;
+	text-indent: 10px;
+	color: #fff;
+	font-family : Arial, Helvetica, sans-serif;
+	padding: 1px 3px 1px 0px;
+	visible: false; /* ektron */
+}
+
+/* --------------- */
+
+.refsite {
+	font-size: 11px;
+	color:#ff6633;
+	font-weight: bolder;
+	padding : 0px 0px 2px 0px;
+	visible: false; /* ektron */
+}
+
+.refsiteB{
+	font-size: 11px;
+	font-family : Arial, Helvetica, sans-serif;
+	color:#3366cc;
+	font-weight: bolder;
+	height: 8px;
+	visible: false; /* ektron */
+}
+
+.register, a:visited.register {
+	font-size: 11px;
+	color:#ff6633;
+	font-weight: bolder;
+	text-decoration : none;
+	visible: false; /* ektron */
+}
+
+.registerTx {
+	font-size: 10px;
+	padding : 0px 0px 0px 0px;
+}
+
+a.refsite, a:visited.refsite {
+	font-size: 11px;
+	color:#3366cc;
+	font-weight: bolder;
+	text-decoration : underline;
+	visible: false; /* ektron */
+}
+
+/* utility navigation */
+.mUtility {
+	font-size: 10px;
+	background-color: #999;
+	font-weight: bold;
+	color: #fff;
+	visible: false; /* ektron */
+}
+
+a.utility, a:visited.utility {
+	font-size: 10px;
+	background-color: #999;
+	font-weight: bold;
+	color: #fff;
+	text-decoration: none;
+	visible: false; /* ektron */
+}
+
+.mUtility  {
+	font-size: 10px;
+	background-color: #999;
+	font-weight: bold;
+	color: #fff;
+	text-decoration: none;
+	visible: false; /* ektron */
+}
+
+/* stockticker navigation */
+.stockTicker {
+	font-size: 10px;
+	background-color: #999;
+	font-weight: bold;
+	color: #FFF;
+	visible: false; /* ektron */
+}
+
+/* drop down menu */
+
+.dmMenu {
+	border : 1px solid #DCDCDC;
+	line-height: 13px;
+	padding-left : 2px;
+    background-color :  #999;
+}
+
+a.dmMenu,a:visited.dmMenu {
+    font-size : 7.5pt;
+    font-weight : bold;
+    color : #FFF;
+    border : none;
+    text-decoration : none;
+}
+
+/* 
+begin: Sectional Classes
+ - these classes should get overridden in a section CSS file! 
+ */
+/* should be heading selector (H2?)*/
+
+
+/* needs to be as high as image  */
+
+
+/* end: Sectional Classes */
+
+/* won't work in enough browsers
+.pageHeading:after {
+	content: url(../staticimages/strips/strip_ourrespo.jpg);
+}
+*/
+
+/* should be heading selector (H3?)*/
+a.contentLink {
+	font-family : Verdana, Helvetica, sans-serif;
+	font-size : 7.5pt;
+    font-weight : normal;
+	color : #666;
+	text-decoration: underline;
+}
+
+a:visited.contentLink {
+	font-family : Verdana, Helvetica, sans-serif;
+	font-size : 7.5pt;
+    font-weight : normal;
+	color : #999;
+	text-decoration: underline;
+}
+
+/* News Elements */
+.newsTable {
+    background-color : #EBEBEB;
+	visible: false;
+}
+
+a.newsTeaserTitle {
+    font-size : 8pt;
+    font-weight : bold;
+    font-family : Verdana, Helvetica, sans-serif;
+	text-decoration: none;
+    color : #666;
+	visible: false;
+}
+
+.newsTeaserDate {
+    font-size : 7.5pt;
+    font-weight : normal;
+    font-family : Verdana, Helvetica, sans-serif;
+    color : #666;
+	visible: false;
+}
+
+.newsTeaserText {
+    font-size : 8pt;
+    font-weight : normal;
+    font-family : Verdana, Helvetica, sans-serif;
+    color : #666;
+	visible: false;
+}
+
+.newsArchive {
+    color: #666;
+    font-size: 8pt;
+    font-weight: normal;
+    font-family: Verdana, Helvetica, sans-serif;
+	visible: false;
+}
+
+a.newsArchive {
+    color : #FF6633;
+    font-size : 8pt;
+    font-weight : normal;
+    font-family : Verdana, Helvetica, sans-serif;
+	visible: false;
+}
+
+a.newsTeaserLink {
+    font-size : 8pt;
+    font-weight : normal;
+    font-family : Verdana, Helvetica, sans-serif;
+    color : #666;
+    text-decoration : underline;
+	visible: false;
+}
+
+UL.newsList {
+	/* news bullet list */
+	list-style-type : square;
+	visible: false; /* ektron */
+}
+
+/* Search elements */
+.search {
+    font-size: 10px;
+    font-weight: bold;
+    font-weight: normal;
+    color: Black;
+	visible: false; /* ektron */
+}
+
+a.advsearch  {
+	color : #000000;
+	font-family : Verdana, Helvetica, sans-serif;
+	font-weight : bold;
+    font-size : 10px;
+}
+
+a.advsearch  {
+	color : #000000;
+	font-family : Verdana, Helvetica, sans-serif;
+	font-weight : bold;
+    font-size : 10px;
+}
+
+ a:visited.advsearch {
+	color : #000000;
+	font-family : Verdana, Helvetica, sans-serif;
+	font-weight : bold;
+    font-size : 10px;
+}
+
+/*.searchLayout {
+	padding: 0 50px 0 50px;
+	visible: false; /* ektron */
+/*}
+
+
+/* Footer elements */
+.footerText {
+	font-family : Verdana, Helvetica, sans-serif;
+    font-weight : normal;
+    font-size : 7.5pt;
+    color : #666;
+    text-decoration : none;
+	visible: false;
+}
+
+a.footerNav {
+	font-family : Verdana, Helvetica, sans-serif;
+	font-size : 7.5pt;
+    font-weight : normal;
+	color : #666;
+   	text-decoration : none;
+}
+
+/* is this used? */
+.nowrap {
+	white-space: nowrap;
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 10px;
+	font-weight: bold;
+	margin-top: 0;
+	margin-bottom: 0;
+	visible: false; /* ektron */
+/* must be combined with nobr in html for ie5win */
+	}
+
+/* is this used? */
+.tiny {
+	color: #000;
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 0.8em;
+	line-height: 16px;
+	margin-top: 15px;
+	margin-bottom: 5px; 
+	visible: true; /* ektron */
+	caption: Small Text;
+	}
+
+/* Classes for BODY property content */
+p.authornote {
+	caption: Note;  /* ektron */
+	color: #000333;
+	PADDING-RIGHT: 20px; 
+	PADDING-LEFT: 20px; 
+	PADDING-BOTTOM: 20px; 
+	PADDING-TOP: 20px; 
+	BACKGROUND-COLOR: #e0e8f7;
+	margin-left: 10px;
+	margin-right: 10px;
+}
+
+p.authorcaution {
+	caption: Caution;  /* ektron */
+	color: #000333;
+	PADDING-RIGHT: 20px; 
+	PADDING-LEFT: 20px; 
+	PADDING-BOTTOM: 20px; 
+	PADDING-TOP: 20px; 
+	BACKGROUND-COLOR: #ff6633;
+	margin-left: 10px;
+	margin-right: 10px;
+}
+
+p.authortip {
+	caption: Tip;  /* ektron */
+	color: #000333;
+	PADDING-RIGHT: 20px; 
+	PADDING-LEFT: 20px; 
+	PADDING-BOTTOM: 20px; 
+	PADDING-TOP: 20px; 
+	BACKGROUND-COLOR: #ccc;
+	margin-left: 10px;
+	margin-right: 10px;
+}
+
+p.authorxref {
+	caption: Cross Reference;  /* ektron */
+	color: #000333;
+	PADDING-RIGHT: 20px; 
+	PADDING-LEFT: 20px; 
+	PADDING-BOTTOM: 20px; 
+	PADDING-TOP: 20px; 
+	BACKGROUND-COLOR: #ff9900;
+	margin-left: 10px;
+	margin-right: 10px;
+}
+
+
+/* Sitemap elements */
+.sitemapLayout {
+	padding: 0 50px 0 50px;
+	visible: false;
+}
+
+a.sitemapLink,a:visited.sitemapLink  {
+	font-family : Verdana, Helvetica, sans-serif;
+	font-size : 7.5pt;
+    font-weight : normal;
+	color : #3366CC;
+	text-decoration: underline;
+}
+
+a:hover.sitemapLink{
+	font-family : Verdana, Helvetica, sans-serif;
+	font-size : 7.5pt;
+    font-weight : normal;
+	color : #3399FF;
+	text-decoration: underline;
+}
+
+/* used to present text to browsers that cannot render CSS ie. it doesn't display in modern browsers */	
+.ahem {
+	caption: Invis to old browsers;  /* ektron */
+	display: none;
+	}
+
+/* fact object classes */
+.factTitle { 
+	font-weight: bolder;
+    font-size: 8.5pt;
+	color: #FF6633; 
+	font-family: Verdana, Helvetica, sans-serif;
+    visible: false;
+}
+
+.factBody { 
+	font-family: Verdana, Helvetica, sans-serif;
+	font-weight: normal;
+    font-size: 7.5pt;
+	visible: false;
+}
+
+.tableHeader {
+	background-color: #FF9900;
+	color: #FFF;
+	font-weight: bolder;
+	font-family: Verdana, Helvetica, sans-serif;
+}
+
+/* 
+// ID Selectors //
+ - for positional elements
+*/
+
+/* defines properties for page layout table */
+
+
+/* fact object div */
+#factLayout {
+    background-color: #EBEBEB;
+	width: 157px;
+}
+
+/* floater menu */
+.floaterLink {
+	color: #000000;
+}
+
+/* WebEnquiries */
+.enqText {
+	font-size : 8pt;
+    font-weight : normal;
+    font-family : Verdana, Helvetica, sans-serif;
+    color : #000;
+	visible: false; /* ektron */
+}

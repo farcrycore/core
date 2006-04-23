@@ -1,0 +1,126 @@
+<!--
+
+  SourceSafe: $Header: /cvs/farcry/farcry_core/admin/siteobjects/soeditor/lite/table.htm,v 1.1.1.1 2002/09/27 06:54:04 petera Exp $
+  Date Created: 12/12/2001
+  Author: Don Bellamy
+  Project: soEditor
+  Description: Displays table dialog for soEditor
+
+-->
+
+<html>
+<head><title>soEditor: Table</title>
+<?xml:namespace prefix="so" />
+<link rel="stylesheet" type="text/css" href="sotoolbar.css"></link>
+<style>
+  body, .button{background: #d4d0c8;font: 8pt/8pt Tahoma;margin:0px;}
+  body {padding:5px;}   
+  .text {font: 8pt/8pt Tahoma;padding:5px 0px 5px 0px;}
+  .inputs {padding-right:15px;}
+  .controls {width:100%;text-align:right;margin-top:5px;margin-right:3px}
+  input {font: 8pt/8pt Tahoma;}
+  fieldset {padding:15px;}   
+</style>
+<script language="JScript">
+  function isInt() {
+    return ((event.keyCode >= 48) && (event.keyCode <= 57))
+  }
+  function setDefault(el) {
+    el.value = el.defaultValue;
+  }
+  function colorPicker() {
+    sOut = null;
+    sOut = parent.showModalDialog("colorpalette.htm",null,"dialogWidth:183px; dialogHeight:227px;help:0;status:no;");  
+    if (sOut)
+      tbBGColor.value = sOut;
+  }
+</script>
+<script language="JScript" for="window" event="onload">
+  for ( elem in window.dialogArguments )
+  {
+    switch( elem )
+    {
+    case "rows":
+      tbRows.value = window.dialogArguments["rows"];
+      if (window.dialogArguments["edit"])
+        tbRows.disabled = true;      
+      break;
+    case "columns":
+      tbColumns.value = window.dialogArguments["columns"];
+      if (window.dialogArguments["edit"])
+        tbColumns.disabled = true;
+      break;
+    case "padding":
+      tbPadding.value = window.dialogArguments["padding"];
+      break;
+    case "height":
+      tbHeight.value = window.dialogArguments["height"];
+      break;
+    case "bgcolor":
+      tbBGColor.value = window.dialogArguments["bgcolor"];
+      break;            
+    case "spacing":
+      tbSpacing.value = window.dialogArguments["spacing"];
+      break;
+    case "width":
+      tbWidth.value = window.dialogArguments["width"];
+      break;
+    case "border":
+      tbBorder.value = window.dialogArguments["border"];
+      break;      
+    case "style":
+      tbStyle.value = window.dialogArguments["style"];
+      break;     
+    }
+  }
+</script>
+<script language="JScript" for="OK" event="onclick">
+  var arr = new Array();
+  arr["border"] = tbBorder.value;  
+  arr["rows"] = tbRows.value;
+  arr["columns"] = tbColumns.value;
+  arr["padding"] = tbPadding.value;
+  arr["spacing"] = tbSpacing.value;
+  arr["width"] = tbWidth.value;
+  arr["height"] = tbHeight.value;
+  arr["bgcolor"] = tbBGColor.value;
+  arr["style"] = tbStyle.value;  
+  window.returnValue = arr;
+  window.close();
+</script>
+</head>
+<body scroll="no">
+<fieldset title="Table Properties"><legend>Table Properties</legend>
+<table cellspacing="3" style="margin:10px;">
+<tr>
+  <td class="text">Rows:</td>
+  <td class="inputs"><input name="tbRows" type="text" size="3" maxlength="2" onkeypress="event.returnValue=isInt();" onblur="if(this.value == '') setDefault(this);"></td>  
+  <td class="text">Columns:</td>
+  <td class="inputs"><input name="tbColumns" type="text" size="3" maxlength="2" onkeypress="event.returnValue=isInt();" onblur="if(this.value == '') setDefault(this);"></td>  
+</tr>
+<tr>
+  <td class="text">Padding:</td>
+  <td class="inputs"><input name="tbPadding" type="text" size="3" maxlength="2" onkeypress="event.returnValue=isInt();" onblur="if(this.value == '') setDefault(this);"></td>  
+  <td class="text">Spacing:</td>
+  <td class="inputs"><input name="tbSpacing" type="text" size="3" maxlength="2" onkeypress="event.returnValue=isInt();" onblur="if(this.value == '') setDefault(this);"></td>  
+</tr>
+<tr>
+  <td class="text">BG Color:</td>
+  <td class="inputs"><input name="tbBGColor" type="text" size="7" maxlength="7" onblur="if(this.value == '') setDefault(this);"><img align="absmiddle" src="icons/bgcolor.gif" width="16" height="15" onclick="colorPicker();"/></td>
+  <td class="text">Border:</td>
+  <td class="inputs"><input name="tbBorder" type="text" size="3" maxlength="1" onkeypress="event.returnValue=isInt();" onblur="if(this.value == '') setDefault(this);"></td>  </tr>
+<tr>
+  <td class="text">Width:</td>
+  <td class="inputs"><input name="tbWidth" type="text" size="3" maxlength="4" onkeypress="event.returnValue=(isInt() || event.keyCode == 37);" onblur="if(this.value == '') setDefault(this);"></td>  
+  <td class="text">Height:</td>
+  <td class="inputs"><input name="tbHeight" type="text" size="3" maxlength="4" onkeypress="event.returnValue=(isInt() || event.keyCode == 37);" onblur="if(this.value == '') setDefault(this);"></td>  
+</tr>
+<tr>
+  <td class="text">Style:</td>
+  <td class="inputs" colspan="3"><input name="tbStyle" type="text" maxlength="255" style="width:175px"></td>  
+</tr>
+</table>
+</fieldset>
+<div class="controls"><input id="OK" class="button" type="button" value="     OK     "> <input class="button" type="button" value="  Cancel  " onclick="window.close();"></div>
+</body>
+</html>

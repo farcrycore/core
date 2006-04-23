@@ -1,0 +1,66 @@
+<!--
+
+  SourceSafe: $Header: /cvs/farcry/farcry_core/admin/siteobjects/soeditor/lite/sobutton.htc,v 1.1.1.1 2002/09/27 06:54:04 petera Exp $
+  Date Created: 12/12/2001
+  Author: Don Bellamy
+  Project: soEditor 
+  Description: HTML component for button
+
+-->
+
+<public:component lightweight="true">
+  <public:property name="type" value="button" />  
+  <public:property name="isActive" get="r_isActive" put="set_isActive"  />  
+  <public:property name="action" value="" />    
+	<public:attach event="onmousedown" onevent="mDown()" />
+	<public:attach event="onmouseup" onevent="mOver()" />  
+	<public:attach event="onmouseover" onevent="mOver()" />
+	<public:attach event="onmouseout" onevent="mOut()" />
+	<public:attach event="onclick" onevent="mClick()" />  
+</public:component>
+
+<script language="JScript"> 
+var _toolbar =  eval(this.parentElement.parentElement.parentElement.parentElement.parentElement);
+var _isActive = true;
+
+function mOver() {
+  try {
+  _toolbar.buttonOver(this);
+  } catch(e) {}
+}
+ 
+function  mOut() {
+  try {
+  _toolbar.buttonOut(this);
+  } catch(e) {}
+}
+
+function  mClick() {
+  try {
+  _toolbar.buttonClicked(this);  
+  } catch(e) {}
+}  
+
+function  mDown() {
+  try {
+  _toolbar.buttonDown(this);
+  } catch(e) {}
+}
+
+function r_isActive() {
+  return _isActive;
+} 
+
+function set_isActive(bSet) {
+  try {
+    _isActive = eval(bSet);
+    if (_isActive) {
+      _toolbar.buttonEnable(this);  
+    }
+    else {
+      _toolbar.buttonDisable(this);
+    }  
+  } catch(e){}
+} 
+
+</script>

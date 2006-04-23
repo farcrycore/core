@@ -1,0 +1,31 @@
+<cfsetting enablecfoutputonly="yes">
+<cfimport taglib="/fourq/tags" prefix="q4">
+<!--- deleteObjects.cfm
+
+Description : 
+
+Deletes single/multiple objects of a particular type. 
+Intended for use with daemon dynamic data.
+
+ --->
+
+<cfparam name="attributes.lObjectIDs" default=""> <!--- The list of objects to be deleted - required--->
+<cfparam name="attributes.typename" default=""> <!--- the type of object to be deleted - required --->
+<cfparam name="attributes.rMsg" default="msg"> <!--- The message returned to the caller - optional --->
+
+
+<cfif len(attributes.lObjectIDs) eq 0>
+	<cfset "caller.#attributes.rMsg#" = "No objects were selected for deletion">
+	<cfexit>
+</cfif>
+
+
+<!--- Now loop through the list and delete object --->
+<cfloop list="#attributes.lObjectIDs#" index="i">
+	<q4:contentobjectdelete objectID="#i#" typename="#application.packagepath#.types.#attributes.typename#">
+</cfloop>
+
+<cfset "caller.#attributes.rMsg#" = "#listLen(attributes.lObjectIds)# object(s) deleted"> 
+
+
+

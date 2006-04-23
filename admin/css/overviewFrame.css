@@ -1,0 +1,113 @@
+
+div {
+	font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;
+}
+
+td {
+	border : none;
+	border-collapse : collapse;
+	font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;
+	font-size : 9px;
+	margin : 0 0 0 0;
+	padding : 0 0 0 0;
+	vertical-align : middle;
+}
+
+.icontext menutext {
+	cursor : hand;
+	font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;
+	font-size : 9px;
+}
+
+.menudiv {
+	background-color : #FFFFFF;
+	border : thin outset;
+	position : absolute;
+	visibility : hidden;
+	width : 120px;
+}
+
+.menuitem {
+	cursor : hand;
+	padding : 1 1 1 1;
+}
+
+.menuitemdisabled {
+	color : #808080;
+	cursor : hand;
+	font-style : italic;
+	padding : 1 1 1 1;
+	display:none;
+}
+
+.menuitemheader {
+	background-color : #000000;
+	color : #FFFFFF;
+	cursor : pointer;
+	font-size : 9px;
+	padding : 2 2 2 2;
+}
+
+.navajobutton {
+	font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;
+	font-size : 9px;
+	width : 160px;
+}
+
+.nodediv {
+	cursor : hand;
+}
+
+.tablenode {
+	border : none;
+	border-collapse : collapse;
+	font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;
+	margin : 0 0 0 0;
+	padding : 0 0 0 0;
+}
+
+/* Admin Frames and Menus */
+.frameMenuHeader {
+	font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;
+	font-weight: bold;
+	font-size: 1.5em;
+	color: Maroon;;
+	padding: 3px 3px 3px 0px;
+	margin: 0 0 0px 0;
+	border: none;
+	text-indent: 0px;
+}
+.frameMenuTitle {
+	font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;
+	font-weight: bold;
+	padding: 10px 3px 3px 3px;
+	text-indent: 3px;
+	
+}
+.frameMenuItem {
+	font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;
+	text-indent: 15px;
+	padding-bottom: 6px;
+	padding-top: 3px;
+	color: blue;
+}
+
+a.frameMenuItem {
+	color: blue;
+}
+
+.frameMenuBullet {
+	color: #FF6600;
+	font-weight: bold;
+}
+
+/* ID's */
+#frameMenu {
+	width: 100%;
+	border: none;
+	border-color: ActiveBorder;	
+	padding: 5px 5px 5px 5px;
+	margin: 5px 5px 5px 5px; 
+	font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;
+	font-size : 12px;
+}

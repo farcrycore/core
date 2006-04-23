@@ -1,0 +1,12 @@
+
+	div, table, img, body
+	{
+		font-size:9px;
+		border-width : 0 0 0 0;
+		border : none;
+	}
+	
+	body
+	{
+		background-color: #fffff9;
+	}

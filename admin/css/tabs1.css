@@ -1,0 +1,221 @@
+/*  ######## Tab Styles ######## */
+
+div.tabBox {
+	width: 100%;
+	padding: 3px 3px 3px 3px;
+}
+
+div.tabArea {
+  width:100%;
+  font-size: 100%;
+  font-weight: normal;
+  padding: 0px 6px 0px 5px;
+}
+
+div.mainTabArea {
+  width:100%;
+  font-size: 100%;
+  font-weight: normal;
+  padding: 0px 6px 0px 5px;
+  margin-top:0px;
+}
+
+div.subTabArea {
+  width:100%;
+  font-size: 100%;
+  font-weight: normal;
+  padding: 3px 0px 1px 3px;
+   
+}
+
+/* Inactive tab style */
+a.tab {
+  background-color: #CCC;
+  border: 1px solid #000;
+  border-color: #666 #666 #666 #666;
+  border-bottom-width: 0px;
+  -moz-border-radius: 1px 1px 0px 0px;
+  border-radius-topleft: 1px;
+  border-radius-topright: 1px;
+  position: relative;
+  width: 60px;
+  padding: 2px 2px 3px 2px;
+  top: 1px;
+  margin-bottom : 0px;
+  text-decoration: none;
+  z-index: 100;
+  font-size : 9px;
+  text-align: center;
+  letter-spacing: -0.1em;
+}
+
+/* Inactive tab font */
+a.tab, a.tab:visited {
+  color: #000;
+}
+
+/* Inactive tab hover style */
+a.tab:hover {
+  background-color: #F96;
+  border-color: #999 #666 #666 #999;
+  color: #000;
+}
+
+/* Active tab styles */
+a.tab.activeTab, a.tab.activeTab:hover, a.tab.activeTab:visited {
+  background-color: #EEE;
+  border: 1px solid #000;
+  border-color: #666 #666 #FFF #666;
+  border-bottom-width: 0px;
+  -moz-border-radius: 1px 1px 0px 0px;
+  border-radius-topleft: 1px;
+  border-radius-topright: 1px;
+  position: relative;
+  width: 60px;
+  padding: 3px 3px 4px 3px;
+  top: 1px;
+  margin-bottom : 0px;
+  text-decoration: none;
+  z-index: 100;
+  font-size : 10px;
+  font-weight: bold;
+  text-align: center;
+  letter-spacing: -0.1em;
+}
+
+a.tab.activeTab {
+  padding-bottom: 3px;
+  top: 1px;
+  z-index: 102;
+}
+
+a.subtab {
+  background-color: #CCC;
+  border: 1px solid #000;
+  border-color: #666 #666 #666 #666;
+  border-bottom-width: 0px;
+  -moz-border-radius: 1px 1px 0px 0px;
+  border-radius-topleft: 1px;
+  border-radius-topright: 1px;
+  position: relative;
+  /*width: 60px;*/
+  padding: 2px 2px 3px 2px;
+  top: 0px;
+  text-decoration: none;
+  z-index: 100;
+  font-size : 9px;
+  text-align: center;
+  letter-spacing: -0.1em;
+}
+
+/* Inactive tab font */
+a.subtab, a.subtab:visited {
+  color: #000;
+}
+
+/* Inactive tab hover style */
+a.subtab:hover {
+  background-color: #F96;
+  border-color: #999 #666 #666 #999;
+  color: #000;
+}
+
+/* Active tab styles */
+a.subtab.activesubTab, a.subtab.activesubTab:hover, a.subtab.activesubTab:visited {
+  background-color: #EEE;
+  border: 1px solid #000;
+  border-color: #666 #666 #FFF #666;
+  border-bottom-width: 0px;
+  -moz-border-radius: 1px 1px 0px 0px;
+  border-radius-topleft: 1px;
+  border-radius-topright: 1px;
+  position: relative;
+  /* width: 60px; */
+  padding: 3px 3px 4px 3px;
+  top: 1px;
+  margin-bottom : 0px;
+  text-decoration: none;
+  z-index: 100;
+  font-size : 10px;
+  font-weight: bold;
+  text-align: center;
+  letter-spacing: -0.1em;
+  
+}
+
+a.subtab.activesubTab {
+  padding-bottom: 3px;
+  top: 1px;
+  z-index: 102;
+}
+
+
+
+div.tabMain {
+  width:100%;
+  background-color: #EEE;
+  padding: 0px;
+  margin: 0px;
+  position: relative;
+  z-index: 101;
+}
+
+div.tabTitle {
+  background-color: #666;
+  border: 1px solid #000;
+  border-color: #669 #999 #999 #669;
+  color: #FFF;
+  font-weight: bold;
+  margin: 0px 0px 2px 0px;
+  padding: 6px 3px 6px 6px;
+  text-align: left;
+  height: 25px;
+  vertical-align : middle;
+}
+
+div.tabIframeWrapper {
+  width: 100%;
+  border: 1px solid #666;
+  background-color: #EEE;
+}
+
+iframe.tabContent {
+  background-color: #EEE;
+  width: 100%;
+  height: expression(document.body.clientHeight*8/10);
+  padding: 10px 10px 10px 10px;
+}
+
+#resizer {
+	position:relative; /* Position is declared "relative" to gain control of stacking order (z-index). */
+	top: 0px;
+	width:7px;
+	height: expression(document.body.clientHeight*8/10);
+	left:expression(document.body.clientWidth*3/10);
+	background-color: #EEE;
+	float:left;	
+	z-index:3; /* This allows the content to overlap the right menu in narrow windows in good browsers. */
+	background-image : url(../images/doublearrow.jpg);
+	background-repeat : no-repeat;
+	background-position : center;
+	}
+
+#column1 {
+	position:absolute;
+	/*top:101px; */
+	/* height: expression(document.body.clientHeight-100); */
+	width: expression(document.body.clientWidth*3/10);
+	background-color:#EEE;
+	z-index:2;
+	}
+		
+#column2 {
+	position:absolute;
+	/* top:101px; */
+	/* height: expression(document.body.clientHeight-100); */
+	width: expression(document.body.clientWidth*7/10-6);
+	background-color:#EEE;
+	z-index:1;
+	}
+
+/*  ######## End Tab Styles ######## */

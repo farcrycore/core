@@ -1,0 +1,68 @@
+<!--
+
+  SourceSafe: $Header: /cvs/farcry/farcry_core/admin/siteobjects/soeditor/lite/hyperlink.htm,v 1.1.1.1 2002/09/27 06:54:04 petera Exp $
+  Date Created: 12/12/2001
+  Author: Don Bellamy
+  Project: soEditor
+  Description: Displays hyperlink dialog
+
+-->
+
+<html>
+<head><title>soEditor: Hyperlink</title>
+<link rel="stylesheet" type="text/css" href="sotoolbar.css"></link>
+<style>
+  body, .button{background: #d4d0c8;font: 8pt/8pt Tahoma;margin:0px;}
+  body {padding:5px;}
+  .text {font: 8pt/8pt Tahoma;padding:5px 0px 5px 0px;}
+  .inputs {padding-right:15px;padding-top:5px;}
+  .controls {width:100%;text-align:right;margin-top:5px;margin-right:3px}
+  input {font: 8pt/8pt Tahoma;}
+  fieldset {padding:15px;}
+</style>
+<script language="JScript" for="window" event="onload">
+  for ( elem in window.dialogArguments )
+  {
+    switch( elem ) {
+    case "url":    
+      tbURL.value = window.dialogArguments["url"];
+      break;    
+    case "target":    
+      tbTarget.value = window.dialogArguments["target"];
+      break;
+    case "style":    
+      tbStyle.value = window.dialogArguments["style"];
+      break;      
+    }
+  }
+</script>
+<script language="JScript" for="OK" event="onclick">
+  var arr = new Array();
+  arr["url"] = tbURL.value;
+  arr["target"] = tbTarget.value;    
+  arr["style"] = tbStyle.value;
+  window.returnValue = arr;
+  window.close();
+</script>
+</head>
+<body scroll="no">
+<fieldset title="Hyperlink Properties"><legend>Hyperlink Properties</legend>
+<table cellspacing="3" style="margin:10px;">
+<tr>
+  <td class="text">URL:</td>
+  <td class="inputs" colspan="3"><input name="tbURL" type="text" maxlength="255" style="width:200px"></td>  
+</tr>
+<tr>
+  <td class="text">Target:</td>
+  <td class="inputs"><input name="tbTarget" type="text" maxlength="100" style="width:50px"></td>  
+</tr>
+<tr>
+  <td class="text">Style:</td>
+  <td class="inputs" colspan="3"><input name="tbStyle" type="text" maxlength="100" style="width:200px"></td>  
+</tr>
+</table>
+</fieldset>
+<div class="controls"><input id="OK" class="button" type="button" value="     OK     "> <input class="button" type="button" value="  Cancel  " onclick="window.close();"></div>
+
+</body>
+</html>

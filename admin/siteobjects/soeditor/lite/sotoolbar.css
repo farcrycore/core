@@ -1,0 +1,50 @@
+<!--
+
+  SourceSafe: $Header: /cvs/farcry/farcry_core/admin/siteobjects/soeditor/lite/sotoolbar.css,v 1.1.1.1 2002/09/27 06:54:04 petera Exp $
+  Date Created: 12/12/2001
+  Author: Don Bellamy
+  Project: soEditor Pro 2.1
+  Description: Toolbar stylesheet
+
+-->
+
+so\:toolbar {	
+  display:inline-block;
+  cursor: default;      
+}    
+so\:toolbar SPAN {
+	font: 8pt Tahoma; 
+	width: 100%;
+	background: #dbd8d1; 
+  border: 1px solid #d4d0c8;      
+}
+so\:toolbar SPAN TABLE{
+  layout: fixed;
+}
+so\:toolbar .sobutton {
+  border: 1px solid #dbd8d1;    
+}
+so\:toolbar SELECT {
+	font: 8pt Tahoma; 
+}
+so\:toolbar .soswitch {
+  border: 1px solid #dbd8d1;    
+}
+so\:toolbar SPAN TABLE TD IMG {
+  margin: 1px;
+	filter: dropShadow(OffX=2, OffY=2, Color='#d4d0c8', Positive='true');  
+}
+so\:toolbar SPAN TABLE TD {
+	font: 8pt Tahoma; 
+}
+so\:toolbar SPAN TABLE TD .seperator {
+  width: 1px;
+	background: #a6a6a6;    
+  height: 23;
+  padding:0px;
+}
+so\:toolbar .handle TR TD {
+  height:1px;
+  width:3px;
+  background:#a6a6a6;
+}

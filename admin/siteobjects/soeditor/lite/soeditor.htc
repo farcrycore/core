@@ -1,0 +1,844 @@
+<!--
+
+  SourceSafe: $Header: /cvs/farcry/farcry_core/admin/siteobjects/soeditor/lite/soeditor.htc,v 1.1.1.1 2002/09/27 06:54:04 petera Exp $
+  Date Created: 12/12/2001
+  Author: Don Bellamy
+  Project: soEditor Lite 2.1 
+  Description: HTML Component for soEditor control
+
+-->
+
+<public:component lightweight="true">
+  <public:method name="updateFormField"/> 
+  <public:property name="Form" /> <!-- runtime only -->
+  <public:property name="Field" /> <!-- runtime only -->
+  <public:property name="ScriptPath" /> <!-- runtime only -->
+  <public:property name="BaseURL" value="" />  <!-- runtime only -->
+  <public:property name="BaseFont" value="" /> <!-- runtime only -->
+  <public:property name="BaseFontSize" value="" /> <!-- runtime only -->  
+  <public:property name="BaseFontColor" value="" /> <!-- runtime only -->
+  <public:property name="BaseBGColor" value="" /> <!-- runtime only -->  
+  <public:property name="PageEdit" value="true" />    <!-- runtime only -->
+  <public:property name="Width" value="450px" />  <!-- runtime only -->
+  <public:property name="Height" value="250px" /> <!-- runtime only -->
+  <public:property name="WordCount" value="true" />  <!-- runtime only -->
+  <public:property name="SingleSpaced" value="false" />  <!-- runtime only -->
+  <public:property name="ValidateOnSave" value="false" /> <!-- runtime only -->
+  <public:property name="ValidationMessage" value="" /> <!-- runtime only -->
+  <public:property name="InitialFocus" value="false" />
+  <public:property name="SourceEdit" put="setSourceEdit" get="getSourceEdit" />  
+  <public:property name="DocumentHTML" put="setHTML" get="getHTML"  />               
+  <public:method name="about"/>   
+  <public:method name="blockFormat"/> 
+  <public:method name="insertLink"/>      
+  <public:method name="validate"/>   
+  <public:method name="newDocument"/>    
+  <public:method name="saveDoc"/>       
+  <public:method name="checkSpelling"/>      
+  <public:method name="execCmd"/>    
+  <public:method name="updateFormField"/>      
+  <public:method name="insertTable"/> 
+  <public:method name="insertText"/>  
+  <public:method name="toggleBorders"/>          
+  <public:method name="colorPicker"/>            
+  <public:method name="image"/>     
+  <public:method name="toggleDetails"/>       
+  <public:method name="codeSweeper"/>   
+  <public:method name="tdProperties"/>          
+  <public:method name="insertImage"/>      
+  <public:method name="openHelp"/>    
+  <public:attach event="oncontentready" onevent="init()"/>
+</public:component>
+
+<script language= "JScript">
+var tbControls;
+var bSourceEdit = false;
+var sDocumentHTML;
+var winIM, iWordTimer;
+var eventCount = 0;
+
+function tdProperties() {
+  var elTD = getParentTag("td");
+
+  if (elTD) {
+  
+    var aOut = null, aIn = new Array();
+    //Set edit params
+    aIn["edit"] = 1;
+    aIn["width"] = elTD.width;
+    aIn["height"] = elTD.height;
+    aIn["align"] = elTD.align;
+    aIn["valign"] = elTD.vAlign;
+    aIn["nowrap"] = elTD.noWrap;
+    aIn["bgcolor"] = elTD.bgColor;
+    aIn["bordercolor"] = elTD.borderColor;    
+    aIn["style"] = elTD.style.cssText;    
+  
+    aOut = parent.showModalDialog(element.ScriptPath + "td.htm",aIn,"dialogWidth:350px; dialogHeight:290px;help:0;status:no;");
+    
+    if (aOut){
+      elTD.width = aOut["width"];
+      elTD.height = aOut["height"];
+      elTD.align = aOut["align"];
+      elTD.vAlign = aOut["valign"];
+      elTD.noWrap = aOut["nowrap"];
+      elTD.bgColor = aOut["bgcolor"];
+      elTD.borderColor = aOut["bordercolor"];            
+      elTD.style.cssText = aOut["style"];       
+    }
+
+    element.editor.focus();  
+    
+  }
+}
+
+function getParentTag(elName) {
+  var currEl;
+  var range = element.editor.DOM.selection.createRange();
+
+  if (element.editor.DOM.selection.type == "None" || element.editor.DOM.selection.type == "Text") {
+    currEl = range.parentElement();
+  } else {
+    currEl = range.item(0).parentElement;  
+  }
+
+  while (currEl && currEl.tagName.toLowerCase() != "body") {
+    if (currEl.tagName.toLowerCase() == elName) {
+      return currEl;
+    }
+    currEl = currEl.parentElement;
+ 
+  }  
+ 
+  return null;
+}
+
+function insertImage(sTag) {
+  var oSelection = element.editor.DOM.selection;
+
+  oTR = oSelection.createRange();
+      
+  if (oSelection.type == "Control"){
+    oTR.item(0).outerHTML = sTag;
+  } else {
+    oTR.pasteHTML(sTag);
+  }
+}
+
+function blockFormat(sTag) {
+  if (sTag == "none") {
+    // clear the formatting
+    execCmd(5043, false, "Normal");
+  } else {
+    insertText("<" + sTag + ">","</" + sTag + ">", true, false);
+  }
+}
+
+function insertText(sStart, sEnd, asHTML, bAllowEmpty) {
+  var oSelection = element.editor.DOM.selection;
+  if (!bAllowEmpty && oSelection.type == "None") return;
+
+  oTR = oSelection.createRange();
+      
+  if (oSelection.type == "Control"){
+    var elHTML = oTR.item(0).outerHTML;
+    oTR.item(0).outerHTML = sStart + elHTML + sEnd;
+  }else {
+    if (asHTML) {
+      if (oSelection.type == "None") {
+        oTR.pasteHTML(sStart + sEnd);      
+      } else {
+        oTR.pasteHTML(sStart + oTR.htmlText + sEnd);      
+      }
+    }
+    else {
+      oTR.text = sStart + oTR.text + sEnd;
+    }
+  }
+ 	element.editor.focus();  
+}
+
+function codeSweeper(bPrompt) {
+	var r, i,content;                    
+
+	// confirm that the user wishes to run the code sweeper
+  if (bPrompt || confirm("Are you sure you want to run the code sweeper?")){
+    	content = element.DocumentHTML;
+      // remove xml processing instructions
+			content = execRE("<\\?xml[^>]*>","",content);
+			// remove all namespaces
+			content = execRE("<\/?[a-z]+:[^>]*>","",content);                
+      // remove the class attributes    
+			content = execRE("(<[^>]+) class=[^ |^>]*([^>]*>)","$1 $2",content);            
+      // remove the style attributes
+			content = execRE("(<[^>]+) style=\"[^\"]*\"([^>]*>)","$1 $2",content);
+			// remove empy span elements
+			content = execRE("<span[^>]*><\/span[^>]*>","",content);                     
+      
+    	element.DocumentHTML = content;
+    	element.editor.focus();
+	}	
+}
+
+// Execute commands against the DHTML Edit component
+function execCmd(cmd,pmt,opt) {  
+  // supress errors
+  try {
+    element.editor.ExecCommand(cmd,pmt,opt);
+    element.editor.focus();
+  }catch(e){}
+}
+
+function newDocument() {  
+  element.editor.NewDocument();
+  element.DocumentHTML = "";
+}
+
+function validate(sMsg) {
+  if (element.editor.DOM.body.outerText.length == 0 && element.editor.DOM.body.getElementsByTagName("img").length == 0 && element.editor.DOM.body.getElementsByTagName("table").length == 0) {
+    if (sMsg.length)
+      alert(sMsg);
+    else
+      alert("Please enter some content inside soEditor");
+    return false;
+  } else {
+    return true;
+  }
+}
+
+function saveDoc() {
+  if (element.ValidateOnSave) {
+    if (element.editor.DOM.body.outerText.length == 0 && element.editor.DOM.body.getElementsByTagName("img").length == 0 && element.editor.DOM.body.getElementsByTagName("table").length == 0) {
+      alert(element.ValidationMessage);
+      return false;
+    }
+  }
+  updateFormField();
+  element.form.submit();
+}
+
+//Open the image manager
+function image() {
+  var sURLParams = "";
+  // check current selection for image
+  if(element.editor.DOM.selection.type == "Control"){
+     var oIMG = element.editor.DOM.selection.createRange().item(0);
+     if (oIMG.tagName == "IMG") {
+      // strip the absolute page if baseURL is defined
+      var sImgSrc = oIMG.src;
+      if (baseURL.length > 0) {
+        sImgSrc = execRE(element.BaseURL, "", sImgSrc);
+      }
+      //Set the url variables
+      sURLParams += "&src=" + sImgSrc + "&style=" + oIMG.style.cssText + "&alt=" + oIMG.alt + "&width=" + oIMG.width + "&height=" + oIMG.height + "&hspace=" + oIMG.hspace + "&vspace=" + oIMG.vspace + "&border=" + oIMG.border + "&align=" + oIMG.align
+     } 
+  } 
+  winIM = window.open(element.ScriptPath + "image.cfm?imagepath=" + element.ImagePath + sURLParams, "ImageManager","width=480,height=260,menubar=0,status=0,toolbar=0,resizeable=0");
+}
+
+// Toggle showing table borders
+function toggleBorders () {
+  element.editor.ShowBorders = !element.editor.ShowBorders;
+  element.editor.focus();  
+}  
+
+// Open the color picker dialog box (used to set the foreground and background colors)
+function colorPicker(cmd){
+  sOut = null;
+  sOut = parent.showModalDialog(element.ScriptPath + "colorpalette.htm",null,"dialogWidth:183px;dialogHeight:227px;help:0;status:no;");  
+  element.editor.ExecCommand(cmd,0, sOut);  
+  element.editor.focus();  
+}
+
+// Invokes spell checker
+function checkSpelling(){
+  if (element.editor.DOM.body.innerText.length != 0) {
+    updateFormField();
+    window.doSpell("en", element.Form + "." + element.Field , element.BaseURL + element.ScriptPath + "sproxy.cfm", true);
+  } else
+    alert("Nothing to spell check!");
+}
+
+function insertLink() { //execCmd(5016)
+  var aOut = null, oInput = null, aIn = new Array(), elHREF, elImg;
+
+  var currEl = element.editor.DOM.selection.createRange();
+  if (element.editor.DOM.selection.type == "Control") {
+    if (currEl.item(0).tagName.toLowerCase() == "img") {
+      elImg = currEl.item(0);
+      elParent = currEl.item(0).parentElement;
+      if (elParent.tagName.toLowerCase() == "a") {
+        elHREF = elParent;
+      }
+    } else return;
+  
+  } else { 
+    elHREF = getHyperLink(currEl.parentElement());
+  }
+
+  if(elHREF){
+    // parse out the link
+		//var oReg= new RegExp("<a href=\"([^\"]*)\".*","i");
+		//var result = elHREF.outerHTML.replace(oReg, "$1");    
+
+    //Set the input params
+    aIn["edit"] = 1;
+    aIn["url"] = elHREF.getAttribute("href",2);
+    aIn["target"] = elHREF.target;
+    aIn["style"] = elHREF.style.cssText;
+  } else {
+    //defaults
+    aIn["url"] = "";    
+  }
+
+  aOut = parent.showModalDialog(element.ScriptPath + "hyperlink.htm",aIn,"dialogWidth:340px; dialogHeight:225px;help:0;status:no;");
+
+  if (aOut != null) {  
+    if (elHREF) {
+      elHREF.href = aOut["url"];    
+      elHREF.target = aOut["target"];
+      elHREF.style.cssText = aOut["style"];      
+    } else {
+      if (elImg) {
+        elImg.outerHTML = "<a href=\"" + aOut["url"] + "\" target=\"" + aOut["target"] + "\" style=\"" + aOut["style"] + "\">" + elImg.outerHTML + "</a>";
+      } else
+        currEl.pasteHTML("<a href=\"" + aOut["url"] + "\" target=\"" + aOut["target"] + "\" style=\"" + aOut["style"] + "\">" + currEl.htmlText + "</a>"); 
+    }
+  }
+  
+  element.editor.focus();  
+
+}
+
+function getHyperLink(currEl) {
+  while (currEl.tagName != "BODY") {
+    if (currEl.tagName == "A") {
+      return currEl;
+    }
+    currEl = currEl.parentElement;
+  }
+  return null;    
+}  
+
+// Open the table dialog box and insert table into the document
+function insertTable() {
+  var oTableInfo = window.document.all.oTable;
+  var aOut = null, oTable = null, aIn = new Array();
+  
+  if(element.editor.DOM.selection.type == "Control"){
+     var oTable = element.editor.DOM.selection.createRange().item(0);
+     if (oTable.tagName == "TABLE") {
+      //Set edit table params
+      aIn["edit"] = 1;
+      aIn["rows"] = oTable.rows.length;
+      aIn["columns"] = Math.round(oTable.cells.length/oTable.rows.length);
+      aIn["padding"] = oTable.cellPadding;
+      aIn["spacing"] = oTable.cellSpacing;
+      aIn["width"] = oTable.width;
+      aIn["height"] =oTable.height;      
+      aIn["border"] =oTable.border;
+      aIn["bgcolor"] =oTable.bgColor;      
+      aIn["style"] = oTable.style.cssText;   
+     } 
+     else
+      return;
+  } 
+  else { // defaults for new table
+    aIn["edit"] = 0;
+    aIn["rows"] = 3;
+    aIn["columns"] = 3;
+    aIn["padding"] = 1;
+    aIn["spacing"] = 1;    
+    aIn["width"] = "75%";
+    aIn["height"] = "";    
+    aIn["border"] = 1;
+    aIn["bgcolor"] = "";
+    aIn["style"] = "";     
+  }
+  aOut = parent.showModalDialog(element.ScriptPath + "table.htm",aIn,"dialogWidth:325px; dialogHeight:275px;help:0;status:no;");
+  
+  if (aOut != null) {  
+    if (oTable != null){
+      oTable.cellPadding = aOut["padding"];
+      oTable.cellSpacing = aOut["spacing"];    
+      oTable.width = aOut["width"];      
+      oTable.height = aOut["height"];     
+      oTable.border = aOut["border"];     
+      oTable.bgColor = aOut["bgcolor"];           
+      oTable.style.cssText = aOut["style"];
+    }
+    else {
+      // Create the table
+      oTableInfo.NumRows = aOut["rows"];
+      oTableInfo.NumCols = aOut["columns"];
+      oTableInfo.TableAttrs = "border=" + aOut["border"] + " cellPadding=" + aOut["padding"] + " cellSpacing=" + aOut["spacing"] + " width=" + aOut["width"] + " style=" + aOut["style"]+ " height=" + aOut["height"] + " bgcolor=" + aOut["bgcolor"];
+      element.editor.ExecCommand(5022,0, oTableInfo);  
+    }
+  }
+  element.editor.focus();  
+}  
+
+function getHTML() {
+  if (element.PageEdit) {
+    // update the hidden form field with entire HTML
+    if (bSourceEdit) {
+      if (element.editor.DOM.body.innerText.length != 0)
+        html = element.editor.FilterSourceCode(element.editor.DOM.body.innerText); 
+      else
+        html = "";    
+    }
+    else
+      html = element.editor.DocumentHTML;
+  } else if (element.editor.DOM.body.innerHTML.length != 0) {
+    if (bSourceEdit) {
+      if (element.editor.DOM.body.innerText.length != 0)
+        html = element.editor.FilterSourceCode(element.editor.DOM.body.innerText);
+      else
+        html = "";
+    } else
+      html = element.editor.FilterSourceCode(element.editor.DOM.body.innerHTML);
+    // check for default empty document and clear it if it exists
+  } else {
+    html = "";
+  }
+     
+  return html;
+}
+
+/* Taken out
+function getHTML() {
+  if (element.PageEdit) {
+    // update the hidden form field with entire HTML
+    if (bSourceEdit)
+      html = element.editor.FilterSourceCode(element.editor.DOM.body.innerText); 
+    else
+      html = element.editor.DocumentHTML;
+  } else if (element.editor.DOM.body.innerHTML.length != 0) {
+    if (bSourceEdit)
+      html = element.editor.FilterSourceCode(element.editor.DOM.body.innerText);
+    else
+      html = element.editor.FilterSourceCode(element.editor.DOM.body.innerHTML);
+    // check for default empty document and clear it if it exists
+  } else {
+    html = "";
+  }
+     
+  return html;
+}
+*/
+
+function setHTML(sVal) {
+  if (element.PageEdit) {
+    if (bSourceEdit) {
+      this.editor.DOM.body.style.fontFamily="Courier New";
+      this.editor.DOM.body.style.fontSize="10pt";       
+      element.editor.DOM.body.innerText = sVal; 
+    } else{
+      element.editor.DocumentHTML = sVal;    
+    }
+  } else {
+    // strip potential HTML, HEAD and BODY elements         
+  	sVal = execRE("<[\/]*html[^>]*>","",sVal);                      
+  	sVal = execRE("<head[^>]*>(.|\n)*<\/head[^>]*>","",sVal);    
+  	sVal = execRE("<[\/]*body[^>]*>","",sVal);                                     
+    if (bSourceEdit) {
+      this.editor.DOM.body.style.fontFamily="Courier New";
+      this.editor.DOM.body.style.fontSize="10pt";       
+      this.editor.DOM.body.style.backgroundColor = "#ffffff";
+      element.editor.DOM.body.innerText = sVal; 
+    } else {
+        element.editor.DocumentHTML = "<html><head></head><body>" + sVal + "</body></html>"; 
+    }
+  }
+}
+
+function getSourceEdit() {
+  return bSourceEdit;
+}
+
+function setSourceEdit(bVal) {
+  var sDocHTML = element.DocumentHTML;
+
+  bSourceEdit= bVal;            
+  element.DocumentHTML = sDocHTML;
+
+   // set toolbar states
+   for (var idxTB = 0; idxTB<2; idxTB++) {
+     for (var idxBtn = 0; idxBtn<tbControls[idxTB].length; idxBtn++) {     
+       try{tbControls[idxTB][idxBtn].el.isActive = !bVal;}
+       catch(e){}
+     }   
+   }   
+   for (var idxSel = 0; idxSel<tbControls[2].length; idxSel++) {     
+     try {tbControls[2][idxSel].el.disabled = bVal;}
+     catch(e){}
+   }
+  if (bSourceEdit) {
+    window.clearInterval(iWordTimer);
+    totalwords.innerText = "Source Edit";  
+  } else if(WordCount) {
+    iWordTimer = window.setInterval(totalWords, 1000, "JScript");    
+  }
+  element.editor.focus();    
+}
+
+function execRE(re,rp,content) {
+		oReg=new RegExp(re,"ig");
+		r = content.replace(oReg, rp);
+		return r; 
+}
+  
+// updates the hidden form field that contains the html being edited
+function updateFormField() {
+  var elHidden = eval("element.form." + element.Field);
+  var html = "";
+
+  // automatically clean up code
+  if (element.AutoSweep)
+    codeSweeper(true);
+
+  // update the hidden form field
+  elHidden.value = element.DocumentHTML;
+}
+
+function toggleDetails() {
+  element.editor.ShowDetails = !element.editor.ShowDetails;
+  element.editor.focus();    
+}
+
+function moveCursorFront() {
+  // move cursor to beginning of document
+  rng = element.editor.DOM.body.createTextRange();
+  rng.move("character",0); 
+  rng.select();
+}
+
+//Update the UI based on the state of the editor ::This function is executed anytime there is any action in the editor, this slows it down::
+function contentChanged() {
+  if (bSourceEdit) {
+
+    for (var idx= 0; idx<tbControls[0].length; idx++) {
+      //Grab the command status state
+      cmdStatus = element.editor.QueryStatus(tbControls[0][idx].cmd);
+      //Determine what to do with each button
+      if (!tbControls[0][idx].inText || cmdStatus == 1 || cmdStatus == 0) {
+          tbControls[0][idx].el.isActive = false;   
+      } else if ((cmdStatus == 3  || cmdStatus == 11) && tbControls[0][idx].inText) {
+        if (!tbControls[0][idx].el.isActive)
+          tbControls[0][idx].el.isActive = true;   
+        if (tbControls[0][idx].el.isPressed){
+          tbControls[0][idx].el.isPressed = false;
+        }
+      }
+    }    
+    
+  } else {
+    for (var idx= 0; idx<tbControls[0].length; idx++) {
+      //Grab the command status state
+      if (tbControls[0][idx].cmd)
+        cmdStatus = element.editor.QueryStatus(tbControls[0][idx].cmd);
+      //Determine what to do with each button
+      if (cmdStatus == 1 || cmdStatus == 0) {
+        tbControls[0][idx].el.isActive = false;  
+      } else if ((cmdStatus == 3  || cmdStatus == 11)) {
+        if (!tbControls[0][idx].el.isActive)
+          tbControls[0][idx].el.isActive = true;   
+        if (tbControls[0][idx].el.isPressed){
+          tbControls[0][idx].el.isPressed = false;
+        }
+      } else if (cmdStatus == 7) {
+        if (!tbControls[0][idx].el.isActive)
+          tbControls[0][idx].el.isActive = true;   
+        tbControls[0][idx].el.isPressed = true;
+      }
+    }
+   if (tbControls[2].length)
+    maintainSelects();
+    
+  }
+}
+
+function maintainSelects() {
+  // hardcoded state maintaince of select elements.
+  if (element.form.btnFormat) {  
+    var elSelect = element.form.btnFormat;
+    cmdStatus = element.editor.QueryStatus(5043);
+    if (cmdStatus == 1 || cmdStatus == 0) {
+      elSelect.disabled = true;
+    } else {
+      selectOption(elSelect,element.editor.ExecCommand(5011, 0));    
+    }
+  }
+  
+  if (element.form.btnFont) {  
+    var elSelect = element.form.btnFont;  
+    cmdStatus = element.editor.QueryStatus(5013);
+    if (cmdStatus == 1 || cmdStatus == 0) {
+      elSelect.disabled = true;
+    } else {
+      selectOption(elSelect,element.editor.ExecCommand(5013, 0));    
+    }
+  }
+  
+  if (element.form.btnSize) {
+    var elSelect = element.form.btnSize;    
+    cmdStatus = element.editor.QueryStatus(5045);    
+    if (cmdStatus == 1 || cmdStatus == 0) {
+      elSelect.disabled = true;
+    } else {
+      selectOption(elSelect,element.editor.ExecCommand(5014, 0));
+    }
+  }
+}
+
+function selectOption(el,opt) {
+  el.disabled = false;
+  for (var idx=0; idx < el.options.length; idx++) {
+    if (el.options[idx].text == opt) {
+      el.selectedIndex = idx;
+      break;      
+    }
+  }
+}
+
+// this function loads soEditor's controls into arrays so that their states can be managed based on the editor
+function registerControl(sName,aControl,cmd,bAllowedInTextEdit) {
+  // load the control and suppress the error if the control isnt present
+  try {
+    aControl[aControl.length] = new control(eval(sName), cmd, bAllowedInTextEdit);
+  }catch(e){}
+}
+
+//Create UI button objects used to maintain the toolbars
+function control(el,cmd,inText) {
+  this.el = el;
+  this.cmd = cmd;
+  this.inText = inText;  
+}
+
+function loadControls(){
+  tbControls = new Array(); // This array holds all the controls of soEditor
+  tbControls[0] = new Array(); // This array contains controls who's state is maintained by soEditor
+  tbControls[1] = new Array(); // This array contains controls that need to be disabled when in Text mode
+  tbControls[2] = new Array(); // This array contains select controls
+  
+  registerControl("btnUndo",tbControls[0],5049,1);
+  registerControl("btnRedo",tbControls[0],5033,1);
+  registerControl("btnCut",tbControls[0],5003,1);
+  registerControl("btnCopy",tbControls[0],5002,1);
+  registerControl("btnPaste",tbControls[0],5032,1);
+  registerControl("element.form.btnFormat",tbControls[2],5043,0);
+  registerControl("element.form.btnFont",tbControls[2],5044,0);
+  registerControl("element.form.btnSize",tbControls[2],5045,0);
+  registerControl("btnBold",tbControls[0],5000,0);
+  registerControl("btnItalic",tbControls[0],5023,0);
+  registerControl("btnUnder",tbControls[0],5048,0);
+  registerControl("btnSuper",tbControls[1],null,0); 
+  registerControl("btnSub",tbControls[1],null,0); 
+  registerControl("btnAlign[0]",tbControls[0],5025,0);
+  registerControl("btnAlign[1]",tbControls[0],5024,0);
+  registerControl("btnAlign[2]",tbControls[0],5026,0);
+  registerControl("btnList[0]",tbControls[0],5030,0);
+  registerControl("btnList[1]",tbControls[0],5051,0);
+  registerControl("btnUnIndent",tbControls[0],5031,0);
+  registerControl("btnIndent",tbControls[0],5018,0);
+  registerControl("btnLink",tbControls[0],5016,0);
+  registerControl("btnUnLink",tbControls[0],5050,0);  
+  registerControl("btnFgColor",tbControls[0],5046,0);
+  registerControl("btnHR",tbControls[1],null,0); 
+  registerControl("btnBgColor",tbControls[0],5042,0);
+  registerControl("btnFontCtrl",tbControls[0],5009,0);
+  registerControl("btnImage",tbControls[0],5017,0);
+  registerControl("btnBorders",tbControls[1],null,0);
+  registerControl("btnTable",tbControls[1],null,0);
+  registerControl("btnInsCell",tbControls[0],5019,0);
+  registerControl("btnDelCell",tbControls[0],5005,0);
+  registerControl("btnInsRow",tbControls[0],5021,0);
+  registerControl("btnDelRow",tbControls[0],5007,0);
+  registerControl("btnInsColumn",tbControls[0],5020,0);
+  registerControl("btnDelColumn",tbControls[0],5006,0);
+  registerControl("btnSpltCell",tbControls[0],5047,0);
+  registerControl("btnMrgCell",tbControls[0],5029,0);
+  registerControl("btnTDProp",tbControls[0],5047,0);
+  registerControl("btnSpellChk",tbControls[1],null,0);
+
+  element.editor.attachEvent("DisplayChanged", contentChanged);  
+
+}
+
+function getBooleanValue(b){
+  return (b == "true" || b == "1");
+}  
+
+// keyboard trap to handle single spacing
+function keyPressed() {
+  objDOM = element.editor.DOM;
+  oEvent = objDOM.parentWindow.event;
+  if (objDOM.selection.type == "Control" || oEvent.keyCode != 13) return;
+  
+  var rng = objDOM.selection.createRange();  
+  var el = rng.parentElement();
+  while (el.tagName != "BODY" && el.tagName != "LI") {
+    el = el.parentElement;
+  }
+  
+  if (oEvent.keyCode == 13 && el.tagName == "LI") {
+    return;
+  } else if (oEvent.keyCode == 13 && !oEvent.altKey && !oEvent.ctrlKey && !oEvent.shiftKey) {
+    rng.pasteHTML("<br>");
+    rng.select();
+    oEvent.returnValue = false;
+  } else if (oEvent.keyCode == 13 && oEvent.shiftKey) {
+    rng.pasteHTML("<p>" + rng.htmlText + "</p>");
+    rng.select();
+    oEvent.returnValue = false;  
+  }
+}
+
+// keeps a running total of the rough amount of words executed every second
+function totalWords() {
+  // skip if editor is loading
+  if (!element.editor.Busy) {
+    var iSumWords = 0;
+    var objDOM = element.editor.DOM;
+    var rng = objDOM.body.createTextRange();
+    rng.collapse(true);
+
+    while(rng.move("word",1)) {
+	    iSumWords++;
+    }
+
+    totalwords.innerText = iSumWords + " word(s)";
+  }
+}
+
+// editor is ready
+function contentReady() { 
+  if (element.BaseFont != "") {
+    element.editor.ExecCommand(5044, 0, element.BaseFont);  
+  }
+  if (element.BaseFontSize != "") {
+    element.editor.ExecCommand(5045, 0, element.BaseFontSize);  
+  }    
+  if (element.BaseFontColor != "") {
+    element.editor.ExecCommand(5046, 0, element.BaseFontColor);  
+  }    
+  moveCursorFront();
+     
+  //check to see if the editor should have focus when loaded
+  if (element.InitialFocus == "true")
+    element.editor.focus();
+  
+  this.editor.DOM.body.style.fontFamily="";
+  this.editor.DOM.body.style.fontSize="";      
+
+  if (element.BaseBGColor != "") {
+    this.editor.DOM.body.style.backgroundColor = element.BaseBGColor;  
+  }     
+  
+  //set the base url for relative links
+  element.editor.BaseURL = element.BaseURL;  
+  
+  element.editor.attachEvent("ondblclick", mDoubleClick);      
+}
+
+function mDoubleClick() {
+//  try {
+
+  if (eventCount % 2 == 0) {
+    var currEl = element.editor.DOM.selection.createRange();
+    if (element.editor.DOM.selection.type == "Control") {
+      switch (currEl.item(0).tagName.toLowerCase()) {
+        case "img":
+          image();
+          break;
+        case "table":
+          insertTable();
+          break;     
+      }
+    }
+  }
+  eventCount ++;
+//  }catch(e){}
+}
+
+function formSubmitted() {
+  if (element.ValidateOnSave) {
+    if (element.editor.DOM.body.outerText.length == 0 && element.editor.DOM.body.getElementsByTagName("img").length == 0 && element.editor.DOM.body.getElementsByTagName("table").length == 0) {
+      alert(element.ValidationMessage);
+      return false;
+    }
+  }
+  updateFormField();
+}
+
+// closes image manager if the window is open
+function cleanUpWindows() {
+  try {
+    winIM.close();
+  } catch(e){}
+}
+
+// Display the about box
+function about() {
+	var w = window.screen.width;
+	var h = window.screen.height;
+	var l = (w-330)/2;
+	var t = (h-220)/2;
+	
+	wAbout = parent.open(element.ScriptPath + "about.htm", "_about", 'fullscreen=1,toolbar=0,location=0,directories=0,status=0,menubar=0,scrollbars=0,resizable=0' );
+
+	wAbout.blur();
+	window.focus();	
+	wAbout.resizeTo(330,220);
+	wAbout.moveTo(l, t);
+	wAbout.focus();
+  
+}
+
+// Initialize the editor by adding the DHTML Edit Component and Table object to the document and loading the control arrays
+function init(){
+  
+  element.PageEdit = getBooleanValue(element.PageEdit);
+  element.SingleSpaced = getBooleanValue(element.SingleSpaced);
+  element.WordCount = getBooleanValue(element.WordCount);
+  element.ValidateOnSave = getBooleanValue(element.ValidateOnSave);  
+  
+  var tempHTML = '<object id="soeditorbox" style="z-index:1;width:' + element.Width + '; height:' + element.Height + ';" CLASSID="clsid:2D360201-FFF5-11D1-8D03-00A0C959BC0A" VIEWASTEXT><param name="AbsoluteDropMode" value="0"><param name="ActivateApplets" value="0">param name="ActivateActiveXControls" value="-1"><param name="ActivateDTCs" value="-1"><param name="ShowDetails" value="0"><param name="ShowBorders" value="0"><param name="Appearance" value="1"><param name="Scrollbars" value="-1"><param name="ScrollbarAppearance" value="1"><param name="SourceCodePreservation" value="-1"><param name="SnapToGrid" value="0"><param name="SnapToGridX" value="50"><param name="SnapToGridY" value="50"><param name="UseDivOnCarriageReturn" VALUE="1"></object><object style="display:none;" ID="oTable" CLASSID="clsid:47B0DFC7-B7A3-11D1-ADC5-006008A5848C" viewastext></object>';
+  
+  if (! element.innerHTML.length > 0) {
+  
+    element.innerHTML = tempHTML;       
+    
+    element.editor = window.document.all.soeditorbox;
+    element.form = eval("window.document." + element.form);  
+    // load the controls when the document is loaded
+    window.attachEvent("onload", loadControls);
+    // set the word counter 
+    if (element.WordCount) {
+      iWordTimer = window.setInterval(totalWords, 1000, "JScript");    
+    } else {
+      totalwords.innerText = "";  
+    }
+    // update the hidden form field when for is submitted by external submit button
+    element.form.attachEvent("onsubmit", formSubmitted);
+    // if image dialog is open, keep focus on it
+    window.attachEvent("onfocus", function() {try {winIM.focus();} catch(e){} });  
+    element.editor.attachEvent("onfocus", function() {try {winIM.focus();} catch(e){} });  
+    // attach to unload event to check for unsaved changes
+    // attach event to clean up possible open windows
+    window.attachEvent("onunload", cleanUpWindows);
+    // add traps for key presses
+    if (element.SingleSpaced) {
+      element.editor.attachEvent("onkeypress", keyPressed);
+    }
+    // load the html to be edited
+    var elHidden = eval("this.form." + element.Field);
+    element.DocumentHTML = elHidden.value;
+    
+    // takes care of functions when document is loaded
+    element.editor.attachEvent("DocumentComplete", contentReady);  
+  }
+
+}
+</script>
