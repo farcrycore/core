@@ -1,40 +1,68 @@
-<cfcomponent>
+<!--- 
+|| LEGAL ||
+$Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
+$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
+
+|| VERSION CONTROL ||
+$Header: /cvs/farcry/farcry_core/packages/farcry/image.cfc,v 1.4 2003/09/21 23:27:07 brendan Exp $
+$Author: brendan $
+$Date: 2003/09/21 23:27:07 $
+$Name: b201 $
+$Revision: 1.4 $
+
+|| DESCRIPTION || 
+$Description: image manipulation cfc $
+$TODO: $
+
+|| DEVELOPER ||
+$Developer: Brendan Sisson (brendan@daemon.com.au) $
+
+|| ATTRIBUTES ||
+$in: $
+$out:$
+--->
+
+<cfcomponent displayName="Image Manipulation" hint="CFC based around image J java class">
+
 	<cffunction name="getDetails" access="public" returntype="struct" hint="Returns a structure of attributes for specified image">
-		<cfargument name="imagePath" type="string" required="true" hint="Path to the image">
-		
-		<cfif fileExists(arguments.ImagePath)>
-			<!--- create imagej objects --->
-			<cfobject type="java" name="objImagePlus" class="ij.ImagePlus" action="create">
-			<cfobject type="java" name="objOpener" class="ij.io.Opener" action="create">
-			
-			<cfscript>
-				// create structure for image details
-				stImageDetail = structNew();
-				
-				objImage = objOpener.openImage(arguments.ImagePath);
-				//get properties
-				stImageDetail.Properties = objImage.getProperties();
-				//get width
-				stImageDetail.Width = objImage.getWidth();
-				//get height
-				stImageDetail.Height = objImage.getHeight();
-				//get image type
-				numType = objImage.getType();
-			</cfscript>
-			
-			<!--- convert image type into meaningful name --->
-			<cfswitch expression="#numType#">
-				<cfcase value="0"><cfset stImageDetail.Type = "GRAY8"></cfcase>
-				<cfcase value="1"><cfset stImageDetail.Type = "GRAY16"></cfcase>
-				<cfcase value="2"><cfset stImageDetail.Type = "GRAY32"></cfcase>
-				<cfcase value="3"><cfset stImageDetail.Type = "COLOR_256"></cfcase>
-				<cfcase value="4"><cfset stImageDetail.Type = "COLOR_RGB"></cfcase>
-			</cfswitch>
-		</cfif>
-		
-		<!--- return image detail structure  --->
-		<cfreturn stImageDetail>
-	</cffunction>
+	  <cfargument name="imagePath" type="string" required="true" hint="Path to the image">
+	  
+	  <cfscript>
+	   // create structure for image details
+	   stImageDetail = structNew();
+	  </cfscript>
+	  
+	  <cfif fileExists(arguments.ImagePath)>
+	   <!--- create imagej objects --->
+	   <cfobject type="java" name="objImagePlus" class="ij.ImagePlus" action="create">
+	   <cfobject type="java" name="objOpener" class="ij.io.Opener" action="create">
+	
+	   <cfscript>
+	
+	    objImage = objOpener.openImage(arguments.ImagePath);
+	    //get properties
+	    stImageDetail.Properties = objImage.getProperties();
+	    //get width
+	    stImageDetail.Width = objImage.getWidth();
+	    //get height
+	    stImageDetail.Height = objImage.getHeight();
+	    //get image type
+	    numType = objImage.getType();
+	   </cfscript>
+	
+	   <!--- convert image type into meaningful name --->
+	   <cfswitch expression="#numType#">
+	    <cfcase value="0"><cfset stImageDetail.Type = "GRAY8"></cfcase>
+	    <cfcase value="1"><cfset stImageDetail.Type = "GRAY16"></cfcase>
+	    <cfcase value="2"><cfset stImageDetail.Type = "GRAY32"></cfcase>
+	    <cfcase value="3"><cfset stImageDetail.Type = "COLOR_256"></cfcase>
+	    <cfcase value="4"><cfset stImageDetail.Type = "COLOR_RGB"></cfcase>
+	   </cfswitch>
+	  </cfif>
+	
+	  <!--- return image detail structure  --->
+	  <cfreturn stImageDetail>
+	 </cffunction>
 	
 	<!---
 	 Resize a image based on width or height :

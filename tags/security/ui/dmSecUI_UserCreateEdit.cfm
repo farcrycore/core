@@ -6,11 +6,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/security/ui/dmSecUI_UserCreateEdit.cfm,v 1.4 2003/07/10 02:35:15 brendan Exp $
+$Header: /cvs/farcry/farcry_core/tags/security/ui/dmSecUI_UserCreateEdit.cfm,v 1.5 2003/08/01 01:57:07 brendan Exp $
 $Author: brendan $
-$Date: 2003/07/10 02:35:15 $
-$Name: b131 $
-$Revision: 1.4 $
+$Date: 2003/08/01 01:57:07 $
+$Name: b201 $
+$Revision: 1.5 $
 
 || DESCRIPTION || 
 $Description: Interface for creating and editing users.$
@@ -64,20 +64,19 @@ $out:$
             <!--- update dmProfile object --->
 			<cftry>
 	            <cfscript>
-	            o_profile = createObject("component", "#application.packagepath#.types.dmProfile");
-	            stProfile = o_profile.getProfile(userName=URL.userLogin);
-				
-	
-	            stProps = structNew();
-	            if (form.userStatus eq 4) stProps.bActive = 1;
-	            else if (form.userStatus eq 2) stProps.bActive = 0;
+		            o_profile = createObject("component", "#application.packagepath#.types.dmProfile");
+		            stProfile = o_profile.getProfile(userName=URL.userLogin);
+					
+		
+		            stProps = structNew();
+					stProps.objectid = stProfile.objectID;
+		            if (form.userStatus eq 4) stProps.bActive = 1;
+		            else if (form.userStatus eq 2) stProps.bActive = 0;
+					
+					// update object	
+					oType = createobject("component","#application.packagepath#.types.dmProfile");
+					oType.setData(stProperties=stProps);	
 	            </cfscript>
-	
-	            <cfimport taglib="/farcry/fourq/tags/" prefix="q4">
-	        	<q4:contentobjectdata
-	            	 typename="#application.packagepath#.types.dmProfile"
-	            	 stProperties="#stProps#"
-	        	     objectID="#stProfile.objectID#">
 				 
 				 <cfcatch></cfcatch>
 			</cftry>

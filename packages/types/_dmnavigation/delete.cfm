@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmnavigation/delete.cfm,v 1.5 2003/06/04 06:24:52 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmnavigation/delete.cfm,v 1.8 2003/08/20 07:03:13 brendan Exp $
 $Author: brendan $
-$Date: 2003/06/04 06:24:52 $
-$Name: b131 $
-$Revision: 1.5 $
+$Date: 2003/08/20 07:03:13 $
+$Name: b201 $
+$Revision: 1.8 $
 
 || DESCRIPTION || 
 $Description: Specific delete method for dmNavigation. Deletes all descendants aswell as cleaning up verity collections$
@@ -26,8 +26,7 @@ $out:$
 <cfscript>
 
 	// get descendants
-	oTree = createObject("component","#application.packagepath#.farcry.tree");
-	qGetDescendants = oTree.getDescendants(objectid=stObj.objectID);
+	qGetDescendants = application.factory.oTree.getDescendants(objectid=stObj.objectID);
 	oNavigation = createObject("component","#application.packagepath#.types.dmNavigation");
 	
 	// delete actual object
@@ -35,14 +34,12 @@ $out:$
 	
 	// delete fu
 	if (application.config.plugins.fu) {
-		fu = createObject("component","#application.packagepath#.farcry.fu");
-		fuUrl = fu.getFU(objectid=stObj.objectid);
-		fu.deleteFu(fuUrl);
-		//fu.deleteMapping(key=cgi.server_name & fuUrl);
+		fuUrl = application.factory.oFU.getFU(objectid=stObj.objectid);
+		application.factory.oFU.deleteFu(fuUrl);
 	}
 	
 	// delete branch
-	oTree.deleteBranch(objectid=stObj.objectID);
+	application.factory.oTree.deleteBranch(objectid=stObj.objectID);
 	
 	// remove permissions
 	oAuthorisation = request.dmSec.oAuthorisation;
@@ -56,10 +53,15 @@ $out:$
 			
 			// work out typename
 			objType = findType(stObj.aObjectIds[i]);
+			if (application.types[objType].bCustomType) {
+				packagepath = application.customPackagepath;
+			} else {
+				packagepath = application.packagepath;
+			}
 			
 			if (len(objType)) {
 				// delete associated object
-				oType = createObject("component","#application.packagepath#.types.#objType#");
+				oType = createObject("component","#packagepath#.types.#objType#");
 				oType.delete(stObj.aObjectIds[i]);
 			}
 		}
@@ -80,10 +82,15 @@ $out:$
 				
 					// work out typename
 					objType = findType(objDesc.aObjectIds[i]);
+					if (application.types[objType].bCustomType) {
+						packagepath = application.customPackagepath;
+					} else {
+						packagepath = application.packagepath;
+					}
 					
 					if (len(objType)) {
 						// delete associated object
-						oType = createObject("component","#application.packagepath#.types.#objType#");
+						oType = createObject("component","#packagepath#.types.#objType#");
 						oType.delete(objDesc.aObjectIds[i]);
 					}
 				}
@@ -91,9 +98,8 @@ $out:$
 			
 			// delete fu
 			if (application.config.plugins.fu) {
-				fuUrl = fu.getFU(objectid=qGetDescendants.objectId[loop0]);
-				fu.deleteFu(fuUrl);
-				//fu.deleteMapping(key=cgi.server_name & fuUrl);
+				fuUrl = application.factory.oFU.getFU(objectid=qGetDescendants.objectId[loop0]);
+				application.factory.oFU.deleteFu(fuUrl);
 			}
 			
 			// remove permissions

@@ -81,7 +81,7 @@
 		<display:OpenLayer width="400" title="Restrict By Categories" titleFont="Verdana" titleSize="7.5" isClosed="#isClosed#" border="no">
 		<table align="center" border="0">
         <tr>
-            <td><b>Does the content need to match ALL the selected Keywords?</b> <input type="checkbox" name="bMatchAllKeywords"></td>
+            <td><b>Does the content need to match ALL the selected Keywords?</b> <input type="checkbox" name="bMatchAllKeywords" value="1" <cfif stObj.bMatchAllKeywords>checked</cfif>></td>
         </tr>
         <tr>
             <td>&nbsp;</td>
@@ -121,17 +121,17 @@
 		
 		<cfif application.dbtype eq "mysql">
 			<!--- create temp table for status --->
-			<cfquery datasource="#stArgs.dsn#" name="temp">
+			<cfquery datasource="#arguments.dsn#" name="temp">
 				DROP TABLE IF EXISTS tblTemp1
 			</cfquery>
-			<cfquery datasource="#stArgs.dsn#" name="temp2">
+			<cfquery datasource="#arguments.dsn#" name="temp2">
 				create temporary table `tblTemp1`
 					(
 					`Status`  VARCHAR(50) NOT NULL
 					)
 			</cfquery>
 			<cfloop list="#request.mode.lValidStatus#" index="i">
-				<cfquery datasource="#stArgs.dsn#" name="temp3">
+				<cfquery datasource="#arguments.dsn#" name="temp3">
 					INSERT INTO tblTemp1 (Status) 
 					VALUES ('#replace(i,"'","","all")#')
 				</cfquery>
@@ -142,65 +142,87 @@
 		<cfif NOT trim(len(stObj.metadata)) EQ 0>
 			<!--- show by categories --->
 			<cfswitch expression="#application.dbtype#">
-				<cfcase value="ora">
-					<cfquery datasource="#arguments.dsn#" name="qGetEvents">
-						SELECT DISTINCT type.objectID, type.publishDate, type.label, type.title, type.location, type.startDate, type.endDate
-						FROM refObjects refObj 
-						JOIN refCategories refCat ON refObj.objectID = refCat.objectID
-						JOIN dmEvent type ON refObj.objectID = type.objectID  
-						WHERE refObj.typename = 'dmEvent' 
-							AND refCat.categoryID IN ('#ListChangeDelims(stObj.metadata,"','",",")#')
-							AND type.status IN ('#ListChangeDelims(request.mode.lValidStatus,"','",",")#')
-							AND publishdate <= #now()#
-							AND expirydate >= #now()#
-						ORDER BY type.publishDate DESC, type.label ASC
-					</cfquery>
-				</cfcase>
-				
 				<cfcase value="mysql">
-					<cfquery datasource="#arguments.dsn#" name="qGetEvents">
-						SELECT DISTINCT type.objectID, type.publishDate, type.label, type.title, type.location, type.startDate, type.endDate
-						FROM tblTemp1, refObjects refObj 
-						JOIN refCategories refCat ON refObj.objectID = refCat.objectID
-						JOIN dmEvent type ON refObj.objectID = type.objectID  
-						WHERE refObj.typename = 'dmEvent' 
-							AND refCat.categoryID IN ('#ListChangeDelims(stObj.metadata,"','",",")#')
-							AND type.status = tblTemp1.Status
-							AND publishdate <= #now()#
-							AND expirydate >= #now()#
-						ORDER BY type.publishDate DESC, type.label ASC
-					</cfquery>
+					<cfif stObj.bMatchAllKeywords>
+						<!--- must match all categories --->
+						<cfquery datasource="#arguments.dsn#" name="qGetEvents">
+							SELECT DISTINCT type.objectID, type.publishDate, type.label, type.title, type.location, type.startDate, type.endDate
+							    FROM tblTemp1, dmEvent type, refCategories refCat1
+							<!--- if more than one category make join for each --->
+							<cfif listLen(stObj.metadata) gt 1>
+								<cfloop from="2" to="#listlen(stObj.metadata)#" index="i">
+								    , refCategories refCat#i#
+								</cfloop>
+							</cfif>
+							WHERE 1=1
+								<!--- loop over each category and make sure item has all categories --->
+								<cfloop from="1" to="#listlen(stObj.metadata)#" index="i">
+									AND refCat#i#.categoryID = '#listGetAt(stObj.metadata,i)#'
+									AND refCat#i#.objectId = type.objectId
+								</cfloop>
+								AND type.status = tblTemp1.Status
+								AND publishdate <= #now()#
+								AND expirydate >= #now()#
+							ORDER BY type.startDate ASC, type.label ASC
+						</cfquery>
+					<cfelse>
+						<!--- doesn't need to match all categories --->
+						<cfquery datasource="#arguments.dsn#" name="qGetEvents">
+							SELECT DISTINCT type.objectID, type.publishDate, type.label, type.title, type.location, type.startDate, type.endDate
+							FROM tblTemp1, refCategories refCat, dmEvent type
+							WHERE refCat.objectID = type.objectID
+								AND refCat.categoryID IN ('#ListChangeDelims(stObj.metadata,"','",",")#')
+								AND type.status = tblTemp1.Status
+								AND publishdate <= #now()#
+								AND expirydate >= #now()#
+							ORDER BY type.startDate ASC, type.label ASC
+						</cfquery>
+					</cfif>
 				</cfcase>
-				
+
 				<cfdefaultcase>
-					<cfquery datasource="#arguments.dsn#" name="qGetEvents">
-						SELECT DISTINCT type.objectID, type.publishDate, type.label, type.title, type.location, type.startDate, type.endDate
-						FROM refObjects refObj 
-						JOIN refCategories refCat ON refObj.objectID = refCat.objectID
-						JOIN dmEvent type ON refObj.objectID = type.objectID  
-						WHERE refObj.typename = 'dmEvent' 
-							AND refCat.categoryID IN ('#ListChangeDelims(stObj.metadata,"','",",")#')
-							AND type.status IN ('#ListChangeDelims(request.mode.lValidStatus,"','",",")#')
-							AND publishdate <= #now()#
-							AND expirydate >= #now()#
-						ORDER BY type.publishDate DESC, type.label ASC
-					</cfquery>
+					<cfif stObj.bMatchAllKeywords>
+						<!--- must match all categories --->
+						<cfquery datasource="#arguments.dsn#" name="qGetEvents">
+							SELECT DISTINCT type.objectID, type.publishDate, type.label, type.title, type.location, type.startDate, type.endDate
+							FROM refCategories refcat1
+							<!--- if more than one category make join for each --->
+							<cfif listLen(stObj.metadata) gt 1>
+								<cfloop from="2" to="#listlen(stObj.metadata)#" index="i">
+									inner join refcategories refcat#i# on refcat#i-1#.objectid = refcat#i#.objectid
+								</cfloop>
+							</cfif>
+							JOIN dmEvent type ON refcat1.objectID = type.objectID
+							WHERE 1=1
+								<!--- loop over each category and make sure item has all categories --->
+								<cfloop from="1" to="#listlen(stObj.metadata)#" index="i">
+									AND refCat#i#.categoryID = '#listGetAt(stObj.metadata,i)#'
+								</cfloop>
+								AND type.status IN ('#ListChangeDelims(request.mode.lValidStatus,"','",",")#')
+								AND publishdate <= #now()#
+								AND expirydate >= #now()#
+							ORDER BY type.startDate ASC, type.label ASC
+						</cfquery>
+					<cfelse>
+						<!--- doesn't need to match all categories --->
+						<cfquery datasource="#arguments.dsn#" name="qGetEvents">
+							SELECT DISTINCT type.objectID, type.publishDate, type.label, type.title, type.location, type.startDate, type.endDate
+							FROM refObjects refObj
+							JOIN refCategories refCat ON refObj.objectID = refCat.objectID
+							JOIN dmEvent type ON refObj.objectID = type.objectID
+							WHERE refObj.typename = 'dmEvent'
+								AND refCat.categoryID IN ('#ListChangeDelims(stObj.metadata,"','",",")#')
+								AND type.status IN ('#ListChangeDelims(request.mode.lValidStatus,"','",",")#')
+								AND publishdate <= #now()#
+								AND expirydate >= #now()#
+							ORDER BY type.startDate ASC, type.label ASC
+						</cfquery>
+					</cfif>
 				</cfdefaultcase>
 			</cfswitch>
 		<cfelse>
 			<!--- don't filter on categories --->
 			<cfswitch expression="#application.dbtype#">
-				<cfcase value="ora">
-					<cfquery datasource="#arguments.dsn#" name="qGetEvents">
-						SELECT *
-						FROM #application.dbowner#dmEvent 
-						WHERE status IN ('#ListChangeDelims(request.mode.lValidStatus,"','",",")#')
-							AND publishdate <= #now()#
-							AND expirydate >= #now()#
-						ORDER BY publishDate DESC
-					</cfquery>
-				</cfcase>
-				
 				<cfcase value="mysql">
 					<cfquery datasource="#arguments.dsn#" name="qGetEvents">
 						SELECT *
@@ -208,23 +230,22 @@
 						WHERE events.status = tblTemp1.Status
 							AND publishdate <= #now()#
 							AND expirydate >= #now()#
-						ORDER BY publishDate DESC
+						ORDER BY startDate ASC
 					</cfquery>
 				</cfcase>
-				
+
 				<cfdefaultcase>
 					<cfquery datasource="#arguments.dsn#" name="qGetEvents">
 						SELECT *
-						FROM #application.dbowner#dmEvent 
+						FROM #application.dbowner#dmEvent
 						WHERE status IN ('#ListChangeDelims(request.mode.lValidStatus,"','",",")#')
 							AND publishdate <= #now()#
 							AND expirydate >= #now()#
-						ORDER BY publishDate DESC
+						ORDER BY startDate ASC
 					</cfquery>
 				</cfdefaultcase>
-			</cfswitch>	
-	
-		</cfif> 
+			</cfswitch>
+		</cfif>
 	
 		<cfif len(trim(stObj.intro)) AND qGetEvents.recordCount>
 			<cfset tmp = arrayAppend(request.aInvocations,stObj.intro)>

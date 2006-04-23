@@ -8,11 +8,11 @@ Daemon Pty Limited 1995-2002
 http://www.daemon.com.au
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmProfile/edit.cfm,v 1.7 2003/04/09 08:04:59 spike Exp $
-$Author: spike $
-$Date: 2003/04/09 08:04:59 $
-$Name: b131 $
-$Revision: 1.7 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmProfile/edit.cfm,v 1.9 2003/09/10 23:46:11 brendan Exp $
+$Author: brendan $
+$Date: 2003/09/10 23:46:11 $
+$Name: b201 $
+$Revision: 1.9 $
 
 || DESCRIPTION || 
 dmProfile edit handler
@@ -22,30 +22,6 @@ Peter Alexandrou (suspiria@daemon.com.au)
 
 || ATTRIBUTES ||
 none
-
-|| HISTORY ||
-$Log: edit.cfm,v $
-Revision 1.7  2003/04/09 08:04:59  spike
-Major update to remove need for multiple ColdFusion and webserver mappings.
-
-Revision 1.6  2002/10/23 02:03:51  pete
-no message
-
-Revision 1.5  2002/10/21 07:01:45  pete
-formatting changes
-
-Revision 1.4  2002/10/21 06:29:03  pete
-added bReceiveEmail property
-
-Revision 1.3  2002/10/21 05:21:28  pete
-email address validation added
-
-Revision 1.2  2002/10/21 01:47:36  pete
-formatting changes
-
-Revision 1.1  2002/10/21 01:15:55  pete
-first working version
-
 
 || END FUSEDOC ||
 --->
@@ -61,6 +37,7 @@ first working version
 
 	<cfscript>
 	stProperties = structNew();
+	stProperties.objectid = stObj.objectid;
 	stProperties.firstName = form.firstName;
 	stProperties.lastName = form.lastName;
 	stProperties.emailAddress = form.email;
@@ -79,27 +56,25 @@ first working version
 	</cfscript>
 
     <cftry>
-
-    	<q4:contentobjectdata
-        	 typename="#application.packagepath#.types.dmProfile"
-        	 stProperties="#stProperties#"
-        	 objectID="#stObj.objectID#">
-
         <cfscript>
-        // reload changes into session.dmProfile object
-        o_userProfile = createObject("component", "#application.packagepath#.types.dmProfile");
-        stProfile = o_userProfile.getProfile(userName=session.dmSec.authentication.userlogin);
-        // place dmProfile in session scope
-        if (isStruct(stProfile) AND not structIsEmpty(stProfile)) session.dmProfile = stProfile;
+			// update the OBJECT	
+			oType = createobject("component","#application.packagepath#.types.dmProfile");
+			oType.setData(stProperties=stProperties);
+			
+	        // reload changes into session.dmProfile object
+	        o_userProfile = createObject("component", "#application.packagepath#.types.dmProfile");
+	        stProfile = o_userProfile.getProfile(userName=session.dmSec.authentication.userlogin);
+	        // place dmProfile in session scope
+	        if (isStruct(stProfile) AND not structIsEmpty(stProfile)) session.dmProfile = stProfile;
         </cfscript>
 
-    <cfcatch type="Any">
-        <cfoutput>
-		<div class="formtitle" style="margin-left:30px;margin-top:30px;">Update Failed</div>
-		<p>
-		<span class="frameMenuBullet" style="margin-left:30px;">&raquo;</span> <a href="edit.cfm?objectID=#session.dmProfile.objectID#&type=dmProfile">Try again</a>
-        </cfoutput>
-    </cfcatch>
+	    <cfcatch type="Any">
+	        <cfoutput>
+			<div class="formtitle" style="margin-left:30px;margin-top:30px;">Update Failed</div>
+			<p>
+			<span class="frameMenuBullet" style="margin-left:30px;">&raquo;</span> <a href="edit.cfm?objectID=#session.dmProfile.objectID#&type=dmProfile">Try again</a>
+	        </cfoutput>
+	    </cfcatch>
     </cftry>
 
     <cfoutput>

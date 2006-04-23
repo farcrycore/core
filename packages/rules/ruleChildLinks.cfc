@@ -2,11 +2,11 @@
 ruleChildLinks (FarCry Core)
 Copyright Daemon Pty Limited 2002 (http://www.daemon.com.au/)
 
-$Header: /cvs/farcry/farcry_core/packages/rules/ruleChildLinks.cfc,v 1.13 2003/06/30 05:02:38 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/rules/ruleChildLinks.cfc,v 1.14 2003/08/08 04:23:36 brendan Exp $
 $Author: brendan $
-$Date: 2003/06/30 05:02:38 $
-$Name: b131 $
-$Revision: 1.13 $
+$Date: 2003/08/08 04:23:36 $
+$Name: b201 $
+$Revision: 1.14 $
 
 Contributors:
 Paul Harrison (paul@daemon.com.au)
@@ -108,10 +108,9 @@ fails to display anything.
 		<cfset stObj = this.getData(arguments.objectid)> 
 		
 		<!--- get the children of this object --->
-		<cfinvoke  component="#application.packagepath#.farcry.tree" method="getChildren" returnvariable="qGetChildren">
-			<cfinvokeargument name="dsn" value="#application.dsn#"/>
-			<cfinvokeargument name="objectid" value="#request.navid#"/>
-		</cfinvoke>
+		<cfscript>
+			qGetChildren = application.factory.oTree.getChildren(objectid=request.navid);
+		</cfscript>
 
 		<!--- if the intro text exists - append to aInvocations to be output as HTML --->
 		<cfif len(stObj.intro) GT 0>

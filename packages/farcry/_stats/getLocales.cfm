@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_stats/getLocales.cfm,v 1.3 2003/05/12 02:45:09 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_stats/getLocales.cfm,v 1.7 2003/09/12 02:59:21 brendan Exp $
 $Author: brendan $
-$Date: 2003/05/12 02:45:09 $
-$Name: b131 $
-$Revision: 1.3 $
+$Date: 2003/09/12 02:59:21 $
+$Name: b201 $
+$Revision: 1.7 $
 
 || DESCRIPTION || 
 $Description: Shows locales$
@@ -23,23 +23,43 @@ $out:$
 --->
 
 <!--- get maxrows if not defined --->
-<cfif stArgs.maxRows eq "all">
-	<cfquery datasource="#stArgs.dsn#" name="qMax">
+<cfif arguments.maxRows eq "all">
+	<cfquery datasource="#arguments.dsn#" name="qMax">
 		SELECT count(logid) as maxrows
-		FROM #application.dbowner#Stats
+		FROM #application.dbowner#stats
 	</cfquery>
-	<cfset stArgs.maxrows = qMax.maxrows>
+	<cfset arguments.maxrows = qMax.maxrows>
 </cfif>
 
-<!--- get downloads from stats --->
-<cfquery datasource="#stArgs.dsn#" name="qGetLocales" maxrows="#stArgs.maxRows#">
-	SELECT locale, count(distinct sessionid) as count_locale, country 
-	FROM #application.dbowner#Stats s,#application.dbowner#StatsCountries
-	WHERE locale <> 'unknown' and isocode = right(locale,2)
-	<cfif stArgs.dateRange neq "all">
-		AND logDateTime > #dateAdd("#stArgs.dateRange#",-1,now())#
-	</cfif>
-	GROUP By locale,country
-	ORDER BY count_locale DESC
-</cfquery>
+<cfswitch expression="#application.dbtype#">
+	<cfcase value="ora">
+		<!--- get downloads from stats --->
+		<cfquery datasource="#arguments.dsn#" name="qGetLocales" maxrows="#arguments.maxRows#">
+			SELECT locale, count(distinct sessionid) as count_locale, country, isocode 
+			FROM #application.dbowner#stats s,#application.dbowner#statsCountries
+			WHERE locale <> 'unknown' and isocode = upper(SUBSTR(locale,-2,2))
+			<cfif arguments.dateRange neq "all">
+				AND logDateTime > #dateAdd("#arguments.dateRange#",-1,now())#
+			</cfif>
+			GROUP By locale,country, isocode
+			ORDER BY count_locale DESC
+		</cfquery>
+	</cfcase>
+	
+	<cfdefaultcase>
+		<!--- get downloads from stats --->
+		<cfquery datasource="#arguments.dsn#" name="qGetLocales" maxrows="#arguments.maxRows#">
+			SELECT locale, count(distinct sessionid) as count_locale, country, isocode 
+			FROM #application.dbowner#stats s,#application.dbowner#statsCountries
+			WHERE locale <> 'unknown' and isocode = right(locale,2)
+			<cfif arguments.dateRange neq "all">
+				AND logDateTime > #dateAdd("#arguments.dateRange#",-1,now())#
+			</cfif>
+			GROUP By locale,country, isocode
+			ORDER BY count_locale DESC
+		</cfquery>
+	</cfdefaultcase>
+
+</cfswitch>
+
 

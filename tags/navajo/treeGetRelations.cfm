@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/navajo/treeGetRelations.cfm,v 1.10 2003/07/15 07:04:15 brendan Exp $
-$Author: brendan $
-$Date: 2003/07/15 07:04:15 $
-$Name: b131 $
-$Revision: 1.10 $
+$Header: /cvs/farcry/farcry_core/tags/navajo/treeGetRelations.cfm,v 1.12 2003/10/08 09:01:45 paul Exp $
+$Author: paul $
+$Date: 2003/10/08 09:01:45 $
+$Name: b201 $
+$Revision: 1.12 $
 
 || DESCRIPTION || 
 
@@ -48,6 +48,8 @@ $out:[attributes.r_lObjectIds]: Objects found as list of ids$
 <cfparam name="attributes.bIncludeObjects" default="1">
 <cfparam name="attributes.lStatus" default="">
 <cfparam name="attributes.lTypeIds" default="">
+<cfparam name="attributes.nodetype" default="dmNavigation">
+
 
 <cfparam name="attributes.r_stObjects" default="">
 <cfparam name="attributes.r_stObject" default="">
@@ -66,15 +68,12 @@ lobjectids
 stObjects
 stObject
  --->
-<!--- <cfquery datasource="#application.dsn#" name="q">
-select * from nested_tree_objects
-</cfquery>
-<cfdump var="#q#">
- ---> 
+
 <cfif attributes.get eq "root">
-	<cfinvoke component="#application.packagepath#.farcry.tree" method="getRootNode" typename="#attributes.typename#" returnvariable="qRoot">
-<!--- <cfdump var="#qRoot#"> --->
-<cfset lObjectIds = qRoot.ObjectID>
+	<cfscript>
+		qRoot = application.factory.oTree.getRootNode(typename="#attributes.typename#");
+	</cfscript>
+	<cfset lObjectIds = qRoot.ObjectID>
 </cfif>
 
 <cfif attributes.get eq "children">
@@ -86,8 +85,10 @@ need to call tag or fourq function that has status as an option somehow
 <cfif attributes.typename eq "">
 	<cfset attributes.typename = "dmnavigation">
 </cfif>
-<cfif attributes.typename is "dmNavigation">
-	<cfinvoke component="#application.packagepath#.farcry.tree" method="getChildren" objectid="#attributes.objectid#" returnvariable="qChildren">
+<cfif attributes.typename is attributes.nodetype>
+	<cfscript>
+		qChildren = application.factory.oTree.getChildren(objectid=attributes.objectid);
+	</cfscript>
 <cfelse>	
 	<cfquery name="qChildren" datasource="#application.dsn#">
 		select a.data AS objectID, b.title AS objectname from #application.dbowner##attributes.typename#_aObjectIDs a
@@ -95,7 +96,6 @@ need to call tag or fourq function that has status as an option somehow
 	    where a.objectID =  '#attributes.objectID#'
 	</cfquery>
 </cfif>
-<!--- <cfdump var="#qChildren#" label="qChildren"> --->
 <!--- 
 get data from COAPI
 TODO
@@ -113,7 +113,6 @@ this should be a COAPI call and *not* a straight SQL shortcut
 
 <cfset lobjectIDs="#ValueList(qObjects.objectid)#">
 
-<!--- <cfabort> --->
 </cfif>
 
 
@@ -123,91 +122,31 @@ this should be a COAPI call and *not* a straight SQL shortcut
 	<!--- children --->
 	<cfif attributes.get eq "children">
 	
-<!--- 	<!--- if objectid is 0 we are looking for root nodes --->
-	<cfif attributes.objectId neq '0'>
-		<!--- get object set lObjectIds to aNavChild, ordered by aNavChild --->
-		<cfa_contentobjectGet objectId="#attributes.objectId#" r_stObject="stObj">
-	
-		<cfif not isStruct(stObj) OR structIsEmpty(stObj)>
-			<!---cfthrow errorcode="navajo" detail="nj2TreeGetRelations:: Unable to find object, objectId='#attributes.objectId#'."--->
-		</cfif>
-		
-		<cfif structKeyExists(stObj,"aNavChild")>
-			<cfif len(attributes.lStatus)>
-			
-			<cfquery name="qStatusedChildren" datasource="#request.cfa.datasource.dsn#">
-				SELECT p.objectId
-					FROM properties p
-					WHERE p.objectId IN ('#ListChangeDelims(ArrayToList(stObj.aNavChild),"','",",")#')
-						AND p.propertyName = 'STATUS'
-						AND p.chardata IN ('#ListChangeDelims(attributes.lStatus,"','",",")#')
-			</cfquery>
-				
-				<cfset lObjectIds=listAppend(lObjectIds,ValueList(qStatusedChildren.objectId))>
-			
-			<cfelse>
-				<cfset lObjectIds=listAppend(lObjectIds,ArrayToList( stObj.aNavChild ))>
-			</cfif>
-		</cfif>
-		
-		<cfif attributes.bIncludeObjects AND structKeyExists(stObj,"aObjectIds") AND arraylen(stObj.aObjectIds)>
-			<cfif len(attributes.lStatus)>
-				
-				<cfquery name="qStatusedChildren" datasource="#request.cfa.datasource.dsn#">
-					SELECT p.objectId
-						FROM properties p
-						WHERE p.objectId IN ('#ListChangeDelims(ArrayToList(stObj.aObjectIds),"','",",")#')
-							AND p.propertyName = 'STATUS'
-							AND p.chardata IN ('#ListChangeDelims(attributes.lStatus,"','",",")#')
-				</cfquery>
-
-				<cfset lObjectIds=listAppend(lObjectIds,ValueList(qStatusedChildren.objectId))>
-			<cfelse>
-				<cfset lObjectIds=listAppend(lObjectIds,ArrayToList( stObj.aObjectIds ))>
-			</cfif>
-		</cfif>
-		
-	<cfelse>
-		<!--- get nodes that aren't pointed to by anything (root nodes) --->
-		<cfquery name="qGetParentLess" datasource="#request.cfa.datasource.dsn#">
-			SELECT *
-				FROM objects o
-				WHERE o.typeId = '#application.daemon_navigationTypeId#' AND
-				        (SELECT COUNT(*)
-				      FROM properties p
-				      WHERE p.propertyname LIKE 'ANAVCHILD%' AND 
-				           p.chardata = o.objectId) = 0
-		</cfquery>
-		
-		<cfset lObjectIds=ValueList( qGetParentLess.objectId )>
-	</cfif> --->
+	<!--- do nothing	 --->
 	
 	<cfelseif attributes.get eq "ancestors">
-<!--- 	
+	<!--- 	
 	TODO
 	if its a dmNavigation object we can go straight to the tree table
 	Otherwise we have to look up the parent somehow.
 	The parent could be either a dmNavigation or dmHTML object
- --->	
-	<cfinvoke component="#application.packagepath#.farcry.tree" method="getAncestors" objectid="#attributes.objectid#" returnvariable="qAncestors" typename="dmNavigation">
-	<!--- <cfdump var="#qAncestors#" label="qAncestors"> --->
+	 --->	
+ 	<cfscript>
+		qAncestors = application.factory.oTree.getAncestors(objectid=attributes.objectid,typename=attributes.nodetype);
+	</cfscript>
+	
 	<cfset lobjectIDs="#ValueList(qAncestors.objectid)#">
 
 
 	<cfelseif attributes.get eq "descendants">
 	<!--- descendants --->
 	<!--- loop while get children, non ordered list/stobjects --->
-	
-		<cfinvoke  component="#application.packagepath#.farcry.tree" method="getDescendants" returnvariable="getDescendantsRet">
-		<cfinvokeargument name="dsn" value="#application.dsn#"/>
-		<cfinvokeargument name="objectid" value="#attributes.objectid#"/>
-	</cfinvoke>
-	<cfset lObjectIds = valueList(getDescendantsRet.objectID)>
+		<cfscript>
+			getDescendantsRet = application.factory.oTree.getDescendants(objectid=attributes.objectID);
+		</cfscript>
+		<cfset lObjectIds = valueList(getDescendantsRet.objectID)>
 	<cfelseif attributes.get eq "parents">
-	<cfif attributes.typename is "dmNavigation">
-		<!--- TODO - invocation of getParentID is barfing.  Ask geoff if ok to mod stored proc. 
-		Do cfquery  for time being --->
-<!--- 		<cfinvoke component="#application.packagepath#.farcry.tree" method="getParentID" objectid="#attributes.objectid#" returnvariable="qGetParent"> --->
+	<cfif attributes.typename is attributes.nodetype>
 		<cfquery name="qGetParent" datasource="#application.dsn#">
 			select  parentid AS objectID from #application.dbowner#nested_tree_objects 
 		    where objectid  = '#attributes.objectid#'
@@ -216,7 +155,7 @@ this should be a COAPI call and *not* a straight SQL shortcut
 		<!--- TODO - MAJOR hack here.  --->
 		<!--- This is the list of #typename#_aObjectIDs tables that we look
 		 for the parent. This list is in ascending search order --->
-		<cfset searchList = "dmNavigation,dmHTML">
+		<cfset searchList = "#attributes.nodetype#,dmHTML">
 		<cfset loop = true>
 		<cfset listIndex = 1>
 		<cfloop condition="loop">

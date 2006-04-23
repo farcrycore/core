@@ -23,12 +23,6 @@ iState = oAuthorisation.checkPermission(permissionName="ModifyPermissions",refer
 
 <body onLoad="window.focus();">
 
-<!-- <style>
-	body { font-size:11px; margin:20 20 20 20;}
-	table, input, select, textarea { font-size:11px; }
-	body { background-color: ##F0F8FF; }
-	a { color: ##000044; text-decoration : none; }
-</style> -->
 </cfoutput>
 
 <cfif not isDefined("form.submit")>
@@ -82,10 +76,12 @@ lPolicyGroupIds = oAuthentication.arrayKeyToList(array=aPolicyGroups,key='policy
 </cfscript>
 
 <script>
+	var ns6=document.getElementById&&!document.all; //test for ns6
+	var ie5=document.getElementById && document.all;//test for ie5
 
-	function t(nm)
+	function t(nm,e)
 	{   
-		var el=event.srcElement;
+		var el=ie5?e.srcElement : e.target;
 		switch( el.value )
 		{
 			case "Yes": el.value="No"; break;
@@ -100,7 +96,7 @@ lPolicyGroupIds = oAuthentication.arrayKeyToList(array=aPolicyGroups,key='policy
 			</cfif>
 		}
 		
-		document.all[nm].value=el.value;
+		document.getElementById(nm).value=el.value;
 	}
 
 	function ct( val )
@@ -121,8 +117,9 @@ lPolicyGroupIds = oAuthentication.arrayKeyToList(array=aPolicyGroups,key='policy
 	
 	function selectPolicyGroup( policyGroup )
 	{
+
 		el = document.getElementById(selectedDiv);
-		el.style.display="none";
+		el.style.display='none';
 		
 		el = document.getElementById(policyGroup);
 		el.style.display="inline";
@@ -166,9 +163,8 @@ lPolicyGroupIds = oAuthentication.arrayKeyToList(array=aPolicyGroups,key='policy
 	
 	<cfloop index="PolicyGroupId" list="#lPolicyGroupIds#">
 	
-	<div id="#PolicyGroupId#" style="display: <cfif isFirst>inline<cfelse>none</cfif>;">
-	<p>
-
+	<div  id="#PolicyGroupId#" style="display: <cfif isFirst>inline<cfelse>none</cfif>;">
+	
 	<table cellpadding="5" cellspacing="0" border="1" style="margin-left:30px;">
 	<tr class="dataheader">
 		<td>Permission</td>
@@ -191,8 +187,8 @@ lPolicyGroupIds = oAuthentication.arrayKeyToList(array=aPolicyGroups,key='policy
 		
 	<tr class="#IIF(i MOD 2, de("dataOddRow"), de("dataEvenRow"))#">
 		<Td>#stPermissions[PermissionId]#</td>
-		<td align="center"><input type="Button" value="#ct(stObjectPermissions[PolicyGroupId][PermissionId].A)#" onclick="t('_#PolicyGroupId#|#PermissionId#');"></td>
-		<input type="hidden" name="_#PolicyGroupId#|#PermissionId#" value="#ct(stObjectPermissions[PolicyGroupId][PermissionId].A)#">
+		<td align="center"><input type="Button" value="#ct(stObjectPermissions[PolicyGroupId][PermissionId].A)#" onclick="t('_#PolicyGroupId#|#PermissionId#',event);"></td>
+		<input type="hidden" id="_#PolicyGroupId#|#PermissionId#" name="_#PolicyGroupId#|#PermissionId#" value="#ct(stObjectPermissions[PolicyGroupId][PermissionId].A)#">
 		<cfif isDefined("url.objectId")>
 			<td>#ct(stObjectPermissions[PolicyGroupId][PermissionId].I)#</td>
 		</cfif>
@@ -268,15 +264,13 @@ lPolicyGroupIds = oAuthentication.arrayKeyToList(array=aPolicyGroups,key='policy
 				<nj:updateTree objectId="#url.objectId#">
 
 		<cfelse>
-			<!--- <script>
-			if( parent && parent.treeFrame ) parent.treeFrame.location.reload();
-				else window.opener.location.reload();
-			</script> --->
+			<script>
+			if( parent && parent.frames['treeFrame'] ) parent.frames['treeFrame'].location.reload();
+			
+			</script>
 		</cfif>
 		
-		<!--- <script>
-		if( !(parent && parent.treeFrame) ) window.close();
-		</script> --->
+
 	</cfoutput>
 
 </cfif>

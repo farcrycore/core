@@ -1,8 +1,32 @@
+<!--- 
+|| LEGAL ||
+$Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
+$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
+
+|| VERSION CONTROL ||
+$Header: /cvs/farcry/farcry_core/packages/farcry/_stats/getUserBrowser.cfm,v 1.4 2003/09/10 12:21:48 brendan Exp $
+$Author: brendan $
+$Date: 2003/09/10 12:21:48 $
+$Name: b201 $
+$Revision: 1.4 $
+
+|| DESCRIPTION || 
+$Description: get users browser $
+$TODO: $
+
+|| DEVELOPER ||
+$Developer: Brendan Sisson (brendan@daemon.com.au) $
+
+|| ATTRIBUTES ||
+$in: $
+$out:$
+--->
+
 <cfscript>
 	browserName="Unknown: ";
-	browserVersion=user_agent;
 	if (Len(user_agent))
 	{
+		browserVersion=user_agent;
 		if (FindNoCase("MSIE",user_agent) AND NOT findNoCase("opera",user_agent) )
 		{ 
 			browserName="MSIE";
@@ -55,6 +79,8 @@
 				browserName="ColdFusion";
 			}
 		}
+	} else {
+		browserVersion = "unkown";
 	}	
 	stBroswer = structNew();
 	stBrowser.name = trim(browsername);

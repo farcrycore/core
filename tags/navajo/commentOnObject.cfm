@@ -73,11 +73,16 @@
 				buildLog =  "#chr(13)##chr(10)##session.dmSec.authentication.canonicalName#" & "(#dateformat(now(),'dd/mm/yyyy')# #timeformat(now(), 'HH:mm:ss')#):#chr(13)##chr(10)# #FORM.commentLog#";
 				stObj.commentLog = buildLog & "#chr(10)##chr(13)#" & stObj.commentLog;
 				}
+			//is this a custom type?
+			if(application.types[stObj.typename].bCustomType)
+				packagePath = application.customPackagePath;
+			else
+				packagePath = application.packagePath;
+			// update the OBJECT	
+			oType = createobject("component","#packagepath#.types.#stObj.typename#");	
+			oType.setData(stProperties=stObj,auditNote="Comment added");	
 		</cfscript>
-		<q4:contentobjectdata objectid="#stObj.objectID#"
-				typename="#application.packagepath#.types.#stObj.typename#"
-				 stProperties="#stObj#">
-		
+				
 		<!--- hack to see if pop up window or from overview page --->
 		<cfif isdefined("form.windowClose")>
 			<cfoutput><script>window.close();</script></cfoutput>

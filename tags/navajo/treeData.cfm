@@ -1,5 +1,6 @@
 <cfimport taglib="/farcry/fourq/tags" prefix="q4">
 <cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
+<cfparam name="attributes.nodetype" default="dmNavigation"> 
 
 
 <cffunction name="checkForDraft" hint="checks to see if object has a draft version">
@@ -38,14 +39,11 @@
 			if (StructKeyExists(stObjs['#key#'], "DATETIMELASTUPDATED"))
 				stObjs['#key#'].ATTR_DATETIMELASTUPDATED = stObjs['#key#'].datetimelastupdated;
 			
-		// add typeid
 			typename = stObjs['#key#'].typename;
-			//SetVariable("stObjs['#key#'].TYPEID", Evaluate("application.#typename#TypeID"));
 		
 		// if navigation item smoke the object up with some aNavChild entries
-		if (typename is "dmNavigation") { 
-			onav = createObject("component", "#application.packagepath#.farcry.tree");
-			qChildren = onav.getChildren(objectid=key);
+		if (typename is attributes.nodetype) { 
+			qChildren = application.factory.oTree.getChildren(objectid=key);
 			stObjs['#key#'].aNavChild = ListToArray(ValueList(qChildren.ObjectID));
 			if (NOT ArrayLen(stObjs['#key#'].aNavChild))
 				stObjs['#key#'].aNavChild = ""; // tree seems to barf on empty array
@@ -87,11 +85,11 @@ Daemon Pty Limited 1995-2001
 http://www.daemon.com.au/
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/navajo/treeData.cfm,v 1.10 2003/04/09 08:04:59 spike Exp $
-$Author: spike $
-$Date: 2003/04/09 08:04:59 $
-$Name: b131 $
-$Revision: 1.10 $
+$Header: /cvs/farcry/farcry_core/tags/navajo/treeData.cfm,v 1.13 2003/10/28 06:48:56 paul Exp $
+$Author: paul $
+$Date: 2003/10/28 06:48:56 $
+$Name: b201 $
+$Revision: 1.13 $
 
 || DESCRIPTION || 
 Retrieves object(s) [and relations] information and returns it in js format.
@@ -109,6 +107,15 @@ Matt Dawson (mad@daemon.com.au)
 
 || HISTORY ||
 $Log: treeData.cfm,v $
+Revision 1.13  2003/10/28 06:48:56  paul
+Some fairly drastic changes to the way the tree is updated after a move. Consider this beta!
+
+Revision 1.12  2003/10/08 09:01:45  paul
+Large number of changes that will allow you to use tree code and functionality with any 'nodetype'. By default dmnavigation tree is rendered.
+
+Revision 1.11  2003/08/08 04:23:36  brendan
+tree calls to reference application.factory object
+
 Revision 1.10  2003/04/09 08:04:59  spike
 Major update to remove need for multiple ColdFusion and webserver mappings.
 
@@ -130,61 +137,6 @@ modified draft object id fields
 Revision 1.4  2002/10/16 07:20:57  brendan
 moved tree code out of fourq and into farcry_core
 
-Revision 1.3  2002/09/30 08:44:19  geoff
-versioning updates for live objs (ph)
-
-Revision 1.17  2002/09/30 07:38:59  geoff
-no message
-
-Revision 1.16  2002/09/12 07:11:11  geoff
-no message
-
-Revision 1.15  2002/09/10 04:53:37  geoff
-no message
-
-Revision 1.14  2002/09/05 00:52:20  geoff
-no message
-
-Revision 1.13  2002/09/04 23:14:39  geoff
-no message
-
-Revision 1.12  2002/09/04 04:52:42  geoff
-no message
-
-Revision 1.11  2002/08/29 03:37:30  geoff
-no message
-
-Revision 1.10  2002/08/26 03:43:13  geoff
-no message
-
-Revision 1.9  2002/08/22 00:09:38  geoff
-no message
-
-Revision 1.8  2002/07/26 04:12:02  geoff
-no message
-
-Revision 1.7  2002/07/18 04:39:44  geoff
-no message
-
-Revision 1.6  2002/07/17 07:46:51  geoff
-no message
-
-Revision 1.5  2002/07/16 07:25:00  geoff
-*** empty log message ***
-
-Revision 1.4  2002/07/09 04:36:37  geoff
-no message
-
-Revision 1.3  2002/06/28 03:49:31  geoff
-f# object munge appears to be working now
-
-Revision 1.2  2002/06/28 03:27:36  geoff
-getting overview tree to happen
-
-Revision 1.1.1.1  2002/06/27 07:30:11  geoff
-Geoff's initial build
-
-
 || END FUSEDOC ||
 --->
 
@@ -205,7 +157,7 @@ Geoff's initial build
 	
 	<!--- get all objects that pertain to get --->
 
-	<nj:treeGetRelations typename="#thisTypename#" objectId="#objectId#" get="#attributes.get#" bInclusive="1" r_stObjects="stObjects">
+	<nj:treeGetRelations typename="#thisTypename#" objectId="#objectId#" get="#attributes.get#" bInclusive="1" r_stObjects="stObjects" nodetype="#attributes.nodetype#">
 	<!--- begin: munge object structure to reflect f# --->
 	<cfset stobjects = mungeobjects(stObjects)>
 	<!--- end: munge object structure to reflect f# --->
@@ -224,13 +176,7 @@ Geoff's initial build
 		}		
 	}
 	</cfscript>
-	
-<!--- 	
-	TODO
-	need to implement bActive 
-	lookup objectids without typename... otherwise tree will just be navids (typename="#application.packagepath#.types.dmNavigation")
---->
-	
+		
 	
 	<q4:contentobjectGetMultiple bActive="0" lObjectIds="#lObjectIds#" r_stObjects="stNewObjects">
 
@@ -270,7 +216,7 @@ Geoff's initial build
 <!--- This cfloop block basically blocks all children of dmHTML objects, and filters the tree by the
 lAllowTypes list
  --->
-<cfset lAllowTypes = "dmHTML,dmNavigation,dmImage,dmInclude">
+<cfset lAllowTypes = "dmHTML,#attributes.nodetype#,dmInclude">
 <cfloop collection="#stAllObjects#" item="objID">
 	<cfoutput>
 	<cfif structKeyExists(stAllObjects[objId], "aObjectIds" )  AND stAllObjects[objID].typename IS "dmHTML">
@@ -279,7 +225,8 @@ lAllowTypes list
 			<cfloop from="#arrayLen(stAllObjects[objId].aObjectIDs)#" to="1" index="i" step="-1">
 				<cfinvoke component="farcry.fourq.fourq" method="findType" returnvariable="rTypeName" objectID="#stAllObjects[objID].aObjectIds[i]#">
 				
-				<cfif NOT listContainsNoCase(lAllowTypes,rTypeName) AND stAllObjects[objID].typename IS "dmHTML">			 <cfset tmp = arrayDeleteAt(stAllObjects[objID].aObjectIds,i)> 
+				<cfif NOT listContainsNoCase(lAllowTypes,rTypeName) AND stAllObjects[objID].typename IS "dmHTML">
+					 <cfset tmp = arrayDeleteAt(stAllObjects[objID].aObjectIds,i)> 
 				</cfif>
 			</cfloop>
 				
@@ -312,15 +259,13 @@ lAllowTypes list
 TODO
 work out suitable solution for reserved names like "typename" 
 --->
-	<cfif stAllObjects[objId].typename IS "dmNavigation">
+	<cfif stAllObjects[objId].typename IS attributes.nodetype>
 	
 	<!--- this may be slow, might have to pull from cache myself --->
 	<cfscript>
-		oAuthorisation = request.dmSec.oAuthorisation;
-		stObjectPermissions = oAuthorisation.collateObjectPermissions(objectID=objID);
-	</cfscript>
+	oAuthorisation = request.dmSec.oAuthorisation;
+	stObjectPermissions = oAuthorisation.collateObjectPermissions(objectID=objID);
 	
-	<cfscript>
 	mergePerms=StructNew();
 	
 	for( i=1; i lte ListLen( session.dmSec.authentication.lPolicyGroupIds); i=i+1 )

@@ -10,11 +10,11 @@ Daemon Pty Limited 1995-2001
 http://www.daemon.com.au/
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/navajo/displayPrinterFriendly.cfm,v 1.4 2003/04/09 08:04:59 spike Exp $
-$Author: spike $
-$Date: 2003/04/09 08:04:59 $
-$Name: b131 $
-$Revision: 1.4 $
+$Header: /cvs/farcry/farcry_core/tags/navajo/displayPrinterFriendly.cfm,v 1.5 2003/08/12 02:05:49 brendan Exp $
+$Author: brendan $
+$Date: 2003/08/12 02:05:49 $
+$Name: b201 $
+$Revision: 1.5 $
 
 || DESCRIPTION || 
 
@@ -29,6 +29,9 @@ Brendan Sisson (brendan@daemon.com.au)
 
 || HISTORY ||
 $Log: displayPrinterFriendly.cfm,v $
+Revision 1.5  2003/08/12 02:05:49  brendan
+cgi.http_host variable used to show current page
+
 Revision 1.4  2003/04/09 08:04:59  spike
 Major update to remove need for multiple ColdFusion and webserver mappings.
 
@@ -230,7 +233,7 @@ the latter is the policy group for anonymous...
 	<div class="contentbody" style="width:600px">
 		#stObj.Body#
 		<p></p>
-		<b>http://#cgi.remote_host##application.url.conjurer#?objectid=#url.objectid#</b>
+		<b>http://#cgi.http_host##application.url.conjurer#?objectid=#url.objectid#</b>
 	</div>
 	</cfoutput>
 	

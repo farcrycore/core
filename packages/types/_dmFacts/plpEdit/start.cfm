@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmFacts/plpEdit/start.cfm,v 1.3 2003/07/10 02:07:06 brendan Exp $
-$Author: brendan $
-$Date: 2003/07/10 02:07:06 $
-$Name: b131 $
-$Revision: 1.3 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmFacts/plpEdit/start.cfm,v 1.5 2003/09/18 07:47:56 paul Exp $
+$Author: paul $
+$Date: 2003/09/18 07:47:56 $
+$Name: b201 $
+$Revision: 1.5 $
 
 || DESCRIPTION || 
 First step of dmFact plp. Adds title, link, body and uploads image if needed.
@@ -25,7 +25,7 @@ Brendan Sisson (brendan@daemon.com.au)
 <cfset thisstep.name = stplp.currentstep>
 
 <!--- upload image --->
-<cfif isdefined("form.submit")>
+<cfif isDefined("FORM.submit") or isdefined("form.save") or (isdefined("form.quicknav") and form.quicknav neq "")>
 	<cfif trim(len(form.image)) NEQ 0 AND form.image NEQ form.imageFile_old>
 		
 		<!--- upload new file --->
@@ -44,6 +44,8 @@ Brendan Sisson (brendan@daemon.com.au)
 			<cfoutput><strong>ERROR:</strong> #stReturn.message#<p>
 			Image types that are accepted: #application.config.image.imagetype# <p></p></cfoutput><cfabort>
 		</cfif>
+	<cfelse>
+		<cfset form.image = form.imageFile_old>
 	</cfif>
 </cfif>
 
@@ -57,7 +59,7 @@ Brendan Sisson (brendan@daemon.com.au)
 	<div class="FormSubTitle">#output.label#</div>
 	<div class="FormTitle">General Info</div>
 	<div class="FormTable">
-	<table class="BorderTable" width="400" align="center">
+	<table class="BorderTable" width="450" align="center">
 	<!--- fact title --->
 	<tr>
 		<td nowrap class="FormLabel">Title: </span></td>
@@ -82,16 +84,17 @@ Brendan Sisson (brendan@daemon.com.au)
 			<input type="hidden" name="imageFile_old" value="#output.image#">
 			<!--- if image exists enable preview --->
 			<cfif NOT len(trim(output.image)) EQ 0>
-				<br><span class="FormLabel">[ file exists ] <a href="#application.defaultImagePath#/#output.image#" target="_blank">Preview</a></span>
+				<br><span class="FormLabel">[ file exists ] <a href="#application.url.webroot#/images/#output.image#" target="_blank">Preview</a></span>
 			</cfif>
 		</td>
 	</tr>
 	<tr>
-		<td colspan="2">&nbsp;</td>
+		<td colspan="2" valign="top">&nbsp;</td>
 	</tr>
 	<!--- fact body --->
 	<tr>
-		<td colspan="2"><span class="FormLabel">Body</span><br>
+		<td nowrap class="FormLabel">Body: </span></td>
+		<td>
 			<textarea name="body" class="formtextbox" rows="10">#output.body#</textarea>
 		</td>
 	</tr>

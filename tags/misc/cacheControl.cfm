@@ -7,11 +7,11 @@ Daemon Pty Limited 1995-2001
 http://www.daemon.com.au/
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/misc/cacheControl.cfm,v 1.2 2002/09/27 07:28:46 petera Exp $
-$Author: petera $
-$Date: 2002/09/27 07:28:46 $
-$Name: b131 $
-$Revision: 1.2 $
+$Header: /cvs/farcry/farcry_core/tags/misc/cacheControl.cfm,v 1.3 2003/09/25 23:28:09 brendan Exp $
+$Author: brendan $
+$Date: 2003/09/25 23:28:09 $
+$Name: b201 $
+$Revision: 1.3 $
 
 || DESCRIPTION || 
 Sets html cache header parameters for web pages.
@@ -27,24 +27,6 @@ Matt Dawson (mad@daemon.com.au)
 -> [attributes.minutes]: How many minutes to cache for
 -> [attributes.seconds]: How many seconds to cache for
 -> [url.CacheControlDebug]: Shows how long page is cached for if anything other than 0
-
-|| HISTORY ||
-$Log: cacheControl.cfm,v $
-Revision 1.2  2002/09/27 07:28:46  petera
-no message
-
-Revision 1.1  2002/08/22 07:24:08  geoff
-no message
-
-Revision 1.3  2002/03/17 04:38:50  geoff
-HTML output was hidden, corrected with appropriate CFOIUTPUT tags
-
-Revision 1.2  2001/09/14 11:48:33  aaron
-fixed enablecfoutput only bug
-
-Revision 1.1  2001/07/20 16:28:12  matson
-no message
-
 
 || END FUSEDOC ||
 --->

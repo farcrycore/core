@@ -1,1 +1,0 @@
-<cfinclude template="/farcry/farcry_core/ui/admin/statsMostPopular.cfm">

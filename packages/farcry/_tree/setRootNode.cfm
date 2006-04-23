@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_tree/setRootNode.cfm,v 1.8 2003/04/11 01:29:27 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_tree/setRootNode.cfm,v 1.10 2003/09/11 08:48:37 brendan Exp $
 $Author: brendan $
-$Date: 2003/04/11 01:29:27 $
-$Name: b131 $
-$Revision: 1.8 $
+$Date: 2003/09/11 08:48:37 $
+$Name: b201 $
+$Revision: 1.10 $
 
 || DESCRIPTION || 
 $Description: setRootNode Function $
@@ -33,13 +33,13 @@ $out:$
 <cfscript>
 	stTmp.bSucess = 'true';
 	stTmp.message = "Root node inserted.";
-	if(NOT rootNodeExists(typename=stArgs.typename, dsn=stArgs.dsn))
+	if(NOT rootNodeExists(typename=arguments.typename, dsn=arguments.dsn))
 	{	
 		sql = "
-		  insert nested_tree_objects
+		  insert into nested_tree_objects
 		  (ObjectID, ParentID, ObjectName, TypeName, Nleft, Nright, Nlevel)
-		  values  ('#stArgs.objectid#',null, '#stArgs.objectName#','#stArgs.typeName#',1, 2, 0)" ; 
-		query(sql=sql, dsn=stArgs.dsn);
+		  values  ('#arguments.objectid#',null, '#arguments.objectName#','#arguments.typeName#',1, 2, 0)" ; 
+		query(sql=sql, dsn=arguments.dsn);
 	}
 	else
 	{

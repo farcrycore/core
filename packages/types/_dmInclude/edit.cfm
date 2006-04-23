@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmInclude/edit.cfm,v 1.11 2003/07/15 07:04:15 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmInclude/edit.cfm,v 1.12 2003/08/01 01:57:07 brendan Exp $
 $Author: brendan $
-$Date: 2003/07/15 07:04:15 $
-$Name: b131 $
-$Revision: 1.11 $
+$Date: 2003/08/01 01:57:07 $
+$Name: b201 $
+$Revision: 1.12 $
 
 || DESCRIPTION || 
 $Description: edit handler$
@@ -30,6 +30,7 @@ $out:$
 	
 	<cfscript>
 		stProperties = structNew();
+		stProperties.objectid = stObj.objectid;
 		stProperties.title = form.title;
 		stProperties.label = form.title;
 		stProperties.teaser = form.teaser;
@@ -41,14 +42,12 @@ $out:$
 		//unlock object
 		stProperties.locked = 0;
 		stProperties.lockedBy = "";
-	</cfscript>
-
-	<q4:contentobjectdata
-	 typename="#application.packagepath#.types.dmInclude"
-	 stProperties="#stProperties#"
-	 objectid="#stObj.ObjectID#"
-	>
 	
+		// update the OBJECT	
+		oType = createobject("component","#application.packagepath#.types.dmInclude");
+		oType.setData(stProperties=stProperties);
+	</cfscript>
+		
 	<!--- get parent to update tree --->	
 	<nj:treeGetRelations 
 			typename="#stObj.typename#"

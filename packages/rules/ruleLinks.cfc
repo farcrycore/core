@@ -86,7 +86,7 @@
 		<display:OpenLayer width="400" title="Restrict By Categories" titleFont="Verdana" titleSize="7.5" isClosed="#isClosed#" border="no">
 		<table align="center" border="0">
         <tr>
-            <td><b>Does the content need to match ALL the selected Keywords?</b> <input type="checkbox" name="bMatchAllKeywords"></td>
+            <td><b>Does the content need to match ALL the selected Keywords?</b> <input type="checkbox" name="bMatchAllKeywords" value="1" <cfif stObj.bMatchAllKeywords>checked</cfif>></td>
         </tr>
         <tr>
             <td>&nbsp;</td>
@@ -129,108 +129,140 @@
 		
 		<cfif application.dbtype eq "mysql">
 			<!--- create temp table for status --->
-			<cfquery datasource="#stArgs.dsn#" name="temp">
+			<cfquery datasource="#arguments.dsn#" name="temp">
 				DROP TABLE IF EXISTS tblTemp1
 			</cfquery>
-			<cfquery datasource="#stArgs.dsn#" name="temp2">
+			<cfquery datasource="#arguments.dsn#" name="temp2">
 				create temporary table `tblTemp1`
 					(
 					`Status`  VARCHAR(50) NOT NULL
 					)
 			</cfquery>
 			<cfloop list="#request.mode.lValidStatus#" index="i">
-				<cfquery datasource="#stArgs.dsn#" name="temp3">
+				<cfquery datasource="#arguments.dsn#" name="temp3">
 					INSERT INTO tblTemp1 (Status) 
 					VALUES ('#replace(i,"'","","all")#')
 				</cfquery>
 			</cfloop>
 		</cfif>
 		
+		<!--- If Archive: Get Maximum Rows in New Table --->
+		<cfif stObj.bArchive>	
+			<cfquery datasource="#arguments.dsn#" name="qGetCount">
+			SELECT objectID
+			FROM #application.dbowner#dmLink
+			</cfquery>
+			<cfset maximumRows = qGetCount.recordcount>
+		<cfelse>
+			<cfset maximumRows = stObj.numItems>
+		</cfif>
+		
 		<!--- check if filtering by categories --->
 		<cfif NOT trim(len(stObj.metadata)) EQ 0>
 			<!--- show by categories --->
 			<cfswitch expression="#application.dbtype#">
-				<cfcase value="ora">
-					<cfquery datasource="#arguments.dsn#" name="qGetEvents" maxrows="#stObj.numItems#">
-						SELECT DISTINCT type.objectID, type.label
-						FROM refObjects refObj 
-						JOIN refCategories refCat ON refObj.objectID = refCat.objectID
-						JOIN dmLink type ON refObj.objectID = type.objectID  
-						WHERE refObj.typename = 'dmLink' 
-							AND refCat.categoryID IN ('#ListChangeDelims(stObj.metadata,"','",",")#')
-							AND type.status IN ('#ListChangeDelims(request.mode.lValidStatus,"','",",")#')
-						ORDER BY type.label ASC
-					</cfquery>
-				</cfcase>
-				
 				<cfcase value="mysql">
-					<cfquery datasource="#arguments.dsn#" name="qGetEvents" maxrows="#stObj.numItems#">
-						SELECT DISTINCT type.objectID, type.label
-						FROM tblTemp1, refObjects refObj 
-						JOIN refCategories refCat ON refObj.objectID = refCat.objectID
-						JOIN dmLink type ON refObj.objectID = type.objectID  
-						WHERE refObj.typename = 'dmLink' 
-							AND refCat.categoryID IN ('#ListChangeDelims(stObj.metadata,"','",",")#')
-							AND type.status = tblTemp1.Status
-						ORDER BY type.label ASC
-					</cfquery>
+					<cfif stObj.bMatchAllKeywords>
+						<!--- must match all categories --->
+						<cfquery datasource="#arguments.dsn#" name="qGetLinks" maxrows="#maximumRows#">
+							SELECT DISTINCT type.objectID, type.label
+							    FROM tblTemp1, dmLink type, refCategories refCat1
+							<!--- if more than one category make join for each --->
+							<cfif listLen(stObj.metadata) gt 1>
+								<cfloop from="2" to="#listlen(stObj.metadata)#" index="i">
+								    , refCategories refCat#i#
+								</cfloop>
+							</cfif>
+							WHERE 1=1
+								<!--- loop over each category and make sure item has all categories --->
+								<cfloop from="1" to="#listlen(stObj.metadata)#" index="i">
+									AND refCat#i#.categoryID = '#listGetAt(stObj.metadata,i)#'
+									AND refCat#i#.objectId = type.objectId
+								</cfloop>
+								AND type.status = tblTemp1.Status
+							ORDER BY type.label ASC
+						</cfquery>
+					<cfelse>
+						<!--- doesn't need to match all categories --->
+						<cfquery datasource="#arguments.dsn#" name="qGetLinks" maxrows="#maximumRows#">
+							SELECT DISTINCT type.objectID, type.label
+							FROM tblTemp1, refCategories refCat, dmLink type
+							WHERE refCat.objectID = type.objectID
+								AND refCat.categoryID IN ('#ListChangeDelims(stObj.metadata,"','",",")#')
+								AND type.status = tblTemp1.Status
+							ORDER BY type.label ASC
+						</cfquery>
+					</cfif>
 				</cfcase>
-				
+
 				<cfdefaultcase>
-					<cfquery datasource="#arguments.dsn#" name="qGetEvents" maxrows="#stObj.numItems#">
-						SELECT DISTINCT type.objectID, type.label
-						FROM refObjects refObj 
-						JOIN refCategories refCat ON refObj.objectID = refCat.objectID
-						JOIN dmLink type ON refObj.objectID = type.objectID  
-						WHERE refObj.typename = 'dmLink' 
-							AND refCat.categoryID IN ('#ListChangeDelims(stObj.metadata,"','",",")#')
-							AND type.status IN ('#ListChangeDelims(request.mode.lValidStatus,"','",",")#')
-						ORDER BY type.label ASC
-					</cfquery>
+					<cfif stObj.bMatchAllKeywords>
+						<!--- must match all categories --->
+						<cfquery datasource="#arguments.dsn#" name="qGetLinks" maxrows="#maximumRows#">
+							SELECT DISTINCT type.objectID, type.label
+							FROM refCategories refcat1
+							<!--- if more than one category make join for each --->
+							<cfif listLen(stObj.metadata) gt 1>
+								<cfloop from="2" to="#listlen(stObj.metadata)#" index="i">
+									inner join refcategories refcat#i# on refcat#i-1#.objectid = refcat#i#.objectid
+								</cfloop>
+							</cfif>
+							JOIN dmLink type ON refcat1.objectID = type.objectID
+							WHERE 1=1
+								<!--- loop over each category and make sure item has all categories --->
+								<cfloop from="1" to="#listlen(stObj.metadata)#" index="i">
+									AND refCat#i#.categoryID = '#listGetAt(stObj.metadata,i)#'
+								</cfloop>
+								AND type.status IN ('#ListChangeDelims(request.mode.lValidStatus,"','",",")#')
+							ORDER BY type.label ASC
+						</cfquery>
+					<cfelse>
+						<!--- doesn't need to match all categories --->
+						<cfquery datasource="#arguments.dsn#" name="qGetLinks" maxrows="#maximumRows#">
+							SELECT DISTINCT type.objectID, type.label
+							FROM refObjects refObj
+							JOIN refCategories refCat ON refObj.objectID = refCat.objectID
+							JOIN dmLink type ON refObj.objectID = type.objectID
+							WHERE refObj.typename = 'dmLink'
+								AND refCat.categoryID IN ('#ListChangeDelims(stObj.metadata,"','",",")#')
+								AND type.status IN ('#ListChangeDelims(request.mode.lValidStatus,"','",",")#')
+							ORDER BY type.label ASC
+						</cfquery>
+					</cfif>
 				</cfdefaultcase>
 			</cfswitch>
 		<cfelse>
 			<!--- don't filter on categories --->
 			<cfswitch expression="#application.dbtype#">
-				<cfcase value="ora">
-					<cfquery datasource="#arguments.dsn#" name="qGetEvents" maxrows="#stObj.numItems#">
-						SELECT *
-						FROM #application.dbowner#dmLink 
-						WHERE status IN ('#ListChangeDelims(request.mode.lValidStatus,"','",",")#')
-						ORDER BY label ASC
-					</cfquery>
-				</cfcase>
-				
 				<cfcase value="mysql">
-					<cfquery datasource="#arguments.dsn#" name="qGetEvents" maxrows="#stObj.numItems#">
+					<cfquery datasource="#arguments.dsn#" name="qGetLinks" maxrows="#maximumRows#">
 						SELECT *
-						FROM #application.dbowner#dmLink events, tblTemp1
-						WHERE events.status = tblTemp1.Status
-						ORDER BY label ASC
+						FROM #application.dbowner#dmLink link, tblTemp1
+						WHERE link.status = tblTemp1.Status
+						ORDER BY label
 					</cfquery>
 				</cfcase>
-				
+
 				<cfdefaultcase>
-					<cfquery datasource="#arguments.dsn#" name="qGetEvents" maxrows="#stObj.numItems#">
+					<cfquery datasource="#arguments.dsn#" name="qGetLinks" maxrows="#maximumRows#">
 						SELECT *
-						FROM #application.dbowner#dmLink 
+						FROM #application.dbowner#dmLink
 						WHERE status IN ('#ListChangeDelims(request.mode.lValidStatus,"','",",")#')
-						ORDER BY label ASC
+						ORDER BY label
 					</cfquery>
 				</cfdefaultcase>
-			</cfswitch>	
-	
-		</cfif> 
+			</cfswitch>
+		</cfif>
 	
 		<cfif NOT stObj.bArchive>
 			<cfif len(trim(stObj.intro)) AND qGetEvents.recordCount>
 				<cfset tmp = arrayAppend(request.aInvocations,stObj.intro)>
 			</cfif>
 			<!--- loop over display methods --->
-			<cfoutput query="qGetEvents">
+			<cfoutput query="qGetLinks">
 				<cfscript>
 				 	stInvoke = structNew();
-					stInvoke.objectID = qGetEvents.objectID;
+					stInvoke.objectID = qGetLinks.objectID;
 					stInvoke.typename = application.packagepath & ".types.dmLink";
 					stInvoke.method = stObj.displayMethod;
 					arrayAppend(request.aInvocations,stInvoke);
@@ -241,7 +273,7 @@
 			<cfparam name="url.pgno" default="1">
 
 			<!--- Get Number of Pages --->
-			<cfset iNumberOfPages = Ceiling(qGetEvents.recordcount / stobj.numitems)>
+			<cfset iNumberOfPages = Ceiling(qGetLinks.recordcount / stobj.numitems)>
 			<!--- Check URL.pageno --->
 			<cfif url.pgno GT iNumberOfPages OR url.pgno GT stobj.numpages>
 				<cfset url.pgno = 1>
@@ -252,7 +284,7 @@
 			</cfif>
 			<!--- Get Query Start and End Numbers --->
 			<cfset startrow = (url.pgno - 1) * stobj.numitems + 1>
-			<cfset endrow = min(startrow + stobj.numitems - 1, qGetEvents.recordcount)>
+			<cfset endrow = min(startrow + stobj.numitems - 1, qGetLinks.recordcount)>
 
 			<!--- Output Page Numbers --->
 			<cfif iNumberOfPages GT 1>
@@ -262,7 +294,7 @@
 					<a class="newsArchive" href="#Application.URL.conjurer#?objectID=#url.objectID#&pgno=#(url.pgno-1)#">Previous Page</a>&nbsp;&nbsp;
 				</cfif>
 				<cfloop index="i" from="1" to="#iNumberOfPages#">
-				<cfif i NEQ url.pgno></cfif><a class="newsArchive" href="#Application.URL.conjurer#?objectID=#url.objectID#&pgno=#i#">#i#</a><cfif i NEQ url.pgno><a class="newsArchive" href="#Application.URL.conjurer#?objectID=#url.objectID#&pgno=#i#"></a></cfif>
+				<cfif i NEQ url.pgno><a class="newsArchive" href="#Application.URL.conjurer#?objectID=#url.objectID#&pgno=#i#"></cfif>#i#<cfif i NEQ url.pgno></a></cfif>
 				</cfloop>
 				<cfif url.pgno NEQ iNumberOfPages>
 					&nbsp;&nbsp;<a class="newsArchive" href="#Application.URL.conjurer#?objectID=#url.objectID#&pgno=#(url.pgno+1)#">Next Page</a>
@@ -273,10 +305,10 @@
 			</cfif>
 			
 			<!--- Loop Through News and Display --->
-			<cfloop query="qGetEvents" startrow="#startrow#" endrow="#endrow#">
+			<cfloop query="qGetLinks" startrow="#startrow#" endrow="#endrow#">
 				<cfscript>
 				o = createObject("component", "#application.packagepath#.types.dmLink");
-				o.getDisplay(qGetEvents.ObjectID, stObj.displayMethod);	
+				o.getDisplay(qGetLinks.ObjectID, stObj.displayMethod);	
 				</cfscript>
 			</cfloop>
 			
@@ -289,7 +321,7 @@
 					<a class="newsArchive" href="#Application.URL.conjurer#?objectID=#url.objectID#&pgno=#(url.pgno-1)#">Previous Page</a>&nbsp;&nbsp;
 				</cfif>
 				<cfloop index="i" from="1" to="#iNumberOfPages#">
-				<cfif i NEQ url.pgno></cfif><a class="newsArchive" href="#Application.URL.conjurer#?objectID=#url.objectID#&pgno=#i#">#i#</a><cfif i NEQ url.pgno><a class="newsArchive" href="#Application.URL.conjurer#?objectID=#url.objectID#&pgno=#i#"></a></cfif>
+				<cfif i NEQ url.pgno><a class="newsArchive" href="#Application.URL.conjurer#?objectID=#url.objectID#&pgno=#i#"></cfif>#i#<cfif i NEQ url.pgno></a></cfif>
 				</cfloop>
 				<cfif url.pgno NEQ iNumberOfPages>
 					&nbsp;&nbsp;<a class="newsArchive" href="#Application.URL.conjurer#?objectID=#url.objectID#&pgno=#(url.pgno+1)#">Next Page</a>

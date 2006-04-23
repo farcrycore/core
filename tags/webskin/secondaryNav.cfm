@@ -7,11 +7,11 @@ Daemon Pty Limited 1995-2003
 http://www.daemon.com.au
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/webskin/secondaryNav.cfm,v 1.8 2003/03/18 01:53:37 brendan Exp $
+$Header: /cvs/farcry/farcry_core/tags/webskin/secondaryNav.cfm,v 1.9 2003/08/08 04:23:36 brendan Exp $
 $Author: brendan $
-$Date: 2003/03/18 01:53:37 $
-$Name: b131 $
-$Revision: 1.8 $
+$Date: 2003/08/08 04:23:36 $
+$Name: b201 $
+$Revision: 1.9 $
 
 || DESCRIPTION || 
 Builds a query with secondary navigation info
@@ -36,9 +36,7 @@ out:
 <cfparam name="attributes.bDisplay" default="false">
 
 <cfscript>
-// invoke tree component
-o = createObject("component", "#application.packagepath#.farcry.tree");
-qSecondaryNav = o.getSecondaryNav(objectid=attributes.navid);
+	qSecondaryNav = application.factory.oTree.getSecondaryNav(objectid=attributes.navid);
 </cfscript>
 
 <!--- Get status of Nav Items --->

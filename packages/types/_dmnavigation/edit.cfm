@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmnavigation/edit.cfm,v 1.26 2003/07/18 05:44:54 paul Exp $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmnavigation/edit.cfm,v 1.35 2003/10/15 07:04:50 paul Exp $
 $Author: paul $
-$Date: 2003/07/18 05:44:54 $
-$Name: b131 $
-$Revision: 1.26 $
+$Date: 2003/10/15 07:04:50 $
+$Name: b201 $
+$Revision: 1.35 $
 
 || DESCRIPTION || 
 $Description: Navigation node edit method. Displays edit form and updates object on submission. $
@@ -34,9 +34,12 @@ $out:$
 </cfoutput>
 
 <cfif isDefined("FORM.submit")> 
+	<cfoutput><span class="frameMenuBullet">&raquo;</span> Saving Changes...<p></p></cfoutput><cfflush>
+	
 	<!--- perform the update --->
 	<cfscript>
 		stProperties = structNew();
+		stProperties.objectid=stObj.objectId;
 		stProperties.title = form.title;
 		stProperties.label = form.title;
 		stProperties.externalLink = form.externalLink;
@@ -46,16 +49,11 @@ $out:$
 		//unlock object
 		stProperties.locked = 0;
 		stProperties.lockedBy = "";
+		
+		// update the OBJECT	
+		this.setData(stProperties=stProperties);
 	</cfscript>
-	
-	<cfoutput><span class="frameMenuBullet">&raquo;</span> Saving Changes...<p></p></cfoutput><cfflush>
-	
-	<q4:contentobjectdata
-	 typename="#application.packagepath#.types.dmNavigation"
-	 stProperties="#stProperties#"
-	 objectid="#stObj.ObjectID#"
-	>
-	
+		
 	<cfoutput><span class="frameMenuBullet">&raquo;</span> Updating Tree...<p></p></cfoutput><cfflush>
 	<cfquery datasource="#application.dsn#">
 		UPDATE #application.dbowner#nested_tree_objects 
@@ -76,16 +74,21 @@ $out:$
 	<!--- update fu --->
 	<cfif application.config.plugins.fu>
 		<cfoutput><span class="frameMenuBullet">&raquo;</span> Updating Friendly URLs...<p></p></cfoutput><cfflush>
-		<cfobject component="#application.packagepath#.farcry.fu" name="fu">
-		<cfobject component="#application.packagepath#.farcry.tree" name="tree">
-		
+				
 		<!--- get current fu --->
-		<cfset fuUrl = fu.getFU(objectid=stObj.objectid)>
+		<cfset fuUrl = application.factory.oFU.getFU(objectid=stObj.objectid)>
+		
+		<!--- check for suffix --->
+		<cfif listLen(application.config.fusettings.suffix,"/") gt 0 and not listContains(fuUrl,"objectid")>
+			<cfset fuLen = listLen(fuURL,"/") - listLen(application.config.fusettings.suffix,"/")>
+		<cfelse>
+			<cfset fuLen = listLen(fuURL,"/")>
+		</cfif>
 		
 		<!--- check if new object --->
 		<cfif listContains(fuUrl,"objectid")>
-			<!--- get descendants --->
-			<cfset qAncestors = tree.getAncestors(objectid=stobj.objectid,bIncludeSelf=false)>
+			<!--- get ancestors --->
+			<cfset qAncestors = application.factory.oTree.getAncestors(objectid=stobj.objectid,bIncludeSelf=false)>
 			<!--- remove root & home --->
 			<cfquery dbtype="query" name="qCrumb">
 				SELECT objectName FROM qAncestors
@@ -93,39 +96,59 @@ $out:$
 				ORDER BY nLevel
 			</cfquery>				
 			<!--- join titles together --->
-			<cfset breadCrumb = lcase(valueList(qCrumb.objectname))>				
+			<cfset breadCrumb = valueList(qCrumb.objectname)>
 			<!--- change delimiter --->
 			<cfset breadCrumb = listChangeDelims(breadCrumb,"/",",")>				
 			<!--- append new title --->
 			<cfset breadCrumb = listAppend(breadCrumb,form.title,"/")>				
 			
 			<!--- set new fu --->
-			<cfset fuUrl = application.config.fusettings.urlpattern&breadcrumb>
+			<cfset fuUrl = application.config.fusettings.urlpattern&breadcrumb&application.config.fusettings.suffix>
+			<!--- set fu --->
+			<cfset application.factory.oFU.setFU(objectid=stobj.objectid,alias=lcase(fuUrl))>
 		<cfelse>
 			<!--- delete current fu --->
-			<cfset fu.deleteFu(fuUrl)>
+			<cfset application.factory.oFU.deleteFu(fuUrl)>
 			<!--- get descendants --->
-			<cfset qGetDescendants = tree.getDescendants(objectid=stObj.objectID)>
+			<cfset qGetDescendants = application.factory.oTree.getDescendants(objectid=stObj.objectID)>
 			<cfif qGetDescendants.recordCount>
 				<cfloop query="qGetDescendants">
 					<!--- get current fu --->
-					<cfset descfuUrl = fu.getFU(objectid=objectid)>
-					<!--- delete current fu --->
-					<cfset fu.deleteFu(descfuUrl)>
-					<!--- work out new fu --->
-					<cfset newfu = listSetAt(descfuUrl,listLen(fuURL,"/"),form.title,"/")>
-						
-					<!--- set new fu --->
-					<cfset fu.setFu(key=cgi.server_name & descfuUrl,objectid=objectid,alias=newfu)>
+					<cfset descfuUrl = application.factory.oFU.getFU(objectid=qGetDescendants.objectid)>
+					<!--- check if descendants have fus set --->
+					<cfif listContains(descfuUrl,"objectid")>
+						<!--- get ancestors --->
+						<cfset qAncestors = application.factory.oTree.getAncestors(objectid=qGetDescendants.objectid,bIncludeSelf=true)>
+						<!--- remove root & home --->
+						<cfquery dbtype="query" name="qCrumb">
+							SELECT objectName FROM qAncestors
+							WHERE nLevel >= 2
+							ORDER BY nLevel
+						</cfquery>
+						<!--- join titles together --->
+						<cfset breadCrumb = valueList(qCrumb.objectname)>
+						<!--- change delimiter --->
+						<cfset breadCrumb = listChangeDelims(breadCrumb,"/",",")>
+						<!--- set new fu for descendant --->
+						<cfset newFu = application.config.fusettings.urlpattern&breadcrumb&application.config.fusettings.suffix>
+						<!--- set fu for descendant --->
+						<cfset application.factory.oFU.setFU(objectid=qGetDescendants.objectid,alias=lcase(newFu))>
+					<cfelse>
+						<!--- delete current fu for descendant --->
+						<cfset application.factory.oFU.deleteFu(descfuUrl)>
+						<!--- work out new fu for descendant  --->
+						<cfset newfu = listSetAt(descfuUrl,fuLen,form.title,"/")>
+						<!--- set new fu  for descendant --->
+						<cfset application.factory.oFU.setFu(objectid=qGetDescendants.objectid,alias=lcase(newfu))>
+					</cfif>
 				</cfloop>
 			</cfif>
+			
+			<!--- work out new fu for actual object--->
+			<cfset newfu = listSetAt(fuUrl,fuLen,form.title,"/")>
+			<!--- set fu for actual object --->
+			<cfset application.factory.oFU.setFU(objectid=stobj.objectid,alias=lcase(newfu))>
 		</cfif> 
-		
-		<!--- work out new fu --->
-		<cfset newfu = listSetAt(fuUrl,listLen(fuURL,"/"),form.title,"/")>
-		
-		<!--- set fu --->
-		<cfset fu.setFU(objectid=stobj.objectid,alias=newfu)>
 	</cfif>
 	
 	
@@ -174,10 +197,9 @@ $out:$
 								<select name="externalLink">
 									<option value="">-- None --
 								<!--- loop over navid structure in memory -- populated on application init --->
-								<cfset aNavalias = StructSort(application.navid, "textnocase", "ASC")>
+								<cfset aNavalias = listToArray(listSort(structKeyList(application.navid),'textnocase'))>
 								<cfloop from="1" to="#arraylen(aNavalias)#" index="i">
 								<cfset key=aNavalias[i]>
-								<!--- do not show root nav alias as already set above after permission check --->
 								<cfif key neq "root">
 									<option value="#application.navid[key]#" <cfif stObj.externalLink eq application.navid[key]>selected</cfif>>#key#</option>
 								</cfif>

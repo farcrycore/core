@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/farcry/statsLog.cfm,v 1.29 2003/06/10 23:02:17 brendan Exp $
+$Header: /cvs/farcry/farcry_core/tags/farcry/statsLog.cfm,v 1.31 2003/09/08 04:41:16 brendan Exp $
 $Author: brendan $
-$Date: 2003/06/10 23:02:17 $
-$Name: b131 $
-$Revision: 1.29 $
+$Date: 2003/09/08 04:41:16 $
+$Name: b201 $
+$Revision: 1.31 $
 
 || DESCRIPTION || 
 $Description: Logs visit of page including pageId, navid,ip address and user (if applicable) $
@@ -29,17 +29,21 @@ $out:$
 	<cfif listcontainsnocase(cgi.PATH_TRANSLATED,"farcry_core") eq 0>
 		<!--- check if session exists --->
 		<cfif NOT isdefined("session.statsSession")>
-			<!--- create stats object --->
-			<cfobject component="#application.packagepath#.farcry.stats" name="stats">
 			<!--- create unique session id --->
 			<cfset session.statsSession = createUUID()>
 			
 			<!--- get browser --->
-			<cfset stBrowser = stats.getBrowser()>
+			<cfset stBrowser = application.factory.oStats.getBrowser()>
 			<cfset session.userBrowser = "#stBrowser.name# #stBrowser.version#">
 			
 			<!--- get operating system --->
-			<cfset session.UserOS = stats.getUserOS()>
+			<cfset session.UserOS = application.factory.oStats.getUserOS()>
+			
+			<!--- get remote ip --->
+			<cfset session.remoteIP = trim(cgi.REMOTE_ADDR)>
+			
+			<!--- set session start time --->
+			<cfset session.startTime = now()>
 			
 			<!--- work out user's locale --->
 			<cfif application.config.plugins.geoLocator>
@@ -61,7 +65,7 @@ $out:$
 			<cfinvoke component="#application.packagepath#.farcry.stats" method="logEntry">
 				<cfinvokeargument name="pageId" value="#request.stObj.objectid#"/>
 				<cfinvokeargument name="navId" value="#request.navid#"/>
-				<cfinvokeargument name="remoteIP" value="#trim(cgi.REMOTE_ADDR)#"/>
+				<cfinvokeargument name="remoteIP" value="#session.remoteIP#"/>
 				<cfinvokeargument name="sessionId" value="#session.statsSession#"/>
 				<cfinvokeargument name="browser" value="#session.userBrowser#"/>
 				<!--- check is a user is logged in --->

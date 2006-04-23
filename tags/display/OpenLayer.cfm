@@ -4,11 +4,11 @@
 || Copyright ||
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/display/OpenLayer.cfm,v 1.2 2002/09/27 07:28:38 petera Exp $
-$Author: petera $
-$Date: 2002/09/27 07:28:38 $
-$Name: b131 $
-$Revision: 1.2 $
+$Header: /cvs/farcry/farcry_core/tags/display/OpenLayer.cfm,v 1.3 2003/09/09 09:22:43 paul Exp $
+$Author: paul $
+$Date: 2003/09/09 09:22:43 $
+$Name: b201 $
+$Revision: 1.3 $
 
 || DESCRIPTION || 
 Wraps its content with an collapse-expand-layer... 
@@ -38,6 +38,9 @@ Wraps its content with an collapse-expand-layer...
   
 || HISTORY ||
 $Log: OpenLayer.cfm,v $
+Revision 1.3  2003/09/09 09:22:43  paul
+Removed all IE specific javascript - this should work a treat now in standards compliant browsers.
+
 Revision 1.2  2002/09/27 07:28:38  petera
 no message
 
@@ -147,6 +150,8 @@ DEFAULT=#ATTRIBUTES.titlecolor#>
   <cfset REQUEST.openLayerBrowserSafeForIE4 = false> 
  </cfif> <!--- REQUEST.openLayerBrowserSafeForIE4 is "true" when IEXP 4 and higher; otherwise "false" ---> 
 </cfif> 
+<!--- setting this to true - we dont care about crap browsers --->
+<cfset  REQUEST.openLayerBrowserSafeForIE4 = true>
 
 <!--- ***** Here comes the actual work of this custom tag: ***** ---> 
 
@@ -195,22 +200,22 @@ DEFAULT=#ATTRIBUTES.titlecolor#>
      <SCRIPT LANGUAGE="JavaScript" TYPE="text/javascript"> 
      <!-- 
       function switchLayer(lyrID, title, titleclosed, borderwidth, imageA,imageB, colorA,colorB) { 
-       if (document.all) { 
+       if (document.getElementById) { 
         // Determine if the layer is currently expanded or collapsed: 
         var tmpStatus; 
-        eval("tmpStatus = document.all.lyrGroup_"+ lyrID +".style.display"); 
+       	tmpStatus = document.getElementById('lyrGroup_'+lyrID).style.display; 
         // OK, then now expand or collapse it... 
         if (tmpStatus == 'none') { 
-         eval("document.all.lyrGroup_"+ lyrID +".style.display='block';"); 
-         eval("document.all.border_"+ lyrID +".style.borderWidth='"+borderwidth+"';"); 
-         eval("document.all.title_"+ lyrID +".innerHTML='"+title+"';"); 
+         document.getElementById('lyrGroup_'+ lyrID).style.display='block'; 
+         document.getElementById('border_'+ lyrID ).style.borderWidth=borderwidth;
+         document.getElementById('title_'+ lyrID).innerHTML=title; 
          tmpImage = imageA; 
          tmpColor = colorA; 
         } 
         else { 
-         eval("document.all.lyrGroup_"+ lyrID +".style.display='none'"); 
-         eval("document.all.border_"+ lyrID +".style.borderWidth='0';"); 
-         eval("document.all.title_"+ lyrID +".innerHTML='"+titleclosed+"';"); 
+       	document.getElementById('lyrGroup_'+ lyrID).style.display='none'; 
+        document.getElementById('border_'+ lyrID).style.borderWidth='0'; 
+        document.getElementById('title_'+ lyrID).innerHTML=titleclosed; 
          tmpImage = imageB; 
          tmpColor = colorB; 
         } 
@@ -220,7 +225,7 @@ DEFAULT=#ATTRIBUTES.titlecolor#>
         } 
         // If different title-colors are used, switch them... 
         if (tmpColor != '') { 
-         eval("document.all.title_"+ lyrID +".style.color='"+tmpColor+"'"); 
+         //eval("document.all.title_"+ lyrID +".style.color='"+tmpColor+"'"); 
         } 
        } 
       } 

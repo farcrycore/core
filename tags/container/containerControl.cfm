@@ -1,3 +1,27 @@
+<!--- 
+|| LEGAL ||
+$Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
+$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
+
+|| VERSION CONTROL ||
+$Header: /cvs/farcry/farcry_core/tags/container/containerControl.cfm,v 1.4 2003/09/25 23:28:09 brendan Exp $
+$Author: brendan $
+$Date: 2003/09/25 23:28:09 $
+$Name: b201 $
+$Revision: 1.4 $
+
+|| DESCRIPTION || 
+$Description: Edit widget for containers $
+$TODO: $
+
+|| DEVELOPER ||
+$Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au)$
+
+|| ATTRIBUTES ||
+$in: $
+$out:$
+--->
+
 <cfparam name="attributes.objectID" default="">
 
 <cfoutput>
@@ -25,6 +49,7 @@ function popUpWindow(URLStr, left, top, width, height)
 		font-weight : bold;
 		font-size : 12px;
 		border: 1px solid black;
+		clear:both;
 	}
 </style>
 </cfoutput>

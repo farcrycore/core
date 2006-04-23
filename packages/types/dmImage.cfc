@@ -1,5 +1,28 @@
+<!--- 
+|| LEGAL ||
+$Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
+$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
-<cfcomponent extends="types" displayname="Images" hint="Image objects">
+|| VERSION CONTROL ||
+$Header: /cvs/farcry/farcry_core/packages/types/dmImage.cfc,v 1.11 2003/09/10 23:46:11 brendan Exp $
+$Author: brendan $
+$Date: 2003/09/10 23:46:11 $
+$Name: b201 $
+$Revision: 1.11 $
+
+|| DESCRIPTION || 
+$Description: dmImage type $
+$TODO: $
+
+|| DEVELOPER ||
+$Developer: Brendan Sisson (brendan@daemon.com.au) $
+
+|| ATTRIBUTES ||
+$in: $
+$out:$
+--->
+
+<cfcomponent extends="types" displayname="Image" hint="Image objects" bUseInTree="1">
 <!------------------------------------------------------------------------
 type properties
 ------------------------------------------------------------------------->
@@ -22,7 +45,6 @@ type properties
 	<!--- getData for object edit --->
 	<cfset stObj = this.getData(arguments.objectid)>
 	
-	<cfset stArgs = arguments> <!--- hack to make arguments available to included file --->
 	<cfinclude template="_dmImage/edit.cfm">
 </cffunction>
 
@@ -31,7 +53,6 @@ type properties
 	
 	<!--- getData for object edit --->
 	<cfset stObj = this.getData(arguments.objectid)>
-	<cfset stArgs = arguments> <!--- hack to make arguments available to included file --->
 	<cfinclude template="_dmImage/display.cfm">
 </cffunction>
 
@@ -40,7 +61,6 @@ type properties
 	
 	<!--- get object details --->
 	<cfset stObj = getData(arguments.objectid)>
-	<cfset stArgs = arguments> <!--- hack to make arguments available to included file --->
 	<cfinclude template="_dmImage/delete.cfm">
 </cffunction>
 

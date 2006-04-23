@@ -5,11 +5,11 @@ $License: Released Under the "Common Public License 1.0", http://www.opensource.
 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_category/deployCategories.cfm,v 1.7 2003/05/27 07:14:03 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_category/deployCategories.cfm,v 1.9 2003/09/17 23:40:47 brendan Exp $
 $Author: brendan $
-$Date: 2003/05/27 07:14:03 $
-$Name: b131 $
-$Revision: 1.7 $
+$Date: 2003/09/17 23:40:47 $
+$Name: b201 $
+$Revision: 1.9 $
 
 
 || DESCRIPTION ||
@@ -23,7 +23,7 @@ $Developer: Daniel Morphett (daniel@daemon.com.au) $
 
 
 || ATTRIBUTES ||
-$in: stArgs.bDropTables	: drop the existing tables if true. destructive! $
+$in: arguments.bDropTables	: drop the existing tables if true. destructive! $
 $out: <separate entry for each variable>$
 --->                                                                                                                                     <cfsetting enablecfoutputonly="Yes">
 
@@ -31,51 +31,51 @@ $out: <separate entry for each variable>$
 	stStatus = structNew();
 	stStatus.message = "";
 	stStatus.status = false;
-	stArgs.bdropTables = true;
+	arguments.bdropTables = true;
 </cfscript>
 
-<cfif stArgs.bDropTables>
+<cfif arguments.bDropTables>
 <!--- <cftry> --->
 	<cfswitch expression="#application.dbtype#">
 	<cfcase value="ora">
-		<cfquery datasource="#stArgs.dsn#" name="qExists">
-			SELECT * FROM #application.dbowner#USER_TABLES
+		<cfquery datasource="#arguments.dsn#" name="qExists">
+			SELECT * FROM USER_TABLES
 			WHERE TABLE_NAME = 'CATEGORIES'
 		</cfquery>
 		<cfif qExists.recordCount>
-			<cfquery datasource="#stArgs.dsn#">
+			<cfquery datasource="#arguments.dsn#">
 			DROP TABLE #application.dbowner#CATEGORIES
 			</cfquery>
 		</cfif>	
-		<cfquery datasource="#stArgs.dsn#" name="qExists">
-			SELECT * FROM #application.dbowner#USER_TABLES
+		<cfquery datasource="#arguments.dsn#" name="qExists">
+			SELECT * FROM USER_TABLES
 			WHERE TABLE_NAME = 'REFCATEGORIES'
 		</cfquery>
 		<cfif qExists.recordCount>
-			<cfquery datasource="#stArgs.dsn#">
+			<cfquery datasource="#arguments.dsn#">
 				DROP TABLE #application.dbowner#REFCATEGORIES
 			</cfquery>
 			
 		</cfif>	
 	</cfcase>
 	<cfcase value="mysql">
-		<cfquery datasource="#stArgs.dsn#">
+		<cfquery datasource="#arguments.dsn#">
         	DROP TABLE IF EXISTS categories	
 		</cfquery>
-		<cfquery datasource="#stArgs.dsn#">
+		<cfquery datasource="#arguments.dsn#">
         	DROP TABLE IF EXISTS refCategories
 		</cfquery>
 	</cfcase>
 	<cfdefaultcase>
 	<cftransaction>
-		<cfquery datasource="#stArgs.dsn#">
+		<cfquery datasource="#arguments.dsn#">
         if exists (select * from sysobjects where name = 'categories')
 		DROP TABLE categories	
 
     	-- return recordset to stop CF bombing out?!?
     	select count(*) as blah from sysobjects
 		</cfquery>
-		<cfquery datasource="#stArgs.dsn#">
+		<cfquery datasource="#arguments.dsn#">
         if exists (select * from sysobjects where name = 'refCategories')
         DROP TABLE refCategories
 
@@ -98,14 +98,14 @@ $out: <separate entry for each variable>$
 	<cfswitch expression="#application.dbtype#">
 	<cfcase value="ora">
 		
-		<cfquery datasource="#stArgs.dsn#">
+		<cfquery datasource="#arguments.dsn#">
 			CREATE TABLE #application.dbowner#CATEGORIES
 			(
 			CATEGORYID VARCHAR2(50) NOT NULL,
 			CATEGORYLABEL VARCHAR2(255) NOT NULL
 			)
 		</cfquery>
-		<cfquery datasource="#stArgs.dsn#">
+		<cfquery datasource="#arguments.dsn#">
 			CREATE TABLE #application.dbowner#REFCATEGORIES
 			(
 			CATEGORYID VARCHAR2(50) NOT NULL,
@@ -115,14 +115,14 @@ $out: <separate entry for each variable>$
 		
 	</cfcase>
 	<cfcase value="mysql">
-		<cfquery datasource="#stArgs.dsn#">
+		<cfquery datasource="#arguments.dsn#">
 		CREATE TABLE #application.dbowner#categories
 		(
 			categoryID VARCHAR(50) NOT NULL,
 			categoryLabel VARCHAR(255) NOT NULL
 		)
 		</cfquery>
-		<cfquery datasource="#stArgs.dsn#">
+		<cfquery datasource="#arguments.dsn#">
 		CREATE TABLE #application.dbowner#refCategories
 		(
 			categoryid VARCHAR (50) NOT NULL,
@@ -133,14 +133,14 @@ $out: <separate entry for each variable>$
 	<cfdefaultcase>
 	<cftransaction>
 	<!--- Create category and refCategories Tables --->
-	<cfquery datasource="#stArgs.dsn#">
+	<cfquery datasource="#arguments.dsn#">
 	CREATE TABLE #application.dbowner#categories
 	(
 		[categoryID] [VARCHAR] (50) NOT NULL,
 		[categoryLabel] [NVARCHAR] (512) NOT NULL
 	);
 	</cfquery>
-	<cfquery datasource="#stArgs.dsn#">
+	<cfquery datasource="#arguments.dsn#">
 	CREATE TABLE #application.dbowner#refCategories
 	(
 		[categoryid] [VARCHAR] (50) NOT NULL,

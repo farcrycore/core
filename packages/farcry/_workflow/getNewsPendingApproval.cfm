@@ -1,3 +1,27 @@
+<!--- 
+|| LEGAL ||
+$Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
+$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
+
+|| VERSION CONTROL ||
+$Header: /cvs/farcry/farcry_core/packages/farcry/_workflow/getNewsPendingApproval.cfm,v 1.7 2003/09/10 12:21:48 brendan Exp $
+$Author: brendan $
+$Date: 2003/09/10 12:21:48 $
+$Name: b201 $
+$Revision: 1.7 $
+
+|| DESCRIPTION || 
+$Description: gets users who can approve pending items $
+$TODO: $
+
+|| DEVELOPER ||
+$Developer: Brendan Sisson (brendan@daemon.com.au) $
+
+|| ATTRIBUTES ||
+$in: $
+$out:$
+--->
+
 <!--- initialize structure --->
 <cfset stPendingNews = structNew()>
 

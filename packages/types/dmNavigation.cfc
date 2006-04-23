@@ -1,4 +1,28 @@
-<cfcomponent name="dmNavigation" extends="types" displayname="Navigation" hint="Navigation nodes are combined with the ntm_navigation table to build the site layout model for the FarCry CMS system.">
+<!--- 
+|| LEGAL ||
+$Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
+$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
+
+|| VERSION CONTROL ||
+$Header: /cvs/farcry/farcry_core/packages/types/dmNavigation.cfc,v 1.15 2003/09/18 04:27:29 brendan Exp $
+$Author: brendan $
+$Date: 2003/09/18 04:27:29 $
+$Name: b201 $
+$Revision: 1.15 $
+
+|| DESCRIPTION || 
+$Description: dmNavigation type $
+$TODO: $
+
+|| DEVELOPER ||
+$Developer: Brendan Sisson (brendan@daemon.com.au) $
+
+|| ATTRIBUTES ||
+$in: $
+$out:$
+--->
+
+<cfcomponent name="dmNavigation" extends="types" displayname="Navigation" hint="Navigation nodes are combined with the ntm_navigation table to build the site layout model for the FarCry CMS system." bUseInTree="1">
 <!------------------------------------------------------------------------
 type properties
 ------------------------------------------------------------------------->	
@@ -17,7 +41,6 @@ object methods
 	
 	<!--- getData for object edit --->
 	<cfset stObj = this.getData(arguments.objectid)>
-	<cfset stArgs = arguments> <!--- hack to make arguments available to included file --->
 	<cfinclude template="_dmnavigation/edit.cfm">
 </cffunction>
 
@@ -39,7 +62,6 @@ object methods
 	
 	<!--- get object details --->
 	<cfset stObj = getData(arguments.objectid)>
-	<cfset stArgs = arguments> <!--- hack to make arguments available to included file --->
 	<cfinclude template="_dmnavigation/delete.cfm">
 </cffunction>
 
@@ -51,11 +73,22 @@ object methods
 
 	<!--- $TODO: all app vars should be passed in as arguments! 
 	move application.dbowner (and others no doubt) GB$ --->
-	<cfquery datasource="#arguments.dsn#" name="q">
-		SELECT objectID, lNavIDAlias
-		FROM #application.dbowner#dmNavigation
-		WHERE lNavIDAlias <> ''
-	</cfquery>
+	<cfswitch expression="#application.dbtype#">
+		<cfcase value="ora">
+			<cfquery datasource="#arguments.dsn#" name="q">
+				SELECT objectID, lNavIDAlias
+				FROM #application.dbowner#dmNavigation
+				WHERE lNavIDAlias IS NOT NULL
+			</cfquery>
+		</cfcase>
+		<cfdefaultcase>
+			<cfquery datasource="#arguments.dsn#" name="q">
+				SELECT objectID, lNavIDAlias
+				FROM #application.dbowner#dmNavigation
+				WHERE lNavIDAlias <> ''
+			</cfquery>
+		</cfdefaultcase>
+	</cfswitch>
 
 	<cfloop query="q">
 		<cfscript>
@@ -73,6 +106,17 @@ object methods
 		</cfscript>
 	</cfloop>
 	<cfreturn stResult>
+</cffunction>
+
+<cffunction name="renderOverview" access="public" hint="Renders options available on the overview page" output="false">
+	<cfargument name="objectid" required="yes" type="UUID" hint="Object ID of the selected object">
+	
+	<!--- get object details --->
+	<cfset stObj = getData(arguments.objectid)>
+	
+	<cfinclude template="_dmnavigation/renderOverview.cfm">
+	
+	<cfreturn html>
 </cffunction>
 
 </cfcomponent>

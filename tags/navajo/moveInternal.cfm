@@ -5,11 +5,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/navajo/moveInternal.cfm,v 1.8 2003/05/03 07:52:07 geoff Exp $
-$Author: geoff $
-$Date: 2003/05/03 07:52:07 $
-$Name: b131 $
-$Revision: 1.8 $
+$Header: /cvs/farcry/farcry_core/tags/navajo/moveInternal.cfm,v 1.16 2003/10/31 17:40:05 tom Exp $
+$Author: tom $
+$Date: 2003/10/31 17:40:05 $
+$Name: b201 $
+$Revision: 1.16 $
 
 || DESCRIPTION || 
 $Description: $
@@ -38,16 +38,18 @@ $out:$
 
 <cfscript>
 	typename = stObj.typename;
-	oTree = createObject("component","#application.packagepath#.farcry.tree");
 	oNav = createObject("component", "#application.packagepath#.types.dmNavigation");
+	oAudit = createObject("component","#application.packagepath#.farcry.audit");
+	oAuthentication = request.dmSec.oAuthentication;	
+	stuser = oAuthentication.getUserAuthenticationData();
 	if (stObj.typename IS 'dmNavigation')
 	{
-		qGetParent = oTree.getParentID(objectID = stObj.objectID);
+		qGetParent = application.factory.oTree.getParentID(objectID = stObj.objectID);
 		parentObjectID = qGetParent.parentID;	
 	}
 	else
 	{
-	// likely to be a parent object with aObjects property (eg. dmHTML, dmNews)
+		// likely to be a parent object with aObjects property (eg. dmHTML, dmNews)
 		qGetParent = oNav.getParent(objectid=stObj.objectID);
 		parentObjectID = qGetParent.objectID;
 	}	
@@ -59,7 +61,8 @@ $out:$
 <!--- get parent object --->
 <q4:contentobjectget objectId="#parentObjectId#" r_stObject="stParentObject">
 
-<cftry>
+<!--- 
+<cftry> --->
 <!--- exclusive lock tree.moveBranch() to prevent corruption --->
 <cflock name="moveBranchNTM" type="EXCLUSIVE" timeout="3" throwontimeout="Yes">
 
@@ -72,7 +75,7 @@ $out:$
 		{
 			if(stObj.typename IS "dmnavigation")
 			{
-				qGetChildren = oTree.getChildren(dsn=application.dsn,objectid=parentObjectID);
+				qGetChildren = application.factory.oTree.getChildren(dsn=application.dsn,objectid=parentObjectID);
 				bottom = qGetChildren.recordCount;
 				for(i=1;i LTE qGetChildren.recordCount;i = i + 1)
 				{
@@ -93,7 +96,8 @@ $out:$
 				else if( url.direction eq "bottom" )	
 					newPosition = bottom;
 				//make the move	
-				oTree.moveBranch(dsn=application.dsn,objectid=stobj.objectid,parentid=parentobjectid,pos=newposition);				
+				application.factory.oTree.moveBranch(dsn=application.dsn,objectid=stobj.objectid,parentid=parentobjectid,pos=newposition);	
+				application.factory.oaudit.logActivity(objectid="#URL.objectid#",auditType="sitetree.movenode", username=StUser.userlogin, location=cgi.remote_host, note="object moved to child position #newposition#");
 				updateTree(objectID =parentObjectID);
 			}
 			else		
@@ -123,14 +127,16 @@ $out:$
 				}
 				else if( url.direction eq "bottom" )
 				{
+					newPos = ArrayLen(stParentObject[key]);
 					arrayDeleteAt( stParentObject[key], pos );
 					arrayAppend( stParentObject[key], url.objectID );
 				}
 				//update the object
-				stParentObject.datetimecreated = createODBCDate("#datepart('yyyy',stNavParent.datetimecreated)#-#datepart('m',stNavParent.datetimecreated)#-#datepart('d',stNavParent.datetimecreated)#");
+				stParentObject.datetimecreated = createODBCDate("#datepart('yyyy',stParentObject.datetimecreated)#-#datepart('m',stParentObject.datetimecreated)#-#datepart('d',stParentObject.datetimecreated)#");
 				stParentObject.datetimelastupdated = createODBCDate(now());
-	
-				contentobjectdata(objectid="#parentObjectID#", typename="#application.packagepath#.types.#stParentObject.typename#", stProperties="#stParentObject#");
+				oType = createobject("component","#application.packagepath#.types.#stParentObject.typename#");
+				oType.setData(stProperties=stParentObject,auditNote="object moved to child position #newpos#");	
+				oaudit.logActivity(objectid="#URL.objectid#",auditType="sitetree.movenode", username=StUser.userlogin, location=cgi.remote_host, note="object moved to child position #newpos#");
 				updateTree(objectID =parentObjectID);
 			}
 		}
@@ -138,12 +144,12 @@ $out:$
 </cfscript>
 
 </cflock>
-	<cfcatch>
+	<!--- <cfcatch>
 		<h2>moveBranch Lockout</h2>
 		<p>Another editor is currently modifying the hierarchy.  Please refresh the site overview tree and try again.</p>
 		<cfabort>
 	</cfcatch>
-</cftry>
+</cftry> --->
 
 
 <cfsetting enablecfoutputonly="No">

@@ -1,6 +1,6 @@
 <cfsetting enablecfoutputonly="Yes">
 
-<cfapplication name="farcry_app" sessionmanagement="Yes" sessiontimeout="#createTimeSpan(0,1,0,0)#">
+<cfapplication name="farcry_aura" sessionmanagement="Yes" sessiontimeout="#createTimeSpan(0,1,0,0)#">
 
 <!--- Application Initialise --->
 <cfif NOT IsDefined("application.bInit") OR IsDefined("url.updateapp")>

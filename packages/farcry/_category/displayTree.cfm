@@ -3,10 +3,6 @@
 <LINK href="#application.url.farcry#/css/overviewFrame.css" rel="stylesheet" type="text/css">
 </cfoutput>
 
-
- 
- 
-
 <cfsetting enablecfoutputonly="No">
 
 <cfimport taglib="/farcry/farcry_core/tags/navajo" prefix="nj">
@@ -18,12 +14,6 @@
 
 <cfparam name="application.navid.rubbish" default="">
 
-<!--- 
-TODO
-need to move dependence on spectra type definitions to a knowledge of the 
-fourq schema
-am setting application.sttypes in _parameters.cfm
- --->
  
 <cfscript>
 nimages = "#application.url.farcry#/images/treeImages";
@@ -137,18 +127,13 @@ if( StructKeyExists( application.types, "dmNavigation" ) )
 <!--- find all the root nodes --->
 <cfif isDefined("URL.rootObjectID")>
 	<cfset rootObjectID = URL.rootObjectID>
-<cfelseif isDefined("stargs.rootobjectid")>
-	<cfset rootobjectid = stargs.rootobjectid>	
+<cfelseif isDefined("arguments.rootobjectid")>
+	<cfset rootobjectid = arguments.rootobjectid>	
 <cfelse>
 	<cfscript>
-		oTree = createObject('component',"#application.packagepath#.farcry.tree");
-		qrootObjectID = oTree.getRootNode(typename='categories');
+		qrootObjectID = application.factory.oTree.getRootNode(typename='categories');
 		rootObjectID = qrootObjectID.objectID;
 	</cfscript>
-	<!--- <nj:treeGetRelations
-		get="root"
-		r_ObjectId="rootObjectId"
-		bInclusive="1"> --->
 </cfif>
 
 <cfoutput>
@@ -160,8 +145,8 @@ if( StructKeyExists( application.types, "dmNavigation" ) )
 <cfset cookie.nodestatev2=listappend(cookie.nodestatev2,"0")>
 
 <cfscript>
-oCat = createObject("component","#application.packagepath#.farcry.category");
-jscode = oCat.getTreeData(rootObjectID);
+	oCat = createObject("component","#application.packagepath#.farcry.category");
+	jscode = oCat.getTreeData(rootObjectID);
 </cfscript>
 	
 
@@ -299,8 +284,8 @@ function renderObjectToDiv( objId, divId )
 function renderObject( objId )
 {
 	var thisObject = objects[objId];
-	var bCheckBox = #stArgs.bshowcheckbox#;
-	var lSelected = "#stArgs.lSelectedCategories#";
+	var bCheckBox = #arguments.bshowcheckbox#;
+	var lSelected = "#arguments.lSelectedCategories#";
 	if( !thisObject ) return "";
 	if (lSelected.indexOf(objId) > -1)
 	{
@@ -468,6 +453,12 @@ function swapToggleImage( src )
 	if( src.indexOf(toggleNoneClose.src) !=-1 ) return toggleNoneOpen.src;
 	
 	return src;
+}
+
+function updateTree(src,dest)
+{
+	getObjectDataAndRender(src);
+	getObjectDataAndRender(dest);
 }
 
 function getTypeImage( objId )
@@ -921,6 +912,56 @@ function menuOption_Delete()
 		frameopen('#application.url.farcry#/navajo/keywords/delete.cfm?objectId='+lastSelectedId,'editFrame');
 }
 
+o = new Object();
+objectMenu['Move'] = o;
+o.text = "Move";
+o.submenu = "Move";
+o.jsvalidate = 1;
+
+o.bShowDisabled = 1;
+o.bSeperator = 0;
+
+	moveMenu = new Object();
+	moveMenu.menuInfo = new Object();
+	moveMenu.menuInfo.name = "MoveMenu";
+
+	o = new Object();
+	moveMenu['MoveUp'] = o;
+	o.text = "Move Up";
+	o.js = "menuOption_MoveInternal(\\'up\\');";
+	o.jsvalidate = "objectIndex(lastSelectedId)>0||nodeIndex(lastSelectedId)>0";
+	o.bShowDisabled = 1;
+	
+	o = new Object();
+	moveMenu['MoveDown'] = o;
+	o.text = "Move Down";
+	o.js = "menuOption_MoveInternal(\\'down\\');";
+	o.jsvalidate = 	"(objectIndex(lastSelectedId)!=-1 && objectIndex(lastSelectedId)+1 < countObjects(getParentObject(lastSelectedId)['OBJECTID'])) || "+
+					"(nodeIndex(lastSelectedId)!=-1 && nodeIndex(lastSelectedId)+1 < countNodes(getParentObject(lastSelectedId)['OBJECTID']))";
+	o.bShowDisabled = 1;
+	o.bSeperator = 0;
+	
+	o = new Object();
+	moveMenu['MoveToTop'] = o;
+	o.text = "Move To Top";
+	o.js = "menuOption_MoveInternal(\\'top\\');";
+	o.jsvalidate = "objectIndex(lastSelectedId)>0||nodeIndex(lastSelectedId)>0";
+	o.bShowDisabled = 1;
+	
+	o = new Object();
+	moveMenu['MoveToBottom'] = o;
+	o.text = "Move To Bottom";
+	o.js = "menuOption_MoveInternal(\\'bottom\\');";
+	o.jsvalidate = "(objectIndex(lastSelectedId)!=-1 && objectIndex(lastSelectedId)+1 < countObjects(getParentObject(lastSelectedId)['OBJECTID'])) || "+
+					"(nodeIndex(lastSelectedId)!=-1 && nodeIndex(lastSelectedId)+1 < countNodes(getParentObject(lastSelectedId)['OBJECTID']))";
+	o.bShowDisabled = 1;
+	
+	function menuOption_MoveInternal( dir )
+	{
+		popupopen( '#application.url.farcry#/navajo/keywords/moveInternal.cfm?direction='+dir+'&objectId='+lastSelectedId, '_blank', '#smallpopupfeatures#' );
+	}
+
+
 
 function generateMenu( data, bIsSub )
 {
@@ -949,8 +990,9 @@ function generateMenu( data, bIsSub )
 	//document.all.popupMenus.innerHTML += menuData;
 }
 
-<cfif NOT stArgs.bShowCheckBox>
+<cfif NOT arguments.bShowCheckBox>
 generateMenu( objectMenu, 0 );
+generateMenu( moveMenu  , 1 );
 </cfif>
 
 
@@ -1194,7 +1236,7 @@ function flutterDoAction() { eval( flutterAction ); }
 function documentClick()
 {
 	//alert(eval("hasPermission( lastSelectedId, #PermNavCreate#) > 0 "));
-	<cfif NOT stArgs.bshowCheckBox>
+	<cfif NOT arguments.bshowCheckBox>
 	var objectMenuDiv = document.getElementById( "ObjectMenu" );
 	if(objectMenuDiv)
 	
@@ -1264,8 +1306,6 @@ document.body.onclick = documentClick;
 			width: 400px; 
 			height: 400px; 
 			display:none;
-
-
 		}
 </STYLE>
 
@@ -1290,20 +1330,11 @@ document.body.onclick = documentClick;
 	</script>
 </cfloop>
 
-<!--- select all relevant categories --->
-<!--- <cfif len(stArgs.lSelectedCategories)>
-<script>
-	list = '#stArgs.lSelectedCategories#';
-	aSelected = list.split();
-	em = document.getElementsByName('categoryid');
-	for (var i=0;i<=em.length;i++)
-	{
-		if (list.indexOf(em[i].value) >-1)
-			em[i].checked = true;
-	}	
-</script>
+<cfif NOT arguments.bExpand>
+	<script>
+		toggleObject('#arguments.rootObjectId#');
+	</script>
 </cfif>
- --->
 
 </cfoutput>
 

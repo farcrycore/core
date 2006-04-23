@@ -1,9 +1,33 @@
+<!--- 
+|| LEGAL ||
+$Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
+$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
+
+|| VERSION CONTROL ||
+$Header: /cvs/farcry/farcry_core/packages/farcry/_versioning/approveEmail_draft_dd.cfm,v 1.9 2003/09/10 12:21:48 brendan Exp $
+$Author: brendan $
+$Date: 2003/09/10 12:21:48 $
+$Name: b201 $
+$Revision: 1.9 $
+
+|| DESCRIPTION || 
+$Description: sends email for draft news like object $
+$TODO: $
+
+|| DEVELOPER ||
+$Developer: Brendan Sisson (brendan@daemon.com.au) $
+
+|| ATTRIBUTES ||
+$in: $
+$out:$
+--->
+
 <cfsetting enablecfoutputonly="Yes">
 
 <cfimport taglib="/farcry/fourq/tags/" prefix="q4">
 
 <!--- get object details --->
-<q4:contentobjectget objectID="#stArgs.objectID#" r_stObject="stObj">
+<q4:contentobjectget objectID="#arguments.objectID#" r_stObject="stObj">
 
 <!--- get dmProfile object --->
 <cfscript>
@@ -25,14 +49,14 @@ Hi <cfif len(stProfile.firstName) gt 0>#stProfile.firstName#<cfelse>#stProfile.u
 
 Your object "<cfif stObj.title neq "">#stObj.title#<cfelse>undefined</cfif>" has been sent back to draft.
 
-<cfif stArgs.comment neq "">
+<cfif arguments.comment neq "">
 Comments added on status change:
-#stArgs.comment#
+#arguments.comment#
 </cfif>
 
 You may edit this page by browsing to the following location:
 
-http://#CGI.HTTP_HOST##application.url.farcry#/index.cfm?section=dynamic&objectID=#stArgs.objectID#&status=draft
+http://#CGI.HTTP_HOST##application.url.farcry#/index.cfm?section=dynamic&objectID=#arguments.objectID#&status=draft
 
 </cfmail>
 

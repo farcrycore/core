@@ -5,11 +5,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmNews/plpEdit/start.cfm,v 1.5 2003/07/15 05:35:09 brendan Exp $
-$Author: brendan $
-$Date: 2003/07/15 05:35:09 $
-$Name: b131 $
-$Revision: 1.5 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmNews/plpEdit/start.cfm,v 1.7 2003/09/09 09:23:14 paul Exp $
+$Author: paul $
+$Date: 2003/09/09 09:23:14 $
+$Name: b201 $
+$Revision: 1.7 $
 
 || DESCRIPTION || 
 $Description: dmNews Edit PLP - Start Step $
@@ -58,8 +58,8 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	
 	<div class="FormSubTitle">#output.label#</div>
 	<div class="FormTitle">General Info</div>
-	<div class="FormTable">
-	<table class="BorderTable" width="400" align="center">
+	<div class="FormTable" style="width:80%">
+	<table class="BorderTable" width="80%" align="center">
 	<tr>
 		<td nowrap class="FormLabel">Title: </span></td>
 		<td width="100%"><input type="text" name="Title" value="#output.Title#" class="formtextbox" maxlength="255"></td>
@@ -122,8 +122,8 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 			<!--- show links to for no expiry/yes expiry date --->
 			<input type="hidden" name="noExpire" value="<cfif 2050 is year(output.expiryDate)>1<cfelse>0</cfif>">
 		 	<div style="display:inline">
-				<a href="##" id="noLink" onClick="document.getElementById('noLink').style.visibility='hidden';document.getElementById('yesLink').style.visibility='visible';noExpire.value='1';document.getElementById('expire').style.visibility='hidden';" style="position:absolute;<cfif 2050 is year(output.expiryDate)>visibility:hidden</cfif>"><img src="#application.url.farcry#/images/no.gif" border="0" alt="No Expiry Date"></a>
-				<a href="##" id="yesLink" onClick="document.getElementById('noLink').style.visibility='visible';document.getElementById('yesLink').style.visibility='hidden';noExpire.value='0';expiryYear.value='#year(now())#';document.getElementById('expire').style.visibility='visible';" style="position:absolute;<cfif not 2050 is year(output.expiryDate)>visibility:hidden</cfif>"><img src="#application.url.farcry#/images/yes.gif" border="0" alt="Has Expiry Date"></a>
+				<a href="javascript:void(0);" id="noLink" onClick="document.getElementById('noLink').style.visibility='hidden';document.getElementById('yesLink').style.visibility='visible';noExpire.value='1';document.getElementById('expire').style.visibility='hidden';" style="position:absolute;<cfif 2050 is year(output.expiryDate)>visibility:hidden</cfif>"><img src="#application.url.farcry#/images/no.gif" border="0" alt="No Expiry Date"></a>
+				<a href="javascript:void(0);" id="yesLink" onClick="document.getElementById('noLink').style.visibility='visible';document.getElementById('yesLink').style.visibility='hidden';noExpire.value='0';expiryYear.value='#year(now())#';document.getElementById('expire').style.visibility='visible';" style="position:absolute;<cfif not 2050 is year(output.expiryDate)>visibility:hidden</cfif>"><img src="#application.url.farcry#/images/yes.gif" border="0" alt="Has Expiry Date"></a>
 			</div>
 		</td>
 		<td >
@@ -193,9 +193,6 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 		</select>
 		</span></td>
 	</tr>
-	<!--- <tr>
-		<td colspan="2"><span class="FormLabel">Teaser</span><br></cfoutput><tags:countertext formname="editform" fieldname="teaser" fieldvalue="#output.teaser#" counter="256"><cfoutput></td>
-	</tr> --->
 	</table>
 	</div>
 	<div class="FormTableClear">

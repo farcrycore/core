@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/farcry/richTextEditor.cfm,v 1.6 2003/05/20 07:30:23 brendan Exp $
-$Author: brendan $
-$Date: 2003/05/20 07:30:23 $
-$Name: b131 $
-$Revision: 1.6 $
+$Header: /cvs/farcry/farcry_core/tags/farcry/richTextEditor.cfm,v 1.7 2003/08/28 01:40:16 paul Exp $
+$Author: paul $
+$Date: 2003/08/28 01:40:16 $
+$Name: b201 $
+$Revision: 1.7 $
 
 || DESCRIPTION || 
 $Description: Displays an editor for long text input. Based on config settings unless in toggle mode which will display a basic html text area$
@@ -24,6 +24,7 @@ $out:$
 <cfsetting enablecfoutputonly="yes">
 
 <cfimport taglib="/farcry/farcry_core/tags/farcry" prefix="tags">
+<cfparam name="attributes.textareaname" default="body">
 
 <!--- check if toggled to text area otherwise use config defined editor --->
 <cfif isdefined("session.toggleTextArea") and session.toggleTextArea eq 1>
@@ -32,12 +33,12 @@ $out:$
 		<script language="JavaScript">
 		function insertHTML( html,field )
 		{
-			editform.body.value = editform.body.value + (html);
+			editform.#attributes.textareaname#.value = editform.#attributes.textareaname#.value + (html);
 		}
 		</script> 
 	</cfoutput>
 	<!--- display text area --->
-	<cfoutput><textarea name="body" cols="60" rows="20">#caller.output.body#</textarea></cfoutput>	
+	<cfoutput><textarea name="#attributes.textareaname#" cols="60" rows="20">#caller.output[attributes.textareaname]#</textarea></cfoutput>	
 	
 <cfelse>
 	
@@ -58,9 +59,9 @@ $out:$
 			<!--- display tag --->
 			<tags:soEditor_pro 
 				form="editform" 
-				field="body" 
+				field="#attributes.textareaname#" 
 				scriptpath="#application.url.farcry#/siteobjects/soeditor/pro/"
-				html="#caller.output.body#" 
+				html="#caller.output[attributes.textareaname]#" 
 				width="#application.config.soEditorPro.width#"
 				height="#application.config.soEditorPro.height#"
 				cols="#application.config.soEditorPro.cols#"
@@ -164,9 +165,9 @@ $out:$
 			<!--- display tag --->
 			<tags:soEditor_lite 
 				form="editform" 
-				field="body" 
+				field="#attributes.textareaname#" 
 				scriptpath="#application.url.farcry#/siteobjects/soeditor/lite/"
-				html="#caller.output.body#"
+				html="#caller.output[attributes.textareaname]#"
 				width="#application.config.soEditor.width#"
 				height="#application.config.soEditor.height#"
 				cols="#application.config.soEditor.cols#"
@@ -252,7 +253,7 @@ $out:$
 				editorName="#application.config.eWebEditPro.alternativeEditorName#"
 				width="#application.config.eWebEditPro.width#"
 				height="#application.config.eWebEditPro.height#"
-				value="#caller.output.body#"
+				value="#caller.output[attributes.textareaname]#"
 				license="#application.config.eWebEditPro.license#"
 				locale="#application.config.eWebEditPro.locale#"
 				config="#application.config.eWebEditPro.config#"
@@ -272,12 +273,12 @@ $out:$
 				<script language="JavaScript">
 				function insertHTML( html,field )
 				{
-					editform.body.value = editform.body.value + (html);
+					editform.#attributes.textareaname#.value = editform.#attributes.textareaname#.value + (html);
 				}
 				</script> 
 			</cfoutput>
 			<!--- display text area --->
-			<cfoutput><textarea name="body" cols="60" rows="20">#caller.output.body#</textarea></cfoutput>
+			<cfoutput><textarea name="#attributes.textareaname#" cols="60" rows="20">#caller.output[attributes.textareaname]#</textarea></cfoutput>
 		</cfcase>
 	</cfswitch>
 </cfif>

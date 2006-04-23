@@ -1,1 +1,6 @@
-<cfinclude template="/farcry/farcry_core/ui/navajo/moveInternal.cfm">
+<cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
+<cfsetting enablecfoutputonly="Yes">
+
+<nj:moveInternal>
+
+<cfsetting enablecfoutputonly="No">

@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmFlash/delete.cfm,v 1.1 2003/03/31 06:35:31 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmFlash/delete.cfm,v 1.2 2003/09/11 01:04:17 brendan Exp $
 $Author: brendan $
-$Date: 2003/03/31 06:35:31 $
-$Name: b131 $
-$Revision: 1.1 $
+$Date: 2003/09/11 01:04:17 $
+$Name: b201 $
+$Revision: 1.2 $
 
 || DESCRIPTION || 
 $Description: dmFlash delete method. Deletes physical file from server$
@@ -30,9 +30,5 @@ $out:$
 	</cftry>
 </cfif>
 
-<!--- delete actual object --->
-<cfset deleteData(stObj.objectId)>
-
-<!--- check if in verity collection --->
-
-<!--- delete from verity --->
+<!--- delete --->
+<cfset super.delete(stObj.objectId)>

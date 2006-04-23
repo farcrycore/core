@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/farcry/floater.cfm,v 1.7 2003/04/10 02:55:24 spike Exp $
-$Author: spike $
-$Date: 2003/04/10 02:55:24 $
-$Name: b131 $
-$Revision: 1.7 $
+$Header: /cvs/farcry/farcry_core/tags/farcry/floater.cfm,v 1.9 2003/09/19 06:02:28 brendan Exp $
+$Author: brendan $
+$Date: 2003/09/19 06:02:28 $
+$Name: b201 $
+$Revision: 1.9 $
 
 || DESCRIPTION || 
 $Description: FarCry DHTML Float Menu$
@@ -63,6 +63,7 @@ div.#attributes.prefix#Menu {
 	display: none;
 	z-index: 999999;
 	background-image: url(#attributes.imagedir#gutter.gif);
+	text-align:left;
 }
 
 
@@ -194,13 +195,15 @@ var #attributes.prefix#IgnoreMouse = false;
 var #attributes.prefix#Timerid = 1;
 
 
-if (typeof(#attributes.prefix#ActiveMenu.filters) == 'undefined') {
-	var #attributes.prefix#tmpfilter = new Object();
+if (    typeof(#attributes.prefix#ActiveMenu.filters) == 'unknown'
+        ||
+        typeof(#attributes.prefix#ActiveMenu.filters) == 'undefined')
+{
+        var #attributes.prefix#tmpfilter = new Object();
 }
 else {
-	var #attributes.prefix#tmpfilter = #attributes.prefix#ActiveMenu.filters;
+        var #attributes.prefix#tmpfilter = #attributes.prefix#ActiveMenu.filters;
 }
-
 
 // Make sure the menufilter exists in non IE browsers
 if (typeof(#attributes.prefix#tmpfilter.Opacity) != 'undefined') {

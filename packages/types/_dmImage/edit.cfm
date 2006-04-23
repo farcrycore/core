@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmImage/edit.cfm,v 1.17 2003/07/15 07:04:15 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmImage/edit.cfm,v 1.19 2003/10/14 07:14:10 brendan Exp $
 $Author: brendan $
-$Date: 2003/07/15 07:04:15 $
-$Name: b131 $
-$Revision: 1.17 $
+$Date: 2003/10/14 07:14:10 $
+$Name: b201 $
+$Revision: 1.19 $
 
 || DESCRIPTION || 
 $Description: edit handler$
@@ -32,6 +32,7 @@ $out:$
 	<cfset showform=0>	
 	<cfscript>
 		stProperties = structNew();
+		stProperties.objectid = stObj.objectid;
 		stProperties.title = form.title;
 		stProperties.label = form.title;
 		//stProperties.caption = form.caption;
@@ -111,12 +112,11 @@ $out:$
 		</cfif>
 	</cfif>
 	
-
-	<q4:contentobjectdata
-	 typename="#application.packagepath#.types.dmImage"
-	 stProperties="#stProperties#"
-	 objectid="#stObj.ObjectID#"
-	>
+	<cfscript>
+		// update the OBJECT	
+		oType = createobject("component","#application.packagepath#.types.dmImage");
+		oType.setData(stProperties=stProperties);
+	</cfscript>
 	
 	<cfif not isdefined("error")>
 		<!--- get parent to update tree --->
@@ -298,10 +298,16 @@ $out:$
 			
 	</table>
 	</form>
-	<script>
+	<!--- form validation --->
+	<SCRIPT LANGUAGE="JavaScript">
+		<!--//
+		objForm = new qForm("imageForm");
+		objForm.title.validateNotNull("Please enter a title");
+		objForm.alt.validateLengthGT(512);
+			
 		//bring focus to title
-		document.imageForm.title.focus();
-	</script>	
+		document.imageForm.title.focus();//-->
+	</SCRIPT>
 	</cfoutput>
 </cfif>	
 

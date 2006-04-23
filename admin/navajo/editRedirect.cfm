@@ -1,1 +1,6 @@
-<cfinclude template="/farcry/farcry_core/ui/navajo/editRedirect.cfm">
+<cfsetting enablecfoutputonly="Yes">
+<cfimport taglib="/farcry/farcry_core/tags/navajo" prefix="nj">
+
+<nj:editRedirect>
+	  
+<cfsetting enablecfoutputonly="No">

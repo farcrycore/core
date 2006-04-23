@@ -13,7 +13,7 @@
 
 <body>
 
-<div class="FormSubTitle">XML Feeds</div>
+<div class="FormSubTitle">RSS Feeds</div>
 
 <cfscript>
 		o = createObject("component","#application.packagepath#.types.#stArgs.typename#");

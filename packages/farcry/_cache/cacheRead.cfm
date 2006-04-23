@@ -1,10 +1,34 @@
-<cfset cachelookupname = stArgs.cacheBlockName & stArgs.cacheName>
+<!--- 
+|| LEGAL ||
+$Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
+$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
+
+|| VERSION CONTROL ||
+$Header: /cvs/farcry/farcry_core/packages/farcry/_cache/cacheRead.cfm,v 1.2 2003/09/10 12:21:48 brendan Exp $
+$Author: brendan $
+$Date: 2003/09/10 12:21:48 $
+$Name: b201 $
+$Revision: 1.2 $
+
+|| DESCRIPTION || 
+$Description: read Cache Function $
+$TODO: $
+
+|| DEVELOPER ||
+$Developer: Brendan Sisson (brendan@daemon.com.au) $
+
+|| ATTRIBUTES ||
+$in: $
+$out:$
+--->
+
+<cfset cachelookupname = arguments.cacheBlockName & arguments.cacheName>
 <cfset read = false>
 <cflock timeout="10" throwontimeout="No" name="GeneratedContentCache_#application.applicationname#" type="READONLY">
 	<cfset success = true>
 	<cfset contentcache = structget("server.dm_generatedcontentcache.#application.applicationname#")>
 	<cfif structkeyexists(contentcache, cachelookupname)>
-		<cfif contentcache[cachelookupname].cachetimestamp gt stArgs.dtCachetimeout>
+		<cfif contentcache[cachelookupname].cachetimestamp gt arguments.dtCachetimeout>
 			<cfoutput>#contentcache[cachelookupname].cache#</cfoutput>
 			<cfset read = true>
 		<cfelse>
@@ -12,27 +36,3 @@
 		</cfif>
 	</cfif>
 </cflock>
-
-
-
-<!--- <cflock timeout="10" throwontimeout="No" name="GeneratedContentCache_#application.applicationname#" type="READONLY">
-	<cfset success = true>
-	<cfset contentcache = structget("server.dm_generatedcontentcache.#application.applicationname#")>
-	<cfif structkeyexists(contentcache, cachelookupname)>
-		<cfif contentcache[cachelookupname].cachetimestamp gt stArgs.dtCachetimeout>
-			<cfif isdefined("stArgs.r_output")>
-				<cfset setvariable("caller.#stArgs.r_output#",  contentcache[cachelookupname].cache)>
-			<cfelse>
-				<cfoutput>#contentcache[cachelookupname].cache#</cfoutput>
-			</cfif>
-			<cfset setvariable("caller.#stArgs.r_cachehit#",  true)>
-		<cfelse>
-			<cfset setvariable("caller.#stArgs.r_cachehit#",  false)>
-		</cfif>
-	<cfelse>
-		<cfset setvariable("caller.#stArgs.r_cachehit#",  false)>
-	</cfif>
-</cflock>
-<cfif success eq false>
-	<cfset setvariable("caller.#stArgs.r_cachehit#",  false)>
-</cfif> --->

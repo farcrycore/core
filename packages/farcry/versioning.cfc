@@ -1,11 +1,33 @@
+<!--- 
+|| LEGAL ||
+$Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
+$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
-<cfcomponent>
+|| VERSION CONTROL ||
+$Header: /cvs/farcry/farcry_core/packages/farcry/versioning.cfc,v 1.7 2003/09/18 01:25:11 brendan Exp $
+$Author: brendan $
+$Date: 2003/09/18 01:25:11 $
+$Name: b201 $
+$Revision: 1.7 $
+
+|| DESCRIPTION || 
+$Description: versioning cfc $
+$TODO: $
+
+|| DEVELOPER ||
+$Developer: Brendan Sisson (brendan@daemon.com.au) $
+
+|| ATTRIBUTES ||
+$in: $
+$out:$
+--->
+
+<cfcomponent displayName="Object Versioning" hint="Functions to handle versioning of objects">
 	<cffunction name="sendObjectLive" access="public" returntype="struct" hint="Sends a versioned object with draft live.Archives existing live object if it exists and deletes old live object">
 		<cfargument name="objectID" type="uuid" required="true">
 		<cfargument name="stDraftObject"  type="struct" required="true" hint="the draft stuct to be updated">
 		<cfargument name="typename" type="string" required="false">
 		
-		<cfset stArgs = arguments>
  		<cfinclude template="_versioning/sendObjectLive.cfm">
 		
 		<cfreturn stResult>
@@ -16,7 +38,6 @@
 		<cfargument name="archiveID"  type="uuid" required="true" hint="the archived object to be sent back live">
 		<cfargument name="typename" type="string" required="false">
 		
-		<cfset stArgs = arguments>
  		<cfinclude template="_versioning/rollbackArchive.cfm">
 		
 		<cfreturn stResult>
@@ -26,7 +47,6 @@
 		<cfargument name="objectID" type="uuid" required="true">
 		<cfargument name="typename" type="string" required="false">
 		
-		<cfset stArgs = arguments>
  		<cfinclude template="_versioning/versioningRules.cfm">
 						
 		<cfreturn stRules>
@@ -35,7 +55,6 @@
 	<cffunction name="getArchives" access="public" returntype="query" hint="returns all archives for a given object">
 		<cfargument name="objectID" type="uuid" required="true">
 
-		<cfset stArgs = arguments>
  		<cfinclude template="_versioning/getArchives.cfm">
 		
 		<cfreturn qArchives>
@@ -44,7 +63,6 @@
 	<cffunction name="getArchiveDetail" access="public" returntype="query" hint="returns one archive">
 		<cfargument name="objectID" type="uuid" required="true">
 
-		<cfset stArgs = arguments>
  		<cfinclude template="_versioning/getArchiveDetail.cfm">
 		
 		<cfreturn qArchives>
@@ -54,7 +72,6 @@
 		<cfargument name="stRules" type="struct" required="true">
 		<cfargument name="stObj" type="struct" required="true">
 		
-		<cfset stArgs = arguments>
  		<cfinclude template="_versioning/checkEdit.cfm">
 	
 	</cffunction>
@@ -64,15 +81,14 @@
 		<cfargument name="objectId" type="UUID" required="true" hint="The ObjectId of object that has had status changed">
 		<cfargument name="comment" type="string" required="true" hint="Comments that were entered when status was changed">
 		
-		<cfset stArgs = arguments>
  		<cfinclude template="_versioning/approveEmail_approved.cfm">
 	</cffunction>
 	
 	<cffunction name="approveEmail_pending" access="public" hint="Sends out email to list of approvers to approve/decline object">
 		<cfargument name="objectId" type="UUID" required="true" hint="The ObjectId of object that has had status changed">
 		<cfargument name="comment" type="string" required="true" hint="Comments that were entered when status was changed">
+		<cfargument name="lApprovers" type="string" required="true" hint="List of approvers to send email to" default="all">
 		
-		<cfset stArgs = arguments>
  		<cfinclude template="_versioning/approveEmail_pending.cfm">
 	</cffunction>
 	
@@ -80,15 +96,14 @@
 		<cfargument name="objectId" type="UUID" required="true" hint="The ObjectId of object that has had status changed">
 		<cfargument name="comment" type="string" required="true" hint="Comments that were entered when status was changed">
 		
-		<cfset stArgs = arguments>
  		<cfinclude template="_versioning/approveEmail_draft.cfm">
 	</cffunction>
 
 	<cffunction name="approveEmail_approved_dd" access="public" hint="Sends out email informing lastupdated user that object has been approved">
 		<cfargument name="objectId" type="UUID" required="true" hint="The ObjectId of object that has had status changed">
 		<cfargument name="comment" type="string" required="true" hint="Comments that were entered when status was changed">
+		<cfargument name="lApprovers" type="string" required="true" hint="List of approvers to send email to" default="all">
 		
-		<cfset stArgs = arguments>
  		<cfinclude template="_versioning/approveEmail_approved_dd.cfm">
 	</cffunction>
 	
@@ -96,7 +111,6 @@
 		<cfargument name="objectId" type="UUID" required="true" hint="The ObjectId of object that has had status changed">
 		<cfargument name="comment" type="string" required="true" hint="Comments that were entered when status was changed">
 		
-		<cfset stArgs = arguments>
  		<cfinclude template="_versioning/approveEmail_pending_dd.cfm">
 	</cffunction>
 	
@@ -104,7 +118,6 @@
 		<cfargument name="objectId" type="UUID" required="true" hint="The ObjectId of object that has had status changed">
 		<cfargument name="comment" type="string" required="true" hint="Comments that were entered when status was changed">
 		
-		<cfset stArgs = arguments>
  		<cfinclude template="_versioning/approveEmail_draft_dd.cfm">
 	</cffunction>
 	
@@ -113,7 +126,6 @@
 		<cfargument name="type" type="string" required="true" hint="Object type to be checked">
 		<cfargument name="dsn" type="string" default="#application.dsn#" required="true" hint="Database DSN">
 		
-		<cfset stArgs = arguments>
  		<cfinclude template="_versioning/checkIsDraft.cfm">
 		
 		<cfreturn qCheckIsDraft>

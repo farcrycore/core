@@ -1,4 +1,28 @@
-<cfcomponent>
+<!--- 
+|| LEGAL ||
+$Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
+$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
+
+|| VERSION CONTROL ||
+$Header: /cvs/farcry/farcry_core/packages/farcry/stats.cfc,v 1.28 2003/09/10 12:21:48 brendan Exp $
+$Author: brendan $
+$Date: 2003/09/10 12:21:48 $
+$Name: b201 $
+$Revision: 1.28 $
+
+|| DESCRIPTION || 
+$Description: statistics cfc $
+$TODO: $
+
+|| DEVELOPER ||
+$Developer: Brendan Sisson (brendan@daemon.com.au) $
+
+|| ATTRIBUTES ||
+$in: $
+$out:$
+--->
+
+<cfcomponent displayName="Statistic" hint="Functions for site and object statistics reports">
 
 <!------------------------------------------------------------------------
 stats properties
@@ -18,7 +42,6 @@ object methods
 	<cfargument name="bDropTable" default="false" type="boolean" required="No">
 	<cfargument name="dsn" type="string" required="false" default="#application.dsn#" hint="Database DSN">
 	
-	<cfset stArgs = arguments>
 	<cfinclude template="_stats/deploy.cfm">
 
 	<cfreturn stStatus>
@@ -36,8 +59,42 @@ object methods
 	<cfargument name="locale" type="string" required="false" hint="The locale of user" default="unknown">
 	<cfargument name="os" type="string" required="false" hint="The operating system of user" default="unknown">
 	
-	<cfset stArgs = arguments>
 	<cfinclude template="_stats/log.cfm">
+</cffunction>
+
+<cffunction name="logSearch" access="public" hint="Add entry to stats log for search queries">
+	<cfargument name="dsn" type="string" required="false" default="#application.dsn#">
+	<cfargument name="searchString" type="string" required="true" hint="Search string inputted by user">
+	<cfargument name="results" type="numeric" required="true" hint="Number of results returned by search">
+	<cfargument name="lCollections" type="string" required="true" hint="List of collections search against" default="">
+	<cfargument name="referer" type="string" required="true" hint="The referer that pointed the user to this page" default="#cgi.http_referer#">
+	<cfargument name="remoteIP" type="string" required="true" default="#trim(cgi.REMOTE_ADDR)#" hint="Remote address of user performing search">
+	
+	<cfinclude template="_stats/logSearch.cfm">
+</cffunction>
+
+<cffunction name="getSearchStats" access="public" returntype="query" hint="Returns full log results for site searches">
+	<cfargument name="dsn" type="string" required="false" default="#application.dsn#">
+	<cfargument name="dateRange" type="string" required="true" default="all">
+		
+	<cfinclude template="_stats/getSearchStats.cfm">
+	<cfreturn qGetSearchStats>
+</cffunction>
+
+<cffunction name="getSearchStatsNoResults" access="public" returntype="query" hint="Returns results for site searches that return no results">
+	<cfargument name="dsn" type="string" required="false" default="#application.dsn#">
+	<cfargument name="dateRange" type="string" required="true" default="all">
+		
+	<cfinclude template="_stats/getSearchStatsNoResults.cfm">
+	<cfreturn qGetSearchStats>
+</cffunction>
+
+<cffunction name="getSearchStatsMostPopular" access="public" returntype="query" hint="Returns results for the most popular site searches">
+	<cfargument name="dsn" type="string" required="false" default="#application.dsn#">
+	<cfargument name="dateRange" type="string" required="true" default="all">
+		
+	<cfinclude template="_stats/getSearchStatsMostPopular.cfm">
+	<cfreturn qGetSearchStats>
 </cffunction>
 
 <cffunction name="getPageStats" access="public" returntype="query" hint="Returns full log results">
@@ -45,7 +102,6 @@ object methods
 	<cfargument name="before" required="No" type="date">
 	<cfargument name="after" required="No" type="date">
 		
-	<cfset stArgs = arguments>
 	<cfinclude template="_stats/getPageStats.cfm">
 	<cfreturn qGetPageStats>
 </cffunction>
@@ -56,7 +112,6 @@ object methods
 	<cfargument name="before" required="No" type="date">
 	<cfargument name="after" required="No" type="date">
 		
-	<cfset stArgs = arguments>
 	<cfinclude template="_stats/getPageStatsByDate.cfm">
 	<cfreturn stReturn>
 </cffunction>
@@ -67,8 +122,6 @@ object methods
 	<cfargument name="showAll" type="boolean" required="false" default="false">
 	<cfargument name="dsn" type="string" required="false" default="#application.dsn#">
 	
-		
-	<cfset stArgs = arguments>
 	<cfinclude template="_stats/getPageStatsByDay.cfm">
 	<cfreturn qGetPageStatsByDay>
 </cffunction>
@@ -79,8 +132,6 @@ object methods
 	<cfargument name="showAll" type="boolean" required="false" default="false">
 	<cfargument name="dsn" type="string" required="false" default="#application.dsn#">
 	
-		
-	<cfset stArgs = arguments>
 	<cfinclude template="_stats/getPageStatsByWeek.cfm">
 	<cfreturn qGetPageStatsByWeek>
 </cffunction>
@@ -91,7 +142,6 @@ object methods
 	<cfargument name="before" required="No" type="date">
 	<cfargument name="after" required="No" type="date">
 		
-	<cfset stArgs = arguments>
 	<cfinclude template="_stats/getBranchStatsByDate.cfm">
 	<cfreturn stReturn>
 </cffunction>
@@ -102,8 +152,6 @@ object methods
 	<cfargument name="showAll" type="boolean" required="false" default="false">
 	<cfargument name="dsn" type="string" required="false" default="#application.dsn#">
 	
-		
-	<cfset stArgs = arguments>
 	<cfinclude template="_stats/getBranchStatsByDay.cfm">
 	<cfreturn qGetPageStatsByDay>
 </cffunction>
@@ -114,8 +162,6 @@ object methods
 	<cfargument name="showAll" type="boolean" required="false" default="false">
 	<cfargument name="dsn" type="string" required="false" default="#application.dsn#">
 	
-		
-	<cfset stArgs = arguments>
 	<cfinclude template="_stats/getBranchStatsByWeek.cfm">
 	<cfreturn qGetPageStatsByWeek>
 </cffunction>
@@ -123,7 +169,6 @@ object methods
 <cffunction name="getDownloadStats" access="public" returntype="query" hint="Returns log results for all downloaded objects">
 	<cfargument name="dsn" type="string" required="false" default="#application.dsn#">
 		
-	<cfset stArgs = arguments>
 	<cfinclude template="_stats/getDownloadStats.cfm">
 	<cfreturn qGetDownloadStats>
 </cffunction>
@@ -134,16 +179,23 @@ object methods
 	<cfargument name="maxRows" type="string" required="true" default="20" hint="Maximum number of results returned">
 	<cfargument name="dateRange" type="string" required="true" default="all">
 		
-	<cfset stArgs = arguments>
 	<cfinclude template="_stats/getMostViewed.cfm">
 	<cfreturn qGetMostViewed>
+</cffunction>
+
+<cffunction name="getSessions" access="public" returntype="query" hint="Returns the number of sessions in a given time frame">
+	<cfargument name="dsn" type="string" required="false" default="#application.dsn#">
+	<cfargument name="dateRange" type="string" required="true" default="all">
+		
+	<cfinclude template="_stats/getSessions.cfm">
+	<cfreturn qGetSessions>
 </cffunction>
 
 <cffunction name="getBrowsers" access="public" returntype="query" hint="Returns log results for browsers used">
 	<cfargument name="dsn" type="string" required="false" default="#application.dsn#">
 	<cfargument name="dateRange" type="string" required="true" default="all">
+	<cfargument name="maxRows" type="string" required="true" default="20" hint="Maximum number of results returned">
 			
-	<cfset stArgs = arguments>
 	<cfinclude template="_stats/getBrowsers.cfm">
 	<cfreturn qVisitors>
 </cffunction>
@@ -154,7 +206,6 @@ object methods
 	<cfargument name="dateRange" type="string" required="true" default="all">
 	<cfargument name="remoteIP" type="string" required="false" hint="filter by IP Address">
 		
-	<cfset stArgs = arguments>
 	<cfinclude template="_stats/getVisitors.cfm">
 	<cfreturn qVisitors>
 </cffunction>
@@ -163,7 +214,6 @@ object methods
 	<cfargument name="dsn" type="string" required="false" default="#application.dsn#">
 	<cfargument name="sessionId" type="string" required="true" hint="ID of visitor session">
 			
-	<cfset stArgs = arguments>
 	<cfinclude template="_stats/getVisitorPath.cfm">
 	<cfreturn qPath>
 </cffunction>
@@ -173,7 +223,6 @@ object methods
 	<cfargument name="before" required="No" type="date">
 	<cfargument name="after" required="No" type="date">
 		
-	<cfset stArgs = arguments>
 	<cfinclude template="_stats/getVisitorStatsByDate.cfm">
 	<cfreturn stReturn>
 </cffunction>
@@ -183,7 +232,6 @@ object methods
 	<cfargument name="showAll" type="boolean" required="false" default="false">
 	<cfargument name="dsn" type="string" required="false" default="#application.dsn#">
 			
-	<cfset stArgs = arguments>
 	<cfinclude template="_stats/getVisitorStatsByDay.cfm">
 	<cfreturn qGetPageStatsByDay>
 </cffunction>
@@ -193,7 +241,6 @@ object methods
 	<cfargument name="showAll" type="boolean" required="false" default="false">
 	<cfargument name="dsn" type="string" required="false" default="#application.dsn#">
 			
-	<cfset stArgs = arguments>
 	<cfinclude template="_stats/getVisitorStatsByWeek.cfm">
 	<cfreturn qGetPageStatsByWeek>
 </cffunction>
@@ -204,7 +251,6 @@ object methods
 	<cfargument name="dateRange" type="string" required="true" default="all">
 	<cfargument name="filter" type="string" required="false" default="all">
 		
-	<cfset stArgs = arguments>
 	<cfinclude template="_stats/getReferers.cfm">
 	<cfreturn qGetReferers>
 </cffunction>
@@ -214,7 +260,6 @@ object methods
 	<cfargument name="maxRows" type="string" required="true" default="20" hint="Maximum number of results returned">
 	<cfargument name="dateRange" type="string" required="true" default="all">
 		
-	<cfset stArgs = arguments>
 	<cfinclude template="_stats/getLocales.cfm">
 	<cfreturn qGetLocales>
 </cffunction>
@@ -224,7 +269,6 @@ object methods
 	<cfargument name="maxRows" type="string" required="true" default="20" hint="Maximum number of results returned">
 	<cfargument name="dateRange" type="string" required="true" default="all">
 		
-	<cfset stArgs = arguments>
 	<cfinclude template="_stats/getOS.cfm">
 	<cfreturn qGetOS>
 </cffunction>
@@ -232,9 +276,17 @@ object methods
 <cffunction name="getBrowser">
 	<cfargument name="user_agent" required="No" default="#cgi.http_user_agent#">
 	
-	<cfset stArgs = arguments>
 	<cfinclude template="_stats/getUserBrowser.cfm">	
 	<cfreturn stBrowser>
+</cffunction>
+
+<cffunction name="getActiveVisitors" hint="Returns a query of current sessions" returntype="query">
+	<cfargument name="dsn" type="string" required="false" default="#application.dsn#">
+	<cfargument name="order" type="string" default="sessionTime" required="true" hint="Field to order by">
+	<cfargument name="orderDirection" type="string" default="asc" required="true" hint="Order by ascending or descending">
+	
+	<cfinclude template="_stats/getActiveVisitors.cfm">	
+	<cfreturn qActive>
 </cffunction>
 
 <cffunction name="getUserOS">

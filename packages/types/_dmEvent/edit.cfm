@@ -5,11 +5,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmEvent/edit.cfm,v 1.3 2003/07/14 02:24:55 brendan Exp $
-$Author: brendan $
-$Date: 2003/07/14 02:24:55 $
-$Name: b131 $
-$Revision: 1.3 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmEvent/edit.cfm,v 1.5 2003/09/17 06:55:15 paul Exp $
+$Author: paul $
+$Date: 2003/09/17 06:55:15 $
+$Name: b201 $
+$Revision: 1.5 $
 
 || DESCRIPTION || 
 $Description: dmNews Edit Handler $
@@ -36,7 +36,7 @@ $in: url.killplp (optional)$
 	bForceNewInstance="#url.killplp#"
 	r_stOutput="stOutput"
 	storage="file"
-	storagedir="#application.fourq.plpstorage#"
+	storagedir="#application.path.plpstorage#"
 	redirection="server"
 	r_bPLPIsComplete="bComplete">
 
@@ -48,6 +48,35 @@ $in: url.killplp (optional)$
 	<farcry:plpstep name="categories" template="metadata.cfm">
 	<farcry:plpstep name="complete" template="complete.cfm" bFinishPLP="true">
 </farcry:plp> 
+
+
+<cfparam name="request.stPLP.currentStep" default="">
+<cfif request.stPLP.currentStep IS 'body'>
+	<script>
+		parent.frames['treeFrame'].location.href='#application.url.farcry#/navajo/overview_frame.cfm?rootobjectid=#application.navid.fileroot#&insertonly=1';
+		em = parent.document.getElementById('subTabArea');
+		for (var i = 0;i < em.childNodes.length;i++)
+		{
+			parent.document.getElementById(em.childNodes[i].id).style.display = 'none';	
+		}
+		parent.document.getElementById('DynamicFileTab').style.display ='inline';
+		parent.document.getElementById('DynamicImageTab').style.display ='inline';
+	</script>
+
+<cfelse>
+	<script>
+		parent.frames['treeFrame'].location.href='#application.url.farcry#/dynamic/dynamicMenuFrame.cfm?type=general';
+		em = parent.document.getElementById('subTabArea');
+		for (var i = 0;i < em.childNodes.length;i++)
+		{
+			parent.document.getElementById(em.childNodes[i].id).style.display = 'inline';	
+		}
+		parent.document.getElementById('DynamicFileTab').style.display ='none';
+		parent.document.getElementById('DynamicImageTab').style.display ='none';
+	</script>
+
+</cfif>
+
 </cfoutput>
 
 <cfif isDefined("bComplete") and bComplete>

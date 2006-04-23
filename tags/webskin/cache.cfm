@@ -6,11 +6,11 @@ Daemon Pty Limited 1995-2001
 http://www.daemon.com.au/
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/webskin/cache.cfm,v 1.6 2003/04/16 07:11:28 brendan Exp $
+$Header: /cvs/farcry/farcry_core/tags/webskin/cache.cfm,v 1.7 2003/09/25 23:28:09 brendan Exp $
 $Author: brendan $
-$Date: 2003/04/16 07:11:28 $
-$Name: b131 $
-$Revision: 1.6 $
+$Date: 2003/09/25 23:28:09 $
+$Name: b201 $
+$Revision: 1.7 $
 
 || PRIMARY DEVELOPER ||
 Aaron Shurmer (aaron@daemon.com.au)
@@ -50,33 +50,6 @@ hours				: optional, cache hours.
 minutes				: optional, cache minutes.
 seconds				: optional, cache seconds.
 r_output			: optional, return variable to put the cached content into.
-
-|| HISTORY ||
-$Log: cache.cfm,v $
-Revision 1.6  2003/04/16 07:11:28  brendan
-set default cacheBlockName to FarCry
-
-Revision 1.5  2003/04/09 09:57:54  spike
-Update with several bug fixes relating to using a single ColdFusion and web mapping
-
-Revision 1.4  2003/04/09 08:04:59  spike
-Major update to remove need for multiple ColdFusion and webserver mappings.
-
-Revision 1.3  2002/10/14 04:47:15  brendan
-updated to use cache cfc
-
-Revision 1.2  2002/10/11 07:03:35  brendan
-checks request mode instead of url
-
-Revision 1.1  2002/10/01 06:23:48  brendan
-no message
-
-Revision 1.1  2002/10/01 00:52:50  brendan
-no message
-
-Revision 1.1  2002/09/30 23:56:51  brendan
-new file for Cache control
-
 
 || END FUSEDOC ||
 --->

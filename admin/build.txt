@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/build.txt,v 1.50 2003/07/28 01:31:41 brendan Exp $
+$Header: /cvs/farcry/farcry_core/admin/build.txt,v 1.54 2003/11/03 05:37:55 brendan Exp $
 $Author: brendan $
-$Date: 2003/07/28 01:31:41 $
-$Name: b131 $
-$Revision: 1.50 $
+$Date: 2003/11/03 05:37:55 $
+$Name: b201 $
+$Revision: 1.54 $
 
 || DESCRIPTION || 
 $DESCRIPTION:$
@@ -21,6 +21,11 @@ $DEVELOPER:Brendan Sisson (brendan@daemon.com.au)$
 $in:$ 
 $out:$
 --->
+
+b201
+
+b200:
+- See release notes on website
 
 b131:
 - fix for handpicked rule submission via drop down

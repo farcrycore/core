@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/rules/_ruleHandpicked/listobjects.cfm,v 1.2 2003/05/03 04:00:57 geoff Exp $
-$Author: geoff $
-$Date: 2003/05/03 04:00:57 $
-$Name: b131 $
-$Revision: 1.2 $
+$Header: /cvs/farcry/farcry_core/packages/rules/_ruleHandpicked/listobjects.cfm,v 1.4 2003/09/24 05:20:10 paul Exp $
+$Author: paul $
+$Date: 2003/09/24 05:20:10 $
+$Name: b201 $
+$Revision: 1.4 $
 
 || DESCRIPTION || 
 $Description: ruleHandpicked PLP - choose object instances (listobjects.cfm) $
@@ -134,7 +134,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	<cfif not listLen(output.lObjectIDs)>
 	<div class="FormTitle" align="center" >
 		No objects have been chosen for this rule.<br>
-		<a href="#CGI.SCRIPT_NAME#?containerID=#URL.containerID#&handpickaction=add">Add Articles</a>
+		<a href="#CGI.SCRIPT_NAME#?containerID=#URL.containerID#&handpickaction=add&ruleid=#output.objectid#&typename=rulehandpicked">Add Articles</a>
 	</div>
 	<cfelse>	
 	
@@ -180,6 +180,8 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 				<!--- retrieve this objects data --->
 				<q4:contentobjectget objectID="#objectID#" r_stObject="stThisObject">
 				<!--- getting the display templates for this objects 'type' eg dmhtml,dmnews --->
+				
+				<cfif NOT structIsEmpty(stThisObject)>
 				<nj:listTemplates typename="#stThisObject.typename#" prefix="displayTeaser" r_qMethods="qDisplayTypes"> 
 				<tr id="row#objectID#">
 					<td>
@@ -200,6 +202,14 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 						<input name="objectID" type="checkbox" value="#stThisObject.objectID#" onClick="selectRow('row#objectID#');"> 
 					</td>
 				</tr>
+				<cfelse>
+					<tr>
+					<td colspan="4">
+						An object that was in this rule has been deleted from the datastore. This reference will be removed after you 'Apply Changes'
+					</td>
+					</tr>
+					<cfset output.lObjectIds = listDeleteAt(output.lObjectIds,listFindNoCase(output.lObjectIds,objectid))>
+				</cfif>
 				</cfloop>
 				<tr>
 					<td colspan="3">&nbsp;</td>
@@ -216,7 +226,8 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 		</td>
 		</table>	
 	</table>
-	<input type="button" value="Add Objects" onClick="location.href='#CGI.SCRIPT_NAME#?containerID=#URL.containerID#&handpickaction=add'" class="normalbttnstyle">
+	
+	<input type="button" value="Add Objects" onClick="location.href='#CGI.SCRIPT_NAME#?containerID=#URL.containerID#&handpickaction=add&ruleid=#output.objectid#&typename=rulehandpicked'" class="normalbttnstyle">
 	<input type="submit" value="Apply Changes" name="submit" class="normalbttnstyle">
 	
 	</div>

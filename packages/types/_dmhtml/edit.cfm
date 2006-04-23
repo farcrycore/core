@@ -5,11 +5,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmhtml/edit.cfm,v 1.15 2003/07/15 07:04:15 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmhtml/edit.cfm,v 1.18 2003/10/15 01:04:04 brendan Exp $
 $Author: brendan $
-$Date: 2003/07/15 07:04:15 $
-$Name: b131 $
-$Revision: 1.15 $
+$Date: 2003/10/15 01:04:04 $
+$Name: b201 $
+$Revision: 1.18 $
 
 || DESCRIPTION || 
 $Description: dmHTML Edit Handler $
@@ -37,7 +37,7 @@ $in: url.killplp (optional)$
 	bForceNewInstance="#url.killplp#"
 	r_stOutput="stOutput"
 	storage="file"
-	storagedir="#application.fourq.plpstorage#"
+	storagedir="#application.path.plpstorage#"
 	redirection="server"
 	r_bPLPIsComplete="bComplete">
 
@@ -47,6 +47,7 @@ $in: url.killplp (optional)$
 	<farcry:plpstep name="teaser" template="teaser.cfm">
 	<farcry:plpstep name="body" template="body.cfm">
 	<farcry:plpstep name="related" template="related.cfm">
+	<farcry:plpstep name="categories" template="metadata.cfm">
 	<farcry:plpstep name="complete" template="complete.cfm" bFinishPLP="true">
 </farcry:plp>
 </cfoutput>
@@ -61,11 +62,22 @@ $in: url.killplp (optional)$
 	</cfinvoke>
 	
 	<!--- check if object is a underlying draft page --->
-	<cfif len(trim(stOutput.versionId))>
-		<cfset objId = stOutput.versionId>
-	<cfelse>
-		<cfset objId = stOutput.objectId>
-	</cfif>
+	<cfscript>
+		oAuthentication = request.dmSec.oAuthentication;	
+		stuser = oAuthentication.getUserAuthenticationData();
+		if (len(trim(stOutput.versionId)))
+		{
+			objId = stOutput.versionId;
+			auditNote = 'Draft object update';
+			
+		}
+		else
+		{
+			objId = stOutput.objectId;
+			auditNote = 'update';
+		}
+		application.factory.oAudit.logActivity(auditType="Update", username=stUser.userlogin, location=cgi.remote_host, note=auditNote,objectid=objID);
+	</cfscript>	
 	
 	<!--- get parent to update tree --->
 	<nj:treeGetRelations 

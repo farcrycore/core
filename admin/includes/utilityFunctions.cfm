@@ -12,6 +12,54 @@
 	}
 
 	</cfscript>
+	
+	<cffunction name="getPackagePath" hint="Returns full package for a component based on its name - useful for determing whether this component is a core or custom effort ">
+		<cfargument name="name" required="true">
+		
+		<cfscript>
+			packagepath = '';
+			//first search types
+			for(key IN application.types)
+			{
+				if (key IS arguments.name)
+				{
+					if(application.types[key].bCustomType)
+					{
+						packagePath = '#application.custompackagepath#.types.#key#';
+						break;
+					}
+					else
+					{	
+						packagePath = '#application.packagepath#.types.#key#';
+						break;
+					}		
+				}	
+			}
+			//search rules now if not found in application.types scope
+			if (not len(packagepath))
+			{
+				for(key IN application.rules)
+				{
+					if (key IS arguments.name)
+					{
+						if(application.rules[key].bCustomRule)
+						{
+							packagePath = '#application.custompackagepath#.rules.#key#';
+							break;
+						}
+						else
+						{	
+							packagePath = '#application.packagepath#.rules.#key#';
+							break;
+						}	
+					}	
+				}
+			}
+			
+		
+		</cfscript>
+		<cfreturn packagepath>
+	</cffunction>
 
 	<cffunction name="arrayKeyToList">
 		<cfargument name="array" required="true">
@@ -43,6 +91,8 @@
 		</cfscript>
 		<cfreturn stStruct>
 	</cffunction>
+	
+	
 	
 	<cffunction name="QueryToArrayOfStructures" returntype="array">
 		<cfargument name="theQuery" required="true">

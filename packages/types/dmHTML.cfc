@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/dmHTML.cfc,v 1.9 2003/07/10 02:07:06 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/types/dmHTML.cfc,v 1.15 2003/09/25 00:14:40 brendan Exp $
 $Author: brendan $
-$Date: 2003/07/10 02:07:06 $
-$Name: b131 $
-$Revision: 1.9 $
+$Date: 2003/09/25 00:14:40 $
+$Name: b201 $
+$Revision: 1.15 $
 
 || DESCRIPTION || 
 $Description: dmHTML Content Type. Forms the basis of the content framework of the site.  HTML objects include containers and static information. $
@@ -18,7 +18,7 @@ $TODO: <whatever todo's needed -- can be inline also>$
 $Developer: Geoff Bowers (modius@daemon.com.au) $
 --->
 
-<cfcomponent extends="types" displayname="Standard Pages" hint="Forms the basis of the content framework of the site.  HTML objects include containers and static information." bSchedule="1">
+<cfcomponent extends="types" displayname="HTML Page" hint="Forms the basis of the content framework of the site.  HTML objects include containers and static information." bSchedule="1" bUseInTree="1">
 <!------------------------------------------------------------------------
 type properties
 ------------------------------------------------------------------------->	
@@ -33,21 +33,7 @@ type properties
 <cfproperty name="commentlog" type="longchar" hint="Workflow comment log." required="no" default="">
 <cfproperty name="versionID" type="uuid" hint="objectID of live object - used for versioning" required="no" default="">
 <cfproperty name="teaserImage" type="string" hint="UUID of image to display in teaser" required="no" default="">
-
-<!--- 
-$TODO: option properties.. for display
-Perhaps this should be a single property with a WDDX packet of attributes?  The only reason for breaking this out into many properties was to make containernames searchable.  Therefore container names are the only option properties that need to be full columns in the database table.  Also having set properties has ramifications for sharing this object type with other deployments.
-<
-cfproperty name="option_*" type="string" hint="display option." required="no" default=""> 
-$
---->
-
 <cfproperty name="status" type="string" hint="Status of the node (draft, pending, approved)." required="yes" default="draft">
-<!--- 
-$TODO: need to rethink versioning for farcry
-<cfproperty name="version" type="string" hint="Version number." required="yes" default="">
-<cfproperty name="versionid" type="string" hint="Object pointer to the versioned object." required="no">
-$ --->
 <!------------------------------------------------------------------------
 object methods 
 ------------------------------------------------------------------------->	
@@ -56,7 +42,6 @@ object methods
 	
 	<!--- getData for object edit --->
 	<cfset stObj = this.getData(arguments.objectid)>
-	<cfset stArgs = arguments> <!--- hack to make arguments available to included file --->
 	<cfinclude template="_dmhtml/edit.cfm">
 </cffunction>
 
@@ -65,9 +50,7 @@ object methods
 	
 	<!--- getData for object edit --->
 	<cfset stObj = this.getData(arguments.objectid)>
-	<cfset stArgs = arguments> <!--- hack to make arguments available to included file --->
 	<cfinclude template="_dmhtml/display.cfm">
 </cffunction>
-
 </cfcomponent>
 

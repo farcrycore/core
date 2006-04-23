@@ -1,3 +1,27 @@
+<!--- 
+|| LEGAL ||
+$Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
+$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
+
+|| VERSION CONTROL ||
+$Header: /cvs/farcry/farcry_core/tags/farcry/dump.cfm,v 1.2 2003/09/25 23:28:09 brendan Exp $
+$Author: brendan $
+$Date: 2003/09/25 23:28:09 $
+$Name: b201 $
+$Revision: 1.2 $
+
+|| DESCRIPTION || 
+$Description: Displays a dump of object data$
+$TODO: $
+
+|| DEVELOPER ||
+$Developer: Brendan Sisson (brendan@daemon.com.au)$
+
+|| ATTRIBUTES ||
+$in: $
+$out:$
+--->
+
 <cfsetting enablecfoutputonly="Yes">
 <cfimport taglib="/farcry/fourq/tags" prefix="q4">
 <cfparam name="url.lObjectIds" default="#attributes.lObjectIDs#">

@@ -6,11 +6,11 @@ Daemon Pty Limited 1995-2002
 http://www.daemon.com.au
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/security/_NTsecurity/getDomainGroups.cfm,v 1.1 2002/10/15 08:48:51 pete Exp $
-$Author: pete $
-$Date: 2002/10/15 08:48:51 $
-$Name: b131 $
-$Revision: 1.1 $
+$Header: /cvs/farcry/farcry_core/packages/security/_NTsecurity/getDomainGroups.cfm,v 1.2 2003/09/10 23:27:33 brendan Exp $
+$Author: brendan $
+$Date: 2003/09/10 23:27:33 $
+$Name: b201 $
+$Revision: 1.2 $
 
 || DESCRIPTION || 
 retrieve all groups in specified domain
@@ -21,12 +21,6 @@ Peter Alexandrou (suspiria@daemon.com.au)
 || ATTRIBUTES ||
 none
 
-|| HISTORY ||
-$Log: getDomainGroups.cfm,v $
-Revision 1.1  2002/10/15 08:48:51  pete
-first working version
-
-
 || END FUSEDOC ||
 --->
 
@@ -34,5 +28,5 @@ first working version
 o_domain = createObject("COM", "NTAdmin.NTContainerManagement");
 
 aGroups = arrayNew(1);
-aGroups  = o_domain.EnumerateContainer(stArgs.domain, "GlobalGroup");
+aGroups  = o_domain.EnumerateContainer(arguments.domain, "GlobalGroup");
 </cfscript>

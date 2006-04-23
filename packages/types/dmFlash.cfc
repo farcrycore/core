@@ -1,8 +1,28 @@
 <!--- 
-dmFlash Type
- ---> 
+|| LEGAL ||
+$Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
+$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
-<cfcomponent extends="types" displayname="Flash" hint="Forms the basis of the content framework of the site.  Displays a flash movie in the page." bSchedule="1">
+|| VERSION CONTROL ||
+$Header: /cvs/farcry/farcry_core/packages/types/dmFlash.cfc,v 1.8 2003/09/10 23:46:11 brendan Exp $
+$Author: brendan $
+$Date: 2003/09/10 23:46:11 $
+$Name: b201 $
+$Revision: 1.8 $
+
+|| DESCRIPTION || 
+$Description: dmFlash type $
+$TODO: $
+
+|| DEVELOPER ||
+$Developer: Brendan Sisson (brendan@daemon.com.au) $
+
+|| ATTRIBUTES ||
+$in: $
+$out:$
+--->
+
+<cfcomponent extends="types" displayname="Flash" hint="Forms the basis of the content framework of the site.  Displays a flash movie in the page." bSchedule="1" bUseInTree="1">
 <!------------------------------------------------------------------------
 type properties
 ------------------------------------------------------------------------->	
@@ -33,7 +53,6 @@ object methods
 	
 	<!--- getData for object edit --->
 	<cfset stObj = this.getData(arguments.objectid)>
-	<cfset stArgs = arguments> <!--- hack to make arguments available to included file --->
 	<cfinclude template="_dmFlash/edit.cfm">
 </cffunction>
 
@@ -42,7 +61,6 @@ object methods
 	
 	<!--- getData for object edit --->
 	<cfset stObj = this.getData(arguments.objectid)>
-	<cfset stArgs = arguments> <!--- hack to make arguments available to included file --->
 	<cfinclude template="_dmFlash/display.cfm">
 </cffunction>
 
@@ -51,7 +69,6 @@ object methods
 	
 	<!--- get object details --->
 	<cfset stObj = getData(arguments.objectid)>
-	<cfset stArgs = arguments> <!--- hack to make arguments available to included file --->
 	<cfinclude template="_dmFlash/delete.cfm">
 </cffunction>
 

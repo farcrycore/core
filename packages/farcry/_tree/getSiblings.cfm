@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_tree/getSiblings.cfm,v 1.6 2003/04/14 01:45:19 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_tree/getSiblings.cfm,v 1.8 2003/09/25 05:28:17 brendan Exp $
 $Author: brendan $
-$Date: 2003/04/14 01:45:19 $
-$Name: b131 $
-$Revision: 1.6 $
+$Date: 2003/09/25 05:28:17 $
+$Name: b201 $
+$Revision: 1.8 $
 
 || DESCRIPTION || 
 $Description: getSiblings Function $
@@ -26,20 +26,11 @@ $out:$
 
 <cfscript>
 	// get parent
-	parentSql = "select parentid from nested_tree_objects where objectid = '#arguments.objectid#'";
-	qParent = query(sql=parentSQl, dsn=stArgs.dsn);	
-	 
+	qParent = getParentID(arguments.objectid);
+	// don't get self
+	temp = arrayAppend(arguments.aFilter,"t.objectid <> '#arguments.objectid#'");
 	// get siblings
-	sql = "
-		select objectid, objectname from nested_tree_objects
-		where parentid =  '#qParent.parentid#'
-		and objectid <> '#arguments.objectid#'
-		order by nleft";
-	siblings = query(sql=sql, dsn=stArgs.dsn);	   	
+	qReturn = getDescendants(objectid=qParent.parentid,depth=1, afilter=arguments.aFilter,lColumns=arguments.lColumns);
 </cfscript>
-	
-
-<!--- set return variable --->
-<cfset qReturn=siblings>
 
 <cfsetting enablecfoutputonly="no">

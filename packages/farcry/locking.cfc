@@ -1,9 +1,32 @@
-<cfcomponent>
+<!--- 
+|| LEGAL ||
+$Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
+$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
+
+|| VERSION CONTROL ||
+$Header: /cvs/farcry/farcry_core/packages/farcry/locking.cfc,v 1.3 2003/09/10 12:21:48 brendan Exp $
+$Author: brendan $
+$Date: 2003/09/10 12:21:48 $
+$Name: b201 $
+$Revision: 1.3 $
+
+|| DESCRIPTION || 
+$Description: locking cfc $
+$TODO: $
+
+|| DEVELOPER ||
+$Developer: Brendan Sisson (brendan@daemon.com.au) $
+
+|| ATTRIBUTES ||
+$in: $
+$out:$
+--->
+
+<cfcomponent displayName="Object Locking" hint="Functions for locking and unlocking objects to avoid users editing at same time">
 	<cffunction name="lock" access="public" returntype="struct" hint="Locks object to current user">
 		<cfargument name="objectId" type="uuid" required="true">
 		<cfargument name="typeName" type="string" required="true">
 		
-		<cfset stArgs = arguments> <!--- hack to make arguments available to included file --->
 		<cfinclude template="_locking/lock.cfm">
 		
 		<cfreturn stLock>
@@ -14,7 +37,6 @@
 		<cfargument name="typeName" type="string" required="true">
 		<cfargument name="stObj" type="struct" required="false">
 		
-		<cfset stArgs = arguments> <!--- hack to make arguments available to included file --->
 		<cfinclude template="_locking/unlock.cfm">
 		
 		<cfreturn stLock>
@@ -23,7 +45,6 @@
 	<cffunction name="checkForLock" access="public" returntype="struct" hint="Checks if specified object is locked by another user on the system">
 		<cfargument name="objectId" type="uuid" required="true">
 		
-		<cfset stArgs = arguments> <!--- hack to make arguments available to included file --->
 		<cfinclude template="_locking/checkForLock.cfm">
 		
 		<cfreturn stLock>
@@ -33,7 +54,6 @@
 		<cfargument name="userLogin" type="string" required="true">
 		<cfargument name="types" type="string" required="false" default="dmHTML,dmNews,dmCSS,dmImage,dmFile,dmNavigation,dmInclude">
 		
-		<cfset stArgs = arguments> <!--- hack to make arguments available to included file --->
 		<cfinclude template="_locking/getLockedObjects.cfm">
 		
 		<cfreturn qLockedObjects2>
@@ -43,7 +63,6 @@
 		<cfargument name="days" type="numeric" required="true" default="5" hint="allowable number of days since locked object last updated">
 		<cfargument name="types" type="string" required="false" default="dmHTML,dmNews,dmCSS,dmImage,dmFile,dmNavigation,dmInclude">
 		
-		<cfset stArgs = arguments> <!--- hack to make arguments available to included file --->
 		<cfinclude template="_locking/scheduledUnlock.cfm">
 		
 		<cfreturn qLockedObjects>

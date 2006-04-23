@@ -1,21 +1,49 @@
+<!--- 
+|| LEGAL ||
+$Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
+$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
+
+|| VERSION CONTROL ||
+$Header: /cvs/farcry/farcry_core/packages/farcry/_locking/unlock.cfm,v 1.9 2003/10/22 07:18:15 paul Exp $
+$Author: paul $
+$Date: 2003/10/22 07:18:15 $
+$Name: b201 $
+$Revision: 1.9 $
+
+|| DESCRIPTION || 
+$Description: unlocks an object $
+$TODO: $
+
+|| DEVELOPER ||
+$Developer: Brendan Sisson (brendan@daemon.com.au) $
+$Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
+
+|| ATTRIBUTES ||
+$in: $
+$out:$
+--->
+
 <cfsetting enablecfoutputonly="yes">
 
 <cfimport taglib="/farcry/fourq/tags" prefix="q4">
+<cfinclude template="/farcry/farcry_core/admin/includes/utilityFunctions.cfm">
 
 <cfset stLock = structNew()>
 <cfset stLock.bSuccess=true>
 
-<cfparam name="stArgs.stObj" default="">
+<cfparam name="arguments.stObj" default="">
 
-<cfif isstruct(stArgs.stObj)>
-	<cfset stProperties = Duplicate(stArgs.stObj)>
+<cfif isstruct(arguments.stObj)>
+	<cfset stProperties = Duplicate(arguments.stObj)>
 <cfelse>
 	<!--- get object details --->
-	<q4:contentobjectget objectID="#stArgs.objectid#" r_stobject="stObj">
+	<q4:contentobjectget objectID="#arguments.objectid#" r_stobject="stObj">
 	<cfset stProperties = Duplicate(stObj)>
 </cfif>
 
-<cfset stProperties.label = stproperties.title>
+<cfif structKeyExists(stProperties,'title')>
+	<cfset stProperties.label = stproperties.title>
+</cfif>
 <!--- update locking fields (unlock) --->
 <cfset stProperties.locked = 0>
 <cfset stProperties.lockedBy = "">
@@ -37,16 +65,11 @@
 
 <cftry>
 	<cfscript>
-	if (application.types['#stArgs.typename#'].bCustomType)
-		thisPackagePath = "#application.custompackagepath#.types.#stArgs.typename#";
-	else
-		thisPackagePath = "#application.packagepath#.types.#stArgs.typename#";
-	</cfscript>
-	<!--- save object details --->
-	<q4:contentobjectdata
-	 typename="#thisPackagePath#"
-	 stProperties="#stProperties#"
-	 objectid="#stArgs.ObjectID#">
+		// update the OBJECT	
+		oType = createobject("component",getPackagePath(arguments.typename));
+		oType.setData(stProperties=stProperties,bAudit=0);
+	</cfscript>	
+	
 	<cfcatch>
 		<cfset stLock.bSuccess=false>
 		<cfset stLock.message=cfcatch>

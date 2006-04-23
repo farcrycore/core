@@ -1,7 +1,7 @@
 <cfsetting enablecfoutputonly="Yes">
 
 <cfscript>
-application.dsn = "farcry_app";
+application.dsn = "farcry_aura";
 application.dbtype = "odbc";
 application.dbowner = "dbo."; // don't forget the "."
 

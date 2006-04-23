@@ -1,7 +1,25 @@
-<!--- ColdFusion Custom Tag --->
-<!---
-	Ektron, Inc.
-	Revision Date: 2001-07-25
+<!--- 
+|| LEGAL ||
+$Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
+$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
+
+|| VERSION CONTROL ||
+$Header: /cvs/farcry/farcry_core/tags/farcry/ewebeditpro3.cfm,v 1.2 2003/09/25 23:28:09 brendan Exp $
+$Author: brendan $
+$Date: 2003/09/25 23:28:09 $
+$Name: b201 $
+$Revision: 1.2 $
+
+|| DESCRIPTION || 
+$Description: Displays an editor for long text input. Based on config settings unless in toggle mode which will display a basic html text area$
+$TODO: $
+
+|| DEVELOPER ||
+$Developer: Tom Cornilliac (tomc@co.deschutes.or.us) $
+
+|| ATTRIBUTES ||
+$in: $
+$out:$
 --->
 
 <cfsetting enablecfoutputonly="Yes">

@@ -9,7 +9,7 @@ http://www.daemon.com.au
 $Header: /cvs/farcry/farcry_core/admin/includes/countdown.cfm,v 1.2 2003/03/18 01:09:28 brendan Exp $
 $Author: brendan $
 $Date: 2003/03/18 01:09:28 $
-$Name: b131 $
+$Name: b201 $
 $Revision: 1.2 $
 
 || DESCRIPTION || 

@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_stats/getBrowsers.cfm,v 1.4 2003/06/05 03:00:56 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_stats/getBrowsers.cfm,v 1.6 2003/09/10 12:21:48 brendan Exp $
 $Author: brendan $
-$Date: 2003/06/05 03:00:56 $
-$Name: b131 $
-$Revision: 1.4 $
+$Date: 2003/09/10 12:21:48 $
+$Name: b201 $
+$Revision: 1.6 $
 
 || DESCRIPTION || 
 $Description: Shows browser types used$
@@ -22,14 +22,22 @@ $in: $
 $out:$
 --->
 
-<!--- get browsers from stats --->
+<!--- get maxrows if not defined --->
+<cfif arguments.maxRows eq "all">
+	<cfquery datasource="#arguments.dsn#" name="qMax">
+		SELECT count(logid) as maxrows
+		FROM #application.dbowner#stats
+	</cfquery>
+	<cfset arguments.maxrows = qMax.maxrows>
+</cfif>
 
-<cfquery name="qVisitors" datasource="#stArgs.dsn#">
+<!--- get browsers from stats --->
+<cfquery name="qVisitors" datasource="#arguments.dsn#" maxrows="#arguments.maxRows#">
 	select browser, count(distinct sessionid) as views
 	from #application.dbowner#stats
 	WHERE 1=1
-	<cfif stArgs.dateRange neq "all">
-		AND logDateTime > #dateAdd("#stArgs.dateRange#",-1,now())#
+	<cfif arguments.dateRange neq "all">
+		AND logDateTime > #dateAdd("#arguments.dateRange#",-1,now())#
 	</cfif>
 	AND browser <> 'unknown'
 	GROUP BY browser	

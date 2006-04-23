@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/rules/_ruleHandpicked/selectObjects.cfm,v 1.4 2003/07/24 00:41:52 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/rules/_ruleHandpicked/selectObjects.cfm,v 1.7 2003/09/22 04:59:11 brendan Exp $
 $Author: brendan $
-$Date: 2003/07/24 00:41:52 $
-$Name: b131 $
-$Revision: 1.4 $
+$Date: 2003/09/22 04:59:11 $
+$Name: b201 $
+$Revision: 1.7 $
 
 || DESCRIPTION || 
 $Description: ruleHandpicked PLP - choose teaser handler (teaser.cfm) $
@@ -18,15 +18,45 @@ $TODO: Clean up whitespace issues, revise formatting 20030503 GB$
 $Developer: Paul Harrison (paul@daemon.com.au) $
 $Developer: Geoff Bowers (modius@daemon.com.au) $
 --->
+<cffunction name="getMinTypeDate">
+	<cfargument name="typename">
+	<cfquery name="q" datasource="#application.dsn#">
+		SELECT min(datetimelastupdated) as mindate
+		FROM #application.dbowner##arguments.typename#
+	</cfquery>
+	<cfreturn q.mindate>
+</cffunction>	
+
+<cffunction name="getMaxTypeDate">
+	<cfargument name="typename">
+	<cfquery name="q" datasource="#application.dsn#">
+		SELECT max(datetimelastupdated) as maxdate
+		FROM #application.dbowner##arguments.typename#
+	</cfquery>
+	<cfreturn q.maxdate>
+</cffunction>	
+
+
+<cfparam name="output.startyear" default="#year(getMinTypeDate(output.dmtype))#">
+<cfparam name="output.endyear" default="#year(getMaxTypeDate(output.dmtype))#">
+<cfparam name="output.maxday" default="#day(getMaxTypeDate(output.dmtype)+1)#">
+<cfparam name="output.maxmonth" default="#month(getMaxTypeDate(output.dmtype))#">
+<cfparam name="output.maxyear" default="#year(getMaxTypeDate(output.dmtype))#">
+<cfparam name="output.minday" default="#day(getMinTypeDate(output.dmtype)-7)#">
+<cfparam name="output.minmonth" default="#month(getMinTypeDate(output.dmtype))#">
+<cfparam name="output.minyear" default="#year(getMinTypeDate(output.dmtype))#">
+
 <cfparam name="output.orderby" default="label">
 <cfparam name="output.orderdir" default="asc">
 <cfparam name="output.lobjectids" default="">
+<cfparam name="output.labelsearch" default="">
+<cfparam name="output.labelsearchcondition" default="">
 <cfparam name="cookie.hp_#output.cleanObjectID#" default="#output.lObjectIDs#">
 
 
 <cfoutput>
 	<link type="text/css" rel="stylesheet" href="#application.url.farcry#/css/admin.css"> 
-</cfoutput>
+
 <script language="JavaScript">
 	
 	var rowcolor="red";
@@ -41,7 +71,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	// serverGet() function when it's done
 	function serverPut(objID,cleanUUID){
 		// the URL of the script on the server to run
-		strURL = "setHandpickedCookie.cfm";
+		strURL = "#application.url.farcry#/navajo/setHandpickedCookie.cfm";
 		// if you need to pass any variables to the script, 
 		// then populate the following string with a valid query string	
 		strQueryString = "objectId=" + objID + "&cookiename="+cleanUUID+"&" + Math.random();
@@ -87,7 +117,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	}
 
 </script>
-
+</cfoutput>
 <cfimport taglib="/farcry/farcry_core/tags/farcry" prefix="tags">
 <cfset thisstep.isComplete = 0>
 <cfset thisstep.name = stplp.currentstep>
@@ -114,8 +144,38 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 
 <!--- Build SQL  --->
 <cfscript>
+		
 	sql = "SELECT * FROM #output.dmType#";
 	sql = sql & " WHERE status = 'approved'";
+	sql = sql & " AND datetimelastupdated >= #createodbcdate(output.minyear &'-'&output.minmonth&'-' & output.minday)#";
+	sql = sql & " AND datetimelastupdated <= #createodbcdate(output.maxyear &'-'&output.maxmonth&'-' & output.maxday)#";
+	
+	if (len(trim(output.labelsearch)))
+	{
+		replace(output.labelsearch,"'","''","ALL"); //delimit single quotes.
+		aKeyWords = listToArray(output.labelsearch,' ');
+		sqlclause = '';
+		switch (output.labelsearchcondition)
+		{
+			case "or" : case "and" :
+			{
+				for (i = 1;i LTE arrayLen(aKeyWords);i=i+1)
+				{
+					sqlclause = sqlclause & "label like '%#aKeyWords[i]#%'";
+					if(i LT arrayLen(aKeyWords))
+						sqlclause = sqlclause & " #output.labelsearchcondition# ";
+				}
+				if (len(sqlClause))
+					sql = sql & " AND (#sqlclause#)";
+				break;	
+			}		
+			case "exact" :
+			{
+				sql = sql & " AND label like '%#output.labelsearch#%'";
+				break;
+			}
+		}	
+	}
 	sql = sql & " ORDER BY #output.orderby# #output.orderdir#";
 </cfscript>
 
@@ -146,6 +206,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 		endrow=1;
 		startrow=1;
 	}
+	oForm = createObject("component","#application.packagepath#.farcry.form");
 </cfscript>
 
 
@@ -156,20 +217,54 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	</style>
 
 	<div class="FormTitle">Select Object Type</div>
-	<div class="FormTable" align="center">
+	<div class="FormTable" align="center" style="width:90%">
 	<form name="form" action="" method="post">
- 	<table>
+ 	<table width="100%">
 	<tr>
 		<td>
-			Object Type - #output.dmType#
+			<strong>Object Type</strong> - #output.dmType#
 		</td>
 	</tr>
+	
 	<tr>
 		<td>
-			<table width="100%">
+			<table style="width:100%" border="1" >
+				<tr>
+					<td width="20%">
+						<strong>Title Keywords</strong>
+					</td>
+					<td>
+						<input type="Text" value="#output.labelsearch#" name="labelsearch">
+						<select name="labelsearchcondition">
+							<option value="or" <cfif output.labelsearchcondition IS "or">selected</cfif>>Match any words
+							<option value="and" <cfif output.labelsearchcondition IS "all">selected</cfif>>Match all words
+							<option value="exact" <cfif output.labelsearchcondition IS "exact">selected</cfif>>Match exact phrase 
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td valign="top">
+						<strong>Date Range</strong>
+					</td>
+					<td>
+						<table>
+						<tr><td valign="middle">
+							#oForm.renderDateSelect(startYear=output.startyear,endyear=output.endyear,selectedyear=output.minyear,selectedday=output.minday,selectedmonth=output.minmonth,elementNamePrefix='min')#
+						</td></tr>
+						<tr><td>
+							to
+						</td></tr>
+						<tr><td>
+							#oForm.renderDateSelect(startYear=output.startyear,endyear=output.endyear,selectedyear=output.maxyear,selectedday=output.maxday,selectedmonth=output.maxmonth,elementNamePrefix='max')#
+						</td></tr>
+						</table>
+					</td>
+				</tr>
 				<tr>
 					<td>
-						Order by
+						<strong>Order by</strong>
+					</td>
+					<td>
 						<select name="orderby">
 							<option value="label" <cfif output.orderby IS "label">selected</cfif>>Label</option>
 							<option value="datetimelastupdated" <cfif output.orderby IS "datetimelastupdated">selected</cfif>>Date Object Last Updated</option>
@@ -178,9 +273,10 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 							<option value="ASC" <cfif output.orderdir IS "ASC">selected</cfif>>Ascending</option>
 							<option value="DESC" <cfif output.orderby IS "DESC">selected</cfif>>Descending</option>
 						</select>
-						<input type="submit" name="search" value="Go">
+						
 					</td>
 				</tr>
+				<tr><td colspan="2" align="center"><input type="submit" name="search" value="Filter"></td></tr>
 			</table>
 		</td>
 	</tr>										

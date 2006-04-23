@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmNews/plpEdit/files.cfm,v 1.3 2003/07/10 02:07:06 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmNews/plpEdit/files.cfm,v 1.6 2003/10/15 00:24:16 brendan Exp $
 $Author: brendan $
-$Date: 2003/07/10 02:07:06 $
-$Name: b131 $
-$Revision: 1.3 $
+$Date: 2003/10/15 00:24:16 $
+$Name: b201 $
+$Revision: 1.6 $
 
 || DESCRIPTION || 
 $Description: dmNews Edit PLP - Adds files as associated objects.$
@@ -135,11 +135,17 @@ function removeUploadBtn()
 		</cfscript>
 		<!--- if form.editfile exists - then an existing object is being edited - else must create new object --->
 		
-		<cfif isDefined("form.editObject")>
-			<q4:contentobjectdata typename="#application.packagepath#.types.#typeName#" stProperties="#stProperties#" objectid="#stProperties.objectID#">
-		<cfelse>
-			<q4:contentobjectcreate typename="#application.packagepath#.types.#typeName#" stproperties="#stProperties#" r_objectid="NewObjID">
-		</cfif>
+		<cfscript>
+			oType = createobject("component","#application.packagepath#.types.#typeName#");
+			if (isdefined("form.editObject")) {
+				// update the OBJECT	
+				oType.setData(stProperties=stProperties);
+			} else {
+				// create the new OBJECT
+				stNewObj = oType.createData(stProperties=stProperties);
+				NewObjID = stNewObj.objectid;
+			}
+		</cfscript>
 	</cfcase>
 
 	<cfcase value="deleteObject">
@@ -213,7 +219,7 @@ function removeUploadBtn()
 			</td>
 			<td align="center">
 				<cfif len(trim(stThisFile.filename)) NEQ 0>
-				<a href="#stThisFile.filePath#\#stThisFile.filename#" target="_blank">
+				<a href="#application.url.webroot#/files/#stThisFile.filename#" target="_blank">
 					<img src="#application.url.farcry#/images/treeImages/preview.gif" border="0">
 				</a>
 				<cfelse>

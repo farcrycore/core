@@ -1,7 +1,7 @@
 
 <cfcomponent displayname="News Rule" extends="rules" hint="">
 
-<cfproperty name="intro" type="string" hint="Intro text for the news listing" required="yes" default="">
+<cfproperty name="intro" type="string" hint="Intro text for the news listing" required="no" default="">
 <cfproperty name="displayMethod" type="string" hint="Display method to render this news rule with." required="yes" default="displayteaserbullets">
 <cfproperty name="numItems" hint="The number of items to display per page" type="numeric" required="true" default="5">
 <cfproperty name="numPages" hint="The number of pages of news articles to display at most" type="numeric" required="true" default="1">
@@ -14,20 +14,19 @@
 		<cfargument name="label" required="no" type="string" default="">
 		<cfimport taglib="/farcry/fourq/tags/" prefix="q4">
 		<cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
-        <cfimport taglib="/farcry/farcry_core/tags/display/" prefix="display">				
+        <cfimport taglib="/farcry/farcry_core/tags/display/" prefix="display">
 
 		<cfparam name="form.bArchive" default="0">
 		<cfparam name="form.bMatchAllKeywords" default="0">
 		<cfparam name="form.categoryID" default="">
-		
 
-		
         <cfparam name="isClosed" default="Yes">
         <cfif isDefined("form.categoryid") OR isDefined("form.apply")>
             <cfset isClosed = "No">
         </cfif>
 
-		<cfset stObj = this.getData(arguments.objectid)> 
+		<cfset stObj = this.getData(arguments.objectid)>
+
 		<cfif isDefined("form.updateRuleNews")>
 			<cfscript>
 				stObj.displayMethod = form.displayMethod;
@@ -40,15 +39,15 @@
 			</cfscript>
 			<q4:contentobjectdata typename="#application.packagepath#.rules.ruleNews" stProperties="#stObj#" objectID="#stObj.objectID#">
 			<!--- Now assign the metadata --->
-					
+
 			<cfset message = "Update Successful">
 		</cfif>
-				
+
 		<cfif isDefined("message")>
 			<div align="center"><strong>#message#</strong></div>
-		</cfif>	
+		</cfif>
 		<!--- get the display methods --->
-		<nj:listTemplates typename="dmNews" prefix="displayTeaser" r_qMethods="qDisplayTypes"> 
+		<nj:listTemplates typename="dmNews" prefix="displayTeaser" r_qMethods="qDisplayTypes">
 		<form action="" method="POST">
 		<table width="100%" align="center" border="0">
 		<input type="hidden" name="ruleID" value="#stObj.objectID#">
@@ -67,7 +66,7 @@
 		<tr>
 				<td align="right">
 					<b>Intro:</b>
-				</td> 
+				</td>
 				<td>
 					<textarea rows="5" cols="50" name="intro">#stObj.intro#</textarea>
 				</td>
@@ -81,7 +80,7 @@
 		</tr>
 		<tr>
 			<td colspan="2"><b>How many pages would you like in the archive at most?</b>  <input type="text" name="numPages" value="#stObj.numPages#" size="3"></td>
-		</tr>	
+		</tr>
 		</table>
 
         <br><br>
@@ -89,7 +88,7 @@
 		<display:OpenLayer width="400" title="Restrict By Categories" titleFont="Verdana" titleSize="7.5" isClosed="#isClosed#" border="no">
 		<table align="center" border="0">
         <tr>
-            <td><b>Does the content need to match ALL the selected Keywords?</b> <input type="checkbox" name="bMatchAllKeywords"></td>
+            <td><b>Does the content need to match ALL the selected Keywords?</b> <input type="checkbox" name="bMatchAllKeywords" value="1" <cfif stObj.bMatchAllKeywords>checked</cfif>></td>
         </tr>
         <tr>
             <td>&nbsp;</td>
@@ -97,8 +96,8 @@
 		<tr>
 			<td id="Tree">
    				<cfinvoke  component="#application.packagepath#.farcry.category" method="displayTree">
-    				<cfinvokeargument name="bShowCheckBox" value="true"> 
-   					<cfinvokeargument name="lselectedCategories" value="#stObj.metaData#">	
+    				<cfinvokeargument name="bShowCheckBox" value="true">
+   					<cfinvokeargument name="lselectedCategories" value="#stObj.metaData#">
     			</cfinvoke>
 			</td>
 		</tr>
@@ -106,9 +105,9 @@
 		</display:OpenLayer>
 		<div align="center"><input class="normalbttnstyle" type="submit" value="go" name="updateRuleNews"></div>
 		</form>
-			
-	</cffunction> 
-	
+
+	</cffunction>
+
 	<cffunction name="getDefaultProperties" returntype="struct" access="public">
 		<cfscript>
 			stProps=structNew();
@@ -120,40 +119,39 @@
 			stProps.bArchive = 0;
 			stProps.bMatchAllKeywords = 0;
 			stProps.metadata = '';
-		</cfscript>	
+		</cfscript>
 		<cfreturn stProps>
-	</cffunction>  
+	</cffunction>
 
 	<cffunction access="public" name="execute" output="true">
 		<cfargument name="objectID" required="Yes" type="uuid" default="">
 		<cfargument name="dsn" required="false" type="string" default="#application.dsn#">
 		<cfparam name="request.mode.lValidStatus" default="approved">
-		<cfset stObj = this.getData(arguments.objectid)> 
-		
+		<cfset stObj = this.getData(arguments.objectid)>
+
 		<cfif application.dbtype eq "mysql">
 			<!--- create temp table for status --->
-			<cfquery datasource="#stArgs.dsn#" name="temp">
+			<cfquery datasource="#arguments.dsn#" name="temp">
 				DROP TABLE IF EXISTS tblTemp1
 			</cfquery>
-			<cfquery datasource="#stArgs.dsn#" name="temp2">
+			<cfquery datasource="#arguments.dsn#" name="temp2">
 				create temporary table `tblTemp1`
 					(
 					`Status`  VARCHAR(50) NOT NULL
 					)
 			</cfquery>
 			<cfloop list="#request.mode.lValidStatus#" index="i">
-				<cfquery datasource="#stArgs.dsn#" name="temp3">
-					INSERT INTO tblTemp1 (Status) 
+				<cfquery datasource="#arguments.dsn#" name="temp3">
+					INSERT INTO tblTemp1 (Status)
 					VALUES ('#replace(i,"'","","all")#')
 				</cfquery>
 			</cfloop>
 		</cfif>
-		
 		<!--- If Archive: Get Maximum Rows in New Table --->
-		<cfif stObj.bArchive>	
+		<cfif stObj.bArchive>
 			<cfquery datasource="#arguments.dsn#" name="qGetNewsCount">
-			SELECT objectID
-			FROM #application.dbowner#dmNews 
+				SELECT objectID
+				FROM #application.dbowner#dmNews
 			</cfquery>
 			<cfset maximumRows = qGetNewsCount.recordcount>
 		<cfelse>
@@ -163,65 +161,87 @@
 		<cfif NOT trim(len(stObj.metadata)) EQ 0>
 			<!--- show by categories --->
 			<cfswitch expression="#application.dbtype#">
-				<cfcase value="ora">
-					<cfquery datasource="#arguments.dsn#" name="qGetNews" maxrows="#maximumRows#">
-						SELECT DISTINCT type.objectID, type.publishDate, type.label
-						FROM refObjects refObj 
-						JOIN refCategories refCat ON refObj.objectID = refCat.objectID
-						JOIN dmNews type ON refObj.objectID = type.objectID  
-						WHERE refObj.typename = 'dmNews' 
-							AND refCat.categoryID IN ('#ListChangeDelims(stObj.metadata,"','",",")#')
-							AND type.status IN ('#ListChangeDelims(request.mode.lValidStatus,"','",",")#')
-							AND publishdate <= #now()#
-							AND expirydate >= #now()#
-						ORDER BY type.publishDate DESC, type.label ASC
-					</cfquery>
-				</cfcase>
-				
 				<cfcase value="mysql">
-					<cfquery datasource="#arguments.dsn#" name="qGetNews" maxrows="#maximumRows#">
-						SELECT DISTINCT type.objectID, type.publishDate, type.label
-						FROM tblTemp1, refObjects refObj 
-						JOIN refCategories refCat ON refObj.objectID = refCat.objectID
-						JOIN dmNews type ON refObj.objectID = type.objectID  
-						WHERE refObj.typename = 'dmNews' 
-							AND refCat.categoryID IN ('#ListChangeDelims(stObj.metadata,"','",",")#')
-							AND type.status = tblTemp1.Status
-							AND publishdate <= #now()#
-							AND expirydate >= #now()#
-						ORDER BY type.publishDate DESC, type.label ASC
-					</cfquery>
+					<cfif stObj.bMatchAllKeywords>
+						<!--- must match all categories --->
+						<cfquery datasource="#arguments.dsn#" name="qGetNews" maxrows="#maximumRows#">
+							SELECT DISTINCT type.objectID, type.publishDate, type.label
+							    FROM tblTemp1, dmNews type, refCategories refCat1
+							<!--- if more than one category make join for each --->
+							<cfif listLen(stObj.metadata) gt 1>
+								<cfloop from="2" to="#listlen(stObj.metadata)#" index="i">
+								    , refCategories refCat#i#
+								</cfloop>
+							</cfif>
+							WHERE 1=1
+								<!--- loop over each category and make sure item has all categories --->
+								<cfloop from="1" to="#listlen(stObj.metadata)#" index="i">
+									AND refCat#i#.categoryID = '#listGetAt(stObj.metadata,i)#'
+									AND refCat#i#.objectId = type.objectId
+								</cfloop>
+								AND type.status = tblTemp1.Status
+								AND publishdate <= #now()#
+								AND expirydate >= #now()#
+							ORDER BY type.publishDate DESC, type.label ASC
+						</cfquery>
+					<cfelse>
+						<!--- doesn't need to match all categories --->
+						<cfquery datasource="#arguments.dsn#" name="qGetNews" maxrows="#maximumRows#">
+							SELECT DISTINCT type.objectID, type.publishDate, type.label
+							FROM tblTemp1, refCategories refCat, dmNews type
+							WHERE refCat.objectID = type.objectID
+								AND refCat.categoryID IN ('#ListChangeDelims(stObj.metadata,"','",",")#')
+								AND type.status = tblTemp1.Status
+								AND publishdate <= #now()#
+								AND expirydate >= #now()#
+							ORDER BY type.publishDate DESC, type.label ASC
+						</cfquery>
+					</cfif>
 				</cfcase>
-				
+
 				<cfdefaultcase>
-					<cfquery datasource="#arguments.dsn#" name="qGetNews" maxrows="#maximumRows#">
-						SELECT DISTINCT type.objectID, type.publishDate, type.label
-						FROM refObjects refObj 
-						JOIN refCategories refCat ON refObj.objectID = refCat.objectID
-						JOIN dmNews type ON refObj.objectID = type.objectID  
-						WHERE refObj.typename = 'dmNews' 
-							AND refCat.categoryID IN ('#ListChangeDelims(stObj.metadata,"','",",")#')
-							AND type.status IN ('#ListChangeDelims(request.mode.lValidStatus,"','",",")#')
-							AND publishdate <= #now()#
-							AND expirydate >= #now()#
-						ORDER BY type.publishDate DESC, type.label ASC
-					</cfquery>
+					<cfif stObj.bMatchAllKeywords>
+						<!--- must match all categories --->
+						<cfquery datasource="#arguments.dsn#" name="qGetNews" maxrows="#maximumRows#">
+							SELECT DISTINCT type.objectID, type.publishDate, type.label
+							FROM refCategories refcat1
+							<!--- if more than one category make join for each --->
+							<cfif listLen(stObj.metadata) gt 1>
+								<cfloop from="2" to="#listlen(stObj.metadata)#" index="i">
+									inner join refcategories refcat#i# on refcat#i-1#.objectid = refcat#i#.objectid
+								</cfloop>
+							</cfif>
+							JOIN dmNews type ON refcat1.objectID = type.objectID
+							WHERE 1=1
+								<!--- loop over each category and make sure item has all categories --->
+								<cfloop from="1" to="#listlen(stObj.metadata)#" index="i">
+									AND refCat#i#.categoryID = '#listGetAt(stObj.metadata,i)#'
+								</cfloop>
+								AND type.status IN ('#ListChangeDelims(request.mode.lValidStatus,"','",",")#')
+								AND publishdate <= #now()#
+								AND expirydate >= #now()#
+							ORDER BY type.publishDate DESC, type.label ASC
+						</cfquery>
+					<cfelse>
+						<!--- doesn't need to match all categories --->
+						<cfquery datasource="#arguments.dsn#" name="qGetNews" maxrows="#maximumRows#">
+							SELECT DISTINCT type.objectID, type.publishDate, type.label
+							FROM refObjects refObj
+							JOIN refCategories refCat ON refObj.objectID = refCat.objectID
+							JOIN dmNews type ON refObj.objectID = type.objectID
+							WHERE refObj.typename = 'dmNews'
+								AND refCat.categoryID IN ('#ListChangeDelims(stObj.metadata,"','",",")#')
+								AND type.status IN ('#ListChangeDelims(request.mode.lValidStatus,"','",",")#')
+								AND publishdate <= #now()#
+								AND expirydate >= #now()#
+							ORDER BY type.publishDate DESC, type.label ASC
+						</cfquery>
+					</cfif>
 				</cfdefaultcase>
 			</cfswitch>
 		<cfelse>
 			<!--- don't filter on categories --->
 			<cfswitch expression="#application.dbtype#">
-				<cfcase value="ora">
-					<cfquery datasource="#arguments.dsn#" name="qGetNews" maxrows="#maximumRows#">
-						SELECT *
-						FROM #application.dbowner#dmNews 
-						WHERE status IN ('#ListChangeDelims(request.mode.lValidStatus,"','",",")#')
-							AND publishdate <= #now()#
-							AND expirydate >= #now()#
-						ORDER BY publishDate DESC
-					</cfquery>
-				</cfcase>
-				
 				<cfcase value="mysql">
 					<cfquery datasource="#arguments.dsn#" name="qGetNews" maxrows="#maximumRows#">
 						SELECT *
@@ -232,21 +252,20 @@
 						ORDER BY publishDate DESC
 					</cfquery>
 				</cfcase>
-				
+
 				<cfdefaultcase>
 					<cfquery datasource="#arguments.dsn#" name="qGetNews" maxrows="#maximumRows#">
 						SELECT *
-						FROM #application.dbowner#dmNews 
+						FROM #application.dbowner#dmNews
 						WHERE status IN ('#ListChangeDelims(request.mode.lValidStatus,"','",",")#')
 							AND publishdate <= #now()#
 							AND expirydate >= #now()#
 						ORDER BY publishDate DESC
 					</cfquery>
 				</cfdefaultcase>
-			</cfswitch>	
-	
-		</cfif> 
-	
+			</cfswitch>
+		</cfif>
+
 		<cfif NOT stObj.bArchive>
 			<cfif len(trim(stObj.intro)) AND qGetNews.recordCount>
 				<cfset tmp = arrayAppend(request.aInvocations,stObj.intro)>
@@ -267,8 +286,8 @@
 			<!--- Check URL.pageno --->
 			<cfif url.pgno GT iNumberOfPages OR url.pgno GT stobj.numpages>
 				<cfset url.pgno = 1>
-			</cfif>		
-				
+			</cfif>
+
 			<!--- Check Number of Pages --->
 			<cfif iNumberOfPages GT stobj.numpages>
 				<cfset iNumberOfPages = stobj.numpages>
@@ -294,15 +313,15 @@
 				<br>
 				</cfoutput>
 			</cfif>
-			
+
 			<!--- Loop Through News and Display --->
 			<cfloop query="qGetNews" startrow="#startrow#" endrow="#endrow#">
 				<cfscript>
 				o = createObject("component", "#application.packagepath#.types.dmNews");
-				o.getDisplay(qGetNews.ObjectID, stObj.displayMethod);	
+				o.getDisplay(qGetNews.ObjectID, stObj.displayMethod);
 				</cfscript>
 			</cfloop>
-			
+
 			<!--- Output Page Numbers --->
 			<cfif iNumberOfPages GT 1>
 				<cfoutput>
@@ -317,12 +336,12 @@
 				<cfif url.pgno NEQ iNumberOfPages>
 					&nbsp;&nbsp;<a class="newsArchive" href="#Application.URL.conjurer#?objectID=#url.objectID#&pgno=#(url.pgno+1)#">Next Page</a>
 				</cfif>
-				</div>				
+				</div>
 				</cfoutput>
 			</cfif>
-			
+
 		</cfif>
-		
-	</cffunction> 
+
+	</cffunction>
 
 </cfcomponent>

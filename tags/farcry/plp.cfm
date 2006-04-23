@@ -243,6 +243,7 @@ TODO:
 <cfset output = duplicate(stPLP.plp.output)>
 	<cfinclude template="#attributes.stepDir#/#stPLP.plp.steps[stPLP.currentStep].template#">	
 <cfset stPLP.plp.output = duplicate(output)>
+<cfset request.stPLP = duplicate(stPLP)>
 
 	<cfcatch type="Any">
 <cfoutput>
@@ -253,6 +254,7 @@ TODO:
 	PLP template: #attributes.stepDir#/#stPLP.plp.steps[stPLP.currentStep].template#
 	<br>
 	ColdFusion Error Data<hr>
+	<cfset request.cfdumpinited = false>
 	<cfdump var="#cfcatch#">
 </fieldset>
 </cfoutput>
@@ -276,6 +278,7 @@ TODO:
 		<fieldset>
 			<legend><font face="verdanda,Arial,geneva,helvetica"><b>PLP Debug Information</b></font></legend>
 			<cfdump var="#stPLP#">
+			
 		</fieldset>
 	</div>
 </cfif>
@@ -329,8 +332,10 @@ TODO:
 					<cffile 
 						action="DELETE" 
 						file="#attributes.storagedir#/#attributes.owner#.plp">
+					<cftrace inline="no" text="delete plp wddx instance from storage.">
 				</cflock>
 				<cfcatch type="Any">
+					<cftrace inline="no" text="error: in killplp file delete.">
 					<cfset bNewPLP = true>
 				</cfcatch>
 			</cftry>
@@ -366,6 +371,7 @@ TODO:
 						charset="utf-8">
 				</cflock>
 				<cfcatch type="Any">
+					<cfset request.cfdumpinited = false>
 					<cfdump var="#cfcatch#">
 				</cfcatch>
 			</cftry>

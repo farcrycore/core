@@ -1,29 +1,43 @@
+<!--- 
+|| LEGAL ||
+$Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
+$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
-<html>
-<head>
-<title>Untitled Document</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link href="<cfoutput>#application.url.farcry#</cfoutput>/css/admin.css" rel="stylesheet" type="text/css">
-<!--// load the qForm JavaScript API //-->
-<SCRIPT SRC="<cfoutput>#application.url.farcry#</cfoutput>/includes/lib/qforms.js"></SCRIPT>
-<!--// you do not need the code below if you plan on just
-       using the core qForm API methods. //-->
-<!--// [start] initialize all default extension libraries  //-->
-<SCRIPT LANGUAGE="JavaScript">
-<!--//
-// specify the path where the "/qforms/" subfolder is located
-qFormAPI.setLibraryPath("<cfoutput>#application.url.farcry#</cfoutput>/includes/lib/");
-// loads all default libraries
-qFormAPI.include("*");
-//-->
+|| VERSION CONTROL ||
+$Header: /cvs/farcry/farcry_core/admin/security/redirect.cfm,v 1.6 2003/09/03 04:06:55 brendan Exp $
+$Author: brendan $
+$Date: 2003/09/03 04:06:55 $
+$Name: b201 $
+$Revision: 1.6 $
 
+|| DESCRIPTION || 
+$Description: Security tags redirect $
+$TODO: need more secure method of permission checks$
 
-</SCRIPT>
-<!--// [ end ] initialize all default extension libraries  //-->
-</head>
+|| DEVELOPER ||
+$Developer: Brendan Sisson (brendan@daemon.com.au)$
 
-<body>
-<cfmodule template="/farcry/farcry_core/tags/security/ui/dmSecUI_Redirect.cfm">
+|| ATTRIBUTES ||
+$in: $
+$out:$
+--->
+<!--- check permissions --->
+<cfscript>
+	iSecurityTab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="SecurityUserManagementTab");
+	iSecurityTab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="SecurityPolicyManagementTab");
+</cfscript>
 
-</body>
-</html>
+<!--- set up page header --->
+<cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
+<admin:header>
+
+<cfif iSecurityTab eq 1 or iSecurityTab eq 1>
+
+	<cfmodule template="/farcry/farcry_core/tags/security/ui/dmSecUI_Redirect.cfm">
+
+<cfelse>
+	<admin:permissionError>
+</cfif>
+
+<!--- setup footer --->
+<admin:footer>

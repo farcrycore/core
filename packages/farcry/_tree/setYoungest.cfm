@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_tree/setYoungest.cfm,v 1.6 2003/04/14 00:33:41 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_tree/setYoungest.cfm,v 1.10 2003/09/12 02:59:21 brendan Exp $
 $Author: brendan $
-$Date: 2003/04/14 00:33:41 $
-$Name: b131 $
-$Revision: 1.6 $
+$Date: 2003/09/12 02:59:21 $
+$Name: b201 $
+$Revision: 1.10 $
 
 || DESCRIPTION || 
 $Description: setYoungest Function $
@@ -32,37 +32,39 @@ $out:$
 <cfset stTmp.message = "Node inserted as youngest child.">
 
 <cfscript>
+	// escape any single quotes
+	arguments.objectName = replace(arguments.objectName,"'","''","ALL");
 	// make youngest child (child is inserted in tree under parent in extreme right pos)
 	stReturn = structNew();
 	sql = "
-	select max(nright) AS nright from nested_tree_objects where parentid = '#stArgs.parentid#'";
-	q = query(sql=sql, dsn=stArgs.dsn);
+	select max(nright) AS nright from nested_tree_objects where parentid = '#arguments.parentid#'";
+	q = query(sql=sql, dsn=arguments.dsn);
 	maxr = q.nRight;
 	
 	   
 	//if user has inadvertantly tried to insert youngest child when they should have used only child, try running the following:
-	if (maxr EQ '')	setOldest(parentID=stArgs.parentID, objectID=stArgs.objectID, objectName=stArgs.objectName, typeName=stArgs.typeName, dsn=stArgs.dsn);
+	if (maxr EQ '')	setOldest(parentID=arguments.parentID, objectID=arguments.objectID, objectName=arguments.objectName, typeName=arguments.typeName, dsn=arguments.dsn);
 	else {
 		//first make room. move other nodes up by 2, where they are greater than the right hand of the youngest existing child
 		sql = "
 		update nested_tree_objects
 		set nright = nright + 2 
 		where nright > #maxr#
-		and typeName = '#stArgs.typeName#'";
-		query(sql=sql, dsn=stArgs.dsn);
+		and typeName = '#arguments.typeName#'";
+		query(sql=sql, dsn=arguments.dsn);
 		
 		sql = "
 		update nested_tree_objects
 		set nleft = nleft + 2
 		where nleft > #maxr#
-		and typeName = '#stArgs.typeName#'";
-		query(sql=sql, dsn=stArgs.dsn);
+		and typeName = '#arguments.typeName#'";
+		query(sql=sql, dsn=arguments.dsn);
 		
 		sql = "		
 			select nlevel
 			from nested_tree_objects 
-			where objectid = '#stArgs.parentid#'";
-		q = query(sql=sql, dsn=stArgs.dsn);	
+			where objectid = '#arguments.parentid#'";
+		q = query(sql=sql, dsn=arguments.dsn);	
 		pLevel = q.nlevel;	
 		
 		switch (application.dbType)
@@ -70,8 +72,8 @@ $out:$
 				case "ora":
 				{
 					sql = "
-					insert nested_tree_objects (ObjectID, ParentID, ObjectName, TypeName, Nleft, Nright, Nlevel)
-					select 	'#stArgs.objectid#', '#stArgs.parentid#', '#stArgs.objectName#', '#stArgs.typeName#', #maxr# + 1, #maxr# + 2,  #plevel# + 1";
+					insert into nested_tree_objects (ObjectID, ParentID, ObjectName, TypeName, Nleft, Nright, Nlevel)
+					values ('#arguments.objectid#', '#arguments.parentid#', '#arguments.objectName#', '#arguments.typeName#', #maxr# + 1, #maxr# + 2,  #plevel# + 1)";
 					break;
 				}
 				
@@ -79,7 +81,7 @@ $out:$
 				{
 					sql = "
 					insert nested_tree_objects (ObjectID, ParentID, ObjectName, TypeName, Nleft, Nright, Nlevel)
-					values 	('#stArgs.objectid#', '#stArgs.parentid#', '#stArgs.objectName#', '#stArgs.typeName#', #maxr# + 1, #maxr# + 2,  #plevel# + 1)";
+					values 	('#arguments.objectid#', '#arguments.parentid#', '#arguments.objectName#', '#arguments.typeName#', #maxr# + 1, #maxr# + 2,  #plevel# + 1)";
 					break;
 				}
 				
@@ -87,11 +89,11 @@ $out:$
 				{
 					sql = "
 					insert nested_tree_objects (ObjectID, ParentID, ObjectName, TypeName, Nleft, Nright, Nlevel)
-					select 	'#stArgs.objectid#', '#stArgs.parentid#', '#stArgs.objectName#', '#stArgs.typeName#', #maxr# + 1, #maxr# + 2,  #plevel# + 1";
+					select 	'#arguments.objectid#', '#arguments.parentid#', '#arguments.objectName#', '#arguments.typeName#', #maxr# + 1, #maxr# + 2,  #plevel# + 1";
 				}
 			}
 			
-		query(sql=sql, dsn=stArgs.dsn);		
+		query(sql=sql, dsn=arguments.dsn);		
 		
 	}	
 

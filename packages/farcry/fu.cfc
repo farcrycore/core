@@ -4,7 +4,7 @@
 
  Created: Thu May 1  14:19:20 2003
  $Revision 0.2$
- Modified: $Date: 2003/07/21 09:32:23 $
+ Modified: $Date: 2003/10/24 01:15:46 $
 
  Author: Spike
  E-mail: spike@spike@spike.org.uk
@@ -68,6 +68,22 @@
 		<cfreturn true>
 	</cffunction>
 	
+	<cffunction name="getFUstruct" access="public" returntype="struct" hint="Returns a structure of all friendly URLs, keyed on object id." output="No">
+		<cfargument name="domain" required="no" type="string" default="#cgi.server_name#">
+		
+		<cfset var stMappings = getmappings()>
+		<cfset var stFU = structnew()>
+		
+		<cfloop collection="#stMappings#" item="i">
+			<cfif findnocase(domain,i)>
+				<cfset stFU[listgetat(stMappings[i],2,"=")] = "/" & listRest(i,'/')>
+			</cfif>
+		</cfloop>
+		
+		<cfreturn stFU>
+	</cffunction>
+	
+	
 	<cffunction name="getMappings" access="public" returntype="struct" hint="Retrieves all current mappings" output="No">
 		<cfreturn dataObject.getMappings()>
 	</cffunction>
@@ -77,30 +93,66 @@
 	<cffunction name="deleteAll" access="public" returntype="boolean" hint="Deletes all mappings and writes the map file to disk" output="No">
 		<cfset mappings= getMappings()>
 		<!--- loop over all entries and delete those that match domain --->
-		<cfloop collection="#mappings#" item="i">
-			<cfif reFind('^#application.config.fusettings.domains##application.config.fusettings.urlpattern#',i)>
-				<cfset deleteMapping(i)>
-			</cfif>
-		</cfloop>
+		
+		<!--- loop over all domains --->
+		<cfloop list="#application.config.fusettings.domains#" index="dom">
+			<cfloop collection="#mappings#" item="i">
+				<cfif reFind('^#dom##application.config.fusettings.urlpattern#',i)>
+					<cfset deleteMapping(i)>
+				</cfif>
+			</cfloop>
+		</cfloop>	
+		<cfset updateAppScope()>
 		<cfreturn true>
 	</cffunction>
 	
 	<cffunction name="deleteFU" access="public" returntype="boolean" hint="Deletes a mappings and writes the map file to disk" output="No">
 		<cfargument name="alias" required="yes" type="string" hint="old alias of object to delete">
 		
-		<cfset mappings= getMappings()>
+		<cfif NOT isDefined("application.FU.mappings")>
+			<cfset application.FU.mappings = getMappings()>
+		</cfif>
+		<cfset mappings = structCopy(application.FU.mappings)>
 		<!--- loop over all domains --->
 		<cfloop list="#application.config.fusettings.domains#" index="dom">
-			<!--- loop over all entries and delete those that match domain and old alias --->
-			<cfloop collection="#mappings#" item="i">
-				<cfif i eq "#dom##arguments.alias#">
-					<cfset deleteMapping(i)>
-				</cfif>
-			</cfloop>
+			<cfset sFUKey = "#dom##arguments.alias#">
+			<cfset aFuKey = structFindKey(mappings,sFUKey,"one")>
+			<cfif arrayLen(aFuKey)>
+				<cfset deleteMapping(sFUKey)>
+			</cfif>
 		</cfloop>
-		
+		<cfset updateAppScope()>
 		<cfreturn true>
 	</cffunction>
+	
+	<cffunction name="updateAppScope" access="public" hint="Updates the application scope with the FU mappings" output="No">
+		<cfset application.FU.mappings = getMappings()>
+	</cffunction>
+
+	<cffunction name="createFUAlias" access="public" returntype="string" hint="Creates the FU Alias for a given objectid">
+		<cfargument name="objectid" required="Yes">
+		<cfscript>
+			qAncestors = application.factory.oTree.getAncestors(objectid=arguments.objectid,bIncludeSelf=true);
+		</cfscript>
+		<!--- remove root & home --->
+		<cfquery dbtype="query" name="qCrumb">
+			SELECT objectName FROM qAncestors
+			WHERE nLevel >= 2
+			ORDER BY nLevel
+		</cfquery>
+		<cfscript>
+			// join titles together 
+			breadCrumb = lcase(valueList(qCrumb.objectname));
+			// change delimiter 
+			breadCrumb = listChangeDelims(breadCrumb,"/",",");
+			// remove spaces 
+			breadCrumb = replace(breadCrumb,' ','-',"all");
+			// prepend fu url pattern and add suffix
+			breadCrumb = application.config.fusettings.urlpattern & breadcrumb & application.config.fusettings.suffix;
+		</cfscript>	
+	<cfreturn breadcrumb>	
+	</cffunction>	
+	
 	
 	<cffunction name="createAll" access="public" returntype="boolean" hint="Deletes old mappings and creates new entries for entire tree, and writes the map file to disk" output="No">
 				
@@ -111,31 +163,31 @@
 		<!--- set nav variable --->
 		<cfset setURLVar("nav")>
 		<!--- get nav tree --->
-		<cfobject component="#application.packagepath#.farcry.tree" name="o">
-		<cfset qNav = o.getDescendants(objectid=application.navid.home, depth=50)>
+		<cfset qNav = application.factory.oTree.getDescendants(objectid=application.navid.home, depth=50)>
 		<!--- loop over nav tree and create friendly urls --->
 		<cfloop query="qNav">
 			<!--- get ancestors of object --->
-			<cfset qAncestors = o.getAncestors(objectid=objectid,bIncludeSelf=true)>
+			<cfset qAncestors = application.factory.oTree.getAncestors(objectid=objectid,bIncludeSelf=true)>
 			<!--- remove root & home --->
 			<cfquery dbtype="query" name="qCrumb">
 				SELECT objectName FROM qAncestors
 				WHERE nLevel >= 2
 				ORDER BY nLevel
 			</cfquery>
-			<!--- join titles together --->
-			<cfset breadCrumb = lcase(valueList(qCrumb.objectname))>
-			<!--- change delimiter --->
-			<cfset breadCrumb = listChangeDelims(breadCrumb,"/",",")>
-			<!--- remove spaces --->
-			<cfset breadCrumb = replace(breadCrumb,' ','-',"all")>
-			
-			<!--- create fu --->
-			<cfset setFU(objectid=objectid,alias=application.config.fusettings.urlpattern&breadcrumb)>
+			<cfif val(qCrumb.recordcount)>
+				<!--- join titles together --->
+				<cfset breadCrumb = lcase(valueList(qCrumb.objectname))>
+				<!--- change delimiter --->
+				<cfset breadCrumb = listChangeDelims(breadCrumb,"/",",")>
+				<!--- remove spaces --->
+				<cfset breadCrumb = replace(breadCrumb,' ','-',"all") & application.config.fusettings.suffix>
+				<!--- create fu --->
+				<cfset setFU(objectid=objectid,alias=application.config.fusettings.urlpattern&breadcrumb)>
+			</cfif>
 		</cfloop>
 		<!--- create fu for home--->
 		<cfset setFU(objectid=application.navid.home,alias=application.config.fusettings.urlpattern)>
-		
+		<cfset updateAppScope()>
 		<cfreturn true>
 	</cffunction>
 	
@@ -154,25 +206,24 @@
 		<cfloop list="#application.config.fusettings.domains#" index="dom">
 			<cfset setMapping(alias=dom&newAlias,mapping="#application.url.conjurer#?objectid=#arguments.objectid#")>
 		</cfloop>
+		<cfset updateAppScope()>
 	</cffunction>
 	
 	<cffunction name="getFU" access="public" returntype="string" hint="Retrieves fu for a real url, returns original ufu if non existent." output="No">
 		<cfargument name="objectid" required="yes" type="UUID" hint="objectid of object to link to">
 		<cfargument name="dom" required="yes" type="string" default="#cgi.server_name#">
-		<cfset fullUFU = application.url.conjurer & "?objectid=" & arguments.objectid>
-		<cfset mappings = getMappings()>
-		<cfset fuURL = "">
-		<cfloop collection="#mappings#" item="i">
-			<cfif listFirst(i,'/') eq arguments.dom and mappings[i] eq fullUFU>
-				<cfset fuURL = "/" & listRest(i,'/')>
-			</cfif>	
-		</cfloop>
-		
-		<cfif not len(fuURL)>
-			<cfset fuURL = application.url.conjurer & "?objectid=" & arguments.objectid>
-		</cfif>
-		
-		<cfreturn fuURL>
+		<cfscript>
+			fullUFU = application.url.conjurer & "?objectid=" & arguments.objectid;
+			if(NOT isDefined("application.FU.mappings"))
+				updateAppScope();
+			fuURL = "";
+			aFuKey = structFindValue(application.FU.mappings, fullUFU, "one");
+			if(arrayLen(aFuKey))
+				fuURL = "/" & listRest(aFuKey[1].key,'/');
+			if(NOT len(fuURL))
+				fuURL = fullUFU;
+			return fuURL;
+		</cfscript>
 	</cffunction>
 
 </cfcomponent>

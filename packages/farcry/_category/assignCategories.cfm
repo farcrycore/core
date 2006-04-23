@@ -1,21 +1,21 @@
 <!--- assignCategories.cfm --->
 
 
-<cfquery datasource="#stArgs.dsn#">
-	DELETE FROM #application.dbowner#refCategories WHERE objectID = '#stArgs.objectID#'	
+<cfquery datasource="#arguments.dsn#">
+	DELETE FROM #application.dbowner#refCategories WHERE objectID = '#arguments.objectID#'	
 </cfquery>	
 
-<cfloop list="#stArgs.lCategoryIDs#" index="i">
+<cfloop list="#arguments.lCategoryIDs#" index="i">
 	<cftransaction>
-	<cfquery datasource="#stArgs.dsn#">
+	<cfquery datasource="#arguments.dsn#">
 			INSERT INTO #application.dbowner#refCategories (categoryID,objectID) 
-			VALUES ('#i#', '#stArgs.objectID#')
+			VALUES ('#i#', '#arguments.objectID#')
 		</cfquery>
 	</cftransaction>
 </cfloop>  
 
 <cfscript>
 	stStatus = structNew();
-	stStatus.message = "#stArgs.objectID# categories successfully assigned";
+	stStatus.message = "#arguments.objectID# categories successfully assigned";
 	stStatus.status = true;
 </cfscript>

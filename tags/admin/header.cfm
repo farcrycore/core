@@ -1,3 +1,27 @@
+<!--- 
+|| LEGAL ||
+$Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
+$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
+
+|| VERSION CONTROL ||
+$Header: /cvs/farcry/farcry_core/tags/admin/header.cfm,v 1.12 2003/09/25 23:28:09 brendan Exp $
+$Author: brendan $
+$Date: 2003/09/25 23:28:09 $
+$Name: b201 $
+$Revision: 1.12 $
+
+|| DESCRIPTION || 
+$Description: Admin header$
+$TODO: $
+
+|| DEVELOPER ||
+$Developer: Brendan Sisson (brendan@daemon.com.au)$
+
+|| ATTRIBUTES ||
+$in: $
+$out:$
+--->
+
 <cfsetting enablecfoutputonly="Yes">
 <cfimport taglib="/farcry/farcry_core/tags/misc/" prefix="misc">
 
@@ -26,6 +50,11 @@
 		//browser testing;
 		var ns6 = document.getElementById && ! document.all;
 		var ie5up = document.getElementById && document.all;  //ie5 ++
+		
+		function reloadTreeFrame(){
+			window.frames.treeFrame.location.href = document.zoom.QuickZoom.options[document.zoom.QuickZoom.options.selectedIndex].value;
+			return false;
+		}
 	</script>
 	
 	<!--- qforms setup --->

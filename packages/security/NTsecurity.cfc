@@ -6,11 +6,11 @@ Daemon Pty Limited 1995-2002
 http://www.daemon.com.au
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/security/NTsecurity.cfc,v 1.13 2002/10/22 01:01:35 pete Exp $
-$Author: pete $
-$Date: 2002/10/22 01:01:35 $
-$Name: b131 $
-$Revision: 1.13 $
+$Header: /cvs/farcry/farcry_core/packages/security/NTsecurity.cfc,v 1.14 2003/09/10 23:27:34 brendan Exp $
+$Author: brendan $
+$Date: 2003/09/10 23:27:34 $
+$Name: b201 $
+$Revision: 1.14 $
 
 || DESCRIPTION ||
 component for NT authentication and authorization
@@ -21,51 +21,10 @@ Peter Alexandrou (suspiria@daemon.com.au)
 || ATTRIBUTES ||
 none
 
-|| HISTORY ||
-$Log: NTsecurity.cfc,v $
-Revision 1.13  2002/10/22 01:01:35  pete
-added getGroupUsers function
-
-Revision 1.12  2002/10/17 04:23:03  pete
-no message
-
-Revision 1.11  2002/10/17 04:15:28  pete
-added getUserFullName method
-
-Revision 1.10  2002/10/15 08:57:34  pete
-added getUserDescription() method.
-
-Revision 1.9  2002/10/15 08:48:34  pete
-added getGroupDescription() method
-
-Revision 1.8  2002/10/15 08:12:15  pete
-no message
-
-Revision 1.7  2002/10/15 08:08:03  pete
-no message
-
-Revision 1.6  2002/10/15 03:59:10  pete
-no message
-
-Revision 1.5  2002/10/15 03:43:09  pete
-no message
-
-Revision 1.4  2002/10/15 03:41:55  pete
-added userInDirectory anmd userInGroup methods
-
-Revision 1.3  2002/10/15 02:21:40  pete
-removed password attributes from getUserGroups() since its not needed
-
-Revision 1.2  2002/10/15 02:02:28  pete
-syntax error fix
-
-Revision 1.1  2002/10/15 01:55:46  pete
-first working version
-
 || END FUSEDOC ||
 --->
 
-<cfcomponent name="security.NTsecurity">
+<cfcomponent name="security.NTsecurity" hint="component for NT authentication and authorization">
 
     <!--- *** USER BASED FUNCTIONS *** --->
 
@@ -75,7 +34,6 @@ first working version
         <cfargument name="password" type="string" required="true" />
         <cfargument name="domain" type="string" required="true" />
                 
-        <cfset stArgs = arguments>
         <cfinclude template="_NTsecurity/authenticateUser.cfm">
 
         <cfreturn bAuth>
@@ -86,7 +44,6 @@ first working version
         <cfargument name="userName" type="string" required="true" />
         <cfargument name="domain" type="string" required="true" />
                 
-        <cfset stArgs = arguments>
         <cfinclude template="_NTsecurity/getUserGroups.cfm">
 
         <cfreturn groups>
@@ -96,7 +53,6 @@ first working version
         <cfargument name="userName" type="string" required="true" />
         <cfargument name="domain" type="string" required="true" />
 
-        <cfset stArgs = arguments>
         <cfinclude template="_NTsecurity/userInDirectory.cfm">
 
         <cfreturn bInDir>
@@ -107,7 +63,6 @@ first working version
         <cfargument name="groupName" type="string" required="true" />
         <cfargument name="domain" type="string" required="true" />
 
-        <cfset stArgs = arguments>
         <cfinclude template="_NTsecurity/userInGroup.cfm">
 
         <cfreturn bInGroup>
@@ -117,7 +72,6 @@ first working version
         <cfargument name="userName" type="string" required="true" />
         <cfargument name="domain" type="string" required="true" />
 
-        <cfset stArgs = arguments>
         <cfinclude template="_NTsecurity/getUserFullName.cfm">
 
         <cfreturn fullName>
@@ -127,7 +81,6 @@ first working version
         <cfargument name="userName" type="string" required="true" />
         <cfargument name="domain" type="string" required="true" />
 
-        <cfset stArgs = arguments>
         <cfinclude template="_NTsecurity/getUserDescription.cfm">
 
         <cfreturn desc>
@@ -138,7 +91,6 @@ first working version
     <cffunction name="getDomainGroups" access="PUBLIC" returntype="array" hint="Retrieve all groups for the domain">
         <cfargument name="domain" type="string" required="true" />
 
-        <cfset stArgs = arguments>
         <cfinclude template="_NTsecurity/getDomainGroups.cfm">
 
         <cfreturn aGroups>
@@ -148,7 +100,6 @@ first working version
         <cfargument name="groupName" type="string" required="true" />
         <cfargument name="domain" type="string" required="true" />
 
-        <cfset stArgs = arguments>
         <cfinclude template="_NTsecurity/getGroupUsers.cfm">
 
         <cfreturn aUsers>
@@ -158,7 +109,6 @@ first working version
         <cfargument name="groupName" type="string" required="true" />
         <cfargument name="domain" type="string" required="true" />
 
-        <cfset stArgs = arguments>
         <cfinclude template="_NTsecurity/getGroupDescription.cfm">
 
         <cfreturn desc>

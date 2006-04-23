@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/farcry/plpNavigationMove.cfm,v 1.3 2003/07/04 07:59:43 daniela Exp $
-$Author: daniela $
-$Date: 2003/07/04 07:59:43 $
-$Name: b131 $
-$Revision: 1.3 $
+$Header: /cvs/farcry/farcry_core/tags/farcry/plpNavigationMove.cfm,v 1.5 2003/10/28 02:28:59 brendan Exp $
+$Author: brendan $
+$Date: 2003/10/28 02:28:59 $
+$Name: b201 $
+$Revision: 1.5 $
 
 || DESCRIPTION || 
 Works out where to go next during plp
@@ -22,27 +22,14 @@ out:
 --->
 <cfsetting enablecfoutputonly="yes">
 
-
+<!--- user is going to 'next' page --->
 <cfif IsDefined("CALLER.FORM.Submit")>
 	<cfscript>
 		CALLER.thisstep.isComplete = 1;
 		CALLER.thisstep.advance = 1;
 	</cfscript>
 
-<cfelseif isDefined("CALLER.FORM.submitGoToSpecifiedStep")>
-	<!--- user needs to be directed to a specific page --->
-	<cfif isNumeric(CALLER.FORM.goToStep)>
-		<!--- the plp step number has been passed, force the 'next' page to be this step number --->
-		<cfscript>
-			CALLER.thisstep.nextstep = CALLER.stPLP.Steps[#goToStep#].name;
-		</cfscript>	
-	</cfif>
-	<!--- move it along to the 'next' step that you have specified --->
-	<cfscript>
-		CALLER.thisstep.isComplete = 1;
-		CALLER.thisstep.advance = 1;
-	</cfscript>
-
+<!--- user 'cancels' plp --->
 <cfelseif isdefined("caller.form.cancel")>
 	<!--- try to unlock object --->
 	<cftry>
@@ -50,16 +37,38 @@ out:
 			<cfinvokeargument name="objectId" value="#caller.output.objectid#"/>
 			<cfinvokeargument name="typename" value="#caller.output.typename#"/>
 		</cfinvoke>
-		<cfcatch></cfcatch>
-	</cftry>
-	
+		<cfcatch>
+			<cfset request.cfdumpinited = false>
+			<cfdump var="#cfcatch#">
+		</cfcatch>
+	</cftry>  
 	<!--- if dmHTML update tabs --->
 	<cfif caller.output.typename eq "dmHTML">
 		<script>
 			document.getallbyId.siteEditOverview.className = activeTabClass;
 		</script>
 	</cfif>
-	
+	<!--- delete the current plp file this will ensure that when user goes back into plp, it will be regarded as 'new'--->
+	<!--- currently only storage type is 'file' --->
+	<cfswitch expression="#CALLER.attributes.storage#">
+		<cfcase value="file">
+			<cftry>
+				<cflock name="plpfile" timeout="10" throwontimeout="Yes" type="EXCLUSIVE">
+					<cffile 
+						action="DELETE" 
+						file="#CALLER.attributes.storagedir#/#CALLER.attributes.owner#.plp">
+				</cflock>
+				<cfcatch type="Any">
+				</cfcatch>
+			</cftry>
+		</cfcase>
+		<cfcase value="db">
+			<!--- ///	todo:	/// --->
+		</cfcase>
+		<cfcase value="spectra">
+			<!--- ///	todo:	/// --->
+		</cfcase>
+	</cfswitch>
 	<!--- relocate to cancel location --->
 	<cftry>
 		<cflocation url="#CALLER.attributes.cancelLocation#" addtoken="no">
@@ -67,7 +76,8 @@ out:
 			<!--- if no cancel location specified try to go to generic admin page --->
 			<cflocation url="#application.url.farcry#/navajo/genericAdmin.cfm?typename=#caller.output.typename#" addtoken="no">
 		</cfcatch>
-	</cftry>		
+	</cftry>	
+	
 <cfelseif isdefined("caller.form.save")>
 	<!--- save plp and return to current step --->
 	<cfscript>
@@ -75,6 +85,8 @@ out:
 		CALLER.thisstep.nextStep = CALLER.thisstep.name;
 		CALLER.thisstep.advance = 1;
 	</cfscript>
+	
+<!--- user is going 'back' to a page --->
 <cfelseif IsDefined("CALLER.FORM.Back")>
 	<cfscript>
 		PrevStep = "";

@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/dmXMLExport.cfc,v 1.3 2003/07/24 07:39:02 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/types/dmXMLExport.cfc,v 1.6 2003/09/22 07:04:33 brendan Exp $
 $Author: brendan $
-$Date: 2003/07/24 07:39:02 $
-$Name: b131 $
-$Revision: 1.3 $
+$Date: 2003/09/22 07:04:33 $
+$Name: b201 $
+$Revision: 1.6 $
 
 || DESCRIPTION || 
 $Description: dmXMLExport Type $
@@ -29,7 +29,7 @@ type properties
 <cfproperty name="generatorAgent" type="string" hint="URL of the feed generator" required="no" default="http://farcry.daemon.com.au/?v=1.31">
 <cfproperty name="errorReportsTo" type="string" hint="Email address for errors to be sent to" required="no" default="">
 <cfproperty name="updatePeriod" type="string" hint="Period for updates, eg hourly, daily" required="no" default="">
-<cfproperty name="updateFrequency" type="string" hint="Feed updated x updatePeriods" required="no" default="">
+<cfproperty name="updateFrequency" type="numeric" hint="Feed updated x updatePeriods" required="no" default="1">
 <cfproperty name="updateBase" type="string" hint="Base date for feed updates" required="no" default="2000-01-01T12:00+00:00">
 <cfproperty name="contentType" type="string" hint="FarCry object type being exported" required="no" default="">
 <cfproperty name="numberOfItems" type="numeric" hint="Maximum number of items for export" required="no" default="10">
@@ -43,7 +43,6 @@ object methods
 	
 	<!--- getData for object edit --->
 	<cfset stObj = getData(arguments.objectid)>
-	<cfset stArgs = arguments> <!--- hack to make arguments available to included file --->
 	<cfinclude template="_dmXMLExport/edit.cfm">
 </cffunction>
 
@@ -53,7 +52,6 @@ object methods
 	
 	<!--- getData for object edit --->
 	<cfset stObj = getData(arguments.objectid)>
-	<cfset stArgs = arguments> <!--- hack to make arguments available to included file --->
 	
 	<cfswitch expression="#url.mode#">
 		<cfcase value="preview">
@@ -75,7 +73,6 @@ object methods
 	
 	<!--- getData for object edit --->
 	<cfset stObj = getData(arguments.objectid)>
-	<cfset stArgs = arguments> <!--- hack to make arguments available to included file --->
 	
 	<cfinclude template="_dmXMLExport/generate.cfm">
 </cffunction>
@@ -88,6 +85,14 @@ object methods
 	
 	<cfreturn qGetAll>
 </cffunction>
+
+<cffunction name="delete" access="public" hint="Specific delete method for dmXMLExport. Removes physical files from ther server.">
+	<cfargument name="objectid" required="yes" type="UUID" hint="Object ID of the object being deleted">
+	
+	<!--- get object details --->
+	<cfset stObj = getData(arguments.objectid)>
+	<cfinclude template="_dmXMLExport/delete.cfm">
+</cffunction>	
 
 </cfcomponent>
 

@@ -19,9 +19,14 @@
 
 <cfparam name="error" default="Please login with your details below.">
 
+<cfif isdefined("url.error") and url.error eq "draft">
+	<cfset error = "This page is in draft. Please login with your details below">
+</cfif>
+
 <cfif isDefined("form.Normal")>
 		<cfscript>
 			bHasLoggedIn = request.dmSec.oAuthentication.login(userlogin=form.userlogin,userpassword=form.password,baudit=1);
+			
 			if (bHasLoggedIn)
 			{
 				o_userProfile = createObject("component", "#application.packagepath#.types.dmProfile");

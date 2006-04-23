@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_tree/deployTreeTables.cfm,v 1.7 2003/05/28 23:15:05 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_tree/deployTreeTables.cfm,v 1.11 2003/09/24 06:09:49 brendan Exp $
 $Author: brendan $
-$Date: 2003/05/28 23:15:05 $
-$Name: b131 $
-$Revision: 1.7 $
+$Date: 2003/09/24 06:09:49 $
+$Name: b201 $
+$Revision: 1.11 $
 
 || DESCRIPTION || 
 $Description: This tag installs all the tables that you need for nested tree model operations.
@@ -31,13 +31,13 @@ $out:$
 <cfswitch expression="#application.dbtype#">
 <cfcase value="mysql">
 	
-	<cfquery name="dropExisting" datasource="#stArgs.dsn#">
-		DROP TABLE IF EXISTS NESTED_TREE_OBJECTS
+	<cfquery name="dropExisting" datasource="#arguments.dsn#">
+		DROP TABLE IF EXISTS #application.dbowner#nested_tree_objects
 	</cfquery>	
 	
 	
-	<cfquery name="nested_tree_objects" datasource="#stArgs.dsn#">
-		CREATE TABLE NESTED_TREE_OBJECTS (
+	<cfquery name="nested_tree_objects" datasource="#arguments.dsn#">
+		CREATE TABLE #application.dbowner#nested_tree_objects (
 			OBJECTID CHAR(35) not null,
 			PARENTID CHAR(35) null,
 			OBJECTNAME VARCHAR(255) not null,
@@ -48,24 +48,24 @@ $out:$
 			CONSTRAINT PK_NESTEDTREE_UNIQUE PRIMARY KEY (OBJECTID))
 	</cfquery>
 	
-	<cfquery datasource="#stArgs.dsn#">
-	 	CREATE INDEX IDX_NTO ON NESTED_TREE_OBJECTS (nLeft, nRight)
+	<cfquery datasource="#arguments.dsn#">
+	 	CREATE INDEX IDX_NTO ON #application.dbowner#nested_tree_objects (nLeft, nRight)
 	</cfquery>
 </cfcase>	
 
 <cfcase value="ora">
-	<cfquery name="qExists" datasource="#stArgs.dsn#">
+	<cfquery name="qExists" datasource="#arguments.dsn#">
 		SELECT * 
 		FROM USER_TABLES
-		WHERE TABLE_NAME = 'NESTED_TREE_OBJECTS';
+		WHERE TABLE_NAME = 'NESTED_TREE_OBJECTS'
 	</cfquery>
 	<cfif qExists.recordCount>
-		<cfquery name="dropExisting" datasource="#stArgs.dsn#">
+		<cfquery name="dropExisting" datasource="#arguments.dsn#">
 			DROP TABLE NESTED_TREE_OBJECTS
 		</cfquery>	
 	</cfif>
 	
-	<cfquery name="nested_tree_objects" datasource="#stArgs.dsn#">
+	<cfquery name="nested_tree_objects" datasource="#arguments.dsn#">
 		CREATE TABLE NESTED_TREE_OBJECTS (
 			OBJECTID CHAR(35) not null,
 			PARENTID CHAR(35) null,
@@ -76,71 +76,71 @@ $out:$
 			NLEVEL NUMBER not null,
 			CONSTRAINT PK_NESTEDTREE_UNIQUE PRIMARY KEY (OBJECTID))
 	</cfquery>
-	<cfquery name="qExists" datasource="#stArgs.dsn#">
+	<cfquery name="qExists" datasource="#arguments.dsn#">
 		SELECT * FROM USER_OBJECTS
 		WHERE OBJECT_NAME = 'IDX_NTO'
 	</cfquery>
 	<cfif qExists.recordCount>
-		<cfquery datasource="#stArgs.dsn#">
+		<cfquery datasource="#arguments.dsn#">
 		DROP INDEX IDX_NTO
 		</cfquery>	
 	</cfif> 
-	<cfquery datasource="#stArgs.dsn#">
+	<cfquery datasource="#arguments.dsn#">
 	 	CREATE INDEX IDX_NTO ON NESTED_TREE_OBJECTS (nLeft, nRight)
 	</cfquery>
-	<cfquery name="qExists" datasource="#stArgs.dsn#">
+	<cfquery name="qExists" datasource="#arguments.dsn#">
 		SELECT * FROM USER_TABLES 
 		WHERE TABLE_NAME = 'TEMP_GET_ANCESTORS'
 	</cfquery>
 	<cfif qExists.recordCount>
-		<cfquery datasource="#stArgs.dsn#">
+		<cfquery datasource="#arguments.dsn#">
 		DROP TABLE TEMP_GET_ANCESTORS
 		</cfquery>	
 	</cfif> 
-	<cfquery datasource="#stArgs.dsn#">
+	<cfquery datasource="#arguments.dsn#">
 		CREATE GLOBAL TEMPORARY TABLE temp_get_ancestors(
 			PARENTID VARCHAR2(40) NULL
 			) on commit preserve rows
 	</cfquery>
-	<cfquery name="qExists" datasource="#stArgs.dsn#">
+	<cfquery name="qExists" datasource="#arguments.dsn#">
 		SELECT * FROM USER_TABLES 
 		WHERE TABLE_NAME = 'TEMP_INSERT_CHILD_AT'
 	</cfquery>
 	<cfif qExists.recordCount>
-		<cfquery datasource="#stArgs.dsn#">
+		<cfquery datasource="#arguments.dsn#">
 		DROP TABLE TEMP_INSERT_CHILD_AT
 		</cfquery>	
 	</cfif> 
-	<cfquery datasource="#stArgs.dsn#">
+	<cfquery datasource="#arguments.dsn#">
 			CREATE GLOBAL TEMPORARY TABLE temp_insert_child_at(
 				SEQ NUMBER NOT NULL,
 				NRIGHT NUMBER NOT NULL
 			) on commit preserve rows
 	</cfquery>
-	<cfquery name="qExists" datasource="#stArgs.dsn#">
+	<cfquery name="qExists" datasource="#arguments.dsn#">
 		SELECT * FROM USER_TABLES 
 		WHERE TABLE_NAME = 'TEMP_BRANCH_IDS'
 	</cfquery>
 	<cfif qExists.recordCount>
-		<cfquery datasource="#stArgs.dsn#">
+		<cfquery datasource="#arguments.dsn#">
 		DROP TABLE TEMP_BRANCH_IDS
 		</cfquery>	
 	</cfif> 
-	<cfquery datasource="#stArgs.dsn#">
+	<cfquery datasource="#arguments.dsn#">
 		CREATE GLOBAL TEMPORARY TABLE temp_branch_ids(
 			OBJECTID VARCHAR2(35) NOT NULL
 		)  on commit preserve rows 
 	</cfquery>	
-	<cfquery name="qExists" datasource="#stArgs.dsn#">
+	<cfquery name="qExists" datasource="#arguments.dsn#">
 		SELECT * FROM USER_TABLES 
 		WHERE TABLE_NAME = 'TEMP_MOVE_BRANCH'
 	</cfquery>
 	<cfif qExists.recordCount>
-		<cfquery datasource="#stArgs.dsn#">
+		<cfquery datasource="#arguments.dsn#">
 		DROP TABLE TEMP_MOVE_BRANCH
 		</cfquery>	
 	</cfif> 
-	<cfquery datasource="#stArgs.dsn#">
+	<cfquery datasource="#arguments.dsn#">
 			CREATE GLOBAL TEMPORARY TABLE temp_move_branch(
 				SEQ NUMBER NOT NULL,
 				NRIGHT NUMBER NOT NULL
@@ -149,9 +149,9 @@ $out:$
 </cfcase>
 
 <cfdefaultcase><!--- mssql server --->
-	<cfquery name="dropExisting" datasource="#stArgs.dsn#">
+	<cfquery name="dropExisting" datasource="#arguments.dsn#">
 		-- drop nested_tree_objects
-		if exists (select * from sysobjects where name = 'nested_tree_objects') 
+		if exists (select * from sysobjects where name = '#application.dbowner#nested_tree_objects') 
 		drop table nested_tree_objects
 		
 		-- drop nested_tree_objects index
@@ -166,8 +166,8 @@ $out:$
 	<!------------------------------------------------------------------------
 	Deploy NTM Table (nested_tree_objects)
 	------------------------------------------------------------------------->
-	<cfquery name="nested_tree_objects" datasource="#stArgs.dsn#">
-		create table [dbo].[nested_tree_objects] (
+	<cfquery name="nested_tree_objects" datasource="#arguments.dsn#">
+		create table #application.dbowner#nested_tree_objects (
 			[ObjectID] [char] (35) not null primary key nonclustered,
 			[ParentID] [char] (35) null ,
 			[ObjectName] [nvarchar] (512) not null ,
@@ -179,8 +179,8 @@ $out:$
 			)
 	</cfquery>
 	
-	<cfquery name="nested_tree_objects_index" datasource="#stArgs.dsn#">
-		create clustered index ix_nto on nested_tree_objects (nLeft, nRight) 
+	<cfquery name="nested_tree_objects_index" datasource="#arguments.dsn#">
+		create clustered index ix_nto on #application.dbowner#nested_tree_objects (nLeft, nRight) 
 	</cfquery> 
 </cfdefaultcase>
 </cfswitch>

@@ -1,18 +1,50 @@
+<!--- 
+|| LEGAL ||
+$Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
+$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
+
+|| VERSION CONTROL ||
+$Header: /cvs/farcry/farcry_core/packages/types/_dmXMLExport/generate.cfm,v 1.11 2003/10/12 23:08:17 brendan Exp $
+$Author: brendan $
+$Date: 2003/10/12 23:08:17 $
+$Name: b201 $
+$Revision: 1.11 $
+
+|| DESCRIPTION || 
+$Description: generates rss feed$
+$TODO: $
+
+|| DEVELOPER ||
+$Developer: Brendan Sisson (brendan@daemon.com.au)$
+
+|| ATTRIBUTES ||
+$in: $
+$out:$
+--->
+
 <!--- get categories --->
 <cfobject component="#application.packagepath#.farcry.category" name="oCategories">
 <cfset lCategories = oCategories.getCategories(objectid=stObj.objectid,bReturnCategoryIDs="true")>
 
+<cfif application.types[stObj.contentType].bCustomType>
+	<cfset packagepath = application.custompackagepath>
+<cfelse>
+	<cfset packagepath = application.packagepath>
+</cfif>
+	
 <cfif len(lCategories)>
 	<!--- get objects in selected categories --->
 	<cfset qObjects = oCategories.getData(typename=stObj.contentType,lCategoryIDs=lCategories,dsn=application.dsn)>
 <cfelse>
 	<!--- get all objects --->
-	<cfobject component="#application.packagepath#.types.#stObj.contentType#" name="oContentType">
+	<cfobject component="#packagepath#.types.#stObj.contentType#" name="oContentType">
 	<cfset stObjects = oContentType.getMultiple(dsn=application.dsn,dbowner=application.dbowner)>
 </cfif>
 
 <!--- get time zone information --->
 <cfset stTimeZone = GetTimeZoneInfo()>
+
+<cfobject component="#application.packagepath#.farcry.rss" name="oRSS">
 
 <!--- loop over and generate xml (not using cfxml due to bug with sandbox security --->
 <cfsavecontent variable="stFeed">
@@ -26,12 +58,12 @@
 	
 	  <channel>
 	    <title>#stObj.title#</title>
-	    <link>http://#cgi.http_host##application.url.webroot#/#application.config.general.exportPath#/#stObj.xmlFile#</link>
+	    <link>http://#cgi.http_host##application.url.webroot#/#listRest(application.config.general.exportPath,"/")#/#stObj.xmlFile#</link>
 	    <description>#stObj.description#</description>
 	    <dc:language>#stObj.language#</dc:language>
 	    <dc:creator>mailto:#stObj.creator#</dc:creator>
 	    <dc:rights>#stObj.rights#</dc:rights>
-	    <dc:date>#dateFormat(stObj.dateTimeLastUpdated,"yyyy-mm-dd")#T#timeFormat(stObj.dateTimeLastUpdated,"hh:mm:ss")##numberFormat((stTimeZone.utcHourOffset * -1),"+00")#:#numberFormat(stTimeZone.utcMinuteOffset,"00")#</dc:date>
+	    <dc:date>#dateFormat(stObj.dateTimeLastUpdated,"yyyy-mm-dd")#T#timeFormat(stObj.dateTimeLastUpdated,"hh:mm:ss")##numberFormat((stTimeZone.utcHourOffset * -1),"+00")#:#abs(numberFormat(stTimeZone.utcMinuteOffset,"00"))#</dc:date>
 		<admin:generatorAgent rdf:resource="#stObj.generatorAgent#"/>
 	    <admin:errorReportsTo rdf:resource="mailto:#stObj.errorReportsTo#"/>
 	    <sy:updatePeriod>#stObj.updatePeriod#</sy:updatePeriod>
@@ -43,12 +75,12 @@
 			<cfloop query="qObjects">
 				<cfoutput>
 				<item>
-					<title>#qObjects.label#</title>
+					<title>#xmlFormat(qObjects.label)#</title>
 					<link>http://#cgi.http_host##application.url.conjurer#?objectid=#qObjects.objectid#</link>
-					<description>#qObjects.teaser#</description>
-					<guid isPermaLink="false">guid</guid>
-					<dc:subject>subject</dc:subject>
-					<dc:date>#dateFormat(qObjects.dateTimeLastUpdated,"yyyy-mm-dd")#T#timeFormat(qObjects.dateTimeLastUpdated,"hh:mm:ss")##numberFormat((stTimeZone.utcHourOffset * -1),"+00")#:#numberFormat(stTimeZone.utcMinuteOffset,"00")#</dc:date>
+					<description><cfif len(qObjects.teaser)>#xmlFormat(qObjects.teaser)#<cfelse>#xmlFormat(oRSS.HTMLStripper(left(qObjects.body,255)))#...</cfif></description>
+					<guid isPermaLink="false">#qObjects.objectid#</guid>
+					<!--- <dc:subject>subject</dc:subject> --->
+					<dc:date>#dateFormat(qObjects.dateTimeLastUpdated,"yyyy-mm-dd")#T#timeFormat(qObjects.dateTimeLastUpdated,"hh:mm:ss")##numberFormat((stTimeZone.utcHourOffset * -1),"+00")#:#abs(numberFormat(stTimeZone.utcMinuteOffset,"00"))#</dc:date>
 				</item>
 				</cfoutput>
 			</cfloop>
@@ -56,12 +88,12 @@
 			<cfloop collection="#stObjects#" item="obj">
 				<cfoutput>
 				<item>
-					<title>#stObjects[obj].label#</title>
+					<title>#xmlFormat(stObjects[obj].label)#</title>
 					<link>http://#cgi.http_host##application.url.conjurer#?objectid=#obj#</link>
-					<description>#stObjects[obj].teaser#</description>
-					<guid isPermaLink="false">guid</guid>
-					<dc:subject>subject</dc:subject>
-					<dc:date>#dateFormat(stObjects[obj].dateTimeLastUpdated,"yyyy-mm-dd")#T#timeFormat(stObjects[obj].dateTimeLastUpdated,"hh:mm:ss")##numberFormat((stTimeZone.utcHourOffset * -1),"+00")#:#numberFormat(stTimeZone.utcMinuteOffset,"00")#</dc:date>
+					<description><cfif len(stObjects[obj].teaser)>#xmlFormat(stObjects[obj].teaser)#<cfelse>#xmlFormat(oRSS.HTMLStripper(left(stObjects[obj].body,255)))#...</cfif></description>
+					<guid isPermaLink="false">#obj#</guid>
+					<!--- <dc:subject>subject</dc:subject> --->
+					<dc:date>#dateFormat(stObjects[obj].dateTimeLastUpdated,"yyyy-mm-dd")#T#timeFormat(stObjects[obj].dateTimeLastUpdated,"hh:mm:ss")##numberFormat((stTimeZone.utcHourOffset * -1),"+00")#:#abs(numberFormat(stTimeZone.utcMinuteOffset,"00"))#</dc:date>
 				</item>
 				</cfoutput>
 			</cfloop>
@@ -72,4 +104,14 @@
 	</cfoutput>
 </cfsavecontent>
 
-<cffile action="write" file="#application.path.project#/#application.config.general.exportPath#/#stObj.xmlFile#" output="#toString(stFeed)#" addnewline="no" nameconflict="OVERWRITE">
+<!--- check directory exists --->
+<cfif not directoryExists("#application.path.project#/#application.config.general.exportPath#")>
+	<cfdirectory action="CREATE" directory="#application.path.project#/#application.config.general.exportPath#">
+</cfif>
+
+<cftry>
+	<!--- generate file --->
+	<cffile action="write" file="#application.path.project#/#application.config.general.exportPath#/#stObj.xmlFile#" output="#toString(stFeed)#" addnewline="no" nameconflict="OVERWRITE">
+	<cfcatch><cfoutput>#application.path.project#/#application.config.general.exportPath# directory doesn't exist. Please create before trying to export.</cfoutput></cfcatch>
+</cftry>
+				

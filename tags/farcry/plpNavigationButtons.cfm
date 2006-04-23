@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/farcry/plpNavigationButtons.cfm,v 1.3 2003/06/23 00:09:12 brendan Exp $
-$Author: brendan $
-$Date: 2003/06/23 00:09:12 $
-$Name: b131 $
-$Revision: 1.3 $
+$Header: /cvs/farcry/farcry_core/tags/farcry/plpNavigationButtons.cfm,v 1.4 2003/09/11 03:26:32 paul Exp $
+$Author: paul $
+$Date: 2003/09/11 03:26:32 $
+$Name: b201 $
+$Revision: 1.4 $
 
 || DESCRIPTION || 
 $Description: Displays plp navigation (previous/next.dropdown)$
@@ -64,7 +64,7 @@ $out:$
 	<cf_dmButton name="Save" value="Save" width="80">
 
 	<cfif attributes.cancelEvent neq "">
-		<input type="button" value="Cancel" width="80" onClick="location.href='#attributes.cancelEvent#'" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';">
+		<input type="button" value="Cancel" width="80" onClick="document.location.href='#attributes.cancelEvent#'" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';">
 	<cfelse>
 		<!--- if dmHTML run synchTab function --->
 		<cfif isdefined("caller.output.typename") and caller.output.typename eq "dmHTML">

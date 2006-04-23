@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/navajo/objectStatus_dd.cfm,v 1.11 2003/04/30 07:15:18 andrewr Exp $
-$Author: andrewr $
-$Date: 2003/04/30 07:15:18 $
-$Name: b131 $
-$Revision: 1.11 $
+$Header: /cvs/farcry/farcry_core/tags/navajo/objectStatus_dd.cfm,v 1.13 2003/09/18 01:25:11 brendan Exp $
+$Author: brendan $
+$Date: 2003/09/18 01:25:11 $
+$Name: b201 $
+$Revision: 1.13 $
 
 || DESCRIPTION || 
 $Description: Changes the status of objects to approved/draft/pending. Intended for use with dynamic data pages $
@@ -72,6 +72,15 @@ $out:$
 			<cfinvoke component="#application.packagepath#.farcry.versioning" method="approveEmail_pending_dd">
 				<cfinvokeargument name="objectId" value="#attributes.objectId#"/>
 				<cfinvokeargument name="comment" value="#attributes.commentlog#"/>
+				<cfif isdefined("attributes.lApprovers") and len(attributes.lApprovers)>
+					<cfif listLen(attributes.lApprovers) gt 1 and listFind(attributes.lApprovers,"all")>
+						<cfinvokeargument name="lApprovers" value="all"/>
+					<cfelse>
+						<cfinvokeargument name="lApprovers" value="#attributes.lApprovers#"/>
+					</cfif>					
+				<cfelse>
+					<cfinvokeargument name="lApprovers" value="all"/>
+				</cfif>
 			</cfinvoke>
 		<cfelse>
 			<cfthrow errorcode="navajo" message="Unknown status passed">
@@ -111,15 +120,15 @@ $out:$
 		
 		<!--- work out if custom package or not --->
 		<cfscript>
-		if (application.types['#stObj.typename#'].bCustomType)
-			thisPackagePath = "#application.custompackagepath#.types.#stObj.typename#";
-		else
-			thisPackagePath = "#application.packagepath#.types.#stObj.typename#";
+			if (application.types['#stObj.typename#'].bCustomType)
+				thisPackagePath = "#application.custompackagepath#.types.#stObj.typename#";
+			else
+				thisPackagePath = "#application.packagepath#.types.#stObj.typename#";
+				
+			// update object	
+			oType = createobject("component","#thisPackagePath#");
+			oType.setData(stProperties=stObj,auditNote="Status changed to #stObj.status#");		
 		</cfscript>
-		
-		<q4:contentobjectdata objectid="#stObj.objectID#"
-            typename="#thisPackagePath#"
-            stProperties="#stObj#">		
 		
 	</cfloop>
 	

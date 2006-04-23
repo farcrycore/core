@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/install/_installFarcry.cfm,v 1.29 2003/07/14 07:05:50 brendan Exp $
+$Header: /cvs/farcry/farcry_core/admin/install/_installFarcry.cfm,v 1.32 2003/09/18 05:59:27 brendan Exp $
 $Author: brendan $
-$Date: 2003/07/14 07:05:50 $
-$Name: b131 $
-$Revision: 1.29 $
+$Date: 2003/09/18 05:59:27 $
+$Name: b201 $
+$Revision: 1.32 $
 
 || DESCRIPTION || 
 $Description: Installation scripts for FarCry database components $
@@ -135,6 +135,9 @@ dotAnim();
 stResult = o_dmType.deployRefObjects(dsn=application.dsn,bDropTable=true);
 if (stResult.bSuccess) writeOutput(successMsg);
 else writeOutput(failureMsg);
+// set up refContainers table
+oCon = createObject("component","#application.packagepath#.rules.container");
+oCon.deployRefContainers(dsn=application.dsn,dbtype=application.dbtype,dbowner=application.dbowner);
 </cfscript>
 <cfoutput></table></cfoutput>
 <cfflush>
@@ -202,7 +205,7 @@ stResult = application.o_dmAuthorisation.createPolicyGroupMapping(groupname="Pub
 <cfoutput><tr><td width="100%"><li>Creating Root node in Overview Tree</cfoutput>
 <cfscript>dotAnim();</cfscript>
 <cfsilent>
-<cfinclude template="/farcry/farcry_core/ui/install/_createDefaultNodes.cfm">
+<cfinclude template="_createDefaultNodes.cfm">
 </cfsilent>
 <cfoutput>#successMsg#</cfoutput>
 <cfflush>
@@ -210,7 +213,7 @@ stResult = application.o_dmAuthorisation.createPolicyGroupMapping(groupname="Pub
 <!--- setup default permissions --->
 <cfoutput><tr><td width="100%"><li>Setting up default tree permissions</cfoutput>
 <cfscript>dotAnim();</cfscript>
-<cfquery name="dPerms" datasource="#application.dsn#">delete from dmPermissionBarnacle</cfquery>
+<cfquery name="dPerms" datasource="#application.dsn#">delete from #application.dbowner#dmPermissionBarnacle</cfquery>
 <cffile action="READ" file="#application.path.core#/admin/install/dmSec_files/permissionBarnacle.csv" variable="permFile">
 <cfloop list="#permFile#" index="lPerms" delimiters="#chr(13)##chr(10)#">
     <cfscript>

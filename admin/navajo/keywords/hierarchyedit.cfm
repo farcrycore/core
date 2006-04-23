@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/navajo/keywords/hierarchyedit.cfm,v 1.10 2003/05/16 01:47:32 brendan Exp $
+$Header: /cvs/farcry/farcry_core/admin/navajo/keywords/hierarchyedit.cfm,v 1.11 2003/08/08 04:23:36 brendan Exp $
 $Author: brendan $
-$Date: 2003/05/16 01:47:32 $
-$Name: b131 $
-$Revision: 1.10 $
+$Date: 2003/08/08 04:23:36 $
+$Name: b201 $
+$Revision: 1.11 $
 
 || DESCRIPTION || 
 $Description: Displays category tree $
@@ -50,8 +50,7 @@ $out:$
 </script>
 </cfoutput>
 <cfscript>
-	oTree = createObject('component',"#application.packagepath#.farcry.tree");
-	qrootObjectID = oTree.getRootNode(typename='categories');
+	qrootObjectID = application.factory.oTree.getRootNode(typename='categories');
 	catRootObjectID = qrootObjectID.objectID;
 </cfscript>
 

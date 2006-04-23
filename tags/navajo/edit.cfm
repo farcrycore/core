@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/navajo/edit.cfm,v 1.14 2003/07/15 07:32:10 paul Exp $
+$Header: /cvs/farcry/farcry_core/tags/navajo/edit.cfm,v 1.18 2003/10/23 08:22:18 paul Exp $
 $Author: paul $
-$Date: 2003/07/15 07:32:10 $
-$Name: b131 $
-$Revision: 1.14 $
+$Date: 2003/10/23 08:22:18 $
+$Name: b201 $
+$Revision: 1.18 $
 
 || DESCRIPTION || 
 $Description: $
@@ -16,6 +16,7 @@ $TODO: $
 
 || DEVELOPER ||
 $Developer: Brendan Sisson (brendan@daemon.com.au)$
+$Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au)$
 
 || ATTRIBUTES ||
 $in: url.Objectid$
@@ -23,7 +24,8 @@ $out:$
 --->
 
 <cfsetting enablecfoutputonly="yes">
-
+<cfinclude template="/farcry/farcry_core/admin/includes/utilityFunctions.cfm">
+<cfinclude template="/farcry/farcry_core/admin/includes/cfFunctionWrappers.cfm">
 <!--- First check permissions --->
 <cfscript>
 	bHasPermission = request.dmsec.oAuthorisation.checkInheritedPermission(permissionName='edit',objectid=URL.objectid);
@@ -39,10 +41,23 @@ $out:$
 
 <cfimport taglib="/farcry/fourq/tags/" prefix="q4">
 
+<!--- work out package epath --->
+<cfscript>
+	packagePath = getPackagePath(URL.type);
+	oType = createObject("component",packagePath);
+	stObj = oType.getData(objectid=url.objectid,dsn=application.dsn);
+</cfscript>
+
 <!--- delete underlying draft --->
 <cfif isDefined("URL.deleteDraftObjectID")>
 	<!--- delete instance --->
 	<cf_deleteObjects typename="dmHTML" lObjectIDs="#URL.deleteDraftObjectID#">
+	<!--- Log this against live object --->
+	<cfscript>
+		oAuthentication = request.dmSec.oAuthentication;	
+		stuser = oAuthentication.getUserAuthenticationData();
+		application.factory.oaudit.logActivity(objectid="#url.objectid#",auditType="delete", username=StUser.userlogin, location=cgi.remote_host, note="Draft object deleted");
+	</cfscript>
 	<!--- get parent for update tree --->
 	<cf_getNavigation objectId="#url.ObjectId#" bInclusive="1" r_stObject="stNav" r_ObjectId="navIdSrcPerm">
 	<!--- update tree --->
@@ -54,60 +69,44 @@ $out:$
 		</script>
 	</cfoutput>
 </cfif>
-
-<!--- work out package epath --->
-<cfif application.types['#url.type#'].bCustomType>
-	<cfset packagepath = application.custompackagepath>
-<cfelse>
-	<cfset packagepath = application.packagepath>
-</cfif>
-
-<!--- get details --->
-<q4:contentobjectget typename="#packagepath#.types.#url.type#" objectid="#url.objectID#" r_stobject="stObj">
-
 <!--- See if we can edit this object --->
-<cfif structKeyExists(stObj,"versionID") AND structKeyExists(stObj,"status")>
-	<cfinvoke component="#packagepath#.farcry.versioning" method="getVersioningRules" objectID="#url.objectID#" returnvariable="stRules">
+<cfscript>
+oVersioning = createObject("component","#application.packagepath#.farcry.versioning");
+oLocking = createObject("component","#application.packagepath#.farcry.locking");
+if (structKeyExists(stObj,"versionID") AND structKeyExists(stObj,"status"))
+{			
+	stRules = oVersioning.getVersioningRules(objectid=url.objectid);
+	oVersioning.checkEdit(stRules=stRules,stObj=stObj);
+}
 
-	<cfinvoke component="#packagepath#.farcry.versioning" method="checkEdit" stRules="#stRules#" stObj="#stObj#">
-</cfif>
-
-<cfif structCount(stObj)>
-	<!--- check if object locked --->
-	
-	<cfinvoke component="#application.packagepath#.farcry.locking" method="checkForLock" returnvariable="checkForLockRet">
-		<cfinvokeargument name="objectId" value="#url.objectID#"/>
-	</cfinvoke>
+if (structCount(stObj))
+{
+	checkForLockRet=oLocking.checkForLock(objectid=url.objectid);
+	if (checkForLockRet.bSuccess)
+	{
+		lockRet = oLocking.lock(objectid=url.objectid,typename=url.type);
+		if (lockRet.bSuccess)
+		{
+			oType.edit(objectid=url.objectid);
+		}
+		else
+		{
+			dump(packagepath);
+			abort();
+		}
+	}
+	else if (not checkForLockRet.bSuccess and checkForLockRet.lockedBy eq "#session.dmSec.authentication.userlogin#_#session.dmSec.authentication.userDirectory#")	
+	{
+		oType.edit(objectid=url.objectid);
+	}
+	else
+	{
+		writeoutput(checkForLockRet.message);
+		abort();
+	}
+}	
 			
-	<cfif checkForLockRet.bSuccess>
-		<!--- available for edit so lock object --->
-		<cfinvoke component="#application.packagepath#.farcry.locking" method="lock" returnvariable="lockRet">
-			<cfinvokeargument name="objectId" value="#url.objectID#"/>
-			<cfinvokeargument name="typename" value="#url.type#"/>
-		</cfinvoke>
-			
-		<cfif lockRet.bSuccess>
-			<!--- now edit --->
-			<q4:contentobject typename="#packagepath#.types.#url.type#" method="edit" objectID="#url.objectID#">
-		<cfelse>
-			<!--- throw error --->
-			<cfdump var="#packagepath#"><cfabort>
-			<cfdump var="#lockRet#"><cfabort>
-		</cfif>
-	<cfelseif not checkForLockRet.bSuccess and checkForLockRet.lockedBy eq "#session.dmSec.authentication.userlogin#_#session.dmSec.authentication.userDirectory#">
-		<!--- locked by current user so available for edit, no need to lock again --->	
-
-		<q4:contentobject typename="#packagepath#.types.#url.type#" method="edit" objectID="#url.objectID#">
-
-	<cfelse>
-		<!--- object is locked, throw error message --->
-		<cfoutput>#checkForLockRet.message#</cfoutput>
-		<cfabort>
-	</cfif>
-	
-<cfelse>
-	<cfoutput><script>window.close();</script></cfoutput>
-</cfif>	  
+</cfscript>
 	  
 <admin:footer>
 

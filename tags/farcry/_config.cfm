@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/farcry/_config.cfm,v 1.28 2003/07/14 02:24:55 brendan Exp $
+$Header: /cvs/farcry/farcry_core/tags/farcry/_config.cfm,v 1.36 2003/09/23 08:05:17 brendan Exp $
 $Author: brendan $
-$Date: 2003/07/14 02:24:55 $
-$Name: b131 $
-$Revision: 1.28 $
+$Date: 2003/09/23 08:05:17 $
+$Name: b201 $
+$Revision: 1.36 $
 
 || DESCRIPTION || 
 $Description: included file for one-time initialisation of application constants $
@@ -69,25 +69,44 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 	for (i=1;i LTE qConfigList.Recordcount; i=i+1) "application.config.#trim(qConfigList.configname[i])#" = config.getConfig(configname=qConfigList.configname[i]);
 
 // activate PLP storage
-	application.path.plpstorage = application.path.core & "/plps/plpstorage";
-	application.path.tempfiles = application.path.core & "/plps/tempfiles";
+	if (NOT isDefined("application.path.plpstorage"))
+		application.path.plpstorage = application.path.core & "/plps/plpstorage";
+	if (NOT isDefined("application.path.tempfiles"))
+		application.path.tempfiles = application.path.core & "/plps/tempfiles";
 	application.fourq.plpstorage = application.path.core & "/plps/plpstorage"; // deprecated
-	// $TODO: should not need specific path for plp handlers - these templates belong under the CO type package$
 	application.fourq.plppath = "/farcry/farcry_core/plps"; // deprecated
 
-// assets 
+	// assets 
 	/* $TODO: 
 	 - need to resolve how this would be overridden from project code base
 	 - /files assumes web server access to this dir -> what about secure filestores?$ */
 	application.defaultFilePath = expandPath("#application.url.webroot#/files");
 	application.defaultImagePath = expandpath("#application.url.webroot#/images");
 
-// initialise the security structuress --->
 
+	//initialise factory objects 
+	application.factory.oAudit = createObject("component","#application.packagepath#.farcry.audit");
+	application.factory.oTree = createObject("component","#application.packagepath#.farcry.tree");
+	application.factory.oCache = createObject("component","#application.packagepath#.farcry.cache");
+	application.factory.oConfig = createObject("component","#application.packagepath#.farcry.config");
+	application.factory.oLocking = createObject("component","#application.packagepath#.farcry.locking");
+	application.factory.oVersioning = createObject("component","#application.packagepath#.farcry.versioning");
+	application.factory.oWorkflow = createObject("component","#application.packagepath#.farcry.workflow");
+	application.factory.oStats = createObject("component","#application.packagepath#.farcry.stats");
+	application.factory.oCategory = createObject("component","#application.packagepath#.farcry.category");
+	application.factory.oGenericAdmin = createObject("component","#application.packagepath#.farcry.genericAdmin");
+	application.factory.oVerity = createObject("component","#application.packagepath#.farcry.verity");
+	try {
+		application.factory.oFU = createObject("component","#application.packagepath#.farcry.FU");
+	}
+	catch (Any excpt) {}
+
+	
+// initialise the security structuress --->
 	request.dmSec.oAuthorisation = createObject("component","#application.securitypackagepath#.authorisation");
 	request.dmSec.oAuthentication = createObject("component","#application.securitypackagepath#.authentication");
 
-// --- Initialise the policy store ---
+
 	
 </cfscript>
 
@@ -157,21 +176,27 @@ $TODO:
 	
 	<!--- Init all CORE types --->
 	<cfloop query="qTypesDir">
-		<cfscript>
-		typename = left(qTypesDir.name, len(qTypesDir.name)-4); //remove the .cfc from the filename
-		"#typename#" = createObject("Component", "#application.packagepath#.types.#typename#");
-		evaluate(typename).initMetaData("application.types");
-		setVariable("application.types['#typename#'].bCustomType",0);
-		</cfscript>
+		<cftry>
+			<cfscript>
+			typename = left(qTypesDir.name, len(qTypesDir.name)-4); //remove the .cfc from the filename
+			"#typename#" = createObject("Component", "#application.packagepath#.types.#typename#");
+			evaluate(typename).initMetaData("application.types");
+			setVariable("application.types['#typename#'].bCustomType",0);
+			</cfscript>
+			<cfcatch></cfcatch>
+		</cftry>
 	</cfloop>	
 	<!--- Now init all Custom Types --->
 	<cfloop query="qCustomTypesDir">
-		<cfscript>
-		typename = left(qCustomTypesDir.name, len(qCustomTypesDir.name)-4); //remove the .cfc from the filename
-		"#typename#" = createObject("Component", "#application.custompackagepath#.types.#typename#");
-		evaluate(typename).initMetaData("application.types");
-		setVariable("application.types['#typename#'].bCustomType",1);
-		</cfscript>
+		<cftry>
+			<cfscript>
+			typename = left(qCustomTypesDir.name, len(qCustomTypesDir.name)-4); //remove the .cfc from the filename
+			"#typename#" = createObject("Component", "#application.custompackagepath#.types.#typename#");
+			evaluate(typename).initMetaData("application.types");
+			setVariable("application.types['#typename#'].bCustomType",1);
+			</cfscript>
+			<cfcatch></cfcatch>
+		</cftry>
 	</cfloop>
 	
 	<cfscript>

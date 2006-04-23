@@ -1,4 +1,27 @@
+<!--- 
+|| LEGAL ||
+$Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
+$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
+|| VERSION CONTROL ||
+$Header: /cvs/farcry/farcry_core/tags/navajo/objectStatus.cfm,v 1.28 2003/09/23 23:32:12 brendan Exp $
+$Author: brendan $
+$Date: 2003/09/23 23:32:12 $
+$Name: b201 $
+$Revision: 1.28 $
+
+|| DESCRIPTION || 
+$Description: changes status of tree item $
+$TODO: $
+
+|| DEVELOPER ||
+$Developer: Brendan Sisson (brendan@daemon.com.au) $
+$Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
+
+|| ATTRIBUTES ||
+$in: $
+$out:$
+--->
 
 <cfsetting enablecfoutputonly="Yes">
 <cfimport taglib="/farcry/fourq/tags/" prefix="q4">
@@ -26,6 +49,25 @@
 <cfinvoke component="#application.packagepath#.farcry.versioning" method="getVersioningRules" objectID="#url.objectID#" returnvariable="stRules">
 
 <cfset changestatus = true>
+<cfoutput>
+<script>
+	
+	
+	function deSelectAll()
+	{
+		if(document.form.lApprovers[0].checked = true)
+		{
+			for(var i = 1;i < document.form.lApprovers.length;i++)
+			{
+				document.form.lApprovers[i].checked = false;
+			}
+		} 
+		return true;
+	}	
+	
+	
+</script>
+</cfoutput>
 
 <!--- show comment form --->
 <cfif not isdefined("form.commentLog") and listlen(attributes.lObjectIDs) eq 1>
@@ -33,9 +75,32 @@
 	<q4:contentobjectget objectid="#attributes.lobjectIDs#" r_stobject="stObj">
 	<cfif isdefined("stObj.status")>
 		<cfoutput>
-			<form action="" method="post">
+			<form name="form" action="" method="post">
 			<span class="formLabel">Add your comments:</span><br>
-			<textarea rows="8" cols="50"  name="commentLog"></textarea><br>
+			<textarea rows="8" cols="50"  name="commentLog"></textarea><br/>
+			
+			<!--- if requesting approval, list approvers --->
+			<cfif url.status eq "requestApproval">
+				
+			
+				<span class="formLabel">Request Approval From</span><br/>
+				
+				<input type="checkbox" onclick="if(this.checked)deSelectAll();" name="lApprovers" value="all" checked="true">All approvers<br/>
+				
+				<!--- get list of approvers for this object --->
+				<cfinvoke component="#application.packagepath#.farcry.workflow" method="getObjectApprovers" returnvariable="stApprovers">
+					<cfinvokeargument name="objectID" value="#url.objectID#"/>
+				</cfinvoke>
+
+				<!--- loop over approvers and display ones that have email profiles --->
+				<cfloop collection="#stApprovers#" item="item">
+				    <cfif stApprovers[item].emailAddress neq "" AND stApprovers[item].bReceiveEmail and stApprovers[item].userName neq session.dmSec.authentication.userLogin>
+						<input type="checkbox" name="lApprovers" onclick="if(this.checked)document.form.lApprovers[0].checked = false;" value="#stApprovers[item].userName#"><cfif len(stApprovers[item].firstName) gt 0>#stApprovers[item].firstName# #stApprovers[item].lastName#<cfelse>#stApprovers[item].userName#</cfif><br/>
+					</cfif>
+				</cfloop>
+				<p></p>
+			</cfif>
+			
 			<input type="submit" name="submit" value="Submit" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';">
 			<input type="button" name="Cancel" value="Cancel" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';" onClick="location.href='../edittabOverview.cfm?objectid=#attributes.lobjectIDs#';"></div>     
 			<!--- display existing comments --->
@@ -92,23 +157,33 @@
 			<cfset status = "pending">
 			<cfset permission = "requestApproval">
 			<cfset active = 0>
-			<!--- send out emails informing object needs approval --->
+			
+			<!--- checkk if underlying draft obejct --->
 			<cfif isDefined("URL.draftObjectID")>
-				<cfinvoke component="#application.packagepath#.farcry.versioning" method="approveEmail_pending">
-					<cfinvokeargument name="objectId" value="#URL.draftObjectID#"/>
-					<cfinvokeargument name="comment" value="#form.commentlog#"/>
-				</cfinvoke>
+				<cfset pendingObject = "#URL.draftObjectID#"/>
 			<cfelse>
-				<cfinvoke component="#application.packagepath#.farcry.versioning" method="approveEmail_pending">
-					<cfinvokeargument name="objectId" value="#stObj.objectID#"/>
-					<cfinvokeargument name="comment" value="#form.commentlog#"/>
-				</cfinvoke>
+				<cfset pendingObject = "#stObj.objectID#"/>
 			</cfif>
 			
-	
+			<!--- send out emails informing object needs approval --->
+			<cfinvoke component="#application.packagepath#.farcry.versioning" method="approveEmail_pending">
+				<cfinvokeargument name="objectId" value="#pendingObject#"/>
+				<cfinvokeargument name="comment" value="#form.commentlog#"/>
+				<cfif isdefined("form.lApprovers") and len(form.lApprovers)>
+					<cfif listLen(form.lApprovers) gt 1 and listFind(form.lApprovers,"all")>
+						<cfinvokeargument name="lApprovers" value="all"/>
+					<cfelse>
+						<cfinvokeargument name="lApprovers" value="#form.lApprovers#"/>
+					</cfif>					
+				<cfelse>
+					<cfinvokeargument name="lApprovers" value="all"/>
+				</cfif>
+			</cfinvoke>
+				
 		<cfelse>
 			<cfoutput><b>Unknown status passed. (#url.status#)<b><br></cfoutput><cfabort>
 		</cfif>
+		
 		<cfscript>
 			oAuthorisation = request.dmsec.oAuthorisation;
 			iState = oAuthorisation.checkInheritedPermission(permissionName=permission,objectid=stNav.objectId);	
@@ -158,11 +233,10 @@
 			<cfif isArray(stObj.aObjectIds)>
 				<cfset keyList = listAppend(keyList,arrayToList(stObj.aObjectIds))>
 			</cfif>
-			<cfinvoke  component="#application.packagepath#.farcry.tree" method="getDescendants" returnvariable="qGetDescendants">
-				<cfinvokeargument name="dsn" value="#application.dsn#"/>
-				<cfinvokeargument name="objectid" value="#attributes.objectID#"/>
-			</cfinvoke>
-			
+			<cfscript>
+				qGetDescendants = application.factory.oTree.getDescendants(objectid=attributes.objectID);
+			</cfscript>
+						
 			<cfset keyList = listAppend(keyList,valueList(qGetDescendants.objectId))>
 			<cfloop query="qGetDescendants">
 				<q4:contentobjectget objectId="#qGetDescendants.objectId#" r_stObject="stThisObj">
@@ -184,10 +258,11 @@
 		
 		<cfoutput>Changing status....<br></cfoutput><cfflush>
 		
-			<!--- update the structure data for object update --->
-			
-		
+		<!--- update the structure data for object update --->
+	
 		<cfloop list="#keyList#" index="key">
+			
+
 			<q4:contentobjectget objectId="#key#" r_stObject="stObj">
 			<cfscript>
 				stObj.datetimecreated = createODBCDateTime("#datepart('yyyy',stObj.datetimecreated)#-#datepart('m',stObj.datetimecreated)#-#datepart('d',stObj.datetimecreated)#");
@@ -210,11 +285,20 @@
 				<cfset returnObjectID=stObj.objectid>
 			<cfelse>
 				<!--- a normal page, no underlying object --->
-				<q4:contentobjectdata objectid="#stObj.objectID#" typename="#application.packagepath#.types.#stObj.typename#"
-				 stProperties="#stObj#">
-				 <cfif stObj.typename neq "dmImage" and stObj.typename neq "dmFile">
-				 	<cfset returnObjectId= url.objectid>
-				 </cfif>
+				<cfscript>
+					//is this a custom type?
+					if(application.types[stObj.typename].bCustomType)
+						packagePath = application.customPackagePath;
+					else
+						packagePath = application.packagePath;
+					// update the OBJECT
+					oType = createobject("component","#packagepath#.types.#stObj.typename#");
+					oType.setData(stProperties=stObj,auditNote="Status changed to #stObj.status#");
+				</cfscript>
+				
+				<cfif stObj.typename neq "dmImage" and stObj.typename neq "dmFile">
+					<cfset returnObjectId= url.objectid>
+				</cfif>
 			</cfif>
 		</cfloop>
 		

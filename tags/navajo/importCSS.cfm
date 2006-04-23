@@ -13,15 +13,14 @@ its navigation node
 <cfif IsDefined("request.navid")>
 <cfscript>
 // get navigation elements to root
-o = createObject("component", "#application.packagepath#.farcry.tree");
-qAncestors = o.getAncestors(objectid=request.navid);
+qAncestors = application.factory.oTree.getAncestors(objectid=request.navid);
 // loop through and determine which ones have CSS objects
 </cfscript>
 
 <cfquery datasource="#application.dsn#" name="qCSS">
-SELECT dmCSS.objectid, dmCSS.filename
-FROM #application.dbowner#dmCSS, #application.dbowner#dmNavigation_aObjectIDs
-WHERE 
+	SELECT dmCSS.objectid, dmCSS.filename
+	FROM #application.dbowner#dmCSS, #application.dbowner#dmNavigation_aObjectIDs
+	WHERE 
 	dmCSS.objectid = dmNavigation_aObjectIDs.data
 	AND dmNavigation_aObjectIDs.objectid IN (#quotedValueList(qAncestors.objectid)#)
 </cfquery>

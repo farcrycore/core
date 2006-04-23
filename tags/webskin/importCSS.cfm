@@ -5,11 +5,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/webskin/importCSS.cfm,v 1.7 2003/06/03 02:22:49 brendan Exp $
+$Header: /cvs/farcry/farcry_core/tags/webskin/importCSS.cfm,v 1.8 2003/08/08 04:23:36 brendan Exp $
 $Author: brendan $
-$Date: 2003/06/03 02:22:49 $
-$Name: b131 $
-$Revision: 1.7 $
+$Date: 2003/08/08 04:23:36 $
+$Name: b201 $
+$Revision: 1.8 $
 
 || DESCRIPTION || 
 Import CSS for templates based on site tree
@@ -30,8 +30,7 @@ out:
 <cfif IsDefined("request.navid")>
 	<cfscript>
 	// get navigation elements to root
-	o = createObject("component", "#application.packagepath#.farcry.tree");
-	qAncestors = o.getAncestors(objectid=request.navid, bIncludeSelf=true);
+	qAncestors = application.factory.oTree.getAncestors(objectid=request.navid, bIncludeSelf=true);
 	</cfscript>
 	
 	<cfset lCSS = "">

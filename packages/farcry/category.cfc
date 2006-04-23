@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/category.cfc,v 1.6 2003/07/24 07:39:02 brendan Exp $
-$Author: brendan $
-$Date: 2003/07/24 07:39:02 $
-$Name: b131 $
-$Revision: 1.6 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/category.cfc,v 1.12 2003/10/09 05:45:34 paul Exp $
+$Author: paul $
+$Date: 2003/10/09 05:45:34 $
+$Name: b201 $
+$Revision: 1.12 $
 
 || DESCRIPTION || 
 $Description: Set of functions to perform metadata characterisation $
@@ -21,12 +21,11 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 
 	<cffunction name="getData" access="public" output="false" returntype="query" hint="">
 		<cfargument name="lCategoryIDs" type="string" required="true" hint="The list of categoryIDs you wish to match">
-		<cfargument name="typename" type="string" required="false" default="Typename you wish to search eg. dmNews"> 
-		<cfargument name="dsn" type="string" required="true" hint="Database DSN">
-		<cfargument name="orderBy" type="string" required="true" default="dateTimeLastUpdated" hint="field to order by">
-		<cfargument name="orderDirection" type="string" required="true" default="desc" hint="order in which direction? descending or ascending">
+		<cfargument name="typename" type="string" required="True"> 
+		<cfargument name="dsn" type="string" default="#application.dsn#" required="false" hint="Database DSN">
+		<cfargument name="orderBy" type="string" required="False" default="dateTimeLastUpdated" hint="field to order by">
+		<cfargument name="orderDirection" type="string" required="False" default="desc" hint="order in which direction? descending or ascending">
 		
-		<cfset stArgs = arguments>
 		<cfinclude template="_category/getData.cfm">
 		
 		<cfreturn getData>
@@ -37,8 +36,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 		<cfargument name="bDropTables" type="boolean" required="false" default="false">
 		<cfargument name="dsn" type="string" required="true" hint="Database DSN">
 		
-		<cfset stArgs = arguments>
- 		<cfinclude template="_category/deployCategories.cfm">
+		<cfinclude template="_category/deployCategories.cfm">
 		
 		<cfreturn stStatus>
 	</cffunction>
@@ -52,8 +50,9 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 	
 	<cffunction name="getHierarchyRoot" hint="This gets a hierarchy root - nlevel 2 - by name">
 		<cfargument name="objectname" required="Yes">
+		<cfargument name="dsn" required="no" default="#application.dsn#">
 		
-		<cfquery name="q" datasource="#application.dsn#">
+		<cfquery name="q" datasource="#arguments.dsn#">
 			SELECT objectID
 			FROM nested_tree_objects
 			WHERE nlevel = 1 AND lower(objectname) = '#lcase(arguments.objectname)#' AND lower(typename) = 'categories'
@@ -79,9 +78,9 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 		<cfargument name="bIsForm" type="boolean" required="false" default="True" hint="If true - then the tree will function as a self contained form, if false, then form submit elements will not be rendered">
 		<cfargument name="lSelectedCategories" type="string" hint="A list of category objectIDs that are to be selected as default" required="false" default="">
 		<cfargument name="lExcludeCategories" type="string" hint="A list of category objectIDs that are to be exlcuded" required="false" default="">
+		<cfargument name="bExpand" type="boolean" hint="Defaul action for root node expansion" required="false" default="True">
 		
-		<cfset stArgs = arguments>
- 		<cfinclude template="_category/displayTree.cfm">
+		<cfinclude template="_category/displayTree.cfm">
 		
 	</cffunction>
 	
@@ -92,8 +91,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 		<cfargument name="parentID" type="uuid" required="true" hint="UUID of parent">
 		<cfargument name="dsn" type="string" required="true" hint="Database DSN">
 		
-		<cfset stArgs = arguments>
- 		<cfinclude template="_category/addCategory.cfm">
+		<cfinclude template="_category/addCategory.cfm">
 		
 		<cfreturn stStatus>
 	</cffunction>
@@ -103,8 +101,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 		<cfargument name="dsn" type="string" required="true" hint="Database DSN">
 		<cfargument name="bDeleteBranch" type="boolean" required="false" default="false">
 				
-		<cfset stArgs = arguments>
- 		<cfinclude template="_category/deleteCategory.cfm">
+		<cfinclude template="_category/deleteCategory.cfm">
 		
 		<cfreturn stStatus>
 	</cffunction>
@@ -113,8 +110,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 		<cfargument name="categoryID" type="uuid" hint="Category ID" required="true">
 		<cfargument name="parentID" type="uuid" hint="New parent ID that branch will sit under">
 		
-		<cfset stArgs = arguments>
- 		<cfinclude template="_category/moveCategory.cfm">
+		<cfinclude template="_category/moveCategory.cfm">
 		<cfreturn stStatus>
 	</cffunction>
 	
@@ -122,8 +118,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 		<cfargument name="objectID" required="true" type="uuid">
 		<cfargument name="bReturnCategoryIDs" required="false" type="boolean" default="false" hint="Set flag to true if you want category objectids instead of category labels.">
 		
-		<cfset stArgs = arguments>
- 		<cfinclude template="_category/getCategories.cfm">
+		<cfinclude template="_category/getCategories.cfm">
 		
 		<cfreturn lCategoryIDs>  
 	</cffunction>
@@ -133,8 +128,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 		<cfargument name="lCategoryIDs" type="string" hint="List of category objectIDs">  
 		<cfargument name="dsn" type="string" required="true" hint="Database DSN">
 		
-		<cfset stArgs = arguments>
- 		<cfinclude template="_category/assignCategories.cfm">
+		<cfinclude template="_category/assignCategories.cfm">
 		
 		<cfreturn stStatus>
 	</cffunction>  
@@ -147,11 +141,10 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 		<cfscript>
 			jsout = "";
 			stAllObjects = structNew();
-			oTree = createObject("component","#application.packagepath#.farcry.tree");
 		</cfscript>
 				
 		<cfscript>
-			qDescendants = oTree.getDescendants(dsn=application.dsn,objectid=arguments.objectid);
+			qDescendants = application.factory.oTree.getDescendants(dsn=application.dsn,objectid=arguments.objectid);
 		</cfscript>
 
 		<cfquery name="q" datasource="#application.dsn#">
@@ -187,7 +180,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 		
 		<cfloop collection="#stObjects#" item="key">
 		<cfscript>
-			qChildren = oTree.getChildren(objectid=key);
+			qChildren = application.factory.oTree.getChildren(objectid=key);
 			stObjects['#key#'].aNavChild = ListToArray(ValueList(qChildren.ObjectID));
 			if (NOT ArrayLen(stObjects['#key#'].aNavChild))
 				stObjects['#key#'].aNavChild = ""; // tree seems to barf on empty array

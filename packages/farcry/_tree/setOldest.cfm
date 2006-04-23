@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_tree/setOldest.cfm,v 1.7 2003/04/14 02:03:13 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_tree/setOldest.cfm,v 1.9 2003/09/12 02:59:21 brendan Exp $
 $Author: brendan $
-$Date: 2003/04/14 02:03:13 $
-$Name: b131 $
-$Revision: 1.7 $
+$Date: 2003/09/12 02:59:21 $
+$Name: b201 $
+$Revision: 1.9 $
 
 || DESCRIPTION || 
 $Description: setOldest Function $
@@ -41,39 +41,39 @@ $out:$
 					sql = "
 						update nested_tree_objects
 						set nright = nright + 2 
-						where nright > (select nleft from nested_tree_objects where objectid = '#stArgs.parentid#' and typename = '#stArgs.typename#')
-						and typename = '#stArgs.typeName#'";
-					query(sql=sql, dsn=stArgs.dsn);	
+						where nright > (select nleft from nested_tree_objects where objectid = '#arguments.parentid#' and typename = '#arguments.typename#')
+						and typename = '#arguments.typeName#'";
+					query(sql=sql, dsn=arguments.dsn);	
 					
 					sql = "
 						update nested_tree_objects
 						set nleft = nleft + 2
-						where nleft > (select nleft from nested_tree_objects where objectid = '#stArgs.parentid#' and typename = '#stArgs.typename#')
-						and typename = '#stArgs.typeName#'";
-					query(sql=sql, dsn=stArgs.dsn);	
+						where nleft > (select nleft from nested_tree_objects where objectid = '#arguments.parentid#' and typename = '#arguments.typename#')
+						and typename = '#arguments.typeName#'";
+					query(sql=sql, dsn=arguments.dsn);	
 					break;
 				}
 				
 				case "mysql":
 				{
-					tempsql = "select nleft from nested_tree_objects where objectid = '#stArgs.parentid#' and typename = '#stArgs.typename#'";
-					tempResult = query(sql=tempsql, dsn=stArgs.dsn);
+					tempsql = "select nleft from nested_tree_objects where objectid = '#arguments.parentid#' and typename = '#arguments.typename#'";
+					tempResult = query(sql=tempsql, dsn=arguments.dsn);
 					sql = "
 						update nested_tree_objects
 						set nright = nright + 2 
 						where nright > #tempResult.nleft#
-						and typename = '#stArgs.typeName#'";
-					query(sql=sql, dsn=stArgs.dsn);	
+						and typename = '#arguments.typeName#'";
+					query(sql=sql, dsn=arguments.dsn);	
 					
-					tempsql = "select nleft from nested_tree_objects where objectid = '#stArgs.parentid#' and typename = '#stArgs.typename#'";
-					tempResult = query(sql=tempsql, dsn=stArgs.dsn);
+					tempsql = "select nleft from nested_tree_objects where objectid = '#arguments.parentid#' and typename = '#arguments.typename#'";
+					tempResult = query(sql=tempsql, dsn=arguments.dsn);
 					
 					sql = "
 						update nested_tree_objects
 						set nleft = nleft + 2
 						where nleft > #tempResult.nleft#
-						and typename = '#stArgs.typeName#'";
-					query(sql=sql, dsn=stArgs.dsn);	
+						and typename = '#arguments.typeName#'";
+					query(sql=sql, dsn=arguments.dsn);	
 					break;
 				}
 				
@@ -82,16 +82,16 @@ $out:$
 					sql = "
 						update nested_tree_objects
 						set nright = nright + 2 
-						where nright > (select nleft from nested_tree_objects where objectid = '#stArgs.parentid#' and typename = '#stArgs.typename#')
-						and typename = '#stArgs.typeName#'";
-					query(sql=sql, dsn=stArgs.dsn);	
+						where nright > (select nleft from nested_tree_objects where objectid = '#arguments.parentid#' and typename = '#arguments.typename#')
+						and typename = '#arguments.typeName#'";
+					query(sql=sql, dsn=arguments.dsn);	
 					
 					sql = "
 						update nested_tree_objects
 						set nleft = nleft + 2
-						where nleft > (select nleft from nested_tree_objects where objectid = '#stArgs.parentid#' and typename = '#stArgs.typename#')
-						and typename = '#stArgs.typeName#'";
-					query(sql=sql, dsn=stArgs.dsn);	
+						where nleft > (select nleft from nested_tree_objects where objectid = '#arguments.parentid#' and typename = '#arguments.typename#')
+						and typename = '#arguments.typeName#'";
+					query(sql=sql, dsn=arguments.dsn);	
 				}
 			}
 		
@@ -99,8 +99,8 @@ $out:$
 		sql = "
 			select nleft, nlevel
 			from nested_tree_objects 
-			where objectid = '#stArgs.parentid#'";
-		q = query(sql=sql, dsn=stArgs.dsn);
+			where objectid = '#arguments.parentid#'";
+		q = query(sql=sql, dsn=arguments.dsn);
 		
 		pleft = q.nleft;
 		plevel = q.nlevel;
@@ -110,8 +110,8 @@ $out:$
 				case "ora":
 				{
 					sql = "
-					insert nested_tree_objects (ObjectID, ParentID, ObjectName, TypeName, Nleft, Nright, Nlevel)
-					select 	'#stArgs.objectid#', '#stArgs.parentid#', '#stArgs.objectName#', '#stArgs.typeName#', #pleft# + 1, #pleft# + 2,  #plevel# + 1";
+					insert into nested_tree_objects (ObjectID, ParentID, ObjectName, TypeName, Nleft, Nright, Nlevel)
+					values ('#arguments.objectid#', '#arguments.parentid#', '#arguments.objectName#', '#arguments.typeName#', #pleft# + 1, #pleft# + 2,  #plevel# + 1)";
 					break;
 				}
 				
@@ -119,7 +119,7 @@ $out:$
 				{
 					sql = "
 					insert nested_tree_objects (ObjectID, ParentID, ObjectName, TypeName, Nleft, Nright, Nlevel)
-					values ('#stArgs.objectid#', '#stArgs.parentid#', '#stArgs.objectName#', '#stArgs.typeName#', #pleft# + 1, #pleft# + 2,  #plevel# + 1)";	
+					values ('#arguments.objectid#', '#arguments.parentid#', '#arguments.objectName#', '#arguments.typeName#', #pleft# + 1, #pleft# + 2,  #plevel# + 1)";	
 					break;
 				}
 				
@@ -127,16 +127,17 @@ $out:$
 				{
 					sql = "
 					insert nested_tree_objects (ObjectID, ParentID, ObjectName, TypeName, Nleft, Nright, Nlevel)
-					select 	'#stArgs.objectid#', '#stArgs.parentid#', '#stArgs.objectName#', '#stArgs.typeName#', #pleft# + 1, #pleft# + 2,  #plevel# + 1";
+					select 	'#arguments.objectid#', '#arguments.parentid#', '#arguments.objectName#', '#arguments.typeName#', #pleft# + 1, #pleft# + 2,  #plevel# + 1";
 				}
 			}
-		query(sql=sql, dsn=stArgs.dsn);		
+		query(sql=sql, dsn=arguments.dsn);		
 		</cfscript>
 
 		<cfcatch>
 			<!--- set negative result --->
 			<cfset stTmp.bSucess = "false">
 			<cfset stTmp.message = cfcatch>
+			<cfdump var="#cfcatch#"><cfabort>
 		</cfcatch>
 
 </cftry>

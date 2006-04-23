@@ -1,17 +1,42 @@
+<!--- 
+|| LEGAL ||
+$Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
+$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
+
+|| VERSION CONTROL ||
+$Header: /cvs/farcry/farcry_core/packages/farcry/_versioning/approveEmail_pending_dd.cfm,v 1.9 2003/09/18 01:25:11 brendan Exp $
+$Author: brendan $
+$Date: 2003/09/18 01:25:11 $
+$Name: b201 $
+$Revision: 1.9 $
+
+|| DESCRIPTION || 
+$Description: sends email for pending news type object $
+$TODO: $
+
+|| DEVELOPER ||
+$Developer: Brendan Sisson (brendan@daemon.com.au) $
+
+|| ATTRIBUTES ||
+$in: $
+$out:$
+--->
+
 <cfsetting enablecfoutputonly="Yes">
 
 <cfimport taglib="/farcry/fourq/tags/" prefix="q4">
 
 <!--- get object details --->
-<q4:contentobjectget objectID="#stArgs.objectID#" r_stObject="stObj">
+<q4:contentobjectget objectID="#arguments.objectID#" r_stObject="stObj">
 
 <!--- get list of approvers for this object --->
 <cfinvoke component="#application.packagepath#.farcry.workflow" method="getNewsApprovers" returnvariable="stApprovers">
-	<cfinvokeargument name="objectID" value="#stArgs.objectID#" />
+	<cfinvokeargument name="objectID" value="#arguments.objectID#" />
 </cfinvoke>
 
 <cfloop collection="#stApprovers#" item="user">
-    <cfif stApprovers[user].emailAddress neq "" AND stApprovers[user].bReceiveEmail>
+    <!--- check user had email profile and is in list of approvers --->
+    <cfif stApprovers[user].emailAddress neq "" AND stApprovers[user].bReceiveEmail and stApprovers[user].userName neq session.dmSec.authentication.userLogin AND (arguments.lApprovers eq "all" or listFind(arguments.lApprovers,stApprovers[user].userName))>
 
     <cfif isdefined("session.dmProfile.emailAddress") and session.dmProfile.emailAddress neq "">
         <cfset fromEmail = session.dmProfile.emailAddress>
@@ -27,11 +52,11 @@ Object "<cfif stObj.title neq "">#stObj.title#<cfelse>undefined</cfif>" is await
 
 You may approve/decline this object by browsing to the following location:
 
-http://#CGI.HTTP_HOST##application.url.farcry#/index.cfm?section=dynamic&objectID=#stArgs.objectID#&status=pending
+http://#CGI.HTTP_HOST##application.url.farcry#/index.cfm?section=dynamic&objectID=#arguments.objectID#&status=pending
 
-<cfif stArgs.comment neq "">
+<cfif arguments.comment neq "">
 Comments added on status change:
-#stArgs.comment#
+#arguments.comment#
 </cfif>
 
 </cfmail>

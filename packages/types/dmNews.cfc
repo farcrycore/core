@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/dmNews.cfc,v 1.9 2003/06/26 04:06:29 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/types/dmNews.cfc,v 1.10 2003/09/10 23:46:11 brendan Exp $
 $Author: brendan $
-$Date: 2003/06/26 04:06:29 $
-$Name: b131 $
-$Revision: 1.9 $
+$Date: 2003/09/10 23:46:11 $
+$Name: b201 $
+$Revision: 1.10 $
 
 || DESCRIPTION || 
 $Description: dmNews Type $
@@ -40,7 +40,6 @@ object methods
 	
 	<!--- getData for object edit --->
 	<cfset stObj = getData(arguments.objectid)>
-	<cfset stArgs = arguments> <!--- hack to make arguments available to included file --->
 	<cfinclude template="_dmNews/edit.cfm">
 </cffunction>
 

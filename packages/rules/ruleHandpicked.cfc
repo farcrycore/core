@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/rules/ruleHandpicked.cfc,v 1.14 2003/07/09 07:16:50 paul Exp $
-$Author: paul $
-$Date: 2003/07/09 07:16:50 $
-$Name: b131 $
-$Revision: 1.14 $
+$Header: /cvs/farcry/farcry_core/packages/rules/ruleHandpicked.cfc,v 1.17 2003/09/22 05:24:57 brendan Exp $
+$Author: brendan $
+$Date: 2003/09/22 05:24:57 $
+$Name: b201 $
+$Revision: 1.17 $
 
 || DESCRIPTION || 
 $Description: Hand-pick and display individual object instances with a specified displayTeaser* handler. Restricted to those components with metadata bScheduled=true. $
@@ -58,10 +58,10 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	<cffunction access="public" name="update" output="true">
 		<cfargument name="objectID" required="Yes" type="uuid" default="">
 		<cfargument name="label" required="no" type="string" default="">
+		<cfargument name="cancelLocation" required="no" type="string" default="#application.url.farcry#/navajo/editContainer.cfm?containerid=#url.containerid#">
         <cfimport taglib="/farcry/farcry_core/tags/farcry" prefix="farcry">
 		<cfimport taglib="/farcry/farcry_core/tags/navajo" prefix="nj">
 		<cfimport taglib="/farcry/fourq/tags/" prefix="q4">
-		
 		
 		<cfscript>
 			stObj = this.getData(arguments.objectid); 
@@ -84,16 +84,18 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 		<!--- Default Vals --->
 		<cfparam name="URL.handpickaction" default="list">
 		<cfparam name="URL.killplp" default="0">
+		<cfparam name="URL.containerid" default="">
 		
 		
 		<!--- Handpicking an object is a multistep process - sticking it in a PLP --->
 		<cfswitch expression="#URL.handpickaction#">
 		
 		<cfcase value="add">
+			
 			<farcry:plp 
 				owner="#session.dmSec.authentication.userlogin#_#stObj.objectID#"
 				stepDir="/farcry/farcry_core/packages/rules/_ruleHandpicked"
-				cancelLocation="#application.url.farcry#/navajo/editContainer.cfm?containerid=#url.containerid#"
+				cancelLocation="#arguments.cancelLocation#"
 				iTimeout="15"
 				stInput="#stObj#"
 				bDebug="0"
@@ -114,7 +116,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 			<farcry:plp 
 				owner="list_#session.dmSec.authentication.userlogin#_#stObj.objectID#"
 				stepDir="/farcry/farcry_core/packages/rules/_ruleHandpicked"
-				cancelLocation="#application.url.farcry#/navajo/editContainer.cfm?containerid=#url.containerid#"
+				cancelLocation="#arguments.cancelLocation#"
 				iTimeout="15"
 				stInput="#stObj#"
 				bDebug="0"
@@ -202,7 +204,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 					if (NOT bFound)
 						arrayAppend(aStTmp,stWDDX[x]);
 				}	
-				stWddx = aStTMP;
+				stWDDX = aStTMP;
 				
 				//dump(stWddx);
 				stProperties.objectWDDX = cfml2WDDX(stWDDX);	
@@ -217,7 +219,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 			 objectid="#stObj.ObjectID#"> 
 			 
 			 <div class="FormTitle" align="center">Action Complete - Object Updated 
-				<cfform action="#CGI.script_name#?containerID=#URL.containerID#&handpickaction=1ist&killplp=1" method="post">
+				<cfform action="#CGI.script_name#?containerID=#URL.containerID#&handpickaction=1ist&killplp=1&ruleid=#stobj.objectid#&typename=rulehandpicked" method="post">
 					<input type="submit" class="normalbttnstyle" value="continue">
 				</cfform>
 			</div>
@@ -265,12 +267,10 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 			 objectid="#stObj.ObjectID#"> 
 			 
 			 <div class="FormTitle" align="center" >Action Complete - Object Updated <br>
-				<cfform action="#CGI.script_name#?#CGI.QUERY_STRING#" method="post">
+				<cfform action="#CGI.script_name#?containerID=#URL.containerID#&ruleid=#stobj.objectid#&typename=rulehandpicked" method="post">
 					<input type="submit" class="normalbttnstyle" value="continue">
 				</cfform>
 			</div>
-			
-		
 		</cfif>	 
 		
 	</cffunction> 
@@ -281,6 +281,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 		<cfargument name="dsn" required="false" type="string" default="#application.dsn#">
 		
 		<cfset stObj = this.getData(arguments.objectid)> 
+		<cftry>
 		<cfwddx action="wddx2cfml" input="#stObj.objectWDDX#"  output="stObjectWDDX">
 		<cfif isArray(stObjectWDDX)>
 			<cfif arrayLen(stObjectWDDX) GT 0>
@@ -308,6 +309,10 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 				</cfloop> 
 			</cfif>
 		</cfif>
+		<cfcatch>
+			<!-- Empty wddx packet-->
+		</cfcatch>
+		</cftry>
 	</cffunction> 
 
 </cfcomponent>

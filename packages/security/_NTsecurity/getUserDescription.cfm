@@ -6,11 +6,11 @@ Daemon Pty Limited 1995-2002
 http://www.daemon.com.au
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/security/_NTsecurity/getUserDescription.cfm,v 1.1 2002/10/15 08:54:29 pete Exp $
-$Author: pete $
-$Date: 2002/10/15 08:54:29 $
-$Name: b131 $
-$Revision: 1.1 $
+$Header: /cvs/farcry/farcry_core/packages/security/_NTsecurity/getUserDescription.cfm,v 1.2 2003/09/10 23:27:33 brendan Exp $
+$Author: brendan $
+$Date: 2003/09/10 23:27:33 $
+$Name: b201 $
+$Revision: 1.2 $
 
 || DESCRIPTION || 
 retrieve a users description from Active Directory
@@ -21,19 +21,13 @@ Peter Alexandrou (suspiria@daemon.com.au)
 || ATTRIBUTES ||
 none
 
-|| HISTORY ||
-$Log: getUserDescription.cfm,v $
-Revision 1.1  2002/10/15 08:54:29  pete
-no message
-
-
 || END FUSEDOC ||
 --->
 
 <cftry>
     <cfscript>
     o_user = createObject("COM", "NTAdmin.NTUserManagement");
-    desc = o_user.QueryUserProperty(stArgs.domain, stArgs.userName, "Description");
+    desc = o_user.QueryUserProperty(arguments.domain, arguments.userName, "Description");
     </cfscript>
 <cfcatch>
     <cfset desc = "">

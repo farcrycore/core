@@ -1,3 +1,27 @@
+<!--- 
+|| LEGAL ||
+$Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
+$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
+
+|| VERSION CONTROL ||
+$Header: /cvs/farcry/farcry_core/packages/security/_user/updatePassword.cfm,v 1.4 2003/09/10 23:27:34 brendan Exp $
+$Author: brendan $
+$Date: 2003/09/10 23:27:34 $
+$Name: b201 $
+$Revision: 1.4 $
+
+|| DESCRIPTION || 
+$Description: updates a users password $
+$TODO: $
+
+|| DEVELOPER ||
+$Developer: Brendan Sisson (brendan@daemon.com.au) $
+
+|| ATTRIBUTES ||
+$in: $
+$out:$
+--->
+
 <!--- get user details --->
 <cfscript>
 	stUser = request.dmsec.oAuthentication.getUser(userlogin="#session.dmsec.authentication.userlogin#",userDirectory="#session.dmsec.authentication.userdirectory#");
@@ -5,10 +29,10 @@
 
 <!--- check old password is entered correctly --->
 <cfif stUser.userPassword eq form.oldPassword>
-	<cfquery name="update" datasource="#stArgs.dsn#">
+	<cfquery name="update" datasource="#arguments.dsn#">
 		UPDATE #application.dbowner#dmUser SET
-		userPassword=<cfqueryparam value="#stArgs.newPassword#" cfsqltype="CF_SQL_VARCHAR"  null="No">
-		WHERE userId=<cfqueryparam value="#stArgs.userId#" cfsqltype="CF_SQL_VARCHAR" null="No">
+		userPassword=<cfqueryparam value="#arguments.newPassword#" cfsqltype="CF_SQL_VARCHAR"  null="No">
+		WHERE userId=<cfqueryparam value="#arguments.userId#" cfsqltype="CF_SQL_VARCHAR" null="No">
 	</cfquery>
 	<cfset bUpdate = true>
 <cfelse>

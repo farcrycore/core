@@ -2,12 +2,12 @@
 oAuthorisation = createObject("component", "#application.securitypackagepath#.authorisation");
 </cfscript>
 
-<cftry>
+<!--- <cftry>
     <cfscript>
     oAuthorisation.createPolicyGroup(policyGroupName=stPolicyGroup.policyGroupName);
     </cfscript>
 <cfcatch type="Any"></cfcatch>
-</cftry>
+</cftry> --->
 
 <cfscript>
 oAuthorisation.createPermissionBarnacle(PermissionName="Admin",	PermissionType="PolicyGroup",PolicyGroupName="SysAdmin",status="1",	Reference="PolicyGroup");

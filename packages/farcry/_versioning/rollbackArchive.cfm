@@ -6,11 +6,11 @@ Daemon Pty Limited 1995-2002
 http://www.daemon.com.au
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_versioning/rollbackArchive.cfm,v 1.2 2003/04/09 08:04:59 spike Exp $
-$Author: spike $
-$Date: 2003/04/09 08:04:59 $
-$Name: b131 $
-$Revision: 1.2 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_versioning/rollbackArchive.cfm,v 1.8 2003/10/31 06:40:57 paul Exp $
+$Author: paul $
+$Date: 2003/10/31 06:40:57 $
+$Name: b201 $
+$Revision: 1.8 $
 
 || DESCRIPTION || 
 Rolls back current object to selected archive version and creates an archive of current version.
@@ -21,14 +21,6 @@ Brendan Sisson (brendan@daemon.com.au)
 || ATTRIBUTES ||
 ObjectId - current objectid
 ArchiveId - id of archive version which will be sent back to live
-
-|| HISTORY ||
-$Log: rollbackArchive.cfm,v $
-Revision 1.2  2003/04/09 08:04:59  spike
-Major update to remove need for multiple ColdFusion and webserver mappings.
-
-Revision 1.1  2003/01/09 01:01:08  brendan
-*** empty log message ***
 
 || END FUSEDOC ||
 --->
@@ -46,10 +38,16 @@ Revision 1.1  2003/01/09 01:01:08  brendan
 	<cfinvoke component="farcry.fourq.fourq" returnvariable="thisTypename" method="findType" objectID="#ObjectId#">
 	<cfset typename = thisTypename>	
 </cfif>
-<cfset typename = "#application.packagepath#.types.#typename#">
+
+<!--- check for custom type --->
+<cfif application.types[typename].bCustomType>
+	<cfset typename = "#application.custompackagepath#.types.#typename#">
+<cfelse>
+	<cfset typename = "#application.packagepath#.types.#typename#">
+</cfif>
 
 <!--- get the current Live Object to archive --->
-<q4:contentobjectget ObjectId="#stArgs.objectID#" r_stObject="stLiveObject" typename="#typename#"> 
+<q4:contentobjectget ObjectId="#arguments.objectID#" r_stObject="stLiveObject" typename="#typename#"> 
 <!--- Convert current live object to WDDX --->
 <cfwddx input="#stLiveObject#" output="stLiveWDDX"  action="cfml2wddx">
 
@@ -70,21 +68,27 @@ Revision 1.1  2003/01/09 01:01:08  brendan
 	stRestult.message = 'Update Successful';
 </cfscript>
 
-<cflock name="createUUID();" timeout="50" type="exclusive">
+<cflock name="archive_#arguments.archiveID#" timeout="50" type="exclusive">
 	<!--- Make the archive - type is dmArchive --->
-	<q4:contentobjectcreate typename="#application.packagepath#.types.#dmArchiveType#" stproperties="#stProps#" r_objectid="archiveObjID">
-	
+	<cfscript>
+		oType = createobject("component","#application.packagepath#.types.#dmArchiveType#");
+		stNewObj = oType.createData(stProperties=stProps);
+		archiveObjID = stNewObj.objectid;
+	</cfscript>	
+		
 	<!--- retrieve archive version --->
-	<q4:contentobjectget ObjectId="#stArgs.archiveID#" r_stObject="stArchive" typename="#application.packagepath#.types.dmArchive"> 
+	<q4:contentobjectget ObjectId="#arguments.archiveID#" r_stObject="stArchive" typename="#application.packagepath#.types.dmArchive"> 
 	
 	<!--- Convert wddx archive object --->
 	<cfwddx input="#stArchive.objectwddx#" output="stArchiveDetail"  action="wddx2cfml">
+	<cfset stArchiveDetail.objectid = stLiveObject.objectID>
 	
 	<!--- Update current live object with archive property values	 --->
-	<q4:contentobjectdata objectid="#stLiveObject.objectID#" 
-		typename="#typename#"
-		stProperties="#stArchiveDetail#">
-	
+	<cfscript>
+		oContentType = createobject("component","#typename#");
+		oContentType.setData(stProperties=stArchiveDetail,auditNote='Archive rolled back');
+	</cfscript>
+		
 	<!--- update tree --->
 	<nj:getNavigation objectId="#stLiveObject.objectID#" bInclusive="1" r_stObject="stNav" r_ObjectId="objectId">	
 	<nj:updateTree ObjectId="#stNav.objectId#">

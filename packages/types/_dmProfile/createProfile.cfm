@@ -6,11 +6,11 @@ Daemon Pty Limited 1995-2002
 http://www.daemon.com.au
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmProfile/createProfile.cfm,v 1.5 2002/11/18 01:14:16 pete Exp $
-$Author: pete $
-$Date: 2002/11/18 01:14:16 $
-$Name: b131 $
-$Revision: 1.5 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmProfile/createProfile.cfm,v 1.6 2003/09/10 23:46:11 brendan Exp $
+$Author: brendan $
+$Date: 2003/09/10 23:46:11 $
+$Name: b201 $
+$Revision: 1.6 $
 
 || DESCRIPTION || 
 dmProfile create handler
@@ -21,29 +21,11 @@ Peter Alexandrou (suspiria@daemon.com.au)
 || ATTRIBUTES ||
 none
 
-|| HISTORY ||
-$Log: createProfile.cfm,v $
-Revision 1.5  2002/11/18 01:14:16  pete
-no message
-
-Revision 1.4  2002/10/21 06:29:03  pete
-added bReceiveEmail property
-
-Revision 1.3  2002/10/21 05:21:39  pete
-no message
-
-Revision 1.2  2002/10/21 02:44:39  pete
-added bActive property value of 1 for new profiles...
-
-Revision 1.1  2002/10/18 07:29:43  pete
-first working version
-
-
 || END FUSEDOC ||
 --->
 
 <cfscript>
-stUser = stArgs.stProperties;
+stUser = arguments.stProperties;
 
 stProfile = structNew();
 stProfile.objectID = createUUID();

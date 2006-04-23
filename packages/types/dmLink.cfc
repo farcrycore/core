@@ -1,5 +1,28 @@
+<!--- 
+|| LEGAL ||
+$Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
+$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
-<cfcomponent extends="types" displayname="Links" hint="A way of linking to external pages" bSchedule="1">
+|| VERSION CONTROL ||
+$Header: /cvs/farcry/farcry_core/packages/types/dmLink.cfc,v 1.9 2003/09/23 03:48:12 brendan Exp $
+$Author: brendan $
+$Date: 2003/09/23 03:48:12 $
+$Name: b201 $
+$Revision: 1.9 $
+
+|| DESCRIPTION || 
+$Description: dmLink type $
+$TODO: $
+
+|| DEVELOPER ||
+$Developer: Brendan Sisson (brendan@daemon.com.au) $
+
+|| ATTRIBUTES ||
+$in: $
+$out:$
+--->
+
+<cfcomponent extends="types" displayname="Link" hint="A way of linking to external pages" bSchedule="1" bUseInTree="1">
 <!------------------------------------------------------------------------
 type properties
 ------------------------------------------------------------------------->
@@ -8,7 +31,7 @@ type properties
 <cfproperty name="link" type="string" hint="Url of link" required="no" default=""> 
 <cfproperty name="commentlog" type="longchar" hint="Workflow comment log." required="no" default=""> 
 <cfproperty name="status" type="string" hint="Status of the node (draft, pending, approved)." required="yes" default="draft">
-
+<cfproperty name="displayMethod" type="string" hint="Display method to render this link object with." required="yes" default="display">
 
 <!--- Object Methods --->
 
@@ -17,7 +40,6 @@ type properties
 	
 	<!--- getData for object edit --->
 	<cfset stObj = this.getData(arguments.objectid)>
-	<cfset stArgs = arguments> <!--- hack to make arguments available to included file --->
 	<cfinclude template="_dmLink/edit.cfm">
 </cffunction>
 
@@ -26,7 +48,6 @@ type properties
 	
 	<!--- getData for object edit --->
 	<cfset stObj = this.getData(arguments.objectid)>
-	<cfset stArgs = arguments> <!--- hack to make arguments available to included file --->
 	<cfinclude template="_dmLink/display.cfm">
 </cffunction>
 

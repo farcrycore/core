@@ -1,6 +1,10 @@
 <cfsetting enablecfoutputonly="Yes">
 
 <cfapplication name="farcry_install" sessionmanagement="Yes">
+<cfset lAllowHosts = "127.0.0.1">
+<cfif NOT listFindNoCase(lAllowHosts,cgi.remote_addr)>
+	<cfthrow errorcode="install_invalid_host" detail="Your IP address is not permitted to access the install directory." extendedinfo="By default, installation is only permitted to the following hosts : 127.0.0.1  To give access to other hosts, then append the desired IP address to the variable lAllowHosts in /farcry_core/admin/install/application.cfm">
+</cfif>
 
 <cfscript>
 // root install directories + webroot
@@ -25,6 +29,7 @@ application.o_serviceFactory = createObject("java", "coldfusion.server.ServiceFa
 application.o_dmSecInit = createObject("component", "#application.packagepath#.security.init");
 application.o_dmAuthentication = createObject("component", "#application.packagepath#.security.authentication");
 application.o_dmAuthorisation = createObject("component", "#application.packagepath#.security.authorisation");
+application.factory.oAudit = createObject("component","#application.packagepath#.farcry.audit");
 
 // initialise any server structs that are non existant
 rc = application.o_dmSecInit.initServer();

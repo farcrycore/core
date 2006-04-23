@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_workflow/getObjectApprovers.cfm,v 1.14 2003/07/15 07:04:15 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_workflow/getObjectApprovers.cfm,v 1.15 2003/09/10 12:21:48 brendan Exp $
 $Author: brendan $
-$Date: 2003/07/15 07:04:15 $
-$Name: b131 $
-$Revision: 1.14 $
+$Date: 2003/09/10 12:21:48 $
+$Name: b201 $
+$Revision: 1.15 $
 
 || DESCRIPTION || 
 $DESCRIPTION: Gets a list of approvers for a navigatio node$
@@ -28,12 +28,12 @@ $out:$
 <cfset lApprovePGs = "">
 
 <!--- check if object is an underlying draft object --->
-<q4:contentobjectget objectID="#stArgs.objectID#" r_stobject="stObj">
+<q4:contentobjectget objectID="#arguments.objectID#" r_stobject="stObj">
 
 <cfif isdefined("stObj.versionID") and len(stObj.versionID)>
 	<cfset objectTest = stObj.versionID>
 <cfelse>
-	<cfset objectTest = stArgs.objectID>
+	<cfset objectTest = arguments.objectID>
 </cfif>
 
 		

@@ -2,11 +2,13 @@
 sql = "select type.*
 	   FROM #application.dbowner#refObjects refObj 
 	   JOIN #application.dbowner#refCategories refCat ON refObj.objectID = refCat.objectID
-	   JOIN #application.dbowner#dmNews type ON refObj.objectID = type.objectID  
-	   WHERE refObj.typename = '#stArgs.typename#' AND refCat.categoryID IN   ('#ListChangeDelims(stArgs.lCategoryIDs,"','",",")#')
-	   order by #stArgs.orderBy# #stArgs.orderDirection#";
+	   JOIN #application.dbowner##arguments.typename# type ON refObj.objectID = type.objectID  
+	   WHERE refObj.typename = '#arguments.typename#' AND refCat.categoryID IN   ('#ListChangeDelims(arguments.lCategoryIDs,"','",",")#')
+	   order by #arguments.orderBy# #arguments.orderDirection#";
 		</cfscript>
 
-<cfquery name="getData" datasource="#stArgs.dsn#">
+<cfdump var="#sql#">
+
+<cfquery name="getData" datasource="#arguments.dsn#">
 	#preserveSingleQuotes(sql)#
 </cfquery>

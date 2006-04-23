@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmCSS/edit.cfm,v 1.19 2003/07/15 07:04:15 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmCSS/edit.cfm,v 1.20 2003/08/01 01:57:07 brendan Exp $
 $Author: brendan $
-$Date: 2003/07/15 07:04:15 $
-$Name: b131 $
-$Revision: 1.19 $
+$Date: 2003/08/01 01:57:07 $
+$Name: b201 $
+$Revision: 1.20 $
 
 || DESCRIPTION || 
 $Description: edit handler$
@@ -34,6 +34,7 @@ $out:$
 	
 	<cfscript>
 		stProperties = structNew();
+		stProperties.objectid = stObj.ObjectID;
 		stProperties.title = form.title;
 		stProperties.label = form.title;
 		stProperties.description = form.description;
@@ -71,11 +72,11 @@ $out:$
 		</cfif>
 	</cfif>
 	
-	<q4:contentobjectdata
-	 typename="#application.packagepath#.types.dmCSS"
-	 stProperties="#stProperties#"
-	 objectid="#stObj.ObjectID#"
-	>
+	<cfscript>
+		// update the OBJECT	
+		oType = createobject("component","#application.packagepath#.types.dmCSS");
+		oType.setData(stProperties=stProperties);
+	</cfscript>
 	
 	<!--- get parent to update tree --->
 	<nj:treeGetRelations 

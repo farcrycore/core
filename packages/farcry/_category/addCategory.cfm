@@ -7,34 +7,35 @@
 </cfscript>
 
 <!--- unicode support --->
+
 <cfswitch expression="#application.dbType#">
 	<cfcase value="ora">
-		<cfquery datasource="#stArgs.dsn#">
+		<cfquery datasource="#arguments.dsn#">
 			INSERT INTO #application.dbowner#categories (categoryID,categoryLabel)
-			VALUES ('#stArgs.categoryID#', '#stArgs.categoryLabel#')
+			VALUES ('#arguments.categoryID#', '#arguments.categoryLabel#')
 		</cfquery>
 	</cfcase>
 	<cfcase value="mysql">
-		<cfquery datasource="#stArgs.dsn#">
+		<cfquery datasource="#arguments.dsn#">
 			INSERT INTO #application.dbowner#categories (categoryID,categoryLabel)
-			VALUES ('#stArgs.categoryID#', '#stArgs.categoryLabel#')
+			VALUES ('#arguments.categoryID#', '#arguments.categoryLabel#')
 		</cfquery>
 	</cfcase>
 	<cfdefaultcase>
-		<cfquery datasource="#stArgs.dsn#">
+		<cfquery datasource="#arguments.dsn#">
 			INSERT INTO #application.dbowner#categories (categoryID,categoryLabel)
-			VALUES ('#stArgs.categoryID#', N'#stArgs.categoryLabel#')
+			VALUES ('#arguments.categoryID#', N'#arguments.categoryLabel#')
 		</cfquery>
 	</cfdefaultcase>
 </cfswitch>
 
    <!--- Insert into nested_tree_objects --->
 <cfinvoke component="#application.packagepath#.farcry.tree" 
-	method="setChild" dsn="#stArgs.dsn#" objectName="#stArgs.categoryLabel#" 
-	typename="categories" pos="1" parentID="#stArgs.parentID#" objectID="#stArgs.categoryID#" 
+	method="setChild" dsn="#arguments.dsn#" objectName="#arguments.categoryLabel#" 
+	typename="categories" pos="1" parentID="#arguments.parentID#" objectID="#arguments.categoryID#" 
 	returnvariable="stReturn">
 	
 <cfscript>
-	stStatus.message = '#stArgs.categoryLabel# successfully added';
+	stStatus.message = '#arguments.categoryLabel# successfully added';
 	stStatus.status = true;
 </cfscript>

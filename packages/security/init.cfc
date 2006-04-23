@@ -1,4 +1,28 @@
-<cfcomponent>
+<!--- 
+|| LEGAL ||
+$Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
+$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
+
+|| VERSION CONTROL ||
+$Header: /cvs/farcry/farcry_core/packages/security/init.cfc,v 1.17 2003/09/17 10:12:50 brendan Exp $
+$Author: brendan $
+$Date: 2003/09/17 10:12:50 $
+$Name: b201 $
+$Revision: 1.17 $
+
+|| DESCRIPTION || 
+$Description: authorisation cfc $
+$TODO: $
+
+|| DEVELOPER ||
+$Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
+
+|| ATTRIBUTES ||
+$in: $
+$out:$
+--->
+
+<cfcomponent displayName="Security Initiatlisation" hint="FarCry security intilisation functions">
 
 	<cffunction name="initPolicyGroupsDatabase">
 		<cfargument name="datasource" required="true">
@@ -298,27 +322,23 @@
 					GROUPNAME VARCHAR2(64) NOT NULL,
 					GROUPNOTES VARCHAR2(256) NULL,
 					CONSTRAINT PK_DMGROUP PRIMARY KEY (GROUPID))
-				</cfquery>	
-				<cfquery datasource="#arguments.datasource#">	
-					CREATE SEQUENCE #application.dbowner#DMGROUP_SEQ;
-				</cfquery>	
-				<cfset sql = "
-				CREATE OR REPLACE TRIGGER #application.dbowner#dmGroup_trig
-					BEFORE
-					INSERT ON ""#application.dbowner#DMGROUP"" FOR EACH ROW begin
-						select #application.dbowner#DMGROUP_SEQ.nextval into :new.GROUPID from DUAL;
-					end;">
-				<cfquery datasource="#arguments.datasource#">	
-					#sql#
-				</cfquery>	
-		
-				<cfquery datasource="#arguments.datasource#">	
-					CREATE SEQUENCE #application.dbowner#DMUSER_SEQ;
 				</cfquery>
+				
+				<cftry>
+					<cfquery datasource="#arguments.datasource#">	
+						CREATE SEQUENCE #application.dbowner#DMGROUP_SEQ
+					</cfquery>	
+							
+					<cfquery datasource="#arguments.datasource#">	
+						CREATE SEQUENCE #application.dbowner#DMUSER_SEQ
+					</cfquery>
+					<cfcatch></cfcatch>
+				</cftry>	
+				
 				<cfquery datasource="#arguments.datasource#">			
 					CREATE TABLE #application.dbowner#dmUser(
 					USERID NUMBER  NOT NULL ,
-					USERLOGIN VARCHAR2(32) NOT NULL ,
+					USERLOGIN VARCHAR2(256) NOT NULL ,
 					USERNOTES VARCHAR2(256) NULL ,
 					USERPASSWORD VARCHAR2(32) NOT NULL ,
 					USERSTATUS VARCHAR2(10) NULL,
@@ -326,17 +346,6 @@
 					
 				</cfquery>
 				
-				<cfset sql = "
-				CREATE OR REPLACE TRIGGER #application.dbowner#DMUSER_TRIG
-					BEFORE 
-					INSERT ON ""#application.dbowner#DMUSER"" FOR EACH ROW
-					BEGIN
-						SELECT #application.dbowner#DMUSER_SEQ.NEXTVAL INTO :new.userid FROM DUAL;
-					END;">	
-					
-				<cfquery datasource="#arguments.datasource#">
-					#sql#
-				</cfquery>	
 				<cfquery datasource="#arguments.datasource#">
 					CREATE TABLE #application.dbowner#DMUSERTOGROUP (
 					USERID NUMBER NOT NULL ,
@@ -357,7 +366,7 @@
 				<cfquery name="qCreateTable_dmUser" datasource="#arguments.datasource#" dbtype="ODBC">
 					CREATE TABLE `#application.dbowner#dmUser` 
 					(`userId` INT (11) UNSIGNED DEFAULT '0' NOT NULL AUTO_INCREMENT, 
-					 `userLogin` VARCHAR (32) DEFAULT '0' NOT NULL, 
+					 `userLogin` VARCHAR (255) DEFAULT '0' NOT NULL, 
 					 `userNotes` VARCHAR (255) DEFAULT '0', 
 					 `userPassword` VARCHAR (32) DEFAULT '0' NOT NULL, 
 					 `userStatus` TINYINT (3) UNSIGNED DEFAULT '0' NOT NULL, 
@@ -526,7 +535,16 @@
 							CONSTRAINT PK_DMPERMISSION PRIMARY KEY (permissionId)
 						)
 					</cfquery>	
-						
+
+					<cftry>
+						<cfquery datasource="#arguments.datasource#">	
+							CREATE SEQUENCE #application.dbowner#DMPERMISSION_SEQ MINVALUE 500
+						</cfquery>
+						<cfquery datasource="#arguments.datasource#">	
+							CREATE SEQUENCE #application.dbowner#DMPOLICYGROUP_SEQ
+						</cfquery>
+						<cfcatch></cfcatch>
+					</cftry>
 				</cfcase>
 				
 				<cfcase value="mysql">
@@ -542,7 +560,7 @@
 					<cfquery datasource="#application.dsn#">
 						CREATE TABLE `#application.dbowner#dmPolicyGroup`
 						(
-							`PolicyGroupId` INT (11) NOT NULL ,
+							`PolicyGroupId` INT (11) NOT NULL auto_increment,
 							`PolicyGroupName` VARCHAR (50) NOT NULL,
 							`PolicyGroupNotes` VARCHAR (255) NULL,
 							PRIMARY KEY(`POLICYGROUPID`)
@@ -561,7 +579,7 @@
 					<cfquery datasource="#application.dsn#">				
 						CREATE TABLE `#application.dbowner#dmPermission`
 						(
-							`PermissionId` INT (11) NOT NULL ,
+							`PermissionId` INT (11) NOT NULL auto_increment,
 							`PermissionName` VARCHAR (64) NOT NULL ,
 							`PermissionNotes` VARCHAR (255) NULL ,
 							`PermissionType` VARCHAR (255) NOT NULL,

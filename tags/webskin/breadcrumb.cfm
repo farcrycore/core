@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/webskin/breadcrumb.cfm,v 1.12 2003/06/06 02:39:04 brendan Exp $
+$Header: /cvs/farcry/farcry_core/tags/webskin/breadcrumb.cfm,v 1.15 2003/10/09 00:50:53 brendan Exp $
 $Author: brendan $
-$Date: 2003/06/06 02:39:04 $
-$Name: b131 $
-$Revision: 1.12 $
+$Date: 2003/10/09 00:50:53 $
+$Name: b201 $
+$Revision: 1.15 $
 
 || DESCRIPTION || 
 builds a breadcrumb for the page
@@ -28,7 +28,7 @@ out:
 <cfsetting enablecfoutputonly="Yes">
 <cfimport taglib="/farcry/farcry_core/tags/webskin" prefix="skin">
 
-<cfparam name="attributes.separator" default="&raquo;">
+<cfparam name="attributes.separator" default=" &raquo; ">
 <cfparam name="attributes.here" default="here">
 <cfparam name="attributes.linkClass" default="">
 <cfif structKeyExists(request,"navid")>
@@ -41,8 +41,7 @@ out:
 
 <cfscript>
 // get navigation elements
-	o = createObject("component", "#application.packagepath#.farcry.tree");
-	qAncestors = o.getAncestors(objectid=attributes.objectid);
+	qAncestors = application.factory.oTree.getAncestors(objectid=attributes.objectid);
 </cfscript>
 
 <cfif attributes.includeSelf>
@@ -65,14 +64,14 @@ out:
 	
 	<!--- output breadcrumb --->
 	<cfloop query="qCrumb">
-		<skin:buildlink objectid="#qCrumb.objectid#" class="#attributes.linkClass#"><cfoutput>#qCrumb.objectName#</cfoutput></skin:buildLink><cfoutput> #attributes.separator# </cfoutput>
+		<skin:buildlink objectid="#qCrumb.objectid#" class="#attributes.linkClass#"><cfoutput>#trim(qCrumb.objectName)#</cfoutput></skin:buildLink><cfoutput>#attributes.separator#</cfoutput>
 	</cfloop>
 	<cfif attributes.includeSelf>
-		<skin:buildlink objectid="#attributes.objectid#" class="#attributes.linkClass#"><cfoutput>#stSelf.title#</cfoutput></skin:buildLink><cfoutput> #attributes.separator# </cfoutput>
+		<skin:buildlink objectid="#attributes.objectid#" class="#attributes.linkClass#"><cfoutput>#stSelf.title#</cfoutput></skin:buildLink><cfoutput>#attributes.separator#</cfoutput>
 	</cfif>
 <cfelse>
 	<!--- output home only --->
-	<cfoutput>#attributes.prefix# <a href="#application.url.webroot#" class="#attributes.linkClass#">Home</a> #attributes.separator# </cfoutput>
+	<cfoutput>#attributes.prefix# <a href="#application.url.webroot#" class="#attributes.linkClass#">Home</a>#attributes.separator#</cfoutput>
 
 </cfif>
 

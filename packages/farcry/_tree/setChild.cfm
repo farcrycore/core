@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_tree/setChild.cfm,v 1.7 2003/04/14 01:58:03 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_tree/setChild.cfm,v 1.8 2003/09/10 12:21:48 brendan Exp $
 $Author: brendan $
-$Date: 2003/04/14 01:58:03 $
-$Name: b131 $
-$Revision: 1.7 $
+$Date: 2003/09/10 12:21:48 $
+$Name: b201 $
+$Revision: 1.8 $
 
 || DESCRIPTION || 
 $Description: setChild Function $
@@ -36,12 +36,12 @@ $out:$
 	<cfscript>
 
 	//if @pos < 2, we will assume they meant to put it 1, which means user has specified the child should go in at the extreme left. use the proc we already have for this
-    if (stArgs.pos LT 2) 
-	     setOldest(parentid=stArgs.parentid, objectid=stArgs.objectid, objectName=stArgs.objectName, typeName=stArgs.typeName, dsn=stArgs.dsn);
+    if (arguments.pos LT 2) 
+	     setOldest(parentid=arguments.parentid, objectid=arguments.objectid, objectName=arguments.objectName, typeName=arguments.typeName, dsn=arguments.dsn);
 	// the following case is: user has specified child should go in at extreme right, or has specified an out-of-range position. 
     // If it is out-of-range, give them the benefit of the doubt and put it in at the extreme right. Use the proc we already have for this
-    else if (stArgs.pos GTE numberOfNodesAtObjectLevel(objectID=stArgs.parentid, dsn=stArgs.dsn))
-		setYoungest(parentid=stArgs.parentid, objectid=stArgs.objectid, objectName=stArgs.objectName, typeName=stArgs.typeName, dsn=stArgs.dsn);
+    else if (arguments.pos GTE numberOfNodesAtObjectLevel(objectID=arguments.parentid, dsn=arguments.dsn))
+		setYoungest(parentid=arguments.parentid, objectid=arguments.objectid, objectName=arguments.objectName, typeName=arguments.typeName, dsn=arguments.dsn);
    	else
 	{
 		rowIndex = 1;
@@ -49,8 +49,8 @@ $out:$
       	// make a temp table, put the right hand value of the first child of the parent into it
     	sql = "
 			select #rowindex# AS seq, min(nright) as nright
-  		    from nested_tree_objects where parentid = '#stArgs.parentid#'";
-    	qNrightSeq = query(sql=sql, dsn=stArgs.dsn);
+  		    from nested_tree_objects where parentid = '#arguments.parentid#'";
+    	qNrightSeq = query(sql=sql, dsn=arguments.dsn);
     	minr = 1; // dummy value to start loop
     
     	// each iteration of the following loop inserts the next youngest child's right hand value into the temp table until we run 
@@ -62,9 +62,9 @@ $out:$
 			
 			sql = "
 			select  min(nright) AS minr 
-			from nested_tree_objects where parentid = '#stArgs.parentid#'
+			from nested_tree_objects where parentid = '#arguments.parentid#'
 			and nright not in (#quotedValueList(q.nright)#)";
-			q = query(sql=sql, dsn=stArgs.dsn);
+			q = query(sql=sql, dsn=arguments.dsn);
 		
 			if (q.recordCount)
 			{
@@ -78,7 +78,7 @@ $out:$
     	// now get the right hand value from the temp table that is directly before the position we want to insert the new child at
 		sql = 
 			"select nright from qNrightSeq
-			where seq = #stArgs.pos# - 1";
+			where seq = #arguments.pos# - 1";
 		q = queryofquery(sql=sql);	
 		maxr = q.nright;
 	   
@@ -88,25 +88,25 @@ $out:$
 			"update nested_tree_objects
 			set nright = nright + 2 
 			where nright > #maxr#
-			and typename = '#stArgs.typename#'";
-		query(sql=sql, dsn=stArgs.dsn);
+			and typename = '#arguments.typename#'";
+		query(sql=sql, dsn=arguments.dsn);
 		sql = "
 			update nested_tree_objects
 			set nleft = nleft + 2
 			where nleft > #maxr#
-			and typename = '#stArgs.typename#'";
-		query(sql=sql, dsn=stArgs.dsn);
+			and typename = '#arguments.typename#'";
+		query(sql=sql, dsn=arguments.dsn);
 		sql = "
 			select nlevel
 			from nested_tree_objects 
-			where objectid = '#stArgs.parentid#'";
-		q = query(sql=sql, dsn=stArgs.dsn);		
+			where objectid = '#arguments.parentid#'";
+		q = query(sql=sql, dsn=arguments.dsn);		
 		pLevel = q.Plevel;	
 		
 		sql ="
 		   insert nested_tree_objects (ObjectID, ParentID, ObjectName, TypeName, Nleft, Nright, Nlevel)
-		  values ('#stArgs.objectid#', '#stArgs.parentid#', '#stArgs.objectName#', '#stArgs.typeName#', #maxr# + 1, #maxr# + 2,  #plevel# + 1)";  
-		query(sql=sql, dsn=stArgs.dsn);	  
+		  values ('#arguments.objectid#', '#arguments.parentid#', '#arguments.objectName#', '#arguments.typeName#', #maxr# + 1, #maxr# + 2,  #plevel# + 1)";  
+		query(sql=sql, dsn=arguments.dsn);	  
 	}
 	</cfscript>
 	

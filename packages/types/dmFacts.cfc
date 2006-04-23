@@ -1,3 +1,27 @@
+<!--- 
+|| LEGAL ||
+$Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
+$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
+
+|| VERSION CONTROL ||
+$Header: /cvs/farcry/farcry_core/packages/types/dmFacts.cfc,v 1.5 2003/09/10 23:46:11 brendan Exp $
+$Author: brendan $
+$Date: 2003/09/10 23:46:11 $
+$Name: b201 $
+$Revision: 1.5 $
+
+|| DESCRIPTION || 
+$Description: dmFacts type $
+$TODO: $
+
+|| DEVELOPER ||
+$Developer: Brendan Sisson (brendan@daemon.com.au) $
+
+|| ATTRIBUTES ||
+$in: $
+$out:$
+--->
+
 <cfcomponent extends="types" displayname="Facts" hint="A fact snippet that belongs to a fact collection." bSchedule="1">
 <!------------------------------------------------------------------------
 type properties
@@ -17,7 +41,6 @@ type properties
 	
 	<!--- getData for object edit --->
 	<cfset stObj = this.getData(arguments.objectid)>
-	<cfset stArgs = arguments> <!--- hack to make arguments available to included file --->
 	<cfinclude template="_dmFacts/edit.cfm">
 </cffunction>
 	

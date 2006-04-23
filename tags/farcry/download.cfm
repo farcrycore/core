@@ -1,3 +1,27 @@
+<!--- 
+|| LEGAL ||
+$Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
+$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
+
+|| VERSION CONTROL ||
+$Header: /cvs/farcry/farcry_core/tags/farcry/download.cfm,v 1.9 2003/10/29 06:32:30 paul Exp $
+$Author: paul $
+$Date: 2003/10/29 06:32:30 $
+$Name: b201 $
+$Revision: 1.9 $
+
+|| DESCRIPTION || 
+$Description: Downloads a dmFile object$
+$TODO: $
+
+|| DEVELOPER ||
+$Developer: Brendan Sisson (brendan@daemon.com.au)$
+
+|| ATTRIBUTES ||
+$in: $
+$out:$
+--->
+
 <cfsetting enablecfoutputonly="Yes">
 <cfimport taglib="/farcry/fourq/tags/" prefix="q4">
 
@@ -9,6 +33,7 @@
 <cfif isDefined("url.DownloadFile") and len(trim(url.DownloadFile))>
 
 	<q4:contentobjectget objectid="#url.DownloadFile#" r_stobject="stFile">
+	
 	
     <!--- work out file type --->
     <cfif stFile.typeName eq "dmImage">
@@ -61,15 +86,14 @@
 			<cfinvokeargument name="userid" value="Anonymous"/>		
 		</cfif>
 	</cfinvoke>
-	
-	
+
 	<!--- download --->
     <cfif stFile.typeName eq "dmImage">
  		<CFHEADER NAME="content-disposition" VALUE="inline; filename=#stFile.imageFile#">
         <cfcontent type="#mime#" file="#stFile.originalImagePath#/#stFile.imageFile#" deletefile="No" reset="Yes">
     <cfelse>
-		<CFHEADER NAME="content-disposition" VALUE="inline; filename=#stFile.filename#">
-		<cfcontent type="#mime#" file="#application.defaultFilePath#/#stFile.filename#" deletefile="No" reset="Yes">
+		<cfheader name="Content-Disposition" VALUE="attachment;filename=#stFile.filename#">
+		<cfcontent type="#mime#" file="#application.defaultfilepath#/#stFile.filename#" deletefile="No" reset="Yes">
     </cfif>
 	<cfabort>
 

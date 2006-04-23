@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmFile/edit.cfm,v 1.15 2003/07/15 07:04:15 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmFile/edit.cfm,v 1.16 2003/08/01 01:57:07 brendan Exp $
 $Author: brendan $
-$Date: 2003/07/15 07:04:15 $
-$Name: b131 $
-$Revision: 1.15 $
+$Date: 2003/08/01 01:57:07 $
+$Name: b201 $
+$Revision: 1.16 $
 
 || DESCRIPTION || 
 $Description: edit handler$
@@ -34,6 +34,7 @@ $out:$
 		
 	<cfscript>
 		stProperties = structNew();
+		StProperties.objectid = stObj.objectid;
 		stProperties.title = form.title;
 		stProperties.label = form.title;
 		stProperties.description = form.description;
@@ -80,12 +81,11 @@ $out:$
 		
 	</cfif>
 	
-
-	<q4:contentobjectdata
-	 typename="#application.packagepath#.types.dmFile"
-	 stProperties="#stProperties#"
-	 objectid="#stObj.ObjectID#"
-	>
+	<cfscript>
+		// update the OBJECT	
+		oType = createobject("component","#application.packagepath#.types.dmFile");
+		oType.setData(stProperties=stProperties);
+	</cfscript>
 	
 	<cfif not isdefined("error")>
 		<!--- get parent to update tree --->

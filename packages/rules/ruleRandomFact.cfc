@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/rules/ruleRandomFact.cfc,v 1.9 2003/07/10 02:07:06 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/rules/ruleRandomFact.cfc,v 1.11 2003/10/13 07:11:27 brendan Exp $
 $Author: brendan $
-$Date: 2003/07/10 02:07:06 $
-$Name: b131 $
-$Revision: 1.9 $
+$Date: 2003/10/13 07:11:27 $
+$Name: b201 $
+$Revision: 1.11 $
 
 || DESCRIPTION || 
 Edit handler and execution handler for displaying Random Facts. Option show x number and reduce to specific categories. Fact 
@@ -27,6 +27,7 @@ out:
 <cfproperty name="displayMethod" type="string" hint="Display method to render this news rule with." required="yes" default="displayteaserbullets">
 <cfproperty name="numItems" hint="The number of items to display per page" type="numeric" required="true" default="1">
 <cfproperty name="metadata" type="string" hint="A list of category ObjectIDs that the news content is to be drawn from" required="false" default="">
+<cfproperty name="bMatchAllKeywords" hint="Doest the content need to match ALL selected keywords" type="boolean" required="false" default="0">
 
 	<cffunction access="public" name="update" output="true">
 		<cfargument name="objectID" required="Yes" type="uuid" default="">
@@ -36,6 +37,7 @@ out:
         <cfimport taglib="/farcry/farcry_core/tags/display/" prefix="display">				
 
 		<cfparam name="form.categoryID" default="">
+		<cfparam name="form.bMatchAllKeywords" default="0">
 		
         <cfparam name="isClosed" default="Yes">
         <cfif isDefined("form.displayHierarchy") OR isDefined("form.apply")>
@@ -48,6 +50,7 @@ out:
 				stObj.displayMethod = form.displayMethod;
 				stObj.intro = form.intro;
 				stObj.numItems = form.numItems;
+				stObj.bMatchAllKeywords = form.bMatchAllKeywords;
 				stObj.metadata = form.categoryID; //must add metadata tree
 			</cfscript>
 			<q4:contentobjectdata typename="#application.packagepath#.rules.ruleRandomFact" stProperties="#stObj#" objectID="#stObj.objectID#">
@@ -94,7 +97,7 @@ out:
 		<display:OpenLayer width="400" title="Restrict By Categories" titleFont="Verdana" titleSize="7.5" isClosed="#isClosed#" border="no">
 		<table align="center" border="0">
         <tr>
-            <td><b>Does the content need to match ALL the selected Keywords?</b> <input type="checkbox" name="bMatchAllKeywords"></td>
+            <td><b>Does the content need to match ALL the selected Keywords?</b> <input type="checkbox" name="bMatchAllKeywords" value="1" <cfif stObj.bMatchAllKeywords>checked</cfif>></td>
         </tr>
         <tr>
             <td>&nbsp;</td>
@@ -135,89 +138,119 @@ out:
 		
 		<cfif application.dbtype eq "mysql">
 			<!--- create temp table for status --->
-			<cfquery datasource="#stArgs.dsn#" name="temp">
+			<cfquery datasource="#arguments.dsn#" name="temp">
 				DROP TABLE IF EXISTS tblTemp1
 			</cfquery>
-			<cfquery datasource="#stArgs.dsn#" name="temp2">
+			<cfquery datasource="#arguments.dsn#" name="temp2">
 				create temporary table `tblTemp1`
 					(
 					`Status`  VARCHAR(50) NOT NULL
 					)
 			</cfquery>
 			<cfloop list="#request.mode.lValidStatus#" index="i">
-				<cfquery datasource="#stArgs.dsn#" name="temp3">
+				<cfquery datasource="#arguments.dsn#" name="temp3">
 					INSERT INTO tblTemp1 (Status) 
 					VALUES ('#replace(i,"'","","all")#')
 				</cfquery>
 			</cfloop>
 		</cfif>
 		
+		<!--- check if filtering by categories --->
 		<cfif NOT trim(len(stObj.metadata)) EQ 0>
+			<!--- show by categories --->
 			<cfswitch expression="#application.dbtype#">
-				<cfcase value="ora">
-					<cfquery name="qGetFacts" datasource="#arguments.dsn#">
-						SELECT DISTINCT type.objectid
-						FROM #application.dbowner#refObjects refObj 
-						JOIN #application.dbowner#refCategories refCat ON refObj.objectID = refCat.objectID
-						JOIN #application.dbowner#dmFacts type ON refObj.objectID = type.objectID  
-						WHERE refObj.typename = 'dmFacts' 
-							AND refCat.categoryID IN ('#ListChangeDelims(stObj.metadata,"','",",")#')
-							AND type.status IN ('#ListChangeDelims(request.mode.lValidStatus,"','",",")#')
-					</cfquery>
-				</cfcase>
-				
 				<cfcase value="mysql">
-					<cfquery name="qGetFacts" datasource="#arguments.dsn#">
-						SELECT DISTINCT type.objectid
-						FROM tblTemp1, #application.dbowner#refObjects refObj 
-						JOIN #application.dbowner#refCategories refCat ON refObj.objectID = refCat.objectID
-						JOIN #application.dbowner#dmFacts type ON refObj.objectID = type.objectID  
-						WHERE refObj.typename = 'dmFacts' 
-							AND refCat.categoryID IN ('#ListChangeDelims(stObj.metadata,"','",",")#')
-							AND type.status = tblTemp1.Status
-					</cfquery>
+					<cfif stObj.bMatchAllKeywords>
+						<!--- must match all categories --->
+						<cfquery datasource="#arguments.dsn#" name="qGetFacts">
+							SELECT DISTINCT type.objectID, type.label
+							    FROM tblTemp1, dmFacts type, refCategories refCat1
+							<!--- if more than one category make join for each --->
+							<cfif listLen(stObj.metadata) gt 1>
+								<cfloop from="2" to="#listlen(stObj.metadata)#" index="i">
+								    , refCategories refCat#i#
+								</cfloop>
+							</cfif>
+							WHERE 1=1
+								<!--- loop over each category and make sure item has all categories --->
+								<cfloop from="1" to="#listlen(stObj.metadata)#" index="i">
+									AND refCat#i#.categoryID = '#listGetAt(stObj.metadata,i)#'
+									AND refCat#i#.objectId = type.objectId
+								</cfloop>
+								AND type.status = tblTemp1.Status
+							ORDER BY type.label ASC
+						</cfquery>
+					<cfelse>
+						<!--- doesn't need to match all categories --->
+						<cfquery datasource="#arguments.dsn#" name="qGetFacts">
+							SELECT DISTINCT type.objectID, type.label
+							FROM tblTemp1, refCategories refCat, dmFacts type
+							WHERE refCat.objectID = type.objectID
+								AND refCat.categoryID IN ('#ListChangeDelims(stObj.metadata,"','",",")#')
+								AND type.status = tblTemp1.Status
+							ORDER BY type.label ASC
+						</cfquery>
+					</cfif>
 				</cfcase>
-				
+
 				<cfdefaultcase>
-					<cfquery name="qGetFacts" datasource="#arguments.dsn#">
-						SELECT DISTINCT type.objectid
-						FROM #application.dbowner#refObjects refObj 
-						JOIN #application.dbowner#refCategories refCat ON refObj.objectID = refCat.objectID
-						JOIN #application.dbowner#dmFacts type ON refObj.objectID = type.objectID  
-						WHERE refObj.typename = 'dmFacts' 
-							AND refCat.categoryID IN ('#ListChangeDelims(stObj.metadata,"','",",")#')
-							AND type.status IN ('#ListChangeDelims(request.mode.lValidStatus,"','",",")#')
-					</cfquery>
+					<cfif stObj.bMatchAllKeywords>
+						<!--- must match all categories --->
+						<cfquery datasource="#arguments.dsn#" name="qGetFacts">
+							SELECT DISTINCT type.objectID, type.label
+							FROM refCategories refcat1
+							<!--- if more than one category make join for each --->
+							<cfif listLen(stObj.metadata) gt 1>
+								<cfloop from="2" to="#listlen(stObj.metadata)#" index="i">
+									inner join refcategories refcat#i# on refcat#i-1#.objectid = refcat#i#.objectid
+								</cfloop>
+							</cfif>
+							JOIN dmFacts type ON refcat1.objectID = type.objectID
+							WHERE 1=1
+								<!--- loop over each category and make sure item has all categories --->
+								<cfloop from="1" to="#listlen(stObj.metadata)#" index="i">
+									AND refCat#i#.categoryID = '#listGetAt(stObj.metadata,i)#'
+								</cfloop>
+								AND type.status IN ('#ListChangeDelims(request.mode.lValidStatus,"','",",")#')
+							ORDER BY type.label ASC
+						</cfquery>
+					<cfelse>
+						<!--- doesn't need to match all categories --->
+						<cfquery datasource="#arguments.dsn#" name="qGetFacts">
+							SELECT DISTINCT type.objectID, type.label
+							FROM refObjects refObj
+							JOIN refCategories refCat ON refObj.objectID = refCat.objectID
+							JOIN dmFacts type ON refObj.objectID = type.objectID
+							WHERE refObj.typename = 'dmFacts'
+								AND refCat.categoryID IN ('#ListChangeDelims(stObj.metadata,"','",",")#')
+								AND type.status IN ('#ListChangeDelims(request.mode.lValidStatus,"','",",")#')
+							ORDER BY type.label ASC
+						</cfquery>
+					</cfif>
 				</cfdefaultcase>
 			</cfswitch>
-           
 		<cfelse>
+			<!--- don't filter on categories --->
 			<cfswitch expression="#application.dbtype#">
-				<cfcase value="ora">
-					<cfquery name="qGetFacts" datasource="#arguments.dsn#">
-						SELECT * 
-						FROM #application.dbowner#dmFacts 
-						WHERE status IN ('#ListChangeDelims(request.mode.lValidStatus,"','",",")#')
-					</cfquery>
-				</cfcase>
-				
 				<cfcase value="mysql">
-					<cfquery name="qGetFacts" datasource="#arguments.dsn#">
-						SELECT * 
-						FROM #application.dbowner#dmFacts facts, tblTemp1 
-						WHERE facts.status = tblTemp1.Status
+					<cfquery datasource="#arguments.dsn#" name="qGetFacts">
+						SELECT *
+						FROM #application.dbowner#dmFacts fact, tblTemp1
+						WHERE fact.status = tblTemp1.Status
+						ORDER BY label
 					</cfquery>
 				</cfcase>
-				
+
 				<cfdefaultcase>
-					<cfquery name="qGetFacts" datasource="#arguments.dsn#">
-						SELECT * 
-						FROM #application.dbowner#dmFacts 
+					<cfquery datasource="#arguments.dsn#" name="qGetFacts">
+						SELECT *
+						FROM #application.dbowner#dmFacts
 						WHERE status IN ('#ListChangeDelims(request.mode.lValidStatus,"','",",")#')
+						ORDER BY label
 					</cfquery>
 				</cfdefaultcase>
 			</cfswitch>
-		</cfif> 
+		</cfif>
 	
 		<!--- if the intro text exists - append to aInvocations to be output as HTML --->
 		<cfif len(stObj.intro)>

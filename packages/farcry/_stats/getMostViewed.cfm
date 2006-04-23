@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_stats/getMostViewed.cfm,v 1.2 2003/04/28 01:08:22 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_stats/getMostViewed.cfm,v 1.6 2003/09/10 12:21:48 brendan Exp $
 $Author: brendan $
-$Date: 2003/04/28 01:08:22 $
-$Name: b131 $
-$Revision: 1.2 $
+$Date: 2003/09/10 12:21:48 $
+$Name: b201 $
+$Revision: 1.6 $
 
 || DESCRIPTION || 
 $Description: Shows most viewed objects$
@@ -25,13 +25,17 @@ $out:$
 <cfimport taglib="/farcry/fourq/tags" prefix="q4">
 
 <!--- get downloads from stats --->
-<cfquery datasource="#stArgs.dsn#" name="qStats">
-	SELECT pageid, count(logId) as count_downloads
-	FROM Stats
-	<cfif stArgs.dateRange neq "all">
-		WHERE logDateTime > #dateAdd("#stArgs.dateRange#",-1,now())#
+<cfquery datasource="#arguments.dsn#" name="qStats">
+	SELECT pageid, count(logId) as count_downloads, typename
+	FROM stats, refObjects
+	WHERE stats.pageid = refObjects.objectid
+	<cfif arguments.dateRange neq "all">
+		 AND logDateTime > #dateAdd("#arguments.dateRange#",-1,now())#
 	</cfif>
-	GROUP By pageid
+	<cfif isdefined("arguments.typeName") and arguments.typeName neq "all">
+		AND refObjects.typename = '#arguments.typeName#'
+	</cfif>
+	GROUP By pageid, typename
 	ORDER BY count_downloads DESC
 </cfquery>
 
@@ -43,28 +47,28 @@ $out:$
 
 <!--- loop over stats and get details --->
 <cfloop query="qStats">
-	<cfset error= false>
+		
 	<cftry>
-		<q4:contentobjectget objectID="#pageId#" r_stobject="stObject">
-
-		<!--- check object exists --->
-		<cfcatch type="any">
-			<cfset error = true>
-		</cfcatch>
-	</cftry>
-	<cfif not error>
-		<cfif not (isdefined("stArgs.typeName") and stArgs.typeName neq stObject.typename and stArgs.typeName neq "all")>
+		<cfquery datasource="#arguments.dsn#" name="qTitle">
+			select title
+			from #qStats.typename#
+			where objectid = '#qStats.pageid#'
+		</cfquery>
+		<cfif qTitle.recordcount>
 			<!--- add row to query --->
 			<cfset temp = queryAddRow(qGetMostViewed, 1)>
-			<cfset temp = querySetCell(qGetMostViewed, "title", stObject.title)>
-			<cfset temp = querySetCell(qGetMostViewed, "objectid", stObject.objectid)>
-			<cfset temp = querySetCell(qGetMostViewed, "typename", stObject.typename)>
-			<cfset temp = querySetCell(qGetMostViewed, "downloads", count_downloads)>
+			<cfset temp = querySetCell(qGetMostViewed, "title", qTitle.title)>
+			<cfset temp = querySetCell(qGetMostViewed, "objectid", qStats.pageid)>
+			<cfset temp = querySetCell(qGetMostViewed, "typename", qStats.typename)>
+			<cfset temp = querySetCell(qGetMostViewed, "downloads", qStats.count_downloads)>
+			
 			<!--- update counter --->
 			<cfset counter = counter + 1>
-			<cfif counter eq stArgs.maxRows and stArgs.maxRows neq "all">
+			<cfif counter eq arguments.maxRows and arguments.maxRows neq "all">
 				<cfbreak>
 			</cfif>
 		</cfif>
-	</cfif>
+		<!--- check object exists --->
+		<cfcatch type="any"></cfcatch>
+	</cftry>
 </cfloop>

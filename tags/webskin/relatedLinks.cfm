@@ -3,11 +3,11 @@
 relatedLinks (FarCry Core: webskin tag library)
 Copyright Daemon Pty Limited 2002 (http://www.daemon.com.au/)
 
-$Header: /cvs/farcry/farcry_core/tags/webskin/relatedLinks.cfm,v 1.6 2003/04/09 08:04:59 spike Exp $
-$Author: spike $
-$Date: 2003/04/09 08:04:59 $
-$Name: b131 $
-$Revision: 1.6 $
+$Header: /cvs/farcry/farcry_core/tags/webskin/relatedLinks.cfm,v 1.7 2003/10/14 23:54:53 brendan Exp $
+$Author: brendan $
+$Date: 2003/10/14 23:54:53 $
+$Name: b201 $
+$Revision: 1.7 $
 
 Contributors:
 Brendan Sisson (brendan@daemon.com.au)
@@ -45,7 +45,6 @@ Example of Usage From Webskin Template:
 	<!--- get related item details --->
 	<cftry>
 		<q4:contentobjectget objectID="#item#" r_stobject="stRelated">
-
 		<!--- check object exists --->
 		<cfcatch type="any">
 			<!--- write out error in html commments --->
@@ -53,7 +52,7 @@ Example of Usage From Webskin Template:
 			<cfset error = true>
 			</cfcatch>
 	</cftry>
-	<cfif not error AND request.mode.lValidStatus CONTAINS stRelated.Status>
+	<cfif not error and structCount(stRelated) gt 0 AND request.mode.lValidStatus CONTAINS stRelated.Status>
 		<!--- add row to query --->
 		<cfset temp = queryAddRow(qRelated, 1)>
 		<cfset temp = querySetCell(qRelated, "objectid", item)>

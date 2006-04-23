@@ -5,11 +5,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmLink/edit.cfm,v 1.4 2003/07/15 07:04:15 brendan Exp $
-$Author: brendan $
-$Date: 2003/07/15 07:04:15 $
-$Name: b131 $
-$Revision: 1.4 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmLink/edit.cfm,v 1.5 2003/07/28 22:36:21 geoff Exp $
+$Author: geoff $
+$Date: 2003/07/28 22:36:21 $
+$Name: b201 $
+$Revision: 1.5 $
 
 || DESCRIPTION || 
 $Description: dmLink Edit Handler $
@@ -50,7 +50,7 @@ $in: url.killplp (optional)$
 	bForceNewInstance="#url.killplp#"
 	r_stOutput="stOutput"
 	storage="file"
-	storagedir="#application.fourq.plpstorage#"
+	storagedir="#application.path.plpstorage#"
 	redirection="server"
 	r_bPLPIsComplete="bComplete">
 

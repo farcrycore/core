@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_tree/getSecondaryNav.cfm,v 1.6 2003/04/14 01:33:51 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_tree/getSecondaryNav.cfm,v 1.7 2003/09/10 12:21:48 brendan Exp $
 $Author: brendan $
-$Date: 2003/04/14 01:33:51 $
-$Name: b131 $
-$Revision: 1.6 $
+$Date: 2003/09/10 12:21:48 $
+$Name: b201 $
+$Revision: 1.7 $
 
 || DESCRIPTION || 
 $Description: getSecondaryNav Function $
@@ -31,8 +31,8 @@ $out:$
 	
    
 	//if object is a leaf, there will be no room between its left and right values
-	sql = "select  nleft, nright from nested_tree_objects where objectid = '#stArgs.objectid#'";
-	q = query(sql=sql, dsn=stArgs.dsn);
+	sql = "select  nleft, nright from nested_tree_objects where objectid = '#arguments.objectid#'";
+	q = query(sql=sql, dsn=arguments.dsn);
 	nleft = q.nleft;
 	nright = q.nright;
 	
@@ -42,15 +42,15 @@ $out:$
 		leaf = 0;
 	
 	// get parent	
-	sql = "select parentid from nested_tree_objects where objectid = '#stArgs.objectid#'";
-	qParent = query(sql=sql, dsn=stArgs.dsn);
+	sql = "select parentid from nested_tree_objects where objectid = '#arguments.objectid#'";
+	qParent = query(sql=sql, dsn=arguments.dsn);
 	parent = qParent.parentId;	
 	
 	//get its grandparent. we will need this for both cases.
 	sql =  "
 		select parentid from nested_tree_objects
 		where objectid = '#parent#'";
-	q = query(sql=sql, dsn=stArgs.dsn);	
+	q = query(sql=sql, dsn=arguments.dsn);	
 	grandpa = q.parentID;	
 	
 	if (leaf EQ 1) // the object has no children. 
@@ -79,16 +79,16 @@ $out:$
 		where objectid =  '#parent#'
 		union  
 		select objectid, objectname, nlevel, nleft from nested_tree_objects
-		where objectid =  '#stArgs.objectID#'
+		where objectid =  '#arguments.objectID#'
 		union  
 		select objectid, objectname, nlevel, nleft from nested_tree_objects
 		where parentid =  '#parent#'
 		union 
 		select objectid, objectname, nlevel, nleft from nested_tree_objects
-		where parentid =  '#stArgs.objectid#'
+		where parentid =  '#arguments.objectid#'
 		order by  nleft";
 	}	
-	secondaryNav = query(sql=sql, dsn=stArgs.dsn);
+	secondaryNav = query(sql=sql, dsn=arguments.dsn);
 </cfscript>
 
 <!--- set return variable --->

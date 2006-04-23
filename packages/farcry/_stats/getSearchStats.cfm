@@ -1,0 +1,44 @@
+<!--- 
+|| LEGAL ||
+$Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
+$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
+
+|| VERSION CONTROL ||
+$Header: /cvs/farcry/farcry_core/packages/farcry/_stats/getSearchStats.cfm,v 1.1 2003/09/04 06:34:01 brendan Exp $
+$Author: brendan $
+$Date: 2003/09/04 06:34:01 $
+$Name: b201 $
+$Revision: 1.1 $
+
+|| DESCRIPTION || 
+$Description: Shows Site Searches$
+$TODO: $
+
+|| DEVELOPER ||
+$Developer: Brendan Sisson (brendan@daemon.com.au)$
+
+|| ATTRIBUTES ||
+$in: $
+$out:$
+--->
+
+<!--- get maxrows if not defined --->
+<cfif arguments.maxRows eq "all">
+	<cfquery datasource="#arguments.dsn#" name="qMax">
+		SELECT count(logid) as maxrows
+		FROM #application.dbowner#statsSearch
+	</cfquery>
+	<cfset arguments.maxrows = qMax.maxrows>
+</cfif>
+
+<!--- get downloads from stats --->
+<cfquery datasource="#arguments.dsn#" name="qGetSearchStats" maxrows="#arguments.maxRows#">
+	SELECT *
+	FROM #application.dbowner#statsSearch
+	WHERE 1=1
+	<cfif arguments.dateRange neq "all">
+		AND logDateTime > #dateAdd("#arguments.dateRange#",-1,now())#
+	</cfif>
+	ORDER BY logDateTime DESC
+</cfquery>
+

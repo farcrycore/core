@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_tree/getChildren.cfm,v 1.5 2003/03/31 02:36:03 internal Exp $
-$Author: internal $
-$Date: 2003/03/31 02:36:03 $
-$Name: b131 $
-$Revision: 1.5 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_tree/getChildren.cfm,v 1.6 2003/09/10 12:21:48 brendan Exp $
+$Author: brendan $
+$Date: 2003/09/10 12:21:48 $
+$Name: b201 $
+$Revision: 1.6 $
 
 || DESCRIPTION || 
 $Description: getChildren Function $
@@ -26,9 +26,9 @@ $out:$
 
 <cfscript>
 sql = "select objectid, objectname from nested_tree_objects
-		where parentid =  '#stArgs.objectid#'
+		where parentid =  '#arguments.objectid#'
 		order by nleft";
-children = query(sql=sql, dsn=stArgs.dsn);		
+children = query(sql=sql, dsn=arguments.dsn);		
 </cfscript>
 
 <!--- set return variable --->

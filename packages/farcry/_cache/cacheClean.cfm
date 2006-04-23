@@ -1,17 +1,41 @@
+<!--- 
+|| LEGAL ||
+$Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
+$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
+
+|| VERSION CONTROL ||
+$Header: /cvs/farcry/farcry_core/packages/farcry/_cache/cacheClean.cfm,v 1.2 2003/09/10 12:21:48 brendan Exp $
+$Author: brendan $
+$Date: 2003/09/10 12:21:48 $
+$Name: b201 $
+$Revision: 1.2 $
+
+|| DESCRIPTION || 
+$Description: clean Cache Function $
+$TODO: $
+
+|| DEVELOPER ||
+$Developer: Brendan Sisson (brendan@daemon.com.au) $
+
+|| ATTRIBUTES ||
+$in: $
+$out:$
+--->
+
 <!--- flush out entire block of caches --->
 <cfset changed = false>
 
 
-<cfif stArgs.bShowResults eq "true">
+<cfif arguments.bShowResults eq "true">
 	<!--- show blocks that have been flushed --->
-	<cfoutput><div class="formtitle">Block<cfif listlen(stArgs.cacheBlockName) gt 1>s</cfif> Cleaned:</div></cfoutput>
+	<cfoutput><div class="formtitle">Block<cfif listlen(arguments.cacheBlockName) gt 1>s</cfif> Cleaned:</div></cfoutput>
 </cfif>
 <!--- check there are blocks selected --->
-<cfif listlen(stArgs.cacheBlockName) gt 1>
+<cfif listlen(arguments.cacheBlockName) gt 1>
 	<cflock timeout="10" throwontimeout="Yes" name="CacheBlockRead_#application.applicationname#" type="EXCLUSIVE">
 		<cfset blockcache = structget("server.dm_CacheBlock.#application.applicationname#")>
 		<!--- loop over list of selected blocks --->
-		<cfloop list="#stArgs.cacheBlockName#" index="block">
+		<cfloop list="#arguments.cacheBlockName#" index="block">
 			<!--- check block exists --->
 			<cfif structkeyexists(blockcache, block)>
 				<cflock timeout="10" throwontimeout="Yes" name="GeneratedContentCache_#application.applicationname#" type="EXCLUSIVE"><!--- possibility to get contention against cachewrite, but this is admin, so it'll throw and no probs... --->

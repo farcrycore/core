@@ -1,40 +1,66 @@
+<!--- 
+|| LEGAL ||
+$Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
+$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
+
+|| VERSION CONTROL ||
+$Header: /cvs/farcry/farcry_core/tags/container/container.cfm,v 1.6 2003/09/25 23:28:09 brendan Exp $
+$Author: brendan $
+$Date: 2003/09/25 23:28:09 $
+$Name: b201 $
+$Revision: 1.6 $
+
+|| DESCRIPTION || 
+$Description: Displays containers$
+$TODO: $
+
+|| DEVELOPER ||
+$Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au)$
+
+|| ATTRIBUTES ||
+$in: $
+$out:$
+--->
+
 <cfimport taglib="/farcry/fourq/tags/" prefix="q4">
 <cfimport taglib="/farcry/farcry_core/tags/container/" prefix="dm">
 
 <cfparam name="attributes.label" default="">
-<cfparam name="attributes.objectID" default="">
+<cfparam name="attributes.objectID" default="#request.stobj.objectid#">
 <cfparam name="attributes.preHTML" default="">
 <cfparam name="attributes.postHTML" default="">
 <cfparam name="request.mode" default="false">
-
 
 <cfif NOT len(attributes.label) AND NOT len(attributes.objectID)>
 	<cfthrow type="container" message="Insufficient parameters (label of objectID are required) passed">
 </cfif>
 
-<cfinvoke component="#application.packagePath#.rules.container" method="getContainer" returnvariable="qGetContainer" label="#attributes.label#" dsn="#application.dsn#"/>
-
-<!--- stick the results in a list - useful if more than one result is returned and we wanna grab the first only --->
-<cfset containerIDList = valueList(qGetContainer.objectID)>
-
-<cfif NOT qGetContainer.recordCount>
-	<!--- create new container --->
-	<cfscript>
+<cfscript>
+	oCon = createObject("component","#application.packagepath#.rules.container");
+	qGetContainer = oCon.getContainer(dsn=application.dsn,label=attributes.label);
+	//stick the results in a list - useful if more than one result is returned and we wanna grab the first only
+	containerIDList = valueList(qGetContainer.objectID);
+	if (NOT qGetContainer.recordCount)
+	{
 		stProps=structNew();
 		//extended fourq specific properties
 		stProps.objectid = createUUID();
 		stProps.label = attributes.label;
-		
 		containerID = stProps.objectID;
-	</cfscript>	
-	<q4:contentobjectcreate typename="#application.packagepath#.rules.container" stproperties="#stProps#">
+		oCon.createData(dsn=application.dsn,stProperties=stProps,parentobjectid=attributes.objectid);
+	}
+	else if(qGetContainer.recordCount GT 1)
+		containerID = listGetAt(containerIDList,1);
+	else
+		containerID = qGetContainer.objectID;
+	stObj = oCon.getData(dsn=application.dsn,objectid=containerid);
+	
+	//this amounts to a check for the container in refObjects - will be phased out for next milestine release(post V2)
+	qRefCon = oCon.refContainerDataExists(objectid=attributes.objectid,containerid=containerid);
+	if (NOT qRefCon.recordCount)
+		oCon.createDataRefContainer(objectid=attributes.objectid,containerid=containerid);
+</cfscript>
 
-<cfelseif qGetContainer.recordCount GT 1>
-	<cflog file="container.log" text="Duplicate container labels for #attributes.label#">
-	<cfset containerID = listGetAt(containerIDList,1)> 
-<cfelseif qGetContainer.recordCount EQ 1>
-	<cfset containerID = qGetContainer.objectID>	
-</cfif>
 
 <!--- display edit widget --->
 
@@ -42,10 +68,13 @@
 	<dm:containerControl objectID="#containerID#" label="#attributes.label#" mode="design">
 </cfif>	
 
-<q4:contentObjectGet typename="#application.packagepath#.rules.container" objectID="#containerID#" r_stObject="stObj">  
-
-<cfif arrayLen(stObj.aRules)>
-    <cfif attributes.preHTML neq ""><cfoutput>#attributes.preHTML#</cfoutput></cfif>
-	<cfinvoke component="#application.packagepath#.rules.container" method="populate" aRules="#stObj.aRules#"/>
-    <cfif attributes.postHTML neq ""><cfoutput>#attributes.postHTML#</cfoutput></cfif>
-</cfif>
+<cfscript>
+if (arrayLen(stObj.aRules))
+{
+	if(attributes.preHTML neq "")
+		writeoutput(attributes.preHTML);
+	oCon.populate(aRules=stObj.aRules);	
+	if (attributes.postHTML neq "")
+		writeoutput(attributes.postHTML);
+}
+</cfscript>

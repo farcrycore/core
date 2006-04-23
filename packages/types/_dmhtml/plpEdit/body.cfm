@@ -5,11 +5,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmhtml/plpEdit/body.cfm,v 1.5 2003/07/10 02:07:06 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmhtml/plpEdit/body.cfm,v 1.6 2003/09/25 02:37:24 brendan Exp $
 $Author: brendan $
-$Date: 2003/07/10 02:07:06 $
-$Name: b131 $
-$Revision: 1.5 $
+$Date: 2003/09/25 02:37:24 $
+$Name: b201 $
+$Revision: 1.6 $
 
 || DESCRIPTION || 
 $Description: body step for dmHTML plp. Displays text editor with option to toggle to plain html text area.$
@@ -113,10 +113,26 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
         		</cfloop>
 			<cfoutput>
             </select>
-		</td>
+		</td></cfoutput>
+		
+		<!--- add templates --->
+		<cfdirectory action="LIST" directory="#application.path.project#/webskin/#output.typename#/" name="qGetTemplates" filter="template*.htm" sort="name ASC">
+		<cfif qGetTemplates.recordcount>
+			<cfoutput><td>
+				<select onchange="insertHTML(this.options[this.selectedIndex].value);this.selectedIndex=0;">
+				    <option value="">--- insert template ---</option></cfoutput>
+					<cfloop query="qGetTemplates">
+						<cffile action="READ" file="#application.path.project#/webskin/#output.typename#/#qGetTemplates.name#" variable="i">
+					    <!--- get templates--->
+					    <cfoutput><option value="#htmleditformat(i)#">#mid(qGetTemplates.name,9,len(qGetTemplates.name))#</option></cfoutput>
+				    </cfloop>
+				<cfoutput></select>
+			</td></cfoutput>	
+		</cfif>	
+				
 		<!--- toggle to textArea instead of editor --->
-		<td>
-        </cfoutput>
+		<cfoutput><td></cfoutput>
+        
 
 		<cfscript>
         oAuthentication = request.dmSec.oAuthentication;

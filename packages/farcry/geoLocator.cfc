@@ -11,7 +11,12 @@ out the bug. cleaned up the var scoping.
 speed. again thanks to Jochem van Dieten for pointing that out. cleaned up valid locales 
 to just include locales w/ language_COUNTRY_VARIANT rather than just language (now matches
 w/i18n functions CFC).
-2-jun-2003 fixed bug in CFMl easter egg replace
+2-jun-2003 fixed bug in CFML easter egg replace
+11-jul-2003 added showCountry & showLanguage methods. changed testbed to use createObject
+4-aug-2003 tidied documentation, sync'd with sf.net (nwetters) note that the InetAddressLocator
+class name has been changed to net.sf.javainetlocator.InetAddressLocator
+5-aug-2003 added self-intialization to all methods, no need to call init(), left as public method
+for backwards compatibility
 
 notes:
 this cfc trys to determine locale & country from user IP (cgi.REMOTE_ADDR) & browser language 
@@ -20,12 +25,14 @@ java class (jar) be loaded. that jar is available from http://sourceforge.net/pr
 (nigel@wetters.net) a line if you find this java class useful or if you have issues with the GNU license his 
 class is released under. for performance reasons, the required java objects are loaded into a shared scope (application). 
 
-there are 5 methods in this component:
+there are 7 methods in this component:
 - init, initializes the required java objects into a shared scope, returns boolean indicating success
 - isValidLocale, checks if a given locale is valid java locale, returns boolean indicating validity of locale
 - findlocale, returns valid locale derived from http_accept_language & IP
 - findCountry, returns 2 letter country code from IP
 - findLanguage, returns two letter language code from http_accept_language & IP
+- showCountry, returns full display name of country for this IP, localized if available
+- showLanguage, returns full display name of language for this IP, localized if available
 
 findLocale logic:
 this component 1st tries to mix language from HTTP_ACCEPT_LANGUAGE and country/region from the
@@ -37,13 +44,15 @@ InetAddressLocator will return '**' for localhost, IP not in db, etc. findLocale
 optional 'fallbackLocale' arguement to handle these cases.
 
 InetAddressLocator:
-please see the InetAddressLocator.txt file but basically, if you distribute the InetAddressLocator class, you 
-must also distribute the GPL License. the InetAddressLocator class is covered by the GNU GENERAL 
-PUBLIC LICENSE.  GNU GPL is available here: http://www.gnu.org/licenses/gpl.txt if you have any questions
-concerning InetAddressLocator java class or its distribution email: nigel@wetters.net
+please see the InetAddressLocator.txt file but basically, if you 
+distribute the InetAddressLocator class, you must also distribute the
+GPL License. the InetAddressLocator class is covered by the GNU GENERAL 
+PUBLIC LICENSE.  GNU GPL is available here: http://www.gnu.org/licenses/gpl.txt
+if you have any questions concerning InetAddressLocator java class or
+its distribution email: nigel@wetters.net
 
 copy the InetAddressLocator.jar somewhere under your MX install dir. add its location to 
-the Java path & stop & re-starth the MX server service. Or more simply copy the 
+the Java path & stop & re-start the MX server service. Or more simply copy the 
 InetAddressLocator.jar to /cfusionMX/wwwroot/web-inf/lib dir.
  --->
 
@@ -59,7 +68,7 @@ InetAddressLocator.jar to /cfusionMX/wwwroot/web-inf/lib dir.
 <cftry>
 	<!--- handle any potential race conditions --->
 	<cflock timeout="10" throwontimeout="Yes" type="EXCLUSIVE" name="geoLocatorLOCK">
-		<cfobject type="Java" action="Create" class="net.wetters.InetAddressLocator"  name="application.geoLocator">
+		<cfobject type="Java" action="Create" class="net.sf.javainetlocator.InetAddressLocator"  name="application.geoLocator">
 		<cfobject type="Java" action="Create" class="java.net.InetAddress"  name="application.ipAddress">
 		<cfobject type="Java" action="Create" class="java.util.Locale"  name="application.javaLocale">
 		<!--- enumerate available locales --->
@@ -70,6 +79,7 @@ InetAddressLocator.jar to /cfusionMX/wwwroot/web-inf/lib dir.
 			</cfif>
 		</cfloop>
 		<cfset application.allLocales = arrayToList(theseLocales)>
+		<cfset application.geoLocatorInit=true>
 	</cflock>
 	<cfcatch type="Any"> <!--- handle object & security exceptions --->
 		<cfset bSuccess=0> <!--- catch if it doesn't --->
@@ -82,9 +92,12 @@ InetAddressLocator.jar to /cfusionMX/wwwroot/web-inf/lib dir.
 	hint="determines if passed locale is valid java locale" output="No" returntype="boolean">
 	<cfargument name="aLocale" required="Yes" type="string"><!--- locale to check --->
 	<cfset var bLocaleValid=0> <!--- assume bad locale --->
-		<cfif Listfind(application.allLocales,arguments.aLocale)>
-			<cfset bLocaleValid=1>
-		</cfif>
+	<cfif NOT structKeyExists(application,"geoLocatorInit")>
+		<cfset isOK=init()>
+	</cfif>
+	<cfif Listfind(application.allLocales,arguments.aLocale)>
+		<cfset bLocaleValid=1>
+	</cfif>
 	<cfreturn bLocaleValid>
 </cffunction> 
 
@@ -92,13 +105,18 @@ InetAddressLocator.jar to /cfusionMX/wwwroot/web-inf/lib dir.
 	hint="returns locale from user IP" output="No" returntype="string"> 
 	<cfargument name="thisIP" required="Yes" type="string"><!--- this user's IP, cgi.REMOTE_ADDR --->
 	<cfargument name="thisLanguage" required="Yes" type="string"><!--- CGI.http_accept_Language --->
-	<cfargument name="fallbackLocale" required="No" type="string" default="Unknown">
-	<cfset var thisHost=application.ipAddress.getByname(arguments.thisIP)>
-	<cfset var aLocale=application.geoLocator.getLocale(thisHost)>
+	<cfargument name="fallbackLocale" required="No" type="string" default="en_US">
+	<cfset var thisHost="">
+	<cfset var aLocale="">
 	<cfset var thisLocale="">
 	<cfset var testLocale="">
 	<cfset var aLanguage="">
 	<cfset var mixedLocale=0>
+	<cfif NOT structKeyExists(application,"geoLocatorInit")>
+		<cfset isOK=init()>
+	</cfif>
+	<cfset thisHost=application.ipAddress.getByname(arguments.thisIP)>
+	<cfset aLocale=application.geoLocator.getLocale(thisHost)>
 	<cfif aLocale EQ "**"> <!--- localhost, IP not in db, etc. --->
 		<cfset aLocale=arguments.fallbackLocale> <!--- fall back locale --->
 	</cfif>
@@ -133,8 +151,13 @@ InetAddressLocator.jar to /cfusionMX/wwwroot/web-inf/lib dir.
 	hint="returns country from user IP" output="No" returntype="string"> 
 	<cfargument name="thisIP" required="Yes" type="string"><!--- this user's IP, cgi.REMOTE_ADDR --->
 	<cfargument name="fallbackCountry" required="No" type="string" default="US">
-	<cfset var thisHost=application.ipAddress.getByname(arguments.thisIP)>
-	<cfset var thisCountry=right(application.geoLocator.getLocale(thisHost),2)>
+	<cfset var thisHost="">
+	<cfset var thisCountry="">
+	<cfif NOT structKeyExists(application,"geoLocatorInit")>
+		<cfset isOK=init()>
+	</cfif>
+	<cfset thisHost=application.ipAddress.getByname(arguments.thisIP)>
+	<cfset thisCountry=right(application.geoLocator.getLocale(thisHost),2)>
 	<cfif thisCountry EQ "**"> <!--- localhost, IP not in db, etc. --->
 		<cfset thisCountry=arguments.fallbackCountry> <!--- fall back country --->
 	</cfif>
@@ -147,8 +170,12 @@ InetAddressLocator.jar to /cfusionMX/wwwroot/web-inf/lib dir.
 	<cfargument name="thisLanguage" required="Yes" type="string"><!--- CGI.http_accept_Language --->
 	<cfargument name="fallbackLanguage" required="No" type="string" default="en">
 	<cfset var foundLanguage="">
+	<cfset var aLanguage="">
+	<cfif NOT structKeyExists(application,"geoLocatorInit")>
+		<cfset isOK=init()>
+	</cfif>
 	<!--- lets clean up CFML easter egg locales, considering who might be using this cfc --->
-	<cfset var aLanguage=replaceNoCase(arguments.thisLanguage,"CFML,","","ALL")>
+	<cfset aLanguage=replaceNoCase(arguments.thisLanguage,"CFML,","","ALL")>
 	<cfset aLanguage=replaceNoCase(aLanguage,",CFML","","ALL")>
 	<cfset aLanguage=replaceNoCase(aLanguage,",CFML,","","ALL")>
 	<cfif len(trim(aLanguage))> <!--- anything left --->
@@ -162,4 +189,45 @@ InetAddressLocator.jar to /cfusionMX/wwwroot/web-inf/lib dir.
 	</cfif>
 	<cfreturn foundLanguage>
 </cffunction>
+
+<cffunction name="showCountry" access="public" displayname="showCountry" 
+	hint="returns full country, localized if available, from user IP" output="No" 
+	returntype="string"> 
+	<cfargument name="thisIP" required="Yes" type="string"><!--- this user's IP, cgi.REMOTE_ADDR --->
+	<cfset var thisHost="">
+	<cfset var thisLocale="">
+	<cfset var thisL="">
+	<cfset var thisC="">
+	<cfset var thisCountry="">	
+	<cfif NOT structKeyExists(application,"geoLocatorInit")>
+		<cfset isOK=init()>
+	</cfif>
+	<cfset thisHost=application.ipAddress.getByname(arguments.thisIP)>
+	<cfset thisLocale=application.geoLocator.getLocale(thisHost)>
+	<cfset thisL=left(thisLocale,2)>
+	<cfset hisC=uCase(right(thisLocale,2))>
+	<cfset thisCountry=application.javaLocale.init(thisL,thisC).getDisplayCountry(thisLocale)>
+	<cfreturn thisCountry>
+</cffunction>	
+
+<cffunction name="showLanguage" access="public" displayname="showLanguage" 
+	hint="returns full language, localized if available, from user IP" output="No" 
+	returntype="string"> 
+	<cfargument name="thisIP" required="Yes" type="string"><!--- this user's IP, cgi.REMOTE_ADDR --->
+	<cfset var thisHost="">
+	<cfset var thisLocale="">
+	<cfset var thisL="">
+	<cfset var thisC="">
+	<cfset var thisLanguage="">
+	<cfif NOT structKeyExists(application,"geoLocatorInit")>
+		<cfset isOK=init()>
+	</cfif>
+	<cfset thisHost=application.ipAddress.getByname(arguments.thisIP)>
+	<cfset thisLocale=application.geoLocator.getLocale(thisHost)>
+	<cfset thisL=left(thisLocale,2)>
+	<cfset thisC=uCase(right(thisLocale,2))>
+	<cfset thisLanguage=application.javaLocale.init(thisL,thisC).getDisplayLanguage(thisLocale)>
+	<cfreturn thisLanguage>
+</cffunction>	
 </cfcomponent>
+

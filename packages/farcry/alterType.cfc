@@ -1,17 +1,48 @@
+<!--- 
+|| LEGAL ||
+$Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
+$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
+
+|| VERSION CONTROL ||
+$Header: /cvs/farcry/farcry_core/packages/farcry/alterType.cfc,v 1.29 2003/09/24 05:49:55 paul Exp $
+$Author: paul $
+$Date: 2003/09/24 05:49:55 $
+$Name: b201 $
+$Revision: 1.29 $
+
+|| DESCRIPTION || 
+$Description: alter type/rule cfc $
+$TODO: $
+
+|| DEVELOPER ||
+$Developer: Brendan Sisson (brendan@daemon.com.au) $
+$Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
+
+|| ATTRIBUTES ||
+$in: $
+$out:$
+--->
+
 <cfcomponent>
+<cfinclude template="/farcry/farcry_core/admin/includes/cfFunctionWrappers.cfm">
 
 <cffunction name="getDataType">
 	<cfargument name="cfctype" required="true">
+	<cfargument name="bReturnTypeOnly" required="No" default="false">
+	
 	<cfscript>
 		stDefaultTypes = getTypeDefaults();
 		type = stDefaultTypes[arguments.cfctype].type;
 		length = stDefaultTypes[arguments.cfctype].length;
 		switch (type){
-			case "varchar":
+			case "varchar":case "varchar2":
 			{
-				datatype=type&'(#length#)';
+				datatype=type;
+				if (not arguments.bReturnTypeOnly)
+					datatype = datatype & '(#length#)';
 				break;
 			}
+			
 			default:{
 			datatype = type;
 			}
@@ -37,10 +68,10 @@
 	
 	<cfscript>
 	//tablename = '#arguments.typename#_#arguments.propertyname#';
-    if (application.types[arguments.typename].bCustomType) "#arguments.typename#" = createObject("component", "#application.custompackagepath#.#arguments.scope#.#arguments.typename#");
+    if (application[arguments.scope][arguments.typename].bCustomType) "#arguments.typename#" = createObject("component", "#application.custompackagepath#.#arguments.scope#.#arguments.typename#");
     else "#arguments.typename#" = createObject("component", "#application.packagepath#.#arguments.scope#.#arguments.typename#");
 
-	evaluate(arguments.typename).deployArrayTable(bTestRun='0',parent=arguments.typename,property=arguments.property);
+	evaluate(arguments.typename).deployArrayTable(bTestRun='0',parent='#application.dbowner##arguments.typename#',property=arguments.property);
 	</cfscript>
 </cffunction>
 
@@ -49,14 +80,45 @@
 	<cfargument name="scope" required="false" default="types">
 	
 	<cfscript>
-    if (application.types[arguments.typename].bCustomType) "#arguments.typename#" = createObject("component", "#application.custompackagepath#.#arguments.scope#.#arguments.typename#");
-    else "#arguments.typename#" = createObject("component", "#application.packagepath#.#arguments.scope#.#arguments.typename#");
-
-	evaluate(typename).initMetaData("application.#arguments.scope#");
+	if (arguments.scope IS 'types')
+	{
+	    if (application[arguments.scope][arguments.typename].bCustomType)
+		{
+			"#arguments.typename#" = createObject("component", "#application.custompackagepath#.#arguments.scope#.#arguments.typename#");
+			evaluate(typename).initMetaData("application.#arguments.scope#");
+			setVariable("application.types['#typename#'].bCustomType",1);	 
+		}	
+	    else
+		{
+			 "#arguments.typename#" = createObject("component", "#application.packagepath#.#arguments.scope#.#arguments.typename#");
+			 evaluate(typename).initMetaData("application.#arguments.scope#");	 
+			 setVariable("application.types['#typename#'].bCustomType",0);	 
+		}	 
+		
+	}
+	else if (arguments.scope IS 'rules')
+	{
+		 if (application[arguments.scope][arguments.typename].bCustomRule)
+		 {
+			"#arguments.typename#" = createObject("component", "#application.custompackagepath#.#arguments.scope#.#arguments.typename#");
+			evaluate(typename).initMetaData("application.#arguments.scope#");
+			setVariable("application.rules['#arguments.typename#'].bCustomRule",1);
+		}	
+	    else
+		{
+			 "#arguments.typename#" = createObject("component", "#application.packagepath#.#arguments.scope#.#arguments.typename#");
+			 evaluate(typename).initMetaData("application.#arguments.scope#");
+			 setVariable("application.rules['#arguments.typename#'].bCustomRule",0);
+		}	 
+		
+	}		
+			 
+	
 	</cfscript>
 </cffunction>
 
 <cffunction name="refreshAllCFCAppData">
+	<!--- First refresh the types  --->
 	<cfdirectory directory="#application.path.core#/packages/types" name="qTypesDir" filter="dm*.cfc" sort="name">
 	<cfdirectory directory="#application.path.project#/packages/types" name="qCustomTypesDir" filter="*.cfc" sort="name">
 	
@@ -76,6 +138,34 @@
 		"#typename#" = createObject("Component", "#application.custompackagepath#.types.#typename#");
 		evaluate(typename).initMetaData("application.types");
 		setVariable("application.types['#typename#'].bCustomType",1);
+		</cfscript>
+	</cfloop>
+	<!--- Now the rules --->
+	<cfscript>
+	rules = createObject("Component", "#application.packagepath#.rules.rules");
+	qRules = rules.getRules(); 
+	</cfscript>
+
+	<!--- Populate application.rules scope with rule metatdata --->
+	<cfloop query="qRules">
+		<cfscript>
+			
+			if(qRules.bCustom)
+				"#qRules.rulename#" = createObject("Component","#application.custompackagepath#.rules.#qRules.rulename#");
+			else
+			{
+				"#qRules.rulename#" = createObject("Component","#application.packagepath#.rules.#qRules.rulename#");
+			}		
+			evaluate("#qRules.rulename#").initMetaData("application.rules");
+			/*************************************************************************************
+			This will make sure that if developers have forgotten to include the BCustomRule attribute in
+			each rule CFC, that it does indeed get included in the COAPI rule metadata.
+			*************************************************************************************/
+			if(qRules.bCustom)
+				setVariable("application.rules['#qrules.rulename#'].bCustomRule",1);			
+			else		
+				setVariable("application.rules['#qrules.rulename#'].bCustomRule",0);
+										
 		</cfscript>
 	</cfloop>
 </cffunction>
@@ -229,34 +319,33 @@
 	<cfcase value="ora">
 		<cfquery datasource="#application.dsn#" name="qArrayTables">
 		SELECT 	TABLE_NAME AS name
-		FROM #application.dbowner#USER_TABLES
-		WHERE UPPER(TABLE_NAME) LIKE '#ucase(arguments.typename)#_A%'
+		FROM USER_TABLES
+		WHERE UPPER(TABLE_NAME) LIKE '#ucase(arguments.typename)#@_A%' escape '@'
 		</cfquery>
 	</cfcase>
+	
 	<cfcase value="mysql">		
 		<cfquery datasource="#application.dsn#" name="qArrayTables1">
-		show tables LIKE '#arguments.typename#_a%'
-		</cfquery>
-		<!--- <cfif qArrayTables1.recordcount gt 0>
-			<cfdump var="#qarraytables1['#listfirst(qArrayTables1.columnlist)#'][1]#"><cfoutput><br> </cfoutput>
-		</cfif> --->		
-		<cfscript>
-			qArrayTables = querynew("name");
-			for (i=1;i LTE qArrayTables1.recordcount;i=i+1) {
-				queryaddrow(qArrayTables);
-				//get the values from the query and put them into a new query set (this is so we can simulate the output of the other db platforms queries)
-				querysetcell(qArrayTables,"name",qArrayTables1['#listfirst(qArrayTables1.columnlist)#'][i]);
-			}			
-		</cfscript>
+		show tables
+		</cfquery>	
+		
+		<cfquery dbtype="query" name="qArrayTables">
+		select #qArrayTables1.columnlist# as name
+		from qArrayTables1
+		where upper(#qArrayTables1.columnlist#) like '#ucase(arguments.typename)#@_A%' escape '@'
+		</cfquery>	
 	</cfcase>
+	
 	<cfdefaultcase>	
 		<cfquery datasource="#application.dsn#" name="qArrayTables">
-		SELECT 	dbo.sysobjects.name 
+		SELECT 	dbo.sysobjects.name
 		FROM dbo.sysobjects
-		WHERE dbo.sysobjects.name LIKE '#arguments.typename#_a%'
+		WHERE dbo.sysobjects.name LIKE '#arguments.typename#@_a%' escape '@'
 		</cfquery>
 	</cfdefaultcase>				
+	
 	</cfswitch>
+	
 	<cfreturn qArrayTables>
 </cffunction>
 
@@ -280,6 +369,7 @@
 <cffunction name="compareDBToCFCMetadata" hint="Compares database metadata to CFC metadata"> 
 	<cfargument name="typename" required="true">
 	<cfargument name="stDB" required="true" hint="Structure containing current database metadata">
+	<cfargument name="scope" required="No" default="types" hint="types or rules are valid options.  Referes to application.types or application.rules">
 	<cfparam name="stCFCConflicts" default="#structNew()#"	>
 	<!--- Generate a structure that compares the database structure to the cfc structure --->
 	<cfscript>
@@ -295,16 +385,16 @@
 		stPropReport.bTypeConflict = false;
 		bConflict = false;
 		
-		if(NOT structKeyExists(application.types[arguments.typename].stProps,key))
+		if(NOT structKeyExists(application[arguments.scope][arguments.typename].stProps,key))
 		{
 			stPropReport.bPropertyExists = false;
 			bConflict = true; //flag that an error has occured
 		}	
 		else
 		{	
-			if (NOT application.types[arguments.typename].stProps[key].metadata.type IS "array")
+			if (NOT application[arguments.scope][arguments.typename].stProps[key].metadata.type IS "array")
 			{
-				CFCType = stTypeDefaults[application.types[arguments.typename].stProps[key].metadata.type].type; 
+				CFCType = stTypeDefaults[application[arguments.scope][arguments.typename].stProps[key].metadata.type].type; 
 				if(NOT arguments.stDB[key].type IS CFCType)
 				{
 					stPropReport.bTypeConflict = true;
@@ -319,7 +409,7 @@
 	</cfloop>
 	
 	<!---  Now we are doing the opposite - generate a structure that compares the CFC structure to the database structure --->
-	<cfloop collection="#application.types[arguments.typename].stProps#" item="key">
+	<cfloop collection="#application[arguments.scope][arguments.typename].stProps#" item="key">
 		<cfscript>
 		stPropReport = structNew();
 		//init struct - just checking for type/name discrepencies for the time being.
@@ -333,8 +423,8 @@
 		}
 		else	
 		{   
-			if (NOT application.types[arguments.typename].stProps[key].metadata.type IS "array")
-				CFCType = stTypeDefaults[application.types[arguments.typename].stProps[key].metadata.type].type;
+			if (NOT application[arguments.scope][arguments.typename].stProps[key].metadata.type IS "array")
+				CFCType = stTypeDefaults[application[arguments.scope][arguments.typename].stProps[key].metadata.type].type;
 			else
 				CFCType = "array";	
 			if(NOT arguments.stDB[key].type IS CFCType)
@@ -355,6 +445,8 @@
 <cffunction name="renderCFCReport" hint="displays the table outlining the descrepencies in each CFCs integrity">
 	<cfargument name="typename" default="string" required="true">
 	<cfargument name="stCFC" type="struct" required="true">
+	<cfargument name="scope" type="string" required="false" default="types">
+	
 		
 	<cfif structCount(arguments.stCFC)>
 	<cfoutput>
@@ -385,12 +477,12 @@
 						<img src="#application.url.farcry#/images/no.gif" border="0" alt="Property not deployed">
 					</td>
 					<td>
-						#application.types[typename].stProps[key].metadata.type#
+						#application[arguments.scope][typename].stProps[key].metadata.type#
 					</td>
 					<td>
 						<select name="action">
 							<option selected value="">Do Nothing</option>
-							<cfif application.types[typename].stProps[key].metadata.type IS "array">
+							<cfif application[arguments.scope][typename].stProps[key].metadata.type IS "array">
 							<option value="deployarrayproperty">Deploy Array Table</option>							
 							<cfelse>
 							<option value="deployproperty">Deploy Property</option>
@@ -572,11 +664,28 @@
 	<cfargument name="srcColumnType" required="true">
 	<cfargument name="bNull" required="false" default="true">
 	<cfargument name="dsn" default="#application.dsn#" required="false">
+	<cfargument name="dbtype" default="#application.dbtype#" required="false">
 	
 	<cfscript>
-	sql = "ALTER TABLE #application.dbowner##arguments.typename#	ADD #arguments.srcColumn# #arguments.srcColumnType# ";
-	if (arguments.bNull) sql = sql & "NULL";
-	else sql = sql & "NOT NULL";
+	switch(arguments.dbtype){
+		case "ora":
+		{ 
+			sql = "ALTER TABLE #application.dbowner##arguments.typename# ADD (#arguments.srcColumn# #arguments.srcColumnType# ";	
+			if (arguments.bNull) sql = sql & "NULL";
+			else sql = sql & "NOT NULL";
+			sql = sql & ")";
+			break;
+		}
+		default:
+		{
+			sql = "ALTER TABLE #application.dbowner##arguments.typename#	ADD #arguments.srcColumn# #arguments.srcColumnType# ";	
+			if (arguments.bNull) sql = sql & "NULL";
+			else sql = sql & "NOT NULL";
+			break;
+		}
+	}	
+	
+	
 	</cfscript>
 	
 	<cfquery datasource="#arguments.dsn#">#preserveSingleQuotes(sql)#</cfquery>
@@ -587,10 +696,11 @@
 	<cfargument name="srcColumn" required="true">
 	<cfargument name="srcColumnType" required="true">
 	<cfargument name="dsn" default="#application.dsn#" required="false">
+	<cfargument name="scope" default="types" required="No">
 	
 	<!--- work out default field length --->
 	<cfset length = getTypeDefaults()>
-	<cfset length = length[application.types[arguments.typename].stProps[arguments.srcColumn].metadata.type].length>
+	<cfset length = length[application[arguments.scope][arguments.typename].stProps[arguments.srcColumn].metadata.type].length>
 	
 	<cftransaction>
 		<cftry>
@@ -619,7 +729,7 @@
 		<!--- alter column --->
 		<cfquery NAME="qAlter" DATASOURCE="#application.dsn#">
 			ALTER TABLE #application.dbowner##arguments.typename#  
-			ALTER COLUMN #arguments.srcColumn# #arguments.srcColumnType# <cfif NOT arguments.srcColumnType IS "NTEXT">(#length#)</cfif>
+			ALTER COLUMN #arguments.srcColumn# #arguments.srcColumnType# <cfif NOT listContainsNoCase("NTEXT,INT,NUMBER",arguments.srcColumnType)>(#length#)</cfif>
 		</cfquery>
 		
 		<!--- add constraint --->
@@ -632,13 +742,16 @@
 			</cfquery>
 	
 		</cfif>
-		<cfcatch><cfoutput>#cfcatch.message#<p></p>#cfcatch.detail#<p></p></cfoutput></cfcatch>
+		<cfcatch><cfoutput>
+		<cfdump var="#cfcatch#">
+		#cfcatch.message#<p></p>#cfcatch.detail#<p></p></cfoutput></cfcatch>
 		</cftry>
 	</cftransaction>
 </cffunction>
 
 <cffunction name="buildDBStructure"> 
-	<cfloop collection="#application.types#" item="typename"> 
+	<cfargument name="scope" default="types" required="No">
+	<cfloop collection="#application[arguments.scope]#" item="typename"> 
 		<cfswitch expression="#application.dbtype#">
 		<cfcase value="ora">
 			<CFQUERY NAME="GetTables" DATASOURCE="#application.dsn#">
@@ -647,7 +760,7 @@
     					uc.DATA_LENGTH AS length,
 	    				uc.NULLABLE AS isnullable,
 		    			uc.DATA_TYPE AS Type
-			FROM #application.dbowner#USER_TABLES ut
+			FROM USER_TABLES ut
 			INNER JOIN USER_TAB_COLUMNS uc	ON (ut.TABLE_NAME = uc.TABLE_NAME)
 			WHERE ut.TABLE_NAME = '#ucase(typename)#'
 			GROUP BY ut.TABLE_NAME,
@@ -660,7 +773,7 @@
 		<cfcase value="mysql">
 			<!--- Get all tables in database--->	
 			<cfquery name="getMySQLTables" datasource="#application.dsn#">
-				SHOW TABLES like '#ucase(typename)#'
+				SHOW TABLES like '#typename#'
 			</cfquery>
 			<!--- Create new query to be filled with db metadata--->					
 			<cfset GetTables = queryNew("TableName,ColumnName,length,isnullable,Type")>	
@@ -723,7 +836,6 @@
 		
 		<cfscript>
 		qArrayTables = getArrayTables(typename='#typename#');
-			
 		for(i = 1;i LTE qArrayTables.recordCount;i=i+1)
 		{
 			queryAddRow(getTables,1);
@@ -755,10 +867,20 @@
 	<cfargument name="scope" required="false" default="types">
 	
 	<cfscript>
-	if(NOT application.types['#arguments.typename#'].bCustomType)
-		o = createObject("component", "#application.packagePath#.#arguments.scope#.#arguments.typename#");
-	else
-		o = createObject("component", "#application.custompackagePath#.#arguments.scope#.#arguments.typename#");
+	if (arguments.scope IS 'types')
+	{
+		if(NOT application[arguments.scope]['#arguments.typename#'].bCustomType)
+			o = createObject("component", "#application.packagePath#.#arguments.scope#.#arguments.typename#");
+		else
+			o = createObject("component", "#application.custompackagePath#.#arguments.scope#.#arguments.typename#");
+	}
+	else if (arguments.scope IS 'rules')
+	{
+		if(NOT application[arguments.scope]['#arguments.typename#'].bCustomRule)
+			o = createObject("component", "#application.packagePath#.#arguments.scope#.#arguments.typename#");
+		else
+			o = createObject("component", "#application.custompackagePath#.#arguments.scope#.#arguments.typename#");
+	}		
 	result = o.deployType(btestRun="false");
 	</cfscript>
 </cffunction> 
@@ -771,14 +893,14 @@
 
 	<cfcase value="ora">
 		<cfquery name="qTableExists" datasource="#application.dsn#">
-		SELECT TABLE_NAME FROM #application.dbowner#USER_TABLES
+		SELECT TABLE_NAME FROM USER_TABLES
 		WHERE TABLE_NAME = '#ucase(arguments.typename)#'
 		</cfquery>
 	</cfcase>
 	
 	<cfcase value="mysql">
 		<cfquery name="qTableExists" datasource="#application.dsn#">
-			SHOW TABLES LIKE '#ucase(arguments.typename)#'
+			SHOW TABLES LIKE '#arguments.typename#'
 		</cfquery>
 	</cfcase>
 

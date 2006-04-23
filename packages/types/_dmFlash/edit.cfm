@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmFlash/edit.cfm,v 1.9 2003/07/15 07:04:15 brendan Exp $
-$Author: brendan $
-$Date: 2003/07/15 07:04:15 $
-$Name: b131 $
-$Revision: 1.9 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmFlash/edit.cfm,v 1.11 2003/08/15 07:06:41 paul Exp $
+$Author: paul $
+$Date: 2003/08/15 07:06:41 $
+$Name: b201 $
+$Revision: 1.11 $
 
 || DESCRIPTION || 
 $Description: edit handler$
@@ -30,6 +30,7 @@ $out:$
 	
 	<cfscript>
 		stProperties = structNew();
+		stProperties.objectid = stObj.objectid;
 		stProperties.title = form.title;
 		stProperties.label = form.title;
 		stProperties.teaser = form.teaser;
@@ -55,7 +56,16 @@ $out:$
 	
 	<!--- upload the flash movie --->
 	<cfif trim(len(FORM.flashMovie)) NEQ 0>
-		<cfinvoke component="#application.packagepath#.farcry.form" method="uploadFile" returnvariable="stReturn" formfield="flashMovie" destination="#application.defaultFilePath#"> 
+		<!--- try and delete current file if its there --->
+		<cfif len(stobj.flashmovie)>
+			 <cftry> 
+				<cffile action="DELETE" file="#application.defaultFilePath#\#stObj.flashMovie#">  
+				 <cfcatch>
+			
+				</cfcatch>			
+			</cftry> 
+		</cfif>
+		<cfinvoke component="#application.packagepath#.farcry.form" method="uploadFile" returnvariable="stReturn" nameconflict="OVERWRITE" formfield="flashMovie" destination="#application.defaultFilePath#"> 
 		<cfif NOT stReturn.bSuccess>
 			<cfoutput><strong>ERROR:</strong> #stReturn.message#<p>
 			File type needs to be a flash movie (.swf) <p></p></cfoutput>
@@ -68,13 +78,12 @@ $out:$
 		
 	</cfif>
 	
-	<!--- save data --->
-	<q4:contentobjectdata
-	 typename="#application.packagepath#.types.dmFlash"
-	 stProperties="#stProperties#"
-	 objectid="#stObj.ObjectID#"
-	>
-	
+	<cfscript>
+		// update the OBJECT	
+		oType = createobject("component","#application.packagepath#.types.dmFlash");
+		oType.setData(stProperties=stProperties);
+	</cfscript>
+		
 	<!--- get parent to update tree --->	
 	<nj:treeGetRelations 
 			typename="#stObj.typename#"

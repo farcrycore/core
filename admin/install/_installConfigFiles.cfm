@@ -14,7 +14,7 @@
 <cffile action="READ" file="#configFilePath#/_serverSpecificVars.cfm" variable="serverVars">
 
 <cfscript>
-serverVars = replaceNoCase(serverVars, "application.dsn = ""farcry_app""", "application.dsn = ""#application.dsn#""");
+serverVars = replaceNoCase(serverVars, "application.dsn = ""farcry_aura""", "application.dsn = ""#application.dsn#""");
 serverVars = replaceNoCase(serverVars, "application.dbtype = ""odbc""", "application.dbtype = ""#form.dbType#""");
 serverVars = replaceNoCase(serverVars, "application.dbowner = ""dbo.""", "application.dbowner = ""#application.dbOwner#""");
 if (form.appMapping neq "/") {
@@ -32,9 +32,40 @@ else {
 
 <!--- create Application.cfm in project path --->
 <cffile action="READ" file="#configFilePath#/Application.cfm" variable="appCFM">
-<cfset appCFM = replaceNoCase(appCFM, "<cfapplication name=""farcry_app"" sessionmanagement=""Yes"" sessiontimeout=""##createTimeSpan(0,1,0,0)##"">", "<cfapplication name=""#form.siteName#"" sessionmanagement=""Yes"" sessiontimeout=""##createTimeSpan(0,1,0,0)##"">")>
+<cfset appCFM = replaceNoCase(appCFM, "<cfapplication name=""farcry_aura"" sessionmanagement=""Yes"" sessiontimeout=""##createTimeSpan(0,1,0,0)##"">", "<cfapplication name=""#form.siteName#"" sessionmanagement=""Yes"" sessiontimeout=""##createTimeSpan(0,1,0,0)##"">")>
 <cffile action="WRITE" file="#application.path.project#/www/Application.cfm" output="#appCFM#" addnewline="Yes">
 
 <!--- modify apps.cfm file --->
+<!--- added by Gary Menzel --->
+<CFTRY>
+	<!--- see if we can load the apps.cfm to initialise the stApps structure --->
+	<CFINCLUDE template="/farcry/apps.cfm">
+	<CFCATCH>
+		<!--- otherwise - create an stApps structure --->
+		<CFSCRIPT>
+		stApps = StructNew();
+		</CFSCRIPT>
+	</CFCATCH>
+</CFTRY>
+
+<!--- add the new site in with the domain provided --->
+<CFSCRIPT>
+	stApps[form.domain] = form.siteName;
+</CFSCRIPT>
+
+<!--- compose the "script" for apps.cfm --->
+<CFSET appsFile = "<cfscript>#chr(13)##chr(10)#stApps = structNew();#chr(13)##chr(10)#">
+<CFLOOP collection="#stApps#" item="site">
+	<CFSET appsFile = appsFile & "stApps['#site#'] = '#stApps[site]#';#chr(13)##chr(10)#">
+</CFLOOP>
+<CFSET appsFile = appsFile & "</cfscript>">
+
+<!--- write the updated apps.cfm back out --->
+<cffile action="WRITE" file="#basePath#/apps.cfm" output="#appsFile#">
+<!--- ABOVE added by Gary Menzel --->
+
+
+<!--- commented out by Gary Menzel
 <cfset appsFile = "<cfscript>#chr(13)##chr(10)#stApps = structNew();#chr(13)##chr(10)#stApps['#form.domain#'] = '#form.siteName#'; // name of physical directory for your FarCry Application#chr(13)##chr(10)#</cfscript>">
 <cffile action="WRITE" file="#basePath#/apps.cfm" output="#appsFile#">
+--->

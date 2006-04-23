@@ -5,11 +5,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmhtml/plpEdit/start.cfm,v 1.5 2003/07/21 03:02:11 paul Exp $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmhtml/plpEdit/start.cfm,v 1.7 2003/09/09 09:23:14 paul Exp $
 $Author: paul $
-$Date: 2003/07/21 03:02:11 $
-$Name: b131 $
-$Revision: 1.5 $
+$Date: 2003/09/09 09:23:14 $
+$Name: b201 $
+$Revision: 1.7 $
 
 || DESCRIPTION || 
 $Description: dmHTML PLP - Start Step $
@@ -43,8 +43,8 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	</tr>
 	<tr>
 		<td nowrap class="FormLabel" valign="top">Extended Metadata
-		<a href="##" id="yesLink" onClick="document.getElementById('noLink').style.display='inline';this.style.display='none';document.getElementById('metadatacell').style.display='none';" style="display:<cfif len(trim(output.extendedmetadata))>inline<cfelse>none</cfif>;"><img src="#application.url.farcry#/images/yes.gif" border="0" alt="Extended Metadata"></a>	
-		<a href="##" id="noLink" onClick="this.style.display='none';document.getElementById('yesLink').style.display='inline';document.getElementById('metadatacell').style.display='inline';" style="display:<cfif NOT len(trim(output.extendedmetadata))>inline<cfelse>none</cfif>;"><img src="#application.url.farcry#/images/no.gif" border="0" alt="No extended metadata"></a>
+		<a href="javascript:void(0);" id="yesLink" onClick="document.getElementById('noLink').style.display='inline';this.style.display='none';document.getElementById('metadatacell').style.display='none';" style="display:<cfif len(trim(output.extendedmetadata))>inline<cfelse>none</cfif>;"><img src="#application.url.farcry#/images/yes.gif" border="0" alt="Extended Metadata"></a>	
+		<a href="javascript:void(0);" id="noLink" onClick="this.style.display='none';document.getElementById('yesLink').style.display='inline';document.getElementById('metadatacell').style.display='inline';" style="display:<cfif NOT len(trim(output.extendedmetadata))>inline<cfelse>none</cfif>;"><img src="#application.url.farcry#/images/no.gif" border="0" alt="No extended metadata"></a>
 		</td>
 		<td id="metadatacell" style="display:<cfif len(trim(output.extendedmetadata))>inline<cfelse>none</cfif>;" width="100%"><textarea name="extendedmetadata" rows="10" cols="50" class="FormTextBox" wrap="off">#output.extendedmetadata#</textarea><br>
 * typically this will be inserted unaltered into the HEAD section of your templates</td>
@@ -65,9 +65,6 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 		</select>
 		</td>
 	</tr>
-	<!--- <tr>
-		<td colspan="2"><strong>Teaser</strong><br><tags:countertext formname="editform" fieldname="teaser" fieldvalue="#output.teaser#" counter="256"></td>
-	</tr> --->	
 	</table>
 	</div>
 	</cfoutput>	

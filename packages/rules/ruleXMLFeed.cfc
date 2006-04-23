@@ -7,7 +7,7 @@ $License: Released Under the "Common Public License 1.0", http://www.opensource.
 $Header: /cvs/farcry/farcry_core/packages/rules/ruleXMLFeed.cfc,v 1.6 2003/07/24 06:04:37 geoff Exp $
 $Author: geoff $
 $Date: 2003/07/24 06:04:37 $
-$Name: b131 $
+$Name: b201 $
 $Revision: 1.6 $
 
 || DESCRIPTION || 

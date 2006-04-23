@@ -26,8 +26,8 @@ function synchTab(frameName, activeTabClass, normalTabClass, linkid) {
     } 
 	
 	 // Set active link
-	 
-   parent.document.getElementById(linkid).className = activeTabClass;
+	if (parent.document.getElementById(linkid))
+	   parent.document.getElementById(linkid).className = activeTabClass;
    //CalculateRemainingTime();
 }
 

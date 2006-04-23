@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_stats/getOS.cfm,v 1.1 2003/05/07 02:13:19 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_stats/getOS.cfm,v 1.3 2003/09/10 12:21:48 brendan Exp $
 $Author: brendan $
-$Date: 2003/05/07 02:13:19 $
-$Name: b131 $
-$Revision: 1.1 $
+$Date: 2003/09/10 12:21:48 $
+$Name: b201 $
+$Revision: 1.3 $
 
 || DESCRIPTION || 
 $Description: Shows Operating Systems$
@@ -23,21 +23,21 @@ $out:$
 --->
 
 <!--- get maxrows if not defined --->
-<cfif stArgs.maxRows eq "all">
-	<cfquery datasource="#stArgs.dsn#" name="qMax">
+<cfif arguments.maxRows eq "all">
+	<cfquery datasource="#arguments.dsn#" name="qMax">
 		SELECT count(logid) as maxrows
-		FROM #application.dbowner#Stats
+		FROM #application.dbowner#stats
 	</cfquery>
-	<cfset stArgs.maxrows = qMax.maxrows>
+	<cfset arguments.maxrows = qMax.maxrows>
 </cfif>
 
 <!--- get downloads from stats --->
-<cfquery datasource="#stArgs.dsn#" name="qGetOS" maxrows="#stArgs.maxRows#">
+<cfquery datasource="#arguments.dsn#" name="qGetOS" maxrows="#arguments.maxRows#">
 	SELECT os, count(distinct sessionid) as count_os
-	FROM #application.dbowner#Stats
+	FROM #application.dbowner#stats
 	WHERE os <> 'unknown'
-	<cfif stArgs.dateRange neq "all">
-		AND logDateTime > #dateAdd("#stArgs.dateRange#",-1,now())#
+	<cfif arguments.dateRange neq "all">
+		AND logDateTime > #dateAdd("#arguments.dateRange#",-1,now())#
 	</cfif>
 	GROUP By os
 	ORDER BY count_os DESC

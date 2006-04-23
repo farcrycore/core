@@ -1,3 +1,3 @@
-
-
- <cfinvoke component="#application.packagepath#.farcry.tree" method="moveBranch" parentID="#stArgs.parentID#" objectID="#stArgs.objectID#" returnvariable="stStatus">
+<cfscript>
+	stStatus = application.factory.oTree.moveBranch(parentID=arguments.parentID,objectID=arguments.objectID);
+</cfscript>

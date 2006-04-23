@@ -5,11 +5,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/install/index.cfm,v 1.48 2003/07/16 00:59:40 brendan Exp $
+$Header: /cvs/farcry/farcry_core/admin/install/index.cfm,v 1.49 2003/09/17 07:24:36 brendan Exp $
 $Author: brendan $
-$Date: 2003/07/16 00:59:40 $
-$Name: b131 $
-$Revision: 1.48 $
+$Date: 2003/09/17 07:24:36 $
+$Name: b201 $
+$Revision: 1.49 $
 
 || DESCRIPTION || 
 $Description: Installation scripts for FarCry$
@@ -74,9 +74,9 @@ $out:$
     <cfflush>
 		
     
-			<!--- copy farcry_app directory to new site name --->
+			<!--- copy farcry_aura directory to new site name --->
 		    <cfscript>
-		    projectPath = replaceNoCase(replace(getCurrentTemplatePath(),"\","/","all"), "/farcry_core/admin/install/index.cfm", "") & "/farcry_app";
+		    projectPath = replaceNoCase(replace(getCurrentTemplatePath(),"\","/","all"), "/farcry_core/admin/install/index.cfm", "") & "/farcry_aura";
 		    newProjectPath = listDeleteAt(projectPath, listLen(projectPath, "/"), "/") & "/" & form.siteName;
 			basePath = replaceNoCase(replace(getCurrentTemplatePath(),"\","/","all"), "/farcry_core/admin/install/index.cfm", "") & "";
 		    </cfscript>

@@ -15,14 +15,9 @@ Creates a draft object
 <cfparam name="url.objectId" default="">
 
 <cfif len(url.objectId)>
-<!--- 	<cfscript>
-		oAuthorisation = request.dmSec.oAuthorisation;
-		iApprove = oAuthorisation.checkPermission(permissionName="Create",reference='dmNavigation');
-	</cfscript>
- --->	
 	<!--- Get this object so we can duplicate it --->
 	<q4:contentobjectget objectid="#url.objectId#" bactiveonly="False" r_stobject="stObject">
-	<!--- <cfinvoke component="farcry.fourq.fourq" returnvariable="thisTypename" method="findType" objectID="#url.ObjectId#"> --->
+	
 	<cfscript>
 		stProps=structCopy(stObject);
 		stProps.objectid = createUUID();
@@ -37,8 +32,21 @@ Creates a draft object
 		stProps.publishDate = now();
 		stProps.expiryDate = now();
 		stProps.versionID = URL.objectID;
+
+		//is this a custom type?
+		if(application.types[stProps.typename].bCustomType)
+			packagePath = application.customPackagePath;
+		else
+			packagePath = application.packagePath;
+		// create the new OBJECT 
+		oType = createobject("component","#packagepath#.types.#stProps.TypeName#");
+		stNewObj = oType.createData(stProperties=stProps);
+		NewObjId = stNewObj.objectid;
+		oAuthentication = request.dmSec.oAuthentication;	
+		stuser = oAuthentication.getUserAuthenticationData();
+		application.factory.oaudit.logActivity(objectid="#URL.objectid#",auditType="Create", username=StUser.userlogin, location=cgi.remote_host, note="Draft object created");
 	</cfscript>
-	<q4:contentobjectcreate typename="#application.packagepath#.types.#stProps.TypeName#" stproperties="#stProps#" r_objectid="NewObjID">
+
 	<cfoutput>
 	<script>
 		window.location="#application.url.farcry#/navajo/edit.cfm?objectId=#NewObjID#&type=#stProps.typename#<cfif isDefined('url.finishUrl')>&finishUrl=#url.finishUrl#</cfif>";

@@ -6,11 +6,11 @@ Daemon Pty Limited 1995-2002
 http://www.daemon.com.au
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/dmProfile.cfc,v 1.13 2003/06/26 04:06:29 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/types/dmProfile.cfc,v 1.14 2003/09/10 23:46:11 brendan Exp $
 $Author: brendan $
-$Date: 2003/06/26 04:06:29 $
-$Name: b131 $
-$Revision: 1.13 $
+$Date: 2003/09/10 23:46:11 $
+$Name: b201 $
+$Revision: 1.14 $
 
 || DESCRIPTION || 
 dmProfile object CFC
@@ -48,7 +48,6 @@ none
         <cfscript>
         // getData for object edit
         stObj = this.getData(arguments.objectID);
-        stArgs = arguments;
         </cfscript>
 
 	    <cfinclude template="_dmProfile/edit.cfm">
@@ -57,7 +56,6 @@ none
     <cffunction name="createProfile" access="PUBLIC" hint="Create new profile object using existing dmSec information">
         <cfargument name="stProperties" type="struct" required="yes">
 
-        <cfset stArgs = arguments>
         <cfinclude template="_dmProfile/createProfile.cfm">
 
         <cfreturn stObj>
@@ -66,7 +64,6 @@ none
     <cffunction name="getProfile" access="PUBLIC" hint="Retrieve profile data for given username">
         <cfargument name="userName" type="string" required="yes">
 
-        <cfset stArgs = arguments>
         <cfinclude template="_dmProfile/getProfile.cfm">
 
         <cfreturn stObj>
@@ -77,7 +74,6 @@ none
 		
 		<!--- getData for object edit --->
 		<cfset stObj = this.getData(arguments.objectid)>
-		<cfset stArgs = arguments> <!--- hack to make arguments available to included file --->
 		<cfinclude template="_dmProfile/display.cfm">
 	</cffunction>
 

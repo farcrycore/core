@@ -1,5 +1,28 @@
+<!--- 
+|| LEGAL ||
+$Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
+$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
-<cfcomponent extends="types" displayname="Files" hint="File objects">
+|| VERSION CONTROL ||
+$Header: /cvs/farcry/farcry_core/packages/types/dmFile.cfc,v 1.11 2003/09/12 06:42:49 brendan Exp $
+$Author: brendan $
+$Date: 2003/09/12 06:42:49 $
+$Name: b201 $
+$Revision: 1.11 $
+
+|| DESCRIPTION || 
+$Description: dmFile type $
+$TODO: $
+
+|| DEVELOPER ||
+$Developer: Brendan Sisson (brendan@daemon.com.au) $
+
+|| ATTRIBUTES ||
+$in: $
+$out:$
+--->
+
+<cfcomponent extends="types" displayname="File"  hint="File objects" bUseInTree="1">
 <!------------------------------------------------------------------------
 type properties
 ------------------------------------------------------------------------->
@@ -7,7 +30,6 @@ type properties
 <cfproperty name="filename" type="string" hint="The name of the file to be uploaded" required="no" default="">  
 <cfproperty name="filepath" type="string" hint="The location of the file on the webserver" required="no" default="">  
 <cfproperty name="description" type="longchar" hint="A description of the file to be uploaded" required="No" default=""> 
-<cfproperty name="status" type="string" hint="Status of file - draft or approved" required="No" default=""> 
 
 <!--- Object Methods --->
 
@@ -16,7 +38,6 @@ type properties
 	
 	<!--- getData for object edit --->
 	<cfset stObj = this.getData(arguments.objectid)>
-	<cfset stArgs = arguments> <!--- hack to make arguments available to included file --->
 	<cfinclude template="_dmFile/edit.cfm">
 </cffunction>
 
@@ -25,7 +46,6 @@ type properties
 	
 	<!--- getData for object edit --->
 	<cfset stObj = this.getData(arguments.objectid)>
-	<cfset stArgs = arguments> <!--- hack to make arguments available to included file --->
 	<cfinclude template="_dmFile/display.cfm">
 </cffunction>
 
@@ -34,7 +54,6 @@ type properties
 	
 	<!--- get object details --->
 	<cfset stObj = getData(arguments.objectid)>
-	<cfset stArgs = arguments> <!--- hack to make arguments available to included file --->
 	<cfinclude template="_dmFile/delete.cfm">
 </cffunction>	
 

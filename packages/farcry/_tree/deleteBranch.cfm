@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_tree/deleteBranch.cfm,v 1.9 2003/05/04 23:08:26 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_tree/deleteBranch.cfm,v 1.10 2003/09/10 12:21:48 brendan Exp $
 $Author: brendan $
-$Date: 2003/05/04 23:08:26 $
-$Name: b131 $
-$Revision: 1.9 $
+$Date: 2003/09/10 12:21:48 $
+$Name: b201 $
+$Revision: 1.10 $
 
 || DESCRIPTION || 
 $Description: deleteBranch Function $
@@ -33,19 +33,19 @@ $out:$
 	//delete a node, and its descendants
 	//preserve old nleft for later
 	sql = "
-	select nleft, typename from nested_tree_objects where objectid = '#stArgs.objectid#'";
-	q = query(sql=sql, dsn=stArgs.dsn);
+	select nleft, typename from nested_tree_objects where objectid = '#arguments.objectid#'";
+	q = query(sql=sql, dsn=arguments.dsn);
 	
 	oldleft = q.nleft;
 	typename = q.typename;
 	
 	// get nleft
-	nLeftSql = "select nleft from nested_tree_objects where objectid = '#stArgs.objectid#' and typename = '#typename#'";
-	qNLeft = query(sql=nLeftSql, dsn=stArgs.dsn);
+	nLeftSql = "select nleft from nested_tree_objects where objectid = '#arguments.objectid#' and typename = '#typename#'";
+	qNLeft = query(sql=nLeftSql, dsn=arguments.dsn);
 	
 	// get nright
-	nRightSql = "select nright from nested_tree_objects where objectid = '#stArgs.objectid#' and typename = '#typename#'";
-	qNRight = query(sql=nRightSql, dsn=stArgs.dsn);
+	nRightSql = "select nright from nested_tree_objects where objectid = '#arguments.objectid#' and typename = '#typename#'";
+	qNRight = query(sql=nRightSql, dsn=arguments.dsn);
 	
 	// get the number of objects that are descendants of the object, plus the object itself. times 2, so that we can 
 	// move the lefts and rights back of the remaining nodes.
@@ -55,17 +55,17 @@ $out:$
 		where nleft between #qNleft.nleft#
 		and #qNRight.nright# 
 		and typename = '#typename#'";
-	q = query(sql=sql, dsn=stArgs.dsn);	
+	q = query(sql=sql, dsn=arguments.dsn);	
 	count = q.objCount;
 	
 	// delete the object itself, and its spawn
 	sql = "
 		delete from nested_tree_objects
-		where objectid = '#stArgs.objectid#'
+		where objectid = '#arguments.objectid#'
 		or nleft between #qNleft.nleft#
 		and #qNRight.nright# 
 		and typename = '#typename#'";
-	query(sql=sql, dsn=stArgs.dsn);	
+	query(sql=sql, dsn=arguments.dsn);	
 	
 	// contract the other nodes left hands
 	sql = "
@@ -73,7 +73,7 @@ $out:$
 		set 	nleft = nleft - #count#
 		where  nleft > #oldleft#
 		and typename = '#typename#'";
-	query(sql=sql, dsn=stArgs.dsn);	
+	query(sql=sql, dsn=arguments.dsn);	
 	
 	// contract the other nodes right hands
 	sql = "
@@ -81,7 +81,7 @@ $out:$
 		set 	nright = nright - #count#
 		where  nright > #oldleft#
 		and typename = '#typename#'";
-	query(sql=sql, dsn=stArgs.dsn);	
+	query(sql=sql, dsn=arguments.dsn);	
 	</cfscript>
 
 	<cfcatch>

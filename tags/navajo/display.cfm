@@ -1,16 +1,16 @@
-<!--- 
+<!---
 || LEGAL ||
 $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
-$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
+$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/navajo/display.cfm,v 1.19 2003/07/10 02:07:06 brendan Exp $
-$Author: brendan $
-$Date: 2003/07/10 02:07:06 $
-$Name: b131 $
-$Revision: 1.19 $
+$Header: /cvs/farcry/farcry_core/tags/navajo/display.cfm,v 1.27 2003/10/24 00:48:03 geoff Exp $
+$Author: geoff $
+$Date: 2003/10/24 00:48:03 $
+$Name: b201 $
+$Revision: 1.27 $
 
-|| DESCRIPTION || 
+|| DESCRIPTION ||
 $Description: Primary controller for invoking the object to be rendered for the website.$
 $TODO: This needs to be converted into a CFC! GB $
 
@@ -34,58 +34,83 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 
 
 <!--- grab the object we are displaying --->
-<cftry>	  
+<cftry>
+
 	<q4:contentobjectget objectid="#url.ObjectID#" r_stobject="stObj">
+
 	<!--- check that an appropriate result was returned from COAPI --->
 	<cfif NOT IsStruct(stObj) OR StructIsEmpty(stObj)>
 		<cfthrow message="Error: COAPI returned a malformed or empty object instance.">
-	</cfif> 
+	</cfif>
 	<CFCATCH type="Any">
 		<cflocation url="#application.url.webroot#/" addtoken="No">
-		<!--- $TODO: 
-		log this error if it occurs 
+		<!--- $TODO:
+		log this error if it occurs
 		or perhaps provide URL 404 type error for user$
 		--->
 		<cfabort>
 	</CFCATCH>
 </cftry>
 
+
 <!--- if we are displaying a navigation point, get the first approved object to display --->
-<cfif 
-	stObj.typename eq "dmNavigation"
-	AND structKeyExists(stObj,"aObjectIds")
-	AND arrayLen(stObj.aObjectIds)>
+<cfif stObj.typename IS "dmNavigation">
+	<!--- check for sim link --->
+    <cfif len(stObj.externalLink) gt 0>
+        <q4:contentobjectget objectid="#stObj.externalLink#" r_stobject="stObj">
+    </cfif>
 
-	<cfloop index="idIndex" from="1" to="#arrayLen(stObj.aObjectIds)#">
-		<q4:contentobjectget objectid="#stObj.aObjectIds[idIndex]#" r_stobject="stObjTemp">
+    <cfif structKeyExists(stObj,"aObjectIds")
+	      AND arrayLen(stObj.aObjectIds)>
 
-		<!--- request.mode.lValidStatus is typically approved, or draft, pending, approved in SHOWDRAFT mode --->
-		<cfif StructKeyExists(stObjTemp,"status") AND ListContains(request.mode.lValidStatus, stObjTemp.status)>
-			<!--- if in request.mode.showdraft=true mode grab underlying draft page (if it exists) --->			
-			<cfif IsDefined("stObjTemp.versionID") AND request.mode.showdraft>
-				<cfquery datasource="#application.dsn#" name="qHasDraft">
-					SELECT objectID,status from #application.dbowner##stObjTemp.typename# where versionID = '#stObjTemp.objectID#' 
-				</cfquery>
-				<cfif qHasDraft.recordcount gt 0>
-					<q4:contentobjectget objectid="#qHasDraft.objectid#" r_stobject="stObjDraft">
-					<!--- reset object structure to be DRAFT object --->
-					<cfset stObjTemp = stObjDraft>
-				</cfif>
-			</cfif>
-			<!--- set the navigation point for the child obj --->
-			<cfset request.navid = stObj.objectID>
-			<!--- reset stObj to appropriate object to be displayed --->
-			<cfset stObj = stObjTemp>
-			<!--- end loop now --->
-			<cfbreak>
-		</cfif>
-	</cfloop>
-	<!--- if request.navid is not set, then no valid objects available for this node. --->
-	<cfif NOT isDefined("request.navid")>
-		<!--- $TODO: this should really force a login and then showdraft=true, if permissions allow GB --->
-		<cfabort showerror="Error: This navigation node has no viewable content attached. If you believe that some content should exist at this point it is more than likely that it is in DRAFT and needs to be approved..">
-	</cfif>
+    	<cfloop index="idIndex" from="1" to="#arrayLen(stObj.aObjectIds)#">
+    		<q4:contentobjectget objectid="#stObj.aObjectIds[idIndex]#" r_stobject="stObjTemp">
 
+    		<!--- request.mode.lValidStatus is typically approved, or draft, pending, approved in SHOWDRAFT mode --->
+    		<cfif StructKeyExists(stObjTemp,"status") AND ListContains(request.mode.lValidStatus, stObjTemp.status)>
+    			<!--- if in request.mode.showdraft=true mode grab underlying draft page (if it exists) --->
+    			<cfif IsDefined("stObjTemp.versionID") AND request.mode.showdraft>
+    				<cfquery datasource="#application.dsn#" name="qHasDraft">
+    					SELECT objectID,status from #application.dbowner##stObjTemp.typename# where versionID = '#stObjTemp.objectID#'
+    				</cfquery>
+    				<cfif qHasDraft.recordcount gt 0>
+    					<q4:contentobjectget objectid="#qHasDraft.objectid#" r_stobject="stObjDraft">
+    					<!--- reset object structure to be DRAFT object --->
+    					<cfset stObjTemp = stObjDraft>
+    				</cfif>
+    			</cfif>
+    			<!--- set the navigation point for the child obj --->
+    			<cfset request.navid = stObj.objectID>
+    			<!--- reset stObj to appropriate object to be displayed --->
+    			<cfset stObj = stObjTemp>
+    			<!--- end loop now --->
+    			<cfbreak>
+    		<cfelse>
+    			<!--- no status so just show object --->
+    			<!--- set the navigation point for the child obj --->
+    			<cfset request.navid = stObj.objectID>
+    			<!--- reset stObj to appropriate object to be displayed --->
+    			<cfset stObj = stObjTemp>
+    			<!--- end loop now --->
+    			<cfbreak>
+    		</cfif>
+    	</cfloop>
+
+    	<!--- if request.navid is not set, then no valid objects available for this node. --->
+    	<cfif NOT isDefined("request.navid")>
+    		<!--- check if object has status --->
+    		<cfif StructKeyExists(stObjTemp,"status")>
+    			<!--- check if logged in --->
+    			<cfif request.loggedIn>
+    				<!--- change to draft mode --->
+    				<cflocation url="#cgi.script_name#?#cgi.query_string#&showdraft=1" addtoken="No">
+    			<cfelse>
+    				<!--- send to login page and return in draft mode --->
+    				<cflocation url="#application.url.farcry#/login.cfm?returnUrl=#URLEncodedFormat(cgi.script_name&'?'&cgi.query_string)#&error=draft&showdraft=1" addtoken="No">
+    			</cfif>
+    		</cfif>
+    	</cfif>
+    </cfif>
 <!--- else get the navigation point from the URL --->
 <cfelseif isDefined("url.navid")>
 	<!--- ie. this is a dynamic object looking for context --->
@@ -95,17 +120,18 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 <cfelse>
 	<nj:getNavigation objectId="#stObj.objectId#" r_stobject="stNav">
 	<!--- if the object is in the tree this will give us the node --->
+
 	<cfif isDefined("stNav.objectid") AND len(stNav.objectid)>
 		<cfset request.navid = stNav.objectID>
-	
+
 	<!--- otherwise, use the home node as a last resort --->
 	<cfelse>
 		<cfset request.navid = application.navid.home>
 	</cfif>
 </cfif>
 
-<!--- 
-check security,... 
+<!---
+check security,...
 remember security is applied through the tree navigation point *not*
 the individual object being rendered.
 lpolicyGroupIds="#application.dmsec.ldefaultpolicygroups#"
@@ -137,14 +163,13 @@ the latter is the policy group for anonymous...
 	<cfabort>
 </cfif>
 
-
 <!--- If we are in designmode then check the containermanagement permissions --->
 <cfif request.mode.design>
 <!--- set the users container management permission --->
 	<cfscript>
 		request.mode.showcontainers = oAuthorisation.checkInheritedPermission(objectid=request.navid,permissionName="ContainerManagement");
 	</cfscript>
-	
+
 </cfif>
 
 
@@ -162,13 +187,13 @@ the latter is the policy group for anonymous...
 <cfif IsDefined("stObj.displayMethod") AND len(stObj.displayMethod)>
 	<!--- Invoke display method of page --->
 	<cftrace var="stObj.displayMethod" text="Object displayMethod used">
-	
+
 	<cfscript>
 		o = createObject("component", "#thisPackagePath#");
-		o.getDisplay(objectid=stObj.ObjectID, template=stObj.displayMethod);	
+		o.getDisplay(objectid=stObj.ObjectID, template=stObj.displayMethod);
 	</cfscript>
-	
-<cfelse>	
+
+<cfelse>
 	<!--- Invoke default display method of page --->
 	<cftrace text="Default display method used">
 	<q4:contentobject
@@ -178,11 +203,11 @@ the latter is the policy group for anonymous...
 </cfif>
 
 <!---------------------------
-Build floatMenu, as required 
-TODO:
-This should respond to request.mode settings and not require a
-a whole new set of permission checks
+Build floatMenu, as required
+$TODO: This should respond to request.mode settings and not require a
+a whole new set of permission checks, have trapped any errors and suppressed GB 20031024 $
 ---------------------------->
+<cftry>
 <!--- begin: logged in user? --->
 <cfscript>
 	stLoggedInUser = oAuthentication.getUserAuthenticationData();
@@ -195,14 +220,17 @@ a whole new set of permission checks
 	<cfscript>
 		iAdmin = oAuthorisation.checkPermission(permissionName="Admin",reference="PolicyGroup");
 		iCanCommentOnContent = oAuthorisation.checkInheritedPermission(objectid=request.navid,permissionName='CanCommentOnContent');
-	</cfscript>	
-	
+	</cfscript>
+
 	<cfif iAdmin eq 1 or iCanCommentOnContent eq 1>
 		<cfset request.floaterIsOnPage = true>
 		<cfinclude template="floatMenu.cfm">
 	</cfif>
 </cfif>
 <!--- end: logged in user? --->
-
+<cfcatch>
+<!--- suppress error --->
+</cfcatch>
+</cftry>
 <cfsetting enablecfoutputonly="No">
 

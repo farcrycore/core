@@ -1,11 +1,33 @@
+<!--- 
+|| LEGAL ||
+$Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
+$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
+
+|| VERSION CONTROL ||
+$Header: /cvs/farcry/farcry_core/packages/farcry/config.cfc,v 1.16 2003/09/17 02:21:29 brendan Exp $
+$Author: brendan $
+$Date: 2003/09/17 02:21:29 $
+$Name: b201 $
+$Revision: 1.16 $
+
+|| DESCRIPTION || 
+$Description: config cfc $
+$TODO: $
+
+|| DEVELOPER ||
+$Developer: Brendan Sisson (brendan@daemon.com.au) $
+
+|| ATTRIBUTES ||
+$in: $
+$out:$
+--->
+
 <cfcomponent displayname="Configuration" hint="Manages configuration files for FarCry CMS.">
 
 <cffunction name="deployConfig" returntype="struct">
     <cfargument name="dsn" type="string" default="#application.dsn#" required="true" hint="Database DSN">
     <cfargument name="bDropTable" type="boolean" default="false" required="false">
 
-	
-	<cfset stArgs = arguments> <!--- hack to make arguments available to included file --->
 	<cfinclude template="_config/deployConfig.cfm">
 	
 	<cfreturn stStatus>
@@ -23,6 +45,31 @@
 	<cfreturn q>
 </cffunction>
 
+<cffunction name="deployCustomConfig" returntype="struct" hint="Gets structure of custom config and either deploys or restores config">
+    <cfargument name="dsn" type="string" default="#application.dsn#" required="true" hint="Database DSN">
+   	<cfargument name="config" type="string" required="true" hint="name of custom config">
+	<cfargument name="action" type="string" required="true" default="deploy" hint="Action to do, deploy or re-deploy">
+	
+	<!--- get config structure --->
+	<cftry>
+		<cfinclude template="/farcry/#application.applicationName#/system/dmConfig/#arguments.config#">
+		<cfcatch><cfdump var="#cfcatch#"><cfabort></cfcatch>
+	</cftry>
+	
+	<cfset configName = listGetAt(arguments.config,1,".")>
+	<cfif arguments.action eq "deploy">
+		<!--- deploy new config --->
+		<cfset stStatus = createConfig(configName=configName,stConfig=stConfig)>
+	<cfelse>
+		<!--- redeploy existing config --->
+		<cfset stStatus = setConfig(configName=configName,stConfig=stConfig)>
+	</cfif>	
+	
+	<!--- set config structure to application scope --->
+	<cfset "application.config.#configName#" = duplicate(stConfig)>
+	
+	<cfreturn stStatus>
+</cffunction>
 
 <cffunction name="getConfig" returntype="struct">
 	<cfargument name="configName" required="Yes" type="string">
@@ -34,7 +81,12 @@
 		WHERE upper(configName) = '#ucase(arguments.configName)#'
 	</cfquery>
 	
-	<cfwddx action="WDDX2CFML" input="#q.wConfig#" output="stConfig">
+	<cfif q.recordcount>
+		<cfwddx action="WDDX2CFML" input="#q.wConfig#" output="stConfig">
+	<cfelse>
+		<cfset stConfig = structNew()>
+	</cfif>
+	
 	<cfreturn stConfig>
 </cffunction>
 
@@ -81,7 +133,6 @@
     <cfargument name="dsn" type="string" default="#application.dsn#" required="true" hint="Database DSN">
 	<cfargument name="configName" required="No" type="string" default="verity">
 	
-	<cfset stArgs = arguments> <!--- hack to make arguments available to included file --->
 	<cfinclude template="_config/defaultVerity.cfm">
 	
 	<cfreturn stStatus>
@@ -91,7 +142,6 @@
     <cfargument name="dsn" type="string" default="#application.dsn#" required="true" hint="Database DSN">
 	<cfargument name="configName" required="No" type="string" default="plugins">
 	
-	<cfset stArgs = arguments> <!--- hack to make arguments available to included file --->
 	<cfinclude template="_config/defaultPlugins.cfm">
 	
 	<cfreturn stStatus>
@@ -101,7 +151,6 @@
     <cfargument name="dsn" type="string" default="#application.dsn#" required="true" hint="Database DSN">
 	<cfargument name="configName" required="No" type="string" default="image">
 	
-	<cfset stArgs = arguments> <!--- hack to make arguments available to included file --->
 	<cfinclude template="_config/defaultImage.cfm">
 	
 	<cfreturn stStatus>
@@ -111,7 +160,6 @@
     <cfargument name="dsn" type="string" default="#application.dsn#" required="true" hint="Database DSN">
 	<cfargument name="configName" required="No" type="string" default="file">
 	
-	<cfset stArgs = arguments> <!--- hack to make arguments available to included file --->
 	<cfinclude template="_config/defaultFile.cfm">
 	
 	<cfreturn stStatus>
@@ -121,7 +169,6 @@
     <cfargument name="dsn" type="string" default="#application.dsn#" required="true" hint="Database DSN">
 	<cfargument name="configName" required="No" type="string" default="soEditorPro">
 	
-	<cfset stArgs = arguments> <!--- hack to make arguments available to included file --->
 	<cfinclude template="_config/defaultSoEditorPro.cfm">
 	
 	<cfreturn stStatus>
@@ -131,7 +178,6 @@
     <cfargument name="dsn" type="string" default="#application.dsn#" required="true" hint="Database DSN">
 	<cfargument name="configName" required="No" type="string" default="soEditor">
 	
-	<cfset stArgs = arguments> <!--- hack to make arguments available to included file --->
 	<cfinclude template="_config/defaultSoEditor.cfm">
 	
 	<cfreturn stStatus>
@@ -141,7 +187,6 @@
     <cfargument name="dsn" type="string" default="#application.dsn#" required="true" hint="Database DSN">
 	<cfargument name="configName" required="No" type="string" default="general">
 	
-	<cfset stArgs = arguments> <!--- hack to make arguments available to included file --->
 	<cfinclude template="_config/defaultGeneral.cfm">
 	
 	<cfreturn stStatus>
@@ -151,7 +196,6 @@
     <cfargument name="dsn" type="string" default="#application.dsn#" required="true" hint="Database DSN">
 	<cfargument name="configName" required="No" type="string" default="eWebEditPro">
 	
-	<cfset stArgs = arguments> <!--- hack to make arguments available to included file --->
 	<cfinclude template="_config/defaultEWebEditPro.cfm">
 	
 	<cfreturn stStatus>
@@ -161,7 +205,6 @@
     <cfargument name="dsn" type="string" default="#application.dsn#" required="true" hint="Database DSN">
 	<cfargument name="configName" required="No" type="string" default="FUSettings">
 	
-	<cfset stArgs = arguments> <!--- hack to make arguments available to included file --->
 	<cfinclude template="_config/defaultFU.cfm">
 	
 	<cfreturn stStatus>

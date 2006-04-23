@@ -1,14 +1,88 @@
-<cfcomponent displayname="Generic Admin" hint="Functions used to display the Generic Admin section of Farcry">
+<!--- 
+|| LEGAL ||
+$Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
+$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
-<cffunction name="deleteObjects" access="remote" returntype="string" hint="Deletes object(s) from type table">
-    <cfargument name="typename" type="string" required="true" hint="Object type of objects being displayed">
-	<cfargument name="lObjectIDs" type="string" required="true" hint="Objects to be deleted">
-    
-	<cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">	
-	<nj:deleteObjects lObjectIDs="#arguments.lObjectIDs#" typename="#arguments.typename#" rMsg="msg">
+|| VERSION CONTROL ||
+$Header: /cvs/farcry/farcry_core/packages/farcry/genericAdmin.cfc,v 1.11 2003/10/24 03:05:38 paul Exp $
+$Author: paul $
+$Date: 2003/10/24 03:05:38 $
+$Name: b201 $
+$Revision: 1.11 $
+
+|| DESCRIPTION || 
+$Description: generic admin cfc $
+$TODO: $
+
+|| DEVELOPER ||
+$Developer: Brendan Sisson (brendan@daemon.com.au) $
+$Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
+
+|| ATTRIBUTES ||
+$in: $
+$out:$
+--->
+
+<cfcomponent extends="farcry.farcry_core.packages.types.types" displayname="Generic Admin" hint="Functions used to display the Generic Admin section of Farcry. Any types that use the farcry generic admin facility MUST extend this component">
+<cfinclude template="/farcry/farcry_core/admin/includes/cfFunctionWrappers.cfm">
+<cffunction name="renderSearchFields" hint="Returns HTML for seach fields in generic Admin" returntype="string">
+	<cfargument name="criteria" required="Yes">
+	<cfargument name="typename" required="Yes">
+	<!--- default vals --->
+	<cfparam name="arguments.criteria.filter" default="">
+	<cfparam name="arguments.criteria.filterType" default="exactly">
+	<cfparam name="arguments.criteria.searchText" default="">
+	<cfparam name="arguments.criteria.currentStatus" default="All">
 	
-	<cfreturn msg>
+	<cfif isdefined("arguments.criteria.clear")>
+		<cfset arguments.criteria.filter = "">
+		<cfset arguments.criteria.searchText = "">
+	</cfif>
+	<!--- Save output to a variable --->
+	<cfsavecontent variable="html">
+	<cfoutput>
+		<cfif structKeyExists(application.types['#arguments.typename#'].stProps,"status")>
+		<!--- show drop down to restrict by status --->
+		<div class="FormTableClear" style="margin-left:0;">
+			Object Status &nbsp; 
+			<select class="text-cellheader" name="currentStatus" onChange="this.form.submit();">
+				<option value="draft" <cfif arguments.criteria.currentStatus IS "draft">selected</cfif>>draft
+				<option value="pending" <cfif arguments.criteria.currentStatus IS "pending">selected</cfif>>pending
+				<option value="approved" <cfif arguments.criteria.currentStatus IS "approved">selected</cfif>>approved
+				<option value="All" <cfif arguments.criteria.currentStatus IS "all">selected</cfif>>All
+			</select>
+			</div>
+		</cfif>
+	
+		Filter: 
+		<select name="filter">
+			<!--- field types that can be filtered --->
+			<cfset fieldType = "string,nstring">
+			<!--- sort structure by Key name --->
+			<cfset listofKeys = listsort(structKeyList(application.types[arguments.typename].stProps),"textnocase")>	
+			<!--- loop over type properties --->
+			<cfloop list="#listOfKeys#" index="property">
+				<!--- check if property is string --->
+				<cfif listFind(fieldType,application.types[arguments.typename].stProps[property].metadata.type)>
+					<option value="#property#" <cfif arguments.criteria.filter eq property>selected</cfif>>#property#
+				</cfif>
+			</cfloop>
+		</select>
+		<!--- filter type exact match search or like --->
+		<select name="filterType">
+			<option value="exactly" <cfif arguments.criteria.filterType eq "exactly">selected</cfif>>Matches Exactly
+			<option value="contains" <cfif arguments.criteria.filterType eq "contains">selected</cfif>>Contains
+		</select>
+		<!--- free text field --->
+		<input type="text" name="searchText" value="#arguments.criteria.searchText#">
+		<!--- submit buttons --->
+		<input type="submit" name="refine" value="Filter" class="normalbttnstyle" >
+		<input type="submit" name="clear" value="Clear" class="normalbttnstyle">
+	</cfoutput>
+	</cfsavecontent>
+	<cfreturn html>
 </cffunction>
+
 
 <cffunction name="permissionCheck" access="remote" returntype="string" hint="Checks if user has a permission to perform select action">
     <cfargument name="permission" type="string" required="true" hint="name of permission">
@@ -23,7 +97,6 @@
 <cffunction name="changeStatus" access="remote" returntype="struct" hint="Changes status of selected object(s)">
     <cfargument name="dsn" type="string" default="#application.dsn#" required="true" hint="Database DSN">
     	
-	<cfset stArgs = arguments> <!--- hack to make arguments available to included file --->
 	<cfinclude template="_genericAdmin/changeStatus.cfm">
 	
 	<cfreturn stStatus>
@@ -31,16 +104,33 @@
 
 <cffunction name="getObjects" access="remote" returntype="query" hint="Returns a query of objects to be displayed">
     <cfargument name="dsn" type="string" default="#application.dsn#" required="true" hint="Database DSN">
-	<cfargument name="typename" type="string" required="true" default="dmNews" hint="Object type of objects to be displayed">
-	<cfargument name="status" type="string" default="all" required="true" hint="Status of objects to be displayed">
-	<cfargument name="order" type="string" default="datetimecreated" required="true" hint="Field to order by">
-	<cfargument name="orderDirection" type="string" default="desc" required="true" hint="Order by ascending or descending">
-	<cfargument name="lCategories" type="string" required="false" hint="Categories to restrict search by">
+	<cfargument name="typename" type="string" required="true" hint="Object type of objects to be displayed">
+	<cfargument name="criteria" type="struct" required="Yes">
     	
-	<cfset stArgs = arguments> <!--- hack to make arguments available to included file --->
 	<cfinclude template="_genericAdmin/getObjects.cfm">
 	
 	<cfreturn qGetObjects>
+</cffunction>
+
+<cffunction name="deployPermissions" hint="Creates default permissions for a given type">
+	<cfargument name="typename" required="Yes">
+	<cfargument name="permissionType" required="No" default="PolicyGroup">
+	
+	<cfscript>
+		lPerms = 'Approve,CanApproveOwnContent,Create,delete,Edit,RequestApproval';
+		for (i = 1;i LTE listLen(lPerms);i=i+1)
+		{
+			permissionName = "#arguments.typename##listGetAt(lPerms,i)#";
+			
+			st = request.dmSec.oAuthorisation.getPermission(permissionName=permissionName,permissionType='#arguments.permissionType#');
+			//create permission if it doesn't exist
+			dump(st);
+			if (structIsEmpty(st))
+			{	
+				request.dmSec.oAuthorisation.createPermission(permissionName=permissionName, permissionType=arguments.permissionType, permissionNotes=""); 
+			}
+		}
+	</cfscript>
 </cffunction>
 
 </cfcomponent>

@@ -1,10 +1,34 @@
+<!--- 
+|| LEGAL ||
+$Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
+$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
+
+|| VERSION CONTROL ||
+$Header: /cvs/farcry/farcry_core/packages/farcry/_reporting/getAgeBreakdown.cfm,v 1.4 2003/09/10 12:21:48 brendan Exp $
+$Author: brendan $
+$Date: 2003/09/10 12:21:48 $
+$Name: b201 $
+$Revision: 1.4 $
+
+|| DESCRIPTION || 
+$Description: gets object age breakdown $
+$TODO: $
+
+|| DEVELOPER ||
+$Developer: Brendan Sisson (brendan@daemon.com.au) $
+
+|| ATTRIBUTES ||
+$in: $
+$out:$
+--->
+
 <!--- initialise last segment for everything greater than last segment --->
-<cfset stArgs.breakdown = listAppend(stArgs.breakdown, (">" & listLast(stArgs.breakdown)))>
+<cfset arguments.breakdown = listAppend(arguments.breakdown, (">" & listLast(arguments.breakdown)))>
 
 <!--- initialize structure --->
 <cfset stAge = structNew()>
 
-<cfloop list="#stArgs.breakdown#" index="segment">
+<cfloop list="#arguments.breakdown#" index="segment">
 	<cfset stAge[segment] = 0>
 </cfloop>
 
@@ -14,7 +38,7 @@
 	
 		<cfset previousSegment = "">
 		<!--- loop over each segment to get count of objects --->
-		<cfloop list="#stArgs.breakdown#" index="segment">
+		<cfloop list="#arguments.breakdown#" index="segment">
 			<cftry>
 				<!--- Get all objects that between dates --->
 				<cfquery name="qGetObjects" datasource="#application.dsn#">

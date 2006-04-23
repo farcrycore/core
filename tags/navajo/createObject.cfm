@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/navajo/createObject.cfm,v 1.11 2003/07/10 02:07:06 brendan Exp $
-$Author: brendan $
-$Date: 2003/07/10 02:07:06 $
-$Name: b131 $
-$Revision: 1.11 $
+$Header: /cvs/farcry/farcry_core/tags/navajo/createObject.cfm,v 1.15 2003/10/08 09:01:45 paul Exp $
+$Author: paul $
+$Date: 2003/10/08 09:01:45 $
+$Name: b201 $
+$Revision: 1.15 $
 
 || DESCRIPTION || 
 $Description: creates an instance of an type object and returns to edit handler$
@@ -16,6 +16,7 @@ $TODO: make more generic. There is some type specific code here for defaulting p
 
 || DEVELOPER ||
 $Developer: Brendan Sisson (brendan@daemon.com.au)$
+$Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au)$
 
 || ATTRIBUTES ||
 $in: $
@@ -29,6 +30,7 @@ $out:$
 <link rel="stylesheet" type="text/css" href="../../www/farcry/navajo/navajo_popup.css">
 
 <cfparam name="url.objectId" default="">
+<cfparam name="url.nodetype" default="dmNavigation">
 
 <cfif NOT isDefined("URL.typename")>
 	<h3>URL.typename variable not provided</h3>
@@ -41,12 +43,6 @@ $out:$
 	<nj:getNavigation objectId="#stParent.objectID#" bInclusive="1" r_stObject="bob" r_ObjectId="objectId">
 	
 	<Cfif len(objectId)>
-		<!--- <cfscript>
-			oAuthorisation = request.dmSec.oAuthorisation;
-			iObjectCreatePermission = oAuthorisation.checkPermission(permissionName="Create",reference="dmNavigation",bThrowOnError=1);
-		</cfscript> --->	
-		
-		
 		<cfset parentNavigationId=objectId>
 	</CFIF>
 	
@@ -79,45 +75,56 @@ $out:$
 		//dmNews specific props
 		stProps.publishDate = now();
 		stProps.expiryDate = now();
+		
+		//create the new OBJECT	
+		if (application.types['#url.typename#'].bCustomType)
+		{
+			typepackagepath = application.custompackagepath;
+		} else
+		{
+			typepackagepath = application.packagepath;
+		}
+		oType = createobject("component","#typepackagepath#.types.#url.typename#");
+		stNewObj = oType.createData(stProperties=stProps);
+		NewObjId = stNewObj.objectid;
 	</cfscript>
-	
-	<!--- create the new OBJECT --->
-	<cfif application.types['#url.typename#'].bCustomType>
-		<q4:contentobjectcreate typename="#application.custompackagepath#.types.#URL.typename#" stproperties="#stProps#" r_objectid="NewObjID">
-	<Cfelse>
-		<q4:contentobjectcreate typename="#application.packagepath#.types.#URL.typename#" stproperties="#stProps#" r_objectid="NewObjID">
-	</cfif>
+
 			
 	<!--- update parent object  --->
 	<cfif len(url.objectId) AND not (arraytolist(stParent.aObjectIds) contains NewObjID)>
 	
-		<cfif url.typename eq "dmNavigation">
+		<cfif url.typename IS url.nodetype>
 			
-			<cfif stParent.typename neq "dmNavigation">
+			<cfif NOT stParent.typename IS url.nodetype>
 				<cfoutput><b>Cannot create navigation nodes in objects!</b></cfoutput>
 				<cfabort>
 			<cfelse>
 				<!--- Insert this node into the tree --->
 				<cfscript>
-					oTree = createobject("component","#application.packagepath#.farcry.tree");
-					qChildren = oTree.getChildren(objectid=stParent.objectID,typename=stParent.typename);
+					qChildren = application.factory.oTree.getChildren(objectid=stParent.objectID,typename=stParent.typename);
 					position = qChildren.recordCount + 1;
-					streturn = oTree.setChild(objectName=stProps.label,typename=typename,parentID=stParent.objectID,objectID=newObjId,pos=position);
+					streturn = application.factory.oTree.setChild(objectName=stProps.label,typename=typename,parentID=stParent.objectID,objectID=newObjId,pos=position);
 				</cfscript>
 
 			</cfif>
 		<cfelse>
 			<!--- Append new ObjectIDs to AObjects array --->
-			<cfset noPurpose = arrayAppend(stParent.aObjectIds, NewObjID)>
 			<cfscript>
+				arrayAppend(stParent.aObjectIds, NewObjID);
 				stParent.DATETIMECREATED =  createODBCDate("#datepart('yyyy',stParent.DATETIMECREATED)#-#datepart('m',stParent.DATETIMECREATED)#-#datepart('d',stParent.DATETIMECREATED)#");
 				stParent.DATETIMELASTUPDATED = createODBCDate(now());
+				// update object
+				if (application.types['#stParent.typename#'].bCustomType)
+				{
+					typepackagepath = application.custompackagepath;
+				} else
+				{
+					typepackagepath = application.packagepath;
+				}
+				oParentType = createobject("component","#typepackagepath#.types.#stParent.typename#");
+				oParentType.setData(stProperties=stParent);
 			</cfscript>
 			
-			<q4:contentobjectdata
-			 typename="#application.packagepath#.types.#stParent.typename#"
-			 stProperties="#stParent#"
-			 objectid="#stParent.objectID#">
 		</cfif>
 		
 		<cfif len(stParent.objectID)>

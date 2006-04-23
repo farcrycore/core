@@ -1,16 +1,16 @@
-<!--- 
+<!---
 || LEGAL ||
 $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
-$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
+$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/install/_installForm.cfm,v 1.26 2003/07/14 05:26:27 brendan Exp $
+$Header: /cvs/farcry/farcry_core/admin/install/_installForm.cfm,v 1.28 2003/10/20 06:14:36 brendan Exp $
 $Author: brendan $
-$Date: 2003/07/14 05:26:27 $
-$Name: b131 $
-$Revision: 1.26 $
+$Date: 2003/10/20 06:14:36 $
+$Name: b201 $
+$Revision: 1.28 $
 
-|| DESCRIPTION || 
+|| DESCRIPTION ||
 $Description: Installation form for FarCry$
 $TODO: $
 
@@ -132,14 +132,22 @@ function hideIIS(showAlert) {
     <td align="right" nowrap><strong>FarCry Admin Mapping</strong></td>
     <td><input type="text" name="farcryMapping" value="#form.farcryMapping#" class="formField" size="30"> <a href="##" onclick="window.open('help.cfm?topic=farcryMapping','help','height=250,width=350')">?</a></td>
 </tr>
-<input type="hidden" name="domain" value="#cgi.server_name#">
+<!--- added/modified by Gary Menzel --->
+<!--- makes the hidden DOMAIN form variable accessible --->
+<tr>
+    <td align="right" nowrap><strong>FarCry Domain</strong></td>
+    <td>
+    <input type="text" name="domain" value="#cgi.server_name#" class="formField" size="30">
+    <a href="##" onclick="window.open('help.cfm?topic=domain','help','height=250,width=350')">?</a></td>
+</tr>
+
 <tr>
     <td align="right" nowrap>&nbsp;</td>
     <td><input type="checkbox" value="true" name="dbonly" <cfif FORM.dbonly> checked</cfif>><strong>Install Database only.</strong> <a href="##" onclick="window.open('help.cfm?topic=dbOnly','help','height=250,width=350')">?</a></td>
 </tr>
 <tr>
     <td align="right" nowrap>&nbsp;</td>
-    <td><input type="checkbox" value="true" name="bDeleteApp" <cfif FORM.bDeleteApp> checked</cfif>><strong>Delete FarCry_App on completion</strong> <a href="##" onclick="window.open('help.cfm?topic=deleteApp','help','height=250,width=350')">?</a></td>
+    <td><input type="checkbox" value="true" name="bDeleteApp" <cfif FORM.bDeleteApp> checked</cfif>><strong>Delete farcry_aura on completion</strong> <a href="##" onclick="window.open('help.cfm?topic=deleteApp','help','height=250,width=350')">?</a></td>
 </tr>
 <tr>
     <td colspan="2" style="height: 10px;">&nbsp;</td>

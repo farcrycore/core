@@ -1,14 +1,32 @@
-<!--------------------------------------------------------------------
-dmHTML
-default display method 
---------------------------------------------------------------------->
+<!--- 
+|| LEGAL ||
+$Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
+$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
+
+|| VERSION CONTROL ||
+$Header: /cvs/farcry/farcry_core/packages/types/_dmhtml/display.cfm,v 1.4 2003/09/10 23:46:11 brendan Exp $
+$Author: brendan $
+$Date: 2003/09/10 23:46:11 $
+$Name: b201 $
+$Revision: 1.4 $
+
+|| DESCRIPTION || 
+$Description: dmHTML default display method  $
+$TODO: $
+
+|| DEVELOPER ||
+$Developer: Geoff Bowers (modius@daemon.com.au) $
+
+|| ATTRIBUTES ||
+$in: $
+--->
+
 <cfscript>
-// get navigation elements
-	o = createObject("component", "#application.packagepath#.farcry.tree");
+	// get navigation elements
 	// getChildren for application.navid.home
-	qPrimary = o.getChildren(objectid=application.navid.home);
-	qSecondary = o.getChildren(objectid=request.navid);
-	qAncestors = o.getAncestors(objectid=request.navid);
+	qPrimary = application.factory.oTree.getChildren(objectid=application.navid.home);
+	qSecondary = application.factory.oTree.getChildren(objectid=request.navid);
+	qAncestors = application.factory.oTree.getAncestors(objectid=request.navid);
 </cfscript>
 
 

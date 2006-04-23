@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_stats/log.cfm,v 1.8 2003/05/07 01:34:58 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_stats/log.cfm,v 1.10 2003/10/15 01:15:05 brendan Exp $
 $Author: brendan $
-$Date: 2003/05/07 01:34:58 $
-$Name: b131 $
-$Revision: 1.8 $
+$Date: 2003/10/15 01:15:05 $
+$Name: b201 $
+$Revision: 1.10 $
 
 || DESCRIPTION || 
 $Description: Logs visit of page including pageId, navid,ip address and user (if applicable) $
@@ -24,15 +24,11 @@ $out:$
 
 <cftry>
 	<!--- insert log entry --->
-	<cfquery name="qInsertLog" datasource="#stArgs.dsn#">
+	<cfquery name="qInsertLog" datasource="#arguments.dsn#">
 		insert into #application.dbowner#stats
 		(logID,logdatetime,pageID,navid,remoteip,userid,sessionId,browser,referer,locale,os)
 		values
-		(<cfoutput>'#CreateUUID()#',#createodbcdatetime(now())#,'#stArgs.pageID#','#stArgs.navid#','#stArgs.remoteip#','#stArgs.userid#','#stArgs.sessionId#','#stArgs.browser#','#stArgs.referer#','#stArgs.locale#','#stArgs.os#'</cfoutput>)
+		(<cfoutput>'#CreateUUID()#',#createodbcdatetime(now())#,'#arguments.pageID#','#arguments.navid#','#arguments.remoteip#','#arguments.userid#','#arguments.sessionId#','#arguments.browser#','#arguments.referer#','#arguments.locale#','#arguments.os#'</cfoutput>)
 	</cfquery>
-	<cfcatch>
-	<cfoutput>
-		#cfcatch.detail#
-	</cfoutput>
-	</cfcatch>
+	<cfcatch></cfcatch>
 </cftry>

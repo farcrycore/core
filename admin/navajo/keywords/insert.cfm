@@ -1,3 +1,5 @@
+
+<cfset URL.objectName = replace(URL.objectname,"'","''","ALL")>
 <cfif isDefined("URL.parentObjectID") AND isDefined("URL.objectname")>
 	<cfinvoke  component="#application.packagepath#.farcry.category" method="addCategory" returnvariable="stStatus">
 		<cfinvokeargument name="categoryID" value="#createUUID()#"/>

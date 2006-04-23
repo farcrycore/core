@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmLink/plpEdit/start.cfm,v 1.2 2003/07/10 02:07:06 brendan Exp $
-$Author: brendan $
-$Date: 2003/07/10 02:07:06 $
-$Name: b131 $
-$Revision: 1.2 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmLink/plpEdit/start.cfm,v 1.4 2003/10/08 08:59:31 paul Exp $
+$Author: paul $
+$Date: 2003/10/08 08:59:31 $
+$Name: b201 $
+$Revision: 1.4 $
 
 || DESCRIPTION || 
 First step of dmFact plp. Adds title, link, body and uploads image if needed.
@@ -53,13 +53,14 @@ Brendan Sisson (brendan@daemon.com.au)
 	</tr>
 	<!--- teaser --->
 	<tr>
-		<td colspan="2"><span class="FormLabel">Teaser</span><br>
+		<td valign="top"><span class="FormLabel">Teaser</span></td>
+		<td>
 			<textarea name="teaser" class="formtextbox" rows="10">#output.teaser#</textarea>
 		</td>
 	</tr>
-	<!--- </cfoutput>
+	</cfoutput>
 	<!--- get the templates for this type --->
-	<nj:listTemplates typename="dmLinks" r_qMethods="qMethods">
+	<nj:listTemplates typename="dmLink" prefix="displaypage" r_qMethods="qMethods">
 	<cfoutput>
 	<!--- display method --->
 	<tr>
@@ -73,7 +74,7 @@ Brendan Sisson (brendan@daemon.com.au)
 		<cfoutput>
 		</select>
 		</span></td> 
-	</tr>--->
+	</tr>
 	</table>
 	</div>
 	<!--- show plp buttons --->

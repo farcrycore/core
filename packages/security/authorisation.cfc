@@ -1,14 +1,109 @@
+<!--- 
+|| LEGAL ||
+$Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
+$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
+|| VERSION CONTROL ||
+$Header: /cvs/farcry/farcry_core/packages/security/authorisation.cfc,v 1.30 2003/10/22 07:38:46 paul Exp $
+$Author: paul $
+$Date: 2003/10/22 07:38:46 $
+$Name: b201 $
+$Revision: 1.30 $
 
-<cfcomponent>
+|| DESCRIPTION || 
+$Description: authorisation cfc $
+$TODO: $
 
+|| DEVELOPER ||
+$Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
+
+|| ATTRIBUTES ||
+$in: $
+$out:$
+--->
+
+<cfcomponent displayName="Authorisation" hint="User authorisaiton">
 	<cfinclude template="/farcry/farcry_core/admin/includes/cfFunctionWrappers.cfm">
 	<cfinclude template="/farcry/farcry_core/admin/includes/utilityFunctions.cfm">
 	<cfimport taglib="/farcry/fourq/tags" prefix="q4">
 	<cfimport taglib="/farcry/farcry_core/tags/navajo" prefix="nj">
-		
 	
-	<cffunction name="createPermissionBarnacle" hint="Creates a permission for a daemon security user context.Only unique permissions will be accepted.">
+	<cffunction name="collateObjectPermissions" output="No">
+		<cfargument name="objectid" required="true">
+		<cfargument name="typename" required="false" default="dmNavigation">
+			<cfscript>
+								
+				oTree = createObject("component","#application.packagepath#.farcry.tree");
+				qAncestors = oTree.getAncestors(objectid=arguments.objectid,typename=arguments.typename);
+				lObjectIds = valueList(qAncestors.objectID);
+				
+				aObjectIds=arrayReverse(ListToArray(lObjectIds));
+				//including self
+				if (arrayLen(aObjectIds))
+			        arrayInsertAt(aObjectIds,1,arguments.objectID);
+				else {
+				 	aObjectIds = arrayNew(1);
+					aObjectIds[1] = arguments.objectID;
+				}
+				
+				lUncachedPermissions="";
+				for( i=1; i lte arrayLen(aObjectIds); i=i+1 )
+				{
+					if( not StructKeyExists(server.dmSec[application.applicationname].dmSecSCache, aObjectIds[i]) )
+            			lUncachedPermissions = listAppend(lUncachedPermissions, aObjectIds[i]);
+				}
+				
+				if (len(lUncachedPermissions))
+					getObjectPermission(lrefs=lUncachedPermissions); //this updates the cache - TODO split getting server cache and update of server cache		
+
+				structCollated = structNew();
+
+				for( i=1; i lte ArrayLen(aObjectIds); i=i+1 )
+				{
+					stObjectPermissions = server.dmSec[application.applicationname].dmSecSCache[aObjectIds[i]];
+					
+					if( StructIsEmpty(structCollated) )
+					{
+						
+						structCollated=duplicate(stObjectPermissions);
+					}
+					else
+					{
+						// --- generated the inherited keys ---
+						for( policyGroupName in stObjectPermissions )
+						{
+							stPolicyGroup = stObjectPermissions[policyGroupName];
+								
+							for( permissionName in stPolicyGroup )
+							{
+								
+								// --- check to see if this permission exists in the objects single permissions struct --->
+								if( structKeyExists(structCollated,policyGroupName)
+									AND structKeyExists(structCollated[policyGroupName],permissionName) )
+								{
+									stPerNext = structCollated[policyGroupName][permissionName];
+									
+									if(stPerNext.I eq 0)
+									stPerNext.I = stObjectPermissions[policyGroupName][permissionName].A;
+									
+									if(stPerNext.A neq 0) stPerNext.T = stPerNext.A;
+										else stPerNext.T = stPerNext.I;
+									
+								} else {
+									structinsert(structget("structCollated.#policyGroupName#"), permissionName, duplicate(stObjectPermissions[policyGroupName][permissionName]));
+								}
+							}
+							
+						}
+						
+					}
+				}
+			</cfscript>
+			<cfreturn structCollated>
+	</cffunction>
+	
+	
+	<cffunction name="createPermissionBarnacle" hint="Creates a permission for a daemon security user context.Only unique permissions will be accepted." output="No">
 		<cfargument name="reference" required="true">
 		<cfargument name="status" required="true">
 		<cfargument name="policygroupID">
@@ -48,10 +143,10 @@
 				query(sql=sql,dsn=stPolicyStore.dataSource);
 			}	
 		</cfscript>
-	
+		
 	</cffunction>
 	
-	<cffunction name="deletePermissionBarnacle" hint="Deletes a permission for a daemon security user context">
+	<cffunction name="deletePermissionBarnacle" hint="Deletes a permission for a daemon security user context" output="No">
 		<cfargument name="objectid" type="UUID" required="true">
 		
 		<cfscript>
@@ -65,7 +160,7 @@
 		
 	</cffunction>
 	
-	<cffunction name="checkPermission" hint="Checks whether you have permission to perform an action on an object. Note: A positive permission from one group overides a negative permission from another group, i.e. they are permissive(heh!).">
+	<cffunction name="checkPermission" hint="Checks whether you have permission to perform an action on an object. Note: A positive permission from one group overides a negative permission from another group, i.e. they are permissive(heh!)." output="No">
 		<cfargument name="permissionName" required="true">
 		<cfargument name="reference">
 		<cfargument name="objectID">
@@ -82,8 +177,8 @@
 			if (isDefined("arguments.objectid"))
 			{
 				stObjectPermissions = collateObjectPermissions(objectid=arguments.objectid); //need to write this
-				stObj = contentObjectGet(objectid=arguments.objectid);
-				permissionType = stObj.typename;
+				//stObj = contentObjectGet(objectid=arguments.objectid);
+				permissionType = 'dmNavigation';//stObj.typename;
 			}
 			else
 			{
@@ -108,14 +203,14 @@
 			}							
 					
 		</cfscript>
-			
+		
 		<cfreturn bHasPermission>	
 			
 	</cffunction>
 	
 	
 	
-	<cffunction name="createPermission" hint="Creates a new permission in the datastore">
+	<cffunction name="createPermission" hint="Creates a new permission in the datastore" output="No">
 		<cfargument name="permissionID" required="false" default="-1" hint="Note that permissionID is only handed in during installtation of farcry">
 		<cfargument name="permissionName" required="true">
 		<cfargument name="permissionType" required="true">
@@ -125,7 +220,7 @@
 			stPolicyStore = getPolicyStore();
 			stPermission = getPermission(permissionName=arguments.permissionName,permissionType=arguments.permissionType);
 			stResult=structNew();
-			dump(stPermission);
+			
 			if (not structIsEmpty(stPermission))
 			{
 				stResult.bSuccess = false;
@@ -137,13 +232,13 @@
 				{
 					case "ora":
 					{
-						sql = "SELECT max(permissionID) + 1 AS maxID
-								FROM #application.dbowner##stPolicyStore.permissionTable#";
-						qGetID = query(sql=sql,dsn=stPolicyStore.datasource);
 						sql = "
 						INSERT INTO #application.dbowner##stPolicyStore.permissionTable# ( permissionid,permissionName,permissionNotes,permissionType";
 						sql = sql & ")";
-						sql = sql & " VALUES (#qGetID.maxID#,'#arguments.permissionName#','#arguments.permissionNotes#','#arguments.permissionType#'";
+						if (arguments.permissionId neq -1)
+							sql = sql & " VALUES (#arguments.permissionId#,'#arguments.permissionName#','#arguments.permissionNotes#','#arguments.permissionType#'";
+						else 
+							sql = sql & " VALUES (DMPERMISSION_SEQ.nextval,'#arguments.permissionName#','#arguments.permissionNotes#','#arguments.permissionType#'";
 						sql = sql & ")";
 						break;	
 					}
@@ -180,13 +275,18 @@
 				query(sql=sql,dsn=stPolicyStore.datasource);
 				stResult.bSuccess = true;
 				stResult.message = "Permission successfully added";
+				oAuthentication = createObject("component","#application.securitypackagepath#.authentication");
+				oAudit = createObject("component","#application.packagepath#.farcry.audit");
+				stuser = oAuthentication.getUserAuthenticationData();
+					if(stUser.bLoggedIn)
+						oaudit.logActivity(auditType="dmSec.createPermission", username=Stuser.userlogin, location=cgi.remote_host, note="permission #arguments.permissionname# of type #arguments.permissiontype# created");	
 			}
 						
 		</cfscript>
 		<cfreturn stResult>
 	</cffunction>
 	
-	<cffunction name="createPolicyGroup" hint="Creates a new policy group in the datastore" returntype="struct">
+	<cffunction name="createPolicyGroup" hint="Creates a new policy group in the datastore" returntype="struct" output="No">
 		<cfargument name="policyGroupName" required="true">
 		<cfargument name="policyGroupNotes" required="false" default="">
 		<cfargument name="policyGroupID">
@@ -206,13 +306,9 @@
 					case "ora":
 					{
 						sql = "
-							SELECT max(policyGroupId) + 1 AS maxID
-							FROM #application.dbowner##stPolicyStore.PolicyGroupTable#";
-						qGetID = query(sql=sql,dsn=stPolicyStore.datasource);
-						sql = "
 							INSERT INTO #application.dbowner##stPolicyStore.PolicyGroupTable# (policyGroupID, policyGroupName,policyGroupNotes )
 							VALUES
-							(#qGetID.maxID#,'#arguments.PolicyGroupName#','#arguments.PolicyGroupNotes#')";
+							(DMPOLICYGROUP_SEQ.nextval,'#arguments.PolicyGroupName#','#arguments.PolicyGroupNotes#')";
 						break;	
 					}
 					
@@ -249,6 +345,11 @@
 				query(sql=sql,dsn=stPolicyStore.datasource);
 				stResult.bSuccess = true;
 				stResult.message = "Policy group successfully added";
+				oAuthentication = createObject("component","#application.securitypackagepath#.authentication");
+				oAudit = createObject("component","#application.packagepath#.farcry.audit");
+				stuser = oAuthentication.getUserAuthenticationData();
+					if(stUser.bLoggedIn)
+						oaudit.logActivity(auditType="dmSec.createPolicyGroup", username=Stuser.userlogin, location=cgi.remote_host, note="policy group #arguments.policygroupname# created");	
 
 			}
 				
@@ -256,11 +357,11 @@
 		<cfreturn stResult>
 	</cffunction>
 	
-	<cffunction name="checkInheritedPermission" hint="checks whether you have inherited permission to perform an action on an object.">
+	<cffunction name="checkInheritedPermission" hint="checks whether you have inherited permission to perform an action on an object." output="No">
 		<cfargument name="permissionName" required="true">
 		<cfargument name="objectid" required="false">
 		<cfargument name="reference" required="false">
-		<cfargument name="lPolicyGroupIDs" required="false" default="">
+		<cfargument name="lPolicyGroupIDs" required="false">
 
 		<cfscript>
 			oAuthentication = createObject("component","#application.securitypackagepath#.authentication");
@@ -275,8 +376,9 @@
 			
 			{
 				stObjectPermissions = collateObjectPermissions(objectid=arguments.objectid);
-				stObj = contentObjectGet(objectid=arguments.objectID);
-				permissionType = stObj.typename;
+				//Dont need this - if we are pasing in an objcetid - then it will always be a tree based permission, therefore permissiontype = 'dmnavigation'
+				//stObj = contentObjectGet(objectid=arguments.objectID);
+				permissionType = 'dmNavigation';
 			}	
 			else
 			{
@@ -314,7 +416,7 @@
 		<cfreturn bHasPermission>
 	</cffunction> 
 	
-	<cffunction name="createPolicyGroupMapping" hint="Creates a new policy group mapping"  returntype="struct">
+	<cffunction name="createPolicyGroupMapping" hint="Creates a new policy group mapping"  returntype="struct" output="No">
 		<cfargument name="groupname" required="true">
 		<cfargument name="userdirectory" required="true">
 		<cfargument name="policyGroupId" required="true">
@@ -343,7 +445,12 @@
 					INSERT INTO #application.dbowner##stPolicyStore.ExternalGroupToPolicyGroupTable#
 					( policyGroupId, ExternalGroupUserDirectory, ExternalGroupName )
 					VALUES	(#arguments.policyGroupId#,'#arguments.userdirectory#','#arguments.groupName#')";
-				query(sql=sql,dsn=stPolicyStore.datasource)	;
+				query(sql=sql,dsn=stPolicyStore.datasource);
+				oAuthentication = createObject("component","#application.securitypackagepath#.authentication");
+				oAudit = createObject("component","#application.packagepath#.farcry.audit");
+				stuser = oAuthentication.getUserAuthenticationData();
+					if(stUser.bLoggedIn)
+						oAudit.logActivity(auditType="dmSec.createPolicyGroupMapping", username=Stuser.userlogin, location=cgi.remote_host, note="group #arguments.groupname# mapped to #stPolicyGroup.policyGroupName#");	
 			}
 		</cfscript>
 
@@ -351,10 +458,11 @@
 
 	</cffunction>
 	
-	<cffunction name="deletePermission" hint="Delets a permission from the datastore" returntype="struct">
+	<cffunction name="deletePermission" hint="Delets a permission from the datastore" returntype="struct" output="No">
 		<cfargument name="permissionID" required="true">
 		
 		<cfscript>
+			stPermission = getPermission(permissionID=arguments.permissionid);
 			stPolicyStore = getPolicyStore();
 			sql = "
 				DELETE FROM #application.dbowner##stPolicyStore.permissionTable#
@@ -363,11 +471,16 @@
 			stResult = structNew();
 			stResult.bSuccess = true;
 			stResult.message = "Permission successfully deleted";	
+			oAuthentication = createObject("component","#application.securitypackagepath#.authentication");
+			oAudit = createObject("component","#application.packagepath#.farcry.audit");
+			stuser = oAuthentication.getUserAuthenticationData();
+				if(stUser.bLoggedIn)
+					oAudit.logActivity(auditType="dmSec.deletepermission", username=Stuser.userlogin, location=cgi.remote_host, note="#stPermission.permissionName# deleted");	
 		</cfscript>
 		<cfreturn stResult>
 	</cffunction>
 	
-	<cffunction name="deletePolicyGroup" hint="Deletes a policy group from the data store.">
+	<cffunction name="deletePolicyGroup" hint="Deletes a policy group from the data store." output="No">
 		<cfargument name="PolicyGroupName">
 		<cfargument name="PolicyGroupID">
 		
@@ -376,7 +489,10 @@
 			if(isDefined("arguments.policyGroupName"))
 				stPolicyGroup = getPolicyGroup(PolicyGroupName="#PolicyGroupName#");
 			else
+			{
 				stPolicyGroup.policyGroupId = arguments.PolicyGroupId;
+					
+			}	
 			sql="
 				DELETE FROM #application.dbowner##stPolicyStore.policyGroupTable# WHERE
 				PolicyGroupId='#stPolicyGroup.policyGroupId#'";
@@ -385,15 +501,21 @@
 				DELETE FROM #application.dbowner##stPolicyStore.externalGroupToPolicyGroupTable#
 				WHERE policyGroupId=#stPolicyGroup.policyGroupId#";
 			query(sql=sql,dsn=stPolicyStore.datasource);	
+			oAuthentication = createObject("component","#application.securitypackagepath#.authentication");
+			oAudit = createObject("component","#application.packagepath#.farcry.audit");
+			stuser = oAuthentication.getUserAuthenticationData();
+				if(stUser.bLoggedIn)
+					oAudit.logActivity(auditType="dmSec.deletePolicyGroup", username=Stuser.userlogin, location=cgi.remote_host, note="#stPolicyGroup.policyGroupID# deleted");	
 					
 		</cfscript>
 
 	</cffunction>
 	
 	
-	<cffunction name="deletePolicyStore" hint="Hmmm this does the same thing as delete policyGroup" returntype="struct">
+	<cffunction name="deletePolicyStore" hint="Hmmm this does the same thing as delete policyGroup" returntype="struct" output="No">
 		<cfargument name="policyGroupID" required="true">
 		<cfscript>
+			stPolicyGroup = getPolicyGroup(policygroupid=arguments.policygroupid);
 			stPolicyStore = getPolicyStore();
 			sql = "
 				DELETE FROM #application.dbowner##stPolicyStore.policyGroupTable# WHERE
@@ -407,27 +529,39 @@
 			stResult = structNew();
 			stResult.bSuccess = true;
 			stResult.message = "Policy Group successfully deleted";	
+			oAuthentication = createObject("component","#application.securitypackagepath#.authentication");
+			oAudit = createObject("component","#application.packagepath#.farcry.audit");
+			stuser = oAuthentication.getUserAuthenticationData();
+				if(stUser.bLoggedIn)
+					oAudit.logActivity(auditType="dmSec.deletePolicyGroup", username=Stuser.userlogin, location=cgi.remote_host, note="#stPolicyGroup.policyGroupName# deleted");	
 		</cfscript>
 	</cffunction>
 	
-	<cffunction name="deletePolicyGroupMapping">
+	<cffunction name="deletePolicyGroupMapping" output="No">
 		<cfargument name="groupname" required="true">
 		<cfargument name="userdirectory" required="true">
 		<cfargument name="policyGroupID" required="true">
 
 		<cfscript>
 			stPolicyStore = getPolicyStore();
+			stPolicyGroup = getPolicyGroup(policygroupid=arguments.policygroupid);
+
 			sql="
 				DELETE FROM #application.dbowner##stPolicyStore.ExternalGroupToPolicyGroupTable#
 				WHERE policyGroupId=#policyGroupId#
 				AND ExternalGroupUserDirectory='#userdirectory#'
 			    AND ExternalGroupName='#groupName#'";
-			query(sql=sql,dsn=stPolicyStore.datasource);	
+			query(sql=sql,dsn=stPolicyStore.datasource);
+			oAuthentication = createObject("component","#application.securitypackagepath#.authentication");	
+			oAudit = createObject("component","#application.packagepath#.farcry.audit");
+			stuser = oAuthentication.getUserAuthenticationData();
+				if(stUser.bLoggedIn)
+					oAudit.logActivity(auditType="dmSec.deletePolicyGroupMapping", username=Stuser.userlogin, location=cgi.remote_host, note="removed #arguments.groupname# mapping from #stPolicyGroup.policyGroupName#");	
 		</cfscript>
 	</cffunction>
 	
 	
-	<cffunction name="getPermission" access="public">
+	<cffunction name="getPermission" access="public" output="No">
 		<cfargument name="permissionID" required="false">
 		<cfargument name="permissionName" type="string">
 		<cfargument name="permissionType" type="string" required="false">
@@ -450,7 +584,7 @@
 		<cfreturn stPermission>
 	</cffunction>	
 	
-	<cffunction name="getPolicyGroupMappings">
+	<cffunction name="getPolicyGroupMappings" output="No">
 		<cfargument name="lGroupNames" required="true">
 		<cfargument name="userDirectory" required="true">
 		
@@ -482,7 +616,7 @@
 	</cffunction>
 	
 		
-	<cffunction name="getPolicyStore">
+	<cffunction name="getPolicyStore" output="No">
 		<cfscript>
 			if (not isDefined( "request.policyStore" ))
 				request.policyStore = duplicate( Application.dmSec.PolicyStore );
@@ -491,7 +625,7 @@
 		<cfreturn request.policyStore>
 	</cffunction>
 	
-	<cffunction name="getMultiplePolicyGroupMappings" hint="Retrieves all group mappings in the form of an array of groupName+userdirectory structures. Filtered by lUserdirectory,policygroupname/policygroupid.">
+	<cffunction name="getMultiplePolicyGroupMappings" hint="Retrieves all group mappings in the form of an array of groupName+userdirectory structures. Filtered by lUserdirectory,policygroupname/policygroupid." output="No">
 		<cfargument name="userdirectory" default="" required="false">
 		<cfargument name="lGroupNames" default="" required="false">
 		<cfargument name="policyGroupId" required="false" default="-1">
@@ -540,7 +674,7 @@
 	</cffunction>
 	
 	
-	<cffunction name="getPolicyGroupUsers" hint="Retrieve list of usernames that are members of a specified Policy Group">
+	<cffunction name="getPolicyGroupUsers" hint="Retrieve list of usernames that are members of a specified Policy Group" output="No">
 		<cfargument name="lPolicyGroupIds" required="false" default="">
 		
 		<cfscript>
@@ -581,7 +715,7 @@
 					switch(stUD.type) {
 						case "ADSI" : {
 		                    o_NTsec = createObject("component", "#application.packagepath#.security.NTsecurity");
-					        aADUsers = o_NTsec.getGroupUsers(groupName=groupUD, domain=stUD.domain);
+					        aADUsers = o_NTsec.getGroupUsers(groupName=groupName, domain=stUD.domain);
 		
 							for (i = 1; i LTE arrayLen(aADUsers); i=i+1) {
 		                        user = aADUsers[i];
@@ -615,8 +749,7 @@
 	</cffunction>	
 		
 	
-	
-	<cffunction name="getAllPermissions">
+	<cffunction name="getAllPermissions" output="No">
 		<cfargument name="permissionType" required="false" default=""> 
 
 		<cfscript>
@@ -631,7 +764,7 @@
 	</cffunction>
 	
 	
-	<cffunction name="getPolicyGroup" returntype="struct">
+	<cffunction name="getPolicyGroup" returntype="struct" output="No">
 		<cfargument name="policyGroupName" required="false">
 		<cfargument name="policyGroupID" required="false">
 		
@@ -652,7 +785,7 @@
 		<cfreturn stPolicyGroup>
 	</cffunction>
 	
-	<cffunction name="getAllPolicyGroups" hint="Gets all policy groups." returntype="array">
+	<cffunction name="getAllPolicyGroups" hint="Gets all policy groups." returntype="array" output="No">
 		<cfscript>
 			stPolicyStore = getPolicyStore();
 			sql = 
@@ -665,7 +798,7 @@
 	</cffunction>
 
 	
-	<cffunction name="getObjectPermission">
+	<cffunction name="getObjectPermission" output="No">
 		<cfargument name="reference">
 		<cfargument name="objectID" required="false" default="">
 		<cfargument name="lrefs">
@@ -677,8 +810,6 @@
 			if (not isDefined("arguments.lRefs"))
 				arguments.lrefs = arguments.reference;
 		</cfscript>		
-
-		
 
 		<cfloop index="arguments.reference" list="#arguments.lrefs#">
 		
@@ -805,82 +936,9 @@
 		
 	
 		
-	<cffunction name="collateObjectPermissions">
-		<cfargument name="objectid" required="true">
-			
-			<cfscript>
-						
-				stObj = contentObjectGet(objectid=arguments.objectid);
-				oTree = createObject("component","#application.packagepath#.farcry.tree");
-				qAncestors = oTree.getAncestors(objectid=arguments.objectid,typename=stObj.typename);
-				lObjectIds = valueList(qAncestors.objectID);
-				
-				aObjectIds=arrayReverse(ListToArray(lObjectIds));
-				//including self
-				if (arrayLen(aObjectIds))
-			        arrayInsertAt(aObjectIds,1,arguments.objectID);
-				else {
-				 	aObjectIds = arrayNew(1);
-					aObjectIds[1] = arguments.objectID;
-				}
-				
-				lUncachedPermissions="";
-				for( i=1; i lte arrayLen(aObjectIds); i=i+1 )
-				{
-					if( not StructKeyExists(server.dmSec[application.applicationname].dmSecSCache, aObjectIds[i]) )
-            			lUncachedPermissions = listAppend(lUncachedPermissions, aObjectIds[i]);
-				}
-				
-				if (len(lUncachedPermissions))
-					getObjectPermission(lrefs=lUncachedPermissions); //this updates the cache - TODO split getting server cache and update of server cache		
-
-				structCollated = structNew();
-
-				for( i=1; i lte ArrayLen(aObjectIds); i=i+1 )
-				{
-					stObjectPermissions = server.dmSec[application.applicationname].dmSecSCache[aObjectIds[i]];
-					
-					if( StructIsEmpty(structCollated) )
-					{
-						
-						structCollated=duplicate(stObjectPermissions);
-					}
-					else
-					{
-						// --- generated the inherited keys ---
-						for( policyGroupName in stObjectPermissions )
-						{
-							stPolicyGroup = stObjectPermissions[policyGroupName];
-								
-							for( permissionName in stPolicyGroup )
-							{
-								
-								// --- check to see if this permission exists in the objects single permissions struct --->
-								if( structKeyExists(structCollated,policyGroupName)
-									AND structKeyExists(structCollated[policyGroupName],permissionName) )
-								{
-									stPerNext = structCollated[policyGroupName][permissionName];
-									
-									if(stPerNext.I eq 0)
-									stPerNext.I = stObjectPermissions[policyGroupName][permissionName].A;
-									
-									if(stPerNext.A neq 0) stPerNext.T = stPerNext.A;
-										else stPerNext.T = stPerNext.I;
-									
-								} else {
-									structinsert(structget("structCollated.#policyGroupName#"), permissionName, duplicate(stObjectPermissions[policyGroupName][permissionName]));
-								}
-							}
-							
-						}
-						
-					}
-				}
-			</cfscript>
-			<cfreturn structCollated>
-	</cffunction>
 	
-	<cffunction name="reInitPermissionsCache" hint="Refreshes server permissions cache from existing database permissions" returntype="struct">
+	
+	<cffunction name="reInitPermissionsCache" hint="Refreshes server permissions cache from existing database permissions" returntype="struct" output="No">
 	
 		<cfscript>
 			stResult = structNew();
@@ -902,7 +960,7 @@
 	
 	</cffunction>
 
-	<cffunction name="updatePermission"	>
+	<cffunction name="updatePermission" output="No"	>
 		<cfargument name="permissionID" required="true">
 		<cfargument name="permissionName" required="true">
 		<cfargument name="permissionType" required="true">
@@ -920,11 +978,16 @@
 			stResult = structNew();
 			stResult.bSuccess = true;
 			stResult.message = "Permission successfully added";
+			oAuthentication = createObject("component","#application.securitypackagepath#.authentication");
+			oAudit = createObject("component","#application.packagepath#.farcry.audit");
+			stuser = oAuthentication.getUserAuthenticationData();
+				if(stUser.bLoggedIn)
+					oAudit.logActivity(auditType="dmSec.updatePermission", username=StUser.userlogin, location=cgi.remote_host, note="#arguments.permissionName# updated");	
 		</cfscript>
 		<cfreturn stResult>
 	</cffunction>	
 	
-	<cffunction name="updatePolicyGroup" returntype="struct">
+	<cffunction name="updatePolicyGroup" returntype="struct" output="No">
 		<cfargument name="policyGroupID" required="true">
 		<cfargument name="PolicyGroupName" required="true">
 		<cfargument name="PolicyGroupNotes" required="false" default="">
@@ -940,12 +1003,17 @@
 			stResult = structNew();
 			stResult.bSuccess = true;
 			stResult.message = "Policy group successfully updated";
+			oAuthentication = createObject("component","#application.securitypackagepath#.authentication");
+			oAudit = createObject("component","#application.packagepath#.farcry.audit");
+			stuser = oAuthentication.getUserAuthenticationData();
+				if(stUser.bLoggedIn)
+					oAudit.logActivity(auditType="dmSec.updatePolicyGroup", username=StUser.userlogin, location=cgi.remote_host, note="#arguments.policyGroupName# updated");	
 		</cfscript>
 		<cfreturn stResult>
 	</cffunction>	
 	
 	
-	<cffunction name="updateObjectPermissionCache">
+	<cffunction name="updateObjectPermissionCache" output="No">
 		<cfargument name="objectid">
 		<cfargument name="reference">
 		<cfargument name="bRevalidateCache" required="false" default="1">
