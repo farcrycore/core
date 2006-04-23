@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/build.txt,v 1.54 2003/11/03 05:37:55 brendan Exp $
+$Header: /cvs/farcry/farcry_core/admin/build.txt,v 1.59.2.3 2004/03/02 00:13:57 brendan Exp $
 $Author: brendan $
-$Date: 2003/11/03 05:37:55 $
-$Name: b201 $
-$Revision: 1.54 $
+$Date: 2004/03/02 00:13:57 $
+$Name: milestone_2-1-2 $
+$Revision: 1.59.2.3 $
 
 || DESCRIPTION || 
 $DESCRIPTION:$
@@ -21,6 +21,35 @@ $DEVELOPER:Brendan Sisson (brendan@daemon.com.au)$
 $in:$ 
 $out:$
 --->
+
+p210:
+- *nix mods
+- empty Trash fix
+- createDateTime timestamp fix when approving objects
+- fix approval error on date fields in tree
+- fix for multiple approvals in genericAdmin
+- add check for - in dsn name when installing
+- add scrollbars to view comments popup
+
+b210:
+- removed forum object
+- removed need to restart cfmx for install
+
+b210-beta3:
+- added forum object
+- allowed multiple rules of same type in a container
+- added google keywords report
+- bug fixes
+
+b210-beta2:
+- added check for mysql create temp table priv before installing
+- display breadcrumb instead of title in overview and most popular stats pages and stats graph pages
+- fix for type in secondaryNav custom tag
+- fix for childLinks and sim links
+- added catch for stats path detail and objects without title
+- checked for server protocol when referencing full url in approval emails (eg http or https)
+
+b210-beta:
 
 b201
 

@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/admin/config_restore.cfm,v 1.6 2003/09/03 01:50:31 brendan Exp $
+$Header: /cvs/farcry/farcry_core/admin/admin/config_restore.cfm,v 1.8 2004/01/19 06:14:19 brendan Exp $
 $Author: brendan $
-$Date: 2003/09/03 01:50:31 $
-$Name: b201 $
-$Revision: 1.6 $
+$Date: 2004/01/19 06:14:19 $
+$Name: milestone_2-1-2 $
+$Revision: 1.8 $
 
 || DESCRIPTION || 
 $DESCRIPTION: restore default config settings$
@@ -79,7 +79,6 @@ $out:$
 	</cfinvoke>
 	
 	<cfoutput><span class="frameMenuBullet">&raquo;</span> #stStatus.message#...<p></p></cfoutput><cfflush>
-	
 	
 	<!--- setup default Plugin config --->
 	<cfinvoke component="#application.packagepath#.farcry.config" method="defaultPlugins" returnvariable="stStatus">

@@ -131,7 +131,7 @@ if( StructKeyExists( application.types, "dmNavigation" ) )
 	<cfset rootobjectid = arguments.rootobjectid>	
 <cfelse>
 	<cfscript>
-		qrootObjectID = application.factory.oTree.getRootNode(typename='categories');
+		qrootObjectID = request.factory.oTree.getRootNode(typename='categories',dsn=arguments.dsn);
 		rootObjectID = qrootObjectID.objectID;
 	</cfscript>
 </cfif>
@@ -146,7 +146,7 @@ if( StructKeyExists( application.types, "dmNavigation" ) )
 
 <cfscript>
 	oCat = createObject("component","#application.packagepath#.farcry.category");
-	jscode = oCat.getTreeData(rootObjectID);
+	jscode = oCat.getTreeData(objectid=rootObjectID,dsn=arguments.dsn);
 </cfscript>
 	
 
@@ -263,7 +263,7 @@ defaultObjectPending = new Image(16,16); defaultObjectPending.src = "#cimages#/d
 defaultObjectApproved = new Image(16,16); defaultObjectApproved.src = "#cimages#/defaultObjectApproved.gif";
 webserver = new Image(16,16);webserver.src="#cimages#/webserver.gif";
 home = new Image(16,16); home.src="#cimages#/home.gif";
-rubbish = new Image(16,16); rubbish.src = "#cimages#/Rubbish.gif";
+rubbish = new Image(16,16); rubbish.src = "#cimages#/rubbish.gif";
 navDraftImg = new Image(16,16);navDraftImg.src = "#cimages#/NavDraft.gif";
 navApprovedImg = new Image(16,16);navApprovedImg.src = "#cimages#/NavApproved.gif";
 images = new Image(16,16);images.src = "#cimages#/images.gif";
@@ -281,11 +281,44 @@ function renderObjectToDiv( objId, divId )
 	el.innerHTML = elData;
 }
 
+var aSelected = new Array()
+<cfloop from="1" to="#listLen(arguments.lSelectedCategories)#" index="i">
+	aSelected[#i#-1] = "#listGetAt(arguments.lSelectedCategories,i)#";
+</cfloop>
+//alert(aSelected.length);
+
+function updateCategories(bChecked,objectId)
+{
+	if(bChecked)
+	{
+		if(!aSelected.length)
+			aSelected[0] = objectId;
+		else
+			aSelected.push(objectId);	
+		//return;	
+	}
+	else		
+	{
+		for(var i = 0;i < aSelected.length;i++)
+		{
+			if (aSelected[i] == objectId)
+			{
+				aSelected.splice(i,1);
+				break;
+			} 	
+		}	
+		//return;
+	}	
+	return;
+}
+
+
+
 function renderObject( objId )
 {
 	var thisObject = objects[objId];
 	var bCheckBox = #arguments.bshowcheckbox#;
-	var lSelected = "#arguments.lSelectedCategories#";
+	var lSelected = aSelected.join();
 	if( !thisObject ) return "";
 	if (lSelected.indexOf(objId) > -1)
 	{
@@ -296,7 +329,7 @@ function renderObject( objId )
 	
 	if(objId != '#rootobjectid#' && bCheckBox)
 	{
-		checkboxhtml = '<input type=\"checkbox\" name=\"categoryid\" value=\"'+objId + '\" ' + checked +'>';
+		checkboxhtml = '<input onClick=\"updateCategories(this.checked,\''+objId+'\')\" type=\"checkbox\" name=\"categoryid\" value=\"'+objId + '\" ' + checked +'>';
 	}else
 		checkboxhtml = '';	
 	

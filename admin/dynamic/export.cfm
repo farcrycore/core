@@ -5,11 +5,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/dynamic/export.cfm,v 1.2 2003/09/10 03:45:11 brendan Exp $
-$Author: brendan $
-$Date: 2003/09/10 03:45:11 $
-$Name: b201 $
-$Revision: 1.2 $
+$Header: /cvs/farcry/farcry_core/admin/dynamic/export.cfm,v 1.3 2003/11/05 04:46:09 tom Exp $
+$Author: tom $
+$Date: 2003/11/05 04:46:09 $
+$Name: milestone_2-1-2 $
+$Revision: 1.3 $
 
 || DESCRIPTION || 
 $Description: Export Edit Handler $
@@ -47,12 +47,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au) $
 	
 	<!--- if no error than show form --->
 	<cfif not bShowForm>
-		<!--- check if custom type --->
-		<cfif application.types[form.contentType].bCustomType>
-			<cfobject component="#application.custompackagepath#.types.#form.contentType#" name="oContentType">
-		<cfelse>
-			<cfobject component="#application.packagepath#.types.#form.contentType#" name="oContentType">
-		</cfif>
+		<cfobject component="#evaluate("application.types.#form.contentType#.typePath")#" name="oContentType">
 		
 		<!--- get all objects --->
 		<cfset stObjects = oContentType.getMultiple(dsn=application.dsn,dbowner=application.dbowner)>

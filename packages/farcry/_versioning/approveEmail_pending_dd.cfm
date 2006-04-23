@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_versioning/approveEmail_pending_dd.cfm,v 1.9 2003/09/18 01:25:11 brendan Exp $
-$Author: brendan $
-$Date: 2003/09/18 01:25:11 $
-$Name: b201 $
-$Revision: 1.9 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_versioning/approveEmail_pending_dd.cfm,v 1.17 2004/01/15 07:11:50 paul Exp $
+$Author: paul $
+$Date: 2004/01/15 07:11:50 $
+$Name: milestone_2-1-2 $
+$Revision: 1.17 $
 
 || DESCRIPTION || 
 $Description: sends email for pending news type object $
@@ -52,7 +52,13 @@ Object "<cfif stObj.title neq "">#stObj.title#<cfelse>undefined</cfif>" is await
 
 You may approve/decline this object by browsing to the following location:
 
-http://#CGI.HTTP_HOST##application.url.farcry#/index.cfm?section=dynamic&objectID=#arguments.objectID#&status=pending
+<cfif isDefined("arguments.approveURL")>
+
+#urldecode(arguments.approveURL)#&objectID=#arguments.objectID#&status=pending
+
+<cfelse>	
+#application.config.general.adminServer##application.url.farcry#/index.cfm?section=dynamic&objectID=#arguments.objectID#&status=pending
+</cfif>
 
 <cfif arguments.comment neq "">
 Comments added on status change:

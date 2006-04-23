@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_types/delete.cfm,v 1.6 2003/09/24 03:12:50 paul Exp $
-$Author: paul $
-$Date: 2003/09/24 03:12:50 $
-$Name: b201 $
-$Revision: 1.6 $
+$Header: /cvs/farcry/farcry_core/packages/types/_types/delete.cfm,v 1.7 2003/11/05 04:46:09 tom Exp $
+$Author: tom $
+$Date: 2003/11/05 04:46:09 $
+$Name: milestone_2-1-2 $
+$Revision: 1.7 $
 
 || DESCRIPTION || 
 $Description: Generic delete method. Checks for associated objects and deletes them, deletes actual object and deletes object from any verity collection if needed$
@@ -42,7 +42,7 @@ $out:$
 			objType = findType(stObj.aObjectIds[i]);
 			
 			// delete associated object
-			oType = createObject("component","#application.packagepath#.types.#objType#");
+			oType = createObject("component", application.types[objType].typePath);
 			oType.delete(stObj.aObjectIds[i]);
 			
 		}

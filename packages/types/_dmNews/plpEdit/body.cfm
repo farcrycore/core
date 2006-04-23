@@ -5,11 +5,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmNews/plpEdit/body.cfm,v 1.6 2003/09/25 02:37:24 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmNews/plpEdit/body.cfm,v 1.7 2004/01/06 05:58:15 brendan Exp $
 $Author: brendan $
-$Date: 2003/09/25 02:37:24 $
-$Name: b201 $
-$Revision: 1.6 $
+$Date: 2004/01/06 05:58:15 $
+$Name: milestone_2-1-2 $
+$Revision: 1.7 $
 
 || DESCRIPTION || 
 $Description: body step for dmNews plp. Displays text editor with option to toggle to plain html text area. $
@@ -81,7 +81,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 							<!--- check if hi res image exists --->
 							<cfif stImages.optimisedimage neq "">
 								<!--- display normal image with link to high res image in new window --->
-								<cfoutput><option value="&lt;a href='#application.url.webroot#/images/#stImages.optimisedimage#' target='_blank'&gt;&lt;img src='/images/#stImages.imagefile#' border=0 alt='#stImages.alt#'&gt;&lt;/a&gt;">#stImages.title#</option></cfoutput>
+								<cfoutput><option value="&lt;a href='#application.url.webroot#/images/#stImages.optimisedimage#' target='_blank'&gt;&lt;img src='#application.url.webroot#/images/#stImages.imagefile#' border=0 alt='#stImages.alt#'&gt;&lt;/a&gt;">#stImages.title#</option></cfoutput>
 							<cfelse>
 								<!--- display normal image --->
 								<cfoutput><option value="&lt;img src='#application.url.webroot#/images/#stImages.imagefile#' border=0 alt='#stImages.alt#'&gt;">#stImages.title#</option></cfoutput>

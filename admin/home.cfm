@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/home.cfm,v 1.43 2003/10/28 22:49:46 brendan Exp $
+$Header: /cvs/farcry/farcry_core/admin/home.cfm,v 1.48.2.1 2004/02/13 06:34:37 brendan Exp $
 $Author: brendan $
-$Date: 2003/10/28 22:49:46 $
-$Name: b201 $
-$Revision: 1.43 $
+$Date: 2004/02/13 06:34:37 $
+$Name: milestone_2-1-2 $
+$Revision: 1.48.2.1 $
 
 || DESCRIPTION || 
 $Description: The home page for farcry. Shows profile information, statistics, latest pages, pages waiting approval etc $
@@ -16,6 +16,7 @@ $TODO: $
 
 || DEVELOPER ||
 $Developer: Brendan Sisson (brendan@daemon.com.au)$
+$Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au)$
 
 || ATTRIBUTES ||
 $in: $
@@ -23,7 +24,6 @@ $out:$
 --->
 
 <cfsetting enablecfoutputonly="Yes" requestTimeOut="200">
-
 <!--- set up page header --->
 <cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
 <admin:header>
@@ -32,7 +32,7 @@ $out:$
     <cfoutput>
     <script language="JavaScript">
     profileWin = window.open('edit.cfm?objectID=#session.dmProfile.objectID#&type=dmProfile','edit_profile','width=385,height=385,left=200,top=100');
-    alert('This is the first time you\'ve logged into #application.applicationName#. Please complete the following profile form with your details.');
+    alert('This is the first time you\'ve logged into #application.config.general.siteTitle#. Please complete the following profile form with your details.');
     profileWin.focus();
     </script>
     </cfoutput>
@@ -43,52 +43,16 @@ $out:$
 <tr>
 	<!--- #### left column #### --->
 	<td valign="top" width="33%">
-		<!--- <cfdump var="#application.dmSec#"> --->
-		<!--- <cfdump var="#request#"> --->
-		<!--- <cfdump var="#server.dmSec#"> --->
-		
 		<!--- user profile stuff --->
 		<span class="formTitle">Your Profile</span>
         <p>
-
-        <table width="250" border="0" cellspacing="1" cellpadding="3" style="border: 1px solid ##000;">
-        <tr>
-            <td class="dataOddRow" width="20%" nowrap><strong>Name&nbsp;</strong></td>
-            <td class="dataEvenRow" width="80%" nowrap>#session.dmProfile.firstName# #session.dmProfile.lastName#</td>
-        </tr>
-        <tr>
-            <td class="dataOddRow" width="20%" nowrap><strong>Email&nbsp;</strong></td>
-            <td class="dataEvenRow" width="80%" nowrap>#session.dmProfile.emailAddress#</td>
-        </tr>
-        <tr>
-            <td class="dataOddRow" width="20%" nowrap><strong>Position&nbsp;</strong></td>
-            <td class="dataEvenRow" width="80%" nowrap>#session.dmProfile.position#</td>
-        </tr>
-        <tr>
-            <td class="dataOddRow" width="20%" nowrap><strong>Department&nbsp;</strong></td>
-            <td class="dataEvenRow" width="80%" nowrap>#session.dmProfile.department#</td>
-        </tr>
-        <tr>
-            <td class="dataOddRow" width="20%" nowrap><strong>Phone&nbsp;</strong></td>
-            <td class="dataEvenRow" width="80%" nowrap>#session.dmProfile.phone#</td>
-        </tr>
-        <tr>
-            <td class="dataOddRow" width="20%" nowrap><strong>Fax&nbsp;</strong></td>
-            <td class="dataEvenRow" width="80%" nowrap>#session.dmProfile.fax#</td>
-        </tr>
-        </table>
-
-        <br>
-
-        <table width="250" border="0" cellspacing="0" cellpadding="2">
-        <tr>
-            <td nowrap><span class="frameMenuBullet">&raquo;</span> <a href="##"  onClick="javascript:window.open('edit.cfm?objectID=#session.dmProfile.objectID#&type=dmProfile','edit_profile','width=385,height=385,left=200,top=100');startTimer(#application.config.general.sessionTimeOut#)" title="Edit your profile">Edit your profile</a></td>
-            <cfif application.dmSec.userDirectory[session.dmProfile.userDirectory].type neq "ADSI">
-            <td>&nbsp;</td>
-            <td nowrap><span class="frameMenuBullet">&raquo;</span> <a href="##"  onClick="javascript:window.open('security/updatePassword.cfm','update_password','width=350,height=250,left=200,top=100');startTimer(#application.config.general.sessionTimeOut#)" title="Change your password">Change your password</a></td>
-        </cfif>
-        </tr>
-        </table>
+		</cfoutput>
+		<cfoutput>
+		<cfscript>
+			// display profile details
+			oProfile = createObject("component", application.types.dmProfile.typePath);
+			writeoutput(oProfile.displaySummary(session.dmProfile.objectID));
+		</cfscript>
 
         <br>
         <hr width="100%" size="1" color="##000000" noshade>
@@ -313,10 +277,14 @@ $out:$
 			<cfparam name="url.lockedEndRow" default="5">
 			<cfloop query="qLockedObjects" startrow="1" endrow="#url.lockedEndRow#">
 				<tr class="#IIF(currentrow MOD 2, de("dataOddRow"), de("dataEvenRow"))#">
-					<cfif objectType eq "dmNews">
+					<cfif not structKeyExists(application.types[objectType], "bUseInTree")>
 						<td><span class="frameMenuBullet">&raquo;</span> <cfoutput><a href="index.cfm?section=dynamic&objectid=#objectid#&status=all">#objectTitle#</cfoutput></td>
-					<cfelse>						
-						<td><span class="frameMenuBullet">&raquo;</span> <cfoutput><a href="index.cfm?section=site&rootobjectid=#objectParent#">#objectTitle#</cfoutput></td>
+					<cfelse>
+						<cfif len(objectParent)>
+							<td><span class="frameMenuBullet">&raquo;</span> <cfoutput><a href="index.cfm?section=site&rootobjectid=#objectParent#">#objectTitle#</cfoutput></td>
+						<cfelse>
+							<td><span class="frameMenuBullet">&raquo;</span> <cfoutput><a href="index.cfm?section=dynamic&objectid=#objectid#&status=all">#objectTitle#</cfoutput></td>
+						</cfif>
 					</cfif>
 					<td valign="top">#objectType#</td>
 					<td valign="top" align="center">#dateformat(objectLastUpdated,"dd-mmm-yyyy")#</td>
@@ -331,6 +299,7 @@ $out:$
 				<div align="left" style="margin-left:7px;margin-top:5px;"><span class="frameMenuBullet" >&raquo;</span> <a href="index.cfm?lockedEndRow=5">Show most recent 5</div>
 			</cfif>
 		</cfif>
+		<p>&nbsp;</p>
 	</td>
 	</cfoutput>
 	

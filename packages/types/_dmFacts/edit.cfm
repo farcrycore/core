@@ -5,11 +5,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmFacts/edit.cfm,v 1.9 2003/07/28 22:36:21 geoff Exp $
-$Author: geoff $
-$Date: 2003/07/28 22:36:21 $
-$Name: b201 $
-$Revision: 1.9 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmFacts/edit.cfm,v 1.10 2003/11/04 03:26:18 paul Exp $
+$Author: paul $
+$Date: 2003/11/04 03:26:18 $
+$Name: milestone_2-1-2 $
+$Revision: 1.10 $
 
 || DESCRIPTION || 
 $Description: dmFacts Edit Handler $
@@ -55,6 +55,6 @@ $in: url.killplp (optional)$
 	</cfinvoke>
 	
 	<!--- all done in one window so relocate back to main page --->
-	<cflocation url="#application.url.farcry#/navajo/GenericAdmin.cfm?#CGI.QUERY_STRING#&typename=#stOutput.typename#" addtoken="no">
+	<cflocation url="#application.url.farcry#/navajo/GenericAdmin.cfm?typename=#stOutput.typename#" addtoken="no">
 </cfif>
 <cfsetting enablecfoutputonly="No">

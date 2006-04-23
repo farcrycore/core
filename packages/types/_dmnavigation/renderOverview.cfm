@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmnavigation/renderOverview.cfm,v 1.6 2003/09/25 04:54:34 paul Exp $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmnavigation/renderOverview.cfm,v 1.7 2003/12/18 07:27:45 paul Exp $
 $Author: paul $
-$Date: 2003/09/25 04:54:34 $
-$Name: b201 $
-$Revision: 1.6 $
+$Date: 2003/12/18 07:27:45 $
+$Name: milestone_2-1-2 $
+$Revision: 1.7 $
 
 || DESCRIPTION || 
 $DESCRIPTION: Dispalys summary and options for editing/approving/previewing etc for selected object$
@@ -24,10 +24,16 @@ $out:$
 <cfinclude template="/farcry/farcry_core/admin/includes/cfFunctionWrappers.cfm">
 <!--- check permissions --->
 <cfscript>
+	oAuthentication = request.dmsec.oAuthentication;
+	stUser = oAuthentication.getUserAuthenticationData();
+	
 	iCreate = request.dmSec.oAuthorisation.checkInheritedPermission(objectid="#stObj.objectid#",permissionName="create");
 	iEdit = request.dmSec.oAuthorisation.checkInheritedPermission(objectid="#stObj.objectid#",permissionName="edit");
 	iRequest = request.dmSec.oAuthorisation.checkInheritedPermission(objectid="#stObj.objectid#",permissionName="RequestApproval");
 	iApprove = request.dmSec.oAuthorisation.checkInheritedPermission(objectid="#stObj.objectid#",permissionName="Approve");
+	iApproveOwn = request.dmSec.oAuthorisation.checkInheritedPermission(objectid="#stObj.objectid#",permissionName="CanApproveOwnContent"); 	
+	if(iApproveOwn EQ 1 AND NOT stObj.lastUpdatedBy IS stUser.userLogin)
+		iApproveOwn = 0;
 	iTreeSendToTrash = request.dmSec.oAuthorisation.checkInheritedPermission(objectid="#stObj.objectid#",permissionName="SendToTrash");
 	iObjectDumpTab = request.dmSec.oAuthorisation.checkPermission(reference="PolicyGroup",permissionName="ObjectDumpTab");
 	iDelete = request.dmSec.oAuthorisation.checkInheritedPermission(objectid="#stObj.objectid#",permissionName="delete");
@@ -52,14 +58,14 @@ $out:$
 			</cfif>
 			
 			<!--- check user can approve object --->
-			<cfif iApprove eq 1>
+			<cfif iApprove eq 1 OR iApproveOwn eq 1>
 				<cfoutput><span class="frameMenuBullet">&raquo;</span> <a href="#application.url.farcry#/navajo/approve.cfm?objectid=#stObj.objectid#&status=approved" class="frameMenuItem">Approve the object yourself</a><br></cfoutput>			
 				<cfoutput><span class="frameMenuBullet">&raquo;</span> <a href="#application.url.farcry#/navajo/approve.cfm?objectid=#stObj.objectid#&status=approved&approveBranch=1" class="frameMenuItem">Approve branch yourself</a><br></cfoutput>
 			</cfif>
 		</cfcase>
 		
 		<cfcase value="pending">
-			<cfif iApprove eq 1>
+			<cfif iApprove eq 1 OR iApproveOwn eq 1>
 				<cfoutput><span class="frameMenuBullet">&raquo;</span> <a href="#application.url.farcry#/navajo/approve.cfm?objectid=#stObj.objectid#&status=approved" class="frameMenuItem">Approve the object yourself</a><br></cfoutput>			
 				<cfoutput><span class="frameMenuBullet">&raquo;</span> <a href="#application.url.farcry#/navajo/approve.cfm?objectid=#stObj.objectid#&status=approved&approveBranch=1" class="frameMenuItem">Approve branch yourself</a><br></cfoutput>
 				<cfoutput><span class="frameMenuBullet">&raquo;</span> <a href="#application.url.farcry#/navajo/approve.cfm?objectid=#stObj.objectid#&status=draft" class="frameMenuItem">Send object back to draft</a><br></cfoutput>			
@@ -68,7 +74,7 @@ $out:$
 		</cfcase>
 		
 		<cfcase value="approved">
-			<cfif iApprove eq 1>
+			<cfif iApprove eq 1 OR iApproveOwn eq 1>
 				<cfoutput><span class="frameMenuBullet">&raquo;</span> <a href="#application.url.farcry#/navajo/approve.cfm?objectid=#stObj.objectid#&status=draft" class="frameMenuItem">Send object back to draft</a><br></cfoutput>
 				<cfoutput><span class="frameMenuBullet">&raquo;</span> <a href="#application.url.farcry#/navajo/approve.cfm?objectid=#stObj.objectid#&status=draft&approveBranch=1" class="frameMenuItem">Send branch back to draft</a><br></cfoutput>
 			</cfif>

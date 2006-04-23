@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/edittabRules.cfm,v 1.7 2003/09/24 04:53:12 brendan Exp $
-$Author: brendan $
-$Date: 2003/09/24 04:53:12 $
-$Name: b201 $
-$Revision: 1.7 $
+$Header: /cvs/farcry/farcry_core/admin/edittabRules.cfm,v 1.8 2003/11/06 00:12:53 tom Exp $
+$Author: tom $
+$Date: 2003/11/06 00:12:53 $
+$Name: milestone_2-1-2 $
+$Revision: 1.8 $
 
 || DESCRIPTION || 
 $DESCRIPTION: shows rules associated with this object $
@@ -69,11 +69,7 @@ function reinstateRuleListing()
 <cfcase value="edit">
 	
 	<cfscript>
-		if(application.rules['#url.typename#'].bCustomRule)
-			packagePath = "#application.custompackagepath#.rules.#url.typename#";
-		else	
-			packagePath = "#application.packagepath#.rules.#url.typename#";
-		o = createObject("component","#packagepath#");
+		o = createObject("component", application.rules[url.typename].rulePath);
 		if (url.typename eq "ruleHandpicked")
 		{
 			o.update(objectid=URL.ruleid,cancelLocation="#application.url.farcry#/editTabRules.cfm?");
@@ -86,11 +82,7 @@ function reinstateRuleListing()
 
 <cfcase value="delete">
 	<cfscript>
-		if(application.rules['#url.typename#'].bCustomRule)
-			packagePath = "#application.custompackagepath#.rules.#url.typename#";
-		else	
-			packagePath = "#application.packagepath#.rules.#url.typename#";
-		o = createObject("component","#packagepath#");
+		o = createObject("component", application.rules[url.typename].rulePath);
 		//o.delete(objectid=URL.ruleid);
 		stCon = oCon.getData(objectid=url.containerid,dsn=application.dsn);
 		for (i = arrayLen(stCon.aRules);i GTE 0; i = i-1)

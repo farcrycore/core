@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/admin/quickBuilder.cfm,v 1.4 2003/09/25 04:52:17 brendan Exp $
-$Author: brendan $
-$Date: 2003/09/25 04:52:17 $
-$Name: b201 $
-$Revision: 1.4 $
+$Header: /cvs/farcry/farcry_core/admin/admin/quickBuilder.cfm,v 1.5 2003/11/05 04:46:09 tom Exp $
+$Author: tom $
+$Date: 2003/11/05 04:46:09 $
+$Name: milestone_2-1-2 $
+$Revision: 1.5 $
 
 || DESCRIPTION || 
 $Description: Quickly builds a navigation structure$
@@ -173,11 +173,11 @@ $out:$
 	    <cfimport taglib="/farcry/fourq/tags/" prefix="q4">
 	
 	    <cfloop index="i" from="1" to="#arrayLen(htmlItems)#">
-	        <q4:contentobjectcreate typename="#application.packagepath#.types.#htmlItems[i].typeName#" stProperties="#htmlItems[i]#" bAudit="false">
+	        <q4:contentobjectcreate typename="#application.types[htmlItems[i].typeName].typePath#" stProperties="#htmlItems[i]#" bAudit="false">
 		</cfloop>
 	
 	    <cfscript>
-	        o_dmNav = createObject("component", "#application.packagepath#.types.dmNavigation");
+	        o_dmNav = createObject("component", application.types.dmNavigation.typePath);
 	        o_farcrytree = createObject("component", "#application.packagepath#.farcry.tree");
 	
 	        for (i = 1; i lte arraylen(items); i = i + 1) {

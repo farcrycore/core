@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/edittabEdit.cfm,v 1.5 2003/09/11 01:26:52 brendan Exp $
-$Author: brendan $
-$Date: 2003/09/11 01:26:52 $
-$Name: b201 $
-$Revision: 1.5 $
+$Header: /cvs/farcry/farcry_core/admin/edittabEdit.cfm,v 1.6 2003/11/25 02:01:45 paul Exp $
+$Author: paul $
+$Date: 2003/11/25 02:01:45 $
+$Name: milestone_2-1-2 $
+$Revision: 1.6 $
 
 || DESCRIPTION || 
 $DESCRIPTION: edit object $
@@ -36,11 +36,11 @@ $out:$
 <cfif iEditTab eq 1>
 	<cfinvoke 
 	 component="farcry.fourq.fourq"
-	 method="findType" returnvariable="typeid">
+	 method="findType" returnvariable="typename">
 		<cfinvokeargument name="objectid" value="#url.objectid#"/>
 	</cfinvoke>
 	
-	<cfparam name="url.type" default="#typeid#">
+	<cfparam name="url.type" default="#typename#">
 	
 	<cfimport taglib="/farcry/farcry_core/tags/navajo" prefix="nj">
 	

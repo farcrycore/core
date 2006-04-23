@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmNews/plpEdit/files.cfm,v 1.6 2003/10/15 00:24:16 brendan Exp $
-$Author: brendan $
-$Date: 2003/10/15 00:24:16 $
-$Name: b201 $
-$Revision: 1.6 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmNews/plpEdit/files.cfm,v 1.7 2003/11/05 04:46:09 tom Exp $
+$Author: tom $
+$Date: 2003/11/05 04:46:09 $
+$Name: milestone_2-1-2 $
+$Revision: 1.7 $
 
 || DESCRIPTION || 
 $Description: dmNews Edit PLP - Adds files as associated objects.$
@@ -136,7 +136,7 @@ function removeUploadBtn()
 		<!--- if form.editfile exists - then an existing object is being edited - else must create new object --->
 		
 		<cfscript>
-			oType = createobject("component","#application.packagepath#.types.#typeName#");
+			oType = createobject("component", application.types[typeName].typePath);
 			if (isdefined("form.editObject")) {
 				// update the OBJECT	
 				oType.setData(stProperties=stProperties);

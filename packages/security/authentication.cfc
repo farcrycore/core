@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/security/authentication.cfc,v 1.20 2003/10/08 08:56:23 paul Exp $
-$Author: paul $
-$Date: 2003/10/08 08:56:23 $
-$Name: b201 $
-$Revision: 1.20 $
+$Header: /cvs/farcry/farcry_core/packages/security/authentication.cfc,v 1.20.2.1 2004/02/13 05:49:08 brendan Exp $
+$Author: brendan $
+$Date: 2004/02/13 05:49:08 $
+$Name: milestone_2-1-2 $
+$Revision: 1.20.2.1 $
 
 || DESCRIPTION || 
 $Description: authentication cfc $
@@ -572,7 +572,7 @@ $out:$
 			
 								<cfif listLen(lGroups) gt 0 AND lGroups neq "false">
 									<!--- get the group mappings for this policy group on this user directory --->
-									aGroups = oAuth.getMultiplePolicyGroupMappings(lgroupnames=lgroups,userdirectory=ud);
+									aGroups = oAuthorisation.getMultiplePolicyGroupMappings(lgroupnames=lgroups,userdirectory=ud);
 	
 									<!--- loop through the mapped groups and check if the user is in them --->
 									<cfloop index="j" from="1" to="#arrayLen(aGroups)#">

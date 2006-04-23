@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_versioning/approveEmail_draft_dd.cfm,v 1.9 2003/09/10 12:21:48 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_versioning/approveEmail_draft_dd.cfm,v 1.17 2004/01/15 04:34:02 brendan Exp $
 $Author: brendan $
-$Date: 2003/09/10 12:21:48 $
-$Name: b201 $
-$Revision: 1.9 $
+$Date: 2004/01/15 04:34:02 $
+$Name: milestone_2-1-2 $
+$Revision: 1.17 $
 
 || DESCRIPTION || 
 $Description: sends email for draft news like object $
@@ -31,7 +31,7 @@ $out:$
 
 <!--- get dmProfile object --->
 <cfscript>
-o_profile = createObject("component", "#application.packagepath#.types.dmProfile");
+o_profile = createObject("component", application.types.dmProfile.typePath);
 stProfile = o_profile.getProfile(userName=stObj.lastupdatedby);
 </cfscript>
 
@@ -56,7 +56,11 @@ Comments added on status change:
 
 You may edit this page by browsing to the following location:
 
-http://#CGI.HTTP_HOST##application.url.farcry#/index.cfm?section=dynamic&objectID=#arguments.objectID#&status=draft
+<cfif isDefined("arguments.approveURL")>
+#urldecode(arguments.approveURL)#&objectID=#arguments.objectID#&status=draft
+<cfelse>	
+#application.config.general.adminServer##application.url.farcry#/index.cfm?section=dynamic&objectID=#arguments.objectID#&status=draft
+</cfif>
 
 </cfmail>
 

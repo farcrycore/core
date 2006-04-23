@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/navajo/overview.cfm,v 1.77 2003/11/01 09:07:42 paul Exp $
+$Header: /cvs/farcry/farcry_core/tags/navajo/overview.cfm,v 1.83 2003/12/19 01:12:55 paul Exp $
 $Author: paul $
-$Date: 2003/11/01 09:07:42 $
-$Name: b201 $
-$Revision: 1.77 $
+$Date: 2003/12/19 01:12:55 $
+$Name: milestone_2-1-2 $
+$Revision: 1.83 $
 
 || DESCRIPTION || 
 $Description: Javascript tree$
@@ -39,15 +39,19 @@ $out:$
 
 
 <cfscript>
-	//default overivew params structure for further flexibility when using tree functionality with apps other than the 'site overview' - this has no effect as yet	
+	//default overivew params structure for further flexibility when using tree functionality with apps other than the 'site overview' - This is very much a work in progress.
 	stOverview = structNew();
 	st = stOverview;
+	st.menu.insert.dmHTML = '#application.url.webroot#/index.cfm'; //default page to insert dmHTML links
 	st.popupmenu.URL.createObject = '#application.url.farcry#/navajo/createObject.cfm';
 	st.popupmenu.URL.deleteObject = '#application.url.farcry#/navajo/delete.cfm';
 </cfscript>
 <cfparam name="attributes.stOverview" default="#stOverview#">
 
+
 <cfscript>
+	stOverview = attributes.stOverview;
+	
 	function buildTreeCreateTypes(a,lTypes)
 	{
 		
@@ -107,6 +111,7 @@ $out:$
 	PermNavView  = application.permission.dmnavigation.View.permissionId;
 	PermNavDelete  = application.permission.dmnavigation.Delete.permissionId;
 	PermNavApprove = application.permission.dmnavigation.Approve.permissionId;
+	PermNavApproveOwn = application.permission.dmnavigation.CanApproveOwnContent.permissionId;
 	PermNavRequestApprove = application.permission.dmnavigation.RequestApproval.permissionId;
 	PermContainerManagement = application.permission.dmnavigation.ContainerManagement.permissionId;
 	PermSendToTrash = application.permission.dmnavigation.sendToTrash.permissionId;
@@ -119,6 +124,9 @@ $out:$
 	iDeveloperState = oAuthorisation.checkPermission(permissionName="developer",reference="PolicyGroup");	
 	bPermTrash = oAuthorisation.checkInheritedPermission(permissionName="create",objectid="#application.navid.rubbish#");	
 	
+	//get Current Loggedin user.
+	stUser = request.dmSec.oAuthentication.getUserAuthenticationData();
+		
 	menuOnColor="##dddddd";
 	menuOffColor="white";
 	menuFlutterOnColor="black";
@@ -186,7 +194,7 @@ if (isDefined("URL.rootObjectID"))
 	rootObjectID = URL.rootObjectID;
 else
 {
-	qRoot = application.factory.oTree.getRootNode(typename=attributes.nodetype);
+	qRoot = request.factory.oTree.getRootNode(typename=attributes.nodetype);
 	rootobjectid = qRoot.objectid;
 }
 
@@ -194,7 +202,7 @@ if(not isDefined("url.insertonly"))
 {
 	if (NOT rootobjectid IS application.navid.root AND len(application.navid.root) EQ 35)
 	{
-		qParent = application.factory.oTree.getParentID(objectid=rootobjectid,dsn=application.dsn);	
+		qParent = request.factory.oTree.getParentID(objectid=rootobjectid,dsn=application.dsn);	
 		upOneRootobjectid = qParent.parentid;
 		if (NOT upOneRootobjectid IS rootobjectid AND iRootNodeManagement EQ 1)
 			writeoutput("<div style=""float:right""><a href=""#cgi.script_name#?rootobjectid=#upOneRootobjectid#""><img alt='Up one level' src=""#application.url.farcry#/images/treeImages/uponefolder.gif"" border=""0""></a></div>");	
@@ -212,9 +220,8 @@ if(not isDefined("url.insertonly"))
 	typename="#attributes.nodetype#"
 	get="Children"
 	topLevelVariable="objects"
-	lStripFields="displayMethod,objecthistory,teaser,body,PATH,commentlog"
+	lStripFields="ORIGINALIMAGEPATH,OPTIMISEDIMAGEPATH,THUMBNAILIMAGEPATH,OPTIMISEDIMAGE,height,width,alt,lNavidAlias,teaserimage,extendedmetadata,externallink,flashparams,flashheight,flashwidth,flashbgcolor,flashloop,flashmenu,flashplay,flashquality,flashversion,teaserimage,metakeywords,displayMethod,objecthistory,teaser,body,PATH,commentlog"
 	r_javascript="jscode">
-	
 
 <cfset imageRoot = "nimages">
 <cfset customIcons = attributes.customIcons>
@@ -250,31 +257,7 @@ if(not isDefined("url.insertonly"))
 			return permission;
 		}
 		//this is preparing for the ability to hode nodes that user doesn't have permission to edit
-		function hideNode(id)
-		{
 			
-			var permission = 0;
-			var thisPerm = 0;
-			var oid=id;
-			//alert(aPerms.length);
-			for (var i = 1;i < aPerms.length;i++)
-			{   pid = aPerms[i];
-				while(permission==0)
-				{	
-					if( typeof(p[id])=='undefined' || typeof(p[id][pid])=='undefined' ) thisPerm=0; else thisPerm=p[id][pid];
-					if( permission==0 && thisPerm != 0) permission=thisPerm;
-					if( permission==-1 && thisPerm ==1 ) permission=1;
-				
-					if( getParentObject(id) != 0 ) id = getParentObject(id)['OBJECTID']; else break;
-				}
-				if (permission > -1)
-					break;
-			}
-			//alert(id);alert(permission);
-			return permission;
-			
-		}	
-	
 		
 	</script>
 </cfoutput>
@@ -395,46 +378,45 @@ function renderObject( objId )
 	if( !thisObject ) return "";
 	
 	var elData="";
-	
-	if( rootIds.indexOf(objId)!=-1) elData += "<table class=tableNode><tr><td>";
-	else
-	{   
-		var parent = getParentObject( objId );
-		var parentParent = getParentObject( parent['OBJECTID'] );
-		if( parentParent['OBJECTID'] 
-			&& (nodeIndex(parent['OBJECTID'])!=-1 && nodeIndex(parent['OBJECTID'])!=countNodes(parentParent['OBJECTID'])-1)
-			|| (objectIndex(parent['OBJECTID'])!=-1 && objectIndex(parent['OBJECTID'])!=countChildren(parentParent['OBJECTID'])-1) &&  countNodes(parent['OBJECTID']) > 1  )
-			elData += "<table id=\""+objId+"_table\" class=tableNode><tr><td style='background-image: url(\""+c.src+"\");background-repeat : repeat-y;'><img src='"+s.src+"' width="+zoom+" height="+zoom+"></td><td>";
+	if (hasPermission(objId,#PermNavView#) >= 0)
+	{
+		if( rootIds.indexOf(objId)!=-1) elData += "<table class=tableNode><tr><td>";
 		else
-			elData += "<table id=\""+objId+"_table\" class=tableNode><tr><td style='background-image: url(\"" + s.src +"\");background-repeat : repeat-y;'><img src='"+s.src+"' width="+zoom+" height="+zoom+"></td><td>";
-	}
-	
-	var jsHighlight=' onclick="highlightObjectClick(\''+objId+'\',event)" ';
-	
-	var contextMenu = ' oncontextmenu="if(!event.ctrlKey)highlightObjectClick(\''+objId+'\',event);popupObjectMenu(event);return false;" ';
-	var drag = " ondragstart='\startDrag(\""+objId+"\",\""+thisObject['TYPENAME']+"\")' ondrop='dropDrag(\""+objId+"\")' ";
-	
-	//objects can only be dropped under dmNavigation nodes
-	if( thisObject['TYPENAME'].toLowerCase()=="#lCase(attributes.nodetype)#" )
-		drag += " ondragover='dragOver()'";	
-	else if( thisObject['TYPENAME']=="dmHTML")
-		drag += " ondragover='if(dragTypeId.toLowerCase()==\"dmimage\" || dragTypeId.toLowerCase()==\"dmfile\") dragOver()' ";
+		{   
+			var parent = getParentObject( objId );
+			var parentParent = getParentObject( parent['OBJECTID'] );
+			if( parentParent['OBJECTID'] 
+				&& (nodeIndex(parent['OBJECTID'])!=-1 && nodeIndex(parent['OBJECTID'])!=countNodes(parentParent['OBJECTID'])-1)
+				|| (objectIndex(parent['OBJECTID'])!=-1 && objectIndex(parent['OBJECTID'])!=countChildren(parentParent['OBJECTID'])-1) &&  countNodes(parent['OBJECTID']) > 1  )
+				elData += "<table id=\""+objId+"_table\" class=tableNode><tr><td style='background-image: url(\""+c.src+"\");background-repeat : repeat-y;'><img src='"+s.src+"' width="+zoom+" height="+zoom+"></td><td>";
+			else
+				elData += "<table id=\""+objId+"_table\" class=tableNode><tr><td style='background-image: url(\"" + s.src +"\");background-repeat : repeat-y;'><img src='"+s.src+"' width="+zoom+" height="+zoom+"></td><td>";
+		}
 		
+		var jsHighlight=' onclick="highlightObjectClick(\''+objId+'\',event)" ';
+		
+		var contextMenu = ' oncontextmenu="if(!event.ctrlKey)highlightObjectClick(\''+objId+'\',event);popupObjectMenu(event);return false;" ';
+		var drag = " ondragstart='\startDrag(\""+objId+"\",\""+thisObject['TYPENAME']+"\")' ondrop='dropDrag(\""+objId+"\")' ";
+		
+		//objects can only be dropped under dmNavigation nodes
+		if( thisObject['TYPENAME'].toLowerCase()=="#lCase(attributes.nodetype)#" )
+			drag += " ondragover='dragOver()'";	
+		else if( thisObject['TYPENAME']=="dmHTML")
+			drag += " ondragover='if(dragTypeId.toLowerCase()==\"dmimage\" || dragTypeId.toLowerCase()==\"dmfile\") dragOver()' ";
 			
-	elData+='<table class=\"tableNode\" '+contextMenu+'>\n<tr><td class=iconText>'+getToggleImage(objId)+
-				'<div id=\"non'+jsHighlight+'\" style="display:inline" '+drag+jsHighlight+'>'+getTypeImage(objId)+'</div>\n</td>'+
-				'<td valign=middle class=iconText>'+
-				'\n<div id="'+objId+'_text" '+jsHighlight+'>'+getObjectTitle(objId)+
-				'</div>\n</td></tr>\n</table>'+
-				'<div id="'+objId+'" style="display:none;">\n</div>\n';
-	
-	elData += "</td></tr>\n</table>";
-	return elData;
-	//this is for hiding nodes that user does not have permission to see
-	/*if (hideNode(objId) > -1)
+				
+		elData+='<table class=\"tableNode\" '+contextMenu+'>\n<tr><td class=iconText>'+getToggleImage(objId)+
+					'<div id=\"non'+jsHighlight+'\" style="display:inline" '+drag+jsHighlight+'>'+getTypeImage(objId)+'</div>\n</td>'+
+					'<td valign=middle class=iconText>'+
+					'\n<div id="'+objId+'_text" '+jsHighlight+'>'+getObjectTitle(objId)+
+					'</div>\n</td></tr>\n</table>'+
+					'<div id="'+objId+'" style="display:none;">\n</div>\n';
+		
+		elData += "</td></tr>\n</table>";
 		return elData;
+	}	
 	else 
-		return "";	*/
+		return "";	
 }
 
 var dragObjectId='';
@@ -611,7 +593,7 @@ function getTypeImage( objId )
 			"\nLast Updated By: "+thisObject['ATTR_LASTUPDATEDBY']+" on "+thisObject['ATTR_DATETIMELASTUPDATED'];
 			
 	
-	 return "<img src='"+eval(cm+'.src')+"' width="+zoom+" height="+zoom+" alt='"+alt+"'>"; 
+	 return "<img src='"+cm+"' width="+zoom+" height="+zoom+" alt='"+alt+"'>"; 
 }
 
 function countChildren( objId )
@@ -849,7 +831,7 @@ function getObjectDataAndRender( objId )
 	{
 		<!--- this is a gay arse way of reloading the window, because of some bug --->
 		<!--- in windows causing window.reload to crash --->
-		window.location.href = "#application.url.farcry#/navajo/overview_frame.cfm?i="+(new Date()).getTime()+"&rootObjectID=#rootobjectID#";
+		window.location.href = "#cgi.script_name#?i="+(new Date()).getTime()+"&rootObjectID=#rootobjectID#";
 	}
 }
 
@@ -1220,7 +1202,7 @@ o.bShowDisabled = 1;
 	
 		o = new Object();
 		createMenu['create#stType.label#'] = o;
-		o.text = "<img align='absmiddle' src='"+#defaultImage#.src+"' height="+zoom+">&nbsp;#stType.description#";
+		o.text = "<img align='absmiddle' src='#defaultImage#' height="+zoom+">&nbsp;#stType.description#";
 		o.js = "menuOption_CreateFramed(\\'#stType.typeId#\\');";
 		o.jsvalidate = 1;
 		o.bShowDisabled = "";
@@ -1254,7 +1236,7 @@ o.bShowDisabled = 1;
 	approveMenu['ApproveItem'] = o;
 	o.text = "Approve";
 	o.js = "menuOption_Approve(\\'approved\\')";
-	o.jsvalidate = "(hasPermission( lastSelectedId, #PermNavApprove# )>=0 && (objects[lastSelectedId]['STATUS'] == 'draft' || objects[lastSelectedId]['STATUS'] == 'pending'))?1:0";
+	o.jsvalidate = "((hasPermission( lastSelectedId, #PermNavApprove# )>=0 || (hasPermission(lastSelectedId,#PermNavApproveOwn#) >=0 && objects[lastSelectedId]['ATTR_LASTUPDATEDBY'].toLowerCase() == '#lCase(stUser.userlogin)#')) && (objects[lastSelectedId]['STATUS'] == 'draft' || objects[lastSelectedId]['STATUS'] == 'pending'))?1:0";
 	o.bShowDisabled = 1;
 	
 	o = new Object();
@@ -1313,14 +1295,14 @@ o.bShowDisabled = 1;
 	approveMenu['Cancel'] = o;
 	o.text = "Send To Draft";
 	o.js = "menuOption_Approve(\\'draft\\')";
-	o.jsvalidate = "(hasPermission( lastSelectedId, #PermNavApprove# )>=0 && !hasDraft(lastSelectedId) && (objects[lastSelectedId]['STATUS'] == 'approved' || objects[lastSelectedId]['STATUS'] == 'pending'))?1:0";
+	o.jsvalidate = "((hasPermission( lastSelectedId, #PermNavApprove# )>=0 || (hasPermission(lastSelectedId,#PermNavApproveOwn#) >=0 && objects[lastSelectedId]['ATTR_LASTUPDATEDBY'].toLowerCase() == '#lCase(stUser.userlogin)#'))&& !hasDraft(lastSelectedId) && (objects[lastSelectedId]['STATUS'] == 'approved' || objects[lastSelectedId]['STATUS'] == 'pending'))?1:0";
 	o.bShowDisabled = 1;
 	
 	o = new Object();
 	approveMenu['CancelBranch'] = o;
 	o.text = "Send Branch To Draft";
 	o.js = "menuOption_ApproveBranch(\\'draft\\')";
-	o.jsvalidate = "(hasPermission( lastSelectedId, #PermNavApprove# )>=0 && (objects[lastSelectedId]['STATUS'] == 'approved' || objects[lastSelectedId]['STATUS'] == 'pending') && objects[lastSelectedId]['TYPENAME'].toLowerCase() == '#lCase(attributes.nodetype)#')?1:0";
+	o.jsvalidate = "((hasPermission( lastSelectedId, #PermNavApprove# )>=0 || (hasPermission(lastSelectedId,#PermNavApproveOwn#) >=0 && objects[lastSelectedId]['ATTR_LASTUPDATEDBY'].toLowerCase() == '#lCase(stUser.userlogin)#')) && (objects[lastSelectedId]['STATUS'] == 'approved' || objects[lastSelectedId]['STATUS'] == 'pending') && objects[lastSelectedId]['TYPENAME'].toLowerCase() == '#lCase(attributes.nodetype)#')?1:0";
 	o.bShowDisabled = 1;
 
 	
@@ -1358,7 +1340,7 @@ function menuOption_Insert()
 			break;
 			
 		default:
-			p.insertHTML( "<a href='#application.url.webroot#/index.cfm?objectId="+lastSelectedId+"'>"+theNode['TITLE']+"</a>" );
+			p.insertHTML( "<a href='#stOverview['menu']['insert']['dmHTML']#?objectId="+lastSelectedId+"'>"+theNode['TITLE']+"</a>" );
 			break;
 	}
 } 
@@ -1416,6 +1398,22 @@ function menuOption_Trash()
 {
 	if( confirm('Are you sure you wish to send this object to the trash?') ) popupopen( '#application.url.farcry#/navajo/move.cfm?srcObjectId='+lastSelectedId+'&destObjectId=#application.navid.rubbish#', '_blank', '#smallpopupfeatures#' );
 }
+
+
+o = new Object();
+objectMenu['EmptyTrash'] = o;
+o.text = "Empty Trash";
+o.js = "menuOption_EmptyTrash()"; 
+o.jsvalidate = "(hasPermission( lastSelectedId, #PermNavDelete#) > 0 && lastSelectedId == '#application.navid.rubbish#')?1:0";
+o.bShowDisabled = 0;
+o.bSeperator = 0;
+
+function menuOption_EmptyTrash()
+{
+	if( confirm('Are you sure you wish to delete all objects in the trash?') ) popupopen( '#application.url.farcry#/navajo/treeEmptyTrash.cfm', '_blank', '#smallpopupfeatures#' );
+}
+
+
 
 o = new Object();
 objectMenu['Zoom'] = o;
@@ -1740,7 +1738,7 @@ function secureTabs()
 		
 		if ((hasPermission(lastSelectedId,#permContainerManagement#) > 0) && parent.document.getElementById('siteEditRules'))
 			parent.document.getElementById('siteEditRules').style.display = 'inline';
-		else	
+		else if(parent.document.getElementById('siteEditRules'))	
 			parent.document.getElementById('siteEditRules').style.display = 'none';		
 	}	
 	

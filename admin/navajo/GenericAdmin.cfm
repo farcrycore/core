@@ -1,14 +1,15 @@
+<cfsetting enablecfoutputonly="Yes">
 <!--- 
 || LEGAL ||
 $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/navajo/GenericAdmin.cfm,v 1.18 2003/11/03 05:40:54 paul Exp $
-$Author: paul $
-$Date: 2003/11/03 05:40:54 $
-$Name: b201 $
-$Revision: 1.18 $
+$Header: /cvs/farcry/farcry_core/admin/navajo/GenericAdmin.cfm,v 1.22.2.3 2005/04/29 03:12:04 guy Exp $
+$Author: guy $
+$Date: 2005/04/29 03:12:04 $
+$Name: milestone_2-1-2 $
+$Revision: 1.22.2.3 $
 
 || DESCRIPTION || 
 $Description: calls generic admin for all types. $
@@ -17,43 +18,25 @@ $Description: calls generic admin for all types. $
 $Developer: Brendan Sisson (brendan@daemon.com.au) $
 $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
 
-
 || ATTRIBUTES ||
 $in: [url.typename]: object type $
 --->
-
 <!--- required variables --->
 <cfimport taglib="/farcry/farcry_core/tags/farcry/" prefix="farcry">
 <cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
-<admin:header>
-<cfparam name="url.type" default="news">
 
 <cfif not IsDefined("url.typename")>
-	<h3>Typename not present in URL scope - better fix this link</h3>
+	<cfoutput>
+	<h3>Error: Typename not present in URL scope</h3>
+	<p>You must specify a typename parameter in order for generic administration to work.</p>
+	</cfoutput>
 	<cfabort>
 </cfif>
-<cfoutput>
-<script>
-
-if (parent.frames['treeFrame'].location.href.indexOf('dynamicMenuFrame.cfm') < 0)
-{
-	parent.frames['treeFrame'].location.href='#application.url.farcry#/dynamic/dynamicMenuFrame.cfm?type=general';
-	em = parent.document.getElementById('subTabArea');
-	for (var i = 0;i < em.childNodes.length;i++)
-	{
-		parent.document.getElementById(em.childNodes[i].id).style.display = 'inline';	
-	}
-	parent.document.getElementById('DynamicFileTab').style.display ='none';
-	parent.document.getElementById('DynamicImageTab').style.display ='none';
-}	
-
-</script>
-</cfoutput>
-
-<cfset permissionType = "news">
-
 
 <cfscript>
+/*
+ build stGrid for core content types
+*/
 	if (isDefined('URL.objectid'))
 		form.objectid = url.objectid;	
 	typename = "#URL.typeName#";
@@ -77,9 +60,16 @@ if (parent.frames['treeFrame'].location.href.indexOf('dynamicMenuFrame.cfm') < 0
 			permissionType = 'news';
 			break;
 				
-	}		
+	}
 	stGrid.permissionType = permissionType;
-	stGrid.finishURL = URLEncodedFormat("#application.url.farcry#/navajo/GenericAdmin.cfm?type=#permissionType#&typename=#typename#"); //this is the url you will end back at after add/edit operations.
+	
+	// check for edit permission
+	oAuthorisation = request.dmSec.oAuthorisation;
+	iObjectEditPermission = oAuthorisation.checkPermission(permissionName="#stGrid.permissionType#Edit",reference="PolicyGroup");		
+	
+	stGrid.finishURL = "#application.url.farcry#/navajo/GenericAdmin.cfm?type=#permissionType#&typename=#typename#"; //this is the url you will end back at after add/edit operations.
+	//stGrid.approveURL = "#cgi.server_name#/farcry/index.cfm?section=Dynamic";
+	
 	stGrid.aTable = arrayNew(1);
 	st = structNew();
 	//select
@@ -95,7 +85,7 @@ if (parent.frames['treeFrame'].location.href.indexOf('dynamicMenuFrame.cfm') < 0
 	st.align = "center";
 	st.columnType = 'eval'; 
 	editobjectURL = "#application.url.farcry#/navajo/edit.cfm?objectid=##recordset.objectID[recordset.currentrow]##&type=#stGrid.typename#";	
-	st.value = "iif(locked and lockedby neq '##session.dmSec.authentication.userlogin##_##session.dmSec.authentication.userDirectory##',DE('<span style=""color:red"">Locked</span>'),DE('<a href=''#editObjectURL#''><img src=""#application.url.farcry#/images/treeImages/edit.gif"" border=""0""></a>'))";
+	st.value = "iif(iObjectEditPermission eq 1,DE(iif(locked and lockedby neq '##session.dmSec.authentication.userlogin##_##session.dmSec.authentication.userDirectory##',DE('<span style=""color:red"">Locked</span>'),DE('<a href=''#editObjectURL#''><img src=""#application.url.farcry#/images/treeImages/edit.gif"" border=""0""></a>'))),DE('<img src=""#application.url.farcry#/images/treeImages/edit.gif"" border=""0"">'))";
 	arrayAppend(stGrid.aTable,st);
 	
 	st = structNew();
@@ -109,14 +99,14 @@ if (parent.frames['treeFrame'].location.href.indexOf('dynamicMenuFrame.cfm') < 0
 	st.heading = 'Stats';
 	st.align = 'center';
 	st.columnType = 'expression'; 
-	st.value = "<a href=""javascript:void(0);"" onclick=""window.open('#application.url.farcry#/editTabStats.cfm?objectid=##recordset.objectid##','Stats','scrollbars,height=600,width=620');""><img src=""#application.url.farcry#/images/treeImages/stats.gif"" border=""0""></a>";
+	st.value = "<a href=""javascript:void(0);"" onclick=""window.open('#application.url.farcry#/edittabStats.cfm?objectid=##recordset.objectid##','Stats','scrollbars,height=600,width=620');""><img src=""#application.url.farcry#/images/treeImages/stats.gif"" border=""0""></a>";
 	arrayAppend(stGrid.aTable,st);
 	
 	st = structNew();
 	st.heading = 'Label';
 	st.columnType = 'eval'; 
 	editobjectURL = "#application.url.farcry#/navajo/edit.cfm?objectid=##recordset.objectID[recordset.currentrow]##&type=#stGrid.typename#";	
-	st.value = "iif(locked and lockedby neq '#session.dmSec.authentication.userlogin#_#session.dmSec.authentication.userDirectory#',DE('##replace(recordset.label[recordset.currentrow],'####','','all')##'),DE('<a href=''#editObjectURL#''>##replace(recordset.label[recordset.currentrow],'####','','all')##</a>'))";
+	st.value = "iif(iObjectEditPermission eq 1,DE(iif(locked and lockedby neq '#session.dmSec.authentication.userlogin#_#session.dmSec.authentication.userDirectory#',DE('##replace(recordset.label[recordset.currentrow],'####','','all')##'),DE('<a href=''#editObjectURL#''>##replace(recordset.label[recordset.currentrow],'####','','all')##</a>'))),DE('##replace(recordset.label[recordset.currentrow],'####','','all')##'))";
 	st.align = "left";
 	arrayAppend(stGrid.aTable,st);
 	
@@ -139,8 +129,7 @@ if (parent.frames['treeFrame'].location.href.indexOf('dynamicMenuFrame.cfm') < 0
 	st.value = "##lastupdatedby##";
 	st.align = 'center';
 	arrayAppend(stGrid.aTable,st);
-	
-		
+			
 	if (typename IS 'dmnews')
 	{
 	st = structNew();
@@ -150,9 +139,34 @@ if (parent.frames['treeFrame'].location.href.indexOf('dynamicMenuFrame.cfm') < 0
 	arrayAppend(stGrid.aTable,st);
 	
 	}
-	
 </cfscript>	
-<!--- call generic admin with extrapolation of URL type --->
 
+<!--- set up page header --->
+<admin:header>
 
-<farcry:genericAdmin lObjectIDs permissionType="#stGrid.permissionType#"  admintype="#url.type#" metadata="True" header="false" typename="#typename#" stGrid="#stGrid#">
+<!--- javascript routines used to integrate global image and file libraries --->
+<cfoutput>
+<script>
+if (parent.frames['treeFrame'].location.href.indexOf('dynamicMenuFrame.cfm') < 0)
+{
+	parent.frames['treeFrame'].location.href='#application.url.farcry#/dynamic/dynamicMenuFrame.cfm?type=general';
+	em = parent.document.getElementById('subTabArea');
+	for (var i = 0;i < em.childNodes.length;i++)
+	{
+		parent.document.getElementById(em.childNodes[i].id).style.display = 'inline';	
+	}
+	parent.document.getElementById('DynamicFileTab').style.display ='none';
+	parent.document.getElementById('DynamicImageTab').style.display ='none';
+}	
+</script>
+</cfoutput>
+
+<farcry:genericAdmin 
+	permissionType="#stGrid.permissionType#"
+	typename="#typename#"
+	stGrid="#stGrid#">
+
+<!--- setup footer --->
+<admin:footer>
+
+<cfsetting enablecfoutputonly="No">

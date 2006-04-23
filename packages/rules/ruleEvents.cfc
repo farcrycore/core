@@ -1,7 +1,7 @@
 
 <cfcomponent displayname="Event Rule" extends="rules" hint="Method for displaying dmEvent objects">
 
-<cfproperty name="intro" type="string" hint="Intro text for the event listing" required="yes" default="">
+<cfproperty name="intro" type="string" hint="Intro text for the event listing" required="no" default="">
 <cfproperty name="displayMethod" type="string" hint="Display method to render this event rule with." required="yes" default="displayteaser">
 <cfproperty name="numItems" hint="The number of items to display per page" type="numeric" required="true" default="5">
 <cfproperty name="numPages" hint="The number of pages of news articles to display at most" type="numeric" required="true" default="1">
@@ -38,7 +38,7 @@
 				stObj.bMatchAllKeywords = form.bMatchAllKeywords;
 				stObj.metadata = form.categoryID; //must add metadata tree
 			</cfscript>
-			<q4:contentobjectdata typename="#application.packagepath#.rules.ruleEvents" stProperties="#stObj#" objectID="#stObj.objectID#">
+			<q4:contentobjectdata typename="#application.rules.ruleEvents.rulePath#" stProperties="#stObj#" objectID="#stObj.objectID#">
 			<!--- Now assign the metadata --->
 					
 			<cfset message = "Update Successful">
@@ -279,7 +279,7 @@
 				<cfscript>
 				 	stInvoke = structNew();
 					stInvoke.objectID = qGetEvents.objectID;
-					stInvoke.typename = application.packagepath & ".types.dmEvent";
+					stInvoke.typename = application.types.dmEvent.typePath;
 					stInvoke.method = stObj.displayMethod;
 					arrayAppend(request.aInvocations,stInvoke);
 				</cfscript>
@@ -323,7 +323,7 @@
 			<!--- Loop Through News and Display --->
 			<cfloop query="qGetEvents" startrow="#startrow#" endrow="#endrow#">
 				<cfscript>
-				o = createObject("component", "#application.packagepath#.types.dmEvent");
+				o = createObject("component", application.types.dmEvent.typePath);
 				o.getDisplay(qGetEvents.ObjectID, stObj.displayMethod);	
 				</cfscript>
 			</cfloop>

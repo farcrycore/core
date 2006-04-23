@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/admin/editRule.cfm,v 1.2 2003/09/03 01:50:31 brendan Exp $
+$Header: /cvs/farcry/farcry_core/admin/admin/editRule.cfm,v 1.4 2004/01/08 22:42:24 brendan Exp $
 $Author: brendan $
-$Date: 2003/09/03 01:50:31 $
-$Name: b201 $
-$Revision: 1.2 $
+$Date: 2004/01/08 22:42:24 $
+$Name: milestone_2-1-2 $
+$Revision: 1.4 $
 
 || DESCRIPTION || 
 $Description: $
@@ -31,11 +31,7 @@ $out:$
 	<cfscript>
 	if(isDefined("url.typename") AND isDefined("url.ruleid"))
 	{
-		if(application.rules['#url.typename#'].bCustomRule)
-			packagePath = "#application.custompackagepath#.rules.#url.typename#";
-		else	
-			packagePath = "#application.packagepath#.rules.#url.typename#";
-		o = createObject("component","#packagepath#");
+		o = createObject("component", application.rules[url.typename].rulePath);
 		if (url.typename eq "ruleHandpicked") {
 			o.update(objectid=URL.ruleid,cancelLocation="#application.url.farcry#/editTabRules.cfm?");
 		} else {

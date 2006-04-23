@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/admin/messageCentre.cfm,v 1.3 2003/09/19 01:18:48 brendan Exp $
+$Header: /cvs/farcry/farcry_core/admin/admin/messageCentre.cfm,v 1.5 2003/12/08 00:20:22 brendan Exp $
 $Author: brendan $
-$Date: 2003/09/19 01:18:48 $
-$Name: b201 $
-$Revision: 1.3 $
+$Date: 2003/12/08 00:20:22 $
+$Name: milestone_2-1-2 $
+$Revision: 1.5 $
 
 || DESCRIPTION || 
 $Description: Message Centre $
@@ -80,7 +80,7 @@ $out:$
 	
 	<cfif isDefined("form.add")>
 		<cfscript>
-			o = createObject("component","#application.packagepath#.types.#stArgs.typename#");
+			o = createObject("component", application.types[stArgs.typename].typePath);
 			objectID = o.create();
 			o.edit(objectid=objectid);
 		</cfscript>
@@ -89,14 +89,14 @@ $out:$
 	
 	<cfif isDefined("form.edit")>
 		<cfscript>
-			o = createObject("component","#application.packagepath#.types.#stArgs.typename#");
+			o = createObject("component", application.types[stArgs.typename].typePath);
 			o.edit(objectid=form.objectid);
 		</cfscript>
 	</cfif>
 	
 	<cfif isDefined("form.delete")>
 		<cfscript>
-			o = createObject("component","#application.packagepath#.types.#stArgs.typename#");
+			o = createObject("component", application.types[stArgs.typename].typePath);
 			o.delete(objectid=form.objectid);
 		</cfscript>
 	</cfif>
@@ -135,7 +135,7 @@ $out:$
 	</cfif>
 	
 	<!--- get objects to display --->
-	<cfinvoke component="#application.packagepath#.types.dmEmail" method="getAllObjects" returnvariable="recordSet">
+	<cfinvoke component="#application.types.dmEmail.typePath#" method="getAllObjects" returnvariable="recordSet">
 	
 	<cfparam name="FORM.thisPage" default="1">
 	<cfscript>
@@ -266,7 +266,7 @@ $out:$
 					<!--- get permissions  --->
 						<form action="" method="post">
 						<cfset finishURL = URLEncodedFormat("#cgi.SCRIPT_NAME#?#CGI.QUERY_STRING#")>
-						<input type="button" value="Add" width="100" style="width:100;" class="normalbttnstyle" name="add" onClick="window.location='#application.url.farcry#/navajo/CreateObject.cfm?typename=#stArgs.typename#&finishURL=#finishURL#';" >
+						<input type="button" value="Add" width="100" style="width:100;" class="normalbttnstyle" name="add" onClick="window.location='#application.url.farcry#/navajo/createObject.cfm?typename=#stArgs.typename#&finishURL=#finishURL#';" >
 						</form>					
 					</td>
 					</tr>

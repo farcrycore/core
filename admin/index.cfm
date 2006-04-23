@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/index.cfm,v 1.57 2003/10/28 07:18:18 paul Exp $
-$Author: paul $
-$Date: 2003/10/28 07:18:18 $
-$Name: b201 $
-$Revision: 1.57 $
+$Header: /cvs/farcry/farcry_core/admin/index.cfm,v 1.68.2.1 2005/04/29 03:12:04 guy Exp $
+$Author: guy $
+$Date: 2005/04/29 03:12:04 $
+$Name: milestone_2-1-2 $
+$Revision: 1.68.2.1 $
 
 || DESCRIPTION || 
 $Description: Landing page for Farcry. Works out which section to display and associated pages according to permissions. $
@@ -25,13 +25,13 @@ $out:$
 
 <cfsetting enablecfoutputonly="Yes">
 
-
 <!--- set up page header --->
 <cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
 <admin:header onLoad="startTimer();">
 
 <cfimport taglib="/farcry/fourq/tags/" prefix="q4">
 <cfimport taglib="/farcry/farcry_core/tags/misc/" prefix="misc">
+<cfinclude template="/farcry/farcry_core/admin/includes/utilityFunctions.cfm">
 
 <cfparam name="url.section" default="Home">
 
@@ -49,12 +49,11 @@ $out:$
 <span class="title" onclick="location.href='index.cfm'" onmouseover="style.cursor='hand'" title="#application.config.general.siteTitle# | Home">#application.config.general.siteTitle#</span><br />
 <span class="description" onclick="location.href='index.cfm'" onmouseover="style.cursor='hand'" title="#application.config.general.siteTitle# | Home">#application.config.general.siteTagLine#</span>
 </cfoutput>
-
-		<!--- 
-		determine appropriate security priveleges for this user.  These will be used to determine the presence of menu items --->
 		
 		<cfscript>
+			//determine appropriate security priveleges for this user.  These will be used to determine the presence of menu items
 			oAuthorisation = request.dmSec.oAuthorisation;
+			q4 = createObject("component","farcry.fourq.fourq");
 			iMyFarcryTab = oAuthorisation.checkPermission(reference="policyGroup",permissionName="MainNavMyFarcryTab");
 			iSiteTab = oAuthorisation.checkPermission(reference="policyGroup",permissionName="MainNavSiteTab");
 			iContentTab = oAuthorisation.checkPermission(reference="policyGroup",permissionName="MainNavContentTab");
@@ -62,9 +61,10 @@ $out:$
 			iReportingTab = oAuthorisation.checkPermission(reference="policyGroup",permissionName="MainNavReportingTab");
 			iSecurityTab = oAuthorisation.checkPermission(reference="policyGroup",permissionName="MainNavSecurityTab");
 			iHelpTab = oAuthorisation.checkPermission(reference="policyGroup",permissionName="MainNavHelpTab");
+				
+						
 		</cfscript>
 				
-		
 		<cfoutput><div class="mainTabArea" align="right"></cfoutput>
 			<!--- display main tabs in header, and check if tab is active --->
 			<admin:tabs>
@@ -154,8 +154,8 @@ $out:$
 				<admin:tabitem class="tab" href="#application.url.farcry#/index.cfm?logout=1" target="_top" title="Logout" text="Logout">
 			</admin:tabs>
 		<cfoutput></div>
-</div></cfoutput>
-	
+</div>
+</cfoutput>
 	<cfif url.section eq "home">
 		<cfif iMyFarcryTab eq 1>
 			<cfinclude template="home.cfm">
@@ -174,10 +174,10 @@ $out:$
 							<cfset url.section = "Site">
 							<cfscript>
 								// Get Root Level
-								getRootNodeRet = application.factory.oTree.getRootNode(typename="dmNavigation");
+								getRootNodeRet = request.factory.oTree.getRootNode(typename="dmNavigation");
 								// Get Level 1 Nodes
-								getChildrenRet = application.factory.oTree.getChildren(objectid=getRootNodeRet.objectid);
-								odmNav = createObject("component","#application.packagepath#.types.dmNavigation");
+								getChildrenRet = request.factory.oTree.getChildren(objectid=getRootNodeRet.objectid);
+								odmNav = createObject("component",application.types.dmNavigation.typePath);
 							</cfscript>
 								
 							<!--- Display root tab 
@@ -259,7 +259,21 @@ $out:$
 							<cfset tabElements = parentTabElements[URL.parentTabIndex].xmlchildren>
 							
 							<!--- setup for a RHS default custom page --->
-							<cfset defaultCustomPage = "">
+							<cfif isDefined("url.defaultPage")>
+								<cfscript>
+								defaultCustomPage = URLDecode(url.defaultpage);
+								host = application.config.general.adminServer;
+								if(findnocase(".cfm?",defaultCustomPage))
+									append = "&";
+								else
+									append = "?";
+								//Bit of a huge assumption that URL.defaultpage is only present from status change on custom types - but will do for now. PH 
+								defaultCustomPage = defaultCustomPage & append & "approveURL=#URLEncodedFormat(host & application.url.farcry & "/index.cfm?" & CGI.query_string)#";								
+								</cfscript>
+							<cfelse>	
+								<cfset defaultCustomPage = "admin/adminHome.cfm">
+							</cfif>
+							
 							<!--- check to see if one has been defined for the tab --->
 							<cfif structKeyExists(parentTabElements[URL.parentTabIndex].xmlattributes,"defaultpage")>
 								<!--- use the tabs defined default --->
@@ -343,7 +357,7 @@ $out:$
 						<cfoutput>
 						<form name="zoom" style="display:inline;">
 							<select name="QuickZoom" onChange="reloadTreeFrame()" class="field">
-								<option value="navajo/overview_frame.cfm">-- Quick Zoom --</option>
+								<option value="0">-- Quick Zoom --</option>
 						</cfoutput>
 								<!--- check user has permission to see root node --->
 								<cfscript>
@@ -528,7 +542,10 @@ $out:$
 					</cfcase>
 					<cfcase value="dynamic">
 						<cfif isdefined("url.objectid")>
-							<cfset defaultPageRight="navajo/GenericAdmin.cfm?type=News&typename=dmNews&status=#url.status#&objectid=#URL.objectid#">
+							<cfscript>
+								typename = q4.findtype(url.objectid);
+							</cfscript>
+							<cfset defaultPageRight="navajo/GenericAdmin.cfm?type=News&typename=#typename#&status=#url.status#&objectid=#URL.objectid#">
 						<cfelse>
 							<cfset defaultPageRight="navajo/GenericAdmin.cfm?type=News&typename=dmNews">
 						</cfif>
@@ -537,7 +554,11 @@ $out:$
 						<cfset defaultPageRight="admin/adminHome.cfm">
 					</cfcase>
 					<cfcase value="customadmin">
-						<cfset defaultPageRight="admin/adminHome.cfm">
+						<cfif isdefined("url.objectid")>
+							<cfset defaultPageRight="#defaultCustomPage#&objectid=#URL.objectid#">
+						<cfelse>
+							<cfset defaultPageRight="#defaultCustomPage#">
+						</cfif>
 					</cfcase>
 					<cfcase value="security">
 						<cfset defaultPageRight="security/securityHome.cfm">

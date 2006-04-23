@@ -2,11 +2,11 @@
 ruleChildLinks (FarCry Core)
 Copyright Daemon Pty Limited 2002 (http://www.daemon.com.au/)
 
-$Header: /cvs/farcry/farcry_core/packages/rules/ruleChildLinks.cfc,v 1.14 2003/08/08 04:23:36 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/rules/ruleChildLinks.cfc,v 1.19 2003/12/10 01:30:34 brendan Exp $
 $Author: brendan $
-$Date: 2003/08/08 04:23:36 $
-$Name: b201 $
-$Revision: 1.14 $
+$Date: 2003/12/10 01:30:34 $
+$Name: milestone_2-1-2 $
+$Revision: 1.19 $
 
 Contributors:
 Paul Harrison (paul@daemon.com.au)
@@ -39,7 +39,7 @@ fails to display anything.
 				stObj.displayMethod = form.displayMethod;
 				stObj.intro = form.intro; 
 			</cfscript>
-			<q4:contentobjectdata typename="#application.packagepath#.rules.ruleChildLinks" stProperties="#stObj#" objectID="#stObj.objectID#">
+			<q4:contentobjectdata typename="#application.rules.ruleChildLinks.rulePath#" stProperties="#stObj#" objectID="#stObj.objectID#">
 			<cfset message = "Update Successful">
 		</cfif>
 		<cfif isDefined("message")>
@@ -92,7 +92,7 @@ fails to display anything.
 		
 		</form>
 		<cfelse>
-			<div align="center">There must be at least 1 common display method in /webskin/dmInclude and /webskin/dmHTML to use this rule.</div>
+			<div align="center">There must be at least 1 common display method in /webskin/dmInclude, /webskin/dmLink and /webskin/dmHTML to use this rule.</div>
 		
 		</cfif>
 			
@@ -109,7 +109,7 @@ fails to display anything.
 		
 		<!--- get the children of this object --->
 		<cfscript>
-			qGetChildren = application.factory.oTree.getChildren(objectid=request.navid);
+			qGetChildren = request.factory.oTree.getChildren(objectid=request.navid);
 		</cfscript>
 
 		<!--- if the intro text exists - append to aInvocations to be output as HTML --->
@@ -120,25 +120,25 @@ fails to display anything.
 		</cfif>
 		
 		<cfif qGetChildren.recordcount GT 0>
-		<!--- <cfdump var="#qGetChildren#" label="qGetChildren"> --->
-		
+			
+			<!--- loop over children --->	`
 			<cfloop query="qGetChildren">
+				<!--- get child nav details --->
 				<q4:contentobjectget objectid="#qGetChildren.objectID#" r_stobject="stCurrentNav">
 				
+				<!--- check for sim link --->
+				<cfif len(stCurrentNav.externalLink)>
+					<!--- get sim link details --->
+					<cftry>
+						<q4:contentobjectget objectid="#stCurrentNav.externalLink#" r_stobject="stCurrentNav">
+						<cfcatch></cfcatch>
+					</cftry>
+				</cfif>
+				
+				<!--- loop over child/sim link nav node --->	
 				<cfloop index="idIndex" from="1" to="#arrayLen(stCurrentNav.aObjectIds)#">
-					<!--- check for sim link --->
-					<cfif len(stCurrentNav.externalLink)>
-						<!--- get sim link details --->
-						<cftry>
-							<q4:contentobjectget objectid="#stCurrentNav.externalLink#" r_stobject="stSimLink">
-							<cfset tempObj = stSimLink.aObjectIds[1]>
-							<cfcatch><cfset tempObj = stCurrentNav.aObjectIds[idIndex]></cfcatch>
-						</cftry>
-					<cfelse>
-						<cfset tempObj = stCurrentNav.aObjectIds[idIndex]>
-					</cfif>
-					
-					<q4:contentobjectget objectid="#tempObj#" r_stobject="stObjTemp">
+									
+					<q4:contentobjectget objectid="#stCurrentNav.aObjectIds[idIndex]#" r_stobject="stObjTemp">
 					
 					<!--- request.lValidStatus is approved, or draft, pending, approved in SHOWDRAFT mode --->
 					<cfif StructKeyExists(stObjTemp,"status") AND ListContains(request.mode.lValidStatus, stObjTemp.status) AND listContains("dmHTML,dmInclude,dmLink", stObjTemp.typename)>
@@ -158,21 +158,21 @@ fails to display anything.
 							<cfset objId = stObjTemp.objectID>
 						</cfif>
 						
-							<cfscript>
+						<cfscript>
 							// populate the invoke structure for the container
-							 	stInvoke = structNew();
-								stInvoke.objectID = objID;
-								stInvoke.typename = application.packagepath & '.types.' & stObjTemp.typename;
-								stInvoke.method = stObj.displayMethod; // nb. from rule
+						 	stInvoke = structNew();
+							stInvoke.objectID = objID;
+							stInvoke.typename = application.types[stObjTemp.typename].typePath;
+							stInvoke.method = stObj.displayMethod; // nb. from rule
 							// append to aInvocations
-								arrayAppend(request.aInvocations,stInvoke);
-							</cfscript>
+							arrayAppend(request.aInvocations,stInvoke);
+						</cfscript>
 						<cfbreak>
 					</cfif>
 				</cfloop>
 			</cfloop>
 		</cfif>
-		<!--- <cfdump var="#request.aInvocations#"> --->
+		
 	</cffunction> 
 
 </cfcomponent>

@@ -6,11 +6,11 @@ Daemon Pty Limited 1995-2001
 http://www.daemon.com.au/
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/webskin/cache.cfm,v 1.7 2003/09/25 23:28:09 brendan Exp $
+$Header: /cvs/farcry/farcry_core/tags/webskin/cache.cfm,v 1.10 2003/11/28 01:07:07 brendan Exp $
 $Author: brendan $
-$Date: 2003/09/25 23:28:09 $
-$Name: b201 $
-$Revision: 1.7 $
+$Date: 2003/11/28 01:07:07 $
+$Name: milestone_2-1-2 $
+$Revision: 1.10 $
 
 || PRIMARY DEVELOPER ||
 Aaron Shurmer (aaron@daemon.com.au)
@@ -49,7 +49,9 @@ days				: optional, cache days.
 hours				: optional, cache hours.
 minutes				: optional, cache minutes.
 seconds				: optional, cache seconds.
+bSuppressDesign	    : optional, supresses design output
 r_output			: optional, return variable to put the cached content into.
+
 
 || END FUSEDOC ||
 --->
@@ -160,14 +162,11 @@ r_output			: optional, return variable to put the cached content into.
 		</cfif>
 	<cfelse>
 		<cfif cacheread eq true>
-			<cfinvoke component="farcry.farcry_core.packages.farcry.cache" method="cacheRead" returnvariable="read">
-				<cfinvokeargument name="cacheBlockName" value="#attributes.cacheBlockName#"/>
-				<cfinvokeargument name="cacheName" value="#attributes.cachename#"/>
-				<cfinvokeargument name="dtCachetimeout" value="#Cachetimeout#"/>
-			</cfinvoke>
-			<cfset setvariable("caller.cacheRead",  read)>
+			<cfset read = application.factory.oCache.cacheRead(cacheBlockName=attributes.cacheBlockName,cacheName=attributes.cachename,dtCachetimeout=Cachetimeout)>
+						
+			<cfset caller.cacheRead = read>
 		<cfelse>
-			<cfset setvariable("caller.cacheRead",  false)>
+			<cfset caller.cacheRead = false>
 		</cfif>	
 		<cfif caller.cacheRead>
 			<cfexit>
@@ -188,11 +187,7 @@ r_output			: optional, return variable to put the cached content into.
 			contentcache.cache = ThisTag.GeneratedContent;
 			contentcache.cachetimestamp = Now() - 0;
 			contentcache.cachetimeout = dtCachetimeout;
+			application.factory.oCache.cacheWrite(cacheBlockName=attributes.cacheBlockName,cacheName=attributes.cachename,stcacheblock=contentcache);
 		</cfscript>
-		<cfinvoke component="#application.packagepath#.farcry.cache" method="cacheWrite">
-			<cfinvokeargument name="cacheBlockName" value="#attributes.cacheBlockName#"/>
-			<cfinvokeargument name="cacheName" value="#attributes.cachename#"/>
-			<cfinvokeargument name="stcacheblock" value="#contentcache#"/>
-		</cfinvoke> 
 	</cfif>
 </cfif>

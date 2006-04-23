@@ -1,5 +1,6 @@
 <!--- set up page header --->
 <cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
+<cfinclude template="/farcry/farcry_core/admin/includes/utilityFunctions.cfm">
 <admin:header>
 
 <cfsetting enablecfoutputonly="Yes">
@@ -15,9 +16,9 @@
     <tr><td>
     <br>
     </cfoutput>
-
+	
 	<cfif isdefined("stObj.status") AND trim(stObj.commentLog) neq "">
-        <cfoutput>#htmlCodeFormat(stObj.commentLog)#</cfoutput>
+        <cfoutput>#wrap(paragraphFormat2(stObj.commentLog),70)#</cfoutput>
     <cfelse>
         <cfoutput><strong>There are no comments available.</strong></cfoutput>
     </cfif>

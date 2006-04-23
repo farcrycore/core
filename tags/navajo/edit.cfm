@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/navajo/edit.cfm,v 1.18 2003/10/23 08:22:18 paul Exp $
-$Author: paul $
-$Date: 2003/10/23 08:22:18 $
-$Name: b201 $
-$Revision: 1.18 $
+$Header: /cvs/farcry/farcry_core/tags/navajo/edit.cfm,v 1.20.2.1 2004/03/19 17:35:48 tom Exp $
+$Author: tom $
+$Date: 2004/03/19 17:35:48 $
+$Name: milestone_2-1-2 $
+$Revision: 1.20.2.1 $
 
 || DESCRIPTION || 
 $Description: $
@@ -26,6 +26,11 @@ $out:$
 <cfsetting enablecfoutputonly="yes">
 <cfinclude template="/farcry/farcry_core/admin/includes/utilityFunctions.cfm">
 <cfinclude template="/farcry/farcry_core/admin/includes/cfFunctionWrappers.cfm">
+<!--- Legacy support for old pages referring to URL.type--->
+<cfif isDefined("URL.type") AND NOT isDefined("URL.typename")>
+	<cfset URL.typename = URL.type>
+</cfif>
+
 <!--- First check permissions --->
 <cfscript>
 	bHasPermission = request.dmsec.oAuthorisation.checkInheritedPermission(permissionName='edit',objectid=URL.objectid);
@@ -43,20 +48,23 @@ $out:$
 
 <!--- work out package epath --->
 <cfscript>
-	packagePath = getPackagePath(URL.type);
-	oType = createObject("component",packagePath);
+	oType = createObject("component", application.types[url.typename].typePath);
 	stObj = oType.getData(objectid=url.objectid,dsn=application.dsn);
 </cfscript>
 
 <!--- delete underlying draft --->
 <cfif isDefined("URL.deleteDraftObjectID")>
-	<!--- delete instance --->
-	<cf_deleteObjects typename="dmHTML" lObjectIDs="#URL.deleteDraftObjectID#">
-	<!--- Log this against live object --->
 	<cfscript>
+		//Delete the copied draft object containers
+		oCon = createObject('component','#application.packagepath#.rules.container');
+		oCon.delete(objectid="#URL.deleteDraftObjectID#");
+		//Delete the copied draft object
+		oHTML = createObject("component", application.types.dmHTML.typePath);
+		oHTML.deletedata(objectId="#URL.deleteDraftObjectID#");
+		//Log this activity against live object
 		oAuthentication = request.dmSec.oAuthentication;	
 		stuser = oAuthentication.getUserAuthenticationData();
-		application.factory.oaudit.logActivity(objectid="#url.objectid#",auditType="delete", username=StUser.userlogin, location=cgi.remote_host, note="Draft object deleted");
+		application.factory.oaudit.logActivity(objectid="#url.objectid#",auditType="delete", username=StUser.userlogin, location=cgi.remote_host, note="Deleted Draft Object (#stObj.title#)");
 	</cfscript>
 	<!--- get parent for update tree --->
 	<cf_getNavigation objectId="#url.ObjectId#" bInclusive="1" r_stObject="stNav" r_ObjectId="navIdSrcPerm">
@@ -84,7 +92,7 @@ if (structCount(stObj))
 	checkForLockRet=oLocking.checkForLock(objectid=url.objectid);
 	if (checkForLockRet.bSuccess)
 	{
-		lockRet = oLocking.lock(objectid=url.objectid,typename=url.type);
+		lockRet = oLocking.lock(objectid=url.objectid,typename=url.typename);
 		if (lockRet.bSuccess)
 		{
 			oType.edit(objectid=url.objectid);

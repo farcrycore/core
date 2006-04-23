@@ -16,7 +16,7 @@
 <div class="FormSubTitle">RSS Feeds</div>
 
 <cfscript>
-		o = createObject("component","#application.packagepath#.types.#stArgs.typename#");
+		o = createObject("component", application.types[stArgs.typename].typePath);
 </cfscript>
 
 <script>
@@ -195,7 +195,7 @@ function confirmDelete(objectID){
 				<!--- get permissions  --->
 					<form action="" method="post">
 					<cfset finishURL = URLEncodedFormat("#cgi.SCRIPT_NAME#?#CGI.QUERY_STRING#")>
-					<input type="button" value="Add" width="100" style="width:100;" class="normalbttnstyle" name="add" onClick="window.location='#application.url.farcry#/navajo/CreateObject.cfm?typename=#stArgs.typename#&finishURL=#finishURL#';" >
+					<input type="button" value="Add" width="100" style="width:100;" class="normalbttnstyle" name="add" onClick="window.location='#application.url.farcry#/navajo/createObject.cfm?typename=#stArgs.typename#&finishURL=#finishURL#';" >
 					</form>					
 				</td>
 				</tr>

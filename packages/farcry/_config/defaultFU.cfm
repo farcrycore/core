@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_config/defaultFU.cfm,v 1.4 2003/09/22 02:13:46 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_config/defaultFU.cfm,v 1.6 2003/11/25 04:38:08 brendan Exp $
 $Author: brendan $
-$Date: 2003/09/22 02:13:46 $
-$Name: b201 $
-$Revision: 1.4 $
+$Date: 2003/11/25 04:38:08 $
+$Name: milestone_2-1-2 $
+$Revision: 1.6 $
 
 || DESCRIPTION || 
 $Description: deploys friendly url config file $
@@ -27,9 +27,10 @@ $out:$
 <cfset aTmp = ArrayNew(1)>
 
 <cfscript>
-stConfig.Domains = cgi.HTTP_HOST;
+stConfig.Domains = cgi.SERVER_NAME;
 stConfig.urlPattern = "/go/";
 stConfig.suffix = "";
+stConfig.sesurls = "no";
 </cfscript>
 
 <cfwddx action="CFML2WDDX" input="#stConfig#" output="wConfig">

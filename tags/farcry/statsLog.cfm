@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/farcry/statsLog.cfm,v 1.31 2003/09/08 04:41:16 brendan Exp $
+$Header: /cvs/farcry/farcry_core/tags/farcry/statsLog.cfm,v 1.32 2003/11/28 04:05:57 brendan Exp $
 $Author: brendan $
-$Date: 2003/09/08 04:41:16 $
-$Name: b201 $
-$Revision: 1.31 $
+$Date: 2003/11/28 04:05:57 $
+$Name: milestone_2-1-2 $
+$Revision: 1.32 $
 
 || DESCRIPTION || 
 $Description: Logs visit of page including pageId, navid,ip address and user (if applicable) $
@@ -26,7 +26,7 @@ $out:$
 <!--- check logging of stats is enabled --->
 <cfif application.config.general.logStats>
 	<!--- check not viewing a farcry admin page --->
-	<cfif listcontainsnocase(cgi.PATH_TRANSLATED,"farcry_core") eq 0>
+	<cfif findNoCase("farcry_core",cgi.PATH_TRANSLATED) eq 0>
 		<!--- check if session exists --->
 		<cfif NOT isdefined("session.statsSession")>
 			<!--- create unique session id --->
@@ -62,27 +62,22 @@ $out:$
 		</cfif>
 		<!--- log page view --->
 		<cftry>
-			<cfinvoke component="#application.packagepath#.farcry.stats" method="logEntry">
-				<cfinvokeargument name="pageId" value="#request.stObj.objectid#"/>
-				<cfinvokeargument name="navId" value="#request.navid#"/>
-				<cfinvokeargument name="remoteIP" value="#session.remoteIP#"/>
-				<cfinvokeargument name="sessionId" value="#session.statsSession#"/>
-				<cfinvokeargument name="browser" value="#session.userBrowser#"/>
-				<!--- check is a user is logged in --->
-				<cfif request.LoggedIn>
-					<cfinvokeargument name="userid" value="#session.dmSec.authentication.userlogin#"/>
-				<cfelse>
-					<cfinvokeargument name="userid" value="Anonymous"/>		
-				</cfif>
-				<!--- check if cgi.http_referer has value --->
-				<cfif cgi.http_referer neq "" and len(cgi.http_referer)>
-					<cfinvokeargument name="referer" value="#cgi.http_referer#"/>
-				<cfelse>
-					<cfinvokeargument name="referer" value="Unknown"/>		
-				</cfif>
-				<cfinvokeargument name="locale" value="#session.userLocale#"/>
-				<cfinvokeargument name="os" value="#session.userOS#"/>
-			</cfinvoke>
+			<cfscript>
+			// check is a user is logged in
+			if (request.LoggedIn)
+				userid = session.dmSec.authentication.userlogin;
+			else
+				userid="Anonymous";
+			
+			// check if cgi.http_referer has value 
+			if (cgi.http_referer neq "" and len(cgi.http_referer))
+				referer="#cgi.http_referer#";
+			else
+				referer="Unknown";
+			
+			// log stats
+			application.factory.oStats.logEntry(pageId=request.stObj.objectid,navId=request.navid,remoteIP=session.remoteIP,sessionId=session.statsSession,browser=session.userBrowser,userid=userid,referer=referer,locale=session.userLocale,os=session.userOS);
+			</cfscript>
 			<cfcatch type="any"></cfcatch>
 		</cftry>
 	</cfif>

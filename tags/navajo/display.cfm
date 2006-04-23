@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/navajo/display.cfm,v 1.27 2003/10/24 00:48:03 geoff Exp $
-$Author: geoff $
-$Date: 2003/10/24 00:48:03 $
-$Name: b201 $
-$Revision: 1.27 $
+$Header: /cvs/farcry/farcry_core/tags/navajo/display.cfm,v 1.34 2004/01/19 00:45:16 paul Exp $
+$Author: paul $
+$Date: 2004/01/19 00:45:16 $
+$Name: milestone_2-1-2 $
+$Revision: 1.34 $
 
 || DESCRIPTION ||
 $Description: Primary controller for invoking the object to be rendered for the website.$
@@ -20,7 +20,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 <cfsetting enablecfoutputonly="Yes">
 <cfimport taglib="/farcry/fourq/tags/" prefix="q4">
 <cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
-
+<cfparam name="request.bHideContextMenu" default="false">
 
 <!--- method for dealing with the missing url param... redirect to home page --->
 <cfif not isDefined("url.objectId")>
@@ -31,7 +31,6 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 		<cflocation url="#application.url.webroot#/" addtoken="No">
 	</cfif>
 </cfif>
-
 
 <!--- grab the object we are displaying --->
 <cftry>
@@ -58,6 +57,8 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 	<!--- check for sim link --->
     <cfif len(stObj.externalLink) gt 0>
         <q4:contentobjectget objectid="#stObj.externalLink#" r_stobject="stObj">
+		<cfset request.navid = URL.objectid>
+		
     </cfif>
 
     <cfif structKeyExists(stObj,"aObjectIds")
@@ -65,7 +66,6 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 
     	<cfloop index="idIndex" from="1" to="#arrayLen(stObj.aObjectIds)#">
     		<q4:contentobjectget objectid="#stObj.aObjectIds[idIndex]#" r_stobject="stObjTemp">
-
     		<!--- request.mode.lValidStatus is typically approved, or draft, pending, approved in SHOWDRAFT mode --->
     		<cfif StructKeyExists(stObjTemp,"status") AND ListContains(request.mode.lValidStatus, stObjTemp.status)>
     			<!--- if in request.mode.showdraft=true mode grab underlying draft page (if it exists) --->
@@ -79,13 +79,19 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
     					<cfset stObjTemp = stObjDraft>
     				</cfif>
     			</cfif>
-    			<!--- set the navigation point for the child obj --->
-    			<cfset request.navid = stObj.objectID>
+    			<!--- set the navigation point for the child obj - unless its a symnolic link in which case wed have already set navid --->
+		
+				<cfif isDefined("URL.navid")>
+					<cfset request.navid = URL.navID>
+				<cfelseif NOT isDefined("request.navid")>		
+	    			<cfset request.navid = stObj.objectID>
+				</cfif>	
+				
     			<!--- reset stObj to appropriate object to be displayed --->
     			<cfset stObj = stObjTemp>
     			<!--- end loop now --->
     			<cfbreak>
-    		<cfelse>
+    		<cfelseif stObjTemp.typename neq "dmCSS">
     			<!--- no status so just show object --->
     			<!--- set the navigation point for the child obj --->
     			<cfset request.navid = stObj.objectID>
@@ -129,7 +135,6 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 		<cfset request.navid = application.navid.home>
 	</cfif>
 </cfif>
-
 <!---
 check security,...
 remember security is applied through the tree navigation point *not*
@@ -138,9 +143,10 @@ lpolicyGroupIds="#application.dmsec.ldefaultpolicygroups#"
 the latter is the policy group for anonymous...
 --->
 <!--- determine the policy groups (or roles) this user belongs to --->
-<cfif isDefined("session.dmsec.authentication.lPolicyGroupIDs")>
+<cfif isDefined("session.dmsec.authentication.lPolicyGroupIDs") and listLen(session.dmsec.authentication.lPolicyGroupIDs)>
 	<!--- concatenate logged in group permissions with anonymous group permissions --->
 	<cfset lpolicyGroupIds = session.dmsec.authentication.lPolicyGroupIDs & "," & application.dmsec.ldefaultpolicygroups>
+	
 <cfelse>
 	<!--- user not logged in, assume anonymous permissions --->
 	<cfset lpolicyGroupIds = application.dmsec.ldefaultpolicygroups>
@@ -155,10 +161,10 @@ the latter is the policy group for anonymous...
 
 <!--- if the user is unable to view the object, then logout and send to login form --->
 <cfif iHasViewPermission neq 1>
-<!--- log out the user --->
-<cfscript>
-	oAuthentication.logout();
-</cfscript>
+	<!--- log out the user --->
+	<cfscript>
+		oAuthentication.logout();
+	</cfscript>
 	<cflocation url="#application.url.farcry#/login.cfm?returnUrl=#URLEncodedFormat(cgi.script_name&'?'&cgi.query_string)#" addtoken="No">
 	<cfabort>
 </cfif>
@@ -169,18 +175,12 @@ the latter is the policy group for anonymous...
 	<cfscript>
 		request.mode.showcontainers = oAuthorisation.checkInheritedPermission(objectid=request.navid,permissionName="ContainerManagement");
 	</cfscript>
-
 </cfif>
 
 
 <!--- determine display method for object --->
 <cfscript>
 	request.stObj = stObj;
-	// check for custom component and set packagepath
-	if (application.types['#stObj.typename#'].bCustomType)
-		thisPackagePath = "#application.custompackagepath#.types.#stObj.typename#";
-	else
-		thisPackagePath = "#application.packagepath#.types.#stObj.typename#";
 	// $TODO: refactor object calls... for now put stOBj into request$
 </cfscript>
 
@@ -189,7 +189,7 @@ the latter is the policy group for anonymous...
 	<cftrace var="stObj.displayMethod" text="Object displayMethod used">
 
 	<cfscript>
-		o = createObject("component", "#thisPackagePath#");
+		o = createObject("component", application.types[stObj.typename].typePath);
 		o.getDisplay(objectid=stObj.ObjectID, template=stObj.displayMethod);
 	</cfscript>
 
@@ -197,7 +197,7 @@ the latter is the policy group for anonymous...
 	<!--- Invoke default display method of page --->
 	<cftrace text="Default display method used">
 	<q4:contentobject
-		typename="#thisPackagePath#"
+		typename="#application.types[stObj.typename].typePath#"
 		objectid="#stObj.ObjectID#"
 		method="display">
 </cfif>
@@ -221,8 +221,10 @@ a whole new set of permission checks, have trapped any errors and suppressed GB 
 		iAdmin = oAuthorisation.checkPermission(permissionName="Admin",reference="PolicyGroup");
 		iCanCommentOnContent = oAuthorisation.checkInheritedPermission(objectid=request.navid,permissionName='CanCommentOnContent');
 	</cfscript>
-
-	<cfif iAdmin eq 1 or iCanCommentOnContent eq 1>
+	
+	
+	
+	<cfif (iAdmin eq 1 or iCanCommentOnContent eq 1) AND NOT request.bHideContextMenu>
 		<cfset request.floaterIsOnPage = true>
 		<cfinclude template="floatMenu.cfm">
 	</cfif>

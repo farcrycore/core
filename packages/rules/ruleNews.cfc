@@ -37,7 +37,7 @@
 				stObj.bMatchAllKeywords = form.bMatchAllKeywords;
 				stObj.metadata = form.categoryID; //must add metadata tree
 			</cfscript>
-			<q4:contentobjectdata typename="#application.packagepath#.rules.ruleNews" stProperties="#stObj#" objectID="#stObj.objectID#">
+			<q4:contentobjectdata typename="#application.rules.ruleNews.rulePath#" stProperties="#stObj#" objectID="#stObj.objectID#">
 			<!--- Now assign the metadata --->
 
 			<cfset message = "Update Successful">
@@ -274,7 +274,7 @@
 				<cfscript>
 				 	stInvoke = structNew();
 					stInvoke.objectID = qGetNews.objectID;
-					stInvoke.typename = application.packagepath & ".types.dmNews";
+					stInvoke.typename = application.types.dmNews.typePath;
 					stInvoke.method = stObj.displayMethod;
 					arrayAppend(request.aInvocations,stInvoke);
 				</cfscript>
@@ -315,10 +315,10 @@
 			</cfif>
 
 			<!--- Loop Through News and Display --->
+			<cfset o = createObject("component", application.types.dmNews.typePath)>
 			<cfloop query="qGetNews" startrow="#startrow#" endrow="#endrow#">
 				<cfscript>
-				o = createObject("component", "#application.packagepath#.types.dmNews");
-				o.getDisplay(qGetNews.ObjectID, stObj.displayMethod);
+					o.getDisplay(qGetNews.ObjectID, stObj.displayMethod);
 				</cfscript>
 			</cfloop>
 

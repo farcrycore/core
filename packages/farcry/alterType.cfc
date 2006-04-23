@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/alterType.cfc,v 1.29 2003/09/24 05:49:55 paul Exp $
-$Author: paul $
-$Date: 2003/09/24 05:49:55 $
-$Name: b201 $
-$Revision: 1.29 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/alterType.cfc,v 1.36 2003/12/09 00:39:31 brendan Exp $
+$Author: brendan $
+$Date: 2003/12/09 00:39:31 $
+$Name: milestone_2-1-2 $
+$Revision: 1.36 $
 
 || DESCRIPTION || 
 $Description: alter type/rule cfc $
@@ -35,7 +35,7 @@ $out:$
 		type = stDefaultTypes[arguments.cfctype].type;
 		length = stDefaultTypes[arguments.cfctype].length;
 		switch (type){
-			case "varchar":case "varchar2":
+			case "varchar":case "varchar2":case "nvarchar":
 			{
 				datatype=type;
 				if (not arguments.bReturnTypeOnly)
@@ -80,67 +80,90 @@ $out:$
 	<cfargument name="scope" required="false" default="types">
 	
 	<cfscript>
+	//this now uses type path
 	if (arguments.scope IS 'types')
 	{
-	    if (application[arguments.scope][arguments.typename].bCustomType)
-		{
-			"#arguments.typename#" = createObject("component", "#application.custompackagepath#.#arguments.scope#.#arguments.typename#");
-			evaluate(typename).initMetaData("application.#arguments.scope#");
-			setVariable("application.types['#typename#'].bCustomType",1);	 
-		}	
-	    else
-		{
-			 "#arguments.typename#" = createObject("component", "#application.packagepath#.#arguments.scope#.#arguments.typename#");
-			 evaluate(typename).initMetaData("application.#arguments.scope#");	 
-			 setVariable("application.types['#typename#'].bCustomType",0);	 
-		}	 
+		typePath = application.types[arguments.typename].typePath;
+		bCustomType = application.types[arguments.typename].bCustomType;
+		"#arguments.typename#" = createObject("component", typePath);
+		evaluate(typename).initMetaData("application.types");
+		application.types[arguments.typename].bCustomType = bCustomType;	 
+		application.types[arguments.typename].typePath = typePath;
 		
 	}
 	else if (arguments.scope IS 'rules')
 	{
-		 if (application[arguments.scope][arguments.typename].bCustomRule)
-		 {
-			"#arguments.typename#" = createObject("component", "#application.custompackagepath#.#arguments.scope#.#arguments.typename#");
-			evaluate(typename).initMetaData("application.#arguments.scope#");
-			setVariable("application.rules['#arguments.typename#'].bCustomRule",1);
-		}	
-	    else
-		{
-			 "#arguments.typename#" = createObject("component", "#application.packagepath#.#arguments.scope#.#arguments.typename#");
-			 evaluate(typename).initMetaData("application.#arguments.scope#");
-			 setVariable("application.rules['#arguments.typename#'].bCustomRule",0);
-		}	 
+		rulePath = application.rules[arguments.typename].rulePath;
+		bCustomRule = application.rules[arguments.typename].bCustomRule;
+		"#arguments.typename#" = createObject("component", rulePath);
+		evaluate(typename).initMetaData("application.rules");
+		application.rules[arguments.typename].bCustomRule = bCustomRule;	 
+		application.rules[arguments.typename].rulePath = rulePath;
 		
 	}		
-			 
-	
 	</cfscript>
 </cffunction>
 
 <cffunction name="refreshAllCFCAppData">
-	<!--- First refresh the types  --->
+	<cfargument name="dsn" required="No" default="#application.dsn#">
+	<!--- Find all types, base, extended & custom --->
 	<cfdirectory directory="#application.path.core#/packages/types" name="qTypesDir" filter="dm*.cfc" sort="name">
 	<cfdirectory directory="#application.path.project#/packages/types" name="qCustomTypesDir" filter="*.cfc" sort="name">
+	<cfdirectory directory="#application.path.project#/packages/system" name="qExtendedTypesDir" filter="*.cfc" sort="name">
+	
+	<!--- We want to search NTM types so we can flag them as a bTreeNode. --->
+	<cfquery datasource="#arguments.dsn#" name="qNTM">
+		SELECT distinct(typename)
+		FROM nested_tree_objects
+	</cfquery> 
+	<cfset lNTMTypes = valueList(qNTM.typename)>
 	
 	<!--- Init all CORE types --->
 	<cfloop query="qTypesDir">
-		<cfscript>
-		typename = left(qTypesDir.name, len(qTypesDir.name)-4); //remove the .cfc from the filename
-		"#typename#" = createObject("Component", "#application.packagepath#.types.#typename#");
-		evaluate(typename).initMetaData("application.types");
-		setVariable("application.types['#typename#'].bCustomType",0);
-		</cfscript>
-	</cfloop>		
+		<cftry>
+			<cfscript>
+			typename = left(qTypesDir.name, len(qTypesDir.name)-4); //remove the .cfc from the filename
+			"#typename#" = createObject("Component", "#application.packagepath#.types.#typename#");
+			evaluate(typename).initMetaData("application.types");
+			application.types[typename].bCustomType = 0;
+			application.types[typename].typePath = "#application.packagepath#.types.#typename#";
+			</cfscript>
+			<cfcatch></cfcatch>
+		</cftry>
+	</cfloop>	
+	<!--- Init all EXTENDED CORE types --->
+	<cfloop query="qExtendedTypesDir">
+		<cftry>
+			<cfscript>
+			typename = left(qExtendedTypesDir.name, len(qExtendedTypesDir.name)-4); //remove the .cfc from the filename
+			sMetaData = getMetaData(createObject("Component", "#application.custompackagepath#.system.#typeName#"));
+			//does this type extend the core type?
+			if(sMetaData.extends.name eq "#application.packagepath#.types.#typename#")
+			{
+				"#typename#" = createObject("Component", "#application.custompackagepath#.system.#typename#");
+				evaluate(typename).initMetaData("application.types");
+				application.types[typename].bCustomType = 0;
+				application.types[typename].typePath = "#application.custompackagepath#.system.#typename#";
+			}
+			</cfscript>
+			<cfcatch></cfcatch>
+		</cftry>
+	</cfloop>	
 	<!--- Now init all Custom Types --->
 	<cfloop query="qCustomTypesDir">
-		<cfscript>
-		typename = left(qCustomTypesDir.name, len(qCustomTypesDir.name)-4); //remove the .cfc from the filename
-		"#typename#" = createObject("Component", "#application.custompackagepath#.types.#typename#");
-		evaluate(typename).initMetaData("application.types");
-		setVariable("application.types['#typename#'].bCustomType",1);
-		</cfscript>
+		<cftry>
+			<cfscript>
+			typename = left(qCustomTypesDir.name, len(qCustomTypesDir.name)-4); //remove the .cfc from the filename
+			"#typename#" = createObject("Component", "#application.custompackagepath#.types.#typename#");
+			evaluate(typename).initMetaData("application.types");
+			application.types[typename].bCustomType = 1;
+			application.types[typename].typePath = "#application.custompackagepath#.types.#typename#";
+			</cfscript>
+			<cfcatch><cfdump var="#cfcatch#"></cfcatch>
+		</cftry>
 	</cfloop>
-	<!--- Now the rules --->
+	
+	<!--- Now get all the rules --->
 	<cfscript>
 	rules = createObject("Component", "#application.packagepath#.rules.rules");
 	qRules = rules.getRules(); 
@@ -151,23 +174,42 @@ $out:$
 		<cfscript>
 			
 			if(qRules.bCustom)
-				"#qRules.rulename#" = createObject("Component","#application.custompackagepath#.rules.#qRules.rulename#");
+			{
+				sRuleMetaData = getMetaData(createObject("Component", "#application.custompackagepath#.rules.#qRules.rulename#"));
+				//does this rule extend the core rule?
+				if(sRuleMetaData.extends.name eq "#application.packagepath#.rules.#qRules.rulename#")
+				{
+					"#qRules.rulename#" = createObject("Component", "#application.custompackagepath#.rules.#qRules.rulename#");
+					evaluate(qRules.rulename).initMetaData("application.rules");
+					application.rules[qRules.rulename].bCustomRule = 0; //override the bCustomRule attribute
+					application.rules[qRules.rulename].rulePath = "#application.custompackagepath#.rules.#qRules.rulename#";
+				}
+				else
+				{
+					"#qRules.rulename#" = createObject("Component", "#application.custompackagepath#.rules.#qRules.rulename#");
+					evaluate(qRules.rulename).initMetaData("application.rules");
+					application.rules[qRules.rulename].bCustomRule = 1;
+					application.rules[qRules.rulename].rulePath = "#application.custompackagepath#.rules.#qRules.rulename#";
+				}
+			
+			}
 			else
 			{
 				"#qRules.rulename#" = createObject("Component","#application.packagepath#.rules.#qRules.rulename#");
-			}		
-			evaluate("#qRules.rulename#").initMetaData("application.rules");
-			/*************************************************************************************
-			This will make sure that if developers have forgotten to include the BCustomRule attribute in
-			each rule CFC, that it does indeed get included in the COAPI rule metadata.
-			*************************************************************************************/
-			if(qRules.bCustom)
-				setVariable("application.rules['#qrules.rulename#'].bCustomRule",1);			
-			else		
-				setVariable("application.rules['#qrules.rulename#'].bCustomRule",0);
-										
+				evaluate(qRules.rulename).initMetaData("application.rules");
+				application.rules[qRules.rulename].bCustomRule = 0; //override the bCustomRule attribute
+				application.rules[qRules.rulename].rulePath = "#application.packagepath#.rules.#qRules.rulename#";
+			}
 		</cfscript>
 	</cfloop>
+	<cfscript>
+		for(type IN application.types)
+		{
+			if(listContainsNoCase(lNTMTypes,type))
+				application.types[type].bTreeNode = 1;
+		}
+	</cfscript>
+	
 </cffunction>
 
 <cffunction name="getTypeDefaults" hint="Initialises a reference structure that can be looked up to get default types/lengths for respective DB columns">
@@ -275,7 +317,7 @@ $out:$
 			db.length = 8;
 			stPropTypes['date'] = duplicate(db);
 			//numeric
-			db.type = 'int';
+			db.type = 'numeric';
 			db.length = 4;
 			stPropTypes['numeric'] = duplicate(db);
 			//string

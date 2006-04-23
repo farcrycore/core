@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_stats/getBranchStatsByDay.cfm,v 1.8 2003/09/10 12:21:48 brendan Exp $
-$Author: brendan $
-$Date: 2003/09/10 12:21:48 $
-$Name: b201 $
-$Revision: 1.8 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_stats/getBranchStatsByDay.cfm,v 1.9 2003/12/08 05:39:55 paul Exp $
+$Author: paul $
+$Date: 2003/12/08 05:39:55 $
+$Name: milestone_2-1-2 $
+$Revision: 1.9 $
 
 || DESCRIPTION || 
 $Description: get stats for entire branch $
@@ -24,7 +24,7 @@ $out:$
 
 <cfscript>
 	// get descendants over object
-	qDescendants = application.factory.oTree.getDescendants(arguments.navId);
+	qDescendants = request.factory.oTree.getDescendants(arguments.navId);
 </cfscript>
 
 <!--- run the query to get counts of user activity by hour --->

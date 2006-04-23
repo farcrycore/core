@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmInclude/edit.cfm,v 1.12 2003/08/01 01:57:07 brendan Exp $
-$Author: brendan $
-$Date: 2003/08/01 01:57:07 $
-$Name: b201 $
-$Revision: 1.12 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmInclude/edit.cfm,v 1.13 2003/11/05 04:46:09 tom Exp $
+$Author: tom $
+$Date: 2003/11/05 04:46:09 $
+$Name: milestone_2-1-2 $
+$Revision: 1.13 $
 
 || DESCRIPTION || 
 $Description: edit handler$
@@ -44,7 +44,7 @@ $out:$
 		stProperties.lockedBy = "";
 	
 		// update the OBJECT	
-		oType = createobject("component","#application.packagepath#.types.dmInclude");
+		oType = createobject("component", application.types.dmInclude.typePath);
 		oType.setData(stProperties=stProperties);
 	</cfscript>
 		
@@ -79,7 +79,7 @@ $out:$
   		<td><span class="FormLabel">Title:</span></td>
    	 	<td><input type="text" name="title" value="#stObj.title#" class="FormTextBox"></td>
 	</tr>
-	<cfinvoke component="#application.packagepath#.types.dmInclude" method="getIncludes" returnvariable="qGetIncludes"/>
+	<cfinvoke component="#application.types.dmInclude.typePath#" method="getIncludes" returnvariable="qGetIncludes"/>
  	<tr>	
 		<td><span class="FormLabel">Include:</span></td>
    		<td width="100%" class="FormLabel">

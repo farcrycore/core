@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/reporting/statsVisitorPathDetail.cfm,v 1.2 2003/09/03 01:50:31 brendan Exp $
+$Header: /cvs/farcry/farcry_core/admin/reporting/statsVisitorPathDetail.cfm,v 1.4 2003/12/10 23:41:33 brendan Exp $
 $Author: brendan $
-$Date: 2003/09/03 01:50:31 $
-$Name: b201 $
-$Revision: 1.2 $
+$Date: 2003/12/10 23:41:33 $
+$Name: milestone_2-1-2 $
+$Revision: 1.4 $
 
 || DESCRIPTION || 
 $Description: Displays path taken by visitor during session$
@@ -48,15 +48,15 @@ $out:$
 	
 	<cfloop query="qVisitorPath">
 		<cftry>
-		<q4:contentobjectget objectID="#objectid#" r_stobject="stObject">
-		<cfcatch></cfcatch>
+			<q4:contentobjectget objectID="#objectid#" r_stobject="stObject">
+			<skin:breadcrumb 
+			separator=" &raquo; " 
+			objectid = "#navid#"
+			here= "#stObject.title#"
+			linkclass="breadcrumb">
+			<cfoutput> (#timeSpent#)<p></p></cfoutput>
+			<cfcatch></cfcatch>
 		</cftry>
-		<skin:breadcrumb 
-		separator="&raquo;" 
-		objectid = "#navid#"
-		here= "#stObject.title#"
-		linkclass="breadcrumb">
-		<cfoutput> (#timeSpent#)<p></p></cfoutput>
 	</cfloop>
 
 <cfelse>

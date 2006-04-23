@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/webskin/multiPageNav.cfm,v 1.1 2003/04/24 05:42:35 brendan Exp $
-$Author: brendan $
-$Date: 2003/04/24 05:42:35 $
-$Name: b201 $
-$Revision: 1.1 $
+$Header: /cvs/farcry/farcry_core/tags/webskin/multiPageNav.cfm,v 1.2 2003/11/05 04:46:09 tom Exp $
+$Author: tom $
+$Date: 2003/11/05 04:46:09 $
+$Name: milestone_2-1-2 $
+$Revision: 1.2 $
 
 || DESCRIPTION || 
 $DESCRIPTION: Displays simple navigation for multi page branches$
@@ -49,7 +49,7 @@ $in: nextArrow (optional - value to use for next page arrow)$
 
 <!--- get nav parent details --->
 <cfscript>
-	o = createObject("component", "#application.packagepath#.types.dmNavigation");
+	o = createObject("component", application.types.dmNavigation.typePath);
 	qParent = o.getParent(objectid=attributes.objectid);
 </cfscript>
 <q4:contentobjectget objectID="#qParent.objectid#" r_stobject="stParent">

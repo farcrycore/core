@@ -7,8 +7,6 @@ sql = "select type.*
 	   order by #arguments.orderBy# #arguments.orderDirection#";
 		</cfscript>
 
-<cfdump var="#sql#">
-
 <cfquery name="getData" datasource="#arguments.dsn#">
 	#preserveSingleQuotes(sql)#
 </cfquery>

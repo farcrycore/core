@@ -46,7 +46,112 @@
 	
 	</cffunction>
 	
-	<cffunction name="delete">
+	<cffunction name="deleteContainerRules" hint="deletes all rules that belong to a container">
+		<cfargument name="containerid" required="Yes" type="UUID" hint="Objectid of container">
+		<cfset var x = 1>
+		<cfscript>
+			st = getData(objectid=arguments.containerid);
+			if(NOT structIsEmpty(st))
+			{
+				for(x=1;x LTE arrayLen(st.aRules);x=x+1)
+				{
+					ruletype = findType(objectid=st.aRules[x]);
+					if (structKeyExists(application.rules,ruletype))
+					{
+						o = createObject("component",application.rules[ruletype].rulepath);
+						o.deleteData(objectid=st.aRules[x]);
+					}	
+				}
+			}
+		</cfscript>
+	
+	</cffunction>
+		
+	
+	<cffunction name="copyContainers" hint="makes a duplicate of all container data in source object and copies to destination object">
+		<cfargument name="srcObjectID" required="Yes" type="UUID" hint="Source object whose container data is to be copied">
+		<cfargument name="destObjectID" required="Yes" type="UUID" hint="Destination object whose container data is to be copied">
+		<cfargument name="bDeleteDestData" required="No" default="1" type="boolean" hint="Effectively overwrites destination data">
+		<cfargument name="bDeleteSrcData" required="No" default="0" type="boolean" hint="Removes source container after copy">
+		<cfargument name="dsn" required="No" default="#application.dsn#">
+		<cfset var index = 1>
+		<cfset var x = 1>
+		
+		<cfscript>
+			
+			qSrcCon = getContainersByObject(arguments.srcObjectId);
+			qDestCon = getContainersByObject(arguments.destObjectId);
+						
+			/*dump(qSrcCon,'qsrc');
+			dump(qDestCon,'qdest');*/
+			
+			if(arguments.bDeleteDestData)
+			{
+				for(index = 1;index LTE qDestCon.recordcount;index=index+1)
+				{	
+					//delete all rule data from this container
+					deleteContainerRules(containerid=qDestCon.containerid[index]);
+					//delete the container
+					super.deleteData(qDestCon.containerid[index]);
+				}
+				//delete all refContainerData
+				deleteRefContainerData(arguments.destObjectID);
+			}	
+			
+						
+			for(index = 1;index LTE qSrcCon.recordcount;index=index+1)
+			{	
+				st = getData(objectid=qSrcCon.containerid[index]);
+				//dump(st,'before');
+				//need to copy all rules now.
+				aRules = arrayNew(1);
+				if(not structIsEmpty(st))
+				{
+					for(x=1;x LTE arrayLen(st.aRules);x=x+1)
+					{
+						ruletype = findType(objectid=st.aRules[x]);
+						if(structKeyExists(application.rules,ruletype))
+						{
+						o = createObject("component",application.rules[ruletype].rulepath);
+						stRule = o.getData(objectid=st.aRules[x]);
+						stRule.objectid = createUUID();
+						//create the rule
+						o.createData(stProperties=stRule,dsn=arguments.dsn);
+						//now create the new array reference to it
+						arrayAppend(aRules,stRule.objectid);
+						}
+					}
+					st.aRules = aRules;
+					//change the label - containers are currently obtained by label
+					st.label = replace(st.label,arguments.srcObjectId,arguments.destObjectId,"ALL");
+					st.objectid = createUUID();
+					//now we want to create this new container
+					createData(stProperties=st,dsn=arguments.dsn);
+					//and log a reference to it in refContainers
+					createDataRefContainer(objectid=arguments.destObjectid,containerid=st.objectid);
+				}
+				
+			}
+			
+			if(arguments.bDeleteSrcData)
+			{
+				for(index = 1;index LTE qSrcCon.recordcount;index=index+1)
+				{	
+					//delete all rule data from this container
+					deleteContainerRules(containerid=qSrcCon.containerid[index]);
+					//delete the container
+					super.deleteData(qSrcCon.containerid[index]);
+				}
+				deleteRefContainerData(arguments.srcObjectId);
+			}	
+			
+		</cfscript>
+		
+		
+	</cffunction>
+	
+	
+	<cffunction name="delete" hint="deletes all container data by objectid">
 		<cfargument name="objectid" required="Yes">
 		<cfargument name="dsn" required="No" default="#application.dsn#">
 		
@@ -58,6 +163,7 @@
 				//get rid of refContainers data for this object
 				deleteRefContainerData(objectid=arguments.objectid,dsn=arguments.dsn);
 				//We only wish to delete container if there are no shared containers 
+				//dump(qObjs,'distinct objects');
 				if (qObjs.recordCount EQ 1)
 				{					
 					for(index = 1;index LTE qRefObjects.recordCount;index=index+1)
@@ -205,17 +311,11 @@
 		<cfargument name="aRules" type="array" required="true">
 		
 		<cfset request.aInvocations = arrayNew(1)>
+		<cfset oFourq = createObject("component", "farcry.fourq.fourq")>
 		<cfloop from="1" to="#arrayLen(arguments.aRules)#" index="i">
 			 <cftry> 
-				
-				<cfinvoke component="farcry.fourq.fourq" returnvariable="rule" method="findType" objectID="#arguments.aRules[i]#">
-				
-				<!--- Is this a custom rule? or not? --->
-				<cfif NOT evaluate("application.rules." & rule & ".bCustomRule")>
-					<cfinvoke objectID="#arguments.aRules[i]#" component="#application.packagepath#.rules.#rule#" method="execute"/>
-				<cfelse>
-					<cfinvoke objectID="#arguments.aRules[i]#" component="#application.custompackagepath#.rules.#rule#" method="execute"/>										
-				</cfif>					
+				<cfset rule = oFourq.findType(objectid=arguments.aRules[i])>
+				<cfinvoke objectID="#arguments.aRules[i]#" component="#application.rules[rule].rulePath#" method="execute"/>										
 			  	<cfcatch type="any">
 					<!--- show error if debugging --->
 					<cfif isdefined("url.debug")>

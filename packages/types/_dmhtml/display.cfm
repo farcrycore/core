@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmhtml/display.cfm,v 1.4 2003/09/10 23:46:11 brendan Exp $
-$Author: brendan $
-$Date: 2003/09/10 23:46:11 $
-$Name: b201 $
-$Revision: 1.4 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmhtml/display.cfm,v 1.5 2003/12/08 05:28:38 paul Exp $
+$Author: paul $
+$Date: 2003/12/08 05:28:38 $
+$Name: milestone_2-1-2 $
+$Revision: 1.5 $
 
 || DESCRIPTION || 
 $Description: dmHTML default display method  $
@@ -24,9 +24,9 @@ $in: $
 <cfscript>
 	// get navigation elements
 	// getChildren for application.navid.home
-	qPrimary = application.factory.oTree.getChildren(objectid=application.navid.home);
-	qSecondary = application.factory.oTree.getChildren(objectid=request.navid);
-	qAncestors = application.factory.oTree.getAncestors(objectid=request.navid);
+	qPrimary = request.factory.oTree.getChildren(objectid=application.navid.home);
+	qSecondary = request.factory.oTree.getChildren(objectid=request.navid);
+	qAncestors = request.factory.oTree.getAncestors(objectid=request.navid);
 </cfscript>
 
 

@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmFlash/edit.cfm,v 1.11 2003/08/15 07:06:41 paul Exp $
-$Author: paul $
-$Date: 2003/08/15 07:06:41 $
-$Name: b201 $
-$Revision: 1.11 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmFlash/edit.cfm,v 1.12 2003/11/05 04:46:09 tom Exp $
+$Author: tom $
+$Date: 2003/11/05 04:46:09 $
+$Name: milestone_2-1-2 $
+$Revision: 1.12 $
 
 || DESCRIPTION || 
 $Description: edit handler$
@@ -80,7 +80,7 @@ $out:$
 	
 	<cfscript>
 		// update the OBJECT	
-		oType = createobject("component","#application.packagepath#.types.dmFlash");
+		oType = createobject("component", application.types.dmFlash.typePath);
 		oType.setData(stProperties=stProperties);
 	</cfscript>
 		

@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_stats/getMostViewed.cfm,v 1.6 2003/09/10 12:21:48 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_stats/getMostViewed.cfm,v 1.7 2003/12/10 23:35:59 brendan Exp $
 $Author: brendan $
-$Date: 2003/09/10 12:21:48 $
-$Name: b201 $
-$Revision: 1.6 $
+$Date: 2003/12/10 23:35:59 $
+$Name: milestone_2-1-2 $
+$Revision: 1.7 $
 
 || DESCRIPTION || 
 $Description: Shows most viewed objects$
@@ -21,8 +21,6 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 $in: $
 $out:$
 --->
-
-<cfimport taglib="/farcry/fourq/tags" prefix="q4">
 
 <!--- get downloads from stats --->
 <cfquery datasource="#arguments.dsn#" name="qStats">
@@ -45,19 +43,55 @@ $out:$
 <!--- initiate counter --->
 <cfset counter = 0>
 
+<!--- create navigation object --->
+<cfset oNav = createObject("component",application.types.dmNavigation.typepath)>
+
 <!--- loop over stats and get details --->
 <cfloop query="qStats">
 		
 	<cftry>
+		<!--- get object title --->
 		<cfquery datasource="#arguments.dsn#" name="qTitle">
 			select title
 			from #qStats.typename#
 			where objectid = '#qStats.pageid#'
 		</cfquery>
+			
 		<cfif qTitle.recordcount>
+			<!--- see if object is in tree --->
+			<cfset qParent = oNav.getParent(qStats.pageid)>
+			
+			<cfif qParent.recordcount>
+				<!--- clear title variable --->
+				<cfset title = "">
+				
+				<!--- get ancestors --->
+				<cfset qAncestors = request.factory.oTree.getAncestors(qParent.objectid)>
+				
+				<!--- build breadcrumb --->
+				<cfloop query="qAncestors">
+					<!--- don't include root and home --->
+					<cfif qAncestors.nlevel gt 1>
+						<cfif len(title)>
+							<cfset title = title & " &raquo; ">
+						</cfif>
+						<cfset title = title & qAncestors.objectName>
+					</cfif>
+				</cfloop>
+				
+				<!--- append object title to breadcrumb --->
+				<cfif len(title)>
+					<cfset title = title & " &raquo; ">
+				</cfif>
+				<cfset title = title & qTitle.title>			
+			<cfelse>
+				<!--- no breadcrumb --->
+				<cfset title = qTitle.title>
+			</cfif>
+		
 			<!--- add row to query --->
 			<cfset temp = queryAddRow(qGetMostViewed, 1)>
-			<cfset temp = querySetCell(qGetMostViewed, "title", qTitle.title)>
+			<cfset temp = querySetCell(qGetMostViewed, "title", title)>
 			<cfset temp = querySetCell(qGetMostViewed, "objectid", qStats.pageid)>
 			<cfset temp = querySetCell(qGetMostViewed, "typename", qStats.typename)>
 			<cfset temp = querySetCell(qGetMostViewed, "downloads", qStats.count_downloads)>

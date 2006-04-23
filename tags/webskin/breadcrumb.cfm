@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/webskin/breadcrumb.cfm,v 1.15 2003/10/09 00:50:53 brendan Exp $
-$Author: brendan $
-$Date: 2003/10/09 00:50:53 $
-$Name: b201 $
-$Revision: 1.15 $
+$Header: /cvs/farcry/farcry_core/tags/webskin/breadcrumb.cfm,v 1.17 2003/12/08 05:23:55 paul Exp $
+$Author: paul $
+$Date: 2003/12/08 05:23:55 $
+$Name: milestone_2-1-2 $
+$Revision: 1.17 $
 
 || DESCRIPTION || 
 builds a breadcrumb for the page
@@ -41,7 +41,7 @@ out:
 
 <cfscript>
 // get navigation elements
-	qAncestors = application.factory.oTree.getAncestors(objectid=attributes.objectid);
+	qAncestors = request.factory.oTree.getAncestors(objectid=attributes.objectid);
 </cfscript>
 
 <cfif attributes.includeSelf>
@@ -64,10 +64,10 @@ out:
 	
 	<!--- output breadcrumb --->
 	<cfloop query="qCrumb">
-		<skin:buildlink objectid="#qCrumb.objectid#" class="#attributes.linkClass#"><cfoutput>#trim(qCrumb.objectName)#</cfoutput></skin:buildLink><cfoutput>#attributes.separator#</cfoutput>
+		<skin:buildLink objectid="#qCrumb.objectid#" class="#attributes.linkClass#"><cfoutput>#trim(qCrumb.objectName)#</cfoutput></skin:buildLink><cfoutput>#attributes.separator#</cfoutput>
 	</cfloop>
 	<cfif attributes.includeSelf>
-		<skin:buildlink objectid="#attributes.objectid#" class="#attributes.linkClass#"><cfoutput>#stSelf.title#</cfoutput></skin:buildLink><cfoutput>#attributes.separator#</cfoutput>
+		<skin:buildLink objectid="#attributes.objectid#" class="#attributes.linkClass#"><cfoutput>#stSelf.title#</cfoutput></skin:buildLink><cfoutput>#attributes.separator#</cfoutput>
 	</cfif>
 <cfelse>
 	<!--- output home only --->

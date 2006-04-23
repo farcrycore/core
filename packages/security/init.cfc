@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/security/init.cfc,v 1.17 2003/09/17 10:12:50 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/security/init.cfc,v 1.17.2.1 2004/02/18 02:51:29 brendan Exp $
 $Author: brendan $
-$Date: 2003/09/17 10:12:50 $
-$Name: b201 $
-$Revision: 1.17 $
+$Date: 2004/02/18 02:51:29 $
+$Name: milestone_2-1-2 $
+$Revision: 1.17.2.1 $
 
 || DESCRIPTION || 
 $Description: authorisation cfc $
@@ -358,14 +358,14 @@ $out:$
 			<cfcase value="mysql">
 				<cfquery name="qCreateTable_dmGroup" datasource="#arguments.datasource#" dbtype="ODBC">
 				CREATE TABLE `#application.dbowner#dmGroup` 
-					(`groupid` INT (11) UNSIGNED DEFAULT '0' NOT NULL AUTO_INCREMENT, 
+					(`groupid` INT (11) UNSIGNED NOT NULL AUTO_INCREMENT, 
 					 `groupName` VARCHAR (64) DEFAULT '0' NOT NULL, 
 					 `groupNotes` VARCHAR (255) DEFAULT '0', 
 					 PRIMARY KEY(`groupid`,`groupName`)) 
 				</cfquery>
 				<cfquery name="qCreateTable_dmUser" datasource="#arguments.datasource#" dbtype="ODBC">
 					CREATE TABLE `#application.dbowner#dmUser` 
-					(`userId` INT (11) UNSIGNED DEFAULT '0' NOT NULL AUTO_INCREMENT, 
+					(`userId` INT (11) UNSIGNED NOT NULL AUTO_INCREMENT, 
 					 `userLogin` VARCHAR (255) DEFAULT '0' NOT NULL, 
 					 `userNotes` VARCHAR (255) DEFAULT '0', 
 					 `userPassword` VARCHAR (32) DEFAULT '0' NOT NULL, 

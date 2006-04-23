@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmCSS/edit.cfm,v 1.20 2003/08/01 01:57:07 brendan Exp $
-$Author: brendan $
-$Date: 2003/08/01 01:57:07 $
-$Name: b201 $
-$Revision: 1.20 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmCSS/edit.cfm,v 1.22 2003/11/28 02:32:11 paul Exp $
+$Author: paul $
+$Date: 2003/11/28 02:32:11 $
+$Name: milestone_2-1-2 $
+$Revision: 1.22 $
 
 || DESCRIPTION || 
 $Description: edit handler$
@@ -74,7 +74,7 @@ $out:$
 	
 	<cfscript>
 		// update the OBJECT	
-		oType = createobject("component","#application.packagepath#.types.dmCSS");
+		oType = createobject("component", application.types.dmCSS.typePath);
 		oType.setData(stProperties=stProperties);
 	</cfscript>
 	
@@ -101,7 +101,7 @@ $out:$
 	<cfoutput>
 	<form action="" method="post" enctype="multipart/form-data" name="fileForm">
 		
-	<table border="0">
+	<table align="left" border="0" width="80%" >
 	<tr>
 		<td colspan="2" align="center">
 			<span class="FormTitle">#stObj.title#</span>
@@ -109,33 +109,27 @@ $out:$
 	</tr>
 	
 	<tr>
-  	 <td><span class="FormLabel">Title:</span></td>
-   	 <td><input type="text" name="title" value="#stObj.title#" style="width:250px;" class="FormTextBox"></td>
+  		<td width="20" align="right"><span class="FormLabel">Title:</span></td>
+   	 	<td align="left"><input type="text" name="title" value="#stObj.title#" style="width:250px;" class="FormTextBox"></td>
 	</tr>
 	<tr>
-		<td>&nbsp;</td>
+		<td colspan="2" >&nbsp;</td>
 	</tr>
-	<!--- don't show filename textbox, just pass as hidden field --->
-		<input type="hidden" name="filename" value="#stObj.filename#">
-		<!--- <tr>	
-		 <td><span class="FormLabel">CSS File:</span></td>
-		 <td><input type="text" name="filename" value="#stObj.filename#" class="FormTextBox"></td>
-		</tr> --->
+	
 	<tr>
-		<td ><span class="FormLabel">Upload File</span></td>
+		<td align="right" ><span class="FormLabel">Upload File</span></td>
 		<td>
+			<input type="hidden" name="filename" value="#stObj.filename#">
 			<input type="file" name="cssFile" class="FormFileBox">&nbsp;&nbsp;
 		</td>
 	</tr>
 	<tr>
-		<td>&nbsp;</td>
+		<td colspan="2" >&nbsp;</td>
 	</tr>
 	<tr>
-  	 <td valign="top"><span class="FormLabel">Description:</span></td>
-   	 <td><textarea cols="30" rows="4" name="description" class="FormTextArea">#stObj.description#</textarea></td>
+  		<td align="right" valign="top"><span class="FormLabel">Description:</span></td>
+   	 	<td><textarea cols="50" rows="4" name="description" class="FormTextArea">#stObj.description#</textarea></td>
 	</tr>
-	</tr>
-
 	<cfif stObj.filename neq "" and FileExists("#application.path.project#/www/css/#stObj.filename#")>
 		<cffile 
 		  action = "read" 
@@ -143,8 +137,8 @@ $out:$
 		  variable = "css"
 		  charset="utf-8">
 		<tr>
-			<td valign="top"><span class="FormLabel">Style Sheet</span></td>
-			<td><textarea style="width:85%" rows="30" name="cssContent" class="FormTextArea" wrap="off">#css#</textarea></td>
+			<td align="right" valign="top"><span class="FormLabel">Style Sheet</span></td>
+			<td><textarea style="width:500"  rows="30" name="cssContent" class="FormTextArea" wrap="off">#css#</textarea></td>
 		</tr>
 	</cfif>
 

@@ -8,11 +8,38 @@
 <cfparam name="attributes.bInclusive" default="0">
 
 <q4:contentobjectget objectId="#attributes.objectId#" r_stObject="stObject">
-
 <cfscript>
+	/*if we are trying to find the navigation node a version is in,
+	then we need to find the object that this is a version of*/
+	if (isDefined("stObject.versionId") and len(stObject.versionId))
+			attributes.objectId=stObject.versionid;	
+	oNav = createObject("component",application.types['dmNavigation'].typepath);
 	typename = stObject.typename;
+	if (attributes.bInclusive AND stObject.typename IS "dmNavigation") //not sure what or why anything would require this - included for legacy support, i suspect its redundant. PH
+	{
+		parentNav=stObject;
+		lObjectIds=attributes.objectId;
+	}
+	else	
+	{	
+		
+		q = oNav.getParent(objectid=attributes.objectid);
+		if(NOT q.recordcount)  //this condition should never happen. Keeping in for legacy support only.
+		{
+			lObjectIds = '';
+			parentNav = '';	
+		}
+		else
+		{
+			lObjectIds = q.objectid;
+			if (len(attributes.r_stObject))  //get parent as object if required
+				parentNav = oNav.getData(objectid=lObjectIds,dsn=application.dsn);
+			
+		}	
+				
+	}
 </cfscript>
-
+<!--- 
 <cfif attributes.bInclusive and stObject.typename IS "dmNavigation">
 	<cfset parentNav=stObject>
 	<cfset lObjectIds=attributes.objectId>
@@ -59,7 +86,7 @@
 		<cfset parentNav="">
 		<cfset lObjectIds="">
 	</cfif>
-</cfif>
+</cfif> --->
 
 <cfif len(attributes.r_objectId)>
 	<cfset "caller.#attributes.r_objectId#"=lObjectIds>

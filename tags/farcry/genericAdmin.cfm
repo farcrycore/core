@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/farcry/genericAdmin.cfm,v 1.46 2003/11/03 05:41:27 brendan Exp $
-$Author: brendan $
-$Date: 2003/11/03 05:41:27 $
-$Name: b201 $
-$Revision: 1.46 $
+$Header: /cvs/farcry/farcry_core/tags/farcry/genericAdmin.cfm,v 1.62.2.2 2005/04/29 07:03:59 guy Exp $
+$Author: guy $
+$Date: 2005/04/29 07:03:59 $
+$Name: milestone_2-1-2 $
+$Revision: 1.62.2.2 $
 
 || DESCRIPTION || 
 $Description: generic admin for all types. If there is a display method called "display" on the type, it can be previewed.... $
@@ -32,9 +32,7 @@ $TODO: the default for this is build regardless of the existence of this attribu
 $in: [stGrid]: optional, structure to specify grid for admin interface $
 
 $TODO: there shouldn't be anything scoped from outside of the tag! Make this an attribute GB031101 $
-$in: [url.module]: required, permission check to make for access to admin $
 --->
-
 <cfsetting enablecfoutputonly="No">
 <cfimport taglib="/farcry/farcry_core/tags/display/" prefix="display">
 <cfinclude template="/farcry/farcry_core/admin/includes/cfFunctionWrappers.cfm">
@@ -43,25 +41,42 @@ $in: [url.module]: required, permission check to make for access to admin $
 
 <!--- default general attributes --->
 <cfparam name="attributes.typename" type="string">
-<Cfparam name="url.module" default="">
+<cfparam name="url.module" default="">
 <cfparam name="attributes.user" default=""><!--- set this to a specific user and it will only get stuff that they created. --->
 <cfparam name="attributes.permissionType"><!--- --->
 <cfparam name="attributes.bDisplayCategories" default="true">
 <cfparam name="attributes.criteria" default="#form#">
 
+
 <cfscript>
-	oType = createObject("component",getPackagePath(attributes.typename));
+	oCat = createObject("component","#application.packagepath#.farcry.category");
+	oType = createObject("component", application.types[attributes.typename].typePath);
+
 	stTypeMetaData = getMetaData(oType);
-	bDeprecated = 0;
+	bDeprecated = 1;
+	finished = false;
 	if(structKeyExists(stTypeMetaData,'extends'))
 	{
-		if(NOT stTypeMetaData.extends.name IS 'farcry.farcry_core.packages.farcry.genericAdmin')
-			bDeprecated = 1;
+		while(NOT finished)
+		{								
+			if (structKeyExists(stTypeMetaData,'extends') AND NOT structIsEmpty(stTypeMetaData.extends))
+			{		
+				if(stTypeMetaData.extends.name IS 'farcry.farcry_core.packages.farcry.genericAdmin')
+				{
+					bDeprecated = 0;
+					finished = true;	
+				}	
+				stTypeMetaData = stTypeMetaData.extends;
+			}
+			else
+			{
+				finished=true;
+			}	
+		}
 	}	
 	if (bDeprecated) 
 		oType = createObject("component","#application.packagepath#.farcry.genericAdmin");
-</cfscript>	
-
+</cfscript>
 
 <cfscript>
 
@@ -69,7 +84,8 @@ $in: [url.module]: required, permission check to make for access to admin $
 	//This data structure is used to create the grid
 
 	stGrid = structNew();
-	stGrid.finishURL = URLEncodedFormat("#application.url.farcry#/navajo/GenericAdmin.cfm?type=news"); //this is the url you will end back at after add/edit operations.
+	//this is the url you will end back at after add/edit operations
+	stGrid.finishURL = "#application.url.farcry#/navajo/GenericAdmin.cfm?typename=#attributes.typename#"; 
 	stGrid.typename = attributes.typename;
 	stGrid.permissionType = 'news';
 	
@@ -87,8 +103,8 @@ $in: [url.module]: required, permission check to make for access to admin $
 	st.heading = 'Edit';
 	st.align = "center";
 	st.columnType = 'eval'; 
-	editobjectURL = "#application.url.farcry#/navajo/edit.cfm?objectid=##recordset.objectID[recordset.currentrow]##&type=#stGrid.typename#";	
-	st.value = "iif(locked and lockedby neq '##session.dmSec.authentication.userlogin##_##session.dmSec.authentication.userDirectory##',DE('<span style=""color:red"">Locked</span>'),DE('<a href=''#editObjectURL#''><img src=""#application.url.farcry#/images/treeImages/edit.gif"" border=""0""></a>'))";
+	editobjectURL = "#application.url.farcry#/navajo/edit.cfm?objectid=##recordset.objectID[recordset.currentrow]##&type=#stGrid.typename#&finishURL=##URLEncodedFormat(stGrid.finishURL)##";	
+	st.value = "iif(iObjectEditPermission eq 1,DE(iif(locked and lockedby neq '##session.dmSec.authentication.userlogin##_##session.dmSec.authentication.userDirectory##',DE('<span style=""color:red"">Locked</span>'),DE('<a href=''#editObjectURL#''><img src=""#application.url.farcry#/images/treeImages/edit.gif"" border=""0""></a>'))),DE('<img src=""#application.url.farcry#/images/treeImages/edit.gif"" border=""0"">'))";
 	arrayAppend(stGrid.aTable,st);
 	
 	st = structNew();
@@ -102,8 +118,7 @@ $in: [url.module]: required, permission check to make for access to admin $
 	st = structNew();
 	st.heading = 'Label';
 	st.columnType = 'eval'; 
-	editobjectURL = "#application.url.farcry#/navajo/edit.cfm?objectid=##recordset.objectID[recordset.currentrow]##&type=#stGrid.typename#";	
-	st.value = "iif(locked and lockedby neq '#session.dmSec.authentication.userlogin#_#session.dmSec.authentication.userDirectory#',DE('##replace(recordset.label[recordset.currentrow],'####','','all')##'),DE('<a href=''#editObjectURL#''>##replace(recordset.label[recordset.currentrow],'####','','all')##</a>'))";
+	st.value = "iif(iObjectEditPermission eq 1,DE(iif(locked and lockedby neq '#session.dmSec.authentication.userlogin#_#session.dmSec.authentication.userDirectory#',DE('##replace(recordset.label[recordset.currentrow],'####','','all')##'),DE('<a href=''#editObjectURL#''>##replace(recordset.label[recordset.currentrow],'####','','all')##</a>'))),DE('##replace(recordset.label[recordset.currentrow],'####','','all')##'))";
 	st.align = "left";
 	arrayAppend(stGrid.aTable,st);
 		
@@ -133,11 +148,25 @@ $in: [url.module]: required, permission check to make for access to admin $
 			
 	// get permissions
 		
+
 </cfscript>
 <cfparam name="attributes.stGrid" default="#stGrid#">
 <cfset stGrid = attributes.stGrid>
 <cfparam name="stgrid.permissionType" default="news">
+<cfif isDefined("attributes.finishURL")>
+	<cfset stGrid.finishURL = attributes.finishURL>
+</cfif>
+<cfif isDefined("attributes.permissionType")>
+	<cfset stGrid.permissionType = attributes.permissionType>
+</cfif>
+<cfif isDefined("URL.approveURL")><!--- yes referring to url params in this tag bad - in here for backwards compatability --->
+	<cfset stGrid.approveURL = URL.approveURL>
+</cfif>
+<cfif isDefined("URL.objectid")><!--- yes referring to url params in this tag bad - in here for backwards compatability --->
+	<cfset form.objectid = URL.objectid>
+</cfif>
 
+<cfparam name="stGrid.submit.create.onClick" default="window.location='#application.url.farcry#/navajo/createObject.cfm?typename=#attributes.typename#';">
 
 <cfscript>
 	oAuthorisation = request.dmSec.oAuthorisation;
@@ -145,6 +174,7 @@ $in: [url.module]: required, permission check to make for access to admin $
 	iObjectDeletePermission = oAuthorisation.checkPermission(permissionName="#stGrid.permissionType#Delete",reference="PolicyGroup");
 	iObjectRequestApprovalPermission = oAuthorisation.checkPermission(permissionName="#stGrid.permissionType#RequestApproval",reference="PolicyGroup");
 	iObjectApprovePermission = oAuthorisation.checkPermission(permissionName="#stGrid.permissionType#Approve",reference="PolicyGroup");
+	iObjectEditPermission = oAuthorisation.checkPermission(permissionName="#stGrid.permissionType#Edit",reference="PolicyGroup");
 	iObjectDumpTab = oAuthorisation.checkPermission(permissionName="ObjectDumpTab",reference="PolicyGroup");
 	iDeveloperPermission = oAuthorisation.checkPermission(reference="policyGroup",permissionName="developer");
 </cfscript>
@@ -160,7 +190,7 @@ $in: [url.module]: required, permission check to make for access to admin $
 
 if (isDefined("form.unlock") AND isDefined("form.objectid"))
 {
-	o = createObject("component",getPackagePath(attributes.typename));
+	o = createObject("component", application.types[attributes.typename].typePath);
 	aObjectids = listToArray(form.objectid);
 	for(i = 1;i LTE arrayLen(aObjectids);i=i+1)
 	{
@@ -194,13 +224,14 @@ if (isDefined("form.unlock") AND isDefined("form.objectid"))
 			}	
 		}
 	}
+	structDelete(form,'objectid');	
 }	
 
 
 if (isDefined("form.delete") AND isDefined("form.objectid") AND form.delete EQ 1)
 {
 	
-	o = createObject("component",getPackagePath(attributes.typename));
+	o = createObject("component", application.types[attributes.typename].typePath);
 	aObjectids = listToArray(form.objectid);
 	if(arrayLen(aObjectids))
 	{
@@ -212,6 +243,7 @@ if (isDefined("form.delete") AND isDefined("form.objectid") AND form.delete EQ 1
 	}
 	else
 		msg = "No objects were selected for deletion";
+	structDelete(form,'objectid');	
 }	
 
 //Change status
@@ -229,15 +261,30 @@ if (isDefined("form.status"))
 		else
 			status = 'unknown';
 		// custom tag to add user comments 
-		location(url="#application.url.farcry#/navajo/objectComment.cfm?status=#status#&objectID=#form.objectID#&finishURL=#stGrid.finishURL#");
+		statusurl = "#application.url.farcry#/navajo/objectComment.cfm?status=#status#&objectID=#form.objectID#&finishURL=#URLEncodedFormat(stGrid.finishURL)#";
+		if (isDefined("stgrid.approveURL"))
+			statusurl = statusurl & "&approveURL=#URLEncodedFormat(stGrid.approveURL)#";
+		location(url=statusurl);
+		
+		structDelete(form,'objectid');			
 	}			
 	else
 		msg = "No objects were selected for this operation";			
 }
 
-
 //get the recordset to display
+	
 recordset = oType.getObjects(dsn=application.dsn,typename=attributes.typename,criteria=attributes.criteria);
+
+//now if restricting by category - get categorised data and perform a union with existing filtered content
+if(isDefined("form.categoryid"))
+{
+	recordSet_restricted = oCat.getData(lcategoryids=form.categoryid,typename=attributes.typename);
+	if (recordSet_restricted.recordcount) {
+		sql = "select * from recordset where objectid IN (#quotedValueList(recordset_restricted.objectid)#)";
+		recordset = queryofquery(sql=sql);
+	}
+}
 
 // pagination
 numRecords = application.config.general.genericAdminNumItems;
@@ -266,13 +313,6 @@ if (recordSet.recordCount GT 0)
 
 <!--- ### display page ### --->
 <cfoutput>
-<HTML lang="en">
-	
-<head>
-	<link type="text/css" rel="stylesheet" href="#application.url.farcry#/css/admin.css">  	
-</head>
-
-<body>
 <!--- javascript functions --->
 <script>
 	function confirmDelete(){
@@ -428,7 +468,7 @@ if (recordSet.recordCount GT 0)
 				<td nowrap valign="top">
 				<!--- add button --->
 				<cfif iObjectCreatePermission eq 1 eq 1>
-					<input type="button" value="Add" width="100" style="width:100;" class="normalbttnstyle"  onClick="window.location='#application.url.farcry#/navajo/createObject.cfm?typename=#attributes.typename#';">
+					<input type="button" value="Add" width="100" style="width:100;" class="normalbttnstyle"  onClick="#stGrid.submit.create.onClick#">
 				</cfif>
 				</td>
 				<!--- delete object(s)	 --->
@@ -501,4 +541,4 @@ if (recordSet.recordCount GT 0)
 		</td> 
 	</tr>
 </table>
-</cfoutput>	
+</cfoutput>

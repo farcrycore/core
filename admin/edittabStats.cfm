@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/edittabStats.cfm,v 1.14 2003/09/11 01:26:52 brendan Exp $
+$Header: /cvs/farcry/farcry_core/admin/edittabStats.cfm,v 1.15 2003/12/11 00:39:53 brendan Exp $
 $Author: brendan $
-$Date: 2003/09/11 01:26:52 $
-$Name: b201 $
-$Revision: 1.14 $
+$Date: 2003/12/11 00:39:53 $
+$Name: milestone_2-1-2 $
+$Revision: 1.15 $
 
 || DESCRIPTION || 
 Shows view statistics for chosen object in a number of formats
@@ -35,6 +35,43 @@ out:
 	<!--- get top level object details --->
 	<cfimport taglib="/farcry/fourq/tags/" prefix="q4">
 	<q4:contentobjectget objectid="#url.objectId#" r_stobject="stObj">
+	
+	<!--- create navigation object --->
+	<cfset oNav = createObject("component",application.types.dmNavigation.typepath)>
+
+	<!--- see if object is in tree --->
+	<cfset qParent = oNav.getParent(url.objectId)>
+	
+	<cfif qParent.recordcount>
+		<!--- clear title variable --->
+		<cfset title = "">
+		
+		<!--- get ancestors --->
+		<cfset qAncestors = request.factory.oTree.getAncestors(qParent.objectid)>
+		
+		<!--- build breadcrumb --->
+		<cfloop query="qAncestors">
+			<!--- don't include root and home --->
+			<cfif qAncestors.nlevel gt 1>
+				<cfif len(title)>
+					<cfset title = title & " &raquo; ">
+				</cfif>
+				<cfset title = title & qAncestors.objectName>
+			</cfif>
+		</cfloop>
+		
+		<!--- append object title to breadcrumb --->
+		<cfif len(title)>
+			<cfset title = title & " &raquo; ">
+		</cfif>
+		<cfset title = title & stObj.title>			
+	<cfelse>
+		<!--- no breadcrumb --->
+		<cfset title = stObj.title>
+	</cfif>
+			
+	<!--- display object title and breadcrumb --->
+	<cfoutput><span class="FormTitle">#title#</span><p></p></cfoutput>
 	
 	<cfif stObj.typename eq "dmNavigation">
 	

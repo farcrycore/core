@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/admin/config.cfm,v 1.6 2003/09/03 01:50:31 brendan Exp $
-$Author: brendan $
-$Date: 2003/09/03 01:50:31 $
-$Name: b201 $
-$Revision: 1.6 $
+$Header: /cvs/farcry/farcry_core/admin/admin/config.cfm,v 1.7 2003/12/08 05:27:39 paul Exp $
+$Author: paul $
+$Date: 2003/12/08 05:27:39 $
+$Name: milestone_2-1-2 $
+$Revision: 1.7 $
 
 || DESCRIPTION || 
 $DESCRIPTION: config edit handler$
@@ -36,6 +36,21 @@ $out:$
 	
 	<cfoutput><span class="formtitle">FarCry Internal Config Files</span><p></p></cfoutput>
 	<cfparam name="form.action" default="none">
+	
+	<cfif isDefined("URL.configName")>
+		<cfset stTemp = evaluate('application.config.#url.configName#')>
+		<cfif structKeyExists(stTemp,'editHandler')>
+			<cftry>
+				<cfinclude template="#stTemp.edithandler#">
+				<cfcatch>
+					<cfoutput><h3>#url.configName# custom config template #stTemp.editHandler# was not found</h3></cfoutput>
+				</cfcatch>
+			</cftry>
+			<cfabort>
+		</cfif>
+	
+	</cfif>
+	
 	
 	<cfswitch expression="#form.action#">
 	
@@ -69,12 +84,14 @@ $out:$
 			<cfif IsDefined("url.configName")>
 				<cfoutput><span class="formTitle">#url.configName# Config</span></cfoutput>
 				
-				<!--- check if verity config, has unique edit handler --->
+				<!--- check if verity config, has unique edit handler TODO - update verity config to include this --->
 				<cfif url.configName eq "verity">
 					<cfinclude template="config_verity.cfm">
 				<cfelse>
 				
 					<cfset stTemp = evaluate('application.config.#url.configName#')>
+					
+									
 					<!--- sort structure by Key name --->
 					<cfset listofKeys = structKeyList(stTemp)>
 					<cfset listofKeys = listsort(listofkeys,"textnocase")>			

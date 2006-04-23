@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/container/container.cfm,v 1.6 2003/09/25 23:28:09 brendan Exp $
-$Author: brendan $
-$Date: 2003/09/25 23:28:09 $
-$Name: b201 $
-$Revision: 1.6 $
+$Header: /cvs/farcry/farcry_core/tags/container/container.cfm,v 1.10 2004/01/12 03:43:50 paul Exp $
+$Author: paul $
+$Date: 2004/01/12 03:43:50 $
+$Name: milestone_2-1-2 $
+$Revision: 1.10 $
 
 || DESCRIPTION || 
 $Description: Displays containers$
@@ -24,6 +24,7 @@ $out:$
 
 <cfimport taglib="/farcry/fourq/tags/" prefix="q4">
 <cfimport taglib="/farcry/farcry_core/tags/container/" prefix="dm">
+<cfinclude template="/farcry/farcry_core/admin/includes/cfFunctionWrappers.cfm">
 
 <cfparam name="attributes.label" default="">
 <cfparam name="attributes.objectID" default="#request.stobj.objectid#">
@@ -38,8 +39,6 @@ $out:$
 <cfscript>
 	oCon = createObject("component","#application.packagepath#.rules.container");
 	qGetContainer = oCon.getContainer(dsn=application.dsn,label=attributes.label);
-	//stick the results in a list - useful if more than one result is returned and we wanna grab the first only
-	containerIDList = valueList(qGetContainer.objectID);
 	if (NOT qGetContainer.recordCount)
 	{
 		stProps=structNew();
@@ -49,10 +48,13 @@ $out:$
 		containerID = stProps.objectID;
 		oCon.createData(dsn=application.dsn,stProperties=stProps,parentobjectid=attributes.objectid);
 	}
-	else if(qGetContainer.recordCount GT 1)
-		containerID = listGetAt(containerIDList,1);
-	else
+	else if(qGetContainer.recordCount GT 1) {
+		//stick the results in a list - useful if more than one result is returned and we wanna grab the first only
+		containerIDList = valueList(qGetContainer.objectID);
+		containerID = listGetAt(containerIDList,listLen(containerIDList));
+	} else {
 		containerID = qGetContainer.objectID;
+	}
 	stObj = oCon.getData(dsn=application.dsn,objectid=containerid);
 	
 	//this amounts to a check for the container in refObjects - will be phased out for next milestine release(post V2)
@@ -63,7 +65,6 @@ $out:$
 
 
 <!--- display edit widget --->
-
 <cfif request.mode.design and request.mode.showcontainers gt 0>
 	<dm:containerControl objectID="#containerID#" label="#attributes.label#" mode="design">
 </cfif>	

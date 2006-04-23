@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/tree.cfc,v 1.28 2003/10/26 23:32:52 brendan Exp $
-$Author: brendan $
-$Date: 2003/10/26 23:32:52 $
-$Name: b201 $
-$Revision: 1.28 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/tree.cfc,v 1.30 2004/01/05 03:36:41 paul Exp $
+$Author: paul $
+$Date: 2004/01/05 03:36:41 $
+$Name: milestone_2-1-2 $
+$Revision: 1.30 $
 
 || DESCRIPTION ||
 $Description: nested tree cfc $
@@ -61,7 +61,7 @@ $out:$
 	<cfargument name="nLevel" required="no" type="numeric">
 	<cfset  parentID = ''>
 	<cfset  nlevel = -1>
-	<cfset  rowindex = 1>
+	
 
 	<cfinclude template="_tree/getAncestors.cfm">
 
@@ -313,6 +313,7 @@ $out:$
 	<cfargument name="objectid" required="yes" type="UUID">
 	<cfargument name="objectname" required="yes" type="string">
 	<cfargument name="typename" required="yes" type="string">
+	<cfset var qChildren = queryNew('whatever')>
 
 	<cfinclude template="_tree/setYoungest.cfm">
 

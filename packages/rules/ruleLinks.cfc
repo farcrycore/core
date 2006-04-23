@@ -1,6 +1,6 @@
 <cfcomponent displayname="External Links Rule" extends="rules" hint="Method for displaying dmLink objects">
 
-<cfproperty name="intro" type="string" hint="Intro text for the link listing" required="yes" default="">
+<cfproperty name="intro" type="string" hint="Intro text for the link listing" required="no" default="">
 <cfproperty name="displayMethod" type="string" hint="Display method to render this link rule with." required="yes" default="displayteaser">
 <cfproperty name="numItems" hint="The number of items to display per page" type="numeric" required="true" default="5">
 <cfproperty name="numPages" hint="The number of pages of links to display at most" type="numeric" required="true" default="1">
@@ -35,7 +35,7 @@
 				stObj.bMatchAllKeywords = form.bMatchAllKeywords;
 				stObj.metadata = form.categoryID; //must add metadata tree
 			</cfscript>
-			<q4:contentobjectdata typename="#application.packagepath#.rules.ruleLinks" stProperties="#stObj#" objectID="#stObj.objectID#">
+			<q4:contentobjectdata typename="#application.rules.ruleLinks.rulePath#" stProperties="#stObj#" objectID="#stObj.objectID#">
 			<!--- Now assign the metadata --->
 					
 			<cfset message = "Update Successful">
@@ -255,7 +255,7 @@
 		</cfif>
 	
 		<cfif NOT stObj.bArchive>
-			<cfif len(trim(stObj.intro)) AND qGetEvents.recordCount>
+			<cfif len(trim(stObj.intro)) AND qGetLinks.recordCount>
 				<cfset tmp = arrayAppend(request.aInvocations,stObj.intro)>
 			</cfif>
 			<!--- loop over display methods --->
@@ -263,7 +263,7 @@
 				<cfscript>
 				 	stInvoke = structNew();
 					stInvoke.objectID = qGetLinks.objectID;
-					stInvoke.typename = application.packagepath & ".types.dmLink";
+					stInvoke.typename = application.types.dmLink.typePath;
 					stInvoke.method = stObj.displayMethod;
 					arrayAppend(request.aInvocations,stInvoke);
 				</cfscript>
@@ -307,7 +307,7 @@
 			<!--- Loop Through News and Display --->
 			<cfloop query="qGetLinks" startrow="#startrow#" endrow="#endrow#">
 				<cfscript>
-				o = createObject("component", "#application.packagepath#.types.dmLink");
+				o = createObject("component", application.types.dmLink.typePath);
 				o.getDisplay(qGetLinks.ObjectID, stObj.displayMethod);	
 				</cfscript>
 			</cfloop>

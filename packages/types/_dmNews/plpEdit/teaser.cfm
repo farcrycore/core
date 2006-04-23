@@ -5,11 +5,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmNews/plpEdit/teaser.cfm,v 1.4 2003/08/20 00:37:02 brendan Exp $
-$Author: brendan $
-$Date: 2003/08/20 00:37:02 $
-$Name: b201 $
-$Revision: 1.4 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmNews/plpEdit/teaser.cfm,v 1.5 2003/12/28 04:00:52 paul Exp $
+$Author: paul $
+$Date: 2003/12/28 04:00:52 $
+$Name: milestone_2-1-2 $
+$Revision: 1.5 $
 
 || DESCRIPTION || 
 $Description: teaser step for dmNews plp. $
@@ -49,10 +49,8 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 					<cfloop list="#relatedItems#" index="id">
 						<q4:contentobjectget objectid="#id#" r_stobject="stImages">
 						 <cfif stImages.typeName eq "dmImage">	
-							<cfif stImages.thumbnail neq "">
-								<cfoutput><option value="#stImages.objectID#" <cfif output.teaserImage EQ id>selected</cfif>>#stImages.title#</option></cfoutput>
-							</cfif>
-						</cfif>
+							<cfoutput><option value="#stImages.objectID#" <cfif output.teaserImage EQ id>selected</cfif>>#stImages.title#</option></cfoutput>
+						 </cfif>
 					</cfloop>
 				<cfoutput>
 				</select>

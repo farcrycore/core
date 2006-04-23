@@ -6,11 +6,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/security/ui/dmSecUI_UserCreateEdit.cfm,v 1.5 2003/08/01 01:57:07 brendan Exp $
+$Header: /cvs/farcry/farcry_core/tags/security/ui/dmSecUI_UserCreateEdit.cfm,v 1.7 2003/12/08 00:25:13 brendan Exp $
 $Author: brendan $
-$Date: 2003/08/01 01:57:07 $
-$Name: b201 $
-$Revision: 1.5 $
+$Date: 2003/12/08 00:25:13 $
+$Name: milestone_2-1-2 $
+$Revision: 1.7 $
 
 || DESCRIPTION || 
 $Description: Interface for creating and editing users.$
@@ -64,7 +64,7 @@ $out:$
             <!--- update dmProfile object --->
 			<cftry>
 	            <cfscript>
-		            o_profile = createObject("component", "#application.packagepath#.types.dmProfile");
+		            o_profile = createObject("component", application.types.dmProfile.typePath);
 		            stProfile = o_profile.getProfile(userName=URL.userLogin);
 					
 		
@@ -74,7 +74,7 @@ $out:$
 		            else if (form.userStatus eq 2) stProps.bActive = 0;
 					
 					// update object	
-					oType = createobject("component","#application.packagepath#.types.dmProfile");
+					oType = createobject("component", application.types.dmProfile.typePath);
 					oType.setData(stProperties=stProps);	
 	            </cfscript>
 				 
@@ -266,6 +266,7 @@ function generateRandomPassword()
 	<SCRIPT LANGUAGE="JavaScript">
 	<!--//
 	objForm = new qForm("user");
+	objForm.userLogin.validateNotNull("Please enter a user name");
 	objForm.userPassword.validateNotNull("Please enter a password");
 	objForm.userPassword.validatePassword(null, '1','32',"Please enter a valid password");
 	//-->

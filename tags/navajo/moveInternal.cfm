@@ -5,11 +5,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/navajo/moveInternal.cfm,v 1.16 2003/10/31 17:40:05 tom Exp $
-$Author: tom $
-$Date: 2003/10/31 17:40:05 $
-$Name: b201 $
-$Revision: 1.16 $
+$Header: /cvs/farcry/farcry_core/tags/navajo/moveInternal.cfm,v 1.18 2003/12/08 05:43:06 paul Exp $
+$Author: paul $
+$Date: 2003/12/08 05:43:06 $
+$Name: milestone_2-1-2 $
+$Revision: 1.18 $
 
 || DESCRIPTION || 
 $Description: $
@@ -38,13 +38,13 @@ $out:$
 
 <cfscript>
 	typename = stObj.typename;
-	oNav = createObject("component", "#application.packagepath#.types.dmNavigation");
+	oNav = createObject("component", application.types.dmNavigation.typePath);
 	oAudit = createObject("component","#application.packagepath#.farcry.audit");
 	oAuthentication = request.dmSec.oAuthentication;	
 	stuser = oAuthentication.getUserAuthenticationData();
 	if (stObj.typename IS 'dmNavigation')
 	{
-		qGetParent = application.factory.oTree.getParentID(objectID = stObj.objectID);
+		qGetParent = request.factory.oTree.getParentID(objectID = stObj.objectID);
 		parentObjectID = qGetParent.parentID;	
 	}
 	else
@@ -75,7 +75,7 @@ $out:$
 		{
 			if(stObj.typename IS "dmnavigation")
 			{
-				qGetChildren = application.factory.oTree.getChildren(dsn=application.dsn,objectid=parentObjectID);
+				qGetChildren = request.factory.oTree.getChildren(dsn=application.dsn,objectid=parentObjectID);
 				bottom = qGetChildren.recordCount;
 				for(i=1;i LTE qGetChildren.recordCount;i = i + 1)
 				{
@@ -96,7 +96,7 @@ $out:$
 				else if( url.direction eq "bottom" )	
 					newPosition = bottom;
 				//make the move	
-				application.factory.oTree.moveBranch(dsn=application.dsn,objectid=stobj.objectid,parentid=parentobjectid,pos=newposition);	
+				request.factory.oTree.moveBranch(dsn=application.dsn,objectid=stobj.objectid,parentid=parentobjectid,pos=newposition);	
 				application.factory.oaudit.logActivity(objectid="#URL.objectid#",auditType="sitetree.movenode", username=StUser.userlogin, location=cgi.remote_host, note="object moved to child position #newposition#");
 				updateTree(objectID =parentObjectID);
 			}
@@ -134,7 +134,7 @@ $out:$
 				//update the object
 				stParentObject.datetimecreated = createODBCDate("#datepart('yyyy',stParentObject.datetimecreated)#-#datepart('m',stParentObject.datetimecreated)#-#datepart('d',stParentObject.datetimecreated)#");
 				stParentObject.datetimelastupdated = createODBCDate(now());
-				oType = createobject("component","#application.packagepath#.types.#stParentObject.typename#");
+				oType = createobject("component", application.types[stParentObject.typename].typePath);
 				oType.setData(stProperties=stParentObject,auditNote="object moved to child position #newpos#");	
 				oaudit.logActivity(objectid="#URL.objectid#",auditType="sitetree.movenode", username=StUser.userlogin, location=cgi.remote_host, note="object moved to child position #newpos#");
 				updateTree(objectID =parentObjectID);

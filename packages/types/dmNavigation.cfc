@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/dmNavigation.cfc,v 1.15 2003/09/18 04:27:29 brendan Exp $
-$Author: brendan $
-$Date: 2003/09/18 04:27:29 $
-$Name: b201 $
-$Revision: 1.15 $
+$Header: /cvs/farcry/farcry_core/packages/types/dmNavigation.cfc,v 1.16 2004/01/05 03:37:56 paul Exp $
+$Author: paul $
+$Date: 2004/01/05 03:37:56 $
+$Name: milestone_2-1-2 $
+$Revision: 1.16 $
 
 || DESCRIPTION || 
 $Description: dmNavigation type $
@@ -62,7 +62,9 @@ object methods
 	
 	<!--- get object details --->
 	<cfset stObj = getData(arguments.objectid)>
-	<cfinclude template="_dmnavigation/delete.cfm">
+	<cfif NOT structIsEmpty(stObj)>
+		<cfinclude template="_dmnavigation/delete.cfm">
+	</cfif>
 </cffunction>
 
 <cffunction name="getNavAlias" access="public" hint="Return a structure of all the dmNavigation nodes with aliases." returntype="struct" output="false">

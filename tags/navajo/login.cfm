@@ -29,7 +29,7 @@
 			
 			if (bHasLoggedIn)
 			{
-				o_userProfile = createObject("component", "#application.packagepath#.types.dmProfile");
+				o_userProfile = createObject("component", application.types.dmProfile.typePath);
 				stProfile = o_userProfile.getProfile(userName=form.userLogin);
 		
 				// place dmProfile in session scope

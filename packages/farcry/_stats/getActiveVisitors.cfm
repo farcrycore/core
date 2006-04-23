@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_stats/getActiveVisitors.cfm,v 1.6 2003/10/24 02:17:07 paul Exp $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_stats/getActiveVisitors.cfm,v 1.8 2003/11/17 07:57:47 paul Exp $
 $Author: paul $
-$Date: 2003/10/24 02:17:07 $
-$Name: b201 $
-$Revision: 1.6 $
+$Date: 2003/11/17 07:57:47 $
+$Name: milestone_2-1-2 $
+$Revision: 1.8 $
 
 || DESCRIPTION || 
 $Description: Shows active sessions$
@@ -23,6 +23,8 @@ $out:$
 --->
 
 <!--- get active sessions structure (thanks to Sam at RewindLife sam@rewindlife.com) --->
+<cftry>
+<cflock name="getActiveVisitors"  throwontimeout="Yes" timeout="120" type="EXCLUSIVE">
 <cfscript>
 	tracker = createObject("java", "coldfusion.runtime.SessionTracker");
 	sessions = tracker.getSessionCollection(application.applicationName);
@@ -43,6 +45,7 @@ $out:$
 		</cfquery>
 		
 		<!--- set up return structure --->
+				
 		
 		<cfscript>
 			
@@ -53,7 +56,7 @@ $out:$
 				querySetCell(qSessions, "views", qViews.views);
 			else
 				querySetCell(qSessions, "views", 1);	
-			querySetCell(qSessions, "locale", qViews.locale);
+			querySetCell(qSessions,"locale", toString(qViews.locale));
 			querySetCell(qSessions, "sessionTime",dateDiff("n", sessions[i].startTime, now()));
 			if(qViews.recordcount EQ 1 AND isDate(qViews.lastActivity))
 				querySetCell(qSessions, "lastActivity",dateDiff("n", qViews.lastActivity, now()));
@@ -74,3 +77,10 @@ $out:$
 <cfelse>
 	<cfset qActive = queryNew("sessionId,remoteIP,views,locale,sessionTime,lastActivity")>
 </cfif>
+</cflock>   
+
+<cfcatch>
+	<cfdump var="#cfcatch#">
+</cfcatch>
+</cftry>
+ 

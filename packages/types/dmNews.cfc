@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/dmNews.cfc,v 1.10 2003/09/10 23:46:11 brendan Exp $
-$Author: brendan $
-$Date: 2003/09/10 23:46:11 $
-$Name: b201 $
-$Revision: 1.10 $
+$Header: /cvs/farcry/farcry_core/packages/types/dmNews.cfc,v 1.11 2003/12/11 03:46:48 paul Exp $
+$Author: paul $
+$Date: 2003/12/11 03:46:48 $
+$Name: milestone_2-1-2 $
+$Revision: 1.11 $
 
 || DESCRIPTION || 
 $Description: dmNews Type $
@@ -17,7 +17,7 @@ $Description: dmNews Type $
 $Developer: Geoff Bowers (modius@daemon.com.au) $
 
 --->
-<cfcomponent extends="types" displayname="News" hint="Dynamic news data" bSchedule="1">
+<cfcomponent extends="farcry.farcry_core.packages.farcry.genericAdmin" displayname="News" hint="Dynamic news data" bSchedule="1">
 <!------------------------------------------------------------------------
 type properties
 ------------------------------------------------------------------------->	
@@ -42,6 +42,7 @@ object methods
 	<cfset stObj = getData(arguments.objectid)>
 	<cfinclude template="_dmNews/edit.cfm">
 </cffunction>
+
 
 </cfcomponent>
 

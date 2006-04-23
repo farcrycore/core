@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_types/renderOverview.cfm,v 1.5 2003/10/01 01:06:32 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/types/_types/renderOverview.cfm,v 1.6.2.1 2004/03/01 23:10:31 brendan Exp $
 $Author: brendan $
-$Date: 2003/10/01 01:06:32 $
-$Name: b201 $
-$Revision: 1.5 $
+$Date: 2004/03/01 23:10:31 $
+$Name: milestone_2-1-2 $
+$Revision: 1.6.2.1 $
 
 || DESCRIPTION || 
 $DESCRIPTION: Dispalys summary and options for editing/approving/previewing etc for selected object$
@@ -33,9 +33,15 @@ $out:$
 
 <!--- check permissions --->
 <cfscript>
+	oAuthentication = request.dmsec.oAuthentication;
+	stUser = oAuthentication.getUserAuthenticationData();
+
 	iEdit = request.dmSec.oAuthorisation.checkInheritedPermission(objectid="#parentid#",permissionName="edit");
 	iRequest = request.dmSec.oAuthorisation.checkInheritedPermission(objectid="#parentid#",permissionName="RequestApproval");
 	iApprove = request.dmSec.oAuthorisation.checkInheritedPermission(objectid="#parentid#",permissionName="approve");
+	iApproveOwn = request.dmSec.oAuthorisation.checkInheritedPermission(objectid="#parentid#",permissionName="CanApproveOwnContent"); 	
+	if(iApproveOwn EQ 1 AND NOT stObj.lastUpdatedBy IS stUser.userLogin)
+		iApproveOwn = 0;
 	iTreeSendToTrash = request.dmSec.oAuthorisation.checkInheritedPermission(objectid="#parentid#",permissionName="SendToTrash");
 	iObjectDumpTab = request.dmSec.oAuthorisation.checkPermission(reference="PolicyGroup",permissionName="ObjectDumpTab");
 	iDelete = request.dmSec.oAuthorisation.checkInheritedPermission(objectid="#parentid#",permissionName="delete");
@@ -59,7 +65,7 @@ $out:$
 			</cfif>
 			
 			<!--- check user can approve object --->
-			<cfif iApprove eq 1>
+			<cfif iApprove eq 1 OR iApproveOwn>
 				<cfoutput><span class="frameMenuBullet">&raquo;</span> <a href="#application.url.farcry#/navajo/approve.cfm?objectid=#stObj.objectid#&status=approved" class="frameMenuItem">Approve the object yourself</a><br></cfoutput>
 			</cfif>
 		</cfcase>
@@ -86,7 +92,7 @@ $out:$
 				</cfif>
 			</cfif>
 			
-			<cfif iApprove eq 1>
+			<cfif iApprove eq 1 OR iApproveOwn EQ 1>
 				<cfoutput><span class="frameMenuBullet">&raquo;</span> <a href="#application.url.farcry#/navajo/approve.cfm?objectid=#stObj.objectid#&status=draft" class="frameMenuItem">Send object back to draft</a> <cfif structKeyExists(stObj,"versionID") and qHasDraft.recordcount> (deleting above draft version)</cfif><br></cfoutput>
 			</cfif>
 			
@@ -106,7 +112,7 @@ $out:$
 <!--- add comments --->
 <span class="frameMenuBullet">&raquo;</span> <a href="navajo/commentOnContent.cfm?objectid=<cfoutput>#stObj.objectid#</cfoutput>">Add Comments</a><BR>
 <!--- view comments --->
-<span class="frameMenuBullet">&raquo;</span> <a href="##" onClick="commWin=window.open('<cfoutput>#application.url.farcry#/navajo/viewComments.cfm?objectid=#stObj.objectid#</cfoutput>', 'commWin', 'width=400,height=450');commWin.focus();">View Comments</a><BR>
+<span class="frameMenuBullet">&raquo;</span> <a href="##" onClick="commWin=window.open('<cfoutput>#application.url.farcry#/navajo/viewComments.cfm?objectid=#stObj.objectid#</cfoutput>', 'commWin', 'scrollbars=yes,width=400,height=450');commWin.focus();">View Comments</a><BR>
 
 
 <cfif iObjectDumpTab eq 1>

@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_verity/verityUpdate.cfm,v 1.3 2003/09/24 02:26:55 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_verity/verityUpdate.cfm,v 1.3.2.2 2004/04/01 02:37:51 brendan Exp $
 $Author: brendan $
-$Date: 2003/09/24 02:26:55 $
-$Name: b201 $
-$Revision: 1.3 $
+$Date: 2004/04/01 02:37:51 $
+$Name: milestone_2-1-2 $
+$Revision: 1.3.2.2 $
 
 || DESCRIPTION || 
 $Description: updates verity collection$
@@ -54,8 +54,10 @@ $out:$
 		<cfoutput><span class="frameMenuBullet">&raquo;</span> Updating #q.recordCount# records for #key#...(#arrayToList(application.config.verity.contenttype[key].aprops)#)<br></cfoutput>
 		<cfflush />
 		
-		<!--- update collection --->		
-		<cfindex action="UPDATE" query="q" body="#arrayToList(application.config.verity.contenttype[key].aprops)#" custom1="#key#" key="objectid" title="label" collection="#application.applicationname#_#key#">
+		<!--- update collection --->	
+		<cfif q.recordcount>
+			<cfindex action="UPDATE" query="q" body="#arrayToList(application.config.verity.contenttype[key].aprops)#" custom1="#key#" key="objectid" title="label" collection="#application.applicationname#_#key#">
+		</cfif>	
 		
 		<cfif structKeyExists(application.config.verity.contenttype[key], "lastupdated") and structKeyExists(application.types[key].stProps, "status")>
 			<!--- remove any objects that may have been sent back to draft or pending --->

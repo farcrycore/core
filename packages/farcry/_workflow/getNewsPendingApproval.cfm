@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_workflow/getNewsPendingApproval.cfm,v 1.7 2003/09/10 12:21:48 brendan Exp $
-$Author: brendan $
-$Date: 2003/09/10 12:21:48 $
-$Name: b201 $
-$Revision: 1.7 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_workflow/getNewsPendingApproval.cfm,v 1.8 2003/11/05 04:46:09 tom Exp $
+$Author: tom $
+$Date: 2003/11/05 04:46:09 $
+$Name: milestone_2-1-2 $
+$Revision: 1.8 $
 
 || DESCRIPTION || 
 $Description: gets users who can approve pending items $
@@ -41,7 +41,7 @@ $out:$
 		<cfloop query="qGetNews">
 			<!--- Create structure for news details to be outputted later --->
             <cfscript>
-            o_profile = createObject("component", "#application.packagepath#.types.dmProfile");
+            o_profile = createObject("component", application.types.dmProfile.typePath);
             stProfile = o_profile.getProfile(userName=qGetNews.createdBy);
 
 			stPendingNews[qGetNews.objectID] = structNew();

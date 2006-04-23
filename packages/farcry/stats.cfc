@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/stats.cfc,v 1.28 2003/09/10 12:21:48 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/farcry/stats.cfc,v 1.29 2004/01/07 23:30:17 brendan Exp $
 $Author: brendan $
-$Date: 2003/09/10 12:21:48 $
-$Name: b201 $
-$Revision: 1.28 $
+$Date: 2004/01/07 23:30:17 $
+$Name: milestone_2-1-2 $
+$Revision: 1.29 $
 
 || DESCRIPTION || 
 $Description: statistics cfc $
@@ -278,6 +278,15 @@ object methods
 	
 	<cfinclude template="_stats/getUserBrowser.cfm">	
 	<cfreturn stBrowser>
+</cffunction>
+
+<cffunction name="getGoogleStats" access="public" returntype="query" hint="Returns log results for google referals">
+	<cfargument name="dsn" type="string" required="false" default="#application.dsn#">
+	<cfargument name="maxRows" type="string" required="true" default="20" hint="Maximum number of results returned">
+	<cfargument name="dateRange" type="string" required="true" default="all">
+	
+	<cfinclude template="_stats/getGoogleStats.cfm">	
+	<cfreturn qGetGoogleStats>
 </cffunction>
 
 <cffunction name="getActiveVisitors" hint="Returns a query of current sessions" returntype="query">

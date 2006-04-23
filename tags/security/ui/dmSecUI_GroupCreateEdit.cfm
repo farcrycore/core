@@ -7,11 +7,11 @@ Daemon Pty Limited 1995-2001
 http://www.daemon.com.au/
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/security/ui/dmSecUI_GroupCreateEdit.cfm,v 1.3 2003/07/14 02:24:55 brendan Exp $
+$Header: /cvs/farcry/farcry_core/tags/security/ui/dmSecUI_GroupCreateEdit.cfm,v 1.4 2003/12/08 00:25:13 brendan Exp $
 $Author: brendan $
-$Date: 2003/07/14 02:24:55 $
-$Name: b201 $
-$Revision: 1.3 $
+$Date: 2003/12/08 00:25:13 $
+$Name: milestone_2-1-2 $
+$Revision: 1.4 $
 
 || DESCRIPTION || 
 Interface for creating and editing groups.
@@ -22,39 +22,6 @@ Interface for creating and editing groups.
 Matt Dawson (mad@daemon.com.au)
 
 || ATTRIBUTES ||
-
-|| HISTORY ||
-$Log: dmSecUI_GroupCreateEdit.cfm,v $
-Revision 1.3  2003/07/14 02:24:55  brendan
-linux mods
-
-Revision 1.2  2003/04/09 08:04:59  spike
-Major update to remove need for multiple ColdFusion and webserver mappings.
-
-Revision 1.1  2003/04/08 08:52:20  paul
-CFC security updates
-
-Revision 1.2  2002/09/11 07:33:24  geoff
-no message
-
-Revision 1.1.1.1  2002/08/22 07:18:17  geoff
-no message
-
-Revision 1.2  2001/11/29 11:12:45  aaron
-modified for frames
-
-Revision 1.1  2001/11/18 16:15:22  matson
-moved all files to custom tags daemon_security/UI (dmSecUI)
-
-Revision 1.2  2001/11/12 10:54:47  matson
-massive update here. navajo is now base install
-
-Revision 1.1.1.1  2001/10/29 15:04:22  matson
-no message
-
-Revision 1.1.1.1  2001/09/26 22:02:02  matson
-no message
-
 
 || END FUSEDOC ||
 --->
@@ -117,7 +84,7 @@ no message
 </cfif>
 
 <cfoutput>
-<form action="" method="POST">
+<form action="" method="POST" name="groupForm">
 <table class="formtable">
 <tr>
 	<td rowspan="10">&nbsp;</td>
@@ -177,6 +144,13 @@ no message
 	<td>&nbsp;</td>
 </tr>
 </table>
+<!--- form validation --->
+<SCRIPT LANGUAGE="JavaScript">
+<!--//
+objForm = new qForm("groupForm");
+objForm.GroupName.validateNotNull("Please enter a group name");
+//-->
+</SCRIPT>
 </form>
 
 </cfoutput>

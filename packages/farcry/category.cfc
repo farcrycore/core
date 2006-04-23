@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/category.cfc,v 1.12 2003/10/09 05:45:34 paul Exp $
+$Header: /cvs/farcry/farcry_core/packages/farcry/category.cfc,v 1.15 2004/01/19 00:45:16 paul Exp $
 $Author: paul $
-$Date: 2003/10/09 05:45:34 $
-$Name: b201 $
-$Revision: 1.12 $
+$Date: 2004/01/19 00:45:16 $
+$Name: milestone_2-1-2 $
+$Revision: 1.15 $
 
 || DESCRIPTION || 
 $Description: Set of functions to perform metadata characterisation $
@@ -57,7 +57,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 			FROM nested_tree_objects
 			WHERE nlevel = 1 AND lower(objectname) = '#lcase(arguments.objectname)#' AND lower(typename) = 'categories'
 		</cfquery>
-		
+				
 		<cfif q.recordcount EQ 1>
 			<cfset objectid = q.objectid>
 		<cfelse>
@@ -79,6 +79,8 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 		<cfargument name="lSelectedCategories" type="string" hint="A list of category objectIDs that are to be selected as default" required="false" default="">
 		<cfargument name="lExcludeCategories" type="string" hint="A list of category objectIDs that are to be exlcuded" required="false" default="">
 		<cfargument name="bExpand" type="boolean" hint="Defaul action for root node expansion" required="false" default="True">
+		<cfargument name="dsn" required="no" default="#application.dsn#">
+		<cfargument name="typename" required="no" default="categories">
 		
 		<cfinclude template="_category/displayTree.cfm">
 		
@@ -136,18 +138,20 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 	<cffunction name="getTreeData">
 		<cfargument name="ObjectId">
 		<cfargument name="topLevelVariable" required="No" default="objects">
+		<cfargument name="dsn" type="string" required="No" default="#application.dsn#" hint="Database DSN">
+		
 		<cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
 		
 		<cfscript>
 			jsout = "";
 			stAllObjects = structNew();
 		</cfscript>
-				
+						
 		<cfscript>
-			qDescendants = application.factory.oTree.getDescendants(dsn=application.dsn,objectid=arguments.objectid);
+			qDescendants =request.factory.oTree.getDescendants(dsn=arguments.dsn,objectid=arguments.objectid);
 		</cfscript>
-
-		<cfquery name="q" datasource="#application.dsn#">
+		
+		<cfquery name="q" datasource="#arguments.dsn#">
 			SELECT * from nested_tree_objects where objectid = '#arguments.objectid#'
 		</cfquery> 
 
@@ -180,7 +184,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 		
 		<cfloop collection="#stObjects#" item="key">
 		<cfscript>
-			qChildren = application.factory.oTree.getChildren(objectid=key);
+			qChildren = request.factory.oTree.getChildren(objectid=key,dsn=arguments.dsn);
 			stObjects['#key#'].aNavChild = ListToArray(ValueList(qChildren.ObjectID));
 			if (NOT ArrayLen(stObjects['#key#'].aNavChild))
 				stObjects['#key#'].aNavChild = ""; // tree seems to barf on empty array
@@ -192,6 +196,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 		<cfscript>
 			StructAppend( stAllObjects, stObjects, "Yes" );
 		</cfscript>
+		
 		<nj:WDDXToJavascript input="#stAllObjects#" output="jsout" toplevelvariable="#arguments.topLevelVariable#">
 		
 		<cfreturn jsout>  
@@ -201,6 +206,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 	
 	<cffunction name="updateTree">
 		<cfargument name="lObjectIds">
+		<cfargument name="dsn" type="string" required="No" default="#application.dsn#" hint="Database DSN">
 		<cfscript>
 			jscode = getTreeData(arguments.lobjectids);
 		</cfscript>

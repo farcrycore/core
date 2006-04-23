@@ -43,7 +43,8 @@
 		
 		// if navigation item smoke the object up with some aNavChild entries
 		if (typename is attributes.nodetype) { 
-			qChildren = application.factory.oTree.getChildren(objectid=key);
+			oTree = createObject("component","#application.packagepath#.farcry.tree");
+			qChildren = oTree.getChildren(objectid=key);
 			stObjs['#key#'].aNavChild = ListToArray(ValueList(qChildren.ObjectID));
 			if (NOT ArrayLen(stObjs['#key#'].aNavChild))
 				stObjs['#key#'].aNavChild = ""; // tree seems to barf on empty array
@@ -57,9 +58,9 @@
 				draftObject = checkForDraft(stObjs['#key#']);
 				if (draftObject.objectID NEQ 0)
 				{
-					SetVariable("stObjs['#key#'].BHASDRAFT",1);
-					SetVariable("stObjs['#key#'].DRAFTOBJECTID",draftObject.objectID);
-					SetVariable("stObjs['#key#'].DRAFTSTATUS",draftObject.status);
+					stObjs['#key#'].BHASDRAFT = 1;
+					stObjs['#key#'].DRAFTOBJECTID = draftObject.objectID;
+					stObjs['#key#'].DRAFTSTATUS = draftObject.status;
 				}
 			}
 		}	
@@ -85,11 +86,11 @@ Daemon Pty Limited 1995-2001
 http://www.daemon.com.au/
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/navajo/treeData.cfm,v 1.13 2003/10/28 06:48:56 paul Exp $
+$Header: /cvs/farcry/farcry_core/tags/navajo/treeData.cfm,v 1.15 2003/12/01 05:41:30 paul Exp $
 $Author: paul $
-$Date: 2003/10/28 06:48:56 $
-$Name: b201 $
-$Revision: 1.13 $
+$Date: 2003/12/01 05:41:30 $
+$Name: milestone_2-1-2 $
+$Revision: 1.15 $
 
 || DESCRIPTION || 
 Retrieves object(s) [and relations] information and returns it in js format.
@@ -107,6 +108,12 @@ Matt Dawson (mad@daemon.com.au)
 
 || HISTORY ||
 $Log: treeData.cfm,v $
+Revision 1.15  2003/12/01 05:41:30  paul
+Removed reference to oTree in app scope and instatiated on this page instead. Seemed to fix weirdness.
+
+Revision 1.14  2003/11/17 07:56:40  paul
+Removal of setVariable functions.
+
 Revision 1.13  2003/10/28 06:48:56  paul
 Some fairly drastic changes to the way the tree is updated after a move. Consider this beta!
 

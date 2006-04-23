@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/navajo/objectStatus.cfm,v 1.28 2003/09/23 23:32:12 brendan Exp $
+$Header: /cvs/farcry/farcry_core/tags/navajo/objectStatus.cfm,v 1.31.2.3 2004/02/13 02:36:54 brendan Exp $
 $Author: brendan $
-$Date: 2003/09/23 23:32:12 $
-$Name: b201 $
-$Revision: 1.28 $
+$Date: 2004/02/13 02:36:54 $
+$Name: milestone_2-1-2 $
+$Revision: 1.31.2.3 $
 
 || DESCRIPTION || 
 $Description: changes status of tree item $
@@ -117,7 +117,6 @@ $out:$
 </cfif>
 <cfif changestatus eq true>
 	<cfflush>
-	
 	<cfloop index="attributes.objectID" list="#attributes.lObjectIDs#">
 		
 		<q4:contentobjectget objectId="#attributes.objectId#" r_stObject="stObj">
@@ -134,7 +133,7 @@ $out:$
 
 		<cfif url.status eq "approved">
 			<cfset status = "approved">
-			<cfset permission = "approve">
+			<cfset permission = "approve,canApproveOwnContent">
 			<cfset active = 1>
 			<!--- send out emails informing object has been approved --->
 			<cfinvoke component="#application.packagepath#.farcry.versioning" method="approveEmail_approved">
@@ -145,7 +144,7 @@ $out:$
 			
 		<cfelseif url.status eq "draft">
 			<cfset status = 'draft'>
-			<cfset permission = "approve">
+			<cfset permission = "approve,canApproveOwnContent">
 			<!--- send out emails informing object has been sent back to draft --->
 			<cfinvoke component="#application.packagepath#.farcry.versioning" method="approveEmail_draft">
 				<cfinvokeargument name="objectId" value="#stObj.objectID#"/>
@@ -186,7 +185,16 @@ $out:$
 		
 		<cfscript>
 			oAuthorisation = request.dmsec.oAuthorisation;
-			iState = oAuthorisation.checkInheritedPermission(permissionName=permission,objectid=stNav.objectId);	
+			oAuthentication = request.dmsec.oAuthentication;
+			stUser = oAuthentication.getUserAuthenticationData();
+			for(x = 1;x LTE listLen(permission);x=x+1)
+			{
+				iState = oAuthorisation.checkInheritedPermission(permissionName=listGetAt(permission,x),objectid=stNav.objectId);	
+				if(listGetAt(permission,x) IS "canApproveOwnContent" AND iState EQ 1 AND NOT stObj.lastUpdatedBy IS stUser.userLogin)
+					iState = 0;
+				if(iState EQ 1)
+					break;
+			}	
 		</cfscript>
 		
 		<cfif iState neq 1>
@@ -234,7 +242,7 @@ $out:$
 				<cfset keyList = listAppend(keyList,arrayToList(stObj.aObjectIds))>
 			</cfif>
 			<cfscript>
-				qGetDescendants = application.factory.oTree.getDescendants(objectid=attributes.objectID);
+				qGetDescendants = request.factory.oTree.getDescendants(objectid=attributes.objectID);
 			</cfscript>
 						
 			<cfset keyList = listAppend(keyList,valueList(qGetDescendants.objectId))>
@@ -261,12 +269,18 @@ $out:$
 		<!--- update the structure data for object update --->
 	
 		<cfloop list="#keyList#" index="key">
-			
-
 			<q4:contentobjectget objectId="#key#" r_stObject="stObj">
+			
+			<!--- prepare date fields --->
+			<cfloop collection="#stObj#" item="field">
+				<cfif StructKeyExists(application.types[stObj.typeName].stProps, field) and application.types[stObj.typeName].stProps[field].metaData.type eq "date">
+					<cfset stObj[field] = CreateODBCDateTime(stObj[field])>
+				</cfif>
+			</cfloop>
+			
 			<cfscript>
-				stObj.datetimecreated = createODBCDateTime("#datepart('yyyy',stObj.datetimecreated)#-#datepart('m',stObj.datetimecreated)#-#datepart('d',stObj.datetimecreated)#");
 				stObj.datetimelastupdated = createODBCDateTime(now());
+				
 				//only if the comment log exists - do we actually append the entry
 				if (isDefined("FORM.commentLog")) {
 					if (structkeyexists(stObj, "commentLog")){
@@ -286,13 +300,7 @@ $out:$
 			<cfelse>
 				<!--- a normal page, no underlying object --->
 				<cfscript>
-					//is this a custom type?
-					if(application.types[stObj.typename].bCustomType)
-						packagePath = application.customPackagePath;
-					else
-						packagePath = application.packagePath;
-					// update the OBJECT
-					oType = createobject("component","#packagepath#.types.#stObj.typename#");
+					oType = createobject("component", application.types[stObj.typename].typePath);
 					oType.setData(stProperties=stObj,auditNote="Status changed to #stObj.status#");
 				</cfscript>
 				

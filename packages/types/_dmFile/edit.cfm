@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmFile/edit.cfm,v 1.16 2003/08/01 01:57:07 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmFile/edit.cfm,v 1.18.2.1 2004/10/12 01:04:42 brendan Exp $
 $Author: brendan $
-$Date: 2003/08/01 01:57:07 $
-$Name: b201 $
-$Revision: 1.16 $
+$Date: 2004/10/12 01:04:42 $
+$Name: milestone_2-1-2 $
+$Revision: 1.18.2.1 $
 
 || DESCRIPTION || 
 $Description: edit handler$
@@ -58,7 +58,7 @@ $out:$
 				destination="#application.defaultFilePath#" 
 				returnvariable="stReturn" 
 				formfield="filename" 
-				accept="#application.config.file.filetype#" /> 
+				accept="#application.config.file.filetype#"/> 
 		<cfelse>
 			<cfinvoke 
 				component="#application.packagepath#.farcry.form" 
@@ -83,7 +83,7 @@ $out:$
 	
 	<cfscript>
 		// update the OBJECT	
-		oType = createobject("component","#application.packagepath#.types.dmFile");
+		oType = createobject("component", application.types.dmFile.typePath);
 		oType.setData(stProperties=stProperties);
 	</cfscript>
 	
@@ -150,7 +150,7 @@ $out:$
 			<img src="#application.url.farcry#/images/treeImages/#fileicon#">
 		</td>
 		<td>
-			<a href="#stObj.filePath#\#stObj.filename#" target="_blank">
+			<a href="#application.url.webroot#/files/#stObj.filename#" target="_blank">
 				<span class="FormLabel">PREVIEW</span>
 			</a>
 		</td>

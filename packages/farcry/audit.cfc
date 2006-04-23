@@ -2,11 +2,11 @@
 audit.cfc (fourQ COAPI)
 Copyright Daemon Pty Limited 2002 (http://www.daemon.com.au/)
 
-$Header: /cvs/farcry/farcry_core/packages/farcry/audit.cfc,v 1.6 2003/09/24 06:09:49 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/farcry/audit.cfc,v 1.7 2003/11/25 00:18:07 brendan Exp $
 $Author: brendan $
-$Date: 2003/09/24 06:09:49 $
-$Name: b201 $
-$Revision: 1.6 $
+$Date: 2003/11/25 00:18:07 $
+$Name: milestone_2-1-2 $
+$Revision: 1.7 $
 
 Released Under the "Common Public License 1.0"
 http://www.opensource.org/licenses/cpl.php
@@ -164,6 +164,8 @@ for the fourQ COAPI
 	<!--- local vars --->
 	<cfset var datetimestamp = Now()>
 	<cfset var bSuccess = true>
+	<!--- check values --->	
+	<cfif not len(arguments.username)><cfset arguments.username = "unknown"></cfif>
 		
 	<cfquery datasource="#arguments.dsn#" name="insertLog">
 	INSERT INTO #arguments.dbowner#fqAudit

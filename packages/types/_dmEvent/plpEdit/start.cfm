@@ -5,11 +5,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmEvent/plpEdit/start.cfm,v 1.5 2003/07/10 02:07:06 brendan Exp $
-$Author: brendan $
-$Date: 2003/07/10 02:07:06 $
-$Name: b201 $
-$Revision: 1.5 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmEvent/plpEdit/start.cfm,v 1.6 2003/12/24 06:04:30 paul Exp $
+$Author: paul $
+$Date: 2003/12/24 06:04:30 $
+$Name: milestone_2-1-2 $
+$Revision: 1.6 $
 
 || DESCRIPTION || 
 $Description: dmEvent Edit PLP - Start Step $
@@ -82,8 +82,8 @@ $Developer: Brendan Sisson (brendan@daemon.com.au) $
 	
 	<div class="FormSubTitle">#output.label#</div>
 	<div class="FormTitle">General Info</div>
-	<div class="FormTable">
-	<table class="BorderTable" width="400" align="center">
+	<div class="FormTable" style="width:500px">
+	<table class="BorderTable" width="500" align="center">
 	<tr>
 		<td nowrap class="FormLabel">Title: </span></td>
 		<td width="100%"><input type="text" name="Title" value="#output.Title#" class="formtextbox" maxlength="255"></td>

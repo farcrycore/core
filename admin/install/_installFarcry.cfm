@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/install/_installFarcry.cfm,v 1.32 2003/09/18 05:59:27 brendan Exp $
+$Header: /cvs/farcry/farcry_core/admin/install/_installFarcry.cfm,v 1.37 2004/01/19 06:14:19 brendan Exp $
 $Author: brendan $
-$Date: 2003/09/18 05:59:27 $
-$Name: b201 $
-$Revision: 1.32 $
+$Date: 2004/01/19 06:14:19 $
+$Name: milestone_2-1-2 $
+$Revision: 1.37 $
 
 || DESCRIPTION || 
 $Description: Installation scripts for FarCry database components $
@@ -85,6 +85,7 @@ o_config.defaultImage(dsn=application.dsn);
 o_config.defaultSoEditor(dsn=application.dsn);
 o_config.defaultSoEditorPro(dsn=application.dsn);
 o_config.defaultEWebEditPro(dsn=application.dsn);
+o_config.defaultEOPro(dsn=application.dsn);
 o_config.defaultGeneral(dsn=application.dsn);
 o_config.defaultPlugins(dsn=application.dsn);
 o_config.defaultFU(dsn=application.dsn);

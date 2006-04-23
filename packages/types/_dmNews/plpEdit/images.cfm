@@ -5,11 +5,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmNews/plpEdit/images.cfm,v 1.7 2003/10/14 07:14:10 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmNews/plpEdit/images.cfm,v 1.8.2.1 2004/02/26 02:44:36 brendan Exp $
 $Author: brendan $
-$Date: 2003/10/14 07:14:10 $
-$Name: b201 $
-$Revision: 1.7 $
+$Date: 2004/02/26 02:44:36 $
+$Name: milestone_2-1-2 $
+$Revision: 1.8.2.1 $
 
 || DESCRIPTION || 
 $Description: dmNews Edit PLP - Adds images as associated objects$
@@ -163,7 +163,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 		<!--- if form.editfile exists - then an existing object is being edited - else must create new object --->
 		
 		<cfscript>
-			oType = createobject("component","#application.packagepath#.types.#typeName#");
+			oType = createobject("component", application.types[typeName].typePath);
 			if (isdefined("form.editObject")) {
 				// update the OBJECT	
 				oType.setData(stProperties=stProperties);
@@ -236,18 +236,30 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 		<cfoutput>
 		<tr>
 			<td></cfoutput>
-				<nj:getFileIcon filename="#stThisFile.imagefile#" r_stIcon="fileicon"> 	
-				<cfoutput><img src="#application.url.farcry#/images/treeImages/#fileicon#">
+				<!---$ole: check to see if any images exist$ --->
+				<cfif len(trim(stThisFile.imagefile)) NEQ 0>
+					<nj:getFileIcon filename="#stThisFile.imagefile#" r_stIcon="fileicon"> 	
+				<cfelseif len(trim(stThisFile.thumbnail)) NEQ 0>
+					<nj:getFileIcon filename="#stThisFile.thumbnail#" r_stIcon="fileicon"> 	
+				<cfelseif len(trim(stThisFile.optimisedImage)) NEQ 0>
+					<nj:getFileIcon filename="#stThisFile.optimisedImage#" r_stIcon="fileicon"> 
+				</cfif>
+				<cfif isDefined("fileicon")>
+					<cfoutput><img src="#application.url.farcry#/images/treeImages/#fileicon#"></cfoutput>
+				<cfelse>
+					<cfoutput><img src="#application.url.farcry#/images/treeImages/unknown.gif"></cfoutput>
+				</cfif>
+			<cfoutput>
 			</td>
 			<td><span class="FormLabel">#left(stThisFile.title,50)#</span></td>
-			<td align="center">
-			<cfif len(trim(stThisFile.imagefile)) NEQ 0>
-				<a href="#application.url.conjurer#?objectid=#stThisFile.objectid#" target="_blank">
-					<img src="#application.url.farcry#/images/treeImages/preview.gif" border="0">
-				</a>
-			<cfelse>
-				<span class="FormLabel">[No image uploaded]</span>	
-			</cfif>
+			<td align="center"></cfoutput>
+				<!---$ole: check to see if any images exist to preview$ --->
+				<cfif len(trim(stThisFile.imagefile)) NEQ 0 OR len(trim(stThisFile.thumbnail)) NEQ 0 OR len(trim(stThisFile.optimisedImage)) NEQ 0>
+					<cfoutput><a href="#application.url.conjurer#?objectid=#stThisFile.objectid#" target="_blank"><img src="#application.url.farcry#/images/treeImages/preview.gif" border="0"></a></cfoutput>
+				 <cfelse>
+					<cfoutput><span class="FormLabel">[No image uploaded]</span></cfoutput>
+				</cfif> 
+				<cfoutput>
 			</td>
 			<td align="center">
 				<a href="javascript:void(0);" onClick="hideAll();toggleForm('#i#_edit','inline');">

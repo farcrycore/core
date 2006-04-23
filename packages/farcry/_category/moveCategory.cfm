@@ -1,3 +1,3 @@
 <cfscript>
-	stStatus = application.factory.oTree.moveBranch(parentID=arguments.parentID,objectID=arguments.objectID);
+	stStatus = request.factory.oTree.moveBranch(parentID=arguments.parentID,objectID=arguments.objectID);
 </cfscript>

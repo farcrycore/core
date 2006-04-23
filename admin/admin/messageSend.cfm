@@ -1,2 +1,2 @@
-<cfobject component="#application.packagepath#.types.dmEmail" name="oEmail">
+<cfobject component="#application.types.dmEmail.typePath#" name="oEmail">
 <cfset oEmail.send(url.objectid)>

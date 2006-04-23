@@ -5,11 +5,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/webskin/buildLink.cfm,v 1.11 2003/10/15 06:15:20 brendan Exp $
-$Author: brendan $
-$Date: 2003/10/15 06:15:20 $
-$Name: b201 $
-$Revision: 1.11 $
+$Header: /cvs/farcry/farcry_core/tags/webskin/buildLink.cfm,v 1.12 2003/12/08 00:47:35 ben Exp $
+$Author: ben $
+$Date: 2003/12/08 00:47:35 $
+$Name: milestone_2-1-2 $
+$Revision: 1.12 $
 
 || DESCRIPTION || 
 $Description: Helps to construct a FarCry style link -- works out whether the links is a symlink or normal farcry link and checks for friendly url$
@@ -28,6 +28,7 @@ $in: target -- target window for link$
 
 <cfif thistag.executionMode eq "Start">
 	<cfparam name="attributes.target" default="_self">
+	<cfparam name="attributes.bShowTarget" default="true">
 	<cfparam name="attributes.externallink" default="">
 	<cfparam name="attributes.class" default="">
 	<cfparam name="attributes.urlOnly" default="false">
@@ -66,7 +67,7 @@ $in: target -- target window for link$
 	<cfelse>
 
 		<!--- display link --->
-		<cfoutput><a href="#href#" <cfif len(attributes.class)>class="#attributes.class#"</cfif> <cfif len(attributes.xCode)>#attributes.xCode#</cfif> target="#attributes.target#"></cfoutput>
+		<cfoutput><a href="#href#"<cfif len(attributes.class)> class="#attributes.class#"</cfif><cfif len(attributes.xCode)> #attributes.xCode#</cfif><cfif attributes.bShowTarget eq true> target="#attributes.target#"</cfif>></cfoutput>
 
 	</cfif>
 

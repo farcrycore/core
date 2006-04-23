@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/rules/ruleHandpicked.cfc,v 1.17 2003/09/22 05:24:57 brendan Exp $
-$Author: brendan $
-$Date: 2003/09/22 05:24:57 $
-$Name: b201 $
-$Revision: 1.17 $
+$Header: /cvs/farcry/farcry_core/packages/rules/ruleHandpicked.cfc,v 1.19 2003/11/06 00:12:53 tom Exp $
+$Author: tom $
+$Date: 2003/11/06 00:12:53 $
+$Name: milestone_2-1-2 $
+$Revision: 1.19 $
 
 || DESCRIPTION || 
 $Description: Hand-pick and display individual object instances with a specified displayTeaser* handler. Restricted to those components with metadata bScheduled=true. $
@@ -165,11 +165,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 					else	
 					{	
 						stWDDX[index].objectID = aWDDXObjects[index];
-						if(application.types['#thisType#'].bCustomType)
-							thisPackagePath = application.custompackagepath;
-						else	
-							thisPackagePath = application.packagepath;
-						stWDDX[index].typename = thisPackagePath & ".types." & thistype;
+						stWDDX[index].typename = application.types[thistype].typePath;
 						//remember that we had to 'clean' the UUIDS for use in variable names
 						cleanUUID =  trim(replace(aWDDXObjects[index],"-","","ALL"));
 						stWDDX[index].method = evaluate("stProperties.method_"& cleanUUID & ".displayMethod");					}
@@ -214,7 +210,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 			<!--- <cfdump var="#stProperties#"> --->
 			<!--- Now we update the datastore --->
 			<q4:contentobjectdata
-			 typename="#application.packagepath#.rules.ruleHandpicked"
+			 typename="#application.rules.ruleHandpicked.rulePath#"
 			 stProperties="#stProperties#"
 			 objectid="#stObj.ObjectID#"> 
 			 
@@ -262,7 +258,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 			</cfscript>
 			<!--- <cfdump var="#stProperties#"> --->
 			<q4:contentobjectdata
-			 typename="#application.packagepath#.rules.ruleHandpicked"
+			 typename="#application.rules.ruleHandpicked.rulePath#"
 			 stProperties="#stProperties#"
 			 objectid="#stObj.ObjectID#"> 
 			 

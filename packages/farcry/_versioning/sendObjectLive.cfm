@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_versioning/sendObjectLive.cfm,v 1.8 2003/10/31 06:40:57 paul Exp $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_versioning/sendObjectLive.cfm,v 1.10 2003/11/20 04:28:54 paul Exp $
 $Author: paul $
-$Date: 2003/10/31 06:40:57 $
-$Name: b201 $
-$Revision: 1.8 $
+$Date: 2003/11/20 04:28:54 $
+$Name: milestone_2-1-2 $
+$Revision: 1.10 $
 
 || DESCRIPTION || 
 $Description: sends versioned object live $
@@ -16,6 +16,7 @@ $TODO: $
 
 || DEVELOPER ||
 $Developer: Brendan Sisson (brendan@daemon.com.au) $
+$Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
 
 || ATTRIBUTES ||
 $in: $
@@ -24,76 +25,69 @@ $out:$
 
 <cfimport taglib="/farcry/fourq/tags/" prefix="q4">
 <cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
+<cfinclude template="/farcry/farcry_core/admin/includes/cfFunctionWrappers.cfm">
 
-<!--- TODO - no where near enough error checking in this CFC --->
 <cfscript>
 	stResult = structNew();
 	stResult.result = false;
-	stRestult.message = 'No update has taken place';
+	stResult.message = 'No update has taken place';
+	if (NOT isDefined("typename"))
+	{
+		q4 = createObject("component","farcry.fourq.fourq");
+		typename = q4.findType(objectid=objectid);
+	}
+	o = createObject("component",application.types[typename].typePath);	
 </cfscript>
-
-<cfif NOT isDefined("typename")>
-	<cfinvoke component="farcry.fourq.fourq" returnvariable="thisTypename" method="findType" objectID="#ObjectId#">
-	<cfset typename = thisTypename>	
-</cfif>
-
-<!--- check for custom type --->
-<cfif application.types[typename].bCustomType>
-	<cfset typename = "#application.custompackagepath#.types.#typename#">
-<cfelse>
-	<cfset typename = "#application.packagepath#.types.#typename#">
-</cfif>
-
-<cfset stDraftObject = arguments.stDraftObject>
 		
-<cfif structKeyExists(stDraftObject,"versionID")>
-	<cfif NOT len(trim(stDraftObject.versionID)) EQ 0>
-		<!--- get the current Live Object to archive --->
-		<q4:contentobjectget ObjectId="#stDraftObject.versionID#" r_stObject="stLiveObject" typename="#typename#"> 
-		<!--- Convert current live object to WDDX --->
-		<cfwddx input="#stLiveObject#" output="stLiveWDDX"  action="cfml2wddx">
-		
+<cfif structKeyExists(stDraftObject,"versionID") AND NOT len(trim(stDraftObject.versionID)) EQ 0 >
+	<!--- get the current Live Object to archive --->
+	<cfscript>
+		stLiveObject = o.getData(arguments.stDraftObject.versionID);
+	</cfscript>		
+	<!--- Convert current live object to WDDX for archive --->
+	<cfwddx input="#stLiveObject#" output="stLiveWDDX"  action="cfml2wddx">
+
+	<cfscript>
+		//set up the dmArchive structure to save
+		stProps = structNew();
+		stProps.objectID = createUUID();
+		stProps.archiveID = stLiveObject.objectID;
+		stProps.objectWDDX = stLiveWDDX;
+		stProps.lastupdatedby = session.dmSec.authentication.userlogin;
+		stProps.datetimelastupdated = createODBCDateTime(Now());
+		stProps.createdby = session.dmSec.authentication.userlogin;
+		stProps.datetimecreated = createODBCDateTime(Now());
+		stProps.label = stLiveObject.title;
+		//end dmArchive struct  
+
+	</cfscript>
+
+	<cflock name="sendlive_#stLiveObject.objectID#" timeout="50" type="exclusive">
+
 		<cfscript>
-			//set up the dmArchive structure to save
-			dmArchiveType = 'dmArchive';
-			//typeID = Evaluate("application.#dmArchiveType#TypeID");
-			stProps = structNew();
-			stProps.objectID = createUUID();
-			stProps.archiveID = stLiveObject.objectID;
-			stProps.objectWDDX = stLiveWDDX;
-			stProps.lastupdatedby = session.dmSec.authentication.userlogin;
-			stProps.datetimelastupdated = Now();
-			stProps.createdby = session.dmSec.authentication.userlogin;
-			stProps.datetimecreated = Now();
-			stProps.label = stLiveObject.title;
-			//make the draft assume the objectID of the current live object. 
-			stDraftObject.versionID = "";
-			// need this to delete the draft
-			thisDraftObjectID = stDraftObject.objectID;
-			//need to set stDraft object to live for fourq update
-			stDraftObject.objectID = stLiveObject.objectID;
+			//copy all container data to live object
+			oCon = createobject("component","#application.packagepath#.rules.container");
+			//copy draft containers to live
+			oCon.copyContainers(srcObjectID=arguments.stDraftObject.objectId,destObjectID=stLiveObject.objectID,bDeleteSrcData=1);
+			//Archive the object
+			oArchive = createobject("component","#application.packagepath#.types.dmArchive");
+			oArchive.createData(stProperties=stProps);
+			
+			//delete the old draft
+			o.deleteData(objectid=arguments.stDraftObject.objectid);
+			
+			//need to set stDraft object to live for fourq update. Update datetimeLastUpdated and clear out versionID
+			arguments.stDraftObject.objectid = stLiveObject.objectID;
+			arguments.stDraftObject.versionID = "";
+			arguments.stDraftObject.dateTimeLastUpdated = createODBCDateTime(Now());
+			arguments.stDraftObject.dateTimeCreated = createODBCDateTime(arguments.stDraftObject.dateTimeCreated);
+			o.setData(stProperties=arguments.stDraftObject,auditNote='Draft version sent live');
+			
 			stResult.result = true;
-			stRestult.message = 'Update Successful';
-		</cfscript>
-
-		<cflock name="sendlive_#stLiveObject.objectID#" timeout="50" type="exclusive">
-			<!--- Make the archive - type is dmArchive --->
-			<cfscript>
-				oType = createobject("component","#application.packagepath#.types.#dmArchiveType#");
-				stNewObj = oType.createData(stProperties=stProps);
-				archiveObjID = stNewObj.objectid;
-				
-				// Update current live object with draft property values
-				stDraftObject.objectid = stLiveObject.objectID;
-				oContentType = createobject("component","#typename#");
-				oContentType.setData(stProperties=stDraftObject,auditNote='Draft version sent live');
-			</cfscript>	
-				
-			<!--- Now delete the draft object --->
-			<q4:contentObjectDelete 
-				ObjectId="#thisDraftObjectID#"
-				typename="#typename#">
-								
-			</cflock>
-	</cfif>	
+			stResult.message = 'Update Successful';
+			
+		</cfscript>	
+						
+	</cflock>
+	
 </cfif>	

@@ -5,11 +5,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/install/index.cfm,v 1.49 2003/09/17 07:24:36 brendan Exp $
+$Header: /cvs/farcry/farcry_core/admin/install/index.cfm,v 1.53 2004/01/19 04:47:41 brendan Exp $
 $Author: brendan $
-$Date: 2003/09/17 07:24:36 $
-$Name: b201 $
-$Revision: 1.49 $
+$Date: 2004/01/19 04:47:41 $
+$Name: milestone_2-1-2 $
+$Revision: 1.53 $
 
 || DESCRIPTION || 
 $Description: Installation scripts for FarCry$
@@ -42,7 +42,6 @@ $out:$
 <cfparam name="form.domain" default="localhost">
 <cfparam name="form.bDeleteApp" default="0">
 
-
 <cfparam name="successMsg" default="<td>&nbsp;&nbsp;&nbsp;&nbsp;<span class=""success"">DONE</span></td></tr>#chr(13)##chr(10)#">
 <cfparam name="failureMsg" default="<td>&nbsp;&nbsp;&nbsp;&nbsp;<span class=""failure"">FAILED!</span></td></tr>#chr(13)##chr(10)#">
 
@@ -54,7 +53,7 @@ $out:$
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-<title>farcry Install</title>
+<title>FarCry Install</title>
 <link rel="STYLESHEET" type="text/css" href="installer.css">
 </head>
 
@@ -66,10 +65,37 @@ $out:$
 
 <cfif isDefined("form.proceed")>
     <cfif not isDefined("errorMsg")>
-
+	
+	<!--- check if mysql check privledges are set correctly --->
+	<cfif form.dbtype eq "mysql">
+		<cftry>
+			<!--- delete temp table --->
+			<cfquery name="qDeleteTemp" datasource="#form.appDsn#">
+				DROP TABLE IF EXISTS tblTemp1
+			</cfquery>
+			<cfcatch></cfcatch>
+		</cftry>
+		<cftry>
+			<!--- test temp table creation --->
+			<cfquery name="qTestPrivledges" datasource="#form.appDsn#">
+				create temporary table `tblTemp1`
+				(
+				`test`  VARCHAR(255) NOT NULL
+				)
+			</cfquery>
+			
+			<cfcatch>
+				<!--- display form with error message --->
+				<cfset errorMsg = "You need to have Create_tmp_table_priv privilege set to true for your MySQL user">
+ 			   	<cfinclude template="_installForm.cfm">
+				<cfabort>
+			</cfcatch>
+		</cftry>
+	</cfif>
+	
     <!--- begin try/catch clause --->
     <cftry>
-
+		
     <cfoutput><p>Installing <strong>farcry</strong> content management system...</p></cfoutput>
     <cfflush>
 		
@@ -91,7 +117,9 @@ $out:$
 		
     <cfscript>
     application.path.project = newProjectPath;
-
+	application.url.webroot = form.appMapping;
+	application.url.farcry = form.farcryMapping;
+	
     // CF datasources
     if (form.appDSN eq "createnew") {
         /* not feasible at this stage
@@ -108,10 +136,15 @@ $out:$
     } else {
         application.dsn = form.appDSN;
         application.dbtype = form.dbType;
-        application.dbowner = form.dbOwner;
+		//check for valid dbOwner
+		if (len(form.dbOwner) and right(form.dbOwner,1) neq ".") {
+        	application.dbowner = form.dbOwner & ".";
+		} else {
+			application.dbowner = form.dbOwner;
+		}
      }
 
-    //initialise the security structures
+   	//initialise the security structures
     application.dmSec = structNew();
     // --- Initialise the policy store ---
     application.dmSec.PolicyStore = structNew();

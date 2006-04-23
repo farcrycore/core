@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/admin/cleanTree.cfm,v 1.3 2003/09/24 00:22:11 brendan Exp $
-$Author: brendan $
-$Date: 2003/09/24 00:22:11 $
-$Name: b201 $
-$Revision: 1.3 $
+$Header: /cvs/farcry/farcry_core/admin/admin/cleanTree.cfm,v 1.4 2003/12/08 05:22:18 paul Exp $
+$Author: paul $
+$Date: 2003/12/08 05:22:18 $
+$Name: milestone_2-1-2 $
+$Revision: 1.4 $
 
 || DESCRIPTION || 
 $Description: tree cleaner. $
@@ -39,7 +39,7 @@ $out:$
 		<cfset qRogue = queryNew("objectid,data,typename,removeFrom")>
 		
 		<!--- get tree data --->
-		<cfset qTree = application.factory.oTree.getDescendants(objectid=application.navid.root)>
+		<cfset qTree = request.factory.oTree.getDescendants(objectid=application.navid.root)>
 		
 		<cffunction name="checkRogue">
 			<cfargument name="typename" default="dmNavigation">

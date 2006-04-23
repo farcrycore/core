@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/navajo/objectStatus_dd.cfm,v 1.13 2003/09/18 01:25:11 brendan Exp $
+$Header: /cvs/farcry/farcry_core/tags/navajo/objectStatus_dd.cfm,v 1.15.2.4 2004/02/13 02:36:54 brendan Exp $
 $Author: brendan $
-$Date: 2003/09/18 01:25:11 $
-$Name: b201 $
-$Revision: 1.13 $
+$Date: 2004/02/13 02:36:54 $
+$Name: milestone_2-1-2 $
+$Revision: 1.15.2.4 $
 
 || DESCRIPTION || 
 $Description: Changes the status of objects to approved/draft/pending. Intended for use with dynamic data pages $
@@ -32,6 +32,7 @@ $out:$
 <cfparam name="form.commentlog" default=""> <!--- hack --->
 
 <cfloop index="attributes.objectID" list="#attributes.lObjectIDs#">
+
 	<q4:contentobjectget objectId="#attributes.objectId#" r_stObject="stObj">
 		<cfif not structkeyexists(stObj, "status")>
 			<cfoutput>
@@ -51,16 +52,23 @@ $out:$
 			<cfinvoke component="#application.packagepath#.farcry.versioning" method="approveEmail_approved_dd">
 				<cfinvokeargument name="objectId" value="#attributes.objectId#"/>
 				<cfinvokeargument name="comment" value="#attributes.commentlog#"/>
+				<cfif isDefined("attributes.approveURL")>
+					<cfinvokeargument name="approveURL" value="#attributes.approveURL#"/>
+				</cfif>
 			</cfinvoke>
-		<cfelseif attributes.status eq "draft">
+		<cfelseif trim(attributes.status) IS "draft">
 			<cfset status = 'draft'>
 			<cfset permission = "approve">
-
+						
 			<!--- send out emails informing object is sent back to draft --->
 			<cfinvoke component="#application.packagepath#.farcry.versioning" method="approveEmail_draft_dd">
 				<cfinvokeargument name="objectId" value="#attributes.objectId#"/>
 				<cfinvokeargument name="comment" value="#attributes.commentlog#"/>
+				<cfif isDefined("attributes.approveURL")>
+					<cfinvokeargument name="approveURL" value="#attributes.approveURL#"/>
+				</cfif>
 			</cfinvoke>
+			
 
 			<cfset active = 0>
 		<cfelseif attributes.status eq "requestApproval">
@@ -81,53 +89,35 @@ $out:$
 				<cfelse>
 					<cfinvokeargument name="lApprovers" value="all"/>
 				</cfif>
+				<cfif isDefined("attributes.approveURL")>
+					<cfinvokeargument name="approveURL" value="#attributes.approveURL#"/>
+				</cfif>	
 			</cfinvoke>
 		<cfelse>
 			<cfthrow errorcode="navajo" message="Unknown status passed">
 		</cfif>
-
-		<!--- update the structure data for object update --->
-		<cfscript>
-		stObj.datetimecreated = createODBCDateTime("#datepart('yyyy',stObj.datetimecreated)#-#datepart('m',stObj.datetimecreated)#-#datepart('d',stObj.datetimecreated)#");
-		stObj.datetimelastupdated = now();
-			
-		if (structkeyexists(stObj, "expirydate")){
-    		stObj.expirydate = createODBCDateTime("#datepart('yyyy',stObj.expirydate)#-#datepart('m',stObj.expirydate)#-#datepart('d',stObj.expirydate)#");
-			stObj.publishdate = createODBCDateTime("#datepart('yyyy',stObj.publishdate)#-#datepart('m',stObj.publishdate)#-#datepart('d',stObj.publishdate)#");
-		}
-
-		//only if the comment log exists - do we actually append the entry
-		if (isDefined("attributes.commentLog") AND attributes.commentLog neq "") {
-			if (structkeyexists(stObj, "commentLog")){
-				buildLog =  "#chr(13)##chr(10)##session.dmSec.authentication.canonicalName#" & "(#dateformat(now(),'dd/mm/yyyy')# #timeformat(now(), 'HH:mm:ss')#):#chr(13)##chr(10)#     Status changed: #stobj.status# -> #status##chr(13)##chr(10)# #attributes.commentLog#";
-				stObj.commentLog = buildLog & "#chr(10)##chr(13)#" & stObj.commentLog;
-			}
-		}
-
-		stObj.status = status;	
-		</cfscript>
 		
-		<!--- HACK to allow Custom Objects that have extra dates to be converted to OBDC Date Time --->
+		<!--- prepare date fields --->
 		<cfloop collection="#stObj#" item="field">
-			<cfif StructKeyExists(Evaluate("application.types."&stObj.typeName&".stProps"), field)>
-				<cfif Evaluate("application.types."&stObj.typeName&".stProps."&field&".metaData.type") EQ "date">
-					<cfset fieldName= "stObj."&field>
-					<cfset fieldValue = Evaluate("stObj.#field#")>
-					<cfset temp = setVariable(fieldName, CreateODBCDateTime(fieldValue))>
-				</cfif>
+			<cfif StructKeyExists(application.types[stObj.typeName].stProps, field) and application.types[stObj.typeName].stProps[field].metaData.type eq "date">
+				<cfset stObj[field] = CreateODBCDateTime(stObj[field])>
 			</cfif>
 		</cfloop>
-		
-		<!--- work out if custom package or not --->
+
 		<cfscript>
-			if (application.types['#stObj.typename#'].bCustomType)
-				thisPackagePath = "#application.custompackagepath#.types.#stObj.typename#";
-			else
-				thisPackagePath = "#application.packagepath#.types.#stObj.typename#";
-				
-			// update object	
-			oType = createobject("component","#thisPackagePath#");
-			oType.setData(stProperties=stObj,auditNote="Status changed to #stObj.status#");		
+		// update the structure data for object update
+		stObj.datetimelastupdated = now();
+					
+		//only if the comment log exists - do we actually append the entry
+		if (structkeyexists(stObj, "commentLog")){
+			buildLog =  "#chr(13)##chr(10)##session.dmSec.authentication.canonicalName#" & "(#dateformat(now(),'dd/mm/yyyy')# #timeformat(now(), 'HH:mm:ss')#):#chr(13)##chr(10)#     Status changed: #stobj.status# -> #status##chr(13)##chr(10)# #attributes.commentLog#";
+			stObj.commentLog = buildLog & "#chr(10)##chr(13)#" & stObj.commentLog;
+		}
+		stObj.status = status;	
+		
+		// update object	
+		oType = createobject("component", application.types[stObj.typename].typePath);
+		oType.setData(stProperties=stObj,auditNote="Status changed to #stObj.status#");		
 		</cfscript>
 		
 	</cfloop>

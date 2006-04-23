@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/admin/resetFU.cfm,v 1.8 2003/09/12 05:23:17 brendan Exp $
-$Author: brendan $
-$Date: 2003/09/12 05:23:17 $
-$Name: b201 $
-$Revision: 1.8 $
+$Header: /cvs/farcry/farcry_core/admin/admin/resetFU.cfm,v 1.9 2003/11/24 03:14:05 paul Exp $
+$Author: paul $
+$Date: 2003/11/24 03:14:05 $
+$Name: milestone_2-1-2 $
+$Revision: 1.9 $
 
 || DESCRIPTION || 
 $Description: Deletes existing FU entries and recretes for entire tree$
@@ -22,7 +22,7 @@ $in: $
 $out:$
 --->
 
-<cfsetting enablecfoutputonly="yes" requestTimeOut="500">
+<cfsetting enablecfoutputonly="yes" requestTimeOut="600">
 
 <!--- check permissions --->
 <cfscript>

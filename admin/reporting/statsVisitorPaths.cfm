@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/reporting/statsVisitorPaths.cfm,v 1.2 2003/09/03 01:50:31 brendan Exp $
+$Header: /cvs/farcry/farcry_core/admin/reporting/statsVisitorPaths.cfm,v 1.3 2003/12/08 00:20:22 brendan Exp $
 $Author: brendan $
-$Date: 2003/09/03 01:50:31 $
-$Name: b201 $
-$Revision: 1.2 $
+$Date: 2003/12/08 00:20:22 $
+$Name: milestone_2-1-2 $
+$Revision: 1.3 $
 
 || DESCRIPTION || 
 $Description: Displays stats for visitors objects$
@@ -95,7 +95,7 @@ $out:$
 				<td>#remoteIP#</td>
 				<td align="center">#dateformat(startDate,"dd-mmm-yyyy")#</td>
 				<td align="center">#Views#</td>
-				<td><a href="StatsVisitorPathDetail.cfm?sessionId=#sessionID#">View Path</a></td>
+				<td><a href="statsVisitorPathDetail.cfm?sessionId=#sessionID#">View Path</a></td>
 			</tr>
 		</cfloop>
 		

@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_versioning/versioningRules.cfm,v 1.8 2003/09/23 23:32:12 brendan Exp $
-$Author: brendan $
-$Date: 2003/09/23 23:32:12 $
-$Name: b201 $
-$Revision: 1.8 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_versioning/versioningRules.cfm,v 1.9 2003/11/05 04:46:09 tom Exp $
+$Author: tom $
+$Date: 2003/11/05 04:46:09 $
+$Name: milestone_2-1-2 $
+$Revision: 1.9 $
 
 || DESCRIPTION || 
 $Description: $
@@ -29,12 +29,7 @@ $out:$
 	<cfset typename = thisTypename> 					
 </cfif>
 
-<!--- work out package path --->
-<cfif application.types[typename].bCustomType>
-	<cfset typename = "#application.custompackagepath#.types.#typename#">
-<cfelse>
-	<cfset typename = "#application.packagepath#.types.#typename#">
-</cfif>
+<cfset typename = application.types[typename].typePath>
 
 <q4:contentobjectget ObjectId="#objectId#" r_stObjects="stObject" typename="#typename#"> 
 

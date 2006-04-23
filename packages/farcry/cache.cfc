@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/cache.cfc,v 1.4 2003/09/10 12:21:48 brendan Exp $
-$Author: brendan $
-$Date: 2003/09/10 12:21:48 $
-$Name: b201 $
-$Revision: 1.4 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/cache.cfc,v 1.5 2003/12/08 05:20:13 paul Exp $
+$Author: paul $
+$Date: 2003/12/08 05:20:13 $
+$Name: milestone_2-1-2 $
+$Revision: 1.5 $
 
 || DESCRIPTION || 
 $Description: cache cfc $
@@ -60,7 +60,7 @@ $out:$
 			// get navigation elements
 			navFilter=arrayNew(1);
 			navfilter[1]="status IN (#listQualify(request.mode.lvalidstatus, "'")#)";
-			qNav = application.factory.oTree.getDescendants(objectid=application.navid.home, depth=4, afilter=navFilter);
+			qNav = request.factory.oTree.getDescendants(objectid=application.navid.home, depth=4, afilter=navFilter);
 		</cfscript>
 		
 		<!--- loop over all pages and hit page to create caches --->

@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_tree/setYoungest.cfm,v 1.10 2003/09/12 02:59:21 brendan Exp $
-$Author: brendan $
-$Date: 2003/09/12 02:59:21 $
-$Name: b201 $
-$Revision: 1.10 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_tree/setYoungest.cfm,v 1.11 2004/01/05 03:36:41 paul Exp $
+$Author: paul $
+$Date: 2004/01/05 03:36:41 $
+$Name: milestone_2-1-2 $
+$Revision: 1.11 $
 
 || DESCRIPTION || 
 $Description: setYoungest Function $
@@ -40,10 +40,11 @@ $out:$
 	select max(nright) AS nright from nested_tree_objects where parentid = '#arguments.parentid#'";
 	q = query(sql=sql, dsn=arguments.dsn);
 	maxr = q.nRight;
-	
-	   
+	qCHildren = getChildren(objectid=arguments.parentid,dsn=arguments.dsn);
+		   
 	//if user has inadvertantly tried to insert youngest child when they should have used only child, try running the following:
-	if (maxr EQ '')	setOldest(parentID=arguments.parentID, objectID=arguments.objectID, objectName=arguments.objectName, typeName=arguments.typeName, dsn=arguments.dsn);
+	if (NOT qChildren.recordcount)
+		setOldest(parentID=arguments.parentID, objectID=arguments.objectID, objectName=arguments.objectName, typeName=arguments.typeName, dsn=arguments.dsn);
 	else {
 		//first make room. move other nodes up by 2, where they are greater than the right hand of the youngest existing child
 		sql = "

@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/navajo/delete.cfm,v 1.14 2003/08/20 07:03:13 brendan Exp $
-$Author: brendan $
-$Date: 2003/08/20 07:03:13 $
-$Name: b201 $
-$Revision: 1.14 $
+$Header: /cvs/farcry/farcry_core/tags/navajo/delete.cfm,v 1.16 2003/12/08 05:28:22 paul Exp $
+$Author: paul $
+$Date: 2003/12/08 05:28:22 $
+$Name: milestone_2-1-2 $
+$Revision: 1.16 $
 
 || DESCRIPTION || 
 $Description: DELETE OBJECTS FROM TREE $
@@ -34,16 +34,11 @@ $out: <separate entry for each variable>$
 
 <!--- This gets the parent object -- need this to clean up its reference to the object we are deleting --->
 <cfscript>
-	if (application.types[stObj.typename].bCustomType) {
-				packagepath = application.customPackagepath;
-			} else {
-				packagepath = application.packagepath;
-			}
-	oType = createObject("component","#packagepath#.types.#stObj.typename#");
-	oNav = createObject("component", "#application.packagepath#.types.dmNavigation");
+	oType = createObject("component", application.types[stObj.typename].typePath);
+	oNav = createObject("component", application.types.dmNavigation.typePath);
 	if (stObj.typename IS 'dmNavigation')
 	{
-		qGetParent = application.factory.oTree.getParentID(objectID = stObj.objectID);
+		qGetParent = request.factory.oTree.getParentID(objectID = stObj.objectID);
 		parentObjectID = qGetParent.parentID;	
 	}
 	else
@@ -77,7 +72,7 @@ $out: <separate entry for each variable>$
 		srcObjParent.datetimelastupdated = createODBCDate(now());
 		
 		// update the parent object instance
-		oParentType = createobject("component","#application.packagepath#.types.#srcObjParent.typename#");
+		oParentType = createobject("component", application.types[srcObjParent.typename].typePath);
 		oParentType.setData(stProperties=srcObjParent,auditNote="Child deleted");	
 	</cfscript>
 	<!--- $TODO: may need to remove typename attribute and force a lookup -- what if it's a custom type? GB$ --->

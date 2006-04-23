@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/navajo/editContainer.cfm,v 1.11 2003/09/22 04:04:11 brendan Exp $
-$Author: brendan $
-$Date: 2003/09/22 04:04:11 $
-$Name: b201 $
-$Revision: 1.11 $ 
+$Header: /cvs/farcry/farcry_core/admin/navajo/editContainer.cfm,v 1.16 2004/01/14 23:47:32 tom Exp $
+$Author: tom $
+$Date: 2004/01/14 23:47:32 $
+$Name: milestone_2-1-2 $
+$Revision: 1.16 $ 
 
 || DESCRIPTION || 
 $Description:  $
@@ -23,6 +23,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 <!--- import tag libraries --->
 <cfimport taglib="/farcry/fourq/tags/" prefix="q4">
 <cfimport taglib="/farcry/farcry_core/tags/admin" prefix="farcry">
+<cfinclude template="/farcry/farcry_core/admin/includes/utilityFunctions.cfm">
 
 <!--- required parameters --->
 <cfparam name="URL.containerID">
@@ -31,56 +32,25 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 <cfparam name="URL.mode" default="update">
 <cfparam name="form.dest" default="">
 
-
-<!--- 
-This is for convenience 
-- we set up a list and a query object of the active rules for this object 
-- bit clunky i know 
-PH
---->
-<q4:contentObjectGet typename="#application.packagepath#.rules.container" objectID="#URL.containerID#" r_stObject="stObj">  
-<cfset qActiveRules = queryNew("objectID,typename")>
-<cfset thisRow = 1>
-<cfloop from="1" to="#arrayLen(stObj.aRules)#" index="i">
-	<cfset newRow = queryAddRow(qActiveRules,1)>
-	<cfinvoke component="farcry.fourq.fourq" returnvariable="rule" method="findType" objectID="#stObj.aRules[i]#">
-	<cfset temp = querySetCell(qActiveRules,"objectID",stObj.aRules[i],thisRow)>
-	<cfset temp = querySetCell(qActiveRules,"typename",rule,thisRow)>
-	<cfset thisRow = thisRow + 1>
-</cfloop>
-<cfset activeRulesList = valueList(qActiveRules.typename)>
-
-<!---
-*********************************************************************
-	This gets all core and custom rules
-*********************************************************************
- --->
-<cfinvoke component="#application.packagepath#.rules.rules" method="getRules" returnvariable="qRules"/>
-<!---  <cfdump var="#qRules#"> --->
-
-<!--- A function to make dealing with custom rules slightly less painfull --->
-<cffunction name="isCustomRule" returntype="struct">
-	<cfargument name="rulename" required="true" hint="the name of the rule i.e. ruleNews,ruleXMLFeed">
-	<!--- A query of the qRules query above to determine whether this rule is a custom rule or not --->
-	<cfquery name="qIsCustom" dbtype="query">
-		SELECT bCustom FROM qRules
-		WHERE rulename = '#arguments.rulename#'
-	</cfquery>
+<cfscript>
+	q4 = createObject("component","farcry.fourq.fourq");
+	oRules = createObject("component","#application.packagepath#.rules.rules");
+	//get the container data
+	oCon = createObject("component","#application.packagepath#.rules.container");
+	stObj = oCon.getData(objectid=URL.containerID);
 	
-	<cfscript>
-		stIsCustom = structNew();
-		if(qIsCustom.bCustom){
-			stIsCustom.bCustom = 1;
-			stIsCustom.typename = application.custompackagepath & '.rules.' & arguments.rulename;
-		}else
-		{
-			stIsCustom.bCustom = 0;
-			stIsCustom.typename = application.packagepath & '.rules.' & arguments.rulename;
-		}		 
-	</cfscript>
-	<cfreturn stIsCustom>
-</cffunction> 
-
+	qActiveRules = queryNew("objectID,typename");
+	for(index=1;index LTE arrayLen(stObj.aRules);index=index+1)
+	{
+		queryAddRow(qActiveRules,1);
+		ruletype = q4.findType(objectid=stObj.aRules[index]);
+		querySetCell(qActiveRules,"objectID",stObj.aRules[index]);
+		querySetCell(qActiveRules,"typename",ruletype);
+	}
+	
+	//gets all core and custom rules
+	qRules = oRules.getRules();
+</cfscript>
 
 <!--- //****************************************************************
 	Start Presentation & Output
@@ -94,7 +64,6 @@ PH
 </head>
 <body>
 </cfoutput>
-
 <!---
 ************************************************************************************
 	Javascript to handle ordering, selecting rules
@@ -139,11 +108,11 @@ function move(fbox,tbox)
 			no.value = fbox.options[i].value;
 			no.text = fbox.options[i].text;
 			tbox.options[tbox.options.length] = no;
-			fbox.options[i].value = "";
-			fbox.options[i].text = "";
+			//fbox.options[i].value = "";
+			//fbox.options[i].text = "";
 	   }
 	}
-	BumpUp(fbox);
+	//BumpUp(fbox);
 }
 
 function takeoff(fbox,tbox)
@@ -197,6 +166,22 @@ function selectAll(dest){
 	}
  }
  
+ function deleteRule(fbox)
+ {
+ 	if (confirm("Are you sure you wish to delete this rule instance?"))
+	{
+		 for(var i=0; i<fbox.options.length; i++)
+		 {
+			if(fbox.options[i].selected)
+			{
+				fbox.options[i].value = "";
+				fbox.options[i].text = "";
+		   }
+		}
+		BumpUp(fbox);	
+	}	
+ }
+ 
 // build rules structure
 oRules = new Object;
 <cfloop query="qRules">
@@ -210,8 +195,7 @@ oRules = new Object;
 </cfloop>
  
 function renderHint(rulename)
-{	//alert('hey');
-	//alert(oRules[rulename].hint);
+{	
 	document.getElementById('rulehint').innerHTML = oRules[rulename].hint;
 }	
  
@@ -268,7 +252,7 @@ This is the container header
 			<select name="ruleID" onChange="form.submit();" class="field">
 			<cfif arrayLen(stObj.aRules) GT 0>
 				<cfloop query="qActiveRules" >
-					<option value="#objectID#" <cfif updateType IS objectID>selected</cfif>>#evaluate("application.rules." & typename & ".displayname")#</option>	
+					<option value="#objectID#" <cfif updateType IS objectID>selected</cfif>><cfif structKeyExists(application.rules[typename],'displayname')>#evaluate("application.rules." & typename & ".displayname")#<cfelse>#typename#</cfif></option>	
 				</cfloop>
 			<cfelse>
 				<option>No rules Selected for this container</option>
@@ -287,18 +271,13 @@ This is the container header
 		<cfquery dbtype="query" name="qGetRuleTypename">
 			SELECT typename FROM qActiveRules where objectID = '#updateType#'
 		</cfquery> 
-		<!--- <cfdump var="#qActiveRules#" label="qActiveRules"> --->
 		<!---
 		*********************************************************************
 			Call the update method for the selected rule - this displays the form
 		*********************************************************************
 		 --->
 		<cfoutput><div id="background">
-			<cfif NOT evaluate("application.rules." & qGetRuleTypename.typename & ".bCustomRule")>
-				<cfinvoke component="#application.packagepath#.rules.#qGetRuleTypename.typename#" method="update" objectID="#updateType#">
-			<cfelse>	
-				<cfinvoke component="#application.custompackagepath#.rules.#qGetRuleTypename.typename#" method="update" objectID="#updateType#">
-			</cfif>
+			<cfinvoke component="#application.rules[qGetRuleTypename.typename].rulepath#" method="update" objectID="#updateType#">
 		</div></cfoutput>
 	</cfif>	
 </cfcase>
@@ -310,52 +289,42 @@ This is the container header
 	*********************************************************************
 	 --->
 	<cfif isDefined("form.update")>
-		<!--- Go thru and remove any rule types that have been removed - both from the DB and the aRules array --->
-		<cfloop query="qActiveRules">
-			<cfif NOT listContainsNoCase(form.dest,qActiveRules.typename) AND len(typename) GT 0>
-			<cfset stDefineRule = isCustomRule(typename)>
-			
-			<q4:contentobjectdelete typename="#stDefineRule.typename#" objectID="#qActiveRules.objectID#">	
-					
-			<cfloop from="#arrayLen(stObj.aRules)#" to="1" index="i" step="-1">
-				<cfif stObj.aRules[i] IS objectID>
-					<cfset temp = arrayDeleteAt(stObj.aRules,i)>
-				</cfif>
-			</cfloop>
-			</cfif>	
-		</cfloop>
-		<!--- Now we are checking to see if any new ones have been added to the list - if so we create a new instance of that rule type --->
-		<cfloop list="#form.dest#" index="thisType">
-			<cfif NOT listContainsNoCase(activeRulesList,thisType)>
-			<!--- Get the properties for this type - and create a rule instance --->
-			<cfscript>
-			 stDefineRule = isCustomRule(thisType);
-			 obj = createObject("Component", "#stDefineRule.typename#");
-			 typeProps = obj.getProperties();
-			 stProps = structNew();
-			 stProps.objectid = createUUID();
-			</cfscript>
-			<cfloop from="1" to="#arrayLen(typeProps)#" index="objID">
-				<cfif structKeyExists(typeProps[objID],"default")>
-						<cfset "stProps.#typeProps[objID].name#" = "#typeProps[objID].default#">
-				</cfif>
-			</cfloop>
-			<q4:contentObjectCreate typename="#stDefineRule.typename#" stProperties="#stProps#">
-			<cfset temp = arrayAppend(stObj.aRules,stProps.objectID)>
-			</cfif>
-		</cfloop>
-		<!--- Now to reorder - man this is a mess --->
-		<cfloop from="1" to="#arraylen(stObj.aRules)#" index="i" step="1" >
-			<cfinvoke component="farcry.fourq.fourq" returnvariable="thisrulename" method="findType" objectID="#stObj.aRules[i]#">
-			<cfset index = listFindNoCase(form.dest,thisrulename)>
-			<cfif index GT 0 AND i NEQ index>
-				<cfset tmp = arrayswap(stObj.aRules,i,index)>			
-			</cfif>
-		</cfloop>
+		<cfscript>
+			function IsCFUUID(str)
+			{  		
+				return REFindNoCase("^[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{16}$", str);
+			}
 		
-		<!--- now update the container object --->
-		<q4:contentobjectdata typename="#application.packagePath#.rules.container" stProperties="#stObj#" objectID="#stObj.objectID#"> 
+	
+			//reinit aRules array for re-sequencing
+			stObj.aRules = arrayNew(1); 
+			for(i=1;i LTE listLen(form.dest);i=i+1)
+			{
+				key = listGetAt(form.dest,i);
+				if (NOT IsCFUUID(key))
+				{
+					// Get the properties for this type - and create a rule instance --->
+					obj = createObject("Component", application.rules[key].rulePath);
+				 	typeProps = obj.getProperties();
+			 		stProps = structNew();
+			 		stProps.objectid = createUUID();
+					for(j=1;j LTE arrayLen(typeProps);j=j+1)
+					{
+						if (structKeyExists(typeProps[j],"default"))
+							"stProps.#typeProps[j].name#" = "#typeProps[j].default#";
+					}
+					o = createObject("component","#application.rules[key].rulePath#");
+					o.createData(stProperties=stProps);
+					arrayAppend(stObj.aRules,stProps.objectID);
+				}
+				else
+					arrayAppend(stObj.aRules,key);	
+			}
+		//now update the container object 
+		oCon.setData(stProperties=stObj);
+		</cfscript>	
 		<cflocation url="#CGI.SCRIPT_NAME#?containerID=#URL.containerID#&mode=update"> 
+		
 	</cfif>
 	<!--- 
 	************************************************************************************				
@@ -374,23 +343,19 @@ This is the container header
 					<strong>Available Rule Types</strong><br>
 					<select name="source" size="8" style="font-size:7pt; border: 0px none;" onchange="renderHint(this.value);" >
 						<cfloop query="qRules">
-							<cfif NOT listContainsNoCase(activeRulesList,qRules.rulename)>
-								<!--- need check here for displayname key --->
-								<option value="#rulename#" >#evaluate("application.rules." & rulename & ".displayname")#
-							</cfif>
+							<option value="#rulename#" ><cfif structKeyExists(application.rules[rulename],'displayname')>#evaluate("application.rules." & rulename & ".displayname")#<cfelse>#rulename#</cfif>
 						</cfloop>
 					</select>
 				</td>
 				<td valign="middle" align="center">
-					<input type="button" name="B1" value="   >>>>   " class="normalBttnStyle"  onClick="move(this.form.source,this.form.dest)"><br><br>
-					<input class="normalBttnStyle"  type="button" value="   <<<<   " onclick="takeoff(this.form.dest,this.form.source)" name="B2"><br><br>
+					<input type="button" name="B1" value="   >>>>    " class="normalBttnStyle"  onClick="move(this.form.source,this.form.dest)"><br><br>
 				</td>
 				<td valign="top" align="center">		
 						<strong>Active Rules</strong><br>
 						<select multiple name="dest" size="8"  style="font-size:7pt;">
 						<cfloop query="qActiveRules">
 							<!--- need check here for displayname key --->
-							<option value="#typename#">#evaluate("application.rules." & typename & ".displayname")#
+							<option value="#qActiveRules.objectid#">#evaluate("application.rules." & typename & ".displayname")#
 						</cfloop>
 						</select>
 				</td>
@@ -398,13 +363,15 @@ This is the container header
 					<input class="normalBttnStyle"  type="button" value="&##8593;"
 					onClick="moveindex(this.form.dest.selectedIndex,-1)"><br><br>
 					<input class="normalBttnStyle"  type="button" value="&##8595;"
-					onClick="moveindex(this.form.dest.selectedIndex,+1)">
+					onClick="moveindex(this.form.dest.selectedIndex,+1)"><br><br>
+					<input class="normalBttnStyle"  type="button" value="Delete Rule"
+					 onClick="deleteRule(this.form.dest);">
 				</td>	
 			</tr>		
 			
 			<tr>
 				<td colspan="4" align="center">
-					<input class="normalbttnstyle" name="update" type="submit" value="OK" onclick="selectAll(this.form.dest);">
+					<input class="normalbttnstyle" name="update" type="submit" value="Commit Changes" onclick="selectAll(this.form.dest);">
 				</td>
 			</tr>
 			</table>

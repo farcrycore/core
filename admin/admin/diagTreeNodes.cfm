@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/admin/diagTreeNodes.cfm,v 1.13 2003/09/19 04:50:57 brendan Exp $
-$Author: brendan $
-$Date: 2003/09/19 04:50:57 $
-$Name: b201 $
-$Revision: 1.13 $
+$Header: /cvs/farcry/farcry_core/admin/admin/diagTreeNodes.cfm,v 1.14 2003/12/08 05:28:38 paul Exp $
+$Author: paul $
+$Date: 2003/12/08 05:28:38 $
+$Name: milestone_2-1-2 $
+$Revision: 1.14 $
 
 || DESCRIPTION || 
 $Description: Looks for orphaned nodes in the nested tree table and they gives option to attach them to nav node in tree$
@@ -75,7 +75,7 @@ $out:$
 		<cflock name="moveBranchNTM" type="EXCLUSIVE" timeout="3" throwontimeout="Yes">
 			<cfloop list="#form.objectid#" index="object">
 				<cfscript>
-					application.factory.oTree.moveBranch(parentid=form.navalias, objectid=object);
+					request.factory.oTree.moveBranch(parentid=form.navalias, objectid=object);
 				</cfscript>
 			</cfloop>
 			<cfoutput>#listlen(form.objectid)# nav node orphan<cfif qOrphans.recordCount neq 1>s</cfif> attached to #form.navalias#.</cfoutput>

@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/security/authorisation.cfc,v 1.30 2003/10/22 07:38:46 paul Exp $
-$Author: paul $
-$Date: 2003/10/22 07:38:46 $
-$Name: b201 $
-$Revision: 1.30 $
+$Header: /cvs/farcry/farcry_core/packages/security/authorisation.cfc,v 1.34.2.2 2004/03/01 00:57:09 brendan Exp $
+$Author: brendan $
+$Date: 2004/03/01 00:57:09 $
+$Name: milestone_2-1-2 $
+$Revision: 1.34.2.2 $
 
 || DESCRIPTION || 
 $Description: authorisation cfc $
@@ -22,7 +22,7 @@ $in: $
 $out:$
 --->
 
-<cfcomponent displayName="Authorisation" hint="User authorisaiton">
+<cfcomponent displayName="Authorisation" hint="User authorisation">
 	<cfinclude template="/farcry/farcry_core/admin/includes/cfFunctionWrappers.cfm">
 	<cfinclude template="/farcry/farcry_core/admin/includes/utilityFunctions.cfm">
 	<cfimport taglib="/farcry/fourq/tags" prefix="q4">
@@ -33,8 +33,7 @@ $out:$
 		<cfargument name="typename" required="false" default="dmNavigation">
 			<cfscript>
 								
-				oTree = createObject("component","#application.packagepath#.farcry.tree");
-				qAncestors = oTree.getAncestors(objectid=arguments.objectid,typename=arguments.typename);
+				qAncestors = request.factory.oTree.getAncestors(objectid=arguments.objectid,typename=arguments.typename);
 				lObjectIds = valueList(qAncestors.objectID);
 				
 				aObjectIds=arrayReverse(ListToArray(lObjectIds));
@@ -167,7 +166,8 @@ $out:$
 		<cfargument name="lPolicyGroupIDs">
 				
 		<cfscript>
-			oAuthentication = createObject("component","#application.securitypackagepath#.authentication");
+			//oAuthentication = createObject("component","#application.securitypackagepath#.authentication");
+			oAuthentication =request.dmsec.oAuthentication;
 			if (not isDefined("arguments.lPolicyGroupIds"))
 			{
 				stLoggedInUser = oAuthentication.getUserAuthenticationData();
@@ -357,21 +357,23 @@ $out:$
 		<cfreturn stResult>
 	</cffunction>
 	
-	<cffunction name="checkInheritedPermission" hint="checks whether you have inherited permission to perform an action on an object." output="No">
+	<cffunction name="checkInheritedPermission" hint="checks whether you have inherited permission to perform an action on an object." output="yes">
 		<cfargument name="permissionName" required="true">
 		<cfargument name="objectid" required="false">
 		<cfargument name="reference" required="false">
 		<cfargument name="lPolicyGroupIDs" required="false">
 
 		<cfscript>
-			oAuthentication = createObject("component","#application.securitypackagepath#.authentication");
-			if(not isDefined('arguments.lPolicyGroupsIds'))
+			
+			oAuthentication = request.dmsec.oAuthentication;
+			if(not isDefined('arguments.lPolicyGroupIds'))
 			{
 				stLoggedInUser = oAuthentication.getUserAuthenticationData();
 				if (structKeyExists(stLoggedInUser,"lPolicyGroupIds"))
 					arguments.lPolicyGroupIds = stLoggedInUser.lPolicyGroupIDs;
 					
 			}
+			
 			if (len(arguments.objectid))
 			
 			{
@@ -388,13 +390,13 @@ $out:$
 			
 			stPermission = getPermission(permissionname=arguments.permissionName,permissionType=permissionType);
 			bHasPermission = 0; 
-			
 			if( not StructIsEmpty(stPermission) )
 			{	
 				for( i=1; i lte listlen(arguments.lpolicyGroupIds); i=i+1 )
 				{
 					policyGroupId = listGetAt( arguments.lpolicyGroupIds, i );
 					perm=0;
+					
 					if( StructKeyExists(stObjectPermissions,policyGroupId) AND StructKeyExists(stObjectPermissions[policyGroupId],stPermission.permissionId))
 					{
 						perm=stObjectPermissions[policyGroupId][stPermission.permissionId].T;
@@ -645,7 +647,7 @@ $out:$
 					if (len(arguments.userDirectory))
 						sql = sql & "AND upper(e.ExternalGroupUserDirectory) = '#ucase(arguments.Userdirectory)#' ";
 					if (len(agroupNames[index]))
-						sql = sql & " AND upper(e.ExternalGroupName) = '#ucase(groupName)#' ";
+						sql = sql & " AND upper(e.ExternalGroupName) = '#ucase(aGroupNames[index])#' ";
 					if (arguments.policyGroupID NEQ -1)
 						sql = sql & "AND e.policyGroupId = '#attributes.policyGroupId#' ";	
 					sql = sql & " ORDER BY p.policyGroupName, e.ExternalGroupUserDirectory, e.ExternalGroupName";

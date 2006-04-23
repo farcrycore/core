@@ -5,11 +5,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/navajo/move.cfm,v 1.23 2003/10/28 07:22:08 paul Exp $
+$Header: /cvs/farcry/farcry_core/tags/navajo/move.cfm,v 1.26 2003/12/08 05:42:58 paul Exp $
 $Author: paul $
-$Date: 2003/10/28 07:22:08 $
-$Name: b201 $
-$Revision: 1.23 $
+$Date: 2003/12/08 05:42:58 $
+$Name: milestone_2-1-2 $
+$Revision: 1.26 $
 
 || DESCRIPTION || 
 
@@ -53,18 +53,18 @@ $out:$
 <cfscript>
 	oAudit = createObject("component","#application.packagepath#.farcry.audit");
 	//get all the descendants for source
-	qGetDescendants = application.factory.oTree.getDescendants(objectid=srcObj.objectID);
+	qGetDescendants = request.factory.oTree.getDescendants(objectid=srcObj.objectID);
 	
 	if (srcObj.typename IS "dmNavigation")
 	{
-		qGetParent = application.factory.oTree.getParentID(objectid = srcObj.objectID);
+		qGetParent = request.factory.oTree.getParentID(objectid = srcObj.objectID);
 		srcParentObjectID = qGetparent.parentID;
-		qGetParent = application.factory.oTree.getParentID(objectid = destObj.objectID);
+		qGetParent = request.factory.oTree.getParentID(objectid = destObj.objectID);
 		destNavObjectID = qGetparent.parentID;
 		
 	}	
 	else{	
-		oNav = createObject("component", "#application.packagepath#.types.dmNavigation");
+		oNav = createObject("component", application.types.dmNavigation.typePath);
 		qGetParent = oNav.getParent(objectid=srcObj.objectID);
 		srcParentObjectID = qGetParent.objectID;
 		destNavObjectID = destObj.objectId;
@@ -80,21 +80,14 @@ $out:$
 <!--- Check permissions - are you allowed to do this? --->
 <cfscript>
 	oAuthorisation = request.dmSec.oAuthorisation;
-	if (not len(srcParentObjectID))
+	if (not len(trim(destNavObjectID)))
 		oAuthorisation.checkPermission(permissionName="RootNodeManagement",reference="PolicyGroup",bThrowOnError=1);
 	else
-		oAuthorisation.checkInheritedPermission(permissionName="Edit",objectid=srcParentObjectID,bThrowOnError=1);	
+		oAuthorisation.checkInheritedPermission(permissionName="Create",objectid=destNavObjectID,bThrowOnError=1);	
 	//get logged in user
 	oAuthentication = request.dmSec.oAuthentication;	
 	stuser = oAuthentication.getUserAuthenticationData();
 
-</cfscript>
-
-<!--- get dest parent object --->
-<!--- <q4:contentobjectget objectid="#destNavObjectID#"  r_stobject="destObjParent"> --->
-
-<cfscript>
-	oAuthorisation.checkInheritedPermission(permissionName="Edit",objectid=destNavObjectID,bThrowOnError=1);	
 </cfscript>
 
 <nj:treeGetRelations get="ancestors" bInclusive="1" objectId="#destObj.objectId#" r_lObjectIds="lAncestorIds">
@@ -131,7 +124,7 @@ $out:$
 				}
 			}
 			
-			application.factory.oTree.moveBranch(dsn=application.dsn,objectID=URL.srcObjectID,parentID=URL.destObjectID);
+			request.factory.oTree.moveBranch(dsn=application.dsn,objectID=URL.srcObjectID,parentID=URL.destObjectID);
 			
 			if (application.config.plugins.fu)
 			{		
@@ -174,7 +167,7 @@ $out:$
 		srcObjParent.datetimecreated = createODBCDate("#datepart('yyyy',srcObjParent.datetimecreated)#-#datepart('m',srcObjParent.datetimecreated)#-#datepart('d',srcObjparent.datetimecreated)#");
 		srcObjParent.datetimelastupdated = createODBCDate(now());
 		// update the parent object instance
-		oType = createobject("component","#application.packagepath#.types.#srcObjParent.typename#");
+		oType = createobject("component", application.types[srcObjParent.typename].typePath);
 		oType.setData(stProperties=srcObjParent,auditNote="Child moved");	
 	</cfscript>
 </cfif>
@@ -185,7 +178,7 @@ $out:$
 	if (NOT srcObj.typename IS "dmNavigation")
 		arrayAppend( destObj[key], srcObj.objectId);
 	// Now Update the dest object
-	oType = createobject("component","#application.packagepath#.types.#destObj.typename#");
+	oType = createobject("component", application.types[destObj.typename].typePath);
 	oType.setData(stProperties=destObj,auditNote="Child moved");		
 </cfscript>
 

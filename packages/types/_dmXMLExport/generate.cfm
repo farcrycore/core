@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmXMLExport/generate.cfm,v 1.11 2003/10/12 23:08:17 brendan Exp $
-$Author: brendan $
-$Date: 2003/10/12 23:08:17 $
-$Name: b201 $
-$Revision: 1.11 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmXMLExport/generate.cfm,v 1.14.2.3 2005/05/06 05:07:47 guy Exp $
+$Author: guy $
+$Date: 2005/05/06 05:07:47 $
+$Name: milestone_2-1-2 $
+$Revision: 1.14.2.3 $
 
 || DESCRIPTION || 
 $Description: generates rss feed$
@@ -21,6 +21,16 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 $in: $
 $out:$
 --->
+<cfscript>
+function high2ascii(str) {
+	while(1) {
+		p=REFind("[^[:ascii:]]",str);
+	    if(not p) break;
+	    	str = replace(str,mid(str,p,1),"&###asc(mid(str,p,1))#;","all");
+	}
+	return str;
+}
+</cfscript>
 
 <!--- get categories --->
 <cfobject component="#application.packagepath#.farcry.category" name="oCategories">
@@ -37,7 +47,7 @@ $out:$
 	<cfset qObjects = oCategories.getData(typename=stObj.contentType,lCategoryIDs=lCategories,dsn=application.dsn)>
 <cfelse>
 	<!--- get all objects --->
-	<cfobject component="#packagepath#.types.#stObj.contentType#" name="oContentType">
+	<cfobject component="#application.types[stObj.contentType].typePath#" name="oContentType">
 	<cfset stObjects = oContentType.getMultiple(dsn=application.dsn,dbowner=application.dbowner)>
 </cfif>
 
@@ -63,39 +73,63 @@ $out:$
 	    <dc:language>#stObj.language#</dc:language>
 	    <dc:creator>mailto:#stObj.creator#</dc:creator>
 	    <dc:rights>#stObj.rights#</dc:rights>
-	    <dc:date>#dateFormat(stObj.dateTimeLastUpdated,"yyyy-mm-dd")#T#timeFormat(stObj.dateTimeLastUpdated,"hh:mm:ss")##numberFormat((stTimeZone.utcHourOffset * -1),"+00")#:#abs(numberFormat(stTimeZone.utcMinuteOffset,"00"))#</dc:date>
+	    <dc:date>#dateFormat(stObj.dateTimeLastUpdated,"yyyy-mm-dd")#T#timeFormat(stObj.dateTimeLastUpdated,"hh:mm:ss")##numberFormat((stTimeZone.utcHourOffset * -1),"+00")#:#numberFormat(abs(stTimeZone.utcMinuteOffset),"00")#</dc:date>
 		<admin:generatorAgent rdf:resource="#stObj.generatorAgent#"/>
 	    <admin:errorReportsTo rdf:resource="mailto:#stObj.errorReportsTo#"/>
 	    <sy:updatePeriod>#stObj.updatePeriod#</sy:updatePeriod>
 	    <sy:updateFrequency>#stObj.updateFrequency#</sy:updateFrequency>
 	    <sy:updateBase>2000-01-01T12:00+00:00</sy:updateBase>
 		</cfoutput>
-		
+
 		<cfif len(lCategories)>
 			<cfloop query="qObjects">
-				<cfoutput>
-				<item>
-					<title>#xmlFormat(qObjects.label)#</title>
-					<link>http://#cgi.http_host##application.url.conjurer#?objectid=#qObjects.objectid#</link>
-					<description><cfif len(qObjects.teaser)>#xmlFormat(qObjects.teaser)#<cfelse>#xmlFormat(oRSS.HTMLStripper(left(qObjects.body,255)))#...</cfif></description>
-					<guid isPermaLink="false">#qObjects.objectid#</guid>
-					<!--- <dc:subject>subject</dc:subject> --->
-					<dc:date>#dateFormat(qObjects.dateTimeLastUpdated,"yyyy-mm-dd")#T#timeFormat(qObjects.dateTimeLastUpdated,"hh:mm:ss")##numberFormat((stTimeZone.utcHourOffset * -1),"+00")#:#abs(numberFormat(stTimeZone.utcMinuteOffset,"00"))#</dc:date>
-				</item>
-				</cfoutput>
+				<cfset bShow = 1>
+				<!--- check object is available for publishing --->
+				<cfif isDefined("qObjects.publishDate") and qObjects.publishDate gt now()>
+					<cfset bShow = 0>
+				<cfelseif isDefined("qObjects.expiryDate") and qObjects.expiryDate lt now()>
+					<cfset bShow = 0>
+				<cfelseif isDefined("qObjects.status") and qObjects.status neq "approved">
+					<cfset bShow = 0>
+				</cfif>
+				<!--- add item to export --->
+				<cfif bShow>
+					<cfoutput>
+					<item>
+						<title>#xmlFormat(qObjects.label)#</title>
+						<link>http://#cgi.http_host##application.url.conjurer#?objectid=#qObjects.objectid#</link>
+						<description><cfif isdefined("qObjects.teaser") and len(qObjects.teaser)>#xmlFormat(high2ascii(qObjects.teaser))#<cfelseif isdefined("qObjects.body") and len(qObjects.body)>#xmlFormat(oRSS.HTMLStripper(high2ascii(left(qObjects.body,255))))#...</cfif></description>
+						<guid isPermaLink="false">#qObjects.objectid#</guid>
+						<!--- <dc:subject>subject</dc:subject> --->
+						<dc:date>#dateFormat(qObjects.dateTimeLastUpdated,"yyyy-mm-dd")#T#timeFormat(qObjects.dateTimeLastUpdated,"hh:mm:ss")##numberFormat((stTimeZone.utcHourOffset * -1),"+00")#:#numberFormat(abs(stTimeZone.utcMinuteOffset),"00")#</dc:date>
+					</item>
+					</cfoutput>
+				</cfif>
 			</cfloop>
 		<cfelse>
 			<cfloop collection="#stObjects#" item="obj">
-				<cfoutput>
-				<item>
-					<title>#xmlFormat(stObjects[obj].label)#</title>
-					<link>http://#cgi.http_host##application.url.conjurer#?objectid=#obj#</link>
-					<description><cfif len(stObjects[obj].teaser)>#xmlFormat(stObjects[obj].teaser)#<cfelse>#xmlFormat(oRSS.HTMLStripper(left(stObjects[obj].body,255)))#...</cfif></description>
-					<guid isPermaLink="false">#obj#</guid>
-					<!--- <dc:subject>subject</dc:subject> --->
-					<dc:date>#dateFormat(stObjects[obj].dateTimeLastUpdated,"yyyy-mm-dd")#T#timeFormat(stObjects[obj].dateTimeLastUpdated,"hh:mm:ss")##numberFormat((stTimeZone.utcHourOffset * -1),"+00")#:#abs(numberFormat(stTimeZone.utcMinuteOffset,"00"))#</dc:date>
-				</item>
-				</cfoutput>
+				<cfset bShow = 1>
+				<!--- check object is available for publishing --->
+				<cfif structKeyExists(stObjects[obj],"publishDate") and stObjects[obj].publishDate gt now()>
+					<cfset bShow = 0>
+				<cfelseif structKeyExists(stObjects[obj],"publishDate") and stObjects[obj].expiryDate lt now()>
+					<cfset bShow = 0>
+				<cfelseif structKeyExists(stObjects[obj],"status") and stObjects[obj].status NEQ "approved">
+					<cfset bShow = 0>
+				</cfif>
+				<!--- add item to export --->
+				<cfif bShow>
+					<cfoutput>
+					<item>
+						<title>#xmlFormat(stObjects[obj].label)#</title>
+						<link>http://#cgi.http_host##application.url.conjurer#?objectid=#obj#</link>
+						<description><cfif structKeyExists(stObjects[obj],"teaser") and len(stObjects[obj].teaser)>#xmlFormat(high2ascii(stObjects[obj].teaser))#<cfelseif structKeyExists(stObjects[obj],"body") and len(stObjects[obj].body)>#xmlFormat(oRSS.HTMLStripper(high2ascii(left(stObjects[obj].body,255))))#...</cfif></description>
+						<guid isPermaLink="false">#obj#</guid>
+						<!--- <dc:subject>subject</dc:subject> --->
+						<dc:date>#dateFormat(stObjects[obj].dateTimeLastUpdated,"yyyy-mm-dd")#T#timeFormat(stObjects[obj].dateTimeLastUpdated,"hh:mm:ss")##numberFormat((stTimeZone.utcHourOffset * -1),"+00")#:#numberFormat(abs(stTimeZone.utcMinuteOffset),"00")#</dc:date>
+					</item>
+					</cfoutput>
+				</cfif>
 			</cfloop>
 		</cfif>
 		<cfoutput>

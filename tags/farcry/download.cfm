@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/farcry/download.cfm,v 1.9 2003/10/29 06:32:30 paul Exp $
-$Author: paul $
-$Date: 2003/10/29 06:32:30 $
-$Name: b201 $
-$Revision: 1.9 $
+$Header: /cvs/farcry/farcry_core/tags/farcry/download.cfm,v 1.9.2.3 2004/04/22 00:50:55 brendan Exp $
+$Author: brendan $
+$Date: 2004/04/22 00:50:55 $
+$Name: milestone_2-1-2 $
+$Revision: 1.9.2.3 $
 
 || DESCRIPTION || 
 $Description: Downloads a dmFile object$
@@ -98,13 +98,16 @@ $out:$
 	<cfabort>
 
 <!--- ext file --->
-<cfelseif isdefined("url.extFile")>
+<cfelseif isdefined("url.extFile") and isDefined("application.config.verity.contentType.extFiles.aProps.uncpath")>
+	
+	<!--- get filename --->
+	<cfset filename = replace(url.extFile,"\","/","all")>
+	<cfset fileName = listLast(filename,"/")>
 	
 	<!--- work out file type --->
  	<cfset pos = find(".", url.extFile)>
     <cfset suffix = removeChars(url.extFile, 1, pos)>
- 
-
+ 	
 	<!--- pick a mime type (if required) --->
 	<cfswitch expression="#lCase(suffix)#">						
 
@@ -130,8 +133,9 @@ $out:$
 	
 	</cfswitch>
 	
+	<!--- download file via unc path specified for external files --->
 	<CFHEADER NAME="content-disposition" VALUE="inline; filename=#url.extFile#">
-	<cfcontent type="#mime#" file="#url.extFile#" deletefile="No" reset="Yes">
+	<cfcontent type="#mime#" file="#application.config.verity.contentType.extFiles.aProps.uncpath#/#fileName#" deletefile="No" reset="Yes">
 </cfif>
 
 <cfsetting enablecfoutputonly="No">

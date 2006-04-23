@@ -1,54 +1,117 @@
-<cfoutput>
-<style type="text/css" >
-	UL { /*list-style-type: none;list-style-image: url(#application.url.farcry#/images/treeImages/crystalIcons/NavApproved.gif)*/ }
-</style>
-</cfoutput>
+<cfparam name="form.action" default="" />
+<cfparam name="form.filterPolicyGroupId" default="" />
+<cfparam name="form.filterPermissionId" default="" />
 
-<cffunction name="isPermissionsSet" hint="checks whether permissions are set in the permmision barnacle.">
+<cfset bFilter = form.action eq "filter" />
+
+<cfscript>
+    oAuthorisation = request.dmsec.oAuthorisation;
+	aPolicyGroup = request.dmsec.oAuthorisation.getAllPolicyGroups();
+	aPermissions = oAuthorisation.getAllPermissions(permissionType="dmNavigation");
+</cfscript>
+
+
+<cffunction name="getPermission" hint="checks whether permissions are set in the permmision barnacle.">
 	<cfargument name="q" hint="This is assumed to be a query of dmPermissionBarnacle">
 	<cfargument name="objectid">
+	<cfargument name="lPolicyGroupIds" required="No" default="">
+	<cfargument name="lPermissionIds" required="No" default="">
+	<cfargument name="lStatus" required="No" default="1">
+	
 	<cfset bPermsSet = false>
 	<cfquery name="q" dbtype="query">
-		SELECT * FROM arguments.q 
-		WHERE reference1 = '#arguments.objectid#'
+		SELECT status FROM arguments.q
+		WHERE reference1 = <cfqueryparam value="#arguments.objectid#" />
 	</cfquery>
 	<cfif q.recordcount>
-		<cfset bPermsSet =true>
+		<cfreturn q.status />
 	</cfif>
-	<cfreturn bPermsSet>
+	<cfreturn 0 />
 </cffunction>
 
 <cfquery name="qPerms" datasource="#application.dsn#">
 	SELECT * from dmPermissionBarnacle
+	<cfif bFilter>
+	    where permissionId = <cfqueryparam value="#form.filterPermissionId#" />
+	    and policyGroupId = <cfqueryparam value="#form.filterPolicyGroupId#" />
+	</cfif>
 </cfquery>
+
 
 <cfscript>
 	oTree = createObject("component","#application.packagepath#.farcry.tree");
 	qDesc = oTree.getDescendants(objectid='#application.navid.root#',dsn=application.dsn,bIncludeSelf=1);
 </cfscript>
 
-<cfoutput><span class="formtitle">Permissions Map</span><p></cfoutput>
-<cfscript>
-	for (i = 1;i LTE qDesc.recordCount;i=i+1)
-	{
-		if (i EQ 1)
-			writeoutput("<ul>");
-		if (isPermissionsSet(qPerms,qDesc.objectid[i]))
-			writeoutput("<li><a href='#application.url.farcry#/navajo/permissions.cfm?objectId=#qDesc.objectid[i]#'>#qDesc.objectname[i]#</a></li>");
-		else			
-			writeoutput("<li>#qDesc.objectname[i]#</li>");
-		if (qDesc.nLevel[i+1] GT qDesc.nlevel[i])
-			writeoutput("<ul>");
-		else if (qDesc.nLevel[i+1] LT qDesc.nlevel[i] OR i EQ qDesc.recordCount)
-		{	
-			if (i NEQ qDesc.recordCount)
-				ulCount = qDesc.nLevel[i] - qDesc.nLevel[i+1];	
-			else 
-				ulCount = 1;	
-			writeoutput(repeatString('</UL>',ulCount));
-		}	
-			
-	}		
-			
-</cfscript>
+<cfoutput><p class="formtitle">Permissions Map</p></cfoutput>
 
+<cfoutput>
+    <form method="POST" action="" name="theForm">
+        <input type="hidden" name="action" value="filter" />
+        Policy group:
+        <select name="filterPolicyGroupId">
+          <cfloop index="i" from="1" to="#arrayLen(aPolicyGroup)#">
+            <option value="#aPolicyGroup[i].policyGroupId#" <cfif aPolicyGroup[i].policyGroupId eq form.filterPolicyGroupId>selected</cfif>>#aPolicyGroup[i].policyGroupName#</option>
+          </cfloop>
+        </select>
+
+        Permission:
+        <select name="filterPermissionId">
+          <cfloop index="i" from="1" to="#arrayLen(aPermissions)#">
+            <option value="#aPermissions[i].permissionId#" <cfif aPermissions[i].permissionId eq form.filterPermissionId>selected</cfif>>#aPermissions[i].permissionName#</option>
+          </cfloop>
+        </select>
+
+        <input type="submit" value="Apply Filter" />
+
+        <cfif bFilter>
+          <input type="button" value="Remove Filter" onClick="document.theForm.action.value = ''; document.theForm.submit()" />
+        <cfelse>
+          (no filter applied)
+        </cfif>
+    </form>
+</cfoutput>
+    <p>
+	<table cellpadding="2" cellspacing="0" border="1" style="margin-left:30px;">
+	<tr class="dataheader">
+		<td>Navigation Node</td>
+		<cfif bFilter>
+		  <td>Allowed</td>
+          <td>Inherited</td>
+        </cfif>
+	</tr>
+    <cfoutput query="qDesc">
+        <cfset permission = getPermission(qPerms, objectId) />
+        <cfset bInherited = permission eq 0 />
+        <cfset bAllowed = permission eq 1 />
+        <tr>
+          <td>
+              #repeatString("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;", nLevel)#
+              <cfif not bInherited>
+                  <a href="#application.url.farcry#/navajo/permissions.cfm?objectId=#objectid#">#objectName#</a>
+              <cfelse>
+                  #objectName#
+              </cfif>
+          </td>
+		<cfif bFilter>
+          <td align="center">
+            <cfif bAllowed>
+                <img src="#application.url.farcry#/images/yes.gif">
+            <cfelseif not bInherited>
+                <img src="#application.url.farcry#/images/no.gif">
+            <cfelse>
+                &nbsp;
+            </cfif>
+          </td>
+          <td align="center">
+            <cfif bInherited>
+                <img src="#application.url.farcry#/images/yes.gif">
+            <cfelse>
+                &nbsp;
+            </cfif>
+          </td>
+        </cfif>
+        </tr>
+    </cfoutput>
+    </table>
+    </p>

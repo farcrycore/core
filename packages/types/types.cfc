@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/types.cfc,v 1.28 2003/10/28 02:28:59 brendan Exp $
-$Author: brendan $
-$Date: 2003/10/28 02:28:59 $
-$Name: b201 $
-$Revision: 1.28 $
+$Header: /cvs/farcry/farcry_core/packages/types/types.cfc,v 1.33.2.1 2005/05/06 01:01:48 guy Exp $
+$Author: guy $
+$Date: 2005/05/06 01:01:48 $
+$Name: milestone_2-1-2 $
+$Revision: 1.33.2.1 $
 
 || DESCRIPTION || 
 $Description: Component Types Abstract class for contenttypes package.  This class defines default handlers and system attributes.$
@@ -49,16 +49,16 @@ default handlers
 		<cfargument name="dsn" required="no" type="string" default="#application.dsn#">
 		<!--- get the data for this instance --->
 		<cfset stObj = getData(objectid=arguments.objectID,dsn=arguments.dsn)>		
-				
 		<cfif NOT structIsEmpty(stObj)> 
-			<!--- check to see if the displayMethod template exists --->
-			<cfif NOT fileExists("#application.path.webskin#/#stObj.typename#/#arguments.template#.cfm")>
-				 <cfabort showerror="Error: Template not found [#application.path.webskin#/#stObj.typename#/#arguments.template#.cfm]."> 
-			</cfif>
 			<cftry>
-			<cfinclude template="/farcry/#application.applicationname#/#application.path.handler#/#stObj.typename#/#arguments.template#.cfm">
+				<cfinclude template="/farcry/#application.applicationname#/#application.path.handler#/#stObj.typename#/#arguments.template#.cfm">
 				<cfcatch>
-					<cfif isdefined("url.debug")><cfset request.cfdumpinited = false><cfdump var="#cfcatch#"></cfif>
+					<!--- check to see if the displayMethod template exists --->
+					<cfif NOT fileExists("#application.path.webskin#/#stObj.typename#/#arguments.template#.cfm")>
+						 <cfabort showerror="Error: Template not found [#application.path.webskin#/#stObj.typename#/#arguments.template#.cfm]."> 
+					<cfelse>
+						<cfif isdefined("url.debug")><cfset request.cfdumpinited = false><cfdump var="#cfcatch#"></cfif>
+					</cfif>
 				</cfcatch>
 			</cftry>
 		</cfif>
@@ -76,10 +76,25 @@ default handlers
 		<cfargument name="user" type="string" required="true" hint="Username for object creator" default="#session.dmSec.authentication.userlogin#">
 		<cfargument name="auditNote" type="string" required="true" hint="Note for audit trail" default="Created">
 		
-		<cfset stNewObject = super.createData(arguments.stProperties)>
-		
-		<!--- log create --->
-		<cfset application.factory.oAudit.logActivity(auditType="Create", username=arguments.user, location=cgi.remote_host, note=arguments.auditNote,objectid=stNewObject.objectid)>	
+		<cfscript>
+			if(NOT structKeyExists(arguments.stProperties,"objectid"))
+				arguments.stProperties.objectid = createUUID();
+			if(NOT structKeyExists(arguments.stProperties,"datetimecreated"))
+				arguments.stProperties.datetimecreated = createODBCDateTime(now());	
+			if(NOT structKeyExists(arguments.stProperties,"datetimelastupdated"))
+				arguments.stProperties.datetimelastupdated = createODBCDateTime(now());		
+			if(NOT structKeyExists(arguments.stProperties,"locked"))
+				arguments.stProperties.locked = 0;			
+			if(NOT structKeyExists(arguments.stProperties,"lockedby"))
+				arguments.stProperties.lockedby = '';
+			if(NOT structKeyExists(arguments.stProperties,"createdby"))
+				arguments.stProperties.createdby = arguments.user;		
+			if(NOT structKeyExists(arguments.stProperties,"lastupdatedby"))
+				arguments.stProperties.lastupdatedby = arguments.user;	
+				
+			stNewObject = super.createData(arguments.stProperties);
+			application.factory.oAudit.logActivity(auditType="Create", username=arguments.user, location=cgi.remote_host, note=arguments.auditNote,objectid=stNewObject.objectid);
+		</cfscript>
 		
 		<cfreturn stNewObject>
 	</cffunction>
@@ -89,13 +104,26 @@ default handlers
 		<cfargument name="user" type="string" required="true" hint="Username for object creator" default="#session.dmSec.authentication.userlogin#">
 		<cfargument name="auditNote" type="string" required="true" hint="Note for audit trail" default="Updated">
 		<cfargument name="bAudit" type="boolean" required="No" default="1" hint="Pass in 0 if you wish no audit to take place">
+		<cfargument name="dsn" required="No" default="#application.dsn#"> 
 		
-		<cfset super.setData(arguments.stProperties)>
+		<cfscript>
+			//fill in the gaps in case user has forgotten any core properties
+			if(NOT structKeyExists(arguments.stProperties,"datetimelastupdated"))
+				arguments.stProperties.datetimelastupdated = createODBCDateTime(now());		
+			if(NOT structKeyExists(arguments.stProperties,"locked"))
+				arguments.stProperties.locked = 0;			
+			if(NOT structKeyExists(arguments.stProperties,"lockedby"))
+				arguments.stProperties.lockedby = '';
+			if(NOT structKeyExists(arguments.stProperties,"lastupdatedby"))
+				arguments.stProperties.lastupdatedby = arguments.user;	
+		</cfscript>				
 		
+		
+		<cfset super.setData(arguments.stProperties,arguments.dsn)>
 		
 		<!--- log update --->
 		<cfif arguments.bAudit>
-			<cfset application.factory.oAudit.logActivity(auditType="Update", username=arguments.user, location=cgi.remote_host, note=arguments.auditNote,objectid=arguments.stProperties.objectid)>	
+			<cfset application.factory.oAudit.logActivity(auditType="Update", username=arguments.user, location=cgi.remote_host, note=arguments.auditNote,objectid=arguments.stProperties.objectid,dsn=arguments.dsn)>	
 		</cfif>
 	</cffunction>
 	
@@ -120,9 +148,22 @@ default handlers
 		<cfset application.factory.oAudit.logActivity(auditType="Delete", username=arguments.user, location=cgi.remote_host, note=arguments.auditNote,objectid=arguments.objectid)>	
 	</cffunction>	
 	
+	<cffunction name="renderObjectOverview" access="public" hint="Renders entire object overiew" output="false">
+		<cfargument name="objectid" required="yes" type="UUID" hint="Object ID of the selected object">
+		<cfset var html = ''>
+		<!--- get object details --->
+		<cfset stObj = getData(arguments.objectid)>
+		<!--- default status for objects that don't require status --->
+		<cfparam name="stobj.status" default="approved">
+		
+		<cfinclude template="_types/renderObjectOverview.cfm">
+		
+		<cfreturn html>
+	</cffunction>
+	
+	
 	<cffunction name="renderOverview" access="public" hint="Renders options available on the overview page" output="false">
 		<cfargument name="objectid" required="yes" type="UUID" hint="Object ID of the selected object">
-		
 		<!--- get object details --->
 		<cfset stObj = getData(arguments.objectid)>
 		

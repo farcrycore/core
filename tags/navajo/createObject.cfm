@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/navajo/createObject.cfm,v 1.15 2003/10/08 09:01:45 paul Exp $
+$Header: /cvs/farcry/farcry_core/tags/navajo/createObject.cfm,v 1.18 2003/12/08 05:28:13 paul Exp $
 $Author: paul $
-$Date: 2003/10/08 09:01:45 $
-$Name: b201 $
-$Revision: 1.15 $
+$Date: 2003/12/08 05:28:13 $
+$Name: milestone_2-1-2 $
+$Revision: 1.18 $
 
 || DESCRIPTION || 
 $Description: creates an instance of an type object and returns to edit handler$
@@ -27,7 +27,8 @@ $out:$
 
 <cfimport taglib="/farcry/fourq/tags/" prefix="q4">
 <cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
-<link rel="stylesheet" type="text/css" href="../../www/farcry/navajo/navajo_popup.css">
+<cfinclude template="/farcry/farcry_core/admin/includes/utilityFunctions.cfm">
+
 
 <cfparam name="url.objectId" default="">
 <cfparam name="url.nodetype" default="dmNavigation">
@@ -76,15 +77,7 @@ $out:$
 		stProps.publishDate = now();
 		stProps.expiryDate = now();
 		
-		//create the new OBJECT	
-		if (application.types['#url.typename#'].bCustomType)
-		{
-			typepackagepath = application.custompackagepath;
-		} else
-		{
-			typepackagepath = application.packagepath;
-		}
-		oType = createobject("component","#typepackagepath#.types.#url.typename#");
+		oType = createobject("component", application.types[url.typename].typePath);
 		stNewObj = oType.createData(stProperties=stProps);
 		NewObjId = stNewObj.objectid;
 	</cfscript>
@@ -101,9 +94,9 @@ $out:$
 			<cfelse>
 				<!--- Insert this node into the tree --->
 				<cfscript>
-					qChildren = application.factory.oTree.getChildren(objectid=stParent.objectID,typename=stParent.typename);
+					qChildren = request.factory.oTree.getChildren(objectid=stParent.objectID,typename=stParent.typename);
 					position = qChildren.recordCount + 1;
-					streturn = application.factory.oTree.setChild(objectName=stProps.label,typename=typename,parentID=stParent.objectID,objectID=newObjId,pos=position);
+					streturn = request.factory.oTree.setChild(objectName=stProps.label,typename=typename,parentID=stParent.objectID,objectID=newObjId,pos=position);
 				</cfscript>
 
 			</cfif>
@@ -113,15 +106,7 @@ $out:$
 				arrayAppend(stParent.aObjectIds, NewObjID);
 				stParent.DATETIMECREATED =  createODBCDate("#datepart('yyyy',stParent.DATETIMECREATED)#-#datepart('m',stParent.DATETIMECREATED)#-#datepart('d',stParent.DATETIMECREATED)#");
 				stParent.DATETIMELASTUPDATED = createODBCDate(now());
-				// update object
-				if (application.types['#stParent.typename#'].bCustomType)
-				{
-					typepackagepath = application.custompackagepath;
-				} else
-				{
-					typepackagepath = application.packagepath;
-				}
-				oParentType = createobject("component","#typepackagepath#.types.#stParent.typename#");
+				oParentType = createobject("component", application.types[stParent.typename].typePath);
 				oParentType.setData(stProperties=stParent);
 			</cfscript>
 			
@@ -134,9 +119,13 @@ $out:$
 	</cfif>
 	
 	<!--- Now that we know its type and new objectID go and edit the object now --->
+	<cfscript>
+		st = filterStructure(URL,'objectid,nodetype');
+		queryString=structToNamePairs(st);
+	</cfscript>
 	<cfoutput>
 		<script>
-			window.location="#application.url.farcry#/navajo/edit.cfm?objectId=#NewObjID#&type=#URL.typename#<cfif isDefined('url.finishUrl')>&finishUrl=#url.finishUrl#</cfif>";
+			window.location="#application.url.farcry#/navajo/edit.cfm?objectId=#NewObjID#&#queryString#";
 		</script>
 	</cfoutput>
 	

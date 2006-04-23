@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/reporting/reportingMenuFrame.cfm,v 1.11 2003/10/28 00:59:07 brendan Exp $
+$Header: /cvs/farcry/farcry_core/admin/reporting/reportingMenuFrame.cfm,v 1.12 2004/01/07 23:30:17 brendan Exp $
 $Author: brendan $
-$Date: 2003/10/28 00:59:07 $
-$Name: b201 $
-$Revision: 1.11 $
+$Date: 2004/01/07 23:30:17 $
+$Name: milestone_2-1-2 $
+$Revision: 1.12 $
 
 || DESCRIPTION || 
 $Description: Displays menu items for reporting section in Farcry. $
@@ -66,7 +66,10 @@ $out:$
 				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="statsVisitorPaths.cfm" class="frameMenuItem" target="editFrame">Session Paths</a></div>
 				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="statsWhosOn.cfm" class="frameMenuItem" target="editFrame">Who's On Now</a></div>
 				
-				<div class="frameMenuTitle">Searches</div>
+				<div class="frameMenuTitle">Search Engine Key Words</div>
+				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="statsGoogle.cfm" class="frameMenuItem" target="editFrame">Google</a></div>
+				
+				<div class="frameMenuTitle">In-Site Searches</div>
 				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="statsSearches.cfm" class="frameMenuItem" target="editFrame">Recent Searches</a></div>
 				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="statsSearchesNoResults.cfm" class="frameMenuItem" target="editFrame">Searches Returning No Results</a></div>
 				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="statsSearchesMostPopular.cfm" class="frameMenuItem" target="editFrame">Most Popular Searches</a></div>

@@ -5,13 +5,13 @@
 	DELETE FROM #application.dbowner#refCategories WHERE objectID = '#arguments.objectID#'	
 </cfquery>	
 
-<cfloop list="#arguments.lCategoryIDs#" index="i">
-	<cftransaction>
-	<cfquery datasource="#arguments.dsn#">
+<cfset aCategoryIds = listToArray(arguments.lcategoryIds)>
+
+<cfloop from="1" to="#arrayLen(aCategoryIds)#" index="i" >
+ 	<cfquery datasource="#arguments.dsn#">
 			INSERT INTO #application.dbowner#refCategories (categoryID,objectID) 
-			VALUES ('#i#', '#arguments.objectID#')
-		</cfquery>
-	</cftransaction>
+			VALUES ('#aCategoryIds[i]#', '#arguments.objectID#')
+	</cfquery>
 </cfloop>  
 
 <cfscript>

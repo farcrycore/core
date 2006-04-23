@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmCron/edit.cfm,v 1.3 2003/09/19 06:20:03 brendan Exp $
-$Author: brendan $
-$Date: 2003/09/19 06:20:03 $
-$Name: b201 $
-$Revision: 1.3 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmCron/edit.cfm,v 1.4 2003/11/05 04:46:09 tom Exp $
+$Author: tom $
+$Date: 2003/11/05 04:46:09 $
+$Name: milestone_2-1-2 $
+$Revision: 1.4 $
 
 || DESCRIPTION || 
 $Description: edit handler$
@@ -61,7 +61,7 @@ $out:$
 		stProperties.lockedBy = "";
 	
 		// update the OBJECT	
-		oType = createobject("component","#application.packagepath#.types.dmCron");
+		oType = createobject("component", application.types.dmCron.typePath);
 		oType.setData(stProperties=stProperties);
 	</cfscript>
 	
@@ -87,7 +87,7 @@ $out:$
 <cfif showform> <!--- Show the form --->
 	<cfscript>
 		// update the OBJECT	
-		oType = createobject("component","#application.packagepath#.types.dmCron");
+		oType = createobject("component", application.types.dmCron.typePath);
 		qTemplates = oType.listTemplates();
 	</cfscript>
 	

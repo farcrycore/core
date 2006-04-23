@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_config/defaultGeneral.cfm,v 1.15 2003/10/20 06:14:09 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_config/defaultGeneral.cfm,v 1.18 2004/01/19 23:23:27 brendan Exp $
 $Author: brendan $
-$Date: 2003/10/20 06:14:09 $
-$Name: b201 $
-$Revision: 1.15 $
+$Date: 2004/01/19 23:23:27 $
+$Name: milestone_2-1-2 $
+$Revision: 1.18 $
 
 || DESCRIPTION || 
 $Description: deploys general config file $
@@ -40,6 +40,8 @@ stConfig.logStats = "Yes";
 stConfig.richTextEditor = "soEditor";
 stConfig.fileDownloadDirectLink = "false";
 stConfig.fileNameConflict = "MAKEUNIQUE";
+stConfig.verityStoragePath = "#server.coldfusion.rootdir#/verity/collections/";
+stConfig.adminServer = "http://#cgi.HTTP_HOST#";
 stConfig.exportPath = "www/xml";
 stConfig.siteTitle = "farcry";
 stConfig.siteTagLine = "tell it to someone who cares";

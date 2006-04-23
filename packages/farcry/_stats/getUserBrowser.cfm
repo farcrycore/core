@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_stats/getUserBrowser.cfm,v 1.4 2003/09/10 12:21:48 brendan Exp $
-$Author: brendan $
-$Date: 2003/09/10 12:21:48 $
-$Name: b201 $
-$Revision: 1.4 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_stats/getUserBrowser.cfm,v 1.5 2003/12/31 00:14:23 paul Exp $
+$Author: paul $
+$Date: 2003/12/31 00:14:23 $
+$Name: milestone_2-1-2 $
+$Revision: 1.5 $
 
 || DESCRIPTION || 
 $Description: get users browser $
@@ -80,7 +80,7 @@ $out:$
 			}
 		}
 	} else {
-		browserVersion = "unkown";
+		browserVersion = "unknown";
 	}	
 	stBroswer = structNew();
 	stBrowser.name = trim(browsername);

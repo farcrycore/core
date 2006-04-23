@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/rules/ruleXMLFeed.cfc,v 1.6 2003/07/24 06:04:37 geoff Exp $
-$Author: geoff $
-$Date: 2003/07/24 06:04:37 $
-$Name: b201 $
-$Revision: 1.6 $
+$Header: /cvs/farcry/farcry_core/packages/rules/ruleXMLFeed.cfc,v 1.7 2003/11/06 00:12:53 tom Exp $
+$Author: tom $
+$Date: 2003/11/06 00:12:53 $
+$Name: milestone_2-1-2 $
+$Revision: 1.7 $
 
 || DESCRIPTION || 
 $Description: Publishing rule to pull, parse and display external RSS feeds.  Is dependent on the rss.cfc component. $
@@ -44,7 +44,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 				stObj.intro = form.intro;
 				stObj.maxRecords = form.maxRecords;
 			</cfscript>
-			<q4:contentobjectdata typename="#application.packagepath#.rules.ruleXMLFeed" stProperties="#stObj#" objectID="#stObj.objectID#">
+			<q4:contentobjectdata typename="#application.rules.ruleXMLFeed.rulePath#" stProperties="#stObj#" objectID="#stObj.objectID#">
 			<cfset message = "Update Successful">
 		</cfif>
 

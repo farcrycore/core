@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/navajo/treeGetRelations.cfm,v 1.12 2003/10/08 09:01:45 paul Exp $
+$Header: /cvs/farcry/farcry_core/tags/navajo/treeGetRelations.cfm,v 1.15 2003/12/08 05:44:50 paul Exp $
 $Author: paul $
-$Date: 2003/10/08 09:01:45 $
-$Name: b201 $
-$Revision: 1.12 $
+$Date: 2003/12/08 05:44:50 $
+$Name: milestone_2-1-2 $
+$Revision: 1.15 $
 
 || DESCRIPTION || 
 
@@ -71,7 +71,7 @@ stObject
 
 <cfif attributes.get eq "root">
 	<cfscript>
-		qRoot = application.factory.oTree.getRootNode(typename="#attributes.typename#");
+		qRoot = request.factory.oTree.getRootNode(typename="#attributes.typename#");
 	</cfscript>
 	<cfset lObjectIds = qRoot.ObjectID>
 </cfif>
@@ -87,7 +87,7 @@ need to call tag or fourq function that has status as an option somehow
 </cfif>
 <cfif attributes.typename is attributes.nodetype>
 	<cfscript>
-		qChildren = application.factory.oTree.getChildren(objectid=attributes.objectid);
+		qChildren = request.factory.oTree.getChildren(objectid=attributes.objectid);
 	</cfscript>
 <cfelse>	
 	<cfquery name="qChildren" datasource="#application.dsn#">
@@ -132,7 +132,7 @@ this should be a COAPI call and *not* a straight SQL shortcut
 	The parent could be either a dmNavigation or dmHTML object
 	 --->	
  	<cfscript>
-		qAncestors = application.factory.oTree.getAncestors(objectid=attributes.objectid,typename=attributes.nodetype);
+		qAncestors = request.factory.oTree.getAncestors(objectid=attributes.objectid,typename=attributes.nodetype);
 	</cfscript>
 	
 	<cfset lobjectIDs="#ValueList(qAncestors.objectid)#">
@@ -142,7 +142,7 @@ this should be a COAPI call and *not* a straight SQL shortcut
 	<!--- descendants --->
 	<!--- loop while get children, non ordered list/stobjects --->
 		<cfscript>
-			getDescendantsRet = application.factory.oTree.getDescendants(objectid=attributes.objectID);
+			getDescendantsRet = request.factory.oTree.getDescendants(objectid=attributes.objectID);
 		</cfscript>
 		<cfset lObjectIds = valueList(getDescendantsRet.objectID)>
 	<cfelseif attributes.get eq "parents">
@@ -215,16 +215,16 @@ SELECT o.objectId
 Build return result structures
 --------------------------------------------------------------------->
 <cfif len(attributes.r_ObjectID)>
-	<cfset SetVariable("caller.#attributes.r_ObjectId#", listgetat(lObjectIds,1))>
+	<cfset "caller.#attributes.r_ObjectId#" =  listgetat(lObjectIds,1)>
 </cfif>
 
 <cfif len(attributes.r_lObjectIds)>
-	<cfset SetVariable("caller.#attributes.r_lObjectIds#", lObjectIds)>
+	<cfset "caller.#attributes.r_lObjectIds#" = lObjectIds>
 </cfif>
 
 <cfif len(attributes.r_stObjects)>
-	<q4:contentobjectGetMultiple lObjectIds="#lObjectIds#" r_stObjects="stObjects" typename="#application.packagepath#.types.#attributes.typename#">
-	<cfset SetVariable("caller.#attributes.r_stObjects#", stObjects)>
+	<q4:contentobjectGetMultiple lObjectIds="#lObjectIds#" r_stObjects="stObjects" typename="#application.types[attributes.typename].typePath#">
+	<cfset "caller.#attributes.r_stObjects#" = stObjects>
 </cfif>
 
 <cfif len(attributes.r_stObject)>
@@ -233,7 +233,7 @@ Build return result structures
 	<cfelse>
 		<cfset stObject=structnew()>
 	</cfif>
-	<cfset SetVariable("caller.#attributes.r_stObject#", stObject)>
+	<cfset "caller.#attributes.r_stObject#" = stObject>
 </cfif>
 
 <cfsetting enablecfoutputonly="No">

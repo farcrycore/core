@@ -7,11 +7,11 @@ Daemon Pty Limited 1995-2003
 http://www.daemon.com.au
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/webskin/secondaryNav.cfm,v 1.9 2003/08/08 04:23:36 brendan Exp $
+$Header: /cvs/farcry/farcry_core/tags/webskin/secondaryNav.cfm,v 1.11 2003/12/09 03:14:18 brendan Exp $
 $Author: brendan $
-$Date: 2003/08/08 04:23:36 $
-$Name: b201 $
-$Revision: 1.9 $
+$Date: 2003/12/09 03:14:18 $
+$Name: milestone_2-1-2 $
+$Revision: 1.11 $
 
 || DESCRIPTION || 
 Builds a query with secondary navigation info
@@ -36,7 +36,7 @@ out:
 <cfparam name="attributes.bDisplay" default="false">
 
 <cfscript>
-	qSecondaryNav = application.factory.oTree.getSecondaryNav(objectid=attributes.navid);
+	qSecondaryNav = request.factory.oTree.getSecondaryNav(objectid=attributes.navid);
 </cfscript>
 
 <!--- Get status of Nav Items --->
@@ -139,9 +139,9 @@ WHERE qSecondaryNav.NLEVEL > #qCurrentLevel.NLEVEL#
 
 <!--- return query object to calling page --->
 <cfif len(attributes.r_navquery)>
-	<cfset setVariable("caller.#attributes.r_navquery#", q2ndNavStatus)>
-    <cfset setVariable("caller.r_CurrentLevel", qCurrentLevel)>
-	<cfset setVariable("caller.r_Leaf", qLeaf)>
+	<cfset "caller.#attributes.r_navquery#" = q2ndNavStatus>
+    <cfset caller.r_CurrentLevel = qCurrentLevel>
+	<cfset caller.r_Leaf = qLeaf>
 </cfif>
 
 <cfsetting enablecfoutputonly="No">

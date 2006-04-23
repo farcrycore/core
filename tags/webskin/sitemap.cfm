@@ -5,11 +5,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/webskin/sitemap.cfm,v 1.10 2003/09/02 23:14:50 brendan Exp $
-$Author: brendan $
-$Date: 2003/09/02 23:14:50 $
-$Name: b201 $
-$Revision: 1.10 $
+$Header: /cvs/farcry/farcry_core/tags/webskin/sitemap.cfm,v 1.11 2003/12/08 05:44:50 paul Exp $
+$Author: paul $
+$Date: 2003/12/08 05:44:50 $
+$Name: milestone_2-1-2 $
+$Revision: 1.11 $
 
 || DESCRIPTION || 
 $Description: Farcry - Sitemap Include
@@ -38,7 +38,7 @@ $out: caller.r_navQuery - complete qNav query$
 	// get navigation elements to root
 	navFilter=arrayNew(1);
 	navfilter[1]="status IN (#listQualify(request.mode.lvalidstatus, "'")#)";
-	qNav = application.factory.oTree.getDescendants(objectid=attributes.startPoint, depth=attributes.depth, afilter=navFilter, lcolumns="externallink");
+	qNav = request.factory.oTree.getDescendants(objectid=attributes.startPoint, depth=attributes.depth, afilter=navFilter, lcolumns="externallink");
 	lv0 = 2; // nlevel for plateau
 	depth = 2; // default depth ie. plateau
 </cfscript>
@@ -91,7 +91,7 @@ $out: caller.r_navQuery - complete qNav query$
 
 <cfelse>
 	<!--- return query to calling page --->
-	<cfset setVariable("caller.#attributes.r_navquery#", qNav)>
+	<cfset "caller.#attributes.r_navquery#" = qNav>
 </cfif>
 
 <cfsetting enablecfoutputonly="no">

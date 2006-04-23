@@ -15,6 +15,7 @@
 <cfparam name="url.parenttabindex" default="1">
 <cfparam name="url.subtabindex" default="1">
 
+
 <div id="frameMenu">
 		<cfset menuElements = application.customAdminXML.customtabs.parenttab[URL.parenttabindex].subtabs[URL.subtabindex].xmlchildren>
 		<cfloop from="1" to="#ArrayLen(menuElements)#" index="i">
@@ -47,11 +48,19 @@
 						}
 						else
 							bHasPerm = 1; //For the sake of backwards compatability, will assume that if no permission set - then everyone can see this menuitem
+						href = link[1].xmltext;
+						parentURL = application.config.general.adminServer;
+						parentURL = parentURL & "#application.url.farcry#/index.cfm?section=customAdmin&parenttabindex=#url.parentTabIndex#&subtabindex=#url.subtabindex#&defaultPage=#link[1].xmltext#";
+						if(findnocase(".cfm?",href))
+							append = "&";
+						else
+							append = "?";
+						href = href & append & "approveURL=#URLEncodedFormat(parentURL)#";
 					</cfscript>
 					<cfif bHasPerm GT 0>
 					<div class="frameMenuItem">
 					<span class="frameMenuBullet">&raquo;</span>
-  						<a href="#link[1].xmltext#" class="frameMenuItem" target="editFrame">#label[1].xmltext#</a>	
+  						<a href="#href#" class="frameMenuItem" target="editFrame">#label[1].xmltext#</a>	
 					</div>			
 					</cfif>		 
 				</cfcase>

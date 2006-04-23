@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_versioning/approveEmail_pending.cfm,v 1.11 2003/09/18 01:25:11 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_versioning/approveEmail_pending.cfm,v 1.17 2004/01/14 21:03:51 brendan Exp $
 $Author: brendan $
-$Date: 2003/09/18 01:25:11 $
-$Name: b201 $
-$Revision: 1.11 $
+$Date: 2004/01/14 21:03:51 $
+$Name: milestone_2-1-2 $
+$Revision: 1.17 $
 
 || DESCRIPTION || 
 $Description: sends email for pending object $
@@ -56,9 +56,8 @@ $out:$
 </cfinvoke>
 
 <cfloop collection="#stApprovers#" item="item">
-	<!--- check user had email profile and is in list of approvers --->
-    <cfif stApprovers[item].emailAddress neq "" AND stApprovers[item].bReceiveEmail and stApprovers[item].userName neq session.dmSec.authentication.userLogin AND (arguments.lApprovers eq "all" or listFind(arguments.lApprovers,stApprovers[item].userName))>
-
+<!--- check user had email profile and is in list of approvers --->
+<cfif stApprovers[item].emailAddress neq "" AND stApprovers[item].bReceiveEmail and stApprovers[item].userName neq session.dmSec.authentication.userLogin AND (arguments.lApprovers eq "all" or listFind(arguments.lApprovers,stApprovers[item].userName))>
     <cfif session.dmProfile.emailAddress neq "">
         <cfset fromEmail = session.dmProfile.emailAddress>
     <cfelse>
@@ -73,7 +72,7 @@ Page "<cfif stObj.title neq "">#stObj.title#<cfelse>undefined</cfif>" is awaitin
 
 You may approve/decline this page by browsing to the following location:
 
-http://#CGI.HTTP_HOST##application.url.farcry#/index.cfm?section=site&rootObjectID=#ParentID#
+#application.config.general.adminServer##application.url.farcry#/index.cfm?section=site&rootObjectID=#ParentID#
 
 <cfif arguments.comment neq "">
 Comments added on status change:
@@ -82,7 +81,7 @@ Comments added on status change:
 
 </cfmail>
 
-    </cfif>
+   </cfif>
 </cfloop>
 
 <cfsetting enablecfoutputonly="no">

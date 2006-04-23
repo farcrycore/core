@@ -1,6 +1,21 @@
 <cfsetting enablecfoutputonly="Yes">
 
-<cfapplication name="farcry_install" sessionmanagement="Yes">
+<cfparam name="form.sitename" default="farcry">
+
+<cfapplication name="#form.sitename#" sessionmanagement="Yes">
+
+<!--- Logout and destroy session variables --->
+<cfloop list="#structkeylist(application)#" index="a">
+	<cfif a neq "applicationname">
+		<cfset selfdestruct = StructDelete(application,a)>
+	</cfif>
+</cfloop>
+<cfloop list="#structkeylist(session)#" index="a">
+	<cfif a neq "sessionid">
+		<cfset selfdestruct = StructDelete(session,a)>
+	</cfif>
+</cfloop>
+	
 <cfset lAllowHosts = "127.0.0.1">
 <cfif NOT listFindNoCase(lAllowHosts,cgi.remote_addr)>
 	<cfthrow errorcode="install_invalid_host" detail="Your IP address is not permitted to access the install directory." extendedinfo="By default, installation is only permitted to the following hosts : 127.0.0.1  To give access to other hosts, then append the desired IP address to the variable lAllowHosts in /farcry_core/admin/install/application.cfm">

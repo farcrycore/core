@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmhtml/plpEdit/related.cfm,v 1.3 2003/07/10 02:07:06 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmhtml/plpEdit/related.cfm,v 1.4 2003/12/10 04:48:21 brendan Exp $
 $Author: brendan $
-$Date: 2003/07/10 02:07:06 $
-$Name: b201 $
-$Revision: 1.3 $
+$Date: 2003/12/10 04:48:21 $
+$Name: milestone_2-1-2 $
+$Revision: 1.4 $
 
 || DESCRIPTION || 
 $Description: dmHTML PLP for edit handler - Related Links Step $
@@ -152,7 +152,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 		}
 		
 		</script>
-		Insert <a href="" onclick="alert('Right click on the node in the tree then select insert.');return false;">?</a> related articles from the Navitron Tree here...<br>
+		Insert <a href="" onclick="alert('Right click on the node in the tree then select insert.');return false;">?</a> related articles from the FarCry Tree here...<br>
 		
 		<STYLE TYPE="text/css">
 		##idServer { 

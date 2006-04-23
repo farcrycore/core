@@ -3,11 +3,11 @@
 $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmEmail/send.cfm,v 1.3 2003/09/19 01:45:25 brendan Exp $
-$Author: brendan $
-$Date: 2003/09/19 01:45:25 $
-$Name: b201 $
-$Revision: 1.3 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmEmail/send.cfm,v 1.4 2003/11/05 04:46:09 tom Exp $
+$Author: tom $
+$Date: 2003/11/05 04:46:09 $
+$Name: milestone_2-1-2 $
+$Revision: 1.4 $
 
 || DESCRIPTION || 
 $Description: dmEmail Send Handler $
@@ -33,7 +33,7 @@ $out: $
 <!--- get profiles of users and add to send structure if active and has email address --->
 <cfloop index="i" from="1" to="#arrayLen(aUsers)#">
     <cfscript>
-	    o_profile = createObject("component", "#application.packagepath#.types.dmProfile");
+	    o_profile = createObject("component", application.types.dmProfile.typePath);
 	    stProfile = o_profile.getProfile(aUsers[i]);
 		if (not structIsEmpty(stProfile) AND stProfile.bActive AND len(stProfile.emailAddress)) stSendList[aUsers[i]] = stProfile;
     </cfscript>
@@ -64,7 +64,7 @@ $out: $
 		stProperties.datetimecreated = createodbcdatetime(stObj.datetimecreated);
 	
 		// update the OBJECT	
-		oType = createobject("component","#application.packagepath#.types.dmEmail");
+		oType = createobject("component", application.types.dmEmail.typePath);
 		oType.setData(stProperties=stProperties,auditNote="Email sent");
 	</cfscript>
 		

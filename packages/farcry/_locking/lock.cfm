@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_locking/lock.cfm,v 1.11 2003/10/22 07:19:03 paul Exp $
-$Author: paul $
-$Date: 2003/10/22 07:19:03 $
-$Name: b201 $
-$Revision: 1.11 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_locking/lock.cfm,v 1.13 2003/11/05 02:47:49 tom Exp $
+$Author: tom $
+$Date: 2003/11/05 02:47:49 $
+$Name: milestone_2-1-2 $
+$Revision: 1.13 $
 
 || DESCRIPTION || 
 $Description: locks an object $
@@ -44,7 +44,7 @@ $out:$
 	stProperties.lockedBy = "#session.dmSec.authentication.userlogin#_#session.dmSec.authentication.userDirectory#";
 
 	// update the OBJECT	
-	oType = createobject("component","#getPackagePath(arguments.typename)#");
+	oType = createobject("component", application.types[arguments.typename].typePath);
 	oType.setData(stProperties=stProperties);	
 	</cfscript>	
 	

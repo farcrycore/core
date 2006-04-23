@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_locking/unlock.cfm,v 1.9 2003/10/22 07:18:15 paul Exp $
-$Author: paul $
-$Date: 2003/10/22 07:18:15 $
-$Name: b201 $
-$Revision: 1.9 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_locking/unlock.cfm,v 1.11 2003/11/05 02:47:49 tom Exp $
+$Author: tom $
+$Date: 2003/11/05 02:47:49 $
+$Name: milestone_2-1-2 $
+$Revision: 1.11 $
 
 || DESCRIPTION || 
 $Description: unlocks an object $
@@ -66,7 +66,7 @@ $out:$
 <cftry>
 	<cfscript>
 		// update the OBJECT	
-		oType = createobject("component",getPackagePath(arguments.typename));
+		oType = createobject("component", application.types[arguments.typename].typePath);
 		oType.setData(stProperties=stProperties,bAudit=0);
 	</cfscript>	
 	

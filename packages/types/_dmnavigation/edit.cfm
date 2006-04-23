@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmnavigation/edit.cfm,v 1.35 2003/10/15 07:04:50 paul Exp $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmnavigation/edit.cfm,v 1.36 2003/12/08 05:28:38 paul Exp $
 $Author: paul $
-$Date: 2003/10/15 07:04:50 $
-$Name: b201 $
-$Revision: 1.35 $
+$Date: 2003/12/08 05:28:38 $
+$Name: milestone_2-1-2 $
+$Revision: 1.36 $
 
 || DESCRIPTION || 
 $Description: Navigation node edit method. Displays edit form and updates object on submission. $
@@ -88,7 +88,7 @@ $out:$
 		<!--- check if new object --->
 		<cfif listContains(fuUrl,"objectid")>
 			<!--- get ancestors --->
-			<cfset qAncestors = application.factory.oTree.getAncestors(objectid=stobj.objectid,bIncludeSelf=false)>
+			<cfset qAncestors = request.factory.oTree.getAncestors(objectid=stobj.objectid,bIncludeSelf=false)>
 			<!--- remove root & home --->
 			<cfquery dbtype="query" name="qCrumb">
 				SELECT objectName FROM qAncestors
@@ -110,7 +110,7 @@ $out:$
 			<!--- delete current fu --->
 			<cfset application.factory.oFU.deleteFu(fuUrl)>
 			<!--- get descendants --->
-			<cfset qGetDescendants = application.factory.oTree.getDescendants(objectid=stObj.objectID)>
+			<cfset qGetDescendants = request.factory.oTree.getDescendants(objectid=stObj.objectID)>
 			<cfif qGetDescendants.recordCount>
 				<cfloop query="qGetDescendants">
 					<!--- get current fu --->
@@ -118,7 +118,7 @@ $out:$
 					<!--- check if descendants have fus set --->
 					<cfif listContains(descfuUrl,"objectid")>
 						<!--- get ancestors --->
-						<cfset qAncestors = application.factory.oTree.getAncestors(objectid=qGetDescendants.objectid,bIncludeSelf=true)>
+						<cfset qAncestors = request.factory.oTree.getAncestors(objectid=qGetDescendants.objectid,bIncludeSelf=true)>
 						<!--- remove root & home --->
 						<cfquery dbtype="query" name="qCrumb">
 							SELECT objectName FROM qAncestors

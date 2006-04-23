@@ -242,4 +242,7 @@ o_farCryTree.setYoungest(dsn=application.dsn,parentID=stUtilNode.objectID,object
 o_farCryTree.setYoungest(dsn=application.dsn,parentID=stRootNode.objectID,objectID=stImageNode.objectID,objectName=stImageNode.title,typeName='dmNavigation');
 o_farCryTree.setYoungest(dsn=application.dsn,parentID=stRootNode.objectID,objectID=stFileNode.objectID,objectName=stFileNode.title,typeName='dmNavigation');
 o_farCryTree.setYoungest(dsn=application.dsn,parentID=stRootNode.objectID,objectID=stTrashNode.objectID,objectName=stTrashNode.title,typeName='dmNavigation');
+
+// update nav alias
+application.navid = o_dmNav.getNavAlias();
 </cfscript>

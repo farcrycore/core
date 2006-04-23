@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/admin/fixtree.cfm,v 1.16 2003/09/19 05:40:17 brendan Exp $
-$Author: brendan $
-$Date: 2003/09/19 05:40:17 $
-$Name: b201 $
-$Revision: 1.16 $
+$Header: /cvs/farcry/farcry_core/admin/admin/fixtree.cfm,v 1.17 2003/11/28 02:33:34 paul Exp $
+$Author: paul $
+$Date: 2003/11/28 02:33:34 $
+$Name: milestone_2-1-2 $
+$Revision: 1.17 $
 
 || DESCRIPTION ||
 $Description: tree fixer. The commented out stuff is debug$
@@ -240,10 +240,21 @@ $out:$
 	            </cfcase>
 	
 	            <cfdefaultcase>
-	                <cfquery name="qUpdateVals" datasource="#dsn#" >
+					<cfquery name="q" datasource="#dsn#">
+						select objectid from #temptablename#
+					</cfquery>
+					<cfloop query="q">
+						<cfquery name="qUpdateVals" datasource="#dsn#" >
+	                    delete from nested_tree_objects
+	                    where objectid = '#q.objectid#'
+	                </cfquery>
+					</cfloop>
+				<!---  
+					This was barfing on sql 2000 with a tree of over 700 nodes.
+					 <cfquery name="qUpdateVals" datasource="#dsn#" >
 	                    delete from nested_tree_objects
 	                    where objectid in (select objectid from #temptablename#)
-	                </cfquery>
+	                </cfquery> --->
 	            </cfdefaultcase>
 	        </cfswitch>
 	        <cfquery name="qUpdateVals" datasource="#dsn#" >

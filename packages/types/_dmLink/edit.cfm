@@ -5,11 +5,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmLink/edit.cfm,v 1.5 2003/07/28 22:36:21 geoff Exp $
-$Author: geoff $
-$Date: 2003/07/28 22:36:21 $
-$Name: b201 $
-$Revision: 1.5 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmLink/edit.cfm,v 1.6.2.1 2004/01/27 01:22:41 brendan Exp $
+$Author: brendan $
+$Date: 2004/01/27 01:22:41 $
+$Name: milestone_2-1-2 $
+$Revision: 1.6.2.1 $
 
 || DESCRIPTION || 
 $Description: dmLink Edit Handler $
@@ -89,7 +89,7 @@ $in: url.killplp (optional)$
 		</cfoutput>
 	<cfelse>
 		<!--- return to generic admin --->
-		<cflocation url="#application.url.farcry#/navajo/genericAdmin.cfm?#CGI.QUERY_STRING#&typename=#stOutput.typename#" addtoken="no">
+		<cflocation url="#application.url.farcry#/navajo/GenericAdmin.cfm?typename=#stOutput.typename#" addtoken="no">
 	</cfif>
 </cfif>
 <cfsetting enablecfoutputonly="No">

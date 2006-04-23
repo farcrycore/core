@@ -33,18 +33,17 @@ Creates a draft object
 		stProps.expiryDate = now();
 		stProps.versionID = URL.objectID;
 
-		//is this a custom type?
-		if(application.types[stProps.typename].bCustomType)
-			packagePath = application.customPackagePath;
-		else
-			packagePath = application.packagePath;
 		// create the new OBJECT 
-		oType = createobject("component","#packagepath#.types.#stProps.TypeName#");
+		oType = createobject("component", application.types[stProps.TypeName].typePath);
 		stNewObj = oType.createData(stProperties=stProps);
 		NewObjId = stNewObj.objectid;
 		oAuthentication = request.dmSec.oAuthentication;	
 		stuser = oAuthentication.getUserAuthenticationData();
 		application.factory.oaudit.logActivity(objectid="#URL.objectid#",auditType="Create", username=StUser.userlogin, location=cgi.remote_host, note="Draft object created");
+		
+		//this will copy containers and there rules from live object to draft
+		oCon = createobject("component","#application.packagepath#.rules.container");
+		oCon.copyContainers(stObject.objectid,stProps.objectid);
 	</cfscript>
 
 	<cfoutput>

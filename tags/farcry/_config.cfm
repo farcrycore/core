@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/farcry/_config.cfm,v 1.36 2003/09/23 08:05:17 brendan Exp $
-$Author: brendan $
-$Date: 2003/09/23 08:05:17 $
-$Name: b201 $
-$Revision: 1.36 $
+$Header: /cvs/farcry/farcry_core/tags/farcry/_config.cfm,v 1.41 2003/12/08 05:17:05 paul Exp $
+$Author: paul $
+$Date: 2003/12/08 05:17:05 $
+$Name: milestone_2-1-2 $
+$Revision: 1.41 $
 
 || DESCRIPTION || 
 $Description: included file for one-time initialisation of application constants $
@@ -60,9 +60,16 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 // application web urls
 	application.url.conjurer = application.url.webroot & "/index.cfm"; // general invoker
 
-// load various metadata structures into memory
-	loadCOAPIMetaData(); // official COAPI type structures
-	
+// load TYPE and RULE metadata structures into memory
+	oAlterType = createObject("component", "#application.packagepath#.farcry.alterType");
+	/***************************************************************************
+	loadCOAPIMetaData() and alterType.refreshAllCFCAppData() were doing the exact
+	same thing line for line, so I removed loadCOAPIMetaData() and we're now using alterType. Altertype
+	is a less than ideal place for this kind of task but it will do until we can agree
+	on some sort ot type initialisation. ~tom
+	*/
+	oAlterType.refreshAllCFCAppData(); // This replaces loadCOAPIMetaData for now. I'm thinking types.init()?? ~tom
+
 // load config files into memory
 	config = createObject("component", "#application.packagepath#.farcry.config");
 	qConfigList = config.list();
@@ -96,6 +103,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 	application.factory.oCategory = createObject("component","#application.packagepath#.farcry.category");
 	application.factory.oGenericAdmin = createObject("component","#application.packagepath#.farcry.genericAdmin");
 	application.factory.oVerity = createObject("component","#application.packagepath#.farcry.verity");
+	application.factory.oCon = createObject("component","#application.packagepath#.rules.container");
 	try {
 		application.factory.oFU = createObject("component","#application.packagepath#.farcry.FU");
 	}
@@ -109,7 +117,6 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 
 	
 </cfscript>
-
 <!--- wrap this in a cftry catch in case the policystore isn't initialised yet  --->
 <!--- <cfif StructKeyExists(request,"init") AND request.init eq 0> --->
 
@@ -147,14 +154,12 @@ inialise all permission types
 	<cfset temp[perm.permissionName] = duplicate(perm)>
 </cfloop>
 
-<!--- </cfif> --->
-
 <!--------------------------------------------------------------------
 Build NavIDs from Navigation Nodes 
 --------------------------------------------------------------------->
 <cfscript>
 	// set up requested navid's application.navIds
-	oNav = createObject("component", "#application.packagepath#.types.dmNavigation");
+	oNav = createObject("component", application.types.dmNavigation.typePath);
 	application.navid = oNav.getNavAlias();
 </cfscript>
 
@@ -164,68 +169,5 @@ Build NavIDs from Navigation Nodes
 
 <!--- set the initialised flag --->
 <cfset application.bInit = true>
-
-
-<!--- 
-$TODO:
- - move this function to the base fourq CFC or other more suitable place when ready$
---->
-<cffunction name="loadCOAPIMetaData" hint="Load metadata for content and rule types.">
-	<cfdirectory directory="#application.path.core#/packages/types" name="qTypesDir" filter="dm*.cfc" sort="name">
-	<cfdirectory directory="#application.path.project#/packages/types" name="qCustomTypesDir" filter="*.cfc" sort="name">
-	
-	<!--- Init all CORE types --->
-	<cfloop query="qTypesDir">
-		<cftry>
-			<cfscript>
-			typename = left(qTypesDir.name, len(qTypesDir.name)-4); //remove the .cfc from the filename
-			"#typename#" = createObject("Component", "#application.packagepath#.types.#typename#");
-			evaluate(typename).initMetaData("application.types");
-			setVariable("application.types['#typename#'].bCustomType",0);
-			</cfscript>
-			<cfcatch></cfcatch>
-		</cftry>
-	</cfloop>	
-	<!--- Now init all Custom Types --->
-	<cfloop query="qCustomTypesDir">
-		<cftry>
-			<cfscript>
-			typename = left(qCustomTypesDir.name, len(qCustomTypesDir.name)-4); //remove the .cfc from the filename
-			"#typename#" = createObject("Component", "#application.custompackagepath#.types.#typename#");
-			evaluate(typename).initMetaData("application.types");
-			setVariable("application.types['#typename#'].bCustomType",1);
-			</cfscript>
-			<cfcatch></cfcatch>
-		</cftry>
-	</cfloop>
-	
-	<cfscript>
-	rules = createObject("Component", "#application.packagepath#.rules.rules");
-	qRules = rules.getRules(); 
-	</cfscript>
-
-	<!--- Populate application.rules scope with rule metatdata --->
-	<cfloop query="qRules">
-		<cfscript>
-			
-			if(qRules.bCustom)
-				"#qRules.rulename#" = createObject("Component","#application.custompackagepath#.rules.#qRules.rulename#");
-			else
-			{
-				"#qRules.rulename#" = createObject("Component","#application.packagepath#.rules.#qRules.rulename#");
-			}		
-			evaluate("#qRules.rulename#").initMetaData("application.rules");
-			/*************************************************************************************
-			This will make sure that if developers have forgotten to include the BCustomRule attribute in
-			each rule CFC, that it does indeed get included in the COAPI rule metadata.
-			*************************************************************************************/
-			if(qRules.bCustom)
-				setVariable("application.rules['#qrules.rulename#'].bCustomRule",1);			
-			else		
-				setVariable("application.rules['#qrules.rulename#'].bCustomRule",0);
-										
-		</cfscript>
-	</cfloop>
-</cffunction>
 
 <cfsetting enablecfoutputonly="no">

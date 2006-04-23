@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmLink/plpEdit/categories.cfm,v 1.2 2003/07/10 02:07:06 brendan Exp $
-$Author: brendan $
-$Date: 2003/07/10 02:07:06 $
-$Name: b201 $
-$Revision: 1.2 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmLink/plpEdit/categories.cfm,v 1.4 2003/12/15 18:20:12 tom Exp $
+$Author: tom $
+$Date: 2003/12/15 18:20:12 $
+$Name: milestone_2-1-2 $
+$Revision: 1.4 $
 
 || DESCRIPTION || 
 $Description: dmFacts Type PLP for edit handler - Categorisation Step $
@@ -30,16 +30,16 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 		action = 'normal';
 	thisstep.isComplete = 0;
 	thisstep.name = stplp.currentstep;	
+	oCat = createObject("component","#application.packagepath#.farcry.category");
 </cfscript>
 
 <cfswitch expression="#action#">
 	<cfcase value="updateMetaData">
 		<cfparam name="form.categoryid" default="">
-		<cfinvoke  component="#application.packagepath#.farcry.category" method="assignCategories" returnvariable="stStatus">
-			<cfinvokeargument name="objectID" value="#output.objectID#"/>
-			<cfinvokeargument name="lCategoryIDs" value="#form.categoryID#"/>
-			<cfinvokeargument name="dsn" value="#application.dsn#"/>
-		</cfinvoke>
+		<!--- <cfdump var="#form#"> --->
+		<cfscript>
+			stStatus = oCat.assignCategories(objectID=output.objectID,lCategoryIDs=form.categoryID,dsn=application.dsn);
+		</cfscript>
 		<cfset message = stStatus.message>
 	</cfcase>
 	<cfdefaultcase>
@@ -53,10 +53,11 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 <cfoutput><div class="FormSubTitle">#output.label#</div></cfoutput>
 <div class="FormTitle">Categories</div>
 
-<cfinvoke  component="#application.packagepath#.farcry.category" method="getCategories" returnvariable="lCategegoryIds">
-	<cfinvokeargument name="objectID" value="#output.objectID#"/>
-	<cfinvokeargument name="bReturnCategoryIDs" value="true"/>
-</cfinvoke>	
+<cfscript>
+	lCategoryIds = oCat.getCategories(objectID=output.objectID,bReturnCategoryIDs=true);
+</cfscript>
+<!--- <cfdump var="#lCategoryIds#"> --->
+
 
 <div align="center" class="FormTableClear">
 <form action="" method="post">
@@ -64,7 +65,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 
 		<cfinvoke  component="#application.packagepath#.farcry.category" method="displayTree">
     		<cfinvokeargument name="bShowCheckBox" value="true"> 
-			<cfinvokeargument name="lSelectedCategories" value="#lCategegoryIds#">
+			<cfinvokeargument name="lSelectedCategories" value="#lCategoryIds#">
    	   	</cfinvoke>
 </td></tr>
 <tr>

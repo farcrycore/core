@@ -4,7 +4,7 @@
 
  Created: Thu May 1  14:19:20 2003
  $Revision 0.2$
- Modified: $Date: 2003/10/24 01:15:46 $
+ Modified: $Date: 2003/12/17 23:08:26 $
 
  Author: Spike
  E-mail: spike@spike@spike.org.uk
@@ -132,7 +132,7 @@
 	<cffunction name="createFUAlias" access="public" returntype="string" hint="Creates the FU Alias for a given objectid">
 		<cfargument name="objectid" required="Yes">
 		<cfscript>
-			qAncestors = application.factory.oTree.getAncestors(objectid=arguments.objectid,bIncludeSelf=true);
+			qAncestors = request.factory.oTree.getAncestors(objectid=arguments.objectid,bIncludeSelf=true);
 		</cfscript>
 		<!--- remove root & home --->
 		<cfquery dbtype="query" name="qCrumb">
@@ -163,11 +163,11 @@
 		<!--- set nav variable --->
 		<cfset setURLVar("nav")>
 		<!--- get nav tree --->
-		<cfset qNav = application.factory.oTree.getDescendants(objectid=application.navid.home, depth=50)>
+		<cfset qNav = request.factory.oTree.getDescendants(objectid=application.navid.home, depth=50)>
 		<!--- loop over nav tree and create friendly urls --->
 		<cfloop query="qNav">
 			<!--- get ancestors of object --->
-			<cfset qAncestors = application.factory.oTree.getAncestors(objectid=objectid,bIncludeSelf=true)>
+			<cfset qAncestors = request.factory.oTree.getAncestors(objectid=objectid,bIncludeSelf=true)>
 			<!--- remove root & home --->
 			<cfquery dbtype="query" name="qCrumb">
 				SELECT objectName FROM qAncestors
@@ -198,7 +198,7 @@
 		<!--- replace spaces in title --->
 		<cfset newAlias = replace(arguments.alias,' ','-',"all")>
 		<!--- remove illegal characters in titles --->
-		<cfset newAlias = reReplaceNoCase(newAlias,'[:\?]','',"all")>
+		<cfset newAlias = reReplaceNoCase(newAlias,'[:\?##]','',"all")>
 		<!--- change & to "and" in title --->
 		<cfset newAlias = reReplaceNoCase(newAlias,'[&]','and',"all")>
 				
@@ -220,8 +220,18 @@
 			aFuKey = structFindValue(application.FU.mappings, fullUFU, "one");
 			if(arrayLen(aFuKey))
 				fuURL = "/" & listRest(aFuKey[1].key,'/');
-			if(NOT len(fuURL))
+			if(NOT len(fuURL)) {
+				// check if search engine safe urls are configured
+				if (isdefined("application.config.fusettings.sesurls") and application.config.fusettings.sesurls) {
+					// return ses url
+					fullUFU = "/go/objectid/" & arguments.objectid;
+					// if not root of webserver add additional url parameters
+					if (application.url.webroot neq "") {
+						fullUFU = fullUFU & "?indexfile=" & application.url.webroot & "/index.cfm";
+					}
+				}
 				fuURL = fullUFU;
+			}
 			return fuURL;
 		</cfscript>
 	</cffunction>

@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/dmCron.cfc,v 1.3 2003/09/17 03:48:37 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/types/dmCron.cfc,v 1.4 2003/12/07 22:29:08 brendan Exp $
 $Author: brendan $
-$Date: 2003/09/17 03:48:37 $
-$Name: b201 $
-$Revision: 1.3 $
+$Date: 2003/12/07 22:29:08 $
+$Name: milestone_2-1-2 $
+$Revision: 1.4 $
 
 || DESCRIPTION || 
 $Description: dmCron Type (scheduled tasks) $
@@ -52,7 +52,7 @@ object methods
 	<cfinclude template="#stObj.template#">
 </cffunction>
 
-<cffunction name="listTemplates" access="public" output="false" returnType="query" hint="Lists available scheduled tasks, both core and custom">
+<cffunction name="listTemplates" access="public" output="true" returnType="query" hint="Lists available scheduled tasks, both core and custom">
 	
 	<cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
 
@@ -71,9 +71,12 @@ object methods
 	<cftry>
 		<nj:listTemplates typename="dmCron" path="#application.path.project#/system/dmCron" prefix="" r_qMethods="qCustom">
 		<cfloop query="qCustom">
-			<cfset queryAddRow(qTemplates, 1)>
-			<cfset querySetCell(qTemplates, "displayname", "#displayname# (custom)")>
-			<cfset querySetCell(qTemplates, "path", "/farcry/#application.applicationName#/system/dmCron/#methodName#.cfm")>
+			<!--- ignore cvs file --->
+			<cfif methodName neq "_donotdelete">
+				<cfset queryAddRow(qTemplates, 1)>
+				<cfset querySetCell(qTemplates, "displayname", "#displayname# (custom)")>
+				<cfset querySetCell(qTemplates, "path", "/farcry/#application.applicationName#/system/dmCron/#methodName#.cfm")>
+			</cfif>
 		</cfloop>
 		<cfcatch></cfcatch>
 	</cftry>	

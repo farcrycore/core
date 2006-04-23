@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/scheduledTasks/updateXMLFeed.cfm,v 1.2 2003/10/02 00:33:28 brendan Exp $
-$Author: brendan $
-$Date: 2003/10/02 00:33:28 $
-$Name: b201 $
-$Revision: 1.2 $
+$Header: /cvs/farcry/farcry_core/admin/scheduledTasks/updateXMLFeed.cfm,v 1.3 2003/11/05 04:46:09 tom Exp $
+$Author: tom $
+$Date: 2003/11/05 04:46:09 $
+$Name: milestone_2-1-2 $
+$Revision: 1.3 $
 
 || DESCRIPTION || 
 $Description: Emails an overview report for site activity $
@@ -34,7 +34,7 @@ $out:$
 
 <cfif IsStruct(stObj) and not StructIsEmpty(stObj) and stObj.typename eq stArgs.typename>
     <cfscript>
-        o = createObject("component","#application.packagepath#.types.#stArgs.typename#");
+        o = createObject("component", application.types[stArgs.typename].typePath);
         o.generate(stObj.objectid);
     </cfscript>
 <cfelse>

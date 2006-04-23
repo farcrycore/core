@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/dynamic/dynamicMenuFrame.cfm,v 1.10 2003/10/28 00:59:07 brendan Exp $
+$Header: /cvs/farcry/farcry_core/admin/dynamic/dynamicMenuFrame.cfm,v 1.14 2004/01/19 06:14:19 brendan Exp $
 $Author: brendan $
-$Date: 2003/10/28 00:59:07 $
-$Name: b201 $
-$Revision: 1.10 $
+$Date: 2004/01/19 06:14:19 $
+$Name: milestone_2-1-2 $
+$Revision: 1.14 $
 
 || DESCRIPTION || 
 $Description: Displays menu for dynamic tab $
@@ -34,7 +34,7 @@ $out:$
 	
 	lDynamicTypes = 'news,event,fact,link';
 	aDynamicTypes = listToArray(lDynamicTypes);
-	lPermissions = 'Approve,Create,Delete,Edit,RequestApproval';
+	lPermissions = 'Edit,Create,Delete,RequestApproval,Approve';
 	aPermissions = listToArray(lPermissions);
 	for (x=1;x LTE arrayLen(aDynamicTypes);x=x+1)
 	{	
@@ -79,7 +79,7 @@ $out:$
 				</cfif>
 				<cfif iEvent eq 1>
 					<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="#application.url.farcry#/navajo/GenericAdmin.cfm?typename=dmEvent" class="frameMenuItem" target="editFrame">Events</a></div>				
-				</cfif>					
+				</cfif>
 			</cfif>
 		</cfcase>
 		

@@ -6,11 +6,11 @@ Daemon Pty Limited 1995-2002
 http://www.daemon.com.au
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/dmProfile.cfc,v 1.14 2003/09/10 23:46:11 brendan Exp $
-$Author: brendan $
-$Date: 2003/09/10 23:46:11 $
-$Name: b201 $
-$Revision: 1.14 $
+$Header: /cvs/farcry/farcry_core/packages/types/dmProfile.cfc,v 1.16 2003/11/28 08:42:43 paul Exp $
+$Author: paul $
+$Date: 2003/11/28 08:42:43 $
+$Name: milestone_2-1-2 $
+$Revision: 1.16 $
 
 || DESCRIPTION || 
 dmProfile object CFC
@@ -75,6 +75,15 @@ none
 		<!--- getData for object edit --->
 		<cfset stObj = this.getData(arguments.objectid)>
 		<cfinclude template="_dmProfile/display.cfm">
+	</cffunction>
+	
+	<cffunction name="displaySummary" access="public" output="true" returntype="string">
+		<cfargument name="objectid" required="yes" type="UUID">
+		
+		<!--- getData for object edit --->
+		<cfset stObj = this.getData(arguments.objectid)>
+		<cfinclude template="_dmProfile/displaySummary.cfm">
+		<cfreturn profilehtml>
 	</cffunction>
 
 </cfcomponent>

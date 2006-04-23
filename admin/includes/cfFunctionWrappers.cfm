@@ -48,6 +48,7 @@
 	<cfreturn q>
 </cffunction>
 
+
 <cffunction name="queryofquery" hint="a wrapper for cfquery of queries for use in cfscript">
 	<cfargument name="sql" type="string" required="true">
 	<cfargument name="maxrows" type="string" required="false">
@@ -63,6 +64,7 @@
 	</cfif>	
 	<cfreturn q>
 </cffunction>
+
 
 <cffunction name="dump" hint="wrapper for cfdump">
 	<cfargument name="object" required="true">
@@ -100,3 +102,6 @@
 	
 	<cftrace inline="no" var="#arguments.var#">
 </cffunction>
+
+
+

@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/rules/ruleRandomFact.cfc,v 1.11 2003/10/13 07:11:27 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/rules/ruleRandomFact.cfc,v 1.13.2.1 2004/04/22 23:13:55 brendan Exp $
 $Author: brendan $
-$Date: 2003/10/13 07:11:27 $
-$Name: b201 $
-$Revision: 1.11 $
+$Date: 2004/04/22 23:13:55 $
+$Name: milestone_2-1-2 $
+$Revision: 1.13.2.1 $
 
 || DESCRIPTION || 
 Edit handler and execution handler for displaying Random Facts. Option show x number and reduce to specific categories. Fact 
@@ -23,7 +23,7 @@ out:
 --->
 <cfcomponent displayname="Random Fact Rule" extends="rules" hint="">
 
-<cfproperty name="intro" type="string" hint="Intro text for the news listing" required="yes" default="">
+<cfproperty name="intro" type="string" hint="Intro text for the news listing" required="no" default="">
 <cfproperty name="displayMethod" type="string" hint="Display method to render this news rule with." required="yes" default="displayteaserbullets">
 <cfproperty name="numItems" hint="The number of items to display per page" type="numeric" required="true" default="1">
 <cfproperty name="metadata" type="string" hint="A list of category ObjectIDs that the news content is to be drawn from" required="false" default="">
@@ -53,7 +53,7 @@ out:
 				stObj.bMatchAllKeywords = form.bMatchAllKeywords;
 				stObj.metadata = form.categoryID; //must add metadata tree
 			</cfscript>
-			<q4:contentobjectdata typename="#application.packagepath#.rules.ruleRandomFact" stProperties="#stObj#" objectID="#stObj.objectID#">
+			<q4:contentobjectdata typename="#application.rules.ruleRandomFact.rulePath#" stProperties="#stObj#" objectID="#stObj.objectID#">
 			<!--- Now assign the metadata --->
 					
 			<cfset message = "Update Successful">
@@ -292,7 +292,7 @@ out:
 			<!--- check if fact is in random selection, if so display it --->
 			<cfif listfind(lRandom,currentrow)>
 				<cfscript>
-				o = createObject("component", "#application.packagepath#.types.dmFacts");
+				o = createObject("component", application.types.dmFacts.typePath);
 				o.getDisplay(qGetFacts.ObjectID, stObj.displayMethod);	
 				</cfscript>
 				<cfoutput><p></p></cfoutput>

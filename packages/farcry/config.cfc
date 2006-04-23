@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/config.cfc,v 1.16 2003/09/17 02:21:29 brendan Exp $
+$Header: /cvs/farcry/farcry_core/packages/farcry/config.cfc,v 1.20 2004/01/19 06:14:19 brendan Exp $
 $Author: brendan $
-$Date: 2003/09/17 02:21:29 $
-$Name: b201 $
-$Revision: 1.16 $
+$Date: 2004/01/19 06:14:19 $
+$Name: milestone_2-1-2 $
+$Revision: 1.20 $
 
 || DESCRIPTION || 
 $Description: config cfc $
@@ -200,6 +200,17 @@ $out:$
 	
 	<cfreturn stStatus>
 </cffunction>
+
+
+<cffunction name="defaultEOPro">
+    <cfargument name="dsn" type="string" default="#application.dsn#" required="true" hint="Database DSN">
+	<cfargument name="configName" required="No" type="string" default="eoPro">
+	
+	<cfinclude template="_config/defaultEOPro.cfm">
+	
+	<cfreturn stStatus>
+</cffunction>
+
 
 <cffunction name="defaultFU">
     <cfargument name="dsn" type="string" default="#application.dsn#" required="true" hint="Database DSN">

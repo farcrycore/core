@@ -6,11 +6,11 @@ Daemon Pty Limited 1995-2002
 http://www.daemon.com.au
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_versioning/rollbackArchive.cfm,v 1.8 2003/10/31 06:40:57 paul Exp $
-$Author: paul $
-$Date: 2003/10/31 06:40:57 $
-$Name: b201 $
-$Revision: 1.8 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_versioning/rollbackArchive.cfm,v 1.9 2003/11/05 04:46:09 tom Exp $
+$Author: tom $
+$Date: 2003/11/05 04:46:09 $
+$Name: milestone_2-1-2 $
+$Revision: 1.9 $
 
 || DESCRIPTION || 
 Rolls back current object to selected archive version and creates an archive of current version.
@@ -39,12 +39,7 @@ ArchiveId - id of archive version which will be sent back to live
 	<cfset typename = thisTypename>	
 </cfif>
 
-<!--- check for custom type --->
-<cfif application.types[typename].bCustomType>
-	<cfset typename = "#application.custompackagepath#.types.#typename#">
-<cfelse>
-	<cfset typename = "#application.packagepath#.types.#typename#">
-</cfif>
+<cfset typename = application.types[typename].typePath>
 
 <!--- get the current Live Object to archive --->
 <q4:contentobjectget ObjectId="#arguments.objectID#" r_stObject="stLiveObject" typename="#typename#"> 
@@ -77,7 +72,7 @@ ArchiveId - id of archive version which will be sent back to live
 	</cfscript>	
 		
 	<!--- retrieve archive version --->
-	<q4:contentobjectget ObjectId="#arguments.archiveID#" r_stObject="stArchive" typename="#application.packagepath#.types.dmArchive"> 
+	<q4:contentobjectget ObjectId="#arguments.archiveID#" r_stObject="stArchive" typename="#application.types.dmArchive.typePath#"> 
 	
 	<!--- Convert wddx archive object --->
 	<cfwddx input="#stArchive.objectwddx#" output="stArchiveDetail"  action="wddx2cfml">

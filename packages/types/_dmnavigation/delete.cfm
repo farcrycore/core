@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmnavigation/delete.cfm,v 1.8 2003/08/20 07:03:13 brendan Exp $
-$Author: brendan $
-$Date: 2003/08/20 07:03:13 $
-$Name: b201 $
-$Revision: 1.8 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmnavigation/delete.cfm,v 1.11 2003/12/19 01:26:48 paul Exp $
+$Author: paul $
+$Date: 2003/12/19 01:26:48 $
+$Name: milestone_2-1-2 $
+$Revision: 1.11 $
 
 || DESCRIPTION || 
 $Description: Specific delete method for dmNavigation. Deletes all descendants aswell as cleaning up verity collections$
@@ -22,12 +22,11 @@ $in: $
 $out:$
 --->
 
-<cfinclude template="/farcry/farcry_core/admin/includes/cfFunctionWrappers.cfm">
 <cfscript>
 
 	// get descendants
-	qGetDescendants = application.factory.oTree.getDescendants(objectid=stObj.objectID);
-	oNavigation = createObject("component","#application.packagepath#.types.dmNavigation");
+	qGetDescendants = request.factory.oTree.getDescendants(objectid=stObj.objectID);
+	oNavigation = createObject("component", application.types.dmNavigation.typePath);
 	
 	// delete actual object
 	deleteData(objectid=stObj.objectId);
@@ -39,7 +38,7 @@ $out:$
 	}
 	
 	// delete branch
-	application.factory.oTree.deleteBranch(objectid=stObj.objectID);
+	request.factory.oTree.deleteBranch(objectid=stObj.objectID);
 	
 	// remove permissions
 	oAuthorisation = request.dmSec.oAuthorisation;
@@ -53,15 +52,9 @@ $out:$
 			
 			// work out typename
 			objType = findType(stObj.aObjectIds[i]);
-			if (application.types[objType].bCustomType) {
-				packagepath = application.customPackagepath;
-			} else {
-				packagepath = application.packagepath;
-			}
-			
 			if (len(objType)) {
 				// delete associated object
-				oType = createObject("component","#packagepath#.types.#objType#");
+				oType = createObject("component", application.types[objType].typePath);
 				oType.delete(stObj.aObjectIds[i]);
 			}
 		}
@@ -82,15 +75,9 @@ $out:$
 				
 					// work out typename
 					objType = findType(objDesc.aObjectIds[i]);
-					if (application.types[objType].bCustomType) {
-						packagepath = application.customPackagepath;
-					} else {
-						packagepath = application.packagepath;
-					}
-					
 					if (len(objType)) {
 						// delete associated object
-						oType = createObject("component","#packagepath#.types.#objType#");
+						oType = createObject("component", application.types[objType].typePath);
 						oType.delete(objDesc.aObjectIds[i]);
 					}
 				}

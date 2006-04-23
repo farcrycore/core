@@ -8,11 +8,11 @@ Daemon Pty Limited 1995-2002
 http://www.daemon.com.au
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmProfile/edit.cfm,v 1.9 2003/09/10 23:46:11 brendan Exp $
-$Author: brendan $
-$Date: 2003/09/10 23:46:11 $
-$Name: b201 $
-$Revision: 1.9 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmProfile/edit.cfm,v 1.10 2003/11/05 04:46:09 tom Exp $
+$Author: tom $
+$Date: 2003/11/05 04:46:09 $
+$Name: milestone_2-1-2 $
+$Revision: 1.10 $
 
 || DESCRIPTION || 
 dmProfile edit handler
@@ -58,11 +58,11 @@ none
     <cftry>
         <cfscript>
 			// update the OBJECT	
-			oType = createobject("component","#application.packagepath#.types.dmProfile");
+			oType = createobject("component", application.types.dmProfile.typePath);
 			oType.setData(stProperties=stProperties);
 			
 	        // reload changes into session.dmProfile object
-	        o_userProfile = createObject("component", "#application.packagepath#.types.dmProfile");
+	        o_userProfile = createObject("component", application.types.dmProfile.typePath);
 	        stProfile = o_userProfile.getProfile(userName=session.dmSec.authentication.userlogin);
 	        // place dmProfile in session scope
 	        if (isStruct(stProfile) AND not structIsEmpty(stProfile)) session.dmProfile = stProfile;

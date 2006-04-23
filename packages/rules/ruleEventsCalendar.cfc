@@ -1,6 +1,6 @@
 <cfcomponent displayname="Event Calendar Rule" extends="rules" hint="Method of showing dmEvent objects in a calendar format">
 
-<cfproperty name="intro" type="string" hint="Intro text for the event listing" required="yes" default="">
+<cfproperty name="intro" type="string" hint="Intro text for the event listing" required="no" default="">
 <cfproperty name="months" type="numeric" hint="Number of months to show" required="yes" default="1">
 <cfproperty name="displayMethod" type="string" hint="Display method to render this event rule with." required="yes" default="displayteaserCalendar">
 <cfproperty name="bMatchAllKeywords" hint="Doest the content need to match ALL selected keywords" type="boolean" required="false" default="0">
@@ -32,7 +32,7 @@
 				stObj.bMatchAllKeywords = form.bMatchAllKeywords;
 				stObj.metadata = form.categoryID; //must add metadata tree
 			</cfscript>
-			<q4:contentobjectdata typename="#application.packagepath#.rules.ruleEventsCalendar" stProperties="#stObj#" objectID="#stObj.objectID#">
+			<q4:contentobjectdata typename="#application.rules.ruleEventsCalendar.rulePath#" stProperties="#stObj#" objectID="#stObj.objectID#">
 			<!--- Now assign the metadata --->
 					
 			<cfset message = "Update Successful">
@@ -286,7 +286,7 @@
 		</cfloop>
 		<cfscript>
 			stInvoke.objectID = qGetEvents.objectID;
-			stInvoke.typename = application.packagepath & ".types.dmEvent";
+			stInvoke.typename = application.types.dmEvent.typePath;
 			stInvoke.method = stObj.displayMethod;
 			stInvoke.months = stObj.months;
 			arrayAppend(request.aInvocations,stInvoke);
