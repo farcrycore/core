@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/rules/ruleRandomFact.cfc,v 1.17 2004/07/30 05:36:54 brendan Exp $
-$Author: brendan $
-$Date: 2004/07/30 05:36:54 $
-$Name: milestone_2-3-2 $
-$Revision: 1.17 $
+$Header: /cvs/farcry/farcry_core/packages/rules/ruleRandomFact.cfc,v 1.20 2005/07/21 02:27:24 guy Exp $
+$Author: guy $
+$Date: 2005/07/21 02:27:24 $
+$Name: milestone_3-0-0 $
+$Revision: 1.20 $
 
 || DESCRIPTION || 
 Edit handler and execution handler for displaying Random Facts. Option show x number and reduce to specific categories. Fact 
@@ -32,90 +32,72 @@ out:
 	<cffunction access="public" name="update" output="true">
 		<cfargument name="objectID" required="Yes" type="uuid" default="">
 		<cfargument name="label" required="no" type="string" default="">
-		<cfimport taglib="/farcry/fourq/tags/" prefix="q4">
-		<cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
-        <cfimport taglib="/farcry/farcry_core/tags/display/" prefix="display">				
-
-		<cfparam name="form.categoryID" default="">
-		<cfparam name="form.bMatchAllKeywords" default="0">
+		<cfset var stLocal = StructNew()>
+		<cfset var stObj = this.getData(arguments.objectid)> 
 		
-        <cfparam name="isClosed" default="Yes">
-        <cfif isDefined("form.displayHierarchy") OR isDefined("form.apply")>
-            <cfset isClosed = "No">
-        </cfif>
+<cfsetting enablecfoutputonly="Yes">		
+		<cfimport taglib="/farcry/fourq/tags/" prefix="q4">
+        <cfimport taglib="/farcry/farcry_core/tags/display/" prefix="display">				
+        <cfimport taglib="/farcry/farcry_core/tags/widgets/" prefix="widgets">
+        
 
-		<cfset stObj = this.getData(arguments.objectid)> 
+		<cfparam name="form.bMatchAllKeywords" default="0">
+		<cfparam name="lSelectedCategoryID" default="">
+		<cfparam name="bRestrictByCategory" default="0">
+		
 		<cfif isDefined("form.updateRuleNews")>
-			<cfscript>
-				stObj.displayMethod = form.displayMethod;
-				stObj.intro = form.intro;
-				stObj.numItems = form.numItems;
-				stObj.bMatchAllKeywords = form.bMatchAllKeywords;
-				stObj.metadata = form.categoryID; //must add metadata tree
-			</cfscript>
+			<cfif bRestrictByCategory EQ 0>
+				<cfset lSelectedCategoryID = "">
+			</cfif>
+			<cfset stObj.displayMethod = form.displayMethod>
+			<cfset stObj.intro = form.intro>
+			<cfset stObj.numItems = form.numItems>
+			<cfset stObj.bMatchAllKeywords = form.bMatchAllKeywords>
+			<cfset stObj.metadata = lSelectedCategoryID>
 			<q4:contentobjectdata typename="#application.rules.ruleRandomFact.rulePath#" stProperties="#stObj#" objectID="#stObj.objectID#">
 			<!--- Now assign the metadata --->
-					
-			<cfset message = "#application.adminBundle[session.dmProfile.locale].updateSuccessful#">
+			<cfset stLocal.successMessage = "#application.adminBundle[session.dmProfile.locale].updateSuccessful#">
+		<cfelse>
+			<cfset lSelectedCategoryID = stObj.metadata>
+			<cfif stObj.metadata NEQ "">
+				<cfset bRestrictByCategory = 1>
+			</cfif>
 		</cfif>
-		<cfif isDefined("message")>
-			<div align="center"><strong>#message#</strong></div>
-		</cfif>	
-		<!--- get the display methods --->
-		<nj:listTemplates typename="dmFacts" prefix="displayTeaser" r_qMethods="qDisplayTypes"> 
-		<form action="" method="POST">
-		<table width="100%" align="center" border="0">
-		<input type="hidden" name="ruleID" value="#stObj.objectID#">
-		<tr>
-			<td width="20%" colspan="1" align="right">
-			<b>#application.adminBundle[session.dmProfile.locale].selectDisplayMethod#</b>
-			</td>
-			<td>
-			<select name="displayMethod" size="1" class="field">
-				<cfloop query="qDisplayTypes">
-					<option value="#methodName#" <cfif methodName is stObj.displayMethod>selected</cfif>>#displayName#</option>
-				</cfloop>
-			</select>
-			</td>
-		</tr>
-		<tr>
-				<td align="right">
-					<b>#application.adminBundle[session.dmProfile.locale].introText#</b>
-				</td> 
-				<td>
-					<textarea rows="5" cols="50" name="intro">#stObj.intro#</textarea>
-				</td>
-		</tr>
-		<tr>
-			<td align="right"><b>#application.adminBundle[session.dmProfile.locale].maxItemsToDisplay#</b></td>
-			<td> <input type="text" name="numItems" value="#stObj.numItems#" size="3"></td>
-		</tr>
-		</table>
 
-        <br><br>
+<cfoutput>
+<form name="editform" action="#cgi.script_name#?#cgi.query_string#" method="post" class="f-wrap-2" style="margin-top:-1.5em">
+<fieldset><cfif StructKeyExists(stLocal,"successmessage")>
+	<p id="fading1" class="fade"><span class="success">#stLocal.successmessage#</span></p></cfif>
 
-		<display:OpenLayer width="400" title="#application.adminBundle[session.dmProfile.locale].restrictByCategories#" titleFont="Verdana" titleSize="7.5" isClosed="#isClosed#" border="no">
-		<table align="center" border="0">
-        <tr>
-            <td><b>#application.adminBundle[session.dmProfile.locale].contentNeedToMatchKeywords#</b> <input type="checkbox" name="bMatchAllKeywords" value="1" <cfif stObj.bMatchAllKeywords>checked</cfif>></td>
-        </tr>
-        <tr>
-            <td>&nbsp;</td>
-        </tr>
-		<tr>
-			<td id="Tree">
-   				<cfinvoke  component="#application.packagepath#.farcry.category" method="displayTree">
-    				<cfinvokeargument name="bShowCheckBox" value="true"> 
-   					<cfinvokeargument name="lselectedCategories" value="#stObj.metaData#">	
-    			</cfinvoke>
-			</td>
-		</tr>
-    	</table>
-		</display:OpenLayer>
-		<div align="center"><input class="normalbttnstyle" type="submit" value="#application.adminBundle[session.dmProfile.locale].go#" name="updateRuleNews"></div>
-		</form>
-			
-	</cffunction> 
+	<widgets:displayMethodSelector typeName="dmFacts" prefix="displayTeaser">
+
+	<label for="intro"><b>#application.adminBundle[session.dmProfile.locale].introText#</b>
+		<textarea id="intro" name="intro">#stObj.intro#</textarea><br />
+	</label>
+
+	<label for="numItems"><b>## #application.adminBundle[session.dmProfile.locale].itemsPerPage#</b>
+		<input type="text" id="numItems" name="numItems" value="#stObj.numItems#" size="3" maxlength="3"><br />
+	</label>
+
+	<label for="bRestrictByCategory"><b>#application.adminBundle[session.dmProfile.locale].restrictByCategories#</b>
+		<input type="checkbox" id="bRestrictByCategory" name="bRestrictByCategory" value="1"<cfif bRestrictByCategory EQ 1> checked="checked"</cfif> onclick="fShowHide('tglCategory',this.checked);"><br />
+	</label>
+
+	<span id="tglCategory" style="display:<cfif bRestrictByCategory>block<cfelse>none</cfif>;">
+	<label for="bMatchAllKeywords"><b>#application.adminBundle[session.dmProfile.locale].contentNeedToMatchKeywords#</b>
+		<input type="checkbox" id="bMatchAllKeywords" name="bMatchAllKeywords" value="1" <cfif stObj.bMatchAllKeywords>checked="checked"</cfif>><br />
+	</label>
+	<widgets:categoryAssociation typeName="dmFacts" lSelectedCategoryID="#stObj.metaData#">
+	</span>
+
+<div class="f-submit-wrap">
+	<input type="Submit" name="updateRuleNews" value="#application.adminBundle[session.dmProfile.locale].go#" class="f-submit" />		
+</div>
+	<input type="hidden" name="ruleID" value="#stObj.objectID#">
+</fieldset>
+</form></cfoutput>
+<cfsetting enablecfoutputonly="no">
+	</cffunction>
 	
 	<cffunction name="getDefaultProperties" returntype="struct" access="public">
 		<cfscript>

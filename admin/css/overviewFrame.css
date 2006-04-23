@@ -1,113 +1,25 @@
+* {margin:0;padding:0}
+body {color:#000;font: 11px arial,tahoma,verdana,sans-serif;background: #5B7FB9 url("images/g2_sidebar_bg.gif") no-repeat fixed -14px -96px 0px}
+img {border:none}
 
-div {
-	font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;
-}
+h5 {width:200px;font-size: 13px;border-bottom: 1px solid #f1f1f1;margin-bottom:13px;padding-bottom:3px}
 
-#tree td {
-	border : none;
-	border-collapse : collapse;
-	font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;
-	font-size : 9px;
-	margin : 0 0 0 0;
-	padding : 0 0 0 0;
-	vertical-align : middle;
-}
+table {}
+td {font: 11px arial,tahoma,verdana,sans-serif;vertical-align:middle;padding:0}
+td td td {}
 
-.icontext  {
-	cursor : hand;
-	font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;
-	font-size : 9px;
-}
 
-.menudiv {
-	background-color : #FFFFFF;
-	border : thin outset;
-	position : absolute;
-	visibility : hidden;
-	width : 120px;
-}
+.icontext  {cursor:hand}
+.menudiv {margin-top:5px;background-color:#fff;border:1px solid #E17000;position:absolute;left:0;top:0;visibility:hidden;width:120px}
+.menuitem {cursor:hand;display:block;width:116px;padding: 1px 2px}
+.menuitemdisabled {color:#808080;cursor:hand;font-style:italic;display:none}
+.menuitemheader {background-color:#E17000;color:#fff;cursor:pointer;font-weight:bold;padding: 2px;width:116px;_width:120px}
+.navajobutton {width:160px}
+.nodediv {cursor:hand}
+.tablenode {}
+.tablenode .menu-text {display:block;cursor:hand;text-indent:2px;font-weight:bold;color:#fff;white-space:nowrap}
+.tablenode .tablenode .menu-text {}
+.tablenode .tablenode .tablenode .menu-text {color:#fff;font-weight:normal}
+.tablenode .tablenode .tablenode .tablenode .menu-text {font-weight:normal}
 
-.menuitem {
-	cursor : hand;
-	padding : 1 1 1 1;
-}
-
-.menuitemdisabled {
-	color : #808080;
-	cursor : hand;
-	font-style : italic;
-	padding : 1 1 1 1;
-	display:none;
-}
-
-.menuitemheader {
-	background-color : #000000;
-	color : #FFFFFF;
-	cursor : pointer;
-	font-size : 9px;
-	padding : 2 2 2 2;
-}
-
-.navajobutton {
-	font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;
-	font-size : 9px;
-	width : 160px;
-}
-
-.nodediv {
-	cursor : hand;
-}
-
-.tablenode {
-	border : none;
-	border-collapse : collapse;
-	font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;
-	margin : 0 0 0 0;
-	padding : 0 0 0 0;
-}
-
-/* Admin Frames and Menus */
-.frameMenuHeader {
-	font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;
-	font-weight: bold;
-	font-size: 1.5em;
-	color: Maroon;;
-	padding: 3px 3px 3px 0px;
-	margin: 0 0 0px 0;
-	border: none;
-	text-indent: 0px;
-}
-.frameMenuTitle {
-	font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;
-	font-weight: bold;
-	padding: 10px 3px 3px 3px;
-	text-indent: 3px;
-	
-}
-.frameMenuItem {
-	font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;
-	text-indent: 15px;
-	padding-bottom: 6px;
-	padding-top: 3px;
-	color: blue;
-}
-
-a.frameMenuItem {
-	color: blue;
-}
-
-.frameMenuBullet {
-	color: #FF6600;
-	font-weight: bold;
-}
-
-/* ID's */
-#frameMenu {
-	width: 100%;
-	border: none;
-	border-color: ActiveBorder;	
-	padding: 5px 5px 5px 5px;
-	margin: 5px 5px 5px 5px; 
-	font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;
-	font-size : 12px;
-}
+.upone {position:absolute;top:0;left:182px}

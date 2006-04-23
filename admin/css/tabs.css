@@ -1,204 +1,77 @@
-/* This is the stylesheet used for the tabs in the admin area*/
+/* 
+-------------------------------------------------------------------
+version:	19-08-05
+author:		pete ottery | daemon | pottery at daemon dot com dot au 
+			please speak to pete before making changes to this file 
+-------------------------------------------------------------------
+*/
 
-div.tabBox {}
+/* styles for the selected tab, add more tab ids if theres more than 6 tabs */
+#tab1, 
+#tab2,
+#tab3, 
+#tab4
+{background:url("images/nav_left_both.gif") no-repeat 0 -300px;border-top: 1px solid #D6D6D6;border-bottom: none}
 
-div.tabArea {
-  padding: 0px 6px 3px 0px;
-}
+/* styles for the de-selected tabs, add more tab ids if theres more than 6 tabs */
+#tab1.tab-disabled, 
+#tab2.tab-disabled, 
+#tab3.tab-disabled , 
+#tab4.tab-disabled  
+{background:url("images/nav_left_both.gif") no-repeat 0 -450px;border-top: none;border-bottom: 1px solid #fff}
 
-/* tabs at top of page*/
-div.mainTabArea {
-  width:100%;
-  font: normal 10px Verdana, Geneva, Arial, Helvetica, sans-serif;
-  letter-spacing: -0.1em;
-  padding: 0px 0px 8px 0px;
-}
+#tab1 a, 
+#tab2 a, 
+#tab3 a, 
+#tab4 a 
+{background: #F1F1F1 url("images/nav_right_both.gif") no-repeat 100% -300px;color:#fff;text-decoration:none;font-weight:bold;font-size:90%}
 
-/* tabs at top of each column*/
-div.subTabArea {
-  width:100%;
-  font: normal 10px Verdana, Geneva, Arial, Helvetica, sans-serif;
-  letter-spacing: -0.1em;
-  padding: 3px 0px 1px 3px;
-  margin-top: 6px;   
-}
+#tab1.tab-disabled a, 
+#tab2.tab-disabled a, 
+#tab3.tab-disabled a,
+#tab4.tab-disabled a  
+{background: #FFF url("images/nav_right_both.gif") no-repeat 100% -450px;color:#AEAEAE}
 
-/* Inactive tab style */
-.tab {
-  background-color: #CCC;
-  border: 1px solid #000;
-  border-bottom-width: 0px;
-  border-color: #666 #777 #777 #666;
-  -moz-border-radius: .75em .75em 0em 0em;
-  border-radius-topleft: .75em;
-  border-radius-topright: .75em;
-  padding: 5px 1em 5px 1em;
-  position: relative;
-  text-decoration: none;
-  top: 3px;
-  z-index: 100;
-  margin: 0 1px 0 0;
-}
+#tab1.tab-disabled a:hover, 
+#tab2.tab-disabled a:hover, 
+#tab3.tab-disabled a:hover, 
+#tab4.tab-disabled a:hover 
+{color:#000}
 
-.tab, .tab:visited {
-  color: #000;
-}
+/* tab list styles */
+.tab-container ul.tabs {list-style:none;margin:0;padding:0;height:1.95em}
+.tab-container ul.tabs li {float:left;width:auto;padding: 0;margin: 0 3px 0 0}
+.tab-container ul.tabs a {display:block;padding:4px 20px 4px 16px;margin: 0 0 0 5px;text-transform:uppercase}
 
-.tab:hover {
-  background-color: #F96;
-  border-color: #666 #777 #777 #666;
-  color: #000;
-}
+.tab-panes hr {clear:both;width:20%;visibility:hidden;margin:0}
 
-/* Active tab styles */
-.activeTab {
-  background-color: #CCC;
-  border: 1px solid #000;
-  border-bottom-width: 0px;
-  border-color: #666 #777 #777 #666;
-  -moz-border-radius: .75em .75em 0em 0em;
-  border-radius-topleft: .75em;
-  border-radius-topright: .75em;
-  padding: 5px 1em 7px 1em;
-  position: relative;
-  text-decoration: none;
-  font-weight: bold;
-  top: 2px;
-  z-index: 100;
-  margin: 0 1px 0 0;
-}
-
-.activeTab, .activeTab:hover, .activeTab:visited {
-  background-color: #FFF;
-  border-color: #666 #777 #777 #666;
-  color: #000;
-}
-
-/* Inactive subtab style */
-.subtab {
-  background-color: #CCC;
-  border: 1px solid #333;
-  border-bottom-width: 0px;
-  -moz-border-radius: .75em .75em 0em 0em;
-  border-radius-topleft: .75em;
-  border-radius-topright: .75em;
-  padding: 3px .7em 3px .7em;
-  position: relative;
-  text-decoration: none;
-  top: 3px;
-  z-index: 100;
-  margin: 0 1px 0 0;
-}
-
-.subtab, .subtab:visited {
-  color: #000;
-}
-
-.subtab:hover {
-  background-color: #F96;
-  border-color: #666 #777 #777 #666;
-  color: #000;
-}
-
-/* Active tab styles */
-.activeSubTab {
-  background-color: #666;
-  border: 1px solid #333;
-  border-bottom-width: 0px;
-  -moz-border-radius: .75em .75em 0em 0em;
-  border-radius-topleft: .75em;
-  border-radius-topright: .75em;
-  padding: 3px 1em 5px 1em;
-  position: relative;
-  text-decoration: none;
-  top: 2px;
-  z-index: 102;
-  color: #FFF;
-  margin: 0 1px 0 0;
-}
+/* apply padding to tab pane content */
+.tab-panes {clear:left;padding: 20px 20px 0;border: 1px solid #E17000;position:relative}
+.tab-panes li {font-size:86%}
+.tab-container {margin: 0 0 15px}
 
 
-div.tabMain {
-  width:100%;
-  background-color: #FFF;
-  border: 1px solid #000;
-  padding: 0px 0px 0px 0px;
-  margin: 5px 0px 0px 3px;
-  position: relative;
-  z-index: 101;
-}
+.tabs2, .tabs2 li {background: none;margin:0;padding:0;display:inline;font-size:96%}
+.tabs2 li#tab1, .tabs2 li#tab2 {border-right: 1px solid #ccc}
 
-div.tabTitle {
-  background-color: #666;
-  color: #FFF;
-  font-weight: bold;
-  margin: 0px 0px 2px 0px;
-  padding: 6px 3px 6px 2px;
-  height: 32px;
-  text-align: left;
-}
+.tab-container .tabs2 #tab1 a:link, .tab-container .tabs2 #tab1 a:visited,  .tab-container .tabs2 #tab1 a:hover, .tab-container .tabs2 #tab1 a:active,  
+.tab-container .tabs2 #tab2 a:link, .tab-container .tabs2 #tab2 a:visited, .tab-container .tabs2 #tab2 a:hover, .tab-container .tabs2 #tab2 a:active, 
+.tab-container .tabs2 #tab3 a:link, .tab-container .tabs2 #tab3 a:visited, .tab-container .tabs2 #tab3 a:hover, .tab-container .tabs2 #tab3 a:active {color:#E17000;text-decoration:underline;background:none;border-bottom:none;font-weight:normal;padding: 2px 6px 5px 6px}
 
-#expand, #contract {
-  position: relative;
-  top:5px;
-  left: 3px;
-}
+.tab-container .tabs2 #tab1 a:active, 
+.tab-container .tabs2 #tab2 a:active,  
+.tab-container .tabs2 #tab3 a:active {color:#000;background: #f1f1f1;text-decoration:none}
 
-#DisplayTitle {
-  font-weight: bold;
-  display: inline;
-  margin-left: 5px;
-  position: relative;
-  top:5px;
-}
+.tabs2 #tab1, .tabs2 #tab2, .tabs2 #tab3 {background:none}
+.tabs2 #tab1.tab-disabled, .tabs2 #tab2.tab-disabled, .tabs2 #tab2.tab-disabled {}
 
-div.tabIframeWrapper {
-  width: 100%;
-  background-color: #FFF;
-}
+/* styles for the de-selected tabs, add more tab ids if theres more than 6 tabs */
+.tabs2 #tab1.tab-disabled, 
+.tabs2 #tab2.tab-disabled, 
+.tabs2 #tab3.tab-disabled  
+{background:none;border-top: none;border-bottom: none}
 
-iframe.tabContent {
-  background-color: #FFF;
-  width: 100%;
-  height: expression(document.body.clientHeight-130);
-  padding: 10px 10px 10px 10px;
-}
-
-#resizer {
-	position:relative;
-	/* Position is declared "relative" to gain control of stacking order (z-index). */
-	top: 5px;
-	width:2px;
-	height: expression(document.body.clientHeight-67);
-	left:expression(document.body.clientWidth*3/10+2);
-	background-color: #999;
-	float:left;
-	z-index:3;
-	/* This allows the content to overlap the right menu in narrow windows in good browsers. */
-	}
-
-#background {
-		background-color: #FFF;
-		height: expression(document.body.clientHeight-100);
-		overflow: none;
-}	
-	
-#column1 {
-	position:absolute;
-	/*top:101px; */
-	/* height: expression(document.body.clientHeight-100); */
-	width: expression(document.body.clientWidth*3/10);
-	background-color:#FFF;
-	z-index:2;
-	}
-		
-#column2 {
-	position:absolute;
-	/* top:101px; */
-	/* height: expression(document.body.clientHeight-100); */
-	width: expression(document.body.clientWidth*7/10-2);
-	background-color:#FFF;
-	z-index:1;
-	}
-
-/*  ######## End Tab Styles ######## */
+.tab-panes-linkslist {clear:left;padding: 0;background: #f1f1f1;border:none}
+.tab-panes-linkslist label {display:inline}
+.tab-panes-linkslist hr {visibility:hidden}
+.tab-panes-linkslist #pane1, .tab-panes-linkslist #pane2, .tab-panes-linkslist #pane3 {padding: 10px 10px 0}

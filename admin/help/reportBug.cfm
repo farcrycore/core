@@ -4,15 +4,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/help/reportBug.cfm,v 1.4 2004/12/20 04:32:33 brendan Exp $
-$Author: brendan $
-$Date: 2004/12/20 04:32:33 $
-$Name: milestone_2-3-2 $
-$Revision: 1.4 $
+$Header: /cvs/farcry/farcry_core/admin/help/reportBug.cfm,v 1.5 2005/08/09 03:54:40 geoff Exp $
+$Author: geoff $
+$Date: 2005/08/09 03:54:40 $
+$Name: milestone_3-0-0 $
+$Revision: 1.5 $
 
 || DESCRIPTION || 
 $Description: bug reporting page for help tab. $
-$TODO: $
+
 
 || DEVELOPER ||
 $Developer: Brendan Sisson (brendan@daemon.com.au)$

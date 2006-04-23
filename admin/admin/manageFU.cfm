@@ -4,15 +4,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/admin/manageFU.cfm,v 1.2 2005/01/27 19:52:58 brendan Exp $
-$Author: brendan $
-$Date: 2005/01/27 19:52:58 $
-$Name: milestone_2-3-2 $
-$Revision: 1.2 $
+$Header: /cvs/farcry/farcry_core/admin/admin/manageFU.cfm,v 1.6 2005/09/15 01:15:46 guy Exp $
+$Author: guy $
+$Date: 2005/09/15 01:15:46 $
+$Name: milestone_3-0-0 $
+$Revision: 1.6 $
 
 || DESCRIPTION || 
 $Description: Manage existing FU entries$
-$TODO: $
+
 
 || DEVELOPER ||
 $Developer: Brendan Sisson (brendan@daemon.com.au)$
@@ -39,57 +39,56 @@ $out:$
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 <cfif iGeneralTab eq 1>
-
+	<cfset objFU = createObject("component","#application.packagepath#.farcry.FU")>
+	
 	<!--- check if items have been marked for deletion --->
 	<cfif isDefined("form.lMappings") and len(form.lMappings)>
 		<!--- loop over marked items --->
 		<cfloop list="#form.lMappings#" index="i">
 			<!--- delete fu --->
-			<cfset application.factory.oFU.deleteMapping(i)>
+			<cfset objFU.deleteMapping(i)>
 		</cfloop>
 		<!--- update fu mappings in app scope --->
-		<cfset application.factory.oFU.updateAppScope()>
-	</cfif>
-	
-	<cfoutput><span class="FormTitle">#application.adminBundle[session.dmProfile.locale].manageURLs#</span><p></p></cfoutput>
-	
-	<!--- check factory fu object loaded --->
-	<cfif not structKeyExists(application.factory,"oFU")>
-		<cftry>
-			<cfset application.factory.oFU = createObject("component","#application.packagepath#.farcry.FU")>
-			<cfcatch>
-				<cfoutput>#application.adminBundle[session.dmProfile.locale].fuPluginError#</cfoutput><cfabort>
-			</cfcatch>
-		</cftry>
+		<!--- <cfset objFU.updateAppScope()> --->
 	</cfif>
 	
 	<cfoutput>
 	<!--- show filter form --->
-	<table cellpadding="5" cellspacing="0" border="0" style="margin-left:30px;">
-	<form action="" method="post">
-	<tr>
-		<td nowrap>		
-		<!--- drop down for filter type --->
-		<select name="searchIn">
-			<option value="#application.adminBundle[session.dmProfile.locale].alias#" <cfif form.searchIn eq "mapping">selected</cfif>>#application.adminBundle[session.dmProfile.locale].alias#
-			<option value="#application.adminBundle[session.dmProfile.locale].objectLC#" <cfif form.searchIn eq "object">selected</cfif>>#application.adminBundle[session.dmProfile.locale].objectLC#
+	
+	<form method="post" class="f-wrap-1 f-bg-short" action="">
+	<fieldset>
+	
+		<h3>#application.adminBundle[session.dmProfile.locale].manageURLs#</h3>
+
+		<label for="searchIn"><b>&nbsp;</b>
+		<select name="searchIn" id="searchIn">
+		<option value="#application.adminBundle[session.dmProfile.locale].alias#" <cfif form.searchIn eq "mapping">selected</cfif>>#application.adminBundle[session.dmProfile.locale].alias#
+		<option value="#application.adminBundle[session.dmProfile.locale].objectLC#" <cfif form.searchIn eq "object">selected</cfif>>#application.adminBundle[session.dmProfile.locale].objectLC#
 		</select>
+		<br />
+		</label>
 		
-		<input type="text" name="searchText" value="#form.searchText#"/>		
-		<input type="submit" value="#application.adminBundle[session.dmProfile.locale].filter#" class="normalbttnstyle">
-		</td>
-	</tr>
-	</table>
-				
+		<label for="searchText"><b>&nbsp;</b>
+		<input type="text" name="searchText" id="searchText" value="#form.searchText#" />	
+		</label>
+		
+		<div class="f-submit-wrap">
+		<input type="submit" value="#application.adminBundle[session.dmProfile.locale].filter#" class="f-submit" />
+		</div>
+		
+	</fieldset>
+	</form>
+
+	<form method="post" action="">				
 	<!--- set up results table --->
-	<table cellpadding="5" cellspacing="0" border="1" style="margin-left:30px;">
+	<table class="table-2" cellspacing="0">
 	<tr>
-		<th class="dataheader">#application.adminBundle[session.dmProfile.locale].delete#</th>
-		<th class="dataheader">#application.adminBundle[session.dmProfile.locale].alias#</th>
-		<th class="dataheader">#application.adminBundle[session.dmProfile.locale].objectLC#</th>
+		<th style="text-align:center">#application.adminBundle[session.dmProfile.locale].delete#</th>
+		<th>#application.adminBundle[session.dmProfile.locale].alias#</th>
+		<th>#application.adminBundle[session.dmProfile.locale].objectLC#</th>
 	</tr>
 	</cfoutput>
-	
+
 	<!--- check mappings are loaded --->
 	<cfif isDefined("application.fu.mappings")>
 		<!--- loop over mappings --->
@@ -113,9 +112,9 @@ $out:$
 			<cfif bShow>
 				<cfoutput>
 					<tr>
-						<td align="center"><input type="checkbox" name="lMappings" value="#key#"></td>
+						<td style="text-align:center"><input type="checkbox" name="lMappings" value="#key#" /></td>
 						<td>#key#</td>
-						<td>#application.fu.mappings[key]#</td>
+						<td>#application.url.conjurer#?objectid=#application.fu.mappings[key].refObjectID#<cfif application.fu.mappings[key].query_string NEQ "">&#application.fu.mappings[key].query_string#</cfif></td>
 					</tr>
 				</cfoutput>
 			</cfif>
@@ -130,7 +129,10 @@ $out:$
 	<!--- end results table --->
 	<cfoutput>
 		</table>
-		<div style="margin:10px 0 0 30px;"><input type="submit" value="#application.adminBundle[session.dmProfile.locale].delete#" class="normalbttnstyle"></div>
+		
+		<input type="submit" value="#application.adminBundle[session.dmProfile.locale].delete#" class="f-submit" />
+		
+		
 		</form>
 	</cfoutput>
 <cfelse>

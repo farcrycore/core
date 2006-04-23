@@ -1,14 +1,15 @@
+<cfsetting enablecfoutputonly="yes">
 <!--- 
 || LEGAL ||
 $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/navajo/edit.cfm,v 1.26 2005/01/17 04:57:33 brendan Exp $
-$Author: brendan $
-$Date: 2005/01/17 04:57:33 $
-$Name: milestone_2-3-2 $
-$Revision: 1.26 $
+$Header: /cvs/farcry/farcry_core/tags/navajo/edit.cfm,v 1.29 2005/08/02 02:27:12 geoff Exp $
+$Author: geoff $
+$Date: 2005/08/02 02:27:12 $
+$Name: milestone_3-0-0 $
+$Revision: 1.29 $
 
 || DESCRIPTION || 
 $Description: $
@@ -20,57 +21,56 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au)$
 
 || ATTRIBUTES ||
-$in: url.Objectid$
+$in: attributes.objectid$
 $out:$
 --->
+<cfif thistag.ExecutionMode eq "end">
+	<cfexit method="exittag">
+</cfif>
 
-<cfsetting enablecfoutputonly="yes">
-<cfprocessingDirective pageencoding="utf-8">
+<!--- import tag libraries --->
+<cfimport taglib="/farcry/fourq/tags/" prefix="q4">
+
+<!--- import function libraries --->
 <cfinclude template="/farcry/farcry_core/admin/includes/utilityFunctions.cfm">
 <cfinclude template="/farcry/farcry_core/admin/includes/cfFunctionWrappers.cfm">
+
+<!--- required attributes --->
+<!--- 	looks like refs to URL params are everywhere... 
+	  	will have to hack this in the interim till we 
+		refactor the lot. 20050728 GB	--->
+<cfif isdefined("url.objectid")><cfset attributes.objectid=url.objectid></cfif>
+<cfif isdefined("url.typename")><cfset attributes.typename=url.typename></cfif>
+<cfparam name="attributes.objectid" type="uuid">
+<cfparam name="attributes.typename" default="" type="string">
+
 <!--- Legacy support for old pages referring to URL.type--->
 <cfif isDefined("URL.type") AND NOT isDefined("URL.typename")>
 	<cfset URL.typename = URL.type>
+	<cflog file="deprecated" application="true" type="warning" text="../tags/navajo/edit.cfm referencing type when typename required." />
 </cfif>
 
-<!--- enforce some validation --->
-<cfparam name="url.objectid" type="uuid">
-<cfparam name="url.typename" default="" type="string">
-
 <cfscript>
-	// Legacy support for old pages referring to URL.type
-	if (isDefined("URL.type"))
-		URL.typename = URL.type;
 	// auto-type lookup if required
-	if (NOT len(url.typename)) {
+	if (NOT len(attributes.typename)) {
 		q4 = createObject("component", "farcry.fourq.fourq");
-		url.typename = q4.findType(objectid=url.objectid);
+		attributes.typename = q4.findType(objectid=attributes.objectid);
 		//its possible that missing objects will kill this so we only want to create object if we actually get a typename result
-		if (NOT len(url.typename))
+		if (NOT len(attributes.typename))
 			abort();
 	}
 </cfscript>
 
-<!--- First check permissions --->
-<cfscript>
-	bHasPermission = request.dmsec.oAuthorisation.checkInheritedPermission(permissionName='edit',objectid=URL.objectid);
-</cfscript>
+<!--- First check tree permissions --->
+<cfset bHasPermission = request.dmsec.oAuthorisation.checkInheritedPermission(permissionName='edit',objectid=attributes.objectid)>
 <cfif NOT bHasPermission GTE 0>
-	<h1><cfoutput>#application.adminBundle[session.dmProfile.locale].noEditPermissions#</cfoutput></h1>
+	<cfoutput><h1>#application.adminBundle[session.dmProfile.locale].noEditPermissions#</h1></cfoutput>
 	<cfabort>
 </cfif>
 
-<!--- set up page header --->
-<cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
-<admin:header>
-
-<cfimport taglib="/farcry/fourq/tags/" prefix="q4">
-
-<!--- work out package epath --->
-<cfscript>
-	oType = createObject("component", application.types[url.typename].typePath);
-	stObj = oType.getData(objectid=url.objectid,dsn=application.dsn);
-</cfscript>
+<!--- work out packagee path --->
+<cfset oType = createObject("component", application.types[attributes.typename].typePath)>
+<cfset stObj = oType.getData(objectid=attributes.objectid,dsn=application.dsn)>
 
 <!--- delete underlying draft --->
 <cfif isDefined("URL.deleteDraftObjectID")>
@@ -83,18 +83,16 @@ $out:$
 		//Log this activity against live object
 		oAuthentication = request.dmSec.oAuthentication;	
 		stuser = oAuthentication.getUserAuthenticationData();
-		application.factory.oaudit.logActivity(objectid="#url.objectid#",auditType="delete", username=StUser.userlogin, location=cgi.remote_host, note="Deleted Draft Object (#stObj.label#)");
+		application.factory.oaudit.logActivity(objectid="#attributes.objectid#",auditType="delete", username=StUser.userlogin, location=cgi.remote_host, note="Deleted Draft Object (#stObj.label#)");
 	</cfscript>
 	<!--- get parent for update tree --->
-	<cf_getNavigation objectId="#url.ObjectId#" bInclusive="1" r_stObject="stNav" r_ObjectId="navIdSrcPerm">
+	<cf_getNavigation objectId="#attributes.objectid#" bInclusive="1" r_stObject="stNav" r_ObjectId="navIdSrcPerm">
 	<!--- update tree --->
 	<cf_updateTree objectId="#navIdSrcPerm#" complete=0>
 	<!--- reload overview page --->
-	<cfoutput>
-		<script language="JavaScript">
-			parent['editFrame'].location.href = '#application.url.farcry#/edittabOverview.cfm?objectid=#url.ObjectID#';
-		</script>
-	</cfoutput>
+	<cfoutput><script type="text/javascript">
+		parent['content'].location = '#application.url.farcry#/edittabOverview.cfm?objectid=#attributes.objectid#';
+	</script></cfoutput>
 </cfif>
 <!--- See if we can edit this object --->
 <cfscript>
@@ -102,19 +100,19 @@ oVersioning = createObject("component","#application.packagepath#.farcry.version
 oLocking = createObject("component","#application.packagepath#.farcry.locking");
 if (structKeyExists(stObj,"versionID") AND structKeyExists(stObj,"status"))
 {			
-	stRules = oVersioning.getVersioningRules(objectid=url.objectid);
+	stRules = oVersioning.getVersioningRules(objectid=attributes.objectid);
 	oVersioning.checkEdit(stRules=stRules,stObj=stObj);
 }
 
 if (structCount(stObj))
 {
-	checkForLockRet=oLocking.checkForLock(objectid=url.objectid);
+	checkForLockRet=oLocking.checkForLock(objectid=attributes.objectid);
 	if (checkForLockRet.bSuccess)
 	{
-		lockRet = oLocking.lock(objectid=url.objectid,typename=url.typename);
+		lockRet = oLocking.lock(objectid=attributes.objectid,typename=url.typename);
 		if (lockRet.bSuccess)
 		{
-			oType.edit(objectid=url.objectid);
+			oType.edit(objectid=attributes.objectid);
 		}
 		else
 		{
@@ -122,19 +120,18 @@ if (structCount(stObj))
 			abort();
 		}
 	}
-	else if (not checkForLockRet.bSuccess and checkForLockRet.lockedBy eq "#session.dmSec.authentication.userlogin#_#session.dmSec.authentication.userDirectory#")	
+	else if (not checkForLockRet.bSuccess and checkForLockRet.lockedBy eq "#session.dmSec.authentication.userlogin#_#session.dmSec.authentication.userDirectory#")
 	{
-		oType.edit(objectid=url.objectid);
+		oType.edit(objectid=attributes.objectid);
 	}
 	else
 	{
 		writeoutput(checkForLockRet.message);
+		dump(checkForLockRet);
 		abort();
 	}
 }	
 			
 </cfscript>
-	  
-<admin:footer>
 
 <cfsetting enablecfoutputonly="No">

@@ -1,17 +1,15 @@
 <cfsetting enablecfoutputonly="Yes">
-
-<cfprocessingDirective pageencoding="utf-8">
 <!--- 
 || LEGAL ||
 $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmhtml/plpEdit/start.cfm,v 1.8 2004/07/15 02:00:49 brendan Exp $
-$Author: brendan $
-$Date: 2004/07/15 02:00:49 $
-$Name: milestone_2-3-2 $
-$Revision: 1.8 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmhtml/plpEdit/start.cfm,v 1.18 2005/09/07 05:26:14 daniela Exp $
+$Author: daniela $
+$Date: 2005/09/07 05:26:14 $
+$Name: milestone_3-0-0 $
+$Revision: 1.18 $
 
 || DESCRIPTION || 
 $Description: dmHTML PLP - Start Step $
@@ -20,137 +18,148 @@ $TODO: clean up formatting -- test in Mozilla 20030503 GB$
 || DEVELOPER ||
 $Developer: Geoff Bowers (modius@daemon.com.au) $
 --->
-<cfimport taglib="/farcry/farcry_core/tags/farcry" prefix="tags">
-<cfimport taglib="/farcry/farcry_core/tags/navajo" prefix="nj">
-<cfimport taglib="/farcry/farcry_core/tags/display/" prefix="display">
+<cfprocessingDirective pageencoding="utf-8">
+<cfparam name="errormessage" default="">
+<cfparam name="bHasMetaData" default="0">
+
+<cfimport taglib="/farcry/farcry_core/tags/widgets" prefix="widgets">
+
 <cfset thisstep.isComplete = 0>
 <cfset thisstep.name = stplp.currentstep>
-<tags:plpNavigationMove>
+
+<cfif isDefined("form.plpAction")>
+	<cfif bHasMetaData EQ 0>
+		<cfset form.extendedmetadata = "">
+	</cfif>
+
+	<cfif form.noReview EQ 1>
+		<cfset reviewDate = '2050-#form.reviewMonth#-#form.reviewDay#'>
+	<cfelse>
+		<cfset reviewDate = '#form.reviewYear#-#form.reviewMonth#-#form.reviewDay#'>
+	</cfif>
+
+	<cfset output.reviewDate = createODBCDatetime(reviewDate)>
+	
+	<cfif errormessage EQ "">
+		<widgets:plpAction>
+	</cfif>
+<cfelse>
+	<cfif NOT IsDate(output.reviewDate)>
+		<cfset output.reviewDate = DateAdd("d",application.config.general.contentReviewdayspan,now())>
+	</cfif>
+</cfif>
+
+<cfif Trim(output.versionID) NEQ "">
+	<cfinvoke  component="#application.packagepath#.farcry.versioning" method="getArchives" returnvariable="qListArchives">
+		<cfinvokeargument name="objectID" value="#output.versionID#"/>
+	</cfinvoke>
+</cfif>
 
 <cfif NOT thisstep.isComplete>
-	<cfoutput>
-	<form action="#cgi.script_name#?#cgi.query_string#" method="post" name="editform">
-	
-	<div class="FormSubTitle">#output.label#</div>
-	<div class="FormTitle">#application.adminBundle[session.dmProfile.locale].generalInfo#</div>
-	<div class="FormTable">
-	<table width="400" border="0" cellspacing="0" cellpadding="5">
-	<tr>
-		<td nowrap class="FormLabel">#application.adminBundle[session.dmProfile.locale].titleLabel#</td>
-		<td width="100%"><input type="text" name="title" value="#output.Title#" maxlength="255" class="FormTextBox"></td>
-	</tr>
-	<tr>
-		<td nowrap class="FormLabel">#application.adminBundle[session.dmProfile.locale].keywordsLabel#</td>
-		<td width="100%"><input type="text" name="metakeywords" value="#output.metakeywords#" maxlength="255"  class="FormTextBox"></td>
-	</tr>
-	<tr>
-		<td nowrap class="FormLabel" valign="top">#application.adminBundle[session.dmProfile.locale].extendedMetadata#
-		<a href="javascript:void(0);" id="yesLink" onClick="document.getElementById('noLink').style.display='inline';this.style.display='none';document.getElementById('metadatacell').style.display='none';" style="display:<cfif len(trim(output.extendedmetadata))>inline<cfelse>none</cfif>;"><img src="#application.url.farcry#/images/yes.gif" border="0" alt="#application.adminBundle[session.dmProfile.locale].extendedMetadata#"></a>	
-		<a href="javascript:void(0);" id="noLink" onClick="this.style.display='none';document.getElementById('yesLink').style.display='inline';document.getElementById('metadatacell').style.display='inline';" style="display:<cfif NOT len(trim(output.extendedmetadata))>inline<cfelse>none</cfif>;"><img src="#application.url.farcry#/images/no.gif" border="0" alt="#application.adminBundle[session.dmProfile.locale].noExtendedMetadata#"></a>
-		</td>
-		<td id="metadatacell" style="display:<cfif len(trim(output.extendedmetadata))>inline<cfelse>none</cfif>;" width="100%"><textarea name="extendedmetadata" rows="10" cols="50" class="FormTextBox" wrap="off">#output.extendedmetadata#</textarea><br>
-#application.adminBundle[session.dmProfile.locale].insertedInHeadBlurb#</td>
-	</tr>
-	</cfoutput>
-	<!--- get the templates for this type --->
-	<nj:listTemplates typename="dmHTML" prefix="displaypage" r_qMethods="qMethods">
-	<cfoutput>
-	<tr>
-		<td nowrap class="FormLabel">#application.adminBundle[session.dmProfile.locale].displayMethodLabel#</td>
-		<td width="100%" class="FormLabel">
-		<select name="DisplayMethod" size="1">
-		</cfoutput>
-		<cfoutput query="qMethods">
-		<option value="#qMethods.methodname#" <cfif qMethods.methodname eq output.displaymethod>SELECTED</cfif>>#qMethods.displayname#</option>
-		</cfoutput>
-		<cfoutput>
-		</select>
-		</td>
-	</tr>
-	</table>
-	</div>
-	</cfoutput>	
-	
-<!---  display commentlog for this object  --->
-	<div class="FormTableClear">
-	<display:OpenLayer width="100%" title="Comment Log" isClosed="Yes" border="no">
-		<cfif len(output.CommentLog)>
-		<cfoutput>
-		<textarea rows="10" style="width: 100%;">#output.CommentLog#</textarea>
-		</cfoutput>
-		<cfelse>
-		<cfoutput>
-		#application.adminBundle[session.dmProfile.locale].noComments#
-		</cfoutput>
-		</cfif>
-	</display:OpenLayer>
-	</div>
-	
-	<cfif len(output.versionID)>
-	<cfinvoke  component="#application.packagepath#.farcry.versioning" method="getArchives" returnvariable="qGetArchives">
-		<cfinvokeargument name="objectID" value="#output.versionID#"/>
-	</cfinvoke>		
-	<!--- display past archived versions of this object --->
-	<div class="FormTableClear">
-	<display:OpenLayer width="100%" title="Archived Versions" isClosed="Yes" border="no">
-		
-		<cfif NOT qGetArchives.recordCount>
-			<cfoutput>#application.adminBundle[session.dmProfile.locale].noRecsReturned#</cfoutput>
-		<cfelse>
-			<table width="100%" border="0" cellspacing="1" bgcolor="##999999">
-			<cfoutput>
-	        <tr> 
-    	      <td class="rowsHeader"> #application.adminBundle[session.dmProfile.locale].view# </td>
-	          <td class="rowsHeader"> #application.adminBundle[session.dmProfile.locale].label# </td>
-    	      <td class="rowsHeader"> #application.adminBundle[session.dmProfile.locale].archiveDate# </td>
-	          <td class="rowsHeader"> #application.adminBundle[session.dmProfile.locale].by# </td>
-    	    </tr>	
-			</cfoutput>
-			<tr>
-			<cfoutput query="qGetArchives" > 
-			<cfscript>
-				previewURL = "#application.url.farcry#/navajo/displayArchive.cfm?objectID=#qGetArchives.objectID#";
-			</cfscript>
-        	  <tr> 
-            	<td class="rows" align="center"> 
-        	      <a href="#previewURL#" target="_blank"><img src="#application.url.farcry#/images/treeImages/preview.gif" border="0"></a> 
-            	</td>
-	            <td class="rows"> 
-		             <a href="#previewURL#">#label#</a>
-				</td>
-            	<td class="rows"> 
-              		#application.thisCalendar.i18nDateFormat(dateTimeCreated,session.dmProfile.locale,application.mediumF)#
-				</td>
-            	<td class="rows"> 
-              		#lastUpdatedBy# 
-			 	</td>
-          	</tr>
-	        </cfoutput>
-			</table>
-		</cfif>
+<widgets:plpWrapper><cfoutput>
+<form action="#cgi.script_name#?#cgi.query_string#" class="f-wrap-1 wider f-bg-short" name="editform" method="post">	
+	<fieldset>
+		<div class="req"><b>*</b>Required</div>
+<h3>#application.adminBundle[session.dmProfile.locale].generalInfo#: <span class="highlight">#output.label#</span></h3>
+<cfif errormessage NEQ "">
+<p id="fading1" class="fade"><span class="error">#errormessage#</span></p>
+</cfif>
+	<label for="title"><b>#application.adminBundle[session.dmProfile.locale].titleLabel#<span class="req">*</span></b>
+		<input type="text" name="title" id="title" value="#output.title#" maxlength="255" /><br />
+	</label>
 
-	
-	</display:OpenLayer>
-	</div>
-	</cfif>
-	<cfoutput>
-	<div class="FormTableClear">
-		<tags:plpNavigationButtons>
-	</div>
-	
-	<!--- form validation --->
-	<SCRIPT LANGUAGE="JavaScript">
-	<!--//
-	//bring focust to title
-	document.editform.title.focus();
-	objForm = new qForm("editform");
-	objForm.title.validateNotNull("#application.adminBundle[session.dmProfile.locale].pleaseEnterTitle#");
-		//-->
-	</SCRIPT>
-	</form>
-	</cfoutput>
+	<label for="metakeywords"><b>#application.adminBundle[session.dmProfile.locale].keywordsLabel#</b>
+		<input type="text" name="metakeywords" id="metakeywords" value="#output.metakeywords#" maxlength="255" /><br />
+	</label>
+
+	<label for="extendedmetadata"><b>#application.adminBundle[session.dmProfile.locale].extendedMetadata#</b>
+		<a href="javascript:void(0);" onclick="doToggle('extendedmetadata','bHasMetaData');"><cfif trim(output.extendedmetadata) EQ ""><img src="#application.url.farcry#/images/no.gif" id="tglextendedmetadata_image" border="0" alt="#application.adminBundle[session.dmProfile.locale].extendedMetadata#"><cfelse>
+			<img src="#application.url.farcry#/images/yes.gif" id="tglextendedmetadata_image" border="0" alt="#application.adminBundle[session.dmProfile.locale].noExtendedMetadata#"></cfif>
+		</a>
+		<span id="tglextendedmetadata" style="display:<cfif Trim(output.extendedmetadata) EQ ''>none<cfelse>inline</cfif>;">
+		<textarea name="extendedmetadata" id="extendedmetadata" wrap="off">#output.extendedmetadata#</textarea><br />
+		#application.adminBundle[session.dmProfile.locale].insertedInHeadBlurb#
+		</span>
+		<input type="hidden" id="bHasMetaData" name="bHasMetaData" value="#Len(trim(output.extendedmetadata))#">
+	</label>
+
+	<widgets:dateSelector fieldNameprefix="Review" bShowTime="0" bDateToggle="1">
+	<widgets:ownedBySelector fieldLabel="Content Owner:" selectedValue="#output.ownedBy#">
+	<widgets:displayMethodSelector typeName="#output.typeName#" prefix="displayPage">
+
+</fieldset>
+<!--- show coment log --->
+<fieldset>
+	<label><b>Comment Log:</b>
+		<a href="javascript:void(0);" onclick="doToggle('CommentLog');">
+			<img src="#application.url.farcry#/images/no.gif" id="tglCommentLog_image" border="0" alt="show hide comments">
+		</a>
+		<span id="tglCommentLog" style="display:none;"><textarea disabled="true" wrap="off"><cfif trim(output.commentLog) NEQ "">
+		#trim(output.commentLog)#<cfelse>
+		#application.adminBundle[session.dmProfile.locale].noComments#</cfif></textarea><br />
+		</span>
+	</label>
+</fieldset>
+	<!--- show archived --->
+	<cfif Trim(output.versionID) NEQ "" AND qListArchives.recordCount GT 0>
+<fieldset>
+	<label><b>Archived Versions:</b>
+		<a href="javascript:void(0);" onclick="doToggle('Archive');">
+			<img src="#application.url.farcry#/images/no.gif" id="tglArchive_image" border="0" alt="show hide archive">
+		</a>
+		<span id="tglArchive" style="display:none;">
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+	<td>#application.adminBundle[session.dmProfile.locale].view#</td>
+	<td>#application.adminBundle[session.dmProfile.locale].label#</td>
+	<td>#application.adminBundle[session.dmProfile.locale].archiveDate#</td>
+	<td>#application.adminBundle[session.dmProfile.locale].by#</td>
+</tr><cfloop query="qListArchives"><cfset previewURL = "#application.url.farcry#/navajo/displayArchive.cfm?objectID=#qListArchives.objectID#">
+<tr>
+	<td><a href="#previewURL#" target="_blank"><img src="#application.url.farcry#/images/treeImages/preview.gif" border="0"></a> </td>
+	<td><a href="#previewURL#">#qListArchives.label#</a></td>
+	<td>#application.thisCalendar.i18nDateFormat(qListArchives.dateTimeCreated,session.dmProfile.locale,application.mediumF)#</td>
+	<td>#qListArchives.lastUpdatedBy#</td>
+</tr></cfloop>
+</table><br />
+		</span>
+	</label>
+</fieldset></cfif>
+
+<input type="hidden" name="plpAction" value="" />
+<input style="display:none;" type="submit" name="buttonSubmit" value="submit" />
+</form>
+<!--- form validation --->
+<script type="text/javascript">
+<!--//
+function doToggle(prefix,bHiddenFieldName){
+	objTgl = document.getElementById('tgl' + prefix);
+	objTglImage = document.getElementById('tgl' + prefix + '_image');
+
+	if(bHiddenFieldName)
+		objTglHiddenValue = document.getElementById(bHiddenFieldName);
+
+	if(objTgl.style.display == "none"){
+		objTgl.style.display = "inline";
+		objTglImage.src = "#application.url.farcry#/images/yes.gif";
+//		objTglImage.alt = "#application.adminBundle[session.dmProfile.locale].noExtendedMetadata#";
+		if(bHiddenFieldName)
+			objTglHiddenValue.value = 1;
+	}else {
+		objTgl.style.display = "none";
+		objTglImage.src = "#application.url.farcry#/images/no.gif";
+//		objTglImage.alt = "#application.adminBundle[session.dmProfile.locale].extendedMetadata#";
+		if(bHiddenFieldName)
+			objTglHiddenValue.value = 0;
+	}	
+}
+//-->
+</script>
+<cfinclude template="/farcry/farcry_core/admin/includes/QFormValidationJS.cfm">
+</cfoutput>
+</widgets:plpWrapper>
 <cfelse>
-	<tags:plpUpdateOutput>
+	<widgets:plpUpdateOutput>
 </cfif>
 
 <cfsetting enablecfoutputonly="no">

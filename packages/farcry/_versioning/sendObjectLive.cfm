@@ -4,15 +4,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_versioning/sendObjectLive.cfm,v 1.14 2005/01/17 06:25:30 brendan Exp $
-$Author: brendan $
-$Date: 2005/01/17 06:25:30 $
-$Name: milestone_2-3-2 $
-$Revision: 1.14 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_versioning/sendObjectLive.cfm,v 1.16 2005/09/02 02:32:34 guy Exp $
+$Author: guy $
+$Date: 2005/09/02 02:32:34 $
+$Name: milestone_3-0-0 $
+$Revision: 1.16 $
 
 || DESCRIPTION || 
 $Description: sends versioned object live $
-$TODO: $
+
 
 || DEVELOPER ||
 $Developer: Brendan Sisson (brendan@daemon.com.au) $
@@ -37,16 +37,15 @@ $out:$
 	}
 	o = createObject("component",application.types[typename].typePath);	
 </cfscript>
-		
+
 <cfif structKeyExists(stDraftObject,"versionID") AND NOT len(trim(stDraftObject.versionID)) EQ 0 >
 	<!--- get the current Live Object to archive --->
-	<cfscript>
-		stLiveObject = o.getData(arguments.stDraftObject.versionID);
-	</cfscript>		
+	<!--- <cfset stLiveObject = o.getData(arguments.stDraftObject.versionID)> --->
 	<!--- Convert current live object to WDDX for archive --->
-	<cfwddx input="#stLiveObject#" output="stLiveWDDX"  action="cfml2wddx">
+	<!--- <cfwddx input="#stLiveObject#" output="stLiveWDDX"  action="cfml2wddx"> --->
+	<!--- <cfset archiveObject(arguments.stDraftObject.versionID,typename)> --->
 
-	<cfscript>
+	<!--- <cfscript>
 		//set up the dmArchive structure to save
 		stProps = structNew();
 		stProps.objectID = createUUID();
@@ -63,31 +62,32 @@ $out:$
 			stProps.label = stLiveObject.label;
 		//end dmArchive struct  
 
-	</cfscript>
+	</cfscript> --->
 
-	<cflock name="sendlive_#stLiveObject.objectID#" timeout="50" type="exclusive">
+	<cflock name="sendlive_#arguments.stDraftObject.versionID#" timeout="50" type="exclusive">
 
 		<cfscript>
 			//copy all container data to live object
 			if (arguments.bCopyDraftContainers) {
 				oCon = createobject("component","#application.packagepath#.rules.container");
-				oCon.copyContainers(srcObjectID=arguments.stDraftObject.objectId,destObjectID=stLiveObject.objectID,bDeleteSrcData=1);
+				oCon.copyContainers(srcObjectID=arguments.stDraftObject.objectId,destObjectID=arguments.stDraftObject.versionID,bDeleteSrcData=1);
 			}
 			
 			//this will copy categories from draft object to live
 			oCategory = createobject("component","#application.packagepath#.farcry.category");
-			oCategory.copyCategories(arguments.stDraftObject.objectid,stLiveObject.objectID);
+			oCategory.copyCategories(arguments.stDraftObject.objectid,arguments.stDraftObject.versionID);
 
 			//Archive the object
-			oArchive = createobject("component","#application.packagepath#.types.dmArchive");
-			oArchive.createData(stProperties=stProps);
+//			oArchive = createobject("component","#application.packagepath#.types.dmArchive");
+//			oArchive.createData(stProperties=stProps);
+			archiveObject(arguments.stDraftObject.versionID,typename);
 			
 			//delete the old draft
 			o.deleteData(objectid=arguments.stDraftObject.objectid);
 			oCategory.deleteAssignedCategories(objectid=stDraftObject.objectid);
 			
 			//need to set stDraft object to live for fourq update. Update datetimeLastUpdated and clear out versionID
-			arguments.stDraftObject.objectid = stLiveObject.objectID;
+			arguments.stDraftObject.objectid = arguments.stDraftObject.versionID;
 			arguments.stDraftObject.versionID = "";
 			arguments.stDraftObject.dateTimeLastUpdated = createODBCDateTime(Now());
 			arguments.stDraftObject.dateTimeCreated = createODBCDateTime(arguments.stDraftObject.dateTimeCreated);

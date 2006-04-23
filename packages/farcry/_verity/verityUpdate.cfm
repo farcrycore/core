@@ -4,15 +4,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_verity/verityUpdate.cfm,v 1.6 2005/02/02 01:20:37 brendan Exp $
-$Author: brendan $
-$Date: 2005/02/02 01:20:37 $
-$Name: milestone_2-3-2 $
-$Revision: 1.6 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_verity/verityUpdate.cfm,v 1.8 2005/09/12 06:35:43 guy Exp $
+$Author: guy $
+$Date: 2005/09/12 06:35:43 $
+$Name: milestone_3-0-0 $
+$Revision: 1.8 $
 
 || DESCRIPTION || 
 $Description: updates verity collection$
-$TODO: $
+
 
 || DEVELOPER ||
 $Developer: Geoff Bowers (modius@daemon.com.au)$
@@ -37,7 +37,17 @@ $out:$
 	<cfelse>
 		<cfset collectionType = "file">
 	</cfif>
-	
+
+	<!--- get all content items under trash --->
+	<cfset qList = application.factory.oTree.getDescendants(objectid=application.navid.rubbish,bIncludeSelf=true)>
+	<cfset lNodeIDS = valueList(qList.objectid)>
+	<cfset aExcludeObjectID = application.factory.oTree.getLeaves(lNodeIDS)>
+	<cfset lExcludeObjectID = "">
+	<cfloop index="i" from="1" to="#ArrayLen(aExcludeObjectID)#">
+		<cfset lExcludeObjectID = ListAppend(lExcludeObjectID, aExcludeObjectID[i].objectid)>
+	</cfloop>
+	<cfset lExcludeObjectID = ListQualify(lExcludeObjectID,"'")>
+
 	<!--- check collection type --->
 	<cfif collectionType eq "type">
 		<!--- build index from type table --->
@@ -45,9 +55,12 @@ $out:$
 			SELECT *
 			FROM #key#
 			WHERE 1 = 1
-			<cfif structKeyExists(application.config.verity.contenttype[key], "lastupdated")>
-				AND datetimelastupdated > #application.config.verity.contenttype[key].lastupdated#
+			<cfif lExcludeObjectID NEQ "">
+				AND objectid NOT IN (#preserveSingleQuotes(lExcludeObjectID)#)
 			</cfif>
+			<!--- <cfif structKeyExists(application.config.verity.contenttype[key], "lastupdated")>
+				AND datetimelastupdated > #application.config.verity.contenttype[key].lastupdated#
+			</cfif> --->
 			<cfif structKeyExists(application.types[key].stProps, "status")>
 				AND upper(status) = 'APPROVED'
 			</cfif>
@@ -67,8 +80,11 @@ $out:$
 			<cfquery datasource="#application.dsn#" name="q">
 				SELECT objectid
 				FROM #key#
-				WHERE datetimelastupdated > #application.config.verity.contenttype[key].lastupdated#
-					AND upper(status) IN ('DRAFT','PENDING')
+				WHERE <!--- datetimelastupdated > #application.config.verity.contenttype[key].lastupdated# --->
+					upper(status) IN ('DRAFT','PENDING')
+				<cfif lExcludeObjectID NEQ "">
+					OR objectid IN (#preserveSingleQuotes(lExcludeObjectID)#)
+				</cfif>					
 			</cfquery>
 			
 			<cfset subS=listToArray("#q.recordCount#, #key#, #arrayToList(application.config.verity.contenttype[key].aprops)#")>

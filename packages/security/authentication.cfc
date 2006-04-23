@@ -4,15 +4,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/security/authentication.cfc,v 1.33.2.1 2005/05/19 01:54:54 gstewart Exp $
-$Author: gstewart $
-$Date: 2005/05/19 01:54:54 $
-$Name: milestone_2-3-2 $
-$Revision: 1.33.2.1 $
+$Header: /cvs/farcry/farcry_core/packages/security/authentication.cfc,v 1.40 2005/10/28 03:25:13 paul Exp $
+$Author: paul $
+$Date: 2005/10/28 03:25:13 $
+$Name: milestone_3-0-0 $
+$Revision: 1.40 $
 
 || DESCRIPTION || 
 $Description: authentication cfc $
-$TODO: $
+
 
 || DEVELOPER ||
 $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
@@ -205,8 +205,9 @@ $out:$
 		<!--- delete profile --->
 		<cfif structKeyExists(stUser,"userLogin")>
 			<cfquery name="qProfile" datasource="#stUd[arguments.userdirectory].datasource#">
-				select objectid from #application.dbowner#dmProfile 
-				where userName = <cfqueryparam value="#stUser.userLogin#" cfsqltype="CF_SQL_VARCHAR">
+			SELECT 	objectid 
+			FROM 	#application.dbowner#dmProfile 
+			WHERE 	UPPER(userName) = <cfqueryparam value="#UCASE(stUser.userLogin)#" cfsqltype="CF_SQL_VARCHAR">
 			</cfquery>
 			<cfif qProfile.recordcount>
 				<cfset oProfile = createObject("component", application.types.dmProfile.typepath)>
@@ -301,9 +302,9 @@ $out:$
 					<!--- search for the user --->
 					<cfquery name="qUser" datasource="#stUd[ud].datasource#" >
 						SELECT * FROM #application.dbowner#dmUser
-							<cfif isDefined("arguments.userLogin")>WHERE upper(UserLogin) = <cfqueryparam value="#ucase(arguments.userLogin)#" cfsqltype="CF_SQL_VARCHAR"></cfif>
+							<cfif isDefined("arguments.userLogin")>WHERE UPPER(UserLogin) = <cfqueryparam value="#ucase(arguments.userLogin)#" cfsqltype="CF_SQL_VARCHAR"></cfif>
 							<cfif isDefined("arguments.userId")>WHERE userId = <cfqueryparam value="#arguments.userId#" cfsqltype="CF_SQL_VARCHAR"></cfif>
-							<cfif isDefined("arguments.fragment")>WHERE UserLogin like <cfqueryparam value="#ucase(arguments.fragment)#" cfsqltype="CF_SQL_VARCHAR"></cfif>
+							<cfif isDefined("arguments.fragment")>WHERE UPPER(UserLogin) like <cfqueryparam value="#ucase(arguments.fragment)#" cfsqltype="CF_SQL_VARCHAR"></cfif>
 						ORDER BY UserLogin ASC
 					</cfquery>
 					<cfscript>
@@ -347,10 +348,10 @@ $out:$
 					{
 						sql = "
 						SELECT *
-						FROM dmGroup g ";
+						FROM #application.dbowner#dmGroup g ";
 						if (isDefined('arguments.userlogin'))
 						{
-							sql = sql & ", dmUserToGroup ug, dmUser u
+							sql = sql & ", #application.dbowner#dmUserToGroup ug, #application.dbowner#dmUser u
 							WHERE g.groupId = ug.groupid
 							AND upper(u.userLogin) = '#ucase(arguments.userLogin)#'
 							AND u.userId = ug.userId";
@@ -422,12 +423,12 @@ $out:$
 							default: {
 								sql = "
 								SELECT *
-								FROM dmGroup
-								WHERE groupId not in (SELECT g.groupId FROM dmGroup g ";
+								FROM #application.dbowner#dmGroup
+								WHERE groupId not in (SELECT g.groupId FROM #application.dbowner#dmGroup g ";
 								if (isDefined('arguments.userlogin'))
 								{
 									sql = sql & "
-									, dmUserToGroup ug, dmUser u
+									, #application.dbowner#dmUserToGroup ug, dmUser u
 									WHERE g.groupId = ug.groupid
 									AND upper(u.userLogin) ='#ucase(arguments.userLogin)#'
 									AND u.userId = ug.userId";
@@ -504,9 +505,10 @@ $out:$
 			<cfcase value="Daemon">
 				<!--- search for the user --->
 				<cfquery name="qUser" datasource="#stUd[Userdirectory].datasource#" >
-					SELECT * FROM dmUser
-						<cfif isDefined("arguments.userLogin")>WHERE upper(UserLogin) = <cfqueryparam value="#ucase(userLogin)#" cfsqltype="CF_SQL_VARCHAR"></cfif>
-						<cfif isDefined("arguments.userId")>WHERE userId = <cfqueryparam value="#userId#" cfsqltype="CF_SQL_VARCHAR"></cfif>
+					SELECT * 
+					FROM 	#application.dbowner#dmUser<cfif isDefined("arguments.userLogin")>
+					WHERE 	UPPER(UserLogin) = <cfqueryparam value="#ucase(userLogin)#" cfsqltype="CF_SQL_VARCHAR"></cfif><cfif isDefined("arguments.userId")>
+					WHERE 	userId = <cfqueryparam value="#userId#" cfsqltype="CF_SQL_VARCHAR"></cfif>
 					ORDER BY UserLogin ASC
 				</cfquery>
 				<!--- if we got a user convert it to a struct --->
@@ -568,7 +570,8 @@ $out:$
 		<cfargument name="userLogin" required="true" hint="The users login name">
 		<cfargument name="userPassword" required="true" hint="The users password">
 		<cfargument name="userdirectory" required="false">
-				
+		
+		<cfset var auditNote = "" />
 		<cfscript>
 			oAuthorisation = createObject("component","#application.securitypackagepath#.authorisation");
 			oAudit = createObject("component","#application.packagepath#.farcry.audit");
@@ -597,11 +600,11 @@ $out:$
 						password = arguments.userPassword;
 			
 						// instantiate NT security object
-						o_NTsec = createObject("component", "#application.packagepath#.security.NTsecurity");
+						o_NTsec = createObject("component", "#application.securitypackagepath#.NTsecurity");
 						// authenticate user against ActiveDirectory
 						bAuth = o_NTsec.authenticateUser(userName=userLogin, password=password, domain=domain);
 						</cfscript>
-			
+						
 						<cfif bAuth>
 							<!--- user is valid --->
 							<cfset validUD = ud>
@@ -609,7 +612,7 @@ $out:$
 			
 							<cftry>
 								<cfset lGroups = o_NTsec.getUserGroups(userName=userLogin, domain=domain)>
-			
+
 								<cfif listLen(lGroups) gt 0 AND lGroups neq "false">
 									<!--- get the group mappings for this policy group on this user directory --->
 									<cfset aGroups = oAuthorisation.getMultiplePolicyGroupMappings(lgroupnames=lgroups,userdirectory=ud)>
@@ -625,43 +628,44 @@ $out:$
 								<cfelse>
 									<cfthrow>
 								</cfif>
-							<cfcatch>
-								<!--- get the group mappings for this policy group on this user directory --->
-								<cfquery name="qUD" datasource="#stPolicyStore.datasource#">
-								SELECT PolicyGroupID, ExternalGroupName
-								FROM #application.dbowner#dmExternalGroupToPolicyGroup
-								WHERE upper(ExternalGroupUserDirectory) = '#ucase(domain)#'
-								ORDER BY PolicyGroupID ASC
-								</cfquery>
-			
-								<!--- loop through the mapped groups and check if the user is in them --->
-								<cfloop query="qUD">
-									<!--- if the user is a member of this group then add the policy group to this users valid policy groups --->
-									<cfscript>
-									bInGroup = o_NTsec.userInGroup(userName=userLogin, groupName=qUD.ExternalGroupName, domain=domain);
-									if (bInGroup) lPolicyGroupIDs = listAppend(lPolicyGroupIDs, qUD.PolicyGroupID);
-									</cfscript>
-								</cfloop>
-							</cfcatch>
+								
+								<cfcatch>
+									<!--- get the group mappings for this policy group on this user directory --->
+									<cfquery name="qUD" datasource="#stPolicyStore.datasource#">
+									SELECT PolicyGroupID, ExternalGroupName
+									FROM #application.dbowner#dmExternalGroupToPolicyGroup
+									WHERE upper(ExternalGroupUserDirectory) = '#ucase(domain)#'
+									ORDER BY PolicyGroupID ASC
+									</cfquery>
+				
+									<!--- loop through the mapped groups and check if the user is in them --->
+									<cfloop query="qUD">
+										<!--- if the user is a member of this group then add the policy group to this users valid policy groups --->
+										<cfscript>
+										bInGroup = o_NTsec.userInGroup(userName=userLogin, groupName=qUD.ExternalGroupName, domain=domain);
+										if (bInGroup) lPolicyGroupIDs = listAppend(lPolicyGroupIDs, qUD.PolicyGroupID);
+										</cfscript>
+									</cfloop>
+								</cfcatch>
 							</cftry>
 			
 							<!--- set the session login information --->
 							<cflock timeout="45" throwontimeout="No" type="EXCLUSIVE" scope="SESSION">
-							<cfscript>
-							//name = o_NTsec.getUserFullName(userName=userLogin, domain=domain);
-							//if (name eq "") name = "<not specified>";
-							//notes = o_NTsec.getUserDescription(userName=userLogin, domain=domain);
-			
-							session.dmSec.authentication = structNew();
-							session.dmSec.authentication.userID = userLogin;
-							session.dmSec.authentication.userLogin = userLogin;
-							session.dmSec.authentication.canonicalName = userLogin;
-							session.dmSec.authentication.userNotes = "";
-							session.dmSec.authentication.lPolicyGroupIDs = lPolicyGroupIDs;
-							session.dmSec.authentication.userDirectory = validUD;
-			
-							bhasLoggedIn = 1;
-							</cfscript>
+								<cfscript>
+								//name = o_NTsec.getUserFullName(userName=userLogin, domain=domain);
+								//if (name eq "") name = "<not specified>";
+								//notes = o_NTsec.getUserDescription(userName=userLogin, domain=domain);
+				
+								session.dmSec.authentication = structNew();
+								session.dmSec.authentication.userID = userLogin;
+								session.dmSec.authentication.userLogin = userLogin;
+								session.dmSec.authentication.canonicalName = userLogin;
+								session.dmSec.authentication.userNotes = "";
+								session.dmSec.authentication.lPolicyGroupIDs = lPolicyGroupIDs;
+								session.dmSec.authentication.userDirectory = validUD;
+				
+								bhasLoggedIn = 1;
+								</cfscript>
 							</cflock>
 			
 							<cfif listLen(lPolicyGroupIDs) eq 0>
@@ -673,7 +677,7 @@ $out:$
 								<!--- throw error --->
 								
 							</cfif>
-						<cfelse>
+						<cfelse> <!--- If bAuth is "false" --->
 							<!--- takes too long to determine if user is in DOMAIN 
 							<cfscript>
 							// login failed so determine if user is a member of the domain
@@ -736,20 +740,34 @@ $out:$
 														
 								<!--- set the session login information --->
 								<cflock timeout="45" throwontimeout="No" type="EXCLUSIVE" scope="SESSION">
-								<cfscript>
-									session.dmSec.authentication = duplicate( stUser );
-									if( structKeyExists( session.dmSec.authentication, "userPassword"))
-										structDelete( session.dmSec.authentication, "userPassword" );
-									session.dmSec.authentication.lPolicyGroupIds=lPolicyGroupIds;
-									session.dmSec.authentication.canonicalName = arguments.userlogin;
-									bHasLoggedIn = 1;
-								</cfscript>
+									<cfscript>
+										session.dmSec.authentication = duplicate( stUser );
+										if( structKeyExists( session.dmSec.authentication, "userPassword"))
+											structDelete( session.dmSec.authentication, "userPassword" );
+										session.dmSec.authentication.lPolicyGroupIds=lPolicyGroupIds;
+										session.dmSec.authentication.canonicalName = arguments.userlogin;
+										
+										//Check the audit log to see if this user has logged in before.
+										//If they have not then set the firstLogin flag
+										if(oAudit.getAuditLog(username=arguments.userLogin, auditType="dmSec.login").recordcount neq 0)
+											session.firstLogin = false;
+										else
+											session.firstLogin = true;
+										
+										bHasLoggedIn = 1;
+									</cfscript>
 								</cflock>
 								
 								<!--- login has succeded so stop searching the user directories --->
 								<cfif arguments.bAudit>
 									<cfscript>
-										oAudit.logActivity(auditType="dmSec.login", username=arguments.userlogin, location=cgi.remote_host, note="userDirectory: #session.dmSec.authentication.userdirectory#");
+										//Make an entry in the Audit Log for this successful login	
+										if(session.firstLogin)
+											auditNote = "userDirectory:" & session.dmSec.authentication.userdirectory & " **First Login**";
+										else
+											auditNote = "userDirectory:" & session.dmSec.authentication.userdirectory;
+											
+										oAudit.logActivity(auditType="dmSec.login", username=arguments.userlogin, location=cgi.remote_host, note=auditNote);
 									</cfscript>
 								</cfif>
 								

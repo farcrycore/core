@@ -4,15 +4,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/admin/customXMLDump.cfm,v 1.6 2004/07/15 01:10:24 brendan Exp $
-$Author: brendan $
-$Date: 2004/07/15 01:10:24 $
-$Name: milestone_2-3-2 $
-$Revision: 1.6 $
+$Header: /cvs/farcry/farcry_core/admin/admin/customXMLDump.cfm,v 1.8 2005/08/09 03:54:39 geoff Exp $
+$Author: geoff $
+$Date: 2005/08/09 03:54:39 $
+$Name: milestone_3-0-0 $
+$Revision: 1.8 $
 
 || DESCRIPTION || 
 $DESCRIPTION: Dumps custom admin setup$
-$TODO: $ 
+ 
 
 || DEVELOPER ||
 $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
@@ -37,11 +37,11 @@ $out:$
 
 <cfif iGeneralTab eq 1>
 
-	<span class="formHeader"><cfoutput>#application.adminBundle[session.dmProfile.locale].customXMLDump#</cfoutput></span>
+	<cfoutput><h3>#application.adminBundle[session.dmProfile.locale].customXMLDump#</h3></cfoutput>
 	<cfif isXMLDoc(application.customAdminXML)>
 		<cfdump var="#application.customAdminXML#" label="application.customAdminXML"><cfoutput><p>&nbsp;</p></cfoutput>
 	<cfelse>
-		<cfoutput><h3>#application.adminBundle[session.dmProfile.locale].noValidCustomXMLDefined#</h3></cfoutput>	
+		<cfoutput><h5 class="error">#application.adminBundle[session.dmProfile.locale].noValidCustomXMLDefined#</h5></cfoutput>	
 	</cfif>
 			
 <cfelse>

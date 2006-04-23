@@ -4,17 +4,17 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_tree/deployTreeTables.cfm,v 1.12 2004/05/20 04:41:25 brendan Exp $
-$Author: brendan $
-$Date: 2004/05/20 04:41:25 $
-$Name: milestone_2-2-1 $
-$Revision: 1.12 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_tree/deployTreeTables.cfm,v 1.13 2005/08/09 03:54:39 geoff Exp $
+$Author: geoff $
+$Date: 2005/08/09 03:54:39 $
+$Name: milestone_3-0-0 $
+$Revision: 1.13 $
 
 || DESCRIPTION || 
 $Description: This tag installs all the tables that you need for nested tree model operations.
 If you add any more, make sure you create them as [dbo].[tablename], otherwise, hassles later on will be caused by the 
 app_user being the table owner.$
-$TODO: $
+
 
 || DEVELOPER ||
 $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $

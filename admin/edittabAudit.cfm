@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/edittabAudit.cfm,v 1.9 2004/07/15 01:09:43 brendan Exp $
-$Author: brendan $
-$Date: 2004/07/15 01:09:43 $
-$Name: milestone_2-3-2 $
-$Revision: 1.9 $
+$Header: /cvs/farcry/farcry_core/admin/edittabAudit.cfm,v 1.10 2005/09/23 04:23:25 guy Exp $
+$Author: guy $
+$Date: 2005/09/23 04:23:25 $
+$Name: milestone_3-0-0 $
+$Revision: 1.10 $
 
 || DESCRIPTION || 
 $DESCRIPTION: Displays an audit log for object$
@@ -25,19 +25,15 @@ $out:$
 <cfprocessingDirective pageencoding="utf-8">
 
 <!--- check permissions --->
-<cfscript>
-	iAuditTab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="ObjectAuditTab");
-</cfscript>
+<cfset iAuditTab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="ObjectAuditTab")>
 
 <!--- set up page header --->
 <cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 <cfif iAuditTab eq 1>
-	<cfscript>
-		oAudit = createObject("component", "#application.packagepath#.farcry.audit");
-		qLog = oAudit.getAuditLog(objectid=url.objectid);
-	</cfscript>
+	<cfset oAudit = createObject("component", "#application.packagepath#.farcry.audit")>
+	<cfset qLog = oAudit.getAuditLog(objectid=url.objectid)>
 	
 	<div class="FormTitle"><cfoutput>#application.adminBundle[session.dmProfile.locale].auditTrace#</cfoutput></div>	
 	
@@ -100,7 +96,7 @@ $out:$
 		</tr>
 		</table>
 	</cfif>
-
+	<a href="<cfoutput>#application.url.farcry#/edittaboverview.cfm?objectid=#url.objectId#</cfoutput>">[BACK]</a>
 <cfelse>
 	<admin:permissionError>
 </cfif>

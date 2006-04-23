@@ -1,9 +1,12 @@
-<cfcomponent displayname="i18nUtil" hint="util I18N functions: version 1.0 1-April-2004 Paul Hastings (paul@sustainbleGIS.com)" output="no">
+<cfcomponent displayname="i18nUtil" hint="util I18N functions: version 1.1 mar-2005 Paul Hastings (paul@sustainbleGIS.com)" output="no">
 <!--- 
 
 author:		paul hastings <paul@sustainableGIS.com>
 date:		1-April-2004
 revisions:	
+3-mar-2005	expanded BIDI locale list based on CLDR 1.2 info
+21-mar-2005	cleaned up some un-scoped vars
+
 notes:
 this CFC contains a few util I18N functions. all valid java locales	are supported. it requires the use 
 of cfobject. 
@@ -27,14 +30,13 @@ methods in this CFC:
 	- showLanguage: returns language display name in english from given locale, takes 
 	one required argument, thisLocale. returns string. PUBLIC
  --->
-<cfset aLocale = createObject("java","java.util.Locale")>
+<cfset variables.aLocale = createObject("java","java.util.Locale")>
 
-<cffunction access="public" name="getLocales" output="No" returntype="string" 
-hint="returns list of locales">
+<cffunction access="public" name="getLocales" output="No" returntype="string" hint="returns list of locales">
 	<cfscript>
-		var orgLocales="";
+		var orgLocales=aLocale.getAvailableLocales();
 		var theseLocales="";	
-		orgLocales = aLocale.getAvailableLocales();
+		var i=0;
 		for (i=1; i LTE arrayLen(orgLocales); i=i+1) {
 			if (listLen(orgLocales[i],"_") EQ 2) {
 				theseLocales=listAppend(theseLocales,orgLocales[i]);
@@ -44,12 +46,12 @@ hint="returns list of locales">
 	</cfscript>
 </cffunction> 
 
-<cffunction access="public" name="getLocaleNames" output="No" returntype="string" 
-hint="returns list of locale names, UNICODE direction char (LRE/RLE) added as required">
+<cffunction access="public" name="getLocaleNames" output="No" returntype="string" hint="returns list of locale names, UNICODE direction char (LRE/RLE) added as required">
 	<cfscript>
 		var orgLocales="";
 		var theseLocales="";	
 		var thisName="";
+		var i=0;
 		orgLocales = aLocale.getAvailableLocales();
 		for (i=1; i LTE arrayLen(orgLocales); i=i+1) {
 			if (listLen(orgLocales[i],"_") EQ 2) {
@@ -64,8 +66,7 @@ hint="returns list of locale names, UNICODE direction char (LRE/RLE) added as re
 	</cfscript>
 </cffunction> 
 
-<cffunction access="public" name="showCountry" output="No" returntype="string" 
-hint="returns display country name for give locale">
+<cffunction access="public" name="showCountry" output="No" returntype="string" hint="returns display country name for give locale">
 <cfargument name="thisLocale" required="yes" type="string">	
 	<cfscript>
 		var locale=aLocale.init(listFirst(arguments.thisLocale,"_"),listLast(arguments.thisLocale,"_"));	
@@ -73,15 +74,11 @@ hint="returns display country name for give locale">
 	</cfscript>
 </cffunction> 
 
-<cffunction access="public" name="showLanguage" output="No" returntype="string" 
-hint="returns display country name for give locale">
+<cffunction access="public" name="showLanguage" output="No" returntype="string" hint="returns display country name for give locale">
 <cfargument name="thisLocale" required="yes" type="string">	
-	<cfscript>
-		var locale=aLocale.init(listFirst(arguments.thisLocale,"_"),listLast(arguments.thisLocale,"_"));	
-		return locale.getDisplayLanguage();	
-	</cfscript>
+	<cfset var locale=aLocale.init(listFirst(arguments.thisLocale,"_"),listLast(arguments.thisLocale,"_"))>	
+	<cfreturn locale.getDisplayLanguage()>	
 </cffunction>
-
 
 <cffunction access="public" name="isValidLocale" output="No" returntype="boolean">
 <cfargument name="thisLocale" required="yes" type="string">
@@ -92,12 +89,13 @@ hint="returns display country name for give locale">
 	<cfreturn isOK>
 </cffunction> 
 
-<cffunction access="public" name="isBIDI" returnType="boolean" output="no" 
-hint="returns true/false for BIDI of givem locale">
+<cffunction access="public" name="isBidi" output="No" returntype="boolean" hint="determines if given locale is BIDI">
 <cfargument name="thisLocale" required="yes" type="string">
-<cfset var lang=left(arguments.thisLocale,2)>
-	<cfreturn lang eq "ar" OR lang eq "iw"> <!--- cheesy little list --->
+	<cfif listFind("ar,he,fa,ps",left(arguments.thisLocale,2))> <!--- cldr 1.2 info --->
+		<cfreturn true>
+	<cfelse>
+		<cfreturn false>	
+	</cfif>	
 </cffunction>
-
 
 </cfcomponent>	 

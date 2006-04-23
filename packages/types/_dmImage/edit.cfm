@@ -1,459 +1,375 @@
+<cfsetting enablecfoutputonly="yes">
 <!--- 
 || LEGAL ||
 $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-
-$Header: /cvs/farcry/farcry_core/packages/types/_dmImage/edit.cfm,v 1.29 2004/12/06 19:12:48 tom Exp $
-$Author: tom $
-$Date: 2004/12/06 19:12:48 $
-$Name: milestone_2-3-2 $
-$Revision: 1.29 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmImage/edit.cfm,v 1.62 2005/10/25 03:12:07 guy Exp $
+$Author: guy $
+$Date: 2005/10/25 03:12:07 $
+$Name: milestone_3-0-0 $
+$Revision: 1.62 $
 
 || DESCRIPTION || 
-$Description: edit handler$
-$TODO: $
+$Description: dmImage edit handler$
 
 || DEVELOPER ||
-$Developer: Brendan Sisson (brendan@daemon.com.au)$
-
-|| ATTRIBUTES ||
-$in: $
-$out:$
+$Developer: Guy (guy@daemon.com.au)$
 --->
-<cfsetting enablecfoutputonly="yes">
+<!--- import tag libraries --->
+<cfimport taglib="/farcry/farcry_core/tags/widgets/" prefix="widgets">
 
-<cfprocessingDirective pageencoding="utf-8"><br>
-
-<cfimport taglib="/farcry/fourq/tags/" prefix="q4">
-<cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
-
+<!--- set up local variables --->
+<cfparam name="primaryObjectID" default="">
+<cfparam name="form.bLibrary" default="0">
+<cfparam name="form.bAutoGenerateThumbnail" default="0">
+<cfinvoke  component="#application.packagepath#.farcry.category" method="getCategories" returnvariable="lCategoryIds">
+	<cfinvokeargument name="objectID" value="#stObj.objectID#"/>
+	<cfinvokeargument name="bReturnCategoryIDs" value="true"/>
+</cfinvoke>
+<cfparam name="errormessage" default="">
 <cfset showform=1>
 
+<!--- lock the content item for editing --->
+<cfif NOT stobj.locked>
+	<cfset setlock(locked="true")>
+</cfif>
+
 <cfif isDefined("FORM.submit")> <!--- perform the update --->
+	<cfset showform=0>
+	<cfset error = false>
 	
-	<cfset showform=0>	
-	<cfscript>
-		oForm = createObject("component","#application.packagepath#.farcry.form");
-		
-		stProperties = structNew();
-		stProperties.objectid = stObj.objectid;
-		stProperties.title = form.title;
-		stProperties.label = form.title;
-		stProperties.alt = form.alt;
-		stProperties.width = form.width;
-		stProperties.height = form.height;
-				
-		stProperties.datetimelastupdated = Now();
-		stProperties.lastupdatedby = session.dmSec.authentication.userlogin;
-		//unlock object
-		stProperties.locked = 0;
-		stProperties.lockedBy = "";
-		oForm = createObject("component","#application.packagepath#.farcry.form");
-		imageAcceptList = application.config.image.imagetype;
-	</cfscript>
+	<cfset oForm = createObject("component","#application.packagepath#.farcry.form")>
+	<cfset stProperties = structNew()>
+	<cfset stProperties.objectid = stObj.objectid>
+	<cfset stProperties.title = form.title>
+	<cfset stProperties.label = form.title>
+	<cfset stProperties.alt = form.alt>
+	<cfset stProperties.bLibrary = form.bLibrary>
+	<cfset stProperties.ownedby = form.ownedby>
+	<cfset stProperties.bAutoGenerateThumbnail = form.bAutoGenerateThumbnail>
+
+	<cfset stProperties.datetimelastupdated = Now()>
+	<cfset stProperties.lastupdatedby = session.dmSec.authentication.userlogin>
+	<cfset stProperties.imageFile = stObj.imageFile>
+	<cfset stProperties.originalImagePath = stObj.originalImagePath>
+
+	<!--- unlock object --->
+	<cfset stProperties.locked = 0>
+	<cfset stProperties.lockedBy = "">
+	<cfset imageAcceptList = application.config.image.imagetype>
+
 	
+	<cfset thisObject = createobject("component", application.types[stObj.typename].typePath)>
 	<!--- set accept list --->
 	<cfset imageAcceptList = application.config.image.imagetype> 
-	
-	<!--- check default image has been passed in from form --->
-	<cfif trim(len(form.imageFile)) NEQ 0>	
-		<!--- check if it's a new image --->
-		<cfif len(stObj.imageFile)>		
-			<!--- overwriting an existing image so check if new file has the same name as existing file--->
-			<cfif stObj.imageFile eq form.defaultImageFileName>
-				<cftry>
-					<!--- same name so upload new image overwriting the existing one --->
-					<cfif len(imageAcceptList)>
-						<cffile action="upload" filefield="imagefile" destination="#application.path.defaultImagePath#" accept="#imageAcceptList#" nameconflict="OVERWRITE"> 
-					<cfelse>
-						<cffile action="upload" filefield="imagefile" destination="#application.path.defaultImagePath#" nameconflict="OVERWRITE"> 
-					</cfif>
-					
-					<cfcatch>
-						<cfoutput><p>#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].cfCatchErrorMsg,'#cfcatch.message#')#</p></cfoutput>
-						<cfset error=1>
-					</cfcatch>
-				</cftry>
+
+	<!--- to move and store any image that gets overwriiten --->
+	<cfset archiveObject = createobject("component",application.types.dmArchive.typepath)>
+	<cfset stFile = StructNew()>
+	<cfset stFile.action = "move">
+	<cfset imageUtilsObj = CreateObject("component","#application.packagepath#.farcry.imageUtilities")>
+	<cfset imageUtilsObj.fCreateDefaultDirectories()>
+	<!--- TODO: make the serverside file upload into a module or a cfc call instead of duplicating the upload 3 times on the edit handler --->
+	<cfif trim(form.defaultImage) NEQ "">
+		<!--- upload image --->
+		<cftry>
+			<cfif len(imageAcceptList)>
+				<cffile action="upload" filefield="defaultImage" destination="#application.config.image.folderpath_original#" accept="#imageAcceptList#" nameconflict="makeunique">
 			<cfelse>
-				<!--- different name so upload new image making it unique --->
-				<cftry>
-					<cfif len(imageAcceptList)>
-						<cffile action="upload" filefield="imagefile" destination="#application.path.defaultImagePath#" accept="#imageAcceptList#" nameconflict="MAKEUNIQUE"> 
-					<cfelse>
-						<cffile action="upload" filefield="imagefile" destination="#application.path.defaultImagePath#" nameconflict="MAKEUNIQUE"> 
-					</cfif>
-					<!--- rename to overwrite existing one --->
-					<cffile action="RENAME" source="#file.ServerDirectory#/#file.serverfile#" destination="#file.ServerDirectory#/#stObj.imageFile#">
-					
-					<cfcatch>
-						<cfoutput><p>#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].cfCatchErrorMsg,'#cfcatch.message#')#</p></cfoutput>
-						<cfset error=1>
-					</cfcatch>
-				</cftry>
-			</cfif>			
-		<cfelse>
-			<!--- new image so check if filename is already in use --->
-			<cfset stCheckDefault = checkForExisting(filename=form.defaultImageFileName)>
-			
-			<cfif not stCheckDefault.bExists>
-				<!--- upload new file (if accept list not specified in config, accept everything) --->
-				<cftry>
-					<cfif len(imageAcceptList)>
-						<cffile action="upload" filefield="imagefile" destination="#application.path.defaultImagePath#" accept="#imageAcceptList#"> 
-					<cfelse>
-						<cffile action="upload" filefield="imagefile" destination="#application.path.defaultImagePath#"> 
-					</cfif>
-					
-					<!--- add image values to object data --->
-					<cfset stProperties.imageFile = oForm.sanitiseFileName(file.ServerFile,file.ClientFileName,file.ServerDirectory)>
-					<cfset stProperties.originalImagePath = file.ServerDirectory>
-					
-					<cfcatch>
-						<cfoutput><p>#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].cfCatchErrorMsg,'#cfcatch.message#')#</p></cfoutput>
-						<cfset error=1>
-					</cfcatch>
-				</cftry>
-			<cfelse>
-				<!--- filename already in use by another image object --->
-				<cfoutput>#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].fileNameInUse,'#stCheckDefault.fileName#')#</cfoutput>
-				<cfset error=1>
+				<cffile action="upload" filefield="defaultImage" destination="#application.config.image.folderpath_original#" nameconflict="makeunique"> 
+			</cfif>	
+			<!--- filesize check --->
+			<cfif cffile.FileSize GT application.config.file.filesize>
+				<cfthrow errorcode="01" message="Sorry the file you tried to upload exceeds the #application.config.image.imagesize/1024#kb limit.<br />">
 			</cfif>
-		</cfif>
+			
+			<cfcatch type="any">
+				<cfif cfcatch.errorCode EQ "01"> <!--- custom --->
+					<cfset errormessage = cfcatch.message>
+				<cfelse>
+					<cfset subS = listToArray(application.config.image.imagetype)>
+					<cfset subS[2] = application.config.image.imagetype>
+					<cfset errormessage = application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].errBadImageType,subS)>
+				</cfif>
+				<cfset error = true>
+			</cfcatch>
+		</cftry>
+		
+		<cfif error>
+			<!--- <cfset subS = listToArray(application.config.image.imagetype)>
+			<cfset subS[2] = application.config.image.imagetype>
+			<cfset errormessage = application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].errBadImageType,subS)> --->
+		<cfelse>
+			<!--- set poperties to insert into database --->
+			<cfset stProperties.imageFile = oForm.sanitiseFileName(cffile.ServerFile,cffile.ClientFileName,cffile.ServerDirectory)>
+			<cfset stProperties.originalImagePath = cffile.ServerDirectory>
+			
+			<cfset imageUtilsObj = CreateObject("component","#application.packagepath#.farcry.imageUtilities")>
+			<cfset originalImage = stProperties.originalImagePath & "\" & stProperties.imageFile>
+			<cfset returnstruct = imageUtilsObj.fGetProperties(originalImage)>
+			<cfset stProperties.width = returnstruct.width>
+			<cfset stProperties.height = returnstruct.height>
+		
+			<!--- archive the image if it is overwritten --->
+			<cfif StructKeyExists(application.config.image,"archivefiles") AND application.config.image.archivefiles EQ "true" AND stObj.imageFile NEQ "">
+				<cfset stFile.sourceDir = "#stObj.originalImagepath#">
+				<cfset stFile.sourceFileName = "#stObj.imageFile#">
+				<cfset stFile.destinationFileName = "#stObj.objectid#_#dateformat(Now(),'yyyymmdd')#_#timeformat(Now(),'HHMMSS')#.#ListLast(stFile.sourceFileName,'.')#">
+				<cfset stFile.destinationDir = "#application.config.general.archivedirectory##stObj.typename#/">
+				<cfset stFile.destinationFileName = "#stObj.objectid#_original_#dateformat(Now(),'yyyymmdd')#_#timeformat(Now(),'HHMMSS')#.#ListLast(stFile.sourceFileName,'.')#">
+				<cfset archiveObject.fMoveFile(stFile)>
+			</cfif>
+		</cfif>		
+	<cfelseif stobj.imageFile EQ "">
+		<cfset errormessage = "Please upload a default image.<br />">
+		<cfset error = true>
 	</cfif>
 
-	
+	<!--- thumbnail upload/generation --->
+	<cfif (NOT error) AND (stProperties.imageFile NEQ "" AND stProperties.bAutoGenerateThumbnail) OR (IsDefined("form.thumbnail_file_upload") AND form.thumbnail_file_upload NEQ "")>
+		<cfif stProperties.bAutoGenerateThumbnail>
+			<!--- create the thumbnail and default image --->
+			<cfset imageUtilsObj = CreateObject("component","#application.packagepath#.farcry.imageUtilities")>
+			<cfset originalImage = stProperties.originalImagePath & "\" & stProperties.imageFile>
+			<cfset returnstruct = imageUtilsObj.fCreatePresets("thumbnail",originalImage)>
+			<cfset stProperties.thumbnail = returnstruct.filename>
+			<cfset stProperties.thumbnailImagePath = returnstruct.path>	
+		<cfelse>
+			<!--- upload the thumbnail --->
+			<cfif len(imageAcceptList)>
+				<cffile action="upload" filefield="thumbnail_file_upload" destination="#application.config.image.folderpath_thumbnail#" accept="#imageAcceptList#" nameconflict="makeunique">
+			<cfelse>
+				<cffile action="upload" filefield="thumbnail_file_upload" destination="#application.config.image.folderpath_thumbnail#" nameconflict="makeunique"> 
+			</cfif>
+
+			<cfset stProperties.thumbnail = oForm.sanitiseFileName(cffile.ServerFile,cffile.ClientFileName,cffile.ServerDirectory)>
+			<cfset stProperties.thumbnailImagePath = cffile.ServerDirectory>
+		</cfif>
+
+		<!--- archive the image if it is overwritten --->
+		<cfif StructKeyExists(application.config.image,"archivefiles") AND application.config.image.archivefiles EQ "true" AND stObj.thumbnail NEQ "">
+			<cfset stFile.sourceDir = "#stObj.thumbnailImagePath#">
+			<cfset stFile.sourceFileName = "#stObj.thumbnail#">
+			<cfset stFile.destinationFileName = "#stObj.objectid#_#dateformat(Now(),'yyyymmdd')#_#timeformat(Now(),'HHMMSS')#.#ListLast(stFile.sourceFileName,'.')#">
+			<cfset stFile.destinationDir = "#application.config.general.archivedirectory##stObj.typename#/">
+			<cfset stFile.destinationFileName = "#stObj.objectid#_thumbnail_#dateformat(Now(),'yyyymmdd')#_#timeformat(Now(),'HHMMSS')#.#ListLast(stFile.sourceFileName,'.')#">
+			<cfset archiveObject.fMoveFile(stFile)>		
+		</cfif>
+	</cfif>
 
 	<!--- check optimised image has been passed in from form --->
-	<cfif trim(len(form.optimisedImage)) NEQ 0>	
-		<!--- check if it's a new image --->
-		<cfif len(stObj.optimisedImage)>		
-			<!--- overwriting an existing image so check if new file has the same name as existing file--->
-			<cfif stObj.optimisedImage eq form.optImageFileName>
-				<cftry>
-					<!--- same name so upload new image overwriting the existing one --->
-					<cfif len(imageAcceptList)>
-						<cffile action="upload" filefield="optimisedImage" destination="#application.path.defaultImagePath#" accept="#imageAcceptList#" nameconflict="OVERWRITE"> 
-					<cfelse>
-						<cffile action="upload" filefield="optimisedImage" destination="#application.path.defaultImagePath#" nameconflict="OVERWRITE"> 
-					</cfif>
-					
-					<cfcatch>
-						<cfoutput><p>#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].cfCatchErrorMsg,'#cfcatch.message#')#</p></cfoutput>
-						<cfset error=1>
-					</cfcatch>
-				</cftry>
-			<cfelse>
-				<!--- different name so upload new image making it unique --->
-				<cftry>
-					<cfif len(imageAcceptList)>
-						<cffile action="upload" filefield="optimisedImage" destination="#application.path.defaultImagePath#" accept="#imageAcceptList#" nameconflict="MAKEUNIQUE"> 
-					<cfelse>
-						<cffile action="upload" filefield="optimisedImage" destination="#application.path.defaultImagePath#" nameconflict="MAKEUNIQUE"> 
-					</cfif>
-					<!--- rename to overwrite existing one --->
-					<cffile action="RENAME" source="#file.ServerDirectory#/#file.serverfile#" destination="#file.ServerDirectory#/#stObj.optimisedImage#">
-					
-					<cfcatch>
-						<cfoutput><p>#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].cfCatchErrorMsg,'#cfcatch.message#')#</p></cfoutput>
-						<cfset error=1>
-					</cfcatch>
-				</cftry>
-			</cfif>			
+	<cfif trim(form.optimisedImage) NEQ "">
+		<!--- upload image --->
+		<cfif len(imageAcceptList)>
+			<cffile action="upload" filefield="optimisedImage" destination="#application.config.image.folderpath_optimised#" accept="#imageAcceptList#" nameconflict="makeunique">
 		<cfelse>
-			<!--- new image so check if filename is already in use --->
-			<cfset stCheckOptimised = checkForExisting(filename=form.optImageFileName)>
-			
-			<cfif not stCheckOptimised.bExists>
-				<!--- upload new file (if accept list not specified in config, accept everything) --->
-				<cftry>
-					<cfif len(imageAcceptList)>
-						<cffile action="upload" filefield="optimisedImage" destination="#application.path.defaultImagePath#" accept="#imageAcceptList#"> 
-					<cfelse>
-						<cffile action="upload" filefield="optimisedImage" destination="#application.path.defaultImagePath#"> 
-					</cfif>
-					
-					<!--- add image values to object data --->
-					<cfset stProperties.optimisedImage = oForm.sanitiseFileName(file.ServerFile,file.ClientFileName,file.ServerDirectory)>
-					<cfset stProperties.optimisedImagePath = file.ServerDirectory>
-					
-					<cfcatch>
-						<cfoutput><p>#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].cfCatchErrorMsg,'#cfcatch.message#')#</p></cfoutput>
-						<cfset error=1>
-					</cfcatch>
-				</cftry>
-			<cfelse>
-				<!--- filename already in use by another image object --->
-				<cfoutput>#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].fileNameInUse,'#stCheckOptimised.fileName#')#</cfoutput>
-				<cfset error=1>
-			</cfif>
+			<cffile action="upload" filefield="optimisedImage" destination="#application.config.image.folderpath_optimised#" nameconflict="makeunique"> 
+		</cfif>	
+
+		<!--- archive the image if it is overwritten --->
+		<cfif StructKeyExists(application.config.image,"archivefiles") AND application.config.image.archivefiles EQ "true" AND stObj.optimisedImage NEQ "">
+			<cfset stFile.sourceDir = "#stObj.optimisedImagePath#">
+			<cfset stFile.sourceFileName = "#stObj.optimisedImage#">
+			<cfset stFile.destinationFileName = "#stObj.objectid#_#dateformat(Now(),'yyyymmdd')#_#timeformat(Now(),'HHMMSS')#.#ListLast(stFile.sourceFileName,'.')#">
+			<cfset stFile.destinationDir = "#application.config.general.archivedirectory##stObj.typename#/">
+			<cfset stFile.destinationFileName = "#stObj.objectid#_optimised_#dateformat(Now(),'yyyymmdd')#_#timeformat(Now(),'HHMMSS')#.#ListLast(stFile.sourceFileName,'.')#">
+			<cfset archiveObject.fMoveFile(stFile)>		
 		</cfif>
+		
+		<!--- set poperties to insert into database --->
+		<cfset stProperties.optimisedImage = oForm.sanitiseFileName(cffile.ServerFile,cffile.ClientFileName,cffile.ServerDirectory)>
+		<cfset stProperties.optimisedImagePath = cffile.ServerDirectory>
 	</cfif>
+
+	<!--- update category --->
+	<cfparam name="form.lSelectedCategoryID" default="">
+	<cfinvoke  component="#application.packagepath#.farcry.category" method="assignCategories" returnvariable="stStatus">
+		<cfinvokeargument name="objectID" value="#stObj.objectID#"/>
+		<cfinvokeargument name="lCategoryIDs" value="#form.lSelectedCategoryID#"/>
+		<cfinvokeargument name="dsn" value="#application.dsn#"/>
+	</cfinvoke>
 	
-	<!--- check thumbnail image has been passed in from form --->
-	<cfif trim(len(form.thumbnailImage)) NEQ 0>	
-		<!--- check if it's a new image --->
-		<cfif len(stObj.thumbnail)>		
-			<!--- overwriting an existing image so check if new file has the same name as existing file--->
-			<cfif stObj.thumbnail eq form.thumbImageFileName>
-				<cftry>
-					<!--- same name so upload new image overwriting the existing one --->
-					<cfif len(imageAcceptList)>
-						<cffile action="upload" filefield="thumbnailImage" destination="#application.path.defaultImagePath#" accept="#imageAcceptList#" nameconflict="OVERWRITE"> 
-					<cfelse>
-						<cffile action="upload" filefield="thumbnailImage" destination="#application.path.defaultImagePath#" nameconflict="OVERWRITE"> 
-					</cfif>
-					
-					<cfcatch>
-						<cfoutput><p>#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].cfCatchErrorMsg,'#cfcatch.message#')#</p></cfoutput>
-						<cfset error=1>
-					</cfcatch>
-				</cftry>
-			<cfelse>
-				<!--- different name upload new image making it unique --->
-				<cftry>
-					<cfif len(imageAcceptList)>
-						<cffile action="upload" filefield="thumbnailImage" destination="#application.path.defaultImagePath#" accept="#imageAcceptList#" nameconflict="MAKEUNIQUE"> 
-					<cfelse>
-						<cffile action="upload" filefield="thumbnailImage" destination="#application.path.defaultImagePath#" nameconflict="MAKEUNIQUE"> 
-					</cfif>
-					<!--- rename to overwrite existing one --->
-					<cffile action="RENAME" source="#file.ServerDirectory#/#file.serverfile#" destination="#file.ServerDirectory#/#stObj.thumbnail#">
-					
-					<cfcatch>
-						<cfoutput><p>#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].cfCatchErrorMsg,'#cfcatch.message#')#</p></cfoutput>
-						<cfset error=1>
-					</cfcatch>
-				</cftry>
-			</cfif>			
-		<cfelse>
-			<!--- new image so check if filename is already in use --->
-			<cfset stCheckThumb = checkForExisting(filename=form.thumbImageFileName)>
-			
-			<cfif not stCheckThumb.bExists>
-				<!--- upload new file (if accept list not specified in config, accept everything) --->
-				<cftry>
-					<cfif len(imageAcceptList)>
-						<cffile action="upload" filefield="thumbnailImage" destination="#application.path.defaultImagePath#" accept="#imageAcceptList#"> 
-					<cfelse>
-						<cffile action="upload" filefield="thumbnailImage" destination="#application.path.defaultImagePath#"> 
-					</cfif>
-					
-					<!--- add image values to object data --->
-					<cfset stProperties.thumbnail = oForm.sanitiseFileName(file.ServerFile,file.ClientFileName,file.ServerDirectory)>
-					<cfset stProperties.thumbnailImagePath = file.ServerDirectory>
-					
-					<cfcatch>
-						<cfoutput><p>#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].cfCatchErrorMsg,'#cfcatch.message#')#</p></cfoutput>
-						<cfset error=1>
-					</cfcatch>
-				</cftry>
-			<cfelse>
-				<!--- filename already in use by another image object --->
-				<cfoutput>#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].filenameInUse,'#stCheckThumb.fileName#')#</cfoutput>
-				<cfset error=1>
-			</cfif>
-		</cfif>
-	</cfif>
-	
-	<cfif not isdefined("error")>
+	<cfif NOT error>
 		<!--- update the OBJECT --->
-		<cfset setData(stProperties=stProperties)>
+		<cfset thisObject.setData(stProperties=stProperties)>
 	
 		<!--- get parent to update tree --->
-		<nj:treeGetRelations 
-			typename="#stObj.typename#"
-			objectId="#stObj.ObjectID#"
-			get="parents"
-			r_lObjectIds="ParentID"
-			bInclusive="1">
-		
+		<nj:treeGetRelations typename="#stObj.typename#" objectId="#stObj.ObjectID#" get="parents" r_lObjectIds="ParentID" bInclusive="1">		
 		<!--- update tree --->
 		<nj:updateTree objectId="#parentID#">
-		
-		<!--- reload overview page --->
-		<cfoutput>
-			<script language="JavaScript">
-				parent['editFrame'].location.href = '#application.url.farcry#/edittabOverview.cfm?objectid=#stObj.ObjectID#';
-			</script>
-		</cfoutput>
-		
+<cfif primaryObjectID NEQ "">
+	<!--- JSON encode and decode functions [jsonencode(str), jsondecode(str)]--->
+	<cfinclude template="/farcry/farcry_core/admin/includes/json.cfm">
+	
+	<cfset objplp = CreateObject("component","#application.packagepath#.farcry.plpUtilities")>
+	<cfset objplp.fAddArrayObjects(primaryObjectID,stObj.objectid)>
+	<cfset arItems = objplp.fGenerateObjectsArray(primaryObjectID,libraryType)>
+<cfoutput><script type="text/javascript">
+var jsonData = '#jsonencode(arItems)#';
+opener.processReqChange#libraryType#(jsonData,'');<cfif form.submit EQ "Insert">
+window.close();<cfelse><cfset showform = 1></cfif>
+</script></cfoutput>
+<cfelse>		
+	<!--- reload overview page ---><cfoutput>
+	<script type="text/javascript">
+	// check if edited from Content or Site (via sidetree)
+	if(parent['sidebar'].frames['sideTree']){
+		parent['sidebar'].frames['sideTree'].location= parent['sidebar'].frames['sideTree'].location;
+		parent['content'].location.href = "#application.url.farcry#/edittabOverview.cfm?objectid=#stObj.ObjectID#";
+	}
+	else
+		parent['content'].location.href = "#application.url.farcry#/content/#stObj.typename#.cfm";
+	</script></cfoutput>
+</cfif>		
 	<cfelse>
 		<cfset showform=1>
 	</cfif>
-		
+<cfelse> <!--- first entry --->
+	<cfinvoke component="#application.packagepath#.farcry.category" method="getCategories" returnvariable="lSelectedCategoryID">
+		<cfinvokeargument name="objectID" value="#stObj.objectID#"/>
+		<cfinvokeargument name="bReturnCategoryIDs" value="true"/>
+	</cfinvoke>
 </cfif>
-
+<cfset objImage = createobject("component", application.types[stObj.typename].typePath)>
  <!--- Show the form --->
 <cfif showform>
-
 	<cfoutput>
-	<form action="" method="post" enctype="multipart/form-data" name="imageForm" onsubmit="document['forms']['imageForm'].defaultImageFileName.value = document['forms']['imageForm'].imageFile.value;document['forms']['imageForm'].thumbImageFileName.value = document['forms']['imageForm'].thumbnailImage.value;document['forms']['imageForm'].optImageFileName.value = document['forms']['imageForm'].optimisedImage.value;">
-		<input type="hidden" name="defaultImageFileName" value="">
-		<input type="hidden" name="thumbImageFileName" value="">
-		<input type="hidden" name="optImageFileName" value="">
-		<br>
-		<table class="FormTable">
-		<tr>
-			<td colspan="2"><span class="FormSubHeading">#application.adminBundle[session.dmProfile.locale].imageDetails#</span></th>
-		</tr>		
-		
-		<tr>
-			<td nowrap><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].titleLabel#</span></td>
-			<td nowrap width="100%">
-				<input type="text" name="title" value="#stObj.title#" class="FormTextBox">
-			</td>
-		</tr>
-	
-		<tr valign="top">
-			<td nowrap><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].alternateTextLabel#</span></td>
-			<td nowrap>
-				<textarea type="text" name="alt" class="FormTextArea" rows="4">#stObj.alt#</textarea>
-			</td>
-		</tr>
-	
-		<tr valign="top">
-			<td nowrap>&nbsp;</td>
-			<td nowrap>		
-				<span class="FormLabel">#application.adminBundle[session.dmProfile.locale].widthLabel#&nbsp;</span><input  class="FormTextBox" style="width:40px" type="text" name="width" value="#stObj.width#">
-				<span class="FormLabel">#application.adminBundle[session.dmProfile.locale].heightLabel#&nbsp;</span><input class="FormTextBox" style="width:40px" type="text" name="height" value="#stObj.height#">
-			</td>
-		</tr>	
-		<tr>
-			<td colspan="2"><span class="FormSubHeading">#application.adminBundle[session.dmProfile.locale].imageFiles#</span></th>
-		</tr>	
-			
-		<tr valign="middle">
-			<td nowrap><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].defaultImage#</span></td>
-			<td nowrap width="100%">
-				<input type="file" name="imageFile" class="FormFileBox">&nbsp;&nbsp;
-			</td>
-		</tr>
-		
-		<tr><td colspan="2">
-		<cfif not len(stObj.imagefile)>
-			<span class="FormSubHeading">[#application.adminBundle[session.dmProfile.locale].noFileUploaded#]</span>
-		<cfelse>
-		
-		<table>
-		<tr>
-			<td colspan="3" style="font-size:7pt;">
-				<span class="FormLabel">#application.adminBundle[session.dmProfile.locale].newFileOverwriteThisFile#</span>
-			</td>
-		</tr>
-		<tr>
-		<td>
-			<span class="FormLabel">#application.adminBundle[session.dmProfile.locale].existingDefaultImageLabel#</span> 
-		</td>
-		<nj:getFileIcon filename="#stObj.imagefile#" r_stIcon="fileicon"> 
-		<td>
-			<img src="#application.url.farcry#/images/treeImages/#fileicon#">
-		</td>
-		<td>
-			<a href="#application.url.webroot#/images/#stObj.imagefile#" target="_blank">
-				<span class="FormLabel">#application.adminBundle[session.dmProfile.locale].previewUC#</span>
-			</a>
-		</td>
-		</tr>
-		</table>
+<script type="text/javascript">
+function fCancelAction(){<cfif primaryObjectID NEQ "">
+	window.close();<cfelse>
+	// check if edited from Content or Site (via sidetree)
+	if(parent['sidebar'].frames['sideTree']){
+		parent['sidebar'].frames['sideTree'].location= parent['sidebar'].frames['sideTree'].location;
+		parent['content'].location.href = "#application.url.farcry#/edittabOverview.cfm?objectid=#stObj.ObjectID#";
+	}
+	else
+		parent['content'].location.href = "#application.url.farcry#/content/#stObj.typename#.cfm";</cfif>
+}
+
+function tgl_thumbnail(){
+	objForm = document.forms.imageForm;
+	objCheck = objForm.bAutoGenerateThumbnail;
+	objThumbnailFileUpload = objForm.thumbnail_file_upload;
+	if(objCheck.checked)
+		objThumbnailFileUpload.disabled = true;
+	else
+		objThumbnailFileUpload.disabled = false;
+
+}
+</script>
+
+<form name="imageForm" action="#cgi.script_name#?#cgi.query_string#" method="post" class="f-wrap-1 wider f-bg-long" enctype="multipart/form-data" onsubmit="return doSubmit(document['forms']['imageForm']);">
+	<fieldset>
+		<div class="req"><b>*</b>Required</div>
+		<h3>#application.adminBundle[session.dmProfile.locale].imageDetails#...</h3>
+		<cfif isDefined("errormessage")>
+			<p id="fading1" class="fade"><span class="error">#errormessage#</span></p>			
 		</cfif>
-		</td>
-		</tr>	
-	
-		<tr valign="middle">
-			<td nowrap><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].thumbnail#</span></td>
-			<td nowrap>
-				<input type="file" name="thumbnailImage" class="FormFileBox">
-			</td>
-		</tr>
+		<label for="title"><b>#application.adminBundle[session.dmProfile.locale].titleLabel#<span class="req">*</span></b>
+			<input type="text" name="title" id="title" value="#stObj.title#" /><br />
+		</label>
 		
-		<tr><td colspan="2">
-		<cfif not len(stObj.thumbnail)>
-			<span class="FormSubHeading">[#application.adminBundle[session.dmProfile.locale].noThumbnailImageUploaded#]</span>
-		<cfelse>
-		
-		<table>
-		<tr>
-			<td colspan="3" style="font-size:7pt;">
-				<span class="FormLabel">#application.adminBundle[session.dmProfile.locale].newFileOverwriteThisFile#</span>
-			</td>
-		</tr>
-		<tr>
-		<td>
-			<span class="FormLabel">#application.adminBundle[session.dmProfile.locale].existingThumbnailImageLabel#</span> 
-		</td>
-		<nj:getFileIcon filename="#stObj.thumbnail#" r_stIcon="fileicon"> 
-		<td>
-			<img src="#application.url.farcry#/images/treeImages/#fileicon#">
-		</td>
-		<td>
-			<a href="#application.url.webroot#/images/#stObj.thumbnail#" target="_blank">
-				<span class="FormLabel">#application.adminBundle[session.dmProfile.locale].previewUC#</span>
-			</a>
-		</td>
-		</tr>
-		</table>
+		<label for="alt"><b>#application.adminBundle[session.dmProfile.locale].alternateTextLabel#</b>
+			<textarea type="text" name="alt" rows="4">#stObj.alt#</textarea><br />
+		</label>
+		<!--- TODO: make the dafault and optimised image uploads use the fileupload widget --->
+		<cfif application.config.image.bAllowOverwrite EQ "true" OR trim(stObj.imageFile) EQ "">
+		<label for="defaultImage"><b>#application.adminBundle[session.dmProfile.locale].defaultImage#:<span class="req">*</span></b>
+			<input type="file" name="defaultImage" id="defaultImage" /><br />
+		</label><cfelse><input type="hidden" name="defaultImage" value="" /><br /></cfif>
+		<cfif len(stObj.imagefile)>
+		<label>
+			<cfif application.config.image.bAllowOverwrite EQ "false">
+			Sorry you are not allowed to overwrite this file, please delete it and reupload OR change the image config settings in the admin<br />
+			<cfelse>
+			#application.adminBundle[session.dmProfile.locale].newFileOverwriteThisFile#<br />
+			</cfif>
+			<b>#application.adminBundle[session.dmProfile.locale].existingDefaultImageLabel#</b>
+			<a href="#objImage.getURLImagePath(stObj.objectID,'original')#" title="#application.adminBundle[session.dmProfile.locale].previewUC#" target="_blank"><img src="#objImage.getURLImagePath(stObj.objectID,'thumb')#" border="0" width="#application.config.image.thumbnailWidth#" height="#application.config.image.thumbnailHeight#"></a>
+		</label>
 		</cfif>
-		</td>
-		</tr>	
-	
-		<tr valign="middle">
-			<td nowrap><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].Highres#</span></td>
-			<td nowrap>
-				<input type="file" name="optimisedImage" class="FormFileBox">
-			</td>
-		</tr>
-		<tr><td colspan="2">
-		<cfif not len(stObj.optimisedimage)>
-			<span class="FormSubHeading">[#application.adminBundle[session.dmProfile.locale].noOptimisedImgUploaded#]</span>
-		<cfelse>
 		
-		<table>
-		<tr>
-			<td colspan="3" style="font-size:7pt;">
-				<span class="FormLabel">#application.adminBundle[session.dmProfile.locale].newFileOverwriteThisFile#</span>
-			</td>
-		</tr>
-		<tr>
-		<td>
-			<span class="FormLabel">#application.adminBundle[session.dmProfile.locale].existingThumbnailImageLabel#</span> 
-		</td>
-		<nj:getFileIcon filename="#stObj.optimisedimage#" r_stIcon="fileicon"> 
-		<td>
-			<img src="#application.url.farcry#/images/treeImages/#fileicon#">
-		</td>
-		<td>
-			<a href="#application.url.webroot#/images/#stObj.optimisedimage#" target="_blank">
-				<span class="FormLabel">#application.adminBundle[session.dmProfile.locale].previewUC#</span>
-			</a>
-		</td>
-		</tr>
-		</table>
+		<label for="bAutoGenerateThumbnail" onclick="tgl_thumbnail()"><b>Auto-Generate Thumbnail:</b>
+			<input type="checkbox" name="bAutoGenerateThumbnail" id="bAutoGenerateThumbnail" value="1"<cfif stObj.bAutoGenerateThumbnail EQ 1>checked="checked"</cfif>>&nbsp;generate thumbnail based on default image<br />
+		</label>		
+
+</cfoutput>
+			<widgets:fileUpload uploadType="image" fieldValue="#stObj.thumbnail#" fileFieldPrefix="thumbnail" fieldLabel="Upload Thumbnail:">
+<cfoutput>
+
+		<cfif application.config.image.bAllowOverwrite EQ "true" OR trim(stObj.optimisedimage) EQ "">
+		<label for="optimisedImage"><b>#application.adminBundle[session.dmProfile.locale].Highres#:</b>
+			<input type="file" name="optimisedImage" /><br />
+		</label><cfelse><input type="hidden" name="optimisedImage" value="" /><br /></cfif>
+		
+
+		<cfif len(stObj.optimisedimage)>
+		<label>
+			<cfif application.config.image.bAllowOverwrite EQ "false">
+			Sorry you are not allowed to overwrite this file, please delete it and reupload OR change the image config settings in the admin<br />
+			<cfelse>
+			#application.adminBundle[session.dmProfile.locale].newFileOverwriteThisFile#<br />
+			</cfif>
+			Existing High Resolution Image:
+			<a href="#objImage.getURLImagePath(stObj.objectID,'optimised')#" target="_blank">#application.adminBundle[session.dmProfile.locale].previewUC#</a>
+		</label>
 		</cfif>
-		</td>
-		</tr>	
-			
-	<tr>
-		<td colspan="2" align="center">
-			<input type="submit" value="#application.adminBundle[session.dmProfile.locale].OK#" name="submit" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';">
-			<input type="Button" value="#application.adminBundle[session.dmProfile.locale].cancel#" name="Cancel" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';" onClick="location.href='#application.url.farcry#/unlock.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#';parent.synchTab('editFrame','activesubtab','subtab','siteEditOverview');parent.synchTitle('Overview')">
-		</td>
-	</tr>
-			
-	</table>
-	</form>
-	<!--- form validation --->
-	<SCRIPT LANGUAGE="JavaScript">
-		<!--//
-		objForm = new qForm("imageForm");
-		objForm.title.validateNotNull("#application.adminBundle[session.dmProfile.locale].pleaseEnterTitle#");
-		objForm.alt.validateLengthLT(255);
-			
-		//bring focus to title
-		document.imageForm.title.focus();//-->
-	</SCRIPT>
+
+		<fieldset class="f-checkbox-wrap">
+			<b>Image Library:</b>
+			<fieldset>
+				<label for="bLibrary">
+					<input id="bLibrary" type="checkbox" class="f-checkbox" name="bLibrary" value="1" <cfif stObj.bLibrary EQ 1>checked="checked"</cfif> />&nbsp;Add to image library
+					<br />
+				</label>
+			</fieldset>
+		</fieldset>
+</cfoutput>
+		<widgets:ownedBySelector fieldLabel="Content Owner:" selectedValue="#stObj.ownedBy#">
+<cfoutput>
+		<fieldset class="f-checkbox-wrap">
+			<b>Image&nbsp;Categories:</b>
+			<fieldset>
+			<widgets:categoryAssociation typeName="#stObj.typename#" lSelectedCategoryID="#lSelectedCategoryID#">
+			</fieldset>
+			<br />
+			</label>		
+		</fieldset>
+		
+	<div class="f-submit-wrap"><cfif primaryObjectID NEQ "">
+		<input type="Submit" name="Submit" value="Insert" class="f-submit" />
+		<input type="Submit" name="Submit" value="Insert &amp; Upload Another" class="f-submit" /><cfelse>
+		<input type="Submit" name="Submit" value="#application.adminBundle[session.dmProfile.locale].OK#" class="f-submit">
+		<input type="Button" name="Cancel" value="#application.adminBundle[session.dmProfile.locale].cancel#" class="f-submit" onClick="fCancelAction();"></cfif>
+	</div>
+	
+	<input type="hidden" name="primaryObjectID" value="#primaryObjectID#">
+	<input type="hidden" name="defaultImageFileName" value="">
+	<input type="hidden" name="thumbImageFileName" value="">
+	<input type="hidden" name="optImageFileName" value="">
+	
+	</fieldset>	
+</form>
+<!--- validate form --->
+<script type="text/javascript">
+function doSubmit(objForm){
+	document['forms']['imageForm'].optImageFileName.value = document['forms']['imageForm'].optimisedImage.value;
+	document['forms']['imageForm'].defaultImageFileName.value = document['forms']['imageForm'].defaultImage.value;
+	// todo: need extra validation here
+	return true;
+}
+</script><hr />
+<cfif primaryObjectID EQ "">
+<cfinclude template="/farcry/farcry_core/admin/includes/image_tips.cfm">
+</cfif>
+<cfif Val(stObj.bAutoGenerateThumbnail) EQ 1>
+<script type="text/javascript">
+objForm = document.forms.imageForm;
+objThumbnailFileUpload = objForm.thumbnail_file_upload;
+objThumbnailFileUpload.disabled = true;
+</script></cfif>
 	</cfoutput>
 </cfif>	
-
 <cfsetting enablecfoutputonly="no">

@@ -4,15 +4,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_tree/setYoungest.cfm,v 1.12 2004/05/20 04:41:25 brendan Exp $
-$Author: brendan $
-$Date: 2004/05/20 04:41:25 $
-$Name: milestone_2-2-1 $
-$Revision: 1.12 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_tree/setYoungest.cfm,v 1.14 2005/10/28 04:10:04 paul Exp $
+$Author: paul $
+$Date: 2005/10/28 04:10:04 $
+$Name: milestone_3-0-0 $
+$Revision: 1.14 $
 
 || DESCRIPTION || 
 $Description: setYoungest Function $
-$TODO: $
+
 
 || DEVELOPER ||
 $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
@@ -37,7 +37,7 @@ $out:$
 	// make youngest child (child is inserted in tree under parent in extreme right pos)
 	stReturn = structNew();
 	sql = "
-	select max(nright) AS nright from nested_tree_objects where parentid = '#arguments.parentid#'";
+	select max(nright) AS nright from #arguments.dbowner#nested_tree_objects where parentid = '#arguments.parentid#'";
 	q = query(sql=sql, dsn=arguments.dsn);
 	maxr = q.nRight;
 	qCHildren = getChildren(objectid=arguments.parentid,dsn=arguments.dsn);
@@ -48,14 +48,14 @@ $out:$
 	else {
 		//first make room. move other nodes up by 2, where they are greater than the right hand of the youngest existing child
 		sql = "
-		update nested_tree_objects
+		update #arguments.dbowner#nested_tree_objects
 		set nright = nright + 2 
 		where nright > #maxr#
 		and typeName = '#arguments.typeName#'";
 		query(sql=sql, dsn=arguments.dsn);
 		
 		sql = "
-		update nested_tree_objects
+		update #arguments.dbowner#nested_tree_objects
 		set nleft = nleft + 2
 		where nleft > #maxr#
 		and typeName = '#arguments.typeName#'";
@@ -63,7 +63,7 @@ $out:$
 		
 		sql = "		
 			select nlevel
-			from nested_tree_objects 
+			from #arguments.dbowner#nested_tree_objects 
 			where objectid = '#arguments.parentid#'";
 		q = query(sql=sql, dsn=arguments.dsn);	
 		pLevel = q.nlevel;	
@@ -97,7 +97,7 @@ $out:$
 				default:
 				{
 					sql = "
-					insert nested_tree_objects (ObjectID, ParentID, ObjectName, TypeName, Nleft, Nright, Nlevel)
+					insert #arguments.dbowner#nested_tree_objects (ObjectID, ParentID, ObjectName, TypeName, Nleft, Nright, Nlevel)
 					select 	'#arguments.objectid#', '#arguments.parentid#', '#arguments.objectName#', '#arguments.typeName#', #maxr# + 1, #maxr# + 2,  #plevel# + 1";
 				}
 			}

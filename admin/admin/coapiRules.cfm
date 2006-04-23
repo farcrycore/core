@@ -4,15 +4,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/admin/coapiRules.cfm,v 1.13 2004/12/22 04:32:36 brendan Exp $
-$Author: brendan $
-$Date: 2004/12/22 04:32:36 $
-$Name: milestone_2-3-2 $
-$Revision: 1.13 $
+$Header: /cvs/farcry/farcry_core/admin/admin/coapiRules.cfm,v 1.16 2005/09/06 10:19:00 paul Exp $
+$Author: paul $
+$Date: 2005/09/06 10:19:00 $
+$Name: milestone_3-0-0 $
+$Revision: 1.16 $
 
 || DESCRIPTION || 
 $Description: Managemnt interface for rules$
-$TODO: $
+
 
 || DEVELOPER ||
 $Developer: Brendan Sisson (brendan@daemon.com.au)$
@@ -36,7 +36,7 @@ $out:$
 <admin:header title="#application.adminBundle[session.dmProfile.locale].COAPIrules#" writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 <cfif iCOAPITab eq 1>	
-	<cfoutput><div class="formtitle">#application.adminBundle[session.dmProfile.locale].ruleClasses#</div></cfoutput>
+	<cfoutput><h3>#application.adminBundle[session.dmProfile.locale].ruleClasses#</h3></cfoutput>
 	
 	<cfparam name="FORM.action" default="">
 	
@@ -101,12 +101,12 @@ $out:$
 		}
 	</script>
 	
-	<table cellpadding="5" cellspacing="0" border="1"  style="margin-left:30px;">
+	<table class="table-5" cellspacing="0">
 	<tr>
-		<th class="dataheader">#application.adminBundle[session.dmProfile.locale].integrity#</th>
-		<th class="dataheader">#application.adminBundle[session.dmProfile.locale].component#</th>
-		<th class="dataheader">#application.adminBundle[session.dmProfile.locale].deployed#</th>
-		<th class="dataheader">#application.adminBundle[session.dmProfile.locale].deploy#</th>
+		<th>#application.adminBundle[session.dmProfile.locale].integrity#</th>
+		<th>#application.adminBundle[session.dmProfile.locale].component#</th>
+		<th>#application.adminBundle[session.dmProfile.locale].deployed#</th>
+		<th style="border-right:none">#application.adminBundle[session.dmProfile.locale].deploy#</th>
 	</tr>
 	</cfoutput>
 	
@@ -119,26 +119,26 @@ $out:$
 		</cfscript>
 		
 		<cfoutput>		
-		<tr <cfif alterType.isCFCConflict(stConflicts=stConflicts,typename=componentName)>style='background-color:##ccc;color:black;'</cfif>>
+		<tr <cfif alterType.isCFCConflict(stConflicts=stConflicts,typename=componentName)>style='color:##000;'</cfif>>
 			<td align="center">
 				<!--- i18n:  yes/no images? check vs x ok across all locales?  --->
 				<cfif alterType.isCFCConflict(stConflicts=stConflicts,typename=componentName)>
-					<img src="#application.url.farcry#/images/no.gif"> #application.adminBundle[session.dmProfile.locale].seeBelow#
+					<img src="#application.url.farcry#/images/no.gif" /> #application.adminBundle[session.dmProfile.locale].seeBelow#
 				<cfelse>
-					<img src="#application.url.farcry#/images/yes.gif">
+					<img src="#application.url.farcry#/images/yes.gif" />
 				</cfif>
 			</td>
 			<td>#componentName#</td>
-			<td align="center">
+			<td>
 				<!--- i18n:  yes/no images? check vs x ok across all locales?  --->
 				<cfif alterType.isCFCDeployed(typename=componentName)>
-					<img src="#application.url.farcry#/images/yes.gif">
+					<img src="#application.url.farcry#/images/yes.gif" />
 				<cfelse>
-					<img src="#application.url.farcry#/images/no.gif">
+					<img src="#application.url.farcry#/images/no.gif" />
 				</cfif>
 			</td>
 			
-			<td align="center">
+			<td style="border-right:none">
 				<cfif NOT alterType.isCFCDeployed(typename=componentName)>
 					<a href="#CGI.SCRIPT_NAME#?deploy=#componentName#">#application.adminBundle[session.dmProfile.locale].Deploy#</a>
 				<cfelse>
@@ -149,13 +149,13 @@ $out:$
 		<cfscript>
 			if (structKeyExists(stConflicts,'cfc') AND structKeyExists(stConflicts['cfc'],componentName))
 				{
-				writeoutput("<tr><td colspan='4' style='background-color:red;'><div id='#componentname#_report'>");
+				writeoutput("<tr><td colspan='4' style='background-color:##F9E6D4;border-right:none'><div id='#componentname#_report'>");
 				alterType.renderCFCReport(typename=componentname,stCFC=stConflicts['cfc'][componentname],scope='rules');
 				writeoutput("</div></td></tr>");		
 				}
 			if (structKeyExists(stConflicts,'database') AND structKeyExists(stConflicts['database'],componentName))
 				{
-				writeoutput("<tr><td colspan='4' style='background-color:red;'><div id='#componentname#_report'>");
+				writeoutput("<tr><td colspan='4' style='background-color:##F9E6D4;border-right:none'><div id='#componentname#_report'>");
 				alterType.renderDBReport(typename=componentname,stDB=stConflicts['database'][componentname]);
 				writeoutput("</div></td></tr>");		
 				}
@@ -166,14 +166,6 @@ $out:$
 	<cfoutput>
 	</table>
 	
-	<!--- TODO: what is this??  Can we remove it?? GB --->
-	<IFRAME WIDTH="400" HEIGHT="400" NAME="idServer" ID="idServer" 
-		 FRAMEBORDER="1" FRAMESPACING="0" MARGINWIDTH="0" MARGINHEIGHT="0" style="display:none" SRC="null">
-			<ILAYER NAME="idServer" WIDTH="400" HEIGHT="100" VISIBILITY="Hide" 
-			 ID="idServer">
-			<P>#application.adminBundle[session.dmProfile.locale].browserReqBlurb#</P>
-			</ILAYER>
-	</IFRAME>
 	</cfoutput>
 
 <cfelse>

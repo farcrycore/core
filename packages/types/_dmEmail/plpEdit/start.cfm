@@ -4,38 +4,38 @@
 $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmEmail/plpEdit/start.cfm,v 1.3 2004/09/28 04:57:09 brendan Exp $
-$Author: brendan $
-$Date: 2004/09/28 04:57:09 $
-$Name: milestone_2-3-2 $
-$Revision: 1.3 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmEmail/plpEdit/start.cfm,v 1.5 2005/09/02 06:27:37 guy Exp $
+$Author: guy $
+$Date: 2005/09/02 06:27:37 $
+$Name: milestone_3-0-0 $
+$Revision: 1.5 $
 
 || DESCRIPTION || 
 $Description: dmEmail -- Start PLP Step $
-$TODO: $
+
 
 || DEVELOPER ||
 $Developer: Brendan Sisson (brendan@dameon.com.au) $
 --->
 <cfprocessingDirective pageencoding="utf-8">
 
-<cfimport taglib="/farcry/farcry_core/tags/farcry" prefix="tags">
+<cfimport taglib="/farcry/farcry_core/tags/widgets" prefix="widgets">
 <cfimport taglib="/farcry/farcry_core/tags/navajo" prefix="nj">
 <cfimport taglib="/farcry/farcry_core/tags/display/" prefix="display">
 
 <cfset thisstep.isComplete = 0>
 <cfset thisstep.name = stplp.currentstep>
 
-<tags:plpNavigationMove>		
+<widgets:plpAction>
 
 <!--- show form --->
 <cfif NOT thisstep.isComplete>
 	<!--- get policy groups --->
 	<cfobject component="#application.packagepath#.security.authorisation" name="oAuthorisation">
 	<cfset aPolicyGroups = oAuthorisation.getAllPolicyGroups()>
-	
+<widgets:plpWrapper>
 	<cfoutput>
-	<form action="#cgi.script_name#?#cgi.query_string#" name="editform" method="post">
+	<form action="#cgi.script_name#?#cgi.query_string#" name="editform" class="f-wrap-1 f-bg-short" method="post">
 	
 	<div class="FormSubTitle">#output.label#</div>
 	<div class="FormTitle">#application.adminBundle[session.dmProfile.locale].generalInfo#</div>
@@ -68,10 +68,6 @@ $Developer: Brendan Sisson (brendan@dameon.com.au) $
 	</table>
 	</div>
 	
-	<div class="FormTableClear">
-		<tags:plpNavigationButtons>
-	</div>
-	
 	<!--- form validation --->
 	<SCRIPT LANGUAGE="JavaScript">
 	<!--//
@@ -82,10 +78,12 @@ $Developer: Brendan Sisson (brendan@dameon.com.au) $
 	objForm.fromEmail.validateNotNull("#application.adminBundle[session.dmProfile.locale].pleaseEnterEmail#");
 	//-->
 	</SCRIPT>
+	<input type="hidden" name="plpAction" value="" />
+	<input style="display:none;" type="submit" name="buttonSubmit" value="submit" />
 	</form></cfoutput>
-
+</widgets:plpWrapper>
 <cfelse>
-	<tags:plpUpdateOutput>
+	<widgets:plpUpdateOutput>
 </cfif>
 
 <cfsetting enablecfoutputonly="no">

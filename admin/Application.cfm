@@ -5,11 +5,11 @@ $Copyright: Daemon Pty Limited 1995-2005, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/Application.cfm,v 1.13.2.2 2005/06/08 23:41:24 guy Exp $
+$Header: /cvs/farcry/farcry_core/admin/Application.cfm,v 1.17 2005/08/29 07:19:44 guy Exp $
 $Author: guy $
-$Date: 2005/06/08 23:41:24 $
-$Name: milestone_2-3-2 $
-$Revision: 1.13.2.2 $
+$Date: 2005/08/29 07:19:44 $
+$Name: milestone_3-0-0 $
+$Revision: 1.17 $
 
 || DESCRIPTION || 
 $Description: Application.cfm global include for farcry admin. $
@@ -38,10 +38,10 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 			<cfinclude template="/farcry/#stApps[cgi.server_name]#/www/Application.cfm">
 
 				<cfcatch>
+					<cfset contextRoot = getPageContext().getRequest().getContextPath()>
                     <!--- hack workaround to handle context roots in the interim --->
-					<cfif server.coldfusion.appserver eq "J2EE">
-						<cfset contextRoot = listGetAt(CGI.SCRIPT_NAME, 1, "/")>
-						<cfinclude template="/#contextRoot#/Application.cfm">
+					<cfif server.coldfusion.appserver eq "J2EE" AND contextRoot NEQ "">
+						<cfinclude template="#contextRoot#/Application.cfm">
 					<cfelse>
 						<cfinclude template="/Application.cfm">
 					</cfif>
@@ -57,10 +57,10 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 	<cfinclude template="/farcry/#stApps[cgi.server_name]#/www/Application.cfm">
 
 		<cfcatch>
+			<cfset contextRoot = getPageContext().getRequest().getContextPath()>
             <!--- hack workaround to handle context roots in the interim --->
-			<cfif server.coldfusion.appserver eq "J2EE">
-				<cfset contextRoot = listGetAt(CGI.SCRIPT_NAME, 1, "/")>
-				<cfinclude template="/#contextRoot#/Application.cfm">
+			<cfif server.coldfusion.appserver eq "J2EE" AND contextRoot NEQ "">
+				<cfinclude template="#contextRoot#/Application.cfm">
 			<cfelse>
 				<cfinclude template="/Application.cfm">
 			</cfif>
@@ -88,5 +88,14 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 		<cfabort>
 	</cfif>
 </cfif>
+
+
+<!--- begin: initialise webtop factory object --->
+<!--- TODO: move to application initialisation --->
+<!--- grab webtop config file and parse --->
+<cfset application.factory.owebtop=createobject("component", "#application.packagepath#.farcry.webtop").init()>
+<!--- <cfdump var="#application.factory.owebtop#"> --->
+<!--- end: initialise webtop factory object --->
+
 
 <cfsetting enablecfoutputonly="no">

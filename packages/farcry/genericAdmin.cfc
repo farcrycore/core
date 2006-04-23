@@ -4,15 +4,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/genericAdmin.cfc,v 1.17 2004/09/02 04:38:29 paul Exp $
-$Author: paul $
-$Date: 2004/09/02 04:38:29 $
-$Name: milestone_2-3-2 $
-$Revision: 1.17 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/genericAdmin.cfc,v 1.18 2005/06/03 09:51:50 geoff Exp $
+$Author: geoff $
+$Date: 2005/06/03 09:51:50 $
+$Name: milestone_3-0-0 $
+$Revision: 1.18 $
 
 || DESCRIPTION || 
 $Description: generic admin cfc $
-$TODO: $
+$TODO: DEPRECATE this component and replace with something more suitable$
 
 || DEVELOPER ||
 $Developer: Brendan Sisson (brendan@daemon.com.au) $
@@ -131,7 +131,6 @@ $out:$
 	<cfreturn html>
 </cffunction>
 
-
 <cffunction name="permissionCheck" access="remote" returntype="string" hint="Checks if user has a permission to perform select action">
     <cfargument name="permission" type="string" required="true" hint="name of permission">
 	    
@@ -142,6 +141,8 @@ $out:$
 	<cfreturn permissionReturn>
 </cffunction>
 
+<!--- 
+Doesn't appear to be used: _genericAdmin/changeStatus.cfm not in code base!
 <cffunction name="changeStatus" access="remote" returntype="struct" hint="Changes status of selected object(s)">
     <cfargument name="dsn" type="string" default="#application.dsn#" required="true" hint="Database DSN">
     	
@@ -149,7 +150,7 @@ $out:$
 	
 	<cfreturn stStatus>
 </cffunction>
-
+ --->
 <cffunction name="sessionNameSpaceExists">
 	<cfargument name="typename" required="true">
 	<cfset bExists = false>
@@ -179,7 +180,6 @@ $out:$
 	</cfif>
 	
 </cffunction>	
-
 
 <cffunction name="getObjects" access="remote" returntype="query" hint="Returns a query of objects to be displayed">
     <cfargument name="dsn" type="string" default="#application.dsn#" required="true" hint="Database DSN">

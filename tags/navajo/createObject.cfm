@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/navajo/createObject.cfm,v 1.19 2004/07/15 02:03:00 brendan Exp $
-$Author: brendan $
-$Date: 2004/07/15 02:03:00 $
-$Name: milestone_2-3-2 $
-$Revision: 1.19 $
+$Header: /cvs/farcry/farcry_core/tags/navajo/createObject.cfm,v 1.20 2005/09/02 06:27:37 guy Exp $
+$Author: guy $
+$Date: 2005/09/02 06:27:37 $
+$Name: milestone_3-0-0 $
+$Revision: 1.20 $
 
 || DESCRIPTION || 
 $Description: creates an instance of an type object and returns to edit handler$
@@ -126,7 +126,7 @@ $out:$
 		queryString=structToNamePairs(st);
 	</cfscript>
 	<cfoutput>
-		<script>
+		<script type="text/javascript">
 			window.location="#application.url.farcry#/navajo/edit.cfm?objectId=#NewObjID#&#queryString#";
 		</script>
 	</cfoutput>

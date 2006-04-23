@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/reporting/statsReferer.cfm,v 1.4 2004/07/15 01:51:48 brendan Exp $
-$Author: brendan $
-$Date: 2004/07/15 01:51:48 $
-$Name: milestone_2-3-2 $
-$Revision: 1.4 $
+$Header: /cvs/farcry/farcry_core/admin/reporting/statsReferer.cfm,v 1.7 2005/08/17 03:28:39 pottery Exp $
+$Author: pottery $
+$Date: 2005/08/17 03:28:39 $
+$Name: milestone_3-0-0 $
+$Revision: 1.7 $
 
 || DESCRIPTION || 
 $Description: Displays summary stats for viewed objects, filter by type,date,maxRows. Click through for graphs$
@@ -55,57 +55,79 @@ $out:$
 	</cfscript>
 	
 	<cfoutput>
-	<div class="formtitle">#application.adminBundle[session.dmProfile.locale].mostPopularReferers#</div>
 	
 	<cfif qReferers.recordcount>
-		<table cellpadding="5" cellspacing="0" border="0"  style="margin-left:30px;">
-		<form action="" method="post">
-		<tr>
-			<td width="450">		
-			<!--- drop down for date --->
-			#application.adminBundle[session.dmProfile.locale].Date#
-			<select name="dateRange">
-				<option value="all" <cfif form.dateRange eq "all">selected</cfif>>#application.adminBundle[session.dmProfile.locale].allDates#
-				<option value="d" <cfif form.dateRange eq "d">selected</cfif>>#application.adminBundle[session.dmProfile.locale].today#
-				<option value="ww" <cfif form.dateRange eq "ww">selected</cfif>>#application.adminBundle[session.dmProfile.locale].lastWeek#
-				<option value="m" <cfif form.dateRange eq "m">selected</cfif>>#application.adminBundle[session.dmProfile.locale].lastMonth#
-				<option value="q" <cfif form.dateRange eq "q">selected</cfif>>#application.adminBundle[session.dmProfile.locale].lastQuarter#
-				<option value="yyyy" <cfif form.dateRange eq "yyyy">selected</cfif>>#application.adminBundle[session.dmProfile.locale].lastYear#
-			</select>
-			
-			<!--- drop down for max rows --->
-			#application.adminBundle[session.dmProfile.locale].Rows#
-			<select name="maxRows">
-				<option value="all" <cfif form.maxRows eq "all">selected</cfif>>#application.adminBundle[session.dmProfile.locale].allRows#
-				<cfloop from="10" to="200" step=10 index="rows">
-					<option value="#rows#" <cfif rows eq form.maxRows>selected</cfif>>#rows#
-				</cfloop>
-			</select>
-			
-			#application.adminBundle[session.dmProfile.locale].filterOwnSite#
-			<input type="checkbox" name="filter" value="1" <cfif form.filter>checked</cfif>>
-			<input type="submit" value="#application.adminBundle[session.dmProfile.locale].Update#">
-			</td>
-		</tr>
-		</form>
-		</table>
 		
-		<table cellpadding="5" cellspacing="0" border="1" width="500" style="margin-left:30px;">
+		<form method="post" class="f-wrap-1 f-bg-short" action="">
+		<fieldset>
+		
+			<h3>#application.adminBundle[session.dmProfile.locale].mostPopularReferers#</h3>
+			
+			<label for="dateRange">
+			<!--- drop down for date --->
+			<b>#application.adminBundle[session.dmProfile.locale].Date#</b>
+			<select name="dateRange" id="dateRange">
+				<option value="all" <cfif form.dateRange eq "all">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].allDates#</option>
+				<option value="d" <cfif form.dateRange eq "d">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].today#</option>
+				<option value="ww" <cfif form.dateRange eq "ww">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].lastWeek#</option>
+				<option value="m" <cfif form.dateRange eq "m">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].lastMonth#</option>
+				<option value="q" <cfif form.dateRange eq "q">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].lastQuarter#</option>
+				<option value="yyyy" <cfif form.dateRange eq "yyyy">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].lastYear#</option>
+			</select><br />
+			</label>
+			
+			<label for="maxRows">
+			<!--- drop down for max rows --->
+			<b>#application.adminBundle[session.dmProfile.locale].Rows#</b>
+			<select name="maxRows" id="maxRows">
+				<option value="all" <cfif form.maxRows eq "all">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].allRows#</option>
+				<cfloop from="10" to="200" step=10 index="rows">
+					<option value="#rows#" <cfif rows eq form.maxRows>selected="selected"</cfif>>#rows#</option>
+				</cfloop>
+			</select><br />
+			</label>
+			
+			<fieldset class="f-checkbox-wrap">
+				
+				<b>#application.adminBundle[session.dmProfile.locale].filterOwnSite#</b>
+				
+				<fieldset>
+				
+				<label for="filter">
+				<input type="checkbox" name="filter" id="filter" class="f-checkbox" value="1" <cfif form.filter>checked="checked"</cfif> />
+				</label>
+	
+				</fieldset>
+				
+			</fieldset> 
+			
+			<div class="f-submit-wrap">
+			<input type="submit" value="#application.adminBundle[session.dmProfile.locale].Update#" class="f-submit" />
+			</div>
+			
+		</fieldset>
+		</form>
+		
+		<hr />
+		
+		<table class="table-3" cellspacing="0">
 		<tr>
-			<th class="dataheader">#application.adminBundle[session.dmProfile.locale].Referer#</td>
-			<th class="dataheader">#application.adminBundle[session.dmProfile.locale].Referals#</td>
+			<th>#application.adminBundle[session.dmProfile.locale].Referer#</th>
+			<th>#application.adminBundle[session.dmProfile.locale].Referals#</th>
 		</tr>
 		
 		<!--- show stats with links to detail --->
 		<cfloop query="qReferers">
-			<tr class="#IIF(qReferers.currentRow MOD 2, de("dataOddRow"), de("dataEvenRow"))#">
+			<tr class="#IIF(qReferers.currentRow MOD 2, de(""), de("alt"))#">
 				<td><a href="#referer#" class="referer">#left(referer,70)#<cfif len(referer) gt 70>...</cfif></a></td>
-				<td align="center">#count_referers#</td>
+				<td>#count_referers#</td>
 			</tr>
 		</cfloop>
 		
 		</table>
-		<div align="center">
+		
+		<hr />
+		
 		<!--- show graph --->
 		<cfchart 
 			format="flash" 
@@ -128,9 +150,9 @@ $out:$
 			
 			<cfchartseries type="pie" query="qReferers" itemcolumn="referer" valuecolumn="count_referers" serieslabel="#application.adminBundle[session.dmProfile.locale].Today#" paintstyle="shade"></cfchartseries>
 		</cfchart>
-		</div>
+		
 	<cfelse>
-		#application.adminBundle[session.dmProfile.locale].noReferersNow#
+		<h3>#application.adminBundle[session.dmProfile.locale].noReferersNow#</h3>
 	</cfif>
 	</cfoutput>
 

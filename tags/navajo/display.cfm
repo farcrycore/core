@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/navajo/display.cfm,v 1.44.2.1 2005/02/14 15:44:02 spike Exp $
-$Author: spike $
-$Date: 2005/02/14 15:44:02 $
-$Name: milestone_2-3-2 $
-$Revision: 1.44.2.1 $
+$Header: /cvs/farcry/farcry_core/tags/navajo/display.cfm,v 1.46 2005/09/02 02:32:34 guy Exp $
+$Author: guy $
+$Date: 2005/09/02 02:32:34 $
+$Name: milestone_3-0-0 $
+$Revision: 1.46 $
 
 || DESCRIPTION ||
 $Description: Primary controller for invoking the object to be rendered for the website.$
@@ -28,11 +28,10 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 <cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
 <cfparam name="request.bHideContextMenu" default="false">
 
-<cfif isDefined("URL.archiveid") AND findNoCase("edittabarchive.cfm",CGI.HTTP_REFERER)>  
-	<cfscript>
-		oArchive = createObject("component","#application.packagepath#.farcry.versioning");
-		qArchive = oArchive.getArchiveDetail(objectid=url.archiveid);
-	</cfscript>
+<cfif isDefined("URL.archiveid") AND findNoCase("archive.cfm",CGI.HTTP_REFERER)>  
+	<cfset oArchive = createObject("component","#application.packagepath#.farcry.versioning")>
+	<cfset qArchive = oArchive.getArchiveDetail(objectid=url.archiveid)>
+
 	<cfif qArchive.recordCount EQ 1>
 		<cfwddx action="wddx2cfml" input="#qArchive.objectWDDX#" output="stArchive">
 		<cfset URL.objectid = stArchive.objectid>
@@ -64,12 +63,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 		<cfthrow message="#application.adminBundle[session.dmProfile.locale].badCOAPI#">
 	</cfif>
 	<cfcatch type="Any">
-		<cfparam name="request.bSuppressDisplayErrors" type="boolean" default="true">
-		<cfif request.bSuppressDisplayErrors>
-			<cflocation url="#application.url.webroot#/" addtoken="No">
-		<cfelse>
-			<cfrethrow>
-		</cfif>
+		<cflocation url="#application.url.webroot#/" addtoken="No">
 		<!--- $TODO:
 		log this error if it occurs
 		or perhaps provide URL 404 type error for user$
@@ -77,7 +71,6 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 		<cfabort>
 	</cfcatch>
 </cftry>
-
 
 <!--- if we are displaying a navigation point, get the first approved object to display --->
 <cfif stObj.typename IS "dmNavigation">
@@ -180,6 +173,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 		<cfset request.navid = application.navid.home>
 	</cfif>
 </cfif>
+
 <!---
 check security,...
 remember security is applied through the tree navigation point *not*
@@ -205,29 +199,22 @@ the latter is the policy group for anonymous...
 </cfscript>
 
 <!--- if the user is unable to view the object, then logout and send to login form --->
-<cfif iHasViewPermission neq 1>
+<cfif iHasViewPermission NEQ 1>
 	<!--- log out the user --->
-	<cfscript>
-		oAuthentication.logout();
-	</cfscript>
+	<cfset oAuthentication.logout()>
 	<cflocation url="#application.url.farcry#/login.cfm?returnUrl=#URLEncodedFormat(cgi.script_name&'?'&cgi.query_string)#" addtoken="No">
 	<cfabort>
 </cfif>
 
 <!--- If we are in designmode then check the containermanagement permissions --->
 <cfif request.mode.design>
-<!--- set the users container management permission --->
-	<cfscript>
-		request.mode.showcontainers = oAuthorisation.checkInheritedPermission(objectid=request.navid,permissionName="ContainerManagement");
-	</cfscript>
+	<!--- set the users container management permission --->
+	<cfset request.mode.showcontainers = oAuthorisation.checkInheritedPermission(objectid=request.navid,permissionName="ContainerManagement")>
 </cfif>
 
-
 <!--- determine display method for object --->
-<cfscript>
-	request.stObj = stObj;
-	// $TODO: refactor object calls... for now put stOBj into request$
-</cfscript>
+<cfset request.stObj = stObj>
+<!--- $TODO: refactor object calls... for now put stOBj into request$ --->
 
 <cfif attributes.method neq "display" AND attributes.lmethods contains attributes.method>
 	<!--- ie. if a method has been passed in deliberately and is allowed use this --->
@@ -255,12 +242,9 @@ the latter is the policy group for anonymous...
 			</cftry>
 		
 	<cfelse>
-		<cfscript>
-			o = createObject("component", application.types[stObj.typename].typePath);
-			o.getDisplay(objectid=stObj.ObjectID, template=stObj.displayMethod);
-		</cfscript>
+		<cfset o = createObject("component", application.types[stObj.typename].typePath)>
+		<cfset o.getDisplay(objectid=stObj.ObjectID, template=stObj.displayMethod)>
 	</cfif>
-
 <cfelse>
 	<!--- Invoke default display method of page --->
 	<cftrace text="Default display method used" />
@@ -299,13 +283,7 @@ a whole new set of permission checks, have trapped any errors and suppressed GB 
 </cfif>
 <!--- end: logged in user? --->
 <cfcatch>
-<cfparam name="request.bSuppressDisplayErrors" type="boolean" default="true">
-		<cfif request.bSuppressDisplayErrors>		
-			<!--- suppress error --->
-		<cfelse>
-			<cfrethrow>
-		</cfif>
-
+<!--- suppress error --->
 </cfcatch>
 </cftry>
 <cfsetting enablecfoutputonly="No">

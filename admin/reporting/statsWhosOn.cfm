@@ -4,15 +4,14 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/reporting/statsWhosOn.cfm,v 1.6 2004/07/15 01:51:48 brendan Exp $
-$Author: brendan $
-$Date: 2004/07/15 01:51:48 $
-$Name: milestone_2-3-2 $
-$Revision: 1.6 $
+$Header: /cvs/farcry/farcry_core/admin/reporting/statsWhosOn.cfm,v 1.10 2005/08/17 03:28:39 pottery Exp $
+$Author: pottery $
+$Date: 2005/08/17 03:28:39 $
+$Name: milestone_3-0-0 $
+$Revision: 1.10 $
 
 || DESCRIPTION || 
 $Description: Displays a listing for who's currently on the website$
-$TODO: $
 
 || DEVELOPER ||
 $Developer: Brendan Sisson (brendan@daemon.com.au)$
@@ -46,70 +45,78 @@ $out:$
 	</cfscript>
 	
 	<cfoutput>
-	<div class="formtitle">#application.adminBundle[session.dmProfile.locale].whoOnNow#</div>
 		
 	<cfif qActive.recordcount>
-		<table cellpadding="5" cellspacing="0" border="0"  style="margin-left:30px;">
-			<form action="" method="post">
-			<tr>
-				<td width="450">
+
+			<form method="post" class="f-wrap-1 f-bg-short" action="">
+			<fieldset>
+
+				<h3>#application.adminBundle[session.dmProfile.locale].whoOnNow#</h3>
+				
+				<label for="order">
 				<!--- drop down for ordering --->
-				#application.adminBundle[session.dmProfile.locale].orderBy#
-				<select name="order">
-					<option value="sessionTime" <cfif form.order eq "sessionTime">selected</cfif>>#application.adminBundle[session.dmProfile.locale].beenActiveFor#
-					<option value="lastActivity" <cfif form.order eq "lastActivity">selected</cfif>>#application.adminBundle[session.dmProfile.locale].lastActivity#
-					<option value="views" <cfif form.order eq "views">selected</cfif>>#application.adminBundle[session.dmProfile.locale].views#
-					<option value="locale" <cfif form.order eq "locale">selected</cfif>>#application.adminBundle[session.dmProfile.locale].Locale#
-				</select>
+				<b>#application.adminBundle[session.dmProfile.locale].orderBy#</b>
+				<select name="order" id="order">
+					<option value="sessionTime" <cfif form.order eq "sessionTime">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].beenActiveFor#</option>
+					<option value="lastActivity" <cfif form.order eq "lastActivity">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].lastActivity#</option>
+					<option value="views" <cfif form.order eq "views">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].views#</option>
+					<option value="locale" <cfif form.order eq "locale">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].Locale#</option>
+				</select><br />
+				</label>
 				
-				#application.adminBundle[session.dmProfile.locale].orderDirection#
-				<select name="orderDirection">
-					<option value="asc" <cfif form.orderDirection eq "asc">selected</cfif>>#application.adminBundle[session.dmProfile.locale].ascending#
-					<option value="desc" <cfif form.orderDirection eq "desc">selected</cfif>>#application.adminBundle[session.dmProfile.locale].descending#
-				</select>
+				<label for="orderDirection">
+				<b>#application.adminBundle[session.dmProfile.locale].orderDirection#</b>
+				<select name="orderDirection" id="orderDirection">
+					<option value="asc" <cfif form.orderDirection eq "asc">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].ascending#</option>
+					<option value="desc" <cfif form.orderDirection eq "desc">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].descending#</option>
+				</select><br />
+				</label>
 				
-				<input type="submit" value="#application.adminBundle[session.dmProfile.locale].Update#">
-				</td>
-			</tr>
+				<div class="f-submit-wrap">
+				<input type="submit" value="#application.adminBundle[session.dmProfile.locale].Update#" class="f-submit" />
+				</div>
+
+			</fieldset>
 			</form>
-			</table>
-			
-		<table cellpadding="5" cellspacing="0" border="1"  style="margin-left:30px;">
+
+		<hr />
+		
+		<table cellspacing="0">
 		<tr>
-			<th class="dataheader">#application.adminBundle[session.dmProfile.locale].ipAddress#</td>
-			<th class="dataheader">#application.adminBundle[session.dmProfile.locale].Locale#</td>
-			<th class="dataheader">#application.adminBundle[session.dmProfile.locale].beenActiveFor#</td>
-			<th class="dataheader">#application.adminBundle[session.dmProfile.locale].lastActivity#</td>
-			<th class="dataheader">#application.adminBundle[session.dmProfile.locale].pagesViewed#</td>
-			<th class="dataheader">&nbsp;</td>
+			<th>#application.adminBundle[session.dmProfile.locale].ipAddress#</th>
+			<th>#application.adminBundle[session.dmProfile.locale].Locale#</th>
+			<th>#application.adminBundle[session.dmProfile.locale].beenActiveFor#</th>
+			<th>#application.adminBundle[session.dmProfile.locale].lastActivity#</th>
+			<th>#application.adminBundle[session.dmProfile.locale].pagesViewed#</th>
+			<th>&nbsp;</td>
 		</tr>
 		
 		<!--- show stats with links to detail --->
 		<cfloop query="qActive">
-			<tr class="#IIF(qActive.currentrow MOD 2, de("dataOddRow"), de("dataEvenRow"))#">
+			<tr class="#IIF(qActive.currentrow MOD 2, de(""), de("alt"))#">
 				<td>#qActive.remoteIP#</td>
-				<td align="center"><cfif len(qActive.locale)>#qActive.locale#<cfelse>#application.adminBundle[session.dmProfile.locale].Unknown#</cfif></td>
-				<td align="center">
+				<td><cfif len(qActive.locale)>#qActive.locale#<cfelse>#application.adminBundle[session.dmProfile.locale].Unknown#</cfif></td>
+				<td>
 				<cfif qActive.sessionTime gte 1>
 				#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].sessionMinutes,"#qActive.sessionTime#")# 
 				<cfelse>
 				#application.adminBundle[session.dmProfile.locale].sessionLTMinute#
 				</cfif>
 				</td>
-				<td align="center">
+				<td>
 				<cfif qActive.lastActivity gte 1>
 				#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].sessionMinutes,"#qActive.lastActivity#")# 
 				<cfelse>
 				#application.adminBundle[session.dmProfile.locale].sessionLTMinute#
 				</cfif> </td>
-				<td align="center">#qActive.views#</td>
+				<td>#qActive.views#</td>
 				<td><a href="statsVisitorPathDetail.cfm?sessionId=#qActive.sessionId#">#application.adminBundle[session.dmProfile.locale].viewPath#</a></td>
 			</tr>
 		</cfloop>
 		
 		</table>
 	<cfelse>
-		#application.adminBundle[session.dmProfile.locale].noActiveVisitorsNow#
+		<h3>#application.adminBundle[session.dmProfile.locale].noActiveVisitorsNow#</h3>
 	</cfif>
 	</cfoutput>
 

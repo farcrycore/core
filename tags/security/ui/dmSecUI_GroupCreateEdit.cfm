@@ -10,11 +10,11 @@ Daemon Pty Limited 1995-2001
 http://www.daemon.com.au/
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/security/ui/dmSecUI_GroupCreateEdit.cfm,v 1.5 2004/07/15 02:03:27 brendan Exp $
-$Author: brendan $
-$Date: 2004/07/15 02:03:27 $
-$Name: milestone_2-3-2 $
-$Revision: 1.5 $
+$Header: /cvs/farcry/farcry_core/tags/security/ui/dmSecUI_GroupCreateEdit.cfm,v 1.8 2005/09/07 06:05:12 daniela Exp $
+$Author: daniela $
+$Date: 2005/09/07 06:05:12 $
+$Name: milestone_3-0-0 $
+$Revision: 1.8 $
 
 || DESCRIPTION || 
 Interface for creating and editing groups.
@@ -53,12 +53,12 @@ Matt Dawson (mad@daemon.com.au)
 			bSuccess = stResult.bSuccess;
 			if (stResult.bSuccess)
 			{	
-				writeoutput("#application.adminBundle[session.dmProfile.locale].groupChangeOK#<p>");
+				writeoutput("<h3 id='fading1' class='fade'><span class='success'>Success</span>: #application.adminBundle[session.dmProfile.locale].groupChangeOK#</h3><br />");
 				stObj = oAuthentication.getGroup(groupName='#form.GroupName#', userDirectory='#form.UserDirectory#');
 			}
 			else
 			{
-				writeoutput("<span style='color:red;'>#stResult.message#<p>");	
+				writeoutput("<h3 id='fading2' class='fade'><span class='error'>Error</span>: #stResult.message#</h3><br />");	
 				stObj = form;
 			}	
 		}
@@ -75,85 +75,59 @@ Matt Dawson (mad@daemon.com.au)
 			stObj.userDirectory="";
 		}
 	}	
-			
-			
 </cfscript>
 
-
-<cfif stObj.GroupId eq -1 >
-	<cfoutput><span class="formtitle">#application.adminBundle[session.dmProfile.locale].createGroup#</span><p></cfoutput>
-<cfelse>
-	<cfoutput><span class="formtitle">#application.adminBundle[session.dmProfile.locale].editGroup#</span><p></cfoutput>
-</cfif>
-
 <cfoutput>
-<form action="" method="POST" name="groupForm">
-<table class="formtable">
-<tr>
-	<td rowspan="10">&nbsp;</td>
-</tr>
-<tr>
-	<td>&nbsp;</td>
-</tr>
-<tr>
-	<td>
-	<cfif stObj.GroupId eq -1>
-		<span class="formlabel">#application.adminBundle[session.dmProfile.locale].selectUserDir#</span><br>
-		<select name="UserDirectory">
-			<cfloop index="i" list="#structKeyList(stUd)#">
-			<option value="#i#" <cfif stObj.userDirectory eq i>selected</cfif>>#i#
-			</cfloop>
-		</select>
-	<cfelse>
-		#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].userDir,"#stObj.UserDirectory#")#
-		<input type="hidden" name="UserDirectory" value="#stObj.UserDirectory#"> 
-	</cfif>
-	</td>
-</tr>
-<tr>
-	<td>&nbsp;</td>
-</tr>
-<input type="hidden" name="GroupId" value="#stObj.GroupId#"> 
-<tr>
-	<td>
-	<!--- User Details --->
-	<span class="formlabel">#application.adminBundle[session.dmProfile.locale].groupNameLabel#</span><br>
-	<input type="text" size="32" maxsize="32" name="GroupName" value="#stObj.groupName#">
-	</td>
-</tr>
-<tr>
-	<td>&nbsp;</td>
-</tr>
-<tr>
-	<td>
-	<span class="formlabel">#application.adminBundle[session.dmProfile.locale].groupNotesLabel#</span><br>
-	<Textarea name="groupNotes" class="formtextarea" rows="4">#stObj.groupNotes#</textarea><br>
-	</td>
-</tr>
-<tr>
-	<td>&nbsp;</td>
-</tr>
-<tr>
-	<td>
-	<cfif stObj.GroupId eq -1>
-		<input type="submit" name="Submit" value="#application.adminBundle[session.dmProfile.locale].createGroup#"><br>
-	<cfelse>
-		<input type="submit" name="Submit" value="#application.adminBundle[session.dmProfile.locale].updateGroup#">&nbsp;&nbsp;&nbsp;&nbsp;
-		<input type="submit" name="Delete" value="#application.adminBundle[session.dmProfile.locale].deleteGroup#" onclick="return confirm('#application.adminBundle[session.dmProfile.locale].confirmGroupDelete#');">
-	</cfif>
-	</td>
-</tr>
-<tr>
-	<td>&nbsp;</td>
-</tr>
-</table>
-<!--- form validation --->
-<SCRIPT LANGUAGE="JavaScript">
-<!--//
-objForm = new qForm("groupForm");
-objForm.GroupName.validateNotNull("#application.adminBundle[session.dmProfile.locale].enterGroupName#");
-//-->
-</SCRIPT>
+<form action="" name="groupForm" method="POST" class="f-wrap-1 f-bg-medium wider">
+	<fieldset>
+		<div class="req"><b>*</b>Required</div>
+		<cfif stObj.GroupId eq -1 >
+			<h3>#application.adminBundle[session.dmProfile.locale].createGroup#</h3>
+		<cfelse>
+			<h3>#application.adminBundle[session.dmProfile.locale].editGroup#</h3>
+		</cfif>
+		<label for="UserDirectory">
+			<cfif stObj.GroupId eq -1>
+				<b>#application.adminBundle[session.dmProfile.locale].selectUserDir#</b>
+				<select name="UserDirectory" id="UserDirectory">
+					<cfloop index="i" list="#structKeyList(stUd)#">
+					<option value="#i#" <cfif stObj.userDirectory eq i>selected="selected"</cfif>>#i#</option>
+					</cfloop>
+				</select>
+			<cfelse>
+				<b>#application.adminBundle[session.dmProfile.locale].userDirectoryLabel#</b>
+				<span style="font-weight:bold;margin-left:8px">#stObj.UserDirectory#</span><input type="hidden" name="UserDirectory" value="#stObj.UserDirectory#" />
+			</cfif>
+			<br />
+		</label>
+		<input type="hidden" name="GroupId" value="#stObj.GroupId#" /> 
+		<label for="GroupName"><b>#application.adminBundle[session.dmProfile.locale].groupNameLabel#<span class="req">*</span></b>
+			<!--- User Details --->
+			<input type="text" name="GroupName" id="GroupName" value="#stObj.groupName#" maxsize="32" />
+			<br />
+		</label>
+		<label for="groupNotes"><b>#application.adminBundle[session.dmProfile.locale].groupNotesLabel#</b>
+			<textarea cols="30" class="f-comments" rows="5" name="groupNotes" id="groupNotes">#stObj.groupNotes#</textarea>
+			<br />
+		</label>
+		<div class="f-submit-wrap">
+			<cfif stObj.GroupId eq -1>
+				<input type="submit" name="Submit" class="f-submit" value="#application.adminBundle[session.dmProfile.locale].createGroup#" />
+			<cfelse>
+				<input type="submit" name="Submit" class="f-submit" value="#application.adminBundle[session.dmProfile.locale].updateGroup#" />
+				<input type="submit" name="Delete" class="f-submit" value="#application.adminBundle[session.dmProfile.locale].deleteGroup#" onclick="return confirm('#application.adminBundle[session.dmProfile.locale].confirmGroupDelete#');" />
+			</cfif>
+		</div>
+	</fieldset>
+	
+	<!--- form validation --->
+	<SCRIPT LANGUAGE="JavaScript">
+		<!--//
+		objForm = new qForm("groupForm");
+		qFormAPI.errorColor="##cc6633";
+		objForm.GroupName.validateNotNull("#application.adminBundle[session.dmProfile.locale].enterGroupName#");
+		//-->
+	</SCRIPT>
 </form>
 
 </cfoutput>

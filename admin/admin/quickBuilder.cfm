@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/admin/quickBuilder.cfm,v 1.6 2004/07/15 01:10:24 brendan Exp $
-$Author: brendan $
-$Date: 2004/07/15 01:10:24 $
-$Name: milestone_2-3-2 $
-$Revision: 1.6 $
+$Header: /cvs/farcry/farcry_core/admin/admin/quickBuilder.cfm,v 1.9 2005/09/06 00:51:07 gstewart Exp $
+$Author: gstewart $
+$Date: 2005/09/06 00:51:07 $
+$Name: milestone_3-0-0 $
+$Revision: 1.9 $
 
 || DESCRIPTION || 
 $Description: Quickly builds a navigation structure$
@@ -207,7 +207,7 @@ $out:$
 	        qNodes = o.getDescendants(dsn=application.dsn, objectid=application.navid.root);
 	    </cfscript>
 	
-	    <nj:listTemplates typename="dmHTML" prefix="displaypage" r_qMethods="qDisplayTypes">
+	    <nj:listTemplates typename="dmHTML" prefix="displayPage" r_qMethods="qDisplayTypes">
 	
 	<cfoutput>
 	<script language="JavaScript">
@@ -221,53 +221,62 @@ $out:$
 	        document.theForm.navaliaseslevel.disabled = !document.theForm.makenavaliases.checked;
 	    }
 	</script>
-	<div class="formTitle">#application.adminBundle[session.dmProfile.locale].navTreeQuickBuilder#</div>
 	
-	<p>
-	  <form action="" method="POST" name="theForm">
-	    <table border="0" cellpadding="3" cellspacing="0">
-	      <tr>
-	        <td>#application.adminBundle[session.dmProfile.locale].createStructureWithin#</td>
-	        <td>
-	          <select name="startPoint">
-	            <option value="#application.navid.root#">#application.adminBundle[session.dmProfile.locale].Root#</option>
-	            <cfloop query="qNodes">
-	                 <option value="#qNodes.objectId#" <cfif qNodes.objectId eq application.navid.home>selected</cfif>>#RepeatString("&nbsp;&nbsp;|", qNodes.nlevel)#- #qNodes.objectName#</option>
-	            </cfloop>
-	          </select>
-	        </td>
-	      </tr>
-	      <tr>
-	        <td>#application.adminBundle[session.dmProfile.locale].status#</td>
-	        <td>
-	          <select name="status">
-	            <option value="draft">#application.adminBundle[session.dmProfile.locale].draft#</option>
-				<option value="approved">#application.adminBundle[session.dmProfile.locale].approved#</option>	            
-	          </select>
-	        </td>
-	      </tr>
-	      <tr>
-	        <td>#application.adminBundle[session.dmProfile.locale].dmHTMLItems#</td>
-	        <td><input type="checkbox" name="makehtml" checked value="1" onClick="updateDisplayBox()" />
-	          #application.adminBundle[session.dmProfile.locale].createdmHtmlItems#
-	        </td>
-	      </tr>
-	      <tr>
-	        <td>&nbsp;</td>
-	        <td>
-			  <select name="displayMethod" size="1" class="field">
-				<cfloop query="qDisplayTypes">
-					<option value="#qDisplayTypes.methodName#" <cfif qDisplayTypes.methodName eq "displayPageStandard">selected</cfif>>#qDisplayTypes.displayName#</option>
-				</cfloop>
-			  </select> #application.adminBundle[session.dmProfile.locale].displayMethod#
-			  <script>updateDisplayBox()</script>
-			</td>
-	      </tr>
-	      <tr>
-	        <td>#application.adminBundle[session.dmProfile.locale].navAliases#</td>
-	        <td><input type="checkbox" name="makenavaliases" checked value="1" onClick="updateNavTreeDepthBox()" />
-	          #application.adminBundle[session.dmProfile.locale].createNavAliases#
-	          <select name="navaliaseslevel">
+	<form method="post" class="f-wrap-1 f-bg-long wider" action="" name="theForm">
+	<fieldset>
+	
+		<h3>#application.adminBundle[session.dmProfile.locale].navTreeQuickBuilder#</h3>
+
+		<label for="startPoint"><b>#application.adminBundle[session.dmProfile.locale].createStructureWithin#</b>
+		<select name="startPoint" id="startPoint">
+		<option value="#application.navid.root#">#application.adminBundle[session.dmProfile.locale].Root#</option>
+		<cfloop query="qNodes">
+		<option value="#qNodes.objectId#" <cfif qNodes.objectId eq application.navid.home>selected</cfif>>#RepeatString("&nbsp;&nbsp;|", qNodes.nlevel)#- #qNodes.objectName#</option>
+		</cfloop>
+		</select><br />
+		</label>
+		
+		<label for="status"><b>#application.adminBundle[session.dmProfile.locale].status#</b>
+		<select name="status" id="status">
+		<option value="draft">#application.adminBundle[session.dmProfile.locale].draft#</option>
+		<option value="approved">#application.adminBundle[session.dmProfile.locale].approved#</option>	            
+		</select><br />
+		</label>
+		
+		<fieldset class="f-checkbox-wrap">
+		
+			<b>#application.adminBundle[session.dmProfile.locale].dmHTMLItems#</b>
+			
+			<fieldset>
+			
+			<label for="makehtml">
+			<input type="checkbox" name="makehtml" id="makehtml" checked="checked" value="1" class="f-checkbox" onclick="updateDisplayBox()" />
+			#application.adminBundle[session.dmProfile.locale].createdmHtmlItems#
+			</label>
+			<select name="displayMethod" id="displayMethod">
+			<cfloop query="qDisplayTypes">
+			<option value="#qDisplayTypes.methodName#" <cfif qDisplayTypes.methodName eq "displayPageStandard">selected="selected"</cfif>>#qDisplayTypes.displayName#</option>
+			</cfloop>
+			</select> 
+			<script>updateDisplayBox()</script><br />
+			#application.adminBundle[session.dmProfile.locale].displayMethod#
+			
+			</fieldset>
+		
+		</fieldset>
+		
+		<fieldset class="f-checkbox-wrap">
+		
+			<b>#application.adminBundle[session.dmProfile.locale].navAliases#</b>
+			
+			<fieldset>
+			
+			<label for="makenavaliases">
+			<input type="checkbox" name="makenavaliases" id="makenavaliases" checked="checked" value="1" onclick="updateNavTreeDepthBox()" class="f-checkbox" />
+			#application.adminBundle[session.dmProfile.locale].createNavAliases#
+			</label>
+			
+			<select name="navaliaseslevel">
 	            <option value="0">#application.adminBundle[session.dmProfile.locale].all#</option>
 	            <option value="1" selected >1</option>
 	            <option value="2">2</option>
@@ -275,38 +284,43 @@ $out:$
 	            <option value="4">4</option>
 	            <option value="5">5</option>
 	            <option value="6">6</option>
-	          </select>
+	          </select><br />
 	          #application.adminBundle[session.dmProfile.locale].levels#
 			  <script>updateNavTreeDepthBox()</script>
-	        </td>
-	      </tr>
-	      <tr>
-	        <td>#application.adminBundle[session.dmProfile.locale].levelToken#</td>
-	        <td><select><option>#levelToken#</option></select></td>
-	      </tr>
-	      <tr>
-	        <td valign="top">#application.adminBundle[session.dmProfile.locale].structure#</td>
-	        <td>
-	<textarea name="structure" rows="10" cols="40"></textarea>
-	        </td>
-	      </tr>
-	      <tr>
-	        <td>&nbsp;</td>
-	        <td>
-	          <input type="submit" value="#application.adminBundle[session.dmProfile.locale].buildSiteStructure#" name="submit" />
-	        </td>
-	      </tr>
-	    </table>
-	  </form>
-	</p>
+			
+			</fieldset>
 		
+		</fieldset>
+		
+		<label for="levelToken"><b>#application.adminBundle[session.dmProfile.locale].levelToken#</b>
+		<select name="levelToken" id="levelToken">
+		<option>#levelToken#</option>
+		</select><br />
+		</label>
+		
+		<label for="structure"><b>#application.adminBundle[session.dmProfile.locale].structure#</b>
+		<textarea name="structure" id="structure" rows="10" cols="40" class="f-comments"></textarea><br />
+		</label>
+
+		<div class="f-submit-wrap">
+		<input type="submit" value="#application.adminBundle[session.dmProfile.locale].buildSiteStructure#" name="submit" class="f-submit" /><br />
+		</div>
+		
+
+	</fieldset>
+	</form>
+	
+	<hr />
+	
+	<h4>#application.adminBundle[session.dmProfile.locale].instructions#</h4>
 	<p>
-	    <strong>#application.adminBundle[session.dmProfile.locale].instructions#</strong>
-	</p>
 	#application.adminBundle[session.dmProfile.locale].quicklyBuildFarCrySiteBlurb#
-	<p>
-	    <strong>#application.adminBundle[session.dmProfile.locale].example#</strong>
 	</p>
+	<hr />
+	
+	<h4>#application.adminBundle[session.dmProfile.locale].example#</h4>
+	
+	<p>
 	<pre>
 	Item 1
 	-Item 1.2
@@ -317,14 +331,20 @@ $out:$
 	--Item 2.2
 	Item 3
 	</pre>
-	<p>
-	    #application.adminBundle[session.dmProfile.locale].visualPurposesBlurb#
 	</p>
+	
+	<p>
+	#application.adminBundle[session.dmProfile.locale].visualPurposesBlurb#
+	</p>
+	
+	<p>
 	<pre>
 	Item 1
 	- Item 1.2
 	-- Item 1.2.1
 	</pre>
+	</p>
+	
 	</cfoutput>
 	</cfif>
 

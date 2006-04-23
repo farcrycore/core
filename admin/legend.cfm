@@ -4,15 +4,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/legend.cfm,v 1.11.2.1 2005/02/08 16:28:05 spike Exp $
-$Author: spike $
-$Date: 2005/02/08 16:28:05 $
-$Name: milestone_2-3-2 $
-$Revision: 1.11.2.1 $
+$Header: /cvs/farcry/farcry_core/admin/legend.cfm,v 1.12 2005/08/09 03:54:40 geoff Exp $
+$Author: geoff $
+$Date: 2005/08/09 03:54:40 $
+$Name: milestone_3-0-0 $
+$Revision: 1.12 $
 
 || DESCRIPTION || 
 $Description: Displays a legend of all icons used in the farcry tree$
-$TODO: $
+
 
 || DEVELOPER ||
 $Developer: Brendan Sisson (brendan@daemon.com.au)$
@@ -77,18 +77,6 @@ $out:$
 <tr>
 	<td align="center"><img src="#cimages#/NavPending.gif" height="16" width="16" border="0"></td>
 	<td>#application.adminBundle[session.dmProfile.locale].pendingNavigationObj#</td>
-</tr>
-<tr>
-	<td align="center"><img src="#cimages#/NavDraftExtLink.gif" height="16" width="16" border="0"></td>
-	<td>#application.adminBundle[session.dmProfile.locale].draftNavigationObjExtLink#</td>
-</tr>
-<tr>
-	<td align="center"><img src="#cimages#/NavApprovedExtLink.gif" height="16" width="16" border="0"></td>
-	<td>#application.adminBundle[session.dmProfile.locale].approvedNavigationObjExtLInk#</td>
-</tr>
-<tr>
-	<td align="center"><img src="#cimages#/NavPendingExtLink.gif" height="16" width="16" border="0"></td>
-	<td>#application.adminBundle[session.dmProfile.locale].pendingNavigationObjExtLink#</td>
 </tr>
 <tr>
 	<td align="center"><img src="#cimages#/images.gif" height="16" width="16" border="0"></td>

@@ -4,16 +4,16 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/navajo/treeGetRelations.cfm,v 1.17 2004/08/07 09:17:51 geoff Exp $
-$Author: geoff $
-$Date: 2004/08/07 09:17:51 $
-$Name: milestone_2-3-2 $
-$Revision: 1.17 $
+$Header: /cvs/farcry/farcry_core/tags/navajo/treeGetRelations.cfm,v 1.19 2005/09/06 06:19:50 guy Exp $
+$Author: guy $
+$Date: 2005/09/06 06:19:50 $
+$Name: milestone_3-0-0 $
+$Revision: 1.19 $
 
 || DESCRIPTION || 
 
 $Description: Takes an object and gets it relations. Relies upon the deployment of NTM stored procs and #application.packagepath#.farcry.tree component $
-$TODO: $
+
 
 
 Relies upon the deployment of NTM stored procs and #application.packagepath#.farcry.tree component
@@ -87,15 +87,18 @@ need to call tag or fourq function that has status as an option somehow
 	<cfset attributes.typename = "dmnavigation">
 </cfif>
 <cfif attributes.typename is attributes.nodetype>
-	<cfscript>
-		qChildren = request.factory.oTree.getChildren(objectid=attributes.objectid);
-	</cfscript>
+	<cfset qChildren = request.factory.oTree.getChildren(objectid=attributes.objectid)>
 <cfelse>	
-	<cfquery name="qChildren" datasource="#application.dsn#">
-		select a.data AS objectID, b.title AS objectname from #application.dbowner##attributes.typename#_aObjectIDs a
+<!--- only relate to aObjectids if one exists --->
+	<cfif StructKeyExists(application.types[attributes.typename].stProps,"aObjectIDs")>
+		<cfquery name="qChildren" datasource="#application.dsn#">
+		SELECT a.data AS objectID, b.title AS objectname from #application.dbowner##attributes.typename#_aObjectIDs a
 		JOIN #application.dbowner##attributes.typename# b ON a.data = b.objectID
-	    where a.objectID =  '#attributes.objectID#'
-	</cfquery>
+		WHERE a.objectID =  '#attributes.objectID#'
+		</cfquery>
+	<cfelse>
+		<cfset qChildren = QueryNew("objectid")>
+	</cfif>
 </cfif>
 <!--- 
 get data from COAPI

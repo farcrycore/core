@@ -2,11 +2,11 @@
 // Sponsored by www.americanbible.org
 // Implementation by Mihai Bazon, http://dynarch.com/mishoo/
 //
-// (c) dynarch.com 2003.
+// (c) dynarch.com 2003-2005.
 // Distributed under the same terms as HTMLArea itself.
 // This notice MUST stay intact for use (see license.txt).
 //
-// $Id: context-menu.js,v 1.1 2004/07/23 13:31:25 geoff Exp $
+// $Id: context-menu.js,v 1.2 2005/02/08 00:27:09 tom Exp $
 
 HTMLArea.loadStyle("menu.css", "ContextMenu");
 
@@ -52,6 +52,7 @@ ContextMenu.prototype.getContextMenu = function(target) {
 
 	var currentTarget = target;
 	var elmenus = [];
+	var tmp;
 
 	var link = null;
 	var table = null;
@@ -61,6 +62,26 @@ ContextMenu.prototype.getContextMenu = function(target) {
 
 	function tableOperation(opcode) {
 		tbo.buttonPress(editor, opcode);
+	};
+
+	function insertPara(currentTarget, after) {
+		var el = currentTarget;
+		var par = el.parentNode;
+		var p = editor._doc.createElement("p");
+		p.appendChild(editor._doc.createElement("br"));
+		par.insertBefore(p, after ? el.nextSibling : el);
+		var sel = editor._getSelection();
+		var range = editor._createRange(sel);
+		if (!HTMLArea.is_ie) {
+			sel.removeAllRanges();
+			range.selectNodeContents(p);
+			range.collapse(true);
+			sel.addRange(range);
+		} else {
+			range.moveToElementText(p);
+			range.collapse(true);
+			range.select();
+		}
 	};
 
 	for (; target; target = target.parentNode) {
@@ -111,7 +132,10 @@ ContextMenu.prototype.getContextMenu = function(target) {
 				     [ i18n["Cell Properties"],
 				       function() { tableOperation("TO-cell-prop"); },
 				       i18n["Show the Table Cell Properties dialog"],
-				       config.btnList["TO-cell-prop"][1] ]
+				       config.btnList["TO-cell-prop"][1] ],
+				     [ i18n["Delete Cell"],
+				       function() { tableOperation("TO-cell-delete"); }, null,
+				       config.btnList["TO-cell-delete"][1] ]
 				);
 			break;
 		    case "tr":
@@ -189,32 +213,43 @@ ContextMenu.prototype.getContextMenu = function(target) {
 				  i18n["Create a link"],
 				  config.btnList["createlink"][1] ]);
 
-	for (var i in elmenus)
+	for (var i = 0; i < elmenus.length; ++i)
 		menu.push(elmenus[i]);
 
-	menu.push(null,
-		  [ i18n["Remove the"] + " &lt;" + currentTarget.tagName + "&gt; " + i18n["Element"],
-		    function() {
-			    if (confirm(i18n["Please confirm that you want to remove this element:"] + " " + currentTarget.tagName)) {
-				    var el = currentTarget;
-				    var p = el.parentNode;
-				    p.removeChild(el);
-				    if (HTMLArea.is_gecko) {
-					    if (p.tagName.toLowerCase() == "td" && !p.hasChildNodes())
-						    p.appendChild(editor._doc.createElement("br"));
-					    editor.forceRedraw();
-					    editor.focusEditor();
-					    editor.updateToolbar();
-					    if (table) {
-						    var save_collapse = table.style.borderCollapse;
-						    table.style.borderCollapse = "collapse";
-						    table.style.borderCollapse = "separate";
-						    table.style.borderCollapse = save_collapse;
+	if (!/html|body/i.test(currentTarget.tagName)) {
+		table ? (tmp = table, table = null) : (tmp = currentTarget);
+		menu.push(null,
+			  [ i18n["Remove the"] + " &lt;" + tmp.tagName + "&gt; " + i18n["Element"],
+			    function() {
+				    if (confirm(i18n["Please confirm that you want to remove this element:"] + " " +
+						tmp.tagName)) {
+					    var el = tmp;
+					    var p = el.parentNode;
+					    p.removeChild(el);
+					    if (HTMLArea.is_gecko) {
+						    if (p.tagName.toLowerCase() == "td" && !p.hasChildNodes())
+							    p.appendChild(editor._doc.createElement("br"));
+						    editor.forceRedraw();
+						    editor.focusEditor();
+						    editor.updateToolbar();
+						    if (table) {
+							    var save_collapse = table.style.borderCollapse;
+							    table.style.borderCollapse = "collapse";
+							    table.style.borderCollapse = "separate";
+							    table.style.borderCollapse = save_collapse;
+						    }
 					    }
 				    }
-			    }
-		    },
-		    i18n["Remove this node from the document"] ]);
+			    },
+			    i18n["Remove this node from the document"] ],
+			  [ i18n["Insert paragraph before"],
+			    function() { insertPara(tmp, false); },
+			    i18n["Insert a paragraph before the current node"] ],
+			  [ i18n["Insert paragraph after"],
+			    function() { insertPara(tmp, true); },
+			    i18n["Insert a paragraph after the current node"] ]
+			);
+	}
 	return menu;
 };
 

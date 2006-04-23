@@ -30,7 +30,7 @@ function genData( stObject, level )
 				if( index neq 1 ) output=output&",";
 				if( not isStruct( el[index] ) )
 				{
-					output = output & "'#el[index]#'";
+					output = output & "'#JSStringFormat(el[index])#'";
 				}
 				else
 				{

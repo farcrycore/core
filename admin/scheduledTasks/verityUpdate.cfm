@@ -6,11 +6,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/scheduledTasks/verityUpdate.cfm,v 1.4.2.1 2005/03/04 22:29:03 tom Exp $
+$Header: /cvs/farcry/farcry_core/admin/scheduledTasks/verityUpdate.cfm,v 1.5 2005/03/04 22:31:27 tom Exp $
 $Author: tom $
-$Date: 2005/03/04 22:29:03 $
-$Name: milestone_2-3-2 $
-$Revision: 1.4.2.1 $
+$Date: 2005/03/04 22:31:27 $
+$Name: milestone_3-0-0 $
+$Revision: 1.5 $
 
 || DESCRIPTION ||
 $Description: Build and update FarCry related Verity collections. Manages

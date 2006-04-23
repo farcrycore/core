@@ -4,12 +4,12 @@
 // Portions (c) dynarch.com, 2003
 //
 // A free WYSIWYG editor replacement for <textarea> fields.
-// For full source code and docs, visit http://www.interactivetools.com/
+// For full source code and docs, visit http://www.htmlarea.com/
 //
 // Version 3.0 developed by Mihai Bazon.
 //   http://dynarch.com/mishoo
 //
-// $Id: popup.js,v 1.1 2004/07/23 13:31:25 geoff Exp $
+// $Id: popup.js,v 1.2 2005/02/08 00:27:09 tom Exp $
 
 function getAbsolutePos(el) {
 	var r = { x: el.offsetLeft, y: el.offsetTop };
@@ -53,12 +53,12 @@ function __dlg_init(bottom) {
 					// only if we call it twice we get the
 					// correct size.
 		window.addEventListener("unload", __dlg_onclose, true);
+		window.innerWidth = body.offsetWidth + 5;
+		window.innerHeight = body_height + 2;
 		// center on parent
 		var x = opener.screenX + (opener.outerWidth - window.outerWidth) / 2;
 		var y = opener.screenY + (opener.outerHeight - window.outerHeight) / 2;
 		window.moveTo(x, y);
-		window.innerWidth = body.offsetWidth + 5;
-		window.innerHeight = body_height + 2;
 	} else {
 		// window.dialogHeight = body.offsetHeight + 50 + "px";
 		// window.dialogWidth = body.offsetWidth + "px";
@@ -76,8 +76,8 @@ function __dlg_init(bottom) {
 };
 
 function __dlg_translate(i18n) {
-	var types = ["span", "option", "td", "button", "div"];
-	for (var type in types) {
+	var types = ["input", "select", "legend", "span", "option", "td", "button", "div"];
+	for (var type = 0; type < types.length; ++type) {
 		var spans = document.getElementsByTagName(types[type]);
 		for (var i = spans.length; --i >= 0;) {
 			var span = spans[i];
@@ -86,6 +86,11 @@ function __dlg_translate(i18n) {
 				if (txt)
 					span.firstChild.data = txt;
 			}
+                        if (span.title) {
+				var txt = i18n[span.title];
+				if (txt)
+					span.title = txt;
+                        }
 		}
 	}
 	var txt = i18n[document.title];

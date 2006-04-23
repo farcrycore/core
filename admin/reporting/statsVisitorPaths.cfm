@@ -4,15 +4,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/reporting/statsVisitorPaths.cfm,v 1.5 2004/08/17 04:51:30 brendan Exp $
-$Author: brendan $
-$Date: 2004/08/17 04:51:30 $
-$Name: milestone_2-3-2 $
-$Revision: 1.5 $
+$Header: /cvs/farcry/farcry_core/admin/reporting/statsVisitorPaths.cfm,v 1.9 2005/08/17 03:28:39 pottery Exp $
+$Author: pottery $
+$Date: 2005/08/17 03:28:39 $
+$Name: milestone_3-0-0 $
+$Revision: 1.9 $
 
 || DESCRIPTION || 
 $Description: Displays stats for visitors objects$
-$TODO: $
+
 
 || DEVELOPER ||
 $Developer: Brendan Sisson (brendan@daemon.com.au)$
@@ -49,46 +49,58 @@ $out:$
 	</cfscript>
 	
 	<cfoutput>
-	<div class="formtitle">#application.adminBundle[session.dmProfile.locale].recentVisitors#</div>
 	
 	<cfif qVisitors.recordcount>
-		<table cellpadding="5" cellspacing="0" border="0"  style="margin-left:30px;">
-		<form action="" method="post">
-		<tr>
-			<td width="450">
-			<!--- drop down for date --->
-			#application.adminBundle[session.dmProfile.locale].Date#
-			<select name="dateRange">
-				<option value="d" <cfif form.dateRange eq "d">selected</cfif>>#application.adminBundle[session.dmProfile.locale].Today#
-				<option value="ww" <cfif form.dateRange eq "ww">selected</cfif>>#application.adminBundle[session.dmProfile.locale].lastWeek#
-				<option value="m" <cfif form.dateRange eq "m">selected</cfif>>#application.adminBundle[session.dmProfile.locale].lastMonth#
-				<option value="q" <cfif form.dateRange eq "q">selected</cfif>>#application.adminBundle[session.dmProfile.locale].lastQuarter#
-				<option value="yyyy" <cfif form.dateRange eq "yyyy">selected</cfif>>#application.adminBundle[session.dmProfile.locale].lastYear#
-				<option value="all" <cfif form.dateRange eq "all">selected</cfif>>#application.adminBundle[session.dmProfile.locale].allDates#
-			</select>
-			
-			<!--- drop down for max rows --->
-			#application.adminBundle[session.dmProfile.locale].Rows#
-			<select name="maxRows">
-				<cfloop from="10" to="200" step=10 index="rows">
-					<option value="#rows#" <cfif rows eq form.maxRows>selected</cfif>>#rows#
-				</cfloop>
-				<option value="all" <cfif form.maxRows eq "all">selected</cfif>>#application.adminBundle[session.dmProfile.locale].allRows#
-			</select>
-			
-			IP <input type="text" name="remoteIP"> 
-			<input type="submit" value="#application.adminBundle[session.dmProfile.locale].Update#">
-			</td>
-		</tr>
-		</form>
-		</table>
+
+		<form method="post" class="f-wrap-1 f-bg-short" action="">
+		<fieldset>
 		
-		<table cellpadding="5" cellspacing="0" border="1"  style="margin-left:30px;">
+			<h3>#application.adminBundle[session.dmProfile.locale].recentVisitors#</h3>
+
+			<label for="dateRange">
+			<!--- drop down for date --->
+			<b>#application.adminBundle[session.dmProfile.locale].Date#</b>
+			<select name="dateRange" id="dateRange">
+				<option value="d" <cfif form.dateRange eq "d">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].Today#</option>
+				<option value="ww" <cfif form.dateRange eq "ww">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].lastWeek#</option>
+				<option value="m" <cfif form.dateRange eq "m">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].lastMonth#</option>
+				<option value="q" <cfif form.dateRange eq "q">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].lastQuarter#</option>
+				<option value="yyyy" <cfif form.dateRange eq "yyyy">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].lastYear#</option>
+				<option value="all" <cfif form.dateRange eq "all">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].allDates#</option>
+			</select><br />
+			</label>
+			
+			<label for="maxRows">
+			<!--- drop down for max rows --->
+			<b>#application.adminBundle[session.dmProfile.locale].Rows#</b>
+			<select name="maxRows" id="maxRows">
+				<cfloop from="10" to="200" step=10 index="rows">
+					<option value="#rows#" <cfif rows eq form.maxRows>selected="selected"</cfif>>#rows#</option>
+				</cfloop>
+				<option value="all" <cfif form.maxRows eq "all">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].allRows#</option>
+			</select><br />
+			</label>
+			
+			<label for="remoteIP">
+			<b>IP</b>
+			<input type="text" name="remoteIP" id="remoteIP" /><br />
+			</label>
+			
+			<div class="f-submit-wrap">
+			<input type="submit" value="#application.adminBundle[session.dmProfile.locale].Update#" class="f-submit" />
+			</div>
+			
+		</fieldset>
+		</form>
+
+		<hr />
+		
+		<table class="table-3" cellspacing="0">
 		<tr>
-			<th class="dataheader">#application.adminBundle[session.dmProfile.locale].ipAddress#</td>
-			<th class="dataheader">#application.adminBundle[session.dmProfile.locale].viewed#</td>
-			<th class="dataheader">#application.adminBundle[session.dmProfile.locale].pagesViewed#</td>
-			<th class="dataheader">&nbsp;</td>
+			<th>#application.adminBundle[session.dmProfile.locale].ipAddress#</th>
+			<th>#application.adminBundle[session.dmProfile.locale].viewed#</th>
+			<th>#application.adminBundle[session.dmProfile.locale].pagesViewed#</th>
+			<th>&nbsp;</th>
 		</tr>
 		
 		<!--- show stats with links to detail --->
@@ -99,17 +111,17 @@ $out:$
 			<cfelse>
 				<cfset initialDate = startDate>
 			</cfif>
-			<tr class="#IIF(qVisitors.currentRow MOD 2, de("dataOddRow"), de("dataEvenRow"))#">
+			<tr class="#IIF(qVisitors.currentRow MOD 2, de(""), de("alt"))#">
 				<td>#remoteIP#</td>
-				<td align="center">#application.thisCalendar.i18nDateFormat(initialDate,session.dmProfile.locale,application.fullF)#</td>
-				<td align="center">#Views#</td>
+				<td>#application.thisCalendar.i18nDateFormat(initialDate,session.dmProfile.locale,application.fullF)#</td>
+				<td>#Views#</td>
 				<td><a href="statsVisitorPathDetail.cfm?sessionId=#sessionID#">#application.adminBundle[session.dmProfile.locale].viewPath#</a></td>
 			</tr>
 		</cfloop>
 		
 		</table>
 	<cfelse>
-		#application.adminBundle[session.dmProfile.locale].noVisitorsNow#
+		<h3>#application.adminBundle[session.dmProfile.locale].noVisitorsNow#</h3>
 	</cfif>
 	</cfoutput>
 

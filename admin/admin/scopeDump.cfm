@@ -4,15 +4,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/admin/scopeDump.cfm,v 1.4 2004/07/15 01:10:24 brendan Exp $
-$Author: brendan $
-$Date: 2004/07/15 01:10:24 $
-$Name: milestone_2-3-2 $
-$Revision: 1.4 $
+$Header: /cvs/farcry/farcry_core/admin/admin/scopeDump.cfm,v 1.6 2005/08/09 03:54:39 geoff Exp $
+$Author: geoff $
+$Date: 2005/08/09 03:54:39 $
+$Name: milestone_3-0-0 $
+$Revision: 1.6 $
 
 || DESCRIPTION || 
 $Description: Scope dumper$
-$TODO: $
+
 
 || DEVELOPER ||
 $Developer: Brendan Sisson (brendan@daemon.com.au)$
@@ -38,17 +38,27 @@ $out:$
 <cfif iGeneralTab eq 1>
 
 	<cfoutput>
-	<span class="FormTitle">#application.adminBundle[session.dmProfile.locale].scopeDump#</span>
-	<p></p>
-	<form action="" method="post">
+
+	
+	<form method="post" class="f-wrap-1 f-bg-short" action="">
+	<fieldset>
+	
+		<h3>#application.adminBundle[session.dmProfile.locale].scopeDump#</h3>
+		
+		<label for="permname"><b>Choose scope:</b>
 		<select name="scope">
-			<option value="application" <cfif isdefined("form.scope") and form.scope eq "application">selected</cfif>>#application.adminBundle[session.dmProfile.locale].application#
-			<option value="request" <cfif isdefined("form.scope") and form.scope eq "request">selected</cfif>>#application.adminBundle[session.dmProfile.locale].request#
-			<option value="session" <cfif isdefined("form.scope") and form.scope eq "session">selected</cfif>>#application.adminBundle[session.dmProfile.locale].session#
-			<option value="server" <cfif isdefined("form.scope") and form.scope eq "server">selected</cfif>>#application.adminBundle[session.dmProfile.locale].server#
-		</select>
-		<input type="submit" value="#application.adminBundle[session.dmProfile.locale].dump#">
-	</form><p></p>
+			<option value="application" <cfif isdefined("form.scope") and form.scope eq "application">selected</cfif>>#application.adminBundle[session.dmProfile.locale].application#</option>
+			<option value="request" <cfif isdefined("form.scope") and form.scope eq "request">selected</cfif>>#application.adminBundle[session.dmProfile.locale].request#</option>
+			<option value="session" <cfif isdefined("form.scope") and form.scope eq "session">selected</cfif>>#application.adminBundle[session.dmProfile.locale].session#</option>
+			<option value="server" <cfif isdefined("form.scope") and form.scope eq "server">selected</cfif>>#application.adminBundle[session.dmProfile.locale].server#</option>
+		</select><br />
+		</label>
+		
+		<div class="f-submit-wrap">
+		<input type="submit" value="#application.adminBundle[session.dmProfile.locale].dump#" class="f-submit" />
+		</div>
+		
+		</form>
 	</cfoutput>
 	
 	<cfif isdefined("form.scope")>

@@ -4,15 +4,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/security/authorisation.cfc,v 1.41.2.3 2005/05/09 06:27:46 guy Exp $
-$Author: guy $
-$Date: 2005/05/09 06:27:46 $
-$Name: milestone_2-3-2 $
-$Revision: 1.41.2.3 $
+$Header: /cvs/farcry/farcry_core/packages/security/authorisation.cfc,v 1.52 2005/10/28 03:15:43 paul Exp $
+$Author: paul $
+$Date: 2005/10/28 03:15:43 $
+$Name: milestone_3-0-0 $
+$Revision: 1.52 $
 
 || DESCRIPTION || 
 $Description: authorisation cfc $
-$TODO: $
+
 
 || DEVELOPER ||
 $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
@@ -21,7 +21,6 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
 $in: $
 $out:$
 --->
-
 
 <cfcomponent displayName="Authorisation" hint="User authorisation">
 	<cfinclude template="/farcry/farcry_core/admin/includes/cfFunctionWrappers.cfm">
@@ -33,12 +32,7 @@ $out:$
 		<cfargument name="objectid" required="true">
 		<cfargument name="typename" required="false" default="dmNavigation">
 			<cfscript>
-				if (NOT structKeyExists(request,'factory')) {				
-					return;
-				}
-				if (NOT structKeyExists(request.factory,'oTree')) {
-					return;
-				}
+								
 				qAncestors = request.factory.oTree.getAncestors(objectid=arguments.objectid,typename=arguments.typename);
 				lObjectIds = valueList(qAncestors.objectID);
 				
@@ -216,238 +210,210 @@ $out:$
 		<cfreturn bHasPermission>	
 			
 	</cffunction>
-
-
-
-
 	
-	<cffunction name="createPermission" hint="Creates a new permission in the datastore" output="No">
+	
+	
+	<cffunction name="createPermission" hint="Creates a new permission in the datastore" output="True">
 		<cfargument name="permissionID" required="false" default="-1" hint="Note that permissionID is only handed in during installtation of farcry">
 		<cfargument name="permissionName" required="true">
 		<cfargument name="permissionType" required="true">
 		<cfargument name="permissionNotes" required="false" default="">
 		
-		<cfscript>
-			stPolicyStore = getPolicyStore();
-			stPermission = getPermission(permissionName=arguments.permissionName,permissionType=arguments.permissionType);
-			stResult=structNew();
-			
-			if (not structIsEmpty(stPermission))
-			{
-				stResult.bSuccess = false;
-				stResult.message = "Permission already exists";
-			}
-			else
-			{
-				switch (application.dbType)
-				{
-					case "ora":
-					{
-						sql = "
-						INSERT INTO #application.dbowner##stPolicyStore.permissionTable# ( permissionid,permissionName,permissionNotes,permissionType";
-						sql = sql & ")";
-						if (arguments.permissionId neq -1)
-							sql = sql & " VALUES (#arguments.permissionId#,'#arguments.permissionName#','#arguments.permissionNotes#','#arguments.permissionType#'";
-						else 
-							sql = sql & " VALUES (DMPERMISSION_SEQ.nextval,'#arguments.permissionName#','#arguments.permissionNotes#','#arguments.permissionType#'";
-						sql = sql & ")";
-						break;	
-					}
-					case "postgresql":
-					{
-						sql = "
-						INSERT INTO #stPolicyStore.permissionTable# ( permissionName,permissionNotes,permissionType";
-						if (arguments.permissionID NEQ -1)
-							sql = sql & ",permissionId)";
-						else
-							sql = sql & ")";
-						sql = sql & " VALUES ('#arguments.permissionName#','#arguments.permissionNotes#','#arguments.permissionType#'";
-						if (arguments.permissionId neq -1)
-							sql = sql & ",#arguments.permissionId#)";
-						else
-							sql = sql & ")";
-						break;	
-					} 
-					case "mysql":
-					{
-						sql = "
-						INSERT INTO #stPolicyStore.permissionTable# ( permissionName,permissionNotes,permissionType";
-						if (arguments.permissionID NEQ -1)
-							sql = sql & ",permissionId)";
-						else
-							sql = sql & ")";
-						sql = sql & " VALUES ('#arguments.permissionName#','#arguments.permissionNotes#','#arguments.permissionType#'";
-						if (arguments.permissionId neq -1)
-							sql = sql & ",#arguments.permissionId#)";
-						else
-							sql = sql & ")";
-						break;
-					}
-					default:
-					{
-						sql = "
-						INSERT INTO #stPolicyStore.permissionTable# ( permissionName,permissionNotes,permissionType";
-						if (arguments.permissionID NEQ -1)
-							sql = sql & ",permissionId)";
-						else
-							sql = sql & ")";
-						sql = sql & " VALUES ('#arguments.permissionName#','#arguments.permissionNotes#','#arguments.permissionType#'";
-						if (arguments.permissionId neq -1)
-							sql = sql & ",#arguments.permissionId#)";
-						else
-							sql = sql & ")";
-					}
-				}
-				query(sql=sql,dsn=stPolicyStore.datasource);
-				stResult.bSuccess = true;
-				stResult.message = "Permission successfully added";
-				oAuthentication = createObject("component","#application.securitypackagepath#.authentication");
-				oAudit = createObject("component","#application.packagepath#.farcry.audit");
-				stuser = oAuthentication.getUserAuthenticationData();
-					if(stUser.bLoggedIn)
-						oaudit.logActivity(auditType="dmSec.createPermission", username=Stuser.userlogin, location=cgi.remote_host, note="permission #arguments.permissionname# of type #arguments.permissiontype# created");	
-			}
-						
-		</cfscript>
-		<cfreturn stResult>
+		<cfset var stPolicyStore = getPolicyStore()>
+		<cfset var stLocal = StructNew()>
+		<cfset stLocal.streturn = StructNew()>
+		<cfset stLocal.streturn.returncode = 1>
+		<cfset stLocal.streturn.returnmessage = "">
+		
+		<cfset stLocal.stPermission = getPermission(permissionName=arguments.permissionName,permissionType=arguments.permissionType)>
+		<cfif NOT StructIsEmpty(stLocal.stPermission)>
+			<cfset stLocal.streturn.returncode = 0>
+			<cfset stLocal.streturn.returnmessage = "Sorry Permission [#arguments.permissionName# - #arguments.permissionType#] already exists">
+		<cfelse>
+			<cfswitch expression="#application.dbType#">
+				<cfcase value="ora">
+					<cfsavecontent variable="stLocal.sql"><cfoutput>
+					INSERT INTO #application.dbowner##stPolicyStore.permissionTable# (permissionid,permissionName,permissionNotes,permissionType)
+					VALUES (<cfif arguments.permissionId NEQ -1>#arguments.permissionId#<cfelse>DMPERMISSION_SEQ.nextval</cfif>,'#arguments.permissionName#','#arguments.permissionNotes#','#arguments.permissionType#')
+					</cfoutput></cfsavecontent>
+				</cfcase>
+
+				<cfcase value="postgresql">
+					<cfsavecontent variable="stLocal.sql"><cfoutput>
+					INSERT INTO #application.dbowner##stPolicyStore.permissionTable# (permissionName,permissionNotes,permissionType<cfif arguments.permissionId NEQ -1>,permissionid</cfif>)
+					VALUES ('#arguments.permissionName#','#arguments.permissionNotes#','#arguments.permissionType#'<cfif arguments.permissionId NEQ -1>,#arguments.permissionId#</cfif>)
+					</cfoutput></cfsavecontent>
+				</cfcase>
+
+				<cfcase value="mysql">
+					<cfsavecontent variable="stLocal.sql"><cfoutput>
+					INSERT INTO #application.dbowner##stPolicyStore.permissionTable# (permissionName,permissionNotes,permissionType<cfif arguments.permissionId NEQ -1>,permissionid</cfif>)
+					VALUES ('#arguments.permissionName#','#arguments.permissionNotes#','#arguments.permissionType#'<cfif arguments.permissionId NEQ -1>,#arguments.permissionId#</cfif>)
+					</cfoutput></cfsavecontent>
+				</cfcase>
+
+				<cfdefaultcase>
+					<cfsavecontent variable="stLocal.sql"><cfoutput>
+					INSERT INTO #application.dbowner##stPolicyStore.permissionTable# (permissionName,permissionNotes,permissionType<cfif arguments.permissionId NEQ -1>,permissionid</cfif>)
+					VALUES ('#arguments.permissionName#','#arguments.permissionNotes#','#arguments.permissionType#'<cfif arguments.permissionId NEQ -1>,#arguments.permissionId#</cfif>)
+					</cfoutput></cfsavecontent>
+				</cfdefaultcase>
+			</cfswitch>
+		
+			<cftry>
+				<cfset query(sql=stLocal.sql,dsn=stPolicyStore.datasource)>
+				<cfset stLocal.oAuthentication = createObject("component","#application.securitypackagepath#.authentication")>
+				<cfset stLocal.oAudit = createObject("component","#application.packagepath#.farcry.audit")>
+				<cfset stLocal.stuser = stLocal.oAuthentication.getUserAuthenticationData()>
+				<cfif stLocal.stUser.bLoggedIn>
+					<cfset stLocal.oAudit.logActivity(auditType="dmSec.createPermission", username=stLocal.Stuser.userlogin, location=cgi.remote_host, note="permission #arguments.permissionname# of type #arguments.permissiontype# created")>
+				</cfif>
+	
+				<cfcatch type="any">
+					<cfset stLocal.streturn.returncode = 0>
+					<cfset stLocal.streturn.returnmessage = "Sorry an error has occured while inserting the permissions.">
+				</cfcatch>
+			</cftry>
+		</cfif>
+
+		<cfreturn stLocal.streturn>
 	</cffunction>
 	
-	<cffunction name="createPolicyGroup" hint="Creates a new policy group in the datastore" returntype="struct" output="No">
-		<cfargument name="policyGroupName" required="true">
-		<cfargument name="policyGroupNotes" required="false" default="">
-		<cfargument name="policyGroupID">
-		<cfscript>
-			stPolicyGroup = getPolicyGroup(policyGroupName=arguments.policyGroupName);
-			stPolicyStore = getPolicyStore();
-			stResult = structNew();
-			if (NOT structIsEmpty(stPolicyGroup))
-			{
-				stResult.bSuccess = false;
-				stResult.message = "Policy Group already exists";
-			}
-			else
-			{
-				switch (application.dbType)
-				{
-					case "ora":
-					{
-						sql = "
-							INSERT INTO #application.dbowner##stPolicyStore.PolicyGroupTable# (policyGroupID, policyGroupName,policyGroupNotes )
-							VALUES
-							(DMPOLICYGROUP_SEQ.nextval,'#arguments.PolicyGroupName#','#arguments.PolicyGroupNotes#')";
-						break;	
-					}
-					case "postgresql":
-					{
-						sql = "
-							INSERT INTO #application.dbowner##stPolicyStore.PolicyGroupTable# ( policyGroupName,policyGroupNotes )
-							VALUES
-							('#arguments.PolicyGroupName#','#arguments.PolicyGroupNotes#')";
-						break;	
-					}
-					case "mysql":
-					{
-						sql = "
-						INSERT INTO #application.dbowner##stPolicyStore.PolicyGroupTable# ( policyGroupName,policyGroupNotes ";
-						if (isDefined("arguments.policyGroupId"))
-							sql = sql & ",policyGroupId";
-						sql = sql & ")	
-						VALUES
-						('#arguments.PolicyGroupName#' ,'#arguments.PolicyGroupNotes#'";
-						if (isDefined("arguments.policyGroupId"))
-							sql = sql & ",#arguments.policyGroupId#";
-						sql = sql & ")";	
-						break;	
-					}
-					
-					default:
-					{
-						sql = "
-						INSERT INTO #application.dbowner##stPolicyStore.PolicyGroupTable# ( policyGroupName,policyGroupNotes ";
-						if (isDefined("arguments.policyGroupId"))
-							sql = sql & ",policyGroupId";
-						sql = sql & ")	
-						VALUES
-						('#arguments.PolicyGroupName#' ,'#arguments.PolicyGroupNotes#'";
-						if (isDefined("arguments.policyGroupId"))
-							sql = sql & ",#arguments.policyGroupId#";
-						sql = sql & ")";	
-					}
-				}
+	<cffunction name="createPolicyGroup" hint="Creates a new policy group in the datastore" returntype="any" output="No">
+		<cfargument name="policyGroupName" required="true" type="string">
+		<cfargument name="policyGroupNotes" required="false" default="" type="string">
+		<cfargument name="policyGroupID" required="false" type="numeric">
 
-				query(sql=sql,dsn=stPolicyStore.datasource);
-				stResult.bSuccess = true;
-				stResult.message = "Policy group successfully added";
-				oAuthentication = createObject("component","#application.securitypackagepath#.authentication");
-				oAudit = createObject("component","#application.packagepath#.farcry.audit");
-				stuser = oAuthentication.getUserAuthenticationData();
-					if(stUser.bLoggedIn)
-						oaudit.logActivity(auditType="dmSec.createPolicyGroup", username=Stuser.userlogin, location=cgi.remote_host, note="policy group #arguments.policygroupname# created");	
+		<cfset var stPolicyGroup = getPolicyGroup(policyGroupName=arguments.policyGroupName)>
+		<cfset var stPolicyStore = getPolicyStore()>
+		<cfset var stLocal = StructNew()>
+		<cfset stLocal.streturn = StructNew()>
+		<cfset stLocal.streturn.returncode = 1>
+		<cfset stLocal.streturn.returnmessage = "">
 
-			}
-				
-		</cfscript>
-		<cfreturn stResult>
+		<cfif NOT StructIsEmpty(stPolicyGroup)>
+			<cfset stLocal.streturn.returncode = 0>
+			<cfset stLocal.streturn.returnmessage = "Sorry Policy Group [#arguments.policyGroupName#] already exists">
+		<cfelse>
+			<cfswitch expression="#application.dbType#">
+				<cfcase value="ora">
+					<cfset stLocal.sql = "INSERT INTO #application.dbowner##stPolicyStore.PolicyGroupTable# (policyGroupID, policyGroupName,policyGroupNotes ) VALUES (DMPOLICYGROUP_SEQ.nextval,'#arguments.PolicyGroupName#','#arguments.PolicyGroupNotes#')">
+				</cfcase>
+
+				<cfcase value="postgresql">
+					<cfset stLocal.sql = "INSERT INTO #application.dbowner##stPolicyStore.PolicyGroupTable# ( policyGroupName,policyGroupNotes ) VALUES ('#arguments.PolicyGroupName#','#arguments.PolicyGroupNotes#')">
+				</cfcase>
+
+				<cfcase value="mysql">
+ 					<cfif isDefined("arguments.policyGroupID")> <!--- during import may want to insert specific policy group id --->
+						<cfset stLocal.sql = "INSERT INTO #application.dbowner##stPolicyStore.PolicyGroupTable# (policyGroupID, policyGroupName,policyGroupNotes ) VALUES (#arguments.PolicyGroupID#, '#arguments.PolicyGroupName#','#arguments.PolicyGroupNotes#')">
+					<cfelse>
+						<cfset stLocal.sql = "INSERT INTO #application.dbowner##stPolicyStore.PolicyGroupTable# (policyGroupName,policyGroupNotes ) VALUES ('#arguments.PolicyGroupName#','#arguments.PolicyGroupNotes#')">
+					</cfif>
+				</cfcase>
+
+				<cfdefaultcase>
+					<cfset stLocal.sql = "INSERT INTO #application.dbowner##stPolicyStore.PolicyGroupTable# ( policyGroupName,policyGroupNotes ">
+					<cfif isDefined("arguments.policyGroupId")>
+						<cfset stLocal.sql = stLocal.sql & ",policyGroupId">
+					</cfif>
+					<cfset stLocal.sql = stLocal.sql & ") VALUES ('#arguments.PolicyGroupName#' ,'#arguments.PolicyGroupNotes#'">
+					<cfif isDefined("arguments.policyGroupId")>
+						<cfset stLocal.sql = stLocal.sql & ",#arguments.policyGroupId#">
+					</cfif>
+					<cfset stLocal.sql = stLocal.sql & ")">
+				</cfdefaultcase>
+			</cfswitch>
+
+			<cftry>
+				<cfset query(sql=stLocal.sql,dsn=stPolicyStore.datasource)>
+				<cfset stLocal.oAuthentication = createObject("component","#application.securitypackagepath#.authentication")>
+				<cfset stLocal.oAudit = createObject("component","#application.packagepath#.farcry.audit")>
+				<cfset stLocal.stuser = stLocal.oAuthentication.getUserAuthenticationData()>
+				<cfif stLocal.stUser.bLoggedIn>
+					<cfset stLocal.oAudit.logActivity(auditType="dmSec.createPolicyGroup", username=stLocal.Stuser.userlogin, location=cgi.remote_host, note="policy group #arguments.policygroupname# created")>
+				</cfif>
+
+				<cfcatch type="any">
+					<cfset stLocal.streturn.returncode = 0>
+					<cfset stLocal.streturn.returnmessage = "Sorry an error has occured while inserting the policy group.">
+				</cfcatch>
+			</cftry>
+		</cfif>
+		<cfreturn stLocal.streturn>
 	</cffunction>
-	
-	<cffunction name="checkInheritedPermission" hint="checks whether you have inherited permission to perform an action on an object." output="yes">
+
+	<cffunction name="copyPolicyGroup" hint="Copys an existing policy group in the datastore" returntype="struct" output="no">
+		<cfargument name="stForm" required="true" type="struct">
+		<cfset var stLocal = StructNew()>
+		<cfset stLocal.streturn = StructNew()>
+		<cfset stLocal.streturn.returncode = 1>
+		<cfset stLocal.streturn.returnmessage = "">
+
+		<cfset stLocal.returnstruct = createPolicyGroup(policyGroupName=arguments.stform.name,policyGroupNotes=arguments.stform.notes)>
+		<!--- check create policy group done suceesfully --->
+		<cfif stLocal.returnstruct.returncode EQ 1>
+			<cfset stLocal.returnstruct = getPolicyGroup(policyGroupName=arguments.stform.name)>
+			<cfset stLocal.desinationPolicyGroupID = stLocal.returnstruct.policyGroupID>
+			<cfset stLocal.stObjectPermissions = getObjectPermission(reference='policyGroup')>
+			<cfset stLocal.stPolicyGroupPermissions = stLocal.stObjectPermissions[arguments.stform.sourcePolicyGroupID]>
+			<cfloop collection="#stLocal.stPolicyGroupPermissions#" item="stLocal.key">
+				<cfset createPermissionBarnacle(PolicyGroupId=stLocal.desinationPolicyGroupID, PermissionId=stLocal.key,Reference="PolicyGroup", status=stLocal.stPolicyGroupPermissions[stLocal.key].A)>
+			</cfloop>
+		<cfelse> <!--- else return an error message --->
+			<cfset stLocal.streturn.returncode = 0>
+			<cfset stLocal.streturn.returnmessage = stLocal.returnstruct.returnmessage>
+		</cfif>
+		<cfreturn stLocal.streturn>		
+	</cffunction>
+
+	<cffunction name="checkInheritedPermission" hint="checks whether you have inherited permission to perform an action on an object." output="no">
 		<cfargument name="permissionName" required="true">
 		<cfargument name="objectid" required="false">
 		<cfargument name="reference" required="false">
 		<cfargument name="lPolicyGroupIDs" required="false">
 
-		<cfscript>
+		<cfset oAuthentication = request.dmsec.oAuthentication>
+		<cfif NOT isDefined("arguments.lPolicyGroupIds")>
+			<cfset stLoggedInUser = oAuthentication.getUserAuthenticationData()>
+			<cfif structKeyExists(stLoggedInUser,"lPolicyGroupIds")>
+				<cfset arguments.lPolicyGroupIds = stLoggedInUser.lPolicyGroupIDs>
+			</cfif>
+		</cfif>
+		
+				
+		<cfset permissionType = "">
+		<cfif Len(arguments.objectid)>
+			<cfset stObjectPermissions = collateObjectPermissions(objectid=arguments.objectid)>
+			<!--- Dont need this - if we are pasing in an objcetid - then it will always be a tree based permission, therefore permissiontype = 'dmnavigation' --->
+			<!--- stObj = contentObjectGet(objectid=arguments.objectID) --->
+			<cfset permissionType = "dmNavigation">
+		<cfelseif IsDefined("arguments.reference")>
+			<cfset stObjectPermissions = getObjectPermission(reference=arguments.reference)>
+			<cfset permissionType = arguments.reference>
+		</cfif>
+		
+		
+		<cfset bHasPermission = 0>
+		<cfif permissionType NEQ "">
+			<cfset stPermission = getPermission(permissionname=arguments.permissionName,permissionType=permissionType)>
 			
-			oAuthentication = request.dmsec.oAuthentication;
-			if(not isDefined('arguments.lPolicyGroupIds'))
-			{
-				stLoggedInUser = oAuthentication.getUserAuthenticationData();
-				if (structKeyExists(stLoggedInUser,"lPolicyGroupIds"))
-					arguments.lPolicyGroupIds = stLoggedInUser.lPolicyGroupIDs;
+			<cfif NOT StructIsEmpty(stPermission)>
+				<cfloop index="policyGroupId" list="#arguments.lpolicyGroupIds#">
+					<cfset perm = 0>
+					<cfif StructKeyExists(stObjectPermissions,policyGroupId) AND StructKeyExists(stObjectPermissions[policyGroupId],stPermission.permissionId)>
+						<cfset perm = stObjectPermissions[policyGroupId][stPermission.permissionId].T>
+					</cfif>
 					
-			}
-			
-			if (len(arguments.objectid))
-			
-			{
-				stObjectPermissions = collateObjectPermissions(objectid=arguments.objectid);
-				//Dont need this - if we are pasing in an objcetid - then it will always be a tree based permission, therefore permissiontype = 'dmnavigation'
-				//stObj = contentObjectGet(objectid=arguments.objectID);
-				permissionType = 'dmNavigation';
-			}	
-			else
-			{
-				stObjectPermissions = getObjectPermission(reference=arguments.reference);
-				permissionType = arguments.reference;
-			}
-			
-			stPermission = getPermission(permissionname=arguments.permissionName,permissionType=permissionType);
-			bHasPermission = 0; 
-			if( not StructIsEmpty(stPermission) )
-			{	
-				for( i=1; i lte listlen(arguments.lpolicyGroupIds); i=i+1 )
-				{
-					policyGroupId = listGetAt( arguments.lpolicyGroupIds, i );
-					perm=0;
-					
-					if( StructKeyExists(stObjectPermissions,policyGroupId) AND StructKeyExists(stObjectPermissions[policyGroupId],stPermission.permissionId))
-					{
-						perm=stObjectPermissions[policyGroupId][stPermission.permissionId].T;
-					}
-					
-					if( bhasPermission eq 0 )
-					{	
-						bhasPermission=perm;
-					}
-					else if (bhasPermission eq -1 AND perm eq 1)
-					{
-						bhasPermission=perm;
-					}
-				}
-			}
-			
-			
-		</cfscript>
+					<cfif bhasPermission EQ 0>
+						<cfset bhasPermission = perm>
+					<cfelseif bhasPermission EQ -1 AND perm EQ 1>
+						<cfset bhasPermission = perm>
+					</cfif>
+				</cfloop>			
+			</cfif>
+		</cfif>
+
 		<cfreturn bHasPermission>
 	</cffunction> 
 	
@@ -455,95 +421,105 @@ $out:$
 		<cfargument name="groupname" required="true">
 		<cfargument name="userdirectory" required="true">
 		<cfargument name="policyGroupId" required="true">
-		
-		<cfscript>
-			stResult = structNew();
-			stResult.bSuccess = true;
-			stResult.message = "Policy group successfully created";
-			stPolicyStore=getPolicyStore();
-			oAuthentication = createObject("component","#application.securitypackagepath#.authentication");
-			stGroup = oAuthentication.getGroup(groupName="#arguments.groupName#", userdirectory="#arguments.userDirectory#");
-			stPolicyGroup = getPolicyGroup(policyGroupId="#policyGroupId#");
-			sql="
-				SELECT * FROM #application.dbowner##stPolicyStore.ExternalGroupToPolicyGroupTable#
-				WHERE policyGroupId=#arguments.policyGroupId#
-				AND upper(ExternalGroupUserDirectory)='#ucase(arguments.userdirectory)#'
-			  	AND upper(ExternalGroupName)='#ucase(arguments.groupName)#'";
-			qCheckMapping = query(sql=sql,dsn=stPolicyStore.datasource);	
-			if (qCheckMapping.recordCount){
-				stResult.bSuccess = false;
-				stResult.message = "Policy group already exists";
-			}	
-			else
-			{
-				sql="
-					INSERT INTO #application.dbowner##stPolicyStore.ExternalGroupToPolicyGroupTable#
-					( policyGroupId, ExternalGroupUserDirectory, ExternalGroupName )
-					VALUES	(#arguments.policyGroupId#,'#arguments.userdirectory#','#arguments.groupName#')";
-				query(sql=sql,dsn=stPolicyStore.datasource);
-				oAuthentication = createObject("component","#application.securitypackagepath#.authentication");
-				oAudit = createObject("component","#application.packagepath#.farcry.audit");
-				stuser = oAuthentication.getUserAuthenticationData();
-					if(stUser.bLoggedIn)
-						oAudit.logActivity(auditType="dmSec.createPolicyGroupMapping", username=Stuser.userlogin, location=cgi.remote_host, note="group #arguments.groupname# mapped to #stPolicyGroup.policyGroupName#");	
-			}
-		</cfscript>
 
-	<cfreturn stResult>
+		<cfset var stLocal = StructNew()>
+		<cfset stLocal.streturn = StructNew()>
+		<cfset stLocal.streturn.returncode = 1>
+		<cfif isDefined("application.adminBundle") AND StructKeyExists(application.adminBundle,session.dmProfile.locale)>
+			<cfset stLocal.streturn.returnmessage = "#application.adminBundle[session.dmProfile.locale].policyGroupMappingAdded#">
+		<cfelse>
+			<cfset stLocal.streturn.returnmessage = "Policy Group Added.">
+		</cfif>				
+		<cfset stLocal.stPolicyStore = getPolicyStore()>
+		<cfset stLocal.oAuthentication = createObject("component","#application.securitypackagepath#.authentication")>
+		<cfset stLocal.stGroup = stLocal.oAuthentication.getGroup(groupName="#arguments.groupName#", userdirectory="#arguments.userDirectory#")>
+		<cfset stLocal.stPolicyGroup = getPolicyGroup(policyGroupId="#arguments.policyGroupId#")>
+		<cfset stLocal.sql = "SELECT * FROM #application.dbowner##stLocal.stPolicyStore.ExternalGroupToPolicyGroupTable# WHERE policyGroupId=#arguments.policyGroupId# AND upper(ExternalGroupUserDirectory)='#ucase(arguments.userdirectory)#' AND upper(ExternalGroupName)='#ucase(arguments.groupName)#'">
+		<cfset stLocal.qCheckMapping = query(sql=stLocal.sql,dsn=stLocal.stPolicyStore.datasource)>
+		<cfif stLocal.qCheckMapping.recordCount>
+			<cfset stLocal.streturn.returncode = 0>
+			<cfset stLocal.streturn.returnmessage = "#application.adminBundle[session.dmProfile.locale].policyGroupMappingExists#">
+		<cfelse>
+			<cfset stLocal.sql = "INSERT INTO #application.dbowner##stPolicyStore.ExternalGroupToPolicyGroupTable# (policyGroupId, ExternalGroupUserDirectory, ExternalGroupName) VALUES (#arguments.policyGroupId#,'#arguments.userdirectory#','#arguments.groupName#')">
+			<cfset query(sql=stLocal.sql,dsn=stLocal.stPolicyStore.datasource)>
+			<cfset stLocal.oAuthentication = createObject("component","#application.securitypackagepath#.authentication")>
+			<cfset stLocal.oAudit = createObject("component","#application.packagepath#.farcry.audit")>
+			<cfset stLocal.stuser = stLocal.oAuthentication.getUserAuthenticationData()>
+			<cfif stLocal.stUser.bLoggedIn>
+				<cfset stLocal.oAudit.logActivity(auditType="dmSec.createPolicyGroupMapping", username=stLocal.Stuser.userlogin, location=cgi.remote_host, note="group #arguments.groupname# mapped to #stPolicyGroup.policyGroupName#")>
+			</cfif>
+		</cfif>
+
+	<cfreturn stLocal.streturn>
 
 	</cffunction>
 	
-	<cffunction name="deletePermission" hint="Delets a permission from the datastore" returntype="struct" output="No">
+	<cffunction name="deletePermission" hint="Delets a permission from the datastore" returntype="struct" output="no">
 		<cfargument name="permissionID" required="true">
 		
-		<cfscript>
-			stPermission = getPermission(permissionID=arguments.permissionid);
-			stPolicyStore = getPolicyStore();
-			sql = "
-				DELETE FROM #application.dbowner##stPolicyStore.permissionTable#
-				WHERE permissionId='#arguments.permissionId#'";
-			query(sql=sql,dsn=stPolicyStore.datasource);
-			stResult = structNew();
-			stResult.bSuccess = true;
-			stResult.message = "Permission successfully deleted";	
-			oAuthentication = createObject("component","#application.securitypackagepath#.authentication");
-			oAudit = createObject("component","#application.packagepath#.farcry.audit");
-			stuser = oAuthentication.getUserAuthenticationData();
-				if(stUser.bLoggedIn)
-					oAudit.logActivity(auditType="dmSec.deletepermission", username=Stuser.userlogin, location=cgi.remote_host, note="#stPermission.permissionName# deleted");	
-		</cfscript>
-		<cfreturn stResult>
+		<cfset var stPolicyStore = getPolicyStore()>
+		<cfset var stLocal = StructNew()>
+		<cfset stLocal.stReturn = StructNew()>
+		<cfset stLocal.streturn.returncode = 1>
+		<cfset stLocal.streturn.returnmessage = "">
+		
+		<cftry>
+			<cfset stLocal.stPermission = getPermission(permissionID=arguments.permissionid)>
+			<cfset stLocal.sql = "DELETE FROM #application.dbowner##stPolicyStore.permissionTable# WHERE permissionId=#arguments.permissionId#">
+			<cfset query(sql=stLocal.sql,dsn=stPolicyStore.datasource)>
+			<cfset stLocal.oAuthentication = createObject("component","#application.securitypackagepath#.authentication")>
+			<cfset stLocal.oAudit = createObject("component","#application.packagepath#.farcry.audit")>
+			<cfset stLocal.stuser = stLocal.oAuthentication.getUserAuthenticationData()>
+			<cfif stLocal.stUser.bLoggedIn>
+				<cfset stLocal.oAudit.logActivity(auditType="dmSec.deletepermission", username=stLocal.stUser.userlogin, location=cgi.remote_host, note="#stlocal.stPermission.permissionName# deleted")>
+			</cfif>
+
+			<cfcatch type="any">
+				<cfset stLocal.streturn.returncode = 0>
+				<cfset stLocal.streturn.returnmessage = "Sorry an error has occured while deleting the Permission.<br />">			
+			</cfcatch>
+		</cftry>
+		
+		<cfreturn stLocal.streturn>
 	</cffunction>
 	
-	<cffunction name="deletePolicyGroup" hint="Deletes a policy group from the data store." output="No">
-		<cfargument name="PolicyGroupName">
-		<cfargument name="PolicyGroupID">
+	<cffunction name="deletePolicyGroup" hint="Deletes a policy group from the data store." output="No" returntype="struct">
+		<cfargument name="PolicyGroupName" required="false" type="string" default="">
+		<cfargument name="PolicyGroupID" required="false" type="numeric" default="0">
 		
-		<cfscript>
-			stPolicyStore=getPolicyStore();
-			if(isDefined("arguments.policyGroupName"))
-				stPolicyGroup = getPolicyGroup(PolicyGroupName="#PolicyGroupName#");
-			else
-			{
-				stPolicyGroup.policyGroupId = arguments.PolicyGroupId;
-					
-			}	
-			sql="
-				DELETE FROM #application.dbowner##stPolicyStore.policyGroupTable# WHERE
-				PolicyGroupId='#stPolicyGroup.policyGroupId#'";
-			query(sql=sql,dsn=stPolicyStore.datasource);
-			sql="
-				DELETE FROM #application.dbowner##stPolicyStore.externalGroupToPolicyGroupTable#
-				WHERE policyGroupId=#stPolicyGroup.policyGroupId#";
-			query(sql=sql,dsn=stPolicyStore.datasource);	
-			oAuthentication = createObject("component","#application.securitypackagepath#.authentication");
-			oAudit = createObject("component","#application.packagepath#.farcry.audit");
-			stuser = oAuthentication.getUserAuthenticationData();
-				if(stUser.bLoggedIn)
-					oAudit.logActivity(auditType="dmSec.deletePolicyGroup", username=Stuser.userlogin, location=cgi.remote_host, note="#stPolicyGroup.policyGroupID# deleted");	
-					
-		</cfscript>
+		<cfset var stPolicyStore = getPolicyStore()>
+		<cfset var stLocal = StructNew()>
+		<cfset stLocal.stReturn = StructNew()>
+		<cfset stLocal.streturn.returncode = 1>
+		<cfset stLocal.streturn.returnmessage = "">
+				
+		<cftry>			
+			<cfif arguments.policyGroupName NEQ "">
+				<cfset stPolicyGroup = getPolicyGroup(PolicyGroupName="#PolicyGroupName#")>
+			<cfelse>
+				<cfset stPolicyGroup.policyGroupId = arguments.policyGroupId>
+			</cfif>
+			
+			<cfset stLocal.sql = "DELETE FROM #application.dbowner##stPolicyStore.policyGroupTable# WHERE PolicyGroupId='#stPolicyGroup.policyGroupId#'">
+			<cfset query(sql=stLocal.sql,dsn=stPolicyStore.datasource)>
 
+			<cfset stLocal.sql = "DELETE FROM #application.dbowner##stPolicyStore.externalGroupToPolicyGroupTable# WHERE policyGroupId=#stPolicyGroup.policyGroupId#">
+			<cfset query(sql=stLocal.sql,dsn=stPolicyStore.datasource)>
+			
+			<cfset stLocal.oAuthentication = createObject("component","#application.securitypackagepath#.authentication")>
+			<cfset stLocal.oAudit = createObject("component","#application.packagepath#.farcry.audit")>
+			<cfset stLocal.stuser = stLocal.oAuthentication.getUserAuthenticationData()>
+			<cfif stLocal.stUser.bLoggedIn>
+				<cfset stLocal.oAudit.logActivity(auditType="dmSec.deletePolicyGroup", username=stlocal.Stuser.userlogin, location=cgi.remote_host, note="#stPolicyGroup.policyGroupID# deleted")>
+			</cfif>
+
+			<cfcatch type="any">
+				<cfset stLocal.streturn.returncode = 0>
+				<cfset stLocal.streturn.returnmessage = "Sorry an error has occured while deleteing the policy group.">
+			</cfcatch>
+		</cftry>
+
+		<cfreturn stLocal.streturn>
 	</cffunction>
 	
 	
@@ -571,28 +547,36 @@ $out:$
 					oAudit.logActivity(auditType="dmSec.deletePolicyGroup", username=Stuser.userlogin, location=cgi.remote_host, note="#stPolicyGroup.policyGroupName# deleted");	
 		</cfscript>
 	</cffunction>
-		
-	<cffunction name="deletePolicyGroupMapping" output="No">
+	
+	<cffunction name="deletePolicyGroupMapping" returntype="struct" output="No">
 		<cfargument name="groupname" required="true">
 		<cfargument name="userdirectory" required="true">
 		<cfargument name="policyGroupID" required="true">
 
-		<cfscript>
-			stPolicyStore = getPolicyStore();
-			stPolicyGroup = getPolicyGroup(policygroupid=arguments.policygroupid);
+		<cfset var stLocal = StructNew()>
+		<cfset stLocal.streturn = StructNew()>
+		<cfset stLocal.streturn.returncode = 1>
+		<cfset stLocal.streturn.returnmessage = "">
+		
+		<cftry>
+			<cfset stLocal.stPolicyStore = getPolicyStore()>
+			<cfset stLocal.stPolicyGroup = getPolicyGroup(policygroupid=arguments.policygroupid)>
+			<cfset stLocal.sql = "DELETE FROM #application.dbowner##stPolicyStore.ExternalGroupToPolicyGroupTable# WHERE policyGroupId=#policyGroupId# AND upper(ExternalGroupUserDirectory)='#ucase(arguments.userdirectory)#' AND upper(ExternalGroupName)='#ucase(arguments.groupName)#'">
+			<cfset query(sql=stLocal.sql,dsn=stLocal.stPolicyStore.datasource)>
+			<cfset stLocal.oAuthentication = createObject("component","#application.securitypackagepath#.authentication")>
+			<cfset stLocal.oAudit = createObject("component","#application.packagepath#.farcry.audit")>
+			<cfset stLocal.stuser = stLocal.oAuthentication.getUserAuthenticationData()>
+			<cfif stLocal.stUser.bLoggedIn>
+				<cfset stLocal.oAudit.logActivity(auditType="dmSec.deletePolicyGroupMapping", username=stLocal.stUser.userlogin, location=cgi.remote_host, note="removed #arguments.groupname# mapping from #stPolicyGroup.policyGroupName#")>
+			</cfif>
 
-			sql="
-				DELETE FROM #application.dbowner##stPolicyStore.ExternalGroupToPolicyGroupTable#
-				WHERE policyGroupId=#policyGroupId#
-				AND upper(ExternalGroupUserDirectory)='#ucase(arguments.userdirectory)#'
-				AND upper(ExternalGroupName)='#ucase(arguments.groupName)#'";
-			query(sql=sql,dsn=stPolicyStore.datasource);
-			oAuthentication = createObject("component","#application.securitypackagepath#.authentication");	
-			oAudit = createObject("component","#application.packagepath#.farcry.audit");
-			stuser = oAuthentication.getUserAuthenticationData();
-				if(stUser.bLoggedIn)
-					oAudit.logActivity(auditType="dmSec.deletePolicyGroupMapping", username=Stuser.userlogin, location=cgi.remote_host, note="removed #arguments.groupname# mapping from #stPolicyGroup.policyGroupName#");	
-		</cfscript>
+			<cfcatch type="any">
+				<cfset stLocal.streturn.returncode = 0>
+				<cfset stLocal.streturn.returnmessage = "Sorry an error has occured while deleting the Policy Group Mapping.<br />">
+			</cfcatch>
+		</cftry>
+
+		<cfreturn stLocal.streturn>
 	</cffunction>
 	
 	
@@ -619,7 +603,7 @@ $out:$
 		<cfreturn stPermission>
 	</cffunction>	
 	
-	<cffunction name="getPolicyGroupMappings" output="No">
+	<cffunction name="getPolicyGroupMappings" output="yes">
 		<cfargument name="lGroupNames" required="true">
 		<cfargument name="userDirectory" required="true">
 		
@@ -805,8 +789,8 @@ $out:$
 	
 	
 	<cffunction name="getPolicyGroup" returntype="struct" output="No">
-		<cfargument name="policyGroupName" required="false">
-		<cfargument name="policyGroupID" required="false">
+		<cfargument name="policyGroupName" required="false" type="string">
+		<cfargument name="policyGroupID" required="false" type="numeric">
 		
 		<cfscript>
 			stPolicyStore = getPolicyStore();
@@ -825,7 +809,7 @@ $out:$
 		<cfreturn stPolicyGroup>
 	</cffunction>
 	
-	<cffunction name="getAllPolicyGroups" hint="Gets all policy groups." returntype="array" output="No">
+	<cffunction name="getAllPolicyGroups" hint="Gets all policy groups." returntype="array" output="Yes">
 		<cfscript>
 			stPolicyStore = getPolicyStore();
 			sql = 
@@ -852,7 +836,7 @@ $out:$
 		</cfscript>		
 
 		<cfloop index="arguments.reference" list="#arguments.lrefs#">
-		
+
 		<cfscript>
 			stObjectPermissions = StructNew();
 	
@@ -945,7 +929,7 @@ $out:$
 							sql = "
 							SELECT s.policyGroupId, s.permissionId, b.status FROM
 								(SELECT g.policyGroupId, p.permissionId FROM #application.dbowner##stPolicyStore.policyGroupTable# g
-								CROSS JOIN dmPermission p WHERE upper(p.PermissionType)='#ucase(permissionType)#' ) s
+								CROSS JOIN #application.dbowner#dmPermission p WHERE upper(p.PermissionType)='#ucase(permissionType)#' ) s
 								
 								LEFT OUTER JOIN #application.dbowner##stPolicyStore.permissionBarnacleTable# b
 									ON s.permissionId = b.permissionID
@@ -954,8 +938,8 @@ $out:$
 						}
 						
 					}
+
 				qPermissionBarnacle = query(sql=sql,dsn=stPolicyStore.datasource);
-									
 				for(row = 1; row LTE qPermissionBarnacle.recordcount; row = row + 1)
 				{
 					pg = qPermissionBarnacle['PolicyGroupId'][row];
@@ -974,68 +958,78 @@ $out:$
 		
 			
 				//cache the permission 
-				if (NOT isDefined("server.dmSec") OR NOT StructKeyExists(server.dmSec,application.applicationname) OR NOT isStruct(server.dmSec[application.applicationname]) OR NOT StructKeyExists(server.dmSec[application.applicationname], "dmSecSCache"))                       
+				if (NOT isDefined("server.dmSec") OR NOT StructKeyExists(server.dmSec,application.applicationname) OR NOT isStruct(server.dmSec[application.applicationname]) OR NOT StructKeyExists(server.dmSec[application.applicationname], "dmSecSCache"))
 					server.dmSec[application.applicationname].dmSecSCache = StructNew();
-			 	server.dmSec[application.applicationname].dmSecSCache[arguments.Reference]=duplicate(stObjectPermissions);
-			}	
-	
+
+			 	server.dmSec[application.applicationname].dmSecSCache[arguments.Reference]=duplicate(stObjectPermissions);	
+			}
 		</cfscript>
 		</cfloop>
+
 		<cfreturn stObjectPermissions>
 		
-	</cffunction>
-		
-	
-		
-	
+	</cffunction>		
 	
 	<cffunction name="reInitPermissionsCache" hint="Refreshes server permissions cache from existing database permissions" returntype="struct" output="No">
-	
-		<cfscript>
-			stResult = structNew();
-			stPolicyStore = getPolicyStore();
-			sql = "select distinct(reference1) AS Objectid from dmPermissionBarnacle where upper(reference1) <> 'POLICYGROUP'";
-			qReferences = query(sql=sql,dsn=stPolicyStore.datasource);
-			//update all the nav permissions
-			for (index=1;index LTE qReferences.recordCount;index=index+1)
-			{ 
-				
-				updateObjectPermissionCache(objectid=qReferences.objectid[index],bUseCache=0);
-			}
-			//update policy group permissions		
-			updateObjectPermissionCache(reference="policygroup");
-			stResult.bSuccess = true;
-			stResult.message = "Permissions cache has been successfully updated";
-		</cfscript>
-		<cfreturn stResult>
-	
+
+		<cfset var stPolicyStore = getPolicyStore()>
+		<cfset var stLocal = StructNew()>
+		<cfset stLocal.stReturn = StructNew()>
+		<cfset stLocal.streturn.returncode = 1>
+		<cfset stLocal.streturn.returnmessage = "Permissions cache has been successfully updated">
+			
+		<cftry>
+			<cfset stLocal.sql = "SELECT DISTINCT(reference1) AS Objectid from #application.dbowner#dmPermissionBarnacle where upper(reference1) <> 'POLICYGROUP'">
+			<cfset stLocal.qReferences = query(sql=stLocal.sql,dsn=stPolicyStore.datasource)>
+			<cfloop query="stLocal.qReferences">
+				<cfset updateObjectPermissionCache(objectid=stLocal.qReferences.objectid,bUseCache=0)>
+			</cfloop>
+
+			<cfcatch type="any">
+				<cfset stLocal.streturn.returncode = 0>
+				<cfset stLocal.streturn.returnmessage = "Sorry an error has occured rebuilding Permissions.<br />">
+			</cfcatch>
+		</cftry>
+
+		<cfreturn stLocal.streturn>
 	</cffunction>
 
-	<cffunction name="updatePermission" output="No"	>
+	<cffunction name="updatePermission" output="No" returntype="struct">
 		<cfargument name="permissionID" required="true">
 		<cfargument name="permissionName" required="true">
 		<cfargument name="permissionType" required="true">
 		<cfargument name="permissionNotes" required="false" default="">
 		
-		<cfscript>
-			stPolicyStore = getPolicyStore();
-			sql = "
-			UPDATE #application.dbowner##stPolicyStore.permissionTable# SET
-			permissionName='#arguments.permissionName#',
-			permissionNotes='#arguments.permissionNotes#',
-			permissionType='#arguments.permissionType#'
-			WHERE permissionId=#arguments.permissionId#";
-			query(sql=sql,dsn=stPolicyStore.datasource);
-			stResult = structNew();
-			stResult.bSuccess = true;
-			stResult.message = "Permission successfully added";
-			oAuthentication = createObject("component","#application.securitypackagepath#.authentication");
-			oAudit = createObject("component","#application.packagepath#.farcry.audit");
-			stuser = oAuthentication.getUserAuthenticationData();
-				if(stUser.bLoggedIn)
-					oAudit.logActivity(auditType="dmSec.updatePermission", username=StUser.userlogin, location=cgi.remote_host, note="#arguments.permissionName# updated");	
-		</cfscript>
-		<cfreturn stResult>
+		<cfset var stPolicyStore = getPolicyStore()>
+		<cfset var stLocal = StructNew()>
+		<cfset stLocal.stReturn = StructNew()>
+		<cfset stLocal.streturn.returncode = 1>
+		<cfset stLocal.streturn.returnmessage = "">		
+
+		<cftry>
+			<cfset stLocal.sql = "SELECT permissionID FROM #application.dbowner##stPolicyStore.permissionTable# WHERE permissionName='#arguments.permissionName#' AND permissionType='#arguments.permissionType#' AND permissionId <> #arguments.permissionId#">
+			<cfset stLocal.qCheck = query(sql=stLocal.sql,dsn=stPolicyStore.datasource)>
+			<cfif stLocal.qCheck.recordcount EQ 0>
+				<cfset stLocal.sql = "UPDATE #application.dbowner##stPolicyStore.permissionTable# SET permissionName='#arguments.permissionName#', permissionNotes='#arguments.permissionNotes#', permissionType='#arguments.permissionType#' WHERE permissionId=#arguments.permissionId#">
+				<cfset query(sql=stLocal.sql,dsn=stPolicyStore.datasource)>
+				<cfset stLocal.oAuthentication = createObject("component","#application.securitypackagepath#.authentication")>
+				<cfset stLocal.oAudit = createObject("component","#application.packagepath#.farcry.audit")>
+				<cfset stLocal.stuser = stLocal.oAuthentication.getUserAuthenticationData()>
+				<cfif stLocal.stUser.bLoggedIn>
+					<cfset stLocal.oAudit.logActivity(auditType="dmSec.updatePermission", username=stLocal.StUser.userlogin, location=cgi.remote_host, note="#arguments.permissionName# updated")>
+				</cfif>
+			<cfelse>
+				<cfset stLocal.streturn.returncode = 0>
+				<cfset stLocal.streturn.returnmessage = "Sorry a policy Permission with the name [#arguments.permissionName#] and Type [#arguments.permissionType#] already exists.">
+			</cfif>
+
+			<cfcatch type="any">
+				<cfset stLocal.streturn.returncode = 0>
+				<cfset stLocal.streturn.returnmessage = "Sorry an error has occured while updating the policy group.">			
+			</cfcatch>
+		</cftry>
+
+		<cfreturn stLocal.streturn>
 	</cffunction>	
 	
 	<cffunction name="updatePolicyGroup" returntype="struct" output="No">
@@ -1043,24 +1037,35 @@ $out:$
 		<cfargument name="PolicyGroupName" required="true">
 		<cfargument name="PolicyGroupNotes" required="false" default="">
 		
-		<cfscript>
-			stPolicyStore = getPolicyStore();
-			sql = "
-			UPDATE #application.dbowner##stPolicyStore.PolicyGroupTable# SET
-			PolicyGroupName='#arguments.PolicyGroupName#',
-			PolicyGroupNotes='#arguments.PolicyGroupNotes#'
-			WHERE PolicyGroupId=#arguments.PolicyGroupId#";
-			query(sql=sql,dsn=stPolicyStore.datasource);
-			stResult = structNew();
-			stResult.bSuccess = true;
-			stResult.message = "Policy group successfully updated";
-			oAuthentication = createObject("component","#application.securitypackagepath#.authentication");
-			oAudit = createObject("component","#application.packagepath#.farcry.audit");
-			stuser = oAuthentication.getUserAuthenticationData();
-				if(stUser.bLoggedIn)
-					oAudit.logActivity(auditType="dmSec.updatePolicyGroup", username=StUser.userlogin, location=cgi.remote_host, note="#arguments.policyGroupName# updated");	
-		</cfscript>
-		<cfreturn stResult>
+		<cfset var stPolicyStore = getPolicyStore()>
+		<cfset var stLocal = StructNew()>
+		<cfset stLocal.stReturn = StructNew()>
+		<cfset stLocal.streturn.returncode = 1>
+		<cfset stLocal.streturn.returnmessage = "">
+				
+		<cftry>
+			<cfset stLocal.sql = "SELECT PolicyGroupId FROM #application.dbowner##stPolicyStore.PolicyGroupTable# WHERE PolicyGroupName='#arguments.PolicyGroupName#' AND PolicyGroupId <> #arguments.PolicyGroupId#">
+			<cfset stLocal.qCheck = query(sql=stLocal.sql,dsn=stPolicyStore.datasource)>
+			<cfif stLocal.qCheck.recordcount EQ 0>
+				<cfset stLocal.sql = "UPDATE #application.dbowner##stPolicyStore.PolicyGroupTable# SET PolicyGroupName='#arguments.PolicyGroupName#', PolicyGroupNotes='#arguments.PolicyGroupNotes#' WHERE PolicyGroupId=#arguments.PolicyGroupId#">
+				<cfset query(sql=stLocal.sql,dsn=stPolicyStore.datasource)>
+				<cfset stLocal.oAuthentication = createObject("component","#application.securitypackagepath#.authentication")>
+				<cfset stLocal.oAudit = createObject("component","#application.packagepath#.farcry.audit")>
+				<cfset stLocal.stuser = stLocal.oAuthentication.getUserAuthenticationData()>
+				<cfif stLocal.stUser.bLoggedIn>
+					<cfset stLocal.oAudit.logActivity(auditType="dmSec.updatePolicyGroup", username=stLocal.StUser.userlogin, location=cgi.remote_host, note="#arguments.policyGroupName# updated")>
+				</cfif>
+			<cfelse>
+				<cfset stLocal.streturn.returncode = 0>
+				<cfset stLocal.streturn.returnmessage = "Sorry a policy group with the name [#arguments.PolicyGroupName#] already exists.">
+			</cfif>
+
+			<cfcatch type="any">
+				<cfset stLocal.streturn.returncode = 0>
+				<cfset stLocal.streturn.returnmessage = "Sorry an error has occured while updating the policy group.">
+			</cfcatch>			
+		</cftry>
+		<cfreturn stLocal.streturn>
 	</cffunction>	
 	
 	
@@ -1080,10 +1085,62 @@ $out:$
 					getObjectPermission(reference=arguments.reference,permissionType="PolicyGroup",bUseCache=0);				
 			</cfscript>
 		<cfcatch></cfcatch>
-		</cftry>
-	
+		</cftry>	
 	</cffunction> 
-		
-		
+
+	<cffunction name="importPolicyGroup" access="public" hint="exports the policy group as a wddx file" returntype="struct">
+		<cfargument name="stForm" required="true" type="struct" hint="form variables passed form editform">
+
+		<cfset var stPolicyStore = getPolicyStore()>
+		<cfset var stLocal = StructNew()>
+		<cfset stLocal.streturn = StructNew()>
+		<cfset stLocal.streturn.returncode = 1>
+		<cfset stLocal.streturn.returnmessage = "">
+
+		<cfreturn  stLocal.streturn>
+	</cffunction>
 	
+	<cffunction name="fListUsersByPermssion" access="public" hint="returns list of user objectids for a particular permission" returntype="struct">
+		<cfargument name="permissionName" required="false" default="" type="string">
+		<cfargument name="permissionID" required="false" default="0" type="numeric">
+		
+		<cfset var stLocal = StructNew()>
+		<cfset var stReturn = StructNew()>
+		<cfset var stPolicyStore = getPolicyStore()>
+
+		<cfset stReturn.bSuccess = true>
+		<cfset stReturn.message = "">
+		<cfset stReturn.lObjectIDs = "">
+		<cftry>
+			<cfquery name="stLocal.qList" datasource="#stPolicyStore.datasource#">
+			SELECT  DISTINCT g.userid
+			FROM    dmpermissionbarnacle pb, dmPermission p, dmUserToGroup g
+			WHERE   p.permissionid = pb.permissionid
+			        AND pb.policyGroupID = g.groupID<cfif arguments.permissionID NEQ 0>
+					AND p.permissionid = <cfqueryparam value="#arguments.permissionID#" cfsqltype="cf_sql_integer"><cfelse>
+					AND p.permissionname = <cfqueryparam value="#arguments.permissionName#" cfsqltype="cf_sql_varchar"></cfif>
+			</cfquery>
+
+			<cfset stReturn.lObjectIDs = ValueList(stLocal.qList.userid)>
+
+			<cfcatch>
+				<cfset stReturn.bSuccess = false>
+				<cfset stReturn.message = cfcatch.message>						
+			</cfcatch>
+		</cftry>
+
+		<cfreturn stReturn>
+	</cffunction>
+
+	<cffunction name="fCheckXMLPermission" returntype="boolean">
+		<cfargument name="xmlAttribute" required="true" type="any">
+		<cfset var bPermission = True>
+	
+		<cfif StructKeyExists(arguments.xmlAttribute,"permission")>
+			<cfif checkPermission(permissionName=arguments.xmlAttribute.permission,reference="PolicyGroup") NEQ 1>
+				<cfset bPermission = False>
+			</cfif>
+		</cfif>
+		<cfreturn bPermission>
+	</cffunction>
 </cfcomponent>

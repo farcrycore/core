@@ -1,31 +1,27 @@
+<cfsetting enablecfoutputonly="Yes">
 <!--- 
-|| BEGIN FUSEDOC ||
-
-|| Copyright ||
-Daemon Pty Limited 1995-2002
-http://www.daemon.com.au
+|| LEGAL ||
+$Copyright: Daemon Pty Limited 1995-2005, http://www.daemon.com.au $
+$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmProfile/edit.cfm,v 1.13 2004/08/20 04:28:23 brendan Exp $
-$Author: brendan $
-$Date: 2004/08/20 04:28:23 $
-$Name: milestone_2-3-2 $
-$Revision: 1.13 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmProfile/edit.cfm,v 1.16 2005/08/16 05:53:23 pottery Exp $
+$Author: pottery $
+$Date: 2005/08/16 05:53:23 $
+$Name: milestone_3-0-0 $
+$Revision: 1.16 $
 
 || DESCRIPTION || 
 dmProfile edit handler
 
 || DEVELOPER ||
 Peter Alexandrou (suspiria@daemon.com.au)
-
-|| ATTRIBUTES ||
-none
-
-|| END FUSEDOC ||
 --->
-<cfsetting enablecfoutputonly="Yes">
 
-<cfprocessingDirective pageencoding="utf-8">
+<!--- set up page header --->
+<cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
+<admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
+
 
 <!--- i18n: grab all available locales on this server --->
 <cfset locales=listToArray(application.i18nUtils.getLocales())>
@@ -88,18 +84,14 @@ none
 
 	    <cfcatch type="Any">
 	        <cfoutput>
-			<div class="formtitle" style="margin-left:30px;margin-top:30px;">#application.adminBundle[session.dmProfile.locale].updateFailed#</div>
-			<p>
-			<span class="frameMenuBullet" style="margin-left:30px;">&raquo;</span> <a href="edit.cfm?objectID=#session.dmProfile.objectID#&type=dmProfile">#application.adminBundle[session.dmProfile.locale].tryAgain#</a>
+			<div class="fade error" style="margin-left:15px" id="fader2">#application.adminBundle[session.dmProfile.locale].updateFailed# | <a href="edit.cfm?objectID=#session.dmProfile.objectID#&type=dmProfile">#application.adminBundle[session.dmProfile.locale].tryAgain#</a></div>
 	        </cfoutput>
 	    </cfcatch>
     </cftry>
 
     <cfoutput>
     <script language="JavaScript">window.opener.location.reload();</script>
-	<div class="formtitle" style="margin-left:30px;margin-top:30px;">#application.adminBundle[session.dmProfile.locale].updateSuccessful#</div>
-	<p>
-	<span class="frameMenuBullet" style="margin-left:30px;">&raquo;</span> <a href="##" onClick="window.close();">#application.adminBundle[session.dmProfile.locale].closeWindow#</a>
+	<div class="fade success" id="fader" style="margin-left:15px"><strong>#application.adminBundle[session.dmProfile.locale].updateSuccessful#</strong> | <a href="##" onClick="window.close();">#application.adminBundle[session.dmProfile.locale].closeWindow#</a></div>
     </cfoutput>
 
     <cfset bShowForm = "false">
@@ -109,85 +101,84 @@ none
 <cfif bShowForm>
 
 	<cfoutput>
-	<br>
-    <div class="FormTitle" style="margin-left:30px;margin-top:30px;">#application.adminBundle[session.dmProfile.locale].editProfile# : #stObj.userName#</div>
 
-    <cfif isDefined("errorMsg")>
-        <div class="FormTitle" style="margin-left:30px;">
-        <font color="maroon"><strong>#errorMsg#</strong></font>
-        </div>
-    </cfif>
-
-    <br>
-
-	<form action="" method="POST" name="profileForm" id="profileForm">
-	<table class="FormTable" style="width:320px">
-	<tr>
-		<td rowspan="13">&nbsp;</td>
-        <td colspan="2">&nbsp;</td>
-        <td rowspan="13">&nbsp;</td>
-	</tr>
-	<tr>
-  		<td><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].firstName#</span></td>
-   	 	<td><input type="text" name="firstName" value="#stObj.firstName#" size="30" ></td>
-	</tr>
-	<tr>
-  		<td><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].lastName#</span></td>
-   	 	<td><input type="text" name="lastName" value="#stObj.lastName#" size="30"></td>
-	</tr>
-	<tr>
-  		<td><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].emailAddress#</span></td>
-   	 	<td><input type="text" name="email" value="#stObj.emailAddress#" size="30"></td>
-	</tr>
-	<tr>
-  		<td><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].position#</span></td>
-   	 	<td><input type="text" name="position" value="#stObj.position#" size="30"></td>
-	</tr>
-	<tr>
-  		<td><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].department#</span></td>
-   	 	<td><input type="text" name="department" value="#stObj.department#" size="30"></td>
-	</tr>
-	<tr>
-  		<td><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].phoneNumber#</span></td>
-   	 	<td><input type="text" name="phone" value="#stObj.phone#" size="30"></td>
-	</tr>
-	<tr>
-  		<td><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].faxNumber#</span></td>
-   	 	<td><input type="text" name="fax" value="#stObj.fax#" size="30"></td>
-	</tr>
-	<tr>
-  		<td><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].locale#</span></td>
-   	 	<td>
-		<!--- i18n: swap to use server locales --->
-		<!--- <input type="text" name="locale" value="#stObj.locale#" size="30"> --->
-		<select name="locale" size="1">
-		<cfloop index="i" from="1" to="#arrayLen(locales)#">
-			<option value="#locales[i]#" <cfif locales[i] EQ stObj.locale>SELECTED</cfif>>#localeNames[i]#</option>			
-		</cfloop>
-		</select>
-		</td>
-	</tr>
-	<tr>
-  		<td><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].getEmailNotifications#</span></td>
-   	 	<td><input type="checkbox" name="receiveEmail" value="1"<cfif stObj.bReceiveEmail> checked</cfif>></td>
-	</tr>
-	<tr>
-		<td colspan="2">&nbsp;</td>
-	</tr>
-	<tr>
-        <td>&nbsp;</td>
-		<td>
-            <input type="submit" value="#application.adminBundle[session.dmProfile.locale].ok#" name="submit" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';">
-            <input type="button" value="#application.adminBundle[session.dmProfile.locale].cancel#" name="cancel" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';" onClick="window.close();">
-		</td>
-	</tr>
-	<tr>
-		<td colspan="2">&nbsp;</td>
-	</tr>
-	</table>
+	<form action="" method="POST" name="profileForm" id="profileForm" class="f-wrap-1 f-bg-medium" style="margin-left:8px">
+	<fieldset>
+	
+		<h3>#application.adminBundle[session.dmProfile.locale].editProfile# : #stObj.userName#</h3>
+		
+		<cfif isDefined("errorMsg")>
+        <div class="fade error" id="fader3"><strong>#errorMsg#</strong></div>
+    	</cfif>
+		
+		<label for="firstname">
+		<b>#application.adminBundle[session.dmProfile.locale].firstName#</b>
+		<input type="text" name="firstName" id="firstName" value="#stObj.firstName#" /><br />
+		</label>
+		
+		<label for="lastName">
+		<b>#application.adminBundle[session.dmProfile.locale].lastName#</b>
+		<input type="text" name="lastName" id="lastName" value="#stObj.lastName#" /><br />
+		</label>
+		
+		<label for="email">
+		<b>#application.adminBundle[session.dmProfile.locale].emailAddress#</b>
+		<input type="text" name="email" id="email" value="#stObj.emailAddress#" /><br />
+		</label>
+		
+		<label for="position">
+		<b>#application.adminBundle[session.dmProfile.locale].position#</b>
+		<input type="text" name="position" id="position" value="#stObj.position#" /><br />
+		</label>
+		
+		<label for="department">
+		<b>#application.adminBundle[session.dmProfile.locale].department#</b>
+		<input type="text" name="department" id="department" value="#stObj.department#" /><br />
+		</label>
+		
+		<label for="phone">
+		<b>#application.adminBundle[session.dmProfile.locale].phoneNumber#</b>
+		<input type="text" name="phone" id="phone" value="#stObj.phone#" /><br />
+		</label>
+		
+		<label for="fax">
+		<b>#application.adminBundle[session.dmProfile.locale].faxNumber#</b>
+		<input type="text" name="fax" id="fax" value="#stObj.fax#" /><br />
+		</label>
+		
+		<label for="locale">
+		<b>#application.adminBundle[session.dmProfile.locale].locale#</b>
+		
+			<!--- i18n: swap to use server locales --->
+			<!--- <input type="text" name="locale" value="#stObj.locale#" size="30"> --->
+			<select name="locale" size="1" id="locale">
+			<cfloop index="i" from="1" to="#arrayLen(locales)#">
+				<option value="#locales[i]#" <cfif locales[i] EQ stObj.locale>selected="selected"</cfif>>#localeNames[i]#</option>			
+			</cfloop>
+			</select><br />
+		</label>
+		
+		<fieldset class="f-checkbox-wrap">
+		
+			<b>&nbsp;</b>
+			
+			<fieldset>
+			<label for="blue" style="width:200px">
+			<input class="f-checkbox" type="checkbox" name="receiveEmail" value="1"<cfif stObj.bReceiveEmail> checked="checked"</cfif> />
+			#application.adminBundle[session.dmProfile.locale].getEmailNotifications#
+			</label>
+			</fieldset>
+				
+		</fieldset>
+			
+		<div class="f-submit-wrap">
+		<input type="submit" value="#application.adminBundle[session.dmProfile.locale].ok#" name="submit" class="f-submit" /><br />
+		</div>
+		
+	</fieldset>
 	</form>
 	</cfoutput>
 
 </cfif>
-
+<admin:footer>
 <cfsetting enablecfoutputonly="No">

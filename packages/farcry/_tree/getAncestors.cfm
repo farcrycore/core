@@ -4,15 +4,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_tree/getAncestors.cfm,v 1.13 2004/03/24 07:10:27 paul Exp $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_tree/getAncestors.cfm,v 1.15 2005/10/28 03:24:15 paul Exp $
 $Author: paul $
-$Date: 2004/03/24 07:10:27 $
-$Name: milestone_2-2-1 $
-$Revision: 1.13 $
+$Date: 2005/10/28 03:24:15 $
+$Name: milestone_3-0-0 $
+$Revision: 1.15 $
 
 || DESCRIPTION || 
 $Description: getAncestors Function $
-$TODO: $
+
 
 || DEVELOPER ||
 $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
@@ -40,7 +40,7 @@ $out:$
 			objID = qParentIDs.parentID[1];	
 		while(nLev GT 0)
 		{			
-			sql = "select parentid from nested_tree_objects	where objectid = '#objID#'";
+			sql = "select parentid from #arguments.dbowner#nested_tree_objects	where objectid = '#objID#'";
 			q = query(sql=sql, dsn=arguments.dsn);
 			if (q.recordCount EQ 1)
 			{	
@@ -52,7 +52,7 @@ $out:$
 			objID = q.parentID;
 		}
 
-		sql = "select objectid, objectname, nlevel from nested_tree_objects where objectID IN (#quotedValueList(qParentIDs.parentID)#)";
+		sql = "select objectid, objectname, nlevel from #arguments.dbowner#nested_tree_objects where objectID IN (#quotedValueList(qParentIDs.parentID)#)";
 		// check if specific ancestor level is required
 		if (isdefined("arguments.nLevel") and isNumeric(arguments.nLevel))
 			sql = sql & "and nLevel = #arguments.nLevel#";

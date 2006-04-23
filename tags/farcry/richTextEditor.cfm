@@ -4,15 +4,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/farcry/richTextEditor.cfm,v 1.17.2.1 2005/06/15 00:27:44 guy Exp $
-$Author: guy $
-$Date: 2005/06/15 00:27:44 $
-$Name: milestone_2-3-2 $
-$Revision: 1.17.2.1 $
+$Header: /cvs/farcry/farcry_core/tags/farcry/richTextEditor.cfm,v 1.22 2005/08/09 03:54:39 geoff Exp $
+$Author: geoff $
+$Date: 2005/08/09 03:54:39 $
+$Name: milestone_3-0-0 $
+$Revision: 1.22 $
 
 || DESCRIPTION || 
 $Description: Displays an editor for long text input. Based on config settings unless in toggle mode which will display a basic html text area$
-$TODO: $
+
 
 || DEVELOPER ||
 $Developer: Brendan Sisson (brendan@daemon.com.au)$
@@ -24,6 +24,7 @@ $out:$
 <cfsetting enablecfoutputonly="yes">
 
 <cfimport taglib="/farcry/farcry_core/tags/farcry" prefix="tags">
+<cfinclude template="/farcry/farcry_core/admin/includes/utilityFunctions.cfm">
 <cfparam name="attributes.textareaname" default="body">
 
 <cfif isDefined('caller.output.#attributes.textareaname#') AND not isDefined('attribute.value')>
@@ -35,9 +36,9 @@ $out:$
 	<!--- javascript for inserting images etc --->
 	<cfoutput>
 		<script language="JavaScript">
-		function insertHTML( html,field )
+		function insertHTML(html,field)
 		{
-			editform.#attributes.textareaname#.value = editform.#attributes.textareaname#.value + (html);
+			document.editform.#attributes.textareaname#.value = editform.#attributes.textareaname#.value + (html);
 		}
 		</script>
 	</cfoutput>
@@ -52,12 +53,13 @@ $out:$
 		<cfcase value="soEditorPro">
 			<!--- javascript for inserting images etc --->
 			<cfoutput>
-				<script language="JavaScript">
-				function insertHTML( html )
-				{
-					soEditorbody.insertText(html, '', true,true);
-				}
-				</script>
+			<script type="text/javascript">
+			function insertHTML(html)
+			{<cfif fBrowserDetect() EQ "Microsoft IE">
+				soEditorbody.insertText(html, '', true,true);<cfelse>
+				document.editform.#attributes.textareaname#.value = document.editform.#attributes.textareaname#.value + html;</cfif>
+			}
+			</script>
 			</cfoutput>
 
 			<!--- display tag --->
@@ -158,12 +160,13 @@ $out:$
 
 			<!--- javascript for inserting images etc --->
 			<cfoutput>
-				<script language="JavaScript">
-				function insertHTML( html )
-				{
-					soEditorbody.insertText(html, '', true,true);
-				}
-				</script>
+			<script type="text/javascript">
+			function insertHTML(html)
+			{<cfif fBrowserDetect() EQ "Microsoft IE">
+				soEditorbody.insertText(html, '', true,true);<cfelse>
+				document.editform.#attributes.textareaname#.value = document.editform.#attributes.textareaname#.value + html;</cfif>
+			}
+			</script>
 			</cfoutput>
 
 			<!--- display tag --->
@@ -286,6 +289,47 @@ $out:$
 		</cfcase>
 
 		<cfcase value="htmlArea">
+			<!--- load HTMLArea --->
+			<cfsavecontent variable="htmlAreaScript">
+				<cfoutput>
+				<!-- // Load the HTMLEditor and set the preferences // -->
+				<script type="text/javascript">
+				   _editor_url = "#application.url.farcry#/includes/lib/htmlarea/";
+				   _editor_lang = "en";
+				</script>
+				<script type="text/javascript" src="#application.url.farcry#/includes/lib/htmlarea/htmlarea.js"></script>
+				<script type="text/javascript" src="#application.url.farcry#/includes/lib/htmlarea/dialog.js"></script>
+				<script type="text/javascript" src="#application.url.farcry#/includes/lib/htmlarea/lang/en.js"></script>
+			
+				<script type="text/javascript">
+					var config = new HTMLArea.Config();
+					config.toolbar = [
+						#application.config.htmlarea.Toolbar1#
+						,#application.config.htmlarea.Toolbar2#
+					];	
+				</script>
+			
+				<script type="text/javascript">
+				<cfif isBoolean(application.config.htmlArea.useContextMenu) AND application.config.htmlArea.useContextMenu>
+					HTMLArea.loadPlugin("ContextMenu");	          
+				</cfif>
+				 //HTMLArea.loadPlugin("CSS");
+				 <cfif isBoolean(application.config.htmlArea.useTableOperations) AND application.config.htmlArea.useTableOperations>
+					 HTMLArea.loadPlugin("TableOperations");
+				 </cfif>
+					HTMLArea.loadPlugin("CharacterMap");
+					
+					window.onload = function()
+					{
+						HTMLArea.init();
+					}
+					
+				</script>
+				<!-- // Finished loading HTMLEditor //-->
+				</cfoutput>
+			</cfsavecontent>
+			<cfhtmlhead text="#htmlAreaScript#">			
+			
 			<cfset uniqueId = replace(createUUID(),'-','','all')>
 			<!--- display text area --->
 			<cfoutput><div id="htmlareawrapper"><textarea name="#attributes.textareaname#" id="#uniqueID#">#attributes.value#</textarea></div></cfoutput>
@@ -306,11 +350,11 @@ $out:$
 				config.height = "#application.config.htmlArea.height#";
 				config.width = "#application.config.htmlArea.width#";
 			
-				 var editor#attributes.textareaname# = new HTMLArea("#uniqueid#",config);
-				 window.onload = function()
-				  {
+				 initEditor = function()
+				 {
+					editor#attributes.textareaname# = new HTMLArea("#uniqueid#",config);
 			      	
-			      	<cfif len(application.config.htmlArea.pageStyle)>
+			     	<cfif len(application.config.htmlArea.pageStyle)>
         		  	editor#attributes.textareaname#.config.pageStyle = "@import url(#application.config.htmlArea.pageStyle#);";
         		  	</cfif>
 			      	// editor.registerPlugin(CSS);
@@ -320,19 +364,52 @@ $out:$
 				  	<cfif isBoolean(application.config.htmlArea.useTableOperations) AND application.config.htmlArea.useTableOperations>
 				  	editor#attributes.textareaname#.registerPlugin(TableOperations);
 				  	</cfif>
+				  	editor#attributes.textareaname#.registerPlugin(CharacterMap);
         		  	editor#attributes.textareaname#.generate();
-      			  }
-								
-				function insertHTML( html )
-				{	//TODO this focuse editor produces the undesirable side effect that images are inserted
+      			 }
+				 
+				 HTMLArea.onload = initEditor;
+				 				
+				 function insertHTML( html )
+				 {	//TODO this focuse editor produces the undesirable side effect that images are inserted
 					//at the top of the page. However this is better than when inserting from the tree having them inserted at the top of the tree frame. 
 					//Will have to devote some more time to sussing this later.
 					editor#attributes.textareaname#.focusEditor();
 					editor#attributes.textareaname#.insertHTML(html);
-				}
+				 } 
 				</script>
 			</cfoutput>
 
+		</cfcase>
+		
+		<cfcase value="fckEditor">
+			<!--- load FCKEditor --->
+			<cfsavecontent variable="fckEditorScript">
+				<cfoutput>
+				<!-- // load FCKEditor and set preferences // -->
+				<script type="text/javascript" src="#application.url.farcry#/includes/lib/fckeditor/fckeditor.js"></script>
+				<!-- // finished loading FCKEditor //-->	
+				<script type="text/javascript">
+					function insertHTML( html )
+					 {	
+					 	 	 var fck = FCKeditorAPI.GetInstance("#attributes.textareaname#");
+							 fck.InsertHtml(html,true) ; 
+							 
+					 } 
+				</script>
+				</cfoutput>
+			</cfsavecontent>				
+			<cfhtmlhead text="#fckeditorscript#">	
+			<cfscript>
+ 	 			fckEditor = createObject("component", "/farcry/includes/lib/fckeditor/fckeditor");
+				fckEditor.toolBarSet="#application.config.fckEditor.toolBarSet#";
+	 			fckEditor.instanceName="#attributes.textareaname#";
+	 			fckEditor.basePath="#application.url.farcry#/includes/lib/fckeditor/";
+	 			fckEditor.value="#attributes.value#";
+ 	 			fckEditor.width="#application.config.fckEditor.width#";
+	 			fckEditor.height="#application.config.fckEditor.height#";
+		 		fckEditor.create(); // create instance now.
+			</cfscript>		
 		</cfcase>
 
 		<cfcase value="eopro">

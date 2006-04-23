@@ -9,15 +9,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_stats/getPageStatsByDay.cfm,v 1.14.4.1 2005/05/30 02:49:46 guy Exp $
-$Author: guy $
-$Date: 2005/05/30 02:49:46 $
-$Name: milestone_2-3-2 $
-$Revision: 1.14.4.1 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_stats/getPageStatsByDay.cfm,v 1.17 2005/10/28 03:41:17 paul Exp $
+$Author: paul $
+$Date: 2005/10/28 03:41:17 $
+$Name: milestone_3-0-0 $
+$Revision: 1.17 $
 
 || DESCRIPTION || 
 $Description: get object stats $
-$TODO: $
+
 
 || DEVELOPER ||
 $Developer: Brendan Sisson (brendan@daemon.com.au) $
@@ -102,9 +102,9 @@ $out:$
 <cfdefaultcase>
 	<cfquery datasource="#arguments.dsn#" name="qGetPageStatsByDay">
 		select distinct hour, datepart(hh, fq.logdatetime) as loginhour, count(fq.logId) as count_views
-		from #application.dbowner#statsHours
+		from #application.dbowner#statsHours statsHours
 		left join (
-				select * from stats
+				select * from #application.dbowner#stats
 				where 1 = 1
 				<cfif not arguments.showAll>
 					and pageid = '#arguments.pageId#'

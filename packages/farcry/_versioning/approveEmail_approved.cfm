@@ -4,15 +4,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_versioning/approveEmail_approved.cfm,v 1.10 2004/11/19 23:18:52 tom Exp $
-$Author: tom $
-$Date: 2004/11/19 23:18:52 $
-$Name: milestone_2-3-2 $
-$Revision: 1.10 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_versioning/approveEmail_approved.cfm,v 1.12 2005/08/09 03:54:40 geoff Exp $
+$Author: geoff $
+$Date: 2005/08/09 03:54:40 $
+$Name: milestone_3-0-0 $
+$Revision: 1.12 $
 
 || DESCRIPTION || 
 $Description: sends email for approved object $
-$TODO: $
+
 
 || DEVELOPER ||
 $Developer: Brendan Sisson (brendan@daemon.com.au) $
@@ -30,21 +30,24 @@ $out:$
 <q4:contentobjectget objectID="#arguments.objectID#" r_stObject="stObj">
 
 <!--- get dmProfile object --->
-<cfscript>
-o_profile = createObject("component", application.types.dmProfile.typePath);
-stProfile = o_profile.getProfile(userName=stObj.lastupdatedby);
-</cfscript>
+<cfset o_profile = createObject("component", application.types.dmProfile.typePath)>
+<cfset stProfile = o_profile.getProfile(userName=stObj.lastupdatedby)>
+<cfset emailObj = CreateObject("component","#application.packagepath#.farcry.email")>
 		
 <!--- send email to lastupdater to let them know object is approved --->
 <cfif stProfile.emailAddress neq "" AND stProfile.bReceiveEmail>
-
     <cfif session.dmProfile.emailAddress neq "">
         <cfset fromEmail = session.dmProfile.emailAddress>
     <cfelse>
         <cfset fromEmail = stProfile.emailAddress>
     </cfif>
 
-<cfmail to="#stProfile.emailAddress#" from="#fromEmail#" subject="#application.config.general.sitetitle# - Page Approved">
+	<cfset stEmail = structNew()>
+	<cfset stEmail.toAddress = stProfile.emailAddress>
+	<cfset stEmail.fromAddress = fromEmail>
+	<cfset stEmail.subject = "#application.config.general.sitetitle# - Page Approved">
+
+	<cfsavecontent variable="stEmail.content"><cfoutput>
 Hi <cfif len(stProfile.firstName) gt 0>#stProfile.firstName#<cfelse>#stProfile.userName#</cfif>,
 
 Your page "<cfif isDefined("stObj.title") and len(trim(stObj.title))>#stObj.title#<cfelseif isDefined("stObj.label") and len(trim(stObj.label))>#stObj.label#<cfelse>undefined</cfif>" has been approved.
@@ -53,9 +56,9 @@ Your page "<cfif isDefined("stObj.title") and len(trim(stObj.title))>#stObj.titl
 Comments added on status change:
 #arguments.comment#
 </cfif>
+	</cfoutput></cfsavecontent>
 
-</cfmail>
-
+	<cfset returnstruct = emailObj.fSend(stEmail)>	
 </cfif>
 
 <cfsetting enablecfoutputonly="no">

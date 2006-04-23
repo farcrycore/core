@@ -17,7 +17,7 @@
 		<cfset dsn = "#application.dsn#" />
 		<!--- get types that use nested tree --->
 	    <cfquery name="qTypeNames" datasource="#dsn#">
-	        select distinct typename from nested_tree_objects order by typename
+	        select distinct typename from #application.dbowner#nested_tree_objects order by typename
 	    </cfquery>
 		
 	    <cfif qTypeNames.recordCount eq 0>

@@ -102,6 +102,7 @@
 				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="cleanTree.cfm" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].removeRogueTreeData#</a></div>
 				<!--- TODO: i18n --->
 				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="rebuildTree.cfm" class="frameMenuItem" target="editFrame">Rebuild Tree</a></div>
+				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="fixRefObjects.cfm" class="frameMenuItem" target="editFrame">Fix RefObjects</a></div>
 			</cfif>
 		</cfcase>
 	</cfswitch>	

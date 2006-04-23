@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/home.cfm,v 1.54.2.4 2005/06/29 05:26:58 guy Exp $
-$Author: guy $
-$Date: 2005/06/29 05:26:58 $
-$Name: milestone_2-3-2 $
-$Revision: 1.54.2.4 $
+$Header: /cvs/farcry/farcry_core/admin/home.cfm,v 1.59 2005/09/06 10:21:29 paul Exp $
+$Author: paul $
+$Date: 2005/09/06 10:21:29 $
+$Name: milestone_3-0-0 $
+$Revision: 1.59 $
 
 || DESCRIPTION || 
 $Description: The home page for farcry. Shows profile information, statistics, latest pages, pages waiting approval etc $
@@ -19,7 +19,6 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au)$
 --->
 <cfprocessingDirective pageencoding="utf-8">
 <cfsetting enablecfoutputonly="Yes" requestTimeOut="200">
-
 <!--- check for customised myFarCry home page --->
 <cfif fileexists(application.path.project & "/customadmin/home.cfm")>
     <cfinclude template="/farcry/#application.applicationName#/customadmin/home.cfm">
@@ -30,7 +29,7 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au)$
 		
 		<cfif session.firstLogin>
 		    <cfoutput>
-		    <script language="JavaScript">
+		    <script type="text/javascript">
 		    profileWin = window.open('edit.cfm?objectID=#session.dmProfile.objectID#&type=dmProfile','edit_profile','width=385,height=385,left=200,top=100');
 		    alert('#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].firstTimeLoginBlurb,"#application.config.general.siteTitle#")#');
 		    profileWin.focus();
@@ -62,32 +61,29 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au)$
 						
 				<!--- get all status breakdown --->
 				<cfinvoke component="#application.packagepath#.farcry.workflow" method="getStatusBreakdown" returnvariable="stStatus"></cfinvoke>
-				<cfoutput><span class="formTitle">#application.adminBundle[session.dmProfile.locale].objStatusBreakdown#</span><p style="margin-left: 5%;">
-					<cftry>
-<cfchart 
-	format="flash" 
-	chartHeight="100" 
-	chartWidth="250" 
-	scaleFrom="0" 
-	showXGridlines = "no" 
-	showYGridlines = "no"
-	showBorder = "no"
-	font="arialunicodeMS"
-	fontsize="10" fontbold="no" fontitalic="no" 
-	labelFormat = "percent"
-	show3D = "yes" rotated="no" sortxaxis="yes"
-	showLegend = "yes" 
-	tipStyle = "MouseOver" showmarkers="no" pieslicestyle="solid">
-	<!--- i18n: slip in localized words for obj status: Draft, Pending & Approved --->
-	<cfchartseries type="pie" colorlist="##eeeeee,##483D8B,##778899">
-		<cfloop collection="#stStatus#" item="i">
-			<cfchartdata item="#application.adminBundle[session.dmProfile.locale][i]#" value="#stStatus[i]#">
-		</cfloop>
-	</cfchartseries>
-</cfchart>
-						<cfcatch type="any"><!--- chart can not be rendered ---></cfcatch>
-					</cftry>				
-				</cfoutput>
+				<cfoutput><span class="formTitle">#application.adminBundle[session.dmProfile.locale].objStatusBreakdown#</span><p style="margin-left: 5%;"></cfoutput>
+				<cfchart 
+					format="flash" 
+					chartHeight="100" 
+					chartWidth="250" 
+					scaleFrom="0" 
+					showXGridlines = "no" 
+					showYGridlines = "no"
+					showBorder = "no"
+					font="arialunicodeMS"
+					fontsize="10" fontbold="no" fontitalic="no" 
+					labelFormat = "percent"
+					show3D = "yes" rotated="no" sortxaxis="yes"
+					showLegend = "yes" 
+					tipStyle = "MouseOver" showmarkers="no" pieslicestyle="solid">
+					<!--- i18n: slip in localized words for obj status: Draft, Pending & Approved --->
+					<cfchartseries type="pie" colorlist="##eeeeee,##483D8B,##778899">
+						<cfloop collection="#stStatus#" item="i">
+							<cfchartdata item="#application.adminBundle[session.dmProfile.locale][i]#" value="#stStatus[i]#">
+						</cfloop>
+					</cfchartseries>
+				</cfchart>
+				
 				<cfoutput><p></p>
 				<hr width="100%" size="1" color="##000000" noshade>
 				<p></p></cfoutput>
@@ -97,39 +93,35 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au)$
 					<cfinvokeargument name="breakdown" value="7,14,21"/>
 				</cfinvoke>
 				
-				<cfoutput><span class="formTitle">#application.adminBundle[session.dmProfile.locale].objAgeBreakdown#</span><p style="margin-left: 5%;">
-					<cftry>
-<cfchart
-	format="flash" 
-	chartHeight="100" 
-	chartWidth="250" 
-	scaleFrom="0" 
-	showXGridlines = "no" 
-	showYGridlines = "no"
-	showBorder = "no"
-	font="arialunicodeMS"
-	fontsize="10" fontbold="no" fontitalic="no" 
-	labelFormat = "percent"
-	show3D = "yes" rotated="no" sortxaxis="yes"
-	showLegend = "yes" 
-	tipStyle = "MouseOver" showmarkers="no" pieslicestyle="solid">
-	
-	<cfchartseries type="pie" colorlist="##eeeeee,##483D8B,##778899,##aeaeae">
-		<cfloop collection="#stAge#" item="i">
-			<!--- check if last segment ie > last defined date --->
-			<cfif not isNumeric(i)>
-				<cfset tD=application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].numberDays,i)>
-				<cfchartdata item="#tD#" value="#stAge[i]#">
-			<cfelse>
-				<cfset tD=application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].numberlastDays,i)>
-				<cfchartdata item="#tD#" value="#stAge[i]#">
-			</cfif>
-		</cfloop>
-	</cfchartseries>
-</cfchart>
-						<cfcatch type="any"><!--- chart can not be rendered ---></cfcatch>
-					</cftry>
-				</cfoutput>
+				<cfoutput><span class="formTitle">#application.adminBundle[session.dmProfile.locale].objAgeBreakdown#</span><p style="margin-left: 5%;"></cfoutput>
+				<cfchart 
+					format="flash" 
+					chartHeight="100" 
+					chartWidth="250" 
+					scaleFrom="0" 
+					showXGridlines = "no" 
+					showYGridlines = "no"
+					showBorder = "no"
+					font="arialunicodeMS"
+					fontsize="10" fontbold="no" fontitalic="no" 
+					labelFormat = "percent"
+					show3D = "yes" rotated="no" sortxaxis="yes"
+					showLegend = "yes" 
+					tipStyle = "MouseOver" showmarkers="no" pieslicestyle="solid">
+					
+					<cfchartseries type="pie" colorlist="##eeeeee,##483D8B,##778899,##aeaeae">
+						<cfloop collection="#stAge#" item="i">
+							<!--- check if last segment ie > last defined date --->
+							<cfif not isNumeric(i)>
+								<cfset tD=application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].numberDays,i)>
+								<cfchartdata item="#tD#" value="#stAge[i]#">
+							<cfelse>
+								<cfset tD=application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].numberlastDays,i)>
+								<cfchartdata item="#tD#" value="#stAge[i]#">
+							</cfif>
+						</cfloop>
+					</cfchartseries>
+				</cfchart>
 				<cfoutput><p></p>
 				<hr width="100%" size="1" color="##000000" noshade>
 				<p></p>
@@ -393,34 +385,32 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au)$
 				
 				<cfif qStats.Max gt 0>
 					<cfoutput><p></p><span class="formTitle">#application.adminBundle[session.dmProfile.locale].siteUsageLastMonth#</span><p style="margin-left: 5%;">
-			    		<div align="center">
-						<cftry>
-<cfchart 
-	format="flash" 
-	chartHeight="300" 
-	chartWidth="300" 
-	scaleFrom="0"
-	scaleTo="#qStats.max*1.1#" 
-	showXGridlines = "yes" 
-	showYGridlines = "yes"
-	seriesPlacement="default"
-	showBorder = "no"
-	font="arialunicodeMS"
-	fontsize="10" fontbold="no" fontitalic="no" 
-	labelFormat = "number"
-	xAxisTitle = "#application.adminBundle[session.dmProfile.locale].date#" 
-	yAxisTitle = "#application.adminBundle[session.dmProfile.locale].totalViews#" 
-	show3D = "yes"
-	xOffset = "0.15" 
-	yOffset = "0.15"
-	rotated = "no" 
-	showLegend = "no" 
-	tipStyle = "MouseOver">
-		<cfchartseries type="line" query="qStats.qGetPageStats" itemcolumn="viewday" valuecolumn="count_views" serieslabel="#application.adminBundle[session.dmProfile.locale].viewsInLastMonth#" paintstyle="shade"></cfchartseries>
-</cfchart>
-							<cfcatch type="any"><!--- graph can not be rendered ---></cfcatch>
-						</cftry>
-						</div></cfoutput>
+			    		<div align="center"></cfoutput>
+			    	<cfchart 
+						format="flash" 
+						chartHeight="300" 
+						chartWidth="300" 
+						scaleFrom="0"
+						scaleTo="#qStats.max*1.1#"
+						showXGridlines = "yes" 
+						showYGridlines = "yes"
+						seriesPlacement="default"
+						showBorder = "no"
+						font="arialunicodeMS"
+						fontsize="10" fontbold="no" fontitalic="no" 
+						labelFormat = "number"
+						xAxisTitle = "#application.adminBundle[session.dmProfile.locale].date#" 
+						yAxisTitle = "#application.adminBundle[session.dmProfile.locale].totalViews#" 
+						show3D = "yes"
+						xOffset = "0.15" 
+						yOffset = "0.15"
+						rotated = "no" 
+						showLegend = "no" 
+						tipStyle = "MouseOver">
+					<cfchartseries type="line" query="qStats.qGetPageStats" itemcolumn="viewday" valuecolumn="count_views" serieslabel="#application.adminBundle[session.dmProfile.locale].viewsInLastMonth#" paintstyle="shade"></cfchartseries>
+		
+					</cfchart>
+					<cfoutput></div></cfoutput>
 		        </cfif>
 		
 		<cfoutput>
@@ -428,16 +418,6 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au)$
 		</tr>
 		</table>
 		
-		<STYLE TYPE="text/css">
-		##idServer { position:relative;width: 1px;height: 1px;clip:rect(0px 1px 1px 0px);display:none;}
-		</STYLE>
-		<IFRAME WIDTH="100" HEIGHT="1" NAME="idServer" ID="idServer" 
-			 FRAMEBORDER="0" FRAMESPACING="0" MARGINWIDTH="0" MARGINHEIGHT="0" SRC="null">
-				<ILAYER NAME="idServer" WIDTH="400" HEIGHT="100" VISIBILITY="Hide" 
-				 ID="idServer">
-				<P>#application.adminBundle[session.dmProfile.locale].browserReqBlurb#</P>
-				</ILAYER>
-		</IFRAME>
 		</cfoutput>
 		
 		<!--- setup footer --->

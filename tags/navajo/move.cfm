@@ -7,11 +7,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/navajo/move.cfm,v 1.31 2004/10/28 11:02:05 paul Exp $
+$Header: /cvs/farcry/farcry_core/tags/navajo/move.cfm,v 1.34 2005/10/27 12:27:43 paul Exp $
 $Author: paul $
-$Date: 2004/10/28 11:02:05 $
-$Name: milestone_2-3-2 $
-$Revision: 1.31 $
+$Date: 2005/10/27 12:27:43 $
+$Name: milestone_3-0-0 $
+$Revision: 1.34 $
 
 || DESCRIPTION || 
 
@@ -51,10 +51,15 @@ $out:$
 	</cfoutput>
 	<cfabort>
 </cfif>
-
+<!--- <cffunction name="dump">
+	<cfargument name="vai">
+	<cfdump var="#vai#">
+	<cfabort>
+</cffunction> --->
 <cfscript>
 	oAudit = createObject("component","#application.packagepath#.farcry.audit");
 	//get all the descendants for source
+	//dump(srcObj);
 	qGetDescendants = request.factory.oTree.getDescendants(objectid=srcObj.objectID);
 	
 	if (srcObj.typename IS "dmNavigation")
@@ -105,7 +110,7 @@ $out:$
 </cfif>
 
 
-<cfif srcObj.typename IS "dmNavigation">
+ <cfif srcObj.typename IS "dmNavigation">
 	<!--- Move the branch in the NTM --->
 	
  	<cftry> 
@@ -178,7 +183,7 @@ $out:$
 		oType = createobject("component", application.types[srcObjParent.typename].typePath);
 		oType.setData(stProperties=srcObjParent,auditNote="Child moved");	
 	</cfscript>
-</cfif>
+</cfif> 
 <!--- add src nav to dest nav --->
 <cfscript>
 	destObj.datetimecreated = createODBCDate("#datepart('yyyy',destObj.datetimecreated)#-#datepart('m',destObj.datetimecreated)#-#datepart('d',destObj.datetimecreated)#");
@@ -190,26 +195,31 @@ $out:$
 	oType.setData(stProperties=destObj,auditNote="Child moved");		
 </cfscript>
 
-<cfoutput>
-	<!--- Update the tree and log--->
-	<cfscript>
-		if (srcObj.typename IS 'dmNavigation')
-			destParentObjectId = destObj.ObjectID;
-		//if they are moving to trash - log this as the audit note	
-		if (isDefined("application.navid.rubbish") AND URL.destObjectID IS application.navid.rubbish)	
-			auditNote = "object moved to trash";
-		else
-			auditnote = "object moved to new parentid #url.destObjectID#";			
-		oaudit.logActivity(objectid="#srcobj.objectid#",auditType="sitetree.movenode", username=StUser.userlogin, location=cgi.remote_host, note="#auditNote#");
 
-	</cfscript>
+<!--- Update the tree and log--->
+<cfscript>
+if (srcObj.typename IS 'dmNavigation')
+	destParentObjectId = destObj.ObjectID;
+//if they are moving to trash - log this as the audit note	
+if (isDefined("application.navid.rubbish") AND URL.destObjectID IS application.navid.rubbish)	
+	auditNote = "object moved to trash";
+else
+	auditnote = "object moved to new parentid #url.destObjectID#";			
+oaudit.logActivity(objectid="#srcobj.objectid#",auditType="sitetree.movenode", username=StUser.userlogin, location=cgi.remote_host, note="#auditNote#");
+</cfscript>
+
+<!--- update overview page --->
+	<cfoutput>
+	
 	<script>
 		srcobjid='#URL.srcObjectID#';	
 		destNavObjectId ='#destObj.objectid#';	
-		top['frames']['treeFrame'].updateTree(src=srcobjid,dest=destNavObjectId,srcobj='#url.srcObjectid#');
-		top['frames']['treeFrame'].enableDragAndDrop();
+		if(top['sidebar'].frames['sideTree'])
+		{
+			top.frames['sidebar'].frames['sideTree'].updateTree(src=srcobjid,dest=destNavObjectId,srcobj='#url.srcObjectid#');
+			top.frames['sidebar'].frames['sideTree'].enableDragAndDrop();
+		}
 	</script>
-	
-</cfoutput>
+	</cfoutput>
 
 <cfsetting enablecfoutputonly="No">

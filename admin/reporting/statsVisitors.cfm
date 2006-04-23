@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/reporting/statsVisitors.cfm,v 1.3 2004/07/15 01:51:48 brendan Exp $
-$Author: brendan $
-$Date: 2004/07/15 01:51:48 $
-$Name: milestone_2-3-2 $
-$Revision: 1.3 $
+$Header: /cvs/farcry/farcry_core/admin/reporting/statsVisitors.cfm,v 1.6 2005/08/17 03:28:39 pottery Exp $
+$Author: pottery $
+$Date: 2005/08/17 03:28:39 $
+$Name: milestone_3-0-0 $
+$Revision: 1.6 $
 
 || DESCRIPTION || 
 Shows view statistics for chosen object in a number of formats
@@ -38,9 +38,9 @@ out:
 	<cfset weekStartDay=application.thisCalendar.weekStarts(session.dmProfile.locale)>
 
 	<cfimport taglib="/farcry/fourq/tags/" prefix="q4">
-	<cfoutput><br>
-	<span class="FormTitle">#application.adminBundle[session.dmProfile.locale].sessionPerHourLast3Days#</span>
-	<p></p></cfoutput>
+	<cfoutput>
+	<h3>#application.adminBundle[session.dmProfile.locale].sessionPerHourLast3Days#</h3>
+	</cfoutput>
 	
 	<!--- get page log entries --->
 	<cfscript>
@@ -78,6 +78,8 @@ out:
 	</cfchart>
 	</cfoutput>
 	
+	<hr />
+	
 	<!--- weekly stats --->
 	
 	<!--- #### work out dates #### --->
@@ -102,10 +104,12 @@ out:
 	q4 = application.factory.oStats.getVisitorStatsByWeek(day=q3Date);
 	</cfscript>
 	
-	
 	<cfoutput>
-	<p></p>
-	<div class="formtitle">#application.adminBundle[session.dmProfile.locale].sessionsPerDayLast4Weeks#</div>
+
+	<hr />
+	
+	<h3>#application.adminBundle[session.dmProfile.locale].sessionsPerDayLast4Weeks#</h3>
+	
 	<cfchart 
 		format="flash" 
 		chartHeight="400" 
@@ -153,12 +157,17 @@ out:
 	q1 = application.factory.oStats.getVisitorStatsByDate(before=createodbcdate(form.before),after=createodbcdate(form.after));
 	</cfscript>
 	
+	
+	
 	<cfoutput>
-	<p></p>
-	<div class="formtitle">
+
+	<hr />
+	
+	<h3>
 	<cfset subS=listToArray('#application.thisCalendar.i18nDateFormat(form.after,session.dmProfile.locale,application.fullF)#,#application.thisCalendar.i18nDateFormat(form.before,session.dmProfile.locale,application.fullF)#')>
 	#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].sessionsPerDayBetween,subS)#
-	</div>
+	</h3>
+	
 	<cfif q1.qGetPageStats.recordcount>
 		<!--- ouput graph --->
 		<cfchart 
@@ -188,14 +197,32 @@ out:
 		<cfoutput><div style="color:red">#application.adminBundle[session.dmProfile.locale].noStatsBetween#</div></cfoutput>
 	</cfif>
 	
+	<hr />
+	
 	<!--- show form to change date range --->
-	<div style="margin-left:30px;margin-top:20px;">
-	<form action="" method="post">
-		#application.adminBundle[session.dmProfile.locale].betweenLabel# <input type="text" name="after" value="#application.thisCalendar.i18nDateFormat(form.after,session.dmProfile.locale,application.fullF)#">
-		#application.adminBundle[session.dmProfile.locale].andLabel# <input type="text" name="before" value="#application.thisCalendar.i18nDateFormat(form.before,session.dmProfile.locale,application.fullF)#">
-		<input type="submit" value="Change Date Range">
+	
+	<form method="post" class="f-wrap-1 f-bg-short" action="">
+	<fieldset>
+	
+		<h3>Edit range</h3>
+		
+		<label>
+		<b>#application.adminBundle[session.dmProfile.locale].betweenLabel#</b>
+		<input type="text" style="width:200px" name="after" value="#application.thisCalendar.i18nDateFormat(form.after,session.dmProfile.locale,application.fullF)#" /><br />
+		</label>
+		
+		<label>
+		<b>#application.adminBundle[session.dmProfile.locale].andLabel#</b>
+		<input type="text" style="width:200px" name="before" value="#application.thisCalendar.i18nDateFormat(form.before,session.dmProfile.locale,application.fullF)#" /><br />
+		</label>
+		
+		<div class="f-submit-wrap">
+		<input type="submit" value="Change Date Range" class="f-submit" />
+		</div>
+		
+	<fieldset>
 	</form>
-	</div>
+
 	</cfoutput>
 
 <cfelse>

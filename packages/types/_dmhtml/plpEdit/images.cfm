@@ -7,11 +7,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmhtml/plpEdit/images.cfm,v 1.19 2004/12/06 19:12:48 tom Exp $
-$Author: tom $
-$Date: 2004/12/06 19:12:48 $
-$Name: milestone_2-3-2 $
-$Revision: 1.19 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmhtml/plpEdit/images.cfm,v 1.20 2005/08/17 06:50:52 pottery Exp $
+$Author: pottery $
+$Date: 2005/08/17 06:50:52 $
+$Name: milestone_3-0-0 $
+$Revision: 1.20 $
 
 || DESCRIPTION || 
 $Description: Adds images as associated objects$
@@ -398,7 +398,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 						</a>
 					</td>
 					<td align="center">
-						<input type="checkbox" name="objectID" value="#stThisFile.objectID#">
+						<input type="checkbox" class="f-checkbox" name="objectID" value="#stThisFile.objectID#" />
 					</td>
 				</tr></cfoutput>
 			</cfloop>

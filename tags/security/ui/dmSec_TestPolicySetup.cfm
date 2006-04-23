@@ -10,11 +10,11 @@ Daemon Pty Limited 1995-2001
 http://www.daemon.com.au/
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/security/ui/dmSec_TestPolicySetup.cfm,v 1.6 2004/07/15 03:52:45 brendan Exp $
-$Author: brendan $
-$Date: 2004/07/15 03:52:45 $
-$Name: milestone_2-3-2 $
-$Revision: 1.6 $
+$Header: /cvs/farcry/farcry_core/tags/security/ui/dmSec_TestPolicySetup.cfm,v 1.7 2005/08/17 06:50:52 pottery Exp $
+$Author: pottery $
+$Date: 2005/08/17 06:50:52 $
+$Name: milestone_3-0-0 $
+$Revision: 1.7 $
 
 || DESCRIPTION || 
 Shows the userdirectory and policy store setup.
@@ -30,7 +30,7 @@ Matt Dawson (mad@daemon.com.au)
 --->
 <cfoutput>
 
-<span class="formtitle">#application.adminBundle[session.dmProfile.locale].securitySetup#</span><p></p>
+<h3>#application.adminBundle[session.dmProfile.locale].securitySetup#</h3>
 
 <cfif not IsDefined("Application.dmSec")>
 	#application.adminBundle[session.dmProfile.locale].securityNotInit#
@@ -42,14 +42,14 @@ Matt Dawson (mad@daemon.com.au)
 	</cfscript>
 
 
-	<form action="" method="POST">
-
+<form action="" method="post" class="f-wrap-1 f-bg-medium wider">
+<fieldset>
 	<cfif isDefined("form.verify")>
 		
 	<h3>#application.adminBundle[session.dmProfile.locale].testingSetup#</h3>
-	<h4>#application.adminBundle[session.dmProfile.locale].policyTests#</h4>
-	<!--- Check the policy store configuration is set in the security structure --->
-	<table border=0 cellpadding=0 cellspacing=0>
+	<h3>#application.adminBundle[session.dmProfile.locale].policyTests#</h3>
+
+	<table cellspacing="0">
 	<tr>
 	<td>&nbsp;&nbsp;</td>
 	<td>
@@ -123,10 +123,13 @@ Matt Dawson (mad@daemon.com.au)
 		
 	</cfif>
 
-	<br>
-	<input type="Submit" name="Verify" value="#application.adminBundle[session.dmProfile.locale].verifyPolicySetup#">&nbsp;<input type="Submit" name="View" value="#application.adminBundle[session.dmProfile.locale].viewSetup#"><br>
-	<br>
-	</form>
+	<div class="f-submit-wrap">
+	<input type="Submit" name="Verify" class="f-submit" value="#application.adminBundle[session.dmProfile.locale].verifyPolicySetup#" />
+	<input type="Submit" name="View" class="f-submit" value="#application.adminBundle[session.dmProfile.locale].viewSetup#" />
+	</div>
+	
+</fieldset>
+</form>
 </cfif>
 
 </cfoutput>

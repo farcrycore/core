@@ -6,11 +6,11 @@ Daemon Pty Limited 1995-2003
 http://www.daemon.com.au
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/admin/cacheAll.cfm,v 1.4 2004/07/15 01:10:24 brendan Exp $
-$Author: brendan $
-$Date: 2004/07/15 01:10:24 $
-$Name: milestone_2-3-2 $
-$Revision: 1.4 $
+$Header: /cvs/farcry/farcry_core/admin/admin/cacheAll.cfm,v 1.6 2005/08/16 05:53:23 pottery Exp $
+$Author: pottery $
+$Date: 2005/08/16 05:53:23 $
+$Name: milestone_3-0-0 $
+$Revision: 1.6 $
 
 || DESCRIPTION || 
 Loops over all pages in website to enable caches to be set
@@ -39,13 +39,13 @@ out:
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 <cfif iGeneralTab eq 1>
-	<cfoutput><span class="Formtitle">#application.adminBundle[session.dmProfile.locale].autoCache#</span><p></p>
+	<cfoutput><h3>#application.adminBundle[session.dmProfile.locale].autoCache#</h3>
 	
-	#application.adminBundle[session.dmProfile.locale].generatingCaches#<p></p></cfoutput><cfflush>
+	<p>#application.adminBundle[session.dmProfile.locale].generatingCaches#</p></cfoutput><cfflush>
 	
 	<cfinvoke component="#application.packagepath#.farcry.cache" method="cacheAll" />
 	
-	<cfoutput><p></p><strong>#application.adminBundle[session.dmProfile.locale].allDone#</strong></cfoutput>
+	<cfoutput><h4 class="fade success" id="fader1">#application.adminBundle[session.dmProfile.locale].allDone#</h4></cfoutput>
 
 <cfelse>
 	<admin:permissionError>

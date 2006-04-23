@@ -4,15 +4,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/edittabArchive.cfm,v 1.10 2004/10/15 01:12:55 paul Exp $
-$Author: paul $
-$Date: 2004/10/15 01:12:55 $
-$Name: milestone_2-3-2 $
-$Revision: 1.10 $
+$Header: /cvs/farcry/farcry_core/admin/edittabArchive.cfm,v 1.12 2005/08/17 06:50:52 pottery Exp $
+$Author: pottery $
+$Date: 2005/08/17 06:50:52 $
+$Name: milestone_3-0-0 $
+$Revision: 1.12 $
 
 || DESCRIPTION || 
 $Description: shows archived objects $
-$TODO: $
+
 
 || DEVELOPER ||
 $Developer: Brendan Sisson (brendan@daemon.com.au)$
@@ -34,9 +34,9 @@ $out:$
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 <cfif iArchiveTab eq 1>
-	<br>
-	<span class="FormTitle"><cfoutput>#application.adminBundle[session.dmProfile.locale].archive#</cfoutput></span>
-	<p></p>
+
+	<h3><cfoutput>#application.adminBundle[session.dmProfile.locale].archive#</cfoutput></h3>
+
 	
 	<!--- check if rollback is required --->
 	<cfif isdefined("url.archiveid")>
@@ -58,18 +58,17 @@ $out:$
 		<cfinvokeargument name="objectID" value="#url.objectid#"/>
 	</cfinvoke>
 	
-	<p></p>
-	<table cellpadding="5" cellspacing="0" border="0" style="margin-left:30px;">
+	<table cellspacing="0">
 	<cfif getArchivesRet.recordcount gt 0>
 		<!--- setup table --->
 		<cfoutput>
 		<tr>
-			<td align="center"><strong>#application.adminBundle[session.dmProfile.locale].Date#</strong></td>
-			<td align="center"><strong>#application.adminBundle[session.dmProfile.locale].Label#</strong></td>
-			<td align="center"><strong>#application.adminBundle[session.dmProfile.locale].User#</strong></td>
-			<td>&nbsp;</td>
-			<td>&nbsp;</td>
-			<td>&nbsp;</td>
+			<th>#application.adminBundle[session.dmProfile.locale].Date#</th>
+			<th>#application.adminBundle[session.dmProfile.locale].Label#</th>
+			<th>#application.adminBundle[session.dmProfile.locale].User#</th>
+			<th>&nbsp;</th>
+			<th>&nbsp;</th>
+			<th>&nbsp;</th>
 		</tr>
 		</cfoutput>
 		<!--- loop over archives --->

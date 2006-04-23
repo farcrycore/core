@@ -4,18 +4,18 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_tree/moveBranch.cfm,v 1.15.6.2 2005/04/28 02:34:09 paul Exp $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_tree/moveBranch.cfm,v 1.19 2005/10/28 04:10:04 paul Exp $
 $Author: paul $
-$Date: 2005/04/28 02:34:09 $
-$Name: milestone_2-3-2 $
-$Revision: 1.15.6.2 $
+$Date: 2005/10/28 04:10:04 $
+$Name: milestone_3-0-0 $
+$Revision: 1.19 $
 
 || DESCRIPTION || 
 $Description: deleteBranch Function $
-$TODO: $
+
 
 || DEVELOPER ||
-$Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
+$Developer: Paul Harrison (paul@enpresiv.com) $
 
 || ATTRIBUTES ||
 $in: $
@@ -48,7 +48,7 @@ $out:$
 		q = getParentID(objectID=arguments.objectID, dsn=arguments.dsn);
 		source_parentid = q.parentID;
 		
-		sql = "select objectID from nested_tree_objects where parentid = '#arguments.parentid#'";
+		sql = "select objectID from #arguments.dbowner#nested_tree_objects where parentid = '#arguments.parentid#'";
 		q = query(sql=sql,dsn=arguments.dsn);
 		destChildrenCount = q.recordCount;
 
@@ -67,7 +67,7 @@ $out:$
 			
 		// get the left and right of the object. this span defines the branch (object including its descendants). Also get typename, 
 		//to differentiate between trees (there may be more than one tree, and we don't want to change the values of the other trees)
-		sql = "select nleft, nright, typename from nested_tree_objects where objectid = '#arguments.objectid#'";
+		sql = "select nleft, nright, typename from #arguments.dbowner#nested_tree_objects where objectid = '#arguments.objectid#'";
 		q = query(sql=sql, dsn=arguments.dsn);
 				
 		nleft = q.nleft;
@@ -77,7 +77,7 @@ $out:$
 		//-- keep the branch (object and descendants of the object) ids safe in a temp table
 		sql = "
 		select objectid 
-		from nested_tree_objects
+		from #arguments.dbowner#nested_tree_objects
 		where nleft between #nleft# and #nright#
 		and typename = '#typename#'";
 	
@@ -100,7 +100,7 @@ $out:$
 		if (NOT source_parentid IS arguments.parentid)
 		{
 			sql = "
-				update nested_tree_objects
+				update #arguments.dbowner#nested_tree_objects
 				set parentid = '#arguments.parentid#'
 				where objectid = '#arguments.objectid#'"; 
 			query(sql=sql, dsn=arguments.dsn);
@@ -110,14 +110,14 @@ $out:$
 			//object and all its descendants
 					
 			sql = "
-			select nlevel from nested_tree_objects 
+			select nlevel from #arguments.dbowner#nested_tree_objects 
 			where objectid = '#arguments.parentid#'";
 			
 			q = query(sql=sql, dsn=arguments.dsn);
 			dest_parent_level = q.nlevel;
 			
 			sql = "
-				select nlevel from nested_tree_objects 
+				select nlevel from #arguments.dbowner#nested_tree_objects 
 				where objectid = '#source_parentid#'";
 			q = query(sql=sql, dsn=arguments.dsn);
 			source_parent_level = q.nlevel;
@@ -126,7 +126,7 @@ $out:$
 			leveldiff = dest_parent_level - source_parent_level;
 			
 			sql = "
-				update nested_tree_objects 
+				update #arguments.dbowner#nested_tree_objects 
 				set nlevel = (nlevel + #leveldiff#)
 				where nleft between #nleft# and #nright#
 				and typename = '#typename#'";
@@ -137,7 +137,7 @@ $out:$
 		//contract the old parent and greater by this number, excluding the branch. 	
 			
 		sql = "
-			update nested_tree_objects 				
+			update #arguments.dbowner#nested_tree_objects 				
 			set	nleft = (nleft - #count#)
 			where nleft > #nleft#
 			and typename = '#typename#'";
@@ -149,7 +149,7 @@ $out:$
 		arrayAppend(aSQL,sql);
 		
 		sql = "
-			update nested_tree_objects 				
+			update #arguments.dbowner#nested_tree_objects 				
 			set	nright = (nright - #count#)
 			where nright > #nleft# 
 			and typename = '#typename#'";
@@ -164,7 +164,7 @@ $out:$
 		// of the specified destination parent. 
 		if (arguments.pos LT 2)
 		{	
-			sql = "select nleft + 1 AS nleft from nested_tree_objects where objectid = '#arguments.parentid#'";
+			sql = "select nleft + 1 AS nleft from #arguments.dbowner#nested_tree_objects where objectid = '#arguments.parentid#'";
 			q = query(sql=sql, dsn=arguments.dsn);
 			dest_left = q.nleft;
 		}	
@@ -175,7 +175,7 @@ $out:$
 			rowindex = 1;
 			sql = "
 				select #rowindex# AS seq, min(nright) AS nright 
-				FROM nested_tree_objects where parentID = '#arguments.parentid#' AND objectID <> '#arguments.objectid#'";
+				FROM #arguments.dbowner#nested_tree_objects where parentID = '#arguments.parentid#' AND objectID <> '#arguments.objectid#'";
 			qTemp = query(sql=sql, dsn=arguments.dsn); 	
 			//smoke up some sequence numbers for the latter
 			for (i = 1;i LTE qTemp.recordCount;i=i+1)
@@ -191,7 +191,7 @@ $out:$
 				q = queryofquery2("select nright",qTemp);
 				sql = "
 					select	min(nright) AS minr 
-					from nested_tree_objects where parentid = '#arguments.parentID#' and objectid <> '#arguments.objectid#'
+					from #arguments.dbowner#nested_tree_objects where parentid = '#arguments.parentID#' and objectid <> '#arguments.objectid#'
 					and nright not in (#quotedValueList(qTemp.nright)#)";
 				q = query(sql=sql, dsn=arguments.dsn);	
 				
@@ -220,7 +220,7 @@ $out:$
 						
 		
 		sql = "
-		update nested_tree_objects 
+		update #arguments.dbowner#nested_tree_objects 
 		set	nright = nright + #count#
 		where nright > #dest_left#
 		and typename = '#typename#'";
@@ -245,7 +245,7 @@ $out:$
 			if ((NOT source_parent_level IS dest_parent_level OR NOT destChildrenCount) AND bExpandDest)
 			{
 				sql = "
-				update nested_tree_objects
+				update #arguments.dbowner#nested_tree_objects
 				set 	nright = nright + #count#
 				where objectid = '#arguments.parentid#'";
 				query(sql=sql, dsn=arguments.dsn);
@@ -255,7 +255,7 @@ $out:$
 				
 			
 		sql = "
-			update nested_tree_objects 				
+			update #arguments.dbowner#nested_tree_objects 				
 			set	nleft = nleft + #count#
 			where nleft >= #dest_left#
 			and typename = '#typename#'";
@@ -274,7 +274,7 @@ $out:$
 		if(qBranchIds.recordCount)	
 		{
 			sql = "
-				update nested_tree_objects 
+				update #arguments.dbowner#nested_tree_objects 
 				set	nleft = (nleft + #diff#),
 				nright = (nright + #diff#)
 				where 	objectid in (#quotedValueList(qBranchIds.objectid)#)";  
@@ -285,7 +285,7 @@ $out:$
 		//Fixing a problem where when moving to bottom, the parent node nright value does not get correctly updated
 		if (source_parentid IS  arguments.parentid)
 		{   
-			sql = "select objectid, objectname from nested_tree_objects
+			sql = "select objectid, objectname from #arguments.dbowner#nested_tree_objects
 					where parentid =  '#arguments.parentid#'
 					order by nleft";
 					
@@ -295,7 +295,7 @@ $out:$
 			{
 			
 			sql = "
-				update nested_tree_objects
+				update #arguments.dbowner#nested_tree_objects
 				set 	nright = nright + #count#
 				where objectid = '#arguments.parentid#'";
 			

@@ -40,6 +40,8 @@
 			if (StructKeyExists(stObjs['#key#'], "DATETIMELASTUPDATED"))
 				stObjs['#key#'].ATTR_DATETIMELASTUPDATED = stObjs['#key#'].datetimelastupdated;
 			
+			
+			
 			typename = stObjs['#key#'].typename;
 		
 		// if navigation item smoke the object up with some aNavChild entries
@@ -87,11 +89,11 @@ Daemon Pty Limited 1995-2001
 http://www.daemon.com.au/
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/navajo/treeData.cfm,v 1.18 2004/08/07 09:17:51 geoff Exp $
-$Author: geoff $
-$Date: 2004/08/07 09:17:51 $
-$Name: milestone_2-3-2 $
-$Revision: 1.18 $
+$Header: /cvs/farcry/farcry_core/tags/navajo/treeData.cfm,v 1.19 2005/02/07 23:24:23 spike Exp $
+$Author: spike $
+$Date: 2005/02/07 23:24:23 $
+$Name: milestone_3-0-0 $
+$Revision: 1.19 $
 
 || DESCRIPTION || 
 Retrieves object(s) [and relations] information and returns it in js format.
@@ -109,6 +111,9 @@ Matt Dawson (mad@daemon.com.au)
 
 || HISTORY ||
 $Log: treeData.cfm,v $
+Revision 1.19  2005/02/07 23:24:23  spike
+Added site tree custom icon overlay for dmNavigation that has an external link associated with it. Icon overlay is the same as the one for dmInclude.
+
 Revision 1.18  2004/08/07 09:17:51  geoff
 Removed some very old Spectra COAPI integration code, and added support for fourq.getdata() bshallow option.  This should improve tree performance by not retrieving longtext field properties for objects in the tree.
 
@@ -197,7 +202,7 @@ moved tree code out of fourq and into farcry_core
 	<!--- begin: munge object structure to reflect f# --->
 	<cfset stNewobjects = mungeobjects(stNewObjects)>
 	<!--- end: munge object structure to reflect f# --->
-	
+
 	<cfscript>
 	stCheckObjects = stNewObjects;
 	StructAppend( stObjects, stNewObjects, "Yes" );

@@ -10,32 +10,39 @@
 sortitems = 1;  
 
 function moveindex(index,to) {
-var list = document.form.dest;
-var total = list.options.length-1;
-if (index == -1) return false;
-if (to == +1 && index == total) return false;
-if (to == -1 && index == 0) return false;
-var items = new Array;
-var values = new Array;
-for (i = total; i >= 0; i--) {
-	items[i] = list.options[i].text;
-	values[i] = list.options[i].value;
-}
-for (i = total; i >= 0; i--) {
-if (index == i) {
-	list.options[i + to] = new Option(items[i],values[i], 0, 1);
-	list.options[i] = new Option(items[i + to], values[i + to]);
-	i--;
-}
-else {
-	list.options[i] = new Option(items[i], values[i]);
-   }
-}
-list.focus();
+	var list = document.forms[0].dest;
+	var total = list.options.length-1;
+	if (index == -1) return false;
+	if (to == +1 && index == total)
+		return false;
+	if (to == -1 && index == 0)
+		return false;
+
+	var items = new Array;
+	var values = new Array;
+
+	for (i = total; i >= 0; i--) {
+		items[i] = list.options[i].text;
+		values[i] = list.options[i].value;
+	}
+
+	for (i = total; i >= 0; i--) {
+		if (index == i) {
+		list.options[i + to] = new Option(items[i],values[i], 0, 1);
+		list.options[i] = new Option(items[i + to], values[i + to]);
+		i--;
+		}
+		else {
+			list.options[i] = new Option(items[i], values[i]);
+   		}
+	}
+
+	list.focus();
 }
 
 function move(fbox,tbox)
-{	for(var i=0; i<fbox.options.length; i++) {
+{
+	for(var i=0; i<fbox.options.length; i++) {
 		if(fbox.options[i].selected && fbox.options[i].value != "") {
 			var no = new Option();
 			no.value = fbox.options[i].value;

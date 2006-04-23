@@ -4,15 +4,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/config.cfc,v 1.25 2004/09/08 08:02:41 geoff Exp $
-$Author: geoff $
-$Date: 2004/09/08 08:02:41 $
-$Name: milestone_2-3-2 $
-$Revision: 1.25 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/config.cfc,v 1.28 2005/09/07 22:41:58 tom Exp $
+$Author: tom $
+$Date: 2005/09/07 22:41:58 $
+$Name: milestone_3-0-0 $
+$Revision: 1.28 $
 
 || DESCRIPTION || 
 $Description: config cfc $
-$TODO: $
+
 
 || DEVELOPER ||
 $Developer: Brendan Sisson (brendan@daemon.com.au) $
@@ -254,6 +254,24 @@ $out:$
 	<cfargument name="configName" required="No" type="string" default="HTMLArea">
 	
 	<cfinclude template="_config/defaultHTMLArea.cfm">
+	
+	<cfreturn stStatus>
+</cffunction>
+
+<cffunction name="defaultFCKEditor">
+    <cfargument name="dsn" type="string" default="#application.dsn#" required="true" hint="Database DSN">
+	<cfargument name="configName" required="No" type="string" default="FCKEditor">
+	
+	<cfinclude template="_config/defaultFCKEditor.cfm">
+	
+	<cfreturn stStatus>
+</cffunction>
+
+<cffunction name="defaultTinyMCE">
+    <cfargument name="dsn" type="string" default="#application.dsn#" required="true" hint="Database DSN">
+	<cfargument name="configName" required="No" type="string" default="tinyMCE">
+	
+	<cfinclude template="_config/defaultTinyMCE.cfm">
 	
 	<cfreturn stStatus>
 </cffunction>

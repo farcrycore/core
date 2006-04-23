@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/dmCron.cfc,v 1.5 2004/07/26 07:48:40 phastings Exp $
-$Author: phastings $
-$Date: 2004/07/26 07:48:40 $
-$Name: milestone_2-3-2 $
-$Revision: 1.5 $
+$Header: /cvs/farcry/farcry_core/packages/types/dmCron.cfc,v 1.6 2005/08/10 01:18:55 guy Exp $
+$Author: guy $
+$Date: 2005/08/10 01:18:55 $
+$Name: milestone_3-0-0 $
+$Revision: 1.6 $
 
 || DESCRIPTION || 
 $Description: dmCron Type (scheduled tasks) $
@@ -84,17 +84,22 @@ object methods
 	<cfreturn qTemplates>
 </cffunction>
 
-<cffunction name="delete" access="public" output="true" hint="Deletes the scheduled task and actual dmCron object">
+<cffunction name="delete" access="public" output="false" hint="Deletes the scheduled task and actual dmCron object" returntype="struct">
 	<cfargument name="objectid" required="yes" type="UUID">
 	
 	<!--- getData for object deletion --->
-	<cfset stObj = getData(arguments.objectid)>
+	<cfset var stObj = getData(arguments.objectid)>
+	<cfset var stReturn = StructNew()>
+	<cfset stReturn.bSuccess = 1>
+	<cfset stReturn.message = "">
 	
 	<!--- delete scheduled task --->
 	<cfschedule	action="Delete"	task = "#application.applicationName#_#stObj.title#">
 	
 	<!--- delete dmCron object --->
 	<cfset super.delete(stObj.objectId)>
+
+	<cfreturn stReturn>
 </cffunction>
 
 <cffunction name="setData" access="public" output="true" hint="Creates a scheduled task and actual dmCron object">

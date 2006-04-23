@@ -1,12 +1,12 @@
 <!--- @@description:
 
-Updates dmFile objects with a default datePublished value<br/>
-Deploys new overview tree config<br/>
-Adds new 'alias' column to categories<br/>
-Updates dmFile objects with a default documentDate value<br/>
-Updates file config with archiveFiles attribute<br/>
-Deploys new htmlArea config<br/>
-Deploys new editOnPro v4.xx config<br/>
+Updates dmFile objects with a default datePublished value<br />
+Deploys new overview tree config<br />
+Adds new 'alias' column to categories<br />
+Updates dmFile objects with a default documentDate value<br />
+Updates file config with archiveFiles attribute<br />
+Deploys new htmlArea config<br />
+Deploys new editOnPro v4.xx config<br />
 --->
 
 <html>
@@ -44,7 +44,7 @@ Deploys new editOnPro v4.xx config<br/>
 		</cfdefaultcase>
 	</cfswitch>
 		<cfcatch>
-			<cfoutput><br/>#cfcatch.detail#<br/></cfoutput>
+			<cfoutput><br />#cfcatch.detail#<br /></cfoutput>
 			<cfflush>
 		</cfcatch>
 	</cftry>
@@ -74,7 +74,7 @@ Deploys new editOnPro v4.xx config<br/>
 		</cfdefaultcase>
 	</cfswitch>
 		<cfcatch>
-			<cfoutput><br/>#cfcatch.detail#<br/></cfoutput>
+			<cfoutput><br />#cfcatch.detail#<br /></cfoutput>
 			<cfflush>
 		</cfcatch>
 	</cftry>
@@ -104,7 +104,7 @@ Deploys new editOnPro v4.xx config<br/>
 		</cfdefaultcase>
 	</cfswitch>
 		<cfcatch>
-			<cfoutput><br/>#cfcatch.detail#<br/></cfoutput>
+			<cfoutput><br />#cfcatch.detail#<br /></cfoutput>
 			<cfflush>
 		</cfcatch>
 	</cftry>
@@ -134,7 +134,7 @@ Deploys new editOnPro v4.xx config<br/>
 		</cfdefaultcase>
 	</cfswitch>
 		<cfcatch>
-			<cfoutput><br/>#cfcatch.detail#<br/></cfoutput>
+			<cfoutput><br />#cfcatch.detail#<br /></cfoutput>
 			<cfflush>
 		</cfcatch>
 	</cftry>
@@ -170,7 +170,7 @@ Deploys new editOnPro v4.xx config<br/>
 		</cfdefaultcase>
 	</cfswitch>
 		<cfcatch>
-			<cfoutput><br/>#cfcatch.detail#<br/></cfoutput>
+			<cfoutput><br />#cfcatch.detail#<br /></cfoutput>
 			<cfflush>
 		</cfcatch>
 	</cftry>
@@ -225,7 +225,7 @@ Deploys new editOnPro v4.xx config<br/>
 		</cfdefaultcase>
 	</cfswitch>
 		<cfcatch>
-			<cfoutput><br/>#cfcatch.detail#<br/></cfoutput>
+			<cfoutput><br />#cfcatch.detail#<br /></cfoutput>
 			<cfflush>
 		</cfcatch>
 	</cftry>

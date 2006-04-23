@@ -4,15 +4,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_config/defaultSoEditorPro.cfm,v 1.9 2003/09/10 12:21:48 brendan Exp $
-$Author: brendan $
-$Date: 2003/09/10 12:21:48 $
-$Name: b201 $
-$Revision: 1.9 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_config/defaultSoEditorPro.cfm,v 1.11 2005/08/19 05:22:13 guy Exp $
+$Author: guy $
+$Date: 2005/08/19 05:22:13 $
+$Name: milestone_3-0-0 $
+$Revision: 1.11 $
 
 || DESCRIPTION || 
 $Description: deploys soEditorPro config file $
-$TODO: $
+
 
 || DEVELOPER ||
 $Developer: Brendan Sisson (brendan@daemon.com.au) $
@@ -98,7 +98,7 @@ stConfig.specialCharacter = "true";
 stConfig.allowFolderCreation = "false";
 stConfig.allowUpload = "false";
 stConfig.autoSweep = "false";
-stConfig.baseCSS = "/css/dmStyle.css";
+stConfig.baseCSS = "/css/main.css";
 stConfig.codeSweeper = "true";
 stConfig.cssList = "";
 stConfig.cssListLabels = ""; 

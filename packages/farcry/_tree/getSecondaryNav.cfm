@@ -4,15 +4,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_tree/getSecondaryNav.cfm,v 1.7 2003/09/10 12:21:48 brendan Exp $
-$Author: brendan $
-$Date: 2003/09/10 12:21:48 $
-$Name: b201 $
-$Revision: 1.7 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_tree/getSecondaryNav.cfm,v 1.9 2005/10/28 04:17:51 paul Exp $
+$Author: paul $
+$Date: 2005/10/28 04:17:51 $
+$Name: milestone_3-0-0 $
+$Revision: 1.9 $
 
 || DESCRIPTION || 
 $Description: getSecondaryNav Function $
-$TODO: $
+
 
 || DEVELOPER ||
 $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
@@ -31,7 +31,7 @@ $out:$
 	
    
 	//if object is a leaf, there will be no room between its left and right values
-	sql = "select  nleft, nright from nested_tree_objects where objectid = '#arguments.objectid#'";
+	sql = "select  nleft, nright from #arguments.dbowner#nested_tree_objects where objectid = '#arguments.objectid#'";
 	q = query(sql=sql, dsn=arguments.dsn);
 	nleft = q.nleft;
 	nright = q.nright;
@@ -42,13 +42,13 @@ $out:$
 		leaf = 0;
 	
 	// get parent	
-	sql = "select parentid from nested_tree_objects where objectid = '#arguments.objectid#'";
+	sql = "select parentid from #arguments.dbowner#nested_tree_objects where objectid = '#arguments.objectid#'";
 	qParent = query(sql=sql, dsn=arguments.dsn);
 	parent = qParent.parentId;	
 	
 	//get its grandparent. we will need this for both cases.
 	sql =  "
-		select parentid from nested_tree_objects
+		select parentid from #arguments.dbowner#nested_tree_objects
 		where objectid = '#parent#'";
 	q = query(sql=sql, dsn=arguments.dsn);	
 	grandpa = q.parentID;	
@@ -59,13 +59,13 @@ $out:$
 		// + now the siblings (includes object itself)
 		//+ grandpa
 		sql = "
-		select objectid, objectname, nlevel, nleft, 1 as leaf from nested_tree_objects
+		select objectid, objectname, nlevel, nleft, 1 as leaf from #arguments.dbowner#nested_tree_objects
 		where parentid =  '#grandpa#'
 		union 
-		select objectid, objectname, nlevel, nleft, 1 as leaf from nested_tree_objects
+		select objectid, objectname, nlevel, nleft, 1 as leaf from #arguments.dbowner#nested_tree_objects
 		where parentid =  '#parent#'
 		union
-		select objectid, objectname, nlevel, nleft, 1 as leaf from nested_tree_objects
+		select objectid, objectname, nlevel, nleft, 1 as leaf from #arguments.dbowner#nested_tree_objects
 		where objectid =  '#grandpa#'
 		order by  nleft";
 	}
@@ -75,16 +75,16 @@ $out:$
 		//+ get the object itself, just in case it's the root (no parent or siblings) 
 		//+  plus its children
 		sql = "
-		select objectid, objectname, nlevel, nleft from nested_tree_objects
+		select objectid, objectname, nlevel, nleft from #arguments.dbowner#nested_tree_objects
 		where objectid =  '#parent#'
 		union  
-		select objectid, objectname, nlevel, nleft from nested_tree_objects
+		select objectid, objectname, nlevel, nleft from #arguments.dbowner#nested_tree_objects
 		where objectid =  '#arguments.objectID#'
 		union  
-		select objectid, objectname, nlevel, nleft from nested_tree_objects
+		select objectid, objectname, nlevel, nleft from #arguments.dbowner#nested_tree_objects
 		where parentid =  '#parent#'
 		union 
-		select objectid, objectname, nlevel, nleft from nested_tree_objects
+		select objectid, objectname, nlevel, nleft from #arguments.dbowner#nested_tree_objects
 		where parentid =  '#arguments.objectid#'
 		order by  nleft";
 	}	

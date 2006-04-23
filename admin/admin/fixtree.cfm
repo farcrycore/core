@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/admin/fixtree.cfm,v 1.19.2.1 2005/05/11 23:56:52 guy Exp $
-$Author: guy $
-$Date: 2005/05/11 23:56:52 $
-$Name: milestone_2-3-2 $
-$Revision: 1.19.2.1 $
+$Header: /cvs/farcry/farcry_core/admin/admin/fixtree.cfm,v 1.22 2005/08/17 03:28:39 pottery Exp $
+$Author: pottery $
+$Date: 2005/08/17 03:28:39 $
+$Name: milestone_3-0-0 $
+$Revision: 1.22 $
 
 || DESCRIPTION ||
 $Description: tree fixer. The commented out stuff is debug$
@@ -332,22 +332,38 @@ $out:$
 			<!--- show form --->
 	        <cfset defaultType = 'dmNavigation' />
 	        <cfoutput>
-	            <div class="formtitle">#application.adminBundle[session.dmProfile.locale].fixNestedTree#</div>
-	            <p>
-	                #application.adminBundle[session.dmProfile.locale].nestedTreeFunctionBlurb#
-	            </p>
-	            <form action="fixtree.cfm" method="post">
-	                #application.adminBundle[session.dmProfile.locale].enterTreeTypeName#
-	                <select name="typename">
-	                    <cfloop query="qTypeNames">
-	                        <option value="#qTypeNames.typename#" <cfif qTypeNames.typename eq defaultType>selected</cfif>>#qTypeNames.typename#</option>
-	                    </cfloop>
-	                </select>
-	                <br /><br />
-	                <input type="checkbox" name="debug" value="1" checked>#application.adminBundle[session.dmProfile.locale].showDebugOnly#<br />
-	                <br />
-	                <input type="submit" name="submit" value="#application.adminBundle[session.dmProfile.locale].submit#">
-	            </form>
+	            
+	            
+	            <form action="fixtree.cfm" method="post" class="f-wrap-1 f-bg-short wider">
+				<fieldset>
+				<h3>#application.adminBundle[session.dmProfile.locale].fixNestedTree#</h3>
+				
+	            <label for="startPoint"><b>#application.adminBundle[session.dmProfile.locale].enterTreeTypeName#</b>
+				<select name="typename">
+					<cfloop query="qTypeNames">
+						<option value="#qTypeNames.typename#" <cfif qTypeNames.typename eq defaultType>selected</cfif>>#qTypeNames.typename#</option>
+					</cfloop>
+				</select><br />
+			  	</label>
+				
+					<fieldset class="f-checkbox-wrap">
+						<b>&nbsp;</b>
+						<fieldset>
+				  		<label for="debug">
+						<input type="checkbox" class="f-checkbox" name="debug" value="1" checked="checked" />
+						#application.adminBundle[session.dmProfile.locale].showDebugOnly#
+						</label>
+	               		</fieldset>
+				    </fieldset>
+					
+					<div class="f-submit-wrap">
+					<input type="submit" name="submit" class="f-submit" value="#application.adminBundle[session.dmProfile.locale].submit#" />
+					</div>
+					
+			    </fieldset>
+				</form>
+				<hr />
+				<p>#application.adminBundle[session.dmProfile.locale].nestedTreeFunctionBlurb#</p>
 	
 	        </cfoutput>
 	    </cfif>

@@ -4,15 +4,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmFlash/edit.cfm,v 1.16 2004/12/06 19:03:10 tom Exp $
-$Author: tom $
-$Date: 2004/12/06 19:03:10 $
-$Name: milestone_2-3-2 $
-$Revision: 1.16 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmFlash/edit.cfm,v 1.27 2005/09/07 01:12:28 daniela Exp $
+$Author: daniela $
+$Date: 2005/09/07 01:12:28 $
+$Name: milestone_3-0-0 $
+$Revision: 1.27 $
 
 || DESCRIPTION || 
 $Description: edit handler$
-$TODO: $
+
 
 || DEVELOPER ||
 $Developer: Brendan Sisson (brendan@daemon.com.au)$
@@ -24,246 +24,226 @@ $out:$
 <cfsetting enablecfoutputonly="yes">
 
 <cfprocessingDirective pageencoding="utf-8">
-
 <cfimport taglib="/farcry/fourq/tags/" prefix="q4">
 <cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
+<cfimport taglib="/farcry/farcry_core/tags/widgets" prefix="widgets">
 
-<cfif isDefined("FORM.submit")> <!--- perform the update --->
-	
-	<cfscript>
-		stProperties = structNew();
-		stProperties.objectid = stObj.objectid;
-		stProperties.title = form.title;
-		stProperties.label = form.title;
-		stProperties.teaser = form.teaser;
-		
-		stProperties.flashHeight = form.height;
-		stProperties.flashWidth = form.width;
-		stProperties.flashQuality = form.quality;
-		stProperties.flashAlign = form.align;
-		stProperties.flashBgcolor = form.bgcolor;
-		stProperties.flashPlay = form.play;
-		stProperties.flashLoop = form.loop;
-		stProperties.flashMenu = form.menu;
-		stProperties.flashVersion = form.flashVersion;
-		stProperties.flashParams = form.flashParams;
-		stProperties.displayMethod = form.displayMethod;
-		//TODO MUST sort out this date stuff. Can't just keep overwriting datetime created
-		stProperties.datetimelastupdated = Now();
-		stProperties.lastupdatedby = session.dmSec.authentication.userlogin;
-		//unlock object
-		stProperties.locked = 0;
-		stProperties.lockedBy = "";
-	</cfscript>
+<cfparam name="bFormSubmitted" default="no">
+<cfparam name="errormessage" default="">
+<!--- default form elements --->
+<cfparam name="title" default="">
+<cfparam name="height" default="">
+<cfparam name="width" default="">
+<cfparam name="flashVersion" default="">
+<cfparam name="flashParams" default="">
+<cfparam name="flashAlign" default="center">
+<cfparam name="flashQuality" default="high">
+<cfparam name="flashBgcolor" default="##FFFFFF">
+<cfparam name="flashPlay" default="0">
+<cfparam name="flashLoop" default="0">
+<cfparam name="flashMenu" default="0">
+<cfparam name="teaser" default="">
+<cfparam name="bLibrary" default="0">
+<cfparam name="ownedBy" default="">
+
+<cfif isdefined("url.ref") AND url.ref eq "typeadmin"> <!--- typeadmin edit --->
+	<cfset cancelCompleteURL = "#application.url.farcry#/content/dmflash.cfm">
+<cfelse> <!--- editing from site tree --->
+	<cfset cancelCompleteURL = "#application.url.farcry#/edittabOverview.cfm?objectid=#stObj.ObjectID#">
+</cfif>
+
+<cfif bFormSubmitted EQ "yes"> <!--- perform the update --->
+	<cfset stProperties = structNew()>
+	<cfset stProperties.objectid = stObj.objectid>
+
+	<cfset stProperties.title = Trim(title)>
+	<cfset stProperties.label = Trim(title)>
+	<cfset stProperties.teaser = Trim(teaser)>
+	<cfset stProperties.flashHeight = Trim(height)>
+	<cfset stProperties.flashWidth = Trim(width)>
+	<cfset stProperties.flashQuality = Trim(flashQuality)>
+	<cfset stProperties.flashAlign = Trim(flashAlign)>
+	<cfset stProperties.flashBgcolor = Trim(flashBgcolor)>
+	<cfset stProperties.flashPlay = Trim(flashPlay)>
+	<cfset stProperties.flashLoop = Trim(flashLoop)>
+	<cfset stProperties.flashMenu = Trim(flashMenu)>
+	<cfset stProperties.flashVersion = Trim(flashVersion)>
+	<cfset stProperties.flashParams = Trim(flashParams)>
+	<cfset stProperties.displayMethod = Trim(displayMethod)>
+	<cfset stProperties.bLibrary = Trim(bLibrary)>
+	<cfset stProperties.flashmovie = stObj.flashmovie>
+	<!--- TODO MUST sort out this date stuff. Can't just keep overwriting datetime created --->
+	<cfset stProperties.datetimelastupdated = Now()>
+	<cfset stProperties.lastupdatedby = session.dmSec.authentication.userlogin>
+	<!--- unlock object --->
+	<cfset stProperties.locked = 0>
+	<cfset stProperties.lockedBy = "">
 	
 	<!--- upload the flash movie --->
-	<cfif trim(len(FORM.flashMovie)) NEQ 0>
-		<!--- try and delete current file if its there --->
-		
-		<cfif len(stobj.flashmovie)>
-			 <cftry> 
-				<cffile action="DELETE" file="#application.path.defaultFilePath#\#stObj.flashMovie#">  
-				 <cfcatch>
-				</cfcatch>			
-			</cftry> 
+	<cftry> <!--- check for file to upload --->
+		<cfif Trim(form.flash_file_upload) NEQ "">		
+			<cffile action="upload" filefield="flash_file_upload" destination="#application.path.defaultFilePath#\" accept="application/x-shockwave-flash" nameConflict="Overwrite"> 
+			<cfset oForm = createObject("component","#application.packagepath#.farcry.form")>
+			<cfset stProperties.flashmovie = oForm.sanitiseFileName(file.ServerFile,file.ClientFileName,file.ServerDirectory)>
+			<cfif Trim(stobj.flashmovie) NEQ "">
+				<cffile action="delete" file="#application.path.defaultFilePath#\#stObj.flashMovie#"> 
+			</cfif>			
 		</cfif>
-		<cftry>
-			<cffile action="upload" nameconflict="OVERWRITE" filefield="flashMovie" destination="#application.path.defaultFilePath#"> 
-			<cfscript>
-				oForm = createObject("component","#application.packagepath#.farcry.form");
-				stProperties.flashMovie = oForm.sanitiseFileName(file.ServerFile,file.ClientFileName,file.ServerDirectory);
-			</cfscript>
-			<cfcatch>
-				<cfoutput><strong>#application.adminBundle[session.dmProfile.locale].cfcatchErrorMsg#<p>
-				#application.adminBundle[session.dmProfile.locale].fileMustBeFlash# <p></p></cfoutput>
-				<cfset error=1>
-			</cfcatch>
-		</cftry>
+
+		<cfcatch>
+		 	<!--- if error flow back through the page and display the error message --->
+			<cfset errormessage = errormessage & application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].cfcatchErrorMsg,cfcatch.message) & "<br>" & application.adminBundle[session.dmProfile.locale].fileMustBeFlash>
+		</cfcatch>
+	</cftry>
+	
+	<!--- update the OBJECT if no error occured and reloacte--->
+	<cfif Trim(errormessage) EQ "">
+		<cfset oType = createobject("component", application.types.dmFlash.typePath)>
+		<cfset oType.setData(stProperties=stProperties)>
+		<cfif NOT (isdefined("url.ref") AND url.ref eq "typeadmin")> <!--- if not typeadmin edit (from site tree edit) --->
+				<!--- get parent to update site js tree --->
+				<nj:treeGetRelations typename="#stObj.typename#" objectId="#stObj.ObjectID#" get="parents" r_lObjectIds="ParentID" bInclusive="1">
+				<!--- update site js tree --->
+				<nj:updateTree objectId="#parentID#">
+		</cfif>
+
+<cfoutput><script type="text/javascript">
+if(parent['sidebar'].frames['sideTree'])
+	parent['sidebar'].frames['sideTree'].location= parent['sidebar'].frames['sideTree'].location;
+parent['content'].location.href = "#cancelCompleteURL#"
+</script></cfoutput>
+		<cfabort>
 	</cfif>
-	
-	<cfscript>
-		// update the OBJECT	
-		oType = createobject("component", application.types.dmFlash.typePath);
-		oType.setData(stProperties=stProperties);
-	</cfscript>
-		
-	<!--- get parent to update tree --->	
-	<nj:treeGetRelations 
-			typename="#stObj.typename#"
-			objectId="#stObj.ObjectID#"
-			get="parents"
-			r_lObjectIds="ParentID"
-			bInclusive="1">
-	
-	<!--- update tree --->
-	<nj:updateTree objectId="#parentID#">
-	
-	<!--- reload overview page --->
-	<cfoutput>
-		<script language="JavaScript">
-			parent['editFrame'].location.href = '#application.url.farcry#/edittabOverview.cfm?objectid=#stObj.ObjectID#';
-		</script>
-	</cfoutput>
-		
-<cfelse> <!--- Show the form --->
-	<cfoutput>
-	<br>
-	<span class="FormTitle">#stObj.title#</span><p></p>
+<cfelse>
+	<cfset title = stObj.title>
+	<cfset height = stObj.flashHeight>
+	<cfset width = stObj.flashWidth>
+	<cfset flashVersion = stObj.flashVersion>
+	<cfset flashParams = stObj.flashParams>
+	<cfset flashAlign = stObj.flashAlign>
+	<cfset flashQuality = stObj.flashQuality>
+	<cfset flashBgcolor = stObj.flashBgcolor>
+	<cfset flashPlay = stObj.flashPlay>
+	<cfset flashLoop = stObj.flashLoop>
+	<cfset flashMenu = stObj.flashMenu>
+	<cfset teaser = stObj.teaser>
+	<cfset bLibrary = stObj.bLibrary>
+	<cfset ownedBy = stObj.ownedBy>
+</cfif>
 
-	
-	<form action="" method="post" enctype="multipart/form-data" name="fileForm">
-		
-	<table class="FormTable">
-	<!--- movie title --->
-	<tr>
-  		<td><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].titleLabel#</span></td>
-   	 	<td><input type="text" name="title" value="#stObj.title#" class="FormTextBox"></td>
-	</tr>
-	
-	<!--- display method --->
-	<nj:listTemplates typename="dmFlash" prefix="display" r_qMethods="qMethods">
-	<tr>
-		<td nowrap class="FormLabel">#application.adminBundle[session.dmProfile.locale].displayMethodLabel#</td>
-		<td width="100%" class="FormLabel">
-		<select name="DisplayMethod" size="1">
-		</cfoutput>
-		<cfif qMethods.recordcount>
-			<cfoutput query="qMethods">
-			<option value="#qMethods.methodname#" <cfif qMethods.methodname eq stObj.displaymethod>SELECTED</cfif>>#qMethods.displayname#</option>
-			</cfoutput>
-		<cfelse>
-			<cfoutput><option value="none">#application.adminBundle[session.dmProfile.locale].none#</cfoutput>
+<cfoutput>
+<form action="#cgi.script_name#?#cgi.query_string#" class="f-wrap-1 wider f-bg-medium" enctype="multipart/form-data" name="fileForm" method="post">
+	<fieldset>
+		<div class="req"><b>*</b>Required</div>
+		<h3>#application.adminBundle[session.dmProfile.locale].generalInfo#: <span class="highlight">#stObj.title#</span></h3>
+		<cfif errormessage NEQ "">
+			<p id="fading1" class="fade"><span class="error">#errormessage#</span></p>
 		</cfif>
-		<cfoutput>
-		</select>
-		</td>
-	</tr>
-	
-	<!--- upload flash movie --->
-	<tr>
-		<td colspan="2">&nbsp;</td>
-	</tr>
-	<tr>	
-  	 <td><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].fileLabel#</span></td>
-   	 <td><input type="file" name="flashMovie" class="FormFileBox"></td>
-	</tr>
-	
-	<tr>
-		<td colspan="2">
-		<cfif not len(stObj.flashMovie)>
-			<span class="FormSubHeading">[#application.adminBundle[session.dmProfile.locale].noFileUploaded#]</span>
-		<cfelse>
-		
-		<table>
-		<tr>
-			<td colspan="3" style="font-size:7pt;">
-				<span class="FormLabel">#application.adminBundle[session.dmProfile.locale].newFileOverwriteThisFile#</span>
-			</td>
-		</tr>
-		<tr>
-		<td>
-			<span class="FormLabel">#application.adminBundle[session.dmProfile.locale].existingFileLabel#</span> 
-		</td>
-		<nj:getFileIcon filename="#stObj.flashMovie#" r_stIcon="fileicon"> 
-		<td>
-			<img src="#application.url.farcry#/images/treeImages/#fileicon#">
-		</td>
-		<td>
-			<a href="#application.path.defaultFilePath#\#stObj.flashMovie#" target="_blank">
-				<span class="FormLabel">#application.adminBundle[session.dmProfile.locale].previewUC#</span>
-			</a>
-		</td>
-		</tr>
-		</table>		
-		</cfif>
-		<p>&nbsp;</p>
-		</td>
-	</tr>
-	
-	<!--- flash movie params --->
-	<tr>
-  		<td><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].heightLabel#</span></td>
-   	 	<td><input type="text" name="height" value="#stObj.flashHeight#" size="4"></td>
-	</tr>
-	<tr>
-  		<td><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].widthLabel#</span></td>
-   	 	<td><input type="text" name="width" value="#stObj.flashWidth#" size="4"></td>
-	</tr>
-	<tr>
-  		<td><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].flashVersionLabel#</span></td>
-   	 	<td><input type="text" name="flashVersion" value="#stObj.flashVersion#" size="10"></td>
-	</tr>
-	<tr>
-  		<td valign="top"><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].flashParametersLabel#</span></td>
-   	 	<td><textarea cols="30" rows="4" name="flashParams" class="FormTextArea">#stObj.flashParams#</textarea></td>
-	</tr>
-	<tr>
-  		<td><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].alignmentLabel#</span></td>
-   	 	<td>
-		<select name="align">
-			<option value="left" <cfif stObj.flashalign eq "left">selected</cfif>>#application.adminBundle[session.dmProfile.locale].left#</option>
-			<option value="center" <cfif stObj.flashalign eq "center">selected</cfif>>#application.adminBundle[session.dmProfile.locale].center#</option>
-			<option value="right" <cfif stObj.flashalign eq "right">selected</cfif>>#application.adminBundle[session.dmProfile.locale].right#</option>
-			<option value="Top" <cfif stObj.flashalign eq "Top">selected</cfif>>#application.adminBundle[session.dmProfile.locale].top#</option>
-			<option value="Bottom" <cfif stObj.flashalign eq "Bottom">selected</cfif>>#application.adminBundle[session.dmProfile.locale].bottom#</option>
-		</select></td>
-	</tr>
-	<tr>
-  		<td><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].qualityLabel#</span></td>
-   	 	<td>
-		<select name="quality">
-			<option value="low" <cfif stObj.flashQuality eq "low">selected</cfif>>#application.adminBundle[session.dmProfile.locale].low#</option>
-			<option value="medium" <cfif stObj.flashQuality eq "medium">selected</cfif>>#application.adminBundle[session.dmProfile.locale].medium#</option>
-			<option value="high" <cfif stObj.flashQuality eq "high">selected</cfif>>#application.adminBundle[session.dmProfile.locale].high#</option>
-			<option value="best" <cfif stObj.flashQuality eq "best">selected</cfif>>#application.adminBundle[session.dmProfile.locale].best#</option>
-			<option value="autoHigh" <cfif stObj.flashQuality eq "autoHigh">selected</cfif>>#application.adminBundle[session.dmProfile.locale].autoHigh#</option>
-			<option value="autoLow" <cfif stObj.flashQuality eq "autoLow">selected</cfif>>#application.adminBundle[session.dmProfile.locale].autoLow#</option>
-		</select></td>
-	</tr>
-	<tr>
-  		<td><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].backgroundColorLabel#</span></td>
-   	 	<td><input type="text" name="bgcolor" value="#stObj.flashBgcolor#" size="9" maxlength="7"></td>
-	</tr>
-	<tr>
-  		<td><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].automaticPlayLabel#</span></td>
-   	 	<td><input type="radio" name="play" value="1" <cfif stObj.flashPlay>checked</cfif>>#application.adminBundle[session.dmProfile.locale].trueTxt# <input type="radio" name="play" value="0" <cfif not stObj.flashPlay>checked</cfif>>#application.adminBundle[session.dmProfile.locale].falseTxt# </td>
-	</tr>
-	<tr>
-  		<td><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].loopLabel#</span></td>
-   	 	<td><input type="radio" name="loop" value="1" <cfif stObj.flashLoop>checked</cfif>>#application.adminBundle[session.dmProfile.locale].trueTxt# <input type="radio" name="loop" value="0" <cfif not stObj.flashLoop>checked</cfif>>#application.adminBundle[session.dmProfile.locale].falseTxt# </td>
-	</tr>
-	<tr>
-  		<td><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].showMenuLabel#</span></td>
-   	 	<td><input type="radio" name="menu" value="1" <cfif stObj.flashMenu>checked</cfif>>#application.adminBundle[session.dmProfile.locale].trueTxt# <input type="radio" name="menu" value="0" <cfif not stObj.flashMenu>checked</cfif>>#application.adminBundle[session.dmProfile.locale].falseTxt# </td>
-	</tr>
-	
-	<tr>
-  		<td valign="top"><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].teaserLabel#</span></td>
-	   	<td>
-			<textarea cols="30" rows="4" name="teaser" class="FormTextArea">#stObj.teaser#</textarea>
-		</td>
-	</tr>
-	
-	<!--- submit buttons --->
-	<tr>
-		<td colspan="2" align="center">
-			<input type="submit" value="#application.adminBundle[session.dmProfile.locale].OK#" name="submit" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';">
-			<input type="Button" value="#application.adminBundle[session.dmProfile.locale].Cancel#" name="Cancel" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';" onClick="location.href='#application.url.farcry#/unlock.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#';parent.synchTab('editFrame','activesubtab','subtab','siteEditOverview');parent.synchTitle('Overview')">
-		</td>
-	</tr>		
-	</table>
-	
-	</form>
-	<script>
-		//bring focus to title
-		document.fileForm.title.focus();
-		objForm = new qForm("fileForm");
-		objForm.title.validateNotNull("#application.adminBundle[session.dmProfile.locale].pleaseEnterTitle#");
-		objForm.height.validateNotNull("#application.adminBundle[session.dmProfile.locale].pleaseEnterHeight#");
-		objForm.width.validateNotNull("#application.adminBundle[session.dmProfile.locale].pleaseEnterWidth#");
-		objForm.flashVersion.validateNotNull("#application.adminBundle[session.dmProfile.locale].pleaseEnterFlashVer#");
-	</script>
-	</cfoutput>
-</cfif>	
+		<label for="title"><b>#application.adminBundle[session.dmProfile.locale].titleLabel#<span class="req">*</span></b>
+			<input type="text" name="title" id="title" value="#title#" maxlength="255" /><br />
+		</label>
+</cfoutput>
+		<widgets:displayMethodSelector typeName="#stObj.typename#" prefix="displayPage"><br />
 
+		<widgets:fileUpload fileFieldPrefix="flash" fieldLabel="#application.adminBundle[session.dmProfile.locale].fileLabel#" uploadType="file" fieldValue="#stObj.flashMovie#" bShowPreview="1">
+<cfoutput>
+		<label for="height"><b>#application.adminBundle[session.dmProfile.locale].heightLabel#<span class="req">*</span></b>
+			<input type="text" name="height" id="height" value="#height#" maxlength="5" /><br />
+		</label>
+
+		<label for="width"><b>#application.adminBundle[session.dmProfile.locale].widthLabel#<span class="req">*</span></b>
+			<input type="text" name="width" id="width" value="#width#" maxlength="5" /><br />
+		</label>
+
+		<label for="flashVersion"><b>#application.adminBundle[session.dmProfile.locale].flashversionLabel#<span class="req">*</span></b>
+			<input type="text" name="flashVersion" id="flashVersion" value="#flashVersion#" maxlength="10" /><br />
+		</label>
+
+		<label for="flashParams"><b>#application.adminBundle[session.dmProfile.locale].flashParametersLabel#</b>
+			<textarea name="flashParams" id="flashParams">#flashParams#</textarea><br />
+		</label>
+
+		<label for="flashAlign"><b>#application.adminBundle[session.dmProfile.locale].alignmentLabel#</b>
+			<select name="flashAlign" id="flashAlign">
+				<option value="left"<cfif flashalign EQ "left"> selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].left#</option>
+				<option value="center"<cfif flashalign EQ "center"> selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].center#</option>
+				<option value="right"<cfif flashalign EQ "right"> selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].right#</option>
+				<option value="top"<cfif flashalign EQ "top"> selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].top#</option>
+				<option value="bottom"<cfif flashalign EQ "bottom"> selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].bottom#</option>
+			</select><br />
+		</label>
+
+		<label for="flashQuality"><b>#application.adminBundle[session.dmProfile.locale].qualityLabel#</b>
+			<select name="flashQuality" id="flashQuality">
+				<option value="low"<cfif flashQuality EQ "low"> selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].low#</option>
+				<option value="medium"<cfif flashQuality EQ "medium"> selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].medium#</option>
+				<option value="high"<cfif flashQuality EQ "high"> selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].high#</option>
+				<option value="best"<cfif flashQuality EQ "best"> selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].best#</option>
+				<option value="autoHigh"<cfif flashQuality EQ "autoHigh"> selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].autoHigh#</option>
+			<option value="autoLow"<cfif flashQuality EQ "autoLow"> selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].autoLow#</option>
+			</select><br />
+		</label>
+
+		<label for="flashBgcolor"><b>#application.adminBundle[session.dmProfile.locale].widthLabel#</b>
+			<input type="text" name="flashBgcolor" id="flashBgcolor" value="#flashBgcolor#" maxlength="7" /><br />
+		</label>
+		
+		<fieldset class="f-radio-wrap">
+			<b>#application.adminBundle[session.dmProfile.locale].automaticPlayLabel#</b>
+			<fieldset>
+				<label for="flashPlay">
+					<input type="radio" name="flashPlay" id="flashPlay" value="1"<cfif flashPlay EQ 1> checked="checked"</cfif> class="f-radio"> #application.adminBundle[session.dmProfile.locale].trueTxt#&nbsp;&nbsp;
+					<input type="radio" name="flashPlay" id="flashPlay" value="0"<cfif flashPlay EQ 0> checked="checked"</cfif> class="f-radio"> #application.adminBundle[session.dmProfile.locale].falseTxt#
+				</label>
+			</fieldset>
+		</fieldset>
+		
+		<fieldset class="f-radio-wrap">
+			<b>#application.adminBundle[session.dmProfile.locale].loopLabel#</b>
+			<fieldset>
+				<label for="flashLoop">
+					<input type="radio" name="flashLoop" id="flashLoop" value="1" <cfif flashLoop EQ 1>checked="checked"</cfif> class="f-radio"> #application.adminBundle[session.dmProfile.locale].trueTxt#&nbsp;&nbsp;
+					<input type="radio" name="flashLoop" id="flashLoop" value="0" <cfif flashLoop EQ 0>checked="checked"</cfif> class="f-radio"> #application.adminBundle[session.dmProfile.locale].falseTxt#
+				</label>
+			</fieldset>
+		</fieldset>
+		
+		<fieldset class="f-radio-wrap">
+			<b>#application.adminBundle[session.dmProfile.locale].showMenuLabel#</b>
+			<fieldset>
+				<label for="flashMenu">
+					<input type="radio" name="flashMenu" id="flashMenu" value="1" <cfif flashMenu EQ 1>checked="checked"</cfif> class="f-radio"> #application.adminBundle[session.dmProfile.locale].trueTxt#&nbsp;&nbsp;
+					<input type="radio" name="flashMenu" id="flashMenu" value="0" <cfif flashMenu EQ 0>checked="checked"</cfif> class="f-radio"> #application.adminBundle[session.dmProfile.locale].falseTxt#
+				</label>
+			</fieldset>
+		</fieldset>
+		
+		<label for="teaser"><b>#application.adminBundle[session.dmProfile.locale].teaserLabel#</b>
+			<textarea name="teaser" id="teaser">#teaser#</textarea><br />
+		</label>
+
+		<label for="bLibrary"><b>Flash Library:</b>
+			<input type="checkbox" name="bLibrary" value="1" id="bLibrary"<cfif bLibrary EQ 1> checked="checked"</cfif>>
+		</label>
+	</fieldset>
+
+</cfoutput>
+	<widgets:ownedBySelector fieldLabel="Content Owner:" selectedValue="#ownedBy#">
+<cfoutput>
+	<div class="f-submit-wrap">
+	<input type="submit" name="submit" value="OK" class="f-submit" />
+	<input type="submit" name="cancel" value="Cancel" class="f-submit" />
+	</div>
+	<input type="hidden" name="bFormSubmitted" value="yes">
+</form>
+<script type="text/javascript">
+//bring focus to title
+document.fileForm.title.focus();
+qFormAPI.errorColor="##cc6633";
+objForm = new qForm("fileForm");
+objForm.title.validateNotNull("#application.adminBundle[session.dmProfile.locale].pleaseEnterTitle#");
+objForm.height.validateNotNull("#application.adminBundle[session.dmProfile.locale].pleaseEnterHeight#");
+objForm.width.validateNotNull("#application.adminBundle[session.dmProfile.locale].pleaseEnterWidth#");
+objForm.flashVersion.validateNotNull("#application.adminBundle[session.dmProfile.locale].pleaseEnterFlashVer#");
+</script></cfoutput>
 <cfsetting enablecfoutputonly="no">

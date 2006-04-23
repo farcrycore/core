@@ -4,15 +4,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_tree/setRootNode.cfm,v 1.10 2003/09/11 08:48:37 brendan Exp $
-$Author: brendan $
-$Date: 2003/09/11 08:48:37 $
-$Name: b201 $
-$Revision: 1.10 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_tree/setRootNode.cfm,v 1.12 2005/10/28 04:19:06 paul Exp $
+$Author: paul $
+$Date: 2005/10/28 04:19:06 $
+$Name: milestone_3-0-0 $
+$Revision: 1.12 $
 
 || DESCRIPTION || 
 $Description: setRootNode Function $
-$TODO: $
+
 
 || DEVELOPER ||
 $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
@@ -36,7 +36,7 @@ $out:$
 	if(NOT rootNodeExists(typename=arguments.typename, dsn=arguments.dsn))
 	{	
 		sql = "
-		  insert into nested_tree_objects
+		  insert into #arguments.dbowner#nested_tree_objects
 		  (ObjectID, ParentID, ObjectName, TypeName, Nleft, Nright, Nlevel)
 		  values  ('#arguments.objectid#',null, '#arguments.objectName#','#arguments.typeName#',1, 2, 0)" ; 
 		query(sql=sql, dsn=arguments.dsn);

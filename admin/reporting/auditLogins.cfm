@@ -4,15 +4,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/reporting/auditLogins.cfm,v 1.4 2004/07/15 01:51:48 brendan Exp $
-$Author: brendan $
-$Date: 2004/07/15 01:51:48 $
-$Name: milestone_2-3-2 $
-$Revision: 1.4 $
+$Header: /cvs/farcry/farcry_core/admin/reporting/auditLogins.cfm,v 1.7 2005/08/16 02:41:08 pottery Exp $
+$Author: pottery $
+$Date: 2005/08/16 02:41:08 $
+$Name: milestone_3-0-0 $
+$Revision: 1.7 $
 
 || DESCRIPTION || 
 $Description: Audit for logins $
-$TODO: $
+
 
 || DEVELOPER ||
 $Developer: Brendan Sisson (brendan@daemon.com.au)$
@@ -34,14 +34,13 @@ $out:$
 
 <cfif iAuditTab eq 1>
 
-	<span class="formtitle">
+	<h3>
 	<cfif isdefined("url.view")>
 		<cfoutput>#application.adminBundle[session.dmProfile.locale].allLogins#</cfoutput>
 	<cfelse>
 		<cfoutput>#application.adminBundle[session.dmProfile.locale].recentLogins#</cfoutput>
 	</cfif>
-	</span>
-	<p></p>
+	</h3>
 	
 	<cfscript>
 		if (not isdefined("url.view")) {
@@ -52,17 +51,17 @@ $out:$
 		qLogins = application.factory.oAudit.getAuditLog(maxrows=maxrows, audittype="dmSec.login");
 	</cfscript>	
 	
-	<table cellpadding="5" cellspacing="0" border="1" style="margin-left:30px;">
+	<table class="table-3" cellspacing="0">
 	<cfoutput>
-	<tr class="dataheader">
-		<td>#application.adminBundle[session.dmProfile.locale].date#</td>
-		<td>#application.adminBundle[session.dmProfile.locale].location#</td>
-		<td>#application.adminBundle[session.dmProfile.locale].note#</td>
-		<td>#application.adminBundle[session.dmProfile.locale].user#</td>
+	<tr>
+		<th>#application.adminBundle[session.dmProfile.locale].date#</th>
+		<th>#application.adminBundle[session.dmProfile.locale].location#</th>
+		<th>#application.adminBundle[session.dmProfile.locale].note#</th>
+		<th>#application.adminBundle[session.dmProfile.locale].user#</th>
 	</tr>
 	</cfoutput>
 	<cfoutput query="qLogins">
-		<tr class="#IIF(currentrow MOD 2, de("dataOddRow"), de("dataEvenRow"))#">
+		<tr class="#IIF(currentrow MOD 2, de(""), de("alt"))#">
 			<td>
 			#application.thisCalendar.i18nDateFormat(Datetimestamp,session.dmProfile.locale,application.shortF)# 
 			#application.thisCalendar.i18nTimeFormat(Datetimestamp,session.dmProfile.locale,application.shortF)#
@@ -73,14 +72,20 @@ $out:$
 		</tr>	
 	</cfoutput>
 	</table>
-	<p></p>
-	<span class="frameMenuBullet" style="margin-left:30px;">&raquo;</span> 
+
+	<hr />
+	
+	<ul>
+	<li>
 
 	<cfif not isdefined("url.view")>
 		<a href="auditLogins.cfm?view=all"><cfoutput>#application.adminBundle[session.dmProfile.locale].viewAllLogins#</cfoutput></a>
 	<cfelse>
 		<a href="auditLogins.cfm"><cfoutput>#application.adminBundle[session.dmProfile.locale].viewRecentLogins#</cfoutput></a>
 	</cfif>
+	
+	</li>
+	</ul>
 
 <cfelse>
 	<admin:permissionError>

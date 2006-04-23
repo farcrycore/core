@@ -4,15 +4,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_locking/unlock.cfm,v 1.18 2005/02/02 01:16:39 brendan Exp $
-$Author: brendan $
-$Date: 2005/02/02 01:16:39 $
-$Name: milestone_2-3-2 $
-$Revision: 1.18 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_locking/unlock.cfm,v 1.19 2005/08/09 03:54:40 geoff Exp $
+$Author: geoff $
+$Date: 2005/08/09 03:54:40 $
+$Name: milestone_3-0-0 $
+$Revision: 1.19 $
 
 || DESCRIPTION || 
 $Description: unlocks an object $
-$TODO: $
+
 
 || DEVELOPER ||
 $Developer: Brendan Sisson (brendan@daemon.com.au) $

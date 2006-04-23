@@ -4,15 +4,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/admin/coapiSchema.cfm,v 1.5 2004/07/15 01:10:24 brendan Exp $
-$Author: brendan $
-$Date: 2004/07/15 01:10:24 $
-$Name: milestone_2-3-2 $
-$Revision: 1.5 $
+$Header: /cvs/farcry/farcry_core/admin/admin/coapiSchema.cfm,v 1.7 2005/08/16 05:53:23 pottery Exp $
+$Author: pottery $
+$Date: 2005/08/16 05:53:23 $
+$Name: milestone_3-0-0 $
+$Revision: 1.7 $
 
 || DESCRIPTION || 
 $Description: Displays the database schema$
-$TODO: $
+
 
 || DEVELOPER ||
 $Developer: Brendan Sisson (brendan@daemon.com.au)$
@@ -36,7 +36,7 @@ $out:$
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 <cfif iCOAPITab eq 1>
-	<cfoutput><span class="formtitle">#application.adminBundle[session.dmProfile.locale].COAPIschema#</span><p></p></cfoutput>
+	<cfoutput><h3>#application.adminBundle[session.dmProfile.locale].COAPIschema#</h3></cfoutput>
 	
 	<!--
 	This page was generated using the CF_DBSchema custom tag from Coldron.

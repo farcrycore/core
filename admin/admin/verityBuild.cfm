@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/admin/verityBuild.cfm,v 1.14 2004/07/15 01:10:24 brendan Exp $
-$Author: brendan $
-$Date: 2004/07/15 01:10:24 $
-$Name: milestone_2-3-2 $
-$Revision: 1.14 $
+$Header: /cvs/farcry/farcry_core/admin/admin/verityBuild.cfm,v 1.15 2005/08/16 02:41:08 pottery Exp $
+$Author: pottery $
+$Date: 2005/08/16 02:41:08 $
+$Name: milestone_3-0-0 $
+$Revision: 1.15 $
 
 || DESCRIPTION || 
 $Description: Build and update FarCry related Verity collections. Manages 
@@ -54,7 +54,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	</cfloop>
 	
 	<!--- build indices... --->
-	<cfoutput><span class="FormTitle">#application.adminBundle[session.dmProfile.locale].buildingCollections#</span><p></p></cfoutput>
+	<cfoutput><h3>#application.adminBundle[session.dmProfile.locale].buildingCollections#</h3></cfoutput>
 	
 	<!--- Empty aIndices Array --->
 	<cfset aIndices = ArrayNew(1)>
@@ -81,12 +81,13 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 			--->
 			<cfif NOT structKeyExists(stVerity, "#application.applicationname#_#key#")>
 				<!--- if not, create colection --->
-				<cfoutput><span class="frameMenuBullet">&raquo;</span> #application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].creatingKey,"#key#")#</cfoutput>
+				<cfoutput>
+				<li>#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].creatingKey,"#key#")#</li></cfoutput>
 				<cfflush />
 				<cftry>
 					<cfset application.factory.oVerity.buildCollection("#application.applicationname#_#key#")>
-					<cfoutput>#application.adminBundle[session.dmProfile.locale].done#<br></cfoutput>
-					<cfcatch><cfoutput>#application.adminBundle[session.dmProfile.locale].error#<br></cfoutput></cfcatch>
+					<cfoutput><li>#application.adminBundle[session.dmProfile.locale].done#</li></cfoutput>
+					<cfcatch><cfoutput><li>#application.adminBundle[session.dmProfile.locale].error#</li></cfoutput></cfcatch>
 				</cftry>
 				
 				<!--- clear lastupdated, if it exists --->
@@ -107,8 +108,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	</cfscript>
 	
 	<cfoutput>
-	<p>#application.adminBundle[session.dmProfile.locale].verityConfigUpdated#</p>
-	<p>#application.adminBundle[session.dmProfile.locale].allDone#</p>
+	<p><strong class="success fade" id="fader1">#application.adminBundle[session.dmProfile.locale].verityConfigUpdated# #application.adminBundle[session.dmProfile.locale].allDone#</strong></p>
 	</cfoutput>
 
 <cfelse>

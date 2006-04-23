@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/farcry/_config.cfm,v 1.45.2.5 2005/06/22 01:02:04 guy Exp $
-$Author: guy $
-$Date: 2005/06/22 01:02:04 $
-$Name: milestone_2-3-2 $
-$Revision: 1.45.2.5 $
+$Header: /cvs/farcry/farcry_core/tags/farcry/_config.cfm,v 1.48 2005/09/08 15:53:36 tom Exp $
+$Author: tom $
+$Date: 2005/09/08 15:53:36 $
+$Name: milestone_3-0-0 $
+$Revision: 1.48 $
 
 || DESCRIPTION || 
 $Description: included file for one-time initialisation of application constants $
@@ -81,7 +81,7 @@ test for the existance of each and act accordingly
 	<cfset application.path.defaultImagePath = "#application.path.project#/www/images">
 	<!--- Deprecated in b230; Use application.path.defaultImagePath instead --->
 	<cfset application.defaultImagePath = application.path.defaultImagePath>
-</cfif>
+</cfif>		 
 
 <cfscript>
 	/* $TODO:
@@ -109,7 +109,8 @@ test for the existance of each and act accordingly
 // load config files into memory
 	config = createObject("component", "#application.packagepath#.farcry.config");
 	qConfigList = config.list();
-	for (i=1;i LTE qConfigList.Recordcount; i=i+1) "application.config.#trim(qConfigList.configname[i])#" = config.getConfig(configname=qConfigList.configname[i]);
+	for (i=1;i LTE qConfigList.Recordcount; i=i+1)
+		application.config[trim(qConfigList.configname[i])] = config.getConfig(configname=qConfigList.configname[i]);
 
 // activate PLP storage
 	if (NOT isDefined("application.path.plpstorage"))

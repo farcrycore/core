@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/navajo/editContainer.cfm,v 1.24.2.2 2005/06/27 07:26:29 guy Exp $
-$Author: guy $
-$Date: 2005/06/27 07:26:29 $
-$Name: milestone_2-3-2 $
-$Revision: 1.24.2.2 $ 
+$Header: /cvs/farcry/farcry_core/admin/navajo/editContainer.cfm,v 1.26 2005/07/19 03:59:21 pottery Exp $
+$Author: pottery $
+$Date: 2005/07/19 03:59:21 $
+$Name: milestone_3-0-0 $
+$Revision: 1.26 $ 
 
 || DESCRIPTION || 
 $Description: Container management editing interface. $
@@ -91,13 +91,12 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 </cfscript>
 
 <cfset bDisplaySkins = false>
-<cfif directoryExists("#application.path.project#/webskin/container")>
+<cfif directoryExists("#application.path.project#\webskin\container")>
 	<nj:listTemplates typename="container" prefix="" r_qMethods="qContainerSkins">
 	<cfif qContainerSkins.recordCount>
 		<cfset bDisplaySkins = true>
 	</cfif>
 </cfif>
-
 
 
 <!--- //****************************************************************
@@ -121,7 +120,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 --------------------------------------------------------------->
 <cfoutput>
 <div id="Header">
-	<span class="title">Container Management</span><br/>
+	<span class="title">Container Management</span><br />
 	<span class="description">You are editing: #removechars(stobj.label, 1, 36)#</span>
 	<div class="mainTabArea" align="right">
 </cfoutput>
@@ -206,7 +205,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 	<cfoutput>
 	<div class="tabTitle" id="EditFrameTitle" align="center">
 	<!--- i18n: needs some bundle action for mirror --->
-	<cfif isDefined("stMirror.objectid")>This container is mirroring the content of another container:<br/> &nbsp; &raquo; #stmirror.label#<cfelse>This container is unique for this page.</cfif>
+	<cfif isDefined("stMirror.objectid")>This container is mirroring the content of another container:<br /> &nbsp; &raquo; #stmirror.label#<cfelse>This container is unique for this page.</cfif>
 	</div>
 	</cfoutput>
 
@@ -263,12 +262,10 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 	 ie. default to the first rule
 	--->
 	<cfscript>
-		if(arrayLen(stObj.aRules) GT 0 AND NOT isDefined("form.ruleID") AND NOT isDefined("url.ruleid"))
+		if(arrayLen(stObj.aRules) GT 0 AND NOT isDefined("form.ruleID"))
 			updateType = stObj.aRules[1];
 		else if(isDefined("form.ruleID"))
-			updateType = form.ruleID;
-		else if(isDefined("url.ruleid"))
-			updateType = url.ruleid;
+			updateType = form.ruleID;	
 	</cfscript>	
 
 	<cfoutput>
@@ -278,7 +275,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 			<select name="ruleID" onChange="form.submit();" class="field">
 			<cfif arrayLen(stObj.aRules) GT 0>
 				<cfloop query="qActiveRules" >
-					<option value="#objectID#" <cfif updateType IS objectID>selected</cfif>>[#qActiveRules.currentrow#] <cfif structKeyExists(application.rules[typename],'displayname')>#evaluate("application.rules." & typename & ".displayname")#<cfelse>#typename#</cfif></option>	
+					<option value="#objectID#" <cfif updateType IS objectID>selected</cfif>><cfif structKeyExists(application.rules[typename],'displayname')>#evaluate("application.rules." & typename & ".displayname")#<cfelse>#typename#</cfif></option>	
 				</cfloop>
 			<cfelse>
 				<option>#application.adminBundle[session.dmProfile.locale].noContainerRules#</option>
@@ -293,7 +290,6 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 	*********************************************************************
 	--->
 	<cfif arrayLen(stObj.aRules) GT 0>
-
 		<!--- get the typename for the current rule --->
 		<cfquery dbtype="query" name="qGetRuleTypename">
 			SELECT typename FROM qActiveRules where objectID = '#updateType#'
@@ -420,9 +416,6 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 </cfswitch>
 
 <cfoutput>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>Container ObjectID: #stobj.objectid#</p>
 </body>
 </html>
 </cfoutput>

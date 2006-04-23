@@ -4,15 +4,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_stats/getSearchStatsNoResults.cfm,v 1.1 2003/09/04 06:34:01 brendan Exp $
-$Author: brendan $
-$Date: 2003/09/04 06:34:01 $
-$Name: b201 $
-$Revision: 1.1 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_stats/getSearchStatsNoResults.cfm,v 1.2 2005/08/09 03:54:39 geoff Exp $
+$Author: geoff $
+$Date: 2005/08/09 03:54:39 $
+$Name: milestone_3-0-0 $
+$Revision: 1.2 $
 
 || DESCRIPTION || 
 $Description: Shows Site Searches that return no results$
-$TODO: $
+
 
 || DEVELOPER ||
 $Developer: Brendan Sisson (brendan@daemon.com.au)$

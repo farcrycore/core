@@ -4,15 +4,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/farcry/floater.cfm,v 1.10 2004/08/04 00:45:51 paul Exp $
-$Author: paul $
-$Date: 2004/08/04 00:45:51 $
-$Name: milestone_2-3-2 $
-$Revision: 1.10 $
+$Header: /cvs/farcry/farcry_core/tags/farcry/floater.cfm,v 1.14 2005/08/28 05:37:13 geoff Exp $
+$Author: geoff $
+$Date: 2005/08/28 05:37:13 $
+$Name: milestone_3-0-0 $
+$Revision: 1.14 $
 
 || DESCRIPTION || 
 $Description: FarCry DHTML Float Menu$
-$TODO: $
+
 
 || DEVELOPER ||
 $Developer: Stephen 'Spike' Milligan (spike@spike.org.uk)$
@@ -54,72 +54,64 @@ div.#attributes.prefix#Menu {
 	filter: progid:DXImageTransform.Microsoft.Shadow(color=aaaaaa,Direction=115,Strength=4);
 	</cfif>
 	width: 180px;
-	background-color: ##EFEDDE;
-	border: 1px solid;
-	border-color: ##8A867A;
+	background-color: ##F9E6D4;
+	border: 1px solid ##E17000;
 	position: absolute;
 	top: #attributes.top#px;
 	left: #Evaluate(attributes.left + 6)#px;
 	display: none;
 	z-index: 999999;
-	background-image: url(#attributes.imagedir#gutter.gif);
 	text-align:left;
 }
 
 
 
 img.#attributes.prefix#MenuBtn {
-	cursor: hand;
+	cursor: pointer;
 	position: absolute;
 	top: #attributes.top#px;
-	left: 0px;
+	left: 0;
 	z-index: 999998;
 }
 
 img.#attributes.prefix#MenuIcon {
 	width: 19px;
 	height: 16px;
-	margin: 0px 8px 0px 2px;
-	vertical-align: middle;
+	margin: 0 9px -5px 2px;
 }
 
 img.#attributes.prefix#MenuIconHover {
 	width: 19px;
 	height: 16px;
-	margin: 0px 8px 0px 2px;
-	vertical-align: middle;
+	margin: 0 9px -5px 2px;
 }
 
 div.#attributes.prefix#MenuItem {
-	vertical-align: middle;
-	margin: 2px 4px 2px 2px;
-	padding:3px 5px 3px 1px;
-	cursor: hand;
-	font-family: "Tahoma,Helvetica,Verdana";
+	cursor: pointer;
+	font: 86% arial,tahoma,verdana,sans-serif;
 	color: ##000000;
-	font-size: 11px;
+	margin: 1px 0;
+	padding: 3px 0;
+	background: ##E17000 url(#attributes.imagedir#gutter.gif) repeat-y 0 0;
 }
 
 
 div.#attributes.prefix#MenuItemHover {
-	background-color: ##B7BFD4;
-	vertical-align: middle;
-	margin: 2px 2px 2px 2px;
-	padding:2px 2px 2px 0px;
-	border: 1px solid ##0A246A;
-	cursor: hand;
-	font-family: "Tahoma,Helvetica,Verdana";
-	color: ##000000;
-	font-size: 11px;
+	cursor: pointer;
+	font: 86% arial,tahoma,verdana,sans-serif;
+	color: ##fff;
+	margin: 1px 0;
+	padding: 3px 0;
+	background: ##E17000 url(#attributes.imagedir#gutter.gif) repeat-y 0 -50px;
 }
 
 hr.#attributes.prefix#MenuSeparator {
-	margin: 0 0 0 0;
-	padding: 0 0 0 0;
+	margin: 0;
+	padding: 0;
 	height: 3px;
 	line-height: 3px;
 	width: 90%;
-	border-top: 0;
+	border-top: none;
 }
 
 span.#attributes.prefix#MenuItemActive {
@@ -158,17 +150,21 @@ span.#attributes.prefix#MenuItemNull {
 			<cfelse>
 				<cfset target = attributes.aItems[i].target>
 			</cfif>
-			
+			<cfif not structKeyExists(attributes.aItems[i],'onclick')>
+				<cfset onclick="">
+			<cfelse>
+				<cfset onclick = attributes.aItems[i].onclick>
+			</cfif>			
 			</cfsilent><div class="#attributes.prefix#MenuItem" onclick="#attributes.prefix#FollowMenuItem('#attributes.aItems[i].href#','#variables.target#')" onmouseout="Javscript:#attributes.prefix#UnHighlight(this);" onmouseover="Javascript:#attributes.prefix#Highlight(this);"><img src="#attributes.imagedir##variables.icon#" class="#attributes.prefix#MenuIcon">#attributes.aItems[i].text#</div>
 		<cfelse>
 			<hr class="#attributes.prefix#MenuSeparator">
 		</cfif>
 	</cfloop>
 	<cfif attributes.showDisableContext and attributes.useContextMenu>
-	<div class="#attributes.prefix#MenuItem" onclick="#attributes.prefix#removeContextMenu();" onmouseout="Javscript:#attributes.prefix#UnHighlight(this);" onmouseover="Javascript:#attributes.prefix#Highlight(this);"><img src="#attributes.imagedir#pix.gif" class="#attributes.prefix#MenuIcon">Disable context menu</div>
+	<div class="#attributes.prefix#MenuItem" onclick="#variables.onclick#;#attributes.prefix#removeContextMenu();" onmouseout="Javscript:#attributes.prefix#UnHighlight(this);" onmouseover="Javascript:#attributes.prefix#Highlight(this);"><img src="#attributes.imagedir#pix.gif" class="#attributes.prefix#MenuIcon">Disable context menu</div>
 	</cfif>
 </div>
-<img src="#attributes.imagedir##attributes.buttonimage#" width="6" height="51" alt="" border="0" onclick="Javascript:#attributes.prefix#ToggleMenu(this);" id="#attributes.prefix#MenuButtonID" class="#attributes.prefix#MenuBtn">
+<img src="#attributes.imagedir##attributes.buttonimage#" width="15" height="52" alt="" border="0" onclick="Javascript:#attributes.prefix#ToggleMenu(this);" id="#attributes.prefix#MenuButtonID" class="#attributes.prefix#MenuBtn">
 
 <script>
 /*
@@ -398,7 +394,8 @@ function #attributes.prefix#ShowDebug() {
 
 function #attributes.prefix#FollowMenuItem(url,target) {
 	if (!#attributes.prefix#IgnoreMouse) {
-		window.open(url,target,'');
+		var fs=window.open(url,target,'');
+ 		fs.focus();
 	}
 }
 

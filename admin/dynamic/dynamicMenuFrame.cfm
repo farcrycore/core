@@ -4,15 +4,14 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/dynamic/dynamicMenuFrame.cfm,v 1.16 2004/08/09 07:18:23 paul Exp $
-$Author: paul $
-$Date: 2004/08/09 07:18:23 $
-$Name: milestone_2-3-2 $
-$Revision: 1.16 $
+$Header: /cvs/farcry/farcry_core/admin/dynamic/dynamicMenuFrame.cfm,v 1.17 2005/08/09 03:54:39 geoff Exp $
+$Author: geoff $
+$Date: 2005/08/09 03:54:39 $
+$Name: milestone_3-0-0 $
+$Revision: 1.17 $
 
 || DESCRIPTION || 
 $Description: Displays menu for dynamic tab $
-$TODO: $
 
 || DEVELOPER ||
 $Developer: Brendan Sisson (brendan@dameon.com.au)$

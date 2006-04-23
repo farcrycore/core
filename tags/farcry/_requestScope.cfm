@@ -4,15 +4,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/farcry/_requestScope.cfm,v 1.4 2003/04/08 08:26:32 paul Exp $
-$Author: paul $
-$Date: 2003/04/08 08:26:32 $
-$Name: b201 $
-$Revision: 1.4 $
+$Header: /cvs/farcry/farcry_core/tags/farcry/_requestScope.cfm,v 1.5 2005/08/09 03:54:39 geoff Exp $
+$Author: geoff $
+$Date: 2005/08/09 03:54:39 $
+$Name: milestone_3-0-0 $
+$Revision: 1.5 $
 
 || DESCRIPTION || 
 $Description: initialise request scope $
-$TODO: $
+
 
 || DEVELOPER ||
 $Developer: Brendan Sisson (brendan@daemon.com.au)$

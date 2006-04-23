@@ -4,15 +4,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_config/defaultGeneral.cfm,v 1.19.2.1 2005/05/09 04:52:13 guy Exp $
-$Author: guy $
-$Date: 2005/05/09 04:52:13 $
-$Name: milestone_2-3-2 $
-$Revision: 1.19.2.1 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_config/defaultGeneral.cfm,v 1.32 2005/10/13 09:14:53 geoff Exp $
+$Author: geoff $
+$Date: 2005/10/13 09:14:53 $
+$Name: milestone_3-0-0 $
+$Revision: 1.32 $
 
 || DESCRIPTION || 
 $Description: deploys general config file $
-$TODO: $
+
 
 || DEVELOPER ||
 $Developer: Brendan Sisson (brendan@daemon.com.au) $
@@ -27,17 +27,19 @@ $out:$
 <cfset aTmp = ArrayNew(1)>
 
 <cfscript>
-stConfig.adminEmail = "brendan@daemon.com.au"; 
+stConfig.adminEmail = "support@daemon.com.au"; 
 stConfig.bugEmail = "farcry@daemon.com.au"; 
 stConfig.newsExpiry = "14";
 stConfig.newsExpiryType = "d";
+stConfig.eventsExpiry = "14";
+stConfig.eventsExpiryType = "d";
 stConfig.sessionTimeOut = "60";
 stConfig.genericAdminNumItems = "15";
 stConfig.teaserLimit = "255";
 stConfig.dmFilesSearchable = "Yes";
 stConfig.showForgotPassword = "Yes";
 stConfig.logStats = "Yes";
-stConfig.richTextEditor = "soEditor";
+stConfig.richTextEditor = ""; //use default
 stConfig.fileDownloadDirectLink = "false";
 stConfig.fileNameConflict = "MAKEUNIQUE";
 stConfig.verityStoragePath = Replace("#server.coldfusion.rootdir#/verity/collections/","\","/","All");
@@ -45,7 +47,17 @@ stConfig.adminServer = "http://#cgi.HTTP_HOST#";
 stConfig.exportPath = "www/xml";
 stConfig.siteTitle = "farcry";
 stConfig.siteTagLine = "tell it to someone who cares";
+stConfig.siteLogoPath = "";
+stConfig.componentDocURL = "/CFIDE/componentutils/componentdetail.cfm";
 stConfig.locale = "en_AU";
+stConfig.contentReviewDaySpan = 90;
+// login settings
+stConfig.loginAttemptsAllowed = 3;
+stConfig.loginAttemptsTimeOut = 10; // minutes
+// archiving variables
+stConfig.bDoArchive = "False";
+stConfig.archiveDirectory = "#application.path.project#/archive/";
+stConfig.archiveWeburl = "#application.url.webroot#archive/";
 </cfscript>
 
 <cfwddx action="CFML2WDDX" input="#stConfig#" output="wConfig">

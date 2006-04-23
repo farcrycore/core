@@ -4,15 +4,14 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/dynamic/export.cfm,v 1.5 2004/10/25 08:54:04 paul Exp $
-$Author: paul $
-$Date: 2004/10/25 08:54:04 $
-$Name: milestone_2-3-2 $
-$Revision: 1.5 $
+$Header: /cvs/farcry/farcry_core/admin/dynamic/export.cfm,v 1.6 2005/08/09 03:54:39 geoff Exp $
+$Author: geoff $
+$Date: 2005/08/09 03:54:39 $
+$Name: milestone_3-0-0 $
+$Revision: 1.6 $
 
 || DESCRIPTION || 
 $Description: Export Edit Handler $
-$TODO: $
 
 || DEVELOPER ||
 $Developer: Brendan Sisson (brendan@daemon.com.au) $

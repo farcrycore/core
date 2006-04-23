@@ -4,15 +4,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/install/_installFarcry.cfm,v 1.40 2004/07/15 01:13:18 brendan Exp $
-$Author: brendan $
-$Date: 2004/07/15 01:13:18 $
-$Name: milestone_2-3-2 $
-$Revision: 1.40 $
+$Header: /cvs/farcry/farcry_core/admin/install/_installFarcry.cfm,v 1.43 2005/09/07 22:40:25 tom Exp $
+$Author: tom $
+$Date: 2005/09/07 22:40:25 $
+$Name: milestone_3-0-0 $
+$Revision: 1.43 $
 
 || DESCRIPTION || 
 $Description: Installation scripts for FarCry database components $
-$TODO: $
+
 
 || DEVELOPER ||
 $Developer: Brendan Sisson (brendan@daemon.com.au)$
@@ -91,6 +91,7 @@ o_config.defaultPlugins(dsn=application.dsn);
 o_config.defaultFU(dsn=application.dsn);
 o_config.defaultOverviewTree(dsn=application.dsn);
 o_config.defaultHTMLArea(dsn=application.dsn);
+o_config.defaultTinyMCE(dsn=application.dsn);
 if (stResult.bSuccess) writeOutput(successMsg);
 else writeOutput(failureMsg);
 </cfscript>
@@ -186,6 +187,13 @@ stResult = application.o_dmAuthentication.createGroup(groupName="SiteAdmin",user
 stResult = application.o_dmAuthentication.createGroup(groupName="SysAdmin",userDirectory="ClientUD",groupNotes="Systems Administrators");
 // create admin user
 stResult = application.o_dmAuthentication.createUser(userLogin="farcry",userDirectory="ClientUD",userStatus="4",userNotes="Systems Administrator",userPassword="farcry");
+// create profile for admin user
+stProps = structNew();
+stProps.userLogin = "farcry";
+stProps.userDirectory = "ClientUD";
+o_profile = createObject("component", "#application.packagepath#.types.dmProfile");
+stNewProfile = o_profile.createProfile(stProperties=stProps);
+
 // add admin user to SysAdmin group
 stResult = application.o_dmAuthentication.addUserToGroup(userLogin="farcry",groupName="SysAdmin",userDirectory="ClientUD");
 </cfscript>

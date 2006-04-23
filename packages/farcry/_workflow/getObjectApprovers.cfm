@@ -4,15 +4,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_workflow/getObjectApprovers.cfm,v 1.16.6.1 2005/05/24 04:49:25 gstewart Exp $
-$Author: gstewart $
-$Date: 2005/05/24 04:49:25 $
-$Name: milestone_2-3-2 $
-$Revision: 1.16.6.1 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_workflow/getObjectApprovers.cfm,v 1.18 2005/08/09 03:54:40 geoff Exp $
+$Author: geoff $
+$Date: 2005/08/09 03:54:40 $
+$Name: milestone_3-0-0 $
+$Revision: 1.18 $
 
 || DESCRIPTION || 
 $DESCRIPTION: Gets a list of approvers for a navigatio node$
-$TODO: $ 
+ 
 
 || DEVELOPER ||
 $DEVELOPER:Brendan Sisson (brendan@daemon.com.au)$
@@ -74,7 +74,6 @@ stObjectPermissions = oAuthorisation.collateObjectPermissions(objectid=stObj.Obj
 <cfscript>
 	aUsers = oAuthorisation.getPolicyGroupUsers(lpolicygroupIDs=lApprovePGs);
 </cfscript>
-
 
 <!--- build struct of dmProfile objects for each user --->
 <cfset stApprovers = structNew()>

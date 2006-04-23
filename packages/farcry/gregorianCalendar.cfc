@@ -1,8 +1,10 @@
-<cfcomponent displayname="gregorianCalendar" output="no" hint="gregorian calendar functions: version 2.1 may-2004 Paul Hastings (paul@sustainbleGIS.com)">
+<cfcomponent displayname="gregorianCalendar" output="no" hint="gregorian calendar functions: version 2.2 mar-2005 Paul Hastings (paul@sustainbleGIS.com)">
 <!--- 
 author:		paul hastings <paul@sustainableGIS.com>
 date:		13-may-2004
 revisions:
+21-mar-2005	cleaned up scope vars, minor code improvements
+
 notes:		
 			
 methods in this CFC:
@@ -121,9 +123,9 @@ methods in this CFC:
 
 <cffunction access="public" name="getLocales" output="No" returntype="string">
 	<cfscript>
-		var orgLocales="";
+		var orgLocales=aLocale.getAvailableLocales();
 		var theseLocales="";	
-		orgLocales = aLocale.getAvailableLocales();
+		var i=0;
 		for (i=1; i LTE arrayLen(orgLocales); i=i+1) {
 			if (listLen(orgLocales[i],"_") GT 1) {
 			listAppend(theseLocales,orgLocales[i]);
@@ -142,13 +144,9 @@ methods in this CFC:
 	<cfreturn isOK>
 </cffunction> 
 
-<cffunction name="getServerOffset" access="private" output="No" returntype="numeric" 
-	hint="returns server TZ offset in ms">
-	<cfscript>
-	  	var tzInfo="";
-		tzInfo=GetTimeZoneInfo(); // get from server
-		return (tzInfo.utcHourOffset*60*60*1000)+(tzInfo.utcMinuteOffset*60*1000);
-	</cfscript>
+<cffunction name="getServerOffset" access="private" output="No" returntype="numeric" hint="returns server TZ offset in ms">
+	<cfset var tzInfo=GetTimeZoneInfo()> <!--- get from server --->
+	<cfreturn (tzInfo.utcHourOffset*60*60*1000)+(tzInfo.utcMinuteOffset*60*1000)>
 </cffunction> 
 
 <cffunction access="public" name="i18nDateTimeFormat" output="No" returntype="string"> 
@@ -189,65 +187,36 @@ methods in this CFC:
 <cffunction access="public" name="i18nDateParse" output="No" returntype="date"> 
 <cfargument name="thisDate" required="yes" type="string">
 <cfargument name="thisLocale" required="yes" type="string">
-	<cfscript>
-		var isOk=false;
-		var parsedDate="";
-		var iLocale=aLocale.init(listFirst(arguments.thisLocale,"_"),listLast(arguments.thisLocale,"_"));
-		// holy cow batman, can't parse dates in an elegant way. bash! pow! socko!
-		// FULL
+<cfscript>
+	var isOk=false;
+	var i=0;
+	var parsedDate="";
+	var Locale=aLocale.init(listFirst(arguments.thisLocale,"_"),listLast(arguments.thisLocale,"_"));
+	var tDateFormatter="";
+	// holy cow batman, can't parse dates in an elegant way. bash! pow! socko!
+	for (i=0; i LTE 3; i=i+1) {
+		isOK=true;
+		tDateFormatter=aDateFormat.getDateInstance(javacast("int",i),Locale);
 		try {
-			isOK=true;
-			parsedDate=aDateFormat.getDateInstance(0,iLocale).parse(arguments.thisDate);
-		}
-		catch (any errmsg) {
+			parsedDate=tDateFormatter.parse(arguments.thisDate);
+		} // try
+		catch (Any errmsg) {
 			isOK=false;
 		}
-		if (NOT isOK) {
-		// LONG
-		try {
-			isOK=true;
-			parsedDate=aDateFormat.getDateInstance(1,iLocale).parse(arguments.thisDate);
-		}
-		catch (any errmsg) {
-			isOK=false;
-		}
-		}
-		if (NOT isOK) {
-		// MEDIUM
-		try {
-			isOK=true;
-			parsedDate=aDateFormat.getDateInstance(2,iLocale).parse(arguments.thisDate);
-		}
-		catch (any errmsg) {
-			isOK=false;
-			}
-		}
-		// SHORT
-		if (NOT isOK) {
-		try {
-			isOK=true;
-			parsedDate=aDateFormat.getDateInstance(3,iLocale).parse(arguments.thisDate);
-		}
-		catch (any errmsg) {
-			isOK=false;
-		}
-		}
-		return parsedDate;
-	</cfscript>
+		if (isOk) break;
+	} // for loop
+	return parsedDate;
+</cfscript>
 </cffunction>
 
 <cffunction access="public" name="i18nIsLeapYear" output="No" returntype="boolean"> 
 <cfargument name="thisYear" required="yes" type="numeric">
-	<cfscript>
-		return aCalendar.isLeapYear(arguments.thisYear);
-	</cfscript>
+	<cfreturn aCalendar.isLeapYear(arguments.thisYear)>
 </cffunction>
 
 <cffunction access="public" name="i18nIsWeekend" output="No" returntype="boolean"> 
 <cfargument name="thisDate" required="yes" type="date">
-	<cfscript>
-		return (dayofWeek(arguments.thisDate) EQ 1 OR dayofWeek(arguments.thisDate) EQ 7);
-	</cfscript>
+	<cfreturn (dayofWeek(arguments.thisDate) EQ 1 OR dayofWeek(arguments.thisDate) EQ 7)>
 </cffunction>
 
 <cffunction access="public" name="getLocaleName" output="No" returntype="string">
@@ -299,8 +268,7 @@ methods in this CFC:
 	<cfreturn tCalendar.get(tCalendar.DAY_OF_WEEK)>
 </cffunction>  
 
-<cffunction access="public" name="getWeekDays" output="No" returntype="array" 
-	hint="returns day names for this calendar">
+<cffunction access="public" name="getWeekDays" output="No" returntype="array" hint="returns day names for this calendar">
 <cfargument name="thisLocale" required="yes" type="string">
 <cfargument name="calendarOrder" required="no" type="boolean" default="true">
 	<cfset var locale=aLocale.init(listFirst(arguments.thisLocale,"_"),listLast(arguments.thisLocale,"_"))>
@@ -336,8 +304,7 @@ methods in this CFC:
 	</cfif>
 </cffunction> 
 
-<cffunction access="public" name="getShortWeekDays" output="No" returntype="array" 
-	hint="returns short day names for this calendar">
+<cffunction access="public" name="getShortWeekDays" output="No" returntype="array" hint="returns short day names for this calendar">
 <cfargument name="thisLocale" required="yes" type="string">
 <cfargument name="calendarOrder" required="no" type="boolean" default="true">
 	<cfset var locale=aLocale.init(listFirst(arguments.thisLocale,"_"),listLast(arguments.thisLocale,"_"))>
@@ -372,24 +339,21 @@ methods in this CFC:
 	</cfif>
 </cffunction> 
 
-<cffunction access="public" name="getMonths" output="No" returntype="array" 
-	hint="returns month names for this calendar">
+<cffunction access="public" name="getMonths" output="No" returntype="array" hint="returns month names for this calendar">
 <cfargument name="thisLocale" required="yes" type="string">
 	<cfset var locale=aLocale.init(listFirst(arguments.thisLocale,"_"),listLast(arguments.thisLocale,"_"))>
 	<cfset var theseDateSymbols=dateSymbols.init(locale)>
 	<cfreturn theseDateSymbols.getMonths()>
 </cffunction> 
 
-<cffunction access="public" name="getShortMonths" output="No" returntype="array" 
-	hint="returns abbrev month names for this calendar">
+<cffunction access="public" name="getShortMonths" output="No" returntype="array" hint="returns abbrev month names for this calendar">
 <cfargument name="thisLocale" required="yes" type="string">
 	<cfset var locale=aLocale.init(listFirst(arguments.thisLocale,"_"),listLast(arguments.thisLocale,"_"))>
 	<cfset var theseDateSymbols=dateSymbols.init(locale)>
 	<cfreturn theseDateSymbols.getShortMonths()>
 </cffunction> 
 
-<cffunction access="public" name="getEras" output="No" returntype="array" 
-	hint="returns era names for this calendar">
+<cffunction access="public" name="getEras" output="No" returntype="array" hint="returns era names for this calendar">
 <cfargument name="thisLocale" required="yes" type="string">
 	<cfset var locale=aLocale.init(listFirst(arguments.thisLocale,"_"),listLast(arguments.thisLocale,"_"))>
 	<cfset var theseDateSymbols=dateSymbols.init(locale)>
@@ -397,16 +361,14 @@ methods in this CFC:
 </cffunction> 
 
 <!--- really varies locale to locale --->
-<cffunction access="public" name="weekStarts" output="No" returntype="numeric" 
-	hint="returns DOY (1-7) that this locale's week starts">
+<cffunction access="public" name="weekStarts" output="No" returntype="numeric" hint="returns DOY (1-7) that this locale's week starts">
 <cfargument name="thisLocale" required="yes" type="string">
 	<cfset var locale=aLocale.init(listFirst(arguments.thisLocale,"_"),listLast(arguments.thisLocale,"_"))>
 	<cfset var tCalendar=aCalendar.init(locale)>
 	<cfreturn tCalendar.getFirstDayOfWeek()>
 </cffunction> 
 
-<cffunction access="public" name="is24HourFormat" output="No" returntype="numeric" 
-	hint="determines if given locale use military sytle 24 hour timeformat & which format it uses returns 0 if not 24 hour timeformat, 1 if timeformat is 0-23 and 2 if 0-24">
+<cffunction access="public" name="is24HourFormat" output="No" returntype="numeric" hint="determines if given locale use military sytle 24 hour timeformat & which format it uses returns 0 if not 24 hour timeformat, 1 if timeformat is 0-23 and 2 if 0-24">
 <cfargument name="thisLocale" required="yes" type="string">
 	<cfset var locale=aLocale.init(listFirst(arguments.thisLocale,"_"),listLast(arguments.thisLocale,"_"))>
 	<cfset var localTF=aDateFormat.getTimeInstance(aDateFormat.SHORT,locale).toPattern()>
@@ -420,8 +382,7 @@ methods in this CFC:
 	</cfif>
 </cffunction> 
 
-<cffunction access="public" name="getTimeSpan" output="No" returntype="array" 
-hint="returns array of localized timespan (0-23, 1-12am/pm)">
+<cffunction access="public" name="getTimeSpan" output="No" returntype="array" hint="returns array of localized timespan (0-23, 1-12am/pm)">
 <cfargument name="thisLocale" required="yes" type="string">
 <cfscript>
 	var i=0;
@@ -433,26 +394,21 @@ hint="returns array of localized timespan (0-23, 1-12am/pm)">
 </cfscript>
 </cffunction>  
 
-<cffunction access="public" name="getMaxDay" output="No" returntype="numeric"
-hint="returns maximum number of days in any month per calendar">
+<cffunction access="public" name="getMaxDay" output="No" returntype="numeric" hint="returns maximum number of days in any month per calendar">
 	<cfreturn aCalendar.getMaximum(DOMfield)>
 </cffunction>  
 
-<cffunction access="public" name="getYear" output="No" returntype="numeric"
-hint="returns this calendar year">
+<cffunction access="public" name="getYear" output="No" returntype="numeric" hint="returns this calendar year">
 <cfargument name="thisYear" required="yes" type="numeric">
-	<cfscript>
-		return arguments.thisYear;
-	</cfscript>
+	<cfreturn arguments.thisYear>
 </cffunction>  
 
-<cffunction access="public" name="getDaysInMonth" output="No" returntype="array"
-hint="returns array containing maximum number of days per month in this calendar">
+<cffunction access="public" name="getDaysInMonth" output="No" returntype="array" hint="returns array containing maximum number of days per month in this calendar">
 <cfscript>
 	var i=0;
 	var t="";
 	var days=arrayNew(1);
-	var tCalendar=aCalendar;
+	var tCalendar=aCalendar.clone();
 	for (i=1; i LTE 12; i=i+1) {
 		t=createDate(year(now()),i,1);
 		tCalendar.setTime(t);
@@ -462,8 +418,7 @@ hint="returns array containing maximum number of days per month in this calendar
 </cfscript>
 </cffunction>  
 
-<cffunction access="public" name="isDayFirstFormat" output="No" returntype="boolean" 
-	hint="determines if given locale uses day-month or month-day format">
+<cffunction access="public" name="isDayFirstFormat" output="No" returntype="boolean" hint="determines if given locale uses day-month or month-day format">
 <cfargument name="thisLocale" required="yes" type="string">
 	<cfset var locale=aLocale.init(listFirst(arguments.thisLocale,"_"),listLast(arguments.thisLocale,"_"))>
 	<cfset var dF=left(aDateFormat.getDateInstance(aDateFormat.SHORT,alocale).toPattern(),1)>
@@ -474,8 +429,7 @@ hint="returns array containing maximum number of days per month in this calendar
 	</cfif>
 </cffunction>
 
-<cffunction access="public" name="monthDayFormat" output="No" returntype="string" 
-	hint="formats a month/day or day/month string depending on passed locale">
+<cffunction access="public" name="monthDayFormat" output="No" returntype="string" hint="formats a month/day or day/month string depending on passed locale">
 <cfargument name="thisDate" required="yes" type="date">	
 <cfargument name="thisLocale" required="yes" type="string">
 <cfscript>
@@ -488,8 +442,7 @@ hint="returns array containing maximum number of days per month in this calendar
 </cfscript>
 </cffunction>
 
-<cffunction access="public" name="dayFormat" output="No" returntype="string" 
-	hint="formats a day string depending on passed locale">
+<cffunction access="public" name="dayFormat" output="No" returntype="string" hint="formats a day string depending on passed locale">
 <cfargument name="thisDate" required="yes" type="date">	
 <cfargument name="thisLocale" required="yes" type="string">
 <cfargument name="longFormat" required="No" default="false"> 
@@ -503,8 +456,7 @@ hint="returns array containing maximum number of days per month in this calendar
 </cfscript>
 </cffunction>
 
-<cffunction access="public" name="monthFormat" output="No" returntype="string" 
-	hint="formats a month string depending on passed locale">
+<cffunction access="public" name="monthFormat" output="No" returntype="string" hint="formats a month string depending on passed locale">
 <cfargument name="thisDate" required="yes" type="date">	
 <cfargument name="thisLocale" required="yes" type="string">
 <cfargument name="longFormat" required="No" default="true"> 

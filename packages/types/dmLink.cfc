@@ -4,15 +4,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/dmLink.cfc,v 1.9 2003/09/23 03:48:12 brendan Exp $
-$Author: brendan $
-$Date: 2003/09/23 03:48:12 $
-$Name: b201 $
-$Revision: 1.9 $
+$Header: /cvs/farcry/farcry_core/packages/types/dmLink.cfc,v 1.11 2005/09/12 01:15:26 daniela Exp $
+$Author: daniela $
+$Date: 2005/09/12 01:15:26 $
+$Name: milestone_3-0-0 $
+$Revision: 1.11 $
 
 || DESCRIPTION || 
 $Description: dmLink type $
-$TODO: $
+
 
 || DEVELOPER ||
 $Developer: Brendan Sisson (brendan@daemon.com.au) $
@@ -31,7 +31,7 @@ type properties
 <cfproperty name="link" type="string" hint="Url of link" required="no" default=""> 
 <cfproperty name="commentlog" type="longchar" hint="Workflow comment log." required="no" default=""> 
 <cfproperty name="status" type="string" hint="Status of the node (draft, pending, approved)." required="yes" default="draft">
-<cfproperty name="displayMethod" type="string" hint="Display method to render this link object with." required="yes" default="display">
+<cfproperty name="displayMethod" type="string" hint="Display method to render this link object with." required="yes" default="displaypage">
 
 <!--- Object Methods --->
 

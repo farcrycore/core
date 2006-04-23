@@ -1,35 +1,42 @@
+<cfsetting enablecfoutputonly="yes">
 <!--- 
 || LEGAL ||
 $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmInclude/edit.cfm,v 1.14 2004/07/16 04:53:23 brendan Exp $
-$Author: brendan $
-$Date: 2004/07/16 04:53:23 $
-$Name: milestone_2-3-2 $
-$Revision: 1.14 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmInclude/edit.cfm,v 1.19 2005/10/28 07:22:51 guy Exp $
+$Author: guy $
+$Date: 2005/10/28 07:22:51 $
+$Name: milestone_3-0-0 $
+$Revision: 1.19 $
 
 || DESCRIPTION || 
-$Description: edit handler$
-$TODO: $
+$Description: dmInclude edit handler$
 
 || DEVELOPER ||
-$Developer: Brendan Sisson (brendan@daemon.com.au)$
-
-|| ATTRIBUTES ||
-$in: $
-$out:$
+$Developer: Geoff Bowers (modius@daemon.com.au)$
 --->
-<cfsetting enablecfoutputonly="yes">
-
-<cfprocessingDirective pageencoding="utf-8">
-
-<cfimport taglib="/farcry/fourq/tags/" prefix="q4">
+<!--- import tag libraries --->
 <cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
+<cfimport taglib="/farcry/farcry_core/tags/widgets" prefix="widgets">
+
+<!--- determine where the edit handler has been called from to provide the right return url --->
+<cfparam name="url.ref" default="sitetree" type="string">
+<cfif url.ref eq "typeadmin"> 
+	<!--- typeadmin redirect --->
+	<cfset cancelCompleteURL = "#application.url.farcry#/content/dminclude.cfm">
+<cfelse> 
+	<!--- site tree redirect --->
+	<cfset cancelCompleteURL = "#application.url.farcry#/edittabOverview.cfm?objectid=#stObj.ObjectID#">
+</cfif>
+
+<!--- lock the content item for editing --->
+<cfif NOT stobj.locked>
+	<cfset setlock(locked="true")>
+</cfif>
 
 <cfif isDefined("FORM.submit")> <!--- perform the update --->
-	
 	<cfscript>
 		stProperties = structNew();
 		stProperties.objectid = stObj.objectid;
@@ -38,101 +45,81 @@ $out:$
 		stProperties.teaser = form.teaser;
 		stProperties.include = form.include;
 		stProperties.displayMethod = form.displayMethod;
-		//TODO MUST sort out this date stuff. Can't just keep overwriting datetime created
 		stProperties.datetimelastupdated = Now();
 		stProperties.lastupdatedby = session.dmSec.authentication.userlogin;
+		stProperties.typename = "dmInclude";
 		//unlock object
 		stProperties.locked = 0;
 		stProperties.lockedBy = "";
-	
 		// update the OBJECT	
-		oType = createobject("component", application.types.dmInclude.typePath);
-		oType.setData(stProperties=stProperties);
+		setData(stProperties=stProperties);
 	</cfscript>
-		
-	<!--- get parent to update tree --->	
-	<nj:treeGetRelations 
-			typename="#stObj.typename#"
-			objectId="#stObj.ObjectID#"
-			get="parents"
-			r_lObjectIds="ParentID"
-			bInclusive="1">
-	
-	<!--- update tree --->
-	<nj:updateTree objectId="#parentID#">
-	
-	<!--- reload overview page --->
-	<cfoutput>
-		<script language="JavaScript">
-			parent['editFrame'].location.href = '#application.url.farcry#/edittabOverview.cfm?objectid=#stObj.ObjectID#';
-		</script>
-	</cfoutput>
-	
-<cfelse> <!--- Show the form --->
-	<cfoutput>
-	<br>
-	<span class="FormTitle">#stObj.title#</span><p></p>
 
-	
-	<form action="" method="post" enctype="multipart/form-data" name="fileForm">
-		
-	<table class="FormTable">
-	<tr>
-  		<td><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].titleLabel#</span></td>
-   	 	<td><input type="text" name="title" value="#stObj.title#" class="FormTextBox"></td>
-	</tr>
-	<cfinvoke component="#application.types.dmInclude.typePath#" method="getIncludes" returnvariable="qGetIncludes"/>
- 	<tr>	
-		<td><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].includeLabel#</span></td>
-   		<td width="100%" class="FormLabel">
-		</cfoutput>
-			<cfif qGetIncludes.recordCount>
-			<cfoutput><select name="include"></cfoutput>
-			<cfoutput query="qGetIncludes">
-				<option value="#include#" <cfif qGetIncludes.include eq stObj.include>SELECTED</cfif>>#include#</option>
-			</cfoutput>
-			</select>
-			<cfelse>
-				<cfoutput>#application.adminBundle[session.dmProfile.locale].noIncludeFiles#</cfoutput>
-			</cfif>
-			<cfoutput>
-		</td>
-	</tr>
-	<nj:listTemplates typename="dmInclude" prefix="display" r_qMethods="qMethods">
-	<tr>
-		<td nowrap class="FormLabel">#application.adminBundle[session.dmProfile.locale].displayMethodLabel#</td>
-		<td width="100%" class="FormLabel">
-		<select name="DisplayMethod" size="1">
-		</cfoutput>
-		<cfoutput query="qMethods">
-		<option value="#qMethods.methodname#" <cfif qMethods.methodname eq stObj.displaymethod>SELECTED</cfif>>#qMethods.displayname#</option>
-		</cfoutput>
+	<!--- if not typeadmin edit then refresh JS tree data --->
+	<cfif url.ref neq "typeadmin"> 
+		<!--- get parent to update site js tree --->
+		<nj:treeGetRelations typename="#stObj.typename#" objectId="#stObj.ObjectID#" get="parents" r_lObjectIds="ParentID" bInclusive="1">
+		<!--- update site js tree --->
+		<nj:updateTree objectId="#parentID#">
+		<!--- relocate iframes for tree and edit areas using JS --->
 		<cfoutput>
-		</select>
-		</td>
-	</tr>	
-	
-	<tr>
-  		<td valign="top"><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].teaserLabel#</span></td>
-	   	<td>
-			<textarea cols="30" rows="4" name="teaser" class="FormTextArea">#stObj.teaser#</textarea>
-		</td>
-	</tr>
-	<tr>
-		<td colspan="2" align="center">
-			<input type="submit" value="#application.adminBundle[session.dmProfile.locale].OK#" name="submit" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';">
-			<input type="Button" value="#application.adminBundle[session.dmProfile.locale].cancel#" name="Cancel" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';" onClick="location.href='#application.url.farcry#/unlock.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#';parent.synchTab('editFrame','activesubtab','subtab','siteEditOverview');parent.synchTitle('Overview')">
-		</td>
-	</tr>		
-	</table>
-	
-	</form>
-	<script>
-		//bring focus to title
-		document.fileForm.title.focus();
-		objForm = new qForm("fileForm");
-		objForm.title.validateNotNull("#application.adminBundle[session.dmProfile.locale].pleaseEnterTitle#");
+		<script type="text/javascript">
+		if(parent['sidebar'].frames['sideTree'])
+			parent['sidebar'].frames['sideTree'].location= parent['sidebar'].frames['sideTree'].location;
+			parent['content'].location.href = "#cancelCompleteURL#"
+		</script>
+		</cfoutput>
+		<cfabort>	
+
+	<cfelse>
+		<cflocation url="#cancelCompleteURL#" addtoken="no">
+	</cfif>
+		
+<!--- Show the form --->
+<cfelse> 
+	<cfoutput>
+	<script type="text/javascript">
+		function fCancelAction(){
+			if(parent['sidebar'].frames['sideTree']){
+				parent['sidebar'].frames['sideTree'].location= parent['sidebar'].frames['sideTree'].location;
+				parent['content'].location.href = "#application.url.farcry#/edittabOverview.cfm?objectid=#stObj.ObjectID#";
+			}
+		}
 	</script>
+	<form name="editform" action="#cgi.script_name#?#cgi.query_string#" method="post" class="f-wrap-1 f-bg-long">
+	
+	<fieldset>
+		<div class="req"><b>*</b>Required</div>
+		<!--- TO DO: Change this heading to pick up from resource bundle --->
+		<h3>#application.adminBundle[session.dmProfile.locale].generalInfo#: <span class="highlight">#stObj.title#</span></h3>
+	
+		<label for="title"><b>#application.adminBundle[session.dmProfile.locale].titleLabel#<span class="req">*</span></b>
+			<input type="text" name="title" id="title" value="#stObj.title#" /><br />
+		</label>
+		</cfoutput>
+		<cfinvoke component="#application.types.dmInclude.typePath#" method="getIncludes" returnvariable="qGetIncludes"/>
+		<cfoutput>
+
+		<label for="include"><b>#application.adminBundle[session.dmProfile.locale].includeLabel#</b>
+			<cfif qGetIncludes.recordCount>
+			<select name="include" id="include"><cfloop query="qGetIncludes">
+				<option value="#qGetIncludes.include#"<cfif qGetIncludes.include EQ stObj.include> selected="selected"</cfif>>#qGetIncludes.include#</option></cfloop>			
+			</select><cfelse>
+			#application.adminBundle[session.dmProfile.locale].noIncludeFiles#</cfif><br />
+		</label>
+		</cfoutput>
+		<widgets:displayMethodSelector typeName="dmInclude">
+		<cfoutput>
+		<label for="teaser"><b>#application.adminBundle[session.dmProfile.locale].teaserLabel#</b>
+			<textarea name="teaser" id="teaser">#stObj.teaser#</textarea><br />
+		</label>
+	
+		<div class="f-submit-wrap">
+		<input type="Submit" name="Submit" value="#application.adminBundle[session.dmProfile.locale].OK#" class="f-submit">
+		<input type="Button" name="Cancel" value="#application.adminBundle[session.dmProfile.locale].cancel#" class="f-submit" onClick="fCancelAction();">
+		</div>
+	</form>
+<cfinclude template="/farcry/farcry_core/admin/includes/QFormValidationJS.cfm">
 	</cfoutput>
 </cfif>	
 

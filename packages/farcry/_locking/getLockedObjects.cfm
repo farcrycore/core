@@ -4,15 +4,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_locking/getLockedObjects.cfm,v 1.7 2004/03/24 22:37:27 brendan Exp $
-$Author: brendan $
-$Date: 2004/03/24 22:37:27 $
-$Name: milestone_2-2-1 $
-$Revision: 1.7 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_locking/getLockedObjects.cfm,v 1.9 2005/10/06 04:25:21 guy Exp $
+$Author: guy $
+$Date: 2005/10/06 04:25:21 $
+$Name: milestone_3-0-0 $
+$Revision: 1.9 $
 
 || DESCRIPTION || 
 $Description: returns all locked objects $
-$TODO: $
+
 
 || DEVELOPER ||
 $Developer: Brendan Sisson (brendan@daemon.com.au) $
@@ -27,9 +27,11 @@ $out:$
 		
 	<cftry>
 		<cfquery name="qGetObjects" datasource="#application.dsn#">
-			select distinct objectID,label, datetimelastUpdated 
-			From #application.dbowner##i# 
-			WHERE locked = 1 and lockedby = '#arguments.userlogin#' order by datetimelastUpdated desc
+		SELECT 	DISTINCT objectID,label, datetimelastUpdated 
+		FROM 	#application.dbowner##i#
+		WHERE 	locked = 1
+			AND lockedby = '#arguments.userlogin#'
+		ORDER BY datetimelastUpdated DESC
 		</cfquery>		
 				
 		<!--- Create structure for object details to be outputted later --->

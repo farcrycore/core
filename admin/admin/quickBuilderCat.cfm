@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/admin/quickBuilderCat.cfm,v 1.1 2004/12/15 21:52:26 brendan Exp $
-$Author: brendan $
-$Date: 2004/12/15 21:52:26 $
-$Name: milestone_2-3-2 $
-$Revision: 1.1 $
+$Header: /cvs/farcry/farcry_core/admin/admin/quickBuilderCat.cfm,v 1.2 2005/05/30 07:35:15 pottery Exp $
+$Author: pottery $
+$Date: 2005/05/30 07:35:15 $
+$Name: milestone_3-0-0 $
+$Revision: 1.2 $
 
 || DESCRIPTION || 
 $Description: Quickly builds a category structure$
@@ -169,27 +169,33 @@ $out:$
 	        document.theForm.navaliaseslevel.disabled = !document.theForm.makenavaliases.checked;
 	    }
 	</script>
-	<div class="formTitle">#application.adminBundle[session.dmProfile.locale].catTreeQuickBuilder#</div>
+
+	<form method="post" class="f-wrap-1 f-bg-long wider" action="" name="theForm">
+	<fieldset>
 	
-	<p>
-	  <form action="" method="POST" name="theForm">
-	    <table border="0" cellpadding="3" cellspacing="0">
-	      <tr>
-	        <td>#application.adminBundle[session.dmProfile.locale].createStructureWithin#</td>
-	        <td>
-	          <select name="startPoint">
-	            <option value="#application.catid.root#" selected>#application.adminBundle[session.dmProfile.locale].Root#</option>
-	            <cfloop query="qNodes">
-	                 <option value="#qNodes.objectId#">#RepeatString("&nbsp;&nbsp;|", qNodes.nlevel)#- #qNodes.objectName#</option>
-	            </cfloop>
-	          </select>
-	        </td>
-	      </tr>
-	      <tr>
-	        <td>#application.adminBundle[session.dmProfile.locale].Alias#</td>
-	        <td><input type="checkbox" name="makenavaliases" checked value="1" onClick="updateNavTreeDepthBox()" />
-	          #application.adminBundle[session.dmProfile.locale].createCatAliases#
-	          <select name="navaliaseslevel">
+		<h3>#application.adminBundle[session.dmProfile.locale].catTreeQuickBuilder#</h3>
+		
+		<label for="startPoint"><b>#application.adminBundle[session.dmProfile.locale].createStructureWithin#</b>
+		<select name="startPoint" id="startPoint">
+		<option value="#application.catid.root#" selected>#application.adminBundle[session.dmProfile.locale].Root#</option>
+		<cfloop query="qNodes">
+		<option value="#qNodes.objectId#">#RepeatString("&nbsp;&nbsp;|", qNodes.nlevel)#- #qNodes.objectName#</option>
+		</cfloop>
+		</select><br />
+		</label>
+		
+		<fieldset class="f-checkbox-wrap">
+		
+			<b>#application.adminBundle[session.dmProfile.locale].navAliases#</b>
+			
+			<fieldset>
+			
+			<label for="makenavaliases">
+			<input type="checkbox" name="makenavaliases" id="makenavaliases" checked="checked" value="1" onclick="updateNavTreeDepthBox()" class="f-checkbox" />
+			#application.adminBundle[session.dmProfile.locale].createNavAliases#
+			</label>
+			
+			<select name="navaliaseslevel">
 	            <option value="0">#application.adminBundle[session.dmProfile.locale].all#</option>
 	            <option value="1" selected >1</option>
 	            <option value="2">2</option>
@@ -197,38 +203,42 @@ $out:$
 	            <option value="4">4</option>
 	            <option value="5">5</option>
 	            <option value="6">6</option>
-	          </select>
+	          </select><br />
 	          #application.adminBundle[session.dmProfile.locale].levels#
 			  <script>updateNavTreeDepthBox()</script>
-	        </td>
-	      </tr>
-	      <tr>
-	        <td>#application.adminBundle[session.dmProfile.locale].levelToken#</td>
-	        <td><select><option>#levelToken#</option></select></td>
-	      </tr>
-	      <tr>
-	        <td valign="top">#application.adminBundle[session.dmProfile.locale].structure#</td>
-	        <td>
-	<textarea name="structure" rows="10" cols="40"></textarea>
-	        </td>
-	      </tr>
-	      <tr>
-	        <td>&nbsp;</td>
-	        <td>
-	          <input type="submit" value="#application.adminBundle[session.dmProfile.locale].buildCatStructure#" name="submit" />
-	        </td>
-	      </tr>
-	    </table>
-	  </form>
-	</p>
+			
+			</fieldset>
 		
+		</fieldset>
+		
+		<label for="levelToken"><b>#application.adminBundle[session.dmProfile.locale].levelToken#</b>
+		<select name="levelToken" id="levelToken">
+		<option>#levelToken#</option>
+		</select><br />
+		</label>
+		
+		<label for="structure"><b>#application.adminBundle[session.dmProfile.locale].structure#</b>
+		<textarea name="structure" id="structure" rows="10" cols="40" class="f-comments"></textarea><br />
+		</label>
+		
+		<div class="f-submit-wrap">
+		<input type="submit" value="#application.adminBundle[session.dmProfile.locale].buildSiteStructure#" name="submit" class="f-submit" /><br />
+		</div>
+		
+	</fieldset>
+	</form>
+	
+	<hr />
+
+	<h4>#application.adminBundle[session.dmProfile.locale].instructions#</h4>
 	<p>
-	    <strong>#application.adminBundle[session.dmProfile.locale].instructions#</strong>
-	</p>
 	#application.adminBundle[session.dmProfile.locale].quicklyBuildFarCrySiteBlurb#
-	<p>
-	    <strong>#application.adminBundle[session.dmProfile.locale].example#</strong>
 	</p>
+	
+	<hr />
+	
+	<h4>#application.adminBundle[session.dmProfile.locale].example#</h4>
+	<p>
 	<pre>
 	Item 1
 	-Item 1.2
@@ -239,14 +249,20 @@ $out:$
 	--Item 2.2
 	Item 3
 	</pre>
-	<p>
-	    #application.adminBundle[session.dmProfile.locale].visualPurposesBlurb#
 	</p>
+	
+	<p>
+	#application.adminBundle[session.dmProfile.locale].visualPurposesBlurb#
+	</p>
+	
+	<p>
 	<pre>
 	Item 1
 	- Item 1.2
 	-- Item 1.2.1
 	</pre>
+	</p>
+	
 	</cfoutput>
 	</cfif>
 

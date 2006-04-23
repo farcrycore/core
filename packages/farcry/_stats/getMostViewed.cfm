@@ -4,15 +4,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_stats/getMostViewed.cfm,v 1.7 2003/12/10 23:35:59 brendan Exp $
-$Author: brendan $
-$Date: 2003/12/10 23:35:59 $
-$Name: milestone_2-2-1 $
-$Revision: 1.7 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_stats/getMostViewed.cfm,v 1.9 2005/10/28 03:41:17 paul Exp $
+$Author: paul $
+$Date: 2005/10/28 03:41:17 $
+$Name: milestone_3-0-0 $
+$Revision: 1.9 $
 
 || DESCRIPTION || 
 $Description: Shows most viewed objects$
-$TODO: $
+
 
 || DEVELOPER ||
 $Developer: Brendan Sisson (brendan@daemon.com.au)$
@@ -25,13 +25,13 @@ $out:$
 <!--- get downloads from stats --->
 <cfquery datasource="#arguments.dsn#" name="qStats">
 	SELECT pageid, count(logId) as count_downloads, typename
-	FROM stats, refObjects
-	WHERE stats.pageid = refObjects.objectid
+	FROM #arguments.dbowner#stats stats, #arguments.dbowner#refObjects ref
+	WHERE stats.pageid = ref.objectid
 	<cfif arguments.dateRange neq "all">
 		 AND logDateTime > #dateAdd("#arguments.dateRange#",-1,now())#
 	</cfif>
 	<cfif isdefined("arguments.typeName") and arguments.typeName neq "all">
-		AND refObjects.typename = '#arguments.typeName#'
+		AND ref.typename = '#arguments.typeName#'
 	</cfif>
 	GROUP By pageid, typename
 	ORDER BY count_downloads DESC
@@ -53,7 +53,7 @@ $out:$
 		<!--- get object title --->
 		<cfquery datasource="#arguments.dsn#" name="qTitle">
 			select title
-			from #qStats.typename#
+			from  #arguments.dbowner##qStats.typename#
 			where objectid = '#qStats.pageid#'
 		</cfquery>
 			

@@ -4,15 +4,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_stats/getVisitorStatsByWeek.cfm,v 1.6 2004/05/20 04:41:25 brendan Exp $
-$Author: brendan $
-$Date: 2004/05/20 04:41:25 $
-$Name: milestone_2-2-1 $
-$Revision: 1.6 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_stats/getVisitorStatsByWeek.cfm,v 1.8 2005/10/28 03:41:17 paul Exp $
+$Author: paul $
+$Date: 2005/10/28 03:41:17 $
+$Name: milestone_3-0-0 $
+$Revision: 1.8 $
 
 || DESCRIPTION || 
 $Description: get visitor stats $
-$TODO: $
+
 
 || DEVELOPER ||
 $Developer: Brendan Sisson (brendan@daemon.com.au) $
@@ -87,9 +87,9 @@ $out:$
 	-- now join our days table to the fqaudit table, to get the set we want. Note the query requires a day, month and year to be specified, for
 	-- which we return the logins by day (nulls are returned if no logins during the day )
 	select distinct day, statsDays.name,datepart(dw, fq.logdatetime) as loginday, count(distinct sessionId) as count_Ip
-	from #application.dbowner#statsDays
+	from #application.dbowner#statsDays statsDays
 	left join (
-			select * from stats
+			select * from #application.dbowner#stats
 				
 	)fq on datepart(dw, fq.logdatetime) = statsDays.day
 	 and datediff(day,fq.logdatetime,#createodbcdatetime(arguments.day)#) <=0 and datediff(day,fq.logdatetime,#createodbcdatetime(arguments.day+7)#) >=0

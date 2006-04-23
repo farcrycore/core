@@ -1,31 +1,24 @@
+<cfsetting enablecfoutputonly="Yes">
 <!--- 
 || LEGAL ||
 $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/navajo/floatMenu.cfm,v 1.17 2004/07/15 02:03:00 brendan Exp $
-$Author: brendan $
-$Date: 2004/07/15 02:03:00 $
-$Name: milestone_2-3-2 $
-$Revision: 1.17 $
+$Header: /cvs/farcry/farcry_core/tags/navajo/floatMenu.cfm,v 1.19 2005/08/28 00:19:41 geoff Exp $
+$Author: geoff $
+$Date: 2005/08/28 00:19:41 $
+$Name: milestone_3-0-0 $
+$Revision: 1.19 $
 
 || DESCRIPTION || 
 $Description: FarCry DHTML Float Menu$
-$TODO: $
 
 || DEVELOPER ||
 $Developer: Stephen 'Spike' Milligan (spike@spike.org.uk)$
-
-|| ATTRIBUTES ||
-$in: $
-$out:$
+$Developer: Geoff Bowers (modius@daemon.com.au)$
 --->
-
-<cfsetting enablecfoutputonly="Yes">
-
-<cfprocessingDirective pageencoding="utf-8">
-
+<!--- import tag libraries --->
 <cfimport taglib="/farcry/farcry_core/tags/farcry/" prefix="farcry">
 
 <!--- Design Mode --->
@@ -69,14 +62,13 @@ $out:$
 <cfset aItems[arrayLen(aItems)].text = "#application.adminBundle[session.dmProfile.locale].adminPage#">
 <cfset aItems[arrayLen(aItems)].href = "#application.url.farcry#/index.cfm">
 <cfset aItems[arrayLen(aItems)].icon = "admin.gif">
-<cfset aItems[arrayLen(aItems)].target = "_blank">
+<cfset aItems[arrayLen(aItems)].target = "farcry_webtop">
 
 <cfset aItems[arrayLen(aItems)+1] = structNew()>
 <cfset aItems[arrayLen(aItems)].text = "#application.adminBundle[session.dmProfile.locale].editPage#">
-<cfset aItems[arrayLen(aItems)].href = "#application.url.farcry#/index.cfm?section=site&rootobjectid=#request.navid#">
+<cfset aItems[arrayLen(aItems)].href = "#application.url.farcry#/index.cfm?sec=site&rootobjectid=#request.navid#">
 <cfset aItems[arrayLen(aItems)].icon = "edit.gif">
-<cfset aItems[arrayLen(aItems)].target = "_blank">
-
+<cfset aItems[arrayLen(aItems)].target = "farcry_webtop">
 
 <cfset aItems[arrayLen(aItems)+1] = structNew()>
 <cfset aItems[arrayLen(aItems)].text = "#application.adminBundle[session.dmProfile.locale].logout#">
@@ -95,13 +87,9 @@ $out:$
 </cfscript>
 
 <!--- This include allows advance developers to manipulate the aItems array before rendering the floater menu. --->
-<cftry>
+<cfif fileexists("#application.path.project#/system/floatMenu/_customItems.cfm")>
 	<cfinclude template="/farcry/#application.applicationname#/system/floatMenu/_customItems.cfm">
-	<cfcatch>
-		<!--- do nothing --->
-	</cfcatch>
-</cftry>
-
+</cfif>
 <!--- show menu --->
 <farcry:floater imagedir="#application.url.farcry#/images/floater/" aItems="#aItems#" prefix="dmfloat" useContextMenu="true">
 

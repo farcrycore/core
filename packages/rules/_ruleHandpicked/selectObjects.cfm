@@ -5,26 +5,22 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/rules/_ruleHandpicked/selectObjects.cfm,v 1.22.2.1 2005/06/27 07:26:29 guy Exp $
-$Author: guy $
-$Date: 2005/06/27 07:26:29 $
-$Name: milestone_2-3-2 $
-$Revision: 1.22.2.1 $
+$Header: /cvs/farcry/farcry_core/packages/rules/_ruleHandpicked/selectObjects.cfm,v 1.30 2005/09/29 02:59:09 gstewart Exp $
+$Author: gstewart $
+$Date: 2005/09/29 02:59:09 $
+$Name: milestone_3-0-0 $
+$Revision: 1.30 $
 
 || DESCRIPTION || 
 $Description: ruleHandpicked PLP - choose teaser handler (teaser.cfm) $
 $TODO: Clean up whitespace issues, revise formatting 20030503 GB$
 
 || DEVELOPER ||
-$Developer: Paul Harrison (paul@daemon.com.au) $
+$Developer: Guy Phanvongsa (guy@daemon.com.au) $
 --->
-
+<cfsetting enablecfoutputonly="true">
 <cfprocessingDirective pageencoding="utf-8">
-
-<cfimport taglib="/farcry/farcry_core/tags/farcry" prefix="tags">
-<cfoutput>
-<link type="text/css" rel="stylesheet" href="#application.url.farcry#/css/admin.css"> 
-</cfoutput>
+<cfimport taglib="/farcry/farcry_core/tags/widgets" prefix="widgets">
 
 <cfparam name="output.orderby" default="label">
 <cfparam name="output.orderdir" default="asc">
@@ -32,380 +28,281 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 <cfparam name="output.labelsearch" default="">
 <cfparam name="output.labelsearchcondition" default="">
 <cfparam name="output.dmType" default="dmNews"> 
+<cfparam name="formSubmitted" default="no">
 
-<cffunction name="getMinTypeDate">
-	<cfargument name="typename">
-	<cfquery name="q" datasource="#application.dsn#">
-		SELECT min(datetimecreated) as mindate
-		FROM #application.dbowner##arguments.typename#
-	</cfquery>
-	<!--- check if there is a min date --->
-	<cfif not len(q.mindate)>
-		<cfset mindate = now()>
-	<cfelse>
-		<cfset mindate = q.mindate>
-	</cfif>
-	<cfreturn mindate>
-</cffunction>	
+<!--- get the min/max date for items --->
+<cfquery name="q" datasource="#application.dsn#">
+SELECT	min(datetimecreated) as mindate, max(datetimecreated) as maxdate
+FROM 	#application.dbowner##output.dmType#
+</cfquery>
 
-<cffunction name="getMaxTypeDate">
-	<cfargument name="typename">
-	<cfquery name="q" datasource="#application.dsn#">
-		SELECT max(datetimecreated) as maxdate
-		FROM #application.dbowner##arguments.typename#
-	</cfquery>
-	<!--- check if there is a max date --->
-	<cfif not len(q.maxdate)>
-		<cfset maxdate = now()>
-	<cfelse>
-		<cfset maxdate = q.maxdate>
-	</cfif>
-	<cfreturn maxdate>
-</cffunction>	
+<!--- check if valid date --->
+<cfif NOT Len(q.mindate)>
+	<cfset mindate = now()>
+<cfelse>
+	<cfset mindate = q.mindate>
+</cfif>
 
-
-<cfset minDate = getMinTypeDate(output.dmType)>
-<cfset maxDate = getMaxTypeDate(output.dmType)>
+<cfif NOT Len(q.maxdate)>
+	<cfset maxdate = now()>
+<cfelse>
+	<cfset maxdate = q.maxdate>
+</cfif>
+<!--- // check if valid date --->
 <cfset output.startYear = year(minDate)>
 <cfset output.endYear = year(maxDate)>
-
-<cfif isDefined("form.formSubmitted")>
+<cfif formSubmitted EQ "yes">
 	<!--- update plp data and move to next step --->
-	<cfloop index="FormItem" list="#FORM.FieldNames#">
-		<cfset "output.#FormItem#" = Evaluate("FORM.#FormItem#")>
+	<cfloop index="formItem" list="#form.fieldNames#">
+		<cfset output[formItem] = form[formItem]>
 	</cfloop>
 	<cfset output.startDate = createDateTime(output.minYear,output.minMonth,output.minDay,0,0,0)>
 	<cfset output.endDate = createDateTime(output.maxYear,output.maxMonth,output.MaxDay,0,0,0)>
 <cfelse>
 	<cfset output.startDate = createDateTime(year(minDate),month(minDate),day(minDate),0,0,0)>
 	<cfset output.endDate = createDateTime(year(maxDate),month(maxDate),day(maxDate),0,0,0)>
-	<cfset output.startDate = dateAdd('d',-1,output.startDate)>
-	<cfset output.endDate = dateAdd('d',1,output.endDate)>
+	<cfset output.startDate = dateAdd('d',-30,output.startDate)>
+	<cfset output.endDate = dateAdd('d',30,output.endDate)>
 </cfif>
 
-
-<cfoutput>
+<!--- get all the types that has a schedule --->
+<cfset aTypes = ArrayNew(1)>
+<cfset i = 0>
+<cfloop item="type" collection="#application.types#">
+	<cfif StructKeyExists(application.types[type],"bSchedule")>
+		<cfset i = i + 1>
+		<cfset aTypes[i] = StructNew()>
+		<cfset aTypes[i].name = type>
+		<cfif StructKeyExists(application.types[type],"displayName")>
+			<cfset aTypes[i].displayName = application.types[type].displayName>
+		<cfelse>
+			<cfset aTypes[i].displayName = type>
+		</cfif>
+	</cfif>
+</cfloop>
 
 <cfif isDefined("form.wddx")>
+	<cfif isWDDX(form.wddx)>
 	<cfwddx input="#form.wddx#" action="wddx2js" toplevelvariable="aWDDX" output="output.objectJs">
 	<cfset output.objectWDDX = form.wddx>
+	</cfif>	
 </cfif>
 
-<script>
- 	
-	#output.objectJS#  
-	
- 
-	function updateArray(id,label)
-	{
-		if (document.getElementById(id).checked)
-			addData(id,label);
-		else
-			removeData(id);
-		return true;		
-	}
- 
-	function addData(id,label)
- 	{
-		var st = new Object();
-		st.typename = '#output.dmType#';
-		st.objectid = id;
-		st.method = '';
-		st.label = label;
- 		aWDDX.push(st);
-		return true;
-	}
- 
- 
-	function removeData(id)
-	{
-		for (var i = 0;i < aWDDX.length;i++)
-		{
-			if (aWDDX[i].objectid == id)
-			{
-				aWDDX.splice(i,1);
-				return true;
-			}
-		}
-		return false;
-	}
- 
- 
-	function updateSelection()
-	{
-		for (var i = 0;i < aWDDX.length;i++)
-		{
-			if(document.getElementById(aWDDX[i].objectid))
-			{
-				document.getElementById(aWDDX[i].objectid).checked=true;
-				selectRow('row'+aWDDX[i].objectid);
-			}	
-		}
-	}
-
- 
-	function serializeData(data, formField)
-	{
-      wddxSerializer = new WddxSerializer();
-      wddxPacket = wddxSerializer.serialize(data);
-      if (wddxPacket != null) {
-         formField.value = wddxPacket;
-      }
-      else {
-         alert("#application.adminBundle[session.dmProfile.locale].notSerializeData#");
-      }
-   	}
-   
-   
-	var rowcolor="red";
-	
-	function selectRow(id){
-	em = document.getElementById(id);
-	if (em.style.color != rowcolor)
-		em.style.color="red";
-	else
-		em.style.color="black";
-	}	
-	
-	<cfinclude template="/farcry/farcry_core/admin/includes/wddx.js">
-  
-</script>
-</cfoutput>
 <cfset thisstep.isComplete = 0>
 <cfset thisstep.name = stplp.currentstep>
 
-
-<cfif NOT isDefined("FORM.search")>
-	<tags:plpNavigationMove>
-<cfelse>
-	<cfloop index="FormItem" list="#FORM.FieldNames#">
-		<cfset "output.#FormItem#" = Evaluate("FORM.#FormItem#")>
-	</cfloop>	
-</cfif>
-
+<widgets:plpAction>
 
 <cfif NOT thisstep.isComplete>
-
-
-<cfparam name="FORM.thisPage" default="1">
-
 <!--- Build SQL  --->
 <cfscript>
-		
-	sql = "SELECT ObjectID, label, datetimelastupdated FROM #output.dmType#";
-	sql = sql & " WHERE 1 = 1 ";
-	if(structKeyExists(application.types[output.dmType].stProps,"status"))
-		sql = sql & " AND status = 'approved'";
-	sql = sql & " AND datetimecreated >= #createodbcdate(output.startDate)#";
-	sql = sql & " AND datetimecreated <= #createodbcdate(output.endDate)#";
-	
-	if (len(trim(output.labelsearch)))
+sql = "SELECT ObjectID, label, datetimelastupdated FROM #output.dmType#";
+sql = sql & " WHERE 1 = 1 ";
+if(structKeyExists(application.types[output.dmType].stProps,"status"))
+	sql = sql & " AND status = 'approved'";
+sql = sql & " AND datetimecreated >= #createodbcdate(output.startDate)#";
+sql = sql & " AND datetimecreated <= #createodbcdate(output.endDate)#";
+
+if (len(trim(output.labelsearch)))
+{
+	replace(output.labelsearch,"'","''","ALL"); //delimit single quotes.
+	aKeyWords = listToArray(output.labelsearch,' ');
+	sqlclause = '';
+	switch (output.labelsearchcondition)
 	{
-		replace(output.labelsearch,"'","''","ALL"); //delimit single quotes.
-		aKeyWords = listToArray(output.labelsearch,' ');
-		sqlclause = '';
-		switch (output.labelsearchcondition)
+		case "or" : case "and" :
 		{
-			case "or" : case "and" :
+			for (i = 1;i LTE arrayLen(aKeyWords);i=i+1)
 			{
-				for (i = 1;i LTE arrayLen(aKeyWords);i=i+1)
-				{
-					sqlclause = sqlclause & "label like '%#aKeyWords[i]#%'";
-					if(i LT arrayLen(aKeyWords))
-						sqlclause = sqlclause & " #output.labelsearchcondition# ";
-				}
-				if (len(sqlClause))
-					sql = sql & " AND (#sqlclause#)";
-				break;	
-			}		
-			case "exact" :
-			{
-				sql = sql & " AND label like '%#output.labelsearch#%'";
-				break;
+				sqlclause = sqlclause & "label like '%#aKeyWords[i]#%'";
+				if(i LT arrayLen(aKeyWords))
+					sqlclause = sqlclause & " #output.labelsearchcondition# ";
 			}
-		}	
-	}
-	sql = sql & " ORDER BY #output.orderby# #output.orderdir#";
+			if (len(sqlClause))
+				sql = sql & " AND (#sqlclause#)";
+			break;	
+		}		
+		case "exact" :
+		{
+			sql = sql & " AND label like '%#output.labelsearch#%'";
+			break;
+		}
+	}	
+}
+sql = sql & " ORDER BY #output.orderby# #output.orderdir#";
 </cfscript>
 
-<!--- <cfdump var="#sql#"> --->
-
-<cfquery name="recordset" datasource="#application.dsn#">
-	#preserveSingleQuotes(sql)#
+<cfquery name="qList" datasource="#application.dsn#">
+#preserveSingleQuotes(sql)#
 </cfquery>
 
-
 <!--- This script block sorts out next/previous page stuff --->
-<cfscript>
-	numRecords = 20; //this is the number of records to display per page
-	thisPage = FORM.thisPage;
-	if (recordSet.recordCount GT 0)
+<!--- this is the number of records to display per page --->
+<cfset numRecords = 10>
+<cfparam name="thisPage" default="1">
+<cfif qList.recordCount GT 0>
+	<!--- the query row which we start from --->
+	<cfset startRow = ((thisPage*numRecords) + 1) - numRecords>
+	<cfset endRow = (numRecords + startRow)-1>
+	<cfset numPages = Ceiling(qList.recordcount/numRecords)>
+
+	<!--- next/previous pages --->
+	<cfif thisPage GT 1>
+		<cfset prevPage = thisPage - 1>
+	</cfif>
+
+	<cfif thisPage LT numPages>
+		<cfset nextPage = thisPage + 1>
+	</cfif>
+<cfelse>
+	<cfset numpages = 1>
+	<cfset thispage = 1>
+	<cfset endrow = 1>
+	<cfset startrow = 1>
+</cfif>
+
+<cfset oForm = createObject("component","#application.packagepath#.farcry.form")>
+
+<widgets:plpWrapperContainer>
+<cfsetting enablecfoutputonly="false"><cfoutput>
+<script type="text/javascript">
+#output.objectJS#
+
+function updateArray(id,label)
+{
+	if (document.getElementById(id).checked)
+		addData(id,label);
+	else
+		removeData(id);
+	return true;
+}
+
+function addData(id,label)
 	{
-		startRow = ((thisPage*numRecords) + 1) - numRecords; //the query row which we start from
-		endRow = (numRecords + startRow)-1;
-		numPages = recordSet.recordcount/numRecords;
-		numPages = ceiling(numPages); // the number of 'pages' of results
-		if (thisPage GT 1){
-			prevPage = thisPage - 1; 
-		}	//the next page to advance to  
-		if (thisPage LT numPages){
-			nextPage = thisPage + 1;
-		}	 // the previous page to go back to	
-	}else
-	{	numpages = 1;
-		thispage = 1;
-		endrow=1;
-		startrow=1;
+	var st = new Object();
+	st.typename = '#output.dmType#';
+	st.objectid = id;
+	st.method = '';
+	st.label = label;
+	aWDDX.push(st);
+	return true;
+}
+
+function removeData(id)
+{
+	for (var i = 0;i < aWDDX.length;i++)
+	{
+		if (aWDDX[i].objectid == id)
+		{
+			aWDDX.splice(i,1);
+			return true;
+		}
 	}
-	oForm = createObject("component","#application.packagepath#.farcry.form");
-</cfscript>
+	return false;
+}
 
+function serializeData(data, formField)
+{
+	wddxSerializer = new WddxSerializer();
+	wddxPacket = wddxSerializer.serialize(data);
+	if (wddxPacket != null) {
+	   formField.value = wddxPacket;
+	}
+	else {
+	   alert("#application.adminBundle[session.dmProfile.locale].notSerializeData#");
+	}
+}
 
-<cfoutput>
+var pageNav = 0;
+function doSubmit(objForm){
+	objForm.thisPage.selectedIndex = objForm.thisPage.selectedIndex + pageNav;
+	pageNav = 0;
+	serializeData(aWDDX,document.forms.editform.wddx);
+	if(!objForm.plpAction.value)
+		objForm.plpAction.value = 'none';
+	objForm.submit();
+}
+<cfinclude template="/farcry/farcry_core/admin/includes/wddx.js">
+</script>
+<form name="editform" action="#cgi.script_name#?#cgi.query_string#" method="post" class="f-wrap-2" style="margin-top:-1.5em" onsubmit="doSubmit(document.editform);">
+	<fieldset><h3>#application.adminBundle[session.dmProfile.locale].selectObjects#</h3>
+		<label for="dmType"><b>#application.adminBundle[session.dmProfile.locale].selectObjTypeLabel#</b>
+			<select id="dmType" name="dmType" onchange="doSubmit(document.editform);"><cfloop index="j" from="1" to="#ArrayLen(aTypes)#">
+				<option value="#aTypes[j].name#"<cfif output.dmType EQ aTypes[j].name> selected="selected"</cfif>>#aTypes[j].displayName#</option></cfloop>		
+			</select><br />
+		</label>
 
-	<style type="text/css">
-		border {border:thin solid Black; }
-	</style>
+		<label for="labelsearch"><b>#application.adminBundle[session.dmProfile.locale].titleKeywords#</b>
+			<input type="text" value="#output.labelsearch#" name="labelsearch">
+			<select name="labelsearchcondition">
+				<option value="or" <cfif output.labelsearchcondition IS "or">selected</cfif>>#application.adminBundle[session.dmProfile.locale].matchAnyWords#
+				<option value="and" <cfif output.labelsearchcondition IS "all">selected</cfif>>#application.adminBundle[session.dmProfile.locale].matchAllWords#
+				<option value="exact" <cfif output.labelsearchcondition IS "exact">selected</cfif>>#application.adminBundle[session.dmProfile.locale].matchExactPhrase#
+			</select><br />
+		</label>
 
-	<div class="FormTitle">#application.adminBundle[session.dmProfile.locale].selectObjects#</div>
-	<div class="FormTable" align="center" style="width:90%">
-	<form name="editform" action="#cgi.script_name#?#cgi.query_string#<cfif NOT isDefined('url.ruleid')>&ruleid=#output.objectid#</cfif>" method="post" onSubmit="serializeData(aWDDX,document['forms'].editform.wddx);">
-	<input type="hidden" name="wddx" value="">
-	<input type="hidden" name="formSubmitted" value="">
-	<input type="hidden" name="ruleid" value="#output.objectid#">
- 	<table width="100%">
+		<label for="labelStartDate"><b>#application.adminBundle[session.dmProfile.locale].dateRange#:</b>
+			#oForm.renderDateSelect(startYear=output.startyear,endyear=output.endyear,selectedDate=output.startDate,elementNamePrefix='min',bDisplayMonthAsString=1)#<br />
+			<b>#application.adminBundle[session.dmProfile.locale].toLabel#</b>
+			#oForm.renderDateSelect(startYear=output.startyear,endyear=output.endyear,selectedDate=output.endDate,elementNamePrefix='max',bDisplayMonthAsString=1)#<br />
+		</label>
+
+		<label><b>#application.adminBundle[session.dmProfile.locale].orderBy#</b>
+			<select id="orderby" name="orderby">
+				<option value="label"<cfif output.orderby IS "label"> selected="selected"</cfif>>Label</option>
+				<option value="datetimelastupdated"<cfif output.orderby IS "datetimelastupdated"> selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].dateObjLastUpdated#</option>
+			</select>
+			<select id="orderdir" name="orderdir">
+				<option value="ASC" <cfif output.orderdir IS "ASC">selected</cfif>>#application.adminBundle[session.dmProfile.locale].ascending#</option>
+				<option value="DESC" <cfif output.orderdir IS "DESC">selected</cfif>>#application.adminBundle[session.dmProfile.locale].descending#</option>
+			</select><br />
+		</label>
 	
+	<div class="f-submit-wrap">
+	<input type="Submit" name="filter" value="#application.adminBundle[session.dmProfile.locale].filter#" class="f-submit" />
+	</div>
+	
+	<table cellspacing="0" class="table-2">
 	<tr>
-		<td>
-			<table style="width:100%" border="1" >
-				<tr>
-					<td>
-						<strong>#application.adminBundle[session.dmProfile.locale].selectObjTypeLabel#</strong>
-					</td>
-					<td>
-						<select name="dmType" onChange="serializeData(aWDDX,document['forms'].editform.wddx);document['forms']['editform'].submit();">
-						<cfloop collection="#application.types#" item="type">
-							<cfif structKeyExists(application.types[type],"BSCHEDULE")>
-								<option value="#type#" <cfif output.dmType IS type>selected</cfif>><cfif structKeyExists(application.types[type],'displayName')>#application.types[type]['displayName']#<cfelse>#type#</cfif></option>
-							</cfif> 
-						</cfloop>
-						</select>
-					</td>
-				</tr>
-				<tr>
-					<td width="20%">
-						<strong>#application.adminBundle[session.dmProfile.locale].titleKeywords#</strong>
-					</td>
-					<td>
-						<input type="Text" value="#output.labelsearch#" name="labelsearch">
-						<select name="labelsearchcondition">
-							<option value="or" <cfif output.labelsearchcondition IS "or">selected</cfif>>#application.adminBundle[session.dmProfile.locale].matchAnyWords#
-							<option value="and" <cfif output.labelsearchcondition IS "all">selected</cfif>>#application.adminBundle[session.dmProfile.locale].matchAllWords#
-							<option value="exact" <cfif output.labelsearchcondition IS "exact">selected</cfif>>#application.adminBundle[session.dmProfile.locale].matchExactPhrase#
-						</select>
-					</td>
-				</tr>
-				<tr>
-					<td valign="top">
-						<strong>#application.adminBundle[session.dmProfile.locale].dateRange#</strong>
-					</td>
-				
-					<td valign="top">
-							#oForm.renderDateSelect(startYear=output.startyear,endyear=output.endyear,selectedDate=output.startDate,elementNamePrefix='min',bDisplayMonthAsString=1)#
-							<strong >#application.adminBundle[session.dmProfile.locale].toLabel#</strong>
-							#oForm.renderDateSelect(startYear=output.startyear,endyear=output.endyear,selectedDate=output.endDate,elementNamePrefix='max',bDisplayMonthAsString=1)#
-					</td>
-
-				</tr>
-				<tr>
-					<td>
-						<strong>#application.adminBundle[session.dmProfile.locale].orderBy#</strong>
-					</td>
-					<td>
-						<select name="orderby">
-							<option value="label" <cfif output.orderby IS "label">selected</cfif>>Label</option>
-							<option value="datetimelastupdated" <cfif output.orderby IS "datetimelastupdated">selected</cfif>>#application.adminBundle[session.dmProfile.locale].dateObjLastUpdated#</option>
-						</select>
-						<select name="orderdir">
-							<option value="ASC" <cfif output.orderdir IS "ASC">selected</cfif>>#application.adminBundle[session.dmProfile.locale].ascending#</option>
-							<option value="DESC" <cfif output.orderdir IS "DESC">selected</cfif>>#application.adminBundle[session.dmProfile.locale].descending#</option>
-						</select>
-						
-					</td>
-				</tr>
-				<tr><td colspan="2" align="center"><input type="button" onClick="serializeData(aWDDX,document['forms'].editform.wddx);document['forms']['editform'].submit();" name="search" value="#application.adminBundle[session.dmProfile.locale].filter#"></td></tr>
-			</table>
-		</td>
-	</tr>										
-	
-	</table>
-	
-	<table class="border" width="100%" style="border:thin solid Black;" >
-	<tr>
-		<td colspan="3">
-			<table width="100%" cellspacing="0" class="border">
-			<tr >
-				<td>#recordSet.recordcount# items</td>
-				<td align="right" valign="middle">
-					<cfif thisPage GT 1>
-						<input type="image" src="#application.url.farcry#/images/treeImages/leftarrownormal.gif" value="#application.adminBundle[session.dmProfile.locale].prev#" name="prev"  onclick="serializeData(aWDDX,document['forms'].editform.wddx);document['forms'].editform.thisPage.selectedIndex--;document['forms'].editform.submit();" >
-					</cfif>
-					Page 
-					<select name="thisPage" onChange="serializeData(aWDDX,document['forms'].editform.wddx);document['forms'].editform.submit();">
-						<cfloop from="1" to="#numPages#" index="i">
-							<option value="#i#" <cfif i eq thisPage>selected</cfif>>#i#
-						</cfloop>
-					</select> of #numPages#
-					<cfif thisPage LT numpages>
-						<input name="next" type="image" src="#application.url.farcry#/images/treeImages/rightarrownormal.gif" value="#application.adminBundle[session.dmProfile.locale].next#" onclick="serializeData(aWDDX,document['forms'].editform.wddx);document['forms'].editform.thisPage.selectedIndex++;document['forms'].editform.submit();">
-					</cfif>
-				</td>
-			</tr>		
-			</table>
+	<td colspan="3" align="right"><cfif thisPage GT 1>
+			<input type="image" src="#application.url.farcry#/images/treeImages/leftarrownormal.gif" value="#application.adminBundle[session.dmProfile.locale].prev#" name="prev"  onclick="pageNav=-1;document.editform.submit();;" ></cfif>Page
+			<select name="thisPage" onchange="doSubmit(document.editform);"><cfloop from="1" to="#numPages#" index="i">
+				<option value="#i#"<cfif i eq thisPage> selected="selected"</cfif>>#i#</option></cfloop>
+			</select> of #numPages#<cfif thisPage LT numpages>
+			<input name="next" type="image" src="#application.url.farcry#/images/treeImages/rightarrownormal.gif" value="#application.adminBundle[session.dmProfile.locale].next#" onclick="pageNav=+1;document.editform.submit();"></cfif>		
 		</td>
 	</tr>
-		<tr>
-			<td>
-				#application.adminBundle[session.dmProfile.locale].select#
-			</td>
-			<td>
-				#application.adminBundle[session.dmProfile.locale].label#
-			</td>
-			<td>
-				#application.adminBundle[session.dmProfile.locale].lastUpdatedLC#
-			</td>
-		</tr>
-		<cfloop query="recordSet" startrow="#startRow#" endrow="#endRow#">
-		<tr id="row#recordSet.objectID#">
-			<td>
-				
-				<cfset JSsafeLabel = replace(trim(recordset.label),"""","","ALL")>
-				<cfset JSsafeLabel = jsStringFormat(jsSafeLabel)>
-				<input id="#recordset.objectid#" onClick="selectRow('row#recordset.objectid#');updateArray(this.id,'#jsSafeLabel#');" type="checkbox" name="lObjectIDs" value="#objectID#">
-			</td>
-			<td>
-				#label#
-			</td>
-			<td>
-				#application.thisCalendar.i18nDateFormat(datetimelastupdated,session.dmProfile.locale,application.mediumF)# 
-				<!--- i18n #dateformat(,"dd-mmm-yyyy")# --->
-			</td>
-		</tr>
-		</cfloop>
+	<tr>
+		<th>#application.adminBundle[session.dmProfile.locale].select#</th>
+		<th>#application.adminBundle[session.dmProfile.locale].label#</th>
+		<th>#application.adminBundle[session.dmProfile.locale].lastUpdatedLC#</th>
+	</tr><cfloop query="qList" startrow="#startRow#" endrow="#endRow#">
+	<cfset JSsafeLabel = replace(trim(qList.label),"""","","ALL")>
+	<cfset JSsafeLabel = jsStringFormat(jsSafeLabel)>
+	<tr>
+		<td><input type="checkbox" id="#qList.objectid#" onClick="updateArray('#qList.objectid#','#jsSafeLabel#');" name="lObjectIDs" value="#qList.objectID#"></td>
+		<td>#qList.label#</td>
+		<td>#application.thisCalendar.i18nDateFormat(qList.datetimelastupdated,session.dmProfile.locale,application.mediumF)#</td>
+	</tr></cfloop>
 	</table>
-	</div>
-	<div class="FormTableClear">
-		<tags:plpNavigationButtons onClick="serializeData(aWDDX,document['forms'].editform.wddx);">
-	</div>
-	</form>
 	
-
-<script>
-	updateSelection();
-</script>
-</cfoutput>
-	
+	<input type="hidden" name="ruleid" value="#output.objectid#">
+	<input type="hidden" name="wddx" value="">
+	<input type="hidden" name="formSubmitted" value="yes">
+	</fieldset>
+	<input type="hidden" name="plpAction" value="" />
+	<input style="display:none;" type="submit" name="buttonSubmit" value="submit" />
+</form>
+<script type="text/javascript">
+// loop over aWDDX to check any ones they have selected
+for(i=0; i<aWDDX.length;i++){
+	objCheck = document.getElementById(aWDDX[i]["objectid"]);
+	if(objCheck)
+		objCheck.checked = "checked";
+}
+</script></cfoutput>
+</widgets:plpWrapperContainer>
 <cfelse>
-	<tags:plpUpdateOutput>
+	<widgets:plpUpdateOutput>
 </cfif>
 <cfsetting enablecfoutputonly="yes">

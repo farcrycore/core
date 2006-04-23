@@ -1,54 +1,48 @@
+<cfsetting enablecfoutputonly="yes">
+
 <!--- 
 || LEGAL ||
 $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/navajo/overview.cfm,v 1.98.2.2 2005/02/17 17:21:24 spike Exp $
-$Author: spike $
-$Date: 2005/02/17 17:21:24 $
-$Name: milestone_2-3-2 $
-$Revision: 1.98.2.2 $
+$Header: /cvs/farcry/farcry_core/tags/navajo/overview.cfm,v 1.115 2005/10/28 03:47:33 paul Exp $
+$Author: paul $
+$Date: 2005/10/28 03:47:33 $
+$Name: milestone_3-0-0 $
+$Revision: 1.115 $
 
 || DESCRIPTION || 
 $Description: Javascript tree$
-$TODO: $
 
 || DEVELOPER ||
-$Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au)$
-$Developer: Matt Dawson (mad@daemon.com.au)$
+$Developer: Paul Harrison (paul@enpresiv.com)$
 $Developer: Brendan Sisson (brendan@daemon.com.au)$
-
-
-|| ATTRIBUTES ||
-$in: $
-$out:$
 --->
-
-<cfsetting enablecfoutputonly="No">
-<cfprocessingDirective pageencoding="utf-8">
-<cfinclude template="/farcry/farcry_core/admin/includes/cfFunctionWrappers.cfm">
+<!--- include tag library --->
 <cfimport taglib="/farcry/farcry_core/tags/navajo" prefix="nj">
 
+<!--- include function library --->
+<cfinclude template="/farcry/farcry_core/admin/includes/cfFunctionWrappers.cfm">
+
+<!--- optional attributes --->
 <cfparam name="attributes.zoom" default="16">
 <cfparam name="attributes.nodetype" default="dmNavigation"> <!--- Allows you to have tree of diffenent 'typenames' - useful if you want full site tree functionality, but for other applications such as document management perhaps --->
 <cfif isDefined("url.zoom")><cfset attributes.zoom=url.zoom></cfif>
-<cfset fontZoom = int(attributes.zoom/16*9)>
-<cfset menuZoom = int(attributes.zoom/16*120)>
+	<cfset fontZoom = int(attributes.zoom/16*9)>
+	<cfset menuZoom = int(attributes.zoom/16*120)>
 <cfparam name="application.navid.rubbish" default="">
 <cfparam name="attributes.lCreateObjects" default="ALL"><!--- This is a list of typenames that you want to restrict to being created in the tree --->
-
 
 <cfscript>
 	//default overivew params structure for further flexibility when using tree functionality with apps other than the 'site overview' - This is very much a work in progress.
 	stOverview = structNew();
 	st = stOverview;
 	st.menu.insert.dmHTML = '#application.url.webroot#/index.cfm'; //default page to insert dmHTML links
-	st.popupmenu.URL.createObject = '#application.url.farcry#/navajo/createObject.cfm';
+	st.popupmenu.URL.createObject = '#application.url.farcry#/conjuror/evocation.cfm';
 	st.popupmenu.URL.deleteObject = '#application.url.farcry#/navajo/delete.cfm';
 </cfscript>
 <cfparam name="attributes.stOverview" default="#stOverview#">
-
 
 <cfscript>
 	stOverview = attributes.stOverview;
@@ -128,10 +122,10 @@ $out:$
 	//get Current Loggedin user.
 	stUser = request.dmSec.oAuthentication.getUserAuthenticationData();
 		
-	menuOnColor="##dddddd";
+	menuOnColor="##97ACCD";
 	menuOffColor="white";
 	menuFlutterOnColor="black";
-	menuFlutterOffColor="##cccccc";
+	menuFlutterOffColor="##97ACCD";
 	smallPopupFeatures="width=200,height=200,menubar=no,toolbars=no,";
 	customIcons = attributes.customIcons;
 
@@ -139,7 +133,9 @@ $out:$
 
 <cfoutput>
 
-<script>
+<script type="text/javascript">
+	var contentFrame = parent.parent['content'];
+
 	//parent.document.getElementById('siteEditEdit').style.display = 'none';
 	var ns6=document.getElementById&&!document.all; //test for ns6
 	var ie5=document.getElementById && document.all;//test for ie5
@@ -201,17 +197,17 @@ else
 	rootobjectid = qRoot.objectid;
 }
 
-if(not isDefined("url.insertonly"))
+/*if(NOT isDefined("url.insertonly"))
 {
 	if (NOT rootobjectid IS application.navid.root AND len(application.navid.root) EQ 35)
 	{
 		qParent = request.factory.oTree.getParentID(objectid=rootobjectid,dsn=application.dsn);	
 		upOneRootobjectid = qParent.parentid;
 		if (NOT upOneRootobjectid IS rootobjectid AND iRootNodeManagement EQ 1)
-			writeoutput("<div style=""float:right""><a href=""#cgi.script_name#?rootobjectid=#upOneRootobjectid#""><img alt='Up one level' src=""#application.url.farcry#/images/treeImages/uponefolder.gif"" border=""0""></a></div>");	
+			writeoutput("<div class=""upone""><a href=""#cgi.script_name#?rootobjectid=#upOneRootobjectid#""><img alt='Up one level' src=""#application.url.farcry#/images/treeImages/uponefolder.gif""></a></div>");	
 		
 	}
-}	
+}*/
 </cfscript>
 
 
@@ -231,12 +227,12 @@ if(not isDefined("url.insertonly"))
 <cfset customIcons = attributes.customIcons>
 
 <cfquery name="q" datasource="#application.dsn#">
-	SELECT permissionID FROM dmPermission WHERE permissionType = 'dmNavigation'
+	SELECT permissionID FROM #application.dbowner#dmPermission WHERE permissionType = 'dmNavigation'
 </cfquery>
 
 <!-------- PERMISSIONS ------------>
 <cfoutput>
-	<script language="javascript">
+	<script type="text/javascript">
 		var aPerms = new Array();
 		<cfloop query="q">
 		aPerms[#q.currentrow#] = #q.permissionid#;
@@ -261,15 +257,11 @@ if(not isDefined("url.insertonly"))
 			return permission;
 		}
 		//this is preparing for the ability to hode nodes that user doesn't have permission to edit
-			
-		
 	</script>
 </cfoutput>
 
-<cfscript>
-	nimages = "#application.url.farcry#/images/treeImages";
-	cimages = "#nimages#/customIcons";
-</cfscript>
+<cfset nimages = "#application.url.farcry#/images/treeImages">
+<cfset cimages = "#nimages#/customIcons">
 
 <cfoutput>
 <!--- initial javascript code for tree --->
@@ -283,31 +275,25 @@ var editFlag = false;
 var copyNodeId = '';
 var pasteAction = ''//may be a cut or copy
 
-function popupopen( strURL,b,c )
+function popupopen(strURL,b,c)
 {
-	
-	if( document.all )
+
+	if(document.idServer)
 		document.idServer.location = strURL;
-	else if( document.getElementById )
-		document.getElementById("idServer").contentDocument.location = strURL;
-	
+	else if(document.getElementById)
+		document.getElementById("idServer").contentDocument.location = strURL;	
 }
 
-function frameopen( a,b )
-{
-	if( parent[b] && !heldEvent.ctrlKey )
-	{
-		if( b == 'editFrame' && parent[b].location.href.toLowerCase().indexOf( "edit.cfm" ) != -1 )
-		{
+function frameopen(a,b)
+{	
+	if(contentFrame && !heldEvent.ctrlKey ){
+		strLocation = "'" + contentFrame + "'";
+		if(b == 'content' && strLocation.toLowerCase().indexOf( "edit.cfm" ) != -1 )
 			alert("#application.adminBundle[session.dmProfile.locale].currentlyEditingObj#" );
-		}
-		else
-		{
-			
-			parent[b].document.location=a;
-		}
+		else			
+			contentFrame.location = a;
 	}
-	else popupopen( a,b+"_popup" );
+	else popupopen(a,b+"_popup" );
 }
 
 var cookieName = "nodeStatev2=";
@@ -348,6 +334,8 @@ home = new Image(16,16); home.src="#cimages#/home.gif";
 rubbish = new Image(16,16); rubbish.src = "#cimages#/rubbish.gif";
 navDraftImg = new Image(16,16);navDraftImg.src = "#cimages#/NavDraft.gif";
 navApprovedImg = new Image(16,16);navApprovedImg.src = "#cimages#/NavApproved.gif";
+navDraftExternalLinkImg = new Image(16,16);navDraftExternalLinkImg.src = "#cimages#/NavDraftExtLink.gif";
+navApprovedExternalLinkImg = new Image(16,16);navApprovedExternalLinkImg.src = "#cimages#/NavApprovedExtLink.gif";
 images = new Image(16,16);images.src = "#cimages#/images.gif";
 floppyDisk = new Image(16,16);floppyDisk.src="#cimages#/floppyDisk.gif";
 navPending = new Image(16,16);navPending.src = "#cimages#/NavPending.gif";
@@ -368,7 +356,9 @@ linkDraft = new Image(16,16); linkDraft.src = "#cimages#/linkDraft.gif";
 linkPending = new Image(16,16);linkPending.src="#cimages#/linkPending.gif";
 linkApproved = new Image(16,16);linkApproved.src="#cimages#/linkApproved.gif";
 
+</cfoutput>
 <cfwddx action="CFML2JS" input="#customIcons.type#" toplevelvariable="customIconMapType">
+<cfoutput>
 
 function renderObjectToDiv( objId, divId )
 {
@@ -387,7 +377,7 @@ function renderObject( objId )
 	var elData="";
 	if (hasPermission(objId,#PermNavView#) >= 0)
 	{
-		if( rootIds.indexOf(objId)!=-1) elData += "<table class=\"tableNode\"><tr><td>";
+		if( rootIds.indexOf(objId)!=-1) elData += "<table class=\"tableNode\" cellspacing=\"0\"><tr><td>";
 		else
 		{   
 			var parent = getParentObject( objId );
@@ -395,9 +385,9 @@ function renderObject( objId )
 			if( parentParent['OBJECTID'] 
 				&& (nodeIndex(parent['OBJECTID'])!=-1 && nodeIndex(parent['OBJECTID'])!=countNodes(parentParent['OBJECTID'])-1)
 				|| (objectIndex(parent['OBJECTID'])!=-1 && objectIndex(parent['OBJECTID'])!=countChildren(parentParent['OBJECTID'])-1) &&  countNodes(parent['OBJECTID']) > 1  )
-				elData += "<table id=\""+objId+"_table\" class=tableNode><tr><td style=\"background-image: url("+c.src+");background-repeat : repeat-y;\"><img src=\""+s.src+"\" width=\""+zoom+"\" height=\""+zoom+"\"></td><td>";
+				elData += "<table id=\""+objId+"_table\" class=\"tableNode\" cellspacing=\"0\"><tr><td style=\"background-image: url("+c.src+");background-repeat : repeat-y;\"><img src=\""+s.src+"\" width=\""+zoom+"\" height=\""+zoom+"\"></td><td>";
 			else
-				elData += "<table id=\""+objId+"_table\" class=tableNode><tr><td style=\"background-image: url(" + s.src +");background-repeat : repeat-y;\"><img src=\""+s.src+"\" width=\""+zoom+"\" height=\""+zoom+"\"></td><td>";
+				elData += "<table id=\""+objId+"_table\" class=\"tableNode\" cellspacing=\"0\"><tr><td style=\"background-image: url(" + s.src +");background-repeat : repeat-y;\"><img src=\""+s.src+"\" width=\""+zoom+"\" height=\""+zoom+"\"></td><td>";
 		}
 		
 		var jsHighlight=" onclick=\"highlightObjectClick('"+objId+"',event)\" ";
@@ -412,10 +402,10 @@ function renderObject( objId )
 			drag += " ondragover=\"if(dragTypeId.toLowerCase()=='dmimage' || dragTypeId.toLowerCase()=='dmfile') dragOver();\" ";
 			
 				
-		elData+="<table class=\"tableNode\" "+contextMenu+">\n<tr><td class=\"iconText\">"+getToggleImage(objId)+
+		elData+="<table class=\"tableNode\" "+contextMenu+" cellspacing=\"0\">\n<tr><td class=\"iconText\">"+getToggleImage(objId)+
 					"<div id=\"non\""+jsHighlight+" style=\"display:inline\" "+drag+jsHighlight+">"+getTypeImage(objId)+"</div>\n</td>"+
 					"<td valign=\"middle\" class=\"iconText\">"+
-					"\n<div id=\""+objId+"_text\" "+jsHighlight+">"+getObjectTitle(objId)+
+					"\n<div id=\""+objId+"_text\" "+jsHighlight+" class=\"menu-text\">"+getObjectTitle(objId)+
 					"</div>\n</td></tr>\n</table>"+
 					"<div id=\""+objId+"\" style=\"display:none;\">\n</div>\n";
 		
@@ -464,7 +454,7 @@ function dragOver()
 	window.event.returnValue = false;
 }
 
-function dropDrag( aDropObjectId )
+function dropDrag(aDropObjectId)
 {	
 	if(!bEnableDragAndDrop)
 	{
@@ -566,52 +556,54 @@ function getToggleImage( objId )
 	if( toggle!="Empty" ) scripting=" onclick=\"toggleObject('"+objId+"')\" ";
 	
 	return "<img id='"+objId+"_toggle' src=\""+eval( 'toggle'+direction+toggle+'.src' )+"\" width=\""+zoom+"\" height=\""+zoom+"\" "+scripting+">";
-}
-
-function swapToggleImage( src )
-{   
-	if( src.indexOf(toggleUpOpen.src) !=-1 ) return toggleUpClose.src;
-	if( src.indexOf(toggleUpClose.src) !=-1 ) return toggleUpOpen.src;
-	
-	if( src.indexOf(toggleDownOpen.src) !=-1 ) return toggleDownClose.src;
-	if( src.indexOf(toggleDownClose.src) !=-1 ) return toggleDownOpen.src;
-	
-	if( src.indexOf(toggleMiddleOpen.src) !=-1 ) return toggleMiddleClose.src;
-	if( src.indexOf(toggleMiddleClose.src) !=-1 ) return toggleMiddleOpen.src;
-	
-	if( src.indexOf(toggleNoneOpen.src) !=-1 ) return toggleNoneClose.src;
-	if( src.indexOf(toggleNoneClose.src) !=-1 ) return toggleNoneOpen.src;
-	
-	return src;
-}
-
-function getTypeImage( objId )
-{
-	var thisObject = objects[objId];
-	
-	var tp = thisObject['TYPENAME'].toLowerCase();
-	if (tp == '#lCase(attributes.nodetype)#')
-		tp = 'dmnavigation';
-	
-	var st = 'approved';
-	if( thisObject['STATUS'] ) {
-        if (thisObject['BHASDRAFT'] && thisObject['DRAFTSTATUS'] == 'pending')
-            st = 'livependingdraft';
-		else if (thisObject['BHASDRAFT'])
-			st = 'livedraft';
-		else	
-			st = thisObject['STATUS'].toLowerCase();
-	}		
-
-	var cm = customIconMapType['default'][st];
-
-	if( customIconMapType[tp] && st ) cm=customIconMapType[tp][st];
-	
-	var na=thisObject['LNAVIDALIAS'];
-	if(na) na=na.toLowerCase();
-	
-	if( na && customIconMapType[na] ) cm = customIconMapType[na][st];
-	
+			}
+			
+			function swapToggleImage( src )
+			{   
+				if( src.indexOf(toggleUpOpen.src) !=-1 ) return toggleUpClose.src;
+				if( src.indexOf(toggleUpClose.src) !=-1 ) return toggleUpOpen.src;
+				
+				if( src.indexOf(toggleDownOpen.src) !=-1 ) return toggleDownClose.src;
+				if( src.indexOf(toggleDownClose.src) !=-1 ) return toggleDownOpen.src;
+				
+				if( src.indexOf(toggleMiddleOpen.src) !=-1 ) return toggleMiddleClose.src;
+				if( src.indexOf(toggleMiddleClose.src) !=-1 ) return toggleMiddleOpen.src;
+				
+				if( src.indexOf(toggleNoneOpen.src) !=-1 ) return toggleNoneClose.src;
+				if( src.indexOf(toggleNoneClose.src) !=-1 ) return toggleNoneOpen.src;
+				
+				return src;
+			}
+			
+			function getTypeImage( objId )
+			{
+				var thisObject = objects[objId];
+				
+			
+				var tp = thisObject['TYPENAME'].toLowerCase();
+				if (tp == '#lCase(attributes.nodetype)#') {
+					tp = 'dmnavigation';
+				}
+				
+				var st = 'approved';
+				if( thisObject['STATUS'] ) {
+			        if (thisObject['BHASDRAFT'] && thisObject['DRAFTSTATUS'] == 'pending')
+			            st = 'livependingdraft';
+					else if (thisObject['BHASDRAFT'])
+						st = 'livedraft';
+					else	
+						st = thisObject['STATUS'].toLowerCase();
+				}		
+			
+				var cm = customIconMapType['default'][st];
+			
+				if( customIconMapType[tp] && st ) cm=customIconMapType[tp][st];
+				
+				var na=thisObject['LNAVIDALIAS'];
+				if(na) na=na.toLowerCase();
+				
+				if( na && customIconMapType[na] ) cm = customIconMapType[na][st];
+				
 	var el = thisObject['EXTERNALLINK'];
 	if (el)  {
 		el=el.toLowerCase();
@@ -620,6 +612,7 @@ function getTypeImage( objId )
 	if (el && customIconMapType['externallink']) {
 		cm = customIconMapType['externallink'][st];
 	}
+	
 	var alt = "Current Status: "+thisObject['STATUS']+" Created By: "+thisObject['ATTR_CREATEDBY']+" on "+thisObject['ATTR_DATETIMECREATED']+
 			"Last Updated By: "+thisObject['ATTR_LASTUPDATEDBY']+" on "+thisObject['ATTR_DATETIMELASTUPDATED'];
 			
@@ -728,7 +721,7 @@ function toggleObject( objId )
 	if(el && (el.style.display=='none' || el.style.display=='') )
 	{
 		
-		el.innerHTML = "<img src=\""+loading.src+"\" width=\""+(zoom-8)+"\" height=\""+(zoom-8)+"\"><span class=\"iconText\">loading...</span>";
+		el.innerHTML = "<img src=\""+loading.src+"\" width=\""+(zoom-8)+"\" height=\""+(zoom-8)+"\"><span class=\"iconText\"> Loading...</span>";
 		
 		allDefined=1;
 		
@@ -854,7 +847,7 @@ function getObjectDataAndRender( objId )
 	}
 	else
 	{
-		<!--- this is a gay arse way of reloading the window, because of some bug --->
+		<!--- reloading the window this way, because of some bug --->
 		<!--- in windows causing window.reload to crash --->
 		window.location.href = "#cgi.script_name#?i="+(new Date()).getTime()+"&rootObjectID=#rootobjectID#";
 	}
@@ -909,10 +902,10 @@ function highlightObjectClick( id,e )
 	if( !e.ctrlKey )
 	{
 		// check if already in edit mode, if not show overview page	
-		if(parent['editFrame'] && parent['editFrame'].document.location.href.indexOf(id) < 0 && parent['editFrame'].document.location.href.indexOf("edittabEdit") < 0 && parent['editFrame'].document.location.href.indexOf("edit.cfm") < 0)
+		if(contentFrame && contentFrame.document.location.href.indexOf(id) < 0 && contentFrame.document.location.href.indexOf("edittabEdit") < 0 && contentFrame.document.location.href.indexOf("edit.cfm") < 0)
 		{
 			// load overview page
-			parent['editFrame'].document.location = "#application.url.farcry#/edittabOverview.cfm?objectid=" + id;
+			contentFrame.document.location = "#application.url.farcry#/edittabOverview.cfm?objectid=" + id;
 			// make tabs visible in edit frame
 			showEditTabs('site',id,'edittabOverview');
 			// change title in edit frame
@@ -931,7 +924,7 @@ function highlightObject( id )
 	var theDiv = document.getElementById( id+"_text" );
 	if( theDiv )
 	{
-		theDiv.style.backgroundColor="##aaaaaa";
+		theDiv.style.backgroundColor="##97ACCD";
 		if( !isSelected(id) )
 		{
 			aSelectedIds[aSelectedIds.length]=id;
@@ -1039,86 +1032,65 @@ function storeState( id, state )
 	//document.cookie = newCookie + "; expires="+aDate.toGMTString();
 	document.cookie = newCookie;// + "; expires="+expiration;
 }
-</cfoutput>
+
 
 objectMenu = new Object();
 objectMenu.menuInfo = new Object();
 objectMenu.menuInfo.name = "ObjectMenu";
-
 <cfif isDefined("url.insertonly")>
-<cfoutput>
 o = new Object();
 objectMenu['Insert'] = o;
 o.text = "#application.adminBundle[session.dmProfile.locale].insert#";
 o.js = "menuOption_Insert()";
-o.jsvalidate = "(parent['editFrame'].insertObjId || parent['editFrame'].insertObjIds || parent['editFrame'].insertHTML)?1:0";
+o.jsvalidate = "(contentFrame.insertObjId || contentFrame.insertObjIds || contentFrame.insertHTML)?1:0";
 o.bShowDisabled = 1;
 o.bSeperator = 0;
 
 function menuOption_Insert()
 {
-	<cfparam name="url.lPermittedInsertTypes" default="">
-
 	// get object
 	var theNode = objects[ lastSelectedId ];
-	var p = parent['editFrame'];
-	var permittedInsertTypeNames = '#url.lPermittedInsertTypes#';
-	
-
-	if(permittedInsertTypeNames.length > 0 
-			&& !listContainsNoCase(permittedInsertTypeNames,theNode['TYPENAME'])) {
-				var msg = 'You are not permitted to insert ' + theNode['TYPENAME'] + ' items.';
-			if (permittedInsertTypeNames.split().length > 1) {
-				msg += 'You can only insert items in the following list: \n' + permittedInsertTypeNames;
-			} else {
-				msg += 'You can only insert '+ permittedInsertTypeNames + ' items';
-			}
-			alert(msg);
-			return;
-	}
+	var p = contentFrame;
 	
 	if( p.insertaObjIds ) p.insertaObjIds( aSelectedIds );
 	else if( p.insertObjId ) p.insertObjId( lastSelectedId );
-    else switch( theNode['TYPENAME'] )
+	else switch( theNode['TYPENAME'] )
 	{
 			<cfparam name="application.config.overviewTree.bUseHiResInsert" default="0">
 		case "dmImage":
-			
-				if (theNode['OPTIMISEDIMAGE'] && theNode['OPTIMISEDIMAGE'].length && #application.config.overviewTree.bUseHiResInsert#)	
-				{
-				<cfif isDefined("application.config.overviewTree.insertJSdmImageHiRes")>
-					p.insertHTML("#evaluate(DE(application.config.overviewTree.insertJSdmImageHiRes))#");
-				<cfelse>
-	 				p.insertHTML("<img alt='"+theNode['ALT']+"' src='#application.url.webroot#/images/"+theNode['OPTIMISEDIMAGE']+"'>");
-				</cfif>
-					
-				}
-				else
-				{
-				<cfif isDefined("application.config.overviewTree.insertJSdmImage")>
-					p.insertHTML("#evaluate(DE(application.config.overviewTree.insertJSdmImage))#");
-				<cfelse>
-	 				p.insertHTML( "<img alt='"+theNode['ALT']+"' src='#application.url.webroot#/images/"+theNode['IMAGEFILE']+"'>" );
-				</cfif>
-				}
+			if (theNode['OPTIMISEDIMAGE'] && theNode['OPTIMISEDIMAGE'].length && #application.config.overviewTree.bUseHiResInsert#)	
+			{
+			<cfif isDefined("application.config.overviewTree.insertJSdmImageHiRes")>
+				p.insertHTML("#evaluate(DE(application.config.overviewTree.insertJSdmImageHiRes))#");
+			<cfelse>
+ 				p.insertHTML("<img alt='"+theNode['ALT']+"' src='#application.url.webroot#/images/"+theNode['OPTIMISEDIMAGE']+"'>");
+			</cfif>
+				
+			}
+			else
+			{
+			<cfif isDefined("application.config.overviewTree.insertJSdmImage")>
+				p.insertHTML("#evaluate(DE(application.config.overviewTree.insertJSdmImage))#");
+			<cfelse>
+ 				p.insertHTML( "<img alt='"+theNode['ALT']+"' src='#application.url.webroot#/images/"+theNode['IMAGEFILE']+"'>" );
+			</cfif>
+			}
 			break;		
 		
 		case "dmFile":
-		
-				<cfif isDefined("application.config.overviewTree.insertJSdmFile")>
-					p.insertHTML("#evaluate(DE(application.config.overviewTree.insertJSdmFile))#");
-				<cfelse>
-					p.insertHTML( "<a href='#application.url.webroot#/download.cfm?DownloadFile="+lastSelectedId+"' target='_blank'>"+theNode['TITLE']+"</a>" );
-				</cfif>
+			<cfif isDefined("application.config.overviewTree.insertJSdmFile")>
+				p.insertHTML("#evaluate(DE(application.config.overviewTree.insertJSdmFile))#");
+			<cfelse>
+				p.insertHTML( "<a href='#application.url.webroot#/download.cfm?DownloadFile="+lastSelectedId+"' target='_blank'>"+theNode['TITLE']+"</a>" );
+			</cfif>
 			break;		
 			
 		case "dmFlash":
-		
-				<cfif isDefined("application.config.overviewTree.insertJSdmFlash")>
-				p.insertHTML("#evaluate(DE(application.config.overviewTree.insertJSdmFlash))#");
-				<cfelse>
-				p.insertHTML( "<OBJECT classid='clsid:D27CDB6E-AE6D-11cf-96B8-444553540000' codebase='http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab##version="+theNode['FLASHVERSION']+"' WIDTH='"+theNode['FLASHWIDTH']+"'  HEIGHT='"+theNode['FLASHHEIGHT']+"'  ALIGN='"+theNode['FLASHALIGN']+"'><PARAM NAME='movie' VALUE='http://#CGI.SERVER_NAME#:#CGI.SERVER_PORT##application.url.webroot#/files/"+theNode['FLASHMOVIE']+"'><PARAM NAME='quality' VALUE='"+theNode['FLASHQUALITY']+"'><PARAM NAME='play' VALUE='"+theNode['FLASHPLAY']+"'><PARAM NAME='menu' VALUE='"+theNode['FLASHMENU']+"'><PARAM NAME='loop' VALUE='"+theNode['FLASHLOOP']+"'><PARAM NAME='FlashVars' VALUE='"+theNode['FLASHPARAMS']+"'><EMBED SRC='http://#CGI.SERVER_NAME#:#CGI.SERVER_PORT#/#application.url.webroot#/files/"+theNode['FLASHMOVIE']+"' QUALITY='"+theNode['FLASHQUALITY']+"' WIDTH='"+theNode['FLASHWIDTH']+"' HEIGHT='"+theNode['FLASHHEIGHT']+"' FLASHVARS='"+theNode['FLASHPARAMS']+"' ALIGN='"+theNode['FLASHALIGN']+"' MENU='"+theNode['FLASHMENU']+"' PLAY='"+theNode['FLASHPLAY']+"' LOOP='"+theNode['FLASHLOOP']+"' TYPE='application/x-shockwave-flash' PLUGINSPAGE='http://www.macromedia.com/go/getflashplayer'></EMBED></OBJECT>" );
-				</cfif>
+			<cfif isDefined("application.config.overviewTree.insertJSdmFlash")>
+			p.insertHTML("#evaluate(DE(application.config.overviewTree.insertJSdmFlash))#");
+			<cfelse>
+			p.insertHTML( "<OBJECT classid='clsid:D27CDB6E-AE6D-11cf-96B8-444553540000' codebase='http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab##version="+theNode['FLASHVERSION']+"' WIDTH='"+theNode['FLASHWIDTH']+"'  HEIGHT='"+theNode['FLASHHEIGHT']+"'  ALIGN='"+theNode['FLASHALIGN']+"'><PARAM NAME='movie' VALUE='http://#CGI.SERVER_NAME#:#CGI.SERVER_PORT##application.url.webroot#/files/"+theNode['FLASHMOVIE']+"'><PARAM NAME='quality' VALUE='"+theNode['FLASHQUALITY']+"'><PARAM NAME='play' VALUE='"+theNode['FLASHPLAY']+"'><PARAM NAME='menu' VALUE='"+theNode['FLASHMENU']+"'><PARAM NAME='loop' VALUE='"+theNode['FLASHLOOP']+"'><PARAM NAME='FlashVars' VALUE='"+theNode['FLASHPARAMS']+"'><EMBED SRC='http://#CGI.SERVER_NAME#:#CGI.SERVER_PORT#/#application.url.webroot#/files/"+theNode['FLASHMOVIE']+"' QUALITY='"+theNode['FLASHQUALITY']+"' WIDTH='"+theNode['FLASHWIDTH']+"' HEIGHT='"+theNode['FLASHHEIGHT']+"' FLASHVARS='"+theNode['FLASHPARAMS']+"' ALIGN='"+theNode['FLASHALIGN']+"' MENU='"+theNode['FLASHMENU']+"' PLAY='"+theNode['FLASHPLAY']+"' LOOP='"+theNode['FLASHLOOP']+"' TYPE='application/x-shockwave-flash' PLUGINSPAGE='http://www.macromedia.com/go/getflashplayer'></EMBED></OBJECT>" );
+			</cfif>
 			break;
 			
 		default:
@@ -1130,20 +1102,7 @@ function menuOption_Insert()
 			break;
 	}
 } 
-
-function listContainsNoCase(list,item) {
-	var listItems = list.toLowerCase().split(',');
-	for (i=0;i<listItems.length;i++) {
-		if (listItems[i] == item.toLowerCase()) {
-			return true;
-		}
-	}
-	return false;
-}
-
-</cfoutput>
 <cfelse>
-<cfoutput>
 <!--- ***  MENU DATA *** --->
 
 
@@ -1157,10 +1116,9 @@ o.bShowDisabled = "1";
 function menuOption_Edit()
 {
 	// open edit page in edit frame
-	frameopen( '#application.url.farcry#/edittabEdit.cfm?objectId='+lastSelectedId, 'editFrame' );
+	frameopen('#application.url.farcry#/edittabEdit.cfm?objectId='+lastSelectedId, 'content');
 	// set edit tab to active
-	showEditTabs('site',lastSelectedId,'edittabEdit');
-	
+//	showEditTabs('site',lastSelectedId,'edittabEdit');
 }
 
 o = new Object();
@@ -1185,11 +1143,18 @@ o.js = "menuOption_Cut();";
 o.jsvalidate = "(objects[lastSelectedId]['TYPENAME'].toLowerCase() == '#lCase(attributes.nodetype)#')?1:0";
 o.bShowDisabled = "0";
 
+
 function menuOption_Cut()
 {
-	copyNodeId = lastSelectedId;
-	pasteAction = 'cut';
-	return true;
+if( hasPermission( lastSelectedId, #PermNavCreate# ) > 0 )
+{ copyNodeId = lastSelectedId;
+pasteAction = 'cut';
+return true; }
+else
+{ alert('#application.adminBundle[session.dmProfile.locale].noModifyNodePermission#');
+copyNodeId = 0;
+pasteAction = 'cut';
+return false; }
 }
 
 
@@ -1200,29 +1165,37 @@ o.js = "menuOption_Paste();";
 o.jsvalidate = "(copyNodeId.length == 35 && objects[lastSelectedId]['TYPENAME'].toLowerCase() == '#lCase(attributes.nodetype)#')?1:0";
 o.bShowDisabled = "1";
 
+
 function menuOption_Paste()
 {
 	var pasteMsg = '';
-	
 	if(copyNodeId == lastSelectedId)
 	{
 		return false;
 	}
-	if (objects[copyNodeId]['TYPENAME'].toLowerCase() == '#lCase(attributes.nodetype)#')
+
+	if( hasPermission( lastSelectedId, #PermNavCreate# ) > 0 )
 	{
-		if(pasteAction == 'copy')
+		if (objects[copyNodeId]['TYPENAME'].toLowerCase() == '#lCase(attributes.nodetype)#')
+		{
+			if(pasteAction == 'copy')
 			pasteMsg = 'Do you wish to copy the node ' + getObjectTitle( copyNodeId ) + ' to ' + getObjectTitle( lastSelectedId );
-		else if(pasteAction == 'cut')
-			pasteMsg = 'Do you wish to cut and paste the node ' + getObjectTitle( copyNodeId ) + ' to ' + getObjectTitle( lastSelectedId );
-	}		
-	if (confirm(pasteMsg))
-	{
+			else if(pasteAction == 'cut')
+				pasteMsg = 'Do you wish to cut and paste the node ' + getObjectTitle( copyNodeId ) + ' to ' + getObjectTitle( lastSelectedId );
+		}
+		if (confirm(pasteMsg))
+		{
 		if(pasteAction == 'copy')
 			popupopen( '#application.url.farcry#/navajo/treeCopyNPaste.cfm?srcObjectId='+copyNodeId+'&destobjectId='+lastSelectedId, '_blank', '#smallpopupfeatures#' );
-		else if(pasteAction == 'cut')	
+		else if(pasteAction == 'cut')
 			popupopen( '#application.url.farcry#/navajo/move.cfm?srcObjectId='+copyNodeId+'&destobjectId='+lastSelectedId, '_blank', '#smallpopupfeatures#' );
-	}	
-}
+		}
+		else
+		{
+			alert('#application.adminBundle[session.dmProfile.locale].noModifyNodePermission#');
+		}
+	}
+}	
 
 
 
@@ -1306,9 +1279,9 @@ o.bSeperator = 0;
 					"(nodeIndex(lastSelectedId)!=-1 && nodeIndex(lastSelectedId)+1 < countNodes(getParentObject(lastSelectedId)['OBJECTID']))";
 	o.bShowDisabled = 1;
 	
-	function menuOption_MoveInternal( dir )
+	function menuOption_MoveInternal(dir)
 	{
-		popupopen( '#application.url.farcry#/navajo/moveInternal.cfm?direction='+dir+'&objectId='+lastSelectedId, '_blank', '#smallpopupfeatures#' );
+		popupopen('#application.url.farcry#/navajo/moveInternal.cfm?direction='+dir+'&objectId='+lastSelectedId, '_blank', '#smallpopupfeatures#');
 	}
 
 o = new Object();
@@ -1325,7 +1298,6 @@ o.bShowDisabled = 1;
 	
 	<!-------*************** OBJECT CREATE MENU OPTIONS HERE **************------->
 	
-	</cfoutput>
 	
 	<!--- build types to create in tree --->
 	<cfloop from="1" to="#arrayLen(aTypesUseInTree)#" index="index">
@@ -1339,10 +1311,9 @@ o.bShowDisabled = 1;
 		</cfif>
 		
 		<cfset defaultImage = customIcons.Type.default.draft>
-		<cfif( StructKeyExists( customIcons.Type, i ) AND StructKeyExists( customIcons.Type[i], "draft" ))>
-			<Cfset defaultImage = customIcons.Type[i].draft>
+		<cfif (StructKeyExists(customIcons.Type, i) AND StructKeyExists(customIcons.Type[i], "draft"))>
+			<cfset defaultImage = customIcons.Type[i].draft>
 		</cfif>
-		<cfoutput>
 	
 		o = new Object();
 		createMenu['create#stType.label#'] = o;
@@ -1350,19 +1321,20 @@ o.bShowDisabled = 1;
 		o.js = "menuOption_CreateFramed(\\'#stType.typeId#\\');";
 		o.jsvalidate = 1;
 		o.bShowDisabled = "";
-		</cfoutput>
+		
 	</cfloop>
-<cfoutput>
-function menuOption_CreateFramed( id )
+
+function menuOption_CreateFramed(id)
 {
-	frameopen( '#application.url.farcry#/navajo/createObject.cfm?nodetype=#attributes.nodetype#&objectId='+lastSelectedId+'&typename='+id, 'editFrame' );
+	var strURL = '#application.url.farcry#/conjuror/evocation.cfm?parenttype=#attributes.nodetype#&objectId='+lastSelectedId+'&typename='+id;	
+	frameopen(strURL, 'content');
 	// set edit tab to active
-	showEditTabs('site',lastSelectedId,'edittabEdit');
+//	showEditTabs('site',lastSelectedId,'edittabEdit');
 }
 
 function menuOption_CreatePopup( id )
 {
-	popupopen( '#application.url.farcry#/navajo/createObject.cfm?nodetype=#attributes.nodetype#&objectId='+lastSelectedId+'&typename='+id, 'popupEditFrame', '#smallPopupFeatures#' );
+	popupopen( '#application.url.farcry#/conjuror/evocation.cfm?parenttype=#attributes.nodetype#&objectId='+lastSelectedId+'&typename='+id, 'popupEditFrame', '#smallPopupFeatures#' );
 }
 
 o = new Object();
@@ -1397,14 +1369,16 @@ o.bShowDisabled = 1;
 	o.jsvalidate = "(hasPermission( lastSelectedId, #PermNavApprove# )>=0 && (objects[lastSelectedId]['STATUS'] == 'draft' || objects[lastSelectedId]['STATUS'] == 'pending') && objects[lastSelectedId]['TYPENAME'].toLowerCase() == '#lCase(attributes.nodetype)#')?1:0";
 	o.bShowDisabled = 1;
 
-	function menuOption_Approve( status ) {
-		//popupopen( 'approve.cfm?objectId='+lastSelectedId+'&status='+status, '_blank', '#smallpopupfeatures#' );
+	function menuOption_Approve(status) {
+		var strURL = "";
 		if (objects[lastSelectedId]['BHASDRAFT'] && status.toLowerCase() == 'requestapproval')
-			frameopen( '#application.url.farcry#/navajo/approve.cfm?objectID='+lastSelectedId+'&draftObjectId='+objects[lastSelectedId]['DRAFTOBJECTID']+'&status='+status+'&requestlivedraft=1', 'editFrame' );
+			strURL = '#application.url.farcry#/navajo/approve.cfm?objectID='+lastSelectedId+'&draftObjectId='+objects[lastSelectedId]['DRAFTOBJECTID']+'&status='+status+'&requestlivedraft=1';
         else if (objects[lastSelectedId]['BHASDRAFT'] && (status.toLowerCase() == 'approved' || status.toLowerCase() == 'draft'))
-            frameopen( '#application.url.farcry#/navajo/approve.cfm?objectId='+objects[lastSelectedId]['DRAFTOBJECTID']+'&status='+status, 'editFrame' );
+            strURL = '#application.url.farcry#/navajo/approve.cfm?objectId='+objects[lastSelectedId]['DRAFTOBJECTID']+'&status='+status;
 		else
-			frameopen( '#application.url.farcry#/navajo/approve.cfm?objectId='+lastSelectedId+'&status='+status, 'editFrame' );
+			strURL = '#application.url.farcry#/navajo/approve.cfm?objectId='+lastSelectedId+'&status='+status;
+		
+		 frameopen(strURL, 'content');
 	}
 
 	function menuOption_ApproveBranch( status ) {
@@ -1454,15 +1428,14 @@ o = new Object();
 objectMenu['Insert'] = o;
 o.text = "#application.adminBundle[session.dmProfile.locale].insert#";
 o.js = "menuOption_Insert()";
-o.jsvalidate = "(parent['editFrame'].insertObjId || parent['editFrame'].insertObjIds || parent['editFrame'].insertHTML)?1:0";
+o.jsvalidate = "(contentFrame.insertObjId || contentFrame.insertObjIds || contentFrame.insertHTML)?1:0";
 o.bShowDisabled = 1;
 o.bSeperator = 0;
-
 function menuOption_Insert()
 {
 	// get object
 	var theNode = objects[ lastSelectedId ];
-	var p = parent['editFrame'];
+	var p = contentFrame;
 	
 	if( p.insertaObjIds ) p.insertaObjIds( aSelectedIds );
 	else if( p.insertObjId ) p.insertObjId( lastSelectedId );
@@ -1538,22 +1511,22 @@ o.bSeperator = 0;
 
 function menuOption_Dump()
 {
-	frameopen( '#application.url.farcry#/navajo/dump.cfm?lObjectIds='+aSelectedIds.toString(),'editFrame' );
+	frameopen('#application.url.farcry#/navajo/dump.cfm?lObjectIds='+aSelectedIds.toString(),'content');
 }
 
 o = new Object();
 objectMenu['Delete'] = o;
 o.text = "#application.adminBundle[session.dmProfile.locale].delete#";
 o.js = "menuOption_Delete()"; //  && countObjects(lastSelectedId) <=0  && countNodes(lastSelectedId) <=0
-o.jsvalidate = "hasPermission( lastSelectedId, #PermNavDelete# )";
+o.jsvalidate = "hasPermission(lastSelectedId, #PermNavDelete#)";
 o.bShowDisabled = 1;
 o.bSeperator = 0;
 
 function menuOption_Delete()
 {
 	// if( confirm('Are you sure you wish to delete this object(s)?') ) popupopen( 'delete.cfm?objectId='+lastSelectedId, '_blank', '#smallpopupfeatures#' );
-	if( confirm('#application.adminBundle[session.dmProfile.locale].confirmDeleteAllObj#') )
-		frameopen('#application.url.farcry#/navajo/delete.cfm?objectId='+lastSelectedId,'editFrame');
+	if(confirm('#application.adminBundle[session.dmProfile.locale].confirmDeleteAllObj#') )
+		frameopen('#application.url.farcry#/navajo/delete.cfm?objectId='+lastSelectedId,'content');
 }
 
 o = new Object();
@@ -1609,9 +1582,9 @@ function menuOption_Zoom()
 				
 	</cfif>	
 }
-</cfoutput>
+
 </cfif>
-<cfoutput>
+
 function generateMenu( data, bIsSub )
 {
 	var menuData;
@@ -1675,17 +1648,17 @@ function endMenu()
 function menuItemClickable( id, text, onclick, bShowDisabled )
 {
 	return	'<div id="'+id+'Item" class="menuItem" onclick="heldEvent=objectCopy(event);flutter(this,\''+onclick+'\');" onMouseOver="fpo(this)" onMouseOut="fpf(this);">'+
-			'<table width=100% class="menuItem"><tr><td width=100%><nobr class="menuText">'+text+'</nobr></td></table></div>'+
+			'<table width="100%" class="menuItem" cellspacing="0"><tr><td width=100%><span class="menuText">'+text+'</span></td></table></div>'+
 			'<div id="'+id+'_disabled" class="menuItemDisabled">'+
-			'<table width=100% class="menuItemDisabled"><tr><td width=100%><nobr class="menuText">'+text+'</nobr></td></table></div>';
+			'<table width=100% class="menuItemDisabled" cellspacing="0"><tr><td width=100%><span class="menuText">'+text+'</span></td></table></div>';
 }
 
 function menuItemPopup( id, text, popup, bShowDisabled )
 {
 	return	'<div id="'+id+'Item" class="menuItem" onMouseOver="fpo(this);popupMenu(\''+popup+'\');" onMouseOut="fpf(this);">\n'+
-			'<table width=100% class="menuItem"><tr><td width=100%><nobr class="menuText">'+text+'...</nobr></td><Td><img align=right src="'+subnavmore.src+'" width="#attributes.zoom#"></td></tr></table></div>'+
+			'<table width="100%" class="menuItem" cellspacing="0"><tr><td width=100%><span class="menuText">'+text+'...</span></td><td><img align=right src="'+subnavmore.src+'" width="#attributes.zoom#"></td></tr></table></div>'+
 			'<div id="'+id+'_disabled" class="menuItemDisabled">\n'+
-			'<table width=100% class="menuItemDisabled"><tr><td width=100%><nobr class="menuText">'+text+'...</nobr></td><Td><img align=right src="'+subnavmoreDisabled.src+'" width="#attributes.zoom#"></td></tr></table></div>';
+			'<table width="100%" class="menuItemDisabled" cellspacing="0"><tr><td width=100%><span class="menuText">'+text+'...</span></td><td><img align=right src="'+subnavmoreDisabled.src+'" width="#attributes.zoom#"></td></tr></table></div>';
 }
 
 function menuItemSeperator()
@@ -1744,13 +1717,11 @@ function popupObjectMenu(e)
 	
 	// run through the object menu and run enabled/disabled checks
 	var data = objectMenu;
-	
 	for( var menuItemId in data )
 	{
 		if( menuItemId != 'menuInfo' )
 		{
-			var o = data[ menuItemId ];
-			
+			var o = data[menuItemId];
 			var menuOptionEnabledDiv = document.getElementById( menuItemId+"Item" );
 			var menuOptionDisabledDiv = document.getElementById( menuItemId+"_disabled" );
 						
@@ -1781,12 +1752,12 @@ function popupObjectMenu(e)
 		
 	
 	//if the horizontal distance isn't enough to accomodate the width of the context menu
-	if (rightedge<objectMenuDiv.offsetWidth)
+//commented out horizontal offset 	if (rightedge<objectMenuDiv.offsetWidth)
 	//move the horizontal position of the menu to the left by it's width
-		objectMenuDiv.style.left=ie5? document.body.scrollLeft+event.clientX-objectMenuDiv.offsetWidth : window.pageXOffset+e.clientX-objectMenuDiv.offsetWidth
-	else
+//commented out horizontal offset		objectMenuDiv.style.left=ie5? document.body.scrollLeft+event.clientX-objectMenuDiv.offsetWidth : window.pageXOffset+e.clientX-objectMenuDiv.offsetWidth
+//commented out horizontal offset	else
 	//position the horizontal position of the menu where the mouse was clicked
-		objectMenuDiv.style.left=ie5? document.body.scrollLeft+event.clientX : window.pageXOffset+e.clientX
+//commented out horizontal offset		objectMenuDiv.style.left=ie5? document.body.scrollLeft+event.clientX : window.pageXOffset+e.clientX
 
 	//same concept with the vertical position
 	if (bottomedge<objectMenuDiv.offsetHeight)
@@ -1970,37 +1941,28 @@ function showEditTabs (tabType, objectid, activeTab)
 document.body.onclick = documentClick;
 </script>
 
-<STYLE TYPE="text/css">
-	##idServer { 
-		position:relative; 
-		width: 0px; 
-		height: 0px; 
-		/*display:none;*/
-	}
-</STYLE>
+<style type="text/css">
+##idServer { 
+	position:relative; 
+	width: 0px; 
+	height: 0px; 
+	/*display:none;*/
+}
+</style>
 
-<IFRAME WIDTH="100" HEIGHT="1" NAME="idServer" ID="idServer" 
-	 FRAMEBORDER="0" FRAMESPACING="0" MARGINWIDTH="0" MARGINHEIGHT="0" SRC="null">
-		<ILAYER NAME="idServer" WIDTH="400" HEIGHT="100" VISIBILITY="Hide" 
-		 ID="idServer">
-		<P>This page uses a hidden frame and requires either Microsoft 
-		Internet Explorer v4.0 (or higher) or Netscape Navigator v4.0 (or 
-		higher.)</P>
-		</ILAYER>
-</IFRAME>
+<iframe width="100" height="1" name="idServer" id="idServer" frameborder="0" framespacing="0" marginwidth="0" marginheight="0" src="/farcry/admin/blank.cfm">
+	
+</iframe>
 
 <!--- now go through each unparented node and generate a div for it --->
 <cfloop index="objId" list="#rootObjectId#">
 	<div id="#objId#_root">
 	</div>
-	<script>
-	renderObjectToDiv( '#objId#', '#objId#_root' );
-	toggleObject( '#objId#' );
-	</script>
+<script type="text/javascript">
+renderObjectToDiv( '#objId#', '#objId#_root' );
+toggleObject( '#objId#' );
+</script>
 </cfloop>
-
-
-
 </cfoutput>
 
 <cfsetting enablecfoutputonly="No">

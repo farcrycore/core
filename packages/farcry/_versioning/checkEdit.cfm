@@ -4,15 +4,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_versioning/checkEdit.cfm,v 1.13.6.1 2005/05/24 04:41:41 gstewart Exp $
-$Author: gstewart $
-$Date: 2005/05/24 04:41:41 $
-$Name: milestone_2-3-2 $
-$Revision: 1.13.6.1 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_versioning/checkEdit.cfm,v 1.16 2005/08/09 03:54:40 geoff Exp $
+$Author: geoff $
+$Date: 2005/08/09 03:54:40 $
+$Name: milestone_3-0-0 $
+$Revision: 1.16 $
 
 || DESCRIPTION || 
 $Description: checks versioning before editing $
-$TODO: $
+
 
 || DEVELOPER ||
 $Developer: Brendan Sisson (brendan@daemon.com.au) $
@@ -40,6 +40,7 @@ $out:$
 						
 					</script>
 					<ul>
+					
 					<cfif arguments.stRules.bDraftVersionExists>
 						<cfscript>
 							oNav = createObject("component",application.types['dmNavigation'].typepath);
@@ -49,7 +50,7 @@ $out:$
 						<span class="formtitle">A DRAFT version of this object exists...</span>
 						<p></p>								
 						<li type="square">
-						 <a href="#application.url.farcry#/edittabEdit.cfm?objectID=#arguments.stRules.draftObjectID#&usingnavajo=1&type=#url.type#" class="frameMenuItem">Edit draft version</a><br>
+						 <a href="#application.url.farcry#/edittabEdit.cfm?objectID=#arguments.stRules.draftObjectID#&usingnavajo=1&typename=#url.typename#" class="frameMenuItem">Edit draft version</a><br>
 						Edit the DRAFT version of this object while retaining the LIVE version for  public viewing.
 						</li>
 						<br><br>

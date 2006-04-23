@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmLink/plpEdit/complete.cfm,v 1.2 2004/07/16 05:07:12 brendan Exp $
-$Author: brendan $
-$Date: 2004/07/16 05:07:12 $
-$Name: milestone_2-3-2 $
-$Revision: 1.2 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmLink/plpEdit/complete.cfm,v 1.4 2005/05/23 04:49:43 geoff Exp $
+$Author: geoff $
+$Date: 2005/05/23 04:49:43 $
+$Name: milestone_3-0-0 $
+$Revision: 1.4 $
 
 || DESCRIPTION || 
 $Description: dmFacts Type PLP for edit handler - Categorisation Step $

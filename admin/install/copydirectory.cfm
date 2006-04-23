@@ -100,7 +100,8 @@ copyrootdir (optional) -
 			<cfloop query="directory_list">
 				<cfif error GT 0><cfbreak></cfif>
 				<cfif directory_list.type is "Dir" AND directory_list.name is not "." AND directory_list.name is not "..">
-					<cfdirectory action="LIST" directory="#destination#/#add_path#/#directory_list.name#" name="temp_list">
+					<cfdirectory action="LIST" directory="#destination#/#add_path#/" name="temp_list" filter="#directory_list.name#">
+
 					<cfif temp_list.RecordCount IS 0>
 						<cfif Len(add_path) IS 0>
 							<cfdirectory action="CREATE" directory="#destination#/#directory_list.name#">
@@ -108,6 +109,7 @@ copyrootdir (optional) -
 							<cfdirectory action="CREATE" directory="#destination#/#add_path#/#directory_list.name#">
 						</cfif>
 					</cfif>
+
 					<cfset error = Abs(Val(ArrayAppend(temp_source_array, "#temp_source_array[1]#/#directory_list.name#")-1))>
 				<cfelseif directory_list.type IS "File">
 					<cfif Len(add_path) GT 0>

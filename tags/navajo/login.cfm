@@ -1,17 +1,28 @@
 <cfsetting enablecfoutputonly="Yes">
 
 <cfprocessingDirective pageencoding="utf-8">
-
 <cfimport taglib="/farcry/fourq/tags" prefix="q4">
 
 <cfoutput>
-<HTML>
-<HEAD> 
-<title>#application.config.general.siteTitle# :: #application.applicationname#&nbsp;&nbsp;&nbsp;</title>
-<link href="#application.url.farcry#/css/admin.css" rel="stylesheet" type="text/css">
-</HEAD>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head> 
+<title>#application.config.general.siteTitle# :: #application.applicationname#</title>
 
-<body onLoad="ol();" style="background-color:##CCC;">
+<!--- check for custom Admin CSS in project codebase --->
+<cfif fileExists("#application.path.project#/www/css/customadmin/admin.css")>
+	<cfoutput>
+	<link href="#application.url.webroot#/css/customadmin/admin.css" rel="stylesheet" type="text/css">
+	</cfoutput>
+<cfelse>
+	<cfoutput>
+	<link href="#application.url.farcry#/css/main.css" rel="stylesheet" type="text/css">
+	</cfoutput>
+</cfif>
+<script type="text/javascript" src="#application.url.farcry#/js/fade.js"></script>
+</head>
+
+<body id="sec-login" onload="ol()">
 
 </cfoutput>
 
@@ -19,50 +30,47 @@
 <cfset returnUrl = replace( returnUrl, "logout=1", "" )>
 <cfset returnUrl = replace( returnUrl, "&&", "" )>
 
-<cfparam name="error" default="Please login with your details below.">
+<cfparam name="error" default="">
 
 <cfif isdefined("url.error") and url.error eq "draft">
+<!--- TODO: i18n --->
 	<cfset error = "This page is in draft. Please login with your details below">
 </cfif>
 
+<cfset currentNumberLoginAttempts = 0>
 <cfif isDefined("form.Normal")>
-		<cfscript>
-			bHasLoggedIn = request.dmSec.oAuthentication.login(userlogin=form.userlogin,userpassword=form.password,baudit=1);
-			
-			if (bHasLoggedIn)
-			{
-				o_userProfile = createObject("component", application.types.dmProfile.typePath);
-				stProfile = o_userProfile.getProfile(userName=form.userLogin);
-		
-				// place dmProfile in session scope
-				if (not structIsEmpty(stProfile) AND stProfile.bInDB) {
-					session.dmProfile = stProfile;
-					session.firstLogin = false;
-				} else {
-					stProfile = o_userProfile.createProfile(stProperties=session.dmSec.authentication);
-					if (not structIsEmpty(stProfile) AND stProfile.bInDB) {
-						session.dmProfile = stProfile;
-						session.firstLogin = true;
-					}
-				}
-			}
-			else
-				error="<font color=##cc0000><b>Login failed:</b></font> Invalid User Login";	
-        </cfscript>
+	<cfset bHasLoggedIn = request.dmSec.oAuthentication.login(userlogin=form.userlogin,userpassword=form.password,baudit=1)>
+	<cfif bHasLoggedIn>
+		<cfset o_userProfile = createObject("component", application.types.dmProfile.typePath)>
+		<cfset session.dmProfile = o_userProfile.getProfile(userName=form.userlogin)>
+	<cfelse>
+		<!--- check the audit log to see if they have try to login before and failed --->
+		<cfset dateTolerance = DateAdd("n","-#application.config.general.loginAttemptsTimeOut#",Now())>
+		<cfquery name="qLogAudit" datasource="#application.dsn#">
+		SELECT  count(a.datetimeStamp) as numberOfLogin, max(a.datetimeStamp) as lastlogindate, a.username
+		FROM    #application.dbowner#fqAudit a
+		WHERE   a.auditType = 'dmSec.loginfailed'
+			AND a.datetimeStamp >= <cfqueryparam value="#createODBCDateTime(dateTolerance)#" cfsqltype="cf_sql_timestamp">
+		GROUP BY a.username
+		</cfquery>
+
+		<cfif qLogAudit.recordcount>
+			<cfset currentNumberLoginAttempts = qLogAudit.numberOfLogin>
+		</cfif>
+
+		<cfset error = "<h5 class='fade-FFDADA' id='errortext'><span style='color:##c00'><b>Login failed:</b></span> Invalid User Login</h5>">
+	</cfif>
 </cfif>
 
-<cfscript>
-	oAuthentication = request.dmSec.oAuthentication;
-	stLoggedIn = oAuthentication.getUserAuthenticationData();	
-	bLoggedin = stLoggedIn.bloggedIn;
-</cfscript>	
+<cfset oAuthentication = request.dmSec.oAuthentication>
+<cfset stLoggedIn = oAuthentication.getUserAuthenticationData()>
+<cfset bLoggedin = stLoggedIn.bloggedIn>
+
 <cfif bLoggedIn>
 	<!--- dmSecMX automatically sets up session.dmSec.authentication structure --->
 	<!--- check for ADMIN permissions --->
-	<cfscript>
-		oAuthorisation = request.dmSec.oAuthorisation;
-		iAdminState = oAuthorisation.checkPermission(permissionName="Admin",reference="PolicyGroup");
-	</cfscript>
+	<cfset oAuthorisation = request.dmSec.oAuthorisation>
+	<cfset iAdminState = oAuthorisation.checkPermission(permissionName="Admin",reference="PolicyGroup")>
 		
 	<cfif iAdminState eq 1>
 		<!--- turn on admin permissions --->
@@ -72,7 +80,12 @@
 		<!--- i18n: admin bits --->
 		<cfif NOT structKeyExists(application.adminBundle, session.dmProfile.locale)>
 			<!--- <cfset application.adminBundle[session.dmProfile.locale]=application.rB.getResourceBundle("farcry.admin",session.dmProfile.locale,true)> --->
-			<cfset application.adminBundle[session.dmProfile.locale]=application.rB.getResourceBundle("#application.path.core#/packages/resources/admin.properties",session.dmProfile.locale,false)>
+			<!--- check if resource exist for this locale if not default to en_AU --->
+			<cfif StructIsEmpty(application.rB.getResourceBundle("#application.path.core#/packages/resources/admin.properties",session.dmProfile.locale,false))>
+				<cfset application.adminBundle[session.dmProfile.locale]=application.rB.getResourceBundle("#application.path.core#/packages/resources/admin.properties",session.dmProfile.locale,false)>
+			<cfelse>
+				<cfset application.adminBundle[session.dmProfile.locale]=application.rB.getResourceBundle("#application.path.core#/packages/resources/admin.properties","en_AU",false)>			
+			</cfif>
 		</cfif>
 		<!--- i18n: find out this locale's writing system direction using our special psychic powers --->
 		<cfif application.i18nUtils.isBIDI(session.dmProfile.locale)>
@@ -89,54 +102,57 @@
 	<cfabort>
 </cfif>
 
-
 <!--- set message [error], if user has logged out --->
 <cfif not len(error) AND returnUrl contains "logout=1">
-	<cfset error="<font color=##00DD00><b>OK:</b></font> You have successfully logged out.">
+	<cfset error="<span style='color:##008C0D'><b>OK:</b></span> You have successfully logged out.">
+</cfif>
+
+<cfset bShowLogin = "true">
+<cfif currentNumberLoginAttempts GTE application.config.general.loginAttemptsAllowed>
+	<cfset bShowLogin = "false">
+	<cfset error = "<h5 class='fade-FFDADA' id='errortext'><span style='color:##c00'><b>Login failed:</b></span> Invalid User Login<br />You have exceeded the ammount of login attempts allowed #application.config.general.loginAttemptsAllowed#. Please retry later.</h5>">
 </cfif>
 
 <cfoutput>
-
-<script>
+<script type="text/javascript">
 function ol()
 {
-	el=document.getElementById('spectrausername');
+	el=document.getElementById('userLogin');
 	if ( el.value.length==0 ) el.focus();
 }
 </script>
 
-<form action="#cgi.script_name#?#cgi.query_string#" method="POST">
+<form action="#cgi.script_name#?#cgi.query_string#" method="post">
 <div id="login">
-	<div id="loginheader">#error#</div>
-	<div id="loginbody">
-		<div style="float:left; position: absolute; top:50px; left: 20px;">
-			<div class="title">#application.config.general.siteTitle#</div><br>
-			<div class="description">#application.config.general.siteTagLine#</div>
-		</div>
-		<div style="position: absolute; top:50px; right: 25px;">
-			<table border="0" cellspacing="0" cellpadding="0">
-	        <TR>
-    	        <TD class="Text">User&nbsp;Name&nbsp;</TD>
-        	    <TD><input type="text" name="userLogin" id="spectrausername" size="15" maxlength="20" class="W150"></TD>
-	        </TR>
-    		<TR>
-            	<TD class="Text">Password&nbsp;</TD>
-	            <TD><input type="password" name="password" size="15" maxlength="20" class="W150"></TD>
-    	    </TR>
-        	<TR>
-				<TD COLSPAN="2">&nbsp;</TD>
-			</TR>
-    		<TR>
-	            <TD ALIGN="right" COLSPAN="2"><input type="Submit" name="Normal" value="Logon" class="normalbttnstyle" WIDTH="65"></TD>
-        	</TR>
-        </table>
-		</div>
-	</div>	
+	<!--- default logo gif --->
+	<cfset siteLogo = "images/logo_placeholder.gif"> 
+	<!--- if there is a site logo, use it instead of the default placeholder --->		
+	<cfif structKeyExists(application.config.general,'siteLogoPath')>
+		<cfif application.config.general.siteLogoPath NEQ "">
+			<cfset siteLogo = application.config.general.siteLogoPath>
+		</cfif>
+	</cfif>
+	<h1><img src="#siteLogo#" alt="#application.config.general.siteTitle#" />#application.config.general.siteTitle#<span>#application.config.general.siteTagLine#</span></h1>
+		<fieldset><cfif bShowLogin EQ "true">
+		<label for="userLogin">
+		Username
+		<input type="text" name="userLogin" id="userLogin" tabindex="1" />
+		</label>
+		<label for="password">
+	    Password
+		<input type="password" name="password" id="password" tabindex="2" />
+		</label>
+		<input type="Submit" name="Normal" value="Log In" class="f-submit" tabindex="3" /></cfif>
+		#error#
+		</fieldset>
+		
+		<h3><img src="images/powered_by_farcry_watermark.gif" />Tell it to someone who cares</h3>
+		
 </div>
-</FORM>
+</form>
 
-</BODY>
-</HTML>
+</body>
+</html>
 </cfoutput>
 
 <cfsetting enablecfoutputonly="No">

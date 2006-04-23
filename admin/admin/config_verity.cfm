@@ -4,15 +4,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/admin/config_verity.cfm,v 1.5 2004/07/27 04:07:39 brendan Exp $
-$Author: brendan $
-$Date: 2004/07/27 04:07:39 $
-$Name: milestone_2-3-2 $
-$Revision: 1.5 $
+$Header: /cvs/farcry/farcry_core/admin/admin/config_verity.cfm,v 1.10 2005/08/17 03:28:39 pottery Exp $
+$Author: pottery $
+$Date: 2005/08/17 03:28:39 $
+$Name: milestone_3-0-0 $
+$Revision: 1.10 $
 
 || DESCRIPTION || 
 $DESCRIPTION: Verity config edit handler$
-$TODO: $ 
+ 
 
 || DEVELOPER ||
 $DEVELOPER:Brendan Sisson (brendan@daemon.com.au)$
@@ -120,30 +120,20 @@ $out:$
 		<cfset stTemp = evaluate('application.config.#url.configName#.contenttype')>
 						
 		<cfoutput>
-		<p></p>
+
 		<form action="#cgi.script_name#" method="post">
 		<input type="Hidden" name="action" value="update">
 		<input type="Hidden" name="stName" value="#url.configName#">
 		
-		<table></cfoutput>
+		<ul class="nomarker"></cfoutput>
 		
 		<!--- loop through all application types --->
 		<cfloop collection="#application.types#" item="typeName">
 			<cfoutput>
-			<tr>
-				<td colspan="2">&nbsp;</td>
-			</tr>
-			<tr>
-				<td colspan="2">
-					<div>
-						<span class="frameMenuBullet">&raquo;</span> <a href="javascript:void(0);" id="show#typename#" onClick="document.getElementById('#typename#').style.display='block';document.getElementById('show#typename#').style.visibility='hidden';document.getElementById('hide#typename#').style.visibility='visible'" style="position:absolute;">#typename#</a>
-						<a href="##top" id="hide#typename#" onClick="document.getElementById('#typename#').style.display='none';document.getElementById('show#typename#').style.visibility='visible';document.getElementById('hide#typename#').style.visibility='hidden'" style="position:absolute;visibility:hidden">#typename#</a>
-					</div>
-				</td>
-			</tr>
-			<tr>
-				<td colspan="2">
-				<table id="#typename#" style="display:none;margin-top:5px;">
+			<li>
+				<a href="javascript:void(0);" onclick="showHide('#typename#','#typename#-a');return false;"><img id="#typename#-a" style="margin-bottom:-5px" src="../images/icons/xsmall/expand.png" alt="" /></a> <a href="javascript:void(0);" onclick="showHide('#typename#','#typename#-a');return false;">#typename#</a>
+				
+				<ul id="#typename#" style="display:none;margin: 5px 0 15px 25px" class="nomarker"> 
 			</cfoutput>
 				
 			<!--- loop through these types and look at each field --->
@@ -162,62 +152,49 @@ $out:$
 							<cfset checked = true>
 						</cfif>
 					</cfif>
-					
 					<!--- display check box to add field to verity setup --->
 					<cfoutput>
-					<tr>
-						<td><input type="checkbox" name="type--#typename#--#field#" <cfif checked>checked</cfif>></td>
-						<td>#field#</td>
-					</tr>
+				<li><label for="type--#typename#--#field#"><input class="f-checkbox" type="checkbox" name="type--#typename#--#field#" id="type--#typename#--#field#" <cfif checked>checked="checked"</cfif> /> #field#</label></li>
 					</cfoutput>
 				</cfif>
-				
 			</cfloop>
 			
 			<cfoutput>
-			</table>
-			</td>
-			</tr>
+				</ul>
+			</li>
 			</cfoutput>
 		</cfloop>
 		
 		<cfoutput>
-		<tr>
-			<td colspan="2">&nbsp;</td>
-		</tr>
-		</table>
-		<p></p>
-		
-		
-		<strong>#application.adminBundle[session.dmProfile.locale].externalFileCollection#</strong>
-		<p></p>
-		<table id="files">
+		</ul>
+
+		<h3>#application.adminBundle[session.dmProfile.locale].externalFileCollection#</h3>
+
+		<table id="files" class="table-4" cellspacing="0">
 		<!--- allow for new file collection to be added --->
 		<input type="hidden" name="file__filecol" value="extFiles">
 		<tr>
-			<td>#application.adminBundle[session.dmProfile.locale].UNCpath#</td>
+			<th class="alt">#application.adminBundle[session.dmProfile.locale].UNCpath#</th>
 			<td><input type="text" size="50" name="file__uncpath" <cfif structKeyExists("#application.config.verity.contenttype#", "extFiles")>value="#application.config.verity.contenttype.extFiles.aprops.uncpath#"</cfif>></td>
 		</tr>
 		<tr>
-			<td>#application.adminBundle[session.dmProfile.locale].recursive#</td>
-			<td><input type="checkbox" name="file__recursive" value="#application.adminBundle[session.dmProfile.locale].yes#" <cfif structKeyExists("#application.config.verity.contenttype#", "extFiles") and application.config.verity.contenttype.extFiles.aprops.recursive eq "yes">checked</cfif>></td>
+			<th class="alt">#application.adminBundle[session.dmProfile.locale].recursive#</th>
+			<td><input type="checkbox" class="f-checkbox" name="file__recursive" value="#application.adminBundle[session.dmProfile.locale].yes#" <cfif structKeyExists("#application.config.verity.contenttype#", "extFiles") and application.config.verity.contenttype.extFiles.aprops.recursive eq "yes">checked</cfif>></td>
 		</tr>
 		<tr>
-			<td>File Types allowed</td>
+			<th class="alt">File Types allowed</th>
 			<td><input type="text" name="file__filetypes" <cfif structKeyExists("#application.config.verity.contenttype#", "extFiles")>value="#application.config.verity.contenttype.extFiles.aprops.fileTypes#"</cfif>> eg .pdf,.doc</td>
 		</tr>
+		<tr>
+			<th class="alt">&nbsp;</th>
+			<td><input type="submit" value="#application.adminBundle[session.dmProfile.locale].updateConfig#" class="f-submit" /></td>
+		</tr>
 		</table>
+		</form>
 		
-		<table>
-		<tr>
-			<td colspan="2">&nbsp;</td>
-		</tr>
-		<tr>
-			<td>&nbsp;</td>
-			<td><input type="submit" value="#application.adminBundle[session.dmProfile.locale].updateConfig#"></td>
-		</tr>
-		</table>
-		</form></cfoutput>
+		<hr />
+		</cfoutput>
+		
 	</cfcase>	
 </cfswitch>
 

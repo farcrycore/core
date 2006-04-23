@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/admin/coapiMetaData.cfm,v 1.4 2004/07/15 01:10:24 brendan Exp $
-$Author: brendan $
-$Date: 2004/07/15 01:10:24 $
-$Name: milestone_2-3-2 $
-$Revision: 1.4 $
+$Header: /cvs/farcry/farcry_core/admin/admin/coapiMetaData.cfm,v 1.5 2005/08/16 05:53:23 pottery Exp $
+$Author: pottery $
+$Date: 2005/08/16 05:53:23 $
+$Name: milestone_3-0-0 $
+$Revision: 1.5 $
 
 || DESCRIPTION || 
 $Description: Dumps COAPI metadata $
@@ -35,11 +35,11 @@ $out:$
 
 <cfif iCOAPITab eq 1>	
 
-	<cfoutput><span class="formtitle">#application.adminBundle[session.dmProfile.locale].COAPITypeMetaData#</span><p></p></cfoutput>
+	<cfoutput><h3>#application.adminBundle[session.dmProfile.locale].COAPITypeMetaData#</h3></cfoutput>
 	<cfdump var="#application.types#" label="application.types" expand="no">
 	
-	<cfoutput><p></p>
-	<span class="formtitle">#application.adminBundle[session.dmProfile.locale].COAPIRulesMetaData#</span><p></p></cfoutput>
+	<cfoutput>
+	<h3>#application.adminBundle[session.dmProfile.locale].COAPIRulesMetaData#</h3></cfoutput>
 	
 	<cfdump var="#application.rules#" label="application.rules" expand="no">
 

@@ -1,5 +1,4 @@
 <cfprocessingDirective pageencoding="utf-8">
-
 	<cfif isDefined("form.submit")>
 		<cfscript>
 			st = structNew();
@@ -12,6 +11,8 @@
 			st.insertJSdmFile = form.insertJSdmFile;
 			st.insertJSdmImage = form.insertJSdmImage;
 			st.insertJSdmFlash = form.insertJSdmFlash;
+			st.bAllowDuplicateNavAlias = form.bAllowDuplicateNavAlias;
+
 			st.editHandler = "/farcry/farcry_core/admin/config/overviewTree.cfm";
 			application.config.overviewTree = duplicate(st);
 		</cfscript>		
@@ -74,6 +75,10 @@
 				<td>
 					<textarea  rows="1" cols="100" style="font-size:0.98em;width:100%;" name="insertJSdmImage">#application.config.overviewTree.insertJSdmImage#</textarea> 
 				</td>
+			</tr>
+			<tr>
+				<td valign="top">Allow Duplicate Navigation Alias</td>
+				<td><input type="text" name="bAllowDuplicateNavAlias" value="#application.config.overviewTree.bAllowDuplicateNavAlias#" maxlength="3"></td>
 			</tr>
 			<tr>
 				<td colspan="2" align="center">

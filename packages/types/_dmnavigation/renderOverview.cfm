@@ -4,15 +4,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmnavigation/renderOverview.cfm,v 1.9 2004/07/15 02:00:50 brendan Exp $
-$Author: brendan $
-$Date: 2004/07/15 02:00:50 $
-$Name: milestone_2-3-2 $
-$Revision: 1.9 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmnavigation/renderOverview.cfm,v 1.10 2005/08/09 03:54:40 geoff Exp $
+$Author: geoff $
+$Date: 2005/08/09 03:54:40 $
+$Name: milestone_3-0-0 $
+$Revision: 1.10 $
 
 || DESCRIPTION || 
 $DESCRIPTION: Dispalys summary and options for editing/approving/previewing etc for selected object$
-$TODO: $ 
+ 
 
 || DEVELOPER ||
 $DEVELOPER:Brendan Sisson (brendan@daemon.com.au)$

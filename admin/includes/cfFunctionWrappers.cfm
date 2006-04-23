@@ -112,7 +112,6 @@
 
 
 
-
 <cffunction name="dump" hint="wrapper for cfdump">
 	<cfargument name="object" required="true">
 	<cfargument name="label" required="false" default="">

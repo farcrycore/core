@@ -4,15 +4,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_stats/getVisitorStatsByDay.cfm,v 1.7 2004/05/20 04:41:25 brendan Exp $
-$Author: brendan $
-$Date: 2004/05/20 04:41:25 $
-$Name: milestone_2-2-1 $
-$Revision: 1.7 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_stats/getVisitorStatsByDay.cfm,v 1.9 2005/10/28 03:41:17 paul Exp $
+$Author: paul $
+$Date: 2005/10/28 03:41:17 $
+$Name: milestone_3-0-0 $
+$Revision: 1.9 $
 
 || DESCRIPTION || 
 $Description: get visitor stats $
-$TODO: $
+
 
 || DEVELOPER ||
 $Developer: Brendan Sisson (brendan@daemon.com.au) $
@@ -81,9 +81,9 @@ $out:$
 <cfdefaultcase>
 	<cfquery datasource="#arguments.dsn#" name="qGetPageStatsByDay">
 		select distinct hour, count(distinct sessionId) as count_Ip, datepart(hh, fq.logdatetime) as loginhour
-		from #application.dbowner#statsHours
+		from #application.dbowner#statsHours statsHours
 		left join (
-				select * from stats
+				select * from #application.dbowner#stats 
 		)fq on datepart(hh, fq.logdatetime) = statsHours.hour
 		and datepart(dd, fq.logdatetime) = #DatePart("d", arguments.day)# and datepart(mm, fq.logdatetime) = #DatePart("m", arguments.day)# and datepart(yyyy, fq.logdatetime) = #DatePart("yyyy", arguments.day)#
 		group by hour, datepart(hh, fq.logdatetime)

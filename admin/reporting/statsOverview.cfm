@@ -4,15 +4,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/reporting/statsOverview.cfm,v 1.4 2004/12/01 06:21:29 brendan Exp $
-$Author: brendan $
-$Date: 2004/12/01 06:21:29 $
-$Name: milestone_2-3-2 $
-$Revision: 1.4 $
+$Header: /cvs/farcry/farcry_core/admin/reporting/statsOverview.cfm,v 1.7 2005/08/17 03:28:39 pottery Exp $
+$Author: pottery $
+$Date: 2005/08/17 03:28:39 $
+$Name: milestone_3-0-0 $
+$Revision: 1.7 $
 
 || DESCRIPTION || 
 $Description: Displays an overview report for site activity $
-$TODO: $
+
 
 || DEVELOPER ||
 $Developer: Brendan Sisson (brendan@daemon.com.au)$
@@ -50,118 +50,123 @@ $out:$
 	</cfscript>
 	
 	<cfoutput>
-	<div class="formtitle">
+	<h3>
 	<cfif form.dateRange neq "all">
 	<cfset subS=listToArray('#application.thisCalendar.i18nDateFormat(dateAdd("#form.dateRange#",-1,now()),session.dmProfile.locale,application.longF)#--- #application.thisCalendar.i18nDateFormat(now(),session.dmProfile.locale,application.longF)#--- #numberformat(qSessions.sessions)#','---')>
 	#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].statsOverviewReport,subS)#
 	<cfelse>
 	#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].allDatesOverviewReport,"#numberformat(qSessions.sessions)#")#
 	</cfif> 
-	</div>
+	</h3>
+
+	<br />
 	
-	<table cellpadding="5" cellspacing="0" border="0" style="margin-left:30px;">
-	<form action="" method="post">
-	<tr>
-		<td width="450">
-		<!--- drop down for date --->
-		Date
-		<select name="dateRange">
-			<option value="all" <cfif form.dateRange eq "all">selected</cfif>>#application.adminBundle[session.dmProfile.locale].allDates#
-			<option value="d" <cfif form.dateRange eq "d">selected</cfif>>#application.adminBundle[session.dmProfile.locale].Today#
-			<option value="ww" <cfif form.dateRange eq "ww">selected</cfif>>#application.adminBundle[session.dmProfile.locale].lastWeek#
-			<option value="m" <cfif form.dateRange eq "m">selected</cfif>>#application.adminBundle[session.dmProfile.locale].lastMonth#
-			<option value="q" <cfif form.dateRange eq "q">selected</cfif>>#application.adminBundle[session.dmProfile.locale].lastQuarter#
-			<option value="yyyy" <cfif form.dateRange eq "yyyy">selected</cfif>>#application.adminBundle[session.dmProfile.locale].lastYear#
-		</select>
+	<form method="post" class="f-wrap-1 f-bg-short" action="">
+		<fieldset>
 		
-		<input type="submit" value="#application.adminBundle[session.dmProfile.locale].Update#">
-		</td>
-	</tr>
+			<label for="dateRange"><b>Date:</b>
+			<select name="dateRange" id="dateRange">
+			<option value="all" <cfif form.dateRange eq "all">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].allDates#</option>
+			<option value="d" <cfif form.dateRange eq "d">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].Today#</option>
+			<option value="ww" <cfif form.dateRange eq "ww">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].lastWeek#</option>
+			<option value="m" <cfif form.dateRange eq "m">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].lastMonth#</option>
+			<option value="q" <cfif form.dateRange eq "q">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].lastQuarter#</option>
+			<option value="yyyy" <cfif form.dateRange eq "yyyy">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].lastYear#</option>
+			</select><br />
+			</label>
+			
+			<div class="f-submit-wrap">
+			<input type="submit" value="#application.adminBundle[session.dmProfile.locale].Update#" class="f-submit" />
+			</div>
+			
+		</fieldset>
+
 	</form>
-	</table>
-	<p></p>
+
+	<hr />
 	
 	<!--- views --->
 	<cfif qViews.recordcount>
-		<div class="formtitle" style="margin-left:30px;padding-bottom:5px;">#application.adminBundle[session.dmProfile.locale].mostPopularPages#</div>
-		<table cellpadding="5" cellspacing="0" border="1" width="500" style="margin-left:30px;">
+	
+		<h3>#application.adminBundle[session.dmProfile.locale].mostPopularPages#</h3>
+		
+		<table class="table-3" cellspacing="0">
 		<tr>
-			<th class="dataheader" align="left">#application.adminBundle[session.dmProfile.locale].objectLC#</td>
-			<th class="dataheader">#application.adminBundle[session.dmProfile.locale].views#</td>
-			<th class="dataheader">#application.adminBundle[session.dmProfile.locale].typeLC#</td>
+			<th style="width:33%">#application.adminBundle[session.dmProfile.locale].objectLC#</th>
+			<th style="width:34%">#application.adminBundle[session.dmProfile.locale].views#</th>
+			<th style="width:33%">#application.adminBundle[session.dmProfile.locale].typeLC#</th>
 		</tr>
 		
 		<!--- show stats with links to detail --->
 		<cfloop query="qViews">
-			<tr class="#IIF(qViews.currentRow MOD 2, de("dataOddRow"), de("dataEvenRow"))#">
+			<tr class="#IIF(qViews.currentRow MOD 2, de(""), de("alt"))#">
 				<td>#title#</td>
-				<td align="center" width="75">#downloads#</td>
-				<td width="75">#typename#</td>
+				<td>#downloads#</td>
+				<td>#typename#</td>
 			</tr>
 		</cfloop>
 		
 		</table>
 	</cfif>
-	<p>&nbsp;</p>
 	
 	<!--- locales --->
 	<cfif qLocales.recordcount>
-		<div class="formtitle" style="margin-left:30px;padding-bottom:5px;">#application.adminBundle[session.dmProfile.locale].mostPopularLocales#</div>
-		<table cellpadding="5" cellspacing="0" border="1" width="500" style="margin-left:30px;">
+	
+		<h3>#application.adminBundle[session.dmProfile.locale].mostPopularLocales#</h3>
+		
+		<table class="table-3" cellspacing="0">
 		<tr>
-			<th class="dataheader" align="left">#application.adminBundle[session.dmProfile.locale].country#</td>
-			<th class="dataheader">#application.adminBundle[session.dmProfile.locale].language#</td>
-			<th class="dataheader">#application.adminBundle[session.dmProfile.locale].sessions#</td>
+			<th style="width:33%">#application.adminBundle[session.dmProfile.locale].country#</th>
+			<th style="width:34%">#application.adminBundle[session.dmProfile.locale].language#</th>
+			<th style="width:33%">#application.adminBundle[session.dmProfile.locale].sessions#</th>
 		</tr>
 		
 		<!--- show stats with links to detail --->
 		<cfloop query="qLocales">
-			<tr class="#IIF(qLocales.currentRow MOD 2, de("dataOddRow"), de("dataEvenRow"))#">
+			<tr class="#IIF(qLocales.currentRow MOD 2, de(""), de("alt"))#">
 				<td>#country#</td>
-				<td width="75">#locale#</td>
-				<td align="center" width="75">#count_locale#</td>
+				<td>#locale#</td>
+				<td>#count_locale#</td>
 			</tr>
 		</cfloop>
 		
 		</table>
 	</cfif>
-	<p>&nbsp;</p>
 	
 	<!--- browsers --->
 	<cfif qBrowsers.recordcount>
-		<div class="formtitle" style="margin-left:30px;padding-bottom:5px;">#application.adminBundle[session.dmProfile.locale].mostPopularBrowsers#</div>
-		<table cellpadding="5" cellspacing="0" border="1" width="500" style="margin-left:30px;">
+		<h3>#application.adminBundle[session.dmProfile.locale].mostPopularBrowsers#</h3>
+		<table class="table-3" cellspacing="0">
 		<tr>
-			<th class="dataheader" align="left">#application.adminBundle[session.dmProfile.locale].Browser#</td>
-			<th class="dataheader">#application.adminBundle[session.dmProfile.locale].Sessions#</td>
+			<th style="width:67%">#application.adminBundle[session.dmProfile.locale].Browser#</th>
+			<th style="width:33%">#application.adminBundle[session.dmProfile.locale].Sessions#</th>
 		</tr>
 		
 		<!--- show stats with links to detail --->
 		<cfloop query="qBrowsers">
-			<tr class="#IIF(qBrowsers.currentRow MOD 2, de("dataOddRow"), de("dataEvenRow"))#">
+			<tr class="#IIF(qBrowsers.currentRow MOD 2, de(""), de("alt"))#">
 				<td>#browser#</td>
-				<td align="center" width="75">#views#</td>
+				<td>#views#</td>
 			</tr>
 		</cfloop>
 		
 		</table>
 	</cfif>
-	<p>&nbsp;</p>
 	
 	<!--- operating systems --->
 	<cfif qOs.recordcount>
-		<div class="formtitle" style="margin-left:30px;padding-bottom:5px;">#application.adminBundle[session.dmProfile.locale].mostPopularOS#</div>
-		<table cellpadding="5" cellspacing="0" border="1" width="500" style="margin-left:30px;">
+		<h3>#application.adminBundle[session.dmProfile.locale].mostPopularOS#</h3>
+		<table class="table-3" cellspacing="0">
 		<tr>
-			<th class="dataheader" align="left">#application.adminBundle[session.dmProfile.locale].OS#</td>
-			<th class="dataheader">#application.adminBundle[session.dmProfile.locale].Sessions#</td>
+			<th style="width:67%">#application.adminBundle[session.dmProfile.locale].OS#</th>
+			<th style="width:33%">#application.adminBundle[session.dmProfile.locale].Sessions#</th>
 		</tr>
 		
 		<!--- show stats with links to detail --->
 		<cfloop query="qOS">
-			<tr class="#IIF(qOS.currentRow MOD 2, de("dataOddRow"), de("dataEvenRow"))#">
+			<tr class="#IIF(qOS.currentRow MOD 2, de(""), de("alt"))#">
 				<td>#os#</td>
-				<td align="center" width="75">#count_os#</td>
+				<td>#count_os#</td>
 			</tr>
 		</cfloop>
 		
@@ -171,45 +176,43 @@ $out:$
 	
 	<!--- referers --->
 	<cfif qReferers.recordcount>
-		<div class="formtitle" style="margin-left:30px;padding-bottom:5px;">Most Popular Referers</div>
-		<table cellpadding="5" cellspacing="0" border="1" width="500" style="margin-left:30px;">
+		<h3>Most Popular Referers</h3>
+		<table class="table-3" cellspacing="0">
 		<tr>
-			<th class="dataheader" align="left">#application.adminBundle[session.dmProfile.locale].Referer#</td>
-			<th class="dataheader">#application.adminBundle[session.dmProfile.locale].Referals#</td>
+			<th style="width:67%">#application.adminBundle[session.dmProfile.locale].Referer#</th>
+			<th style="width:33%">#application.adminBundle[session.dmProfile.locale].Referals#</th>
 		</tr>
 		
 		<!--- show stats with links to detail --->
 		<cfloop query="qReferers">
-			<tr class="#IIF(qReferers.currentRow MOD 2, de("dataOddRow"), de("dataEvenRow"))#">
+			<tr class="#IIF(qReferers.currentRow MOD 2, de(""), de("alt"))#">
 				<td><a href="#referer#" class="referer">#left(referer,60)#<cfif len(referer) gt 60>...</cfif></a></td>
-				<td align="center" width="75">#count_referers#</td>
+				<td>#count_referers#</td>
 			</tr>
 		</cfloop>
 		
 		</table>
 	</cfif>
-	<p>&nbsp;</p>
 	
 	<!--- searches --->
 	<cfif qSearches.recordcount>
-		<div class="formtitle" style="margin-left:30px;padding-bottom:5px;">#application.adminBundle[session.dmProfile.locale].mostPopularSearches#</div>
-		<table cellpadding="5" cellspacing="0" border="1" width="500" style="margin-left:30px;">
+		<h3>#application.adminBundle[session.dmProfile.locale].mostPopularSearches#</h3>
+		<table class="table-3" cellspacing="0">
 		<tr>
-			<th class="dataheader" align="left">#application.adminBundle[session.dmProfile.locale].searchString#</td>
-			<th class="dataheader">#application.adminBundle[session.dmProfile.locale].searches#</td>
+			<th style="width:67%">#application.adminBundle[session.dmProfile.locale].searchString#</th>
+			<th style="width:33%">#application.adminBundle[session.dmProfile.locale].searches#</th>
 		</tr>
 		
 		<!--- show stats with links to detail --->
 		<cfloop query="qSearches">
-			<tr class="#IIF(qSearches.currentRow MOD 2, de("dataOddRow"), de("dataEvenRow"))#">
+			<tr class="#IIF(qSearches.currentRow MOD 2, de(""), de("alt"))#">
 				<td>#searchString#</td>			
-				<td align="center" width="75">#count_searches#</td>
+				<td>#count_searches#</td>
 			</tr>
 		</cfloop>
 		
 		</table>
 	</cfif>
-	<p>&nbsp;</p>
 	
 	</cfoutput>
 

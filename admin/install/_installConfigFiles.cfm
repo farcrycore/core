@@ -14,7 +14,7 @@
 <cffile action="READ" file="#configFilePath#/_serverSpecificVars.cfm" variable="serverVars">
 
 <cfscript>
-serverVars = replaceNoCase(serverVars, "application.dsn = ""farcry_aura""", "application.dsn = ""#application.dsn#""");
+serverVars = replaceNoCase(serverVars, "application.dsn = ""farcry_pliant""", "application.dsn = ""#application.dsn#""");
 serverVars = replaceNoCase(serverVars, "application.dbtype = ""odbc""", "application.dbtype = ""#form.dbType#""");
 serverVars = replaceNoCase(serverVars, "application.dbowner = ""dbo.""", "application.dbowner = ""#application.dbOwner#""");
 if (form.appMapping neq "/") {
@@ -32,7 +32,7 @@ else {
 
 <!--- create Application.cfm in project path --->
 <cffile action="READ" file="#configFilePath#/Application.cfm" variable="appCFM">
-<cfset appCFM = replaceNoCase(appCFM, "<cfapplication name=""farcry_aura"" sessionmanagement=""Yes"" sessiontimeout=""##createTimeSpan(0,1,0,0)##"">", "<cfapplication name=""#form.siteName#"" sessionmanagement=""Yes"" sessiontimeout=""##createTimeSpan(0,1,0,0)##"">")>
+<cfset appCFM = replaceNoCase(appCFM, "<cfapplication name=""farcry_pliant"" sessionmanagement=""Yes"" sessiontimeout=""##createTimeSpan(0,1,0,0)##"">", "<cfapplication name=""#form.siteName#"" sessionmanagement=""Yes"" sessiontimeout=""##createTimeSpan(0,1,0,0)##"">")>
 <cffile action="WRITE" file="#application.path.project#/www/Application.cfm" output="#appCFM#" addnewline="Yes">
 
 <!--- modify apps.cfm file --->

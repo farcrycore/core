@@ -1,52 +1,48 @@
+<cfprocessingDirective pageencoding="utf-8">
+<cfsetting enablecfoutputonly="Yes">
 <!--- 
 || LEGAL ||
 $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/edittabEdit.cfm,v 1.7 2004/07/15 01:09:43 brendan Exp $
-$Author: brendan $
-$Date: 2004/07/15 01:09:43 $
-$Name: milestone_2-3-2 $
-$Revision: 1.7 $
+$Header: /cvs/farcry/farcry_core/admin/edittabEdit.cfm,v 1.8 2005/07/29 07:29:33 geoff Exp $
+$Author: geoff $
+$Date: 2005/07/29 07:29:33 $
+$Name: milestone_3-0-0 $
+$Revision: 1.8 $
 
 || DESCRIPTION || 
-$DESCRIPTION: edit object $
-$TODO:  $ 
+$DESCRIPTION: edit object invoker for primarily tree based content; on its way out the door 20050728 GB$
+$TODO: get rid of this crack edittabEdit.cfm GB$
 
 || DEVELOPER ||
 $DEVELOPER:Brendan Sisson (brendan@daemon.com.au)$
-
-|| ATTRIBUTES ||
-$in:$ 
-$out:$
 --->
+<!--- import tag libraries --->
+<cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/farcry_core/tags/navajo" prefix="nj">
 
-<cfprocessingDirective pageencoding="utf-8">
+<!--- check for content type and objectid--->
+<cfparam name="url.objectid" type="uuid">
+<!--- type deprecated in favour of typename --->
+<cfparam name="url.type" default="" type="string">
+<cfparam name="url.typename" default="#url.type#" type="string">
 
-<!--- check permissions --->
-<cfscript>
-	iEditTab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="ObjectEditTab");
-</cfscript>
-
-<cfsetting enablecfoutputonly="Yes">
+<cfif NOT len(url.typename)>
+	<cfinvoke 
+		component="farcry.fourq.fourq"
+		method="findType" 
+		returnvariable="typename"
+		objectid="#url.objectid#" />
+	<cfset url.typename=typename>
+</cfif>
 
 <!--- set up page header --->
-<cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<cfif iEditTab eq 1>
-	<cfinvoke 
-	 component="farcry.fourq.fourq"
-	 method="findType" returnvariable="typename">
-		<cfinvokeargument name="objectid" value="#url.objectid#"/>
-	</cfinvoke>
-	
-	<cfparam name="url.type" default="#typename#">
-	
-	<cfimport taglib="/farcry/farcry_core/tags/navajo" prefix="nj">
-	
-	<nj:edit>
+<cfif request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="ObjectEditTab")>
+	<nj:edit objectid="#url.objectid#" typename="#url.typename#" />
 
 <cfelse>
 	<admin:permissionError>

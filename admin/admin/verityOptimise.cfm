@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/admin/verityOptimise.cfm,v 1.9 2004/07/15 01:10:24 brendan Exp $
-$Author: brendan $
-$Date: 2004/07/15 01:10:24 $
-$Name: milestone_2-3-2 $
-$Revision: 1.9 $
+$Header: /cvs/farcry/farcry_core/admin/admin/verityOptimise.cfm,v 1.11 2005/08/16 05:53:23 pottery Exp $
+$Author: pottery $
+$Date: 2005/08/16 05:53:23 $
+$Name: milestone_3-0-0 $
+$Revision: 1.11 $
 
 || DESCRIPTION || 
 $Description: Optimise all Verity collections for the active application. $
@@ -33,7 +33,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	<!--------------------------------------------------------------------
 	Optimisation Routine For CFMX 
 	--------------------------------------------------------------------->
-	<cfoutput><span class="FormTitle">Optimising Collections</span><p></p></cfoutput>
+	<cfoutput><h3>Optimising Collections</h3></cfoutput>
 	
 	<!--- get system Verity information ---> 
 	<cfcollection action="LIST" name="qcollections">
@@ -44,14 +44,14 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 		<cfif findNoCase(application.applicationname, qCollections.name)>
 			<cftry>
 				<cfset application.factory.oVerity.optimiseCollection(qCollections.name)>
-				<cfoutput>#qCollections.name#: #application.adminBundle[session.dmProfile.locale].optimized#...<br></cfoutput>
-				<cfcatch><cfoutput>#qCollections.name#: #application.adminBundle[session.dmProfile.locale].errorOptimizing#<br></cfoutput></cfcatch>
+				<cfoutput>#qCollections.name#: #application.adminBundle[session.dmProfile.locale].optimized#...<br /></cfoutput>
+				<cfcatch><cfoutput>#qCollections.name#: #application.adminBundle[session.dmProfile.locale].errorOptimizing#<br /></cfoutput></cfcatch>
 			</cftry>
 			<cfflush>
 		</cfif>
 	</cfloop>
 	
-	<cfoutput><p>#application.adminBundle[session.dmProfile.locale].allDone#</p></cfoutput>
+	<cfoutput><p><strong class="success fade" id="fader1">#application.adminBundle[session.dmProfile.locale].allDone#</strong></p></cfoutput>
 
 <cfelse>
 	<admin:permissionError>

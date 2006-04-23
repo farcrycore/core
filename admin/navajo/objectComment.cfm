@@ -4,15 +4,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/navajo/objectComment.cfm,v 1.18 2005/01/17 21:51:27 brendan Exp $
-$Author: brendan $
-$Date: 2005/01/17 21:51:27 $
-$Name: milestone_2-3-2 $
-$Revision: 1.18 $
+$Header: /cvs/farcry/farcry_core/admin/navajo/objectComment.cfm,v 1.20 2005/08/09 03:54:40 geoff Exp $
+$Author: geoff $
+$Date: 2005/08/09 03:54:40 $
+$Name: milestone_3-0-0 $
+$Revision: 1.20 $
 
 || DESCRIPTION || 
 $Description: add comments to genericadmin items $
-$TODO: $
+
 
 || DEVELOPER ||
 $Developer: Brendan Sisson (brendan@daemon.com.au) $
@@ -84,9 +84,9 @@ $out:$
 			
 			<!--- if requesting approval, list approvers --->
 			<cfif url.status eq "requestApproval">
-				<span class="formLabel">#application.adminBundle[session.dmProfile.locale].requestApprovalFrom#</span><br/>
+				<span class="formLabel">#application.adminBundle[session.dmProfile.locale].requestApprovalFrom#</span><br />
 				
-				<input type="checkbox" onclick="if(this.checked)deSelectAll();" name="lApprovers" value="#application.adminBundle[session.dmProfile.locale].all#" checked="true">#application.adminBundle[session.dmProfile.locale].allApprovers#<br/>
+				<input type="checkbox" onclick="if(this.checked)deSelectAll();" name="lApprovers" value="#application.adminBundle[session.dmProfile.locale].all#" checked="true">#application.adminBundle[session.dmProfile.locale].allApprovers#<br />
 				
 				<!--- get list of approvers for this object --->
 				<cfinvoke component="#application.packagepath#.farcry.workflow" method="getNewsApprovers" returnvariable="stApprovers">
@@ -95,7 +95,7 @@ $out:$
 				<!--- loop over approvers and display ones that have email profiles --->
 				<cfloop collection="#stApprovers#" item="item">
 				    <cfif stApprovers[item].emailAddress neq "" AND stApprovers[item].bReceiveEmail and stApprovers[item].userName neq session.dmSec.authentication.userLogin>
-						<input type="checkbox" name="lApprovers" onclick="if(this.checked)document.form.lApprovers[0].checked = false;" value="#stApprovers[item].userName#"><cfif len(stApprovers[item].firstName) gt 0>#stApprovers[item].firstName# #stApprovers[item].lastName#<cfelse>#stApprovers[item].userName#</cfif><br/>
+						<input type="checkbox" name="lApprovers" onclick="if(this.checked)document.form.lApprovers[0].checked = false;" value="#stApprovers[item].userName#"><cfif len(stApprovers[item].firstName) gt 0>#stApprovers[item].firstName# #stApprovers[item].lastName#<cfelse>#stApprovers[item].userName#</cfif><br />
 					</cfif>
 				</cfloop>
 				<p></p>

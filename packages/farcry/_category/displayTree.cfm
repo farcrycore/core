@@ -1,15 +1,13 @@
 <cfsetting enablecfoutputonly="No">
 
 <cfoutput>
-<html>
-<head>
+
 <LINK href="#application.url.farcry#/css/overviewFrame.css" rel="stylesheet" type="text/css">
-</head>
-<body>
-<div id="tree">
+<style type="text/css">
+body {background:##fff}
+</style>
+<div id="tree" style="position:relative;">
 </cfoutput>
-
-
 
 
 <cfimport taglib="/farcry/farcry_core/tags/navajo" prefix="nj">
@@ -193,7 +191,7 @@ if( StructKeyExists( application.types, "dmNavigation" ) )
 <!--- initial javascript code for tree --->
 <script>#jscode#</script>
 
-<div id="popupMenus"></div>
+<div id="popupMenus" style="position:absolute;"></div>
 
 <script>
 var localWin = window;
@@ -203,9 +201,9 @@ function popupopen( strURL,b,c )
 {
 	/*var w;
 
-	if( b && c ) w = window.open( 'javascript:document.write("Loading....");', b, c );
-	else if( b ) w = window.open( 'javascript:document.write("Loading....");', b );
-	else w = window.open( 'javascript:document.write("Loading....");' );
+	if( b && c ) w = window.open( 'javascript:document.write(" Loading....");', b, c );
+	else if( b ) w = window.open( 'javascript:document.write(" Loading....");', b );
+	else w = window.open( 'javascript:document.write(" Loading....");' );
 	
 	//w.moveTo( window.screenLeft+200, window.screenTop+50 );
 	w.focus();
@@ -228,7 +226,7 @@ function frameopen( a,b )
 		}
 		else
 		{
-			//parent[b].document.write("Loading....");
+			//parent[b].document.write(" Loading....");
 			parent[b].document.location=a;
 		}
 	}
@@ -335,7 +333,7 @@ function renderObject( objId )
 	
 	if(objId != '#rootobjectid#' && bCheckBox)
 	{
-		checkboxhtml = '<input onClick=\"updateCategories(this.checked,\''+objId+'\')\" type=\"checkbox\" name=\"categoryid\" value=\"'+objId + '\" ' + checked +'>';
+		checkboxhtml = '<input style="width:auto" onClick=\"updateCategories(this.checked,\''+objId+'\')\" type=\"checkbox\" name=\"categoryid\" value=\"'+objId + '\" ' + checked +'>';
 	}else
 		checkboxhtml = '';	
 	
@@ -349,9 +347,9 @@ function renderObject( objId )
 		if( parentParent['OBJECTID'] 
 			&& (nodeIndex(parent['OBJECTID'])!=-1 && nodeIndex(parent['OBJECTID'])!=countNodes(parentParent['OBJECTID'])-1)
 			|| (objectIndex(parent['OBJECTID'])!=-1 && objectIndex(parent['OBJECTID'])!=countChildren(parentParent['OBJECTID'])-1) &&  countNodes(parent['OBJECTID']) > 1  )
-			elData += "<table class=tableNode><tr><td style='background-image: url(\""+c.src+"\");background-repeat : repeat-y;'><img src='"+s.src+"' width="+zoom+" height="+zoom+"></td><td>";
+			elData += "<table class='tableNode'><tr><td style='background-image: url(\""+c.src+"\");background-repeat : repeat-y;'><img src='"+s.src+"' width="+zoom+" height="+zoom+"></td><td>";
 		else
-			elData += "<table class=tableNode><tr><td style='background-image: url(\"" + s.src +"\");background-repeat : repeat-y;'><img src='"+s.src+"' width="+zoom+" height="+zoom+"></td><td>";
+			elData += "<table class='tableNode'><tr><td style='background-image: url(\"" + s.src +"\");background-repeat : repeat-y;'><img src='"+s.src+"' width="+zoom+" height="+zoom+"></td><td>";
 	}
 	
 	var jsHighlight=' onclick="highlightObjectClick(\''+objId+'\',event)" ';
@@ -363,7 +361,7 @@ function renderObject( objId )
 	else if( thisObject['TYPENAME']=="dmHTML")drag += " ondragover='if(dragTypeId!=\"dmNavigation\") dragOver()' ";
 		
 	
-	elData+='<table class=\"tableNode\" '+contextMenu+'>\n<tr><td class=iconText>'+getToggleImage(objId)+
+	elData+='<table class=\"tableNoded\" '+contextMenu+'>\n<tr><td class=iconText>'+getToggleImage(objId)+
 				'<div id=\"non'+jsHighlight+'\" style="display:inline" '+drag+jsHighlight+'>'+getTypeImage(objId)+'</div>\n</td>'+
 				'<td valign=middle class=iconText>'+ 
 				'\n<div id="'+objId+'_text" '+jsHighlight+'>'+checkboxhtml+getObjectTitle(objId)+
@@ -646,7 +644,7 @@ function toggleObject( objId )
 	
 	if( el.style.display=='none' || el.style.display=='' )
 	{
-		el.innerHTML = "<img src='"+loading.src+"' width="+(zoom-8)+" height="+(zoom-8)+"><span class=iconText>loading...</span>";
+		el.innerHTML = "<img src='"+loading.src+"' width="+(zoom-8)+" height="+(zoom-8)+"><span class=iconText> Loading...</span>";
 		
 		allDefined=1;
 		
@@ -685,8 +683,7 @@ function toggleObject( objId )
 		else 
 		{
 			downloadRender( objId );
-			//serverPut(objId);
-			//{oDownload.startDownload("updateTreeData.cfm?lObjectIds="+objId, downloadDone );
+		
 		}
 				
 
@@ -710,7 +707,7 @@ function getObjectDataAndRender( objId )
 	if( objId && objId != '0' && parentObj )
 	{
 		serverPut(objId);
-		//oDownload.startDownload("updateTreeData.cfm?lObjectIds="+objId, downloadDone );
+
 	}
 	else
 	{
@@ -808,9 +805,7 @@ function highlightObject( id )
 		}
 	}
 
-	/*var rng = document.body.createTextRange( );
-	rng.move('character');
-	rng.select();*/
+
 }
 
 function isSelected( id )
@@ -835,9 +830,6 @@ function clearHighlightedObjects()
 	lastSelectedId = 0;
 	aSelectedIds = new Array();
 
-	/*var rng = document.body.createTextRange( );
-	rng.move('character');
-	rng.select();*/
 }
 
 function toggleObjectHighlight( id )
@@ -1046,10 +1038,9 @@ function generateMenu( data, bIsSub )
 		}
 	}
 	menuData += endMenu();
-	//alert(menuData);
 	pm = document.getElementById("popupMenus");
 	pm.innerHTML += menuData;
-	//document.all.popupMenus.innerHTML += menuData;
+
 }
 
 <cfif NOT arguments.bShowCheckBox>
@@ -1398,8 +1389,7 @@ document.body.onclick = documentClick;
 	</script>
 </cfif>
 </div>
-</body>
-</html>
+
 </cfoutput>
 
 <cfsetting enablecfoutputonly="No">

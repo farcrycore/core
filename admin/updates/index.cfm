@@ -9,7 +9,8 @@
 
 <body style="margin-left:20px;margin-top:20px;">
 
-<img src="#application.url.farcry#/images/farcry_logo.gif" border="0" alt="FarCry Updater"><P></P>
+<img src="#application.url.farcry#/images/powered_by_farcry.gif" alt="FarCry Updater">
+<p>&nbsp;</p>
 
 <span class="formtitle" style="margin-left:30px;">FarCry Updates</span>
 </cfoutput>
@@ -22,6 +23,14 @@
 		<!--- include update script --->
 		<cfinclude template="/farcry/farcry_core/admin/updates/#script#.cfm">
 	</cfloop>
+	<!--- logout user if logged in because errors will occur when returning to admin --->
+	<cfif isdefined("session.dmprofile")>
+		<cfscript>
+			request.dmsec.oAuthentication.logout();
+		</cfscript>
+	</cfif>
+	<!--- Farcry Core RE - Initialisation --->
+	<cfinclude template="/farcry/farcry_core/tags/farcry/_farcryApplicationInit.cfm">
 	<!--- finish message and link back to FarCry --->
 	<cfoutput>
 	<p></p><span class="frameMenuBullet">&raquo;</span> <strong>Updates Complete.</strong><p></p>

@@ -4,15 +4,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/dmNavigation.cfc,v 1.16 2004/01/05 03:37:56 paul Exp $
-$Author: paul $
-$Date: 2004/01/05 03:37:56 $
-$Name: milestone_2-2-1 $
-$Revision: 1.16 $
+$Header: /cvs/farcry/farcry_core/packages/types/dmNavigation.cfc,v 1.20 2005/10/11 07:14:52 guy Exp $
+$Author: guy $
+$Date: 2005/10/11 07:14:52 $
+$Name: milestone_3-0-0 $
+$Revision: 1.20 $
 
 || DESCRIPTION || 
 $Description: dmNavigation type $
-$TODO: $
+
 
 || DEVELOPER ||
 $Developer: Brendan Sisson (brendan@daemon.com.au) $
@@ -32,6 +32,7 @@ type properties
 <cfproperty name="lNavIDAlias" type="string" hint="A Nav alias provides a human interpretable link to this navigation node.  Each Nav alias is set up as key in the structure application.navalias.<i>aliasname</i> with a value equal to the navigation node's UUID." required="no" default="">
 <cfproperty name="options" type="string" hint="No idea what this is for." required="no" default="">
 <cfproperty name="status" type="string" hint="Status of the node (draft, pending, approved)." required="yes" default="draft">
+<cfproperty name="fu" type="string" hint="Friendly URL for this node." required="no" default="">
 
 <!------------------------------------------------------------------------
 object methods 
@@ -121,4 +122,43 @@ object methods
 	<cfreturn html>
 </cffunction>
 
+<cffunction name="renderObjectOverview" access="public" hint="Renders entire object overiew" output="true">
+	<cfargument name="objectid" required="yes" type="UUID" hint="Object ID of the selected object">
+		
+	<!--- get object details --->
+	<cfset var stObj = getData(arguments.objectid)>
+	<cfset var stLocal = StructNew()>
+	<cfset stLocal.html = "">		
+	<cfinclude template="_dmNavigation/renderObjectOverview.cfm">
+	<cfreturn stLocal.html>
+
+</cffunction>
+
+<cffunction name="setFriendlyURL" access="public" returntype="struct" hint="the default set friendly url for an object." output="true">
+	<cfargument name="stProperties" required="true" type="struct">
+	
+	<cfset var stLocal = structnew()>
+	<cfset stLocal.returnstruct = StructNew()>
+	<cfset stLocal.returnstruct.bSuccess = 1>
+	<cfset stLocal.returnstruct.message = "">
+
+	<cfset stLocal.stFriendlyURL = StructNew()>
+	<cfset stLocal.stFriendlyURL.objectid = arguments.stProperties.objectid>
+	<cfset stLocal.stFriendlyURL.friendlyURL = "">
+	<cfset stLocal.stFriendlyURL.querystring = "">
+
+	<cfset stLocal.objFU = CreateObject("component","#Application.packagepath#.farcry.fu")>
+
+	<!--- This determines the friendly url by where it sits in the navigation node  --->
+	<cfset stLocal.stFriendlyURL.friendlyURL = stLocal.objFU.createFUAlias(arguments.stProperties.objectid,0)>
+	<cfset stLocal.stFriendlyURL.friendlyURL = stLocal.stFriendlyURL.friendlyURL & "#arguments.stProperties.label#">
+
+	<cfset stLocal.objFU.setFU(stLocal.stFriendlyURL.objectid, stLocal.stFriendlyURL.friendlyURL, stLocal.stFriendlyURL.querystring)>
+	<cfif trim(arguments.stProperties.fu) NEQ ""> <!--- create an alternative FU based on fu --->
+		<cfset stLocal.stFriendlyURL.friendlyURL = arguments.stProperties.fu>
+		<cfset stLocal.objFU.setFU(stLocal.stFriendlyURL.objectid, stLocal.stFriendlyURL.friendlyURL, stLocal.stFriendlyURL.querystring,1)>
+	</cfif>
+
+	<cfreturn stLocal.returnstruct>
+</cffunction>
 </cfcomponent>

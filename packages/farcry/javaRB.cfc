@@ -1,9 +1,11 @@
-<cfcomponent displayname="javaRB" hint="reads and parses java resource bundle per locale" output="no">
+<cfcomponent displayname="javaRB" hint="reads and parses java resource bundle per locale, version 1.2 mar-2005" output="no">
 <!--- 
 
 author:		paul hastings <paul@sustainableGIS.com>
 date:		08-december-2003
 revisions:	
+15-mar-2005	fixed un-scoped var variable in formatRBString method.
+
 notes:		the purpose of this CFC is to extract text resources from a pure java resource bundle. these
 			resource bundles should be produced by a tools such as IBM's rbManager and consist of:
 				key=ANSI escaped string such as
@@ -156,7 +158,7 @@ methods in this CFC:
 	<cfargument name="rbString" required="yes" type="string">
 	<cfargument name="substituteValues" required="yes"> <!--- array or single value to format --->
 	<cfset var i=0>
-	<cfset tmpStr=arguments.rbString>
+	<cfset var tmpStr=arguments.rbString>
 	<cfif isArray(arguments.substituteValues)> <!--- do a bunch? --->
 		<cfloop index="i" from="1" to="#arrayLen(arguments.substituteValues)#">
 			<cfset tmpStr=replace(tmpStr,"{#i#}",arguments.substituteValues[i],"ALL")>

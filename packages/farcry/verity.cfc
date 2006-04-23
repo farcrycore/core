@@ -4,15 +4,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/verity.cfc,v 1.4 2004/08/21 13:38:25 geoff Exp $
-$Author: geoff $
-$Date: 2004/08/21 13:38:25 $
-$Name: milestone_2-3-2 $
-$Revision: 1.4 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/verity.cfc,v 1.6 2005/09/08 15:56:45 tom Exp $
+$Author: tom $
+$Date: 2005/09/08 15:56:45 $
+$Name: milestone_3-0-0 $
+$Revision: 1.6 $
 
 || DESCRIPTION ||
 $Description: verity search cfc $
-$TODO: $
+
 
 || DEVELOPER ||
 $Developer: Brendan Sisson (brendan@daemon.com.au) $
@@ -87,33 +87,26 @@ $out:$
 
 	<cffunction name="listCollections" output="no" returntype="query" hint="Lists active collections for farcry site">
 		<cfset var qVerity="">
-		<cfset var qCollections="">
-		<cfset var qCollectionList="">
-		
+		<cfset var temp="">
+		<cfset var qCollectionList = queryNew("name,lastUpdated")>
+
 		<!--- get system Verity information --->
 		<cfcollection action="LIST" name="qVerity">
 
-		<!--- get collections for this site --->
-		<cfquery name="qCollections" dbtype="query">
-			select name
-			from qVerity
-			where name like '#application.applicationName#%'
-			order by name
-		</cfquery>
-
-		<cfset qCollectionList = queryNew("name,lastUpdated")>
-
-		<!--- add lastupdated time to returned query --->
-		<cfloop query="qCollections">
-
-			<cfif structKeyExists(application.config.verity.contenttype,"#replaceNoCase(qCollections.name,'#application.applicationName#_','')#") and structKeyExists(application.config.verity.contenttype[replaceNoCase(qCollections.name,"#application.applicationName#_","")],"lastUpdated")>
-				<cfset lastUpdated = "#dateFormat(application.config.verity.contenttype[replaceNoCase(qCollections.name,"#application.applicationName#_","")].lastUpdated,"dd-mmm-yyyy")# #timeFormat(application.config.verity.contenttype[replaceNoCase(qCollections.name,"#application.applicationName#_","")].lastUpdated,"hh:mm")#">
-			<cfelse>
-				<cfset lastUpdated = "n/a">
+		<!--- Loop over Verity Collections and act on collections prefixed with this site's name --->
+		<cfloop query="qVerity">
+			<cfif find(application.applicationName, qVerity.name) eq 1>
+				<!--- Figure and add lastupdated time to returned query --->
+				<cfif structKeyExists(application.config.verity.contenttype,"#replaceNoCase(qVerity.name,'#application.applicationName#_','')#") and structKeyExists(application.config.verity.contenttype[replaceNoCase(qVerity.name,"#application.applicationName#_","")],"lastUpdated")>
+					<cfset lastUpdated = "#dateFormat(application.config.verity.contenttype[replaceNoCase(qVerity.name,"#application.applicationName#_","")].lastUpdated,"dd-mmm-yyyy")# #timeFormat(application.config.verity.contenttype[replaceNoCase(qVerity.name,"#application.applicationName#_","")].lastUpdated,"hh:mm")#">
+				<cfelse>
+					<cfset lastUpdated = "n/a">
+				</cfif>
+			
+				<cfset temp = queryAddRow(qCollectionList, 1)>
+				<cfset temp = querySetCell(qCollectionList, "name", qVerity.name)>
+				<cfset temp = querySetCell(qCollectionList, "lastUpdated", lastUpdated)>
 			</cfif>
-			<cfset temp = queryAddRow(qCollectionList, 1)>
-			<cfset temp = querySetCell(qCollectionList, "name", qCollections.name)>
-			<cfset temp = querySetCell(qCollectionList, "lastUpdated", lastUpdated)>
 		</cfloop>
 
 		<cfreturn qCollectionList>

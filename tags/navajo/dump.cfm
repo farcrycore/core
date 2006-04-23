@@ -1,67 +1,18 @@
 <cfsetting enablecfoutputonly="Yes">
 <cfprocessingDirective pageencoding="utf-8">
-<cfimport taglib="/farcry/fourq/tags" prefix="q4">
+
 <cfparam name="url.lObjectIds" default="#attributes.lObjectIDs#">
-<cfoutput>
-<html dir="#session.writingDir#" lang="#session.userLanguage#">
 
-<link rel="stylesheet" type="text/css" href="navajo_popup.css">
+<cfimport taglib="/farcry/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
 
-<BODY>
 
-<table cellpadding=0 cellspacing=0 border=0 bgcolor="##444444"><TR><td>
+<!--- setup page header --->
+<admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<table cellpadding=0 cellspacing=0 border=1 bgcolor="##aaaaaa"><TR>
-<cfloop index="objId" list="#url.lObjectIds#">
-<q4:contentobjectGet objectId="#objId#" r_stObject="stobj">
-<cfif len(stobj.label) gt 20><cfset stobj.label=left(stobj.label,20)&"..."></cfif>
-<Td onclick="hideAll('#objId#')" style="cursor:hand;"><nobr>
-<span style="padding: 10px 10px 10px 10px;background-color:##<cfif objId neq listGetAt(url.lObjectIds,1)>aaaaaa<cfelse>dddddd</cfif>" id="#objId#tab">
-#stobj.label#</span></nobr></td>
-</cfloop><Cfset l = listLen(url.lObjectIds)+1>
-<td width=100%></td></tr><tr><td colspan=#l#>
+<q4:contentobjectGet objectId="#url.lObjectIds#" r_stObject="stObj" />
+<cfdump var="#stObj#" label="#stObj.label# Properties">	
 
-</cfoutput>
-<cfloop index="objId" list="#url.lObjectIds#">
-	
-	<q4:contentobjectGet objectId="#objId#" r_stObject="stobj">
-	
-	<cfoutput>
-	<table cellpadding=0 cellspacing=0 border=0 bgcolor="##dddddd"><tr>
-	<Td><div style="padding: 16px 16px 16px 16px;<cfif objId neq listGetAt(url.lObjectIds,1)>display:none;</cfif>" id="#objId#"></cfoutput>x
-	
-	<cfoutput><h3 style="display:inline;">#stobj.label#</h3> <h6 style="display:inline">( #stobj.objectId# )</h6></cfoutput>x
-	<cfdump var="#stobj#">
-	
-	<cfoutput></div>
-	</td></tr></table>
-	
-	</cfoutput>
-</cfloop>
-
-<cfoutput>
-</td></tr></table>
-</td></tr></table>
-
-<script>
-function hideAll(id)
-{
-	var lIds = "#url.lObjectIds#";
-	var aIds = lIds.split(",");
-	
-	for( var i=0; i<aIds.length; i++ )
-	{
-		document.getElementById(aIds[i]).style.display='none';
-		document.getElementById(aIds[i]+"tab").style.backgroundColor='##aaaaaa';
-	}
-	
-	document.getElementById(id).style.display='inline';
-	document.getElementById(id+"tab").style.backgroundColor='##dddddd';
-}
-</script>
-
-</body>
-</html>
-</cfoutput>
-
+<!--- setup page footer --->
+<admin:footer>
 <cfsetting enablecfoutputonly="No">

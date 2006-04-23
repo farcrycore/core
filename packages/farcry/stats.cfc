@@ -4,15 +4,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/stats.cfc,v 1.29 2004/01/07 23:30:17 brendan Exp $
-$Author: brendan $
-$Date: 2004/01/07 23:30:17 $
-$Name: milestone_2-2-1 $
-$Revision: 1.29 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/stats.cfc,v 1.33 2005/10/28 03:41:37 paul Exp $
+$Author: paul $
+$Date: 2005/10/28 03:41:37 $
+$Name: milestone_3-0-0 $
+$Revision: 1.33 $
 
 || DESCRIPTION || 
 $Description: statistics cfc $
-$TODO: $
+
 
 || DEVELOPER ||
 $Developer: Brendan Sisson (brendan@daemon.com.au) $
@@ -121,6 +121,7 @@ object methods
 	<cfargument name="day" type="date" required="true">
 	<cfargument name="showAll" type="boolean" required="false" default="false">
 	<cfargument name="dsn" type="string" required="false" default="#application.dsn#">
+	<cfargument name="dbowner" type="string" required="false" default="#application.dbowner#">
 	
 	<cfinclude template="_stats/getPageStatsByDay.cfm">
 	<cfreturn qGetPageStatsByDay>
@@ -131,6 +132,7 @@ object methods
 	<cfargument name="day" type="date" required="true">
 	<cfargument name="showAll" type="boolean" required="false" default="false">
 	<cfargument name="dsn" type="string" required="false" default="#application.dsn#">
+	<cfargument name="dbowner" type="string" required="false" default="#application.dbowner#">
 	
 	<cfinclude template="_stats/getPageStatsByWeek.cfm">
 	<cfreturn qGetPageStatsByWeek>
@@ -178,6 +180,7 @@ object methods
 	<cfargument name="typeName" type="string" required="false" hint="Filter by typeName">
 	<cfargument name="maxRows" type="string" required="true" default="20" hint="Maximum number of results returned">
 	<cfargument name="dateRange" type="string" required="true" default="all">
+	<cfargument name="dbowner" type="string" required="false" default="#application.dbowner#">
 		
 	<cfinclude template="_stats/getMostViewed.cfm">
 	<cfreturn qGetMostViewed>
@@ -349,4 +352,57 @@ object methods
 	</cfscript>		
 	<cfreturn os>
 </cffunction> 	
+
+<cffunction name="getOwnedBy" access="public" returntype="struct" hint="Returns a break down of content tyoe owned by each user">
+	<cfset var stLocal = StructNew()>
+	<cfset var stReturn = StructNew()>
+	<cfset stReturn.returnCode = 1>
+	<cfset stReturn.returnMessage = "">
+
+	<cfinclude template="_stats/getOwnedBy.cfm">
+
+	<cfreturn stReturn>
+</cffunction>
+
+<cffunction name="fPurgeStatistics" access="public" returntype="struct" hint="deletes records older than a certain date" output="false">
+	<cfargument name="purgeDate" required="true" type="date">
+	<cfargument name="dsn" type="string" required="false" default="#application.dsn#">
+	<cfset var stLocal = StructNew()>
+	<cfset stLocal.stReturn = StructNew()>
+	<cfset stLocal.stReturn.bSuccess = 1>
+	<cfset stLocal.stReturn.message = "">
+	
+	<cftry>
+		<cfquery name="qTotal" datasource="#arguments.dsn#">
+		SELECT	count(logid) as total_logs
+		FROM 	#application.dbowner#stats
+		</cfquery>
+
+		<cfquery name="qPurged" datasource="#arguments.dsn#">
+		SELECT	count(logid) as total_logs
+		FROM 	#application.dbowner#stats
+		WHERE	logdatetime < <cfqueryparam value="#CreateODBCDate(arguments.purgeDate)#" cfsqltype="cf_sql_date">
+		</cfquery>
+
+		<cfquery name="qPurgeData" datasource="#arguments.dsn#">
+		DELETE
+		FROM	#application.dbowner#stats
+		WHERE	logdatetime < <cfqueryparam value="#CreateODBCDate(arguments.purgeDate)#" cfsqltype="cf_sql_date">
+		</cfquery>
+
+		<cfset totalPercentage = 0>
+		<cfif qTotal.total_logs NEQ 0>
+			<cfset totalPercentage = numberformat(((qPurged.total_logs/qTotal.total_logs)*100),"__.__")>
+		</cfif>
+
+		<cfset stLocal.stReturn.message = "Statistics Sucessfully purged, (#totalPercentage#% removed).<br />">
+
+		<cfcatch>
+			<cfset stLocal.stReturn.bSuccess = 0>
+			<cfset stLocal.stReturn.message = cfcatch.message>		
+		</cfcatch>
+	</cftry>
+	<cfreturn stLocal.stReturn>
+</cffunction>
+
 </cfcomponent>

@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_tree/fixBranch.cfm,v 1.1.2.1 2005/05/24 02:49:08 jason Exp $
-$Author: jason $
-$Date: 2005/05/24 02:49:08 $
-$Name: milestone_2-3-2 $
-$Revision: 1.1.2.1 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_tree/fixBranch.cfm,v 1.3 2005/10/28 04:10:04 paul Exp $
+$Author: paul $
+$Date: 2005/10/28 04:10:04 $
+$Name: milestone_3-0-0 $
+$Revision: 1.3 $
 
 || DESCRIPTION || 
 $Description: fixBranch Function $
@@ -25,7 +25,7 @@ $out:$
 <cfsetting enablecfoutputonly="No">
 
 	<cfquery name="qChildren" datasource="#arguments.dsn#">
-		select objectid, objectname, parentid from nested_tree_objects 
+		select objectid, objectname, parentid from #arguments.dbowner#nested_tree_objects 
 		where parentid =  '#arguments.parentid#' 
 		order by nleft
 	</cfquery>
@@ -43,7 +43,7 @@ $out:$
 			<cfset nRight = fixBranch(qChildren.objectid, nNewLeft + 1,arguments.nLevel + 1)>
 			<cfif nRight gt nNewLeft>
 				<cfquery name="qUpdateChild" datasource="#arguments.dsn#">
-					UPDATE nested_tree_objects set nLeft = #nNewLeft#, nRight = #nRight#, nLevel = #arguments.nlevel#
+					UPDATE #arguments.dbowner#nested_tree_objects set nLeft = #nNewLeft#, nRight = #nRight#, nLevel = #arguments.nlevel#
 					WHERE objectid = '#qChildren.objectid#'
 				</cfquery>		
 			</cfif>			

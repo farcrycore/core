@@ -4,15 +4,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/navajo/delete.cfm,v 1.17 2004/07/15 02:03:00 brendan Exp $
-$Author: brendan $
-$Date: 2004/07/15 02:03:00 $
-$Name: milestone_2-3-2 $
-$Revision: 1.17 $
+$Header: /cvs/farcry/farcry_core/tags/navajo/delete.cfm,v 1.20 2005/08/09 03:54:40 geoff Exp $
+$Author: geoff $
+$Date: 2005/08/09 03:54:40 $
+$Name: milestone_3-0-0 $
+$Revision: 1.20 $
 
 || DESCRIPTION || 
 $Description: DELETE OBJECTS FROM TREE $
-$TODO: $
+
 
 || DEVELOPER ||
 $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
@@ -35,32 +35,21 @@ $out: <separate entry for each variable>$
 <q4:contentobjectget objectid="#url.ObjectId#" r_stobject="stObj">
 
 <!--- This gets the parent object -- need this to clean up its reference to the object we are deleting --->
-<cfscript>
-	oType = createObject("component", application.types[stObj.typename].typePath);
-	oNav = createObject("component", application.types.dmNavigation.typePath);
-	if (stObj.typename IS 'dmNavigation')
-	{
-		qGetParent = request.factory.oTree.getParentID(objectID = stObj.objectID);
-		parentObjectID = qGetParent.parentID;	
-	}
-	else
-	{
-	// likely to be a parent object with aObjects property (eg. dmHTML, dmNews)
-		qGetParent = oNav.getParent(objectid=stObj.objectID);
-		parentObjectID = qGetParent.objectID;
-	}	
-	oAuthorisation = request.dmSec.oAuthorisation;
-	oAuthorisation.checkInheritedPermission(permissionName="edit",objectid=parentobjectid,bThrowOnError=1);
-</cfscript>
+<cfset oType = createObject("component", application.types[stObj.typename].typePath)>
+<cfset oNav = createObject("component", application.types.dmNavigation.typePath)>
+<cfif stObj.typename EQ "dmNavigation">
+	<cfset qGetParent = request.factory.oTree.getParentID(objectID = stObj.objectID)>
+	<cfset parentObjectID = qGetParent.parentID>
+<cfelse> <!--- likely to be a parent object with aObjects property (eg. dmHTML, dmNews) --->
+	<cfset qGetParent = oNav.getParent(objectid=stObj.objectID)>
+	<cfset parentObjectID = qGetParent.objectID>
+</cfif>
+<cfset oAuthorisation = request.dmSec.oAuthorisation>
+<cfset oAuthorisation.checkInheritedPermission(permissionName="edit",objectid=parentobjectid,bThrowOnError=1)>
 
 <!--- get the parentID --->
 <q4:contentobjectget objectid="#parentObjectId#" r_stobject="srcObjParent">
-
-<!--- Does the user have permission to do this? --->
-<cfscript>
-</cfscript>	
 					
-
 <cfif NOT stObj.typename IS "dmNavigation">
 	<cfset key = 'aobjectids'>
 	<cfloop index="i" from="#ArrayLen(srcObjParent[key])#" to="1" step="-1">
@@ -75,26 +64,23 @@ $out: <separate entry for each variable>$
 		
 		// update the parent object instance
 		oParentType = createobject("component", application.types[srcObjParent.typename].typePath);
-		oParentType.setData(stProperties=srcObjParent,auditNote="Child deleted");	
+		oParentType.setData(stProperties=srcObjParent,auditNote="Child Deleted");
 	</cfscript>
 	<!--- $TODO: may need to remove typename attribute and force a lookup -- what if it's a custom type? GB$ --->
-</cfif>	
-	
+</cfif>
+
 	<!--- type specific delete options --->
-	<cfscript>
-		oType.delete(stObj.objectId);
-	</cfscript>
-	
+	<cfset oType.delete(stObj.objectId)>
+
 	<!--- Update the tree view --->
-	<nj:updateTree objectId="#parentObjectID#"> 
+	<!--- <nj:updateTree objectId="#parentObjectID#"> --->
 	
 	<!--- update overview page --->
-	<cfoutput>
-		<script>
-				top['editFrame'].location.href = '#application.url.farcry#/edittabOverview.cfm?objectid=#parentObjectID#';
-		</script>
-	</cfoutput>
-
+	<cfoutput><script type="text/javascript">
+	// check if edited from Content or Site (via sidetree)
+	if(parent['sidebar'].frames['sideTree'])
+		parent['sidebar'].frames['sideTree'].location= parent['sidebar'].frames['sideTree'].location;
+	</script></cfoutput>
 <cfelse>
 	<cfthrow detail="URL.objectID not passed">
 </cfif>

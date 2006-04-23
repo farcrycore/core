@@ -4,15 +4,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/admin/messageCentre.cfm,v 1.6 2004/07/15 01:10:24 brendan Exp $
-$Author: brendan $
-$Date: 2004/07/15 01:10:24 $
-$Name: milestone_2-3-2 $
-$Revision: 1.6 $
+$Header: /cvs/farcry/farcry_core/admin/admin/messageCentre.cfm,v 1.10 2005/09/02 06:27:37 guy Exp $
+$Author: guy $
+$Date: 2005/09/02 06:27:37 $
+$Name: milestone_3-0-0 $
+$Revision: 1.10 $
 
 || DESCRIPTION || 
 $Description: Message Centre $
-$TODO: $
+
 
 || DEVELOPER ||
 $Developer: Brendan Sisson (brendan@daemon.com.au)$
@@ -27,9 +27,7 @@ $out:$
 <cfprocessingDirective pageencoding="utf-8">
 
 <!--- check permissions --->
-<cfscript>
-	iGeneralTab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="AdminGeneralTab");
-</cfscript>
+<cfset iGeneralTab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="AdminGeneralTab")>
 
 <!--- set up page header --->
 <cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
@@ -168,13 +166,9 @@ $out:$
 	</div>
 	</cfif>
 	
-	<table width="100%" cellspacing="1"> 
-		<tr>
-			<td>
-			<table width="90%" cellspacing="0">
-				<tr>
-					<td>#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].items,"#recordSet.recordcount#")#</td>
-					<td align="right" valign="middle">
+
+			<h3>#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].items,"#recordSet.recordcount#")#</h3>
+					
 					<form action="" method="post" name="dynamicAdmin">
 						<cfif thisPage GT 1>
 							<input type="image" src="#application.url.farcry#/images/treeImages/leftarrownormal.gif" value="#application.adminBundle[session.dmProfile.locale].prev#" name="prev"  onclick="this.form.thisPage.selectedIndex--;this.form.submit();" >
@@ -196,27 +190,22 @@ $out:$
 						</cfloop>
 						</cfif>
 						</form>
-					</td>
-				</tr>		
-			</table>
-			</td>
-		</tr>
-	
-		<tr>
-			<td>
-				<table cellpadding="5" cellspacing="0" border="1" width="90%">
-				<tr class="dataheader">
-					<td align="center"> #application.adminBundle[session.dmProfile.locale].subject# </td>
-					<td align="center"> #application.adminBundle[session.dmProfile.locale].edit# </td>
-					<td align="center"> #application.adminBundle[session.dmProfile.locale].preview# </td>
-					<td align="center"> #application.adminBundle[session.dmProfile.locale].send# </td>
-					<td align="center"> #application.adminBundle[session.dmProfile.locale].delete# </td>
+					
+			<hr />
+
+				<table class="table-2" cellspacing="0">
+				<tr>
+					<th>#application.adminBundle[session.dmProfile.locale].subject# </th>
+					<th>#application.adminBundle[session.dmProfile.locale].edit# </th>
+					<th>#application.adminBundle[session.dmProfile.locale].preview# </th>
+					<th>#application.adminBundle[session.dmProfile.locale].send# </th>
+					<th>#application.adminBundle[session.dmProfile.locale].delete# </th>
 				</tr>
 	         </cfoutput>
 			<cfif recordSet.recordCount EQ 0 >
 				<cfoutput>
 				<tr>
-					<td colspan="8" align="center">
+					<td colspan="8">
 						<strong>#application.adminBundle[session.dmProfile.locale].noRecsRecovered#</strong>
 					</td>	
 				</tr>
@@ -229,53 +218,44 @@ $out:$
 					previewURL = "#application.url.webroot#/index.cfm?objectID=#objectID#&flushcache=1";
 				</cfscript>
 				  <tr class="#IIF(currentrow MOD 2, de("dataOddRow"), de("dataEvenRow"))#"> 
-					<td align="center">#title#</td>
-					<td align="center">
-						<form action="" method="post" name="form_#recordset.objectid#">
+				  <form action="" method="post" name="form_#recordset.objectid#">
+					<td><strong>#title#</strong></td>
+					<td>
+						
 						<input type="hidden" name="objectid" value="#recordset.objectid#">
-						<input type="button" name="edit" value="#application.adminBundle[session.dmProfile.locale].Edit#" onClick="location.href='#editObjectURL#';">
+						<input class="f-submit" type="button" name="edit" value="#application.adminBundle[session.dmProfile.locale].Edit#" onClick="location.href='#editObjectURL#';" />
 					</td>
-					<td align="center">
-						<input type="button" name="preview" value="#application.adminBundle[session.dmProfile.locale].preview#" onClick="window.open('#previewURL#');">
+					<td>
+						<input class="f-submit" type="button" name="preview" value="#application.adminBundle[session.dmProfile.locale].preview#" onClick="window.open('#previewURL#');" />
 					</td>
-					<td align="center">
+					<td>
 						<cfif bSent>
 							#application.adminBundle[session.dmProfile.locale].sent#
 						<cfelse>
-							<input type="button" name="send" value="#application.adminBundle[session.dmProfile.locale].send#" onClick="location.href='#application.url.farcry#/admin/messageSend.cfm?objectid=#objectid#';">	
+							<input class="f-submit" type="button" name="send" value="#application.adminBundle[session.dmProfile.locale].send#" onClick="location.href='#application.url.farcry#/admin/messageSend.cfm?objectid=#objectid#';" />	
 						</cfif>						
 					</td>
-					<td align="center">
-						<input type="submit" name="delete" value="#application.adminBundle[session.dmProfile.locale].delete#" onClick="return confirmDelete('#recordset.objectid#')">
-						</form>
+					<td>
+						<input class="f-submit" type="submit" name="delete" value="#application.adminBundle[session.dmProfile.locale].delete#" onClick="return confirmDelete('#recordset.objectid#')" />
+						
 					</td>
+					</form>
 				  </tr>
 				</cfoutput>
 			</cfif>
 			<cfoutput> </table>
-			</td>
-		</tr>
-		<tr>
-			<td>&nbsp;</td>
-		</tr>
-		<tr>
-			<td>
-				<table class="BorderTable">
-				<tr>
-					<td nowrap valign="top">
+
+	
+	<hr />
+				
 					<!--- get permissions  --->
 						<form action="" method="post">
-						<cfset finishURL = URLEncodedFormat("#cgi.SCRIPT_NAME#?#CGI.QUERY_STRING#")>
-						<input type="button" value="#application.adminBundle[session.dmProfile.locale].add#" width="100" style="width:100;" class="normalbttnstyle" name="add" onClick="window.location='#application.url.farcry#/navajo/createObject.cfm?typename=#stArgs.typename#&finishURL=#finishURL#';" >
+						<cfset finishURL = URLEncodedFormat("#cgi.SCRIPT_NAME#?#CGI.QUERY_STRING#")><!--- navajo/createObject.cfm?typename=#stArgs.typename#&finishURL=#finishURL#' ---><!--- window.location='#application.url.farcry#/#application.url.conjurer#?typename=#stArgs.typename#&finishURL=#finishURL#'; --->
+						<input type="button" value="#application.adminBundle[session.dmProfile.locale].add#" name="add" class="f-submit" onclick="window.location='#application.url.farcry#/conjuror/evocation.cfm?typename=#stArgs.typename#&finishURL=#finishURL#';" />
 						</form>					
-					</td>
-					</tr>
-				<tr><td>&nbsp;</td></tr>					
-				</table>
+					
 				</form>		
-			</td> 
-		</tr>
-	</table>
+			
 	</cfoutput>	
 
 <cfelse>

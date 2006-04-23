@@ -4,15 +4,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/dmFlash.cfc,v 1.8 2003/09/10 23:46:11 brendan Exp $
-$Author: brendan $
-$Date: 2003/09/10 23:46:11 $
-$Name: b201 $
-$Revision: 1.8 $
+$Header: /cvs/farcry/farcry_core/packages/types/dmFlash.cfc,v 1.13 2005/09/16 00:56:13 guy Exp $
+$Author: guy $
+$Date: 2005/09/16 00:56:13 $
+$Name: milestone_3-0-0 $
+$Revision: 1.13 $
 
 || DESCRIPTION || 
 $Description: dmFlash type $
-$TODO: $
+
 
 || DEVELOPER ||
 $Developer: Brendan Sisson (brendan@daemon.com.au) $
@@ -34,8 +34,8 @@ type properties
 <cfproperty name="status" type="string" hint="Status of movie - draft,pending or approved" required="No" default="">
 <cfproperty name="flashVersion" type="string" hint="version of flash player required" required="No" default="6,0,0,0">
 <cfproperty name="flashParams" type="string" hint="paremeters to be passed to flash movie" required="No" default="">
-<cfproperty name="flashHeight" type="numeric" hint="height of flash movie in pixels" required="No" default="">
-<cfproperty name="flashWidth" type="numeric" hint="width of flash movie in pixels" required="No" default="">
+<cfproperty name="flashHeight" type="numeric" hint="height of flash movie in pixels" required="No" default="0">
+<cfproperty name="flashWidth" type="numeric" hint="width of flash movie in pixels" required="No" default="0">
 <cfproperty name="flashMovie" type="string" hint="The name of the flash movie" required="No" default=""> 
 <cfproperty name="flashQuality" type="string" hint="The quality of the flash movie" required="no" default="high"> 
 <cfproperty name="flashAlign" type="string" hint="The alignment of the flash movie" required="no" default="center"> 
@@ -43,7 +43,7 @@ type properties
 <cfproperty name="flashLoop" type="boolean" hint="Whether or not to loop over flash movie" required="yes" default="0"> 
 <cfproperty name="flashPlay" type="boolean" hint="Play flash movie straight away?" required="yes" default="1"> 
 <cfproperty name="flashMenu" type="boolean" hint="Display options menu in flash movie" required="yes" default="0"> 
-
+<cfproperty name="bLibrary" type="boolean" hint="Flag to indictae if in file library or not" required="no" default="1">
 
 <!------------------------------------------------------------------------
 object methods 
@@ -64,12 +64,17 @@ object methods
 	<cfinclude template="_dmFlash/display.cfm">
 </cffunction>
 
-<cffunction name="delete" access="public" hint="Specific delete method for dmFlash. Removes physical files from ther server.">
+<cffunction name="delete" access="public" hint="Specific delete method for dmFlash. Removes physical files from ther server." returntype="struct">
 	<cfargument name="objectid" required="yes" type="UUID" hint="Object ID of the object being deleted">
 	
 	<!--- get object details --->
-	<cfset stObj = getData(arguments.objectid)>
+	<cfset var stObj = getData(arguments.objectid)>
+	<cfset var stReturn = StructNew()>
+	<cfset stReturn.bSuccess = 1>
+	<cfset stReturn.message = "dmFlash item successfully dleted.">
+	
 	<cfinclude template="_dmFlash/delete.cfm">
+	<cfreturn stReturn>
 </cffunction>
 
 </cfcomponent>

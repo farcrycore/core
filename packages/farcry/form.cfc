@@ -4,15 +4,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/form.cfc,v 1.16 2004/12/22 04:32:36 brendan Exp $
-$Author: brendan $
-$Date: 2004/12/22 04:32:36 $
-$Name: milestone_2-3-2 $
-$Revision: 1.16 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/form.cfc,v 1.20 2005/09/16 14:09:59 paul Exp $
+$Author: paul $
+$Date: 2005/09/16 14:09:59 $
+$Name: milestone_3-0-0 $
+$Revision: 1.20 $
 
 || DESCRIPTION ||
 $Description: form cfc $
-$TODO: $
+
 
 || DEVELOPER ||
 $Developer: Brendan Sisson (brendan@daemon.com.au) $
@@ -200,47 +200,40 @@ $out:$
 
 		<cfsavecontent variable="html">
 			<cfoutput>
-				<table style="display:inline">
-					<tr>
-						<td>
-							<select name="#arguments.elementNamePrefix#day">
+						
+							<select id="#arguments.elementNamePrefix#day" name="#arguments.elementNamePrefix#day">
 								<cfloop from="1" to="31" index="i">
 									<option value="#i#" <cfif i IS arguments.selectedDay>selected</cfif>>#i#</option>
 								</cfloop>
 							</select>
-						</td>
-						<td>
-							<select name="#arguments.elementNamePrefix#month">
+
+							<select id="#arguments.elementNamePrefix#month" name="#arguments.elementNamePrefix#month">
 								<cfloop from="1" to="12" index="i">
 									<option value="#i#" <cfif i IS arguments.selectedMonth>selected</cfif>><cfif NOT arguments.bDisplayMonthAsString>#i#<cfelse>#monthAsString(i)#</cfif></option>
 								</cfloop>
 							</select>
-						</td>
-						<td>
-							<select name="#arguments.elementNamePrefix#year">
+
+							<select id="#arguments.elementNamePrefix#year" name="#arguments.elementNamePrefix#year">
 								<cfloop from="#arguments.startYear#" to="#arguments.endYear#" index="i">
 									<option value="#i#" <cfif i IS arguments.selectedYear>selected</cfif>>#i#</option>
 								</cfloop>
 							</select>
-						</td>
+						
 						<cfif arguments.bDisplayTime>
-						<td>
-							<select name="#arguments.elementNamePrefix#hour">
+						
+							<select id="#arguments.elementNamePrefix#hour" name="#arguments.elementNamePrefix#hour">
 								<cfloop from="0" to="23" index="i">
 									<option value="#i#" <cfif i IS arguments.selectedHour>selected</cfif>>#i#</option>
 								</cfloop>
 							</select>
-						</td>
-						<td>
-							<select name="#arguments.elementNamePrefix#minute">
+
+							<select id="#arguments.elementNamePrefix#minute" name="#arguments.elementNamePrefix#minute">
 								<cfloop from="0" to="59" index="i">
 									<option value="#i#" <cfif i IS arguments.selectedMinute>selected</cfif>>#i#</option>
 								</cfloop>
 							</select>
-						</td>
-						</cfif> 
-					</tr>
-				</table>
+						
+						</cfif>
 			</cfoutput>
 		</cfsavecontent>
 		<cfreturn html>
@@ -312,13 +305,8 @@ $out:$
 			</STYLE>
 
 			<IFRAME WIDTH="100" HEIGHT="1" NAME="#arguments.iframeID#" ID="#arguments.iframeID#"
-				 FRAMEBORDER="0" FRAMESPACING="0" MARGINWIDTH="0" MARGINHEIGHT="0" SRC="null">
-					<ILAYER NAME="#arguments.iframeID#" WIDTH="400" HEIGHT="100" VISIBILITY="Hide"
-					 ID="#arguments.iframeID#">
-					<P>This page uses a hidden frame and requires either Microsoft
-					Internet Explorer v4.0 (or higher) or Netscape Navigator v4.0 (or
-					higher.)</P>
-					</ILAYER>
+				 FRAMEBORDER="0" FRAMESPACING="0" MARGINWIDTH="0" MARGINHEIGHT="0" SRC="/farcry/admin/blank.cfm">
+				
 			</IFRAME>
 		</cfoutput>
 		</cfsavecontent>

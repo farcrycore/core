@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmhtml/plpEdit/files.cfm,v 1.17.2.2 2005/06/09 23:19:06 guy Exp $
-$Author: guy $
-$Date: 2005/06/09 23:19:06 $
-$Name: milestone_2-3-2 $
-$Revision: 1.17.2.2 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmhtml/plpEdit/files.cfm,v 1.18 2005/08/17 06:50:52 pottery Exp $
+$Author: pottery $
+$Date: 2005/08/17 06:50:52 $
+$Name: milestone_3-0-0 $
+$Revision: 1.18 $
 
 || DESCRIPTION || 
 $Description: Adds files as associated objects.$
@@ -213,10 +213,8 @@ function removeUploadBtn()
 		<td align="center"><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].edit#</span></td>
 		<td align="center"><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].delete#</span></td>
 	</tr></cfoutput>
-
 	<cfloop from="1" to="#arrayLen(afileArray)#" index="i">
 		<q4:contentobjectget objectid="#aFileArray[i]#" bactiveonly="False" r_stobject="stThisFile">
-		<cfif NOT StructIsEmpty(stThisFile)>
 		<cfoutput>
 		<tr>
 			<td>
@@ -228,7 +226,7 @@ function removeUploadBtn()
 			</td>
 			<td align="center">
 				<cfif len(trim(stThisFile.filename)) NEQ 0>
-				<a href="#application.url.conjurer#?objectid=#stThisFile.objectid#" target="_blank">
+				<a href="#stThisFile.filePath#\#stThisFile.filename#" target="_blank">
 					<img src="#application.url.farcry#/images/treeImages/preview.gif" border="0">
 				</a>
 				<cfelse>
@@ -242,14 +240,14 @@ function removeUploadBtn()
 				</a>
 			</td>
 			<td align="center">
-				<input type="checkbox" name="objectID" value="#stThisFile.objectID#">
+				<input type="checkbox" class="f-checkbox" name="objectID" value="#stThisFile.objectID#" />
 			</td>
-		</tr></cfoutput></cfif>
+		</tr></cfoutput>
 	</cfloop>
 	<cfoutput>
 	<tr>
 		<td colspan="4">&nbsp;</td>
-		<td><input name="deleteObject" type="submit" class="normalbttnstyle" value="#application.adminBundle[session.dmProfile.locale].delete#"></td>
+		<td><input name="deleteObject" type="submit" class="normalbttnstyle" value="#application.adminBundle[session.dmProfile.locale].delete#" /></td>
 	</tr>
 	</table>
 	</form>

@@ -4,15 +4,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_config/defaultHTMLArea.cfm,v 1.4 2004/10/06 08:11:10 paul Exp $
-$Author: paul $
-$Date: 2004/10/06 08:11:10 $
-$Name: milestone_2-3-2 $
-$Revision: 1.4 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_config/defaultHTMLArea.cfm,v 1.5 2005/08/09 03:54:39 geoff Exp $
+$Author: geoff $
+$Date: 2005/08/09 03:54:39 $
+$Name: milestone_3-0-0 $
+$Revision: 1.5 $
 
 || DESCRIPTION || 
 $Description: deploys HTMLArea config file $
-$TODO: $
+
 
 || DEVELOPER ||
 $Developer: Stephen Milligan (spike@spike.org.uk) $

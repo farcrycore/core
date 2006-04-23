@@ -4,15 +4,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/install/_installForm.cfm,v 1.34 2004/12/20 03:29:57 brendan Exp $
-$Author: brendan $
-$Date: 2004/12/20 03:29:57 $
-$Name: milestone_2-3-2 $
-$Revision: 1.34 $
+$Header: /cvs/farcry/farcry_core/admin/install/_installForm.cfm,v 1.36 2005/08/19 05:22:13 guy Exp $
+$Author: guy $
+$Date: 2005/08/19 05:22:13 $
+$Name: milestone_3-0-0 $
+$Revision: 1.36 $
 
 || DESCRIPTION ||
 $Description: Installation form for FarCry$
-$TODO: $
+
 
 || DEVELOPER ||
 $Developer: Brendan Sisson (brendan@daemon.com.au)$
@@ -48,8 +48,8 @@ function verifyForm() {
         alert('You cannot name your site "farcry"');
         formObj.siteName.focus();
         return false;
-	} else if (siteName == 'farcry_aura') {
-        alert('You cannot name your site "farcry_aura"');
+	} else if (siteName == 'farcry_pliant') {
+        alert('You cannot name your site "farcry_pliant"');
         formObj.siteName.focus();
         return false;
 	} else if (siteName == 'farcry_core') {
@@ -186,7 +186,7 @@ function hideIIS(showAlert) {
 	</tr>
 	<tr>
 	    <td align="right" nowrap>&nbsp;</td>
-	    <td><input type="checkbox" value="true" name="bDeleteApp" <cfif FORM.bDeleteApp> checked</cfif>><strong>Delete farcry_aura on completion</strong> <a href="##" onclick="window.open('help.cfm?topic=deleteApp','help','height=250,width=350')">?</a></td>
+	    <td><input type="checkbox" value="true" name="bDeleteApp" <cfif FORM.bDeleteApp> checked</cfif>><strong>Delete farcry_pliant on completion</strong> <a href="##" onclick="window.open('help.cfm?topic=deleteApp','help','height=250,width=350')">?</a></td>
 	</tr>
 	<tr>
 	    <td colspan="2" style="height: 10px;">&nbsp;</td>

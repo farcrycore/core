@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/rules/ruleXMLFeed.cfc,v 1.11 2004/07/26 09:13:14 phastings Exp $
-$Author: phastings $
-$Date: 2004/07/26 09:13:14 $
-$Name: milestone_2-3-2 $
-$Revision: 1.11 $
+$Header: /cvs/farcry/farcry_core/packages/rules/ruleXMLFeed.cfc,v 1.13 2005/07/19 03:59:21 pottery Exp $
+$Author: pottery $
+$Date: 2005/07/19 03:59:21 $
+$Name: milestone_3-0-0 $
+$Revision: 1.13 $
 
 || DESCRIPTION || 
 $Description: Publishing rule to pull, parse and display external RSS feeds.  Is dependent on the rss.cfc component. $
@@ -34,79 +34,55 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 		<cfargument name="objectID" required="Yes" type="uuid" default="">
 		<cfargument name="label" required="no" type="string" default="">
 		<cfset var stObj = getData(arguments.objectid)> 
-		
-		<cfsetting enablecfoutputonly="Yes">
+		<cfset var stLocal = StructNew()>
 
+<cfsetting enablecfoutputonly="Yes">
+		<cfset stLocal.numMaxRecordsAllowed = 50>
 		<cfif isDefined("form.updateRuleXMLFeed")>
-			<cfscript>
-				stObj.feedName = form.feedName;
-				stObj.XMLFeedURL = form.XMLFeedURL; 
-				stObj.intro = form.intro;
-				stObj.maxRecords = form.maxRecords;
-			</cfscript>
+			<cfset stObj.feedName = form.feedName>
+			<cfset stObj.XMLFeedURL = form.XMLFeedURL>
+			<cfset stObj.intro = form.intro>
+			<cfset stObj.maxRecords = form.maxRecords>
+
 			<q4:contentobjectdata typename="#application.rules.ruleXMLFeed.rulePath#" stProperties="#stObj#" objectID="#stObj.objectID#">
-			<cfset message = "#application.adminBundle[session.dmProfile.locale].updateSuccessful#">
+			<cfset stLocal.successMessage = "#application.adminBundle[session.dmProfile.locale].updateSuccessful#">
 		</cfif>
+<cfoutput>
+<form name="editform" action="#cgi.script_name#?#cgi.query_string#" method="post" class="f-wrap-2" style="margin-top:-1.5em">
+<fieldset>
+<cfif StructKeyExists(stLocal,"successmessage")>
+	<p id="fading1" class="fade"><span class="success">#stLocal.successmessage#</span></p></cfif>
+	<label for="feedName"><b>#application.adminBundle[session.dmProfile.locale].feedName#:</b>
+		<input type="text" id="feedName" name="feedName" value="#stObj.feedName#"><br />
+	</label>
 
-		<cfif isDefined("message")>
-			<cfoutput><div align="center"><strong>#message#</strong></div></cfoutput>
-		</cfif>			
+	<label for="intro"><b>#application.adminBundle[session.dmProfile.locale].xmlFeedIntro#:</b>
+		<textarea id="intro" name="intro">#stObj.intro#</textarea><br />
+	</label>
 
-		<cfoutput>
-		<form action="" method="post">
-		<input type="hidden" name="ruleID" value="#stObj.objectID#">
-		
-		<table width="100%">
-		<tr>
-			<td align="right">
-				<strong>#application.adminBundle[session.dmProfile.locale].feedName#</strong>
-			</td>
-			<td>
-				<input class="field" type="text" name="feedName" value="#stObj.feedName#">
-			</td>
-		</tr>
-		<tr>
-			<td align="right" >
-				<strong>#application.adminBundle[session.dmProfile.locale].xmlFeedIntro#</strong>
-			</td>
-			<td>
-				<textarea  class="field" cols="50" name="intro" rows="5">#stObj.intro#</textarea>
-			</td>
-		</tr>
-		<tr>
-			<td align="right" >
-				<strong>#application.adminBundle[session.dmProfile.locale].maxItemsToDisplay#</strong>
-			</td>		
-			<td>
-				<select name="maxRecords">
-				<cfloop from="1" to="50" index="i"><option value="#i#" <cfif i EQ stObj.maxRecords>Selected</cfif>>#i#</option>
-				</cfloop>
-				</select>
-			</td>
-		</tr>
-		<tr>
-			<td align="right" >
-				<strong>#application.adminBundle[session.dmProfile.locale].xmlFeedLocation#</strong>
-			</td>
-			<td>
-				<input  class="field" type="text" name="xmlFeedURL" size="50" value="#stObj.xmlFeedURL#">
-			</td>
-		</tr>
-		<tr>
-			<td colspan="2" align="center"><input class="normalbttnstyle" type="submit" value="#application.adminBundle[session.dmProfile.locale].go#" name="updateRuleXMLFeed"></td>
-		</tr>
-		</table>
-		
-		</form>
-		
-		<div style="width: 80%; padding: 30px 30px;">
-		<h3>#application.adminBundle[session.dmProfile.locale].previewOutput#</h3>
-		#execute(objectid)#
-		</div>
-		</cfoutput>
-		
+	<label for="maxRecords"><b>#application.adminBundle[session.dmProfile.locale].maxItemsToDisplay#:</b>
+		<select name="maxRecords" id="maxRecords"><cfloop index="stLocal.i" from="1" to="#stLocal.numMaxRecordsAllowed#">
+			<option value="#stLocal.i#"<cfif stLocal.i EQ stObj.maxRecords> selected="selected"</cfif>>#stLocal.i#</option></cfloop>
+		</select><br />
+	</label>
+
+	<label for="xmlFeedURL"><b>#application.adminBundle[session.dmProfile.locale].xmlFeedLocation#:</b>
+		<input type="text" id="xmlFeedURL" name="xmlFeedURL" value="#stObj.xmlFeedURL#"><br />
+	</label>
+
+<div class="f-submit-wrap">
+	<input type="Submit" name="updateRuleXMLFeed" value="#application.adminBundle[session.dmProfile.locale].go#" class="f-submit" />		
+</div>
+	<input type="hidden" name="ruleID" value="#stObj.objectID#">
+</fieldset>
+</form>		
+
+
+<h3>#application.adminBundle[session.dmProfile.locale].previewOutput#</h3>
+<p>#execute(objectid)#</p>
+
+</cfoutput>		
 		<cfsetting enablecfoutputonly="No">
-		
 	</cffunction> 
 	
 	<cffunction access="public" name="execute" output="false">

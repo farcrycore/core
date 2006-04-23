@@ -3,11 +3,11 @@
 $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmEmail/edit.cfm,v 1.7 2004/07/30 01:45:15 brendan Exp $
-$Author: brendan $
-$Date: 2004/07/30 01:45:15 $
-$Name: milestone_2-3-2 $
-$Revision: 1.7 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmEmail/edit.cfm,v 1.8 2005/09/02 05:11:44 guy Exp $
+$Author: guy $
+$Date: 2005/09/02 05:11:44 $
+$Name: milestone_3-0-0 $
+$Revision: 1.8 $
 
 || DESCRIPTION || 
 $Description: dmEmail Edit Handler $
@@ -20,11 +20,12 @@ $in: $
 $out: $
 --->
 <cfsetting enablecfoutputonly="yes">
-<cfimport taglib="/farcry/farcry_core/tags/farcry" prefix="farcry">
+<cfimport taglib="/farcry/farcry_core/tags/widgets/" prefix="widgets">
+<!--- <cfimport taglib="/farcry/farcry_core/tags/farcry" prefix="farcry"> --->
 
 <cfparam name="url.killplp" default="0">
 
-<farcry:plp 
+<widgets:plp 
 	owner="#session.dmSec.authentication.userlogin#_#stObj.objectID#"
 	stepDir="/farcry/farcry_core/packages/types/_dmEmail/plpEdit"
 	cancelLocation="#application.url.farcry#/admin/messageCentre.cfm"
@@ -38,13 +39,13 @@ $out: $
 	redirection="server"
 	r_bPLPIsComplete="bComplete">
 
-	<farcry:plpstep name="#application.adminBundle[session.dmProfile.locale].start#" template="start.cfm">
-	<farcry:plpstep name="#application.adminBundle[session.dmProfile.locale].advancedOptions#" template="options.cfm">
-	<farcry:plpstep name="#application.adminBundle[session.dmProfile.locale].bodyLC#" template="body.cfm">
-	<farcry:plpstep name="#application.adminBundle[session.dmProfile.locale].htmlBody#" template="htmlbody.cfm">
-	<farcry:plpstep name="#application.adminBundle[session.dmProfile.locale].completeLC#" template="complete.cfm" bFinishPLP="true">
+	<widgets:plpstep name="#application.adminBundle[session.dmProfile.locale].start#" template="start.cfm">
+	<widgets:plpstep name="#application.adminBundle[session.dmProfile.locale].advancedOptions#" template="options.cfm">
+	<widgets:plpstep name="#application.adminBundle[session.dmProfile.locale].bodyLC#" template="body.cfm">
+	<widgets:plpstep name="#application.adminBundle[session.dmProfile.locale].htmlBody#" template="htmlbody.cfm">
+	<widgets:plpstep name="#application.adminBundle[session.dmProfile.locale].completeLC#" template="complete.cfm" bFinishPLP="true">
 	
-</farcry:plp> 
+</widgets:plp> 
 
 <cfif isDefined("bComplete") and bComplete>
 	<!--- unlock object and save object --->

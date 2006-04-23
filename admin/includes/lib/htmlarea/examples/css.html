@@ -11,6 +11,7 @@
     <script type="text/javascript" src="../htmlarea.js"></script>
 
     <script type="text/javascript">
+
       HTMLArea.loadPlugin("CSS");
 
       function initDocument() {
@@ -48,11 +49,12 @@
         });
         editor.generate();
       }
+
     </script>
 
   </head>
 
-  <body onload="initDocument()">
+  <body onload="HTMLArea.init(); HTMLArea.onload = initDocument">
     <h1>Test of FullPage plugin</h1>
 
     <textarea id="editor" style="height: 30em; width: 100%;"

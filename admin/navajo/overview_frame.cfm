@@ -1,49 +1,56 @@
+<cfsetting enablecfoutputonly="Yes" showdebugoutput="No">
 <cfprocessingDirective pageencoding="utf-8">
+<!--- 
+|| LEGAL ||
+$Copyright: Daemon Pty Limited 1995-2005, http://www.daemon.com.au $
+$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
+|| VERSION CONTROL ||
+$Header: /cvs/farcry/farcry_core/admin/navajo/overview_frame.cfm,v 1.10 2005/08/28 01:34:54 geoff Exp $
+$Author: geoff $
+$Date: 2005/08/28 01:34:54 $
+$Name: milestone_3-0-0 $
+$Revision: 1.10 $
+
+|| DESCRIPTION || 
+$Description: 	Iframe for the site tree overview page.  
+				Gradually trying to refactor this area but its sensitive to change. GB $
+
+|| DEVELOPER ||
+$Developer: Geoff Bowers (modius@daemon.com.au)$
+--->
+<!--- import tag libraries --->
 <cfimport taglib="/farcry/farcry_core/tags/navajo" prefix="nj">
 
-<cfsetting enablecfoutputonly="Yes" showdebugoutput="No">
-
-
-<cflock timeout="30" throwontimeout="Yes" type="READONLY" scope="SESSION">
-	<cfset sessionId = session.sessionId>
-</cflock>
-
 <cftry>
-<cflock timeout="0" throwontimeout="Yes" name="refreshLockout_#sessionID#" type="EXCLUSIVE">
-	
-	<cfset borderStyle="ridge thin">
-	<cfset smallPopupFeatures="width=400,height=300,menubar=no,toolbars=no">
-	
+<!--- TODO: not sure how beneficial this lock is. not sure of its history either :( GB --->
+<cflock timeout="0" throwontimeout="Yes" name="refreshLockout_#session.sessionId#" type="EXCLUSIVE">
+	<!--- include icon image paths. sets variables.customIcons (not great GB) --->
 	<cfinclude template="_customIcons.cfm">
 	
 	<cfoutput>
 	<html dir="#session.writingDir#" lang="#session.userLanguage#">
 	<HEAD>
 	<TITLE>#application.adminBundle[session.dmProfile.locale].overviewTree#</TITLE>
-	<!--- <cf_cachecontrol> --->
-	<LINK href="#application.url.farcry#/css/admin.css" rel="stylesheet" type="text/css">
 	<LINK href="#application.url.farcry#/css/overviewFrame.css" rel="stylesheet" type="text/css">
 	<meta content="text/html; charset=UTF-8" http-equiv="content-type">
 	</HEAD>
 		
 	<body>
-		<div class="FormTitle">#application.adminBundle[session.dmProfile.locale].siteManagement#</div>
-		
-		<div style="margin-left: 12px;" id="tree">
+		<div id="tree">
 			</cfoutput>
-					<nj:Overview customIcons="#customIcons#">
+				<nj:Overview customIcons="#customIcons#">
 			<cfoutput>
 		</div>
 	</body>
 	</html>
 	</cfoutput>
-	
-	</cflock>
+</cflock>
 
 	<cfcatch type="Lock">
 		<cfoutput>
-		#application.adminBundle[session.dmProfile.locale].overviewTreeLoadingBlurb#
+		<p>#application.adminBundle[session.dmProfile.locale].overviewTreeLoadingBlurb#</p>
+		<p><a href="">Refresh Tree</a></p>
 		</cfoutput>
 	</cfcatch>
 </cftry>

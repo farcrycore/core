@@ -4,15 +4,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_stats/getActiveVisitors.cfm,v 1.8 2003/11/17 07:57:47 paul Exp $
-$Author: paul $
-$Date: 2003/11/17 07:57:47 $
-$Name: milestone_2-2-1 $
-$Revision: 1.8 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_stats/getActiveVisitors.cfm,v 1.9 2005/08/09 03:54:39 geoff Exp $
+$Author: geoff $
+$Date: 2005/08/09 03:54:39 $
+$Name: milestone_3-0-0 $
+$Revision: 1.9 $
 
 || DESCRIPTION || 
 $Description: Shows active sessions$
-$TODO: $
+
 
 || DEVELOPER ||
 $Developer: Brendan Sisson (brendan@daemon.com.au)$

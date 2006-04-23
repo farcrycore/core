@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/edittabDump.cfm,v 1.7 2005/01/17 00:22:27 brendan Exp $
-$Author: brendan $
-$Date: 2005/01/17 00:22:27 $
-$Name: milestone_2-3-2 $
-$Revision: 1.7 $
+$Header: /cvs/farcry/farcry_core/admin/edittabDump.cfm,v 1.8 2005/08/17 06:50:52 pottery Exp $
+$Author: pottery $
+$Date: 2005/08/17 06:50:52 $
+$Name: milestone_3-0-0 $
+$Revision: 1.8 $
 
 || DESCRIPTION || 
 $DESCRIPTION: Displays an audit log for object$
@@ -35,10 +35,8 @@ $out:$
 
 <cfif iDumpTab eq 1>
 	<cfimport taglib="/farcry/fourq/tags/" prefix="q4">
-	
-	<br>
-	<span class="FormTitle"><cfoutput>#application.adminBundle[session.dmProfile.locale].objectDump#</cfoutput></span>
-	<p></p>
+
+	<h3><cfoutput>#application.adminBundle[session.dmProfile.locale].objectDump#</cfoutput></h3>
 	
 	<!--- get object details and dump results --->
 	<q4:contentobjectget objectid="#url.objectid#" r_stobject="stobj">

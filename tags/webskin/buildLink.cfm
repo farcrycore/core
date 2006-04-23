@@ -5,11 +5,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/webskin/buildLink.cfm,v 1.12.6.2 2005/05/03 07:36:35 guy Exp $
-$Author: guy $
-$Date: 2005/05/03 07:36:35 $
-$Name: milestone_2-3-2 $
-$Revision: 1.12.6.2 $
+$Header: /cvs/farcry/farcry_core/tags/webskin/buildLink.cfm,v 1.16 2005/10/30 09:13:18 geoff Exp $
+$Author: geoff $
+$Date: 2005/10/30 09:13:18 $
+$Name: milestone_3-0-0 $
+$Revision: 1.16 $
 
 || DESCRIPTION || 
 $Description: Helps to construct a FarCry style link -- works out whether the links is a symlink or normal farcry link and checks for friendly url$
@@ -24,7 +24,6 @@ $in: title -- link text $
 $in: external -- external link for nav node $
 $in: class -- css class for link$
 $in: target -- target window for link$
-$in: extraURLParams -- extra parameters to include in the URL$
 --->
 
 <cfif thistag.executionMode eq "Start">
@@ -37,7 +36,15 @@ $in: extraURLParams -- extra parameters to include in the URL$
 	<cfparam name="attributes.includeDomain" default="false">
 	<cfparam name="attributes.stParameters" default="#StructNew()#">
 
-    <cfif attributes.includeDomain>
+	<!---
+	Only initialize FU if we're using Friendly URL's
+	We cannot guarantee the Friendly URL Servlet exists otherwise
+	--->
+	<cfif application.config.plugins.fu>
+		<cfset objFU = CreateObject("component","#Application.packagepath#.farcry.fu")>
+	</cfif>
+	
+	<cfif attributes.includeDomain>
         <cfset href = "http://#cgi.http_host#">
     <cfelse>
         <cfset href = "">
@@ -47,19 +54,19 @@ $in: extraURLParams -- extra parameters to include in the URL$
 	<cfif len(attributes.externallink)>
 		<!--- check for friendly url --->
 		<cfif application.config.plugins.fu>
-			<cfset href = href & application.factory.oFU.getFU(attributes.externallink)>
+			<cfset href = href & objFU.getFU(attributes.externallink)>
 		<cfelse>
 			<cfset href = href & application.url.conjurer & "?objectid=" & attributes.externallink>
 		</cfif>
 	<cfelse>
 		<!--- check for friendly url --->
 		<cfif application.config.plugins.fu>
-			<cfset href = href & application.factory.oFU.getFU(attributes.objectid)>
+			<cfset href = href & objFU.getFU(attributes.objectid)>
 		<cfelse>
 			<cfset href = href & application.url.conjurer & "?objectid=" & attributes.objectid>
 		</cfif>
 	</cfif>
-	
+
 	<!--- check for extra URL parameters --->
 	<cfif NOT StructIsEmpty(attributes.stParameters)>
 		<cfset stLocal = StructNew()>
@@ -81,28 +88,37 @@ $in: extraURLParams -- extra parameters to include in the URL$
 		  	<!--- if FU is turned off then append extra URL parameters with a leading '&' as there will already be URL params (i.e. "?objectid=") --->
 			<cfset href = href & "&" & stLocal.parameters>
 		</cfif>
-
 	</cfif>
-
+	
 	<!--- Are we mean to display an a tag or the URL only? --->
 	<cfif attributes.urlOnly EQ true>
-
 		<!--- display the URL only --->
-		<cfoutput>#href#</cfoutput>
+		<cfset tagoutput=href>
 
 	<cfelse>
-
 		<!--- display link --->
-		<cfoutput><a href="#href#"<cfif len(attributes.class)> class="#attributes.class#"</cfif><cfif len(attributes.xCode)> #attributes.xCode#</cfif><cfif attributes.bShowTarget eq true> target="#attributes.target#"</cfif>></cfoutput>
-
+		<cfset tagoutput='<a href="#href#"'>
+		<cfif len(attributes.class)>
+			<cfset tagoutput=tagoutput & ' class="#attributes.class#"'>
+		</cfif>
+		<cfif len(attributes.xCode)>
+			<cfset tagoutput=tagoutput & ' #attributes.xCode#'>
+		</cfif>
+		<cfif attributes.bShowTarget eq true>
+			<cfset tagoutput=tagoutput & ' target="#attributes.target#"'>
+		</cfif>
+		<cfset tagoutput=tagoutput & '>'>
 	</cfif>
 
+<!--- thistag.ExecutionMode is END --->
 <cfelse>
-
 	<!--- Was only the URL requested? If so, we don't need to close any tags --->
 	<cfif attributes.urlOnly EQ false>
-		<cfoutput></a></cfoutput>
+		<cfset tagoutput=tagoutput & trim(thistag.generatedcontent) & '</a>'>
 	</cfif>
 
+	<!--- clean up whitespace --->
+	<cfset thistag.GeneratedContent=tagoutput>
 </cfif>
+
 <cfsetting enablecfoutputonly="No">

@@ -4,15 +4,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/security/init.cfc,v 1.21 2004/12/09 05:19:09 brendan Exp $
-$Author: brendan $
-$Date: 2004/12/09 05:19:09 $
-$Name: milestone_2-3-2 $
-$Revision: 1.21 $
+$Header: /cvs/farcry/farcry_core/packages/security/init.cfc,v 1.23 2005/09/16 07:25:39 guy Exp $
+$Author: guy $
+$Date: 2005/09/16 07:25:39 $
+$Name: milestone_3-0-0 $
+$Revision: 1.23 $
 
 || DESCRIPTION || 
 $Description: authorisation cfc $
-$TODO: $
+
 
 || DEVELOPER ||
 $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
@@ -31,20 +31,27 @@ $out:$
 		<cfargument name="securitypackagepath" required="false" default="#application.securitypackagepath#">
 
 		<cfif arguments.bClearTable>
-		    <cfquery name="qDelete" datasource="#arguments.datasource#">DELETE FROM #application.dbowner#dmPolicyGroup</cfquery>
+			<cftry>
+			    <cfquery name="qDelete" datasource="#arguments.datasource#">
+				DELETE FROM #application.dbowner#dmPolicyGroup
+				</cfquery>
+
+				<cfcatch>
+					<cflog text="#cfcatch.message# #cfcatch.detail# [SQL: #cfcatch.sql#]" file="coapi" type="error" application="yes">					
+				</cfcatch>
+			</cftry>
 		</cfif>
 		
 		<cftry>
 			<cfquery name="sIdentity" datasource="#arguments.datasource#">SET Identity_Insert dmPolicyGroup ON</cfquery>
 			<cfcatch type="Database">
+				<cflog text="#cfcatch.message# #cfcatch.detail# [SQL: #cfcatch.sql#]" file="coapi" type="warning" application="yes">
 			</cfcatch>
 		</cftry>
 	
 		<cffile action="READ" file="#arguments.core#/admin/install/dmSec_files/policyGroups.wddx" variable="qPolicyGroupsWDDX">
 		<cfwddx action="WDDX2CFML" input="#qPolicyGroupsWDDX#" output="qPolicyGroups">
-		<cfscript>
-			oAuthorisation=createObject("component","#arguments.securitypackagepath#.authorisation");
-		</cfscript>
+		<cfset oAuthorisation=createObject("component","#arguments.securitypackagepath#.authorisation")>
 		
 		<cfloop query="qPolicyGroups">
 			<cftry>
@@ -65,8 +72,12 @@ $out:$
 
 		<cftry>
 			<!--- TODO = turn on the oracle triggers again --->
-			<cfquery name="sIdentity" datasource="#arguments.datasource#">SET Identity_Insert dmPolicyGroup OFF</cfquery>
+			<cfquery name="sIdentity" datasource="#arguments.datasource#">
+			SET Identity_Insert dmPolicyGroup OFF
+			</cfquery>
+
 			<cfcatch type="Database">
+				<cflog text="#cfcatch.message# #cfcatch.detail# [SQL: #cfcatch.sql#]" file="coapi" type="error" application="yes">					
 			</cfcatch>
 		</cftry>
 	</cffunction>
@@ -284,25 +295,52 @@ $out:$
 			<cfcase value="postgresql">
 				<cftry>
 					<cfquery datasource="#application.dsn#">
-						DROP TABLE #application.dbowner#DMGROUP
+					DROP TABLE #application.dbowner#DMGROUP
 					</cfquery>
+
+					<cfcatch>
+						<cflog text="#cfcatch.message# #cfcatch.detail# [SQL: #cfcatch.sql#]" file="coapi" type="warning" application="yes">
+					</cfcatch>
+				</cftry>
+
+				<cftry>
 					<cfquery datasource="#application.dsn#">
-						DROP TABLE #application.dbowner#DMUSER
+					DROP TABLE #application.dbowner#DMUSER
 					</cfquery>
+
+					<cfcatch>
+						<cflog text="#cfcatch.message# #cfcatch.detail# [SQL: #cfcatch.sql#]" file="coapi" type="warning" application="yes">
+					</cfcatch>
+				</cftry>
+
+				<cftry>
 					<cfquery datasource="#application.dsn#">
-						DROP TABLE #application.dbowner#DMUSERTOGROUP
+					DROP TABLE #application.dbowner#DMUSERTOGROUP
 					</cfquery>
+					<cfcatch>
+						<cflog text="#cfcatch.message# #cfcatch.detail# [SQL: #cfcatch.sql#]" file="coapi" type="warning" application="yes">
+					</cfcatch>
+				</cftry>
+
+				<cftry>				
 					<cfquery datasource="#application.dsn#">
-						DROP #application.dbowner#SEQUENCE DMGROUP_SEQ
+					DROP #application.dbowner#SEQUENCE DMGROUP_SEQ
 					</cfquery>
+					<cfcatch>
+						<cflog text="#cfcatch.message# #cfcatch.detail# [SQL: #cfcatch.sql#]" file="coapi" type="warning" application="yes">
+					</cfcatch>
+				</cftry>
+
+				<cftry>
 					<cfquery datasource="#application.dsn#">	
-						DROP SEQUENCE #application.dbowner#DMUSER_SEQ
+					DROP SEQUENCE #application.dbowner#DMUSER_SEQ
 					</cfquery> 
 					
 					<cfcatch>
-						<cfoutput><b style="color:red;font-size:14pt"> #cfcatch.Detail#</b></cfoutput>
+						<cflog text="#cfcatch.message# #cfcatch.detail# [SQL: #cfcatch.sql#]" file="coapi" type="warning" application="yes">
 					</cfcatch>
 				</cftry>
+				<!--- <cfoutput><b style="color:red;font-size:14pt"> #cfcatch.Detail#</b></cfoutput> --->
 			</cfcase>
 			<cfcase value="mysql">
 				<cfquery datasource="#arguments.datasource#">

@@ -4,15 +4,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_tree/setChild.cfm,v 1.8 2003/09/10 12:21:48 brendan Exp $
-$Author: brendan $
-$Date: 2003/09/10 12:21:48 $
-$Name: b201 $
-$Revision: 1.8 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_tree/setChild.cfm,v 1.10 2005/10/28 04:10:04 paul Exp $
+$Author: paul $
+$Date: 2005/10/28 04:10:04 $
+$Name: milestone_3-0-0 $
+$Revision: 1.10 $
 
 || DESCRIPTION || 
 $Description: setChild Function $
-$TODO: $
+
 
 || DEVELOPER ||
 $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
@@ -49,7 +49,7 @@ $out:$
       	// make a temp table, put the right hand value of the first child of the parent into it
     	sql = "
 			select #rowindex# AS seq, min(nright) as nright
-  		    from nested_tree_objects where parentid = '#arguments.parentid#'";
+  		    from #arguments.dbowner#nested_tree_objects where parentid = '#arguments.parentid#'";
     	qNrightSeq = query(sql=sql, dsn=arguments.dsn);
     	minr = 1; // dummy value to start loop
     
@@ -62,7 +62,7 @@ $out:$
 			
 			sql = "
 			select  min(nright) AS minr 
-			from nested_tree_objects where parentid = '#arguments.parentid#'
+			from #arguments.dbowner#nested_tree_objects where parentid = '#arguments.parentid#'
 			and nright not in (#quotedValueList(q.nright)#)";
 			q = query(sql=sql, dsn=arguments.dsn);
 		
@@ -85,26 +85,26 @@ $out:$
 		
 		//first make room. move other nodes up by 2, where they are greater than the right hand of the older sibling of the new child
 		sql = 
-			"update nested_tree_objects
+			"update #arguments.dbowner#nested_tree_objects
 			set nright = nright + 2 
 			where nright > #maxr#
 			and typename = '#arguments.typename#'";
 		query(sql=sql, dsn=arguments.dsn);
 		sql = "
-			update nested_tree_objects
+			update #arguments.dbowner#nested_tree_objects
 			set nleft = nleft + 2
 			where nleft > #maxr#
 			and typename = '#arguments.typename#'";
 		query(sql=sql, dsn=arguments.dsn);
 		sql = "
 			select nlevel
-			from nested_tree_objects 
+			from #arguments.dbowner#nested_tree_objects 
 			where objectid = '#arguments.parentid#'";
 		q = query(sql=sql, dsn=arguments.dsn);		
 		pLevel = q.Plevel;	
 		
 		sql ="
-		   insert nested_tree_objects (ObjectID, ParentID, ObjectName, TypeName, Nleft, Nright, Nlevel)
+		   insert #arguments.dbowner#nested_tree_objects (ObjectID, ParentID, ObjectName, TypeName, Nleft, Nright, Nlevel)
 		  values ('#arguments.objectid#', '#arguments.parentid#', '#arguments.objectName#', '#arguments.typeName#', #maxr# + 1, #maxr# + 2,  #plevel# + 1)";  
 		query(sql=sql, dsn=arguments.dsn);	  
 	}

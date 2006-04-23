@@ -4,6 +4,7 @@
 <cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 <cfoutput>
+
 <cfif isdefined("form.newPassword")>
 	
     <cfscript>
@@ -12,58 +13,45 @@
     </cfscript>
 
 	<cfif bUpdate>
-		<div class="formtitle" style="margin-left:30px;margin-top:30px;">#application.adminBundle[session.dmProfile.locale].updateSuccessful#</div>
-		<p></p>
-		<span class="frameMenuBullet" style="margin-left:30px;">&raquo;</span> <a href="##" onClick="window.close();">#application.adminBundle[session.dmProfile.locale].closeWindow#</a>
+		<div class="fade success" id="fader" style="margin-left:15px"><strong>#application.adminBundle[session.dmProfile.locale].updateSuccessful#</strong> | <a href="##" onClick="window.close();">#application.adminBundle[session.dmProfile.locale].closeWindow#</a></div>
 	<cfelse>
-		<div class="formtitle" style="margin-left:30px;margin-top:30px;">#application.adminBundle[session.dmProfile.locale].updateFailed#</div>
-		<p></p>
-		<span class="frameMenuBullet" style="margin-left:30px;">&raquo;</span> <a href="updatePassword.cfm">#application.adminBundle[session.dmProfile.locale].tryAgain#</a>
+		<div class="fade error" style="margin-left:15px" id="fader2"><strong>#application.adminBundle[session.dmProfile.locale].updateFailed#</strong> | <a href="updatePassword.cfm">#application.adminBundle[session.dmProfile.locale].tryAgain#</a></div>
 	</cfif>
 <cfelse>
-
-	<form action="updatePassword.cfm" method="post" name="updatePassword">
-
-	<div class="formtitle" style="margin-left:30px;margin-top:30px;">#application.adminBundle[session.dmProfile.locale].changePassword#</div><br>
+	<form action="updatePassword.cfm" method="post" name="updatePassword" class="f-wrap-1 f-bg-medium" style="margin-left:8px">
+	<fieldset>
 	
-	<table class="formtable" style="width:300px">
-	<tr>
-		<td rowspan="10">&nbsp;</td>
-	</tr>
-	<tr>
-		<td colspan="2">&nbsp;</td>
-	</tr>
-	<tr>
-		<td><span class="formlabel">#application.adminBundle[session.dmProfile.locale].oldPassword#</span></td>
-		<td><input type="password" name="oldPassword" size="12"></td>
-	</tr>
-	<tr>
-		<td><span class="formlabel">#application.adminBundle[session.dmProfile.locale].newPassword#</span></td>
-		<td><input type="password" name="newPassword" size="12"></td>
-	</tr>
-	<tr>
-		<td><span class="formlabel">#application.adminBundle[session.dmProfile.locale].confirmNewPassword#</span></td>
-		<td><input type="password" name="newPassword2" size="12"></td>
-	</tr>
-	<tr>
-		<td colspan="2">&nbsp;</td>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td><input type="submit" value="#application.adminBundle[session.dmProfile.locale].change#" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';"></td>
-	</tr>
-	<tr>
-		<td colspan="2">&nbsp;</td>
-	</tr>
-	</table>
+		<h3>#application.adminBundle[session.dmProfile.locale].changePassword#</h3>
+		
+		<label for="oldPassword">
+		<b>#application.adminBundle[session.dmProfile.locale].oldPassword#</b>
+		<input type="password" name="oldPassword" id="oldPassword" size="12" /><br />
+		</label>
+		
+		<label for="newPassword">
+		<b>#application.adminBundle[session.dmProfile.locale].newPassword#</b>
+		<input type="password" name="newPassword" id="newPassword" size="12" /><br />
+		</label>
+		
+		<label for="newPassword2">
+		<b>#application.adminBundle[session.dmProfile.locale].confirmNewPassword#</b>
+		<input type="password" name="newPassword2" id="newPassword2" size="12" /><br />
+		</label>
+		
+		<div class="f-submit-wrap">
+		<input type="submit" class="f-submit" value="#application.adminBundle[session.dmProfile.locale].change#" />
+		</div>
+		
+	</fieldset>
 	</form>
 	<!--- form validation --->
 	<SCRIPT LANGUAGE="JavaScript">
 	<!--//
 	objForm = new qForm("updatePassword");
+	qFormAPI.errorColor="##cc6633";
 	objForm.oldPassword.validateNotNull("#application.adminBundle[session.dmProfile.locale].existingPassword#");
 	objForm.newPassword.validateNotNull("#application.adminBundle[session.dmProfile.locale].enterNewPassword#");
-	objForm.newPassword2.validateNotNull("#application.adminBundle[session.dmProfile.locale].reenterPassword#");
+	objForm.newPassword2.validateNotNull("#application.adminBundle[session.dmProfile.locale].reenterNewPassword#");
 	objForm.newPassword.validatePassword('newPassword2', '1','32',"#application.adminBundle[session.dmProfile.locale].badPasswords#");
 	objForm.oldPassword.validatePassword(null, '1','32',"#application.adminBundle[session.dmProfile.locale].reenterExistingPassword#");
 	//-->

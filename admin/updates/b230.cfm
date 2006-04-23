@@ -1,13 +1,13 @@
 <!--- @@description:
-Updates general config with locale attribute<br/>
-Adds the locale property to dmProfile<br/>
-Adds mirrorId field to the container table<br/>
-Adds bShared field to the container table<br/>
-Expands HTMLArea config<br/>
-Updates permission sequence for PostgeSQL installs<br/>
-Sets category alias for root node<br/>
-Adds mediaType field to dmCSS table<br/>
-Adds bThisNodeOnly field to dmCSS table<br/>
+Updates general config with locale attribute<br />
+Adds the locale property to dmProfile<br />
+Adds mirrorId field to the container table<br />
+Adds bShared field to the container table<br />
+Expands HTMLArea config<br />
+Updates permission sequence for PostgeSQL installs<br />
+Sets category alias for root node<br />
+Adds mediaType field to dmCSS table<br />
+Adds bThisNodeOnly field to dmCSS table<br />
 Removes orphaned containers from refContainers table
 --->
 
@@ -400,19 +400,7 @@ Removes orphaned containers from refContainers table
 	<cfif not error>
 		<cfoutput><strong>done</strong></p></cfoutput><cfflush>
 	</cfif>	
-
-	<!--- Update dmFile FileSize to 0 if null or '' --->
-	<cfoutput><p><span class="frameMenuBullet">&raquo;</span> Update dmFile FileSize to 0 if null or ''...</cfoutput><cfflush>
-	<cftry>
-		<cfquery name="update_filesize" datasource="#application.dsn#">
-		UPDATE dmfile SET filesize = 0 WHERE filesize = '' OR filesize IS NULL
-		</cfquery>
-		<cfcatch><cfset error=1><cfoutput><p><span class="frameMenuBullet">&raquo;</span> <span class="error"><cfdump var="#cfcatch.detail#"></span></p></cfoutput></cfcatch>
-	</cftry>
 	
-	<cfif not error>
-		<cfoutput><strong>done</strong></p></cfoutput><cfflush>
-	</cfif>	
 <cfelse>
 	<cfoutput>
 	<p>
@@ -428,7 +416,6 @@ Removes orphaned containers from refContainers table
 		<li type="square">Adds mediaType field to dmCSS table</li>
 		<li type="square">Adds bThisNodeOnly field to dmCSS table</li>
 		<li type="square">Removes orphaned containers from refContainers table</li>
-		<li type="square">Update dmFile FileSize to 0 if null or ''</li>
 	</ul>
 	</p>
 	<form action="" method="post">

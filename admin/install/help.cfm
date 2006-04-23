@@ -14,7 +14,7 @@
 		This is the name of your new FarCry application.<p></p>
 		Your entry here will be set in the &lt;application&gt; tag and will also be the physical directory name of your new application.<p></p>
 		Your web server mappings will/should point to this directory.<p></p>
-		Do not use farcry_aura as your site name.
+		Do not use farcry_pliant as your site name.
 	</cfcase>
 
 	<cfcase value="dsn">
@@ -105,8 +105,8 @@
 	</cfcase>
 
 	<cfcase value="deleteApp">
-		<strong>Delete farcry_aura on completion</strong><p></p>
-		When selected, the farcry_aura directory will be deleted at the end of the install process. Leave unchecked if you wish to perform multiple installs.<p></p>
+		<strong>Delete farcry_pliant on completion</strong><p></p>
+		When selected, the farcry_pliant directory will be deleted at the end of the install process. Leave unchecked if you wish to perform multiple installs.<p></p>
 	</cfcase>
 </cfswitch>
 

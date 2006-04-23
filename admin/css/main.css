@@ -1,0 +1,542 @@
+/* 
+-------------------------------------------------------------------
+version:	20-10-05
+author:		pete ottery | daemon | pottery at daemon dot com dot au 
+			please speak to pete before making changes to this file 
+-------------------------------------------------------------------
+*/
+
+
+
+/* =THE BIG GUYS */
+html {margin:0;padding:0;height:100%}
+body {height:100%;background: #fff url("images/body_bg.gif") repeat-y -404px 0;margin:0;padding:0;color:#000;font:83%/1.5 arial,tahoma,verdana,sans-serif}
+
+/* =LINKS */
+a,a:link,a:visited,a:hover,a:active {background:transparent;text-decoration:underline;cursor:pointer;padding:2px 0} 
+a:link, a:visited, a:hover, a:active {color:#E17000}
+a:hover {color:#fff;background:#E17000} 
+
+ul {position:relative;margin: 0 .3em 1em 0;padding: 0;list-style-type:none}
+ol {margin: .5em .5em}
+ol li {margin-left: 2em;padding-left: 0;background: none; list-style-type: decimal}
+li {line-height: 1.3em;padding-left: 20px;background: transparent url("images/sprites.gif") no-repeat 0 -100px}
+ul.nomarker li {background:none;padding-left:0}
+
+
+/* =GENERAL */
+img {border:none} 
+
+hr {margin: .3em 0 1em;background:#F1F1F1;height:1px;color:#F1F1F1;border:none}
+small, .small {font-size:11px}
+.clear {clear:both;position:relative;font-size:0;height:0;line-height:0} 
+.hidden {visibility:hidden} 
+.error {color:#c00}
+.success {color:#360}
+.highlight {color:#26568D}
+.subdued {color:#999}
+.disabled {color:#708090}
+.switch {float:right}
+
+/* =FORMS */
+form {margin: 0 0 1.5em}
+input, textarea, select {font-family:arial}
+
+form {margin:0 0 1em}
+fieldset {border: none;padding:0;margin:0}
+label {display:block;margin: 0;padding: 5px 0}
+li label {display:inline}
+li label input.f-checkbox {margin-bottom:-1px;_margin-bottom:-2px}
+	.category-tree li {font-weight:bold}
+	.category-tree li li {font-weight:normal;font-size:100%}
+	.category-tree li img {margin: 3px 0 -5px}
+label br {clear:left}
+div.f-submit-wrap {clear:both;display:block;padding:5px 0}
+form.f-bg-short {}
+form.f-bg-medium {}
+form.f-bg-long {}
+
+select {background-color: #FDFEFF;border-color: #ccc #ccc #ccc #ccc}
+select:hover, select:focus {border-color: #E17000}
+input.f-submit, input.normalbttnstyle {padding: 2px 10px;font-weight:bold;color:#fff;background:#333 url("images/sprites.gif") repeat-x 0 -500px;border: 3px double;border-color: #eee #eee #999 #999;_background:#999;_border: 1px solid #666}
+input.f-submit:hover, input.f-submit:focus, input.normalbttnstyle:hover, input.normalbttnstyle:focus {background:#333 url("images/sprites.gif") repeat-x 0 -600px;border-color: #E1ECF8 #E1ECF8 #26568D #26568D;_background:#999;_border: 1px solid #666}
+input, textarea {border: 1px solid;border-color: #ccc #ccc #999 #999}
+textarea {font-size:12px}
+input:focus, textarea:focus {border-color: #E17000}
+
+input.f-checkbox {_border:none}
+
+
+
+/* =HEADINGS */
+h1, h2, h3, h4, h5, h6 {font-family: arial,verdana,sans-serif;margin: 1.2em 0 0}
+h1 {font-size: 156%;margin: 0}
+h2 {font-size: 116%}
+h3 {font-size: 112%}
+h4 {font-size: 102%}
+h5 {font-size: 92%}
+h6 {font-size: 83%}
+
+/* =TYPOGRAPHY */
+p {margin: 0 0 1.5em}
+
+#view-site {position:absolute;top:5px;right:20px;font-weight:bold}
+#view-site a:link {color:#fff} 
+#view-site a:visited {color:#fff} 
+#view-site a:hover,a:active {color:#26568D;background:#fff} 
+
+
+/* =LAYOUT-HEADER */
+#header {background:#fff;width:100%}
+
+	#powered-by {float:left;width:96px;margin-right: 13px}
+	#powered-by img {border-right: 1px solid #D2D2D2}
+
+	#site-name {float:left;width:65%;font-size:76%;padding: 13px 0 10px 10px}
+	
+		#site-name h1, #site-name h2 {margin: 0 10px;line-height:1.2}
+		#site-name h1 {padding: 15px 0 5px;font-size:195%;display:inline}
+		#site-name h2 {display:inline;color:#999;font-style:italic}
+	
+	#admin-tools {font-size:86%;padding: 2px 0 0;width:220px;margin: 5px 0 0;float:right}
+	#admin-tools p {margin: 0;padding: 0}
+	
+	#nav {margin: 0 0 0 20px;height: 2.15em;font-size:96%;clear:left}
+ 	#nav ul {margin:0;padding:2px 0 0;list-style:none}
+    #nav li {float:left;background:url("images/nav_left_both.gif") no-repeat 0 -150px;margin:0;padding:0 0 0 9px;border-bottom:1px solid #fff}
+	#nav a {float:left;display:block;width:.1em;background:url("images/nav_right_both.gif") no-repeat 100% -150px;padding:6px 15px 2px 6px;text-decoration:none;color:#fff;font-weight:bold;white-space:nowrap}
+    #nav > ul a {width:auto;}
+    /* Commented Backslash Hack hides rule from IE5-Mac \*/
+    #nav a {float:none;}
+    /* End IE5-Mac hack */
+    #nav a:hover {color:#000}
+    #nav li.active {background-position:0 0;border-width:0}
+    #nav li.active a {background-position:100% 0;padding-bottom:3px;color:#fff}
+
+/* =LAYOUT-LOGIN PAGE */
+body#sec-login {background: #5A7EB9 url("images/full_page_bg.gif") repeat-x 0 0;height:auto}
+	#login {border: 8px solid #eee;background:#fff;width:37em;margin: 50px auto;padding: 20px;color:#999}
+	
+	#login h1 {font-size:105%;color:#116EAF;margin: 0;float:left;display:inline;padding-bottom:10px}
+	#login h1 img {margin: 0 0 15px}
+	#login h1 img, #login h1 span {display:block;font: normal 80% arial;color:#999}
+	#login h3 {clear:both;font: normal 86% arial;text-align:right;margin: 15px 0 0 auto;padding: 15px 0 0;border-top: 1px solid #eee;color:#ccc}
+	#login h3 img {display:block;margin: 0 0 0 auto}
+	#login fieldset {font-weight:bold;margin-bottom: 10px;width:17em;float:right}
+	#login fieldset h5 {margin: 50px 0 0;padding:2px 5px}
+	#login label {width:17em}
+	#login fieldset input {margin-top:-1.6em;width:140px;float:right;font-weight:bold}
+	#login fieldset input.f-submit {margin: 5px 0;width:142px;_width:144px}
+
+/* =LAYOUT-CONTENT-AREA */
+#content-wrap {border-top: 7px solid #324E7C;position:relative;height:82.6%;max-height:82.6%;_height:80.6%;background: transparent url("images/g2_content_bg.gif") no-repeat 0 0}
+	
+	#sidebar {height:100%;float:left;width:200px;padding: 0;background: transparent url("images/g2_sidebar_bg.gif") no-repeat 0 0}
+		#sidebar #iframe-sidebar {height:100%;width:200px}
+		body.iframed select {font-size:86%}
+	#content {height:96%;margin: 0 0 0 232px;padding-top:20px;background: #fff url("images/g2_content_bg.gif") no-repeat -236px 0}
+		#content #iframe-content {height:100%;width:100%}
+
+/* =IFRAMES */
+body.iframed, body.iframed-home {padding-left:14px;background: #5B7FB9 url("images/g2_sidebar_wider_bg.gif") no-repeat fixed 0 0;padding-top:14px;width:83%;height:90%}
+	body.iframed li, body.iframed-home li {font-size:86%;background: transparent url("images/sprites.gif") no-repeat 0 -200px}
+	body.iframed ul, body.iframed-home ul {margin-bottom:6px}
+	body.iframed h3, body.iframed-home h3 {text-transform:uppercase;color:#fff;font-size:86%;border-top: 1px solid #7B96C0;padding: 6px 0 0 3px;margin-top:0}
+	body.iframed, body.iframed-home {color:#fff}
+	body.iframed a:link, body.iframed a:visited, body.iframed a:hover, body.iframed a:active {color:#fff;background:transparent;text-decoration:none;padding:0}
+	body.iframed a:hover, body.iframed a:active {background:#97ACCD}
+	body.iframed a:active {font-weight:bold}
+body.iframed-tree {height:80%}
+
+#iframe-sideTree {width:100%;height:100%;}
+
+
+body.iframed-content {background: #fff url("images/content_bg_2.gif") no-repeat fixed 0 -20px;width:96%;height:90%}
+body.iframed-content h3 {margin-top:0;font-size:135%}
+.iframe-nav-form {margin: 0 0 10px}
+.iframe-nav-form-zoom {border-bottom: 1px solid #f1f1f1;padding: 3px 0 10px}
+.iframe-nav-form-zoom select {margin-bottom:-2px}
+
+
+/* =TREE RESIZING */
+
+	/* =SITE SECTION */
+	#sec-site #tree-button-max {display:block;position:absolute;top:299px;left:203px;width:29px;height:38px;background: transparent url("images/sprites.gif") no-repeat 0 -300px}
+	#sec-site #tree-button-max span {display:none}
+	#sec-site #tree-button-min {display:block;display:none;position:absolute;top:299px;left:503px;width:29px;height:38px;background: transparent url("images/sprites.gif") no-repeat 0 -350px}
+	#sec-site #tree-button-min span {display:none}
+	#sec-site #tree-button-max:hover {background-position: -50px -300px}
+	#sec-site #tree-button-min:hover {background-position: -50px -350px}
+
+	/* =OTHER SECTIONs */
+	#content-button-max {display:block;position:absolute;top:299px;left:203px;width:29px;height:38px;background: transparent url("images/sprites.gif") no-repeat 0 -350px}
+	#content-button-max span {display:none}
+	#content-button-min {display:block;display:none;position:absolute;top:299px;left:2px;width:29px;height:38px;background: transparent url("images/sprites.gif") no-repeat 0 -300px}
+	#content-button-min span {display:none}
+	#content-button-max:hover {background-position: -50px -350px}
+	#content-button-min:hover {background-position: -50px -300px}
+
+/* =POPUP */
+body.popup {background: #fff;padding: 0 10px}
+body.popup h1 {margin: 10px 0 .4em}
+body.popup h2 {margin: 0 0 .4em}
+
+body.popup #content {margin:0;background:transparent;padding:0}
+
+.results-bar h5 {margin:0}
+.results-bar {padding: 5px 0}
+
+.utilBar {margin: 0 0 15px;font-weight:bold;float:left}
+#genadmin-wrap .pagination {float:right;margin-right:-3px;margin-bottom: 10px}
+#genadmin-wrap .pagination span {white-space:nowrap}
+#genadmin-wrap .pagination h5 {margin:0}
+.utilBar h5 {float:right;margin:0}
+.utilBar span, .utilBar a, .utilBar a:link, .utilBar a:visited, .utilBar a:hover, .utilBar a:active {margin: 0 3px 0 0;padding: 1px 6px;text-decoration:none;border: 1px solid #ccc}
+#genadmin-wrap .pagination span, 
+#genadmin-wrap .pagination a, 
+#genadmin-wrap .pagination a:link, 
+#genadmin-wrap .pagination a:visited, 
+#genadmin-wrap .pagination a:hover, 
+#genadmin-wrap .pagination a:active {cursor:pointer;color:#E17000;padding:0 6px;margin:0 2px;float:left;display:block;background:#F9E6D4;text-decoration:none;border: 1px solid #F8DDC2;border-left: 1px solid #EB9948;border-bottom: 1px solid #EB9948}
+#genadmin-wrap .pagination span {color:#000}
+
+#genadmin-wrap .pagination a:hover, #genadmin-wrap .pagination a:active {background:#E17000;color:#fff;border: 1px solid #EB9948}
+
+.utilBar a:hover, .utilBar a:active {background:#E17000;border: 1px solid #ccc}
+
+.utilBar input {padding: 2px 4px;_padding: 2px 0;background:#f5f5f5;color:#369;border: 1px solid #ddd;border-left: 1px solid #999;border-bottom: 1px solid #999;cursor:pointer}
+.utilBar input:hover {background:#E4ECF6;border: 1px solid #369}
+
+.thumbNailsWrap ul {height: 18em}
+
+.thumbNailsWrap li {position:relative;float:left;width:90px;height:9.2em;background:#fff;border: 1px solid #ccc;margin: 0 10px 10px 0;display:inline;padding:2px;font-size:86%}
+.thumbNailsWrap li img {display:block}
+.thumbNailsWrap li input {position:absolute;top:71px;right:3px}
+.thumbNailsWrap li label {padding:0}
+.thumbNailsWrap li span {display:block;width:83px;height:83px;padding:3px;border-bottom: 1px solid #eee}
+.thumbNailsWrap li p {margin:2px;line-height:1.3}
+
+.filesWrap ul {position:static;margin: 1em 0}
+.filesWrap ul li input {border:none}
+.filesWrap li {padding-left:0;margin: 0 0 -2px;border-bottom: 1px solid #f1f1f1;background:none}
+.filesWrap li label {margin:0;padding:0}
+
+body.Filebrowse form.f-wrap-1, body.Imagebrowse form.f-wrap-1 {width:35em}
+
+body.Imagebrowse .tab-panes, body.Filebrowse .tab-panes {padding: 15px 10px 0;background:#f1f1f1 url("images/wizard_bg.gif") repeat-y 125px 0}
+body.Imagebrowse #utility, body.Filebrowse #utility {float:left;width:160px;font-size:92%}
+body.Imagebrowse #utility p, body.Filebrowse #utility p {font-size:92%}
+body.Imagebrowse #utility li, body.Filebrowse #utility li {background-color:#f1f1f1;font-size:100%}
+body.Imagebrowse #utility form, body.Filebrowse #utility form {margin-bottom: 15px}
+body.Imagebrowse #content, body.Filebrowse #content {margin-left:190px;height:auto}
+body.Imagebrowse form.f-wrap-1 .f-submit-wrap, body.Filebrowse form.f-wrap-1 .f-submit-wrap {padding: 5px;clear:both;margin: 0;text-align:center}
+
+
+body.Imagebrowse .f-checkbox-wrap ul, body.Filebrowse .f-checkbox-wrap ul {margin:0}
+body.Imagebrowse .f-checkbox-wrap ul li, body.Filebrowse .f-checkbox-wrap ul li {border-bottom: 1px solid #F1F1F1}
+body.Imagebrowse form.f-wrap-1 fieldset.f-checkbox-wrap label, body.Filebrowse form.f-wrap-1 fieldset.f-checkbox-wrap label {margin: 0 0 -2px}
+body.Imagebrowse form.f-wrap-1 fieldset.f-checkbox-wrap label, body.Filebrowse form.f-wrap-1 fieldset.f-checkbox-wrap label {float:none;width:auto}
+body.Imagebrowse form.f-wrap-1 label, body.Filebrowse form.f-wrap-1 label {border-bottom: none}
+body.Imagebrowse form.f-wrap-1 h3, body.Filebrowse form.f-wrap-1 h3 {font-size:115%}
+
+/* =PLP WRAP */
+
+
+
+#plp-wrap {background: transparent url("images/plp_wrap_bg.gif") no-repeat 100% 100%;padding-bottom: 2.5em}
+#plp-wrap .pagination {float:right}
+#plp-wrap .pg-bot {clear:both}
+#plp-wrap .pagination ul {padding:0;margin: 0;list-style-type:none;width:120px;position:relative;height:2.2em}
+#plp-wrap .pagination li {padding:0;margin:0;display:inline}
+
+#plp-wrap .pagination li.li-prev {position:absolute;top:0;left:0}
+#plp-wrap .pagination li.li-next {position:absolute;top:0;right:0}
+
+#plp-wrap .pagination li.li-prev a:link, #plp-wrap .pagination li.li-prev a:visited {color:#666;background:#fff url("images/sprites_icons.gif") no-repeat -7px -450px;height: 2.2em;font: bold 100%/2.2 arial;padding-left:20px}
+#plp-wrap .pagination li.li-next a:link, #plp-wrap .pagination li.li-next a:visited {color:#666;background:#fff url("images/sprites_icons.gif") no-repeat 100% -550px;height: 2.2em;font: bold 100%/2.2 arial;padding-right:22px}
+
+#plp-wrap .pagination li.li-prev a:hover, #plp-wrap .pagination li.li-prev a:active {background-position: -7px -400px;color:#006BD0}
+#plp-wrap .pagination li.li-next a:hover, #plp-wrap .pagination li.li-next a:active {background-position: 100% -500px;color:#006BD0}
+
+#genadmin-wrap th {font-size:105%;line-height:1.3}
+
+#plp-content {clear:left;margin: 0 155px 0 0}
+#plp-content iframe, #plp-content textarea#body {float:left;width:97%}
+#plp-content table {width:97%;float:left}
+#plp-content td {padding:0;border:none}
+
+
+
+#plp-wrap h1 {border-bottom: 1px solid #DEDEDE;margin:0;padding: 3px 0 6px}
+#plp-wrap h1 img {display:block;float:left;width:60px;height:48px;margin-bottom: 10px}
+
+#plp-nav {clear:both;float:right;width:120px}
+#plp-nav ul {margin: 0 0 15px;padding:0;list-style-type:none} 
+#plp-nav li {margin:0;padding:0;background:none;font: normal 90%/2 arial;border-bottom: 1px solid #e8e8e8;text-transform:capitalize}
+#plp-nav a:link, #plp-nav a:visited {color:#666}
+#plp-nav a:link strong , #plp-nav a:visited strong {color:#E17000}
+#plp-nav a:hover, #plp-nav a:active {color:#E17000;background:#fff}
+
+
+#plp-nav li.li-complete, #plp-nav li.li-cancel {border-bottom: none;padding: 0;margin: 30px 0 0;font-size:100%}
+#plp-nav li.li-cancel {margin-top:5px}
+
+#plp-nav li.li-complete a:link, #plp-nav li.li-complete a:visited, #plp-nav li.li-complete a:hover, #plp-nav li.li-complete a:active {color:#666;background:#fff url("images/sprites_icons.gif") no-repeat 0 -297px;display:block;height: 2.2em;font: bold 110%/2.2 arial;padding-left:40px}
+#plp-nav li.li-complete a:hover, #plp-nav li.li-complete a:active {background-position: 0 -347px;color:#00A700}
+
+
+#plp-nav li.li-cancel a:link, #plp-nav li.li-cancel a:visited, #plp-nav li.li-cancel a:hover, #plp-nav li.li-cancel a:active {color:#666;background:#fff url("images/sprites_icons.gif") no-repeat 0 -197px;display:block;height: 2.2em;font: bold 110%/2.2 arial;padding-left:40px}
+#plp-nav li.li-cancel a:hover, #plp-nav li.li-cancel a:active {background-position: 0 -247px;color:#c00}
+
+#plp-nav a:link, #plp-wrap .pagination a:link, #plp-nav a:visited, #plp-wrap .pagination a:visited, #plp-nav a:hover, #plp-wrap .pagination a:hover, #plp-nav a:active, #plp-wrap .pagination a:active {text-decoration:none}
+
+.container-management #plp-wrap {background:none;padding:0}
+.container-management #plp-wrap .pagination, .container-management #plp-wrap #plp-nav {float:none;width:auto}
+.container-management #plp-content {margin:0}
+.container-management #plp-content iframe, .container-management #plp-content textarea#body {float:none;width:auto}
+.container-management #plp-wrap h1 {background:none;border:none}
+
+.relateditems-wrap {float:left;width:230px;padding-bottom: 10px}
+.relateditems-wrap h2 small {float:right;margin-top:3px;margin-right:8px}
+.relateditems-wrap select {width: 150px;float:left;margin: 3px 0}
+.relateditems-wrap input.f-submit {font-size:86%}
+.relateditems-wrap input.f-delete {font-size:86%;float:right;padding: 1px 8px;_padding: 1px 3px}
+
+.r-i-images {padding-right:40px}
+.r-i-files {}
+
+.relateditems-wrap a strong {position:absolute;left:-9999px}
+.relateditems-wrap a.moveup:link, .relateditems-wrap a.moveup:visited, .relateditems-wrap a.moveup:hover, .relateditems-wrap a.moveup:active {float:right;background:#fff url("images/sprites_icons.gif") no-repeat -100px -650px;display:block;height: 25px;width:30px}
+.relateditems-wrap a.moveup:hover, .relateditems-wrap a.moveup:active {background-position: -100px -600px}
+.relateditems-wrap a.movedown:link, .relateditems-wrap a.movedown:visited, .relateditems-wrap a.movedown:hover, .relateditems-wrap a.movedown:active {float:right;background:#fff url("images/sprites_icons.gif") no-repeat 0px -650px;display:block;height: 25px;width:30px}
+.relateditems-wrap a.movedown:hover, .relateditems-wrap a.movedown:active {background-position: 0px -600px}
+
+.teaser-wrap {clear:left;border-top: 1px solid #DEDEDE;padding-bottom: 10px;font-size:86%}
+.teaser-wrap .teaser-image {padding: 15px 0}
+.teaser-wrap .teaser-image h3 {}
+.teaser-wrap .teaser-image select {display:block;margin: 2px 0 8px;width: 150px;float:left}
+.teaser-wrap .teaser-image img {border: 1px solid #ccc;margin: -16px 0 5px 20px}
+.teaser-wrap .teaser-text {border-top: 1px solid #DEDEDE;padding: 15px 0}
+.teaser-wrap .teaser-text p {margin:0;font: bold 86% arial;padding-bottom: 20px}
+.teaser-wrap .teaser-text textarea {width: 100%}
+
+.f-source {clear:left;border-top: 1px solid #DEDEDE;padding: 10px 0 0}
+.f-source label:hover {background:none}
+.f-source input {margin-left: 7px}
+
+/* =GENERIC ADMIN */
+.gen-admin-filterby, 
+.gen-admin-filterby input,
+.gen-admin-action, 
+.gen-admin-action input {font-size: 90%;padding:1px 2px}
+
+.gen-admin-action {float:right}
+.gen-admin-action img {margin: 0 10px -7px 0}
+.utilBar label {display:inline}
+.gen-admin-filterby input.f-submit {margin-right:15px}
+
+/* =ALL BLUE LEFT HAND COL */
+body.iframed-home a:link {color:#fff} 
+body.iframed-home a:visited {color:#fff} 
+body.iframed-home a:hover, body.iframed-home a:active {color:#26568D;background:#fff} 
+
+
+.refreshtree {display:inline;height:18px;width:16px;margin-left:5px}
+.refreshtree img {height:16px;width:16px;margin-bottom: -2px;background:none}
+body.iframed .upone a:link, body.iframed .upone a:visited, body.iframed .upone a:hover, body.iframed .upone a:active, 
+body.iframed .refreshtree a:link, body.iframed .refreshtree a:visited, body.iframed .refreshtree a:hover, body.iframed .refreshtree a:active {background:none}
+
+.upone {position:absolute;top:48px;right:21px}
+
+/* =LAYOUT-FOOTER */
+#footer {position:absolute;bottom:0;right:5px;text-align:right;font-size: 86%;color:#999;background:#fff;width:400px}
+#footer p {margin:0}
+
+/* =DEFINITION LISTS */
+dl {margin: 0 0 1.5em}
+dt {clear:left;font-weight:bold;margin:3px 0}
+dd {margin:3px 0;padding:0}
+dd.thumbnail {float:left;width:100px;margin-right:6px;border: 1px solid #000;margin-bottom:0}
+dd.thumbnail img {display:block}
+
+dl.dl-style1 {border-top: 1px solid #fff;font-size:86%}
+	.tab-panes dl.dl-style1 {margin-right:140px}
+dl.dl-style1 dt {float:left;clear:left;width:130px;margin:0;_height:1.5em;min-height:1.5em;border:none}
+	.tab-panes dl.dl-style1 dt {width:28%}
+dl.dl-style1 dd {width: auto;margin: 0;border-bottom: 1px solid #fff;padding: 1px 0;_height:1.5em;min-height:1.5em}
+	.tab-panes dl.dl-style1 dd {margin-left:28%;_margin-left:20%}
+	
+dl.dl-style2 {font-size:86%;margin-top:10px}
+dl.dl-style2 dt {float:left;clear:left;width:70px;margin:0}
+dl.dl-style2 dd {margin:0;padding: 1px 0}
+
+/* =WIZARDS */
+.wizard-nav {float:right;width:110px}
+.wizard-nav a {display:block;width:100px;border: 1px solid #ccc;font-size:86%;margin: 0 0 3px}
+.wizard-nav a:link, .wizard-nav a:visited, .wizard-nav a:hover, .wizard-nav a:active {text-decoration:none;background:#fff;padding: 3px 5px}
+.wizard-nav a:hover {background:#FFF4E9;color:#E17000;border: 1px solid #E17000}
+.wizard-nav br {display:none}
+
+.icon {margin: 0 0 10px}
+
+/* =LAYOUT-FORMS  ===TAKEN FROM DAEMON STANDARD FORMS=== */
+
+/* f-wrap-1 - simple form, headings on left, form elements on right */
+form.f-wrap-1 {width:auto;position:relative;font-size:92%}
+	form.f-wrap-1 fieldset {width:auto}
+	form.f-wrap-1 h3 {margin:0 0 .6em;font-size:155%}
+	form.f-wrap-1 label {display:block;width:32em;border-top: 1px solid #fff}
+	
+		form.f-wrap-1 .f-multiselect-wrap {display:block;width:32em;border-bottom: 1px solid #fff;margin: 0;padding: 5px 0}
+		form.f-wrap-1 .f-multiselect-wrap br {clear:left}
+	
+	
+	/* hide from IE5 mac \*/
+	form.f-wrap-1 label, form.f-wrap-1 .f-multiselect-wrap {float:none}
+	/* end hiding from IE5 mac */
+
+	form.f-wrap-1 label input, form.f-wrap-1 label textarea, form.f-wrap-1 label select {width:auto;float:left;margin-left:10px}  
+		form.f-wrap-1 .f-multiselect-wrap input, form.f-wrap-1 .f-multiselect-wrap textarea, form.f-wrap-1 .f-multiselect-wrap select  {width:auto;margin-left:10px}
+	
+	form.f-wrap-1 label b, form.f-wrap-1 .f-multiselect-wrap b {float:left;width:8em;line-height: 1.7;display:block}
+	form.f-wrap-1 label b .req, form.f-wrap-1 .f-multiselect-wrap b .req {color:#c00;font-size:150%;font-weight:normal}
+	form.f-wrap-1 div.req {color:#666;font-size:96%;font-weight:normal;position:absolute;top:.4em;right:1em;_right:160px;left:auto;width:13em;text-align:right}
+	form.f-wrap-1 div.req b {color:#c00;font-size:140%}
+	form.f-wrap-1 label textarea.f-comments {width: 260px}
+	textarea.f-comments2 {width: 230px;height:80px;font-size:12px;padding:3px;display:block}
+	form.f-wrap-1 label textarea.f-comments2 {width: 230px;height:80px;font-size:12px;padding:3px}
+	form.f-wrap-1 a.f-extratext {margin-left: 11em;font-size:90%}
+	form.f-wrap-1 div.f-submit-wrap a.f-extratext {margin-left: 1em;font-size:90%}
+	form.f-wrap-1 div.f-submit-wrap {padding: 5px 0 5px 8em}
+	form.f-wrap-1 input.f-submit {margin: 0 0 10px 10px}
+	.f-subdued {white-space:nowrap}
+	.f-subdued .f-submit {padding:0;font: normal 86% arial}
+	
+	form.f-wrap-1 fieldset.f-checkbox-wrap, form.f-wrap-1 fieldset.f-radio-wrap {display:block;width:32em;border:none;margin:0;padding-bottom:.7em;clear:left}
+	form.f-wrap-1 fieldset.f-checkbox-wrap fieldset ul li {background-color:transparent;clear:left}
+	form.f-wrap-1 fieldset.f-checkbox-wrap fieldset ul li label {float:none}
+	form.f-wrap-1 fieldset.f-checkbox-wrap b, form.f-wrap-1 fieldset.f-radio-wrap b {float:left;width:8em;line-height: 1.7;display:block;padding-top:.3em}
+	form.f-wrap-1 fieldset.f-checkbox-wrap fieldset, form.f-wrap-1 fieldset.f-radio-wrap fieldset {float:left;width:13em;margin: 3px 0 0 10px}
+	form.f-wrap-1 fieldset.f-checkbox-wrap label, form.f-wrap-1 fieldset.f-radio-wrap label {float:left;width:13em;border:none;margin:0;padding:2px 0;margin-right:-3px}
+	form.f-wrap-1 label input.f-checkbox, form.f-wrap-1 label input.f-radio {width:auto;float:none;margin:0;padding:0}
+	
+	form.f-wrap-1 label span.errormsg {position:absolute;top:0;right:-10em;left:auto;display:block;width:16em;background: transparent url(images/errormsg_bg.gif) no-repeat 0 0}
+	form.f-wrap-1 label span.errormsg b {padding: 10px 0;margin: 0 10px 0 30px;color:#B30800;font-weight:bold;display:block;width:auto;float:none;line-height:1.3}
+
+	form.wider {}
+	form.wider fieldset {}
+	form.wider label, form.wider .f-multiselect-wrap {width:37em}
+	form.wider label b, form.wider .f-multiselect-wrap b {width:13em}
+	form.wider fieldset.f-checkbox-wrap, form.wider fieldset.f-radio-wrap {width:37em}
+	form.wider fieldset.f-checkbox-wrap b, form.wider fieldset.f-radio-wrap b {width:13em}
+	form.wider div.f-submit-wrap {padding-left: 13em}
+	form.wider a.f-extratext {margin-left: 16em}
+	
+	form.f-wrap-1 label select.f-hours, form.f-wrap-1 .f-multiselect-wrap select.f-hours {margin: 10px 10px 10px 169px;display:inline;}
+	form.f-wrap-1 label select.f-mins, form.f-wrap-1 .f-multiselect-wrap select.f-mins {margin: 10px 10px 10px 0;display:inline}
+	
+	#plp-content form.f-wrap-1 label b, #plp-content form.f-wrap-1 .f-multiselect-wrap b {width:10em}
+	
+	#plp-content form.f-wrap-1 label select.f-hours, #plp-content form.f-wrap-1 .f-multiselect-wrap select.f-hours {margin: 10px 10px 10px 132px;_margin-left:135px}
+	
+form.f-wrap-2 {width:auto;position:relative;padding: .5em 0;font-size:92%}
+	
+	form.f-wrap-2 fieldset {width:100%;margin: 0}
+	form.f-wrap-2 fieldset ul {margin-left: 25%}
+	form.f-wrap-2 fieldset ul ul {margin-left: 0}
+	form.f-wrap-2 h3 {margin:0 0 .6em;font-size:155%}
+	form.f-wrap-2 label, form.f-wrap-2 .f-multiselect-wrap {width:100%;border-bottom: 1px solid #fff}
+
+	
+	
+	
+	form.f-wrap-2 input.movetoactive {background:none;border:none;text-decoration:underline;position:absolute;top:4em;right:1em;font-weight:bold;color:#E17000;cursor:pointer}
+	
+	form.f-wrap-2 label input, form.f-wrap-2 label textarea, form.f-wrap-2 label select, 
+		form.f-wrap-2 .f-multiselect-wrap input, form.f-wrap-2 .f-multiselect-wrap textarea, form.f-wrap-2 .f-multiselect-wrap select {width:auto;float:left;margin-left:10px}
+	
+	form.f-wrap-2 label b, form.f-wrap-2 .f-multiselect-wrap b {float:left;width:25%;line-height: 1.7;display:block}
+	form.f-wrap-2 label b .req, form.f-wrap-2 .f-multiselect-wrap b .req {color:#c00;font-size:150%;font-weight:normal;line-height:1;width:.3em;height:.3em}
+	form.f-wrap-2 div.req {color:#666;font-size:96%;font-weight:normal;position:absolute;top:.4em;right:1em;left:auto;width:13em;text-align:right}
+	form.f-wrap-2 div.req b {color:#c00;font-size:140%}
+	form.f-wrap-2 label textarea.f-comments {width: 20em}
+	form.f-wrap-2 div.f-submit-wrap {padding: 5px 0 5px 25%}
+	form.f-wrap-2 input.f-submit {margin: 0 0 10px 10px}
+
+	form.f-wrap-2 fieldset.f-checkbox-wrap, form.f-wrap-2 fieldset.f-radio-wrap {width:100%;border-bottom: 1px solid #fff}
+	form.f-wrap-2 fieldset.f-checkbox-wrap fieldset ul li {background-color:transparent;clear:left}
+	
+	form.f-wrap-2 fieldset.f-checkbox-wrap fieldset ul li label {float:none}
+	form.f-wrap-2 fieldset.f-checkbox-wrap b, form.f-wrap-2 fieldset.f-radio-wrap b {float:left;width:25%;line-height: 1.7;display:block;padding-top:.3em}
+	form.f-wrap-2 fieldset.f-checkbox-wrap fieldset, form.f-wrap-2 fieldset.f-radio-wrap fieldset {float:left;width:70%;margin: 3px 0 0 10px;_margin-left: 6px}
+	form.f-wrap-2 fieldset.f-checkbox-wrap label, form.f-wrap-2 fieldset.f-radio-wrap label {float:left;width:70%;border:none;margin:0;padding:2px 0;margin-right:-3px}
+	form.f-wrap-2 label input.f-checkbox, form.f-wrap-2 label input.f-radio {width:auto;float:none;margin:0;padding:0}
+	
+
+	form.f-wrap-2 fieldset.catpicker {padding-bottom: 1em}
+	form.f-wrap-2 fieldset.catpicker label {border: none}
+	form.f-wrap-2 fieldset.catpicker ul ul {border: none}
+	form.f-wrap-2 fieldset.catpicker ul li {font-size:11px;border: none}
+	form.f-wrap-2 fieldset.catpicker ul li img {margin-left:-3px;_margin:0}
+	form.f-wrap-2 fieldset.catpicker ul li label {padding:0;border: none}
+	
+	.f-toolwrap {width:175px;display:block;margin:0;padding:0;float:right;margin-top:-102px}
+	
+	form.f-wrap-2 label input.f-delete, form.f-wrap-2 label input.f-deletehover, form.f-wrap-2 label input.f-uparrow, form.f-wrap-2 label input.f-uparrowhover, form.f-wrap-2 label input.f-downarrow, form.f-wrap-2 label input.f-downhover {text-decoration:underline;font-weight:bold;color:#E17000;cursor:pointer;background:none;border:none;display:block;height:25px;width:170px;text-align:left;padding: 0 0 0 30px;margin:0}
+	
+	form.f-wrap-2 label input.f-uparrow {background:#F1F1F1 url("images/sprites_icons.gif") no-repeat 0 -758px}
+	form.f-wrap-2 label input.f-downarrow {background:#F1F1F1 url("images/sprites_icons.gif") no-repeat 0 -708px}
+	form.f-wrap-2 label input.f-delete {background:#F1F1F1 url("images/sprites_icons.gif") no-repeat 0 -808px}
+	
+	form.f-wrap-2 label input.f-uparrowhover {background-position: 0 -908px}
+	form.f-wrap-2 label input.f-downarrowhover {background-position: 0 -858px}
+	form.f-wrap-2 label input.f-deletehover {background-position: 0 -958px}
+	
+form.f-bg-3 {background:#F3F3F3 url(images/form_bg_3.gif) repeat-x 0 100%;padding-bottom: 25px;margin-left:-20px;margin-right:-20px;padding-left: 20px;padding-right:20px}
+
+body.container-management h1 {font: bold 135% arial,helvetica,sans-serif;height:auto;clear:both;_height:1em;min-height:1em}
+body.container-management h1 {padding: 10px 0 14px 40px;background: transparent url("images/container_edit_2.gif") no-repeat -10px -100px}
+
+
+ /* =DATA-TABLES */
+
+	table {border-collapse:collapse;border:none;background:#fff;margin: .3em 0 1.5em;font-size:86%;border-bottom: 1px solid #ccc;border-left: 1px solid #ccc}
+	form table {font-size:92%}
+	table table {font-size:100%}
+		caption {text-align:left;font: bold 145% arial;padding: 5px 10px;background:#fff}
+		th {color: #fff;border-top: 1px solid #A5B9D0;border-right: 1px solid #A5B9D0;text-align: left;padding: 3px 10px;background: #9EB4CC url("images/th_bg.gif") repeat-x 0 0;font-size: 110%}
+		th.order-asc {background-position: 100% -100px;padding-right:25px}
+		th.order-desc {background-position: 100% -200px;padding-right:25px}
+			th a:link, th a:visited, th a:hover, th a:active {color:#fff}
+			th.alt a:link, th.alt a:visited {color:#E17000}
+			th.alt a:hover, th.alt a:active {color:#fff}
+			th img {display:block;float:right;margin:0}
+		td {border-top: 1px solid #ccc;border-right: 1px solid #ccc;padding: 2px 10px}
+		th.nobg {border:none;background:#fff}
+		tr.alt {background: #f1f1f1} 
+		tr.ruled {background: #c00} 
+		tr {background:#fff}
+		
+	table.table-2 {width:100%}
+	table.table-2 th {white-space:nowrap}
+	table.table-3 {width:500px}
+	table.table-4 {width:500px}
+		table.table-4 th.alt {background:#fff;color:#000;font-size:96%;border-top: 1px solid #ccc;border-right: 1px solid #ccc}
+		table.table-4 tr.alt th.alt {background:#f1f1f1}
+	table.table-5 {width:100%;border:none}
+	table.table-5 td {font-size: 110%;font-weight:bold}
+	table.table-5 td table, table.table-5 td table td {border:none}
+	table.table-6 {width:100%;margin: 20px 0;border:none}
+	table.table-6 td {font-size: 11px;font-weight:normal}
+	table.table-6 th {color:#666;background:#eee;border-top: 1px solid #fff;border-right: 1px solid #fff}
+	table.table-6 td table {width:100%}
+
+
+ /* =OLD ADMIN CLASSES */
+.FormTitle {font-weight:bold;font-size:135%}
+table.FormTableClear {border: none}
+table.dataheader td {font-weight:bold;color: #fff;border-top: 1px solid #A5B9D0;border-right: 1px solid #A5B9D0;text-align: left;padding: 3px 10px;background: #9EB4CC url("images/th_bg.gif") repeat-x 0 0;font-size: 110%}
+table.BorderTable td, table.BorderTable th {border:none;padding:0} 
+
+
+

@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/admin/diagTreeNodes.cfm,v 1.16 2004/09/29 04:39:01 brendan Exp $
-$Author: brendan $
-$Date: 2004/09/29 04:39:01 $
-$Name: milestone_2-3-2 $
-$Revision: 1.16 $
+$Header: /cvs/farcry/farcry_core/admin/admin/diagTreeNodes.cfm,v 1.18 2005/08/17 06:50:52 pottery Exp $
+$Author: pottery $
+$Date: 2005/08/17 06:50:52 $
+$Name: milestone_3-0-0 $
+$Revision: 1.18 $
 
 || DESCRIPTION || 
 $Description: Looks for orphaned nodes in the nested tree table and they gives option to attach them to nav node in tree$
@@ -67,7 +67,7 @@ $out:$
 		</cfdefaultcase>
 	</cfswitch>
 	
-	<cfoutput><span class="formtitle">#application.adminBundle[session.dmProfile.locale].diagOrphanNotes#</span><p></p></cfoutput>
+	<cfoutput><h3>#application.adminBundle[session.dmProfile.locale].diagOrphanNotes#</h3></cfoutput>
 	
 	<!--- if requested, attach orphans to navnode in tree --->
 	<cfif isDefined("form.objectid")>
@@ -91,41 +91,42 @@ $out:$
 		
 	<cfelse>
 		<cfoutput>
-			#application.adminBundle[session.dmProfile.locale].noParentNestedTreeBlurb#
-			<p></p>
+			<p>#application.adminBundle[session.dmProfile.locale].noParentNestedTreeBlurb#</p>
 		</cfoutput>
 		
 		<cfif qOrphans.recordcount>
 			<!--- show orphaned nodes --->
-			<cfoutput>#application.adminBundle[session.dmProfile.locale].currentOrphanedNodes#<p></p></cfoutput>
+			<cfoutput><p>#application.adminBundle[session.dmProfile.locale].currentOrphanedNodes#</p></cfoutput>
 			<!--- <cfdump var="#qOrphans#" label="Orphaned Nodes"> --->
 			<!--- show form to attach orphans to a known node --->
-			<cfoutput><p></p>
-			<form action="" method="post">
-				<table cellpadding="5" cellspacing="0" border="1">
-				<tr class="dataheader">
-					<td>&nbsp;</td>
+			<cfoutput>
+			<form action="" method="post" class="f-wrap-1 f-bg-short wider">
+			<fieldset>
+				<table cellspacing="0">
+				<tr>
+					<th>&nbsp;</th>
 					<!--- 18n: can these be localized?  --->
-					<td align="center"><strong>#application.adminBundle[session.dmProfile.locale].objID#</strong></td>
-					<td align="center"><strong>#application.adminBundle[session.dmProfile.locale].parentID#</strong></td>
-					<td align="center"><strong>#application.adminBundle[session.dmProfile.locale].title#</strong></td>
+					<th>#application.adminBundle[session.dmProfile.locale].objID#</th>
+					<th>#application.adminBundle[session.dmProfile.locale].parentID#</th>
+					<th>#application.adminBundle[session.dmProfile.locale].title#</th>
 				</tr>
 				<cfloop query="qOrphans">
 					<tr class="#IIF(qOrphans.currentRow MOD 2, de("dataOddRow"), de("dataEvenRow"))#">
-						<td><input type="checkbox" name="objectid" value="#objectid#"></td>
+						<td><input type="checkbox" class="f-checkbox" name="objectid" value="#objectid#" /></td>
 						<td>#objectid#</td>
 						<td>#parentid#</td>
 						<td>#objectname#</td>
 					</tr>
 				</cfloop>
 				</table>
-				<p></p>
+				<hr />
 				<select name="navalias" size="1">
 				<cfloop collection="#application.navid#" item="key">
 					<option value="#application.navid[key]#"> #key#
 				</cfloop>
 				</select>
-				<input type="submit" name="action" value="Attach Orphans">
+				<input type="submit" name="action" value="Attach Orphans" class="f-submit" />
+			</fieldset>
 			</form>
 			</cfoutput>
 		<cfelse>

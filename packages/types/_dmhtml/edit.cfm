@@ -1,21 +1,18 @@
 <cfsetting enablecfoutputonly="Yes">
-
-<cfprocessingDirective pageencoding="utf-8">
 <!--- 
 || LEGAL ||
 $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmhtml/edit.cfm,v 1.23 2004/07/30 01:05:03 brendan Exp $
-$Author: brendan $
-$Date: 2004/07/30 01:05:03 $
-$Name: milestone_2-3-2 $
-$Revision: 1.23 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmhtml/edit.cfm,v 1.35 2005/09/29 23:29:38 gstewart Exp $
+$Author: gstewart $
+$Date: 2005/09/29 23:29:38 $
+$Name: milestone_3-0-0 $
+$Revision: 1.35 $
 
 || DESCRIPTION || 
 $Description: dmHTML Edit Handler $
-$TODO: remove cfoutputs from plp tags and make sure the steps are correctly defined with appropriate cfsettings 20030503 GB $
 
 || DEVELOPER ||
 $Developer: Geoff Bowers (modius@daemon.com.au) $
@@ -23,16 +20,37 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 || ATTRIBUTES ||
 $in: url.killplp (optional)$
 --->
-<cfimport taglib="/farcry/farcry_core/tags/farcry" prefix="farcry">
+<cfimport taglib="/farcry/farcry_core/tags/widgets/" prefix="widgets">
 <cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
 
 <cfparam name="url.killplp" default="0">
 
-<cfoutput>
-<farcry:plp 
+<cfset tempObject = CreateObject("component",application.types.dmhtml.typepath)>
+<cfset stObj = tempObject.getData(arguments.objectid)>
+
+<!--- determine where the edit handler has been called from to provide the right return url --->
+<cfparam name="url.ref" default="sitetree" type="string">
+<cfif url.ref eq "typeadmin"> 
+	<!--- typeadmin redirect --->
+	<cfset cancelCompleteURL = "#application.url.farcry#/content/dmhtml.cfm">
+<cfelseif url.ref eq "closewin"> 
+	<!--- close win has no official redirector as it closes open window --->
+	<cfset cancelCompleteURL = "#application.url.farcry#/content/dmhtml.cfm">
+<cfelse> 
+	<!--- site tree redirect --->
+	<cfset cancelCompleteURL = "#application.url.farcry#/edittabOverview.cfm?objectid=#stObj.ObjectID#">
+</cfif>
+
+<!--- lock the content item for editing --->
+<cfif NOT stobj.locked>
+	<cfset setlock(locked="true")>
+</cfif>
+
+
+<widgets:plp
 	owner="#session.dmSec.authentication.userlogin#_#stObj.objectID#"
 	stepDir="/farcry/farcry_core/packages/types/_dmhtml/plpEdit"
-	cancelLocation="#application.url.farcry#/edittabOverview.cfm?objectid=#stObj.objectid#"
+	cancelLocation="#cancelCompleteUrl#"
 	iTimeout="15"
 	stInput="#stObj#"
 	bDebug="0"
@@ -43,61 +61,70 @@ $in: url.killplp (optional)$
 	redirection="server"
 	r_bPLPIsComplete="bComplete">
 
-	<farcry:plpstep name="#application.adminBundle[session.dmProfile.locale].start#" template="start.cfm">
-	<farcry:plpstep name="#application.adminBundle[session.dmProfile.locale].filesLC#" template="files.cfm">
-	<farcry:plpstep name="#application.adminBundle[session.dmProfile.locale].imagesLC#" template="images.cfm">
-	<farcry:plpstep name="#application.adminBundle[session.dmProfile.locale].teaserLC#" template="teaser.cfm">
-	<farcry:plpstep name="#application.adminBundle[session.dmProfile.locale].bodyLC#" template="body.cfm">
-	<farcry:plpstep name="#application.adminBundle[session.dmProfile.locale].relatedLC#" template="related.cfm">
-	<farcry:plpstep name="#application.adminBundle[session.dmProfile.locale].categoriesLC#" template="metadata.cfm">
-	<farcry:plpstep name="#application.adminBundle[session.dmProfile.locale].completeLC#" template="complete.cfm" bFinishPLP="true">
-</farcry:plp>
-</cfoutput>
+	<widgets:plpstep name="#application.adminBundle[session.dmProfile.locale].start#" template="start.cfm">
+	<widgets:plpstep name="#application.adminBundle[session.dmProfile.locale].bodyLC#" template="body.cfm">
+	<widgets:plpstep name="#application.adminBundle[session.dmProfile.locale].relatedLC#" template="related.cfm">
+	<widgets:plpstep name="#application.adminBundle[session.dmProfile.locale].categoriesLC#" template="categories.cfm">
+	<widgets:plpstep name="#application.adminBundle[session.dmProfile.locale].completeLC#" template="complete.cfm" bFinishPLP="true">
+</widgets:plp>
+
 
 <cfif isDefined("bComplete") and bComplete>
-
-	<!--- unlock object --->
+	<!--- update label --->
 	<cfset stoutput.label = stoutput.title>
-	<cfinvoke component="#application.packagepath#.farcry.locking" method="unlock" returnvariable="unlockRet">
-		<cfinvokeargument name="stObj" value="#stOutput#"/>
-		<cfinvokeargument name="objectid" value="#stOutput.objectid#"/>
-		<cfinvokeargument name="typename" value="#stOutput.typename#"/>
-	</cfinvoke>
+	<!--- update timestamp as wizard may have been active for some time --->
+	<cfset stoutput.datetimelastupdated = now()>
 	
+	<!--- remove content item lock --->
+	<cfset stoutput.locked=0>
+	<!--- update content item --->
+	<cfset setData(stProperties=stoutput)>
+
+<!--- 
+	FriendlyURL stuff Example Only
+	<widgets:setFriendlyURL objectid="#stoutput.objectid#" customFriendlyURL="html/#stoutput.objectid#">
+ --->
+
 	<!--- check if object is a underlying draft page --->
-	<cfscript>
-		oAuthentication = request.dmSec.oAuthentication;	
-		stuser = oAuthentication.getUserAuthenticationData();
-		if (len(trim(stOutput.versionId)))
-		{
-			objId = stOutput.versionId;
-			auditNote = 'Draft object update';
-			
-		}
-		else
-		{
-			objId = stOutput.objectId;
-			auditNote = 'update';
-		}
-		application.factory.oAudit.logActivity(auditType="Update", username=stUser.userlogin, location=cgi.remote_host, note=auditNote,objectid=objID);
-	</cfscript>	
+	<cfset oAuthentication = request.dmSec.oAuthentication>
+	<cfset stuser = oAuthentication.getUserAuthenticationData()>
+	<cfif Len(Trim(stOutput.versionId))>
+		<cfset objId = stOutput.versionId>
+		<cfset auditNote = "Draft object update">
+	<cfelse>
+		<cfset objId = stOutput.objectId>
+		<cfset auditNote = "update">
+	</cfif>
 	
-	<!--- get parent to update tree --->
-	<nj:treeGetRelations 
-			typename="#stOutput.typename#"
-			objectId="#objId#"
-			get="parents"
-			r_lObjectIds="ParentID"
-			bInclusive="1">
-	<!--- update tree --->
-	<nj:updateTree objectId="#parentID#">
-	
-	<!--- reload overview page --->
-	<cfoutput>
-		<script language="JavaScript">
-			parent['editFrame'].location.href = '#application.url.farcry#/edittabOverview.cfm?objectid=#objId#';
-		</script>
-	</cfoutput>
+	<!--- TODO: Please explain? Isn't this audit task being performed in the setdata() GB --->
+	<cfset application.factory.oAudit.logActivity(auditType="Update", username=stUser.userlogin, location=cgi.remote_host, note=auditNote,objectid=objID)>
+
+	<!--- clean up and redirect user --->
+	<cfif url.ref eq "closewin">
+		<cfoutput>
+			<script type="text/javascript">
+				// refresh parent window
+				opener.location.href=opener.location.href;
+				// close browser
+				window.close();
+			</script>
+		</cfoutput>
+	<cfelse>
+		<!--- get parent to update tree --->
+		<nj:treeGetRelations typename="#stOutput.typename#" objectId="#objId#" get="parents" r_lObjectIds="ParentID" bInclusive="1">
+		<!--- update tree --->
+		<nj:updateTree objectId="#parentID#">
+		<!--- relocate iframes for tree and edit areas using JS --->
+		<cfoutput>
+			<script type="text/javascript">
+				// if sidebar overtree exists rebuild JS tree
+				if(parent['sidebar'].frames['sideTree'])
+					parent['sidebar'].frames['sideTree'].location= parent['sidebar'].frames['sideTree'].location;
+				// redirect to cancelcompleteURL
+				parent['content'].location.href = "#cancelCompleteURL#";
+			</script>
+		</cfoutput>
+	</cfif>
 </cfif>
 
 <cfsetting enablecfoutputonly="no">

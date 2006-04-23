@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmnavigation/delete.cfm,v 1.11.6.2 2005/04/21 06:24:29 paul Exp $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmnavigation/delete.cfm,v 1.12 2005/04/21 06:23:53 paul Exp $
 $Author: paul $
-$Date: 2005/04/21 06:24:29 $
-$Name: milestone_2-3-2 $
-$Revision: 1.11.6.2 $
+$Date: 2005/04/21 06:23:53 $
+$Name: milestone_3-0-0 $
+$Revision: 1.12 $
 
 || DESCRIPTION || 
 $Description: Specific delete method for dmNavigation. Deletes all descendants aswell as cleaning up verity collections$

@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/admin/bulkImageUpload.cfm,v 1.5.2.1 2005/06/21 17:48:26 tom Exp $
-$Author: tom $
-$Date: 2005/06/21 17:48:26 $
-$Name: milestone_2-3-2 $
-$Revision: 1.5.2.1 $
+$Header: /cvs/farcry/farcry_core/admin/admin/bulkImageUpload.cfm,v 1.9 2005/09/15 03:10:33 guy Exp $
+$Author: guy $
+$Date: 2005/09/15 03:10:33 $
+$Name: milestone_3-0-0 $
+$Revision: 1.9 $
 
 || DESCRIPTION || 
 $Description: Uploads a zip file containing images, creates navigation to match directory structure $
@@ -29,14 +29,15 @@ $out:$
 <cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
 <cfimport taglib="/farcry/farcry_core/tags/farcry/" prefix="farcry">
 <cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
+<cfimport taglib="/farcry/farcry_core/tags/widgets/" prefix="widgets">
 <cfinclude template="/farcry/farcry_core/admin/includes/cfFunctionWrappers.cfm">
 <cfinclude template="/farcry/farcry_core/admin/includes/utilityFunctions.cfm">
-
+<cfparam name="bLibrary" default="0">
+<cfparam name="lSelectedCategoryID" default="">
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 <!--- check permissions --->
-<cfscript>
-	iDeveloperPermission = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="developer");
-</cfscript>
+<cfset iDeveloperPermission = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="developer")>
+
 <cfif iDeveloperPermission eq 1>
 	<cfif isDefined("form.submit")>
 		<cfoutput>
@@ -63,9 +64,9 @@ $out:$
 			zipFile.init(zipFilePath);
 			entries = zipFile.entries();
 			//Get the data on the starting point in the tree
-			qStartingPointData = createObject("component", "#application.packagepath#.farcry.tree").getNode(objectid=form.startPoint); 
+			qStartingPointData = createObject("component", "#application.packagepath#.farcry.tree").getNode(objectid=application.navid.imageroot); 
 			//Set the floor for adding folders and images
-			iBaseLevel = qStartingPointData.nLevel;
+			//iBaseLevel = qStartingPointData.nLevel;
 			/*
 			Get a query object containing all descendants of the starting point. This query will be used as
 			a lookup table for folders. If the folder exists at the correct level than nothing will be done.
@@ -73,6 +74,7 @@ $out:$
 			*/ 
 			qStartPointDescendants = createObject("component", "#application.packagepath#.farcry.tree").getDescendants(objectid=qStartingPointData.objectId);
 			//Loop through all entries in the zip file
+			objCategory = CreateObject("component","#application.packagepath#.farcry.category");
 			while(entries.hasMoreElements()) {
 				entry = entries.nextElement();
 				navigationParentId = qStartingPointData.objectId;
@@ -118,7 +120,7 @@ $out:$
 				//Is it an image? If so evaluate it for upload
 				if (not entry.isDirectory()){
 					sFileName = getFileFromPath(entry.getName());
-					sFilePath = application.defaultfilepath;
+					sFilePath = application.defaultimagepath;
 					oFile = createObject("component", "#application.packagepath#.farcry.file");
 					//do we have a mime type match?
 					sFileMimeType = oFile.getMimeType(sFileName);
@@ -165,6 +167,8 @@ $out:$
 						stImageProps.title = listFirst(stImageProps.imageFile,".");
 						stImageProps.label = listFirst(stImageProps.imageFile,".");
 						stImageProps.alt = "Image " & sFileName;
+						stImageProps.bLibrary = bLibrary;
+						
 						//If imageJ is installed use it to get the Height and Width of the Original Image
 						if(structKeyExists(form,"imageJInstalled")and form.imageJInstalled){
 							imagePath = stImageProps.originalImagePath & "\" & stImageProps.imageFile;
@@ -210,6 +214,8 @@ $out:$
 						}
 						//Create the image object
 						createobject("component", application.types.dmImage.typePath).createData(stProperties=stImageProps);
+						// assign category
+						objCategory.assignCategories(objectid=stImageProps.objectID,lCategoryIDs=lSelectedCategoryID);
 						//Add the new image under it's nav parent
 						oParentNav = createobject("component", application.types.dmNavigation.typePath);
 						stParent = oParentNav.getData(navigationParentID);
@@ -226,49 +232,80 @@ $out:$
 			}
 			zipFile.close();
 		</cfscript>
-		
 		<!--- Cleanup the uploaded zip file --->
 		<cffile action="delete" file="#zipFilePath#">
 		<cfoutput><span class="success"><strong>#application.adminBundle[session.dmProfile.locale].Done#</strong></span><br></cfoutput>
 
 	<cfelse>
 		<!--- Get all of the nodes under the imageRoot --->
-		<cfscript>
+		<!--- <cfscript>
 		o = createObject("component", "#application.packagepath#.farcry.tree");
 		qNodes = o.getDescendants(dsn=application.dsn, objectid=application.navid.imageroot);
-		</cfscript>
+		</cfscript> --->
 		
 		<!--- Show the form --->
 		<cfoutput>
-		<div class="formTitle">#application.adminBundle[session.dmProfile.locale].bulkImageUpload#</div>
+
 		
-		<p>
-		<form action="" method="POST" name="imageForm" enctype="multipart/form-data">
-		<table border="0" cellpadding="3" cellspacing="0">
-			<tr>
-				<td>#application.adminBundle[session.dmProfile.locale].recreateImageStructure#</td>
-				<td>
-					<select name="startPoint">
-					<option value="#application.navid.imageroot#">#application.adminBundle[session.dmProfile.locale].imageRoot#</option>
-					<cfloop query="qNodes">
-					<option value="#qNodes.objectId#" <cfif qNodes.objectId eq application.navid.imageroot>selected</cfif>>#RepeatString("&nbsp;&nbsp;|", qNodes.nlevel)#- #qNodes.objectName#</option>
-					</cfloop>
-					</select>
-				</td>
-			</tr>
-			<tr>
-				<td>#application.adminBundle[session.dmProfile.locale].zipFile#</td>
-				<td>
-					<input type="File" size=25 accept="application/x-zip-compressed" name="zipFile">
-				</td>
-			</tr>
-			<tr>
-				<td colspan=2>
-					<input type="checkbox" name="bCreateDirectories" value=0> #application.adminBundle[session.dmProfile.locale].noCreateNavigationNodes#
-				</td>
-			</tr>
-			<tr>
-				<td colspan=2>
+	<form method="post" class="f-wrap-1 f-bg-medium wider" action="" name="imageForm" enctype="multipart/form-data">
+		<fieldset>
+	
+		<h3>#application.adminBundle[session.dmProfile.locale].bulkImageUpload#</h3>
+		
+		<fieldset class="f-checkbox-wrap">
+			<fieldset>
+			<widgets:categoryAssociation typeName="dmImage" lSelectedCategoryID="">
+			</fieldset>
+			<br />
+			</label>		
+		</fieldset>
+		
+		<!--- <label for="startPoint"><b>#application.adminBundle[session.dmProfile.locale].recreateImageStructure#</b>
+		<select name="startPoint" id="startPoint">
+		<option value="#application.navid.imageroot#">#application.adminBundle[session.dmProfile.locale].imageRoot#</option>
+		<cfloop query="qNodes">
+		<option value="#qNodes.objectId#" <cfif qNodes.objectId eq application.navid.imageroot>selected</cfif>>#RepeatString("&nbsp;&nbsp;|", qNodes.nlevel)#- #qNodes.objectName#</option>
+		</cfloop>
+		</select><br />
+		</label> --->
+		
+
+		<label for="startPoint"><b>#application.adminBundle[session.dmProfile.locale].zipFile#</b>
+		<input type="File" accept="application/x-zip-compressed" name="zipFile" /><br />
+		</label>
+		
+		<fieldset class="f-checkbox-wrap">
+			<b>Image Library:</b>
+			<fieldset>
+				<label for="bLibrary">
+					<input id="bLibrary" type="checkbox" class="f-checkbox" name="bLibrary" value="1" />&nbsp;Add to image library
+					<br />
+				</label>
+			</fieldset>
+		</fieldset>
+		<!--- <fieldset class="f-checkbox-wrap">
+		
+			<b>dmNavigation nodes</b>
+			
+			<fieldset>
+			
+			<label for="bCreateDirectories">
+			<input type="checkbox" class="f-checkbox" name="bCreateDirectories" id="bCreateDirectories" value="0" /> #application.adminBundle[session.dmProfile.locale].noCreateNavigationNodes#
+			</label>
+			
+			</fieldset>
+		
+		</fieldset> --->
+		
+		<div class="f-submit-wrap">
+		<input type="submit" value="#application.adminBundle[session.dmProfile.locale].uploadImages#" name="submit" class="f-submit" /><br />
+		</div>
+		
+	</fieldset>
+	</form>
+	
+	<hr />
+
 					<!---
 					**Check their Java Version**
 					There's a known ImageJ measure bug in J2SE 1.4.2.
@@ -301,9 +338,9 @@ $out:$
 							<input type="text" size="3" maxlength="3" name="resizeValue">px
 							<input type="hidden" name="imageJInstalled" value=1>
 							<cfcatch type="Object">
-							<span style="color:##FF0000;">
+							<p class="error">
 							#application.adminBundle[session.dmProfile.locale].downloadIJBlurb#
-							</span>
+							</p>
 							</cfcatch>
 						</cftry>
 					<cfelse>
@@ -311,22 +348,14 @@ $out:$
 							<cfscript>
 								oTest = createObject("java","ij.io.Opener");
 							</cfscript>
-							<span style="color:##FF0000;">
+							<p class="error">
 							#application.adminBundle[session.dmProfile.locale].jreWarningBlurb#
-							</span>
+							</p>
 							<input type="hidden" name="imageJInstalled" value=0>
 							<cfcatch type="Object"></cfcatch>
 						</cftry>
 					</cfif>
-				</td>
-			</tr>
-			<tr>
-				<td>&nbsp;</td>
-				<td>
-					<input type="submit" value="#application.adminBundle[session.dmProfile.locale].uploadImages#" name="submit" />
-				</td>
-			</tr>
-		</table>
+
 		<!--- form validation --->
 		<SCRIPT LANGUAGE="JavaScript">
 		<!--//
@@ -337,11 +366,15 @@ $out:$
 			//-->
 		</SCRIPT>
 		</form>
+		
+		
+		
+		<h3>#application.adminBundle[session.dmProfile.locale].instructions#</h3>
 		<p>
-		    <strong>#application.adminBundle[session.dmProfile.locale].instructions#</strong>
-		</p>
 		#application.adminBundle[session.dmProfile.locale].uploadImagesBlurb#
-		<p><em>#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].currentJRE,"#javaVersion#")#</em></p>
+		</p>
+		<p>
+		<em>#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].currentJRE,"#javaVersion#")#</em></p>
 		</cfoutput>
 	</cfif>
 <cfelse>

@@ -6,15 +6,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/scheduledTasks/statsOverviewReport.cfm,v 1.4.2.1 2005/03/04 22:29:03 tom Exp $
-$Author: tom $
-$Date: 2005/03/04 22:29:03 $
-$Name: milestone_2-3-2 $
-$Revision: 1.4.2.1 $
+$Header: /cvs/farcry/farcry_core/admin/scheduledTasks/statsOverviewReport.cfm,v 1.8 2005/09/15 04:43:06 daniela Exp $
+$Author: daniela $
+$Date: 2005/09/15 04:43:06 $
+$Name: milestone_3-0-0 $
+$Revision: 1.8 $
 
 || DESCRIPTION || 
 $Description: Emails an overview report for site activity $
-$TODO: $
+
 
 || DEVELOPER ||
 $Developer: Brendan Sisson (brendan@daemon.com.au)$
@@ -31,7 +31,7 @@ $out:$
 <cfsetting requestTimeout="600">
 
 <cfparam name="url.dateRange" default="ww">
-<cfparam name="url.emailTo" default="brendan@daemon.com.au">
+<cfparam name="url.emailTo" default="#application.config.general.adminemail#">
 	
 <!--- get stats --->
 <cfscript>
@@ -45,6 +45,7 @@ $out:$
 </cfscript>
 
 <cfset tS=application.rb.formatRBString(application.adminBundle[application.config.general.locale].emailStatReport,"#application.config.general.siteTitle#")>
+
 <cfmail to="#url.emailTo#" from="#application.config.general.adminEmail#" subject="#tS#" type="HTML">
 
 <cfoutput>

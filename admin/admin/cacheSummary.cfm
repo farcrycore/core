@@ -6,11 +6,11 @@ Daemon Pty Limited 1995-2003
 http://www.daemon.com.au
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/admin/cacheSummary.cfm,v 1.7 2004/07/15 01:10:24 brendan Exp $
-$Author: brendan $
-$Date: 2004/07/15 01:10:24 $
-$Name: milestone_2-3-2 $
-$Revision: 1.7 $
+$Header: /cvs/farcry/farcry_core/admin/admin/cacheSummary.cfm,v 1.9 2005/08/16 05:53:23 pottery Exp $
+$Author: pottery $
+$Date: 2005/08/16 05:53:23 $
+$Name: milestone_3-0-0 $
+$Revision: 1.9 $
 
 || DESCRIPTION || 
 Displays a summary of cache blocks
@@ -55,7 +55,7 @@ out:
 	</cfif>
 	
 	<!--- display form --->
-	<cfoutput><span class="Formtitle">#application.adminBundle[session.dmProfile.locale].contentCacheSummary#</span><p></p></cfoutput>
+	<cfoutput><h3>#application.adminBundle[session.dmProfile.locale].contentCacheSummary#</h3></cfoutput>
 	
 	<!--- block caches --->
 	<!--- check a block cache exists --->
@@ -63,13 +63,13 @@ out:
 		<!--- setup form and header --->
 		<cfoutput>
 		<form action="" method="post" name="BlockForm">
-		<table cellpadding="5" cellspacing="0" border="1" style="margin-left:30px;">
-		<tr class="dataheader">
-			<td>#application.adminBundle[session.dmProfile.locale].Block#</td>
-			<td align="center">#application.adminBundle[session.dmProfile.locale].numberCaches#</td>
-			<td align="center">#application.adminBundle[session.dmProfile.locale].expiredCaches#</td>
-			<td align="center">#application.adminBundle[session.dmProfile.locale].clean#</td>
-			<td align="center">#application.adminBundle[session.dmProfile.locale].flush#</td>
+		<table class="table-4" cellspacing="0">
+		<tr>
+			<th>#application.adminBundle[session.dmProfile.locale].Block#</th>
+			<th>#application.adminBundle[session.dmProfile.locale].numberCaches#</th>
+			<th>#application.adminBundle[session.dmProfile.locale].expiredCaches#</th>
+			<th>#application.adminBundle[session.dmProfile.locale].clean#</th>
+			<th>#application.adminBundle[session.dmProfile.locale].flush#</th>
 		</tr>
 		</cfoutput>
 		
@@ -89,7 +89,7 @@ out:
 							<!--- display block cache name --->
 							<td><a href="cacheDetail.cfm?block=#blockName#">#blockname#</a></td>
 							<!--- display number of caches within block --->
-							<td align="center">#listlen(blockCache[blockName])#</td>
+							<td>#listlen(blockCache[blockName])#</td>
 						</cfoutput>
 						<cfset contentcache = structget("server.dm_generatedcontentcache.#application.applicationname#")>
 						<cfset cacheflushnum = 0>
@@ -108,9 +108,9 @@ out:
 						
 						<cfoutput>
 								<!--- display number of caches that have timed out --->
-								<td align="center">#cacheflushnum#</td>
-								<td align="center"><input type="checkbox" value="#blockName#" name="cleanBlock"></td>
-								<td align="center"><input type="checkbox" value="#blockName#" name="flushBlock"></td>
+								<td>#cacheflushnum#</td>
+								<td><input type="checkbox" value="#blockName#" name="cleanBlock"></td>
+								<td><input type="checkbox" value="#blockName#" name="flushBlock"></td>
 							</tr>
 						</cfoutput>
 					</cflock>
@@ -118,19 +118,20 @@ out:
 			</cfloop>
 		</cflock>
 		<cfoutput>
-		<tr style="border: none;">
+		<tr>
 			<!--- show form buttons, javascript to submit the form onClick of button --->
-			<td style="border-right: none;" colspan="3"><input type="button" value="Refresh" name="refresh" class="normalbttnstyle" onClick="forms.BlockForm.submitButton.name='refresh';forms.BlockForm.submitButton.click()"></td>
-			<td  style="border-right: none;border-left: none;" align="center"><input type="button" name"cleanBlock" value="Clean" class="normalbttnstyle" onClick="forms.BlockForm.submitButton.name='cleanBlock';forms.BlockForm.submitButton.click()"></td>
-			<td  style="border-left: none;" align="center"><input type="button" value="Flush" name="flushBlock" class="normalbttnstyle" onClick="forms.BlockForm.submitButton.name='flushBlock';forms.BlockForm.submitButton.click()"></td>
+			<td colspan="3"><input type="button" value="Refresh" name="refresh" class="normalbttnstyle" onClick="forms.BlockForm.submitButton.name='refresh';forms.BlockForm.submitButton.click()"></td>
+			<td><input type="button" name"cleanBlock" value="Clean" class="normalbttnstyle" onClick="forms.BlockForm.submitButton.name='cleanBlock';forms.BlockForm.submitButton.click()"></td>
+			<td><input type="button" value="Flush" name="flushBlock" class="normalbttnstyle" onClick="forms.BlockForm.submitButton.name='flushBlock';forms.BlockForm.submitButton.click()"></td>
 		</tr>
-		</table><p></p>
+		</table>
+		
 		<input type="submit" name="submitButton" style="visibility:hidden;width:28px;">	
 		<input type="hidden" value="" name="dummyField">
 		</form>
 		</cfoutput>
 	<cfelse>
-		<cfoutput>#application.adminBundle[session.dmProfile.locale].noBlockCachesNow#</cfoutput>
+		<cfoutput><p>#application.adminBundle[session.dmProfile.locale].noBlockCachesNow#</p></cfoutput>
 	</cfif>
 
 <cfelse>

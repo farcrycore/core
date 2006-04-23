@@ -9,11 +9,11 @@ Daemon Pty Limited 1995-2001
 http://www.daemon.com.au/
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/security/ui/dmSecUI_UserGroups.cfm,v 1.3 2004/07/30 02:00:28 brendan Exp $
-$Author: brendan $
-$Date: 2004/07/30 02:00:28 $
-$Name: milestone_2-3-2 $
-$Revision: 1.3 $
+$Header: /cvs/farcry/farcry_core/tags/security/ui/dmSecUI_UserGroups.cfm,v 1.5 2005/10/07 04:14:14 daniela Exp $
+$Author: daniela $
+$Date: 2005/10/07 04:14:14 $
+$Name: milestone_3-0-0 $
+$Revision: 1.5 $
 
 || DESCRIPTION || 
 Manage the groups a user belongs to.
@@ -29,6 +29,13 @@ Matt Dawson (mad@daemon.com.au)
 
 || HISTORY ||
 $Log: dmSecUI_UserGroups.cfm,v $
+Revision 1.5  2005/10/07 04:14:14  daniela
+[FC-340]
+Redirect - use application.url.farcry rather than /farcry (virtual directory sites)
+
+Revision 1.4  2005/08/17 05:18:52  daniela
+[FC-192]   Add glamour touch and add a cancel button
+
 Revision 1.3  2004/07/30 02:00:28  brendan
 i18n mods
 
@@ -76,8 +83,6 @@ no message
 	stUD = oAuthentication.getUserDirectory();
 </cfscript>
 
-<cfoutput><span class="formtitle">#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].manageUserGroups,"#userLogin#")#</span><p></cfoutput>
-
 <cfif isDefined("form.Submit")>
 	<!--- update the groups this user is a member of --->
 	<cfloop index="i" list="#form.MemberOf#">
@@ -91,6 +96,10 @@ no message
 			oAuthentication.removeUserFromGroup(userlogin=userlogin,userdirectory=userdirectory,groupname=i);
 		</cfscript>
 	</cfloop>
+	
+	<!--- return to listing page???? --->
+	
+	
 </cfif>
 
 <cfscript>
@@ -155,48 +164,48 @@ f = document.forms.userSearch;
 }
 </script>
 
-<form action="" name="userSearch" method="POST" onSubmit="SelectAllOptions();">
-
-<table class="formtable">
-<tr>
-	<td rowspan="20">&nbsp;</td>
-	<td colspan="3">&nbsp;</td>
-	<td rowspan="20">&nbsp;</td>
-</tr>
-
-<tr>
-	<td>
-		<span class="formlabel">#application.adminBundle[session.dmProfile.locale].memberOf#</span><br>
-		<select name="MemberOf" multiple size=10 style="width:140px;">
-			<cfloop index="i" from="1" to="#arrayLen(aUserGroups)#">
-				<option value="#aUserGroups[i].groupName#">#aUserGroups[i].groupName#
-			</cfloop>
-		</select>
-	</td>
-	<td align="center" width="100%">
-		<input type="Button" name="Add" value="&lt;&lt;-" onClick="AddGroup();"><Br>
-		<br>
-		<input type="Button" name="Remove" value="-&gt;&gt;" onClick="RemoveGroup();">
-	</td>
-	<td>
-		<span class="formlabel">#application.adminBundle[session.dmProfile.locale].memberNot#</span><br>
-		<select name="NotMemberOf" multiple size=10 style="width:140px;">
-			<cfloop index="i" from="1" to="#arrayLen(aNotUserGroups)#">
-				<option value="#aNotUserGroups[i].groupName#">#aNotUserGroups[i].groupName#
-			</cfloop>
-		</select>
-	</td>
-</tr>
-<tr>
-	<td colspan="3">&nbsp;</td>
-</tr>
-<tr>
-	<td colspan=3 align=center><input type="Submit" name="Submit" value="#application.adminBundle[session.dmProfile.locale].updateLC#"></td>
-</tr>
-<tr>
-	<td colspan="3">&nbsp;</td>
-</tr>
-</table>
+<form action="" method="post" name="userSearch" id="userSearch" class="f-wrap-1 f-bg-medium" onSubmit="SelectAllOptions();">
+	<fieldset> 
+			<h3>#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].manageUserGroups,"#userLogin#")#</h3>
+		<br />
+		<table border="0" cellpadding="1" cellspacing="0" class="table-1">
+			<colgroup align="left">
+			<colgroup align="center">
+			<colgroup align="left">
+			<thead valign="top">
+				<tr>
+					<th>#application.adminBundle[session.dmProfile.locale].memberOf#</th>
+					<th>&nbsp;</th>
+					<th>#application.adminBundle[session.dmProfile.locale].memberNot#</th>
+				</tr>
+			</thead>
+			<tr>
+				<td>
+					<select name="MemberOf" id="MemberOf" size="10" multiple style="width:140px;">
+						<cfloop index="i" from="1" to="#arrayLen(aUserGroups)#">
+							<option value="#aUserGroups[i].groupName#">#aUserGroups[i].groupName#
+						</cfloop>
+					</select>
+				</td>
+				<td>
+					<input type="Button" name="Add" class="f-submit" value="&lt;&lt;-" onClick="AddGroup();">
+					<br />
+					<input type="Button" name="Remove" class="f-submit" value="-&gt;&gt;" onClick="RemoveGroup();">
+				</td>
+				<td>
+					<select name="NotMemberOf" id="NotMemberOf" size="10" multiple style="width:140px;">
+						<cfloop index="i" from="1" to="#arrayLen(aNotUserGroups)#">
+							<option value="#aNotUserGroups[i].groupName#">#aNotUserGroups[i].groupName#
+						</cfloop>
+					</select>
+				</td>
+			</tr>
+		</table>
+		<div class="f-submit-wrap">
+			<input type="Submit" name="Submit" class="f-submit" value="#application.adminBundle[session.dmProfile.locale].updateLC#">
+			<input type="button" name="cancel" class="f-submit" value="#application.adminBundle[session.dmProfile.locale].cancel#" onclick="location.href='#application.url.farcry#/security/redirect.cfm?tag=UserCreateEdit&userDirectory=#userdirectory#&userLogin=#userlogin#'">
+		</div>
+	</fieldset>
 
 </form>
 </cfoutput>

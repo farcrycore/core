@@ -4,15 +4,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/admin/config_custom.cfm,v 1.4 2004/07/15 01:10:24 brendan Exp $
-$Author: brendan $
-$Date: 2004/07/15 01:10:24 $
-$Name: milestone_2-3-2 $
-$Revision: 1.4 $
+$Header: /cvs/farcry/farcry_core/admin/admin/config_custom.cfm,v 1.7 2005/08/16 05:53:23 pottery Exp $
+$Author: pottery $
+$Date: 2005/08/16 05:53:23 $
+$Name: milestone_3-0-0 $
+$Revision: 1.7 $
 
 || DESCRIPTION || 
 $Description: Manages custom config items$
-$TODO: $
+
 
 || DEVELOPER ||
 $Developer: Brendan Sisson (brendan@daemon.com.au)$
@@ -45,20 +45,19 @@ $out:$
 	</cfscript>
 	
 	<cfoutput>
-	<span class="formtitle">#application.adminBundle[session.dmProfile.locale].customConfigTypes#</span><p></p></cfoutput>
+	<h3>#application.adminBundle[session.dmProfile.locale].customConfigTypes#</h3></cfoutput>
 	
 	<cfif qConfigs.recordcount>
 		<cfoutput>
 		<!--- display any messages --->
 		<cfif isdefined("stStatus")>
-			<div style="margin-left:30px;">#stStatus.msg#</div>
+			<p>#stStatus.msg#</p>
 		</cfif>
-		<p></p>
-		<table cellpadding="5" cellspacing="0" border="1"  style="margin-left:30px;">
+		<table class="table-3" cellspacing="0">
 		<tr>
-			<th class="dataheader">#application.adminBundle[session.dmProfile.locale].config#</th>
-			<th class="dataheader">#application.adminBundle[session.dmProfile.locale].deployed#</th>
-			<th class="dataheader">#application.adminBundle[session.dmProfile.locale].deploy#</th>
+			<th scope="col">#application.adminBundle[session.dmProfile.locale].config#</th>
+			<th scope="col">#application.adminBundle[session.dmProfile.locale].deployed#</th>
+			<th scope="col">#application.adminBundle[session.dmProfile.locale].deploy#</th>
 		</tr>
 		</cfoutput>
 		
@@ -93,7 +92,7 @@ $out:$
 		</cfoutput>
 	
 	<cfelse>
-		<cfoutput>#application.adminBundle[session.dmProfile.locale].noCustomConfigNow#</cfoutput>
+		<cfoutput><p>#application.adminBundle[session.dmProfile.locale].noCustomConfigNow#</p></cfoutput>
 	</cfif>
 
 <cfelse>

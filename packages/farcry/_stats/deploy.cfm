@@ -5,11 +5,11 @@ $License: Released Under the "Common Public License 1.0", http://www.opensource.
 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_stats/deploy.cfm,v 1.21 2004/05/20 04:41:25 brendan Exp $
-$Author: brendan $
-$Date: 2004/05/20 04:41:25 $
-$Name: milestone_2-2-1 $
-$Revision: 1.21 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_stats/deploy.cfm,v 1.22 2005/09/16 07:25:39 guy Exp $
+$Author: guy $
+$Date: 2005/09/16 07:25:39 $
+$Name: milestone_3-0-0 $
+$Revision: 1.22 $
 
 
 || DESCRIPTION ||
@@ -198,13 +198,18 @@ $out: stStatus			: struct to pass status report back to caller $
 			
 	</cfcase>
 	<cfcase value="postgresql">
-		<cftry><cfquery datasource="#arguments.dsn#" name="qCreateTemp">
-			drop table #application.dbowner#statsHours 
-		</cfquery><cfcatch></cfcatch></cftry>
+		<cftry>
+			<cfquery datasource="#arguments.dsn#" name="qCreateTemp">
+			DROP TABLE #application.dbowner#statsHours 
+			</cfquery>
+
+			<cfcatch>
+				<cflog text="#cfcatch.message# #cfcatch.detail# [SQL: #cfcatch.sql#]" file="coapi" type="warning" application="yes">			
+			</cfcatch>
+		</cftry>
+
 		<cfquery datasource="#arguments.dsn#" name="qCreateTemp">
-			create table #application.dbowner#statsHours (
-				HOUR INTEGER NOT NULL PRIMARY KEY
-			)
+		CREATE TABLE #application.dbowner#statsHours(HOUR INTEGER NOT NULL PRIMARY KEY)
 		</cfquery>
 		
 		<!--- populate table --->
@@ -221,45 +226,64 @@ $out: stStatus			: struct to pass status report back to caller $
 		<!--- make a dummy tblexists --->
 		<cftry>
 			<cfparam name="qCheck.tblExists" default="0">
+			
 			<cfquery datasource="#arguments.dsn#" name="qCheck">
-				select count(*) as tblexists from stats	
+			SELECT count(*) AS tblexists FROM stats	
 			</cfquery>
+
 			<cfcatch>
-				<!--- do nothing --->
+				<cflog text="#cfcatch.message# #cfcatch.detail# [SQL: #cfcatch.sql#]" file="coapi" type="warning" application="yes">
 			</cfcatch>		
 		</cftry>
+
 		<!--- create the stats days table and populate it--->
-		<cftry><cfquery datasource="#arguments.dsn#" name="qDrop">
-			drop table statsDays
-		</cfquery><cfcatch></cfcatch></cftry>
-		<cfquery datasource="#arguments.dsn#" name="qCreate">
-			CREATE TABLE statsDays (
-				Day int NOT NULL ,
-				Name varchar (10) NOT NULL 
-			) 
-		</cfquery>
-		<cfquery datasource="#arguments.dsn#" name="qPop">					
-			insert into statsDays (day,name) values (1,'Sunday')
-		</cfquery>
-		<cfquery datasource="#arguments.dsn#" name="qPop">		
-			insert into statsDays (day,name) values (2,'Monday')
-		</cfquery>
-		<cfquery datasource="#arguments.dsn#" name="qPop">		
-			insert into statsDays (day,name) values (3,'Tuesday')
-		</cfquery>
-		<cfquery datasource="#arguments.dsn#" name="qPop">		
-			insert into statsDays (day,name) values (4,'Wednesday')
-		</cfquery>
-		<cfquery datasource="#arguments.dsn#" name="qPop">		
-			insert into statsDays (day,name) values (5,'Thursday')
-		</cfquery>
-		<cfquery datasource="#arguments.dsn#" name="qPop">		
-			insert into statsDays (day,name) values (6,'Friday')
-		</cfquery>
-		<cfquery datasource="#arguments.dsn#" name="qPop">		
-			insert into statsDays (day,name) values (7,'Saturday')
-		</cfquery>
+		<cftry>
+			<cfquery datasource="#arguments.dsn#" name="qDrop">
+			DROP TABLE statsDays
+			</cfquery>
+
+			<cfcatch>
+				<cflog text="#cfcatch.message# #cfcatch.detail# [SQL: #cfcatch.sql#]" file="coapi" type="warning" application="yes">
+			</cfcatch>
+		</cftry>
+
+		<cftry>
+			<cfquery datasource="#arguments.dsn#" name="qCreate">
+			CREATE TABLE statsDays (Day int NOT NULL ,Name varchar (10) NOT NULL) 
+			</cfquery>
+	
+			<cfquery datasource="#arguments.dsn#" name="qPop">					
+			INSERT INTO statsDays (day,name) VALUES (1,'Sunday')
+			</cfquery>
+	
+			<cfquery datasource="#arguments.dsn#" name="qPop">		
+			INSERT INTO statsDays (day,name) VALUES (2,'Monday')
+			</cfquery>
 			
+			<cfquery datasource="#arguments.dsn#" name="qPop">		
+			INSERT INTO statsDays (day,name) VALUES (3,'Tuesday')
+			</cfquery>
+	
+			<cfquery datasource="#arguments.dsn#" name="qPop">		
+			INSERT INTO statsDays (day,name) VALUES (4,'Wednesday')
+			</cfquery>
+	
+			<cfquery datasource="#arguments.dsn#" name="qPop">		
+			INSERT INTO statsDays (day,name) VALUES (5,'Thursday')
+			</cfquery>
+	
+			<cfquery datasource="#arguments.dsn#" name="qPop">		
+			INSERT INTO statsDays (day,name) VALUES (6,'Friday')
+			</cfquery>
+	
+			<cfquery datasource="#arguments.dsn#" name="qPop">		
+			INSERT INTO statsDays (day,name) VALUES (7,'Saturday')
+			</cfquery>
+
+			<cfcatch>
+				<cflog text="#cfcatch.message# #cfcatch.detail# [SQL: #cfcatch.sql#]" file="coapi" type="error" application="yes">
+			</cfcatch>
+		</cftry>
 	</cfcase>
 	<cfdefaultcase>
 		<cfquery datasource="#arguments.dsn#" name="qCreateTemp">

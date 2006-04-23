@@ -1,0 +1,204 @@
+/* This is the stylesheet used for the tabs in the admin area*/
+
+div.tabBox {}
+
+div.tabArea {
+  padding: 0px 6px 3px 0px;
+}
+
+/* tabs at top of page*/
+div.mainTabArea {
+  width:100%;
+  font: normal 10px Verdana, Geneva, Arial, Helvetica, sans-serif;
+  letter-spacing: -0.1em;
+  padding: 0px 0px 8px 0px;
+}
+
+/* tabs at top of each column*/
+div.subTabArea {
+  width:100%;
+  font: normal 10px Verdana, Geneva, Arial, Helvetica, sans-serif;
+  letter-spacing: -0.1em;
+  padding: 3px 0px 1px 3px;
+  margin-top: 6px;   
+}
+
+/* Inactive tab style */
+.tab {
+  background-color: #CCC;
+  border: 1px solid #000;
+  border-bottom-width: 0px;
+  border-color: #666 #777 #777 #666;
+  -moz-border-radius: .75em .75em 0em 0em;
+  border-radius-topleft: .75em;
+  border-radius-topright: .75em;
+  padding: 5px 1em 5px 1em;
+  position: relative;
+  text-decoration: none;
+  top: 3px;
+  z-index: 100;
+  margin: 0 1px 0 0;
+}
+
+.tab, .tab:visited {
+  color: #000;
+}
+
+.tab:hover {
+  background-color: #F96;
+  border-color: #666 #777 #777 #666;
+  color: #000;
+}
+
+/* Active tab styles */
+.activeTab {
+  background-color: #CCC;
+  border: 1px solid #000;
+  border-bottom-width: 0px;
+  border-color: #666 #777 #777 #666;
+  -moz-border-radius: .75em .75em 0em 0em;
+  border-radius-topleft: .75em;
+  border-radius-topright: .75em;
+  padding: 5px 1em 7px 1em;
+  position: relative;
+  text-decoration: none;
+  font-weight: bold;
+  top: 2px;
+  z-index: 100;
+  margin: 0 1px 0 0;
+}
+
+.activeTab, .activeTab:hover, .activeTab:visited {
+  background-color: #FFF;
+  border-color: #666 #777 #777 #666;
+  color: #000;
+}
+
+/* Inactive subtab style */
+.subtab {
+  background-color: #CCC;
+  border: 1px solid #333;
+  border-bottom-width: 0px;
+  -moz-border-radius: .75em .75em 0em 0em;
+  border-radius-topleft: .75em;
+  border-radius-topright: .75em;
+  padding: 3px .7em 3px .7em;
+  position: relative;
+  text-decoration: none;
+  top: 3px;
+  z-index: 100;
+  margin: 0 1px 0 0;
+}
+
+.subtab, .subtab:visited {
+  color: #000;
+}
+
+.subtab:hover {
+  background-color: #F96;
+  border-color: #666 #777 #777 #666;
+  color: #000;
+}
+
+/* Active tab styles */
+.activeSubTab {
+  background-color: #666;
+  border: 1px solid #333;
+  border-bottom-width: 0px;
+  -moz-border-radius: .75em .75em 0em 0em;
+  border-radius-topleft: .75em;
+  border-radius-topright: .75em;
+  padding: 3px 1em 5px 1em;
+  position: relative;
+  text-decoration: none;
+  top: 2px;
+  z-index: 102;
+  color: #FFF;
+  margin: 0 1px 0 0;
+}
+
+
+div.tabMain {
+  width:100%;
+  background-color: #FFF;
+  border: 1px solid #000;
+  padding: 0px 0px 0px 0px;
+  margin: 5px 0px 0px 3px;
+  position: relative;
+  z-index: 101;
+}
+
+div.tabTitle {
+  background-color: #666;
+  color: #FFF;
+  font-weight: bold;
+  margin: 0px 0px 2px 0px;
+  padding: 6px 3px 6px 2px;
+  height: 32px;
+  text-align: left;
+}
+
+#expand, #contract {
+  position: relative;
+  top:5px;
+  left: 3px;
+}
+
+#DisplayTitle {
+  font-weight: bold;
+  display: inline;
+  margin-left: 5px;
+  position: relative;
+  top:5px;
+}
+
+div.tabIframeWrapper {
+  width: 100%;
+  background-color: #FFF;
+}
+
+iframe.tabContent {
+  background-color: #FFF;
+  width: 100%;
+  height: expression(document.body.clientHeight-130);
+  padding: 10px 10px 10px 10px;
+}
+
+#resizer {
+	position:relative;
+	/* Position is declared "relative" to gain control of stacking order (z-index). */
+	top: 5px;
+	width:2px;
+	height: expression(document.body.clientHeight-67);
+	left:expression(document.body.clientWidth*3/10+2);
+	background-color: #999;
+	float:left;
+	z-index:3;
+	/* This allows the content to overlap the right menu in narrow windows in good browsers. */
+	}
+
+#background {
+		background-color: #FFF;
+		height: expression(document.body.clientHeight-100);
+		overflow: none;
+}	
+	
+#column1 {
+	position:absolute;
+	/*top:101px; */
+	/* height: expression(document.body.clientHeight-100); */
+	width: expression(document.body.clientWidth*3/10);
+	background-color:#FFF;
+	z-index:2;
+	}
+		
+#column2 {
+	position:absolute;
+	/* top:101px; */
+	/* height: expression(document.body.clientHeight-100); */
+	width: expression(document.body.clientWidth*7/10-2);
+	background-color:#FFF;
+	z-index:1;
+	}
+
+/*  ######## End Tab Styles ######## */

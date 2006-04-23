@@ -5,15 +5,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/install/index.cfm,v 1.54 2005/02/04 05:21:27 brendan Exp $
-$Author: brendan $
-$Date: 2005/02/04 05:21:27 $
-$Name: milestone_2-3-2 $
-$Revision: 1.54 $
+$Header: /cvs/farcry/farcry_core/admin/install/index.cfm,v 1.58 2005/09/13 00:00:15 geoff Exp $
+$Author: geoff $
+$Date: 2005/09/13 00:00:15 $
+$Name: milestone_3-0-0 $
+$Revision: 1.58 $
 
 || DESCRIPTION || 
 $Description: Installation scripts for FarCry$
-$TODO: $
+
 
 || DEVELOPER ||
 $Developer: Brendan Sisson (brendan@daemon.com.au)$
@@ -50,17 +50,17 @@ $out:$
 
 <!--- HTML header --->
 <cfoutput>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <title>FarCry Install</title>
 <link rel="STYLESHEET" type="text/css" href="installer.css">
 </head>
 
-<body bgcolor="##FFFFFF">
-<div align="center">
-<p><img src="farcry_logo.gif" alt="farcry" width="265" height="70" border="0" align="bottom"></p>
-<p>Please complete the form below with your installation options...</p>
+<body>
+<div id="wrap">
+<div class="logo"><img src="farcry_logo.gif" alt="FarCry CMS" width="220" height="95" border="0"></div>
 </cfoutput>
 
 <cfif isDefined("form.proceed")>
@@ -100,9 +100,9 @@ $out:$
     <cfflush>
 		
     
-			<!--- copy farcry_aura directory to new site name --->
+			<!--- copy farcry_pliant directory to new site name --->
 		    <cfscript>
-		    projectPath = replaceNoCase(replace(getCurrentTemplatePath(),"\","/","all"), "/farcry_core/admin/install/index.cfm", "") & "/farcry_aura";
+		    projectPath = replaceNoCase(replace(getCurrentTemplatePath(),"\","/","all"), "/farcry_core/admin/install/index.cfm", "") & "/farcry_pliant";
 		    newProjectPath = listDeleteAt(projectPath, listLen(projectPath, "/"), "/") & "/" & form.siteName;
 			basePath = replaceNoCase(replace(getCurrentTemplatePath(),"\","/","all"), "/farcry_core/admin/install/index.cfm", "") & "";
 		    </cfscript>

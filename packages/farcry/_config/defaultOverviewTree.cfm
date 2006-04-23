@@ -4,15 +4,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_config/defaultOverviewTree.cfm,v 1.2 2004/07/09 04:08:48 paul Exp $
-$Author: paul $
-$Date: 2004/07/09 04:08:48 $
-$Name: milestone_2-2-1 $
-$Revision: 1.2 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_config/defaultOverviewTree.cfm,v 1.4 2005/09/13 06:34:27 guy Exp $
+$Author: guy $
+$Date: 2005/09/13 06:34:27 $
+$Name: milestone_3-0-0 $
+$Revision: 1.4 $
 
 || DESCRIPTION || 
 $Description: deploys overview tree config $
-$TODO: $
+
 
 || DEVELOPER ||
 $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
@@ -34,6 +34,7 @@ stConfig.insertJSdmHTML = "<a href='##stOverview['menu']['insert']['dmHTML']##?o
 stConfig.insertJSdmFile = "<a href='#application.url.webroot#/download.cfm?DownloadFile=""+lastSelectedId+""' target='_blank'>""+theNode['TITLE']+""</a>";
 stConfig.insertJSdmFlash = "<OBJECT classid='clsid:D27CDB6E-AE6D-11cf-96B8-444553540000' codebase='http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab####version=""+theNode['FLASHVERSION']+""' WIDTH='""+theNode['FLASHWIDTH']+""'  HEIGHT='""+theNode['FLASHHEIGHT']+""'  ALIGN='""+theNode['FLASHALIGN']+""'><PARAM NAME='movie' VALUE='http://#CGI.SERVER_NAME#:#CGI.SERVER_PORT##application.url.webroot#/files/""+theNode['FLASHMOVIE']+""'><PARAM NAME='quality' VALUE='""+theNode['FLASHQUALITY']+""'><PARAM NAME='play' VALUE='""+theNode['FLASHPLAY']+""'><PARAM NAME='menu' VALUE='""+theNode['FLASHMENU']+""'><PARAM NAME='loop' VALUE='""+theNode['FLASHLOOP']+""'><PARAM NAME='FlashVars' VALUE='""+theNode['FLASHPARAMS']+""'><EMBED SRC='http://#CGI.SERVER_NAME#:#CGI.SERVER_PORT#/#application.url.webroot#/files/""+theNode['FLASHMOVIE']+""' QUALITY='""+theNode['FLASHQUALITY']+""' WIDTH='""+theNode['FLASHWIDTH']+""' HEIGHT='""+theNode['FLASHHEIGHT']+""' FLASHVARS='""+theNode['FLASHPARAMS']+""' ALIGN='""+theNode['FLASHALIGN']+""' MENU='""+theNode['FLASHMENU']+""' PLAY='""+theNode['FLASHPLAY']+""' LOOP='""+theNode['FLASHLOOP']+""' TYPE='application/x-shockwave-flash' PLUGINSPAGE='http://www.macromedia.com/go/getflashplayer'></EMBED></OBJECT>";
 stConfig.insertJSdmImage = "<img alt='""+theNode['ALT']+""' src='#application.url.webroot#/images/""+theNode['IMAGEFILE']+""'>";
+stConfig.bAllowDuplicateNavAlias = '1';
 </cfscript>
 
 <cfwddx action="CFML2WDDX" input="#stConfig#" output="wConfig">

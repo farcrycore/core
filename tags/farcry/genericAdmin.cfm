@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/farcry/genericAdmin.cfm,v 1.70.2.2 2005/05/24 04:44:06 gstewart Exp $
+$Header: /cvs/farcry/farcry_core/tags/farcry/genericAdmin.cfm,v 1.72 2005/05/24 02:59:01 gstewart Exp $
 $Author: gstewart $
-$Date: 2005/05/24 04:44:06 $
-$Name: milestone_2-3-2 $
-$Revision: 1.70.2.2 $
+$Date: 2005/05/24 02:59:01 $
+$Name: milestone_3-0-0 $
+$Revision: 1.72 $
 
 || DESCRIPTION ||
 $Description: generic admin for all types. If there is a display method called "display" on the type, it can be previewed.... $

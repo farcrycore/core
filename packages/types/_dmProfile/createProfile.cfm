@@ -1,30 +1,21 @@
 <!--- 
-|| BEGIN FUSEDOC ||
-
-|| Copyright ||
-Daemon Pty Limited 1995-2002
-http://www.daemon.com.au
+|| LEGAL ||
+$Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
+$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmProfile/createProfile.cfm,v 1.7 2004/07/15 02:00:50 brendan Exp $
-$Author: brendan $
-$Date: 2004/07/15 02:00:50 $
-$Name: milestone_2-3-2 $
-$Revision: 1.7 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmProfile/createProfile.cfm,v 1.9 2005/10/04 23:57:16 geoff Exp $
+$Author: geoff $
+$Date: 2005/10/04 23:57:16 $
+$Name: milestone_3-0-0 $
+$Revision: 1.9 $
 
 || DESCRIPTION || 
 dmProfile create handler
 
 || DEVELOPER ||
 Peter Alexandrou (suspiria@daemon.com.au)
-
-|| ATTRIBUTES ||
-none
-
-|| END FUSEDOC ||
 --->
-<cfprocessingDirective pageencoding="utf-8">
-
 <cfscript>
 stUser = arguments.stProperties;
 
@@ -43,7 +34,7 @@ stProfile.datetimecreated = now();
 stProfile.locked = 0;
 stProfile.lockedBy = "";
 
-stResult = this.createData(stProperties=stProfile);
+stResult = this.createData(stProperties=stProfile, User=stUser.userLogin);
 
 if (stResult.bSuccess) stObj = this.getProfile(userName=stUser.userLogin);
 </cfscript>

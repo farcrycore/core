@@ -1,254 +1,151 @@
+<cfsetting enablecfoutputonly="yes">
 <!--- 
 || LEGAL ||
 $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmCron/edit.cfm,v 1.8 2004/12/17 02:25:00 paul Exp $
-$Author: paul $
-$Date: 2004/12/17 02:25:00 $
-$Name: milestone_2-3-2 $
-$Revision: 1.8 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmCron/edit.cfm,v 1.14 2005/08/18 08:15:33 pottery Exp $
+$Author: pottery $
+$Date: 2005/08/18 08:15:33 $
+$Name: milestone_3-0-0 $
+$Revision: 1.14 $
 
 || DESCRIPTION || 
-$Description: edit handler$
-$TODO: $
+$Description: dmCron edit handler$
 
 || DEVELOPER ||
-$Developer: Brendan Sisson (brendan@daemon.com.au)$
-
-|| ATTRIBUTES ||
-$in: $
-$out:$
+$Developer: Geoff Bowers (modius@daemon.com.au)$
 --->
-<cfsetting enablecfoutputonly="yes">
-<cfprocessingDirective pageencoding="utf-8">
+<!--- import tag libraries --->
+<cfimport taglib="/farcry/farcry_core/tags/widgets" prefix="widgets">
 
-<cfimport taglib="/farcry/fourq/tags/" prefix="q4">
-<cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
+<!--- local variables --->
+<cfparam name="errormessage" default="">
+<cfparam name="bFormSubmitted" default="no">
+<cfparam name="title" default="">
+<cfparam name="description" default="">
+<cfparam name="template" default="">
+<cfparam name="parameters" default="">
+<cfparam name="frequency" default="">
+<cfparam name="timeOut" default="">
+<cfparam name="startDate" default="#now()#">
+<cfparam name="endDate" default="#DateAdd(application.config.general.newsExpiryType,application.config.general.newsExpiry,now())#">
+<cfparam name="noEnd" default="0">
+
+<!--- lock the content item for editing --->
+<cfif NOT stobj.locked>
+	<cfset setlock(locked="true")>
+</cfif>
 
 <!--- i18n get locale months --->
 <cfset localeMonths=application.thisCalendar.getMonths(session.dmProfile.locale)>
+<cfset oType = createobject("component", application.types.dmCron.typePath)>
+<cfif bFormSubmitted EQ "yes"> <!--- form submitted --->
+	<cfset startDate = '#form.startYear#-#form.startMonth#-#form.startDay# #form.startHour#:#form.startMinutes#'>
+	<cfset form.startDate = createODBCDatetime(startDate)>
 
-<cfset showform=1>
-
-<cfif isDefined("FORM.submit")> <!--- perform the update --->
-	<cfset showform=0>
-	<span class="FormTitle">Object Updated</span>
-		
-	<cfscript>
-		startDate = '#form.startYear#-#form.startMonth#-#form.startDay# #form.startHour#:#form.startMinutes#';
-		form.startDate = createODBCDatetime(startDate);
-		// hack for no expiry. sets expiry year to 2050...the y2050 bug :)
-		if (form.noExpire) {
-			endDate = createDate(2050,form.endMonth,form.endDay);
-			form.endDate = createODBCDatetime(endDate);
-		} else {
-			endDate = createDate(form.endYear,form.endMonth,form.endDay);
-			form.endDate = createODBCDateTime(endDate);
-		}
-	
-		stProperties = structNew();
-		StProperties.objectid = stObj.objectid;
-		stProperties.title = form.title;
-		stProperties.label = form.title;
-		stProperties.description = form.description;
-		stProperties.template = form.template;
-		stProperties.parameters = form.parameters;
-		stProperties.frequency = form.frequency;
-		stProperties.startDate = form.startDate;
-		stProperties.endDate = form.endDate;
-		stProperties.timeOut = form.timeOut;
-			
-		//unlock object
-		stProperties.locked = 0;
-		stProperties.lockedBy = "";
-	
-		// update the OBJECT	
-		oType = createobject("component", application.types.dmCron.typePath);
-		oType.setData(stProperties=stProperties);
-	</cfscript>
-	
-	<cfif not isdefined("error")>
-		<!--- reload list page --->
-		<cflocation url="#application.url.farcry#/admin/scheduledTasks.cfm" addtoken="no">
-				
+	<!--- hack for no expiry. sets expiry year to 2050...the y2050 bug :) --->
+	<cfif noEnd>
+		<cfset endDate = createDate(2050,endMonth,endDay)>
+		<cfset endDate = createODBCDatetime(endDate)>
 	<cfelse>
-		<cfset showform=1>
+		<cfset endDate = createDate(endYear,endMonth,endDay)>
+		<cfset endDate = createODBCDateTime(endDate)>
+	</cfif>
+	
+	<cfset stProperties = structNew()>
+	<cfset stProperties.objectid = stObj.objectid>
+	<cfset stProperties.title = title>
+	<cfset stProperties.label = title>
+	<cfset stProperties.description = description>
+	<cfset stProperties.template = template>
+	<cfset stProperties.parameters = parameters>
+	<cfset stProperties.frequency = frequency>
+	<cfset stProperties.startDate = startDate>
+	<cfset stProperties.endDate = endDate>
+	<cfset stProperties.timeOut = timeOut>
+
+	<!--- unlock object --->
+	<cfset stProperties.locked = 0>
+	<cfset stProperties.lockedBy = "">
+
+	<cfif DateCompare(stProperties.startDate,stProperties.endDate) EQ 1>
+		<cfset errormessage = errormessage & "Please select a End Date later than #DateFormat(stProperties.startDate,'dd-mmm-yyyy')#">
+	</cfif>
+
+	<!--- update the OBJECT --->
+	<cfif errormessage EQ "">
+		<cfset oType.setData(stProperties=stProperties)>
+		<cflocation url="#application.url.farcry#/admin/scheduledTasks.cfm" addtoken="no">
+	</cfif>
+<cfelse>
+	<cfif IsDate(stObj.startDate)>
+		<cfset startDate = stObj.startDate>
+	</cfif>
+
+	<cfif IsDate(stObj.endDate)>
+		<cfset endDate = stObj.endDate>
+	</cfif>
+	
+	<cfif stObj.endDate eq stObj.startDate>
+		<cfset stObj.endDate = dateadd(application.config.general.newsExpiryType,application.config.general.newsExpiry,"#now()#")>
 	</cfif>
 </cfif>
+<cfset qTemplates = oType.listTemplates()>
+<cfsetting enablecfoutputonly="no">
 
-<cfif len(stObj.startDate) eq 0>
-	<cfset stObj.startDate = now()>
+<cfoutput>
+<form action="#cgi.script_name#?#cgi.query_string#" class="f-wrap-1 wider f-bg-medium" name="editform" method="post">
+<fieldset>
+<h3>#application.adminBundle[session.dmProfile.locale].scheduledTaskDetails#: <span class="highlight">#stObj.label#</span></h3>
+<cfif errormessage NEQ "">
+<p id="fading1" class="fade"><span class="error">#errormessage#</span></p>
 </cfif>
-<cfif len(stObj.endDate) eq 0>
-	<cfset stObj.endDate = now()>
-</cfif>
-<cfif stObj.endDate eq stObj.startDate>
-	<cfset stObj.endDate = dateadd(application.config.general.newsExpiryType,application.config.general.newsExpiry,"#now()#")>
-</cfif>
-	
-<cfif showform> <!--- Show the form --->
-	<cfscript>
-		// update the OBJECT	
-		oType = createobject("component", application.types.dmCron.typePath);
-		qTemplates = oType.listTemplates();
-	</cfscript>
-	
-	<cfoutput>
-	<br>
-	<span class="FormTitle">#application.adminBundle[session.dmProfile.locale].scheduledTaskDetails#</span><p></p>
-	<form action="" method="post" name="fileForm">
-	<table class="FormTable">
-	
-	<tr>
-	  	<td><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].titleLabel#</span></td>
-	   	<td><input type="text" name="title" value="#stObj.title#" class="FormTextBox"></td>
-	</tr>
-	
-	<tr>
-	  	<td valign="top"><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].descLabel#</span></td>
-	   	<td><textarea cols="30" rows="4" name="description" class="FormTextArea">#stObj.description#</textarea></td>
-	</tr>
-	<tr>
-	  	<td><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].templateLabel#</span></td>
-	   	<td>
-			<select name="template">
-				<cfloop query="qTemplates">
-					<option value="#path#" <cfif stObj.template eq path>selected</cfif>>#displayName#
-				</cfloop>
-			</select>
-		</td>
-	</tr>
-	<tr>
-	  	<td><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].parametersLabel#</span></td>
-	   	<td><input type="text" name="parameters" value="#stObj.parameters#" class="FormTextBox"></td>
-	</tr>
-	<tr>
-	  	<td><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].freqLabel#</span></td>
-	   	<td>
-			<select name="frequency">
-				<option value="once" <cfif stObj.frequency eq "once">selected</cfif>>#application.adminBundle[session.dmProfile.locale].once#
-				<option value="daily" <cfif stObj.frequency eq "daily">selected</cfif>>#application.adminBundle[session.dmProfile.locale].daily#
-				<option value="weekly" <cfif stObj.frequency eq "weekly">selected</cfif>>#application.adminBundle[session.dmProfile.locale].weekly#
-				<option value="monthly" <cfif stObj.frequency eq "monthly">selected</cfif>>#application.adminBundle[session.dmProfile.locale].monthly#
-			</select>
-		</tr>
-	<tr>
-	  	<td><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].startDateLabel#</span></td>
-	   	<td>
-		<table>
-				<tr>
-					<td>
-						<select name="startDay" class="formfield">
-							<cfloop from="1" to="31" index="i">
-								<option value="#i#" <cfif i IS day(stObj.startDate)>selected</cfif>>#i#</option>
-							</cfloop>
-						</select>	
-					</td>
-					<td>
-						<select name="startMonth" class="formfield">
-							<cfloop from="1" to="12" index="i">
-								<option value="#i#" <cfif i IS month(stObj.startDate)>selected</cfif>>#localeMonths[i]#</option>
-							</cfloop>
-						</select>
-					</td>
-					<td>
-						<cfscript>
-							thisYear = year(now());
-							startYear = 2000;
-							endYear = year(dateadd("yyyy",7,now()));	
-						</cfscript>
-						<select name="startYear" class="formfield">
-							<cfloop from="#startYear#" to="#endYear#" index="i">
-								<option value="#i#" <cfif i IS year(stObj.startDate)>selected</cfif>>#i#</option>
-							</cfloop>
-						</select>
-					</td>
-					<td>
-						<select name="startHour" class="formfield">
-							<cfloop from="0" to="23" index="i">
-								<option value="#i#" <cfif hour(stObj.startDate) IS i>selected</cfif>>#i# #application.adminBundle[session.dmProfile.locale].hrs#</option>						
-							</cfloop>
-						</select>
-					</td>
-					<td>
-						<select name="startMinutes" class="formfield">
-							<cfloop from="0" to="45" index="i" step="15">
-								<option value="#i#" <cfif minute(stObj.startDate) IS i>selected</cfif>>#i# #application.adminBundle[session.dmProfile.locale].mins#</option>						
-							</cfloop>
-						</select>
-					</td>	
-				</tr>
-			</table>
-		</td>
-	</tr>
-	<tr>
-		<td nowrap>
-			<span class="FormLabel">#application.adminBundle[session.dmProfile.locale].endDateLabel#</span>
-			<!--- show links to for no expiry/yes expiry date --->
-			<input type="hidden" name="noExpire" value="<cfif 2050 is year(stObj.endDate)>1<cfelse>0</cfif>">
-		 	<div style="display:inline">
-				<a href="javascript:void(0);" id="noLink" onClick="document.getElementById('noLink').style.visibility='hidden';document.getElementById('yesLink').style.visibility='visible';document.forms['fileForm'].noExpire.value='1';document.getElementById('expire').style.visibility='hidden';" style="position:absolute;<cfif 2050 is year(stObj.endDate)>visibility:hidden</cfif>"><img src="#application.url.farcry#/images/no.gif" border="0" alt="#application.adminBundle[session.dmProfile.locale].noEndDate#"></a>
-				<a href="javascript:void(0);" id="yesLink" onClick="document.getElementById('noLink').style.visibility='visible';document.getElementById('yesLink').style.visibility='hidden';document.forms['fileForm'].noExpire.value='0';document.forms['fileForm'].endYear.value='#year(now())#';document.getElementById('expire').style.visibility='visible';" style="position:absolute;<cfif not 2050 is year(stObj.endDate)>visibility:hidden</cfif>"><img src="#application.url.farcry#/images/yes.gif" border="0" alt="#application.adminBundle[session.dmProfile.locale].hasEndDate#"></a>
-			</div>
-		</td>
-		<td>
-			<table id="expire" <cfif 2050 is year(stObj.endDate)>style="visibility:hidden"</cfif>>
-				<tr>
-					<td>
-						<select name="endDay" class="formfield">
-							<cfloop from="1" to="31" index="i">
-								<option value="#i#" <cfif i IS day(stObj.endDate)>selected</cfif>>#i#</option>
-							</cfloop>
-						</select>	
-					</td>
-					<td>
-						<select name="endMonth" class="formfield">
-							<cfloop from="1" to="12" index="i">
-								<option value="#i#" <cfif i IS month(stObj.endDate)>selected</cfif>>#localeMonths[i]#</option>
-							</cfloop>
-						</select>
-					</td>
-					<td>
-						<cfscript>
-							thisYear = year(now());
-							startYear = 2000;
-							endYear = year(dateadd("yyyy",7,now()));	
-						</cfscript>
-						<select name="endYear" class="formfield">
-							<cfloop from="#startYear#" to="#endYear#" index="i">
-								<option value="#i#" <cfif i IS year(stObj.endDate)>selected</cfif>>#i#</option>
-							</cfloop>
-							<!--- if set to not expire --->
-							<cfif 2050 IS year(stObj.endDate)>
-								<option value="2050" selected></option>
-							</cfif>
-						</select>
-					</td>	
-				</tr>
-			</table>
-		</td>
-	</tr>
-	<tr>
-	  	<td><span class="FormLabel">#application.adminBundle[session.dmProfile.locale].timeoutLabel#</span></td>
-	   	<td><input type="text" name="timeOut" value="#stObj.timeOut#" class="FormTextBox"></td>
-	</tr>
-	<tr>
-		<td colspan="2" align="center">
-			<input type="Submit" name="Submit" value="#application.adminBundle[session.dmProfile.locale].reallyDone#" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';">
-			<input type="Button" name="Cancel" value="#application.adminBundle[session.dmProfile.locale].cancel#" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';" onClick="location.href='#application.url.farcry#/admin/scheduledTasks.cfm';parent.synchTab('editFrame','activesubtab','subtab','siteEditOverview');parent.synchTitle('Overview')">  
-		</td>
-	</tr>
-		
-	</table>
-	
-	</form>
-	<script>
-		//bring focus to title
-		document.fileForm.title.focus();
-	</script>
-	</cfoutput>
-</cfif>	
+	<label for="title"><b>#application.adminBundle[session.dmProfile.locale].titleLabel#</b>
+		<input type="text" name="title" id="title" value="#stObj.title#" maxlength="255" /><br />
+	</label>
 
+	<label for="description"><b>#application.adminBundle[session.dmProfile.locale].descLabel#</b>
+		<textarea name="description" id="description">#stObj.description#</textarea><br />
+	</label>
+
+	<label for="template"><b>#application.adminBundle[session.dmProfile.locale].templateLabel#</b>
+		<select name="template" id="template"><cfloop query="qTemplates">
+			<option value="#qTemplates.path#" <cfif stObj.template eq qTemplates.path>selected="selected"</cfif>>#qTemplates.displayName#</option></cfloop>
+		</select><br />
+	</label>
+
+	<label for="parameters"><b>#application.adminBundle[session.dmProfile.locale].parametersLabel#</b>
+		<input type="text" name="parameters" id="parameters" value="#stObj.parameters#" maxlength="255" /><br />
+	</label>
+
+	<label for="frequency"><b>#application.adminBundle[session.dmProfile.locale].templateLabel#</b>
+		<select name="frequency" id="frequency">
+			<option value="once"<cfif stObj.frequency eq "once"> selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].once#</option>
+			<option value="daily"<cfif stObj.frequency eq "daily"> selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].daily#</option>
+			<option value="weekly"<cfif stObj.frequency eq "weekly"> selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].weekly#</option>
+			<option value="monthly"<cfif stObj.frequency eq "monthly"> selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].monthly#</option>
+		</select><br />
+	</label>
+	
+	<widgets:dateSelector fieldNamePrefix="start" fieldLabel="#application.adminBundle[session.dmProfile.locale].startDateLabel#" fieldValue="#stObj.startDate#">
+
+	<widgets:dateSelector fieldNamePrefix="end" fieldLabel="#application.adminBundle[session.dmProfile.locale].endDateLabel#" fieldValue="#stObj.endDate#" bDateToggle="1">
+
+	<label for="timeOut"><b>#application.adminBundle[session.dmProfile.locale].timeoutLabel#</b>
+		<input type="text" name="timeOut" id="timeOut" value="#stObj.timeOut#" maxlength="10" /><br />
+	</label>
+
+	<div class="f-submit-wrap">
+	<input type="submit" name="submit" value="OK" class="f-submit" />
+	<input type="submit" name="cancel" value="Cancel" class="f-submit" />
+	</div>
+	<input type="hidden" name="bFormSubmitted" value="yes">
+</fieldset>
+</form>
+<script type="text/javascript">
+//bring focus to title
+document.editForm.title.focus();
+</script></cfoutput>
 <cfsetting enablecfoutputonly="no">

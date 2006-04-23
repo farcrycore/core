@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/rules/_ruleHandpicked/selectDisplayMethods.cfm,v 1.11.2.1 2005/06/27 07:26:28 guy Exp $
+$Header: /cvs/farcry/farcry_core/packages/rules/_ruleHandpicked/selectDisplayMethods.cfm,v 1.15 2005/09/08 01:49:27 guy Exp $
 $Author: guy $
-$Date: 2005/06/27 07:26:28 $
-$Name: milestone_2-3-2 $
-$Revision: 1.11.2.1 $
+$Date: 2005/09/08 01:49:27 $
+$Name: milestone_3-0-0 $
+$Revision: 1.15 $
 
 || DESCRIPTION || 
 $Description: ruleHandpicked PLP - choose teaser handler (teaser.cfm) $
@@ -16,51 +16,39 @@ $Description: ruleHandpicked PLP - choose teaser handler (teaser.cfm) $
 || DEVELOPER ||
 $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
 --->
+<cfsetting enablecfoutputonly="true">
 <cfprocessingDirective pageencoding="utf-8">
-
-<cfimport taglib="/farcry/farcry_core/tags/farcry" prefix="tags">
+<cfimport taglib="/farcry/farcry_core/tags/widgets" prefix="widgets">
 <cfimport taglib="/farcry/farcry_core/tags/navajo" prefix="nj">
 <cfinclude template="/farcry/farcry_core/admin/includes/cfFunctionWrappers.cfm">
-<cfoutput>
-	<link type="text/css" rel="stylesheet" href="#application.url.farcry#/css/admin.css"> 
-</cfoutput>
 
 <cffunction name="generateSelectHTML">
 	<cfargument name="objectid" required="yes">
 	<cfargument name="typename" required="yes">
 	<cfargument name="method" required="yes">
 	
-	<cfset var qDisplayTypes = ''>
-	<cfset var html = ''>
+	<cfset var qDisplayTypes = "">
+	<cfset var html = "">
 	<nj:listTemplates typename="#arguments.typename#" prefix="displayTeaser" r_qMethods="qDisplayTypes"> 
-	<cfsavecontent variable="html"><cfoutput><select id="displayMethod_#arguments.objectid#" name="displayMethod_#arguments.objectid#" size="1" class="field" onChange="setDisplayMethod('#arguments.objectid#',document['forms']['editform']['displayMethod_#arguments.objectid#'].options[selectedIndex].value);"><cfloop query="qDisplayTypes"><option value="#methodName#" <cfif arguments.method IS qDisplayTypes.methodname>selected</cfif>>#qDisplayTypes.displayName#</option></cfloop></select></cfoutput></cfsavecontent>
+	<cfsavecontent variable="html"><cfoutput><select id="displayMethod_#arguments.objectid#" name="displayMethod_#arguments.objectid#" size="1" class="field" onChange="setDisplayMethod('#arguments.objectid#',document['forms']['editform']['displayMethod_#arguments.objectid#'].options[selectedIndex].value);"><cfloop query="qDisplayTypes"><option value="#methodName#"<cfif arguments.method IS qDisplayTypes.methodname> selected="selected"</cfif>>#qDisplayTypes.displayName#</option></cfloop></select></cfoutput></cfsavecontent>
 	<cfreturn trim(html)>
-	
 </cffunction>
-
 
 <cfif isDefined("form.wddx") AND isWDDX(form.wddx)>
 	<cfwddx input="#form.wddx#" action="wddx2js" toplevelvariable="aWDDX" output="output.objectJs">
 	<cfset output.objectWDDX = form.wddx>
 </cfif>
 
-
 <cfwddx input="#output.objectWDDX#" action="wddx2cfml" output="aWDDX">
-
-<cfscript>
-	for(i = 1;i LTE arrayLen(aWDDX);i=i+1)
-	{
-		aWDDX[i].selectHTML = generateSelectHTML(objectid=aWDDX[i].objectid,typename=aWDDX[i].typename,method=aWDDX[i].method);
-	}
-</cfscript>
-
-
+<cfloop index="i" from="1" to="#arrayLen(aWDDX)#">
+	<cfset aWDDX[i].selectHTML = generateSelectHTML(objectid=aWDDX[i].objectid,typename=aWDDX[i].typename,method=aWDDX[i].method)>
+</cfloop>
 
 <cfset thisstep.isComplete = 0>
 <cfset thisstep.name = stplp.currentstep>
 
-<tags:plpNavigationMove>
-
+<widgets:plpAction>
+		
 <!--- defaults for this step --->
 <cfparam name="output.orderby" default="label">
 <cfparam name="output.orderdir" default="asc">
@@ -68,12 +56,11 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
 
 <cfif NOT thisstep.isComplete>
 <cfwddx action="cfml2js" input="#aWDDX#" output="output.objectJS" toplevelvariable="aWDDX">
-<!--- <cfwddx action="wddx2cfml" input="#output.objectWDDX#" output="aWDDX"> --->
-<cfoutput>
-<script>
 
+<cfsetting enablecfoutputonly="false">
+<widgets:plpWrapperContainer><cfoutput>
+<script type="text/javascript">
 #output.objectJS#
-
 function overviewHeader()
 {
 	var html = "<table><tr>";
@@ -200,6 +187,7 @@ function selectRadioIndex(radioName,index)
 
  
 function serializeData(data, formField) {
+
       wddxSerializer = new WddxSerializer();
       wddxPacket = wddxSerializer.serialize(data);
       if (wddxPacket != null) {
@@ -253,41 +241,37 @@ function resetMethodSelections()
 	}
 }
 
-<cfinclude template="/farcry/farcry_core/admin/includes/wddx.js">
-	
+function doSubmit(objForm){
+	serializeData(aWDDX,document.forms.editform.wddx);
+	return true;
+}
+<cfinclude template="/farcry/farcry_core/admin/includes/wddx.js">	
 </script>
 
-<form action="#cgi.script_name#?#cgi.query_string#<cfif NOT isDefined('url.ruleid')>&ruleid=#output.objectid#</cfif>" name="editform" method="post">
-	<input type="hidden" name="wddx" value="">
-		
-	<div class="FormTitle">#application.adminBundle[session.dmProfile.locale].selectObjDisplayMethod#</div>
-	<div class="FormTable" align="center" style="width:500px">
-			
-	<table border="0">
+<form name="editform" action="#cgi.script_name#?#cgi.query_string#" method="post" class="f-wrap-2" style="margin-top:-1.5em" onsubmit="return doSubmit(document.editform);">
+	<fieldset>
+		<h3>#application.adminBundle[session.dmProfile.locale].selectObjDisplayMethod#</h3>
+	</fieldset>
+	<input type="hidden" name="wddx" value="">			
+	<table border="0" width="100%">
 	<tr>
-		<td width="400">
-			<div id="objectsOverview">
-			</div>
+		<td width="400"><div id="objectsOverview"></div>
 		</td>	
 		<td valign="middle" align="center">
-			<input type="button" class="normalbttnstyle" value="&uarr;" onClick="reArrange(aWDDX,getSelectedIndex(document.forms['editform'].seq),getSelectedIndex(document.forms['editform'].seq) -1,getSeqIndex('seq')-1)"><br/>
-			<input type="button" class="normalbttnstyle" value="&darr;" onClick="reArrange(aWDDX,getSelectedIndex(document.forms['editform'].seq),getSelectedIndex(document.forms['editform'].seq) +1,getSeqIndex('seq')+1)"><br/>
+			<input type="button" class="normalbttnstyle" value="&uarr;" onClick="reArrange(aWDDX,getSelectedIndex(document.forms['editform'].seq),getSelectedIndex(document.forms['editform'].seq) -1,getSeqIndex('seq')-1)"><br />
+			<input type="button" class="normalbttnstyle" value="&darr;" onClick="reArrange(aWDDX,getSelectedIndex(document.forms['editform'].seq),getSelectedIndex(document.forms['editform'].seq) +1,getSeqIndex('seq')+1)"><br />
 		</td>
 	</tr>
 	</table>
-
-	</div>
-
-	<div class="FormTableClear">
-		<tags:plpNavigationButtons onClick="serializeData(aWDDX,document['forms'].editform.wddx);">
-	</div>
+	<input type="hidden" name="ruleid" value="#output.objectid#">
+	<input type="hidden" name="plpAction" value="" />
+	<input style="display:none;" type="submit" name="buttonSubmit" value="submit" />
 </form>	
-<script language="javascript1.2">
-	buildOverview();
-    resetMethodSelections();
-</script>
-</cfoutput>
-	
+<script type="text/javascript">
+buildOverview();
+resetMethodSelections();
+</script></cfoutput>	
+</widgets:plpWrapperContainer>
 <cfelse>
-	<tags:plpUpdateOutput>
+	<widgets:plpUpdateOutput onClick="serializeData(aWDDX,document.forms.editform.wddx);">
 </cfif>

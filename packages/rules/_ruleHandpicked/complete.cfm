@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/rules/_ruleHandpicked/complete.cfm,v 1.3 2004/07/30 08:34:40 phastings Exp $
-$Author: phastings $
-$Date: 2004/07/30 08:34:40 $
-$Name: milestone_2-3-2 $
-$Revision: 1.3 $
+$Header: /cvs/farcry/farcry_core/packages/rules/_ruleHandpicked/complete.cfm,v 1.4 2005/07/13 07:44:50 guy Exp $
+$Author: guy $
+$Date: 2005/07/13 07:44:50 $
+$Name: milestone_3-0-0 $
+$Revision: 1.4 $
 
 || DESCRIPTION || 
 $Description: ruleHandpicked PLP - complete step (complete.cfm) $
@@ -24,9 +24,9 @@ cleanup of the output scope before setting the PLP as completed.
 --->
 <cfprocessingDirective pageencoding="utf-8">
 
-<cfoutput>
+<!--- <cfoutput>
 	<link type="text/css" rel="stylesheet" href="#application.url.farcry#/css/admin.css"> 
-</cfoutput>
+</cfoutput> --->
 
 <cfset bComplete = true>
 

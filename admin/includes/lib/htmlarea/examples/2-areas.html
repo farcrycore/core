@@ -120,10 +120,14 @@
         }, 500);
         //---------------------------------------------------------------------
       };
+
+      HTMLArea.init();
+      HTMLArea.onload = initDocument;
+
     </script>
   </head>
 
-  <body onload="initDocument()">
+  <body onload="">
     <h1>Example with 2 HTMLAreas in the same form</h1>
 
     <form action="2-areas.cgi" method="post" target="_blank">

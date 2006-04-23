@@ -14,7 +14,7 @@
 </head>
 <body>
 <div align="center">
-<p><img src="#application.url.farcry#/images/farcry_logo.gif" alt="farcry" width="265" height="70" border="0" align="bottom"></p>
+<p><img src="#application.url.farcry#/images/powered_by_farcry.gif" alt="FarCry CMS"></p>
 </cfoutput>
 
 <!--- handle form processing --->

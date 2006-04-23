@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/edittabStats.cfm,v 1.17 2004/09/07 23:15:13 tom Exp $
-$Author: tom $
-$Date: 2004/09/07 23:15:13 $
-$Name: milestone_2-3-2 $
-$Revision: 1.17 $
+$Header: /cvs/farcry/farcry_core/admin/edittabStats.cfm,v 1.19 2005/09/23 03:34:04 guy Exp $
+$Author: guy $
+$Date: 2005/09/23 03:34:04 $
+$Name: milestone_3-0-0 $
+$Revision: 1.19 $
 
 || DESCRIPTION || 
 Shows view statistics for chosen object in a number of formats
@@ -26,9 +26,7 @@ out:
 <cfsetting enablecfoutputonly="yes" requestTimeOut="600">
 
 <!--- check permissions --->
-<cfscript>
-	iStatsTab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="ObjectStatsTab");
-</cfscript>
+<cfset iStatsTab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="ObjectStatsTab")>
 
 <cfif iStatsTab eq 1>
 	<cftry> 
@@ -82,13 +80,13 @@ out:
 			</cfif>
 					
 			<!--- display object title and breadcrumb --->
-			<cfoutput><span class="FormTitle">#title#</span><p></p></cfoutput>
+			<cfoutput><h3><a href="#application.url.farcry#/edittaboverview.cfm?objectid=#url.objectId#">#title#</a></h3></cfoutput>
 			
 			<cfif stObj.typename eq "dmNavigation">
 			
-				<cfoutput><br>
-				<span class="FormTitle">#application.adminBundle[session.dmProfile.locale].viewsPerHour#</span>
-				<p></p></cfoutput>
+				<cfoutput>
+				<h3>#application.adminBundle[session.dmProfile.locale].viewsPerHour#</h3>
+				</cfoutput>
 				
 				<!--- get page log entries --->
 				<cfscript>
@@ -379,6 +377,7 @@ out:
 				<cfoutput>
 				<p></p>
 				<!--- i18n: for readability --->
+
 				<cfset tA=application.thisCalendar.i18nDateFormat(form.after,session.dmProfile.locale,application.mediumF)>
 				<cfset tB=application.thisCalendar.i18nDateFormat(form.before,session.dmProfile.locale,application.mediumF)>
 				<cfset subS=listToArray('#tA#,#tB#')>
@@ -417,7 +416,7 @@ out:
 				</cfif>
 				
 				<!--- show form to change date range --->
-				<div style="margin-left:30px;margin-top:20px;">
+				<!--- <div style="margin-left:30px;margin-top:20px;">
 				<form action="" method="post">
 					#application.adminBundle[session.dmProfile.locale].between# 
 					<input type="text" name="after" value="#application.thisCalendar.i18nDateFormat(form.after,session.dmProfile.locale,application.mediumF)#">
@@ -425,7 +424,7 @@ out:
 					<input type="text" name="before" value="#application.thisCalendar.i18nDateFormat(form.before,session.dmProfile.locale,application.mediumF)#">
 					<input type="submit" value="#application.adminBundle[session.dmProfile.locale].changeDateRange#">
 				</form>
-				</div>
+				</div> --->
 				</cfoutput>
 			</cfif>
 		</cfcatch>

@@ -4,15 +4,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_config/defaultEOPro4.cfm,v 1.1 2004/07/02 04:55:12 paul Exp $
-$Author: paul $
-$Date: 2004/07/02 04:55:12 $
-$Name: milestone_2-2-1 $
-$Revision: 1.1 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_config/defaultEOPro4.cfm,v 1.3 2005/08/19 05:22:13 guy Exp $
+$Author: guy $
+$Date: 2005/08/19 05:22:13 $
+$Name: milestone_3-0-0 $
+$Revision: 1.3 $
 
 || DESCRIPTION || 
 $Description: deploys soEditor config file $
-$TODO: $
+
 
 || DEVELOPER ||
 $Developer: Brendan Sisson (brendan@daemon.com.au) $
@@ -63,7 +63,7 @@ stConfig.startupscreenbackgroundcolor = "##ebf0ff";
 stConfig.startupscreentextcolor = "navy"; 
 stConfig.height = '350';
 stConfig.width = '600';*/
-stConfig.defaultcss = '#application.url.webroot#/css/dmStyle.css';
+stConfig.defaultcss = '#application.url.webroot#/css/main.css';
 </cfscript>
 
 <cfwddx action="CFML2WDDX" input="#stConfig#" output="wConfig">

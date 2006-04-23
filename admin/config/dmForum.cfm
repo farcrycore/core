@@ -12,7 +12,7 @@
 		application.config.Forum.lPolicyGroupIds = form.lPolicyGroupIds;
 	</cfscript>
 	<cfoutput>
-		<strong>#application.adminBundle[session.dmProfile.locale].updateComplete#</strong><br/>
+		<strong>#application.adminBundle[session.dmProfile.locale].updateComplete#</strong><br />
 	</cfoutput>
 <cfelse>
 	<cfoutput>

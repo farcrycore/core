@@ -4,15 +4,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/reporting/auditUserActivity.cfm,v 1.4 2004/07/15 01:51:48 brendan Exp $
-$Author: brendan $
-$Date: 2004/07/15 01:51:48 $
-$Name: milestone_2-3-2 $
-$Revision: 1.4 $
+$Header: /cvs/farcry/farcry_core/admin/reporting/auditUserActivity.cfm,v 1.7 2005/08/09 03:54:40 geoff Exp $
+$Author: geoff $
+$Date: 2005/08/09 03:54:40 $
+$Name: milestone_3-0-0 $
+$Revision: 1.7 $
 
 || DESCRIPTION || 
 $Description: Audit login activity $
-$TODO: $
+
 
 || DEVELOPER ||
 $Developer: Brendan Sisson (brendan@daemon.com.au)$
@@ -37,14 +37,13 @@ $out:$
 	<cfset weekStartDay=application.thisCalendar.weekStarts(session.dmProfile.locale)>
 
 	<cfif url.graph eq "day">
-		<div class="formtitle"><cfoutput>#application.adminBundle[session.dmProfile.locale].dailyUserLog#</cfoutput></div>
+		<cfoutput><h3>#application.adminBundle[session.dmProfile.locale].dailyUserLog#</h3></cfoutput>
 		<cfscript>
 		q1 = application.factory.oAudit.getUserActivityDaily(now());
 		q2 = application.factory.oAudit.getUserActivityDaily(now()-1);
 		q3 = application.factory.oAudit.getUserActivityDaily(now()-2);
 		</cfscript>
 		
-		<div class="formtableclear">
 		<cfchart 
 			format="flash" 
 			chartHeight="400" 
@@ -69,9 +68,10 @@ $out:$
 		<cfchartseries type="bar" query="q2" itemcolumn="hour" valuecolumn="count_logins" serieslabel="#application.adminBundle[session.dmProfile.locale].Yesterday#" paintstyle="shade"></cfchartseries>
 		<cfchartseries type="bar" query="q3" itemcolumn="hour" valuecolumn="count_logins" serieslabel="#application.adminBundle[session.dmProfile.locale].DayBefore#" paintstyle="shade"></cfchartseries>
 		</cfchart>
-		</div>
+
 	<cfelse>
-		<div class="formtitle"><cfoutput>#application.adminBundle[session.dmProfile.locale].weeklyUserLog#</cfoutput></div>
+		
+		<cfoutput><h3>#application.adminBundle[session.dmProfile.locale].weeklyUserLog#</h3></cfoutput>
 		
 		<!--- #### work out dates #### --->
 		<!--- loop over weeks --->
@@ -93,7 +93,6 @@ $out:$
 		q4 = application.factory.oAudit.getUserActivityWeekly(q3Date);
 		</cfscript>
 		
-		<div class="formtableclear">
 		<cfchart 
 			format="flash" 
 			chartHeight="400" 
@@ -119,7 +118,7 @@ $out:$
 		<cfchartseries type="bar" query="q3" itemcolumn="name" valuecolumn="count_logins" serieslabel="#application.adminBundle[session.dmProfile.locale].twoWeeksBefore#" paintstyle="shade"></cfchartseries>
 		<cfchartseries type="bar" query="q4" itemcolumn="name" valuecolumn="count_logins" serieslabel="#application.adminBundle[session.dmProfile.locale].threeWeeksBefore#" paintstyle="shade"></cfchartseries>
 		</cfchart>
-		</div>
+
 	</cfif>
 
 <cfelse>

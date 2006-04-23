@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/reporting/statsBrowsers.cfm,v 1.4 2004/07/15 01:51:48 brendan Exp $
-$Author: brendan $
-$Date: 2004/07/15 01:51:48 $
-$Name: milestone_2-3-2 $
-$Revision: 1.4 $
+$Header: /cvs/farcry/farcry_core/admin/reporting/statsBrowsers.cfm,v 1.7 2005/08/17 03:28:39 pottery Exp $
+$Author: pottery $
+$Date: 2005/08/17 03:28:39 $
+$Name: milestone_3-0-0 $
+$Revision: 1.7 $
 
 || DESCRIPTION || 
 Shows view statistics for browsers
@@ -43,60 +43,64 @@ out:
 		q1 = application.factory.oStats.getBrowsers(dateRange='#form.dateRange#',maxRows=#form.maxRows#);
 	</cfscript>
 	
-	<cfoutput><br>
-	<span class="FormTitle">#application.adminBundle[session.dmProfile.locale].browserUsage#</span>
-	<p></p></cfoutput>
-	
 	<cfif q1.recordcount>
 		<cfoutput>
-		<table>
-		<tr>
-			<td valign="top" nowrap>
-			<table cellpadding="5" cellspacing="0" border="0">
-			<form action="" method="post">
-			<tr>
-				<td width="450">
-				<!--- drop down for date --->
-				#application.adminBundle[session.dmProfile.locale].Date#
-				<select name="dateRange">
-					<option value="all" <cfif form.dateRange eq "all">selected</cfif>>#application.adminBundle[session.dmProfile.locale].allDates#
-					<option value="d" <cfif form.dateRange eq "d">selected</cfif>>#application.adminBundle[session.dmProfile.locale].today#
-					<option value="ww" <cfif form.dateRange eq "ww">selected</cfif>>#application.adminBundle[session.dmProfile.locale].lastWeek#
-					<option value="m" <cfif form.dateRange eq "m">selected</cfif>>#application.adminBundle[session.dmProfile.locale].lastMonth#
-					<option value="q" <cfif form.dateRange eq "q">selected</cfif>>#application.adminBundle[session.dmProfile.locale].lastQuarter#
-					<option value="yyyy" <cfif form.dateRange eq "yyyy">selected</cfif>>#application.adminBundle[session.dmProfile.locale].lastYear#
-				</select>
+		
+			<form method="post" class="f-wrap-1 f-bg-short" action="">
+			<fieldset>
+	
+				<h3>#application.adminBundle[session.dmProfile.locale].browserUsage#</h3>
 				
+				<label for="dateRange">
+				<!--- drop down for date --->
+				<b>#application.adminBundle[session.dmProfile.locale].Date#</b>
+				<select name="dateRange" id="dateRange">
+					<option value="all" <cfif form.dateRange eq "all">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].allDates#</option>
+					<option value="d" <cfif form.dateRange eq "d">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].today#</option>
+					<option value="ww" <cfif form.dateRange eq "ww">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].lastWeek#</option>
+					<option value="m" <cfif form.dateRange eq "m">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].lastMonth#</option>
+					<option value="q" <cfif form.dateRange eq "q">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].lastQuarter#</option>
+					<option value="yyyy" <cfif form.dateRange eq "yyyy">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].lastYear#</option>
+				</select><br />
+				</label>
+				
+				<label for="maxRows">
 				<!--- drop down for max rows --->
-					#application.adminBundle[session.dmProfile.locale].rows#
-					<select name="maxRows">
-						<option value="all" <cfif form.maxRows eq "all">selected</cfif>>#application.adminBundle[session.dmProfile.locale].allRows#
-						<cfloop from="10" to="200" step=10 index="rows">
-							<option value="#rows#" <cfif rows eq form.maxRows>selected</cfif>>#rows#
-						</cfloop>
-					</select>
-				<input type="submit" value="#application.adminBundle[session.dmProfile.locale].update#">
-				</td>
-			</tr>
+				<b>#application.adminBundle[session.dmProfile.locale].rows#</b>
+				<select name="maxRows" id="maxRows">
+					<option value="all" <cfif form.maxRows eq "all">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].allRows#</option>
+					<cfloop from="10" to="200" step=10 index="rows">
+						<option value="#rows#" <cfif rows eq form.maxRows>selected="selected"</cfif>>#rows#</option>
+					</cfloop>
+				</select><br />
+				</label>
+				
+				<div class="f-submit-wrap">
+				<input type="submit" value="#application.adminBundle[session.dmProfile.locale].update#" class="f-submit" />
+				</div>
+			
+			</fieldset>
 			</form>
-			</table>
-			<table cellpadding="5" cellspacing="0" border="1"  style="margin-left:30px;">
+
+			<hr />
+			
+			<table class="table-3" cellspacing="0">
 				<tr>
-					<th class="dataheader">#application.adminBundle[session.dmProfile.locale].browser#</td>
-					<th class="dataheader">#application.adminBundle[session.dmProfile.locale].sessions#</td>
+					<th>#application.adminBundle[session.dmProfile.locale].browser#</th>
+					<th>#application.adminBundle[session.dmProfile.locale].sessions#</th>
 				</tr>
 				
 				<!--- show stats with links to detail --->
 				<cfloop query="q1">
-					<tr class="#IIF(q1.currentRow MOD 2, de("dataOddRow"), de("dataEvenRow"))#">
+					<tr class="#IIF(q1.currentRow MOD 2, de(""), de("alt"))#">
 						<td>#browser#</td>
-						<td align="center">#views#</td>
+						<td>#views#</td>
 					</tr>
 				</cfloop>
 				
 				</table>
-			</td>
-			<td valign="top">
+
+			<hr />
 		
 			<!--- show graph --->
 			<cfchart 
@@ -120,12 +124,10 @@ out:
 				
 				<cfchartseries type="pie" query="q1" itemcolumn="browser" valuecolumn="views" serieslabel="#application.adminBundle[session.dmProfile.locale].today#" paintstyle="shade"></cfchartseries>
 			</cfchart>
-			</td>
-		</tr>
-		</table>
+
 		</cfoutput>
 	<cfelse>
-		<cfoutput>#application.adminBundle[session.dmProfile.locale].noStatsNow#</cfoutput>
+		<cfoutput><h3>#application.adminBundle[session.dmProfile.locale].noStatsNow#</h3></cfoutput>
 	</cfif>
 	
 <cfelse>

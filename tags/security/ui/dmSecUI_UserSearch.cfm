@@ -9,11 +9,11 @@ Daemon Pty Limited 1995-2001
 http://www.daemon.com.au/
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/security/ui/dmSecUI_UserSearch.cfm,v 1.5 2004/07/30 04:55:55 brendan Exp $
-$Author: brendan $
-$Date: 2004/07/30 04:55:55 $
-$Name: milestone_2-3-2 $
-$Revision: 1.5 $
+$Header: /cvs/farcry/farcry_core/tags/security/ui/dmSecUI_UserSearch.cfm,v 1.9 2005/08/17 06:50:52 pottery Exp $
+$Author: pottery $
+$Date: 2005/08/17 06:50:52 $
+$Name: milestone_3-0-0 $
+$Revision: 1.9 $
 
 || DESCRIPTION || 
 UI for searching for users.
@@ -27,6 +27,20 @@ Matt Dawson (mad@daemon.com.au)
 
 || HISTORY ||
 $Log: dmSecUI_UserSearch.cfm,v $
+Revision 1.9  2005/08/17 06:50:52  pottery
+FC-83
+security setup pages cleaned up and layed forms out with css
+
+Revision 1.8  2005/08/17 04:47:46  daniela
+[FC-192]   Add glamour touch
+
+Revision 1.7  2005/08/16 01:28:55  daniela
+[FC-192]   Add glamour touch to table displaying the users returned from the search.
+
+Revision 1.6  2005/05/27 02:37:17  pottery
+FC-83
+main table removed and markd up using labels. results of search still needs formatting. making a mockup html page for skunkworks now as the editing of this cfm file requires a developer
+
 Revision 1.5  2004/07/30 04:55:55  brendan
 i18n mods
 
@@ -97,8 +111,6 @@ no message
 <cfimport taglib="/farcry/farcry_core/tags/security/ui" prefix="dmsec">
 <cfparam name="form.lUserDirectory" default="">
 
-<cfoutput><span class="formtitle">#application.adminBundle[session.dmProfile.locale].userSearch#</span><p></cfoutput>
-
 <cfif isDefined("URL.msg")>
 	<cfoutput>#URL.msg#</cfoutput>
 </cfif>
@@ -129,66 +141,50 @@ else
 </cfscript>
 
 <cfoutput>
-<form name="userSearch" method="POST">
-<table class="formtable">
-<tr>
-	<td rowspan="15">&nbsp;</td>
-</tr>
-<tr>
-	<td>&nbsp;</td>
-</tr>
-<tr>
-	<td><span class="formlabel">#application.adminBundle[session.dmProfile.locale].selectSearchUserDir#</span></td>
-</tr>
-<tr>
-	<td>
-	<select name="lUserDirectory" size=4 multiple class="formselectlist">
-		<cfloop index="ud" list="#structKeyList(stUd)#">
-        <cfif stUd[ud].type neq "ADSI"><option value="#ud#" <cfif listContains(stobj.lUserDirectory,ud) or listlen(structKeyList(stUd)) eq 1>selected</cfif>>#ud#</cfif>
-		</cfloop>
-	</select>
-	</td>
-</tr>
-<tr>
-	<td>&nbsp;</td>
-</tr>
-<tr>
-	<td><span class="formlabel">#application.adminBundle[session.dmProfile.locale].userLoginFragment#</span></td>
-</tr>
-<tr>
-	<td>
-	<input type="text" name="fragment" value="#stobj.fragment#" size="30">
-	<select name="fragmentLocation">
-		<option value="Starts with" <cfif stobj.fragmentLocation eq "Starts with">selected</cfif>>#application.adminBundle[session.dmProfile.locale].startsWith#
-		<option value="Contains" <cfif stobj.fragmentLocation eq "Contains">selected</cfif>>#application.adminBundle[session.dmProfile.locale].containsLabel#
-		<option value="Ends with" <cfif stobj.fragmentLocation eq "Ends with">selected</cfif>>#application.adminBundle[session.dmProfile.locale].endsWith#
-	</select>
-	</td>
-</tr>
-<tr>
-	<td>&nbsp;</td>
-</tr>
-<tr>
-	<td><input type="checkbox" name="inactive" <cfif isdefined("form.submit") and isdefined("form.inactive")>checked</cfif>> #application.adminBundle[session.dmProfile.locale].searchInactiveAccounts#</td>
-</tr>
-<tr>
-	<td>&nbsp;</td>
-</tr>
-<tr>
-	<td><input type="Submit" name="Submit" Value="#application.adminBundle[session.dmProfile.locale].search#"></td>
-</tr>
-<tr>
-	<td>&nbsp;</td>
-</tr>
-</table>
+<form name="userSearch" method="POST" class="f-wrap-1 f-bg-medium wider">
+	<fieldset>
+	<h3>#application.adminBundle[session.dmProfile.locale].userSearch#</h3>
+		
+	<label for="lUserDirectory"><b>#application.adminBundle[session.dmProfile.locale].selectSearchUserDir#</b>
+	<select name="lUserDirectory" id="lUserDirectory" size="4" multiple="multiple">
+	<cfloop index="ud" list="#structKeyList(stUd)#">
+	<cfif stUd[ud].type neq "ADSI"><option value="#ud#" <cfif listContains(stobj.lUserDirectory,ud) or listlen(structKeyList(stUd)) eq 1>selected</cfif>>#ud#</cfif>
+	</cfloop>
+	</select><br />
+	</label>
+	
+	<label for="fragmentLocation"><b>#application.adminBundle[session.dmProfile.locale].userLoginFragment#</b>
+	<select name="fragmentLocation" id="fragmentLocation">
+		<option value="Starts with" <cfif stobj.fragmentLocation eq "Starts with">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].startsWith#
+		<option value="Contains" <cfif stobj.fragmentLocation eq "Contains">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].containsLabel#
+		<option value="Ends with" <cfif stobj.fragmentLocation eq "Ends with">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].endsWith#
+	</select><br />
+	</label>
+	
+	<label for="fragment"><b>&nbsp;</b>
+	<input type="text" name="fragment" id="fragment" value="#stobj.fragment#" /><br />
+	</label>
+	
+		<fieldset class="f-checkbox-wrap">
+			<b>#application.adminBundle[session.dmProfile.locale].searchInactiveAccounts#</b>
+			<fieldset>
+			<label for="inactive">
+			<input type="checkbox" class="f-checkbox" name="inactive" id="inactive" <cfif isdefined("form.submit") and isdefined("form.inactive")>checked="checked"</cfif> /> 
+			</label>
+			</fieldset>
+		</fieldset> 
+		
+		<div class="f-submit-wrap">
+		<input type="Submit" name="Submit" class="f-submit" Value="#application.adminBundle[session.dmProfile.locale].search#" />
+		</div>
+		
+	</fieldset>
+</form>
 
-</form><br>
-<br>
 </cfoutput>
 
 <!---- DO THE SEARCH ---->
 <cfif isDefined("form.submit")>
-
 <cfif form.fragmentlocation eq "Ends with" OR form.fragmentlocation eq "Contains">
 	<cfset form.fragment="%"&form.fragment>
 </cfif>
@@ -203,13 +199,14 @@ else
 <cfloop index="ud" list="#lUserDirectory#">
 
 <cfoutput>
-<span class="formtitle">#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].queryResults,"#ud#")#</span><p>
-<table cellpadding="5" cellspacing="0" border="1" style="margin-left:30px;">
-<tr class="dataheader">
-	<td>#application.adminBundle[session.dmProfile.locale].loginName#</td>
-	<td>#application.adminBundle[session.dmProfile.locale].status#</td>
-</tr>
-
+<hr />
+<h3>#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].queryResults,"#ud#")#</h3>
+<table cellspacing="0" class="table-3">
+		<tr>
+			<th>#application.adminBundle[session.dmProfile.locale].loginName#</th>
+			<th>#application.adminBundle[session.dmProfile.locale].status#</th>
+		</tr>
+	</thead>
 </cfoutput>	
 
 <cfswitch expression="#stUd[ud].type#">
@@ -225,7 +222,7 @@ else
 			<cfif isdefined("form.inactive")>
 				<!--- show all users --->
 				<cfoutput>
-				<tr class="#IIF(i MOD 2, de("dataOddRow"), de("dataEvenRow"))#">
+				<tr#iif(i mod 2, de(" class=""alt"""), de(""))#>
 					<td><a href="?tag=UserCreateEdit&userLogin=#aUsers[i].userLogin#&userDirectory=#ud#">#aUsers[i].userLogin#</a></td>
 					<td>#ListGetAt(lStatus, aUsers[i].userstatus)#</td>
 				</tr>	
@@ -234,7 +231,7 @@ else
 				<!--- don't show inactive users --->
 				<cfif aUsers[i].userstatus neq 2>
 					<cfoutput>
-					<tr class="#IIF(i MOD 2, de("dataOddRow"), de("dataEvenRow"))#">
+					<tr#iif(i mod 2, de(" class=""alt"""), de(""))#>
 						<td><a href="?tag=UserCreateEdit&userLogin=#aUsers[i].userLogin#&userDirectory=#ud#">#aUsers[i].userLogin#</a></td>
 						<td>#ListGetAt(lStatus, aUsers[i].userstatus)#</td>
 					</tr>	

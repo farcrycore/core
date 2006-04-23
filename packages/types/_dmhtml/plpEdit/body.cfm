@@ -1,180 +1,62 @@
 <cfsetting enablecfoutputonly="yes">
-
-<cfprocessingDirective pageencoding="utf-8">
-
 <!--- 
 || LEGAL ||
 $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmhtml/plpEdit/body.cfm,v 1.15 2005/01/10 06:42:42 brendan Exp $
-$Author: brendan $
-$Date: 2005/01/10 06:42:42 $
-$Name: milestone_2-3-2 $
-$Revision: 1.15 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmhtml/plpEdit/body.cfm,v 1.21 2005/09/27 09:25:09 geoff Exp $
+$Author: geoff $
+$Date: 2005/09/27 09:25:09 $
+$Name: milestone_3-0-0 $
+$Revision: 1.21 $
 
 || DESCRIPTION || 
-$Description: body step for dmHTML plp. Displays text editor with option to toggle to plain html text area.$
-$TODO: clean up formatting -- test in Mozilla 20030503 GB$
+$Description: body step for dmHTML plp. $
 
 || DEVELOPER ||
-$Developer: Brendan Sisson (brendan@daemon.com.au)$
+$Developer: Guy Phanvongsa (guy@daemon.com.au)$
 --->
-<cfimport taglib="/farcry/farcry_core/tags/farcry" prefix="farcry">
-<cfimport taglib="/farcry/fourq/tags/" prefix="q4">
+<cfprocessingDirective pageencoding="utf-8">
 
-<!--- check for toggle option --->
-<cfif isdefined("form.toggle")>
-	<cfset session.toggleTextArea = 1>
-	<cfset onClickEvent = "">
-<cfelse>
-	<cfset session.toggleTextArea = 0>
-	<!--- work out if onClick event needed for specified rich text editor --->
-	<cfswitch expression="#application.config.general.richTextEditor#">
-		<cfcase value="soEditorPro">
-			<cfset onClickEvent = "soEditorbody.updateFormField()">
-		</cfcase>
-		<cfcase value="soEditor">
-			<cfset onClickEvent = "soEditorbody.updateFormField()">
-		</cfcase>
-		<cfcase value="textArea">
-			<cfset onClickEvent = "">
-		</cfcase>
-		<cfcase value="eopro">
-			<cfset onClickEvent= "scriptForm_onsubmit();">
-		</cfcase>
-		<cfcase value="htmlarea">
-			<cfset onClickEvent= "document.editform.onsubmit();document.editform.submit();">
-		</cfcase>
-		<cfdefaultcase>
-			<cfset onClickEvent = "">
-		</cfdefaultcase>
-	</cfswitch>
-</cfif>
-	
-<!--- copy related items to a list for looping --->
-<cfset aRelatedItems = output.aObjectIds>
+<cfimport taglib="/farcry/farcry_core/tags/widgets" prefix="widgets">
+<cfinclude template="/farcry/farcry_core/admin/includes/utilityFunctions.cfm">
+
+<cfset onClickEvent = fGetOnclickEvent()>
 
 <cfset thisstep.isComplete = 0>
 <cfset thisstep.name = stplp.currentstep>
-
-<farcry:plpNavigationMove>
+<widgets:plpAction>
 
 <cfif NOT thisstep.isComplete>
-	<cfoutput><form action="#cgi.script_name#?#cgi.query_string#" method="post" name="editform" style="display:inline">
-	<input type="hidden" name="bBodySubmit" value="1"/>
-	<!--- <div class="FormSubTitle">#output.label#</div> --->
-	<div class="FormTitle">#application.adminBundle[session.dmProfile.locale].bodyUC#</div></cfoutput>
+
+<widgets:plpWrapper><cfoutput>
+<form action="#cgi.script_name#?#cgi.query_string#" method="post" name="editform">
+	<input type="hidden" name="bBodySubmit" value="1"/></cfoutput>
 	
 	<!--- display texteditor (config specified) --->
-	<farcry:richTextEditor value="#output.body#">
-		
+	<widgets:richTextEditor value="#output.body#">
+	
+	<cfoutput><div class="relateditems-wrap r-i-images"></cfoutput>
+	<widgets:bodyInsertItem typename="dmImage">
+	<cfoutput></div></cfoutput>
+
+	<cfoutput><div class="relateditems-wrap r-i-files"></cfoutput>
+	<widgets:bodyInsertItem typename="dmFile">
+	<cfoutput></div></cfoutput>
+	
+	<cfoutput><div class="teaser-wrap"></cfoutput>
+	<widgets:teaser>
+	<cfoutput></div></cfoutput>
+
 	<cfoutput>
-	<table>
-	<tr>
-		<td>
-			<!--- add image option --->
-			<select onchange="insertHTML(this.options[this.selectedIndex].value);this.selectedIndex=0;">
-				<option value="">#application.adminBundle[session.dmProfile.locale].insertImage#</option>
-                </cfoutput>
-                <!--- todo: dmHTML.getImages() --->
-        		<cfloop from="1" to="#arrayLen(aRelatedItems)#" index="id">
-    			<!--- get the objectType --->
-	    		<cfinvoke component="farcry.fourq.fourq" returnVariable="typeName" method="findType" objectID="#aRelatedItems[id]#">
-    			<cfif typename eq "dmImage">
-    				<q4:contentObjectGet objectID="#aRelatedItems[id]#" r_stObject="stImage">
-					<cfif stImage.imageFile neq "">
-						<!--- check if hi res image exists --->
-						<cfif stImage.optimisedImage neq "">
-							<!--- display normal image with link to high res image in new window --->
-							<cfoutput><option value="&lt;a href='#application.url.webroot#/images/#stImage.optimisedimage#' target='_blank'&gt;&lt;img src='#application.url.webroot#/images/#stImage.imageFile#' border=0 alt='#stImage.alt#'&gt;&lt;/a&gt;">#stImage.title#</option></cfoutput>
-						<cfelse>
-							<!--- display normal image --->
-							<cfoutput><option value="&lt;img src='#application.url.webroot#/images/#stImage.imagefile#' border=0 alt='#stImage.alt#'&gt;">#stImage.title#</option></cfoutput>
-						</cfif>
-					</cfif>
-    			</cfif>
-        		</cfloop>
-		    <cfoutput>
-            </select>
-		</td>
-		<td>
-			<!--- add file option --->
-			<select onchange="insertHTML(this.options[this.selectedIndex].value);this.selectedIndex=0;">
-			<option value="">#application.adminBundle[session.dmProfile.locale].insertFile#</option></cfoutput>
-                <!--- todo: dmHTML.getImages() --->
-        		<cfloop from="1" to="#arrayLen(aRelatedItems)#" index="id">
-    			<!--- get the objectType --->
-	    		<cfinvoke component="farcry.fourq.fourq" returnVariable="typeName" method="findType" objectID="#aRelatedItems[id]#">
-    			<cfif typeName eq "dmFile">
-    				<q4:contentObjectGet objectID="#aRelatedItems[id]#" r_stObject="stFile">
-					<cfif stFile.typeName eq "dmFile">
-						<cfif stFile.filename neq "">
-							<!--- check whether to link directly to file or use download.cfm --->
-							<cfif application.config.general.fileDownloadDirectLink eq "false">
-								<cfoutput><option value="<a href='#application.url.webroot#/download.cfm?DownloadFile=#aRelatedItems[id]#' target='_blank'>#stFile.title#</a>">#stFile.title#</option></cfoutput>
-							<cfelse>
-								<cfoutput><option value="<a href='#application.url.webroot#/files/#stFile.filename#' target='_blank'>#stFile.title#</a>">#stFile.title#</option></cfoutput>
-							</cfif>
-						</cfif>
-					</cfif>
-    			</cfif>
-        		</cfloop>
-			<cfoutput>
-            </select>
-		</td></cfoutput>
-		
-		<!--- add templates --->
-		<cfdirectory action="LIST" directory="#application.path.project#/webskin/#output.typename#/" name="qGetTemplates" filter="template*.htm" sort="name ASC">
-		<cfif qGetTemplates.recordcount>
-			<cfoutput><td>
-				<select onchange="insertHTML(this.options[this.selectedIndex].value);this.selectedIndex=0;">
-				    <option value="">#application.adminBundle[session.dmProfile.locale].insertTemplate#</option></cfoutput>
-					<cfloop query="qGetTemplates">
-						<cffile action="READ" file="#application.path.project#/webskin/#output.typename#/#qGetTemplates.name#" variable="i">
-					    <!--- get templates--->
-					    <cfoutput><option value="#htmleditformat(i)#">#mid(qGetTemplates.name,9,len(qGetTemplates.name))#</option></cfoutput>
-				    </cfloop>
-				<cfoutput></select>
-			</td></cfoutput>	
-		</cfif>	
-				
-		<!--- toggle to textArea instead of editor --->
-		<cfoutput><td></cfoutput>
-        
-
-		<cfscript>
-        oAuthentication = request.dmSec.oAuthentication;
-		aUserGroups = oAuthentication.getMultipleGroups(userLogin="#session.dmSec.authentication.userLogin#", userDirectory="#session.dmSec.authentication.userDirectory#");
-		</cfscript>
-
-        <cfset bTogglePerm = 0>
-        <cfloop index="i" from="1" to="#arrayLen(aUserGroups)#">
-            <cfscript>
-            stGroup = aUserGroups[i];
-            if (stGroup.groupName eq "SiteAdmin" OR stGroup.groupName eq "SysAdmin") {
-                bTogglePerm = 1;
-                break;
-            }
-            </cfscript>
-        </cfloop>
-
-        <cfif bTogglePerm>
-            <cfoutput><input type="checkbox" name="toggle" onClick="javascript:submit();" <cfif isdefined("session.toggleTextArea") and session.toggleTextArea eq 1>checked</cfif>> #application.adminBundle[session.dmProfile.locale].toggleTextArea#</cfoutput>
-        </cfif>
-
-        <cfoutput>
-		</td>
-	</tr>
-	</table></cfoutput>
-	
-	<farcry:plpNavigationButtons bDropDown="true" onClick="#onClickEvent#">
-	
-	<cfoutput></form></cfoutput>
-	
+	<input type="hidden" name="plpAction" value="" />
+	<input type="hidden" name="bBodySubmit" value="1" />	
+	<input style="display:none;" type="submit" name="buttonSubmit" value="submit" />
+</form></cfoutput>	
+	</widgets:plpWrapper>
 <cfelse>
-	<farcry:plpUpdateOutput>
+	<widgets:plpUpdateOutput onclick="#onclickEvent#">
 </cfif>
 
-<cfsetting enablecfoutputonly="no">
+<cfsetting enablecfoutputonly="No">

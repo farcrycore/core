@@ -4,15 +4,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_locking/scheduledUnlock.cfm,v 1.6 2004/03/24 22:38:22 brendan Exp $
-$Author: brendan $
-$Date: 2004/03/24 22:38:22 $
-$Name: milestone_2-2-1 $
-$Revision: 1.6 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_locking/scheduledUnlock.cfm,v 1.7 2005/08/09 03:54:40 geoff Exp $
+$Author: geoff $
+$Date: 2005/08/09 03:54:40 $
+$Name: milestone_3-0-0 $
+$Revision: 1.7 $
 
 || DESCRIPTION || 
 $Description: scheduled task for unlocking objects left locked $
-$TODO: $
+
 
 || DEVELOPER ||
 $Developer: Brendan Sisson (brendan@daemon.com.au) $

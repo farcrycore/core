@@ -4,15 +4,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/rules/container.cfc,v 1.33.2.1 2005/04/12 07:18:49 paul Exp $
+$Header: /cvs/farcry/farcry_core/packages/rules/container.cfc,v 1.41 2005/10/28 03:52:41 paul Exp $
 $Author: paul $
-$Date: 2005/04/12 07:18:49 $
-$Name: milestone_2-3-2 $
-$Revision: 1.33.2.1 $
+$Date: 2005/10/28 03:52:41 $
+$Name: milestone_3-0-0 $
+$Revision: 1.41 $
 
 || DESCRIPTION || 
 $Description: Core container management component. $
-$TODO: $
+
 
 || DEVELOPER ||
 $Developer: Geoff Bowers (modius@daemon.com.au) $
@@ -23,24 +23,9 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	<cfproperty name="aRules" hint="Array of rule objects to be managed by this container." type="array"> 
 	<cfproperty name="bShared" hint="Flags whether or not this container is to be shared amongst various objects and scheduled by publishing rule." type="boolean" default="0">
 	<cfproperty name="mirrorID" hint="The UUID of a shared container to be used instead of this container; a mirror container if you like." type="UUID" default="">
-	<cfproperty name="displayMethod" hint="The webskin that will encapsulate container content" type="nstring" default="">
+	<cfproperty name="displayMethod" hint="The webskin that will encapsulate container content" type="nstring" default=""> 
 	
 	<cfinclude template="/farcry/farcry_core/admin/includes/cfFunctionWrappers.cfm">
-	
-	<cffunction name="getDisplay" hint="Gets webskins for container content">
-		<cfargument name="containerBody" required="true">
-		<cfargument name="template" required="true">
-		
-		<cfset variables.containerBody = arguments.containerBody>
-		<cftry>
-			<cfinclude template="/farcry/#application.applicationname#/webskin/container/#template#.cfm">
-			
-			<cfcatch>
-				<cfdump var="#cfcatch#">
-			</cfcatch>
-		</cftry>
-		
-	</cffunction>	
 	
 	<cffunction name="createData" access="public" returntype="any" output="false" hint="Creates an instance of a container object.">
 		<cfargument name="stProperties" type="struct" required="true" hint="Structure of properties for the new container instance.">
@@ -61,13 +46,14 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 		<cfargument name="objectid" required="Yes" type="UUID" hint="objectid of object that container belongs to">
 		<cfargument name="containerid" required="Yes" type="UUID" default="object id of container">
 		<cfargument name="dsn" required="No" default="#application.dsn#">
+		<cfargument name="dbowner" required="No" default="#application.dbowner#">
 		<cfset var q = ''>
 		<cfset var qExists = ''>
 		
 		<cfset qExists = refContainerDataExists(containerid=arguments.containerid,objectid=arguments.objectid)>
 		<cfif NOT qExists.recordCount>
 			<cfquery datasource="#arguments.dsn#" name="q">
-				INSERT INTO refContainers
+				INSERT INTO #arguments.dbowner#refContainers
 				(objectid,containerID)
 				VALUES
 				('#arguments.objectid#','#arguments.containerid#')
@@ -79,10 +65,11 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 		<cfargument name="objectid" required="false">
 		<cfargument name="containerid" required="false">
 		<cfargument name="dsn" required="false" default="#application.dsn#">
+		<cfargument name="dbowner" required="No" default="#application.dbowner#">
 				
 		<cfquery datasource="#arguments.dsn#">
 			DELETE 
-			FROM refContainers
+			FROM #arguments.dbowner#refContainers
 			WHERE
 			<cfif isDefined("arguments.objectid")>
 				OBJECTID = '#arguments.objectid#'
@@ -151,7 +138,6 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 					used in the destination object. However if the container label does not contain
 					the destination object's objectid then is is a global container and therefore
 					should not be removed because it *was not copied* to begin with.
-<
 					*/
 					 
 					//First verify that getData() returned a record by checking for the existance of LABEL
@@ -164,7 +150,6 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 						//delete the refContainers entry for this container
 						deleteRefContainerData(containerid=qDestCon.containerid[index],dsn=arguments.dsn);
 					}
-
 				}
 			}	
 			
@@ -239,32 +224,52 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 		</cfscript>
 	</cffunction>
 	
-	<cffunction name="delete" hint="deletes all container data by objectid">
+	<cffunction name="delete" hint="deletes all container data by objectid" returntype="struct">
 		<cfargument name="objectid" required="Yes">
 		<cfargument name="dsn" required="No" default="#application.dsn#">
 		<cfset var qRefObjects = ''>
 		<cfset var qObjs = ''>
 		<cfset var index = 1>
-		
-		<cfscript>
-			qRefObjects = getContainersByObject(objectid=arguments.objectid,dsn=arguments.dsn);
-			if(qRefObjects.recordCount)
-			{
-				qObjs = getDistinctObjectsByContainer(lContainerIds=valuelist(qRefObjects.containerid));
-				//get rid of refContainers data for this object
-				deleteRefContainerData(objectid=arguments.objectid,dsn=arguments.dsn);
-				//We only wish to delete container if there are no shared containers 
-				//dump(qObjs,'distinct objects');
-				if (qObjs.recordCount EQ 1)
-				{					
-					for(index = 1;index LTE qRefObjects.recordCount;index=index+1)
-					{	
-						 super.deleteData(qRefObjects.containerID[index]);
-					}	
-				}	
-			}		
-		</cfscript>
+		<cfset var stReturn = StructNew()>
+		<cfset stReturn.bSuccess = true>
+		<cfset stReturn.message = "">
+
+		<!--- container shold only be deleted if not used by --->
+
+		<!--- need to delete [container] [objectid] and associtaed [container_arules] --->
+		<cfset super.deleteData(arguments.objectid)>
+
+		<!--- set to remove [mirrorid] if [container] reflected by another --->
+		<cfquery name="qUpdate" datasource="#application.dsn#">
+		UPDATE	#application.dbowner#container
+		SET		mirrorid = ''
+		WHERE	mirrorid = '#arguments.objectid#'
+		</cfquery>
+
+		<!--- delete container from [refcontainers] for object content types --->
+		<cfquery name="qDelete" datasource="#application.dsn#">
+		DELETE
+		FROM	#application.dbowner#refcontainers
+		WHERE	containerid = '#arguments.objectid#'
+		</cfquery>
+
+		<cfreturn stReturn>
 	</cffunction>
+	
+	<cffunction name="getDisplay" hint="Gets webskins for container content">
+		<cfargument name="containerBody" required="true">
+		<cfargument name="template" required="true">
+		
+		<cfset variables.containerBody = arguments.containerBody>
+		<cftry>
+			<cfinclude template="/farcry/#application.applicationname#/webskin/container/#template#.cfm">
+			
+			<cfcatch>
+				<cfdump var="#cfcatch#">
+			</cfcatch>
+		</cftry>
+		
+	</cffunction>			
 			
 	<cffunction name="getDistinctObjectsByContainer">	
 		<cfargument name="lContainerIds" required="Yes" hint="value list (not quoted) of container ids">
@@ -300,11 +305,12 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	<cffunction name="getContainersByObject" hint="gets all container objects that are attached to a particular object" returntype="query">
 		<cfargument name="objectid" required="Yes">
 		<cfargument name="dsn" required="No" default="#application.dsn#">
+		<cfargument name="dbowner" required="No" default="#application.dbowner#">
 		<cfset var q = ''>
 		
 		<cfquery name="q" datasource="#arguments.dsn#">
 			SELECT *
-			FROM refContainers r
+			FROM #arguments.dbowner#refContainers r
 			WHERE objectid = '#arguments.objectid#'
 		</cfquery>
 		
@@ -316,11 +322,12 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 		<cfargument name="containerid" required="Yes">
 		<cfargument name="objectid" required="Yes">
 		<cfargument name="dsn" required="No" default="#application.dsn#">
+		<cfargument name="dbowner" required="No" default="#application.dbowner#">
 		<cfset var q = ''>
 		
 		<cfquery name="q" datasource="#arguments.dsn#">
 			SELECT *
-			FROM refContainers r
+			FROM #arguments.dbowner#refContainers r
 			WHERE objectid = '#arguments.objectid#'
 			AND containerid = '#arguments.containerid#'
 		</cfquery>
@@ -466,10 +473,10 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 				</cfcatch>
 			</cftry>  
 		</cfloop>		 
-		
 		<cfloop from="1" to="#arrayLen(request.aInvocations)#" index="i">
 			<cfif isStruct(request.aInvocations[i])>
 				<cfscript>
+					request.i = i;
 					o = createObject("component", "#request.aInvocations[i].typename#");
 					o.getDisplay(request.aInvocations[i].objectID, request.aInvocations[i].method);	
 				</cfscript>

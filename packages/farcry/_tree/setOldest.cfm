@@ -4,15 +4,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_tree/setOldest.cfm,v 1.10 2004/05/20 04:41:25 brendan Exp $
-$Author: brendan $
-$Date: 2004/05/20 04:41:25 $
-$Name: milestone_2-2-1 $
-$Revision: 1.10 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_tree/setOldest.cfm,v 1.13 2005/10/28 04:17:51 paul Exp $
+$Author: paul $
+$Date: 2005/10/28 04:17:51 $
+$Name: milestone_3-0-0 $
+$Revision: 1.13 $
 
 || DESCRIPTION || 
 $Description: setOldest Function $
-$TODO: $
+
 
 || DEVELOPER ||
 $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
@@ -39,14 +39,14 @@ $out:$
 				case "ora":
 				{
 					sql = "
-						update nested_tree_objects
+						update #arguments.dbowner#nested_tree_objects
 						set nright = nright + 2 
-						where nright > (select nleft from nested_tree_objects where objectid = '#arguments.parentid#' and typename = '#arguments.typename#')
+						where nright > (select nleft from #arguments.dbowner#nested_tree_objects where objectid = '#arguments.parentid#' and typename = '#arguments.typename#')
 						and typename = '#arguments.typeName#'";
 					query(sql=sql, dsn=arguments.dsn);	
 					
 					sql = "
-						update nested_tree_objects
+						update #arguments.dbowner#nested_tree_objects
 						set nleft = nleft + 2
 						where nleft > (select nleft from nested_tree_objects where objectid = '#arguments.parentid#' and typename = '#arguments.typename#')
 						and typename = '#arguments.typeName#'";
@@ -56,7 +56,7 @@ $out:$
 				
 				case "mysql":
 				{
-					tempsql = "select nleft from nested_tree_objects where objectid = '#arguments.parentid#' and typename = '#arguments.typename#'";
+					tempsql = "select nleft from #arguments.dbowner#nested_tree_objects where objectid = '#arguments.parentid#' and typename = '#arguments.typename#'";
 					tempResult = query(sql=tempsql, dsn=arguments.dsn);
 					sql = "
 						update nested_tree_objects
@@ -65,11 +65,11 @@ $out:$
 						and typename = '#arguments.typeName#'";
 					query(sql=sql, dsn=arguments.dsn);	
 					
-					tempsql = "select nleft from nested_tree_objects where objectid = '#arguments.parentid#' and typename = '#arguments.typename#'";
+					tempsql = "select nleft from #arguments.dbowner#nested_tree_objects where objectid = '#arguments.parentid#' and typename = '#arguments.typename#'";
 					tempResult = query(sql=tempsql, dsn=arguments.dsn);
 					
 					sql = "
-						update nested_tree_objects
+						update #arguments.dbowner#nested_tree_objects
 						set nleft = nleft + 2
 						where nleft > #tempResult.nleft#
 						and typename = '#arguments.typeName#'";
@@ -79,20 +79,20 @@ $out:$
 				
 				 case "postgresql":
 				{
-					tempsql = "select nleft from nested_tree_objects where objectid = '#arguments.parentid#' and typename = '#arguments.typename#'";
+					tempsql = "select nleft from #arguments.dbowner#nested_tree_objects where objectid = '#arguments.parentid#' and typename = '#arguments.typename#'";
 					tempResult = query(sql=tempsql, dsn=arguments.dsn);
 					sql = "
-						update nested_tree_objects
+						update #arguments.dbowner#nested_tree_objects
 						set nright = nright + 2 
 						where nright > #tempResult.nleft#
 						and typename = '#arguments.typeName#'";
 					query(sql=sql, dsn=arguments.dsn);	
 					
-					tempsql = "select nleft from nested_tree_objects where objectid = '#arguments.parentid#' and typename = '#arguments.typename#'";
+					tempsql = "select nleft from #arguments.dbowner#nested_tree_objects where objectid = '#arguments.parentid#' and typename = '#arguments.typename#'";
 					tempResult = query(sql=tempsql, dsn=arguments.dsn);
 					
 					sql = "
-						update nested_tree_objects
+						update #arguments.dbowner#nested_tree_objects
 						set nleft = nleft + 2
 						where nleft > #tempResult.nleft#
 						and typename = '#arguments.typeName#'";
@@ -103,16 +103,16 @@ $out:$
 				default:
 				{
 					sql = "
-						update nested_tree_objects
+						update #arguments.dbowner#nested_tree_objects
 						set nright = nright + 2 
-						where nright > (select nleft from nested_tree_objects where objectid = '#arguments.parentid#' and typename = '#arguments.typename#')
+						where nright > (select nleft from #arguments.dbowner#nested_tree_objects where objectid = '#arguments.parentid#' and typename = '#arguments.typename#')
 						and typename = '#arguments.typeName#'";
 					query(sql=sql, dsn=arguments.dsn);	
 					
 					sql = "
-						update nested_tree_objects
+						update #arguments.dbowner#nested_tree_objects
 						set nleft = nleft + 2
-						where nleft > (select nleft from nested_tree_objects where objectid = '#arguments.parentid#' and typename = '#arguments.typename#')
+						where nleft > (select nleft from #arguments.dbowner#nested_tree_objects where objectid = '#arguments.parentid#' and typename = '#arguments.typename#')
 						and typename = '#arguments.typeName#'";
 					query(sql=sql, dsn=arguments.dsn);	
 				}
@@ -121,7 +121,7 @@ $out:$
 		
 		sql = "
 			select nleft, nlevel
-			from nested_tree_objects 
+			from #arguments.dbowner#nested_tree_objects 
 			where objectid = '#arguments.parentid#'";
 		q = query(sql=sql, dsn=arguments.dsn);
 		
@@ -133,7 +133,7 @@ $out:$
 				case "ora":
 				{
 					sql = "
-					insert into nested_tree_objects (ObjectID, ParentID, ObjectName, TypeName, Nleft, Nright, Nlevel)
+					insert into #arguments.dbowner#nested_tree_objects (ObjectID, ParentID, ObjectName, TypeName, Nleft, Nright, Nlevel)
 					values ('#arguments.objectid#', '#arguments.parentid#', '#arguments.objectName#', '#arguments.typeName#', #pleft# + 1, #pleft# + 2,  #plevel# + 1)";
 					break;
 				}
@@ -157,7 +157,7 @@ $out:$
 				default:
 				{
 					sql = "
-					insert nested_tree_objects (ObjectID, ParentID, ObjectName, TypeName, Nleft, Nright, Nlevel)
+					insert #arguments.dbowner#nested_tree_objects (ObjectID, ParentID, ObjectName, TypeName, Nleft, Nright, Nlevel)
 					select 	'#arguments.objectid#', '#arguments.parentid#', '#arguments.objectName#', '#arguments.typeName#', #pleft# + 1, #pleft# + 2,  #plevel# + 1";
 				}
 			}

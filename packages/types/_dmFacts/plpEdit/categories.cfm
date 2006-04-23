@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmFacts/plpEdit/categories.cfm,v 1.11 2004/07/16 05:52:27 brendan Exp $
-$Author: brendan $
-$Date: 2004/07/16 05:52:27 $
-$Name: milestone_2-3-2 $
-$Revision: 1.11 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmFacts/plpEdit/categories.cfm,v 1.15 2005/07/25 03:33:37 guy Exp $
+$Author: guy $
+$Date: 2005/07/25 03:33:37 $
+$Name: milestone_3-0-0 $
+$Revision: 1.15 $
 
 || DESCRIPTION || 
 $Description: dmFacts Type PLP for edit handler - Categorisation Step $
@@ -17,55 +17,46 @@ $TODO: clean-up whitespace handling, and formatting 20030503 GB$
 || DEVELOPER ||
 $Developer: Geoff Bowers (modius@daemon.com.au) $
 --->
-<cfprocessingDirective pageencoding="utf-8">
 
-<cfimport taglib="/farcry/farcry_core/tags/farcry" prefix="tags">
+<cfprocessingDirective pageencoding="utf-8">
+<cfimport taglib="/farcry/farcry_core/tags/widgets/" prefix="widgets">
+<cfparam name="lSelectedCategoryID" default="">
 
 <cfif isDefined("form.bSubmitted")>
-	<cfparam name="form.categoryid" default="">
+	<cfparam name="form.lSelectedCategoryID" default="">
 	<cfinvoke  component="#application.packagepath#.farcry.category" method="assignCategories" returnvariable="stStatus">
 		<cfinvokeargument name="objectID" value="#output.objectID#"/>
-		<cfinvokeargument name="lCategoryIDs" value="#form.categoryID#"/>
+		<cfinvokeargument name="lCategoryIDs" value="#form.lSelectedCategoryID#"/>
 		<cfinvokeargument name="dsn" value="#application.dsn#"/>
 	</cfinvoke>
-</cfif>		
+<cfelse>
+	<cfinvoke component="#application.packagepath#.farcry.category" method="getCategories" returnvariable="lSelectedCategoryID">
+		<cfinvokeargument name="objectID" value="#output.objectID#"/>
+		<cfinvokeargument name="bReturnCategoryIDs" value="true"/>
+	</cfinvoke>
+</cfif>
 
 <cfset thisstep.isComplete = 0>
 <cfset thisstep.name = stplp.currentstep>
 	
-<tags:plpNavigationMove>
+<widgets:plpAction>
 
 <cfif NOT thisstep.isComplete>
-<cfinvoke  component="#application.packagepath#.farcry.category" method="getCategories" returnvariable="lCategoryIds">
-	<cfinvokeargument name="objectID" value="#output.objectID#"/>
-	<cfinvokeargument name="bReturnCategoryIDs" value="true"/>
-</cfinvoke>	
 
+<widgets:plpWrapper>
 
-<cfoutput><div class="FormSubTitle">#output.label#</div>
-<div class="FormTitle">#application.adminBundle[session.dmProfile.locale].categories#</div>
+<cfoutput>
+<form action="#cgi.script_name#?#cgi.query_string#" name="editform" method="post">
+<h3>#application.adminBundle[session.dmProfile.locale].categories#</h3>
+<widgets:categoryAssociation typeName="#output.typename#" lSelectedCategoryID="#lSelectedCategoryID#">
 
-<div class="FormTableClear">
-<form action="#cgi.script_name#?#cgi.query_string#" method="post" name="editform">
 	<input type="hidden" name="bSubmitted" value="1"/>
-	<table>
-		<tr>
-			<td><div  id="tree">
-				<cfinvoke  component="#application.packagepath#.farcry.category" method="displayTree">
-					<cfinvokeargument name="bShowCheckBox" value="true"> 
-					<cfinvokeargument name="lSelectedCategories" value="#lCategoryIds#">
-				</cfinvoke>
-				</div>
-			</td>
-		</tr>
-		<tr>
-			<td>
-				<tags:plpNavigationButtons>
-			</td>
-		</tr>
-	</table>
-</form>
-</cfoutput>
-<cfelse>	
-	<tags:plpUpdateOutput>
+	<input type="hidden" name="plpAction" value="" />
+	<input style="display:none;" type="submit" name="buttonSubmit" value="submit" />
+</form></cfoutput>
+
+</widgets:plpWrapper>
+
+<cfelse>
+	<widgets:plpUpdateOutput>
 </cfif>

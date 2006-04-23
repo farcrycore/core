@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/rules/ruleHandpicked.cfc,v 1.23 2004/12/17 07:35:26 paul Exp $
-$Author: paul $
-$Date: 2004/12/17 07:35:26 $
-$Name: milestone_2-3-2 $
-$Revision: 1.23 $
+$Header: /cvs/farcry/farcry_core/packages/rules/ruleHandpicked.cfc,v 1.26 2005/09/09 05:24:08 guy Exp $
+$Author: guy $
+$Date: 2005/09/09 05:24:08 $
+$Name: milestone_3-0-0 $
+$Revision: 1.26 $
 
 || DESCRIPTION || 
 $Description: Hand-pick and display individual object instances with a specified displayTeaser* handler. Restricted to those components with metadata bScheduled=true. $
@@ -58,10 +58,12 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	<cffunction access="public" name="update" output="true">
 		<cfargument name="objectID" required="Yes" type="uuid" default="">
 		<cfargument name="label" required="no" type="string" default="">
-		<cfargument name="cancelLocation" required="no" type="string" default="#application.url.farcry#/navajo/editContainer.cfm?containerid=#url.containerid#">
+		<cfargument name="cancelLocation" required="no" type="string" default="#application.url.farcry#/navajo/container_index.cfm?containerid=#url.containerid#">
+		<cfset var stLocal = StructNew()>
 		<cfset var stObj = this.getData(arguments.objectid)>
-		
-        <cfimport taglib="/farcry/farcry_core/tags/farcry" prefix="farcry">
+
+<cfsetting enablecfoutputonly="false">
+        <cfimport taglib="/farcry/farcry_core/tags/widgets" prefix="widgets">
 		<cfimport taglib="/farcry/farcry_core/tags/navajo" prefix="nj">
 		<cfimport taglib="/farcry/fourq/tags/" prefix="q4">
 		<!--- Default Vals --->
@@ -69,12 +71,13 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 		<cfparam name="URL.killplp" default="0">
 		<cfparam name="URL.containerid" default="">
 				
-		<cfscript>
-			stObjectWDDX = wddx2cfml(stObj.objectWDDX);
-		</cfscript>			
-		<cfwddx action="cfml2js" input="#stObjectWDDX#" output="stObj.objectJS" toplevelvariable="aWDDX">
-		<cfset caller.form.ruleid = stObj.objectid>			
-			<farcry:plp 
+
+		<cfset stLocal.stObjectWDDX = wddx2cfml(stObj.objectWDDX)>
+
+		<cfwddx action="cfml2js" input="#stLocal.stObjectWDDX#" output="stObj.objectJS" toplevelvariable="aWDDX">
+		<cfset caller.ruleid = stObj.objectid>
+
+			<widgets:plp 
 				owner="#session.dmSec.authentication.userlogin#_#stObj.objectID#"
 				stepDir="/farcry/farcry_core/packages/rules/_ruleHandpicked"
 				cancelLocation="#arguments.cancelLocation#"
@@ -88,10 +91,10 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 				redirection="server"
 				r_bPLPIsComplete="bComplete">
 
-				<farcry:plpstep name="#application.adminBundle[session.dmProfile.locale].selectObjects#" template="selectObjects.cfm">
-				<farcry:plpstep name="#application.adminBundle[session.dmProfile.locale].displayMethodsArrange#" template="selectDisplayMethods.cfm">
-				<farcry:plpstep name="#application.adminBundle[session.dmProfile.locale].completeUC#" template="complete.cfm">
-			</farcry:plp>
+				<widgets:plpstep name="#application.adminBundle[session.dmProfile.locale].selectObjects#" template="selectObjects.cfm">
+				<widgets:plpstep name="#application.adminBundle[session.dmProfile.locale].displayMethodsArrange#" template="selectDisplayMethods.cfm">
+				<widgets:plpstep name="#application.adminBundle[session.dmProfile.locale].completeUC#" template="complete.cfm">
+			</widgets:plp>
 		
 		<cfif isDefined("bComplete") AND bComplete>
 		<!--- Just doing a check here to see if user has in fact selected display methods - its possible that if they skip this step that displayMethods will get set to an empty string and break the execution of the rule --->
@@ -115,8 +118,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 				</form>
 			</div>
 		</cfif>	
-
-		
+<cfsetting enablecfoutputonly="false">
 	</cffunction> 
 	
 	

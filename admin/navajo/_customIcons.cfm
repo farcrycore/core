@@ -1,37 +1,27 @@
+<cfsetting enablecfoutputonly="Yes">
 <!--- 
 || LEGAL ||
 $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/navajo/_customIcons.cfm,v 1.12.2.1 2005/02/08 16:28:05 spike Exp $
-$Author: spike $
-$Date: 2005/02/08 16:28:05 $
-$Name: milestone_2-3-2 $
-$Revision: 1.12.2.1 $
+$Header: /cvs/farcry/farcry_core/admin/navajo/_customIcons.cfm,v 1.16 2005/10/17 00:47:55 paul Exp $
+$Author: paul $
+$Date: 2005/10/17 00:47:55 $
+$Name: milestone_3-0-0 $
+$Revision: 1.16 $
 
 || DESCRIPTION || 
 $Description: Sets icons to images$
-$TODO: $
 
 || DEVELOPER ||
 $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au)$
 
-|| ATTRIBUTES ||
-$in: $
-$out:$
 --->
-
-<cfsetting enablecfoutputonly="Yes">
-
-<cfprocessingDirective pageencoding="utf-8">
-
 <cfscript>
 nimages = "#application.url.farcry#/images/treeImages";
 cimages = "#nimages#/customIcons";
 customIcons = StructNew();
-
-customIcons.Type = StructNew();
 
 customIcons.Type = StructNew();
 customIcons.Type.default = StructNew();
@@ -75,7 +65,7 @@ if( StructKeyExists( application.types, "dmNavigation" ) )
 {
 	customIcons.Type.dmnavigation = StructNew();
 	customIcons.Type.dmnavigation.draft ="#cimages#/NavDraft.gif";
-	customIcons.Type.dmnavigation.pending ="#cimages#/NavDraft.gif";
+	customIcons.Type.dmnavigation.pending ="#cimages#/NavPending.gif";
 	customIcons.Type.dmnavigation.approved ="#cimages#/NavApproved.gif";
 }
 
@@ -130,12 +120,8 @@ if( StructKeyExists( application.types, "dmLink" ) )
 customIcons.locked = "#cimages#/padlock.gif";
 </cfscript>
 
-<cftry>
+<cfif fileexists("#application.path.project#/system/overviewTree/_customIcons.cfm")>
 	<cfinclude template="/farcry/#application.applicationname#/system/overviewTree/_customIcons.cfm">
-	<cfcatch>
-		<!--- Do Nothing --->
-	</cfcatch>
-</cftry>
-
+</cfif>
 
 <cfsetting enablecfoutputonly="No">

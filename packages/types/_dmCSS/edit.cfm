@@ -1,226 +1,176 @@
+<cfsetting enablecfoutputonly="yes" />
 <!--- 
 || LEGAL ||
-$Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
+$Copyright: Daemon Pty Limited 1995-2005, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmCSS/edit.cfm,v 1.26 2005/02/02 04:11:37 brendan Exp $
-$Author: brendan $
-$Date: 2005/02/02 04:11:37 $
-$Name: milestone_2-3-2 $
-$Revision: 1.26 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmCSS/edit.cfm,v 1.34 2005/10/11 00:50:06 daniela Exp $
+$Author: daniela $
+$Date: 2005/10/11 00:50:06 $
+$Name: milestone_3-0-0 $
+$Revision: 1.34 $
 
 || DESCRIPTION || 
-$Description: edit handler$
-$TODO: $
+$Description: CSS Stylesheet reference edit handler$
 
 || DEVELOPER ||
-$Developer: Brendan Sisson (brendan@daemon.com.au)$
-
-|| ATTRIBUTES ||
-$in: $
-$out:$
+$Developer: Geoff Bowers (modius@daemon.com.au)$
 --->
-<cfsetting enablecfoutputonly="yes" />
-
-<cfimport taglib="/farcry/fourq/tags/" prefix="q4" />
+<!--- import tag libraries --->
 <cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj" />
+<cfimport taglib="/farcry/farcry_core/tags/widgets" prefix="widgets">
 
-<cfoutput>
-	<link type="text/css" rel="stylesheet" href="#application.url.farcry#/css/admin.css" />
-</cfoutput>
+<!--- determine where the edit handler has been called from to provide the right return url --->
+<cfparam name="url.ref" default="sitetree" type="string">
+<cfif url.ref eq "typeadmin"> 
+	<!--- typeadmin redirect --->
+	<cfset cancelCompleteURL = "#application.url.farcry#/content/dmcss.cfm">
+<cfelse> 
+	<!--- site tree redirect --->
+	<cfset cancelCompleteURL = "#application.url.farcry#/edittabOverview.cfm?objectid=#stObj.ObjectID#">
+</cfif>
 
-<cfif isDefined("FORM.submit")> <!--- perform the update --->
-	
-	<cfscript>
-		stProperties = structNew();
-		stProperties.objectid = stObj.ObjectID;
-		stProperties.title = form.title;
-		stProperties.label = form.title;
-		stProperties.description = form.description;
-		stProperties.filename = form.filename;
-		stProperties.mediaType = form.mediaType;
+<!--- default form elements --->
+<cfparam name="form.title" default="">
+<cfparam name="form.bThisNodeOnly" default="0">
+<cfparam name="form.mediaType" default="">
+<cfparam name="form.description" default="">
+<cfparam name="form.cssContent" default="">
 
-		stProperties.datetimelastupdated = Now();
-		stProperties.lastupdatedby = session.dmSec.authentication.userlogin;
-		//unlock object
-		stProperties.locked = 0;
-		stProperties.lockedBy = "";
+<!--- local variables --->
+<cfparam name="errormessage" default="">
+<cfset lMediaTypes = "all,aural,braille,embossed,handheld,print,projection,screen,tty,tv">
 
-	    if (isDefined("form.bThisNodeOnly")){
-			stProperties.bThisNodeOnly = 1;
-    	}else{
-			stProperties.bThisNodeOnly = 0;
-		}
-	</cfscript>
-	
-	<!--- check for file to upload --->
-	<cfif trim(len(form.cssFile)) NEQ 0>
+<!------------------------------------------------ 
+	Form Action
+	 - self posting form
+------------------------------------------------->
+<!--- action: cancel --->
+<cfif isDefined("form.cancel")>
+	<!--- cancel content item lock --->
+	<cfset setlock(locked="false")>
+	<cflocation url="#cancelCompleteURL#" addtoken="no">
+</cfif>
+
+<cfif isDefined("form.update")>
+	<!--- action: update --->
+	<cfset stProperties = structNew()>
+	<cfset stProperties.objectid = stObj.ObjectID>
+	<cfset stProperties.title = form.title>
+	<cfset stProperties.label = form.title>
+	<cfset stProperties.description = form.description>
+	<cfset stProperties.filename = form.css_file_original>
+	<cfset stProperties.mediaType = form.mediaType>
+	<cfset stProperties.datetimelastupdated = Now()>
+	<cfset stProperties.lastupdatedby = session.dmSec.authentication.userlogin>
+	<cfset stProperties.bThisNodeOnly = bThisNodeOnly>
+		
+	<cftry> 
+		<!--- check for file to upload --->
+		<cfif len(form.css_file_upload)>		
+			<cffile action="upload" filefield="css_file_upload" destination="#application.path.project#/www/css/" accept="text/css" nameConflict="Overwrite"> 
+			<cfset stProperties.filename = file.ServerFile>
+		
+		<!--- else, update the css content of original file --->
+		<cfelseif len(stProperties.filename)>
+			<cffile action="write" file="#application.path.project#/www/css/#stProperties.filename#" output="#cssContent#" charset="utf-8">
+		</cfif>
+
+		<cfcatch> 
+			<!--- if error flow back through the page and display the error message --->
+			<cfset errormessage = errormessage & cfcatch.message>
+		</cfcatch>
+	</cftry>
+
+	<!--- update the OBJECT if no error occured and reloacte--->
+	<cfif NOT len(errormessage)>
+		<!--- remove content item lock --->
+		<cfset setlock(locked="false")>
+		<!--- update content item --->
+		<cfset setData(stProperties=stProperties)>
+
+		<!--- if not typeadmin edit then refresh JS tree data --->
+		<cfif url.ref neq "typeadmin"> 
+			<!--- get parent to update site js tree --->
+			<nj:treeGetRelations typename="#stObj.typename#" objectId="#stObj.ObjectID#" get="parents" r_lObjectIds="ParentID" bInclusive="1">
+			<!--- update site js tree --->
+			<nj:updateTree objectId="#parentID#">
+			<!--- relocate iframes for tree and edit areas using JS --->
+			<cfoutput>
+			<script type="text/javascript">
+			if(parent['sidebar'].frames['sideTree'])
+				parent['sidebar'].frames['sideTree'].location= parent['sidebar'].frames['sideTree'].location;
+				parent['content'].location.href = "#cancelCompleteURL#"
+			</script>
+			</cfoutput>
+			<cfabort>
+			
+		<cfelse>
+			<cflocation url="#cancelCompleteURL#" addtoken="no">
+		</cfif>
+
+	<cfelse>
+		<!--- show error --->
+		<cfoutput><p id="fading1" class="fade"><span class="error">#errormessage#</span></p></cfoutput>
+	</cfif>
+
+<!--- set default values for form--->
+<cfelse> 
+	<!--- Lock content item for editing--->
+	<cfset setlock(locked="true")>
+
+	<cfset title = stObj.title>
+	<cfset bThisNodeOnly = stObj.bThisNodeOnly>
+	<cfset mediaType = stObj.mediaType>
+	<cfset description = stObj.description>
+	<cfif stObj.filename NEQ "">
 		<cftry>
-			<cffile action="upload" filefield="cssFile" destination="#application.path.project#/www/css/" accept="text/css" nameConflict="Overwrite"> 
-			<cfcatch>
-				<div><span class="title">Error!</span><p></p>
-				<cfoutput>#cfcatch.Message#<p></p>
-				<span class="frameMenuBullet">&raquo;</span> <a href="#application.url.farcry#/edittabEdit.cfm?objectid=#objectid#">Return to edit form</a></cfoutput></div>
-				<cfabort>
+				
+			<cffile action="read" file="#application.path.project#/www/css/#stObj.filename#" variable="cssContent">
+			<cfcatch type="any">
+				<cfset readErrormessage = cfcatch.message>
+				<cfoutput><p id="fading1" class="fade"><span class="error">#readErrormessage#</span></p></cfoutput>
 			</cfcatch>
 		</cftry>
-		<cfscript>
-			stProperties.filename = file.ServerFile;
-		</cfscript>
-	<cfelse>
-		<cfif isdefined("cssContent")>
-			<!--- save content as file --->
-			<cffile 
-			  action = "write" 
-			  file = "#application.path.project#/www/css/#stProperties.filename#"
-			  output = "#cssContent#"
-			  charset="utf-8">
-		</cfif>
 	</cfif>
-	
-	<cfscript>
-		// update the OBJECT	
-		oType = createobject("component", application.types.dmCSS.typePath);
-		oType.setData(stProperties=stProperties);
-	</cfscript>
-	
-	<!--- get parent to update tree --->
-	<nj:treeGetRelations 
-			typename="#stObj.typename#"
-			objectId="#stObj.ObjectID#"
-			get="parents"
-			r_lObjectIds="ParentID"
-			bInclusive="1">
-	<!--- update tree --->
-	<nj:updateTree objectId="#parentID#">
-	
-	<!--- reload overview page --->
-	<cfoutput>
-		<script language="JavaScript">
-			parent['editFrame'].location.href = '#application.url.farcry#/edittabOverview.cfm?objectid=#stObj.ObjectID#';
-		</script>
-	</cfoutput>
-	
-</cfif> <!--- Show the form --->
+</cfif>
 
+<!------------------------------------------------ 
+	Form Display 
+------------------------------------------------->
+<!--- output form UI --->
+<cfoutput>
+<form action="#cgi.script_name#?#cgi.query_string#" class="f-wrap-1 wider f-bg-medium" enctype="multipart/form-data" name="fileForm" method="post">
+	<fieldset>
+<h3>#application.adminBundle[session.dmProfile.locale].generalInfo#: <span class="highlight">#stObj.title#</span></h3>
+		<label for="title"><b>#application.adminBundle[session.dmProfile.locale].titleLabel#</b>
+			<input type="text" name="title" id="title" value="#title#" maxlength="255" /><br />
+		</label>
 
-	<cfoutput>
-	<!--- javascript to populate text box from multiselect box --->
-	<script type="text/javascript">
-	  if (typeof Array.prototype.push == "undefined")
-	  {
-	    Array.prototype.push = function()
-	    {
-	      var i=0;
-	      b = this.length
-	      a = arguments;
-	      for(i;i<a.length;i++)this[b+i]=a[i];
-	      return this.length
-	    }
-	  }
-	  function addSelections(s,t) {
-	    var selectedArray = [];
-	    var o = s.options;
-	    for (var i = 0; i < o.length; i++) {
-	      if (o[i].selected) {
-	        selectedArray.push(o[i].value);
-	      }
-	    }
-	    t.value = selectedArray.join(", ");
-	  }
-	</script>
-	<form action="" method="post" enctype="multipart/form-data" name="fileForm">
-		
-	<table align="left" border="0" width="80%" >
-	<tr>
-		<td colspan="2" align="center">
-			<span class="FormTitle">#stObj.title#</span>
-		</td>
-	</tr>
-	
-	<tr>
-  		<td width="20" align="right"><span class="FormLabel">Title:</span></td>
-   	 	<td align="left"><input type="text" name="title" value="#stObj.title#" style="width:250px;" class="FormTextBox" /></td>
-	</tr>
-	<tr>
-		<td colspan="2" >&nbsp;</td>
-	</tr>
-	
-	<tr>
-		<td align="right" ><span class="FormLabel">Upload File</span></td>
-		<td>
-			<input type="hidden" name="filename" value="#stObj.filename#" />
-			<input type="file" name="cssFile" class="FormFileBox" />&nbsp;&nbsp;
-		</td>
-	</tr>
-	<tr>
-		<td colspan="2" >&nbsp;</td>
-	</tr>
+		<widgets:fileUpload fileFieldPrefix="css" fieldLabel="Upload CSS:" uploadType="file" fieldValue="#stObj.filename#" previewURL="/css/" bShowPreview="0">
 
-	<tr>
-		<td align="right" ><span class="FormLabel">Use CSS in this node only</span></td>
-		<td>
-			<input type="checkbox" name="bThisNodeOnly" value="1"<cfif stObj.bThisNodeOnly neq ''><cfif stObj.bThisNodeOnly>checked="checked"</cfif></cfif> />
-			This node's children will not inherit this CSS object.
-		</td>
-	</tr>
-	<tr>
-		<td colspan="2" >&nbsp;</td>
-	</tr>
+		<label for="cssContent"><b>CSS Content:</b>
+			<textarea name="cssContent" id="cssContent" cols="40" rows="10">#cssContent#</textarea><br />		
+		</label>
+		<label for="bThisNodeOnly"><b>Use CSS in this folder only:</b>
+			<input type="checkbox" name="bThisNodeOnly" value="1"<cfif bThisNodeOnly EQ 1> checked="checked"</cfif> /><br />
+		</label>
 
-	<tr>
-		<td align="right" ><span class="FormLabel">Media Type</span></td>
-		<td>
-			<select id="selectBoxMediaType" name="selectBoxMediaType" multiple="multiple" onchange="addSelections(this,document.getElementById('textBoxMediaType'));">
-				<option value="all">all</option>
-				<option value="aural">aural</option>
-				<option value="braille">braille</option>
-				<option value="embossed">embossed</option>
-				<option value="handheld">handheld</option>
-				<option value="print">print</option>
-				<option value="projection">projection</option>
-				<option value="screen">screen</option>
-				<option value="tty">tty</option>
-				<option value="tv">tv</option>
-			</select>
-			<input type="text" name="mediaType" value="#stObj.mediaType#" id="textBoxMediaType" />
-		</td>
-	</tr>
-	<tr>
-		<td colspan="2" >&nbsp;</td>
-	</tr>
+		<label for="mediaType"><b>Media Type:</b>
+			<select name="mediaType" id="mediaType" multiple="true"><cfloop index="iMedia" list="#lMediaTypes#">
+				<option value="#iMedia#"<cfif ListFindNoCase(mediaType,iMedia)> selected="selected"</cfif>>#iMedia#</option></cfloop>
+			</select><br />
+		</label>
 
-	<tr>
-  		<td align="right" valign="top"><span class="FormLabel">Description:</span></td>
-   	 	<td><textarea cols="50" rows="4" name="description" class="FormTextArea">#stObj.description#</textarea></td>
-	</tr>
-	<cfif stObj.filename neq "" and FileExists("#application.path.project#/www/css/#stObj.filename#")>
-		<cffile 
-		  action = "read" 
-		  file = "#application.path.project#/www/css/#stObj.filename#"
-		  variable = "css"
-		  charset="utf-8">
-		<tr>
-			<td align="right" valign="top"><span class="FormLabel">Style Sheet</span></td>
-			<td><textarea style="width:500"  rows="30" name="cssContent" class="FormTextArea" wrap="off">#css#</textarea></td>
-		</tr>
-	</cfif>
-
-	<tr>
-		<td colspan="2" align="center">
-			<input type="submit" value="OK" name="submit" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';" />
-			<input type="button" value="Cancel" name="Cancel" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';" onClick="location.href='#application.url.farcry#/unlock.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#';parent.synchTab('editFrame','activesubtab','subtab','siteEditOverview');parent.synchTitle('Overview')" />
-		</td>
-	</tr>		
-	</table>
-	
-	</form>
-	<br/>
-	<script>
-		//bring focus to title
-		document.fileForm.title.focus();
-	</script>
-	</cfoutput>
-	
+		<label for="description"><b>Description:</b>
+			<textarea name="description" id="description" cols="40">#description#</textarea><br />
+		</label>
+	</fieldset>
+	<div class="f-submit-wrap">
+	<input type="submit" name="update" value="OK" class="f-submit" />
+	<input type="submit" name="cancel" value="Cancel" class="f-submit" />
+	</div>
+</form>
+</cfoutput>
 <cfsetting enablecfoutputonly="no" />

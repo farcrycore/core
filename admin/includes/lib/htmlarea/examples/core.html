@@ -138,7 +138,7 @@ function highlight() {
 
 <!-- use <body onload="HTMLArea.replaceAll()" if you don't care about
      customizing the editor.  It's the easiest way! :) -->
-<body onload="initEditor()">
+<body onload="HTMLArea.init(); HTMLArea.onload = initEditor">
 
 <h1>HTMLArea 3.0</h1>
 

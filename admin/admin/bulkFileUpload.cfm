@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/admin/bulkFileUpload.cfm,v 1.5.2.2 2005/06/21 17:48:26 tom Exp $
-$Author: tom $
-$Date: 2005/06/21 17:48:26 $
-$Name: milestone_2-3-2 $
-$Revision: 1.5.2.2 $
+$Header: /cvs/farcry/farcry_core/admin/admin/bulkFileUpload.cfm,v 1.11 2005/09/15 03:10:33 guy Exp $
+$Author: guy $
+$Date: 2005/09/15 03:10:33 $
+$Name: milestone_3-0-0 $
+$Revision: 1.11 $
 
 || DESCRIPTION || 
 $Description: Uploads contents of a zip file , creates navigation to match directory structure within zip file $
@@ -29,14 +29,17 @@ $out:$
 <cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
 <cfimport taglib="/farcry/farcry_core/tags/farcry/" prefix="farcry">
 <cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
+<cfimport taglib="/farcry/farcry_core/tags/widgets/" prefix="widgets">
 <cfinclude template="/farcry/farcry_core/admin/includes/cfFunctionWrappers.cfm">
 <cfinclude template="/farcry/farcry_core/admin/includes/utilityFunctions.cfm">
 
+<cfparam name="bLibrary" default="0">
+<cfparam name="lSelectedCategoryID" default="">
+
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 <!--- check permissions --->
-<cfscript>
-	iDeveloperPermission = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="developer");
-</cfscript>
+<cfset iDeveloperPermission = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="developer")>
+
 <cfif iDeveloperPermission eq 1>
 	<cfif isDefined("form.submit")>
 		<cfoutput>
@@ -56,6 +59,8 @@ $out:$
 		<cfflush>
 
 		<cfscript>
+			filOutStream = createObject("java","java.io.FileOutputStream");					
+			bufOutStream = createObject("java","java.io.BufferedOutputStream");
 			zipFilePath = application.path.defaultFilePath & "/" & file.serverFile;
 			//list of file mime types that can be uploaded
 			fileAcceptList = application.config.file.filetype;
@@ -64,7 +69,7 @@ $out:$
 			zipFile.init(zipFilePath);
 			entries = zipFile.entries();
 			//Get the data on the starting point in the tree
-			qStartingPointData = createObject("component", "#application.packagepath#.farcry.tree").getNode(objectid=form.startPoint);
+			qStartingPointData = createObject("component", "#application.packagepath#.farcry.tree").getNode(objectid=application.navid.fileroot);
 			//Set the floor for adding folders and files
 			iBaseLevel = qStartingPointData.nLevel;
 			/*
@@ -74,6 +79,7 @@ $out:$
 			*/ 
 			qStartPointDescendants = createObject("component", "#application.packagepath#.farcry.tree").getDescendants(objectid=qStartingPointData.objectId);
 			//Loop through all entries in the zip file
+			objCategory = CreateObject("component","#application.packagepath#.farcry.category");
 			while(entries.hasMoreElements()) {
 				entry = entries.nextElement();
 				navigationParentId = qStartingPointData.objectId;
@@ -88,7 +94,9 @@ $out:$
 							//writeOutput(entry.getName() & "||" & navigationParentId & "<br>");
 							sql = "select objectId from qStartPointDescendants where objectName = '#folderName#' and nLevel = " & iBaseLevel+i & " and parentId = '#navigationParentId#'";
 							q = queryofquery(sql);
-							if(not q.recordcount){
+							//dump(q);
+							
+							if(NOT q.recordcount){
 								//Setup the struct of properties for the new dmNavigation node
 								writeOutput("<em>Creating dmNavigation Node (#folderName#)</em><br>");
 								flush();
@@ -115,68 +123,77 @@ $out:$
 						}
 					}
 				}
-				
+
 				//Now create the file
-				if (not entry.isDirectory()) {
-					sFileName = getFileFromPath(entry.getName());
-					sFilePath = application.defaultfilepath;
-					oFile = createObject("component", "#application.packagepath#.farcry.file");
-					//do we have a mime type match?
-					sFileMimeType = oFile.getMimeType(sFileName);
-					//If the MIME Type of the file matches any list item in the file accept list
-					//if accept list not specified in config, accept everything
-					if(listFindNoCase(fileAcceptList, sFileMimeType) OR NOT Len(Trim(fileAcceptList))){						//placeholder for the original filename
-						sAbsolutePath = sFilePath & "/" & sFileName;
-						//Write the file to disk
-						filOutStream = createObject("java","java.io.FileOutputStream");					
-						filOutStream.init(sAbsolutePath);
-						bufOutStream = createObject("java","java.io.BufferedOutputStream");
-						bufOutStream.init(filOutStream);
-						inStream = zipFile.getInputStream(entry);
-						buffer = repeatString(" ",1024).getBytes(); 
-						l = inStream.read(buffer);
-						while(l GTE 0){
-							bufOutStream.write(buffer, 0, l);
+				try {
+					if (not entry.isDirectory()) {
+						sFileName = getFileFromPath(entry.getName());
+						sFilePath = application.defaultfilepath;
+						oFile = createObject("component", "#application.packagepath#.farcry.file");
+						//do we have a mime type match?
+						sFileMimeType = oFile.getMimeType(sFileName);
+						//If the MIME Type of the file matches any list item in the file accept list
+						//if accept list not specified in config, accept everything
+						if(listFindNoCase(fileAcceptList, sFileMimeType) OR NOT Len(Trim(fileAcceptList))){						//placeholder for the original filename
+							sAbsolutePath = sFilePath & "/" & sFileName;
+							
+							//Write the file to disk
+							filOutStream.init(sAbsolutePath);
+							bufOutStream.init(filOutStream);
+							inStream = zipFile.getInputStream(entry);
+							buffer = repeatString(" ",1024).getBytes(); 
 							l = inStream.read(buffer);
+							while(l GTE 0){
+								bufOutStream.write(buffer, 0, l);
+								l = inStream.read(buffer);
+							}
+							//cleanup
+							inStream.close();
+							bufOutStream.close();
+							filOutStream.close();
+							
+							//Create structure with new file properties
+							flush();
+							stFileProps = structNew();
+							stFileProps.objectID = createUUID();
+							stFileProps.fileName = createObject("component","#application.packagepath#.farcry.form").sanitiseFileName(sFileName,listFirst(sFileName,"."),sFilePath);
+							writeOutput("Creating dmFile (#stFileProps.fileName#)<br>");
+							flush();
+							stFileProps.title = listFirst(stFileProps.fileName,".");
+							stFileProps.label = listFirst(stFileProps.fileName,".");
+							stFileProps.filePath = sFilePath;
+							stFileProps.fileType = listFirst(sFileMimeType,"/");
+							stFileProps.fileSubType = listLast(sFileMimeType,"/");
+							stFileProps.fileExt = listLast(stFileProps.fileName,".");
+							stFileProps.filesize = entry.getSize();
+							stFileProps.datetimecreated = Now();
+							stFileProps.documentDate = createODBCDate(now());
+							stFileProps.createdby = session.dmSec.authentication.userlogin;
+							stFileProps.datetimelastupdated = Now();
+							stFileProps.lastupdatedby = session.dmSec.authentication.userlogin;
+							stFileProps.bLibrary = bLibrary;
+							//Create the file object
+							createobject("component", application.types.dmFile.typePath).createData(stProperties=stFileProps);
+							// assign category
+							objCategory.assignCategories(objectid=stFileProps.objectID,lCategoryIDs=lSelectedCategoryID);
+							//Add the new file under it's nav parent
+							oParentNav = createobject("component", application.types.dmNavigation.typePath);
+							stParent = oParentNav.getData(navigationParentID);
+							arrayAppend(stParent.aObjectIds, stFileProps.objectId);
+							stParent.dateTimeCreated =  createODBCDate("#datepart('yyyy',stParent.DATETIMECREATED)#-#datepart('m',stParent.DATETIMECREATED)#-#datepart('d',stParent.DATETIMECREATED)#");
+							stParent.dateTimeLastUpdated = createODBCDate(now());
+							oParentNav.setData(stProperties=stParent);
 						}
-						//cleanup
-						inStream.close();
-						bufOutStream.close();
-						filOutStream.close();
-						
-						//Create structure with new file properties
-						flush();
-						stFileProps = structNew();
-						stFileProps.objectID = createUUID();
-						stFileProps.fileName = createObject("component","#application.packagepath#.farcry.form").sanitiseFileName(sFileName,listFirst(sFileName,"."),sFilePath);
-						writeOutput("Creating dmFile (#stFileProps.fileName#)<br>");
-						flush();
-						stFileProps.title = listFirst(stFileProps.fileName,".");
-						stFileProps.label = listFirst(stFileProps.fileName,".");
-						stFileProps.filePath = sFilePath;
-						stFileProps.fileType = listFirst(sFileMimeType,"/");
-						stFileProps.fileSubType = listLast(sFileMimeType,"/");
-						stFileProps.fileExt = listLast(stFileProps.fileName,".");
-						stFileProps.filesize = entry.getSize();
-						stFileProps.datetimecreated = Now();
-						stFileProps.documentDate = createODBCDate(now());
-						stFileProps.createdby = session.dmSec.authentication.userlogin;
-						stFileProps.datetimelastupdated = Now();
-						stFileProps.lastupdatedby = session.dmSec.authentication.userlogin;
-						//Create the file object
-						createobject("component", application.types.dmFile.typePath).createData(stProperties=stFileProps);
-						//Add the new file under it's nav parent
-						oParentNav = createobject("component", application.types.dmNavigation.typePath);
-						stParent = oParentNav.getData(navigationParentID);
-						arrayAppend(stParent.aObjectIds, stFileProps.objectId);
-						stParent.dateTimeCreated =  createODBCDate("#datepart('yyyy',stParent.DATETIMECREATED)#-#datepart('m',stParent.DATETIMECREATED)#-#datepart('d',stParent.DATETIMECREATED)#");
-						stParent.dateTimeLastUpdated = createODBCDate(now());
-						oParentNav.setData(stProperties=stParent);
+						else {
+							writeOutput("<span class=""fail"">Skipping &quot;#entry.getName()#&quot;. NOT an acceptable file MIME type (#sFileMimeType#)</span><br>");
+							flush();
+						}
 					}
-					else
-						writeOutput("<span class=""fail"">Skipping &quot;#entry.getName()#&quot;. NOT an acceptable file MIME type (#sFileMimeType#)</span><br>");
-						flush();
-					
+				} //end try
+				
+				catch(Any Expr) {
+					writeOutput("<span class=""fail"">Error: &quot;#entry.getName()#&quot; could not be uploaded to the server</span><br>");
+					flush();
 				}
 			}
 			zipFile.close();
@@ -194,41 +211,63 @@ $out:$
 		
 		<!--- Show the form --->
 		<cfoutput>
-		<div class="formTitle">#application.adminBundle[session.dmProfile.locale].bulkUpload#</div>
 		
-		<p>
-		<form action="" method="POST" name="fileForm" enctype="multipart/form-data">
-		<table border="0" cellpadding="3" cellspacing="0">
-			<tr>
-				<td>#application.adminBundle[session.dmProfile.locale].recreateFileStructure#</td>
-				<td>
-					<select name="startPoint">
-					<option value="#application.navid.fileroot#">#application.adminBundle[session.dmProfile.locale].fileRoot#</option>
-					<cfloop query="qNodes">
-					<option value="#qNodes.objectId#" <cfif qNodes.objectId eq application.navid.fileroot>selected</cfif>>#RepeatString("&nbsp;&nbsp;|", qNodes.nlevel)#- #qNodes.objectName#</option>
-					</cfloop>
-					</select>
-				</td>
-			</tr>
-			<tr>
-				<td>#application.adminBundle[session.dmProfile.locale].zipFile#</td>
-				<td>
-					<input type="File" size=25 accept="application/x-zip-compressed" name="zipFile">
-				</td>
-			</tr>
-			<tr>
-				<td colspan=2>
-					<input type="checkbox" name="bCreateDirectories" value=0> #application.adminBundle[session.dmProfile.locale].noCreateNavigationNodes#
-				</td>
-			</tr>
-			<tr>
-				<td>&nbsp;</td>
-				<td>
-					<input type="submit" value="#application.adminBundle[session.dmProfile.locale].uploadFiles#" name="submit" />
-				</td>
-			</tr>
-		</table>
+	<form method="post" class="f-wrap-1 f-bg-medium wider" action="" name="fileForm" enctype="multipart/form-data">
+	<fieldset>
+	
+		<h3>#application.adminBundle[session.dmProfile.locale].bulkUpload#</h3>
 		
+		<fieldset class="f-checkbox-wrap">
+			<fieldset>
+			<widgets:categoryAssociation typeName="dmFile" lSelectedCategoryID="">
+			</fieldset>
+			<br />
+			</label>		
+		</fieldset>
+		
+		<!--- <label for="startPoint"><b>#application.adminBundle[session.dmProfile.locale].recreateFileStructure#</b>
+		<select name="startPoint" id="startPoint">
+		<option value="#application.navid.fileroot#">#application.adminBundle[session.dmProfile.locale].fileRoot#</option>
+		<cfloop query="qNodes">
+		<option value="#qNodes.objectId#" <cfif qNodes.objectId eq application.navid.fileroot>selected="selected"</cfif>>#RepeatString("&nbsp;&nbsp;|", qNodes.nlevel)#- #qNodes.objectName#</option>
+		</cfloop>
+		</select><br />
+		</label> --->
+		
+		<label for="zipFile"><b>#application.adminBundle[session.dmProfile.locale].zipFile#</b>
+		<input type="File" accept="application/x-zip-compressed" name="zipFile" id="zipFile" /><br />
+		</label>
+		
+		<fieldset class="f-checkbox-wrap">
+			<b>File Library:</b>
+			<fieldset>
+				<label for="bLibrary">
+					<input id="bLibrary" type="checkbox" class="f-checkbox" name="bLibrary" value="1" />&nbsp;Add to file library
+					<br />
+				</label>
+			</fieldset>
+		</fieldset>
+		
+		<!--- <fieldset class="f-checkbox-wrap">
+		
+			<b>dmNavigation nodes</b>
+			
+			<fieldset>
+			
+			<label for="bCreateDirectories">
+			<input type="checkbox" name="bCreateDirectories" value="0" class="f-checkbox"> #application.adminBundle[session.dmProfile.locale].noCreateNavigationNodes#
+			</label>
+			
+			</fieldset>
+		
+		</fieldset> --->
+		
+		<div class="f-submit-wrap">
+		<input type="submit" value="#application.adminBundle[session.dmProfile.locale].uploadFiles#" name="submit" class="f-submit" /><br />
+		</div>
+		
+	</fieldset>
+
 		<!--- form validation --->
 		<SCRIPT LANGUAGE="JavaScript">
 		<!--//
@@ -238,11 +277,14 @@ $out:$
 		objForm.zipFile.validateNotNull("#application.adminBundle[session.dmProfile.locale].missingZipFile#");
 			//-->
 		</SCRIPT>
-		</form>
-		<p>
-		    <strong>#application.adminBundle[session.dmProfile.locale].instructions#</strong>
-		</p>
-			#application.adminBundle[session.dmProfile.locale].uploadFileBlurb#
+		
+	</form>
+	
+	<hr />
+	
+		<h3>#application.adminBundle[session.dmProfile.locale].instructions#</h3>
+		<p>#application.adminBundle[session.dmProfile.locale].uploadFileBlurb#</p>
+		
 	</cfoutput>
 	</cfif>
 <cfelse>

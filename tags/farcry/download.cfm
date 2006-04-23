@@ -4,15 +4,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/farcry/download.cfm,v 1.12.4.2 2005/06/10 02:26:55 suspiria Exp $
-$Author: suspiria $
-$Date: 2005/06/10 02:26:55 $
-$Name: milestone_2-3-2 $
-$Revision: 1.12.4.2 $
+$Header: /cvs/farcry/farcry_core/tags/farcry/download.cfm,v 1.17 2005/10/07 05:44:58 daniela Exp $
+$Author: daniela $
+$Date: 2005/10/07 05:44:58 $
+$Name: milestone_3-0-0 $
+$Revision: 1.17 $
 
 || DESCRIPTION ||
 $Description: Downloads a dmFile object$
-$TODO: $
+
 
 || DEVELOPER ||
 $Developer: Brendan Sisson (brendan@daemon.com.au)$
@@ -29,11 +29,11 @@ $out:$
 	<cfset url.downloadfile = attributes.downloadfile>
 </cfif>
 
+
 <!--- should not be able to get object unless authorised. --->
 <cfif isDefined("url.DownloadFile") and len(trim(url.DownloadFile))>
 
 	<q4:contentobjectget objectid="#url.DownloadFile#" r_stobject="stFile">
-
 
     <!--- work out file type --->
     <cfif stFile.typeName eq "dmImage">
@@ -106,7 +106,7 @@ $out:$
 			<cfheader name="Content-Disposition" VALUE="attachment;filename=#stFile.filename#">
 			<cfheader name="cache-control" value="">
 			<cfheader name="pragma" value="">
-			<cfcontent type="#mime#" file="#application.defaultfilepath#/#stFile.filename#" deletefile="No" reset="Yes">
+			<cfcontent type="#mime#" file="#application.path.defaultfilepath#/#stFile.filename#" deletefile="No" reset="Yes">
 	    </cfif>
     <cfcatch><!--- prevent unnecessary log entries when user cancels download whilst it is in progress ---></cfcatch>
     </cftry>
@@ -157,7 +157,7 @@ $out:$
 	</cfswitch>
 
 	<!--- download file via unc path specified for external files --->
-	<cfheader name="content-disposition" value="inline; filename=#url.extFile#">
+	<cfheader name="content-disposition" value="attachment; filename=#fileName#" />
 	<cfheader name="cache-control" value="">
 	<cfheader name="pragma" value="">
 

@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/navajo/objectStatus_dd.cfm,v 1.21.2.1 2005/05/24 04:42:54 gstewart Exp $
-$Author: gstewart $
-$Date: 2005/05/24 04:42:54 $
-$Name: milestone_2-3-2 $
-$Revision: 1.21.2.1 $
+$Header: /cvs/farcry/farcry_core/tags/navajo/objectStatus_dd.cfm,v 1.24 2005/10/04 05:51:35 guy Exp $
+$Author: guy $
+$Date: 2005/10/04 05:51:35 $
+$Name: milestone_3-0-0 $
+$Revision: 1.24 $
 
 || DESCRIPTION || 
 $Description: Changes the status of objects to approved/draft/pending. Intended for use with dynamic data pages $
@@ -33,7 +33,6 @@ $out:$
 <cfparam name="form.commentlog" default=""> <!--- hack --->
 
 <cfloop index="attributes.objectID" list="#attributes.lObjectIDs#">
-
 	<q4:contentobjectget objectId="#attributes.objectId#" r_stObject="stObj">
 		<cfif not structkeyexists(stObj, "status")>
 			<cfoutput>
@@ -48,12 +47,13 @@ $out:$
 			<cfset status = "approved">
 			<cfset permission = "approve">
 			<cfset active = 1>
-			
+
 			<cfinvoke component="#application.packagepath#.farcry.versioning" method="getVersioningRules" objectID="#attributes.objectID#" returnvariable="stRules">
 			<cfif stRules.BLIVEVERSIONEXISTS>
 				<cfinvoke component="#application.packagepath#.farcry.versioning" method="sendObjectLive" objectID="#attributes.objectID#"  stDraftObject="#stObj#" returnvariable="stRules">
 				<cfset attributes.objectId=stObj.objectid>
 			</cfif>
+
 			<!--- send out emails informing object has been approved ---><br /> 
 			<cfinvoke component="#application.packagepath#.farcry.versioning" method="approveEmail_approved_dd">
 				<cfinvokeargument name="objectId" value="#attributes.objectId#"/>
@@ -62,6 +62,7 @@ $out:$
 					<cfinvokeargument name="approveURL" value="#attributes.approveURL#"/>
 				</cfif>
 			</cfinvoke>
+
 		<cfelseif trim(attributes.status) IS "draft">
 			<cfset status = 'draft'>
 			<cfset permission = "approve">
@@ -102,13 +103,25 @@ $out:$
 		<cfelse>
 			<cfthrow errorcode="navajo" message="#application.adminBundle[session.dmProfile.locale].passedUnknownStatus#">
 		</cfif>
-		
+
 		<!--- prepare date fields --->
 		<cfloop collection="#stObj#" item="field">
-			<cfif StructKeyExists(application.types[stObj.typeName].stProps, field) and application.types[stObj.typeName].stProps[field].metaData.type eq "date">
+			<cfif StructKeyExists(application.types[stObj.typeName].stProps, field) AND application.types[stObj.typeName].stProps[field].metaData.type eq "date" AND IsDate(stObj[field])>
 				<cfset stObj[field] = CreateODBCDateTime(stObj[field])>
 			</cfif>
 		</cfloop>
+
+		<!--- update related aObjectids status to approved --->
+		<cfif status EQ "approved" AND StructKeyExists(stObj,"aObjectIDs")>
+			<cfloop index="i" from="1" to="#ArrayLen(stObj.aObjectIDs)#">
+				<q4:contentobjectget objectId="#stObj.aObjectIDs[i]#" r_stObject="relstObj">
+				<cfif relstObj.typename EQ "dmFile" OR relstObj.typename EQ "dmImage">
+					<cfset relstObj.status = status>
+					<cfset oType = createobject("component", application.types[relstObj.typename].typePath)>
+					<cfset oType.setData(stProperties=relstObj, auditNote="Status changed to #relstObj.status#")>
+				</cfif>
+			</cfloop>
+		</cfif>
 
 		<cfscript>
 		// update the structure data for object update
@@ -122,11 +135,9 @@ $out:$
 		
 		// update object	
 		oType = createobject("component", application.types[stObj.typename].typePath);
-		oType.setData(stProperties=stObj,auditNote="Status changed to #stObj.status#");		
+		oType.setData(stProperties=stObj,auditNote="Status changed to #stObj.status#");
 		</cfscript>
 		
 	</cfloop>
-	
 	<cfset "caller.#attributes.rMsg#" = "#listLen(attributes.lObjectIds)# object(s) status changed"> 
-
 <cfsetting enablecfoutputonly="No">

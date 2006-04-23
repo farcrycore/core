@@ -10,11 +10,11 @@ Daemon Pty Limited 1995-2001
 http://www.daemon.com.au/
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/security/ui/dmSecUI_GroupSearch.cfm,v 1.3 2004/07/30 04:55:55 brendan Exp $
-$Author: brendan $
-$Date: 2004/07/30 04:55:55 $
-$Name: milestone_2-3-2 $
-$Revision: 1.3 $
+$Header: /cvs/farcry/farcry_core/tags/security/ui/dmSecUI_GroupSearch.cfm,v 1.5 2005/08/17 06:50:52 pottery Exp $
+$Author: pottery $
+$Date: 2005/08/17 06:50:52 $
+$Name: milestone_3-0-0 $
+$Revision: 1.5 $
 
 || DESCRIPTION || 
 UI for searching for groups.
@@ -28,6 +28,13 @@ Matt Dawson (mad@daemon.com.au)
 
 || HISTORY ||
 $Log: dmSecUI_GroupSearch.cfm,v $
+Revision 1.5  2005/08/17 06:50:52  pottery
+FC-83
+security setup pages cleaned up and layed forms out with css
+
+Revision 1.4  2005/08/17 04:19:22  daniela
+[FC-192]   Add glamour touch
+
 Revision 1.3  2004/07/30 04:55:55  brendan
 i18n mods
 
@@ -64,7 +71,7 @@ no message
 
 <cfparam name="form.lUserDirectory" default="">
 
-<cfoutput><span class="formtitle">#application.adminBundle[session.dmProfile.locale].groupSearch#</span><p></cfoutput>
+
 
 <!--- User directory selection --->
 <cfscript>
@@ -89,55 +96,36 @@ else
 </cfscript>
 
 <cfoutput>
-<form name="groupSearch" action="" method="POST">
-<table class="formtable">
-<tr>
-	<td rowspan="10">&nbsp;</td>
-</tr>
-<tr>
-	<td>&nbsp;</td>
-</tr>
-<tr>
-	<td><span class="formlabel">#application.adminBundle[session.dmProfile.locale].selectSearchUserDir#</span></td>
-</tr>
-<tr>
-	<td>
-	<select name="lUserDirectory" size=4 multiple>
-		<cfloop index="ud" list="#structKeyList(stUd)#">
-		<cfif stUd[ud].type neq "ADSI"><option value="#ud#" <cfif listContains(stobj.lUserDirectory,ud) or listlen(structKeyList(stUd)) eq 1>selected</cfif>>#ud#</cfif>
-		</cfloop>
-	</select>
-	</td>
-</tr>
-<tr>
-	<td>&nbsp;</td>
-</tr>
-<tr>
-	<td><span class="formlabel">#application.adminBundle[session.dmProfile.locale].groupNameFragment#</span></td>
-</tr>
-<tr>
-	<td>
-	<input type="text" name="fragment" value="#stobj.fragment#">
-	<!--- i18n: problematic --->
-	<cfset lLocations="Starts with,Contains,Ends with">
-	<select name="fragmentLocation">
-		<option value="Starts with" <cfif stobj.fragmentLocation eq "Starts with">selected</cfif>>#application.adminBundle[session.dmProfile.locale].startsWith#
-		<option value="Contains" <cfif stobj.fragmentLocation eq "Contains">selected</cfif>>#application.adminBundle[session.dmProfile.locale].containsLabel#
-		<option value="Ends with" <cfif stobj.fragmentLocation eq "Ends with">selected</cfif>>#application.adminBundle[session.dmProfile.locale].endsWith#
-	</select>
-	</td>
-</tr>
-<tr>
-	<td>&nbsp;</td>
-</tr>
-<tr>
-	<td><input type="Submit" name="Submit" Value="#application.adminBundle[session.dmProfile.locale].search#"></td>
-</tr>
-<tr>
-	<td>&nbsp;</td>
-</tr>
-</table>
-
+<form action="" name="groupSearch" method="post" class="f-wrap-1 f-bg-medium wider">
+	<fieldset>
+		<h3>#application.adminBundle[session.dmProfile.locale].groupSearch#</h3>
+		
+		<label for="lUserDirectory"><b>#application.adminBundle[session.dmProfile.locale].selectSearchUserDir#</b>
+			<select name="lUserDirectory" size=4 multiple="multiple">
+				<cfloop index="ud" list="#structKeyList(stUd)#">
+					<cfif stUd[ud].type neq "ADSI"><option value="#ud#" <cfif listContains(stobj.lUserDirectory,ud) or listlen(structKeyList(stUd)) eq 1>selected="selected"</cfif>>#ud#</cfif></option>
+				</cfloop>
+			</select>
+			<br />
+		</label>
+		<label for="fragment"><b>#application.adminBundle[session.dmProfile.locale].groupNameFragment#</b>
+			<!--- i18n: problematic --->
+			<cfset lLocations="Starts with,Contains,Ends with">
+			<select name="fragmentLocation" id="fragmentLocation">
+				<option value="Starts with" <cfif stobj.fragmentLocation eq "Starts with">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].startsWith#</option>
+				<option value="Contains" <cfif stobj.fragmentLocation eq "Contains">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].containsLabel#</option>
+				<option value="Ends with" <cfif stobj.fragmentLocation eq "Ends with">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].endsWith#</option>
+			</select>
+			<br />
+		</label>
+		<label for="fragment"><b>&nbsp;</b>
+			<input type="text" name="fragment" id="fragment" value="#stobj.fragment#">
+			<br />
+		</label>
+		<div class="f-submit-wrap">
+			<input type="Submit" name="Submit" class="f-submit" Value="#application.adminBundle[session.dmProfile.locale].search#">
+		</div>
+	</fieldset>
 </form>
 </cfoutput>
 
@@ -158,18 +146,20 @@ else
 <cfloop index="ud" list="#stObj.lUserDirectory#">
 
 <cfoutput>
-<table cellpadding="5" cellspacing="0" border="1" style="margin-left:30px;">
-<tr class="dataheader">
-	<td>Group Name</td>
-	<td>Group Notes</td>
-</tr>
+<hr />
+<h3>#application.adminBundle[session.dmProfile.locale].groups#</h3>
 
+<table cellspacing="0" class="table-3">
+		<tr>
+			<th>Group Name</th>
+			<th>Group Notes</th>
+		</tr>
 <cfscript>
 	aGroups = oAuthentication.getMultipleGroups(userdirectory=ud);
 </cfscript>
 <cfloop index="i" from="1" to="#ArrayLen(aGroups)#">
 	<cfoutput>
-	<tr  class="#IIF(i MOD 2, de("dataOddRow"), de("dataEvenRow"))#">
+	<tr#iif(i mod 2, de(" class=""alt"""), de(""))#>
 		<cfif stUd[ud].type eq "Daemon">
 			<td><a href="?tag=GroupCreateEdit&groupName=#aGroups[i].groupName#&userDirectory=#ud#">#aGroups[i].groupName#</a></td>
 		<cfelse>
@@ -179,7 +169,6 @@ else
 	</tr>
 	</cfoutput>
 </cfloop>
-	
 </tr>
 </table>
 

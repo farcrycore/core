@@ -7,15 +7,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/security/ui/dmSecUI_UserCreateEdit.cfm,v 1.8 2004/07/15 02:03:27 brendan Exp $
-$Author: brendan $
-$Date: 2004/07/15 02:03:27 $
-$Name: milestone_2-3-2 $
-$Revision: 1.8 $
+$Header: /cvs/farcry/farcry_core/tags/security/ui/dmSecUI_UserCreateEdit.cfm,v 1.18 2005/10/20 06:49:27 guy Exp $
+$Author: guy $
+$Date: 2005/10/20 06:49:27 $
+$Name: milestone_3-0-0 $
+$Revision: 1.18 $
 
 || DESCRIPTION || 
 $Description: Interface for creating and editing users.$
-$TODO: $
+
 
 || DEVELOPER ||
 $Developer: Brendan Sisson (brendan@daemon.com.au)$
@@ -32,7 +32,7 @@ $out:$
 
 <cfparam name="url.userLogin" default="">
 <cfparam name="form.deleteuser" default="0">
-
+<cfparam name="original_userlogin" default="">
 <cfif len(url.userLogin)>
 	<cfparam name="url.userDirectory">
 </cfif>
@@ -50,39 +50,52 @@ $out:$
 
 <!--- Create/Update the user details on submit--->
 <cfif isDefined("form.submit")>
-	
 	<cfset noError=1>
 	<cftry>
 		<cfif form.userId eq -1>
 			<cfscript>
+				//Create the new user
 				oAuthentication.createUser(userlogin=form.userlogin,userpassword=form.userpassword,userdirectory=form.userdirectory,usernotes=form.usernotes,userstatus=form.userstatus);
+				
+				//Now create a structure to hold new profile properties
+				stProps = structNew();
+				stProps.userLogin = form.userlogin;
+				stProps.userDirectory = form.userdirectory;
+				
+				//Create new profile. This used to be done as part of the login
+				o_profile = createObject("component", application.types.dmProfile.typePath);
+				stNewProfile = o_profile.createProfile(stProperties=stProps);
+				
+				//Now update the profile with the users home node in the Overview tree
+				structClear(stProps); //clear and reuse stProps
+				stProps.overviewHome = form.overviewHome;
+				stProps.objectId = stNewProfile.objectId;
+				o_profile.setData(stProperties=stProps);	
 			</cfscript>
 		<cfelse>
-			<cfscript>
-				oAuthentication.updateUser(userid=form.userid,userlogin=form.userlogin,userpassword=form.userpassword,userdirectory=form.userdirectory,usernotes=form.usernotes,userstatus=form.userstatus);
-			</cfscript>
+
+			<cfset oAuthentication.updateUser(userid=form.userid,userlogin=form.userlogin,userpassword=form.userpassword,userdirectory=form.userdirectory,usernotes=form.usernotes,userstatus=form.userstatus)>
 
             <!--- update dmProfile object --->
 			<cftry>
-	            <cfscript>
-		            o_profile = createObject("component", application.types.dmProfile.typePath);
-		            stProfile = o_profile.getProfile(userName=URL.userLogin);
-					
-		
-		            stProps = structNew();
-					stProps.objectid = stProfile.objectID;
-		            if (form.userStatus eq 4) stProps.bActive = 1;
-		            else if (form.userStatus eq 2) stProps.bActive = 0;
-					
-					// update object	
-					oType = createobject("component", application.types.dmProfile.typePath);
-					oType.setData(stProperties=stProps);	
-	            </cfscript>
-				 
-				 <cfcatch></cfcatch>
+				<cfset o_profile = createObject("component", application.types.dmProfile.typePath)>
+				<cfset stProfile = o_profile.getProfile(userName=original_userlogin)>
+				<cfset stProps = structNew()>
+				<cfset stProps.objectid = stProfile.objectID>
+				<cfset stProps.username = form.userLogin>
+				
+				<cfif form.userStatus eq 4>
+					<cfset stProps.bActive = 1>
+				<cfelseif form.userStatus eq 2>
+					<cfset stProps.bActive = 0>
+				</cfif>
+				<cfset stProps.overviewHome =  form.overviewHome>
+				<cfset o_profile.setData(stProperties = stProps)>
+
+				 <cfcatch><cfdump var="#cfcatch#"><cfabort></cfcatch>
 			</cftry>
 		</cfif>
-		
+
 		<cfcatch type="dmSec">
 			<cfoutput>#cfcatch.message#</cfoutput>
 			<cfset noError=0>
@@ -90,17 +103,22 @@ $out:$
 	</cftry>
 	
 	<cfif noError>
-		<cfoutput>#application.adminBundle[session.dmProfile.locale].userChangeOK#<p></p></cfoutput>
+		<cfoutput>
+			<p id="fading1" class="fade"><span class="success">#application.adminBundle[session.dmProfile.locale].userChangeOK#</span></p>
+			<!--- <br /> --->
+		</cfoutput>
 		<!--- Now grab the user --->
 		<cfscript>
 			stObj = oAuthentication.getUser(userlogin=form.userlogin,userdirectory=form.userdirectory);
+	        stProfile = createObject("component", application.types.dmProfile.typePath).getProfile(userName=form.userlogin);
 		</cfscript>
+		<!--- What is this for??? ~tom
 		<cfscript>
 			oAuthorisation = request.dmsec.oAuthorisation;
 			oAuthentication = request.dmsec.oAuthentication;
 			stObj = oAuthentication.getUser(userLogin="#form.UserLogin#", userDirectory="#form.UserDirectory#");
 		</cfscript>
-		
+		--->
 		
 	<cfelse>
 		<cfset stObj=form>
@@ -110,12 +128,18 @@ $out:$
 	<!--- Editing a user --->
 	<cfscript>
 		stObj = oAuthentication.getUser(userlogin=url.userlogin,userdirectory=url.userdirectory);
+        stProfile = createObject("component", application.types.dmProfile.typePath).getProfile(userName=URL.userLogin);
 	</cfscript>
-	
+
 	<cfif StructIsEmpty(stObj)>
 		<dmSec:dmSec_throw errorcode="dmSec_UserGetUnableToFind" lExtra="#url.userLogin#,#url.userDirectory#">	
 	</cfif>
-
+	
+	<!--- if, for whatever reason, the key 'overviewHome' does not exist in the profile structure... --->
+	<cfif NOT structKeyExists(stProfile,"overviewHome")>
+		<!--- create the key and assign default value of 'home' node --->
+		<cfset tmp = structInsert(stProfile, "overviewHome", "HOME", "yes")>
+	</cfif>
 <cfelse>
 	<!--- Creating new user --->
 	<cfscript>
@@ -126,13 +150,11 @@ $out:$
 		stObj.userPassword="";
 		stObj.userStatus="";
 		stObj.userDirectory="";
+		
+		//struct to hold overviewHome variable. This is part of dmProfile
+		stProfile = structNew();
+		stProfile.overviewHome = "";
 	</cfscript>
-</cfif>
-
-<cfif stObj.userId eq -1 >
-	<cfoutput><span class="formtitle">#application.adminBundle[session.dmProfile.locale].createUser#</span><p></cfoutput>
-<cfelse>
-	<cfoutput><span class="formtitle">#application.adminBundle[session.dmProfile.locale].editUser#</span><p></cfoutput>
 </cfif>
 
 <cfoutput>
@@ -148,142 +170,136 @@ function generateRandomPassword()
 			'prove','muppet','show','tonight','very','special','guest','god','gremlin','jake','land','wack',
 			'read','mag','mad','yum','kid','nubile','boy','attitude','feel','what','why','you','gotta','like','right',
 			'ride','up','down','world','sick','people','know','beast','window','some','thing','nana','goat','blow','spank'];
-	document.forms['user'].userPassword.value=words[Math.floor(Math.random()*words.length)]+words[Math.floor(Math.random()*words.length)]+Math.floor(Math.random()*1000);
+	document.forms['user'].generatedPassword.value=words[Math.floor(Math.random()*words.length)]+words[Math.floor(Math.random()*words.length)]+Math.floor(Math.random()*1000);
 }
 </script>
 
-
-<form action="" name="user" method="POST">
-<table class="formtable" border="0">
-<tr>
-	<td rowspan="20" colspan="2">&nbsp;</td>
-</tr>
-<tr>
-	<td colspan="2">&nbsp;</td>
-</tr>
-<tr>
-	
-	<cfif stObj.userId eq -1>
-		<td><span class="formlabel">#application.adminBundle[session.dmProfile.locale].selectUserDirCreateUser#</span></td>
-		<td>
-		<select name="UserDirectory" class="formselectlist">
-			<cfloop index="i" list="#structKeyList(stUd)#">
-				<cfif stUD[i].type neq "ADSI"><option value="#i#" <cfif stObj.userDirectory eq i>selected</cfif>>#i#</option></cfif>
-			</cfloop>
-		</select>
-		</td>
-	<cfelse>
-		<td><span class="formlabel">#application.adminBundle[session.dmProfile.locale].userDirectoryLabel#</span></td>
-		<td>#stObj.UserDirectory#<input type="hidden" name="UserDirectory" value="#stObj.UserDirectory#"></td>
-	</cfif>
-	
-</tr>
-<tr>
-	<td colspan="2">&nbsp;</td>
-</tr>
-<input type="hidden" name="UserId" value="#stObj.userId#"> 
-<!--- User Details --->
-<tr>
-	<td><span class="formlabel">#application.adminBundle[session.dmProfile.locale].userLoginLabel#</span></td>
-	<td>
-	<cfif stObj.userId eq -1 OR stUd[stObj.UserDirectory].type neq 'Custom'>
-		<input type="text" size="32" maxsize="32" name="userLogin" value="#stObj.userLogin#">
-	<cfelse>
-		<input type="hidden" size="32" maxsize="32" name="userLogin" value="#stObj.userLogin#">#stObj.userLogin#
-	</cfif>
-	</td>
-</tr>
-<tr>
-	<td colspan="2">&nbsp;</td>
-</tr>
-<cfif stObj.userId eq -1 OR stUd[stObj.UserDirectory].type neq 'Custom'>
-	<tr>
-		<td valign="top"><span class="formlabel">#application.adminBundle[session.dmProfile.locale].userNotes#</span></td>
-		<td><Textarea name="userNotes" class="formtextarea" rows="5">#stObj.userNotes#</textarea></td>
-	</tr>
-	<tr>
-		<td colspan="2">&nbsp;</td>
-	</tr>
-</cfif>
-
-<tr>
-	<td valign="top"><span class="formlabel">#application.adminBundle[session.dmProfile.locale].userPasswordLabel#</span></td>
-	<td>
-		<input type="text" maxsize="32" name="userPassword" value="#stObj.userPassword#">
-		<input type="button" onClick="generateRandomPassword()" value="#application.adminBundle[session.dmProfile.locale].genRandomPassword#" style="width:150px;">
-	</td>
-</tr>
-<tr>
-	<td colspan="2">&nbsp;</td>
-</tr>
-<cfif stObj.userId eq -1 OR stUd[stObj.UserDirectory].type neq 'Custom'>
-	<tr>
-		<td><span class="formlabel">#application.adminBundle[session.dmProfile.locale].userStatusLabel#</span></td>
-		<td>
-		<select name="userStatus" class="formselectlist">
-			<option value="4" <cfif stObj.userStatus eq 4>selected</cfif>>#application.adminBundle[session.dmProfile.locale].active#
-			<!--- <option value="1" <cfif stObj.userStatus eq 1>selected</cfif>>Blacklisted --->
-			<option value="2" <cfif stObj.userStatus eq 2>selected</cfif>>#application.adminBundle[session.dmProfile.locale].disabled#
-			<!--- <option value="3" <cfif stObj.userStatus eq 3>selected</cfif>>Pending Approval --->
-		</select>
-		</td>
-	</tr>
-	<tr>
-		<td colspan="2">&nbsp;</td>
-	</tr>
-</cfif>
-<tr>
-	<cfif stObj.userId eq -1>
-	<td colspan="2"><input type="submit" name="Submit" value="#application.adminBundle[session.dmProfile.locale].createUser#"><br></td>
-	<cfelse>
-		<cfscript>
-			aUserGroups = oAuthentication.getMultipleGroups(userLogin="#stObj.userLogin#", userDirectory="#stObj.userdirectory#");
-		</cfscript>
-		
-		<td><span class="formlabel">#application.adminBundle[session.dmProfile.locale].memberOfGroupsLabel#</span></td>
-		<td>
-		<cfif arrayLen(aUserGroups) neq 0>
-			<cfloop index="i" from="1" to="#arrayLen(aUserGroups)#">
-				<cfif i neq 1>,</cfif>
-				#aUserGroups[i].groupName#
-			</cfloop>
+<form action="" name="user" method="POST" class="f-wrap-2 f-bg-long">
+	<fieldset>
+		<div class="req"><b>*</b>Required</div>
+		<cfif stObj.userId eq -1 >
+			<h3>#application.adminBundle[session.dmProfile.locale].createUser#</h3>
 		<cfelse>
-			None.
-		</cfif>
-		</td>		
-		<p></p>
-		<input type="hidden" name="deleteuser" value="0">
-		<input type="submit" name="Submit" value="#application.adminBundle[session.dmProfile.locale].updateUser#">
-		<input type="button" name="delete" value="#application.adminBundle[session.dmProfile.locale].deleteUser#" onClick="if(confirm('#application.adminBundle[session.dmProfile.locale].confirmDeleteUser#')){document.user.deleteuser.value=1;user.submit();}">
+			<h3>#application.adminBundle[session.dmProfile.locale].editUser#</h3>
+		</cfif>			
+	
+		<label for="UserDirectory">
+			<cfif stObj.userId eq -1>
+				<b>#application.adminBundle[session.dmProfile.locale].selectUserDirCreateUser#</b>
+				<select name="UserDirectory" id="UserDirectory">
+					<cfloop index="i" list="#structKeyList(stUd)#">
+						<cfif stUD[i].type neq "ADSI"><option value="#i#" <cfif stObj.userDirectory eq i>selected="selected"</cfif>>#i#</option></cfif>
+					</cfloop>
+				</select>
+			<cfelse>
+				<b>#application.adminBundle[session.dmProfile.locale].userDirectoryLabel#</b>
+				<span style="font-weight:bold;margin-left:8px">#stObj.UserDirectory#</span><input type="hidden" name="UserDirectory" id="UserDirectory" value="#stObj.UserDirectory#" />
+			</cfif>
+			<br />
+		</label>
+		<!--- User Details --->
+		<input type="hidden" name="UserId" value="#stObj.userId#" /> 
+		<input type="hidden" name="original_userlogin" value="#stObj.userLogin#" /> 
+		<label for="userLogin"><b>#application.adminBundle[session.dmProfile.locale].userLoginLabel#<span class="req">*</span></b>
+			<cfif stObj.userId eq -1 OR stUd[stObj.UserDirectory].type neq 'Custom'>
+				<input type="text" name="userLogin" id="userLogin" value="#stObj.userLogin#" maxsize="32" />
+			<cfelse>
+				<input type="hidden" name="userLogin" id="userLogin" value="#stObj.userLogin#" />#stObj.userLogin#
+			</cfif>
+			<br />
+		</label>
+		<cfif stObj.userId eq -1 OR stUd[stObj.UserDirectory].type neq 'Custom'>
+			<label for="userNotes"><b>#application.adminBundle[session.dmProfile.locale].userNotes#</b>
+				<textarea name="userNotes" class="f-comments" id="userNotes" rows="5" cols="30">#stObj.userNotes#</textarea><br />
+			</label>
+		</cfif>			
 		
-	</cfif>
-	</td>
-</tr>
-<tr>
-	<td colspan="2">&nbsp;</td>
-</tr>
-<!--- form validation --->
+		<label for="generatedPassword"><b>#application.adminBundle[session.dmProfile.locale].genRandomPassword#:</b>
+			<input type="text" name="generatedPassword" id="generatedPassword" maxsize="32" class="subdued" readonly /> 
+			<a href="##" onclick="generateRandomPassword()" class="f-extratext">#application.adminBundle[session.dmProfile.locale].genRandomPassword#</a><br />
+		</label>
+
+		<label for="userPassword">
+			<b>#application.adminBundle[session.dmProfile.locale].userPasswordLabel#<span class="req">*</span></b>
+			<input type="password" name="userPassword" id="userPassword" value="#stObj.userPassword#" /><br />
+		</label>
+		
+		<label for="userPassword2">
+			<b>#application.adminBundle[session.dmProfile.locale].confirmPassword#:<span class="req">*</span></b>
+			<input type="password" name="userPassword2" id="userPassword2" value="#stObj.userPassword#" />
+			<br />			
+		</label>
+		
+		<cfif stObj.userId eq -1 OR stUd[stObj.UserDirectory].type neq 'Custom'>
+			<label for="userStatus">
+				<b>#application.adminBundle[session.dmProfile.locale].userStatusLabel#</b>
+				<select name="userStatus" id="userStatus" class="formselectlist">
+					<option value="4" <cfif stObj.userStatus eq 4>selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].active#</option>
+					<option value="2" <cfif stObj.userStatus eq 2>selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].disabled#</option>
+				</select>
+				<br />
+			</label>
+		</cfif>
+	
+		<label for="overviewHome">
+			<cfset aNavalias = listToArray(listSort(structKeyList(application.navid),'textnocase'))>
+			<b>#application.adminBundle[session.dmProfile.locale].userHomeNodeLabel#</b>
+			<select name="overviewHome" id="overviewHome">
+				<option value="HOME">HOME</option>
+				<cfloop from="1" to="#arraylen(aNavalias)#" index="i">
+					<cfset key=aNavalias[i]>
+					<cfif key neq "home">
+						<option value="#key#"<cfif stProfile.overviewHome eq key> selected="selected"</cfif>>#UCase(key)#</option>
+					</cfif>
+				</cfloop>
+			</select>
+			<br />
+		</label>
+		
+		<label for="userGroup">
+			<cfif stObj.userId eq -1>
+				<div class="f-submit-wrap">
+					<input type="submit" name="Submit" class="f-submit" value="#application.adminBundle[session.dmProfile.locale].createUser#">
+				</div>
+			<cfelse>
+				<cfscript>
+					aUserGroups = oAuthentication.getMultipleGroups(userLogin="#stObj.userLogin#", userDirectory="#stObj.userdirectory#");
+				</cfscript>
+				<b>#application.adminBundle[session.dmProfile.locale].memberOfGroupsLabel#</b>
+				<cfif arrayLen(aUserGroups) neq 0>
+					<cfloop index="i" from="1" to="#arrayLen(aUserGroups)#">
+						<cfif i neq 1>,</cfif>
+						<span style="font-weight:bold;margin-left:8px">#trim(aUserGroups[i].groupName)#</span>
+					</cfloop>
+				<cfelse>
+					<span style="font-weight:bold;margin-left:8px">None.</span>
+				</cfif>
+				
+				<br />
+				
+				<p style="font-weight:bold;margin-left:0"><a href="#application.url.farcry#/security/redirect.cfm?tag=UserGroups&userLogin=#stObj.userLogin#&userdirectory=#stobj.userdirectory#">#application.adminBundle[session.dmProfile.locale].manageGroups#</a>
+				</p>
+				<div class="f-submit-wrap">
+					<input type="hidden" name="deleteuser" value="0" />
+					<input type="submit" name="Submit" class="f-submit" value="#application.adminBundle[session.dmProfile.locale].updateUser#" />
+					<input type="button" name="delete" class="f-submit" value="#application.adminBundle[session.dmProfile.locale].deleteUser#" onClick="if(confirm('#application.adminBundle[session.dmProfile.locale].confirmDeleteUser#')){document.user.deleteuser.value=1;user.submit();}" />
+				</div>
+			</cfif>
+		</label>
+	</fieldset>
+	<!--- form validation --->
 	<SCRIPT LANGUAGE="JavaScript">
-	<!--//
-	objForm = new qForm("user");
-	objForm.userLogin.validateNotNull("#application.adminBundle[session.dmProfile.locale].enterUserName#");
-	objForm.userPassword.validateNotNull("#application.adminBundle[session.dmProfile.locale].enterPassword#");
-	objForm.userPassword.validatePassword(null, '1','32',"#application.adminBundle[session.dmProfile.locale].enterValidPassword#");
-	//-->
+		<!--//
+		objForm = new qForm("user");
+		qFormAPI.errorColor="##cc6633";
+		objForm.userLogin.validateNotNull("#application.adminBundle[session.dmProfile.locale].enterUserName#");
+		objForm.userPassword.validateNotNull("#application.adminBundle[session.dmProfile.locale].enterPassword#");		
+		objForm.userPassword.validatePassword(null,"1","32","#application.adminBundle[session.dmProfile.locale].enterValidPassword#");
+		objForm.userPassword2.validateNotNull("#application.adminBundle[session.dmProfile.locale].reenterPassword#");
+		objForm.userPassword.validatePassword('userPassword2', '1','32',"#application.adminBundle[session.dmProfile.locale].badPasswords#");
+		//-->
 	</SCRIPT>
 </form>
-
-<cfif stObj.userId neq -1>
-	<form action="?tag=UserGroups&userLogin=#stObj.userLogin#&userdirectory=#stobj.userdirectory#" method="POST" style="display:inline">
-	<tr>
-		<td><input type="submit" name="GroupManage" value="#application.adminBundle[session.dmProfile.locale].manageGroups#"></td>
-	</tr>
-	<tr>
-		<td colspan="2">&nbsp;</td>
-	</tr>
-	</form>	
-</cfif>
-</table>
 </cfoutput>
 
 <cfsetting enablecfoutputonly="No">

@@ -4,15 +4,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/reporting/statsMostPopular.cfm,v 1.4 2004/07/15 01:51:48 brendan Exp $
-$Author: brendan $
-$Date: 2004/07/15 01:51:48 $
-$Name: milestone_2-3-2 $
-$Revision: 1.4 $
+$Header: /cvs/farcry/farcry_core/admin/reporting/statsMostPopular.cfm,v 1.8 2005/08/17 03:28:39 pottery Exp $
+$Author: pottery $
+$Date: 2005/08/17 03:28:39 $
+$Name: milestone_3-0-0 $
+$Revision: 1.8 $
 
 || DESCRIPTION || 
 $Description: Displays summary stats for viewed objects, filter by type,date,maxRows. Click through for graphs$
-$TODO: $
+
 
 || DEVELOPER ||
 $Developer: Brendan Sisson (brendan@daemon.com.au)$
@@ -46,65 +46,77 @@ $out:$
 	</cfscript>
 	
 	<cfoutput>
-	<div class="formtitle">#application.adminBundle[session.dmProfile.locale].mostPopularObj#</div>
+	
 	
 	<cfif qDownloads.recordcount>
-		<table cellpadding="5" cellspacing="0" border="0"  style="margin-left:30px;">
-		<form action="" method="post">
-		<tr>
-			<td width="450">
+		
+		<form action="" method="post" class="f-wrap-1 f-bg-short">
+		
+			<fieldset>
+			
+			<h3>#application.adminBundle[session.dmProfile.locale].mostPopularObj#</h3>
+			
+			<label for="typeName">
 			<!--- drop down for typeName --->
-			#application.adminBundle[session.dmProfile.locale].typeLC# 
-			<select name="typeName">
-				<option value="all" <cfif form.typeName eq "all">selected</cfif>>#application.adminBundle[session.dmProfile.locale].allTypes#
+			<b>#application.adminBundle[session.dmProfile.locale].typeLC#</b>
+			<select name="typeName" id="typeName">
+				<option value="all" <cfif form.typeName eq "all">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].allTypes#</option>
 				<!--- sort structure by Key name --->
 				<cfset listofKeys = structKeyList(application.types)>
 				<cfset listofKeys = listsort(listofkeys,"textnocase")>
 				<cfloop list="#listofKeys#" index="key">
-					<option value="#key#" <cfif key eq form.typeName>selected</cfif>>#key#
+					<option value="#key#" <cfif key eq form.typeName>selected="selected"</cfif>>#key#</option>
 				</cfloop>
-			</select>
+			</select><br />
+			</label>
 			
+			<label for="dateRange">
 			<!--- drop down for date --->
-			#application.adminBundle[session.dmProfile.locale].date#
-			<select name="dateRange">
-				<option value="all" <cfif form.dateRange eq "all">selected</cfif>>#application.adminBundle[session.dmProfile.locale].allDates#
-				<option value="d" <cfif form.dateRange eq "d">selected</cfif>>#application.adminBundle[session.dmProfile.locale].Today#
-				<option value="ww" <cfif form.dateRange eq "ww">selected</cfif>>#application.adminBundle[session.dmProfile.locale].lastWeek#
-				<option value="m" <cfif form.dateRange eq "m">selected</cfif>>#application.adminBundle[session.dmProfile.locale].lastMonth#
-				<option value="q" <cfif form.dateRange eq "q">selected</cfif>>#application.adminBundle[session.dmProfile.locale].lastQuarter#
-				<option value="yyyy" <cfif form.dateRange eq "yyyy">selected</cfif>>#application.adminBundle[session.dmProfile.locale].lastYear#
-			</select>
+			<b>#application.adminBundle[session.dmProfile.locale].date#</b>
+			<select name="dateRange" id="dateRange">
+				<option value="all" <cfif form.dateRange eq "all">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].allDates#</option>
+				<option value="d" <cfif form.dateRange eq "d">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].Today#</option>
+				<option value="ww" <cfif form.dateRange eq "ww">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].lastWeek#</option>
+				<option value="m" <cfif form.dateRange eq "m">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].lastMonth#</option>
+				<option value="q" <cfif form.dateRange eq "q">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].lastQuarter#</option>
+				<option value="yyyy" <cfif form.dateRange eq "yyyy">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].lastYear#</option>
+			</select><br />
+			</label>
 			
+			<label for="maxRows">
 			<!--- drop down for max rows --->
-			#application.adminBundle[session.dmProfile.locale].rows#
-			<select name="maxRows">
-				<option value="all" <cfif form.maxRows eq "all">selected</cfif>>#application.adminBundle[session.dmProfile.locale].allRows#
+			<b>#application.adminBundle[session.dmProfile.locale].rows#</b>
+			<select name="maxRows" id="maxRows">
+				<option value="all" <cfif form.maxRows eq "all">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].allRows#</option>
 				<cfloop from="10" to="200" step=10 index="rows">
-					<option value="#rows#" <cfif rows eq form.maxRows>selected</cfif>>#rows#
+					<option value="#rows#" <cfif rows eq form.maxRows>selected="selected"</cfif>>#rows#</option>
 				</cfloop>
-				
-			</select>
+			</select><br />
+			</label>
 			
-			<input type="submit" value="#application.adminBundle[session.dmProfile.locale].Update#">
-			</td>
-		</tr>
-		</form>
-		</table>
+			<div class="f-submit-wrap">
+			<input type="submit" value="#application.adminBundle[session.dmProfile.locale].Update#" class="f-submit" />
+			</div>
+			
+			</fieldset>
 		
-		<table cellpadding="5" cellspacing="0" border="1"  style="margin-left:30px;">
+		</form>
+		
+		<hr />
+		
+		<table class="table-3" cellspacing="0">
 		<tr>
-			<th class="dataheader">#application.adminBundle[session.dmProfile.locale].objectLC#</td>
-			<th class="dataheader">#application.adminBundle[session.dmProfile.locale].views#</td>
-			<th class="dataheader">#application.adminBundle[session.dmProfile.locale].typeLC#</td>
-			<th class="dataheader">&nbsp;</td>
+			<th>#application.adminBundle[session.dmProfile.locale].objectLC#</th>
+			<th>#application.adminBundle[session.dmProfile.locale].views#</th>
+			<th>#application.adminBundle[session.dmProfile.locale].typeLC#</th>
+			<th>&nbsp;</th>
 		</tr>
 		
 		<!--- show stats with links to detail --->
 		<cfloop query="qDownloads">
-			<tr class="#IIF(qDownloads.currentRow MOD 2, de("dataOddRow"), de("dataEvenRow"))#">
+			<tr class="#IIF(qDownloads.currentRow MOD 2, de(""), de("alt"))#">
 				<td>#title#</td>
-				<td align="center">#downloads#</td>
+				<td>#downloads#</td>
 				<td>#typename#</td>
 				<td><a href="#application.url.farcry#/edittabStats.cfm?objectid=#objectid#">#application.adminBundle[session.dmProfile.locale].moreDetail#</a></td>
 			</tr>
@@ -112,7 +124,7 @@ $out:$
 		
 		</table>
 	<cfelse>
-		#application.adminBundle[session.dmProfile.locale].noViewsNow#
+		<h3>#application.adminBundle[session.dmProfile.locale].noViewsNow#</h3>
 	</cfif>
 	</cfoutput>
 

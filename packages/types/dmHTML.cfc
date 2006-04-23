@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/dmHTML.cfc,v 1.21 2004/08/16 04:32:55 brendan Exp $
-$Author: brendan $
-$Date: 2004/08/16 04:32:55 $
-$Name: milestone_2-3-2 $
-$Revision: 1.21 $
+$Header: /cvs/farcry/farcry_core/packages/types/dmHTML.cfc,v 1.23 2005/09/29 00:02:26 gstewart Exp $
+$Author: gstewart $
+$Date: 2005/09/29 00:02:26 $
+$Name: milestone_3-0-0 $
+$Revision: 1.23 $
 
 || DESCRIPTION || 
 $Description: dmHTML Content Type. Forms the basis of the content framework of the site.  HTML objects include containers and static information. $
@@ -33,6 +33,7 @@ type properties
 <cfproperty name="commentlog" type="longchar" hint="Workflow comment log." required="no" default="">
 <cfproperty name="versionID" type="uuid" hint="objectID of live object - used for versioning" required="no" default="">
 <cfproperty name="teaserImage" type="string" hint="UUID of image to display in teaser" required="no" default="">
+<cfproperty name="reviewDate" type="date" hint="The date for which the object will be reviewed" required="no" default="">
 <cfproperty name="status" type="string" hint="Status of the node (draft, pending, approved)." required="yes" default="draft">
 <!------------------------------------------------------------------------
 object methods 
@@ -41,7 +42,6 @@ object methods
 	<cfargument name="objectid" required="yes" type="UUID">
 	
 	<!--- getData for object edit --->
-	<cfset stObj = this.getData(arguments.objectid)>
 	<cfinclude template="_dmhtml/edit.cfm">
 </cffunction>
 

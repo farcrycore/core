@@ -4,15 +4,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/reporting/statsGoogle.cfm,v 1.2 2004/07/15 01:51:48 brendan Exp $
-$Author: brendan $
-$Date: 2004/07/15 01:51:48 $
-$Name: milestone_2-3-2 $
-$Revision: 1.2 $
+$Header: /cvs/farcry/farcry_core/admin/reporting/statsGoogle.cfm,v 1.5 2005/08/17 03:28:39 pottery Exp $
+$Author: pottery $
+$Date: 2005/08/17 03:28:39 $
+$Name: milestone_3-0-0 $
+$Revision: 1.5 $
 
 || DESCRIPTION || 
 $Description: Displays summary stats for google referers$
-$TODO: $
+
 
 || DEVELOPER ||
 $Developer: Brendan Sisson (brendan@daemon.com.au)$
@@ -45,62 +45,64 @@ $out:$
 	</cfscript>
 	
 	<cfoutput>
-	<div class="formtitle">#application.adminBundle[session.dmProfile.locale].googleKeyWords#</div>
 	
 	<cfif qGoogle.recordcount>
-		<table>
-		<tr>
-			<td valign="top" nowrap>
-				<table cellpadding="5" cellspacing="0" border="0"  style="margin-left:30px;">
-				<form action="" method="post">
-				<tr>
-					<td nowrap>			
+
+				<form method="post" class="f-wrap-1 f-bg-short" action="">
+				<fieldset>
+
+					<h3>#application.adminBundle[session.dmProfile.locale].googleKeyWords#</h3>
+					
+					<label for="dateRange">
 					<!--- drop down for date --->
-					#application.adminBundle[session.dmProfile.locale].Date#
-					<select name="dateRange">
-						<option value="all" <cfif form.dateRange eq "all">selected</cfif>>#application.adminBundle[session.dmProfile.locale].allDates#
-						<option value="d" <cfif form.dateRange eq "d">selected</cfif>>#application.adminBundle[session.dmProfile.locale].today#
-						<option value="ww" <cfif form.dateRange eq "ww">selected</cfif>>#application.adminBundle[session.dmProfile.locale].lastWeek#
-						<option value="m" <cfif form.dateRange eq "m">selected</cfif>>#application.adminBundle[session.dmProfile.locale].lastMonth#
-						<option value="q" <cfif form.dateRange eq "q">selected</cfif>>#application.adminBundle[session.dmProfile.locale].lastQuarter#
-						<option value="yyyy" <cfif form.dateRange eq "yyyy">selected</cfif>>#application.adminBundle[session.dmProfile.locale].lastYear#
-					</select>
+					<b>#application.adminBundle[session.dmProfile.locale].Date#</b>
+					<select name="dateRange" id="dateRange">
+						<option value="all" <cfif form.dateRange eq "all">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].allDates#</option>
+						<option value="d" <cfif form.dateRange eq "d">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].today#</option>
+						<option value="ww" <cfif form.dateRange eq "ww">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].lastWeek#</option>
+						<option value="m" <cfif form.dateRange eq "m">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].lastMonth#</option>
+						<option value="q" <cfif form.dateRange eq "q">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].lastQuarter#</option>
+						<option value="yyyy" <cfif form.dateRange eq "yyyy">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].lastYear#</option>
+					</select><br />
+					</label>
 					
+					<label for="maxRows">
 					<!--- drop down for max rows --->
-					#application.adminBundle[session.dmProfile.locale].rows#
-					<select name="maxRows">
-						<option value="all" <cfif form.maxRows eq "all">selected</cfif>>#application.adminBundle[session.dmProfile.locale].allRows#
+					<b>#application.adminBundle[session.dmProfile.locale].rows#</b>
+					<select name="maxRows" id="maxRows">
+						<option value="all" <cfif form.maxRows eq "all">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].allRows#</option>
 						<cfloop from="10" to="200" step=10 index="rows">
-							<option value="#rows#" <cfif rows eq form.maxRows>selected</cfif>>#rows#
+							<option value="#rows#" <cfif rows eq form.maxRows>selected="selected"</cfif>>#rows#</option>
 						</cfloop>
-					</select>
+					</select><br />
+					<label>
 					
-					<input type="submit" value="#application.adminBundle[session.dmProfile.locale].update#">
-					</td>
-				</tr>
+					<div class="f-submit-wrap">
+					<input type="submit" value="#application.adminBundle[session.dmProfile.locale].update#" class="f-submit" />
+					</div>
+					
+				</fieldset>
 				</form>
-				</table>
+
 				
-				<table cellpadding="5" cellspacing="0" border="1"  style="margin-left:30px;">
+				<table class="table-3" cellspacing="0">
 				<tr>
-					<th class="dataheader">#application.adminBundle[session.dmProfile.locale].keyWords#</td>
-					<th class="dataheader">#application.adminBundle[session.dmProfile.locale].Referals#</td>
+					<th>#application.adminBundle[session.dmProfile.locale].keyWords#</th>
+					<th>#application.adminBundle[session.dmProfile.locale].Referals#</th>
 				</tr>
 				
 				<!--- show stats with links to search page --->
 				<cfloop query="qGoogle">
-					<tr class="#IIF(qGoogle.currentRow MOD 2, de("dataOddRow"), de("dataEvenRow"))#">
+					<tr class="#IIF(qGoogle.currentRow MOD 2, de(""), de("alt"))#">
 						<td><a href="#referer#" class="referer">#keywords#</a></td>
-						<td align="center">#referals#</td>				
+						<td>#referals#</td>				
 					</tr>
 				</cfloop>
 				
 				</table>
-			</td>
-		</tr>
-		</table>
+
 	<cfelse>
-		#application.adminBundle[session.dmProfile.locale].noSearchesNow#
+		<h3>#application.adminBundle[session.dmProfile.locale].noSearchesNow#</h3>
 	</cfif>
 	</cfoutput>
 	

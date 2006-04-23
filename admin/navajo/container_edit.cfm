@@ -1,0 +1,102 @@
+<!--- 
+|| LEGAL ||
+$Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
+$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
+
+|| VERSION CONTROL ||
+$Header: /cvs/farcry/farcry_core/admin/navajo/container_edit.cfm,v 1.2 2005/08/09 03:54:40 geoff Exp $
+$Author: geoff $
+$Date: 2005/08/09 03:54:40 $
+$Name: milestone_3-0-0 $
+$Revision: 1.2 $
+
+|| DESCRIPTION || 
+$Description: Edit widget for containers $
+
+
+|| DEVELOPER ||
+$Developer: Guy Phanvongsa (guy@daemon.com.au)$
+
+|| ATTRIBUTES ||
+$in: $
+$out:$
+--->
+<cfsetting enablecfoutputonly="true">
+<cfparam name="containerid" default="">
+<cfparam name="reflectionid" default="">
+<cfparam name="section" default="container_rules">
+<cfparam name="displayContainerTitle" default="Unknown">
+
+<!--- TODO: shift this baby out so can be used by other pages --->
+<cffunction name="IsCFUUID" displayname="checks if the string is a valid coldfusion uuid">
+	<cfargument name="str" required="true">
+	<cfreturn REFindNoCase("^[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{16}$", str)>
+</cffunction>
+
+<!--- create rules|container objects --->
+<cfset oRules = createObject("component","#application.packagepath#.rules.rules")>
+<cfset oCon = createObject("component","#application.packagepath#.rules.container")>
+
+<cfif section EQ "container_rules"> <!--- delete the current rule id in the session as we are out of the rules management section --->
+	<cfset StructDelete(session,"ruleid")>
+	<cfset StructDelete(session,"ruleTypeName")>
+<cfelseif section EQ "container_contents">
+	<cfif StructKeyExists(form,"ruleID")>
+		<cfset session.ruleid = ruleid>
+		<cfset session.ruleTypeName = oCon.findType(objectid=ruleid)>
+	</cfif>
+</cfif>
+
+<!--- get object data --->
+<cfif containerID EQ ""> <!--- containerid not passed in .: create reflection --->
+	<cfset stProps = StructNew()>
+	<cfset stProps.objectid = CreateUUID()>
+	<cfset stProps.bShared = 1>
+	<cfset stProps.label = "(Incomplete)">
+	<cfset oCon.CreateData(stProperties=stProps)>
+	<cfset containerID = stProps.objectid>
+</cfif>
+
+<cfset stObj = oCon.getData(objectid=containerID)>
+<cfif NOT StructIsEmpty(stObj)>
+	<cfset displayContainerTitle = stobj.label>
+<cfelse>
+	<cfset errormessage = errormessage & "Invalid Container ID: [#containerID#]">
+</cfif>
+	
+<cfparam name="reflectionid" default="#stObj.mirrorid#">
+<cfif reflectionid NEQ ""> <!--- contianer has a reflection .: show reflection editform --->
+	<cfset section = "container_reflections">
+<cfelseif ArrayLen(stObj.aRules) EQ 0 AND section EQ "container_contents"> <!--- container has no rules so go to configure rule page --->
+	<cfset section = "container_rules">
+</cfif>
+
+<cfset query_string = "containerid=#containerid#">
+
+<cfsetting enablecfoutputonly="false">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>FarCry: Container Rules</title><cfoutput>
+	<style type="text/css" title="default" media="screen">@import url(#application.url.farcry#/css/main.css);</style>
+	<style type="text/css" title="default" media="screen">@import url(#application.url.farcry#/css/tabs.css);</style>
+	<script type="text/javascript" src="#application.url.farcry#/js/fade.js"></script>
+	<script type="text/javascript" src="#application.url.farcry#/js/prototype.js"></script>
+	<script type="text/javascript" src="#application.url.farcry#/js/formutilities.js"></script></cfoutput>
+</head>
+<body class="popup container-management">
+<h1><cfoutput>#displayContainerTitle#</cfoutput></h1>
+<div class="tab-container">
+	<ul class="tabs"><cfoutput>
+	<li id="tab1"<cfif section NEQ "container_rules"> class="tab-disabled"</cfif>><a href="<cfif section EQ 'container_rules'>##<cfelse>#cgi.script_name#?#query_string#&section=container_rules</cfif>">Configure Rules</a></li>
+	<li id="tab2"<cfif section NEQ "container_contents"> class="tab-disabled"</cfif>><a href="<cfif section EQ 'container_contents'>##<cfelse>#cgi.script_name#?#query_string#&section=container_contents</cfif>">Container Content</a></li></cfoutput>
+	</ul>
+	<div class="tab-panes">
+	<cfinclude template="#section#.cfm">
+	<!--- Rule hint will be dynamically populated here --->
+	<p id="rulehint" class="highlight"></p>
+	</div>
+</div>
+</body>
+</html>

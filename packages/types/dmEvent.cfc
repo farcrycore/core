@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/dmEvent.cfc,v 1.6.6.1 2005/05/24 04:47:35 gstewart Exp $
-$Author: gstewart $
-$Date: 2005/05/24 04:47:35 $
-$Name: milestone_2-3-2 $
-$Revision: 1.6.6.1 $
+$Header: /cvs/farcry/farcry_core/packages/types/dmEvent.cfc,v 1.11 2005/10/05 23:42:42 guy Exp $
+$Author: guy $
+$Date: 2005/10/05 23:42:42 $
+$Name: milestone_3-0-0 $
+$Revision: 1.11 $
 
 || DESCRIPTION || 
 $Description: dmEvent Type $
@@ -17,7 +17,7 @@ $Description: dmEvent Type $
 $Developer: Brendan Sisson (brendan@daemon.com.au) $
 
 --->
-<cfcomponent extends="types" displayname="Events" hint="Dynamic events data" bSchedule="1">
+<cfcomponent extends="farcry.farcry_core.packages.types.versions" displayname="Events" hint="Dynamic events data" bSchedule="1">
 <!------------------------------------------------------------------------
 type properties
 ------------------------------------------------------------------------->	
@@ -45,8 +45,10 @@ object methods
 	<cfset stObj = getData(arguments.objectid)>
 	<cfinclude template="_dmEvent/edit.cfm">
 </cffunction>
-<cffunction name="renderObjectOverview" hint="just over riding edit overview for now">
+
+<!--- <cffunction name="renderObjectOverview" hint="just over riding edit overview for now">
 	<cfargument name = "ObjectId">
-</cffunction>
+</cffunction> --->
 </cfcomponent>
+
 

@@ -4,15 +4,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_config/defaultFile.cfm,v 1.5 2004/05/04 22:52:55 brendan Exp $
-$Author: brendan $
-$Date: 2004/05/04 22:52:55 $
-$Name: milestone_2-2-1 $
-$Revision: 1.5 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_config/defaultFile.cfm,v 1.7 2005/08/09 03:54:39 geoff Exp $
+$Author: geoff $
+$Date: 2005/08/09 03:54:39 $
+$Name: milestone_3-0-0 $
+$Revision: 1.7 $
 
 || DESCRIPTION || 
 $Description: deploys file config file $
-$TODO: $
+
 
 || DEVELOPER ||
 $Developer: Brendan Sisson (brendan@daemon.com.au) $
@@ -30,6 +30,7 @@ $out:$
 stConfig.fileSize = 1024000; // bytes
 stConfig.fileType = "application/msword,application/pdf,application/vnd.ms-excel"; // extension
 stConfig.archiveFiles = "false";
+stConfig.bAllowOverwrite = "false";
 </cfscript>
 
 <cfwddx action="CFML2WDDX" input="#stConfig#" output="wConfig">

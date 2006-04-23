@@ -4,15 +4,15 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmNews/plpEdit/files.cfm,v 1.16.2.1 2005/06/09 23:19:06 guy Exp $
-$Author: guy $
-$Date: 2005/06/09 23:19:06 $
-$Name: milestone_2-3-2 $
-$Revision: 1.16.2.1 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmNews/plpEdit/files.cfm,v 1.20 2005/08/17 06:50:52 pottery Exp $
+$Author: pottery $
+$Date: 2005/08/17 06:50:52 $
+$Name: milestone_3-0-0 $
+$Revision: 1.20 $
 
 || DESCRIPTION || 
 $Description: dmNews Edit PLP - Adds files as associated objects.$
-$TODO: $
+
 
 || DEVELOPER ||
 $Developer: Brendan Sisson (brendan@daemon.com.au)$
@@ -23,7 +23,6 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 <cfimport taglib="/farcry/fourq/tags/" prefix="q4">
 <cfimport taglib="/farcry/farcry_core/tags/farcry" prefix="tags">
 <cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
-
 <cfset localeMonths=application.thisCalendar.getMonths(session.dmProfile.locale)>
 
 <cfoutput>
@@ -226,7 +225,7 @@ function removeUploadBtn()
 			</td>
 			<td align="center">
 				<cfif len(trim(stThisFile.filename)) NEQ 0>
-				<a href="#application.url.conjurer#?objectid=#stThisFile.objectid#" target="_blank">
+				<a href="#stThisFile.filePath#\#stThisFile.filename#" target="_blank">
 					<img src="#application.url.farcry#/images/treeImages/preview.gif" border="0">
 				</a>
 				<cfelse>
@@ -240,7 +239,7 @@ function removeUploadBtn()
 				</a>
 			</td>
 			<td align="center">
-				<input type="checkbox" name="objectID" value="#stThisFile.objectID#">
+				<input type="checkbox" class="f-checkbox" name="objectID" value="#stThisFile.objectID#" />
 			</td>
 		</tr></cfoutput>
 	</cfloop>

@@ -2,11 +2,11 @@
 audit.cfc (fourQ COAPI)
 Copyright Daemon Pty Limited 2002 (http://www.daemon.com.au/)
 
-$Header: /cvs/farcry/farcry_core/packages/farcry/audit.cfc,v 1.8.4.1 2005/04/11 02:43:05 paul Exp $
+$Header: /cvs/farcry/farcry_core/packages/farcry/audit.cfc,v 1.9 2005/04/11 03:05:53 paul Exp $
 $Author: paul $
-$Date: 2005/04/11 02:43:05 $
-$Name: milestone_2-3-2 $
-$Revision: 1.8.4.1 $
+$Date: 2005/04/11 03:05:53 $
+$Name: milestone_3-0-0 $
+$Revision: 1.9 $
 
 Released Under the "Common Public License 1.0"
 http://www.opensource.org/licenses/cpl.php
@@ -22,7 +22,7 @@ for the fourQ COAPI
 
 <cffunction name="deployAudit" hint="Deploy table structure for audit subsystem." returntype="struct">
 	<!--- arguments --->
-	<cfargument name="dsn" default="#application.dsn#" type="string" required="No">
+	<cfargument name="dsn" default="#application.dsn#" type="variableName" required="No">
 	<cfargument name="bDropTable" default="false" type="boolean" required="No">
 	<cfargument name="dbtype" default="#application.dbtype#" type="string" required="No">
 	<cfargument name="dbowner" type="string" required="false" default="#ucase(application.dbowner)#">
