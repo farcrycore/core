@@ -12,6 +12,9 @@ Creates a draft object
 
 
 <cfparam name="url.objectId" default="">
+<cfparam name="url.method" default="edit">
+<cfparam name="url.ref" default="">
+<cfparam name="url.finishurl" default="">
 
 <cfif len(url.objectId)>
 	<!--- Get this object so we can duplicate it --->
@@ -48,8 +51,8 @@ Creates a draft object
 	</cfscript>
 
 	<cfoutput>
-	<script>
-		window.location="#application.url.farcry#/navajo/edit.cfm?objectId=#NewObjID#&type=#stProps.typename#<cfif isDefined('url.finishUrl')>&finishUrl=#url.finishUrl#</cfif>";
+	<script type="text/javascript">
+		window.location="#application.url.farcry#/conjuror/invocation.cfm?objectid=#NewObjID#&method=#url.method#&ref=#url.ref#&finishurl=#url.finishurl#";
 	</script>
 	</cfoutput>
 </cfif>
