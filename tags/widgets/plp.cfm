@@ -62,6 +62,10 @@ TODO:
 <cfparam name="attributes.bForceNewInstance" default="0" type="boolean">
 <cfparam name="attributes.r_bPLPIsComplete" default="bComplete">
 <cfparam name="attributes.r_stOutput" default="stOutput">
+<cfparam name="attributes.r_stOutputObjects" default="stOutputObjects">
+
+
+
 
 <cfparam name="bNewPLP" default="0">
 <cfscript>
@@ -165,12 +169,16 @@ TODO:
 				stPLP.plp = structNew();
 				stPLP.plp.input = structNew();
 				stPLP.plp.output = structNew();
+				stPLP.plp.inputObjects = structNew();
+				stPLP.plp.outputObjects = structNew();
 					//take the passed in struct, and put it in the stPLP.PLP.input struct. 
 					//and put a copy in the output scope as well.
 					if( isDefined("attributes.stInput") and isStruct(attributes.stInput) )
 					{
 						stPLP.plp.input = duplicate(attributes.stInput);
 						stPLP.plp.output = duplicate(attributes.stInput);
+						stPLP.plp.inputObjects[attributes.stInput.objectid] = duplicate(attributes.stInput);
+						stPLP.plp.outputObjects[attributes.stInput.objectid] = duplicate(attributes.stInput);
 					}
 				stPLP.steps = ArrayNew(1);
 				stPLP.plp.steps = structNew();
@@ -225,7 +233,7 @@ TODO:
 ///////////////////////////////////////////////////////////////
 --->
  <cftry>
-<!--- <cfdump var="#stPLP.plp.output#"><cfabort> --->
+
 	<cfset output = duplicate(stPLP.plp.output)>
 	<!--- Check if plpstep has a different stepDir --->
 	<cfif structKeyExists(stPLP.plp.steps[stPLP.currentStep],"stepDir")>
@@ -234,7 +242,87 @@ TODO:
 		<cfset plpfilepath = "#attributes.stepDir#/#stPLP.plp.steps[stPLP.currentStep].template#">
 	</cfif>
 	
-	<cfinclude template="#plpfilepath#">
+	<cfsavecontent variable="Variables.PLPFormCSS">
+
+<cfoutput>
+	<style type="text/css">
+	
+		table {border-collapse:collapse;border:none;background:none;margin: .none;font-size:86%;border-bottom: none;border-left: none;}
+		form.f-wrap-1 table {font-size:92%}
+		table table {font-size:100%}
+		caption {text-align:left;font: bold 145% arial;padding: 5px 10px;background:none}
+		th {vertical-align:top;color: ##48618A;border-top: none;border-right: none;text-align: left;padding: 5px;background: none;font-size: 110%}
+		th.order-asc {background-position: 100% -100px;padding-right:25px}
+		th.order-desc {background-position: 100% -200px;padding-right:25px}
+		th a:link, th a:visited, th a:hover, th a:active {color:##fff}
+		th.alt a:link, th.alt a:visited {color:##E17000}
+		th.alt a:hover, th.alt a:active {color:##fff}
+		th img {display:block;float:right;margin:0;padding: 10px;}
+		td {vertical-align:top;border:none;padding: 50px;margin:10px;}
+		th.nobg {border:none;background:none}
+		tr.alt {background: none} 
+		tr.ruled {background: none} 
+		tr {background:none}
+		
+
+/* =FORMS */
+form.f-wrap-1 {margin: 0 0 1.5em}
+input {font-family: arial,tahoma,verdana,sans-serif;margin: 2px 0}
+fieldset {border: none}
+label {display:block;padding: 5px 0;width:150px;}
+label br {clear:left}
+input.f-submit {padding: 1px 3px;background:##666;color:##fff;font-weight:bold;font-size:96%}
+
+	/* f-wrap-1 - simple form, headings on left, form.f-wrap-1 elements on right */
+	form.f-wrap-1 {width:100%;padding: .5em 0;background: ##f6f6f6 url("images/featurebox_bg.gif") no-repeat 100% 100%;border-top: 1px solid ##d7d7d7;position:relative}
+		form.f-wrap-1 fieldset {width:auto;margin: 0 1em}
+		form.f-wrap-1 h3 {margin:0 0 .6em;font: bold 155% arial;color:##c00}
+		form.f-wrap-1 label {clear:left;float:left;width:auto;border:0px;}
+		
+		/* hide from IE mac \*/
+		form.f-wrap-1 label {float:none}
+		/* end hiding from IE5 mac */
+	
+		form.f-wrap-1 label input, form.f-wrap-1 label textarea, form.f-wrap-1 label select {width:15em;float:left;margin-left:10px}
+		
+		form.f-wrap-1 label b {float:left;width:8em;line-height: 1.7;display:block;position:relative}
+		form.f-wrap-1 label b .req {color:##c00;font-size:150%;font-weight:normal;position:absolute;top:-.1em;line-height:1;left:-.4em;width:.3em;height:.3em}
+		form.f-wrap-1 div.req {color:##666;font-size:96%;font-weight:normal;position:absolute;top:.4em;right:.4em;left:auto;width:13em;text-align:right}
+		form.f-wrap-1 div.req b {color:##c00;font-size:140%}
+		form.f-wrap-1 label select {width: 15.5em}
+		form.f-wrap-1 label textarea.f-comments {width: 20em}
+		form.f-wrap-1 div.f-submit-wrap {padding: 5px 0 5px 8em}
+		form.f-wrap-1 input.f-submit {margin: 0 0 0 10px}
+		
+		form.f-wrap-1 fieldset.f-checkbox-wrap, form.f-wrap-1 fieldset.f-radio-wrap {float:left;width:32em;border:none;margin:0;padding-bottom:.7em}
+		form.f-wrap-1 fieldset.f-checkbox-wrap b, form.f-wrap-1 fieldset.f-radio-wrap b {float:left;width:8em;line-height: 1.7;display:block;position:relative;padding-top:.3em}
+		form.f-wrap-1 fieldset.f-checkbox-wrap fieldset, form.f-wrap-1 fieldset.f-radio-wrap fieldset {float:left;width:13em;margin: 3px 0 0 10px}
+		form.f-wrap-1 fieldset.f-checkbox-wrap label, form.f-wrap-1 fieldset.f-radio-wrap label {float:left;width:13em;border:none;margin:0;padding:2px 0;margin-right:-3px}
+		form.f-wrap-1 label input.f-checkbox, form.f-wrap-1 label input.f-radio {width:auto;float:none;margin:0;padding:0}
+		
+		form.f-wrap-1 label span.errormsg {position:absolute;top:0;right:-10em;left:auto;display:block;width:16em;background: transparent url(images/errormsg_bg.gif) no-repeat 0 0}
+		
+	</style>
+	
+	
+	
+</cfoutput>
+	</cfsavecontent>
+	
+
+<cfhtmlhead text="#Variables.PLPFormCSS#">
+
+	
+	
+	
+	<cfif structKeyExists(stPLP.plp.steps[stPLP.currentStep],"lFields")>
+		<cfset lFields = duplicate(stPLP.plp.steps[stPLP.currentStep].lFields)>
+		<cfinclude template="/farcry/farcry_core/tags/widgets/plpGenericStep.cfm">
+	<cfelse>
+		<cfinclude template="#plpfilepath#">
+	</cfif>
+	<!--- 
+	<cfdump var="#stPLP#"> --->
 	
 	<cfset stPLP.plp.output = duplicate(output)>
 	<cfset request.stPLP = duplicate(stPLP)>
@@ -284,10 +372,18 @@ TODO:
 			killPLP = true;
 			"caller.#attributes.r_bPLPIsComplete#" = true;
 			"caller.#attributes.r_stOutput#" = stPLP.plp.output;
+			if(isDefined("stPLP.plp.outputObjects"))
+				{
+				"caller.#attributes.r_stOutputObjects#" = stPLP.plp.outputObjects;
+				}
 		}else{
 			killPLP = false;
 			"caller.#attributes.r_bPLPIsComplete#" = false;
 			"caller.#attributes.r_stOutput#" = stPLP.plp.output;
+			if(isDefined("stPLP.plp.outputObjects"))
+			{
+				"caller.#attributes.r_stOutputObjects#" = stPLP.plp.outputObjects;
+			}
 		}
 		
 		if( isDefined("thisStep.isComplete") )

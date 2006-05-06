@@ -7,7 +7,7 @@ $License: Released Under the "Common Public License 1.0", http://www.opensource.
 $Header: /cvs/farcry/farcry_core/tags/farcry/_farcryApplication.cfm,v 1.7 2005/08/09 03:54:39 geoff Exp $
 $Author: geoff $
 $Date: 2005/08/09 03:54:39 $
-$Name: milestone_3-0-1 $
+$Name:  $
 $Revision: 1.7 $
 
 || DESCRIPTION || 
@@ -37,5 +37,8 @@ request.loggedin = stLoggedin.bLoggedIn;
 
 <!--- setup request variables --->
 <cfinclude template="_requestScope.cfm">
+
+<!--- This parameter is used by _farcryOnRequestEnd.cfm to determine which javascript libraries to include in the page <head> --->
+<cfparam name="Request.inHead" default="#structNew()#">
 
 <cfsetting enablecfoutputonly="no">
