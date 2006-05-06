@@ -1,0 +1,86 @@
+
+
+<cfcomponent extends="field" name="numeric" displayname="numeric" hint="Field component to liase with all string types"> 
+
+	<cffunction name="edit" access="public" output="true" returntype="string" hint="his will return a string of formatted HTML text to enable the user to edit the data">
+		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
+		<cfargument name="stObj" required="true" type="struct" hint="The object of the record that this field is part of.">
+		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
+		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
+
+		<cfparam name="arguments.stMetadata.ftIncludeDecimal" default="true">
+		<cfparam name="arguments.stMetadata.ftCurrencySymbol" default="">
+		
+		<cfif stMetadata.ftIncludeDecimal>
+			<cfset arguments.stMetadata.value = DecimalFormat(arguments.stMetadata.value)>
+		<cfelse>
+			<cfset arguments.stMetadata.value = NumberFormat(arguments.stMetadata.value)>
+		</cfif>
+		
+		<cfsavecontent variable="html">
+			<cfoutput><input type="Text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#arguments.stMetadata.ftCurrencySymbol##arguments.stMetadata.value#" <cfif structKeyExists(arguments.stMetadata,'ftStyle')>style="#arguments.stMetadata.ftstyle#"</cfif> /></cfoutput>
+		</cfsavecontent>
+		
+		<cfreturn html>
+	</cffunction>
+
+	<cffunction name="display" access="public" output="true" returntype="string" hint="This will return a string of formatted HTML text to display.">
+		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
+		<cfargument name="stObj" required="true" type="struct" hint="The object of the record that this field is part of.">
+		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
+		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
+		
+		<cfparam name="stMetadata.ftIncludeDecimal" default="true">
+		<cfparam name="stMetadata.ftCurrencySymbol" default="">
+		
+		<cfif NOT stMetadata.ftIncludeDecimal>
+			<cfset arguments.stMetadata.value = NumberFormat(arguments.stMetadata.value)>
+		</cfif>
+		
+		<cfsavecontent variable="html">
+			<cfoutput>#stMetadata.ftCurrencySymbol##arguments.stMetadata.value#</cfoutput>
+		</cfsavecontent>
+		
+		<cfreturn html>
+	</cffunction>
+
+	<cffunction name="validate" access="public" output="true" returntype="struct" hint="This will return a struct with bSuccess and stError">
+		<cfargument name="stFieldPost" required="true" type="struct" hint="The fields that are relevent to this field type.">
+		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
+		
+		<cfset var stResult = structNew()>		
+		<cfset stResult.bSuccess = true>
+		<cfset stResult.value = "#stFieldPost.Value#">
+		<cfset stResult.stError = StructNew()>
+		
+		<!--- --------------------------- --->
+		<!--- Perform any validation here --->
+		<!--- --------------------------- --->
+		<cfset stResult.value = ReplaceNoCase(stResult.value, ",","","all")>
+		
+		<cfif isDefined("arguments.stMetadata.ftCurrencySymbol") AND len(arguments.stMetadata.ftCurrencySymbol)>
+			<cfset stResult.value = ReplaceNoCase(stResult.value, arguments.stMetadata.ftCurrencySymbol, "","all")>
+		</cfif>
+		
+		
+		<!--- ----------------- --->
+		<!--- Return the Result --->
+		<!--- ----------------- --->
+		<cfreturn stResult>
+		
+	</cffunction>
+
+</cfcomponent> 
+
+
+<!--- 			db.boolean = "INT";
+			db.date = "DATETIME";
+			db.numeric = "NUMERIC";
+			db.string = "VARCHAR(255)";
+			db.nstring = "VARCHAR(255)";
+			db.uuid = "VARCHAR(50)";
+			db.variablename = "VARCHAR(64)";
+			db.color = "VARCHAR(20)";
+			db.email = "VARCHAR(255)";
+			db.longchar = "LONGTEXT";	
+			 --->
