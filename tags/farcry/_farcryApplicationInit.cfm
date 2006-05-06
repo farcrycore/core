@@ -7,19 +7,14 @@ $License: Released Under the "Common Public License 1.0", http://www.opensource.
 $Header: /cvs/farcry/farcry_core/tags/farcry/_farcryApplicationInit.cfm,v 1.10.2.4 2006/01/24 09:48:36 geoff Exp $
 $Author: geoff $
 $Date: 2006/01/24 09:48:36 $
-$Name: milestone_3-0-1 $
+$Name:  $
 $Revision: 1.10.2.4 $
 
 || DESCRIPTION ||
-$Description: initialise application level code. Sets up site config and permissions cache$
-
+$Description: initialise application level code. Sets up site config and permissions cache $
 
 || DEVELOPER ||
-$Developer: Brendan Sisson (brendan@daemon.com.au)$
-
-|| ATTRIBUTES ||
-$in: $
-$out:$
+$Developer: Mat Bryant (mat@daemon.com.au)$
 --->
 <cfsetting requestTimeOut="200">
 
@@ -56,6 +51,9 @@ $out:$
     // refresh the friendly url sub-system
     objFU = createObject("component","#application.packagepath#.farcry.fu");
     objFU.refreshApplicationScope();
-
-    if (isDefined("URL.updateApp") AND URL.updateApp) writeOutput("<script language=""JavaScript"">alert('Application Scope Refreshed!');</script>");
 </cfscript>
+
+<!--- alert user that application scope has been refreshed --->
+<cfif isDefined("URL.updateApp") AND URL.updateApp>
+	<cfhtmlhead text="<script language='JavaScript'>alert('Application Scope Refreshed!');</script>">
+</cfif>
