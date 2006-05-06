@@ -22,6 +22,11 @@
 			<cfset stLocal.stPLP.plp = StructNew()>
 			<cfset stLocal.stPLP.plp.output = StructCopy(stLocal.stObj)>
 			<cfset stLocal.stPLP.plp.input = StructCopy(stLocal.stObj)>
+			
+			<cfset stLocal.stPLP.plp.outputObjects[stLocal.objectid] = StructCopy(stLocal.stObj)>
+			<cfset stLocal.stPLP.plp.inputObjects[stLocal.objectid] = StructCopy(stLocal.stObj)>
+			
+			
 		</cfif>
 		<cfoutput>reading file: #application.path.plpstorage#/#session.dmSec.authentication.userlogin#_#arguments.objectid#.plp<br /></cfoutput>
 		<cfreturn stLocal.stPLP>
@@ -167,6 +172,10 @@
 				<cfset stLocal.stPLP.plp.output[arguments.propertieName] = ArrayToList(stLocal.aObjects)>
 			</cfif>
 		</cfloop>
+
+		<cfset stLocal.stPLP.plp.inputObjects[objectid][arguments.propertieName] = stLocal.stPLP.plp.input[arguments.propertieName]>
+		<cfset stLocal.stPLP.plp.outputObjects[objectid][arguments.propertieName] = stLocal.stPLP.plp.output[arguments.propertieName]>
+		
 		<cfset stLocal.stPLP = fWrite(stLocal.stPLP,arguments.bPLPStorage)>
 	</cffunction>
 
@@ -182,14 +191,16 @@
 
 		<cfset stLocal.lExcludeInput = ArrayToList(stLocal.stPLP.plp.input[arguments.propertieName])>
 		<cfset stLocal.lExcludeOutput = ArrayToList(stLocal.stPLP.plp.output[arguments.propertieName])>
-		
+
 		<cfloop index="stLocal.addObjectID" list="#stLocal.lAddObjectid#">
 			<cfif NOT ListFindNoCase(stLocal.lExcludeInput,stLocal.addObjectID)>
 				<cfset ArrayAppend(stLocal.stPLP.plp.input[arguments.propertieName],stLocal.addObjectID)>
+				<cfset ArrayAppend(stLocal.stPLP.plp.inputObjects[objectid][arguments.propertieName],stLocal.addObjectID)>
 			</cfif>
 
 			<cfif NOT ListFindNoCase(stLocal.lExcludeOutput,stLocal.addObjectID)>
 				<cfset ArrayAppend(stLocal.stPLP.plp.output[arguments.propertieName],stLocal.addObjectID)>
+				<cfset ArrayAppend(stLocal.stPLP.plp.outputObjects[objectid][arguments.propertieName],stLocal.addObjectID)>
 			</cfif>
 		</cfloop>
 		<cfset stLocal.stPLP = fWrite(stLocal.stPLP,arguments.bPLPStorage)>
@@ -253,6 +264,11 @@
 			<cfset stLocal.stPLP.plp.output[arguments.propertieName] = ArrayToList(stLocal.aObjects)>
 		</cfif>
 		
+
+		<cfset stLocal.stPLP.plp.inputObjects[objectid][arguments.propertieName] = stLocal.stPLP.plp.input[arguments.propertieName]>
+		<cfset stLocal.stPLP.plp.outputObjects[objectid][arguments.propertieName] = stLocal.stPLP.plp.output[arguments.propertieName]>
+		
+				
 		<cfset stLocal.stPLP = fWrite(stLocal.stPLP,arguments.bPLPStorage)>
 
 	</cffunction>
