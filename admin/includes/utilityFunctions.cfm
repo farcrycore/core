@@ -183,15 +183,17 @@
 	
 	<cffunction name="structToNamePairs" hint="Builds a named pair string from a structure">
 		<cfargument name="st">
+		<cfargument name="delimiter" default="&" required="false">
+		<cfargument name="Quotes" default="" required="false">
 		<cfset var keyindex = 1>
 		<cfscript>
 			namepair = '';
 			keyCount = structCount(arguments.st);
 			for(key in arguments.st)
 			{	
-				namepair = namepair & "#key#=#arguments.st[key]#";
+				namepair = namepair & "#key#=#arguments.quotes##arguments.st[key]##arguments.quotes#";
 				if(keyIndex LT keyCount)
-					namepair = namepair & "&";
+					namepair = namepair & "#arguments.delimiter#";
 				keyIndex = keyIndex + 1;		
 			}
 		</cfscript>
@@ -389,4 +391,163 @@
 	</cfif>
 
 	<cfreturn returnString>
+</cffunction>
+
+<cffunction name="ConvertVerityWebSearch" returntype="array" hint="Returns an array of structures defining the individual elements that can be used in a verity search">
+
+	<cfargument name="webSearchString" type="string" required="true" default="">
+	
+	
+	<cfset aPhrases = arrayNew(1)>
+	<cfset PhraseState = "start">
+	<cfset Phrasecount = 0>
+	
+	<cfloop from="1" to="#len(arguments.webSearchString)#" index="i">
+		<cfset character = Mid(arguments.webSearchString, i, 1)>
+		
+		<cfif character EQ "#chr(34)#"><!--- chr(34) is a " --->
+			<cfif PhraseState EQ "start">
+				<cfset stPhrase = StructNew()>
+				<cfset stPhrase.Start = i>
+				<cfset stPhrase.End = "">
+				<cfset stPhrase.String = "">
+				<cfset stPhrase.Type = "Phrase">
+				<cfset Phrasecount = Phrasecount + 1>
+				<cfset PhraseState = "end">
+			<cfelse>
+				<cfset stPhrase.End = i>
+				<cfset stPhrase.String = Mid(arguments.webSearchString, stPhrase.Start + 1, stPhrase.End - stPhrase.Start -1)>
+				
+				<cfset ArrayAppend(aPhrases,Duplicate(stPhrase))>
+				<cfset PhraseState = "start">
+			</cfif>
+			
+		</cfif>
+		
+	</cfloop>
+	
+	
+			
+	<cfset PhraseState = "start">
+	
+	<cfloop from="1" to="#len(arguments.webSearchString)#" index="i">
+		<cfset character = Mid(arguments.webSearchString, i, 1)>
+		
+		<cfif character EQ "+" and PhraseState EQ "Start">
+				<cfset stPhrase = StructNew()>
+				<cfset stPhrase.Start = i>
+				<cfset stPhrase.End = "">
+				<cfset stPhrase.String = "">
+				<cfset stPhrase.Type = "+">
+				<cfset Phrasecount = Phrasecount + 1>
+				<cfset PhraseState = "end">			
+		</cfif>
+		
+		
+		<cfif (character EQ " " and PhraseState EQ "end") or (i EQ len(arguments.webSearchString) and PhraseState EQ "end")>
+			<cfset stPhrase.End = i>
+			<cfset stPhrase.String = Mid(arguments.webSearchString, stPhrase.Start + 1, stPhrase.End - stPhrase.Start)>
+			
+			<cfset ArrayAppend(aPhrases,Duplicate(stPhrase))>
+			
+			<cfset PhraseState = "start">
+		</cfif>
+	</cfloop>
+
+			
+	<cfset PhraseState = "start">
+	
+	<cfloop from="1" to="#len(arguments.webSearchString)#" index="i">
+		<cfset character = Mid(arguments.webSearchString, i, 1)>
+		
+		<cfif character EQ "-" and PhraseState EQ "Start">
+				<cfset stPhrase = StructNew()>
+				<cfset stPhrase.Start = i>
+				<cfset stPhrase.End = "">
+				<cfset stPhrase.String = "">
+				<cfset stPhrase.Type = "-">
+				<cfset Phrasecount = Phrasecount + 1>
+				<cfset PhraseState = "end">			
+		</cfif>
+		
+		
+		<cfif (character EQ " " and PhraseState EQ "end") or (i EQ len(arguments.webSearchString) and PhraseState EQ "end")>
+			<cfset stPhrase.End = i>
+			<cfset stPhrase.String = Mid(arguments.webSearchString, stPhrase.Start + 1, stPhrase.End - stPhrase.Start)>
+			
+			<cfset ArrayAppend(aPhrases,Duplicate(stPhrase))>
+				
+			<cfset PhraseState = "start">
+		</cfif>
+	</cfloop>
+
+
+	<cfset PhraseState = "start">
+	<cfset stPhrase = StructNew()>
+	<cfset stPhrase.Type = "regular">
+	
+	<cfloop from="1" to="#len(arguments.webSearchString)#" index="i">
+		<cfset character = Mid(arguments.webSearchString, i, 1)>
+		<cfif i EQ len(arguments.webSearchString)>
+			<cfset nextcharacter = "">
+		<cfelse>
+			<cfset nextcharacter = Mid(arguments.webSearchString, i + 1, 1)>
+		</cfif>
+		
+		<cfif i EQ 1>
+			<cfset prevcharacter = "">
+		<cfelse>
+			<cfset prevcharacter = Mid(arguments.webSearchString, i - 1, 1)>
+		</cfif>
+		
+		
+		<cfif character EQ "#chr(34)#"><!--- chr(34) is a " ---> 
+			<cfif PhraseState EQ "Start">
+				<cfset PhraseState = "End">
+				<cfset stPhrase.Type = "phrase">	
+			<cfelse>
+				<cfset PhraseState = "Start">
+				<cfset stPhrase.Type = "regular">		
+			</cfif>
+		</cfif>
+		
+		
+		<cfif PhraseState EQ "Start" AND stPhrase.Type EQ "regular">
+			<cfif (character EQ " " AND Not ListContainsNoCase("#chr(34)#,+,-",nextCharacter)) or (i EQ 1 AND Not ListContainsNoCase("#chr(34)#,+,-",Character))>
+				<cfset stPhrase = StructNew()>
+				<cfset stPhrase.Start = i>
+				<cfset stPhrase.End = "">
+				<cfset stPhrase.String = "">
+				<cfset stPhrase.Type = "regular">
+				<cfset PhraseState = "end">	
+				<cfset Phrasecount = Phrasecount + 1>	
+			</cfif>
+		<cfelseif PhraseState EQ "End" AND stPhrase.Type EQ "regular">
+			<cfif character EQ " " or i EQ len(arguments.webSearchString)>
+				
+				<cfset stPhrase.End = i>
+				<cfset stPhrase.String = Mid(arguments.webSearchString, stPhrase.Start, stPhrase.End - stPhrase.Start + 1 )>
+				
+				<cfset ArrayAppend(aPhrases,Duplicate(stPhrase))>
+					
+				<cfset PhraseState = "start">
+				
+			</cfif>
+			
+			<cfif (character EQ " " AND Not ListContainsNoCase("#chr(34)#,+,-",nextCharacter)) or (i EQ 1 AND Not ListContainsNoCase("#chr(34)#,+,-",Character))>
+				<cfset stPhrase = StructNew()>
+				<cfset stPhrase.Start = i>
+				<cfset stPhrase.End = "">
+				<cfset stPhrase.String = "">
+				<cfset stPhrase.Type = "regular">
+				<cfset PhraseState = "end">	
+				<cfset Phrasecount = Phrasecount + 1>	
+			</cfif>
+						
+		</cfif>
+		
+				
+	</cfloop>
+	
+	<cfreturn aPhrases>
 </cffunction>
