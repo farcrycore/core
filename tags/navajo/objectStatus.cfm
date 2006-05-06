@@ -7,7 +7,7 @@ $License: Released Under the "Common Public License 1.0", http://www.opensource.
 $Header: /cvs/farcry/farcry_core/tags/navajo/objectStatus.cfm,v 1.47.2.5 2006/01/23 22:30:32 geoff Exp $
 $Author: geoff $
 $Date: 2006/01/23 22:30:32 $
-$Name: milestone_3-0-1 $
+$Name:  $
 $Revision: 1.47.2.5 $
 
 || DESCRIPTION || 
@@ -273,7 +273,6 @@ function deSelectAll()
 			<cfoutput>Changing status....<br></cfoutput><cfflush>
 			
 			<!--- update the structure data for object update --->
-		
 			<cfloop list="#keyList#" index="key">
 				<q4:contentobjectget objectId="#key#" r_stObject="stObj">
 				<cfif NOT structIsEmpty(stObj)>
@@ -336,8 +335,6 @@ if(window.opener && window.opener.parent)
 	window.close();
 else{
 	if(parent['sidebar'].frames['sideTree'])
-		parent['sidebar'].frames['sideTree'].location= parent['sidebar'].frames['sideTree'].location;
-		
 	location.href = "#application.url.farcry#/edittabOverview.cfm?objectid=#returnObjectId#";
 }
 </script></cfoutput>
