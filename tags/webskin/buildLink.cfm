@@ -8,7 +8,7 @@ $License: Released Under the "Common Public License 1.0", http://www.opensource.
 $Header: /cvs/farcry/farcry_core/tags/webskin/buildLink.cfm,v 1.16.2.2 2006/01/26 06:49:20 geoff Exp $
 $Author: geoff $
 $Date: 2006/01/26 06:49:20 $
-$Name: milestone_3-0-1 $
+$Name:  $
 $Revision: 1.16.2.2 $
 
 || DESCRIPTION || 
@@ -37,7 +37,27 @@ $in: xCode -- eXtra code to be placed inside the anchor tag $
 	<cfparam name="attributes.xCode" default="">
 	<cfparam name="attributes.includeDomain" default="false">
 	<cfparam name="attributes.stParameters" default="#StructNew()#">
+	<cfparam name="attributes.JSWindow" default="0"><!--- Default to not using a Javascript Window popup --->
+	<cfparam name="attributes.stJSParameters" default="#StructNew()#">
 
+	
+	<cfif attributes.target NEQ "_self" AND NOT attributes.urlOnly> <!--- If target is defined and the user doesn't just want the URL then it is a popup window and must therefore have the following parameters --->		
+		<cfset attributes.JSWindow = 1>
+		
+		<cfparam name="Attributes.stJSParameters.Toolbar" default="0">
+		<cfparam name="Attributes.stJSParameters.Status" default="1">
+		<cfparam name="Attributes.stJSParameters.Location" default="0">
+		<cfparam name="Attributes.stJSParameters.Menubar" default="0">
+		<cfparam name="Attributes.stJSParameters.Directories" default="0">
+		<cfparam name="Attributes.stJSParameters.Scrollbars" default="1">
+		<cfparam name="Attributes.stJSParameters.Resizable" default="1">
+		<cfparam name="Attributes.stJSParameters.Top" default="0">
+		<cfparam name="Attributes.stJSParameters.Left" default="0">
+		<cfparam name="Attributes.stJSParameters.Width" default="700">
+		<cfparam name="Attributes.stJSParameters.Height" default="700">
+	</cfif>
+	
+	
 	<!---
 	Only initialize FU if we're using Friendly URL's
 	We cannot guarantee the Friendly URL Servlet exists otherwise
@@ -46,29 +66,37 @@ $in: xCode -- eXtra code to be placed inside the anchor tag $
 		<cfset objFU = CreateObject("component","#Application.packagepath#.farcry.fu")>
 	</cfif>
 	
-	<cfif attributes.includeDomain>
-        <cfset href = "http://#cgi.http_host#">
-    <cfelse>
-        <cfset href = "">
-    </cfif>
-
-	<!--- check for sim link --->
-	<cfif len(attributes.externallink)>
-		<!--- check for friendly url --->
-		<cfif application.config.plugins.fu>
-			<cfset href = href & objFU.getFU(attributes.externallink)>
-		<cfelse>
-			<cfset href = href & application.url.conjurer & "?objectid=" & attributes.externallink>
+	<cfif structKeyExists(attributes,"href")>
+		<cfset href = attributes.href>
+		
+		<cfif NOT FindNoCase(attributes.href,"?")>
+			<cfset href = "#href#?">
 		</cfif>
 	<cfelse>
-		<!--- check for friendly url --->
-		<cfif application.config.plugins.fu>
-			<cfset href = href & objFU.getFU(attributes.objectid)>
+		<cfif attributes.includeDomain>
+	        <cfset href = "http://#cgi.http_host#">
+	    <cfelse>
+	        <cfset href = "">
+	    </cfif>
+	
+		<!--- check for sim link --->
+		<cfif len(attributes.externallink)>
+			<!--- check for friendly url --->
+			<cfif application.config.plugins.fu>
+				<cfset href = href & objFU.getFU(attributes.externallink)>
+			<cfelse>
+				<cfset href = href & application.url.conjurer & "?objectid=" & attributes.externallink>
+			</cfif>
 		<cfelse>
-			<cfset href = href & application.url.conjurer & "?objectid=" & attributes.objectid>
+			<!--- check for friendly url --->
+			<cfif application.config.plugins.fu>
+				<cfset href = href & objFU.getFU(attributes.objectid)>
+			<cfelse>
+				<cfset href = href & application.url.conjurer & "?objectid=" & attributes.objectid>
+			</cfif>
 		</cfif>
 	</cfif>
-
+	
 	<!--- check for extra URL parameters --->
 	<cfif NOT StructIsEmpty(attributes.stParameters)>
 		<cfset stLocal = StructNew()>
@@ -91,6 +119,51 @@ $in: xCode -- eXtra code to be placed inside the anchor tag $
 			<cfset href = href & "&" & stLocal.parameters>
 		</cfif>
 	</cfif>
+	
+	
+	<!--- Are we meant to use the Javascript Popup Window? --->
+	<cfif attributes.JSWindow>
+	
+		<cfset attributes.bShowTarget = 0><!--- No need to add the target to the <a href> as it is handled in the javascript --->
+		
+		<cfset jsParameters = "">
+		<cfloop list="#structKeyList(Attributes.stJSParameters)#" index="i">
+			<cfset jsParameters = ListAppend(jsParameters, "#i#=#attributes.stJSParameters[i]#")>
+		</cfloop>
+		<cfset href = "javascript:win=window.open('#href#', '#attributes.Target#', '#jsParameters#'); win.focus();">
+		
+		<!--- Has the javascript already been added to this page? --->
+		<cfif NOT structKeyExists(request,"jsOpenWindowDefined")>
+			
+			<cfset request.jsOpenWindowDefined = 1>
+			
+			<cfsavecontent variable="jsOpenWindow">
+			<cfoutput>
+			<script type="text/javascript">
+			function OpenFarcryWindow(URL,Target,Width,Height,Parameters) {
+				
+				if ((Width == 0) && (Height == 0)){
+					if ((screen.Height >= 0) && (screen.Width >= 0))
+					{
+						var Width = screen.Width - 10;
+						var Height = screen.Height - 100;
+					}
+					else if ((screen.availHeight >= 0) && (screen.availWidth >= 0)) {
+						
+						var Width = screen.availWidth - 10;
+						var Height = screen.availHeight - 100;
+					}
+				}
+				
+			}		
+			</script>
+			</cfoutput>
+			</cfsavecontent>
+			
+			<cfhtmlhead text="#jsOpenWindow#">
+		</cfif>
+	</cfif>
+	
 	
 	<!--- Are we mean to display an a tag or the URL only? --->
 	<cfif attributes.urlOnly EQ true>
