@@ -8,7 +8,7 @@ $License: Released Under the "Common Public License 1.0", http://www.opensource.
 $Header: /cvs/farcry/farcry_core/tags/admin/menu.cfm,v 1.6 2005/10/07 04:06:17 daniela Exp $
 $Author: daniela $
 $Date: 2005/10/07 04:06:17 $
-$Name: milestone_3-0-1 $
+$Name:  $
 $Revision: 1.6 $
 
 || DESCRIPTION || 
@@ -88,7 +88,20 @@ $Developer: Guy Phanvongsa (guy@daemon.com.au)$
 		<cfif request.dmsec.oAuthorisation.fCheckXMLPermission(aMenu[i].xmlAttributes)><cfoutput>
 	<h3>#aMenu[i].xmlattributes.label#</h3></cfoutput><cfset amenuitems=aMenu[i].xmlchildren><cfoutput>
 	<ul></cfoutput><cfloop from="1" to="#arrayLen(amenuitems)#" index="j"><cfif request.dmsec.oAuthorisation.fCheckXMLPermission(amenuitems[j].xmlAttributes)><cfoutput>
-		<li><a href="#application.url.farcry##ReplaceNoCase(amenuitems[j].xmlattributes.link,'#application.url.farcry#','')#" target="content">#amenuitems[j].xmlattributes.label#</a></li></cfoutput></cfif></cfloop><cfoutput>
+		<cfparam name="amenuitems[j].xmlattributes.linkType" default="farcry">
+		<cfswitch expression="#amenuitems[j].xmlattributes.linkType#">
+			<cfcase value="External">
+				<li><a href="#amenuitems[j].xmlattributes.link#" target="content">#amenuitems[j].xmlattributes.label#</a></li>
+			</cfcase>
+			<cfdefaultcase>
+				<li><a href="#application.url.farcry##ReplaceNoCase(amenuitems[j].xmlattributes.link,'#application.url.farcry#','')#" target="content">#amenuitems[j].xmlattributes.label#</a></li>
+			</cfdefaultcase>
+		</cfswitch>
+		</cfoutput>
+		</cfif>
+		</cfloop>
+		<cfoutput>
+			
 	</ul></cfoutput></cfif>
 	</cfloop>
 </cfif> 
