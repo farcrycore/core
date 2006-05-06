@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/types.cfc,v 1.68.2.16 2006/02/22 02:09:17 paul Exp $
-$Author: paul $
-$Date: 2006/02/22 02:09:17 $
-$Name: milestone_3-0-1 $
-$Revision: 1.68.2.16 $
+$Header: /cvs/farcry/farcry_core/packages/types/types.cfc,v 1.68.2.17 2006/04/19 13:53:09 geoff Exp $
+$Author: geoff $
+$Date: 2006/04/19 13:53:09 $
+$Name:  $
+$Revision: 1.68.2.17 $
 
 || DESCRIPTION || 
 $Description: Component Types Abstract class for contenttypes package.  
@@ -34,20 +34,24 @@ system attributes
 <cfproperty name="lockedBy" displayname="Locked by" type="nstring" hint="Username for locker." required="no" default="">
 <cfproperty name="locked" displayname="Locked" type="boolean" hint="Flag for object locking." required="yes" default="0">
 
+<cfimport taglib="/farcry/farcry_core/tags/formtools/" prefix="ft" />
+
+
 <!--------------------------------------------------------------------
 default handlers
   handlers that all types require
   these will likely be overloaded in production
 --------------------------------------------------------------------->	
-	<cffunction name="getDisplay" access="public" output="Yes">
+	<cffunction name="getDisplay" access="public" output="Yes" >
 		<cfargument name="objectid" required="yes" type="UUID">
 		<cfargument name="template" required="yes" type="string">
+		<cfargument name="stparam" required="false" type="struct" hint="Structure of parameters to be passed into the display handler." />
 		<cfargument name="dsn" required="no" type="string" default="#application.dsn#">
 		
 		<!--- get the data for this instance --->
 		<cfset var stObj = getData(objectid=arguments.objectID,dsn=arguments.dsn)>		
 
-		<cfif NOT structIsEmpty(stObj)> 
+		<cfif NOT structIsEmpty(stObj)>
 			<cftry>
 				<cfinclude template="/farcry/#application.applicationname#/#application.path.handler#/#stObj.typename#/#arguments.template#.cfm">
 				<cfcatch>
@@ -101,7 +105,7 @@ default handlers
 		<cfreturn stNewObject>
 	</cffunction>
 	
-	<cffunction name="setData" access="public" output="false" hint="Update the record for an objectID including array properties.  Pass in a structure of property values; arrays should be passed as an array.">
+	<cffunction name="setData" access="public" output="true" hint="Update the record for an objectID including array properties.  Pass in a structure of property values; arrays should be passed as an array.">
 		<cfargument name="stProperties" required="true">
 		<cfargument name="user" type="string" required="true" hint="Username for object creator" default="#session.dmSec.authentication.userlogin#">
 		<cfargument name="auditNote" type="string" required="true" hint="Note for audit trail" default="Updated">
@@ -110,7 +114,7 @@ default handlers
 		
 		<cfset var stResult = StructNew()>
 		<cfset var stresult_friendly = StructNew()>
-
+		
 		<cfscript>
 			// TODO should prepopulate with values set in cfproperty
 			//fill in the gaps in case user has forgotten any core properties
@@ -172,6 +176,7 @@ default handlers
 			</cfif>
 		</cfif>
 
+	
 		<!--- log event --->
 		<cfif arguments.bAudit>
 			<cfset application.factory.oAudit.logActivity(auditType="Lock", username=arguments.lockedby, location=cgi.remote_host, note="Locked: #yesnoformat(arguments.locked)#",objectid=instance.stobj.objectid,dsn=arguments.dsn)>
@@ -267,6 +272,15 @@ default handlers
 		<cfsetting enablecfoutputonly="No">
 			
 	</cffunction>
+
+	
+	<cffunction name="ftEdit" access="public" output="true" returntype="void">
+		<cfargument name="ObjectID" required="yes" type="string" default="">
+		
+		<ft:Object ObjectID="#arguments.ObjectID#" typename="#gettablename()#" />
+	
+	</cffunction>
+	
 	
 	<cffunction name="delete" access="public" hint="Basic delete method for all objects. Deletes content item and removes Verity entries." returntype="struct" output="false">
 		<cfargument name="objectid" required="yes" type="UUID" hint="Object ID of the object being deleted">
@@ -553,4 +567,27 @@ default handlers
 		<cfset stLocal.returnstruct.message = "#stLocal.iCounterSuccess# #arguments.typeName# rebuilt successfully.<br />">
  		<cfreturn stLocal.returnstruct>
 	</cffunction>
+
+	<cffunction name="getArrayFieldAsQuery" access="public" output="true" returntype="query">
+		
+		<cfargument name="ObjectID" required="no" type="string" default="" hint="This is the PK for which we are getting the linked FK's. If the ObjectID passed is empty, the we are creating a new object and it will therefore not have an objectID">
+		<cfargument name="Fieldname" required="yes" type="string">
+		<cfargument name="typename" required="yes" type="string" default="#getTablename()#">
+		<cfargument name="Link" required="yes" type="string" default="#application.types[typename].stprops[arguments.Fieldname].metadata.ftLink#">
+
+		<!--- getData for object edit --->
+
+		<cfquery datasource="#application.dsn#" name="qArrayAsQuery">
+		SELECT #arguments.Link#.*
+		FROM #arguments.typename#_#arguments.Fieldname#
+		INNER JOIN #arguments.Link# ON #arguments.typename#_#arguments.Fieldname#.data = #arguments.Link#.ObjectID
+		WHERE #arguments.typename#_#arguments.Fieldname#.objectid = '#arguments.ObjectID#'
+		ORDER BY #arguments.typename#_#arguments.Fieldname#.seq ASC
+		</cfquery>		
+				
+		<cfreturn qArrayAsQuery>
+			
+	</cffunction>
+		
+		
 </cfcomponent>
