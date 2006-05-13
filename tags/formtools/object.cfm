@@ -1,5 +1,4 @@
  <cfimport taglib="/farcry/farcry_core/tags/formtools/" prefix="ft" >
- <cfimport taglib="/farcry/farcry_core/tags/formtools/formfieldtypes" prefix="fft" >
  <cfimport taglib="/farcry/farcry_core/tags/webskin/" prefix="ws" >
 
 <cfif not thistag.HasEndTag>
