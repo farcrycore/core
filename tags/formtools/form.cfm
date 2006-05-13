@@ -14,8 +14,10 @@ It just ignores the inner ones.
 --->
 <cfif ListValueCountNoCase(getbasetaglist(),"CF_FORM") EQ 1>
 
-	<cfif thistag.ExecutionMode EQ "Start">
+	
+	<cfif thistag.ExecutionMode EQ "Start" AND NOT isDefined("Request.farcryForm")>
 		
+		<cfset Variables.CorrectForm = 1>
 		
 		<cfparam name="attributes.Name" default="farcryForm">
 		<cfparam name="attributes.Target" default="">
@@ -46,15 +48,17 @@ It just ignores the inner ones.
 		
 		<cfif listFindNoCase(request.farcryFormList, Request.farcryForm.Name)>
 			<cfset Request.farcryForm.Name = "#Request.farcryForm.Name##ListLen(request.farcryFormList) + 1#">
+			
 		</cfif>
 	
+		
 		<!--- <cfoutput><h1><a href="#cgi.SCRIPT_NAME#?#cgi.query_string#">Farcry Form #Request.farcryForm.Name#</a></h1></cfoutput> --->
 		
 		<ft:renderHTMLformStart onsubmit="#attributes.onsubmit#" class="#attributes.Class#" css="#attributes.css#" style="#attributes.style#" heading="#attributes.heading#" />
 	
 	</cfif>
 	
-	<cfif thistag.ExecutionMode EQ "End">
+	<cfif thistag.ExecutionMode EQ "End" and isDefined("Variables.CorrectForm")>
 		
 		
 		
