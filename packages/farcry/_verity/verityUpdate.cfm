@@ -4,27 +4,22 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_verity/verityUpdate.cfm,v 1.8.2.3 2006/03/27 06:22:34 jason Exp $
-$Author: jason $
-$Date: 2006/03/27 06:22:34 $
-$Name: milestone_3-0-1 $
-$Revision: 1.8.2.3 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_verity/verityUpdate.cfm,v 1.8.2.4 2006/04/19 00:45:51 geoff Exp $
+$Author: geoff $
+$Date: 2006/04/19 00:45:51 $
+$Name: p300_b113 $
+$Revision: 1.8.2.4 $
 
 || DESCRIPTION || 
 $Description: updates verity collection$
 
+$todo: looks like someone commented out the where clauses for limiting 
+updates to only those objects recently updated.. no reason given in the 
+commit comments. GB 20060405 $
 
 || DEVELOPER ||
 $Developer: Geoff Bowers (modius@daemon.com.au)$
-$Developer: Brendan Sisson (brendan@daemon.com.au)$
-
-|| ATTRIBUTES ||
-$in: $
-$out:$
 --->
-
-<cfprocessingDirective pageencoding="utf-8">
-
 <cfset key = replaceNoCase(arguments.collection,"#application.applicationName#_","")>
 
 <!--- check for existing collections with no app data --->
@@ -50,88 +45,21 @@ $out:$
 
 	<!--- check collection type --->
 	<cfif collectionType eq "type">
-		<!--- build index from type table --->
-		<cfquery datasource="#application.dsn#" name="q">
-			SELECT *
-			FROM #key#
-			WHERE 1 = 1
-			<cfif lExcludeObjectID NEQ "">
-				AND objectid NOT IN (#preserveSingleQuotes(lExcludeObjectID)#)
-			</cfif>
-			<!--- <cfif structKeyExists(application.config.verity.contenttype[key], "lastupdated")>
-				AND datetimelastupdated > #application.config.verity.contenttype[key].lastupdated#
-			</cfif> --->
-			<cfif structKeyExists(application.types[key].stProps, "status")>
-				AND upper(status) = 'APPROVED'
-			</cfif>
-		</cfquery>
-		
-		<cfset subS=listToArray("#q.recordCount#, #key#,#arrayToList(application.config.verity.contenttype[key].aprops)#")>
-		<cfoutput><span class="frameMenuBullet">&raquo;</span> #application.rB.formatRBString(application.adminBundle[session.dmProfile.locale].updatingRecsFor,subS)#<br></cfoutput>
+		<!--- update type collection: backward compatability --->
+		<cfset stTypeResult=updateTypeCollection(key, lExcludeObjectID)>
+		<cfoutput>#stTypeResult.report#</cfoutput>
 		<cfflush />
-		
-		<!--- update collection --->	
-		<cfif q.recordcount>
-			<cfindex action="UPDATE" query="q" body="#arrayToList(application.config.verity.contenttype[key].aprops)#" custom1="#key#" key="objectid" title="label" collection="#application.applicationname#_#key#">
-		</cfif>	
-		
-		<cfif structKeyExists(application.config.verity.contenttype[key], "lastupdated") and structKeyExists(application.types[key].stProps, "status")>
-			<!--- remove any objects that may have been sent back to draft or pending --->
-			<cfquery datasource="#application.dsn#" name="q">
-				SELECT objectid
-				FROM #key#
-				WHERE <!--- datetimelastupdated > #application.config.verity.contenttype[key].lastupdated# --->
-					upper(status) IN ('DRAFT','PENDING')
-				<cfif lExcludeObjectID NEQ "">
-					OR objectid IN (#preserveSingleQuotes(lExcludeObjectID)#)
-				</cfif>					
-			</cfquery>
 			
-			<cfset subS=listToArray("#q.recordCount#, #key#, #arrayToList(application.config.verity.contenttype[key].aprops)#")>
-			<cfoutput><span class="frameMenuBullet">&raquo;</span> #application.rB.formatRBString(application.adminBundle[session.dmProfile.locale].purgingDeadRecsFor,subS)#<p></cfoutput>
-			<cfflush />
-			
-			<cfloop query="q">						
-				<cfindex action="DELETE" collection="#application.applicationname#_#key#" key="#objectid#">
-			</cfloop>
-		</cfif>
-		
-		<!--- final catchall to ensure any deleted items are also removed from archive --->
-		<cfquery datasource="#application.dsn#" name="qDelete">
-		SELECT DISTINCT archiveID AS objectid
-		FROM         dmArchive
-		WHERE     (archiveID NOT IN
-                          (SELECT     objectid
-                            FROM          refobjects))
-		</cfquery>
-		
-		<cflock name="verity" timeout="60">
-			<cfindex 
-				collection="#application.applicationname#_#key#" 
-		    	action="delete"
-				type="custom"
-				query="qDelete"
-    			key="objectid">
-		</cflock>
-	
 	<cfelse>
-		<cfif len(application.config.verity.contenttype[key].aprops.uncPath)>
-			<!--- build filter list --->
-			<cfif listlen(application.config.verity.contenttype[key].aprops.fileTypes)>
-				<cfset filter= application.config.verity.contenttype[key].aprops.fileTypes>
-			<cfelse>
-				<cfset filter= ".*">
-			</cfif>
-			<cfset subS=listToArray("#key#,#application.config.verity.contenttype[key].aprops.uncPath#")>	
-			<cfoutput><span class="frameMenuBullet">&raquo;</span>#application.rB.formatRBString(application.adminBundle[session.dmProfile.locale].updatingKey,subS)# <p></cfoutput>
-			<cfflush />
-			
-			<cfindex action="UPDATE" type="PATH" key="#application.config.verity.contenttype[key].aprops.uncPath#" collection="#application.applicationname#_#key#" recurse="#application.config.verity.contenttype[key].aprops.recursive#" extensions="#filter#">
-		</cfif>
+		<!--- update file collection: backward compatability --->
+		<cfset stFileResult=updateFileCollection(key)>
+		<cfoutput>#stFileResult.report#</cfoutput>
+		<cfflush />
 	</cfif>
 	
 	<!--- reset lastupdated timestamp --->
-	<cfset application.config.verity.contenttype[replaceNoCase(arguments.collection,"#application.applicationName#_","")].lastUpdated = now()>
+	<cfset setLastupdated(arguments.collection, now())>
 	
 	<cfoutput><span class="frameMenuBullet">&raquo;</span> <strong></strong> #application.rB.formatRBString(application.adminBundle[session.dmProfile.locale].updated,"#arguments.collection#")#<p></p></cfoutput>
 </cfif>
+

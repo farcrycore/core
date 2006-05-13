@@ -6,15 +6,20 @@ $Community: FarCry CMS http://www.farcrycms.org $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/includes/relatedlist.cfm,v 1.15.2.7 2006/03/14 11:30:18 geoff Exp $
+$Header: /cvs/farcry/farcry_core/admin/includes/relatedlist.cfm,v 1.15.2.8 2006/05/06 11:26:54 geoff Exp $
 $Author: geoff $
-$Date: 2006/03/14 11:30:18 $
-$Name: milestone_3-0-1 $
-$Revision: 1.15.2.7 $
+$Date: 2006/05/06 11:26:54 $
+$Name: p300_b113 $
+$Revision: 1.15.2.8 $
 
 || DESCRIPTION || 
 $Description: Related content item picker. $
-$TODO: This is in need of a major overhaul.. what happened here? taking ownership. GB 20060314 $
+$TODO: This is in need of a major overhaul.. what happened here? taking ownership. GB 20060314 
+Action plan:
+ - comment code
+ - close out current tickets FC-403, FC-466
+ - earmark for refactoring to more flexible tag/component
+$
 
 || DEVELOPER ||
 $Developer: Geoff Bowers (modius@daemon.com.au)$
@@ -191,25 +196,29 @@ ACTION: form action
 
 <!--- QUERY: content listing query --->
 <!--- 
-todo: this is areal worry.. 
+todo: this is a real worry.. 
 		- need pref cache in session
-		- category selection overwrites search selection!!!
 		- need to clean up UI logic completely
 	20060314 GB
 --->
-<cfif bSearchFormSubmitted AND searchField NEQ "" AND trim(searchText) NEQ "">
+<cfif (bSearchFormSubmitted AND searchField NEQ "" AND trim(searchText) NEQ "") OR (structKeyExists(URL, "searchText") AND len(trim(URL.searchText)))>
 	<cfquery dbtype="query" name="qReturn">
-	SELECT	*
+	SELECT	DISTINCT objectid, label
 	FROM	qReturn
-	WHERE	#searchField# LIKE '%#trim(searchText)#%'
+	WHERE	LOWER(#searchField#) LIKE '%#trim(searchText)#%'
 	</cfquery>
 </cfif>
 
 <cfquery dbtype="query" name="qLibraryList">
-SELECT	objectid, label
-FROM	qReturn<cfif lExcludeObjectID NEQ "">
-WHERE	objectid NOT IN (#preservesinglequotes(lExcludeObjectID)#)</cfif>
-GROUP BY objectid, label
+SELECT distinct	objectid, label
+FROM	qReturn
+WHERE 
+	label <> '(incomplete)'
+<!--- excludes those content items already selected for the underlying wizard (plp) --->
+<cfif lExcludeObjectID NEQ "">
+	AND objectid NOT IN (#preservesinglequotes(lExcludeObjectID)#)
+</cfif>
+ORDER BY label
 </cfquery>
 <!--- /QUERY --->
 
@@ -218,7 +227,7 @@ GROUP BY objectid, label
 <cfset stPageination.qList = qLibraryList>
 <cfset stPageination.currentpage = pg>
 <cfset stPageination.urlParametersWithOutFilter = "lRelatedTypeName=#lRelatedTypeName#&relatedTypeName=#relatedTypeName#&primaryObjectID=#primaryObjectID#&fieldName=#fieldName#&bShowCategoryTree=#bShowCategoryTree#&bPLPStorage=#bPLPStorage#">
-<cfset stPageination.urlParameters = "#stPageination.urlParametersWithOutFilter#&categoryID=#categoryID#">
+<cfset stPageination.urlParameters = "#stPageination.urlParametersWithOutFilter#&categoryID=#categoryID#&searchText=#searchText#&searchField=#searchField#">
 <cfset stPageination.maxRow = 10>
 <cfset strRefreshUrl = cgi.script_name & "?#stPageination.urlParameters#">
 
@@ -264,6 +273,7 @@ VIEW: render page
 					<input value="#searchText#" name="searchText" id="searchText" type="text" size="15" />
 					<input type="submit" name="buttonSearch" id="buttonSearch" value="Go" />
 					<input type="hidden" name="bSearchFormSubmitted" value="Yes">
+					<input type="hidden" name="relatedTypeName" value="#relatedTypeName#">
 					<input type="hidden" name="lRelatedTypeName" value="#lRelatedTypeName#">
 					<input type="hidden" name="primaryObjectID" value="#primaryObjectID#">
 					<input type="hidden" name="bPLPStorage" value="#bPLPStorage#">

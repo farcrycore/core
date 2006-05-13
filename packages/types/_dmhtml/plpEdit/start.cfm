@@ -5,11 +5,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmhtml/plpEdit/start.cfm,v 1.18.2.1 2006/03/21 05:03:26 jason Exp $
-$Author: jason $
-$Date: 2006/03/21 05:03:26 $
-$Name: milestone_3-0-1 $
-$Revision: 1.18.2.1 $
+$Header: /cvs/farcry/farcry_core/packages/types/_dmhtml/plpEdit/start.cfm,v 1.18.2.2 2006/05/05 05:20:58 daniela Exp $
+$Author: daniela $
+$Date: 2006/05/05 05:20:58 $
+$Name: p300_b113 $
+$Revision: 1.18.2.2 $
 
 || DESCRIPTION || 
 $Description: dmHTML PLP - Start Step $
@@ -71,60 +71,23 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	<label for="metakeywords"><b>#application.adminBundle[session.dmProfile.locale].keywordsLabel#</b>
 		<input type="text" name="metakeywords" id="metakeywords" value="#output.metakeywords#" maxlength="255" size="45" /><br />
 	</label>
-
 	<label for="extendedmetadata"><b>#application.adminBundle[session.dmProfile.locale].extendedMetadata#</b>
-		<a href="javascript:void(0);" onclick="doToggle('extendedmetadata','bHasMetaData');"><cfif trim(output.extendedmetadata) EQ ""><img src="#application.url.farcry#/images/no.gif" id="tglextendedmetadata_image" border="0" alt="#application.adminBundle[session.dmProfile.locale].extendedMetadata#"><cfelse>
-			<img src="#application.url.farcry#/images/yes.gif" id="tglextendedmetadata_image" border="0" alt="#application.adminBundle[session.dmProfile.locale].noExtendedMetadata#"></cfif>
-		</a>
+		<a href="javascript:void(0);" onclick="doToggle('extendedmetadata','bHasMetaData');"><cfif trim(output.extendedmetadata) EQ ""><img src="#application.url.farcry#/images/no.gif" id="tglextendedmetadata_image" border="0" alt="#application.adminBundle[session.dmProfile.locale].extendedMetadata#"><cfelse><img src="#application.url.farcry#/images/yes.gif" id="tglextendedmetadata_image" border="0" alt="#application.adminBundle[session.dmProfile.locale].noExtendedMetadata#"></cfif></a>
 		<span id="tglextendedmetadata" style="display:<cfif Trim(output.extendedmetadata) EQ ''>none<cfelse>inline</cfif>;">
-		<textarea name="extendedmetadata" id="extendedmetadata" wrap="off">#output.extendedmetadata#</textarea><br />
-		#application.adminBundle[session.dmProfile.locale].insertedInHeadBlurb#
+		<fieldset>
+			<textarea name="extendedmetadata" id="extendedmetadata" wrap="soft" cols="35" rows="5">#output.extendedmetadata#</textarea>
+			<br />
+			#application.adminBundle[session.dmProfile.locale].insertedInHeadBlurb#
+		</fieldset>
 		</span>
 		<input type="hidden" id="bHasMetaData" name="bHasMetaData" value="#Len(trim(output.extendedmetadata))#">
+		<br />
 	</label>
 
 	<widgets:dateSelector fieldNameprefix="Review" bShowTime="0" bDateToggle="1">
 	<widgets:ownedBySelector fieldLabel="Content Owner:" selectedValue="#output.ownedBy#">
 	<widgets:displayMethodSelector typeName="#output.typeName#" prefix="displayPage">
-
 </fieldset>
-<!--- show coment log --->
-<fieldset>
-	<label><b>Comment Log:</b>
-		<a href="javascript:void(0);" onclick="doToggle('CommentLog');">
-			<img src="#application.url.farcry#/images/no.gif" id="tglCommentLog_image" border="0" alt="show hide comments">
-		</a>
-		<span id="tglCommentLog" style="display:none;"><textarea disabled="true" wrap="off"><cfif trim(output.commentLog) NEQ "">
-		#trim(output.commentLog)#<cfelse>
-		#application.adminBundle[session.dmProfile.locale].noComments#</cfif></textarea><br />
-		</span>
-	</label>
-</fieldset>
-	<!--- show archived --->
-	<cfif Trim(output.versionID) NEQ "" AND qListArchives.recordCount GT 0>
-<fieldset>
-	<label><b>Archived Versions:</b>
-		<a href="javascript:void(0);" onclick="doToggle('Archive');">
-			<img src="#application.url.farcry#/images/no.gif" id="tglArchive_image" border="0" alt="show hide archive">
-		</a>
-		<span id="tglArchive" style="display:none;">
-<table border="0" cellspacing="0" cellpadding="0">
-<tr>
-	<td>#application.adminBundle[session.dmProfile.locale].view#</td>
-	<td>#application.adminBundle[session.dmProfile.locale].label#</td>
-	<td>#application.adminBundle[session.dmProfile.locale].archiveDate#</td>
-	<td>#application.adminBundle[session.dmProfile.locale].by#</td>
-</tr><cfloop query="qListArchives"><cfset previewURL = "#application.url.farcry#/navajo/displayArchive.cfm?objectID=#qListArchives.objectID#">
-<tr>
-	<td><a href="#previewURL#" target="_blank"><img src="#application.url.farcry#/images/treeImages/preview.gif" border="0"></a> </td>
-	<td><a href="#previewURL#">#qListArchives.label#</a></td>
-	<td>#application.thisCalendar.i18nDateFormat(qListArchives.dateTimeCreated,session.dmProfile.locale,application.mediumF)#</td>
-	<td>#qListArchives.lastUpdatedBy#</td>
-</tr></cfloop>
-</table><br />
-		</span>
-	</label>
-</fieldset></cfif>
 
 <input type="hidden" name="plpAction" value="" />
 <input style="display:none;" type="submit" name="buttonSubmit" value="submit" />
@@ -142,13 +105,15 @@ function doToggle(prefix,bHiddenFieldName){
 	if(objTgl.style.display == "none"){
 		objTgl.style.display = "inline";
 		objTglImage.src = "#application.url.farcry#/images/yes.gif";
-//		objTglImage.alt = "#application.adminBundle[session.dmProfile.locale].noExtendedMetadata#";
+		objTglImage.alt = "#application.adminBundle[session.dmProfile.locale].noExtendedMetadata#";
+
 		if(bHiddenFieldName)
 			objTglHiddenValue.value = 1;
 	}else {
 		objTgl.style.display = "none";
 		objTglImage.src = "#application.url.farcry#/images/no.gif";
-//		objTglImage.alt = "#application.adminBundle[session.dmProfile.locale].extendedMetadata#";
+		objTglImage.alt = "#application.adminBundle[session.dmProfile.locale].extendedMetadata#";
+		
 		if(bHiddenFieldName)
 			objTglHiddenValue.value = 0;
 	}	

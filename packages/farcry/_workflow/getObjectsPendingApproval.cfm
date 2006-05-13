@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_workflow/getObjectsPendingApproval.cfm,v 1.25.2.5 2006/02/10 06:11:45 paul Exp $
-$Author: paul $
-$Date: 2006/02/10 06:11:45 $
-$Name: milestone_3-0-1 $
-$Revision: 1.25.2.5 $
+$Header: /cvs/farcry/farcry_core/packages/farcry/_workflow/getObjectsPendingApproval.cfm,v 1.25.2.6 2006/04/14 06:50:41 geoff Exp $
+$Author: geoff $
+$Date: 2006/04/14 06:50:41 $
+$Name: p300_b113 $
+$Revision: 1.25.2.6 $
 
 || DESCRIPTION || 
 $Description: get obejcts pending approval$
@@ -30,7 +30,15 @@ $out:$
 <cfset stLocal.lcontent_type = "">
 <cfif arguments.stForm.lcontent_type EQ "all">
 	<cfloop item="stLocal.iType" collection="#application.types#">
-		<cfif StructKeyExists(application.types[stLocal.iType].stProps,"status")>
+		<!--- 	todo: 
+				bad hack.. to get around content types using status as a property but not flagging it as string
+				hack allows you to set metadata in the content type of bSystem="true" to exclude it from being addressed here
+				need to just rip out this cancer along with farcry.workflow GB 20060414
+		 --->	
+		<cfif NOT structKeyExists(application.types[stLocal.iType],"bSystem")>
+				<cfset application.types[stLocal.iType].bSystem="false">
+		</cfif>
+	    <cfif StructKeyExists(application.types[stLocal.iType].stProps,"status") AND NOT application.types[stLocal.iType].bSystem>
 			<cfset stLocal.lcontent_type = ListAppend(stLocal.lcontent_type,stLocal.iType)>
 		</cfif>
 	</cfloop>

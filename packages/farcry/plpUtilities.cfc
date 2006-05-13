@@ -10,7 +10,7 @@
 
 		<cfif stLocal.bPLPStorage>
 			<cflock name="_plpaccess" timeout="10">
-				<cffile action="read" file="#application.path.plpstorage#/#session.dmSec.authentication.userlogin#_#arguments.objectid#.plp" variable="stLocal.wddxPLP">
+				<cffile action="read" file="#application.path.plpstorage#/#session.dmSec.authentication.userlogin#_#arguments.objectid#.plp" variable="stLocal.wddxPLP" charset="utf-8">
 				<cfwddx action="wddx2cfml" input="#stLocal.wddxPLP#" output="stLocal.stPLP">
 			</cflock>
 		<cfelse>

@@ -11,7 +11,7 @@
 </cffunction>
 
 <cffunction name="getVersionTagline" access="public" output="false" hint="Returns a string detailing the current FarCry CMS build details." returntype="string">
-	<cfreturn "FarCry 3.0.1" />
+	<cfreturn "FarCry 3.0.2RC" />
 </cffunction>
 
 </cfcomponent>

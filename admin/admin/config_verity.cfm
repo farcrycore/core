@@ -1,35 +1,38 @@
+<cfprocessingDirective pageencoding="utf-8">
 <!--- 
 || LEGAL ||
 $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/admin/config_verity.cfm,v 1.10 2005/08/17 03:28:39 pottery Exp $
-$Author: pottery $
-$Date: 2005/08/17 03:28:39 $
-$Name: milestone_3-0-1 $
-$Revision: 1.10 $
+$Header: /cvs/farcry/farcry_core/admin/admin/config_verity.cfm,v 1.10.2.1 2006/04/19 00:45:50 geoff Exp $
+$Author: geoff $
+$Date: 2006/04/19 00:45:50 $
+$Name: p300_b113 $
+$Revision: 1.10.2.1 $
 
 || DESCRIPTION || 
 $DESCRIPTION: Verity config edit handler$
+
+$TODO: 
+lot of work here.. taking ownership and band-aiding for now to allow for new functionality.
+Will look to sweep through when we revamp config to a bona fide content type 20060415 GB
+$
  
-
 || DEVELOPER ||
-$DEVELOPER:Brendan Sisson (brendan@daemon.com.au)$
-
-|| ATTRIBUTES ||
-$in:$ 
-$out:$
+$DEVELOPER: Geoff Bowers (modius@daemon.com.au)$
 --->
 
-<cfprocessingDirective pageencoding="utf-8">
+<!--- import tag library --->
+<cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
 
 <!--- check permissions --->
-<cfscript>
-	iGeneralTab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="AdminGeneralTab");
-</cfscript>
+<cfset iGeneralTab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="AdminGeneralTab")>
+<cfif iGeneralTab neq 1>
+	<admin:permissionError>
+	<cfabort />
+</cfif>
 
-<cfif iGeneralTab eq 1>
 <cfswitch expression="#form.action#">
 
 	<cfcase value="update">
@@ -198,7 +201,3 @@ $out:$
 	</cfcase>	
 </cfswitch>
 
-<cfelse>
-	<cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
-	<admin:permissionError>
-</cfif>

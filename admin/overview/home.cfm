@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/overview/home.cfm,v 1.8.2.5 2006/02/14 02:55:28 tlucas Exp $
-$Author: tlucas $
-$Date: 2006/02/14 02:55:28 $
-$Name: milestone_3-0-1 $
-$Revision: 1.8.2.5 $
+$Header: /cvs/farcry/farcry_core/admin/overview/home.cfm,v 1.8.2.6 2006/04/14 06:50:41 geoff Exp $
+$Author: geoff $
+$Date: 2006/04/14 06:50:41 $
+$Name: p300_b113 $
+$Revision: 1.8.2.6 $
 
 || DESCRIPTION ||
 $Description: FarCry Overview Page $
@@ -32,10 +32,21 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 <cfparam name="draft_MaxRecords" default="5">
 <cfparam name="draft_objectType" default="All">
 
+<!--- <cfdump var="#application.types#">
+<cfabort>
+ --->
 <cfset lMaxRecords = "All,5,10,20">
 <cfset aObjectTypes = ArrayNew(1)>
 <cfloop item="iType" collection="#application.types#">
-    <cfif StructKeyExists(application.types[iType].stProps,"status")>
+<!--- 	todo: 
+		bad hack.. to get around content types using status as a property but not flagging it as string
+		hack allows you to set metadata in the content type of bSystem="true" to exclude it from being addressed here
+		need to just rip out this cancer along with farcry.workflow GB 20060414
+ --->	
+<cfif NOT structKeyExists(application.types[iType],"bSystem")>
+		<cfset application.types[iType].bSystem="false">
+	</cfif>
+    <cfif StructKeyExists(application.types[iType].stProps,"status") AND NOT application.types[iType].bSystem>
         <cfset ArrayAppend(aObjectTypes,iType)>
     </cfif>
 </cfloop>

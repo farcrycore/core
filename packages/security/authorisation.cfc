@@ -4,11 +4,11 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/security/authorisation.cfc,v 1.52.2.1 2006/02/17 06:48:41 paul Exp $
-$Author: paul $
-$Date: 2006/02/17 06:48:41 $
-$Name: milestone_3-0-1 $
-$Revision: 1.52.2.1 $
+$Header: /cvs/farcry/farcry_core/packages/security/authorisation.cfc,v 1.52.2.2 2006/04/20 07:40:00 jason Exp $
+$Author: jason $
+$Date: 2006/04/20 07:40:00 $
+$Name: p300_b113 $
+$Revision: 1.52.2.2 $
 
 || DESCRIPTION || 
 $Description: authorisation cfc $
@@ -1115,12 +1115,19 @@ $out:$
 			
 		
 			<cfquery name="stLocal.qList" datasource="#stPolicyStore.datasource#">
-			    SELECT  DISTINCT g.userId
-			    FROM    dmPermissionBarnacle pb, dmPermission p, dmUserToGroup g
-			    WHERE   p.PermissionId = pb.PERMISSIONID
-			            AND pb.POLICYGROUPID = g.groupId<cfif arguments.permissionID NEQ 0>
-			            AND p.PermissionId = <cfqueryparam value="#arguments.permissionID#" cfsqltype="cf_sql_integer"><cfelse>
-			            AND p.PermissionName = <cfqueryparam value="#arguments.permissionName#" cfsqltype="cf_sql_varchar"></cfif>
+				SELECT     DISTINCT ug.userid 
+				FROM         dmpolicygroup p INNER JOIN
+				                      dmexternalgrouptopolicygroup e ON p.PolicyGroupName = e.EXTERNALGROUPNAME INNER JOIN
+				                      dmgroup g ON g.groupName = p.PolicyGroupName INNER JOIN
+				                      dmusertogroup ug ON ug.groupId = g.groupid INNER JOIN
+				                      dmpermissionbarnacle pb ON pb.POLICYGROUPID = p.PolicyGroupId INNER JOIN
+				                      dmpermission pm ON pm.PermissionId = pb.PERMISSIONID
+				WHERE    1=1
+				<cfif arguments.permissionID NEQ 0>
+					AND pm.PermissionId = <cfqueryparam value="#arguments.permissionID#" cfsqltype="cf_sql_integer">
+				<cfelse>
+				    AND pm.PermissionName = <cfqueryparam value="#arguments.permissionName#" cfsqltype="cf_sql_varchar">
+				</cfif>					
 			</cfquery> 
 			
 

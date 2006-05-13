@@ -136,6 +136,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 		<cfargument name="dsn" type="string" default="#application.dsn#" required="false" hint="Database DSN">
 		<cfargument name="orderBy" type="string" required="False" default="dateTimeLastUpdated" hint="Property field to order by">
 		<cfargument name="orderDirection" type="string" required="False" default="desc" hint="order in which direction? descending or ascending">
+		<cfargument name="lStatus" type="string" required="False" default="approved" hint="the list of statuses to match on">
 		
 		<cfset var i=0>
 		<cfset var qGetData = QueryNew("objectid")>
@@ -143,15 +144,18 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 		<cfset var stLocal = StructNew()>
 		
 		<cfif arguments.lcategoryids EQ ""> <!--- if no categories passed then return all unassigned --->
-<cfsavecontent variable="strSQL"><cfoutput>
-SELECT	type.*
-<cfif StructKeyExists(application.types[arguments.typename].stprops,"versionid")>
-	, (SELECT count(d.objectid) FROM #arguments.typename# d WHERE d.versionid = type.objectid) as bHasMultipleVersion
-</cfif>
-FROM 	#application.dbowner##arguments.typename# type INNER JOIN #application.dbowner#refObjects refObj ON refObj.objectid = type.ObjectID
-WHERE	lower(refObj.typename) = '#LCase(arguments.typename)#'
-		AND type.objectid NOT IN (SELECT objectid FROM #application.dbowner#refCategories)
-</cfoutput></cfsavecontent>
+			<cfsavecontent variable="strSQL">
+				<cfoutput>
+				SELECT	type.*
+				<cfif StructKeyExists(application.types[arguments.typename].stprops,"versionid")>
+					, (SELECT count(d.objectid) FROM #arguments.typename# d WHERE d.versionid = type.objectid) as bHasMultipleVersion
+				</cfif>
+				FROM 	#application.dbowner##arguments.typename# type INNER JOIN #application.dbowner#refObjects refObj ON refObj.objectid = type.ObjectID
+				WHERE	lower(refObj.typename) = '#LCase(arguments.typename)#'				
+				AND type.status in (#listqualify(arguments.lstatus,"'")#)
+				AND type.objectid NOT IN (SELECT objectid FROM #application.dbowner#refCategories)
+				</cfoutput>
+			</cfsavecontent>
 		<cfelse>
 			<cfif arguments.bHasDescendants>
 				<cfset arguments.lcategoryids=getCategoryBranchAsList(arguments.lcategoryids)>
@@ -159,47 +163,53 @@ WHERE	lower(refObj.typename) = '#LCase(arguments.typename)#'
 			
 			<cfif arguments.bMatchAll>
 				<!--- must match all categories --->
-				<cfsavecontent variable="strSQL"><cfoutput>
-SELECT type.*
-<cfif StructKeyExists(application.types[arguments.typename].stprops,"versionid")>
-	, (SELECT count(d.objectid) FROM #arguments.typename# d WHERE d.versionid = type.objectid) as bHasMultipleVersion
-<cfelse>
-	,0 as bHasMultipleVersion
-</cfif>
-FROM #application.dbowner#refObjects refObj 
-JOIN #application.dbowner#refCategories refCat1 ON refObj.objectid = refCat1.objectID
-JOIN #application.dbowner##arguments.typename# type ON refObj.objectid = type.ObjectID 
-<!--- if more than one category make join for each --->
-<cfif listLen(arguments.lCategoryIDs) gt 1>
-	<cfloop from="2" to="#listlen(arguments.lCategoryIDs)#" index="i">
-	    , refCategories refCat#i#
-	</cfloop>
-</cfif>
-WHERE 1=1
-	<!--- loop over each category and make sure item has all categories --->
-	<cfloop from="1" to="#listlen(arguments.lCategoryIDs)#" index="i">
-		AND refCat#i#.categoryID = '#listGetAt(arguments.lCategoryIDs,i)#'
-		AND refCat#i#.objectId = type.objectId
-	</cfloop>
-ORDER BY #arguments.orderBy# #arguments.orderDirection#</cfoutput>
+				<cfsavecontent variable="strSQL">
+					<cfoutput>
+					SELECT type.*
+					<cfif StructKeyExists(application.types[arguments.typename].stprops,"versionid")>
+						, (SELECT count(d.objectid) FROM #arguments.typename# d WHERE d.versionid = type.objectid) as bHasMultipleVersion
+					<cfelse>
+						,0 as bHasMultipleVersion
+					</cfif>
+					FROM #application.dbowner#refObjects refObj 
+					JOIN #application.dbowner#refCategories refCat1 ON refObj.objectid = refCat1.objectID
+					JOIN #application.dbowner##arguments.typename# type ON refObj.objectid = type.ObjectID 
+					<!--- if more than one category make join for each --->
+					<cfif listLen(arguments.lCategoryIDs) gt 1>
+						<cfloop from="2" to="#listlen(arguments.lCategoryIDs)#" index="i">
+						    , refCategories refCat#i#
+						</cfloop>
+					</cfif>
+					WHERE 1=1 
+					AND type.status in (#listqualify(arguments.lstatus,"'")#)
+						<!--- loop over each category and make sure item has all categories --->
+						<cfloop from="1" to="#listlen(arguments.lCategoryIDs)#" index="i">
+							AND refCat#i#.categoryID = '#listGetAt(arguments.lCategoryIDs,i)#'
+							AND refCat#i#.objectId = type.objectId
+						</cfloop>
+					ORDER BY #arguments.orderBy# #arguments.orderDirection#
+					</cfoutput>
 				</cfsavecontent>
 	
 			<cfelse>
-				<cfsavecontent variable="strSQL"><cfoutput>
-SELECT type.*
-<cfif StructKeyExists(application.types[arguments.typename].stprops,"versionid")>
-	, (SELECT count(d.objectid) FROM #arguments.typename# d WHERE d.versionid = type.objectid) as bHasMultipleVersion
-<cfelse>
-	,0 as bHasMultipleVersion
-</cfif>
-FROM #application.dbowner#refObjects refObj 
-JOIN #application.dbowner#refCategories refCat ON refObj.objectid = refCat.objectID
-JOIN #application.dbowner##arguments.typename# type ON refObj.objectid = type.ObjectID  
-WHERE lower(refObj.typename) = '#LCase(arguments.typename)#'
-<cfif listlen(arguments.lCategoryIDs)>
-AND refCat.categoryid IN ('#ListChangeDelims(arguments.lCategoryIDs,"','",",")#')
-</cfif>
-ORDER BY #arguments.orderBy# #arguments.orderDirection#</cfoutput>
+				<cfsavecontent variable="strSQL">
+					<cfoutput>
+					SELECT type.*
+					<cfif StructKeyExists(application.types[arguments.typename].stprops,"versionid")>
+						, (SELECT count(d.objectid) FROM #arguments.typename# d WHERE d.versionid = type.objectid) as bHasMultipleVersion
+					<cfelse>
+						,0 as bHasMultipleVersion
+					</cfif>
+					FROM #application.dbowner#refObjects refObj 
+					JOIN #application.dbowner#refCategories refCat ON refObj.objectid = refCat.objectID
+					JOIN #application.dbowner##arguments.typename# type ON refObj.objectid = type.ObjectID  
+					WHERE lower(refObj.typename) = '#LCase(arguments.typename)#'
+					AND type.status in (#listqualify(arguments.lstatus,"'")#)
+					<cfif listlen(arguments.lCategoryIDs)>
+					AND refCat.categoryid IN ('#ListChangeDelims(arguments.lCategoryIDs,"','",",")#')
+					</cfif>
+					ORDER BY #arguments.orderBy# #arguments.orderDirection#
+					</cfoutput>
 				</cfsavecontent>
 			</cfif>
 		</cfif>

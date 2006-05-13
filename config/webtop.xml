@@ -98,7 +98,7 @@
 				<menuitem id="managecollections" label="application.adminBundle[session.dmProfile.locale].ManageCollections" labelType="evaluate" link="/admin/verityManage.cfm" />
 				<menuitem id="buildupdateallcollections" label="application.adminBundle[session.dmProfile.locale].UpdateCollections" labelType="evaluate" link="/admin/verityBuild.cfm" />
 				<menuitem id="optimiseallcollections" label="application.adminBundle[session.dmProfile.locale].OptimizeCollections" labelType="evaluate" link="/admin/verityOptimise.cfm" />
-				<menuitem id="verityconfig" label="application.adminBundle[session.dmProfile.locale].verityConfig" labelType="evaluate" link="/admin/config.cfm?configName=verity" />
+				<menuitem id="verityconfig" label="application.adminBundle[session.dmProfile.locale].verityConfig" labelType="evaluate" link="/admin/verityConfig.cfm" />
 			</menu>
 		</subsection>
 		<subsection id="coapi" permission="AdminCOAPITab" label="application.adminBundle[session.dmProfile.locale].COAPIManagement" labelType="evaluate" sidebar="admin/sidebar.cfm" content="inc/content.html">
