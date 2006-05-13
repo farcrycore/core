@@ -1,5 +1,4 @@
 <cfimport taglib="/farcry/farcry_core/tags/widgets" prefix="widgets">
-<cfimport taglib="/farcry/farcry_core/tags/formtools/formfieldtypes" prefix="fft" >
 
 <cfif thistag.ExecutionMode EQ "Start">
 	
