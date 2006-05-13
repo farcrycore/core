@@ -178,7 +178,7 @@ default handlers
 
 	
 		<!--- log event --->
-		<cfif arguments.bAudit>
+		<cfif arguments.bAudit and isDefined("instance.stobj.objectid")>
 			<cfset application.factory.oAudit.logActivity(auditType="Lock", username=arguments.lockedby, location=cgi.remote_host, note="Locked: #yesnoformat(arguments.locked)#",objectid=instance.stobj.objectid,dsn=arguments.dsn)>
 		</cfif>
 	</cffunction>
