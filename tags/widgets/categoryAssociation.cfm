@@ -37,6 +37,6 @@
 </cfloop>
 <cfoutput></label></cfoutput>
 <cfoutput>
-<script type="text/javascript" src="/farcry/js/showhide.js"></script>
+<script type="text/javascript" src="#application.url.farcry#/js/showhide.js"></script>
 </cfoutput>
 <cfsetting enablecfoutputonly="false">

@@ -45,12 +45,12 @@
 <tr>
 	<th scope="col">Select</th>
 	<th scope="col">Edit</th>
-	<th scope="col"><a href="/farcry/content/dmnews.cfm?orderby=label&order=asc">Label</a></th>
+	<th scope="col"><a href="#application.url.farcry#/content/dmnews.cfm?orderby=label&order=asc">Label</a></th>
 </tr><cfoutput query="qList">
 <tr<cfif qList.currentRow MOD 2> class="alt"</cfif>>
 	<td style="text-align:center"><input type="checkbox" class="f-checkbox" name="objectid" value="#qList.objectid#" onclick="setRowBackground(this);" /></td>
-	<td style="text-align:center"><a href="/farcry/navajo/container_edit.cfm?containerid=#qList.objectid#"><img src="/farcry/images/treeImages/edit.gif" alt="Edit" title="Edit" /></a></td>
-	<td style="text-align:left"><a href="/farcry/navajo/container_edit.cfm?containerid=#qList.objectid#">#qList.label#</a></td>
+	<td style="text-align:center"><a href="#application.url.farcry#/navajo/container_edit.cfm?containerid=#qList.objectid#"><img src="#application.url.farcry#/images/treeImages/edit.gif" alt="Edit" title="Edit" /></a></td>
+	<td style="text-align:left"><a href="#application.url.farcry#/navajo/container_edit.cfm?containerid=#qList.objectid#">#qList.label#</a></td>
 </tr></cfoutput>
 </table>
 <div class="utilBar f-subdued">

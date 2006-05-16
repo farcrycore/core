@@ -302,7 +302,6 @@ $out:$
 		</div>
 		
 	</fieldset>
-	</form>
 	
 	<hr />
 

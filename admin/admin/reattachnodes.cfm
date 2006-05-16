@@ -19,7 +19,7 @@
 		</cfquery>
 		<cfoutput>
 		<h3>Attaching NTM Orphans</h3>
-		You <strong>MUST</strong> now <a href="/farcry/admin/rebuildTree.cfm">Rebuild Tree</a> for the dmNavigation content types.
+		You <strong>MUST</strong> now <a href="#application.url.farcry#/admin/rebuildTree.cfm">Rebuild Tree</a> for the dmNavigation content types.
 		</cfoutput>
 		
 	<cfelseif isDefined("attachlostcontent")>
@@ -47,7 +47,7 @@
 		</cfquery>
 		<cfoutput>
 		<h3>Attaching Lost dmNavigation Content Items</h3>
-		You <strong>MUST</strong> now <a href="/farcry/admin/rebuildTree.cfm">Rebuild Tree</a> for the dmNavigation content types.
+		You <strong>MUST</strong> now <a href="#application.url.farcry#/admin/rebuildTree.cfm">Rebuild Tree</a> for the dmNavigation content types.
 		</cfoutput>
 	</cfif>
 <cfabort />

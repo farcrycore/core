@@ -185,6 +185,7 @@ ACTION: form action
 	FROM 	#application.dbowner##relatedTypeName# type
 	</cfquery>
 </cfif>
+
 <!--- /FILTER --->
 
 <!--- FILTER: keyword filter --->
@@ -201,11 +202,13 @@ todo: this is a real worry..
 		- need to clean up UI logic completely
 	20060314 GB
 --->
-<cfif (bSearchFormSubmitted AND searchField NEQ "" AND trim(searchText) NEQ "") OR (structKeyExists(URL, "searchText") AND len(trim(URL.searchText)))>
+<!--- <cfif (bSearchFormSubmitted AND searchField NEQ "" AND trim(searchText) NEQ "") OR (structKeyExists(URL, "searchText") AND len(trim(URL.searchText)))> --->
+<cfif (searchField NEQ "" AND trim(searchText) NEQ "") OR (structKeyExists(URL, "searchText") AND len(trim(URL.searchText)))>
+	
 	<cfquery dbtype="query" name="qReturn">
 	SELECT	DISTINCT objectid, label
 	FROM	qReturn
-	WHERE	LOWER(#searchField#) LIKE '%#trim(searchText)#%'
+	WHERE	LOWER(#searchField#) LIKE '%#trim(lcase(searchText))#%'
 	</cfquery>
 </cfif>
 
@@ -266,31 +269,51 @@ VIEW: render page
 			</ul></cfif>
 			<h3>Search</h3>
 			<form name="frmSearch" id="frmSearch" action="relatedlist.cfm" method="post">
-				<fieldset>
-					<select name="searchField" id="searchField"><cfloop index="i" from="1" to="#ArrayLen(aKeywordField)#">
-						<option value="#aKeywordField[i]#"<cfif searchField EQ aKeywordField[i]> selected="selected"</cfif>>#aKeywordField[i]#</option></cfloop>
-					</select>
-					<input value="#searchText#" name="searchText" id="searchText" type="text" size="15" />
-					<input type="submit" name="buttonSearch" id="buttonSearch" value="Go" />
-					<input type="hidden" name="bSearchFormSubmitted" value="Yes">
-					<input type="hidden" name="relatedTypeName" value="#relatedTypeName#">
+				<table>
+					<tr>
+						<td>Search feild</td>
+					</tr>
+					<tr>
+						<td>
+						<select name="searchField" id="searchField"><cfloop index="i" from="1" to="#ArrayLen(aKeywordField)#">
+							<option value="#aKeywordField[i]#"<cfif searchField EQ aKeywordField[i]> selected="selected"</cfif>>#aKeywordField[i]#</option></cfloop>
+						</select>
+						</td>
+					<tr>
+						<td>
+							Keywords
+						</td>
+					</tr>
+					<tr>
+						<td>
+						<input value="#searchText#" name="searchText" id="searchText" type="text" size="15" />
+						</td>
+					</tr>
+					<tr>
+						<td>Object type</td>
+					</tr>
+					<tr>
+						<td>
+						<select name="relatedTypeName">
+						<cfloop index="availableTypename" list="#lRelatedTypeName#">
+							<option value="#availableTypename#"<cfif availableTypename EQ relatedTypeName> selected="selected"</cfif>>#availableTypename#</option>
+						</cfloop>
+						</select>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<input type="submit" name="buttonChnage" value="Change">	
+						</td>
+					</tr>
+					<input type="hidden" name="categoryID" value="#categoryID#">
+					
 					<input type="hidden" name="lRelatedTypeName" value="#lRelatedTypeName#">
 					<input type="hidden" name="primaryObjectID" value="#primaryObjectID#">
 					<input type="hidden" name="bPLPStorage" value="#bPLPStorage#">
 					<input type="hidden" name="fieldName" value="#fieldName#">
 					<input type="hidden" name="bShowCategoryTree" value="#bShowCategoryTree#">
-					<input type="hidden" name="categoryID" value="#categoryID#">
-				</fieldset>
-			</form>
-			<form name="frmRelated" action="relatedlist.cfm" method="post">
-				<select name="relatedTypeName"><cfloop index="availableTypename" list="#lRelatedTypeName#">
-					<option value="#availableTypename#"<cfif availableTypename EQ relatedTypeName> selected="selected"</cfif>>#availableTypename#</option></cfloop>
-				</select>&nbsp;<input type="submit" name="buttonChnage" value="Change">
-				<input type="hidden" name="lRelatedTypeName" value="#lRelatedTypeName#">
-				<input type="hidden" name="primaryObjectID" value="#primaryObjectID#">
-				<input type="hidden" name="bPLPStorage" value="#bPLPStorage#">
-				<input type="hidden" name="fieldName" value="#fieldName#">
-				<input type="hidden" name="bShowCategoryTree" value="#bShowCategoryTree#">
+				</table>
 			</form>
 		</div>
 

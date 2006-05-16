@@ -12,7 +12,7 @@
 	<cfif session.firstLogin>
 	    <cfoutput>
 	    <script type="text/javascript">
-	    profileWin = window.open('/farcry/edit.cfm?objectID=#session.dmProfile.objectID#&type=dmProfile','edit_profile','width=385,height=385,left=200,top=100');
+	    profileWin = window.open('#application.url.farcry#/edit.cfm?objectID=#session.dmProfile.objectID#&type=dmProfile','edit_profile','width=385,height=385,left=200,top=100');
 	    alert('#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].firstTimeLoginBlurb,"#application.config.general.siteTitle#")#');
 	    profileWin.focus();
 	    </script>

@@ -28,7 +28,7 @@
 <script src="#application.url.farcry#/includes/lib/json.js"></script>
 
 <!--// load the qForm JavaScript API //-->
-	<script type="text/javascript" src="/farcry/includes/lib/qforms.js"></script>
+	<script type="text/javascript" src="#application.url.farcry#/includes/lib/qforms.js"></script>
 
 	<!--// you do not need the code below if you plan on just
 		   using the core qForm API methods. //-->
@@ -36,7 +36,7 @@
 	<script type="text/javascript">
 	<!--//
 	// specify the path where the "/qforms/" subfolder is located
-	qFormAPI.setLibraryPath("/farcry/includes/lib/");
+	qFormAPI.setLibraryPath("#application.url.farcry#/includes/lib/");
 	// loads all default libraries
 	qFormAPI.include("*");
 	//-->

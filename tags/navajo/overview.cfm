@@ -1950,7 +1950,7 @@ document.body.onclick = documentClick;
 }
 </style>
 
-<iframe width="100" height="1" name="idServer" id="idServer" frameborder="0" framespacing="0" marginwidth="0" marginheight="0" src="/farcry/admin/blank.cfm">
+<iframe width="100" height="1" name="idServer" id="idServer" frameborder="0" framespacing="0" marginwidth="0" marginheight="0" src="#application.url.farcry#/admin/blank.cfm">
 	
 </iframe>
 
@@ -1966,6 +1966,3 @@ toggleObject( '#objId#' );
 </cfoutput>
 
 <cfsetting enablecfoutputonly="No">
-
-
-

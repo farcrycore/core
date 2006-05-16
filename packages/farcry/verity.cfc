@@ -341,7 +341,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	
 	<!--- <cfdump var="#arguments#"> --->
 
-	<cfquery datasource="#application.dsn#" name="qContent" result="info" blockfactor="100">
+	<cfquery datasource="#application.dsn#" name="qContent"  blockfactor="100">
 		SELECT #lSelectColumns#
 		FROM #arguments.typename#
 		WHERE 1 = 1
@@ -355,9 +355,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 		ORDER BY datetimelastupdated
 	</cfquery>
 	
-<!--- 	<cfdump var="#qcontent#">
-	<cfdump var="#info#">
-	<cfabort> --->
+
 
 	<cfreturn qContent />
 

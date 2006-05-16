@@ -295,19 +295,19 @@ $out:$
 		<cfargument name="bHideFrame" default="false" required="True">
 		<cfsavecontent variable="html">
 			<cfoutput>
-			<STYLE TYPE="text/css">
+			<style type="text/css">
 			###arguments.iframeID# {
 				position:relative;
 				width: 400px;
 				height: 400px;
 				<cfif arguments.bHideFrame>display:none;</cfif>
 			}
-			</STYLE>
+			</style>
 
-			<IFRAME WIDTH="100" HEIGHT="1" NAME="#arguments.iframeID#" ID="#arguments.iframeID#"
-				 FRAMEBORDER="0" FRAMESPACING="0" MARGINWIDTH="0" MARGINHEIGHT="0" SRC="/farcry/admin/blank.cfm">
+			<iframe width="100" height="1" name="#arguments.iframeID#" id="#arguments.iframeID#"
+				 frameborder="0" framespacing="0" marginwidth="0" marginheight="0" src="#application.url.farcry#/admin/blank.cfm">
 				
-			</IFRAME>
+			</iframe>
 		</cfoutput>
 		</cfsavecontent>
 		<cfreturn html>
