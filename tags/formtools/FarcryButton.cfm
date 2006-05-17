@@ -14,7 +14,7 @@
 
 <cfif thistag.ExecutionMode EQ "Start">
 
-	<cfoutput><input type="#attributes.Type#" name="FarcryFormSubmitButton" id="FarcryFormSubmitButton" value="#attributes.Value#" onclick="#attributes.Onclick#" class="#attributes.Class#" /></cfoutput>
+	<cfoutput><input type="#attributes.Type#" name="FarcryFormSubmitButton" id="FarcryFormSubmitButton" value="#attributes.Value#" onclick="#attributes.Onclick#" class="#attributes.Class#" style="#attributes.Style#" /></cfoutput>
 	
 </cfif>
 
