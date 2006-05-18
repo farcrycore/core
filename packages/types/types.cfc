@@ -572,9 +572,12 @@ default handlers
 		
 		<cfargument name="ObjectID" required="no" type="string" default="" hint="This is the PK for which we are getting the linked FK's. If the ObjectID passed is empty, the we are creating a new object and it will therefore not have an objectID">
 		<cfargument name="Fieldname" required="yes" type="string">
-		<cfargument name="typename" required="yes" type="string" default="#getTablename()#">
+		<cfargument name="typename" required="yes" type="string" default="">
 		<cfargument name="Link" required="yes" type="string" default="#application.types[typename].stprops[arguments.Fieldname].metadata.ftLink#">
 
+		<cfif len(arguments.typename) EQ 0>
+			<cfset arguments.typename  = findType(objectID="#arguments.ObjectID#")>
+		</cfif>
 		<!--- getData for object edit --->
 
 		<cfquery datasource="#application.dsn#" name="qArrayAsQuery">
