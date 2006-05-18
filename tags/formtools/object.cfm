@@ -98,8 +98,12 @@
 	<!--- CHECK TO SEE IF OBJECTED HAS ALREADY BEEN RENDERED. IF SO, USE SAME PREFIX --->
 	<cfif isDefined("variables.stObj") and not structIsEmpty(variables.stObj)>
 	
-		<cfparam name="Request.farcryForm.stObjects" default="#StructNew()#">		
-
+		<cfif not isDefined("Request.farcryForm.stObjects")>
+			<!--- If the call to this tag is not made within the confines of a <ft:form> tag, then we need to create a temp one and then delete it at the end of the tag. --->
+			<cfset Request.farcryForm.stObjects = StructNew()>
+			<cfset Request.tmpDeleteFarcryForm = 1>		
+		</cfif>
+		
 		<cfloop list="#StructKeyList(Request.farcryForm.stObjects)#" index="key">
 			<cfif isDefined("request.farcryForm.stObjects.#key#.farcryformobjectinfo.ObjectID") AND request.farcryForm.stObjects[key].farcryformobjectinfo.ObjectID EQ stObj.ObjectID>
 				<cfset variables.prefix = key>
@@ -553,5 +557,11 @@
 			<cfif attributes.IncludeFieldSet>
 				<cfoutput></fieldset></cfoutput>
 			</cfif>
+		</cfif>
+		
+		<cfif isDefined("Request.tmpDeleteFarcryForm") AND  isDefined("Request.farcryForm")>
+			<!--- If the call to this tag is not made within the confines of a <ft:form> tag, then we need to delete the temp one we created. --->
+			<cfset dummy = structDelete(Request,"farcryForm")>
+			<cfset dummy = structDelete(Request,"tmpDeleteFarcryForm")>
 		</cfif>
 </cfif>

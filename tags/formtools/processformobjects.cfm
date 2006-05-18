@@ -14,6 +14,7 @@
 
 <cfif thistag.ExecutionMode EQ "Start">
 	
+	
 	<!--- Object to render --->
 	<cfparam name="attributes.stObj" default="#structNew()#" >
 	
@@ -131,7 +132,7 @@
 		
 		
 		<cfif structKeyExists(stType,"BeforeSave")>
-			<cfset Caller[attributes.r_stProperties] = stType.BeforeSave(stProperties=Caller[attributes.r_stProperties],stFields=stFields)>		
+			<cfset Caller[attributes.r_stProperties] = stType.BeforeSave(stProperties=Caller[attributes.r_stProperties],stFields=stFields)>	
 		</cfif>
 		
 		
@@ -139,7 +140,7 @@
 
 	
 				
-			<cfif not isDefined("CALLER.stPLP.plp.inputObjects") OR not structKeyExists(CALLER.stPLP.plp.inputObjects,"#Caller.stProperties.ObjectID#")>	
+			<cfif not isDefined("CALLER.inputObjects") OR not structKeyExists(CALLER.inputObjects,"#Caller.stProperties.ObjectID#")>	
 				
 				<cfif not isDefined("Caller.stProperties.typename") or not len(Caller.stProperties.typename)>
 		
@@ -150,24 +151,28 @@
 													
 				<cfset stType = createobject("component",application.types[Caller.stProperties.typename].typepath)>	
 				<cfset stObj = stType.getData(Caller.stProperties.ObjectID)>	
-				<cfset CALLER.stPLP.plp.inputObjects[Caller.stProperties.ObjectID] = Duplicate(stObj)>	
-				<cfset CALLER.stPLP.plp.outputObjects[Caller.stProperties.ObjectID] = Duplicate(stObj)>	
+				<cfset CALLER.inputObjects[Caller.stProperties.ObjectID] = Duplicate(stObj)>	
+				<cfset CALLER.outputObjects[Caller.stProperties.ObjectID] = Duplicate(stObj)>	
 			</cfif>
 			
 			
 
 
-	
+			
 			<cfloop list="#lFields#" index="i" >
 
-				<cfif isDefined("FORM.#ProcessingFormObjectPrefix##i#")>						
-					<cfset CALLER.stPLP.plp.outputObjects[#Caller.stProperties.ObjectID#][#i#] = Evaluate("FORM.#ProcessingFormObjectPrefix##i#")>	
+				<cfif isDefined("Caller.#attributes.r_stProperties#.#i#")>	
+					<!--- PLP outputObjects is used to store multiple objects in the plp. --->					
+					<cfset CALLER.outputObjects[#Caller.stProperties.ObjectID#][#i#] = Caller[attributes.r_stProperties][i]>	
+					
+					<!--- PLP object is used to store the base object of the PLP --->
+					<cfif isDefined("CALLER.output.objectid") AND CALLER.output.objectID EQ Caller.stProperties.ObjectID>						
+						<cfset CALLER.output[#i#] = Caller[attributes.r_stProperties][i]>	
+					</cfif>
 				</cfif>
 	
 	
 			</cfloop>	
-				
-			
 			
 		<cfelse>		
 			
@@ -332,14 +337,14 @@
 			<cfelse>
 				<cfset FieldMethod = "validate">
 			</cfif>	
-			
+
 			<cfinvoke component="#application.formtools[ftFieldMetadata.ftType]#" method="#FieldMethod#" returnvariable="stResult">
 				<cfinvokeargument name="stFieldPost" value="#Request.farcryForm.stObjects[variables.prefix]['FormPost'][i]#">
 				<cfinvokeargument name="stMetadata" value="#ftFieldMetadata#">
 			</cfinvoke>
 						
 			<cfset "Caller.#attributes.r_stProperties#.#i#" = stResult.Value>
-
+			
 			<!--- 
 			<cfswitch expression="#stFields[i].metadata.type#">
 				<cfcase value="date">
@@ -397,7 +402,7 @@
 
 		</cfif>
 	</cfloop>
-
+	
 	<cfif isDefined("FORM.#ProcessingFormObjectPrefix#typename")>
 		<cfset "Caller.#attributes.r_stProperties#.typename" = Evaluate("FORM.#ProcessingFormObjectPrefix#typename")>
 	</cfif>

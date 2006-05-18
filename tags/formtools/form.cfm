@@ -1,7 +1,7 @@
 <cfimport taglib="/farcry/farcry_core/tags/formtools/" prefix="ft" >
 
  
- 
+
 
 <cfif not thistag.HasEndTag>
 	<cfabort showerror="Does not have an end tag...">
@@ -16,7 +16,7 @@ It just ignores the inner ones.
 
 	
 	<cfif thistag.ExecutionMode EQ "Start" AND NOT isDefined("Request.farcryForm")>
-		
+
 		<cfset Variables.CorrectForm = 1>
 		
 		<cfparam name="attributes.Name" default="farcryForm">
