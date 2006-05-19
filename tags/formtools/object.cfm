@@ -101,7 +101,7 @@
 		<cfif not isDefined("Request.farcryForm.stObjects")>
 			<!--- If the call to this tag is not made within the confines of a <ft:form> tag, then we need to create a temp one and then delete it at the end of the tag. --->
 			<cfset Request.farcryForm.stObjects = StructNew()>
-			<cfset Request.tmpDeleteFarcryForm = 1>		
+			<cfset Request.tmpDeleteFarcryForm = attributes.ObjectID>		
 		</cfif>
 		
 		<cfloop list="#StructKeyList(Request.farcryForm.stObjects)#" index="key">
@@ -113,6 +113,7 @@
 
 	</cfif>
 	
+
 	<cfset Variables.CurrentCount = StructCount(request.farcryForm.stObjects) + 1>
 	<cfparam  name="variables.prefix" default="FFO#RepeatString('0', 3 - Len(Variables.CurrentCount))##Variables.CurrentCount#">			
 	<cfset Request.farcryForm.stObjects[variables.prefix] = StructNew()>
@@ -145,7 +146,6 @@
 	</cfif>
 	
 	<cfloop list="#lFieldsToRender#" index="i">
-		
 		
 		<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i] = StructNew()>
 
@@ -286,186 +286,16 @@
 				</cfif>
 			</cfif>
 		</cfif>	
-
-		<cfinvoke component="#tFieldType#" method="#FieldMethod#" returnvariable="returnHTML">
-			<cfinvokeargument name="typename" value="#typename#">
-			<cfinvokeargument name="stobj" value="#stObj#">
-			<cfinvokeargument name="stMetadata" value="#ftFieldMetadata#">
-			<cfinvokeargument name="fieldname" value="#variables.prefix##ftFieldMetadata.Name#">
-		</cfinvoke>
 		
-		
-		
-		<!--- <cfsavecontent variable="FieldHTML">
-			
-			
-			<cfset st = 
-			
-			
-			<cfset stType = createObject("component",application.types[typename].typepath)>
-
-						
-			<!--- See ithe user is requesting a specific method to be run on the field --->
-			<cfif structKeyExists(attributes.stPropMethods,ftFieldMetadata.Name)>
-				
-				<cftry>
-					<cfinvoke component="#stType#" method="#attributes.stPropMethods[ftFieldMetadata.Name]#" returnvariable="returnHTML">
-						<cfinvokeargument name="stobj" value="#stObj#">
-						<cfinvokeargument name="stMetadata" value="#ftFieldMetadata#">
-						<cfinvokeargument name="fieldname" value="#variables.prefix##ftFieldMetadata.Name#">
-					</cfinvoke>
-					#ReturnHTML#
-					<cfcatch type="any">
-						<cfoutput><span class="error">ERROR calling "#typename#.#attributes.stPropMethods[ftFieldMetadata.Name]#"</span></cfoutput>
-					</cfcatch>
-				</cftry>
-			
-			
-			<cfelseif structKeyExists(stType,"edit#ftFieldMetadata.Name#")>
-				<!--- OTHERWISE see if their is a default EDIT method for the field --->
-				<cftry>
-					<cfinvoke component="#stType#" method="edit#ftFieldMetadata.Name#" returnvariable="returnHTML">
-						<cfinvokeargument name="stobj" value="#stObj#">
-						<cfinvokeargument name="stMetadata" value="#ftFieldMetadata#">
-						<cfinvokeargument name="fieldname" value="#variables.prefix##ftFieldMetadata.Name#">
-					</cfinvoke>
-					#ReturnHTML#
-					<cfcatch type="any">
-						<cfoutput><span class="error">ERROR calling "#typename#.edit#ftFieldMetadata.Name#"</span></cfoutput>
-					</cfcatch>
-				</cftry>
-			
-			<cfelse>
-				<!--- OTHERWISE run the default edit method for the Render Type. --->
-			
-				<cfswitch expression="#ftFieldMetadata.ftType#" >
-	
-					<cfcase value="longchar,longtext" >
-						
-						<cfparam name="ftFieldMetadata.RenderStyles" default="width:400px;height:100px;">
-	
-						<cfoutput  >
-							<fft:longtext name="#variables.prefix##ftFieldMetadata.Name#" value="#ftFieldMetadata.Value#" class="#attributes.class#" style="#attributes.style##ftFieldMetadata.RenderStyles#" format="#attributes.format#">
-							
-							
-							<!--- <widgets:richTextEditor value="#ftFieldMetadata.Value#" textareaname="#Prefixes##ftFieldMetadata.Name#"> --->
-							<!--- <fft:tinymce name="#variables.prefix##ftFieldMetadata.Name#" value="#ftFieldMetadata.Value#" style="width:560px;">  --->
-						</cfoutput>
-	
-	
-					</cfcase>
-					
-					<cfcase value="RichText" >
-	
-						<cfoutput  >
-							<!--- <textarea name="#Prefixes##ftFieldMetadata.Name#" id="#Prefixes##ftFieldMetadata.Name#" style="width:600px;height:400px;">#ftFieldMetadata.Value#</textarea> --->
-							<!--- <widgets:richTextEditor value="#ftFieldMetadata.Value#" textareaname="#Prefixes##ftFieldMetadata.Name#"> --->
-							<fft:tinymce ObjectID="#ObjectID#" typename="#typename#" name="#variables.prefix##ftFieldMetadata.Name#" value="#ftFieldMetadata.Value#" style="width:560px;"> 
-						</cfoutput>
-	
-	
-					</cfcase>
-					
-					<cfcase value="boolean" >
-	
-						<cfoutput  >
-							<fft:Boolean name="#variables.prefix##ftFieldMetadata.Name#" value="#ftFieldMetadata.Value#" class="#attributes.class#" style="#attributes.style#" format="#attributes.format#">
-						</cfoutput>
-	
-	
-					</cfcase>
-	
-	
-					<cfcase value="date" >
-						<cfoutput>
-						<div style="float:left;">
-							<input id="#variables.prefix##ftFieldMetadata.Name#" name="#variables.prefix##ftFieldMetadata.Name#" type="text" size="25" value="#DateFormat(ftFieldMetadata.Value,'dd mmm yyyy')# #TimeFormat(ftFieldMetadata.Value,'hh:mm:ss tt')#"><a href="javascript:NewCal('#variables.prefix##ftFieldMetadata.Name#','ddmmmyyyy',true,12)"><img src="/js/datetimepicker/cal.gif" width="16" height="16" border="0" alt="Pick a date"></a>
-						</div>
-						</cfoutput>
-					</cfcase>
-					
-					
-	
-	
-					<cfcase value="image" >
-						<cfoutput>
-						
-							<fft:image ObjectID="#stObj.objectID#" name="#variables.prefix##ftFieldMetadata.Name#" value="#ftFieldMetadata.Value#" prefix="#variables.prefix#" fieldname="#ftFieldMetadata.Name#"  class="#attributes.class#" style="#attributes.style#" format="#attributes.format#">
-						
-						</cfoutput>
-					</cfcase>
-					
-					<cfcase value="integer" >
-						<cfoutput>
-						
-							<fft:integer name="#variables.prefix##ftFieldMetadata.Name#" value="#ftFieldMetadata.Value#" class="#attributes.class#" style="#attributes.style#" format="#attributes.format#">
-						
-						</cfoutput>
-					</cfcase>
-	
-	
-					<cfcase value="array" >
-						<cfset ft = createObject("component","farcry.farcry_core.packages.farcry.formtools")>
-						
-						<cfset returnHTML = ft.editArray(stObj=stObj,stMetadata=ftFieldMetadata,typename=typename,fieldname="#variables.prefix##ftFieldMetadata.Name#")>
-
-						<cfoutput>#returnHTML#</cfoutput>
-					</cfcase>
-					
-					<cfcase value="insertItem" >
-						<cfparam name="ftFieldMetadata.ftTypename" default="dmImage">
-						<cfoutput>
-						
-							<fft:bodyInsertItem ObjectID="#stObj.objectID#" name="#variables.prefix##ftFieldMetadata.Name#" value="#ftFieldMetadata.Value#" prefix="#variables.prefix#" fieldname="#ftFieldMetadata.Name#" typename="#ftFieldMetadata.ftTypename#"  class="#attributes.class#" style="#attributes.style#" format="#attributes.format#">
-						
-						</cfoutput>
-					</cfcase>
-					
-					
-					<cfcase value="UUID" >
-						<cfif isDefined("ftFieldMetadata.RenderSelectTable") AND len(ftFieldMetadata.RenderSelectTable)>
-							<cfparam name="ftFieldMetadata.RenderSelectTableField" default="label">
-							<fft:selecttable name="#variables.prefix##ftFieldMetadata.Name#" value="#ftFieldMetadata.Value#" class="#attributes.class#" style="#attributes.style#" format="#attributes.format#" SelectTable="#ftFieldMetadata.RenderSelectTable#" SelectTableField="#ftFieldMetadata.RenderSelectTableField#">
-						<cfelse>
-							<fft:text name="#variables.prefix##ftFieldMetadata.Name#" value="#ftFieldMetadata.Value#" class="#attributes.class#" style="#attributes.style#" format="#attributes.format#">
-						</cfif>
-					</cfcase>
-					
-	
-					<cfcase value="SelectList" >
-						<cfif isDefined("ftFieldMetadata.RenderSelectTable") AND len(ftFieldMetadata.RenderSelectTable) 
-							AND isDefined("ftFieldMetadata.RenderSelectTableField") AND len(ftFieldMetadata.RenderSelectTableField)
-							AND isDefined("ftFieldMetadata.RenderSelectTableObjectIDLocation") AND len(ftFieldMetadata.RenderSelectTableObjectIDLocation)
-							AND isDefined("variables.stObj.#ftFieldMetadata.RenderSelectTableObjectIDLocation#")
-								>
-							<cfset RenderSelectTableObjectID = Evaluate("variables.stObj.#ftFieldMetadata.RenderSelectTableObjectIDLocation#")>
-							<fft:selectList name="#variables.prefix##ftFieldMetadata.Name#" value="#ftFieldMetadata.Value#" class="#attributes.class#" style="#attributes.style#" format="#attributes.format#" SelectTable="#ftFieldMetadata.RenderSelectTable#" SelectTableField="#ftFieldMetadata.RenderSelectTableField#"  SelectTableObjectID="#RenderSelectTableObjectID#">
-						<cfelse>
-						
-							<fft:text name="#variables.prefix##ftFieldMetadata.Name#" value="#ftFieldMetadata.Value#" class="#attributes.class#" style="#attributes.style#" format="#attributes.format#">
-						</cfif>
-					</cfcase>
-					
-					
-					<cfdefaultcase  >
-						<cfoutput  >
-						<fft:text name="#variables.prefix##ftFieldMetadata.Name#" value="#ftFieldMetadata.Value#" class="#attributes.class#" style="#attributes.style#" format="#attributes.format#">
-						
-							
-						<!--- 	<input type="Text" name="#variables.prefix##ftFieldMetadata.Name#" id="#variables.prefix##ftFieldMetadata.Name#" value="#ftFieldMetadata.Value#" class="#attributes.class#"> --->
-	
-						</cfoutput>
-	
-	
-					</cfdefaultcase>
-	
-				</cfswitch>
-
-			</cfif>
-
-		</cfsavecontent> --->
-		
-
+		<cftry>
+			<cfinvoke component="#tFieldType#" method="#FieldMethod#" returnvariable="returnHTML">
+				<cfinvokeargument name="typename" value="#typename#">
+				<cfinvokeargument name="stobj" value="#stObj#">
+				<cfinvokeargument name="stMetadata" value="#ftFieldMetadata#">
+				<cfinvokeargument name="fieldname" value="#variables.prefix##ftFieldMetadata.Name#">
+			</cfinvoke>
+			<cfcatch><cfdump var="#cfcatch#"></cfcatch>
+		</cftry>
 			
 					
 		<cfif NOT len(Attributes.r_stFields)>
@@ -508,11 +338,18 @@
 				<cfoutput>#FieldLabelEnd#</cfoutput>
 			</cfif>
 		<cfelse>
+			<cftry>
 			<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i].HTML = returnHTML>
 			<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i].Label = "#FieldLabelStart##FieldLabelEnd#">
 			<cfif ftFieldMetadata.Type EQ "array">
 				<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i].ArrayLink = "#ArrayLink#">
 			</cfif>
+				<cfcatch type="any">
+					<cfif attributes.ObjectID EQ '4B50EEAF-C3E9-E712-1E6502034F92EFC9'>
+						<cfdump var="#i#"><cfabort>
+					</cfif>
+				</cfcatch>
+			</cftry>
 		</cfif>
 		
 	</cfloop>
@@ -559,8 +396,8 @@
 			</cfif>
 		</cfif>
 		
-		<cfif isDefined("Request.tmpDeleteFarcryForm") AND  isDefined("Request.farcryForm")>
-			<!--- If the call to this tag is not made within the confines of a <ft:form> tag, then we need to delete the temp one we created. --->
+		<cfif isDefined("Request.tmpDeleteFarcryForm") AND Request.tmpDeleteFarcryForm EQ attributes.ObjectID AND  isDefined("Request.farcryForm")>
+			<!--- If the call to this tag is not made within the confines of a <ft:form> tag and this is the object that created it, then we need to delete the temp one we created. --->
 			<cfset dummy = structDelete(Request,"farcryForm")>
 			<cfset dummy = structDelete(Request,"tmpDeleteFarcryForm")>
 		</cfif>
