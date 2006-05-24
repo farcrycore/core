@@ -225,7 +225,6 @@ $Developer: $
 <cfquery datasource="#application.dsn#" name="qLibraryList">
 SELECT ObjectID
 FROM #URL.ftLink#
-<cfif q.recordcount>WHERE ObjectID NOT IN (#ListQualify(valuelist(q.objectid),"'")#)</cfif>
 </cfquery>
 
 <!--- Put JS and CSS for TabStyle1 into the header --->
@@ -363,12 +362,17 @@ FROM #URL.ftLink#
 		<cfset Request.InHead.ScriptaculousEffects = 1>
 		
 		<script type="text/javascript">
+			
+		<cfloop query="q">
+			Effect.Fade($('select#q.objectID#'), {from:0.2,to:0.2});
+		</cfloop>	
+		
 		<cfloop query="qLibraryList" startrow="#StartRow#" endrow="#EndRow#">
 			new Draggable('select#qLibraryList.objectID#',
 			 
 		      {revert:true,
 		      	endeffect: function(element) { 
-		        	//new Effect.Opacity(element, {duration:2, from:0, to:.2}); 
+		        	//new Effect.Opacity(element, {duration:1, from:0, to:.2}); 
 		      	}
 		      }
 		     )
@@ -387,8 +391,7 @@ FROM #URL.ftLink#
 					onComplete:function(request){
 
 						$('basket').innerHTML = request.responseText;
-						opener.update_#url.primaryFormFieldname#_wrapper(request.responseText);
-						
+						opener.update_#url.primaryFormFieldname#_wrapper(request.responseText);						
 						Effect.Fade(element, {from:0.2,to:0.2});
 					}, 
 					parameters:'primaryObjectID=#url.primaryObjectID#&primaryTypename=#url.primaryTypeName#&primaryFieldname=#url.primaryFieldname#&primaryFormFieldname=#url.primaryFormFieldname#&WizzardID=#url.WizzardID#&DataObjectID=' + encodeURIComponent($(element).getAttribute('objectid')) + '&DataTypename=#url.ftLink#', evalScripts:true, asynchronous:true
@@ -399,10 +402,7 @@ FROM #URL.ftLink#
 		})
 			
 
-		function playme(id){
-			Effect.Puff($(id), {queue:{scope:'myscope', position:'end'}})
-			Effect.Appear($(id), {queue:{scope:'myscope', position:'end'}})
-		}
+
 		initTabNavigation('LibraryTab','current','tab-disabled');
 		
 		</script>
