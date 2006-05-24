@@ -290,7 +290,7 @@
 			<cfoutput>
 				<label for="#variables.prefix##ftFieldMetadata.Name#" class="#attributes.class#">
 				<b>#ftFieldMetadata.ftlabel#</b>
-				<cfif isDefined("ArrayLink")>
+				<cfif ftFieldMetadata.Type EQ "array" AND isDefined("ftFieldMetadata.ftLink")>
 					#ArrayLink#					
 				</cfif>
 				<cfoutput></label></cfoutput>
