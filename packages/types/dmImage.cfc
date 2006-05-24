@@ -163,7 +163,11 @@ type properties
 		<cfif structKeyExists(stobject, "OptimisedImage") AND len(stObject.OptimisedImage)>
 			<a href="#stObject.OptimisedImage#" rel="lightbox[Collections]">
 				<img src="#arguments.stMetadata.value#">
-			</a>
+			</a><br />			
+			&nbsp;&nbsp;&nbsp;&nbsp;    
+			
+			 
+			
 		<cfelse>
 			<img src="#arguments.stMetadata.value#">
 		</cfif>
