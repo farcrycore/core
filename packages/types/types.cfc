@@ -258,8 +258,8 @@ default handlers
 		<cfargument name="stFields" required="yes" type="struct">
 		
 		<cfloop list="#StructKeyList(arguments.stFields)#" index="field">
-			<cfif isDefined("arguments.stFields.#field#.Metadata.bLabel") AND arguments.stFields[field].Metadata.bLabel>
-				<cfset stProperties.label = stProperties[field]>
+			<cfif structKeyExists(arguments.stProperties,field) AND isDefined("arguments.stFields.#field#.Metadata.bLabel") AND arguments.stFields[field].Metadata.bLabel>
+				<cfset stProperties.label = arguments.stProperties[field]>
 			</cfif>
 		</cfloop>
 
