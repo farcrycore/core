@@ -47,8 +47,9 @@
 
 		<cfparam name="arguments.stMetadata.ftDestination" default="/images">
 	
+
 		<cfsavecontent variable="html">
-			<cfoutput><img src="#arguments.stMetadata.value#"></cfoutput>
+			<cfoutput><img src="#arguments.stMetadata.value#"></cfoutput>			
 		</cfsavecontent>
 		
 		<cfreturn html>

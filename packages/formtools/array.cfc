@@ -106,9 +106,9 @@
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 
-		<cfparam name="arguments.stMetadata.ftSelectedArrayObjectMethod" default="PickArrayObject">
-		<cfparam name="arguments.stMetadata.ftSelectedArrayObjectListClass" default="PickArrayObject">
-		<cfparam name="arguments.stMetadata.ftSelectedArrayObjectListStyle" default="">
+		<cfparam name="arguments.stMetadata.ftLibrarySelectedMethod" default="Selected">
+		<cfparam name="arguments.stMetadata.ftLibrarySelectedListClass" default="thumbNailsWrap">
+		<cfparam name="arguments.stMetadata.ftLibrarySelectedListStyle" default="">
 		
 		<!--- We need to get the Array Field Items as a query --->
 		<cfset o = createObject("component",application.types[arguments.typename].typepath)>
@@ -120,14 +120,22 @@
 		<cfsavecontent variable="returnHTML">
 		<cfoutput>
 				
+			<cfset ULID = "#arguments.fieldname#_list">
 			
 			<cfif q.RecordCount>
-				<ul id="#arguments.fieldname#list" class="#arguments.stMetadata.ftSelectedArrayObjectListClass#">
+				<ul id="#ULID#" class="#arguments.stMetadata.ftLibrarySelectedListClass#" style="#arguments.stMetadata.ftLibrarySelectedListStyle#">
 					<cfloop query="q">
-						<li id="itemid_#arguments.fieldname#_#q.objectid#">
-							<cfinvoke component="#oData#" method="#arguments.stMetadata.ftSelectedArrayObjectMethod#">
-								<cfinvokeargument name="objectID" value="#q.objectid#">
-							</cfinvoke>							
+						<li id="#arguments.fieldname#_#q.objectid#">
+							
+							<div>
+							<cfif FileExists("#application.path.project#/webskin/#arguments.stMetadata.ftLink#/#arguments.stMetadata.ftLibrarySelectedMethod#.cfm")>
+								<cfset stobj = oData.getData(objectid=q.ObjectID)>
+								<cfinclude template="/farcry/#application.applicationname#/webskin/#arguments.stMetadata.ftLink#/#arguments.stMetadata.ftLibrarySelectedMethod#.cfm">
+							<cfelse>
+								<cfif isDefined("q.label") AND len(q.label)>#q.Label#<cfelse>#q.ObjectID#</cfif>
+							</cfif>
+							</div>
+													
 						</li>
 					</cfloop>
 				</ul>
