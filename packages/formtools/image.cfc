@@ -48,7 +48,7 @@
 		<cfparam name="arguments.stMetadata.ftDestination" default="/images">
 	
 		<cfsavecontent variable="html">
-			<cfoutput><img src="#arguments.stMetadata.ftDestination#/#arguments.stMetadata.value#"></cfoutput>
+			<cfoutput><img src="#arguments.stMetadata.value#"></cfoutput>
 		</cfsavecontent>
 		
 		<cfreturn html>
@@ -66,14 +66,15 @@
 		<cfparam name="arguments.stMetadata.ftDestination" default="/images">
 		<cfparam name="arguments.stMetadata.ftImageWidth" default="">
 		<cfparam name="arguments.stMetadata.ftImageHeight" default="">
-		<cfparam name="arguments.stMetadata.ftThumbnail" default="true">
+		<cfparam name="arguments.stMetadata.ftThumbnail" default="false"><!--- pads out the image to the required width/height --->
 		<cfparam name="arguments.stMetadata.ftThumbnailBGColor" default="white">
 		<cfparam name="arguments.stMetadata.ftThumbnailBevel" default="No">
 		
 		<!--- --------------------------- --->
 		<!--- Perform any validation here --->
 		<!--- --------------------------- --->
-
+		
+		
 		<cfif NOT DirectoryExists("#application.path.project#/www#arguments.stMetadata.ftDestination#")>
 			<cfdirectory action="create" directory="#application.path.project#/www#arguments.stMetadata.ftDestination#">
 		</cfif>		
@@ -86,7 +87,7 @@
 		        destination="#application.path.project#/www#arguments.stMetadata.ftDestination#"
 				nameconflict="MAKEUNIQUE">
 			
-			<cfabort>
+		
 
 			<cfif arguments.stMetadata.ftThumbnail>
 			
@@ -128,9 +129,10 @@
 				</cfif>	
 				
 			</cfif>
-											
+					
+									
 			<!--- </cfif> --->
-			<cfset stResult.value = "#File.ServerFile#">
+			<cfset stResult.value = "#arguments.stMetadata.ftDestination#/#File.ServerFile#">
 			
 			
 		</cfif>
