@@ -35,7 +35,7 @@ system attributes
 <cfproperty name="locked" displayname="Locked" type="boolean" hint="Flag for object locking." required="yes" default="0">
 
 <cfimport taglib="/farcry/farcry_core/tags/formtools/" prefix="ft" />
-
+<cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
 
 <!--------------------------------------------------------------------
 default handlers
@@ -183,7 +183,91 @@ default handlers
 		</cfif>
 	</cffunction>
 	
-	<cffunction name="edit" access="public" displayname="Edit handler." hint="Default edit method for objects. Self posting form dynamically generated from the type metadata.  Calls farcry.locking for update.  Override as required." output="true">
+	<cffunction name="edit" access="public" output="true" returntype="void">
+		<cfargument name="ObjectID" required="true" type="UUID">
+		<cfargument name="lFields" required="false" type="string" default="">
+		
+		<cfset var stObj=getData(arguments.objectid)>
+		<cfset var oType = createObject("component",application.types['#stObj.typename#'].typepath)>
+
+
+		<ft:processForm action="Save" >
+			
+			<ft:processFormObjects objectid="#arguments.ObjectID#" />
+			
+			<cfoutput><h3>Object updated!</h3></cfoutput>
+			
+		</ft:processForm>
+		
+		<ft:processForm action="cancel" >
+			<cfset oType.setlock(stObj=stObj,locked="false",lockedby=#session.dmSec.authentication.userlogin#)>
+			<cfoutput><h3>Object Not Saved!</h3></cfoutput>
+		</ft:processForm>
+
+		<ft:processForm >
+			<!--- get parent to update tree --->
+			<cfset stObj=getData(arguments.objectid)>
+			<nj:treeGetRelations typename="#stObj.typename#" objectId="#stObj.ObjectID#" get="parents" r_lObjectIds="ParentID" bInclusive="1">
+			<!--- update tree --->
+			<nj:updateTree objectId="#parentID#">
+			<cfabort>
+		</ft:processForm>
+
+					
+		<cfset stObj=getData(arguments.objectid)>	
+		<ft:form>
+			<cfoutput><h3>#stObj.label#</h3></cfoutput>
+		
+			<ft:object objectID="#arguments.objectID#" lfields="#arguments.lFields#" inTable=0 />
+			
+			<ft:farcrybutton value="Save" />
+			<ft:farcrybutton value="Cancel" />	
+		</ft:form>
+		
+		<!--- <cfimport taglib="/farcry/farcry_core/tags/wizzard/" prefix="wiz" >
+		
+		<wiz:wizzard
+			ReferenceID="#arguments.objectID#"
+			ReturnLocation="wizzard.cfm"
+			Timeout="15"
+			r_stWizzard="stWizzard">
+		
+			
+			<wiz:step name="start" lFields="Title" />
+			<wiz:step name="media" lFields="aObjectIDs,aRelatedIDs" />
+			<wiz:step name="detail">
+				<ft:object ObjectID="#stWizzard.PrimaryObjectID#" lFields="Body" InTable=0 />
+			</wiz:step>
+			
+			
+		</wiz:wizzard> --->
+		
+	</cffunction>
+	
+	
+	<cffunction name="AddNew" access="public" output="true" returntype="void">
+		<cfargument name="typename" required="true" type="string">
+		<cfargument name="lFields" required="false" type="string" default="">
+		
+		<ft:object typename="#arguments.typename#" lfields="#arguments.lFields#" inTable=0 />
+
+	</cffunction>
+	
+	<cffunction name="BeforeSave" access="public" output="true" returntype="struct">
+		<cfargument name="stProperties" required="yes" type="struct">
+		<cfargument name="stFields" required="yes" type="struct">
+		
+		<cfloop list="#StructKeyList(arguments.stFields)#" index="field">
+			<cfif isDefined("arguments.stFields.#field#.Metadata.bLabel") AND arguments.stFields[field].Metadata.bLabel>
+				<cfset stProperties.label = stProperties[field]>
+			</cfif>
+		</cfloop>
+
+		<cfreturn stProperties>
+	</cffunction>
+	
+	
+	<!--- <cffunction name="edit" access="public" displayname="Edit handler." hint="Default edit method for objects. Self posting form dynamically generated from the type metadata.  Calls farcry.locking for update.  Override as required." output="true">
 		<cfargument name="objectid" required="yes" type="UUID">
 		<!--- getData for object edit --->
 		<cfset var stObj=getData(arguments.objectid)>
@@ -271,7 +355,7 @@ default handlers
 		
 		<cfsetting enablecfoutputonly="No">
 			
-	</cffunction>
+	</cffunction> --->
 
 	
 	<cffunction name="ftEdit" access="public" output="true" returntype="void">
@@ -592,5 +676,31 @@ default handlers
 			
 	</cffunction>
 		
+		
+
+		
+	<cffunction name="AddArrayObject" access="public" output="true" returntype="any" hint="This is the Edit Method that is used in the Library">
+		<cfargument name="typename" required="yes" type="string">
+		
+		<ft:form>
+			<ft:object typename="#arguments.typename#" format="edit" inTable=0 />
+		</ft:form>
+
+	</cffunction>
+		
+	<cffunction name="PickArrayObject" access="public" output="true" returntype="any" hint="This is the Edit Method that is used in the Library">
+		<cfargument name="ObjectID" required="yes" type="UUID">
+		
+		<ft:object objectID="#arguments.ObjectID#" lFields="label" format="display" />
+
+	</cffunction>
+		
+	<cffunction name="SelectedArrayObject" access="public" output="true" returntype="any" hint="This is the Edit Method that is used in the Library">
+		<cfargument name="ObjectID" required="yes" type="UUID">
+		
+		<ft:object objectID="#arguments.ObjectID#" lFields="label" format="display" />
+	
+	</cffunction>
+			
 		
 </cfcomponent>

@@ -22,13 +22,21 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 <!------------------------------------------------------------------------
 type properties
 ------------------------------------------------------------------------->	
-<cfproperty name="aObjectIds" type="array" hint="Mixed type children objects that sit underneath this object" required="no" default="">
-<cfproperty name="aRelatedIDs" type="array" hint="Holds object pointers to related objects.  Can be of mixed types." required="no" default="">
-<cfproperty name="publishDate" type="date" hint="The date that a news object is sent live and appears on the public website" required="no" default="">
-<cfproperty name="expiryDate" type="date" hint="The date that a news object is removed from the web site" required="no" default="">
+<cfproperty name="aObjectIds" type="array" hint="Mixed type children objects that sit underneath this object" required="no" default="" 
+	ftLink="dmImage"
+	ftLibraryPickListClass="thumbNailsWrap"
+	ftLibrarySelectedListClass="thumbNailsWrap"	ftLibrarySelectedListStyle="margin-left:10px;"
+	ftLibraryAddNewMethod="ftEdit">
+<cfproperty name="aRelatedIDs" type="array" hint="Holds object pointers to related objects.  Can be of mixed types." required="no" default="" 
+	ftLink="dmFile"
+	ftLibraryPickListClass="thumbNailsWrap"
+	ftLibrarySelectedListClass="thumbNailsWrap"	ftLibrarySelectedListStyle="margin-left:10px;"
+	ftLibraryAddNewMethod="AddNew">
+<cfproperty name="publishDate" type="date" hint="The date that a news object is sent live and appears on the public website" required="no"  defaultType="Evaluate" default="now()" ftType="datetime" ftDateFormatMask="dd mmm yyyy" ftTimeFormatMask="hh:mm tt" ftToggleOffDateTime="true">
+<cfproperty name="expiryDate" type="date" hint="The date that a news object is removed from the web site" required="no" defaultType="Evaluate" default="DateAdd('d', 5, now())" ftType="datetime" ftDateFormatMask="dd mmm yyyy" ftTimeFormatMask="hh:mm tt" ftToggleOffDateTime="true">
 <cfproperty name="Title" type="nstring" hint="Title of object.  *perhaps this should be deprecated for object label*" required="no" default="">
 <cfproperty name="Teaser" type="longchar" hint="Teaser text." required="no" default="">
-<cfproperty name="Body" type="longchar" hint="Main body of content." required="no" default="">
+<cfproperty name="Body" type="longchar" hint="Main body of content." required="no" default="" ftType="RichText">
 <cfproperty name="source" type="string" hint="source of the information contained in the content" required="no" default="">
 <cfproperty name="displayMethod" type="string" hint="Display method to render." required="yes" default="display">
 <cfproperty name="status" type="string" hint="Status of the node (draft, pending, approved)." required="yes" default="draft">

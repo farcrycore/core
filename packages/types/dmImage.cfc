@@ -7,7 +7,7 @@ $License: Released Under the "Common Public License 1.0", http://www.opensource.
 $Header: /cvs/farcry/farcry_core/packages/types/dmImage.cfc,v 1.23.2.6 2006/02/14 06:48:47 paul Exp $
 $Author: paul $
 $Date: 2006/02/14 06:48:47 $
-$Name: milestone_3-0-1 $
+$Name:  $
 $Revision: 1.23.2.6 $
 
 || DESCRIPTION || 
@@ -28,18 +28,106 @@ type properties
 ------------------------------------------------------------------------->
 <cfproperty name="title" type="nstring" hint="Image title." required="no" default=""> 
 <cfproperty name="alt" type="nstring" hint="Alternate text" required="no" default="" > 
-<cfproperty name="width" type="nstring" hint="Image width" required="no" default="">  
-<cfproperty name="height" type="nstring" hint="Image height" required="no" default="">  
-<cfproperty name="imagefile" type="string" hint="The image file to be uploaded" required="No" default="">
-<cfproperty name="thumbnail" type="string" hint="The name of the thumbnail image to be uploaded" required="no" default="">  
-<cfproperty name="optimisedImage" type="string" hint="The name of the optimised image to be uploaded" required="no" default="">  
+<cfproperty name="width" type="nstring" hint="Image width (blank for default)" required="no" default="">  
+<cfproperty name="height" type="nstring" hint="Image height (blank for default)" required="no" default="">  
+<cfproperty name="imagefile" type="string" hint="The image file to be uploaded" required="No" default="" ftType="Image" ftDestination="/images/original">
+<cfproperty name="thumbnail" type="string" hint="The name of the thumbnail image to be uploaded" required="no" default="" ftType="Image" ftImageWidth="100" ftImageHeight="100" ftDestination="/images/thumbnail">  
+<cfproperty name="optimisedImage" type="string" hint="The name of the optimised image to be uploaded" required="no" default="" ftType="Image" ftImageWidth="297" ftImageHeight="297" ftDestination="/images/optimised">  
 <cfproperty name="originalImagePath" type="string" hint="The location in the filesystem where the original image is stored." required="No" default=""> 
 <cfproperty name="thumbnailImagePath" editHandler="void" type="string" hint="The location in the filesystem where the thumbnail image is stored." required="no" default=""> 
 <cfproperty name="optimisedImagePath" editHandler="void" type="string" hint="The location in the filesystem where the optimized image is stored." required="no" default=""> 
-<cfproperty name="bLibrary" type="numeric" hint="Flag to indictae if in file library or not" required="no" default="1">
+<cfproperty name="bLibrary" type="numeric" hint="Flag to indictae if in file library or not" required="no" default="1" ftType="boolean">
 <cfproperty name="bAutoGenerateThumbnail" type="numeric" hint="Flag to indicate if to automatically generate a thumbnail form the default image" required="no" default="1">
 <cfproperty name="status" type="string" hint="Status of the node (draft, pending, approved)." required="yes" default="draft">
 <!--- Object Methods --->
+
+
+<cfimport taglib="/farcry/farcry_core/tags/formtools/" prefix="ft" >
+
+<cffunction name="ftEdit" access="public" output="true" returntype="void">
+	<cfargument name="ObjectID" required="no" type="string" default="">
+	
+	<ft:object typename="#getTablename()#" objectID="#arguments.ObjectID#" lFields="ImageFile" inTable=0 />
+	<cfoutput>
+	<a href="##" onclick="Effect.toggle('edsubpanel','slide');">Advanced options</a>
+	<div id="edsubpanel" style="display:none;">
+	<div>		
+		<ft:object typename="#getTablename()#" objectID="#arguments.ObjectID#" lFields="Title,Alt,width,height,bLibrary,status" inTable=0 />
+	</div>
+	</div>
+	</cfoutput>
+</cffunction>
+
+<cffunction name="BeforeSave" access="public" output="true" returntype="struct">
+	<cfargument name="stProperties" required="yes" type="struct">
+	<cfargument name="stFields" required="yes" type="struct">
+	
+	<cfparam name="arguments.stFields.Thumbnail.metadata.ftImageWidth" default="100">
+	<cfparam name="arguments.stFields.Thumbnail.metadata.ftImageHeight" default="100">
+	<cfparam name="arguments.stFields.optimisedImage.metadata.ftImageWidth" default="300">
+	<cfparam name="arguments.stFields.optimisedImage.metadata.ftImageHeight" default="300">
+	
+	<cfif len(arguments.stProperties.imageFile)>
+		
+					
+		<cfif NOT DirectoryExists("#application.path.project#/www#arguments.stFields.imageFile.metadata.ftDestination#")>
+			<cfdirectory action="create" directory="#application.path.project#/www#arguments.stFields.imageFile.metadata.ftDestination#">
+		</cfif>		
+		<cfif NOT DirectoryExists("#application.path.project#/www#arguments.stFields.optimisedImage.metadata.ftDestination#")>
+			<cfdirectory action="create" directory="#application.path.project#/www#arguments.stFields.optimisedImage.metadata.ftDestination#">
+		</cfif>		
+		<cfif NOT DirectoryExists("#application.path.project#/www#arguments.stFields.Thumbnail.metadata.ftDestination#")>
+			<cfdirectory action="create" directory="#application.path.project#/www#arguments.stFields.Thumbnail.metadata.ftDestination#">
+		</cfif>
+			
+		<cfdump var="#arguments.stFields#" expand="false">
+		<cfabort>
+		<cfx_image action="resize"
+			file="#application.path.project#/www#arguments.stFields.imageFile.metadata.ftDestination#/#arguments.stProperties.imageFile#"
+			output="#application.path.project#/www#arguments.stFields.Thumbnail.metadata.ftDestination#/#arguments.stProperties.imageFile#"
+			X="#arguments.stFields.Thumbnail.metadata.ftImageWidth#"
+			Y="#arguments.stFields.Thumbnail.metadata.ftImageHeight#"
+			thumbnail=yes
+			bevel=no
+			backcolor=white>
+			
+		<cfset stproperties.thumbnail = File.ServerFile>
+		<cfset stproperties.thumbnailImagePath = "#application.path.project#/www#arguments.stFields.Thumbnail.metadata.ftDestination#">
+		
+		<cffile action="copy" 
+			source="#application.path.project#/www#arguments.stFields.imageFile.metadata.ftDestination#/#arguments.stProperties.imageFile#"
+			destination="#application.path.project#/www#arguments.stFields.optimisedImage.metadata.ftDestination#/#arguments.stProperties.imageFile#">
+			
+		<!--- 	
+		<cfx_image action="read"
+			file="#application.path.project#/www#arguments.stFields.optimisedImage.metadata.ftDestination#/#arguments.stProperties.imageFile#">
+			
+		<cfif IMG_WIDTH GT arguments.stFields.optimisedImage.metadata.ftImageWidth>
+			<cfx_image action="resize"
+					file="#application.path.project#/www#arguments.stFields.optimisedImage.metadata.ftDestination#/#arguments.stProperties.imageFile#"
+					output="#application.path.project#/www#arguments.stFields.optimisedImage.metadata.ftDestination#/#arguments.stProperties.imageFile#"
+					X="#arguments.stFields.optimisedImage.metadata.ftImageWidth#">
+		</cfif>
+			
+	
+		<cfx_image action="read"
+			file="#application.path.project#/www#arguments.stFields.optimisedImage.metadata.ftDestination#/#arguments.stProperties.imageFile#">
+			
+		<cfif IMG_HEIGHT GT arguments.stFields.optimisedImage.metadata.ftImageHeight>
+			<cfx_image action="resize"
+					file="#application.path.project#/www#arguments.stFields.optimisedImage.metadata.ftDestination#/#arguments.stProperties.imageFile#"
+					output="#application.path.project#/www#arguments.stFields.optimisedImage.metadata.ftDestination#/#arguments.stProperties.imageFile#"
+					Y="#arguments.stFields.optimisedImage.metadata.ftImageHeight#">
+		</cfif>
+ --->
+		<cfset stproperties.OptimisedImage = File.ServerFile>
+		<cfset stproperties.optimisedImagePath = "#application.path.project#/www#arguments.stFields.optimisedImage.metadata.ftDestination#">
+		
+	</cfif>
+	
+	
+	<cfreturn stProperties>
+</cffunction>
 
 <cffunction name="edit" access="public">
 	<cfargument name="objectid" required="yes" type="UUID">
@@ -200,4 +288,7 @@ type properties
 	<cfset stReturn.message = "File content type cannot have friendly url.">
 	<cfreturn stReturn>
 </cffunction>
+
+
 </cfcomponent>
+	

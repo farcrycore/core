@@ -7,7 +7,7 @@ $License: Released Under the "Common Public License 1.0", http://www.opensource.
 $Header: /cvs/farcry/farcry_core/packages/farcry/alterType.cfc,v 1.57.2.2 2005/12/30 01:07:10 paul Exp $
 $Author: paul $
 $Date: 2005/12/30 01:07:10 $
-$Name: milestone_3-0-1 $
+$Name:  $
 $Revision: 1.57.2.2 $
 
 || DESCRIPTION || 
@@ -112,7 +112,17 @@ $out:$
 		application.rules[arguments.typename].bCustomRule = bCustomRule;	 
 		application.rules[arguments.typename].rulePath = rulePath;
 		
-	}		
+	}	
+	else if (arguments.scope IS 'formtools')
+	{
+		formtoolPath = application.formtools[arguments.typename].FormToolPath;
+		bCustomFormTool = application.formtools[arguments.typename].bCustomFormTool;
+		"#arguments.typename#" = createObject("component", formtoolPath);
+		evaluate(typename).initMetaData("application.formtools");
+		application.formtools[arguments.typename].bCustomFormTool = bCustomFormTool;	 
+		application.formtools[arguments.typename].FormToolPath = formtoolPath;
+		
+	}	
 	</cfscript>
 </cffunction>
 
@@ -168,10 +178,12 @@ $out:$
 	<!--- Now init all Custom Types --->
 	<cfloop query="qCustomTypesDir">
 		<cftry>
+			
+			<cfset typename = left(qCustomTypesDir.name, len(qCustomTypesDir.name)-4)> //remove the .cfc from the filename
+			<cfset otype = createObject("Component", "#application.custompackagepath#.types.#typename#")>
+
 			<cfscript>
-			typename = left(qCustomTypesDir.name, len(qCustomTypesDir.name)-4); //remove the .cfc from the filename
-			"#typename#" = createObject("Component", "#application.custompackagepath#.types.#typename#");
-			evaluate(typename).initMetaData("application.types");
+			otype.initMetaData("application.types");
 			application.types[typename].bCustomType = 1;
 			application.types[typename].typePath = "#application.custompackagepath#.types.#typename#";
 			</cfscript>
@@ -181,6 +193,38 @@ $out:$
 			</cfcatch>
 		</cftry>
 	</cfloop>
+	
+	<!--- FormTools specific Types --->
+	<cfdirectory directory="#application.path.core#/packages/formtools" name="qFormToolsTypesDir" filter="*.cfc" sort="name">
+	<cfdirectory directory="#application.path.project#/packages/formtools" name="qCustomFormToolsTypesDir" filter="*.cfc" sort="name">
+	
+	<!--- Init all CORE FormTools Types --->
+	<cfloop query="qFormToolsTypesDir">
+		<cftry>
+			<cfscript>
+			formtoolname = left(qFormToolsTypesDir.name, len(qFormToolsTypesDir.name)-4); //remove the .cfc from the filename
+			application.formtools[formtoolname] = createObject("Component", "#application.packagepath#.formtools.#formtoolname#");			
+			application.formtools[formtoolname].bCustomformtool = 0;
+			application.formtools[formtoolname].formtoolPath = "#application.packagepath#.formtools.#formtoolname#";
+			</cfscript>
+			<cfcatch></cfcatch>
+		</cftry>
+	</cfloop>	
+	<!--- Init all FORMTOOL CORE types --->
+	<cfloop query="qCustomFormToolsTypesDir">
+		<cftry>
+			<cfscript>
+			formtoolname = left(qCustomFormToolsTypesDir.name, len(qCustomFormToolsTypesDir.name)-4); //remove the .cfc from the filename
+			application.formtools[formtoolname] = createObject("Component", "#application.custompackagepath#.formtools.#formtoolname#");			
+			application.formtools[formtoolname].bCustomformtool = 1;
+			application.formtools[formtoolname].formtoolPath = "#application.custompackagepath#.formtools.#formtoolname#";
+			</cfscript>
+			<cfcatch>
+				<cftrace inline="no" text="Error creating extended formtool. & #cfcatch.message#" category="error">
+			</cfcatch>
+		</cftry>
+	</cfloop>		
+		
 	
 	<!--- Now get all the rules --->
 	<cfscript>
@@ -322,7 +366,31 @@ $out:$
 			//longchar
 			db.type = 'longtext';
 			db.length = 16;
-			stPropTypes['longchar'] = duplicate(db);	
+			stPropTypes['longchar'] = duplicate(db);						
+			//int
+			db.type = 'int';
+			db.length = 11;
+			stPropTypes['int'] = duplicate(db);			
+			//smallint
+			db.type = 'smallint';
+			db.length = 6;
+			stPropTypes['smallint'] = duplicate(db);			
+			//decimal
+			db.type = 'decimal';
+			db.length = '(10,2)';
+			stPropTypes['decimal'] = duplicate(db);			
+			//text
+			db.type = 'text';
+			db.length = 16;
+			stPropTypes['text'] = duplicate(db);			
+			//varchar
+			db.type = 'varchar';
+			db.length = 255;
+			stPropTypes['varchar'] = duplicate(db);			
+			//varchar
+			db.type = 'datetime';
+			db.length = 8;
+			stPropTypes['datetime'] = duplicate(db);	
 			break;
 		}
 		

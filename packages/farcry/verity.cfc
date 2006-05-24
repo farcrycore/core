@@ -439,8 +439,8 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 		<cfargument name="maxRows" type="numeric" requried="yes" default="250" hint="Maximum number of results to return.">
 
 		<!--- create return query; should replicate CFMX 6.1 Verity query --->
-		<cfset var qResults = queryNew("title,key,score,summary,custom1,custom2")>
-		<cfset var qFirstResults = queryNew("title,key,score,summary,custom1,custom2")>
+		<cfset var qResults = queryNew("title,key,score,summary,custom1,custom2,custom3,custom4")>
+		<cfset var qFirstResults = queryNew("title,key,score,summary,custom1,custom2,custom3,custom4")>
 		
 		<!--- perform search --->
 		<cftry>
@@ -464,6 +464,12 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 				<cfset querySetCell(qResults, "summary", "#textHighlight(htmleditformat(HTMLStripper(qFirstResults.summary)), arguments.searchString)#")>
 				<cfset querySetCell(qResults, "custom1", qFirstResults.custom1)>
 				<cfset querySetCell(qResults, "custom2", qFirstResults.custom2)>
+				<cfif isDefined("qFirstResults.custom3")>
+					<cfset querySetCell(qResults, "custom3", qFirstResults.custom3)>
+				</cfif>
+				<cfif isDefined("qFirstResults.custom4")>
+					<cfset querySetCell(qResults, "custom4", qFirstResults.custom4)>
+				</cfif>
 			</cfloop>
 			<cfcatch>
 				<cftrace category="farcry.verity" type="warning" text="Verity result error; #cfcatch.message#">
