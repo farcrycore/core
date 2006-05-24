@@ -446,9 +446,11 @@
 	
 	<cfif len(Attributes.r_stFields)>
 		<cfloop list="#attributes.r_stFields#" index="i">
-
-				<cfset "CALLER.#i#" = Request.farcryForm.stObjects[variables.prefix]['MetaData']>
-
+			<cfif structKeyExists(Request.farcryForm.stObjects[variables.prefix],'MetaData')>
+				<cfset CALLER[i] = Request.farcryForm.stObjects[variables.prefix]['MetaData']>
+			<cfelse>
+				<cfset CALLER[i] = StructNew()>
+			</cfif>
 		</cfloop>
 	</cfif>
 	
