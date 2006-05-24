@@ -1,54 +1,98 @@
-		/*- Menu Tabs 6--------------------------- */
+/* 
+-------------------------------------------------------------------
+version:	18-01-06
+author:		pete ottery | daemon | pottery at daemon dot com dot au 
+			please speak to pete before making changes to this file 
+-------------------------------------------------------------------
+*/
 
-    ul.tabs6 {
-		float:left;
-		width:100%;
-		background:#efefef;
-		font-size:93%;
-		line-height:normal;
-		margin:0px;
-		margin-bottom:0px;
-		padding:10px 10px 0 20px;
-		list-style:none;
-      }
+.browse form.f-wrap-1 {width:35em}
 
-    .tabs6 li {
-      display:inline;
-      margin:0;
-      padding:0;
-      }
-    .tabs6 a {
-      float:left;
-      background:url("/wsimages/tab6/tableft6.gif") no-repeat left top;
-      margin:0;
-      padding:0 0 0 4px;
-      text-decoration:none;
-      }
-    .tabs6 a span {
-      float:left;
-      display:block;
-      background:url("/wsimages/tab6/tabright6.gif") no-repeat right top;
-      padding:5px 15px 4px 6px;
-      color:#FFF;
-      }
-    /* Commented Backslash Hack hides rule from IE5-Mac \*/
-    .tabs6 a span {float:none;}
-    /* End IE5-Mac hack */
-    .tabs6 a:hover span {
-      color:#FFF;
-      }
-    .tabs6 a:hover {
-      background-position:0% -42px;
-      }
-    .tabs6 a:hover span {
-      background-position:100% -42px;
-      }
+.tab-container .tab-panes, .browse .tab-panes, body.filebrowse .tab-panes {padding: 15px 10px 0;background:#f1f1f1 url("/farcry/css/images/wizard_bg.gif") repeat-y 125px 0}
+.browse #libutility, body.filebrowse #libutility {float:left;width:160px;font-size:92%;position:relative}
+.browse #libutility p, body.filebrowse #libutility p {font-size:92%}
+.browse #libutility li, body.filebrowse #libutility li {background-color:#f1f1f1;font-size:100%}
+.browse #libutility form, body.filebrowse #libutility form {margin-bottom: 15px}
+.browse #libcontent {margin-left:190px;height:auto}
+.browse .f-submit-wrap {padding: 5px;clear:both;margin: 1em 0 1em 0px;text-align:left;_margin-top:0}
+.browse form.f-wrap-1 .f-submit-wrap {padding: 5px;clear:both;margin: 0;text-align:center}
 
-      .tabs6 .current a {
-              background-position:0% -42px;
-			color:#F29200;
-      }
-      .tabs6 .current a span {
-      	background-position:100% -42px;
-		color:#F29200;
-      }
+.browse .utilBar {float:none;margin: 0 0 1em}
+
+.browse .f-checkbox-wrap ul, body.filebrowse .f-checkbox-wrap ul {margin:0}
+.browse .f-checkbox-wrap ul li, body.filebrowse .f-checkbox-wrap ul li {border-bottom: 1px solid #F1F1F1}
+.browse form.f-wrap-1 fieldset.f-checkbox-wrap label, body.filebrowse form.f-wrap-1 fieldset.f-checkbox-wrap label {margin: 0 0 -2px}
+.browse form.f-wrap-1 fieldset.f-checkbox-wrap label, body.filebrowse form.f-wrap-1 fieldset.f-checkbox-wrap label {float:none;width:auto}
+.browse form.f-wrap-1 label, body.filebrowse form.f-wrap-1 label {border-bottom: none}
+.browse form.f-wrap-1 h3, body.filebrowse form.f-wrap-1 h3 {font-size:115%}
+
+
+/* styles for the selected tab, add more tab ids if theres more than 6 tabs */
+#tab1, 
+#tab2,
+#tab3, 
+#tab4
+{background:url("/farcry/css/images/nav_left_both.gif") no-repeat 0 -300px;border-top: 1px solid #D6D6D6;border-bottom: none}
+
+/* styles for the de-selected tabs, add more tab ids if theres more than 6 tabs */
+#tab1.tab-disabled, 
+#tab2.tab-disabled, 
+#tab3.tab-disabled , 
+#tab4.tab-disabled  
+{background:url("/farcry/css/images/nav_left_both.gif") no-repeat 0 -450px;border-top: none;border-bottom: 1px solid #fff}
+
+#tab1 a, 
+#tab2 a, 
+#tab3 a, 
+#tab4 a 
+{background: #F1F1F1 url("/farcry/css/images/nav_right_both.gif") no-repeat 100% -300px;color:#fff;text-decoration:none;font-weight:bold;font-size:90%}
+
+#tab1.tab-disabled a, 
+#tab2.tab-disabled a, 
+#tab3.tab-disabled a,
+#tab4.tab-disabled a  
+{background: #FFF url("/farcry/css/images/nav_right_both.gif") no-repeat 100% -450px;color:#AEAEAE}
+
+#tab1.tab-disabled a:hover, 
+#tab2.tab-disabled a:hover, 
+#tab3.tab-disabled a:hover, 
+#tab4.tab-disabled a:hover 
+{color:#000}
+
+/* tab list styles */
+.tab-container ul.links {list-style:none;margin:0;padding:0;height:1.95em}
+.tab-container ul.links li {float:left;width:auto;padding: 0;margin: 0 3px 0 0}
+.tab-container ul.links a {display:block;padding:4px 20px 4px 16px;margin: 0 0 0 5px;text-transform:uppercase}
+
+.tab-panes hr {clear:both;width:20%;visibility:hidden;margin:0}
+
+/* apply padding to tab pane content */
+.tab-panes {clear:left;padding: 20px 20px 0;border: 1px solid #E17000;position:relative}
+.tab-panes li {font-size:86%}
+.tab-container {margin: 0 0 15px}
+
+
+.tabs2, .tabs2 li {background: none;margin:0;padding:0;display:inline;font-size:96%}
+.tabs2 li#tab1, .tabs2 li#tab2 {border-right: 1px solid #ccc}
+
+.tab-container .tabs2 #tab1 a:link, .tab-container .tabs2 #tab1 a:visited,  .tab-container .tabs2 #tab1 a:hover, .tab-container .tabs2 #tab1 a:active,  
+.tab-container .tabs2 #tab2 a:link, .tab-container .tabs2 #tab2 a:visited, .tab-container .tabs2 #tab2 a:hover, .tab-container .tabs2 #tab2 a:active, 
+.tab-container .tabs2 #tab3 a:link, .tab-container .tabs2 #tab3 a:visited, .tab-container .tabs2 #tab3 a:hover, .tab-container .tabs2 #tab3 a:active {color:#E17000;text-decoration:underline;background:none;border-bottom:none;font-weight:normal;padding: 2px 6px 5px 6px}
+
+.tab-container .tabs2 #tab1 a:active, 
+.tab-container .tabs2 #tab2 a:active,  
+.tab-container .tabs2 #tab3 a:active {color:#000;background: #f1f1f1;text-decoration:none}
+
+.tabs2 #tab1, .tabs2 #tab2, .tabs2 #tab3 {background:none}
+.tabs2 #tab1.tab-disabled, .tabs2 #tab2.tab-disabled, .tabs2 #tab2.tab-disabled {}
+
+/* styles for the de-selected tabs, add more tab ids if theres more than 6 tabs */
+.tabs2 #tab1.tab-disabled, 
+.tabs2 #tab2.tab-disabled, 
+.tabs2 #tab3.tab-disabled  
+{background:none;border-top: none;border-bottom: none}
+
+.tab-panes-linkslist {clear:left;padding: 0;background: #f1f1f1;border:none}
+.tab-panes-linkslist label {display:inline}
+.tab-panes-linkslist hr {visibility:hidden}
+.tab-panes-linkslist #pane1, .tab-panes-linkslist #pane2, .tab-panes-linkslist #pane3 {padding: 10px 10px 0}

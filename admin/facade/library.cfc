@@ -1,50 +1,67 @@
 <cfcomponent name="library" displayname="library" hint="Used by the Library for the ajax callbacks" output="false" > 
 
+<cfimport taglib="/farcry/farcry_core/tags/formtools/" prefix="ft" >
+
 <cffunction name="ajaxUpdateArray" access="remote" output="true" returntype="void">
  	<cfargument name="PrimaryObjectID" required="yes" type="UUID">
 	<cfargument name="PrimaryTypename" required="yes" type="string">
  	<cfargument name="PrimaryFieldName" required="yes" type="string">
+ 	<cfargument name="PrimaryFormFieldName" required="yes" type="string">
 	<cfargument name="DataObjectID" required="yes" type="UUID">
 	<cfargument name="DataTypename" required="yes" type="string">
+ 	<cfargument name="WizzardID" required="no" type="string" default="">
+
+
+	<cfargument name="ftLibrarySelectedMethod" type="string" default="selected"><!--- Webskin Display method to Display Selected Objects --->
+	<cfargument name="ftLibrarySelectedMethodListClass" type="string" default="selected">
+	<cfargument name="ftLibrarySelectedMethodListStyle" type="string" default="">
 	
-	<cfset tPrimary = createObject("component",application.types[arguments.PrimaryTypename].typepath)>
-	<cfset stobj = tPrimary.getData(objectid=arguments.PrimaryObjectID)>
+	<cfset oPrimary = createObject("component",application.types[arguments.PrimaryTypename].typepath)>
+	<cfset stPrimary = oPrimary.getData(objectid=arguments.PrimaryObjectID)>
 	
+	<cfset oData = createObject("component",application.types[arguments.DataTypename].typepath)>
 	
-	<cfset tData = createObject("component",application.types[arguments.DataTypename].typepath)>
-	<cfset stdata = tData.getData(objectid=arguments.DataObjectID)>
+	<cfset o = createObject("component","farcry.fourq.gateway.dbGateway").init(dsn=application.dsn,dbowner="")>
+
+	<cfif len(arguments.wizzardID)>
+		<cfset oWizzard = createObject("component",application.types['dmWizzard'].typepath)>
+		
+		<cfset stWizzard = oWizzard.Read(wizzardID=arguments.WizzardID)>
+		
+		<cfset arrayAppend(stWizzard.Data[PrimaryObjectID][arguments.PrimaryFieldname],arguments.DataObjectID)>
+		
+		
 	
-	
-	<cfset arrayAppend(stobj[arguments.PrimaryFieldname],arguments.DataObjectID)>
-	
-	<cfif isdefined("session.dmSec.authentication.userlogin")>
-		<cfset userlogin = session.dmSec.authentication.userlogin>
+		<cfset variables.tableMetadata = createobject('component','farcry.fourq.TableMetadata').init() />
+		<cfset tableMetadata.parseMetadata(md=getMetadata(oPrimary)) />		
+		<cfset stFields = variables.tableMetadata.getTableDefinition() />
+		
+		<cfset aProps = o.createArrayTableData(tableName=PrimaryTypename & "_" & PrimaryFieldName,objectid=arguments.PrimaryObjectID,tabledef=stFields[PrimaryFieldName].Fields,aprops=stWizzard.Data[PrimaryObjectID][arguments.PrimaryFieldname])>
+
+		<cfset stWizzard.Data[PrimaryObjectID][arguments.PrimaryFieldname] = aProps>
+		
+		
+		<cfset stWizzard = oWizzard.Write(ObjectID=arguments.wizzardID,Data=stWizzard.Data)>
+		
+		<cfset st = stWizzard.Data[PrimaryObjectID]>
 	<cfelse>
-		<cfset userlogin = "annonymous">
+	
+		<cfset arrayAppend(stPrimary[arguments.PrimaryFieldname],arguments.DataObjectID)>
+	
+		<cfset oPrimary.setData(objectID=stPrimary.ObjectID,stProperties="#stPrimary#",user="#session.dmSec.authentication.userlogin#")>
+		<cfset st = oPrimary.getData(objectid=stPrimary.ObjectID)>
 	</cfif>
 	
-	<cfset tPrimary.setData(objectID=stobj.ObjectID,stProperties="#stObj#",user=userlogin)>
 	
-	<cfset st = tPrimary.getData(objectid=stObj.ObjectID)>
 	
 	<cfoutput>
-	<ul style="margin: 1em 0;_margin-top:0;_height:1%;overflow:auto;_overflow:visible;">
-		<cfloop list="#arrayToList(st[arguments.PrimaryFieldname])#" index="i">
-			<li style="float:left;background:transparent;">#tData.ftBasket(objectID=i)#</li>
-		</cfloop>
-	</ul>
+		<ft:form>
+			<ft:object objectID="#arguments.PrimaryObjectID#" WizzardID="#arguments.WizzardID#" lFields="#arguments.PrimaryFieldName#" inTable=0 IncludeLabel=0 />
+		</ft:form>
 	</cfoutput>
-	
 
-	
-		<!--- <cfdump var="#arguments#"> --->
-	<!--- 	<cfoutput>
-			<p>arguments: #structKeyList(arguments)#</p>
-			<p>form: #structKeyList(form)#</p>
-			<p>url: #structKeyList(url)#</p>
-		</cfoutput>
- --->
 </cffunction>
 
 
 </cfcomponent> 
+

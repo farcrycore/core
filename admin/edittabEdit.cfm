@@ -29,6 +29,7 @@ $DEVELOPER:Brendan Sisson (brendan@daemon.com.au)$
 <cfparam name="url.type" default="" type="string">
 <cfparam name="url.typename" default="#url.type#" type="string">
 
+
 <cfif NOT len(url.typename)>
 	<cfinvoke 
 		component="farcry.fourq.fourq"
@@ -42,6 +43,7 @@ $DEVELOPER:Brendan Sisson (brendan@daemon.com.au)$
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 <cfif request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="ObjectEditTab")>
+	
 	<nj:edit objectid="#url.objectid#" typename="#url.typename#" />
 
 <cfelse>

@@ -1,9 +1,9 @@
-function initTabNavigation(tab,currentclass){
+function initTabNavigation(tab,currentclass,disabledclass){
 	var i = 0;			
 	tablinks = $$("#" + tab + " .links li a")
 	tablinks.each(function(tablink) {	
 		i++;
-		tablink.setAttribute("onclick", "loadTabNavigation('" + tab + "'," + i + ",'current');");
+		tablink.setAttribute("onclick", "loadTabNavigation('" + tab + "'," + i + ",'" + currentclass + "','" + disabledclass + "');");
 		tablink.setAttribute("href", "#");	
 
 	});
@@ -13,13 +13,13 @@ function initTabNavigation(tab,currentclass){
 	tablistitems.each(function(tablistitem) {	
 		i++;
 		if (tablistitem.getAttribute("class") == currentclass) {					
-			loadTabNavigation(tab,i,currentclass);
+			loadTabNavigation(tab,i,currentclass,disabledclass);
 		}			
 	});
 				
 	
 }
-function loadTabNavigation (tab,selection,currentclass){
+function loadTabNavigation (tab,selection,currentclass,disabledclass){
 	var i = 0;
 	panels = $$("#" + tab + " .panel");			
 	panels.each(function(panel) {	
@@ -41,7 +41,7 @@ function loadTabNavigation (tab,selection,currentclass){
 			tablistitem.setAttribute("class", currentclass);
 		}
 		else{
-			tablistitem.setAttribute("class", "");
+			tablistitem.setAttribute("class", disabledclass);
 		}				
 	});
 	
