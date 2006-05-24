@@ -247,8 +247,8 @@ FROM #URL.ftLink#
 			<div class="tab-panes">
 				<div class="panel">
 				
-					<ft:form style="width:100%">
-					<table style="background:##fa0;border:0px;width:100%">
+					<ft:form style="width:100%;background:none;border:0px;">
+					<table style="width:100%;background:##fa0;">
 					<tr>
 						<td width="100px;" valign="top">
 							<div id="utility">
@@ -266,7 +266,7 @@ FROM #URL.ftLink#
 						</td>
 						<td valign="top">
 
-							<div id="content" >
+							<div id="content" style="margin-left:0px;" >
 								<!--- Render all the objects for the requested Type. --->
 								<ws:paginate PageLinksShown=5 RecordsPerPage=20 query="#qLibraryList#">
 									<div style="display:block;">	
