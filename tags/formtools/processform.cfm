@@ -7,15 +7,21 @@
 
 
 <cfif thistag.ExecutionMode EQ "Start">
-
+	
 	<cfparam name="attributes.action" default="*" >
-
-	<cfif isDefined("FORM.FarcryFormSubmitButton") AND len(FORM.FarcryFormSubmitButton) AND (listFindNoCase(attributes.action, FORM.FarcryFormSubmitButton) OR attributes.action EQ "*")>
-
-	<cfelse>
-		<cfexit>
+	<cfset variables.EnterFormProcess = false>
+	
+	<cfif isDefined("FORM.FarcryFormSubmitButton") AND len(FORM.FarcryFormSubmitButton)>
+		<cfloop list="#attributes.action#" index="i">
+			<cfif listFindNoCase(FORM.FarcryFormSubmitButton,i) OR i EQ "*">
+				<cfset variables.EnterFormProcess = true>
+			</cfif>
+		</cfloop>
 	</cfif>
 
+	<cfif NOT variables.EnterFormProcess>
+		<cfexit>
+	</cfif>
 
 </cfif>
 

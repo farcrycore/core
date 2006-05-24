@@ -33,6 +33,9 @@ $in: [bCacheControl] output cache control headers; default true. $
 <cfparam name="attributes.writingDir" type="string" default="ltr">
 <cfparam name="attributes.userLanguage" type="string" default="en">
 
+<!--- Allow dynamic body class --->
+<cfparam name="attributes.bodyclass" default="iframed-content">
+
 <!--- check for custom css --->
 <cfset customCSS="">
 <cfif directoryExists("#application.path.project#/www/css/customadmin")>
@@ -115,6 +118,6 @@ $in: [bCacheControl] output cache control headers; default true. $
 
 <cfoutput>
 	</head>
-<body class="iframed-content"<cfif len(attributes.onload)> onload="#attributes.onload#"</cfif>>
+<body class="#attributes.bodyclass#"<cfif len(attributes.onload)> onload="#attributes.onload#"</cfif>>
 </cfoutput>
 <cfsetting enablecfoutputonly="No">

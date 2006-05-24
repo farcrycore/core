@@ -10,7 +10,7 @@
 <cfif thistag.ExecutionMode EQ "Start">
 
 	<cfparam name="attributes.ObjectID" default=""><!--- ObjectID of object to render --->
-	<cfparam name="attributes.stObj" default=""><!--- Object to render --->
+	<cfparam name="attributes.stObject" default=""><!--- Object to render --->
 	<cfparam name="attributes.typename" default=""><!--- Type of Object to render --->
 	<cfparam name="attributes.ObjectLabel" default=""><!--- Used to group and label rendered object if required --->
 	<cfparam name="attributes.lFields" default=""><!--- List of fields to render --->
@@ -25,36 +25,76 @@
 	<cfparam name="attributes.insidePLP" default="0"><!--- how are we rendering the form --->
 	<cfparam name="attributes.r_stFields" default=""><!--- the name of the structure that is to be returned with the form field information. --->
 	<cfparam name="attributes.stPropMetadata" default="#structNew()#"><!--- This is used to override the default metadata as setup in the type.cfc --->
+	<cfparam name="attributes.WizzardID" default=""><!--- If this object call is part of a wizzard, the object will be retrieved from the wizzard storage --->
 	
-	<cfset attributes.lExcludeFields = ListAppend(attributes.lExcludeFields,"label,objectid,locked,lockedby,lastupdatedby,ownedby,datetimelastupdated,createdby,datetimecreated")>
+	<cfset attributes.lExcludeFields = ListAppend(attributes.lExcludeFields,"label,objectid,locked,lockedby,lastupdatedby,ownedby,datetimelastupdated,createdby,datetimecreated,versionID,status")>
 	
 	
 	<cfif len(attributes.ObjectID)>
-		<cfif not isDefined("attributes.typename") or not len(attributes.typename)>
-			<cfset q4 = createObject("component", "farcry.fourq.fourq")>
-			<cfset attributes.typename = q4.findType(objectid=attributes.objectid)>
-		</cfif>
-		
-		<cfset stType = createobject("component",application.types[attributes.typename].typepath)>
-		<cfset lFields = StructKeyList(application.types[attributes.typename].stprops)>
-		<cfset stFields = application.types[attributes.typename].stprops>
-		<cfset typename = attributes.typename>
-		<cfset ObjectID = attributes.ObjectID>
-			
-		<cfif attributes.insidePLP EQ "1" and isDefined("CALLER.stPLP.plp.outputObjects") AND structKeyExists(CALLER.stPLP.plp.outputObjects,attributes.ObjectID)>		
-			<cfset stObj = CALLER.stPLP.plp.outputObjects[attributes.ObjectID]>
-		<cfelse>			
-			<cfset stObj = stType.getData(attributes.objectID)>
-		</cfif>
 	
-	<cfelseif isStruct(attributes.stObj)>
+		<cfset ParentTag = GetBaseTagList()>
+		
+		<cfif len(attributes.WizzardID)>
+		
+			<cfset oWizzard = createobject("component",application.types.dmWizzard..typepath)>
+			<cfset stWizzard = oWizzard.getData(objectID=attributes.WizzardID)>
+			
+			<cfwddx action="wddx2cfml" input="#stWizzard.Data#" output="stWizzardData">
+
+			<cfset typename = stWizzardData[attributes.ObjectID].typename>
+			<cfset stType = createobject("component",application.types[variables.typename].typepath)>
+			<cfset lFields = StructKeyList(application.types[variables.typename].stprops)>
+			<cfset stFields = application.types[variables.typename].stprops>
+			<cfset ObjectID = attributes.ObjectID>
+			
+			<cfset stObj = stWizzardData[attributes.objectID]>
+
+		<cfelseif ListFindNoCase(ParentTag, "cf_wizzard")>
+			<cfif not isDefined("attributes.typename") or not len(attributes.typename)>
+				<cfset q4 = createObject("component", "farcry.fourq.fourq")>
+				<cfset attributes.typename = q4.findType(objectid=attributes.objectid)>
+			</cfif>
+			
+			<cfset stType = createobject("component",application.types[attributes.typename].typepath)>
+			<cfset lFields = StructKeyList(application.types[attributes.typename].stprops)>
+			<cfset stFields = application.types[attributes.typename].stprops>
+			<cfset typename = attributes.typename>
+			<cfset ObjectID = attributes.ObjectID>
+			
+			<cfset stBaseTag = GetBaseTagData("cf_step")>
+			<cfset stWizzard = stBaseTag.stWizzard>
+			<cfset stObj = stWizzard.data[attributes.objectID]>
+	
+		<cfelse>
+			<cfif not isDefined("attributes.typename") or not len(attributes.typename)>
+				<cfset q4 = createObject("component", "farcry.fourq.fourq")>
+				<cfset attributes.typename = q4.findType(objectid=attributes.objectid)>
+			</cfif>
+			
+			<cfset stType = createobject("component",application.types[attributes.typename].typepath)>
+			<cfset lFields = StructKeyList(application.types[attributes.typename].stprops)>
+			<cfset stFields = application.types[attributes.typename].stprops>
+			<cfset typename = attributes.typename>
+			<cfset ObjectID = attributes.ObjectID>
+			
+	
+		
+			<cfif attributes.insidePLP EQ "1" and isDefined("CALLER.stPLP.plp.outputObjects") AND structKeyExists(CALLER.stPLP.plp.outputObjects,attributes.ObjectID)>		
+				<cfset stObj = CALLER.stPLP.plp.outputObjects[attributes.ObjectID]>
+			<cfelse>			
+				<cfset stObj = stType.getData(attributes.objectID)>
+			</cfif>
+		</cfif>
+
+	
+	<cfelseif isStruct(attributes.stObject)>
 	
 		<cfset stType = createobject("component",application.types[stObj.typename].typepath)>
-		<cfset stObj = attributes.stObj>
+		<cfset stObj = attributes.stObject>
 		<cfset lFields = StructKeyList(application.types[stObj.typename].stprops)>
 		<cfset stFields = application.types[stObj.typename].stprops>
 		<cfset typename = stObj.typename>
-		<cfset ObjectID = attributes.stObj.ObjectID>
+		<cfset ObjectID = attributes.stObject.ObjectID>
 		
 	<cfelseif len(attributes.typename)>
 	
@@ -105,8 +145,10 @@
 		</cfif>
 		
 		<cfloop list="#StructKeyList(Request.farcryForm.stObjects)#" index="key">
-			<cfif isDefined("request.farcryForm.stObjects.#key#.farcryformobjectinfo.ObjectID") AND request.farcryForm.stObjects[key].farcryformobjectinfo.ObjectID EQ stObj.ObjectID>
-				<cfset variables.prefix = key>
+			<cfif structKeyExists(request.farcryForm.stObjects,'#key#') AND structKeyExists(request.farcryForm.stObjects[key],'farcryformobjectinfo')
+				AND structKeyExists(request.farcryForm.stObjects[key].farcryformobjectinfo,'ObjectID')
+				AND request.farcryForm.stObjects[key].farcryformobjectinfo.ObjectID EQ stObj.ObjectID>
+					<cfset variables.prefix = key>
 			</cfif>			
 			
 		</cfloop>
@@ -115,7 +157,8 @@
 	
 
 	<cfset Variables.CurrentCount = StructCount(request.farcryForm.stObjects) + 1>
-	<cfparam  name="variables.prefix" default="FFO#RepeatString('0', 3 - Len(Variables.CurrentCount))##Variables.CurrentCount#">			
+	<!--- <cfparam  name="variables.prefix" default="FFO#RepeatString('0', 3 - Len(Variables.CurrentCount))##Variables.CurrentCount#">	 --->
+	<cfparam  name="variables.prefix" default="#ReplaceNoCase(variables.ObjectID,'-','','All')#">			
 	<cfset Request.farcryForm.stObjects[variables.prefix] = StructNew()>
 		
 	
@@ -144,6 +187,7 @@
 			</cfoutput>
 		</cfif>
 	</cfif>
+	
 	
 	<cfloop list="#lFieldsToRender#" index="i">
 		
@@ -196,7 +240,8 @@
 
 		</cfif>
 		
-		<cfif ftFieldMetadata.Type EQ "array">
+		<cfif ftFieldMetadata.Type EQ "array" AND isDefined("ftFieldMetadata.ftLink")>
+			
 			<cfsavecontent variable="ArrayLink">
 				<cfoutput>
 					<cfset stURLParams = structNew()>
@@ -206,17 +251,34 @@
 					<cfset stURLParams.primaryFormFieldName = "#variables.prefix##ftFieldMetadata.Name#">
 					<cfset stURLParams.ftLink = "#ftFieldMetadata.ftLink#">
 					
-					<cfif structKeyExists(ftFieldMetadata,'ftLibraryFieldList')>
-						<cfset stURLParams.ftLibraryFieldList = "#ftFieldMetadata.ftLibraryFieldList#">
-					</cfif>
-					<cfif structKeyExists(ftFieldMetadata,'ftLibraryPickerMethod')>
-						<cfset stURLParams.ftLibraryPickerMethod = "#ftFieldMetadata.ftLibraryPickerMethod#">
-					</cfif>
-					<cfif structKeyExists(ftFieldMetadata,'ftLibraryAddMethod')>
-						<cfset stURLParams.ftLibraryAddMethod = "#ftFieldMetadata.ftLibraryAddMethod#">
+					<!--- If the field is contained in a wizzard, we need to let the library know which wizzard. --->
+					<cfif ListFindNoCase(ParentTag, "cf_wizzard")>
+						<cfset stURLParams.WizzardID = "#stWizzard.ObjectID#">
 					</cfif>
 					
-					<ws:buildLink href="#application.url.farcry#/facade/library.cfm" target="library" bShowTarget="true" stParameters="#stURLParams#">[attach]</ws:buildLink>
+					<cfif structKeyExists(ftFieldMetadata,'ftLibraryAddNewMethod')>
+						<cfset stURLParams.ftLibraryAddNewMethod = "#ftFieldMetadata.ftLibraryAddNewMethod#">
+					</cfif>
+					<cfif structKeyExists(ftFieldMetadata,'ftLibraryPickMethod')>
+						<cfset stURLParams.ftLibraryPickMethod = "#ftFieldMetadata.ftLibraryPickMethod#">
+					</cfif>
+					<cfif structKeyExists(ftFieldMetadata,'ftLibraryPickListClass')>
+						<cfset stURLParams.ftLibraryPickListClass = "#ftFieldMetadata.ftLibraryPickListClass#">
+					</cfif>
+					<cfif structKeyExists(ftFieldMetadata,'ftLibraryPickListStyle')>
+						<cfset stURLParams.ftLibraryPickListStyle = "#ftFieldMetadata.ftLibraryPickListStyle#">
+					</cfif>
+					<cfif structKeyExists(ftFieldMetadata,'ftLibrarySelectedMethod')>
+						<cfset stURLParams.ftLibrarySelectedMethod = "#ftFieldMetadata.ftLibrarySelectedMethod#">
+					</cfif>
+					<cfif structKeyExists(ftFieldMetadata,'ftLibrarySelectedListClass')>
+						<cfset stURLParams.ftLibrarySelectedListClass = "#ftFieldMetadata.ftLibrarySelectedListClass#">
+					</cfif>
+					<cfif structKeyExists(ftFieldMetadata,'ftLibrarySelectedListStyle')>
+						<cfset stURLParams.ftLibrarySelectedListStyle = "#ftFieldMetadata.ftLibrarySelectedListStyle#">
+					</cfif>
+					
+					<ws:buildLink href="#application.url.farcry#/facade/library.cfm" target="library" bShowTarget="true" stParameters="#stURLParams#"><img src="#application.url.farcry#/images/treeimages/crystalIcons/includeApproved.gif" /></ws:buildLink>
 				</cfoutput>
 			</cfsavecontent>	
 		</cfif>
@@ -228,16 +290,21 @@
 			<cfoutput>
 				<label for="#variables.prefix##ftFieldMetadata.Name#" class="#attributes.class#">
 				<b>#ftFieldMetadata.ftlabel#</b>
-				<cfif ftFieldMetadata.Type EQ "array">
-					<br />#ArrayLink#
+				<cfif isDefined("ArrayLink")>
+					#ArrayLink#					
+				</cfif>
+				<cfoutput></label></cfoutput>
+				<cfif ftFieldMetadata.Type EQ "array" AND isDefined("ftFieldMetadata.ftLink")>
+					<div id="#variables.prefix##ftFieldMetadata.Name#-wrapper" class="formfield-wrapper">
 				</cfif>
 			</cfoutput>
 			
 		</cfsavecontent>
 		
 		<cfsavecontent variable="FieldLabelEnd">
-				
-			<cfoutput></label></cfoutput>
+			<cfif ftFieldMetadata.Type EQ "array" AND isDefined("ftFieldMetadata.ftLink")>
+				<cfoutput></div></cfoutput>
+			</cfif>
 			
 		</cfsavecontent>
 		
@@ -286,16 +353,21 @@
 				</cfif>
 			</cfif>
 		</cfif>	
+
+
+		<cfset variables.returnHTML = "">
 		
-		<cftry>
-			<cfinvoke component="#tFieldType#" method="#FieldMethod#" returnvariable="returnHTML">
-				<cfinvokeargument name="typename" value="#typename#">
-				<cfinvokeargument name="stobj" value="#stObj#">
-				<cfinvokeargument name="stMetadata" value="#ftFieldMetadata#">
-				<cfinvokeargument name="fieldname" value="#variables.prefix##ftFieldMetadata.Name#">
-			</cfinvoke>
-			<cfcatch><cfdump var="#cfcatch#"></cfcatch>
-		</cftry>
+		<cfif structKeyExists(tFieldType,FieldMethod)>
+			<cftry>
+				<cfinvoke component="#tFieldType#" method="#FieldMethod#" returnvariable="variables.returnHTML">
+					<cfinvokeargument name="typename" value="#typename#">
+					<cfinvokeargument name="stObject" value="#stObj#">
+					<cfinvokeargument name="stMetadata" value="#ftFieldMetadata#">
+					<cfinvokeargument name="fieldname" value="#variables.prefix##ftFieldMetadata.Name#">
+				</cfinvoke>
+				<cfcatch><cfdump var="#cfcatch#"><cfabort></cfcatch>
+			</cftry>
+		</cfif>
 			
 					
 		<cfif NOT len(Attributes.r_stFields)>
@@ -323,12 +395,12 @@
 			<cfif Attributes.InTable EQ 1>
 				<cfoutput><td></cfoutput>
 			</cfif>
-			<cfoutput>#returnHTML#</cfoutput>
+			<cfoutput>#variables.returnHTML#</cfoutput>
 			<cfif Attributes.InTable EQ 1>
 				<cfoutput></td></cfoutput>
 			<cfelse>
 				<cfif isDefined("Attributes.IncludeBR") AND attributes.IncludeBR EQ 1>
-					<cfoutput><br class="#attributes.class#" /></cfoutput>	
+					<cfoutput><br class="#attributes.class#" style="clear:both;" /></cfoutput>	
 				</cfif>
 			</cfif>
 			
@@ -338,18 +410,11 @@
 				<cfoutput>#FieldLabelEnd#</cfoutput>
 			</cfif>
 		<cfelse>
-			<cftry>
 			<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i].HTML = returnHTML>
 			<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i].Label = "#FieldLabelStart##FieldLabelEnd#">
 			<cfif ftFieldMetadata.Type EQ "array">
 				<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i].ArrayLink = "#ArrayLink#">
 			</cfif>
-				<cfcatch type="any">
-					<cfif attributes.ObjectID EQ '4B50EEAF-C3E9-E712-1E6502034F92EFC9'>
-						<cfdump var="#i#"><cfabort>
-					</cfif>
-				</cfcatch>
-			</cftry>
 		</cfif>
 		
 	</cfloop>
@@ -362,10 +427,12 @@
 	
 	<cfparam name="Request.lFarcryObjectsRendered" default="">
 
-	<cfif StructKeyExists(Request.farcryForm.stObjects[variables.prefix].farcryformobjectinfo,"ObjectID")
+	<cfif attributes.format EQ "edit"
+		AND StructKeyExists(Request.farcryForm.stObjects[variables.prefix].farcryformobjectinfo,"ObjectID")
 		AND  NOT ListContains(Request.lFarcryObjectsRendered, Request.farcryForm.stObjects[variables.prefix].farcryformobjectinfo.ObjectID)>
 			
 		<cfoutput>
+			<input type="hidden" name="FarcryFormPrefixes" id="FarcryFormPrefixes" value="#StructKeyList(request.farcryForm.stObjects)#" />
 			<input type="hidden" name="#variables.prefix#ObjectID" value="#Request.farcryForm.stObjects[variables.prefix].farcryformobjectinfo.ObjectID#">
 			<input type="hidden" name="#variables.prefix#Typename" value="#Request.farcryForm.stObjects[variables.prefix].farcryformobjectinfo.Typename#">
 		</cfoutput>

@@ -94,8 +94,11 @@ $out:$
 		parent['content'].location = '#application.url.farcry#/edittabOverview.cfm?objectid=#attributes.objectid#';
 	</script></cfoutput>
 </cfif>
+
 <!--- See if we can edit this object --->
+
 <cfscript>
+
 oVersioning = createObject("component","#application.packagepath#.farcry.versioning");
 oLocking = createObject("component","#application.packagepath#.farcry.locking");
 if (structKeyExists(stObj,"versionID") AND structKeyExists(stObj,"status"))
@@ -106,8 +109,10 @@ if (structKeyExists(stObj,"versionID") AND structKeyExists(stObj,"status"))
 
 if (structCount(stObj))
 {
+		
 	checkForLockRet=oLocking.checkForLock(objectid=attributes.objectid);
 	if (checkForLockRet.bSuccess)
+	
 	{
 		lockRet = oLocking.lock(objectid=attributes.objectid,typename=attributes.typename);
 		if (lockRet.bSuccess)

@@ -55,44 +55,52 @@
 	<cfset typename = stSetup.typename>
 	
 
-	
-
 	<!--- --------------------------------------------------------------------- --->
 	<!--- Loop through all the prefixes and determine which prefixes to process --->
 	<!--- --------------------------------------------------------------------- --->
-	<cfloop list="#form.farcryFormPrefixes#" index="Prefix" >
+	<cfloop list="#form.farcryFormPrefixes#" index="variables.Prefix" >
 		
-		<!--- Processing an Object --->
-		<cfif isDefined("stObj.ObjectID") AND len(stObj.ObjectID)>
-
-			<cfif isDefined("FORM.#Prefix#ObjectID") AND FORM["#Prefix#ObjectID"] EQ stObj.ObjectID>
-
-				<cfset variables.farcryFormPrefixesToProcess = ListAppend(variables.farcryFormPrefixesToProcess,FORM["#Prefix#ObjectID"] )>
-
-			</cfif>
-
-			<cfif not isDefined("CALLER.stPLP.plp.inputObjects[stObj.ObjectID]")>
-				<cfset CALLER.stPLP.plp.inputObjects[stObj.ObjectID] = Duplicate(stObj)>	
-				<cfset CALLER.stPLP.plp.outputObjects[stObj.ObjectID] = Duplicate(stObj)>	
-			</cfif>
+		<!--- Clean up Form[ObjectIDs] and FORM[Typenames] incase of duplications caused by Dynamic Array Library Pickers. --->
+		<cfif structKeyExists(form,"#variables.Prefix#ObjectID") AND ListLen(FORM["#variables.Prefix#ObjectID"]) GT 1>			
+			<cfset FORM["#variables.Prefix#ObjectID"] = ListGetAt(FORM["#variables.Prefix#ObjectID"],1)>			
+		</cfif>
+		<cfif structKeyExists(form,"#variables.Prefix#typename") AND ListLen(FORM["#variables.Prefix#typename"]) GT 1>
+			<cfset FORM["#variables.Prefix#typename"] = ListGetAt(FORM["#variables.Prefix#typename"],1)>
+		</cfif>
 		
+			
 		
-		<!--- Processing a Type --->
-		<cfelse>
-
-			<cfif isDefined("FORM.#Prefix#typename") AND FORM["#Prefix#typename"] EQ attributes.typename>
-
-				<cfset variables.farcryFormPrefixesToProcess = ListAppend(variables.farcryFormPrefixesToProcess,Prefix )>
-
+		<cfif NOT listFindNoCase(variables.farcryFormPrefixesToProcess,variables.Prefix)><!--- Eliminates Duplicates --->
+			<!--- Processing an Object --->
+			<cfif isDefined("stObj.ObjectID") AND len(stObj.ObjectID)>	
+				
+				<cfif structKeyExists(form,"#Prefix#ObjectID") AND FORM["#Prefix#ObjectID"] EQ stObj.ObjectID>
+					
+					<cfset variables.farcryFormPrefixesToProcess = ListAppend(variables.farcryFormPrefixesToProcess,Prefix )>
+	
+				</cfif>
+	
+				
+				<cfif NOT isDefined("CALLER.stPLP.plp.inputObjects") or NOT structKeyExists(CALLER.stPLP.plp.inputObjects,stObj.ObjectID)>
+					<cfset CALLER.stPLP.plp.inputObjects[stObj.ObjectID] = Duplicate(stObj)>	
+					<cfset CALLER.stPLP.plp.outputObjects[stObj.ObjectID] = Duplicate(stObj)>	
+				</cfif>
+			
+			
+			<!--- Processing a Type --->
+			<cfelse>
+	
+				<cfif structKeyExists(FORM,"#Prefix#typename") AND FORM["#Prefix#typename"] EQ attributes.typename>
+	
+					<cfset variables.farcryFormPrefixesToProcess = ListAppend(variables.farcryFormPrefixesToProcess,Prefix )>
+	
+				</cfif>
+	
+	
 			</cfif>
-
-
 		</cfif>
 
-
 	</cfloop>
-	
-	
 	
 	<cfif NOT len(variables.farcryFormPrefixesToProcess)>
 		<cfexit method="exittag">
@@ -112,6 +120,7 @@
 
 <cfif thistag.ExecutionMode EQ "End">
 	
+
 	<cfif StructisEmpty(Caller[attributes.r_stProperties]) OR (isDefined("Request.BreakProcessingCurrentFormObject") AND Request.BreakProcessingCurrentFormObject EQ 1)>
 		
 		<!--- DO NOT PROCESS THIS LOOP --->
@@ -136,7 +145,17 @@
 		</cfif>
 		
 		
-		<cfif isDefined("attributes.insidePLP") AND attributes.insidePLP EQ 1>
+		<cfif isDefined("ParentTag") AND ListFindNoCase(ParentTag, "cf_wizzard")>
+		
+			<cfset stBaseTag = GetBaseTagData("cf_wizzard")>
+			<cfset stWizzard = stBaseTag.stWizzard>
+			
+			<!--- TO DO. NEED TO ADD ALL PROPERTIES TO DATA AND NOT JUST THE ONES SUBMITTED. --->
+			<cfloop list="#structKeyList(Caller[attributes.r_stProperties])#" index="i">
+				<cfset stWizzard.data[attributes.objectID][i] = Caller[attributes.r_stProperties][i]>
+			</cfloop>
+	
+		<cfelseif isDefined("attributes.insidePLP") AND attributes.insidePLP EQ 1>
 
 	
 				
@@ -181,7 +200,6 @@
 			
 			<cfset stObj = stType.setData(stProperties=Evaluate("Caller.#attributes.r_stProperties#"),user=Variables.LockedBy)>		
 			<cfset stType.setlock(stObj=Caller[attributes.r_stProperties],locked="false",lockedby=Variables.LockedBy)>
-			
 			
 		</cfif>	
 		
@@ -231,22 +249,39 @@
 		<cfset stResult.stFields = application.types[arguments.stObj.typename].stprops>
 		<cfset stResult.typename = arguments.stObj.typename>
 
+
+	
 	<cfelseif len(arguments.ObjectID)>
 
-		<cfif not isDefined("arguments.typename") or not len(arguments.typename)>
-
-			<cfset q4 = createObject("component", "farcry.fourq.fourq")>
-			<cfset arguments.typename = q4.findType(objectid=arguments.objectid)>
-
+		<cfset ParentTag = GetBaseTagList()>
+				
+		<cfif isDefined("ParentTag") AND ListFindNoCase(ParentTag, "cf_wizzard")>
+		
+			<cfset stBaseTag = GetBaseTagData("cf_wizzard")>
+			<cfset stWizzard = stBaseTag.stWizzard>
+			
+			<cfset stResult.stObj = stWizzard.data[attributes.objectID]>			
+			<cfset stResult.stType = createobject("component",application.types[stResult.stObj.typename].typepath)>
+			<cfset stResult.lFields = StructKeyList(application.types[stResult.stObj.typename].stprops)>
+			<cfset stResult.stFields = application.types[stResult.stObj.typename].stprops>
+			<cfset stResult.typename = stResult.stObj.typename>			
+	
+		<cfelse>
+		
+			<cfif not isDefined("arguments.typename") or not len(arguments.typename)>
+	
+				<cfset q4 = createObject("component", "farcry.fourq.fourq")>
+				<cfset arguments.typename = q4.findType(objectid=arguments.objectid)>
+	
+			</cfif>
+	
+	
+			<cfset stResult.stType = createobject("component",application.types[arguments.typename].typepath)>
+			<cfset stResult.stObj = stResult.stType.getData(arguments.objectID)>
+			<cfset stResult.lFields = StructKeyList(application.types[arguments.typename].stprops)>
+			<cfset stResult.stFields = application.types[arguments.typename].stprops>
+			<cfset stResult.typename = arguments.typename>
 		</cfif>
-
-
-		<cfset stResult.stType = createobject("component",application.types[arguments.typename].typepath)>
-		<cfset stResult.stObj = stType.getData(arguments.objectID)>
-		<cfset stResult.lFields = StructKeyList(application.types[arguments.typename].stprops)>
-		<cfset stResult.stFields = application.types[arguments.typename].stprops>
-		<cfset stResult.typename = arguments.typename>
-
 	<cfelseif len(attributes.typename)>
 
 		<cfset stResult.stType = createobject("component",application.types[arguments.typename].typepath)>
@@ -270,17 +305,17 @@
 
 	<cfset ProcessingFormObjectPrefix = ListGetAt(variables.farcryFormPrefixesToProcess,arguments.Position)>
 
-	
+
 	<cfloop list="#lFields#" index="i" >
 
-		<cfif isDefined("FORM.#ProcessingFormObjectPrefix##i#")>
+		<cfif structKeyExists(FORM,"#ProcessingFormObjectPrefix##i#")>
 		
 		
-			<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i] = StructNew()>
+			<cfset Request.farcryForm.stObjects[ProcessingFormObjectPrefix]['MetaData'][i] = StructNew()>
 
-			<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i] = Duplicate(stFields[i].MetaData)>
+			<cfset Request.farcryForm.stObjects[ProcessingFormObjectPrefix]['MetaData'][i] = Duplicate(stFields[i].MetaData)>
 	
-			<cfset ftFieldMetadata = request.farcryForm.stObjects[variables.prefix].MetaData[i]>
+			<cfset ftFieldMetadata = request.farcryForm.stObjects[ProcessingFormObjectPrefix].MetaData[i]>
 			<cfset ftFieldMetadata.FormFieldPrefix = ProcessingFormObjectPrefix>
 	
 			
@@ -307,9 +342,9 @@
 		
 				
 			<!--- Need to put all the form fields relevent to this field into a struct. This will include any fields that begin with the name of the field. ie. OrderDate field will also put OrderDateDay, OrderDateMonth and OrderDateYear into the struct --->
-			<cfset Request.farcryForm.stObjects[variables.prefix]['FormPost'][i] = StructNew()>
-			<cfset Request.farcryForm.stObjects[variables.prefix]['FormPost'][i].value = "">
-			<cfset Request.farcryForm.stObjects[variables.prefix]['FormPost'][i].stSupporting = StructNew()>
+			<cfset Request.farcryForm.stObjects[ProcessingFormObjectPrefix]['FormPost'][i] = StructNew()>
+			<cfset Request.farcryForm.stObjects[ProcessingFormObjectPrefix]['FormPost'][i].value = "">
+			<cfset Request.farcryForm.stObjects[ProcessingFormObjectPrefix]['FormPost'][i].stSupporting = StructNew()>
 
 			<cfloop list="#StructKeyList(FORM)#" index="j">
 				<cfif FindNoCase("#ProcessingFormObjectPrefix##i#",j)>
@@ -317,10 +352,10 @@
 					<!--- This will strip out the prefix from the FormFields and enable us to send a clean formpost structure to validate with only the current object formfields by their original name. --->
 					<cfif "#ProcessingFormObjectPrefix##i#" EQ j>
 						<!--- This is the actual field value --->
-						<cfset Request.farcryForm.stObjects[variables.prefix]['FormPost'][i].value = FORM[j]>
+						<cfset Request.farcryForm.stObjects[ProcessingFormObjectPrefix]['FormPost'][i].value = FORM[j]>
 					<cfelse>
 						<!--- These are supporting fields --->
-						<cfset Request.farcryForm.stObjects[variables.prefix]['FormPost'][i].stSupporting[ReplaceNoCase(j,'#variables.prefix##i#','')] = FORM[j]>
+						<cfset Request.farcryForm.stObjects[ProcessingFormObjectPrefix]['FormPost'][i].stSupporting[ReplaceNoCase(j,'#ProcessingFormObjectPrefix##i#','')] = FORM[j]>
 					</cfif>
 					
 				</cfif>
@@ -337,73 +372,22 @@
 			<cfelse>
 				<cfset FieldMethod = "validate">
 			</cfif>	
-
+		
 			<cfinvoke component="#application.formtools[ftFieldMetadata.ftType]#" method="#FieldMethod#" returnvariable="stResult">
-				<cfinvokeargument name="stFieldPost" value="#Request.farcryForm.stObjects[variables.prefix]['FormPost'][i]#">
+				<cfinvokeargument name="ObjectID" value="#attributes.ObjectID#">
+				<cfinvokeargument name="Typename" value="#attributes.Typename#">			
+				<cfinvokeargument name="stFieldPost" value="#Request.farcryForm.stObjects[ProcessingFormObjectPrefix]['FormPost'][i]#">
 				<cfinvokeargument name="stMetadata" value="#ftFieldMetadata#">
 			</cfinvoke>
 						
 			<cfset "Caller.#attributes.r_stProperties#.#i#" = stResult.Value>
-			
-			<!--- 
-			<cfswitch expression="#stFields[i].metadata.type#">
-				<cfcase value="date">
-					<cfset "Caller.#attributes.r_stProperties#.#i#" = Evaluate("FORM.#ProcessingFormObjectPrefix##i#")>
-				</cfcase>
-				<cfcase value="boolean">
-					<cfset "Caller.#attributes.r_stProperties#.#i#" = ListFirst(Evaluate("FORM.#ProcessingFormObjectPrefix##i#"))>
-				</cfcase>
-				<cfcase value="array">
-					
-					<cfset aField = ArrayNew(1)>				
-					<cfloop list="#Evaluate('FORM.#ProcessingFormObjectPrefix##i#')#" index="j">
-						<cfset ArrayAppend(aField,j)>
-					</cfloop>
-					
-					<cfset Caller[attributes.r_stProperties][i] = aField>
-
-				</cfcase>
-
-	
-	
-				<cfdefaultcase>
-					<cfset "Caller.#attributes.r_stProperties#.#i#" = Evaluate("FORM.#ProcessingFormObjectPrefix##i#")>
-				</cfdefaultcase>
-			</cfswitch> --->
-			
-			<!--- 
-			<cfif structkeyexists(stFields[i].metadata,"RenderType")>
-				<cfswitch expression="#stFields[i].metadata.RenderType#">
-					<cfcase value="image">
-						<cfif isDefined("FORM.#ProcessingFormObjectPrefix##i#NEW") and len(evaluate("FORM.#ProcessingFormObjectPrefix##i#NEW"))>
-							
-							<!--- Upload --->
-							<cffile action="UPLOAD"
-						        filefield="#ProcessingFormObjectPrefix##i#NEW"
-						        destination="#application.path.project#/www/images/static"
-								nameconflict="MAKEUNIQUE">
-						
-								<cfx_image action="resize"
-									file="#application.path.project#/www/images/static/#File.ServerFile#"
-									output="#application.path.project#/www/images/static/#File.ServerFile#"
-									X="276"
-									Stretch="FALSE"
-									Shrink="TRUE">
-
-
-							<!--- Define FileName of Image --->
-							<cfset "Caller.#attributes.r_stProperties#.#i#" = "#application.url.webroot#/images/static/#File.ServerFile#">		
-														
-						</cfif>
-					</cfcase>
-				</cfswitch>				
-			</cfif> --->
 		
-
+		
+		
 		</cfif>
 	</cfloop>
 	
-	<cfif isDefined("FORM.#ProcessingFormObjectPrefix#typename")>
-		<cfset "Caller.#attributes.r_stProperties#.typename" = Evaluate("FORM.#ProcessingFormObjectPrefix#typename")>
+	<cfif structKeyExists(FORM,"#ProcessingFormObjectPrefix#typename")>
+		<cfset "Caller.#attributes.r_stProperties#.typename" = Evaluate("FORM['#ProcessingFormObjectPrefix#typename']")>
 	</cfif>
 </cffunction>

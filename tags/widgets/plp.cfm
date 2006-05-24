@@ -242,7 +242,7 @@ TODO:
 		<cfset plpfilepath = "#attributes.stepDir#/#stPLP.plp.steps[stPLP.currentStep].template#">
 	</cfif>
 	
-	<cfsavecontent variable="Variables.PLPFormCSS">
+<!--- 	<cfsavecontent variable="Variables.PLPFormCSS">
 
 <cfoutput>
 	<style type="text/css">
@@ -310,7 +310,7 @@ input.f-submit {padding: 1px 3px;background:##666;color:##fff;font-weight:bold;f
 	</cfsavecontent>
 	
 
-<cfhtmlhead text="#Variables.PLPFormCSS#">
+<cfhtmlhead text="#Variables.PLPFormCSS#"> --->
 
 	
 	
@@ -360,7 +360,7 @@ input.f-submit {padding: 1px 3px;background:##666;color:##fff;font-weight:bold;f
 		</fieldset>
 	</div>
 </cfif>
-	
+
 <!--- 
 ///////////////////////////////////////////////////////////////
 	now the step has been completed, modify the stPLP
