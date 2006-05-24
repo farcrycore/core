@@ -19,7 +19,15 @@
 			<cfif isDefined("qWebskin") AND qWebskin.RecordCount>
 				<select name="#arguments.fieldname#" id="#arguments.fieldname#">
 					<cfloop query="qWebskin">
-						<option value="#qWebskin.name#">#qWebskin.name#</option>
+						<cfset pos = FindNoCase('.cfm',qWebskin.name) - 1>
+						<cfif Pos GT 0>
+							<cfset WebskinID = Left(qWebskin.name,Pos)>
+						<cfelse>
+							<cfset WebskinID = qWebskin.name>
+						</cfif>
+						
+						
+						<option value="#WebskinID#">#qWebskin.name#</option>
 					</cfloop>
 				</select>
 			<cfelse>
