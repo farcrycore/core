@@ -6,12 +6,14 @@
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 		
-		<cfparam name="arguments.stMetadata.ftstyle" default="width:250px;height:150px;">
+		<cfif len(arguments.stMetadata.ftstyle)>
+			<cfset arguments.stMetadata.ftstyle = "width:250px;height:150px;" />
+		</cfif>
 	
 		<cfsavecontent variable="html">
 			<!--- Place custom code here! --->
 			<cfoutput>
-				<textarea name="#arguments.fieldname#" id="#arguments.fieldname#" style="#arguments.stMetadata.ftstyle#">#arguments.stMetadata.value#</textarea>
+				<textarea name="#arguments.fieldname#" id="#arguments.fieldname#" class="#arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#">#arguments.stMetadata.value#</textarea>
 			</cfoutput>
 		</cfsavecontent>
 		
