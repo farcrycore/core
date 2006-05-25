@@ -354,11 +354,41 @@
 			</cfif>
 		</cfif>	
 
+		<!--- Make sure ftStyle and ftClass exist --->
+		<cfparam name="ftFieldMetadata.ftStyle" default="">
+		<cfparam name="ftFieldMetadata.ftClass" default="">
 
+		<!--- Prepare Form Validation (from Andrew Tetlaw http://tetlaw.id.au/view/home/) --->
+		<!--- 
+		Here's the list of classes available to add to your field elements:
+	
+	    * required (not blank)
+	    * validate-number (a valid number)
+	    * validate-digits (digits only)
+	    * validate-alpha (letters only)
+	    * validate-alphanum (only letters and numbers)
+	    * validate-date (a valid date value)
+	    * validate-email (a valid email address)
+	    * validate-date-au (a date formatted as; dd/mm/yyyy)
+	    * validate-currency-dollar (a valid dollar value)
+
+		 --->
+		 
+		<cfif structKeyExists(ftFieldMetadata, "ftValidation")>
+			<cfloop list="#ftFieldMetadata.ftValidation#" index="i">
+				<cfset ftFieldMetadata.ftClass = "#ftFieldMetadata.ftClass# #lcase(i)#">
+			</cfloop>
+		</cfif>
+		<cfset ftFieldMetadata.ftClass = Trim(ftFieldMetadata.ftClass)>
+		
 		<cfset variables.returnHTML = "">
 		
 		<cfif structKeyExists(tFieldType,FieldMethod)>
+			
 			<cftry>
+				
+				
+				
 				<cfinvoke component="#tFieldType#" method="#FieldMethod#" returnvariable="variables.returnHTML">
 					<cfinvokeargument name="typename" value="#typename#">
 					<cfinvokeargument name="stObject" value="#stObj#">

@@ -26,6 +26,33 @@ $out:$
 <cfif structKeyExists(Request,"inHead") AND len(structKeyList(Request.InHead))>		
 		<cfparam name="Request.RequiredInHead" default="#StructNew()#">		
 		
+		<cfparam name="Request.RequiredInHead.prototypeJS" default = "0">
+		<cfparam name="Request.RequiredInHead.prototypeLiteJS" default = "0">
+		<cfparam name="Request.RequiredInHead.moofxJS" default = "0">
+		<cfparam name="Request.RequiredInHead.tabsJS" default = "0">
+		<cfparam name="Request.RequiredInHead.scriptaculousJS" default = "0">
+		<cfparam name="Request.RequiredInHead.scriptaculousDragAndDropJS" default = "0">
+		<cfparam name="Request.RequiredInHead.scriptaculousEffectsJS" default = "0">
+		<cfparam name="Request.RequiredInHead.scriptaculousBuilderJS" default = "0">
+		<cfparam name="Request.RequiredInHead.scriptaculousSliderJS" default = "0">
+		<cfparam name="Request.RequiredInHead.scriptaculousControlsJS" default = "0">
+		<cfparam name="Request.RequiredInHead.lightboxJS" default = "0">
+		<cfparam name="Request.RequiredInHead.DateTimePickerJS" default = "1">
+		<cfparam name="Request.RequiredInHead.CalendarJS" default = "0">
+		<cfparam name="Request.RequiredInHead.CalendarSetupJS" default = "0">
+		<cfparam name="Request.RequiredInHead.TinyMCEJS" default = "0">
+		<cfparam name="Request.RequiredInHead.JSONJS" default = "0">
+		<cfparam name="Request.RequiredInHead.FormValidationJS" default = "0">
+		
+		
+		
+		<cfparam name="Request.RequiredInHead.TabStyle1CSS" default = "0">
+		<cfparam name="Request.RequiredInHead.TabStyle6CSS" default = "0">
+		<cfparam name="Request.RequiredInHead.CalendarStyle1CSS" default = "0">
+		
+		
+		
+		
 		<cfif isDefined("Request.InHead.PrototypeLite")>
 			<cfset Request.RequiredInHead.prototypeLiteJS = 1>
 		</cfif>
@@ -100,10 +127,16 @@ $out:$
 			<cfset Request.RequiredInHead.JSONJS = 1>
 		</cfif>
 		
+		<cfif isdefined("Request.InHead.FormValidation")>
+			<cfset Request.RequiredInHead.FormValidationJS = 1>
+			<cfset Request.RequiredInHead.prototypeJS = 1>
+			<cfset Request.RequiredInHead.scriptaculousEffectsJS = 1>
+		</cfif>
+		
 		
 		
 	<cfsavecontent variable="RequiredHead">	
-		<cfif isDefined("Request.RequiredInHead.prototypeLiteJS") AND Request.RequiredInHead.prototypeLiteJS EQ 1>
+		<cfif isDefined("Request.RequiredInHead.prototypeLiteJS") AND Request.RequiredInHead.prototypeLiteJS EQ 1 AND Request.RequiredInHead.prototypeJS EQ 0>
 			<cfoutput><script src="#application.url.farcry#/js/prototype/prototype.lite.js" type="text/javascript"></script></cfoutput>
 		</cfif>
 		<cfif isDefined("Request.RequiredInHead.prototypeJS") AND Request.RequiredInHead.prototypeJS EQ 1>
@@ -165,6 +198,9 @@ $out:$
 			<cfoutput><script src="#application.url.farcry#/includes/lib/json.js" type="text/javascript"></script></cfoutput>
 		</cfif>
 		
+		<cfif isDefined("Request.RequiredInHead.FormValidationJS") AND Request.RequiredInHead.FormValidationJS EQ 1>
+			<cfoutput><script src="#application.url.farcry#/js/formvalidation/validation.js" type="text/javascript"></script></cfoutput>
+		</cfif>
 		
 	</cfsavecontent>
 	

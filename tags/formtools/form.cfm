@@ -29,6 +29,7 @@ It just ignores the inner ones.
 		<cfparam name="attributes.Class" default="f-wrap-1">
 		<cfparam name="attributes.Style" default="">
 		<cfparam name="attributes.Heading" default="">
+		<cfparam name="attributes.Validation" default="1">
 		
 		
 		
@@ -42,6 +43,7 @@ It just ignores the inner ones.
 			<cfset Request.farcryForm.Name = attributes.Name>	
 			<cfset Request.farcryForm.Target = attributes.Target>	
 			<cfset Request.farcryForm.Action = attributes.Action>
+			<cfset Request.farcryForm.Validation = attributes.Validation>
 			<cfset Request.farcryForm.stObjects = StructNew()>		
 		</cfif>
 	
@@ -50,7 +52,10 @@ It just ignores the inner ones.
 			<cfset Request.farcryForm.Name = "#Request.farcryForm.Name##ListLen(request.farcryFormList) + 1#">
 			
 		</cfif>
-	
+		
+		<cfif Request.farcryForm.Validation EQ 1>
+			<cfset Request.InHead.FormValidation = 1>			
+		</cfif>
 		
 		<!--- <cfoutput><h1><a href="#cgi.SCRIPT_NAME#?#cgi.query_string#">Farcry Form #Request.farcryForm.Name#</a></h1></cfoutput> --->
 		

@@ -62,6 +62,7 @@ $in: SessionID -- $
 		<cfparam name="attributes.FormClass" default="f-wrap-1">
 		<cfparam name="attributes.FormStyle" default="">
 		<cfparam name="attributes.FormHeading" default="">
+		<cfparam name="attributes.FormValidation" default="1">
 		
 		<cfparam name="Request.farcryFormList" default="">			
 		
@@ -70,6 +71,7 @@ $in: SessionID -- $
 			<cfset Request.farcryForm.Name = attributes.FormName>	
 			<cfset Request.farcryForm.Target = attributes.FormTarget>	
 			<cfset Request.farcryForm.Action = attributes.FormAction>
+			<cfset Request.farcryForm.Validation = attributes.FormValidation>
 			<cfset Request.farcryForm.stObjects = StructNew()>		
 		</cfif>	
 		
@@ -77,6 +79,11 @@ $in: SessionID -- $
 			<cfset Request.farcryForm.Name = "#Request.farcryForm.Name##ListLen(request.farcryFormList) + 1#">			
 		</cfif>
 	
+	
+		<cfif Request.farcryForm.Validation EQ 1>
+			<cfset Request.InHead.FormValidation = 1>			
+		</cfif>
+		
 		<ft:renderHTMLformStart onsubmit="#attributes.Formonsubmit#" class="#attributes.FormClass#" css="#attributes.Formcss#" style="#attributes.Formstyle#" heading="#attributes.Formheading#" />
 	
 	</cfif>
@@ -150,8 +157,11 @@ $in: SessionID -- $
 		<cfoutput>
 		<script language="javascript">
 			function WizzardSubmission(state) {
-				$('FarcryFormSubmitButton').value=state;
-				$('#Request.farcryForm.Name#').submit();	
+				if( valid.validate() ){
+					alert('madeit');
+					$('FarcryFormSubmitButton').value=state;
+					$('#Request.farcryForm.Name#').submit();	
+				}
 			}
 			function WizzardCancelConfirm(){
 				if( window.confirm("Changes made will not be saved.\nDo you still wish to Cancel?")){
