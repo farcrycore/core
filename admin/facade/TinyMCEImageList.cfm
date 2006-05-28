@@ -15,7 +15,7 @@ var tinyMCEImageList = new Array(
 	
 	<cfset currentrow = 1>
 	<cfloop query="q">
-		["<cfif len(q.title)>#q.title#<cfelse>#q.optimisedImage#</cfif>", "#ReplaceNoCase(q.optimisedImagePath,'#application.path.project#/www','')#/#q.optimisedImage#"]<cfif currentRow LT q.RecordCount>,<cfset currentrow = currentrow + 1></cfif>
+		["<cfif len(q.title)>#q.title#<cfelse>#q.optimisedImage#</cfif>", "#q.optimisedImage#"]<cfif currentRow LT q.RecordCount>,<cfset currentrow = currentrow + 1></cfif>
 	</cfloop>
 );
 </cfoutput>
