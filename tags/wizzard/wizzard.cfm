@@ -158,7 +158,6 @@ $in: SessionID -- $
 		<script language="javascript">
 			function WizzardSubmission(state) {
 				if( valid.validate() ){
-					alert('madeit');
 					$('FarcryFormSubmitButton').value=state;
 					$('#Request.farcryForm.Name#').submit();	
 				}
