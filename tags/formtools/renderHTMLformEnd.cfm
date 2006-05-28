@@ -4,7 +4,7 @@
 	<cfoutput>
 			
 			<input type="hidden" name="FarcryFormSubmitButton" id="FarcryFormSubmitButton" value="" />
-			<input type="submit" value="Submit" /> <input type="button" value="Reset" onclick="valid.reset(); return false" />
+			
 		</form>
 		
 		<cfif Request.farcryForm.Validation EQ 1>
