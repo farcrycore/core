@@ -35,14 +35,15 @@ $in: SessionID -- $
 	<cfparam name="attributes.r_stWizzard" default="stWizzard" /><!--- this is the WDDX packet that will be returned --->
 	
 	<!--- Set User login to current user --->
-	<cfset attributes.UserLogin = session.dmSec.authentication.userlogin>
-		
-	<!--- Set to the session id given to the user by ColdFusion --->
-	<cfif attributes.UserLogin EQ "anonymous">
-		<cfset attributes.UserLogin = "#attributes.UserLogin##cfid##cftoken#" />
+	<cfif isDefined("session.dmSec.authentication.userlogin")>
+		<cfset attributes.UserLogin = session.dmSec.authentication.userlogin>
+	<cfelse>
+		<cfset attributes.UserLogin = "Unknown#cfid##cftoken#" />
 	</cfif>
 	
 
+	<!--- Add required CSS to <head> --->
+	<cfset Request.InHead.Wizard = 1>
 	
 	<cfset stWizzard = odmWizzard.Read(ReferenceID=attributes.ReferenceID,UserLogin=attributes.UserLogin)>
 	
