@@ -173,8 +173,8 @@ $in: SessionID -- $
 	<cfhtmlhead text="#WizzardSubmissionJS#" />
 	
 	<cfoutput>
-	<div id="plp-wrap">			
-		<div class="pagination">
+	<div id="wizard-wrap">			
+		<div class="wizard-pagination">
 			<ul>
 				<cfif stWizzard.CurrentStep LT ListLen(stWizzard.Steps)><li class="li-next"><a href="javascript:WizzardSubmission('next');">Next</a></li></cfif>
 				<cfif stWizzard.CurrentStep GT 1><li class="li-prev"><a href="javascript:WizzardSubmission('previous');">Back</a></li></cfif>
@@ -182,7 +182,7 @@ $in: SessionID -- $
 		</div>
 
 		<h1><img src="/farcry/images/icons/HTML.png" alt="HTML" />#ListGetAt(stWizzard.Steps,stWizzard.CurrentStep)#</h1>			
-		<div id="plp-nav">
+		<div id="wizard-nav">
 			<ul>
 				<cfloop list="#stWizzard.Steps#" index="i">
 					<li><a href="javascript:WizzardSubmission('#i#')"><cfif ListGetAt(stWizzard.Steps,stWizzard.CurrentStep) EQ i><strong>#i#</strong><cfelse>#i#</cfif></a></li>
@@ -192,14 +192,14 @@ $in: SessionID -- $
 			</ul>
 		</div>
 
-		<div id="plp-content">
+		<div id="wizard-content">
 			#stWizzard.StepHTML#
 		</div>
 		
 		<br style="clear:both;" />
 		<hr class="clear hidden" />
 		
-		<div class="pagination pg-bot">
+		<div class="wizard-pagination pg-bot">
 			<ul>
 				<cfif stWizzard.CurrentStep LT ListLen(stWizzard.Steps)><li class="li-next"><a href="javascript:WizzardSubmission('next');">Next</a></li></cfif>
 				<cfif stWizzard.CurrentStep GT 1><li class="li-prev"><a href="javascript:WizzardSubmission('previous');">Back</a></li></cfif>
