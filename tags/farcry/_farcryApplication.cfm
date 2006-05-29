@@ -35,9 +35,6 @@ request.loggedin = stLoggedin.bLoggedIn;
 
 </cfscript>
 
-<cfparam name="session.dmSec.authentication.userlogin" default="anonymous" />
-<cfparam name="session.dmSec.authentication.userDirectory" default="anonymous" />
-
 <!--- setup request variables --->
 <cfinclude template="_requestScope.cfm">
 
