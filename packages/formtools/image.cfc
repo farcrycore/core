@@ -25,7 +25,7 @@
 					<cfif len(#arguments.stMetadata.value#)>
 						<td valign="top">
 							<div id="#arguments.fieldname#previewimage">
-								<img src="#arguments.stMetadata.ftDestination#/#arguments.stMetadata.value#" width="50px">
+								<img src="#arguments.stMetadata.value#" width="50px">
 								<ft:farcrybutton type="button" value="Delete Image" onclick="if(confirm('Are you sure you want to remove this image?')) {} else {return false};this.form.#arguments.fieldname#.value='';document.getElementById('#arguments.fieldname#previewimage').style.visibility='hidden';document.getElementById('#arguments.fieldname#previewimage').style.display='none';" />
 							</div>
 						</td>
