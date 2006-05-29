@@ -50,6 +50,8 @@ $out:$
 		<cfparam name="Request.RequiredInHead.TabStyle6CSS" default = "0">
 		<cfparam name="Request.RequiredInHead.CalendarStyle1CSS" default = "0">
 		
+		<cfparam name="Request.RequiredInHead.WizardCSS" default = "0">
+		
 		
 		
 		
@@ -133,6 +135,10 @@ $out:$
 			<cfset Request.RequiredInHead.scriptaculousEffectsJS = 1>
 		</cfif>
 		
+		<cfif isdefined("Request.InHead.Wizard")>
+			<cfset Request.RequiredInHead.WizardCSS = 1>
+		</cfif>
+		
 		
 		
 	<cfsavecontent variable="RequiredHead">	
@@ -200,6 +206,11 @@ $out:$
 		
 		<cfif isDefined("Request.RequiredInHead.FormValidationJS") AND Request.RequiredInHead.FormValidationJS EQ 1>
 			<cfoutput><script src="#application.url.farcry#/js/formvalidation/validation.js" type="text/javascript"></script></cfoutput>
+		</cfif>
+		
+		
+		<cfif isDefined("Request.RequiredInHead.WizardCSS") AND Request.RequiredInHead.WizardCSS EQ 1>
+			<cfoutput><link rel="stylesheet" href="#application.url.farcry#/css/wizard.css" type="text/css" media="screen" /></cfoutput>
 		</cfif>
 		
 	</cfsavecontent>
