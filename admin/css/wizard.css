@@ -1,0 +1,49 @@
+
+/* WIZARD WRAP */
+
+#wizard-wrap {background: transparent url("/farcry/css/images/plp_wrap_bg.gif") no-repeat 100% 100%;padding-bottom: 2.5em}
+#wizard-wrap .wizard-pagination {float:right}
+#wizard-wrap .pg-bot {clear:both}
+#wizard-wrap .wizard-pagination ul {padding:0;margin: 0;list-style-type:none;width:120px;position:relative;height:2.2em}
+#wizard-wrap .wizard-pagination li {padding:0;margin:0;display:inline}
+
+#wizard-wrap .wizard-pagination li.li-prev {position:absolute;top:0;left:0}
+#wizard-wrap .wizard-pagination li.li-next {position:absolute;top:0;right:0}
+
+#wizard-wrap .wizard-pagination li.li-prev a:link, #wizard-wrap .wizard-pagination li.li-prev a:visited {color:#666;background:#fff url("/farcry/css/images/sprites_icons.gif") no-repeat -7px -450px;height: 2.2em;font: bold 100%/2.2 arial;padding-left:20px}
+#wizard-wrap .wizard-pagination li.li-next a:link, #wizard-wrap .wizard-pagination li.li-next a:visited {color:#666;background:#fff url("/farcry/css/images/sprites_icons.gif") no-repeat 100% -550px;height: 2.2em;font: bold 100%/2.2 arial;padding-right:22px}
+
+#wizard-wrap .wizard-pagination li.li-prev a:hover, #wizard-wrap .wizard-pagination li.li-prev a:active {background-position: -7px -400px;color:#006BD0}
+#wizard-wrap .wizard-pagination li.li-next a:hover, #wizard-wrap .wizard-pagination li.li-next a:active {background-position: 100% -500px;color:#006BD0}
+
+#genadmin-wrap th {font-size:105%;line-height:1.3}
+
+#wizard-content {clear:left;margin: 0 155px 0 0}
+#wizard-content iframe, #wizard-content textarea#body {float:left;width:97%}
+#wizard-content table {width:97%;float:left}
+#wizard-content td {padding:0;border:none}
+
+
+
+#wizard-wrap h1 {border-bottom: 1px solid #DEDEDE;margin:0;padding: 3px 0 6px}
+#wizard-wrap h1 img {display:block;float:left;width:60px;height:48px;margin-bottom: 10px}
+
+#wizard-nav {clear:both;float:right;width:120px}
+#wizard-nav ul {margin: 0 0 15px;padding:0;list-style-type:none} 
+#wizard-nav li {margin:0;padding:0;background:none;font: normal 90%/2 arial;border-bottom: 1px solid #e8e8e8;text-transform:capitalize}
+#wizard-nav a:link, #wizard-nav a:visited {color:#666}
+#wizard-nav a:link strong , #wizard-nav a:visited strong {color:#E17000}
+#wizard-nav a:hover, #wizard-nav a:active {color:#E17000;background:#fff}
+
+
+#wizard-nav li.li-complete, #wizard-nav li.li-cancel {border-bottom: none;padding: 0;margin: 30px 0 0;font-size:100%}
+#wizard-nav li.li-cancel {margin-top:5px}
+
+#wizard-nav li.li-complete a:link, #wizard-nav li.li-complete a:visited, #wizard-nav li.li-complete a:hover, #wizard-nav li.li-complete a:active {color:#666;background:#fff url("/farcry/css/images/sprites_icons.gif") no-repeat 0 -297px;display:block;height: 2.2em;font: bold 110%/2.2 arial;padding-left:40px}
+#wizard-nav li.li-complete a:hover, #wizard-nav li.li-complete a:active {background-position: 0 -347px;color:#00A700}
+
+
+#wizard-nav li.li-cancel a:link, #wizard-nav li.li-cancel a:visited, #wizard-nav li.li-cancel a:hover, #wizard-nav li.li-cancel a:active {color:#666;background:#fff url("/farcry/css/images/sprites_icons.gif") no-repeat 0 -197px;display:block;height: 2.2em;font: bold 110%/2.2 arial;padding-left:40px}
+#wizard-nav li.li-cancel a:hover, #wizard-nav li.li-cancel a:active {background-position: 0 -247px;color:#c00}
+
+#wizard-nav a:link, #wizard-wrap .wizard-pagination a:link, #wizard-nav a:visited, #wizard-wrap .wizard-pagination a:visited, #wizard-nav a:hover, #wizard-wrap .wizard-pagination a:hover, #wizard-nav a:active, #wizard-wrap .wizard-pagination a:active {text-decoration:none}
