@@ -30,15 +30,24 @@ type properties
 <cfproperty name="alt" type="nstring" hint="Alternate text" required="no" default="" > 
 <cfproperty name="width" type="nstring" hint="Image width (blank for default)" required="no" default="">  
 <cfproperty name="height" type="nstring" hint="Image height (blank for default)" required="no" default="">  
-<cfproperty name="imagefile" type="string" hint="The image file to be uploaded" required="No" default="" ftType="Image" ftDestination="/images/original">
-<cfproperty name="thumbnail" type="string" hint="The name of the thumbnail image to be uploaded" required="no" default="" ftType="Image" ftImageWidth="100" ftImageHeight="100" ftDestination="/images/thumbnail">  
-<cfproperty name="optimisedImage" type="string" hint="The name of the optimised image to be uploaded" required="no" default="" ftType="Image" ftImageWidth="297" ftImageHeight="297" ftDestination="/images/optimised">  
+<cfproperty name="imagefile" type="string" hint="The image file to be uploaded" required="No" default="">
+<cfproperty name="thumbnail" type="string" hint="The name of the thumbnail image to be uploaded" required="no" default="">  
+<cfproperty name="optimisedImage" type="string" hint="The name of the optimised image to be uploaded" required="no" default="">  
 <cfproperty name="originalImagePath" type="string" hint="The location in the filesystem where the original image is stored." required="No" default=""> 
 <cfproperty name="thumbnailImagePath" editHandler="void" type="string" hint="The location in the filesystem where the thumbnail image is stored." required="no" default=""> 
 <cfproperty name="optimisedImagePath" editHandler="void" type="string" hint="The location in the filesystem where the optimized image is stored." required="no" default=""> 
 <cfproperty name="bLibrary" type="numeric" hint="Flag to indictae if in file library or not" required="no" default="1" ftType="boolean">
-<cfproperty name="bAutoGenerateThumbnail" type="numeric" hint="Flag to indicate if to automatically generate a thumbnail form the default image" required="no" default="1">
+<cfproperty name="bAutoGenerateThumbnail" type="numeric" hint="Flag to indicate if to automatically generate a thumbnail form the default image" required="no" default="1" ftType="boolean">
 <cfproperty name="status" type="string" hint="Status of the node (draft, pending, approved)." required="yes" default="draft">
+
+<!--- URL locations to images (includes filename) --->
+<cfproperty name="SourceImage" type="string" hint="The URL location of the uploaded image" required="No" default="" 
+	ftType="Image" ftDestination="/images/SourceImages">
+<cfproperty name="StandardImage" type="string" hint="The URL location of the optimised uploaded image that should be used for general display" required="no" default="" 
+	ftType="Image" ftImageWidth="400" ftImageHeight="400" ftDestination="/images/StandardImages">  
+<cfproperty name="ThumbnailImage" type="string" hint="The URL location of the thumnail of the uploaded image that should be used in " required="no" default="" 
+	ftType="Image" ftImageWidth="80" ftImageHeight="80" ftDestination="/images/ThumbnailImages">  
+
 <!--- Object Methods --->
 
 
@@ -72,77 +81,77 @@ type properties
 	<cfargument name="stProperties" required="yes" type="struct">
 	<cfargument name="stFields" required="yes" type="struct">
 	
-	<cfparam name="arguments.stFields.Thumbnail.metadata.ftDestination" default="/Thumbnail">
-	<cfparam name="arguments.stFields.Thumbnail.metadata.ftImageWidth" default="100">
-	<cfparam name="arguments.stFields.Thumbnail.metadata.ftImageHeight" default="100">
+	<cfparam name="arguments.stFields.ThumbnailImage.metadata.ftDestination" default="/images/ThumbnailImage">
+	<cfparam name="arguments.stFields.ThumbnailImage.metadata.ftImageWidth" default="100">
+	<cfparam name="arguments.stFields.ThumbnailImage.metadata.ftImageHeight" default="100">
 	
-	<cfparam name="arguments.stFields.OptimisedImage.metadata.ftDestination" default="/Optimised">
-	<cfparam name="arguments.stFields.optimisedImage.metadata.ftImageWidth" default="300">
-	<cfparam name="arguments.stFields.optimisedImage.metadata.ftImageHeight" default="300">
-	
-	
+	<cfparam name="arguments.stFields.StandardImage.metadata.ftDestination" default="/images/Optimised">
+	<cfparam name="arguments.stFields.StandardImage.metadata.ftImageWidth" default="300">
+	<cfparam name="arguments.stFields.StandardImage.metadata.ftImageHeight" default="300">
 	
 	
 	
-	<cfif structKeyExists(arguments.stProperties,"imageFile") AND len(arguments.stProperties.imageFile) AND (NOT isDefined("arguments.stProperties.Thumbnail") OR NOT len(arguments.stProperties.Thumbnail))>
+	
+	
+	<cfif structKeyExists(arguments.stProperties, "SourceImage") AND len(arguments.stProperties.SourceImage) AND (NOT isDefined("arguments.stProperties.ThumbnailImage") OR NOT len(arguments.stProperties.ThumbnailImage))>
 		
-		<cfif NOT DirectoryExists("#application.path.project#/www#arguments.stFields.Thumbnail.metadata.ftDestination#")>
-			<cfdirectory action="create" directory="#application.path.project#/www#arguments.stFields.Thumbnail.metadata.ftDestination#">
+		<cfif NOT DirectoryExists("#application.path.project#/www#arguments.stFields.ThumbnailImage.metadata.ftDestination#")>
+			<cfdirectory action="create" directory="#application.path.project#/www#arguments.stFields.ThumbnailImage.metadata.ftDestination#">
 		</cfif>
 		
 					
 		<cffile action="copy" 
-			source="#application.path.project#/www#arguments.stProperties.imageFile#"
-			destination="#application.path.project#/www#arguments.stFields.Thumbnail.metadata.ftDestination#">
+			source="#application.path.project#/www#arguments.stProperties.SourceImage#"
+			destination="#application.path.project#/www#arguments.stFields.ThumbnailImage.metadata.ftDestination#">
 		
 		
 		<cfx_image action="resize"
-			file="#application.path.project#/www#arguments.stFields.Thumbnail.metadata.ftDestination#/#File.ServerFile#"
-			output="#application.path.project#/www#arguments.stFields.Thumbnail.metadata.ftDestination#/#File.ServerFile#"
-			X="#arguments.stFields.Thumbnail.metadata.ftImageWidth#"
-			Y="#arguments.stFields.Thumbnail.metadata.ftImageHeight#"
-			thumbnail=yes
+			file="#application.path.project#/www#arguments.stFields.ThumbnailImage.metadata.ftDestination#/#File.ServerFile#"
+			output="#application.path.project#/www#arguments.stFields.ThumbnailImage.metadata.ftDestination#/#File.ServerFile#"
+			X="#arguments.stFields.ThumbnailImage.metadata.ftImageWidth#"
+			Y="#arguments.stFields.ThumbnailImage.metadata.ftImageHeight#"
+			ThumbnailImage=yes
 			bevel=no
 			backcolor=white>
 			
-		<cfset stproperties.thumbnail = "#arguments.stFields.Thumbnail.metadata.ftDestination#/#File.ServerFile#">
-		<!--- <cfset stproperties.thumbnailImagePath = "#application.path.project#/www#arguments.stFields.Thumbnail.metadata.ftDestination#"> --->
+		<cfset stproperties.ThumbnailImage = "#arguments.stFields.ThumbnailImage.metadata.ftDestination#/#File.ServerFile#">
+		<!--- <cfset stproperties.ThumbnailImageImagePath = "#application.path.project#/www#arguments.stFields.ThumbnailImage.metadata.ftDestination#"> --->
 	</cfif>
 		
 		
-	<cfif structKeyExists(arguments.stProperties,"imageFile") AND len(arguments.stProperties.imageFile) AND (NOT isDefined("arguments.stProperties.OptimisedImage") OR NOT len(arguments.stProperties.OptimisedImage))>
+	<cfif structKeyExists(arguments.stProperties, "SourceImage") AND  len(arguments.stProperties.SourceImage) AND (NOT isDefined("arguments.stProperties.StandardImage") OR NOT len(arguments.stProperties.StandardImage))>
 		
-		<cfif NOT DirectoryExists("#application.path.project#/www#arguments.stFields.OptimisedImage.metadata.ftDestination#")>
-			<cfdirectory action="create" directory="#application.path.project#/www#arguments.stFields.OptimisedImage.metadata.ftDestination#">
+		<cfif NOT DirectoryExists("#application.path.project#/www#arguments.stFields.StandardImage.metadata.ftDestination#")>
+			<cfdirectory action="create" directory="#application.path.project#/www#arguments.stFields.StandardImage.metadata.ftDestination#">
 		</cfif>
 			
 		<cffile action="copy" 
-			source="#application.path.project#/www#arguments.stProperties.imageFile#"
-			destination="#application.path.project#/www#arguments.stFields.optimisedImage.metadata.ftDestination#">
+			source="#application.path.project#/www#arguments.stProperties.SourceImage#"
+			destination="#application.path.project#/www#arguments.stFields.StandardImage.metadata.ftDestination#">
 			
 			
 		<cfx_image action="read"
-			file="#application.path.project#/www#arguments.stFields.optimisedImage.metadata.ftDestination#/#File.ServerFile#">
+			file="#application.path.project#/www#arguments.stFields.StandardImage.metadata.ftDestination#/#File.ServerFile#">
 			
-		<cfif IMG_WIDTH GT arguments.stFields.optimisedImage.metadata.ftImageWidth>
+		<cfif IMG_WIDTH GT arguments.stFields.StandardImage.metadata.ftImageWidth>
 			<cfx_image action="resize"
-					file="#application.path.project#/www#arguments.stFields.optimisedImage.metadata.ftDestination#/#File.ServerFile#"
-					output="#application.path.project#/www#arguments.stFields.optimisedImage.metadata.ftDestination#/#File.ServerFile#"
-					X="#arguments.stFields.optimisedImage.metadata.ftImageWidth#">
+					file="#application.path.project#/www#arguments.stFields.StandardImage.metadata.ftDestination#/#File.ServerFile#"
+					output="#application.path.project#/www#arguments.stFields.StandardImage.metadata.ftDestination#/#File.ServerFile#"
+					X="#arguments.stFields.StandardImage.metadata.ftImageWidth#">
 		</cfif>
 			
 	
 		<cfx_image action="read"
-			file="#application.path.project#/www#arguments.stFields.optimisedImage.metadata.ftDestination#/#File.ServerFile#">
+			file="#application.path.project#/www#arguments.stFields.StandardImage.metadata.ftDestination#/#File.ServerFile#">
 			
-		<cfif IMG_HEIGHT GT arguments.stFields.optimisedImage.metadata.ftImageHeight>
+		<cfif IMG_HEIGHT GT arguments.stFields.StandardImage.metadata.ftImageHeight>
 			<cfx_image action="resize"
-					file="#application.path.project#/www#arguments.stFields.optimisedImage.metadata.ftDestination#/#File.ServerFile#"
-					output="#application.path.project#/www#arguments.stFields.optimisedImage.metadata.ftDestination#/#File.ServerFile#"
-					Y="#arguments.stFields.optimisedImage.metadata.ftImageHeight#">
+					file="#application.path.project#/www#arguments.stFields.StandardImage.metadata.ftDestination#/#File.ServerFile#"
+					output="#application.path.project#/www#arguments.stFields.StandardImage.metadata.ftDestination#/#File.ServerFile#"
+					Y="#arguments.stFields.StandardImage.metadata.ftImageHeight#">
 		</cfif>
 
-		<cfset stproperties.OptimisedImage = "#arguments.stFields.optimisedImage.metadata.ftDestination#/#File.ServerFile#">
+		<cfset stproperties.StandardImage = "#arguments.stFields.StandardImage.metadata.ftDestination#/#File.ServerFile#">
 	</cfif>
 	
 	
