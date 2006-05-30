@@ -10,24 +10,54 @@
 	
 	
 		<cfif directoryExists("#application.path.project#/webskin/#arguments.typename#")>
-			<cfdirectory action="list" directory="#application.path.project#/webskin/#arguments.typename#" name="qWebskin" filter="#arguments.stMetadata.ftPrefix#*">
+			<cfdirectory action="list" directory="#application.path.project#/webskin/#arguments.typename#" name="qWebskin" >
 		</cfif>
+
+		<!--- This is to overcome casesensitivity issues on mac/linux machines --->
+		<cfquery name="qWebskin" dbtype="query">
+			SELECT *
+			FROM qWebskin
+			WHERE lower(qWebskin.name) LIKE '#lCase(arguments.stMetadata.ftPrefix)#%'
+		</cfquery>
+
+		<cfset qMethods = queryNew("methodname, displayname")>
+
+		<cfloop query="qWebskin">
+		<!--- TODO
+		must be able to do this more neatly with a regEX, especially if we 
+		want more than one bit of template metadata --->
+			<cffile action="READ" file="#attributes.path#/#qWebskin.name#" variable="template">
+		
+			<cfset pos = findNoCase('@@displayname:', template)>
+			<cfif pos eq 0>
+				<cfset displayname = listfirst(qWebskin.name, ".")>
+			<cfelse>
+				<cfset pos = pos + 14>
+				<cfset count = findNoCase('--->', template, pos)-pos>
+				<cfset displayname = listLast(mid(template,  pos, count), ":")>
+			</cfif>
+		
+			<cfset queryAddRow(qMethods, 1)>
+			<cfset querySetCell(qMethods, "methodname", listfirst(qWebskin.name, "."))>
+			<cfset querySetCell(qMethods, "displayname", displayname)>
+		</cfloop>
+
+
+		<!--- Reorder List --->
+		<cfquery name="qMethods" dbtype="query">
+		SELECT *
+		FROM qMethods
+		ORDER BY DisplayName
+		</cfquery>
+		
 		
 		<cfsavecontent variable="html">
 			<!--- Place custom code here! --->
 			<cfoutput>
-			<cfif isDefined("qWebskin") AND qWebskin.RecordCount>
+			<cfif isDefined("qMethods") AND qMethods.RecordCount>
 				<select name="#arguments.fieldname#" id="#arguments.fieldname#">
-					<cfloop query="qWebskin">
-						<cfset pos = FindNoCase('.cfm',qWebskin.name) - 1>
-						<cfif Pos GT 0>
-							<cfset WebskinID = Left(qWebskin.name,Pos)>
-						<cfelse>
-							<cfset WebskinID = qWebskin.name>
-						</cfif>
-						
-						
-						<option value="#WebskinID#">#qWebskin.name#</option>
+					<cfloop query="qMethods">						
+						<option value="#qMethods.methodname#">#qMethods.displayname#</option>
 					</cfloop>
 				</select>
 			<cfelse>
