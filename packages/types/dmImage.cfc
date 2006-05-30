@@ -84,7 +84,7 @@ type properties
 	
 	
 	
-	<cfif len(arguments.stProperties.imageFile) AND (NOT isDefined("arguments.stProperties.Thumbnail") OR NOT len(arguments.stProperties.Thumbnail))>
+	<cfif structKeyExists(arguments.stProperties,"imageFile") AND len(arguments.stProperties.imageFile) AND (NOT isDefined("arguments.stProperties.Thumbnail") OR NOT len(arguments.stProperties.Thumbnail))>
 		
 		<cfif NOT DirectoryExists("#application.path.project#/www#arguments.stFields.Thumbnail.metadata.ftDestination#")>
 			<cfdirectory action="create" directory="#application.path.project#/www#arguments.stFields.Thumbnail.metadata.ftDestination#">
@@ -110,7 +110,7 @@ type properties
 	</cfif>
 		
 		
-	<cfif len(arguments.stProperties.imageFile) AND (NOT isDefined("arguments.stProperties.OptimisedImage") OR NOT len(arguments.stProperties.OptimisedImage))>
+	<cfif structKeyExists(arguments.stProperties,"imageFile") AND len(arguments.stProperties.imageFile) AND (NOT isDefined("arguments.stProperties.OptimisedImage") OR NOT len(arguments.stProperties.OptimisedImage))>
 		
 		<cfif NOT DirectoryExists("#application.path.project#/www#arguments.stFields.OptimisedImage.metadata.ftDestination#")>
 			<cfdirectory action="create" directory="#application.path.project#/www#arguments.stFields.OptimisedImage.metadata.ftDestination#">
