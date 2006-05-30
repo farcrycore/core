@@ -23,12 +23,12 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 type properties
 ------------------------------------------------------------------------->	
 <cfproperty name="aObjectIds" type="array" hint="Mixed type children objects that sit underneath this object" required="no" default="" 
-	ftLink="dmImage"
+	ftJoin="dmImage"
 	ftLibraryPickListClass="thumbNailsWrap"
 	ftLibrarySelectedListClass="thumbNailsWrap"	ftLibrarySelectedListStyle="margin-left:10px;"
 	ftLibraryAddNewMethod="ftEdit">
 <cfproperty name="aRelatedIDs" type="array" hint="Holds object pointers to related objects.  Can be of mixed types." required="no" default="" 
-	ftLink="dmFile"
+	ftJoin="dmFile"
 	ftLibraryPickListClass="thumbNailsWrap"
 	ftLibrarySelectedListClass="thumbNailsWrap"	ftLibrarySelectedListStyle="margin-left:10px;"
 	ftLibraryAddNewMethod="AddNew">

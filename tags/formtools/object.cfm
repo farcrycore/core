@@ -240,7 +240,7 @@
 
 		</cfif>
 		
-		<cfif ftFieldMetadata.Type EQ "array" AND isDefined("ftFieldMetadata.ftLink")>
+		<cfif ftFieldMetadata.Type EQ "array" AND isDefined("ftFieldMetadata.ftJoin")>
 			
 			<cfsavecontent variable="ArrayLink">
 				<cfoutput>
@@ -249,7 +249,7 @@
 					<cfset stURLParams.primaryTypename = "#typename#">
 					<cfset stURLParams.primaryFieldName = "#ftFieldMetadata.Name#">
 					<cfset stURLParams.primaryFormFieldName = "#variables.prefix##ftFieldMetadata.Name#">
-					<cfset stURLParams.ftLink = "#ftFieldMetadata.ftLink#">
+					<cfset stURLParams.ftJoin = "#ftFieldMetadata.ftJoin#">
 					
 					<!--- If the field is contained in a wizzard, we need to let the library know which wizzard. --->
 					<cfif ListFindNoCase(ParentTag, "cf_wizzard")>
@@ -290,11 +290,11 @@
 			<cfoutput>
 				<label for="#variables.prefix##ftFieldMetadata.Name#" class="#attributes.class#">
 				<b>#ftFieldMetadata.ftlabel#</b>
-				<cfif ftFieldMetadata.Type EQ "array" AND isDefined("ftFieldMetadata.ftLink")>
+				<cfif ftFieldMetadata.Type EQ "array" AND isDefined("ftFieldMetadata.ftJoin")>
 					#ArrayLink#					
 				</cfif>
 				<cfoutput></label></cfoutput>
-				<cfif ftFieldMetadata.Type EQ "array" AND isDefined("ftFieldMetadata.ftLink")>
+				<cfif ftFieldMetadata.Type EQ "array" AND isDefined("ftFieldMetadata.ftJoin")>
 					<div id="#variables.prefix##ftFieldMetadata.Name#-wrapper" class="formfield-wrapper">
 				</cfif>
 			</cfoutput>
@@ -302,7 +302,7 @@
 		</cfsavecontent>
 		
 		<cfsavecontent variable="FieldLabelEnd">
-			<cfif ftFieldMetadata.Type EQ "array" AND isDefined("ftFieldMetadata.ftLink")>
+			<cfif ftFieldMetadata.Type EQ "array" AND isDefined("ftFieldMetadata.ftJoin")>
 				<cfoutput></div></cfoutput>
 			</cfif>
 			

@@ -34,7 +34,7 @@ $Developer: $
 <cfparam name="url.primaryTypeName" default="">
 <cfparam name="url.primaryFieldName" default="">
 <cfparam name="url.primaryFormFieldName" default="">
-<cfparam name="url.ftLink" default="">
+<cfparam name="url.ftJoin" default="">
 <cfparam name="url.WizzardID" default="">
 
 <cfparam name="url.ftLibraryAddNewMethod" default="AddNew"><!--- Method to Add New Object --->
@@ -84,7 +84,7 @@ $Developer: $
 
 <ft:processForm action="Attach,Attach & Add Another">
 	
-	<ft:processFormObjects typename="#url.ftLink#" /><!--- Returns variables.lSavedObjectIDs --->
+	<ft:processFormObjects typename="#url.ftJoin#" /><!--- Returns variables.lSavedObjectIDs --->
 
 	<!--- Attach the Newly Created Object --->
 	<cfset oPrimary = createObject("component",application.types[url.primaryTypeName].typepath)>		
@@ -156,7 +156,7 @@ $Developer: $
 					<cfset stProperties.bLibrary = 1>	
 					<cfset stProperties.status = "approved">	
 					
-					<cfset t = createObject("component",application.types[url.ftLink].typepath)>
+					<cfset t = createObject("component",application.types[url.ftJoin].typepath)>
 					<cfset stImage =  t.createData(stproperties=stProperties)>
 					
 					<!--- update category --->
@@ -216,15 +216,15 @@ $Developer: $
 
 
 <cfset oPrimary = createObject("component",application.types[url.primaryTypeName].typepath)>
-<cfset q = oPrimary.getArrayFieldAsQuery(objectid="#url.primaryObjectID#", Fieldname="#url.primaryFieldName#", Typename="#url.primaryTypeName#", Link="#url.ftLink#")>
+<cfset q = oPrimary.getArrayFieldAsQuery(objectid="#url.primaryObjectID#", Fieldname="#url.primaryFieldName#", Typename="#url.primaryTypeName#", Link="#url.ftJoin#")>
 	
 
-<cfset oData = createObject("component",application.types[url.ftLink].typepath)>
+<cfset oData = createObject("component",application.types[url.ftJoin].typepath)>
 
 
 <cfquery datasource="#application.dsn#" name="qLibraryList">
 SELECT ObjectID
-FROM #URL.ftLink#
+FROM #URL.ftJoin#
 </cfquery>
 
 <!--- Put JS and CSS for TabStyle1 into the header --->
@@ -272,9 +272,9 @@ FROM #URL.ftLink#
 										<ul class="#url.ftLibraryPickListClass#" style="#url.ftLibraryPickListStyle#">
 											<ws:paginateRecords r_stRecord="stObject">
 												<li id="select#stObject.objectID#" class="LibraryItem" style="cursor:pointer;" objectID="#stObject.ObjectID#">
-													<cfif FileExists("#application.path.project#/webskin/#url.ftLink#/#url.ftLibraryPickMethod#.cfm")>
+													<cfif FileExists("#application.path.project#/webskin/#url.ftJoin#/#url.ftLibraryPickMethod#.cfm")>
 														<cfset stobj = oData.getData(objectid=stObject.ObjectID)>
-														<cfinclude template="/farcry/#application.applicationname#/webskin/#url.ftLink#/#url.ftLibraryPickMethod#.cfm">
+														<cfinclude template="/farcry/#application.applicationname#/webskin/#url.ftJoin#/#url.ftLibraryPickMethod#.cfm">
 													<cfelse>
 														#stObject.ObjectID#
 													</cfif>
@@ -324,11 +324,11 @@ FROM #URL.ftLink#
 							
 							<cfif StructKeyExists(oData,url.ftLibraryAddNewMethod)>
 								<cfinvoke component="#oData#" method="#url.ftLibraryAddNewMethod#">
-									<cfinvokeargument name="typename" value="#url.ftLink#">
+									<cfinvokeargument name="typename" value="#url.ftJoin#">
 								</cfinvoke>
 							<cfelse>
 								<cfinvoke component="#oData#" method="AddNew">
-									<cfinvokeargument name="typename" value="#url.ftLink#">
+									<cfinvokeargument name="typename" value="#url.ftJoin#">
 								</cfinvoke>
 							</cfif>
 
@@ -394,7 +394,7 @@ FROM #URL.ftLink#
 						opener.update_#url.primaryFormFieldname#_wrapper(request.responseText);						
 						Effect.Fade(element, {from:0.2,to:0.2});
 					}, 
-					parameters:'primaryObjectID=#url.primaryObjectID#&primaryTypename=#url.primaryTypeName#&primaryFieldname=#url.primaryFieldname#&primaryFormFieldname=#url.primaryFormFieldname#&WizzardID=#url.WizzardID#&DataObjectID=' + encodeURIComponent($(element).getAttribute('objectid')) + '&DataTypename=#url.ftLink#', evalScripts:true, asynchronous:true
+					parameters:'primaryObjectID=#url.primaryObjectID#&primaryTypename=#url.primaryTypeName#&primaryFieldname=#url.primaryFieldname#&primaryFormFieldname=#url.primaryFormFieldname#&WizzardID=#url.WizzardID#&DataObjectID=' + encodeURIComponent($(element).getAttribute('objectid')) + '&DataTypename=#url.ftJoin#', evalScripts:true, asynchronous:true
 				}) 
 				
                 				

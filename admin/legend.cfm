@@ -124,7 +124,7 @@ $out:$
 </tr>
 <tr>
 	<td align="center"><img src="#cimages#/linkDraft.gif" height="16" width="16" border="0"></td>
-	<td>#application.adminBundle[session.dmProfile.locale].draftLinkObj#</td>
+	<td>#application.adminBundle[session.dmProfile.locale].draftJoinObj#</td>
 </tr>
 <tr>
 	<td align="center"><img src="#cimages#/linkPending.gif" height="16" width="16" border="0"></td>

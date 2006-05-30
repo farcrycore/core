@@ -8,7 +8,7 @@
 		
 		<cfparam name="arguments.stMetadata.ftstyle" default="width:600px;">
 		<cfparam name="arguments.stMetadata.ftImageListField" default="">
-		<cfparam name="arguments.stMetadata.ftLinkListField" default="">
+		<cfparam name="arguments.stMetadata.ftJoinListField" default="">
 	
 	
 		<cfset Request.InHead.TinyMCE = 1>

@@ -17,13 +17,13 @@
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedListClass" default="thumbNailsWrap">
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedListStyle" default="">
 
-		<!--- An array type MUST have a 'ftLink' property --->
-		<cfif not structKeyExists(stMetadata,"ftLink")>
+		<!--- An array type MUST have a 'ftJoin' property --->
+		<cfif not structKeyExists(stMetadata,"ftJoin")>
 			<cfreturn "">
 		</cfif>
 		
 		<!--- Create the Linked Table Type as an object  --->
-		<cfset oData = createObject("component",application.types[stMetadata.ftLink].typepath)>
+		<cfset oData = createObject("component",application.types[stMetadata.ftJoin].typepath)>
 
 
 		<!--- Make sure scriptaculous libraries are included. --->
@@ -46,9 +46,9 @@
 						<cfloop list="#arrayToList(arguments.stObject[arguments.stMetaData.Name])#" index="i">
 							<li id="#arguments.fieldname#_#i#">
 								<div>
-								<cfif FileExists("#application.path.project#/webskin/#arguments.stMetadata.ftLink#/#arguments.stMetadata.ftLibrarySelectedMethod#.cfm")>
+								<cfif FileExists("#application.path.project#/webskin/#arguments.stMetadata.ftJoin#/#arguments.stMetadata.ftLibrarySelectedMethod#.cfm")>
 									<cfset stobj = oData.getData(objectid=i)>
-									<cfinclude template="/farcry/#application.applicationname#/webskin/#arguments.stMetadata.ftLink#/#arguments.stMetadata.ftLibrarySelectedMethod#.cfm">
+									<cfinclude template="/farcry/#application.applicationname#/webskin/#arguments.stMetadata.ftJoin#/#arguments.stMetadata.ftLibrarySelectedMethod#.cfm">
 								<cfelse>
 									#i#
 								</cfif>
@@ -112,10 +112,10 @@
 		
 		<!--- We need to get the Array Field Items as a query --->
 		<cfset o = createObject("component",application.types[arguments.typename].typepath)>
-		<cfset q = o.getArrayFieldAsQuery(objectid="#arguments.stObject.ObjectID#", Typename="#arguments.typename#", Fieldname="#stMetadata.Name#", ftLink="#stMetadata.ftLink#")>
+		<cfset q = o.getArrayFieldAsQuery(objectid="#arguments.stObject.ObjectID#", Typename="#arguments.typename#", Fieldname="#stMetadata.Name#", ftJoin="#stMetadata.ftJoin#")>
 	
 		<!--- Create the Linked Table Type as an object  --->
-		<cfset oData = createObject("component",application.types[stMetadata.ftLink].typepath)>
+		<cfset oData = createObject("component",application.types[stMetadata.ftJoin].typepath)>
 
 		<cfsavecontent variable="returnHTML">
 		<cfoutput>
@@ -128,9 +128,9 @@
 						<li id="#arguments.fieldname#_#q.objectid#">
 							
 							<div>
-							<cfif FileExists("#application.path.project#/webskin/#arguments.stMetadata.ftLink#/#arguments.stMetadata.ftLibrarySelectedMethod#.cfm")>
+							<cfif FileExists("#application.path.project#/webskin/#arguments.stMetadata.ftJoin#/#arguments.stMetadata.ftLibrarySelectedMethod#.cfm")>
 								<cfset stobj = oData.getData(objectid=q.ObjectID)>
-								<cfinclude template="/farcry/#application.applicationname#/webskin/#arguments.stMetadata.ftLink#/#arguments.stMetadata.ftLibrarySelectedMethod#.cfm">
+								<cfinclude template="/farcry/#application.applicationname#/webskin/#arguments.stMetadata.ftJoin#/#arguments.stMetadata.ftLibrarySelectedMethod#.cfm">
 							<cfelse>
 								<cfif isDefined("q.label") AND len(q.label)>#q.Label#<cfelse>#q.ObjectID#</cfif>
 							</cfif>
