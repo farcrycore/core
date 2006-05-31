@@ -240,7 +240,7 @@
 
 		</cfif>
 		
-		<cfif ftFieldMetadata.Type EQ "array" AND isDefined("ftFieldMetadata.ftJoin")>
+		<cfif (ftFieldMetadata.Type EQ "array" OR ftFieldMetadata.Type EQ "UUID") AND isDefined("ftFieldMetadata.ftJoin")>
 			
 			<cfsavecontent variable="ArrayLink">
 				<cfoutput>
@@ -252,8 +252,8 @@
 					<cfset stURLParams.ftJoin = "#ftFieldMetadata.ftJoin#">
 					
 					<!--- If the field is contained in a wizzard, we need to let the library know which wizzard. --->
-					<cfif ListFindNoCase(ParentTag, "cf_wizzard")>
-						<cfset stURLParams.WizzardID = "#stWizzard.ObjectID#">
+					<cfif len(attributes.WizzardID)>
+						<cfset stURLParams.WizzardID = "#attributes.WizzardID#">
 					</cfif>
 					
 					<cfif structKeyExists(ftFieldMetadata,'ftLibraryAddNewMethod')>
