@@ -148,6 +148,7 @@ function fcleanBody(myString){
 		<!--- relocate iframes for tree and edit areas using JS --->
 		<cfoutput>
 			<script type="text/javascript">
+				debugger;
 				// if sidebar overtree exists rebuild JS tree
 				/*if(parent['sidebar'].frames['sideTree'])
 					parent['sidebar'].frames['sideTree'].location= parent['sidebar'].frames['sideTree'].location;
