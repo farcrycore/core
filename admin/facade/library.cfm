@@ -216,6 +216,7 @@ $Developer: $
 
 
 <cfset oPrimary = createObject("component",application.types[url.primaryTypeName].typepath)>
+<cfdump var="#application.types[url.primaryTypeName]#" expand="false"><cfabort>
 <cfset q = oPrimary.getArrayFieldAsQuery(objectid="#url.primaryObjectID#", Fieldname="#url.primaryFieldName#", Typename="#url.primaryTypeName#", Link="#url.ftJoin#")>
 	
 
