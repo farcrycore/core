@@ -18,6 +18,7 @@
 			SELECT *
 			FROM qWebskin
 			WHERE lower(qWebskin.name) LIKE '#lCase(arguments.stMetadata.ftPrefix)#%'
+			AND lower(qWebskin.name) LIKE '%.cfm'
 		</cfquery>
 
 		<cfset qMethods = queryNew("methodname, displayname")>
@@ -26,7 +27,7 @@
 		<!--- TODO
 		must be able to do this more neatly with a regEX, especially if we 
 		want more than one bit of template metadata --->
-			<cffile action="READ" file="#attributes.path#/#qWebskin.name#" variable="template">
+			<cffile action="READ" file="#application.path.project#/webskin/#arguments.typename#/#qWebskin.name#" variable="template">
 		
 			<cfset pos = findNoCase('@@displayname:', template)>
 			<cfif pos eq 0>

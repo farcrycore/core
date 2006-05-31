@@ -1,10 +1,6 @@
 <cfcomponent extends="field" name="array" displayname="array" hint="Used to liase with Array type fields"> 
 
 
-	<cfimport taglib="/farcry/farcry_core/tags/webskin/" prefix="ws" >
-
-		
-
 	<cffunction name="edit" access="public" output="true" returntype="string" hint="This is going to called from ft:object and will always be passed 'typename,stobj,stMetadata,fieldname'.">
 		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
 		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
@@ -17,7 +13,7 @@
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedListClass" default="thumbNailsWrap">
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedListStyle" default="">
 
-		<!--- An array type MUST have a 'ftJoin' property --->
+		<!--- A UUID type MUST have a 'ftJoin' property --->
 		<cfif not structKeyExists(stMetadata,"ftJoin")>
 			<cfreturn "">
 		</cfif>
@@ -25,73 +21,18 @@
 		<!--- Create the Linked Table Type as an object  --->
 		<cfset oData = createObject("component",application.types[stMetadata.ftJoin].typepath)>
 
-
-		<!--- Make sure scriptaculous libraries are included. --->
-		<cfset Request.InHead.ScriptaculousDragAndDrop = 1>
-		<cfset Request.InHead.ScriptaculousEffects = 1>	
-		
-		
-		<!--- If the array contains items, make sure that the cursor reflects the fact that the items can be re-oredered --->
-		<cfif ListLen(arrayToList(arguments.stObject[arguments.stMetaData.Name])) GT 1>
-			<cfset arguments.stMetadata.ftLibrarySelectedListStyle = "#arguments.stMetadata.ftLibrarySelectedListStyle#;cursor:move;" />
-		</cfif>
-		
-		<cfset ULID = "#arguments.fieldname#_list"><!--- ID of the unordered list. Important to use this so that the object can be referenced even if their are multiple objects referencing the same field. --->
-		
 		<cfsavecontent variable="returnHTML">
 		<cfoutput>
-				<input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="#arrayToList(arguments.stObject[arguments.stMetaData.Name])#" />
-				<cfif ListLen(arrayToList(arguments.stObject[arguments.stMetaData.Name]))>
-					<ul id="#ULID#" class="#arguments.stMetadata.ftLibrarySelectedListClass#" style="#arguments.stMetadata.ftLibrarySelectedListStyle#">
-						<cfloop list="#arrayToList(arguments.stObject[arguments.stMetaData.Name])#" index="i">
-							<li id="#arguments.fieldname#_#i#">
-								<div>
-								<cfif FileExists("#application.path.project#/webskin/#arguments.stMetadata.ftJoin#/#arguments.stMetadata.ftLibrarySelectedMethod#.cfm")>
-									<cfset stobj = oData.getData(objectid=i)>
-									<cfinclude template="/farcry/#application.applicationname#/webskin/#arguments.stMetadata.ftJoin#/#arguments.stMetadata.ftLibrarySelectedMethod#.cfm">
-								<cfelse>
-									#i#
-								</cfif>
-								
-								<script type="text/javascript" language="javascript" charset="utf-8">					
-								// <![CDATA[
-									  Sortable.create('#ULID#',
-									  {ghosting:false,constraint:false,hoverclass:'over',
-									    onChange:function(element){$('#arguments.fieldname#').value = Sortable.sequence('#ULID#')},
-									    
-									  });
-									// ]]>	
-								
-								</script>							
-								<a href="##" onclick="Sortable.create('#ULID#');new Effect.Fade($('#arguments.fieldname#_#i#'));Element.remove('#arguments.fieldname#_#i#');$('#arguments.fieldname#').value = Sortable.sequence('#ULID#'); return false;"><img src="#application.url.farcry#/images/crystal/22x22/actions/button_cancel.png" style="width:16px;height:16px;" /></a>
-								</div>
-							</li>
-						</cfloop>
-					</ul>
-				
-	
-				
+				<input type="text" id="#arguments.fieldname#" name="#arguments.fieldname#" value="#arguments.stObject[arguments.stMetaData.Name]#" />
+				<cfif Len(arguments.stObject[arguments.stMetaData.Name])>
+					<cfif FileExists("#application.path.project#/webskin/#arguments.stMetadata.ftJoin#/#arguments.stMetadata.ftLibrarySelectedMethod#.cfm")>
+						<cfset stobj = oData.getData(objectid=i)>
+						<cfinclude template="/farcry/#application.applicationname#/webskin/#arguments.stMetadata.ftJoin#/#arguments.stMetadata.ftLibrarySelectedMethod#.cfm">
+					<cfelse>
+						#i#
+					</cfif>
 
 				</cfif>
-			
-			
-			
-			<script type="text/javascript" language="javascript" charset="utf-8">
-			function update_#arguments.fieldname#_wrapper(HTML){
-				$('#arguments.fieldname#-wrapper').innerHTML = HTML;
-				// <![CDATA[
-					  Sortable.create('#ULID#',
-					  {ghosting:false,constraint:false,hoverclass:'over',
-					    onChange:function(element){$('#arguments.fieldname#').value = Sortable.sequence('#ULID#')},
-					    
-					  });
-					// ]]>									 
-			}
-			</script>
-			
-
-			
-						
 			
 		</cfoutput>
 		</cfsavecontent>
