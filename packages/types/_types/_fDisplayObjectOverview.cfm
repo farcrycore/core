@@ -1,3 +1,4 @@
+
 <cfparam name="stObject.bAlwaysShowEdit" default="0">
 <cfsavecontent variable="displayContent"><cfoutput>
 	<div class="wizard-nav">
@@ -7,7 +8,8 @@
 			<cfcase value="draft"> <!--- DRAFT STATUS --->
 				<!--- check user can edit --->
 				<cfif stPermissions.iEdit EQ 1>
-					<a href="edittabEdit.cfm?objectid=#stObject.objectid#">#application.adminBundle[session.dmProfile.locale].editObj#</a><br /><cfif stObject.objectid NEQ stObject.objectid_previousversion>
+					<!--- MJB: added url.ref so that the edit methods know they were initially called by the overview page and they can return here if they so desire. --->
+					<a href="edittabEdit.cfm?objectid=#stObject.objectid#&ref=overview">#application.adminBundle[session.dmProfile.locale].editObj#</a><br /><cfif stObject.objectid NEQ stObject.objectid_previousversion>
 					<a onclick="confirmRestore('#stObject.parentid#','#stObject.objectid#');" href="javascript:void(0);">#application.adminBundle[session.dmProfile.locale].restoreLiveObj#</a><br /></cfif>
 				</cfif>
 	
