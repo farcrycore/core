@@ -47,9 +47,9 @@ application.o_dmAuthorisation = createObject("component", "#application.packagep
 application.factory.oAudit = createObject("component","#application.packagepath#.farcry.audit");
 
 // initialise any server structs that are non existant
-rc = application.o_dmSecInit.initServer();
+application.o_dmSecInit.initServer();
 // initialise any session structs that are non existant
-rc = application.o_dmSecInit.initSession();
+application.o_dmSecInit.initSession();
 
 // determing browser being used
 if (CGI.HTTP_USER_AGENT contains "MSIE") browser = "IE"; else browser = "NS";

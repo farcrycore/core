@@ -159,12 +159,16 @@ $out:$
 	</cffunction>
 	
 	<cffunction name="initServer" access="public" returntype="boolean">
+		<cfargument name="clearExistingCache" type="boolean" default="false" required="false">
 		<cfset var bSuccess = 1>
 		<cftry>
 		<cflock timeout="45" throwontimeout="Yes" type="READONLY" scope="SERVER">
 			
 			<cfscript>
 			serverdmSec_def=0;
+			
+			if(arguments.clearExistingCache) StructDelete(server, "dmSec");
+			
 			if(isDefined("server.dmSec")) serverdmSec_def=1;
 			
 			serverdmSecApplication_def=0;

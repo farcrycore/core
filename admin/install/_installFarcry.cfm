@@ -237,6 +237,13 @@ stResult = application.o_dmAuthorisation.createPolicyGroupMapping(groupname="Pub
 <cfif fileExists("#application.path.project#/permissionCache.wddx")>
     <cffile action="DELETE" file="#application.path.project#/permissionCache.wddx">
 </cfif>
+
+<!--- reset permissions caches --->
+<cfoutput><tr><td width="100%"><li>Resetting permission caches</cfoutput>
+<cfset application.o_dmSecInit.initServer(clearExistingCache=true) />
+<cfset application.o_dmSecInit.initSession() />
+
+<!--- success! --->
 <cfoutput>#successMsg#</cfoutput>
 <cfflush>
 
