@@ -53,7 +53,7 @@ default handlers
 
 		<cfif NOT structIsEmpty(stObj)>
 			<cftry>
-				<cfinclude template="/farcry/#application.applicationname#/#application.path.handler#/#stObj.typename#/#arguments.template#.cfm">
+				<cfinclude template="#application.path.webskin#/#stObj.typename#/#arguments.template#.cfm">
 				<cfcatch>
 					<!--- check to see if the displayMethod template exists --->
 					<cfif NOT fileExists("#application.path.webskin#/#stObj.typename#/#arguments.template#.cfm")>
