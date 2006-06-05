@@ -43,7 +43,7 @@ object methods
 	<!--- getData for object edit --->
 	<cfset stObj = this.getData(arguments.objectid)>
 	
-	<cfinclude template="_dmnavigation/edit.cfm">
+	<cfinclude template="_dmNavigation/edit.cfm">
 </cffunction>
 
 <cffunction name="getParent" access="public" returntype="query" output="false" hint="Returns the navigation parent of child (dmHTML page for example)">
@@ -65,7 +65,7 @@ object methods
 	<!--- get object details --->
 	<cfset stObj = getData(arguments.objectid)>
 	<cfif NOT structIsEmpty(stObj)>
-		<cfinclude template="_dmnavigation/delete.cfm">
+		<cfinclude template="_dmNavigation/delete.cfm">
 	</cfif>
 </cffunction>
 
@@ -118,7 +118,7 @@ object methods
 	<!--- get object details --->
 	<cfset stObj = getData(arguments.objectid)>
 	
-	<cfinclude template="_dmnavigation/renderOverview.cfm">
+	<cfinclude template="_dmNavigation/renderOverview.cfm">
 	
 	<cfreturn html>
 </cffunction>
@@ -130,7 +130,7 @@ object methods
 	<cfset var stObj = getData(arguments.objectid)>
 	<cfset var stLocal = StructNew()>
 	<cfset stLocal.html = "">		
-	<cfinclude template="_dmnavigation/renderObjectOverview.cfm">
+	<cfinclude template="_dmNavigation/renderObjectOverview.cfm">
 	<cfreturn stLocal.html>
 
 </cffunction>
