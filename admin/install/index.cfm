@@ -102,7 +102,7 @@ $out:$
     
 			<!--- copy farcry_pliant directory to new site name --->
 		    <cfscript>
-		    projectPath = replaceNoCase(replace(getCurrentTemplatePath(),"\","/","all"), "/farcry_core/admin/install/index.cfm", "") & "/farcry_pliant";
+		    projectPath = replaceNoCase(replace(getCurrentTemplatePath(),"\","/","all"), "/farcry_core/admin/install/index.cfm", "") & "/farcry_mollio";
 		    newProjectPath = listDeleteAt(projectPath, listLen(projectPath, "/"), "/") & "/" & form.siteName;
 			basePath = replaceNoCase(replace(getCurrentTemplatePath(),"\","/","all"), "/farcry_core/admin/install/index.cfm", "") & "";
 		    </cfscript>
