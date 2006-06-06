@@ -239,7 +239,7 @@ the latter is the policy group for anonymous...
 	
 	<cfif isDefined("stArchive")>
 		<cftry>
-				<cfinclude template="#application.path.webskin#/#stObj.typename#/#stObj.displayMethod#.cfm">
+				<cfinclude template="/farcry/#application.applicationname#/#application.path.handler#/#stObj.typename#/#stObj.displayMethod#.cfm">
 				<cfcatch>
 					<!--- check to see if the displayMethod template exists --->
 					<cfif NOT fileExists("#application.path.webskin#/#stObj.typename#/#stObj.displayMethod#.cfm")>

@@ -52,20 +52,17 @@ default handlers
 		<cfset var stObj = getData(objectid=arguments.objectID,dsn=arguments.dsn)>		
 
 		<cfif NOT structIsEmpty(stObj)>
-			<cftry>
-				<cfinclude template="#application.path.webskin#/#stObj.typename#/#arguments.template#.cfm">
-				<cfcatch>
-					<!--- check to see if the displayMethod template exists --->
-					<cfif NOT fileExists("#application.path.webskin#/#stObj.typename#/#arguments.template#.cfm")>
-						<cfthrow type="Application" detail="Error: Template not found [#application.path.webskin#/#stObj.typename#/#arguments.template#.cfm]." >
-						<!--- <cfabort showerror="Error: Template not found [#application.path.webskin#/#stObj.typename#/#arguments.template#.cfm].">  --->
-					<cfelse>
-						<cfrethrow /> 
-						<!--- <cfif isdefined("url.debug")><cfset request.cfdumpinited = false><cfoutput>#cfcatch.message#<br />#cfcatch.detail#</cfoutput><cfdump var="#cfcatch#"></cfif> --->
-					</cfif>
-				</cfcatch>
-			</cftry>
+			<cfif NOT fileExists("#ExpandPath(displayTemplatePath(typename=stObj.typename, template=arguments.template))#")>
+				<cfthrow type="Application" detail="Error: Template not found [#ExpandPath(displayTemplatePath(typename=stObj.typename, template=arguments.template))#]." />
+			</cfif>
+			<cfinclude template="#displayTemplatePath(typename=stObj.typename, template=arguments.template)#">
 		</cfif>
+	</cffunction>
+	
+	<cffunction name="displayTemplatePath" returntype="string" access="private" output="no">
+		<cfargument name="typename" type="string" required="yes" />
+		<cfargument name="template" type="string" required="yes" />
+		<cfreturn "/farcry/#application.applicationname#/#application.path.handler#/#arguments.typename#/#arguments.template#.cfm" />
 	</cffunction>
 
 	<cffunction name="display" access="public" returntype="any" output="Yes">
