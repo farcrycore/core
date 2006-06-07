@@ -183,10 +183,13 @@ default handlers
 	<cffunction name="edit" access="public" output="true" returntype="void">
 		<cfargument name="ObjectID" required="true" type="UUID">
 		<cfargument name="lFields" required="false" type="string" default="">
+		<cfargument name="cancelCompleteURL" required="false" type="string" default="">
 		
 		<cfset var stObj=getData(arguments.objectid)>
 		<cfset var oType = createObject("component",application.types['#stObj.typename#'].typepath)>
 
+	
+		<cfparam name="url.ref" default="">
 
 		<ft:processForm action="Save" >
 			
@@ -207,6 +210,16 @@ default handlers
 			<nj:treeGetRelations typename="#stObj.typename#" objectId="#stObj.ObjectID#" get="parents" r_lObjectIds="ParentID" bInclusive="1">
 			<!--- update tree --->
 			<nj:updateTree objectId="#parentID#">
+			<cfswitch expression="#url.ref#">
+			<cfcase value="overview">
+				<cfoutput>
+				<script language="javascript" type="text/javascript">
+				location.href = "#application.url.farcry#/edittabOverview.cfm?objectid=#stObj.ObjectID#";
+				</script>
+				</cfoutput>
+			</cfcase>
+			</cfswitch>
+
 			<cfabort>
 		</ft:processForm>
 
