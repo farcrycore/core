@@ -26,6 +26,9 @@
 	<cfparam name="attributes.r_stFields" default=""><!--- the name of the structure that is to be returned with the form field information. --->
 	<cfparam name="attributes.stPropMetadata" default="#structNew()#"><!--- This is used to override the default metadata as setup in the type.cfc --->
 	<cfparam name="attributes.WizzardID" default=""><!--- If this object call is part of a wizzard, the object will be retrieved from the wizzard storage --->
+	<cfparam name="attributes.IncludeLibraryWrapper" default="true"><!--- If this is set to false, the library wrapper is not displayed. This is so that the library can change the inner html of the wrapper without duplicating the wrapping div. --->
+	
+	
 	
 	<cfset attributes.lExcludeFields = ListAppend(attributes.lExcludeFields,"label,objectid,locked,lockedby,lastupdatedby,ownedby,datetimelastupdated,createdby,datetimecreated,versionID,status")>
 	
@@ -83,13 +86,14 @@
 				<cfset stObj = CALLER.stPLP.plp.outputObjects[attributes.ObjectID]>
 			<cfelse>			
 				<cfset stObj = stType.getData(attributes.objectID)>
+				
 			</cfif>
 		</cfif>
 
 	
 	<cfelseif isStruct(attributes.stObject)>
 	
-		<cfset stType = createobject("component",application.types[stObj.typename].typepath)>
+		<cfset stType = createobject("component",application.types[attributes.stObject.typename].typepath)>
 		<cfset stObj = attributes.stObject>
 		<cfset lFields = StructKeyList(application.types[stObj.typename].stprops)>
 		<cfset stFields = application.types[stObj.typename].stprops>
@@ -240,73 +244,6 @@
 
 		</cfif>
 		
-		<cfif (ftFieldMetadata.Type EQ "array" OR ftFieldMetadata.Type EQ "UUID") AND isDefined("ftFieldMetadata.ftJoin")>
-			
-			<cfsavecontent variable="ArrayLink">
-				<cfoutput>
-					<cfset stURLParams = structNew()>
-					<cfset stURLParams.primaryObjectID = "#stObj.ObjectID#">
-					<cfset stURLParams.primaryTypename = "#typename#">
-					<cfset stURLParams.primaryFieldName = "#ftFieldMetadata.Name#">
-					<cfset stURLParams.primaryFormFieldName = "#variables.prefix##ftFieldMetadata.Name#">
-					<cfset stURLParams.ftJoin = "#ftFieldMetadata.ftJoin#">
-					
-					<!--- If the field is contained in a wizzard, we need to let the library know which wizzard. --->
-					<cfif len(attributes.WizzardID)>
-						<cfset stURLParams.WizzardID = "#attributes.WizzardID#">
-					</cfif>
-					
-					<cfif structKeyExists(ftFieldMetadata,'ftLibraryAddNewMethod')>
-						<cfset stURLParams.ftLibraryAddNewMethod = "#ftFieldMetadata.ftLibraryAddNewMethod#">
-					</cfif>
-					<cfif structKeyExists(ftFieldMetadata,'ftLibraryPickMethod')>
-						<cfset stURLParams.ftLibraryPickMethod = "#ftFieldMetadata.ftLibraryPickMethod#">
-					</cfif>
-					<cfif structKeyExists(ftFieldMetadata,'ftLibraryPickListClass')>
-						<cfset stURLParams.ftLibraryPickListClass = "#ftFieldMetadata.ftLibraryPickListClass#">
-					</cfif>
-					<cfif structKeyExists(ftFieldMetadata,'ftLibraryPickListStyle')>
-						<cfset stURLParams.ftLibraryPickListStyle = "#ftFieldMetadata.ftLibraryPickListStyle#">
-					</cfif>
-					<cfif structKeyExists(ftFieldMetadata,'ftLibrarySelectedMethod')>
-						<cfset stURLParams.ftLibrarySelectedMethod = "#ftFieldMetadata.ftLibrarySelectedMethod#">
-					</cfif>
-					<cfif structKeyExists(ftFieldMetadata,'ftLibrarySelectedListClass')>
-						<cfset stURLParams.ftLibrarySelectedListClass = "#ftFieldMetadata.ftLibrarySelectedListClass#">
-					</cfif>
-					<cfif structKeyExists(ftFieldMetadata,'ftLibrarySelectedListStyle')>
-						<cfset stURLParams.ftLibrarySelectedListStyle = "#ftFieldMetadata.ftLibrarySelectedListStyle#">
-					</cfif>
-					
-					<ws:buildLink href="#application.url.farcry#/facade/library.cfm" target="library" bShowTarget="true" stParameters="#stURLParams#"><img src="#application.url.farcry#/images/treeimages/crystalIcons/includeApproved.gif" /></ws:buildLink>
-				</cfoutput>
-			</cfsavecontent>	
-		</cfif>
-		
-		
-				
-		<cfsavecontent variable="FieldLabelStart">
-				
-			<cfoutput>
-				<label for="#variables.prefix##ftFieldMetadata.Name#" class="#attributes.class#">
-				<b>#ftFieldMetadata.ftlabel#</b>
-				<cfif ftFieldMetadata.Type EQ "array" AND isDefined("ftFieldMetadata.ftJoin")>
-					#ArrayLink#					
-				</cfif>
-				<cfoutput></label></cfoutput>
-				<cfif ftFieldMetadata.Type EQ "array" AND isDefined("ftFieldMetadata.ftJoin")>
-					<div id="#variables.prefix##ftFieldMetadata.Name#-wrapper" class="formfield-wrapper">
-				</cfif>
-			</cfoutput>
-			
-		</cfsavecontent>
-		
-		<cfsavecontent variable="FieldLabelEnd">
-			<cfif ftFieldMetadata.Type EQ "array" AND isDefined("ftFieldMetadata.ftJoin")>
-				<cfoutput></div></cfoutput>
-			</cfif>
-			
-		</cfsavecontent>
 		
 		
 		<!--- Default to using the FormTools Field CFC --->
@@ -381,6 +318,8 @@
 		</cfif>
 		<cfset ftFieldMetadata.ftClass = Trim(ftFieldMetadata.ftClass)>
 		
+		
+		
 		<cfset variables.returnHTML = "">
 		
 		<cfif structKeyExists(tFieldType,FieldMethod)>
@@ -399,6 +338,77 @@
 			</cftry>
 		</cfif>
 			
+
+		<cfif attributes.Format EQ "Edit" AND (ftFieldMetadata.Type EQ "array" OR ftFieldMetadata.Type EQ "UUID") AND isDefined("ftFieldMetadata.ftJoin")>
+			
+			<cfsavecontent variable="LibraryLink">
+				<cfoutput>
+					<cfset stURLParams = structNew()>
+					<cfset stURLParams.primaryObjectID = "#stObj.ObjectID#">
+					<cfset stURLParams.primaryTypename = "#typename#">
+					<cfset stURLParams.primaryFieldName = "#ftFieldMetadata.Name#">
+					<cfset stURLParams.primaryFormFieldName = "#variables.prefix##ftFieldMetadata.Name#">
+					<cfset stURLParams.ftJoin = "#ftFieldMetadata.ftJoin#">
+					<cfset stURLParams.LibraryType = "#ftFieldMetadata.Type#">
+					
+					<!--- If the field is contained in a wizzard, we need to let the library know which wizzard. --->
+					<cfif len(attributes.WizzardID)>
+						<cfset stURLParams.WizzardID = "#attributes.WizzardID#">
+					</cfif>
+					
+					<cfif structKeyExists(ftFieldMetadata,'ftLibraryAddNewMethod')>
+						<cfset stURLParams.ftLibraryAddNewMethod = "#ftFieldMetadata.ftLibraryAddNewMethod#">
+					</cfif>
+					<cfif structKeyExists(ftFieldMetadata,'ftLibraryPickMethod')>
+						<cfset stURLParams.ftLibraryPickMethod = "#ftFieldMetadata.ftLibraryPickMethod#">
+					</cfif>
+					<cfif structKeyExists(ftFieldMetadata,'ftLibraryPickListClass')>
+						<cfset stURLParams.ftLibraryPickListClass = "#ftFieldMetadata.ftLibraryPickListClass#">
+					</cfif>
+					<cfif structKeyExists(ftFieldMetadata,'ftLibraryPickListStyle')>
+						<cfset stURLParams.ftLibraryPickListStyle = "#ftFieldMetadata.ftLibraryPickListStyle#">
+					</cfif>
+					<cfif structKeyExists(ftFieldMetadata,'ftLibrarySelectedMethod')>
+						<cfset stURLParams.ftLibrarySelectedMethod = "#ftFieldMetadata.ftLibrarySelectedMethod#">
+					</cfif>
+					<cfif structKeyExists(ftFieldMetadata,'ftLibrarySelectedListClass')>
+						<cfset stURLParams.ftLibrarySelectedListClass = "#ftFieldMetadata.ftLibrarySelectedListClass#">
+					</cfif>
+					<cfif structKeyExists(ftFieldMetadata,'ftLibrarySelectedListStyle')>
+						<cfset stURLParams.ftLibrarySelectedListStyle = "#ftFieldMetadata.ftLibrarySelectedListStyle#">
+					</cfif>
+					
+					<ws:buildLink href="#application.url.farcry#/facade/library.cfm" target="library" bShowTarget="true" stParameters="#stURLParams#"><img src="#application.url.farcry#/images/treeimages/crystalIcons/includeApproved.gif" /></ws:buildLink>
+				</cfoutput>
+			</cfsavecontent>
+		<cfelse>
+			<cfset libraryLink = "">	
+		</cfif>
+		
+		
+				
+		<cfsavecontent variable="FieldLabelStart">
+				
+			<cfoutput>
+				<label for="#variables.prefix##ftFieldMetadata.Name#" class="#attributes.class#">
+				<b>#ftFieldMetadata.ftlabel#</b>
+				<cfif len(LibraryLink)>
+					#LibraryLink#					
+				</cfif>
+				</label>
+			</cfoutput>
+			
+		</cfsavecontent>
+		
+		
+		<cfsavecontent variable="FieldLabelEnd">
+			<!--- Not required --->			
+		</cfsavecontent>
+					
+					
+		<cfif len(LibraryLink) and attributes.IncludeLibraryWrapper>
+			<cfset variables.returnHTML = "<div id='#variables.prefix##ftFieldMetadata.Name#-wrapper' class='formfield-wrapper'>#variables.returnHTML#</div>">
+		</cfif>
 					
 		<cfif NOT len(Attributes.r_stFields)>
 			
@@ -425,7 +435,11 @@
 			<cfif Attributes.InTable EQ 1>
 				<cfoutput><td></cfoutput>
 			</cfif>
+
+			
 			<cfoutput>#variables.returnHTML#</cfoutput>
+			
+						
 			<cfif Attributes.InTable EQ 1>
 				<cfoutput></td></cfoutput>
 			<cfelse>
@@ -443,7 +457,7 @@
 			<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i].HTML = returnHTML>
 			<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i].Label = "#FieldLabelStart##FieldLabelEnd#">
 			<cfif ftFieldMetadata.Type EQ "array">
-				<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i].ArrayLink = "#ArrayLink#">
+				<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i].LibraryLink = "#LibraryLink#">
 			</cfif>
 		</cfif>
 		
