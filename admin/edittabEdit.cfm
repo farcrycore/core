@@ -44,7 +44,7 @@ $DEVELOPER:Brendan Sisson (brendan@daemon.com.au)$
 
 <cfif request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="ObjectEditTab")>
 	
-	<nj:edit objectid="#url.objectid#" typename="#url.typename#" />
+	<nj:edit objectid="#url.objectid#" typename="#url.typename#" cancelCompleteURL="#application.url.farcry#/edittabOverview.cfm?objectid=#url.objectid#" />
 
 <cfelse>
 	<admin:permissionError>

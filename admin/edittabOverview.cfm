@@ -38,7 +38,10 @@ $out:$
 <cfset o = createObject("component",application.types['#typename#'].typepath)>
 <cfset stObject = o.getData(objectid)>
 
+
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#" onload="setupPanes('container1','tab1');">
+
+
 <!--- javascript functions for object editing --->
 <script type="text/javascript"><cfoutput>
 function confirmRestore(navid,draftObjectID)
