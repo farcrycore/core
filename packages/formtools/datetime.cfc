@@ -43,7 +43,7 @@
 		</cfif>
 			
 
-		<cfif DateDiff('yyyy', now(), arguments.stMetadata.value) GT 100>
+		<cfif len(arguments.stMetadata.value) AND DateDiff('yyyy', now(), arguments.stMetadata.value) GT 100>
 			<cfset datetimefieldvisible = 0>
 			<cfset datetimefieldvisibletoggletext = "show...">
 			<cfset arguments.stMetadata.ftStyle = "#arguments.stMetadata.ftStyle#;display:none;">

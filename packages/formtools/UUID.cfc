@@ -23,18 +23,27 @@
 
 		<cfsavecontent variable="returnHTML">
 		<cfoutput>
-				<input type="text" id="#arguments.fieldname#" name="#arguments.fieldname#" value="#arguments.stObject[arguments.stMetaData.Name]#" />
-				<cfif Len(arguments.stObject[arguments.stMetaData.Name])>
-					<cfif FileExists("#application.path.project#/webskin/#arguments.stMetadata.ftJoin#/#arguments.stMetadata.ftLibrarySelectedMethod#.cfm")>
-						<cfset stobj = oData.getData(objectid=i)>
-						<cfinclude template="/farcry/#application.applicationname#/webskin/#arguments.stMetadata.ftJoin#/#arguments.stMetadata.ftLibrarySelectedMethod#.cfm">
-					<cfelse>
-						#i#
-					</cfif>
-
+			<input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="#arguments.stObject[arguments.stMetaData.Name]#" />
+			<div id="#arguments.fieldname#_1">
+			<cfif Len(arguments.stObject[arguments.stMetaData.Name])>
+				<cfif FileExists("#application.path.project#/webskin/#arguments.stMetadata.ftJoin#/#arguments.stMetadata.ftLibrarySelectedMethod#.cfm")>
+					<cfset stobj = oData.getData(objectid=#arguments.stObject[arguments.stMetaData.Name]#)>
+					<cfinclude template="/farcry/#application.applicationname#/webskin/#arguments.stMetadata.ftJoin#/#arguments.stMetadata.ftLibrarySelectedMethod#.cfm">
+				<cfelse>
+					#arguments.stObject[arguments.stMetaData.Name]#
 				</cfif>
-			
-		</cfoutput>
+				<a href="##" onclick="new Effect.Fade($('#arguments.fieldname#_1'));Element.remove('#arguments.fieldname#_1');$('#arguments.fieldname#').value = ''; return false;"><img src="#application.url.farcry#/images/crystal/22x22/actions/button_cancel.png" style="width:16px;height:16px;" /></a>
+			</cfif>
+			</div>
+		
+			<script type="text/javascript" language="javascript" charset="utf-8">
+			function update_#arguments.fieldname#_wrapper(HTML){
+				$('#arguments.fieldname#-wrapper').innerHTML = HTML;
+						 
+			}
+			</script>
+				
+		</cfoutput>	
 		</cfsavecontent>
 		
  		<cfreturn ReturnHTML>
@@ -51,37 +60,28 @@
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedListClass" default="thumbNailsWrap">
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedListStyle" default="">
 		
-		<!--- We need to get the Array Field Items as a query --->
-		<cfset o = createObject("component",application.types[arguments.typename].typepath)>
-		<cfset q = o.getArrayFieldAsQuery(objectid="#arguments.stObject.ObjectID#", Typename="#arguments.typename#", Fieldname="#stMetadata.Name#", ftJoin="#stMetadata.ftJoin#")>
-	
+		
+		<!--- A UUID type MUST have a 'ftJoin' property --->
+		<cfif not structKeyExists(stMetadata,"ftJoin")>
+			<cfreturn "">
+		</cfif>
+				
 		<!--- Create the Linked Table Type as an object  --->
 		<cfset oData = createObject("component",application.types[stMetadata.ftJoin].typepath)>
+		
 
 		<cfsavecontent variable="returnHTML">
 		<cfoutput>
-				
-			<cfset ULID = "#arguments.fieldname#_list">
 			
-			<cfif q.RecordCount>
-				<ul id="#ULID#" class="#arguments.stMetadata.ftLibrarySelectedListClass#" style="#arguments.stMetadata.ftLibrarySelectedListStyle#">
-					<cfloop query="q">
-						<li id="#arguments.fieldname#_#q.objectid#">
-							
-							<div>
-							<cfif FileExists("#application.path.project#/webskin/#arguments.stMetadata.ftJoin#/#arguments.stMetadata.ftLibrarySelectedMethod#.cfm")>
-								<cfset stobj = oData.getData(objectid=q.ObjectID)>
-								<cfinclude template="/farcry/#application.applicationname#/webskin/#arguments.stMetadata.ftJoin#/#arguments.stMetadata.ftLibrarySelectedMethod#.cfm">
-							<cfelse>
-								<cfif isDefined("q.label") AND len(q.label)>#q.Label#<cfelse>#q.ObjectID#</cfif>
-							</cfif>
-							</div>
-													
-						</li>
-					</cfloop>
-				</ul>
+			<cfif Len(arguments.stObject[arguments.stMetaData.Name])>
+				<cfset stobj = oData.getData(objectid=#arguments.stObject[arguments.stMetaData.Name]#)>
+				<cfif FileExists("#application.path.project#/webskin/#arguments.stMetadata.ftJoin#/#arguments.stMetadata.ftLibrarySelectedMethod#.cfm")>
+					
+					<cfinclude template="/farcry/#application.applicationname#/webskin/#arguments.stMetadata.ftJoin#/#arguments.stMetadata.ftLibrarySelectedMethod#.cfm">
+				<cfelse>
+					#stobj.label#
+				</cfif>
 			</cfif>
-
 				
 		</cfoutput>
 		</cfsavecontent>
@@ -89,10 +89,7 @@
 		<cfreturn returnHTML>
 	</cffunction>
 
-
 	<cffunction name="validate" access="public" output="true" returntype="struct" hint="This will return a struct with bSuccess and stError">
-		<cfargument name="ObjectID" required="true" type="UUID" hint="The objectid of the object that this field is part of.">
-		<cfargument name="Typename" required="true" type="string" hint="the typename of the objectid.">
 		<cfargument name="stFieldPost" required="true" type="struct" hint="The fields that are relevent to this field type.">
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		
@@ -104,29 +101,9 @@
 		<!--- --------------------------- --->
 		<!--- Perform any validation here --->
 		<!--- --------------------------- --->
+		<cfset stResult.value = stFieldPost.Value>
 		
 		
-		<cfset aField = ArrayNew(1)>				
-		<cfloop list="#stFieldPost.value#" index="i">
-			<cfset ArrayAppend(aField,i)>
-		</cfloop>
-		
-		<cfif not len(arguments.typename)>
-			<cfset q4 = createObject("component","farcry.fourq.fourq")>
-			<cfset arguments.typename = q4.findType(objectid=arguments.objectid)>
-		</cfif>
-		
-		
-		<cfset oPrimary = createObject("component",application.types[arguments.Typename].typepath)>
-		<cfset variables.tableMetadata = createobject('component','farcry.fourq.TableMetadata').init() />
-		<cfset tableMetadata.parseMetadata(md=getMetadata(oPrimary)) />		
-		<cfset stFields = variables.tableMetadata.getTableDefinition() />
-		<cfset o = createObject("component","farcry.fourq.gateway.dbGateway").init(dsn=application.dsn,dbowner="")>
-		<cfset aProps = o.createArrayTableData(tableName=Typename & "_" & arguments.stMetadata.name,objectid=arguments.ObjectID,tabledef=stFields[arguments.stMetadata.name].Fields,aprops=aField)>
-
-
-		<cfset stResult.value = aField>
-
 		<!--- ----------------- --->
 		<!--- Return the Result --->
 		<!--- ----------------- --->

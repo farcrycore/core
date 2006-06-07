@@ -6,7 +6,6 @@
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 		
-		<cfparam name="arguments.stMetadata.ftstyle" default="width:600px;">
 		<cfparam name="arguments.stMetadata.ftImageListField" default="">
 		<cfparam name="arguments.stMetadata.ftJoinListField" default="">
 	
@@ -16,28 +15,25 @@
 		
 		<cfoutput>
 		<script language="javascript" type="text/javascript">
-			var tinyMCEImageList = new Array(
-				// Name, URL
-				["Logo 1 -", "logo.jpg"],
-				["Logo 2 -", "logo_over.jpg"]
-			);
+
 
 			tinyMCE.init({
 				mode : "exact",
 				elements : "#arguments.fieldname#",
 				theme : "advanced",
 				plugins : "style,layer,table,save,advhr,advimage,advlink,emotions,iespell,insertdatetime,preview,flash,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable",
-				theme_advanced_buttons1_add_before : "save,newdocument,separator",
-				theme_advanced_buttons1_add : "fontselect,fontsizeselect",
-				theme_advanced_buttons2_add : "separator,insertdate,inserttime,preview,separator,forecolor,backcolor",
-				theme_advanced_buttons2_add_before: "cut,copy,paste,pastetext,pasteword,separator,search,replace,separator",
-				theme_advanced_buttons3_add_before : "tablecontrols,separator",
-				theme_advanced_buttons3_add : "emotions,iespell,flash,advhr,separator,print,separator,ltr,rtl,separator,fullscreen",
-				theme_advanced_buttons4 : "insertlayer,moveforward,movebackward,absolute,|,styleprops",
+				//theme_advanced_buttons1_add_before : "save,newdocument,separator",
+				//theme_advanced_buttons1_add : "fontselect,fontsizeselect",
+				//theme_advanced_buttons2_add : "separator,insertdate,inserttime,preview,separator,forecolor,backcolor",
+				//theme_advanced_buttons2_add_before: "cut,copy,paste,pastetext,pasteword,separator,search,replace,separator",
+				//theme_advanced_buttons3_add_before : "tablecontrols,separator",
+				//theme_advanced_buttons3_add : "emotions,iespell,flash,advhr,separator,print,separator,ltr,rtl,separator,fullscreen",
+				//theme_advanced_buttons4 : "insertlayer,moveforward,movebackward,absolute,|,styleprops",
 				theme_advanced_toolbar_location : "top",
 				theme_advanced_toolbar_align : "left",
 				theme_advanced_path_location : "bottom",
 				content_css : "example_full.css",
+				button_tile_map : true,
 			    plugin_insertdate_dateFormat : "%Y-%m-%d",
 			    plugin_insertdate_timeFormat : "%H:%M:%S",
 				extended_valid_elements : "hr[class|width|size|noshade],font[face|size|color|style],span[class|align|style]",

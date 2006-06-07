@@ -13,6 +13,9 @@
 
 		<cfparam name="arguments.stMetadata.ftstyle" default="">
 		<cfparam name="arguments.stMetadata.ftDestination" default="/images">
+		
+		<cfset Request.inHead.Scriptaculous = 1>
+		
 		<cfsavecontent variable="html">
 			<cfoutput>
 				<table>
@@ -26,7 +29,7 @@
 						<td valign="top">
 							<div id="#arguments.fieldname#previewimage">
 								<img src="#arguments.stMetadata.value#" width="50px">
-								<ft:farcrybutton type="button" value="Delete Image" onclick="if(confirm('Are you sure you want to remove this image?')) {} else {return false};this.form.#arguments.fieldname#.value='';document.getElementById('#arguments.fieldname#previewimage').style.visibility='hidden';document.getElementById('#arguments.fieldname#previewimage').style.display='none';" />
+								<ft:farcrybutton type="button" value="Delete Image" onclick="if(confirm('Are you sure you want to remove this image?')) {} else {return false};$('#arguments.fieldname#').value='';Effect.Fade('#arguments.fieldname#previewimage');" />
 							</div>
 						</td>
 					</cfif>				
@@ -74,7 +77,6 @@
 		<!--- --------------------------- --->
 		<!--- Perform any validation here --->
 		<!--- --------------------------- --->
-		
 		
 		<cfif NOT DirectoryExists("#application.path.project#/www#arguments.stMetadata.ftDestination#")>
 			<cfdirectory action="create" directory="#application.path.project#/www#arguments.stMetadata.ftDestination#">

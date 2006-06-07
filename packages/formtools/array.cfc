@@ -18,7 +18,7 @@
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedListStyle" default="">
 
 		<!--- An array type MUST have a 'ftJoin' property --->
-		<cfif not structKeyExists(stMetadata,"ftJoin")>
+		<cfif not structKeyExists(arguments.stMetadata,"ftJoin")>
 			<cfreturn "">
 		</cfif>
 		
@@ -30,21 +30,18 @@
 		<cfset Request.InHead.ScriptaculousDragAndDrop = 1>
 		<cfset Request.InHead.ScriptaculousEffects = 1>	
 		
-		
-		<!--- If the array contains items, make sure that the cursor reflects the fact that the items can be re-oredered --->
-		<cfif ListLen(arrayToList(arguments.stObject[arguments.stMetaData.Name])) GT 1>
-			<cfset arguments.stMetadata.ftLibrarySelectedListStyle = "#arguments.stMetadata.ftLibrarySelectedListStyle#;cursor:move;" />
-		</cfif>
-		
+			
 		<cfset ULID = "#arguments.fieldname#_list"><!--- ID of the unordered list. Important to use this so that the object can be referenced even if their are multiple objects referencing the same field. --->
 		
 		<cfsavecontent variable="returnHTML">
+			
 		<cfoutput>
 				<input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="#arrayToList(arguments.stObject[arguments.stMetaData.Name])#" />
 				<cfif ListLen(arrayToList(arguments.stObject[arguments.stMetaData.Name]))>
 					<ul id="#ULID#" class="#arguments.stMetadata.ftLibrarySelectedListClass#" style="#arguments.stMetadata.ftLibrarySelectedListStyle#">
 						<cfloop list="#arrayToList(arguments.stObject[arguments.stMetaData.Name])#" index="i">
 							<li id="#arguments.fieldname#_#i#">
+								<img src="#application.url.farcry#/images/dragbar.gif" class="#ULID#handle" style="cursor:move;" align="center">
 								<div>
 								<cfif FileExists("#application.path.project#/webskin/#arguments.stMetadata.ftJoin#/#arguments.stMetadata.ftLibrarySelectedMethod#.cfm")>
 									<cfset stobj = oData.getData(objectid=i)>
@@ -52,49 +49,78 @@
 								<cfelse>
 									#i#
 								</cfif>
-								
-								<script type="text/javascript" language="javascript" charset="utf-8">					
-								// <![CDATA[
-									  Sortable.create('#ULID#',
-									  {ghosting:false,constraint:false,hoverclass:'over',
-									    onChange:function(element){$('#arguments.fieldname#').value = Sortable.sequence('#ULID#')},
-									    
-									  });
-									// ]]>	
-								
-								</script>							
-								<a href="##" onclick="Sortable.create('#ULID#');new Effect.Fade($('#arguments.fieldname#_#i#'));Element.remove('#arguments.fieldname#_#i#');$('#arguments.fieldname#').value = Sortable.sequence('#ULID#'); return false;"><img src="#application.url.farcry#/images/crystal/22x22/actions/button_cancel.png" style="width:16px;height:16px;" /></a>
+												
+								<a href="##" onclick="new Effect.Fade($('#arguments.fieldname#_#i#'));Element.remove('#arguments.fieldname#_#i#');$('#arguments.fieldname#').value = Sortable.sequence('#ULID#');update_#arguments.fieldname#('sort',$('#arguments.fieldname#')); return false;"><img src="#application.url.farcry#/images/crystal/22x22/actions/button_cancel.png" style="width:16px;height:16px;" /></a>
 								</div>
 							</li>
 						</cfloop>
 					</ul>
 				
-	
+				
+					<script type="text/javascript" language="javascript" charset="utf-8">					
+					// <![CDATA[
+						  Sortable.create('#ULID#',
+						  	{ghosting:false,constraint:false,hoverclass:'over',handle:'#ULID#handle',
+						    onChange:function(element){
+						    	$('#arguments.fieldname#').value = Sortable.sequence('#ULID#');	
+						    },
+						    onUpdate:function(element){					
+					   			update_#arguments.fieldname#('sort',element);
+						    },
+						    
+						  });
+						// ]]>	
+					
+					</script>
 				
 
 				</cfif>
 			
-			
-			
+				
 			<script type="text/javascript" language="javascript" charset="utf-8">
 			function update_#arguments.fieldname#_wrapper(HTML){
 				$('#arguments.fieldname#-wrapper').innerHTML = HTML;
 				// <![CDATA[
 					  Sortable.create('#ULID#',
-					  {ghosting:false,constraint:false,hoverclass:'over',
-					    onChange:function(element){$('#arguments.fieldname#').value = Sortable.sequence('#ULID#')},
-					    
+					  {ghosting:false,constraint:false,hoverclass:'over',handle:'#ULID#handle',
+					    onChange:function(element){
+					    	$('#arguments.fieldname#').value = Sortable.sequence('#ULID#');	
+					    },
+					    onUpdate:function(element){					
+				   			update_#arguments.fieldname#('sort',element);
+					    },
 					  });
 					// ]]>									 
 			}
+			
+			function update_#arguments.fieldname#(action,element){
+				new Ajax.Updater('#arguments.fieldname#-wrapper', '/farcry/facade/library.cfc?method=ajaxUpdateArray', {
+						//onLoading:function(request){Element.show('indicator')}, 
+						onComplete:function(request){
+	
+							update_#arguments.fieldname#_wrapper(request.responseText);	
+							opener.update_#arguments.fieldname#_wrapper(request.responseText);						
+							Effect.Fade(element, {from:0.2,to:0.2});
+							// <![CDATA[
+								  Sortable.create('#arguments.fieldname#_list',
+								  	{ghosting:false,constraint:false,hoverclass:'over',handle:'#arguments.fieldname#_listhandle',
+								    onChange:function(element){
+								    	$('#arguments.fieldname#').value = Sortable.sequence('#arguments.fieldname#_list')
+								    },
+								    
+								  });
+								// ]]>	
+														
+						}, 
+						parameters:'Action=' + action + '&LibraryType=Array&primaryObjectID=#arguments.stObject.ObjectID#&primaryTypename=#arguments.typename#&primaryFieldname=#arguments.stMetaData.Name#&primaryFormFieldname=#arguments.fieldname#&WizzardID=&DataObjectID=' + encodeURIComponent($('#arguments.fieldname#').value) + '&DataTypename=#arguments.stMetadata.ftJoin#', evalScripts:true, asynchronous:true
+					})
+			}
 			</script>
-			
-
-			
 						
 			
 		</cfoutput>
 		</cfsavecontent>
+		
 		
  		<cfreturn ReturnHTML>
 		

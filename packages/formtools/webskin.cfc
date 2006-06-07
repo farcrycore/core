@@ -10,7 +10,7 @@
 	
 	
 		<cfif directoryExists("#application.path.project#/webskin/#arguments.typename#")>
-			<cfdirectory action="list" directory="#application.path.project#/webskin/#arguments.typename#" name="qWebskin" >
+			<cfdirectory action="list" directory="#application.path.project#/webskin/#arguments.typename#" name="qWebskin" filter="*.cfm" >
 		</cfif>
 
 		<!--- This is to overcome casesensitivity issues on mac/linux machines --->
