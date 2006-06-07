@@ -216,11 +216,22 @@ $Developer: $
 
 
 <cfset oPrimary = createObject("component",application.types[url.primaryTypeName].typepath)>
-<cfdump var="#application.types[url.primaryTypeName]#" expand="false"><cfabort>
-<cfset q = oPrimary.getArrayFieldAsQuery(objectid="#url.primaryObjectID#", Fieldname="#url.primaryFieldName#", Typename="#url.primaryTypeName#", Link="#url.ftJoin#")>
-	
-
 <cfset oData = createObject("component",application.types[url.ftJoin].typepath)>
+
+<cfset stPrimary = oPrimary.getData(objectid=url.primaryObjectID)>
+	
+<cfif URL.LibraryType EQ "array">
+	<cfset q = oPrimary.getArrayFieldAsQuery(objectid="#url.primaryObjectID#", Fieldname="#url.primaryFieldName#", Typename="#url.primaryTypeName#", Link="#url.ftJoin#")>
+<cfelse>
+	<cfquery datasource="#application.dsn#" name="q">
+	SELECT * FROM #url.ftJoin#
+	WHERE ObjectID = '#stPrimary[url.primaryFieldName]#'
+	</cfquery>
+</cfif>
+
+
+
+
 
 
 <cfquery datasource="#application.dsn#" name="qLibraryList">
@@ -232,6 +243,45 @@ FROM #URL.ftJoin#
 <cfset Request.InHead.TabStyle1 = 1>
 
 <cfoutput>
+
+<style type="text/css">
+##edsubpanel {
+	position:absolute;
+	width:90%;
+	z-index:101;
+	border:1px solid ##000;
+	background:##fff; 
+	opacity:0.9;
+	filter:alpha(opacity:90); 
+}
+
+##overlay{
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 90;
+	width: 100%;
+	height: 500px;
+	background-color: ##000;
+	filter:alpha(opacity=60);
+	-moz-opacity: 0.6;
+	opacity: 0.6;
+	}
+	
+</style>
+
+
+<div style="background:##F1F1F1;">
+	<a href="##" onclick="new Effect.toggle('edsubpanel','slide', {duration:.3});return false;">Show Selected</a>
+</div>
+	<div id="edsubpanel" style="display:none;">
+		<div style="padding:25px;">
+			<ft:object ObjectID="#url.primaryObjectID#" wizzardid="#url.WizzardID#" lFields="#url.primaryFieldName#" InTable=0 IncludeLabel=0 />
+		</div>
+	</div>
+
+
+
 
 	<h1>Library...</h1>
 
@@ -252,14 +302,14 @@ FROM #URL.ftJoin#
 					<tr>
 						<td width="100px;" valign="top">
 							<div id="utility">
-								<h2>Basket</h2> 
+								<h2>Drag here to add</h2> 
 								
 								<style type="text/css">
 									.basket-active {background:##E17000;}
 								</style>		
 								
 								<div id="basket" style="border:1px solid ##E17000;min-height:100px;_height:100px;">
-									<ft:object ObjectID="#url.primaryObjectID#" wizzardid="#url.WizzardID#" lFields="#url.primaryFieldName#" InTable=0 IncludeLabel=0 />
+									<!--- <ft:object ObjectID="#url.primaryObjectID#" wizzardid="#url.WizzardID#" lFields="#url.primaryFieldName#" InTable=0 IncludeLabel=0 /> --->
 								</div>	
 															
 							</div><!--- utility --->						
@@ -272,7 +322,8 @@ FROM #URL.ftJoin#
 									<div style="display:block;">	
 										<ul class="#url.ftLibraryPickListClass#" style="#url.ftLibraryPickListStyle#">
 											<ws:paginateRecords r_stRecord="stObject">
-												<li id="select#stObject.objectID#" class="LibraryItem" style="cursor:pointer;" objectID="#stObject.ObjectID#">
+												<li id="select#stObject.objectID#" class="LibraryItem" style="text-align:center;" objectID="#stObject.ObjectID#">
+													<img src="#application.url.farcry#/images/dragbar.gif" id="handle#stObject.objectID#" style="cursor:move;" align="center">
 													<cfif FileExists("#application.path.project#/webskin/#url.ftJoin#/#url.ftLibraryPickMethod#.cfm")>
 														<cfset stobj = oData.getData(objectid=stObject.ObjectID)>
 														<cfinclude template="/farcry/#application.applicationname#/webskin/#url.ftJoin#/#url.ftLibraryPickMethod#.cfm">
@@ -371,13 +422,35 @@ FROM #URL.ftJoin#
 		<cfloop query="qLibraryList" startrow="#StartRow#" endrow="#EndRow#">
 			new Draggable('select#qLibraryList.objectID#',
 			 
-		      {revert:true,
+		      {revert:true,handle:'handle#qLibraryList.objectID#',
 		      	endeffect: function(element) { 
 		        	//new Effect.Opacity(element, {duration:1, from:0, to:.2}); 
 		      	}
 		      }
 		     )
 		</cfloop>
+		
+		
+		function updateBasket(action,element){
+			new Ajax.Updater('#url.primaryFormFieldname#-wrapper', '/farcry/facade/library.cfc?method=ajaxUpdateArray', {
+					//onLoading:function(request){Element.show('indicator')}, 
+					onComplete:function(request){
+
+						update_#url.primaryFormFieldname#_wrapper(request.responseText);	
+						opener.update_#url.primaryFormFieldname#_wrapper(request.responseText);						
+						Effect.Fade(element, {from:0.2,to:0.2});
+						// <![CDATA[
+							  Sortable.create('#url.primaryFormFieldname#_list',
+							  	{ghosting:false,constraint:false,hoverclass:'over',handle:'#url.primaryFormFieldname#_listhandle',
+							    onChange:function(element){$('#url.primaryFormFieldname#').value = Sortable.sequence('#url.primaryFormFieldname#_list')},
+							    
+							  });
+							// ]]>	
+													
+					}, 
+					parameters:'Action=' + action + '&LibraryType=#url.LibraryType#&primaryObjectID=#url.primaryObjectID#&primaryTypename=#url.primaryTypeName#&primaryFieldname=#url.primaryFieldname#&primaryFormFieldname=#url.primaryFormFieldname#&WizzardID=#url.WizzardID#&DataObjectID=' + encodeURIComponent($(element).getAttribute('objectid')) + '&DataTypename=#url.ftJoin#', evalScripts:true, asynchronous:true
+				})
+		}
 		
 		Droppables.add('basket', {
 			accept:'LibraryItem',
@@ -387,16 +460,7 @@ FROM #URL.ftJoin#
 				Effect.Fade(element, {duration:2,from:0,to:0.2});
 				//$('#URL.primaryFieldName#').value = $(element).getAttribute('objectid');
                 //$('basket').innerHTML = element.innerHTML;
-                 new Ajax.Updater('basket', '/farcry/facade/library.cfc?method=ajaxUpdateArray', {
-					//onLoading:function(request){Element.show('indicator')}, 
-					onComplete:function(request){
-
-						$('basket').innerHTML = request.responseText;
-						opener.update_#url.primaryFormFieldname#_wrapper(request.responseText);						
-						Effect.Fade(element, {from:0.2,to:0.2});
-					}, 
-					parameters:'primaryObjectID=#url.primaryObjectID#&primaryTypename=#url.primaryTypeName#&primaryFieldname=#url.primaryFieldname#&primaryFormFieldname=#url.primaryFormFieldname#&WizzardID=#url.WizzardID#&DataObjectID=' + encodeURIComponent($(element).getAttribute('objectid')) + '&DataTypename=#url.ftJoin#', evalScripts:true, asynchronous:true
-				}) 
+                updateBasket('add',element);
 				
                 				
 			}
