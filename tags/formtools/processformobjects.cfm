@@ -305,11 +305,11 @@
 
 	<cfset ProcessingFormObjectPrefix = ListGetAt(variables.farcryFormPrefixesToProcess,arguments.Position)>
 
-
+	
 	<cfloop list="#lFields#" index="i" >
 
 		<cfif structKeyExists(FORM,"#ProcessingFormObjectPrefix##i#")>
-		
+			
 		
 			<cfset Request.farcryForm.stObjects[ProcessingFormObjectPrefix]['MetaData'][i] = StructNew()>
 
@@ -372,15 +372,20 @@
 			<cfelse>
 				<cfset FieldMethod = "validate">
 			</cfif>	
-		
-			<cfinvoke component="#application.formtools[ftFieldMetadata.ftType]#" method="#FieldMethod#" returnvariable="stResult">
-				<cfinvokeargument name="ObjectID" value="#attributes.ObjectID#">
-				<cfinvokeargument name="Typename" value="#attributes.Typename#">			
-				<cfinvokeargument name="stFieldPost" value="#Request.farcryForm.stObjects[ProcessingFormObjectPrefix]['FormPost'][i]#">
-				<cfinvokeargument name="stMetadata" value="#ftFieldMetadata#">
-			</cfinvoke>
-						
-			<cfset "Caller.#attributes.r_stProperties#.#i#" = stResult.Value>
+
+			<cfif i EQ "ObjectID" or i EQ "typename">
+				<cfset "Caller.#attributes.r_stProperties#.#i#" = Request.farcryForm.stObjects[ProcessingFormObjectPrefix]['FormPost'][i].value>
+			<cfelse>
+				<cfinvoke component="#application.formtools[ftFieldMetadata.ftType]#" method="#FieldMethod#" returnvariable="stResult">
+					<cfinvokeargument name="ObjectID" value="#FORM['#ProcessingFormObjectPrefix#objectid']#">
+					<cfinvokeargument name="Typename" value="#FORM['#ProcessingFormObjectPrefix#typename']#">			
+					<cfinvokeargument name="stFieldPost" value="#Request.farcryForm.stObjects[ProcessingFormObjectPrefix]['FormPost'][i]#">
+					<cfinvokeargument name="stMetadata" value="#ftFieldMetadata#">
+				</cfinvoke>
+							
+				<cfset "Caller.#attributes.r_stProperties#.#i#" = stResult.Value>
+			
+			</cfif>
 		
 		
 		
