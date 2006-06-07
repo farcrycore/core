@@ -54,7 +54,7 @@
 			<cfcase value="pending"> <!--- PENDING STATUS --->
 				<!--- check user can edit --->
 				<cfif stPermissions.iEdit EQ 1 AND stObject.bAlwaysShowEdit EQ 1>
-					<a href="edittabEdit.cfm?objectid=#stObject.objectid#">#application.adminBundle[session.dmProfile.locale].editObj#</a><br /><cfif stObject.objectid NEQ stObject.objectid_previousversion>
+					<a href="edittabEdit.cfm?objectid=#stObject.objectid#&ref=overview">#application.adminBundle[session.dmProfile.locale].editObj#</a><br /><cfif stObject.objectid NEQ stObject.objectid_previousversion>
 					<a onclick="confirmRestore('#stObject.parentid#','#stObject.objectid#');" href="javascript:void(0);">#application.adminBundle[session.dmProfile.locale].restoreLiveObj#</a><br /></cfif>
 				</cfif>
 				
@@ -68,7 +68,7 @@
 			<cfcase value="approved">	
 				<!--- check user can edit --->
 				<cfif stPermissions.iEdit EQ 1 AND stObject.bAlwaysShowEdit EQ 1>
-					<a href="edittabEdit.cfm?objectid=#stObject.objectid#">#application.adminBundle[session.dmProfile.locale].editObj#</a><br /><cfif stObject.objectid NEQ stObject.objectid_previousversion>
+					<a href="edittabEdit.cfm?objectid=#stObject.objectid#&ref=overview">#application.adminBundle[session.dmProfile.locale].editObj#</a><br /><cfif stObject.objectid NEQ stObject.objectid_previousversion>
 					<a onclick="confirmRestore('#stObject.parentid#','#stObject.objectid#');" href="javascript:void(0);">#application.adminBundle[session.dmProfile.locale].restoreLiveObj#</a><br /></cfif>
 				</cfif>
 				
@@ -97,7 +97,7 @@
 	<cfelse>	<!--- content items without a status --->
 		<!--- check user can edit --->
 		<cfif stPermissions.iEdit EQ 1>
-				<a href="edittabEdit.cfm?objectid=#stObject.objectid#">#application.adminBundle[session.dmProfile.locale].editObj#</a><br />
+				<a href="edittabEdit.cfm?objectid=#stObject.objectid#&ref=overview">#application.adminBundle[session.dmProfile.locale].editObj#</a><br />
 		</cfif>
 		
 		<!--- check user can delete --->
