@@ -72,7 +72,7 @@ type properties
 		<cfargument name="typename" required="true" type="string">
 		<cfargument name="lFields" required="false" type="string" default="">
 		
-		<ft:object typename="#arguments.typename#" lfields="Title,ImageFile" inTable=0 />
+		<ft:object typename="#arguments.typename#" lfields="Title,SourceImage" inTable=0 />
 
 	</cffunction>
 
