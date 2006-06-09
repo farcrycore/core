@@ -324,7 +324,7 @@ Adds suffix to ruleNews,ruleEvents<br />
 
 	<!--- add the cache timespan for cachetimespan --->
 	<cfif NOT StructKeyExists(stConfig,"categoryCacheTimeSpan")>
-		<cfset stConfig.categoryCacheTimeSpan = "6">
+		<cfset stConfig.categoryCacheTimeSpan = "0">
 	</cfif>
 
 	<!--- site logo --->
