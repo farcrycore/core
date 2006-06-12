@@ -7,7 +7,7 @@
 
 		
 		
-	<cfoutput  >
+	<cfoutput >
 		<form action="#Request.farcryForm.Action#" method="post" id="#Request.farcryForm.Name#" name="#Request.farcryForm.Name#" target="#Request.farcryForm.Target#" enctype="multipart/form-data" onsubmit="#attributes.onSubmit#" class="#attributes.class#" style="#attributes.style#">
 
 		<cfif len(attributes.heading)><h3>#attributes.Heading#</h3></cfif>

@@ -121,7 +121,7 @@
 <cfif thistag.ExecutionMode EQ "End">
 	
 
-	<cfif StructisEmpty(Caller[attributes.r_stProperties]) OR (isDefined("Request.BreakProcessingCurrentFormObject") AND Request.BreakProcessingCurrentFormObject EQ 1)>
+	<cfif (isDefined("Request.BreakProcessingCurrentFormObject") AND Request.BreakProcessingCurrentFormObject EQ 1)>
 		
 		<!--- DO NOT PROCESS THIS LOOP --->
 		<cfset Request.BreakProcessingCurrentFormObject = 0>
@@ -204,7 +204,7 @@
 		</cfif>	
 		
 		<cfif structKeyExists(stType,"AfterSave")>
-			<cfset Caller[attributes.r_stProperties] = stType.AfterSave(stProperties=Caller[attributes.r_stProperties])>		
+			<cfset stResult = stType.AfterSave(stProperties=Caller[attributes.r_stProperties])>		
 		</cfif>
 		<cfset caller.lSavedObjectIDs = listappend(caller.lSavedObjectIDs,Caller[attributes.r_stProperties].ObjectID)>
 
