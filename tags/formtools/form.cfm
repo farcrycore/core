@@ -15,7 +15,8 @@ It just ignores the inner ones.
 <cfif ListValueCountNoCase(getbasetaglist(),"CF_FORM") EQ 1>
 
 	
-	<cfif thistag.ExecutionMode EQ "Start" AND NOT isDefined("Request.farcryForm")>
+	<!--- Check to make sure that Request.farcryForm.Name exists. This is because other tags may have created Request.farcryForm but only this tag creates "Name" --->
+	<cfif thistag.ExecutionMode EQ "Start" AND NOT isDefined("Request.farcryForm.Name")>
 
 		<cfset Variables.CorrectForm = 1>
 		
@@ -31,20 +32,17 @@ It just ignores the inner ones.
 		<cfparam name="attributes.Heading" default="">
 		<cfparam name="attributes.Validation" default="1">
 		
-		
-		
-		
-	
+
 		<cfparam name="Request.farcryFormList" default="">	
 		
 		
 		<cfif not isDefined("Request.farcryForm.Name")>
-			<cfset Request.farcryForm = StructNew()>
-			<cfset Request.farcryForm.Name = attributes.Name>	
-			<cfset Request.farcryForm.Target = attributes.Target>	
-			<cfset Request.farcryForm.Action = attributes.Action>
-			<cfset Request.farcryForm.Validation = attributes.Validation>
-			<cfset Request.farcryForm.stObjects = StructNew()>		
+			<cfparam name="Request.farcryForm" default="#StructNew()#">
+			<cfparam name="Request.farcryForm.Name" default="#attributes.Name#">
+			<cfparam name="Request.farcryForm.Target" default="#attributes.Target#">
+			<cfparam name="Request.farcryForm.Action" default="#attributes.Action#">
+			<cfparam name="Request.farcryForm.Validation" default="#attributes.Validation#">
+			<cfparam name="Request.farcryForm.stObjects" default="#StructNew()#">		
 		</cfif>
 	
 		
