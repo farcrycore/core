@@ -37,7 +37,7 @@ $out:$
 		<cfparam name="Request.RequiredInHead.scriptaculousSliderJS" default = "0">
 		<cfparam name="Request.RequiredInHead.scriptaculousControlsJS" default = "0">
 		<cfparam name="Request.RequiredInHead.lightboxJS" default = "0">
-		<cfparam name="Request.RequiredInHead.DateTimePickerJS" default = "1">
+		<cfparam name="Request.RequiredInHead.DateTimePickerJS" default = "0">
 		<cfparam name="Request.RequiredInHead.CalendarJS" default = "0">
 		<cfparam name="Request.RequiredInHead.CalendarSetupJS" default = "0">
 		<cfparam name="Request.RequiredInHead.TinyMCEJS" default = "0">
