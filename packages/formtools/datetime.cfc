@@ -109,7 +109,6 @@
 		<cfset stResult.value = "">
 		<cfset stResult.stError = StructNew()>
 		
-
 		<!--- --------------------------- --->
 		<!--- Perform any validation here --->
 		<!--- --------------------------- --->
@@ -119,7 +118,6 @@
 			<cfset stResult.value = CreateODBCDateTime("#DateAdd('yyyy',200,now())#")>
 		</cfif>
 	
-		
 		<!--- ----------------- --->
 		<!--- Return the Result --->
 		<!--- ----------------- --->
