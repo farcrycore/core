@@ -277,97 +277,6 @@ default handlers
 	</cffunction>
 	
 	
-	<!--- <cffunction name="edit" access="public" displayname="Edit handler." hint="Default edit method for objects. Self posting form dynamically generated from the type metadata.  Calls farcry.locking for update.  Override as required." output="true">
-		<cfargument name="objectid" required="yes" type="UUID">
-		<!--- getData for object edit --->
-		<cfset var stObj=getData(arguments.objectid)>
-		<cfset var stProps=application.types[stobj.typename].stprops>
-		<cfset var displayname=application.types[stobj.typename].displayname>
-		<cfset var hint=application.types[stobj.typename].hint>
-
-		<cfsetting enablecfoutputonly="Yes">
-	
-		<!--- update object with changes --->
-		<cfif isDefined("form.update")>
-			<cfscript>
-				stoutput=structNew();
-				stoutput=form;
-				stoutput.typename=stobj.typename;
-				if (isDefined("stoutput.title")) {
-					stoutput.label=stoutput.title; // match label with title
-				} 
-				if (isDefined("stoutput.name")) {
-					stoutput.label=stoutput.name; // match label with title
-				} 
-				else {
-					stoutput.label=displayname & ": " & dateFormat(now(), "dd-mmm-yy") & timeFormat(now(), "HH:mm");
-				}
-			</cfscript>
-			<!--- unlock object and save object --->
-			<cfinvoke component="#application.packagepath#.farcry.locking" method="unlock" returnvariable="stresult">
-				<cfinvokeargument name="stObj" value="#stOutput#"/>
-				<cfinvokeargument name="objectid" value="#stOutput.objectid#"/>
-				<cfinvokeargument name="typename" value="#stOutput.typename#"/>
-			</cfinvoke>
-			
-			<!--- all done in one window so relocate back to main page --->
-			<!--- <cflocation url="#application.url.farcry#/admin/customadmin.cfm?module=accounts/listprojects.cfm" addtoken="no"> --->
-			<cfoutput><h3>Object updated!</h3></cfoutput>
-			<cfdump var="#stresult#">
-		<cfelse>
-			<!--- render update form for object --->
-			<cfoutput>
-			<h3>#stobj.label#</h3>
-			<p>#displayname#: #hint#</p>
-			
-			<form name="edit" action="#CGI.SCRIPT_NAME#?#query_string#" method="post" class="form-columns">
-			<input type="hidden" name="update" value="true">
-			<input type="hidden" name="objectid" value="#stobj.objectid#">
-					
-			<cfloop collection="#stprops#" item="prop">
-			<cfset sttmp=stprops[prop]>
-			<cfif stprops[prop].origin neq "farcry.farcry_core.packages.types.types" AND NOT isarray(stobj[prop])>
-			<!--- #stprops[prop].origin# --->
-			<!--- <cfdump var="#stprops[prop]#"> --->
-			<DIV class="label"><LABEL for="#prop#"><cfif isDefined("sttmp.metadata.displayname") AND len(sttmp.metadata.displayname)>#stprops[prop].metadata.displayname#<cfelse>#prop#</cfif><cfif isDefined("sttmp.metadata.required") AND sttmp.metadata.required><SPAN class="required">*</SPAN></cfif></LABEL></DIV>
-			
-			<cfswitch expression="#stprops[prop].metadata.type#">
-			<cfcase value="nstring,string">
-			<DIV class="field"><INPUT type="text" class="textfield wide" name="#prop#" id="#prop#" value="#stobj[prop]#" maxlength="255" tabindex="110" /></DIV>
-			<BR class="clear-both"/>
-			</cfcase>
-	
-			<cfcase value="longchar">
-			<DIV class="field"><TEXTAREA name="#prop#" id="#prop#" cols="45" rows="10" wrap="VIRTUAL" maxlength="2000" class="wide" tabindex="120">#stobj[prop]#</TEXTAREA></DIV>
-			<BR class="clear-both"/>
-			</cfcase>
-			
-			<cfdefaultcase>
-			<DIV class="field"><INPUT type="text" class="textfield wide" name="#prop#" id="#prop#" value="#stobj[prop]#" maxlength="255" tabindex="110" /></DIV>
-			<BR class="clear-both"/>
-			</cfdefaultcase>
-			</cfswitch>
-			</cfif>
-			</cfloop> 
-			
-			<P class="nav-right"><INPUT type="submit" name="Submit" value="Submit" class="submit" tabindex="190" /></P>
-			</FORM>
-			
-			<p>#stobj.typename#: #stobj.objectid#</p>
-			<!--- debugging output --->
-			<!--- reset dump variable in request scope 
-			<cfset request.cfdumpinited = false>
-			<cfdump var="#stprops#" expand="no" label="Complete Type Metadata.stprops">
-			<cfdump var="#stobj#" expand="no" label="Complete stObj">
-			--->
-			</cfoutput>
-		</cfif>
-		
-		<cfsetting enablecfoutputonly="No">
-			
-	</cffunction> --->
-
-	
 	<cffunction name="ftEdit" access="public" output="true" returntype="void">
 		<cfargument name="ObjectID" required="yes" type="string" default="">
 		
@@ -667,13 +576,12 @@ default handlers
 		<cfargument name="ObjectID" required="no" type="string" default="" hint="This is the PK for which we are getting the linked FK's. If the ObjectID passed is empty, the we are creating a new object and it will therefore not have an objectID">
 		<cfargument name="Fieldname" required="yes" type="string">
 		<cfargument name="typename" required="yes" type="string" default="">
-		<cfargument name="Link" required="yes" type="string" default="#application.types[typename].stprops[arguments.Fieldname].metadata.ftJoin#">
-
+		<cfargument name="Link" required="yes" type="string" default="#application.types[typename].stprops[arguments.Fieldname].metadata.ftJoin#" />
+		
 		<cfif len(arguments.typename) EQ 0>
 			<cfset arguments.typename  = findType(objectID="#arguments.ObjectID#")>
 		</cfif>
 		<!--- getData for object edit --->
-
 		<cfquery datasource="#application.dsn#" name="qArrayAsQuery">
 		SELECT #arguments.Link#.*
 		FROM #arguments.typename#_#arguments.Fieldname#

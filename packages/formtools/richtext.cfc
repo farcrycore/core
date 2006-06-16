@@ -7,8 +7,6 @@
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 		
 		<cfparam name="arguments.stMetadata.ftImageListField" default="">
-		<cfparam name="arguments.stMetadata.ftJoinListField" default="">
-	
 	
 		<cfset Request.InHead.TinyMCE = 1>
 

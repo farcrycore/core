@@ -71,16 +71,3 @@
 	</cffunction>
 
 </cfcomponent> 
-
-
-<!--- 			db.boolean = "INT";
-			db.date = "DATETIME";
-			db.numeric = "NUMERIC";
-			db.string = "VARCHAR(255)";
-			db.nstring = "VARCHAR(255)";
-			db.uuid = "VARCHAR(50)";
-			db.variablename = "VARCHAR(64)";
-			db.color = "VARCHAR(20)";
-			db.email = "VARCHAR(255)";
-			db.longchar = "LONGTEXT";	
-			 --->
