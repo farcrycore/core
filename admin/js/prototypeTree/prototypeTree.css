@@ -1,0 +1,5 @@
+.node_table_wrap table, .node_table_wrap tr, .node_table_wrap td, .node_table_wrap th
+	{padding:0px;margin:0px;}
+.node_table_wrap td {font: 11px arial,tahoma,verdana,sans-serif ;vertical-align:middle;padding:0;}
+.node_table_wrap .nodeicon {cursor:hand}
+.node_table_wrap .icontext {cursor:hand}

@@ -43,6 +43,8 @@ $out:$
 		<cfparam name="Request.RequiredInHead.TinyMCEJS" default = "0">
 		<cfparam name="Request.RequiredInHead.JSONJS" default = "0">
 		<cfparam name="Request.RequiredInHead.FormValidationJS" default = "0">
+		<cfparam name="Request.RequiredInHead.prototypeTreeJS" default = "0">
+		<cfparam name="Request.RequiredInHead.prototypeTreeCSS" default = "0">
 		
 		
 		
@@ -139,6 +141,15 @@ $out:$
 			<cfset Request.RequiredInHead.WizardCSS = 1>
 		</cfif>
 		
+		<cfif isDefined("Request.InHead.prototypeTree")>
+			<cfset Request.RequiredInHead.prototypeJS = 1>
+			<cfset Request.RequiredInHead.prototypeLiteJS = 0>
+			<cfset Request.RequiredInHead.scriptaculousJS = 1>
+			<cfset Request.RequiredInHead.scriptaculousEffectsJS = 1>
+			<cfset Request.RequiredInHead.prototypeTreeJS = 1>
+			<cfset Request.RequiredInHead.prototypeTreeCSS = 1>
+		</cfif>
+				
 		
 		
 	<cfsavecontent variable="RequiredHead">	
@@ -206,6 +217,13 @@ $out:$
 		
 		<cfif isDefined("Request.RequiredInHead.FormValidationJS") AND Request.RequiredInHead.FormValidationJS EQ 1>
 			<cfoutput><script src="#application.url.farcry#/js/formvalidation/validation.js" type="text/javascript"></script></cfoutput>
+		</cfif>
+		
+		<cfif isDefined("Request.RequiredInHead.prototypeTreeJS") AND Request.RequiredInHead.prototypeTreeJS EQ 1>
+			<cfoutput><script src="#application.url.farcry#/js/prototypeTree/prototypeTree.js" type="text/javascript"></script></cfoutput>
+		</cfif>
+		<cfif isDefined("Request.RequiredInHead.prototypeTreeCSS") AND Request.RequiredInHead.prototypeTreeCSS EQ 1>
+			<cfoutput><link rel="stylesheet" href="#application.url.farcry#/js/prototypeTree/prototypeTree.css" type="text/css" media="screen" /></cfoutput>
 		</cfif>
 		
 		
