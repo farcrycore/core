@@ -65,7 +65,7 @@
 	
 	// set defaults for attributes not passed
 	if(not isDefined("attributes.navID") or len(attributes.navID) neq 35) 
-		attributes.navID="E24C915F-D9B2-7474-64BCD5E2BAFF07B2";
+		attributes.navID="";
 	if(not isDefined("attributes.depth") or not isNumeric(attributes.depth)) 
 		attributes.depth=1;
 	if(not isDefined("attributes.startLevel") or not isNumeric(attributes.startLevel)) 
