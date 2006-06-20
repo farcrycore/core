@@ -36,6 +36,7 @@
 		<cfsavecontent variable="returnHTML">
 			
 		<cfoutput>
+			
 				<input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="#arrayToList(arguments.stObject[arguments.stMetaData.Name])#" />
 				<cfif ListLen(arrayToList(arguments.stObject[arguments.stMetaData.Name]))>
 					<ul id="#ULID#" class="#arguments.stMetadata.ftLibrarySelectedListClass#" style="#arguments.stMetadata.ftLibrarySelectedListStyle#">

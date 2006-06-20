@@ -19,7 +19,7 @@
 		<cfif structKeyExists(application.catid, arguments.stMetadata.ftAlias)>
 			<cfset navid = application.catid[arguments.stMetadata.ftAlias] >
 		<cfelse>
-			<cfset navid = "" >
+			<cfset navid = application.catid['root'] >
 		</cfif>
 		
 		
