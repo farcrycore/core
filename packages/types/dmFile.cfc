@@ -23,12 +23,13 @@ $out:$
 --->
 
 <cfcomponent extends="types" displayname="File"  hint="File objects" bUseInTree="1">
+	
 <!------------------------------------------------------------------------
 type properties
 ------------------------------------------------------------------------->
 <cfproperty name="title" type="nstring" hint="Meaningful reference title for file" required="no" default=""> 
 <cfproperty name="filename" type="string" hint="The name of the file to be uploaded" required="no" default="">  
-<cfproperty name="filepath" type="string" hint="The location of the file on the webserver" required="no" default="">  
+<cfproperty name="filepath" type="string" hint="The location of the file on the webserver" required="no" default="" ftType="file">  
 <cfproperty name="fileSize" type="numeric" hint="The size of the file on the webserver (in bytes)" required="no" default="0">  
 <cfproperty name="fileType" type="string" hint="MIME content type of the saved file" required="no" default="">
 <cfproperty name="fileSubType" type="string" hint="MIME content subtype of the saved file" required="no" default="">
@@ -38,6 +39,8 @@ type properties
 <cfproperty name="description" type="longchar" hint="A description of the file to be uploaded" required="No" default=""> 
 <cfproperty name="status" type="string" hint="Status of the node (draft, pending, approved)." required="yes" default="draft">
 <!--- Object Methods --->
+
+<cfimport taglib="/farcry/farcry_core/tags/formtools/" prefix="ft" >
 
 <cffunction name="edit" access="public">
 	<cfargument name="objectid" required="yes" type="UUID">
@@ -179,6 +182,14 @@ type properties
 	<cfset stReturn.bSuccess = 0>
 	<cfset stReturn.message = "File content type cannot have friendly url.">
 	<cfreturn stReturn>
+</cffunction>
+
+<cffunction name="AddNew" access="public" output="true" returntype="void">
+	<cfargument name="typename" required="true" type="string">
+	<cfargument name="lFields" required="false" type="string" default="">
+	
+	<ft:object typename="#arguments.typename#" lfields="Title,filepath" inTable=0 />
+
 </cffunction>
 
 </cfcomponent>
