@@ -32,6 +32,7 @@
 		<cfsavecontent variable="html">
 			<cfoutput>
 			<div style="float:left;">
+				<input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="" />
 				<ft:PrototypeTree id="#arguments.fieldname#" navid="#navid#" depth="99" bIncludeHome=1 lSelectedItems="#lSelectedCategoryID#">
 			</div>
 			</cfoutput>					
@@ -69,7 +70,7 @@
 		
 		<cfset var stResult = structNew()>		
 		<cfset stResult.bSuccess = true>
-		<cfset stResult.value = "#stFieldPost.Value#">
+		<cfset stResult.value = "#arguments.stFieldPost.Value#">
 		<cfset stResult.stError = StructNew()>
 		
 		<cfparam name="arguments.stMetadata.ftAlias" default="">
@@ -84,7 +85,8 @@
 			<cfinvokeargument name="alias" value="#arguments.stMetadata.ftAlias#"/>
 			<cfinvokeargument name="dsn" value="#application.dsn#"/>
 		</cfinvoke>
-			
+
+					
 		<!--- ----------------- --->
 		<!--- Return the Result --->
 		<!--- ----------------- --->
