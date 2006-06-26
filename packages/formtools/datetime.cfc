@@ -113,7 +113,12 @@
 		<!--- Perform any validation here --->
 		<!--- --------------------------- --->
 		<cfif ListGetAt(stFieldPost.stSupporting.Include,1)>
-			<cfset stResult.value = CreateODBCDateTime("#stFieldPost.Value#")>
+			<cfif len(stFieldPost.Value)>
+				<cfset stResult.value = CreateODBCDateTime("#stFieldPost.Value#")>
+			<cfelse>
+				<cfset stResult.value = "">
+			</cfif>
+			
 		<cfelse>
 			<cfset stResult.value = CreateODBCDateTime("#DateAdd('yyyy',200,now())#")>
 		</cfif>
