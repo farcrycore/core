@@ -31,10 +31,10 @@
 		
 		<cfsavecontent variable="html">
 			<cfoutput>
-			<div style="float:left;">
+			
 				<input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="" />
 				<ft:PrototypeTree id="#arguments.fieldname#" navid="#navid#" depth="99" bIncludeHome=1 lSelectedItems="#lSelectedCategoryID#">
-			</div>
+			
 			</cfoutput>					
 		</cfsavecontent>
 		

@@ -11,20 +11,17 @@
 	
 		<cfsavecontent variable="html">
 			<cfoutput>
-				<table>
-				<tr>
-					<th>Current Password: </th>
-					<td><input type="text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#arguments.stMetadata.value#" class="#arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" /></td>
-				</tr>
-				<tr>
-					<th>New Password: </th>
-					<td><input type="password" name="#arguments.fieldname#New" id="#arguments.fieldname#New" value="" class="#arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" /></td>
-				</tr>
-				<tr>
-					<th>Confirm New Password: </th>
-					<td><input type="password" name="#arguments.fieldname#Confirm" id="#arguments.fieldname#Confirm" value="" class="#arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" /></td>
-				</tr>
-				</table>
+				<fieldset>
+					<legend>Password Entry</legend>
+					<label for="#arguments.fieldname#">Current Password</label>
+					<input type="text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#arguments.stMetadata.value#" class="#arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" />
+					
+					<label for="#arguments.fieldname#New">New Password</label>
+					<input type="password" name="#arguments.fieldname#New" id="#arguments.fieldname#New" value="" class="#arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" />
+					
+					<label for="#arguments.fieldname#Confirm">Confirm New Password</label>
+					<input type="password" name="#arguments.fieldname#Confirm" id="#arguments.fieldname#Confirm" value="" class="#arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" />
+				</fieldset>
 			</cfoutput>
 		</cfsavecontent>
 		

@@ -74,7 +74,8 @@
 					
 					</script>
 				
-
+				<cfelse>
+					&nbsp; 
 				</cfif>
 			
 				
