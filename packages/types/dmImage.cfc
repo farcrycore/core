@@ -68,13 +68,13 @@ type properties
 </cffunction>
 
 
-	<cffunction name="AddNew" access="public" output="true" returntype="void">
-		<cfargument name="typename" required="true" type="string">
-		<cfargument name="lFields" required="false" type="string" default="">
-		
-		<ft:object typename="#arguments.typename#" lfields="Title,SourceImage" inTable=0 />
+<cffunction name="AddNew" access="public" output="true" returntype="void">
+	<cfargument name="typename" required="true" type="string">
+	<cfargument name="lFields" required="false" type="string" default="">
+	
+	<ft:object typename="#arguments.typename#" lfields="Title,SourceImage" inTable=0 />
 
-	</cffunction>
+</cffunction>
 
 
 <cffunction name="BeforeSave" access="public" output="true" returntype="struct">

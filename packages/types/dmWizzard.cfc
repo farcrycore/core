@@ -52,9 +52,10 @@ AND UserLogin = '#arguments.UserLogin#'
 
 <!--- If the wizzard exists, create the CF struct to return --->
 <cfif qWizzard.RecordCount>
-<cfset stWizzard = getData(objectID=qWizzard.objectid) />
+	<cfset stWizzard = getData(objectID=qWizzard.objectid) />
 <cfelseif isDefined("arguments.UserLogin") and len(arguments.UserLogin) AND isDefined("arguments.ReferenceID") and len(arguments.ReferenceID)>
-<cfset stWizzard = Create(ReferenceID=arguments.ReferenceID,UserLogin=arguments.UserLogin)>
+	
+	<cfset stWizzard = Create(ReferenceID=arguments.ReferenceID,UserLogin=arguments.UserLogin)>
 </cfif>
 
 <cfif isDefined("stWizzard.Data")>
@@ -90,6 +91,7 @@ AND UserLogin = '#arguments.UserLogin#'
 
 <cfset stProperties.PrimaryObjectID = st.ObjectID>
 <cfset stProperties.CurrentStep = 1>
+<cfset stProperties.OwnedBy = 'help'>
 
 <cfset variables.data = StructNew() />
 <cfset variables.data[st.ObjectID] = st />

@@ -15,7 +15,7 @@
 	<cfparam name="attributes.ObjectLabel" default=""><!--- Used to group and label rendered object if required --->
 	<cfparam name="attributes.lFields" default=""><!--- List of fields to render --->
 	<cfparam name="attributes.lExcludeFields" default=""><!--- List of fields to exclude from render --->
-	<cfparam name="attributes.class" default="farcryform"><!--- class with which to set all farcry form tags --->
+	<cfparam name="attributes.class" default=""><!--- class with which to set all farcry form tags --->
 	<cfparam name="attributes.style" default=""><!--- style with which to set all farcry form tags --->
 	<cfparam name="attributes.format" default="edit"><!--- edit or display --->
 	<cfparam name="attributes.IncludeLabel" default="1">
@@ -32,6 +32,8 @@
 	
 	<cfset attributes.lExcludeFields = ListAppend(attributes.lExcludeFields,"label,objectid,locked,lockedby,lastupdatedby,ownedby,datetimelastupdated,createdby,datetimecreated,versionID,status")>
 	
+	<!--- Add Form Tools Specific CSS --->
+	<cfset Request.InHead.FormsCSS = 1>
 	
 	<cfif len(attributes.ObjectID)>
 	
@@ -177,14 +179,25 @@
 		
 
 	<cfif NOT len(Attributes.r_stFields)>
+
 		<cfif attributes.IncludeFieldSet>
-			<cfoutput><fieldset class="#attributes.class#"></cfoutput>
+			<cfoutput><fieldset class="formsection #attributes.class#"></cfoutput>
 		</cfif>
 		
 		<cfif isDefined("attributes.legend") and len(attributes.legend)>
 			<cfoutput><legend class="#attributes.class#">#attributes.legend#</legend></cfoutput>
 		</cfif>	
 		
+		<cfif structKeyExists(attributes,"HelpSection") and len(attributes.HelpSection)>
+			<cfoutput>
+				<div class="helpsection">
+					<cfif structKeyExists(attributes,"HelpTitle") and len(attributes.HelpTitle)>
+						<h4>#attributes.HelpTitle#</h4>
+					</cfif>
+					<p>#attributes.HelpSection#</p>
+				</div>
+			</cfoutput>
+		</cfif>
 		<cfif Attributes.InTable EQ 1>
 			<cfoutput>
 				<table>
@@ -375,6 +388,9 @@
 			<cfif structKeyExists(ftFieldMetadata,'ftLibrarySelectedListStyle')>
 				<cfset stURLParams.ftLibrarySelectedListStyle = "#ftFieldMetadata.ftLibrarySelectedListStyle#">
 			</cfif>
+			<cfif structKeyExists(ftFieldMetadata,'ftDataProvider')>
+				<cfset stURLParams.ftDataProvider = "#ftFieldMetadata.ftDataProvider#">
+			</cfif>
 
 			<cfsavecontent variable="LibraryLink">
 				<!--- <cfdump var="#ftFieldMetadata#"> --->
@@ -388,8 +404,8 @@
 		<cfsavecontent variable="FieldLabelStart">
 				
 			<cfoutput>
-				<label for="#variables.prefix##ftFieldMetadata.Name#" class="#attributes.class#">
-				<b>#ftFieldMetadata.ftlabel#</b>
+				<label for="#variables.prefix##ftFieldMetadata.Name#" class="fieldsectionlabel #attributes.class#">
+				#ftFieldMetadata.ftlabel#
 				<cfif len(LibraryLink)>
 					#LibraryLink#					
 				</cfif>
@@ -398,11 +414,7 @@
 			
 		</cfsavecontent>
 		
-		
-		<cfsavecontent variable="FieldLabelEnd">
-			<!--- Not required --->			
-		</cfsavecontent>
-					
+	
 					
 		<cfif len(LibraryLink) and attributes.IncludeLibraryWrapper>
 			<cfset variables.returnHTML = "<div id='#variables.prefix##ftFieldMetadata.Name#-wrapper' class='formfield-wrapper'>#variables.returnHTML#</div>">
@@ -414,6 +426,8 @@
 					
 			<cfif Attributes.InTable EQ 1>
 				<cfoutput><tr></cfoutput>
+			<cfelse>
+				<cfoutput><div class="fieldsection #ftFieldMetadata.ftType# #ftFieldMetadata.ftClass#"></cfoutput>
 			</cfif>
 			
 			
@@ -421,7 +435,7 @@
 				<cfif Attributes.InTable EQ 1>
 					<cfoutput>
 						<th>
-							#FieldLabelStart##FieldLabelEnd#
+							#FieldLabelStart#
 						</th>
 					</cfoutput>
 				<cfelse>
@@ -435,25 +449,23 @@
 			</cfif>
 
 			
-			<cfoutput>#variables.returnHTML#</cfoutput>
+			<cfoutput><div class="fieldwrap">#variables.returnHTML#</div></cfoutput>
 			
-						
-			<cfif Attributes.InTable EQ 1>
-				<cfoutput></td></cfoutput>
-			<cfelse>
-				<cfif isDefined("Attributes.IncludeBR") AND attributes.IncludeBR EQ 1>
-					<cfoutput><br class="#attributes.class#" style="clear:both;" /></cfoutput>	
-				</cfif>
+			<cfif structKeyExists(ftFieldMetadata,"ftHint") and len(ftFieldMetadata.ftHint)>
+				<cfoutput><small>#ftFieldMetadata.ftHint#</small></cfoutput>
 			</cfif>
 			
 			<cfif Attributes.InTable EQ 1>
-				<cfoutput></tr></cfoutput>
+				<cfoutput></td></tr></cfoutput>
 			<cfelse>
-				<cfoutput>#FieldLabelEnd#</cfoutput>
+				<cfoutput>
+					<br class="fieldsectionbreak" />
+					</div>
+				</cfoutput>
 			</cfif>
 		<cfelse>
 			<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i].HTML = returnHTML>
-			<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i].Label = "#FieldLabelStart##FieldLabelEnd#">
+			<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i].Label = "#FieldLabelStart#">
 			<cfif ftFieldMetadata.Type EQ "array">
 				<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i].LibraryLink = "#LibraryLink#">
 			</cfif>
@@ -461,26 +473,6 @@
 		
 	</cfloop>
 	
-	<cfif NOT len(Attributes.r_stFields)>
-		<cfif Attributes.InTable EQ 1>
-			<cfoutput></table></cfoutput>
-		</cfif>
-	</cfif>
-	
-	<cfparam name="Request.lFarcryObjectsRendered" default="">
-
-	<cfif attributes.format EQ "edit"
-		AND StructKeyExists(Request.farcryForm.stObjects[variables.prefix].farcryformobjectinfo,"ObjectID")
-		AND  NOT ListContains(Request.lFarcryObjectsRendered, Request.farcryForm.stObjects[variables.prefix].farcryformobjectinfo.ObjectID)>
-			
-		<cfoutput>
-			<input type="hidden" name="FarcryFormPrefixes" id="FarcryFormPrefixes" value="#StructKeyList(request.farcryForm.stObjects)#" />
-			<input type="hidden" name="#variables.prefix#ObjectID" value="#Request.farcryForm.stObjects[variables.prefix].farcryformobjectinfo.ObjectID#">
-			<input type="hidden" name="#variables.prefix#Typename" value="#Request.farcryForm.stObjects[variables.prefix].farcryformobjectinfo.Typename#">
-		</cfoutput>
-		
-		<cfset Request.lFarcryObjectsRendered = ListAppend(Request.lFarcryObjectsRendered,Request.farcryForm.stObjects[variables.prefix].farcryformobjectinfo.ObjectID)>
-	</cfif>
 
 	
 	
@@ -501,15 +493,37 @@
 
 
 <cfif thistag.ExecutionMode EQ "End">
-		<cfif NOT len(Attributes.r_stFields)>
-			<cfif attributes.IncludeFieldSet>
-				<cfoutput></fieldset></cfoutput>
-			</cfif>
+
+
+	<cfif NOT len(Attributes.r_stFields)>
+		<cfif Attributes.InTable EQ 1>
+			<cfoutput></table></cfoutput>
+		<cfelse>
+			
 		</cfif>
+		<cfif attributes.IncludeFieldSet>
+			<cfoutput></fieldset></cfoutput>
+		</cfif>
+	</cfif>
+	
+	<cfparam name="Request.lFarcryObjectsRendered" default="">
+
+	<cfif attributes.format EQ "edit"
+		AND StructKeyExists(Request.farcryForm.stObjects[variables.prefix].farcryformobjectinfo,"ObjectID")
+		AND  NOT ListContains(Request.lFarcryObjectsRendered, Request.farcryForm.stObjects[variables.prefix].farcryformobjectinfo.ObjectID)>
+			
+		<cfoutput>
+			<input type="hidden" name="FarcryFormPrefixes" id="FarcryFormPrefixes" value="#StructKeyList(request.farcryForm.stObjects)#" />
+			<input type="hidden" name="#variables.prefix#ObjectID" value="#Request.farcryForm.stObjects[variables.prefix].farcryformobjectinfo.ObjectID#">
+			<input type="hidden" name="#variables.prefix#Typename" value="#Request.farcryForm.stObjects[variables.prefix].farcryformobjectinfo.Typename#">
+		</cfoutput>
 		
-		<cfif isDefined("Request.tmpDeleteFarcryForm") AND Request.tmpDeleteFarcryForm EQ attributes.ObjectID AND  isDefined("Request.farcryForm")>
-			<!--- If the call to this tag is not made within the confines of a <ft:form> tag and this is the object that created it, then we need to delete the temp one we created. --->
-			<cfset dummy = structDelete(Request,"farcryForm")>
-			<cfset dummy = structDelete(Request,"tmpDeleteFarcryForm")>
-		</cfif>
+		<cfset Request.lFarcryObjectsRendered = ListAppend(Request.lFarcryObjectsRendered,Request.farcryForm.stObjects[variables.prefix].farcryformobjectinfo.ObjectID)>
+	</cfif>
+	
+	<cfif isDefined("Request.tmpDeleteFarcryForm") AND Request.tmpDeleteFarcryForm EQ attributes.ObjectID AND  isDefined("Request.farcryForm")>
+		<!--- If the call to this tag is not made within the confines of a <ft:form> tag and this is the object that created it, then we need to delete the temp one we created. --->
+		<cfset dummy = structDelete(Request,"farcryForm")>
+		<cfset dummy = structDelete(Request,"tmpDeleteFarcryForm")>
+	</cfif>
 </cfif>

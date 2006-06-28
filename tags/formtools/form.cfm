@@ -27,7 +27,7 @@ It just ignores the inner ones.
 	
 		<cfparam name="attributes.onsubmit" default="">
 		<cfparam name="attributes.css" default="">
-		<cfparam name="attributes.Class" default="f-wrap-1">
+		<cfparam name="attributes.Class" default="">
 		<cfparam name="attributes.Style" default="">
 		<cfparam name="attributes.Heading" default="">
 		<cfparam name="attributes.Validation" default="1">

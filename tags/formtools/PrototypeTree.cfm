@@ -123,7 +123,7 @@
 	
 	
 	
-	<cfoutput><div id="#attributes.id#"></cfoutput>
+	<cfoutput><div id="treewrap_#attributes.id#"></cfoutput>
 	<!--- // build menu [bb: this relies on nLevels, starting from nLevel 2] --->
 	<cfloop query="qNav" ><!--- for(i=1; i lt incrementvalue(qNav.recordcount); i=i+1) --->
 	<!--- { --->
@@ -268,7 +268,7 @@
 	
 	<cfoutput>
 	<script language="javascript">
-		inittree('#attributes.id#');
+		inittree('treewrap_#attributes.id#');
 	</script>
 	</cfoutput>
 

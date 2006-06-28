@@ -60,6 +60,7 @@ If you are providing a data subset that needs to be protected disable the catego
 --->
 <!--- import tag libraries --->
 <cfimport taglib="/farcry/farcry_core/tags/widgets" prefix="widgets" />
+<cfimport taglib="/farcry/farcry_core/tags/formtools/" prefix="ft" >
 
 <!--- make sure tag is correctly implemented --->
 <cfif NOT thisTag.HasEndTag>
@@ -523,6 +524,14 @@ oAuthorisation=request.dmsec.oAuthorisation;
 			<cfcase value="value">
 				<cfoutput>
 				<td <cfif len(attributes.aColumns[i].style)>style="#attributes.aColumns[i].style#"</cfif>>#evaluate("recordset.#attributes.aColumns[i].value#")##showMultipleVersionIdicator#</td></cfoutput>
+			</cfcase>
+			<cfcase value="render">
+				<cfoutput>
+				<td <cfif len(attributes.aColumns[i].style)>style="#attributes.aColumns[i].style#"</cfif>>
+					<ft:object objectid="#recordset.objectid#" lfields="#attributes.aColumns[i].value#" intable="0" includeLabel="0" format="display" r_stFields="stFields" />
+					[#ListChangeDelims(stFields[attributes.aColumns[i].value].html, " ] [" , ",")#]
+					#showMultipleVersionIdicator#
+				</td></cfoutput>
 			</cfcase>
 			<cfdefaultcase>
 				<cfoutput>

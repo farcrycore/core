@@ -154,6 +154,7 @@ function fcleanBody(myString){
 					parent['sidebar'].frames['sideTree'].location= parent['sidebar'].frames['sideTree'].location;
 					*/
 				// redirect to cancelcompleteURL
+	
 				parent['content'].location.href = "#cancelCompleteURL#";
 			</script>
 		</cfoutput>

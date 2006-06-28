@@ -626,9 +626,13 @@ $out:$
 				<script type="text/javascript">
 				tinyMCE.init({
 					mode : "exact",
-					elements : "#attributes.textareaname#",<cfif NOT ListFindNoCase("none,default", application.config.tinyMCE.insertimage_callback) AND application.config.tinyMCE.insertimage_callback NEQ "">
-					insertimage_callback : "#application.config.tinyMCE.insertimage_callback#",</cfif><cfif NOT ListFindNoCase("none,default", application.config.tinyMCE.file_browser_callback) AND application.config.tinyMCE.file_browser_callback NEQ "">
-					file_browser_callback : "#application.config.tinyMCE.file_browser_callback#",</cfif>
+					elements : "#attributes.textareaname#",
+					<cfif NOT ListFindNoCase("none,default", application.config.tinyMCE.insertimage_callback) AND application.config.tinyMCE.insertimage_callback NEQ "">
+						insertimage_callback : "#application.config.tinyMCE.insertimage_callback#",
+					</cfif>
+					<cfif NOT ListFindNoCase("none,default", application.config.tinyMCE.file_browser_callback) AND application.config.tinyMCE.file_browser_callback NEQ "">
+						file_browser_callback : "#application.config.tinyMCE.file_browser_callback#",
+					</cfif>
 					#application.config.tinyMCE.tinyMCE_config#
 				});
 				</script>

@@ -53,7 +53,7 @@ $out:$
 		<cfparam name="Request.RequiredInHead.CalendarStyle1CSS" default = "0">
 		
 		<cfparam name="Request.RequiredInHead.WizardCSS" default = "0">
-		
+		<cfparam name="Request.RequiredInHead.FormsCSS" default = "0">
 		
 		
 		
@@ -139,6 +139,9 @@ $out:$
 		
 		<cfif isdefined("Request.InHead.Wizard")>
 			<cfset Request.RequiredInHead.WizardCSS = 1>
+		</cfif>
+		<cfif isdefined("Request.InHead.FormsCSS")>
+			<cfset Request.RequiredInHead.FormsCSS = 1>
 		</cfif>
 		
 		<cfif isDefined("Request.InHead.prototypeTree")>
@@ -229,6 +232,10 @@ $out:$
 		
 		<cfif isDefined("Request.RequiredInHead.WizardCSS") AND Request.RequiredInHead.WizardCSS EQ 1>
 			<cfoutput><link rel="stylesheet" href="#application.url.farcry#/css/wizard.css" type="text/css" media="screen" /></cfoutput>
+		</cfif>
+		
+		<cfif isDefined("Request.RequiredInHead.FormsCSS") AND Request.RequiredInHead.FormsCSS EQ 1>
+			<cfoutput><link rel="stylesheet" type="text/css" href="#application.url.farcry#/css/forms.css" media="all" /></cfoutput>
 		</cfif>
 		
 	</cfsavecontent>
