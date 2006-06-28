@@ -8,13 +8,14 @@
 	<cfimport taglib="/farcry/farcry_core/tags/widgets/" prefix="widgets">
 	<cfimport taglib="/farcry/farcry_core/tags/formtools/" prefix="ft" >
 
-	<cffunction name="edit" access="public" output="true" returntype="string" hint="his will return a string of formatted HTML text to enable the user to edit the data">
+	<cffunction name="edit" access="public" output="false" returntype="string" hint="his will return a string of formatted HTML text to enable the user to edit the data">
 		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
 		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 
 		<cfparam name="arguments.stMetadata.ftAlias" default="">
+		<cfparam name="arguments.stMetadata.ftLegend" default="">
 		
 		<cfif structKeyExists(application.catid, arguments.stMetadata.ftAlias)>
 			<cfset navid = application.catid[arguments.stMetadata.ftAlias] >
@@ -30,12 +31,21 @@
 		</cfinvoke>
 		
 		<cfsavecontent variable="html">
-			<cfoutput>
 			
-				<input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="" />
-				<ft:PrototypeTree id="#arguments.fieldname#" navid="#navid#" depth="99" bIncludeHome=1 lSelectedItems="#lSelectedCategoryID#">
-			
-			</cfoutput>					
+				<cfoutput><fieldset>
+					<cfif len(arguments.stMetadata.ftLegend)><legend>#arguments.stMetadata.ftLegend#</legend></cfif>
+				
+					<div class="fieldsection optional full">
+											
+						<div class="fieldwrap"></cfoutput>
+							<ft:PrototypeTree id="#arguments.fieldname#" navid="#navid#" depth="99" bIncludeHome=1 lSelectedItems="#lSelectedCategoryID#">
+						<cfoutput></div>
+						
+						<br class="fieldsectionbreak" />
+					</div>
+					<input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="" />
+				</fieldset></cfoutput>
+						
 		</cfsavecontent>
 		
 		<cfreturn html>

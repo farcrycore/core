@@ -13,14 +13,23 @@
 			<cfoutput>
 				<fieldset>
 					<legend>Password Entry</legend>
-					<label for="#arguments.fieldname#">Current Password</label>
-					<input type="text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#arguments.stMetadata.value#" class="#arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" />
+					<div class="fieldsection optional">
+						<label class="fieldsectionlabel" class="fieldsectionlabel" for="#arguments.fieldname#">Current Password</label>
+						<div class="fieldwrap"><input type="text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#arguments.stMetadata.value#" class="#arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" /></div>
+						<br class="fieldsectionbreak" />
+					</div>
 					
-					<label for="#arguments.fieldname#New">New Password</label>
-					<input type="password" name="#arguments.fieldname#New" id="#arguments.fieldname#New" value="" class="#arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" />
+					<div class="fieldsection optional">
+						<label class="fieldsectionlabel" for="#arguments.fieldname#New">New Password</label>
+						<div class="fieldwrap"><input type="password" name="#arguments.fieldname#New" id="#arguments.fieldname#New" value="" class="#arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" /></div>
+						<br class="fieldsectionbreak" />
+					</div>
 					
-					<label for="#arguments.fieldname#Confirm">Confirm New Password</label>
-					<input type="password" name="#arguments.fieldname#Confirm" id="#arguments.fieldname#Confirm" value="" class="#arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" />
+					<div class="fieldsection optional">
+						<label class="fieldsectionlabel" for="#arguments.fieldname#Confirm">Confirm New Password</label>
+						<div class="fieldwrap"><input type="password" name="#arguments.fieldname#Confirm" id="#arguments.fieldname#Confirm" value="" class="#arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" /></div>
+						<br class="fieldsectionbreak" />
+					</div>
 				</fieldset>
 			</cfoutput>
 		</cfsavecontent>

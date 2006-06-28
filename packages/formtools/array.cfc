@@ -5,7 +5,7 @@
 
 		
 
-	<cffunction name="edit" access="public" output="true" returntype="string" hint="This is going to called from ft:object and will always be passed 'typename,stobj,stMetadata,fieldname'.">
+	<cffunction name="edit" access="public" output="false" returntype="string" hint="This is going to called from ft:object and will always be passed 'typename,stobj,stMetadata,fieldname'.">
 		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
 		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
@@ -35,62 +35,63 @@
 		
 		<cfsavecontent variable="returnHTML">
 			
-		<cfoutput>
+		
 			
-				<input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="#arrayToList(arguments.stObject[arguments.stMetaData.Name])#" />
+				<cfoutput><input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="#arrayToList(arguments.stObject[arguments.stMetaData.Name])#" /></cfoutput>
 				<cfif ListLen(arrayToList(arguments.stObject[arguments.stMetaData.Name]))>
-					<ul id="#ULID#" class="#arguments.stMetadata.ftLibrarySelectedListClass#" style="#arguments.stMetadata.ftLibrarySelectedListStyle#">
+					<cfoutput><div id="#ULID#" class="#arguments.stMetadata.ftLibrarySelectedListClass#" style="#arguments.stMetadata.ftLibrarySelectedListStyle#"></cfoutput>
 						<cfloop list="#arrayToList(arguments.stObject[arguments.stMetaData.Name])#" index="i">
-							<li id="#arguments.fieldname#_#i#">
+							<cfoutput><div id="#arguments.fieldname#_#i#">
 								<img src="#application.url.farcry#/images/dragbar.gif" class="#ULID#handle" style="cursor:move;" align="center">
-								<div>
+								<div></cfoutput>
 								<cfif FileExists("#application.path.project#/webskin/#arguments.stMetadata.ftJoin#/#arguments.stMetadata.ftLibrarySelectedMethod#.cfm")>
 									<cfset stobj = oData.getData(objectid=i)>
 									<cfinclude template="/farcry/#application.applicationname#/webskin/#arguments.stMetadata.ftJoin#/#arguments.stMetadata.ftLibrarySelectedMethod#.cfm">
 								<cfelse>
-									#i#
+									<cfoutput>#i#</cfoutput>
 								</cfif>
 												
-								<a href="##" onclick="new Effect.Fade($('#arguments.fieldname#_#i#'));Element.remove('#arguments.fieldname#_#i#');$('#arguments.fieldname#').value = Sortable.sequence('#ULID#');update_#arguments.fieldname#('sort',$('#arguments.fieldname#')); return false;"><img src="#application.url.farcry#/images/crystal/22x22/actions/button_cancel.png" style="width:16px;height:16px;" /></a>
+								<cfoutput><a href="##" onclick="new Effect.Fade($('#arguments.fieldname#_#i#'));Element.remove('#arguments.fieldname#_#i#');$('#arguments.fieldname#').value = Sortable.sequence('#ULID#');update_#arguments.fieldname#('sort',$('#arguments.fieldname#')); return false;"><img src="#application.url.farcry#/images/crystal/22x22/actions/button_cancel.png" style="width:16px;height:16px;" /></a>
 								</div>
-							</li>
+							</div></cfoutput>
 						</cfloop>
-					</ul>
+					<cfoutput></div></cfoutput>
 				
-				
+					<cfoutput>
 					<script type="text/javascript" language="javascript" charset="utf-8">					
 					// <![CDATA[
 						  Sortable.create('#ULID#',
-						  	{ghosting:false,constraint:false,hoverclass:'over',handle:'#ULID#handle',
+						  	{ghosting:false,constraint:false,hoverclass:'over',handle:'#ULID#handle',constraint:'vertical',tag:'div',
 						    onChange:function(element){
 						    	$('#arguments.fieldname#').value = Sortable.sequence('#ULID#');	
 						    },
 						    onUpdate:function(element){					
 					   			update_#arguments.fieldname#('sort',element);
-						    },
+						    }
 						    
 						  });
 						// ]]>	
 					
 					</script>
+				</cfoutput>
 				
 				<cfelse>
-					&nbsp; 
+					<cfoutput>&nbsp;</cfoutput> 
 				</cfif>
 			
-				
+			<cfoutput>	
 			<script type="text/javascript" language="javascript" charset="utf-8">
 			function update_#arguments.fieldname#_wrapper(HTML){
 				$('#arguments.fieldname#-wrapper').innerHTML = HTML;
 				// <![CDATA[
 					  Sortable.create('#ULID#',
-					  {ghosting:false,constraint:false,hoverclass:'over',handle:'#ULID#handle',
+					  {ghosting:false,constraint:false,hoverclass:'over',handle:'#ULID#handle',constraint:'vertical',tag:'div',
 					    onChange:function(element){
 					    	$('#arguments.fieldname#').value = Sortable.sequence('#ULID#');	
 					    },
 					    onUpdate:function(element){					
 				   			update_#arguments.fieldname#('sort',element);
-					    },
+					    }
 					  });
 					// ]]>									 
 			}
@@ -105,10 +106,10 @@
 							Effect.Fade(element, {from:0.2,to:0.2});
 							// <![CDATA[
 								  Sortable.create('#arguments.fieldname#_list',
-								  	{ghosting:false,constraint:false,hoverclass:'over',handle:'#arguments.fieldname#_listhandle',
+								  	{ghosting:false,constraint:false,hoverclass:'over',handle:'#arguments.fieldname#_listhandle',constraint:'vertical',tag:'div',
 								    onChange:function(element){
 								    	$('#arguments.fieldname#').value = Sortable.sequence('#arguments.fieldname#_list')
-								    },
+								    }
 								    
 								  });
 								// ]]>	
@@ -117,10 +118,13 @@
 						parameters:'Action=' + action + '&LibraryType=Array&primaryObjectID=#arguments.stObject.ObjectID#&primaryTypename=#arguments.typename#&primaryFieldname=#arguments.stMetaData.Name#&primaryFormFieldname=#arguments.fieldname#&WizzardID=&DataObjectID=' + encodeURIComponent($('#arguments.fieldname#').value) + '&DataTypename=#arguments.stMetadata.ftJoin#', evalScripts:true, asynchronous:true
 					})
 			}
-			</script>
-						
 			
-		</cfoutput>
+			
+				
+			</script>
+			</cfoutput>		
+			
+		
 		</cfsavecontent>
 		
 		
