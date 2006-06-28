@@ -231,54 +231,20 @@ $Developer: $
 
 
 
-
-
-
-<cfquery datasource="#application.dsn#" name="qLibraryList">
-SELECT ObjectID
-FROM #URL.ftJoin#
-</cfquery>
+<cfif isDefined("url.ftDataProvider") AND len(url.ftDataProvider)>	
+	<cfinvoke component="#oData#" method="#url.ftDataProvider#" returnvariable="qLibraryList" />
+<cfelse>
+	<cfquery datasource="#application.dsn#" name="qLibraryList">
+	SELECT ObjectID
+	FROM #URL.ftJoin#
+	ORDER BY label
+	</cfquery>
+</cfif>
 
 <!--- Put JS and CSS for TabStyle1 into the header --->
 <cfset Request.InHead.TabStyle1 = 1>
 
 <cfoutput>
-
-<style type="text/css">
-##edsubpanel {
-	position:absolute;
-	width:90%;
-	z-index:101;
-	border:1px solid ##000;
-	background:##fff; 
-	opacity:0.9;
-	filter:alpha(opacity:90); 
-}
-
-##overlay{
-	position: absolute;
-	top: 0;
-	left: 0;
-	z-index: 90;
-	width: 100%;
-	height: 500px;
-	background-color: ##000;
-	filter:alpha(opacity=60);
-	-moz-opacity: 0.6;
-	opacity: 0.6;
-	}
-	
-</style>
-
-
-<div style="background:##F1F1F1;">
-	<a href="##" onclick="new Effect.toggle('edsubpanel','slide', {duration:.3});return false;">Show Selected</a>
-</div>
-	<div id="edsubpanel" style="display:none;">
-		<div style="padding:25px;">
-			<ft:object ObjectID="#url.primaryObjectID#" wizzardid="#url.WizzardID#" lFields="#url.primaryFieldName#" InTable=0 IncludeLabel=0 />
-		</div>
-	</div>
 
 
 
@@ -302,14 +268,14 @@ FROM #URL.ftJoin#
 					<tr>
 						<td width="100px;" valign="top">
 							<div id="utility">
-								<h2>Drag here to add</h2> 
+								<h2 id="DragTitle">Drag here to add</h2> 
 								
 								<style type="text/css">
 									.basket-active {background:##E17000;}
 								</style>		
 								
-								<div id="basket" style="border:1px solid ##E17000;min-height:100px;_height:100px;">
-									<!--- <ft:object ObjectID="#url.primaryObjectID#" wizzardid="#url.WizzardID#" lFields="#url.primaryFieldName#" InTable=0 IncludeLabel=0 /> --->
+								<div id="basket" style="border:1px solid ##E17000;overflow:auto;height:800px;">
+									<ft:object ObjectID="#url.primaryObjectID#" wizzardid="#url.WizzardID#" lFields="#url.primaryFieldName#" InTable=0 IncludeLabel=0 />
 								</div>	
 															
 							</div><!--- utility --->						
@@ -320,9 +286,13 @@ FROM #URL.ftJoin#
 								<!--- Render all the objects for the requested Type. --->
 								<ws:paginate PageLinksShown=5 RecordsPerPage=20 query="#qLibraryList#">
 									<div style="display:block;">	
-										<ul class="#url.ftLibraryPickListClass#" style="#url.ftLibraryPickListStyle#">
+										<div class="#url.ftLibraryPickListClass#" style="#url.ftLibraryPickListStyle#">
+										
+											<cfset lRenderedObjects = "">
 											<ws:paginateRecords r_stRecord="stObject">
-												<li id="select#stObject.objectID#" class="LibraryItem" style="text-align:center;" objectID="#stObject.ObjectID#">
+												<cfset lRenderedObjects = ListAppend(lRenderedObjects,stObject.ObjectID) />
+												
+												<div id="select#stObject.objectID#" class="LibraryItem thumbNailItem" style="text-align:center;" objectID="#stObject.ObjectID#">
 													<img src="#application.url.farcry#/images/dragbar.gif" id="handle#stObject.objectID#" style="cursor:move;" align="center">
 													<cfif FileExists("#application.path.project#/webskin/#url.ftJoin#/#url.ftLibraryPickMethod#.cfm")>
 														<cfset stobj = oData.getData(objectid=stObject.ObjectID)>
@@ -331,9 +301,9 @@ FROM #URL.ftJoin#
 														#stObject.ObjectID#
 													</cfif>
 		
-												</li>
+												</div>
 											</ws:paginateRecords>
-										</ul>
+										</div>
 									</div>	
 									
 									<br style="clear:both;" />
@@ -344,7 +314,7 @@ FROM #URL.ftJoin#
 									</div>
 								</ws:paginate>
 							
-								<div class="f-submit-wrap">
+								 <div class="f-submit-wrap">
 									<div style="float:left;">
 									<cfif qLibraryList.recordCount GT 0>	
 										<ft:farcrybutton type="button" value="Close" onclick="self.blur();window.close();" />
@@ -367,11 +337,8 @@ FROM #URL.ftJoin#
 				</div>
 				<div class="panel">
 					<ft:form>
-						<div id="utility">
-							<h2>Browse by category</h2> 
-						</div><!--- utility --->
 						
-						<div id="content">
+						
 							
 							
 							<cfif StructKeyExists(oData,url.ftLibraryAddNewMethod)>
@@ -386,20 +353,15 @@ FROM #URL.ftJoin#
 
 							
 							
-							<div class="f-submit-wrap">
 								<div style="float:left;">
 									<ft:farcrybutton value="Attach" />	
 									<ft:farcrybutton type="button" value="Close" onclick="self.blur();window.close();" />	
 								</div>
 								
-								<br style="clear:both;" />
-							</div>
-							
-						</div>
+					
 					</ft:form>
 				</div>
 				
-				<br style="clear:both;" />
 			</div>
 		</div>
 	
@@ -407,68 +369,95 @@ FROM #URL.ftJoin#
 		<br style="clear:both" />
 
 
-
-		
-		
 		
 		<cfset Request.InHead.ScriptaculousEffects = 1>
+		
+		
+		<cfquery dbtype="query" name="q">
+		SELECT ObjectID
+		FROM q
+		WHERE ObjectID IN (#ListQualify(lRenderedObjects,"'")#)
+		</cfquery>
+		
 		
 		<script type="text/javascript">
 			
 		<cfloop query="q">
 			Effect.Fade($('select#q.objectID#'), {from:0.2,to:0.2});
-		</cfloop>	
+		</cfloop>
 		
 		<cfloop query="qLibraryList" startrow="#StartRow#" endrow="#EndRow#">
-			new Draggable('select#qLibraryList.objectID#',
-			 
-		      {revert:true,handle:'handle#qLibraryList.objectID#',
-		      	endeffect: function(element) { 
-		        	//new Effect.Opacity(element, {duration:1, from:0, to:.2}); 
-		      	}
-		      }
-		     )
+			new Draggable('select#qLibraryList.objectID#', {revert:true,handle:'handle#qLibraryList.objectID#'}) 
 		</cfloop>
 		
 		
+		
 		function updateBasket(action,element){
-			new Ajax.Updater('#url.primaryFormFieldname#-wrapper', '/farcry/facade/library.cfc?method=ajaxUpdateArray', {
-					//onLoading:function(request){Element.show('indicator')}, 
-					onComplete:function(request){
+			var indicatorIcon = '<img alt="Indicator" src="/farcry/images/indicator.gif" /> Saving...';
 
+			$('DragTitle').innerHTML = indicatorIcon;
+			
+			
+			
+			new Ajax.Request('/farcry/facade/library.cfc?method=ajaxUpdateArray', {
+				parameters:'Action=' + action + '&LibraryType=#url.LibraryType#&primaryObjectID=#url.primaryObjectID#&primaryTypename=#url.primaryTypeName#&primaryFieldname=#url.primaryFieldname#&primaryFormFieldname=#url.primaryFormFieldname#&WizzardID=#url.WizzardID#&DataObjectID=' + encodeURIComponent($(element).getAttribute('objectid')) + '&DataTypename=#url.ftJoin#',
+				asynchronous:true, 
+				onSuccess:function(request){
+					//$('basket').innerHTML = request.responseText;
+					update_#url.primaryFormFieldname#_wrapper(request.responseText);	
+					opener.update_#url.primaryFormFieldname#_wrapper(request.responseText);	
+					Effect.Fade(element, {from:0.2,to:0.2});
+					//Effect.Pulsate($('#url.primaryFormFieldname#_' + $(element).getAttribute('objectid')), {duration:1});
+					$('DragTitle').innerHTML = 'Drag here to add';
+					// <![CDATA[
+						  Sortable.create('#url.primaryFormFieldname#_list',
+						  	{ghosting:false,hoverclass:'over',handle:'#url.primaryFormFieldname#_listhandle',constraint:'vertical',tag:'div',
+						    onChange:function(element){$('#url.primaryFormFieldname#').value = Sortable.sequence('#url.primaryFormFieldname#_list')}
+						    
+						  })
+						// ]]>
+						
+				
+				}
+			});
+			
+			
+			<!--- new Ajax.Updater('#url.primaryFormFieldname#-wrapper', '/farcry/facade/library.cfc?method=ajaxUpdateArray', {
+					onComplete:function(request){
+						
 						update_#url.primaryFormFieldname#_wrapper(request.responseText);	
 						opener.update_#url.primaryFormFieldname#_wrapper(request.responseText);						
 						Effect.Fade(element, {from:0.2,to:0.2});
 						// <![CDATA[
 							  Sortable.create('#url.primaryFormFieldname#_list',
 							  	{ghosting:false,constraint:false,hoverclass:'over',handle:'#url.primaryFormFieldname#_listhandle',
-							    onChange:function(element){$('#url.primaryFormFieldname#').value = Sortable.sequence('#url.primaryFormFieldname#_list')},
+							    onChange:function(element){$('#url.primaryFormFieldname#').value = Sortable.sequence('#url.primaryFormFieldname#_list')}
 							    
-							  });
+							  })
 							// ]]>	
 													
 					}, 
 					parameters:'Action=' + action + '&LibraryType=#url.LibraryType#&primaryObjectID=#url.primaryObjectID#&primaryTypename=#url.primaryTypeName#&primaryFieldname=#url.primaryFieldname#&primaryFormFieldname=#url.primaryFormFieldname#&WizzardID=#url.WizzardID#&DataObjectID=' + encodeURIComponent($(element).getAttribute('objectid')) + '&DataTypename=#url.ftJoin#', evalScripts:true, asynchronous:true
-				})
+				}) --->
 		}
 		
 		Droppables.add('basket', {
 			accept:'LibraryItem',
 			hoverclass:'basket-active',
 			onDrop:function(element) {
+				
 				//Effect.Opacity(element, {duration:2, from:0, to:.2}); 
 				Effect.Fade(element, {duration:2,from:0,to:0.2});
 				//$('#URL.primaryFieldName#').value = $(element).getAttribute('objectid');
                 //$('basket').innerHTML = element.innerHTML;
                 updateBasket('add',element);
-				
                 				
 			}
 		})
 			
 
 
-		initTabNavigation('LibraryTab','current','tab-disabled');
+		//initTabNavigation('LibraryTab','current','tab-disabled');
 		
 		</script>
 </cfoutput>	
