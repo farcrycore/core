@@ -243,6 +243,8 @@ body.imagebrowse form.f-wrap-1 fieldset.f-checkbox-wrap label, body.filebrowse f
 body.imagebrowse form.f-wrap-1 label, body.filebrowse form.f-wrap-1 label {border-bottom: none}
 body.imagebrowse form.f-wrap-1 h3, body.filebrowse form.f-wrap-1 h3 {font-size:115%}
 
+body.library .tab-panes {background:#f1f1f1 none;}
+
 /* =PLP WRAP */
 
 
