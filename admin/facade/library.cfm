@@ -211,7 +211,7 @@ $Developer: $
 <ft:processForm action="*" url="#cgi.script_name#?#querystring#" />
 
 
-<admin:Header Title="Library" bodyclass="popup imagebrowse">
+<admin:Header Title="Library" bodyclass="popup imagebrowse library" onload="setupPanes('container1','tab1');">
 
 
 
@@ -246,127 +246,155 @@ $Developer: $
 
 <cfoutput>
 
+<h1>Library...</h1>
+
+<div id="container1" class="tab-container">
+	<ul class="tabs">
+		<li id="tab1" onclick="return showPane('pane1', this)" class="tab-active">
+			<a href="##pane1-ref">Attach</a>
+		</li>
+		<li id="tab2" onclick="return showPane('pane2', this)" class="tab-disabled">
+			<a href="##pane2-ref">Add New</a>
+		</li>
+	</ul>
+	
+	<div class="tab-panes">
+		<a name="pane1-ref" style="display: none;" ></a>
+		<div id="pane1" style="display: block;">
 
 
+			#RenderPicker()#
 
-	<h1>Library...</h1>
 
-		
-		
-				
-		
-		<div id="LibraryTab" class="tab-container">
-        	<ul class="links" style="">                   
-				<li id="tab1" class="current"><a href="#cgi.script_name#?#querystring#&librarySection=Select"><span>SELECT</span></a></li>
-				<li id="tab2"><a href="#cgi.script_name#?#querystring#&librarySection=Add"><span>ADD NEW</span></a></li>			
-			</ul>
-			<div class="tab-panes">
-				<div class="panel">
-				
-					<ft:form style="width:100%;background:none;border:0px;">
-					<table style="width:100%;background:##fa0;">
-					<tr>
-						<td width="100px;" valign="top">
-							<div id="utility">
-								<h2 id="DragTitle">Drag here to add</h2> 
-								
-								<style type="text/css">
-									.basket-active {background:##E17000;}
-								</style>		
-								
-								<div id="basket" style="border:1px solid ##E17000;overflow:auto;height:800px;">
-									<ft:object ObjectID="#url.primaryObjectID#" wizzardid="#url.WizzardID#" lFields="#url.primaryFieldName#" InTable=0 IncludeLabel=0 />
-								</div>	
-															
-							</div><!--- utility --->						
-						</td>
-						<td valign="top">
-
-							<div id="content" style="margin-left:0px;" >
-								<!--- Render all the objects for the requested Type. --->
-								<ws:paginate PageLinksShown=5 RecordsPerPage=20 query="#qLibraryList#">
-									<div style="display:block;">	
-										<div class="#url.ftLibraryPickListClass#" style="#url.ftLibraryPickListStyle#">
-										
-											<cfset lRenderedObjects = "">
-											<ws:paginateRecords r_stRecord="stObject">
-												<cfset lRenderedObjects = ListAppend(lRenderedObjects,stObject.ObjectID) />
-												
-												<div id="select#stObject.objectID#" class="LibraryItem thumbNailItem" style="text-align:center;" objectID="#stObject.ObjectID#">
-													<img src="#application.url.farcry#/images/dragbar.gif" id="handle#stObject.objectID#" style="cursor:move;" align="center">
-													<cfif FileExists("#application.path.project#/webskin/#url.ftJoin#/#url.ftLibraryPickMethod#.cfm")>
-														<cfset stobj = oData.getData(objectid=stObject.ObjectID)>
-														<cfinclude template="/farcry/#application.applicationname#/webskin/#url.ftJoin#/#url.ftLibraryPickMethod#.cfm">
-													<cfelse>
-														#stObject.ObjectID#
-													</cfif>
-		
-												</div>
-											</ws:paginateRecords>
-										</div>
-									</div>	
-									
-									<br style="clear:both;" />
-									
-									<div style="border:1px dashed ##CACACA;border-width:1px 0;">
-										<ws:paginateScroll />
-										<br style="clear:both;" />
-									</div>
-								</ws:paginate>
-							
-								 <div class="f-submit-wrap">
-									<div style="float:left;">
-									<cfif qLibraryList.recordCount GT 0>	
-										<ft:farcrybutton type="button" value="Close" onclick="self.blur();window.close();" />
-									</cfif>
-									</div>
-									
-									<br style="clear:both;" />
-								</div>
-								
-		
-						
-							</div> <!--- content --->						
-						</td>
-					</tr>
-					</table>
-
-					
-						
-					</ft:form>
-				</div>
-				<div class="panel">
-					<ft:form>
-						
-						
-							
-							
-							<cfif StructKeyExists(oData,url.ftLibraryAddNewMethod)>
-								<cfinvoke component="#oData#" method="#url.ftLibraryAddNewMethod#">
-									<cfinvokeargument name="typename" value="#url.ftJoin#">
-								</cfinvoke>
-							<cfelse>
-								<cfinvoke component="#oData#" method="AddNew">
-									<cfinvokeargument name="typename" value="#url.ftJoin#">
-								</cfinvoke>
-							</cfif>
-
-							
-							
-								<div style="float:left;">
-									<ft:farcrybutton value="Attach" />	
-									<ft:farcrybutton type="button" value="Close" onclick="self.blur();window.close();" />	
-								</div>
-								
-					
-					</ft:form>
-				</div>
-				
-			</div>
 		</div>
+		<a name="pane2-ref" style="display: none;" ></a>
+		<div id="pane2" style="display:none;">			
+
+			#RenderAddNew()#
+
+
+		</div>
+	</div>
+</div>
+
+
+<cffunction name="RenderPicker">
+	
+	<cfsavecontent variable="sReturn">
+	<cfoutput>
+	<ft:form style="width:100%;background:none;border:0px;">
+		<table style="width:100%;background:##fa0;">
+		<tr>
+			<td width="100px;" valign="top">
+				<div id="utility">
+					<h2 id="DragTitle">Drag here to add</h2> 
+					
+					<style type="text/css">
+						.basket-active {background:##E17000;}
+					</style>		
+					
+					<ft:object ObjectID="#url.primaryObjectID#" wizzardid="#url.WizzardID#" lFields="#url.primaryFieldName#" InTable=0 IncludeLabel=0 IncludeFieldSet=0 r_stFields="stBasketFields" />
+						
+					<div id="basket" style="border:1px solid ##E17000;height:800px;">
+						#stBasketFields[url.primaryFieldName].HTML#
+					</div>	
+					
+												
+				</div><!--- utility --->						
+			</td>
+			<td valign="top">
+	
+				<div id="content" style="margin-left:0px;" >
+					<!--- Render all the objects for the requested Type. --->
+					<ws:paginate PageLinksShown=5 RecordsPerPage=20 query="#qLibraryList#">
+						<div style="display:block;">	
+							<div class="#url.ftLibraryPickListClass#" style="#url.ftLibraryPickListStyle#">
+							
+								<cfset lRenderedObjects = "">
+								<ws:paginateRecords r_stRecord="stObject">
+									<cfset lRenderedObjects = ListAppend(lRenderedObjects,stObject.ObjectID) />
+									
+									<div id="select#stObject.objectID#" class="LibraryItem thumbNailItem" style="text-align:center;" objectID="#stObject.ObjectID#">
+										<img src="#application.url.farcry#/images/dragbar.gif" id="handle#stObject.objectID#" style="cursor:move;" align="center">
+										<cfif FileExists("#application.path.project#/webskin/#url.ftJoin#/#url.ftLibraryPickMethod#.cfm")>
+											<cfset stobj = oData.getData(objectid=stObject.ObjectID)>
+											<cfinclude template="/farcry/#application.applicationname#/webskin/#url.ftJoin#/#url.ftLibraryPickMethod#.cfm">
+										<cfelse>
+											#stObject.ObjectID#
+										</cfif>
+	
+									</div>
+								</ws:paginateRecords>
+							</div>
+						</div>	
+						
+						<br style="clear:both;" />
+						
+						<div style="border:1px dashed ##CACACA;border-width:1px 0;">
+							<ws:paginateScroll />
+							<br style="clear:both;" />
+						</div>
+					</ws:paginate>
+				
+					 <div class="f-submit-wrap">
+						<div style="float:left;">
+						<cfif qLibraryList.recordCount GT 0>	
+							<ft:farcrybutton type="button" value="Close" onclick="self.blur();window.close();" />
+						</cfif>
+						</div>
+						
+						<br style="clear:both;" />
+					</div>
+					
+	
+			
+				</div> <!--- content --->						
+			</td>
+		</tr>
+		</table>
 	
 		
-		<br style="clear:both" />
+			
+		</ft:form>
+	</cfoutput>
+	</cfsavecontent>
+	<cfreturn sReturn >
+</cffunction>
+
+<cffunction name="RenderAddNew">
+	<cfsavecontent variable="sReturn">
+	<cfoutput>
+	<ft:form>
+						
+						
+							
+				
+				<cfif StructKeyExists(oData,url.ftLibraryAddNewMethod)>
+					<cfinvoke component="#oData#" method="#url.ftLibraryAddNewMethod#">
+						<cfinvokeargument name="typename" value="#url.ftJoin#">
+					</cfinvoke>
+				<cfelse>
+					<cfinvoke component="#oData#" method="AddNew">
+						<cfinvokeargument name="typename" value="#url.ftJoin#">
+					</cfinvoke>
+				</cfif>
+
+				
+				
+					<div style="float:left;">
+						<ft:farcrybutton value="Attach" />	
+						<ft:farcrybutton type="button" value="Close" onclick="self.blur();window.close();" />	
+					</div>
+					
+		
+		</ft:form>
+	</cfoutput>
+	</cfsavecontent>
+	
+	<cfreturn sReturn >
+</cffunction>
+
+
 
 
 		
@@ -393,30 +421,41 @@ $Developer: $
 		
 		
 		function updateBasket(action,element){
-			var indicatorIcon = '<img alt="Indicator" src="/farcry/images/indicator.gif" /> Saving...';
-
-			$('DragTitle').innerHTML = indicatorIcon;
 			
+
+			
+			
+			if(element){
+				dataobjectid = encodeURIComponent($(element).getAttribute('objectid'));	
+				var indicatorIcon = '<img alt="Indicator" src="/farcry/images/indicator.gif" /> Saving...';
+				$('DragTitle').innerHTML = indicatorIcon;
+			} else {
+				dataobjectid = '';	
+			}
 			
 			
 			new Ajax.Request('/farcry/facade/library.cfc?method=ajaxUpdateArray', {
-				parameters:'Action=' + action + '&LibraryType=#url.LibraryType#&primaryObjectID=#url.primaryObjectID#&primaryTypename=#url.primaryTypeName#&primaryFieldname=#url.primaryFieldname#&primaryFormFieldname=#url.primaryFormFieldname#&WizzardID=#url.WizzardID#&DataObjectID=' + encodeURIComponent($(element).getAttribute('objectid')) + '&DataTypename=#url.ftJoin#',
+				parameters:'Action=' + action + '&LibraryType=#url.LibraryType#&primaryObjectID=#url.primaryObjectID#&primaryTypename=#url.primaryTypeName#&primaryFieldname=#url.primaryFieldname#&primaryFormFieldname=#url.primaryFormFieldname#&WizzardID=#url.WizzardID#&DataObjectID=' + dataobjectid + '&DataTypename=#url.ftJoin#',
 				asynchronous:true, 
 				onSuccess:function(request){
 					//$('basket').innerHTML = request.responseText;
 					update_#url.primaryFormFieldname#_wrapper(request.responseText);	
 					opener.update_#url.primaryFormFieldname#_wrapper(request.responseText);	
-					Effect.Fade(element, {from:0.2,to:0.2});
 					//Effect.Pulsate($('#url.primaryFormFieldname#_' + $(element).getAttribute('objectid')), {duration:1});
 					$('DragTitle').innerHTML = 'Drag here to add';
-					// <![CDATA[
-						  Sortable.create('#url.primaryFormFieldname#_list',
-						  	{ghosting:false,hoverclass:'over',handle:'#url.primaryFormFieldname#_listhandle',constraint:'vertical',tag:'div',
-						    onChange:function(element){$('#url.primaryFormFieldname#').value = Sortable.sequence('#url.primaryFormFieldname#_list')}
-						    
-						  })
-						// ]]>
-						
+					update_#url.primaryFormFieldname#('sort',$('#url.primaryFormFieldname#'));
+					
+					if(element){
+						Effect.Fade(element, {from:0.2,to:0.2});					
+					
+						// <![CDATA[
+							  Sortable.create('#url.primaryFormFieldname#_list',
+							  	{ghosting:false,hoverclass:'over',handle:'#url.primaryFormFieldname#_listhandle',constraint:'vertical',tag:'div',
+							    onChange:function(element){$('#url.primaryFormFieldname#').value = Sortable.sequence('#url.primaryFormFieldname#_list')}
+							    
+							  })
+							// ]]>
+					}
 				
 				}
 			});
@@ -454,8 +493,9 @@ $Developer: $
                 				
 			}
 		})
+		
 			
-
+		updateBasket('refresh');
 
 		//initTabNavigation('LibraryTab','current','tab-disabled');
 		
