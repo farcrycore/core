@@ -36,6 +36,13 @@ stConfig.bAllowOverwrite = "false";
 stConfig.thumbnailWidth = 80;
 stConfig.thumbnailHeight = 80;
 stConfig.insertHTML = "<a href='*imagefile*' target='_blank'><img src='*thumbnail*' border=0 alt='*alt*'></a>";
+
+stConfig.SourceImagePath = "#application.path.project#\www\images\SourceImages"; // Server path of Source Images
+stConfig.ThumbnailImagePath = "#application.path.project#\www\images\ThumbnailImages"; // Server path of Thumbnail Images
+stConfig.StandardImagePath = "#application.path.project#\www\images\StandardImages"; // Server path of Standard Images
+stConfig.SourceImageURL = "/images/SourceImages"; // URL path of Standard Images
+stConfig.ThumbnailImageURL = "/images/ThumbnailImages"; // URL path of Thumbnail Images
+stConfig.StandardImageURL = "/images/StandardImages"; // URL path of Standard Images
 </cfscript>
 
 <cfwddx action="CFML2WDDX" input="#stConfig#" output="wConfig">
