@@ -73,7 +73,8 @@ $in: [bCacheControl] output cache control headers; default true. $
 		<script src="#application.url.farcry#/includes/lib/DataRequestor.js"></script>
 		<!--- JSON javascript object --->
 		<script src="#application.url.farcry#/includes/lib/json.js"></script>
-		<style type="text/css" title="default" media="screen">@import url(#application.url.farcry#/css/main.css);</style>
+		<style type="text/css" title="default" media="screen">@import url(#application.url.farcry#/css/main.css);</style><!--- 
+		<style type="text/css" title="default" media="screen">@import url(#application.url.farcry#/css/forms.css);</style> --->
 		<style type="text/css" title="default" media="screen">@import url(#application.url.farcry#/css/tabs.css);</style>
 		<script type="text/javascript" src="#application.url.farcry#/js/tables.js"></script>
 		<script type="text/javascript" src="#application.url.farcry#/js/showhide.js"></script>
