@@ -36,6 +36,7 @@ $Developer: $
 <cfparam name="url.primaryFormFieldName" default="">
 <cfparam name="url.ftJoin" default="">
 <cfparam name="url.WizzardID" default="">
+<cfparam name="url.LibraryType" default="array">
 
 <cfparam name="url.ftLibraryAddNewMethod" default="AddNew"><!--- Method to Add New Object --->
 
@@ -86,12 +87,13 @@ $Developer: $
 	
 	<ft:processFormObjects typename="#url.ftJoin#" /><!--- Returns variables.lSavedObjectIDs --->
 
-	<!--- Attach the Newly Created Object --->
+<!---	<!--- Attach the Newly Created Object --->
 	<cfset oPrimary = createObject("component",application.types[url.primaryTypeName].typepath)>		
 	<cfset stPrimary = oPrimary.getdata(objectid=url.primaryObjectID)>	
 	
 	<cfset lArray = arraytolist(stPrimary[url.primaryFieldName])>
 	
+	<cfdump var="#stPrimary#" expand="false">
 	<cfloop list="#lSavedObjectIDs#" index="i">
 		<cfif not listcontainsnocase(lArray,i)>
 			<cfset arrayappend(stPrimary[url.primaryFieldName],i)>
@@ -99,9 +101,70 @@ $Developer: $
 	</cfloop>	
 	
 	
+	<cfdump var="#stPrimary#" expand="false"><cfabort>
+	
 	<cfset stResult = oPrimary.setData(stProperties=stPrimary,user="#session.dmSec.authentication.userlogin#")>
 
+ --->
 
+
+
+
+	<cfset oPrimary = createObject("component",application.types[url.PrimaryTypename].typepath)>
+	
+	<cfset oData = createObject("component",application.types[url.ftJoin].typepath)>
+	
+
+	<cfloop list="#lSavedObjectIDs#" index="DataObjectID">
+		
+		
+		
+	
+	
+		<cfif len(url.WizzardID)>		
+			
+			<cfset oWizzard = createObject("component",application.types['dmWizzard'].typepath)>
+			
+			<cfset stWizzard = oWizzard.Read(wizzardID=url.WizzardID)>
+			
+			<cfif url.LibraryType EQ "UUID">
+				<cfset stWizzard.Data[url.PrimaryObjectID][url.PrimaryFieldname] = DataObjectID>
+		
+			<cfelse><!--- Array --->
+				<cfset arrayAppend(stWizzard.Data[url.PrimaryObjectID][url.PrimaryFieldname],DataObjectID)>
+						
+				<cfset variables.tableMetadata = createobject('component','farcry.fourq.TableMetadata').init() />
+				<cfset tableMetadata.parseMetadata(md=getMetadata(oPrimary)) />		
+				<cfset stFields = variables.tableMetadata.getTableDefinition() />
+				
+				<cfset o = createObject("component","farcry.fourq.gateway.dbGateway").init(dsn=application.dsn,dbowner="")>
+				<cfset aProps = o.createArrayTableData(tableName=url.PrimaryTypename & "_" & url.PrimaryFieldName,objectid=url.PrimaryObjectID,tabledef=stFields[PrimaryFieldName].Fields,aprops=stWizzard.Data[PrimaryObjectID][url.PrimaryFieldname])>
+		
+				<cfset stWizzard.Data[url.PrimaryObjectID][url.PrimaryFieldname] = aProps>
+			</cfif>
+			
+			<cfset stWizzard = oWizzard.Write(ObjectID=url.WizzardID,Data=stWizzard.Data)>
+			
+			<cfset st = stWizzard.Data[url.PrimaryObjectID]>
+		<cfelse>
+		
+			<cfset stPrimary = oPrimary.getData(objectid=url.PrimaryObjectID)>
+			
+			<cfif url.LibraryType EQ "UUID">
+				<cfset stPrimary[url.PrimaryFieldname] = DataObjectID>		
+			<cfelse><!--- Array --->
+				<cfset arrayAppend(stPrimary[url.PrimaryFieldname],DataObjectID)>
+						
+			</cfif>
+		
+			
+			
+			<cfparam name="session.dmSec.authentication.userlogin" default="anonymous" />
+			<cfset oPrimary.setData(objectID=stPrimary.ObjectID,stProperties="#stPrimary#",user="#session.dmSec.authentication.userlogin#")>
+			
+		</cfif>
+	</cfloop>
+	
 </ft:processForm>
 
 
