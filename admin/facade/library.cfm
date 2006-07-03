@@ -376,11 +376,11 @@ $Developer: $
 									
 									<div id="select#stObject.objectID#" class="LibraryItem thumbNailItem" style="text-align:center;" objectID="#stObject.ObjectID#">
 										<img src="#application.url.farcry#/images/dragbar.gif" id="handle#stObject.objectID#" style="cursor:move;" align="center">
+										<cfset stobj = oData.getData(objectid=stObject.ObjectID)>
 										<cfif FileExists("#application.path.project#/webskin/#url.ftJoin#/#url.ftLibraryPickMethod#.cfm")>
-											<cfset stobj = oData.getData(objectid=stObject.ObjectID)>
 											<cfinclude template="/farcry/#application.applicationname#/webskin/#url.ftJoin#/#url.ftLibraryPickMethod#.cfm">
 										<cfelse>
-											#stObject.ObjectID#
+											<cfif isDefined("stobj.label") AND len(stobj.label)>#stobj.Label#<cfelse>#stobj.ObjectID#</cfif>
 										</cfif>
 	
 									</div>
