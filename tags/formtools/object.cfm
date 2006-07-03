@@ -176,7 +176,7 @@
 	<cfset Request.farcryForm.stObjects[variables.prefix].farcryformobjectinfo.typename = typename>
 	<cfset Request.farcryForm.stObjects[variables.prefix].farcryformobjectinfo.ObjectLabel = attributes.ObjectLabel>
 
-		
+
 
 	<cfif NOT len(Attributes.r_stFields)>
 
@@ -427,7 +427,14 @@
 			<cfif Attributes.InTable EQ 1>
 				<cfoutput><tr></cfoutput>
 			<cfelse>
-				<cfoutput><div class="fieldsection #ftFieldMetadata.ftType# #ftFieldMetadata.ftClass#"></cfoutput>
+
+				<!--- Need to determine if Help Section is going to be included and if so, place class that will determine margin. --->
+				<cfset helpsectionClass = "">
+				<cfif structKeyExists(attributes,"HelpSection") and len(attributes.HelpSection)>
+					<cfset helpSectionClass = "helpsectionmargin">
+				</cfif>	
+							
+				<cfoutput><div class="fieldsection #ftFieldMetadata.ftType# #ftFieldMetadata.ftClass# #helpSectionClass#"></cfoutput>
 			</cfif>
 			
 			
