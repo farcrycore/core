@@ -42,12 +42,11 @@ type properties
 
 <!--- URL locations to images (includes filename) --->
 <cfproperty name="SourceImage" type="string" hint="The URL location of the uploaded image" required="No" default="" 
-	ftType="Image" ftDestination="/images/SourceImages">
+	ftType="Image">
 <cfproperty name="StandardImage" type="string" hint="The URL location of the optimised uploaded image that should be used for general display" required="no" default="" 
-	ftType="Image" ftImageWidth="400" ftImageHeight="400" ftDestination="/images/StandardImages">  
+	ftType="Image"> 
 <cfproperty name="ThumbnailImage" type="string" hint="The URL location of the thumnail of the uploaded image that should be used in " required="no" default="" 
-	ftType="Image" ftImageWidth="80" ftImageHeight="80" ftDestination="/images/ThumbnailImages">  
-
+	ftType="Image">  
 <!--- Object Methods --->
 
 
@@ -81,14 +80,13 @@ type properties
 	<cfargument name="stProperties" required="yes" type="struct">
 	<cfargument name="stFields" required="yes" type="struct">
 	
-	<cfparam name="arguments.stFields.ThumbnailImage.metadata.ftDestination" default="/images/ThumbnailImage">
-	<cfparam name="arguments.stFields.ThumbnailImage.metadata.ftImageWidth" default="100">
-	<cfparam name="arguments.stFields.ThumbnailImage.metadata.ftImageHeight" default="100">
+	<cfparam name="arguments.stFields.ThumbnailImage.metadata.ftDestination" default="#application.config.image.THUMBNAILIMAGEURL#">
+	<cfparam name="arguments.stFields.ThumbnailImage.metadata.ftImageWidth" default="#application.config.image.THUMBNAILWIDTH#">
+	<cfparam name="arguments.stFields.ThumbnailImage.metadata.ftImageHeight" default="#application.config.image.THUMBNAILHEIGHT#">
 	
-	<cfparam name="arguments.stFields.StandardImage.metadata.ftDestination" default="/images/Optimised">
-	<cfparam name="arguments.stFields.StandardImage.metadata.ftImageWidth" default="300">
-	<cfparam name="arguments.stFields.StandardImage.metadata.ftImageHeight" default="300">
-	
+	<cfparam name="arguments.stFields.StandardImage.metadata.ftDestination" default="#application.config.image.STANDARDIMAGEURL#">
+	<cfparam name="arguments.stFields.StandardImage.metadata.ftImageWidth" default="#application.config.image.IMAGEWIDTH#">
+	<cfparam name="arguments.stFields.StandardImage.metadata.ftImageHeight" default="#application.config.image.IMAGEHEIGHT#">
 	
 	
 	
