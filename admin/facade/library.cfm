@@ -116,10 +116,7 @@ $Developer: $
 	
 
 	<cfloop list="#lSavedObjectIDs#" index="DataObjectID">
-		
-		
-		
-	
+
 	
 		<cfif len(url.WizzardID)>		
 			
