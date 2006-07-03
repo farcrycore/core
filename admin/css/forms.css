@@ -36,7 +36,7 @@
 			font-weight:bold;
 		}
 		
-		.full .fieldsectionlabel {
+		.richtext .fieldsectionlabel {
 			display: block;
 			float: none;
 			padding: 2px 5px;
@@ -63,21 +63,29 @@
 
 		.fieldwrap {
 			display: block;
-			margin: 0px 200px 5px 165px;
+			margin: 0px 0px 5px 165px;
 			padding: 2px 5px;
 		}	
+		
+		.helpsectionmargin .fieldwrap {
+			margin-right:200px;
+		}
+		
+		
 		.fieldwrap .fieldwrap {
 			display: block;
 			float: none;
 			margin: 0px 0px 5px 165px;
 			padding: 2px 5px;
 		}	
-		.full .fieldwrap {
+		
+		.richtext .fieldwrap {
 			display:block;
 			float: none;
-			margin: 0px 200px 5px 0px;
+			margin-left:0px;
 			padding: 0px 5px;
 		}
+		
 		.fieldwrap fieldset {
 			border-width: 1px;
 			border-style: solid;
@@ -89,7 +97,7 @@
 			font-size: 120%;
 		}	
 		
-	
+		
 		
 		.helpsection {
 			float: right;
