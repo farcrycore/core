@@ -35,11 +35,17 @@ Copy Files from Old Locations to New Locations
 	<cfif NOT StructKeyExists(stConfig,"SourceImagePath")>
 	
 		<cfset stConfig.SourceImagePath = "#application.path.project#/www/images/SourceImages" />
-		<cfset stConfig.ThumbnailImagePath = "#application.path.project#/www/images/ThumbnailImages" />
-		<cfset stConfig.StandardImagePath = "#application.path.project#/www/images/StandardImages" />
 		<cfset stConfig.SourceImageURL = "/images/SourceImages" />
+		
+		<cfset stConfig.ThumbnailImagePath = "#application.path.project#/www/images/ThumbnailImages" />
 		<cfset stConfig.ThumbnailImageURL = "/images/ThumbnailImages" />
+		<cfset stConfig.ThumbnailImageWidth = "80" />
+		<cfset stConfig.ThumbnailImageHeight = "80" />
+		
+		<cfset stConfig.StandardImagePath = "#application.path.project#/www/images/StandardImages" />
 		<cfset stConfig.StandardImageURL = "/images/StandardImages" />
+		<cfset stConfig.StandardImageWidth = "400" />
+		<cfset stConfig.StandardImageHeight = "400" />
 	</cfif>
 	
 	<cfwddx action="CFML2WDDX" input="#stConfig#" output="wConfig">
