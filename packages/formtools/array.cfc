@@ -44,11 +44,12 @@
 							<cfoutput><div id="#arguments.fieldname#_#i#">
 								<img src="#application.url.farcry#/images/dragbar.gif" class="#ULID#handle" style="cursor:move;" align="center">
 								<div></cfoutput>
+								<cfset stobj = oData.getData(objectid=i)>
 								<cfif FileExists("#application.path.project#/webskin/#arguments.stMetadata.ftJoin#/#arguments.stMetadata.ftLibrarySelectedMethod#.cfm")>
-									<cfset stobj = oData.getData(objectid=i)>
+									
 									<cfinclude template="/farcry/#application.applicationname#/webskin/#arguments.stMetadata.ftJoin#/#arguments.stMetadata.ftLibrarySelectedMethod#.cfm">
 								<cfelse>
-									<cfoutput>#i#</cfoutput>
+									<cfoutput>#stobj.label#</cfoutput>
 								</cfif>
 												
 								<cfoutput><a href="##" onclick="new Effect.Fade($('#arguments.fieldname#_#i#'));Element.remove('#arguments.fieldname#_#i#');$('#arguments.fieldname#').value = Sortable.sequence('#ULID#');update_#arguments.fieldname#('sort',$('#arguments.fieldname#')); return false;"><img src="#application.url.farcry#/images/crystal/22x22/actions/button_cancel.png" style="width:16px;height:16px;" /></a>
