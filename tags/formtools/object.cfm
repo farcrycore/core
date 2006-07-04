@@ -205,13 +205,12 @@
 		</cfif>
 	</cfif>
 	
-	
+
 	<cfloop list="#lFieldsToRender#" index="i">
 		
 		<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i] = StructNew()>
 
 		<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i] = Duplicate(stFields[i].MetaData)>
-		
 		
 		<cfif isDefined("variables.stObj") and not structIsEmpty(variables.stObj)>
 					
@@ -228,7 +227,6 @@
 		<!--- CAPTURE THE HTML FOR THE FIELD --->
 		
 		<cfset ftFieldMetadata = request.farcryForm.stObjects[variables.prefix].MetaData[i]>
-		
 		
 		<!--- If we have been sent stPropMetadata for this field then we need to append it to the default metatdata setup in the type.cfc  --->
 		<cfif structKeyExists(attributes.stPropMetadata,ftFieldMetadata.Name)>
@@ -348,10 +346,11 @@
 					<cfinvokeargument name="fieldname" value="#variables.prefix##ftFieldMetadata.Name#">
 				</cfinvoke>
 				<cfcatch><cfdump var="#cfcatch#"><cfabort></cfcatch>
+				
 			</cftry>
+			
 		</cfif>
 			
-
 		<cfif attributes.Format EQ "Edit" AND (ftFieldMetadata.Type EQ "array" OR ftFieldMetadata.Type EQ "UUID") AND isDefined("ftFieldMetadata.ftJoin")>
 	
 			<cfset stURLParams = structNew()>
@@ -436,7 +435,29 @@
 							
 				<cfoutput><div class="fieldsection #ftFieldMetadata.ftType# #ftFieldMetadata.ftClass# #helpSectionClass#"></cfoutput>
 			</cfif>
-			
+				<cffunction access="public" displayname="Edit handler" name="edit" hint="Edit company entries." output="true" returntype="void" >		
+		<cfargument name="objectid" required="yes" type="UUID" >
+		<cfargument name="cancelCompleteURL" required="no" type="string" default="#cgi.script_name#?#cgi.query_string#" >
+		
+		<cfset stObj=getData(arguments.objectid)>				
+				
+		<!--- PROCESS THE FORM SUBMISSION --->		
+		<ft:processForm action="Save"  url="#arguments.cancelCompleteURL#">					
+			<ft:processFormObjects objectid="#stObj.objectid#" />	
+		</ft:processForm>		
+		
+				
+		<!--- RENDER THE FORM --->
+<ft:form>
+<cfoutput><h1>#stObj.name#</h1></cfoutput>
+			<ft:object objectid="#stObj.objectid#" lExcludeProps="label" state="edit" />					
+					
+			<ft:farcrybutton type="submit" value="Save">		
+		</ft:form>
+		
+
+		
+</cffunction>
 			
 			<cfif isDefined("Attributes.IncludeLabel") AND attributes.IncludeLabel EQ 1>
 				<cfif Attributes.InTable EQ 1>
@@ -471,11 +492,13 @@
 				</cfoutput>
 			</cfif>
 		<cfelse>
-			<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i].HTML = returnHTML>
-			<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i].Label = "#FieldLabelStart#">
+			
+			<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][ftFieldMetadata.Name].HTML = returnHTML>
+			<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][ftFieldMetadata.Name].Label = "#FieldLabelStart#">
 			<cfif ftFieldMetadata.Type EQ "array">
-				<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i].LibraryLink = "#LibraryLink#">
+				<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][ftFieldMetadata.Name].LibraryLink = "#LibraryLink#">
 			</cfif>
+			
 		</cfif>
 		
 	</cfloop>
