@@ -27,7 +27,7 @@
 	<cfparam name="attributes.stPropMetadata" default="#structNew()#"><!--- This is used to override the default metadata as setup in the type.cfc --->
 	<cfparam name="attributes.WizzardID" default=""><!--- If this object call is part of a wizzard, the object will be retrieved from the wizzard storage --->
 	<cfparam name="attributes.IncludeLibraryWrapper" default="true"><!--- If this is set to false, the library wrapper is not displayed. This is so that the library can change the inner html of the wrapper without duplicating the wrapping div. --->
-	
+	<cfparam name="attributes.bValidation" default="true"><!--- Flag to determine if client side validation classes are added to this section of the form. --->
 	
 	
 	<cfset attributes.lExcludeFields = ListAppend(attributes.lExcludeFields,"label,objectid,locked,lockedby,lastupdatedby,ownedby,datetimelastupdated,createdby,datetimecreated,versionID,status")>
@@ -322,10 +322,12 @@
 
 		 --->
 		 
-		<cfif structKeyExists(ftFieldMetadata, "ftValidation")>
-			<cfloop list="#ftFieldMetadata.ftValidation#" index="i">
-				<cfset ftFieldMetadata.ftClass = "#ftFieldMetadata.ftClass# #lcase(i)#">
-			</cfloop>
+		<cfif attributes.bValidation>
+			<cfif structKeyExists(ftFieldMetadata, "ftValidation")>
+				<cfloop list="#ftFieldMetadata.ftValidation#" index="i">
+					<cfset ftFieldMetadata.ftClass = "#ftFieldMetadata.ftClass# #lcase(i)#">
+				</cfloop>
+			</cfif>
 		</cfif>
 		<cfset ftFieldMetadata.ftClass = Trim(ftFieldMetadata.ftClass)>
 		
@@ -433,7 +435,7 @@
 					<cfset helpSectionClass = "helpsectionmargin">
 				</cfif>	
 							
-				<cfoutput><div class="fieldsection #ftFieldMetadata.ftType# #ftFieldMetadata.ftClass# #helpSectionClass#"></cfoutput>
+				<cfoutput><div class="fieldsection #lcase(ftFieldMetadata.ftType)# #ftFieldMetadata.ftClass# #helpSectionClass#"></cfoutput>
 			</cfif>
 				<cffunction access="public" displayname="Edit handler" name="edit" hint="Edit company entries." output="true" returntype="void" >		
 		<cfargument name="objectid" required="yes" type="UUID" >
