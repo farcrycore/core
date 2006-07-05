@@ -28,7 +28,8 @@
 	<cfparam name="attributes.WizzardID" default=""><!--- If this object call is part of a wizzard, the object will be retrieved from the wizzard storage --->
 	<cfparam name="attributes.IncludeLibraryWrapper" default="true"><!--- If this is set to false, the library wrapper is not displayed. This is so that the library can change the inner html of the wrapper without duplicating the wrapping div. --->
 	<cfparam name="attributes.bValidation" default="true"><!--- Flag to determine if client side validation classes are added to this section of the form. --->
-	
+	<cfparam name="attributes.lHiddenFields" default=""><!--- List of fields to render as hidden fields that can be use to inject a value into the form post. --->
+	<cfparam name="attributes.stPropValues" default="#structNew()#">
 	
 	<cfset attributes.lExcludeFields = ListAppend(attributes.lExcludeFields,"label,objectid,locked,lockedby,lastupdatedby,ownedby,datetimelastupdated,createdby,datetimecreated,versionID,status")>
 	
@@ -125,11 +126,18 @@
 	</cfif>	
 	
 	<!--- Determine fields to render --->
-		<cfloop list="#attributes.lFields#" index="i">
-			<cfif ListFindNoCase(variables.lFields,i)>
-				<cfset lFieldsToRender =  listappend(lFieldsToRender,i)>
-			</cfif>
-		</cfloop>
+	<cfloop list="#attributes.lFields#" index="i">
+		<cfif ListFindNoCase(variables.lFields,i)>
+			<cfset lFieldsToRender =  listappend(lFieldsToRender,i)>
+		</cfif>
+	</cfloop>
+
+	<!--- Determine fields to render but as hidden fields --->
+	<cfloop list="#attributes.lHiddenFields#" index="i">
+		<cfif ListFindNoCase(variables.lFields,i)>
+			<cfset lFieldsToRender =  listappend(lFieldsToRender,i)>
+		</cfif>
+	</cfloop>	
 	
 	<!--- Determine fields to exclude from render --->
 	<cfif isDefined("attributes.lExcludeFields") and len(attributes.lExcludeFields)>
@@ -212,13 +220,18 @@
 
 		<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i] = Duplicate(stFields[i].MetaData)>
 		
-		<cfif isDefined("variables.stObj") and not structIsEmpty(variables.stObj)>
-					
+		<cfif isDefined("variables.stObj") and not structIsEmpty(variables.stObj)>					
 			<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i].value = variables.stObj[i]>
 		<cfelseif isDefined("stFields.#i#.MetaData.Default")>
 			<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i].value = stFields[i].MetaData.Default>
 		<cfelse>
 			<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i].value = "">
+		</cfif>
+		
+		<!--- If we have been sent stPropValues for this field then we need to set it to this value  --->
+		<cfif structKeyExists(attributes.stPropValues,i)>
+			<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i].value = attributes.stPropValues[i]>
+			<cfset variables.stObj[i] = attributes.stPropValues[i]>
 		</cfif>
 		
 		<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i].formFieldName = "#variables.prefix##stFields[i].MetaData.Name#">
@@ -235,9 +248,7 @@
 	
 		<!--- SETUP REQUIRED PARAMETERS --->
 		<cfif not isDefined("ftFieldMetadata.ftType")>
-
 			<cfset ftFieldMetadata.ftType = ftFieldMetadata.Type>
-
 		</cfif>
 		
 		<cfif NOT StructKeyExists(application.formtools,ftFieldMetadata.ftType)>
@@ -518,7 +529,7 @@
 				<cfset CALLER[i] = StructNew()>
 			</cfif>
 		</cfloop>
-	</cfif>
+	</cfif>	
 	
 </cfif>
 
