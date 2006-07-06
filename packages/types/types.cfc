@@ -42,19 +42,23 @@ default handlers
   handlers that all types require
   these will likely be overloaded in production
 --------------------------------------------------------------------->	
-	<cffunction name="getDisplay" access="public" output="Yes" >
-		<cfargument name="objectid" required="no" type="UUID" hint="ObjectID of the object that is to be rendered by the webskin.">
-		<cfargument name="template" required="yes" type="string">
+	<cffunction name="getDisplay" access="public" output="yes" returntype="void" hint="Renders a view from the webskin content type folder.">
+		<cfargument name="objectid" required="no" type="UUID" hint="ObjectID of the object that is to be rendered by the webskin view." />
+		<cfargument name="template" required="yes" type="string" hint="Name of the template in the corresponding content type webskin folder, without the .cfm extension." />
 		<cfargument name="stparam" required="false" type="struct" hint="Structure of parameters to be passed into the display handler." />
+		<cfargument name="stobject" required="no" type="struct" hint="Property structure to render in view.  Overrides any property structure mapped to arguments.objectid. Useful if you want to render a view with a modified content item.">
 		<cfargument name="dsn" required="no" type="string" default="#application.dsn#">
 		
-		<cfset var stObj = StructNew()>
+		<cfset var stObj = StructNew() />
 		
-		<!--- If the objectid has not been sent, we need to create a default object. --->
-		<cfparam name="arguments.objectid" default="#CreateUUID()#" type="uuid">
-			
-		<!--- get the data for this instance --->
-		<cfset stObj = getData(objectid=arguments.objectID,dsn=arguments.dsn)>		
+		<cfif isDefined("arguments.stobject")>
+			<cfset stobj=arguments.stobject />
+		<cfelse>
+			<!--- If the objectid has not been sent, we need to create a default object. --->
+			<cfparam name="arguments.objectid" default="#CreateUUID()#" type="uuid">
+			<!--- get the data for this instance --->
+			<cfset stObj = getData(objectid=arguments.objectID,dsn=arguments.dsn)>		
+		</cfif>
 
 		<cfif NOT structIsEmpty(stObj)>
 			<cfif NOT fileExists("#ExpandPath(displayTemplatePath(typename=stObj.typename, template=arguments.template))#")>
@@ -64,7 +68,7 @@ default handlers
 		</cfif>
 	</cffunction>
 	
-	<cffunction name="displayTemplatePath" returntype="string" access="private" output="no">
+	<cffunction name="displayTemplatePath" returntype="string" access="private" output="no" hint="Returns a template path for a webskin view.">
 		<cfargument name="typename" type="string" required="yes" />
 		<cfargument name="template" type="string" required="yes" />
 		<cfreturn "/farcry/#application.applicationname#/#application.path.handler#/#arguments.typename#/#arguments.template#.cfm" />
