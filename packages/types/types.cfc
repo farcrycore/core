@@ -43,13 +43,18 @@ default handlers
   these will likely be overloaded in production
 --------------------------------------------------------------------->	
 	<cffunction name="getDisplay" access="public" output="Yes" >
-		<cfargument name="objectid" required="yes" type="UUID">
+		<cfargument name="objectid" required="no" type="UUID" hint="ObjectID of the object that is to be rendered by the webskin.">
 		<cfargument name="template" required="yes" type="string">
 		<cfargument name="stparam" required="false" type="struct" hint="Structure of parameters to be passed into the display handler." />
 		<cfargument name="dsn" required="no" type="string" default="#application.dsn#">
 		
+		<cfset var stObj = StructNew()>
+		
+		<!--- If the objectid has not been sent, we need to create a default object. --->
+		<cfparam name="arguments.objectid" default="#CreateUUID()#" type="uuid">
+			
 		<!--- get the data for this instance --->
-		<cfset var stObj = getData(objectid=arguments.objectID,dsn=arguments.dsn)>		
+		<cfset stObj = getData(objectid=arguments.objectID,dsn=arguments.dsn)>		
 
 		<cfif NOT structIsEmpty(stObj)>
 			<cfif NOT fileExists("#ExpandPath(displayTemplatePath(typename=stObj.typename, template=arguments.template))#")>

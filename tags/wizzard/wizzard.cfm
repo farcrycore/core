@@ -114,6 +114,7 @@ $in: SessionID -- $
 		</cfif>
 	
 		<ft:processFormObjects objectid="#stWizzard.PrimaryObjectID#" />
+		<ft:processFormObjects typename="crmtodo" />
 <!--- 		
 		<cfif listLen(lSavedObjectIDs)>
 			<cfset stWizzard.Data = StructNew()>
