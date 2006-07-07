@@ -106,7 +106,7 @@ AND UserLogin = '#arguments.UserLogin#'
 </cffunction>
 
 
-<cffunction name="Write" access="public" output="false" returntype="struct">
+<cffunction name="Write" access="public" output="false" returntype="struct" hint="Saves the wizzard to the DB and returns the Wizzard Data as a structure">
 <cfargument name="ObjectID" required="yes" type="UUID">
 <cfargument name="CurrentStep" required="no" type="numeric">
 <cfargument name="Steps" required="no" type="string" default="">

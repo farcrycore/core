@@ -152,7 +152,6 @@ type properties
 		<cfset stproperties.StandardImage = "#arguments.stFields.StandardImage.metadata.ftDestination#/#File.ServerFile#">
 	</cfif>
 	
-	
 	<cfreturn stProperties>
 </cffunction>
 

@@ -272,7 +272,7 @@ default handlers
 
 	</cffunction>
 	
-	<cffunction name="BeforeSave" access="public" output="true" returntype="struct">
+	<cffunction name="BeforeSave" access="public" output="false" returntype="struct">
 		<cfargument name="stProperties" required="yes" type="struct">
 		<cfargument name="stFields" required="yes" type="struct">
 		
@@ -306,7 +306,16 @@ default handlers
 		<cfreturn stProperties>
 	</cffunction>
 	
-	
+	<cffunction name="AfterSave" access="public" output="false" returntype="void" hint="Called from ProcessFormObjects and run after the object has been saved.">
+		<cfargument name="stProperties" required="yes" type="struct" hint="A structure containing the contents of the properties that were saved to the object.">
+		
+		<!--- TODO: Add ability to reindex object if required based on verity metadata info in the component. --->
+		<!---<cfif structkeyexists(arguments.stproperties.objectid) and len(arguments.stproperties.objectid) AND  structkeyexists(arguments.stproperties.typename) and len(arguments.stproperties.typename)>
+			<cfif structkeyexists(application.types,arguments.stproperties.typename) 
+				AND structkeyexists(application.types[arguments.stproperties.typename],"veritycollection")>
+		</cfif> --->
+		
+	</cffunction>
 	<cffunction name="ftEdit" access="public" output="true" returntype="void">
 		<cfargument name="ObjectID" required="yes" type="string" default="">
 		
