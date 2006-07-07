@@ -55,6 +55,7 @@ $in: objectid -- $
 	<cfparam name="stWizzard.StepHTML" default="">
 
 	<!--- If the current step is not this step, then exit from this step --->
+	
 	<cfif stWizzard.CurrentStep NEQ ListLen(stWizzard.Steps)>
 		<cfexit method="exittag">
 	</cfif>

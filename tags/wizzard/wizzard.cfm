@@ -41,7 +41,6 @@ $in: SessionID -- $
 		<cfset attributes.UserLogin = "Unknown#cfid##cftoken#" />
 	</cfif>
 	
-
 	<!--- Add required CSS to <head> --->
 	<cfset Request.InHead.Wizard = 1>
 	
@@ -112,20 +111,47 @@ $in: SessionID -- $
 		<cfif stWizzard.CurrentStep LTE 0 OR stWizzard.CurrentStep GT ListLen(stWizzard.Steps)>
 			<cfset stWizzard.CurrentStep = 1>
 		</cfif>
+<!---
+		<!--- Save the Primary Object --->
+		<ft:processFormObjects objectid="#stWizzard.PrimaryObjectID#" /> --->
+		
 	
-		<ft:processFormObjects objectid="#stWizzard.PrimaryObjectID#" />
-		<ft:processFormObjects typename="crmtodo" />
-<!--- 		
-		<cfif listLen(lSavedObjectIDs)>
+		<!--- Keep track of object ids that have been processed. We need to put them all  --->
+		<cfset lProcessedObjectIDs = "" />
+		<!--- Loop through the other objects in the wizard and save them if they have been submitted in the form --->
+		<cfloop list="#form.farcryformprefixes#" index="i">
+			
+			<cfif structKeyExists(form,"#i#objectid")>
+				
+				<!--- get the objectid from the form field --->
+				<cfset FormObjectID = form['#i#objectid'] />
+				
+				<cfif structKeyExists(stWizzard.data,FormObjectID) and  structKeyExists(stWizzard.data[FormObjectID],"typename")>
+					<cfset variables.typename = stWizzard.data[FormObjectID].typename>
+				<cfelse>
+					<cfset variables.typename = "">
+				</cfif>
+				
+				<ft:processFormObjects objectID="#FormObjectID#" typename="#variables.typename#">
+					
+				</ft:processFormObjects>
+				
+				<cfset lProcessedObjectIDs = ListAppend(lProcessedObjectIDs,FormObjectID) />
+			</cfif>
+			
+		</cfloop>
+
+		
+<!---		<cfif listLen(lProcessedObjectIDs)>
 			<cfset stWizzard.Data = StructNew()>
-			<cfloop list="#lSavedObjectIDs#" index="i">
+			<cfloop list="#lProcessedObjectIDs#" index="i">
 				<cfset typename = odmWizzard.FindType(ObjectID=i) />				
 				<cfset otype = createObject("component",application.types[typename].typepath) />
 				<cfset stWizzard.Data[i] = otype.getData(objectID=i) />
 			</cfloop>
 		</cfif> --->
 		<cfset stWizzard = odmWizzard.Write(ObjectID=stWizzard.ObjectID,CurrentStep=stWizzard.CurrentStep,Data="#stWizzard.Data#")>
-		
+	
 	</ft:processForm>
 	
 	

@@ -40,23 +40,51 @@
 	
 		<cfset ParentTag = GetBaseTagList()>
 		
-		<cfif len(attributes.WizzardID)>
+		<!---<cfif len(attributes.WizzardID)>
 		
 			<cfset oWizzard = createobject("component",application.types.dmWizzard..typepath)>
 			<cfset stWizzard = oWizzard.getData(objectID=attributes.WizzardID)>
 			
 			<cfwddx action="wddx2cfml" input="#stWizzard.Data#" output="stWizzardData">
 
-			<!--- populate the primary values --->
-			<cfset typename = stWizzardData[attributes.ObjectID].typename>
-			<cfset stType = createobject("component",application.types[variables.typename].typepath)>
-			<cfset lFields = StructKeyList(application.types[variables.typename].stprops)>
-			<cfset stFields = application.types[variables.typename].stprops>
-			<cfset ObjectID = attributes.ObjectID>
 			
-			<cfset stObj = stWizzardData[attributes.objectID]>
+			
+			<cfif structKeyExists(stWizzardData,attributes.objectid)>
+				<cfset stObj = stWizzardData[attributes.objectID]>
+				
+				<!--- populate the primary values --->
+				<cfset typename = stWizzardData[attributes.ObjectID].typename>
+				<cfset stType = createobject("component",application.types[variables.typename].typepath)>
+				<cfset lFields = StructKeyList(application.types[variables.typename].stprops)>
+				<cfset stFields = application.types[variables.typename].stprops>
+				<cfset ObjectID = attributes.ObjectID>
+				
+			<cfelse>
+				
+				<cfif not isDefined("attributes.typename") or not len(attributes.typename)>
+					<cfset q4 = createObject("component", "farcry.fourq.fourq")>
+					<cfset attributes.typename = q4.findType(objectid=attributes.objectid)>
+				</cfif>
+				
+				<cfset stType = createobject("component",application.types[attributes.typename].typepath)>
+				<cfset lFields = StructKeyList(application.types[attributes.typename].stprops)>
+				<cfset stFields = application.types[attributes.typename].stprops>
+				<cfset typename = attributes.typename>
+				<cfset ObjectID = attributes.ObjectID>
+				
+				<!--- Get the object from the DB --->
+				<cfset stObj = stType.getData(attributes.objectID)>
+				<!--- Add it to the wizard structure --->
+				<cfset stWizzardData[attributes.objectid] = stObj>
+				
+				<!--- Write the Wizard structure back to the DB --->
+				<cfset odmWizzard = createObject("component",application.types['dmWizzard'].typepath)>
+				<cfset stWizzard = odmWizzard.Write(ObjectID=stWizzard.ObjectID,CurrentStep=stWizzard.CurrentStep,Data="#stWizzardData#")>
+				
+							
+			</cfif>	 --->		
 
-		<cfelseif ListFindNoCase(ParentTag, "cf_wizzard")>
+		<cfif ListFindNoCase(ParentTag, "cf_wizzard")>
 			<cfif not isDefined("attributes.typename") or not len(attributes.typename)>
 				<cfset q4 = createObject("component", "farcry.fourq.fourq")>
 				<cfset attributes.typename = q4.findType(objectid=attributes.objectid)>
@@ -87,7 +115,6 @@
 				
 			</cfif>
 			
-	
 		<cfelse>
 			<cfif not isDefined("attributes.typename") or not len(attributes.typename)>
 				<cfset q4 = createObject("component", "farcry.fourq.fourq")>
@@ -198,7 +225,7 @@
 
 	<cfset Variables.CurrentCount = StructCount(request.farcryForm.stObjects) + 1>
 	<!--- <cfparam  name="variables.prefix" default="FFO#RepeatString('0', 3 - Len(Variables.CurrentCount))##Variables.CurrentCount#">	 --->
-	<cfparam  name="variables.prefix" default="#ReplaceNoCase(variables.ObjectID,'-','','All')#">			
+	<cfparam  name="variables.prefix" default="#variables.ObjectID#">			
 	<cfset Request.farcryForm.stObjects[variables.prefix] = StructNew()>
 		
 	
@@ -586,6 +613,10 @@
 			<input type="hidden" name="#variables.prefix#ObjectID" value="#Request.farcryForm.stObjects[variables.prefix].farcryformobjectinfo.ObjectID#">
 			<input type="hidden" name="#variables.prefix#Typename" value="#Request.farcryForm.stObjects[variables.prefix].farcryformobjectinfo.Typename#">
 		</cfoutput>
+		
+		<cfif len(attributes.WizzardID)>
+			<cfoutput><input type="hidden" name="#variables.prefix#WizzardID" value="#attributes.WizzardID#"></cfoutput>
+		</cfif>
 		
 		<cfset Request.lFarcryObjectsRendered = ListAppend(Request.lFarcryObjectsRendered,Request.farcryForm.stObjects[variables.prefix].farcryformobjectinfo.ObjectID)>
 	</cfif>

@@ -14,7 +14,6 @@
 
 <cfif thistag.ExecutionMode EQ "Start">
 	
-	
 	<!--- Object to render --->
 	<cfparam name="attributes.stObj" default="#structNew()#" >
 	
@@ -71,6 +70,7 @@
 			
 		
 		<cfif NOT listFindNoCase(variables.farcryFormPrefixesToProcess,variables.Prefix)><!--- Eliminates Duplicates --->
+			
 			<!--- Processing an Object --->
 			<cfif isDefined("stObj.ObjectID") AND len(stObj.ObjectID)>	
 				
@@ -149,11 +149,17 @@
 		
 			<cfset stBaseTag = GetBaseTagData("cf_wizzard")>
 			<cfset stWizzard = stBaseTag.stWizzard>
+			<!--- Not in the wizzard and therefore a new object. Need to save to db and then put in the wizzard --->
+			<cfif NOT structKeyExists(stWizzard.data,Caller[attributes.r_stProperties].objectid)>
+				<cfset stObj = stType.setData(stProperties=Caller[attributes.r_stProperties],user=Variables.LockedBy)>
+				<cfset stWizzard.data[Caller[attributes.r_stProperties].objectid] =  Duplicate(stObj)>
+			</cfif>
 			
 			<!--- TO DO. NEED TO ADD ALL PROPERTIES TO DATA AND NOT JUST THE ONES SUBMITTED. --->
 			<cfloop list="#structKeyList(Caller[attributes.r_stProperties])#" index="i">
 				<cfset stWizzard.data[attributes.objectID][i] = Caller[attributes.r_stProperties][i]>
 			</cfloop>
+			
 	
 		<cfelseif isDefined("attributes.insidePLP") AND attributes.insidePLP EQ 1>
 
@@ -257,15 +263,29 @@
 				
 		<cfif isDefined("ParentTag") AND ListFindNoCase(ParentTag, "cf_wizzard")>
 		
-			<cfset stBaseTag = GetBaseTagData("cf_wizzard")>
-			<cfset stWizzard = stBaseTag.stWizzard>
+			<cfif not isDefined("attributes.typename") or not len(attributes.typename)>
+				<cfset q4 = createObject("component", "farcry.fourq.fourq")>
+				<cfset attributes.typename = q4.findType(objectid=attributes.objectid)>
+			</cfif>
 			
-			<cfset stResult.stObj = stWizzard.data[attributes.objectID]>			
-			<cfset stResult.stType = createobject("component",application.types[stResult.stObj.typename].typepath)>
-			<cfset stResult.lFields = StructKeyList(application.types[stResult.stObj.typename].stprops)>
-			<cfset stResult.stFields = application.types[stResult.stObj.typename].stprops>
-			<cfset stResult.typename = stResult.stObj.typename>			
-	
+			<!--- populate the primary values --->
+			<cfset stResult.typename = attributes.typename>
+			<cfset stResult.stType = createobject("component",application.types[stResult.typename].typepath)>
+			<cfset stResult.lFields = StructKeyList(application.types[stResult.typename].stprops)>
+			<cfset stResult.stFields = application.types[stResult.typename].stprops>
+			
+					
+			<cfset stBaseTag = GetBaseTagData("cf_wizzard")>
+			<cfset stWizzard = stBaseTag.stWizzard>				
+				
+			<cfif structKeyExists(stWizzard.data,attributes.objectid)>
+				<cfset stResult.stObj = stWizzard.data[attributes.objectID]>
+			<cfelse>
+				<!--- Get the object from the DB --->
+				<cfset stResult.stObj = stResult.stType.getData(attributes.objectID)>
+			</cfif>
+				
+			
 		<cfelse>
 		
 			<cfif not isDefined("arguments.typename") or not len(arguments.typename)>
@@ -305,7 +325,7 @@
 
 	<cfset ProcessingFormObjectPrefix = ListGetAt(variables.farcryFormPrefixesToProcess,arguments.Position)>
 
-	
+
 	<cfloop list="#lFields#" index="i" >
 
 		<cfif structKeyExists(FORM,"#ProcessingFormObjectPrefix##i#")>
