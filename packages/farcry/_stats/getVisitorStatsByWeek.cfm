@@ -7,7 +7,7 @@ $License: Released Under the "Common Public License 1.0", http://www.opensource.
 $Header: /cvs/farcry/farcry_core/packages/farcry/_stats/getVisitorStatsByWeek.cfm,v 1.8 2005/10/28 03:41:17 paul Exp $
 $Author: paul $
 $Date: 2005/10/28 03:41:17 $
-$Name: milestone_3-0-1 $
+$Name: p300_b113 $
 $Revision: 1.8 $
 
 || DESCRIPTION || 
@@ -31,10 +31,10 @@ $out:$
 		select distinct day, statsDays.name,TO_CHAR(fq.logdatetime,'dy') as loginday, count(distinct sessionId) as count_Ip
 		from #application.dbowner#statsDays
 		left join (
-			select * from stats
-				
-		)fq on UPPER(TO_CHAR(fq.logdatetime,'dy')) = UPPER(SUBSTR(statsDays.day,1,3))
-		 and (fq.logdatetime - TO_DATE('#arguments.day#','dd/mon/yy') <=0) and (TO_DATE('#dateadd('d','7',arguments.day)#','dd/mon/yy') - fq.logdatetime >=0))
+			select * from #application.dbowner#stats
+		) fq on UPPER(TO_CHAR(fq.logdatetime,'dy')) = UPPER(SUBSTR(statsDays.name,1,3))
+		 and (fq.logdatetime >= <cfqueryparam cfsqltype="CF_SQL_DATE" value="#arguments.day#" />  ) 
+		 and (fq.logdatetime < <cfqueryparam cfsqltype="CF_SQL_DATE" value="#arguments.day#" />  )
 		group by day, statsDays.name, TO_CHAR(fq.logdatetime,'dy')
 		order by 1 
 	</cfquery>

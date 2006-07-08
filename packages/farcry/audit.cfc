@@ -5,7 +5,7 @@ Copyright Daemon Pty Limited 2002 (http://www.daemon.com.au/)
 $Header: /cvs/farcry/farcry_core/packages/farcry/audit.cfc,v 1.9 2005/04/11 03:05:53 paul Exp $
 $Author: paul $
 $Date: 2005/04/11 03:05:53 $
-$Name: milestone_3-0-1 $
+$Name: p300_b113 $
 $Revision: 1.9 $
 
 Released Under the "Common Public License 1.0"
@@ -293,7 +293,18 @@ need a bunch of functions to get audit data here
 	
 	<cfswitch expression="#arguments.dbtype#">
 	    <cfcase value="ora">
-		<!--- to be written --->
+            <cfquery datasource="#arguments.dsn#" name="qLog">
+            select distinct hour, TO_CHAR(fq.datetimestamp, 'hh24') as loginhour, count(fq.auditID) as count_logins
+   			from #arguments.dbowner#statsHours
+   			left join (
+   			        select * from #arguments.dbowner#fqaudit
+   			        where auditType = 'dmSec.login'
+   			) fq on 
+			    TO_CHAR(fq.datetimestamp, 'hh24') =  statsHours.hour
+   			and TO_CHAR(fq.datetimestamp,'mm/dd/yyyy')   = <cfqueryparam cfsqltype="CF_SQL_CHAR" value="#dateFormat(arguments.day,'mm/dd/yyyy')#" />
+   			group by hour, TO_CHAR(fq.datetimestamp, 'hh24')
+   			order by 1 
+   			</cfquery>
 	    </cfcase>
 	    <cfcase value="mysql"><!--- no subqueries allowed in mysql, so workaround.... --->
 			<cfquery datasource="#arguments.dsn#" name="qDrop">
@@ -380,7 +391,18 @@ need a bunch of functions to get audit data here
 	
 	<cfswitch expression="#arguments.dbtype#">
 	    <cfcase value="ora">
-		<!--- to be written --->
+            <cfquery datasource="#arguments.dsn#" name="qLog">
+    		select distinct day, statsDays.name, to_char(fq.datetimestamp,'D') as loginday, count(fq.auditID) as count_logins
+				from #arguments.dbowner#statsDays
+				left join (
+   			        select * from fqaudit
+   			        where auditType = 'dmSec.login'
+   			    ) fq on to_char(fq.datetimestamp,'D') = statsDays.day
+					and fq.datetimestamp >= <cfqueryparam cfsqltype="CF_SQL_DATE" value="#arguments.day#" />     -- newer than the day we were passed
+					and fq.datetimestamp <= <cfqueryparam cfsqltype="CF_SQL_DATE" value="#arguments.day+7#" /> 	 -- older than the day plus one week
+				group by day, statsDays.name, to_char(fq.datetimestamp,'D')
+				order by 1 
+            </cfquery>
 	    </cfcase>
 	    <cfcase value="mysql"><!--- no subqueries allowed in mysql, so workaround.... --->
 			<cfquery datasource="#arguments.dsn#" name="qDrop">

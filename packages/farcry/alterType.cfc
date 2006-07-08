@@ -1,4 +1,4 @@
-<!--- 
+<!---
 || LEGAL ||
 $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
@@ -10,7 +10,7 @@ $Date: 2005/12/30 01:07:10 $
 $Name:  $
 $Revision: 1.57.2.2 $
 
-|| DESCRIPTION || 
+|| DESCRIPTION ||
 $Description: alter type/rule cfc $
 
 
@@ -29,7 +29,7 @@ $out:$
 <cffunction name="getDataType">
 	<cfargument name="cfctype" required="true">
 	<cfargument name="bReturnTypeOnly" required="No" default="false">
-	
+
 	<cfscript>
 		stDefaultTypes = getTypeDefaults();
 		type = stDefaultTypes[arguments.cfctype].type;
@@ -42,7 +42,7 @@ $out:$
 					datatype = datatype & '(#length#)';
 				break;
 			}
-			
+
 			default:{
 			datatype = type;
 			}
@@ -55,9 +55,9 @@ $out:$
 	<cfargument name="typename" required="true">
 	<cfargument name="property" required="true">
 	<cfargument name="dsn" default="#application.dsn#" required="false">
-	
+
 	<cfquery datasource="#arguments.dsn#">
-	DROP TABLE #application.dbowner##arguments.typename#_#arguments.property#	
+	DROP TABLE #application.dbowner##arguments.typename#_#arguments.property#
 	</cfquery>
 </cffunction>
 
@@ -66,7 +66,7 @@ $out:$
 	<cfargument name="property" required="true">
 	<cfargument name="scope" required="false" default="types">
 
-    
+
 	<cfswitch expression="#arguments.scope#">
 
 		<cfcase value="rules">
@@ -76,7 +76,7 @@ $out:$
 		<cfcase value="types">
 			<cfset typeInstance = createObject("component", "#application.types[arguments.typename].typepath#")>
 		</cfcase>
-		
+
 		<cfdefaultcase>
 			<cfthrow type="AlterType" message="Unknown scope passed to deployArrayProperty"  >
 		</cfdefaultcase>
@@ -84,13 +84,13 @@ $out:$
 	</cfswitch>
 
 	<cfset typeInstance.deployArrayTable(bTestRun='0',parent='#application.dbowner##arguments.typename#',property=arguments.property)>
-	
+
 </cffunction>
 
 <cffunction name="refreshCFCAppData">
 	<cfargument name="typename">
 	<cfargument name="scope" required="false" default="types">
-	
+
 	<cfscript>
 	//this now uses type path
 	if (arguments.scope IS 'types')
@@ -99,9 +99,9 @@ $out:$
 		bCustomType = application.types[arguments.typename].bCustomType;
 		"#arguments.typename#" = createObject("component", typePath);
 		evaluate(typename).initMetaData("application.types");
-		application.types[arguments.typename].bCustomType = bCustomType;	 
+		application.types[arguments.typename].bCustomType = bCustomType;
 		application.types[arguments.typename].typePath = typePath;
-		
+
 	}
 	else if (arguments.scope IS 'rules')
 	{
@@ -109,7 +109,7 @@ $out:$
 		bCustomRule = application.rules[arguments.typename].bCustomRule;
 		"#arguments.typename#" = createObject("component", rulePath);
 		evaluate(typename).initMetaData("application.rules");
-		application.rules[arguments.typename].bCustomRule = bCustomRule;	 
+		application.rules[arguments.typename].bCustomRule = bCustomRule;
 		application.rules[arguments.typename].rulePath = rulePath;
 		
 	}	
@@ -133,12 +133,12 @@ $out:$
 	<cfdirectory directory="#application.path.core#/packages/types" name="qTypesDir" filter="dm*.cfc" sort="name">
 	<cfdirectory directory="#application.path.project#/packages/types" name="qCustomTypesDir" filter="*.cfc" sort="name">
 	<cfdirectory directory="#application.path.project#/packages/system" name="qExtendedTypesDir" filter="*.cfc" sort="name">
-	
+
 	<!--- We want to search NTM types so we can flag them as a bTreeNode. --->
 	<cfquery datasource="#arguments.dsn#" name="qNTM">
 	SELECT distinct(typename)
 	FROM #arguments.dbowner#nested_tree_objects
-	</cfquery> 
+	</cfquery>
 
 	<cfset lNTMTypes = valueList(qNTM.typename)>
 
@@ -154,7 +154,7 @@ $out:$
 			</cfscript>
 			<cfcatch></cfcatch>
 		</cftry>
-	</cfloop>	
+	</cfloop>
 	<!--- Init all EXTENDED CORE types --->
 	<cfloop query="qExtendedTypesDir">
 		<cftry>
@@ -174,7 +174,7 @@ $out:$
 				<cftrace inline="no" text="Error creating extended type. & #cfcatch.message#" category="error">
 			</cfcatch>
 		</cftry>
-	</cfloop>	
+	</cfloop>
 	<!--- Now init all Custom Types --->
 	<cfloop query="qCustomTypesDir">
 		<cftry>
@@ -193,7 +193,7 @@ $out:$
 			</cfcatch>
 		</cftry>
 	</cfloop>
-	
+
 	<!--- FormTools specific Types --->
 	<cfdirectory directory="#application.path.core#/packages/formtools" name="qFormToolsTypesDir" filter="*.cfc" sort="name">
 	<cfdirectory directory="#application.path.project#/packages/formtools" name="qCustomFormToolsTypesDir" filter="*.cfc" sort="name">
@@ -229,13 +229,13 @@ $out:$
 	<!--- Now get all the rules --->
 	<cfscript>
 	rules = createObject("Component", "#application.packagepath#.rules.rules");
-	qRules = rules.getRules(); 
+	qRules = rules.getRules();
 	</cfscript>
 
 	<!--- Populate application.rules scope with rule metatdata --->
 	<cfloop query="qRules">
 		<cfscript>
-			
+
 			if(qRules.bCustom)
 			{
 				sRuleMetaData = getMetaData(createObject("Component", "#application.custompackagepath#.rules.#qRules.rulename#"));
@@ -254,7 +254,7 @@ $out:$
 					application.rules[qRules.rulename].bCustomRule = 1;
 					application.rules[qRules.rulename].rulePath = "#application.custompackagepath#.rules.#qRules.rulename#";
 				}
-			
+
 			}
 			else
 			{
@@ -272,7 +272,7 @@ $out:$
 				application.types[type].bTreeNode = 1;
 		}
 	</cfscript>
-	
+
 </cffunction>
 
 <cffunction name="getTypeDefaults" hint="Initialises a reference structure that can be looked up to get default types/lengths for respective DB columns">
@@ -281,7 +281,7 @@ $out:$
 		stPropTypes = structNew();
 		switch(arguments.dbtype){
 		case "ora":
-		{   //todo 
+		{   //todo
 			db.type = 'number';
 			db.length = 1;
 			stPropTypes['boolean'] = duplicate(db);
@@ -316,18 +316,18 @@ $out:$
 			//email
 			db.type = 'varchar2';
 			db.length = 255;
-			stPropTypes['email'] = duplicate(db);		
+			stPropTypes['email'] = duplicate(db);
 			//longchar
 			db.type = 'nclob';
 			db.length = 32760;
-			stPropTypes['longchar'] = duplicate(db);	
+			stPropTypes['longchar'] = duplicate(db);
 			break;
-			
+
 		}
-		
+
 		case "mysql":
 		{
-			//boolean	
+			//boolean
 			db.type = 'tinyint';
 			db.length = 1;
 			stPropTypes['boolean'] = duplicate(db);
@@ -362,7 +362,7 @@ $out:$
 			//email
 			db.type = 'varchar';
 			db.length = 255;
-			stPropTypes['email'] = duplicate(db);		
+			stPropTypes['email'] = duplicate(db);
 			//longchar
 			db.type = 'longtext';
 			db.length = 16;
@@ -393,10 +393,10 @@ $out:$
 			stPropTypes['datetime'] = duplicate(db);	
 			break;
 		}
-		
+
 		case "postgresql":
 		{
-			//boolean	
+			//boolean
 			db.type = 'int';
 			db.length = 4;
 			stPropTypes['boolean'] = duplicate(db);
@@ -431,16 +431,16 @@ $out:$
 			//email
 			db.type = 'varchar';
 			db.length = 255;
-			stPropTypes['email'] = duplicate(db);		
+			stPropTypes['email'] = duplicate(db);
 			//longchar
 			db.type = 'text';
 			db.length = 16;
-			stPropTypes['longchar'] = duplicate(db);	
+			stPropTypes['longchar'] = duplicate(db);
 			break;
 		}
-		
+
 		default:
-		{	//boolean	
+		{	//boolean
 			db.type = 'int';
 			db.length = 4;
 			stPropTypes['boolean'] = duplicate(db);
@@ -475,14 +475,14 @@ $out:$
 			//email
 			db.type = 'varchar';
 			db.length = 255;
-			stPropTypes['email'] = duplicate(db);		
+			stPropTypes['email'] = duplicate(db);
 			//longchar
 			db.type = 'NTEXT';
 			db.length = 16;
-			stPropTypes['longchar'] = duplicate(db);	
+			stPropTypes['longchar'] = duplicate(db);
 			break;
 		}
-		}	
+		}
 	</cfscript>
 	<cfreturn stPropTypes>
 </cffunction>
@@ -497,44 +497,44 @@ $out:$
 		WHERE UPPER(TABLE_NAME) LIKE '#ucase(arguments.typename)#@_A%' escape '@'
 		</cfquery>
 	</cfcase>
-	
-	<cfcase value="mysql">		
+
+	<cfcase value="mysql">
 		<cfquery datasource="#application.dsn#" name="qArrayTables1">
 		show tables
-		</cfquery>	
-		
+		</cfquery>
+
 		<cfquery dbtype="query" name="qArrayTables">
 		select #qArrayTables1.columnlist# as name
 		from qArrayTables1
 		where upper(#qArrayTables1.columnlist#) like '#ucase(arguments.typename)#@_A%' escape '@'
-		</cfquery>	
+		</cfquery>
 	</cfcase>
-	
-	<cfcase value="postgresql">		
+
+	<cfcase value="postgresql">
 		<cfquery datasource="#application.dsn#" name="qArrayTables">
-		select tablename as name 
-      from pg_tables 
+		select tablename as name
+      from pg_tables
       where upper(tablename) like '#ucase(arguments.typename)#@_A%' escape '@'
-		</cfquery>	
+		</cfquery>
 	</cfcase>
-	
-	<cfdefaultcase>	
+
+	<cfdefaultcase>
 		<cfquery datasource="#application.dsn#" name="qArrayTables">
 		SELECT 	dbo.sysobjects.name
 		FROM dbo.sysobjects
 		WHERE dbo.sysobjects.name LIKE '#arguments.typename#@_a%' escape '@'
 		</cfquery>
-	</cfdefaultcase>				
-	
+	</cfdefaultcase>
+
 	</cfswitch>
-	
+
 	<cfreturn qArrayTables>
 </cffunction>
 
 <cffunction name="arrayTableExists" hint="Checks to see what array tables exists for a given type">
 	<cfargument name="tablename" type="string">
 	<cfquery datasource="#application.dsn#" name="qArrayTables">
-	SELECT 	dbo.sysobjects.name 
+	SELECT 	dbo.sysobjects.name
 	FROM dbo.sysobjects
 	WHERE dbo.sysobjects.name = '#arguments.tablename#'
 	</cfquery>
@@ -548,7 +548,7 @@ $out:$
 </cffunction>
 
 
-<cffunction name="compareDBToCFCMetadata" hint="Compares database metadata to CFC metadata"> 
+<cffunction name="compareDBToCFCMetadata" hint="Compares database metadata to CFC metadata">
 	<cfargument name="typename" required="true">
 	<cfargument name="stDB" required="true" hint="Structure containing current database metadata">
 	<cfargument name="scope" required="No" default="types" hint="types or rules are valid options.  Referes to application.types or application.rules">
@@ -559,35 +559,35 @@ $out:$
 	<cfloop collection="#arguments.stDB#" item="key">
 		<cfscript>
 		stPropReport = structNew();
-		
+
 		//init struct - just checking for type/name discrepencies for the time being.
 		stPropReport.bPropertyExists = true;
 		stPropReport.bTypeConflict = false;
 		bConflict = false;
-		
+
 		if(NOT structKeyExists(application[arguments.scope][arguments.typename].stProps,key))
 		{
 			stPropReport.bPropertyExists = false;
 			bConflict = true; //flag that an error has occured
-		}	
+		}
 		else
-		{	
+		{
 			if (NOT application[arguments.scope][arguments.typename].stProps[key].metadata.type IS "array")
 			{
-				CFCType = stTypeDefaults[application[arguments.scope][arguments.typename].stProps[key].metadata.type].type; 
+				CFCType = stTypeDefaults[application[arguments.scope][arguments.typename].stProps[key].metadata.type].type;
 				if(NOT arguments.stDB[key].type IS CFCType)
 				{
 					stPropReport.bTypeConflict = true;
 					bConflict = true;
-				}		
-			}	
-		}	
-		if (bConflict)		
+				}
+			}
+		}
+		if (bConflict)
 			stCFCConflicts['database']['#arguments.typename#']['#key#'] = duplicate(stPropReport);
 		</cfscript>
-		
+
 	</cfloop>
-	
+
 	<!---  Now we are doing the opposite - generate a structure that compares the CFC structure to the database structure --->
 	<cfloop collection="#application[arguments.scope][arguments.typename].stProps#" item="key">
 		<cfscript>
@@ -597,28 +597,28 @@ $out:$
 		stPropReport.bTypeConflict = false;
 		bConflict = false;
 		if(NOT structKeyExists(arguments.stDB,key))
-		{	
+		{
 			stPropReport.bPropertyExists = false;
 			bConflict = true; //flag that an error has occured
 		}
-		else	
-		{   
+		else
+		{
 			if (NOT application[arguments.scope][arguments.typename].stProps[key].metadata.type IS "array")
 				CFCType = stTypeDefaults[application[arguments.scope][arguments.typename].stProps[key].metadata.type].type;
 			else
-				CFCType = "array";	
+				CFCType = "array";
 			if(NOT arguments.stDB[key].type IS CFCType)
 			{
 				stPropReport.bTypeConflict = true;
 				bConflict = true;
 			}
-		}	
+		}
 		if(bConflict)
 			stCFCConflicts['cfc']['#arguments.typename#']['#key#'] = duplicate(stPropReport);
 		</cfscript>
-		
+
 	</cfloop>
-	
+
 	<cfreturn stCFCConflicts>
 </cffunction>
 
@@ -626,7 +626,7 @@ $out:$
 	<cfargument name="typename" default="string" required="true">
 	<cfargument name="stCFC" type="struct" required="true">
 	<cfargument name="scope" type="string" required="false" default="types">
-	
+
 	<cfif structCount(arguments.stCFC)>
 	<cfoutput>
 	<table class="dataEvenRow table-6" cellspacing="0">
@@ -662,7 +662,7 @@ $out:$
 						<select name="action">
 							<option selected="selected" value="">Do Nothing</option>
 							<cfif application[arguments.scope][typename].stProps[key].metadata.type IS "array">
-							<option value="deployarrayproperty">Deploy Array Table</option>							
+							<option value="deployarrayproperty">Deploy Array Table</option>
 							<cfelse>
 							<option value="deployproperty">Deploy Property</option>
 							</cfif>
@@ -678,14 +678,14 @@ $out:$
 					#key#
 					</td>
 					<td>
-						
+
 						<img src="#application.url.farcry#/images/yes.gif" alt="Property deployed" />
-						
+
 					</td>
 					<td colspan="3">
-						<strong>TYPE CONFLICT EXISTS</strong>:	Choose repair type below 
+						<strong>TYPE CONFLICT EXISTS</strong>:	Choose repair type below
 					</td>
-					
+
 				</cfif>
 				</tr>
 				</form>
@@ -706,7 +706,7 @@ $out:$
 	<cfscript>
 	stTypes = buildDBStructure();
 	</cfscript>
-	
+
 	<cfif structCount(arguments.stDB)>
 	<cfoutput>
 	<table class="dataEvenRow table-6" cellspacing="0">
@@ -739,7 +739,7 @@ $out:$
 							em.style.display='none';
 					}
 				</script>
-				
+
 				<cfloop collection="#arguments.stDB#" item="key">
 				<form name="#arguments.typename#_#key#_DBForm" action="#cgi.SCRIPT_NAME#" method="post">
 				<tr>
@@ -755,12 +755,12 @@ $out:$
 						#stTypes[arguments.typename][key].type#
 					</td>
 					<td>
-						
+
 						<select name="action" onchange="showRename('#arguments.typename#_#key#_DBForm','#arguments.typename#_#key#_renameto');">
 							<option selected="selected" value="">Do Nothing</option>
 							<cfif stTypes[arguments.typename][key].type IS "array">
 								<option value="droparraytable">Drop Array Table</option>
-							<cfelse>	
+							<cfelse>
 								<option value="deleteproperty">Delete Column</option>
 								<option value="renameproperty">Rename Column</option>
 							</cfif>
@@ -782,7 +782,7 @@ $out:$
 						#key#
 					</td>
 					<td>
-						
+
 						<img src="#application.url.farcry#/images/yes.gif" alt="Property deployed" />
 						Property has been deployed
 					</td>
@@ -799,7 +799,7 @@ $out:$
 						<input type="hidden" name="property" value="#key#" />
 						<input type="hidden" name="typename" value="#arguments.typename#" />
 						<input type="submit" value="Go" class="f-submit" />
-					</td>		
+					</td>
 				</cfif>
 				</tr>
 				</form>
@@ -808,7 +808,7 @@ $out:$
 		</td>
 	</tr>
 	</table>
-	
+
 	</cfoutput>
 	</cfif>
 </cffunction>
@@ -820,18 +820,18 @@ $out:$
 	<cfargument name="colType" required="false">
 	<cfargument name="colLength" required="false">
 	<cfargument name="dsn" default="#application.dsn#" required="false">
-	
+
 	<cfswitch expression="#application.dbtype#">
 		<cfcase value="postgresql">
 		  <cfquery datasource="#arguments.dsn#">
 			ALTER TABLE #arguments.typename#
-			RENAME #arguments.srcColumn# TO #arguments.destColumn#	
+			RENAME #arguments.srcColumn# TO #arguments.destColumn#
 		  </cfquery>
 		</cfcase>
 		<cfcase value="ora">
 		  <cfquery datasource="#arguments.dsn#">
 			ALTER TABLE #arguments.typename#
-			RENAME COLUMN #arguments.srcColumn# TO #arguments.destColumn#	
+			RENAME COLUMN #arguments.srcColumn# TO #arguments.destColumn#
 		  </cfquery>
 		</cfcase>
 		<cfcase value="mysql">
@@ -842,7 +842,7 @@ $out:$
 		</cfcase>
 		<cfdefaultcase>
 		  <cfset srcObject = "#arguments.typename#.[#arguments.srcColumn#]">
-  
+
 		  <cfstoredproc procedure="sp_rename" datasource="#arguments.dsn#">
 			  <cfprocparam cfsqltype="cf_sql_varchar" type="in" value="#srcObject#">
 			  <cfprocparam cfsqltype="cf_sql_varchar" type="in" value="#destColumn#">
@@ -850,15 +850,15 @@ $out:$
 		  </cfstoredproc>
 		</cfdefaultcase>
 	</cfswitch>
-	
-	
+
+
 </cffunction>
 
 <cffunction name="deleteProperty">
 	<cfargument name="typename" required="true">
 	<cfargument name="srcColumn" required="true">
 	<cfargument name="dsn" default="#application.dsn#" required="false">
-	
+
 	<cfswitch expression="#application.dbtype#">
 		<cfcase value="odbc">
 			<!--- check for constraint --->
@@ -866,7 +866,7 @@ $out:$
 				SELECT c_obj.name as CONSTRAINT_NAME, col.name	as COLUMN_NAME, com.text as DEFAULT_CLAUSE
 				FROM	sysobjects	c_obj
 				JOIN 	syscomments	com on 	c_obj.id = com.id
-				JOIN 	sysobjects	t_obj on c_obj.parent_obj = t_obj.id  
+				JOIN 	sysobjects	t_obj on c_obj.parent_obj = t_obj.id
 				JOIN    sysconstraints con on c_obj.id	= con.constid
 				JOIN 	syscolumns	col on t_obj.id = col.id
 							AND con.colid = col.colid
@@ -875,7 +875,7 @@ $out:$
 					AND col.name = '#arguments.srcColumn#'
 			</cfquery>
 			<cfset defaultL = len(qCheck.Default_Clause)-2>
-			
+
 			<!--- drop constraint --->
 			<cfif qCheck.recordcount>
 				<cfquery NAME="qDrop" DATASOURCE="#application.dsn#">
@@ -887,14 +887,14 @@ $out:$
 				ALTER TABLE #application.dbowner##arguments.typename# DROP COLUMN #arguments.srcColumn#
 			</cfquery>
 		</cfcase>
-		
+
 		<cfdefaultcase>
 			<cfquery NAME="qDrop" DATASOURCE="#application.dsn#">
 				ALTER TABLE #application.dbowner##arguments.typename# DROP COLUMN #arguments.srcColumn#
 			</cfquery>
 		</cfdefaultcase>
 	</cfswitch>
-	
+
 </cffunction>
 
 <cffunction name="addProperty">
@@ -905,12 +905,12 @@ $out:$
 	<cfargument name="stDefault" required="false" default="">
 	<cfargument name="dsn" default="#application.dsn#" required="false">
 	<cfargument name="dbtype" default="#application.dbtype#" required="false">
-	
+
 	<cfscript>
 	switch(arguments.dbtype){
 		case "ora":
-		{ 
-			sql = "ALTER TABLE #application.dbowner##arguments.typename# ADD (#arguments.srcColumn# #arguments.srcColumnType# ";	
+		{
+			sql = "ALTER TABLE #application.dbowner##arguments.typename# ADD (#arguments.srcColumn# #arguments.srcColumnType# ";
 			if (Len(arguments.stDefault)) sql = sql & "DEFAULT '#stDefault#'";
  			if (arguments.bNull) sql = sql & "NULL";
  			else sql = sql & "NOT NULL";
@@ -919,14 +919,14 @@ $out:$
 		}
 		case "postgresql":
 		{
-			sql = "ALTER TABLE #application.dbowner##arguments.typename#	ADD #arguments.srcColumn# #arguments.srcColumnType# ";	
-			if (Len(arguments.stDefault)) sql = sql & "; ALTER TABLE #application.dbowner##arguments.typename# ALTER COLUMN #arguments.srcColumn# set default '#stDefault#'; UPDATE #application.dbowner##arguments.typename# SET #arguments.srcColumn# = '#stDefault#'";	
+			sql = "ALTER TABLE #application.dbowner##arguments.typename#	ADD #arguments.srcColumn# #arguments.srcColumnType# ";
+			if (Len(arguments.stDefault)) sql = sql & "; ALTER TABLE #application.dbowner##arguments.typename# ALTER COLUMN #arguments.srcColumn# set default '#stDefault#'; UPDATE #application.dbowner##arguments.typename# SET #arguments.srcColumn# = '#stDefault#'";
 			if (not arguments.bNull) sql = sql & "; ALTER TABLE #application.dbowner##arguments.typename# ALTER COLUMN #arguments.srcColumn# set NOT NULL";
-			break;	
+			break;
 		}
 		default:
 		{
-			sql = "ALTER TABLE #application.dbowner##arguments.typename#	ADD #arguments.srcColumn# #arguments.srcColumnType# ";	
+			sql = "ALTER TABLE #application.dbowner##arguments.typename#	ADD #arguments.srcColumn# #arguments.srcColumnType# ";
 			if (arguments.bNull) sql = sql & "NULL";
 
 			else sql = sql & "NOT NULL";
@@ -934,9 +934,9 @@ $out:$
 			if (Len(arguments.stDefault) OR NOT arguments.bNull) sql = sql & " DEFAULT '#stDefault#'";
 			break;
 		}
-	}	
+	}
 	</cfscript>
-	
+
 	<cfquery datasource="#arguments.dsn#">#preserveSingleQuotes(sql)#</cfquery>
 </cffunction>
 
@@ -946,27 +946,27 @@ $out:$
 	<cfargument name="srcColumnType" required="true">
 	<cfargument name="dsn" default="#application.dsn#" required="false">
 	<cfargument name="scope" default="types" required="No">
-	
+
 	<!--- work out default field length --->
 	<cfset length = getTypeDefaults()>
 	<cfset length = length[application[arguments.scope][arguments.typename].stProps[arguments.srcColumn].metadata.type].length>
-	
+
 	<cftransaction>
 		<cftry>
 			<cfswitch expression="#application.dbtype#">
 				<cfcase value="mysql">
 					<!--- alter column --->
 					<cfquery NAME="qAlter" DATASOURCE="#application.dsn#">
-						ALTER TABLE #application.dbowner##arguments.typename#  
+						ALTER TABLE #application.dbowner##arguments.typename#
 						CHANGE #arguments.srcColumn# #arguments.srcColumn# #arguments.srcColumnType#
 					</cfquery>
 				</cfcase>
-				
+
 				<cfcase value="postgresql">
 					<cfoutput><p class="error">This functionality is currently not available for PostgreSQL</p></cfoutput>
 				</cfcase>
-				
-				<!--- TODO: these repair type functions can be improved and refactored .: need mpre research into how differnt databases work so can support it --->				
+
+				<!--- TODO: these repair type functions can be improved and refactored .: need mpre research into how differnt databases work so can support it --->
 				<cfcase value="ora">
 					<!--- alter column --->
 					<!--- convert a clob field to another field type --->
@@ -991,7 +991,7 @@ $out:$
 						<cfquery name="qTemp" datasource="#application.dsn#">
 						ALTER TABLE #application.dbowner##arguments.typename# RENAME COLUMN #arguments.srcColumn#_temp TO #arguments.srcColumn#
 						</cfquery>
-						
+
 							<cfcatch>
 								<cfdump var="#cfcatch.Message#">
 								<cfdump var="#cfcatch.sql#">
@@ -1005,17 +1005,17 @@ $out:$
 							<cfquery name="qTemp" datasource="#application.dsn#">
 							ALTER TABLE #application.dbowner##arguments.typename# ADD #arguments.srcColumn#_temp #arguments.srcColumnType#
 							</cfquery>
-	
+
 							<!--- copy data to clob --->
 							<cfquery name="qTemp" datasource="#application.dsn#">
 							UPDATE #application.dbowner##arguments.typename# SET #arguments.srcColumn#_temp = #arguments.srcColumn#
 							</cfquery>
-	
+
 							<!--- drop original field --->
 							<cfquery name="qTemp" datasource="#application.dsn#">
 							ALTER TABLE #application.dbowner##arguments.typename# DROP (#arguments.srcColumn#)
 							</cfquery>
-	
+
 							<!--- rename temp field to original field --->
 							<cfquery name="qTemp" datasource="#application.dsn#">
 							ALTER TABLE #application.dbowner##arguments.typename# RENAME COLUMN #arguments.srcColumn#_temp TO #arguments.srcColumn#
@@ -1025,7 +1025,7 @@ $out:$
 								<cfdump var="#cfcatch.Message#">
 								<cfdump var="#cfcatch.sql#">
 							</cfcatch>
-						</cftry>						
+						</cftry>
 
 					<cfelse>
 						<cfquery NAME="qAlter" DATASOURCE="#application.dsn#">
@@ -1034,22 +1034,22 @@ $out:$
 						</cfquery>
 					</cfif>
 				</cfcase>
-				
+
 				<!--- <cfcase value="ora">
 					<!--- alter column --->
 					<cfquery NAME="qAlter" DATASOURCE="#application.dsn#">
-						ALTER TABLE #application.dbowner##arguments.typename#  
+						ALTER TABLE #application.dbowner##arguments.typename#
 						MODIFY (#arguments.srcColumn# #arguments.srcColumnType# <cfif NOT listContainsNoCase("CLOB,INT,NUMBER",arguments.srcColumnType)>(#length#)</cfif>)
 					</cfquery>
 				</cfcase> --->
-				
+
 				<cfdefaultcase>
 					<!--- check for constraint --->
 					<cfquery NAME="qCheck" DATASOURCE="#application.dsn#">
 						SELECT c_obj.name as CONSTRAINT_NAME, col.name	as COLUMN_NAME, com.text as DEFAULT_CLAUSE
 						FROM	sysobjects	c_obj
 						JOIN 	syscomments	com on 	c_obj.id = com.id
-						JOIN 	sysobjects	t_obj on c_obj.parent_obj = t_obj.id  
+						JOIN 	sysobjects	t_obj on c_obj.parent_obj = t_obj.id
 						JOIN    sysconstraints con on c_obj.id	= con.constid
 						JOIN 	syscolumns	col on t_obj.id = col.id
 									AND con.colid = col.colid
@@ -1058,29 +1058,29 @@ $out:$
 							AND col.name = '#arguments.srcColumn#'
 					</cfquery>
 					<cfset defaultL = len(qCheck.Default_Clause)-2>
-					
+
 					<!--- drop constraint --->
 					<cfif qCheck.recordcount>
 						<cfquery NAME="qDrop" DATASOURCE="#application.dsn#">
 							ALTER TABLE #application.dbowner##arguments.typename# DROP CONSTRAINT #qCheck.Constraint_Name#
 						</cfquery>
 					</cfif>
-					
+
 					<!--- alter column --->
 					<cfquery NAME="qAlter" DATASOURCE="#application.dsn#">
-						ALTER TABLE #application.dbowner##arguments.typename#  
+						ALTER TABLE #application.dbowner##arguments.typename#
 						ALTER COLUMN #arguments.srcColumn# #arguments.srcColumnType# <cfif NOT listContainsNoCase("NTEXT,INT,NUMBER",arguments.srcColumnType)>(#length#)</cfif>
 					</cfquery>
-					
+
 					<!--- add constraint --->
 					<cfif qCheck.recordcount>
 						<cfoutput></cfoutput>
 						<cfset sql  = 	"ALTER TABLE #application.dbowner##arguments.typename# WITH NOCHECK ADD	CONSTRAINT #qCheck.Constraint_Name# DEFAULT #qCheck.Default_Clause# FOR #arguments.srcColumn#">
 						<cfquery NAME="qAdd" DATASOURCE="#application.dsn#">
-							
+
 							#preserveSingleQuotes(sql)#
 						</cfquery>
-				
+
 					</cfif>
 				</cfdefaultcase>
 			</cfswitch>
@@ -1093,38 +1093,41 @@ $out:$
 	</cftransaction>
 </cffunction>
 
-<cffunction name="buildDBStructure"> 
+<cffunction name="buildDBStructure">
 	<cfargument name="scope" default="types" required="No">
-	<cfloop collection="#application[arguments.scope]#" item="typename"> 
+	<cfloop collection="#application[arguments.scope]#" item="typename">
 		<cfswitch expression="#application.dbtype#">
 		<cfcase value="ora">
+	        <!--- Changed by bowden to use (+) syntax rather than inner join.
+    	    Oracle didn't support the join syntax until version 9 --->
 			<CFQUERY NAME="GetTables" DATASOURCE="#application.dsn#">
-			SELECT ut.TABLE_NAME AS TableName, 
-					    uc.COLUMN_NAME AS ColumnName, 
+			SELECT ut.TABLE_NAME AS TableName,
+					    uc.COLUMN_NAME AS ColumnName,
     					uc.DATA_LENGTH AS length,
 	    				uc.NULLABLE AS isnullable,
 		    			uc.DATA_TYPE AS Type
 			FROM USER_TABLES ut
-			INNER JOIN USER_TAB_COLUMNS uc	ON (ut.TABLE_NAME = uc.TABLE_NAME)
+			    , USER_TAB_COLUMNS uc
 			WHERE ut.TABLE_NAME = '#ucase(typename)#'
+			and   (ut.TABLE_NAME = uc.TABLE_NAME (+))
 			GROUP BY ut.TABLE_NAME,
         					uc.COLUMN_NAME,
     		    			uc.DATA_LENGTH,
 			        		uc.NULLABLE,
     	    				uc.DATA_TYPE
-			</cfquery>		
+			</cfquery>
 		</cfcase>
 		<cfcase value="mysql">
-			<!--- Get all tables in database--->	
+			<!--- Get all tables in database--->
 			<cfquery name="getMySQLTables" datasource="#application.dsn#">
 				SHOW TABLES like '#typename#'
 			</cfquery>
-			<!--- Create new query to be filled with db metadata--->					
-			<cfset GetTables = queryNew("TableName,ColumnName,length,isnullable,Type")>	
+			<!--- Create new query to be filled with db metadata--->
+			<cfset GetTables = queryNew("TableName,ColumnName,length,isnullable,Type")>
 			<cfloop query="getMySQLTables">
 				<!--- Get tablename --->
 				<cfset myTable = GetMySQLTables[columnlist][currentrow]>
-				<!--- Get column details of each table--->	
+				<!--- Get column details of each table--->
 				<cfquery name="GetMySQLColumns" datasource="#application.dsn#">
 					SHOW COLUMNS FROM #myTable#
 				</cfquery>
@@ -1152,10 +1155,10 @@ $out:$
 					<cfset temp = QuerySetCell(GetTables, "length", myLength)>
 					<cfset temp = QuerySetCell(GetTables, "isnullable", yesnoformat(GetMySQLColumns.null))>
 					<cfset temp = QuerySetCell(GetTables, "Type", myType)>
-				</cfloop>	
-			</cfloop>				
+				</cfloop>
+			</cfloop>
 		</cfcase>
-		
+
 		<cfcase value="postgresql">
          <cfquery name="getTableId" datasource="#application.dsn#">
          SELECT cast(c.oid as bigint) as oid,
@@ -1167,7 +1170,7 @@ $out:$
                AND upper(c.relname) ~ upper('^#typename#$')
          ORDER BY 2, 3;
          </cfquery>
-         
+
          <cfquery name="getColumns" datasource="#application.dsn#">
          SELECT a.attname,
            pg_catalog.format_type(a.atttypid, a.atttypmod) as thetype,
@@ -1176,7 +1179,7 @@ $out:$
          WHERE a.attrelid = '#getTableId.oid#' AND a.attnum > 0 AND NOT a.attisdropped
          ORDER BY a.attnum
          </cfquery>
-         
+
          <cfset GetTables = queryNew("TableName,ColumnName,length,isnullable,type")>
          <cfloop query="getColumns">
             <cfset truelen = reReplaceNoCase(thetype, ".*\(([^\)]*)\).*", "\1")>
@@ -1193,11 +1196,11 @@ $out:$
                <cfset truelen = "8">
             <cfelseif thetype contains "numeric">
                <cfset truetype = "numeric">
-               <cfset truelen = "4">  
+               <cfset truelen = "4">
             <cfelse>
                <cfset truetype = "varchar">
             </cfif>
-            
+
             <cfset temp = queryAddRow(GetTables)>
             <cfset temp = querySetCell(GetTables, "TableName", typename)>
             <cfset temp = querySetCell(GetTables, "ColumnName", attname)>
@@ -1205,17 +1208,17 @@ $out:$
             <cfset temp = querySetCell(GetTables, "isnullable", yesnoformat(isnullable))>
             <cfset temp = querySetCell(GetTables, "type", truetype)>
          </cfloop>
-         
+
 		</cfcase>
-		
+
 		<cfdefaultcase>
 			<CFQUERY NAME="GetTables" DATASOURCE="#application.dsn#">
-			SELECT dbo.sysobjects.name AS TableName, 
-						dbo.syscolumns.Name AS ColumnName, 
+			SELECT dbo.sysobjects.name AS TableName,
+						dbo.syscolumns.Name AS ColumnName,
 						dbo.syscolumns.length,
 						dbo.syscolumns.isnullable,
 						dbo.systypes.name AS Type
-			FROM dbo.sysobjects 
+			FROM dbo.sysobjects
 			INNER JOIN dbo.syscolumns ON (dbo.sysobjects.id = dbo.syscolumns.id)
 			INNER JOIN 	dbo.systypes ON (dbo.syscolumns.xtype = dbo.systypes.xusertype)
 			WHERE dbo.sysobjects.xtype = 'U'
@@ -1229,7 +1232,7 @@ $out:$
 			</CFQUERY>
 		</cfdefaultcase>
 		</cfswitch>
-		
+
 		<cfscript>
 		qArrayTables = getArrayTables(typename='#typename#');
 		for(i = 1;i LTE qArrayTables.recordCount;i=i+1)
@@ -1237,8 +1240,8 @@ $out:$
 			queryAddRow(getTables,1);
 			querySetCell(getTables,'columnname',replacenocase(qArrayTables.name[i],"#typename#_",""));
 			querySetCell(getTables,'type','array');
-		}	
-			
+		}
+
 		for(i = 1;i LTE getTables.recordCount;i = i+1){
 			stThisRow = structNew();
 			stThisRow.length = getTables.length[i];
@@ -1252,16 +1255,16 @@ $out:$
 		 <!--- <cfdump var="#getTables#">
 		 <cfdump var="#stTypes#">
 		 <cfdump var="#application.types[typename].stprops#">  --->
-		<!---  <cfdump var="#stTypes#">  ---> 
-	</cfloop> 
+		<!---  <cfdump var="#stTypes#">  --->
+	</cfloop>
 
 	<cfreturn stTypes>
-</cffunction> 
+</cffunction>
 
 <cffunction name="deployCFC">
 	<cfargument name="typename" required="true">
 	<cfargument name="scope" required="false" default="types">
-	
+
 	<cfscript>
 	if (arguments.scope IS 'types')
 	{
@@ -1276,10 +1279,10 @@ $out:$
 			o = createObject("component", "#application.packagePath#.#arguments.scope#.#arguments.typename#");
 		else
 			o = createObject("component", "#application.custompackagePath#.#arguments.scope#.#arguments.typename#");
-	}		
+	}
 	result = o.deployType(btestRun="false");
 	</cfscript>
-</cffunction> 
+</cffunction>
 
 <cffunction name="isCFCDeployed">
 	<cfargument name="typename" required="true">
@@ -1293,7 +1296,7 @@ $out:$
 		WHERE TABLE_NAME = '#ucase(arguments.typename)#'
 		</cfquery>
 	</cfcase>
-	
+
 	<cfcase value="mysql">
 		<cfquery name="qTableExists" datasource="#application.dsn#">
 			SHOW TABLES LIKE '#arguments.typename#'
@@ -1307,7 +1310,7 @@ $out:$
          and    upper(tablename) = upper('#arguments.typename#')
       </cfquery>
    </cfcase>
-	
+
 	<cfdefaultcase>
 		<cfquery name="qTableExists" datasource="#application.dsn#">
 		SELECT 	dbo.sysobjects.name FROM dbo.sysobjects
@@ -1327,7 +1330,7 @@ $out:$
 <cffunction name="isCFCConflict" hint="Determines whether or not a CFCs integrity has been compromised" returntype="boolean">
 	<cfargument name="stConflicts" type="struct" required="true">
 	<cfargument name="typename" type="string" required="true" hint="CFC name eg dmNew, ruleNews etc">
-	
+
 	<cfscript>
 	bConflict = false;
 	if((structKeyExists(stConflicts,'cfc') AND structKeyExists(stConflicts['cfc'],arguments.typeName)) OR (structKeyExists(stConflicts,'database') AND structKeyExists(stConflicts['database'],arguments.typeName)))

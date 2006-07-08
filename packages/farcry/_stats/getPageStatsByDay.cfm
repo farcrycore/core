@@ -12,7 +12,7 @@ $License: Released Under the "Common Public License 1.0", http://www.opensource.
 $Header: /cvs/farcry/farcry_core/packages/farcry/_stats/getPageStatsByDay.cfm,v 1.17 2005/10/28 03:41:17 paul Exp $
 $Author: paul $
 $Date: 2005/10/28 03:41:17 $
-$Name: milestone_3-0-1 $
+$Name: p300_b113 $
 $Revision: 1.17 $
 
 || DESCRIPTION || 
@@ -31,7 +31,7 @@ $out:$
 <cfswitch expression="#application.dbtype#">
 <cfcase value="ora">
 	<cfquery datasource="#arguments.dsn#" name="qGetPageStatsByDay">
-		select distinct hour, TO_CHAR(fq.logdatetime,'hh') as loginhour, count(fq.logId) as count_views
+		select distinct hour, TO_CHAR(fq.logdatetime,'hh24') as loginhour, count(fq.logId) as count_views
 		from #application.dbowner#statsHours
 		left join (
 				select * from stats
@@ -39,9 +39,9 @@ $out:$
 				<cfif not arguments.showAll>
 					and pageid = '#arguments.pageId#'
 				</cfif>
-		)fq on TO_CHAR(fq.logdatetime,'hh') = statsHours.hour
+		) fq on TO_CHAR(fq.logdatetime,'hh24') = statsHours.hour
 		and TO_CHAR(fq.logdatetime,'dd' ) = #DatePart("d", arguments.day)# and TO_CHAR(fq.logdatetime,'mm') = #DatePart("m", arguments.day)# and TO_CHAR(fq.logdatetime,'yyyy') = #DatePart("yyyy", arguments.day)#
-		group by hour, TO_CHAR(fq.logdatetime,'hh')
+		group by hour, TO_CHAR(fq.logdatetime,'hh24')
 		order by 1 
 	</cfquery>	
 </cfcase>

@@ -8,7 +8,7 @@ $License: Released Under the "Common Public License 1.0", http://www.opensource.
 $Header: /cvs/farcry/farcry_core/packages/farcry/_stats/deploy.cfm,v 1.22 2005/09/16 07:25:39 guy Exp $
 $Author: guy $
 $Date: 2005/09/16 07:25:39 $
-$Name: milestone_3-0-1 $
+$Name: p300_b113 $
 $Revision: 1.22 $
 
 
@@ -36,9 +36,15 @@ $out: stStatus			: struct to pass status report back to caller $
 <cftry>
 	<cfswitch expression="#application.dbtype#">
 	<cfcase value="ora">
-		<cfquery datasource="#arguments.dsn#" name="qDropTemp">
-			drop table #application.dbowner#statsHours
+		<cfquery datasource="#arguments.dsn#" name="qExists">
+			SELECT * FROM USER_TABLES
+			WHERE TABLE_NAME = 'STATSHOURS'
 		</cfquery>
+		<cfif qExists.recordCount>
+		<cfquery datasource="#arguments.dsn#" name="qDropTemp">
+			DROP TABLE #application.dbowner#statsHours
+		</cfquery>
+		</cfif>	
 	</cfcase>
 	<cfcase value="mysql">
 		<cfquery datasource="#arguments.dsn#" name="qDropTemp">

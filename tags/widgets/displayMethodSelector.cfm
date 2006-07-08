@@ -11,7 +11,7 @@
 <cfparam name="caller.output" default="#StructNew()#">
 <cfparam name="caller.stObj" default="#StructNew()#">
 <cfparam name="attributes.fieldValue" default="">
-
+<cfparam name="attributes.fieldName" default="DisplayMethod">
 
 <cfset typename = attributes.typename>
 <cfset fieldLabel = attributes.fieldLabel>
@@ -30,13 +30,13 @@
 <cfif typename NEQ "">
 	<!--- get the templates for this type --->
 	<nj:listTemplates typename="#typename#" prefix="#attributes.prefix#" r_qMethods="qMethods"><cfoutput>
-	<label for="DisplayMethod"><b>#fieldLabel#</b>
+	<label for="#attributes.fieldName#"><b>#fieldLabel#</b>
 		<!---No display methods for this content item type --->
 		 <cfif qMethods.RecordCount EQ 0>
 			No display methods for this content item type
-			<input type="hidden" name="DisplayMethod" value="">
+			<input type="hidden" name="#attributes.fieldName#" value="">
 		<cfelse>
-			<select name="DisplayMethod" size="1">
+			<select name="#attributes.fieldName#" size="1">
 			<cfloop query="qMethods"><option value="#qMethods.methodname#"<cfif qMethods.methodname EQ fieldValue> selected="selected"</cfif>>#qMethods.displayname#</option>
 			</cfloop>
 			</select>

@@ -30,16 +30,21 @@ window.close();
 
 <!--- filter --->
 <!--- default category id [defaults to unassinged] --->
-<cfparam name="categoryID" default="">
+<cfparam name="categoryID" default="" />
+<cfparam name="session.objectPicker.categoryID" default="" />
 
-<!--- <cfif categoryID EQ "">
-	<cfset objTree = CreateObject("component","#application.packagepath#.farcry.tree")>
-	<cfset qtemp = objTree.getRootNode(application.dsn,"categories")>
-	<cfif qtemp.recordCount GT 0>
-		<cfset categoryID = qtemp.objectID>
-	</cfif>
-</cfif> --->
-		
+<cfif categoryID EQ "unassigned">
+	<!--- User has clicked the "[Unassigned]" link --->
+	<cfset session.objectPicker.categoryID = "unassigned" />
+	<cfset categoryID = "" />
+<cfelseif (structKeyExists(application.catid, "root") AND NOT len(categoryId)) AND (session.objectPicker.categoryID NEQ "unassigned")>
+	<!--- default view state from webtop link should be the category root --->
+	<cfset session.objectPicker.categoryID = application.catid['root'] />
+	<cfset categoryID = session.objectPicker.categoryID />
+<cfelseif len(trim(categoryID))>
+	<!--- when in categories, pagination will always send an objectID --->
+	<cfset session.objectPicker.categoryID = trim(categoryID) />
+</cfif>
 
 <!--- filter by keyword --->
 <cfset aKeywordField = ArrayNew(1)>
@@ -73,7 +78,8 @@ window.close();
 <cfquery dbtype="query" name="qLibraryList">
 SELECT	DISTINCT *
 FROM	qReturn
-WHERE	UPPER(status) = 'APPROVED'
+WHERE	status is not null 
+		AND UPPER(status) = 'APPROVED'
  		AND bLibrary = 1<cfif lExcludeObjectID NEQ "">
 		AND objectid NOT IN (#preservesinglequotes(lExcludeObjectID)#)</cfif>
 </cfquery>
@@ -102,7 +108,7 @@ WHERE	UPPER(status) = 'APPROVED'
 			<widgets:categoryAssociation typeName="#librarytype#" lSelectedCategoryID="#categoryID#" naviagtionURL="#stPageination.urlParametersWithOutFilter#"><cfoutput>
 			<ul>
 				<li><cfif categoryID EQ ""><strong>[Unassigned]</strong><cfelse>
-					<a href="#cgi.script_name#?#stPageination.urlParametersWithOutFilter#">[Unassigned]</a></cfif>
+					<a href="#cgi.script_name#?#stPageination.urlParametersWithOutFilter#&categoryID=unassigned">[Unassigned]</a></cfif>
 				</li>
 			</ul>
 

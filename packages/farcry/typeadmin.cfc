@@ -1,6 +1,6 @@
 <cfcomponent name="typeadmin" displayname="Type Admin Component" hint="Supports the ../tags/widgets/typeadmin.cfc custom tag. Not to be used in isolation.">
 
-<!--- 
+<!---
 environment references (might be nice to clean these up)
 	session.dmProfile.locale
 	session.dmSec.authentication
@@ -11,7 +11,7 @@ environment references (might be nice to clean these up)
 	application.types
 
 	TODO: please refactoring to make cleaner
- --->	
+ --->
 
 <cffunction name="init" hint="Constructor." access="public" returntype="typeadmin">
 	<cfargument name="attributes" type="struct" required="true" displayname="Typeadmin attributes." hint="Structure of attributes for the specific typeadmin page.">
@@ -19,10 +19,10 @@ environment references (might be nice to clean these up)
 
 	<cfset variables.attributes = arguments.attributes>
 	<cfset variables.prefs = arguments.stprefs>
-	
+
 	<!--- override debug output --->
 	<!--- <cfset attributes.bdebug="true"> --->
-	
+
 	<!--- set default columns, as required --->
 	<cfif arrayisempty(variables.attributes.aColumns)>
 		<cfset variables.attributes.aColumns=getDefaultColumns()>
@@ -32,7 +32,7 @@ environment references (might be nice to clean these up)
 		<cfset variables.attributes.aButtons=getDefaultButtons()>
 	</cfif>
 
-	<!--- set default prefs --->	
+	<!--- set default prefs --->
 	<cfif NOT structKeyExists(variables.prefs, "lCategoryIDs")>
 		<cfset structInsert(variables.prefs, "lCategoryIDs", "")>
 	</cfif>
@@ -40,11 +40,11 @@ environment references (might be nice to clean these up)
 	<cfif NOT structKeyExists(variables.prefs, "filter_lkeywords")>
 		<cfset structInsert(variables.prefs, "filter_lkeywords", "")>
 	</cfif>
-		
+
 	<cfif NOT structKeyExists(variables.prefs, "filter_dateRange")>
 		<cfset variables.prefs.filter_dateRange = "">
 	</cfif>
-		
+
 	<cfif NOT structKeyExists(variables.prefs, "orderby")>
 		<cfset structInsert(variables.prefs, "orderby", attributes.defaultorderby)>
 	</cfif>
@@ -67,7 +67,7 @@ environment references (might be nice to clean these up)
 
 <cffunction name="setattribute" output="false" access="public" returntype="void">
 	<cfargument name="attribkey" required="true" type="string">
-	<cfargument name="attribvalue" required="true" type="any">  
+	<cfargument name="attribvalue" required="true" type="any">
 	<cfset structUpdate(variables.attributes, arguments.attribkey, arguments.attribvalue)>
 </cffunction>
 
@@ -98,7 +98,7 @@ environment references (might be nice to clean these up)
 	<cfset stLocal.iPosition = ListFindNocase(variables.prefs.Filter_lkeywords,arguments.keyword,"~")>
 	<cfif stLocal.iPosition>
 		<cfset variables.prefs.filter_lkeywords = ListDeleteAt(variables.prefs.filter_lkeywords,stLocal.iPosition,"~")>
-	</cfif> 
+	</cfif>
 </cffunction>
 
 <!--- DATERANGE --->
@@ -115,7 +115,7 @@ environment references (might be nice to clean these up)
 	<cfset stLocal.iPosition = ListFindNocase(variables.prefs.filter_daterange,arguments.daterange_filter,"~")>
 	<cfif stLocal.iPosition>
 		<cfset variables.prefs.filter_daterange = ListDeleteAt(variables.prefs.filter_daterange,stLocal.iPosition,"~")>
-	</cfif> 
+	</cfif>
 </cffunction>
 
 
@@ -170,24 +170,46 @@ environment references (might be nice to clean these up)
 		<!--- generic query based on typename --->
 		<!--- TODO: ignore longtext columns to improve performance --->
 		<cfif StructKeyExists(application.types[attributes.typename].stprops,"versionid")>
-			<cfquery datasource="#attributes.datasource#" name="recordset">
-			SELECT	n.*,
+			<!--- added by bowden to remove clobs because clob was bombing out later query of queries --->
+			<cfswitch expression="#application.dbtype#">
+			<cfcase value="ora">
+			 <cfquery datasource="#attributes.datasource#" name="qTempCols">
+			   SELECT	distinct 'n.'||column_name column_name
+			   FROM 	all_tab_columns
+			   WHERE	table_name = upper('#attributes.typename#')
+			   and		owner||'.' = upper('#arguments.dbowner#')
+			   and      data_type not like '%CLOB%'
+			 </cfquery>
+
+			 <cfquery datasource="#attributes.datasource#" name="recordset">
+			   SELECT	#valueList(qTempCols.column_name)#,
 					(SELECT count(d.objectid) FROM #arguments.dbowner##attributes.typename# d WHERE d.versionid = n.objectid) as bHasMultipleVersion
-			FROM 	#arguments.dbowner##attributes.typename# n
-			WHERE	n.versionid = ''
-				OR	versionid IS NULL			
-			</cfquery>		
+			   FROM 	#arguments.dbowner##attributes.typename# n
+			   WHERE	n.versionid = ''
+				OR	versionid IS NULL
+			   </cfquery>
+			</cfcase>
+			<cfdefaultcase>
+			   <cfquery datasource="#attributes.datasource#" name="recordset">
+			   SELECT	n.*,
+					(SELECT count(d.objectid) FROM #arguments.dbowner##attributes.typename# d WHERE d.versionid = n.objectid) as bHasMultipleVersion
+			   FROM 	#arguments.dbowner##attributes.typename# n
+			   WHERE	n.versionid = ''
+				OR	versionid IS NULL
+			   </cfquery>
+			</cfdefaultcase>
+			</cfswitch>
 		<cfelse>
 			<cfquery datasource="#attributes.datasource#" name="recordset">
 			SELECT	n.*,0 as bHasMultipleVersion
 			FROM 	#arguments.dbowner##attributes.typename# n
-			</cfquery>		
+			</cfquery>
 		</cfif>
 	</cfif>
 
 	<cfquery dbtype="query" name="recordset">
 	SELECT	DISTINCT *
-	FROM	recordset	
+	FROM	recordset
 	</cfquery>
 
 	<!--- filter by daterange --->
@@ -216,22 +238,30 @@ environment references (might be nice to clean these up)
 			AND #aDateRangeSQL[k].fieldName# <= <cfqueryparam value="#CreateODBCDate(aDateRangeSQL[k].dateTo)#" cfsqltype="cf_sql_date"></cfif></cfloop>
 		</cfquery>
 	</cfif>
-	
+
 	<!--- filter by keyword --->
 	<cfset aKeyword = ListToArray(prefs.filter_lkeywords,"~")>
 	<cfif ArrayLen(aKeyword)>
+		<cftry>
 		<cfquery dbtype="query" name="recordset">
 		SELECT	*
 		FROM	recordset
-		WHERE	<cfloop index="i" from="1" to="#ArrayLen(aKeyword)#"><cfif i GT 1> AND </cfif>
-				lower(#ListFirst(aKeyword[i],"^")#) LIKE <cfqueryparam value="%#LCase(ListLast(aKeyword[i],'^'))#%" cfsqltype="cf_sql_varchar"></cfloop>
+		WHERE 0=0	
+		<cfloop index="i" from="1" to="#ArrayLen(aKeyword)#">
+			AND #ListFirst(aKeyword[i],"^")# is not null
+			AND lower(#ListFirst(aKeyword[i],"^")#) LIKE <cfqueryparam value="%#LCase(ListLast(aKeyword[i],'^'))#%" cfsqltype="cf_sql_varchar"></cfloop>
 		</cfquery>
+		<cfcatch >
+			<cfdump var="#cfcatch#">
+			<cfabort>
+		</cfcatch>
+		</cftry>
 	</cfif>
 
 	<!--- reorder query if needed --->
 	<cfif len(prefs.orderby)>
 		<cfquery dbtype="query" name="recordset">
-		SELECT	* 
+		SELECT	*
 		FROM 	recordset
 		ORDER BY #prefs.orderby# #prefs.order#
 		</cfquery>
@@ -262,13 +292,13 @@ environment references (might be nice to clean these up)
 	<cfset var aDefaultColumns=arraynew(1)>
 	<cfset var stCol=structnew()>
 	<cfset var stPermissions=getBasePermissions()>
-	
+
 	<cfscript>
 		//This data structure is used to create the grid columns
 		//remember to delimit dynamic expressions ##
 		aDefaultColumns=arrayNew(1);
 		editobjectURL = "#application.url.farcry#/conjuror/invocation.cfm?objectid=##recordset.objectID[recordset.currentrow]##&typename=#attributes.typename#&ref=typeadmin";
-		
+
 		//select
 		stCol=structNew();
 		stCol.columnType="expression";
@@ -277,7 +307,7 @@ environment references (might be nice to clean these up)
 		stCol.style="text-align: center;";
 		//stCol.orderby="";
 		arrayAppend(aDefaultColumns,stCol);
-	
+
 		//edit icon
 		stCol=structNew();
 		stCol.columnType="evaluate";
@@ -286,7 +316,7 @@ environment references (might be nice to clean these up)
 		stCol.style="text-align: center;";
 		//stCol.orderby="";
 		arrayAppend(aDefaultColumns,stCol);
-	
+
 		//preview
 		stCol=structNew();
 		stCol.columnType="expression";
@@ -295,7 +325,7 @@ environment references (might be nice to clean these up)
 		stCol.style="text-align: center;";
 		//stCol.orderby="";
 		arrayAppend(aDefaultColumns,stCol);
-	
+
 		//label and edit
 		stCol=structNew();
 		stCol.columnType="evaluate";
@@ -304,7 +334,7 @@ environment references (might be nice to clean these up)
 		stCol.style="text-align: left;";
 		stCol.orderby="label";
 		arrayAppend(aDefaultColumns,stCol);
-	
+
 		//datetimelastupdated
 		stCol=structNew();
 		stCol.columnType="evaluate";
@@ -313,7 +343,7 @@ environment references (might be nice to clean these up)
 		stCol.style="text-align: center;";
 		stCol.orderby="datetimelastupdated";
 		arrayAppend(aDefaultColumns,stCol);
-	
+
 		//status
 		if (structKeyExists(application.types[attributes.typename].stprops, "status")) {
 			stCol=structNew();
@@ -324,7 +354,7 @@ environment references (might be nice to clean these up)
 			stCol.orderby="status";
 			arrayAppend(aDefaultColumns,stCol);
 		}
-	
+
 		//lastupdatedby
 		stCol=structNew();
 		stCol.columnType="value";
@@ -350,7 +380,7 @@ environment references (might be nice to clean these up)
 		oAuthorisation=request.dmsec.oAuthorisation;
 		// set bunlock for now, needs to be set if locked objects exist
 		bUnlock=true;
-				
+
 		//add, delete, unlock, dump, requestapproval, approve, sendtodraft
 		// add button
 			stBut=structNew();
@@ -362,7 +392,7 @@ environment references (might be nice to clean these up)
 			stBut.permission="#attributes.permissionset#Create";
 			stBut.buttontype="add";
 			arrayAppend(aDefaultButtons,stBut);
-	
+
 		// delete object(s)
 			stBut=structNew();
 			stBut.type="button";
@@ -374,7 +404,7 @@ environment references (might be nice to clean these up)
 			stBut.permission="#attributes.permissionset#Delete";
 			stBut.buttontype="delete";
 			arrayAppend(aDefaultButtons,stBut);
-	
+
 		// check if object uses status
 		if (structKeyExists(application.types['#attributes.typename#'].stProps,"status")) {
 			// Set status to pending
@@ -408,7 +438,7 @@ environment references (might be nice to clean these up)
 				stBut.permission="#attributes.permissionset#Approve";
 				stBut.buttontype="sendtodraft";
 				arrayAppend(aDefaultButtons,stBut);
-	
+
 		}
 		// dump objects
 			stBut=structNew();
@@ -420,7 +450,7 @@ environment references (might be nice to clean these up)
 			stBut.permission="ObjectDumpTab";
 			stBut.buttontype="dump";
 			arrayAppend(aDefaultButtons,stBut);
-	
+
 		// check if there are locked objects
 		if (isdefined("bUnlock")) {
 			stBut=structNew();
@@ -465,10 +495,11 @@ environment references (might be nice to clean these up)
 </cffunction>
 
 <cffunction name="panelKeywordFilter">
+	
 	<cfset var panel="">
 	<cfset var qString="">
 	<cfset var aKeywordField = ArrayNew(1)>
-	
+
 	<cfif Len(prefs.filter_lkeywords)>
 		<cfsavecontent variable="keywordsFilterList">
 			<cfoutput><ul></cfoutput>
@@ -477,8 +508,7 @@ environment references (might be nice to clean these up)
 		</cfloop>
 			<cfoutput></ul></cfoutput>
 		</cfsavecontent>
-	</cfif>		
-
+	</cfif>
 	<!--- filter by keyword --->
 	<!--- todo: accept atributes from typeadmin.cfm --->
 	<cfset lSearchableFieldTypes = "nstring,string,uuid">
@@ -488,9 +518,23 @@ environment references (might be nice to clean these up)
 			<cfset ArrayAppend(aKeywordField,field)>
 		</cfif>
 	</cfloop>
-	
+
 	<cfset ArraySort(aKeywordField,"textnocase","asc")>
-	<cfsavecontent variable="panel"><cfoutput>
+	<cfif isdefined("variables.attributes.query") and isQuery(variables.attributes.query) and variables.attributes.query.recordcount>
+		<!--- key words should list columns in the query if a custom q1uery has been passed into the tag --->
+		<cfsavecontent variable="panel"><cfoutput>
+		<b>Properties:</b>
+			<select name="keywords_field" id="keywords_field"><cfloop list="#variables.attributes.query.columnlist#" index="x">
+				<option value="#x#"<cfif x eq "label"> SELECTED</cfif>>#lcase(x)#</option></cfloop>
+			</select>
+		<!--- todo: i18n --->
+		<b>Keywords:</b>
+			<input type="text" name="keywords" id="keywords" />
+		<!--- </label> --->
+		<input type="submit" name="button_Filter_Keyword" value="Filter" class="f-submit" /></cfoutput>
+		</cfsavecontent>	
+	<cfelse>
+		<cfsavecontent variable="panel"><cfoutput>
 		<cfif isDefined("keywordsFilterList")>#keywordsFilterList#</cfif>
 		<!--- todo: i18n --->
 		<b>Properties:</b>
@@ -502,7 +546,10 @@ environment references (might be nice to clean these up)
 			<input type="text" name="keywords" id="keywords" />
 		<!--- </label> --->
 		<input type="submit" name="button_Filter_Keyword" value="Filter" class="f-submit" /></cfoutput>
-	</cfsavecontent>
+		</cfsavecontent>	
+	</cfif>
+	
+	
 	<cfreturn panel />
 </cffunction>
 
@@ -533,16 +580,16 @@ environment references (might be nice to clean these up)
 			</cfif>
 		</cfloop>
 	</cfif>
-	
+
 	<cfsavecontent variable="panel"><cfoutput>
 		<cfif isDefined("dateRangeFilterList")>#dateRangeFilterList#</cfif>
 		<cfif ArrayLen(aDateField)>
 		<!--- <label for="daterange"> --->
 		<b>Date Field:</b>
 		<select name="daterange_field" id="daterange_field"><cfloop index="i" from="1" to="#Arraylen(aDateField)#">
-			<option value="#aDateField[i]#">#LCase(aDateField[i])#</option></cfloop>		
+			<option value="#aDateField[i]#">#LCase(aDateField[i])#</option></cfloop>
 		</select>
-		
+
 		<b>Date range:</b>
 			<input type="text" name="daterange" id="daterange" />
 		<!--- </label> --->
@@ -568,16 +615,16 @@ environment references (might be nice to clean these up)
 		<cfsavecontent variable="categoryFilterDisplay">
 			<cfloop list="#prefs.lcategoryids#" index="i">
 				<cfoutput>#oCat.getCategoryNamebyid(categoryid=i)#</cfoutput>
-			</cfloop>	
+			</cfloop>
 		</cfsavecontent>
-		
+
 		<!--- list currently active category filters & delete option --->
 		<cfloop collection="#url#" item="tempQString">
 			<cfif tempQString NEQ "killCatID">
 				<cfset qString = qString & "&#tempQString#=#url[tempQString]#">
 			</cfif>
 		</cfloop>
-	
+
 		<cfsavecontent variable="categoryFilterList">
 			<cfoutput><ul></cfoutput>
 			<cfloop list="#session.typeadmin[attributes.typename].lcategoryids#" index="i">
@@ -586,7 +633,7 @@ environment references (might be nice to clean these up)
 			<cfoutput></ul></cfoutput>
 		</cfsavecontent>
 	</cfif>
-	
+
 	<cfsavecontent variable="panel">
 		<cfoutput>
 		<cfif isDefined("categoryFilterList")>#categoryFilterList#</cfif>
@@ -606,11 +653,11 @@ environment references (might be nice to clean these up)
 /**
  * Case-insensitive function for removing duplicate entries in a list.
  * Based on dedupe by Raymond Camden
- * 
- * @param list 	 List to be modified. 
- * @return Returns a list. 
- * @author Jeff Howden (jeff@members.evolt.org) 
- * @version 1, March 21, 2002 
+ *
+ * @param list 	 List to be modified.
+ * @return Returns a list.
+ * @author Jeff Howden (jeff@members.evolt.org)
+ * @version 1, March 21, 2002
  */
 function ListDeleteDuplicatesNoCase(list)
 {

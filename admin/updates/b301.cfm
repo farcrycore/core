@@ -63,7 +63,7 @@ Updates FCKEditor config<br />
     <cfquery name="qList" datasource="#application.dsn#">
     SELECT  wconfig
     FROM    #application.dbowner#config
-    WHERE   configname = 'tinymce'
+    WHERE   upper(configname) = 'TINYMCE'
     </cfquery>
 
     <cfwddx action="wddx2cfml" input="#qList.wconfig#" output="stConfig">
@@ -71,11 +71,26 @@ Updates FCKEditor config<br />
     <cfset stConfig.file_browser_callback = "showWindowdmFile">
 
     <cfwddx action="CFML2WDDX" input="#stConfig#" output="wConfig">
+
+    <!--- bowden1. changed to use cfqueryparam and clob for ora --->
+    <cfswitch expression="#application.dbtype#">
+	<cfcase value="ora">
+	   <cfquery datasource="#application.dsn#" name="qUpdate">
+		UPDATE  #application.dbowner#config
+			SET     wconfig = <cfqueryparam value='#wConfig#'  cfsqltype="cf_sql_clob" /> 
+		    	WHERE   upper(configname) = 'TINYMCE'
+	   </cfquery>
+	</cfcase>
+	<cfdefaultcase>
     <cfquery name="qUpdate" datasource="#application.dsn#">
     UPDATE  #application.dbowner#config
     SET     wconfig = '#wConfig#'
-    WHERE   configname = 'tinymce'
+    WHERE   upper(configname) = 'TINYMCE'
     </cfquery>
+	</cfdefaultcase>
+    </cfswitch>
+    <!--- end of change bowden1 --->
+
     <cfoutput>COMPLETE</p></cfoutput><cfflush>
 
 

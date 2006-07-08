@@ -7,7 +7,7 @@ $License: Released Under the "Common Public License 1.0", http://www.opensource.
 $Header: /cvs/farcry/farcry_core/packages/farcry/_config/defaultSoEditorPro.cfm,v 1.11 2005/08/19 05:22:13 guy Exp $
 $Author: guy $
 $Date: 2005/08/19 05:22:13 $
-$Name: milestone_3-0-1 $
+$Name: p300_b113 $
 $Revision: 1.11 $
 
 || DESCRIPTION || 
@@ -125,13 +125,30 @@ stConfig.textBox = "false";
 		delete from #application.dbowner#config
 		where configname = '#arguments.configName#'
 	</cfquery>
-	
-	<cfquery datasource="#arguments.dsn#" name="qUpdate">
+
+
+	<!--- bowden1. changed to use cfqueryparam and clob for ora --->
+	<cfswitch expression="#application.dbtype#">
+	<cfcase value="ora">
+	   <cfquery datasource="#arguments.dsn#" name="qUpdate">
 		INSERT INTO #application.dbowner#config
 		(configName, wConfig)
 		VALUES
-		('#arguments.configName#', '#wConfig#')
-	</cfquery>
+		('#arguments.configName#', 
+		  <cfqueryparam value='#wConfig#'  cfsqltype="cf_sql_clob" />
+             )
+	   </cfquery>
+	</cfcase>
+	<cfdefaultcase>
+	   <cfquery datasource="#arguments.dsn#" name="qUpdate">
+		INSERT INTO #application.dbowner#config
+		(configName, wConfig)
+		VALUES
+		('#arguments.configName#', '#wConfig#' )
+	   </cfquery>
+	</cfdefaultcase>
+	</cfswitch>
+	<!--- end of change bowden1 --->
 
 	<cfset stStatus.message = "#arguments.configName# created successfully">
 	<cfcatch>

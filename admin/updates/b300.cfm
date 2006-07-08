@@ -125,7 +125,7 @@ Adds suffix to ruleNews,ruleEvents<br />
 			</cfcase>
 			<cfcase value="postgresql">
 				<cfquery name="update" datasource="#application.dsn#">
-					ALTER TABLE #application.dbowner#dmFile ADD bLibrary INTEGER UNSIGNED NOT NULL DEFAULT 0
+					ALTER TABLE #application.dbowner#dmFile ADD bLibrary INTEGER NOT NULL DEFAULT 0
 				</cfquery>
 				<cfquery name="update" datasource="#application.dsn#">
 					ALTER TABLE #application.dbowner#dmFile ADD status VARCHAR(255) NOT NULL default 'draft'
@@ -177,7 +177,7 @@ Adds suffix to ruleNews,ruleEvents<br />
 			</cfcase>
 			<cfcase value="postgresql">
 				<cfquery name="update" datasource="#application.dsn#">
-					ALTER TABLE #application.dbowner#dmImage ADD bLibrary INTEGER UNSIGNED NOT NULL DEFAULT 0
+					ALTER TABLE #application.dbowner#dmImage ADD bLibrary INTEGER NOT NULL DEFAULT 0
 				</cfquery>
 				<cfquery name="update" datasource="#application.dsn#">
 					ALTER TABLE #application.dbowner#dmImage ADD bAutoGenerateThumbnail INTEGER UNSIGNED NOT NULL DEFAULT 0
@@ -222,7 +222,7 @@ Adds suffix to ruleNews,ruleEvents<br />
 			</cfcase>
 			<cfcase value="postgresql">
 				<cfquery name="update" datasource="#application.dsn#">
-					ALTER TABLE #application.dbowner#dmFlash ADD bLibrary INTEGER UNSIGNED NOT NULL DEFAULT 0
+					ALTER TABLE #application.dbowner#dmFlash ADD bLibrary INTEGER NOT NULL DEFAULT 0
 				</cfquery>
 			</cfcase>
 			<cfdefaultcase>
@@ -430,9 +430,7 @@ Adds suffix to ruleNews,ruleEvents<br />
 	<cftry>
 	<cfswitch expression="#application.dbtype#">
 			<cfcase value="ora">
-				<cfoutput>ORACLE SQL NEEDED.<br /></cfoutput>
-			</cfcase>
-			<cfcase value="mysql">
+				<!--- bowden1 --->
 				<cfquery name="qCreateTable" datasource="#application.dsn#">
 					CREATE TABLE #application.dbowner#ruleText (
 						label varchar(255) default NULL,
@@ -441,9 +439,17 @@ Adds suffix to ruleNews,ruleEvents<br />
 						 title varchar(255) default NULL
 						)
 				</cfquery>
+				<!--- bowden1 - end --->
 			</cfcase>
 			<cfcase value="postgresql">
-				<cfoutput>POSTGRESQL SQL NEEDED.<br /></cfoutput>
+				<cfquery name="qCreateTable" datasource="#application.dsn#">
+					CREATE TABLE #application.dbowner#ruleText (
+						label varchar(255) default NULL,
+						objectid varchar(50) default NULL,
+						text varchar(255) default NULL,
+						title varchar(255) default NULL
+					)
+				</cfquery>
 			</cfcase>
 			<cfdefaultcase>
 				<cfquery name="qCreateTable" datasource="#application.dsn#">
@@ -471,9 +477,7 @@ Adds suffix to ruleNews,ruleEvents<br />
 			<cftry>
 				<cfswitch expression="#application.dbtype#">
 					<cfcase value="ora">
-		<cfoutput>ORACLE SQL NEEDED.<br /></cfoutput>
-					</cfcase>
-					<cfcase value="mysql">
+						<!--- bowden1 --->
 						<cfquery name="qCreateTable" datasource="#application.dsn#">
 						CREATE TABLE #application.dbowner##typeName#_aRelatedIDs (
 							data varchar(255) default NULL,
@@ -481,9 +485,16 @@ Adds suffix to ruleNews,ruleEvents<br />
 						  	seq decimal(10,0) default NULL
 							)
 						</cfquery>
+						<!--- bowden1 - end --->
 					</cfcase>
 					<cfcase value="postgresql">
-		<cfoutput>POSTGRESQL SQL NEEDED.<br /></cfoutput>
+						<cfquery name="qCreateTable" datasource="#application.dsn#">
+						CREATE TABLE #application.dbowner##typeName#_aRelatedIDs (
+							data varchar(255) default NULL,
+						  	objectid varchar(50) default NULL,
+						  	seq decimal(10,0) default NULL
+							)
+						</cfquery>
 					</cfcase>
 					<cfdefaultcase>
 						<cfquery name="qCreateTable" datasource="#application.dsn#">
@@ -768,9 +779,14 @@ Adds suffix to ruleNews,ruleEvents<br />
 
 	<cfinvoke component="#application.packagepath#.farcry.config" method="defaultTinyMCE" returnvariable="stStatus">
 	</cfinvoke>
-
+	
 	<!--- FU updates --->
+	<cftry>
 	<cfinclude template="fu.cfm">
+	<cfcatch>
+		<cfset error=1><cfoutput><p><span class="frameMenuBullet">&raquo;</span> <span class="error"><cfdump var="#cfcatch.detail#"></span></p></cfoutput>
+	</cfcatch>
+	</cftry>
 
 	<cfoutput> done</p></cfoutput><cfflush>
 

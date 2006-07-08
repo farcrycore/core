@@ -108,14 +108,34 @@ $out:$
 	<cfset var qUpdate="">
 		
 	<cfwddx action="CFML2WDDX" input="#arguments.stConfig#" output="wConfig">
+<!--- bowden1 --->
+<cfswitch expression="#application.dbtype#">
+	<cfcase value="ora">
+	<!--- Back slashes are escaped  in mysql--->
+	<cfif arguments.dbtype EQ "mysql">
+        <cfset wConfig = replaceNoCase(wConfig,"\","\\","ALL") >
+    </cfif>
+	
 	
 	<cfquery datasource="#arguments.dsn#" name="qUpdate">
 		UPDATE #arguments.dbowner#config
 		SET
+			wConfig = <cfqueryparam cfsqltype="cf_sql_clob" value='#wConfig#'/>
+			WHERE 
+			configName = '#arguments.configName#'
+		</cfquery>
+	</cfcase>
+	<cfdefaultcase>
+		<cfquery datasource="#arguments.dsn#" name="qUpdate">
+			UPDATE #arguments.dbowner#config
+			SET
 		wConfig = '#wConfig#'
 		WHERE 
 		configName = '#arguments.configName#'
 	</cfquery>
+	</cfdefaultcase>
+</cfswitch>
+<!--- bowden1 - end --->
 	
 	<cfset stStatus.msg = "#arguments.configName# updated successfully">
 	<cfreturn stStatus>

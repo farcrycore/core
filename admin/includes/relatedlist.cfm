@@ -52,6 +52,19 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 <cfparam name="categoryID" default=""> <!--- category filter --->
 <cfparam name="currentpage" default="1"> <!--- pagination flag --->
 
+<cfif categoryID EQ "unassigned">
+	<!--- User has clicked the "[Unassigned]" link --->
+	<cfset session.objectPicker.categoryID = "unassigned" />
+	<cfset categoryID = "" />
+<cfelseif (structKeyExists(application.catid, "root") AND NOT len(categoryId)) AND (session.objectPicker.categoryID NEQ "unassigned")>
+	<!--- default view state from webtop link should be the category root --->
+	<cfset session.objectPicker.categoryID = application.catid['root'] />
+	<cfset categoryID = session.objectPicker.categoryID />
+<cfelseif len(trim(categoryID))>
+	<!--- when in categories, pagination will always send an objectID --->
+	<cfset session.objectPicker.categoryID = trim(categoryID) />
+</cfif>
+
 <!--- check if related content is being called form a plp or from a normal editform --->
 <cfif bPLPStorage>
 	<cfset objplp = CreateObject("component","#application.packagepath#.farcry.plpUtilities")>
@@ -264,7 +277,7 @@ VIEW: render page
 			<widgets:categoryAssociation typeName="#relatedTypeName#" lSelectedCategoryID="#categoryID#" naviagtionURL="#stPageination.urlParametersWithOutFilter#">
 			<ul>
 				<li><cfif categoryID EQ ""><strong>[Unassigned]</strong><cfelse>
-					<a href="#cgi.script_name#?#stPageination.urlParametersWithOutFilter#">[Unassigned]</a></cfif>
+					<a href="#cgi.script_name#?#stPageination.urlParametersWithOutFilter#&categoryID=unassigned">[Unassigned]</a></cfif>
 				</li>
 			</ul></cfif>
 			<h3>Search</h3>

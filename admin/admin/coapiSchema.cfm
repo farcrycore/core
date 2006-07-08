@@ -7,7 +7,7 @@ $License: Released Under the "Common Public License 1.0", http://www.opensource.
 $Header: /cvs/farcry/farcry_core/admin/admin/coapiSchema.cfm,v 1.7 2005/08/16 05:53:23 pottery Exp $
 $Author: pottery $
 $Date: 2005/08/16 05:53:23 $
-$Name: milestone_3-0-1 $
+$Name: p300_b113 $
 $Revision: 1.7 $
 
 || DESCRIPTION || 
@@ -467,14 +467,17 @@ $out:$
 	
 	<cfswitch expression="#application.dbtype#">
 	<cfcase value="ora">
+        <!--- Changed by bowden to use (+) syntax rather than inner join. 
+        Oracle didn't support the join syntax until version 9 --->
 		<CFQUERY NAME="GetTables" DATASOURCE="#Attributes.dsn#">
 			SELECT 	ut.TABLE_NAME AS TableName, 
 					uc.COLUMN_NAME AS ColumnName, 
 					uc.DATA_LENGTH AS length,
 					uc.NULLABLE AS isnullable,
 					uc.DATA_TYPE AS Type
-			FROM 		USER_TABLES ut
-			INNER JOIN USER_TAB_COLUMNS uc	ON 	(ut.TABLE_NAME = uc.TABLE_NAME)
+			FROM 		USER_TABLES ut,
+			            USER_TAB_COLUMNS uc	
+            where ut.TABLE_NAME = uc.TABLE_NAME (+)
 			GROUP BY 	ut.TABLE_NAME,
 						uc.COLUMN_NAME,
 					uc.DATA_LENGTH,

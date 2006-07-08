@@ -217,6 +217,12 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 		<cfquery name="qGetData" datasource="#arguments.dsn#" cachedwithin="#CreateTimeSpan(0,0,0,20)#">
 		#preservesingleQuotes(strSQL)#
 		</cfquery>
+		
+		<!--- to prevent duplicate results (when 1 typeobject belongs to many categories) --->
+		<cfquery dbtype="query" name="qGetData">
+		SELECT	DISTINCT *
+		FROM	qGetData
+		</cfquery>
 
 		<cfreturn qGetData>
 	</cffunction>

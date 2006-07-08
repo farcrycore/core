@@ -153,6 +153,12 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 			collection="#application.applicationname#_#key#">
 		<cfset arrayAppend(application.verity.buildstatus[builstatusid].aStatus, "#timeformat(now())#: Collection update complete.") />
 	</cfif>
+	
+	<!--- set builttodate on completion to last record --->
+	<cfif q.recordcount>
+		<cfset lastbuilttodate=q.datetimelastupdated[q.recordcount] />
+		<cfset setBuiltToDate(typename, lastbuilttodate) />
+	</cfif>	
 
 	<cfif structKeyExists(application.config.verity.contenttype[key], "lastupdated") and structKeyExists(application.types[key].stProps, "status")>
 		<!--- remove any objects that may have been sent back to draft or pending --->
@@ -203,11 +209,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	
 	<cfset arrayAppend(application.verity.buildstatus[builstatusid].aStatus, "#timeformat(now())#: All done.") />
 	
-	<!--- set builttodate on completion to last record --->
-	<cfif q.recordcount>
-		<cfset lastbuilttodate=q.datetimelastupdated[q.recordcount] />
-		<cfset setBuiltToDate(typename, lastbuilttodate) />
-	</cfif>
+
 	
 	<!--- return reult --->
 	<cfset stresult.report=rpt1 & rpt2 >

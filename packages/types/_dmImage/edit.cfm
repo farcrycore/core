@@ -24,6 +24,9 @@ $Developer: Guy (guy@daemon.com.au)$
 <cfparam name="primaryObjectID" default="">
 <cfparam name="form.bLibrary" default="0">
 <cfparam name="form.bAutoGenerateThumbnail" default="0">
+<cfparam name="form.ownedby" default="">
+
+
 <cfinvoke  component="#application.packagepath#.farcry.category" method="getCategories" returnvariable="lCategoryIds">
 	<cfinvokeargument name="objectID" value="#stObj.objectID#"/>
 	<cfinvokeargument name="bReturnCategoryIDs" value="true"/>

@@ -28,7 +28,7 @@
 <cfif attributes.onclick>
     <!--- javascript function to open window --->
     <cfoutput>
-    <script language="javascript">
+    <script type="text/javascript">
         function openNewWindow(sURL,sName,sFeatures,bReplace){
             window.open(sURL,sName,sFeatures,bReplace);
         }

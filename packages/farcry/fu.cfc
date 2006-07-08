@@ -59,8 +59,9 @@
 
 		<!--- check if friendly url is currently active AND that no change has occured to the friendlyurl --->
 		<cfquery name="qCheck" datasource="#application.dsn#">
-		SELECT	objectid
-		FROM	#application.dbowner#reffriendlyURL
+		SELECT	r.objectid
+		FROM	#application.dbowner#reffriendlyURL u inner join 
+				#application.dbowner#refobjects r on r.objectid = u.refobjectid
 		WHERE	refObjectID = <cfqueryparam value="#stLocal.refObjectID#" cfsqltype="cf_sql_varchar">
 				AND friendlyurl = <cfqueryparam value="#stLocal.friendlyURL#" cfsqltype="cf_sql_varchar">
 				AND status = <cfqueryparam value="#stLocal.status#" cfsqltype="cf_sql_integer">
@@ -70,7 +71,8 @@
 			<!--- get exitsing friendly ONLINE urls for the objectid --->
 			<cfquery datasource="#application.dsn#" name="qCheckCurrent">
 			SELECT	friendlyurl
-			FROM	#application.dbowner#reffriendlyURL
+			FROM	#application.dbowner#reffriendlyURL u inner join 
+					#application.dbowner#refobjects r on r.objectid = u.refobjectid
 			WHERE	refObjectID = <cfqueryparam value="#stLocal.refObjectID#" cfsqltype="cf_sql_varchar">
 				AND status = <cfqueryparam value="#stLocal.status#" cfsqltype="cf_sql_integer">
 			</cfquery>
@@ -122,7 +124,7 @@
 		
 		<cfquery datasource="#application.dsn#" name="qDelete">
 		DELETE	
-		FROM	#application.dbowner#reffriendlyURL
+		FROM	#application.dbowner#reffriendlyURL 				
 		WHERE	friendlyURL = <cfqueryparam value="#arguments.alias#" cfsqltype="cf_sql_varchar">
 		</cfquery>
 		
@@ -140,6 +142,7 @@
 		<cfset stReturn.refObject = "">
 		<cfset stReturn.query_string = "">
 		<cfset stReturn.redirectFUURL = "">
+		
 
 		<!--- correct internal var for presence/absence of trailing slash in URL --->
 		<cfif Right(arguments.friendlyURL,1) EQ "/">
@@ -160,8 +163,9 @@
 		<cfelse> <!--- check in database [retired] .: redirect --->
 
 			<cfquery datasource="#application.dsn#" name="qGet">
-			SELECT	refobjectid
-			FROM	#application.dbowner#reffriendlyURL
+			SELECT	u.refobjectid
+			FROM	#application.dbowner#reffriendlyURL u inner join 
+					#application.dbowner#refobjects r on r.objectid = u.refobjectid
 			WHERE	friendlyURL = <cfqueryparam value="#stLocal.strFriendlyURL#" cfsqltype="cf_sql_varchar">
 				OR 	friendlyURL = <cfqueryparam value="#stLocal.strFriendlyURL_WSlash#" cfsqltype="cf_sql_varchar">
 			ORDER BY status DESC
@@ -171,7 +175,8 @@
 				<!--- get the new friendly url for the retired friendly url --->
 				<cfquery datasource="#application.dsn#" name="qGetRedirectFU">
 				SELECT	refobjectid, friendlyURL, query_string, status
-				FROM	#application.dbowner#reffriendlyURL
+				FROM	#application.dbowner#reffriendlyURL u inner join 
+					    #application.dbowner#refobjects r on r.objectid = u.refobjectid
 				WHERE	refobjectid = <cfqueryparam value="#qGet.refobjectid#" cfsqltype="cf_sql_varchar">
 				ORDER BY status DESC
 				</cfquery>
@@ -279,7 +284,8 @@
 			<!--- retrieve list of all FU that is not retired --->
 			<cfquery name="stLocal.qListFU" datasource="#application.dsn#">
 			SELECT	friendlyurl, refobjectid, query_string
-			FROM	#application.dbowner#reffriendlyURL
+			FROM	#application.dbowner#reffriendlyURL u inner join 
+					#application.dbowner#refobjects r on r.objectid = u.refobjectid
 			WHERE	status > 0
 			</cfquery>
 			
@@ -411,6 +417,8 @@
 		<cfset var newAlias = replace(arguments.alias,' ','-',"all")>
 		<!--- replace duplicate dashes with a single dash --->
 		<cfset newAlias = REReplace(newAlias,"-+","-","all")>
+		<!--- replace the html entity (&amp;) with and --->
+		<cfset newAlias = reReplaceNoCase(newAlias,'&amp;','and',"all")>
 		<!--- remove illegal characters in titles --->
 		<cfset newAlias = reReplaceNoCase(newAlias,'[,:\?##ï¿½ï¿½®™]','',"all")>
 		<!--- change & to "and" in title --->
@@ -454,7 +462,8 @@
 			<!--- get friendly url based on the objectid --->
 			<cfquery datasource="#application.dsn#" name="qGet">
 			SELECT	friendlyURL, refobjectid, query_string
-			FROM	#application.dbowner#reffriendlyURL
+			FROM	#application.dbowner#reffriendlyURL u inner join 
+					#application.dbowner#refobjects r on r.objectid = u.refobjectid
 			WHERE
 				refobjectid = <cfqueryparam value="#arguments.objectid#" cfsqltype="cf_sql_varchar">
 				AND status != 0
@@ -502,8 +511,9 @@
 		<cftry>
 			<!--- get friendly url based on the objectid --->
 			<cfquery datasource="#application.dsn#" name="stLocal.qList">
-			SELECT	objectid, friendlyURL, refobjectid, query_string, datetimelastupdated, status
-			FROM	#application.dbowner#reffriendlyURL
+			SELECT	u.objectid, friendlyURL, refobjectid, query_string, u.datetimelastupdated, u.status
+			FROM	#application.dbowner#reffriendlyURL u inner join 
+					#application.dbowner#refobjects r on r.objectid = u.refobjectid
 			WHERE	refobjectid = <cfqueryparam value="#arguments.objectid#" cfsqltype="cf_sql_varchar">
 				AND status IN (#stLocal.friendly_status#)
 			ORDER BY status DESC

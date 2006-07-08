@@ -75,6 +75,10 @@
 				<menuitem id="DumpCustomAdminXML" label="application.adminBundle[session.dmProfile.locale].DumpCustomAdminXML" labelType="evaluate" link="/admin/customXMLDump.cfm" />
 			</menu>
 			<menu id="mennudump" permission="developer" label="application.adminBundle[session.dmProfile.locale].ScopeDump" labelType="evaluate">
+				<menuitem id="appndump" label="application.adminBundle[session.dmProfile.locale].applicationDump" labelType="evaluate" link="/admin/applicationDump.cfm" />
+				<menuitem id="rulesdump" label="application.adminBundle[session.dmProfile.locale].rulesDump" labelType="evaluate" link="/admin/ruleDump.cfm" />
+				<menuitem id="typesdump" label="application.adminBundle[session.dmProfile.locale].typesDump" labelType="evaluate" link="/admin/typeDump.cfm" />
+				<menuitem id="othdump" label="application.adminBundle[session.dmProfile.locale].utilVcoreDump" labelType="evaluate" link="/admin/versusDump.cfm" />
 				<menuitem id="scopedump" label="application.adminBundle[session.dmProfile.locale].ScopeDump" labelType="evaluate" link="/admin/scopeDump.cfm" />
 			</menu>
 			<menu id="cachemanagement" label="application.adminBundle[session.dmProfile.locale].CacheManagement" labelType="evaluate">
