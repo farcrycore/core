@@ -252,7 +252,7 @@ the latter is the policy group for anonymous...
 		
 	<cfelse>
 		<cfset o = createObject("component", application.types[stObj.typename].typePath)>
-		<cfset o.getDisplay(objectid=stObj.ObjectID, template=stObj.displayMethod)>
+		<cfset o.getDisplay(stObject=stObj, template=stObj.displayMethod)>
 	</cfif>
 <cfelse>
 	<!--- Invoke default display method of page --->
