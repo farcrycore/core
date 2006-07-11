@@ -5,6 +5,11 @@
 	<cfabort showerror="Does not have an end tag...">
 </cfif>
 
+<cfset ParentTag = GetBaseTagList()>
+<cfif ListFindNoCase(ParentTag, "cf_wizzard")>
+	<cfabort showerror="You must use the wiz:object inside of a wizzard...">
+</cfif>
+		
 
 
 <cfif thistag.ExecutionMode EQ "Start">
@@ -225,7 +230,7 @@
 
 	<cfset Variables.CurrentCount = StructCount(request.farcryForm.stObjects) + 1>
 	<!--- <cfparam  name="variables.prefix" default="FFO#RepeatString('0', 3 - Len(Variables.CurrentCount))##Variables.CurrentCount#">	 --->
-	<cfparam  name="variables.prefix" default="#variables.ObjectID#">			
+	<cfparam  name="variables.prefix" default="#ReplaceNoCase(variables.ObjectID,'-', '', 'all')#">			
 	<cfset Request.farcryForm.stObjects[variables.prefix] = StructNew()>
 		
 	
@@ -501,30 +506,7 @@
 							
 				<cfoutput><div class="fieldsection #lcase(ftFieldMetadata.ftType)# #ftFieldMetadata.ftClass# #helpSectionClass#"></cfoutput>
 			</cfif>
-				<cffunction access="public" displayname="Edit handler" name="edit" hint="Edit company entries." output="true" returntype="void" >		
-		<cfargument name="objectid" required="yes" type="UUID" >
-		<cfargument name="cancelCompleteURL" required="no" type="string" default="#cgi.script_name#?#cgi.query_string#" >
-		
-		<cfset stObj=getData(arguments.objectid)>				
-				
-		<!--- PROCESS THE FORM SUBMISSION --->		
-		<ft:processForm action="Save"  url="#arguments.cancelCompleteURL#">					
-			<ft:processFormObjects objectid="#stObj.objectid#" />	
-		</ft:processForm>		
-		
-				
-		<!--- RENDER THE FORM --->
-<ft:form>
-<cfoutput><h1>#stObj.name#</h1></cfoutput>
-			<ft:object objectid="#stObj.objectid#" lExcludeProps="label" state="edit" />					
-					
-			<ft:farcrybutton type="submit" value="Save">		
-		</ft:form>
-		
 
-		
-</cffunction>
-			
 			<cfif isDefined("Attributes.IncludeLabel") AND attributes.IncludeLabel EQ 1>
 				<cfif Attributes.InTable EQ 1>
 					<cfoutput>
