@@ -34,16 +34,16 @@ Copy Files from Old Locations to New Locations
 	
 	<cfif NOT StructKeyExists(stConfig,"SourceImagePath")>
 	
-		<cfset stConfig.SourceImagePath = "#application.path.project#/www/images/SourceImages" />
-		<cfset stConfig.SourceImageURL = "/images/SourceImages" />
+		<cfset stConfig.SourceImagePath = "#application.path.project#/www/images/Source" />
+		<cfset stConfig.SourceImageURL = "/images/Source" />
 		
-		<cfset stConfig.ThumbnailImagePath = "#application.path.project#/www/images/ThumbnailImages" />
-		<cfset stConfig.ThumbnailImageURL = "/images/ThumbnailImages" />
+		<cfset stConfig.ThumbnailImagePath = "#application.path.project#/www/images/Thumbnail" />
+		<cfset stConfig.ThumbnailImageURL = "/images/Thumbnail" />
 		<cfset stConfig.ThumbnailImageWidth = "80" />
 		<cfset stConfig.ThumbnailImageHeight = "80" />
 		
-		<cfset stConfig.StandardImagePath = "#application.path.project#/www/images/StandardImages" />
-		<cfset stConfig.StandardImageURL = "/images/StandardImages" />
+		<cfset stConfig.StandardImagePath = "#application.path.project#/www/images/Standard" />
+		<cfset stConfig.StandardImageURL = "/images/Standard" />
 		<cfset stConfig.StandardImageWidth = "400" />
 		<cfset stConfig.StandardImageHeight = "400" />
 	</cfif>
@@ -124,14 +124,14 @@ Copy Files from Old Locations to New Locations
 	<cfoutput><p><span class="frameMenuBullet">&raquo;</span> Create SourceImages, thumbnailImages and StandardImages directories...</cfoutput><cfflush>
 	<cftry>
 	
-		<cfif NOT directoryExists("#application.path.project#\www\images\SourceImages\")>
-			<cfdirectory action="create" directory="#application.path.project#\www\images\SourceImages\">
+		<cfif NOT directoryExists("#application.path.project#\www\images\Source\")>
+			<cfdirectory action="create" directory="#application.path.project#\www\images\Source\">
 		</cfif>
-		<cfif NOT directoryExists("#application.path.project#\www\images\thumbnailImages\")>
-			<cfdirectory action="create" directory="#application.path.project#\www\images\thumbnailImages\">
+		<cfif NOT directoryExists("#application.path.project#\www\images\thumbnail\")>
+			<cfdirectory action="create" directory="#application.path.project#\www\images\thumbnail\">
 		</cfif>
-		<cfif NOT directoryExists("#application.path.project#\www\images\StandardImages\")>
-			<cfdirectory action="create" directory="#application.path.project#\www\images\StandardImages\">
+		<cfif NOT directoryExists("#application.path.project#\www\images\Standard\")>
+			<cfdirectory action="create" directory="#application.path.project#\www\images\Standard\">
 		</cfif>
 		
 		
@@ -169,7 +169,7 @@ Copy Files from Old Locations to New Locations
 					<cfset NewImageName = ReplaceNoCase(NewImageName, qImages.ThumbnailImagePath, "" , "ALL")>
 				</cfif>
 				<!--- Strip //'s if any' --->
-				<cfset NewImageName = ReplaceNoCase('/images/ThumbnailImages/#NewImageName#','//','/','ALL')>
+				<cfset NewImageName = ReplaceNoCase('/images/Thumbnail/#NewImageName#','//','/','ALL')>
 				
 				<cfquery name="qUpdate" datasource="#application.dsn#">
 				UPDATE	#application.dbowner#dmImage
@@ -186,7 +186,7 @@ Copy Files from Old Locations to New Locations
 					<cfset NewImageName = ReplaceNoCase(NewImageName, qImages.OptimisedImagePath, "" , "ALL")>
 				</cfif>
 				<!--- Strip //'s if any' --->
-				<cfset NewImageName = ReplaceNoCase('/images/StandardImages/#NewImageName#','//','/','ALL')>
+				<cfset NewImageName = ReplaceNoCase('/images/Standard/#NewImageName#','//','/','ALL')>
 
 				<cfquery name="qUpdate" datasource="#application.dsn#">
 				UPDATE	#application.dbowner#dmImage
@@ -202,7 +202,7 @@ Copy Files from Old Locations to New Locations
 					<cfset NewImageName = ReplaceNoCase(NewImageName, qImages.OriginalImagePath, "" , "ALL")>
 				</cfif>
 				<!--- Strip //'s if any' --->
-				<cfset NewImageName = ReplaceNoCase('/images/SourceImages/#NewImageName#','//','/','ALL')>
+				<cfset NewImageName = ReplaceNoCase('/images/Source/#NewImageName#','//','/','ALL')>
 
 				<cfquery name="qUpdate" datasource="#application.dsn#">
 				UPDATE	#application.dbowner#dmImage
@@ -233,21 +233,21 @@ Copy Files from Old Locations to New Locations
 			
 				
 			<cfif fileExists("#qImages.ThumbnailImagePath#\#qImages.Thumbnail#")
-					AND NOT fileExists("#application.path.project#\www\images\thumbnailImages\#qImages.Thumbnail#") >
+					AND NOT fileExists("#application.path.project#\www\images\thumbnail\#qImages.Thumbnail#") >
 				<cffile action="copy" source="#qImages.ThumbnailImagePath#\#qImages.Thumbnail#"
-						destination="#application.path.project#\www\images\thumbnailImages\">
+						destination="#application.path.project#\www\images\thumbnail\">
 			</cfif>
 		
 			<cfif fileExists("#qImages.ThumbnailImagePath#\#qImages.OptimisedImage#")
-					AND NOT fileExists("#application.path.project#\www\images\StandardImages\#qImages.OptimisedImage#") >
+					AND NOT fileExists("#application.path.project#\www\images\Standard\#qImages.OptimisedImage#") >
 				<cffile action="copy" source="#qImages.ThumbnailImagePath#\#qImages.OptimisedImage#"
-						destination="#application.path.project#\www\images\StandardImages\">
+						destination="#application.path.project#\www\images\Standard\">
 			</cfif>
 		
 			<cfif fileExists("#qImages.OriginalImagePath#\#qImages.ImageFile#")
-					AND NOT fileExists("#application.path.project#\www\images\SourceImages\#qImages.ImageFile#") >
+					AND NOT fileExists("#application.path.project#\www\images\Source\#qImages.ImageFile#") >
 				<cffile action="copy" source="#qImages.OriginalImagePath#\#qImages.ImageFile#"
-						destination="#application.path.project#\www\images\SourceImages\">
+						destination="#application.path.project#\www\images\Source\">
 			</cfif>
 		</cfoutput>
 		
