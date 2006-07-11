@@ -27,46 +27,37 @@ return REFindNoCase("^[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{16}$", str);
 </cfscript>
 
 
-<cffunction name="Read" access="public" output="true" returntype="struct">
-<cfargument name="WizzardID" required="no" type="UUID">
-<cfargument name="UserLogin" required="no" type="String">
-<cfargument name="ReferenceID" required="no" type="String">
-
-
-<!--- Get the Wizzard info from the db --->
-<cfif isDefined("arguments.WizzardID") and len(arguments.WizzardID)>
-<cfquery datasource="#application.dsn#" name="qWizzard">
-SELECT *
-FROM dmWizzard
-WHERE objectID = '#arguments.WizzardID#'
-</cfquery>
-<cfelseif isDefined("arguments.UserLogin") and len(arguments.UserLogin) AND isDefined("arguments.ReferenceID") and len(arguments.ReferenceID)>
-<cfquery datasource="#application.dsn#" name="qWizzard">
-SELECT *
-FROM dmWizzard
-WHERE ReferenceID = '#arguments.ReferenceID#'
-AND UserLogin = '#arguments.UserLogin#'
-</cfquery>
-</cfif>
-
-
-<!--- If the wizzard exists, create the CF struct to return --->
-<cfif qWizzard.RecordCount>
-	<cfset stWizzard = getData(objectID=qWizzard.objectid) />
-<cfelseif isDefined("arguments.UserLogin") and len(arguments.UserLogin) AND isDefined("arguments.ReferenceID") and len(arguments.ReferenceID)>
+<cffunction name="Read" access="public" output="true" returntype="struct" hint="Returns the Wizzard Object with the WDDX Data field converted to a CF Structure">
+	<cfargument name="WizzardID" required="no" type="UUID">
+	<cfargument name="UserLogin" required="no" type="String">
+	<cfargument name="ReferenceID" required="no" type="String">
 	
-	<cfset stWizzard = Create(ReferenceID=arguments.ReferenceID,UserLogin=arguments.UserLogin)>
-</cfif>
-
-<cfif isDefined("stWizzard.Data")>
-<cfwddx action="WDDX2CFML" input="#stWizzard.Data#" output="stWizzard.Data">
-<!--- return the struct --->
-<cfreturn stWizzard>
-<cfelse>
-<cfabort showerror="Farcy could not find or create the wizzard requested." />
-</cfif>
-
-
+	<cfif isDefined("arguments.WizzardID") and len(arguments.WizzardID)>
+		<cfset stWizzard = getData(objectID=arguments.WizzardID) />
+	<cfelseif isDefined("arguments.UserLogin") and len(arguments.UserLogin) AND isDefined("arguments.ReferenceID") and len(arguments.ReferenceID)>
+		<cfquery datasource="#application.dsn#" name="qWizzard">
+		SELECT *
+		FROM dmWizzard
+		WHERE ReferenceID = '#arguments.ReferenceID#'
+		AND UserLogin = '#arguments.UserLogin#'
+		</cfquery>
+		
+		<!--- If the wizzard exists, create the CF struct to return --->
+		<cfif qWizzard.RecordCount>
+			<cfset stWizzard = getData(objectID=qWizzard.objectid) />
+		<cfelseif isDefined("arguments.UserLogin") and len(arguments.UserLogin) AND isDefined("arguments.ReferenceID") and len(arguments.ReferenceID)>
+			<cfset stWizzard = Create(ReferenceID=arguments.ReferenceID,UserLogin=arguments.UserLogin)>
+		</cfif>
+		
+	</cfif>
+	
+	<cfif isDefined("stWizzard.Data")>
+		<cfwddx action="WDDX2CFML" input="#stWizzard.Data#" output="stWizzard.Data">
+		<!--- return the struct --->
+		<cfreturn stWizzard>
+	<cfelse>
+		<cfabort showerror="Farcy could not find or create the wizzard requested." />
+	</cfif>
 
 </cffunction>
 
@@ -106,7 +97,7 @@ AND UserLogin = '#arguments.UserLogin#'
 </cffunction>
 
 
-<cffunction name="Write" access="public" output="false" returntype="struct" hint="Saves the wizzard to the DB and returns the Wizzard Data as a structure">
+<cffunction name="Write" access="public" output="true" returntype="struct" hint="Saves the wizzard to the DB and returns the Wizzard Data as a structure">
 <cfargument name="ObjectID" required="yes" type="UUID">
 <cfargument name="CurrentStep" required="no" type="numeric">
 <cfargument name="Steps" required="no" type="string" default="">
@@ -123,14 +114,15 @@ AND UserLogin = '#arguments.UserLogin#'
 </cfif>
 
 <cfif isDefined("arguments.Data")>
-<cfwddx action="CFML2wddx" input="#arguments.data#" output="stWizzard.Data">
+	<cfwddx action="CFML2wddx" input="#arguments.data#" output="stWizzard.Data">
 </cfif>
 
 <cfset stResult = setData(stProperties=stWizzard,user=stWizzard.UserLogin) />
 
 <cfset stWizzard = getData(objectID=arguments.objectid) />
 
-<cfwddx action="WDDX2CFML" input="#stWizzard.Data#" output="stWizzard.Data">
+<cfwddx action="WDDX2CFML" input="#stWizzard.Data#" output="stWizzardData">
+<cfset stWizzard.Data = stWizzardData />
 
 <!--- return the struct --->
 <cfreturn stWizzard>
