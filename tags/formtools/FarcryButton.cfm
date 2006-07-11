@@ -1,4 +1,4 @@
-
+<cfsetting enablecfoutputonly="yes">
 
 <cfif not thistag.HasEndTag>
 
@@ -21,3 +21,6 @@
 <cfif thistag.ExecutionMode EQ "End">
 	<!--- Do Nothing --->
 </cfif>
+
+
+<cfsetting enablecfoutputonly="no">
