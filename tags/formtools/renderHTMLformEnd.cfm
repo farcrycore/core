@@ -4,6 +4,7 @@
 	<cfoutput>
 			
 			<input type="hidden" name="FarcryFormSubmitButton" id="FarcryFormSubmitButton" value="" />
+			<input type="hidden" name="SelectedObjectID" id="SelectedObjectID" value="" /><!--- Hidden Field to take a UUID from the attributes.SelectedObjectID on ft:farcryButton --->
 			
 		</form>
 		
