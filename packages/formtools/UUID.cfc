@@ -1,7 +1,7 @@
 <cfcomponent extends="field" name="array" displayname="array" hint="Used to liase with Array type fields"> 
 
 
-	<cffunction name="edit" access="public" output="true" returntype="string" hint="This is going to called from ft:object and will always be passed 'typename,stobj,stMetadata,fieldname'.">
+	<cffunction name="edit" access="public" output="false" returntype="string" hint="This is going to called from ft:object and will always be passed 'typename,stobj,stMetadata,fieldname'.">
 		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
 		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
@@ -71,7 +71,7 @@
 		
 
 		<cfsavecontent variable="returnHTML">
-		<cfoutput>
+		
 			
 			<cfif Len(arguments.stObject[arguments.stMetaData.Name])>
 				<cfset stobj = oData.getData(objectid=#arguments.stObject[arguments.stMetaData.Name]#)>
@@ -79,11 +79,11 @@
 					
 					<cfinclude template="/farcry/#application.applicationname#/webskin/#arguments.stMetadata.ftJoin#/#arguments.stMetadata.ftLibrarySelectedMethod#.cfm">
 				<cfelse>
-					#stobj.label#
+					<cfoutput>#stobj.label#</cfoutput>
 				</cfif>
 			</cfif>
 				
-		</cfoutput>
+		
 		</cfsavecontent>
 		
 		<cfreturn returnHTML>
