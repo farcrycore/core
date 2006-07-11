@@ -28,6 +28,6 @@
 
 <cfif thistag.ExecutionMode EQ "End">
 	<cfif isDefined("attributes.URL")>
-		<cflocation url="#attributes.URL#">
+		<cflocation url="#attributes.URL#" addtoken="false">
 	</cfif>
 </cfif>
