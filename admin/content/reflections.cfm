@@ -16,7 +16,7 @@
 				<cfif NOT returnstruct.bSuccess>
 					<cfset message_error = returnstruct.message>
 				</cfif>
-			</cfloop>		
+			</cfloop>
 		</cfcase>
 
 		<cfdefaultcase>
@@ -37,7 +37,7 @@
 
 <form name="frm" action="<cfoutput>#cgi.script_name#</cfoutput>" method="post">
 <div class="utilBar f-subdued">
-<input type="button" name="add" value="Add" class="f-submit" onClick="window.location='/farcry/navajo/container_edit.cfm';"><cfif qList.recordCount GT 0>
+<input type="button" name="add" value="Add" class="f-submit" onClick="window.location='#application.url.farcry#/navajo/container_edit.cfm';"><cfif qList.recordCount GT 0>
 <input type="button" name="deleteAction" value="Delete" class="f-submit" onClick="if(confirm('Are you sure you wish to delete these objects?')){this.form.ObjectAction.value='delete';this.form.submit();}"></cfif>
 </div>
 <br class="clear" /><cfif qList.recordCount GT 0>
@@ -54,7 +54,7 @@
 </tr></cfoutput>
 </table>
 <div class="utilBar f-subdued">
-<input type="button" name="add" value="Add" class="f-submit" onClick="window.location='/farcry/navajo/container_edit.cfm';">
+<input type="button" name="add" value="Add" class="f-submit" onClick="window.location='#application.url.farcry#/navajo/container_edit.cfm';">
 <input type="button" name="deleteAction" value="Delete" class="f-submit" onClick="if(confirm('Are you sure you wish to delete these objects?')){this.form.ObjectAction.value='delete';this.form.submit();}">
 </div></cfif>
 <br class="clear" />

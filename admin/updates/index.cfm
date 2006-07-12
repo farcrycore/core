@@ -21,7 +21,15 @@
 		<!--- display update name --->
 		<cfoutput><p></p><span class="frameMenuBullet">&raquo;</span> <strong>Running Update #script#...</strong><p></p></cfoutput><cfflush>
 		<!--- include update script --->
-		<cfinclude template="/farcry/farcry_core/admin/updates/#script#.cfm">
+		<!--- begin modification by Nelson Johnson --->
+		<!--- only if the script already exists --->
+		<cfdirectory action="LIST" filter="#script#.cfm" name="qUpdates" directory="#application.path.core#/admin/updates">
+		<cfif len(qUpdates.name) gt 0>
+			<cfinclude template="/farcry/farcry_core/admin/updates/#script#.cfm">
+		<cfelse>
+			<cfoutput><p></p><span class="frameMenuBullet">&raquo;</span> <strong>Cannot find update #script#...</strong><p></p></cfoutput><cfflush>
+		</cfif>
+		<!--- end modification by Nelson Johnson --->
 	</cfloop>
 	<!--- logout user if logged in because errors will occur when returning to admin --->
 	<cfif isdefined("session.dmprofile")>
