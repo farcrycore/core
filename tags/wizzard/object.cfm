@@ -155,7 +155,7 @@
 
 	<cfset Variables.CurrentCount = StructCount(request.farcryForm.stObjects) + 1>
 	<!--- <cfparam  name="variables.prefix" default="FFO#RepeatString('0', 3 - Len(Variables.CurrentCount))##Variables.CurrentCount#">	 --->
-	<cfparam  name="variables.prefix" default="#variables.ObjectID#">			
+	<cfparam  name="variables.prefix" default="#ReplaceNoCase(variables.ObjectID,'-', '', 'all')#">			
 	<cfset Request.farcryForm.stObjects[variables.prefix] = StructNew()>
 		
 	
@@ -169,26 +169,28 @@
 
 
 
-	<cfif NOT len(Attributes.r_stFields)>
+	
 
-		<cfif attributes.IncludeFieldSet>
-			<cfoutput><fieldset class="formsection #attributes.class#"></cfoutput>
-		</cfif>
-		
-		<cfif isDefined("attributes.legend") and len(attributes.legend)>
-			<cfoutput><legend class="#attributes.class#">#attributes.legend#</legend></cfoutput>
-		</cfif>	
-		
-		<cfif structKeyExists(attributes,"HelpSection") and len(attributes.HelpSection)>
-			<cfoutput>
-				<div class="helpsection">
-					<cfif structKeyExists(attributes,"HelpTitle") and len(attributes.HelpTitle)>
-						<h4>#attributes.HelpTitle#</h4>
-					</cfif>
-					<p>#attributes.HelpSection#</p>
-				</div>
-			</cfoutput>
-		</cfif>
+	<cfif attributes.IncludeFieldSet>
+		<cfoutput><fieldset class="formsection #attributes.class#"></cfoutput>
+	</cfif>
+	
+	<cfif isDefined("attributes.legend") and len(attributes.legend)>
+		<cfoutput><legend class="#attributes.class#">#attributes.legend#</legend></cfoutput>
+	</cfif>	
+	
+	<cfif structKeyExists(attributes,"HelpSection") and len(attributes.HelpSection)>
+		<cfoutput>
+			<div class="helpsection">
+				<cfif structKeyExists(attributes,"HelpTitle") and len(attributes.HelpTitle)>
+					<h4>#attributes.HelpTitle#</h4>
+				</cfif>
+				<p>#attributes.HelpSection#</p>
+			</div>
+		</cfoutput>
+	</cfif>
+	
+	<cfif NOT len(Attributes.r_stFields)>
 		<cfif Attributes.InTable EQ 1>
 			<cfoutput>
 				<table>
@@ -511,9 +513,11 @@
 		<cfelse>
 			
 		</cfif>
-		<cfif attributes.IncludeFieldSet>
-			<cfoutput></fieldset></cfoutput>
-		</cfif>
+		
+	</cfif>
+	
+	<cfif attributes.IncludeFieldSet>
+		<cfoutput></fieldset></cfoutput>
 	</cfif>
 	
 	<cfparam name="Request.lFarcryObjectsRendered" default="">
