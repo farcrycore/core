@@ -136,7 +136,7 @@ td .fieldwrap, th .fieldwrap {
   float: none;
   display: block;
 }
-.richtext div.fieldwrap, .longchar div.fieldwrap {
+.full div.fieldwrap, .richtext div.fieldwrap, .longchar div.fieldwrap {
   margin: 0px;  
 }
 
