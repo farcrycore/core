@@ -325,6 +325,7 @@
 
 	<cfset ProcessingFormObjectPrefix = ListGetAt(variables.farcryFormPrefixesToProcess,arguments.Position)>
 
+	<cfset Caller[attributes.r_stProperties] = structNew() />
 
 	<cfloop list="#lFields#" index="i" >
 
