@@ -7,25 +7,33 @@
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 		
 		<cfparam name="arguments.stMetadata.ftImageListField" default="">
+		<cfparam name="arguments.stMetadata.ftConfig" default=""><!--- tinyMCE.tinyMCE_config --->
 	
 		<cfset Request.InHead.TinyMCE = 1>
-
-		
-	
-
-			
 	
 		<cfsavecontent variable="html">
 			
-			<cfoutput>
-			<script language="javascript" type="text/javascript">	
-				
+			<cfoutput><script language="javascript" type="text/javascript">	</cfoutput>
+
+				<cfoutput>
 					tinyMCE.init({
 						mode : "exact",
+						<cfif len(arguments.stMetadata.ftConfig) and isdefined("application.config.#arguments.stMetadata.ftConfig#")>
+							#Evaluate("application.config.#arguments.stMetadata.ftConfig#")#,
+						<cfelse>
+							theme : "advanced",
+							plugins : "table,advhr,advlink,preview,zoom,searchreplace,print,contextmenu,paste,directionality,fullscreen",
+							theme_advanced_buttons3_add : "separator,fullscreen",
+							theme_advanced_toolbar_location : "top",
+							theme_advanced_toolbar_align : "left",
+							theme_advanced_path_location : "bottom",
+							theme_advanced_resize_horizontal : true,
+							theme_advanced_resizing : true,
+						</cfif>						
 						elements : "#arguments.fieldname#",
-						<cfif NOT ListFindNoCase("none,default", application.config.tinyMCE.insertimage_callback) AND application.config.tinyMCE.insertimage_callback NEQ "">
+						<!---<cfif NOT ListFindNoCase("none,default", application.config.tinyMCE.insertimage_callback) AND application.config.tinyMCE.insertimage_callback NEQ "">
 							insertimage_callback : "#application.config.tinyMCE.insertimage_callback#",
-						</cfif>
+						</cfif> --->
 						<!--- <cfif NOT ListFindNoCase("none,default", application.config.tinyMCE.file_browser_callback) AND application.config.tinyMCE.file_browser_callback NEQ "">
 							file_browser_callback : "#application.config.tinyMCE.file_browser_callback#",
 						</cfif> --->
@@ -34,15 +42,17 @@
 							external_image_list_url : "#application.url.farcry#/facade/tinyMCEImageList.cfm?objectID=#arguments.stObject.ObjectID#&Typename=#arguments.stobject.Typename#&FieldName=#arguments.stMetadata.ftImageListField#",
 						</cfif>			
 						external_link_list_url : "#application.url.farcry#/facade/tinyMCELinkList.cfm",		
-						#application.config.tinyMCE.tinyMCE_config#
+
+						
 					});
-				
+				</cfoutput>
 			
 				<cfif not isDefined("Request.TinyMCEBrowserCallbackJS")>
 					
 					<cfset Request.TinyMCEBrowserCallbackJS = 1><!--- Make sure this is only placced once per request. --->
 					
-					function fileBrowserCallBack(field_name, url, type, win) {
+					<cfoutput>
+						function fileBrowserCallBack(field_name, url, type, win) {
 						// This is where you insert your custom filebrowser logic
 						//alert("Example of filebrowser callback: field_name: " + field_name + ", url: " + url + ", type: " + type);
 						this.field = field_name;
@@ -75,17 +85,18 @@
 							// Skip it
 						}
 					}
+					</cfoutput>
 					
 					
 				</cfif>
 				
-			</script>
-			</cfoutput>
+			<cfoutput></script></cfoutput>
+			
 
 
 
 			<cfoutput>
-				<textarea  name="#arguments.fieldname#" id="#arguments.fieldname#" cols="50" rows="15">#arguments.stMetadata.value#</textarea>
+				<textarea  name="#arguments.fieldname#" id="#arguments.fieldname#">#arguments.stMetadata.value#</textarea>
 				<!--- <div><textarea name="#arguments.fieldname#" id="#arguments.fieldname#" style="#arguments.stMetadata.ftstyle#;width:100%;" >#arguments.stMetadata.value#</textarea></div> --->
 			</cfoutput>
 		</cfsavecontent>
