@@ -59,7 +59,7 @@ $in: SessionID -- $
 		<cfparam name="attributes.FormAction" default="#cgi.SCRIPT_NAME#?#cgi.query_string#">	
 		<cfparam name="attributes.Formonsubmit" default="">
 		<cfparam name="attributes.Formcss" default="">
-		<cfparam name="attributes.FormClass" default="f-wrap-1">
+		<cfparam name="attributes.FormClass" default="">
 		<cfparam name="attributes.FormStyle" default="">
 		<cfparam name="attributes.FormHeading" default="">
 		<cfparam name="attributes.FormValidation" default="1">
