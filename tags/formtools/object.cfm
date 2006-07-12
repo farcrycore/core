@@ -244,26 +244,28 @@
 
 
 
-	<cfif NOT len(Attributes.r_stFields)>
+	
 
-		<cfif attributes.IncludeFieldSet>
-			<cfoutput><fieldset class="formsection #attributes.class#"></cfoutput>
-		</cfif>
-		
-		<cfif isDefined("attributes.legend") and len(attributes.legend)>
-			<cfoutput><legend class="#attributes.class#">#attributes.legend#</legend></cfoutput>
-		</cfif>	
-		
-		<cfif structKeyExists(attributes,"HelpSection") and len(attributes.HelpSection)>
-			<cfoutput>
-				<div class="helpsection">
-					<cfif structKeyExists(attributes,"HelpTitle") and len(attributes.HelpTitle)>
-						<h4>#attributes.HelpTitle#</h4>
-					</cfif>
-					<p>#attributes.HelpSection#</p>
-				</div>
-			</cfoutput>
-		</cfif>
+	<cfif attributes.IncludeFieldSet>
+		<cfoutput><fieldset class="formsection #attributes.class#"></cfoutput>
+	</cfif>
+	
+	<cfif isDefined("attributes.legend") and len(attributes.legend)>
+		<cfoutput><legend class="#attributes.class#">#attributes.legend#</legend></cfoutput>
+	</cfif>	
+	
+	<cfif structKeyExists(attributes,"HelpSection") and len(attributes.HelpSection)>
+		<cfoutput>
+			<div class="helpsection">
+				<cfif structKeyExists(attributes,"HelpTitle") and len(attributes.HelpTitle)>
+					<h4>#attributes.HelpTitle#</h4>
+				</cfif>
+				<p>#attributes.HelpSection#</p>
+			</div>
+		</cfoutput>
+	</cfif>
+	
+	<cfif NOT len(Attributes.r_stFields)>
 		<cfif Attributes.InTable EQ 1>
 			<cfoutput>
 				<table>
@@ -579,10 +581,12 @@
 		<cfelse>
 			
 		</cfif>
+	</cfif>
+	
 		<cfif attributes.IncludeFieldSet>
 			<cfoutput></fieldset></cfoutput>
 		</cfif>
-	</cfif>
+	
 	
 	<cfparam name="Request.lFarcryObjectsRendered" default="">
 
