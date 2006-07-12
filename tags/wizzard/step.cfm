@@ -21,7 +21,6 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 $in: objectid -- $
 --->
 
-<cfimport taglib="/farcry/farcry_core/tags/formtools/" prefix="ft" >
 <cfimport taglib="/farcry/farcry_core/tags/wizzard/" prefix="wiz" >
 <cfimport taglib="/farcry/farcry_core/tags/security/" prefix="se" >
 
@@ -62,7 +61,7 @@ $in: objectid -- $
 
 	<cfif len(attributes.lFields)>
 		<cfsavecontent variable="stWizzard.StepHTML">
-			<ft:object ObjectID="#stWizzard.PrimaryObjectID#" wizzardID="#stWizzard.ObjectID#" typename="#stWizzard.Data[stWizzard.PrimaryObjectID].typename#" lFields="#attributes.lFields#" InTable=0 />
+			<wiz:object ObjectID="#stWizzard.PrimaryObjectID#"  typename="#stWizzard.Data[stWizzard.PrimaryObjectID].typename#" lFields="#attributes.lFields#" InTable=0 />
 		</cfsavecontent>
 	</cfif>	
 	
