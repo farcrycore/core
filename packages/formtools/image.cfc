@@ -67,7 +67,7 @@
 		<cfset stResult.value = stFieldPost.value>
 		<cfset stResult.stError = StructNew()>
 		
-		<cfparam name="arguments.stMetadata.ftDestination" default="#application.config.image.SOURCEIMAGEURL#">
+		<cfparam name="arguments.stMetadata.ftDestination" default="#application.config.image.SourceImageURL#">
 		<cfparam name="arguments.stMetadata.ftImageWidth" default="">
 		<cfparam name="arguments.stMetadata.ftImageHeight" default="">
 		<cfparam name="arguments.stMetadata.ftThumbnail" default="false"><!--- pads out the image to the required width/height --->
