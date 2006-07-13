@@ -79,77 +79,81 @@ type properties
 <cffunction name="BeforeSave" access="public" output="true" returntype="struct">
 	<cfargument name="stProperties" required="yes" type="struct">
 	<cfargument name="stFields" required="yes" type="struct">
+		
+	<cfparam name="arguments.stFields.ThumbnailImage.metadata.ftDestination" default="#application.config.image.ThumbnailImageURL#">
+	<cfparam name="arguments.stFields.ThumbnailImage.metadata.ftImageWidth" default="#application.config.image.ThumbnailImageWidth#">
+	<cfparam name="arguments.stFields.ThumbnailImage.metadata.ftImageHeight" default="#application.config.image.ThumbnailImageHeight#">
 	
-	<cfparam name="arguments.stFields.ThumbnailImage.metadata.ftDestination" default="#application.config.image.THUMBNAILIMAGEURL#">
-	<cfparam name="arguments.stFields.ThumbnailImage.metadata.ftImageWidth" default="#application.config.image.THUMBNAILWIDTH#">
-	<cfparam name="arguments.stFields.ThumbnailImage.metadata.ftImageHeight" default="#application.config.image.THUMBNAILHEIGHT#">
-	
-	<cfparam name="arguments.stFields.StandardImage.metadata.ftDestination" default="#application.config.image.STANDARDIMAGEURL#">
-	<cfparam name="arguments.stFields.StandardImage.metadata.ftImageWidth" default="#application.config.image.IMAGEWIDTH#">
-	<cfparam name="arguments.stFields.StandardImage.metadata.ftImageHeight" default="#application.config.image.IMAGEHEIGHT#">
+	<cfparam name="arguments.stFields.StandardImage.metadata.ftDestination" default="#application.config.image.StandardImageURL#">
+	<cfparam name="arguments.stFields.StandardImage.metadata.ftImageWidth" default="#application.config.image.StandardImageWidth#">
+	<cfparam name="arguments.stFields.StandardImage.metadata.ftImageHeight" default="#application.config.image.StandardImageHeight#">
 	
 	
-	
+	<cfset stObject = getData(objectid=stproperties.objectid) />
 	
 	<cfif structKeyExists(arguments.stProperties, "SourceImage") AND len(arguments.stProperties.SourceImage) AND (NOT isDefined("arguments.stProperties.ThumbnailImage") OR NOT len(arguments.stProperties.ThumbnailImage))>
-		
-		<cfif NOT DirectoryExists("#application.path.project#/www#arguments.stFields.ThumbnailImage.metadata.ftDestination#")>
-			<cfdirectory action="create" directory="#application.path.project#/www#arguments.stFields.ThumbnailImage.metadata.ftDestination#">
-		</cfif>
-		
-					
-		<cffile action="copy" 
-			source="#application.path.project#/www#arguments.stProperties.SourceImage#"
-			destination="#application.path.project#/www#arguments.stFields.ThumbnailImage.metadata.ftDestination#">
-		
-		
-		<cfx_image action="resize"
-			file="#application.path.project#/www#arguments.stFields.ThumbnailImage.metadata.ftDestination#/#File.ServerFile#"
-			output="#application.path.project#/www#arguments.stFields.ThumbnailImage.metadata.ftDestination#/#File.ServerFile#"
-			X="#arguments.stFields.ThumbnailImage.metadata.ftImageWidth#"
-			Y="#arguments.stFields.ThumbnailImage.metadata.ftImageHeight#"
-			ThumbnailImage=yes
-			bevel=no
-			backcolor=white>
+		<cfif stObject.SourceImage NEQ arguments.stProperties.SourceImage>
+
+			<!--- Image has changed --->
+			<cfif NOT DirectoryExists("#application.path.project#/www#arguments.stFields.ThumbnailImage.metadata.ftDestination#")>
+				<cfdirectory action="create" directory="#application.path.project#/www#arguments.stFields.ThumbnailImage.metadata.ftDestination#">
+			</cfif>
 			
-		<cfset stproperties.ThumbnailImage = "#arguments.stFields.ThumbnailImage.metadata.ftDestination#/#File.ServerFile#">
-		<!--- <cfset stproperties.ThumbnailImageImagePath = "#application.path.project#/www#arguments.stFields.ThumbnailImage.metadata.ftDestination#"> --->
+						
+			<cffile action="copy" 
+				source="#application.path.project#/www#arguments.stProperties.SourceImage#"
+				destination="#application.path.project#/www#arguments.stFields.ThumbnailImage.metadata.ftDestination#">
+			
+			
+			<cfx_image action="resize"
+				file="#application.path.project#/www#arguments.stFields.ThumbnailImage.metadata.ftDestination#/#File.ServerFile#"
+				output="#application.path.project#/www#arguments.stFields.ThumbnailImage.metadata.ftDestination#/#File.ServerFile#"
+				X="#arguments.stFields.ThumbnailImage.metadata.ftImageWidth#"
+				Y="#arguments.stFields.ThumbnailImage.metadata.ftImageHeight#"
+				ThumbnailImage=yes
+				bevel=no
+				backcolor=white>
+				
+			<cfset stproperties.ThumbnailImage = "#arguments.stFields.ThumbnailImage.metadata.ftDestination#/#File.ServerFile#">
+			<!--- <cfset stproperties.ThumbnailImageImagePath = "#application.path.project#/www#arguments.stFields.ThumbnailImage.metadata.ftDestination#"> --->
+		</cfif>
 	</cfif>
 		
 		
 	<cfif structKeyExists(arguments.stProperties, "SourceImage") AND  len(arguments.stProperties.SourceImage) AND (NOT isDefined("arguments.stProperties.StandardImage") OR NOT len(arguments.stProperties.StandardImage))>
+		<cfif stObject.SourceImage NEQ arguments.stProperties.SourceImage>
+			<cfif NOT DirectoryExists("#application.path.project#/www#arguments.stFields.StandardImage.metadata.ftDestination#")>
+				<cfdirectory action="create" directory="#application.path.project#/www#arguments.stFields.StandardImage.metadata.ftDestination#">
+			</cfif>
+				
+			<cffile action="copy" 
+				source="#application.path.project#/www#arguments.stProperties.SourceImage#"
+				destination="#application.path.project#/www#arguments.stFields.StandardImage.metadata.ftDestination#">
+				
+				
+			<cfx_image action="read"
+				file="#application.path.project#/www#arguments.stFields.StandardImage.metadata.ftDestination#/#File.ServerFile#">
+				
+			<cfif IMG_WIDTH GT arguments.stFields.StandardImage.metadata.ftImageWidth>
+				<cfx_image action="resize"
+						file="#application.path.project#/www#arguments.stFields.StandardImage.metadata.ftDestination#/#File.ServerFile#"
+						output="#application.path.project#/www#arguments.stFields.StandardImage.metadata.ftDestination#/#File.ServerFile#"
+						X="#arguments.stFields.StandardImage.metadata.ftImageWidth#">
+			</cfif>
+				
 		
-		<cfif NOT DirectoryExists("#application.path.project#/www#arguments.stFields.StandardImage.metadata.ftDestination#")>
-			<cfdirectory action="create" directory="#application.path.project#/www#arguments.stFields.StandardImage.metadata.ftDestination#">
-		</cfif>
-			
-		<cffile action="copy" 
-			source="#application.path.project#/www#arguments.stProperties.SourceImage#"
-			destination="#application.path.project#/www#arguments.stFields.StandardImage.metadata.ftDestination#">
-			
-			
-		<cfx_image action="read"
-			file="#application.path.project#/www#arguments.stFields.StandardImage.metadata.ftDestination#/#File.ServerFile#">
-			
-		<cfif IMG_WIDTH GT arguments.stFields.StandardImage.metadata.ftImageWidth>
-			<cfx_image action="resize"
-					file="#application.path.project#/www#arguments.stFields.StandardImage.metadata.ftDestination#/#File.ServerFile#"
-					output="#application.path.project#/www#arguments.stFields.StandardImage.metadata.ftDestination#/#File.ServerFile#"
-					X="#arguments.stFields.StandardImage.metadata.ftImageWidth#">
-		</cfif>
-			
+			<cfx_image action="read"
+				file="#application.path.project#/www#arguments.stFields.StandardImage.metadata.ftDestination#/#File.ServerFile#">
+				
+			<cfif IMG_HEIGHT GT arguments.stFields.StandardImage.metadata.ftImageHeight>
+				<cfx_image action="resize"
+						file="#application.path.project#/www#arguments.stFields.StandardImage.metadata.ftDestination#/#File.ServerFile#"
+						output="#application.path.project#/www#arguments.stFields.StandardImage.metadata.ftDestination#/#File.ServerFile#"
+						Y="#arguments.stFields.StandardImage.metadata.ftImageHeight#">
+			</cfif>
 	
-		<cfx_image action="read"
-			file="#application.path.project#/www#arguments.stFields.StandardImage.metadata.ftDestination#/#File.ServerFile#">
-			
-		<cfif IMG_HEIGHT GT arguments.stFields.StandardImage.metadata.ftImageHeight>
-			<cfx_image action="resize"
-					file="#application.path.project#/www#arguments.stFields.StandardImage.metadata.ftDestination#/#File.ServerFile#"
-					output="#application.path.project#/www#arguments.stFields.StandardImage.metadata.ftDestination#/#File.ServerFile#"
-					Y="#arguments.stFields.StandardImage.metadata.ftImageHeight#">
+			<cfset stproperties.StandardImage = "#arguments.stFields.StandardImage.metadata.ftDestination#/#File.ServerFile#">
 		</cfif>
-
-		<cfset stproperties.StandardImage = "#arguments.stFields.StandardImage.metadata.ftDestination#/#File.ServerFile#">
 	</cfif>
 	
 	<cfreturn stProperties>
