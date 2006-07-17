@@ -45,6 +45,8 @@ $out:$
 		<cfparam name="Request.RequiredInHead.FormValidationJS" default = "0">
 		<cfparam name="Request.RequiredInHead.prototypeTreeJS" default = "0">
 		<cfparam name="Request.RequiredInHead.prototypeTreeCSS" default = "0">
+		<cfparam name="Request.RequiredInHead.prototypeWindowJS" default = "0">
+		<cfparam name="Request.RequiredInHead.ricoJS" default = "0">
 		
 		
 		
@@ -154,6 +156,22 @@ $out:$
 		</cfif>
 				
 		
+		<cfif isDefined("Request.InHead.prototypeWindow")>
+			<cfset Request.RequiredInHead.prototypeJS = 1>
+			<cfset Request.RequiredInHead.prototypeLiteJS = 0>
+			<cfset Request.RequiredInHead.scriptaculousJS = 1>
+			<cfset Request.RequiredInHead.scriptaculousEffectsJS = 1>
+			<cfset Request.RequiredInHead.prototypeWindowJS = 1>
+		</cfif>
+				
+		
+		<cfif isDefined("Request.InHead.rico")>
+			<cfset Request.RequiredInHead.prototypeJS = 1>
+			<cfset Request.RequiredInHead.prototypeLiteJS = 0>
+			<cfset Request.RequiredInHead.ricoJS = 1>
+		</cfif>
+				
+		
 		
 	<cfsavecontent variable="RequiredHead">	
 		<cfif isDefined("Request.RequiredInHead.prototypeLiteJS") AND Request.RequiredInHead.prototypeLiteJS EQ 1 AND Request.RequiredInHead.prototypeJS EQ 0>
@@ -237,6 +255,22 @@ $out:$
 		<cfif isDefined("Request.RequiredInHead.FormsCSS") AND Request.RequiredInHead.FormsCSS EQ 1>
 			<cfoutput><link rel="stylesheet" type="text/css" href="#application.url.farcry#/css/forms.css" media="all" /></cfoutput>
 		</cfif>
+		
+		<cfif isDefined("Request.RequiredInHead.prototypeWindowJS") AND Request.RequiredInHead.prototypeWindowJS EQ 1>
+			<cfoutput>
+				<script src="#application.url.farcry#/js/prototypeWindow/window.js" type="text/javascript"></script>
+				<link rel="stylesheet" type="text/css" href="#application.url.farcry#/js/prototypeWindow/themes/default.css" media="all" />
+				<link rel="stylesheet" type="text/css" href="#application.url.farcry#/js/prototypeWindow/themes/mac_os_x.css" media="all"  />   
+			</cfoutput>
+		</cfif>
+		
+		
+		
+		<cfif isDefined("Request.RequiredInHead.ricoJS") AND Request.RequiredInHead.ricoJS EQ 1>
+			<cfoutput><script language="JavaScript" type="text/javascript" src="/farcry/js/rico/rico.js"></script></cfoutput>
+		</cfif>
+		
+		
 		
 	</cfsavecontent>
 	

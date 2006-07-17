@@ -211,7 +211,7 @@ $in: SessionID -- $
 	
 	
 	<!--- Need Create a Form. Cant use </ft:form> because of incorrect nesting --->
-	<cfif isDefined("Variables.CorrectForm")>		
+	<cfif isDefined("Variables.CorrectForm")>				
 		<cfoutput>
 			<input type="hidden" id="currentWizzardStep" name="currentWizzardStep" value="#ListGetAt(stWizzard.Steps,stWizzard.CurrentStep)#" />
 			<input type="hidden" id="wizzardID" name="wizzardID" value="#stWizzard.ObjectID#" />

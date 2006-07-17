@@ -92,9 +92,14 @@
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 
+		<cfparam name="arguments.stMetadata.ftDateMask" default="long">
+		<cfparam name="arguments.stMetadata.ftTimeMask" default="medium">
 		
 		<cfsavecontent variable="html">
-			<cfoutput>#arguments.stMetadata.value#</cfoutput>
+			<cfif len(arguments.stMetadata.value)>
+				<cfoutput>#DateFormat(arguments.stMetadata.value,arguments.stMetadata.ftDateMask)#</cfoutput>
+				<cfoutput> < #TimeFormat(arguments.stMetadata.value,arguments.stMetadata.ftTimeMask)# ></cfoutput>
+			</cfif>
 		</cfsavecontent>
 		
 		<cfreturn html>

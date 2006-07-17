@@ -156,9 +156,9 @@
 			<cfset ULID = "#arguments.fieldname#_list">
 			
 			<cfif q.RecordCount>
-				<ul id="#ULID#" class="#arguments.stMetadata.ftLibrarySelectedListClass#" style="#arguments.stMetadata.ftLibrarySelectedListStyle#">
+				<div id="#ULID#" class="#arguments.stMetadata.ftLibrarySelectedListClass#" style="#arguments.stMetadata.ftLibrarySelectedListStyle#">
 					<cfloop query="q">
-						<li id="#arguments.fieldname#_#q.objectid#">
+						<!---<li id="#arguments.fieldname#_#q.objectid#"> --->
 							
 							<div>
 							<cfif FileExists("#application.path.project#/webskin/#arguments.stMetadata.ftJoin#/#arguments.stMetadata.ftLibrarySelectedMethod#.cfm")>
@@ -169,9 +169,9 @@
 							</cfif>
 							</div>
 													
-						</li>
+						<!---</li> --->
 					</cfloop>
-				</ul>
+				</div>
 			</cfif>
 
 				

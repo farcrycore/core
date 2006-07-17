@@ -1,7 +1,10 @@
 
 <cfif thistag.ExecutionMode EQ "Start">
 
-	<cfoutput>
+
+			
+		<cfoutput>	
+			<input type="hidden" name="FarcryFormPrefixes" id="FarcryFormPrefixes" value="#StructKeyList(request.farcryForm.stObjects)#" />
 			
 			<input type="hidden" name="FarcryFormSubmitButton" id="FarcryFormSubmitButton" value="" />
 			<input type="hidden" name="SelectedObjectID" id="SelectedObjectID" value="" /><!--- Hidden Field to take a UUID from the attributes.SelectedObjectID on ft:farcryButton --->

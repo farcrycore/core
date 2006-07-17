@@ -16,6 +16,8 @@
 
 		<cfparam name="arguments.stMetadata.ftAlias" default="">
 		<cfparam name="arguments.stMetadata.ftLegend" default="">
+		<cfparam name="arguments.stMetadata.ftRenderType" default="Tree">
+		<cfparam name="arguments.stMetadata.ftSelectMultiple" default="true">
 		
 		<cfif structKeyExists(application.catid, arguments.stMetadata.ftAlias)>
 			<cfset navid = application.catid[arguments.stMetadata.ftAlias] >
@@ -23,30 +25,58 @@
 			<cfset navid = application.catid['root'] >
 		</cfif>
 		
+		<cfset oCategory = createObject("component",'farcry.farcry_core.packages.farcry.category')>
 		
+		<cfset lSelectedCategoryID = oCategory.getCategories(objectid=arguments.stObject.ObjectID,bReturnCategoryIDs=true)>
 
-		<cfinvoke component="#application.packagepath#.farcry.category" method="getCategories" returnvariable="lSelectedCategoryID">
-			<cfinvokeargument name="objectID" value="#stObject.ObjectID#"/>
-			<cfinvokeargument name="bReturnCategoryIDs" value="true"/>
-		</cfinvoke>
-		
-		<cfsavecontent variable="html">
+		<cfswitch expression="#arguments.stMetadata.ftRenderType#">
 			
-				<cfoutput><fieldset>
-					<cfif len(arguments.stMetadata.ftLegend)><legend>#arguments.stMetadata.ftLegend#</legend></cfif>
-				
-					<div class="fieldsection optional full">
+			<cfcase value="dropdown">
+				<cfset lCategoryBranch = oCategory.getCategoryBranchAsList(lCategoryIDs=navid) />
+							
+				<cfsavecontent variable="html">
+					<cfoutput><fieldset></cfoutput>
+					<cfoutput><select id="#arguments.fieldname#" name="#arguments.fieldname#" <cfif arguments.stMetadata.ftSelectMultiple> multiple="true"</cfif>></cfoutput>
+					<cfloop list="#lCategoryBranch#" index="i">
+						<cfset CategoryName = oCategory.getCategoryNamebyID(categoryid=i,typename='categories') />
+						<cfoutput><option value="#i#">#CategoryName#</option></cfoutput>
+					</cfloop>
+					<cfoutput></select></cfoutput>
+					<cfoutput></fieldset></cfoutput>
+				</cfsavecontent>
+			</cfcase>
+			
+			<cfdefaultcase>
+				<cfsavecontent variable="html">
+					
+						<cfoutput><fieldset>
+							<cfif len(arguments.stMetadata.ftLegend)><legend>#arguments.stMetadata.ftLegend#</legend></cfif>
+						
+							<div class="fieldsection optional full">
+													
+								<div class="fieldwrap">
+								</cfoutput>
+<!---									<ft:prototypeTree id="#arguments.fieldname#" navid="#navid#" depth="99" bIncludeHome=1 lSelectedItems="#lSelectedCategoryID#" bSelectMultiple="#arguments.stMetadata.ftSelectMultiple#">
+										<ft:prototypeTreeNode>
+											<ft:prototypeTreeNode>
 											
-						<div class="fieldwrap"></cfoutput>
-							<ft:PrototypeTree id="#arguments.fieldname#" navid="#navid#" depth="99" bIncludeHome=1 lSelectedItems="#lSelectedCategoryID#">
-						<cfoutput></div>
-						
-						<br class="fieldsectionbreak" />
-					</div>
-					<input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="" />
-				</fieldset></cfoutput>
-						
-		</cfsavecontent>
+											</ft:prototypeTreeNode>
+										</ft:prototypeTreeNode>
+									</ft:prototypeTree> --->
+									<ft:NTMPrototypeTree id="#arguments.fieldname#" navid="#navid#" depth="99" bIncludeHome=1 lSelectedItems="#lSelectedCategoryID#" bSelectMultiple="#arguments.stMetadata.ftSelectMultiple#">
+								
+								<cfoutput>
+								</div>
+								
+								<br class="fieldsectionbreak" />
+							</div>
+							<input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="" />
+						</fieldset></cfoutput>
+								
+				</cfsavecontent>
+			</cfdefaultcase>
+			
+		</cfswitch>
 		
 		<cfreturn html>
 	</cffunction>

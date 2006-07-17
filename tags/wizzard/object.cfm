@@ -330,11 +330,12 @@
 		
 		
 		
-		<!--- If we are supposed to render the form and the field is supposed to be hidden --->
-		<cfif not len(attributes.r_stFields) AND  ListContainsNoCase(attributes.lHiddenFields,i)>
+		<!---If the field is supposed to be hidden --->
+		<cfif ListContainsNoCase(attributes.lHiddenFields,i)>
 			<cfoutput><input type="hidden" id="#variables.prefix##ftFieldMetadata.Name#" name="#variables.prefix##ftFieldMetadata.Name#" value="#variables.stObj[i]#" /></cfoutput>
-		<cfelse>
 		
+		<cfelse>
+			
 			<cfset variables.returnHTML = "">
 		
 			
@@ -527,16 +528,10 @@
 		AND  NOT ListContains(Request.lFarcryObjectsRendered, Request.farcryForm.stObjects[variables.prefix].farcryformobjectinfo.ObjectID)>
 			
 		<cfoutput>
-			<input type="hidden" name="FarcryFormPrefixes" id="FarcryFormPrefixes" value="#StructKeyList(request.farcryForm.stObjects)#" />
 			<input type="hidden" name="#variables.prefix#ObjectID" value="#Request.farcryForm.stObjects[variables.prefix].farcryformobjectinfo.ObjectID#">
 			<input type="hidden" name="#variables.prefix#Typename" value="#Request.farcryForm.stObjects[variables.prefix].farcryformobjectinfo.Typename#">
 		</cfoutput>
 		
-		<cfif len(attributes.WizzardID)>
-			<cfoutput><input type="hidden" name="#variables.prefix#WizzardID" value="#attributes.WizzardID#"></cfoutput>
-		</cfif>
-		
-		<cfset Request.lFarcryObjectsRendered = ListAppend(Request.lFarcryObjectsRendered,Request.farcryForm.stObjects[variables.prefix].farcryformobjectinfo.ObjectID)>
 	</cfif>
 	
 	<cfif isDefined("Request.tmpDeleteFarcryForm") AND Request.tmpDeleteFarcryForm EQ attributes.ObjectID AND  isDefined("Request.farcryForm")>
