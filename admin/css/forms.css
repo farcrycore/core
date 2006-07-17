@@ -132,14 +132,14 @@ td .fieldwrap, th .fieldwrap {
 	margin-left:0px;
 }	
 		
-.richtext label, .longchar label {
+.richtext label, .longchar label, .array label {
   float: none;
   display: block;
 }
-.full div.fieldwrap, .richtext div.fieldwrap, .longchar div.fieldwrap {
+.full div.fieldwrap, .richtext div.fieldwrap, .longchar div.fieldwrap, .array div.fieldwrap {
   margin: 0px;  
 }
 
-.richtext textarea {
-	width:400px;
+.richtext textarea, .longchar textarea {
+	width:600px;
 }
