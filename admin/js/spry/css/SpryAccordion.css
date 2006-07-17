@@ -1,0 +1,67 @@
+/* Accordion Classes
+----------------------------------------------- */
+.Accordion {
+	border-left: solid 1px #404040;
+	border-right: solid 1px #404040;
+	border-bottom: solid 1px #404040;
+	overflow: hidden;
+}
+.AccordionPanelTab {
+	color: #ccc;
+	border-top: solid 1px #999;
+	border-bottom: solid 1px #3a3a3a;
+	cursor: pointer;
+	-moz-user-select: none;
+	-khtml-user-select: none;
+	background: #080808 url('/farcry/js/spry/images/bg_grad_gray1.gif') repeat-x;
+	
+}
+
+
+.AccordionPanelTab h3 {
+	margin: 0;
+	padding: 2px 2px 4px 36px;
+	font-size: 110%;
+	background: url('/farcry/js/spry/images/blt_panel_exp.gif') no-repeat left 50%;
+} 
+
+
+
+.AccordionPanelContent {
+	overflow: auto;
+	font-size: 90%;
+	line-height: 140%;
+}
+
+.AccordionPanelTabInside {
+	padding:3px;	
+}
+.AccordionPanelContentInside {
+	padding:10px;	
+}
+
+/*
+.AccordionPanelContent ul { margin: 0;	padding: 1.375em; }
+.AccordionPanelTabHover { color: #fff; }
+.AccordionPanelClosed .AccordionPanelTab h3 { background: url('/farcry/js/spry/images/blt_panel_clps.gif') no-repeat left 50%; }
+.AccordionPanelContent div { margin: 5px 8px; }
+*/
+
+.flowContainer .AccordionPanelContent{
+	overflow: auto;
+	height: 600px;
+	background: #F4F4F4;
+}
+
+
+.flowContent .AccordionPanelContent{
+	overflow: auto;
+	height: 300px;
+	background: #F4F4F4;
+}
+
+.flowPods .AccordionPanelContent{
+	overflow: auto;
+	height: 200px;
+	background: #F4F4F4;
+}
