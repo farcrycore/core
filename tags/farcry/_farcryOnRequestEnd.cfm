@@ -29,6 +29,9 @@ $out:$
 		<cfparam name="Request.RequiredInHead.prototypeJS" default = "0">
 		<cfparam name="Request.RequiredInHead.prototypeLiteJS" default = "0">
 		<cfparam name="Request.RequiredInHead.moofxJS" default = "0">
+		<cfparam name="Request.RequiredInHead.moofxPackJS" default = "0">
+		<cfparam name="Request.RequiredInHead.mooAjaxJS" default = "0">
+		<cfparam name="Request.RequiredInHead.mooDomJS" default = "0">
 		<cfparam name="Request.RequiredInHead.tabsJS" default = "0">
 		<cfparam name="Request.RequiredInHead.scriptaculousJS" default = "0">
 		<cfparam name="Request.RequiredInHead.scriptaculousDragAndDropJS" default = "0">
@@ -48,6 +51,10 @@ $out:$
 		<cfparam name="Request.RequiredInHead.prototypeWindowJS" default = "0">
 		<cfparam name="Request.RequiredInHead.ricoJS" default = "0">
 		
+		<cfparam name="Request.RequiredInHead.spryAccordionJS" default = "0">
+		<cfparam name="Request.RequiredInHead.spryXPathJS" default = "0">
+		<cfparam name="Request.RequiredInHead.spryAccordionCSS" default = "0">
+		
 		
 		
 		<cfparam name="Request.RequiredInHead.TabStyle1CSS" default = "0">
@@ -65,6 +72,15 @@ $out:$
 		<cfif isDefined("Request.InHead.MooFX")>
 			<cfset Request.RequiredInHead.prototypeLiteJS = 1>
 			<cfset Request.RequiredInHead.moofxJS = 1>
+			<cfset Request.RequiredInHead.moofxPackJS = 1>
+		</cfif>
+		<cfif isDefined("Request.InHead.MooAjax")>
+			<cfset Request.RequiredInHead.prototypeLiteJS = 1>
+			<cfset Request.RequiredInHead.mooAjaxJS = 1>
+		</cfif>
+		<cfif isDefined("Request.InHead.MooDOM")>
+			<cfset Request.RequiredInHead.prototypeLiteJS = 1>
+			<cfset Request.RequiredInHead.MooDOMJS = 1>
 		</cfif>
 		<cfif isDefined("Request.InHead.TabStyle1")>
 			<cfset Request.RequiredInHead.prototypeLiteJS = 1>
@@ -170,6 +186,11 @@ $out:$
 			<cfset Request.RequiredInHead.prototypeLiteJS = 0>
 			<cfset Request.RequiredInHead.ricoJS = 1>
 		</cfif>
+		<cfif isDefined("Request.InHead.spryAccordion")>
+			<cfset Request.RequiredInHead.spryAccordionJS = 1>
+			<cfset Request.RequiredInHead.spryXpathJS = 1>
+			<cfset Request.RequiredInHead.spryAccordionCSS = 1>
+		</cfif>
 				
 		
 		
@@ -177,9 +198,24 @@ $out:$
 		<cfif isDefined("Request.RequiredInHead.prototypeLiteJS") AND Request.RequiredInHead.prototypeLiteJS EQ 1 AND Request.RequiredInHead.prototypeJS EQ 0>
 			<cfoutput><script src="#application.url.farcry#/js/prototype/prototype.lite.js" type="text/javascript"></script></cfoutput>
 		</cfif>
+		
 		<cfif isDefined("Request.RequiredInHead.prototypeJS") AND Request.RequiredInHead.prototypeJS EQ 1>
 			<cfoutput><script src="#application.url.farcry#/js/prototype/prototype.js" type="text/javascript"></script></cfoutput>
 		</cfif>
+		
+		<cfif isDefined("Request.RequiredInHead.mooFxJS") AND Request.RequiredInHead.mooFxJS EQ 1>
+			<cfoutput><script src="#application.url.farcry#/js/moofx/moo.fx.js" type="text/javascript"></script></cfoutput>
+		</cfif>
+		<cfif isDefined("Request.RequiredInHead.mooFxPackJS") AND Request.RequiredInHead.mooFxPackJS EQ 1>
+			<cfoutput><script src="#application.url.farcry#/js/moofx/moo.fx.pack.js" type="text/javascript"></script></cfoutput>
+		</cfif>
+		<cfif isDefined("Request.RequiredInHead.mooAjaxJS") AND Request.RequiredInHead.mooAjaxJS EQ 1>
+			<cfoutput><script src="#application.url.farcry#/js/moofx/moo.ajax.js" type="text/javascript"></script></cfoutput>
+		</cfif>
+		<cfif isDefined("Request.RequiredInHead.mooDOMJS") AND Request.RequiredInHead.mooDOMJS EQ 1>
+			<cfoutput><script src="#application.url.farcry#/js/moofx/moo.dom.js" type="text/javascript"></script></cfoutput>
+		</cfif>
+		
 		<cfif isDefined("Request.RequiredInHead.scriptaculousJS") AND Request.RequiredInHead.scriptaculousJS EQ 1>
 			<cfoutput><script src="#application.url.farcry#/js/scriptaculous/scriptaculous.js" type="text/javascript"></script></cfoutput>
 		</cfif>
@@ -269,6 +305,26 @@ $out:$
 		<cfif isDefined("Request.RequiredInHead.ricoJS") AND Request.RequiredInHead.ricoJS EQ 1>
 			<cfoutput><script language="JavaScript" type="text/javascript" src="/farcry/js/rico/rico.js"></script></cfoutput>
 		</cfif>
+		
+		
+		
+		<cfif isDefined("Request.RequiredInHead.spryAccordionJS") AND Request.RequiredInHead.spryAccordionJS EQ 1>
+			<cfoutput><script language="JavaScript" type="text/javascript" src="/farcry/js/spry/SpryAccordion.js"></script></cfoutput>
+		</cfif>
+		<cfif isDefined("Request.RequiredInHead.spryxpathJS") AND Request.RequiredInHead.spryxpathJS EQ 1>
+			<cfoutput><script language="JavaScript" type="text/javascript" src="/farcry/js/spry/xpath.js"></script></cfoutput>
+		</cfif>
+		<cfif isDefined("Request.RequiredInHead.spryAccordionCSS") AND Request.RequiredInHead.spryAccordionCSS EQ 1>
+			<cfoutput><link href="/farcry/js/spry/css/SpryAccordion.css" rel="stylesheet" type="text/css" /></cfoutput>
+		</cfif>
+		
+
+
+
+
+
+
+
 		
 		
 		
