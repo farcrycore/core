@@ -28,13 +28,13 @@
 
 
 .AccordionPanelContent {
-	overflow: auto;
+	/*overflow: auto;*/
 	font-size: 90%;
 	line-height: 140%;
 }
 
 .AccordionPanelTabInside {
-	padding:3px;	
+	padding:1px;	
 }
 .AccordionPanelContentInside {
 	padding:10px;	
@@ -48,20 +48,20 @@
 */
 
 .flowContainer .AccordionPanelContent{
-	overflow: auto;
-	height: 600px;
+	/*overflow: auto;
+	height: 600px;*/
 	background: #F4F4F4;
 }
 
 
 .flowContent .AccordionPanelContent{
-	overflow: auto;
-	height: 300px;
+	/*overflow: auto;
+	height: 300px;*/
 	background: #F4F4F4;
 }
 
 .flowPods .AccordionPanelContent{
-	overflow: auto;
-	height: 200px;
+	/*overflow: auto;
+	height: 200px;*/
 	background: #F4F4F4;
 }
