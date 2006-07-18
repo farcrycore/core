@@ -2,8 +2,8 @@
 moo.fx pack, effects extensions for moo.fx.
 by Valerio Proietti (http://mad4milk.net) MIT-style LICENSE
 for more info visit (http://moofx.mad4milk.net).
-Tuesday, March 07, 2006
-v 1.2.3
+Friday, April 14, 2006
+v 1.2.4
 */
 
 //smooth scroll
@@ -109,32 +109,36 @@ fx.Accordion.prototype = {
 		this.elements = elements;
 		this.setOptions(options);
 		var options = options || '';
+		this.fxa = [];
+		if (options && options.onComplete) options.onFinish = options.onComplete;
 		elements.each(function(el, i){
 			options.onComplete = function(){
 				if (el.offsetHeight > 0) el.style.height = '1%';
+				if (options.onFinish) options.onFinish(el);
 			}
-			el.fx = new fx.Combo(el, options);
-			el.fx.hide();
-		});
+			this.fxa[i] = new fx.Combo(el, options);
+			this.fxa[i].hide();
+		}.bind(this));
 
 		togglers.each(function(tog, i){
+			if (typeof tog.onclick == 'function') var exClick = tog.onclick;
 			tog.onclick = function(){
+				if (exClick) exClick();
 				this.showThisHideOpen(elements[i]);
 			}.bind(this);
 		}.bind(this));
 	},
 
 	showThisHideOpen: function(toShow){
-		this.elements.each(function(el, i){
-			if (el.offsetHeight > 0 && el != toShow) this.clearAndToggle(el);
+		this.elements.each(function(el, j){
+			if (el.offsetHeight > 0 && el != toShow) this.clearAndToggle(el, j);
+			if (el == toShow && toShow.offsetHeight == 0) setTimeout(function(){this.clearAndToggle(toShow, j);}.bind(this), this.options.delay);
 		}.bind(this));
-		if (toShow.offsetHeight == 0) setTimeout(function(){this.clearAndToggle(toShow);}.bind(this), this.options.delay);
-
 	},
 
-	clearAndToggle: function(el){
-		el.fx.clearTimer();
-		el.fx.toggle();
+	clearAndToggle: function(el, i){
+		this.fxa[i].clearTimer();
+		this.fxa[i].toggle();
 	}
 }
 
@@ -213,9 +217,10 @@ fx.RememberText.prototype = Object.extend(new Remember(), {
 });
 
 //useful for-replacement
-Array.prototype.each = function(func){
-	for(var i=0;ob=this[i];i++) func(ob, i);
+Array.prototype.iterate = function(func){
+	for(var i=0;i<this.length;i++) func(this[i], i);
 }
+if (!Array.prototype.each) Array.prototype.each = Array.prototype.iterate;
 
 //Easing Equations (c) 2003 Robert Penner, all rights reserved.
 //This work is subject to the terms in http://www.robertpenner.com/easing_terms_of_use.html.
