@@ -9,14 +9,18 @@
 <cfif thistag.ExecutionMode EQ "Start">
 	
 	<cfparam name="attributes.action" default="*" >
+	<cfparam name="attributes.excludeAction" default="" >
+	
 	<cfset variables.EnterFormProcess = false>
 	
 	<cfif isDefined("FORM.FarcryFormSubmitButton") AND len(FORM.FarcryFormSubmitButton)>
-		<cfloop list="#attributes.action#" index="i">
-			<cfif listFindNoCase(FORM.FarcryFormSubmitButton,i) OR i EQ "*">
-				<cfset variables.EnterFormProcess = true>
+
+		<cfif listFindNoCase(attributes.action,FORM.FarcryFormSubmitButton) OR attributes.action EQ "*">
+			<cfif NOT listFindNoCase(attributes.excludeAction,FORM.FarcryFormSubmitButton)>
+				<cfset variables.EnterFormProcess = true />
 			</cfif>
-		</cfloop>
+		</cfif>
+
 	</cfif>
 
 	<cfif NOT variables.EnterFormProcess>
@@ -28,6 +32,11 @@
 
 <cfif thistag.ExecutionMode EQ "End">
 	<cfif isDefined("attributes.URL")>
-		<cflocation url="#attributes.URL#" addtoken="false">
+		<cfif attributes.URL EQ "reload">
+			<cflocation url="#cgi.SCRIPT_NAME#?#cgi.QUERY_STRING#" addtoken="false">
+		<cfelse>
+			<cflocation url="#attributes.URL#" addtoken="false">
+		</cfif>
+		
 	</cfif>
 </cfif>
