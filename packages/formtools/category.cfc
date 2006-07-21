@@ -14,7 +14,7 @@
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 
-		<cfparam name="arguments.stMetadata.ftAlias" default="">
+		<cfparam name="arguments.stMetadata.ftAlias" default=""><!--- Hint --->
 		<cfparam name="arguments.stMetadata.ftLegend" default="">
 		<cfparam name="arguments.stMetadata.ftRenderType" default="Tree">
 		<cfparam name="arguments.stMetadata.ftSelectMultiple" default="true">
