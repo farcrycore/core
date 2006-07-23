@@ -173,6 +173,60 @@ $out:$
 		<cfif not form.dbOnly>
 	    <!--- install config files --->
 	    <cfinclude template="_installConfigFiles.cfm">
+      <!--- Copied by bowden 7/23/2006. Copied from b301.cfm --->
+      <cfoutput><p><span class="frameMenuBullet">&raquo;</span> Adding FCKEditor Custom Configurations File...</cfoutput><cfflush>
+	
+    	<cfset jsDirectoryPath = "#application.path.project#/www/js/" />
+    	<cfset customFCKConfigFilePath = "#jsDirectoryPath#customfckconfig.js" />
+    	
+    	<cfif NOT directoryExists(jsDirectoryPath)>
+    		<cfdirectory action="create" directory="#jsDirectoryPath#" />
+    	</cfif>
+    	
+    	<cfif NOT fileExists(customFCKConfigFilePath)>
+    		<cfset fckCustomConfigFileContent = "
+/*
+FCKEditor Custom Configurations File
+=========================================================
+Use this file to override the default FCKEditor configurations.
+Information about the FCKEditor Custom Config can be found on the 
+FCKEditor Wiki: 
+
+http://wiki.fckeditor.net/Developer%27s_Guide/Configuration/Configurations_File
+
+!!IF YOU DELETE OR MOVE THIS FILE YOU MUST UPDATE THE FCKEDITOR
+CONFIG IN FARCRY/ADMIN/CONFIG_FILES
+=========================================================
+*/
+		
+		" />
+  		<cffile action="write" file="#customFCKConfigFilePath#" output="#fckCustomConfigFileContent#">
+  	</cfif>
+    <cfoutput>COMPLETE</p></cfoutput><cfflush>
+	  <!--- end of copy  --->
+      <!--- Copied by bowden 7/23/2006. Copied from b301.cfm --->
+    	<cfoutput><p><span class="frameMenuBullet">&raquo;</span> Create SourceImages, thumbnailImages and StandardImages directories...</cfoutput><cfflush>
+        	<cftry>
+      	
+      		<cfif NOT directoryExists("#application.path.project#\www\images\Source\")>
+      			<cfdirectory action="create" directory="#application.path.project#\www\images\Source\">
+      		</cfif>
+      		<cfif NOT directoryExists("#application.path.project#\www\images\thumbnail\")>
+      			<cfdirectory action="create" directory="#application.path.project#\www\images\thumbnail\">
+      		</cfif>
+      		<cfif NOT directoryExists("#application.path.project#\www\images\Standard\")>
+      			<cfdirectory action="create" directory="#application.path.project#\www\images\Standard\">
+      		</cfif>
+          <cfoutput>COMPLETE</p></cfoutput><cfflush>
+      		<cfcatch>
+    				<!--- display form with error message --->
+		    		<cfset errorMsg = "problem creating SourceImages, thumbnailImages and StandardImages directories">
+ 			     	<cfinclude template="_installForm.cfm">
+				    <cfabort>
+          </cfcatch>
+      	</cftry>
+	  <!--- end of copy  --->   
+
 		</cfif>
 		
     <!--- install farcry --->
@@ -198,7 +252,23 @@ $out:$
     </cfcatch>
 
     </cftry>
-
+    <!--- copied by bowden 7/23/2006. copied from b300.cfm. --->
+    	<!--- FU updates --->
+    	<cftry>
+    	<cfinclude template="fu.cfm">
+    	<cfcatch>
+    				<!--- display form with error message --->
+		    		<cfset errorMsg = "problem creating SourceImages, thumbnailImages and StandardImages directories">
+ 			     	<cfinclude template="_installForm.cfm">
+				    <cfabort>
+    	</cfcatch>
+    	</cftry>
+    
+    	<cfoutput> done</p></cfoutput><cfflush>
+    
+    	<cfoutput></ul></cfoutput>
+    <!--- end of copy --->
+    
     </cfif>
 
 </cfif>

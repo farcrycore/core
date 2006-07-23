@@ -92,6 +92,10 @@ o_config.defaultFU(dsn=application.dsn);
 o_config.defaultOverviewTree(dsn=application.dsn);
 o_config.defaultHTMLArea(dsn=application.dsn);
 o_config.defaultTinyMCE(dsn=application.dsn);
+// bowden 7/23/2006. Added. implied by b301.cfm
+o_config.defaultFCKEditor(dsn=application.dsn);
+// end of add
+
 if (stResult.bSuccess) writeOutput(successMsg);
 else writeOutput(failureMsg);
 </cfscript>

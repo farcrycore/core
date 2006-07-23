@@ -23,7 +23,9 @@ stHTML.title = 'farcry - open source';
 stHTML.typeName = 'dmHTML';
 stHTML.versionID = '';
 stHTML.extendedmetadata = '';
-
+// bowden 7/23/2006. Added. taken from b300.cfm
+stHTML.reviewdate = createODBCDate(CreateDate(2050,month(Now()),day(Now())));
+// end of add
 // create 2nd level page
 stHTML2 = structNew();
 stHTML2.aObjectIDs = arrayNew(1);
@@ -46,6 +48,9 @@ stHTML2.title = 'FarCry Support';
 stHTML2.typeName = 'dmHTML';
 stHTML2.versionID = '';
 stHTML2.extendedmetadata = '';
+// bowden 7/23/2006. Added. taken from b300.cfm
+stHTML2.reviewdate = createODBCDate(CreateDate(2050,month(Now()),day(Now())));
+// end of add
 
 stCSS = structNew();
 stCSS.createdBy = 'farcry';

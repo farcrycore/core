@@ -32,7 +32,9 @@ stConfig.imageType = "image/pjpeg,image/gif,image/png,image/jpg,image/jpeg,image
 stConfig.imageWidth = 500; // pixels
 stConfig.imageHeight = 500; // pixels
 stConfig.archiveFiles = "false";
-stConfig.bAllowOverwrite = "false";
+// bowden 7/23/2006. Changed default to be true. taken from b300.cfm
+stConfig.bAllowOverwrite = "true";
+// end of change
 stConfig.thumbnailWidth = 80;
 stConfig.thumbnailHeight = 80;
 stConfig.insertHTML = "<a href='*imagefile*' target='_blank'><img src='*thumbnail*' border=0 alt='*alt*'></a>";
@@ -43,6 +45,18 @@ stConfig.StandardImagePath = "#application.path.project#\www\images\StandardImag
 stConfig.SourceImageURL = "/images/SourceImages"; // URL path of Standard Images
 stConfig.ThumbnailImageURL = "/images/ThumbnailImages"; // URL path of Thumbnail Images
 stConfig.StandardImageURL = "/images/StandardImages"; // URL path of Standard Images
+
+// added by bowden 7/23/2006. taken from b300.cfm
+stConfig.folderpath_optimised = "#application.path.project#/www/images";
+stConfig.folderpath_original = "#application.path.project#/www/images";
+stConfig.folderpath_thumbnail = "#application.path.project#/www/images";
+//end of add
+// added by bowden 7/23/2006. taken from b310.cfm
+stConfig.ThumbnailImageWidth = "80" ;
+stConfig.ThumbnailImageHeight = "80" ;
+stConfig.StandardImageWidth = "400" ;
+stConfig.StandardImageHeight = "400" ;
+//end of add
 </cfscript>
 
 <cfwddx action="CFML2WDDX" input="#stConfig#" output="wConfig">

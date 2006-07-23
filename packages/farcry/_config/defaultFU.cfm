@@ -31,6 +31,11 @@ stConfig.Domains = cgi.SERVER_NAME;
 stConfig.urlPattern = "/go/";
 stConfig.suffix = "";
 stConfig.sesurls = "no";
+
+// bowden 7/23/2006. Added. taken from b301.cfm
+stConfig.lExcludeNavAlias = "";
+stConfig.lExcludeObjectIDs = "";
+// end of add
 </cfscript>
 
 <cfwddx action="CFML2WDDX" input="#stConfig#" output="wConfig">

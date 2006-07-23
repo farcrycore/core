@@ -58,6 +58,9 @@ stConfig.loginAttemptsTimeOut = 10; // minutes
 stConfig.bDoArchive = "False";
 stConfig.archiveDirectory = "#application.path.project#/archive/";
 stConfig.archiveWeburl = "#application.url.webroot#archive/";
+// added by bowden 7/23/2006. taken from b300.cfm
+stConfig.categoryCacheTimeSpan = 0;
+// end of add
 </cfscript>
 
 <cfwddx action="CFML2WDDX" input="#stConfig#" output="wConfig">
@@ -67,8 +70,6 @@ stConfig.archiveWeburl = "#application.url.webroot#archive/";
 		delete from #application.dbowner#config
 		where configname = '#arguments.configName#'
 	</cfquery>
-
-
 
 	<!--- bowden1. changed to use cfqueryparam and clob for ora --->
 	<cfswitch expression="#application.dbtype#">

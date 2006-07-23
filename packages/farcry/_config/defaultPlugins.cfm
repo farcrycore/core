@@ -29,6 +29,9 @@ $out:$
 <cfscript>
 stConfig.FU = "No";
 stConfig.geoLocator = "No";
+// bowden 7/23/2006. Added. taken from b301.cfm
+stConfig.jtidy = "No";
+// end of add
 </cfscript>
 
 <cfwddx action="CFML2WDDX" input="#stConfig#" output="wConfig">

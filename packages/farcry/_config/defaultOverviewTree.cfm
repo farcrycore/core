@@ -34,7 +34,9 @@ stConfig.insertJSdmHTML = "<a href='##stOverview['menu']['insert']['dmHTML']##?o
 stConfig.insertJSdmFile = "<a href='#application.url.webroot#/download.cfm?DownloadFile=""+lastSelectedId+""' target='_blank'>""+theNode['TITLE']+""</a>";
 stConfig.insertJSdmFlash = "<OBJECT classid='clsid:D27CDB6E-AE6D-11cf-96B8-444553540000' codebase='http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab####version=""+theNode['FLASHVERSION']+""' WIDTH='""+theNode['FLASHWIDTH']+""'  HEIGHT='""+theNode['FLASHHEIGHT']+""'  ALIGN='""+theNode['FLASHALIGN']+""'><PARAM NAME='movie' VALUE='http://#CGI.SERVER_NAME#:#CGI.SERVER_PORT##application.url.webroot#/files/""+theNode['FLASHMOVIE']+""'><PARAM NAME='quality' VALUE='""+theNode['FLASHQUALITY']+""'><PARAM NAME='play' VALUE='""+theNode['FLASHPLAY']+""'><PARAM NAME='menu' VALUE='""+theNode['FLASHMENU']+""'><PARAM NAME='loop' VALUE='""+theNode['FLASHLOOP']+""'><PARAM NAME='FlashVars' VALUE='""+theNode['FLASHPARAMS']+""'><EMBED SRC='http://#CGI.SERVER_NAME#:#CGI.SERVER_PORT#/#application.url.webroot#/files/""+theNode['FLASHMOVIE']+""' QUALITY='""+theNode['FLASHQUALITY']+""' WIDTH='""+theNode['FLASHWIDTH']+""' HEIGHT='""+theNode['FLASHHEIGHT']+""' FLASHVARS='""+theNode['FLASHPARAMS']+""' ALIGN='""+theNode['FLASHALIGN']+""' MENU='""+theNode['FLASHMENU']+""' PLAY='""+theNode['FLASHPLAY']+""' LOOP='""+theNode['FLASHLOOP']+""' TYPE='application/x-shockwave-flash' PLUGINSPAGE='http://www.macromedia.com/go/getflashplayer'></EMBED></OBJECT>";
 stConfig.insertJSdmImage = "<img alt='""+theNode['ALT']+""' src='#application.url.webroot#/images/""+theNode['IMAGEFILE']+""'>";
-stConfig.bAllowDuplicateNavAlias = '1';
+// bowden 7/23/2006. Changed default to be "Yes". taken from b300.cfm
+stConfig.bAllowDuplicateNavAlias = "Yes";
+// end of change
 </cfscript>
 
 <cfwddx action="CFML2WDDX" input="#stConfig#" output="wConfig">
