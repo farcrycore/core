@@ -290,16 +290,34 @@ $Developer: $
 </cfif>
 
 
+<!-------------------------------------------------------------------------- 
+LIBRARY DATA
+	- generate library data query to populate library interface 
+--------------------------------------------------------------------------->
+<cfif isDefined("url.ftLibraryData") AND len(url.ftLibraryData)>	
+	
+	<!--- use ftlibrarydata method from primary content type --->
+	<cfif structkeyexists(oprimary, url.ftLibraryData)>
+		<cfinvoke component="#oPrimary#" method="#url.ftLibraryData#" returnvariable="qLibraryList" />
+		<cfdump var="#qLibraryList#" top="5" expand="false" label="Primary" />
+	<!--- if nothing nominated then default to joined content type getLibraryData() --->
+	<cfelseif structkeyexists(odata, "getLibraryData")>
+		<cfinvoke component="#oData#" method="getLibraryData" returnvariable="qLibraryList" />
+		<cfdump var="#qLibraryList#" top="5" expand="false" label="Data" />
+	</cfif>
 
-<cfif isDefined("url.ftDataProvider") AND len(url.ftDataProvider)>	
-	<cfinvoke component="#oData#" method="#url.ftDataProvider#" returnvariable="qLibraryList" />
-<cfelse>
+</cfif>
+<!--- if nothing exists to generate library data then cobble something together --->
+<cfif NOT isDefined("qLibraryList")>
 	<cfquery datasource="#application.dsn#" name="qLibraryList">
 	SELECT ObjectID
 	FROM #URL.ftJoin#
 	ORDER BY label
 	</cfquery>
+	<cfdump var="#qLibraryList#" top="5" expand="false" label="Cobble" />
 </cfif>
+
+
 
 <!--- Put JS and CSS for TabStyle1 into the header --->
 <cfset Request.InHead.TabStyle1 = 1>

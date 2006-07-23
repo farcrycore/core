@@ -464,8 +464,8 @@
 				<cfif structKeyExists(ftFieldMetadata,'ftLibrarySelectedListStyle')>
 					<cfset stURLParams.ftLibrarySelectedListStyle = "#ftFieldMetadata.ftLibrarySelectedListStyle#">
 				</cfif>
-				<cfif structKeyExists(ftFieldMetadata,'ftDataProvider')>
-					<cfset stURLParams.ftDataProvider = "#ftFieldMetadata.ftDataProvider#">
+				<cfif structKeyExists(ftFieldMetadata,'ftLibraryData')>
+					<cfset stURLParams.ftLibraryData = "#ftFieldMetadata.ftLibraryData#">
 				</cfif>
 	
 				<cfsavecontent variable="LibraryLink">
