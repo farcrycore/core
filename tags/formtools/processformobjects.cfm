@@ -36,6 +36,11 @@
 	<!--- This structure contains the methods to be used to save the field --->
 	<cfparam name="attributes.stPropMethods" default="#structNew()#" >
 	
+	
+	<!--- Could be types or rules.. --->
+	<cfparam name="attributes.PackageType" default="types">
+	
+	
 	<cfset Caller[attributes.r_stProperties] = structNew()>
 	<cfset Caller.lSavedObjectIDs = "">
 
@@ -129,9 +134,18 @@
 	<cfelse>
 		
 		
+		<cfif attributes.PackageType EQ "types">
+			<cfset stPackage = application[attributes.PackageType][typename]>
+			<cfset packagePath = application[attributes.PackageType][typename].typepath>
+		<cfelse>
+			<cfset stPackage = application[attributes.PackageType][typename]>
+			<cfset packagePath = application[attributes.PackageType][typename].rulepath>
+		</cfif>
+				
+		
 
 
-		<cfset stType = createobject("component",application.types[typename].typepath)>
+		<cfset stType = createobject("component",packagePath)>
 		<cfif isDefined("session.dmSec.authentication.userlogin")>
 			<cfset "CALLER.stProperties.lastupdatedby" = session.dmSec.authentication.userlogin>
 		<cfelse>
@@ -205,7 +219,15 @@
 			
 			
 			<cfset stObj = stType.setData(stProperties=Evaluate("Caller.#attributes.r_stProperties#"),user=Variables.LockedBy)>		
-			<cfset stType.setlock(stObj=Caller[attributes.r_stProperties],locked="false",lockedby=Variables.LockedBy)>
+			
+			<cftry>
+				<cfset stType.setlock(stObj=Caller[attributes.r_stProperties],locked="false",lockedby=Variables.LockedBy)>
+				<cfcatch >
+					<!--- TODO: Rules do not currently have the ability to be locked. --->					
+				</cfcatch>
+			</cftry>
+		
+			
 			
 		</cfif>	
 		
@@ -249,66 +271,75 @@
 	
 	<cfif isStruct(arguments.stObj) and NOT structIsEmpty(arguments.stObj)>
 
-		<cfset stResult.stType = createobject("component",application.types[arguments.stObj.typename].typepath)>
+
 		<cfset stResult.stObj = arguments.stObj>
-		<cfset stResult.lFields = StructKeyList(application.types[arguments.stObj.typename].stprops)>
-		<cfset stResult.stFields = application.types[arguments.stObj.typename].stprops>
 		<cfset stResult.typename = arguments.stObj.typename>
+		
+		<cfif attributes.PackageType EQ "types">
+			<cfset stPackage = application[attributes.PackageType][stResult.typename]>
+			<cfset packagePath = application[attributes.PackageType][stResult.typename].typepath>
+		<cfelse>
+			<cfset stPackage = application[attributes.PackageType][stResult.typename]>
+			<cfset packagePath = application[attributes.PackageType][stResult.typename].rulepath>
+		</cfif>
+		
+		
+		<cfset stResult.stType = createobject("component",packagePath)>
+		<cfset stResult.lFields = StructKeyList(stPackage.stprops)>
+		<cfset stResult.stFields = stPackage.stprops>
 
 
 	
 	<cfelseif len(arguments.ObjectID)>
 
-		<cfset ParentTag = GetBaseTagList()>
-				
-		<cfif isDefined("ParentTag") AND ListFindNoCase(ParentTag, "cf_wizzard")>
 		
-			<cfif not isDefined("attributes.typename") or not len(attributes.typename)>
-				<cfset q4 = createObject("component", "farcry.fourq.fourq")>
-				<cfset attributes.typename = q4.findType(objectid=attributes.objectid)>
-			</cfif>
-			
-			<!--- populate the primary values --->
-			<cfset stResult.typename = attributes.typename>
-			<cfset stResult.stType = createobject("component",application.types[stResult.typename].typepath)>
-			<cfset stResult.lFields = StructKeyList(application.types[stResult.typename].stprops)>
-			<cfset stResult.stFields = application.types[stResult.typename].stprops>
-			
-					
-			<cfset stBaseTag = GetBaseTagData("cf_wizzard")>
-			<cfset stWizzard = stBaseTag.stWizzard>				
-				
-			<cfif structKeyExists(stWizzard.data,attributes.objectid)>
-				<cfset stResult.stObj = stWizzard.data[attributes.objectID]>
-			<cfelse>
-				<!--- Get the object from the DB --->
-				<cfset stResult.stObj = stResult.stType.getData(attributes.objectID)>
-			</cfif>
-				
-			
-		<cfelse>
-		
-			<cfif not isDefined("arguments.typename") or not len(arguments.typename)>
-	
-				<cfset q4 = createObject("component", "farcry.fourq.fourq")>
-				<cfset arguments.typename = q4.findType(objectid=arguments.objectid)>
-	
-			</cfif>
-	
-	
-			<cfset stResult.stType = createobject("component",application.types[arguments.typename].typepath)>
-			<cfset stResult.stObj = stResult.stType.getData(arguments.objectID)>
-			<cfset stResult.lFields = StructKeyList(application.types[arguments.typename].stprops)>
-			<cfset stResult.stFields = application.types[arguments.typename].stprops>
-			<cfset stResult.typename = arguments.typename>
-		</cfif>
-	<cfelseif len(attributes.typename)>
+		<cfif not isDefined("arguments.typename") or not len(arguments.typename)>
 
-		<cfset stResult.stType = createobject("component",application.types[arguments.typename].typepath)>
-		<cfset stResult.stObj = StructNew()>
-		<cfset stResult.lFields = StructKeyList(application.types[arguments.typename].stprops)>
-		<cfset stResult.stFields = application.types[arguments.typename].stprops>
+			<cfset q4 = createObject("component", "farcry.fourq.fourq")>
+			<cfset arguments.typename = q4.findType(objectid=arguments.objectid)>
+
+		</cfif>
+		
+		
 		<cfset stResult.typename = arguments.typename>
+			
+			
+		<cfif attributes.PackageType EQ "types">
+			<cfset stPackage = application[attributes.PackageType][stResult.typename]>
+			<cfset packagePath = application[attributes.PackageType][stResult.typename].typepath>
+		<cfelse>
+			<cfset stPackage = application[attributes.PackageType][stResult.typename]>
+			<cfset packagePath = application[attributes.PackageType][stResult.typename].rulepath>
+		</cfif>
+		
+		
+		<cfset stResult.stType = createobject("component",packagePath)>
+
+		<cfset stResult.stObj = stResult.stType.getData(arguments.objectID)>
+
+		<cfset stResult.lFields = StructKeyList(stPackage.stprops)>
+		<cfset stResult.stFields = stPackage.stprops>
+		
+	<cfelseif len(arguments.typename)>
+
+
+		<cfset stResult.stObj = StructNew()>
+		<cfset stResult.typename = arguments.typename>
+
+			
+		<cfif attributes.PackageType EQ "types">
+			<cfset stPackage = application[attributes.PackageType][stResult.typename]>
+			<cfset packagePath = application[attributes.PackageType][stResult.typename].typepath>
+		<cfelse>
+			<cfset stPackage = application[attributes.PackageType][stResult.typename]>
+			<cfset packagePath = application[attributes.PackageType][stResult.typename].rulepath>
+		</cfif>
+		
+		
+		
+		<cfset stResult.stType = createobject("component",packagePath)>
+		<cfset stResult.lFields = StructKeyList(stPackage.stprops)>
+		<cfset stResult.stFields = stPackage.stprops>
 	<cfelse>
 		<!--- PROCESSING ALL SUBMITTED OBJECTS --->
 		<!--- <cfabort showerror="Processing Unknown Form Objects"> --->

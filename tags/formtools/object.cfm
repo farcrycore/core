@@ -35,135 +35,83 @@
 	<cfparam name="attributes.bValidation" default="true"><!--- Flag to determine if client side validation classes are added to this section of the form. --->
 	<cfparam name="attributes.lHiddenFields" default=""><!--- List of fields to render as hidden fields that can be use to inject a value into the form post. --->
 	<cfparam name="attributes.stPropValues" default="#structNew()#">
+	<cfparam name="attributes.PackageType" default="types"><!--- Could be types or rules.. --->
 	
-	<cfset attributes.lExcludeFields = ListAppend(attributes.lExcludeFields,"label,objectid,locked,lockedby,lastupdatedby,ownedby,datetimelastupdated,createdby,datetimecreated,versionID,status")>
+	
 	
 	<!--- Add Form Tools Specific CSS --->
 	<cfset Request.InHead.FormsCSS = 1>
 	
+	
+		
+	<cfset attributes.lExcludeFields = ListAppend(attributes.lExcludeFields,"label,objectid,locked,lockedby,lastupdatedby,ownedby,datetimelastupdated,createdby,datetimecreated,versionID,status")>
+
+	
+
+	
 	<cfif len(attributes.ObjectID)>
 	
-		<cfset ParentTag = GetBaseTagList()>
-		
-		<!---<cfif len(attributes.WizzardID)>
-		
-			<cfset oWizzard = createobject("component",application.types.dmWizzard..typepath)>
-			<cfset stWizzard = oWizzard.getData(objectID=attributes.WizzardID)>
-			
-			<cfwddx action="wddx2cfml" input="#stWizzard.Data#" output="stWizzardData">
 
-			
-			
-			<cfif structKeyExists(stWizzardData,attributes.objectid)>
-				<cfset stObj = stWizzardData[attributes.objectID]>
-				
-				<!--- populate the primary values --->
-				<cfset typename = stWizzardData[attributes.ObjectID].typename>
-				<cfset stType = createobject("component",application.types[variables.typename].typepath)>
-				<cfset lFields = StructKeyList(application.types[variables.typename].stprops)>
-				<cfset stFields = application.types[variables.typename].stprops>
-				<cfset ObjectID = attributes.ObjectID>
-				
-			<cfelse>
-				
-				<cfif not isDefined("attributes.typename") or not len(attributes.typename)>
-					<cfset q4 = createObject("component", "farcry.fourq.fourq")>
-					<cfset attributes.typename = q4.findType(objectid=attributes.objectid)>
-				</cfif>
-				
-				<cfset stType = createobject("component",application.types[attributes.typename].typepath)>
-				<cfset lFields = StructKeyList(application.types[attributes.typename].stprops)>
-				<cfset stFields = application.types[attributes.typename].stprops>
-				<cfset typename = attributes.typename>
-				<cfset ObjectID = attributes.ObjectID>
-				
-				<!--- Get the object from the DB --->
-				<cfset stObj = stType.getData(attributes.objectID)>
-				<!--- Add it to the wizard structure --->
-				<cfset stWizzardData[attributes.objectid] = stObj>
-				
-				<!--- Write the Wizard structure back to the DB --->
-				<cfset odmWizzard = createObject("component",application.types['dmWizzard'].typepath)>
-				<cfset stWizzard = odmWizzard.Write(ObjectID=stWizzard.ObjectID,CurrentStep=stWizzard.CurrentStep,Data="#stWizzardData#")>
-				
-							
-			</cfif>	 --->		
-
-		<!---<cfif ListFindNoCase(ParentTag, "cf_wizzard")>
-			<cfif not isDefined("attributes.typename") or not len(attributes.typename)>
-				<cfset q4 = createObject("component", "farcry.fourq.fourq")>
-				<cfset attributes.typename = q4.findType(objectid=attributes.objectid)>
-			</cfif>
-			
-			<!--- populate the primary values --->
-			<cfset typename = attributes.typename>
-			<cfset stType = createobject("component",application.types[attributes.typename].typepath)>
-			<cfset lFields = StructKeyList(application.types[attributes.typename].stprops)>
-			<cfset stFields = application.types[attributes.typename].stprops>
-			<cfset ObjectID = attributes.ObjectID>
-			
-			<!--- Retrieve the Wizard structure from the underlying step --->
-			<cfset stBaseTag = GetBaseTagData("cf_step")>
-			<cfset stWizzard = stBaseTag.stWizzard>
-			
-			<cfif structKeyExists(stWizzard.data,attributes.objectid)>
-				<cfset stObj = stWizzard.data[attributes.objectID]>
-			<cfelse>
-				<!--- Get the object from the DB --->
-				<cfset stObj = stType.getData(attributes.objectID)>
-				<!--- Add it to the wizard structure --->
-				<cfset stWizzard.Data[attributes.objectid] = stObj>
-				
-				<!--- Write the Wizard structure back to the DB --->
-				<cfset odmWizzard = createObject("component",application.types['dmWizzard'].typepath)>
-				<cfset stWizzard = odmWizzard.Write(ObjectID=stWizzard.ObjectID,CurrentStep=stWizzard.CurrentStep,Data="#stWizzard.Data#")>
-				
-			</cfif>
-			
-		<cfelse> --->
-			<cfif not isDefined("attributes.typename") or not len(attributes.typename)>
-				<cfset q4 = createObject("component", "farcry.fourq.fourq")>
-				<cfset attributes.typename = q4.findType(objectid=attributes.objectid)>
-			</cfif>
-			
-			<cfset stType = createobject("component",application.types[attributes.typename].typepath)>
-			<cfset lFields = StructKeyList(application.types[attributes.typename].stprops)>
-			<cfset stFields = application.types[attributes.typename].stprops>
-			<cfset typename = attributes.typename>
-			<cfset ObjectID = attributes.ObjectID>
-			
+		<cfif not isDefined("attributes.typename") or not len(attributes.typename)>
+			<cfset q4 = createObject("component", "farcry.fourq.fourq")>
+			<cfset attributes.typename = q4.findType(objectid=attributes.objectid)>
+		</cfif>		
 	
-			
-			<cfif attributes.insidePLP EQ "1" and isDefined("CALLER.stPLP.plp.outputObjects") AND structKeyExists(CALLER.stPLP.plp.outputObjects,attributes.ObjectID)>		
-				<!--- 
-				LEGACY CODE. 
-				PLP's have been replaced by Wizards
-				Need to ensure nothing uses this anymore before taking out.
-				 --->
-				<cfset stObj = CALLER.stPLP.plp.outputObjects[attributes.ObjectID]>
-			<cfelse>			
-				<cfset stObj = stType.getData(attributes.objectID)>
-				
-			</cfif>
-		<!---</cfif> --->
-
+	
+		<cfif attributes.PackageType EQ "types">
+			<cfset stPackage = application[attributes.PackageType][attributes.typename]>
+			<cfset packagePath = application[attributes.PackageType][attributes.typename].typepath>
+		<cfelse>
+			<cfset stPackage = application[attributes.PackageType][attributes.typename]>
+			<cfset packagePath = application[attributes.PackageType][attributes.typename].rulepath>
+		</cfif>
+		
+		
+		<cfset stType = createobject("component",packagePath)>
+		<cfset lFields = StructKeyList(stPackage.stprops)>
+		<cfset stFields = stPackage.stprops>
+		<cfset typename = attributes.typename>
+		<cfset ObjectID = attributes.ObjectID>
+		
+		<cfset stObj = stType.getData(attributes.objectID)>
 	
 	<cfelseif isStruct(attributes.stObject)>
 	
 		
-		<cfset stObj = attributes.stObject>
+		<cfset stObj = attributes.stObject>		
+		<cfset attributes.typename = stObj.typename>	
 		
-		<cfset stType = createobject("component",application.types[attributes.stObject.typename].typepath)>
-		<cfset lFields = StructKeyList(application.types[stObj.typename].stprops)>
-		<cfset stFields = application.types[stObj.typename].stprops>
-		<cfset typename = stObj.typename>
+	
+		<cfif attributes.PackageType EQ "types">
+			<cfset stpackage = application[attributes.PackageType][attributes.typename]>
+			<cfset packagePath = application[attributes.PackageType][attributes.typename].typepath>
+		<cfelse>
+			<cfset stpackage = application[attributes.PackageType][attributes.typename]>
+			<cfset packagePath = application[attributes.PackageType][attributes.typename].rulepath>
+		</cfif>
+				
+		
+		<cfset stType = createobject("component",packagePath)>
+		<cfset lFields = StructKeyList(stPackage.stprops)>
+		<cfset stFields = stPackage.stprops>
+		<cfset typename = attributes.typename>
 		<cfset ObjectID = attributes.stObject.ObjectID>
 		
 	<cfelseif len(attributes.typename)>
 	
-		<cfset stType = createobject("component",application.types[attributes.typename].typepath)>
-		<cfset lFields = StructKeyList(application.types[attributes.typename].stprops)>
-		<cfset stFields = application.types[attributes.typename].stprops>
+	
+		<cfif attributes.PackageType EQ "types">
+			<cfset stpackage = application[attributes.PackageType][attributes.typename]>
+			<cfset packagePath = application[attributes.PackageType][attributes.typename].typepath>
+		<cfelse>
+			<cfset stpackage = application[attributes.PackageType][attributes.typename]>
+			<cfset packagePath = application[attributes.PackageType][attributes.typename].rulepath>
+		</cfif>
+			
+	
+		<cfset stType = createobject("component",packagePath)>
+		<cfset lFields = StructKeyList(stPackage.stprops)>
+		<cfset stFields = stPackage.stprops>
 		<cfset typename = attributes.typename>
 		
 		<cfset stObj = stType.getData(objectID="#CreateUUID()#")>
@@ -173,7 +121,13 @@
 
 	
 	<cfif isDefined("stObj") and not structIsEmpty(stObj)>
-		<cfset stType.setlock(stObj=stObj,locked="true",lockedby="")>
+		<cftry>
+			<cfset stType.setlock(stObj=stObj,locked="true",lockedby="")>
+			<cfcatch >
+				<!--- TODO: Rules do not currently have the ability to be locked. --->
+				
+			</cfcatch>
+		</cftry>
 	</cfif>
 	
 
