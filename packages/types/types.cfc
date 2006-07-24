@@ -307,14 +307,34 @@ default handlers
 		<cfreturn stProperties>
 	</cffunction>
 	
-	<cffunction name="AfterSave" access="public" output="false" returntype="void" hint="Called from ProcessFormObjects and run after the object has been saved.">
+	<cffunction name="AfterSave" access="public" output="true" returntype="void" hint="Called from ProcessFormObjects and run after the object has been saved.">
 		<cfargument name="stProperties" required="yes" type="struct" hint="A structure containing the contents of the properties that were saved to the object.">
 		
 		<!--- TODO: Add ability to reindex object if required based on verity metadata info in the component. --->
-		<!---<cfif structkeyexists(arguments.stproperties.objectid) and len(arguments.stproperties.objectid) AND  structkeyexists(arguments.stproperties.typename) and len(arguments.stproperties.typename)>
+
 			<cfif structkeyexists(application.types,arguments.stproperties.typename) 
-				AND structkeyexists(application.types[arguments.stproperties.typename],"veritycollection")>
-		</cfif> --->
+				AND structkeyexists(application.types[arguments.stproperties.typename],"SearchCollection")>
+				
+				<cfquery datasource="#application.dsn#" name="q">
+				SELECT * 
+				FROM #arguments.stproperties.typename#
+				WHERE objectid = '#arguments.stProperties.ObjectID#'
+				</cfquery>
+					
+				<cfindex 
+					action="UPDATE" 
+					query="q" 
+					body="#arrayToList(application.config.verity.contenttype[arguments.stproperties.typename].aprops)#" 
+					custom1="#arguments.stproperties.typename#" 
+					custom2=""
+					custom3="#application.config.verity.contenttype[arguments.stproperties.typename].custom3#"
+					custom4="#application.config.verity.contenttype[arguments.stproperties.typename].custom4#"
+					key="objectid" 
+					title="label" 
+					collection="#application.applicationname#_#arguments.stproperties.typename#">
+				
+			</cfif>
+
 		
 	</cffunction>
 	<cffunction name="ftEdit" access="public" output="true" returntype="void">
