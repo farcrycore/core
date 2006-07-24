@@ -61,7 +61,6 @@
 	<cfset lFields = stSetup.lFields>
 	<cfset stFields = stSetup.stFields>
 	<cfset typename = stSetup.typename>
-	
 
 	<!--- --------------------------------------------------------------------- --->
 	<!--- Loop through all the prefixes and determine which prefixes to process --->
@@ -116,7 +115,7 @@
 
 <cfif thistag.ExecutionMode EQ "End">
 	
-
+	
 	<cfif (isDefined("Request.BreakProcessingCurrentFormObject") AND Request.BreakProcessingCurrentFormObject EQ 1)>
 		
 		<!--- DO NOT PROCESS THIS LOOP --->
@@ -155,11 +154,8 @@
 	
 	</cfif>
 
-	<!--- Save the Wizzard and return it to the CALLER --->
-	<cfset stWizzard = createObject("component",application.types['dmWizzard'].typepath).Write(ObjectID=stWizzard.ObjectID,Data="#stWizzard.Data#")>
-		
-	<!--- Return the updated stWizzard to the CALLER. --->
-	<cfset CALLER[attributes.r_stWizzard] = stWizzard />
+
+
 	
 	<cfset dummy = StructDelete(Caller,"stProperties")>
 
@@ -171,6 +167,15 @@
 		
 		<cfexit method="loop" >
 
+	<cfelse>
+		
+		<!--- Save the Wizzard and return it to the CALLER --->
+		<cfset stWizzard = createObject("component",application.types['dmWizzard'].typepath).Write(ObjectID=stWizzard.ObjectID,Data="#stWizzard.Data#")>
+			
+		<!--- Return the updated stWizzard to the CALLER. --->
+		<cfset CALLER[attributes.r_stWizzard] = stWizzard />
+		
+		
 	</cfif>
 
 
