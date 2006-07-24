@@ -119,17 +119,7 @@
 		<cfset ObjectID = stObj.objectID>
 	</cfif>
 
-	
-	<cfif isDefined("stObj") and not structIsEmpty(stObj)>
-		<cftry>
-			<cfset stType.setlock(stObj=stObj,locked="true",lockedby="")>
-			<cfcatch >
-				<!--- TODO: Rules do not currently have the ability to be locked. --->
-				
-			</cfcatch>
-		</cftry>
-	</cfif>
-	
+
 
 	<cfset lFieldsToRender =  "">
 	
