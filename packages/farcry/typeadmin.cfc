@@ -297,7 +297,7 @@ environment references (might be nice to clean these up)
 		//This data structure is used to create the grid columns
 		//remember to delimit dynamic expressions ##
 		aDefaultColumns=arrayNew(1);
-		editobjectURL = "#application.url.farcry#/conjuror/invocation.cfm?objectid=##recordset.objectID[recordset.currentrow]##&typename=#attributes.typename#&ref=typeadmin";
+		editobjectURL = "#application.url.farcry#/conjuror/invocation.cfm?objectid=##recordset.objectID[recordset.currentrow]##&typename=#attributes.typename#&ref=typeadmin&module=#url.module#";
 
 		//select
 		stCol=structNew();
@@ -375,7 +375,7 @@ environment references (might be nice to clean these up)
 		//This data structure is used to create the buttons
 		//remember to delimit dynamic expressions ##
 		aDefaultButtons=arrayNew(1);
-		editobjectURL = "#application.url.farcry#/conjuror/invocation.cfm?objectid=##recordset.objectID[recordset.currentrow]##&typename=#attributes.typename#&ref=typeadmin";
+		editobjectURL = "#application.url.farcry#/conjuror/invocation.cfm?objectid=##recordset.objectID[recordset.currentrow]##&typename=#attributes.typename#&ref=typeadmin&module=#url.module#";
 		// check for base permissions
 		oAuthorisation=request.dmsec.oAuthorisation;
 		// set bunlock for now, needs to be set if locked objects exist
@@ -388,7 +388,7 @@ environment references (might be nice to clean these up)
 			stBut.name="add";
 			stBut.value="#application.adminBundle[session.dmProfile.locale].add#";
 			stBut.class="f-submit";
-			stBut.onClick="window.location='#application.url.farcry#/conjuror/evocation.cfm?typename=#attributes.typename#&ref=typeadmin';";
+			stBut.onClick="window.location='#application.url.farcry#/conjuror/evocation.cfm?typename=#attributes.typename#&ref=typeadmin&module=#url.module#';";
 			stBut.permission="#attributes.permissionset#Create";
 			stBut.buttontype="add";
 			arrayAppend(aDefaultButtons,stBut);
