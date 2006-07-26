@@ -111,8 +111,54 @@ Pseudo:
 		<cfabort>
 	<cfelse>
 		<!--- go to edit --->
-		<admin:header>
-			<cfset evaluate("oType.#method#(objectid='#objectid#')")>
+
+		<!--- determine where the edit handler has been called from to provide the right return url --->
+		<cfparam name="url.ref" default="sitetree" type="string">
+		
+		<cfset stOnExit = StructNew() />
+		<cfif url.ref eq "typeadmin" AND isDefined("url.module")> 
+			<!--- typeadmin redirect --->
+			<cfset stOnExit.Type = "URL" />
+			<cfset stOnExit.Content = "#application.url.farcry#/admin/customadmin.cfm?module=#url.module#" />
+		<cfelseif url.ref eq "closewin"> 
+			<!--- close win has no official redirector as it closes open window --->
+			<cfset stOnExit.Type = "HTML" />
+			<cfsavecontent variable="stOnExit.Content">
+				<cfoutput>
+				<script type="text/javascript">
+					opener.location.href = opener.location.href;
+					window.close();
+				</script>
+				</cfoutput>
+			</cfsavecontent>
+		<cfelse> 
+			<!--- site tree redirect --->
+			<cfset stOnExit.Type = "HTML" />
+			<cfsavecontent variable="stOnExit.Content">
+				<!--- get parent to update tree --->
+				<nj:treeGetRelations typename="#returnStruct.typename#" objectId="#returnStruct.ObjectID#" get="parents" r_lObjectIds="ParentID" bInclusive="1">
+				<!--- update tree --->
+				<nj:updateTree objectId="#parentID#">
+				<cfoutput>
+				<script type="text/javascript">
+					parent['content'].location.href = '#application.url.farcry#/edittabOverview.cfm?objectid=#returnStruct.ObjectID#';
+				</script>
+				</cfoutput>
+			</cfsavecontent>
+		</cfif>
+			
+
+
+		<admin:header>	
+		
+		
+			<cfif FileExists("#application.path.project#/webskin/#Typename#/#method#.cfm")>
+				<cfset oType.getDisplay(stObject=returnStruct, template="#method#", OnExit="#stOnExit#") /><!--- #application.url.farcry#/edittabOverview.cfm?objectid=#stObj.ObjectID# --->
+			<cfelse>
+				<cfset evaluate("oType.#method#(objectid='#objectid#')")>
+			</cfif>
+
+			
 		<admin:footer> 
 	</cfif> 
 </cfif>
