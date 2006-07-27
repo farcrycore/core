@@ -49,6 +49,7 @@ default handlers
 		<cfargument name="stparam" required="false" type="struct" hint="Structure of parameters to be passed into the display handler." />
 		<cfargument name="stobject" required="no" type="struct" hint="Property structure to render in view.  Overrides any property structure mapped to arguments.objectid. Useful if you want to render a view with a modified content item.">
 		<cfargument name="dsn" required="no" type="string" default="#application.dsn#">
+		<cfargument name="OnExit" required="no" type="any" default="">
 		
 		<cfset var stObj = StructNew() />
 		
@@ -114,13 +115,30 @@ default handlers
 	
 	<cffunction name="setData" access="public" output="true" hint="Update the record for an objectID including array properties.  Pass in a structure of property values; arrays should be passed as an array.">
 		<cfargument name="stProperties" required="true">
-		<cfargument name="user" type="string" required="true" hint="Username for object creator" default="#session.dmSec.authentication.userlogin#">
+		<cfargument name="user" type="string" required="true" hint="Username for object creator" default="">
 		<cfargument name="auditNote" type="string" required="true" hint="Note for audit trail" default="Updated">
 		<cfargument name="bAudit" type="boolean" required="No" default="1" hint="Pass in 0 if you wish no audit to take place">
-		<cfargument name="dsn" required="No" default="#application.dsn#"> 
+		<cfargument name="dsn" required="No" default="#application.dsn#">
+		<cfargument name="bSessionOnly" type="boolean" required="false" default="false"><!--- This property allows you to save the changes to the Temporary Object Store for the life of the current session. ---> 
 		
 		<cfset var stResult = StructNew()>
 		<cfset var stresult_friendly = StructNew()>
+		
+		<!--- If no user has been defined we need to manually set it here. --->
+		<cfif not len(arguments.User)>
+			
+			<!--- If a user has logged in then use them --->
+			<cfif isDefined("session.dmSec.authentication.userlogin")>
+				<cfset arguments.User = session.dmSec.authentication.userlogin>
+				
+			<!--- 
+			No user is logged in so use anonymous user. 
+			Security may be inserted here in the future to search for a permission set value.
+			 --->
+			<cfelse>
+				<cfset arguments.User = "anonymous" />
+			</cfif>
+		</cfif>
 		
 		<cfscript>
 			// TODO should prepopulate with values set in cfproperty
@@ -138,7 +156,7 @@ default handlers
 				
 		</cfscript>				
 				
-		<cfset stresult = super.setData(arguments.stProperties,arguments.dsn)>
+		<cfset stresult = super.setData(stProperties=arguments.stProperties, dsn=arguments.dsn, bSessionOnly=arguments.bSessionOnly) />
 
 		<!--- set friendly url for content item,if applicable 
 		TODO: sort out FU allocation.. have moved this to status approval step for now.. so introducing a catch all for non-status based content types. --->
@@ -310,33 +328,58 @@ default handlers
 	<cffunction name="AfterSave" access="public" output="true" returntype="void" hint="Called from ProcessFormObjects and run after the object has been saved.">
 		<cfargument name="stProperties" required="yes" type="struct" hint="A structure containing the contents of the properties that were saved to the object.">
 		
-		<!--- TODO: Add ability to reindex object if required based on verity metadata info in the component. --->
-
-			<cfif structkeyexists(application.types,arguments.stproperties.typename) 
-				AND structkeyexists(application.types[arguments.stproperties.typename],"SearchCollection")>
-				
-				<cfquery datasource="#application.dsn#" name="q">
-				SELECT * 
-				FROM #arguments.stproperties.typename#
-				WHERE objectid = '#arguments.stProperties.ObjectID#'
-				</cfquery>
-					
-				<cfindex 
-					action="UPDATE" 
-					query="q" 
-					body="#arrayToList(application.config.verity.contenttype[arguments.stproperties.typename].aprops)#" 
-					custom1="#arguments.stproperties.typename#" 
-					custom2=""
-					custom3="#application.config.verity.contenttype[arguments.stproperties.typename].custom3#"
-					custom4="#application.config.verity.contenttype[arguments.stproperties.typename].custom4#"
-					key="objectid" 
-					title="label" 
-					collection="#application.applicationname#_#arguments.stproperties.typename#">
-				
-			</cfif>
-
+		<cfset var indexBody = "" />
+		<cfset var indexCustom1 = "" />
+		<cfset var indexCustom2 = "" />
+		<cfset var indexCustom3 = "" />
+		<cfset var indexCustom4 = "" />
 		
+		<!--- 
+		TODO: Add ability to reindex object if required based on verity metadata info in the component. 
+		This would be nice if it used the new Event Queue ;)
+		--->
+		<!---
+		<cfif structkeyexists(application.types,arguments.stproperties.typename)
+			AND structkeyexists(application.types[arguments.stproperties.typename],"SearchCollection")
+			AND structKeyExists(application.config.verity.contenttype, arguments.stproperties.typename) >
+			
+			
+			<cfquery datasource="#application.dsn#" name="q">
+			SELECT * 
+			FROM #arguments.stproperties.typename#
+			WHERE objectid = '#arguments.stProperties.ObjectID#'
+			</cfquery>
+				
+			<cfif structKeyExists(application.config.verity.contenttype[arguments.stproperties.typename],"aProps")
+				AND isArray(application.config.verity.contenttype[arguments.stproperties.typename].aprops)>
+				<cfset indexBody = arrayToList(application.config.verity.contenttype[arguments.stproperties.typename].aprops) />
+			</cfif>
+			<cfif structKeyExists(application.config.verity.contenttype[arguments.stproperties.typename],"custom3")
+				AND isArray(application.config.verity.contenttype[arguments.stproperties.typename].custom3)>
+				<cfset indexCustom3 = arrayToList(application.config.verity.contenttype[arguments.stproperties.typename].custom3) />
+			</cfif>
+			<cfif structKeyExists(application.config.verity.contenttype[arguments.stproperties.typename],"custom4")
+				AND isArray(application.config.verity.contenttype[arguments.stproperties.typename].custom4)>
+				<cfset indexCustom4 = arrayToList(application.config.verity.contenttype[arguments.stproperties.typename].custom4) />
+			</cfif>
+			
+			<cfindex 
+				action="UPDATE" 
+				query="q" 
+				body="#indexBody#" 
+				custom1="#arguments.stproperties.typename#" 
+				custom2=""
+				custom3="#indexCustom3#"
+				custom4="#indexCustom4#"
+				key="objectid" 
+				title="label" 
+				collection="#application.applicationname#_#arguments.stproperties.typename#">
+			
+		</cfif>
+
+		 --->
 	</cffunction>
+	
 	<cffunction name="ftEdit" access="public" output="true" returntype="void">
 		<cfargument name="ObjectID" required="yes" type="string" default="">
 		
