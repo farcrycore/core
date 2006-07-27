@@ -231,8 +231,11 @@ default handlers
 			<cfset oType.setlock(stObj=stObj,locked="false",lockedby=#session.dmSec.authentication.userlogin#)>
 			<cfoutput><h3>Object Not Saved!</h3></cfoutput>
 		</ft:processForm>
+		
+		<ft:processForm action="save,cancel" exit="true">
+		</ft:processForm>
 
-		<ft:processForm >
+		<!--- <ft:processForm >
 			<!--- get parent to update tree --->
 			<cfset stObj=getData(arguments.objectid)>
 			<nj:treeGetRelations typename="#stObj.typename#" objectId="#stObj.ObjectID#" get="parents" r_lObjectIds="ParentID" bInclusive="1">
@@ -249,7 +252,7 @@ default handlers
 			</cfswitch>
 
 			<cfabort>
-		</ft:processForm>
+		</ft:processForm> --->
 
 					
 		<cfset stObj=getData(arguments.objectid)>	

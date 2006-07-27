@@ -292,6 +292,8 @@ environment references (might be nice to clean these up)
 	<cfset var aDefaultColumns=arraynew(1)>
 	<cfset var stCol=structnew()>
 	<cfset var stPermissions=getBasePermissions()>
+	
+	<cfparam name="URL.module" default="" />
 
 	<cfscript>
 		//This data structure is used to create the grid columns

@@ -155,7 +155,11 @@ Pseudo:
 			<cfif FileExists("#application.path.project#/webskin/#Typename#/#method#.cfm")>
 				<cfset oType.getDisplay(stObject=returnStruct, template="#method#", OnExit="#stOnExit#") /><!--- #application.url.farcry#/edittabOverview.cfm?objectid=#stObj.ObjectID# --->
 			<cfelse>
-				<cfset evaluate("oType.#method#(objectid='#objectid#')")>
+				<!--- <cfset evaluate("oType.#method#(objectid='#objectid#',OnExit=#stOnExit#)")> --->
+				<cfinvoke component="#application.types[typename].typePath#" method="#method#">
+					<cfinvokeargument name="objectId" value="#objectId#" />
+					<cfinvokeargument name="onExit" value="#stOnExit#" />
+				</cfinvoke>
 			</cfif>
 
 			

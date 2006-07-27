@@ -49,6 +49,16 @@
 	
 		<cfset Request.FarcryFormOnExitRun = true />
 
+		<!--- 
+			the edit view could be called through a function in which case the onExit struct will be in the arguments scope
+			We should check for this first
+		 --->
+		<cfif NOT structKeyExists(caller, "onExit")>
+			<cfif structKeyExists(caller, "arguments") AND structKeyExists(caller.arguments, "onExit")>
+				<cfset caller.onExit = caller.arguments.onExit />
+			</cfif>
+		</cfif>
+		
 		<!--- If the onExit doesnt exist, default to Refreshing the page. --->
 		<cfparam name="Caller.onExit" default="Refresh" />
 		
