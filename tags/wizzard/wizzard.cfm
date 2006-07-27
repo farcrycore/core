@@ -33,6 +33,11 @@ $in: SessionID -- $
 	<cfparam name="attributes.ReturnLocation" default="" />
 	<cfparam name="attributes.Timeout" default="15" /><!--- Default timeout of wizzard of 15 minutes --->
 	<cfparam name="attributes.r_stWizzard" default="stWizzard" /><!--- this is the WDDX packet that will be returned --->
+
+	<!--- We only render the form if FarcryWizzard OnExit has not been Fired. --->
+	<cfif isDefined("Request.FarcryWizzardOnExitRun") AND Request.FarcryWizzardOnExitRun >			
+		<cfexit method="exittag">			
+	</cfif>
 	
 	<!--- Set User login to current user --->
 	<cfif isDefined("session.dmSec.authentication.userlogin")>
@@ -91,7 +96,7 @@ $in: SessionID -- $
 
 	
 	
-	<wiz:processWizzard action="Cancel" url="#attributes.ReturnLocation#" >
+<!---	<wiz:processWizzard action="Cancel" url="#attributes.ReturnLocation#" >
 		<cfset stResult = oWizzard.deleteData(objectID=stWizzard.ObjectID)>
 		
 		<!--- If a return location is not set, we want to delete the wizzard object and exit the wizzard tag. --->
@@ -99,7 +104,7 @@ $in: SessionID -- $
 			<cfset stResult = oWizzard.deleteData(objectID=stWizzard.ObjectID)>
 			<cfexit method="exittag">	
 		</cfif>
-	</wiz:processWizzard>
+	</wiz:processWizzard> --->
 
 	
 	<!--- If the wizzard has been submitted then work out the next step. --->
@@ -108,8 +113,10 @@ $in: SessionID -- $
 			<cfset stWizzard.CurrentStep = stWizzard.CurrentStep + 1>
 		<cfelseif FORM.FarcryFormSubmitButton EQ "Previous">
 			<cfset stWizzard.CurrentStep = stWizzard.CurrentStep - 1>
-		<cfelse>
+		<cfelseif ListFindNoCase(stWizzard.Steps,FORM.FarcryFormSubmitButton)>
 			<cfset stWizzard.CurrentStep = ListFindNoCase(stWizzard.Steps,FORM.FarcryFormSubmitButton)>
+		<cfelse>
+			<cfset stWizzard.CurrentStep = stWizzard.CurrentStep>
 		</cfif>
 		
 		<cfif stWizzard.CurrentStep LTE 0 OR stWizzard.CurrentStep GT ListLen(stWizzard.Steps)>
@@ -119,7 +126,7 @@ $in: SessionID -- $
 	</wiz:processWizzard>
 	
 	
-	<wiz:processWizzard action="Save" url="#attributes.ReturnLocation#" >
+<!---	<wiz:processWizzard action="Save" url="#attributes.ReturnLocation#" >
 		<cfloop list="#structKeyList(stWizzard.Data)#" index="i">
 			<cfset stProperties = stWizzard.Data[i]>
 			<cfset typename = oWizzard.FindType(ObjectID=i) />				
@@ -132,7 +139,7 @@ $in: SessionID -- $
 			<cfset stResult = oWizzard.deleteData(objectID=stWizzard.ObjectID)>
 			<cfexit method="exittag">	
 		</cfif>
-	</wiz:processWizzard>
+	</wiz:processWizzard> --->
 	
 		
 	<!--- Reset the steps just before running them just incase they have changes since last call. --->

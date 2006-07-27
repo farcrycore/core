@@ -19,7 +19,7 @@
 	<cfparam name="attributes.typename" default=""><!--- Type of Object to render --->
 	<cfparam name="attributes.ObjectLabel" default=""><!--- Used to group and label rendered object if required --->
 	<cfparam name="attributes.lFields" default=""><!--- List of fields to render --->
-	<cfparam name="attributes.lExcludeFields" default=""><!--- List of fields to exclude from render --->
+	<cfparam name="attributes.lExcludeFields" default="label"><!--- List of fields to exclude from render --->
 	<cfparam name="attributes.class" default=""><!--- class with which to set all farcry form tags --->
 	<cfparam name="attributes.style" default=""><!--- style with which to set all farcry form tags --->
 	<cfparam name="attributes.format" default="edit"><!--- edit or display --->
@@ -44,7 +44,7 @@
 	
 	
 		
-	<cfset attributes.lExcludeFields = ListAppend(attributes.lExcludeFields,"label,objectid,locked,lockedby,lastupdatedby,ownedby,datetimelastupdated,createdby,datetimecreated,versionID,status")>
+	<cfset attributes.lExcludeFields = ListAppend(attributes.lExcludeFields,"objectid,locked,lockedby,lastupdatedby,ownedby,datetimelastupdated,createdby,datetimecreated,versionID,status")>
 
 	
 

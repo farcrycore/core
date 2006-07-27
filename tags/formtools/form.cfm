@@ -32,6 +32,13 @@ It just ignores the inner ones.
 		<cfparam name="attributes.Heading" default="">
 		<cfparam name="attributes.Validation" default="1">
 		
+		
+		<!--- We only render the form if FarcryForm OnExit has not been Fired. --->
+		<cfif isDefined("Request.FarcryFormOnExitRun") AND Request.FarcryFormOnExitRun >			
+			<cfexit method="exittag">			
+		</cfif>
+		
+		
 
 		<cfparam name="Request.farcryFormList" default="">	
 		
