@@ -1,7 +1,7 @@
-<!--- 
+<!---
 || LEGAL ||
 $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
-$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
+$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
 $Header: /cvs/farcry/farcry_core/tags/farcry/richTextEditor.cfm,v 1.22.2.1 2005/11/29 03:12:39 guy Exp $
@@ -10,7 +10,7 @@ $Date: 2005/11/29 03:12:39 $
 $Name: milestone_3-0-1 $
 $Revision: 1.22.2.1 $
 
-|| DESCRIPTION || 
+|| DESCRIPTION ||
 $Description: Displays an editor for long text input. Based on config settings unless in toggle mode which will display a basic html text area$
 
 
@@ -325,36 +325,36 @@ $out:$
 				<script type="text/javascript" src="#application.url.farcry#/includes/lib/htmlarea/htmlarea.js"></script>
 				<script type="text/javascript" src="#application.url.farcry#/includes/lib/htmlarea/dialog.js"></script>
 				<script type="text/javascript" src="#application.url.farcry#/includes/lib/htmlarea/lang/en.js"></script>
-			
+
 				<script type="text/javascript">
 					var config = new HTMLArea.Config();
 					config.toolbar = [
 						#application.config.htmlarea.Toolbar1#
 						,#application.config.htmlarea.Toolbar2#
-					];	
+					];
 				</script>
-			
+
 				<script type="text/javascript">
 				<cfif isBoolean(application.config.htmlArea.useContextMenu) AND application.config.htmlArea.useContextMenu>
-					HTMLArea.loadPlugin("ContextMenu");	          
+					HTMLArea.loadPlugin("ContextMenu");
 				</cfif>
 				 //HTMLArea.loadPlugin("CSS");
 				 <cfif isBoolean(application.config.htmlArea.useTableOperations) AND application.config.htmlArea.useTableOperations>
 					 HTMLArea.loadPlugin("TableOperations");
 				 </cfif>
 					HTMLArea.loadPlugin("CharacterMap");
-					
+
 					window.onload = function()
 					{
 						HTMLArea.init();
 					}
-					
+
 				</script>
 				<!-- // Finished loading HTMLEditor //-->
 				</cfoutput>
 			</cfsavecontent>
-			<cfhtmlhead text="#htmlAreaScript#">			
-			
+			<cfhtmlhead text="#htmlAreaScript#">
+
 			<cfset uniqueId = replace(createUUID(),'-','','all')>
 			<!--- display text area --->
 			<cfoutput><div id="htmlareawrapper"><textarea id="#attributes.textareaname#" name="#attributes.textareaname#" id="#uniqueID#">#attributes.value#</textarea></div></cfoutput>
@@ -363,7 +363,7 @@ $out:$
 			<!--- javascript for inserting images etc --->
 			<cfoutput>
 				<script language="JavaScript">
-				
+
 				/*
 				var config = new HTMLArea.Config();
 				config.toolbar = [
@@ -371,14 +371,14 @@ $out:$
 					,#application.config.htmlarea.Toolbar2#
 					];
 				*/
-				
+
 				config.height = "#application.config.htmlArea.height#";
 				config.width = "#application.config.htmlArea.width#";
-			
+
 				 initEditor = function()
 				 {
 					editor#attributes.textareaname# = new HTMLArea("#uniqueid#",config);
-			      	
+
 			     	<cfif len(application.config.htmlArea.pageStyle)>
         		  	editor#attributes.textareaname#.config.pageStyle = "@import url(#application.config.htmlArea.pageStyle#);";
         		  	</cfif>
@@ -392,41 +392,41 @@ $out:$
 				  	editor#attributes.textareaname#.registerPlugin(CharacterMap);
         		  	editor#attributes.textareaname#.generate();
       			 }
-				 
+
 				 HTMLArea.onload = initEditor;
-				 				
+
 				 function insertHTML( html )
 				 {	//TODO this focuse editor produces the undesirable side effect that images are inserted
-					//at the top of the page. However this is better than when inserting from the tree having them inserted at the top of the tree frame. 
+					//at the top of the page. However this is better than when inserting from the tree having them inserted at the top of the tree frame.
 					//Will have to devote some more time to sussing this later.
 					editor#attributes.textareaname#.focusEditor();
 					editor#attributes.textareaname#.insertHTML(html);
-				 } 
+				 }
 				</script>
 			</cfoutput>
 
 		</cfcase>
-		
+
 		<cfcase value="fckEditor">
 			<!--- load FCKEditor --->
 			<cfsavecontent variable="fckEditorScript">
 				<cfoutput>
 				<!-- // load FCKEditor and set preferences // -->
 				<script type="text/javascript" src="#application.url.farcry#/includes/lib/fckeditor/fckeditor.js"></script>
-				<!-- // finished loading FCKEditor //-->	
+				<!-- // finished loading FCKEditor //-->
 				<script type="text/javascript">
 					function insertHTML( html )
-					 {	
+					 {
 					 	 	 var fck = FCKeditorAPI.GetInstance("#attributes.textareaname#");
-							 fck.InsertHtml(html,true) ; 
-							 
-					 } 
+							 fck.InsertHtml(html,true) ;
+
+					 }
 				</script>
 				</cfoutput>
-			</cfsavecontent>				
-			<cfhtmlhead text="#fckeditorscript#">	
+			</cfsavecontent>
+			<cfhtmlhead text="#fckeditorscript#">
 			<cfscript>
- 	 			fckEditor = createObject("component", "/farcry/includes/lib/fckeditor/fckeditor");
+ 	 			fckEditor = createObject("component", "#application.url.farcry#/includes/lib/fckeditor/fckeditor");
 				fckEditor.toolBarSet="#application.config.fckEditor.toolBarSet#";
 	 			fckEditor.instanceName="#attributes.textareaname#";
 	 			fckEditor.basePath="#application.url.farcry#/includes/lib/fckeditor/";
@@ -434,51 +434,51 @@ $out:$
  	 			fckEditor.width="#application.config.fckEditor.width#";
 	 			fckEditor.height="#application.config.fckEditor.height#";
 		 		fckEditor.create(); // create instance now.
-			</cfscript>		
+			</cfscript>
 		</cfcase>
 
 		<cfcase value="eopro">
 			<cfoutput>
 			<script language="javascript">
 			<!--
-	
+
 				function scriptForm_onsubmit()
 				{
 					document.editform.#attributes.textareaname#.value = document.MyEditor.getHTMLData("http://");
 					document.editform.submit();
-	
+
 				}
-	
+
 			   //-------------------------------------------------------------------------//
 			   //The CSS-Data can not be loaded before HTMLData is completely loaded.
 			   //Thats why "ONEDITORLOADED" and "ONDATALOADED" is used below
 			   //-------------------------------------------------------------------------//
 			   //This function is called when the applet has finished loading
-	
+
 				function loadData()
 				{
 				   document.MyEditor.setHTMLData("http://", document.editform.#attributes.textareaname#.value)
-	
+
 				}
-	
+
 			   //This function is called when the editor has finished the loading of HTMLData
 				function setstyle()
 				{
 					document.MyEditor.setStyleSheet( document.editform.CSSText.value)
 				}
-	
+
 				function insertHTML( html,field )
 				{
 					document.MyEditor.insertHTMLData("http://", html);
 					//editform.#attributes.textareaname#.value = editform.#attributes.textareaname#.value + (html);
 				}
-	
-	
-	
+
+
+
 			//-->
 			</script>
-	
-	
+
+
 			<applet code="com.realobjects.eop.applet.EditorApplet" height="#application.config.eoPro.height#" id="editor" codebase="#application.config.eoPro.codebase#" name="MyEditor" width="#application.config.eoPro.width#" archive="edit-on-pro-signed.jar,tidy.jar,ssce.jar" mayscript>
 	        <param name="cabbase" value="#application.config.eoPro.cabbase#">
 	        <param name="locale" value="#application.config.eoPro.locale#">
@@ -511,10 +511,10 @@ $out:$
 			<textarea name="#attributes.textareaname#" id="#attributes.textareaname#" cols="1" rows="1" style="visibility:hidden;">#attributes.value#</textarea>
 			</cfoutput>
 			<cfif application.config.general.richTextEditor IS "eoPro">
-	
+
 	    			<!--This hidden textarea field will receive the CSSData on submitting the form. Needed by RealObjects eoPro-->
 					<cfset cssText = "">
-	
+
 					<cfif fileExists(expandPath(application.config.eoPro.defaultcss))>
 						<cffile action="read" file="#expandPath(application.config.eoPro.defaultcss)#" variable="cssText">
 					</cfif>
@@ -522,11 +522,11 @@ $out:$
 					<cfoutput>
 			    	<textarea name="CSSText" cols="1" rows="1" style="visibility:hidden;">#CSSText#</textarea>
 					</cfoutput>
-	
-	
+
+
 			</cfif>
 		</cfcase>
-		
+
 		<cfcase value="eoPro4">
 			<cfoutput>
 				<script type="text/javascript" src="#application.config.eoPro4.codebase#/editonpro.js"></script>
@@ -539,19 +539,19 @@ $out:$
 	   				eop.setStartUpScreenBackgroundColor("#application.config.eoPro4.StartUpScreenBackgroundColor#");
 	   				/*eop.setImageBase(document.URL);*/
 	   				eop.setLookAndFeel("#application.config.eoPro4.LookAndFeel#");
-					
+
 					function scriptForm_onsubmit()
 	   				{
 				       document.editform.#attributes.textareaname#.value = eop.getHTMLData();
 				       document.editform.submit();
-				    }  
-					
+				    }
+
 					function insertHTML(html,field)
 					{
 						eop.insertHTMLData(html);
 	    			    eop.pumpEvents();
 					}
-					
+
 					eop.loadEditor();
 				</script>
 				 <textarea name="#attributes.textareaname#" cols="1" rows="1" style="visibility:hidden;"><cfoutput>#HtmlEditFormat(attributes.value)#</cfoutput></textarea>
@@ -570,7 +570,7 @@ $out:$
 				 <cfif isDefined("caller.onClickEvent")>
 				 	<cfset caller.onClickEvent =  "scriptForm_onsubmit();">
 				 </cfif>
-				 
+
 			 </cfoutput>
 		</cfcase>
 		<cfcase value="tinymce">
@@ -588,19 +588,19 @@ $out:$
 					#application.config.tinyMCE.tinyMCE_config#
 				});
 				</script>
-				
+
 				<script type="text/javascript">
 					//returns the selected text from the editor
 					function TinyMCE_getSelectedText(){
 					     var inst = tinyMCE.selectedInstance;
-					   
+
 					     if (tinyMCE.isMSIE) {
 					    var doc = inst.getDoc();
 					    var rng = doc.selection.createRange();
 					    selectedText = rng.text;
 					     } else {
 					    var sel = inst.contentWindow.getSelection();
-					   
+
 					    if (sel && sel.toString){
 					                    selectedText = sel.toString();
 					    }else{
@@ -608,16 +608,16 @@ $out:$
 					    }
 					    }
 					    return selectedText;
-					} 					
-					
-					function insertHTML( html ) {	
+					}
+
+					function insertHTML( html ) {
 					 	//Are we inserting an image or anchor?
 					 	if(html.indexOf('<img') == -1) {
 					 		//Is there selected text in the editor?
 					 		if(TinyMCE_getSelectedText().length != 0) {
 								var Pattern = />[\S\s]+<\/a>$/i;
 								var match = Pattern.exec(html);
-								//Did we get a pattern match?					 		
+								//Did we get a pattern match?
 								if(match != null) {
 									//Replace the original anchor with the selection
 									html = html.replace(Pattern, '>{$selection}</a>');
@@ -636,13 +636,13 @@ $out:$
 
 				</script>
 				</cfoutput>
-			</cfsavecontent>				
+			</cfsavecontent>
 			<cfhtmlhead text="#tinyMCEjs#">
 			<cfoutput>
 			<textarea id="#attributes.textareaname#" name="#attributes.textareaname#" cols="50" rows="15">#attributes.value#</textarea>
 			</cfoutput>
 		</cfcase>
-		
+
 		<!--- Default Editor --->
 		<cfdefaultcase>
 			<!--- load TinyMCE --->
@@ -662,14 +662,14 @@ $out:$
 						//returns the selected text from the editor
 						function TinyMCE_getSelectedText(){
 						     var inst = tinyMCE.selectedInstance;
-						   
+
 						     if (tinyMCE.isMSIE) {
 						    var doc = inst.getDoc();
 						    var rng = doc.selection.createRange();
 						    selectedText = rng.text;
 						     } else {
 						    var sel = inst.contentWindow.getSelection();
-						   
+
 						    if (sel && sel.toString){
 						                    selectedText = sel.toString();
 						    }else{
@@ -677,16 +677,16 @@ $out:$
 						    }
 						    }
 						    return selectedText;
-						} 					
-						
-						function insertHTML( html ) {	
+						}
+
+						function insertHTML( html ) {
 						 	//Are we inserting an image or anchor?
 						 	if(html.indexOf('<img') == -1) {
 						 		//Is there selected text in the editor?
 						 		if(TinyMCE_getSelectedText().length != 0) {
 									var Pattern = />[\S\s]+<\/a>$/i;
 									var match = Pattern.exec(html);
-									//Did we get a pattern match?					 		
+									//Did we get a pattern match?
 									if(match != null) {
 										//Replace the original anchor with the selection
 										html = html.replace(Pattern, '>{$selection}</a>');
@@ -704,7 +704,7 @@ $out:$
 						}
 					</script>
 				</cfoutput>
-			</cfsavecontent>				
+			</cfsavecontent>
 			<cfhtmlhead text="#tinyMCEjs#">
 			<cfoutput><textarea id="#attributes.textareaname#" name="#attributes.textareaname#" cols="50" rows="15">#attributes.value#</textarea></cfoutput>
 		</cfdefaultcase>>

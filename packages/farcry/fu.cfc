@@ -61,7 +61,7 @@
 		<cfquery name="qCheck" datasource="#application.dsn#">
 		SELECT	r.objectid
 		FROM	#application.dbowner#reffriendlyURL u inner join 
-				#application.dbowner#refobjects r on r.objectid = u.refobjectid
+				#application.dbowner#refObjects r on r.objectid = u.refobjectid
 		WHERE	refObjectID = <cfqueryparam value="#stLocal.refObjectID#" cfsqltype="cf_sql_varchar">
 				AND friendlyurl = <cfqueryparam value="#stLocal.friendlyURL#" cfsqltype="cf_sql_varchar">
 				AND status = <cfqueryparam value="#stLocal.status#" cfsqltype="cf_sql_integer">
@@ -72,7 +72,7 @@
 			<cfquery datasource="#application.dsn#" name="qCheckCurrent">
 			SELECT	friendlyurl
 			FROM	#application.dbowner#reffriendlyURL u inner join 
-					#application.dbowner#refobjects r on r.objectid = u.refobjectid
+					#application.dbowner#refObjects r on r.objectid = u.refobjectid
 			WHERE	refObjectID = <cfqueryparam value="#stLocal.refObjectID#" cfsqltype="cf_sql_varchar">
 				AND status = <cfqueryparam value="#stLocal.status#" cfsqltype="cf_sql_integer">
 			</cfquery>
@@ -165,7 +165,7 @@
 			<cfquery datasource="#application.dsn#" name="qGet">
 			SELECT	u.refobjectid
 			FROM	#application.dbowner#reffriendlyURL u inner join 
-					#application.dbowner#refobjects r on r.objectid = u.refobjectid
+					#application.dbowner#refObjects r on r.objectid = u.refobjectid
 			WHERE	friendlyURL = <cfqueryparam value="#stLocal.strFriendlyURL#" cfsqltype="cf_sql_varchar">
 				OR 	friendlyURL = <cfqueryparam value="#stLocal.strFriendlyURL_WSlash#" cfsqltype="cf_sql_varchar">
 			ORDER BY status DESC
@@ -176,7 +176,7 @@
 				<cfquery datasource="#application.dsn#" name="qGetRedirectFU">
 				SELECT	refobjectid, friendlyURL, query_string, status
 				FROM	#application.dbowner#reffriendlyURL u inner join 
-					    #application.dbowner#refobjects r on r.objectid = u.refobjectid
+					    #application.dbowner#refObjects r on r.objectid = u.refobjectid
 				WHERE	refobjectid = <cfqueryparam value="#qGet.refobjectid#" cfsqltype="cf_sql_varchar">
 				ORDER BY status DESC
 				</cfquery>
@@ -285,7 +285,7 @@
 			<cfquery name="stLocal.qListFU" datasource="#application.dsn#">
 			SELECT	friendlyurl, refobjectid, query_string
 			FROM	#application.dbowner#reffriendlyURL u inner join 
-					#application.dbowner#refobjects r on r.objectid = u.refobjectid
+					#application.dbowner#refObjects r on r.objectid = u.refobjectid
 			WHERE	status > 0
 			</cfquery>
 			
@@ -463,7 +463,7 @@
 			<cfquery datasource="#application.dsn#" name="qGet">
 			SELECT	friendlyURL, refobjectid, query_string
 			FROM	#application.dbowner#reffriendlyURL u inner join 
-					#application.dbowner#refobjects r on r.objectid = u.refobjectid
+					#application.dbowner#refObjects r on r.objectid = u.refobjectid
 			WHERE
 				refobjectid = <cfqueryparam value="#arguments.objectid#" cfsqltype="cf_sql_varchar">
 				AND status != 0
@@ -513,7 +513,7 @@
 			<cfquery datasource="#application.dsn#" name="stLocal.qList">
 			SELECT	u.objectid, friendlyURL, refobjectid, query_string, u.datetimelastupdated, u.status
 			FROM	#application.dbowner#reffriendlyURL u inner join 
-					#application.dbowner#refobjects r on r.objectid = u.refobjectid
+					#application.dbowner#refObjects r on r.objectid = u.refobjectid
 			WHERE	refobjectid = <cfqueryparam value="#arguments.objectid#" cfsqltype="cf_sql_varchar">
 				AND status IN (#stLocal.friendly_status#)
 			ORDER BY status DESC

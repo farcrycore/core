@@ -1,30 +1,41 @@
-<!------------------------------------------------------------------------
+<!--- 
+|| LEGAL ||
+$Copyright: Daemon Pty Limited 1995-2006, http://www.daemon.com.au $
+$Community: FarCry CMS http://www.farcrycms.org $
+$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
+
+|| VERSION CONTROL ||
+$Header: $
+$Author: $
+$Date: $
+$Name:  $
+$Revision: $
+
+|| DESCRIPTION || 
+$Description: 
 ruleChildLinks (FarCry Core)
-Copyright Daemon Pty Limited 2002 (http://www.daemon.com.au/)
-
-$Header: /cvs/farcry/farcry_core/packages/rules/ruleChildLinks.cfc,v 1.28 2005/07/19 03:59:21 pottery Exp $
-$Author: pottery $
-$Date: 2005/07/19 03:59:21 $
-$Name: milestone_3-0-1 $
-$Revision: 1.28 $
-
-Contributors:
-Paul Harrison (paul@daemon.com.au)
-Geoff Bowers (modius@daemon.com.au)
-
-Description:
-List teasers for the current nodes children.  Children types restricted to
-dmHTML and dmInclude.
+List teasers for the current nodes children.  Children types are restricted to
+dmHTML, dmLink and dmInclude content types.
 
 Known Issues:
 Teaser template listing is only from dmHTML.  But dmInclude is also a possible 
 child object, so if a method is chosen that is not in dmInclude then it 
 fails to display anything.
-------------------------------------------------------------------------->
-<cfcomponent displayname="Child Links Rule" extends="rules" hint="Displays teasers for any approved HTML objects that are children of the calling page.">
+$
 
-<cfproperty name="displayMethod" type="string" hint="Display method to render this news rule with." required="yes" default="displayTeaser">
-<cfproperty name="intro" hint="Intro text to child links" type="string" required="false" default="">
+|| DEVELOPER ||
+$Developer: Geoff Bowers (modius@daemon.com.au)$
+
+--->
+
+<cfcomponent displayname="Child Links Rule" extends="rules" 
+	hint="List teaser displays for the current navigation folders children.  
+		Children content types are restricted to dmHTML, dmLink and dmInclude. 
+		This publishing rule is commonly used on section landing pages to 
+		build a summary for the pages in the section.">
+
+	<cfproperty name="displayMethod" type="string" hint="Teaser display method to render children links." required="yes" default="displayTeaser" />
+	<cfproperty name="intro" hint="Intro text to child link listing; can be any relevant HTML code and content." type="string" required="false" default="" />
 	
 	<cffunction access="public" name="update" output="true">
 		<cfargument name="objectID" required="Yes" type="uuid" default="">
@@ -89,7 +100,7 @@ fails to display anything.
 <cfsetting enablecfoutputonly="false">
 	</cffunction> 
 	
-	<cffunction access="public" name="execute" output="true">
+	<cffunction access="public" name="execute" output="false">
 		<cfargument name="objectID" required="Yes" type="uuid" default="">
 		<cfargument name="dsn" required="false" type="string" default="#application.dsn#">
 		<!--- assumes existance of request.navid  --->

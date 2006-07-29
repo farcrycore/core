@@ -138,7 +138,7 @@ stCollections = application.config.verity.contenttype;
 		FROM         dmArchive
 		WHERE     (archiveID NOT IN
                           (SELECT     objectid
-                            FROM          refobjects))
+                            FROM          refObjects))
 		</cfquery>
 		
 		<cflock name="verity" timeout="60">

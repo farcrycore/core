@@ -11,15 +11,20 @@ $Name: milestone_3-0-1 $
 $Revision: 1.26 $
 
 || DESCRIPTION || 
-$Description: Hand-pick and display individual object instances with a specified displayTeaser* handler. Restricted to those components with metadata bScheduled=true. $
+$Description: 
+Hand-pick and display individual content items with a specified displayTeaser* handler. 
+Restricted to those content types with metadata bScheduled=true.
+$
 
 || DEVELOPER ||
-$Developer: Paul Harrison (paul@daemon.com.au) $
 $Developer: Geoff Bowers (modius@daemon.com.au) $
 --->
-<cfcomponent displayname="Handpicked Rule" extends="rules" hint="Hand-pick and display individual object instances with a specified displayTeaser* handler. Restricted to those components with metadata bScheduled=true." bCustomRule="0">
-<cfproperty name="intro" hint="A provision for intro text to any handpicked rule" type="longchar">
-<cfproperty name="objectWDDX" type="longchar"  hint="Array of WDDX Packets containing an stParams stucture.stParams has objectID and method specified as well as any other keys for use with the selected method " required="no" default="">
+<cfcomponent displayname="Handpicked Rule" extends="rules" 
+	hint="Hand-pick and display individual content items with a specified displayTeaser* handler. 
+		Restricted to those content types with metadata bScheduled=true.">
+
+<cfproperty name="intro" hint="Intro text placed in front of the handpicked rule results.  Can be any relevant content and HTML markup." type="longchar" />
+<cfproperty name="objectWDDX" type="longchar" hint="Hidden property; not seen by users. Stores an array of WDDX Packets containing an stParams stucture.stParams has objectID and method specified as well as any other keys for use with the selected method." required="no" default="" />
 
 	<cffunction name="cfml2wddx" hint="A wrapper to cfwddx - converts cfml to wddx">
 		<cfargument name="stInput">

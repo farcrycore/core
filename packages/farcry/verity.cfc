@@ -193,7 +193,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	FROM         dmArchive
 	WHERE     (archiveID NOT IN
                          (SELECT     objectid
-                           FROM          refobjects))
+                           FROM          refObjects))
 	</cfquery>
 	
 	<cfif qDelete.recordcount>

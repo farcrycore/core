@@ -11,23 +11,26 @@ $Name: milestone_3-0-1 $
 $Revision: 1.20.2.2 $
 
 || DESCRIPTION || 
-Edit handler and execution handler for displaying Random Facts. Option show x number and reduce to specific categories. Fact 
-is then shown using its associated display handler.
+$Description: 
+Publishing rule to randomly show a number of fact content items from 
+a pool of fact items.  The pool is comprised of those content items 
+that match the nominated categories.
+$
 
 || DEVELOPER ||
-Brendan Sisson (brendan@daemon.com.au)
-
-|| ATTRIBUTES ||
-in: 
-out:
+$Developer: Geoff Bowers (modius@daemon.com.au) $
 --->
-<cfcomponent displayname="Random Fact Rule" extends="rules" hint="">
 
-<cfproperty name="intro" type="string" hint="Intro text for the news listing" required="no" default="">
-<cfproperty name="displayMethod" type="string" hint="Display method to render this news rule with." required="yes" default="displayteaserbullets">
-<cfproperty name="numItems" hint="The number of items to display per page" type="numeric" required="true" default="1">
-<cfproperty name="metadata" type="string" hint="A list of category ObjectIDs that the news content is to be drawn from" required="false" default="">
-<cfproperty name="bMatchAllKeywords" hint="Doest the content need to match ALL selected keywords" type="boolean" required="false" default="0">
+<cfcomponent displayname="Random Fact Rule" extends="rules" 
+	hint="Publishing rule to randomly show a number of fact content items from 
+		a pool of fact items.  The pool is comprised of those content items that 
+		match the nominated categories.">
+
+<cfproperty name="intro" type="string" hint="Intro text for random fact displays.  Can be any combination of content and HTML markup." required="no" default="">
+<cfproperty name="displayMethod" type="string" hint="Display method to render fact content items." required="yes" default="displayteaserbullets">
+<cfproperty name="numItems" hint="The number of fact items to display." type="numeric" required="true" default="1">
+<cfproperty name="metadata" type="string" hint="A list of categories that the fact content pool must match in order to be shown." required="false" default="">
+<cfproperty name="bMatchAllKeywords" hint="Does the content need to match ALL selected keywords?" type="boolean" required="false" default="0">
 
 	<cffunction access="public" name="update" output="true">
 		<cfargument name="objectID" required="Yes" type="uuid" default="">

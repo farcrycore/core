@@ -46,9 +46,6 @@ object methods
 	<cfinclude template="_dmEvent/edit.cfm">
 </cffunction>
 
-<!--- <cffunction name="renderObjectOverview" hint="just over riding edit overview for now">
-	<cfargument name = "ObjectId">
-</cffunction> --->
 </cfcomponent>
 
 

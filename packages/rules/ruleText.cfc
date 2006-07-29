@@ -1,28 +1,42 @@
-<!--- Author: Gavin Stewart
-         Date: 28/06/2005 
-	  Purpose:
+<!--- 
+|| LEGAL ||
+$Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
+$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
+
+|| VERSION CONTROL ||
+$Header: $
+$Author: $
+$Date: $
+$Name: $
+$Revision: $
+
+|| DESCRIPTION || 
+$Description: 
+
+$
+
+|| DEVELOPER ||
+$Developer: Geoff Bowers (modius@daemon.com.au) $
 --->
-<cfcomponent displayname="Text Rule" extends="rules" hint="Rule for listing Case Studies">
+<cfcomponent displayname="Text Rule" extends="rules" 
+	hint="Publishing rule for rendering a block of user definable text/markup in the container.">
 
 <!--- rule object properties --->
-<cfproperty name="title" type="string" hint="Title for text dispay" required="no" default="">
-<cfproperty name="text" type="longchar" hint="text to be displayed" required="yes" default="">
+<cfproperty name="title" type="string" hint="Title for text rule; not displayed in the container." required="no" default="">
+<cfproperty name="text" type="longchar" hint="Text to display.  Can be any combination of content and HTML markup." required="yes" default="">
 
-<!--- pseudo import tag library --->
+<!--- import tag library --->
 <cfimport prefix="q4" taglib="/farcry/fourq/tags">
 
 <cffunction name="update" output="true">
 	<cfargument name="objectID" required="Yes" type="uuid" default="">
 	<cfargument name="label" required="no" type="string" default="">
-	
-	<cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
-	<cfimport taglib="/farcry/farcry_core/tags/widgets" prefix="widgets">
 
+	<cfset var stObj = getData(arguments.objectid) />
+	
 	<cfparam name="form.title" default="">
 	<cfparam name="form.text" default="">
 	
-	
-	<cfset stObj = this.getData(arguments.objectid)>
 	<!--- save submitted data --->
 	<cfif isDefined("form.submit")>
 	
@@ -52,20 +66,16 @@
 	</form>
 </cffunction>
 	
-<cffunction name="execute" hint="displays the text Rule on the page" output="false" returntype="void">
+<cffunction name="execute" hint="Displays the text rule on the page." output="false" returntype="void" access="public">
 	<cfargument name="objectID" required="Yes" type="uuid" default="">
 	<cfargument name="dsn" required="false" type="string" default="#application.dsn#">
-		<cfset var stObj = getData(arguments.objectid)> 
-		<cfset var blurb = "">
-		
-		<cfif trim(len(stObj.title))>
-			<cfset blurb = "<h2>#stObj.title#</h2>">
-		</cfif>
-		<cfset blurb = "#blurb##stObj.text#">
-		
-		<cfif len(trim(blurb))>
-			<cfset tmp = arrayAppend(request.aInvocations,blurb)>
-		</cfif>
-	</cffunction>
+	
+	<cfset var stObj = getData(arguments.objectid) /> 
+	<cfset var blurb = stObj.text />
+
+	<cfif len(trim(blurb))>
+		<cfset arrayAppend(request.aInvocations,blurb) />
+	</cfif>
+</cffunction>
 </cfcomponent>
 

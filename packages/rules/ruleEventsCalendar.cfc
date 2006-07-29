@@ -1,4 +1,28 @@
-<cfcomponent displayname="Event Calendar Rule" extends="rules" hint="Method of showing dmEvent objects in a calendar format">
+<!--- 
+|| LEGAL ||
+$Copyright: Daemon Pty Limited 1995-2006, http://www.daemon.com.au $
+$Community: FarCry CMS http://www.farcrycms.org $
+$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
+
+|| VERSION CONTROL ||
+$Header: $
+$Author: $
+$Date: $
+$Name:  $
+$Revision: $
+
+|| DESCRIPTION || 
+$Description: 
+ruleEventsCalendar (FarCry Core)
+Publishing rule for showing Event content items in a month calendar view format.
+$
+
+|| DEVELOPER ||
+$Developer: Geoff Bowers (modius@daemon.com.au)$
+
+--->
+<cfcomponent displayname="Event Calendar Rule" extends="rules" 
+	hint="Publishing rule for showing Event content items in a month calendar view format.">
 
 <cfproperty name="intro" type="string" hint="Intro text for the event listing" required="no" default="">
 <cfproperty name="months" type="numeric" hint="Number of months to show" required="yes" default="1">

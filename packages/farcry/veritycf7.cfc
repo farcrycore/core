@@ -128,7 +128,7 @@ Update for individual content types to capture categories
 		FROM         dmArchive
 		WHERE     (archiveID NOT IN
                           (SELECT     objectid
-                            FROM          refobjects))
+                            FROM          refObjects))
 		</cfquery>
 		
 		<cfindex 

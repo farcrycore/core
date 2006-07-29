@@ -23,14 +23,14 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 
 <cfquery datasource="#application.dsn#" name="qArchives" blockfactor="50">
 SELECT 
-	(SELECT count(*) FROM refobjects o WHERE o.objectid = a.archiveid) AS bNotDeleted, 
+	(SELECT count(*) FROM refObjects o WHERE o.objectid = a.archiveid) AS bNotDeleted, 
 	objectid, 
 	label, 
 	archiveid, 
 	datetimecreated, 
 	createdby, 
 	datetimelastupdated
-FROM dmarchive a
+FROM dmArchive a
 WHERE archiveid not in (SELECT objectid FROM refObjects)
 ORDER BY bNotDeleted ASC
 </cfquery>

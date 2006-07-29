@@ -1,14 +1,42 @@
+<!--- 
+|| LEGAL ||
+$Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
+$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
-<cfcomponent displayname="News Rule" extends="rules" hint="">
+|| VERSION CONTROL ||
+$Header:  $
+$Author: $
+$Date: $
+$Name: $
+$Revision: $
 
-<cfproperty name="intro" type="string" hint="Intro text for the news listing" required="no" default="">
-<cfproperty name="displayMethod" type="string" hint="Display method to render this news rule with." required="yes" default="displayteaserbullets">
-<cfproperty name="numItems" hint="The number of items to display per page" type="numeric" required="true" default="5">
-<cfproperty name="numPages" hint="The number of pages of news articles to display at most" type="numeric" required="true" default="1">
-<cfproperty name="bArchive" hint="Display News as an archive" type="boolean" required="true" default="0">
-<cfproperty name="bMatchAllKeywords" hint="Doest the content need to match ALL selected keywords" type="boolean" required="false" default="0">
-<cfproperty name="metadata" type="string" hint="A list of category ObjectIDs that the news content is to be drawn from" required="false" default="">
-<cfproperty name="suffix" type="string" hint="Suffix text for the news listing" required="no" default="">
+|| DESCRIPTION || 
+$Description: 
+News rule publishes news content items in date order, with 
+most recently published first.  News content is only visible 
+if it is a) approved content; b) time is past the publish date; 
+c) time is before the expriy date, and; d) it matches the nominated 
+categories.
+$
+
+|| DEVELOPER ||
+$Developer: Geoff Bowers (modius@daemon.com.au) $
+--->
+<cfcomponent displayname="News Rule" extends="rules" 
+	hint="News rule publishes news content items in date order, with 
+		most recently published first.  News content is only visible 
+		if it is a) approved content; b) time is past the publish date; 
+		c) time is before the expriy date, and; d) it matches the nominated 
+		categories.">
+
+<cfproperty name="intro" type="string" hint="Intro text for the news listing.  Can be any combination of content and HTML markup." required="no" default="">
+<cfproperty name="displayMethod" type="string" hint="Display teaser method to render individual content items." required="yes" default="displayteaserbullets">
+<cfproperty name="numItems" hint="The number of items to display per page." type="numeric" required="true" default="5">
+<cfproperty name="numPages" hint="The number of pages of news articles to display at most (when bArchive is flagged as true)." type="numeric" required="true" default="1">
+<cfproperty name="bArchive" hint="Display News as an archive (ie. paginated display)." type="boolean" required="true" default="0">
+<cfproperty name="bMatchAllKeywords" hint="Does the content need to match ALL selected keywords?" type="boolean" required="false" default="0">
+<cfproperty name="metadata" type="string" hint="A list of categories that the news content must match in order to be shown." required="false" default="">
+<cfproperty name="suffix" type="string" hint="Suffix text for the news listing.  Can be any combination of content and HTML markup." required="no" default="">
 
 	<cffunction access="public" name="update" output="true">
 		<cfargument name="objectID" required="Yes" type="uuid" default="">

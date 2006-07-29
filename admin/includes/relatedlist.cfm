@@ -51,6 +51,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 <cfparam name="pg" default="1">
 <cfparam name="categoryID" default=""> <!--- category filter --->
 <cfparam name="currentpage" default="1"> <!--- pagination flag --->
+<cfparam name="session.objectPicker.categoryID" default="" />
 
 <cfif categoryID EQ "unassigned">
 	<!--- User has clicked the "[Unassigned]" link --->
