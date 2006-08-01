@@ -1,6 +1,6 @@
 
 
-<cfcomponent name="Image" displayname="Image" Extends="UUID" hint="Field component to liase with all Image types"> 
+<cfcomponent name="File" displayname="File" Extends="Field" hint="Field component to liase with all File types"> 
 
 
 	<cfimport taglib="/farcry/farcry_core/tags/formtools/" prefix="ft" >
@@ -29,7 +29,7 @@
 						<td valign="top">
 							<div id="#arguments.fieldname#previewfile">
 								#arguments.stMetadata.value#
-								<ft:farcrybutton type="button" value="Delete Image" onclick="if(confirm('Are you sure you want to remove this file?')) {} else {return false};$('#arguments.fieldname#').value='';Effect.Fade('#arguments.fieldname#previewfile');" />
+								<ft:farcrybutton type="button" value="Delete File" onclick="if(confirm('Are you sure you want to remove this file?')) {} else {return false};$('#arguments.fieldname#').value='';Effect.Fade('#arguments.fieldname#previewfile');" />
 							</div>
 						</td>
 					</cfif>				

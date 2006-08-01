@@ -1,6 +1,6 @@
 
 
-<cfcomponent name="Image" displayname="Image" Extends="UUID" hint="Field component to liase with all Image types"> 
+<cfcomponent name="Image" displayname="Image" Extends="field" hint="Field component to liase with all Image types"> 
 
 
 	<cfimport taglib="/farcry/farcry_core/tags/formtools/" prefix="ft" >

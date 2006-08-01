@@ -9,7 +9,7 @@
 
 		<cfset var stobj = structnew() / >
 		
-		<cfparam name="arguments.stMetadata.ftLibrarySelectedMethod" default="Selected">
+		<cfparam name="arguments.stMetadata.ftLibrarySelectedMethod" default="LibrarySelected">
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedListClass" default="thumbNailsWrap">
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedListStyle" default="">
 
@@ -26,11 +26,14 @@
 			<input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="#arguments.stObject[arguments.stMetaData.Name]#" />
 			<div id="#arguments.fieldname#_1">
 			<cfif Len(arguments.stObject[arguments.stMetaData.Name])>
+			
+				<cfset stobj = oData.getData(objectid=#arguments.stObject[arguments.stMetaData.Name]#)>
+					
 				<cfif FileExists("#application.path.project#/webskin/#arguments.stMetadata.ftJoin#/#arguments.stMetadata.ftLibrarySelectedMethod#.cfm")>
-					<cfset stobj = oData.getData(objectid=#arguments.stObject[arguments.stMetaData.Name]#)>
-					<cfinclude template="/farcry/#application.applicationname#/webskin/#arguments.stMetadata.ftJoin#/#arguments.stMetadata.ftLibrarySelectedMethod#.cfm">
+					<cfset oData.getDisplay(stObject=stobj, template="#arguments.stMetadata.ftLibrarySelectedMethod#") />
+					<!---<cfinclude template="/farcry/#application.applicationname#/webskin/#arguments.stMetadata.ftJoin#/#arguments.stMetadata.ftLibrarySelectedMethod#.cfm"> --->
 				<cfelse>
-					#arguments.stObject[arguments.stMetaData.Name]#
+					<cfif isDefined("stobj.label") AND len(stobj.label)>#stobj.Label#<cfelse>#stobj.ObjectID#</cfif>
 				</cfif>
 				<a href="##" onclick="new Effect.Fade($('#arguments.fieldname#_1'));Element.remove('#arguments.fieldname#_1');$('#arguments.fieldname#').value = ''; return false;"><img src="#application.url.farcry#/images/crystal/22x22/actions/button_cancel.png" style="width:16px;height:16px;" /></a>
 			</cfif>
