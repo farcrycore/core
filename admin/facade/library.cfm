@@ -38,13 +38,13 @@ $Developer: $
 <cfparam name="url.WizzardID" default="">
 <cfparam name="url.LibraryType" default="array">
 
-<cfparam name="url.ftLibraryAddNewMethod" default="AddNew"><!--- Method to Add New Object --->
+<cfparam name="url.ftLibraryAddNewMethod" default="libraryAdd"><!--- Method to Add New Object --->
 
-<cfparam name="url.ftLibraryPickMethod" default="Pick"><!--- Method to Pick Existing Objects --->
+<cfparam name="url.ftLibraryPickMethod" default="libraryPick"><!--- Method to Pick Existing Objects --->
 <cfparam name="url.ftLibraryPickListClass" default="thumbNailsWrap">
 <cfparam name="url.ftLibraryPickListStyle" default="">
 
-<cfparam name="url.ftLibrarySelectedMethod" default="Selected"><!--- Method to Pick Existing Objects --->
+<cfparam name="url.ftLibrarySelectedMethod" default="librarySelected"><!--- Method to Pick Existing Objects --->
 <cfparam name="url.ftLibrarySelectedListClass" default="thumbNailsWrap">
 <cfparam name="url.ftLibrarySelectedListStyle" default="">
 
@@ -299,22 +299,19 @@ LIBRARY DATA
 	<!--- use ftlibrarydata method from primary content type --->
 	<cfif structkeyexists(oprimary, url.ftLibraryData)>
 		<cfinvoke component="#oPrimary#" method="#url.ftLibraryData#" returnvariable="qLibraryList" />
-		<cfdump var="#qLibraryList#" top="5" expand="false" label="Primary" />
 	<!--- if nothing nominated then default to joined content type getLibraryData() --->
 	<cfelseif structkeyexists(odata, "getLibraryData")>
 		<cfinvoke component="#oData#" method="getLibraryData" returnvariable="qLibraryList" />
-		<cfdump var="#qLibraryList#" top="5" expand="false" label="Data" />
 	</cfif>
 
 </cfif>
 <!--- if nothing exists to generate library data then cobble something together --->
 <cfif NOT isDefined("qLibraryList")>
 	<cfquery datasource="#application.dsn#" name="qLibraryList">
-	SELECT ObjectID
+	SELECT ObjectID,Label
 	FROM #URL.ftJoin#
 	ORDER BY label
 	</cfquery>
-	<cfdump var="#qLibraryList#" top="5" expand="false" label="Cobble" />
 </cfif>
 
 
@@ -354,7 +351,7 @@ LIBRARY DATA
 		</div>
 	</div>
 </div>
-
+</cfoutput>
 
 <cffunction name="RenderPicker">
 	
@@ -394,11 +391,15 @@ LIBRARY DATA
 									
 									<div id="select#stObject.objectID#" class="LibraryItem thumbNailItem" style="text-align:center;" objectID="#stObject.ObjectID#">
 										<img src="#application.url.farcry#/images/dragbar.gif" id="handle#stObject.objectID#" style="cursor:move;" align="center">
+										
 										<cfset stobj = oData.getData(objectid=stObject.ObjectID)>
+										
 										<cfif FileExists("#application.path.project#/webskin/#url.ftJoin#/#url.ftLibraryPickMethod#.cfm")>
-											<cfinclude template="/farcry/#application.applicationname#/webskin/#url.ftJoin#/#url.ftLibraryPickMethod#.cfm">
+											<cfset oData.getDisplay(stObject=stobj, template="#url.ftLibraryPickMethod#") />
+											
+											<!---<cfinclude template="/farcry/#application.applicationname#/webskin/#url.ftJoin#/#url.ftLibraryPickMethod#.cfm"> --->
 										<cfelse>
-											<cfif isDefined("stobj.label") AND len(stobj.label)>#stobj.Label#<cfelse>#stobj.ObjectID#</cfif>
+											<cfif isDefined("stobj.label") AND len(stobj.label)>#stobject.Label#<cfelse>#stobj.ObjectID#</cfif>
 										</cfif>
 	
 									</div>
@@ -444,25 +445,18 @@ LIBRARY DATA
 	<cfoutput>
 	<ft:form>
 						
-						
-							
-				
-				<cfif StructKeyExists(oData,url.ftLibraryAddNewMethod)>
-					<cfinvoke component="#oData#" method="#url.ftLibraryAddNewMethod#">
-						<cfinvokeargument name="typename" value="#url.ftJoin#">
-					</cfinvoke>
-				<cfelse>
-					<cfinvoke component="#oData#" method="AddNew">
-						<cfinvokeargument name="typename" value="#url.ftJoin#">
-					</cfinvoke>
-				</cfif>
 
+						
+				<cfif FileExists("#application.path.project#/webskin/#url.ftJoin#/#url.ftLibraryAddNewMethod#.cfm")>
+					<cfset oData.getDisplay(template="#url.ftLibraryAddNewMethod#") />
+				<cfelse>
+					<ft:object typename="#URL.ftJoin#" lfields="" inTable=0 />
+				</cfif>
 				
-				
-					<div style="float:left;">
-						<ft:farcrybutton value="Attach" />	
-						<ft:farcrybutton type="button" value="Close" onclick="self.blur();window.close();" />	
-					</div>
+				<div style="float:left;">
+					<ft:farcrybutton value="Attach" />	
+					<ft:farcrybutton type="button" value="Close" onclick="self.blur();window.close();" />	
+				</div>
 					
 		
 		</ft:form>
@@ -474,7 +468,7 @@ LIBRARY DATA
 
 
 
-
+<cfoutput>
 		
 		<cfset Request.InHead.ScriptaculousEffects = 1>
 		
