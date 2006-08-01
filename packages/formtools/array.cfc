@@ -49,7 +49,11 @@
 									<cfset oData.getDisplay(stObject=stobj, template="#arguments.stMetadata.ftLibrarySelectedMethod#") />
 									<!---<cfinclude template="/farcry/#application.applicationname#/webskin/#arguments.stMetadata.ftJoin#/#arguments.stMetadata.ftLibrarySelectedMethod#.cfm"> --->
 								<cfelse>
-									<cfif isDefined("stobj.label") AND len(stobj.label)>#stobj.Label#<cfelse>#stobj.ObjectID#</cfif>
+									<cfif isDefined("stobj.label") AND len(stobj.label)>
+										<cfoutput>#stobj.Label#</cfoutput>
+									<cfelse>
+										<cfoutput>#stobj.ObjectID#</cfoutput>
+									</cfif>
 								</cfif>
 												
 								<cfoutput><a href="##" onclick="new Effect.Fade($('#arguments.fieldname#_#i#'));Element.remove('#arguments.fieldname#_#i#');$('#arguments.fieldname#').value = Sortable.sequence('#ULID#');update_#arguments.fieldname#('sort',$('#arguments.fieldname#')); return false;"><img src="#application.url.farcry#/images/crystal/22x22/actions/button_cancel.png" style="width:16px;height:16px;" /></a>

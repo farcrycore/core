@@ -318,7 +318,7 @@ default handlers
 				<cfset stProperties.label = "#arguments.stProperties.name#">
 			<cfelse>
 				<cfloop list="#StructKeyList(arguments.stProperties)#" index="field">
-					<cfif FindNoCase("Name",field)>
+					<cfif FindNoCase("Name",field) AND field NEQ "typename">
 						<cfset stProperties.label = "#stProperties.label# #arguments.stProperties[field]#">
 					</cfif>
 				</cfloop>

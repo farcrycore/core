@@ -399,7 +399,7 @@ LIBRARY DATA
 											
 											<!---<cfinclude template="/farcry/#application.applicationname#/webskin/#url.ftJoin#/#url.ftLibraryPickMethod#.cfm"> --->
 										<cfelse>
-											<cfif isDefined("stobj.label") AND len(stobj.label)>#stobject.Label#<cfelse>#stobj.ObjectID#</cfif>
+											<cfif isDefined("stobj.label") AND len(stobj.label)>#stobj.Label#<cfelse>#stobj.ObjectID#</cfif>
 										</cfif>
 	
 									</div>

@@ -528,7 +528,7 @@ oAuthorisation=request.dmsec.oAuthorisation;
 			<cfcase value="render">
 				<cfoutput>
 				<td <cfif len(attributes.aColumns[i].style)>style="#attributes.aColumns[i].style#"</cfif>>
-					<ft:object objectid="#recordset.objectid#" lfields="#attributes.aColumns[i].value#" intable="0" includeLabel="0" format="display" r_stFields="stFields" />
+					<ft:object objectid="#recordset.objectid#" lfields="#attributes.aColumns[i].value#" intable="0" includeLabel="0" format="display" r_stFields="stFields" includefieldset="false" />
 					[#ListChangeDelims(stFields[attributes.aColumns[i].value].html, " ] [" , ",")#]
 					#showMultipleVersionIdicator#
 				</td></cfoutput>
