@@ -156,6 +156,8 @@ type properties
 		</cfif>
 	</cfif>
 	
+	<cfset stProperties = super.BeforeSave(stProperties=stproperties, stFields=stFields) />
+	
 	<cfreturn stProperties>
 </cffunction>
 
