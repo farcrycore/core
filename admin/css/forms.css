@@ -141,5 +141,5 @@ td .fieldwrap, th .fieldwrap {
 }
 
 .richtext textarea, .longchar textarea {
-	width:600px;
+	/*width:350px;*/
 }

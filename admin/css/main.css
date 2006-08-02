@@ -284,7 +284,7 @@ body.library .tab-panes {background:#f1f1f1 none;}
 #plp-nav a:hover, #plp-nav a:active {color:#E17000;background:#fff}
 
 
-#plp-nav li.li-complete, #plp-nav li.li-cancel {border-bottom: none;padding: 0;margin: 30px 0 0;font-size:100%}
+#plp-nav li.li-complete, #plp-nav li.li-cancel {border-bottom: none;padding: 0;margin: 30px 0 0;font-size:100%;}
 #plp-nav li.li-cancel {margin-top:5px}
 
 #plp-nav li.li-complete a:link, #plp-nav li.li-complete a:visited, #plp-nav li.li-complete a:hover, #plp-nav li.li-complete a:active {color:#666;background:#fff url("images/sprites_icons.gif") no-repeat 0 -297px;display:block;height: 2.2em;font: bold 110%/2.2 arial;padding-left:40px}
@@ -295,6 +295,8 @@ body.library .tab-panes {background:#f1f1f1 none;}
 #plp-nav li.li-cancel a:hover, #plp-nav li.li-cancel a:active {background-position: 0 -247px;color:#c00}
 
 #plp-nav a:link, #plp-wrap .pagination a:link, #plp-nav a:visited, #plp-wrap .pagination a:visited, #plp-nav a:hover, #plp-wrap .pagination a:hover, #plp-nav a:active, #plp-wrap .pagination a:active {text-decoration:none}
+
+#wizard-wrap textarea {width:350px;}
 
 .container-management #plp-wrap {background:none;padding:0}
 .container-management #plp-wrap .pagination, .container-management #plp-wrap #plp-nav {float:none;width:auto}
