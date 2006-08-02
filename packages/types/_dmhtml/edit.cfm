@@ -43,7 +43,7 @@ $in: url.killplp (optional)$
 
 <!--- lock the content item for editing --->
 <cfif NOT stobj.locked>
-	<cfset setlock(locked="true")>
+	<cfset setlock(stobj=stobj, locked="true")>
 </cfif>
 
 <!--- todo maybe this can be a global function so can be used to clean other content types  --->
