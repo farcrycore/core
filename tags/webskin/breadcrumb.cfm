@@ -76,7 +76,8 @@ out:
 <cfelse>
 	<!--- output home only --->
 	<cfoutput>#attributes.prefix# <a href="#application.url.webroot#/" class="#attributes.linkClass#">Home</a></cfoutput>
-
+	<!--- if calling page is including itself, display page title, no link --->
+	<cfif attributes.includeSelf><cfoutput>#attributes.separator##stSelf.title#</cfoutput></cfif>
 </cfif>
 
 <!--- output suffix HTML --->
