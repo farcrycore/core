@@ -238,7 +238,7 @@ $out:$
 			<cfoutput><script src="#application.url.farcry#/js/lightbox/lightbox.js" type="text/javascript"></script></cfoutput>
 		</cfif>
 		<cfif isDefined("Request.RequiredInHead.lightboxCSS") AND Request.RequiredInHead.lightboxCSS EQ 1>
-			<cfoutput><link rel="stylesheet" href="#application.url.farcry#/css/lightbox/lightbox.css" type="text/css" media="screen" /></cfoutput>
+			<cfoutput><link rel="stylesheet" href="#application.url.webroot#/js/lightbox/css/lightbox.css" type="text/css" media="screen" /></cfoutput>
 		</cfif>
 		<cfif isDefined("Request.RequiredInHead.TabsJS") AND Request.RequiredInHead.TabsJS EQ 1>
 			<cfoutput><script src="#application.url.farcry#/js/tabs/tabs.js" type="text/javascript"></script></cfoutput>
