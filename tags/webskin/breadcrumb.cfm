@@ -76,8 +76,14 @@ out:
 <cfelse>
 	<!--- output home only --->
 	<cfoutput>#attributes.prefix# <a href="#application.url.webroot#/" class="#attributes.linkClass#">Home</a></cfoutput>
-	<!--- if calling page is including itself, display page title, no link --->
-	<cfif attributes.includeSelf><cfoutput>#attributes.separator##stSelf.title#</cfoutput></cfif>
+	<!--- if calling page is including itself, display page linked title --->
+	<cfif attributes.includeSelf>
+		<cfoutput>#attributes.separator#</cfoutput><skin:buildLink objectid="#attributes.objectid#" class="#attributes.linkClass#"><cfoutput>#stSelf.title#</cfoutput></skin:buildLink>
+	</cfif>
+	<!--- if calling page is including 'here', display value of attributes.here, no link --->
+	<cfif len(attributes.here)>
+		<cfoutput>#attributes.separator##attributes.here#</cfoutput>
+	</cfif>
 </cfif>
 
 <!--- output suffix HTML --->
