@@ -127,7 +127,7 @@ oRules = new Object;
 <cfloop query="qRules">
 	oRules['#qRules.rulename#'] = new Object;
 	<cfif structKeyExists(application.rules['#qRules.rulename#'],'hint')>
-		oRules['#qRules.rulename#'].hint = '#application.rules[qRules.rulename].hint#';
+		oRules['#qRules.rulename#'].hint = '#JSStringFormat(application.rules[qRules.rulename].hint)#';
 	<cfelse>
 		oRules['#qRules.rulename#'].hint = 	'';
 	</cfif>
