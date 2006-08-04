@@ -49,6 +49,7 @@ $Developer: $
 <cfparam name="url.ftLibrarySelectedListStyle" default="">
 
 
+
 <!--- Cleanup the Query_String so that we can paginate correctly --->
 <cfscript>
 	stURL = Duplicate(url);
@@ -347,7 +348,7 @@ LIBRARY DATA
 
 			#RenderAddNew()#
 
-
+		
 		</div>
 	</div>
 </div>
@@ -453,7 +454,7 @@ LIBRARY DATA
 					<ft:object typename="#URL.ftJoin#" lfields="" inTable=0 />
 				</cfif>
 				
-				<div style="float:left;">
+				<div>
 					<ft:farcrybutton value="Attach" />	
 					<ft:farcrybutton type="button" value="Close" onclick="self.blur();window.close();" />	
 				</div>
