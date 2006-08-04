@@ -19,7 +19,7 @@
 	}
 
 #imageContainer{
-	padding: 10px;
+	padding: 5px;
 	}
 
 #loading{
@@ -64,7 +64,7 @@
 #imageData{
 	padding:0 10px;
 	}
-#imageData #imageDetails{ width: 70%; float: left; text-align: left; color:#000; }	
+#imageData #imageDetails{ width: 70%; float: left; text-align: left; }	
 #imageData #caption{ font-weight: bold;	}
 #imageData #numberDisplay{ display: block; clear: left; padding-bottom: 1.0em;	}			
 #imageData #bottomNavClose{ width: 66px; float: right;  padding-bottom: 0.7em;	}	
@@ -77,9 +77,9 @@
 	width: 100%;
 	height: 500px;
 	background-color: #000;
-	filter:alpha(opacity=60);
-	-moz-opacity: 0.6;
-	opacity: 0.6;
+	filter:alpha(opacity=90);
+	-moz-opacity: 0.9;
+	opacity: 0.9;
 	}
 	
 
