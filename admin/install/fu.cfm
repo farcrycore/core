@@ -50,7 +50,7 @@
 			objectid    		varchar(50) NOT NULL,
 			refobjectid 		varchar(50) NOT NULL,
 			<cfswitch expression="#application.dbtype#">
-			<cfcase value="ODBC">
+			<cfcase value="ODBC,MSSQL">
 			friendlyurl	varchar(8000) NULL,
 			query_string varchar(8000) NULL,
 			datetimelastupdated datetime NULL,
