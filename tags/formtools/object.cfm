@@ -68,7 +68,7 @@
 		
 		
 		<cfset stType = createobject("component",packagePath)>
-		<cfset lFields = StructKeyList(stPackage.stprops)>
+		<cfset lFields = ValueList(stPackage.qMetadata.propertyname)>
 		<cfset stFields = stPackage.stprops>
 		<cfset typename = attributes.typename>
 		<cfset ObjectID = attributes.ObjectID>
@@ -90,9 +90,8 @@
 			<cfset packagePath = application[attributes.PackageType][attributes.typename].rulepath>
 		</cfif>
 				
-		
 		<cfset stType = createobject("component",packagePath)>
-		<cfset lFields = StructKeyList(stPackage.stprops)>
+		<cfset lFields = ValueList(stPackage.qMetadata.propertyname)>
 		<cfset stFields = stPackage.stprops>
 		<cfset typename = attributes.typename>
 		<cfset ObjectID = attributes.stObject.ObjectID>
@@ -110,7 +109,7 @@
 			
 	
 		<cfset stType = createobject("component",packagePath)>
-		<cfset lFields = StructKeyList(stPackage.stprops)>
+		<cfset lFields = ValueList(stPackage.qMetadata.propertyname)>
 		<cfset stFields = stPackage.stprops>
 		<cfset typename = attributes.typename>
 		
@@ -118,8 +117,6 @@
 		
 		<cfset ObjectID = stObj.objectID>
 	</cfif>
-
-
 
 	<cfset lFieldsToRender =  "">
 	

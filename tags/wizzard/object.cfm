@@ -52,11 +52,14 @@
 				<cfset q4 = createObject("component", "farcry.fourq.fourq")>
 				<cfset attributes.typename = q4.findType(objectid=attributes.objectid)>
 			</cfif>
-			
+
 			<!--- populate the primary values --->
 			<cfset typename = attributes.typename>
 			<cfset oType = createobject("component",application.types[attributes.typename].typepath)>
-			<cfset lFields = StructKeyList(application.types[attributes.typename].stprops)>
+			
+			<cfset qMetadata = application.types[attributes.typename].qMetadata />
+			<cfset lFields = ValueList(qMetadata.propertyname)>
+			
 			<cfset stFields = application.types[attributes.typename].stprops>
 			<cfset ObjectID = attributes.ObjectID>
 			
@@ -87,7 +90,9 @@
 	<cfelse>
 	
 		<cfset oType = createobject("component",application.types[attributes.typename].typepath)>
-		<cfset lFields = StructKeyList(application.types[attributes.typename].stprops)>
+			
+		<cfset qMetadata = application.types[attributes.typename].qMetadata />
+		<cfset lFields = ValueList(qMetadata.propertyname)>
 		<cfset stFields = application.types[attributes.typename].stprops>
 		<cfset typename = attributes.typename>
 		
@@ -145,7 +150,7 @@
 			<cfif structKeyExists(request.farcryForm.stObjects,'#key#') AND structKeyExists(request.farcryForm.stObjects[key],'farcryformobjectinfo')
 				AND structKeyExists(request.farcryForm.stObjects[key].farcryformobjectinfo,'ObjectID')
 				AND request.farcryForm.stObjects[key].farcryformobjectinfo.ObjectID EQ stObj.ObjectID>
-					<cfset variables.prefix = key>
+					<cfset variables.prefix = "#key#">
 			</cfif>			
 			
 		</cfloop>
