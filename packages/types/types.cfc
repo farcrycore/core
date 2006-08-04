@@ -36,6 +36,7 @@ system attributes
 <cfproperty name="locked" displayname="Locked" type="boolean" hint="Flag for object locking." required="yes" default="0">
 
 <cfimport taglib="/farcry/farcry_core/tags/formtools/" prefix="ft" />
+<cfimport taglib="/farcry/farcry_core/tags/wizzard/" prefix="wiz" />
 <cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
 
 <!--------------------------------------------------------------------
@@ -385,8 +386,159 @@ default handlers
 	
 	<cffunction name="ftEdit" access="public" output="true" returntype="void">
 		<cfargument name="ObjectID" required="yes" type="string" default="">
+		<cfargument name="onExit" required="no" type="any" default="Refresh">
 		
-		<ft:Object ObjectID="#arguments.ObjectID#" typename="#gettablename()#" />
+		
+		<cfset var stObj = getData(objectid=arguments.objectid) />
+		
+		<cfset var qMetadata = application.types[stobj.typename].qMetadata >
+		
+		
+		
+		<cfquery dbtype="query" name="qWizzardSteps">
+		SELECT ftWizzardStep
+		FROM qMetadata
+		WHERE ftWizzardStep <> '#stobj.typename#'
+		Group By ftWizzardStep
+		ORDER BY ftSeq
+		</cfquery>
+		
+		<!------------------------ 
+		Work out if we are creating a wizzard or just a simple form.
+		If there are multiple wizzard steps then we will be creating a wizzard
+		 ------------------------>
+		<cfif qWizzardSteps.recordcount GT 1>
+			
+			<!--- Always save wizzard WDDX data --->
+			<wiz:processWizzard>
+			
+				<!--- Save the Primary Wizzard Object --->
+				<wiz:processWizzardObjects typename="#stobj.typename#" />	
+					
+			</wiz:processWizzard>
+			
+			<wiz:processWizzard action="Save" SaveWizzard="true" Exit="true" /><!--- Save Wizzard Data to Database and remove Wizzard --->
+			<wiz:processWizzard action="Cancel" RemoveWizzard="true" Exit="true" /><!--- remove Wizzard --->
+			
+			
+			<wiz:wizzard ReferenceID="#stobj.objectid#">
+			
+				<cfloop query="qWizzardSteps">
+						
+					<cfquery dbtype="query" name="qWizzardStep">
+					SELECT *
+					FROM qMetadata
+					WHERE ftWizzardStep = '#qWizzardSteps.ftWizzardStep#'
+					ORDER BY ftSeq
+					</cfquery>
+				
+					<wiz:step name="#qWizzardSteps.ftWizzardStep#">
+						
+
+						<cfquery dbtype="query" name="qFieldSets">
+						SELECT ftWizzardStep, ftFieldset
+						FROM qMetadata
+						WHERE ftWizzardStep = '#qWizzardSteps.ftWizzardStep#'
+						AND ftFieldset <> '#stobj.typename#'
+						Group By ftWizzardStep, ftFieldset
+						ORDER BY ftSeq
+						</cfquery>
+											
+						<cfloop query="qFieldSets">
+						
+							<cfquery dbtype="query" name="qFieldset">
+							SELECT *
+							FROM qMetadata
+							WHERE ftFieldset = '#qFieldsets.ftFieldset#'
+							ORDER BY ftSeq
+							</cfquery>
+							
+							
+							<wiz:object ObjectID="#stObj.ObjectID#" lfields="#valuelist(qFieldset.propertyname)#" format="edit" intable="false" legend="#qFieldset.ftFieldset#" />
+						</cfloop>
+						
+						
+					</wiz:step>
+				
+				</cfloop>
+				
+			</wiz:wizzard>	
+				
+				
+				
+				
+		<!------------------------ 
+		If there is only 1 wizzard step (typename by default) then we will be creating a simple form
+		 ------------------------>		 
+		<cfelse>
+		
+			<cfquery dbtype="query" name="qFieldSets">
+			SELECT ftWizzardStep, ftFieldset
+			FROM qMetadata
+			WHERE ftFieldset <> '#stobj.typename#'
+			Group By ftWizzardStep, ftFieldset
+			ORDER BY ftSeq
+			</cfquery>
+		
+		
+			<!---------------------------------------
+			ACTION:
+			 - default form processing
+			---------------------------------------->
+			<ft:processForm action="Save" Exit="true">
+				<ft:processFormObjects typename="#gettablename()#" />
+			</ft:processForm>
+			
+			<ft:processForm action="Cancel" Exit="true" />
+			
+			
+			
+			<ft:form>
+		
+				<cfif qFieldSets.recordcount GT 1>
+					
+					<cfloop query="qFieldSets">
+						<cfquery dbtype="query" name="qFieldset">
+						SELECT *
+						FROM qMetadata
+						WHERE ftFieldset = '#qFieldsets.ftFieldset#'
+						ORDER BY ftSeq
+						</cfquery>
+						
+						<ft:object ObjectID="#arguments.ObjectID#" format="edit" lExcludeFields="label" lFields="#valuelist(qFieldset.propertyname)#" inTable=false IncludeFieldSet=1 Legend="#qFieldSets.ftFieldset#" />
+					</cfloop>
+					
+					
+				<cfelse>
+				
+					<!--- default edit handler --->
+					<ft:object ObjectID="#arguments.ObjectID#" format="edit" lExcludeFields="label" lFields="" inTable=false IncludeFieldSet=1 Legend="#stObj.Label#" />
+				</cfif>
+				
+				
+				<cfoutput>
+				<div class="fieldwrap">
+					<ft:farcrybutton value="Save" /> 
+					<ft:farcrybutton value="Cancel" />
+				</div>
+				</cfoutput>
+		
+			</ft:form>
+		</cfif>
+
+			
+		
+		
+		
+		<!---------------------------------------
+		VIEW:
+		 - default form view
+		---------------------------------------->
+		
+
+
+			
+		<!---<ft:Object ObjectID="#arguments.ObjectID#" typename="#gettablename()#" /> --->
 	
 	</cffunction>
 	
