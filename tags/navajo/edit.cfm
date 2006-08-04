@@ -30,6 +30,7 @@ $out:$
 
 <!--- import tag libraries --->
 <cfimport taglib="/farcry/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
 
 <!--- import function libraries --->
 <cfinclude template="/farcry/farcry_core/admin/includes/utilityFunctions.cfm">
@@ -98,7 +99,7 @@ $out:$
 <!--- See if we can edit this object --->
 
 <cfscript>
-
+bAllowEdit = false;
 oVersioning = createObject("component","#application.packagepath#.farcry.versioning");
 oLocking = createObject("component","#application.packagepath#.farcry.locking");
 if (structKeyExists(stObj,"versionID") AND structKeyExists(stObj,"status"))
@@ -117,7 +118,8 @@ if (structCount(stObj))
 		lockRet = oLocking.lock(objectid=attributes.objectid,typename=attributes.typename);
 		if (lockRet.bSuccess)
 		{
-			oType.edit(objectid=attributes.objectid);
+			bAllowEdit = true;
+			//oType.edit(objectid=attributes.objectid);
 		}
 		else
 		{
@@ -127,7 +129,8 @@ if (structCount(stObj))
 	}
 	else if (not checkForLockRet.bSuccess and checkForLockRet.lockedBy eq "#session.dmSec.authentication.userlogin#_#session.dmSec.authentication.userDirectory#")
 	{
-		oType.edit(objectid=attributes.objectid);
+		bAllowEdit = true;
+		//oType.edit(objectid=attributes.objectid);
 	}
 	else
 	{
@@ -138,5 +141,25 @@ if (structCount(stObj))
 }	
 			
 </cfscript>
+
+<cfset stOnExit = structNew() />
+<cfset stOnExit.Type = "HTML" />
+<cfsavecontent variable="stOnExit.Content">
+		<!--- get parent to update tree --->
+		<nj:treeGetRelations typename="#stObj.typename#" objectId="#stObj.ObjectID#" get="parents" r_lObjectIds="ParentID" bInclusive="1">
+		<!--- update tree --->
+		<nj:updateTree objectId="#parentID#">
+		<cfoutput>
+		<script type="text/javascript">
+			parent['content'].location.href = '#application.url.farcry#/edittabOverview.cfm?objectid=#stObj.ObjectID#';
+		</script>
+		</cfoutput>
+</cfsavecontent>
+
+<cfif FileExists("#application.path.project#/webskin/#stObj.Typename#/edit.cfm")>
+	<cfset oType.getDisplay(stObject=stobj, template="edit", onExit="#stOnExit#") /><!--- #application.url.farcry#/edittabOverview.cfm?objectid=#stObj.ObjectID# --->
+<cfelse>
+	<cfset oType.ftEdit(objectid=attributes.objectid, onExit="#stOnExit#") />
+</cfif>
 
 <cfsetting enablecfoutputonly="No">
