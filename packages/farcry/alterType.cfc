@@ -154,6 +154,64 @@ $out:$
 			</cfscript>
 			<cfcatch></cfcatch>
 		</cftry>
+		
+		<!--------------------------------- 
+		WE NEED TO SETUP FTSEQ, FTFIELDSET & FTWIZZARDSTEP
+		THESE PROPERTIES ARE USED TO AUTOMATICALLY RENDER FORMS (BOTH DISPLAY AND EDIT) BASED ON THE METADATA IF NO EDIT OR DISPLAY METHOD ARE PROVIDED.
+		 --------------------------------->
+		<cfif structKeyExists(application.types[typename], "stProps")>
+			
+			<!--- Prepare a temporary metadata query that will later be sorted and sent into the types metadata structure. --->
+			<cfset qMetadataSetup = queryNew("typename,propertyname,ftSeq,ftFieldset,ftWizzardStep","varchar,varchar,Integer,varchar,varchar") />
+					
+			<cfloop list="#structKeyList(application.types[typename].stProps)#" index="i">
+				
+				<!--- SETUP FTSEQ --->
+				<cfif structKeyExists(application.types[typename].stProps[i].METADATA, "ftSeq")>
+					<cfset application.types[typename].stProps[i].ftSeq = application.types[typename].stProps[i].METADATA.ftSeq />
+				<cfelse>
+					<cfif i EQ"label">
+						<cfset application.types[typename].stProps[i].ftSeq = 0 />
+					<cfelse>
+						<cfset application.types[typename].stProps[i].ftSeq = 999 />
+					</cfif>
+					
+				</cfif>
+				
+				<!--- SETUP FTFIELDSET --->
+				<cfif structKeyExists(application.types[typename].stProps[i].METADATA, "ftFieldset")>
+					<cfset application.types[typename].stProps[i].ftFieldset = application.types[typename].stProps[i].METADATA.ftFieldset />
+				<cfelse>
+					<cfset application.types[typename].stProps[i].ftFieldset = typename />
+				</cfif>
+				
+				<!--- SETUP FTWIZZARDSTEP --->
+				<cfif structKeyExists(application.types[typename].stProps[i].METADATA, "ftWizzardStep")>
+					<cfset application.types[typename].stProps[i].ftWizzardStep = application.types[typename].stProps[i].METADATA.ftWizzardStep />
+				<cfelse>
+					<cfset application.types[typename].stProps[i].ftWizzardStep = typename />
+				</cfif>
+				
+			   <cfset temp = QueryAddRow(qMetadataSetup)>
+			   <cfset Temp = QuerySetCell(qMetadataSetup,"typename", typename) />
+			   <cfset Temp = QuerySetCell(qMetadataSetup,"propertyname", i) />
+			   <cfset Temp = QuerySetCell(qMetadataSetup,"ftSeq", application.types[typename].stProps[i].ftSeq) />
+			   <cfset Temp = QuerySetCell(qMetadataSetup,"ftFieldset", application.types[typename].stProps[i].ftFieldset) />
+			   <cfset Temp = QuerySetCell(qMetadataSetup,"ftWizzardStep", application.types[typename].stProps[i].ftWizzardStep) />
+				
+				
+			</cfloop>
+			
+			<!--- Now we have all the metadata in qMetadataSetup, we sort and send into the qMetadata key. --->
+			<cfquery dbType="query" name="application.types.#typename#.qMetadata">
+			SELECT * FROM qMetadataSetup
+			ORDER BY ftSeq
+			</cfquery>
+			
+
+		   
+		</cfif>	
+		
 	</cfloop>
 	<!--- Init all EXTENDED CORE types --->
 	<cfloop query="qExtendedTypesDir">
@@ -174,6 +232,64 @@ $out:$
 				<cftrace inline="no" text="Error creating extended type. & #cfcatch.message#" category="error">
 			</cfcatch>
 		</cftry>
+		
+<!--------------------------------- 
+		WE NEED TO SETUP FTSEQ, FTFIELDSET & FTWIZZARDSTEP
+		THESE PROPERTIES ARE USED TO AUTOMATICALLY RENDER FORMS (BOTH DISPLAY AND EDIT) BASED ON THE METADATA IF NO EDIT OR DISPLAY METHOD ARE PROVIDED.
+		 --------------------------------->
+		<cfif structKeyExists(application.types[typename], "stProps")>
+			
+			<!--- Prepare a temporary metadata query that will later be sorted and sent into the types metadata structure. --->
+			<cfset qMetadataSetup = queryNew("typename,propertyname,ftSeq,ftFieldset,ftWizzardStep","varchar,varchar,Integer,varchar,varchar") />
+					
+			<cfloop list="#structKeyList(application.types[typename].stProps)#" index="i">
+				
+				<!--- SETUP FTSEQ --->
+				<cfif structKeyExists(application.types[typename].stProps[i].METADATA, "ftSeq")>
+					<cfset application.types[typename].stProps[i].ftSeq = application.types[typename].stProps[i].METADATA.ftSeq />
+				<cfelse>
+					<cfif i EQ"label">
+						<cfset application.types[typename].stProps[i].ftSeq = 0 />
+					<cfelse>
+						<cfset application.types[typename].stProps[i].ftSeq = 999 />
+					</cfif>
+					
+				</cfif>
+				
+				<!--- SETUP FTFIELDSET --->
+				<cfif structKeyExists(application.types[typename].stProps[i].METADATA, "ftFieldset")>
+					<cfset application.types[typename].stProps[i].ftFieldset = application.types[typename].stProps[i].METADATA.ftFieldset />
+				<cfelse>
+					<cfset application.types[typename].stProps[i].ftFieldset = typename />
+				</cfif>
+				
+				<!--- SETUP FTWIZZARDSTEP --->
+				<cfif structKeyExists(application.types[typename].stProps[i].METADATA, "ftWizzardStep")>
+					<cfset application.types[typename].stProps[i].ftWizzardStep = application.types[typename].stProps[i].METADATA.ftWizzardStep />
+				<cfelse>
+					<cfset application.types[typename].stProps[i].ftWizzardStep = typename />
+				</cfif>
+				
+			   <cfset temp = QueryAddRow(qMetadataSetup)>
+			   <cfset Temp = QuerySetCell(qMetadataSetup,"typename", typename) />
+			   <cfset Temp = QuerySetCell(qMetadataSetup,"propertyname", i) />
+			   <cfset Temp = QuerySetCell(qMetadataSetup,"ftSeq", application.types[typename].stProps[i].ftSeq) />
+			   <cfset Temp = QuerySetCell(qMetadataSetup,"ftFieldset", application.types[typename].stProps[i].ftFieldset) />
+			   <cfset Temp = QuerySetCell(qMetadataSetup,"ftWizzardStep", application.types[typename].stProps[i].ftWizzardStep) />
+				
+				
+			</cfloop>
+			
+			<!--- Now we have all the metadata in qMetadataSetup, we sort and send into the qMetadata key. --->
+			<cfquery dbType="query" name="application.types.#typename#.qMetadata">
+			SELECT * FROM qMetadataSetup
+			ORDER BY ftSeq
+			</cfquery>
+			
+
+		   
+		</cfif>	
+				
 	</cfloop>
 	<!--- Now init all Custom Types --->
 	<cfloop query="qCustomTypesDir">
@@ -323,6 +439,66 @@ $out:$
 				application.rules[qRules.rulename].rulePath = "#application.packagepath#.rules.#qRules.rulename#";
 			}
 		</cfscript>
+		
+
+		<!--------------------------------- 
+		WE NEED TO SETUP FTSEQ, FTFIELDSET & FTWIZZARDSTEP
+		THESE PROPERTIES ARE USED TO AUTOMATICALLY RENDER FORMS (BOTH DISPLAY AND EDIT) BASED ON THE METADATA IF NO EDIT OR DISPLAY METHOD ARE PROVIDED.
+		 --------------------------------->
+		<cfif structKeyExists(application.rules[qRules.rulename], "stProps")>
+			
+			<!--- Prepare a temporary metadata query that will later be sorted and sent into the types metadata structure. --->
+			<cfset qMetadataSetup = queryNew("typename,propertyname,ftSeq,ftFieldset,ftWizzardStep","varchar,varchar,Integer,varchar,varchar") />
+					
+			<cfloop list="#structKeyList(application.rules[qRules.rulename].stProps)#" index="i">
+				
+				<!--- SETUP FTSEQ --->
+				<cfif structKeyExists(application.rules[qRules.rulename].stProps[i].METADATA, "ftSeq")>
+					<cfset application.rules[qRules.rulename].stProps[i].ftSeq = application.rules[qRules.rulename].stProps[i].METADATA.ftSeq />
+				<cfelse>
+					<cfif i EQ"label">
+						<cfset application.rules[qRules.rulename].stProps[i].ftSeq = 0 />
+					<cfelse>
+						<cfset application.rules[qRules.rulename].stProps[i].ftSeq = 999 />
+					</cfif>
+					
+				</cfif>
+				
+				<!--- SETUP FTFIELDSET --->
+				<cfif structKeyExists(application.rules[qRules.rulename].stProps[i].METADATA, "ftFieldset")>
+					<cfset application.rules[qRules.rulename].stProps[i].ftFieldset = application.rules[qRules.rulename].stProps[i].METADATA.ftFieldset />
+				<cfelse>
+					<cfset application.rules[qRules.rulename].stProps[i].ftFieldset = typename />
+				</cfif>
+				
+				<!--- SETUP FTWIZZARDSTEP --->
+				<cfif structKeyExists(application.rules[qRules.rulename].stProps[i].METADATA, "ftWizzardStep")>
+					<cfset application.rules[qRules.rulename].stProps[i].ftWizzardStep = application.rules[qRules.rulename].stProps[i].METADATA.ftWizzardStep />
+				<cfelse>
+					<cfset application.rules[qRules.rulename].stProps[i].ftWizzardStep = typename />
+				</cfif>
+				
+			   <cfset temp = QueryAddRow(qMetadataSetup)>
+			   <cfset Temp = QuerySetCell(qMetadataSetup,"typename", typename) />
+			   <cfset Temp = QuerySetCell(qMetadataSetup,"propertyname", i) />
+			   <cfset Temp = QuerySetCell(qMetadataSetup,"ftSeq", application.rules[qRules.rulename].stProps[i].ftSeq) />
+			   <cfset Temp = QuerySetCell(qMetadataSetup,"ftFieldset", application.rules[qRules.rulename].stProps[i].ftFieldset) />
+			   <cfset Temp = QuerySetCell(qMetadataSetup,"ftWizzardStep", application.rules[qRules.rulename].stProps[i].ftWizzardStep) />
+				
+				
+			</cfloop>
+			
+			<!--- Now we have all the metadata in qMetadataSetup, we sort and send into the qMetadata key. --->
+			<cfquery dbType="query" name="application.rules.#qRules.rulename#.qMetadata">
+			SELECT * FROM qMetadataSetup
+			ORDER BY ftSeq
+			</cfquery>
+			
+
+		   
+		</cfif>			
+		
+		
 	</cfloop>
 	<cfscript>
 		for(type IN application.types)
