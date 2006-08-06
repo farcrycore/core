@@ -41,4 +41,9 @@ request.loggedin = stLoggedin.bLoggedIn;
 <!--- This parameter is used by _farcryOnRequestEnd.cfm to determine which javascript libraries to include in the page <head> --->
 <cfparam name="Request.inHead" default="#structNew()#">
 
+
+<cfif isDefined("application.mode.developer") and application.mode.developer EQ "true">
+	<cfset createObject("component","#application.packagepath#.farcry.alterType").refreshAllCFCAppData() />
+</cfif>
+
 <cfsetting enablecfoutputonly="no">
