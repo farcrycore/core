@@ -38,11 +38,17 @@ request.loggedin = stLoggedin.bLoggedIn;
 <!--- setup request variables --->
 <cfinclude template="_requestScope.cfm">
 
+<cfif application.sysInfo.bServerSpecificRequestScope>
+	<cfinclude template="/farcry/#application.applicationName#/config/_serverSpecificRequestScope.cfm">
+</cfif>
+
+
 <!--- This parameter is used by _farcryOnRequestEnd.cfm to determine which javascript libraries to include in the page <head> --->
 <cfparam name="Request.inHead" default="#structNew()#">
 
 
-<cfif isDefined("application.mode.developer") and application.mode.developer EQ "true">
+<!--- IF the project has been set to developer mode, we need to refresh the metadata on each page request. --->
+<cfif request.mode.bDeveloper>
 	<cfset createObject("component","#application.packagepath#.farcry.alterType").refreshAllCFCAppData() />
 </cfif>
 
