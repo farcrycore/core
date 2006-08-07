@@ -159,7 +159,7 @@ $out:$
 		WE NEED TO SETUP FTSEQ, FTFIELDSET & FTWIZZARDSTEP
 		THESE PROPERTIES ARE USED TO AUTOMATICALLY RENDER FORMS (BOTH DISPLAY AND EDIT) BASED ON THE METADATA IF NO EDIT OR DISPLAY METHOD ARE PROVIDED.
 		 --------------------------------->
-		<cfif structKeyExists(application.types[typename], "stProps")>
+		<cfif structKeyExists(application.types, typename) AND structKeyExists(application.types[typename], "stProps")>
 			
 			<!--- Prepare a temporary metadata query that will later be sorted and sent into the types metadata structure. --->
 			<cfset qMetadataSetup = queryNew("typename,propertyname,ftSeq,ftFieldset,ftWizzardStep","varchar,varchar,Integer,varchar,varchar") />
@@ -237,7 +237,7 @@ $out:$
 		WE NEED TO SETUP FTSEQ, FTFIELDSET & FTWIZZARDSTEP
 		THESE PROPERTIES ARE USED TO AUTOMATICALLY RENDER FORMS (BOTH DISPLAY AND EDIT) BASED ON THE METADATA IF NO EDIT OR DISPLAY METHOD ARE PROVIDED.
 		 --------------------------------->
-		<cfif structKeyExists(application.types[typename], "stProps")>
+		<cfif structKeyExists(application.types, typename) AND structKeyExists(application.types[typename], "stProps")>
 			
 			<!--- Prepare a temporary metadata query that will later be sorted and sent into the types metadata structure. --->
 			<cfset qMetadataSetup = queryNew("typename,propertyname,ftSeq,ftFieldset,ftWizzardStep","varchar,varchar,Integer,varchar,varchar") />
@@ -314,7 +314,7 @@ $out:$
 		WE NEED TO SETUP FTSEQ, FTFIELDSET & FTWIZZARDSTEP
 		THESE PROPERTIES ARE USED TO AUTOMATICALLY RENDER FORMS (BOTH DISPLAY AND EDIT) BASED ON THE METADATA IF NO EDIT OR DISPLAY METHOD ARE PROVIDED.
 		 --------------------------------->
-		<cfif structKeyExists(application.types[typename], "stProps")>
+		<cfif structKeyExists(application.types, typename) AND structKeyExists(application.types[typename], "stProps")>
 			
 			<!--- Prepare a temporary metadata query that will later be sorted and sent into the types metadata structure. --->
 			<cfset qMetadataSetup = queryNew("typename,propertyname,ftSeq,ftFieldset,ftWizzardStep","varchar,varchar,Integer,varchar,varchar") />
@@ -445,7 +445,7 @@ $out:$
 		WE NEED TO SETUP FTSEQ, FTFIELDSET & FTWIZZARDSTEP
 		THESE PROPERTIES ARE USED TO AUTOMATICALLY RENDER FORMS (BOTH DISPLAY AND EDIT) BASED ON THE METADATA IF NO EDIT OR DISPLAY METHOD ARE PROVIDED.
 		 --------------------------------->
-		<cfif structKeyExists(application.rules[qRules.rulename], "stProps")>
+		<cfif structKeyExists(application.rules, qRules.rulename) AND  structKeyExists(application.rules[qRules.rulename], "stProps")>
 			
 			<!--- Prepare a temporary metadata query that will later be sorted and sent into the types metadata structure. --->
 			<cfset qMetadataSetup = queryNew("typename,propertyname,ftSeq,ftFieldset,ftWizzardStep","varchar,varchar,Integer,varchar,varchar") />
