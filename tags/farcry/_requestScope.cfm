@@ -50,6 +50,9 @@ request.mode.design = 0;
 request.mode.flushcache = 0;
 request.mode.showdraft = 0;
 
+// Developer Mode
+request.mode.bDeveloper = 0;
+
 // container management
 // default to off, conjurer determines permissions based on nav-node
 request.mode.showcontainers = 0; 
