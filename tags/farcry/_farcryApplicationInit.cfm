@@ -51,7 +51,38 @@ $Developer: Mat Bryant (mat@daemon.com.au)$
     // refresh the friendly url sub-system
     objFU = createObject("component","#application.packagepath#.farcry.fu");
     objFU.refreshApplicationScope();
+    
+    
+    // System Information. This provides information about the environment on which the application is being run
+    oSysInfo=createObject("component","#application.packagepath#.farcry.sysinfo");
+    
+    application.sysInfo=structNew();    
+	application.sysInfo.machineName = oSysInfo.getMachineName();
+	application.sysInfo.instanceName = oSysInfo.getInstanceName();
+	application.sysInfo.farcryVersionTagLine = oSysInfo.getVersionTagline();
+	
+	
 </cfscript>
+
+
+<!--------------------------------------------------------------------------------------------------------------- 
+Check to see if Important project specific files exist. This removes the need to continually check on each request. 
+------------------------------------------------------------------------------------------------------------------>
+
+<!--- _serverSpecificRequestScope.cfm --->
+<cfif fileExists("#application.path.project#/config/_serverSpecificRequestScope.cfm")>
+	<cfset application.sysInfo.bServerSpecificRequestScope = "true" />
+<cfelse>
+	<cfset application.sysInfo.bServerSpecificRequestScope = "false" />
+</cfif>
+
+<!--- apps.cfm --->
+<cfif fileExists("/farcry/apps.cfm")>
+	<cfset application.sysInfo.bApps = "true" />
+<cfelse>
+	<cfset application.sysInfo.bApps = "false" />
+</cfif>
+	
 
 <!--- alert user that application scope has been refreshed --->
 <cfif isDefined("URL.updateApp") AND URL.updateApp>
