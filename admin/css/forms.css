@@ -66,6 +66,14 @@
 			padding: 2px 5px;
 		}	
 		
+
+		.array div.fieldwrap {
+			display: block;
+			margin: 0px 0px 5px 165px;
+			padding: 2px 5px;
+
+		}
+		
 		.helpsectionmargin .fieldwrap {
 			margin-right:200px;
 		}
@@ -132,13 +140,15 @@ td .fieldwrap, th .fieldwrap {
 	margin-left:0px;
 }	
 		
-.richtext label, .longchar label, .array label {
+.richtext label, .longchar label {
   float: none;
   display: block;
 }
-.full div.fieldwrap, .richtext div.fieldwrap, .longchar div.fieldwrap, .array div.fieldwrap {
-  margin: 0px;  
+.full div.fieldwrap, .richtext div.fieldwrap, .longchar div.fieldwrap {
+  margin: 0px; 
+
 }
+
 
 .richtext textarea, .longchar textarea {
 	/*width:350px;*/
