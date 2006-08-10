@@ -71,6 +71,40 @@ default handlers
 		</cfif>
 	</cffunction>
 	
+	<cffunction name="getView" access="public" output="no" returntype="string" hint="Returns the HTML of a view from the webskin content type folder.">
+		<cfargument name="objectid" required="no" type="UUID" hint="ObjectID of the object that is to be rendered by the webskin view." />
+		<cfargument name="template" required="yes" type="string" hint="Name of the template in the corresponding content type webskin folder, without the .cfm extension." />
+		<cfargument name="stparam" required="false" type="struct" hint="Structure of parameters to be passed into the display handler." />
+		<cfargument name="stobject" required="no" type="struct" hint="Property structure to render in view.  Overrides any property structure mapped to arguments.objectid. Useful if you want to render a view with a modified content item.">
+		<cfargument name="dsn" required="no" type="string" default="#application.dsn#">
+		<cfargument name="OnExit" required="no" type="any" default="">
+		
+		<cfset var result = "" />
+		<cfset var stObj = StructNew() />
+		
+		<cfif isDefined("arguments.stobject")>
+			<cfset stobj=arguments.stobject />
+		<cfelse>
+			<!--- If the objectid has not been sent, we need to create a default object. --->
+			<cfparam name="arguments.objectid" default="#CreateUUID()#" type="uuid">
+			<!--- get the data for this instance --->
+			<cfset stObj = getData(objectid=arguments.objectID,dsn=arguments.dsn)>		
+		</cfif>
+
+		<cfif NOT structIsEmpty(stObj)>
+			<cfif NOT fileExists("#ExpandPath(displayTemplatePath(typename=stObj.typename, template=arguments.template))#")>
+				<cfthrow type="Application" detail="Error: Template not found [#ExpandPath(displayTemplatePath(typename=stObj.typename, template=arguments.template))#]." />
+			</cfif>
+			
+			<cfsavecontent variable="result">
+				<cfinclude template="#displayTemplatePath(typename=stObj.typename, template=arguments.template)#">
+			</cfsavecontent>
+			
+		</cfif>
+		
+		<cfreturn result />
+	</cffunction>
+		
 	<cffunction name="displayTemplatePath" returntype="string" access="private" output="no" hint="Returns a template path for a webskin view.">
 		<cfargument name="typename" type="string" required="yes" />
 		<cfargument name="template" type="string" required="yes" />
