@@ -159,7 +159,7 @@ if (structCount(stObj))
 <cfif FileExists("#application.path.project#/webskin/#stObj.Typename#/edit.cfm")>
 	<cfset oType.getDisplay(stObject=stobj, template="edit", onExit="#stOnExit#") /><!--- #application.url.farcry#/edittabOverview.cfm?objectid=#stObj.ObjectID# --->
 <cfelse>
-	<cfset oType.ftEdit(objectid=attributes.objectid, onExit="#stOnExit#") />
+	<cfset oType.edit(objectid=attributes.objectid, onExit="#stOnExit#") />
 </cfif>
 
 <cfsetting enablecfoutputonly="No">

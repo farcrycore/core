@@ -243,7 +243,7 @@ default handlers
 		</cfif>
 	</cffunction>
 	
-	<cffunction name="edit" access="public" output="true" returntype="void">
+	<cffunction name="editDeprecated" access="public" output="true" returntype="void">
 		<cfargument name="ObjectID" required="true" type="UUID">
 		<cfargument name="lFields" required="false" type="string" default="">
 		<cfargument name="cancelCompleteURL" required="false" type="string" default="">
@@ -418,7 +418,7 @@ default handlers
 		 --->
 	</cffunction>
 	
-	<cffunction name="ftEdit" access="public" output="true" returntype="void">
+	<cffunction name="Edit" access="public" output="true" returntype="void">
 		<cfargument name="ObjectID" required="yes" type="string" default="">
 		<cfargument name="onExit" required="no" type="any" default="Refresh">
 		
