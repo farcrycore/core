@@ -113,9 +113,56 @@ default handlers
 
 	<cffunction name="display" access="public" returntype="any" output="Yes">
 		<cfargument name="objectid" required="yes" type="UUID">
-		<cfset var myObject = getData(arguments[1])>
+		
+		
+		<!---<cfset var myObject = getData(arguments[1])>
 		<cfoutput><p>This is the default output of <strong>types.Display()</strong>:</p></cfoutput>
-		<cfdump var="#myObject#">
+		<cfdump var="#myObject#"> --->
+		
+		<cfset var stObj = getData(objectid=arguments.objectid) />
+		<cfset var HTML = "" />
+		<cfset var qMetadata = queryNew("objectID") />
+		
+		<cfif fileExists("#application.path.project#/webskin/#stobj.typename#/displayPageStandard.cfm")>
+			<cfset HTML = getView(stobject=stObj, Template="displayPageStandard") />
+			<cfoutput>#HTML#</cfoutput>		
+		
+		<cfelse>
+			
+			
+			<cfset qMetadata = application.types[stobj.typename].qMetadata >
+			
+			
+			<cfquery dbtype="query" name="qFieldSets">
+			SELECT ftWizzardStep, ftFieldset
+			FROM qMetadata
+			WHERE ftFieldset <> '#stobj.typename#'
+			Group By ftWizzardStep, ftFieldset
+			ORDER BY ftSeq
+			</cfquery>
+			
+			<cfif qFieldSets.recordcount GT 1>
+				
+				<cfloop query="qFieldSets">
+					<cfquery dbtype="query" name="qFieldset">
+					SELECT *
+					FROM qMetadata
+					WHERE ftFieldset = '#qFieldsets.ftFieldset#'
+					ORDER BY ftSeq
+					</cfquery>
+					
+					<ft:object ObjectID="#arguments.ObjectID#" format="display" lExcludeFields="label" lFields="#valuelist(qFieldset.propertyname)#" inTable=false IncludeFieldSet=1 Legend="#qFieldSets.ftFieldset#" />
+				</cfloop>
+				
+				
+			<cfelse>
+			
+				<!--- default edit handler --->
+				<ft:object ObjectID="#arguments.ObjectID#" format="display" lExcludeFields="label" lFields="" inTable=false IncludeFieldSet=1 Legend="#stObj.Label#" />
+			</cfif>
+		
+		</cfif>		
+				
 	</cffunction>
 	
 	<cffunction name="createData" access="public" returntype="any" output="false" hint="Creates an instance of an object">
@@ -878,7 +925,7 @@ default handlers
 		SELECT #arguments.Link#.*
 		FROM #arguments.typename#_#arguments.Fieldname#
 		INNER JOIN #arguments.Link# ON #arguments.typename#_#arguments.Fieldname#.data = #arguments.Link#.ObjectID
-		WHERE #arguments.typename#_#arguments.Fieldname#.objectid = '#arguments.ObjectID#'
+		WHERE #arguments.typename#_#arguments.Fieldname#.parentID = '#arguments.ObjectID#'
 		ORDER BY #arguments.typename#_#arguments.Fieldname#.seq ASC
 		</cfquery>		
 				
