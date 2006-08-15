@@ -32,21 +32,18 @@ Copy Files from Old Locations to New Locations
 
 	<cfwddx action="wddx2cfml" input="#qList.wconfig#" output="stConfig">
 	
-	<cfif NOT StructKeyExists(stConfig,"SourceImagePath")>
+	<cfparam name="stConfig.SourceImagePath" default="#application.path.project#/www/images/Source" />
+	<cfparam name="stConfig.SourceImageURL" default="/images/Source" />
+	<cfparam name="stConfig.ThumbnailImagePath" default="#application.path.project#/www/images/Thumbnail" />
+	<cfparam name="stConfig.ThumbnailImageURL" default="/images/Thumbnail" />
+	<cfparam name="stConfig.ThumbnailImageWidth" default="80" />
+	<cfparam name="stConfig.ThumbnailImageHeight" default="80" />
 	
-		<cfset stConfig.SourceImagePath = "#application.path.project#/www/images/Source" />
-		<cfset stConfig.SourceImageURL = "/images/Source" />
-		
-		<cfset stConfig.ThumbnailImagePath = "#application.path.project#/www/images/Thumbnail" />
-		<cfset stConfig.ThumbnailImageURL = "/images/Thumbnail" />
-		<cfset stConfig.ThumbnailImageWidth = "80" />
-		<cfset stConfig.ThumbnailImageHeight = "80" />
-		
-		<cfset stConfig.StandardImagePath = "#application.path.project#/www/images/Standard" />
-		<cfset stConfig.StandardImageURL = "/images/Standard" />
-		<cfset stConfig.StandardImageWidth = "400" />
-		<cfset stConfig.StandardImageHeight = "400" />
-	</cfif>
+	<cfparam name="stConfig.StandardImagePath" default="#application.path.project#/www/images/Standard" />
+	<cfparam name="stConfig.StandardImageURL" default="/images/Standard" />
+	<cfparam name="stConfig.StandardImageWidth" default="400" />
+	<cfparam name="stConfig.StandardImageHeight" default="400" />
+
 	
 	<cfwddx action="CFML2WDDX" input="#stConfig#" output="wConfig">
 	<cfquery name="qUpdate" datasource="#application.dsn#">
