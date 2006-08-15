@@ -12,6 +12,7 @@
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 
 		<cfset var stobj = structnew() / >
+		<cfset var lArrayObjectIDs = "" />
 		
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedMethod" default="LibrarySelected">
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedListClass" default="thumbNailsWrap">
@@ -35,54 +36,65 @@
 		
 		<cfsavecontent variable="returnHTML">
 			
-		
 			
-				<cfoutput><input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="#arrayToList(arguments.stObject[arguments.stMetaData.Name])#" /></cfoutput>
-				<cfif ListLen(arrayToList(arguments.stObject[arguments.stMetaData.Name]))>
-					<cfoutput><div id="#ULID#" class="#arguments.stMetadata.ftLibrarySelectedListClass#" style="#arguments.stMetadata.ftLibrarySelectedListStyle#"></cfoutput>
-						<cfloop list="#arrayToList(arguments.stObject[arguments.stMetaData.Name])#" index="i">
-							<cfoutput><div id="#arguments.fieldname#_#i#">
-								<img src="#application.url.farcry#/images/dragbar.gif" class="#ULID#handle" style="cursor:move;" align="center">
-								<div></cfoutput>
-								<cfset stobj = oData.getData(objectid=i)>
-								<cfif FileExists("#application.path.project#/webskin/#arguments.stMetadata.ftJoin#/#arguments.stMetadata.ftLibrarySelectedMethod#.cfm")>
-									<cfset oData.getDisplay(stObject=stobj, template="#arguments.stMetadata.ftLibrarySelectedMethod#") />
-									<!---<cfinclude template="/farcry/#application.applicationname#/webskin/#arguments.stMetadata.ftJoin#/#arguments.stMetadata.ftLibrarySelectedMethod#.cfm"> --->
-								<cfelse>
-									<cfif isDefined("stobj.label") AND len(stobj.label)>
-										<cfoutput>#stobj.Label#</cfoutput>
-									<cfelse>
-										<cfoutput>#stobj.ObjectID#</cfoutput>
-									</cfif>
-								</cfif>
-												
-								<cfoutput><a href="##" onclick="new Effect.Fade($('#arguments.fieldname#_#i#'));Element.remove('#arguments.fieldname#_#i#');$('#arguments.fieldname#').value = Sortable.sequence('#ULID#');update_#arguments.fieldname#('sort',$('#arguments.fieldname#')); return false;"><img src="#application.url.farcry#/images/crystal/22x22/actions/button_cancel.png" style="width:16px;height:16px;" /></a>
-								</div>
-							</div></cfoutput>
-						</cfloop>
-					<cfoutput></div></cfoutput>
-				
-					<cfoutput>
-					<script type="text/javascript" language="javascript" charset="utf-8">					
-					// <![CDATA[
-						  Sortable.create('#ULID#',
-						  	{ghosting:false,constraint:false,hoverclass:'over',handle:'#ULID#handle',constraint:'vertical',tag:'div',
-						    onChange:function(element){
-						    	$('#arguments.fieldname#').value = Sortable.sequence('#ULID#');	
-						    },
-						    onUpdate:function(element){					
-					   			update_#arguments.fieldname#('sort',element);
-						    }
-						    
-						  });
-						// ]]>	
-					
-					</script>
-				</cfoutput>
-				
+			<cfloop from ="1" to="#arrayLen(arguments.stObject[arguments.stMetaData.Name])#" index="i">
+				<cfif isStruct(arguments.stObject[arguments.stMetaData.Name][i]) AND structKeyExists(arguments.stObject[arguments.stMetaData.Name][i],"data")>
+					<cfset lArrayObjectIDs = ListAppend(lArrayObjectIDs,arguments.stObject[arguments.stMetaData.Name][i].data)>
 				<cfelse>
-					<cfoutput>&nbsp;</cfoutput> 
+					<cfset lArrayObjectIDs = ListAppend(lArrayObjectIDs,arguments.stObject[arguments.stMetaData.Name][i])>
 				</cfif>
+				
+			</cfloop>		
+			
+			<!--- Contains a list of objectID's currently associated with this field' --->
+			<cfoutput><input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="#lArrayObjectIDs#" /></cfoutput>
+			
+			
+			<cfif ListLen(lArrayObjectIDs)>
+				<cfoutput><div id="#ULID#" class="#arguments.stMetadata.ftLibrarySelectedListClass#" style="#arguments.stMetadata.ftLibrarySelectedListStyle#"></cfoutput>
+					<cfloop list="#lArrayObjectIDs#" index="i">
+						<cfoutput><div id="#arguments.fieldname#_#i#">
+							<img src="#application.url.farcry#/images/dragbar.gif" class="#ULID#handle" style="cursor:move;" align="center">
+							<div></cfoutput>
+							<cfset stobj = oData.getData(objectid=i)>
+							<cfif FileExists("#application.path.project#/webskin/#arguments.stMetadata.ftJoin#/#arguments.stMetadata.ftLibrarySelectedMethod#.cfm")>
+								<cfset oData.getDisplay(stObject=stobj, template="#arguments.stMetadata.ftLibrarySelectedMethod#") />
+								<!---<cfinclude template="/farcry/#application.applicationname#/webskin/#arguments.stMetadata.ftJoin#/#arguments.stMetadata.ftLibrarySelectedMethod#.cfm"> --->
+							<cfelse>
+								<cfif isDefined("stobj.label") AND len(stobj.label)>
+									<cfoutput>#stobj.Label#</cfoutput>
+								<cfelse>
+									<cfoutput>#stobj.ObjectID#</cfoutput>
+								</cfif>
+							</cfif>
+											
+							<cfoutput><a href="##" onclick="new Effect.Fade($('#arguments.fieldname#_#i#'));Element.remove('#arguments.fieldname#_#i#');$('#arguments.fieldname#').value = Sortable.sequence('#ULID#');update_#arguments.fieldname#('sort',$('#arguments.fieldname#')); return false;"><img src="#application.url.farcry#/images/crystal/22x22/actions/button_cancel.png" style="width:16px;height:16px;" /></a>
+							</div>
+						</div></cfoutput>
+					</cfloop>
+				<cfoutput></div></cfoutput>
+			
+				<cfoutput>
+				<script type="text/javascript" language="javascript" charset="utf-8">					
+				// <![CDATA[
+					  Sortable.create('#ULID#',
+					  	{ghosting:false,constraint:false,hoverclass:'over',handle:'#ULID#handle',constraint:'vertical',tag:'div',
+					    onChange:function(element){
+					    	$('#arguments.fieldname#').value = Sortable.sequence('#ULID#');	
+					    },
+					    onUpdate:function(element){					
+				   			update_#arguments.fieldname#('sort',element);
+					    }
+					    
+					  });
+					// ]]>	
+				
+				</script>
+			</cfoutput>
+			
+			<cfelse>
+				<cfoutput>&nbsp;</cfoutput> 
+			</cfif>
 			
 			<cfoutput>	
 			<script type="text/javascript" language="javascript" charset="utf-8">
