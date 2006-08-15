@@ -51,7 +51,7 @@ object methods
 	<cfargument name="dsn" required="yes" type="string" default="#application.dsn#">
 	
 	<cfquery name="qGetParent" datasource="#arguments.dsn#">
-		SELECT objectid FROM #application.dbowner#dmNavigation_aObjectIDs
+		SELECT parentid FROM #application.dbowner#dmNavigation_aObjectIDs
 		WHERE data = '#arguments.objectid#'	
 	</cfquery>
 	
