@@ -58,6 +58,8 @@
 	<cfif isDefined("attributes.SaveWizzard") and attributes.SaveWizzard EQ "true">
 		<cfloop list="#structKeyList(stWizzard.Data)#" index="i">
 			<cfset stProperties = stWizzard.Data[i]>
+			<cfset stProperties.locked = "0" />
+			<cfset stProperties.lockedby = ""/>
 			<cfset typename = oWizzard.FindType(ObjectID=i) />				
 			<cfset otype = createObject("component",application.types["#stWizzard.Data[i]['typename']#"].typepath) />
 			<cfset stResult = otype.setData(stProperties=stProperties) />
