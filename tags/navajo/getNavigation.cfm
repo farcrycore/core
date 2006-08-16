@@ -32,7 +32,7 @@
 		}
 		else
 		{
-			lObjectIds = q.objectid;
+			lObjectIds = q.parentid;
 			if (len(attributes.r_stObject))  //get parent as object if required
 				parentNav = oNav.getData(objectid=lObjectIds,dsn=application.dsn);
 			
