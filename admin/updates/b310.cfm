@@ -145,13 +145,7 @@ Copy Files from Old Locations to New Locations
 	<cftry>
 	
 			
-		<cfquery name="qUpdate" datasource="#application.dsn#">
-		UPDATE	#application.dbowner#dmImage
-		SET		ThumbnailImage = '',
-				StandardImage = '',
-				SourceImage = ''
-		</cfquery>	
-		
+	
 		<cfquery datasource="#application.dsn#" name="qImages">
 		SELECT * FROM dmImage
 		</cfquery>
