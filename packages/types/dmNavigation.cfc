@@ -26,13 +26,13 @@ $out:$
 <!------------------------------------------------------------------------
 type properties
 ------------------------------------------------------------------------->	
-<cfproperty name="title" type="nstring" hint="Object title.  Same as Label, but required for overview tree render." required="no" default="">
-<cfproperty name="aObjectIDs" type="array" hint="Holds objects to be displayed at this particular node.  Can be of mixed types." required="no" default=""> 
-<cfproperty name="ExternalLink" type="string" hint="URL to an external (ie. off site) link." required="no" default="">
-<cfproperty name="lNavIDAlias" type="string" hint="A Nav alias provides a human interpretable link to this navigation node.  Each Nav alias is set up as key in the structure application.navalias.<i>aliasname</i> with a value equal to the navigation node's UUID." required="no" default="">
-<cfproperty name="options" type="string" hint="No idea what this is for." required="no" default="">
-<cfproperty name="status" type="string" hint="Status of the node (draft, pending, approved)." required="yes" default="draft">
-<cfproperty name="fu" type="string" hint="Friendly URL for this node." required="no" default="">
+<cfproperty ftSeq="1" name="title" type="nstring" hint="Object title.  Same as Label, but required for overview tree render." required="no" default="" ftLabel="Title" />
+<cfproperty ftSeq="2" name="aObjectIDs" type="array" hint="Holds objects to be displayed at this particular node.  Can be of mixed types." required="no" default="" ftJoin="dmImage" />
+<cfproperty ftSeq="3" name="ExternalLink" type="string" hint="URL to an external (ie. off site) link." required="no" default="" ftLabel="External Link" />
+<cfproperty ftSeq="4" name="lNavIDAlias" type="string" hint="A Nav alias provides a human interpretable link to this navigation node.  Each Nav alias is set up as key in the structure application.navalias.<i>aliasname</i> with a value equal to the navigation node's UUID." required="no" default="" ftLabel="Alias" />
+<cfproperty ftSeq="5" name="options" type="string" hint="No idea what this is for." required="no" default="" ftLabel="Options" />
+<cfproperty ftSeq="6" name="status" type="string" hint="Status of the node (draft, pending, approved)." required="yes" default="draft" ftLabel="Status" />
+<cfproperty ftSeq="7" name="fu" type="string" hint="Friendly URL for this node." required="no" default="" ftLabel="Friendly URL" />
 
 <!------------------------------------------------------------------------
 object methods 
