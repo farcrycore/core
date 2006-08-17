@@ -13,6 +13,8 @@
 
 		<cfparam name="arguments.stMetadata.ftstyle" default="">
 		<cfparam name="arguments.stMetadata.ftDestination" default="/images">
+		<cfparam name="arguments.stMetadata.ftCreateFromSourceOption" default="true">
+		<cfparam name="arguments.stMetadata.ftCreateFromSourceDefault" default="true">
 		
 		<cfset Request.inHead.Scriptaculous = 1>
 		
@@ -21,6 +23,13 @@
 				<table>
 				<tr>
 					<td valign="top">
+						<cfif arguments.stMetadata.ftCreateFromSourceOption>
+							<!--- TODO: If change to off then deactivate the browse button --->
+							<div>
+							<input type="checkbox" name="#arguments.fieldname#CreateFromSource" id="#arguments.fieldname#CreateFromSource" value="true" <cfif arguments.stMetadata.ftCreateFromSourceDefault>checked</cfif>> generate based on "Source Image"
+							<input type="hidden" name="#arguments.fieldname#CreateFromSource" id="#arguments.fieldname#CreateFromSource" value="false" />
+							</div>
+						</cfif>
 						<input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#arguments.stMetadata.value#" />
 						<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" value="" style="#arguments.stMetadata.ftstyle#" />
 					</td>
@@ -62,16 +71,19 @@
 		<cfargument name="stFieldPost" required="true" type="struct" hint="The fields that are relevent to this field type. Includes Value and stSupporting">
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		
-		<cfset var stResult = structNew()>		
+		<cfset var stResult = structNew()>
+		<cfset var stGeneratedImageArgs = StructNew() />		
+		<cfset var stGeneratedImage = structNew() />
+		
 		<cfset stResult.bSuccess = true>
 		<cfset stResult.value = stFieldPost.value>
 		<cfset stResult.stError = StructNew()>
 		
 		<cfparam name="arguments.stMetadata.ftDestination" default="#application.config.image.SourceImageURL#">
-		<cfparam name="arguments.stMetadata.ftImageWidth" default="">
-		<cfparam name="arguments.stMetadata.ftImageHeight" default="">
-		<cfparam name="arguments.stMetadata.ftThumbnail" default="false"><!--- pads out the image to the required width/height --->
-		<cfparam name="arguments.stMetadata.ftThumbnailBGColor" default="white">
+		<cfparam name="arguments.stMetadata.ftImageWidth" default="#application.config.image.standardImageWidth#">
+		<cfparam name="arguments.stMetadata.ftImageHeight" default="#application.config.image.standardImageHeight#">
+		<cfparam name="arguments.stMetadata.ftAutoGenerateType" default="FitInside">
+		<cfparam name="arguments.stMetadata.ftPadColor" default="##ffffff">
 		<cfparam name="arguments.stMetadata.ftThumbnailBevel" default="No">
 		
 		<!--- --------------------------- --->
@@ -89,70 +101,26 @@
 		        filefield="#stMetadata.FormFieldPrefix##stMetadata.Name#New" 
 		        destination="#application.path.project#/www#arguments.stMetadata.ftDestination#"
 				nameconflict="MAKEUNIQUE">
-			
-		
-		
-			<!---
-			<cfparam name="arguments.stFields['#i#'].metadata.ftImageWidth" default="#application.config.image.ThumbnailImageWidth#">
-			<cfparam name="arguments.stFields['#i#'].metadata.ftImageHeight" default="#application.config.image.StandardImageURL#">
-			<cfparam name="arguments.stFields['#i#'].metadata.ftDestination" default="#application.config.image.ThumbnailImageHeight#">
-			<cfparam name="arguments.stFields['#i#'].metadata.ftAutoGenerateType" default="FitInside">
-			
-			<cfset stArgs = StructNew() />
-			<cfset stArgs.Source = "#arguments.stProperties.SourceImage#" />
-			<cfset stArgs.Width = "#arguments.stFields['#i#'].metadata.ftImageWidth#" />
-			<cfset stArgs.Height = "#arguments.stFields['#i#'].metadata.ftImageHeight#" />
-			<cfset stArgs.Destination = "#arguments.stFields['#i#'].metadata.ftDestination#" />			
-			<cfset stArgs.AutoGenerateType = "#arguments.stFields['#i#'].metadata.ftAutoGenerateType#" />
-			
-			<cfset stProperties['#i#'] = GenerateImage(Source="#stArgs.Source#", Destination="#stArgs.Destination#", Width="#stArgs.Width#", Height="#stArgs.Height#", AutoGenerateType="#stArgs.AutoGenerateType#") />
-			 --->
 
-			<cfif arguments.stMetadata.ftThumbnail>
-			
-				<cfx_image action="resize"
-					file="#application.path.project#/www#arguments.stMetadata.ftDestination#/#File.ServerFile#"
-					output="#application.path.project#/www#arguments.stMetadata.ftDestination#/#File.ServerFile#"
-					X="#arguments.stMetadata.ftImageWidth#"
-					Y="#arguments.stMetadata.ftImageHeight#"
-					thumbnail=yes
-					bevel="#arguments.stMetadata.ftThumbnailBevel#"
-					backcolor="#arguments.stMetadata.ftThumbnailBGColor#">
-			
-			<cfelse>
-		
+				<cfif len(arguments.stMetaData.ftImageWidth) OR len(arguments.stMetaData.ftImageHeight)>
+					<cfset stGeneratedImageArgs.Source = "#application.path.project#/www#arguments.stMetadata.ftDestination#/#File.ServerFile#" />
+					<cfset stGeneratedImageArgs.Destination = "" />			
+					<cfset stGeneratedImageArgs.Width = "#arguments.stMetadata.ftImageWidth#" />
+					<cfset stGeneratedImageArgs.Height = "#arguments.stMetadata.ftImageHeight#" />
+					<cfset stGeneratedImageArgs.AutoGenerateType = "#arguments.stMetadata.ftAutoGenerateType#" />
+					<cfset stGeneratedImageArgs.PadColor = "#arguments.stMetadata.ftPadColor#" />
 
-				
-				<cfif len(arguments.stMetadata.ftImageWidth) AND arguments.stMetadata.ftImageWidth GT 0>
-					<cfx_image action="read"
-						file="#application.path.project#/www#arguments.stMetadata.ftDestination#/#File.ServerFile#">
-						
-					<cfif IMG_WIDTH GT arguments.stMetadata.ftImageWidth>
-						<cfx_image action="resize"
-								file="#application.path.project#/www#arguments.stMetadata.ftDestination#/#File.ServerFile#"
-								output="#application.path.project#/www#arguments.stMetadata.ftDestination#/#File.ServerFile#"
-								X="#arguments.stMetadata.ftImageWidth#">
+					<cfset stGeneratedImage = GenerateImage(Source="#stGeneratedImageArgs.Source#", Destination="#stGeneratedImageArgs.Destination#", Width="#stGeneratedImageArgs.Width#", Height="#stGeneratedImageArgs.Height#", AutoGenerateType="#stGeneratedImageArgs.AutoGenerateType#", PadColor="#stGeneratedImageArgs.PadColor#") />
+					<cfif stGeneratedImage.bSuccess>
+						<cfset stResult.value = "#arguments.stMetadata.ftDestination#/#file.serverFile#" />
 					</cfif>
-				</cfif>	
-			
-				<cfif len(arguments.stMetadata.ftImageHeight) AND arguments.stMetadata.ftImageHeight GT 0>
-					<cfx_image action="read"
-						file="#application.path.project#/www#arguments.stMetadata.ftDestination#/#File.ServerFile#">
-						
-					<cfif IMG_HEIGHT GT arguments.stMetadata.ftImageHeight>
-						<cfx_image action="resize"
-								file="#application.path.project#/www#arguments.stMetadata.ftDestination#/#File.ServerFile#"
-								output="#application.path.project#/www#arguments.stMetadata.ftDestination#/#File.ServerFile#"
-								Y="#arguments.stMetadata.ftImageHeight#">
-					</cfif>
-				</cfif>	
+				<cfelse>
+					<cfset stResult.value = "#arguments.stMetadata.ftDestination#/#file.serverFile#" />	
+				</cfif>
 				
-			</cfif>
-					
-									
-			<!--- </cfif> --->
-			<cfset stResult.value = "#arguments.stMetadata.ftDestination#/#File.ServerFile#">
-			
+
+		
+		
 			
 		</cfif>
 		
@@ -167,37 +135,57 @@
 	</cffunction>
 
 
-	<cffunction name="GenerateImage" access="private" output="false" returntype="string">
-		<cfargument name="Source" required="false" default="#application.config.image.StandardImageURL#" hint="The webroot URL where the image that is being used to generate this new image is located.">
-		<cfargument name="Destination" required="false" default="#application.config.image.StandardImageURL#" hint="The webroot URL where the image will be stored.">
+	<cffunction name="GenerateImage" access="public" output="false" returntype="struct">
+		<cfargument name="Source" required="true" hint="The absolute path where the image that is being used to generate this new image is located.">
+		<cfargument name="Destination" required="false" default="" hint="The absolute path where the image will be stored.">
 		<cfargument name="Width" required="false" default="#application.config.image.StandardImageWidth#" hint="The maximum width of the new image.">
 		<cfargument name="Height" required="false" default="#application.config.image.StandardImageHeight#" hint="The maximum height of the new image.">
 		<cfargument name="AutoGenerateType" required="false" default="FitInside" hint="How is the new image to be generated (ForceSize,FitInside,Pad)">
+		<cfargument name="PadColor" required="false" default="##ffffff" hint="If AutoGenerateType='Pad', image will be padded with this colour">
+		<cfargument name="Bevel" required="false" default="no" hint="Will this image have a bevel edge">
 		
+		<cfset var ImageDestination = arguments.Source />
+		<cfset var stResult = structNew() />
+		<cfset stResult.bSuccess = true />
+		<cfset stResult.message = "" />
+		<cfset stResult.filename = "" />
+		
+			
 		<!---
 		FTAUTOGENERATETYPE OPTIONS
 		ForceSize - Ignores source image aspect ratio and forces the new image to be the size set in the metadata width/height
 		FitInside - Reduces the width and height so that it fits in the box defined by the metadata width/height
 		Pad - Reduces the width and height so that it fits in the box defined by the metadata width/height and then pads the image so it ends up being the metadata width/height
 		 --->
+		
+		<!--- TODO: set a try/catch block to catch any errors in the return struct --->
 		 
 		<!--- Image has changed --->
-		<cfif NOT DirectoryExists("#application.path.project#/www#arguments.Destination#")>
-			<cfdirectory action="create" directory="#application.path.project#/www#arguments.Destination#">
-		</cfif>
 		
-		<cffile action="copy" 
-			source="#application.path.project#/www#arguments.Source#"
-			destination="#application.path.project#/www#arguments.Destination#" >
-
+		<cfif len(arguments.destination)>
+		
+			<cfset ImageDestination = arguments.Destination />
+			
+			<cfif NOT DirectoryExists("#ImageDestination#")>
+				<cfdirectory action="create" directory="#ImageDestination#">
+			</cfif>
+					
+			<cffile action="copy" 
+				source="#arguments.Source#"
+				destination="#ImageDestination#">
+			
+			<cfset ImageDestination = ImageDestination & "/#File.ServerFile#" />
+			
+			<cfset stResult.filename = File.ServerFile />	
+		</cfif>
 		
 		<cfswitch expression="#arguments.AutoGenerateType#">
 		
 			<cfcase value="ForceSize">
 				<!--- Simply force the resize of the image into the width/height provided --->
 				<cfx_image action="resize"
-					file="#application.path.project#/www#arguments.Destination#/#File.ServerFile#"
-					output="#application.path.project#/www#arguments.Destination#/#File.ServerFile#"
+					file="#ImageDestination#"
+					output="#ImageDestination#"
 					X="#arguments.Width#"
 					Y="#arguments.Height#">
 			</cfcase>
@@ -205,23 +193,23 @@
 			<cfcase value="FitInside">
 				<!--- If the Width of the image is wider than the requested width, resize the image in the correct proportions to be the width requested --->
 				<cfx_image action="read"
-					file="#application.path.project#/www#arguments.Destination#/#File.ServerFile#">
+					file="#ImageDestination#">
 					
 				<cfif IMG_WIDTH GT arguments.Width>
 					<cfx_image action="resize"
-						file="#application.path.project#/www#arguments.Destination#/#File.ServerFile#"
-						output="#application.path.project#/www#arguments.Destination#/#File.ServerFile#"
+						file="#ImageDestination#"
+						output="#ImageDestination#"
 						X="#arguments.Width#">
 				</cfif>
 					
 				<!--- If the height of the image (after the previous width setting) is taller than the requested height, resize the image in the correct proportions to be the height requested --->
 				<cfx_image action="read"
-					file="#application.path.project#/www#arguments.Destination#/#File.ServerFile#">
+					file="#ImageDestination#">
 					
 				<cfif IMG_HEIGHT GT arguments.Height>
 					<cfx_image action="resize"
-						file="#application.path.project#/www#arguments.Destination#/#File.ServerFile#"
-						output="#application.path.project#/www#arguments.Destination#/#File.ServerFile#"
+						file="#ImageDestination#"
+						output="#ImageDestination#"
 						Y="#arguments.Height#">
 				</cfif>
 				
@@ -229,18 +217,18 @@
 			
 			<cfcase value="Pad">
 				<cfx_image action="resize"
-					file="#application.path.project#/www#arguments.Destination#/#File.ServerFile#"
-					output="#application.path.project#/www#arguments.Destination#/#File.ServerFile#"
+					file="#ImageDestination#"
+					output="#ImageDestination#"
 					X="#arguments.Width#"
 					Y="#arguments.Height#"
 					Thumbnail=yes
-					bevel=no
-					backcolor="##4B0102">
+					bevel="#lCase(arguments.Bevel)#"
+					backcolor="#arguments.PadColor#">
 			</cfcase>
 		
 		</cfswitch>
 		 		
-		<cfreturn "#arguments.Destination#/#File.ServerFile#" />
+		<cfreturn stResult />
 	</cffunction>
 	
 	
