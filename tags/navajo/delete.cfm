@@ -42,7 +42,7 @@ $out: <separate entry for each variable>$
 	<cfset parentObjectID = qGetParent.parentID>
 <cfelse> <!--- likely to be a parent object with aObjects property (eg. dmHTML, dmNews) --->
 	<cfset qGetParent = oNav.getParent(objectid=stObj.objectID)>
-	<cfset parentObjectID = qGetParent.objectID>
+	<cfset parentObjectID = qGetParent.parentid>
 </cfif>
 <cfset oAuthorisation = request.dmSec.oAuthorisation>
 <cfset oAuthorisation.checkInheritedPermission(permissionName="edit",objectid=parentobjectid,bThrowOnError=1)>

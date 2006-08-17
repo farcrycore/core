@@ -225,7 +225,7 @@ the latter is the policy group for anonymous...
 <cfset request.stObj = stObj>
 <!--- $TODO: refactor object calls... for now put stOBj into request$ --->
 
-<cfif attributes.method neq "display" AND attributes.lmethods contains attributes.method>
+<cfif attributes.method neq "display" AND  attributes.lmethods contains attributes.method>
 	<!--- ie. if a method has been passed in deliberately and is allowed use this --->
 	<cftrace var="attributes.method" text="Passed in attribute method used" />
 	<q4:contentobject

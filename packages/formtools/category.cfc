@@ -24,7 +24,7 @@
 		<cfelse>
 			<cfset navid = application.catid['root'] >
 		</cfif>
-		
+
 		<cfset oCategory = createObject("component",'farcry.farcry_core.packages.farcry.category')>
 		
 		<cfset lSelectedCategoryID = oCategory.getCategories(objectid=arguments.stObject.ObjectID,bReturnCategoryIDs=true)>

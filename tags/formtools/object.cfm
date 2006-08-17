@@ -24,9 +24,9 @@
 	<cfparam name="attributes.style" default=""><!--- style with which to set all farcry form tags --->
 	<cfparam name="attributes.format" default="edit"><!--- edit or display --->
 	<cfparam name="attributes.IncludeLabel" default="1">
-	<cfparam name="attributes.IncludeFieldSet" default="1">
+	<cfparam name="attributes.IncludeFieldSet" default="">
 	<cfparam name="attributes.IncludeBR" default="1">
-	<cfparam name="attributes.InTable" default="1">
+	<cfparam name="attributes.InTable" default="0">
 	<cfparam name="attributes.insidePLP" default="0"><!--- how are we rendering the form --->
 	<cfparam name="attributes.r_stFields" default=""><!--- the name of the structure that is to be returned with the form field information. --->
 	<cfparam name="attributes.stPropMetadata" default="#structNew()#"><!--- This is used to override the default metadata as setup in the type.cfc --->
@@ -43,7 +43,17 @@
 	<cfset Request.InHead.FormsCSS = 1>
 	
 	
-		
+	<!--- If the attributes [IncludeFieldSet] has not been explicitly defined, work out the value. --->
+	<cfif attributes.includeFieldSet EQ "">
+		<cfif  len(attributes.lFields)>
+			<cfset attributes.includeFieldSet = 1 />
+		<cfelse>
+			<cfset attributes.includeFieldSet = 0 />
+		</cfif>
+	</cfif>
+	
+	
+	<!--- Never render the following fields. --->
 	<cfset attributes.lExcludeFields = ListAppend(attributes.lExcludeFields,"objectid,locked,lockedby,lastupdatedby,ownedby,datetimelastupdated,createdby,datetimecreated,versionID,status")>
 
 	

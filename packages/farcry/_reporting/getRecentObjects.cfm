@@ -29,7 +29,7 @@ $out:$
                 #arguments.objectType#.title,
                 #arguments.objectType#.createdby,
                 #arguments.objectType#.dateTimeCreated,
-                dmNavigation_aObjectIDs.objectid as objectParent
+                dmNavigation_aObjectIDs.parentid as objectParent
 	FROM #application.dbowner##arguments.objectType#,
              #application.dbowner#dmNavigation_aObjectIDs 
 	WHERE dmNavigation_aObjectIDs.data = #arguments.objectType#.objectid

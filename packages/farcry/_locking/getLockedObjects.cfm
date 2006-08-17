@@ -50,7 +50,7 @@ $out:$
 				<cfif structKeyExists(application.types[i], "bUseInTree") and application.types[i].bUseInTree>
 					<!--- get object parent --->
 					<cfquery name="qGetParent" datasource="#application.dsn#">
-						SELECT objectid FROM #application.dbowner#dmNavigation_aObjectIDs 
+						SELECT parentid FROM #application.dbowner#dmNavigation_aObjectIDs 
 						WHERE data = '#objectId#'	
 					</cfquery>
 					<cfset querySetCell(qLockedObjects,"objectParent", qGetParent.objectid)>

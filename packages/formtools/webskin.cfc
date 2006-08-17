@@ -7,10 +7,11 @@
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 		
 		<cfparam name="arguments.stMetadata.ftPrefix" default="">
+		<cfparam name="arguments.stMetadata.ftTypename" default="#arguments.typename#"><!--- The typename that the webskin is to be selected for. It defaults to the typename of the object this field is contained in. --->
 	
 	
-		<cfif directoryExists("#application.path.project#/webskin/#arguments.typename#")>
-			<cfdirectory action="list" directory="#application.path.project#/webskin/#arguments.typename#" name="qWebskin" filter="*.cfm" >
+		<cfif directoryExists("#application.path.project#/webskin/#arguments.stMetadata.ftTypename#")>
+			<cfdirectory action="list" directory="#application.path.project#/webskin/#arguments.stMetadata.ftTypename#" name="qWebskin" filter="*.cfm" >
 		</cfif>
 
 		<!--- This is to overcome casesensitivity issues on mac/linux machines --->
@@ -27,7 +28,7 @@
 		<!--- TODO
 		must be able to do this more neatly with a regEX, especially if we 
 		want more than one bit of template metadata --->
-			<cffile action="READ" file="#application.path.project#/webskin/#arguments.typename#/#qWebskin.name#" variable="template">
+			<cffile action="READ" file="#application.path.project#/webskin/#arguments.stMetadata.ftTypename#/#qWebskin.name#" variable="template">
 		
 			<cfset pos = findNoCase('@@displayname:', template)>
 			<cfif pos eq 0>

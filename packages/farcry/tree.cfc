@@ -501,7 +501,7 @@ ORDER BY ntm.nleft</cfoutput>
 		FROM         
 	 		#arguments.dbOwner#dmNavigation_aObjectIDs o INNER JOIN 
         	refObjects r ON r.objectid = o.data 
-		WHERE  o.objectid IN ('#ListChangeDelims(arguments.lNodeIds,"','",",")#')
+		WHERE  o.parentid IN ('#ListChangeDelims(arguments.lNodeIds,"','",",")#')
 		ORDER BY seq
 	</cfquery>
 	<cfloop query="q">

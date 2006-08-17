@@ -95,8 +95,7 @@
 			
 			
 			<cfparam name="session.dmSec.authentication.userlogin" default="anonymous" />
-			<cfset oPrimary.setData(objectID=stPrimary.ObjectID,stProperties="#stPrimary#",user="#session.dmSec.authentication.userlogin#")>
-			<cfset st = oPrimary.getData(objectid=stPrimary.ObjectID)>
+			<cfset st = oPrimary.setData(objectID=stPrimary.ObjectID,stProperties="#stPrimary#",user="#session.dmSec.authentication.userlogin#")>
 		</cfif>
 	</cfif>
 	

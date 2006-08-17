@@ -152,7 +152,7 @@ this should be a COAPI call and *not* a straight SQL shortcut
 	<cfelseif attributes.get eq "parents">
 	<cfif attributes.typename is attributes.nodetype>
 		<cfquery name="qGetParent" datasource="#application.dsn#">
-			select  parentid AS objectID from #application.dbowner#nested_tree_objects 
+			select  parentid from #application.dbowner#nested_tree_objects 
 		    where objectid  = '#attributes.objectid#'
 		</cfquery>	
 	<cfelse>	
@@ -165,7 +165,7 @@ this should be a COAPI call and *not* a straight SQL shortcut
 		<cfloop condition="loop">
 				
 			<cfquery name="qGetParent" datasource="#application.dsn#">
-				SELECT objectID FROM #application.dbowner##listGetAt(searchlist,listIndex)#_aObjectIDs 
+				SELECT parentID FROM #application.dbowner##listGetAt(searchlist,listIndex)#_aObjectIDs 
 				WHERE data = '#attributes.objectID#'	
 			</cfquery>	
 			<cfif qGetParent.recordCount GT 0>
@@ -186,7 +186,7 @@ this should be a COAPI call and *not* a straight SQL shortcut
 		<cfthrow errorcode="navajo" detail="nj2TreeGetRelations:: Object has more than one parent, objectId='#attributes.objectId#'.">
 	</cfif> --->
 	
-	<cfset lObjectIds=qGetParent.objectId>
+	<cfset lObjectIds=qGetParent.parentid>
 	
 	<cfelse>
 	<cfthrow errorcode="navajo" detail="nj2TreeGetRelations:: Unknown attribute value passed, get='#attributes.get#'.">
