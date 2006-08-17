@@ -26,7 +26,7 @@ $out:$
 <!------------------------------------------------------------------------
 type properties
 ------------------------------------------------------------------------->
-<cfproperty name="title" type="nstring" hint="Image title." required="no" default=""> 
+<cfproperty ftSeq=1 ftFieldset="general" name="title" type="nstring" hint="Image title." required="no" default=""> 
 <cfproperty name="alt" type="nstring" hint="Alternate text" required="no" default="" > 
 <cfproperty name="width" type="nstring" hint="Image width (blank for default)" required="no" default="">  
 <cfproperty name="height" type="nstring" hint="Image height (blank for default)" required="no" default="">  
@@ -42,7 +42,7 @@ type properties
 
 <!--- URL locations to images (includes filename) --->
 <cfproperty name="SourceImage" type="string" hint="The URL location of the uploaded image" required="No" default="" 
-	ftType="Image">
+	ftType="Image" ftCreateFromSourceOption="false">
 <cfproperty name="StandardImage" type="string" hint="The URL location of the optimised uploaded image that should be used for general display" required="no" default="" 
 	ftType="Image"> 
 <cfproperty name="ThumbnailImage" type="string" hint="The URL location of the thumnail of the uploaded image that should be used in " required="no" default="" 
@@ -88,77 +88,55 @@ type properties
 	<cfparam name="arguments.stFields.StandardImage.metadata.ftImageWidth" default="#application.config.image.StandardImageWidth#">
 	<cfparam name="arguments.stFields.StandardImage.metadata.ftImageHeight" default="#application.config.image.StandardImageHeight#">
 	
-	
-	<cfset stObject = getData(objectid=stproperties.objectid) />
-	
-	<cfif structKeyExists(arguments.stProperties, "SourceImage") AND len(arguments.stProperties.SourceImage) AND (NOT isDefined("arguments.stProperties.ThumbnailImage") OR NOT len(arguments.stProperties.ThumbnailImage))>
-		<cfif stObject.SourceImage NEQ arguments.stProperties.SourceImage>
 
-			<!--- Image has changed --->
-			<cfif NOT DirectoryExists("#application.path.project#/www#arguments.stFields.ThumbnailImage.metadata.ftDestination#")>
-				<cfdirectory action="create" directory="#application.path.project#/www#arguments.stFields.ThumbnailImage.metadata.ftDestination#">
+	<!--- IS THERE A SOURCE IMAGE PROVIDED? --->
+	<cfif structKeyExists(arguments.stProperties, "SourceImage") AND len(arguments.stProperties.SourceImage)>
+		
+		<cfset stObject = getData(objectid=stproperties.objectid) />
+		<cfset oImage = createobject("component", "farcry.farcry_core.packages.formtools.image") />
+		
+		<cfset lImageFields = "" />
+		<cfloop list="#StructKeyList(arguments.stFields)#" index="i">
+
+			<cfif structKeyExists(arguments.stFields[i].metadata, "ftType") AND arguments.stFields[i].metadata.ftType EQ "Image" AND i NEQ "SourceImage" >
+				<cfif structKeyExists(arguments.stFormPost, i) AND structKeyExists(arguments.stFormPost[i].stSupporting, "CreateFromSource") AND ListFirst(arguments.stFormPost[i].stSupporting.CreateFromSource)>
+					<cfset lImageFields = ListAppend(lImageFields, i) />
+				</cfif>
+			</cfif>
+
+		</cfloop>
+
+		<cfloop list="#lImageFields#" index="i">
+			<cfparam name="arguments.stFields['#i#'].metadata.ftDestination" default="#application.config.image.StandardImageURL#">		
+			<cfparam name="arguments.stFields['#i#'].metadata.ftImageWidth" default="#application.config.image.ThumbnailImageWidth#">
+			<cfparam name="arguments.stFields['#i#'].metadata.ftImageHeight" default="#application.config.image.ThumbnailImageHeight#">
+			<cfparam name="arguments.stFields['#i#'].metadata.ftAutoGenerateType" default="FitInside">
+			<cfparam name="arguments.stFields['#i#'].metadata.ftPadColor" default="##ffffff">
+			
+			<cfset stArgs = StructNew() />
+			<cfset stArgs.Source = "#application.path.project#/www#arguments.stProperties.SourceImage#" />
+			<cfset stArgs.Destination = "#application.path.project#/www#arguments.stFields['#i#'].metadata.ftDestination#" />
+			<cfset stArgs.Width = "#arguments.stFields['#i#'].metadata.ftImageWidth#" />
+			<cfset stArgs.Height = "#arguments.stFields['#i#'].metadata.ftImageHeight#" />
+			<cfset stArgs.AutoGenerateType = "#arguments.stFields['#i#'].metadata.ftAutoGenerateType#" />
+			<cfset stArgs.padColor = "#arguments.stFields['#i#'].metadata.ftpadColor#" />
+			
+			<cfset stGenerateImageResult = oImage.GenerateImage(Source="#stArgs.Source#", Destination="#stArgs.Destination#", Width="#stArgs.Width#", Height="#stArgs.Height#", AutoGenerateType="#stArgs.AutoGenerateType#", padColor="#stArgs.padColor#") />
+			
+			<cfif stGenerateImageResult.bSuccess>
+				<cfset stProperties['#i#'] = "#arguments.stFields['#i#'].metadata.ftDestination#/#stGenerateImageResult.filename#" />
 			</cfif>
 			
-						
-			<cffile action="copy" 
-				source="#application.path.project#/www#arguments.stProperties.SourceImage#"
-				destination="#application.path.project#/www#arguments.stFields.ThumbnailImage.metadata.ftDestination#">
-			
-			
-			<cfx_image action="resize"
-				file="#application.path.project#/www#arguments.stFields.ThumbnailImage.metadata.ftDestination#/#File.ServerFile#"
-				output="#application.path.project#/www#arguments.stFields.ThumbnailImage.metadata.ftDestination#/#File.ServerFile#"
-				X="#arguments.stFields.ThumbnailImage.metadata.ftImageWidth#"
-				Y="#arguments.stFields.ThumbnailImage.metadata.ftImageHeight#"
-				ThumbnailImage=yes
-				bevel=no
-				backcolor=white>
-				
-			<cfset stproperties.ThumbnailImage = "#arguments.stFields.ThumbnailImage.metadata.ftDestination#/#File.ServerFile#">
-			<!--- <cfset stproperties.ThumbnailImageImagePath = "#application.path.project#/www#arguments.stFields.ThumbnailImage.metadata.ftDestination#"> --->
-		</cfif>
-	</cfif>
-		
-		
-	<cfif structKeyExists(arguments.stProperties, "SourceImage") AND  len(arguments.stProperties.SourceImage) AND (NOT isDefined("arguments.stProperties.StandardImage") OR NOT len(arguments.stProperties.StandardImage))>
-		<cfif stObject.SourceImage NEQ arguments.stProperties.SourceImage>
-			<cfif NOT DirectoryExists("#application.path.project#/www#arguments.stFields.StandardImage.metadata.ftDestination#")>
-				<cfdirectory action="create" directory="#application.path.project#/www#arguments.stFields.StandardImage.metadata.ftDestination#">
-			</cfif>
-				
-			<cffile action="copy" 
-				source="#application.path.project#/www#arguments.stProperties.SourceImage#"
-				destination="#application.path.project#/www#arguments.stFields.StandardImage.metadata.ftDestination#">
-				
-				
-			<cfx_image action="read"
-				file="#application.path.project#/www#arguments.stFields.StandardImage.metadata.ftDestination#/#File.ServerFile#">
-				
-			<cfif IMG_WIDTH GT arguments.stFields.StandardImage.metadata.ftImageWidth>
-				<cfx_image action="resize"
-						file="#application.path.project#/www#arguments.stFields.StandardImage.metadata.ftDestination#/#File.ServerFile#"
-						output="#application.path.project#/www#arguments.stFields.StandardImage.metadata.ftDestination#/#File.ServerFile#"
-						X="#arguments.stFields.StandardImage.metadata.ftImageWidth#">
-			</cfif>
-				
-		
-			<cfx_image action="read"
-				file="#application.path.project#/www#arguments.stFields.StandardImage.metadata.ftDestination#/#File.ServerFile#">
-				
-			<cfif IMG_HEIGHT GT arguments.stFields.StandardImage.metadata.ftImageHeight>
-				<cfx_image action="resize"
-						file="#application.path.project#/www#arguments.stFields.StandardImage.metadata.ftDestination#/#File.ServerFile#"
-						output="#application.path.project#/www#arguments.stFields.StandardImage.metadata.ftDestination#/#File.ServerFile#"
-						Y="#arguments.stFields.StandardImage.metadata.ftImageHeight#">
-			</cfif>
+		</cfloop>
 	
-			<cfset stproperties.StandardImage = "#arguments.stFields.StandardImage.metadata.ftDestination#/#File.ServerFile#">
-		</cfif>
-	</cfif>
 	
+	</cfif>
 	<cfset stProperties = super.BeforeSave(stProperties=stproperties, stFields=stFields) />
-	
+
 	<cfreturn stProperties>
+	
+
+	
 </cffunction>
 
 <cffunction name="ftDisplayThumbnail" access="public" output="true" returntype="string" hint="This will return a string of formatted HTML text to display.">
