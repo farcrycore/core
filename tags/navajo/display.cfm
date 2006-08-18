@@ -25,6 +25,12 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 <cfparam name="attributes.lmethods" default="display" type="string">
 <cfparam name="attributes.loginpath" default="#application.url.farcry#/login.cfm?returnUrl=#URLEncodedFormat(cgi.script_name&'?'&cgi.query_string)#" type="string">
 
+<!--- make sure that the attributes.method variable is not empty --->
+<cfif not len(attributes.method)>
+	<cfset attributes.method = "display">
+</cfif>
+
+
 <cfimport taglib="/farcry/fourq/tags/" prefix="q4">
 <cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
 <cfparam name="request.bHideContextMenu" default="false">
