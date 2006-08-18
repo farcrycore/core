@@ -473,12 +473,14 @@ LIBRARY DATA
 		
 		<cfset Request.InHead.ScriptaculousEffects = 1>
 		
-		
-		<cfquery dbtype="query" name="q">
-		SELECT ObjectID
-		FROM q
-		WHERE ObjectID IN (#ListQualify(lRenderedObjects,"'")#)
-		</cfquery>
+		<!--- only perform this QoQ if there are records (images) in the database --->
+		<cfif len(trim(lRenderedObjects))>
+			<cfquery dbtype="query" name="q">
+			SELECT ObjectID
+			FROM q
+			WHERE ObjectID IN (#ListQualify(lRenderedObjects,"'")#)
+			</cfquery>
+		</cfif>
 		
 		
 		<script type="text/javascript">
