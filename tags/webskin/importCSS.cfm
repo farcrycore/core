@@ -39,11 +39,11 @@ out:
 <cfloop query="qAncestors">
 	<!--- check for style sheet --->
 	<cfquery datasource="#application.dsn#" name="qCheck">
-	SELECT dmCSS.objectid, dmCSS.filename, dmCSS.mediaType, dmCSS.bThisNodeOnly, dmnav.parentid as callerObjectID
+	SELECT dmCSS.objectid, dmCSS.filename, dmCSS.mediaType, dmCSS.bThisNodeOnly, dmnav.objectId as callerObjectID
 	FROM #application.dbowner#dmCSS dmCSS, #application.dbowner#dmNavigation_aObjectIDs dmnav
 	WHERE 
 		dmCSS.objectid = dmnav.data
-		AND dmnav.parentid = '#qAncestors.objectid#'
+		AND dmnav.objectId = '#qAncestors.objectid#'
 		AND dmCSS.label != '(incomplete)'
 	ORDER BY dmnav.seq
 	</cfquery>
