@@ -260,6 +260,11 @@ the latter is the policy group for anonymous...
 		<cfset o = createObject("component", application.types[stObj.typename].typePath)>
 		<cfset o.getDisplay(stObject=stObj, template=stObj.displayMethod)>
 	</cfif>
+	
+<cfelseif fileExists("#application.path.project#/webskin/#stobj.typename#/displayPageStandard.cfm")>
+	<cfset HTML = getView(stobject=stObj, Template="displayPageStandard") />
+	<cfoutput>#HTML#</cfoutput>		
+
 <cfelse>
 	<!--- Invoke default display method of page --->
 	<cftrace text="Default display method used" />
