@@ -77,6 +77,9 @@ $out:$
 </cfif>
 <cfparam name="reflectionid" default="#stObj.mirrorid#">
 
+<!--- Make sure we include the prototype library --->
+<cfset request.inHead.Prototype = 1 />
+
 <cfset query_string = "containerid=#containerid#">
 <cfsetting enablecfoutputonly="false">
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -87,7 +90,6 @@ $out:$
 	<style type="text/css" title="default" media="screen">@import url(#application.url.farcry#/css/main.css);</style>
 	<style type="text/css" title="default" media="screen">@import url(#application.url.farcry#/css/tabs.css);</style>
 	<script type="text/javascript" src="#application.url.farcry#/js/fade.js"></script>
-	<script type="text/javascript" src="#application.url.farcry#/js/prototype.js"></script>
 	<script type="text/javascript" src="#application.url.farcry#/js/formutilities.js"></script></cfoutput>
 </head>
 <body class="popup container-management">
