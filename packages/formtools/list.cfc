@@ -27,7 +27,7 @@
 					<cfsavecontent variable="html">
 						<cfoutput><select id="#arguments.fieldname#" name="#arguments.fieldname#" <cfif arguments.stMetadata.ftSelectMultiple> multiple="true"</cfif>></cfoutput>
 							<cfloop list="#arguments.stMetadata.ftList#" index="i">
-								<cfoutput><option value="#ListFirst(i,":")#" <cfif listFindNoCase(arguments.stMetadata.value,i)>selected</cfif>>#ListLast(i , ":")#</option></cfoutput>
+								<cfoutput><option value="#ListFirst(i,":")#" <cfif listFindNoCase(arguments.stMetadata.value,#ListFirst(i,":")#)>selected</cfif>>#ListLast(i , ":")#</option></cfoutput>
 							</cfloop>
 							<cfoutput></select></cfoutput>
 						</cfsavecontent>
