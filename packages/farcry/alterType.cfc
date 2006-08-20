@@ -233,7 +233,7 @@ $out:$
 			</cfcatch>
 		</cftry>
 		
-<!--------------------------------- 
+		<!--------------------------------- 
 		WE NEED TO SETUP FTSEQ, FTFIELDSET & FTWIZZARDSTEP
 		THESE PROPERTIES ARE USED TO AUTOMATICALLY RENDER FORMS (BOTH DISPLAY AND EDIT) BASED ON THE METADATA IF NO EDIT OR DISPLAY METHOD ARE PROVIDED.
 		 --------------------------------->
@@ -468,18 +468,18 @@ $out:$
 				<cfif structKeyExists(application.rules[qRules.rulename].stProps[i].METADATA, "ftFieldset")>
 					<cfset application.rules[qRules.rulename].stProps[i].ftFieldset = application.rules[qRules.rulename].stProps[i].METADATA.ftFieldset />
 				<cfelse>
-					<cfset application.rules[qRules.rulename].stProps[i].ftFieldset = typename />
+					<cfset application.rules[qRules.rulename].stProps[i].ftFieldset = qRules.rulename />
 				</cfif>
 				
 				<!--- SETUP FTWIZZARDSTEP --->
 				<cfif structKeyExists(application.rules[qRules.rulename].stProps[i].METADATA, "ftWizzardStep")>
 					<cfset application.rules[qRules.rulename].stProps[i].ftWizzardStep = application.rules[qRules.rulename].stProps[i].METADATA.ftWizzardStep />
 				<cfelse>
-					<cfset application.rules[qRules.rulename].stProps[i].ftWizzardStep = typename />
+					<cfset application.rules[qRules.rulename].stProps[i].ftWizzardStep = qRules.rulename />
 				</cfif>
 				
 			   <cfset temp = QueryAddRow(qMetadataSetup)>
-			   <cfset Temp = QuerySetCell(qMetadataSetup,"typename", typename) />
+			   <cfset Temp = QuerySetCell(qMetadataSetup,"typename", qRules.rulename) />
 			   <cfset Temp = QuerySetCell(qMetadataSetup,"propertyname", i) />
 			   <cfset Temp = QuerySetCell(qMetadataSetup,"ftSeq", application.rules[qRules.rulename].stProps[i].ftSeq) />
 			   <cfset Temp = QuerySetCell(qMetadataSetup,"ftFieldset", application.rules[qRules.rulename].stProps[i].ftFieldset) />
