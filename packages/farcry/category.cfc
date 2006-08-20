@@ -152,7 +152,9 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 				</cfif>
 				FROM 	#application.dbowner##arguments.typename# type INNER JOIN #application.dbowner#refObjects refObj ON refObj.objectid = type.ObjectID
 				WHERE	lower(refObj.typename) = '#LCase(arguments.typename)#'				
-				AND type.status in (#listqualify(arguments.lstatus,"'")#)
+				<cfif StructKeyExists(application.types[arguments.typename].stprops,"status")>
+					AND type.status in (#listqualify(arguments.lstatus,"'")#)
+				</cfif>
 				AND type.objectid NOT IN (SELECT objectid FROM #application.dbowner#refCategories)
 				</cfoutput>
 			</cfsavecontent>
@@ -181,12 +183,17 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 						</cfloop>
 					</cfif>
 					WHERE 1=1 
-					AND type.status in (#listqualify(arguments.lstatus,"'")#)
-						<!--- loop over each category and make sure item has all categories --->
-						<cfloop from="1" to="#listlen(arguments.lCategoryIDs)#" index="i">
-							AND refCat#i#.categoryID = '#listGetAt(arguments.lCategoryIDs,i)#'
-							AND refCat#i#.objectId = type.objectId
-						</cfloop>
+					
+					<cfif StructKeyExists(application.types[arguments.typename].stprops,"status")>
+						AND type.status in (#listqualify(arguments.lstatus,"'")#)
+					</cfif>
+					
+					<!--- loop over each category and make sure item has all categories --->
+					<cfloop from="1" to="#listlen(arguments.lCategoryIDs)#" index="i">
+						AND refCat#i#.categoryID = '#listGetAt(arguments.lCategoryIDs,i)#'
+						AND refCat#i#.objectId = type.objectId
+					</cfloop>
+					
 					ORDER BY #arguments.orderBy# #arguments.orderDirection#
 					</cfoutput>
 				</cfsavecontent>
@@ -204,7 +211,9 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 					JOIN #application.dbowner#refCategories refCat ON refObj.objectid = refCat.objectID
 					JOIN #application.dbowner##arguments.typename# type ON refObj.objectid = type.ObjectID  
 					WHERE lower(refObj.typename) = '#LCase(arguments.typename)#'
-					AND type.status in (#listqualify(arguments.lstatus,"'")#)
+					<cfif StructKeyExists(application.types[arguments.typename].stprops,"status")>
+						AND type.status in (#listqualify(arguments.lstatus,"'")#)
+					</cfif>
 					<cfif listlen(arguments.lCategoryIDs)>
 					AND refCat.categoryid IN ('#ListChangeDelims(arguments.lCategoryIDs,"','",",")#')
 					</cfif>
