@@ -567,7 +567,7 @@ default handlers
 			 - default form processing
 			---------------------------------------->
 			<ft:processForm action="Save" Exit="true">
-				<ft:processFormObjects typename="#gettablename()#" />
+				<ft:processFormObjects typename="#stobj.typename#" />
 			</ft:processForm>
 			
 			<ft:processForm action="Cancel" Exit="true" />
@@ -607,20 +607,7 @@ default handlers
 			</ft:form>
 		</cfif>
 
-			
-		
-		
-		
-		<!---------------------------------------
-		VIEW:
-		 - default form view
-		---------------------------------------->
-		
 
-
-			
-		<!---<ft:Object ObjectID="#arguments.ObjectID#" typename="#gettablename()#" /> --->
-	
 	</cffunction>
 	
 	
@@ -825,7 +812,7 @@ default handlers
 		<cfset var stFriendlyURL = StructNew()>
 		<cfset var objFU = CreateObject("component","#Application.packagepath#.farcry.fu")>
 		<cfset var objNavigation = CreateObject("component","#Application.packagepath#.types.dmNavigation")>
-		<cfset var qNavigation=querynew("objectid")>
+		<cfset var qNavigation=querynew("parentid")>
 		
 		<!--- default return structure --->
 		<cfset stReturn.bSuccess = 1>
@@ -847,7 +834,7 @@ default handlers
 					PLUS need to exclude trash branch (perhaps just from total rebuild?
 					GB 20060117 --->
 		<cfif qNavigation.recordcount>
-			<cfset stFriendlyURL.friendlyURL = objFU.createFUAlias(qNavigation.objectid)>
+			<cfset stFriendlyURL.friendlyURL = objFU.createFUAlias(qNavigation.parentid)>
 		
 		<!--- otherwise, generate friendly url based on content type --->
 		<cfelse> 
