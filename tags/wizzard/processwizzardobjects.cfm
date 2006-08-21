@@ -130,10 +130,16 @@
 			<cfset CALLER.stProperties.lastupdatedby = "anonymous">
 		</cfif>
 		
+
+		<cfset stObj = oType.getData(Caller[attributes.r_stProperties].ObjectID) />
+		<cfset bResult = structAppend(Caller[attributes.r_stProperties], stObj, false )  />
+		
 		
 		<cfif structKeyExists(oType,"BeforeSave")>
-			<cfset Caller[attributes.r_stProperties] = oType.BeforeSave(stProperties=Caller[attributes.r_stProperties],stFields=stFields, stFormPost=Request.farcryForm.stObjects[ProcessingFormObjectPrefix]['FormPost'])>	
+			<cfset Caller[attributes.r_stProperties] = oType.BeforeSave(stProperties=Caller[attributes.r_stProperties],stFields=stFields, stFormPost=Request.farcryForm.stObjects[ProcessingFormObjectPrefix]['FormPost']) />	
 		</cfif>
+		
+				
 
 		<!--- Not in the wizzard and therefore a new object. Need to save to db and then put in the wizzard --->
 		<cfif NOT structKeyExists(stWizzard.data,Caller[attributes.r_stProperties].objectid)>

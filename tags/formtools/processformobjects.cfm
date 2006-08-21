@@ -153,6 +153,8 @@
 		</cfif>
 		
 		
+		<cfset stObj = stType.getData(Caller[attributes.r_stProperties].ObjectID) />
+		<cfset bResult = structAppend(Caller[attributes.r_stProperties], stObj, false )  />
 		
 		<cfif structKeyExists(stType,"BeforeSave")>
 			<cfset Caller[attributes.r_stProperties] = stType.BeforeSave(stProperties=Caller[attributes.r_stProperties],stFields=stFields, stFormPost=Request.farcryForm.stObjects[ProcessingFormObjectPrefix]['FormPost']) />	
