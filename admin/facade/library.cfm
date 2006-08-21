@@ -59,6 +59,7 @@ $Developer: $
 
 
 
+
 <ft:processForm action="Attach Selected">
 
 	<cfset oPrimary = createObject("component",application.types[url.primaryTypeName].typepath)>	
@@ -269,7 +270,7 @@ $Developer: $
 
 <ft:processForm action="Attach & Add Another" url="#cgi.script_name#?#querystring#&librarySection=Add" />
 
-<ft:processForm action="*" url="#cgi.script_name#?#querystring#" />
+<ft:processForm action="*" excludeAction="Search" url="#cgi.script_name#?#querystring#" />
 
 
 <admin:Header Title="Library" bodyclass="popup imagebrowse library" onload="setupPanes('container1','tab1');">
@@ -317,13 +318,54 @@ LIBRARY DATA
 
 
 
+
 <!--- Put JS and CSS for TabStyle1 into the header --->
 <cfset Request.InHead.TabStyle1 = 1>
 
+
+
+<cfoutput><h1 style="float:left;">Library...</h1></cfoutput>
+
+
+
+<cfif structKeyExists(application.config.verity, "CONTENTTYPE") AND structKeyExists(application.config.verity.CONTENTTYPE,URL.ftJoin)>
+	
+	<cfoutput><div style="float:right;"></cfoutput>
+
+
+	<ft:processForm action="Search">
+		<cfsearch collection="#application.applicationName#_#URL.ftJoin#" criteria="#form.Criteria#" name="qResults" type="internet" />
+		
+		<cfif qResults.RecordCount>
+			<cfquery dbtype="query" name="qLibraryList">
+			SELECT objectid
+			FROM qLibraryList
+			WHERE objectid IN (#ListQualify(ValueList(qResults.key),"'")#)
+			</cfquery>
+		<cfelse>
+			<cfoutput><h3>No Results matched search. All records have been returned</h3></cfoutput>
+		</cfif>
+		
+	</ft:processForm>
+	
+	<ft:processForm action="Refresh">
+		<cfset form.Criteria = "" />
+	</ft:processForm>
+	
+	
+	<cfparam name="form.Criteria" default="" />
+	<ft:form>
+		<cfoutput><input type="text" name="criteria" id="criteria" value="#form.Criteria#" /></cfoutput>
+		<ft:farcrybutton value="Search" />
+		<ft:farcrybutton value="Refresh" />
+	</ft:form>
+	<cfoutput></div></cfoutput>
+	
+</cfif>
+
+<cfoutput><br style="clear:both;" /></cfoutput>
+
 <cfoutput>
-
-<h1>Library...</h1>
-
 <div id="container1" class="tab-container">
 	<ul class="tabs">
 		<li id="tab1" onclick="return showPane('pane1', this)" class="tab-active">
