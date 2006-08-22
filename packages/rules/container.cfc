@@ -475,11 +475,17 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 		</cfloop>		 
 		<cfloop from="1" to="#arrayLen(request.aInvocations)#" index="i">
 			<cfif isStruct(request.aInvocations[i])>
+				<cfif structKeyExists(request.aInvocations[i],"preHTML")>
+					<cfoutput>#request.aInvocations[i].preHTML#</cfoutput>
+				</cfif>
 				<cfscript>
 					request.i = i;
 					o = createObject("component", "#request.aInvocations[i].typename#");
 					o.getDisplay(request.aInvocations[i].objectID, request.aInvocations[i].method);	
 				</cfscript>
+				<cfif structKeyExists(request.aInvocations[i],"postHTML")>
+					<cfoutput>#request.aInvocations[i].postHTML#</cfoutput>
+				</cfif>
 			<cfelse>
 				<cfoutput>
 					#request.aInvocations[i]#
