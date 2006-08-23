@@ -212,7 +212,7 @@ type properties
 		</cfif>
 		
 		<cfquery name="stLocal.qCheck" datasource="#application.dsn#">
-		SELECT	objectid
+		SELECT	parentId
 		FROM	#relatedTable#
 		WHERE	data = '#arguments.objectid#'
 		</cfquery>

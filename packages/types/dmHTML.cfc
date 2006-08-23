@@ -61,7 +61,7 @@ object methods
 	<cfset var q = ''>
 	<cfquery name="q" datasource="#arguments.dsn#">
 		DELETE FROM #application.dbowner#dmHTML_aRelatedIDs
-		WHERE objectid = '#arguments.objectid#'
+		WHERE parentId = '#arguments.objectid#'
 	</cfquery>
 	
 </cffunction>
