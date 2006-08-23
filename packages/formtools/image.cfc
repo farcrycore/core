@@ -13,7 +13,7 @@
 
 		<cfparam name="arguments.stMetadata.ftstyle" default="">
 		<cfparam name="arguments.stMetadata.ftDestination" default="/images">
-		<cfparam name="arguments.stMetadata.ftCreateFromSourceOption" default="true">
+		<cfparam name="arguments.stMetadata.ftCreateFromSourceOption" default="false">
 		<cfparam name="arguments.stMetadata.ftCreateFromSourceDefault" default="true">
 		
 		<cfset Request.inHead.Scriptaculous = 1>
