@@ -1330,6 +1330,9 @@ $out:$
 
 <cffunction name="buildDBStructure">
 	<cfargument name="scope" default="types" required="No">
+	
+	<cfset var stTypes = structNew() />
+	
 	<cfloop collection="#application[arguments.scope]#" item="typename">
 		<cfswitch expression="#application.dbtype#">
 		<cfcase value="ora">

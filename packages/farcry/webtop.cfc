@@ -24,18 +24,91 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 	<cfargument type="string" required="false" name="xCustomAdmin" default="" hint="Custom Admin XML config file as a string.">
 	<cfset var xmlWebtop="">
 	<cfset var xmlCustomAdmin="">
+	<cfset var aXMLCustomAdmin= arrayNew(1) />
 	
 	<cfif NOT len(arguments.xWebtop)>
 		<cffile action="read" file="#application.path.core#/config/webtop.xml" variable="arguments.xWebtop">
 	</cfif>
-	<cfif NOT len(arguments.xCustomAdmin) AND fileexists("#application.path.project#/customadmin/customadmin.xml")>
+<!---	<cfif NOT len(arguments.xCustomAdmin) AND fileexists("#application.path.project#/customadmin/customadmin.xml")>
 		<cffile action="read" file="#application.path.project#/customadmin/customadmin.xml" variable="arguments.xCustomAdmin">
-	</cfif>
+	</cfif> --->
 
 	<!--- parse XML and validate config files --->
 	<cfset xmlWebTop=xmlParse(arguments.xWebtop)>
+
+
+	<!--- If we have passed a custom admin in through arguments, add it as the first item in the custom admin XML array --->
+	<cfif len(arguments.xCustomAdmin)>
+		<cfset bResult = arrayAppend(aXMLCustomAdmin, xmlParse(arguments.xCustomAdmin)) />
+	</cfif>
+	
+	<!--- If any custom admin xml files exist, we need to add them to our custom admin XML array --->
+	<cfdirectory action="list" directory="#application.path.project#/customadmin" filter="*.xml" name="qCustomAdmin" />
+	
+	<cfif qCustomAdmin.RecordCount>
+		
+		<cfloop query="qCustomAdmin">
+			<cffile action="read" file="#application.path.project#/customadmin/#qCustomAdmin.Name#" variable="arguments.xCustomAdmin">
+			
+			<cftry>
+				<!--- validate custom admin xml --->
+				<cfset xmlCustomAdmin=xmlParse(arguments.xCustomAdmin)>
+				<cfif arraylen(xmlsearch(xmlCustomAdmin, "/customtabs"))>
+					<!--- process old-style custom admin --->
+					<cffile action="read" file="#application.path.core#/config/transform.xsl" variable="xslt">
+					<!--- XSLT transform customadmin --->
+					<cfset xmlCustomAdmin=xmlTransform(xmlCustomAdmin,xslt)>
+					<cfset xmlCustomAdmin=xmlParse(xmlCustomAdmin)>
+					<!--- log deprecated approach --->
+					<cftrace type="warning" category="farcry.webtop" text="../customadmin/customadmin.xml is using an old format.  This was updated to a more modern format with the release of FarCry 2.4." />
+					<cflog application="true" file="deprecated" type="warning" text="../customadmin/customadmin.xml initialised using an old xml format.  This was updated to a more modern format with the release of FarCry 2.4." />
+				</cfif>
+				
+				<!--- add the xml to our array --->
+				<cfset bResult = arrayAppend(aXMLCustomAdmin, xmlCustomAdmin) />
+				
+				<cfcatch>
+					<cftrace type="warning" category="farcry.webtop" text="../customadmin/customadmin.xml was not parsed successfully." var="cfcatch.Detail" />
+				</cfcatch>
+			</cftry>
+			
+		</cfloop>
+	</cfif>
+		
+	<cfif arrayLen(aXMLCustomAdmin)>
+		
+			
+		<cfinvoke component="WebtopRoot" method="init" returnVariable="webtopRoot"> 
+  			<cfinvokeargument name="WebtopXmlDoc" value="#xmlWebtop#"> 
+		</cfinvoke> 
+		
+		
+		<cfloop from="1" to="#arrayLen(aXMLCustomAdmin)#" index="i">
+
+						
+			<cfinvoke component="WebtopRoot" method="init" returnVariable="webtopCustom"> 
+				<cfinvokeargument name="WebtopXmlDoc" value="#aXMLCustomAdmin[i]#"> 
+			</cfinvoke> 
+			
+			
+			
+			<cfset webtopRoot.mergeRoot(webtopCustom)>  	
+			
+		</cfloop>
+		
+		
+		<cfset xmlWebtop = webtopRoot.getXmlDoc()>
+		
+			
+	</cfif>
+	<cfset this.xmlwebtop=xmlWebtop>
+
+
+<!---
+	<!--- parse XML and validate config files --->
+	<cfset xmlWebTop=xmlParse(arguments.xWebtop)>
 	<cfif len(arguments.xcustomadmin)>
-		<cftry>
+		
 		<!--- validate custom admin xml --->
 			<cfset xmlCustomAdmin=xmlParse(arguments.xCustomAdmin)>
 			<cfif arraylen(xmlsearch(xmlCustomAdmin, "/customtabs"))>
@@ -48,10 +121,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 				<cftrace type="warning" category="farcry.webtop" text="../customadmin/customadmin.xml is using an old format.  This was updated to a more modern format with the release of FarCry 2.4." />
 				<cflog application="true" file="deprecated" type="warning" text="../customadmin/customadmin.xml initialised using an old xml format.  This was updated to a more modern format with the release of FarCry 2.4." />
 			</cfif>
-		<cfcatch>
-			<cftrace type="warning" category="farcry.webtop" text="../customadmin/customadmin.xml was not parsed successfully." var="cfcatch.Detail" />
-		</cfcatch>
-		</cftry>
+
 	</cfif>
 	
 	<!--- merge xml documents--->
@@ -69,6 +139,8 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 	</cfif> 
 	
 	<cfset this.xmlwebtop=xmlWebtop>
+	 --->
+	
 	<cfreturn this>
 </cffunction>
 
