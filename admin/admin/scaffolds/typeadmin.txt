@@ -1,0 +1,34 @@
+<cfsetting enablecfoutputonly="yes">
+<!--- 
+|| DESCRIPTION || 
+$Description: $
+
+|| DEVELOPER ||
+$Developer: DEVELOPER NAME $
+--->
+
+<!--- tag libraries --->
+<cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/farcry_core/tags/widgets/" prefix="widgets">
+
+<cfset editobjectURL = "#application.url.farcry#/conjuror/invocation.cfm?objectid=##recordset.objectID[recordset.currentrow]##&typename=[TYPENAME]&method=edit&ref=typeadmin&module=customlists/[TYPENAME].cfm" />
+
+<!--- set up page header --->
+<admin:header>
+
+<widgets:typeAdmin 
+	permissionset="News"
+	typename="[TYPENAME]">	
+
+	<widgets:typeadmincolumn title="Select" columntype="expression" value="<input type=""checkbox"" name=""objectid"" value=""##recordset.objectid##"" onclick=""setRowBackground(this);"" />" style="text-align: center;" />
+	<widgets:typeadmincolumn title="Edit" columntype="evaluate" value="iif(locked and lockedby neq '##session.dmSec.authentication.userlogin##_##session.dmSec.authentication.userDirectory##',DE('<span style=""color:red"">Locked</span>'),DE('<a href=''#editObjectURL#''><img src=""#application.url.farcry#/images/treeImages/edit.gif"" alt=""Edit"" title=""Edit"" /></a>'))" />
+	<widgets:typeadmincolumn title="View" columntype="expression" value="<a href=""#application.url.webroot#/index.cfm?objectID=##recordset.objectID##&flushcache=1"" target=""_blank""><img src=""#application.url.farcry#/images/treeImages/preview.gif"" alt=""#application.adminBundle[session.dmProfile.locale].view#"" title=""#application.adminBundle[session.dmProfile.locale].view#"" /></a>" />
+	<widgets:typeadmincolumn title="label" columntype="value" value="label" orderby="label" />
+	<!---<widgets:typeadmincolumn title="Categories" columntype="render" value="lCategories" /> --->
+	
+</widgets:typeAdmin>
+
+<!--- setup footer --->
+<admin:footer>
+
+<cfsetting enablecfoutputonly="no">

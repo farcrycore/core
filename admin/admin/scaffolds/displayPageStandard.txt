@@ -1,0 +1,25 @@
+<cfsetting enablecfoutputonly="yes">
+
+<!--- @@displayname: Standard Page Display for [TYPENAME] --->
+<!--- @@author: DEVELOPER NAME--->
+
+
+<!--- tag libraries --->
+<cfimport taglib="/farcry/[PROJECTNAME]/tags" prefix="tags">
+<cfimport taglib="/farcry/farcry_core/tags/container" prefix="con">
+<cfimport taglib="/farcry/farcry_core/tags/formtools" prefix="ft">
+
+<tags:pagewrap title="#stobj.label#">
+
+	<con:container label="[TYPENAME]_top" />
+	
+	
+	<ft:object stObject="#stobj#" format="display" />
+	
+
+	<con:container label="[TYPENAME]_bottom" />
+			
+
+</tags:pagewrap>
+	
+<cfsetting enablecfoutputonly="no">

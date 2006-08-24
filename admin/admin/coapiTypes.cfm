@@ -163,7 +163,8 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 				<cfif NOT alterType.isCFCDeployed(typename=componentName)>
 					<a href="#CGI.SCRIPT_NAME#?deploy=#componentName#">#application.adminBundle[session.dmProfile.locale].deploy#</a>
 				<cfelse>
-					#application.adminBundle[session.dmProfile.locale].notAvailable#
+					<a href="#application.url.farcry#/admin/scaffold.cfm?typename=#componentname#" target="_blank">Scaffold</a>
+					<!---#application.adminBundle[session.dmProfile.locale].notAvailable# --->
 				</cfif>
 			</td>
 			<!--- <td><em>Create Permissions</em>
