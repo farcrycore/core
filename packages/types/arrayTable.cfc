@@ -25,6 +25,7 @@ system attributes
 <cfproperty name="parentID" type="uuid" hint="objectID of primary object in the MANY To MANY relationship" required="yes" default="" />
 <cfproperty name="data" type="uuid" hint="objectID of foreign object in the MANY To MANY relationship" required="yes" default="" />
 <cfproperty name="seq" type="numeric" hint="Enables the array field to be sorted." required="yes" default="0" />
+<cfproperty name="typename" type="string" hint="Stores the typename that the data id relates to." default="" />
 
 
 </cfcomponent>
