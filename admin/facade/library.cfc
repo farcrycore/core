@@ -17,13 +17,14 @@
 	<cfargument name="ftLibrarySelectedMethod" type="string" default="selected"><!--- Webskin Display method to Display Selected Objects --->
 	<cfargument name="ftLibrarySelectedMethodListClass" type="string" default="selected">
 	<cfargument name="ftLibrarySelectedMethodListStyle" type="string" default="">
-	
+
 	<cfset oPrimary = createObject("component",application.types[arguments.PrimaryTypename].typepath)>
 	<cfset stPrimary = oPrimary.getData(objectid=arguments.PrimaryObjectID)>
 	
 	<cfset oData = createObject("component",application.types[arguments.DataTypename].typepath)>
 	
 	
+
 	<cfif arguments.Action NEQ "Refresh">
 	
 		<cfif len(arguments.wizzardID)>

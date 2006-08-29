@@ -1,7 +1,13 @@
 <cfif structKeyExists(url,"ObjectID") AND structKeyExists(url,"Typename") AND structKeyExists(url,"Fieldname")>
 	<cfset o = createObject("component",application.types['dmImage'].typepath)>
-	<cfset q = o.getArrayFieldAsQuery(objectid=url.objectid,Fieldname=url.Fieldname,typename=url.typename,Link='dmImage')>
+	<cfset q = o.getArrayFieldAsQuery(objectid=url.objectid,Fieldname=url.Fieldname,typename=url.typename,ftJoin='dmImage')>
 </cfif>
+
+<cfquery datasource="#application.dsn#" name="qImages">
+SELECT * 
+FROM dmImage
+WHERE ObjectID IN (#ListQualify(ValueList(q.ObjectID),"'")#)
+</cfquery>
 
 <cfoutput>
 	
@@ -14,8 +20,8 @@ var tinyMCEImageList = new Array(
 	// Name, URL
 	
 	<cfset currentrow = 1>
-	<cfloop query="q">
-		["<cfif len(q.title)>#q.title#<cfelse>#q.optimisedImage#</cfif>", "#q.optimisedImage#"]<cfif currentRow LT q.RecordCount>,<cfset currentrow = currentrow + 1></cfif>
+	<cfloop query="qImages">
+		["<cfif len(qImages.title)>#qImages.title#<cfelse>#qImages.optimisedImage#</cfif>", "#qImages.optimisedImage#"]<cfif currentRow LT qImages.RecordCount>,<cfset currentrow = currentrow + 1></cfif>
 	</cfloop>
 );
 </cfoutput>

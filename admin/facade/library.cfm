@@ -1,3 +1,5 @@
+<cfsetting enablecfoutputonly="yes">
+
 <!--- 
 || LEGAL ||
 $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
@@ -49,11 +51,15 @@ $Developer: $
 <cfparam name="url.ftLibrarySelectedListStyle" default="">
 
 
+<!--- TODO: dynamically determine the typename to join. --->
+<cfset request.ftJoin = listFirst(url.ftJoin) />
+
+
 
 <!--- Cleanup the Query_String so that we can paginate correctly --->
 <cfscript>
 	stURL = Duplicate(url);
-	stURL = filterStructure(stURL,'Page');
+	stURL = filterStructure(stURL,'Page,ftJoin');
 	queryString=structToNamePairs(stURL);
 </cfscript>
 
@@ -87,7 +93,7 @@ $Developer: $
 
 <ft:processForm action="Attach,Attach & Add Another">
 	
-	<ft:processFormObjects typename="#url.ftJoin#" /><!--- Returns variables.lSavedObjectIDs --->
+	<ft:processFormObjects typename="#request.ftJoin#" /><!--- Returns variables.lSavedObjectIDs --->
 
 <!---	<!--- Attach the Newly Created Object --->
 	<cfset oPrimary = createObject("component",application.types[url.primaryTypeName].typepath)>		
@@ -114,7 +120,7 @@ $Developer: $
 
 	<cfset oPrimary = createObject("component",application.types[url.PrimaryTypename].typepath)>
 	
-	<cfset oData = createObject("component",application.types[url.ftJoin].typepath)>
+	<cfset oData = createObject("component",application.types[request.ftJoin].typepath)>
 	
 
 	<cfloop list="#lSavedObjectIDs#" index="DataObjectID">
@@ -218,7 +224,7 @@ $Developer: $
 					<cfset stProperties.bLibrary = 1>	
 					<cfset stProperties.status = "approved">	
 					
-					<cfset t = createObject("component",application.types[url.ftJoin].typepath)>
+					<cfset t = createObject("component",application.types[request.ftJoin].typepath)>
 					<cfset stImage =  t.createData(stproperties=stProperties)>
 					
 					<!--- update category --->
@@ -268,9 +274,9 @@ $Developer: $
 	<cfabort>
 </ft:processForm>
 
-<ft:processForm action="Attach & Add Another" url="#cgi.script_name#?#querystring#&librarySection=Add" />
+<ft:processForm action="Attach & Add Another" url="#cgi.script_name#?#querystring#&ftJoin=#request.ftJoin#&librarySection=Add" />
 
-<ft:processForm action="*" excludeAction="Search" url="#cgi.script_name#?#querystring#" />
+<ft:processForm action="*" excludeAction="Search" url="#cgi.script_name#?#querystring#&ftJoin=#request.ftJoin#" />
 
 
 <admin:Header Title="Library" bodyclass="popup imagebrowse library" onload="setupPanes('container1','tab1');">
@@ -278,17 +284,20 @@ $Developer: $
 
 
 <cfset oPrimary = createObject("component",application.types[url.primaryTypeName].typepath)>
-<cfset oData = createObject("component",application.types[url.ftJoin].typepath)>
+<cfset oData = createObject("component",application.types[request.ftJoin].typepath)>
 
 <cfset stPrimary = oPrimary.getData(objectid=url.primaryObjectID)>
 	
 <cfif URL.LibraryType EQ "array">
-	<cfset q = oPrimary.getArrayFieldAsQuery(objectid="#url.primaryObjectID#", Fieldname="#url.primaryFieldName#", Typename="#url.primaryTypeName#", Link="#url.ftJoin#")>
-<cfelse>
+<!---	<cfset qArray = oPrimary.getArrayFieldAsQuery(objectid="#url.primaryObjectID#", Fieldname="#url.primaryFieldName#", Typename="#url.primaryTypeName#", ftJoin="#request.ftJoin#")> --->
 	<cfquery datasource="#application.dsn#" name="q">
-	SELECT * FROM #url.ftJoin#
-	WHERE ObjectID = '#stPrimary[url.primaryFieldName]#'
+	SELECT * FROM #url.primaryTypeName#_#url.primaryFieldName#
+	WHERE parentID = '#url.primaryObjectID#'
 	</cfquery>
+		
+	<cfset lBasketIDs = valueList(q.data) />
+<cfelse>
+	<cfset lBasketIDs = stPrimary[url.primaryFieldName] />
 </cfif>
 
 
@@ -311,30 +320,38 @@ LIBRARY DATA
 <cfif NOT isDefined("qLibraryList")>
 	<cfquery datasource="#application.dsn#" name="qLibraryList">
 	SELECT ObjectID,Label
-	FROM #URL.ftJoin#
+	FROM #request.ftJoin#
 	ORDER BY label
 	</cfquery>
 </cfif>
 
 
 
-
 <!--- Put JS and CSS for TabStyle1 into the header --->
 <cfset Request.InHead.TabStyle1 = 1>
 
+<cfif listLen(application.types[url.primaryTypename].stProps[url.primaryFieldname].metadata.ftJoin)>
+	<ft:form>
+	<cfoutput><select name="ftJoin" id="ftJoin" onchange="javascript:window.location='#cgi.script_name#?#querystring#&ftJoin=' + this[selectedIndex].value;"></cfoutput>
+		<cfloop list="#application.types[url.primaryTypename].stProps[url.primaryFieldname].metadata.ftJoin#" index="i">
+			<cfoutput><option value="#i#" <cfif url.ftJoin EQ i>selected</cfif>>#application.types[i].displayname#</option></cfoutput>
+		</cfloop>
+	<cfoutput></select></cfoutput>
+	
+	</ft:form>
+</cfif>
+
+<cfoutput><h1 style="float:left;">#application.types[url.ftJoin].displayname# Library...</h1></cfoutput>
 
 
-<cfoutput><h1 style="float:left;">Library...</h1></cfoutput>
 
-
-
-<cfif structKeyExists(application.config.verity, "CONTENTTYPE") AND structKeyExists(application.config.verity.CONTENTTYPE,URL.ftJoin)>
+<cfif structKeyExists(application.config.verity, "CONTENTTYPE") AND structKeyExists(application.config.verity.CONTENTTYPE,request.ftJoin)>
 	
 	<cfoutput><div style="float:right;"></cfoutput>
 
 
 	<ft:processForm action="Search">
-		<cfsearch collection="#application.applicationName#_#URL.ftJoin#" criteria="#form.Criteria#" name="qResults" type="internet" />
+		<cfsearch collection="#application.applicationName#_#request.ftJoin#" criteria="#form.Criteria#" name="qResults" type="internet" />
 		
 		<cfif qResults.RecordCount>
 			<cfquery dbtype="query" name="qLibraryList">
@@ -365,6 +382,10 @@ LIBRARY DATA
 
 <cfoutput><br style="clear:both;" /></cfoutput>
 
+<cfset RenderPickerHTML = RenderPicker() />
+<cfset RenderAddNewHTML = RenderAddNew() />
+
+
 <cfoutput>
 <div id="container1" class="tab-container">
 	<ul class="tabs">
@@ -380,28 +401,25 @@ LIBRARY DATA
 		<a name="pane1-ref" style="display: none;" ></a>
 		<div id="pane1" style="display: block;">
 
-
-			#RenderPicker()#
-
+			#RenderPickerHTML#
 
 		</div>
 		<a name="pane2-ref" style="display: none;" ></a>
 		<div id="pane2" style="display:none;">			
 
-			#RenderAddNew()#
-
+			#RenderAddNewHTML#
 		
 		</div>
 	</div>
 </div>
 </cfoutput>
 
-<cffunction name="RenderPicker">
+<cffunction name="RenderPicker" returntype="string" output="false">
 	
 	<cfsavecontent variable="sReturn">
-	<cfoutput>
+	
 	<ft:form style="width:100%;background:none;border:0px;">
-		<table style="width:100%;background:##fa0;">
+		<cfoutput><table style="width:100%;background:##fa0;">
 		<tr>
 			<td width="100px;" valign="top">
 				<div id="utility">
@@ -409,10 +427,10 @@ LIBRARY DATA
 					
 					<style type="text/css">
 						.basket-active {background:##E17000;}
-					</style>		
+					</style>	</cfoutput>	
 					
 					<ft:object ObjectID="#url.primaryObjectID#" wizzardid="#url.WizzardID#" lFields="#url.primaryFieldName#" InTable=0 IncludeLabel=0 IncludeFieldSet=0 r_stFields="stBasketFields" />
-						
+					<cfoutput>	
 					<div id="basket" style="border:1px solid ##E17000;height:800px;">
 						#stBasketFields[url.primaryFieldName].HTML#
 					</div>	
@@ -422,42 +440,42 @@ LIBRARY DATA
 			</td>
 			<td valign="top">
 	
-				<div id="content" style="margin-left:0px;" >
+				<div id="content" style="margin-left:0px;" ></cfoutput>
 					<!--- Render all the objects for the requested Type. --->
 					<ws:paginate PageLinksShown=5 RecordsPerPage=20 query="#qLibraryList#">
-						<div style="display:block;">	
-							<div class="#url.ftLibraryPickListClass#" style="#url.ftLibraryPickListStyle#">
+						<cfoutput><div style="display:block;">	
+							<div class="#url.ftLibraryPickListClass#" style="#url.ftLibraryPickListStyle#"></cfoutput>
 							
 								<cfset lRenderedObjects = "">
 								<ws:paginateRecords r_stRecord="stObject">
 									<cfset lRenderedObjects = ListAppend(lRenderedObjects,stObject.ObjectID) />
 									
-									<div id="select#stObject.objectID#" class="LibraryItem thumbNailItem" style="text-align:center;" objectID="#stObject.ObjectID#">
-										<img src="#application.url.farcry#/images/dragbar.gif" id="handle#stObject.objectID#" style="cursor:move;" align="center">
+									<cfoutput><div id="select#stObject.objectID#" class="LibraryItem thumbNailItem" style="text-align:center;" objectID="#stObject.ObjectID#">
+										<img src="#application.url.farcry#/images/dragbar.gif" id="handle#stObject.objectID#" style="cursor:move;" align="center"></cfoutput>
 										
 										<cfset stobj = oData.getData(objectid=stObject.ObjectID)>
 										
-										<cfif FileExists("#application.path.project#/webskin/#url.ftJoin#/#url.ftLibraryPickMethod#.cfm")>
+										<cfif FileExists("#application.path.project#/webskin/#request.ftJoin#/#url.ftLibraryPickMethod#.cfm")>
 											<cfset oData.getDisplay(stObject=stobj, template="#url.ftLibraryPickMethod#") />
 											
-											<!---<cfinclude template="/farcry/#application.applicationname#/webskin/#url.ftJoin#/#url.ftLibraryPickMethod#.cfm"> --->
+											<!---<cfinclude template="/farcry/#application.applicationname#/webskin/#request.ftJoin#/#url.ftLibraryPickMethod#.cfm"> --->
 										<cfelse>
-											<cfif isDefined("stobj.label") AND len(stobj.label)>#stobj.Label#<cfelse>#stobj.ObjectID#</cfif>
+											<cfif isDefined("stobj.label") AND len(stobj.label)><cfoutput>#stobj.Label#</cfoutput><cfelse><cfoutput>#stobj.ObjectID#</cfoutput></cfif>
 										</cfif>
 	
-									</div>
+									<cfoutput></div></cfoutput>
 								</ws:paginateRecords>
-							</div>
+							<cfoutput></div>
 						</div>	
 						
 						<br style="clear:both;" />
 						
-						<div style="border:1px dashed ##CACACA;border-width:1px 0;">
+						<div style="border:1px dashed ##CACACA;border-width:1px 0;"></cfoutput>
 							<ws:paginateScroll />
-							<br style="clear:both;" />
-						</div>
+							<cfoutput><br style="clear:both;" />
+						</div></cfoutput>
 					</ws:paginate>
-				
+				<cfoutput>
 					 <div class="f-submit-wrap">
 						<div style="float:left;">
 						<cfif qLibraryList.recordCount GT 0>	
@@ -474,36 +492,36 @@ LIBRARY DATA
 			</td>
 		</tr>
 		</table>
-	
+	</cfoutput>
 		
 			
 		</ft:form>
-	</cfoutput>
+
 	</cfsavecontent>
 	<cfreturn sReturn >
 </cffunction>
 
-<cffunction name="RenderAddNew">
+<cffunction name="RenderAddNew" returntype="string" output="false">
 	<cfsavecontent variable="sReturn">
-	<cfoutput>
+	
 	<ft:form>
 						
 
 						
-				<cfif FileExists("#application.path.project#/webskin/#url.ftJoin#/#url.ftLibraryAddNewMethod#.cfm")>
+				<cfif FileExists("#application.path.project#/webskin/#request.ftJoin#/#url.ftLibraryAddNewMethod#.cfm")>
 					<cfset oData.getDisplay(template="#url.ftLibraryAddNewMethod#") />
 				<cfelse>
-					<ft:object typename="#URL.ftJoin#" lfields="" inTable=0 />
+					<ft:object typename="#request.ftJoin#" lfields="" inTable=0 />
 				</cfif>
-				
+				<cfoutput>
 				<div>
 					<ft:farcrybutton value="Attach" />	
 					<ft:farcrybutton type="button" value="Close" onclick="self.blur();window.close();" />	
 				</div>
-					
+				</cfoutput>
 		
 		</ft:form>
-	</cfoutput>
+	
 	</cfsavecontent>
 	
 	<cfreturn sReturn >
@@ -515,20 +533,12 @@ LIBRARY DATA
 		
 		<cfset Request.InHead.ScriptaculousEffects = 1>
 		
-		<!--- only perform this QoQ if there are records (images) in the database --->
-		<cfif len(trim(lRenderedObjects))>
-			<cfquery dbtype="query" name="q">
-			SELECT ObjectID
-			FROM q
-			WHERE ObjectID IN (#ListQualify(lRenderedObjects,"'")#)
-			</cfquery>
-		</cfif>
-		
-		
 		<script type="text/javascript">
 			
-		<cfloop query="q">
-			Effect.Fade($('select#q.objectID#'), {from:0.2,to:0.2});
+		<cfloop list="#lBasketIDs#" index="i">
+			<cfif listFindNoCase(lRenderedObjects,i)>
+				Effect.Fade($('select#i#'), {from:0.2,to:0.2});
+			</cfif>
 		</cfloop>
 		
 		<cfloop query="qLibraryList" startrow="#StartRow#" endrow="#EndRow#">
@@ -538,8 +548,6 @@ LIBRARY DATA
 		
 		
 		function updateBasket(action,element){
-			
-
 			
 			
 			if(element){
@@ -552,11 +560,13 @@ LIBRARY DATA
 			
 			
 			new Ajax.Request('/farcry/facade/library.cfc?method=ajaxUpdateArray', {
-				parameters:'Action=' + action + '&LibraryType=#url.LibraryType#&primaryObjectID=#url.primaryObjectID#&primaryTypename=#url.primaryTypeName#&primaryFieldname=#url.primaryFieldname#&primaryFormFieldname=#url.primaryFormFieldname#&WizzardID=#url.WizzardID#&DataObjectID=' + dataobjectid + '&DataTypename=#url.ftJoin#',
+				parameters:'Action=' + action + '&LibraryType=#url.LibraryType#&primaryObjectID=#url.primaryObjectID#&primaryTypename=#url.primaryTypeName#&primaryFieldname=#url.primaryFieldname#&primaryFormFieldname=#url.primaryFormFieldname#&WizzardID=#url.WizzardID#&DataObjectID=' + dataobjectid + '&DataTypename=#request.ftJoin#',
 				asynchronous:true, 
 				onSuccess:function(request){
 					//$('basket').innerHTML = request.responseText;
+					
 					update_#url.primaryFormFieldname#_wrapper(request.responseText);	
+					
 					opener.update_#url.primaryFormFieldname#_wrapper(request.responseText);	
 					//Effect.Pulsate($('#url.primaryFormFieldname#_' + $(element).getAttribute('objectid')), {duration:1});
 					$('DragTitle').innerHTML = 'Drag here to add';
@@ -573,6 +583,9 @@ LIBRARY DATA
 							  })
 							// ]]>
 					}
+					
+					
+					
 				
 				}
 			});
@@ -593,7 +606,7 @@ LIBRARY DATA
 							// ]]>	
 													
 					}, 
-					parameters:'Action=' + action + '&LibraryType=#url.LibraryType#&primaryObjectID=#url.primaryObjectID#&primaryTypename=#url.primaryTypeName#&primaryFieldname=#url.primaryFieldname#&primaryFormFieldname=#url.primaryFormFieldname#&WizzardID=#url.WizzardID#&DataObjectID=' + encodeURIComponent($(element).getAttribute('objectid')) + '&DataTypename=#url.ftJoin#', evalScripts:true, asynchronous:true
+					parameters:'Action=' + action + '&LibraryType=#url.LibraryType#&primaryObjectID=#url.primaryObjectID#&primaryTypename=#url.primaryTypeName#&primaryFieldname=#url.primaryFieldname#&primaryFormFieldname=#url.primaryFormFieldname#&WizzardID=#url.WizzardID#&DataObjectID=' + encodeURIComponent($(element).getAttribute('objectid')) + '&DataTypename=#request.ftJoin#', evalScripts:true, asynchronous:true
 				}) --->
 		}
 		
@@ -620,3 +633,6 @@ LIBRARY DATA
 </cfoutput>	
 
 <admin:footer>
+
+
+<cfsetting enablecfoutputonly="no">
