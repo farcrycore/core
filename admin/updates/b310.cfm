@@ -4,6 +4,8 @@ Adds the SourceImage, StandardImage and ThumbnailImage entry to dmImage table<br
 Create SourceImages, thumbnailImages and StandardImages directories<br />
 Update SourceImage, StandardImage and ThumbnailImage initial values<br />
 Copy Files from Old Locations to New Locations
+Add Typename Field to each array table.
+Populate each new typename field.
 
 --->
 <cfoutput>
@@ -108,7 +110,7 @@ Copy Files from Old Locations to New Locations
 			</cfdefaultcase>
 		</cfswitch>
 
-		<cfcatch><cfset error=1><cfoutput><p><span class="frameMenuBullet">&raquo;</span> <span class="error"><cfdump var="#cfcatch.detail#"></span></p></cfoutput></cfcatch>
+		<cfcatch><cfset error=1><cfoutput><strong>fields already exist.</strong></p></cfoutput></cfcatch>
 	</cftry>
 
 	<cfif not error>
@@ -250,6 +252,108 @@ Copy Files from Old Locations to New Locations
 	</cfif>	
 
 
+
+
+
+
+	<!--- Add typename field to all array tables --->
+	<cfset error = 0>
+	<cfoutput><p><span class="frameMenuBullet">&raquo;</span> Adding typename field to all array tables...</cfoutput><cfflush>
+	<cftry>
+		
+		<cfset stArrayFields = StructNew() />
+		<cfset stArrayFields.container.lfields = "aRules" />
+		<cfloop list="#structKeyList(application.types)#" index="iType">
+			
+			<cfloop list="#structKeyList(application.types[iType].stProps)#" index="iField">
+				<cfif application.types[iType].stprops[iField].metadata.Type EQ "Array">
+					<cfparam name="stArrayFields[iType]" default="#structNew()#">
+					<cfparam name="stArrayFields[iType].lFields" default="">
+					<cfset stArrayFields[iType].lFields = ListAppend(stArrayFields[iType].lFields,iField) />
+				</cfif>
+			</cfloop>
+			
+		</cfloop>
+		
+
+		<cfloop list="#structKeyList(stArrayFields)#" index="iType">
+			<cfloop list="#stArrayFields[iType].lFields#" index="iField">
+				
+		
+					<cfswitch expression="#application.dbtype#">
+						
+						<cfcase value="ora">																
+							<cftry>
+								<cfquery name="qAlterTable" datasource="#application.dsn#">
+								ALTER TABLE #application.dbowner##iType#_#iField# ADD typename VARCHAR2(255) NULL
+								</cfquery>
+								<cfoutput><div>Typename added to table #iType#_#iField#</div></cfoutput>
+								<cfcatch type="database"><cfoutput><div>Typename already exists in table #iType#_#iField#</div></cfoutput></cfcatch>
+							</cftry>
+
+							<cftry>		
+								<cfquery name="update" datasource="#application.dsn#">
+								UPDATE #application.dbowner##iType#_#iField#
+								SET #application.dbowner##iType#_#iField#.typename = refObjects.typename		
+								FROM #application.dbowner##iType#_#iField# INNER JOIN #application.dbowner#refObjects
+								ON #application.dbowner##iType#_#iField#.data=refObjects.objectid					
+								</cfquery>	
+								<cfoutput><div>Typename field updated in <strong>#application.dbowner##iType#_#iField#</strong></div></cfoutput>	
+							
+								<cfcatch type="database"><cfdump var="#cfcatch#" expand="false"></cfcatch>
+							</cftry>	
+						</cfcase>
+						
+						
+						<cfcase value="mssql,odbc,mysql,postgresql">																
+							<cftry>
+								<cfquery name="qAlterTable" datasource="#application.dsn#">
+								ALTER TABLE #application.dbowner##iType#_#iField# ADD typename VARCHAR(255) NULL
+								</cfquery>
+								<cfoutput><div>Typename added to table #iType#_#iField#</div></cfoutput>
+								<cfcatch type="database"><cfoutput><div>Typename already exists in table #iType#_#iField#</div></cfoutput></cfcatch>
+							</cftry>
+
+							<cftry>		
+								<cfquery name="update" datasource="#application.dsn#">
+								UPDATE #application.dbowner##iType#_#iField#
+								SET #application.dbowner##iType#_#iField#.typename = refObjects.typename		
+								FROM #application.dbowner##iType#_#iField# INNER JOIN #application.dbowner#refObjects
+								ON #application.dbowner##iType#_#iField#.data=refObjects.objectid					
+								</cfquery>	
+								<cfoutput><div>Typename field updated in <strong>#application.dbowner##iType#_#iField#</strong></div></cfoutput>	
+							
+								<cfcatch type="database"><cfdump var="#cfcatch#" expand="false"></cfcatch>
+							</cftry>	
+							
+												
+						</cfcase>
+						
+						<cfdefaultcase>
+							<cfthrow message="Your database type is not supported for this update (310)." /> 
+						</cfdefaultcase>
+					
+					</cfswitch>
+					
+					
+					
+
+			</cfloop>
+		</cfloop>
+		
+
+		<cfcatch><cfset error=1><cfoutput><p><span class="frameMenuBullet">&raquo;</span> <span class="error"><cfdump var="#cfcatch.detail#"></span></p></cfoutput></cfcatch>
+	</cftry>
+
+	<cfif not error>
+		<cfoutput><strong>done</strong></p></cfoutput><cfflush>
+	</cfif>
+	
+		
+	
+	
+	
+
 	<!---
 		clean up caching: kill all shared scopes and force application initialisation
 			- application
@@ -271,6 +375,8 @@ Copy Files from Old Locations to New Locations
 		<li>Create SourceImages, thumbnailImages and StandardImages directories</li>
 		<li>Update SourceImage, StandardImage and ThumbnailImage initial values</li>
 		<li>Copy Files from Old Locations to New Locations</li>
+		<li>Add new typename field to each array table</li>
+		<li>Populate each new typename field with the typname of the objectid it contains.</li>
 	</ul>
 	</p>
 	<form action="" method="post">
