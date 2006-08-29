@@ -26,7 +26,7 @@ type properties
 <cfproperty name="aRelatedIDs" type="array" hint="Holds object pointers to related objects.  Can be of mixed types." required="no" default="">
 <cfproperty name="Title" type="nstring" hint="Title of object.  *perhaps this should be deprecated for object label*" required="no" default="">
 <cfproperty name="Teaser" type="longchar" hint="Teaser text." required="no" default="">
-<cfproperty name="Body" type="longchar" hint="Main body of content." required="no" default="">
+<cfproperty name="Body" type="longchar" hint="Main body of content." required="no" default="" ftType="richtext">
 <cfproperty name="displayMethod" type="string" hint="Display method to render this HTML object with." required="yes" default="display">
 <cfproperty name="metaKeywords" type="nstring" hint="HTML head section metakeywords." required="no" default="">
 <cfproperty name="extendedmetadata" type="longchar" hint="HTML head section for extended keywords." required="no" default="">
@@ -61,7 +61,7 @@ object methods
 	<cfset var q = ''>
 	<cfquery name="q" datasource="#arguments.dsn#">
 		DELETE FROM #application.dbowner#dmHTML_aRelatedIDs
-		WHERE parentId = '#arguments.objectid#'
+		WHERE parentid = '#arguments.objectid#'
 	</cfquery>
 	
 </cffunction>
