@@ -123,45 +123,41 @@ default handlers
 		<cfset var HTML = "" />
 		<cfset var qMetadata = queryNew("objectID") />
 		
-		<cfif fileExists("#application.path.project#/webskin/#stobj.typename#/displayPageStandard.cfm")>
-			<cfset HTML = getView(stobject=stObj, Template="displayPageStandard") />
-			<cfoutput>#HTML#</cfoutput>		
+
+			
 		
+		<cfset qMetadata = application.types[stobj.typename].qMetadata >
+		
+		
+		<cfquery dbtype="query" name="qFieldSets">
+		SELECT ftWizzardStep, ftFieldset
+		FROM qMetadata
+		WHERE ftFieldset <> '#stobj.typename#'
+		Group By ftWizzardStep, ftFieldset
+		ORDER BY ftSeq
+		</cfquery>
+		
+		<cfif qFieldSets.recordcount GT 1>
+			
+			<cfloop query="qFieldSets">
+				<cfquery dbtype="query" name="qFieldset">
+				SELECT *
+				FROM qMetadata
+				WHERE ftFieldset = '#qFieldsets.ftFieldset#'
+				ORDER BY ftSeq
+				</cfquery>
+				
+				<ft:object ObjectID="#arguments.ObjectID#" format="display" lExcludeFields="label" lFields="#valuelist(qFieldset.propertyname)#" inTable=false IncludeFieldSet=1 Legend="#qFieldSets.ftFieldset#" />
+			</cfloop>
+			
+			
 		<cfelse>
-			
-			
-			<cfset qMetadata = application.types[stobj.typename].qMetadata >
-			
-			
-			<cfquery dbtype="query" name="qFieldSets">
-			SELECT ftWizzardStep, ftFieldset
-			FROM qMetadata
-			WHERE ftFieldset <> '#stobj.typename#'
-			Group By ftWizzardStep, ftFieldset
-			ORDER BY ftSeq
-			</cfquery>
-			
-			<cfif qFieldSets.recordcount GT 1>
-				
-				<cfloop query="qFieldSets">
-					<cfquery dbtype="query" name="qFieldset">
-					SELECT *
-					FROM qMetadata
-					WHERE ftFieldset = '#qFieldsets.ftFieldset#'
-					ORDER BY ftSeq
-					</cfquery>
-					
-					<ft:object ObjectID="#arguments.ObjectID#" format="display" lExcludeFields="label" lFields="#valuelist(qFieldset.propertyname)#" inTable=false IncludeFieldSet=1 Legend="#qFieldSets.ftFieldset#" />
-				</cfloop>
-				
-				
-			<cfelse>
-			
-				<!--- default edit handler --->
-				<ft:object ObjectID="#arguments.ObjectID#" format="display" lExcludeFields="label" lFields="" inTable=false IncludeFieldSet=1 Legend="#stObj.Label#" />
-			</cfif>
 		
-		</cfif>		
+			<!--- default edit handler --->
+			<ft:object ObjectID="#arguments.ObjectID#" format="display" lExcludeFields="label" lFields="" inTable=false IncludeFieldSet=1 Legend="#stObj.Label#" />
+		</cfif>
+		
+	
 				
 	</cffunction>
 	
@@ -603,7 +599,8 @@ default handlers
 				<cfelse>
 				
 					<!--- default edit handler --->
-					<ft:object ObjectID="#arguments.ObjectID#" format="edit" lExcludeFields="label" lFields="" inTable=false IncludeFieldSet=1 Legend="#stObj.Label#" />
+					<ft:object ObjectID="#arguments.ObjectID#" format="edit" lExcludeFields="label" lFields="" IncludeFieldSet=1 Legend="#stObj.Label#" />
+					
 				</cfif>
 				
 				
@@ -912,21 +909,22 @@ default handlers
 		<cfargument name="ObjectID" required="no" type="string" default="" hint="This is the PK for which we are getting the linked FK's. If the ObjectID passed is empty, the we are creating a new object and it will therefore not have an objectID">
 		<cfargument name="Fieldname" required="yes" type="string">
 		<cfargument name="typename" required="yes" type="string" default="">
-		<cfargument name="Link" required="yes" type="string" default="#application.types[typename].stprops[arguments.Fieldname].metadata.ftJoin#" />
+		<cfargument name="ftJoin" required="yes" type="string" /><!--- This is a list of typenames as defined in the metadata of the property --->
 		
-		<cfif len(arguments.typename) EQ 0>
+		<cfset var q = queryNew("parentid,data,seq,typename") />
+		
+		<cfif NOT len(arguments.typename)>
 			<cfset arguments.typename  = findType(objectID="#arguments.ObjectID#")>
 		</cfif>
-		<!--- getData for object edit --->
-		<cfquery datasource="#application.dsn#" name="qArrayAsQuery">
-		SELECT #arguments.Link#.*
+		
+		<cfquery datasource="#application.dsn#" name="q">
+		SELECT *
 		FROM #arguments.typename#_#arguments.Fieldname#
-		INNER JOIN #arguments.Link# ON #arguments.typename#_#arguments.Fieldname#.data = #arguments.Link#.ObjectID
 		WHERE #arguments.typename#_#arguments.Fieldname#.parentID = '#arguments.ObjectID#'
 		ORDER BY #arguments.typename#_#arguments.Fieldname#.seq ASC
 		</cfquery>		
-				
-		<cfreturn qArrayAsQuery>
+	
+		<cfreturn q />
 			
 	</cffunction>
 		
