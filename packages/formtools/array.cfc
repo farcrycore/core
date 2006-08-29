@@ -181,7 +181,7 @@
 
 		<cfset var returnHTML = ""/>
 
-		<cfparam name="arguments.stMetadata.ftLibrarySelectedMethod" default="Selected">
+		<cfparam name="arguments.stMetadata.ftLibrarySelectedMethod" default="librarySelected">
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedListClass" default="thumbNailsWrap">
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedListStyle" default="">
 		
@@ -211,8 +211,7 @@
 							<cfset stobj = stJoinObjects[q.typename].getData(objectid=q.data) />
 							<cfif FileExists("#application.path.project#/webskin/#q.typename#/#arguments.stMetadata.ftLibrarySelectedMethod#.cfm")>
 								<cfset html = stJoinObjects[q.typename].getView(stObject=stobj,template="#arguments.stMetadata.ftLibrarySelectedMethod#") />
-								#html#
-								
+								#html#								
 								<!---<cfinclude template="/farcry/#application.applicationname#/webskin/#q.typename#/#arguments.stMetadata.ftLibrarySelectedMethod#.cfm"> --->
 							<cfelse>
 								#stobj.label#
