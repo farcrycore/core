@@ -5,61 +5,85 @@
 
 		
 
-	<cffunction name="edit" access="public" output="false" returntype="string" hint="This is going to called from ft:object and will always be passed 'typename,stobj,stMetadata,fieldname'.">
+	<cffunction name="edit" access="public" output="true" returntype="string" hint="This is going to called from ft:object and will always be passed 'typename,stobj,stMetadata,fieldname'.">
 		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
 		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 
+		<cfset var returnHTML = "" />
 		<cfset var stobj = structnew() / >
-		<cfset var lArrayObjectIDs = "" />
+		<cfset var stJoinObjects = structNew() /> <!--- This will contain a structure of object components that match the ftJoin list from the metadata --->
+		
+
+		<!---
+		<cfset var oFourQ = createObject("component","farcry.fourq.fourq")><!--- TODO: this needs to be removed when we add typename to array tables. ---> 
+		 --->
 		
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedMethod" default="LibrarySelected">
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedListClass" default="thumbNailsWrap">
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedListStyle" default="">
 
 		<!--- An array type MUST have a 'ftJoin' property --->
-		<cfif not structKeyExists(arguments.stMetadata,"ftJoin")>
+		<cfif not structKeyExists(arguments.stMetadata,"ftJoin") or not len(arguments.stMetadata.ftJoin)>
 			<cfreturn "">
 		</cfif>
 		
-		<!--- Create the Linked Table Type as an object  --->
-		<cfset oData = createObject("component",application.types[stMetadata.ftJoin].typepath)>
-
+		<cfset stJoinObjects = StructNew() />
+		
+		<!--- Create each of the the Linked Table Types as an object  --->
+		<cfloop list="#arguments.stMetadata.ftJoin#" index="i">			
+			<cfset stJoinObjects[i] = createObject("component",application.types[i].typepath)>
+		</cfloop>
 
 		<!--- Make sure scriptaculous libraries are included. --->
 		<cfset Request.InHead.ScriptaculousDragAndDrop = 1>
 		<cfset Request.InHead.ScriptaculousEffects = 1>	
 		
 			
+		<cfquery datasource="#application.dsn#" name="qArrayField">
+		SELECT *
+		FROM #arguments.typename#_#arguments.stMetaData.Name#
+		WHERE parentID = '#arguments.stObject.objectID#'
+		ORDER BY seq
+		</cfquery>	
+		
+		
+		
 		<cfset ULID = "#arguments.fieldname#_list"><!--- ID of the unordered list. Important to use this so that the object can be referenced even if their are multiple objects referencing the same field. --->
 		
 		<cfsavecontent variable="returnHTML">
 			
 			
-			<cfloop from ="1" to="#arrayLen(arguments.stObject[arguments.stMetaData.Name])#" index="i">
+<!---			<cfloop from ="1" to="#arrayLen(arguments.stObject[arguments.stMetaData.Name])#" index="i">
 				<cfif isStruct(arguments.stObject[arguments.stMetaData.Name][i]) AND structKeyExists(arguments.stObject[arguments.stMetaData.Name][i],"data")>
 					<cfset lArrayObjectIDs = ListAppend(lArrayObjectIDs,arguments.stObject[arguments.stMetaData.Name][i].data)>
 				<cfelse>
 					<cfset lArrayObjectIDs = ListAppend(lArrayObjectIDs,arguments.stObject[arguments.stMetaData.Name][i])>
 				</cfif>
 				
-			</cfloop>		
+			</cfloop>	 --->	
 			
 			<!--- Contains a list of objectID's currently associated with this field' --->
-			<cfoutput><input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="#lArrayObjectIDs#" /></cfoutput>
+			<cfoutput><input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="#valuelist(qArrayField.data)#" /></cfoutput>
 			
 			
-			<cfif ListLen(lArrayObjectIDs)>
+			<cfif qArrayField.Recordcount>
 				<cfoutput><div id="#ULID#" class="#arguments.stMetadata.ftLibrarySelectedListClass#" style="#arguments.stMetadata.ftLibrarySelectedListStyle#"></cfoutput>
-					<cfloop list="#lArrayObjectIDs#" index="i">
-						<cfoutput><div id="#arguments.fieldname#_#i#">
+					<cfloop query="qArrayField">
+						<cfoutput><div id="#arguments.fieldname#_#qArrayField.data#">
 							<img src="#application.url.farcry#/images/dragbar.gif" class="#ULID#handle" style="cursor:move;" align="center">
 							<div></cfoutput>
-							<cfset stobj = oData.getData(objectid=i)>
-							<cfif FileExists("#application.path.project#/webskin/#arguments.stMetadata.ftJoin#/#arguments.stMetadata.ftLibrarySelectedMethod#.cfm")>
-								<cfset oData.getDisplay(stObject=stobj, template="#arguments.stMetadata.ftLibrarySelectedMethod#") />
-								<!---<cfinclude template="/farcry/#application.applicationname#/webskin/#arguments.stMetadata.ftJoin#/#arguments.stMetadata.ftLibrarySelectedMethod#.cfm"> --->
+							<!---
+							<!--------------------------------------------------------------- 
+							Need to determine the type of the object.
+							TODO: array tables will include a typename field by default so we know what type they are and will not need to lookup the refObjects table.
+							 --------------------------------------------------------------->
+							<cfset typeName = oFourQ.findType(objectid=i) />
+							 --->	
+							<cfset stobj = stJoinObjects[qArrayField.typename].getData(objectid=qArrayField.data)>
+							<cfif FileExists("#application.path.project#/webskin/#qArrayField.typename#/#arguments.stMetadata.ftLibrarySelectedMethod#.cfm")>
+								<cfset stJoinObjects[qArrayField.typename].getDisplay(stObject=stobj, template="#arguments.stMetadata.ftLibrarySelectedMethod#") />
 							<cfelse>
 								<cfif isDefined("stobj.label") AND len(stobj.label)>
 									<cfoutput>#stobj.Label#</cfoutput>
@@ -68,7 +92,7 @@
 								</cfif>
 							</cfif>
 											
-							<cfoutput><a href="##" onclick="new Effect.Fade($('#arguments.fieldname#_#i#'));Element.remove('#arguments.fieldname#_#i#');$('#arguments.fieldname#').value = Sortable.sequence('#ULID#');update_#arguments.fieldname#('sort',$('#arguments.fieldname#')); return false;"><img src="#application.url.farcry#/images/crystal/22x22/actions/button_cancel.png" style="width:16px;height:16px;" /></a>
+							<cfoutput><a href="##" onclick="new Effect.Fade($('#arguments.fieldname#_#qArrayField.data#'));Element.remove('#arguments.fieldname#_#qArrayField.data#');$('#arguments.fieldname#').value = Sortable.sequence('#ULID#');update_#arguments.fieldname#('sort',$('#arguments.fieldname#')); return false;"><img src="#application.url.farcry#/images/crystal/22x22/actions/button_cancel.png" style="width:16px;height:16px;" /></a>
 							</div>
 						</div></cfoutput>
 					</cfloop>
@@ -132,7 +156,7 @@
 								// ]]>	
 														
 						}, 
-						parameters:'Action=' + action + '&LibraryType=Array&primaryObjectID=#arguments.stObject.ObjectID#&primaryTypename=#arguments.typename#&primaryFieldname=#arguments.stMetaData.Name#&primaryFormFieldname=#arguments.fieldname#&WizzardID=&DataObjectID=' + encodeURIComponent($('#arguments.fieldname#').value) + '&DataTypename=#arguments.stMetadata.ftJoin#', evalScripts:true, asynchronous:true
+						parameters:'Action=' + action + '&LibraryType=Array&primaryObjectID=#arguments.stObject.ObjectID#&primaryTypename=#arguments.typename#&primaryFieldname=#arguments.stMetaData.Name#&primaryFormFieldname=#arguments.fieldname#&WizzardID=&DataObjectID=' + encodeURIComponent($('#arguments.fieldname#').value) + '&DataTypename=#ListFirst(arguments.stMetadata.ftJoin)#', evalScripts:true, asynchronous:true
 					})
 			}
 			
@@ -143,10 +167,10 @@
 			
 		
 		</cfsavecontent>
-		
+
 		
  		<cfreturn ReturnHTML>
-		
+
 	</cffunction>
 	
 	<cffunction name="display" access="public" output="false" returntype="string" hint="This will return a string of formatted HTML text to display.">
@@ -154,6 +178,8 @@
 		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
+
+		<cfset var returnHTML = ""/>
 
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedMethod" default="Selected">
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedListClass" default="thumbNailsWrap">
@@ -163,9 +189,14 @@
 		<cfset o = createObject("component",application.types[arguments.typename].typepath)>
 		<cfset q = o.getArrayFieldAsQuery(objectid="#arguments.stObject.ObjectID#", Typename="#arguments.typename#", Fieldname="#stMetadata.Name#", ftJoin="#stMetadata.ftJoin#")>
 	
-		<!--- Create the Linked Table Type as an object  --->
-		<cfset oData = createObject("component",application.types[stMetadata.ftJoin].typepath)>
+		<cfset stJoinObjects = StructNew() />
+		
+		<!--- Create each of the the Linked Table Types as an object  --->
+		<cfloop list="#arguments.stMetadata.ftJoin#" index="i">			
+			<cfset stJoinObjects[i] = createObject("component",application.types[i].typepath)>
+		</cfloop>
 
+		
 		<cfsavecontent variable="returnHTML">
 		<cfoutput>
 				
@@ -177,11 +208,14 @@
 						<!---<li id="#arguments.fieldname#_#q.objectid#"> --->
 							
 							<div>
-							<cfif FileExists("#application.path.project#/webskin/#arguments.stMetadata.ftJoin#/#arguments.stMetadata.ftLibrarySelectedMethod#.cfm")>
-								<cfset stobj = oData.getData(objectid=q.ObjectID)>
-								<cfinclude template="/farcry/#application.applicationname#/webskin/#arguments.stMetadata.ftJoin#/#arguments.stMetadata.ftLibrarySelectedMethod#.cfm">
+							<cfset stobj = stJoinObjects[q.typename].getData(objectid=q.data) />
+							<cfif FileExists("#application.path.project#/webskin/#q.typename#/#arguments.stMetadata.ftLibrarySelectedMethod#.cfm")>
+								<cfset html = stJoinObjects[q.typename].getView(stObject=stobj,template="#arguments.stMetadata.ftLibrarySelectedMethod#") />
+								#html#
+								
+								<!---<cfinclude template="/farcry/#application.applicationname#/webskin/#q.typename#/#arguments.stMetadata.ftLibrarySelectedMethod#.cfm"> --->
 							<cfelse>
-								<cfif isDefined("q.label") AND len(q.label)>#q.Label#<cfelse>#q.ObjectID#</cfif>
+								#stobj.label#
 							</cfif>
 							</div>
 													
@@ -193,7 +227,7 @@
 				
 		</cfoutput>
 		</cfsavecontent>
-		
+
 		<cfreturn returnHTML>
 	</cffunction>
 

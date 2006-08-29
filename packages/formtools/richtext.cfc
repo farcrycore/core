@@ -22,8 +22,9 @@
 							#Evaluate("application.config.#arguments.stMetadata.ftConfig#")#,
 						<cfelse>
 							theme : "advanced",
-							plugins : "table,advhr,advlink,preview,zoom,searchreplace,print,contextmenu,paste,directionality,fullscreen",
-							theme_advanced_buttons3_add : "separator,fullscreen",
+							plugins : "table,advhr,advlink,preview,zoom,searchreplace,print,contextmenu,paste,directionality,fullscreen",		
+							theme_advanced_buttons3_add : "separator,fullscreen,pasteword",
+							
 							theme_advanced_toolbar_location : "top",
 							theme_advanced_toolbar_align : "left",
 							theme_advanced_path_location : "bottom",

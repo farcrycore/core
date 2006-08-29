@@ -162,6 +162,8 @@ todo: 	versioning object will be deprecated..
     		</cfif>
     	</cfif>
     </cfif>
+	
+	
 <!--- else get the navigation point from the URL --->
 <cfelseif isDefined("url.navid")>
 	<!--- ie. this is a dynamic object looking for context --->

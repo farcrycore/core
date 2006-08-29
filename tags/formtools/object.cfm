@@ -283,7 +283,9 @@
 		<cfset tFieldType = application.formtools[ftFieldMetadata.ftType]>
 		
 		<!--- Need to determine which method to run on the field --->		
-		<cfif structKeyExists(ftFieldMetadata,"Method")><!--- Have we been requested to run a specific method on the field. This can enable the user to run a display method inside an edit form for instance --->
+		<cfif structKeyExists(ftFieldMetadata, "ftDisplayOnly")>
+			<cfset FieldMethod = "display" />
+		<cfelseif structKeyExists(ftFieldMetadata,"Method")><!--- Have we been requested to run a specific method on the field. This can enable the user to run a display method inside an edit form for instance --->
 			<cfset FieldMethod = ftFieldMetadata.method>
 		<cfelse>
 			<cfif attributes.Format EQ "Edit">
@@ -324,6 +326,7 @@
 			</cfif>
 		</cfif>	
 
+		
 		<!--- Make sure ftStyle and ftClass exist --->
 		<cfparam name="ftFieldMetadata.ftStyle" default="">
 		<cfparam name="ftFieldMetadata.ftClass" default="">
@@ -363,8 +366,9 @@
 			
 			<cfif structKeyExists(tFieldType,FieldMethod)>
 				
+
 				<cftry>
-					
+				
 					
 					
 					<cfinvoke component="#tFieldType#" method="#FieldMethod#" returnvariable="variables.returnHTML">
@@ -373,55 +377,63 @@
 						<cfinvokeargument name="stMetadata" value="#ftFieldMetadata#">
 						<cfinvokeargument name="fieldname" value="#variables.prefix##ftFieldMetadata.Name#">
 					</cfinvoke>
-					<cfcatch><cfdump var="#cfcatch#"><cfabort></cfcatch>
+					<cfcatch><cfdump var="#cfcatch#" expand="false"></cfcatch>
 					
 				</cftry>
 				
+				
 			</cfif>
-			
+
+
 			<cfif attributes.Format EQ "Edit" AND (ftFieldMetadata.Type EQ "array" OR ftFieldMetadata.Type EQ "UUID") AND isDefined("ftFieldMetadata.ftJoin")>
-		
-				<cfset stURLParams = structNew()>
-				<cfset stURLParams.primaryObjectID = "#stObj.ObjectID#">
-				<cfset stURLParams.primaryTypename = "#typename#">
-				<cfset stURLParams.primaryFieldName = "#ftFieldMetadata.Name#">
-				<cfset stURLParams.primaryFormFieldName = "#variables.prefix##ftFieldMetadata.Name#">
-				<cfset stURLParams.ftJoin = "#ftFieldMetadata.ftJoin#">
-				<cfset stURLParams.LibraryType = "#ftFieldMetadata.Type#">
-				
-				<!--- If the field is contained in a wizzard, we need to let the library know which wizzard. --->
-				<cfif len(attributes.WizzardID)>
-					<cfset stURLParams.WizzardID = "#attributes.WizzardID#">
-				</cfif>
-				
-				<cfif structKeyExists(ftFieldMetadata,'ftLibraryAddNewMethod')>
-					<cfset stURLParams.ftLibraryAddNewMethod = "#ftFieldMetadata.ftLibraryAddNewMethod#">
-				</cfif>
-				<cfif structKeyExists(ftFieldMetadata,'ftLibraryPickMethod')>
-					<cfset stURLParams.ftLibraryPickMethod = "#ftFieldMetadata.ftLibraryPickMethod#">
-				</cfif>
-				<cfif structKeyExists(ftFieldMetadata,'ftLibraryPickListClass')>
-					<cfset stURLParams.ftLibraryPickListClass = "#ftFieldMetadata.ftLibraryPickListClass#">
-				</cfif>
-				<cfif structKeyExists(ftFieldMetadata,'ftLibraryPickListStyle')>
-					<cfset stURLParams.ftLibraryPickListStyle = "#ftFieldMetadata.ftLibraryPickListStyle#">
-				</cfif>
-				<cfif structKeyExists(ftFieldMetadata,'ftLibrarySelectedMethod')>
-					<cfset stURLParams.ftLibrarySelectedMethod = "#ftFieldMetadata.ftLibrarySelectedMethod#">
-				</cfif>
-				<cfif structKeyExists(ftFieldMetadata,'ftLibrarySelectedListClass')>
-					<cfset stURLParams.ftLibrarySelectedListClass = "#ftFieldMetadata.ftLibrarySelectedListClass#">
-				</cfif>
-				<cfif structKeyExists(ftFieldMetadata,'ftLibrarySelectedListStyle')>
-					<cfset stURLParams.ftLibrarySelectedListStyle = "#ftFieldMetadata.ftLibrarySelectedListStyle#">
-				</cfif>
-				<cfif structKeyExists(ftFieldMetadata,'ftLibraryData')>
-					<cfset stURLParams.ftLibraryData = "#ftFieldMetadata.ftLibraryData#">
-				</cfif>
-	
 				<cfsavecontent variable="LibraryLink">
-					<!--- <cfdump var="#ftFieldMetadata#"> --->
-					<ws:buildLink href="#application.url.farcry#/facade/library.cfm" target="library" bShowTarget="true" stParameters="#stURLParams#"><cfoutput><img src="#application.url.farcry#/images/treeimages/crystalIcons/includeApproved.gif" /></cfoutput></ws:buildLink>
+					<cfloop list="#ftFieldMetadata.ftJoin#" index="i">
+						<cfset stURLParams = structNew()>
+						<cfset stURLParams.primaryObjectID = "#stObj.ObjectID#">
+						<cfset stURLParams.primaryTypename = "#typename#">
+						<cfset stURLParams.primaryFieldName = "#ftFieldMetadata.Name#">
+						<cfset stURLParams.primaryFormFieldName = "#variables.prefix##ftFieldMetadata.Name#">
+						<cfset stURLParams.ftJoin = "#i#">
+						<cfset stURLParams.LibraryType = "#ftFieldMetadata.Type#">
+						
+						<!--- If the field is contained in a wizzard, we need to let the library know which wizzard. --->
+						<cfif len(attributes.WizzardID)>
+							<cfset stURLParams.WizzardID = "#attributes.WizzardID#">
+						</cfif>
+						
+						<cfif structKeyExists(ftFieldMetadata,'ftLibraryAddNewMethod')>
+							<cfset stURLParams.ftLibraryAddNewMethod = "#ftFieldMetadata.ftLibraryAddNewMethod#">
+						</cfif>
+						<cfif structKeyExists(ftFieldMetadata,'ftLibraryPickMethod')>
+							<cfset stURLParams.ftLibraryPickMethod = "#ftFieldMetadata.ftLibraryPickMethod#">
+						</cfif>
+						<cfif structKeyExists(ftFieldMetadata,'ftLibraryPickListClass')>
+							<cfset stURLParams.ftLibraryPickListClass = "#ftFieldMetadata.ftLibraryPickListClass#">
+						</cfif>
+						<cfif structKeyExists(ftFieldMetadata,'ftLibraryPickListStyle')>
+							<cfset stURLParams.ftLibraryPickListStyle = "#ftFieldMetadata.ftLibraryPickListStyle#">
+						</cfif>
+						<cfif structKeyExists(ftFieldMetadata,'ftLibrarySelectedMethod')>
+							<cfset stURLParams.ftLibrarySelectedMethod = "#ftFieldMetadata.ftLibrarySelectedMethod#">
+						</cfif>
+						<cfif structKeyExists(ftFieldMetadata,'ftLibrarySelectedListClass')>
+							<cfset stURLParams.ftLibrarySelectedListClass = "#ftFieldMetadata.ftLibrarySelectedListClass#">
+						</cfif>
+						<cfif structKeyExists(ftFieldMetadata,'ftLibrarySelectedListStyle')>
+							<cfset stURLParams.ftLibrarySelectedListStyle = "#ftFieldMetadata.ftLibrarySelectedListStyle#">
+						</cfif>
+						<cfif structKeyExists(ftFieldMetadata,'ftLibraryData')>
+							<cfset stURLParams.ftLibraryData = "#ftFieldMetadata.ftLibraryData#">
+						</cfif>
+			
+						
+						<!--- <cfdump var="#ftFieldMetadata#"> --->
+						<ws:buildLink href="#application.url.farcry#/facade/library.cfm" target="library" bShowTarget="true" stParameters="#stURLParams#"><cfoutput><img src="#application.url.farcry#/images/treeimages/crystalIcons/includeApproved.gif" /></cfoutput></ws:buildLink>
+							
+						
+						
+					</cfloop>
+					
 				</cfsavecontent>
 			<cfelse>
 				<cfset libraryLink = "">	

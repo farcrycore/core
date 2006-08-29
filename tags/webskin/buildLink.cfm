@@ -119,7 +119,7 @@ $in: xCode -- eXtra code to be placed inside the anchor tag $
 			<cfset href = href & "&" & stLocal.parameters>
 		</cfif>
 	</cfif>
-	
+
 	
 	<!--- Are we meant to use the Javascript Popup Window? --->
 	<cfif attributes.JSWindow>
