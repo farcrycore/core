@@ -262,7 +262,7 @@
 		<cfset tFieldType = application.formtools[ftFieldMetadata.ftType]>
 		
 		<!--- Need to determine which method to run on the field --->
-		<cfif structKeyExists(ftFieldMetadata, "ftDisplayOnly")>
+		<cfif structKeyExists(ftFieldMetadata, "ftDisplayOnly") AND ftFieldMetadata.ftDisplayOnly>
 			<cfset FieldMethod = "display" />				
 		<cfelseif structKeyExists(ftFieldMetadata,"Method")><!--- Have we been requested to run a specific method on the field. This can enable the user to run a display method inside an edit form for instance --->
 			<cfset FieldMethod = ftFieldMetadata.method>
