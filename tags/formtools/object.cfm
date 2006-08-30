@@ -401,11 +401,11 @@
 							<cfset stURLParams.WizzardID = "#attributes.WizzardID#">
 						</cfif>
 						
-						<cfif structKeyExists(ftFieldMetadata,'ftLibraryAddNewMethod')>
-							<cfset stURLParams.ftLibraryAddNewMethod = "#ftFieldMetadata.ftLibraryAddNewMethod#">
+						<cfif structKeyExists(ftFieldMetadata,'ftLibraryAddNewWebskin')>
+							<cfset stURLParams.ftLibraryAddNewWebskin = "#ftFieldMetadata.ftLibraryAddNewWebskin#">
 						</cfif>
-						<cfif structKeyExists(ftFieldMetadata,'ftLibraryPickMethod')>
-							<cfset stURLParams.ftLibraryPickMethod = "#ftFieldMetadata.ftLibraryPickMethod#">
+						<cfif structKeyExists(ftFieldMetadata,'ftLibraryPickWebskin')>
+							<cfset stURLParams.ftLibraryPickWebskin = "#ftFieldMetadata.ftLibraryPickWebskin#">
 						</cfif>
 						<cfif structKeyExists(ftFieldMetadata,'ftLibraryPickListClass')>
 							<cfset stURLParams.ftLibraryPickListClass = "#ftFieldMetadata.ftLibraryPickListClass#">
@@ -413,8 +413,8 @@
 						<cfif structKeyExists(ftFieldMetadata,'ftLibraryPickListStyle')>
 							<cfset stURLParams.ftLibraryPickListStyle = "#ftFieldMetadata.ftLibraryPickListStyle#">
 						</cfif>
-						<cfif structKeyExists(ftFieldMetadata,'ftLibrarySelectedMethod')>
-							<cfset stURLParams.ftLibrarySelectedMethod = "#ftFieldMetadata.ftLibrarySelectedMethod#">
+						<cfif structKeyExists(ftFieldMetadata,'ftLibrarySelectedWebskin')>
+							<cfset stURLParams.ftLibrarySelectedWebskin = "#ftFieldMetadata.ftLibrarySelectedWebskin#">
 						</cfif>
 						<cfif structKeyExists(ftFieldMetadata,'ftLibrarySelectedListClass')>
 							<cfset stURLParams.ftLibrarySelectedListClass = "#ftFieldMetadata.ftLibrarySelectedListClass#">
