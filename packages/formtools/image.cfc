@@ -222,7 +222,7 @@
 					X="#arguments.Width#"
 					Y="#arguments.Height#"
 					Thumbnail=yes
-					bevel="#lCase(arguments.Bevel)#"
+					bevel="#lCase(yesnoformat(arguments.Bevel))#"
 					backcolor="#arguments.PadColor#">
 			</cfcase>
 		

@@ -52,7 +52,8 @@
 	
 
 		<cfsavecontent variable="html">
-			<cfoutput><a target="_blank" href="#arguments.stMetadata.value#"><cfif len(stobject.Title)>#stObject.Title#<cfelse>#arguments.stMetadata.value#</cfif></a></cfoutput>			
+			<cfoutput><a target="_blank" href="#arguments.stMetadata.value#">#arguments.stMetadata.value#</a></cfoutput>			
+			
 		</cfsavecontent>
 		
 		<cfreturn html>

@@ -9,6 +9,9 @@
 		<cfparam name="arguments.stMetadata.ftPrefix" default="">
 		<cfparam name="arguments.stMetadata.ftTypename" default="#arguments.typename#"><!--- The typename that the webskin is to be selected for. It defaults to the typename of the object this field is contained in. --->
 	
+		<cfif NOT len(arguments.stMetadata.ftTypename)>
+			<cfset arguments.stMetadata.ftTypename = arguments.typename />
+		</cfif>
 	
 		<cfif directoryExists("#application.path.project#/webskin/#arguments.stMetadata.ftTypename#")>
 			<cfdirectory action="list" directory="#application.path.project#/webskin/#arguments.stMetadata.ftTypename#" name="qWebskin" filter="*.cfm" >

@@ -20,7 +20,7 @@
 		<cfset var oFourQ = createObject("component","farcry.fourq.fourq")><!--- TODO: this needs to be removed when we add typename to array tables. ---> 
 		 --->
 		
-		<cfparam name="arguments.stMetadata.ftLibrarySelectedMethod" default="LibrarySelected">
+		<cfparam name="arguments.stMetadata.ftLibrarySelectedWebskin" default="LibrarySelected">
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedListClass" default="thumbNailsWrap">
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedListStyle" default="">
 
@@ -82,8 +82,8 @@
 							<cfset typeName = oFourQ.findType(objectid=i) />
 							 --->	
 							<cfset stobj = stJoinObjects[qArrayField.typename].getData(objectid=qArrayField.data)>
-							<cfif FileExists("#application.path.project#/webskin/#qArrayField.typename#/#arguments.stMetadata.ftLibrarySelectedMethod#.cfm")>
-								<cfset stJoinObjects[qArrayField.typename].getDisplay(stObject=stobj, template="#arguments.stMetadata.ftLibrarySelectedMethod#") />
+							<cfif FileExists("#application.path.project#/webskin/#qArrayField.typename#/#arguments.stMetadata.ftLibrarySelectedWebskin#.cfm")>
+								<cfset stJoinObjects[qArrayField.typename].getDisplay(stObject=stobj, template="#arguments.stMetadata.ftLibrarySelectedWebskin#") />
 							<cfelse>
 								<cfif isDefined("stobj.label") AND len(stobj.label)>
 									<cfoutput>#stobj.Label#</cfoutput>
@@ -181,7 +181,7 @@
 
 		<cfset var returnHTML = ""/>
 
-		<cfparam name="arguments.stMetadata.ftLibrarySelectedMethod" default="librarySelected">
+		<cfparam name="arguments.stMetadata.ftLibrarySelectedWebskin" default="librarySelected">
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedListClass" default="thumbNailsWrap">
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedListStyle" default="">
 		
@@ -209,10 +209,10 @@
 							
 							<div>
 							<cfset stobj = stJoinObjects[q.typename].getData(objectid=q.data) />
-							<cfif FileExists("#application.path.project#/webskin/#q.typename#/#arguments.stMetadata.ftLibrarySelectedMethod#.cfm")>
-								<cfset html = stJoinObjects[q.typename].getView(stObject=stobj,template="#arguments.stMetadata.ftLibrarySelectedMethod#") />
+							<cfif FileExists("#application.path.project#/webskin/#q.typename#/#arguments.stMetadata.ftLibrarySelectedWebskin#.cfm")>
+								<cfset html = stJoinObjects[q.typename].getView(stObject=stobj,template="#arguments.stMetadata.ftLibrarySelectedWebskin#") />
 								#html#								
-								<!---<cfinclude template="/farcry/#application.applicationname#/webskin/#q.typename#/#arguments.stMetadata.ftLibrarySelectedMethod#.cfm"> --->
+								<!---<cfinclude template="/farcry/#application.applicationname#/webskin/#q.typename#/#arguments.stMetadata.ftLibrarySelectedWebskin#.cfm"> --->
 							<cfelse>
 								#stobj.label#
 							</cfif>
