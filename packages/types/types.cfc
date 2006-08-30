@@ -413,6 +413,9 @@ default handlers
 			<cfset stProperties.label = stProperties.label />
 		</cfif>
 		
+		
+		<cfset stProperties.datetimelastupdated = now() />
+		
 		<cfreturn stProperties>
 	</cffunction>
 	
