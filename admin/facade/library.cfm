@@ -40,13 +40,13 @@ $Developer: $
 <cfparam name="url.WizzardID" default="">
 <cfparam name="url.LibraryType" default="array">
 
-<cfparam name="url.ftLibraryAddNewMethod" default="libraryAdd"><!--- Method to Add New Object --->
+<cfparam name="url.ftLibraryAddNewWebskin" default="libraryAdd"><!--- Method to Add New Object --->
 
-<cfparam name="url.ftLibraryPickMethod" default="libraryPick"><!--- Method to Pick Existing Objects --->
+<cfparam name="url.ftLibraryPickWebskin" default="libraryPick"><!--- Method to Pick Existing Objects --->
 <cfparam name="url.ftLibraryPickListClass" default="thumbNailsWrap">
 <cfparam name="url.ftLibraryPickListStyle" default="">
 
-<cfparam name="url.ftLibrarySelectedMethod" default="librarySelected"><!--- Method to Pick Existing Objects --->
+<cfparam name="url.ftLibrarySelectedWebskin" default="librarySelected"><!--- Method to Pick Existing Objects --->
 <cfparam name="url.ftLibrarySelectedListClass" default="thumbNailsWrap">
 <cfparam name="url.ftLibrarySelectedListStyle" default="">
 
@@ -455,10 +455,10 @@ LIBRARY DATA
 										
 										<cfset stobj = oData.getData(objectid=stObject.ObjectID)>
 										
-										<cfif FileExists("#application.path.project#/webskin/#request.ftJoin#/#url.ftLibraryPickMethod#.cfm")>
-											<cfset oData.getDisplay(stObject=stobj, template="#url.ftLibraryPickMethod#") />
+										<cfif FileExists("#application.path.project#/webskin/#request.ftJoin#/#url.ftLibraryPickWebskin#.cfm")>
+											<cfset oData.getDisplay(stObject=stobj, template="#url.ftLibraryPickWebskin#") />
 											
-											<!---<cfinclude template="/farcry/#application.applicationname#/webskin/#request.ftJoin#/#url.ftLibraryPickMethod#.cfm"> --->
+											<!---<cfinclude template="/farcry/#application.applicationname#/webskin/#request.ftJoin#/#url.ftLibraryPickWebskin#.cfm"> --->
 										<cfelse>
 											<cfif isDefined("stobj.label") AND len(stobj.label)><cfoutput>#stobj.Label#</cfoutput><cfelse><cfoutput>#stobj.ObjectID#</cfoutput></cfif>
 										</cfif>
@@ -508,8 +508,8 @@ LIBRARY DATA
 						
 
 						
-				<cfif FileExists("#application.path.project#/webskin/#request.ftJoin#/#url.ftLibraryAddNewMethod#.cfm")>
-					<cfset oData.getDisplay(template="#url.ftLibraryAddNewMethod#") />
+				<cfif FileExists("#application.path.project#/webskin/#request.ftJoin#/#url.ftLibraryAddNewWebskin#.cfm")>
+					<cfset oData.getDisplay(template="#url.ftLibraryAddNewWebskin#") />
 				<cfelse>
 					<ft:object typename="#request.ftJoin#" lfields="" inTable=0 />
 				</cfif>

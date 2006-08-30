@@ -14,9 +14,9 @@
  	<cfargument name="Action" required="no" type="string" default="Add" hint="Value can be [Add] or [Remove] or [Sort]">
 
 
-	<cfargument name="ftLibrarySelectedMethod" type="string" default="selected"><!--- Webskin Display method to Display Selected Objects --->
-	<cfargument name="ftLibrarySelectedMethodListClass" type="string" default="selected">
-	<cfargument name="ftLibrarySelectedMethodListStyle" type="string" default="">
+	<cfargument name="ftLibrarySelectedWebskin" type="string" default="selected"><!--- Webskin Display method to Display Selected Objects --->
+	<cfargument name="ftLibrarySelectedWebskinListClass" type="string" default="selected">
+	<cfargument name="ftLibrarySelectedWebskinListStyle" type="string" default="">
 
 	<cfset oPrimary = createObject("component",application.types[arguments.PrimaryTypename].typepath)>
 	<cfset stPrimary = oPrimary.getData(objectid=arguments.PrimaryObjectID)>
