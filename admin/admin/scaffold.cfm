@@ -121,6 +121,8 @@
 	</cfif>
 </ft:processForm>
 
+<ft:processForm Action="Cancel" Exit="true" />
+
 
 <ft:form>
 
