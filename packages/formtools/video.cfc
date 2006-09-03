@@ -1,11 +1,11 @@
 
 
-<cfcomponent name="File" displayname="File" Extends="Field" hint="Field component to liase with all File types"> 
+<cfcomponent name="Video" displayname="Video" Extends="Field" hint="Field component to liase with all Video types"> 
 
 
 	<cfimport taglib="/farcry/farcry_core/tags/formtools/" prefix="ft" >
 	
-	<cffunction name="init" access="public" returntype="farcry.farcry_core.packages.formtools.file" output="false" hint="Returns a copy of this initialised object">
+	<cffunction name="init" access="public" returntype="farcry.farcry_core.packages.formtools.video" output="false" hint="Returns a copy of this initialised object">
 		<cfreturn this>
 	</cffunction>
 	
@@ -16,7 +16,7 @@
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 
 		<cfparam name="arguments.stMetadata.ftstyle" default="">
-		<cfparam name="arguments.stMetadata.ftDestination" default="/files">
+		<cfparam name="arguments.stMetadata.ftDestination" default="/videos">
 		
 		<cfset Request.inHead.Scriptaculous = 1>
 		
@@ -33,7 +33,7 @@
 						<td valign="top">
 							<div id="#arguments.fieldname#previewfile">
 								#arguments.stMetadata.value#
-								<ft:farcrybutton type="button" value="Delete File" onclick="if(confirm('Are you sure you want to remove this file?')) {} else {return false};$('#arguments.fieldname#').value='';Effect.Fade('#arguments.fieldname#previewfile');" />
+								<ft:farcrybutton type="button" value="Delete Video" onclick="if(confirm('Are you sure you want to remove this file?')) {} else {return false};$('#arguments.fieldname#').value='';Effect.Fade('#arguments.fieldname#previewfile');" />
 							</div>
 						</td>
 					</cfif>				
@@ -56,8 +56,7 @@
 	
 
 		<cfsavecontent variable="html">
-			<cfoutput><a target="_blank" href="#arguments.stMetadata.value#">#arguments.stMetadata.value#</a></cfoutput>			
-			
+			<cfoutput><a target="_blank" href="#arguments.stMetadata.value#"><cfif len(stobject.Title)>#stObject.Title#<cfelse>#arguments.stMetadata.value#</cfif></a></cfoutput>			
 		</cfsavecontent>
 		
 		<cfreturn html>

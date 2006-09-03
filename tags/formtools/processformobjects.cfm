@@ -430,7 +430,8 @@
 			<cfif i EQ "ObjectID" or i EQ "typename">
 				<cfset "Caller.#attributes.r_stProperties#.#i#" = Request.farcryForm.stObjects[ProcessingFormObjectPrefix]['FormPost'][i].value>
 			<cfelse>
-				<cfinvoke component="#application.formtools[ftFieldMetadata.ftType]#" method="#FieldMethod#" returnvariable="stResult">
+				<cfset o = application.formtools[ftFieldMetadata.ftType].oFactory.init() />
+				<cfinvoke component="#o#" method="#FieldMethod#" returnvariable="stResult">
 					<cfinvokeargument name="ObjectID" value="#FORM['#ProcessingFormObjectPrefix#objectid']#">
 					<cfinvokeargument name="Typename" value="#FORM['#ProcessingFormObjectPrefix#typename']#">			
 					<cfinvokeargument name="stFieldPost" value="#Request.farcryForm.stObjects[ProcessingFormObjectPrefix]['FormPost'][i]#">

@@ -45,6 +45,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 	<!--- If any custom admin xml files exist, we need to add them to our custom admin XML array --->
 	<cfdirectory action="list" directory="#application.path.project#/customadmin" filter="*.xml" name="qCustomAdmin" />
 	
+
 	<cfif qCustomAdmin.RecordCount>
 		
 		<cfloop query="qCustomAdmin">
@@ -75,6 +76,49 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 		</cfloop>
 	</cfif>
 		
+		
+	<cfif structKeyExists(application, "lIncludeFarcryLib") and listLen(application.lIncludeFarcryLib)>
+
+		<cfloop list="#application.lIncludeFarcryLib#" index="library">
+			
+			<cfif directoryExists("#application.path.library#/#library#/customadmin")>
+				<cfdirectory action="list" directory="#application.path.library#/#library#/customadmin" filter="*.xml" name="qCustomAdmin" />
+	
+
+				<cfif qCustomAdmin.RecordCount>
+					
+					<cfloop query="qCustomAdmin">
+						<cffile action="read" file="#application.path.library#/#library#/customadmin/#qCustomAdmin.Name#" variable="arguments.xCustomAdmin">
+						
+						<cftry>
+							<!--- validate custom admin xml --->
+							<cfset xmlCustomAdmin=xmlParse(arguments.xCustomAdmin)>
+							<cfif arraylen(xmlsearch(xmlCustomAdmin, "/customtabs"))>
+								<!--- process old-style custom admin --->
+								<cffile action="read" file="#application.path.core#/config/transform.xsl" variable="xslt">
+								<!--- XSLT transform customadmin --->
+								<cfset xmlCustomAdmin=xmlTransform(xmlCustomAdmin,xslt)>
+								<cfset xmlCustomAdmin=xmlParse(xmlCustomAdmin)>
+								<!--- log deprecated approach --->
+								<cftrace type="warning" category="farcry.webtop" text="../customadmin/customadmin.xml is using an old format.  This was updated to a more modern format with the release of FarCry 2.4." />
+								<cflog application="true" file="deprecated" type="warning" text="../customadmin/customadmin.xml initialised using an old xml format.  This was updated to a more modern format with the release of FarCry 2.4." />
+							</cfif>
+							
+							<!--- add the xml to our array --->
+							<cfset bResult = arrayAppend(aXMLCustomAdmin, xmlCustomAdmin) />
+							
+							<cfcatch>
+								<cftrace type="warning" category="farcry.webtop" text="../customadmin/customadmin.xml was not parsed successfully." var="cfcatch.Detail" />
+							</cfcatch>
+						</cftry>
+						
+					</cfloop>
+				</cfif>
+			</cfif>
+		</cfloop>
+		
+	</cfif>
+			
 	<cfif arrayLen(aXMLCustomAdmin)>
 		
 			

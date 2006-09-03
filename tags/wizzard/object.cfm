@@ -259,8 +259,12 @@
 		
 		
 		<!--- Default to using the FormTools Field CFC --->
-		<cfset tFieldType = application.formtools[ftFieldMetadata.ftType]>
-		
+		<cfif structKeyExists(application.formtools, ftFieldMetadata.ftType)>
+			<cfset tFieldType = application.formtools[ftFieldMetadata.ftType].oFactory.init() />
+		<cfelse>
+			<cfset tFieldType = application.formtools["field"].oFactory.init() />
+		</cfif>
+				
 		<!--- Need to determine which method to run on the field --->
 		<cfif structKeyExists(ftFieldMetadata, "ftDisplayOnly") AND ftFieldMetadata.ftDisplayOnly>
 			<cfset FieldMethod = "display" />				

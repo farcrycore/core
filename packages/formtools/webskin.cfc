@@ -1,5 +1,9 @@
-<cfcomponent extends="field" name="longchar" displayname="longchar" hint="Used to liase with longchar type fields"> 
-
+<cfcomponent extends="field" name="webskin" displayname="webskin" hint="Used to liase with webskin type fields"> 
+	
+	<cffunction name="init" access="public" returntype="farcry.farcry_core.packages.formtools.webskin" output="false" hint="Returns a copy of this initialised object">
+		<cfreturn this>
+	</cffunction>
+	
 	<cffunction name="edit" access="public" output="true" returntype="string" hint="his will return a string of formatted HTML text to enable the user to edit the data">
 		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
 		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">

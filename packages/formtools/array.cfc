@@ -1,10 +1,13 @@
 <cfcomponent extends="field" name="array" displayname="array" hint="Used to liase with Array type fields"> 
 
 
-	<cfimport taglib="/farcry/farcry_core/tags/webskin/" prefix="ws" >
+	<!---<cfimport taglib="/farcry/farcry_core/tags/webskin/" prefix="ws" > --->
 
 		
-
+	<cffunction name="init" access="public" returntype="farcry.farcry_core.packages.formtools.array" output="false" hint="Returns a copy of this initialised object">
+		<cfreturn this>
+	</cffunction>
+	
 	<cffunction name="edit" access="public" output="true" returntype="string" hint="This is going to called from ft:object and will always be passed 'typename,stobj,stMetadata,fieldname'.">
 		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
 		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">

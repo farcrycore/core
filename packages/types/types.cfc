@@ -78,9 +78,12 @@ default handlers
 		<cfargument name="stobject" required="no" type="struct" hint="Property structure to render in view.  Overrides any property structure mapped to arguments.objectid. Useful if you want to render a view with a modified content item.">
 		<cfargument name="dsn" required="no" type="string" default="#application.dsn#">
 		<cfargument name="OnExit" required="no" type="any" default="">
+		<cfargument name="alternateHTML" required="no" type="string" hint="If the webskin template does not exist, if this argument is sent in, its value will be passed back as the result.">
 		
 		<cfset var result = "" />
 		<cfset var stObj = StructNew() />
+		<cfset var WebskinPath = "" />
+		
 		
 		<cfif isDefined("arguments.stobject")>
 			<cfset stobj=arguments.stobject />
@@ -92,19 +95,85 @@ default handlers
 		</cfif>
 
 		<cfif NOT structIsEmpty(stObj)>
-			<cfif NOT fileExists("#ExpandPath(displayTemplatePath(typename=stObj.typename, template=arguments.template))#")>
-				<cfthrow type="Application" detail="Error: Template not found [#ExpandPath(displayTemplatePath(typename=stObj.typename, template=arguments.template))#]." />
-			</cfif>
 			
-			<cfsavecontent variable="result">
-				<cfinclude template="#displayTemplatePath(typename=stObj.typename, template=arguments.template)#">
-			</cfsavecontent>
-			
+			<cfset webskinPath = getWebskinPath(typename=stObj.typename, template=arguments.template) />
+						
+			<cfif len(webskinPath)>
+
+				<cfsavecontent variable="result">
+					<cfinclude template="#WebskinPath#">
+				</cfsavecontent>
+				
+			<cfelseif structKeyExists(arguments, "alternateHTML")>
+				<cfset result = arguments.alternateHTML />
+			<cfelse>
+				<cfthrow type="Application" detail="Error: Template not found [/webskin/#stObj.typename#/#arguments.template#.cfm] and no alternate html provided." />
+			</cfif>			
+		<cfelse>
+			<cfthrow type="Application" detail="Error: When trying to render [/webskin/#stObj.typename#/#arguments.template#.cfm] the object was not created correctly." />	
 		</cfif>
 		
 		<cfreturn result />
 	</cffunction>
 		
+		
+	<cffunction name="getWebskinPath" returntype="string" access="public" output="false" hint="Returns the path to a webskin. Search through project first, then any library's that have been included.">
+		<cfargument name="typename" type="string" required="true" />
+		<cfargument name="template" type="string" required="true" />
+		
+		<cfset webskinPath = "" />
+	
+		<cfif fileExists(ExpandPath("/farcry/#application.applicationname#/webskin/#arguments.typename#/#arguments.template#.cfm"))>
+			
+			<cfset webskinPath = "/farcry/#application.applicationname#/webskin/#arguments.typename#/#arguments.template#.cfm" />
+			
+		<cfelseif structKeyExists(application, "lIncludeFarcryLib") and listLen(application.lIncludeFarcryLib)>
+
+			<cfloop list="#application.lIncludeFarcryLib#" index="library">
+				
+				<cfif fileExists(ExpandPath("/farcry/farcry_lib/#library#/webskin/#arguments.typename#/#arguments.template#.cfm"))>
+				
+					<cfset webskinPath = "/farcry/farcry_lib/#library#/webskin/#arguments.typename#/#arguments.template#.cfm" />
+				</cfif>	
+				
+			</cfloop>
+			
+		</cfif>
+			
+		<cfreturn webskinPath>
+		
+	</cffunction>
+	
+	
+	<cffunction name="getWebskinDisplayname" returntype="string" access="public" output="false" hint="">
+		<cfargument name="typename" type="string" required="false" />
+		<cfargument name="template" type="string" required="false" />
+		<cfargument name="path" type="string" required="false" />
+	
+		<cfset var result = "" />
+		
+		<cfif NOT structKeyExists(arguments, "path")>
+			<cfif len(arguments.typename) AND len(arguments.template)>
+				<cfset arguments.path = getWebskinPath(typename=arguments.typename, template=arguments.template) />
+			<cfelse>
+				<cfthrow type="Application" detail="Error: [getWebskinDisplayname] You must pass in a path or both the typename and template" />	
+			</cfif>
+		</cfif>
+		
+		<cfif len(arguments.path) and fileExists(arguments.path)>
+			<cffile action="READ" file="#arguments.path#" variable="template">
+		
+			<cfset pos = findNoCase('@@displayname:', template)>
+			<cfif pos GT 0>
+				<cfset pos = pos + 14>
+				<cfset count = findNoCase('--->', template, pos)-pos>
+				<cfset result = listLast(mid(template,  pos, count), ":")>
+			</cfif>	
+		</cfif>
+		
+		<cfreturn result />
+	</cffunction>
+	
 	<cffunction name="displayTemplatePath" returntype="string" access="private" output="no" hint="Returns a template path for a webskin view.">
 		<cfargument name="typename" type="string" required="yes" />
 		<cfargument name="template" type="string" required="yes" />
@@ -421,55 +490,31 @@ default handlers
 	
 	<cffunction name="AfterSave" access="public" output="true" returntype="void" hint="Called from ProcessFormObjects and run after the object has been saved.">
 		<cfargument name="stProperties" required="yes" type="struct" hint="A structure containing the contents of the properties that were saved to the object.">
-		
-		<cfset var indexBody = "" />
-		<cfset var indexCustom1 = "" />
-		<cfset var indexCustom2 = "" />
-		<cfset var indexCustom3 = "" />
-		<cfset var indexCustom4 = "" />
+
+		<cfset var searchData = structNew() />
 		
 		<!--- 
 		TODO: Add ability to reindex object if required based on verity metadata info in the component. 
 		This would be nice if it used the new Event Queue ;)
 		--->
-		<!---
-		<cfif structkeyexists(application.types,arguments.stproperties.typename)
-			AND structkeyexists(application.types[arguments.stproperties.typename],"SearchCollection")
-			AND structKeyExists(application.config.verity.contenttype, arguments.stproperties.typename) >
+		
+		<cfif structKeyExists(application, "searchCollection")>
 			
+			<cfset searchData = structNew() />
+			<cfset searchData.CollectionName = application.searchCollection.Name />
+			<cfset searchData.CollectionPath = "C:/CFusionMX7/verity/collections/" />
+			<cfset searchData.Typename = stProperties.typename />
+			<cfset searchData.stProps = application.types[stProperties.typename].stprops />
+			<cfset searchData.stObject = arguments.stProperties />
 			
-			<cfquery datasource="#application.dsn#" name="q">
-			SELECT * 
-			FROM #arguments.stproperties.typename#
-			WHERE objectid = '#arguments.stProperties.ObjectID#'
-			</cfquery>
-				
-			<cfif structKeyExists(application.config.verity.contenttype[arguments.stproperties.typename],"aProps")
-				AND isArray(application.config.verity.contenttype[arguments.stproperties.typename].aprops)>
-				<cfset indexBody = arrayToList(application.config.verity.contenttype[arguments.stproperties.typename].aprops) />
-			</cfif>
-			<cfif structKeyExists(application.config.verity.contenttype[arguments.stproperties.typename],"custom3")
-				AND isArray(application.config.verity.contenttype[arguments.stproperties.typename].custom3)>
-				<cfset indexCustom3 = arrayToList(application.config.verity.contenttype[arguments.stproperties.typename].custom3) />
-			</cfif>
-			<cfif structKeyExists(application.config.verity.contenttype[arguments.stproperties.typename],"custom4")
-				AND isArray(application.config.verity.contenttype[arguments.stproperties.typename].custom4)>
-				<cfset indexCustom4 = arrayToList(application.config.verity.contenttype[arguments.stproperties.typename].custom4) />
-			</cfif>
-			
-			<cfindex 
-				action="UPDATE" 
-				query="q" 
-				body="#indexBody#" 
-				custom1="#arguments.stproperties.typename#" 
-				custom2=""
-				custom3="#indexCustom3#"
-				custom4="#indexCustom4#"
-				key="objectid" 
-				title="label" 
-				collection="#application.applicationname#_#arguments.stproperties.typename#">
-			
+			<cfset status = SendGatewayMessage("FarcrySearchIndexing", searchData) />
 		</cfif>
+
+		<!---
+		
+		
+		
+
 
 		 --->
 	</cffunction>

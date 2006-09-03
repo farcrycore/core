@@ -91,309 +91,325 @@ $out:$
 	<cfargument name="typename">
 	<cfargument name="scope" required="false" default="types">
 
-	<cfscript>
-	//this now uses type path
-	if (arguments.scope IS 'types')
-	{
-		typePath = application.types[arguments.typename].typePath;
-		bCustomType = application.types[arguments.typename].bCustomType;
-		"#arguments.typename#" = createObject("component", typePath);
-		evaluate(typename).initMetaData("application.types");
-		application.types[arguments.typename].bCustomType = bCustomType;
-		application.types[arguments.typename].typePath = typePath;
+	<cfset var path = "" />
+	<cfset var bCustomType = "" />
+	<cfset var bCustomRule = "" />
+	<cfset var bCustomFormtool = "" />
+	<cfset var bLibraryType = "" />
+	<cfset var bLibraryRule = "" />
+	<cfset var bLibraryFormtool = "" />
+	<cfset var o = "" />
+	
+	
+	<!---//this now uses type path --->
+	<cfif arguments.scope IS 'types' >
+	
+		<cfset path = application.types[arguments.typename].typePath />
+		<cfset bCustomType = application.types[arguments.typename].bCustomType />
+		<cfset bLibraryType = application.types[arguments.typename].bLibraryType />
+		
+		<cfparam name="application.types.#arguments.typename#" default="#structnew()#" />
+		<cfset application.types[arguments.typename] = createObject("component", path).initMetaData(application.types[arguments.typename]) />
+		<cfset application.types[arguments.typename].bCustomType = bCustomType />
+		<cfset application.types[arguments.typename].bLibraryType = bLibraryType />
+		<cfset application.types[arguments.typename].typePath = path />
 
-	}
-	else if (arguments.scope IS 'rules')
-	{
-		rulePath = application.rules[arguments.typename].rulePath;
-		bCustomRule = application.rules[arguments.typename].bCustomRule;
-		"#arguments.typename#" = createObject("component", rulePath);
-		evaluate(typename).initMetaData("application.rules");
-		application.rules[arguments.typename].bCustomRule = bCustomRule;
-		application.rules[arguments.typename].rulePath = rulePath;
+	<cfelseif arguments.scope IS 'rules' >
+
+		<cfset path = application.rules[arguments.typename].rulePath />
+		<cfset bCustomRule = application.rules[arguments.typename].bCustomRule />
+		<cfset bLibraryRule = application.rules[arguments.typename].bLibraryRule />
 		
-	}	
-	else if (arguments.scope IS 'formtools')
-	{
-		formtoolPath = application.formtools[arguments.typename].FormToolPath;
-		bCustomFormTool = application.formtools[arguments.typename].bCustomFormTool;
-		"#arguments.typename#" = createObject("component", formtoolPath);
-		evaluate(typename).initMetaData("application.formtools");
-		application.formtools[arguments.typename].bCustomFormTool = bCustomFormTool;	 
-		application.formtools[arguments.typename].FormToolPath = formtoolPath;
+		<cfparam name="application.rules.#arguments.typename#" default="#structnew()#" />
+		<cfset application.rules[arguments.typename] = createObject("Component", path).initmetadata(application.rules[arguments.typename]) />
+		<cfset application.rules[arguments.typename].bCustomRule = bCustomRule />
+		<cfset application.rules[arguments.typename].bLibraryRule = bLibraryRule />
+		<cfset application.rules[arguments.typename].rulePath = path />
+	
+	<cfelseif  arguments.scope IS 'formtools' >
+	
+		<cfset path = application.formtools[arguments.typename].FormToolPath />
+		<cfset bCustomFormTool = application.formtools[arguments.typename].bCustomFormTool />
+		<cfset bLibraryFormtool = application.formtools[arguments.typename].bLibraryFormtool />
 		
-	}	
-	</cfscript>
+		<cfparam name="application.formtools.#arguments.typename#" default="#structnew()#" />
+		<cfset application.formtools[arguments.typename] = createObject("component", path).initMetaData(application.formtools[arguments.typename]) />
+		<cfset application.formtools[arguments.typename].bCustomFormTool = bCustomFormTool /> 
+		<cfset application.formtools[arguments.typename].bLibraryFormtool = bLibraryFormtool /> 
+		<cfset application.formtools[arguments.typename].FormToolPath = path />
+		
+	</cfif>
 </cffunction>
 
-<cffunction name="refreshAllCFCAppData" output="true">
+<cffunction name="setupMetadataQuery" output="false" displayname="Sets up the metadata query containing formtool structure information" returntype="query" access="private">
+	
+	<cfargument name="typename" type="string" required="true" />
+	<cfargument name="stProps" type="struct" required="true" />
+	
+	
+	<cfset var qMetadataSetup = queryNew("typename,propertyname,ftSeq,ftFieldset,ftWizzardStep","varchar,varchar,Integer,varchar,varchar") /><!--- Prepare a temporary metadata query that will later be sorted and sent into the types metadata structure. --->
+	<cfset var qMetadata = queryNew("typename,propertyname,ftSeq,ftFieldset,ftWizzardStep","varchar,varchar,Integer,varchar,varchar") /><!--- Prepare a temporary metadata query that will later be sorted and sent into the types metadata structure. --->	
+	<cfset var Seq = "" />
+	<cfset var Fieldset = "" />
+	<cfset var WizzardStep = "" />
+	
+	<!--------------------------------- 
+	WE NEED TO SETUP FTSEQ, FTFIELDSET & FTWIZZARDSTEP
+	THESE PROPERTIES ARE USED TO AUTOMATICALLY RENDER FORMS (BOTH DISPLAY AND EDIT) BASED ON THE METADATA IF NO EDIT OR DISPLAY METHOD ARE PROVIDED.
+	 --------------------------------->
+				
+	<cfloop list="#structKeyList(arguments.stProps)#" index="i">
+		
+		<!--- SETUP FTSEQ --->
+		<cfif structKeyExists(arguments.stProps[i].METADATA, "ftSeq")>
+			<cfset Seq = arguments.stProps[i].METADATA.ftSeq />
+		<cfelse>
+			<cfif i EQ"label">
+				<cfset Seq = 0 /><!--- Label is first unless overridden --->
+			<cfelse>
+				<cfset Seq = 99999 /><!--- fields without ftSeq metadata are placed last in the form --->
+			</cfif>
+			
+		</cfif>
+		
+		<!--- SETUP FTFIELDSET --->
+		<cfif structKeyExists(arguments.stProps[i].METADATA, "ftFieldset")>
+			<cfset Fieldset = arguments.stProps[i].METADATA.ftFieldset />
+		<cfelse>
+			<cfset Fieldset = typename />
+		</cfif>
+		
+		<!--- SETUP FTWIZZARDSTEP --->
+		<cfif structKeyExists(arguments.stProps[i].METADATA, "ftWizzardStep")>
+			<cfset WizzardStep = arguments.stProps[i].METADATA.ftWizzardStep />
+		<cfelse>
+			<cfset WizzardStep = typename />
+		</cfif>
+		
+	   <cfset temp = QueryAddRow(qMetadataSetup)>
+	   <cfset Temp = QuerySetCell(qMetadataSetup,"typename", typename) />
+	   <cfset Temp = QuerySetCell(qMetadataSetup,"propertyname", i) />
+	   <cfset Temp = QuerySetCell(qMetadataSetup,"ftSeq", Seq) />
+	   <cfset Temp = QuerySetCell(qMetadataSetup,"ftFieldset", Fieldset) />
+	   <cfset Temp = QuerySetCell(qMetadataSetup,"ftWizzardStep", WizzardStep) />
+		
+		
+	</cfloop>
+	
+	<!--- Now we have all the metadata in qMetadataSetup, we sort and send into the qMetadata key. --->
+	<cfquery dbType="query" name="qMetadata">
+	SELECT * FROM qMetadataSetup
+	ORDER BY ftSeq
+	</cfquery>
+	
+	<cfreturn qMetadata />
+
+
+</cffunction>
+
+
+<cffunction name="refreshAllCFCAppData" output="false" hint="Inserts the metadata information for each cfc into the application scope.">
 	<cfargument name="dsn" required="No" default="#application.dsn#">
 	<cfargument name="dbowner" required="No" default="#application.dbowner#">
+	
+	<cfset var o = "" /><!--- This will contain the object as we iterate through each cfc --->
+	<cfset var typename = "" /><!--- this will contain the typename as we iterate through each cfc  --->	
+	<cfset var qDir = queryNew("name") /><!--- This will contain the directory listing --->
+	
+	<cfset application.types = structNew() />
+	<cfset application.formtools = structNew() />
+	<cfset application.rules = structNew() />
+	 
 	<!--- Find all types, base, extended & custom --->
-	<cfdirectory directory="#application.path.core#/packages/types" name="qTypesDir" filter="dm*.cfc" sort="name">
-	<cfdirectory directory="#application.path.project#/packages/types" name="qCustomTypesDir" filter="*.cfc" sort="name">
+	<cfdirectory directory="#application.path.core#/packages/types" name="qDir" filter="dm*.cfc" sort="name">
 	<cfdirectory directory="#application.path.project#/packages/system" name="qExtendedTypesDir" filter="*.cfc" sort="name">
+	<cfdirectory directory="#application.path.project#/packages/types" name="qCustomTypesDir" filter="*.cfc" sort="name">
 
-	<!--- We want to search NTM types so we can flag them as a bTreeNode. --->
-	<cfquery datasource="#arguments.dsn#" name="qNTM">
-	SELECT distinct(typename)
-	FROM #arguments.dbowner#nested_tree_objects
-	</cfquery>
 
-	<cfset lNTMTypes = valueList(qNTM.typename)>
 
 	<!--- Init all CORE types --->
-	<cfloop query="qTypesDir">
+	<cfloop query="qDir">
 		<cftry>
-			<cfscript>
-			typename = left(qTypesDir.name, len(qTypesDir.name)-4); //remove the .cfc from the filename
-			"#typename#" = createObject("Component", "#application.packagepath#.types.#typename#");
-			evaluate(typename).initMetaData("application.types");
-			application.types[typename].bCustomType = 0;
-			application.types[typename].typePath = "#application.packagepath#.types.#typename#";
-			</cfscript>
+			
+			<cfset typename = left(qDir.name, len(qDir.name)-4) /> <!---remove the .cfc from the filename --->
+			
+			<cfparam name="application.types.#typename#" default="#structNew()#" />
+			<cfset application.types[typename] = createObject("Component", "#application.packagepath#.types.#typename#").initmetadata(application.types[typename]) />
+			<cfset application.types[typename].bCustomType = 0 />
+			<cfset application.types[typename].bLibraryType = 0 />
+			<cfset application.types[typename].typePath = "#application.packagepath#.types.#typename#" />
+			
+			<cfset application.types[typename].qMetadata = setupMetadataQuery(typename=typename,stProps=application.types[typename].stProps) />
+			
 			<cfcatch></cfcatch>
 		</cftry>
 		
-		<!--------------------------------- 
-		WE NEED TO SETUP FTSEQ, FTFIELDSET & FTWIZZARDSTEP
-		THESE PROPERTIES ARE USED TO AUTOMATICALLY RENDER FORMS (BOTH DISPLAY AND EDIT) BASED ON THE METADATA IF NO EDIT OR DISPLAY METHOD ARE PROVIDED.
-		 --------------------------------->
-		<cfif structKeyExists(application.types, typename) AND structKeyExists(application.types[typename], "stProps")>
-			
-			<!--- Prepare a temporary metadata query that will later be sorted and sent into the types metadata structure. --->
-			<cfset qMetadataSetup = queryNew("typename,propertyname,ftSeq,ftFieldset,ftWizzardStep","varchar,varchar,Integer,varchar,varchar") />
-					
-			<cfloop list="#structKeyList(application.types[typename].stProps)#" index="i">
-				
-				<!--- SETUP FTSEQ --->
-				<cfif structKeyExists(application.types[typename].stProps[i].METADATA, "ftSeq")>
-					<cfset application.types[typename].stProps[i].ftSeq = application.types[typename].stProps[i].METADATA.ftSeq />
-				<cfelse>
-					<cfif i EQ"label">
-						<cfset application.types[typename].stProps[i].ftSeq = 0 />
-					<cfelse>
-						<cfset application.types[typename].stProps[i].ftSeq = 999 />
-					</cfif>
-					
-				</cfif>
-				
-				<!--- SETUP FTFIELDSET --->
-				<cfif structKeyExists(application.types[typename].stProps[i].METADATA, "ftFieldset")>
-					<cfset application.types[typename].stProps[i].ftFieldset = application.types[typename].stProps[i].METADATA.ftFieldset />
-				<cfelse>
-					<cfset application.types[typename].stProps[i].ftFieldset = typename />
-				</cfif>
-				
-				<!--- SETUP FTWIZZARDSTEP --->
-				<cfif structKeyExists(application.types[typename].stProps[i].METADATA, "ftWizzardStep")>
-					<cfset application.types[typename].stProps[i].ftWizzardStep = application.types[typename].stProps[i].METADATA.ftWizzardStep />
-				<cfelse>
-					<cfset application.types[typename].stProps[i].ftWizzardStep = typename />
-				</cfif>
-				
-			   <cfset temp = QueryAddRow(qMetadataSetup)>
-			   <cfset Temp = QuerySetCell(qMetadataSetup,"typename", typename) />
-			   <cfset Temp = QuerySetCell(qMetadataSetup,"propertyname", i) />
-			   <cfset Temp = QuerySetCell(qMetadataSetup,"ftSeq", application.types[typename].stProps[i].ftSeq) />
-			   <cfset Temp = QuerySetCell(qMetadataSetup,"ftFieldset", application.types[typename].stProps[i].ftFieldset) />
-			   <cfset Temp = QuerySetCell(qMetadataSetup,"ftWizzardStep", application.types[typename].stProps[i].ftWizzardStep) />
-				
-				
-			</cfloop>
-			
-			<!--- Now we have all the metadata in qMetadataSetup, we sort and send into the qMetadata key. --->
-			<cfquery dbType="query" name="application.types.#typename#.qMetadata">
-			SELECT * FROM qMetadataSetup
-			ORDER BY ftSeq
-			</cfquery>
-			
-
-		   
-		</cfif>	
-		
 	</cfloop>
+	
+	
+	<cfif structKeyExists(application, "lIncludeFarcryLib") and listLen(application.lIncludeFarcryLib)>
+
+		<cfloop list="#application.lIncludeFarcryLib#" index="library">
+			
+			<cfif directoryExists("#application.path.library#/#library#/packages/types")>
+			
+				<cfdirectory directory="#application.path.library#/#library#/packages/types" name="qDir" filter="*.cfc" sort="name">
+				
+				<!--- Init all LIBRARY types --->
+				<cfloop query="qDir">
+					<cftry>
+						
+						<cfset typename = left(qDir.name, len(qDir.name)-4) /> <!---remove the .cfc from the filename --->
+						
+						<cfif structKeyExists(application.types, typename)>
+							<cflog application="true" file="farcry" text="Error attempting to create a library type that already exists in core. Not permitted to extent core types from the library as project may override.">
+						<cfelse>
+							<cfparam name="application.types.#typename#" default="#structNew()#" />
+							<cfset application.types[typename] = createObject("Component", "farcry.farcry_lib.#library#.packages.types.#typename#").initmetadata(application.types[typename]) />
+							<cfset application.types[typename].bCustomType = 1 />
+							<cfset application.types[typename].bLibraryType = 1 />
+							<cfset application.types[typename].typePath = "farcry.farcry_lib.#library#.packages.types.#typename#" />							
+							<cfset application.types[typename].qMetadata = setupMetadataQuery(typename=typename,stProps=application.types[typename].stProps) />
+						l
+						</cfif>
+						<cfcatch></cfcatch>
+					</cftry>
+					
+				</cfloop>
+				
+			</cfif>
+			
+		</cfloop>	
+		
+	</cfif>
+	
+	
+	
+	
 	<!--- Init all EXTENDED CORE types --->
 	<cfloop query="qExtendedTypesDir">
 		<cftry>
-			<cfscript>
-			typename = left(qExtendedTypesDir.name, len(qExtendedTypesDir.name)-4); //remove the .cfc from the filename
-			sMetaData = getMetaData(createObject("Component", "#application.custompackagepath#.system.#typeName#"));
-			//does this type extend the core type?
-			if(sMetaData.extends.name eq "#application.packagepath#.types.#typename#")
-			{
-				"#typename#" = createObject("Component", "#application.custompackagepath#.system.#typename#");
-				evaluate(typename).initMetaData("application.types");
-				application.types[typename].bCustomType = 0;
-				application.types[typename].typePath = "#application.custompackagepath#.system.#typename#";
-			}
-			</cfscript>
+			<cfset typename = left(qExtendedTypesDir.name, len(qExtendedTypesDir.name)-4) /> <!---remove the .cfc from the filename --->
+			<cfset sMetaData = getMetaData(createObject("Component", "#application.custompackagepath#.system.#typeName#")) />
+			<!---does this type extend the core type? --->
+			
+			<cfif sMetaData.extends.name eq "#application.packagepath#.types.#typename#">
+				
+				<cfparam name="application.types.#typename#" default="#structNew()#" />
+				<cfset application.types[typename] = createObject("Component", "#application.custompackagepath#.system.#typename#").initMetaData(application.types[typename]) />
+				<cfset application.types[typename].bCustomType = 0 />
+				<cfset application.types[typename].bLibraryType = 0 />
+				<cfset application.types[typename].typePath = "#application.custompackagepath#.system.#typename#" />
+				
+				<cfset application.types[typename].qMetadata = setupMetadataQuery(typename=typename,stProps=application.types[typename].stProps) />
+			</cfif>
+				
 			<cfcatch>
 				<cftrace inline="no" text="Error creating extended type. & #cfcatch.message#" category="error">
 			</cfcatch>
 		</cftry>
-		
-		<!--------------------------------- 
-		WE NEED TO SETUP FTSEQ, FTFIELDSET & FTWIZZARDSTEP
-		THESE PROPERTIES ARE USED TO AUTOMATICALLY RENDER FORMS (BOTH DISPLAY AND EDIT) BASED ON THE METADATA IF NO EDIT OR DISPLAY METHOD ARE PROVIDED.
-		 --------------------------------->
-		<cfif structKeyExists(application.types, typename) AND structKeyExists(application.types[typename], "stProps")>
-			
-			<!--- Prepare a temporary metadata query that will later be sorted and sent into the types metadata structure. --->
-			<cfset qMetadataSetup = queryNew("typename,propertyname,ftSeq,ftFieldset,ftWizzardStep","varchar,varchar,Integer,varchar,varchar") />
-					
-			<cfloop list="#structKeyList(application.types[typename].stProps)#" index="i">
-				
-				<!--- SETUP FTSEQ --->
-				<cfif structKeyExists(application.types[typename].stProps[i].METADATA, "ftSeq")>
-					<cfset application.types[typename].stProps[i].ftSeq = application.types[typename].stProps[i].METADATA.ftSeq />
-				<cfelse>
-					<cfif i EQ"label">
-						<cfset application.types[typename].stProps[i].ftSeq = 0 />
-					<cfelse>
-						<cfset application.types[typename].stProps[i].ftSeq = 999 />
-					</cfif>
-					
-				</cfif>
-				
-				<!--- SETUP FTFIELDSET --->
-				<cfif structKeyExists(application.types[typename].stProps[i].METADATA, "ftFieldset")>
-					<cfset application.types[typename].stProps[i].ftFieldset = application.types[typename].stProps[i].METADATA.ftFieldset />
-				<cfelse>
-					<cfset application.types[typename].stProps[i].ftFieldset = typename />
-				</cfif>
-				
-				<!--- SETUP FTWIZZARDSTEP --->
-				<cfif structKeyExists(application.types[typename].stProps[i].METADATA, "ftWizzardStep")>
-					<cfset application.types[typename].stProps[i].ftWizzardStep = application.types[typename].stProps[i].METADATA.ftWizzardStep />
-				<cfelse>
-					<cfset application.types[typename].stProps[i].ftWizzardStep = typename />
-				</cfif>
-				
-			   <cfset temp = QueryAddRow(qMetadataSetup)>
-			   <cfset Temp = QuerySetCell(qMetadataSetup,"typename", typename) />
-			   <cfset Temp = QuerySetCell(qMetadataSetup,"propertyname", i) />
-			   <cfset Temp = QuerySetCell(qMetadataSetup,"ftSeq", application.types[typename].stProps[i].ftSeq) />
-			   <cfset Temp = QuerySetCell(qMetadataSetup,"ftFieldset", application.types[typename].stProps[i].ftFieldset) />
-			   <cfset Temp = QuerySetCell(qMetadataSetup,"ftWizzardStep", application.types[typename].stProps[i].ftWizzardStep) />
-				
-				
-			</cfloop>
-			
-			<!--- Now we have all the metadata in qMetadataSetup, we sort and send into the qMetadata key. --->
-			<cfquery dbType="query" name="application.types.#typename#.qMetadata">
-			SELECT * FROM qMetadataSetup
-			ORDER BY ftSeq
-			</cfquery>
-			
-
-		   
-		</cfif>	
 				
 	</cfloop>
+	
+	
+	
 	<!--- Now init all Custom Types --->
 	<cfloop query="qCustomTypesDir">
 		<cftry>
 			
-			<cfset typename = left(qCustomTypesDir.name, len(qCustomTypesDir.name)-4)> //remove the .cfc from the filename
-			<cfset otype = createObject("Component", "#application.custompackagepath#.types.#typename#")>
+			<cfset typename = left(qCustomTypesDir.name, len(qCustomTypesDir.name)-4)> <!---//remove the .cfc from the filename --->
+			<cfset o = createObject("Component", "#application.custompackagepath#.types.#typename#") />
 
-			<cfscript>
-			otype.initMetaData("application.types");
-			application.types[typename].bCustomType = 1;
-			application.types[typename].typePath = "#application.custompackagepath#.types.#typename#";
-			</cfscript>
+			<cfparam name="application.types.#typename#" default="#structNew()#" />
+			<cfset application.types[typename] = o.initMetaData(application.types[typename]) />
+			<cfset application.types[typename].bCustomType = 1 />
+			<cfset application.types[typename].bLibraryType = 0 />
+			<cfset application.types[typename].typePath = "#application.custompackagepath#.types.#typename#" />
+			<cfset application.types[typename].qMetadata = setupMetadataQuery(typename=typename,stProps=application.types[typename].stProps) />
 
-			<cfcatch>
-
-			</cfcatch>
+			<cfcatch></cfcatch>
 		</cftry>
-		
-		
-		<!--------------------------------- 
-		WE NEED TO SETUP FTSEQ, FTFIELDSET & FTWIZZARDSTEP
-		THESE PROPERTIES ARE USED TO AUTOMATICALLY RENDER FORMS (BOTH DISPLAY AND EDIT) BASED ON THE METADATA IF NO EDIT OR DISPLAY METHOD ARE PROVIDED.
-		 --------------------------------->
-		<cfif structKeyExists(application.types, typename) AND structKeyExists(application.types[typename], "stProps")>
-			
-			<!--- Prepare a temporary metadata query that will later be sorted and sent into the types metadata structure. --->
-			<cfset qMetadataSetup = queryNew("typename,propertyname,ftSeq,ftFieldset,ftWizzardStep","varchar,varchar,Integer,varchar,varchar") />
-					
-			<cfloop list="#structKeyList(application.types[typename].stProps)#" index="i">
-				
-				<!--- SETUP FTSEQ --->
-				<cfif structKeyExists(application.types[typename].stProps[i].METADATA, "ftSeq")>
-					<cfset application.types[typename].stProps[i].ftSeq = application.types[typename].stProps[i].METADATA.ftSeq />
-				<cfelse>
-					<cfif i EQ"label">
-						<cfset application.types[typename].stProps[i].ftSeq = 0 />
-					<cfelse>
-						<cfset application.types[typename].stProps[i].ftSeq = 999 />
-					</cfif>
-					
-				</cfif>
-				
-				<!--- SETUP FTFIELDSET --->
-				<cfif structKeyExists(application.types[typename].stProps[i].METADATA, "ftFieldset")>
-					<cfset application.types[typename].stProps[i].ftFieldset = application.types[typename].stProps[i].METADATA.ftFieldset />
-				<cfelse>
-					<cfset application.types[typename].stProps[i].ftFieldset = typename />
-				</cfif>
-				
-				<!--- SETUP FTWIZZARDSTEP --->
-				<cfif structKeyExists(application.types[typename].stProps[i].METADATA, "ftWizzardStep")>
-					<cfset application.types[typename].stProps[i].ftWizzardStep = application.types[typename].stProps[i].METADATA.ftWizzardStep />
-				<cfelse>
-					<cfset application.types[typename].stProps[i].ftWizzardStep = typename />
-				</cfif>
-				
-			   <cfset temp = QueryAddRow(qMetadataSetup)>
-			   <cfset Temp = QuerySetCell(qMetadataSetup,"typename", typename) />
-			   <cfset Temp = QuerySetCell(qMetadataSetup,"propertyname", i) />
-			   <cfset Temp = QuerySetCell(qMetadataSetup,"ftSeq", application.types[typename].stProps[i].ftSeq) />
-			   <cfset Temp = QuerySetCell(qMetadataSetup,"ftFieldset", application.types[typename].stProps[i].ftFieldset) />
-			   <cfset Temp = QuerySetCell(qMetadataSetup,"ftWizzardStep", application.types[typename].stProps[i].ftWizzardStep) />
-				
-				
-			</cfloop>
-			
-			<!--- Now we have all the metadata in qMetadataSetup, we sort and send into the qMetadata key. --->
-			<cfquery dbType="query" name="application.types.#typename#.qMetadata">
-			SELECT * FROM qMetadataSetup
-			ORDER BY ftSeq
-			</cfquery>
-			
-
-		   
-		</cfif>	
 				
 	</cfloop>
+	
+	
+	
+	
 
 	<!--- FormTools specific Types --->
 	<cfdirectory directory="#application.path.core#/packages/formtools" name="qFormToolsTypesDir" filter="*.cfc" sort="name">
-	<cfdirectory directory="#application.path.project#/packages/formtools" name="qCustomFormToolsTypesDir" filter="*.cfc" sort="name">
 	
 	<!--- Init all CORE FormTools Types --->
 	<cfloop query="qFormToolsTypesDir">
 		<cftry>
-			<cfscript>
-			formtoolname = left(qFormToolsTypesDir.name, len(qFormToolsTypesDir.name)-4); //remove the .cfc from the filename
-			application.formtools[formtoolname] = createObject("Component", "#application.packagepath#.formtools.#formtoolname#");			
-			application.formtools[formtoolname].bCustomformtool = 0;
-			application.formtools[formtoolname].formtoolPath = "#application.packagepath#.formtools.#formtoolname#";
-			</cfscript>
+			<cfset formtoolname = left(qFormToolsTypesDir.name, len(qFormToolsTypesDir.name)-4) /><!--- //remove the .cfc from the filename --->			
+			<cfset oFactory = createObject("Component", "#application.packagepath#.formtools.#formtoolname#").init() />
+			
+			<cfparam name="application.formtools.#formtoolname#" default="#structNew()#" />
+			
+			<cfset application.formtools[formtoolname].oFactory = oFactory />	
+			<cfset application.formtools[formtoolname].bCustomformtool = 0 />
+			<cfset application.formtools[formtoolname].bLibraryformtool = 0 />
+			<cfset application.formtools[formtoolname].formtoolPath = "#application.packagepath#.formtools.#formtoolname#" />
+			
 			<cfcatch></cfcatch>
 		</cftry>
 	</cfloop>	
-	<!--- Init all FORMTOOL CORE types --->
+	
+	
+	
+	<cfif structKeyExists(application, "lIncludeFarcryLib") and listLen(application.lIncludeFarcryLib)>
+
+		<cfloop list="#application.lIncludeFarcryLib#" index="library">
+			
+			<cfif directoryExists("#application.path.library#/#library#/packages/formtools")>
+			
+				<cfdirectory directory="#application.path.library#/#library#/packages/formtools" name="qDir" filter="*.cfc" sort="name">
+				
+				<!--- Init all LIBRARY types --->
+				<cfloop query="qDir">
+					<cftry>
+						
+						<cfset formtoolname = left(qDir.name, len(qDir.name)-4) /> <!---remove the .cfc from the filename --->
+						
+						<cfif structKeyExists(application.formtools, formtoolname)>
+							<cflog application="true" file="farcry" text="Error attempting to create a library type that already exists in core. Not permitted to extent core types from the library as project may override.">
+						<cfelse>
+							<cfset oFactory = createObject("Component", "farcry.farcry_lib.#library#.packages.formtools.#formtoolname#").init() />
+							
+							<cfparam name="application.formtools.#formtoolname#" default="#structNew()#" />
+							<cfset application.formtools[formtoolname].oFactory = oFactory />	
+							<cfset application.formtools[formtoolname].bCustomformtool = 1 />
+							<cfset application.formtools[formtoolname].bLibraryformtool = 1 />
+							<cfset application.formtools[formtoolname].formtoolPath = "farcry.farcry_lib.#library#.packages.formtools.#formtoolname#" />							
+							<cfset application.formtools[formtoolname].qMetadata = setupMetadataQuery(typename=formtoolname,stProps=application.formtools[formtoolname].stProps) />
+						</cfif>
+						<cfcatch></cfcatch>
+					</cftry>
+					
+				</cfloop>
+				
+			</cfif>
+			
+		</cfloop>	
+		
+	</cfif>	
+	
+	
+	<!--- Init all PROJECCT FORMTOOL types --->
+	
+	<cfdirectory directory="#application.path.project#/packages/formtools" name="qCustomFormToolsTypesDir" filter="*.cfc" sort="name">
 	<cfloop query="qCustomFormToolsTypesDir">
 		<cftry>
-			<cfscript>
-			formtoolname = left(qCustomFormToolsTypesDir.name, len(qCustomFormToolsTypesDir.name)-4); //remove the .cfc from the filename
-			application.formtools[formtoolname] = createObject("Component", "#application.custompackagepath#.formtools.#formtoolname#");			
-			application.formtools[formtoolname].bCustomformtool = 1;
-			application.formtools[formtoolname].formtoolPath = "#application.custompackagepath#.formtools.#formtoolname#";
-			</cfscript>
+			<cfset formtoolname = left(qCustomFormToolsTypesDir.name, len(qCustomFormToolsTypesDir.name)-4) /><!--- //remove the .cfc from the filename --->			
+			<cfset o = createObject("Component", "#application.custompackagepath#.formtools.#formtoolname#")>
+			
+			<cfparam name="application.formtools.#formtoolname#" default="#structNew()#" />			
+			<cfset application.formtools[formtoolname].o = o />	
+			<cfset application.formtools[formtoolname].bCustomformtool = 1 />
+			<cfset application.formtools[formtoolname].bLibraryformtool = 0 />
+			<cfset application.formtools[formtoolname].formtoolPath = "#application.custompackagepath#.formtools.#formtoolname#" />
+			
 			<cfcatch>
 				<cftrace inline="no" text="Error creating extended formtool. & #cfcatch.message#" category="error">
 			</cfcatch>
@@ -401,112 +417,169 @@ $out:$
 	</cfloop>		
 		
 	
+	<!---
+	RULES
+	 --->
+	 
+	<!--- Init all CORE RULES --->
+	<cfdirectory directory="#application.path.core#/packages/rules" name="qDir" filter="rule*.cfc" sort="name">
+
+	<cfloop query="qDir">
+		<cfif qDir.name NEQ "rules.cfc">
+			<cftry>
+				
+				<cfset typename = left(qDir.name, len(qDir.name)-4) /> <!---remove the .cfc from the filename --->
+				
+				<cfparam name="application.rules.#typename#" default="#structNew()#" />
+				<cfset application.rules[typename] = createObject("Component", "#application.packagepath#.rules.#typename#").initmetadata(application.rules[typename]) />
+				<cfset application.rules[typename].bCustomRule = 0 />
+				<cfset application.rules[typename].bLibraryRule = 0 />
+				<cfset application.rules[typename].rulePath = "#application.packagepath#.rules.#typename#" />
+				
+				<cfset application.rules[typename].qMetadata = setupMetadataQuery(typename=typename,stProps=application.rules[typename].stProps) />
+				
+				<cfcatch></cfcatch>
+			</cftry>
+		</cfif>
+	</cfloop>
+	
+	
+	<!--- Init all LIBRARY RULES --->	
+	<cfif structKeyExists(application, "lIncludeFarcryLib") and listLen(application.lIncludeFarcryLib)>
+
+		<cfloop list="#application.lIncludeFarcryLib#" index="library">
+			
+			<cfif directoryExists("#application.path.library#/#library#/packages/rules")>
+			
+				<cfdirectory directory="#application.path.library#/#library#/packages/rules" name="qDir" filter="rule*.cfc" sort="name">
+				
+				<!--- Init all LIBRARY types --->
+				<cfloop query="qDir">
+					<cftry>
+						
+						<cfset typename = left(qDir.name, len(qDir.name)-4) /> <!---remove the .cfc from the filename --->
+						
+						<cfif structKeyExists(application.rules, typename)>
+							<cflog application="true" file="farcry" text="Error attempting to create a library RULE that already exists in core. Not permitted to extend core RULES from the library as project may override.">
+						<cfelse>
+							<cfparam name="application.rules.#typename#" default="#structNew()#" />
+							<cfset application.rules[typename] = createObject("Component", "farcry.farcry_lib.#library#.packages.types.#typename#").initmetadata(application.types[typename]) />
+							<cfset application.rules[typename].bCustomRule = 1 />
+							<cfset application.rules[typename].bLibraryRule = 1 />
+							<cfset application.rules[typename].rulePath = "farcry.farcry_lib.#library#.packages.rules.#typename#" />							
+							<cfset application.rules[typename].qMetadata = setupMetadataQuery(typename=typename,stProps=application.rules[typename].stProps) />
+						l
+						</cfif>
+						<cfcatch></cfcatch>
+					</cftry>
+					
+				</cfloop>
+				
+			</cfif>
+			
+		</cfloop>	
+		
+	</cfif>
+
+
+	<!--- Init all PROJECT RULES --->
+	<cfdirectory directory="#application.path.project#/packages/rules" name="qDir" filter="rule*.cfc" sort="name">
+
+	<cfloop query="qDir">
+		<cftry>
+			
+			<cfset typename = left(qDir.name, len(qDir.name)-4) /> <!---remove the .cfc from the filename --->
+			
+			<cfparam name="application.rules.#typename#" default="#structNew()#" />
+			<cfset application.rules[typename] = createObject("Component", "#application.custompackagepath#.rules.#typename#").initmetadata(application.rules[typename]) />
+			<cfset application.rules[typename].bCustomRule = 1 />
+			<cfset application.rules[typename].bLibraryRule = 0 />
+			<cfset application.rules[typename].rulePath = "#application.custompackagepath#.rules.#typename#" />
+			
+			<cfset application.rules[typename].qMetadata = setupMetadataQuery(typename=typename,stProps=application.rules[typename].stProps) />
+			
+			<cfcatch></cfcatch>
+		</cftry>
+	</cfloop>
+	
+	
+
+
+
+
+
+
+
+
+
+<!---
+
+
+
+	
 	<!--- Now get all the rules --->
-	<cfscript>
-	rules = createObject("Component", "#application.packagepath#.rules.rules");
-	qRules = rules.getRules();
-	</cfscript>
+	
+	<cfset rules = createObject("Component", "#application.packagepath#.rules.rules") />
+	<cfset qRules = rules.getRules() />
+	
+	
 
 	<!--- Populate application.rules scope with rule metatdata --->
 	<cfloop query="qRules">
-		<cfscript>
-
-			if(qRules.bCustom)
-			{
-				sRuleMetaData = getMetaData(createObject("Component", "#application.custompackagepath#.rules.#qRules.rulename#"));
-				//does this rule extend the core rule?
-				if(sRuleMetaData.extends.name eq "#application.packagepath#.rules.#qRules.rulename#")
-				{
-					"#qRules.rulename#" = createObject("Component", "#application.custompackagepath#.rules.#qRules.rulename#");
-					evaluate(qRules.rulename).initMetaData("application.rules");
-					application.rules[qRules.rulename].bCustomRule = 0; //override the bCustomRule attribute
-					application.rules[qRules.rulename].rulePath = "#application.custompackagepath#.rules.#qRules.rulename#";
-				}
-				else
-				{
-					"#qRules.rulename#" = createObject("Component", "#application.custompackagepath#.rules.#qRules.rulename#");
-					evaluate(qRules.rulename).initMetaData("application.rules");
-					application.rules[qRules.rulename].bCustomRule = 1;
-					application.rules[qRules.rulename].rulePath = "#application.custompackagepath#.rules.#qRules.rulename#";
-				}
-
-			}
-			else
-			{
-				"#qRules.rulename#" = createObject("Component","#application.packagepath#.rules.#qRules.rulename#");
-				evaluate(qRules.rulename).initMetaData("application.rules");
-				application.rules[qRules.rulename].bCustomRule = 0; //override the bCustomRule attribute
-				application.rules[qRules.rulename].rulePath = "#application.packagepath#.rules.#qRules.rulename#";
-			}
-		</cfscript>
 		
 
-		<!--------------------------------- 
-		WE NEED TO SETUP FTSEQ, FTFIELDSET & FTWIZZARDSTEP
-		THESE PROPERTIES ARE USED TO AUTOMATICALLY RENDER FORMS (BOTH DISPLAY AND EDIT) BASED ON THE METADATA IF NO EDIT OR DISPLAY METHOD ARE PROVIDED.
-		 --------------------------------->
-		<cfif structKeyExists(application.rules, qRules.rulename) AND  structKeyExists(application.rules[qRules.rulename], "stProps")>
-			
-			<!--- Prepare a temporary metadata query that will later be sorted and sent into the types metadata structure. --->
-			<cfset qMetadataSetup = queryNew("typename,propertyname,ftSeq,ftFieldset,ftWizzardStep","varchar,varchar,Integer,varchar,varchar") />
-					
-			<cfloop list="#structKeyList(application.rules[qRules.rulename].stProps)#" index="i">
+		<cfif qRules.bCustom >
+			<cfset sRuleMetaData = getMetaData(createObject("Component", "#application.custompackagepath#.rules.#qRules.rulename#")) />
+			<!---//does this rule extend the core rule? --->
+			<cfif (sRuleMetaData.extends.name eq "#application.packagepath#.rules.#qRules.rulename#")>
+				<cfset o = createObject("Component", "#application.custompackagepath#.rules.#qRules.rulename#") />					
 				
-				<!--- SETUP FTSEQ --->
-				<cfif structKeyExists(application.rules[qRules.rulename].stProps[i].METADATA, "ftSeq")>
-					<cfset application.rules[qRules.rulename].stProps[i].ftSeq = application.rules[qRules.rulename].stProps[i].METADATA.ftSeq />
-				<cfelse>
-					<cfif i EQ"label">
-						<cfset application.rules[qRules.rulename].stProps[i].ftSeq = 0 />
-					<cfelse>
-						<cfset application.rules[qRules.rulename].stProps[i].ftSeq = 999 />
-					</cfif>
-					
-				</cfif>
+				<cfparam name="application.rules.#qRules.rulename#" default="#structNew()#" />
+				<cfset application.rules[qRules.rulename] = o.initMetaData(application.rules[qRules.rulename]) />	
 				
-				<!--- SETUP FTFIELDSET --->
-				<cfif structKeyExists(application.rules[qRules.rulename].stProps[i].METADATA, "ftFieldset")>
-					<cfset application.rules[qRules.rulename].stProps[i].ftFieldset = application.rules[qRules.rulename].stProps[i].METADATA.ftFieldset />
-				<cfelse>
-					<cfset application.rules[qRules.rulename].stProps[i].ftFieldset = qRules.rulename />
-				</cfif>
+				<cfset application.rules[qRules.rulename].bCustomRule = 0 />
+				<cfset application.rules[qRules.rulename].bLibraryRule = 0 />
+				<cfset application.rules[qRules.rulename].rulePath = "#application.custompackagepath#.rules.#qRules.rulename#" />
+			<cfelse>
+				<cfset o = createObject("Component", "#application.custompackagepath#.rules.#qRules.rulename#") />				
 				
-				<!--- SETUP FTWIZZARDSTEP --->
-				<cfif structKeyExists(application.rules[qRules.rulename].stProps[i].METADATA, "ftWizzardStep")>
-					<cfset application.rules[qRules.rulename].stProps[i].ftWizzardStep = application.rules[qRules.rulename].stProps[i].METADATA.ftWizzardStep />
-				<cfelse>
-					<cfset application.rules[qRules.rulename].stProps[i].ftWizzardStep = qRules.rulename />
-				</cfif>
-				
-			   <cfset temp = QueryAddRow(qMetadataSetup)>
-			   <cfset Temp = QuerySetCell(qMetadataSetup,"typename", qRules.rulename) />
-			   <cfset Temp = QuerySetCell(qMetadataSetup,"propertyname", i) />
-			   <cfset Temp = QuerySetCell(qMetadataSetup,"ftSeq", application.rules[qRules.rulename].stProps[i].ftSeq) />
-			   <cfset Temp = QuerySetCell(qMetadataSetup,"ftFieldset", application.rules[qRules.rulename].stProps[i].ftFieldset) />
-			   <cfset Temp = QuerySetCell(qMetadataSetup,"ftWizzardStep", application.rules[qRules.rulename].stProps[i].ftWizzardStep) />
-				
-				
-			</cfloop>
-			
-			<!--- Now we have all the metadata in qMetadataSetup, we sort and send into the qMetadata key. --->
-			<cfquery dbType="query" name="application.rules.#qRules.rulename#.qMetadata">
-			SELECT * FROM qMetadataSetup
-			ORDER BY ftSeq
-			</cfquery>
-			
+				<cfparam name="application.rules.#qRules.rulename#" default="#structNew()#" />
+				<cfset application.rules[qRules.rulename] = o.initMetaData(application.rules[qRules.rulename]) />	
+				<cfset application.rules[qRules.rulename].bCustomRule = 1 />
+				<cfset application.rules[qRules.rulename].bLibraryRule = 0 />
+				<cfset application.rules[qRules.rulename].rulePath = "#application.custompackagepath#.rules.#qRules.rulename#" />
+			</cfif>
 
-		   
-		</cfif>			
+		<cfelse>
+			<cfset o = createObject("Component","#application.packagepath#.rules.#qRules.rulename#") />				
+				
+				<cfparam name="application.rules.#qRules.rulename#" default="#structNew()#" />
+				<cfset application.rules[qRules.rulename] = o.initMetaData(application.rules[qRules.rulename]) />	
+			<cfset application.rules[qRules.rulename].bCustomRule = 0 /><!--- //override the bCustomRule attribute --->
+			<cfset application.rules[qRules.rulename].rulePath = "#application.packagepath#.rules.#qRules.rulename#" />
+		</cfif>
+	
 		
 		
+	</cfloop> --->
+	
+	
+	<!--- 
+	We want to search NTM types so we can flag them as a bTreeNode.
+	MJB: THIS SEEMS TO HAVE BEEN DEPRICATED BY bUseInTree flag set on the <cfcomponent> tag.
+	 --->
+	<cfquery datasource="#arguments.dsn#" name="qNTM">
+	SELECT distinct(typename)
+	FROM #arguments.dbowner#nested_tree_objects
+	</cfquery>
+	
+	<cfset lNTMTypes = valueList(qNTM.typename)>
+	
+	<cfloop list="#structKeyList(application.types)#" index="i">
+		<cfif listContainsNoCase(lNTMTypes, i)>
+			<cfset application.types[i].bTreeNode = 1 />
+		</cfif>
 	</cfloop>
-	<cfscript>
-		for(type IN application.types)
-		{
-			if(listContainsNoCase(lNTMTypes,type))
-				application.types[type].bTreeNode = 1;
-		}
-	</cfscript>
 
 </cffunction>
 
@@ -1502,24 +1575,18 @@ $out:$
 <cffunction name="deployCFC">
 	<cfargument name="typename" required="true">
 	<cfargument name="scope" required="false" default="types">
+	
+	<cfset var o = "" />
+	<cfset var result = "" />
+	
+	<cfif arguments.scope EQ "types">
+		<cfset o = createObject("component", application.types[arguments.typename].typepath) />
+	<cfelseif arguments.scope EQ "rules">
+		<cfset o = createObject("component", application.rules[arguments.typename].rulepath) />
+	</cfif>
+	
+	<cfset result = o.deployType(btestRun="false") />
 
-	<cfscript>
-	if (arguments.scope IS 'types')
-	{
-		if(NOT application[arguments.scope]['#arguments.typename#'].bCustomType)
-			o = createObject("component", "#application.packagePath#.#arguments.scope#.#arguments.typename#");
-		else
-			o = createObject("component", "#application.custompackagePath#.#arguments.scope#.#arguments.typename#");
-	}
-	else if (arguments.scope IS 'rules')
-	{
-		if(NOT application[arguments.scope]['#arguments.typename#'].bCustomRule)
-			o = createObject("component", "#application.packagePath#.#arguments.scope#.#arguments.typename#");
-		else
-			o = createObject("component", "#application.custompackagePath#.#arguments.scope#.#arguments.typename#");
-	}
-	result = o.deployType(btestRun="false");
-	</cfscript>
 </cffunction>
 
 <cffunction name="isCFCDeployed">

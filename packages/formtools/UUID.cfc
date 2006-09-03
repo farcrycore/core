@@ -1,6 +1,10 @@
-<cfcomponent extends="field" name="array" displayname="array" hint="Used to liase with Array type fields"> 
+<cfcomponent extends="field" name="UUID" displayname="UUID" hint="Used to liase with UUID type fields"> 
 
-
+	
+	<cffunction name="init" access="public" returntype="farcry.farcry_core.packages.formtools.UUID" output="false" hint="Returns a copy of this initialised object">
+		<cfreturn this>
+	</cffunction>
+	
 	<cffunction name="edit" access="public" output="false" returntype="string" hint="This is going to called from ft:object and will always be passed 'typename,stobj,stMetadata,fieldname'.">
 		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
 		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
