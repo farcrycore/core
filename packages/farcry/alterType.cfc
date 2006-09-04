@@ -229,20 +229,14 @@ $out:$
 
 	<!--- Init all CORE types --->
 	<cfloop query="qDir">
-		<cftry>
-			
+	
 			<cfset typename = left(qDir.name, len(qDir.name)-4) /> <!---remove the .cfc from the filename --->
-			
 			<cfparam name="application.types.#typename#" default="#structNew()#" />
 			<cfset application.types[typename] = createObject("Component", "#application.packagepath#.types.#typename#").initmetadata(application.types[typename]) />
 			<cfset application.types[typename].bCustomType = 0 />
 			<cfset application.types[typename].bLibraryType = 0 />
 			<cfset application.types[typename].typePath = "#application.packagepath#.types.#typename#" />
-			
 			<cfset application.types[typename].qMetadata = setupMetadataQuery(typename=typename,stProps=application.types[typename].stProps) />
-			
-			<cfcatch></cfcatch>
-		</cftry>
 		
 	</cfloop>
 	
@@ -257,24 +251,15 @@ $out:$
 				
 				<!--- Init all LIBRARY types --->
 				<cfloop query="qDir">
-					<cftry>
-						
 						<cfset typename = left(qDir.name, len(qDir.name)-4) /> <!---remove the .cfc from the filename --->
 						
-						<cfif structKeyExists(application.types, typename)>
-							<cflog application="true" file="farcry" text="Error attempting to create a library type that already exists in core. Not permitted to extent core types from the library as project may override.">
-						<cfelse>
-							<cfparam name="application.types.#typename#" default="#structNew()#" />
-							<cfset application.types[typename] = createObject("Component", "farcry.farcry_lib.#library#.packages.types.#typename#").initmetadata(application.types[typename]) />
-							<cfset application.types[typename].bCustomType = 1 />
-							<cfset application.types[typename].bLibraryType = 1 />
-							<cfset application.types[typename].typePath = "farcry.farcry_lib.#library#.packages.types.#typename#" />							
-							<cfset application.types[typename].qMetadata = setupMetadataQuery(typename=typename,stProps=application.types[typename].stProps) />
-						l
-						</cfif>
-						<cfcatch></cfcatch>
-					</cftry>
-					
+						<cfparam name="application.types.#typename#" default="#structNew()#" />
+						<cfset application.types[typename] = createObject("Component", "farcry.farcry_lib.#library#.packages.types.#typename#").initmetadata(application.types[typename]) />
+						<cfset application.types[typename].bCustomType = 1 />
+						<cfset application.types[typename].bLibraryType = 1 />
+						<cfset application.types[typename].typePath = "farcry.farcry_lib.#library#.packages.types.#typename#" />							
+						<cfset application.types[typename].qMetadata = setupMetadataQuery(typename=typename,stProps=application.types[typename].stProps) />
+						
 				</cfloop>
 				
 			</cfif>
@@ -293,16 +278,15 @@ $out:$
 			<cfset sMetaData = getMetaData(createObject("Component", "#application.custompackagepath#.system.#typeName#")) />
 			<!---does this type extend the core type? --->
 			
-			<cfif sMetaData.extends.name eq "#application.packagepath#.types.#typename#">
 				
-				<cfparam name="application.types.#typename#" default="#structNew()#" />
-				<cfset application.types[typename] = createObject("Component", "#application.custompackagepath#.system.#typename#").initMetaData(application.types[typename]) />
-				<cfset application.types[typename].bCustomType = 0 />
-				<cfset application.types[typename].bLibraryType = 0 />
-				<cfset application.types[typename].typePath = "#application.custompackagepath#.system.#typename#" />
-				
-				<cfset application.types[typename].qMetadata = setupMetadataQuery(typename=typename,stProps=application.types[typename].stProps) />
-			</cfif>
+			<cfparam name="application.types.#typename#" default="#structNew()#" />
+			<cfset application.types[typename] = createObject("Component", "#application.custompackagepath#.system.#typename#").initMetaData(application.types[typename]) />
+			<cfset application.types[typename].bCustomType = 0 />
+			<cfset application.types[typename].bLibraryType = 0 />
+			<cfset application.types[typename].typePath = "#application.custompackagepath#.system.#typename#" />
+			
+			<cfset application.types[typename].qMetadata = setupMetadataQuery(typename=typename,stProps=application.types[typename].stProps) />
+			
 				
 			<cfcatch>
 				<cftrace inline="no" text="Error creating extended type. & #cfcatch.message#" category="error">
@@ -315,7 +299,6 @@ $out:$
 	
 	<!--- Now init all Custom Types --->
 	<cfloop query="qCustomTypesDir">
-		<cftry>
 			
 			<cfset typename = left(qCustomTypesDir.name, len(qCustomTypesDir.name)-4)> <!---//remove the .cfc from the filename --->
 			<cfset o = createObject("Component", "#application.custompackagepath#.types.#typename#") />
@@ -326,9 +309,6 @@ $out:$
 			<cfset application.types[typename].bLibraryType = 0 />
 			<cfset application.types[typename].typePath = "#application.custompackagepath#.types.#typename#" />
 			<cfset application.types[typename].qMetadata = setupMetadataQuery(typename=typename,stProps=application.types[typename].stProps) />
-
-			<cfcatch></cfcatch>
-		</cftry>
 				
 	</cfloop>
 	
@@ -372,9 +352,6 @@ $out:$
 						
 						<cfset formtoolname = left(qDir.name, len(qDir.name)-4) /> <!---remove the .cfc from the filename --->
 						
-						<cfif structKeyExists(application.formtools, formtoolname)>
-							<cflog application="true" file="farcry" text="Error attempting to create a library type that already exists in core. Not permitted to extent core types from the library as project may override.">
-						<cfelse>
 							<cfset oFactory = createObject("Component", "farcry.farcry_lib.#library#.packages.formtools.#formtoolname#").init() />
 							
 							<cfparam name="application.formtools.#formtoolname#" default="#structNew()#" />
@@ -383,7 +360,7 @@ $out:$
 							<cfset application.formtools[formtoolname].bLibraryformtool = 1 />
 							<cfset application.formtools[formtoolname].formtoolPath = "farcry.farcry_lib.#library#.packages.formtools.#formtoolname#" />							
 							<cfset application.formtools[formtoolname].qMetadata = setupMetadataQuery(typename=formtoolname,stProps=application.formtools[formtoolname].stProps) />
-						</cfif>
+						
 						<cfcatch></cfcatch>
 					</cftry>
 					
@@ -426,8 +403,6 @@ $out:$
 
 	<cfloop query="qDir">
 		<cfif qDir.name NEQ "rules.cfc">
-			<cftry>
-				
 				<cfset typename = left(qDir.name, len(qDir.name)-4) /> <!---remove the .cfc from the filename --->
 				
 				<cfparam name="application.rules.#typename#" default="#structNew()#" />
@@ -437,9 +412,6 @@ $out:$
 				<cfset application.rules[typename].rulePath = "#application.packagepath#.rules.#typename#" />
 				
 				<cfset application.rules[typename].qMetadata = setupMetadataQuery(typename=typename,stProps=application.rules[typename].stProps) />
-				
-				<cfcatch></cfcatch>
-			</cftry>
 		</cfif>
 	</cfloop>
 	
@@ -455,23 +427,17 @@ $out:$
 				
 				<!--- Init all LIBRARY types --->
 				<cfloop query="qDir">
-					<cftry>
 						
 						<cfset typename = left(qDir.name, len(qDir.name)-4) /> <!---remove the .cfc from the filename --->
 						
-						<cfif structKeyExists(application.rules, typename)>
-							<cflog application="true" file="farcry" text="Error attempting to create a library RULE that already exists in core. Not permitted to extend core RULES from the library as project may override.">
-						<cfelse>
+						
 							<cfparam name="application.rules.#typename#" default="#structNew()#" />
 							<cfset application.rules[typename] = createObject("Component", "farcry.farcry_lib.#library#.packages.types.#typename#").initmetadata(application.types[typename]) />
 							<cfset application.rules[typename].bCustomRule = 1 />
 							<cfset application.rules[typename].bLibraryRule = 1 />
 							<cfset application.rules[typename].rulePath = "farcry.farcry_lib.#library#.packages.rules.#typename#" />							
 							<cfset application.rules[typename].qMetadata = setupMetadataQuery(typename=typename,stProps=application.rules[typename].stProps) />
-						l
-						</cfif>
-						<cfcatch></cfcatch>
-					</cftry>
+						
 					
 				</cfloop>
 				
@@ -486,7 +452,6 @@ $out:$
 	<cfdirectory directory="#application.path.project#/packages/rules" name="qDir" filter="rule*.cfc" sort="name">
 
 	<cfloop query="qDir">
-		<cftry>
 			
 			<cfset typename = left(qDir.name, len(qDir.name)-4) /> <!---remove the .cfc from the filename --->
 			
@@ -498,70 +463,8 @@ $out:$
 			
 			<cfset application.rules[typename].qMetadata = setupMetadataQuery(typename=typename,stProps=application.rules[typename].stProps) />
 			
-			<cfcatch></cfcatch>
-		</cftry>
 	</cfloop>
 	
-	
-
-
-
-
-
-
-
-
-
-<!---
-
-
-
-	
-	<!--- Now get all the rules --->
-	
-	<cfset rules = createObject("Component", "#application.packagepath#.rules.rules") />
-	<cfset qRules = rules.getRules() />
-	
-	
-
-	<!--- Populate application.rules scope with rule metatdata --->
-	<cfloop query="qRules">
-		
-
-		<cfif qRules.bCustom >
-			<cfset sRuleMetaData = getMetaData(createObject("Component", "#application.custompackagepath#.rules.#qRules.rulename#")) />
-			<!---//does this rule extend the core rule? --->
-			<cfif (sRuleMetaData.extends.name eq "#application.packagepath#.rules.#qRules.rulename#")>
-				<cfset o = createObject("Component", "#application.custompackagepath#.rules.#qRules.rulename#") />					
-				
-				<cfparam name="application.rules.#qRules.rulename#" default="#structNew()#" />
-				<cfset application.rules[qRules.rulename] = o.initMetaData(application.rules[qRules.rulename]) />	
-				
-				<cfset application.rules[qRules.rulename].bCustomRule = 0 />
-				<cfset application.rules[qRules.rulename].bLibraryRule = 0 />
-				<cfset application.rules[qRules.rulename].rulePath = "#application.custompackagepath#.rules.#qRules.rulename#" />
-			<cfelse>
-				<cfset o = createObject("Component", "#application.custompackagepath#.rules.#qRules.rulename#") />				
-				
-				<cfparam name="application.rules.#qRules.rulename#" default="#structNew()#" />
-				<cfset application.rules[qRules.rulename] = o.initMetaData(application.rules[qRules.rulename]) />	
-				<cfset application.rules[qRules.rulename].bCustomRule = 1 />
-				<cfset application.rules[qRules.rulename].bLibraryRule = 0 />
-				<cfset application.rules[qRules.rulename].rulePath = "#application.custompackagepath#.rules.#qRules.rulename#" />
-			</cfif>
-
-		<cfelse>
-			<cfset o = createObject("Component","#application.packagepath#.rules.#qRules.rulename#") />				
-				
-				<cfparam name="application.rules.#qRules.rulename#" default="#structNew()#" />
-				<cfset application.rules[qRules.rulename] = o.initMetaData(application.rules[qRules.rulename]) />	
-			<cfset application.rules[qRules.rulename].bCustomRule = 0 /><!--- //override the bCustomRule attribute --->
-			<cfset application.rules[qRules.rulename].rulePath = "#application.packagepath#.rules.#qRules.rulename#" />
-		</cfif>
-	
-		
-		
-	</cfloop> --->
 	
 	
 	<!--- 
