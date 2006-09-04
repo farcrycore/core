@@ -55,8 +55,8 @@ $Developer: Pete Ottery (pot@daemon.com.au)$
 <cfset subid=url.sub>
 <!--- <cfset sidebar=aSubectionToDisplay[1].xmlattributes.sidebar & "?sub=" & aSubectionToDisplay[1].xmlattributes.id & "&" & cgi.query_string>
 <cfset content=aSubectionToDisplay[1].xmlattributes.content & "?" & cgi.query_string> --->
-<cfset sidebar=oWebTop.getSidebarUrl(aSubectionToDisplay[1].XmlAttributes)>
-<cfset content=oWebTop.getContentUrl(aSubectionToDisplay[1].XmlAttributes)> 
+<cfset variables.sidebar=oWebTop.getSidebarUrl(aSubectionToDisplay[1].XmlAttributes)>
+<cfset variables.content=oWebTop.getContentUrl(aSubectionToDisplay[1].XmlAttributes)> 
 
 <cfoutput>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
