@@ -496,27 +496,18 @@ default handlers
 		<!--- 
 		TODO: Add ability to reindex object if required based on verity metadata info in the component. 
 		This would be nice if it used the new Event Queue ;)
-		--->
 		
 		<cfif structKeyExists(application, "searchCollection")>
-			
 			<cfset searchData = structNew() />
 			<cfset searchData.CollectionName = application.searchCollection.Name />
 			<cfset searchData.CollectionPath = "C:/CFusionMX7/verity/collections/" />
 			<cfset searchData.Typename = stProperties.typename />
 			<cfset searchData.stProps = application.types[stProperties.typename].stprops />
 			<cfset searchData.stObject = arguments.stProperties />
-			
 			<cfset status = SendGatewayMessage("FarcrySearchIndexing", searchData) />
 		</cfif>
-
-		<!---
+		--->
 		
-		
-		
-
-
-		 --->
 	</cffunction>
 	
 	<cffunction name="Edit" access="public" output="true" returntype="void">
