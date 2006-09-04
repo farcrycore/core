@@ -215,6 +215,9 @@ $out:$
 	<cfset var o = "" /><!--- This will contain the object as we iterate through each cfc --->
 	<cfset var typename = "" /><!--- this will contain the typename as we iterate through each cfc  --->	
 	<cfset var qDir = queryNew("name") /><!--- This will contain the directory listing --->
+	<cfset var qExtendedTypesDir = queryNew("name") /><!--- This will contain the directory listing --->
+	<cfset var qCustomTypesDir = queryNew("name") /><!--- This will contain the directory listing --->
+	<cfset var stTypeMD = structNew() />
 	
 	<cfset application.types = structNew() />
 	<cfset application.formtools = structNew() />
@@ -234,17 +237,23 @@ $out:$
 	
 			<cfset typename = left(qDir.name, len(qDir.name)-4) /> <!---remove the .cfc from the filename --->
 			<cfset o = createObject("Component", "#application.packagepath#.types.#typeName#") />			
-			<cfset stMetaData = getMetaData(o) />
-			<cfif not structKeyExists(stMetadata,"bAbstract") or stMetadata.bAbstract EQ "False">
-				
-				<cfparam name="application.types.#typename#" default="#structNew()#" />
-				<cfset application.types[typename] = o.initmetadata(application.types[typename]) />
-				<cfset application.types[typename].bCustomType = 0 />
-				<cfset application.types[typename].bLibraryType = 0 />
-				<cfset application.types[typename].typePath = "#application.packagepath#.types.#typename#" />
-				
-				<cfset application.types[typename].qMetadata = setupMetadataQuery(typename=typename,stProps=application.types[typename].stProps) />
+
+			<cfif NOT structkeyexists(application.types, typename)>
+				<cfset application.types[typename]=structNew() />
 			</cfif>
+			<cfset stTypeMD = o.initmetadata(application.types[typename]) />
+			<cfif not structKeyExists(stTypeMD,"bAbstract") or stTypeMD.bAbstract EQ "False">
+				<cfset stTypeMD.bCustomType = 0 />
+				<cfset stTypeMD.bLibraryType = 0 />
+				<cfset stTypeMD.typePath = "#application.packagepath#.types.#typename#" />
+				<cfset stTypeMD.qMetadata = setupMetadataQuery(typename=typename,stProps=stTypeMD.stProps) />
+				<cfset application.types[typename]=duplicate(stTypeMD) />
+
+			<cfelse>
+				<!--- Remove typename if it is an abstract class. --->
+				<cfset structDelete(application.types, typename) />
+			</cfif>
+
 		
 	</cfloop>
 	
