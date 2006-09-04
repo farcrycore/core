@@ -335,10 +335,8 @@ $out:$
 	<cfloop query="qFormToolsTypesDir">
 
 			<cfset formtoolname = left(qFormToolsTypesDir.name, len(qFormToolsTypesDir.name)-4) /><!--- //remove the .cfc from the filename --->			
-			<cftry><cfset oFactory = createObject("Component", "#application.packagepath#.formtools.#formtoolname#").init() />
-			<cfcatch><cfoutput>#application.packagepath#.formtools.#formtoolname#</cfoutput><cfabort></cfcatch>
-			</cftry>
-			
+			<cfset oFactory = createObject("Component", "#application.packagepath#.formtools.#formtoolname#").init() />
+
 			<cfset stMetaData = getMetaData(oFactory) />
 			<cfif not structKeyExists(stMetadata,"bAbstract") or stMetadata.bAbstract EQ "False">			
 				
