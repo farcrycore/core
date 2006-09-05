@@ -9,7 +9,7 @@
 <form name="frm_#tableStatus_name#" action="#cgi.script_name#?#cgi.query_string#" method="post">
 <div class="utilBar f-subdued">
 	<label for="#tableStatus_name#_objectType"><b>Content Type:</b>
-		<select name="#tableStatus_name#_objectType" id="pending_objectType" onchange="doToggleContent(document.frm_#tableStatus_name#,'#tableStatus_name#');"><cfloop index="icount" from="1" to="#ArrayLen(aObjectTypes)#">
+		<select name="#tableStatus_name#_objectType" id="#tableStatus_name#_objectType" onchange="doToggleContent(document.frm_#tableStatus_name#,'#tableStatus_name#');"><cfloop index="icount" from="1" to="#ArrayLen(aObjectTypes)#">
 			<option value="#aObjectTypes[icount]#"<cfif icount EQ Evaluate("#tableStatus_name#_objectType")> selected="selected"</cfif>>#aObjectTypes[icount]#</option></cfloop>
 		</select>
 	</label>
