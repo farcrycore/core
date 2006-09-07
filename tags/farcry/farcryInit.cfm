@@ -66,16 +66,17 @@ $in: objectid -- $
 	<!---<cferror type="request" template="/farcry/#attributes.projectDirectoryName#/error/500.cfm"> --->
 	
 	
-	<!--- Application Initialise --->
+	<!---------------------------------------- 
+	BEGIN: Application Initialise 
+	----------------------------------------->
 	<cfif NOT IsDefined("application.bInit") OR IsDefined("url.updateapp")>
-		<!---
-		 SET THE DATABASE SPECIFIC INFORMATION 
-		--->
 		
 		
 	<!---	<cfinclude template="/farcry/farcry_core/tags/farcry/flightcheck.cfm" /> --->
 		
-		
+		<!----------------------------------------
+		 SET THE DATABASE SPECIFIC INFORMATION 
+		---------------------------------------->
 		<cfset application.dsn = attributes.dsn />
 		<cfset application.dbtype = attributes.dbtype />
 		<cfset application.dbowner = attributes.dbowner />
@@ -84,32 +85,35 @@ $in: objectid -- $
 			<cfset application.dbowner = "dbo." />
 		</cfif>
 		
-		<!---
+		<!----------------------------------------
 		 SET THE MAIN PHYSICAL PATH INFORMATION
-		 --->
+		 ---------------------------------------->
 		<cfset application.path.project = expandpath("/farcry/#attributes.projectDirectoryName#") />
 		<cfset application.path.core = expandpath("/farcry/farcry_core") />
 		
-		<!---
-		 WEB URLS
-		 --->
+		<!----------------------------------------
+		 WEB URL PATHS
+		 ---------------------------------------->
 		<cfset application.url.webroot = attributes.projectURL />
 		<cfset application.url.farcry = "#attributes.projectURL#/farcry" />
 		
 		
-		<!---
-		SHORTCUT PATHS
-		 --->
+		<!----------------------------------------
+		SHORTCUT PACKAGE PATHS
+		 ---------------------------------------->
 		<cfset application.packagepath = "farcry.farcry_core.packages" />
 		<cfset application.custompackagepath = "farcry.#attributes.projectDirectoryName#.packages" />
 		<cfset application.securitypackagepath = "farcry.farcry_core.packages.security" />
 		
+		<!----------------------------------------
+		LIBRARY PATHS
+		 ---------------------------------------->
+		<cfset application.lFarcryLib = attributes.lFarcryLib />
 		
 		
-		<!---
+		<!----------------------------------------
 		SECURITY
-		 --->		
-	
+		 ---------------------------------------->		
 		<!---// dmSecurity settings --->
 		<!---//Init Application dmsec scope --->
 		<cfset Application.dmSec=StructNew() />
@@ -143,7 +147,10 @@ $in: objectid -- $
 		<cfinclude template="/farcry/farcry_core/tags/farcry/_farcryApplicationInit.cfm">
 		<!--- $TODO: must have project vars set AFTER core vars! GB$ --->
 	</cfif>
-	
+	<!---------------------------------------- 
+	END: Application Initialise 
+	----------------------------------------->
+
 
 		
 
