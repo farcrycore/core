@@ -258,9 +258,9 @@ $out:$
 	</cfloop>
 	
 	
-	<cfif structKeyExists(application, "lIncludeFarcryLib") and listLen(application.lIncludeFarcryLib)>
+	<cfif structKeyExists(application, "lFarcryLib") and listLen(application.lFarcryLib)>
 
-		<cfloop list="#application.lIncludeFarcryLib#" index="library">
+		<cfloop list="#application.lFarcryLib#" index="library">
 			
 			<cfif directoryExists("#application.path.library#/#library#/packages/types")>
 			
@@ -274,12 +274,15 @@ $out:$
 					<cfset stMetaData = getMetaData(o) />
 					<cfif not structKeyExists(stMetadata,"bAbstract") or stMetadata.bAbstract EQ "False">
 						
+						<cfset stTypeMD = structNew() />
 						<cfparam name="application.types.#typename#" default="#structNew()#" />
-						<cfset application.types[typename] = o.initmetadata(application.types[typename]) />
-						<cfset application.types[typename].bCustomType = 1 />
-						<cfset application.types[typename].bLibraryType = 1 />
-						<cfset application.types[typename].typePath = "farcry.farcry_lib.#library#.packages.types.#typename#" />							
-						<cfset application.types[typename].qMetadata = setupMetadataQuery(typename=typename,stProps=application.types[typename].stProps) />
+						
+						<cfset stTypeMD = o.initmetadata(application.types[typename]) />
+						<cfset stTypeMD.bCustomType = 1 />
+						<cfset stTypeMD.bLibraryType = 1 />
+						<cfset stTypeMD.typePath = "farcry.farcry_lib.#library#.packages.types.#typename#" />							
+						<cfset stTypeMD.qMetadata = setupMetadataQuery(typename=typename,stProps=stTypeMD.stProps) />
+						<cfset application.types[typename]=duplicate(stTypeMD) />
 					</cfif>	
 					
 				</cfloop>
@@ -301,13 +304,15 @@ $out:$
 			<cfset stMetaData = getMetaData(o) />
 			<cfif not structKeyExists(stMetadata,"bAbstract") or stMetadata.bAbstract EQ "False">			
 			
+				<cfset stTypeMD = structNew() />
 				<cfparam name="application.types.#typename#" default="#structNew()#" />
-				<cfset application.types[typename] = o.initMetaData(application.types[typename]) />
-				<cfset application.types[typename].bCustomType = 0 />
-				<cfset application.types[typename].bLibraryType = 0 />
-				<cfset application.types[typename].typePath = "#application.custompackagepath#.system.#typename#" />
 				
-				<cfset application.types[typename].qMetadata = setupMetadataQuery(typename=typename,stProps=application.types[typename].stProps) />
+				<cfset stTypeMD = o.initMetaData(application.types[typename]) />
+				<cfset stTypeMD.bCustomType = 0 />
+				<cfset stTypeMD.bLibraryType = 0 />
+				<cfset stTypeMD.typePath = "#application.custompackagepath#.system.#typename#" />				
+				<cfset stTypeMD = setupMetadataQuery(typename=typename,stProps=stTypeMD.stProps) />
+				<cfset application.types[typename]=duplicate(stTypeMD) />
 			</cfif>
 	
 				
@@ -324,12 +329,15 @@ $out:$
 			<cfset stMetaData = getMetaData(o) />
 			<cfif not structKeyExists(stMetadata,"bAbstract") or stMetadata.bAbstract EQ "False">			
 
+				<cfset stTypeMD = structNew() />
 				<cfparam name="application.types.#typename#" default="#structNew()#" />
-				<cfset application.types[typename] = o.initMetaData(application.types[typename]) />
-				<cfset application.types[typename].bCustomType = 1 />
-				<cfset application.types[typename].bLibraryType = 0 />
-				<cfset application.types[typename].typePath = "#application.custompackagepath#.types.#typename#" />
-				<cfset application.types[typename].qMetadata = setupMetadataQuery(typename=typename,stProps=application.types[typename].stProps) />
+				
+				<cfset stTypeMD = o.initMetaData(application.types[typename]) />
+				<cfset stTypeMD.bCustomType = 1 />
+				<cfset stTypeMD.bLibraryType = 0 />
+				<cfset stTypeMD.typePath = "#application.custompackagepath#.types.#typename#" />
+				<cfset stTypeMD.qMetadata = setupMetadataQuery(typename=typename,stProps=stTypeMD.stProps) />
+				<cfset application.types[typename]=duplicate(stTypeMD) />
 			</cfif>
 	</cfloop>
 	
@@ -349,21 +357,22 @@ $out:$
 			<cfset stMetaData = getMetaData(oFactory) />
 			<cfif not structKeyExists(stMetadata,"bAbstract") or stMetadata.bAbstract EQ "False">			
 				
-				
+				<cfset stTypeMD = structNew() />
 				<cfparam name="application.formtools.#formtoolname#" default="#structNew()#" />
 				
-				<cfset application.formtools[formtoolname].oFactory = oFactory />	
-				<cfset application.formtools[formtoolname].bCustomformtool = 0 />
-				<cfset application.formtools[formtoolname].bLibraryformtool = 0 />
-				<cfset application.formtools[formtoolname].formtoolPath = "#application.packagepath#.formtools.#formtoolname#" />
+				<cfset stTypeMD.bCustomformtool = 0 />
+				<cfset stTypeMD.bLibraryformtool = 0 />
+				<cfset stTypeMD.formtoolPath = "#application.packagepath#.formtools.#formtoolname#" />
+				<cfset application.formtools[formtoolname] = duplicate(stTypeMD) />
+				<cfset application.formtools[formtoolname].oFactory = oFactory /><!--- you can't duplicate an object --->
 			</cfif>
 	</cfloop>	
 	
 	
 	
-	<cfif structKeyExists(application, "lIncludeFarcryLib") and listLen(application.lIncludeFarcryLib)>
+	<cfif structKeyExists(application, "lFarcryLib") and listLen(application.lFarcryLib)>
 
-		<cfloop list="#application.lIncludeFarcryLib#" index="library">
+		<cfloop list="#application.lFarcryLib#" index="library">
 			
 			<cfif directoryExists("#application.path.library#/#library#/packages/formtools")>
 			
@@ -378,12 +387,15 @@ $out:$
 							<cfset oFactory = createObject("Component", "farcry.farcry_lib.#library#.packages.formtools.#formtoolname#").init() />
 							<cfset stMetaData = getMetaData(oFactory) />
 							<cfif not structKeyExists(stMetadata,"bAbstract") or stMetadata.bAbstract EQ "False">			
+								<cfset stTypeMD = structNew() />
 								<cfparam name="application.formtools.#formtoolname#" default="#structNew()#" />
-								<cfset application.formtools[formtoolname].oFactory = oFactory />	
-								<cfset application.formtools[formtoolname].bCustomformtool = 1 />
-								<cfset application.formtools[formtoolname].bLibraryformtool = 1 />
-								<cfset application.formtools[formtoolname].formtoolPath = "farcry.farcry_lib.#library#.packages.formtools.#formtoolname#" />							
-								<cfset application.formtools[formtoolname].qMetadata = setupMetadataQuery(typename=formtoolname,stProps=application.formtools[formtoolname].stProps) />
+
+								<cfset stTypeMD.bCustomformtool = 1 />
+								<cfset stTypeMD.bLibraryformtool = 1 />
+								<cfset stTypeMD.formtoolPath = "farcry.farcry_lib.#library#.packages.formtools.#formtoolname#" />
+								
+								<cfset application.formtools[formtoolname] = duplicate(stTypeMD) />
+								<cfset application.formtools[formtoolname].oFactory = oFactory /><!--- you can't duplicate an object --->
 							</cfif>
 
 				</cfloop>
@@ -404,11 +416,14 @@ $out:$
 			<cfset o = createObject("Component", "#application.custompackagepath#.formtools.#formtoolname#")>	
 			<cfset stMetaData = getMetaData(o) />
 			<cfif not structKeyExists(stMetadata,"bAbstract") or stMetadata.bAbstract EQ "False">			
+				<cfset stTypeMD = structNew() />
 				<cfparam name="application.formtools.#formtoolname#" default="#structNew()#" />			
-				<cfset application.formtools[formtoolname].o = o />	
-				<cfset application.formtools[formtoolname].bCustomformtool = 1 />
-				<cfset application.formtools[formtoolname].bLibraryformtool = 0 />
-				<cfset application.formtools[formtoolname].formtoolPath = "#application.custompackagepath#.formtools.#formtoolname#" />
+				
+				<cfset stTypeMD.bCustomformtool = 1 />
+				<cfset stTypeMD.bLibraryformtool = 0 />
+				<cfset stTypeMD.formtoolPath = "#application.custompackagepath#.formtools.#formtoolname#" />
+				<cfset application.formtools[formtoolname] = duplicate(stTypeMD) />
+				<cfset application.formtools[formtoolname].oFactory = oFactory /><!--- you can't duplicate an object --->
 			</cfif>
 	</cfloop>		
 		
@@ -429,13 +444,14 @@ $out:$
 				<cfset stMetaData = getMetaData(o) />
 				<cfif not structKeyExists(stMetadata,"bAbstract") or stMetadata.bAbstract EQ "False">			
 				
+					<cfset stTypeMD = structNew() />
 					<cfparam name="application.rules.#typename#" default="#structNew()#" />
-					<cfset application.rules[typename] = o.initmetadata(application.rules[typename]) />
-					<cfset application.rules[typename].bCustomRule = 0 />
-					<cfset application.rules[typename].bLibraryRule = 0 />
-					<cfset application.rules[typename].rulePath = "#application.packagepath#.rules.#typename#" />
-					
-					<cfset application.rules[typename].qMetadata = setupMetadataQuery(typename=typename,stProps=application.rules[typename].stProps) />
+					<cfset stTypeMD = o.initmetadata(application.rules[typename]) />
+					<cfset stTypeMD.bCustomRule = 0 />
+					<cfset stTypeMD.bLibraryRule = 0 />
+					<cfset stTypeMD.rulePath = "#application.packagepath#.rules.#typename#" />					
+					<cfset stTypeMD.qMetadata = setupMetadataQuery(typename=typename,stProps=stTypeMD.stProps) />
+					<cfset application.rules[typename] = duplicate(stTypeMD) />
 				</cfif>
 
 		</cfif>
@@ -443,9 +459,9 @@ $out:$
 	
 	
 	<!--- Init all LIBRARY RULES --->	
-	<cfif structKeyExists(application, "lIncludeFarcryLib") and listLen(application.lIncludeFarcryLib)>
+	<cfif structKeyExists(application, "lFarcryLib") and listLen(application.lFarcryLib)>
 
-		<cfloop list="#application.lIncludeFarcryLib#" index="library">
+		<cfloop list="#application.lFarcryLib#" index="library">
 			
 			<cfif directoryExists("#application.path.library#/#library#/packages/rules")>
 			
@@ -459,12 +475,14 @@ $out:$
 						<cfset o = createObject("Component", "farcry.farcry_lib.#library#.packages.types.#typename#") />			
 						<cfset stMetaData = getMetaData(o) />
 						<cfif not structKeyExists(stMetadata,"bAbstract") or stMetadata.bAbstract EQ "False">			
+							<cfset stTypeMD = structNew() />
 							<cfparam name="application.rules.#typename#" default="#structNew()#" />
-							<cfset application.rules[typename] = o.initmetadata(application.types[typename]) />
-							<cfset application.rules[typename].bCustomRule = 1 />
-							<cfset application.rules[typename].bLibraryRule = 1 />
-							<cfset application.rules[typename].rulePath = "farcry.farcry_lib.#library#.packages.rules.#typename#" />							
-							<cfset application.rules[typename].qMetadata = setupMetadataQuery(typename=typename,stProps=application.rules[typename].stProps) />
+							<cfset stTypeMD = o.initmetadata(application.types[typename]) />
+							<cfset stTypeMD.bCustomRule = 1 />
+							<cfset stTypeMD.bLibraryRule = 1 />
+							<cfset stTypeMD.rulePath = "farcry.farcry_lib.#library#.packages.rules.#typename#" />							
+							<cfset stTypeMD.qMetadata = setupMetadataQuery(typename=typename,stProps=stTypeMD.stProps) />
+							<cfset application.rules[typename] = duplicate(stTypeMD) />
 						</cfif>
 
 				</cfloop>
@@ -486,13 +504,15 @@ $out:$
 			<cfset o = createObject("Component", "#application.custompackagepath#.rules.#typename#") />			
 			<cfset stMetaData = getMetaData(o) />
 			<cfif not structKeyExists(stMetadata,"bAbstract") or stMetadata.bAbstract EQ "False">			
+				<cfset stTypeMD = structNew() />
 				<cfparam name="application.rules.#typename#" default="#structNew()#" />
-				<cfset application.rules[typename] = createObject("Component", "#application.custompackagepath#.rules.#typename#").initmetadata(application.rules[typename]) />
-				<cfset application.rules[typename].bCustomRule = 1 />
-				<cfset application.rules[typename].bLibraryRule = 0 />
-				<cfset application.rules[typename].rulePath = "#application.custompackagepath#.rules.#typename#" />
+				<cfset stTypeMD = createObject("Component", "#application.custompackagepath#.rules.#typename#").initmetadata(application.rules[typename]) />
+				<cfset stTypeMD.bCustomRule = 1 />
+				<cfset stTypeMD.bLibraryRule = 0 />
+				<cfset stTypeMD.rulePath = "#application.custompackagepath#.rules.#typename#" />
 				
-				<cfset application.rules[typename].qMetadata = setupMetadataQuery(typename=typename,stProps=application.rules[typename].stProps) />
+				<cfset stTypeMD.qMetadata = setupMetadataQuery(typename=typename,stProps=stTypeMD.stProps) />
+				<cfset application.rules[typename] = duplicate(stTypeMD) />
 			</cfif>
 	</cfloop>
 	
