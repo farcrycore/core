@@ -40,11 +40,10 @@ $in: url -- the url portion that we are searching for in the script_name. eg. /f
 		<cfset loc = "/Application.cfm" />
 	</cfif>
 	
-	
 	<cftry>
 		<cfinclude template="#loc#">
 		
-		<cfcatch type="any">
+		<cfcatch type="missinginclude">
 			<cfthrow type="Application" message="could not find project application" detail="this usually means that your mappings are incorectly setup. Please see your administrator.">	
 		</cfcatch>
 	
