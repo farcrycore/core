@@ -145,11 +145,9 @@ $in: objectid -- $
 		<!----------------------------------- 
 		INITIALISE THE REQUESTED LIBRARIES
 		 ----------------------------------->
-		 
-		 
 		<cfif isDefined("application.lFarcryLib")>
 			<cfloop list="#application.lFarcryLib#" index="library">
-				<cfif fileExists("#application.path.library#\#library#\config\librarySpecificVars.cfm")>
+				<cfif fileExists("#application.path.library#/#library#/config/librarySpecificVars.cfm")>
 					<cfinclude template="/farcry/farcry_lib/#library#/config/librarySpecificVars.cfm">
 				</cfif>
 			</cfloop>
