@@ -77,9 +77,9 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 	</cfif>
 		
 		
-	<cfif structKeyExists(application, "lIncludeFarcryLib") and listLen(application.lIncludeFarcryLib)>
+	<cfif structKeyExists(application, "lFarcryLib") and listLen(application.lFarcryLib)>
 
-		<cfloop list="#application.lIncludeFarcryLib#" index="library">
+		<cfloop list="#application.lFarcryLib#" index="library">
 			
 			<cfif directoryExists("#application.path.library#/#library#/customadmin")>
 				<cfdirectory action="list" directory="#application.path.library#/#library#/customadmin" filter="*.xml" name="qCustomAdmin" />
