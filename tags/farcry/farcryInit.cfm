@@ -147,7 +147,9 @@ $in: objectid -- $
 		 ----------------------------------->
 		<cfif isDefined("application.lFarcryLib")>
 			<cfloop list="#application.lFarcryLib#" index="library">
-				<cfinclude template="/farcry/farcry_lib/#library#/config/librarySpecificVars.cfm">
+				<cfif fileExists("/farcry/farcry_lib/#library#/config/librarySpecificVars.cfm")>
+					<cfinclude template="/farcry/farcry_lib/#library#/config/librarySpecificVars.cfm">
+				</cfif>
 			</cfloop>
 		</cfif>
 
