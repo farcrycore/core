@@ -16,42 +16,89 @@
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedWebskin" default="LibrarySelected">
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedListClass" default="thumbNailsWrap">
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedListStyle" default="">
+		<cfparam name="arguments.stMetadata.ftRenderType" default="Library">
 
 		<!--- A UUID type MUST have a 'ftJoin' property --->
 		<cfif not structKeyExists(stMetadata,"ftJoin")>
-			<cfreturn "">
+			<cfreturn "" />
 		</cfif>
 		
 		<!--- Create the Linked Table Type as an object  --->
 		<cfset oData = createObject("component",application.types[stMetadata.ftJoin].typepath)>
 
-		<cfsavecontent variable="returnHTML">
-		<cfoutput>
-			<input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="#arguments.stObject[arguments.stMetaData.Name]#" />
-			<div id="#arguments.fieldname#_1">
-			<cfif Len(arguments.stObject[arguments.stMetaData.Name])>
-			
-				<cfset stobj = oData.getData(objectid=#arguments.stObject[arguments.stMetaData.Name]#)>
-					
-				<cfif FileExists("#application.path.project#/webskin/#arguments.stMetadata.ftJoin#/#arguments.stMetadata.ftLibrarySelectedWebskin#.cfm")>
-					<cfset oData.getDisplay(stObject=stobj, template="#arguments.stMetadata.ftLibrarySelectedWebskin#") />
-					<!---<cfinclude template="/farcry/#application.applicationname#/webskin/#arguments.stMetadata.ftJoin#/#arguments.stMetadata.ftLibrarySelectedWebskin#.cfm"> --->
-				<cfelse>
-					<cfif isDefined("stobj.label") AND len(stobj.label)>#stobj.Label#<cfelse>#stobj.ObjectID#</cfif>
-				</cfif>
-				<a href="##" onclick="new Effect.Fade($('#arguments.fieldname#_1'));Element.remove('#arguments.fieldname#_1');$('#arguments.fieldname#').value = ''; return false;"><img src="#application.url.farcry#/images/crystal/22x22/actions/button_cancel.png" style="width:16px;height:16px;" /></a>
-			</cfif>
-			</div>
-		
-			<script type="text/javascript" language="javascript" charset="utf-8">
-			function update_#arguments.fieldname#_wrapper(HTML){
-				$('#arguments.fieldname#-wrapper').innerHTML = HTML;
-						 
-			}
-			</script>
+		<!--------------------------------------------- 
+		RENDER TYPE SWITCH
+			- select specific form element output
+ 		----------------------------------------------->
+		<cfswitch expression="#arguments.stMetadata.ftRenderType#">
+		<cfcase value="list">
+			<!-------------------------------------------------------------------------- 
+			generate library data query to populate library interface 
+			--------------------------------------------------------------------------->
+			<cfif structkeyexists(stMetadata, "ftLibraryData") AND len(stMetadata.ftLibraryData)>	
+				<cfset oPrimary = createObject("component", application.types[typename].typepath) />
+				<cfset stPrimary =  oPrimary.getData(objectid=stobject.objectid) />
 				
-		</cfoutput>	
-		</cfsavecontent>
+				<!--- use ftlibrarydata method from primary content type --->
+				<cfif structkeyexists(oprimary, stMetadata.ftLibraryData)>
+					<cfinvoke component="#oPrimary#" method="#stMetadata.ftLibraryData#" returnvariable="qLibraryList" />
+				</cfif>
+			</cfif>
+			<!--- if nothing exists to generate library data then cobble something together --->
+			<cfif NOT isDefined("qLibraryList")>
+				<cfinvoke component="#oData#" method="getLibraryData" returnvariable="qLibraryList" />
+			</cfif>
+
+			<cfsavecontent variable="returnHTML">
+			<cfif qLibraryList.recordcount>
+				<cfoutput>
+				<select  id="#arguments.fieldname#" name="#arguments.fieldname#" value="#arguments.stObject[arguments.stMetaData.Name]#">
+				<cfloop query="qLibraryList"><option value="#qLibraryList.objectid#"><cfif isDefined("qLibraryList.label")>#qLibraryList.label#<cfelse>#qLibraryList.objectid#</cfif></option></cfloop>
+				</select>
+				</cfoutput>
+				
+			<cfelse>
+				<!--- todo: i18n --->
+				<cfoutput>
+				<em>No options available.</em>
+				<input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="" />
+				</cfoutput>
+			</cfif>
+			
+			</cfsavecontent>
+		
+		</cfcase>
+		
+		<cfdefaultcase>
+			<cfsavecontent variable="returnHTML">
+			<cfoutput>
+				<input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="#arguments.stObject[arguments.stMetaData.Name]#" />
+				<div id="#arguments.fieldname#_1">
+				<cfif Len(arguments.stObject[arguments.stMetaData.Name])>
+				
+					<cfset stobj = oData.getData(objectid=#arguments.stObject[arguments.stMetaData.Name]#)>
+						
+					<cfif FileExists("#application.path.project#/webskin/#arguments.stMetadata.ftJoin#/#arguments.stMetadata.ftLibrarySelectedWebskin#.cfm")>
+						<cfset oData.getDisplay(stObject=stobj, template="#arguments.stMetadata.ftLibrarySelectedWebskin#") />
+						<!---<cfinclude template="/farcry/#application.applicationname#/webskin/#arguments.stMetadata.ftJoin#/#arguments.stMetadata.ftLibrarySelectedWebskin#.cfm"> --->
+					<cfelse>
+						<cfif isDefined("stobj.label") AND len(stobj.label)>#stobj.Label#<cfelse>#stobj.ObjectID#</cfif>
+					</cfif>
+					<a href="##" onclick="new Effect.Fade($('#arguments.fieldname#_1'));Element.remove('#arguments.fieldname#_1');$('#arguments.fieldname#').value = ''; return false;"><img src="#application.url.farcry#/images/crystal/22x22/actions/button_cancel.png" style="width:16px;height:16px;" /></a>
+				</cfif>
+				</div>
+			
+				<script type="text/javascript" language="javascript" charset="utf-8">
+				function update_#arguments.fieldname#_wrapper(HTML){
+					$('#arguments.fieldname#-wrapper').innerHTML = HTML;
+							 
+				}
+				</script>
+			</cfoutput>	
+			</cfsavecontent>
+		</cfdefaultcase>
+		</cfswitch>
+		
 		
  		<cfreturn ReturnHTML>
 		

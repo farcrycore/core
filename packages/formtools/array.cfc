@@ -17,15 +17,15 @@
 		<cfset var returnHTML = "" />
 		<cfset var stobj = structnew() / >
 		<cfset var stJoinObjects = structNew() /> <!--- This will contain a structure of object components that match the ftJoin list from the metadata --->
-		
 
 		<!---
 		<cfset var oFourQ = createObject("component","farcry.fourq.fourq")><!--- TODO: this needs to be removed when we add typename to array tables. ---> 
 		 --->
-		
-		<cfparam name="arguments.stMetadata.ftLibrarySelectedWebskin" default="LibrarySelected">
-		<cfparam name="arguments.stMetadata.ftLibrarySelectedListClass" default="thumbNailsWrap">
-		<cfparam name="arguments.stMetadata.ftLibrarySelectedListStyle" default="">
+		<cfparam name="arguments.stMetadata.ftLibrarySelectedWebskin" default="LibrarySelected" type="string" />
+		<cfparam name="arguments.stMetadata.ftLibrarySelectedListClass" default="thumbNailsWrap" type="string" />
+		<cfparam name="arguments.stMetadata.ftLibrarySelectedListStyle" default="" type="string" />
+		<cfparam name="arguments.stMetadata.ftRenderType" default="Library" type="string" />
+		<cfparam name="arguments.stMetadata.ftSelectSize" default="1" type="numeric" />
 
 		<!--- An array type MUST have a 'ftJoin' property --->
 		<cfif not structKeyExists(arguments.stMetadata,"ftJoin") or not len(arguments.stMetadata.ftJoin)>
@@ -51,128 +51,162 @@
 		ORDER BY seq
 		</cfquery>	
 		
-		
-		
-		<cfset ULID = "#arguments.fieldname#_list"><!--- ID of the unordered list. Important to use this so that the object can be referenced even if their are multiple objects referencing the same field. --->
-		
-		<cfsavecontent variable="returnHTML">
-			
-			
-<!---			<cfloop from ="1" to="#arrayLen(arguments.stObject[arguments.stMetaData.Name])#" index="i">
-				<cfif isStruct(arguments.stObject[arguments.stMetaData.Name][i]) AND structKeyExists(arguments.stObject[arguments.stMetaData.Name][i],"data")>
-					<cfset lArrayObjectIDs = ListAppend(lArrayObjectIDs,arguments.stObject[arguments.stMetaData.Name][i].data)>
-				<cfelse>
-					<cfset lArrayObjectIDs = ListAppend(lArrayObjectIDs,arguments.stObject[arguments.stMetaData.Name][i])>
+		<!--------------------------------------------- 
+		RENDER TYPE SWITCH
+			- select specific form element output
+ 		----------------------------------------------->
+		<cfswitch expression="#arguments.stMetadata.ftRenderType#">
+		<cfcase value="list">
+			<!-------------------------------------------------------------------------- 
+			generate library data query to populate library interface 
+			--------------------------------------------------------------------------->
+			<cfif structkeyexists(stMetadata, "ftLibraryData") AND len(stMetadata.ftLibraryData)>	
+				<cfset oPrimary = createObject("component", application.types[typename].typepath) />
+				<cfset stPrimary =  oPrimary.getData(objectid=stobject.objectid) />
+				
+				<!--- use ftlibrarydata method from primary content type --->
+				<cfif structkeyexists(oprimary, stMetadata.ftLibraryData)>
+					<cfinvoke component="#oPrimary#" method="#stMetadata.ftLibraryData#" returnvariable="qLibraryList" />
 				</cfif>
-				
-			</cfloop>	 --->	
-			
-			<!--- Contains a list of objectID's currently associated with this field' --->
-			<cfoutput><input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="#valuelist(qArrayField.data)#" /></cfoutput>
-			
-			
-			<cfif qArrayField.Recordcount>
-				<cfoutput><div id="#ULID#" class="#arguments.stMetadata.ftLibrarySelectedListClass#" style="#arguments.stMetadata.ftLibrarySelectedListStyle#"></cfoutput>
-					<cfloop query="qArrayField">
-						<cfoutput><div id="#arguments.fieldname#_#qArrayField.data#">
-							<img src="#application.url.farcry#/images/dragbar.gif" class="#ULID#handle" style="cursor:move;" align="center">
-							<div></cfoutput>
-							<!---
-							<!--------------------------------------------------------------- 
-							Need to determine the type of the object.
-							TODO: array tables will include a typename field by default so we know what type they are and will not need to lookup the refObjects table.
-							 --------------------------------------------------------------->
-							<cfset typeName = oFourQ.findType(objectid=i) />
-							 --->	
-							<cfset stobj = stJoinObjects[qArrayField.typename].getData(objectid=qArrayField.data)>
-							<cfif FileExists("#application.path.project#/webskin/#qArrayField.typename#/#arguments.stMetadata.ftLibrarySelectedWebskin#.cfm")>
-								<cfset stJoinObjects[qArrayField.typename].getDisplay(stObject=stobj, template="#arguments.stMetadata.ftLibrarySelectedWebskin#") />
-							<cfelse>
-								<cfif isDefined("stobj.label") AND len(stobj.label)>
-									<cfoutput>#stobj.Label#</cfoutput>
-								<cfelse>
-									<cfoutput>#stobj.ObjectID#</cfoutput>
-								</cfif>
-							</cfif>
-											
-							<cfoutput><a href="##" onclick="new Effect.Fade($('#arguments.fieldname#_#qArrayField.data#'));Element.remove('#arguments.fieldname#_#qArrayField.data#');$('#arguments.fieldname#').value = Sortable.sequence('#ULID#');update_#arguments.fieldname#('sort',$('#arguments.fieldname#')); return false;"><img src="#application.url.farcry#/images/crystal/22x22/actions/button_cancel.png" style="width:16px;height:16px;" /></a>
-							</div>
-						</div></cfoutput>
-					</cfloop>
-				<cfoutput></div></cfoutput>
-			
+			</cfif>
+			<!--- if nothing exists to generate library data then cobble something together --->
+			<cfif NOT isDefined("qLibraryList")>
+				<cfinvoke component="#oData#" method="getLibraryData" returnvariable="qLibraryList" />
+			</cfif>
+
+			<cfsavecontent variable="returnHTML">
+			<cfif qLibraryList.recordcount>
 				<cfoutput>
-				<script type="text/javascript" language="javascript" charset="utf-8">					
-				// <![CDATA[
-					  Sortable.create('#ULID#',
-					  	{ghosting:false,constraint:false,hoverclass:'over',handle:'#ULID#handle',constraint:'vertical',tag:'div',
-					    onChange:function(element){
-					    	$('#arguments.fieldname#').value = Sortable.sequence('#ULID#');	
-					    },
-					    onUpdate:function(element){					
-				   			update_#arguments.fieldname#('sort',element);
-					    }
-					    
-					  });
-					// ]]>	
+				<select  id="#arguments.fieldname#" name="#arguments.fieldname#" size="#arguments.stMetadata.ftSelectSize#" multiple="true">
+				<cfloop query="qLibraryList"><option value="#qLibraryList.objectid#" <cfif valuelist(qArrayField.data) contains qLibraryList.objectid>selected</cfif>><cfif isDefined("qLibraryList.label")>#qLibraryList.label#<cfelse>#qLibraryList.objectid#</cfif></option></cfloop>
+				</select>
+				</cfoutput>
 				
-				</script>
-			</cfoutput>
-			
 			<cfelse>
-				<cfoutput>&nbsp;</cfoutput> 
+				<!--- todo: i18n --->
+				<cfoutput>
+				<em>No options available.</em>
+				<input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="" />
+				</cfoutput>
 			</cfif>
 			
-			<cfoutput>	
-			<script type="text/javascript" language="javascript" charset="utf-8">
-			function update_#arguments.fieldname#_wrapper(HTML){
-				$('#arguments.fieldname#-wrapper').innerHTML = HTML;
-				// <![CDATA[
-					  Sortable.create('#ULID#',
-					  {ghosting:false,constraint:false,hoverclass:'over',handle:'#ULID#handle',constraint:'vertical',tag:'div',
-					    onChange:function(element){
-					    	$('#arguments.fieldname#').value = Sortable.sequence('#ULID#');	
-					    },
-					    onUpdate:function(element){					
-				   			update_#arguments.fieldname#('sort',element);
-					    }
-					  });
-					// ]]>									 
-			}
+			</cfsavecontent>
+		
+		</cfcase>
+		
+		<cfdefaultcase>
+		
+			<!--- ID of the unordered list. Important to use this so that the object can be referenced even if their are multiple objects referencing the same field. --->
+			<cfset ULID = "#arguments.fieldname#_list">
 			
-			function update_#arguments.fieldname#(action,element){
-				new Ajax.Updater('#arguments.fieldname#-wrapper', '/farcry/facade/library.cfc?method=ajaxUpdateArray', {
-						//onLoading:function(request){Element.show('indicator')}, 
-						onComplete:function(request){
-	
-							update_#arguments.fieldname#_wrapper(request.responseText);	
-							opener.update_#arguments.fieldname#_wrapper(request.responseText);						
-							Effect.Fade(element, {from:0.2,to:0.2});
-							// <![CDATA[
-								  Sortable.create('#arguments.fieldname#_list',
-								  	{ghosting:false,constraint:false,hoverclass:'over',handle:'#arguments.fieldname#_listhandle',constraint:'vertical',tag:'div',
-								    onChange:function(element){
-								    	$('#arguments.fieldname#').value = Sortable.sequence('#arguments.fieldname#_list')
-								    }
-								    
-								  });
-								// ]]>	
-														
-						}, 
-						parameters:'Action=' + action + '&LibraryType=Array&primaryObjectID=#arguments.stObject.ObjectID#&primaryTypename=#arguments.typename#&primaryFieldname=#arguments.stMetaData.Name#&primaryFormFieldname=#arguments.fieldname#&WizzardID=&DataObjectID=' + encodeURIComponent($('#arguments.fieldname#').value) + '&DataTypename=#ListFirst(arguments.stMetadata.ftJoin)#', evalScripts:true, asynchronous:true
-					})
-			}
-			
-			
+			<cfsavecontent variable="returnHTML">
+				<!--- Contains a list of objectID's currently associated with this field' --->
+				<cfoutput><input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="#valuelist(qArrayField.data)#" /></cfoutput>
 				
-			</script>
-			</cfoutput>		
+				
+				<cfif qArrayField.Recordcount>
+					<cfoutput><div id="#ULID#" class="#arguments.stMetadata.ftLibrarySelectedListClass#" style="#arguments.stMetadata.ftLibrarySelectedListStyle#"></cfoutput>
+						<cfloop query="qArrayField">
+							<cfoutput><div id="#arguments.fieldname#_#qArrayField.data#">
+								<img src="#application.url.farcry#/images/dragbar.gif" class="#ULID#handle" style="cursor:move;" align="center">
+								<div></cfoutput>
+								<!---
+								<!--------------------------------------------------------------- 
+								Need to determine the type of the object.
+								TODO: array tables will include a typename field by default so we know what type they are and will not need to lookup the refObjects table.
+								 --------------------------------------------------------------->
+								<cfset typeName = oFourQ.findType(objectid=i) />
+								 --->	
+								<cfset stobj = stJoinObjects[qArrayField.typename].getData(objectid=qArrayField.data)>
+								<cfif FileExists("#application.path.project#/webskin/#qArrayField.typename#/#arguments.stMetadata.ftLibrarySelectedWebskin#.cfm")>
+									<cfset stJoinObjects[qArrayField.typename].getDisplay(stObject=stobj, template="#arguments.stMetadata.ftLibrarySelectedWebskin#") />
+								<cfelse>
+									<cfif isDefined("stobj.label") AND len(stobj.label)>
+										<cfoutput>#stobj.Label#</cfoutput>
+									<cfelse>
+										<cfoutput>#stobj.ObjectID#</cfoutput>
+									</cfif>
+								</cfif>
+												
+								<cfoutput><a href="##" onclick="new Effect.Fade($('#arguments.fieldname#_#qArrayField.data#'));Element.remove('#arguments.fieldname#_#qArrayField.data#');$('#arguments.fieldname#').value = Sortable.sequence('#ULID#');update_#arguments.fieldname#('sort',$('#arguments.fieldname#')); return false;"><img src="#application.url.farcry#/images/crystal/22x22/actions/button_cancel.png" style="width:16px;height:16px;" /></a>
+								</div>
+							</div></cfoutput>
+						</cfloop>
+					<cfoutput></div></cfoutput>
+				
+					<cfoutput>
+					<script type="text/javascript" language="javascript" charset="utf-8">					
+					// <![CDATA[
+						  Sortable.create('#ULID#',
+						  	{ghosting:false,constraint:false,hoverclass:'over',handle:'#ULID#handle',constraint:'vertical',tag:'div',
+						    onChange:function(element){
+						    	$('#arguments.fieldname#').value = Sortable.sequence('#ULID#');	
+						    },
+						    onUpdate:function(element){					
+					   			update_#arguments.fieldname#('sort',element);
+						    }
+						    
+						  });
+						// ]]>	
+					
+					</script>
+				</cfoutput>
+				
+				<cfelse>
+					<cfoutput>&nbsp;</cfoutput> 
+				</cfif>
+				
+				<cfoutput>	
+				<script type="text/javascript" language="javascript" charset="utf-8">
+				function update_#arguments.fieldname#_wrapper(HTML){
+					$('#arguments.fieldname#-wrapper').innerHTML = HTML;
+					// <![CDATA[
+						  Sortable.create('#ULID#',
+						  {ghosting:false,constraint:false,hoverclass:'over',handle:'#ULID#handle',constraint:'vertical',tag:'div',
+						    onChange:function(element){
+						    	$('#arguments.fieldname#').value = Sortable.sequence('#ULID#');	
+						    },
+						    onUpdate:function(element){					
+					   			update_#arguments.fieldname#('sort',element);
+						    }
+						  });
+						// ]]>									 
+				}
+				
+				function update_#arguments.fieldname#(action,element){
+					new Ajax.Updater('#arguments.fieldname#-wrapper', '/farcry/facade/library.cfc?method=ajaxUpdateArray', {
+							//onLoading:function(request){Element.show('indicator')}, 
+							onComplete:function(request){
+		
+								update_#arguments.fieldname#_wrapper(request.responseText);	
+								opener.update_#arguments.fieldname#_wrapper(request.responseText);						
+								Effect.Fade(element, {from:0.2,to:0.2});
+								// <![CDATA[
+									  Sortable.create('#arguments.fieldname#_list',
+									  	{ghosting:false,constraint:false,hoverclass:'over',handle:'#arguments.fieldname#_listhandle',constraint:'vertical',tag:'div',
+									    onChange:function(element){
+									    	$('#arguments.fieldname#').value = Sortable.sequence('#arguments.fieldname#_list')
+									    }
+									    
+									  });
+									// ]]>	
+															
+							}, 
+							parameters:'Action=' + action + '&LibraryType=Array&primaryObjectID=#arguments.stObject.ObjectID#&primaryTypename=#arguments.typename#&primaryFieldname=#arguments.stMetaData.Name#&primaryFormFieldname=#arguments.fieldname#&WizzardID=&DataObjectID=' + encodeURIComponent($('#arguments.fieldname#').value) + '&DataTypename=#ListFirst(arguments.stMetadata.ftJoin)#', evalScripts:true, asynchronous:true
+						})
+				}
+				
+				
+					
+				</script>
+				</cfoutput>		
+				
 			
+			</cfsavecontent>
+		</cfdefaultcase>
+		</cfswitch>
 		
-		</cfsavecontent>
-
-		
- 		<cfreturn ReturnHTML>
+ 		<cfreturn ReturnHTML />
 
 	</cffunction>
 	

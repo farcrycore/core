@@ -388,8 +388,16 @@
 				
 			</cfif>
 
-
-			<cfif attributes.Format EQ "Edit" AND (ftFieldMetadata.Type EQ "array" OR ftFieldMetadata.Type EQ "UUID") AND isDefined("ftFieldMetadata.ftJoin")>
+			<!-------------------------------------------------------------
+			Library Link
+				- add library link for library properties, if required
+			-------------------------------------------------------------->	
+			<cfif 
+				attributes.Format EQ "Edit" 
+				AND (ftFieldMetadata.Type EQ "array" 
+				OR ftFieldMetadata.Type EQ "UUID") 
+				AND isDefined("ftFieldMetadata.ftJoin")>
+				<!--- AND (structKeyExists(ftfieldmetadata, "ftrendertype") AND ftfieldmetadata.rendertype neq "list")> --->
 				<cfsavecontent variable="LibraryLink">
 					<cfloop list="#ftFieldMetadata.ftJoin#" index="i">
 						<cfset stURLParams = structNew()>

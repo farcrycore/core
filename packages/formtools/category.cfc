@@ -19,10 +19,11 @@
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 
-		<cfparam name="arguments.stMetadata.ftAlias" default=""><!--- Hint --->
-		<cfparam name="arguments.stMetadata.ftLegend" default="">
-		<cfparam name="arguments.stMetadata.ftRenderType" default="Tree">
-		<cfparam name="arguments.stMetadata.ftSelectMultiple" default="true">
+		<cfparam name="arguments.stMetadata.ftAlias" default="" type="string" />
+		<cfparam name="arguments.stMetadata.ftLegend" default="" type="string" />
+		<cfparam name="arguments.stMetadata.ftRenderType" default="Tree" type="string" />
+		<cfparam name="arguments.stMetadata.ftSelectMultiple" default="true" type="boolean" />
+		<cfparam name="arguments.stMetadata.ftSelectSize" default="1" type="numeric" />
 		
 		<cfif structKeyExists(application.catid, arguments.stMetadata.ftAlias)>
 			<cfset navid = application.catid[arguments.stMetadata.ftAlias] >
@@ -41,7 +42,7 @@
 							
 				<cfsavecontent variable="html">
 					<cfoutput><fieldset></cfoutput>
-					<cfoutput><select id="#arguments.fieldname#" name="#arguments.fieldname#" <cfif arguments.stMetadata.ftSelectMultiple> multiple="true"</cfif>></cfoutput>
+					<cfoutput><select id="#arguments.fieldname#" name="#arguments.fieldname#" size="#arguments.stMetadata.ftSelectSize#" <cfif arguments.stMetadata.ftSelectMultiple> multiple="true"</cfif>></cfoutput>
 					<cfloop list="#lCategoryBranch#" index="i">
 						<cfset CategoryName = oCategory.getCategoryNamebyID(categoryid=i,typename='categories') />
 						<cfoutput><option value="#i#">#CategoryName#</option></cfoutput>

@@ -300,29 +300,19 @@ $Developer: $
 	<cfset lBasketIDs = stPrimary[url.primaryFieldName] />
 </cfif>
 
-
 <!-------------------------------------------------------------------------- 
 LIBRARY DATA
 	- generate library data query to populate library interface 
 --------------------------------------------------------------------------->
 <cfif isDefined("url.ftLibraryData") AND len(url.ftLibraryData)>	
-	
 	<!--- use ftlibrarydata method from primary content type --->
 	<cfif structkeyexists(oprimary, url.ftLibraryData)>
 		<cfinvoke component="#oPrimary#" method="#url.ftLibraryData#" returnvariable="qLibraryList" />
-	<!--- if nothing nominated then default to joined content type getLibraryData() --->
-	<cfelseif structkeyexists(odata, "getLibraryData")>
-		<cfinvoke component="#oData#" method="getLibraryData" returnvariable="qLibraryList" />
 	</cfif>
-
 </cfif>
 <!--- if nothing exists to generate library data then cobble something together --->
 <cfif NOT isDefined("qLibraryList")>
-	<cfquery datasource="#application.dsn#" name="qLibraryList">
-	SELECT ObjectID,Label
-	FROM #request.ftJoin#
-	ORDER BY label
-	</cfquery>
+	<cfinvoke component="#oData#" method="getLibraryData" returnvariable="qLibraryList" />
 </cfif>
 
 

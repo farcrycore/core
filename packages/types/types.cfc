@@ -993,5 +993,14 @@ default handlers
 	
 	</cffunction>
 			
-		
+	<cffunction name="getLibraryData" access="public" output="false" returntype="query" hint="Return a query of all content instances for generic library interface.">
+		<cfset var qLibraryList=queryNew("ObjectID,Label") />
+		<cfquery datasource="#application.dsn#" name="qLibraryList">
+		SELECT ObjectID,Label
+		FROM #getTablename()#
+		ORDER BY label
+		</cfquery>
+		<cfreturn qLibraryList />
+	</cffunction>
+	
 </cfcomponent>
