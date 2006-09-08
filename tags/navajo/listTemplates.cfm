@@ -34,9 +34,9 @@ OTHERWISE WE NEED TO LOOP THROUGH ALL THE LIBRARIES AND GET ALL RELEVENT TEMPLAT
 	
 	<cfset stLibraryTemplates = structNew() />
 	
-	<cfif structKeyExists(application, "lIncludeFarcryLib") and listLen(application.lIncludeFarcryLib)>
+	<cfif structKeyExists(application, "lFarcryLib") and listLen(application.lFarcryLib)>
 	
-		<cfloop list="#application.lIncludeFarcryLib#" index="library">
+		<cfloop list="#application.lFarcryLib#" index="library">
 			
 			<cfif directoryExists("#application.path.library#/#library#/webskin/#attributes.typename#")>
 				<cfdirectory directory="#application.path.library#/#library#/webskin/#attributes.typename#" name="stLibraryTemplates.#library#.qTemplates" filter="*.cfm" sort="name">
