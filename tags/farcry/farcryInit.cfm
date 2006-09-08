@@ -90,6 +90,7 @@ $in: objectid -- $
 		 ---------------------------------------->
 		<cfset application.path.project = expandpath("/farcry/#attributes.projectDirectoryName#") />
 		<cfset application.path.core = expandpath("/farcry/farcry_core") />
+		<cfset application.path.library = expandpath("/farcry/farcry_lib") />
 		
 		<!----------------------------------------
 		 WEB URL PATHS
@@ -139,13 +140,30 @@ $in: objectid -- $
 		
 		
 		<cfinclude template="/farcry/#attributes.name#/config/_serverSpecificVars.cfm" />
-				
-		<!--- initialise dmSec --->
+		
+		
+		<!----------------------------------- 
+		INITIALISE THE REQUESTED LIBRARIES
+		 ----------------------------------->
+		<cfif isDefined("application.lFarcryLib")>
+			<cfloop list="#application.lFarcryLib#" index="library">
+				<cfinclude template="/farcry/farcry_lib/#library#/config/librarySpecificVars.cfm">
+			</cfloop>
+		</cfif>
+
+		
+						
+		<!--------------------------------- 
+		INITIALISE DMSEC
+		 --------------------------------->
 		<cfinclude template="/farcry/farcry_core/tags/farcry/_dmSec.cfm">
 	
-		<!--- Farcry Core Initialisation --->
+		<!--------------------------------- 
+		FARCRY CORE INITIALISATION
+		 --------------------------------->
 		<cfinclude template="/farcry/farcry_core/tags/farcry/_farcryApplicationInit.cfm">
-		<!--- $TODO: must have project vars set AFTER core vars! GB$ --->
+
+
 	</cfif>
 	<!---------------------------------------- 
 	END: Application Initialise 
