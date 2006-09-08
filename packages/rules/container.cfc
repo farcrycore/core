@@ -478,11 +478,11 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 				<cfif structKeyExists(request.aInvocations[i],"preHTML")>
 					<cfoutput>#request.aInvocations[i].preHTML#</cfoutput>
 				</cfif>
-				<cfscript>
-					request.i = i;
-					o = createObject("component", "#request.aInvocations[i].typename#");
-					o.getDisplay(request.aInvocations[i].objectID, request.aInvocations[i].method);	
-				</cfscript>
+
+				<cfset request.i = i />
+				<cfset html = createObject("component", "#request.aInvocations[i].typename#").getView(objectid=request.aInvocations[i].objectID, template=request.aInvocations[i].method, alternateHTML="[#request.aInvocations[i].method#] does not exist") />	
+				<cfoutput>#html#</cfoutput>
+
 				<cfif structKeyExists(request.aInvocations[i],"postHTML")>
 					<cfoutput>#request.aInvocations[i].postHTML#</cfoutput>
 				</cfif>
