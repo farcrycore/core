@@ -127,9 +127,9 @@ default handlers
 			
 			<cfset webskinPath = "/farcry/#application.applicationname#/webskin/#arguments.typename#/#arguments.template#.cfm" />
 			
-		<cfelseif structKeyExists(application, "lIncludeFarcryLib") and listLen(application.lIncludeFarcryLib)>
+		<cfelseif structKeyExists(application, "lFarcryLib") and listLen(application.lFarcryLib)>
 
-			<cfloop list="#application.lIncludeFarcryLib#" index="library">
+			<cfloop list="#application.lFarcryLib#" index="library">
 				
 				<cfif fileExists(ExpandPath("/farcry/farcry_lib/#library#/webskin/#arguments.typename#/#arguments.template#.cfm"))>
 				
