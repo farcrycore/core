@@ -104,6 +104,6 @@ FROM qMethods
 ORDER BY DisplayName
 </cfquery>
 
-<cfset setVariable("caller.#attributes.r_qMethods#", qOrderedMethods)>
+<cfset caller[attributes.r_qMethods] = qOrderedMethods>
 
 
