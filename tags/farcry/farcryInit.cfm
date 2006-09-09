@@ -49,6 +49,9 @@ $in: objectid -- $
 	<cfparam name="attributes.lFarcryLib" default="farcrycms"  />
 	
 	<cfparam name="attributes.projectURL" default="" />
+	
+	
+	<cfparam name="attributes.bObjectBroker" default="true" />
 
 
 	<cfapplication name="#attributes.name#" 
@@ -107,9 +110,15 @@ $in: objectid -- $
 		<cfset application.securitypackagepath = "farcry.farcry_core.packages.security" />
 		
 		<!----------------------------------------
-		LIBRARY PATHS
+		LIBRARYs To INCLUDE
 		 ---------------------------------------->
 		<cfset application.lFarcryLib = attributes.lFarcryLib />
+		
+		
+		<!------------------------------------------ 
+		USE OBJECT BROKER?
+		 ------------------------------------------>
+		<cfset application.bObjectBroker = attributes.bObjectBroker />
 		
 		
 		<!----------------------------------------
@@ -137,8 +146,7 @@ $in: objectid -- $
 		<cfset ps.externalGroupToPolicyGroupTable = "dmExternalGroupToPolicyGroup" />
 						
 	
-		
-		
+
 		<cfinclude template="/farcry/#attributes.name#/config/_serverSpecificVars.cfm" />
 		
 		
@@ -164,6 +172,21 @@ $in: objectid -- $
 		FARCRY CORE INITIALISATION
 		 --------------------------------->
 		<cfinclude template="/farcry/farcry_core/tags/farcry/_farcryApplicationInit.cfm">
+
+
+		<!------------------------------------
+		OBJECT BROKER
+		 ------------------------------------>		
+		<cfif application.bObjectBroker>
+			<cfset objectBroker = createObject("component","farcry.fourq.objectBroker")>
+			
+			<cfloop list="#structKeyList(application.types)#" index="typename">
+				<cfif application.types[typename].bObjectBroker>
+					<cfset bSuccess = objectBroker.configureType(typename=typename, MaxObjects=application.types[typename].ObjectBrokerMaxObjects) />
+				</cfif>
+			</cfloop>
+		</cfif>
+		
 
 
 	</cfif>
