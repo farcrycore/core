@@ -22,7 +22,7 @@ It just ignores the inner ones.
 		
 		<cfparam name="attributes.Name" default="farcryForm">
 		<cfparam name="attributes.Target" default="">
-		<cfparam name="attributes.Action" default="#cgi.SCRIPT_NAME#?#cgi.query_string#">
+		<cfparam name="attributes.Action" default="">
 		
 	
 		<cfparam name="attributes.onsubmit" default="">
@@ -31,6 +31,7 @@ It just ignores the inner ones.
 		<cfparam name="attributes.Style" default="">
 		<cfparam name="attributes.Heading" default="">
 		<cfparam name="attributes.Validation" default="1">
+		<cfparam name="attributes.bAjaxSubmission" default="false">
 		
 		
 		<!--- We only render the form if FarcryForm OnExit has not been Fired. --->
@@ -39,6 +40,20 @@ It just ignores the inner ones.
 		</cfif>
 		
 		
+		<!--------------------------------------------- 
+		IF SUBMITTING BY AJAX, SET REQUIRED VARIABLES.
+		 --------------------------------------------->
+		<cfif attributes.bAjaxSubmission and isDefined("attributes.typename") AND isDefined("attributes.webskin") AND isDefined("attributes.objectid")>
+			
+			<cfif NOT len(attributes.Action)>
+				<cfset attributes.Action = "#application.url.farcry#/facade/ajaxFormSubmission.cfm?typename=#attributes.typename#&webskin=#attributes.webskin#&objectid=#attributes.ObjectID#" />
+			</cfif>
+			<cfset request.inHead.prototypelite = true />
+			<cfset attributes.onSubmit = "#attributes.onSubmit#;$('#attributes.Name#ajaxsubmission').innerHTML='saving changes';new Ajax.Updater('#attributes.Name#', '#attributes.Action#', {asynchronous:true, parameters:Form.serialize(this)}); return false;" />
+			
+		<cfelseif NOT len(attributes.Action)>
+			<cfset attributes.Action = "#cgi.SCRIPT_NAME#?#cgi.query_string#" />				
+		</cfif>
 
 		<cfparam name="Request.farcryFormList" default="">	
 		
@@ -64,7 +79,7 @@ It just ignores the inner ones.
 		
 		<!--- <cfoutput><h1><a href="#cgi.SCRIPT_NAME#?#cgi.query_string#">Farcry Form #Request.farcryForm.Name#</a></h1></cfoutput> --->
 		
-		<ft:renderHTMLformStart onsubmit="#attributes.onsubmit#" class="#attributes.Class#" css="#attributes.css#" style="#attributes.style#" heading="#attributes.heading#" />
+		<ft:renderHTMLformStart onsubmit="#attributes.onsubmit#" class="#attributes.Class#" css="#attributes.css#" style="#attributes.style#" heading="#attributes.heading#" bAjaxSubmission="#attributes.bAjaxSubmission#" />
 	
 	</cfif>
 	
