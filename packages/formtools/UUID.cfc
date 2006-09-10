@@ -52,8 +52,8 @@
 			<cfsavecontent variable="returnHTML">
 			<cfif qLibraryList.recordcount>
 				<cfoutput>
-				<select  id="#arguments.fieldname#" name="#arguments.fieldname#" value="#arguments.stObject[arguments.stMetaData.Name]#">
-				<cfloop query="qLibraryList"><option value="#qLibraryList.objectid#"><cfif isDefined("qLibraryList.label")>#qLibraryList.label#<cfelse>#qLibraryList.objectid#</cfif></option></cfloop>
+				<select  id="#arguments.fieldname#" name="#arguments.fieldname#">
+				<cfloop query="qLibraryList"><option value="#qLibraryList.objectid#" <cfif arguments.stObject[arguments.stMetaData.Name] EQ qLibraryList.objectid>selected</cfif>><cfif isDefined("qLibraryList.label")>#qLibraryList.label#<cfelse>#qLibraryList.objectid#</cfif></option></cfloop>
 				</select>
 				</cfoutput>
 				
