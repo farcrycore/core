@@ -14,8 +14,10 @@
 	<cfset variables.EnterFormProcess = false>
 	
 	<!---  --->
-	<cfif isDefined("FORM.FarcryFormSubmitted") AND isDefined("#FORM.FarcryFormSubmitted#FarcryFormSubmitButtonClicked") AND len(evaluate("#FORM.FarcryFormSubmitted#FarcryFormSubmitButtonClicked"))>
-		<cfset FORM.FarcryFormSubmitButton = evaluate("#FORM.FarcryFormSubmitted#FarcryFormSubmitButtonClicked") />
+	
+	<cfif isDefined("FORM.FarcryFormSubmitted") AND isDefined("FarcryFormSubmitButtonClicked#FORM.FarcryFormSubmitted#") AND len(evaluate("FarcryFormSubmitButtonClicked#FORM.FarcryFormSubmitted#"))>
+
+		<cfset FORM.FarcryFormSubmitButton = evaluate("FarcryFormSubmitButtonClicked#FORM.FarcryFormSubmitted#") />
 	</cfif>
 	
 	<cfif isDefined("FORM.FarcryFormSubmitButton") AND len(FORM.FarcryFormSubmitButton)>

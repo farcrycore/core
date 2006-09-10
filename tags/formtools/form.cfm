@@ -20,7 +20,7 @@ It just ignores the inner ones.
 
 		<cfset Variables.CorrectForm = 1>
 		
-		<cfparam name="attributes.Name" default="farcryForm">
+		<cfparam name="attributes.Name" default="farcryForm#randrange(1,999999999)#">
 		<cfparam name="attributes.Target" default="">
 		<cfparam name="attributes.Action" default="">
 		
@@ -39,23 +39,34 @@ It just ignores the inner ones.
 			<cfexit method="exittag">			
 		</cfif>
 		
+
+		<cfparam name="Request.farcryFormList" default="">
+		<cfif listFindNoCase(request.farcryFormList, attributes.Name)>
+			<cfset attributes.Name = "#attributes.Name##ListLen(request.farcryFormList) + 1#">			
+		</cfif>
+				
 		
 		<!--------------------------------------------- 
 		IF SUBMITTING BY AJAX, SET REQUIRED VARIABLES.
 		 --------------------------------------------->
-		<cfif attributes.bAjaxSubmission and isDefined("attributes.typename") AND isDefined("attributes.webskin") AND isDefined("attributes.objectid")>
+		<cfif attributes.bAjaxSubmission>
+		
+			<!--- If the form is contained in a webskin, these variables can be determined automatically. --->
+			<cfparam name="attributes.typename" default="#caller.stobj.typename#" />
+			<cfparam name="attributes.webskin" default="#caller.arguments.template#" />
+			<cfparam name="attributes.objectid" default="#caller.stobj.objectid#" />
 			
+			<!---<cfdump var="#attributes#"> --->
 			<cfif NOT len(attributes.Action)>
 				<cfset attributes.Action = "#application.url.farcry#/facade/ajaxFormSubmission.cfm?typename=#attributes.typename#&webskin=#attributes.webskin#&objectid=#attributes.ObjectID#" />
 			</cfif>
-			<cfset request.inHead.prototypelite = true />
-			<cfset attributes.onSubmit = "#attributes.onSubmit#;$('#attributes.Name#ajaxsubmission').innerHTML='saving changes';new Ajax.Updater('#attributes.Name#', '#attributes.Action#', {asynchronous:true, parameters:Form.serialize(this)}); return false;" />
+			<cfset request.inHead.prototypelite = "true" />
+			<cfset attributes.onSubmit = "#attributes.onSubmit#;$('#attributes.Name#ajaxsubmission').innerHTML='saving changes';new Ajax.Updater('#attributes.Name#formwrap', '#attributes.Action#', {asynchronous:true, parameters:Form.serialize(this)}); return false;" />
 			
 		<cfelseif NOT len(attributes.Action)>
 			<cfset attributes.Action = "#cgi.SCRIPT_NAME#?#cgi.query_string#" />				
 		</cfif>
-
-		<cfparam name="Request.farcryFormList" default="">	
+	
 		
 		
 		<cfif not isDefined("Request.farcryForm.Name")>
@@ -65,13 +76,10 @@ It just ignores the inner ones.
 			<cfparam name="Request.farcryForm.Action" default="#attributes.Action#">
 			<cfparam name="Request.farcryForm.Validation" default="#attributes.Validation#">
 			<cfparam name="Request.farcryForm.stObjects" default="#StructNew()#">		
+			<cfparam name="Request.farcryForm.bAjaxSubmission" default="#attributes.bAjaxSubmission#">		
 		</cfif>
 	
 		
-		<cfif listFindNoCase(request.farcryFormList, Request.farcryForm.Name)>
-			<cfset Request.farcryForm.Name = "#Request.farcryForm.Name##ListLen(request.farcryFormList) + 1#">
-			
-		</cfif>
 		
 		<cfif Request.farcryForm.Validation EQ 1>
 			<cfset Request.InHead.FormValidation = 1>			
@@ -79,7 +87,7 @@ It just ignores the inner ones.
 		
 		<!--- <cfoutput><h1><a href="#cgi.SCRIPT_NAME#?#cgi.query_string#">Farcry Form #Request.farcryForm.Name#</a></h1></cfoutput> --->
 		
-		<ft:renderHTMLformStart onsubmit="#attributes.onsubmit#" class="#attributes.Class#" css="#attributes.css#" style="#attributes.style#" heading="#attributes.heading#" bAjaxSubmission="#attributes.bAjaxSubmission#" />
+		<ft:renderHTMLformStart onsubmit="#attributes.onsubmit#" class="#attributes.Class#" css="#attributes.css#" style="#attributes.style#" heading="#attributes.heading#" />
 	
 	</cfif>
 	
