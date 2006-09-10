@@ -497,7 +497,7 @@ LIBRARY DATA
 	<ft:form>
 	
 		<cfset stparam = structNew() />
-		<cfset stparam.primaryObjectID = url.primaryObjectID />
+		<cfset stparam.stPrimary = stPrimary />
 		<cfset HTML = oData.getVew(template="#url.ftLibraryAddNewWebskin#", alternateHTML="", stparam=stparam) />	
 			
 		<cfif len(HTML)>
