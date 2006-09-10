@@ -498,7 +498,7 @@ LIBRARY DATA
 	
 		<cfset stparam = structNew() />
 		<cfset stparam.stPrimary = stPrimary />
-		<cfset HTML = oData.getVew(template="#url.ftLibraryAddNewWebskin#", alternateHTML="", stparam=stparam) />	
+		<cfset HTML = oData.getView(template="#url.ftLibraryAddNewWebskin#", alternateHTML="", stparam=stparam) />	
 			
 		<cfif len(HTML)>
 			<cfoutput>#HTML#</cfoutput>
