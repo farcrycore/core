@@ -17,6 +17,7 @@
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedListClass" default="thumbNailsWrap">
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedListStyle" default="">
 		<cfparam name="arguments.stMetadata.ftRenderType" default="Library">
+		<cfparam name="arguments.stMetadata.ftFirstListLabel" default="-- SELECT --">
 
 		<!--- A UUID type MUST have a 'ftJoin' property --->
 		<cfif not structKeyExists(stMetadata,"ftJoin")>
@@ -53,6 +54,9 @@
 			<cfif qLibraryList.recordcount>
 				<cfoutput>
 				<select  id="#arguments.fieldname#" name="#arguments.fieldname#">
+				<cfif len(arguments.stMetadata.ftFirstListLabel)>
+					<option value="">#arguments.stMetadata.ftFirstListLabel#</option>
+				</cfif>
 				<cfloop query="qLibraryList"><option value="#qLibraryList.objectid#" <cfif arguments.stObject[arguments.stMetaData.Name] EQ qLibraryList.objectid>selected</cfif>><cfif isDefined("qLibraryList.label")>#qLibraryList.label#<cfelse>#qLibraryList.objectid#</cfif></option></cfloop>
 				</select>
 				</cfoutput>
