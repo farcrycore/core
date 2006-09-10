@@ -57,7 +57,6 @@
 	<cfset lFields = stSetup.lFields>
 	<cfset stFields = stSetup.stFields>
 	<cfset typename = stSetup.typename>
-	
 
 	<!--- --------------------------------------------------------------------- --->
 	<!--- Loop through all the prefixes and determine which prefixes to process --->
@@ -444,7 +443,7 @@
 					<cfinvokeargument name="stMetadata" value="#ftFieldMetadata#">
 				</cfinvoke>
 							
-				<cfset "Caller.#attributes.r_stProperties#.#i#" = stResult.Value>
+				<cfset Caller[attributes.r_stProperties][i] = stResult.Value />
 			
 			</cfif>
 		

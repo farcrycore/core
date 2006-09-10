@@ -13,6 +13,11 @@
 	
 	<cfset variables.EnterFormProcess = false>
 	
+	<!---  --->
+	<cfif isDefined("FORM.FarcryFormSubmitted") AND isDefined("#FORM.FarcryFormSubmitted#FarcryFormSubmitButtonClicked") AND len(evaluate("#FORM.FarcryFormSubmitted#FarcryFormSubmitButtonClicked"))>
+		<cfset FORM.FarcryFormSubmitButton = evaluate("#FORM.FarcryFormSubmitted#FarcryFormSubmitButtonClicked") />
+	</cfif>
+	
 	<cfif isDefined("FORM.FarcryFormSubmitButton") AND len(FORM.FarcryFormSubmitButton)>
 
 		<cfif listFindNoCase(attributes.action,FORM.FarcryFormSubmitButton) OR attributes.action EQ "*">

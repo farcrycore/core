@@ -14,12 +14,15 @@
 <cfparam name="attributes.SelectedObjectID" default="">
 
 <cfif thistag.ExecutionMode EQ "Start">
-	<cfif len(attributes.SelectedObjectID)>
-		<!--- Include Prototype light in the head --->
-		<cfset Request.InHead.PrototypeLite = 1>
-		
+
+	<!--- Include Prototype light in the head --->
+	<cfset Request.InHead.PrototypeLite = 1>
+	
+	<cfif len(attributes.SelectedObjectID)>		
 		<cfset attributes.Onclick = "#attributes.OnClick#;$('SelectedObjectID').value='#attributes.SelectedObjectID#';">
 	</cfif>
+	
+	<cfset attributes.onClick = "#attributes.onClick#;$('#Request.farcryForm.Name#FarcryFormSubmitButtonClicked').value = '#attributes.Value#';">
 
 	<cfoutput><input type="#attributes.Type#" name="FarcryFormSubmitButton" value="#attributes.Value#" onclick="#attributes.Onclick#" class="#attributes.Class#" style="#attributes.Style#" /></cfoutput>
 	
