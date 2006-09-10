@@ -219,8 +219,14 @@
 			
 
 			
+			<!--- Save the object with new properties --->
+			<cfset stObj = stType.setData(stProperties=Caller[attributes.r_stProperties],user=Variables.LockedBy)>		
 			
-			<cfset stObj = stType.setData(stProperties=Evaluate("Caller.#attributes.r_stProperties#"),user=Variables.LockedBy)>		
+			<!--- We need to return the new structure if requested. --->
+			<cfif isDefined("attributes.r_stObject") AND len(attributes.r_stObject)>
+				<cfset caller[attributes.r_stObject] = stType.getData(objectid=Caller[attributes.r_stProperties].objectid) />
+			</cfif>
+			
 			
 			<cftry>
 				<cfset stType.setlock(stObj=Caller[attributes.r_stProperties],locked="false",lockedby=Variables.LockedBy)>
