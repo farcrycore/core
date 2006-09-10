@@ -495,22 +495,25 @@ LIBRARY DATA
 	<cfsavecontent variable="sReturn">
 	
 	<ft:form>
-						
-
-						
-				<cfif FileExists("#application.path.project#/webskin/#request.ftJoin#/#url.ftLibraryAddNewWebskin#.cfm")>
-					<cfset oData.getDisplay(template="#url.ftLibraryAddNewWebskin#") />
-				<cfelse>
-					<ft:object typename="#request.ftJoin#" lfields="" inTable=0 />
-				</cfif>
-				<cfoutput>
-				<div>
-					<ft:farcrybutton value="Attach" />	
-					<ft:farcrybutton type="button" value="Close" onclick="self.blur();window.close();" />	
-				</div>
-				</cfoutput>
+	
+		<cfset stparam = structNew() />
+		<cfset stparam.primaryObjectID = url.primaryObjectID />
+		<cfset HTML = oData.getVew(template="#url.ftLibraryAddNewWebskin#", alternateHTML="", stparam=stparam) />	
+			
+		<cfif len(HTML)>
+			<cfoutput>#HTML#</cfoutput>
+		<cfelse>
+			<ft:object typename="#request.ftJoin#" lfields="" inTable=0 />
+		</cfif>
 		
-		</ft:form>
+		<cfoutput>
+		<div>
+			<ft:farcrybutton value="Attach" />	
+			<ft:farcrybutton type="button" value="Close" onclick="self.blur();window.close();" />	
+		</div>
+		</cfoutput>
+		
+	</ft:form>
 	
 	</cfsavecontent>
 	
