@@ -197,7 +197,7 @@ default handlers
 		
 		<cfset qMetadata = application.types[stobj.typename].qMetadata >
 		
-		
+		<ft:form>
 		<cfquery dbtype="query" name="qFieldSets">
 		SELECT ftWizzardStep, ftFieldset
 		FROM qMetadata
@@ -225,7 +225,7 @@ default handlers
 			<!--- default edit handler --->
 			<ft:object ObjectID="#arguments.ObjectID#" format="display" lExcludeFields="label" lFields="" inTable=false IncludeFieldSet=1 Legend="#stObj.Label#" />
 		</cfif>
-		
+		</ft:form>		
 	
 				
 	</cffunction>
