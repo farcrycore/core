@@ -36,6 +36,7 @@
 	<cfparam name="attributes.lHiddenFields" default=""><!--- List of fields to render as hidden fields that can be use to inject a value into the form post. --->
 	<cfparam name="attributes.stPropValues" default="#structNew()#">
 	<cfparam name="attributes.PackageType" default="types"><!--- Could be types or rules.. --->
+	<cfparam name="attributes.bIncludeSystemProperties" default="false"><!--- Allow system properties to be displayed.. --->
 	
 	
 	
@@ -53,9 +54,10 @@
 	</cfif>
 	
 	
-	<!--- Never render the following fields. --->
-	<cfset attributes.lExcludeFields = ListAppend(attributes.lExcludeFields,"objectid,locked,lockedby,lastupdatedby,ownedby,datetimelastupdated,createdby,datetimecreated,versionID,status")>
-
+	<!--- Never render the following fields if editing. --->
+	<cfif NOT attributes.bIncludeSystemProperties OR attributes.format EQ "edit">
+		<cfset attributes.lExcludeFields = ListAppend(attributes.lExcludeFields,"objectid,locked,lockedby,lastupdatedby,ownedby,datetimelastupdated,createdby,datetimecreated,versionID,status")>
+	</cfif>
 	
 
 	
