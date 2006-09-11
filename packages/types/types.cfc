@@ -322,7 +322,7 @@ default handlers
 		<cfreturn stresult>
 	</cffunction>
 	
-	<cffunction name="setLock" access="public" output="false" hint="Lock a content item to prevent simultaneous editing." returntype="void">
+	<cffunction name="setLock" access="public" output="true" hint="Lock a content item to prevent simultaneous editing." returntype="void">
 		<cfargument name="locked" type="boolean" required="true" hint="Turn the lock on or off.">
 		<cfargument name="lockedby" type="string" required="false" hint="Name of the user locking the object." default="#session.dmSec.authentication.userlogin#_#session.dmSec.authentication.userDirectory#">
 		<cfargument name="bAudit" type="boolean" required="No" default="1" hint="Pass in 0 if you wish no audit to take place">
