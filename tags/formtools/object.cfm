@@ -46,10 +46,10 @@
 	
 	<!--- If the attributes [IncludeFieldSet] has not been explicitly defined, work out the value. --->
 	<cfif attributes.includeFieldSet EQ "">
-		<cfif  len(attributes.lFields)>
-			<cfset attributes.includeFieldSet = 1 />
-		<cfelse>
+		<cfif len(attributes.r_stFields)>
 			<cfset attributes.includeFieldSet = 0 />
+		<cfelse>
+			<cfset attributes.includeFieldSet = 1 />
 		</cfif>
 	</cfif>
 	
