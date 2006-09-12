@@ -121,7 +121,7 @@ default handlers
 		<cfargument name="typename" type="string" required="true" />
 		<cfargument name="template" type="string" required="true" />
 		
-		<cfset webskinPath = "" />
+		<cfset var webskinPath = "" />
 	
 		<cfif fileExists(ExpandPath("/farcry/#application.applicationname#/webskin/#arguments.typename#/#arguments.template#.cfm"))>
 			
@@ -144,7 +144,58 @@ default handlers
 		
 	</cffunction>
 	
-	
+	<cffunction name="getWebskins" returntype="query" access="public" output="false" hint="Returns a query of all available webskins. Search through project first, then any library's that have been included.">
+		<cfargument name="typename" type="string" default="#gettablename()#" hint="Typename of instance." />
+		<cfargument name="prefix" type="string" required="false" default="" hint="Prefix to filter template results." />
+		
+		<cfset var qResult=queryNew("name,directory,size,type,datelastmodified,attributes,mode") />
+		<cfset var qLibResult=queryNew("name,directory,size,type,datelastmodified,attributes,mode") />
+		<cfset var qDupe=queryNew("name,directory,size,type,datelastmodified,attributes,mode") />
+		<cfset var webskinPath = ExpandPath("/farcry/#application.applicationname#/webskin/#arguments.typename#") />
+		<cfset var library="" />
+		<cfset var col="" />
+
+		<!--- check project webskins --->
+		<cfif directoryExists(webskinPath)>
+			<cfdirectory action="list" directory="#webskinPath#" filter="#arguments.prefix#*" name="qResult" recurse="true" sort="asc" />
+		</cfif>
+		
+		<!--- check library webskins --->
+		<cfif structKeyExists(application, "lFarcryLib") and Len(application.lFarcryLib)>
+
+			<cfloop list="#application.lFarcryLib#" index="library">
+				<cfset webskinpath=ExpandPath("/farcry/farcry_lib/#library#/webskin/#arguments.typename#") />
+				
+				<cfif directoryExists(webskinpath)>
+					<cfdirectory action="list" directory="#webskinPath#" filter="#arguments.prefix#*" name="qLibResult" sort="asc" />
+
+					<cfloop query="qLibResult">
+						<cfquery dbtype="query" name="qDupe">
+						SELECT * FROM qResult
+						WHERE name = '#qLibResult.name#'
+						</cfquery>
+						
+						<cfif NOT qDupe.Recordcount>
+							<cfset queryaddrow(qresult,1) />
+							<cfloop list="#qlibresult.columnlist#" index="col">
+								<cfset querysetcell(qresult, col, qlibresult[col][1]) />
+							</cfloop>
+						</cfif>
+						
+					</cfloop>
+				</cfif>	
+				
+			</cfloop>
+			
+		</cfif>
+ 		<cfquery dbtype="query" name="qResult">
+		SELECT * FROM qResult
+		ORDER BY name
+		</cfquery>
+
+		<cfreturn qresult />
+	</cffunction>
+
 	<cffunction name="getWebskinDisplayname" returntype="string" access="public" output="false" hint="">
 		<cfargument name="typename" type="string" required="false" />
 		<cfargument name="template" type="string" required="false" />

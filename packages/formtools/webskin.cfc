@@ -17,10 +17,14 @@
 			<cfset arguments.stMetadata.ftTypename = arguments.typename />
 		</cfif>
 	
+		<!--- 
 		<cfif directoryExists("#application.path.project#/webskin/#arguments.stMetadata.ftTypename#")>
 			<cfdirectory action="list" directory="#application.path.project#/webskin/#arguments.stMetadata.ftTypename#" name="qWebskin" filter="*.cfm" >
 		</cfif>
-
+		 --->
+		<cfset oType=createobject("component", application.types[arguments.stmetadata.fttypename].typepath) />
+		<cfset qWebskin=oType.getWebskins(prefix=arguments.stMetadata.ftPrefix) />
+		 
 		<!--- This is to overcome casesensitivity issues on mac/linux machines --->
 		<cfquery name="qWebskin" dbtype="query">
 			SELECT *
@@ -32,20 +36,8 @@
 		<cfset qMethods = queryNew("methodname, displayname")>
 
 		<cfloop query="qWebskin">
-		<!--- TODO
-		must be able to do this more neatly with a regEX, especially if we 
-		want more than one bit of template metadata --->
-			<cffile action="READ" file="#application.path.project#/webskin/#arguments.stMetadata.ftTypename#/#qWebskin.name#" variable="template">
-		
-			<cfset pos = findNoCase('@@displayname:', template)>
-			<cfif pos eq 0>
-				<cfset displayname = listfirst(qWebskin.name, ".")>
-			<cfelse>
-				<cfset pos = pos + 14>
-				<cfset count = findNoCase('--->', template, pos)-pos>
-				<cfset displayname = listLast(mid(template,  pos, count), ":")>
-			</cfif>
-		
+			<cfset displayname=oType.getWebskinDisplayname(typename=arguments.stmetadata.fttypename, path="#qwebskin.directory#/#qwebskin.name#") />
+			
 			<cfset queryAddRow(qMethods, 1)>
 			<cfset querySetCell(qMethods, "methodname", listfirst(qWebskin.name, "."))>
 			<cfset querySetCell(qMethods, "displayname", displayname)>
