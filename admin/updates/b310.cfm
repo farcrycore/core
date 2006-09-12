@@ -304,8 +304,8 @@ Populate each new typename field.
 							</cftry>	
 						</cfcase>
 						
-						
-						<cfcase value="mssql,odbc,mysql,postgresql">																
+
+						<cfcase value="mysql">																
 							<cftry>
 								<cfquery name="qAlterTable" datasource="#application.dsn#">
 								ALTER TABLE #application.dbowner##iType#_#iField# ADD typename VARCHAR(255) NULL
@@ -314,7 +314,39 @@ Populate each new typename field.
 								<cfcatch type="database"><cfoutput><div>Typename already exists in table #iType#_#iField#</div></cfoutput></cfcatch>
 							</cftry>
 
-							<cftry>		
+							<cftry>
+								<cfquery name="update" datasource="#application.dsn#">
+								<!--- UPDATE #application.dbowner##iType#_#iField#
+								SET #application.dbowner##iType#_#iField#.typename = refObjects.typename		
+								FROM #application.dbowner##iType#_#iField# INNER JOIN #application.dbowner#refObjects
+								ON #application.dbowner##iType#_#iField#.data=refObjects.objectid --->
+								
+								UPDATE #application.dbowner##iType#_#iField#
+								SET #application.dbowner##iType#_#iField#.typename = 
+										(SELECT refObjects.typename
+                                    	 FROM refObjects
+                                    	 WHERE #application.dbowner##iType#_#iField#.data=refObjects.objectid
+                                    	 )
+								</cfquery>
+								
+								<cfoutput><div>Typename field updated in <strong>#application.dbowner##iType#_#iField#</strong></div></cfoutput>	
+							
+								<cfcatch type="database"><cfdump var="#cfcatch#" expand="false"></cfcatch>
+							</cftry>	
+							
+												
+						</cfcase>
+						
+						<cfcase value="mssql,odbc,postgresql">																
+							<cftry>
+								<cfquery name="qAlterTable" datasource="#application.dsn#">
+								ALTER TABLE #application.dbowner##iType#_#iField# ADD typename VARCHAR(255) NULL
+								</cfquery>
+								<cfoutput><div>Typename added to table #iType#_#iField#</div></cfoutput>
+								<cfcatch type="database"><cfoutput><div>Typename already exists in table #iType#_#iField#</div></cfoutput></cfcatch>
+							</cftry>
+
+							<cftry>
 								<cfquery name="update" datasource="#application.dsn#">
 								UPDATE #application.dbowner##iType#_#iField#
 								SET #application.dbowner##iType#_#iField#.typename = refObjects.typename		
@@ -324,7 +356,7 @@ Populate each new typename field.
 								<cfoutput><div>Typename field updated in <strong>#application.dbowner##iType#_#iField#</strong></div></cfoutput>	
 							
 								<cfcatch type="database"><cfdump var="#cfcatch#" expand="false"></cfcatch>
-							</cftry>	
+							</cftry>
 							
 												
 						</cfcase>
