@@ -472,12 +472,12 @@ $out:$
 
 						
 						<cfset typename = left(qDir.name, len(qDir.name)-4) /> <!---remove the .cfc from the filename --->
-						<cfset o = createObject("Component", "farcry.farcry_lib.#library#.packages.types.#typename#") />			
+						<cfset o = createObject("Component", "farcry.farcry_lib.#library#.packages.rules.#typename#") />			
 						<cfset stMetaData = getMetaData(o) />
 						<cfif not structKeyExists(stMetadata,"bAbstract") or stMetadata.bAbstract EQ "False">			
 							<cfset stTypeMD = structNew() />
 							<cfparam name="application.rules.#typename#" default="#structNew()#" />
-							<cfset stTypeMD = o.initmetadata(application.types[typename]) />
+							<cfset stTypeMD = o.initmetadata(application.rules[typename]) />
 							<cfset stTypeMD.bCustomRule = 1 />
 							<cfset stTypeMD.bLibraryRule = 1 />
 							<cfset stTypeMD.rulePath = "farcry.farcry_lib.#library#.packages.rules.#typename#" />							

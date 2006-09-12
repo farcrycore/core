@@ -222,33 +222,22 @@ $out:$
 	
 	<cffunction access="public" name="getRules" returntype="query" hint="Returns a two column query (rulename, bCustom) of available rules. Assumes that rule names are rule*.cfc">
 		
-		<cfset var qRules = queryNew("rulename,bCustom")>
-		<cfset var thisRow = 1>
-		<cfset var qDir = ''>
+		<cfset var qRules = queryNew("rulename,bCustom") />
+		<cfset var rule = "" />
+
+		<cfloop collection="#application.rules#" item="rule">
+			<cfset queryAddRow(qRules, 1) />
+			<cfset querySetCell(qRules,"rulename", rule) />
+			<cfset querySetCell(qRules,"bCustom", application.rules[rule].bcustomrule) />
+		</cfloop>	
 		
-		<!--- get all core rules --->
-		<cfdirectory directory="#GetDirectoryFromPath(GetCurrentTemplatePath())#" name="qDir" filter="rule*.cfc" sort="name">
-		<cfloop query="qDir">
-			<cfif NOT name IS "rules.cfc"> <!--- Rules.cfc is the abstract class --->
-				<cfset queryAddRow(qRules, 1)>
-				<Cfset rulename = left(qDir.name, len(qDir.name)-4)>
-				<cfset querySetCell(qRules,"rulename","#rulename#",thisRow)>
-				<cfset querySetCell(qRules,"bCustom","0",thisRow)>
-				<cfset thisRow = thisRow + 1>
-			</cfif>
-		</cfloop>
+		<cfquery dbtype="query" name="qRules">
+		SELECT * FROM qRules
+		ORDER BY rulename
+		</cfquery>
 		
-		<!--- get all custom rules from project rules directory --->
-		<cfdirectory directory="#application.path.project#/packages/rules" name="qDir" filter="rule*.cfc" sort="name">
-		<cfloop query="qDir">
-			<cfset queryAddRow(qRules, 1)>
-			<Cfset rulename = left(qDir.name, len(qDir.name)-4)>
-			<cfset querySetCell(qRules,"rulename","#rulename#",thisRow)>
-			<cfset querySetCell(qRules,"bCustom","1",thisRow)>
-			<cfset thisRow = thisRow + 1>
-		</cfloop>
-						
-		<cfreturn qRules>	
+		<cfreturn qRules />		
+
 	</cffunction>
 	
 	<cffunction name="setData" access="public" output="false" hint="Update the record for an objectID including array properties.  Pass in a structure of property values; arrays should be passed as an array." returntype="struct">
