@@ -177,7 +177,7 @@ $in: objectid -- $
 		<!------------------------------------
 		OBJECT BROKER
 		 ------------------------------------>		
-		<cfif application.bObjectBroker>
+		<cfif structkeyexists(application, "bObjectBroker") AND application.bObjectBroker>
 			<cfset objectBroker = createObject("component","farcry.fourq.objectBroker")>
 			
 			<cfloop list="#structKeyList(application.types)#" index="typename">
