@@ -311,7 +311,7 @@ $out:$
 				<cfset stTypeMD.bCustomType = 0 />
 				<cfset stTypeMD.bLibraryType = 0 />
 				<cfset stTypeMD.typePath = "#application.custompackagepath#.system.#typename#" />				
-				<cfset stTypeMD = setupMetadataQuery(typename=typename,stProps=stTypeMD.stProps) />
+				<cfset stTypeMD.qMetadata = setupMetadataQuery(typename=typename,stProps=stTypeMD.stProps) />
 				<cfset application.types[typename]=duplicate(stTypeMD) />
 			</cfif>
 	
