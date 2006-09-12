@@ -39,8 +39,8 @@ $in: objectid -- $
 	<cfparam name="attributes.clientstorage" default="registry" />
 	<cfparam name="attributes.loginstorage" default="cookie" />
 	<cfparam name="attributes.scriptprotect" default="" />
-	<cfparam name="attributes.setclientcookies" default="false" />
-	<cfparam name="attributes.setdomaincookies" default="false" />
+	<cfparam name="attributes.setclientcookies" default="true" />
+	<cfparam name="attributes.setdomaincookies" default="true" />
 
 	<cfparam name="attributes.dsn" default="#attributes.name#" />
 	<cfparam name="attributes.dbowner" default="" />
