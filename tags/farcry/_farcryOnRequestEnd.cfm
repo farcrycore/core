@@ -289,7 +289,7 @@ $out:$
 		</cfif>
 		
 		<cfif isDefined("Request.RequiredInHead.FormsCSS") AND Request.RequiredInHead.FormsCSS EQ 1>
-			<cfoutput><link rel="stylesheet" type="text/css" href="#application.url.farcry#/css/forms.css" media="all" /></cfoutput>
+			<cfoutput><link rel="stylesheet" type="text/css" href="#application.url.farcry#/css/forms.cfm" media="all" /></cfoutput>
 		</cfif>
 		
 		<cfif isDefined("Request.RequiredInHead.prototypeWindowJS") AND Request.RequiredInHead.prototypeWindowJS EQ 1>
