@@ -136,6 +136,11 @@
 		<cfset attributes.lFields = variables.lFields>
 	</cfif>	
 	
+	<!--- allow for whitespace in field list attributes by trimming --->
+	<cfset attributes.lFields = replacenocase(attributes.lFields, " ", "", "ALL") />
+	<cfset attributes.lHiddenFields = replacenocase(attributes.lHiddenFields, " ", "", "ALL") />
+	<cfset attributes.lExcludeFields = replacenocase(attributes.lExcludeFields, " ", "", "ALL") />
+	
 	<!--- Determine fields to render --->
 	<cfloop list="#attributes.lFields#" index="i">
 		<cfif ListFindNoCase(variables.lFields,i)>
@@ -228,7 +233,6 @@
 	
 
 	<cfloop list="#lFieldsToRender#" index="i">
-		
 		<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i] = StructNew()>
 
 		<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i] = Duplicate(stFields[i].MetaData)>
