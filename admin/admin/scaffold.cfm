@@ -13,111 +13,63 @@
 
 <ft:processForm Action="Create Now">
 
-<!---<cfdirectory action="list" directory="#application.path.core#/admin/admin/scaffolds" filter="*.txt" name="qScaffolds" />
+	
+<cffunction name="genDocument" returntype="string">
+	<cfargument name="docProps" type="struct" required="true" />
+	<cfargument name="typeName" type="string" required="true" />
+	<cfargument name="projectName" type="string" required="true" />
+	<cfargument name="projectDir" type="string" required="true" />
+	
+	<cfset var result = "">
+	<cfset var fullpath = "">
+	<cfset var docContent = docProps.content />
+	
+	
+	<cfset docProps.filename = replaceNoCase(docProps.filename,"[TYPENAME]",lcase(typeName)) />
+	<cfset docProps.package = replaceNoCase(docProps.package,"[TYPENAME]",lcase(typeName)) />
+	
+	
+	<cfset docContent = replaceNoCase(docContent, "[PROJECTNAME]", projectName, "all") />
+	<cfset docContent = replaceNoCase(docContent, "[TYPENAME]", typeName, "all") />
+	
+	<cfset fullpath = "#projectDir##docProps.package#">
 
-<cfloop query="qScaffolds">
-	
-	<cffile action="read" file="#application.path.core#/admin/admin/scaffolds/customadmin.txt" variable="customAdmin">
-	<cfset customAdmin = replaceNoCase(customAdmin, "[PROJECTNAME]", "#application.applicationname#", "all") />
-	<cfset customAdmin = replaceNoCase(customAdmin, "[TYPENAME]", "#url.typename#", "all") />
-	
-	<cfif not directoryExists("#application.path.project#/customadmin")>
-		<cfdirectory action="create" directory="#application.path.project#/customadmin">
+	<cfif not directoryExists("#fullpath#")>
+		<cfdirectory action="create" directory="#fullpath#">
 	</cfif>
-	<cfif fileExists("#application.path.project#/customadmin/#url.typename#.xml")>
-		<cfoutput><p>#url.typename#.xml already exists in #application.path.project#/customadmin</p></cfoutput>
+	
+	<cfif fileExists("#fullpath#/#docProps.filename#")>
+		<cfset result="<p>#docProps.filename# already exists in #fullpath#/#docProps.filename#</p>">
 	<cfelse>
-		<cffile action="write" file="#application.path.project#/customadmin/#url.typename#.xml" output="#customadmin#" >
-		<cfoutput><p>CREATED: #application.path.project#/customadmin/#url.typename#.xml</p></cfoutput>
+		<cftry>
+			<cffile action="write" file="#fullpath#/#docProps.filename#" output="#trim(docContent)#" >
+			<cfset result="<p>CREATED: #fullpath#/#docProps.filename#</p>">
+			
+			<cfcatch type="any">
+				<cfset result="<p>ERROR CREATING: #fullpath#/#docProps.filename#</p>">
+			</cfcatch>
+		</cftry>
 	</cfif>
-</cfloop> --->
+
+	<cfreturn result>
+</cffunction>	
+	
 	
 	
 	
 	<cfif structKeyExists(form, "scaffold")>
-		<cfif listContainsNoCase(form.scaffold, "CustomAdmin")>
-					
-			<cffile action="read" file="#application.path.core#/admin/admin/scaffolds/customadmin.txt" variable="customAdmin">
-			<cfset customAdmin = replaceNoCase(customAdmin, "[PROJECTNAME]", "#application.applicationname#", "all") />
-			<cfset customAdmin = replaceNoCase(customAdmin, "[TYPENAME]", "#url.typename#", "all") />
-			
-			<cfif not directoryExists("#application.path.project#/customadmin")>
-				<cfdirectory action="create" directory="#application.path.project#/customadmin">
-			</cfif>
-			<cfif fileExists("#application.path.project#/customadmin/#url.typename#.xml")>
-				<cfoutput><p>#url.typename#.xml already exists in #application.path.project#/customadmin</p></cfoutput>
-			<cfelse>
-				<cffile action="write" file="#application.path.project#/customadmin/#url.typename#.xml" output="#customadmin#" >
-				<cfoutput><p>CREATED: #application.path.project#/customadmin/#url.typename#.xml</p></cfoutput>
-			</cfif>
-			
-			
-			
-			<cffile action="read" file="#application.path.core#/admin/admin/scaffolds/typeadmin.txt" variable="typeadmin">
-			<cfset typeadmin = replaceNoCase(typeadmin, "[PROJECTNAME]", "#application.applicationname#", "all") />
-			<cfset typeadmin = replaceNoCase(typeadmin, "[TYPENAME]", "#url.typename#", "all") />
-			
-			<cfif not directoryExists("#application.path.project#/customadmin/customLists")>
-				<cfdirectory action="create" directory="#application.path.project#/customadmin/customLists">
-			</cfif>
-			<cfif fileExists("#application.path.project#/customadmin/customLists/#url.typename#.cfm")>
-				<cfoutput><p>#url.typename#.cfm already exists in #application.path.project#/customadmin/customLists</p></cfoutput>
-			<cfelse>
-				<cffile action="write" file="#application.path.project#/customadmin/customLists/#url.typename#.cfm" output="#typeadmin#" >
-				<cfoutput><p>CREATED: #application.path.project#/customadmin/customLists/#url.typename#.cfm</p></cfoutput>
-			</cfif>
-		</cfif>
-		
-		<cfif listContainsNoCase(form.scaffold, "Webskin")>
-			
-			<cfif not directoryExists("#application.path.project#/webskin/#url.typename#")>
-				<cfdirectory action="create" directory="#application.path.project#/webskin/#url.typename#">
-			</cfif>
-			
-			<cffile action="read" file="#application.path.core#/admin/admin/scaffolds/displayPageStandard.txt" variable="displayPageStandard">			
-			<cfset displayPageStandard = replaceNoCase(displayPageStandard, "[PROJECTNAME]", "#application.applicationname#", "all") />
-			<cfset displayPageStandard = replaceNoCase(displayPageStandard, "[TYPENAME]", "#url.typename#", "all") />
 
+		<cfloop list="#form.scaffold#" index="FilePath">
 
-			<cfif fileExists("#application.path.project#/webskin/#url.typename#/displayPageStandard.cfm")>
-				<cfoutput><p>displayPageStandard already exists in #application.path.project#/webskin/#url.typename#</p></cfoutput>
-			<cfelse>
-				<cffile action="write" file="#application.path.project#/webskin/#url.typename#/displayPageStandard.cfm" output="#displayPageStandard#" >
-				<cfoutput><p>CREATED: #application.path.project#/webskin/#url.typename#/displayPageStandard.cfm</p></cfoutput>
-			</cfif>
 			
+			<!--- define folder path --->
+			<cfset docProps = getScaffoldProps(filePath="#FilePath#") />	
+			<cfset result = genDocument(docProps,url.typename, application.applicationname,application.path.PROJECT)>
 			
-			<cffile action="read" file="#application.path.core#/admin/admin/scaffolds/displayTeaserStandard.txt" variable="displayTeaserStandard">
-			<cfset displayTeaserStandard = replaceNoCase(displayTeaserStandard, "[PROJECTNAME]", "#application.applicationname#", "all") />
-			<cfset displayTeaserStandard = replaceNoCase(displayTeaserStandard, "[TYPENAME]", "#url.typename#", "all") />
-			
-			<cfif fileExists("#application.path.project#/webskin/#url.typename#/displayTeaserStandard.cfm")>
-				<cfoutput><p>displayTeaserStandard already exists in #application.path.project#/webskin/#url.typename#</p></cfoutput>
-			<cfelse>
-				<cffile action="write" file="#application.path.project#/webskin/#url.typename#/displayTeaserStandard.cfm" output="#displayTeaserStandard#" >
-				<cfoutput><p>CREATED: #application.path.project#/webskin/#url.typename#/displayTeaserStandard.cfm</p></cfoutput>
-			</cfif>
-			
-		</cfif>
+			<cfoutput>#result#</cfoutput>
+		</cfloop>
+	
 		
-		<cfif listContainsNoCase(form.scaffold, "Rule")>
-			
-			<cffile action="read" file="#application.path.core#/admin/admin/scaffolds/rule.txt" variable="rule">			
-			<cfset rule = replaceNoCase(rule, "[PROJECTNAME]", "#application.applicationname#", "all") />
-			<cfset rule = replaceNoCase(rule, "[TYPENAME]", "#url.typename#", "all") />
-			
-			<cfif not directoryExists("#application.path.project#/packages/rules")>
-				<cfdirectory action="create" directory="#application.path.project#/packages/rules">
-			</cfif>
-				
-			<cfif fileExists("#application.path.project#/packages/rules/rule#url.typename#.cfc")>
-				<cfoutput><p>rule#url.typename#.cfc already exists in #application.path.project#/packages/rules</p></cfoutput>
-			<cfelse>
-				<cffile action="write" file="#application.path.project#/packages/rules/rule#url.typename#.cfc" output="#rule#" >
-				<cfoutput><p>CREATED: #application.path.project#/packages/rules/rule#url.typename#.cfc</p></cfoutput>
-			</cfif>		
-			
-		</cfif>
 	</cfif>
 </ft:processForm>
 
@@ -129,11 +81,76 @@
 	<cfoutput>
 	<p>WHICH SCAFFOLDS WOULD YOU LIKE TO CREATE</p>
 	
-	<input type="checkbox" name="scaffold" value="CustomAdmin" /> Custom Admin<br />
-	<input type="checkbox" name="scaffold" value="Webskin" /> Webskins<br />
-	<input type="checkbox" name="scaffold" value="Rule" /> Rule<br />
-
+	<h3>CUSTOM ADMIN</h3>
+	<cfset q = getScaffolds(scaffoldPath="/customAdmin") />
+	<table border="1">
+	<cfloop query="q">
+		<cfset stScaffoldProps = getScaffoldProps(filePath="#q.Directory#/#q.Name#") />
+		<tr>
+			<td><input type="checkbox" name="scaffold" value="#q.Directory#/#q.Name#" /></td>
+			<td>
+				<strong>#stScaffoldProps.label#</strong><br />
+				#stScaffoldProps.description#
+			</td>
+		</tr>
+	</cfloop>
+	</table>
 	
+	<h3>CUSTOM LISTS</h3>
+	<cfset q = getScaffolds(scaffoldPath="/customadmin/customLists") />
+	
+	<table border="1">
+	<cfloop query="q">
+		<cfset stScaffoldProps = getScaffoldProps(filePath="#q.Directory#/#q.Name#") />
+		<tr>
+			<td><input type="checkbox" name="scaffold" value="#q.Directory#/#q.Name#" /></td>
+			<td>
+				<strong>#stScaffoldProps.label#</strong><br />
+				#stScaffoldProps.description#
+			</td>
+		</tr>
+	</cfloop>
+	</table>
+	
+	<h3>CUSTOM RULES</h3>
+	<cfset q = getScaffolds(scaffoldPath="/rules") />
+	<table border="1">
+	<cfloop query="q">
+		<cfset stScaffoldProps = getScaffoldProps(filePath="#q.Directory#/#q.Name#") />
+		<tr>
+			<td><input type="checkbox" name="scaffold" value="#q.Directory#/#q.Name#" /></td>
+			<td>
+				<strong>#stScaffoldProps.label#</strong><br />
+				#stScaffoldProps.description#
+			</td>
+		</tr>
+	</cfloop>
+	</table>
+	
+	
+	<h3>CUSTOM WEBSKINS</h3>
+	<cfset q = getScaffolds(scaffoldPath="/webskin") />
+	<table border="1">
+	<cfloop query="q">
+		<cfset stScaffoldProps = getScaffoldProps(filePath="#q.Directory#/#q.Name#") />
+		<tr>
+			<td><input type="checkbox" name="scaffold" value="#q.Directory#/#q.Name#" /></td>
+			<td>
+				<strong>#stScaffoldProps.label#</strong><br />
+				#stScaffoldProps.description#
+			</td>
+		</tr>
+	</cfloop>
+	</table>
+	
+	
+<!--- 	<cfabort>
+	
+	<input type="checkbox" name="scaffold" value="customAdmin" /> Custom Admin<br />
+	<input type="checkbox" name="scaffold" value="webskin" /> Webskins<br />
+	<input type="checkbox" name="scaffold" value="rule" /> Rule<br /> --->
+ 
+
 	<div class="formsection">
 		<ft:farcrybutton value="Create Now" />	
 		<ft:farcrybutton value="Cancel" />
@@ -142,4 +159,145 @@
 </ft:form>
 
 
+
+	<cffunction name="getScaffolds" returntype="query" access="public" output="false" hint="Returns a query of all available webskins. Search through project first, then any library's that have been included.">
+		<cfargument name="scaffoldPath" required="true" type="string">
+		
+		<cfset var qResult=queryNew("name,directory,size,type,datelastmodified,attributes,mode") />
+		<cfset var qLibResult=queryNew("name,directory,size,type,datelastmodified,attributes,mode") />
+		<cfset var qDupe=queryNew("name,directory,size,type,datelastmodified,attributes,mode") />
+		<cfset var FullScaffoldPath = "" />
+		<cfset var library="" />
+		<cfset var col="" />
+
+		<!--- check project webskins --->
+		<cfset FullScaffoldPath = ExpandPath("/farcry/#application.applicationname#/scaffolds#scaffoldPath#") />
+		<cfif directoryExists(FullScaffoldPath)>
+			<cfdirectory action="list" directory="#FullScaffoldPath#" name="qResult" filter="*.txt" sort="asc" />
+		</cfif>
+	
+		<!--- check library webskins --->
+		<cfif structKeyExists(application, "lFarcryLib") and Len(application.lFarcryLib)>
+
+			<cfloop list="#application.lFarcryLib#" index="library">
+				<cfset FullScaffoldPath=ExpandPath("/farcry/farcry_lib/#library#/scaffolds#scaffoldPath#") />
+				
+				<cfif directoryExists(FullScaffoldPath)>
+					<cfdirectory action="list" directory="#FullScaffoldPath#" name="qLibResult" filter="*.txt" sort="asc" />
+
+					<cfloop query="qLibResult">
+						<cfquery dbtype="query" name="qDupe">
+						SELECT * FROM qResult
+						WHERE lower(name) = '#lcase(qLibResult.name)#'
+						</cfquery>
+						
+						<cfif NOT qDupe.Recordcount>
+							<cfset queryaddrow(qresult,1) />
+							<cfloop list="#qlibresult.columnlist#" index="col">
+								<cfset querysetcell(qresult, col, qlibresult[col][1]) />
+							</cfloop>
+						</cfif>
+						
+					</cfloop>
+				</cfif>	
+				
+			</cfloop>
+			
+		</cfif>
+		
+		<!--- check core scaffolds --->
+		<cfset FullScaffoldPath=ExpandPath("/farcry/farcry_core/admin/admin/scaffolds#scaffoldPath#") />
+		
+		<cfif directoryExists(FullScaffoldPath)>
+			<cfdirectory action="list" directory="#FullScaffoldPath#" name="qCoreResult" filter="*.txt" sort="asc" />
+			
+			
+			<cfloop query="qCoreResult">
+				<cfquery dbtype="query" name="qDupe">
+				SELECT * FROM qResult
+				WHERE lower(name) = '#lCase(qCoreResult.name)#'
+				</cfquery>
+				
+				<cfif NOT qDupe.Recordcount>
+					<cfset queryaddrow(qresult,1) />
+					<cfloop list="#qlibresult.columnlist#" index="col">
+						<cfset querysetcell(qresult, col, qCoreResult[col][1]) />
+					</cfloop>
+				</cfif>
+				
+			</cfloop>
+					
+								
+		</cfif>
+		
+					
+ 		<cfquery dbtype="query" name="qResult">
+		SELECT * FROM qResult
+		ORDER BY name
+		</cfquery>
+
+		<cfreturn qresult />
+	</cffunction>
+	
+		
+	<cffunction name="getScaffoldProps" returntype="struct" output="true" hint="return package, filename and content from scaffold file">
+		<cfargument name="filePath" required="true" />
+		
+		<cfset var stResult = structNew() />
+		<cfset var startPos = "" />
+		<cfset var endPos = "" />
+		
+
+		<!--- EXTRACT THE SCAFFOLD METADATA --->
+		<cffile action="read" file="#arguments.filePath#" variable="fileContent" />
+
+		<cfset startPos = findNocase("<scaffold>", fileContent) />
+		<cfset endPos = findNocase("</scaffold>", fileContent) />
+				
+		
+				
+		<cfif startPos neq 0 and endPos neq 0>
+			<cfset endPos = endPos + len("</scaffold>") />
+			<cfset scaffoldString = mid(fileContent, startPos, endPos-startPos) />
+	
+			<cfxml variable="ScaffXML">
+			  <cfoutput>#scaffoldString#</cfoutput>
+			</cfxml>
+			
+			<cfset tmpXmlnode = XmlSearch(ScaffXML, "/scaffold/label") />
+			<cfif arraylen(tmpXmlnode) gt 0>
+				<cfset stResult.label = tmpXmlnode[1].XmlText />
+			<cfelse>
+				<cfset stResult.label = "not found" />
+			</cfif>
+			
+			<cfset tmpXmlnode = XmlSearch(ScaffXML, "/scaffold/description") />	
+			<cfif arraylen(tmpXmlnode) gt 0>
+				<cfset stResult.description = tmpXmlnode[1].XmlText />
+			<cfelse>
+				<cfset stResult.description = "not found" />
+			</cfif>
+			
+			<cfset tmpXmlnode = XmlSearch(ScaffXML, "/scaffold/filename") />
+			<cfif arraylen(tmpXmlnode) gt 0>
+				<cfset stResult.filename = tmpXmlnode[1].XmlText />
+			<cfelse>
+				<cfset stResult.filename = "not found" />
+			</cfif>
+			
+			<cfset tmpXmlnode = XmlSearch(ScaffXML, "/scaffold/package") />	
+			<cfif arraylen(tmpXmlnode) gt 0>
+				<cfset stResult.package = tmpXmlnode[1].XmlText />
+			<cfelse>
+				<cfset stResult.package = "not found" />
+			</cfif>
+	
+			<cfset stResult.content = replace(fileContent,scaffoldString,"") />
+		</cfif>	
+				
+		<cfreturn stResult />
+	</cffunction>
+	
+	
+	
 <cfsetting enablecfoutputonly="no">
