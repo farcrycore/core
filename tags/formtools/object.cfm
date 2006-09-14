@@ -461,7 +461,7 @@
 			<cfsavecontent variable="FieldLabelStart">
 					
 				<cfoutput>
-					<label for="#variables.prefix##ftFieldMetadata.Name#" class="fieldsectionlabel #attributes.class#">
+					<label for="#variables.prefix##ftFieldMetadata.Name#" class="fieldsectionlabel #attributes.class# <cfif ftFieldMetadata.ftType EQ 'password'>passwordlabel</cfif>">
 					#ftFieldMetadata.ftlabel#
 					<cfif len(LibraryLink)>
 						#LibraryLink#					
@@ -512,7 +512,7 @@
 				</cfif>
 	
 				
-				<cfoutput><div class="fieldwrap">#variables.returnHTML#</div></cfoutput>
+				<cfoutput><div class="fieldAlign">#variables.returnHTML#</div></cfoutput>
 				
 				<cfif structKeyExists(ftFieldMetadata,"ftHint") and len(ftFieldMetadata.ftHint)>
 					<cfoutput><small>#ftFieldMetadata.ftHint#</small></cfoutput>
@@ -522,8 +522,8 @@
 					<cfoutput></td></tr></cfoutput>
 				<cfelse>
 					<cfoutput>
-						<br class="fieldsectionbreak" />
-						</div>
+						<br class="clearer" />
+					</div>
 					</cfoutput>
 				</cfif>
 			<cfelse>
