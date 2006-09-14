@@ -536,7 +536,7 @@ environment references (might be nice to clean these up)
 		<b>Keywords:</b>
 			<input type="text" name="keywords" id="keywords" />
 		<!--- </label> --->
-		<input type="submit" name="button_Filter_Keyword" value="Filter" class="f-submit" /></cfoutput>
+		<input type="submit" name="button_Filter_Keyword" value="Filter" class="f-submit" style="width:50px;" /></cfoutput>
 		</cfsavecontent>	
 	<cfelse>
 		<cfsavecontent variable="panel"><cfoutput>
@@ -550,7 +550,7 @@ environment references (might be nice to clean these up)
 		<b>Keywords:</b>
 			<input type="text" name="keywords" id="keywords" />
 		<!--- </label> --->
-		<input type="submit" name="button_Filter_Keyword" value="Filter" class="f-submit" /></cfoutput>
+		<input type="submit" name="button_Filter_Keyword" value="Filter" class="f-submit" style="width:50px;" /></cfoutput>
 		</cfsavecontent>	
 	</cfif>
 	

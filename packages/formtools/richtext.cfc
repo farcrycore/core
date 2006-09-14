@@ -101,7 +101,7 @@
 
 
 			<cfoutput>
-				<textarea  name="#arguments.fieldname#" id="#arguments.fieldname#">#arguments.stMetadata.value#</textarea>
+				<textarea  name="#arguments.fieldname#" id="#arguments.fieldname#" style="width: 600px;" class="richtext tinymce">#arguments.stMetadata.value#</textarea>
 				<!--- <div><textarea name="#arguments.fieldname#" id="#arguments.fieldname#" style="#arguments.stMetadata.ftstyle#;width:100%;" >#arguments.stMetadata.value#</textarea></div> --->
 			</cfoutput>
 		</cfsavecontent>

@@ -55,7 +55,7 @@
 			<cfdefaultcase>
 				<cfsavecontent variable="html">
 					
-						<cfoutput><fieldset>
+						<cfoutput><fieldset style="width: 300px;">
 							<cfif len(arguments.stMetadata.ftLegend)><legend>#arguments.stMetadata.ftLegend#</legend></cfif>
 						
 							<div class="fieldsection optional full">
