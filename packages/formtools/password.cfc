@@ -12,14 +12,14 @@
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 	
-		<cfparam name="arguments.stMetadata.ftLegend" default="Password Entry" />
+		<cfparam name="arguments.stMetadata.ftLabel" default="#arguments.stMetadata.name#" />
 	
 		<cfsavecontent variable="html">
 			<cfoutput>
 				<fieldset>
-					<legend>#arguments.stMetadata.ftLegend#</legend>
+					<legend>#arguments.stMetadata.ftLabel#</legend>
 					<div class="fieldsection optional">
-						<label class="fieldsectionlabel" class="fieldsectionlabel" for="#arguments.fieldname#">Current Password</label>
+						<label class="fieldsectionlabel" for="#arguments.fieldname#">Current Password</label>
 						<div class="fieldwrap"><input type="text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#arguments.stMetadata.value#" class="#arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" /></div>
 						<br class="fieldsectionbreak" />
 					</div>
