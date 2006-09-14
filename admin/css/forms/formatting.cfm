@@ -1,12 +1,6 @@
 <!--- allow output only from cfoutput tags --->
 <cfsetting enablecfoutputonly="yes" />
 
-<!--- set content type of cfm to css to enable output to be parsed as css by all browsers --->
-<!--- <cfcontent type="text/css; charset=UTF-8"> --->
-
-<!--- include swatches file
-<cfinclude template="swatches.cfm"/> --->
-
 <!--- assign hex colour strings to component elements --->
 <cfscript>
 	/* body background */
@@ -29,8 +23,8 @@
 <!---
 the following style tag enables tag insight in your IDE
 and is placed before the cfoutput tag to prevent being output.
-
-<style>--->
+--->
+<style>
 
 <!--- output css --->
 <cfoutput>
@@ -53,7 +47,7 @@ this stylesheet defines the following page elements:
 /* form formatting styles */
 form {font-size: 100%;}
 form fieldset {font-size: 100%;}
-form fieldset legend {font-size: 150%; font-weight: normal; color: ##000000;}
+form fieldset legend {font-size: 150%; font-weight: normal; color: #hexPrimaryDark#;}
 label {font-size: 100%;}
 label u {font-style: normal; text-decoration: underline;}
 input, select, textarea {font-family: Tahoma, Arial, sans-serif; font-size: 100%; color: ##000000;}
@@ -103,8 +97,8 @@ form div.wide small {}
 <!--- end css output --->
 </cfoutput>
 
-<!--- end enable tag insight
-</style> --->
+<!--- end enable tag insight  --->
+</style>
 
 <!--- end allow output only from cfoutput tags --->
 <cfsetting enablecfoutputonly="no" />

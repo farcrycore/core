@@ -1,13 +1,25 @@
-<!--- allow output only from cfoutput tags --->
+`<!--- allow output only from cfoutput tags --->
 <cfsetting enablecfoutputonly="yes" />
 
-<!--- set content type of cfm to css to enable output to be parsed as css by all browsers 
-<cfcontent type="text/css; charset=UTF-8">--->
+<!--- assign widths to strings for form elements --->
+<cfscript>
+	/* form */
+	formWidth = "600px";
+
+	/* left column */
+	columnLeftWidth = "130px";
+
+	/* right column */
+	columnRightWidth = "150px";
+
+	/* form notes component */
+	notesWidth = "150px";
+</cfscript>
 
 <!---
 the following style tag enables tag insight in your IDE
-and is placed before the cfoutput tag to prevent being output.--->
-
+and is placed before the cfoutput tag to prevent being output.
+--->
 <style>
 
 <!--- output css --->
@@ -32,55 +44,104 @@ this stylesheet defines the following page elements:
 */
 
 /* form layout styles */
+p.asdafas {border: 3px solid green;}
 form {margin: 0px; padding: 0px;}
-form.content {margin: 0px auto 0px auto; padding: 0px; width: 600px;}
-form fieldset {margin: 0px 0px 0px 0px; padding: 10px 10px 10px 10px; clear: both;}
-form fieldset legend {margin: 0px 0px 0px 0px; padding: 0px 5px 0px 5px;}
+form.formtool {margin: 0px 0px 0px 0px; padding: 0px; width: #formWidth#;}
+form.formtool fieldset {margin: 0px 0px 0px 0px; padding: 10px 10px 10px 10px; clear: both;}
+form.formtool fieldset legend {margin: 10px 0px 10px 0px; padding: 0px 5px 0px 5px;}
 label {}
 label u {}
 input, select, textarea {}
-textarea {overflow: auto;}
-div.content form div {margin: 5px 0px 0px 0px; padding: 1px 3px 1px 3px; width: 354px; height: 1%; display: block; clear: left;}
-form fieldset div.notes {margin: 0px 0px 10px 10px; padding: 5px 5px 5px 5px; width: 150px; height: auto; float: right;}
-form fieldset div.notes h4 {margin: 0px; padding: 3px 0px 3px 0px;}
-form fieldset div.notes p {margin: 0em 0em 1.2em 0em;}
-form fieldset div.notes p.last {margin: 0em;}
-form div fieldset {margin: 0px 0px 0px 142px; padding: 0px 5px 5px 5px; width: 197px; clear: none;}
-form div fieldset legend {padding: 0px 3px 0px 9px;}
-form div.required fieldset legend {}
-form div label {margin: 0px 0px 5px 0px; padding: 3px 5px 3px 5px; width: 130px; display: block; float: left;}
-form div.optional label, label.optional {}
-form div.required label, label.required {}
-form div label.labelCheckbox, form div label.labelRadio {margin: 0px 0px 5px 142px; padding: 0px 0px 0px 0px; width: 200px; height: 1%; display: block; float: none;}
-form div fieldset label.labelCheckbox, form div fieldset label.labelRadio {margin: 0px 0px 5px 0px; width: 170px;}
-form div img {}
-p.error {margin: auto 100px auto 100px; padding: 3px 3px 5px 27px;}
-form div.error {}
-form div.error p.error {margin: 0px 0px 0px 118px; width: 200px;}
-form div input, form div select, form div textarea {margin: 0px 0px 0px 0px; padding: 1px 3px 1px 3px; width: 200px;}
-form div input.inputFile {width: 211px;}
-form div select.selectOne, form div select.selectMultiple {padding: 1px 3px 1px 3px; width: 211px;}
-form div input.inputCheckbox, form div input.inputRadio, input.inputCheckbox, input.inputRadio {margin: 0px 0px 0px 140px; padding: 0px 0px 0px 0px; width: 14px; height: 14px; display: inline;}
-form div.submit {padding: 0px 0px 0px 140px; width: 214px;}
-form div.submit div {margin: 0px 0px 0px 0px; padding: 0px 0px 0px 0px; width: auto; display: inline; float: left;}
-form div input.inputSubmit, form div input.inputButton, input.inputSubmit, input.inputButton {margin: 0px 0px 0px 0px; padding: 0px 6px 0px 6px; width: auto;}
-form div.submit div input.inputSubmit, form div.submit div input.inputButton {margin: 0px 0px 0px 5px; float: right;}
-form div small {margin: 0px 0px 5px 142px; padding: 1px 3px 1px 3px; height: 1%; display: block;}
+textarea.formtool {overflow: auto;}
+<!--- div.content form div {margin: 5px 0px 0px 0px; padding: 1px 3px 1px 3px; width: 354px; height: 1%; display: block; clear: left;} --->
+form.formtool fieldset div.notes {margin: 0px 0px 10px 10px; padding: 5px 5px 5px 5px; width: #notesWidth#; height: auto; float: right;}
+form.formtool fieldset div.notes h4 {margin: 0px; padding: 3px 0px 3px 0px;}
+form.formtool fieldset div.notes p {margin: 0em 0em 1.2em 0em;}
+form.formtool fieldset div.notes p.last {margin: 0em;}
+<!--- form div fieldset {margin: 0px 0px 0px 142px; padding: 0px 5px 5px 5px; width: 197px; clear: none;} --->
+form.formtool fieldset legend {padding: 0px 3px 0px 9px;}
+<!--- form.formtool .required fieldset legend {} --->
+form.formtool label {margin: 0px 0px 5px 0px; padding: 0px 5px 3px 5px; width: #columnLeftWidth#; display: block; float: left;}
+<!--- form.formtool .optional label, label.optional {}
+form.formtool .required label, label.required {}--->
 
-form fieldset legend {}
-form input, form select, form textarea {}
-form textarea.expanding {overflow: auto; overflow-x: auto; overflow-y: visible;}
-div.optional label:before {content: '';}
-div.required label:before {content: '';}
-form div label.labelCheckbox, form div label.labelRadio, label.labelCheckbox, label.labelRadio {padding: 4px 0px 0px 18px; width: 190px; height: 1%; display: block;}
-form div label.labelCheckbox input.inputCheckbox, form div label.labelRadio input.inputRadio, label.labelCheckbox input.inputCheckbox, label.labelRadio input.inputRadio {margin: 0px 0px 0px 0px;}
-form div fieldset input.inputText, form div fieldset input.inputPassword, form div fieldset input.inputFile, form div fieldset textarea.inputTextarea {margin: 0px 0px 0px 18px; width: 160px;}
-form div label.compact {margin: 0px 0px 0px 0px; padding: 4px 10px 0px 0px; width: auto; display: inline;}
-form div.wide label {display: block; float: none;}
-form div label.wide {width: 348px;}
-form div.wide input.inputText, form div.wide input.inputPassword, form div.wide input.inputFile, form div.wide select, form div.wide textarea {width: 344px; margin: 0px;}
-form div.notes p, form div small {}
-form div.wide small {margin: 0px 0px 5px 0px;}
+form.formtool label.labelCheckbox,
+	form.formtool label.labelRadio {margin: 0px 0px 5px 142px; padding: 0px 0px 0px 0px; width: 200px; height: 1%; display: block; float: none;}
+
+form.formtool fieldset label.labelCheckbox,
+	form.formtool fieldset label.labelRadio {margin: 0px 0px 5px 0px; width: 170px;}
+
+p.error {margin: auto 100px auto 100px; padding: 3px 3px 5px 27px;}
+form.formtool .error {}
+form.formtool .error p.error {margin: 0px 0px 0px 118px; width: 200px;}
+
+form.formtool input,
+	form.formtool select,
+	form.formtool textarea {margin: 0px 0px 0px 0px; padding: 1px 3px 1px 3px; width: 200px;}
+
+form.formtool input.inputFile {width: 211px;}
+
+form.formtool select.selectOne,
+	form.formtool select.selectMultiple {padding: 1px 3px 1px 3px; width: 211px;}
+
+form.formtool input.inputCheckbox,
+	form.formtool input.inputRadio,
+	input.inputCheckbox,
+	input.inputRadio {margin: 0px 0px 0px 140px; padding: 0px 0px 0px 0px; width: 14px; height: 14px; display: inline;}
+
+form.formtool .submit {padding: 0px 0px 0px 140px; width: 214px;}
+form.formtool .submit {margin: 0px 0px 0px 0px; padding: 0px 0px 0px 0px; width: auto; display: inline; float: left;}
+
+form.formtool input.inputSubmit,
+	form.formtool input.inputButton,
+	input.inputSubmit,
+	input.inputButton {margin: 0px 0px 0px 0px; padding: 0px 6px 0px 6px; width: auto;}
+
+form.formtool .submit input.inputSubmit,
+	form.formtool .submit input.inputButton {margin: 0px 0px 0px 5px; float: right;}
+
+form.formtool small {margin: 0px 0px 5px 142px; padding: 1px 3px 1px 3px; height: 1%; display: block;}
+
+<!--- form fieldset legend {}
+form.formtool input, form.formtool select, form.formtool textarea {} --->
+form.formtool textarea.expanding {overflow: auto; overflow-x: auto; overflow-y: visible;}
+<!--- div.optional label:before {content: '';}
+div.required label:before {content: '';} --->
+
+form.formtool label.labelCheckbox,
+	form div label.labelRadio,
+	label.labelCheckbox,
+	label.labelRadio {padding: 4px 0px 0px 18px; width: 190px; height: 1%; display: block;}
+
+form.formtool label.labelCheckbox input.inputCheckbox,
+	form div label.labelRadio input.inputRadio,
+	label.labelCheckbox input.inputCheckbox,
+	label.labelRadio input.inputRadio {margin: 0px 0px 0px 0px;}
+
+form.formtool fieldset input.inputText,
+	form.formtool fieldset input.inputPassword,
+	form.formtool fieldset input.inputFile,
+	form.formtool fieldset textarea.inputTextarea {margin: 0px 0px 0px 18px; width: 160px;}
+
+form.formtool label.compact {margin: 0px 0px 0px 0px; padding: 4px 10px 0px 0px; width: auto; display: inline;}
+form.formtool .wide label {display: block; float: none;}
+form.formtool label.wide {width: 348px;}
+
+form.formtool .wide input.inputText,
+	form.formtool .wide input.inputPassword,
+	form.formtool .wide input.inputFile,
+	form.formtool .wide select,
+	form.formtool .wide textarea {width: 344px; margin: 0px;}
+
+form.formtool .notes p, form.formtool small {}
+form.formtool .wide small {margin: 0px 0px 5px 0px;}
+
+form.formtool .formsection .fieldAlign {float: left; margin: 0px; padding: 0px;}
+form.formtool .passwordlabel {display: none;}
+<!--- form.formtool .password label label {display: block;} --->
+
+form.formtool .formsection .password .fieldAlign {float: none; margin: 0px 0px 0px #columnLeftWidth#; padding: 0px;}
+form.formtool .fieldsection .clearer {clear: both;}
 
 <!--- end css output --->
 </cfoutput>

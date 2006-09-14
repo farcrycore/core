@@ -1,9 +1,6 @@
 <!--- allow output only from cfoutput tags --->
 <cfsetting enablecfoutputonly="yes" />
 
-<!--- set content type of cfm to css to enable output to be parsed as css by all browsers
-<cfcontent type="text/css; charset=UTF-8"> --->
-
 <!--- include swatches file --->
 <cfinclude template="swatches.cfm"/>
 
@@ -67,8 +64,8 @@
 
 <!---
 the following style tag enables tag insight in your IDE
-and is placed before the cfoutput tag to prevent being output.--->
-
+and is placed before the cfoutput tag to prevent being output.
+--->
 <style>
 
 <!--- output css --->
@@ -92,7 +89,9 @@ form skin styles
 */
 
 form {}
-form fieldset {border-color: ##000000; border-width: 1px 0px 0px 0px; border-style: solid none none none;}
+form.formtool fieldset {border-color: #hexPrimaryLighter#; border-width: 1px 0px 0px 0px; border-style: solid none none none;}
+form.formtool fieldset fieldset {border: 1px solid #hexPrimaryLighter#;}
+<!--- form.formtool .password .fieldAlign {float: none; margin: 0px 0px 0px #columnLeftWidth#; padding: 0px;} --->
 form fieldset legend {}
 label {}
 label u {}
@@ -100,10 +99,10 @@ input, select, textarea {}
 textarea {}
 form div {}
 form fieldset div.notes {border: 1px solid #hexPrimaryLight#; background-color: #hexPrimaryLighter#; color: inherit;}
-/* form fieldset div.notes h4 {background-image: url(/images/icon_info.gif); background-repeat: no-repeat; background-position: top left; border-style: solid; border-color: ##666666;} */
+<!--- /* form fieldset div.notes h4 {background-image: url(/images/icon_info.gif); background-repeat: no-repeat; background-position: top left; border-style: solid; border-color: ##666666;} */ --->
 form fieldset div.notes p {}
 form fieldset div.notes p.last {}
-form div fieldset {border-width: 1px; border-style: solid; border-color: ##666666;}
+<!--- form div fieldset {border-width: 1px; border-style: solid; border-color: ##666666;} --->
 form div fieldset legend {}
 form div.required fieldset legend {}
 form div label {}
@@ -111,7 +110,6 @@ form div.optional label, label.optional {}
 form div.required label, label.required {}
 form div label.labelCheckbox, form div label.labelRadio {}
 form div fieldset label.labelCheckbox, form div fieldset label.labelRadio {}
-form div img {border: 1px solid ##000000;}
 p.error {background-color: ##ff0000; background-image: url(/images/icon_error.gif); background-repeat: no-repeat; background-position: 3px 3px; border: 1px solid ##000000; color: inherit; }
 form div.error {background-color: ##ffffe1; background-image: url(/images/required_bg.gif); background-repeat: no-repeat; background-position: top left; border: 1px solid ##ff0000; color: inherit;}
 form div.error p.error {background-image: url(/images/icon_error.gif); background-position: top left; background-color: transparent; border-style: none;}
