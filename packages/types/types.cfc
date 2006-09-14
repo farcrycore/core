@@ -620,19 +620,26 @@ default handlers
 						Group By ftWizzardStep, ftFieldset
 						ORDER BY ftSeq
 						</cfquery>
-											
-						<cfloop query="qFieldSets">
 						
-							<cfquery dbtype="query" name="qFieldset">
-							SELECT *
-							FROM qMetadata
-							WHERE ftFieldset = '#qFieldsets.ftFieldset#'
-							ORDER BY ftSeq
-							</cfquery>
+						<cfif qFieldSets.recordCount>
+											
+							<cfloop query="qFieldSets">
 							
+								<cfquery dbtype="query" name="qFieldset">
+								SELECT *
+								FROM qMetadata
+								WHERE ftFieldset = '#qFieldsets.ftFieldset#'
+								ORDER BY ftSeq
+								</cfquery>
+								
+								
+								<wiz:object ObjectID="#stObj.ObjectID#" lfields="#valuelist(qFieldset.propertyname)#" format="edit" intable="false" legend="#qFieldset.ftFieldset#" />
+							</cfloop>
+						<cfelse>
 							
-							<wiz:object ObjectID="#stObj.ObjectID#" lfields="#valuelist(qFieldset.propertyname)#" format="edit" intable="false" legend="#qFieldset.ftFieldset#" />
-						</cfloop>
+							<wiz:object ObjectID="#stObj.ObjectID#" lfields="#valuelist(qWizzardStep.propertyname)#" format="edit" intable="false" />
+						
+						</cfif>
 						
 						
 					</wiz:step>
