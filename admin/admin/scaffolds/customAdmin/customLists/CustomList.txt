@@ -1,3 +1,10 @@
+<scaffold>
+	<label>CORE custom list</label>
+	<description>CORE custom list</description>
+	<package>/customadmin/customlists</package>
+	<filename>[TYPENAME].cfm</filename>
+</scaffold>
+
 <cfsetting enablecfoutputonly="yes">
 <!--- 
 || DESCRIPTION || 

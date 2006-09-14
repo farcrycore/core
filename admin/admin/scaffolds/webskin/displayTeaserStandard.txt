@@ -1,3 +1,14 @@
+<scaffold>
+	<label>Core display teaser standard</label>
+	<description>Display label and teaser and more link</description>
+	<package>/webskin/[TYPENAME]</package>
+	<filename>displayTeaserStandard.cfm</filename>
+</scaffold>
+<scaffold>
+	<package>webskin</package>
+	<filename>displayTeaserStandard.cfm</filename>
+</scaffold>
+
 <cfsetting enablecfoutputonly="yes">
 
 <!--- @@displayname: Standard Teaser for [TYPENAME] --->

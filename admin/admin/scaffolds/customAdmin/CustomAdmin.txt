@@ -1,11 +1,13 @@
+<scaffold>
+	<label>CORE custom admin</label>
+	<description>CORE custom admin</description>
+	<package>/customadmin</package>
+	<filename>core[TYPENAME].xml</filename>
+</scaffold>
+
 <?xml version="1.0" encoding="utf-8"?>
-<!-- @@displayname: Standard Teaser for [TYPENAME] -->
-<!-- @@descritption: Standard Teaser for [TYPENAME] -->
-<!-- @@author: DEVELOPER NAME -->
-	
-<!-- @@scaffoldlocation: /customadmin -->
-<!-- @@scaffoldfilename: /[TYPENAME].xml -->
 <webtop>
+
 	<section mergeType="merge" id="[PROJECTNAME]Section" label="[PROJECTNAME] Content" labelType="value">
 		<subsection mergeType="merge" id="[PROJECTNAME]SubSection" label="Custom Content" labelType="value">
 			<menu mergeType="merge" id="[PROJECTNAME]Menu" label="Custom Content" labelType="value">

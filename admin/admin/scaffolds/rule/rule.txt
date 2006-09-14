@@ -1,3 +1,11 @@
+
+<scaffold>
+	<label>sort by datetime last update</label>
+	<description>Lists the latest Objects according to datetimelastupdated</description>
+	<package>/packages/rules</package>
+	<filename>rule[TYPENAME]Latest.cfc</filename>
+</scaffold>
+
 <!--- 
 || LEGAL ||
 $Copyright: $

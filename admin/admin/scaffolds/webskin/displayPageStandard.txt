@@ -1,3 +1,9 @@
+<scaffold>
+	<label>Core display page standard</label>
+	<description>Displays full content</description>
+	<package>/webskin/[TYPENAME]</package>
+	<filename>displayPageStandard.cfm</filename>
+</scaffold>
 <cfsetting enablecfoutputonly="yes">
 
 <!--- @@displayname: Standard Page Display for [TYPENAME] --->
