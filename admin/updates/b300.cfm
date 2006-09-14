@@ -43,7 +43,7 @@ Adds suffix to ruleNews,ruleEvents<br />
 					overviewHome VARCHAR2(50) NULL
 				</cfquery>
 			</cfcase>
-			<cfcase value="mysql">
+			<cfcase value="mysql,mysql5">
 				<cfquery name="update" datasource="#application.dsn#">
 					ALTER TABLE #application.dbowner#dmProfile ADD
 					overviewHome VARCHAR(50) NULL
@@ -76,7 +76,7 @@ Adds suffix to ruleNews,ruleEvents<br />
 					fu VARCHAR2(255) NULL
 				</cfquery>
 			</cfcase>
-			<cfcase value="mysql">
+			<cfcase value="mysql,mysql5">
 				<cfquery name="update" datasource="#application.dsn#">
 					ALTER TABLE #application.dbowner#dmNavigation ADD
 					fu VARCHAR(255) NULL
@@ -115,7 +115,7 @@ Adds suffix to ruleNews,ruleEvents<br />
 					ALTER TABLE #application.dbowner#dmFile ADD status VARCHAR2(255) default 'draft' NOT NULL
 				</cfquery>
 			</cfcase>
-			<cfcase value="mysql">
+			<cfcase value="mysql,mysql5">
 				<cfquery name="update" datasource="#application.dsn#">
 					ALTER TABLE #application.dbowner#dmFile ADD bLibrary INTEGER UNSIGNED NOT NULL DEFAULT 0
 				</cfquery>
@@ -163,7 +163,7 @@ Adds suffix to ruleNews,ruleEvents<br />
 					ALTER TABLE #application.dbowner#dmImage ADD status VARCHAR2(255) default 'draft' NOT NULL
 				</cfquery>
 			</cfcase>
-			<cfcase value="mysql">
+			<cfcase value="mysql,mysql5">
 				<cfquery name="update" datasource="#application.dsn#">
 					ALTER TABLE #application.dbowner#dmImage ADD bAutoGenerateThumbnail INTEGER UNSIGNED NOT NULL DEFAULT 0
 				</cfquery>
@@ -215,7 +215,7 @@ Adds suffix to ruleNews,ruleEvents<br />
 					ALTER TABLE #application.dbowner#dmFlash ADD bLibrary INTEGER DEFAULT 0 NOT NULL
 				</cfquery>
 			</cfcase>
-			<cfcase value="mysql">
+			<cfcase value="mysql,mysql5">
 				<cfquery name="update" datasource="#application.dsn#">
 					ALTER TABLE #application.dbowner#dmFlash ADD bLibrary INTEGER UNSIGNED NOT NULL DEFAULT 0
 				</cfquery>
@@ -256,7 +256,7 @@ Adds suffix to ruleNews,ruleEvents<br />
 					UPDATE #application.dbowner##tableName# SET ownedby = createdBy WHERE ownedBy = '' OR ownedBy IS NULL
 					</cfquery>
 				</cfcase>
-				<cfcase value="mysql">
+				<cfcase value="mysql,mysql5">
 					<cfquery name="update" datasource="#application.dsn#">
 					ALTER TABLE #application.dbowner##tableName# ADD ownedby VARCHAR(255) NULL
 					</cfquery>
@@ -358,7 +358,7 @@ Adds suffix to ruleNews,ruleEvents<br />
 					suffix VARCHAR2(255) NULL
 				</cfquery>
 			</cfcase>
-			<cfcase value="mysql">
+			<cfcase value="mysql,mysql5">
 				<cfquery name="update" datasource="#application.dsn#">
 					ALTER TABLE #application.dbowner#ruleNews ADD
 					suffix VARCHAR(255) NULL
@@ -395,7 +395,7 @@ Adds suffix to ruleNews,ruleEvents<br />
 					suffix VARCHAR2(255) NULL
 				</cfquery>
 			</cfcase>
-			<cfcase value="mysql">
+			<cfcase value="mysql,mysql5">
 				<cfquery name="update" datasource="#application.dsn#">
 					ALTER TABLE #application.dbowner#ruleEvents ADD
 					suffix VARCHAR(255) NULL
@@ -615,7 +615,7 @@ Adds suffix to ruleNews,ruleEvents<br />
 				ALTER TABLE #application.dbowner#dmNews ADD source VARCHAR2(255) NULL
 				</cfquery>
 			</cfcase>
-			<cfcase value="mysql">
+			<cfcase value="mysql,mysql5">
 				<cfquery name="update" datasource="#application.dsn#">
 				ALTER TABLE #application.dbowner#dmNews ADD source VARCHAR(255) NULL
 				</cfquery>
@@ -647,7 +647,7 @@ Adds suffix to ruleNews,ruleEvents<br />
 				UPDATE #application.dbowner#dmHTML SET reviewDate = #defaultdate# WHERE reviewDate IS NULL
 				</cfquery>
 			</cfcase>
-			<cfcase value="mysql">
+			<cfcase value="mysql,mysql5">
 				<cfquery name="update" datasource="#application.dsn#">
 				ALTER TABLE #application.dbowner#dmHTML ADD reviewDate datetime NULL
 				</cfquery>
@@ -719,7 +719,7 @@ Adds suffix to ruleNews,ruleEvents<br />
 					ALTER TABLE #application.dbowner##tableName# ADD versionID VARCHAR2(255) DEFAULT '' NOT NULL
 					</cfquery>
 				</cfcase>
-				<cfcase value="mysql">
+				<cfcase value="mysql,mysql5">
 					<cfquery name="update" datasource="#application.dsn#">
 					ALTER TABLE #application.dbowner##tableName# ADD versionID VARCHAR(255) NOT NULL DEFAULT ''
 					</cfquery>
@@ -751,7 +751,7 @@ Adds suffix to ruleNews,ruleEvents<br />
 				ALTER TABLE #application.dbowner#container ADD displayMethod VARCHAR2(255) NULL
 				</cfquery>
 			</cfcase>
-			<cfcase value="mysql">
+			<cfcase value="mysql,mysql5">
 				<cfquery name="update" datasource="#application.dsn#">
 				ALTER TABLE #application.dbowner#container ADD displayMethod VARCHAR(255) NULL
 				</cfquery>

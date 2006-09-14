@@ -37,7 +37,7 @@ for the fourQ COAPI
 			SELECT count(*) AS tblExists FROM #arguments.dbowner#USER_TABLES WHERE TABLE_NAME = 'FQAUDIT'
 			</cfquery>
 		</cfcase>
-		<cfcase value="mysql">
+		<cfcase value="mysql,mysql5">
 		    <cfquery datasource="#arguments.dsn#" name="qCheck">
 		        SHOW TABLES LIKE 'fqAudit'
 		    </cfquery>
@@ -100,7 +100,7 @@ for the fourQ COAPI
 			</cfquery>
 		
 		</cfcase>
-		<cfcase value="mysql">			
+		<cfcase value="mysql,mysql5">			
 			<cfquery datasource="#arguments.dsn#" name="qDrop">
 				DROP TABLE if exists #arguments.dbowner#fqAudit
 			</cfquery>
@@ -306,7 +306,7 @@ need a bunch of functions to get audit data here
    			order by 1 
    			</cfquery>
 	    </cfcase>
-	    <cfcase value="mysql"><!--- no subqueries allowed in mysql, so workaround.... --->
+	    <cfcase value="mysql,mysql5"><!--- no subqueries allowed in mysql, so workaround.... --->
 			<cfquery datasource="#arguments.dsn#" name="qDrop">
 				drop table if exists fqTemp			
 			</cfquery>
@@ -404,7 +404,7 @@ need a bunch of functions to get audit data here
 				order by 1 
             </cfquery>
 	    </cfcase>
-	    <cfcase value="mysql"><!--- no subqueries allowed in mysql, so workaround.... --->
+	    <cfcase value="mysql,mysql5"><!--- no subqueries allowed in mysql, so workaround.... --->
 			<cfquery datasource="#arguments.dsn#" name="qDrop">
 				drop table if exists fqTemp			
 			</cfquery>

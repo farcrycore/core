@@ -27,7 +27,7 @@ Creates visitor sessions for existing stats
 					browser VARCHAR2(100) NOT NULL default 'blank'
 				</cfquery>
 			</cfcase>
-			<cfcase value="mysql">
+			<cfcase value="mysql,mysql5">
 				<cfquery name="update" datasource="#application.dsn#">
 					ALTER TABLE #application.dbowner#Stats ADD
 					sessionid VARCHAR(100) NOT NULL default 'blank'

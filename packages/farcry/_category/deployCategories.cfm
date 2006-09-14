@@ -57,7 +57,7 @@ $out: <separate entry for each variable>$
 			
 		</cfif>	
 	</cfcase>
-	<cfcase value="mysql">
+	<cfcase value="mysql,mysql5">
 		<cfquery datasource="#arguments.dsn#">
         	DROP TABLE IF EXISTS categories	
 		</cfquery>
@@ -123,7 +123,7 @@ $out: <separate entry for each variable>$
 		</cfquery>
 		
 	</cfcase>
-	<cfcase value="mysql">
+	<cfcase value="mysql,mysql5">
 		<cfquery datasource="#arguments.dsn#">
 		CREATE TABLE #application.dbowner#categories
 		(

@@ -45,7 +45,7 @@ $out:$
 	
 	    <!--- setup temporary table stuff --->
 	    <cfswitch expression="#application.dbtype#">
-	        <cfcase value="mysql">
+	        <cfcase value="mysql,mysql5">
 	            <cfset temptablename = "tbltemp_fixtree" />
 	            <cfquery datasource="#dsn#" name="q">
 	                drop table if exists #temptablename#
@@ -179,7 +179,7 @@ $out:$
 	    </cfquery>
 	
 	    <cfswitch expression="#application.dbtype#">
-	        <cfcase value="mysql">
+	        <cfcase value="mysql,mysql5">
 	
 	            <cfset nval = 0>
 	            <cfquery name="qGetRoots" datasource="#dsn#">
@@ -277,7 +277,7 @@ $out:$
 	    <cfelse>
 	        <!--- update the real table --->
 	        <cfswitch expression="#application.dbtype#">
-	            <cfcase value="mysql">
+	            <cfcase value="mysql,mysql5">
 	                <!---
 	                  workaround for lack of subselect in mysql. would be better
 	                  to it the defaultcase way - just in case for any reason an

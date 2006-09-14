@@ -33,7 +33,7 @@ Adds three new fields to the stats table (referer, operating system and locale)
 					os VARCHAR2(50) NOT NULL default 'unknown'
 				</cfquery>
 			</cfcase>
-			<cfcase value="mysql">
+			<cfcase value="mysql,mysql5">
 				<cfquery name="update" datasource="#application.dsn#">
 					ALTER TABLE #application.dbowner#Stats ADD
 					referer TEXT 

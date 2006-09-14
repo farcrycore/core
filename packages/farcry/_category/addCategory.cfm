@@ -15,7 +15,7 @@
 			VALUES ('#arguments.categoryID#', '#arguments.categoryLabel#')
 		</cfquery>
 	</cfcase>
-	<cfcase value="mysql">
+	<cfcase value="mysql,mysql5">
 		<cfquery datasource="#arguments.dsn#">
 			INSERT INTO #application.dbowner#categories (categoryID,categoryLabel)
 			VALUES ('#arguments.categoryID#', '#arguments.categoryLabel#')

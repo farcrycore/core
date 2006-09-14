@@ -245,7 +245,7 @@ $out:$
 					</cfoutput></cfsavecontent>
 				</cfcase>
 
-				<cfcase value="mysql">
+				<cfcase value="mysql,mysql5">
 					<cfsavecontent variable="stLocal.sql"><cfoutput>
 					INSERT INTO #application.dbowner##stPolicyStore.permissionTable# (permissionName,permissionNotes,permissionType<cfif arguments.permissionId NEQ -1>,permissionid</cfif>)
 					VALUES ('#arguments.permissionName#','#arguments.permissionNotes#','#arguments.permissionType#'<cfif arguments.permissionId NEQ -1>,#arguments.permissionId#</cfif>)
@@ -304,7 +304,7 @@ $out:$
 					<cfset stLocal.sql = "INSERT INTO #application.dbowner##stPolicyStore.PolicyGroupTable# ( policyGroupName,policyGroupNotes ) VALUES ('#arguments.PolicyGroupName#','#arguments.PolicyGroupNotes#')">
 				</cfcase>
 
-				<cfcase value="mysql">
+				<cfcase value="mysql,mysql5">
  					<cfif isDefined("arguments.policyGroupID")> <!--- during import may want to insert specific policy group id --->
 						<cfset stLocal.sql = "INSERT INTO #application.dbowner##stPolicyStore.PolicyGroupTable# (policyGroupID, policyGroupName,policyGroupNotes ) VALUES (#arguments.PolicyGroupID#, '#arguments.PolicyGroupName#','#arguments.PolicyGroupNotes#')">
 					<cfelse>

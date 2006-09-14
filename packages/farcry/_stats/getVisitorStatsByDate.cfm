@@ -55,7 +55,7 @@ $out:$
 		order by to_char(logdatetime,'yyyy-mm-dd')
 		</cfquery>
 	</cfcase>
-	<cfcase value="mysql">
+	<cfcase value="mysql,mysql5">
 		<cfquery name="qGetPageStats" datasource="#arguments.dsn#">
 		select replace(left(logdatetime, 10),"-",".") as viewday, count(distinct sessionId) as count_Ip
 		from #application.dbowner#stats

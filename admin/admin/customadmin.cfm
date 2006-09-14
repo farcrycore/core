@@ -22,9 +22,9 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 
 <cfprocessingDirective pageencoding="utf-8">
 
-<cftry>
+<!---<cftry> --->
 	<cfmodule template="/farcry/#application.applicationname#/customadmin/#URL.module#">
-	<cfcatch>
+<!---	<cfcatch>
 		<cfif isDefined("URL.debug")>
 		<cfdump var="#cfcatch#">
 		<cfelse>
@@ -35,6 +35,6 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 		</cfoutput>
 		</cfif>
 	</cfcatch>
-</cftry> 
+</cftry>  --->
 
 <cfsetting enablecfoutputonly="No">

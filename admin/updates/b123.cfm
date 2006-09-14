@@ -24,7 +24,7 @@ Deploys new Stats Countries Table
 				</cfquery>
 			</cfcase>
 			
-			<cfcase value="mysql">
+			<cfcase value="mysql,mysql5">
 				<cfquery name="update" datasource="#application.dsn#">
 					create table #application.dbowner#statsCountries (
 						COUNTRY VARCHAR(255) NOT NULL,

@@ -46,7 +46,7 @@ $out:$
 				) 
 		</cfquery>
 	</cfcase>
-	<cfcase value="mysql">
+	<cfcase value="mysql,mysql5">
 		<cfif arguments.bDropTable>
 			<cfquery datasource="#arguments.dsn#" name="dropConfig">			
 				DROP TABLE IF EXISTS #application.dbowner#config			

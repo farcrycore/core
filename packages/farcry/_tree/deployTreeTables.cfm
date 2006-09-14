@@ -29,7 +29,7 @@ $out:$
 <cfsetting enablecfoutputonly="yes">
 
 <cfswitch expression="#application.dbtype#">
-<cfcase value="mysql">
+<cfcase value="mysql,mysql5">
 	
 	<cfquery name="dropExisting" datasource="#arguments.dsn#">
 		DROP TABLE IF EXISTS #application.dbowner#nested_tree_objects

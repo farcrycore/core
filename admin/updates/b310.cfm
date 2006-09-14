@@ -74,7 +74,7 @@ Populate each new typename field.
 					ALTER TABLE #application.dbowner#dmImage ADD ThumbnailImage VARCHAR2(255) NULL
 				</cfquery>
 			</cfcase>
-			<cfcase value="mysql">
+			<cfcase value="mysql,mysql5">
 				<cfquery name="update" datasource="#application.dsn#">
 					ALTER TABLE #application.dbowner#dmImage ADD SourceImage VARCHAR(255) NULL
 				</cfquery>
@@ -305,7 +305,7 @@ Populate each new typename field.
 						</cfcase>
 						
 
-						<cfcase value="mysql">																
+						<cfcase value="mysql,mysql5">																
 							<cftry>
 								<cfquery name="qAlterTable" datasource="#application.dsn#">
 								ALTER TABLE #application.dbowner##iType#_#iField# ADD typename VARCHAR(255) NULL

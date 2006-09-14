@@ -486,7 +486,7 @@ $out:$
 		</cfquery>			
 	</cfcase>
 	
-	<cfcase value="mysql">
+	<cfcase value="mysql,mysql5">
 		<!--- Get all tables in database--->	
 		<cfquery name="getMySQLTables" datasource="#Attributes.dsn#">
 		SHOW TABLES

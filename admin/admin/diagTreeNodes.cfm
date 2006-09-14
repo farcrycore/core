@@ -40,7 +40,7 @@ $out:$
 
 	<!--- find orphans --->
 	<cfswitch expression="#application.dbtype#">
-		<cfcase value="mysql">
+		<cfcase value="mysql,mysql5">
 			<cfquery datasource="#application.dsn#" name="qOrphansTemp">
 				SELECT objectid FROM #application.dbowner#nested_tree_objects
 			</cfquery>

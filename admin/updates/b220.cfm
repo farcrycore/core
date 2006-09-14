@@ -30,7 +30,7 @@ Deploys new editOnPro v4.xx config<br />
 				fileSize VARCHAR2(50) NULL 
 			</cfquery>
 		</cfcase>
-		<cfcase value="mysql">
+		<cfcase value="mysql,mysql5">
 			<cfquery name="update" datasource="#application.dsn#">
 				ALTER TABLE #application.dbowner#dmFile ADD
 				fileSize VARCHAR(50) NULL 
@@ -60,7 +60,7 @@ Deploys new editOnPro v4.xx config<br />
 				fileType VARCHAR2(50) NULL 
 			</cfquery>
 		</cfcase>
-		<cfcase value="mysql">
+		<cfcase value="mysql,mysql5">
 			<cfquery name="update" datasource="#application.dsn#">
 				ALTER TABLE #application.dbowner#dmFile ADD
 				fileType VARCHAR(50) NULL 
@@ -90,7 +90,7 @@ Deploys new editOnPro v4.xx config<br />
 				fileSubType VARCHAR2(50) NULL 
 			</cfquery>
 		</cfcase>
-		<cfcase value="mysql">
+		<cfcase value="mysql,mysql5">
 			<cfquery name="update" datasource="#application.dsn#">
 				ALTER TABLE #application.dbowner#dmFile ADD
 				fileSubType VARCHAR(50) NULL 
@@ -120,7 +120,7 @@ Deploys new editOnPro v4.xx config<br />
 				fileExt VARCHAR2(50) NULL 
 			</cfquery>
 		</cfcase>
-		<cfcase value="mysql">
+		<cfcase value="mysql,mysql5">
 			<cfquery name="update" datasource="#application.dsn#">
 				ALTER TABLE #application.dbowner#dmFile ADD
 				fileExt VARCHAR(50) NULL 
@@ -150,7 +150,7 @@ Deploys new editOnPro v4.xx config<br />
 				documentDate date NULL 
 			</cfquery>
 		</cfcase>
-		<cfcase value="mysql">
+		<cfcase value="mysql,mysql5">
 			<cfquery name="update" datasource="#application.dsn#">
 				ALTER TABLE #application.dbowner#dmFile ADD
 				documentDate datetime NULL 
@@ -211,7 +211,7 @@ Deploys new editOnPro v4.xx config<br />
 				alias VARCHAR2(50) NULL 
 			</cfquery>
 		</cfcase>
-		<cfcase value="mysql">
+		<cfcase value="mysql,mysql5">
 			<cfquery name="update" datasource="#application.dsn#">
 				ALTER TABLE #application.dbowner#categories ADD
 				alias VARCHAR(50) NULL 

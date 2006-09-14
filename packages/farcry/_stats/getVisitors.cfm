@@ -61,7 +61,7 @@ $out:$
 			</cfquery>
 		</cfcase>
 		
-		<cfcase value="mysql">
+		<cfcase value="mysql,mysql5">
 			<cfquery name="qVisitors" datasource="#arguments.dsn#" maxrows="#arguments.maxRows#">
 				select sessionid, remoteip, count(pageId) as views, min(logDateTime) as startDate
 				from #application.dbowner#stats
@@ -120,7 +120,7 @@ $out:$
 			</cfquery>
 		</cfcase>
 		
-		<cfcase value="mysql">
+		<cfcase value="mysql,mysql5">
 			<cfquery name="qVisitors" datasource="#arguments.dsn#">
 				select sessionid, remoteip, count(pageId) as views, min(logDateTime) as startDate
 				from #application.dbowner#stats

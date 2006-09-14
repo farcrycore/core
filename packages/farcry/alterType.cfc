@@ -759,7 +759,7 @@ $out:$
 		</cfquery>
 	</cfcase>
 
-	<cfcase value="mysql">
+	<cfcase value="mysql,mysql5">
 		<cfquery datasource="#application.dsn#" name="qArrayTables1">
 		show tables
 		</cfquery>
@@ -1095,7 +1095,7 @@ $out:$
 			RENAME COLUMN #arguments.srcColumn# TO #arguments.destColumn#
 		  </cfquery>
 		</cfcase>
-		<cfcase value="mysql">
+		<cfcase value="mysql,mysql5">
 		  <cfquery datasource="#arguments.dsn#">
 			ALTER TABLE #arguments.typename#
 			CHANGE #arguments.srcColumn# #arguments.destColumn# #arguments.colType# <cfif arguments.colType eq 'varchar'>(#arguments.colLength#)</cfif>
@@ -1215,7 +1215,7 @@ $out:$
 	<cftransaction>
 		<cftry>
 			<cfswitch expression="#application.dbtype#">
-				<cfcase value="mysql">
+				<cfcase value="mysql,mysql5">
 					<!--- alter column --->
 					<cfquery NAME="qAlter" DATASOURCE="#application.dsn#">
 						ALTER TABLE #application.dbowner##arguments.typename#
@@ -1381,7 +1381,7 @@ $out:$
     	    				uc.DATA_TYPE
 			</cfquery>
 		</cfcase>
-		<cfcase value="mysql">
+		<cfcase value="mysql,mysql5">
 			<!--- Get all tables in database--->
 			<cfquery name="getMySQLTables" datasource="#application.dsn#">
 				SHOW TABLES like '#typename#'
@@ -1555,7 +1555,7 @@ $out:$
 		</cfquery>
 	</cfcase>
 
-	<cfcase value="mysql">
+	<cfcase value="mysql,mysql5">
 		<cfquery name="qTableExists" datasource="#application.dsn#">
 			SHOW TABLES LIKE '#arguments.typename#'
 		</cfquery>

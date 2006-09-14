@@ -294,7 +294,7 @@ CONSTRAINT PK_STATSSEARCH PRIMARY KEY (LOGID))
 			</cfquery>
 			
 		</cfcase>
-		<cfcase value="mysql">
+		<cfcase value="mysql,mysql5">
 			
 			<cfquery datasource="#application.dsn#" name="qDrop">
 				DROP TABLE IF EXISTS #application.dbowner#statsSearch

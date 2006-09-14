@@ -46,7 +46,7 @@ $out: stStatus			: struct to pass status report back to caller $
 		</cfquery>
 		</cfif>	
 	</cfcase>
-	<cfcase value="mysql">
+	<cfcase value="mysql,mysql5">
 		<cfquery datasource="#arguments.dsn#" name="qDropTemp">
 			drop table #application.dbowner#statsHours
 		</cfquery>
@@ -138,7 +138,7 @@ $out: stStatus			: struct to pass status report back to caller $
 		</cfquery>
 	</cfcase>
 	
-	<cfcase value="mysql">
+	<cfcase value="mysql,mysql5">
 		<cfquery datasource="#arguments.dsn#" name="qCreateTemp">
 			drop table if exists #application.dbowner#statsHours 
 		</cfquery>
@@ -381,7 +381,7 @@ CONSTRAINT PK_STATS PRIMARY KEY (LOGID))
 			</cfquery>
 			
 		</cfcase>
-		<cfcase value="mysql">
+		<cfcase value="mysql,mysql5">
 			
 			<cfquery datasource="#arguments.dsn#" name="qDrop">
 				DROP TABLE IF EXISTS #application.dbowner#stats
@@ -511,7 +511,7 @@ OS VARCHAR(50) NOT NULL)
 			</cfquery>
 		</cfcase>
 		
-		<cfcase value="mysql">
+		<cfcase value="mysql,mysql5">
 			<cfquery name="update" datasource="#application.dsn#">
 				create table #application.dbowner#statsCountries (
 					COUNTRY VARCHAR(255) NOT NULL,
@@ -1305,7 +1305,7 @@ CONSTRAINT PK_STATSSEARCH PRIMARY KEY (LOGID))
 		</cfquery>
 		
 	</cfcase>
-	<cfcase value="mysql">
+	<cfcase value="mysql,mysql5">
 		
 		<cfquery datasource="#arguments.dsn#" name="qDrop">
 			DROP TABLE IF EXISTS #application.dbowner#statsSearch

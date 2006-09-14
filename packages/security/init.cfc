@@ -346,7 +346,7 @@ $out:$
 				</cftry>
 				<!--- <cfoutput><b style="color:red;font-size:14pt"> #cfcatch.Detail#</b></cfoutput> --->
 			</cfcase>
-			<cfcase value="mysql">
+			<cfcase value="mysql,mysql5">
 				<cfquery datasource="#arguments.datasource#">
 				DROP TABLE IF EXISTS #application.dbowner#dmGroup
 				</cfquery>
@@ -446,7 +446,7 @@ $out:$
 			
 			</cfcase>
 			
-			<cfcase value="mysql">
+			<cfcase value="mysql,mysql5">
 				<cfquery name="qCreateTable_dmGroup" datasource="#arguments.datasource#" dbtype="ODBC">
 				CREATE TABLE `#application.dbowner#dmGroup` 
 					(`groupid` INT (11) UNSIGNED NOT NULL AUTO_INCREMENT, 
@@ -563,7 +563,7 @@ $out:$
 					</cftry>
 				</cfcase>
 				
-				<cfcase value="mysql">
+				<cfcase value="mysql,mysql5">
 					<cftry>
 						<cfquery datasource="#application.dsn#">
 							DROP TABLE IF EXISTS #application.dbowner#dmExternalGroupToPolicyGroup
@@ -700,7 +700,7 @@ $out:$
 					</cfquery>
 				</cfcase>
 				
-				<cfcase value="mysql">
+				<cfcase value="mysql,mysql5">
 				
 					<cfquery datasource="#application.dsn#">
 						CREATE TABLE `#application.dbowner#dmExternalGroupToPolicyGroup`

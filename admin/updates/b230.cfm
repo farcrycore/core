@@ -67,7 +67,7 @@ Removes orphaned containers from refContainers table
 					locale VARCHAR2(10) default 'en_AU' NOT NULL
 				</cfquery>
 			</cfcase>
-			<cfcase value="mysql">
+			<cfcase value="mysql,mysql5">
 				<cfquery name="update" datasource="#application.dsn#">
 					ALTER TABLE #application.dbowner#dmProfile ADD
 					locale VARCHAR(10) NOT NULL default 'en_AU'
@@ -118,7 +118,7 @@ Removes orphaned containers from refContainers table
 					displayMethod VARCHAR2(50) NULL
 				</cfquery>
 			</cfcase>
-			<cfcase value="mysql">
+			<cfcase value="mysql,mysql5">
 			
 				<cfquery name="update" datasource="#application.dsn#">
 					ALTER TABLE #application.dbowner#container ADD
@@ -165,7 +165,7 @@ Removes orphaned containers from refContainers table
 					displayMethod VARCHAR2(50) NULL
 				</cfquery>
 			</cfcase>
-			<cfcase value="mysql">
+			<cfcase value="mysql,mysql5">
 				<cfquery name="update" datasource="#application.dsn#">
 					ALTER TABLE #application.dbowner#container ADD
 					mirrorID VARCHAR(50) NULL
@@ -215,7 +215,7 @@ Removes orphaned containers from refContainers table
 					bShared NUMBER(1) DEFAULT '0' NULL
 				</cfquery>
 			</cfcase>
-			<cfcase value="mysql">
+			<cfcase value="mysql,mysql5">
 				<cfquery name="update" datasource="#application.dsn#">
 					ALTER TABLE #application.dbowner#container ADD
 					bShared INT NULL DEFAULT '0'
@@ -285,7 +285,7 @@ Removes orphaned containers from refContainers table
 					mediaType VARCHAR2(50) NULL
 				</cfquery>
 			</cfcase>
-			<cfcase value="mysql">
+			<cfcase value="mysql,mysql5">
 				<cfquery name="update" datasource="#application.dsn#">
 					ALTER TABLE #application.dbowner#dmCSS ADD
 					mediaType VARCHAR(50) NULL
@@ -323,7 +323,7 @@ Removes orphaned containers from refContainers table
 					bThisNodeOnly NUMBER(1) DEFAULT '0' NOT NULL
 				</cfquery>
 			</cfcase>
-			<cfcase value="mysql">
+			<cfcase value="mysql,mysql5">
 				<cfquery name="update" datasource="#application.dsn#">
 					ALTER TABLE #application.dbowner#dmCSS ADD
 					bThisNodeOnly INT NOT NULL default 0
@@ -367,7 +367,7 @@ Removes orphaned containers from refContainers table
 	<cfoutput><p><span class="frameMenuBullet">&raquo;</span> Removing orphaned containers from refContainers table...</cfoutput><cfflush>
 	<cftry>
 		<cfswitch expression="#application.dbtype#">
-			<cfcase value="mysql">
+			<cfcase value="mysql,mysql5">
 				<cfquery name="qGet" datasource="#application.dsn#">
 					select * 
 					from #application.dbowner#refContainers

@@ -54,7 +54,7 @@ $out:$
 	</cfquery>
 </cfcase>
 
-<cfcase value="mysql">
+<cfcase value="mysql,mysql5">
 	<!--- create temp table --->
 	<cfquery datasource="#arguments.dsn#" name="temp">
 		DROP TABLE IF EXISTS tblTemp1
