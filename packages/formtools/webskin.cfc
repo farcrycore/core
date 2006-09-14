@@ -58,7 +58,7 @@
 			<cfif isDefined("qMethods") AND qMethods.RecordCount>
 				<select name="#arguments.fieldname#" id="#arguments.fieldname#">
 					<cfloop query="qMethods">						
-						<option value="#qMethods.methodname#">#qMethods.displayname#</option>
+						<option value="#qMethods.methodname#" <cfif qmethods.methodname eq arguments.stMetadata.value>selected</cfif>>#qMethods.displayname#</option>
 					</cfloop>
 				</select>
 			<cfelse>
