@@ -299,8 +299,8 @@
 		<cfset variables.tableMetadata = createobject('component','farcry.fourq.TableMetadata').init() />
 		<cfset tableMetadata.parseMetadata(md=getMetadata(oPrimary)) />		
 		<cfset stFields = variables.tableMetadata.getTableDefinition() />
-		<cfset o = createObject("component","farcry.fourq.gateway.dbGateway").init(dsn=application.dsn,dbowner="")>
-		<cfset aProps = o.createArrayTableData(tableName=Typename & "_" & arguments.stMetadata.name,objectid=arguments.ObjectID,tabledef=stFields[arguments.stMetadata.name].Fields,aprops=aField)>
+		<!---<cfset o = createObject("component","farcry.fourq.gateway.dbGateway").init(dsn=application.dsn,dbowner="")> --->
+		<cfset aProps = oPrimary.createArrayTableData(tableName=Typename & "_" & arguments.stMetadata.name,objectid=arguments.ObjectID,tabledef=stFields[arguments.stMetadata.name].Fields,aprops=aField)>
 
 
 		<cfset stResult.value = aField>
