@@ -1,3 +1,4 @@
+<cfsetting enablecfoutputonly="Yes">
 <!--- 
 || LEGAL ||
 $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
@@ -24,10 +25,15 @@ in: - separator (shown between levels)
 	- linkClass (css class for links)
 out:
 --->
-
-<cfsetting enablecfoutputonly="Yes">
+<!--- import tag library --->
 <cfimport taglib="/farcry/farcry_core/tags/webskin" prefix="skin">
 
+<!--- allow developers to close custom tag by exiting on end --->
+<cfif thistag.ExecutionMode eq "end">
+	<cfexit method="exittag" />
+</cfif>
+
+<!--- optional attributes --->
 <cfparam name="attributes.separator" default=" &raquo; ">
 <cfparam name="attributes.here" default="">
 <cfparam name="attributes.linkClass" default="">
