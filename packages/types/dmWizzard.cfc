@@ -1,4 +1,4 @@
-<cfcomponent extends="types" name="dmWizzard" displayname="Wizzard" hint="Wizzard">
+<cfcomponent extends="types" name="dmWizzard" displayname="Wizzard" hint="Wizzard" bSystem="true">
 
 <!--------type properties-------->
 <cfproperty name="ReferenceID" type="string" displayname="Reference ID" hint="Reference ID of the Wizzard. A UUID for an existing object or a Typename for a new object" required="yes" >
