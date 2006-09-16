@@ -80,15 +80,6 @@ type properties
 	<cfargument name="stProperties" required="yes" type="struct">
 	<cfargument name="stFields" required="yes" type="struct">
 		
-	<cfparam name="arguments.stFields.ThumbnailImage.metadata.ftDestination" default="#application.config.image.ThumbnailImageURL#">
-	<cfparam name="arguments.stFields.ThumbnailImage.metadata.ftImageWidth" default="#application.config.image.ThumbnailImageWidth#">
-	<cfparam name="arguments.stFields.ThumbnailImage.metadata.ftImageHeight" default="#application.config.image.ThumbnailImageHeight#">
-	
-	<cfparam name="arguments.stFields.StandardImage.metadata.ftDestination" default="#application.config.image.StandardImageURL#">
-	<cfparam name="arguments.stFields.StandardImage.metadata.ftImageWidth" default="#application.config.image.StandardImageWidth#">
-	<cfparam name="arguments.stFields.StandardImage.metadata.ftImageHeight" default="#application.config.image.StandardImageHeight#">
-	
-
 	<!--- IS THERE A SOURCE IMAGE PROVIDED? --->
 	<cfif structKeyExists(arguments.stProperties, "SourceImage") AND len(arguments.stProperties.SourceImage)>
 		
