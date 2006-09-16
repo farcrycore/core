@@ -1,5 +1,10 @@
 <cfsetting enablecfoutputonly="yes" />
 
+<!--- allow developers to close custom tag by exiting on end --->
+<cfif thistag.ExecutionMode eq "end">
+	<cfexit method="exittag" />
+</cfif>
+
 <cfif isDefined("request.ver") and request.ver>
 	<cfoutput><!-- _genericNav $Revision: 1.2.2.4 $ --></cfoutput>
 </cfif>
