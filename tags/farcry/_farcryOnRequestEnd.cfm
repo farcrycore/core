@@ -65,6 +65,9 @@ $out:$
 		<cfparam name="Request.RequiredInHead.FormsCSS" default = "0">
 		
 		
+		<cfparam name="Request.RequiredInHead.swfObjectJS" default = "0">
+		
+		
 		
 		<cfif isDefined("Request.InHead.PrototypeLite")>
 			<cfset Request.RequiredInHead.prototypeLiteJS = 1>
@@ -192,6 +195,11 @@ $out:$
 			<cfset Request.RequiredInHead.spryAccordionCSS = 1>
 		</cfif>
 				
+				
+		
+		<cfif isDefined("Request.InHead.swfObject") AND Request.InHead.swfObject>
+			<cfset Request.RequiredInHead.swfObjectJS = 1>
+		</cfif>
 		
 		
 	<cfsavecontent variable="RequiredHead">	
@@ -303,24 +311,27 @@ $out:$
 		
 		
 		<cfif isDefined("Request.RequiredInHead.ricoJS") AND Request.RequiredInHead.ricoJS EQ 1>
-			<cfoutput><script language="JavaScript" type="text/javascript" src="/farcry/js/rico/rico.js"></script></cfoutput>
+			<cfoutput><script language="JavaScript" type="text/javascript" src="#application.url.farcry#/js/rico/rico.js"></script></cfoutput>
 		</cfif>
 		
 		
 		
 		<cfif isDefined("Request.RequiredInHead.spryAccordionJS") AND Request.RequiredInHead.spryAccordionJS EQ 1>
-			<cfoutput><script language="JavaScript" type="text/javascript" src="/farcry/js/spry/SpryAccordion.js"></script></cfoutput>
+			<cfoutput><script language="JavaScript" type="text/javascript" src="#application.url.farcry#/js/spry/SpryAccordion.js"></script></cfoutput>
 		</cfif>
 		<cfif isDefined("Request.RequiredInHead.spryxpathJS") AND Request.RequiredInHead.spryxpathJS EQ 1>
-			<cfoutput><script language="JavaScript" type="text/javascript" src="/farcry/js/spry/xpath.js"></script></cfoutput>
+			<cfoutput><script language="JavaScript" type="text/javascript" src="#application.url.farcry#/js/spry/xpath.js"></script></cfoutput>
 		</cfif>
 		<cfif isDefined("Request.RequiredInHead.spryAccordionCSS") AND Request.RequiredInHead.spryAccordionCSS EQ 1>
-			<cfoutput><link href="/farcry/js/spry/css/SpryAccordion.css" rel="stylesheet" type="text/css" /></cfoutput>
+			<cfoutput><link href="#application.url.farcry#/js/spry/css/SpryAccordion.css" rel="stylesheet" type="text/css" /></cfoutput>
 		</cfif>
 		
 
 
 
+		<cfif isDefined("Request.RequiredInHead.swfObjectJS") AND Request.RequiredInHead.swfObjectJS EQ "true">
+			<cfoutput><script language="JavaScript" type="text/javascript" src="#application.url.farcry#/js/swfObject.js"></script></cfoutput>
+		</cfif>
 
 
 
