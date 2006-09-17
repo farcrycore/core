@@ -211,6 +211,8 @@ default handlers
 			</cfif>
 		</cfif>
 		
+		<cfset arguments.path=expandpath(arguments.path) />
+		
 		<cfif len(arguments.path) and fileExists(arguments.path)>
 			<cffile action="READ" file="#arguments.path#" variable="template">
 		
