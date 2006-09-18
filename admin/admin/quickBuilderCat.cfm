@@ -45,10 +45,10 @@ $out:$
 
 	<cfif isDefined("form.submit")>
 	    <cfscript>
+		    aliasDelimiter = "||";
 	        startPoint = form.startPoint;
 	        makenavaliases = isDefined("form.makenavaliases") and form.makenavaliases;
-	        if (makenavaliases)
-	            navaliaseslevel = form.navaliaseslevel;
+	        if (makenavaliases)navaliaseslevel = form.navaliaseslevel;
 	
 	        structure = form.structure;
 	
@@ -73,7 +73,11 @@ $out:$
 	            if (len(title) gt 0) {
 	                item = structNew();
 	                //item.title = ReplaceNoCase(title, "'", "''", "ALL");
-	                item.title = title;
+	                item.title = listFirst(title,aliasDelimiter);
+	                if(listLen(title,aliasDelimiter) eq 2){
+	                	item.navAlias = lcase(replace(trim(listLast(title,aliasDelimiter))," ","_","ALL"));
+	                }
+	                else item.navAlias = "";
 	                item.level = level;
 	                item.objectid = createuuid();
 	                item.parentid = '';
@@ -120,23 +124,22 @@ $out:$
 	
 	            lastlevel = items[i].level;
 	        }
-	
+			
 	        // now finish setting up the structure of each item
 	        for (i = 1; i lte arraylen(items); i = i + 1) {
 	            structDelete(items[i], "level");
 	        }
 	    </cfscript>
 	
-	    <cfimport taglib="/farcry/fourq/tags/" prefix="q4">
-	
+	    <cfimport taglib="/farcry/fourq/tags/" prefix="q4">		
 	    <cfscript>
 	        o_farcrytree = createObject("component", "#application.packagepath#.farcry.tree");
 	        oCat = createObject("component", "#application.packagepath#.farcry.category");
 	
 	        for (i = 1; i lte arraylen(items); i = i + 1) {
 	            oCat.addCategory(dsn=application.dsn,parentID=items[i].parentID,categoryID=items[i].objectID,categoryLabel=items[i].title);
-	            if (len(items[i].lNavIDAlias)) 
-	            	oCat.setAlias(categoryid=items[i].objectID,alias=items[i].title);
+	            if (len(items[i].lNavIDAlias) and len(items[i].navAlias) eq 0){oCat.setAlias(categoryid=items[i].objectID,alias=items[i].title);}
+	            else if(len(items[i].navAlias) GT 0){oCat.setAlias(categoryid=items[i].objectID, alias=items[i].navAlias);}
 	        }
 	    </cfscript>
 	
