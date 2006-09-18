@@ -964,7 +964,7 @@ function menuOption_Delete()
 {
 	
 	if( confirm('Are you sure you wish to delete this object(s)?') )
-		frameopen('#application.url.farcry#/navajo/keywords/delete.cfm?objectId='+lastSelectedId,'editFrame');
+		frameopen('#application.url.farcry#/navajo/keywords/delete.cfm?objectId='+lastSelectedId,'cateditframe');
 }
 
 o = new Object();
