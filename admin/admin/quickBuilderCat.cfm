@@ -138,7 +138,7 @@ $out:$
 	
 	        for (i = 1; i lte arraylen(items); i = i + 1) {
 	            oCat.addCategory(dsn=application.dsn,parentID=items[i].parentID,categoryID=items[i].objectID,categoryLabel=items[i].title);
-	            if (len(items[i].lNavIDAlias) and len(items[i].navAlias) eq 0){oCat.setAlias(categoryid=items[i].objectID,alias=items[i].title);}
+	            if (len(items[i].lNavIDAlias) and len(items[i].navAlias) eq 0){oCat.setAlias(categoryid=items[i].objectID,alias=lcase(replace(trim(items[i].title)," ","_","ALL")));}
 	            else if(len(items[i].navAlias) GT 0){oCat.setAlias(categoryid=items[i].objectID, alias=items[i].navAlias);}
 	        }
 	    </cfscript>
