@@ -44,6 +44,7 @@ $out:$
 
 	<cfif isDefined("form.submit")>
 	    <cfscript>
+		    aliasDelimiter = "||";
 	        startPoint = form.startPoint;
 	        makeHtml = isDefined("form.makeHtml") and form.makeHtml;
 	        if (makeHtml)
@@ -78,7 +79,12 @@ $out:$
 	            if (len(title) gt 0) {
 	                item = structNew();
 	                //item.title = ReplaceNoCase(title, "'", "''", "ALL");
-	                item.title = title;
+	                item.title = listFirst(title,aliasDelimiter);
+	                if(listLen(title,aliasDelimiter) eq 2){
+	                	item.navAlias = lcase(replace(trim(listLast(title,aliasDelimiter))," ","_","ALL"));
+	                }
+	                else item.navAlias = "";
+	               
 	                item.level = level;
 	                item.objectid = createuuid();
 	                item.parentid = '';
@@ -113,19 +119,24 @@ $out:$
 	            navtitle = lcase(rereplacenocase(items[i].title, "\W+", "_", "all"));
 	            arrayAppend(navstack, rereplace(navtitle, "_+", "_", "all"));
 	
-	            if (makenavaliases) {
+	            if (makenavaliases and items[i].navAlias eq "") {
 	                if (navaliaseslevel eq 0 or items[i].level lte navaliaseslevel)
 	                    items[i].lNavIDAlias = arrayToList(navstack, '_');
 	                else
 	                    items[i].lNavIDAlias = '';
 	
 	            }
+	            
+	            else if(items[i].navAlias neq ""){
+	            	items[i].lNavIDAlias = items[i].navAlias;
+	            }
 	            else
 	                items[i].lNavIDAlias = '';
 	
 	            lastlevel = items[i].level;
 	        }
-	
+			
+		
 	        htmlItems = arrayNew(1);
 	
 	        // now finish setting up the structure of each item
@@ -171,7 +182,7 @@ $out:$
 	            structDelete(items[i], "level");
 	        }
 	    </cfscript>
-	
+
 		
 	    <cfimport taglib="/farcry/fourq/tags/" prefix="q4">
 	
