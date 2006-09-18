@@ -144,7 +144,7 @@ default handlers
 		
 	</cffunction>
 	
-	<cffunction name="getWebskins" returntype="query" access="public" output="false" hint="Returns a query of all available webskins. Search through project first, then any library's that have been included.">
+	<cffunction name="getWebskins" returntype="query" access="public" output="true" hint="Returns a query of all available webskins. Search through project first, then any library's that have been included.">
 		<cfargument name="typename" type="string" default="#gettablename()#" hint="Typename of instance." />
 		<cfargument name="prefix" type="string" required="false" default="" hint="Prefix to filter template results." />
 		
@@ -196,7 +196,7 @@ default handlers
 		<cfreturn qresult />
 	</cffunction>
 
-	<cffunction name="getWebskinDisplayname" returntype="string" access="public" output="false" hint="">
+	<cffunction name="getWebskinDisplayname" returntype="string" access="public" output="true" hint="">
 		<cfargument name="typename" type="string" required="false" />
 		<cfargument name="template" type="string" required="false" />
 		<cfargument name="path" type="string" required="false" />
@@ -210,8 +210,6 @@ default handlers
 				<cfthrow type="Application" detail="Error: [getWebskinDisplayname] You must pass in a path or both the typename and template" />	
 			</cfif>
 		</cfif>
-		
-		<cfset arguments.path=expandpath(arguments.path) />
 		
 		<cfif len(arguments.path) and fileExists(arguments.path)>
 			<cffile action="READ" file="#arguments.path#" variable="template">
