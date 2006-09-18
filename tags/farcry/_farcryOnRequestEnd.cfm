@@ -1,3 +1,5 @@
+<cfsetting enablecfoutputonly="yes">
+
 <!--- 
 || LEGAL ||
 $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
@@ -21,6 +23,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 $in: $
 $out:$
 --->
+
 
 
 <cfif structKeyExists(Request,"inHead") AND len(structKeyList(Request.InHead))>		
@@ -344,8 +347,6 @@ $out:$
 	<cfhtmlhead text="#RequiredHead#">
 </cfif>
 
-
-<cfsetting enablecfoutputonly="yes">
 
 <!--- log visit to page --->
 <cf_statsLog>
