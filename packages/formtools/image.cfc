@@ -14,11 +14,13 @@
 		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
-
+		<cfargument name="stPackage" required="true" type="struct" hint="Contains the metadata for the all fields for the current typename.">
+		
 		<cfparam name="arguments.stMetadata.ftstyle" default="">
 		<cfparam name="arguments.stMetadata.ftDestination" default="/images">
-		<cfparam name="arguments.stMetadata.ftCreateFromSourceOption" default="false">
+		<cfparam name="arguments.stMetadata.ftSourceField" default="">
 		<cfparam name="arguments.stMetadata.ftCreateFromSourceDefault" default="true">
+		<cfparam name="arguments.stMetadata.ftAllowUpload" default="true">
 		
 		<cfset Request.inHead.Scriptaculous = 1>
 		
@@ -27,15 +29,20 @@
 				<table>
 				<tr>
 					<td valign="top">
-						<cfif arguments.stMetadata.ftCreateFromSourceOption>
+						<cfif len(arguments.stMetadata.ftSourceField)>
 							<!--- TODO: If change to off then deactivate the browse button --->
 							<div>
-							<input type="checkbox" name="#arguments.fieldname#CreateFromSource" id="#arguments.fieldname#CreateFromSource" value="true" <cfif arguments.stMetadata.ftCreateFromSourceDefault>checked</cfif>> generate based on "Source Image"
+							<input type="checkbox" name="#arguments.fieldname#CreateFromSource" id="#arguments.fieldname#CreateFromSource" value="true" <cfif arguments.stMetadata.ftCreateFromSourceDefault AND NOT len(arguments.stMetadata.value)>checked</cfif>> generate based on "#arguments.stPackage.stProps[arguments.stMetadata.ftSourceField].metadata.ftLabel#"
 							<input type="hidden" name="#arguments.fieldname#CreateFromSource" id="#arguments.fieldname#CreateFromSource" value="false" />
 							</div>
 						</cfif>
-						<input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#arguments.stMetadata.value#" />
-						<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" value="" style="#arguments.stMetadata.ftstyle#" />
+						
+						
+						<!--- Can the user upload their own image. --->
+						<cfif arguments.stMetadata.ftAllowUpload>
+							<input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#arguments.stMetadata.value#" />
+							<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" value="" style="#arguments.stMetadata.ftstyle#" />
+						</cfif>
 					</td>
 					
 					<cfif len(#arguments.stMetadata.value#)>
@@ -139,7 +146,7 @@
 	</cffunction>
 
 
-	<cffunction name="GenerateImage" access="public" output="false" returntype="struct">
+	<cffunction name="GenerateImage" access="public" output="true" returntype="struct">
 		<cfargument name="Source" required="true" hint="The absolute path where the image that is being used to generate this new image is located.">
 		<cfargument name="Destination" required="false" default="" hint="The absolute path where the image will be stored.">
 		<cfargument name="Width" required="false" default="#application.config.image.StandardImageWidth#" hint="The maximum width of the new image.">
@@ -166,21 +173,37 @@
 		 
 		<!--- Image has changed --->
 		
+
+
+		
+				
 		<cfif len(arguments.destination)>
 		
 			<cfset ImageDestination = arguments.Destination />
 			
+			<!--- Create the directory for the image if it doesnt already exist --->
 			<cfif NOT DirectoryExists("#ImageDestination#")>
 				<cfdirectory action="create" directory="#ImageDestination#">
 			</cfif>
 					
+			<!--- We need to check to see if the image we are copying already exists. If so, we need to create a unique filename --->
+			<cfset imageUtilsObj = CreateObject("component","#application.packagepath#.farcry.imageUtilities")>
+			<cfset returnstruct = imageUtilsObj.fGetProperties(arguments.Source)>			
+							
+			<cfif fileExists("#ImageDestination#/#returnstruct.filename#")>
+				<cfset returnstruct.filename = "#dateFormat(now(),'yymmdd')#_#timeFormat(now(),'hhmmssl')#_#returnstruct.filename#"/>
+			</cfif>
+			
+			<!--- Include the image filename into the image destination. --->
+			<cfset ImageDestination = "#ImageDestination#/#returnstruct.filename#" />									
+			
+			<!--- Copy the image to the new destination folder --->
 			<cffile action="copy" 
-				source="#arguments.Source#"
-				destination="#ImageDestination#">
-			
-			<cfset ImageDestination = ImageDestination & "/#File.ServerFile#" />
-			
-			<cfset stResult.filename = File.ServerFile />	
+					source="#arguments.Source#"
+					destination="#ImageDestination#">
+				
+			<!--- update the return filename --->				
+			<cfset stResult.filename = returnstruct.filename />	
 		</cfif>
 		
 		<cfswitch expression="#arguments.AutoGenerateType#">
