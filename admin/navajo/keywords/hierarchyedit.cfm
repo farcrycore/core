@@ -51,7 +51,7 @@ $out:$
 	function showTree(id)
 	{		
 		strURL = '#application.url.farcry#/navajo/keywords/tree.cfm?rootobjectid='+id;
-		document.frames.cattreeframe.location.href = strURL;
+		frames.cattreeframe.location.href = strURL;
 				
 	}	
 </script>
@@ -61,32 +61,35 @@ $out:$
 	catRootObjectID = qrootObjectID.objectID;
 </cfscript>
 
- <table width="100%" border="0" cellspacing="0" cellpadding="0">
+<cfoutput><table width="100%" border="0" cellspacing="0" cellpadding="0">
 	<tr>
-		<td>
+		<td></cfoutput>
 			<cfinvoke component="#application.packagepath#.farcry.category" method="getHierarchies"  returnvariable="qHierarchies">
-
+			<cfoutput>
 			<form action="" method="post">
-			<cfoutput>#application.adminBundle[session.dmProfile.locale].existingHierarchies#</cfoutput>
+			#application.adminBundle[session.dmProfile.locale].existingHierarchies#
 			<select name="hierarchyID" class="formfield" onchange="showTree(this.value);">
-			<cfoutput><option value="#catRootObjectID#">#application.adminBundle[session.dmProfile.locale].showAllHierarchies#</cfoutput>
-			<cfoutput query="qHierarchies">
+			<option value="#catRootObjectID#">#application.adminBundle[session.dmProfile.locale].showAllHierarchies#
+			<cfloop query="qHierarchies">
 				<option value="#objectID#">#objectName#</option>
-			</cfoutput>
+			</cfloop>
 			</select> 
 			</form>
 		</td>
 	</tr>
 	<tr>
-		<td>&nbsp;</td>
+		<td></td>
 	</tr>
 </table>		
 
-<cfoutput>
-<div>
-	<iframe name="cattreeframe" width="100%" height="100%" id="cattreeframe" style="display:inline;" src="#application.url.farcry#/navajo/keywords/tree.cfm" scrolling="Yes" frameborder="0"></iframe>
-	<iframe style="display:inline;" width="400" height="100%" name="cateditframe" id="cateditframe" src="#application.url.farcry#/navajo/keywords/overview.cfm" scrolling="Auto" frameborder="0"></iframe> 
+
+<div style="float:left;width:50%">
+	<iframe name="cattreeframe" width="100%" height="100%" id="cattreeframe" style="display:inline;" src="#application.url.farcry#/navajo/keywords/tree.cfm" scrolling="auto" frameborder="0"></iframe>
 </div>
+<div style="float:right;width:50%">
+<iframe style="display:inline;" width="100%" height="100%" name="cateditframe" id="cateditframe" src="#application.url.farcry#/navajo/keywords/overview.cfm" scrolling="Auto" frameborder="0"></iframe> 			
+</div>
+
 </body>
 </html>
 </cfoutput>
