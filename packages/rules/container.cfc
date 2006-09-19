@@ -359,7 +359,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 				</cfquery>
 				
 			</cfcase>
-			<cfcase value="mysql">
+			<cfcase value="mysql,mysql5">
 				<cfquery datasource="#arguments.dsn#">
 					DROP TABLE IF EXISTS #arguments.dbowner#refContainers
 				</cfquery>
