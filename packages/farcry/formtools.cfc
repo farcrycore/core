@@ -4,9 +4,10 @@
 <cffunction name="getRecordset" access="public" output="No" returntype="struct">
 	<cfargument name="typename" required="No" type="string" default="" />
 	<cfargument name="identityColumn" required="No" type="string" default="ObjectID" />
-	<cfargument name="sqlColumns" required="No" type="string" default="objectid" />
+	<cfargument name="sqlColumns" required="No" type="string" default="tbl.ObjectID" />
 	<cfargument name="sqlWhere" required="No" type="string" default="" />
 	<cfargument name="sqlOrderBy" required="No" type="string" default="label" />
+	<cfargument name="lCategories" required="No" type="string" default="" />
 	
 	<cfargument name="CurrentPage" required="No" type="numeric" default="1" />
 	<cfargument name="RecordsPerPage" required="No" type="numeric" default="5" />
@@ -15,14 +16,19 @@
 	<cfset var stReturn = structNew() />
 	<cfset var q = '' />
 	<cfset var recordcount = '' />
-	
+	<cfset  arguments.identityColumn = "tbl." & arguments.identityColumn>
+	<cfif arguments.sqlColumns neq 'tbl.ObjectID'>
+		<cfset  arguments.sqlColumns="tbl.ObjectID," & sqlColumns>
+	</cfif>
 	<cfif NOT len(arguments.sqlWhere)>
 		<cfset arguments.sqlWhere = "0=0" />
 	</cfif>
+	
+	<cfset SQLList = listQualify(lCategories,"'")>
 
 	<cftimer label="cfstoredproc">
 	<!--- query --->
-	<cfstoredproc procedure="sp_selectnextn" datasource="#application.dsn#">
+	<cfstoredproc procedure="sp_selectnextn_bycat" datasource="#application.dsn#">
 	    <cfprocresult name="q" resultset="1">
 	    <cfprocresult name="recordcount" resultset="2">
 	     <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="TableName"  value="#arguments.typename#">
@@ -32,6 +38,7 @@
 	     <cfprocparam type="In"  cfsqltype="CF_SQL_VARCHAR" dbvarname="GroupSize" value="#arguments.recordsPerPage#">
 	     <cfprocparam type="In" cfsqltype="CF_SQL_LONGVARCHAR" dbvarname="SqlWhere" value="#arguments.SqlWhere#">
 	     <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="SqlOrderBy" value="#arguments.sqlOrderBy#">
+	     <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="lCategories" value="#preserveSingleQuotes(SQLList)#">
 	</cfstoredproc>
 	</cftimer>
 	
