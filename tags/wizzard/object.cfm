@@ -486,7 +486,7 @@
 					<cfoutput></td></tr></cfoutput>
 				<cfelse>
 					<cfoutput>
-						<br class="fieldsectionbreak" />
+						<br class="clearer" />
 						</div>
 					</cfoutput>
 				</cfif>
