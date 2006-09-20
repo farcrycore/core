@@ -52,13 +52,19 @@ return REFindNoCase("^[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{16}$", str);
 	</cfif>
 	
 	<cfif isDefined("stWizzard.Data")>
-		<cfwddx action="WDDX2CFML" input="#stWizzard.Data#" output="stWizzard.Data">
-		<!--- return the struct --->
-		<cfreturn stWizzard>
+		<!--- only run this if the wddx packet has not already been extracted into a struct --->
+		<cfif  not isStruct(stWizzard.Data)>
+			<cfwddx action="WDDX2CFML" input="#stWizzard.Data#" output="stWizzardData">
+			<cfset stWizzard.Data = duplicate(stWizzardData) />
+		</cfif>
 	<cfelse>
 		<cfabort showerror="Farcy could not find or create the wizzard requested." />
 	</cfif>
-
+	
+	<!--- return the struct --->
+	<cfreturn stWizzard>
+	
+		
 </cffunction>
 
 <cffunction name="create" access="public" output="false" returntype="struct">
@@ -124,8 +130,33 @@ return REFindNoCase("^[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{16}$", str);
 <cfwddx action="WDDX2CFML" input="#stWizzard.Data#" output="stWizzardData">
 <cfset stWizzard.Data = stWizzardData />
 
+<!--- we need to loop through each wizzard object and save to the session --->
+<cfloop list="#structKeyList(stWizzard.Data)#" index="i">
+	<cfset stProperties = stWizzard.Data[i] />
+	
+	<cfset bsuccess = createObject("component", application.types[stProperties.typename].typepath).setdata(stProperties=stProperties,bSessionOnly="true") />
+</cfloop>
+
 <!--- return the struct --->
 <cfreturn stWizzard>
 
 </cffunction>
+
+
+<cffunction name="deleteData" access="public" output="false" returntype="struct" hint="Delete the specified objectid and corresponding data, including array properties and refObjects.">
+	<cfargument name="objectid" type="uuid" required="true">
+	<cfargument name="dsn" type="string" required="false" default="#application.dsn#">
+	<cfargument name="dbowner" type="string" required="false" default="#ucase(application.dbowner)#">
+	
+	<cfset stWizzard = read(wizzardid=arguments.objectid) />
+	
+	<cfloop list="#structKeyList(stWizzard.data)#" index="i" >
+		<cfset structDelete(Session.TempObjectStore, i) />
+	</cfloop>
+	
+	
+	<cfreturn super.deleteData(objectid=arguments.objectid,dsn=arguments.dsn, dbowner=arguments.dbowner) />
+</cffunction>
+
+
 </cfcomponent>
