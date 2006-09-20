@@ -101,7 +101,7 @@
 	</cfif>
 	
 	
-	<ft:object objectID="#arguments.PrimaryObjectID#" WizzardID="#arguments.WizzardID#" lFields="#arguments.PrimaryFieldName#" inTable=0 IncludeLabel=0 IncludeFieldSet=0 r_stFields="stFields" />
+	<ft:object objectID="#arguments.PrimaryObjectID#" WizzardID="#arguments.WizzardID#" lFields="#arguments.PrimaryFieldName#" inTable=0 IncludeLabel=0 IncludeFieldSet=0 r_stFields="stFields" IncludeLibraryWrapper="false" />
 		
 	<cfoutput>
 		#stFields[arguments.PrimaryFieldName].HTML#
