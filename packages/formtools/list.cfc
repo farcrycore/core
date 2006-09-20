@@ -21,6 +21,8 @@
 		<cfparam name="arguments.stMetadata.ftList" default="">
 		<cfparam name="arguments.stMetadata.ftRenderType" default="dropdown">
 		<cfparam name="arguments.stMetadata.ftSelectMultiple" default="false">
+		<cfparam name="arguments.stMetadata.ftClass" default="">
+		<cfparam name="arguments.stMetadata.ftstyle" default="">
 		
 
 		<cfif len(arguments.stMetadata.ftList)>
@@ -29,7 +31,7 @@
 				<cfcase value="dropdown">
 								
 					<cfsavecontent variable="html">
-						<cfoutput><select id="#arguments.fieldname#" name="#arguments.fieldname#" <cfif arguments.stMetadata.ftSelectMultiple> multiple="true"</cfif>></cfoutput>
+						<cfoutput><select id="#arguments.fieldname#" name="#arguments.fieldname#" class="#arguments.stMetadata.ftClass#" style="#arguments.stMetadata.ftStyle#" <cfif arguments.stMetadata.ftSelectMultiple> multiple="true"</cfif>></cfoutput>
 							<cfloop list="#arguments.stMetadata.ftList#" index="i">
 								<cfoutput><option value="#ListFirst(i,":")#" <cfif listFindNoCase(arguments.stMetadata.value,#ListFirst(i,":")#)>selected</cfif>>#ListLast(i , ":")#</option></cfoutput>
 							</cfloop>
