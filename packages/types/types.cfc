@@ -87,6 +87,7 @@ default handlers
 		
 		<cfif isDefined("arguments.stobject")>
 			<cfset stobj=arguments.stobject />
+			<cfset instance.stobj = stObj />
 		<cfelse>
 			<!--- If the objectid has not been sent, we need to create a default object. --->
 			<cfparam name="arguments.objectid" default="#CreateUUID()#" type="uuid">
@@ -144,7 +145,7 @@ default handlers
 		
 	</cffunction>
 	
-	<cffunction name="getWebskins" returntype="query" access="public" output="true" hint="Returns a query of all available webskins. Search through project first, then any library's that have been included.">
+	<cffunction name="getWebskins" returntype="query" access="public" output="false" hint="Returns a query of all available webskins. Search through project first, then any library's that have been included.">
 		<cfargument name="typename" type="string" default="#gettablename()#" hint="Typename of instance." />
 		<cfargument name="prefix" type="string" required="false" default="" hint="Prefix to filter template results." />
 		
@@ -196,7 +197,7 @@ default handlers
 		<cfreturn qresult />
 	</cffunction>
 
-	<cffunction name="getWebskinDisplayname" returntype="string" access="public" output="true" hint="">
+	<cffunction name="getWebskinDisplayname" returntype="string" access="public" output="false" hint="">
 		<cfargument name="typename" type="string" required="false" />
 		<cfargument name="template" type="string" required="false" />
 		<cfargument name="path" type="string" required="false" />
@@ -587,7 +588,7 @@ default handlers
 		<cfif qWizzardSteps.recordcount GT 1>
 			
 			<!--- Always save wizzard WDDX data --->
-			<wiz:processWizzard>
+			<wiz:processWizzard excludeAction="Cancel">
 			
 				<!--- Save the Primary Wizzard Object --->
 				<wiz:processWizzardObjects typename="#stobj.typename#" />	
