@@ -1,6 +1,8 @@
 <cfsetting enablecfoutputonly="yes">
 
 <cfparam name="attributes.r_stWizzard" default="stWizzard" type="string" /><!--- Name of structure to return the stWizzard to the Caller. --->
+<cfparam name="attributes.excludeAction" default="" ><!--- Any actions to exclude --->
+
 
 <cfif not thistag.HasEndTag>
 
@@ -32,13 +34,20 @@
 		<cfloop list="#StringToCheck#" index="i">
 			<!--- If it finds any of the things to be processed, or it is a * or if its empty and therefore to process anything --->
 			<cfif listFindNoCase(FORM[FormFieldToProcess],i) OR i EQ "*" >
-				<cfset variables.EnterWizzardProcess = true>
+				
+				<!--- Check to make sure the farcry form button that has been pressed is not in the exclude list --->
+				<cfif NOT listFindNoCase(attributes.excludeAction, form.farcryformsubmitbutton)>
+					<cfset variables.EnterWizzardProcess = true>
+				</cfif>
 			</cfif>
 		</cfloop>
 	</cfif>
 
 	<!--- Read the Wizzard --->
 	<cfif variables.EnterWizzardProcess and structKeyExists(form, 'WizzardID') and len(form.wizzardID)>
+		
+		
+		
 		<cfset oWizzard = createObject("component",application.types['dmWizzard'].typepath) />
 		<cfset stWizzard = oWizzard.Read(WizzardID=form.wizzardID)>
 		<cfloop list="#attributes.r_stWizzard#" index="i">
@@ -71,6 +80,7 @@
 		
 	<!--- Have we been requested to remove the wizzard object? --->
 	<cfif isDefined("attributes.RemoveWizzard") and attributes.RemoveWizzard EQ "true">
+		
 		
 		<cfset stResult = oWizzard.deleteData(objectID=stWizzard.ObjectID) />	
 		
