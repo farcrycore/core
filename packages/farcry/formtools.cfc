@@ -37,20 +37,58 @@
 	
 	<cfset arguments.lCategories = listQualify(arguments.lCategories,"'")>
 
+	<cfset theSQLTop = arguments.CurrentPage * arguments.recordsPerPage>
+
+<cftry>
+	<!--- <cfquery name="getRecords" datasource="#application.dsn#">
+		
+		IF OBJECT_ID('tempdb..##thetops') IS NOT NULL drop table ##thetops
+
+		CREATE TABLE ##thetops (objectID varchar(40), myint int IDENTITY(1,1) NOT NULL)
+		
+		INSERT ##thetops (objectID)
+		SELECT TOP #theSQLTop# tbl.objectid FROM #arguments.typename# tbl 
+		<cfif arguments.lCategories neq ''>
+			, refCategories cat where cat.objectId = tbl.ObjectID
+		<cfelse>
+			where 0=0
+		</cfif>
+		<cfif arguments.SqlWhere neq ''>AND #arguments.SqlWhere#</cfif>
+		<cfif arguments.lCategories neq ''>	AND cat.categoryID in(#preserveSingleQuotes(arguments.lCategories)#)</cfif>
+		ORDER BY publishDate Desc
+		
+		SELECT #arguments.sqlColumns# FROM #arguments.typename# tbl inner join  ##thetops t
+		on tbl.objectid = t.objectid 
+		where t.myint > ((select count(*) from ##thetops) - #arguments.recordsPerPage#)
+		
+		drop table ##thetops
+				
+	</cfquery>  --->
+
+
 	<!--- query --->
-	<cfstoredproc procedure="sp_selectnextn_bycat" datasource="#application.dsn#">
+
+	
+	<cfstoredproc procedure="sp_selectview_bycat" datasource="#application.dsn#">
 	    <cfprocresult name="q" resultset="1">
 	    <cfprocresult name="recordcount" resultset="2">
-	     <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="TableName"  value="#arguments.typename#">
-	     <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="Columns" value="#arguments.sqlColumns#">
-	     <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="IdentityColumn" value="#arguments.identityColumn#">
-	     <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="GroupNumber" value="#arguments.CurrentPage#">
-	     <cfprocparam type="In"  cfsqltype="CF_SQL_VARCHAR" dbvarname="GroupSize" value="#arguments.recordsPerPage#">
-	     <cfprocparam type="In" cfsqltype="CF_SQL_LONGVARCHAR" dbvarname="SqlWhere" value="#arguments.SqlWhere#">
-	     <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="SqlOrderBy" value="#arguments.sqlOrderBy#">
-	     <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="lCategories" value="#preserveSingleQuotes(arguments.lCategories)#">
+	    
+	    <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="TableName"  value="#arguments.typename#">
+	    <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="Columns" value="#arguments.sqlColumns#">
+	    <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="GroupNumber" value="#arguments.CurrentPage#">
+	    <cfprocparam type="In"  cfsqltype="CF_SQL_VARCHAR" dbvarname="GroupSize" value="#arguments.recordsPerPage#">
+	    <cfprocparam type="In" cfsqltype="CF_SQL_LONGVARCHAR" dbvarname="SqlWhere" value="#arguments.SqlWhere#">
+	    <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="SqlOrderBy" value="#arguments.sqlOrderBy#">
+	    <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="lCategories" value="#preserveSingleQuotes(arguments.lCategories)#">
 	</cfstoredproc>
 
+
+
+<cfcatch>
+	<cfdump var="#cfcatch#">
+<cfabort>
+</cfcatch>
+</cftry>
 	<!------------------------------
 	DETERMINE THE TOTAL PAGES
 	 ------------------------------>
@@ -68,18 +106,18 @@
 		<cfset arguments.CurrentPage = 1 />
 		
 		<!--- query --->
-		<cfstoredproc procedure="sp_selectnextn_bycat" datasource="#application.dsn#">
-		    <cfprocresult name="q" resultset="1">
-		    <cfprocresult name="recordcount" resultset="2">
-		     <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="TableName"  value="#arguments.typename#">
-		     <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="Columns" value="#arguments.sqlColumns#">
-		     <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="IdentityColumn" value="objectid">
-		     <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="GroupNumber" value="#arguments.CurrentPage#">
-		     <cfprocparam type="In"  cfsqltype="CF_SQL_VARCHAR" dbvarname="GroupSize" value="#arguments.recordsPerPage#">
-		     <cfprocparam type="In" cfsqltype="CF_SQL_LONGVARCHAR" dbvarname="SqlWhere" value="#arguments.SqlWhere#">
-		     <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="SqlOrderBy" value="#arguments.sqlOrderBy#">
-		     <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="lCategories" value="#preserveSingleQuotes(arguments.lCategories)#">
-		</cfstoredproc>
+	<cfstoredproc procedure="sp_selectview_bycat" datasource="#application.dsn#">
+	    <cfprocresult name="q" resultset="1">
+	    <cfprocresult name="recordcount" resultset="2">
+	    
+	    <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="TableName"  value="#arguments.typename#">
+	    <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="Columns" value="#arguments.sqlColumns#">
+	    <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="GroupNumber" value="#arguments.CurrentPage#">
+	    <cfprocparam type="In"  cfsqltype="CF_SQL_VARCHAR" dbvarname="GroupSize" value="#arguments.recordsPerPage#">
+	    <cfprocparam type="In" cfsqltype="CF_SQL_LONGVARCHAR" dbvarname="SqlWhere" value="#arguments.SqlWhere#">
+	    <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="SqlOrderBy" value="#arguments.sqlOrderBy#">
+	    <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="lCategories" value="#preserveSingleQuotes(arguments.lCategories)#">
+	</cfstoredproc>
 	</cfif>			
 	
 	<cfif isNumeric(recordcount.countAll) AND recordcount.countAll GT 0>
