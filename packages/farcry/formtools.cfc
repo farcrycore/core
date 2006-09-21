@@ -19,7 +19,7 @@
 	<cfset  arguments.identityColumn = "tbl." & arguments.identityColumn>
 	
 	<!--- Ensure  if objectID provided in columns names prefixed it with tbl. --->
-	<cfif arguments.sqlColumns neq "*">
+ 	<cfif arguments.sqlColumns neq "*">
 	
 		<cfif arguments.sqlColumns neq 'tbl.ObjectID'>
 			<cfif listFind(arguments.sqlColumns,"ObjectID")>
@@ -31,14 +31,12 @@
 			<cfset arguments.sqlColumns="tbl.*">
 	</cfif>
 
-
 	<cfif NOT len(arguments.sqlWhere)>
 		<cfset arguments.sqlWhere = "0=0" />
 	</cfif>
 	
 	<cfset arguments.lCategories = listQualify(arguments.lCategories,"'")>
 
-	<cftimer label="cfstoredproc">
 	<!--- query --->
 	<cfstoredproc procedure="sp_selectnextn_bycat" datasource="#application.dsn#">
 	    <cfprocresult name="q" resultset="1">
@@ -52,8 +50,7 @@
 	     <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="SqlOrderBy" value="#arguments.sqlOrderBy#">
 	     <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="lCategories" value="#preserveSingleQuotes(arguments.lCategories)#">
 	</cfstoredproc>
-	</cftimer>
-	
+
 	<!------------------------------
 	DETERMINE THE TOTAL PAGES
 	 ------------------------------>
@@ -129,8 +126,10 @@
 	
 	<!--- check if any array property is required --->
 	
+	
+	
 	<cfloop list="#arguments.recordset.columnlist#" index="i">
-		<cfif application.types[arguments.typename].stProps[i].metadata.type EQ "array">
+		<cfif structKeyExists(application.types[arguments.typename].stProps,i) AND application.types[arguments.typename].stProps[i].metadata.type EQ "array">
 			<cfset listAppend(lArrayProps,application.types[arguments.typename].stProps[i])>
 		</cfif>
 	</cfloop>
@@ -161,15 +160,14 @@
 	
 	</cfif>
 	
-	
-	
+
 	
 	<cfloop query="arguments.recordset">
 	
 		<cfset tmpSt = structNew()>
 		<cfset tmpSt.typeName = arguments.typename>
 		<cfloop list="#arguments.recordset.columnlist#" index="i">	
-			<cfif application.types[arguments.typename].stProps[i].metadata.type NEQ "array">
+			<cfif structKeyExists(application.types[arguments.typename].stProps,i) and application.types[arguments.typename].stProps[i].metadata.type NEQ "array">
 				<cfset tmpSt[i] = arguments.recordset[i][arguments.recordset.currentRow]>			
 			</cfif>
 		</cfloop>
