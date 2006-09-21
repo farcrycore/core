@@ -34,6 +34,7 @@
 	<cfparam name="attributes.bValidation" default="true"><!--- Flag to determine if client side validation classes are added to this section of the form. --->
 	<cfparam name="attributes.lHiddenFields" default=""><!--- List of fields to render as hidden fields that can be use to inject a value into the form post. --->
 	<cfparam name="attributes.stPropValues" default="#structNew()#">
+	<cfparam name="attributes.PackageType" default="types"><!--- Could be types or rules.. --->
 	<cfparam name="attributes.r_stWizzard" default="stWizzard"><!--- The name of the CALLER variable that contains the stWizzard structure --->
 	
 	
@@ -53,6 +54,15 @@
 				<cfset attributes.typename = q4.findType(objectid=attributes.objectid)>
 			</cfif>
 
+	
+			<cfif attributes.PackageType EQ "types">
+				<cfset stPackage = application[attributes.PackageType][attributes.typename]>
+				<cfset packagePath = application[attributes.PackageType][attributes.typename].typepath>
+			<cfelse>
+				<cfset stPackage = application[attributes.PackageType][attributes.typename]>
+				<cfset packagePath = application[attributes.PackageType][attributes.typename].rulepath>
+			</cfif>
+			
 			<!--- populate the primary values --->
 			<cfset typename = attributes.typename>
 			<cfset oType = createobject("component",application.types[attributes.typename].typepath)>
@@ -91,6 +101,16 @@
 	
 		<cfset oType = createobject("component",application.types[attributes.typename].typepath)>
 			
+
+	
+		<cfif attributes.PackageType EQ "types">
+			<cfset stPackage = application[attributes.PackageType][attributes.typename]>
+			<cfset packagePath = application[attributes.PackageType][attributes.typename].typepath>
+		<cfelse>
+			<cfset stPackage = application[attributes.PackageType][attributes.typename]>
+			<cfset packagePath = application[attributes.PackageType][attributes.typename].rulepath>
+		</cfif>
+					
 		<cfset qMetadata = application.types[attributes.typename].qMetadata />
 		<cfset lFields = ValueList(qMetadata.propertyname)>
 		<cfset stFields = application.types[attributes.typename].stprops>
@@ -364,6 +384,7 @@
 						<cfinvokeargument name="stObject" value="#stObj#">
 						<cfinvokeargument name="stMetadata" value="#ftFieldMetadata#">
 						<cfinvokeargument name="fieldname" value="#variables.prefix##ftFieldMetadata.Name#">
+						<cfinvokeargument name="stPackage" value="#stPackage#">
 					</cfinvoke>
 					<cfcatch><cfdump var="#cfcatch#"><cfabort></cfcatch>
 					
