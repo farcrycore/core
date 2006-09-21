@@ -17,14 +17,26 @@
 	<cfset var q = '' />
 	<cfset var recordcount = '' />
 	<cfset  arguments.identityColumn = "tbl." & arguments.identityColumn>
-	<cfif arguments.sqlColumns neq 'tbl.ObjectID'>
-		<cfset  arguments.sqlColumns="tbl.ObjectID," & sqlColumns>
+	
+	<!--- Ensure  if objectID provided in columns names prefixed it with tbl. --->
+	<cfif arguments.sqlColumns neq "*">
+	
+		<cfif arguments.sqlColumns neq 'tbl.ObjectID'>
+			<cfif listFind(arguments.sqlColumns,"ObjectID")>
+				<cfset tmp = ListDeleteAt(arguments.sqlColumns, listFind(arguments.sqlColumns,"ObjectID"))>
+			</cfif>
+			<cfset arguments.sqlColumns="tbl.ObjectID," & sqlColumns>
+		</cfif>
+	<cfelse>
+			<cfset arguments.sqlColumns="tbl.*">
 	</cfif>
+
+
 	<cfif NOT len(arguments.sqlWhere)>
 		<cfset arguments.sqlWhere = "0=0" />
 	</cfif>
 	
-	<cfset SQLList = listQualify(lCategories,"'")>
+	<cfset arguments.lCategories = listQualify(arguments.lCategories,"'")>
 
 	<cftimer label="cfstoredproc">
 	<!--- query --->
@@ -38,7 +50,7 @@
 	     <cfprocparam type="In"  cfsqltype="CF_SQL_VARCHAR" dbvarname="GroupSize" value="#arguments.recordsPerPage#">
 	     <cfprocparam type="In" cfsqltype="CF_SQL_LONGVARCHAR" dbvarname="SqlWhere" value="#arguments.SqlWhere#">
 	     <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="SqlOrderBy" value="#arguments.sqlOrderBy#">
-	     <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="lCategories" value="#preserveSingleQuotes(SQLList)#">
+	     <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="lCategories" value="#preserveSingleQuotes(arguments.lCategories)#">
 	</cfstoredproc>
 	</cftimer>
 	
@@ -59,7 +71,7 @@
 		<cfset arguments.CurrentPage = 1 />
 		
 		<!--- query --->
-		<cfstoredproc procedure="sp_selectnextn" datasource="#application.dsn#">
+		<cfstoredproc procedure="sp_selectnextn_bycat" datasource="#application.dsn#">
 		    <cfprocresult name="q" resultset="1">
 		    <cfprocresult name="recordcount" resultset="2">
 		     <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="TableName"  value="#arguments.typename#">
@@ -69,6 +81,7 @@
 		     <cfprocparam type="In"  cfsqltype="CF_SQL_VARCHAR" dbvarname="GroupSize" value="#arguments.recordsPerPage#">
 		     <cfprocparam type="In" cfsqltype="CF_SQL_LONGVARCHAR" dbvarname="SqlWhere" value="#arguments.SqlWhere#">
 		     <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="SqlOrderBy" value="#arguments.sqlOrderBy#">
+		     <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="lCategories" value="#preserveSingleQuotes(arguments.lCategories)#">
 		</cfstoredproc>
 	</cfif>			
 	
