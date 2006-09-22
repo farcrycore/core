@@ -154,33 +154,23 @@
 
 	<cfargument name="recordset" type="query" required="true">
 	<cfargument name="typename" type="string" required="false" default="">	
+	<cfargument name="lArrayProps" type="string" required="false" default="">	
+	
 
 	<cfset var arResult = arrayNew(1) />
 	
-	<cfset var lArrayProps = "">
 	<cfset var stPropsQueries = structNew()>
 		
 	<cfset stResult.typename = arguments.typename />
 	
-	<!--- check if any array property is required --->
-	
-	
-	
-	<cfloop list="#arguments.recordset.columnlist#" index="i">
-		<cfif structKeyExists(application.types[arguments.typename].stProps,i) AND application.types[arguments.typename].stProps[i].metadata.type EQ "array">
-			<cfset listAppend(lArrayProps,application.types[arguments.typename].stProps[i])>
-		</cfif>
-	</cfloop>
-	
-	
-	
+	<!--- get array property if requested --->
 	<cfif lArrayProps neq "">
 		<cfset lObjectIDs = valueList(arguments.recordset.objectId)>
 	
 		
 		<cfloop list="#lArrayProps#" index="arPropName">
 			<!--- get all relational items id of all instances and store in a struct with the property name as a the key  --->
-			<cfquery datasource="#arguments.dsn#" name="qArrayData">
+			<cfquery datasource="#application.dsn#" name="qArrayData">
 					select parentID, data from #arguments.typename#_#arPropName#
 					where parentID in (#listQualify(lObjectIDs,"'")#)
 					order by parentID, seq
