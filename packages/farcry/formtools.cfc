@@ -19,17 +19,17 @@
 	<cfset  arguments.identityColumn = "tbl." & arguments.identityColumn>
 	
 	<!--- Ensure  if objectID provided in columns names prefixed it with tbl. --->
- 	<cfif arguments.sqlColumns neq "*">
-	
+ 	<cfif arguments.sqlColumns neq "*">	
 		<cfif arguments.sqlColumns neq 'tbl.ObjectID'>
-			<cfif listFind(arguments.sqlColumns,"ObjectID")>
-				<cfset tmp = ListDeleteAt(arguments.sqlColumns, listFind(arguments.sqlColumns,"ObjectID"))>
-			</cfif>
+			<cfif listFindNoCase(arguments.sqlColumns,"ObjectID")>
+				<cfset arguments.sqlColumns = ListDeleteAt(arguments.sqlColumns, listFindNoCase(arguments.sqlColumns,"ObjectID"))>
+			</cfif>		
 			<cfset arguments.sqlColumns="tbl.ObjectID," & sqlColumns>
 		</cfif>
 	<cfelse>
 			<cfset arguments.sqlColumns="tbl.*">
 	</cfif>
+
 
 	<cfif NOT len(arguments.sqlWhere)>
 		<cfset arguments.sqlWhere = "0=0" />
