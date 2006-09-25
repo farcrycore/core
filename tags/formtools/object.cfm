@@ -369,7 +369,15 @@
 		
 			<!--- If the field is supposed to be hidden --->
 		<cfif ListContainsNoCase(attributes.lHiddenFields,i)>
-			<cfoutput><input type="hidden" id="#variables.prefix##ftFieldMetadata.Name#" name="#variables.prefix##ftFieldMetadata.Name#" value="#variables.stObj[i]#" /></cfoutput>
+			<cfsavecontent variable="variables.returnHTML">
+				<cfoutput><input type="hidden" id="#variables.prefix##ftFieldMetadata.Name#" name="#variables.prefix##ftFieldMetadata.Name#" value="#variables.stObj[i]#" /></cfoutput>
+			</cfsavecontent>
+			
+			<cfif NOT len(Attributes.r_stFields)>
+				<cfoutput>#variables.returnHTML#</cfoutput>
+			<cfelse>
+				<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][ftFieldMetadata.Name].HTML = returnHTML>
+			</cfif>
 		<cfelse>	
 			
 			<cfset variables.returnHTML = "">
@@ -531,7 +539,7 @@
 				
 				<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][ftFieldMetadata.Name].HTML = returnHTML>
 				<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][ftFieldMetadata.Name].Label = "#FieldLabelStart#">
-				<cfif ftFieldMetadata.Type EQ "array">
+				<cfif len(LibraryLink)>
 					<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][ftFieldMetadata.Name].LibraryLink = "#LibraryLink#">
 				</cfif>
 				

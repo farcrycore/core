@@ -963,9 +963,10 @@ $out:$
 <cffunction name="renderDBReport" hint="">
 	<cfargument name="typename" default="string" required="true">
 	<cfargument name="stDB" type="struct" required="true">
-
+	<cfargument name="scope" type="string" default="types" required="false">
+	
 	<cfscript>
-	stTypes = buildDBStructure();
+	stTypes = buildDBStructure(scope='#arguments.scope#');
 	</cfscript>
 
 	<cfif structCount(arguments.stDB)>
@@ -1012,8 +1013,11 @@ $out:$
 						<img src="#application.url.farcry#/images/no.gif" />
 					</td>
 					<td>
-
+						<cftry>
 						#stTypes[arguments.typename][key].type#
+						<cfcatch type="any"><cfdump var="#cfcatch#" top="1"><cfdump var="#stTypes#" top="1"><cfabort></cfcatch>
+						</cftry>	
+						
 					</td>
 					<td>
 

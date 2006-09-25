@@ -7,14 +7,6 @@
 		<subsection id="tree" permission="MainNavAdminTab" sidebar="site/sidebar.cfm" content="inc/content_overview.html" label="application.adminBundle[session.dmProfile.locale].site" labelType="evaluate" />
 	</section>
 	<section id="content" permission="MainNavContentTab" label="application.adminBundle[session.dmProfile.locale].content" labelType="evaluate">
-		<subsection id="dynamic" sidebar="content/sidebar.cfm" content="inc/content_overview.html" label="application.adminBundle[session.dmProfile.locale].dynamicContent" labelType="evaluate">
-			<menu id="contenttype" label="application.adminBundle[session.dmProfile.locale].contenttype" labelType="evaluate">
-				<menuitem id="listdmnews" label="application.adminBundle[session.dmProfile.locale].news" labelType="evaluate" link="/content/dmnews.cfm" />
-				<menuitem id="listdmevent" label="application.adminBundle[session.dmProfile.locale].events" labelType="evaluate" link="/content/dmevent.cfm" />
-				<menuitem id="listdmlink" label="application.adminBundle[session.dmProfile.locale].links" labelType="evaluate" link="/content/dmlink.cfm" />
-				<menuitem id="listdmfact" label="application.adminBundle[session.dmProfile.locale].facts" labelType="evaluate" link="/content/dmfacts.cfm" />
-			</menu>
-		</subsection>
 		<subsection id="media" label="application.adminBundle[session.dmProfile.locale].MediaLibrary" labelType="evaluate" sidebar="content/sidebar.cfm" content="inc/content_overview.html">
 			<menu id="MediaLibraryContent" label="application.adminBundle[session.dmProfile.locale].MediaLibraryContent" labelType="evaluate">
 				<menuitem id="listdmimage" label="application.adminBundle[session.dmProfile.locale].MediaLibraryImage" labelType="evaluate" link="/content/dmimage.cfm" />

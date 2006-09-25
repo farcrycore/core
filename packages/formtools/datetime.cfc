@@ -14,6 +14,7 @@
 		<cfparam name="arguments.stMetadata.ftStyle" default="width:160px;">
 		<cfparam name="arguments.stMetadata.ftDateFormatMask" default="dd mmm yyyy">
 		<cfparam name="arguments.stMetadata.ftTimeFormatMask" default="hh:mm tt">
+		<cfparam name="arguments.stMetadata.ftCalendarFormatMask" default="%d %b %Y %I:%M %p">
 		<cfparam name="arguments.stMetadata.ftToggleOffDateTime" default="0">
 		
 		<cfset Request.InHead.Calendar = 1>
@@ -73,7 +74,7 @@
 				  Calendar.setup(
 				    {
 					  inputField	: "#arguments.fieldname#",         // ID of the input field
-				      ifFormat		: "%d %b %Y %I:%M %P",    // the date format
+				      ifFormat		: "#arguments.stMetadata.ftCalendarFormatMask#",    // the date format
 				      button		: "#arguments.fieldname#DatePicker",       // ID of the button
 				      showsTime		: true
 				    }
@@ -123,6 +124,8 @@
 		<!--- --------------------------- --->
 		<!--- Perform any validation here --->
 		<!--- --------------------------- --->
+		<cfparam name="stFieldPost.stSupporting.Include" default="true">
+		
 		<cfif ListGetAt(stFieldPost.stSupporting.Include,1)>
 		
 			<cfif len(trim(arguments.stFieldPost.Value))>

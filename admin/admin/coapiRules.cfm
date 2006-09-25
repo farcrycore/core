@@ -156,7 +156,7 @@ $out:$
 			if (structKeyExists(stConflicts,'database') AND structKeyExists(stConflicts['database'],componentName))
 				{
 				writeoutput("<tr><td colspan='4' style='background-color:##F9E6D4;border-right:none'><div id='#componentname#_report'>");
-				alterType.renderDBReport(typename=componentname,stDB=stConflicts['database'][componentname]);
+				alterType.renderDBReport(typename=componentname,stDB=stConflicts['database'][componentname],scope='rules');
 				writeoutput("</div></td></tr>");		
 				}
 		</cfscript>

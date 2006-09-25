@@ -19,7 +19,7 @@
 	<cfset Request.InHead.PrototypeLite = 1>
 	
 	<cfif len(attributes.SelectedObjectID)>		
-		<cfset attributes.Onclick = "#attributes.OnClick#;$('SelectedObjectID').value='#attributes.SelectedObjectID#';">
+		<cfset attributes.Onclick = "#attributes.OnClick#;$('SelectedObjectID#Request.farcryForm.Name#').value='#attributes.SelectedObjectID#';">
 	</cfif>
 	
 	<cfset attributes.onClick = "#attributes.onClick#;$('FarcryFormSubmitButtonClicked#Request.farcryForm.Name#').value = '#attributes.Value#';">
