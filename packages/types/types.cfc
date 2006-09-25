@@ -860,7 +860,7 @@ default handlers
 		<cfset var stproperties = structNew()>
 		<cfset var stobj = getdata(objectid=instance.stobj.objectid)>
 		<cfset var stlocal = structnew()>
-		<cfset stproperties.objectid = instance.stobj.objectid> --->
+		<cfset stproperties.objectid = instance.stobj.objectid>
 		<cfset stproperties.status = "approved">
 		<cfset setData(stproperties=stproperties)>
 		<cfset stresult.bsuccess = true>

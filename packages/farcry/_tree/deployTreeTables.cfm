@@ -174,8 +174,8 @@ $out:$
 <cfdefaultcase><!--- mssql server --->
 	<cfquery name="dropExisting" datasource="#arguments.dsn#">
 		-- drop nested_tree_objects
-		if exists (select * from sysobjects where name = '#application.dbowner#nested_tree_objects') 
-		drop table nested_tree_objects
+		if exists (select * from sysobjects where name = 'nested_tree_objects') 
+		drop table #application.dbowner#nested_tree_objects
 		
 		-- drop nested_tree_objects index
 		if exists (select * from sysindexes where name = 'ix_nto') 

@@ -28,8 +28,9 @@ $out:$
 		<cfargument name="datasource" required="true">
 		<cfargument name="bClearTable" required="false" default="false">
 		<cfargument name="core" required="true">
+		<cfargument name="project" required="true" type="string" hint="Absolute path to the project dir" />
 		<cfargument name="securitypackagepath" required="false" default="#application.securitypackagepath#">
-
+		
 		<cfif arguments.bClearTable>
 			<cftry>
 			    <cfquery name="qDelete" datasource="#arguments.datasource#">
@@ -48,8 +49,9 @@ $out:$
 				<cflog text="#cfcatch.message# #cfcatch.detail# [SQL: #cfcatch.sql#]" file="coapi" type="warning" application="yes">
 			</cfcatch>
 		</cftry>
-	
-		<cffile action="READ" file="#arguments.core#/admin/install/dmSec_files/policyGroups.wddx" variable="qPolicyGroupsWDDX">
+		
+		<!--- #arguments.core#/admin/install/dmSec_files/policyGroups.wddx --->
+		<cffile action="READ" file="#arguments.project#/www/install/dmSec_files/policyGroups.wddx" variable="qPolicyGroupsWDDX">
 		<cfwddx action="WDDX2CFML" input="#qPolicyGroupsWDDX#" output="qPolicyGroups">
 		<cfset oAuthorisation=createObject("component","#arguments.securitypackagepath#.authorisation")>
 		
@@ -86,6 +88,7 @@ $out:$
 		<cfargument name="datasource" required="true">
 		<cfargument name="bClearTable" required="false" default="false">
 		<cfargument name="core" required="true">
+		<cfargument name="project" required="true" type="string" hint="Absolute path to the project dir" />
 		<cfargument name="securitypackagepath" required="false" default="#application.securitypackagepath#">
 
 		<cfif arguments.bClearTable>
@@ -103,7 +106,7 @@ $out:$
 		</cfcase>
 		</cfswitch>
 	
-		<cffile action="READ" file="#arguments.core#/admin/install/dmSec_files/permissions.wddx" variable="qPermissionsWDDX">
+		<cffile action="READ" file="#arguments.project#/www/install/dmSec_files/permissions.wddx" variable="qPermissionsWDDX">
 		<cfwddx action="WDDX2CFML" input="#qPermissionsWDDX#" output="qPermissions">
 		<cfscript>
 			oAuthorisation=createObject("component","#arguments.securitypackagepath#.authorisation");
