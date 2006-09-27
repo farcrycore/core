@@ -84,7 +84,7 @@ $Developer: Guy (guy@daemon.com.au)$
 				<cffile action="upload" filefield="defaultImage" destination="#application.config.image.folderpath_original#" nameconflict="makeunique"> 
 			</cfif>	
 			<!--- filesize check --->
-			<cfif cffile.FileSize GT application.config.file.filesize>
+			<cfif cffile.FileSize GT application.config.image.imagesize>
 				<cfthrow errorcode="01" message="Sorry the file you tried to upload exceeds the #application.config.image.imagesize/1024#kb limit.<br />">
 			</cfif>
 			
