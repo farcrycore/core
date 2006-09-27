@@ -264,13 +264,22 @@ Removes orphaned containers from refContainers table
 			FROM nested_tree_objects
 			WHERE nlevel = 0 AND lower(typename) = 'categories'
 		</cfquery>
-		
-	<cfquery datasource="#application.dsn#" name="qUpdate">
-		insert into #application.dbowner#categories
-		(categoryid,alias,categorylabel)
-		values 
-		('#qRoot.objectid#','root' ,'root')
+	
+	<!--- the 'root' category should have been created during installation, check to see if exists so you don't have duplicates --->
+	<cfquery name="qCheckRoot" datasource="#application.dsn#">
+		SELECT 	categorylabel
+		FROM 	#application.dbowner#categories
+		WHERE 	categorylabel = 'root'
 	</cfquery>
+	
+	<cfif NOT qCheckRoot.recordCount>
+		<cfquery datasource="#application.dsn#" name="qUpdate">
+			insert into #application.dbowner#categories
+			(categoryid,alias,categorylabel)
+			values 
+			('#qRoot.objectid#','root' ,'root')
+		</cfquery>
+	</cfif>
 
 	<cfoutput><strong>done</strong></p></cfoutput><cfflush>
 	
