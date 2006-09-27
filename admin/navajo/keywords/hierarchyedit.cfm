@@ -83,11 +83,11 @@ $out:$
 </table>		
 
 
-<div style="float:left;width:50%">
+<div style="float:left;width:45%">
 	<iframe name="cattreeframe" width="100%" height="100%" id="cattreeframe" style="display:inline;" src="#application.url.farcry#/navajo/keywords/tree.cfm" scrolling="auto" frameborder="0"></iframe>
 </div>
-<div style="float:right;width:50%">
-<iframe style="display:inline;" width="100%" height="100%" name="cateditframe" id="cateditframe" src="#application.url.farcry#/navajo/keywords/overview.cfm" scrolling="Auto" frameborder="0"></iframe> 			
+<div style="float:right;width:45%">
+	<iframe style="display:inline;" width="100%" height="100%" name="cateditframe" id="cateditframe" src="#application.url.farcry#/navajo/keywords/overview.cfm" scrolling="Auto" frameborder="0"></iframe> 			
 </div>
 
 </body>
