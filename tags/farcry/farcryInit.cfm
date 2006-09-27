@@ -188,7 +188,11 @@ $in: objectid -- $
 		</cfif>
 		
 
-
+		<cfif fileExists("#application.path.project#/config/_serverSpecificVarsAfterInit.cfm") >
+			<cfinclude template="/farcry/#attributes.name#/config/_serverSpecificVarsAfterInit.cfm" />
+		</cfif>
+		
+		
 	</cfif>
 	<!---------------------------------------- 
 	END: Application Initialise 
