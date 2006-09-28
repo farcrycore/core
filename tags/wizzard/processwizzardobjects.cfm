@@ -40,6 +40,9 @@
 	<!--- This structure contains the methods to be used to save the field --->
 	<cfparam name="attributes.stPropMethods" default="#structNew()#" >
 	
+	<!--- Flag to process image autogenerate routine.. --->
+	<cfparam name="attributes.bimageautogenerate" default="false" />
+	
 	<cfset Caller[attributes.r_stProperties] = structNew()>
 	<cfset Caller.lSavedObjectIDs = "">
 
@@ -134,7 +137,11 @@
 		<!--- APPEND the object that is currently in the wizzard to the form submitted object --->
 		<cfset bResult = structAppend(Caller[attributes.r_stProperties], stWizzard.data[Caller[attributes.r_stProperties].objectid], false )  />
 		
-		 
+
+		<cfif attributes.bimageautogenerate>
+			<cfset oFormTools = createObject("component", "farcry.farcry_core.packages.farcry.formtools") />
+			<cfset Caller[attributes.r_stProperties] = oFormTools.ImageAutoGenerateBeforeSave(stProperties=Caller[attributes.r_stProperties],stFields=stFields, stFormPost=Request.farcryForm.stObjects[ProcessingFormObjectPrefix]['FormPost']) />
+		</cfif>
 		
 		<cfif structKeyExists(oType,"BeforeSave")>
 			<cfset Caller[attributes.r_stProperties] = oType.BeforeSave(stProperties=Caller[attributes.r_stProperties],stFields=stFields, stFormPost=Request.farcryForm.stObjects[ProcessingFormObjectPrefix]['FormPost']) />	
@@ -344,6 +351,10 @@
 				</cfinvoke>
 							
 				<cfset "Caller.#attributes.r_stProperties#.#i#" = stResult.Value>
+				
+				<cfif ftFieldMetadata.ftType eq "image">
+					<cfset attributes.bimageautogenerate="true" />
+				</cfif>
 			
 			</cfif>
 		
