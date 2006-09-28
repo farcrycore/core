@@ -177,12 +177,12 @@
 
 	<cfargument name="recordset" type="query" required="true">
 	<cfargument name="typename" type="string" required="false" default="">	
-	<cfargument name="lArrayProps" type="string" required="false" default="">	
-	
+	<cfargument name="lArrayProps" type="string" required="false" default="">
 
 	<cfset var arResult = arrayNew(1) />
-	
 	<cfset var stPropsQueries = structNew()>
+	<cfset var qArrayData=queryNew("parentID, data") />
+	<cfset var lObjectIDs="" />
 		
 	<cfset stResult.typename = arguments.typename />
 	
@@ -193,20 +193,31 @@
 		
 		<cfloop list="#lArrayProps#" index="arPropName">
 			<!--- get all relational items id of all instances and store in a struct with the property name as a the key  --->
-			<cfquery datasource="#application.dsn#" name="qArrayData">
+			<cfif len(lObjectIDs)>
+				<cfquery datasource="#application.dsn#" name="qArrayData">
 					select parentID, data from #arguments.typename#_#arPropName#
 					where parentID in (#listQualify(lObjectIDs,"'")#)
 					order by parentID, seq
-			</cfquery>
-			<cfoutput query="qArrayData" group="parentID">
+				</cfquery>
+			</cfif>
+			<cfif qarraydata.recordcount>
+				<cfsilent>
+					<cfoutput query="qArrayData" group="parentID">
+						<cfif not structKeyExists(stPropsQueries,parentID)>
+							<cfset stPropsQueries[parentID] = structNew() />
+						</cfif>				
+						<cfset stPropsQueries[parentID][arPropName] = arrayNew(1)>
+						<cfoutput>
+							<cfset arrayAppend(stPropsQueries[parentID][arPropName],data)>
+						</cfoutput>
+					</cfoutput>
+				</cfsilent>
+			<cfelse>
 				<cfif not structKeyExists(stPropsQueries,parentID)>
-					<cfset stPropsQueries[parentID] = structNew>
+					<cfset stPropsQueries[parentID] = structNew() />
 				</cfif>				
 				<cfset stPropsQueries[parentID][arPropName] = arrayNew(1)>
-				<cfoutput>
-					<cfset arrayAppend(stPropsQueries[parentID][arPropName],data)>
-				</cfoutput>
-			</cfoutput>
+			</cfif>
 		</cfloop>
 	
 	</cfif>
@@ -234,4 +245,59 @@
 </cffunction>
 
 
+
+<cffunction name="ImageAutoGenerateBeforeSave" access="public" output="true" returntype="struct">
+	<cfargument name="stProperties" required="yes" type="struct">
+	<cfargument name="stFields" required="yes" type="struct">
+		
+
+	<cfset oImage = createobject("component", "farcry.farcry_core.packages.formtools.image") />
+
+	<cfloop list="#StructKeyList(arguments.stFields)#" index="i">
+
+		<cfif structKeyExists(arguments.stFields[i].metadata, "ftType") AND arguments.stFields[i].metadata.ftType EQ "Image" >
+
+			<cfif structKeyExists(arguments.stFormPost, i) AND structKeyExists(arguments.stFormPost[i].stSupporting, "CreateFromSource") AND ListFirst(arguments.stFormPost[i].stSupporting.CreateFromSource)>	
+			
+				<!--- Make sure a ftSourceField --->
+				<cfparam name="arguments.stFields.#i#.metadata.ftSourceField" default="sourceImage" />
+				
+				<cfset sourceFieldName = arguments.stFields[i].metadata.ftSourceField />
+				
+				<!--- IS THE SOURCE IMAGE PROVIDED? --->
+				<cfif structKeyExists(arguments.stProperties, sourceFieldName) AND len(arguments.stProperties[sourceFieldName])>
+													
+
+					<cfparam name="arguments.stFields['#i#'].metadata.ftDestination" default="#application.config.image.StandardImageURL#">		
+					<cfparam name="arguments.stFields['#i#'].metadata.ftImageWidth" default="#application.config.image.StandardImageWidth#">
+					<cfparam name="arguments.stFields['#i#'].metadata.ftImageHeight" default="#application.config.image.StandardImageHeight#">
+					<cfparam name="arguments.stFields['#i#'].metadata.ftAutoGenerateType" default="FitInside">
+					<cfparam name="arguments.stFields['#i#'].metadata.ftPadColor" default="##ffffff">
+					
+					<cfset stArgs = StructNew() />
+					<cfset stArgs.Source = "#application.path.project#/www#arguments.stProperties[sourceFieldName]#" />
+					<cfset stArgs.Destination = "#application.path.project#/www#arguments.stFields['#i#'].metadata.ftDestination#" />
+					<cfset stArgs.Width = "#arguments.stFields['#i#'].metadata.ftImageWidth#" />
+					<cfset stArgs.Height = "#arguments.stFields['#i#'].metadata.ftImageHeight#" />
+					<cfset stArgs.AutoGenerateType = "#arguments.stFields['#i#'].metadata.ftAutoGenerateType#" />
+					<cfset stArgs.padColor = "#arguments.stFields['#i#'].metadata.ftpadColor#" />
+				
+												
+					<cfset stGenerateImageResult = oImage.GenerateImage(Source="#stArgs.Source#", Destination="#stArgs.Destination#", Width="#stArgs.Width#", Height="#stArgs.Height#", AutoGenerateType="#stArgs.AutoGenerateType#", padColor="#stArgs.padColor#") />
+					
+					<cfif stGenerateImageResult.bSuccess>
+						<cfset stProperties['#i#'] = "#arguments.stFields['#i#'].metadata.ftDestination#/#stGenerateImageResult.filename#" />
+					</cfif>
+				
+				</cfif>
+									
+			</cfif>
+
+		</cfif>
+
+	</cfloop>
+	
+	<cfreturn stProperties />
+	
+</cffunction>
 </cfcomponent> 
