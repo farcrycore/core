@@ -99,11 +99,12 @@
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 
-		<cfparam name="arguments.stMetadata.ftDestination" default="/images">
-	
-
+		<cfparam name="arguments.stMetadata.ftAutoGenerateType" default="FitInside">
+		<cfparam name="arguments.stMetadata.ftImageWidth" default="#application.config.image.standardImageWidth#">
+		<cfparam name="arguments.stMetadata.ftImageHeight" default="#application.config.image.standardImageHeight#">
+		
 		<cfsavecontent variable="html">
-			<cfoutput><img src="#arguments.stMetadata.value#"></cfoutput>			
+			<cfoutput><img src="#arguments.stMetadata.value#" <cfif arguments.stMetadata.ftAutoGenerateType EQ "ForceSise" OR arguments.stMetadata.ftAutoGenerateType EQ "Pad" >width="#arguments.stMetadata.ftImageWidth#" height="#arguments.stMetadata.ftImageHeight#"</cfif>></cfoutput>			
 		</cfsavecontent>
 		
 		<cfreturn html>
