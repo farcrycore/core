@@ -30,9 +30,33 @@
 				<tr>
 					<td valign="top">
 						<cfif len(arguments.stMetadata.ftSourceField)>
-							<!--- TODO: If change to off then deactivate the browse button --->
+
+							<cfset Request.InHead.ScriptaculousEffects = 1>
+				
+							
+							<cfsavecontent variable="ToggleOffGenerateImageJS">
+								<cfoutput>
+									<script language="javascript">
+									function toggle#arguments.fieldname#(){
+										Effect.toggle('#arguments.fieldname#previewimage','appear');
+										Effect.toggle('#arguments.fieldname#NEW','appear');
+									}
+									
+				
+									</script>
+								</cfoutput>
+							</cfsavecontent>
+							
+							<cfhtmlhead text="#ToggleOffGenerateImageJS#">
+							
+							
+							<cfif arguments.stMetadata.ftCreateFromSourceDefault AND NOT len(arguments.stMetadata.value)>
+								<cfset arguments.stMetadata.ftStyle = "#arguments.stMetadata.ftStyle#;display:none;">
+							</cfif>		
+
+
 							<div>
-							<input type="checkbox" name="#arguments.fieldname#CreateFromSource" id="#arguments.fieldname#CreateFromSource" value="true" <cfif arguments.stMetadata.ftCreateFromSourceDefault AND NOT len(arguments.stMetadata.value)>checked</cfif>> generate based on "#arguments.stPackage.stProps[arguments.stMetadata.ftSourceField].metadata.ftLabel#"
+							<input type="checkbox" name="#arguments.fieldname#CreateFromSource" id="#arguments.fieldname#CreateFromSource" value="true" onclick="javascript:toggle#arguments.fieldname#();" <cfif arguments.stMetadata.ftCreateFromSourceDefault AND NOT len(arguments.stMetadata.value)>checked</cfif>> generate based on "#arguments.stPackage.stProps[arguments.stMetadata.ftSourceField].metadata.ftLabel#"
 							<input type="hidden" name="#arguments.fieldname#CreateFromSource" id="#arguments.fieldname#CreateFromSource" value="false" />
 							</div>
 						</cfif>
@@ -50,6 +74,13 @@
 							<div id="#arguments.fieldname#previewimage">
 								<img src="#arguments.stMetadata.value#" width="50px">
 								<ft:farcrybutton type="button" value="Delete Image" onclick="if(confirm('Are you sure you want to remove this image?')) {} else {return false};$('#arguments.fieldname#').value='';Effect.Fade('#arguments.fieldname#previewimage');" />
+							</div>
+						</td>
+					<cfelse>
+						
+						<td valign="top">
+							<div id="#arguments.fieldname#previewimage">
+								&nbsp;
 							</div>
 						</td>
 					</cfif>				
