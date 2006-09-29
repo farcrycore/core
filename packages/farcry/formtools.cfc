@@ -10,8 +10,8 @@
 	<cfargument name="lCategories" required="No" type="string" default="" />
 	
 	<cfargument name="CurrentPage" required="No" type="numeric" default="1" />
-	<cfargument name="RecordsPerPage" required="No" type="numeric" default="0" />
-	<cfargument name="PageLinksShown" required="No" type="numeric" default="0" />
+	<cfargument name="RecordsPerPage" required="No" type="numeric" default="10" />
+	<cfargument name="PageLinksShown" required="No" type="numeric" default="5" />
 	
 	<cfset var stReturn = structNew() />
 	<cfset var q = '' />
@@ -37,9 +37,7 @@
 		<cfif NOT len(arguments.sqlWhere)>
 			<cfset arguments.sqlWhere = "0=0" />
 		</cfif>
-		
-		
-	
+
 		<cfset theSQLTop = arguments.CurrentPage * arguments.recordsPerPage>
 	
 		<cftry>
@@ -101,7 +99,7 @@
 		<cfelse>
 			<cfset stReturn.TotalPages = 0>
 		</cfif>
-			
+		
 		<!------------------------------
 		IF THE CURRENT PAGE IS GREATER THAN THE TOTAL PAGES, REDO THE RECORDSET FOR PAGE 1
 		 ------------------------------>		
@@ -110,18 +108,18 @@
 			<cfset arguments.CurrentPage = 1 />
 			
 			<!--- query --->
-		<cfstoredproc procedure="sp_selectview_bycat" datasource="#application.dsn#">
-		    <cfprocresult name="q" resultset="1">
-		    <cfprocresult name="recordcount" resultset="2">
-		    
-		    <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="TableName"  value="#arguments.typename#">
-		    <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="Columns" value="#arguments.sqlColumns#">
-		    <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="GroupNumber" value="#arguments.CurrentPage#">
-		    <cfprocparam type="In"  cfsqltype="CF_SQL_VARCHAR" dbvarname="GroupSize" value="#arguments.recordsPerPage#">
-		    <cfprocparam type="In" cfsqltype="CF_SQL_LONGVARCHAR" dbvarname="SqlWhere" value="#arguments.SqlWhere#">
-		    <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="SqlOrderBy" value="#arguments.sqlOrderBy#">
-		    <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="lCategories" value="#preserveSingleQuotes(arguments.lCategories)#">
-		</cfstoredproc>
+			<cfstoredproc procedure="sp_selectview_bycat" datasource="#application.dsn#">
+			    <cfprocresult name="q" resultset="1">
+			    <cfprocresult name="recordcount" resultset="2">
+			    
+			    <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="TableName"  value="#arguments.typename#">
+			    <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="Columns" value="#arguments.sqlColumns#">
+			    <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="GroupNumber" value="#arguments.CurrentPage#">
+			    <cfprocparam type="In"  cfsqltype="CF_SQL_VARCHAR" dbvarname="GroupSize" value="#arguments.recordsPerPage#">
+			    <cfprocparam type="In" cfsqltype="CF_SQL_LONGVARCHAR" dbvarname="SqlWhere" value="#arguments.SqlWhere#">
+			    <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="SqlOrderBy" value="#arguments.sqlOrderBy#">
+			    <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="lCategories" value="#preserveSingleQuotes(arguments.lCategories)#">
+			</cfstoredproc>
 		</cfif>			
 		
 		<cfif isNumeric(recordcount.countAll) AND recordcount.countAll GT 0>
@@ -129,7 +127,7 @@
 		<cfelse>
 			<cfset stReturn.TotalPages = 0>
 		</cfif>
-		
+			
 		
 		<!--- NOW THAT WE HAVE OUR QUERY, POPULATE THE RETURN STRUCTURE --->
 		<cfset stReturn.q = q />
@@ -140,11 +138,15 @@
 		<cfset stReturn.Startpage = 1>
 		<cfset stReturn.PageLinksShown = min(arguments.PageLinksShown, stReturn.TotalPages)>
 		
+		
+		
 		<cfif stReturn.CurrentPage + int(stReturn.PageLinksShown / 2) - 1 GTE stReturn.TotalPages>
 			<cfset stReturn.StartPage = stReturn.TotalPages - stReturn.PageLinksShown + 1>
 		<cfelseif stReturn.CurrentPage + 1 GT stReturn.PageLinksShown>
 			<cfset stReturn.StartPage = stReturn.CurrentPage - int(stReturn.PageLinksShown / 2)>
 		</cfif>
+		
+		
 		
 		<cfset stReturn.Endpage = stReturn.StartPage + stReturn.PageLinksShown - 1>
 			
