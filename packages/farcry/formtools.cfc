@@ -9,7 +9,10 @@
 	<cfargument name="sqlOrderBy" required="No" type="string" default="label" />
 	<cfargument name="lCategories" required="No" type="string" default="" />
 	
-	<cfargument name="CurrentPage" required="No" type="numeric" default="1" />
+	<cfargument name="id" required="No" type="string" default="" />
+	
+	
+	<cfargument name="CurrentPage" required="No" type="numeric" default="0" />
 	<cfargument name="RecordsPerPage" required="No" type="numeric" default="10" />
 	<cfargument name="PageLinksShown" required="No" type="numeric" default="5" />
 	
@@ -17,6 +20,27 @@
 	<cfset var q = '' />
 	<cfset var recordcount = '' />
 	<cfset  arguments.identityColumn = "tbl." & arguments.identityColumn>
+	
+	<cfif id neq ""> <!--- use session key instead of arguments.CurrentPage --->
+		<cfif not structKeyExists(session,"ftPagination")><!--- check for main ftPagination struct --->
+			<cfset session.ftPagination = structNew()>
+			<cfset session.ftPagination[id] = 1>
+		</cfif>
+		<cfif structKeyExists(session.ftPagination,id)><!--- use session value instead of  arguments value --->
+			<cfif arguments.CurrentPage eq 0 and session.ftPagination[id] GT 1><!--- use the last url page after leaving master page --->
+				<cfset arguments.CurrentPage = session.ftPagination[id]>
+			<cfelse>
+				<cfset session.ftPagination[id] = arguments.CurrentPage><!--- remember last pagination in session --->
+			</cfif>
+			
+		<cfelse>
+			<cfset session.ftPagination[id] = 1><!--- set default value --->
+		</cfif>
+	</cfif>	
+	
+	<cfif arguments.CurrentPage eq 0>
+		<cfset arguments.CurrentPage = 1>
+	</cfif>	
 	
 	<!--- Ensure  if objectID provided in columns names prefixed it with tbl. --->
  	<cfif arguments.sqlColumns neq "*">	
