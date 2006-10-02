@@ -43,6 +43,9 @@
 	<!--- Flag to process image autogenerate routine.. --->
 	<cfparam name="attributes.bimageautogenerate" default="false" />
 	
+	<!--- list of arrayList fields to process on AfterSave.. --->
+	<cfparam name="attributes.lArrayListGenerate" default="" />
+	
 	
 	<cfset Caller[attributes.r_stProperties] = structNew()>
 	<cfset Caller.lSavedObjectIDs = "">
@@ -247,6 +250,34 @@
 			
 			
 		</cfif>	
+		
+		<cfif len(attributes.lArrayListGenerate)>
+			
+			<cfset stObj = stType.getData(objectid=Caller[attributes.r_stProperties].ObjectID, bUseInstanceCache=false, bArraysAsStructs=true)>
+			<cfset oFormTools = createObject("component", "farcry.farcry_core.packages.farcry.formtools") />
+			<cfloop list="#attributes.lArrayListGenerate#" index="i">
+				<cfset arrayField = stFields[i].metadata.ftArrayField />
+				<cfif structKeyExists(stFields[i].metadata, "ftListType")>
+					<cfset ListType = stFields[i].metadata.ftListType />
+				<cfelse>
+					<cfset ListType = "none" />
+				</cfif>
+				<cfif structKeyExists(stFields[i].metadata, "ftWebskin")>
+					<cfset Webskin = stFields[i].metadata.ftWebskin />
+				<cfelse>
+					<cfset Webskin = "" />
+				</cfif>
+				<cfif structKeyExists(stFields[i].metadata, "ftIncludeLink")>
+					<cfset bIncludeLink = stFields[i].metadata.ftIncludeLink />
+				<cfelse>
+					<cfset bIncludeLink = "false" />
+				</cfif>
+				<cfset stObj[i] = oFormTools.ArrayListGenerate(aField=stObj[arrayField], ListType=ListType, Webskin=Webskin, bIncludeLink=bIncludeLink) />
+			</cfloop>
+			<cfset stResult = stType.setData(stProperties=stObj,user=Variables.LockedBy)>		
+		</cfif>
+		
+
 		
 		<cfif structKeyExists(stType,"AfterSave")>
 			<cfset stResult = stType.AfterSave(stProperties=Caller[attributes.r_stProperties])>		
@@ -455,8 +486,22 @@
 							
 				<cfset Caller[attributes.r_stProperties][i] = stResult.Value />
 				<cfif ftFieldMetadata.ftType eq "image">
-					<cfset attributes.bimageautogenerate="true" />
+					<cfset attributes.bimageautogenerate ="true" />
 				</cfif>
+				
+				<cfif ftFieldMetadata.ftType eq "array">
+					<cfloop list="#structKeyList(stFields)#" index="j">
+						<cfif structKeyExists(stFields[j].metadata, "ftType") AND structKeyExists(stFields[j].metadata, "ftArrayField") AND stFields[j].metadata.ftType EQ "arrayList" AND stFields[j].metadata.ftArrayField EQ i>
+						
+							<cfset attributes.lArrayListGenerate = listAppend(attributes.lArrayListGenerate, j) />
+							
+						</cfif>
+						
+					</cfloop>
+				</cfif>
+				
+				
+				
 			</cfif>
 		
 		

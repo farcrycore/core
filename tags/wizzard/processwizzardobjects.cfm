@@ -40,8 +40,15 @@
 	<!--- This structure contains the methods to be used to save the field --->
 	<cfparam name="attributes.stPropMethods" default="#structNew()#" >
 	
+	<!--- Could be types or rules.. --->
+	<cfparam name="attributes.PackageType" default="types">
+	
+		
 	<!--- Flag to process image autogenerate routine.. --->
 	<cfparam name="attributes.bimageautogenerate" default="false" />
+	
+	<!--- list of arrayList fields to process on AfterSave.. --->
+	<cfparam name="attributes.lArrayListGenerate" default="" />
 	
 	<cfset Caller[attributes.r_stProperties] = structNew()>
 	<cfset Caller.lSavedObjectIDs = "">
@@ -147,7 +154,32 @@
 			<cfset Caller[attributes.r_stProperties] = oType.BeforeSave(stProperties=Caller[attributes.r_stProperties],stFields=stFields, stFormPost=Request.farcryForm.stObjects[ProcessingFormObjectPrefix]['FormPost']) />	
 		</cfif>
 		
-				
+	
+		<cfif len(attributes.lArrayListGenerate)>
+			
+			<cfset oFormTools = createObject("component", "farcry.farcry_core.packages.farcry.formtools") />
+			<cfloop list="#attributes.lArrayListGenerate#" index="i">
+				<cfset arrayField = stFields[i].metadata.ftArrayField />
+				<cfif structKeyExists(stFields[i].metadata, "ftListType")>
+					<cfset ListType = stFields[i].metadata.ftListType />
+				<cfelse>
+					<cfset ListType = "none" />
+				</cfif>
+				<cfif structKeyExists(stFields[i].metadata, "ftWebskin")>
+					<cfset Webskin = stFields[i].metadata.ftWebskin />
+				<cfelse>
+					<cfset Webskin = "" />
+				</cfif>
+				<cfif structKeyExists(stFields[i].metadata, "ftIncludeLink")>
+					<cfset bIncludeLink = stFields[i].metadata.ftIncludeLink />
+				<cfelse>
+					<cfset bIncludeLink = "false" />
+				</cfif>
+				<cfset Caller[attributes.r_stProperties][i] = oFormTools.ArrayListGenerate(aField=Caller[attributes.r_stProperties][arrayField]) />
+			</cfloop>
+
+		</cfif>
+		
 
 		<!--- Not in the wizzard and therefore a new object. Need to save to db and then put in the wizzard --->
 		<cfif NOT structKeyExists(stWizzard.data,Caller[attributes.r_stProperties].objectid)>
@@ -160,7 +192,9 @@
 			<cfset stWizzard.data[Caller[attributes.r_stProperties].objectid][i] = Caller[attributes.r_stProperties][i]>
 		</cfloop>		
 
-	
+
+		
+			
 		<cfif structKeyExists(oType,"AfterSave")>
 			<cfset stResult = oType.AfterSave(stProperties=Caller[attributes.r_stProperties])>		
 		</cfif>
@@ -354,6 +388,17 @@
 				
 				<cfif ftFieldMetadata.ftType eq "image">
 					<cfset attributes.bimageautogenerate="true" />
+				</cfif>
+				
+				<cfif ftFieldMetadata.ftType eq "array">
+					<cfloop list="#structKeyList(stFields)#" index="j">
+						<cfif structKeyExists(stFields[j].metadata, "ftType") AND structKeyExists(stFields[j].metadata, "ftArrayField") AND stFields[j].metadata.ftType EQ "arrayList" AND stFields[j].metadata.ftArrayField EQ i>
+						
+							<cfset attributes.lArrayListGenerate = listAppend(attributes.lArrayListGenerate, j) />
+							
+						</cfif>
+						
+					</cfloop>
 				</cfif>
 			
 			</cfif>

@@ -161,6 +161,14 @@
 		</cfloop>
 	</cfif>
 	
+
+	<!--- REMOVE any arrayList fields from the render. --->
+	<cfloop list="#lFieldsToRender#" index="i">
+		<cfif structKeyExists(stFields[i].metadata, "ftType") AND stFields[i].metadata.ftType EQ "arrayList">
+			<cfset lFieldsToRender =  listdeleteat(lFieldsToRender,ListFindNoCase(lFieldsToRender,i))>
+		</cfif>
+	</cfloop>
+	
 	
 	<!--- CHECK TO SEE IF OBJECTED HAS ALREADY BEEN RENDERED. IF SO, USE SAME PREFIX --->
 	<cfif isDefined("variables.stObj") and not structIsEmpty(variables.stObj)>
@@ -291,7 +299,7 @@
 		</cfif>
 				
 		<!--- Need to determine which method to run on the field --->
-		<cfif structKeyExists(ftFieldMetadata, "ftDisplayOnly") AND ftFieldMetadata.ftDisplayOnly>
+		<cfif structKeyExists(ftFieldMetadata, "ftDisplayOnly") AND ftFieldMetadata.ftDisplayOnly OR ftFieldMetadata.ftType EQ "arrayList">
 			<cfset FieldMethod = "display" />				
 		<cfelseif structKeyExists(ftFieldMetadata,"Method")><!--- Have we been requested to run a specific method on the field. This can enable the user to run a display method inside an edit form for instance --->
 			<cfset FieldMethod = ftFieldMetadata.method>
