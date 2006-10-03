@@ -8,13 +8,9 @@
 	<cfargument name="sqlWhere" required="No" type="string" default="" />
 	<cfargument name="sqlOrderBy" required="No" type="string" default="label" />
 	<cfargument name="lCategories" required="No" type="string" default="" />
-	
 	<cfargument name="id" required="No" type="string" default="" />
-	
-	
 	<cfargument name="CurrentPage" required="No" type="numeric" default="0" />
 	<cfargument name="RecordsPerPage" required="No" type="numeric" default="10" />
-	<cfargument name="PageLinksShown" required="No" type="numeric" default="5" />
 	
 	<cfset var stReturn = structNew() />
 	<cfset var q = '' />
@@ -144,7 +140,7 @@
 			    <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="SqlOrderBy" value="#arguments.sqlOrderBy#">
 			    <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="lCategories" value="#preserveSingleQuotes(arguments.lCategories)#">
 			</cfstoredproc>
-		</cfif>			
+		</cfif>	
 		
 		<cfif isNumeric(recordcount.countAll) AND recordcount.countAll GT 0>
 			<cfset stReturn.TotalPages = ceiling(recordcount.countAll / arguments.RecordsPerPage)>
@@ -157,23 +153,6 @@
 		<cfset stReturn.q = q />
 		<cfset stReturn.countAll = recordcount.countAll />
 		<cfset stReturn.CurrentPage = arguments.CurrentPage />
-		
-		
-		<cfset stReturn.Startpage = 1>
-		<cfset stReturn.PageLinksShown = min(arguments.PageLinksShown, stReturn.TotalPages)>
-		
-		
-		
-		<cfif stReturn.CurrentPage + int(stReturn.PageLinksShown / 2) - 1 GTE stReturn.TotalPages>
-			<cfset stReturn.StartPage = stReturn.TotalPages - stReturn.PageLinksShown + 1>
-		<cfelseif stReturn.CurrentPage + 1 GT stReturn.PageLinksShown>
-			<cfset stReturn.StartPage = stReturn.CurrentPage - int(stReturn.PageLinksShown / 2)>
-		</cfif>
-		
-		
-		
-		<cfset stReturn.Endpage = stReturn.StartPage + stReturn.PageLinksShown - 1>
-			
 		<cfset stReturn.RecordsPerPage = arguments.RecordsPerPage />
 		<!--- end of pagination  --->
 	<cfelse>
