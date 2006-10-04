@@ -4,7 +4,48 @@
 <cfimport prefix="skin" taglib="/farcry/farcry_core/tags/webskin" />
 
 
-<cffunction name="getRecordset" access="public" output="No" returntype="struct">
+<cffunction name="getCurrentPaginationPage" access="public" output="true" returntype="numeric">
+	<cfargument name="paginationID" required="No" type="string" default="" />
+	<cfargument name="currentPage" required="No" type="string" default="0" />
+	
+	
+	<cfif arguments.CurrentPage eq 0 or not isNumeric(arguments.currentPage)>
+		<cfif isDefined("url.page")>
+			<cfset arguments.CurrentPage = url.page>
+		<cfelseif isDefined("form.paginationpage")>
+			<cfset arguments.CurrentPage = form.paginationpage>		
+		</cfif>
+	</cfif>
+		
+	<cfif arguments.paginationID neq ""> <!--- use session key --->
+		<cfparam name="session.ftPagination" default="#structNew()#" />
+		<cfif not structKeyExists(session.ftPagination, arguments.paginationID)>
+			<cfset session.ftPagination[arguments.paginationID] = 1 />
+		</cfif>
+		
+
+		<cfif arguments.currentPage GT 0 and isNumeric(arguments.CurrentPage)>
+			<cfset session.ftPagination[paginationID] = arguments.currentPage />
+			
+			
+		<cfelseif session.ftPagination[paginationID] GT 1><!--- use the last url page after leaving master page --->
+			<cfset arguments.CurrentPage = session.ftPagination[paginationID]>
+		</cfif>		
+		
+		
+			
+	</cfif>	
+
+	<cfif arguments.CurrentPage eq 0 or not isNumeric(arguments.currentPage)>
+		<cfset arguments.CurrentPage = 1>
+	</cfif>
+	
+	<cfreturn arguments.currentPage />
+		
+</cffunction>
+
+
+<cffunction name="getRecordset" access="public" output="true" returntype="struct">
 	<cfargument name="typename" required="No" type="string" default="" />
 	<cfargument name="identityColumn" required="No" type="string" default="ObjectID" />
 	<cfargument name="sqlColumns" required="No" type="string" default="tbl.ObjectID" />
@@ -12,9 +53,7 @@
 	<cfargument name="sqlOrderBy" required="No" type="string" default="label" />
 	<cfargument name="lCategories" required="No" type="string" default="" />
 	
-	<cfargument name="id" required="No" type="string" default="" />
-	
-	
+	<cfargument name="paginationID" required="No" type="string" default="" />	
 	<cfargument name="CurrentPage" required="No" type="numeric" default="0" />
 	<cfargument name="RecordsPerPage" required="No" type="numeric" default="10" />
 	<cfargument name="PageLinksShown" required="No" type="numeric" default="5" />
@@ -22,29 +61,11 @@
 	<cfset var stReturn = structNew() />
 	<cfset var q = '' />
 	<cfset var recordcount = '' />
-	<cfset  arguments.identityColumn = "tbl." & arguments.identityColumn>
+	<cfset arguments.identityColumn = "tbl." & arguments.identityColumn>
 	
-	<cfif id neq ""> <!--- use session key instead of arguments.CurrentPage --->
-		<cfif not structKeyExists(session,"ftPagination")><!--- check for main ftPagination struct --->
-			<cfset session.ftPagination = structNew()>
-			<cfset session.ftPagination[id] = 1>
-		</cfif>
-		<cfif structKeyExists(session.ftPagination,id)><!--- use session value instead of  arguments value --->
-			<cfif arguments.CurrentPage eq 0 and session.ftPagination[id] GT 1><!--- use the last url page after leaving master page --->
-				<cfset arguments.CurrentPage = session.ftPagination[id]>
-			<cfelse>
-				<cfset session.ftPagination[id] = arguments.CurrentPage><!--- remember last pagination in session --->
-			</cfif>
-			
-		<cfelse>
-			<cfset session.ftPagination[id] = 1><!--- set default value --->
-		</cfif>
-	</cfif>	
-	
-	<cfif arguments.CurrentPage eq 0>
-		<cfset arguments.CurrentPage = 1>
-	</cfif>	
-	
+
+	<cfset arguments.currentPage = getCurrentPaginationPage(paginationID=arguments.paginationID,CurrentPage=arguments.CurrentPage) />
+
 	<!--- Ensure  if objectID provided in columns names prefixed it with tbl. --->
  	<cfif arguments.sqlColumns neq "*">	
 		<cfif arguments.sqlColumns neq 'tbl.ObjectID'>
@@ -54,8 +75,9 @@
 			<cfset arguments.sqlColumns="tbl.ObjectID," & sqlColumns>
 		</cfif>
 	<cfelse>
-			<cfset arguments.sqlColumns="tbl.*">
+		<cfset arguments.sqlColumns="tbl.*">
 	</cfif>
+
 
 	<cfset arguments.lCategories = listQualify(arguments.lCategories,"'")>
 
@@ -66,40 +88,81 @@
 		</cfif>
 
 		<cfset theSQLTop = arguments.CurrentPage * arguments.recordsPerPage>
-	
+
 		<cftry>
-			<!--- <cfquery name="getRecords" datasource="#application.dsn#">
-				
-				IF OBJECT_ID('tempdb..##thetops') IS NOT NULL drop table ##thetops
-		
-				CREATE TABLE ##thetops (objectID varchar(40), myint int IDENTITY(1,1) NOT NULL)
-				
-				INSERT ##thetops (objectID)
-				SELECT TOP #theSQLTop# tbl.objectid FROM #arguments.typename# tbl 
-				<cfif arguments.lCategories neq ''>
-					, refCategories cat where cat.objectId = tbl.ObjectID
-				<cfelse>
-					where 0=0
-				</cfif>
-				<cfif arguments.SqlWhere neq ''>AND #arguments.SqlWhere#</cfif>
-				<cfif arguments.lCategories neq ''>	AND cat.categoryID in(#preserveSingleQuotes(arguments.lCategories)#)</cfif>
-				ORDER BY publishDate Desc
-				
-				SELECT #arguments.sqlColumns# FROM #arguments.typename# tbl inner join  ##thetops t
-				on tbl.objectid = t.objectid 
-				where t.myint > ((select count(*) from ##thetops) - #arguments.recordsPerPage#)
-				
-				drop table ##thetops
-						
-			</cfquery>  --->
-		
-		
-			<!--- query --->
-		
+			<cfquery name="q" datasource="#application.dsn#" result="qRes">
+											
+											
+											
+			IF OBJECT_ID('tempdb..##thetops') IS NOT NULL 	drop table ##thetops
+			CREATE TABLE ##thetops (objectID varchar(40), myint int IDENTITY(1,1) NOT NULL)
 			
-			<cfstoredproc procedure="sp_selectview_bycat" datasource="#application.dsn#">
+				
+			INSERT ##thetops (objectID)
+			SELECT TOP #theSQLTop# tbl.objectid
+			FROM #arguments.typename# tbl 
+			
+			<cfif arguments.lCategories neq ''>
+				WHERE objectid in (
+				    select distinct objectid 
+				    from refCategories 
+				    where categoryID in (#preserveSingleQuotes(arguments.lCategories)#)
+				    )
+				AND #arguments.SqlWhere#
+			<cfelse>
+				WHERE #arguments.SqlWhere#
+			</cfif>
+			<cfif len(arguments.sqlOrderBy)>
+				ORDER BY #arguments.sqlOrderBy#
+			</cfif>
+			
+			
+			SELECT #arguments.sqlColumns#
+			FROM #arguments.typename# tbl
+			inner join  ##thetops t on tbl.objectid = t.objectid where t.myint > ((select count(*) from ##thetops) - #arguments.recordsPerPage#)
+			
+			
+			drop table ##thetops
+							
+			</cfquery>
+				
+			<cfquery name="qrecordcount" datasource="#application.dsn#" result="qRes">
+											
+			IF OBJECT_ID('tempdb..##thetops') IS NOT NULL 	drop table ##thetops
+			CREATE TABLE ##thetops (objectID varchar(40), myint int IDENTITY(1,1) NOT NULL)
+			
+			  
+				
+			INSERT ##thetops (objectID)
+			SELECT tbl.objectid
+			FROM #arguments.typename# tbl 
+			
+			<cfif arguments.lCategories neq ''>
+				WHERE objectid in (
+				    select distinct objectid 
+				    from refCategories 
+				    where categoryID in (#preserveSingleQuotes(arguments.lCategories)#)
+				    )
+				AND #arguments.SqlWhere#
+			<cfelse>
+				WHERE #arguments.SqlWhere#
+			</cfif>
+			<cfif len(arguments.sqlOrderBy)>
+				ORDER BY #arguments.sqlOrderBy#
+			</cfif>
+			
+			
+			
+			select count(distinct objectid) as CountAll from ##thetops
+						
+			drop table ##thetops
+							
+			</cfquery>
+			
+						
+			<!---<cfstoredproc procedure="sp_selectview_bycat" datasource="#application.dsn#" result="spresult">
 			    <cfprocresult name="q" resultset="1">
-			    <cfprocresult name="recordcount" resultset="2">
+			    <cfprocresult name="qrecordcount" resultset="2">
 			    
 			    <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="TableName"  value="#arguments.typename#">
 			    <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="Columns" value="#arguments.sqlColumns#">
@@ -108,36 +171,103 @@
 			    <cfprocparam type="In" cfsqltype="CF_SQL_LONGVARCHAR" dbvarname="SqlWhere" value="#arguments.SqlWhere#">
 			    <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="SqlOrderBy" value="#arguments.sqlOrderBy#">
 			    <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="lCategories" value="#preserveSingleQuotes(arguments.lCategories)#">
-			</cfstoredproc>
-		
-		
+			</cfstoredproc> --->
 		
 			<cfcatch>
 				<cfdump var="#cfcatch#">
 				<cfabort>
 			</cfcatch>
 			</cftry>
-		
 		<!------------------------------
 		DETERMINE THE TOTAL PAGES
 		 ------------------------------>
-		<cfif isNumeric(recordcount.countAll) AND recordcount.countAll GT 0>
-			<cfset stReturn.TotalPages = ceiling(recordcount.countAll / arguments.RecordsPerPage)>
+		<cfif isNumeric(qrecordcount.countAll) AND qrecordcount.countAll GT 0>
+			<cfset stReturn.TotalPages = ceiling(qrecordcount.countAll / arguments.RecordsPerPage)>
 		<cfelse>
 			<cfset stReturn.TotalPages = 0>
 		</cfif>
-		
+			
 		<!------------------------------
 		IF THE CURRENT PAGE IS GREATER THAN THE TOTAL PAGES, REDO THE RECORDSET FOR PAGE 1
 		 ------------------------------>		
 		<cfif arguments.CurrentPage GT stReturn.TotalPages and arguments.CurrentPage GT 1>
 			
-			<cfset arguments.CurrentPage = 1 />
+			<cfset arguments.currentPage = getCurrentPaginationPage(paginationID=arguments.paginationID,CurrentPage=1) />
 			
+			
+			
+			<cfquery name="q" datasource="#application.dsn#" result="qRes">
+											
+			IF OBJECT_ID('tempdb..##thetops') IS NOT NULL 	drop table ##thetops
+			CREATE TABLE ##thetops (objectID varchar(40), myint int IDENTITY(1,1) NOT NULL)
+			
+			INSERT ##thetops (objectID)
+			SELECT TOP #theSQLTop# tbl.objectid
+			FROM #arguments.typename# tbl 
+			
+			<cfif arguments.lCategories neq ''>
+				WHERE objectid in (
+				    select distinct objectid 
+				    from refCategories 
+				    where categoryID in (#preserveSingleQuotes(arguments.lCategories)#)
+				    )
+				AND #arguments.SqlWhere#
+			<cfelse>
+				WHERE #arguments.SqlWhere#
+			</cfif>
+			<cfif len(arguments.sqlOrderBy)>
+				ORDER BY #arguments.sqlOrderBy#
+			</cfif>
+			
+			
+			
+			SELECT #arguments.sqlColumns#
+			FROM #arguments.typename# tbl
+			inner join  ##thetops t on tbl.objectid = t.objectid where t.myint > ((select count(*) from ##thetops) - #arguments.recordsPerPage#)
+			
+			
+			drop table ##thetops
+							
+			</cfquery>
+		
+			<cfquery name="qrecordcount" datasource="#application.dsn#" result="qRes">
+											
+			IF OBJECT_ID('tempdb..##thetops') IS NOT NULL 	drop table ##thetops
+			CREATE TABLE ##thetops (objectID varchar(40), myint int IDENTITY(1,1) NOT NULL)
+			
+				
+			INSERT ##thetops (objectID)
+			SELECT tbl.objectid
+			FROM #arguments.typename# tbl 
+			
+			<cfif arguments.lCategories neq ''>
+				WHERE objectid in (
+				    select distinct objectid 
+				    from refCategories 
+				    where categoryID in (#preserveSingleQuotes(arguments.lCategories)#)
+				    )
+				AND #arguments.SqlWhere#
+			<cfelse>
+				WHERE #arguments.SqlWhere#
+			</cfif>
+			<cfif len(arguments.sqlOrderBy)>
+				ORDER BY #arguments.sqlOrderBy#
+			</cfif>
+			
+			
+			select count(distinct objectid) as CountAll from ##thetops
+						
+			drop table ##thetops
+							
+			</cfquery>
+			
+			
+						
+			<!---
 			<!--- query --->
 			<cfstoredproc procedure="sp_selectview_bycat" datasource="#application.dsn#">
 			    <cfprocresult name="q" resultset="1">
-			    <cfprocresult name="recordcount" resultset="2">
+			    <cfprocresult name="qrecordcount" resultset="2">
 			    
 			    <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="TableName"  value="#arguments.typename#">
 			    <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="Columns" value="#arguments.sqlColumns#">
@@ -146,11 +276,11 @@
 			    <cfprocparam type="In" cfsqltype="CF_SQL_LONGVARCHAR" dbvarname="SqlWhere" value="#arguments.SqlWhere#">
 			    <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="SqlOrderBy" value="#arguments.sqlOrderBy#">
 			    <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="lCategories" value="#preserveSingleQuotes(arguments.lCategories)#">
-			</cfstoredproc>
+			</cfstoredproc> --->
 		</cfif>			
 		
-		<cfif isNumeric(recordcount.countAll) AND recordcount.countAll GT 0>
-			<cfset stReturn.TotalPages = ceiling(recordcount.countAll / arguments.RecordsPerPage)>
+		<cfif isNumeric(qrecordcount.countAll) AND qrecordcount.countAll GT 0>
+			<cfset stReturn.TotalPages = ceiling(qrecordcount.countAll / arguments.RecordsPerPage)>
 		<cfelse>
 			<cfset stReturn.TotalPages = 0>
 		</cfif>
@@ -158,7 +288,7 @@
 		
 		<!--- NOW THAT WE HAVE OUR QUERY, POPULATE THE RETURN STRUCTURE --->
 		<cfset stReturn.q = q />
-		<cfset stReturn.countAll = recordcount.countAll />
+		<cfset stReturn.countAll = qrecordcount.countAll />
 		<cfset stReturn.CurrentPage = arguments.CurrentPage />
 		
 		
@@ -198,11 +328,10 @@
 	
 	
 	<cfset stReturn.typename = arguments.typename />
-     
 	<cfreturn stReturn />
 </cffunction>
 
-<cffunction name="getRecordSetObject" access="public" output="false" returntype="Array" hint="This function accepts a recordset and will return a Faux Farcry Array of Object Structure that will enable it to run through ft:object without requiring a getData.">
+<cffunction name="getRecordSetObjectStructures" access="public" output="false" returntype="Array" hint="This function accepts a recordset and will return a Faux Farcry Array of Object Structure that will enable it to run through ft:object without requiring a getData.">
 
 	<cfargument name="recordset" type="query" required="true">
 	<cfargument name="typename" type="string" required="false" default="">	
@@ -217,7 +346,9 @@
 	
 	<!--- get array property if requested --->
 	<cfif lArrayProps neq "">
-		<cfset lObjectIDs = valueList(arguments.recordset.objectId)>
+		
+		<!--- DO WE ONLY WANT ONE ROW? or ALL OF THEM --->
+		<cfset lObjectIDs = valueList(arguments.recordset.objectId)>	
 	
 		
 		<cfloop list="#lArrayProps#" index="arPropName">
@@ -272,6 +403,58 @@
 	</cfloop>
 	<cfreturn arResult />
 </cffunction>
+
+
+<cffunction name="getRecordsetObject" access="public" output="false" returntype="struct" hint="This function accepts a recordset and will return a Faux Farcry Object Structure that will enable it to run through ft:object without requiring a getData.">
+
+	<cfargument name="recordset" type="query" required="false">
+	<cfargument name="row" type="numeric" required="false">		
+	<cfargument name="typename" type="string" required="false" default="">	
+	
+	<cfset var i = "" />
+	<cfset var j = "" />
+	<cfset var key = "" />
+	<cfset var aTmp = arrayNew(1) />
+	<cfset var stTmp = structNew() />
+	<cfset var st = structNew() />
+	
+	<cfset stTmp.typename = arguments.typename />
+	
+	<cfloop list="#arguments.recordset.columnlist#" index="i">
+		<cfif application.types[arguments.typename].stProps[i].metadata.type NEQ "array">
+			<cfset stTmp[i] = recordset[i][row] />
+		<cfelse>
+			<cfset stTmp[i] = arrayNew(1) />
+			
+			<cfif listContains(arrayprops, i)>								
+				<cfset key = i>
+					
+				<!--- getdata for array properties --->
+				<cfquery datasource="#arguments.dsn#" name="qArrayData">
+	  			select * from #arguments.dbowner##tablename#_#key#
+				where parentID = '#recordset.objectID[arguments.row]#'
+				order by seq
+				</cfquery>
+				<!--- 	<cfset qArrayData = queryNew("parentID,Data,seq,typename")> --->
+				<cfset SetVariable("#key#", ArrayNew(1))>
+				<cfset aTmp = arrayNew(1) />
+	
+				<cfloop from="1" to="#qArrayData.recordcount#" index="j">
+					<cfset ArrayAppend(aTmp, qArrayData.data[j])>
+				</cfloop>
+				<cfset stTmp[key] = aTmp>
+															
+			</cfif>
+		</cfif>
+	</cfloop>
+
+	<cfimport taglib="/farcry/farcry_core/tags/formtools/" prefix="ft" >
+	<ft:object stobject="#stTmp#" typename="#arguments.typename#" lFields="#arguments.recordset.columnlist#" lExcludeFields="" bIncludeSystemProperties="true" format="display" includeFieldSet="false" r_stFields="stFields" />
+
+	<cfreturn stFields />
+</cffunction>
+
+
 
 <cffunction name="ArrayListGenerate" access="public" output="true" returntype="string">
 	
