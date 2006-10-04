@@ -76,59 +76,6 @@ type properties
 </cffunction>
 
 
-<cffunction name="BeforeSave" access="public" output="true" returntype="struct">
-	<cfargument name="stProperties" required="yes" type="struct">
-	<cfargument name="stFields" required="yes" type="struct">
-		
-	<!--- IS THERE A SOURCE IMAGE PROVIDED? --->
-	<cfif structKeyExists(arguments.stProperties, "SourceImage") AND len(arguments.stProperties.SourceImage)>
-		
-		<cfset stObject = getData(objectid=stproperties.objectid) />
-		<cfset oImage = createobject("component", "farcry.farcry_core.packages.formtools.image") />
-		
-		<cfset lImageFields = "" />
-		<cfloop list="#StructKeyList(arguments.stFields)#" index="i">
-
-			<cfif structKeyExists(arguments.stFields[i].metadata, "ftType") AND arguments.stFields[i].metadata.ftType EQ "Image" AND i NEQ "SourceImage" >
-				<cfif structKeyExists(arguments.stFormPost, i) AND structKeyExists(arguments.stFormPost[i].stSupporting, "CreateFromSource") AND ListFirst(arguments.stFormPost[i].stSupporting.CreateFromSource)>
-					<cfset lImageFields = ListAppend(lImageFields, i) />
-				</cfif>
-			</cfif>
-
-		</cfloop>
-
-		<cfloop list="#lImageFields#" index="i">
-			<cfparam name="arguments.stFields['#i#'].metadata.ftDestination" default="#application.config.image.StandardImageURL#">		
-			<cfparam name="arguments.stFields['#i#'].metadata.ftImageWidth" default="#application.config.image.ThumbnailImageWidth#">
-			<cfparam name="arguments.stFields['#i#'].metadata.ftImageHeight" default="#application.config.image.ThumbnailImageHeight#">
-			<cfparam name="arguments.stFields['#i#'].metadata.ftAutoGenerateType" default="FitInside">
-			<cfparam name="arguments.stFields['#i#'].metadata.ftPadColor" default="##ffffff">
-			
-			<cfset stArgs = StructNew() />
-			<cfset stArgs.Source = "#application.path.project#/www#arguments.stProperties.SourceImage#" />
-			<cfset stArgs.Destination = "#application.path.project#/www#arguments.stFields['#i#'].metadata.ftDestination#" />
-			<cfset stArgs.Width = "#arguments.stFields['#i#'].metadata.ftImageWidth#" />
-			<cfset stArgs.Height = "#arguments.stFields['#i#'].metadata.ftImageHeight#" />
-			<cfset stArgs.AutoGenerateType = "#arguments.stFields['#i#'].metadata.ftAutoGenerateType#" />
-			<cfset stArgs.padColor = "#arguments.stFields['#i#'].metadata.ftpadColor#" />
-			
-			<cfset stGenerateImageResult = oImage.GenerateImage(Source="#stArgs.Source#", Destination="#stArgs.Destination#", Width="#stArgs.Width#", Height="#stArgs.Height#", AutoGenerateType="#stArgs.AutoGenerateType#", padColor="#stArgs.padColor#") />
-			
-			<cfif stGenerateImageResult.bSuccess>
-				<cfset stProperties['#i#'] = "#arguments.stFields['#i#'].metadata.ftDestination#/#stGenerateImageResult.filename#" />
-			</cfif>
-			
-		</cfloop>
-	
-	
-	</cfif>
-	<cfset stProperties = super.BeforeSave(stProperties=stproperties, stFields=stFields) />
-
-	<cfreturn stProperties>
-	
-
-	
-</cffunction>
 
 <cffunction name="ftDisplayThumbnail" access="public" output="true" returntype="string" hint="This will return a string of formatted HTML text to display.">
 	<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
