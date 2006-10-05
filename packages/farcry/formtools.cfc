@@ -2,6 +2,7 @@
 
 
 <cfimport prefix="skin" taglib="/farcry/farcry_core/tags/webskin" />
+<cfimport taglib="/farcry/farcry_core/tags/formtools/" prefix="ft" >
 
 
 <cffunction name="getCurrentPaginationPage" access="public" output="true" returntype="numeric">
@@ -64,6 +65,7 @@
 	<cfset arguments.identityColumn = "tbl." & arguments.identityColumn>
 	
 
+
 	<cfset arguments.currentPage = getCurrentPaginationPage(paginationID=arguments.paginationID,CurrentPage=arguments.CurrentPage) />
 
 	<!--- Ensure  if objectID provided in columns names prefixed it with tbl. --->
@@ -89,8 +91,8 @@
 
 		<cfset theSQLTop = arguments.CurrentPage * arguments.recordsPerPage>
 
-		<cftry>
-			<cfquery name="q" datasource="#application.dsn#" result="qRes">
+		
+			<cfquery name="q" datasource="#application.dsn#">
 											
 											
 											
@@ -108,9 +110,9 @@
 				    from refCategories 
 				    where categoryID in (#preserveSingleQuotes(arguments.lCategories)#)
 				    )
-				AND #arguments.SqlWhere#
+				AND #preserveSingleQuotes(arguments.SqlWhere)#
 			<cfelse>
-				WHERE #arguments.SqlWhere#
+				WHERE #preserveSingleQuotes(arguments.SqlWhere)#
 			</cfif>
 			<cfif len(arguments.sqlOrderBy)>
 				ORDER BY #arguments.sqlOrderBy#
@@ -143,12 +145,12 @@
 				    from refCategories 
 				    where categoryID in (#preserveSingleQuotes(arguments.lCategories)#)
 				    )
-				AND #arguments.SqlWhere#
+				AND #preserveSingleQuotes(arguments.SqlWhere)#
 			<cfelse>
-				WHERE #arguments.SqlWhere#
+				WHERE #preserveSingleQuotes(arguments.SqlWhere)#
 			</cfif>
 			<cfif len(arguments.sqlOrderBy)>
-				ORDER BY #arguments.sqlOrderBy#
+				ORDER BY #preserveSingleQuotes(arguments.sqlOrderBy)#
 			</cfif>
 			
 			
@@ -173,11 +175,7 @@
 			    <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="lCategories" value="#preserveSingleQuotes(arguments.lCategories)#">
 			</cfstoredproc> --->
 		
-			<cfcatch>
-				<cfdump var="#cfcatch#">
-				<cfabort>
-			</cfcatch>
-			</cftry>
+
 		<!------------------------------
 		DETERMINE THE TOTAL PAGES
 		 ------------------------------>
@@ -211,12 +209,12 @@
 				    from refCategories 
 				    where categoryID in (#preserveSingleQuotes(arguments.lCategories)#)
 				    )
-				AND #arguments.SqlWhere#
+				AND #preserveSingleQuotes(arguments.SqlWhere)#
 			<cfelse>
-				WHERE #arguments.SqlWhere#
+				WHERE #preserveSingleQuotes(arguments.SqlWhere)#
 			</cfif>
 			<cfif len(arguments.sqlOrderBy)>
-				ORDER BY #arguments.sqlOrderBy#
+				ORDER BY #preserveSingleQuotes(arguments.sqlOrderBy)#
 			</cfif>
 			
 			
@@ -246,12 +244,12 @@
 				    from refCategories 
 				    where categoryID in (#preserveSingleQuotes(arguments.lCategories)#)
 				    )
-				AND #arguments.SqlWhere#
+				AND #preserveSingleQuotes(arguments.SqlWhere)#
 			<cfelse>
-				WHERE #arguments.SqlWhere#
+				WHERE #preserveSingleQuotes(arguments.SqlWhere)#
 			</cfif>
 			<cfif len(arguments.sqlOrderBy)>
-				ORDER BY #arguments.sqlOrderBy#
+				ORDER BY #preserveSingleQuotes(arguments.sqlOrderBy)#
 			</cfif>
 			
 			
@@ -341,7 +339,7 @@
 	<cfset var stPropsQueries = structNew()>
 	<cfset var qArrayData=queryNew("parentID, data") />
 	<cfset var lObjectIDs="" />
-		
+	
 	<cfset stResult.typename = arguments.typename />
 	
 	<!--- get array property if requested --->
@@ -418,15 +416,23 @@
 	<cfset var stTmp = structNew() />
 	<cfset var st = structNew() />
 	
+	
+	
+		
+		
 	<cfset stTmp.typename = arguments.typename />
+	
 	
 	<cfloop list="#arguments.recordset.columnlist#" index="i">
 		<cfif application.types[arguments.typename].stProps[i].metadata.type NEQ "array">
 			<cfset stTmp[i] = recordset[i][row] />
 		<cfelse>
-			<cfset stTmp[i] = arrayNew(1) />
 			
-			<cfif listContains(arrayprops, i)>								
+			
+			<cfif listContains(arrayprops, i)>	
+				
+				<cfset stTmp[i] = arrayNew(1) />
+											
 				<cfset key = i>
 					
 				<!--- getdata for array properties --->
@@ -447,10 +453,11 @@
 			</cfif>
 		</cfif>
 	</cfloop>
-
-	<cfimport taglib="/farcry/farcry_core/tags/formtools/" prefix="ft" >
-	<ft:object stobject="#stTmp#" typename="#arguments.typename#" lFields="#arguments.recordset.columnlist#" lExcludeFields="" bIncludeSystemProperties="true" format="display" includeFieldSet="false" r_stFields="stFields" />
-
+	
+	
+	
+	<ft:object stobject="#stTmp#" typename="#arguments.typename#" lFields="#structKeyList(stTmp)#" lExcludeFields="" bIncludeSystemProperties="true" format="display" includeFieldSet="false" r_stFields="stFields" />
+	
 	<cfreturn stFields />
 </cffunction>
 

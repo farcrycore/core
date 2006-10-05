@@ -202,6 +202,26 @@ body.popup #content {margin:0;background:transparent;padding:0}
 
 #genadmin-wrap .pagination a:hover, #genadmin-wrap .pagination a:active {background:#E17000;color:#fff;border: 1px solid #EB9948}
 
+	/* rule: list - pagination layout styles */
+	div.ruleListPagination {margin: 0px; padding: 8px 8px 8px 8px;}
+		div.ruleListPagination {border-top: 1px solid #666666;}
+		div.ruleListPagination div.pageDetails {float: left; display: block;}
+		div.ruleListPagination div.pageDetails h2 {margin: 4px 0px 4px 0px; padding: 0px;}
+		div.ruleListPagination div.pageDetails h2 {font-size: 100%; font-weight: normal;}
+		<!--- div.ruleListPagination div.pageDetails label {margin: 0px; padding: 0px; float: left; display: block;}
+		div.ruleListPagination div.pageDetails select {width: 35px; float: left; display: block;}
+		div.ruleListPagination div.pageDetails select {font-size: 80%;}
+		div.ruleListPagination div.pageDetails p {margin: 0px; padding: 0px; float: left; display: block;}
+		div.ruleListPagination div.pageDetails p {color: #000000; background-color: inherit;} --->
+		div.ruleListPagination div.pageList {float: right;}
+		div.ruleListPagination div.pageList ul {margin: 0px; padding: 0px;}
+		div.ruleListPagination div.pageList ul li {margin: 0px 0px 0px 2px; padding: 0px; float: left; display: block; text-align: center;}
+		div.ruleListPagination div.pageList ul li a {margin: 0px; padding: 0px; width: 16px; height: 16px; display: block;}
+		div.ruleListPagination div.pageList ul li a {background-color: #FFFFFF; border: 1px solid #d9c7ad; color: inherit;}
+		div.ruleListPagination div.pageList ul li a {color: #b79d65; font-weight: bold; font-size: 100%; text-decoration: none; background-color: inherit;}
+		div.ruleListPagination div.pageList ul li a:hover {border: 1px solid #a69163;}
+		
+		
 .utilBar a:hover, .utilBar a:active {background:#E17000;border: 1px solid #ccc}
 
 .utilBar input {padding: 2px 4px;_padding: 2px 0;background:#f5f5f5;color:#369;border: 1px solid #ddd;border-left: 1px solid #999;border-bottom: 1px solid #999;cursor:pointer}
