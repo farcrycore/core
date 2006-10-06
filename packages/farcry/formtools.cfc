@@ -404,10 +404,13 @@
 
 
 <cffunction name="getRecordsetObject" access="public" output="false" returntype="struct" hint="This function accepts a recordset and will return a Faux Farcry Object Structure that will enable it to run through ft:object without requiring a getData.">
-
-	<cfargument name="recordset" type="query" required="false">
-	<cfargument name="row" type="numeric" required="false">		
-	<cfargument name="typename" type="string" required="false" default="">	
+	<cfargument name="recordset" type="query" required="true" hint="Resultset to process." />
+	<cfargument name="row" type="numeric" required="true" hint="Specific row number to return." />
+	<cfargument name="typename" type="string" required="true" hint="Typename of the content." />
+	<cfargument name="larrayprops" type="string" required="false" default="" hint="List of array properties to return." />
+	<cfargument name="bFormToolMetadata" type="boolean" default="true" hint="Convert content item to form tool metadata; else leave as a simple structure.">
+	<cfargument name="dsn" default="#application.dsn#" type="string" hint="Datasource name." />
+	<cfargument name="dbowner" default="#application.dbowner#" type="string" hint="Database owner." />
 	
 	<cfset var i = "" />
 	<cfset var j = "" />
@@ -415,53 +418,63 @@
 	<cfset var aTmp = arrayNew(1) />
 	<cfset var stTmp = structNew() />
 	<cfset var st = structNew() />
-	
-	
-	
-		
-		
+	<cfset var qArrayData = queryNew("data") />
+	<cfset var stResult=structNew() />
+
 	<cfset stTmp.typename = arguments.typename />
 	
-	
 	<cfloop list="#arguments.recordset.columnlist#" index="i">
-		<cfif application.types[arguments.typename].stProps[i].metadata.type NEQ "array">
-			<cfset stTmp[i] = recordset[i][row] />
-		<cfelse>
-			
-			
-			<cfif listContains(arrayprops, i)>	
+		<cfif structkeyexists(application.types[arguments.typename].stProps, i)>
+			<cfif application.types[arguments.typename].stProps[i].metadata.type NEQ "array">
+				<cfset stTmp[i] = arguments.recordset[i][row] />
+			<cfelse>
 				
-				<cfset stTmp[i] = arrayNew(1) />
-											
-				<cfset key = i>
+				<cfif listContains(arguments.larrayprops, i)>	
 					
-				<!--- getdata for array properties --->
-				<cfquery datasource="#arguments.dsn#" name="qArrayData">
-	  			select * from #arguments.dbowner##tablename#_#key#
-				where parentID = '#recordset.objectID[arguments.row]#'
-				order by seq
-				</cfquery>
-				<!--- 	<cfset qArrayData = queryNew("parentID,Data,seq,typename")> --->
-				<cfset SetVariable("#key#", ArrayNew(1))>
-				<cfset aTmp = arrayNew(1) />
+					<cfset stTmp[i] = arrayNew(1) />
+												
+					<cfset key = i>
+						
+					<!--- getdata for array properties --->
+					<cfquery datasource="#arguments.dsn#" name="qArrayData">
+		  			select data from #arguments.dbowner##tablename#_#key#
+					where parentID = '#arguments.recordset.objectID[arguments.row]#'
+					order by seq
+					</cfquery>
 	
-				<cfloop from="1" to="#qArrayData.recordcount#" index="j">
-					<cfset ArrayAppend(aTmp, qArrayData.data[j])>
-				</cfloop>
-				<cfset stTmp[key] = aTmp>
-															
+					<cfset aTmp = arrayNew(1) />
+						<cfloop from="1" to="#qArrayData.recordcount#" index="j">
+						<cfset ArrayAppend(aTmp, qArrayData.data[j])>
+					</cfloop>
+					<cfset stTmp[key] = aTmp>
+																
+				</cfif>
 			</cfif>
 		</cfif>
 	</cfloop>
 	
+	<cfif arguments.bFormToolMetadata>
+		<ft:object stobject="#stTmp#" typename="#arguments.typename#" lFields="#structKeyList(stTmp)#" lExcludeFields="" bIncludeSystemProperties="true" format="display" includeFieldSet="false" r_stFields="stResult" />
+	<cfelse>
+		<cfset stResult=stTmp />
+	</cfif>
 	
-	
-	<ft:object stobject="#stTmp#" typename="#arguments.typename#" lFields="#structKeyList(stTmp)#" lExcludeFields="" bIncludeSystemProperties="true" format="display" includeFieldSet="false" r_stFields="stFields" />
-	
-	<cfreturn stFields />
+	<cfreturn stResult />
 </cffunction>
 
-
+<cffunction name="getRecordsetObjectArray" access="public" output="false" returntype="array" hint="Accepts a recordset and returns an array of faux Farcry content object structures that can be used with ft:object without requiring a getData()">
+	<cfargument name="recordset" type="query" required="true" hint="Resultset to process." />
+	<cfargument name="typename" type="string" required="true" hint="Typename of the content." />
+	<cfargument name="larrayprops" type="string" required="false" default="" hint="List of array properties to return." />
+	<cfargument name="bFormToolMetadata" type="boolean" default="true" hint="Convert content item to form tool metadata; else leave as a simple structure.">
+	<cfargument name="dsn" default="#application.dsn#" type="string" hint="Datasource name." />
+	<cfargument name="dbowner" default="#application.dbowner#" type="string" hint="Database owner." />
+	<cfset var aResult=arrayNew(1) />
+	<cfloop query="arguments.recordset">
+		<cfset arrayAppend(aResult, getRecordsetObject(row=arguments.recordset.currentrow, recordset=arguments.recordset, typename=arguments.typename, larrayprops=arguments.larrayprops, dsn=arguments.dsn, dbowner=arguments.dbowner, bformtoolmetadata=arguments.bformtoolmetadata)) />
+	</cfloop>
+	<cfreturn aResult />
+</cffunction>
 
 <cffunction name="ArrayListGenerate" access="public" output="true" returntype="string">
 	
@@ -477,8 +490,6 @@
 	
 	
 	<cfif arrayLen(aField)>
-			
-										
 		
 		<cfloop from="1" to="#arrayLen(aField)#" index="pos" >
 			<cfif isStruct(aField[pos])>
@@ -521,9 +532,6 @@
 			
 		</cfloop>
 		
-
-				
-							
 		<cfif arguments.listType EQ "unordered">
 			<cfset result = "<ul>#result#</ul>" />
 		</cfif>
@@ -533,114 +541,7 @@
 	</cfif>
 	
 	<cfreturn result />
-	
-	
-<!---		
-	
-	
-	
-	
-	
-	<cfargument name="objectID" required="true" type="UUID" />
-	<cfargument name="typename" required="true" type="string" />
-	<cfargument name="packageType" required="false" type="string" default="types" />
-	<cfargument name="lArrayListFields" required="true" type="string" />
 
-	<cfset var stPackage = structNew() />
-	<cfset var packagePath = "" />	
-	<cfset var o = "" />
-	<cfset var contents = "" />
-	<cfset var item = "" />
-	
-	<cfset var bResult = "true" />
-	
-	
-	<cfif arguments.PackageType EQ "types">
-		<cfset stPackage = application[arguments.PackageType][arguments.typename]>
-		<cfset packagePath = application[arguments.PackageType][arguments.typename].typepath>
-	<cfelse>
-		<cfset stPackage = application[arguments.PackageType][arguments.typename]>
-		<cfset packagePath = application[arguments.PackageType][arguments.typename].rulepath>
-	</cfif>
-	
-	<cfset o = createObject("component", packagePath) />
-	
-	<cfset st = o.getData(objectID=arguments.objectid,bArraysAsStructs=true,bUseInstanceCache=false) />
-
-
-	<cfloop list="#arguments.lArrayListFields#" index="i">
-
-		<cfif structKeyExists(stPackage.stProps[i].metadata, "ftType") AND structKeyExists(stPackage.stProps[i].metadata, "ftArrayField") AND stPackage.stProps[i].metadata.ftType EQ "arrayList">
-			<cfset arrayFieldName = stPackage.stProps[i].metadata.ftArrayField />
-			
-			<cfparam name="stPackage.stProps.#i#.metadata.ftListType" default="none" />
-			<cfparam name="stPackage.stProps.#i#.metadata.ftWebskin" default="" />
-			<cfparam name="stPackage.stProps.#i#.metadata.ftIncludeLink" default="false" />
-			
-			<cfset aField = st[arrayFieldname] />
-			
-			<cfset lNew = "" />
-			
-			<cfif arrayLen(aField)>
-					
-												
-				
-				<cfloop from="1" to="#arrayLen(aField)#" index="pos" >
-					<cftry><cfset itemTypename = aField[pos].typename /><cfcatch><cfdump var="#aField#"><cfabort></cfcatch></cftry>
-					<cfset oData = createObject("component", application.types[aField[pos].typename].typePath) />
-					<cfset stData = oData.getData(objectID=aField[pos].data) />
-					
-					
-
-					<!--- Use the label as the item value. --->
-					<cfif len(stPackage.stProps[i].metadata.ftWebskin)>
-						<cfset item = oData.getView(objectid="#stData.objectid#", template="#stPackage.stProps[i].metadata.ftWebskin#", alternateHTML="#stData.label#") />
-					<cfelse>
-						<cfset item = stData.label />
-					</cfif>
-								
-					<!--- add the link if requested --->
-					<cfif stPackage.stProps[i].metadata.ftIncludeLink>
-						<cfsavecontent variable="item">							
-							<skin:buildlink objectid="#aField[pos].data#"><cfoutput>#item#</cfoutput></skin:buildlink>
-						</cfsavecontent>
-					</cfif>
-					
-					<!--- If in a list, then append with li tags otherwise append to list --->
-					<cfswitch expression="#stPackage.stProps[i].metadata.ftListType#">
-					<cfcase value="unordered,ordered">
-						<cfset lNew = "#lNew#<li>#item#</li>" />
-					</cfcase>
-					<cfdefaultcase>
-						<cfset lNew = listAppend(lNew, item) />
-					</cfdefaultcase>
-					</cfswitch>
-					
-				</cfloop>
-				
-
-						
-									
-				<cfif stPackage.stProps[i].metadata.ftListType EQ "unordered">
-					<cfset lNew = "<ul>#lNew#</ul>" />
-				</cfif>
-				<cfif stPackage.stProps[i].metadata.ftListType EQ "ordered">
-					<cfset lNew = "<ol>#lNew#</ol>" />
-				</cfif>
-			</cfif>
-			
-			<cfset st[i] = lNew />
-			
-			
-		</cfif>
-		
-	</cfloop>
-	
-	<cfset stResult = o.setData(stProperties=st) />	
-	
-	<cfset bResult = stResult.bSuccess />
-	
-	<cfreturn bResult /> --->
 </cffunction>
 
 <cffunction name="ImageAutoGenerateBeforeSave" access="public" output="true" returntype="struct">
