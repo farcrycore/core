@@ -13,6 +13,10 @@
 
 <cfif thistag.ExecutionMode EQ "Start">
 
+	<cfif isDefined("FORM.FarcryFormSubmitted") AND isDefined("FarcryFormSubmitButtonClicked#FORM.FarcryFormSubmitted#") AND len(evaluate("FarcryFormSubmitButtonClicked#FORM.FarcryFormSubmitted#"))>
+		<cfset FORM.FarcryFormSubmitButton = evaluate("FarcryFormSubmitButtonClicked#FORM.FarcryFormSubmitted#") />
+	</cfif>
+	
 	<!--- Determine if we are processing the Action or the current step --->
 	<cfif structKeyExists(attributes,"action")>
 		<cfset FormFieldToProcess = "FarcryFormSubmitButton" />

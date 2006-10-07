@@ -147,6 +147,7 @@ $in: SessionID -- $
 
 </cfif>
 
+<cfdump var="#FORM#" expand="false">
 <cfif thistag.executionMode eq "End">
 
 
@@ -159,11 +160,11 @@ $in: SessionID -- $
 		<script language="javascript">
 			function WizzardSubmission(state) {
 				if (state == 'Cancel') {
-					$('FarcryFormSubmitButton').value=state;
+					$('FarcryFormSubmitButtonClicked#Request.farcryForm.Name#').value=state;
 					$('#Request.farcryForm.Name#').submit();	
 				} 
 				else if ( valid.validate() ) {
-					$('FarcryFormSubmitButton').value=state;
+					$('FarcryFormSubmitButtonClicked#Request.farcryForm.Name#').value=state;
 					$('#Request.farcryForm.Name#').submit();	
 				}
 			}
