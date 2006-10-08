@@ -215,7 +215,7 @@ body.popup #content {margin:0;background:transparent;padding:0}
 		div.ruleListPagination div.pageDetails p {color: #000000; background-color: inherit;} --->
 		div.ruleListPagination div.pageList {float: right;}
 		div.ruleListPagination div.pageList ul {margin: 0px; padding: 0px;}
-		div.ruleListPagination div.pageList ul li {margin: 0px 0px 0px 2px; padding: 0px; float: left; display: block; text-align: center;}
+		div.ruleListPagination div.pageList ul li {margin: 0px 0px 0px 2px; padding: 0px; float: left; display: block; text-align: center;background-color: #FFFFFF;}
 		div.ruleListPagination div.pageList ul li a {margin: 0px; padding: 0px; width: 16px; height: 16px; display: block;}
 		div.ruleListPagination div.pageList ul li a {background-color: #FFFFFF; border: 1px solid #d9c7ad; color: inherit;}
 		div.ruleListPagination div.pageList ul li a {color: #b79d65; font-weight: bold; font-size: 100%; text-decoration: none; background-color: inherit;}
