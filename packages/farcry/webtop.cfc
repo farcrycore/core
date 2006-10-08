@@ -1,14 +1,14 @@
 <!--- 
 || LEGAL ||
-$Copyright: Daemon Pty Limited 1995-2005, http://www.daemon.com.au $
+$Copyright: Daemon Pty Limited 1995-2006, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/webtop.cfc,v 1.11 2005/10/12 00:50:52 daniela Exp $
-$Author: daniela $
-$Date: 2005/10/12 00:50:52 $
-$Name: milestone_3-0-1 $
-$Revision: 1.11 $
+$Header: $
+$Author: $
+$Date: $
+$Name: $
+$Revision: $
 
 || DESCRIPTION || 
 $Description: Webtop component. $
@@ -25,6 +25,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 	<cfset var xmlWebtop="">
 	<cfset var xmlCustomAdmin="">
 	<cfset var aXMLCustomAdmin= arrayNew(1) />
+	<cfset var xmlpathfull="" />
 	
 	<cfif NOT len(arguments.xWebtop)>
 		<cffile action="read" file="#application.path.core#/config/webtop.xml" variable="arguments.xWebtop">
@@ -88,6 +89,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 				<cfif qCustomAdmin.RecordCount>
 					
 					<cfloop query="qCustomAdmin">
+						<cfset xmlpathfull="#application.path.library#/#library#/customadmin/#qCustomAdmin.Name#" />
 						<cffile action="read" file="#application.path.library#/#library#/customadmin/#qCustomAdmin.Name#" variable="arguments.xCustomAdmin">
 						
 						<cftry>
@@ -100,15 +102,15 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 								<cfset xmlCustomAdmin=xmlTransform(xmlCustomAdmin,xslt)>
 								<cfset xmlCustomAdmin=xmlParse(xmlCustomAdmin)>
 								<!--- log deprecated approach --->
-								<cftrace type="warning" category="farcry.webtop" text="../customadmin/customadmin.xml is using an old format.  This was updated to a more modern format with the release of FarCry 2.4." />
-								<cflog application="true" file="deprecated" type="warning" text="../customadmin/customadmin.xml initialised using an old xml format.  This was updated to a more modern format with the release of FarCry 2.4." />
+								<cftrace type="warning" category="farcry.webtop" text="#xmlpathfull# is using an old format.  This was updated to a more modern format with the release of FarCry 2.4." />
+								<cflog application="true" file="deprecated" type="warning" text="#xmlpathfull# initialised using an old xml format.  This was updated to a more modern format with the release of FarCry 2.4." />
 							</cfif>
 							
 							<!--- add the xml to our array --->
 							<cfset bResult = arrayAppend(aXMLCustomAdmin, xmlCustomAdmin) />
 							
 							<cfcatch>
-								<cftrace type="warning" category="farcry.webtop" text="../customadmin/customadmin.xml was not parsed successfully." var="cfcatch.Detail" />
+								<cftrace type="warning" category="farcry.webtop" text="#xmlpathfull# was not parsed successfully." var="cfcatch.Detail" />
 							</cfcatch>
 						</cftry>
 						
