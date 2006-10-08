@@ -1362,6 +1362,7 @@ $out:$
 	<cfargument name="scope" default="types" required="No">
 	
 	<cfset var stTypes = structNew() />
+	<cfset var TableId="" />
 	
 	<cfloop collection="#application[arguments.scope]#" item="typename">
 		<cfswitch expression="#application.dbtype#">
@@ -1439,12 +1440,19 @@ $out:$
          ORDER BY 2, 3;
          </cfquery>
 
+		<!--- if table doesn't exist then set tableid to 0, to ignore --->
+		<cfif gettableid.recordcount>
+			<cfset tableid= getTableID.oid />
+		<cfelse>
+			<cfset tableid="0" />
+		</cfif>
+
          <cfquery name="getColumns" datasource="#application.dsn#">
          SELECT a.attname,
            pg_catalog.format_type(a.atttypid, a.atttypmod) as thetype,
            not a.attnotnull as isnullable
          FROM pg_catalog.pg_attribute a
-         WHERE a.attrelid = '#getTableId.oid#' AND a.attnum > 0 AND NOT a.attisdropped
+         WHERE a.attrelid = '#TableId#' AND a.attnum > 0 AND NOT a.attisdropped
          ORDER BY a.attnum
          </cfquery>
 
