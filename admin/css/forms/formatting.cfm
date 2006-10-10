@@ -49,6 +49,7 @@ form {font-size: 100%;}
 form fieldset {font-size: 100%;}
 form fieldset legend {font-size: 150%; font-weight: normal; color: #hexPrimaryDark#;}
 label {font-size: 100%;}
+form.formtool label {letter-spacing: 0.0em; font-size: 90%;}
 label u {font-style: normal; text-decoration: underline;}
 input, select, textarea {font-family: Tahoma, Arial, sans-serif; font-size: 100%; color: ##000000;}
 textarea {}
@@ -94,6 +95,9 @@ form div.wide input.inputText, form div.wide input.inputPassword, form div.wide 
 form div.notes p, form div small {line-height: 125%;}
 form div.wide small {}
 
+
+form.formtool ##wizard-content select {font-size: 90%; line-height: normal;}
+form.formtool ##wizard-content select option {font-size:inherit; line-height:inherit;}
 <!--- end css output --->
 </cfoutput>
 

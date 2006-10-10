@@ -141,6 +141,9 @@ form div.wide small {}
 /* temp hack to clean up buttons: GB 20060914 */
 .formButton {width: 50px;}
 textarea.richtext {width: 600px;}
+
+form.formtool ##wizard-content table, form.formtool ##wizard-content table tr, form.formtool ##wizard-content table tr td, form.formtool ##wizard-content table th {border: none;}
+form.formtool select {border: 1px solid #hexPrimaryLighter#;}
 <!--- end css output --->
 </cfoutput>
 

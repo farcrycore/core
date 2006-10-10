@@ -7,7 +7,7 @@
 	formWidth = "600px";
 
 	/* left column */
-	columnLeftWidth = "130px";
+	columnLeftWidth = "140px";
 
 	/* right column */
 	columnRightWidth = "150px";
@@ -46,7 +46,7 @@ this stylesheet defines the following page elements:
 /* form layout styles */
 p.asdafas {border: 3px solid green;}
 form {margin: 0px; padding: 0px;}
-form.formtool {margin: 0px 0px 0px 0px; padding: 0px; width: #formWidth#;}
+form.formtool {margin: 0px 0px 0px 0px; padding: 0px; min-width: 600px; width: 800px; max-width: 900px;}
 form.formtool fieldset {margin: 0px 0px 0px 0px; padding: 10px 10px 10px 10px;}
 <!--- form.formtool #wizard-wrap fieldset {margin: 0px 0px 0px 0px; padding: 10px 10px 10px 10px;}--->
 form.formtool fieldset legend {margin: 10px 0px 10px 0px; padding: 0px 5px 0px 5px;}
@@ -79,6 +79,8 @@ form.formtool .error p.error {margin: 0px 0px 0px 118px; width: 200px;}
 form.formtool input,
 	form.formtool select,
 	form.formtool textarea {margin: 0px 0px 0px 0px; padding: 1px 3px 1px 3px; width: 200px;}
+
+	form.formtool textarea {height: 8.0em;}
 
 form.formtool input.inputFile {width: 211px;}
 
@@ -145,6 +147,12 @@ form.formtool .passwordlabel {display: none;}
 
 form.formtool .formsection .password .fieldAlign {float: none; margin: 0px 0px 0px #columnLeftWidth#; padding: 0px;}
 form.formtool .fieldsection .clearer {clear: both;}
+
+form.formtool .formCheckbox {width: auto; border: none;}
+form.formtool .category .fieldwrap input {border: none;}
+
+form.formtool ##wizard-content select {width: auto; margin: 0px; padding: 0px;}
+form.formtool ##wizard-content select option {width: auto; margin: 0px; padding: 0px 3px 0px 3px;}
 
 <!--- end css output --->
 </cfoutput>
