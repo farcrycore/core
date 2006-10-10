@@ -10,11 +10,12 @@
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 	
+		<cfparam name="arguments.stMetadata.ftclass" default="">
 		<cfparam name="arguments.stMetadata.ftstyle" default="">
 		
 		<cfsavecontent variable="html">
 			<cfoutput>
-				<input type="checkbox" name="#arguments.fieldname#" id="#arguments.fieldname#" value="1" style="#arguments.stMetadata.ftstyle#" <cfif arguments.stMetadata.value EQ 1>checked</cfif> />
+				<input type="checkbox" name="#arguments.fieldname#" id="#arguments.fieldname#" value="1" class="formcheckbox #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" <cfif arguments.stMetadata.value EQ 1>checked</cfif> />
 				<input type="hidden" name="#arguments.fieldname#" value="0" />
 			</cfoutput>
 		
