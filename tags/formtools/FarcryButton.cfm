@@ -9,7 +9,7 @@
 <cfparam  name="attributes.Type" default="submit">
 <cfparam  name="attributes.Value" default="#Attributes.Type#">
 <cfparam  name="attributes.Onclick" default="">
-<cfparam  name="attributes.Class" default="ft-submit">
+<cfparam  name="attributes.Class" default="">
 <cfparam  name="attributes.Style" default="">
 <cfparam name="attributes.SelectedObjectID" default="">
 
@@ -24,7 +24,7 @@
 	
 	<cfset attributes.onClick = "#attributes.onClick#;$('FarcryFormSubmitButtonClicked#Request.farcryForm.Name#').value = '#attributes.Value#';">
 
-	<cfoutput><input type="#attributes.Type#" name="FarcryFormSubmitButton" value="#attributes.Value#" onclick="#attributes.Onclick#" class="#attributes.Class#" style="#attributes.Style#;width:auto;" /></cfoutput>
+	<cfoutput><input type="#attributes.Type#" name="FarcryFormSubmitButton" value="#attributes.Value#" onclick="#attributes.Onclick#" class="formButton #attributes.Class#" style="#attributes.Style#;width:auto;" /></cfoutput>
 </cfif>
 
 <cfif thistag.ExecutionMode EQ "End">
