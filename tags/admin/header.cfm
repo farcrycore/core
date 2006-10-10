@@ -2,15 +2,15 @@
 <cfprocessingDirective pageencoding="utf-8">
 <!--- 
 || LEGAL ||
-$Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
+$Copyright: Daemon Pty Limited 1995-2006, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/admin/header.cfm,v 1.36.2.1 2006/03/14 06:29:26 geoff Exp $
-$Author: geoff $
-$Date: 2006/03/14 06:29:26 $
-$Name: milestone_3-0-1 $
-$Revision: 1.36.2.1 $
+$Header:  $
+$Author:  $
+$Date:  $
+$Name: $
+$Revision:  $
 
 || DESCRIPTION || 
 $Description: Admin header$
@@ -24,6 +24,11 @@ $in: [title] page title for frame $
 $in: [bCacheControl] output cache control headers; default true. $
 --->
 <cfimport taglib="/farcry/farcry_core/tags/misc/" prefix="misc">
+
+<!--- exit tag if its been closed, ie don't run twice --->
+<cfif thistag.executionmode eq "end">
+	<cfexit method="exittag" />
+</cfif>
 
 <cfparam name="attributes.title" default="#application.config.general.siteTitle# :: Administration" type="string">
 <cfparam name="attributes.bCacheControl" default="true" type="boolean">
@@ -43,7 +48,7 @@ $in: [bCacheControl] output cache control headers; default true. $
 	<cfsavecontent variable="customCSS">
 	<cfloop query="qCSS">
 		<cfoutput>
-		<link href="#application.url.webroot#/css/customadmin/#qCSS.name#" rel="stylesheet" type="text/css"></cfoutput>
+		<link href="#application.url.webroot#/css/customadmin/#qCSS.name#" rel="stylesheet" type="text/css" /></cfoutput>
 	</cfloop>
 	</cfsavecontent>
 </cfif>
@@ -65,14 +70,14 @@ $in: [bCacheControl] output cache control headers; default true. $
 <html xmlns="http://www.w3.org/1999/xhtml" dir="#attributes.writingDir#" lang="#attributes.userLanguage#">
 	<head>
 		<!--- apply cach control metadata as required --->
-		</cfoutput><cfif attributes.bCacheControl><misc:cacheControl></cfif><cfoutput>
-		<meta content="text/html; charset=UTF-8" http-equiv="content-type">
+		</cfoutput><cfif attributes.bCacheControl><misc:cacheControl /></cfif><cfoutput>
+		<meta content="text/html; charset=UTF-8" http-equiv="content-type" />
 		<title>#attributes.title#</title>
-		<script src="#application.url.farcry#/js/tabs.js" type="text/javascript"></script>
+		<script type="text/javascript" src="#application.url.farcry#/js/tabs.js"></script>
 		<!--- DataRequestor Object : used to retrieve xml data via javascript --->
-		<script src="#application.url.farcry#/includes/lib/DataRequestor.js"></script>
+		<script type="text/javascript" src="#application.url.farcry#/includes/lib/DataRequestor.js"></script>
 		<!--- JSON javascript object --->
-		<script src="#application.url.farcry#/includes/lib/json.js"></script>
+		<script type="text/javascript" src="#application.url.farcry#/includes/lib/json.js"></script>
 		<style type="text/css" title="default" media="screen">@import url(#application.url.farcry#/css/main.css);</style><!--- 
 		<style type="text/css" title="default" media="screen">@import url(#application.url.farcry#/css/forms.css);</style> --->
 		<style type="text/css" title="default" media="screen">@import url(#application.url.farcry#/css/tabs.css);</style>

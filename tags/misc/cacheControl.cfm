@@ -1,22 +1,18 @@
 <cfsetting enablecfoutputonly="Yes">
 <!--- 
-|| BEGIN FUSEDOC ||
-
-|| Copyright ||
-Daemon Pty Limited 1995-2001
-http://www.daemon.com.au/
+|| LEGAL ||
+$Copyright: Daemon Pty Limited 1995-2006, http://www.daemon.com.au $
+$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/misc/cacheControl.cfm,v 1.3 2003/09/25 23:28:09 brendan Exp $
-$Author: brendan $
-$Date: 2003/09/25 23:28:09 $
-$Name: milestone_3-0-1 $
-$Revision: 1.3 $
+$Header:  $
+$Author:  $
+$Date: $
+$Name: $
+$Revision: $
 
 || DESCRIPTION || 
 Sets html cache header parameters for web pages.
-
-|| USAGE ||
 
 || DEVELOPER ||
 Matt Dawson (mad@daemon.com.au)
@@ -27,9 +23,12 @@ Matt Dawson (mad@daemon.com.au)
 -> [attributes.minutes]: How many minutes to cache for
 -> [attributes.seconds]: How many seconds to cache for
 -> [url.CacheControlDebug]: Shows how long page is cached for if anything other than 0
-
-|| END FUSEDOC ||
 --->
+
+<!--- exit tag if its been closed, ie don't run twice --->
+<cfif thistag.executionmode eq "end">
+	<cfexit method="exittag" />
+</cfif>
 
 <!---
 	Some firewalls strip off the CFHEADER information,
@@ -48,9 +47,9 @@ Matt Dawson (mad@daemon.com.au)
 	<CFHEADER NAME="cache-control" VALUE="no-cache, no-store, must-revalidate">
 	
 	<cfoutput>
-	<META HTTP-EQUIV="Expires" CONTENT="Tue, 01 Jan 1985 00:00:01 GMT">
-	<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
-	<META HTTP-EQUIV="cache-control" CONTENT="no-cache, no-store, must-revalidate">
+	<META HTTP-EQUIV="Expires" CONTENT="Tue, 01 Jan 1985 00:00:01 GMT" />
+	<META HTTP-EQUIV="Pragma" CONTENT="no-cache" />
+	<META HTTP-EQUIV="cache-control" CONTENT="no-cache, no-store, must-revalidate" />
 	</cfoutput>
 	<cfif ( url.CacheControlDebug neq 0 )>
 		<cfoutput>Page cached until: Page not cached</cfoutput>
@@ -80,7 +79,7 @@ Matt Dawson (mad@daemon.com.au)
 	
 	<CFHEADER NAME="Expires" VALUE="#dateString#">
 	<cfoutput>
-	<META HTTP-EQUIV="Expires" CONTENT="#dateString#">
+	<META HTTP-EQUIV="Expires" CONTENT="#dateString#" />
 	</cfoutput>
 </cfif>
 <cfsetting enablecfoutputonly="No">
