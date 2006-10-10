@@ -46,7 +46,7 @@
 </cffunction>
 
 
-<cffunction name="getRecordset" access="public" output="true" returntype="struct">
+<cffunction name="getRecordset" access="public" output="false" returntype="struct">
 	<cfargument name="typename" required="No" type="string" default="" />
 	<cfargument name="identityColumn" required="No" type="string" default="ObjectID" />
 	<cfargument name="sqlColumns" required="No" type="string" default="tbl.ObjectID" />
@@ -60,7 +60,7 @@
 	<cfargument name="PageLinksShown" required="No" type="numeric" default="5" />
 	
 	<cfset var stReturn = structNew() />
-	<cfset var q = '' />
+	<cfset var qFormToolRecordset = '' />
 	<cfset var recordcount = '' />
 	<cfset arguments.identityColumn = "tbl." & arguments.identityColumn>
 	
@@ -92,10 +92,8 @@
 		<cfset theSQLTop = arguments.CurrentPage * arguments.recordsPerPage>
 
 		
-			<cfquery name="q" datasource="#application.dsn#">
-											
-											
-											
+			<cfquery name="qFormToolRecordset" datasource="#application.dsn#">
+
 			IF OBJECT_ID('tempdb..##thetops') IS NOT NULL 	drop table ##thetops
 			CREATE TABLE ##thetops (objectID varchar(40), myint int IDENTITY(1,1) NOT NULL)
 			
@@ -128,7 +126,8 @@
 							
 			</cfquery>
 				
-			<cfquery name="qrecordcount" datasource="#application.dsn#" result="qRes">
+			
+			<cfquery name="qrecordcount" datasource="#application.dsn#">
 											
 			IF OBJECT_ID('tempdb..##thetops') IS NOT NULL 	drop table ##thetops
 			CREATE TABLE ##thetops (objectID varchar(40), myint int IDENTITY(1,1) NOT NULL)
@@ -194,7 +193,7 @@
 			
 			
 			
-			<cfquery name="q" datasource="#application.dsn#" result="qRes">
+			<cfquery name="qFormToolRecordset" datasource="#application.dsn#" result="qRes">
 											
 			IF OBJECT_ID('tempdb..##thetops') IS NOT NULL 	drop table ##thetops
 			CREATE TABLE ##thetops (objectID varchar(40), myint int IDENTITY(1,1) NOT NULL)
@@ -285,7 +284,7 @@
 			
 		
 		<!--- NOW THAT WE HAVE OUR QUERY, POPULATE THE RETURN STRUCTURE --->
-		<cfset stReturn.q = q />
+		<cfset stReturn.q = qFormToolRecordset />
 		<cfset stReturn.countAll = qrecordcount.countAll />
 		<cfset stReturn.CurrentPage = arguments.CurrentPage />
 		
