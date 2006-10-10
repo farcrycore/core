@@ -139,7 +139,7 @@ form div.notes p, form div small {}
 form div.wide small {}
 
 /* temp hack to clean up buttons: GB 20060914 */
-.ft-submit {width: 50px;}
+.formButton {width: 50px;}
 textarea.richtext {width: 600px;}
 <!--- end css output --->
 </cfoutput>
