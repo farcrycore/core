@@ -46,9 +46,7 @@
 						<cfif len(arguments.stMetadata.ftImageListField)>
 							external_image_list_url : "#application.url.farcry#/facade/tinyMCEImageList.cfm?objectID=#arguments.stObject.ObjectID#&Typename=#arguments.stobject.Typename#&FieldName=#arguments.stMetadata.ftImageListField#",
 						</cfif>			
-						external_link_list_url : "#application.url.farcry#/facade/tinyMCELinkList.cfm",		
-
-						
+						external_link_list_url : "#application.url.farcry#/facade/tinyMCELinkList.cfm"						
 					});
 				</cfoutput>
 			
@@ -86,7 +84,7 @@
 						// Try to fire the onchange event
 						try {
 							this.callerWindow.document.forms[0].elements[this.field].onchange();
-						} catch (e) {
+						} catch (e) {alert("hop")
 							// Skip it
 						}
 					}
