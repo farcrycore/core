@@ -128,14 +128,7 @@
 				
 			
 			<cfquery name="qrecordcount" datasource="#application.dsn#">
-											
-			IF OBJECT_ID('tempdb..##thetops') IS NOT NULL 	drop table ##thetops
-			CREATE TABLE ##thetops (objectID varchar(40), myint int IDENTITY(1,1) NOT NULL)
-			
-			  
-				
-			INSERT ##thetops (objectID)
-			SELECT tbl.objectid
+			SELECT count(distinct tbl.objectid) as CountAll 
 			FROM #arguments.typename# tbl 
 			
 			<cfif arguments.lCategories neq ''>
@@ -148,16 +141,6 @@
 			<cfelse>
 				WHERE #preserveSingleQuotes(arguments.SqlWhere)#
 			</cfif>
-			<cfif len(arguments.sqlOrderBy)>
-				ORDER BY #preserveSingleQuotes(arguments.sqlOrderBy)#
-			</cfif>
-			
-			
-			
-			select count(distinct objectid) as CountAll from ##thetops
-						
-			drop table ##thetops
-							
 			</cfquery>
 			
 						
@@ -228,13 +211,7 @@
 			</cfquery>
 		
 			<cfquery name="qrecordcount" datasource="#application.dsn#" result="qRes">
-											
-			IF OBJECT_ID('tempdb..##thetops') IS NOT NULL 	drop table ##thetops
-			CREATE TABLE ##thetops (objectID varchar(40), myint int IDENTITY(1,1) NOT NULL)
-			
-				
-			INSERT ##thetops (objectID)
-			SELECT tbl.objectid
+			SELECT count(distinct tbl.objectid)
 			FROM #arguments.typename# tbl 
 			
 			<cfif arguments.lCategories neq ''>
@@ -247,15 +224,6 @@
 			<cfelse>
 				WHERE #preserveSingleQuotes(arguments.SqlWhere)#
 			</cfif>
-			<cfif len(arguments.sqlOrderBy)>
-				ORDER BY #preserveSingleQuotes(arguments.sqlOrderBy)#
-			</cfif>
-			
-			
-			select count(distinct objectid) as CountAll from ##thetops
-						
-			drop table ##thetops
-							
 			</cfquery>
 			
 			
