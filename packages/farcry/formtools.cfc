@@ -151,9 +151,7 @@
 			<cfelseif len(trim(arguments.SqlWhere))>
 				WHERE #preserveSingleQuotes(arguments.SqlWhere)#
 			</cfif>
-			<cfif len(arguments.sqlOrderBy)>
-				ORDER BY #arguments.sqlOrderBy#
-			</cfif>
+			
 			</cfquery>
 			
 						
@@ -234,9 +232,10 @@
 				    where categoryID in (#preserveSingleQuotes(arguments.lCategories)#)
 				    )
 				AND #preserveSingleQuotes(arguments.SqlWhere)#
-			<cfelse>
+			<cfelseif len(trim(arguments.SqlWhere))>
 				WHERE #preserveSingleQuotes(arguments.SqlWhere)#
 			</cfif>
+			
 			</cfquery>
 			
 			
