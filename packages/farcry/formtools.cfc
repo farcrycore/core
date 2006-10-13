@@ -53,6 +53,7 @@
 	<cfargument name="sqlWhere" required="No" type="string" default="" />
 	<cfargument name="sqlOrderBy" required="No" type="string" default="label" />
 	<cfargument name="lCategories" required="No" type="string" default="" />
+	<!--- <cfargument name="lCategoriesMust" required="No" type="string" default="" /> --->
 	
 	<cfargument name="paginationID" required="No" type="string" default="" />	
 	<cfargument name="CurrentPage" required="No" type="numeric" default="0" />
@@ -82,6 +83,12 @@
 
 
 	<cfset arguments.lCategories = listQualify(arguments.lCategories,"'")>
+	<!--- <cfset SQLCategoryMust = "">
+	<cfif arguments.lCategoriesMust neq "">
+		<cfloop list="#arguments.lCategoriesMust#" index="catID">
+			<cfset SQLCategoryMust = SQLCategoryMust & " AND categoryID='" & catID & "'">
+		</cfloop>	
+	</cfif> --->
 
 	<cfif RecordsPerPage GT 0><!--- Start if pagination  --->
 
@@ -90,14 +97,13 @@
 		</cfif>
 
 		<cfset theSQLTop = arguments.CurrentPage * arguments.recordsPerPage>
-
+		
 		
 			<cfquery name="qFormToolRecordset" datasource="#application.dsn#">
 
 			IF OBJECT_ID('tempdb..##thetops') IS NOT NULL 	drop table ##thetops
-			CREATE TABLE ##thetops (objectID varchar(40), myint int IDENTITY(1,1) NOT NULL)
+			CREATE TABLE ##thetops (objectID varchar(40), myint int IDENTITY(1,1) NOT NULL);
 			
-				
 			INSERT ##thetops (objectID)
 			SELECT TOP #theSQLTop# tbl.objectid
 			FROM #arguments.typename# tbl 
@@ -108,8 +114,10 @@
 				    from refCategories 
 				    where categoryID in (#preserveSingleQuotes(arguments.lCategories)#)
 				    )
+				<cfif len(trim(arguments.SqlWhere))>
 				AND #preserveSingleQuotes(arguments.SqlWhere)#
-			<cfelse>
+				</cfif>
+			<cfelseif len(trim(arguments.SqlWhere))>
 				WHERE #preserveSingleQuotes(arguments.SqlWhere)#
 			</cfif>
 			<cfif len(arguments.sqlOrderBy)>
@@ -137,9 +145,14 @@
 				    from refCategories 
 				    where categoryID in (#preserveSingleQuotes(arguments.lCategories)#)
 				    )
+				<cfif len(trim(arguments.SqlWhere))>
 				AND #preserveSingleQuotes(arguments.SqlWhere)#
-			<cfelse>
+				</cfif>
+			<cfelseif len(trim(arguments.SqlWhere))>
 				WHERE #preserveSingleQuotes(arguments.SqlWhere)#
+			</cfif>
+			<cfif len(arguments.sqlOrderBy)>
+				ORDER BY #arguments.sqlOrderBy#
 			</cfif>
 			</cfquery>
 			
@@ -195,7 +208,7 @@
 			<cfelse>
 				WHERE #preserveSingleQuotes(arguments.SqlWhere)#
 			</cfif>
-			<cfif len(arguments.sqlOrderBy)>
+			<cfif len(trim(arguments.sqlOrderBy))>
 				ORDER BY #preserveSingleQuotes(arguments.sqlOrderBy)#
 			</cfif>
 			
