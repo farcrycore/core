@@ -1,28 +1,22 @@
+<cfsetting enablecfoutputonly="Yes">
 <!--- 
 || LEGAL ||
 $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/farcry/_farcryApplication.cfm,v 1.7 2005/08/09 03:54:39 geoff Exp $
-$Author: geoff $
-$Date: 2005/08/09 03:54:39 $
-$Name:  $
-$Revision: 1.7 $
+$Header: $
+$Author: $
+$Date: $
+$Name: $
+$Revision: $
 
 || DESCRIPTION || 
 $Description: application code needed for every page. Checks login status and setus up request scope$
 
-
 || DEVELOPER ||
 $Developer: Brendan Sisson (brendan@daemon.com.au)$
-
-|| ATTRIBUTES ||
-$in: $
-$out:$
 --->
-
-<cfsetting enablecfoutputonly="Yes">
 
 <cfscript>
 request.dmSec.oAuthorisation = createObject("component","#application.securitypackagepath#.authorisation");
@@ -32,14 +26,21 @@ if (isDefined("url.logout") and url.logout eq 1)
 	request.dmsec.oAuthentication.logout(bAudit=1);
 stLoggedIn = request.dmsec.oAuthentication.getUserAuthenticationData();
 request.loggedin = stLoggedin.bLoggedIn;	
-
 </cfscript>
 
-<!--- setup request variables --->
+
+<!-------------------------------------------------------
+Run Request Processing
+	_serverSpecificRequestScope.cfm
+-------------------------------------------------------->
+<!--- farcry_core request processing --->
 <cfinclude template="_requestScope.cfm">
 
+<!--- project and library request processing --->
 <cfif application.sysInfo.bServerSpecificRequestScope>
-	<cfinclude template="/farcry/#application.applicationName#/config/_serverSpecificRequestScope.cfm">
+	<cfloop from="1" to="#arraylen(application.sysinfo.ASERVERSPECIFICREQUESTSCOPE)#" index="i">
+		<cfinclude template="#application.sysinfo.ASERVERSPECIFICREQUESTSCOPE[i]#" />
+	</cfloop>
 </cfif>
 
 

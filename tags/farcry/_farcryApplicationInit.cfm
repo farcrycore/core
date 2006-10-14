@@ -1,14 +1,16 @@
+<cfsetting requestTimeOut="200">
+<cfsilent>
 <!---
 || LEGAL ||
 $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/farcry/_farcryApplicationInit.cfm,v 1.10.2.4 2006/01/24 09:48:36 geoff Exp $
-$Author: geoff $
-$Date: 2006/01/24 09:48:36 $
-$Name:  $
-$Revision: 1.10.2.4 $
+$Header: $
+$Author: $
+$Date: $
+$Name: $
+$Revision: $
 
 || DESCRIPTION ||
 $Description: initialise application level code. Sets up site config and permissions cache $
@@ -16,7 +18,7 @@ $Description: initialise application level code. Sets up site config and permiss
 || DEVELOPER ||
 $Developer: Mat Bryant (mat@daemon.com.au)$
 --->
-<cfsetting requestTimeOut="200">
+
 
 <!--- set up general config variables --->
 <cfinclude template="_config.cfm">
@@ -60,31 +62,54 @@ $Developer: Mat Bryant (mat@daemon.com.au)$
 	application.sysInfo.machineName = oSysInfo.getMachineName();
 	application.sysInfo.instanceName = oSysInfo.getInstanceName();
 	application.sysInfo.farcryVersionTagLine = oSysInfo.getVersionTagline();
-	
-	
 </cfscript>
 
+<!------------------------------------------------------------
+Check to see if Important project specific files exist. 
+This removes the need to continually check on each request. 
+------------------------------------------------------------->
 
-<!--------------------------------------------------------------------------------------------------------------- 
-Check to see if Important project specific files exist. This removes the need to continually check on each request. 
------------------------------------------------------------------------------------------------------------------->
-
-<!--- _serverSpecificRequestScope.cfm --->
+<!-------------------------------------------------------
+Library Request Processing
+	_serverSpecificRequestScope.cfm
+-------------------------------------------------------->
+<cfif structkeyexists(application, "lfarcrylib")>
+	<cfset application.sysInfo.aServerSpecificRequestScope = arrayNew(1) />
+	<cfloop list="#application.lfarcrylib#" index="lib">
+		<cfif fileExists("#application.path.LIBRARY#/#lib#/config/_serverSpecificRequestScope.cfm")>
+			<cfset arrayAppend(application.sysInfo.aServerSpecificRequestScope, "/farcry/farcry_lib/#lib#/config/_serverSpecificRequestScope.cfm") />
+		</cfif>
+	</cfloop>
+</cfif>
+<!--- add project request scope processing --->
 <cfif fileExists("#application.path.project#/config/_serverSpecificRequestScope.cfm")>
+	<cfset arrayAppend(application.sysInfo.aServerSpecificRequestScope, "/farcry/#application.applicationname#/config/_serverSpecificRequestScope.cfm") />
+</cfif>
+<!--- set flag for request processing --->
+<cfif arraylen(application.sysInfo.aServerSpecificRequestScope)>
 	<cfset application.sysInfo.bServerSpecificRequestScope = "true" />
 <cfelse>
 	<cfset application.sysInfo.bServerSpecificRequestScope = "false" />
 </cfif>
 
-<!--- apps.cfm --->
+
+<!-------------------------------------------------------
+Apps Processing
+	/farcry/apps.cfm
+	DEPRECATED: you should not need this crack anymore
+-------------------------------------------------------->
 <cfif fileExists("/farcry/apps.cfm")>
 	<cfset application.sysInfo.bApps = "true" />
 <cfelse>
 	<cfset application.sysInfo.bApps = "false" />
 </cfif>
-	
 
-<!--- alert user that application scope has been refreshed --->
+
+<!-------------------------------------------------------
+Alert user that application scope has been refreshed
+-------------------------------------------------------->
 <cfif isDefined("URL.updateApp") AND URL.updateApp>
 	<cfhtmlhead text="<script language='JavaScript'>alert('Application Scope Refreshed!');</script>">
 </cfif>
+
+</cfsilent>
