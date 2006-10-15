@@ -1,56 +1,52 @@
 <!--- 
 || LEGAL ||
-$Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
+$Copyright: Daemon Pty Limited 1995-2006, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/dmImage.cfc,v 1.23.2.6 2006/02/14 06:48:47 paul Exp $
-$Author: paul $
-$Date: 2006/02/14 06:48:47 $
-$Name:  $
-$Revision: 1.23.2.6 $
+$Header: $
+$Author: $
+$Date: $
+$Name: $
+$Revision: $
 
 || DESCRIPTION || 
 $Description: dmImage type $
 
-
 || DEVELOPER ||
 $Developer: Brendan Sisson (brendan@daemon.com.au) $
-
-|| ATTRIBUTES ||
-$in: $
-$out:$
 --->
-
-<cfcomponent extends="types" displayname="Image" hint="Image objects" bUseInTree="1">
+<cfcomponent extends="types" displayname="Image" hint="Image Media" bUseInTree="1">
 <!------------------------------------------------------------------------
 type properties
 ------------------------------------------------------------------------->
-<cfproperty ftSeq=1 ftFieldset="general" name="title" type="nstring" hint="Image title." required="no" default=""> 
-<cfproperty name="alt" type="nstring" hint="Alternate text" required="no" default="" > 
+<cfproperty ftSeq="1" ftFieldset="General Details" name="title" type="nstring" hint="Image title." required="no" default="" blabel="true" ftlabel="Image Title" /> 
+<cfproperty ftSeq="2" ftFieldset="General Details" name="alt" type="nstring" hint="Alternate text" required="no" default="" ftlabel="Alternative Text" /> 
+<cfproperty ftSeq="5" ftFieldset="General Details" name="bLibrary" type="numeric" hint="Flag to indictae if in file library or not" required="no" default="1" ftType="boolean" ftlabel="Add to Library" />
+<cfproperty ftSeq="6" ftFieldset="General Details" name="status" type="string" hint="Status of the node (draft, pending, approved)." required="yes" default="draft" ftlabel="Status" />
+
+<!--- image file locations --->
+<cfproperty ftSeq="10" ftFieldset="Image Files" name="SourceImage" type="string" hint="The URL location of the uploaded image" required="No" default="" ftType="Image" ftCreateFromSourceOption="false" ftDestination="/images/SourceImage" ftlabel="Source Image" />
+<cfproperty ftSeq="11" ftFieldset="Image Files" name="StandardImage" type="string" hint="The URL location of the optimised uploaded image that should be used for general display" required="no" default="" ftType="Image" ftDestination="/images/StandardImage" ftImageWidth="600" ftImageHeight="600" ftAutoGenerateType="FitInside" ftSourceField="SourceImage" ftCreateFromSourceDefault="true" ftAllowUpload="true" ftlabel="Mid Size Image" />  
+<cfproperty ftSeq="12" ftFieldset="Image Files" name="ThumbnailImage" type="string" hint="The URL location of the thumnail of the uploaded image that should be used in " required="no" default="" ftType="Image"  ftDestination="/images/ThumbnailImage" ftImageWidth="80" ftImageHeight="80" ftAutoGenerateType="Pad" ftPadColor="##000000" ftSourceField="SourceImage" ftCreateFromSourceDefault="true" ftAllowUpload="true" ftlabel="Thumbnail Image" />  
+
+<!--- image categorisation --->
+<cfproperty ftSeq="20" ftFieldset="Categorisation" name="imageCategory" type="string" hint="Image categorisation." required="no" default="" ftlabel="Category" fttype="category" ftalias="dmimage" ftselectmultiple="true" />
+
+<!--- deprecated: legacy image properties --->
 <cfproperty name="width" type="nstring" hint="Image width (blank for default)" required="no" default="">  
 <cfproperty name="height" type="nstring" hint="Image height (blank for default)" required="no" default="">  
+<cfproperty name="bAutoGenerateThumbnail" type="numeric" hint="Flag to indicate if to automatically generate a thumbnail form the default image" required="no" default="1" ftType="boolean">
 <cfproperty name="imagefile" type="string" hint="The image file to be uploaded" required="No" default="">
 <cfproperty name="thumbnail" type="string" hint="The name of the thumbnail image to be uploaded" required="no" default="">  
 <cfproperty name="optimisedImage" type="string" hint="The name of the optimised image to be uploaded" required="no" default="">  
 <cfproperty name="originalImagePath" type="string" hint="The location in the filesystem where the original image is stored." required="No" default=""> 
 <cfproperty name="thumbnailImagePath" editHandler="void" type="string" hint="The location in the filesystem where the thumbnail image is stored." required="no" default=""> 
 <cfproperty name="optimisedImagePath" editHandler="void" type="string" hint="The location in the filesystem where the optimized image is stored." required="no" default=""> 
-<cfproperty name="bLibrary" type="numeric" hint="Flag to indictae if in file library or not" required="no" default="1" ftType="boolean">
-<cfproperty name="bAutoGenerateThumbnail" type="numeric" hint="Flag to indicate if to automatically generate a thumbnail form the default image" required="no" default="1" ftType="boolean">
-<cfproperty name="status" type="string" hint="Status of the node (draft, pending, approved)." required="yes" default="draft">
 
-<!--- URL locations to images (includes filename) --->
-<cfproperty name="SourceImage" type="string" hint="The URL location of the uploaded image" required="No" default="" 
-	ftType="Image" ftCreateFromSourceOption="false">
-<cfproperty name="StandardImage" type="string" hint="The URL location of the optimised uploaded image that should be used for general display" required="no" default="" 
-	ftType="Image"> 
-<cfproperty name="ThumbnailImage" type="string" hint="The URL location of the thumnail of the uploaded image that should be used in " required="no" default="" 
-	ftType="Image">  
-<!--- Object Methods --->
-
-
+<!--- import tag libraries --->
 <cfimport taglib="/farcry/farcry_core/tags/formtools/" prefix="ft" >
+
 
 <cffunction name="ftEdit" access="public" output="true" returntype="void">
 	<cfargument name="ObjectID" required="no" type="string" default="">
@@ -108,7 +104,7 @@ type properties
 	
 
 
-<cffunction name="edit" access="public">
+<cffunction name="editdud" access="public">
 	<cfargument name="objectid" required="yes" type="UUID">
 	
 	<!--- getData for object edit --->
@@ -259,15 +255,5 @@ type properties
 	<cfreturn imagePath>
 </cffunction>
 
-<!--- TODO: Is this needed anymore? The argument doesn't even match the super's arg. TL 20060214 --->
-<cffunction name="setFriendlyURL" access="public" returntype="struct" hint="Files do not have FUs; method always returns false." output="false">
-	<cfargument name="stProperties" required="true" type="struct">
-	<cfset var stReturn = StructNew()>
-	<cfset stReturn.bSuccess = 0>
-	<cfset stReturn.message = "File content type cannot have friendly url.">
-	<cfreturn stReturn>
-</cffunction>
-
 
 </cfcomponent>
-	
