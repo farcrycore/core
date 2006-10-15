@@ -1,16 +1,16 @@
-<cfprocessingDirective pageencoding="utf-8">
-<cfsetting enablecfoutputonly="Yes">
+<cfsetting enablecfoutputonly="true" />
+<cfprocessingDirective pageencoding="utf-8" />
 <!--- 
 || LEGAL ||
-$Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
+$Copyright: Daemon Pty Limited 1995-2006, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/edittabEdit.cfm,v 1.8 2005/07/29 07:29:33 geoff Exp $
-$Author: geoff $
-$Date: 2005/07/29 07:29:33 $
-$Name: milestone_3-0-1 $
-$Revision: 1.8 $
+$Header: $
+$Author: $
+$Date: $
+$Name: $
+$Revision: $
 
 || DESCRIPTION || 
 $DESCRIPTION: edit object invoker for primarily tree based content; on its way out the door 20050728 GB$
@@ -24,10 +24,8 @@ $DEVELOPER:Brendan Sisson (brendan@daemon.com.au)$
 <cfimport taglib="/farcry/farcry_core/tags/navajo" prefix="nj">
 
 <!--- check for content type and objectid--->
-<cfparam name="url.objectid" type="uuid">
-<!--- type deprecated in favour of typename --->
-<cfparam name="url.type" default="" type="string">
-<cfparam name="url.typename" default="#url.type#" type="string">
+<cfparam name="url.objectid" type="uuid" />
+<cfparam name="url.typename" type="string" />
 
 
 <cfif NOT len(url.typename)>
@@ -36,7 +34,7 @@ $DEVELOPER:Brendan Sisson (brendan@daemon.com.au)$
 		method="findType" 
 		returnvariable="typename"
 		objectid="#url.objectid#" />
-	<cfset url.typename=typename>
+	<cfset url.typename=typename />
 </cfif>
 
 <!--- set up page header --->
@@ -53,4 +51,4 @@ $DEVELOPER:Brendan Sisson (brendan@daemon.com.au)$
 <!--- setup footer --->
 <admin:footer>
 
-<cfsetting enablecfoutputonly="No">
+<cfsetting enablecfoutputonly="false" />

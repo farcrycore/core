@@ -1,45 +1,43 @@
+<cfsetting enablecfoutputonly="true" />
+<cfprocessingDirective pageencoding="utf-8">
 <!--- 
 || LEGAL ||
-$Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
+$Copyright: Daemon Pty Limited 1995-2006, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/edittabAudit.cfm,v 1.10.2.1 2006/02/14 02:55:28 tlucas Exp $
-$Author: tlucas $
-$Date: 2006/02/14 02:55:28 $
-$Name: milestone_3-0-1 $
-$Revision: 1.10.2.1 $
+$Header: $
+$Author: $
+$Date: $
+$Name: $
+$Revision: $
 
 || DESCRIPTION || 
 $DESCRIPTION: Displays an audit log for object$
-$TODO:  $ 
 
 || DEVELOPER ||
 $DEVELOPER:Brendan Sisson (brendan@daemon.com.au)$
-
-|| ATTRIBUTES ||
-$in:$ 
-$out:$
 --->
-
-<cfprocessingDirective pageencoding="utf-8">
+<!--- import tag libraries --->
+<cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
 
 <!--- check permissions --->
 <cfset iAuditTab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="ObjectAuditTab")>
 
 <!--- set up page header --->
-<cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 <cfif iAuditTab eq 1>
 	<cfset oAudit = createObject("component", "#application.packagepath#.farcry.audit")>
 	<cfset qLog = oAudit.getAuditLog(objectid=url.objectid)>
 	
-	<div class="FormTitle"><cfoutput>#application.adminBundle[session.dmProfile.locale].auditTrace#</cfoutput></div>	
+	<cfoutput>
+	<div class="FormTitle">#application.adminBundle[session.dmProfile.locale].auditTrace#</div>
+	</cfoutput>
 	
 	<cfif qLog.recordcount gt 0>
-		<table cellpadding="5" cellspacing="0" border="1" style="margin-left:30px;">
 		<cfoutput>
+		<table cellpadding="5" cellspacing="0" border="1" style="margin-left:30px;">
 		<tr class="dataheader">
 			<td align="center"><strong>#application.adminBundle[session.dmProfile.locale].date#</strong></td>
 			<td align="center"><strong>#application.adminBundle[session.dmProfile.locale].changeType#</strong></td>
@@ -81,25 +79,33 @@ $out:$
 				</tr>
 			</cfif>
 		</cfoutput>
+
 		<cfif isdefined("url.user")>
+			<cfoutput>
 			<tr>
-				<cfoutput>
 				<td colspan="5" align="right"><span class="frameMenuBullet">&raquo;</span> <a href="edittabAudit.cfm?objectid=#url.objectid#">#application.adminBundle[session.dmProfile.locale].showAllUsers#</a></td>
-				</cfoutput>
 			</tr>
+			</cfoutput>
 		</cfif>
-		</table>
+
+		<cfoutput></table></cfoutput>
+	
 	<cfelse>
+		<cfoutput>
 		<table cellpadding="5" cellspacing="0" border="0" style="margin-left:30px;">
 		<tr>
-			<td colspan="5"><cfoutput>#application.adminBundle[session.dmProfile.locale].noTraceRecorded#</cfoutput></td>
+			<td colspan="5">#application.adminBundle[session.dmProfile.locale].noTraceRecorded#</td>
 		</tr>
 		</table>
+		</cfoutput>
 	</cfif>
-	<a href="<cfoutput>#application.url.farcry#/edittabOverview.cfm?objectid=#url.objectId#</cfoutput>">[BACK]</a>
+	<cfoutput><a href="<cfoutput>#application.url.farcry#/edittabOverview.cfm?objectid=#url.objectId#</cfoutput>">[BACK]</a></cfoutput>
+
 <cfelse>
 	<admin:permissionError>
 </cfif>
 
 <!--- setup footer --->
 <admin:footer>
+
+<cfsetting enablecfoutputonly="false" />

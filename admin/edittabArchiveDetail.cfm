@@ -1,11 +1,20 @@
+<cfsetting enablecfoutputonly="true" />
 <cfprocessingDirective pageencoding="utf-8">
 
-<!--- set up page header --->
+<!--- import tag libraries --->
 <cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
+
+<!--- environment variables --->
+<cfparam name="url.archiveid" type="uuid" />
+
+<!--- set up page header --->
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<h3><cfoutput>#application.adminBundle[session.dmProfile.locale].archive#</cfoutput></h3>
+<cfoutput>
+	<h3>#application.adminBundle[session.dmProfile.locale].archive#</h3>
+</cfoutput>
 
+<!--- todo: move this functionality to the dmArchive or auxillary component --->
 <cfinvoke 
  component="#application.packagepath#.farcry.versioning"
  method="getArchiveDetail"
@@ -13,7 +22,7 @@
 	<cfinvokeargument name="objectID" value="#url.archiveid#"/>
 </cfinvoke>
 
-<cfdump var="#getArchiveDetailRet#" label="Archive">
+<cfdump var="#getArchiveDetailRet#" label="Archive" />
 
 <!--- setup footer --->
 <admin:footer>

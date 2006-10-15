@@ -1,28 +1,29 @@
+<cfsetting enablecfoutputonly="true" />
+<cfprocessingDirective pageencoding="utf-8">
 <!--- 
 || LEGAL ||
-$Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
+$Copyright: Daemon Pty Limited 1995-2006, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/edittabArchive.cfm,v 1.12 2005/08/17 06:50:52 pottery Exp $
-$Author: pottery $
-$Date: 2005/08/17 06:50:52 $
-$Name: milestone_3-0-1 $
-$Revision: 1.12 $
+$Header: $
+$Author: $
+$Date: $
+$Name: $
+$Revision: $
 
 || DESCRIPTION || 
 $Description: shows archived objects $
 
-
 || DEVELOPER ||
 $Developer: Brendan Sisson (brendan@daemon.com.au)$
-
-|| ATTRIBUTES ||
-$in: $
-$out:$
 --->
+<!--- import tag libraries --->
+<cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
 
-<cfprocessingDirective pageencoding="utf-8">
+<!--- environment variables --->
+<cfparam name="url.archiveid" type="uuid" />
+<cfparam name="url.objectid" type="uuid" />
 
 <!--- check permissions --->
 <cfscript>
@@ -30,13 +31,12 @@ $out:$
 </cfscript>
 
 <!--- set up page header --->
-<cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 <cfif iArchiveTab eq 1>
-
-	<h3><cfoutput>#application.adminBundle[session.dmProfile.locale].archive#</cfoutput></h3>
-
+	<cfoutput>
+	<h3>#application.adminBundle[session.dmProfile.locale].archive#</h3>
+	</cfoutput>
 	
 	<!--- check if rollback is required --->
 	<cfif isdefined("url.archiveid")>
@@ -58,7 +58,7 @@ $out:$
 		<cfinvokeargument name="objectID" value="#url.objectid#"/>
 	</cfinvoke>
 	
-	<table cellspacing="0">
+	<cfoutput><table cellspacing="0"></cfoutput>
 	<cfif getArchivesRet.recordcount gt 0>
 		<!--- setup table --->
 		<cfoutput>
@@ -92,11 +92,13 @@ $out:$
 		</tr>
 		</cfoutput>
 	<cfelse>
+	<cfoutput>
 		<tr>
-			<td colspan="6"><cfoutput>#application.adminBundle[session.dmProfile.locale].noArchiveRecorded#</cfoutput></td>
+			<td colspan="6">#application.adminBundle[session.dmProfile.locale].noArchiveRecorded#</td>
 		</tr>
+	</cfoutput>
 	</cfif>
-	</table>
+	<cfoutput></table></cfoutput>
 
 <cfelse>
 	<admin:permissionError>
@@ -104,3 +106,5 @@ $out:$
 
 <!--- setup footer --->
 <admin:footer>
+
+<cfsetting enablecfoutputonly="false" />
