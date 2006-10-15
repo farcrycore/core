@@ -1,7 +1,7 @@
 
-<cfcomponent name="URL" displayname="URL" hint="Field component to liase with all URL types"> 
+<cfcomponent name="email" displayname="Email" hint="Field component for Email types"> 
 	
-	<cffunction name="init" access="public" returntype="farcry.farcry_core.packages.formtools.URL" output="false" hint="Returns a copy of this initialised object">
+	<cffunction name="init" access="public" returntype="farcry.farcry_core.packages.formtools.email" output="false" hint="Returns a copy of this initialised object">
 		<cfreturn this>
 	</cffunction>
 	
@@ -19,7 +19,7 @@
 		<cfreturn html>
 	</cffunction>
 
-	<cffunction name="display" access="public" output="false" returntype="string" hint="This will return a string of formatted HTML text to display. Activates URL if recognised.">
+	<cffunction name="display" access="public" output="false" returntype="string" hint="This will return a string of formatted HTML text to display. Activates mailto if recognised.">
 		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
 		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
