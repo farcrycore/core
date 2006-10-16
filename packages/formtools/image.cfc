@@ -104,7 +104,9 @@
 		<cfparam name="arguments.stMetadata.ftImageHeight" default="#application.config.image.standardImageHeight#">
 		
 		<cfsavecontent variable="html">
-			<cfoutput><img src="#arguments.stMetadata.value#" <cfif arguments.stMetadata.ftAutoGenerateType EQ "ForceSise" OR arguments.stMetadata.ftAutoGenerateType EQ "Pad" >width="#arguments.stMetadata.ftImageWidth#" height="#arguments.stMetadata.ftImageHeight#"</cfif>></cfoutput>			
+			<cfif len(arguments.stMetadata.value)>
+				<cfoutput><img src="#arguments.stMetadata.value#" <cfif arguments.stMetadata.ftAutoGenerateType EQ "ForceSise" OR arguments.stMetadata.ftAutoGenerateType EQ "Pad" >width="#arguments.stMetadata.ftImageWidth#" height="#arguments.stMetadata.ftImageHeight#"</cfif>></cfoutput>			
+			</cfif>
 		</cfsavecontent>
 		
 		<cfreturn html>
