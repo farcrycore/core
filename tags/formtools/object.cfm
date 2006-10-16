@@ -421,6 +421,7 @@
 						<cfset stURLParams.primaryFormFieldName = "#variables.prefix##ftFieldMetadata.Name#">
 						<cfset stURLParams.ftJoin = "#i#">
 						<cfset stURLParams.LibraryType = "#ftFieldMetadata.Type#">
+						<cfset stURLParams.PackageType = "#attributes.PackageType#">
 						
 						<!--- If the field is contained in a wizzard, we need to let the library know which wizzard. --->
 						<cfif len(attributes.WizzardID)>
