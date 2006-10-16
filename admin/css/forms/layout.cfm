@@ -1,4 +1,4 @@
-`<!--- allow output only from cfoutput tags --->
+<!--- allow output only from cfoutput tags --->
 <cfsetting enablecfoutputonly="yes" />
 
 <!--- assign widths to strings for form elements --->
@@ -48,6 +48,7 @@ p.asdafas {border: 3px solid green;}
 form {margin: 0px; padding: 0px;}
 form.formtool {margin: 0px 0px 0px 0px; padding: 0px; min-width: 600px; width: 800px; max-width: 900px;}
 form.formtool fieldset {margin: 0px 0px 0px 0px; padding: 10px 10px 10px 10px;}
+body.library form.formtool {width: auto;}
 <!--- form.formtool #wizard-wrap fieldset {margin: 0px 0px 0px 0px; padding: 10px 10px 10px 10px;}--->
 form.formtool fieldset legend {margin: 10px 0px 10px 0px; padding: 0px 5px 0px 5px;}
 label {}
