@@ -113,6 +113,7 @@ $out:$
 		<cfset application.types[arguments.typename].bCustomType = bCustomType />
 		<cfset application.types[arguments.typename].bLibraryType = bLibraryType />
 		<cfset application.types[arguments.typename].typePath = path />
+		<cfset application.types[arguments.typename].packagePath = path />
 
 	<cfelseif arguments.scope IS 'rules' >
 
@@ -125,6 +126,7 @@ $out:$
 		<cfset application.rules[arguments.typename].bCustomRule = bCustomRule />
 		<cfset application.rules[arguments.typename].bLibraryRule = bLibraryRule />
 		<cfset application.rules[arguments.typename].rulePath = path />
+		<cfset application.rules[arguments.typename].packagePath = path />
 	
 	<cfelseif  arguments.scope IS 'formtools' >
 	
@@ -137,6 +139,7 @@ $out:$
 		<cfset application.formtools[arguments.typename].bCustomFormTool = bCustomFormTool /> 
 		<cfset application.formtools[arguments.typename].bLibraryFormtool = bLibraryFormtool /> 
 		<cfset application.formtools[arguments.typename].FormToolPath = path />
+		<cfset application.formtools[arguments.typename].packagePath = path />
 		
 	</cfif>
 </cffunction>
@@ -246,6 +249,7 @@ $out:$
 				<cfset stTypeMD.bCustomType = 0 />
 				<cfset stTypeMD.bLibraryType = 0 />
 				<cfset stTypeMD.typePath = "#application.packagepath#.types.#typename#" />
+				<cfset stTypeMD.packagePath = "#application.packagepath#.types.#typename#" />
 				<cfset stTypeMD.qMetadata = setupMetadataQuery(typename=typename,stProps=stTypeMD.stProps) />
 				<cfset application.types[typename]=duplicate(stTypeMD) />
 
@@ -281,6 +285,7 @@ $out:$
 						<cfset stTypeMD.bCustomType = 1 />
 						<cfset stTypeMD.bLibraryType = 1 />
 						<cfset stTypeMD.typePath = "farcry.farcry_lib.#library#.packages.types.#typename#" />							
+						<cfset stTypeMD.packagePath = "farcry.farcry_lib.#library#.packages.types.#typename#" />							
 						<cfset stTypeMD.qMetadata = setupMetadataQuery(typename=typename,stProps=stTypeMD.stProps) />
 						<cfset application.types[typename]=duplicate(stTypeMD) />
 					</cfif>	
@@ -311,6 +316,7 @@ $out:$
 				<cfset stTypeMD.bCustomType = 0 />
 				<cfset stTypeMD.bLibraryType = 0 />
 				<cfset stTypeMD.typePath = "#application.custompackagepath#.system.#typename#" />				
+				<cfset stTypeMD.packagePath = "#application.custompackagepath#.system.#typename#" />				
 				<cfset stTypeMD.qMetadata = setupMetadataQuery(typename=typename,stProps=stTypeMD.stProps) />
 				<cfset application.types[typename]=duplicate(stTypeMD) />
 			</cfif>
@@ -336,6 +342,7 @@ $out:$
 				<cfset stTypeMD.bCustomType = 1 />
 				<cfset stTypeMD.bLibraryType = 0 />
 				<cfset stTypeMD.typePath = "#application.custompackagepath#.types.#typename#" />
+				<cfset stTypeMD.packagePath = "#application.custompackagepath#.types.#typename#" />
 				<cfset stTypeMD.qMetadata = setupMetadataQuery(typename=typename,stProps=stTypeMD.stProps) />
 				<cfset application.types[typename]=duplicate(stTypeMD) />
 			</cfif>
@@ -363,6 +370,7 @@ $out:$
 				<cfset stTypeMD.bCustomformtool = 0 />
 				<cfset stTypeMD.bLibraryformtool = 0 />
 				<cfset stTypeMD.formtoolPath = "#application.packagepath#.formtools.#formtoolname#" />
+				<cfset stTypeMD.packagePath = "#application.packagepath#.formtools.#formtoolname#" />
 				<cfset application.formtools[formtoolname] = duplicate(stTypeMD) />
 				<cfset application.formtools[formtoolname].oFactory = oFactory /><!--- you can't duplicate an object --->
 			</cfif>
@@ -393,6 +401,7 @@ $out:$
 								<cfset stTypeMD.bCustomformtool = 1 />
 								<cfset stTypeMD.bLibraryformtool = 1 />
 								<cfset stTypeMD.formtoolPath = "farcry.farcry_lib.#library#.packages.formtools.#formtoolname#" />
+								<cfset stTypeMD.packagePath = "farcry.farcry_lib.#library#.packages.formtools.#formtoolname#" />
 								
 								<cfset application.formtools[formtoolname] = duplicate(stTypeMD) />
 								<cfset application.formtools[formtoolname].oFactory = oFactory /><!--- you can't duplicate an object --->
@@ -422,6 +431,7 @@ $out:$
 				<cfset stTypeMD.bCustomformtool = 1 />
 				<cfset stTypeMD.bLibraryformtool = 0 />
 				<cfset stTypeMD.formtoolPath = "#application.custompackagepath#.formtools.#formtoolname#" />
+				<cfset stTypeMD.packagePath = "#application.custompackagepath#.formtools.#formtoolname#" />
 				<cfset application.formtools[formtoolname] = duplicate(stTypeMD) />
 				<cfset application.formtools[formtoolname].oFactory = oFactory /><!--- you can't duplicate an object --->
 			</cfif>
@@ -450,6 +460,7 @@ $out:$
 					<cfset stTypeMD.bCustomRule = 0 />
 					<cfset stTypeMD.bLibraryRule = 0 />
 					<cfset stTypeMD.rulePath = "#application.packagepath#.rules.#typename#" />					
+					<cfset stTypeMD.packagePath = "#application.packagepath#.rules.#typename#" />					
 					<cfset stTypeMD.qMetadata = setupMetadataQuery(typename=typename,stProps=stTypeMD.stProps) />
 					<cfset application.rules[typename] = duplicate(stTypeMD) />
 				</cfif>
@@ -481,6 +492,7 @@ $out:$
 							<cfset stTypeMD.bCustomRule = 1 />
 							<cfset stTypeMD.bLibraryRule = 1 />
 							<cfset stTypeMD.rulePath = "farcry.farcry_lib.#library#.packages.rules.#typename#" />							
+							<cfset stTypeMD.packagePath = "farcry.farcry_lib.#library#.packages.rules.#typename#" />							
 							<cfset stTypeMD.qMetadata = setupMetadataQuery(typename=typename,stProps=stTypeMD.stProps) />
 							<cfset application.rules[typename] = duplicate(stTypeMD) />
 						</cfif>
@@ -510,6 +522,7 @@ $out:$
 				<cfset stTypeMD.bCustomRule = 1 />
 				<cfset stTypeMD.bLibraryRule = 0 />
 				<cfset stTypeMD.rulePath = "#application.custompackagepath#.rules.#typename#" />
+				<cfset stTypeMD.packagePath = "#application.custompackagepath#.rules.#typename#" />
 				
 				<cfset stTypeMD.qMetadata = setupMetadataQuery(typename=typename,stProps=stTypeMD.stProps) />
 				<cfset application.rules[typename] = duplicate(stTypeMD) />
