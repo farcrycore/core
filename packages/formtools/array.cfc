@@ -13,7 +13,8 @@
 		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
-
+		<cfargument name="stPackage" required="true" type="struct" hint="Contains the metadata for the all fields for the current typename.">
+		
 		<cfset var returnHTML = "" />
 		<cfset var stobj = structnew() / >
 		<cfset var stJoinObjects = structNew() /> <!--- This will contain a structure of object components that match the ftJoin list from the metadata --->
@@ -57,12 +58,12 @@
  		----------------------------------------------->
 		<cfswitch expression="#arguments.stMetadata.ftRenderType#">
 		<cfcase value="list">
+			
 			<!-------------------------------------------------------------------------- 
 			generate library data query to populate library interface 
 			--------------------------------------------------------------------------->
 			<cfif structkeyexists(stMetadata, "ftLibraryData") AND len(stMetadata.ftLibraryData)>	
-				<cfset oPrimary = createObject("component", application.types[typename].typepath) />
-				<cfset stPrimary =  oPrimary.getData(objectid=stobject.objectid) />
+				<cfset oPrimary = createObject("component", arguments.stPackage.packagePath) />
 				
 				<!--- use ftlibrarydata method from primary content type --->
 				<cfif structkeyexists(oprimary, stMetadata.ftLibraryData)>
@@ -71,13 +72,13 @@
 			</cfif>
 			<!--- if nothing exists to generate library data then cobble something together --->
 			<cfif NOT isDefined("qLibraryList")>
-				<cfinvoke component="#oData#" method="getLibraryData" returnvariable="qLibraryList" />
+				<cfset qLibraryList = createObject("component", application.types[listFirst(arguments.stMetadata.ftJoin)].typepath).getLibraryData() />
 			</cfif>
-
+	
 			<cfsavecontent variable="returnHTML">
 			<cfif qLibraryList.recordcount>
 				<cfoutput>
-				<select  id="#arguments.fieldname#" name="#arguments.fieldname#" size="#arguments.stMetadata.ftSelectSize#" multiple="true">
+				<select  id="#arguments.fieldname#" name="#arguments.fieldname#" size="#arguments.stMetadata.ftSelectSize#" multiple="true" style="width:auto;">
 				<cfloop query="qLibraryList"><option value="#qLibraryList.objectid#" <cfif valuelist(qArrayField.data) contains qLibraryList.objectid>selected</cfif>><cfif isDefined("qLibraryList.label")>#qLibraryList.label#<cfelse>#qLibraryList.objectid#</cfif></option></cfloop>
 				</select>
 				</cfoutput>
