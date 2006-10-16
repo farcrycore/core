@@ -51,9 +51,18 @@ $Developer: $
 <cfparam name="url.ftLibrarySelectedListStyle" default="">
 
 
+<cfparam name="url.PackageType" default="types"><!--- Could be types or rules.. --->
+	
+<cfif url.PackageType EQ "rules">
+	<cfset PrimaryPackage = application.rules[url.primaryTypeName] />
+	<cfset PrimaryPackagePath = application.rules[url.primaryTypeName].rulepath />
+<cfelse>
+	<cfset PrimaryPackage = application.types[url.primaryTypeName] />
+	<cfset PrimaryPackagePath = application.types[url.primaryTypeName].typepath />
+</cfif>
+
 <!--- TODO: dynamically determine the typename to join. --->
 <cfset request.ftJoin = listFirst(url.ftJoin) />
-
 
 
 <!--- Cleanup the Query_String so that we can paginate correctly --->
@@ -68,7 +77,7 @@ $Developer: $
 
 <ft:processForm action="Attach Selected">
 
-	<cfset oPrimary = createObject("component",application.types[url.primaryTypeName].typepath)>	
+	<cfset oPrimary = createObject("component",PrimaryPackagePath)>	
 	<cfset stPrimary = oPrimary.getdata(objectid=url.primaryObjectID)>
 	
 	<cfset stProperties = StructNew()>
@@ -118,7 +127,7 @@ $Developer: $
 
 
 
-	<cfset oPrimary = createObject("component",application.types[url.PrimaryTypename].typepath)>
+	<cfset oPrimary = createObject("component",PrimaryPackagePath)>
 	
 	<cfset oData = createObject("component",application.types[request.ftJoin].typepath)>
 	
@@ -184,7 +193,7 @@ $Developer: $
 		<cfset ImageZipFile = Duplicate(File)>
 
 		<!--- Unzip the  --->
-		<cfset oZip = createObject("component","#application.packagepath#.farcry.tmt_zip")>
+		<cfset oZip = createObject("component","#application.PrimaryPackagePath#.farcry.tmt_zip")>
 		
 		<cfset qZip = oZip.getEntryList(zipFilePath="#ImageZipFile.SERVERDIRECTORY#\#ImageZipFile.SERVERFILE#")>
 		
@@ -283,7 +292,7 @@ $Developer: $
 
 
 
-<cfset oPrimary = createObject("component",application.types[url.primaryTypeName].typepath)>
+<cfset oPrimary = createObject("component",PrimaryPackagePath)>
 <cfset oData = createObject("component",application.types[request.ftJoin].typepath)>
 
 <cfset stPrimary = oPrimary.getData(objectid=url.primaryObjectID)>
@@ -320,10 +329,10 @@ LIBRARY DATA
 <!--- Put JS and CSS for TabStyle1 into the header --->
 <cfset Request.InHead.TabStyle1 = 1>
 
-<cfif listLen(application.types[url.primaryTypename].stProps[url.primaryFieldname].metadata.ftJoin)>
+<cfif listLen(PrimaryPackage.stProps[url.primaryFieldname].metadata.ftJoin)>
 	<ft:form>
 	<cfoutput><select name="ftJoin" id="ftJoin" onchange="javascript:window.location='#cgi.script_name#?#querystring#&ftJoin=' + this[selectedIndex].value;"></cfoutput>
-		<cfloop list="#application.types[url.primaryTypename].stProps[url.primaryFieldname].metadata.ftJoin#" index="i">
+		<cfloop list="#PrimaryPackage.stProps[url.primaryFieldname].metadata.ftJoin#" index="i">
 			<cfoutput><option value="#i#" <cfif url.ftJoin EQ i>selected</cfif>>#application.types[i].displayname#</option></cfoutput>
 		</cfloop>
 	<cfoutput></select></cfoutput>
@@ -419,7 +428,7 @@ LIBRARY DATA
 						.basket-active {background:##E17000;}
 					</style>	</cfoutput>	
 					
-					<ft:object ObjectID="#url.primaryObjectID#" wizzardid="#url.WizzardID#" lFields="#url.primaryFieldName#" InTable=0 IncludeLabel=0 IncludeFieldSet=0 r_stFields="stBasketFields" />
+					<ft:object ObjectID="#url.primaryObjectID#" wizzardid="#url.WizzardID#" lFields="#url.primaryFieldName#" InTable=0 IncludeLabel=0 IncludeFieldSet=0 r_stFields="stBasketFields" packageType="#URL.packageType#" />
 					<cfoutput>	
 					<div id="basket" style="border:1px solid ##E17000;height:800px;">
 						#stBasketFields[url.primaryFieldName].HTML#

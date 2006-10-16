@@ -17,8 +17,18 @@
 	<cfargument name="ftLibrarySelectedWebskin" type="string" default="selected"><!--- Webskin Display method to Display Selected Objects --->
 	<cfargument name="ftLibrarySelectedWebskinListClass" type="string" default="selected">
 	<cfargument name="ftLibrarySelectedWebskinListStyle" type="string" default="">
+	
+	<cfargument name="packageType" type="string" default="types">
 
-	<cfset oPrimary = createObject("component",application.types[arguments.PrimaryTypename].typepath)>
+	<cfif url.PackageType EQ "rules">
+		<cfset PrimaryPackage = application.rules[url.primaryTypeName] />
+		<cfset PrimaryPackagePath = application.rules[url.primaryTypeName].rulepath />
+	<cfelse>
+		<cfset PrimaryPackage = application.types[url.primaryTypeName] />
+		<cfset PrimaryPackagePath = application.types[url.primaryTypeName].typepath />
+	</cfif>
+
+	<cfset oPrimary = createObject("component",PrimaryPackage)>
 	<cfset stPrimary = oPrimary.getData(objectid=arguments.PrimaryObjectID)>
 	
 	<cfset oData = createObject("component",application.types[arguments.DataTypename].typepath)>
@@ -101,7 +111,7 @@
 	</cfif>
 	
 	
-	<ft:object objectID="#arguments.PrimaryObjectID#" WizzardID="#arguments.WizzardID#" lFields="#arguments.PrimaryFieldName#" inTable=0 IncludeLabel=0 IncludeFieldSet=0 r_stFields="stFields" IncludeLibraryWrapper="false" />
+	<ft:object objectID="#arguments.PrimaryObjectID#" WizzardID="#arguments.WizzardID#" lFields="#arguments.PrimaryFieldName#" inTable=0 IncludeLabel=0 IncludeFieldSet=0 r_stFields="stFields" IncludeLibraryWrapper="false" packageType="#arguments.packagePath#" />
 		
 	<cfoutput>
 		#stFields[arguments.PrimaryFieldName].HTML#
