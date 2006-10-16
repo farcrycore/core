@@ -20,20 +20,23 @@
 	
 	<cfargument name="packageType" type="string" default="types">
 
-	<cfif url.PackageType EQ "rules">
-		<cfset PrimaryPackage = application.rules[url.primaryTypeName] />
-		<cfset PrimaryPackagePath = application.rules[url.primaryTypeName].rulepath />
-	<cfelse>
-		<cfset PrimaryPackage = application.types[url.primaryTypeName] />
-		<cfset PrimaryPackagePath = application.types[url.primaryTypeName].typepath />
+	
+	<cfif arguments.PackageType EQ "rules">
+		<cfset PrimaryPackage = application.rules[arguments.primaryTypeName] />
+		<cfset PrimaryPackagePath = application.rules[arguments.primaryTypeName].rulepath />
+	<cfelse>	
+		<cfset PrimaryPackage = application.types[arguments.primaryTypeName] />
+		<cfset PrimaryPackagePath = application.types[arguments.primaryTypeName].typepath />
 	</cfif>
 
-	<cfset oPrimary = createObject("component",PrimaryPackage)>
+
+
+	<cfset oPrimary = createObject("component",PrimaryPackagePath)>
 	<cfset stPrimary = oPrimary.getData(objectid=arguments.PrimaryObjectID)>
 	
 	<cfset oData = createObject("component",application.types[arguments.DataTypename].typepath)>
 	
-	
+
 
 	<cfif arguments.Action NEQ "Refresh">
 	
@@ -111,7 +114,7 @@
 	</cfif>
 	
 	
-	<ft:object objectID="#arguments.PrimaryObjectID#" WizzardID="#arguments.WizzardID#" lFields="#arguments.PrimaryFieldName#" inTable=0 IncludeLabel=0 IncludeFieldSet=0 r_stFields="stFields" IncludeLibraryWrapper="false" packageType="#arguments.packagePath#" />
+	<ft:object objectID="#arguments.PrimaryObjectID#" WizzardID="#arguments.WizzardID#" lFields="#arguments.PrimaryFieldName#" inTable=0 IncludeLabel=0 IncludeFieldSet=0 r_stFields="stFields" IncludeLibraryWrapper="false" packageType="#arguments.packageType#" />
 		
 	<cfoutput>
 		#stFields[arguments.PrimaryFieldName].HTML#
