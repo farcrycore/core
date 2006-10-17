@@ -12,6 +12,10 @@
 <cfparam  name="attributes.Class" default="">
 <cfparam  name="attributes.Style" default="">
 <cfparam name="attributes.SelectedObjectID" default="">
+<cfparam name="attributes.ConfirmText" default="">
+
+
+
 
 <cfif thistag.ExecutionMode EQ "Start">
 
@@ -21,6 +25,12 @@
 	<cfif len(attributes.SelectedObjectID)>		
 		<cfset attributes.Onclick = "#attributes.OnClick#;$('SelectedObjectID#Request.farcryForm.Name#').value='#attributes.SelectedObjectID#';">
 	</cfif>
+	
+	<cfif len(Attributes.ConfirmText)>
+		<!--- Confirm the click before submitting --->
+		<cfset attributes.OnClick = "#attributes.OnClick#;if(confirm('#Attributes.ConfirmText#')) {dummyconfirmvalue=1} else {return false};">
+	</cfif>	
+	 
 	
 	<cfset attributes.onClick = "#attributes.onClick#;$('FarcryFormSubmitButtonClicked#Request.farcryForm.Name#').value = '#attributes.Value#';">
 
