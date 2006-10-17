@@ -157,6 +157,31 @@ form.formtool .category .fieldwrap input {border: none;}
 form.formtool ##wizard-content select {width: auto; margin: 0px; padding: 0px;}
 form.formtool ##wizard-content select option {width: auto; margin: 0px; padding: 0px 3px 0px 3px;}
 
+
+input.validation-failed, textarea.validation-failed {
+	border: 1px solid ##FF3300;
+	color : ##FF3300;
+}
+
+
+.validation-advice {
+	margin: 5px 0;
+	padding: 5px;
+	background-color: ##FF3300;
+	color : ##FFF;
+	font-weight: bold;
+}
+
+.custom-advice {
+	margin: 5px 0;
+	padding: 5px;
+	background-color: ##C8AA00;
+	color : ##FFF;
+	font-weight: bold;
+}
+
+
+
 <!--- end css output --->
 </cfoutput>
 
