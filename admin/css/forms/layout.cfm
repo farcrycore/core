@@ -46,7 +46,8 @@ this stylesheet defines the following page elements:
 /* form layout styles */
 p.asdafas {border: 3px solid green;}
 form {margin: 0px; padding: 0px;}
-form.formtool {margin: 0px 0px 0px 0px; padding: 0px; min-width: 600px; width: 800px; max-width: 900px;}
+<!--- form.formtool {margin: 0px 0px 0px 0px; padding: 0px; min-width: 600px; width: 800px; max-width: 900px;} --->
+form.formtool {margin: 0px 0px 0px 0px; padding: 0px;}
 form.formtool fieldset {margin: 0px 0px 0px 0px; padding: 10px 10px 10px 10px;}
 body.library form.formtool {width: auto;}
 <!--- form.formtool #wizard-wrap fieldset {margin: 0px 0px 0px 0px; padding: 10px 10px 10px 10px;}--->
