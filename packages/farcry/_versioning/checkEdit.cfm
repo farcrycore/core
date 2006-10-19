@@ -42,11 +42,13 @@ $out:$
 					<ul>
 					
 					<cfif arguments.stRules.bDraftVersionExists>
+						
 						<cfscript>
 							oNav = createObject("component",application.types['dmNavigation'].typepath);
 							qParent = oNav.getParent(objectid=arguments.stObj.objectid);
-							parentNavID = qParent.Objectid;
+							parentNavID = qParent.parentID;
 						</cfscript>
+					
 						<span class="formtitle">A DRAFT version of this object exists...</span>
 						<p></p>								
 						<li type="square">
