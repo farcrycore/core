@@ -1116,7 +1116,7 @@ o.bShowDisabled = "1";
 function menuOption_Edit()
 {
 	// open edit page in edit frame
-	frameopen('#application.url.farcry#/edittabEdit.cfm?objectId='+lastSelectedId, 'content');
+	frameopen('#application.url.farcry#/edittabEdit.cfm?objectId='+lastSelectedId+'&typename='+objects[lastSelectedId]['TYPENAME'].toLowerCase(), 'content');
 	// set edit tab to active
 //	showEditTabs('site',lastSelectedId,'edittabEdit');
 }
