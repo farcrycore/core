@@ -33,7 +33,7 @@
 
 	<cfset oPrimary = createObject("component",PrimaryPackagePath)>
 	<cfset stPrimary = oPrimary.getData(objectid=arguments.PrimaryObjectID)>
-	
+
 	<cfset oData = createObject("component",application.types[arguments.DataTypename].typepath)>
 	
 
@@ -109,7 +109,8 @@
 			
 			
 			<cfparam name="session.dmSec.authentication.userlogin" default="anonymous" />
-			<cfset st = oPrimary.setData(objectID=stPrimary.ObjectID,stProperties="#stPrimary#",user="#session.dmSec.authentication.userlogin#")>
+			<cfset st = oPrimary.setData(stProperties="#stPrimary#",user="#session.dmSec.authentication.userlogin#")>
+			<cfset st = oPrimary.getData(objectid="#stPrimary.objectid#")>
 		</cfif>
 	</cfif>
 	

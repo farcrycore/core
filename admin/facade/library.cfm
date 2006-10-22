@@ -562,7 +562,7 @@ LIBRARY DATA
 			
 			
 			new Ajax.Request('/farcry/facade/library.cfc?method=ajaxUpdateArray', {
-				parameters:'Action=' + action + '&LibraryType=#url.LibraryType#&primaryObjectID=#url.primaryObjectID#&primaryTypename=#url.primaryTypeName#&primaryFieldname=#url.primaryFieldname#&primaryFormFieldname=#url.primaryFormFieldname#&WizzardID=#url.WizzardID#&DataObjectID=' + dataobjectid + '&DataTypename=#request.ftJoin#',
+				parameters:'Action=' + action + '&LibraryType=#url.LibraryType#&primaryObjectID=#url.primaryObjectID#&primaryTypename=#url.primaryTypeName#&primaryFieldname=#url.primaryFieldname#&primaryFormFieldname=#url.primaryFormFieldname#&WizzardID=#url.WizzardID#&DataObjectID=' + dataobjectid + '&DataTypename=#request.ftJoin#&packageType=#url.PackageType#',
 				asynchronous:true, 
 				onSuccess:function(request){
 					//$('basket').innerHTML = request.responseText;
@@ -584,7 +584,7 @@ LIBRARY DATA
 							    
 							  })
 							// ]]>
-					}
+					} 
 					
 					
 					
