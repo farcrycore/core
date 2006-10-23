@@ -152,6 +152,9 @@
 			FROM #arguments.typename# tbl
 			inner join  ##thetops t on tbl.objectid = t.objectid where t.myint > ((select count(*) from ##thetops) - #arguments.recordsPerPage#)
 			
+			<cfif len(trim(arguments.sqlOrderBy))>
+				ORDER BY #preserveSingleQuotes(arguments.sqlOrderBy)#
+			</cfif>
 			
 			drop table ##thetops
 							
@@ -168,6 +171,7 @@
 				    select distinct objectid 
 				    from refCategories 
 				    where categoryID in (#preserveSingleQuotes(arguments.lCategories)#)
+				)
 			</cfif>
 			<cfif bHasVersionID>
 				AND (tbl.versionid = '' OR tbl.versionid IS NULL)
@@ -240,6 +244,9 @@
 			FROM #arguments.typename# tbl
 			inner join  ##thetops t on tbl.objectid = t.objectid where t.myint > ((select count(*) from ##thetops) - #arguments.recordsPerPage#)
 			
+			<cfif len(trim(arguments.sqlOrderBy))>
+				ORDER BY #preserveSingleQuotes(arguments.sqlOrderBy)#
+			</cfif>
 			
 			drop table ##thetops
 							
