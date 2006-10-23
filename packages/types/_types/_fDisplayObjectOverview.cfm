@@ -11,8 +11,10 @@
 				<!--- check user can edit --->
 				<cfif stPermissions.iEdit EQ 1>
 					<!--- MJB: added url.ref so that the edit methods know they were initially called by the overview page and they can return here if they so desire. --->
-					<a href="edittabEdit.cfm?objectid=#stObject.objectid#&ref=overview&typename=#stObject.typeName#">#application.adminBundle[session.dmProfile.locale].editObj#</a><br /><cfif stObject.objectid NEQ stObject.objectid_previousversion>
-					<a onclick="confirmRestore('#stObject.parentid#','#stObject.objectid#');" href="javascript:void(0);">#application.adminBundle[session.dmProfile.locale].restoreLiveObj#</a><br /></cfif>
+					<a href="edittabEdit.cfm?objectid=#stObject.objectid#&ref=overview&typename=#stObject.typeName#">#application.adminBundle[session.dmProfile.locale].editObj#</a><br />
+					<cfif stObject.objectid NEQ stObject.objectid_previousversion>
+						<a onclick="confirmRestore('#stObject.parentid#','#stObject.objectid#');" href="javascript:void(0);">#application.adminBundle[session.dmProfile.locale].restoreLiveObj#</a><br />
+					</cfif>
 				</cfif>
 	
 				<!--- Check user can request approval --->
@@ -39,12 +41,12 @@
 							<cfif listContains(application.navid.home,stObject.objectid) EQ 0 AND listContains(application.navid.root,stObject.objectid) eq 0>
 							<!--- check user can delete --->
 								<cfif stPermissions.iDelete eq 1>
-							<a href="navajo/delete.cfm?ObjectId=#stObject.objectId#" onClick="return confirm('#application.adminBundle[session.dmProfile.locale].confirmDeleteObj#');">#application.adminBundle[session.dmProfile.locale].delete#</a><br />
+									<a href="navajo/delete.cfm?ObjectId=#stObject.objectId#" onClick="return confirm('#application.adminBundle[session.dmProfile.locale].confirmDeleteObj#');">#application.adminBundle[session.dmProfile.locale].delete#</a><br />
 								</cfif>
 										
 								<!--- check user can move to trash and is a navigation obj--->
 								<cfif stPermissions.iTreeSendToTrash eq 1 and stObject.typeName eq "dmNavigation">
-							<a href="navajo/move.cfm?srcObjectId=#stObject.objectId#&destObjectId=#application.navid.rubbish#" onclick="return confirm('#application.adminBundle[session.dmProfile.locale].confirmTrashObj#');">#application.adminBundle[session.dmProfile.locale].sendToTrash#</a><br />
+									<a href="navajo/move.cfm?srcObjectId=#stObject.objectId#&destObjectId=#application.navid.rubbish#" onclick="return confirm('#application.adminBundle[session.dmProfile.locale].confirmTrashObj#');">#application.adminBundle[session.dmProfile.locale].sendToTrash#</a><br />
 								</cfif>
 							</cfif>
 						<cfelse>
@@ -56,13 +58,15 @@
 			<cfcase value="pending"> <!--- PENDING STATUS --->
 				<!--- check user can edit --->
 				<cfif stPermissions.iEdit EQ 1 AND stObject.bAlwaysShowEdit EQ 1>
-					<a href="edittabEdit.cfm?objectid=#stObject.objectid#&ref=overview&typename=#stObject.typeName#">#application.adminBundle[session.dmProfile.locale].editObj#</a><br /><cfif stObject.objectid NEQ stObject.objectid_previousversion>
-					<a onclick="confirmRestore('#stObject.parentid#','#stObject.objectid#');" href="javascript:void(0);">#application.adminBundle[session.dmProfile.locale].restoreLiveObj#</a><br /></cfif>
+					<a href="edittabEdit.cfm?objectid=#stObject.objectid#&ref=overview&typename=#stObject.typeName#">#application.adminBundle[session.dmProfile.locale].editObj#</a><br />
+					<cfif stObject.objectid NEQ stObject.objectid_previousversion>
+						<a onclick="confirmRestore('#stObject.parentid#','#stObject.objectid#');" href="javascript:void(0);">#application.adminBundle[session.dmProfile.locale].restoreLiveObj#</a><br />
+					</cfif>
 				</cfif>
 				
 				<cfif stPermissions.iApprove eq 1> <!--- check user can approve object --->
 					<a href="#application.url.farcry#/navajo/approve.cfm?objectid=#stObject.objectid#&status=approved">#application.adminBundle[session.dmProfile.locale].sendObjLive#</a><br />
-							<!--- send back to draft --->
+					<!--- send back to draft --->
 					<a href="#application.url.farcry#/navajo/approve.cfm?objectid=#stObject.objectid#&status=draft">#application.adminBundle[session.dmProfile.locale].sendBackToDraft#</a><br />
 				</cfif>
 			</cfcase>
@@ -70,8 +74,10 @@
 			<cfcase value="approved">	
 				<!--- check user can edit --->
 				<cfif stPermissions.iEdit EQ 1 AND stObject.bAlwaysShowEdit EQ 1>
-					<a href="edittabEdit.cfm?objectid=#stObject.objectid#&ref=overview&typename=#stObject.typeName#">#application.adminBundle[session.dmProfile.locale].editObj#</a><br /><cfif stObject.objectid NEQ stObject.objectid_previousversion>
-					<a onclick="confirmRestore('#stObject.parentid#','#stObject.objectid#');" href="javascript:void(0);">#application.adminBundle[session.dmProfile.locale].restoreLiveObj#</a><br /></cfif>
+					<a href="edittabEdit.cfm?objectid=#stObject.objectid#&ref=overview&typename=#stObject.typeName#">#application.adminBundle[session.dmProfile.locale].editObj#</a><br />
+					<cfif stObject.objectid NEQ stObject.objectid_previousversion>
+						<a onclick="confirmRestore('#stObject.parentid#','#stObject.objectid#');" href="javascript:void(0);">#application.adminBundle[session.dmProfile.locale].restoreLiveObj#</a><br />
+					</cfif>
 				</cfif>
 				
 				<!--- check if draft version exists --->

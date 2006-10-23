@@ -106,12 +106,18 @@ $out:$
 <cfscript>
 oVersioning = createObject("component","#application.packagepath#.farcry.versioning");
 oLocking = createObject("component","#application.packagepath#.farcry.locking");
+</cfscript>
+
+<cfscript>
 if (structKeyExists(stObj,"versionID") AND structKeyExists(stObj,"status"))
 {			
 	stRules = oVersioning.getVersioningRules(objectid=url.objectid);
 	oVersioning.checkEdit(stRules=stRules,stObj=stObj);
 }
+</cfscript>
 
+
+<cfscript>
 if (structCount(stObj))
 {
 	checkForLockRet=oLocking.checkForLock(objectid=url.objectid);

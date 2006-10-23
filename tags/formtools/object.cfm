@@ -37,7 +37,7 @@
 	<cfparam name="attributes.stPropValues" default="#structNew()#">
 	<cfparam name="attributes.PackageType" default="types"><!--- Could be types or rules.. --->
 	<cfparam name="attributes.bIncludeSystemProperties" default="false"><!--- Allow system properties to be displayed.. --->
-	
+	<cfparam name="attributes.lock" default="true"><!--- Lock if editing. --->
 	
 	
 	<!--- Add Form Tools Specific CSS --->
@@ -174,7 +174,8 @@
 		</cfif>
 		
 		<cfloop list="#StructKeyList(Request.farcryForm.stObjects)#" index="key">
-			<cfif structKeyExists(request.farcryForm.stObjects,'#key#') AND structKeyExists(request.farcryForm.stObjects[key],'farcryformobjectinfo')
+			<cfif structKeyExists(request.farcryForm.stObjects,'#key#') 
+				AND structKeyExists(request.farcryForm.stObjects[key],'farcryformobjectinfo')
 				AND structKeyExists(request.farcryForm.stObjects[key].farcryformobjectinfo,'ObjectID')
 				AND request.farcryForm.stObjects[key].farcryformobjectinfo.ObjectID EQ stObj.ObjectID>
 					<cfset variables.prefix = key>
@@ -198,7 +199,10 @@
 	
 	<cfset Request.farcryForm.stObjects[variables.prefix].farcryformobjectinfo.typename = typename>
 	<cfset Request.farcryForm.stObjects[variables.prefix].farcryformobjectinfo.ObjectLabel = attributes.ObjectLabel>
-
+	
+	<cfif attributes.lock AND attributes.format EQ "Edit">
+		<cfset Request.farcryForm.stObjects[variables.prefix].farcryformobjectinfo.lock = true />
+	</cfif>
 
 
 	

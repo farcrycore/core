@@ -92,8 +92,25 @@ It just ignores the inner ones.
 	</cfif>
 	
 	<cfif thistag.ExecutionMode EQ "End" and isDefined("Variables.CorrectForm")>
+
+		<cfparam name="session.dmSec.authentication.userlogin" default="anonymous" />
+		<cfparam name="session.dmSec.authentication.userDirectory" default="clientud" />
 		
-		
+		<cfif structkeyexists(Request.farcryForm, "stObjects") AND len(structKeyList(Request.farcryForm.stObjects))>
+
+			<cfloop list="#structKeyList(Request.farcryForm.stObjects)#" index="i">
+				<cfif structkeyexists(Request.farcryForm.stObjects[i], "FARCRYFORMOBJECTINFO") 
+					AND structkeyexists(Request.farcryForm.stObjects[i].FarcryFormObjectInfo, "objectid")
+					AND structkeyexists(Request.farcryForm.stObjects[i].FarcryFormObjectInfo, "typename")
+					AND structkeyexists(Request.farcryForm.stObjects[i].FarcryFormObjectInfo, "Lock") 
+					AND Request.farcryForm.stObjects[i].FarcryFormObjectInfo.Lock >
+					
+					<cfset oType = createObject("component", application.types[Request.farcryForm.stObjects[i].FarcryFormObjectInfo.typename].packagepath) />
+					<cfset stType = oType.getData(objectid=Request.farcryForm.stObjects[i].FarcryFormObjectInfo.objectID) />
+					<cfset oType.setLock(locked=true,lockedby="#session.dmSec.authentication.userlogin#_#session.dmSec.authentication.userDirectory#") >
+				</cfif>
+			</cfloop>
+		</cfif>
 		
 		<ft:renderHTMLformEnd />
 	

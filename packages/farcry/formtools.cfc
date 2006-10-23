@@ -63,12 +63,25 @@
 	<cfset var stReturn = structNew() />
 	<cfset var qFormToolRecordset = '' />
 	<cfset var recordcount = '' />
+	
+	<cfset var bHasStatus = false />	
+	<cfset var bHasVersionID = false />
+	
 	<cfset arguments.identityColumn = "tbl." & arguments.identityColumn>
 	
-
-
 	<cfset arguments.currentPage = getCurrentPaginationPage(paginationID=arguments.paginationID,CurrentPage=arguments.CurrentPage) />
 
+
+	<!---
+	DETERMINE IF TYPE HAS STATUS AND VERSIONID TO ENUSRE WE DO NOT GET DUPLICATES.
+	 --->
+	<cfif structKeyExists(application.types[arguments.typename].stProps, "status")>
+		<cfset bHasStatus = true />
+	</cfif>
+	<cfif structKeyExists(application.types[arguments.typename].stProps, "versionid")>
+		<cfset bHasVersionID = true />
+	</cfif>
+	
 	<!--- Ensure  if objectID provided in columns names prefixed it with tbl. --->
  	<cfif arguments.sqlColumns neq "*">	
 		<cfif arguments.sqlColumns neq 'tbl.ObjectID'>
@@ -76,6 +89,14 @@
 				<cfset arguments.sqlColumns = ListDeleteAt(arguments.sqlColumns, listFindNoCase(arguments.sqlColumns,"ObjectID"))>
 			</cfif>		
 			<cfset arguments.sqlColumns="tbl.ObjectID," & sqlColumns>
+		</cfif>
+		
+		<cfif bHasStatus AND NOT listContainsNoCase(arguments.sqlColumns, "status") >
+			<cfset arguments.sqlColumns = listAppend(arguments.sqlColumns, "status") />
+		</cfif>
+		
+		<cfif bHasVersionID AND NOT listContainsNoCase(arguments.sqlColumns, "versionid") >
+			<cfset arguments.sqlColumns = listAppend(arguments.sqlColumns, "versionid") />
 		</cfif>
 	<cfelse>
 		<cfset arguments.sqlColumns="tbl.*">
@@ -107,25 +128,27 @@
 			INSERT ##thetops (objectID)
 			SELECT TOP #theSQLTop# tbl.objectid
 			FROM #arguments.typename# tbl 
+			WHERE #preserveSingleQuotes(arguments.SqlWhere)#
 			
 			<cfif arguments.lCategories neq ''>
-				WHERE objectid in (
+				AND objectid in (
 				    select distinct objectid 
 				    from refCategories 
 				    where categoryID in (#preserveSingleQuotes(arguments.lCategories)#)
 				    )
-				<cfif len(trim(arguments.SqlWhere))>
-				AND #preserveSingleQuotes(arguments.SqlWhere)#
-				</cfif>
-			<cfelseif len(trim(arguments.SqlWhere))>
-				WHERE #preserveSingleQuotes(arguments.SqlWhere)#
 			</cfif>
+			<cfif bHasVersionID>
+				AND (tbl.versionid = '' OR tbl.versionid IS NULL)
+			</cfif>
+			
 			<cfif len(arguments.sqlOrderBy)>
 				ORDER BY #arguments.sqlOrderBy#
 			</cfif>
 			
-			
 			SELECT #arguments.sqlColumns#
+			<cfif bHasversionID>
+				,(SELECT count(d.objectid) FROM #arguments.typename# d WHERE d.versionid = tbl.objectid) as bHasMultipleVersion
+			</cfif>
 			FROM #arguments.typename# tbl
 			inner join  ##thetops t on tbl.objectid = t.objectid where t.myint > ((select count(*) from ##thetops) - #arguments.recordsPerPage#)
 			
@@ -137,19 +160,17 @@
 			
 			<cfquery name="qrecordcount" datasource="#application.dsn#">
 			SELECT count(distinct tbl.objectid) as CountAll 
-			FROM #arguments.typename# tbl 
+			FROM #arguments.typename# tbl 			
+			WHERE #preserveSingleQuotes(arguments.SqlWhere)#
 			
 			<cfif arguments.lCategories neq ''>
-				WHERE objectid in (
+				AND objectid in (
 				    select distinct objectid 
 				    from refCategories 
 				    where categoryID in (#preserveSingleQuotes(arguments.lCategories)#)
-				    )
-				<cfif len(trim(arguments.SqlWhere))>
-				AND #preserveSingleQuotes(arguments.SqlWhere)#
-				</cfif>
-			<cfelseif len(trim(arguments.SqlWhere))>
-				WHERE #preserveSingleQuotes(arguments.SqlWhere)#
+			</cfif>
+			<cfif bHasVersionID>
+				AND (tbl.versionid = '' OR tbl.versionid IS NULL)
 			</cfif>
 			
 			</cfquery>
@@ -213,6 +234,9 @@
 			
 			
 			SELECT #arguments.sqlColumns#
+			<cfif bHasversionID>
+				,(SELECT count(d.objectid) FROM #arguments.typename# d WHERE d.versionid = tbl.objectid) as bHasMultipleVersion
+			</cfif>
 			FROM #arguments.typename# tbl
 			inner join  ##thetops t on tbl.objectid = t.objectid where t.myint > ((select count(*) from ##thetops) - #arguments.recordsPerPage#)
 			

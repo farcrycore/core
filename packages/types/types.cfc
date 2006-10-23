@@ -398,6 +398,8 @@ default handlers
 			<cfelse>
 				<cfset arguments.stobj.lockedby="">
 			</cfif>
+			<!--- call fourq.setdata() (ie super) to bypass prepop of sys attributes by types.setdata() --->
+			<cfset setdata(arguments.stobj, arguments.lockedby, 0)>
 		</cfif>
 
 	

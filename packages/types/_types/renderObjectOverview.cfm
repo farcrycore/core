@@ -88,20 +88,22 @@
 	<li onclick="return showPane('pane#iCounter#', this)" id="tab#iCounter#"><a href="##pane2-ref">#stLocal.stObjectOverview.status#</a></li><cfelse>
 	<li onclick="return showPane('pane#iCounter#', this)" id="tab#iCounter#"><a href="##pane2-ref">Approved/Live</a></li></cfif>
 	</ul>
-	<div class="tab-panes"> <!--- panes tabs div ---><cfset iCounter = 1>
-<cfif NOT structIsEmpty(stLocal.stObjectOverviewDraft)>
-		<a name="pane#iCounter#-ref"></a> <!--- show draft pane --->
-		<div id="pane#iCounter#"> <!--- pane1 --->
-#fDisplayObjectOverview(stLocal.stObjectOverviewDraft,stLocal.stPermissions)#
-		</div> <!--- // pane1 --->
-	<cfset iCounter = iCounter + 1>
-</cfif>
+	<div class="tab-panes"> <!--- panes tabs div --->
+	<cfset iCounter = 1>
+		<cfif NOT structIsEmpty(stLocal.stObjectOverviewDraft)>
+				<a name="pane#iCounter#-ref"></a> <!--- show draft pane --->
+				<div id="pane#iCounter#"> <!--- pane1 --->
+					#fDisplayObjectOverview(stLocal.stObjectOverviewDraft,stLocal.stPermissions)#
+				</div> <!--- // pane1 --->
+			<cfset iCounter = iCounter + 1>
+		</cfif>
 
 		<a name="pane#iCounter#-ref"></a> <!--- show approved pane --->
 		<div id="pane#iCounter#">
-#fDisplayObjectOverview(stLocal.stObjectOverview,stLocal.stPermissions)#
+			#fDisplayObjectOverview(stLocal.stObjectOverview,stLocal.stPermissions)#
 		</div>
 	</div> <!--- //panes tabs div --->
-</div></cfoutput>
+</div>
+</cfoutput>
 </cfif>	
 </cfsavecontent>

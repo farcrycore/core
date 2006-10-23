@@ -62,6 +62,8 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	<cfset finishURL=url.finishURL>
 <cfelseif isDefined("form.finishURL") AND len(form.finishURL)>
 	<cfset finishURL=form.finishURL>
+<cfelseif isDefined("url.module")>
+	<cfset finishURL = "#application.url.farcry#/admin/customadmin.cfm?module=#url.module#" />
 <cfelse>
 	<cfabort showerror="<strong>Error:</strong> finishURL is a required parameter.">
 </cfif>
