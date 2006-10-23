@@ -93,7 +93,9 @@ It just ignores the inner ones.
 	
 	<cfif thistag.ExecutionMode EQ "End" and isDefined("Variables.CorrectForm")>
 
-		<cfparam name="session.dmSec.authentication.userlogin" default="anonymous" />
+
+	<!--- TODO: locking of objects needs to be handled. This is causing problems however as it locks things that shouldnt be locked. --->
+<!---		<cfparam name="session.dmSec.authentication.userlogin" default="anonymous" />
 		<cfparam name="session.dmSec.authentication.userDirectory" default="clientud" />
 		
 		<cfif structkeyexists(Request.farcryForm, "stObjects") AND len(structKeyList(Request.farcryForm.stObjects))>
@@ -110,7 +112,7 @@ It just ignores the inner ones.
 					<cfset oType.setLock(locked=true,lockedby="#session.dmSec.authentication.userlogin#_#session.dmSec.authentication.userDirectory#") >
 				</cfif>
 			</cfloop>
-		</cfif>
+		</cfif> --->
 		
 		<ft:renderHTMLformEnd />
 	
