@@ -383,15 +383,18 @@ default handlers
 				
 		<!--- if the properties struct not passed in grab the instance --->
 		<cfif StructIsEmpty(arguments.stObj)>
-			<cfset instance.stobj.locked=arguments.locked>
-			<cfif arguments.locked>
-				<cfset instance.stobj.lockedby=arguments.lockedby>
-			<cfelse>
-				<cfset instance.stobj.lockedby="">
+			<!--- Default Objects should not be locked as this will create a record in the database. --->
+			<cfif structKeyExists(instance, "stobj") AND (NOT structKeyExists(instance.stobj, "bDefaultObject") OR NOT instance.stobj.bDefaultObject)>
+				<cfset instance.stobj.locked=arguments.locked>
+				<cfif arguments.locked>
+					<cfset instance.stobj.lockedby=arguments.lockedby>
+				<cfelse>
+					<cfset instance.stobj.lockedby="">
+				</cfif>
+				<!--- call fourq.setdata() (ie super) to bypass prepop of sys attributes by types.setdata() --->
+				<cfset setdata(instance.stobj, arguments.lockedby, 0)>
 			</cfif>
-			<!--- call fourq.setdata() (ie super) to bypass prepop of sys attributes by types.setdata() --->
-			<cfset setdata(instance.stobj, arguments.lockedby, 0)>
-		<cfelse>
+		<cfelseif NOT structKeyExists(arguments.stobj, "bDefaultObject") or NOT arguments.stobj.bDefaultObject >
 			<cfset arguments.stobj.locked = arguments.locked>
 			<cfif arguments.locked>
 				<cfset arguments.stobj.lockedby=arguments.lockedby>
