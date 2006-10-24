@@ -1,6 +1,5 @@
 <cfcomponent extends="field" name="array" displayname="array" hint="Used to liase with Array type fields"> 
 
-
 	<!---<cfimport taglib="/farcry/farcry_core/tags/webskin/" prefix="ws" > --->
 
 		
@@ -23,10 +22,13 @@
 		<cfset var oFourQ = createObject("component","farcry.fourq.fourq")><!--- TODO: this needs to be removed when we add typename to array tables. ---> 
 		 --->
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedWebskin" default="LibrarySelected" type="string" />
-		<cfparam name="arguments.stMetadata.ftLibrarySelectedListClass" default="thumbNailsWrap" type="string" />
+		<cfparam name="arguments.stMetadata.ftLibrarySelectedListClass" default="arrayDetail" type="string" />
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedListStyle" default="" type="string" />
+		<cfparam name="arguments.stMetadata.ftLibraryListItemWidth" default="" type="string" />
+		<cfparam name="arguments.stMetadata.ftLibraryListItemHeight" default="" type="string" />
 		<cfparam name="arguments.stMetadata.ftRenderType" default="Library" type="string" />
-		<cfparam name="arguments.stMetadata.ftSelectSize" default="1" type="numeric" />
+		<cfparam name="arguments.stMetadata.ftSelectSize" default="10" type="numeric" />
+		<cfparam name="arguments.stMetadata.ftSelectMultiple" default="true" type="string" />
 
 		<!--- An array type MUST have a 'ftJoin' property --->
 		<cfif not structKeyExists(arguments.stMetadata,"ftJoin") or not len(arguments.stMetadata.ftJoin)>
@@ -78,7 +80,7 @@
 			<cfsavecontent variable="returnHTML">
 			<cfif qLibraryList.recordcount>
 				<cfoutput>
-				<select  id="#arguments.fieldname#" name="#arguments.fieldname#" size="#arguments.stMetadata.ftSelectSize#" multiple="true" style="width:auto;">
+				<select  id="#arguments.fieldname#" name="#arguments.fieldname#" size="#arguments.stMetadata.ftSelectSize#" multiple="#arguments.stMetadata.ftSelectMultiple#" style="width:auto;">
 				<cfloop query="qLibraryList"><option value="#qLibraryList.objectid#" <cfif valuelist(qArrayField.data) contains qLibraryList.objectid>selected</cfif>><cfif isDefined("qLibraryList.label")>#qLibraryList.label#<cfelse>#qLibraryList.objectid#</cfif></option></cfloop>
 				</select>
 				</cfoutput>
@@ -103,10 +105,9 @@
 			<cfsavecontent variable="returnHTML">
 				<!--- Contains a list of objectID's currently associated with this field' --->
 				<cfoutput><input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="#valuelist(qArrayField.data)#" /></cfoutput>
-				
-				
+
 				<cfif qArrayField.Recordcount>
-					<cfoutput><div id="#ULID#" class="#arguments.stMetadata.ftLibrarySelectedListClass#" style="#arguments.stMetadata.ftLibrarySelectedListStyle#"></cfoutput>
+					<!---<cfoutput><div id="#ULID#" class="#arguments.stMetadata.ftLibrarySelectedListClass#" style="#arguments.stMetadata.ftLibrarySelectedListStyle#"></cfoutput>
 						<cfloop query="qArrayField">
 							<cfoutput><div id="#arguments.fieldname#_#qArrayField.data#">
 								<img src="#application.url.farcry#/images/dragbar.gif" class="#ULID#handle" style="cursor:move;" align="center">
@@ -133,31 +134,87 @@
 								</div>
 							</div></cfoutput>
 						</cfloop>
-					<cfoutput></div></cfoutput>
-				
+					<cfoutput></div></cfoutput> --->
+
+					<!-----------------------
+					NEW ARRAY LAYOUT
+					 ----------------------->
 					<cfoutput>
-					<script type="text/javascript" language="javascript" charset="utf-8">					
+						<select id="arrayLibrary" name="arrayLibrary" tabindex="1" >
+							<option value="1">Image Library</option>
+							<option value="2">Contact Library</option>
+							<option value="3">UUID Library</option>
+						</select>
+
+						<input type="submit" name="libraryOpen" value="Open Library" class="formButton" tabindex="2" />
+		
+						<div class="buttonViewMethod"><a href="##" onclick="jsFunc('arrayDetailView','arrayThumbnailView');"><img src="#application.url.farcry#/css/images/form_button_icon_thumbnail.gif" width="14" height="14" alt="Thumbnail View" /></a></div>
+						<div class="buttonViewMethod"><a href="##" onclick="jsFunc('arrayThumbnailView','arrayDetailView');"><img src="#application.url.farcry#/css/images/form_button_icon_detail.gif" width="14" height="14" alt="Detail View" /></a></div>
+		
+						<br class="clearer"/>
+		
+						<ul id="#ULID#" class="#arguments.stMetadata.ftLibrarySelectedListClass#View" style="#arguments.stMetadata.ftLibrarySelectedListStyle#">
+							<cfloop query="qArrayField">
+								<li id="#arguments.fieldname#_#qArrayField.data# #ULID#handle" style="<cfif len(arguments.stMetadata.ftLibraryListItemWidth)>width:#arguments.stMetadata.ftLibraryListItemWidth#;</cfif><cfif len(arguments.stMetadata.ftLibraryListItemheight)>height:#arguments.stMetadata.ftLibraryListItemHeight#;</cfif>">
+									<div class="buttonGripper"><p>&nbsp;</p></div>
+									<input type="checkbox" name="#arguments.fieldname#Selected" id="#arguments.fieldname#Selected" class="formCheckbox" value="#qArrayField.data#" />
+
+									<div class="arrayDetail">
+										<p>
+										<cfset stobj = stJoinObjects[qArrayField.typename].getData(objectid=qArrayField.data)>
+										<cfif FileExists("#application.path.project#/webskin/#qArrayField.typename#/#arguments.stMetadata.ftLibrarySelectedWebskin#.cfm")>
+											<cfset stJoinObjects[qArrayField.typename].getDisplay(stObject=stobj, template="#arguments.stMetadata.ftLibrarySelectedWebskin#") />
+										<cfelse>
+											<cfif isDefined("stobj.label") AND len(stobj.label)>
+												<cfoutput>#stobj.Label#</cfoutput>
+											<cfelse>
+												<cfoutput>#stobj.ObjectID#</cfoutput>
+											</cfif>
+										</cfif>
+										</p>
+									</div>
+									
+									<div class="arrayThumbnail">
+										<p>
+											TESTING
+										</p>
+									</div>
+										
+								</li>
+							</cfloop>
+						</ul>
+
+						<div class="buttonGroup">
+							<div class="buttonStandard"><a href="##">Select All</a></div>
+							<div class="buttonStandard"><a href="##">Deselect All</a></div>
+							<div class="buttonStandard"><a href="##">Remove Selected</a></div>
+							<br class="clearer" />
+						</div>
+
+						<br class="clearer" />
+					</cfoutput>
+
+					<cfoutput>
+					<script type="text/javascript" charset="utf-8">
 					// <![CDATA[
 						  Sortable.create('#ULID#',
-						  	{ghosting:false,constraint:false,hoverclass:'over',handle:'#ULID#handle',constraint:'vertical',tag:'div',
+						  	{ghosting:false,constraint:false,hoverclass:'over',handle:'#ULID#handle',
 						    onChange:function(element){
-						    	$('#arguments.fieldname#').value = Sortable.sequence('#ULID#');	
+						    	$('#arguments.fieldname#').value = Sortable.sequence('#ULID#');
 						    },
-						    onUpdate:function(element){					
+						    onUpdate:function(element){
 					   			update_#arguments.fieldname#('sort',element);
 						    }
-						    
 						  });
-						// ]]>	
-					
+					// ]]>
 					</script>
 				</cfoutput>
-				
+
 				<cfelse>
 					<cfoutput>&nbsp;</cfoutput> 
 				</cfif>
-				
-				<cfoutput>	
+
+				<cfoutput>
 				<script type="text/javascript" language="javascript" charset="utf-8">
 				function update_#arguments.fieldname#_wrapper(HTML){
 					$('#arguments.fieldname#-wrapper').innerHTML = HTML;
@@ -165,22 +222,21 @@
 						  Sortable.create('#ULID#',
 						  {ghosting:false,constraint:false,hoverclass:'over',handle:'#ULID#handle',constraint:'vertical',tag:'div',
 						    onChange:function(element){
-						    	$('#arguments.fieldname#').value = Sortable.sequence('#ULID#');	
+						    	$('#arguments.fieldname#').value = Sortable.sequence('#ULID#');
 						    },
-						    onUpdate:function(element){					
+						    onUpdate:function(element){
 					   			update_#arguments.fieldname#('sort',element);
 						    }
 						  });
-						// ]]>									 
+					// ]]>
 				}
-				
+
 				function update_#arguments.fieldname#(action,element){
 					new Ajax.Updater('#arguments.fieldname#-wrapper', '/farcry/facade/library.cfc?method=ajaxUpdateArray', {
-							//onLoading:function(request){Element.show('indicator')}, 
+							//onLoading:function(request){Element.show('indicator')},
 							onComplete:function(request){
-		
 								update_#arguments.fieldname#_wrapper(request.responseText);	
-								opener.update_#arguments.fieldname#_wrapper(request.responseText);						
+								opener.update_#arguments.fieldname#_wrapper(request.responseText);
 								Effect.Fade(element, {from:0.2,to:0.2});
 								// <![CDATA[
 									  Sortable.create('#arguments.fieldname#_list',
@@ -188,17 +244,12 @@
 									    onChange:function(element){
 									    	$('#arguments.fieldname#').value = Sortable.sequence('#arguments.fieldname#_list')
 									    }
-									    
 									  });
-									// ]]>	
-															
-							}, 
+								// ]]>
+							},
 							parameters:'Action=' + action + '&LibraryType=Array&primaryObjectID=#arguments.stObject.ObjectID#&primaryTypename=#arguments.typename#&primaryFieldname=#arguments.stMetaData.Name#&primaryFormFieldname=#arguments.fieldname#&WizzardID=&DataObjectID=' + encodeURIComponent($('#arguments.fieldname#').value) + '&DataTypename=#ListFirst(arguments.stMetadata.ftJoin)#', evalScripts:true, asynchronous:true
 						})
 				}
-				
-				
-					
 				</script>
 				</cfoutput>		
 				
