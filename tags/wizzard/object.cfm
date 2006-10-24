@@ -210,7 +210,7 @@
 	
 
 	<cfif attributes.IncludeFieldSet>
-		<cfoutput><fieldset class="formsection #attributes.class#"></cfoutput>
+		<cfoutput><fieldset class="formSection #attributes.class#"></cfoutput>
 	</cfif>
 	
 	<cfif isDefined("attributes.legend") and len(attributes.legend)>
@@ -455,11 +455,11 @@
 					
 				<cfoutput>
 					<label for="#variables.prefix##ftFieldMetadata.Name#" class="fieldsectionlabel #attributes.class#">
-					#ftFieldMetadata.ftlabel#
+					#ftFieldMetadata.ftlabel# 
 					<cfif len(LibraryLink)>
-						#LibraryLink#					
+						#LibraryLink#
 					</cfif>
-					</label>
+					:</label>
 				</cfoutput>
 				
 			</cfsavecontent>
@@ -484,7 +484,7 @@
 						<cfset helpSectionClass = "helpsectionmargin">
 					</cfif>	
 								
-					<cfoutput><div class="fieldsection #lcase(ftFieldMetadata.ftType)# #ftFieldMetadata.ftClass# #helpSectionClass#"></cfoutput>
+					<cfoutput><div class="fieldSection #lcase(ftFieldMetadata.ftType)# #ftFieldMetadata.ftClass# #helpSectionClass#"></cfoutput>
 				</cfif>
 					
 				
@@ -506,7 +506,7 @@
 				</cfif>
 	
 				
-				<cfoutput><div class="fieldwrap">#variables.returnHTML#</div></cfoutput>
+				<cfoutput><div class="fieldAlign">#variables.returnHTML#</div></cfoutput>
 				
 				<cfif structKeyExists(ftFieldMetadata,"ftHint") and len(ftFieldMetadata.ftHint)>
 					<cfoutput><small>#ftFieldMetadata.ftHint#</small></cfoutput>

@@ -300,7 +300,15 @@ $out:$
 		</cfif>
 		
 		<cfif isDefined("Request.RequiredInHead.FormsCSS") AND Request.RequiredInHead.FormsCSS EQ 1>
-			<cfoutput><link rel="stylesheet" type="text/css" href="#application.url.farcry#/css/forms.cfm" media="all" /></cfoutput>
+			<cfoutput>
+				<link rel="stylesheet" type="text/css" href="#application.url.farcry#/css/forms.cfm" media="all" />
+				<!--[if lt IE 8]>
+				<link rel="stylesheet" href="#application.url.farcry#/css/custom/customstuff.cfm" type="text/css" media="screen" />
+				<![endif]-->
+				<!--[if lt IE 7]>
+				<link rel="stylesheet" href="#application.url.farcry#/css/htc/iehtc.cfm" type="text/css" media="screen" />
+				<![endif]-->
+			</cfoutput>
 		</cfif>
 		
 		<cfif isDefined("Request.RequiredInHead.prototypeWindowJS") AND Request.RequiredInHead.prototypeWindowJS EQ 1>

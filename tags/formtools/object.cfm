@@ -208,7 +208,7 @@
 	
 
 	<cfif attributes.IncludeFieldSet>
-		<cfoutput><fieldset class="formsection #attributes.class#"></cfoutput>
+		<cfoutput><fieldset class="formSection #attributes.class#"></cfoutput>
 	</cfif>
 	
 	<cfif isDefined("attributes.legend") and len(attributes.legend)>
@@ -458,13 +458,15 @@
 						</cfif>
 			
 						
-						<!--- <cfdump var="#ftFieldMetadata#"> --->
-						<ws:buildLink href="#application.url.farcry#/facade/library.cfm" target="library" bShowTarget="true" stParameters="#stURLParams#"><cfoutput><img src="#application.url.farcry#/images/treeimages/crystalIcons/includeApproved.gif" /></cfoutput></ws:buildLink>
+						<!--- <cfdump var="#ftFieldMetadata#">
+						<ws:buildLink href="#application.url.farcry#/facade/library.cfm" target="library" bShowTarget="true" stParameters="#stURLParams#"><cfoutput><img src="#application.url.farcry#/images/treeimages/crystalIcons/includeApproved.gif" /></cfoutput></ws:buildLink> --->
 							
 						
 						
 					</cfloop>
-					
+					<!--- temporary override of library button
+					<cfset libraryLink = ""> --->
+
 				</cfsavecontent>
 			<cfelse>
 				<cfset libraryLink = "">	
@@ -475,7 +477,7 @@
 					
 				<cfoutput>
 					<label for="#variables.prefix##ftFieldMetadata.Name#" class="fieldsectionlabel #attributes.class# <cfif ftFieldMetadata.ftType EQ 'password'>passwordlabel</cfif>">
-					#ftFieldMetadata.ftlabel#
+					#ftFieldMetadata.ftlabel# :
 					<cfif len(LibraryLink)>
 						#LibraryLink#					
 					</cfif>
@@ -504,7 +506,7 @@
 						<cfset helpSectionClass = "helpsectionmargin">
 					</cfif>	
 								
-					<cfoutput><div class="fieldsection #lcase(ftFieldMetadata.ftType)# #ftFieldMetadata.ftClass# #helpSectionClass#"></cfoutput>
+					<cfoutput><div class="fieldSection #lcase(ftFieldMetadata.ftType)# #ftFieldMetadata.ftClass# #helpSectionClass#"></cfoutput>
 				</cfif>
 	
 				<cfif isDefined("Attributes.IncludeLabel") AND attributes.IncludeLabel EQ 1>
