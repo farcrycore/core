@@ -545,12 +545,12 @@ default handlers
 		<cfreturn stProperties>
 	</cffunction>
 	
-	<cffunction name="AfterSave" access="public" output="true" returntype="void" hint="Called from ProcessFormObjects and run after the object has been saved.">
+	<cffunction name="AfterSave" access="public" output="true" returntype="struct" hint="Called from ProcessFormObjects and run after the object has been saved.">
 		<cfargument name="stProperties" required="yes" type="struct" hint="A structure containing the contents of the properties that were saved to the object.">
-
+<!--- 
 		<cfset var searchData = structNew() />
 		
-		<!--- 
+		
 		TODO: Add ability to reindex object if required based on verity metadata info in the component. 
 		This would be nice if it used the new Event Queue ;)
 		
@@ -564,7 +564,7 @@ default handlers
 			<cfset status = SendGatewayMessage("FarcrySearchIndexing", searchData) />
 		</cfif>
 		--->
-		
+		<cfreturn stProperties />
 	</cffunction>
 	
 	<cffunction name="Edit" access="public" output="true" returntype="void">
