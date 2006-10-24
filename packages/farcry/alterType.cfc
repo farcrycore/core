@@ -1313,14 +1313,6 @@ $out:$
 					</cfif>
 				</cfcase>
 
-				<!--- <cfcase value="ora">
-					<!--- alter column --->
-					<cfquery NAME="qAlter" DATASOURCE="#application.dsn#">
-						ALTER TABLE #application.dbowner##arguments.typename#
-						MODIFY (#arguments.srcColumn# #arguments.srcColumnType# <cfif NOT listContainsNoCase("CLOB,INT,NUMBER",arguments.srcColumnType)>(#length#)</cfif>)
-					</cfquery>
-				</cfcase> --->
-
 				<cfdefaultcase>
 					<!--- check for constraint --->
 					<cfquery NAME="qCheck" DATASOURCE="#application.dsn#">

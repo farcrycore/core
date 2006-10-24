@@ -34,7 +34,7 @@ $out: <separate entry for each variable>$
 </cfscript>
 
 <cfif arguments.bDropTables>
-<!--- <cftry> --->
+
 	<cfswitch expression="#application.dbtype#">
 	<cfcase value="ora">
 		<cfquery datasource="#arguments.dsn#" name="qExists">
@@ -94,12 +94,7 @@ $out: <separate entry for each variable>$
 	</cfdefaultcase>
 	</cfswitch>	
 	<cfset stStatus.message = "refCategories,categories tables successfully dropped <br>">
-	<!--- <cfcatch type="any">
-		<!--- TODO - put some details of the cfcatch.Message --->
-		<cfset stStatus.message = "refCategories,categories tables unsuccessfully dropped <br>"> 
-	</cfcatch>
-</cftry>	
---->
+
 </cfif> 
 <cflock name="#createUUID()#" type="exclusive" timeout="50">
 <cftry>
