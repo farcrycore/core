@@ -102,7 +102,6 @@
 		<cfset arguments.sqlColumns="tbl.*">
 	</cfif>
 
-
 	<cfset arguments.lCategories = listQualify(arguments.lCategories,"'")>
 	<!--- <cfset SQLCategoryMust = "">
 	<cfif arguments.lCategoriesMust neq "">
@@ -140,9 +139,8 @@
 			<cfif bHasVersionID>
 				AND (tbl.versionid = '' OR tbl.versionid IS NULL)
 			</cfif>
-			
-			<cfif len(arguments.sqlOrderBy)>
-				ORDER BY #arguments.sqlOrderBy#
+			<cfif len(trim(arguments.sqlOrderBy))>
+				ORDER BY #preserveSingleQuotes(arguments.sqlOrderBy)#
 			</cfif>
 			
 			SELECT #arguments.sqlColumns#
