@@ -1,27 +1,21 @@
 <!--- 
 || LEGAL ||
-$Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
+$Copyright: Daemon Pty Limited 1995-2006, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/security/init.cfc,v 1.23 2005/09/16 07:25:39 guy Exp $
-$Author: guy $
-$Date: 2005/09/16 07:25:39 $
-$Name: milestone_3-0-1 $
-$Revision: 1.23 $
+$Header: $
+$Author: $
+$Date: $
+$Name: $
+$Revision: $
 
 || DESCRIPTION || 
-$Description: authorisation cfc $
-
+$Description: FarCry security intilisation functions $
 
 || DEVELOPER ||
 $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
-
-|| ATTRIBUTES ||
-$in: $
-$out:$
 --->
-
 <cfcomponent displayName="Security Initiatlisation" hint="FarCry security intilisation functions">
 
 	<cffunction name="initPolicyGroupsDatabase">
@@ -30,6 +24,21 @@ $out:$
 		<cfargument name="core" required="true">
 		<cfargument name="project" required="true" type="string" hint="Absolute path to the project dir" />
 		<cfargument name="securitypackagepath" required="false" default="#application.securitypackagepath#">
+		<cfargument name="policygroupimport" required="false" default="" type="string" />
+		
+		<cfif NOT len(arguments.policygroupimport)>
+			<!--- if no import provided, resort to legacy location --->
+			<cfset arguments.policygroupimport="#arguments.project#/www/install/dmSec_files/policyGroups.wddx" />
+		</cfif>
+		
+		<!--- 		
+		TODO:
+			this appears to be dbtype specific
+			makes reference to absolute file positions
+			should throw errors where applicable
+			GB 20061022 needs to be sorted out!
+ 		--->	
+		
 		
 		<cfif arguments.bClearTable>
 			<cftry>
@@ -51,7 +60,11 @@ $out:$
 		</cftry>
 		
 		<!--- #arguments.core#/admin/install/dmSec_files/policyGroups.wddx --->
-		<cffile action="READ" file="#arguments.project#/www/install/dmSec_files/policyGroups.wddx" variable="qPolicyGroupsWDDX">
+		<cfif fileexists(arguments.policygroupimport)>
+			<cffile action="READ" file="#arguments.policygroupimport#" variable="qPolicyGroupsWDDX" />
+		<cfelse>
+			<cfthrow type="security.init" message="File not found" detail="#arguments.policygroupimport# does not exist." />
+		</cfif>
 		<cfwddx action="WDDX2CFML" input="#qPolicyGroupsWDDX#" output="qPolicyGroups">
 		<cfset oAuthorisation=createObject("component","#arguments.securitypackagepath#.authorisation")>
 		
@@ -90,7 +103,13 @@ $out:$
 		<cfargument name="core" required="true">
 		<cfargument name="project" required="true" type="string" hint="Absolute path to the project dir" />
 		<cfargument name="securitypackagepath" required="false" default="#application.securitypackagepath#">
+		<cfargument name="permissionsimport" default="" type="string" />
 
+		<!--- if permissionsimport not available, resort to legacy location --->
+		<cfif NOT len(arguments.permissionsimport)>
+			<cfset arguments.permissionsimport="#arguments.project#/www/install/dmSec_files/permissions.wddx" />
+		</cfif>
+		
 		<cfif arguments.bClearTable>
 		    <cfquery name="qDelete" datasource="#arguments.datasource#">DELETE FROM #application.dbowner#dmPermission</cfquery>
 		</cfif>
@@ -105,8 +124,12 @@ $out:$
 			</cftry>
 		</cfcase>
 		</cfswitch>
-	
-		<cffile action="READ" file="#arguments.project#/www/install/dmSec_files/permissions.wddx" variable="qPermissionsWDDX">
+		
+		<cfif fileexists(arguments.permissionsimport)>
+			<cffile action="READ" file="#arguments.permissionsimport#" variable="qPermissionsWDDX" />
+		<cfelse>
+			<cfthrow type="security.init" message="File not found" detail="#arguments.permissionsimport# does not exist." />		
+		</cfif>
 		<cfwddx action="WDDX2CFML" input="#qPermissionsWDDX#" output="qPermissions">
 		<cfscript>
 			oAuthorisation=createObject("component","#arguments.securitypackagepath#.authorisation");
