@@ -458,15 +458,13 @@
 						</cfif>
 			
 						
-						<!--- <cfdump var="#ftFieldMetadata#">
-						<ws:buildLink href="#application.url.farcry#/facade/library.cfm" target="library" bShowTarget="true" stParameters="#stURLParams#"><cfoutput><img src="#application.url.farcry#/images/treeimages/crystalIcons/includeApproved.gif" /></cfoutput></ws:buildLink> --->
+						<!--- <cfdump var="#ftFieldMetadata#"> --->
+						<ws:buildLink href="#application.url.farcry#/facade/library.cfm" target="library" bShowTarget="true" stParameters="#stURLParams#"><cfoutput><img src="#application.url.farcry#/images/treeimages/crystalIcons/includeApproved.gif" /></cfoutput></ws:buildLink>
 							
 						
 						
 					</cfloop>
-					<!--- temporary override of library button
-					<cfset libraryLink = ""> --->
-
+					
 				</cfsavecontent>
 			<cfelse>
 				<cfset libraryLink = "">	
