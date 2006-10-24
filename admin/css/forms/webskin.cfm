@@ -74,81 +74,79 @@ and is placed before the cfoutput tag to prevent being output.
 =================================================================================
 webskin.css:
 =================================================================================
-
 this stylesheet defines the skins of page elements - and should be linked second
-
 this stylesheet defines the following page elements:
 - background colours / graphics / positions
 - border colours / styles / thickness
 - sprite graphics / positions
-
 */
 
 /*
 form skin styles
 */
-
-form {}
 form.formtool fieldset {border-color: #hexPrimaryLighter#; border-width: 1px 0px 0px 0px; border-style: solid none none none;}
 form.formtool fieldset fieldset {border: 1px solid #hexPrimaryLighter#;}
 <!--- form.formtool .password .fieldAlign {float: none; margin: 0px 0px 0px #columnLeftWidth#; padding: 0px;} --->
-form fieldset legend {}
-label {}
-label u {}
-input, select, textarea {}
-textarea {}
-form div {}
 form fieldset div.notes {border: 1px solid #hexPrimaryLight#; background-color: #hexPrimaryLighter#; color: inherit;}
 <!--- /* form fieldset div.notes h4 {background-image: url(/images/icon_info.gif); background-repeat: no-repeat; background-position: top left; border-style: solid; border-color: ##666666;} */ --->
-form fieldset div.notes p {}
-form fieldset div.notes p.last {}
 <!--- form div fieldset {border-width: 1px; border-style: solid; border-color: ##666666;} --->
-form div fieldset legend {}
-form div.required fieldset legend {}
-form div label {}
-form div.optional label, label.optional {}
-form div.required label, label.required {}
-form div label.labelCheckbox, form div label.labelRadio {}
-form div fieldset label.labelCheckbox, form div fieldset label.labelRadio {}
 p.error {background-color: ##ff0000; background-image: url(/images/icon_error.gif); background-repeat: no-repeat; background-position: 3px 3px; border: 1px solid ##000000; color: inherit; }
 form div.error {background-color: ##ffffe1; background-image: url(/images/required_bg.gif); background-repeat: no-repeat; background-position: top left; border: 1px solid ##ff0000; color: inherit;}
 form div.error p.error {background-image: url(/images/icon_error.gif); background-position: top left; background-color: transparent; border-style: none;}
-form div input, form div select, form div textarea {}
-form div input.inputFile {}
-form div select.selectOne, form div select.selectMultiple {}
 form div input.inputCheckbox, form div input.inputRadio, input.inputCheckbox, input.inputRadio {background-color: transparent; border-width: 0px;}
-form div.submit {}
-form div.submit div {}
 form div input.inputSubmit, form div input.inputButton, input.inputSubmit, input.inputButton {background-color: ##cccccc; color: inherit;}
-form div.submit div input.inputSubmit, form div.submit div input.inputButton {}
-form div small {}
-
-form fieldset legend {}
 form input, form select, form textarea {background-color: #hexWhite#;}
-form textarea.expanding {}
-div.optional label:before {}
-div.required label:before {}
-form div label.labelCheckbox, form div label.labelRadio, label.labelCheckbox, label.labelRadio {}
-form div label.labelCheckbox input.inputCheckbox, form div label.labelRadio input.inputRadio, label.labelCheckbox input.inputCheckbox, label.labelRadio input.inputRadio {}
-form div fieldset input.inputText, form div fieldset input.inputPassword, form div fieldset input.inputFile, form div fieldset textarea.inputTextarea {}
-form div label.compact {}
-form div.wide label {}
-form div label.wide {}
-form div.wide input.inputText, form div.wide input.inputPassword, form div.wide input.inputFile, form div.wide select, form div.wide textarea {}
-form div.notes p, form div small {}
-form div.wide small {}
 
 /* temp hack to clean up buttons: GB 20060914 */
-.formButton {width: 50px;}
+input.formButton {width: 70px;}
 textarea.richtext {width: 600px;}
 
 form.formtool ##wizard-content table, form.formtool ##wizard-content table tr, form.formtool ##wizard-content table tr td, form.formtool ##wizard-content table th {border: none;}
-form.formtool select {border: 1px solid #hexPrimaryLighter#;}
-<!--- end css output --->
+<!--- form.formtool select {border: 1px solid #hexPrimaryLighter#;} --->
+
+
+/* start new formtool webskin styles */
+
+/* formtool form components */
+	/* formtool input : formButton layout styles */	
+	form.formtool input.formButton {background: ##FFFFFF url("#application.url.farcry#/css/images/form_button_bg.gif") no-repeat 0px -2px; border-top: 1px solid ##AEAFC7; border-right: 1px solid ##5A5B85; border-bottom: 1px solid ##5A5B85; border-left: 1px solid ##AEAFC7; cursor: pointer; color: inherit;}
+	form.formtool input.formButton:hover {background: url("#application.url.farcry#/css/images/form_button_bg.gif") no-repeat 0px -58px;}
+	/* formtool select layout styles */
+	form.formtool select {background-color: ##FFFFFF; border-top: 1px solid ##5A5B85; border-right: 1px solid ##AEAFC7; border-bottom: 1px solid ##AEAFC7; border-left: 1px solid ##5A5B85; color: inherit;}
+	form.formtool select option {background-color: ##FFFFFF; color: inherit;}
+
+/* formtool html button layout styles */
+	/* formtool default html button layout styles */
+	form.formtool div.buttonStandard {background: url("#application.url.farcry#/css/images/form_button_bg.gif") no-repeat -2px -2px; border-top: 1px solid ##AEAFC7; border-right: 1px solid ##5A5B85; border-bottom: 1px solid ##5A5B85; border-left: 1px solid ##AEAFC7; cursor: pointer;}
+		form.formtool div.buttonStandard a:hover {background: url("#application.url.farcry#/css/images/form_button_bg.gif") no-repeat -2px -58px;}
+	/* formtool default html view method button layout styles */
+	form.formtool div.buttonViewMethod {background: ##FFFFFF url("#application.url.farcry#/css/images/form_button_bg.gif") no-repeat -2px -2px; border-top: 1px solid ##AEAFC7; border-right: 1px solid ##5A5B85; border-bottom: 1px solid ##5A5B85; border-left: 1px solid ##AEAFC7; cursor: pointer; color: inherit;}
+		form.formtool div.buttonViewMethod a:hover {background: url("#application.url.farcry#/css/images/form_button_bg.gif") no-repeat -2px -58px;}
+		form.formtool div.buttonViewMethod a.selected {background: url("#application.url.farcry#/css/images/form_button_bg.gif") no-repeat -2px -58px;}
+
+	/* formtool array component layout styles */
+	form.formtool div.array div.fieldAlign ul {border: 1px solid ##AEAFC7;}
+	form.formtool div.array div.fieldAlign ul {list-style-type: none;}
+
+	/* array component : detail view layout styles */
+	form.formtool div.array div.fieldAlign ul.arrayViewDetail li {border-bottom: 1px solid ##eaeaf0; background-image: none;}
+	form.formtool div.array div.fieldAlign ul.arrayViewDetail li:hover {background-color: ##eaeaf0; cursor: pointer; color: inherit;}
+			form.formtool div.array div.fieldAlign ul.arrayViewDetail li div.buttonGripper p {background: url("#application.url.farcry#/css/images/form_button_gripper.gif") no-repeat 0px 0px;}
+			form.formtool div.array div.fieldAlign ul.arrayViewDetail li div.arrayDetail p {background: transparent url("#application.url.farcry#/css/images/content_type_icon_contact.gif") no-repeat 0px 3px;}
+
+	/* array component : thumbnail view layout styles */
+	form.formtool div.array div.fieldAlign ul.arrayViewThumbnail li {background-color: ##7476a6; border-top: 1px solid ##8e8fb6; border-right: 1px solid ##61638b; border-bottom: 1px solid ##61638b; border-left: 1px solid ##8e8fb6; cursor: pointer; color: inherit;}
+		form.formtool div.array div.fieldAlign ul.arrayViewThumbnail li div.buttonGripper p {background: url("#application.url.farcry#/css/images/form_button_gripper.gif") no-repeat 100% -29px; border-left: 1px solid ##696a8c;}
+		form.formtool div.array div.fieldAlign ul.arrayViewThumbnail li div.arrayThumbnail img {border: 1px solid ##FFFFFF;}
+			form.formtool div.array div.fieldAlign ul.arrayViewThumbnail li:hover div.arrayThumbnail img {border: 1px solid ##e17000;}
+
+/* end new formtool webskin styles */
+
 </cfoutput>
+<!--- end css output --->
 
-<!--- end enable tag insight --->
 </style>
+<!--- end enable tag insight --->
 
-<!--- end allow output only from cfoutput tags --->
 <cfsetting enablecfoutputonly="no" />
+<!--- end allow output only from cfoutput tags --->

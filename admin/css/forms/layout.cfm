@@ -3,6 +3,10 @@
 
 <!--- assign widths to strings for form elements --->
 <cfscript>
+	/*
+	legacy layout variables
+	*/
+
 	/* form */
 	formWidth = "600px";
 
@@ -14,6 +18,31 @@
 
 	/* form notes component */
 	notesWidth = "150px";
+
+	/* temporary url string pointing to images on skunkworks */
+	skunkworks = "http://skunkworks.farcrycms.com/grae/farcry/formtools";
+
+
+	/*
+	new layout variables
+	*/
+
+	/* set formtool object */
+	request.formtool = structNew();
+
+	/* form width */
+	request.formtool.width = "700px";
+
+	/* form width */
+	request.formtool.widthMax = "800px";
+
+	/* left column */
+	request.formtool.widthLeft = "180px";
+
+	/* right column */
+	request.formtool.widthRight = "400px";
+
+
 </cfscript>
 
 <!---
@@ -44,27 +73,25 @@ this stylesheet defines the following page elements:
 */
 
 /* form layout styles */
-p.asdafas {border: 3px solid green;}
 form {margin: 0px; padding: 0px;}
-<!--- form.formtool {margin: 0px 0px 0px 0px; padding: 0px; min-width: 600px; width: 800px; max-width: 900px;} --->
 form.formtool {margin: 0px 0px 0px 0px; padding: 0px;}
 form.formtool fieldset {margin: 0px 0px 0px 0px; padding: 10px 10px 10px 10px;}
 body.library form.formtool {width: auto;}
-<!--- form.formtool #wizard-wrap fieldset {margin: 0px 0px 0px 0px; padding: 10px 10px 10px 10px;}--->
 form.formtool fieldset legend {margin: 10px 0px 10px 0px; padding: 0px 5px 0px 5px;}
-label {}
-label u {}
-input, select, textarea {}
 textarea.formtool {overflow: auto;}
-<!--- div.content form div {margin: 5px 0px 0px 0px; padding: 1px 3px 1px 3px; width: 354px; height: 1%; display: block; clear: left;} --->
 form.formtool fieldset div.notes {margin: 0px 0px 10px 10px; padding: 5px 5px 5px 5px; width: #notesWidth#; height: auto; float: right;}
 form.formtool fieldset div.notes h4 {margin: 0px; padding: 3px 0px 3px 0px;}
 form.formtool fieldset div.notes p {margin: 0em 0em 1.2em 0em;}
 form.formtool fieldset div.notes p.last {margin: 0em;}
-<!--- form div fieldset {margin: 0px 0px 0px 142px; padding: 0px 5px 5px 5px; width: 197px; clear: none;} --->
 form.formtool fieldset legend {padding: 0px 3px 0px 9px;}
-<!--- form.formtool .required fieldset legend {} --->
-form.formtool label {margin: 0px 0px 5px 0px; padding: 0px 5px 3px 5px; width: #columnLeftWidth#; display: block; float: left;}
+/* formtool form left column layout styles */
+form.formtool div.fieldSection {margin: 0px; padding: 0px; display: block; height: auto;}
+/* formtool form left column layout styles */
+form.formtool label {margin: 0px 0px 5px 0px; padding: 0px 10px 3px 5px; width: #request.formtool.widthLeft#; display: block; float: left; text-align: right;}
+/* formtool form right column layout styles */
+form.formtool div.fieldAlign {margin: 0px; padding: 0px; width: #request.formtool.widthRight#; display: block; float: left;}
+
+<!--- form.formtool label {margin: 0px 0px 5px 0px; padding: 0px 5px 3px 5px; width: #columnLeftWidth#; display: block; float: left;} --->
 <!--- form.formtool .optional label, label.optional {}
 form.formtool .required label, label.required {}--->
 
@@ -111,11 +138,7 @@ form.formtool .submit input.inputSubmit,
 
 form.formtool small {margin: 0px 0px 5px 142px; padding: 1px 3px 1px 3px; height: 1%; display: block;}
 
-<!--- form fieldset legend {}
-form.formtool input, form.formtool select, form.formtool textarea {} --->
 form.formtool textarea.expanding {overflow: auto; overflow-x: auto; overflow-y: visible;}
-<!--- div.optional label:before {content: '';}
-div.required label:before {content: '';} --->
 
 form.formtool label.labelCheckbox,
 	form div label.labelRadio,
@@ -145,12 +168,11 @@ form.formtool .wide input.inputText,
 form.formtool .notes p, form.formtool small {}
 form.formtool .wide small {margin: 0px 0px 5px 0px;}
 
-form.formtool .formsection .fieldAlign {float: left; margin: 0px; padding: 0px;}
+form.formtool .formSection .fieldAlign {float: left; margin: 0px; padding: 0px;}
 form.formtool .passwordlabel {display: none;}
-<!--- form.formtool .password label label {display: block;} --->
 
-form.formtool .formsection .password .fieldAlign {float: none; margin: 0px 0px 0px #columnLeftWidth#; padding: 0px;}
-form.formtool .fieldsection .clearer {clear: both;}
+form.formtool .formSection .password .fieldAlign {float: none; margin: 0px 0px 0px #columnLeftWidth#; padding: 0px;}
+form.formtool .fieldSection .clearer {clear: both;}
 
 form.formtool .formCheckbox {width: auto; border: none;}
 form.formtool .category .fieldwrap input {border: none;}
@@ -158,30 +180,55 @@ form.formtool .category .fieldwrap input {border: none;}
 form.formtool ##wizard-content select {width: auto; margin: 0px; padding: 0px;}
 form.formtool ##wizard-content select option {width: auto; margin: 0px; padding: 0px 3px 0px 3px;}
 
+input.validation-failed, textarea.validation-failed {border: 1px solid ##FF3300; color: ##FF3300;}
+.validation-advice {margin: 5px 0px 5px 0px; padding: 5px 5px 5px 5px; background-color: ##FF3300; color: ##FFFFFF; font-weight: bold;}
+.custom-advice {margin: 5px 0px 5px 0px; padding: 5px 5px 5px 5px; background-color: ##C8AA00; color: ##FFFFFF; font-weight: bold;}
 
-input.validation-failed, textarea.validation-failed {
-	border: 1px solid ##FF3300;
-	color : ##FF3300;
-}
+/* formtool form components */
+	/* formtool input : formButton layout styles */	
+	form.formtool input.formButton {margin: 0px; padding: 0px; height: 18px; vertical-align: top;}
+	/* formtool input : formCheckbox layout styles */	
+	form.formtool input.formCheckbox {margin: 0px; padding: 0px; width: 12px; height: 12px;}
+	/* formtool select layout styles */
+	form.formtool select {margin: 0px; padding: 0px; height: 16px; float: left; display: block;}
 
+/* formtool html button layout styles */
+	/* formtool default html button group layout styles */
+	form.formtool div.buttonGroup {margin: 0px; padding: 0px; display: block; float: right;}
+	/* formtool default html button layout styles */
+	form.formtool div.buttonStandard {margin: 0px; padding: 0px; height: 16px; width: 100px; display: block; float: left; vertical-align: top;}
+		form.formtool div.buttonStandard a {margin: 0px; padding: 1px 4px 0px 4px; width: auto; height: 15px; display: block; text-align: center;}
+	/* formtool default html view method button layout styles */
+	form.formtool div.buttonViewMethod {margin: 0px; padding: 0px; width: 16px; height: 16px; display: block; float: left; vertical-align: top;}
+		form.formtool div.buttonViewMethod a {margin: 0px; padding: 0px; width: 16px; height: 16px; display: block;}
+			form.formtool div.buttonViewMethod a img {margin: 0px; padding: 1px 0px 0px 1px; width: 14px; height: 14px; display: block;}
 
-.validation-advice {
-	margin: 5px 0;
-	padding: 5px;
-	background-color: ##FF3300;
-	color : ##FFF;
-	font-weight: bold;
-}
+	/* formtool array component layout styles */
+	form.formtool div.array div.fieldAlign input.formButton {margin: 0px 5px 5px 0px; width: 70px; float: left; display: block;}
+	form.formtool div.array div.fieldAlign input.formCheckbox {width: 10px; height: 10px;}
 
-.custom-advice {
-	margin: 5px 0;
-	padding: 5px;
-	background-color: ##C8AA00;
-	color : ##FFF;
-	font-weight: bold;
-}
+	form.formtool div.array div.fieldAlign {margin: 0px 0px 30px 0px; padding: 0px;}
 
+	form.formtool div.array div.fieldAlign ul {margin: 0px 0px 5px 0px; padding: 0px;}
 
+	/* array component : detail view layout styles */
+	form.formtool div.array div.fieldAlign ul.arrayViewDetail {width: auto; height: auto; display: block;}
+		form.formtool div.array div.fieldAlign ul.arrayViewDetail li {margin: 0px; padding: 0px; height: 19px;}
+			form.formtool div.array div.fieldAlign ul.arrayViewDetail li div.buttonGripper {margin: 0px; padding: 1px 0px 0px 0px; width: 7px; height: 17px; display: block; float: left;}
+				form.formtool div.array div.fieldAlign ul.arrayViewDetail li div.buttonGripper p {margin: 0px; padding: 0px; width: 7px; height: 17px; display: block;}
+		 	form.formtool div.array div.fieldAlign ul.arrayViewDetail li input.formCheckbox {margin: 4px 2px 0px 0px; padding: 0px; display: block; float: right; overflow: hidden;}
+			form.formtool div.array div.fieldAlign ul.arrayViewDetail li div.arrayDetail {margin: 0px; padding: 0px 0px 0px 10px; display: block;}
+				form.formtool div.array div.fieldAlign ul.arrayViewDetail li div.arrayDetail p {margin: 0px 0px 0px 4px; padding: 3px 0px 0px 18px; width: auto; height: 16px; display: block;}
+			form.formtool div.array div.fieldAlign ul.arrayViewDetail li div.arrayThumbnail {margin: 0px; padding: 0px; display: none;}
+
+	/* array component : thumbnail view layout styles */
+	form.formtool div.array div.fieldAlign ul.arrayViewThumbnail {width: auto; height: 300px; display: block; overflow: auto;}
+		form.formtool div.array div.fieldAlign ul.arrayViewThumbnail li {margin: 5px 0px 0px 5px; padding: 0px; width: 52px; height: 62px; display: block; float: left; overflow: hidden;}
+			form.formtool div.array div.fieldAlign ul.arrayViewThumbnail li div.buttonGripper {margin: 0px; padding: 0px; width: 40px; height: 9px; display: block; float: left;}
+				form.formtool div.array div.fieldAlign ul.arrayViewThumbnail li div.buttonGripper p {margin: 0px; padding: 0px; width: 40px; height: 9px; display: block;}
+			form.formtool div.array div.fieldAlign ul.arrayViewThumbnail li input.formCheckbox {margin: 0px; padding: 0px; display: block; float: right; overflow: hidden;}
+			form.formtool div.array div.fieldAlign ul.arrayViewThumbnail li div.arrayDetail {margin: 0px; padding: 0px; display: none;}
+			form.formtool div.array div.fieldAlign ul.arrayViewThumbnail li div.arrayThumbnail {margin: 0px; padding: 0px;}
 
 <!--- end css output --->
 </cfoutput>

@@ -10,8 +10,8 @@
 #wizard-wrap .wizard-pagination li.li-prev {position:absolute;top:0;left:0;list-style-type:none;}
 #wizard-wrap .wizard-pagination li.li-next {position:absolute;top:0;right:0;list-style-type:none;}
 
-#wizard-wrap .wizard-pagination li.li-prev a:link, #wizard-wrap .wizard-pagination li.li-prev a:visited {color:#666;background:#fff url("/farcry/css/images/sprites_icons.gif") no-repeat -7px -450px;height: 2.5em;font: bold 100%/2.2 arial;padding: 0 0 3px 20px;}
-#wizard-wrap .wizard-pagination li.li-next a:link, #wizard-wrap .wizard-pagination li.li-next a:visited {color:#666;background:#fff url("/farcry/css/images/sprites_icons.gif") no-repeat 100% -550px;height: 2.5em;font: bold 100%/2.2 arial;padding: 0 22px 3px 0;}
+#wizard-wrap .wizard-pagination li.li-prev a:link, #wizard-wrap .wizard-pagination li.li-prev a:visited {color:#666;background:#fff url("/farcry/css/images/sprites_icons.gif") no-repeat -7px -450px;height: 2.7em;font: bold 100%/2.2 arial;padding: 4px 0px 3px 20px;}
+#wizard-wrap .wizard-pagination li.li-next a:link, #wizard-wrap .wizard-pagination li.li-next a:visited {color:#666;background:#fff url("/farcry/css/images/sprites_icons.gif") no-repeat 100% -550px;height: 2.7em;font: bold 100%/2.2 arial;padding: 4px 22px 3px 0px;}
 
 #wizard-wrap .wizard-pagination li.li-prev a:hover, #wizard-wrap .wizard-pagination li.li-prev a:active {background-position: -7px -400px;color:#006BD0}
 #wizard-wrap .wizard-pagination li.li-next a:hover, #wizard-wrap .wizard-pagination li.li-next a:active {background-position: 100% -500px;color:#006BD0}
@@ -30,7 +30,7 @@
 
 #wizard-nav {clear:both;float:right;width:120px}
 #wizard-nav ul {margin: 0 0 15px;padding:0;list-style-type:none} 
-#wizard-nav li {margin:0;padding:0;background:none;font: normal 90%/2 arial;border-bottom: 1px solid #e8e8e8;text-transform:capitalize}
+#wizard-nav li {margin:0;padding:0;background:none;font: normal 100%/2 arial;border-bottom: 1px solid #e8e8e8;text-transform:capitalize}
 #wizard-nav a:link, #wizard-nav a:visited {color:#666}
 #wizard-nav a:link strong , #wizard-nav a:visited strong {color:#E17000}
 #wizard-nav a:hover, #wizard-nav a:active {color:#E17000;background:#fff}

@@ -45,64 +45,67 @@ this stylesheet defines the following page elements:
 */
 
 /* form formatting styles */
-form {font-size: 100%;}
-form fieldset {font-size: 100%;}
-form fieldset legend {font-size: 150%; font-weight: normal; color: #hexPrimaryDark#;}
-label {font-size: 100%;}
-form.formtool label {letter-spacing: 0.0em; font-size: 90%;}
+
+/* start legacy formtool css  */
+form.formtool {font-size: 80%;}
+form.formtool fieldset {font-size: 100%;}
+form.formtool fieldset legend {font-size: 150%; font-weight: normal; color: #hexPrimaryDark#;}
+
 label u {font-style: normal; text-decoration: underline;}
 input, select, textarea {font-family: Tahoma, Arial, sans-serif; font-size: 100%; color: ##000000;}
-textarea {}
-form div {}
 form fieldset div.notes {color: ##666666; font-size: 88%;}
 form fieldset div.notes h4 {color: ##666666; font-size: 120%;}
 form fieldset div.notes p {color: ##666666;}
-form fieldset div.notes p.last {}
-form div fieldset {}
 form div fieldset legend {font-size: 100%;}
 form div.required fieldset legend {font-weight: bold;}
 form div label {text-align: right;}
 form div.optional label, label.optional {font-weight: normal;}
 form div.required label, label.required {font-weight: bold;}
 form div label.labelCheckbox, form div label.labelRadio {text-align: left;}
-form div fieldset label.labelCheckbox, form div fieldset label.labelRadio {}
-form div img {}
 p.error {color: ##ffffff;}
 form div.error {color: ##666666;}
-form div.error p.error {font-size: 88%; font-weight: bold; color: ##ff0000;}
-form div input, form div select, form div textarea {}
-form div input.inputFile {}
-form div select.selectOne, form div select.selectMultiple {}
-form div input.inputCheckbox, form div input.inputRadio, input.inputCheckbox, input.inputRadio {}
-form div.submit {}
+form div.error p.error {font-size: 80%; font-weight: bold; color: ##ff0000;}
 form div.submit div {text-align: left;}
 form div input.inputSubmit, form div input.inputButton, input.inputSubmit, input.inputButton {color: ##000000;}
-form div.submit div input.inputSubmit, form div.submit div input.inputButton {}
 form div small {font-size: 88%;}
 
 form fieldset legend {line-height: 150%;}
-form input, form select, form textarea {}
-form textarea.expanding {}
-div.optional label:before {content: '';}
-div.required label:before {content: '';}
 form div label.labelCheckbox, form div label.labelRadio, label.labelCheckbox, label.labelRadio {text-indent: -18px; line-height: 120%;}
-form div label.labelCheckbox input.inputCheckbox, form div label.labelRadio input.inputRadio, label.labelCheckbox input.inputCheckbox, label.labelRadio input.inputRadio {}
-form div fieldset input.inputText, form div fieldset input.inputPassword, form div fieldset input.inputFile, form div fieldset textarea.inputTextarea {}
 form div label.compact {text-indent: 0px;}
-form div.wide label {}
-form div label.wide {}
-form div.wide input.inputText, form div.wide input.inputPassword, form div.wide input.inputFile, form div.wide select, form div.wide textarea {}
 form div.notes p, form div small {line-height: 125%;}
-form div.wide small {}
 
-
-form.formtool ##wizard-content select {font-size: 90%; line-height: normal;}
+<!--- form.formtool ##wizard-content select {font-size: 90%; line-height: normal;} --->
 form.formtool ##wizard-content select option {font-size:inherit; line-height:inherit;}
-<!--- end css output --->
+/* end legacy formtool css  */
+
+/* start new formtool formatting styles */
+	/* formtool form layout styles */
+	form.formtool label {font: normal 120%/1.0 "Trebuchet MS",arial,helvetica,sans-serif; color: ##324e7c; letter-spacing: 0.0em; background-color: inherit;}
+
+/* formtool form components */
+	/* formtool input : formButton layout styles */	
+	form.formtool input.formButton {font-size: 90%; color: ##30326F; background-color: inherit;}
+	/* formtool select layout styles */
+	form.formtool select {font-size: 100%; color: ##324e7c; line-height: normal; background-color: inherit;}
+
+/* formtool html button formatting styles */
+	/* formtool default html button formatting styles */
+	form.formtool div.buttonStandard a {color: ##30326F; background-color: inherit; text-decoration: none;}
+
+	/* array component : detail view formatting styles */
+	form.formtool div.array div.fieldAlign ul.arrayViewDetail li {line-height: normal;}
+		form.formtool div.array div.fieldAlign ul.arrayViewDetail li div.buttonGripper p {font-size: 0%; line-height: normal;}
+		form.formtool div.array div.fieldAlign ul.arrayViewDetail li div.arrayDetail p {color: ##30326F; font-size: 100%; background-color: inherit;}
+
+	/* array component : thumbnail view formatting styles */
+	form.formtool div.array div.fieldAlign ul.arrayViewThumbnail li div.buttonGripper p {font-size: 0%; line-height: normal;}
+
+/* start new formtool formatting styles */
 </cfoutput>
+<!--- end css output --->
 
-<!--- end enable tag insight  --->
 </style>
+<!--- end enable tag insight  --->
 
-<!--- end allow output only from cfoutput tags --->
 <cfsetting enablecfoutputonly="no" />
+<!--- end allow output only from cfoutput tags --->
