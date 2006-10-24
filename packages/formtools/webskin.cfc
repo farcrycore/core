@@ -43,14 +43,12 @@
 			<cfset querySetCell(qMethods, "displayname", displayname)>
 		</cfloop>
 
-
-		<!--- Reorder List --->
+		<!--- de-dupe and reorder method list --->
 		<cfquery name="qMethods" dbtype="query">
-		SELECT *
+		SELECT DISTINCT methodname, displayname
 		FROM qMethods
 		ORDER BY DisplayName
 		</cfquery>
-		
 		
 		<cfsavecontent variable="html">
 			<!--- Place custom code here! --->
@@ -108,4 +106,4 @@
 		
 	</cffunction>
 
-</cfcomponent> 
+</cfcomponent>
