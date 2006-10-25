@@ -123,7 +123,7 @@
 							</ul>
 						</div>
 						<div class="buttonGroup">
-							<div class="buttonStandard"><a href="##" onclick="">Remove Selected</a></div>
+							<div class="buttonStandard"><a href="##" onclick="if(!confirm('Are you sure you want to delete the selected item')) {return false};deleteSelected#arguments.fieldname#();return false;">Remove Selected</a></div>
 							<br class="clearer" />
 						</div>
 
@@ -134,6 +134,20 @@
 					<cfoutput>
 					<script type="text/javascript" language="javascript" charset="utf-8">
 						
+							
+					function deleteSelected#arguments.fieldname#(){
+						
+						aInputs = $$("###ULID# input");
+						aInputs.each(function(child) {
+							if(child.checked == true){
+								Element.remove('#arguments.fieldname#_' + child.value);
+							}
+						});
+						Sortable.create('#ULID#');
+						$('#arguments.fieldname#').value = Sortable.sequence('#ULID#');
+						libraryCallback_#arguments.fieldname#('remove',$('#arguments.fieldname#').value);
+					}
+					
 					function libraryCallback_#arguments.fieldname#(action,ids){
 						$('#arguments.fieldname#').value = ids;
 						

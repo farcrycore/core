@@ -187,7 +187,7 @@
 						<div class="buttonGroup">
 							<div class="buttonStandard"><a href="##" onclick="toggleOn#arguments.fieldname#();return false;">Select All</a></div>
 							<div class="buttonStandard"><a href="##" onclick="toggleOff#arguments.fieldname#();return false;">Deselect All</a></div>
-							<div class="buttonStandard"><a href="##" onclick="">Remove Selected</a></div>
+							<div class="buttonStandard"><a href="##" onclick="if(!confirm('Are you sure you want to delete the selected item(s)')) {return false};deleteSelected#arguments.fieldname#();return false;">Remove Selected</a></div>
 							<br class="clearer" />
 						</div>
 
@@ -207,6 +207,19 @@
 								aInputs.each(function(child) {
 									child.checked = false;
 								});
+							}
+							
+							function deleteSelected#arguments.fieldname#(){
+								
+								aInputs = $$("###ULID# input");
+								aInputs.each(function(child) {
+									if(child.checked == true){
+										Element.remove('#arguments.fieldname#_' + child.value);
+									}
+								});
+								
+								$('#arguments.fieldname#').value = Sortable.sequence('#ULID#');
+								libraryCallback_#arguments.fieldname#('sort',$('#arguments.fieldname#').value);
 							}
 
 						// <![CDATA[
