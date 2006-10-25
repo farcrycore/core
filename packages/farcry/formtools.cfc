@@ -210,30 +210,29 @@
 			
 			
 			
-			<cfquery name="qFormToolRecordset" datasource="#application.dsn#" result="qRes">
-											
+			<cfquery name="qFormToolRecordset" datasource="#application.dsn#">
+
 			IF OBJECT_ID('tempdb..##thetops') IS NOT NULL 	drop table ##thetops
-			CREATE TABLE ##thetops (objectID varchar(40), myint int IDENTITY(1,1) NOT NULL)
+			CREATE TABLE ##thetops (objectID varchar(40), myint int IDENTITY(1,1) NOT NULL);
 			
 			INSERT ##thetops (objectID)
 			SELECT TOP #theSQLTop# tbl.objectid
 			FROM #arguments.typename# tbl 
+			WHERE #preserveSingleQuotes(arguments.SqlWhere)#
 			
 			<cfif arguments.lCategories neq ''>
-				WHERE objectid in (
+				AND objectid in (
 				    select distinct objectid 
 				    from refCategories 
 				    where categoryID in (#preserveSingleQuotes(arguments.lCategories)#)
 				    )
-				AND #preserveSingleQuotes(arguments.SqlWhere)#
-			<cfelse>
-				WHERE #preserveSingleQuotes(arguments.SqlWhere)#
+			</cfif>
+			<cfif bHasVersionID>
+				AND (tbl.versionid = '' OR tbl.versionid IS NULL)
 			</cfif>
 			<cfif len(trim(arguments.sqlOrderBy))>
 				ORDER BY #preserveSingleQuotes(arguments.sqlOrderBy)#
 			</cfif>
-			
-			
 			
 			SELECT #arguments.sqlColumns#
 			<cfif bHasversionID>
@@ -249,20 +248,22 @@
 			drop table ##thetops
 							
 			</cfquery>
-		
-			<cfquery name="qrecordcount" datasource="#application.dsn#" result="qRes">
-			SELECT count(distinct tbl.objectid)
-			FROM #arguments.typename# tbl 
+				
+			
+			<cfquery name="qrecordcount" datasource="#application.dsn#">
+			SELECT count(distinct tbl.objectid) as CountAll 
+			FROM #arguments.typename# tbl 			
+			WHERE #preserveSingleQuotes(arguments.SqlWhere)#
 			
 			<cfif arguments.lCategories neq ''>
-				WHERE objectid in (
+				AND objectid in (
 				    select distinct objectid 
 				    from refCategories 
 				    where categoryID in (#preserveSingleQuotes(arguments.lCategories)#)
-				    )
-				AND #preserveSingleQuotes(arguments.SqlWhere)#
-			<cfelseif len(trim(arguments.SqlWhere))>
-				WHERE #preserveSingleQuotes(arguments.SqlWhere)#
+				)
+			</cfif>
+			<cfif bHasVersionID>
+				AND (tbl.versionid = '' OR tbl.versionid IS NULL)
 			</cfif>
 			
 			</cfquery>
