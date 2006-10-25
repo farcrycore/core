@@ -55,6 +55,9 @@ $in: stRPC -- cfStruct containing additional user defined flashVars for use with
 	<!--- stRPC : cfStruct containing additional user defined flashVars for use with remoting --->
 	<cfparam name="attributes.stRPC" default="#structNew()#" />
 
+	<!--- Request.InHead : caveat to enable use of flashWrapper if request scope is not present --->
+	<cfparam name="Request.InHead" default="#structNew()#" />
+
 
 	<!--- swfObjectJS : sets boolean in request scope to ensure swfObject JS is included in the head of the page --->
 	<cfset Request.InHead.swfObjectJS = true />
