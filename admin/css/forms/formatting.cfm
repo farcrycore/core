@@ -93,12 +93,12 @@ form.formtool ##wizard-content select option {font-size:inherit; line-height:inh
 	form.formtool div.buttonStandard a {color: ##30326F; background-color: inherit; text-decoration: none;}
 
 	/* array component : detail view formatting styles */
-	form.formtool div.array div.fieldAlign ul.arrayDetailView li {line-height: normal;}
-		form.formtool div.array div.fieldAlign ul.arrayDetailView li div.buttonGripper p {font-size: 0%; line-height: normal;}
-		form.formtool div.array div.fieldAlign ul.arrayDetailView li div.arrayDetail p {color: ##30326F; font-size: 100%; background-color: inherit;}
+	ul.arrayDetailView li {line-height: normal;}
+		ul.arrayDetailView li div.buttonGripper p {font-size: 0%; line-height: normal;}
+		ul.arrayDetailView li div.arrayDetail p {color: ##30326F; font-size: 100%; background-color: inherit;}
 
 	/* array component : thumbnail view formatting styles */
-	form.formtool div.array div.fieldAlign ul.arrayThumbnailView li div.buttonGripper p {font-size: 0%; line-height: normal;}
+	ul.arrayThumbnailView li div.buttonGripper p {font-size: 0%; line-height: normal;}
 
 /* start new formtool formatting styles */
 </cfoutput>

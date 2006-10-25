@@ -129,16 +129,16 @@ form.formtool ##wizard-content table, form.formtool ##wizard-content table tr, f
 	form.formtool div.array div.fieldAlign ul {list-style-type: none;}
 
 	/* array component : detail view layout styles */
-	form.formtool div.array div.fieldAlign ul.arrayDetailView li {border-bottom: 1px solid ##eaeaf0; background-image: none;}
-	form.formtool div.array div.fieldAlign ul.arrayDetailView li:hover {background-color: ##eaeaf0; cursor: pointer; color: inherit;}
-			form.formtool div.array div.fieldAlign ul.arrayDetailView li div.buttonGripper p {background: url("#application.url.farcry#/css/images/form_button_gripper.gif") no-repeat 0px 0px;}
-			form.formtool div.array div.fieldAlign ul.arrayDetailView li div.arrayDetail p {background: transparent url("#application.url.farcry#/css/images/content_type_icon_contact.gif") no-repeat 0px 3px;}
+	ul.arrayDetailView li {border-bottom: 1px solid ##eaeaf0; background-image: none;}
+	ul.arrayDetailView li:hover {background-color: ##eaeaf0; cursor: pointer; color: inherit;}
+		ul.arrayDetailView li div.buttonGripper p {background: url("#application.url.farcry#/css/images/form_button_gripper.gif") no-repeat 0px 0px;}
+		ul.arrayDetailView li div.arrayDetail p {background: transparent url("#application.url.farcry#/css/images/content_type_icon_contact.gif") no-repeat 0px 3px;}
 
 	/* array component : thumbnail view layout styles */
-	form.formtool div.array div.fieldAlign ul.arrayThumbnailView li { background-image: none; background-color: ##7476a6; border-top: 1px solid ##8e8fb6; border-right: 1px solid ##61638b; border-bottom: 1px solid ##61638b; border-left: 1px solid ##8e8fb6; cursor: pointer; color: inherit;}
-		form.formtool div.array div.fieldAlign ul.arrayThumbnailView li div.buttonGripper p {background: url("#application.url.farcry#/css/images/form_button_gripper.gif") no-repeat 100% -29px; border-left: 1px solid ##696a8c;}
-		form.formtool div.array div.fieldAlign ul.arrayThumbnailView li div.arrayThumbnail img {border: 1px solid ##FFFFFF;}
-			form.formtool div.array div.fieldAlign ul.arrayThumbnailView li:hover div.arrayThumbnail img {border: 1px solid ##e17000;}
+	ul.arrayThumbnailView li { background-image: none; background-color: ##7476a6; border-top: 1px solid ##8e8fb6; border-right: 1px solid ##61638b; border-bottom: 1px solid ##61638b; border-left: 1px solid ##8e8fb6; cursor: pointer; color: inherit;}
+		ul.arrayThumbnailView li div.buttonGripper p {background: url("#application.url.farcry#/css/images/form_button_gripper.gif") no-repeat 100% -29px; border-left: 1px solid ##696a8c;}
+		ul.arrayThumbnailView li div.arrayThumbnail img {border: 1px solid ##FFFFFF;}
+		ul.arrayThumbnailView li:hover div.arrayThumbnail img {border: 1px solid ##e17000;}
 
 /* end new formtool webskin styles */
 

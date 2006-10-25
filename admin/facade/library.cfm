@@ -63,7 +63,9 @@ $Developer: $
 
 <!--- TODO: dynamically determine the typename to join. --->
 <cfset request.ftJoin = listFirst(url.ftJoin) />
-
+<cfif NOT listContainsNoCase(PrimaryPackage.stProps[url.primaryFieldname].metadata.ftJoin,request.ftJoin)>
+	<cfset request.ftJoin = listFirst(PrimaryPackage.stProps[url.primaryFieldname].metadata.ftJoin) />
+</cfif>
 
 <!--- Cleanup the Query_String so that we can paginate correctly --->
 <cfscript>
@@ -295,8 +297,9 @@ $Developer: $
 <cfset oPrimary = createObject("component",PrimaryPackagePath)>
 <cfset oData = createObject("component",application.types[request.ftJoin].typepath)>
 
-<cfset stPrimary = oPrimary.getData(objectid=url.primaryObjectID)>
-	
+<cfset stPrimary = oPrimary.getData(objectid=url.primaryObjectID, bArraysAsStructs=true)>
+
+
 <cfif URL.LibraryType EQ "array">
 <!---	<cfset qArray = oPrimary.getArrayFieldAsQuery(objectid="#url.primaryObjectID#", Fieldname="#url.primaryFieldName#", Typename="#url.primaryTypeName#", ftJoin="#request.ftJoin#")> --->
 	<cfquery datasource="#application.dsn#" name="q">
@@ -322,16 +325,29 @@ LIBRARY DATA
 <!--- if nothing exists to generate library data then cobble something together --->
 <cfif NOT isDefined("qLibraryList")>
 	<cfinvoke component="#oData#" method="getLibraryData" returnvariable="qLibraryList" />
+	
 </cfif>
 
-
+<cfif listLen(lBasketIDs)>
+	<cfquery dbtype="query" name="qLibraryList">
+	SELECT * FROM qLibraryList
+	WHERE ObjectID NOT IN (#ListQualify(lBasketIDs,"'")#)
+	</cfquery>
+</cfif>
 
 <!--- Put JS and CSS for TabStyle1 into the header --->
 <cfset Request.InHead.TabStyle1 = 1>
 
-<cfif listLen(PrimaryPackage.stProps[url.primaryFieldname].metadata.ftJoin)>
+
+<cfoutput><h1 style="float:left;">#application.types[request.ftJoin].displayname# Library...</h1></cfoutput>
+
+
+<cfif listLen(PrimaryPackage.stProps[url.primaryFieldname].metadata.ftJoin) GT 1>
 	<ft:form>
-	<cfoutput><select name="ftJoin" id="ftJoin" onchange="javascript:window.location='#cgi.script_name#?#querystring#&ftJoin=' + this[selectedIndex].value;"></cfoutput>
+	
+	<cfoutput>
+		Change To: 
+		<select name="ftJoin" id="ftJoin" onchange="javascript:window.location='#cgi.script_name#?#querystring#&ftJoin=' + this[selectedIndex].value;"></cfoutput>
 		<cfloop list="#PrimaryPackage.stProps[url.primaryFieldname].metadata.ftJoin#" index="i">
 			<cfoutput><option value="#i#" <cfif url.ftJoin EQ i>selected</cfif>>#application.types[i].displayname#</option></cfoutput>
 		</cfloop>
@@ -339,10 +355,6 @@ LIBRARY DATA
 	
 	</ft:form>
 </cfif>
-
-<cfoutput><h1 style="float:left;">#application.types[url.ftJoin].displayname# Library...</h1></cfoutput>
-
-
 
 <cfif structKeyExists(application.config.verity, "CONTENTTYPE") AND structKeyExists(application.config.verity.CONTENTTYPE,request.ftJoin)>
 	
@@ -379,10 +391,224 @@ LIBRARY DATA
 	
 </cfif>
 
-<cfoutput><br style="clear:both;" /></cfoutput>
+<cfoutput><br style="clear:both;" /><br style="clear:both;" /></cfoutput>
 
-<cfset RenderPickerHTML = RenderPicker() />
+
+
+	<!--- Create each of the the Linked Table Types as an object  --->
+	<cfloop list="#PrimaryPackage.stProps[url.primaryFieldname].metadata.ftJoin#" index="i">		
+		<cfset stJoinObjects[i] = createObject("component",application.types[i].typepath)>
+	</cfloop>
+
+	
+	
+	
+	
+	<!--- Add Form Tools Specific CSS --->
+	<cfset Request.InHead.FormsCSS = 1>
+	
+	
+	<cfset arguments.fieldname = "company" />
+	
+	<cfsavecontent variable="sPicker">
+		<cfoutput>
+		<div id="infoBox"></div>
+		<table border="1" style="width:100%">
+		<tr>
+			<td style="width:50%">
+				<h3>Selected <cfif URL.LibraryType EQ "UUID"><em>(only 1 permitted)</em></cfif></h3>
+				
+			<cfif URL.LibraryType EQ "array">
+				<ul id="sortableListTo" class="arrayDetailView" style="background-color:##F1F1F1;height:500px;overflow-y:auto;overflow-x:hidden;">
+			<cfelse>
+				<div id="sortableListTo" style="background-color:##F1F1F1;height:500px;overflow-y:auto;overflow-x:hidden;">
+			</cfif>	
+
+		</cfoutput>	
+			
+					<cfif URL.LibraryType EQ "array">
+						<cfloop from="1" to="#arrayLen(stPrimary[url.primaryFieldName])#" index="i">
+							
+							<cfset stCurrentArrayItem = stPrimary[url.primaryFieldName][i] />
+							
+							<cfset HTML = stJoinObjects[stCurrentArrayItem.typename].getView(objectid=stCurrentArrayItem.data, template="LibrarySelected", alternateHTML="") />
+							<cfif NOT len(trim(HTML))>
+								<cfset stTemp = stJoinObjects[stCurrentArrayItem.typename].getData(objectid=stCurrentArrayItem.data) />
+								<cfif structKeyExists(stTemp, "label") AND len(stTemp.label)>
+									<cfset HTML = stTemp.label />
+								<cfelse>
+									<cfset HTML = stTemp.objectid />
+								</cfif>
+							</cfif>		
+							<!------------------------------------------------------------------------
+							THE ID OF THE LIST ELEMENT MUST BE "FIELDNAME_OBJECTID" 
+							BECAUSE THE JAVASCRIPT STRIPS THE "FIELDNAME_" TO DETERMINE THE OBJECTID
+							 ------------------------------------------------------------------------->			
+							<cfoutput>
+							<li id="sortableListFrom_#stCurrentArrayItem.data#" class="sortableHandle">
+								<div class="arrayDetail">
+									<p>#HTML#</p>
+								</div>								
+							</li>
+							</cfoutput>
+						</cfloop>
+					<cfelse>
+						<cfif listLen(lBasketIDs)>
+							<cfset HTML = oData.getView(objectid=stPrimary[url.primaryFieldName], template="LibrarySelected", alternateHTML="") />
+							<cfif NOT len(trim(HTML))>
+								<cfset stTemp = oData.getData(objectid=stPrimary[url.primaryFieldName]) />
+								<cfif structKeyExists(stTemp, "label") AND len(stTemp.label)>
+									<cfset HTML = stTemp.label />
+								<cfelse>
+									<cfset HTML = stTemp.objectid />
+								</cfif>
+							</cfif>		
+							<!------------------------------------------------------------------------
+							THE ID OF THE LIST ELEMENT MUST BE "FIELDNAME_OBJECTID" 
+							BECAUSE THE JAVASCRIPT STRIPS THE "FIELDNAME_" TO DETERMINE THE OBJECTID
+							 ------------------------------------------------------------------------->			
+							<cfoutput>
+							<p>#HTML#</p>
+							</cfoutput>
+						</cfif>
+					</cfif>
+				
+			
+			<cfoutput>
+				
+			<cfif URL.LibraryType EQ "array">
+				</ul>
+			<cfelse>
+				</div>
+			</cfif>
+			
+			</td>
+			<td style="width:50%">
+				<h3>Drag To Select</h3>
+			</cfoutput>
+			
+				<ws:paginate PageLinksShown=5 RecordsPerPage=20 query="#qLibraryList#">		
+			
+			<cfoutput>
+				<ul id="sortableListFrom" class="arrayDetailView" style="border:1px solid ##F1F1F1;height:500px;overflow-y:auto;overflow-x:hidden;">
+			</cfoutput>
+				
+								
+					
+					<ws:paginateRecords r_stRecord="stObject">
+						<cfif isDefined("stObject.label") AND len(stObject.label)>
+							<cfset variables.alternateHTML = stObject.Label />
+						<cfelse>
+							<cfset variables.alternateHTML = stObject.ObjectID />
+						</cfif>					
+						<cfset HTML = oData.getView(objectid=stObject.ObjectID, template="LibrarySelected", alternateHTML=variables.alternateHTML) />
+								
+						<!------------------------------------------------------------------------
+						THE ID OF THE LIST ELEMENT MUST BE "FIELDNAME_OBJECTID" 
+						BECAUSE THE JAVASCRIPT STRIPS THE "FIELDNAME_" TO DETERMINE THE OBJECTID
+						 ------------------------------------------------------------------------->			
+						<cfoutput>
+							<cfif URL.LibraryType EQ "array">
+								<li id="sortableListFrom_#stObject.ObjectID#" class="sortableHandle">
+							<cfelse>
+								<li id="#stObject.ObjectID#" class="sortableHandle">
+							</cfif>
+								<div class="arrayDetail">
+									<p>#HTML#</p>
+								</div>								
+							</li>
+						</cfoutput>
+					</ws:paginateRecords>
+					
+					
+			<cfoutput>
+				</ul>
+			</cfoutput>
+				
+
+						
+			<cfoutput><p></cfoutput>
+				<ws:paginateScroll />
+			<cfoutput></p></cfoutput>
+			
+				</ws:paginate>	
+				
+		<cfoutput>			
+			</td>
+		</tr>
+		</table>
+		</cfoutput>
+		
+		
+		<cfset Request.InHead.ScriptaculousEffects = 1>
+		<cfoutput>
+		<script type="text/javascript">
+		 // <![CDATA[
+			Sortable.create("sortableListFrom",{
+				dropOnEmpty:true,
+				containment:["sortableListFrom","sortableListTo"],
+				constraint:false<!---,
+				onUpdate:function(element) {
+					alert('taking from');
+					//updateBasket('add',element);
+			             				
+				} --->
+			});
+			
+			<cfif URL.LibraryType EQ "array">
+				Sortable.create("sortableListTo",{
+					dropOnEmpty:true,
+					containment:["sortableListFrom","sortableListTo"],
+					constraint:false,
+					onUpdate:function(element) {
+						
+						opener.libraryCallback_#url.primaryFormFieldname#('sort',Sortable.sequence('sortableListTo'));
+						new Effect.Highlight('sortableListTo',{startcolor:'##FFECD9',duration: 2});
+				             				
+					}
+				});
+			<cfelse>
+				Droppables.add('sortableListTo', {
+				   onDrop: function(element) {
+				   		$('sortableListTo').innerHTML = $(element).innerHTML;
+				   		opener.libraryCallback_#url.primaryFormFieldname#('add',$(element).id);
+						new Effect.Highlight('sortableListTo',{startcolor:'##FFECD9',duration: 2});
+	
+				   }
+				});
+			</cfif>
+			
+
+		     
+	<!---		Droppables.add('sortableListTo', {
+			accept:'sortableListFrom',
+			hoverclass:'basket-active',
+			onDrop:function(element) {
+				alert('adding');
+				//updateBasket('add',element);
+			             				
+			}
+			}) --->
+			
+		 // ]]>
+		 </script>
+		</cfoutput>
+	</cfsavecontent>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+<!---<cfset RenderPickerHTML = RenderPicker() /> --->
 <cfset RenderAddNewHTML = RenderAddNew() />
+
 
 
 <cfoutput>
@@ -400,7 +626,8 @@ LIBRARY DATA
 		<a name="pane1-ref" style="display: none;" ></a>
 		<div id="pane1" style="display: block;">
 
-			#RenderPickerHTML#
+			<!---#RenderPickerHTML# --->
+			#sPicker#
 
 		</div>
 		<a name="pane2-ref" style="display: none;" ></a>
@@ -414,11 +641,14 @@ LIBRARY DATA
 </cfoutput>
 
 <cffunction name="RenderPicker" returntype="string" output="false">
-	
+
+		
 	<cfsavecontent variable="sReturn">
+
 	
 	<ft:form style="width:100%;background:none;border:0px;">
-		<cfoutput><table style="width:100%;background:##fa0;">
+		<cfoutput>
+		<table style="width:100%;background:##fa0;">
 		<tr>
 			<td width="100px;" valign="top">
 				<div id="utility">
@@ -426,10 +656,12 @@ LIBRARY DATA
 					
 					<style type="text/css">
 						.basket-active {background:##E17000;}
-					</style>	</cfoutput>	
+					</style>	
+		</cfoutput>	
 					
 					<ft:object ObjectID="#url.primaryObjectID#" wizzardid="#url.WizzardID#" lFields="#url.primaryFieldName#" InTable=0 IncludeLabel=0 IncludeFieldSet=0 r_stFields="stBasketFields" packageType="#URL.packageType#" />
-					<cfoutput>	
+		
+		<cfoutput>	
 					<div id="basket" style="border:1px solid ##E17000;height:800px;">
 						#stBasketFields[url.primaryFieldName].HTML#
 					</div>	
@@ -530,7 +762,7 @@ LIBRARY DATA
 </cffunction>
 
 
-
+<!---
 <cfoutput>
 		
 		<cfset Request.InHead.ScriptaculousEffects = 1>
@@ -632,7 +864,7 @@ LIBRARY DATA
 		//initTabNavigation('LibraryTab','current','tab-disabled');
 		
 		</script>
-</cfoutput>	
+</cfoutput>	 --->
 
 <admin:footer>
 

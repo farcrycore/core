@@ -417,53 +417,63 @@
 				AND isDefined("ftFieldMetadata.ftJoin")>
 				<!--- AND (structKeyExists(ftfieldmetadata, "ftrendertype") AND ftfieldmetadata.rendertype neq "list")> --->
 				<cfsavecontent variable="LibraryLink">
-					<cfloop list="#ftFieldMetadata.ftJoin#" index="i">
-						<cfset stURLParams = structNew()>
-						<cfset stURLParams.primaryObjectID = "#stObj.ObjectID#">
-						<cfset stURLParams.primaryTypename = "#typename#">
-						<cfset stURLParams.primaryFieldName = "#ftFieldMetadata.Name#">
-						<cfset stURLParams.primaryFormFieldName = "#variables.prefix##ftFieldMetadata.Name#">
-						<cfset stURLParams.ftJoin = "#i#">
-						<cfset stURLParams.LibraryType = "#ftFieldMetadata.Type#">
-						<cfset stURLParams.PackageType = "#attributes.PackageType#">
-						
-						<!--- If the field is contained in a wizzard, we need to let the library know which wizzard. --->
-						<cfif len(attributes.WizzardID)>
-							<cfset stURLParams.WizzardID = "#attributes.WizzardID#">
-						</cfif>
-						
-						<cfif structKeyExists(ftFieldMetadata,'ftLibraryAddNewWebskin')>
-							<cfset stURLParams.ftLibraryAddNewWebskin = "#ftFieldMetadata.ftLibraryAddNewWebskin#">
-						</cfif>
-						<cfif structKeyExists(ftFieldMetadata,'ftLibraryPickWebskin')>
-							<cfset stURLParams.ftLibraryPickWebskin = "#ftFieldMetadata.ftLibraryPickWebskin#">
-						</cfif>
-						<cfif structKeyExists(ftFieldMetadata,'ftLibraryPickListClass')>
-							<cfset stURLParams.ftLibraryPickListClass = "#ftFieldMetadata.ftLibraryPickListClass#">
-						</cfif>
-						<cfif structKeyExists(ftFieldMetadata,'ftLibraryPickListStyle')>
-							<cfset stURLParams.ftLibraryPickListStyle = "#ftFieldMetadata.ftLibraryPickListStyle#">
-						</cfif>
-						<cfif structKeyExists(ftFieldMetadata,'ftLibrarySelectedWebskin')>
-							<cfset stURLParams.ftLibrarySelectedWebskin = "#ftFieldMetadata.ftLibrarySelectedWebskin#">
-						</cfif>
-						<cfif structKeyExists(ftFieldMetadata,'ftLibrarySelectedListClass')>
-							<cfset stURLParams.ftLibrarySelectedListClass = "#ftFieldMetadata.ftLibrarySelectedListClass#">
-						</cfif>
-						<cfif structKeyExists(ftFieldMetadata,'ftLibrarySelectedListStyle')>
-							<cfset stURLParams.ftLibrarySelectedListStyle = "#ftFieldMetadata.ftLibrarySelectedListStyle#">
-						</cfif>
-						<cfif structKeyExists(ftFieldMetadata,'ftLibraryData')>
-							<cfset stURLParams.ftLibraryData = "#ftFieldMetadata.ftLibraryData#">
-						</cfif>
-			
-						
-						<!--- <cfdump var="#ftFieldMetadata#"> --->
-						<ws:buildLink href="#application.url.farcry#/facade/library.cfm" target="library" bShowTarget="true" stParameters="#stURLParams#"><cfoutput><img src="#application.url.farcry#/images/treeimages/crystalIcons/includeApproved.gif" /></cfoutput></ws:buildLink>
+
+					<cfset stURLParams = structNew()>
+					<cfset stURLParams.primaryObjectID = "#stObj.ObjectID#">
+					<cfset stURLParams.primaryTypename = "#typename#">
+					<cfset stURLParams.primaryFieldName = "#ftFieldMetadata.Name#">
+					<cfset stURLParams.primaryFormFieldName = "#variables.prefix##ftFieldMetadata.Name#">
+					<cfset stURLParams.LibraryType = "#ftFieldMetadata.Type#">
+					<cfset stURLParams.PackageType = "#attributes.PackageType#">
+					
+					<!--- If the field is contained in a wizzard, we need to let the library know which wizzard. --->
+					<cfif len(attributes.WizzardID)>
+						<cfset stURLParams.WizzardID = "#attributes.WizzardID#">
+					</cfif>
+					
+					<cfif structKeyExists(ftFieldMetadata,'ftLibraryAddNewWebskin')>
+						<cfset stURLParams.ftLibraryAddNewWebskin = "#ftFieldMetadata.ftLibraryAddNewWebskin#">
+					</cfif>
+					<cfif structKeyExists(ftFieldMetadata,'ftLibraryPickWebskin')>
+						<cfset stURLParams.ftLibraryPickWebskin = "#ftFieldMetadata.ftLibraryPickWebskin#">
+					</cfif>
+					<cfif structKeyExists(ftFieldMetadata,'ftLibraryPickListClass')>
+						<cfset stURLParams.ftLibraryPickListClass = "#ftFieldMetadata.ftLibraryPickListClass#">
+					</cfif>
+					<cfif structKeyExists(ftFieldMetadata,'ftLibraryPickListStyle')>
+						<cfset stURLParams.ftLibraryPickListStyle = "#ftFieldMetadata.ftLibraryPickListStyle#">
+					</cfif>
+					<cfif structKeyExists(ftFieldMetadata,'ftLibrarySelectedWebskin')>
+						<cfset stURLParams.ftLibrarySelectedWebskin = "#ftFieldMetadata.ftLibrarySelectedWebskin#">
+					</cfif>
+					<cfif structKeyExists(ftFieldMetadata,'ftLibrarySelectedListClass')>
+						<cfset stURLParams.ftLibrarySelectedListClass = "#ftFieldMetadata.ftLibrarySelectedListClass#">
+					</cfif>
+					<cfif structKeyExists(ftFieldMetadata,'ftLibrarySelectedListStyle')>
+						<cfset stURLParams.ftLibrarySelectedListStyle = "#ftFieldMetadata.ftLibrarySelectedListStyle#">
+					</cfif>
+					<cfif structKeyExists(ftFieldMetadata,'ftLibraryData')>
+						<cfset stURLParams.ftLibraryData = "#ftFieldMetadata.ftLibraryData#">
+					</cfif>
 							
+					<cfset request.inHead.libraryPopupJS = true />
+					
+					<ws:buildLink href="#application.url.farcry#/facade/library.cfm" stParameters="#stURLParams#" r_url="libraryPopupJS" />
+
+					<cfoutput>
+						<input type="button" name="libraryOpen" value="Open Library" class="formButton" onClick="openLibrary('#stObj.ObjectID#', $('#variables.prefix##ftFieldMetadata.Name#Join').value,'#libraryPopupJS#')" />
+
+						<cfif listLen(ftFieldMetadata.ftJoin) GT 1>
+							<select id="#variables.prefix##ftFieldMetadata.Name#Join" name="#variables.prefix##ftFieldMetadata.Name#Join" >
+								<cfloop list="#ftFieldMetadata.ftJoin#" index="i">
+									<option value="#i#">#application.types[i].displayname#</option>
+								</cfloop>
+							</select>
+						<cfelse>
+							<input type="hidden" id="#variables.prefix##ftFieldMetadata.Name#Join" name="#variables.prefix##ftFieldMetadata.Name#Join" value="#ftFieldMetadata.ftJoin#" >
+						</cfif>
+					</cfoutput>
 						
-						
-					</cfloop>
 					
 				</cfsavecontent>
 			<cfelse>
@@ -476,9 +486,6 @@
 				<cfoutput>
 					<label for="#variables.prefix##ftFieldMetadata.Name#" class="fieldsectionlabel #attributes.class# <cfif ftFieldMetadata.ftType EQ 'password'>passwordlabel</cfif>">
 					#ftFieldMetadata.ftlabel# :
-					<cfif len(LibraryLink)>
-						#LibraryLink#					
-					</cfif>
 					</label>
 				</cfoutput>
 				
@@ -525,7 +532,16 @@
 				</cfif>
 	
 				
-				<cfoutput><div class="fieldAlign">#variables.returnHTML#</div></cfoutput>
+				<cfoutput>
+					<div class="fieldAlign">					
+						
+						<cfif len(LibraryLink)>
+							#LibraryLink#					
+						</cfif>
+						
+						#variables.returnHTML#
+					</div>
+				</cfoutput>
 				
 				<cfif structKeyExists(ftFieldMetadata,"ftHint") and len(ftFieldMetadata.ftHint)>
 					<cfoutput><small>#ftFieldMetadata.ftHint#</small></cfoutput>

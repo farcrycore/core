@@ -114,8 +114,11 @@
 		</cfif>
 	</cfif>
 	
-	
-	<ft:object objectID="#arguments.PrimaryObjectID#" WizzardID="#arguments.WizzardID#" lFields="#arguments.PrimaryFieldName#" inTable=0 IncludeLabel=0 IncludeFieldSet=0 r_stFields="stFields" IncludeLibraryWrapper="false" packageType="#arguments.packageType#" />
+	<cfset stPropMetadata = structNew() />
+	<cfset stPropMetadata[arguments.PrimaryFieldName] = structNew() />
+	<cfset stPropMetadata[arguments.PrimaryFieldName].ftEditMethod = "libraryCallback" >
+
+	<ft:object objectID="#arguments.PrimaryObjectID#" WizzardID="#arguments.WizzardID#" lFields="#arguments.PrimaryFieldName#" stPropMetadata="#stPropMetadata#" inTable=0 IncludeLabel=0 IncludeFieldSet=0 r_stFields="stFields" IncludeLibraryWrapper="false" packageType="#arguments.packageType#" />
 		
 	<cfoutput>
 		#stFields[arguments.PrimaryFieldName].HTML#

@@ -212,23 +212,23 @@ input.validation-failed, textarea.validation-failed {border: 1px solid ##FF3300;
 	form.formtool div.array div.fieldAlign ul {margin: 0px 0px 5px 0px; padding: 0px;}
 
 	/* array component : detail view layout styles */
-	form.formtool div.array div.fieldAlign ul.arrayDetailView {width: auto; height: auto; display: block;}
-		form.formtool div.array div.fieldAlign ul.arrayDetailView li {margin: 0px; padding: 0px; height: 19px;}
-			form.formtool div.array div.fieldAlign ul.arrayDetailView li div.buttonGripper {margin: 0px; padding: 1px 0px 0px 0px; width: 7px; height: 17px; display: block; float: left;}
-				form.formtool div.array div.fieldAlign ul.arrayDetailView li div.buttonGripper p {margin: 0px; padding: 0px; width: 7px; height: 17px; display: block;}
-		 	form.formtool div.array div.fieldAlign ul.arrayDetailView li input.formCheckbox {margin: 4px 2px 0px 0px; padding: 0px; display: block; float: right; overflow: hidden;}
-			form.formtool div.array div.fieldAlign ul.arrayDetailView li div.arrayDetail {margin: 0px; padding: 0px 0px 0px 10px; display: block;}
-				form.formtool div.array div.fieldAlign ul.arrayDetailView li div.arrayDetail p {margin: 0px 0px 0px 4px; padding: 3px 0px 0px 18px; width: auto; height: 16px; display: block;}
-			form.formtool div.array div.fieldAlign ul.arrayDetailView li div.arrayThumbnail {margin: 0px; padding: 0px; display: none;}
+	ul.arrayDetailView {width: auto; height: auto; display: block;}
+		ul.arrayDetailView li {margin: 0px; padding: 0px; height: auto;}
+			ul.arrayDetailView li div.buttonGripper {margin: 0px; padding: 1px 0px 0px 0px; width: 7px; height: 17px; display: block; float: left;}
+				ul.arrayDetailView li div.buttonGripper p {margin: 0px; padding: 0px; width: 7px; height: 17px; display: block;}
+		 	ul.arrayDetailView li input.formCheckbox {margin: 4px 2px 0px 0px; padding: 0px; display: block; float: right; overflow: hidden;}
+			ul.arrayDetailView li div.arrayDetail {margin: 0px; padding: 0px 0px 0px 10px; display: block;}
+				ul.arrayDetailView li div.arrayDetail p {margin: 0px 0px 0px 4px; padding: 3px 0px 0px 18px; width: auto; height: auto; display: block;}
+			ul.arrayDetailView li div.arrayThumbnail {margin: 0px; padding: 0px; display: none;}
 
 	/* array component : thumbnail view layout styles */
-	form.formtool div.array div.fieldAlign ul.arrayThumbnailView {width: auto; height: 300px; display: block; overflow: auto;}
-		form.formtool div.array div.fieldAlign ul.arrayThumbnailView li {margin: 5px 0px 0px 5px; padding: 0px; width: 52px; height: 62px; display: block; float: left; overflow: hidden;}
-			form.formtool div.array div.fieldAlign ul.arrayThumbnailView li div.buttonGripper {margin: 0px; padding: 0px; width: 40px; height: 9px; display: block; float: left;}
-				form.formtool div.array div.fieldAlign ul.arrayThumbnailView li div.buttonGripper p {margin: 0px; padding: 0px; width: 40px; height: 9px; display: block;}
-			form.formtool div.array div.fieldAlign ul.arrayThumbnailView li input.formCheckbox {margin: 0px; padding: 0px; display: block; float: right; overflow: hidden;}
-			form.formtool div.array div.fieldAlign ul.arrayThumbnailView li div.arrayDetail {margin: 0px; padding: 0px; display: none;}
-			form.formtool div.array div.fieldAlign ul.arrayThumbnailView li div.arrayThumbnail {margin: 0px; padding: 0px;}
+	ul.arrayThumbnailView {width: auto; height: 300px; display: block; overflow: auto;}
+		ul.arrayThumbnailView li {margin: 5px 0px 0px 5px; padding: 0px; width: 52px; height: 62px; display: block; float: left; overflow: hidden;}
+			ul.arrayThumbnailView li div.buttonGripper {margin: 0px; padding: 0px; width: 40px; height: 9px; display: block; float: left;}
+				ul.arrayThumbnailView li div.buttonGripper p {margin: 0px; padding: 0px; width: 40px; height: 9px; display: block;}
+			ul.arrayThumbnailView li input.formCheckbox {margin: 0px; padding: 0px; display: block; float: right; overflow: hidden;}
+			ul.arrayThumbnailView li div.arrayDetail {margin: 0px; padding: 0px; display: none;}
+			ul.arrayThumbnailView li div.arrayThumbnail {margin: 0px; padding: 0px;}
 
 <!--- end css output --->
 </cfoutput>

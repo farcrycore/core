@@ -34,6 +34,7 @@ $in: xCode -- eXtra code to be placed inside the anchor tag $
 	<cfparam name="attributes.externallink" default="">
 	<cfparam name="attributes.class" default="">
 	<cfparam name="attributes.urlOnly" default="false">
+	<cfparam name="attributes.r_url" default="">
 	<cfparam name="attributes.xCode" default="">
 	<cfparam name="attributes.includeDomain" default="false">
 	<cfparam name="attributes.stParameters" default="#StructNew()#">
@@ -132,36 +133,6 @@ $in: xCode -- eXtra code to be placed inside the anchor tag $
 		</cfloop>
 		<cfset href = "javascript:win=window.open('#href#', '#attributes.Target#', '#jsParameters#'); win.focus();">
 		
-		<!--- Has the javascript already been added to this page? --->
-		<cfif NOT structKeyExists(request,"jsOpenWindowDefined")>
-			
-			<cfset request.jsOpenWindowDefined = 1>
-			
-			<cfsavecontent variable="jsOpenWindow">
-			<cfoutput>
-			<script type="text/javascript">
-			function OpenFarcryWindow(URL,Target,Width,Height,Parameters) {
-				
-				if ((Width == 0) && (Height == 0)){
-					if ((screen.Height >= 0) && (screen.Width >= 0))
-					{
-						var Width = screen.Width - 10;
-						var Height = screen.Height - 100;
-					}
-					else if ((screen.availHeight >= 0) && (screen.availWidth >= 0)) {
-						
-						var Width = screen.availWidth - 10;
-						var Height = screen.availHeight - 100;
-					}
-				}
-				
-			}		
-			</script>
-			</cfoutput>
-			</cfsavecontent>
-			
-			<cfhtmlhead text="#jsOpenWindow#">
-		</cfif>
 	</cfif>
 	
 	
@@ -169,7 +140,8 @@ $in: xCode -- eXtra code to be placed inside the anchor tag $
 	<cfif attributes.urlOnly EQ true>
 		<!--- display the URL only --->
 		<cfset tagoutput=href>
-
+	<cfelseif len(attributes.r_url)>
+		<cfset caller[attributes.r_url] = href />	
 	<cfelse>
 		<!--- display link --->
 		<cfset tagoutput='<a href="#href#"'>
@@ -188,16 +160,17 @@ $in: xCode -- eXtra code to be placed inside the anchor tag $
 <!--- thistag.ExecutionMode is END --->
 <cfelse>
 	<!--- Was only the URL requested? If so, we don't need to close any tags --->
-	<cfif attributes.urlOnly EQ false>
+	<cfif attributes.urlOnly EQ false and not len(attributes.r_url)>
 		<cfif len(attributes.linktext)>
 			<cfset tagoutput=tagoutput & trim(attributes.linktext) & '</a>'>
 		<cfelse>
 			<cfset tagoutput=tagoutput & trim(thistag.generatedcontent) & '</a>'>
 		</cfif>
-	</cfif>
+	
 
-	<!--- clean up whitespace --->
-	<cfset thistag.GeneratedContent=tagoutput>
+		<!--- clean up whitespace --->
+		<cfset thistag.GeneratedContent=tagoutput>
+	</cfif>
 </cfif>
 
 <cfsetting enablecfoutputonly="No">

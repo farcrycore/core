@@ -70,6 +70,9 @@ $out:$
 		
 		<cfparam name="Request.RequiredInHead.swfObjectJS" default = "0">
 		
+		<cfparam name="Request.RequiredInHead.libraryPopupJS" default = "0">
+
+		
 		
 		
 		<cfif isDefined("Request.InHead.PrototypeLite")>
@@ -202,6 +205,10 @@ $out:$
 		
 		<cfif isDefined("Request.InHead.swfObject") AND Request.InHead.swfObject>
 			<cfset Request.RequiredInHead.swfObjectJS = 1>
+		</cfif>
+		
+		<cfif isDefined("Request.InHead.libraryPopupJS") AND Request.InHead.libraryPopupJS>
+			<cfset Request.RequiredInHead.libraryPopupJS = 1>
 		</cfif>
 		
 		
@@ -345,10 +352,17 @@ $out:$
 		</cfif>
 
 
+		<cfif isDefined("Request.RequiredInHead.libraryPopupJS") AND Request.RequiredInHead.libraryPopupJS EQ "true">
+			<cfoutput>
+				<script language="JavaScript" type="text/javascript">
+				function openLibrary(objectid,ftJoin,url) {
+					win=window.open(url + '&ftJoin=' + ftJoin, objectid);
+					win.focus();
+				}
+				</script>
+			</cfoutput>
+		</cfif>
 
-
-		
-		
 		
 	</cfsavecontent>
 	
