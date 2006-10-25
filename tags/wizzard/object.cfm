@@ -121,12 +121,6 @@
 		<cfset ObjectID = stObj.objectID>
 	</cfif>
 
-	
-	<cfif isDefined("stObj") and not structIsEmpty(stObj)>
-		<cfset oType.setlock(stObj=stObj,locked="true",lockedby="")>
-	</cfif>
-	
-
 	<cfset lFieldsToRender =  "">
 	
 	<cfif not len(attributes.lFields)>
