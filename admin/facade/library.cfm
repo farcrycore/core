@@ -567,6 +567,11 @@ LIBRARY DATA
 				             				
 					}
 				});
+				
+				//call on initial page load
+				opener.libraryCallback_#url.primaryFormFieldname#('sort',Sortable.sequence('sortableListTo'));
+				
+				
 			<cfelse>
 				Droppables.add('sortableListTo', {
 				   onDrop: function(element) {
@@ -576,6 +581,9 @@ LIBRARY DATA
 	
 				   }
 				});
+				
+				//call on initial page load
+				opener.libraryCallback_#url.primaryFormFieldname#('sort',$(element).id);
 			</cfif>
 			
 
