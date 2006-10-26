@@ -547,12 +547,7 @@ LIBRARY DATA
 			Sortable.create("sortableListFrom",{
 				dropOnEmpty:true,
 				containment:["sortableListFrom","sortableListTo"],
-				constraint:false<!---,
-				onUpdate:function(element) {
-					alert('taking from');
-					//updateBasket('add',element);
-			             				
-				} --->
+				constraint:false
 			});
 			
 			<cfif URL.LibraryType EQ "array">
