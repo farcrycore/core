@@ -355,8 +355,8 @@ $out:$
 		<cfif isDefined("Request.RequiredInHead.libraryPopupJS") AND Request.RequiredInHead.libraryPopupJS EQ "true">
 			<cfoutput>
 				<script language="JavaScript" type="text/javascript">
-				function openLibrary(objectid,ftJoin,url) {
-					win=window.open(url + '&ftJoin=' + ftJoin, objectid);
+				function openLibrary(target,ftJoin,url) {
+					win=window.open(url + '&ftJoin=' + ftJoin, target);
 					win.focus();
 				}
 				</script>
