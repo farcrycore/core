@@ -20,6 +20,10 @@
 	<cfset var stReturn = structNew() />
 
 	<cfswitch expression="#variables.dbtype#">
+		<cfcase value="mssql">
+			<cfset streturn = createTableMSSQL(argumentcollection=arguments) />
+		</cfcase>
+
 		<cfcase value="postgresql">
 			<cfset streturn = createTablePostgresql(argumentcollection=arguments) />
 		</cfcase>

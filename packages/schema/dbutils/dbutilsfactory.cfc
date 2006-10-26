@@ -17,6 +17,18 @@
 			<cfset dbutils=createobject("component", "postgresql").init(arguments.dsn) />
 		</cfcase>
 		
+		<cfcase value="mssql">
+			<cfset dbutils=createobject("component", "mssql").init(arguments.dsn) />
+		</cfcase>
+
+		<cfcase value="mysql,mysql5">
+			<cfset dbutils=createobject("component", "mysql").init(arguments.dsn) />
+		</cfcase>
+
+		<cfcase value="ora">
+			<cfset dbutils=createobject("component", "oracle").init(arguments.dsn) />
+		</cfcase>
+
 		<cfdefaultcase>
 			<cfthrow detail="Not yet implemented for #arguments.dbtype#" />
 		</cfdefaultcase>

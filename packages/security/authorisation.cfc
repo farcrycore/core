@@ -102,7 +102,7 @@ $out:$
 	</cffunction>
 	
 	
-	<cffunction name="createPermissionBarnacle" hint="Creates a permission for a daemon security user context.Only unique permissions will be accepted." output="No">
+	<cffunction name="createPermissionBarnacle" hint="Creates a permission for a daemon security user context.Only unique permissions will be accepted." output="true" returntype="void">
 		<cfargument name="reference" required="true">
 		<cfargument name="status" required="true">
 		<cfargument name="policygroupID">
@@ -110,15 +110,21 @@ $out:$
 		<cfargument name="permissionName" required="false">
 		<cfargument name="permissionType" required="false">
 		
+		<cfset var thePermissionID="" />
+		<cfset var stPermission=structNew() />
+		
+		<cfif (not isDefined('arguments.permissionID') AND isDefined("arguments.PermissionName") AND isDefined("arguments.PermissionType"))>
+			<cfset stPermission = getPermission(permissionName=arguments.permissionName,permissionType=arguments.permissionType) />
+			<cfif structkeyexists(stpermission, "permissionid")>
+				<cfset thePermissionID = stPermission.permissionID />
+			<cfelse>
+				<cfthrow type="security.authorisation" message="createPermissionBarnacle failed." detail="createPermissionBarnacle failed: no permissionid could be found." />
+			</cfif>
+		<cfelse>
+			<cfset thePermissionID = arguments.permissionid />
+		</cfif>
+		
 		<cfscript>
-			if(not isDefined('arguments.permissionID') AND isDefined("arguments.PermissionName") AND isDefined("arguments.PermissionType"))
-			{
-				stPermission = getPermission(permissionName=arguments.permissionName,permissionType=arguments.permissionType);
-				thePermissionID = stPermission.permissionID;
-			}	
-			else {
-				thePermissionID = arguments.permissionid;
-			}
 			if (isDefined("arguments.PolicyGroupName") AND not isDefined('arguments.policygroupid'))
 			{
 				stPolicyGroup = getPolicyGroup(PolicyGroupName=arguments.PolicyGroupName);
@@ -548,7 +554,7 @@ $out:$
 		</cfscript>
 	</cffunction>
 	
-	<cffunction name="deletePolicyGroupMapping" returntype="struct" output="No">
+	<cffunction name="deletePolicyGroupMapping" returntype="struct" output="false">
 		<cfargument name="groupname" required="true">
 		<cfargument name="userdirectory" required="true">
 		<cfargument name="policyGroupID" required="true">
@@ -580,29 +586,33 @@ $out:$
 	</cffunction>
 	
 	
-	<cffunction name="getPermission" access="public" output="No">
+	<cffunction name="getPermission" access="public" output="false" returntype="struct">
 		<cfargument name="permissionID" required="false">
 		<cfargument name="permissionName" type="string">
 		<cfargument name="permissionType" type="string" required="false">
 		
-		<cfscript>
-			stPolicyStore = getPolicyStore();
-			sql = "SELECT * FROM #application.dbowner##stPolicyStore.permissionTable# WHERE ";
-			if (isDefined("arguments.permissionName") AND isDefined("arguments.permissionType"))
-				sql = sql & "upper(permissionName) = '#ucase(arguments.permissionName)#' AND upper(permissiontype) = '#ucase(arguments.permissionType)#'";
-			else
-				sql = sql & "permissionid = '#arguments.permissionID#'";
-			q = query(sql=sql,dsn=stPolicyStore.datasource);
-			if(q.recordCount)
-				stPermission = queryToStructure(q); 	
-			else
-				stPermission = structNew();	
-			
-		</cfscript>
+		<cfset var stPolicyStore = getPolicyStore() />
+		<cfset var q=queryNew("blah") />
+		<cfset var stPermission=structNew() />
 		
-		<cfreturn stPermission>
+		<cfquery datasource="#stPolicyStore.datasource#" name="q">
+		SELECT * 
+		FROM #application.dbowner##stPolicyStore.permissionTable# 
+		WHERE 
+			<cfif (isDefined("arguments.permissionName") AND isDefined("arguments.permissionType"))>
+				upper(permissionName) = '#ucase(arguments.permissionName)#' AND upper(permissiontype) = '#ucase(arguments.permissionType)#'
+			<cfelse>
+				permissionid = '#arguments.permissionID#'
+			</cfif>
+		</cfquery>
+
+		<cfif q.recordCount>
+			<cfset stPermission = queryToStructure(q) />
+		</cfif>		
+		
+		<cfreturn stPermission />
 	</cffunction>	
-	
+
 	<cffunction name="getPolicyGroupMappings" output="yes">
 		<cfargument name="lGroupNames" required="true">
 		<cfargument name="userDirectory" required="true">

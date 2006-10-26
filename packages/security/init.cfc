@@ -97,7 +97,7 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
 		</cftry>
 	</cffunction>
 	
-	<cffunction name="initPermissionsDatabase">
+	<cffunction name="initPermissionsDatabase" hint="Initialise permissions table with a file import." output="false" returntype="void">
 		<cfargument name="datasource" required="true">
 		<cfargument name="bClearTable" required="false" default="false">
 		<cfargument name="core" required="true">
@@ -105,24 +105,28 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
 		<cfargument name="securitypackagepath" required="false" default="#application.securitypackagepath#">
 		<cfargument name="permissionsimport" default="" type="string" />
 
+		<cfset var qPermissionsWDDX="" />
+		<cfset var oAuthorisation="" />
+		<cfset var qPermissions="" />
+		<cfset var stObj = structNew() />
+
 		<!--- if permissionsimport not available, resort to legacy location --->
 		<cfif NOT len(arguments.permissionsimport)>
 			<cfset arguments.permissionsimport="#arguments.project#/www/install/dmSec_files/permissions.wddx" />
 		</cfif>
 		
 		<cfif arguments.bClearTable>
-		    <cfquery name="qDelete" datasource="#arguments.datasource#">DELETE FROM #application.dbowner#dmPermission</cfquery>
+		    <cfquery datasource="#arguments.datasource#">
+			    DELETE FROM #application.dbowner#dmPermission
+			</cfquery>
 		</cfif>
 
 		<cfswitch expression="#application.dbtype#">
-		<cfcase value="odbc">
-			<cftry>
-			<cfquery name="sIdentity" datasource="#arguments.datasource#">
-			SET Identity_Insert dmPermission ON</cfquery>
-			<cfcatch type="Database">
-			</cfcatch>
-			</cftry>
-		</cfcase>
+			<cfcase value="odbc,mssql">
+				<cfquery datasource="#arguments.datasource#">
+				SET Identity_Insert dmPermission ON
+				</cfquery>
+			</cfcase>
 		</cfswitch>
 		
 		<cfif fileexists(arguments.permissionsimport)>
@@ -130,32 +134,27 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
 		<cfelse>
 			<cfthrow type="security.init" message="File not found" detail="#arguments.permissionsimport# does not exist." />		
 		</cfif>
-		<cfwddx action="WDDX2CFML" input="#qPermissionsWDDX#" output="qPermissions">
-		<cfscript>
-			oAuthorisation=createObject("component","#arguments.securitypackagepath#.authorisation");
-		</cfscript>
+		
+		<cfwddx action="WDDX2CFML" input="#qPermissionsWDDX#" output="qPermissions" />
+		<cfset oAuthorisation=createObject("component","#arguments.securitypackagepath#.authorisation") />
 
 		<cfloop query="qPermissions">
-			
-				<cfscript>
-				stObj = structNew();
-				stObj.PermissionID = qPermissions.PermissionID;
-				stObj.PermissionName = qPermissions.PermissionName;
-				stObj.PermissionNotes = qPermissions.PermissionNotes;
-				stObj.PermissionType = qPermissions.PermissionType;
-				oAuthorisation.createPermission(PermissionID = qPermissions.PermissionID,PermissionName = qPermissions.PermissionName,PermissionNotes = qPermissions.PermissionNotes,PermissionType = qPermissions.PermissionType);
-				</cfscript>
+			<cfscript>
+			stObj = structNew();
+			stObj.PermissionID = qPermissions.PermissionID;
+			stObj.PermissionName = qPermissions.PermissionName;
+			stObj.PermissionNotes = qPermissions.PermissionNotes;
+			stObj.PermissionType = qPermissions.PermissionType;
+			oAuthorisation.createPermission(PermissionID = qPermissions.PermissionID,PermissionName = qPermissions.PermissionName,PermissionNotes = qPermissions.PermissionNotes,PermissionType = qPermissions.PermissionType);
+			</cfscript>
 		</cfloop>
-			
 		
 		<cfswitch expression="#application.dbtype#">
-		<cfcase value="odbc">	
-			<cftry>
-			<cfquery name="sIdentity" datasource="#arguments.datasource#">SET Identity_Insert dmPermission OFF</cfquery>
-			<cfcatch type="Database">
-			</cfcatch>
-			</cftry>
-		</cfcase>
+			<cfcase value="odbc,mssql">	
+				<cfquery datasource="#arguments.datasource#">
+					SET Identity_Insert dmPermission OFF
+				</cfquery>
+			</cfcase>
 		</cfswitch>	
 			
 	</cffunction>
