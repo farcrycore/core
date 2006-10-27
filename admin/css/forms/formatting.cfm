@@ -90,6 +90,7 @@ form.formtool ##wizard-content select option {font-size:inherit; line-height:inh
 
 /* formtool html button formatting styles */
 	/* formtool default html button formatting styles */
+	form.formtool div.buttonStandard a {font-size: 80%;}
 	form.formtool div.buttonStandard a {color: ##30326F; background-color: inherit; text-decoration: none;}
 
 	/* array component : detail view formatting styles */

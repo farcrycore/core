@@ -97,10 +97,6 @@ form div input.inputCheckbox, form div input.inputRadio, input.inputCheckbox, in
 form div input.inputSubmit, form div input.inputButton, input.inputSubmit, input.inputButton {background-color: ##cccccc; color: inherit;}
 form input, form select, form textarea {background-color: #hexWhite#;}
 
-/* temp hack to clean up buttons: GB 20060914 */
-input.formButton {width: 70px;}
-textarea.richtext {width: 600px;}
-
 form.formtool ##wizard-content table, form.formtool ##wizard-content table tr, form.formtool ##wizard-content table tr td, form.formtool ##wizard-content table th {border: none;}
 <!--- form.formtool select {border: 1px solid #hexPrimaryLighter#;} --->
 
