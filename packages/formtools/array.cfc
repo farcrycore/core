@@ -1,6 +1,7 @@
 <cfcomponent extends="field" name="array" displayname="array" hint="Used to liase with Array type fields"> 
 
 	<!---<cfimport taglib="/farcry/farcry_core/tags/webskin/" prefix="ws" > --->
+	<cfimport taglib="/farcry/farcry_core/tags/formtools/" prefix="ft" >
 
 		
 	<cffunction name="init" access="public" returntype="farcry.farcry_core.packages.formtools.array" output="false" hint="Returns a copy of this initialised object">
@@ -185,10 +186,9 @@
 							</ul>
 						</div>
 						<div class="buttonGroup">
-							<div class="buttonStandard"><a href="##" onclick="toggleOn#arguments.fieldname#();return false;">Select All</a></div>
-							<div class="buttonStandard"><a href="##" onclick="toggleOff#arguments.fieldname#();return false;">Deselect All</a></div>
-							<div class="buttonStandard"><a href="##" onclick="if(!confirm('Are you sure you want to delete the selected item(s)')) {return false};deleteSelected#arguments.fieldname#();return false;">Remove Selected</a></div>
-							<br class="clearer" />
+							<ft:farcryButton type="button" value="Select All" onclick="toggleOn#arguments.fieldname#();return false;" / >
+							<ft:farcryButton type="button" value="De-select All" onclick="toggleOff#arguments.fieldname#();return false;" / >
+							<ft:farcryButton type="button" value="Remove Selected" onclick="deleteSelected#arguments.fieldname#();return false;" confirmText="Are you sure you want to remove the selected item(s)" / >
 						</div>
 
 						<br class="clearer" />

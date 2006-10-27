@@ -1,5 +1,6 @@
 <cfcomponent extends="field" name="UUID" displayname="UUID" hint="Used to liase with UUID type fields"> 
 
+	<cfimport taglib="/farcry/farcry_core/tags/formtools/" prefix="ft" >
 	
 	<cffunction name="init" access="public" returntype="farcry.farcry_core.packages.formtools.UUID" output="false" hint="Returns a copy of this initialised object">
 		<cfreturn this>
@@ -123,8 +124,7 @@
 							</ul>
 						</div>
 						<div class="buttonGroup">
-							<div class="buttonStandard"><a href="##" onclick="if(!confirm('Are you sure you want to delete the selected item')) {return false};deleteSelected#arguments.fieldname#();return false;">Remove Selected</a></div>
-							<br class="clearer" />
+							<ft:farcryButton type="button" value="Remove Selected" onclick="deleteSelected#arguments.fieldname#();return false;" confirmText="Are you sure you want to remove the selected item" / >						
 						</div>
 
 						<br class="clearer" />
