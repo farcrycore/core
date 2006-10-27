@@ -290,7 +290,7 @@ $Developer: $
 <ft:processForm action="*" excludeAction="Search" url="#cgi.script_name#?#querystring#&ftJoin=#request.ftJoin#" />
 
 
-<admin:Header Title="Library" bodyclass="popup imagebrowse library" onload="setupPanes('container1','tab1');">
+<admin:Header Title="Library" bodyclass="popup imagebrowse library" onload="setupPanes('container1','tab1');" bCacheControl="false">
 
 
 
