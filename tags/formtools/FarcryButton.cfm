@@ -34,7 +34,7 @@
 	
 	<cfset attributes.onClick = "#attributes.onClick#;$('FarcryFormSubmitButtonClicked#Request.farcryForm.Name#').value = '#attributes.Value#';">
 
-	<cfoutput><input type="#attributes.Type#" name="FarcryFormSubmitButton" value="#attributes.Value#" onclick="#attributes.Onclick#" class="formButton #attributes.Class#" style="#attributes.Style#;width:auto;" /></cfoutput>
+	<cfoutput><input type="#attributes.Type#" name="FarcryFormSubmitButton" value="#attributes.Value#" onclick="#attributes.Onclick#" class="formButton #attributes.Class#" style="#attributes.Style#" /></cfoutput>
 </cfif>
 
 <cfif thistag.ExecutionMode EQ "End">
