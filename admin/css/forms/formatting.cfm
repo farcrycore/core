@@ -47,7 +47,7 @@ this stylesheet defines the following page elements:
 /* form formatting styles */
 
 /* start legacy formtool css  */
-form.formtool {font-size: 80%;}
+form.formtool {font-size: 100%;}
 form.formtool fieldset {font-size: 100%;}
 form.formtool fieldset legend {font-size: 150%; font-weight: normal; color: #hexPrimaryDark#;}
 
