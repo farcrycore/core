@@ -61,6 +61,7 @@
 				</select>
 			<cfelse>
 				No Display Methods Defined
+				<input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value="" />
 			</cfif>
 			
 			</cfoutput>
