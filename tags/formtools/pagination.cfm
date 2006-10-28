@@ -18,7 +18,7 @@ $Description:  -- This is a subtag that will add the links to enable the user to
 <cf_pagination 
 		totalRecords = "100"
 		currentPage="2"
-		pagesLink="8"
+		pageLinks="8"
 		recordsPerPage="10" />
 
 || DEVELOPER ||
@@ -28,26 +28,64 @@ $Developer: Matthew Bryant (mat@bcreative.com.au)$
 $in:  $
 --->
 
+
+
+<cfimport taglib="/farcry/farcry_core/tags/formtools/" prefix="ft" >
+
+
 <cfif thistag.executionMode eq "Start">
+
+	<!--- optional attributes --->
 	<cfparam name="attributes.Step" default="1" type="numeric">
-	
 	<cfparam name="attributes.Top" default="true">
 	<cfparam name="attributes.Bottom" default="true">
-	<cfparam name="attributes.htmlFirst" default="first page">
-	<cfparam name="attributes.htmlPrevious" default="prev page">
-	<cfparam name="attributes.htmlNext" default="next page">
-	<cfparam name="attributes.htmlLast" default="last page">
-	
-	
+	<cfparam name="attributes.htmlFirst" default="&laquo;">
+	<cfparam name="attributes.htmlPrevious" default="&lt;">
+	<cfparam name="attributes.htmlNext" default="&gt;">
+	<cfparam name="attributes.htmlLast" default="&raquo;">
+	<cfparam name="attributes.bShowResultTotal" default="true" type="boolean" />
+	<cfparam name="attributes.bShowPageDropdown" default="true" type="boolean" />
+	<cfparam name="attributes.paginationID" default="" />	
+	<cfparam name="attributes.CurrentPage" default="0" />
 	<cfparam name="attributes.maxPages" default="0" type="numeric">
-	
 	<cfparam name="attributes.totalRecords" default="0" type="numeric">
-	<cfparam name="attributes.currentPage" default="1" type="numeric">
-	<cfparam name="attributes.pagesLink" default="0" type="numeric">
+	<cfparam name="attributes.pageLinks" default="0" type="numeric">
 	<cfparam name="attributes.recordsPerPage" default="1" type="numeric">
-
-	<cfinclude template="/farcry/farcry_core/admin/includes/utilityFunctions.cfm" >
+	<cfparam name="attributes.submissionType" default="url" type="string">
 	
+	<cfif not isDefined("attributes.qRecordSet") or not isQuery(attributes.qRecordSet)>
+		<cfabort showerror="you must pass a recordset into pagination." />
+	</cfif>
+	<cfif not isDefined("attributes.typename") or not len(attributes.typename)>
+		<cfabort showerror="you must pass a typename into pagination." />
+	</cfif>
+
+	<!--- import function libraries --->
+	<cfinclude template="/farcry/farcry_core/admin/includes/utilityFunctions.cfm" >
+	<cfset oFormtoolUtil = createObject("component", "farcry.farcry_core.packages.farcry.formtools") />
+	
+	<cfset attributes.currentPage = oFormtoolUtil.getCurrentPaginationPage(paginationID=attributes.paginationID, currentPage=attributes.currentPage) />
+
+	<cfif attributes.totalRecords LTE 0 or NOT isnumeric(attributes.totalRecords)>
+		<!--- This means that we have passed in an entire recordset and not just the page of relevent data --->
+		<cfset attributes.totalRecords = attributes.qRecordSet.recordCount />
+		<cfset attributes.startRow = attributes.currentPage * attributes.recordsPerPage - attributes.recordsPerPage + 1 />
+		<cfif attributes.StartRow GT attributes.totalRecords>
+			<cfset attributes.startRow = 1 />
+		</cfif>
+		
+		<cfset attributes.endRow = attributes.currentPage * attributes.recordsPerPage />
+		<cfif attributes.endRow GT attributes.qRecordSet.recordcount>
+			<cfset attributes.endRow = attributes.qRecordSet.recordcount />
+		</cfif>
+			
+	<cfelse>
+		<cfset attributes.startRow = 1 />
+		<cfset attributes.endRow = attributes.recordsPerPage />
+		<cfif attributes.endRow GT attributes.qRecordSet.recordcount>
+			<cfset attributes.endRow = attributes.qRecordSet.recordcount />
+		</cfif>
+	</cfif>
 	
 	<cfscript>
 		bShowPaginate = true;
@@ -62,15 +100,15 @@ $in:  $
 				pTotalPages = pTotalPages + 1;
 			}
 						
-			pFirstPage = attributes.currentPage - round((attributes.pagesLink - 1)/2) ;
+			pFirstPage = attributes.currentPage - round((attributes.pageLinks - 1)/2) ;
 			if(pFirstPage LT 1){
 				pFirstPage = 1;
 			}
 			
-			pLastPage = pFirstPage + attributes.pagesLink - 1;
+			pLastPage = pFirstPage + attributes.pageLinks - 1;
 			
 			if(pLastPage GT pTotalPages){
-					pFirstPage = pTotalPages - attributes.pagesLink - 1;
+					pFirstPage = pTotalPages - attributes.pageLinks - 1;
 					pLastPage = pTotalPages;
 			}
 			
@@ -82,236 +120,162 @@ $in:  $
 				bShowDropDown = false;
 			}
 			
-			if(len(attributes.step) GT 0){
-				if(pTotalPages GTE (attributes.recordsPerPage * attributes.pagesLink)){attributes.step = attributes.pagesLink;}
+			if(len(attributes.step)){
+				if(pTotalPages GTE (attributes.recordsPerPage * attributes.pageLinks)){attributes.step = attributes.pageLinks;}
 				else attributes.step = 1;
 			}
-			
-			
 			
 		}
 	</cfscript>
 	
-
-	
+		
+	<cfoutput>
+	<div class="ruleContentVanilla">
+		<div class="ruleListPagination">
+	</cfoutput>
+					
 	<cfif attributes.Top and bShowPaginate>
-		<cfoutput>#DisplayPaginationScroll()#</cfoutput>
+		<cfoutput>#DisplayPaginationScroll(bShowResultTotal="#attributes.bShowResultTotal#",bShowPageDropdown="#attributes.bShowPageDropdown#")#</cfoutput>
 	</cfif>
 
-	<cfif not bShowPaginate>
+	<cfif not bShowPaginate AND attributes.bShowResultTotal>
 		<cfif attributes.totalRecords GT 0>
-			<cfoutput><h4>Displaying 1-#attributes.totalRecords# of #attributes.totalRecords# results</h4></cfoutput>
+			<cfoutput><div class="pageDetails"><h2>Displaying <strong>1-#attributes.totalRecords#</strong> of <strong>#attributes.totalRecords#</strong> results</h2></div></cfoutput>
 		<cfelse>
-			<cfoutput><h4><strong>0</strong> records found.</h4></cfoutput>			
-		</cfif>
-		
-
+			<cfoutput><div class="pageDetails"><h2><strong>0</strong> records found.</h2></div></cfoutput>			
+		</cfif>	
 	</cfif> 
+	
+	<cfoutput>	
+	</div>
+		</div>
+	<br class="clearer" />
+	</cfoutput>
+	
+	
+
+		
 	
 </cfif>
 
 <cfif thistag.executionMode eq "End">
+
+	<cfoutput>
+	<div class="ruleContentVanilla">
+		<div class="ruleListPagination">
+	</cfoutput>
+					
 	<cfif attributes.Bottom and bShowPaginate>
-		<cfoutput>#DisplayPaginationScroll()#</cfoutput>
+		<cfoutput>#DisplayPaginationScroll(bShowResultTotal="#attributes.bShowResultTotal#",bShowPageDropdown="#attributes.bShowPageDropdown#")#</cfoutput>
 	</cfif>
+
+	<cfif not bShowPaginate AND attributes.bShowResultTotal>
+		<cfif attributes.totalRecords GT 0>
+			<cfoutput><div class="pageDetails"><h2>Displaying <strong>1-#attributes.totalRecords#</strong> of <strong>#attributes.totalRecords#</strong> results</h2></div></cfoutput>
+		<cfelse>
+			<cfoutput><div class="pageDetails"><h2><strong>0</strong> records found.</h2></div></cfoutput>			
+		</cfif>	
+	</cfif> 
+	
+	<cfoutput>	
+		</div>
+	</div>
+	<br class="clearer" />
+	</cfoutput>
 </cfif>
 
-
-
-<cffunction name="DisplayPaginationScroll" access="private" output="true" returntype="string">
+<!--- user defined function, for generating pagination scroll --->
+<cffunction name="displayPaginationScroll" access="private" output="false" returntype="string">
+	
+	<cfparam name="arguments.bShowResultTotal" default="true" type="boolean" />
+	<cfparam name="arguments.bShowPageDropdown" default="true" type="boolean" />
+	
 	<cfscript>
 		stURL = Duplicate(url);
 		stURL = filterStructure(stURL,'Page');
 		queryString=structToNamePairs(stURL);
 	</cfscript>
-		<cfsavecontent variable="cssPagi">
-<style type="text/css">
-	
-   .pagination {border-top: 1px solid ##AEBAD0;color:##666;padding: 8px 0;float:left;width:100%} 
+		
+	<cfset fromRecord = attributes.currentPage * attributes.recordsPerPage - attributes.recordsPerPage + 1 />
+	<cfset toRecord = attributes.currentPage * attributes.recordsPerPage />
+	<cfif toRecord GT attributes.totalRecords>
+		<cfset toRecord = attributes.totalRecords />
+	</cfif>
 
-   .pagination p {float:right;width:auto;margin:0} 
-
-   .pagination p a:link, .pagination p a:visited, .pagination p a:hover, .pagination p a:active {text-decoration:none;background:##fff;padding:0 3px;float:left;display:block;border: 1px solid ##ccc;margin-left: 3px;font-weight:bold} 
-
-   .pagination p a:hover {background:##0C4CCD;color:##fff} 
-
-   .pagination p span {text-decoration:none;background:##fff;padding:0 3px;border: 1px solid ##ccc;color:##ccc;display:block;float:left;margin-left: 3px} 
-	
-   .pagination p a:link, .pagination p a:visited, .pagination p a:hover, .pagination p a:active 
-{
-    text-decoration: none;
-    background-color: rgb(255, 255, 255);
-    background-image: none;
-    background-repeat: repeat;
-    background-attachment: scroll;
-    -x-background-x-position: 0%;
-    -x-background-y-position: 0%;
-    -moz-background-clip: -moz-initial;
-    -moz-background-origin: -moz-initial;
-    -moz-background-inline-policy: -moz-initial;
-    padding-top: 0pt;
-    padding-right-value: 3px;
-    padding-bottom: 0pt;
-    padding-left-value: 3px;
-    padding-left-ltr-source: physical;
-    padding-left-rtl-source: physical;
-    padding-right-ltr-source: physical;
-    padding-right-rtl-source: physical;
-    float: left;
-    display: block;
-    border-top-width: 1px;
-    border-right-width: 1px;
-    border-bottom-width: 1px;
-    border-left-width: 1px;
-    border-top-style: solid;
-    border-right-style: solid;
-    border-bottom-style: solid;
-    border-left-style: solid;
-    border-top-color: rgb(204, 204, 204);
-    border-right-color: rgb(204, 204, 204);
-    border-bottom-color: rgb(204, 204, 204);
-    border-left-color: rgb(204, 204, 204);
-    margin-left-value: 3px;
-    margin-left-ltr-source: physical;
-    margin-left-rtl-source: physical;
-    font-weight: bold;
-}
-
-.pagination p a:link, .pagination p a:visited, .pagination p a:hover, .pagination p a:active  
-{
-    text-decoration: none;
-    background-color: rgb(255, 255, 255);
-    background-image: none;
-    background-repeat: repeat;
-    background-attachment: scroll;
-    -x-background-x-position: 0%;
-    -x-background-y-position: 0%;
-    -moz-background-clip: -moz-initial;
-    -moz-background-origin: -moz-initial;
-    -moz-background-inline-policy: -moz-initial;
-    padding-top: 0pt;
-    padding-right-value: 3px;
-    padding-bottom: 0pt;
-    padding-left-value: 3px;
-    padding-left-ltr-source: physical;
-    padding-left-rtl-source: physical;
-    padding-right-ltr-source: physical;
-    padding-right-rtl-source: physical;
-    float: left;
-    display: block;
-    border-top-width: 1px;
-    border-right-width: 1px;
-    border-bottom-width: 1px;
-    border-left-width: 1px;
-    border-top-style: solid;
-    border-right-style: solid;
-    border-bottom-style: solid;
-    border-left-style: solid;
-    border-top-color: rgb(204, 204, 204);
-    border-right-color: rgb(204, 204, 204);
-    border-bottom-color: rgb(204, 204, 204);
-    border-left-color: rgb(204, 204, 204);
-    margin-left-value: 3px;
-    margin-left-ltr-source: physical;
-    margin-left-rtl-source: physical;
-    font-weight: bold;
-}
-
-.pagination p a:hover
-{
-    background-color: rgb(12, 76, 205);
-    background-image: none;
-    background-repeat: repeat;
-    background-attachment: scroll;
-    -x-background-x-position: 0%;
-    -x-background-y-position: 0%;
-    -moz-background-clip: -moz-initial;
-    -moz-background-origin: -moz-initial;
-    -moz-background-inline-policy: -moz-initial;
-    color: rgb(255, 255, 255);
-}
-</style>
-</cfsavecontent>
-<cfhtmlhead text="#cssPagi#">
-	
-	
-		<cfset fromRecord = attributes.currentPage * attributes.recordsPerPage - attributes.recordsPerPage + 1 />
-		<cfset toRecord = attributes.currentPage * attributes.recordsPerPage />
-		<cfif toRecord GT attributes.totalRecords>
-			<cfset toRecord = attributes.totalRecords />
-		</cfif>
-
-			<cfoutput><h4>Displaying #fromRecord#-#toRecord# of #attributes.totalRecords# results</h4> Page</cfoutput>
+	<cfif pTotalPages GT 1>
+		<cfif not isDefined("request.paginationpageInputFieldRendered")>
+			<cfset request.inhead.prototypelite = 1>
 			
-			<cfif pTotalPages GT 1 and bShowDropDown>
+			<cfsavecontent variable="jsPagination">
+								
 				<cfoutput>
-					<select name="page" onchange="javascript:window.location = '#cgi.SCRIPT_NAME#?#queryString#&page=' + this.value;"></cfoutput>
-					<cfif attributes.step GT 1><cfoutput><option value="1"><cfif attributes.currentPage EQ 1><1><cfelse>1</cfif></option></cfoutput></cfif>
-					
-					
-					<cfif attributes.step GT 1 AND 1 LT attributes.currentPage AND (1 + attributes.step) GT attributes.currentPage>
-						<cfoutput><option value="" selected><#attributes.currentPage#></option></cfoutput>
+				<script type="text/javascript">
+				function paginationSubmission (page) {
+					<cfif attributes.submissionType EQ "form">
+						$('paginationpage').value=page;
+						$('#Request.farcryForm.Name#').submit();
+					<cfelse>
+						window.location = '#cgi.SCRIPT_NAME#?#queryString#&page=' + page;
 					</cfif>
-					
-										
-					<cfloop from="#attributes.step#" to="#pTotalPages#" index="i" step="#attributes.step#">
-						<cfoutput><option value="#i#"<cfif attributes.currentPage EQ i> selected</cfif>><cfif attributes.currentPage EQ i><#i#><cfelse>#i#</cfif></option></cfoutput>
-						
-						<cfif attributes.step GT 1 AND i LT attributes.currentPage AND (i + attributes.step) GT attributes.currentPage>
-							<cfoutput><option value="" selected><#attributes.currentPage#></option></cfoutput>
-						</cfif>
-					
-					</cfloop>
-				<cfoutput></select></cfoutput>
-			<cfelse>
-				<cfoutput><strong>#attributes.currentPage#</strong></cfoutput>
-			</cfif>
+				}
+				</script>
+				</cfoutput>
+			</cfsavecontent>
 			
-			<cfoutput>of <strong>#pTotalPages#</strong></cfoutput> 
-				
-
-			<cfset paginationHTML = '<div class="pagination"><p>'>			
-			<cfif attributes.currentPage EQ 1>
-				<cfif pTotalPages GT attributes.pagesLink>
-			   		<cfset paginationHTML = paginationHTML & '<span>' & attributes.htmlFirst &'</span>'>
-				</cfif>
-				<cfset paginationHTML = paginationHTML & '<span>' & attributes.htmlPrevious &'</span>'>
-			<cfelse>
-				<cfif pTotalPages GT attributes.pagesLink>
-					<cfset paginationHTML = paginationHTML & '<a href="#cgi.SCRIPT_NAME#?#queryString#&page=1">' & attributes.htmlFirst &'</a>'>
-			   	</cfif>
-			   	<cfset paginationHTML = paginationHTML & '<a href="#cgi.SCRIPT_NAME#?#queryString#&page=#attributes.currentPage-1#"><strong>' & attributes.htmlPrevious &'</strong></a>'>
-			</cfif>		
+			<cfhtmlhead text="#jsPagination#">
 			
-
-			<cfloop from="#pFirstPage#" to="#pLastPage#" index="i">
-			    <cfif attributes.currentPage EQ i>
-			       <cfset paginationHTML = paginationHTML & '<span>#i#</span>'>
-			   <cfelse>
-			        <cfset paginationHTML = paginationHTML & '<a href="#cgi.SCRIPT_NAME#?#queryString#&page=#i#">#i#</a>'>
-			    </cfif>
-			</cfloop>
-		
-		
-			<cfif attributes.currentPage * attributes.recordsPerPage LT attributes.totalRecords>
-			    <cfset paginationHTML = paginationHTML & '<a href="#cgi.SCRIPT_NAME#?#queryString#&page=#attributes.currentPage+1#"><strong>' & attributes.htmlNext &'</strong></a>'>
-			   <cfif pTotalPages GT attributes.pagesLink>
-			   		<cfset paginationHTML = paginationHTML & '<a href="#cgi.SCRIPT_NAME#?#queryString#&page=#pTotalPages#"><strong>' & attributes.htmlLast &'</strong></a>'>
-			   	</cfif>
-			<cfelse>
-			   <cfset paginationHTML = paginationHTML & '<span>' & attributes.htmlNext &'</span>'>
-				<cfif pTotalPages GT attributes.pagesLink>
-			   		<cfset paginationHTML = paginationHTML & '<span>' & attributes.htmlLast &'</span>'>
-			   	</cfif>
-			</cfif>
-			
-		<cfset paginationHTML = paginationHTML & '</p></div>'>
-		
-		
-		<cfoutput>#paginationHTML#</cfoutput>
-
-
-	<cfoutput><br style="clear:both;" /></cfoutput>
+			<cfset request.paginationpageInputFieldRendered = 1 />
+		</cfif>			
+	</cfif>
 	
+	<cfsavecontent variable="scrollinnards">
+		<!--- required for JS pagination --->
+		<cfoutput><input type="hidden" name="paginationpage" id="paginationpage" value="" /></cfoutput>
+		
+		<cfif arguments.bShowResultTotal>
+			<cfoutput><div class="pageDetails"><h2>Displaying <strong>#fromRecord#-#toRecord#</strong> of <strong>#attributes.totalRecords#</strong> results</h2></div></cfoutput>
+		</cfif>
+		
+		<cfoutput><div class="pageList"><ul></cfoutput>			
+		<cfif attributes.currentPage EQ 1>
+			<cfif pTotalPages GT attributes.pageLinks>
+				<cfoutput><li><a href="##">#attributes.htmlFirst#</a></li></cfoutput>
+			</cfif>
+			<cfoutput><li><a href="##">#attributes.htmlPrevious#</a></li></cfoutput>
+		<cfelse>
+			<cfif pTotalPages GT attributes.pageLinks>
+				<cfoutput><li><a href="#cgi.SCRIPT_NAME#?#queryString#&amp;page=1" onclick="javascript:paginationSubmission(1);return false;">#attributes.htmlFirst#</a></li></cfoutput>
+		   	</cfif>
+		   	<cfoutput><li><a href="#cgi.SCRIPT_NAME#?#queryString#&amp;page=#attributes.currentPage-1#" onclick="javascript:paginationSubmission(#attributes.currentPage-1#);return false;">#attributes.htmlPrevious#</a></li></cfoutput>
+		</cfif>		
+		
+		<cfloop from="#pFirstPage#" to="#pLastPage#" index="i">
+		    <cfif attributes.currentPage EQ i>
+				<cfoutput><li class="active"><a href="##">#i#</a></li></cfoutput>
+		   <cfelse>
+		   	<cfoutput><li><a href="#cgi.SCRIPT_NAME#?#queryString#&amp;page=#i#" onclick="javascript:paginationSubmission(#i#);return false;">#i#</a></li></cfoutput>	   
+		    </cfif>
+		</cfloop>
+	
+		<cfif attributes.currentPage * attributes.recordsPerPage LT attributes.totalRecords>
+		
+		   	<cfoutput><li><a href="#cgi.SCRIPT_NAME#?#queryString#&amp;page=#attributes.currentPage+1#" onclick="javascript:paginationSubmission(#attributes.currentPage+1#);return false;">#attributes.htmlNext#</a></li></cfoutput>
+		   <cfif pTotalPages GT attributes.pageLinks>
+			   <cfoutput><li><a href="#cgi.SCRIPT_NAME#?#queryString#&amp;page=#pTotalPages#" onclick="javascript:paginationSubmission(#pTotalPages#);return false;">#attributes.htmlLast#</a></li></cfoutput>
+		   	</cfif>
+		<cfelse>
+			<cfoutput><li><a href="##">#attributes.htmlNext#</a></li></cfoutput>
+			<cfif pTotalPages GT attributes.pageLinks>
+				<cfoutput><li><a href="##">#attributes.htmlLast#</a></li></cfoutput>
+		   	</cfif>
+		</cfif>
+	
+		<cfoutput>
+			</ul>
+		</div>
+		</cfoutput>
+	</cfsavecontent>
+	
+	<cfreturn scrollinnards />
 </cffunction>
 

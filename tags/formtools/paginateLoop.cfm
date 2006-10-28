@@ -26,6 +26,7 @@ $in: objectid -- $
 
 <cfimport taglib="/farcry/farcry_core/tags/formtools/" prefix="ft" >
 
+	
 
 <cfif thistag.executionMode eq "Start">
 
@@ -33,32 +34,133 @@ $in: objectid -- $
 	<!--- Get the BaseTagData  --->
 	<cfset PaginateData = getBaseTagData("cf_pagination")>
 	<cfset structAppend(attributes, PaginateData.attributes,false) />
+		
 
 	<cfparam name="attributes.r_stObject" default="stObject">
 	<cfparam name="attributes.editWebskin" default="edit">
-	<cfparam name="attributes.CustomList" default="#caller.attributes.typename#">
+	<cfparam name="attributes.CustomList" default="#attributes.typename#">
+	<cfparam name="attributes.startRow" default="1">
+	<cfparam name="attributes.lArrayProps" default="">
+	<cfparam name="attributes.bIncludeFields" default="false">
+	<cfparam name="attributes.bIncludeObjects" default="true">
+	<cfparam name="attributes.bTypeAdmin" default="true">
+	<cfparam name="attributes.stpermissions" default="#structNew()#">
 	
-	<cfparam name="variables.currentRow" default="1" />
 	
-	<cfset o = createObject("component", application.types[caller.attributes.typename].typepath) />
+	
+	<cfset variables.currentRow = attributes.startRow />
 
+	<cfset o = createObject("component", application.types[attributes.typename].typepath) />
+	<cfset oFormtoolUtil = createObject("component", "farcry.farcry_core.packages.farcry.formtools") />
+
+	<cfif attributes.bIncludeObjects>
+		<cfset aObjects = oFormtoolUtil.getRecordSetObjectStructures(recordset=attributes.qRecordSet,typename=attributes.typename, lArrayProps=attributes.lArrayProps) />
+	</cfif>	
+	
+	
+	
 	<cfif len(attributes.r_stobject) and variables.currentRow LTE attributes.totalRecords AND attributes.totalRecords>
 
 		<cfset caller[attributes.r_stobject] = structNew() />
-		<cfset caller[attributes.r_stobject].stFields = getRecordsetObject(recordset=caller.stRecordset.q, row=variables.currentRow, typename=caller.attributes.typename) />
-		<!---<cfset caller[attributes.r_stobject] = o.getdata(bUseInstanceCache=false, objectid=attributes.stParams.q.objectid[variables.currentrow], typename=attributes.stParams.typename, recordset=attributes.stParams.q, row=variables.currentRow) /> --->
+		<cfif attributes.bIncludeFields>
+			<cfset caller[attributes.r_stobject].stFields = oFormtoolUtil.getRecordsetObject(recordset=attributes.qRecordSet, row=variables.currentRow, typename=attributes.typename) />
+		</cfif>
+		<cfif attributes.bIncludeObjects>
+			<cfset caller[attributes.r_stobject].stObject = aObjects[variables.currentRow] />
+		</cfif>		
 		
-		<cfset caller[attributes.r_stobject].select = "<input type='checkbox' name='objectid' value='#caller.stRecordset.q.objectid[variables.currentRow]#' onclick='setRowBackground(this);' style='width:10px;' />" />
-		<cfset caller[attributes.r_stobject].currentRow = (attributes.CurrentPage - 1) * attributes.RecordsPerPage + variables.currentRow />
-
-		<cfif caller.stRecordset.q.locked[variables.currentRow] AND caller.stRecordset.q.lockedby[variables.currentRow] eq '#session.dmSec.authentication.userlogin#_#session.dmSec.authentication.userDirectory#'>
-			<cfset caller[attributes.r_stObject].editLink = "<span style='color:red'>Locked</span>" />		
-		<cfelse>
-			<cfset caller[attributes.r_stObject].editLink = "<a href='#application.url.farcry#/conjuror/invocation.cfm?objectid=#caller.stRecordset.q.objectid[variables.currentrow]#&typename=#caller.attributes.typename#&method=#attributes.editWebskin#&ref=typeadmin&module=customlists/#attributes.customList#.cfm'><img src='#application.url.farcry#/images/treeImages/edit.gif' alt='Edit' title='Edit' /></a>" />
+		<cfset caller[attributes.r_stobject].select = "<input type='checkbox' name='objectid' value='#attributes.qRecordSet.objectid[variables.currentRow]#' onclick='setRowBackground(this);' class='formCheckbox' />" />
+		<cfset caller[attributes.r_stobject].currentRow = (attributes.CurrentPage - 1) * attributes.RecordsPerPage + variables.currentRow - attributes.startRow + 1 />
+		
+		<cfif listContainsNoCase(attributes.qRecordSet.columnlist,"locked") AND attributes.qRecordSet.locked[variables.currentRow]>
+			<cfset caller[attributes.r_stobject].currentRow = "#caller[attributes.r_stobject].currentRow# <img src='#application.url.farcry#/images/treeImages/customIcons/padlock.gif'>" />
 		</cfif>
 		
-		<cfset caller[attributes.r_stObject].viewLink = "<a href='#application.url.webroot#/index.cfm?objectID=#caller.stRecordset.q.objectid[variables.currentrow]#&flushcache=1' target='_blank'><img src='#application.url.farcry#/images/treeImages/preview.gif' alt='View' title='View' /></a>" />
-		<cfset caller[attributes.r_stObject].flowLink = "<a href='#application.farcrylib.flow.url#/?startid=#caller.stRecordset.q.objectid[variables.currentrow]#&flushcache=1' target='_blank'><img src='#application.url.farcry#/images/treeImages/preview.gif' alt='flow' title='flow' /></a>" />
+		
+		
+		<!---------------------------------------------------
+		ONLY REQUIRE THE FOLLOWING IF CALED FROM TYPEADMIN
+		 --------------------------------------------------->
+		<cfif attributes.bTypeAdmin>
+			<cfif listContainsNoCase(attributes.qRecordSet.columnlist,"bHasMultipleVersion") AND attributes.qRecordSet.bHasMultipleVersion[variables.currentrow]>
+				<cfset caller[attributes.r_stobject].status = "<span style='color:red;'>versioned</span>" />
+			<cfelseif listContainsNoCase(attributes.qRecordSet.columnlist,"status")>
+				<cfset caller[attributes.r_stobject].status = attributes.qRecordSet.status[variables.currentrow] />
+			</cfif>
+			
+			
+	<!---		<cfif listContainsNoCase(attributes.qRecordSet.columnlist,"locked") AND attributes.qRecordSet.locked[variables.currentRow] AND attributes.qRecordSet.lockedby[variables.currentRow] eq '#session.dmSec.authentication.userlogin#_#session.dmSec.authentication.userDirectory#'>
+				<cfset caller[attributes.r_stObject].editLink = "<span style='color:red'>Locked</span>" />		
+			<cfelse>
+				<cfset caller[attributes.r_stObject].editLink = "<a href='#application.url.farcry#/conjuror/invocation.cfm?objectid=#attributes.qRecordSet.objectid[variables.currentrow]#&typename=#attributes.typename#&method=#attributes.editWebskin#&ref=typeadmin&module=customlists/#attributes.customList#.cfm'><img src='#application.url.farcry#/images/treeImages/edit.gif' alt='Edit' title='Edit' /></a>" />
+			</cfif>
+			
+			<cfset caller[attributes.r_stObject].viewLink = "<a href='#application.url.webroot#/index.cfm?objectID=#attributes.qRecordSet.objectid[variables.currentrow]#&flushcache=1' target='_blank'><img src='#application.url.farcry#/images/treeImages/preview.gif' alt='View' title='View' /></a>" />
+			
+			<cfif structKeyExists(application.farcrylib, "flow")>
+				<cfset caller[attributes.r_stObject].flowLink = "<a href='#application.farcrylib.flow.url#/?startid=#attributes.qRecordSet.objectid[variables.currentrow]#&flushcache=1' target='_blank'><img src='#application.url.farcry#/images/treeImages/preview.gif' alt='flow' title='flow' /></a>" />
+			</cfif> --->
+			
+			<cfsavecontent variable="ActionDropdown">
+				<cfset request.inhead.prototype = 1 />
+				<cfoutput>
+				<select name="action#variables.currentrow#" id="action#variables.currentrow#" onchange="$('SelectedObjectID#Request.farcryForm.Name#').value='#attributes.qRecordSet.objectid[variables.currentrow]#';$('FarcryFormSubmitButtonClicked#Request.farcryForm.Name#').value=this.value;submit();" style="width:100px;">
+					<option value="">-- action --</option>
+	
+					<option value="overview">Overview</option>
+								
+					<cfif listContainsNoCase(attributes.qRecordSet.columnlist,"locked") AND attributes.qRecordSet.locked[variables.currentRow] AND attributes.qRecordSet.lockedby[variables.currentRow] neq '#session.dmSec.authentication.userlogin#_#session.dmSec.authentication.userDirectory#'>
+						<cfif structKeyExists(attributes.stPermissions, "iApprove") AND attributes.stPermissions.iApprove>
+							<option value="unlock">Unlock</option>
+						</cfif>		
+					<cfelseif structKeyExists(attributes.stPermissions, "iEdit") AND attributes.stPermissions.iEdit>
+						<cfif listContainsNoCase(attributes.qRecordSet.columnlist,"bHasMultipleVersion")>
+							<cfif NOT(attributes.qRecordSet.bHasMultipleVersion[variables.currentrow]) AND attributes.qRecordSet.status[variables.currentRow] EQ "approved">
+								<option value="createDraft">Create Draft Object</option>
+							<cfelseif NOT(attributes.qRecordSet.bHasMultipleVersion[variables.currentrow])>
+								<option value="edit">Edit</option>
+							</cfif>
+						<cfelse>
+							<option value="edit">Edit</option>
+						</cfif>
+					</cfif>
+					
+					<option value="view">View</option>
+					
+					<cfif structKeyExists(application.farcrylib, "flow")>
+						<option value="flow">Flow</option>
+					</cfif>
+					
+					
+					<cfif structKeyExists(attributes.stPermissions, "iRequestApproval") 
+							AND attributes.stPermissions.iRequestApproval
+						AND listContainsNoCase(attributes.qRecordSet.columnlist,"status") 
+						AND attributes.qRecordSet.status[variables.currentRow] EQ "draft">
+						<option value="requestApproval">Request Approval</option>
+					</cfif>
+					
+					<cfif structKeyExists(attributes.stPermissions, "iApprove") 
+						AND attributes.stPermissions.iApprove
+						AND listContainsNoCase(attributes.qRecordSet.columnlist,"status")
+						AND (
+							attributes.qRecordSet.status[variables.currentRow] EQ "draft" 
+							OR attributes.qRecordSet.status[variables.currentRow] EQ "pending"
+						)>
+						<option value="approve">Approve</option>
+					</cfif>
+					
+					
+					<option value="delete">Delete</option>
+				</select>
+				</cfoutput>
+			</cfsavecontent>
+			
+			<cfset caller[attributes.r_stObject].action = ActionDropdown />
+		</cfif>
+		
+		
+		
+				
 		<cfset variables.currentRow = variables.CurrentRow + 1 />
 	<cfelse>
 		<cfexit method="exittag" />
@@ -70,23 +172,114 @@ $in: objectid -- $
 <cfif thistag.executionMode eq "End">
 
 
-	<cfif len(attributes.r_stobject) and variables.currentRow LTE caller.stRecordset.q.RecordCount>
+	<cfif len(attributes.r_stobject) and variables.currentRow LTE attributes.endRow>
 		
 		<cfset caller[attributes.r_stobject] = structNew() />
-		<cfset caller[attributes.r_stobject].stFields = getRecordsetObject(recordset=caller.stRecordset.q, row=variables.currentRow, typename=caller.attributes.typename) />
-		<!---<cfset caller[attributes.r_stobject] = o.getdata(bUseInstanceCache=false, objectid=caller.stRecordset.q.objectid[variables.currentrow], typename=caller.attributes.typename, recordset=caller.stRecordset.q, row=variables.currentRow) /> --->
-		
-		<cfset caller[attributes.r_stobject].select = "<input type='checkbox' name='objectid' value='#caller.stRecordset.q.objectid[variables.currentRow]#' onclick='setRowBackground(this);' style='width:10px;' />" />
-		<cfset caller[attributes.r_stobject].currentRow = (attributes.CurrentPage - 1) * attributes.RecordsPerPage + variables.currentRow />		
-		<cfif caller.stRecordset.q.locked[variables.currentRow] AND caller.stRecordset.q.lockedby[variables.currentRow] eq '#session.dmSec.authentication.userlogin#_#session.dmSec.authentication.userDirectory#'>
-			<cfset caller[attributes.r_stObject].editLink = "<span style='color:red'>Locked</span>" />		
-		<cfelse>
-			<cfset caller[attributes.r_stObject].editLink = "<a href='#application.url.farcry#/conjuror/invocation.cfm?objectid=#caller.stRecordset.q.objectid[variables.currentrow]#&typename=#caller.attributes.typename#&method=#attributes.editWebskin#&ref=typeadmin&module=customlists/#attributes.customList#.cfm'><img src='#application.url.farcry#/images/treeImages/edit.gif' alt='Edit' title='Edit' /></a>" />
+		<cfif attributes.bIncludeFields>
+			<cfset caller[attributes.r_stobject].stFields = oFormtoolUtil.getRecordsetObject(recordset=attributes.qRecordSet, row=variables.currentRow, typename=attributes.typename) />
 		</cfif>
-		<cfset caller[attributes.r_stObject].viewLink = "<a href='#application.url.webroot#/index.cfm?objectID=#caller.stRecordset.q.objectid[variables.currentrow]#&flushcache=1' target='_blank'><img src='#application.url.farcry#/images/treeImages/preview.gif' alt='View' title='View' /></a>" />
-		<cfset caller[attributes.r_stObject].flowLink = "<a href='#application.farcrylib.flow.url#/?startid=#caller.stRecordset.q.objectid[variables.currentrow]#&flushcache=1' target='_blank'><img src='#application.url.farcry#/images/treeImages/preview.gif' alt='flow' title='flow' /></a>" />
-				
+		<cfif attributes.bIncludeObjects>
+			<cfset caller[attributes.r_stobject].stObject = aObjects[variables.currentRow] />
+		</cfif>		
+		
+		<cfset caller[attributes.r_stobject].select = "<input type='checkbox' name='objectid' value='#attributes.qRecordSet.objectid[variables.currentRow]#' onclick='setRowBackground(this);' class='formCheckbox' />" />
+		<cfset caller[attributes.r_stobject].currentRow = (attributes.CurrentPage - 1) * attributes.RecordsPerPage + variables.currentRow - attributes.startRow + 1 />		
+		
+		<cfif listContainsNoCase(attributes.qRecordSet.columnlist,"locked") AND attributes.qRecordSet.locked[variables.currentRow]>
+			<cfset caller[attributes.r_stobject].currentRow = "#caller[attributes.r_stobject].currentRow# <img src='#application.url.farcry#/images/treeImages/customIcons/padlock.gif'>" />
+		</cfif>
+		
+		<cfif listContainsNoCase(attributes.qRecordSet.columnlist,"bHasMultipleVersion") AND attributes.qRecordSet.bHasMultipleVersion[variables.currentrow]>
+			<cfset caller[attributes.r_stobject].status = "<span style='color:red;'>versioned</span>" />
+		<cfelseif listContainsNoCase(attributes.qRecordSet.columnlist,"status")>
+			<cfset caller[attributes.r_stobject].status = attributes.qRecordSet.status[variables.currentrow] />
+		</cfif>
+		
+		
+		
+		<!---------------------------------------------------
+		ONLY REQUIRE THE FOLLOWING IF CALED FROM TYPEADMIN
+		 --------------------------------------------------->
+		<cfif attributes.bTypeAdmin>
+			<cfif listContainsNoCase(attributes.qRecordSet.columnlist,"bHasMultipleVersion") AND attributes.qRecordSet.bHasMultipleVersion[variables.currentrow]>
+				<cfset caller[attributes.r_stobject].status = "<span style='color:red;'>versioned</span>" />
+			<cfelseif listContainsNoCase(attributes.qRecordSet.columnlist,"status")>
+				<cfset caller[attributes.r_stobject].status = attributes.qRecordSet.status[variables.currentrow] />
+			</cfif>
+			
+			
+	<!---		<cfif listContainsNoCase(attributes.qRecordSet.columnlist,"locked") AND attributes.qRecordSet.locked[variables.currentRow] AND attributes.qRecordSet.lockedby[variables.currentRow] eq '#session.dmSec.authentication.userlogin#_#session.dmSec.authentication.userDirectory#'>
+				<cfset caller[attributes.r_stObject].editLink = "<span style='color:red'>Locked</span>" />		
+			<cfelse>
+				<cfset caller[attributes.r_stObject].editLink = "<a href='#application.url.farcry#/conjuror/invocation.cfm?objectid=#attributes.qRecordSet.objectid[variables.currentrow]#&typename=#attributes.typename#&method=#attributes.editWebskin#&ref=typeadmin&module=customlists/#attributes.customList#.cfm'><img src='#application.url.farcry#/images/treeImages/edit.gif' alt='Edit' title='Edit' /></a>" />
+			</cfif>
+			
+			<cfset caller[attributes.r_stObject].viewLink = "<a href='#application.url.webroot#/index.cfm?objectID=#attributes.qRecordSet.objectid[variables.currentrow]#&flushcache=1' target='_blank'><img src='#application.url.farcry#/images/treeImages/preview.gif' alt='View' title='View' /></a>" />
+			
+			<cfif structKeyExists(application.farcrylib, "flow")>
+				<cfset caller[attributes.r_stObject].flowLink = "<a href='#application.farcrylib.flow.url#/?startid=#attributes.qRecordSet.objectid[variables.currentrow]#&flushcache=1' target='_blank'><img src='#application.url.farcry#/images/treeImages/preview.gif' alt='flow' title='flow' /></a>" />
+			</cfif> --->
+			
+			<cfsavecontent variable="ActionDropdown">
+				<cfset request.inhead.prototype = 1 />
+				<cfoutput>
+				<select name="action#variables.currentrow#" id="action#variables.currentrow#" onchange="$('SelectedObjectID#Request.farcryForm.Name#').value='#attributes.qRecordSet.objectid[variables.currentrow]#';$('FarcryFormSubmitButtonClicked#Request.farcryForm.Name#').value=this.value;submit();" style="width:100px;">
+					<option value="">-- action --</option>
+	
+					<option value="overview">Overview</option>
+								
+					<cfif listContainsNoCase(attributes.qRecordSet.columnlist,"locked") AND attributes.qRecordSet.locked[variables.currentRow] AND attributes.qRecordSet.lockedby[variables.currentRow] neq '#session.dmSec.authentication.userlogin#_#session.dmSec.authentication.userDirectory#'>
+						<cfif structKeyExists(attributes.stPermissions, "iApprove") AND attributes.stPermissions.iApprove>
+							<option value="unlock">Unlock</option>
+						</cfif>		
+					<cfelseif structKeyExists(attributes.stPermissions, "iEdit") AND attributes.stPermissions.iEdit>
+						<cfif listContainsNoCase(attributes.qRecordSet.columnlist,"bHasMultipleVersion")>
+							<cfif NOT(attributes.qRecordSet.bHasMultipleVersion[variables.currentrow]) AND attributes.qRecordSet.status[variables.currentRow] EQ "approved">
+								<option value="createDraft">Create Draft Object</option>
+							<cfelseif NOT(attributes.qRecordSet.bHasMultipleVersion[variables.currentrow])>
+								<option value="edit">Edit</option>
+							</cfif>
+						<cfelse>
+							<option value="edit">Edit</option>
+						</cfif>
+					</cfif>
+					
+					<option value="view">View</option>
+					
+					<cfif structKeyExists(application.farcrylib, "flow")>
+						<option value="flow">Flow</option>
+					</cfif>
+					
+					
+					<cfif structKeyExists(attributes.stPermissions, "iRequestApproval") 
+							AND attributes.stPermissions.iRequestApproval
+						AND listContainsNoCase(attributes.qRecordSet.columnlist,"status") 
+						AND attributes.qRecordSet.status[variables.currentRow] EQ "draft">
+						<option value="requestApproval">Request Approval</option>
+					</cfif>
+					
+					<cfif structKeyExists(attributes.stPermissions, "iApprove") 
+						AND attributes.stPermissions.iApprove
+						AND listContainsNoCase(attributes.qRecordSet.columnlist,"status")
+						AND (
+							attributes.qRecordSet.status[variables.currentRow] EQ "draft" 
+							OR attributes.qRecordSet.status[variables.currentRow] EQ "pending"
+						)>
+						<option value="approve">Approve</option>
+					</cfif>
+					
+					
+					<option value="delete">Delete</option>
+				</select>
+				</cfoutput>
+			</cfsavecontent>
+			
+			<cfset caller[attributes.r_stObject].action = ActionDropdown />
+		</cfif>
+		
+		
 		<cfset variables.currentRow = variables.CurrentRow + 1 />
+		
 		<cfexit method="loop" />
 	</cfif>
 
@@ -95,51 +288,4 @@ $in: objectid -- $
 <cfsetting enablecfoutputonly="no">
 
 
-<cffunction name="getRecordsetObject" access="private" output="false" returntype="struct" hint="This function accepts a recordset and will return a Faux Farcry Object Structure that will enable it to run through ft:object without requiring a getData.">
-
-	<cfargument name="recordset" type="query" required="false">
-	<cfargument name="row" type="numeric" required="false">		
-	<cfargument name="typename" type="string" required="false" default="">	
-	
-	<cfset var i = "" />
-	<cfset var j = "" />
-	<cfset var key = "" />
-	<cfset var aTmp = arrayNew(1) />
-	<cfset var stTmp = structNew() />
-	<cfset var st = structNew() />
-	
-	<cfset stTmp.typename = arguments.typename />
-	
-	<cfloop list="#arguments.recordset.columnlist#" index="i">
-		<cfif application.types[arguments.typename].stProps[i].metadata.type NEQ "array">
-			<cfset stTmp[i] = recordset[i][row] />
-		<cfelse>
-			<cfset stTmp[i] = arrayNew(1) />
-			
-			<cfif listContains(arrayprops, i)>								
-				<cfset key = i>
-					
-				<!--- getdata for array properties --->
-				<cfquery datasource="#arguments.dsn#" name="qArrayData">
-	  			select * from #arguments.dbowner##tablename#_#key#
-				where parentID = '#recordset.objectID[arguments.row]#'
-				order by seq
-				</cfquery>
-				<!--- 	<cfset qArrayData = queryNew("parentID,Data,seq,typename")> --->
-				<cfset SetVariable("#key#", ArrayNew(1))>
-				<cfset aTmp = arrayNew(1) />
-	
-				<cfloop from="1" to="#qArrayData.recordcount#" index="j">
-					<cfset ArrayAppend(aTmp, qArrayData.data[j])>
-				</cfloop>
-				<cfset stTmp[key] = aTmp>
-															
-			</cfif>
-		</cfif>
-	</cfloop>
-
-	<ft:object stobject="#stTmp#" typename="#arguments.typename#" lFields="#arguments.recordset.columnlist#" lExcludeFields="" bIncludeSystemProperties="true" format="display" includeFieldSet="false" r_stFields="stFields" />
-
-	<cfreturn stFields />
-</cffunction>
 
