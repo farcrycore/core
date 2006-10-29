@@ -206,12 +206,12 @@ LIBRARY DATA
 	
 </cfif>
 
-<cfif listLen(lBasketIDs)>
+<!---<cfif listLen(lBasketIDs)>
 	<cfquery dbtype="query" name="qLibraryList">
 	SELECT * FROM qLibraryList
 	WHERE ObjectID NOT IN (#ListQualify(lBasketIDs,"'")#)
 	</cfquery>
-</cfif>
+</cfif> --->
 
 <!--- Put JS and CSS for TabStyle1 into the header --->
 <cfset Request.InHead.TabStyle1 = 1>
@@ -402,9 +402,9 @@ GENERATE THE LIBRARY PICKER
 					
 				
 				<cfif URL.LibraryType EQ "array">
-					<ul id="sortableListTo" class="arrayDetailView" style="background-color:##F1F1F1;height:500px;overflow-y:auto;overflow-x:hidden;">
+					<ul id="sortableListTo" class="arrayDetailView" style="background-color:##F1F1F1;min-height:500px;_height:500px;">
 				<cfelse>
-					<div id="sortableListTo" style="background-color:##F1F1F1;height:500px;overflow-y:auto;overflow-x:hidden;">
+					<div id="sortableListTo" style="background-color:##F1F1F1;min-height:500px;_height:500px;">
 				</cfif>	
 		
 			</cfoutput>	
@@ -471,11 +471,11 @@ GENERATE THE LIBRARY PICKER
 				</cfoutput>
 				
 				
-					<ft:pagination qRecordSet="#qLibraryList#" typename="#url.primaryTypeName#" recordsPerPage="20" submissionType="URL" pageLinks="5" top="true" bottom="true">
+					<ft:pagination qRecordSet="#qLibraryList#" typename="#request.ftJoin#" recordsPerPage="20" submissionType="URL" pageLinks="5" top="true" bottom="true">
 
 				
 				<cfoutput>
-					<ul id="sortableListFrom" class="arrayDetailView" style="border:1px solid ##F1F1F1;height:500px;overflow-y:auto;overflow-x:hidden;">
+					<ul id="sortableListFrom" class="arrayDetailView" style="border:1px solid ##F1F1F1;min-height:500px;_height:500px;">
 				</cfoutput>
 					
 									
@@ -553,17 +553,19 @@ GENERATE THE LIBRARY PICKER
 					
 					
 				<cfelse>
-					Droppables.add('sortableListTo', {
+				Droppables.add('sortableListTo', {
 					   onDrop: function(element) {
 					   		$('sortableListTo').innerHTML = $(element).innerHTML;
 					   		opener.libraryCallback_#url.primaryFormFieldname#('add',$(element).id);
 							new Effect.Highlight('sortableListTo',{startcolor:'##FFECD9',duration: 2});
 		
 					   }
-					});
+					}); 
 					
-					//call on initial page load
-					opener.libraryCallback_#url.primaryFormFieldname#('sort',$(element).id);
+					<cfif len(stPrimary[url.primaryFieldName]) >
+						//call on initial page load
+						opener.libraryCallback_#url.primaryFormFieldname#('sort','#stPrimary[url.primaryFieldName]#');
+					</cfif>
 				</cfif>
 				
 		
@@ -571,6 +573,7 @@ GENERATE THE LIBRARY PICKER
 			</cfoutput>
 		
 		</ft:form>	
+		
 					
 	</cfsavecontent>
 

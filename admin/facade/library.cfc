@@ -21,12 +21,16 @@
 	<cfargument name="packageType" type="string" default="types">
 
 	
-	<cfif arguments.PackageType EQ "rules">
+	<cfif arguments.PackageType EQ "rules" OR not StructKeyExists(application.types, "arguments.primaryTypeName") >
+		<!--- If the developer has not specifid the packageType and the primaryTypename does not exist as a type then we will assume it is a rule. --->
+		<cfset arguments.PackageType = "rules" />
+			
 		<cfset PrimaryPackage = application.rules[arguments.primaryTypeName] />
-		<cfset PrimaryPackagePath = application.rules[arguments.primaryTypeName].rulepath />
+		<cfset PrimaryPackagePath = application.rules[arguments.primaryTypeName].packagePath />	
+		
 	<cfelse>	
 		<cfset PrimaryPackage = application.types[arguments.primaryTypeName] />
-		<cfset PrimaryPackagePath = application.types[arguments.primaryTypeName].typepath />
+		<cfset PrimaryPackagePath = application.types[arguments.primaryTypeName].packagePath />
 	</cfif>
 
 
