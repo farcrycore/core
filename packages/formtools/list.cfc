@@ -24,6 +24,22 @@
 		<cfparam name="arguments.stMetadata.ftClass" default="">
 		<cfparam name="arguments.stMetadata.ftstyle" default="">
 		
+		
+		<cfparam name="arguments.stMetadata.ftListData" default="" />
+		
+		
+		<cfif len(arguments.stMetadata.ftListData) >
+			<cfparam name="arguments.stMetadata.ftListDataTypename" default="#arguments.typename#" />
+			
+			<cfif structKeyExists(application.types, arguments.typename)>
+				<cfset oList = createObject("component", application.types[arguments.stMetadata.ftListDataTypename].packagePath) />
+			<cfelse>
+				<cfset oList = createObject("component", application.rules[arguments.stMetadata.ftListDataTypename].packagePath) />
+			</cfif>
+			
+			<cfinvoke component="#oList#" method="#arguments.stMetadata.ftListData#" returnvariable="arguments.stMetadata.ftList" />
+		</cfif>
+		
 
 		<cfif len(arguments.stMetadata.ftList)>
 			<cfswitch expression="#arguments.stMetadata.ftRenderType#">
@@ -31,7 +47,7 @@
 				<cfcase value="dropdown">
 								
 					<cfsavecontent variable="html">
-						<cfoutput><select id="#arguments.fieldname#" name="#arguments.fieldname#" class="#arguments.stMetadata.ftClass#" style="#arguments.stMetadata.ftStyle#" <cfif arguments.stMetadata.ftSelectMultiple> multiple="true"</cfif>></cfoutput>
+						<cfoutput><select id="#arguments.fieldname#" name="#arguments.fieldname#" class="formList #arguments.stMetadata.ftClass#" style="#arguments.stMetadata.ftStyle#" <cfif arguments.stMetadata.ftSelectMultiple> multiple="true"</cfif>></cfoutput>
 							<cfloop list="#arguments.stMetadata.ftList#" index="i">
 								<cfoutput><option value="#ListFirst(i,":")#" <cfif listFindNoCase(arguments.stMetadata.value,#ListFirst(i,":")#)>selected</cfif>>#ListLast(i , ":")#</option></cfoutput>
 							</cfloop>
@@ -47,7 +63,7 @@
 									
 									<div class="fieldsection optional">
 										<div class="fieldwrap">
-										<input type="checkbox" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#ListFirst(i,":")#" <cfif listFindNoCase(arguments.stMetadata.value,i)>checked</cfif> />
+										<input type="checkbox" name="#arguments.fieldname#" class="formCheckbox" id="#arguments.fieldname#" value="#ListFirst(i,":")#" <cfif listFindNoCase(arguments.stMetadata.value,i)>checked</cfif> />
 										<label class="fieldsectionlabel" class="fieldsectionlabel" for="#arguments.fieldname#">#ListLast(i , ":")#</label>
 										</div>
 										<br class="fieldsectionbreak" />
@@ -66,7 +82,7 @@
 								<cfloop list="#arguments.stMetadata.ftList#" index="i">
 									
 										
-										<input type="radio" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#ListFirst(i,":")#" <cfif listFindNoCase(arguments.stMetadata.value,i)>checked</cfif> />
+										<input type="radio" name="#arguments.fieldname#" id="#arguments.fieldname#" class="formRadio" value="#ListFirst(i,":")#" <cfif listFindNoCase(arguments.stMetadata.value,i)>checked</cfif> />
 										<label class="fieldsectionlabel" class="fieldsectionlabel" for="#arguments.fieldname#">#ListLast(i , ":")#</label>
 										<br />
 									
