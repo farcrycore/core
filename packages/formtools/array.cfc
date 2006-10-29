@@ -362,8 +362,14 @@
 			<cfset arguments.typename = q4.findType(objectid=arguments.objectid)>
 		</cfif>
 		
+		<cfif structKeyExists(application.types, arguments.typename)>
+			<cfset oPrimary = createObject("component",application.types[arguments.Typename].packagePath)>
+		<cfelseif structKeyExists(application.rules, arguments.typename)>
+			<cfset oPrimary = createObject("component",application.rules[arguments.Typename].packagePath)>
+		<cfelse>
+			<cfabort showerror="arguments.typename does not exist as a rule or a type" />
+		</cfif>
 		
-		<cfset oPrimary = createObject("component",application.types[arguments.Typename].typepath)>
 		<cfset variables.tableMetadata = createobject('component','farcry.fourq.TableMetadata').init() />
 		<cfset tableMetadata.parseMetadata(md=getMetadata(oPrimary)) />		
 		<cfset stFields = variables.tableMetadata.getTableDefinition() />
@@ -454,7 +460,7 @@
 			<cfsavecontent variable="returnHTML">
 			<cfif qLibraryList.recordcount>
 				<cfoutput>
-				<select  id="#arguments.fieldname#" name="#arguments.fieldname#" size="#arguments.stMetadata.ftSelectSize#" multiple="#arguments.stMetadata.ftSelectMultiple#" style="width:auto;">
+				<select  id="#arguments.fieldname#" name="#arguments.fieldname#" size="#arguments.stMetadata.ftSelectSize#" multiple="#arguments.stMetadata.ftSelectMultiple#">
 				<cfloop query="qLibraryList"><option value="#qLibraryList.objectid#" <cfif valuelist(qArrayField.data) contains qLibraryList.objectid>selected</cfif>><cfif isDefined("qLibraryList.label")>#qLibraryList.label#<cfelse>#qLibraryList.objectid#</cfif></option></cfloop>
 				</select>
 				</cfoutput>
