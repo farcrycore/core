@@ -78,12 +78,13 @@ $out:$
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-<title>FarCry: Container Rules</title><cfoutput>
+<title>FarCry: Container Rules</title>
+<cfoutput>
 	<style type="text/css" title="default" media="screen">@import url(#application.url.farcry#/css/main.css);</style>
 	<style type="text/css" title="default" media="screen">@import url(#application.url.farcry#/css/tabs.css);</style>
 	<script type="text/javascript" src="#application.url.farcry#/js/fade.js"></script>
-	<script type="text/javascript" src="#application.url.farcry#/js/prototype.js"></script>
-	<script type="text/javascript" src="#application.url.farcry#/js/formutilities.js"></script></cfoutput>
+	<script type="text/javascript" src="#application.url.farcry#/js/formutilities.js"></script>
+</cfoutput>
 </head>
 <body class="popup container-management">
 <h1><cfoutput>#displayContainerTitle#</cfoutput></h1>
