@@ -196,17 +196,27 @@ LIBRARY DATA
 
 <cfset stLibraryData = structNew() />
 
+		
+		
 <cfif isDefined("url.ftLibraryData") AND len(url.ftLibraryData)>	
 	
-	<!--- use ftlibrarydata method from primary content type --->
-	<cfif structkeyexists(oprimary, url.ftLibraryData)>
-		<cfinvoke component="#oPrimary#" method="#url.ftLibraryData#" returnvariable="stLibraryData" />
-		
+	
+	<cfparam name="url.ftLibraryDataTypename" default="#url.ftJoin#" />
+	
+	<cfif structKeyExists(application.types, url.ftLibraryDataTypename)>
+		<cfset oLibraryData = createObject("component", application.types[url.ftLibraryDataTypename].packagePath) />
+	<cfelse>
+		<cfset oLibraryData = createObject("component", application.rules[url.ftLibraryDataTypename].packagePath) />
 	</cfif>
+	
+	<cfif structkeyexists(oLibraryData, url.ftLibraryData)>
+		<cfinvoke component="#oLibraryData#" method="#url.ftLibraryData#" returnvariable="stLibraryData" />
+	</cfif>
+	
 </cfif>
 
 <!--- if nothing exists to generate library data then cobble something together --->
-<cfif NOT isDefined("qLibraryList")>
+<cfif structIsEmpty(stLibraryData)>
 	
 	<cfset oFormTools = createObject("component","farcry.farcry_core.packages.farcry.formtools")>
 	<cfset stLibraryData = oFormTools.getRecordset(typename="#request.ftJoin#", sqlColumns="*", sqlOrderBy="label", RecordsPerPage="20") />
