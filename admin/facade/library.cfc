@@ -21,7 +21,7 @@
 	<cfargument name="packageType" type="string" default="types">
 
 	
-	<cfif arguments.PackageType EQ "rules" OR not StructKeyExists(application.types, "arguments.primaryTypeName") >
+	<cfif arguments.PackageType EQ "rules" OR not StructKeyExists(application.types, arguments.primaryTypeName) >
 		<!--- If the developer has not specifid the packageType and the primaryTypename does not exist as a type then we will assume it is a rule. --->
 		<cfset arguments.PackageType = "rules" />
 			
