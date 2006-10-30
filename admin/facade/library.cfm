@@ -499,7 +499,7 @@ GENERATE THE LIBRARY PICKER
 				</cfoutput>
 					
 									
-						<ft:paginateLoop r_stObject="stLibraryObject" btypeadmin="false">
+						<ft:paginateLoop r_stObject="stLibraryObject" bTypeAdmin="false">
 						<!---<ws:paginateRecords r_stRecord="stObject"> --->
 							<cfif isDefined("stLibraryObject.stObject.label") AND len(stLibraryObject.stObject.label)>
 								<cfset variables.alternateHTML = stLibraryObject.stObject.Label />
