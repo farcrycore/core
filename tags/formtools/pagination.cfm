@@ -50,7 +50,7 @@ $in:  $
 	<cfparam name="attributes.maxPages" default="0" type="numeric">
 	<cfparam name="attributes.totalRecords" default="0" type="numeric">
 	<cfparam name="attributes.pageLinks" default="0" type="numeric">
-	<cfparam name="attributes.recordsPerPage" default="1" type="numeric">
+	<cfparam name="attributes.recordsPerPage" default="10" type="numeric">
 	<cfparam name="attributes.submissionType" default="url" type="string">
 	
 	<cfif not isDefined("attributes.qRecordSet") or not isQuery(attributes.qRecordSet)>
