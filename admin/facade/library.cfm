@@ -192,17 +192,27 @@ $Developer: $
 LIBRARY DATA
 	- generate library data query to populate library interface 
 --------------------------------------------------------------------------->
+
+
+<cfset stLibraryData = structNew() />
+
 <cfif isDefined("url.ftLibraryData") AND len(url.ftLibraryData)>	
 	
 	<!--- use ftlibrarydata method from primary content type --->
 	<cfif structkeyexists(oprimary, url.ftLibraryData)>
-		<cfinvoke component="#oPrimary#" method="#url.ftLibraryData#" returnvariable="qLibraryList" />
+		<cfinvoke component="#oPrimary#" method="#url.ftLibraryData#" returnvariable="stLibraryData" />
+		
 	</cfif>
 </cfif>
 
 <!--- if nothing exists to generate library data then cobble something together --->
 <cfif NOT isDefined("qLibraryList")>
-	<cfinvoke component="#oData#" method="getLibraryData" returnvariable="qLibraryList" />
+	
+	<cfset oFormTools = createObject("component","farcry.farcry_core.packages.farcry.formtools")>
+	<cfset stLibraryData = oFormTools.getRecordset(typename="#request.ftJoin#", sqlColumns="*", sqlOrderBy="label", RecordsPerPage="20") />
+
+	
+	<!---<cfinvoke component="#oData#" method="getLibraryData" returnvariable="qLibraryList" /> --->
 	
 </cfif>
 
@@ -245,9 +255,9 @@ LIBRARY DATA
 		<cfsearch collection="#application.applicationName#_#request.ftJoin#" criteria="#form.Criteria#" name="qResults" type="internet" />
 		
 		<cfif qResults.RecordCount>
-			<cfquery dbtype="query" name="qLibraryList">
+			<cfquery dbtype="query" name="stLibraryData.q">
 			SELECT objectid
-			FROM qLibraryList
+			FROM stLibraryData.q
 			WHERE objectid IN (#ListQualify(ValueList(qResults.key),"'")#)
 			</cfquery>
 		<cfelse>
@@ -471,7 +481,7 @@ GENERATE THE LIBRARY PICKER
 				</cfoutput>
 				
 				
-					<ft:pagination qRecordSet="#qLibraryList#" typename="#request.ftJoin#" recordsPerPage="20" submissionType="URL" pageLinks="5" top="true" bottom="true">
+					<ft:pagination qRecordSet="#stLibraryData.q#" typename="#request.ftJoin#" submissionType="URL" recordsPerPage="#stLibraryData.recordsPerPage#" totalRecords="#stLibraryData.CountAll#" pageLinks="5" top="true" bottom="true">
 
 				
 				<cfoutput>
