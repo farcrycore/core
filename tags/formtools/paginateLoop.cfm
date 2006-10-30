@@ -188,14 +188,7 @@ $in: objectid -- $
 		<cfif listContainsNoCase(attributes.qRecordSet.columnlist,"locked") AND attributes.qRecordSet.locked[variables.currentRow]>
 			<cfset caller[attributes.r_stobject].currentRow = "#caller[attributes.r_stobject].currentRow# <img src='#application.url.farcry#/images/treeImages/customIcons/padlock.gif'>" />
 		</cfif>
-		
-		<cfif listContainsNoCase(attributes.qRecordSet.columnlist,"bHasMultipleVersion") AND attributes.qRecordSet.bHasMultipleVersion[variables.currentrow]>
-			<cfset caller[attributes.r_stobject].status = "<span style='color:red;'>versioned</span>" />
-		<cfelseif listContainsNoCase(attributes.qRecordSet.columnlist,"status")>
-			<cfset caller[attributes.r_stobject].status = attributes.qRecordSet.status[variables.currentrow] />
-		</cfif>
-		
-		
+				
 		
 		<!---------------------------------------------------
 		ONLY REQUIRE THE FOLLOWING IF CALED FROM TYPEADMIN
