@@ -455,6 +455,9 @@
 					<cfif structKeyExists(ftFieldMetadata,'ftLibraryData')>
 						<cfset stURLParams.ftLibraryData = "#ftFieldMetadata.ftLibraryData#">
 					</cfif>
+					<cfif structKeyExists(ftFieldMetadata,'ftLibraryDataTypename')>
+						<cfset stURLParams.ftLibraryData = "#ftFieldMetadata.ftLibraryDataTypename#">
+					</cfif>
 							
 					<cfset request.inHead.libraryPopupJS = true />
 					
