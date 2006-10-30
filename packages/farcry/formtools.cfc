@@ -511,7 +511,7 @@
 				<cfset itemData = aField[pos] />
 			</cfif>
 			
-			<cftry><cfset oData = createObject("component", application.types[itemTypename].typePath) /><cfcatch><cfdump var="#itemTypename#"><cfdump var="#aField[pos]#"><cfabort></cfcatch></cftry>
+			<cfset oData = createObject("component", application.types[itemTypename].typePath) />
 			<cfset stData = oData.getData(objectID=itemData) />	
 			
 
