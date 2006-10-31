@@ -266,7 +266,7 @@ LIBRARY DATA
 		
 		<cfif qResults.RecordCount>
 			<cfquery dbtype="query" name="stLibraryData.q">
-			SELECT objectid
+			SELECT *
 			FROM stLibraryData.q
 			WHERE objectid IN (#ListQualify(ValueList(qResults.key),"'")#)
 			</cfquery>
