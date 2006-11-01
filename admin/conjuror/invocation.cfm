@@ -63,12 +63,26 @@ Pseudo:
 	</cfif>
 </cfif>
 
+
+<cfif structKeyExists(application.types, typename)>
+	<cfset stPackage = application.types[typename] />
+	<cfset packagePath = application.types[typename].typepath />
+<cfelse>
+	<cfset stPackage = application.rules[typename] />
+	<cfset packagePath = application.rules[typename].rulepath />
+	<cfif method EQ "edit">
+		<cfset method = "update" />
+	</cfif>
+</cfif>
+
+
+
 <!--- 
 	check method permissions for this content and user 
 	worth noting that additional permission check should exist within the method being invoked
 	this step at least provides some blanquet security to protect people from themselves ;)
 --->
-<cfif structKeyExists(application.types[typename], "BUSEINTREE") AND application.types[typename].BUSEINTREE>
+<cfif structKeyExists(stPackage, "BUSEINTREE") AND stPackage.BUSEINTREE>
 	<!--- determine inherited tree based permissions --->
 	<cfset bHasPermission = request.dmsec.oAuthorisation.checkInheritedPermission(permissionName='edit',objectid=URL.objectid)>
 	<cfif NOT bHasPermission GTE 0>
@@ -82,9 +96,9 @@ Pseudo:
 				as a bonafide standard.
 				Currently works well for EDIT which is the only requirement at present.
 		 --->
-	<cfif structKeyExists(application.types[typename], "permissionset")>
+	<cfif structKeyExists(stPackage, "permissionset")>
 		<!--- grab permission set from component metadata --->
-		<cfset permissionset=application.types[typename].permissionset>
+		<cfset permissionset=stPackage.permissionset>
 	<cfelse>
 		<!--- if no permission set specified default to news --->
 		<cfset permissionset="news">
@@ -98,7 +112,7 @@ Pseudo:
 </cfif>
 
 <!--- get object instance --->
-<cfset oType = createObject("component", application.types[typename].typePath)>
+<cfset oType = createObject("component", PackagePath)>
 <cfif ListLen(url.objectid) GT 1>
 	<admin:header>
 		<cfset evaluate("oType.#method#(objectid='#objectid#')")>
@@ -156,7 +170,7 @@ Pseudo:
 				<cfset oType.getDisplay(stObject=returnStruct, template="#method#", OnExit="#stOnExit#") /><!--- #application.url.farcry#/edittabOverview.cfm?objectid=#stObj.ObjectID# --->
 			<cfelse>
 				<!--- <cfset evaluate("oType.#method#(objectid='#objectid#',OnExit=#stOnExit#)")> --->
-				<cfinvoke component="#application.types[typename].typePath#" method="#method#">
+				<cfinvoke component="#PackagePath#" method="#method#">
 					<cfinvokeargument name="objectId" value="#objectId#" />
 					<cfinvokeargument name="onExit" value="#stOnExit#" />
 				</cfinvoke>

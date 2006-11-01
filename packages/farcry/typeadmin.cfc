@@ -13,7 +13,7 @@ environment references (might be nice to clean these up)
 	TODO: please refactoring to make cleaner
  --->
 
-<cffunction name="init" hint="Constructor." access="public" returntype="typeadmin">
+<cffunction name="init" hint="Constructor." access="public" returntype="typeadmin" output="true">
 	<cfargument name="attributes" type="struct" required="true" displayname="Typeadmin attributes." hint="Structure of attributes for the specific typeadmin page.">
 	<cfargument name="stPrefs" type="struct" required="false" displayname="User Preferences" hint="Structure of preferences typically cached in session.typeadmin[typename] scope.">
 
@@ -23,6 +23,17 @@ environment references (might be nice to clean these up)
 	<!--- override debug output --->
 	<!--- <cfset attributes.bdebug="true"> --->
 
+	
+	<cfif structKeyExists(application.types, variables.attributes.typename)>
+		<cfset variables.PrimaryPackage = application.types[variables.attributes.typename] />
+		<cfset variables.PrimaryPackagePath = application.types[variables.attributes.typename].typepath />
+	<cfelse>
+		<cfset variables.PrimaryPackage = application.rules[variables.attributes.typename] />
+		<cfset variables.PrimaryPackagePath = application.rules[variables.attributes.typename].rulepath />
+	</cfif>
+		
+	
+	
 	<!--- set default columns, as required --->
 	<cfif arrayisempty(variables.attributes.aColumns)>
 		<cfset variables.attributes.aColumns=getDefaultColumns()>
@@ -142,7 +153,7 @@ environment references (might be nice to clean these up)
 		<!--- if category filter on, query for objects matching the category --->
 		<cfset recordset=application.factory.ocategory.getData(lCategoryIDs=prefs.lCategoryIDs,typename=attributes.typename,bMatchAll=0,bHasDescendants=1)>
 
-		<cfif StructKeyExists(application.types[attributes.typename].stprops,"versionid")>
+		<cfif StructKeyExists(PrimaryPackage.stprops,"versionid")>
 			<cfquery dbtype="query" name="recordset">
 			SELECT	*
 			FROM	recordset
@@ -169,7 +180,7 @@ environment references (might be nice to clean these up)
 	<cfelse>
 		<!--- generic query based on typename --->
 		<!--- TODO: ignore longtext columns to improve performance --->
-		<cfif StructKeyExists(application.types[attributes.typename].stprops,"versionid")>
+		<cfif StructKeyExists(PrimaryPackage.stprops,"versionid")>
 			<!--- added by bowden to remove clobs because clob was bombing out later query of queries --->
 			<cfswitch expression="#application.dbtype#">
 			<cfcase value="ora">
@@ -347,7 +358,7 @@ environment references (might be nice to clean these up)
 		arrayAppend(aDefaultColumns,stCol);
 
 		//status
-		if (structKeyExists(application.types[attributes.typename].stprops, "status")) {
+		if (structKeyExists(variables.PrimaryPackage.stprops, "status")) {
 			stCol=structNew();
 			stCol.columnType="value";
 			stCol.title="#application.adminBundle[session.dmProfile.locale].status#";
@@ -411,7 +422,7 @@ environment references (might be nice to clean these up)
 			arrayAppend(aDefaultButtons,stBut);
 
 		// check if object uses status
-		if (structKeyExists(application.types['#attributes.typename#'].stProps,"status")) {
+		if (structKeyExists(PrimaryPackage.stProps,"status")) {
 			// Set status to pending
 				stBut=structNew();
 				stBut.type="submit";
@@ -518,8 +529,8 @@ environment references (might be nice to clean these up)
 	<!--- todo: accept atributes from typeadmin.cfm --->
 	<cfset lSearchableFieldTypes = "nstring,string,uuid">
 	<cfset lSearchableFieldName_exclude = "navigation">
-	<cfloop collection="#application.types[attributes.typename].stprops#" item="field">
-		<cfif ListFindNoCase(lSearchableFieldTypes,application.types[attributes.typename].stprops[field].metadata.type) AND NOT ListFindNoCase(lSearchableFieldName_exclude, field)>
+	<cfloop collection="#PrimaryPackage.stprops#" item="field">
+		<cfif ListFindNoCase(lSearchableFieldTypes,PrimaryPackage.stprops[field].metadata.type) AND NOT ListFindNoCase(lSearchableFieldName_exclude, field)>
 			<cfset ArrayAppend(aKeywordField,field)>
 		</cfif>
 	</cfloop>
@@ -579,8 +590,8 @@ environment references (might be nice to clean these up)
 	<cfset aDateField = ArrayNew(1)>
 	<cfset lSearchableFieldTypes = "date,datetime,timestamp">
 	<cfif attributes.bFilterDateRange>
-		<cfloop collection="#application.types[attributes.typename].stprops#" item="field">
-			<cfif ListFindNoCase(lSearchableFieldTypes,application.types[attributes.typename].stprops[field].metadata.type)>
+		<cfloop collection="#PrimaryPackage.stprops#" item="field">
+			<cfif ListFindNoCase(lSearchableFieldTypes,PrimaryPackage.stprops[field].metadata.type)>
 				<cfset ArrayAppend(aDateField,field)>
 			</cfif>
 		</cfloop>

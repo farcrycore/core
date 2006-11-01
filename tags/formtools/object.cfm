@@ -69,14 +69,16 @@
 			<cfset attributes.typename = q4.findType(objectid=attributes.objectid)>
 		</cfif>		
 	
-	
-		<cfif attributes.PackageType EQ "types">
-			<cfset stPackage = application[attributes.PackageType][attributes.typename]>
-			<cfset packagePath = application[attributes.PackageType][attributes.typename].typepath>
+		
+		<cfif structKeyExists(application.types, attributes.typename)>
+			<cfset stPackage = application.types[attributes.typename] />
+			<cfset packagePath = application.types[attributes.typename].typepath />
 		<cfelse>
-			<cfset stPackage = application[attributes.PackageType][attributes.typename]>
-			<cfset packagePath = application[attributes.PackageType][attributes.typename].rulepath>
+			<cfset stPackage = application.rules[attributes.typename] />
+			<cfset packagePath = application.rules[attributes.typename].rulepath />
+			<cfset attributes.PackageType = "rules" />
 		</cfif>
+		
 		
 		
 		<cfset stType = createobject("component",packagePath)>
@@ -94,12 +96,13 @@
 		<cfset attributes.typename = stObj.typename>	
 		
 	
-		<cfif attributes.PackageType EQ "types">
-			<cfset stpackage = application[attributes.PackageType][attributes.typename]>
-			<cfset packagePath = application[attributes.PackageType][attributes.typename].typepath>
+		<cfif structKeyExists(application.types, attributes.typename)>
+			<cfset stPackage = application.types[attributes.typename] />
+			<cfset packagePath = application.types[attributes.typename].typepath />
 		<cfelse>
-			<cfset stpackage = application[attributes.PackageType][attributes.typename]>
-			<cfset packagePath = application[attributes.PackageType][attributes.typename].rulepath>
+			<cfset stPackage = application.rules[attributes.typename] />
+			<cfset packagePath = application.rules[attributes.typename].rulepath />
+			<cfset attributes.PackageType = "rules" />
 		</cfif>
 				
 		<cfset stType = createobject("component",packagePath)>
@@ -111,14 +114,14 @@
 	<cfelseif len(attributes.typename)>
 	
 	
-		<cfif attributes.PackageType EQ "types">
-			<cfset stpackage = application[attributes.PackageType][attributes.typename]>
-			<cfset packagePath = application[attributes.PackageType][attributes.typename].typepath>
+		<cfif structKeyExists(application.types, attributes.typename)>
+			<cfset stPackage = application.types[attributes.typename] />
+			<cfset packagePath = application.types[attributes.typename].typepath />
 		<cfelse>
-			<cfset stpackage = application[attributes.PackageType][attributes.typename]>
-			<cfset packagePath = application[attributes.PackageType][attributes.typename].rulepath>
+			<cfset stPackage = application.rules[attributes.typename] />
+			<cfset packagePath = application.rules[attributes.typename].rulepath />
+			<cfset attributes.PackageType = "rules" />
 		</cfif>
-			
 	
 		<cfset stType = createobject("component",packagePath)>
 		<cfset lFields = ValueList(stPackage.qMetadata.propertyname)>

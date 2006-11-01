@@ -60,12 +60,27 @@
 	<cfargument name="RecordsPerPage" required="No" type="numeric" default="10" />
 	<cfargument name="PageLinksShown" required="No" type="numeric" default="5" />
 	
+	
+	<cfset var PrimaryPackage = "" />
+	<cfset var PrimaryPackagePath = "" />
+		
+	
 	<cfset var stReturn = structNew() />
 	<cfset var qFormToolRecordset = '' />
 	<cfset var recordcount = '' />
 	
 	<cfset var bHasStatus = false />	
 	<cfset var bHasVersionID = false />
+	
+	<cfif structKeyExists(application.types, arguments.typename)>
+		<cfset PrimaryPackage = application.types[arguments.typename] />
+		<cfset PrimaryPackagePath = application.types[arguments.typename].typepath />
+	<cfelse>
+		<cfset PrimaryPackage = application.rules[arguments.typename] />
+		<cfset PrimaryPackagePath = application.rules[arguments.typename].rulepath />
+	</cfif>
+
+	
 	
 	<cfset arguments.identityColumn = "tbl." & arguments.identityColumn>
 	
@@ -75,12 +90,20 @@
 	<!---
 	DETERMINE IF TYPE HAS STATUS AND VERSIONID TO ENUSRE WE DO NOT GET DUPLICATES.
 	 --->
-	<cfif structKeyExists(application.types[arguments.typename].stProps, "status")>
+	<cfif structKeyExists(PrimaryPackage.stProps, "status")>
 		<cfset bHasStatus = true />
 	</cfif>
-	<cfif structKeyExists(application.types[arguments.typename].stProps, "versionid")>
+	<cfif structKeyExists(PrimaryPackage.stProps, "versionid")>
 		<cfset bHasVersionID = true />
 	</cfif>
+	
+	<cfloop list="#arguments.sqlColumns#" index="i">
+		<cfif NOT FindNoCase("tbl.", i) AND i NEQ "*">
+			<cfif not StructKeyExists(primaryPackage.stprops, i)>
+				<cfset arguments.sqlColumns = ListDeleteAt(arguments.sqlColumns, listFindNoCase(arguments.sqlColumns,i))>
+			</cfif>
+		</cfif>
+	</cfloop>
 	
 	<!--- Ensure  if objectID provided in columns names prefixed it with tbl. --->
  	<cfif arguments.sqlColumns neq "*">	
@@ -343,11 +366,26 @@
 	<cfargument name="recordset" type="query" required="true">
 	<cfargument name="typename" type="string" required="false" default="">	
 	<cfargument name="lArrayProps" type="string" required="false" default="">
+	
+	
+	<cfset var PrimaryPackage = "" />
+	<cfset var PrimaryPackagePath = "" />	
 
 	<cfset var arResult = arrayNew(1) />
 	<cfset var stPropsQueries = structNew()>
 	<cfset var qArrayData=queryNew("parentID, data") />
 	<cfset var lObjectIDs="" />
+	
+
+	
+	<cfif structKeyExists(application.types, arguments.typename)>
+		<cfset PrimaryPackage = application.types[arguments.typename] />
+		<cfset PrimaryPackagePath = application.types[arguments.typename].typepath />
+	<cfelse>
+		<cfset PrimaryPackage = application.rules[arguments.typename] />
+		<cfset PrimaryPackagePath = application.rules[arguments.typename].rulepath />
+	</cfif>
+	
 	
 	<cfset stResult.typename = arguments.typename />
 	
@@ -396,7 +434,7 @@
 		<cfset tmpSt = structNew()>
 		<cfset tmpSt.typeName = arguments.typename>
 		<cfloop list="#arguments.recordset.columnlist#" index="i">	
-			<cfif structKeyExists(application.types[arguments.typename].stProps,i) and application.types[arguments.typename].stProps[i].metadata.type NEQ "array">
+			<cfif structKeyExists(PrimaryPackage.stProps,i) and PrimaryPackage.stProps[i].metadata.type NEQ "array">
 				<cfset tmpSt[i] = arguments.recordset[i][arguments.recordset.currentRow]>			
 			</cfif>
 		</cfloop>
@@ -420,6 +458,11 @@
 	<cfargument name="bFormToolMetadata" type="boolean" default="true" hint="Convert content item to form tool metadata; else leave as a simple structure.">
 	<cfargument name="dsn" default="#application.dsn#" type="string" hint="Datasource name." />
 	<cfargument name="dbowner" default="#application.dbowner#" type="string" hint="Database owner." />
+
+	
+	<cfset var PrimaryPackage = "" />
+	<cfset var PrimaryPackagePath = "" />	
+	
 	
 	<cfset var i = "" />
 	<cfset var j = "" />
@@ -429,12 +472,22 @@
 	<cfset var st = structNew() />
 	<cfset var qArrayData = queryNew("data") />
 	<cfset var stResult=structNew() />
+	
+
+	
+	<cfif structKeyExists(application.types, arguments.typename)>
+		<cfset PrimaryPackage = application.types[arguments.typename] />
+		<cfset PrimaryPackagePath = application.types[arguments.typename].typepath />
+	<cfelse>
+		<cfset PrimaryPackage = application.rules[arguments.typename] />
+		<cfset PrimaryPackagePath = application.rules[arguments.typename].rulepath />
+	</cfif>
 
 	<cfset stTmp.typename = arguments.typename />
 	
 	<cfloop list="#arguments.recordset.columnlist#" index="i">
-		<cfif structkeyexists(application.types[arguments.typename].stProps, i)>
-			<cfif application.types[arguments.typename].stProps[i].metadata.type NEQ "array">
+		<cfif structkeyexists(PrimaryPackage.stProps, i)>
+			<cfif PrimaryPackage.stProps[i].metadata.type NEQ "array">
 				<cfset stTmp[i] = arguments.recordset[i][row] />
 			<cfelse>
 				

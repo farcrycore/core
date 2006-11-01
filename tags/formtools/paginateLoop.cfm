@@ -46,11 +46,18 @@ $in: objectid -- $
 	<cfparam name="attributes.bTypeAdmin" default="true">
 	<cfparam name="attributes.stpermissions" default="#structNew()#">
 	
+	<cfif structKeyExists(application.types, attributes.typename)>
+		<cfset PrimaryPackage = application.types[attributes.typename] />
+		<cfset PrimaryPackagePath = application.types[attributes.typename].typepath />
+	<cfelse>
+		<cfset PrimaryPackage = application.rules[attributes.typename] />
+		<cfset PrimaryPackagePath = application.rules[attributes.typename].rulepath />
+	</cfif>
 	
 	
 	<cfset variables.currentRow = attributes.startRow />
 
-	<cfset o = createObject("component", application.types[attributes.typename].typepath) />
+	<cfset o = createObject("component", PrimaryPackagePath) />
 	<cfset oFormtoolUtil = createObject("component", "farcry.farcry_core.packages.farcry.formtools") />
 
 	<cfif attributes.bIncludeObjects>
