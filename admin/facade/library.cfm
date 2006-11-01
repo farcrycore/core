@@ -159,14 +159,36 @@ $Developer: $
 
 <ft:processForm action="Attach & Add Another" url="#cgi.script_name#?#querystring#&ftJoin=#request.ftJoin#&librarySection=Add" />
 
-<ft:processForm action="*" excludeAction="Search" url="#cgi.script_name#?#querystring#&ftJoin=#request.ftJoin#" />
+<ft:processForm action="*" excludeAction="Search,Refresh" url="#cgi.script_name#?#querystring#&ftJoin=#request.ftJoin#" />
 
 
 
+<cfparam name="session.stLibraryFilter" default="#structNew()#" />
+<cfparam name="session.stLibraryFilter['#request.ftJoin#']" default="#structNew()#" />
+<cfparam name="session.stLibraryFilter['#request.ftJoin#'].Criteria" default="" />
+
+<ft:processForm action="Search">
+
+	<cfset session.stLibraryFilter['#request.ftJoin#'].Criteria = form.criteria />
+
+</ft:processForm>
 
 
+<ft:processForm action="Refresh">
+	<cfset session.stLibraryFilter[request.ftJoin] = structNew() />
+	<cfset session.stLibraryFilter[request.ftJoin].Criteria = "" />
+</ft:processForm>
 
-
+<cfif len(session.stLibraryFilter[request.ftJoin].Criteria)>
+	<cfset filterCriteria = session.stLibraryFilter[request.ftJoin].Criteria />
+	<cfsearch collection="#application.applicationName#_#request.ftJoin#" criteria="#filterCriteria#" name="qSearchResults" type="internet" />
+	
+	<cfif NOT qSearchResults.RecordCount>
+		<cfoutput><h3>No Results matched search. All records have been returned</h3></cfoutput>
+	<cfelse>
+		<cfset session.stLibraryFilter['#request.ftJoin#'].qResults = qSearchResults />
+	</cfif>
+</cfif>
 
 <admin:Header Title="Library" bodyclass="popup imagebrowse library" bCacheControl="false">
 
@@ -197,9 +219,7 @@ LIBRARY DATA
 <cfset stLibraryData = structNew() />
 
 		
-		
 <cfif isDefined("url.ftLibraryData") AND len(url.ftLibraryData)>	
-	
 	
 	<cfparam name="url.ftLibraryDataTypename" default="#url.ftJoin#" />
 	
@@ -208,9 +228,24 @@ LIBRARY DATA
 	<cfelse>
 		<cfset oLibraryData = createObject("component", application.rules[url.ftLibraryDataTypename].packagePath) />
 	</cfif>
-	
+
 	<cfif structkeyexists(oLibraryData, url.ftLibraryData)>
-		<cfinvoke component="#oLibraryData#" method="#url.ftLibraryData#" returnvariable="stLibraryData" />
+		<cfinvoke component="#oLibraryData#" method="#url.ftLibraryData#" returnvariable="qLibraryData" />
+		
+		<cfif structKeyExists(session.stLibraryFilter[request.ftJoin], "qResults") AND session.stLibraryFilter[request.ftJoin].qResults.recordCount AND qLibraryData.recordCount>
+			<cfset qFilter = session.stLibraryFilter[request.ftJoin].qResults />
+			<cfset FilterList = valuelist(qFilter.key) />
+
+	
+			<cfquery dbType="query" name="qLibraryData">
+			select * from qLibraryData
+			where objectid IN (#ListQualify(FilterList,"'")#)
+			</cfquery>
+		</cfif>
+
+		<cfset stLibraryData.q = qLibraryData />
+		<cfset stLibraryData.recordsPerPage = 20 />
+		<cfset stLibraryData.CountAll = qLibraryData.recordCount />
 	</cfif>
 	
 </cfif>
@@ -218,8 +253,25 @@ LIBRARY DATA
 <!--- if nothing exists to generate library data then cobble something together --->
 <cfif structIsEmpty(stLibraryData)>
 	
+	<cfset SQLWhere = "1=1" />
+	
+	<cfif structKeyExists(PrimaryPackage.stProps[url.primaryFieldName].Metadata, "ftLibraryDataSQLWhere")>
+		<cfset SQLWhere = " #SQLWhere# AND (#PrimaryPackage.stProps[url.primaryFieldName].Metadata.ftLibraryDataSQLWhere#)" />
+	</cfif>
+	
+	<cfif structKeyExists(session.stLibraryFilter[request.ftJoin], "qResults") AND session.stLibraryFilter[request.ftJoin].qResults.recordCount>
+		<cfset qFilter = session.stLibraryFilter[request.ftJoin].qResults />
+		<cfset FilterList = valuelist(qFilter.key) />
+		<cfset SQLWhere = " #SQLWhere# AND objectid IN (#ListQualify(FilterList,"'")#)" />
+	</cfif>
+	
+	<cfset SQLOrderBy = "label" />
+	<cfif structKeyExists(PrimaryPackage.stProps[url.primaryFieldName].Metadata, "ftLibraryDataSQLOrderBy")>
+		<cfset SQLOrderBy = PrimaryPackage.stProps[url.primaryFieldName].Metadata.ftLibraryDataSQLOrderBy />
+	</cfif>
+	
 	<cfset oFormTools = createObject("component","farcry.farcry_core.packages.farcry.formtools")>
-	<cfset stLibraryData = oFormTools.getRecordset(typename="#request.ftJoin#", sqlColumns="*", sqlOrderBy="label", RecordsPerPage="20") />
+	<cfset stLibraryData = oFormTools.getRecordset(typename="#request.ftJoin#", sqlColumns="*", sqlOrderBy="#SQLOrderBy#", SQLWhere="#SQLWhere#", RecordsPerPage="20") />
 
 	
 	<!---<cfinvoke component="#oData#" method="getLibraryData" returnvariable="qLibraryList" /> --->
@@ -261,32 +313,16 @@ LIBRARY DATA
 	<cfoutput><div></cfoutput>
 
 
-	<ft:processForm action="Search">
-		<cfsearch collection="#application.applicationName#_#request.ftJoin#" criteria="#form.Criteria#" name="qResults" type="internet" />
-		
-		<cfif qResults.RecordCount>
-			<cfquery dbtype="query" name="stLibraryData.q">
-			SELECT *
-			FROM stLibraryData.q
-			WHERE objectid IN (#ListQualify(ValueList(qResults.key),"'")#)
-			</cfquery>
-		<cfelse>
-			<cfoutput><h3>No Results matched search. All records have been returned</h3></cfoutput>
-		</cfif>
-		
-	</ft:processForm>
-	
-	<ft:processForm action="Refresh">
-		<cfset form.Criteria = "" />
-	</ft:processForm>
+
 	
 	
-	<cfparam name="form.Criteria" default="" />
 	<ft:form>
-		<cfoutput><input type="text" name="criteria" id="criteria" value="#form.Criteria#" /></cfoutput>
+		<cfoutput><input type="text" name="criteria" id="criteria" value="#session.stLibraryFilter[request.ftJoin].Criteria#" /></cfoutput>
 		<ft:farcrybutton value="Search" />
 		<ft:farcrybutton value="Refresh" />
 	</ft:form>
+	
+	
 	<cfoutput></div></cfoutput>
 	
 </cfif>
