@@ -166,6 +166,7 @@ $Developer: $
 <cfparam name="session.stLibraryFilter" default="#structNew()#" />
 <cfparam name="session.stLibraryFilter['#request.ftJoin#']" default="#structNew()#" />
 <cfparam name="session.stLibraryFilter['#request.ftJoin#'].Criteria" default="" />
+<cfparam name="session.stLibraryFilter['#request.ftJoin#'].qResults" default="#queryNew('objectid')#" />
 
 <ft:processForm action="Search">
 
@@ -177,6 +178,7 @@ $Developer: $
 <ft:processForm action="Refresh">
 	<cfset session.stLibraryFilter[request.ftJoin] = structNew() />
 	<cfset session.stLibraryFilter[request.ftJoin].Criteria = "" />
+	<cfset session.stLibraryFilter[request.ftJoin].qResults = queryNew("objectid") />
 </ft:processForm>
 
 <cfif len(session.stLibraryFilter[request.ftJoin].Criteria)>
@@ -230,8 +232,24 @@ LIBRARY DATA
 	</cfif>
 
 	<cfif structkeyexists(oLibraryData, url.ftLibraryData)>
-		<cfinvoke component="#oLibraryData#" method="#url.ftLibraryData#" returnvariable="qLibraryData" />
-		
+		<cfinvoke component="#oLibraryData#" method="#url.ftLibraryData#" returnvariable="LibraryDataResult">
+			<cfinvokeargument name="primaryID" value="#url.primaryObjectID#">
+			<cfinvokeargument name="qFilter" value="#session.stLibraryFilter[request.ftJoin].qResults#">
+		</cfinvoke>
+	
+		<!---
+		The return variable from the LibraryData function can either be a basic query 
+		or structure that contains only the page of date as returned by the getRecordSet function in core
+		 --->
+		 
+		<cfif isQuery(libraryDataResult)>
+			<cfset stLibraryData.q = libraryDataResult />
+			<cfset stLibraryData.recordsPerPage = 20 />
+			<cfset stLibraryData.CountAll = libraryDataResult.recordCount />
+		<cfelseif structKeyExists(libraryDataResult, "q")>
+			<cfset stLibraryData = LibraryDataResult />
+		</cfif>
+<!---		
 		<cfif structKeyExists(session.stLibraryFilter[request.ftJoin], "qResults") AND session.stLibraryFilter[request.ftJoin].qResults.recordCount AND qLibraryData.recordCount>
 			<cfset qFilter = session.stLibraryFilter[request.ftJoin].qResults />
 			<cfset FilterList = valuelist(qFilter.key) />
@@ -245,7 +263,7 @@ LIBRARY DATA
 
 		<cfset stLibraryData.q = qLibraryData />
 		<cfset stLibraryData.recordsPerPage = 20 />
-		<cfset stLibraryData.CountAll = qLibraryData.recordCount />
+		<cfset stLibraryData.CountAll = qLibraryData.recordCount /> --->
 	</cfif>
 	
 </cfif>
