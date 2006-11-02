@@ -73,11 +73,13 @@ $out:$
 		<cfif listLen(structKeyList(application.rules[stobj.typename].stProps)) LTE 2>
 			<cfoutput><h3>No Parameters required</h3></cfoutput>
 		</cfif>
-		
+		<cfif isDefined("url.saved")>
+			<cfoutput><h3>Rule has been saved</h3></cfoutput>
+		</cfif>
 		
 		<cfset onExit = StructNew() />		
-		<cfset onExit.Type = "HTML" />
-		<cfset onExit.Content = "<h1>RULE HAS BEEN SAVED</h1>" />
+		<cfset onExit.Type = "URL" />
+		<cfset onExit.Content = "#cgi.SCRIPT_NAME#?#cgi.QUERY_STRING#&saved=1" />
 		
 		
 		
@@ -246,10 +248,12 @@ $out:$
 		<cfargument name="auditNote" type="string" required="true" hint="Note for audit trail" default="Updated publishing rule.">
 		<cfargument name="bAudit" type="boolean" required="No" default="1" hint="Pass in 0 if you wish no audit to take place">
 		<cfargument name="dsn" required="No" default="#application.dsn#"> 
+		<cfargument name="bSessionOnly" type="boolean" required="false" default="false"><!--- This property allows you to save the changes to the Temporary Object Store for the life of the current session. ---> 
+		
 		
 		<cfset var stReturn=structNew()>
-		
-		<cfset stReturn=super.setData(arguments.stProperties,arguments.dsn)>
+					    
+		<cfset stReturn=super.setData(stProperties=arguments.stProperties, dsn=arguments.dsn, bSessionOnly=arguments.bSessionOnly) />
 		<!--- log update --->
 		<cfif arguments.bAudit>
 			<cfset application.factory.oAudit.logActivity(auditType="Update", username=arguments.user, location=cgi.remote_host, note=arguments.auditNote,objectid=arguments.stProperties.objectid,dsn=arguments.dsn)>	
