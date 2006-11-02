@@ -75,7 +75,7 @@ form div label.compact {text-indent: 0px;}
 form div.notes p, form div small {line-height: 125%;}
 
 <!--- form.formtool ##wizard-content select {font-size: 90%; line-height: normal;} --->
-form.formtool ##wizard-content select option {font-size:inherit; line-height:inherit;}
+<!--- form.formtool ##wizard-content select option {font-size:inherit; line-height:inherit;} --->
 /* end legacy formtool css  */
 
 /* start new formtool formatting styles */

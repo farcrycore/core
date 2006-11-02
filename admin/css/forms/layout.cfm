@@ -180,7 +180,7 @@ form.formtool .formCheckbox {width: auto; border: none;}
 form.formtool .category .fieldwrap input {border: none;}
 
 form.formtool ##wizard-content select {width: auto; margin: 0px; padding: 0px;}
-form.formtool ##wizard-content select option {width: auto; margin: 0px; padding: 0px 3px 0px 3px;}
+<!--- form.formtool ##wizard-content select option {width: auto; margin: 0px; padding: 0px 3px 0px 3px;} --->
 
 input.validation-failed, textarea.validation-failed {border: 1px solid ##FF3300; color: ##FF3300;}
 .validation-advice {margin: 5px 0px 5px 0px; padding: 5px 5px 5px 5px; background-color: ##FF3300; color: ##FFFFFF; font-weight: bold;}
@@ -192,7 +192,7 @@ input.validation-failed, textarea.validation-failed {border: 1px solid ##FF3300;
 	/* formtool input : formCheckbox layout styles */	
 	form.formtool input.formCheckbox {margin: 0px; padding: 0px; width: 12px; height: 12px;}
 	/* formtool select layout styles */
-	form.formtool select {margin: 0px; padding: 0px; height: 16px; float: left; display: block;}
+	form.formtool select {margin: 0px; padding: 0px; float: left; display: block;}
 
 /* formtool html button layout styles */
 	/* formtool default html button group layout styles */
