@@ -74,7 +74,13 @@ $out:$
 			<cfoutput><h3>No Parameters required</h3></cfoutput>
 		</cfif>
 		<cfif isDefined("url.saved")>
-			<cfoutput><h3>Rule has been saved</h3></cfoutput>
+			<cfset request.inhead.scriptaculousEffects = true />
+			<cfoutput>
+				<h3 id="ruleSaveMessage">Rule has been saved</h3>
+				<script type="text/javascript">
+				new Effect.Highlight($('ruleSaveMessage'), {startcolor:'##E17000',duration:3})
+				</script>
+			</cfoutput>
 		</cfif>
 		
 		<cfset onExit = StructNew() />		
