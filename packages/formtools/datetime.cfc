@@ -51,7 +51,6 @@
 			<cfset datetimefieldvisible = 0>
 			<cfset datetimefieldvisibletoggletext = "show...">
 			<cfset arguments.stMetadata.ftStyle = "#arguments.stMetadata.ftStyle#;display:none;">
-			<cfset arguments.stMetadata.value = Evaluate(arguments.stMetadata.Default)>
 		<cfelse>
 			<cfset datetimefieldvisible = 1>
 			<cfset datetimefieldvisibletoggletext = "remove...">
