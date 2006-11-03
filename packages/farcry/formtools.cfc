@@ -60,6 +60,8 @@
 	<cfargument name="RecordsPerPage" required="No" type="numeric" default="10" />
 	<cfargument name="PageLinksShown" required="No" type="numeric" default="5" />
 	
+	<cfargument name="aCategoryFilters" required="No" type="array" default="#arrayNew(1)#" />
+	
 	
 	<cfset var PrimaryPackage = "" />
 	<cfset var PrimaryPackagePath = "" />
@@ -71,6 +73,13 @@
 	
 	<cfset var bHasStatus = false />	
 	<cfset var bHasVersionID = false />
+	
+	
+	<cfif len(arguments.lCategories)>
+		<cfset arrayAppend(aCategoryFilters, arguments.lCategories) />
+	</cfif>
+	
+	
 	
 	<cfif structKeyExists(application.types, arguments.typename)>
 		<cfset PrimaryPackage = application.types[arguments.typename] />
@@ -125,7 +134,7 @@
 		<cfset arguments.sqlColumns="tbl.*">
 	</cfif>
 
-	<cfset arguments.lCategories = listQualify(arguments.lCategories,"'")>
+	<!---<cfset arguments.lCategories = listQualify(arguments.lCategories,"'")> --->
 	<!--- <cfset SQLCategoryMust = "">
 	<cfif arguments.lCategoriesMust neq "">
 		<cfloop list="#arguments.lCategoriesMust#" index="catID">
@@ -152,12 +161,16 @@
 			FROM #arguments.typename# tbl 
 			WHERE #preserveSingleQuotes(arguments.SqlWhere)#
 			
-			<cfif arguments.lCategories neq ''>
-				AND objectid in (
-				    select distinct objectid 
-				    from refCategories 
-				    where categoryID in (#preserveSingleQuotes(arguments.lCategories)#)
-				    )
+			<cfif arrayLen(arguments.aCategoryFilters)>
+				<cfloop from="1" to="#arrayLen(arguments.aCategoryFilters)#" index="i">
+					<cfif arguments.aCategoryFilters[i] neq ''>
+						AND objectid in (
+						    select distinct objectid 
+						    from refCategories 
+						    where categoryID in (#listQualify(arguments.aCategoryFilters[i],"'")#)
+						    )
+					</cfif>
+				</cfloop>
 			</cfif>
 			<cfif bHasVersionID>
 				AND (tbl.versionid = '' OR tbl.versionid IS NULL)
@@ -187,12 +200,16 @@
 			FROM #arguments.typename# tbl 			
 			WHERE #preserveSingleQuotes(arguments.SqlWhere)#
 			
-			<cfif arguments.lCategories neq ''>
-				AND objectid in (
-				    select distinct objectid 
-				    from refCategories 
-				    where categoryID in (#preserveSingleQuotes(arguments.lCategories)#)
-				)
+			<cfif arrayLen(arguments.aCategoryFilters)>
+				<cfloop from="1" to="#arrayLen(arguments.aCategoryFilters)#" index="i">
+					<cfif arguments.aCategoryFilters[i] neq ''>
+						AND objectid in (
+						    select distinct objectid 
+						    from refCategories 
+						    where categoryID in (#listQualify(arguments.aCategoryFilters[i],"'")#)
+						    )
+					</cfif>
+				</cfloop>
 			</cfif>
 			<cfif bHasVersionID>
 				AND (tbl.versionid = '' OR tbl.versionid IS NULL)
@@ -243,12 +260,16 @@
 			FROM #arguments.typename# tbl 
 			WHERE #preserveSingleQuotes(arguments.SqlWhere)#
 			
-			<cfif arguments.lCategories neq ''>
-				AND objectid in (
-				    select distinct objectid 
-				    from refCategories 
-				    where categoryID in (#preserveSingleQuotes(arguments.lCategories)#)
-				    )
+			<cfif arrayLen(arguments.aCategoryFilters)>
+				<cfloop from="1" to="#arrayLen(arguments.aCategoryFilters)#" index="i">
+					<cfif arguments.aCategoryFilters[i] neq ''>
+						AND objectid in (
+						    select distinct objectid 
+						    from refCategories 
+						    where categoryID in (#listQualify(arguments.aCategoryFilters[i],"'")#)
+						    )
+					</cfif>
+				</cfloop>
 			</cfif>
 			<cfif bHasVersionID>
 				AND (tbl.versionid = '' OR tbl.versionid IS NULL)
@@ -278,12 +299,16 @@
 			FROM #arguments.typename# tbl 			
 			WHERE #preserveSingleQuotes(arguments.SqlWhere)#
 			
-			<cfif arguments.lCategories neq ''>
-				AND objectid in (
-				    select distinct objectid 
-				    from refCategories 
-				    where categoryID in (#preserveSingleQuotes(arguments.lCategories)#)
-				)
+			<cfif arrayLen(arguments.aCategoryFilters)>
+				<cfloop from="1" to="#arrayLen(arguments.aCategoryFilters)#" index="i">
+					<cfif arguments.aCategoryFilters[i] neq ''>
+						AND objectid in (
+						    select distinct objectid 
+						    from refCategories 
+						    where categoryID in (#listQualify(arguments.aCategoryFilters[i],"'")#)
+						    )
+					</cfif>
+				</cfloop>
 			</cfif>
 			<cfif bHasVersionID>
 				AND (tbl.versionid = '' OR tbl.versionid IS NULL)
@@ -340,15 +365,33 @@
 		<cfset stReturn.RecordsPerPage = arguments.RecordsPerPage />
 		<!--- end of pagination  --->
 	<cfelse>
+		<cfif NOT len(arguments.sqlWhere)>
+			<cfset arguments.sqlWhere = "0=0" />
+		</cfif>
+		
 		<cfquery name="getRecords" datasource="#application.dsn#">		
-				SELECT #arguments.sqlColumns# FROM #arguments.typename# tbl 
-				<cfif arguments.lCategories neq ''>
+				SELECT #arguments.sqlColumns# 
+				FROM #arguments.typename# tbl 
+				<cfif arguments.SqlWhere neq ''>WHERE #arguments.SqlWhere#</cfif>
+				<cfif arrayLen(arguments.aCategoryFilters)>
+					<cfloop from="1" to="#arrayLen(arguments.aCategoryFilters)#" index="i">
+						<cfif arguments.aCategoryFilters[i] neq ''>
+							AND objectid in (
+							    select distinct objectid 
+							    from refCategories 
+							    where categoryID in (#listQualify(arguments.aCategoryFilters[i],"'")#)
+							    )
+						</cfif>
+					</cfloop>
+				</cfif>
+								
+				<!---<cfif arguments.lCategories neq ''>
 					, refCategories cat where cat.objectId = tbl.ObjectID
 				<cfelse>
 					where 0=0
 				</cfif>
-				<cfif arguments.SqlWhere neq ''>AND #arguments.SqlWhere#</cfif>
-				<cfif arguments.lCategories neq ''>	AND cat.categoryID in(#preserveSingleQuotes(arguments.lCategories)#)</cfif>
+				
+				<cfif arguments.lCategories neq ''>	AND cat.categoryID in(#preserveSingleQuotes(arguments.lCategories)#)</cfif> --->
 				<cfif arguments.sqlOrderBy neq ''>ORDER BY #arguments.sqlOrderBy#</cfif>
 		</cfquery>
 		<cfset stReturn.q = getRecords />
