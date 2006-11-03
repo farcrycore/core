@@ -70,6 +70,7 @@
 				<menuitem id="scopedump" label="application.adminBundle[session.dmProfile.locale].ScopeDump" labelType="evaluate" link="/admin/yxplorer.cfm" />
 			</menu>
 			<menu id="cachemanagement" label="application.adminBundle[session.dmProfile.locale].CacheManagement" labelType="evaluate">
+				<menuitem id="objbrokersummary" label="Object Broker Report" labelType="value" link="/admin/objectBrokerReport.cfm" />
 				<menuitem id="cachesummary" label="application.adminBundle[session.dmProfile.locale].CacheSummary" labelType="evaluate" link="/admin/cacheSummary.cfm" />
 				<menuitem id="cacheauto" label="application.adminBundle[session.dmProfile.locale].AutoCache" labelType="evaluate" link="/admin/cacheAll.cfm" />
 			</menu>
