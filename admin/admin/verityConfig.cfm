@@ -1,3 +1,4 @@
+<cfsetting enablecfoutputonly="true" />
 <!--- 
 || LEGAL ||
 $Copyright: Daemon Pty Limited 1995-2006, http://www.daemon.com.au $
@@ -5,11 +6,11 @@ $Community: FarCry CMS http://www.farcrycms.org $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header$
-$Author$
-$Date$
-$Name$
-$Revision$
+$Header: $
+$Author: $
+$Date: $
+$Name: $
+$Revision: $
 
 || DESCRIPTION || 
 $Description: Verity Configurator Prototype; will have to tie us over till config engine is rebuilt. $
@@ -83,7 +84,7 @@ VIEW:
 	<cfset querySetCell(qProps,"property",property)>
 </cfloop>
 
-<admin:header>
+<admin:header />
 <cfoutput><h1>Collection Settings for #typename#</h1></cfoutput>
 
 <cfform action="verityConfig.cfm">
@@ -139,7 +140,7 @@ FileCollectionProperty: <cfselect name="FileCollectionProperty" query="qProps" v
 <input type="submit" name="updateCollection" value="Commit Collection Settings" />
 </cfoutput>
 </cfform>
-<admin:footer>
+<admin:footer />
 
 <cfelse>
 
@@ -208,7 +209,9 @@ ORDER BY typename
 OUTPUT:
  - Overview screen
 ----------------------------------------->
-<admin:header title="Type Collection Management">
+<admin:header title="Type Collection Management" />
+
+<cfoutput>
 <h1>Type Collection Management</h1>
 
 <table class="table-2" cellspacing="0">
@@ -223,6 +226,7 @@ OUTPUT:
 	<th scope="col">doccount</th>
 	<th scope="col">builttodate</th>
 </tr>
+</cfoutput>
 <cfoutput query="qCollections">
 <tr class="#iif(currentrow MOD 2, de("alt"), de(""))# #iif(qCollections.bactive, de(""), de("disabled"))#">
 	<td style="text-align: center;"><input type="checkbox" class="f-checkbox" name="objectid" value="4FA8AEFC-C0A8-7E1F-160956AF789CC4E8" onclick="setRowBackground(this);" /></td>
@@ -241,13 +245,13 @@ OUTPUT:
 	<td>#qcollections.builttodate#</td>
 </tr>
 </cfoutput>
+<cfoutput>
 </table>
-<admin:footer>
+</cfoutput>
+
+<admin:footer />
 
 </cfif>
 
 
-
-<!--- <cfdump var="#qCollections#">
-<cfdump var="#stServerCollections#"> --->
-<!--- <cfdump var="#application.config.verity.contenttype#"> --->
+<cfsetting enablecfoutputonly="true" />
