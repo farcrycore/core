@@ -23,12 +23,13 @@ $Developer: Brendan Sisson (brendan@daemon.com.au) $
 type properties
 ------------------------------------------------------------------------->
 <cfproperty name="title" type="nstring" hint="Meaningful reference title for include file" required="no" default=""> 
-<cfproperty name="teaser" type="nstring" hint="A brief description of the nature of the include file" required="no" default="">  
-<cfproperty name="displayMethod" type="string" hint="" required="No" default=""> 
-<cfproperty name="include" type="string" hint="The name of the include file" required="No" default=""> 
+<cfproperty name="teaser" type="nstring" hint="A brief description of the nature of the include file" required="no" default="" ftType="longchar">  
+<cfproperty name="displayMethod" type="string" hint="" required="No" default="" ftType="webskin" ftPrefix="displayPage"> 
+<cfproperty name="include" type="string" hint="The name of the include file" required="No" default="" ftType="list" ftListData="getIncludeList"> 
 <cfproperty name="status" type="string" hint="Status of file - draft or approved" required="No" default="draft"> 
 <cfproperty name="commentlog" type="longchar" hint="Workflow comment log." required="no" default=""> 
 <cfproperty name="teaserImage" type="string" hint="UUID of image to display in teaser" required="no" default="">
+<cfproperty name="catInclude" type="string" hint="category of the include" required="no" default="" ftType="category" />
 
 <!--- Object Methods --->
 
@@ -62,4 +63,31 @@ type properties
 	<cfreturn qIncludes>	
 </cffunction>
 	
+	
+
+<cffunction access="public" name="getIncludeList" returntype="string" hint="returns a list (column name 'include') of available includes.">
+	
+	<cfset var returnList = "" />
+	<cfset var includePath = application.path.project & "/includedObj">
+	<cfset var qDir = queryNew("blah") />
+	<cfset var includeAlias = "" />
+	
+	
+	<cfif NOT directoryExists(includePath)>
+		<cfdirectory action="create" directory="#includePath#" /> 
+	</cfif>
+	
+	<cfdirectory directory="#includePath#" name="qDir" filter="*.cfm" sort="name">
+
+	<cfloop query="qDir">
+		<cfif qDir.name neq "_donotdelete.cfm">
+			<cfset includeAlias = left(qDir.name, len(qDir.name)-4)>			
+			<cfset returnList = listAppend(returnList, "#qDir.name#:#includeAlias#") />
+		</cfif>
+	</cfloop>
+	
+	<cfreturn returnList>	
+</cffunction>
+	
+		
 </cfcomponent>
