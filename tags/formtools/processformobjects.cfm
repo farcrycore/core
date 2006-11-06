@@ -141,15 +141,14 @@
 
 	<cfelse>
 		
-		
-		<cfif attributes.PackageType EQ "types">
-			<cfset stPackage = application[attributes.PackageType][typename]>
-			<cfset packagePath = application[attributes.PackageType][typename].typepath>
+					
+		<cfif structKeyExists(application.types, typename)>
+			<cfset stPackage = application.types[typename]>
+			<cfset packagePath = application.types[typename].typepath>
 		<cfelse>
-			<cfset stPackage = application[attributes.PackageType][typename]>
-			<cfset packagePath = application[attributes.PackageType][typename].rulepath>
+			<cfset stPackage = application.rules[typename]>
+			<cfset packagePath = application.rules[typename].rulepath>
 		</cfif>
-				
 		
 
 
@@ -326,12 +325,13 @@
 		<cfset stResult.stObj = arguments.stObj>
 		<cfset stResult.typename = arguments.stObj.typename>
 		
-		<cfif attributes.PackageType EQ "types">
-			<cfset stPackage = application[attributes.PackageType][stResult.typename]>
-			<cfset packagePath = application[attributes.PackageType][stResult.typename].typepath>
+			
+		<cfif structKeyExists(application.types, stResult.typename)>
+			<cfset stPackage = application.types[stResult.typename]>
+			<cfset packagePath = application.types[stResult.typename].typepath>
 		<cfelse>
-			<cfset stPackage = application[attributes.PackageType][stResult.typename]>
-			<cfset packagePath = application[attributes.PackageType][stResult.typename].rulepath>
+			<cfset stPackage = application.rules[stResult.typename]>
+			<cfset packagePath = application.rules[stResult.typename].rulepath>
 		</cfif>
 		
 		
@@ -355,12 +355,12 @@
 		<cfset stResult.typename = arguments.typename>
 			
 			
-		<cfif attributes.PackageType EQ "types">
-			<cfset stPackage = application[attributes.PackageType][stResult.typename]>
-			<cfset packagePath = application[attributes.PackageType][stResult.typename].typepath>
+		<cfif structKeyExists(application.types, stResult.typename)>
+			<cfset stPackage = application.types[stResult.typename]>
+			<cfset packagePath = application.types[stResult.typename].typepath>
 		<cfelse>
-			<cfset stPackage = application[attributes.PackageType][stResult.typename]>
-			<cfset packagePath = application[attributes.PackageType][stResult.typename].rulepath>
+			<cfset stPackage = application.rules[stResult.typename]>
+			<cfset packagePath = application.rules[stResult.typename].rulepath>
 		</cfif>
 		
 		
@@ -376,14 +376,13 @@
 
 		<cfset stResult.stObj = StructNew()>
 		<cfset stResult.typename = arguments.typename>
-
 			
-		<cfif attributes.PackageType EQ "types">
-			<cfset stPackage = application[attributes.PackageType][stResult.typename]>
-			<cfset packagePath = application[attributes.PackageType][stResult.typename].typepath>
+		<cfif structKeyExists(application.types, stResult.typename)>
+			<cfset stPackage = application.types[stResult.typename]>
+			<cfset packagePath = application.types[stResult.typename].typepath>
 		<cfelse>
-			<cfset stPackage = application[attributes.PackageType][stResult.typename]>
-			<cfset packagePath = application[attributes.PackageType][stResult.typename].rulepath>
+			<cfset stPackage = application.rules[stResult.typename]>
+			<cfset packagePath = application.rules[stResult.typename].rulepath>
 		</cfif>
 		
 		
