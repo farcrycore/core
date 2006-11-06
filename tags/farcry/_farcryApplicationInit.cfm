@@ -57,12 +57,14 @@ $Developer: Mat Bryant (mat@daemon.com.au)$
     
     // System Information. This provides information about the environment on which the application is being run
     oSysInfo=createObject("component","#application.packagepath#.farcry.sysinfo");
-    
-    application.sysInfo=structNew();    
-	application.sysInfo.machineName = oSysInfo.getMachineName();
-	application.sysInfo.instanceName = oSysInfo.getInstanceName();
-	application.sysInfo.farcryVersionTagLine = oSysInfo.getVersionTagline();
 </cfscript>
+
+<!--- build sysinfo --->
+<cfparam name="application.sysInfo" default="#structNew()#" type="struct" />
+<cfparam name="application.sysInfo.machineName" default="#oSysInfo.getMachineName()#" />
+<cfparam name="application.sysInfo.instanceName" default="#oSysInfo.getInstanceName()#" />
+<cfparam name="application.sysInfo.farcryVersionTagLine" default="oSysInfo.getVersionTagline()" />
+<cfparam name="application.sysinfo.bwebtopaccess" default="true" type="boolean" />
 
 <!------------------------------------------------------------
 Check to see if Important project specific files exist. 

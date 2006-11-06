@@ -56,9 +56,19 @@ DETERMINE WHICH PROJECT WE ARE ATTEMPTING TO ADMINISTER
 
 <!--- begin: initialise webtop factory object --->
 <!--- TODO: move to application initialisation --->
-<!--- grab webtop config file and parse --->
-<cfset application.factory.owebtop=createobject("component", "#application.packagepath#.farcry.webtop").init()>
-<!--- <cfdump var="#application.factory.owebtop#"> --->
+<cfif application.sysinfo.bwebtopaccess>
+	<!--- grab webtop config file and parse --->
+	<cfset application.factory.owebtop=createobject("component", "#application.packagepath#.farcry.webtop").init()>
+<cfelse>
+	<cfoutput>
+	<div style="margin: 10% 30% 0% 30%; padding: 10px; border: 2px navy solid; background: ##dedeff; font-family: Verdana; font-color: navy; text-align: center;">
+		<h2>Webtop Access Restricted</h2>
+		<p>Webtop access has been specifically restricted on this server.  Please contact your system administrator for details.</p>
+	</div>
+	</cfoutput>
+	<cfabort />
+</cfif>
+
 <!--- end: initialise webtop factory object --->
 
 
