@@ -65,12 +65,23 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 </ft:processForm>
 
 
+<cfoutput>
+	<script type="text/javascript">
+		function fCancelAction(){
+			if(parent['sidebar'].frames['sideTree']){
+				parent['sidebar'].frames['sideTree'].location= parent['sidebar'].frames['sideTree'].location;
+				parent['content'].location.href = "#application.url.farcry#/edittabOverview.cfm?objectid=#stObj.ObjectID#";
+			}
+		}
+	</script>
+</cfoutput>
+
 <ft:form>
 
 	<ft:object stobject="#stObj#" lfields="title,Teaser,include,displayMethod,catInclude" />
 	
 	<ft:farcryButton value="Save" />
-	<ft:farcryButton value="cancel" onClick="fCancelAction();" />
+	<ft:farcryButton value="cancel" onClick="fCancelAction();return false;" />
 	
 </ft:form>
 	
