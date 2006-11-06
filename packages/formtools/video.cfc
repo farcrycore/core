@@ -1,6 +1,6 @@
 
 
-<cfcomponent name="Video" displayname="Video" Extends="Field" hint="Field component to liase with all Video types"> 
+<cfcomponent name="Video" displayname="Video" Extends="field" hint="Field component to liase with all Video types"> 
 
 
 	<cfimport taglib="/farcry/farcry_core/tags/formtools/" prefix="ft" >
