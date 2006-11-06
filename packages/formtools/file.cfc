@@ -1,6 +1,6 @@
 
 
-<cfcomponent name="File" displayname="File" Extends="Field" hint="Field component to liase with all File types"> 
+<cfcomponent name="File" displayname="File" Extends="field" hint="Field component to liase with all File types"> 
 
 
 	<cfimport taglib="/farcry/farcry_core/tags/formtools/" prefix="ft" >
