@@ -23,6 +23,7 @@ It just ignores the inner ones.
 		<cfparam name="attributes.Name" default="farcryForm#randrange(1,999999999)#">
 		<cfparam name="attributes.Target" default="">
 		<cfparam name="attributes.Action" default="">
+		<cfparam name="attributes.method" default="post">
 		
 	
 		<cfparam name="attributes.onsubmit" default="">
@@ -74,6 +75,7 @@ It just ignores the inner ones.
 			<cfparam name="Request.farcryForm.Name" default="#attributes.Name#">
 			<cfparam name="Request.farcryForm.Target" default="#attributes.Target#">
 			<cfparam name="Request.farcryForm.Action" default="#attributes.Action#">
+			<cfparam name="Request.farcryForm.Method" default="#attributes.Method#">
 			<cfparam name="Request.farcryForm.Validation" default="#attributes.Validation#">
 			<cfparam name="Request.farcryForm.stObjects" default="#StructNew()#">		
 			<cfparam name="Request.farcryForm.bAjaxSubmission" default="#attributes.bAjaxSubmission#">		
