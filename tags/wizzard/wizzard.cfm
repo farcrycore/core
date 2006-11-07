@@ -62,6 +62,7 @@ $in: SessionID -- $
 		<cfparam name="attributes.FormName" default="farcryForm">
 		<cfparam name="attributes.FormTarget" default="">
 		<cfparam name="attributes.FormAction" default="#cgi.SCRIPT_NAME#?#cgi.query_string#">	
+		<cfparam name="attributes.FormMethod" default="post">	
 		<cfparam name="attributes.Formonsubmit" default="">
 		<cfparam name="attributes.Formcss" default="">
 		<cfparam name="attributes.FormClass" default="">
@@ -76,6 +77,7 @@ $in: SessionID -- $
 			<cfset Request.farcryForm.Name = attributes.FormName>	
 			<cfset Request.farcryForm.Target = attributes.FormTarget>	
 			<cfset Request.farcryForm.Action = attributes.FormAction>
+			<cfset Request.farcryForm.Method = attributes.FormMethod>
 			<cfset Request.farcryForm.Validation = attributes.FormValidation>
 			<cfset Request.farcryForm.stObjects = StructNew()>		
 		</cfif>	
