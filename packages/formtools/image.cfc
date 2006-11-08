@@ -16,11 +16,21 @@
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 		<cfargument name="stPackage" required="true" type="struct" hint="Contains the metadata for the all fields for the current typename.">
 		
+		
+		<cfset var html = "" />
+		<cfset var dimensionAlert = "" />
+		
 		<cfparam name="arguments.stMetadata.ftstyle" default="">
 		<cfparam name="arguments.stMetadata.ftDestination" default="/images">
 		<cfparam name="arguments.stMetadata.ftSourceField" default="">
 		<cfparam name="arguments.stMetadata.ftCreateFromSourceDefault" default="true">
 		<cfparam name="arguments.stMetadata.ftAllowUpload" default="true">
+		<cfparam name="arguments.stMetadata.ftImageWidth" default="#application.config.image.standardImageWidth#">
+		<cfparam name="arguments.stMetadata.ftImageHeight" default="#application.config.image.standardImageHeight#">
+		<cfparam name="arguments.stMetadata.ftAutoGenerateType" default="FitInside">
+		<cfparam name="arguments.stMetadata.ftPadColor" default="##ffffff">
+		
+		
 		
 		<cfset Request.inHead.Scriptaculous = 1>
 		
@@ -29,6 +39,7 @@
 				<table>
 				<tr>
 					<td valign="top">
+			</cfoutput>
 						<cfif len(arguments.stMetadata.ftSourceField)>
 
 							<cfset Request.InHead.ScriptaculousEffects = 1>
@@ -54,37 +65,71 @@
 								<cfset arguments.stMetadata.ftStyle = "#arguments.stMetadata.ftStyle#;display:none;">
 							</cfif>		
 
-
+							<cfoutput>
 							<div>
-							<input type="checkbox" name="#arguments.fieldname#CreateFromSource" id="#arguments.fieldname#CreateFromSource" value="true" onclick="javascript:toggle#arguments.fieldname#();" class="formCheckbox" <cfif arguments.stMetadata.ftCreateFromSourceDefault AND NOT len(arguments.stMetadata.value)>checked</cfif>> generate based on "#arguments.stPackage.stProps[arguments.stMetadata.ftSourceField].metadata.ftLabel#"
+							<input type="checkbox" name="#arguments.fieldname#CreateFromSource" id="#arguments.fieldname#CreateFromSource" value="true" onclick="javascript:toggle#arguments.fieldname#();" class="formCheckbox" <cfif arguments.stMetadata.ftCreateFromSourceDefault AND NOT len(arguments.stMetadata.value)>checked</cfif>> 
+							generate based on "#arguments.stPackage.stProps[arguments.stMetadata.ftSourceField].metadata.ftLabel#"
 							<input type="hidden" name="#arguments.fieldname#CreateFromSource" id="#arguments.fieldname#CreateFromSource" value="false" />
 							</div>
+							</cfoutput>
 						</cfif>
 						
+						
+						<cfif (structKeyExists(arguments.stMetadata, "ftImagewidth") AND arguments.stMetadata.ftImageWidth GT 0)  OR (structKeyExists(arguments.stMetadata, "ftImageHeight") AND arguments.stMetadata.ftImageHeight GT 0) >
+							<cfsavecontent variable="dimensionAlert">
+								<cfif structKeyExists(arguments.stMetadata, "ftImagewidth") AND arguments.stMetadata.ftImageWidth GT 0>
+									<cfoutput> width:#arguments.stMetadata.ftImageWidth#</cfoutput>
+								</cfif>
+								<cfif structKeyExists(arguments.stMetadata, "ftImageHeight") AND arguments.stMetadata.ftImageHeight GT 0>
+									<cfoutput> height:#arguments.stMetadata.ftImageHeight#</cfoutput>
+								</cfif>
+								<cfif structKeyExists(arguments.stMetadata, "ftAutoGenerateType")>
+									<cfif arguments.stMetadata.ftAutoGenerateType EQ "Pad">
+										<cfoutput> (#arguments.stMetadata.ftAutoGenerateType#: #arguments.stMetadata.ftPadColor#)</cfoutput>
+									<cfelse>
+										<cfoutput> (#arguments.stMetadata.ftAutoGenerateType#)</cfoutput>
+									</cfif>
+									
+								</cfif>
+							</cfsavecontent>
+						</cfif>
 						
 						<!--- Can the user upload their own image. --->
 						<cfif arguments.stMetadata.ftAllowUpload>
+							<cfoutput>
 							<input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#arguments.stMetadata.value#" />
 							<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" value="" class="formFile" style="#arguments.stMetadata.ftstyle#" />
+							</cfoutput>
+							
+							<cfif len(dimensionAlert)>
+								<cfoutput><a href="##" onclick="alert('#dimensionAlert#');return false;">dimensions</a></cfoutput>
+							</cfif>
 						</cfif>
+						
+					<cfoutput>
 					</td>
+					</cfoutput>
 					
 					<cfif len(#arguments.stMetadata.value#)>
+						<cfoutput>
 						<td valign="top">
 							<div id="#arguments.fieldname#previewimage">
 								<img src="#arguments.stMetadata.value#" width="50px">
 								<ft:farcrybutton type="button" value="Delete Image" onclick="if(confirm('Are you sure you want to remove this image?')) {} else {return false};$('#arguments.fieldname#').value='';Effect.Fade('#arguments.fieldname#previewimage');" />
 							</div>
 						</td>
+						</cfoutput>
 					<cfelse>
-						
+						<cfoutput>
 						<td valign="top">
 							<div id="#arguments.fieldname#previewimage">
 								&nbsp;
 							</div>
 						</td>
+						</cfoutput>
 					</cfif>				
 					
+			<cfoutput>
 				</tr>
 				</table>
 			</cfoutput>					
