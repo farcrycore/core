@@ -24,7 +24,7 @@ $out:$
 <cfsetting enablecfoutputonly="true">
 <cfimport taglib="/farcry/farcry_core/tags/navajo" prefix="nj">
 <cfparam name="containerid" default="">
-<cfparam name="section" default="container_contents">
+<cfparam name="section" default="">
 <cfparam name="displayContainerTitle" default="Unknown">
 <!--- <cfparam name="reflectionid" default=""> --->
 
@@ -61,14 +61,27 @@ $out:$
 
 <cfif stObj.mirrorid NEQ ""> <!--- contianer has a reflection .: show reflection editform --->
 	<cfset section = "container_reflections">
-<cfelseif ArrayLen(stObj.aRules) EQ 0 AND section EQ "container_contents"> <!--- container has no rules so go to configure rule page --->
+<cfelseif ArrayLen(stObj.aRules) EQ 0>
 	<cfset section = "container_rules">
-<!---<cfelseif ArrayLen(stObj.aRules) GT 0>
-	<cfset section = "container_contents"> --->
 </cfif>
 
+<cfif not len(section)>
+	<cfif ArrayLen(stObj.aRules) GT 0>
+		<cfset section = "container_contents">
+	<cfelse>
+		<cfset section = "container_rules">
+	</cfif>
+</cfif>
 
-<cfif section EQ "container_rules"> <!--- delete the current rule id in the session as we are out of the rules management section --->
+<!---
+<cfelseif ArrayLen(stObj.aRules) EQ 0 AND section EQ "container_contents"> <!--- container has no rules so go to configure rule page --->
+	<cfset section = "container_rules">
+<cfelseif ArrayLen(stObj.aRules) GT 0>
+	<cfset section = "container_contents">
+</cfif> --->
+
+
+<cfif not len(section) or section EQ "container_rules"> <!--- delete the current rule id in the session as we are out of the rules management section --->
 	<cfset StructDelete(session,"ruleid")>
 	<cfset StructDelete(session,"ruleTypeName")>
 <cfelseif section EQ "container_contents">
