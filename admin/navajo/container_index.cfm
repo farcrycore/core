@@ -24,7 +24,7 @@ $out:$
 <cfsetting enablecfoutputonly="true">
 <cfimport taglib="/farcry/farcry_core/tags/navajo" prefix="nj">
 <cfparam name="containerid" default="">
-<cfparam name="section" default="container_rules">
+<cfparam name="section" default="container_contents">
 <cfparam name="displayContainerTitle" default="Unknown">
 <!--- <cfparam name="reflectionid" default=""> --->
 
@@ -38,15 +38,6 @@ $out:$
 <cfset oRules = createObject("component","#application.packagepath#.rules.rules")>
 <cfset oCon = createObject("component","#application.packagepath#.rules.container")>
 
-<cfif section EQ "container_rules"> <!--- delete the current rule id in the session as we are out of the rules management section --->
-	<cfset StructDelete(session,"ruleid")>
-	<cfset StructDelete(session,"ruleTypeName")>
-<cfelseif section EQ "container_contents">
-	<cfif StructKeyExists(form,"ruleID")>
-		<cfset session.ruleid = ruleid>
-		<cfset session.ruleTypeName = oCon.findType(objectid=ruleid)>
-	</cfif>
-</cfif>
 
 <cfset bDisplaySkins = false>
 <cfif directoryExists("#application.path.project#/webskin/container")>
@@ -72,9 +63,21 @@ $out:$
 	<cfset section = "container_reflections">
 <cfelseif ArrayLen(stObj.aRules) EQ 0 AND section EQ "container_contents"> <!--- container has no rules so go to configure rule page --->
 	<cfset section = "container_rules">
-<!--- <cfelseif ArrayLen(stObj.aRules) GT 0>
+<!---<cfelseif ArrayLen(stObj.aRules) GT 0>
 	<cfset section = "container_contents"> --->
 </cfif>
+
+
+<cfif section EQ "container_rules"> <!--- delete the current rule id in the session as we are out of the rules management section --->
+	<cfset StructDelete(session,"ruleid")>
+	<cfset StructDelete(session,"ruleTypeName")>
+<cfelseif section EQ "container_contents">
+	<cfif StructKeyExists(form,"ruleID")>
+		<cfset session.ruleid = ruleid>
+		<cfset session.ruleTypeName = oCon.findType(objectid=ruleid)>
+	</cfif>
+</cfif>
+
 <cfparam name="reflectionid" default="#stObj.mirrorid#">
 
 <!--- Make sure we include the prototype library --->
