@@ -108,7 +108,7 @@ $in: stRPC -- cfStruct containing additional user defined flashVars for use with
 		<div class="#attributes.class#">
 			<div id="#attributes.SWFID#Container" style="width: #attributes.SWFWidth#px; height: #attributes.SWFHeight#px;">
 				<p>This content requires the Macromedia Flash Player.</p>
-				<p><a href=http://www.macromedia.com/go/getflash/>Get Flash</a>.</p>
+				<p><a href="http://www.macromedia.com/go/getflash/">Get Flash</a>.</p>
 			</div>
 			<script type="text/javascript">
 				var so = new SWFObject("#attributes.SWFSource#", "#attributes.SWFID#", "#attributes.SWFWidth#", "#attributes.SWFHeight#", "#attributes.SWFVersion#", "#attributes.SWFBackgroundColor#");
