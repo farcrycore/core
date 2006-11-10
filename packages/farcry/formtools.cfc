@@ -74,6 +74,7 @@
 	<cfset var bHasStatus = false />	
 	<cfset var bHasVersionID = false />
 	
+	<cfset var thisDiff = 0 /><!--- var used if recordcount/RecordsPerPage remainder is not 0, occurs at the end of pagination --->
 	
 	<cfif len(arguments.lCategories)>
 		<cfset arrayAppend(aCategoryFilters, arguments.lCategories) />
@@ -149,8 +150,35 @@
 		</cfif>
 
 		<cfset theSQLTop = arguments.CurrentPage * arguments.recordsPerPage>
+			
+			<cfquery name="qrecordcount" datasource="#application.dsn#">
+			SELECT count(distinct tbl.objectid) as CountAll 
+			FROM #arguments.typename# tbl 			
+			WHERE #preserveSingleQuotes(arguments.SqlWhere)#
+			
+			<cfif arrayLen(arguments.aCategoryFilters)>
+				<cfloop from="1" to="#arrayLen(arguments.aCategoryFilters)#" index="i">
+					<cfif arguments.aCategoryFilters[i] neq ''>
+						AND objectid in (
+						    select distinct objectid 
+						    from refCategories 
+						    where categoryID in (#listQualify(arguments.aCategoryFilters[i],"'")#)
+						    )
+					</cfif>
+				</cfloop>
+			</cfif>
+			<cfif bHasVersionID>
+				AND (tbl.versionid = '' OR tbl.versionid IS NULL)
+			</cfif>
+			
+			</cfquery>
+			
+			
+			<cfif qrecordcount.CountAll mod  RecordsPerPage neq 0 and theSQLTop GT qrecordcount.CountAll>
+				<cfset thisDiff = RecordsPerPage - (qrecordcount.CountAll mod  arguments.RecordsPerPage)>
+			</cfif>
 		
-		
+			
 			<cfquery name="qFormToolRecordset" datasource="#application.dsn#">
 
 			IF OBJECT_ID('tempdb..##thetops') IS NOT NULL 	drop table ##thetops
@@ -184,7 +212,7 @@
 				,(SELECT count(d.objectid) FROM #arguments.typename# d WHERE d.versionid = tbl.objectid) as bHasMultipleVersion
 			</cfif>
 			FROM #arguments.typename# tbl
-			inner join  ##thetops t on tbl.objectid = t.objectid where t.myint > ((select count(*) from ##thetops) - #arguments.recordsPerPage#)
+			inner join  ##thetops t on tbl.objectid = t.objectid where t.myint > ((select count(*) from ##thetops) - #RecordsPerPage-thisDiff#)
 			
 			<cfif len(trim(arguments.sqlOrderBy))>
 				ORDER BY #preserveSingleQuotes(arguments.sqlOrderBy)#
@@ -195,27 +223,7 @@
 			</cfquery>
 				
 			
-			<cfquery name="qrecordcount" datasource="#application.dsn#">
-			SELECT count(distinct tbl.objectid) as CountAll 
-			FROM #arguments.typename# tbl 			
-			WHERE #preserveSingleQuotes(arguments.SqlWhere)#
 			
-			<cfif arrayLen(arguments.aCategoryFilters)>
-				<cfloop from="1" to="#arrayLen(arguments.aCategoryFilters)#" index="i">
-					<cfif arguments.aCategoryFilters[i] neq ''>
-						AND objectid in (
-						    select distinct objectid 
-						    from refCategories 
-						    where categoryID in (#listQualify(arguments.aCategoryFilters[i],"'")#)
-						    )
-					</cfif>
-				</cfloop>
-			</cfif>
-			<cfif bHasVersionID>
-				AND (tbl.versionid = '' OR tbl.versionid IS NULL)
-			</cfif>
-			
-			</cfquery>
 			
 						
 			<!---<cfstoredproc procedure="sp_selectview_bycat" datasource="#application.dsn#" result="spresult">
@@ -248,7 +256,33 @@
 			
 			<cfset arguments.currentPage = getCurrentPaginationPage(paginationID=arguments.paginationID,CurrentPage=1) />
 			
+			<cfquery name="qrecordcount" datasource="#application.dsn#">
+			SELECT count(distinct tbl.objectid) as CountAll 
+			FROM #arguments.typename# tbl 			
+			WHERE #preserveSingleQuotes(arguments.SqlWhere)#
 			
+			<cfif arrayLen(arguments.aCategoryFilters)>
+				<cfloop from="1" to="#arrayLen(arguments.aCategoryFilters)#" index="i">
+					<cfif arguments.aCategoryFilters[i] neq ''>
+						AND objectid in (
+						    select distinct objectid 
+						    from refCategories 
+						    where categoryID in (#listQualify(arguments.aCategoryFilters[i],"'")#)
+						    )
+					</cfif>
+				</cfloop>
+			</cfif>
+			<cfif bHasVersionID>
+				AND (tbl.versionid = '' OR tbl.versionid IS NULL)
+			</cfif>
+			
+			</cfquery>
+			
+		
+			<cfif qrecordcount.CountAll mod  RecordsPerPage neq 0 and theSQLTop GT qrecordcount.CountAll>
+				<cfset thisDiff = RecordsPerPage - (qrecordcount.CountAll mod  arguments.RecordsPerPage)>
+			</cfif>
+		
 			
 			<cfquery name="qFormToolRecordset" datasource="#application.dsn#">
 
@@ -283,7 +317,7 @@
 				,(SELECT count(d.objectid) FROM #arguments.typename# d WHERE d.versionid = tbl.objectid) as bHasMultipleVersion
 			</cfif>
 			FROM #arguments.typename# tbl
-			inner join  ##thetops t on tbl.objectid = t.objectid where t.myint > ((select count(*) from ##thetops) - #arguments.recordsPerPage#)
+			inner join  ##thetops t on tbl.objectid = t.objectid where t.myint >  ((select count(*) from ##thetops) - #arguments.RecordsPerPage-thisDiff#)
 			
 			<cfif len(trim(arguments.sqlOrderBy))>
 				ORDER BY #preserveSingleQuotes(arguments.sqlOrderBy)#
@@ -294,29 +328,7 @@
 			</cfquery>
 				
 			
-			<cfquery name="qrecordcount" datasource="#application.dsn#">
-			SELECT count(distinct tbl.objectid) as CountAll 
-			FROM #arguments.typename# tbl 			
-			WHERE #preserveSingleQuotes(arguments.SqlWhere)#
-			
-			<cfif arrayLen(arguments.aCategoryFilters)>
-				<cfloop from="1" to="#arrayLen(arguments.aCategoryFilters)#" index="i">
-					<cfif arguments.aCategoryFilters[i] neq ''>
-						AND objectid in (
-						    select distinct objectid 
-						    from refCategories 
-						    where categoryID in (#listQualify(arguments.aCategoryFilters[i],"'")#)
-						    )
-					</cfif>
-				</cfloop>
-			</cfif>
-			<cfif bHasVersionID>
-				AND (tbl.versionid = '' OR tbl.versionid IS NULL)
-			</cfif>
-			
-			</cfquery>
-			
-			
+
 						
 			<!---
 			<!--- query --->
