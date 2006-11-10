@@ -36,12 +36,13 @@
 		<cfset qMethods = queryNew("methodname, displayname")>
 
 		<cfloop query="qWebskin">
-			<cfset displayname=oType.getWebskinDisplayname(typename=arguments.stmetadata.fttypename, path="#qwebskin.directory#/#qwebskin.name#") />
+			<cfset displayname=oType.getWebskinDisplayname(typename=arguments.stmetadata.fttypename, template="#listfirst(qWebskin.name, ".")#") />
 			
 			<cfset queryAddRow(qMethods, 1)>
 			<cfset querySetCell(qMethods, "methodname", listfirst(qWebskin.name, "."))>
 			<cfset querySetCell(qMethods, "displayname", displayname)>
 		</cfloop>
+		
 
 		<!--- de-dupe and reorder method list --->
 		<cfquery name="qMethods" dbtype="query">
@@ -76,14 +77,23 @@
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 
+		<cfset var displayname = "#arguments.stMetadata.value#" />
+		<cfset var webskinTypename = arguments.typename />
+		<cfset var oType = "" />
 		
-		<cfsavecontent variable="html">
-			<!--- Place custom code here! --->
-			<cfoutput>#arguments.stMetadata.value#</cfoutput>
+		<cfif structKeyExists(arguments.stMetadata, "ftTypename") AND len(arguments.stMetadata.ftTypename)>
+			<cfset webskinTypename = arguments.stMetadata.ftTypename />
+		</cfif>
+		
+
+		<cfif len(arguments.stMetadata.value)>
+			<cfset oType=createobject("component", application.types[webskinTypename].typepath) />
 			
-		</cfsavecontent>
+			<cfset displayname=oType.getWebskinDisplayname(typename=webskinTypename, template="#arguments.stMetadata.value#") />
+		</cfif>	
 		
-		<cfreturn html>
+		
+		<cfreturn displayname />
 	</cffunction>
 
 	<cffunction name="validate" access="public" output="true" returntype="struct" hint="This will return a struct with bSuccess and stError">
