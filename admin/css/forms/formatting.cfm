@@ -51,17 +51,17 @@ form.formtool {font-size: 100%;}
 form.formtool fieldset {font-size: 100%;}
 form.formtool fieldset legend {font-size: 150%; font-weight: normal; color: #hexPrimaryDark#;}
 
-label u {font-style: normal; text-decoration: underline;}
+form.formtool label u {font-style: normal; text-decoration: underline;}
 input, select, textarea {font-family: Tahoma, Arial, sans-serif; font-size: 100%; color: ##000000;}
 form fieldset div.notes {color: ##666666; font-size: 88%;}
 form fieldset div.notes h4 {color: ##666666; font-size: 120%;}
 form fieldset div.notes p {color: ##666666;}
 form div fieldset legend {font-size: 100%;}
 form div.required fieldset legend {font-weight: bold;}
-form div label {text-align: right;}
-form div.optional label, label.optional {font-weight: normal;}
-form div.required label, label.required {font-weight: bold;}
-form div label.labelCheckbox, form div label.labelRadio {text-align: left;}
+form.formtool label {text-align: right;}
+form.formtool div.optional label, form.formtool label.optional {font-weight: normal;}
+form.formtool div.required label, form.formtool label.required {font-weight: bold;}
+form.formtool label.labelCheckbox, form.formtool label.labelRadio {text-align: left;}
 p.error {color: ##ffffff;}
 form div.error {color: ##666666;}
 form div.error p.error {font-size: 80%; font-weight: bold; color: ##ff0000;}
@@ -70,8 +70,8 @@ form div input.inputSubmit, form div input.inputButton, input.inputSubmit, input
 form div small {font-size: 88%;}
 
 form fieldset legend {line-height: 150%;}
-form div label.labelCheckbox, form div label.labelRadio, label.labelCheckbox, label.labelRadio {text-indent: -18px; line-height: 120%;}
-form div label.compact {text-indent: 0px;}
+form.formtool label.labelCheckbox, form.formtool label.labelRadio, form.formtool label.labelCheckbox, form.formtool label.labelRadio {text-indent: -18px; line-height: 120%;}
+form.formtool label.compact {text-indent: 0px;}
 form div.notes p, form div small {line-height: 125%;}
 
 <!--- form.formtool ##wizard-content select {font-size: 90%; line-height: normal;} --->

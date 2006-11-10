@@ -143,14 +143,14 @@ form.formtool small {margin: 0px 0px 5px 142px; padding: 1px 3px 1px 3px; height
 form.formtool textarea.expanding {overflow: auto; overflow-x: auto; overflow-y: visible;}
 
 form.formtool label.labelCheckbox,
-	form div label.labelRadio,
-	label.labelCheckbox,
-	label.labelRadio {padding: 4px 0px 0px 18px; width: 190px; height: 1%; display: block;}
+	form.formtool label.labelRadio,
+	form.formtool label.labelCheckbox,
+	form.formtool label.labelRadio {padding: 4px 0px 0px 18px; width: 190px; height: 1%; display: block;}
 
 form.formtool label.labelCheckbox input.inputCheckbox,
-	form div label.labelRadio input.inputRadio,
-	label.labelCheckbox input.inputCheckbox,
-	label.labelRadio input.inputRadio {margin: 0px 0px 0px 0px;}
+	form.formtool label.labelRadio input.inputRadio,
+	form.formtool label.labelCheckbox input.inputCheckbox,
+	form.formtool label.labelRadio input.inputRadio {margin: 0px 0px 0px 0px;}
 
 form.formtool fieldset input.inputText,
 	form.formtool fieldset input.inputPassword,
