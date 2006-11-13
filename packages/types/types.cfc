@@ -212,8 +212,8 @@ default handlers
 			</cfif>
 		</cfif>
 		
-		<cfif len(arguments.path) and fileExists(arguments.path)>
-			<cffile action="READ" file="#arguments.path#" variable="template">
+		<cfif len(arguments.path) and fileExists(Expandpath(arguments.path))>
+			<cffile action="READ" file="#Expandpath(arguments.path)#" variable="template">
 		
 			<cfset pos = findNoCase('@@displayname:', template)>
 			<cfif pos GT 0>
