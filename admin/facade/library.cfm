@@ -185,9 +185,20 @@ $Developer: $
 	<cfset filterCriteria = session.stLibraryFilter[request.ftJoin].Criteria />
 	<cfsearch collection="#application.applicationName#_#request.ftJoin#" criteria="#filterCriteria#" name="qSearchResults" type="internet" />
 	
+
+	
 	<cfif NOT qSearchResults.RecordCount>
 		<cfoutput><h3>No Results matched search. All records have been returned</h3></cfoutput>
 	<cfelse>
+		<cfif qSearchResults.RecordCount GT 100>
+			<cfoutput><h3>#qSearchResults.RecordCount# results matched search. Results have been limited to 100.</h3></cfoutput>
+			
+			<cfquery dbtype="query" name="qSearchResults" maxrows="100">
+			SELECT * FROM qSearchResults
+			</cfquery>
+			
+		</cfif>
+		
 		<cfset session.stLibraryFilter['#request.ftJoin#'].qResults = qSearchResults />
 	</cfif>
 </cfif>
@@ -386,6 +397,49 @@ LIBRARY DATA
 	</div>
 	</cfoutput>
 
+
+	
+<cfelseif url.librarySection EQ "edit">
+
+	<cfset variables.QueryString = structToNamePairs(filterStructure(Duplicate(url), "librarySection")) />
+
+	<cfoutput>
+	<div id="container1" class="tab-container">
+		<ul class="tabs">
+			<li id="tab2" class="tab-active"><a href="##" onclick="return false;">Edit</a></li>
+		</ul>
+		
+		<div class="tab-panes">
+			<div id="pane2">		
+	</cfoutput>
+	
+				<ft:form>
+				
+					<cfset stparam = structNew() />
+					<cfset stparam.stPrimary = stPrimary />
+					<cfset HTML = oData.getView(template="#url.ftLibraryAddNewWebskin#", alternateHTML="", stparam=stparam) />	
+						
+					<cfif len(HTML)>
+						<cfoutput>#HTML#</cfoutput>
+					<cfelse>
+						<ft:object typename="#request.ftJoin#" lfields="" inTable=0 />
+					</cfif>
+					
+					<cfoutput>
+					<div>
+						<ft:farcrybutton value="Attach" />	
+						<ft:farcrybutton type="button" value="Close" onclick="self.blur();window.close();" />	
+					</div>
+					</cfoutput>
+					
+				</ft:form>
+	
+	<cfoutput>		
+			</div>
+		</div>
+	</div>
+	</cfoutput>
+	
 <cfelse>
 
 	<cfset variables.QueryString = structToNamePairs(filterStructure(Duplicate(url), "librarySection")) />
@@ -482,6 +536,11 @@ GENERATE THE LIBRARY PICKER
 				</cfif>	
 		
 			</cfoutput>	
+			
+			
+<cfset variables.QueryString = structToNamePairs(filterStructure(Duplicate(url), "librarySection")) />
+
+					
 				
 					<cfif URL.LibraryType EQ "array">
 						<cfloop from="1" to="#arrayLen(stPrimary[url.primaryFieldName])#" index="i">
@@ -511,6 +570,9 @@ GENERATE THE LIBRARY PICKER
 						</cfloop>
 					<cfelse>
 						<cfif listLen(lBasketIDs)>
+						
+							<cfset editLink = "#cgi.SCRIPT_NAME#?#variables.QueryString#&librarySection=edit&editObjectid=#stPrimary[url.primaryFieldName]#" />
+
 							<cfset HTML = oData.getView(objectid=stPrimary[url.primaryFieldName], template="LibrarySelected", alternateHTML="") />
 							<cfif NOT len(trim(HTML))>
 								<cfset stTemp = oData.getData(objectid=stPrimary[url.primaryFieldName]) />
@@ -525,7 +587,7 @@ GENERATE THE LIBRARY PICKER
 							BECAUSE THE JAVASCRIPT STRIPS THE "FIELDNAME_" TO DETERMINE THE OBJECTID
 							 ------------------------------------------------------------------------->			
 							<cfoutput>
-							<p>#HTML#</p>
+							<p><!---<a href="#editLink#">edit</a> --->#HTML#</p>
 							</cfoutput>
 						</cfif>
 					</cfif>
