@@ -23,7 +23,7 @@
 	</cfif>
 	
 	<cfif NOT len(collection)>
-		<cfthrow type="search.searchapi" message="Collection not specified." detail="Search() could not determine a valid list of collections to seach." />
+		<cfthrow type="search.searchapi" message="Collection not specified." detail="Search() could not determine a valid list of collections to seach. ltypenames (#ltypenames#)" />
 	</cfif>
 	
 	<cfsearch
@@ -73,7 +73,7 @@
 	<cfloop list="#arguments.ltypenames#" index="i">
 		<cfquery dbtype="query" name="qLookup">
 		SELECT name FROM qCollections
-		WHERE name LIKE '%#i#%'
+		WHERE name LIKE '%#lcase(i)#%'
 		</cfquery>
 		
 		<cfif qLookup.recordcount>
