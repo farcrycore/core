@@ -41,9 +41,16 @@ $in: stRPC -- cfStruct containing additional user defined flashVars for use with
 	<!--- SWFVersion : defines the version of the swf --->
 	<cfparam name="attributes.SWFVersion" default="8" />
 	<!--- SWFBackgroundColor : defines window mode of the swf --->
-	<cfparam name="attributes.SWFBackgroundColor" default="##808080" />
+	<cfparam name="attributes.SWFBackgroundColor" default="" />
 	<!--- SWFWMode : defines window mode of the swf --->
 	<cfparam name="attributes.SWFWMode" default="transparent" />
+	<!--- SWFScriptAccess : defines access permissions of the swf --->
+	<cfparam name="attributes.SWFScriptAccess" default="sameDomain" />
+
+	<!--- containerWidth : defines width of container swf is written to --->
+	<cfparam name="attributes.containerWidth" default="" />
+	<!--- containerHeight : defines height of container swf is written to --->
+	<cfparam name="attributes.containerHeight" default="" />
 
 	<!--- RPCServiceName : flashVar for use with remoting - defines the remote service --->
 	<cfparam name="attributes.RPCServiceName" default="facade" />
@@ -65,6 +72,16 @@ $in: stRPC -- cfStruct containing additional user defined flashVars for use with
 	<cfset variables.RPCFlashVars = "" />
 	<!--- additionalFlashVars : contains output for additional user defined flashVars --->
 	<cfset variables.additionalFlashVars = "" />
+
+
+	<!--- if container width is undefined assign width of swf --->
+	<cfif not len(trim(attributes.containerWidth))>
+		<cfset attributes.containerWidth = attributes.SWFWidth/>
+	</cfif>
+	<!--- if container height is undefined assign height of swf --->
+	<cfif not len(trim(attributes.containerHeight))>
+		<cfset attributes.containerHeight = attributes.SWFHeight/>
+	</cfif>
 
 
 	<!--- set contents of RPCFlashVars for output --->
@@ -106,14 +123,15 @@ $in: stRPC -- cfStruct containing additional user defined flashVars for use with
 	<!--- start output html --->
 	<cfoutput>
 		<div class="#attributes.class#">
-			<div id="#attributes.SWFID#Container" style="width: #attributes.SWFWidth#px; height: #attributes.SWFHeight#px;">
+			<div id="#attributes.SWFID#Container" style="width: #attributes.containerWidth#px; height: #attributes.containerHeight#px;">
 				<p>This content requires the Macromedia Flash Player.</p>
 				<p><a href="http://www.macromedia.com/go/getflash/">Get Flash</a>.</p>
 			</div>
 			<script type="text/javascript">
 				var so = new SWFObject("#attributes.SWFSource#", "#attributes.SWFID#", "#attributes.SWFWidth#", "#attributes.SWFHeight#", "#attributes.SWFVersion#", "#attributes.SWFBackgroundColor#");
 				so.addParam("quality", "high");
-				so.addParam("wmode", "#attributes.SWFWMode#");</cfoutput>
+				so.addParam("wmode", "#attributes.SWFWMode#");
+				so.addParam("allowScriptAccess", "#attributes.SWFScriptAccess#");</cfoutput>
 				<!--- output contentes of RPCFlashVars --->
 				<cfoutput>#RPCFlashVars#</cfoutput>
 				<!--- output contentes of additionalFlashVars --->
