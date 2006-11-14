@@ -45,7 +45,7 @@
 					<cfoutput><select id="#arguments.fieldname#" name="#arguments.fieldname#" size="#arguments.stMetadata.ftSelectSize#" <cfif arguments.stMetadata.ftSelectMultiple> multiple="true"</cfif>></cfoutput>
 					<cfloop list="#lCategoryBranch#" index="i">
 						<cfset CategoryName = oCategory.getCategoryNamebyID(categoryid=i,typename='categories') />
-						<cfoutput><option value="#i#">#CategoryName#</option></cfoutput>
+						<cfoutput><option value="#i#" <cfif listContainsNoCase(lSelectedCategoryID, i)>selected</cfif>>#CategoryName#</option></cfoutput>
 					</cfloop>
 					<cfoutput></select></cfoutput>
 					<cfoutput></fieldset></cfoutput>
