@@ -73,6 +73,8 @@ $out:$
 		<cfparam name="Request.RequiredInHead.swfObjectJS" default = "0">
 		
 		<cfparam name="Request.RequiredInHead.libraryPopupJS" default = "0">
+		
+		<cfparam name="request.requiredInHead." default="0">
 
 		
 		
@@ -215,6 +217,13 @@ $out:$
 		
 		<cfif isDefined("Request.InHead.libraryPopupJS") AND Request.InHead.libraryPopupJS>
 			<cfset Request.RequiredInHead.libraryPopupJS = 1>
+		</cfif>
+		
+		<cfif isDefined("request.inHead.flashWrapperToggle") AND request.inHead.flashWrapperToggle>
+			<cfset request.requiredInHead.prototypeJS = 1 />
+			<cfset Request.RequiredInHead.scriptaculousJS = 1>
+			<cfset request.requiredInHead.flashWrapperToggle = 1/>
+			
 		</cfif>
 		
 		
@@ -371,6 +380,17 @@ $out:$
 					win.focus();
 				}
 				</script>
+			</cfoutput>
+		</cfif>
+		
+		<cfif isDefined("request.requiredInHead.flashWrapperToggle") and request.requiredInHead.flashWrapperToggle EQ true>
+			<cfoutput>
+			<script type="text/javascript">
+			function toggleFlashWrapper(id,width,height) {
+				Element.setStyle(id, {width:width})
+				Element.setStyle(id, {height:height})
+			}
+			</script>
 			</cfoutput>
 		</cfif>
 
