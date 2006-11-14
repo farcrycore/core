@@ -124,8 +124,20 @@ $in: stRPC -- cfStruct containing additional user defined flashVars for use with
 
 	<!--- start output html --->
 	<cfoutput>
+		
+		
+		<cfset containerOver = "" />
+		<cfset containerOut = "" />
+		
+		<cfif attributes.containerWidth NEQ attributes.SWFWidth OR attributes.containerHeight NEQ attributes.SWFHeight>
+			<cfset request.inhead.flashWrapperToggle = true />
+							
+			<cfset containerOver = "toggleFlashWrapper('#attributes.SWFID#Container', '#attributes.SWFWidth#px', '#attributes.SWFHeight#px'); return false;" />
+			<cfset containerOut = "toggleFlashWrapper('#attributes.SWFID#Container', '#attributes.containerWidth#px', '#attributes.containerHeight#px'); return false;" />
+				
+		</cfif>
 		<div class="#attributes.class#">
-			<div id="#attributes.SWFID#Container" style="width: #attributes.containerWidth#px; height: #attributes.containerHeight#px;">
+			<div id="#attributes.SWFID#Container" style="width: #attributes.containerWidth#px; height: #attributes.containerHeight#px;overflow:hidden;" onmouseover="#containerOver#" onmouseout="#containerOut#">
 				<p>This content requires the Macromedia Flash Player.</p>
 				<p><a href="http://www.macromedia.com/go/getflash/">Get Flash</a>.</p>
 			</div>
