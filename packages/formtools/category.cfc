@@ -23,7 +23,7 @@
 		<cfparam name="arguments.stMetadata.ftLegend" default="" type="string" />
 		<cfparam name="arguments.stMetadata.ftRenderType" default="Tree" type="string" />
 		<cfparam name="arguments.stMetadata.ftSelectMultiple" default="true" type="boolean" />
-		<cfparam name="arguments.stMetadata.ftSelectSize" default="1" type="numeric" />
+		<cfparam name="arguments.stMetadata.ftSelectSize" default="5" type="numeric" />
 		
 		<cfif structKeyExists(application.catid, arguments.stMetadata.ftAlias)>
 			<cfset navid = application.catid[arguments.stMetadata.ftAlias] >
