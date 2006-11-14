@@ -46,6 +46,8 @@ $in: stRPC -- cfStruct containing additional user defined flashVars for use with
 	<cfparam name="attributes.SWFWMode" default="transparent" />
 	<!--- SWFScriptAccess : defines access permissions of the swf --->
 	<cfparam name="attributes.SWFScriptAccess" default="sameDomain" />
+	<!--- SWFMenu : defines the presence of the right-click menu --->
+	<cfparam name="attributes.SWFMenu" default="false" />
 
 	<!--- containerWidth : defines width of container swf is written to --->
 	<cfparam name="attributes.containerWidth" default="" />
@@ -131,6 +133,7 @@ $in: stRPC -- cfStruct containing additional user defined flashVars for use with
 				var so = new SWFObject("#attributes.SWFSource#", "#attributes.SWFID#", "#attributes.SWFWidth#", "#attributes.SWFHeight#", "#attributes.SWFVersion#", "#attributes.SWFBackgroundColor#");
 				so.addParam("quality", "high");
 				so.addParam("wmode", "#attributes.SWFWMode#");
+				so.addParam("menu", "#attributes.SWFMenu#");
 				so.addParam("allowScriptAccess", "#attributes.SWFScriptAccess#");</cfoutput>
 				<!--- output contentes of RPCFlashVars --->
 				<cfoutput>#RPCFlashVars#</cfoutput>
