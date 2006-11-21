@@ -24,6 +24,7 @@
 		<cfparam name="arguments.stMetadata.ftRenderType" default="Tree" type="string" />
 		<cfparam name="arguments.stMetadata.ftSelectMultiple" default="true" type="boolean" />
 		<cfparam name="arguments.stMetadata.ftSelectSize" default="5" type="numeric" />
+		<cfparam name="arguments.stMetadata.ftDropdownFirstItem" default="" type="string" />
 		
 		<cfif structKeyExists(application.catid, arguments.stMetadata.ftAlias)>
 			<cfset navid = application.catid[arguments.stMetadata.ftAlias] >
@@ -42,10 +43,22 @@
 							
 				<cfsavecontent variable="html">
 					<cfoutput><fieldset></cfoutput>
-					<cfoutput><select id="#arguments.fieldname#" name="#arguments.fieldname#" size="#arguments.stMetadata.ftSelectSize#" <cfif arguments.stMetadata.ftSelectMultiple> multiple="true"</cfif>></cfoutput>
+					<cfoutput><select id="#arguments.fieldname#" name="#arguments.fieldname#"  <cfif arguments.stMetadata.ftSelectMultiple>size="#arguments.stMetadata.ftSelectSize#" multiple="true"</cfif>></cfoutput>
 					<cfloop list="#lCategoryBranch#" index="i">
-						<cfset CategoryName = oCategory.getCategoryNamebyID(categoryid=i,typename='categories') />
-						<cfoutput><option value="#i#" <cfif listContainsNoCase(lSelectedCategoryID, i)>selected</cfif>>#CategoryName#</option></cfoutput>
+						<!--- If the item is the actual alias requested then it is not selectable. --->
+						<cfif i EQ navid>
+							<cfif len(arguments.stMetadata.ftDropdownFirstItem)>
+								<cfoutput><option value="">#arguments.stMetadata.ftDropdownFirstItem#</option></cfoutput>
+							<cfelse>
+								<cfset CategoryName = oCategory.getCategoryNamebyID(categoryid=i,typename='categories') />
+								<cfoutput><option value="">#CategoryName#</option></cfoutput>
+							</cfif>
+							
+						<cfelse>
+							<cfset CategoryName = oCategory.getCategoryNamebyID(categoryid=i,typename='categories') />
+							<cfoutput><option value="#i#" <cfif listContainsNoCase(lSelectedCategoryID, i)>selected</cfif>>#CategoryName#</option></cfoutput>
+						</cfif>
+						
 					</cfloop>
 					<cfoutput></select></cfoutput>
 					<cfoutput></fieldset></cfoutput>
