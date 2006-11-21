@@ -110,7 +110,7 @@ $out:$
 					</cfif>
 					
 					<cfif stLocal.qParent.recordCount GT 0>
-						<cfset stLocal.parentid = stLocal.qParent.objectid>
+						<cfset stLocal.parentid = stLocal.qParent.parentid>
 					<cfelse>
 						<cfset stLocal.parentid = stLocal.qList.objectid>
 					</cfif>
