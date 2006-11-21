@@ -275,6 +275,51 @@ $out:$
 		<cfreturn stReturn>
 	</cffunction>
 	
-	
+	<cffunction name="BeforeSave" access="public" output="false" returntype="struct">
+		<cfargument name="stProperties" required="true" type="struct">
+		<cfargument name="stFields" required="true" type="struct">
+		<cfargument name="stFormPost" required="false" type="struct">
+		
+		
+		<!--- 
+			This will set the default Label value. It first looks form the bLabel associated metadata.
+			Otherwise it will look for title, then name and then anything with the substring Name.
+		 --->
+		<cfset var NewLabel = "" />
+		
+		<cfparam name="stProperties.label" default="">
+		
+		
+		<cfloop list="#StructKeyList(arguments.stFields)#" index="field">
+			<cfif structKeyExists(arguments.stProperties,field) AND isDefined("arguments.stFields.#field#.Metadata.bLabel") AND arguments.stFields[field].Metadata.bLabel>
+				<cfset NewLabel = "#NewLabel# #arguments.stProperties[field]#">
+			</cfif>
+		</cfloop>
+
+		<cfif not len(NewLabel)>
+			<cfif structKeyExists(arguments.stProperties,"Title")>
+				<cfset NewLabel = "#arguments.stProperties.title#">
+			<cfelseif structKeyExists(arguments.stProperties,"Name")>
+				<cfset NewLabel = "#arguments.stProperties.name#">
+			<cfelse>
+				<cfloop list="#StructKeyList(arguments.stProperties)#" index="field">
+					<cfif FindNoCase("Name",field) AND field NEQ "typename">
+						<cfset NewLabel = "#NewLabel# #arguments.stProperties[field]#">
+					</cfif>
+				</cfloop>
+			</cfif>
+		</cfif>
+		
+		<cfif len(trim(NewLabel))>
+			<cfset stProperties.label = trim(NewLabel) />
+		<cfelse>
+			<cfset stProperties.label = stProperties.label />
+		</cfif>
+		
+		
+		<cfset stProperties.datetimelastupdated = now() />
+		
+		<cfreturn stProperties>
+	</cffunction>
 	
 </cfcomponent>
