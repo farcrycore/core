@@ -353,7 +353,7 @@ Populate each new typename field.
 												
 						</cfcase>
 						
-						<cfcase value="mssql,odbc,postgresql">																
+						<cfcase value="postgresql">																
 							<cftry>
 								<cfquery name="qAlterTable" datasource="#application.dsn#">
 								ALTER TABLE #application.dbowner##iType#_#iField# ADD typename VARCHAR(255) NULL
@@ -383,6 +383,40 @@ Populate each new typename field.
 							</cftry>
 												
 						</cfcase>
+	
+						<cfcase value="mssql,odbc">																
+							<cftry>
+								<cfquery name="qAlterTable" datasource="#application.dsn#">
+								ALTER TABLE #application.dbowner##iType#_#iField# ADD typename VARCHAR(255) NULL
+								</cfquery>
+								<cfoutput><div>Typename added to table #iType#_#iField#</div></cfoutput>
+								<cfcatch type="database"><cfoutput><div>Typename already exists in table #iType#_#iField#</div></cfoutput></cfcatch>
+							</cftry>
+
+							<cftry>
+								<cfquery name="update" datasource="#application.dsn#">
+								UPDATE #application.dbowner##iType#_#iField#
+								SET #application.dbowner##iType#_#iField#.typename = refObjects.typename		
+								FROM #application.dbowner##iType#_#iField# INNER JOIN #application.dbowner#refObjects
+								ON #application.dbowner##iType#_#iField#.data=refObjects.objectid					
+								</cfquery>	
+								<cfoutput><div>Typename field updated in <strong>#application.dbowner##iType#_#iField#</strong></div></cfoutput>	
+							
+								<cfcatch type="database"><cfdump var="#cfcatch#" expand="false"></cfcatch>
+							</cftry>
+							
+							<cftry>		
+								<cfquery name="qAlterTable" datasource="#application.dsn#">
+									EXEC sp_rename 
+								    @objname = '#application.dbowner##iType#_#iField#.objectid', 
+								    @newname = 'parentid', 
+								    @objtype = 'COLUMN'
+								</cfquery>
+								<cfoutput><div>objectid renamed to parentid for #iType#_#iField#</div></cfoutput>
+								<cfcatch type="database"><cfoutput><div>Rename of objectid column failed for in table #iType#_#iField#</div></cfoutput></cfcatch>
+							</cftry>
+												
+						</cfcase>					
 						
 						<cfdefaultcase>
 							<cfthrow message="Your database type is not supported for this update (310)." /> 
