@@ -689,7 +689,7 @@ GENERATE THE LIBRARY PICKER
 					
 					
 				<cfelse>
-				Droppables.add('sortableListTo', {
+					Droppables.add('sortableListTo', {
 					   onDrop: function(element) {
 					   		$('sortableListTo').innerHTML = $(element).innerHTML;
 					   		opener.libraryCallback_#url.primaryFormFieldname#('add',$(element).id);
@@ -700,7 +700,7 @@ GENERATE THE LIBRARY PICKER
 					
 					<cfif len(stPrimary[url.primaryFieldName]) >
 						//call on initial page load
-						opener.libraryCallback_#url.primaryFormFieldname#('sort','#stPrimary[url.primaryFieldName]#');
+						opener.libraryCallback_#url.primaryFormFieldname#('add','#stPrimary[url.primaryFieldName]#');
 					</cfif>
 				</cfif>
 				
