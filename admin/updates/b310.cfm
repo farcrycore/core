@@ -256,9 +256,9 @@ Populate each new typename field.
 
 
 
-	<!--- Add typename field to all array tables --->
+	<!--- Add typename and rename objectid to parentid to all array tables --->
 	<cfset error = 0>
-	<cfoutput><p><span class="frameMenuBullet">&raquo;</span> Adding typename field to all array tables...</cfoutput><cfflush>
+	<cfoutput><p><span class="frameMenuBullet">&raquo;</span> Adding typename field and renaming objectid to parentid fo all array tables...</cfoutput><cfflush>
 	<cftry>
 		
 		<cfset stArrayFields = StructNew() />
@@ -301,7 +301,15 @@ Populate each new typename field.
 								<cfoutput><div>Typename field updated in <strong>#application.dbowner##iType#_#iField#</strong></div></cfoutput>	
 							
 								<cfcatch type="database"><cfdump var="#cfcatch#" expand="false"></cfcatch>
-							</cftry>	
+							</cftry>
+							
+							<cftry>		
+								<cfquery name="qAlterTable" datasource="#application.dsn#">
+								ALTER TABLE #application.dbowner##iType#_#iField# RENAME COLUMN objectid TO parentid;
+								</cfquery>
+								<cfoutput><div>objectid renamed to parentid for #iType#_#iField#</div></cfoutput>
+								<cfcatch type="database"><cfoutput><div>Rename of objectid column failed for in table #iType#_#iField#</div></cfoutput></cfcatch>
+							</cftry>
 						</cfcase>
 						
 
@@ -333,6 +341,14 @@ Populate each new typename field.
 							
 								<cfcatch type="database"><cfdump var="#cfcatch#" expand="false"></cfcatch>
 							</cftry>	
+
+							<cftry>		
+								<cfquery name="qAlterTable" datasource="#application.dsn#">
+								ALTER TABLE #application.dbowner##iType#_#iField# RENAME COLUMN objectid TO parentid;
+								</cfquery>
+								<cfoutput><div>objectid renamed to parentid for #iType#_#iField#</div></cfoutput>
+								<cfcatch type="database"><cfoutput><div>Rename of objectid column failed for in table #iType#_#iField#</div></cfoutput></cfcatch>
+							</cftry>
 							
 												
 						</cfcase>
@@ -358,6 +374,13 @@ Populate each new typename field.
 								<cfcatch type="database"><cfdump var="#cfcatch#" expand="false"></cfcatch>
 							</cftry>
 							
+							<cftry>		
+								<cfquery name="qAlterTable" datasource="#application.dsn#">
+								ALTER TABLE #application.dbowner##iType#_#iField# RENAME COLUMN objectid TO parentid;
+								</cfquery>
+								<cfoutput><div>objectid renamed to parentid for #iType#_#iField#</div></cfoutput>
+								<cfcatch type="database"><cfoutput><div>Rename of objectid column failed for in table #iType#_#iField#</div></cfoutput></cfcatch>
+							</cftry>
 												
 						</cfcase>
 						
@@ -366,9 +389,6 @@ Populate each new typename field.
 						</cfdefaultcase>
 					
 					</cfswitch>
-					
-					
-					
 
 			</cfloop>
 		</cfloop>
