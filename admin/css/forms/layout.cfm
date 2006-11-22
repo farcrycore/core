@@ -205,6 +205,7 @@ input.validation-failed, textarea.validation-failed {border: 1px solid ##FF3300;
 		form.formtool div.buttonViewMethod a {margin: 0px; padding: 0px; width: 16px; height: 16px; display: block;}
 			form.formtool div.buttonViewMethod a img {margin: 0px; padding: 1px 0px 0px 1px; width: 14px; height: 14px; display: block;}
 
+
 	/* formtool array component layout styles */
 	form.formtool div.array div.fieldAlign input.formButton {margin: 0px 5px 5px 0px; width: 70px; float: left; display: block;}
 	form.formtool div.array div.fieldAlign input.formCheckbox {width: 10px; height: 10px;}
@@ -232,6 +233,9 @@ input.validation-failed, textarea.validation-failed {border: 1px solid ##FF3300;
 			ul.arrayThumbnailView li div.arrayDetail {margin: 0px; padding: 0px; display: none;}
 			ul.arrayThumbnailView li div.arrayThumbnail {margin: 0px; padding: 0px;}
 
+	/* formtool richtext component layout styles */
+	form.formtool div.richtext div.fieldAlign {float: none; width: auto;}
+			
 <!--- end css output --->
 </cfoutput>
 
