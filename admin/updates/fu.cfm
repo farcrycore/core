@@ -9,61 +9,84 @@
 	
 	<!--- bowden --->
 	<cfswitch expression="#application.dbtype#">
+		
 		<cfcase value="ora">
 			<cfquery name="qTableExists" datasource="#application.dsn#">
-				select 1
-				from user_tables
-				where table_name =  'REFFRIENDLYURL' 
+			select 1
+			from user_tables
+			where table_name =  'REFFRIENDLYURL' 
 			</cfquery>
+			
 			<cfif qTableExists.recordcount gt 0>
-	<cfquery name="qDrop" datasource="#application.dsn#" maxrows="1">
-					DROP TABLE #application.dbOwner#reffriendlyURL
-	</cfquery> 
+				<cfquery name="qDrop" datasource="#application.dsn#" maxrows="1">
+				DROP TABLE #application.dbOwner#reffriendlyURL
+				</cfquery> 
 			</cfif>
+			
 		</cfcase>
+		
 		<cfdefaultcase>
 			<cfquery name="qDrop" datasource="#application.dsn#" maxrows="1">
-				DROP TABLE #application.dbOwner#reffriendlyURL
+			DROP TABLE #application.dbOwner#reffriendlyURL
 			</cfquery> 
 		</cfdefaultcase>
+		
 	</cfswitch>
 
 	<cfcatch>
 		<!--- only create table if one doesnt exist --->
 		<!--- bowden --->
 		<cfswitch expression="#application.dbtype#">
+			
 			<cfcase value="ora">
-		<cfquery name="qCreateFUTable" datasource="#application.dsn#">
-		CREATE TABLE #application.dbOwner#reffriendlyURL ( 
+				<cfquery name="qCreateFUTable" datasource="#application.dsn#">
+				CREATE TABLE #application.dbOwner#reffriendlyURL ( 
 				objectid    		varchar2(50) NOT NULL,
 				refobjectid 		varchar2(50) NOT NULL,
-				friendlyurl	            varchar2(4000) NULL,
-				query_string            varchar2(4000) NULL,
-				datetimelastupdated     date NULL,
+				friendlyurl	        varchar2(4000) NULL,
+				query_string        varchar2(4000) NULL,
+				datetimelastupdated date NULL,
 				status      		numeric NULL 
 				)
 				</cfquery>
 			</cfcase>
+			
 			<cfdefaultcase>
 				<cfquery name="qCreateFUTable" datasource="#application.dsn#">
 				CREATE TABLE #application.dbOwner#reffriendlyURL ( 
-			objectid    		varchar(50) NOT NULL,
-			refobjectid 		varchar(50) NOT NULL,
-			<cfswitch expression="#application.dbtype#">
-			<cfcase value="ODBC">
-			friendlyurl	varchar(8000) NULL,
-			query_string varchar(8000) NULL,
-			datetimelastupdated datetime NULL,
-			</cfcase>
-			<cfdefaultcase>
-			friendlyurl 		text NULL,
-			query_string		text NULL,
-			datetimelastupdated timestamp NULL,
-			</cfdefaultcase>
-			</cfswitch>
-			status      		numeric NULL 
-			)
-		</cfquery>
+				objectid varchar(50) NOT NULL,
+				refobjectid varchar(50) NOT NULL,
+				
+				<cfswitch expression="#application.dbtype#">
+					
+					<cfcase value="ODBC">
+					friendlyurl	varchar(8000) NULL,
+					query_string varchar(8000) NULL,
+					datetimelastupdated datetime NULL,
+					</cfcase>
+					
+					<cfcase value="mssql">
+					friendlyurl	varchar(8000) NULL,
+					query_string varchar(8000) NULL,
+					datetimelastupdated datetime NULL,
+					</cfcase>
+					
+					<cfcase value="mysql">
+					friendlyurl	varchar(255) NULL,
+					query_string varchar(255) NULL,
+					datetimelastupdated datetime NULL,
+					</cfcase>
+					
+					<cfdefaultcase>
+					friendlyurl	varchar(255) NULL,
+					query_string varchar(255) NULL,
+					datetimelastupdated datetime NULL,
+					</cfdefaultcase>
+				
+				</cfswitch>
+				status numeric NULL 
+				)
+				</cfquery>
 			</cfdefaultcase>
 		 </cfswitch>
 	</cfcatch>
