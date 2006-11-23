@@ -31,6 +31,7 @@ $in: objectid -- $
 <cfif thistag.executionMode eq "Start">
 	<cfparam name="attributes.Name" default="" >
 	<cfparam name="attributes.lFields" default="" >
+	<cfparam name="attributes.legend" default="" >
 	<cfparam name="attributes.RequiredPermissions" default="" ><!--- If the user sends through a list of permissions for this step, only users with correct permissions will be granted access. --->
 	
 	<cfif len(attributes.RequiredPermissions)>
@@ -61,7 +62,7 @@ $in: objectid -- $
 
 	<cfif len(attributes.lFields)>
 		<cfsavecontent variable="stWizzard.StepHTML">
-			<wiz:object ObjectID="#stWizzard.PrimaryObjectID#"  typename="#stWizzard.Data[stWizzard.PrimaryObjectID].typename#" lFields="#attributes.lFields#" InTable=0 />
+			<wiz:object legend="#attributes.legend#" ObjectID="#stWizzard.PrimaryObjectID#"  typename="#stWizzard.Data[stWizzard.PrimaryObjectID].typename#" lFields="#attributes.lFields#" InTable=0 />
 		</cfsavecontent>
 	</cfif>	
 	
