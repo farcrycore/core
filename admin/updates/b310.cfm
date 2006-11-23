@@ -23,6 +23,44 @@ Populate each new typename field.
 
 
 
+
+	<!--- Adding the SourceImage, StandardImage and ThumbnailImage entry to dmImage table --->
+	<cfset error = 0>
+	<cfoutput><p><span class="frameMenuBullet">&raquo;</span> Adding the typename field to refCategories table...</cfoutput><cfflush>
+	<cftry>
+		<cfswitch expression="#application.dbtype#">
+			<cfcase value="ora">
+				<cfquery name="update" datasource="#application.dsn#">
+					ALTER TABLE #application.dbowner#refCategories ADD typename VARCHAR2(255) NULL
+				</cfquery>
+			</cfcase>
+			<cfcase value="mysql,mysql5">
+				<cfquery name="update" datasource="#application.dsn#">
+					ALTER TABLE #application.dbowner#refCategories ADD typename VARCHAR(255) NULL
+				</cfquery>
+			</cfcase>
+			<cfcase value="postgresql">
+				
+				<cfquery name="update" datasource="#application.dsn#">
+					ALTER TABLE #application.dbowner#refCategories ADD typename VARCHAR(255) NULL
+				</cfquery>
+			</cfcase>
+			<cfdefaultcase>
+				<cfquery name="update" datasource="#application.dsn#">
+					ALTER TABLE #application.dbowner#refCategories ADD typename VARCHAR(255) NULL
+				</cfquery>
+			</cfdefaultcase>
+		</cfswitch>
+
+		<cfcatch><cfset error=1><cfoutput><strong>field already exist.</strong></p></cfoutput></cfcatch>
+	</cftry>
+
+	<cfif not error>
+		<cfoutput><strong>done</strong></p></cfoutput><cfflush>
+	</cfif>
+	
+	
+
 	<!--- Update Image Config --->
 	<cfset error = 0>
 	<cfoutput><p><span class="frameMenuBullet">&raquo;</span> Updating image config properties...</cfoutput><cfflush>
