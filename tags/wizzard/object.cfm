@@ -25,7 +25,7 @@
 	<cfparam name="attributes.IncludeLabel" default="1">
 	<cfparam name="attributes.IncludeFieldSet" default="1">
 	<cfparam name="attributes.IncludeBR" default="1">
-	<cfparam name="attributes.InTable" default="1">
+	<cfparam name="attributes.InTable" default="0">
 	<cfparam name="attributes.insidePLP" default="0"><!--- how are we rendering the form --->
 	<cfparam name="attributes.r_stFields" default=""><!--- the name of the structure that is to be returned with the form field information. --->
 	<cfparam name="attributes.stPropMetadata" default="#structNew()#"><!--- This is used to override the default metadata as setup in the type.cfc --->
