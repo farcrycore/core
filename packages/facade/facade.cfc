@@ -1,6 +1,10 @@
-<cfcomponent name="facade" hint="facade for flash & flex remoting calls" >
+<cfcomponent name="facade" output="false" hint="facade for flash & flex remoting calls">
 
-	<cffunction name="checkConnection" returntype="boolean" access="remote" output="false">
+	<cffunction name="init" access="public" output="false" returntype="facade" hint="constructor for facade">
+		<cfreturn this>
+	</cffunction>
+
+	<cffunction name="checkConnection" access="remote" output="false" returntype="boolean" hint="basic boolean return method to check remote connection">
 		<cfreturn true>
 	</cffunction>
 
