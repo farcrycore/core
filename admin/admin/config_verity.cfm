@@ -1,3 +1,9 @@
+<cfoutput>
+<p>This verity config has been deprecated.</p>
+<p>Please use Admin : Verity Managemnet : Verity Config</p>
+</cfoutput>
+<cfabort>
+
 <cfprocessingDirective pageencoding="utf-8">
 <!--- 
 || LEGAL ||
