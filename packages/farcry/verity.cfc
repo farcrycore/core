@@ -331,6 +331,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	<cfargument name="builttodate" required="false" hint="Date to which the collection has been previously built." type="date" />
 	<cfargument name="lExcludeObjectID" required="false" hint="List of objectids to exclude from the collection." type="string" />
 	<cfargument name="bBuildFromScratch" required="false" default="false" hint="Flag to override builttodate setting." type="boolean" />
+	<cfargument name="maxRows" required="false" default="1000" hint="Number of records to update." type="numeric" />
 	<cfset var lSelectColumns=getSelectColumns(arguments.typename)>
 	<cfset var qContent=queryNew(lSelectColumns) />
 	
@@ -339,24 +340,39 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	</cfif>
 	
 	<!--- todo: lExcludeObjectID not yet implemented --->
-	<cfif isDefined("arguments.lExcludeObjectID")><cfthrow message="lExcludeObjectID not yet implemented."></cfif>
+	<cfif isDefined("arguments.lExcludeObjectID")>
+		<cfthrow message="lExcludeObjectID not yet implemented.">
+	</cfif>
 	
 	<!--- <cfdump var="#arguments#"> --->
 
-	<cfquery datasource="#application.dsn#" name="qContent"  blockfactor="100">
-		SELECT #lSelectColumns#
+	<cfquery datasource="#application.dsn#" name="qContent" result="res">
+		
+		<cfif application.dbtype EQ "mssql">
+			SELECT TOP #arguments.maxRows# #lSelectColumns#
+		<cfelse>
+			SELECT #lSelectColumns#
+		</cfif>	
+			
 		FROM #arguments.typename#
 		WHERE 1 = 1
+		
 		<cfif  isDefined("arguments.builttodate") AND NOT arguments.bBuildFromScratch>
 			AND datetimelastupdated > #createODBCDate(arguments.builttodate)#
 			AND datetimelastupdated < #createODBCDate(arguments.builttodate+365)#
 		</cfif>
+		
 		<cfif structKeyExists(application.types[arguments.typename].stProps, "status")>
 			AND upper(status) = 'APPROVED'
 		</cfif>
+		
 		ORDER BY datetimelastupdated
+		
+		<cfif listcontainsNoCase("mysql,mysql5,postgresql", application.dbtype)>
+			LIMIT #arguments.maxRows#
+		</cfif>		
 	</cfquery>
-	
+
 
 
 	<cfreturn qContent />
