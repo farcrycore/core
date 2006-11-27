@@ -180,8 +180,6 @@ Associated File Collections To Be Built
 <cfparam name="form.lfilecollectionstocreate" default="">
 <cfparam name="form.lcollections" default="">
 
-<!--- debug only --->
-<cfdump var="#form#">
 
 <!-----------------------------------
 ACTION:
