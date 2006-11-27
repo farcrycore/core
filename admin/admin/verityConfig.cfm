@@ -41,7 +41,7 @@ ACTION:
 	<cfset contenttype.aprops=arrayNew(1) />
 	<!--- apply updated settings --->
 	<cfloop collection="#form#" item="field">
-		<cfif NOT listContainsNoCase("FIELDNAMES, UPDATECOLLECTION, CUSTOM3, CUSTOM4, TYPENAME, FILECOLLECTIONPROPERTY",field)>
+		<cfif NOT listContainsNoCase("FIELDNAMES, builttodate, UPDATECOLLECTION, CUSTOM3, CUSTOM4, TYPENAME, FILECOLLECTIONPROPERTY",field)>
 			<cfset arrayAppend(contenttype.aprops, field) />
 		</cfif>
 	</cfloop>
