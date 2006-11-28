@@ -122,7 +122,7 @@ Collections To Be Built
 			<input type="hidden" name="lcollectionstocreate" id="lcollectionstocreate" value="#key#">
 		</td>
 		<td>#key#</td>
-		<cfif isArray(stcollections[key].aprops)>
+		<cfif structKeyExists(stCollections[key], "aprops") AND isArray(stcollections[key].aprops)>
 		<td>#arraytolist(stcollections[key].aprops)#</td>
 		<td>#stcollections[key].custom3#, #stcollections[key].custom4#</td>
 		<cfelse>
