@@ -161,8 +161,8 @@
 		<cfset stResult.stError = StructNew()>
 		
 		<cfparam name="arguments.stMetadata.ftDestination" default="#application.config.image.SourceImageURL#">
-		<cfparam name="arguments.stMetadata.ftImageWidth" default="#application.config.image.standardImageWidth#">
-		<cfparam name="arguments.stMetadata.ftImageHeight" default="#application.config.image.standardImageHeight#">
+		<cfparam name="arguments.stMetadata.ftImageWidth" default="">
+		<cfparam name="arguments.stMetadata.ftImageHeight" default="">
 		<cfparam name="arguments.stMetadata.ftAutoGenerateType" default="FitInside">
 		<cfparam name="arguments.stMetadata.ftPadColor" default="##ffffff">
 		<cfparam name="arguments.stMetadata.ftThumbnailBevel" default="No">
