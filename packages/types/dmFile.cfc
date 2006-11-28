@@ -87,7 +87,7 @@ type properties
 			<cfset relatedTable = "#application.dbowner##stLocal.relatedContentType#_aObjectIDs">
 		</cfif>
 		<cfquery name="stLocal.qCheck" datasource="#application.dsn#">
-		SELECT	objectid
+		SELECT	parentid
 		FROM	#relatedTable#
 		WHERE	data = '#arguments.objectid#'
 		</cfquery>
