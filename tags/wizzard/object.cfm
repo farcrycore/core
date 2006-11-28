@@ -200,11 +200,14 @@
 	<cfset Request.farcryForm.stObjects[variables.prefix].farcryformobjectinfo.ObjectLabel = attributes.ObjectLabel>
 
 
-
-	
+	<!--- determine if we need to hide any legend specific css. --->
+	<cfset LegendClass = "" />
+	<cfif not isDefined("attributes.legend") or not len(attributes.legend)>
+		<cfset LegendClass = "noLegend" />
+	</cfif>
 
 	<cfif attributes.IncludeFieldSet>
-		<cfoutput><fieldset class="formSection #attributes.class#"></cfoutput>
+		<cfoutput><fieldset class="formSection #attributes.class# #LegendClass#"></cfoutput>
 	</cfif>
 	
 	<cfif isDefined("attributes.legend") and len(attributes.legend)>
@@ -446,6 +449,9 @@
 					</cfif>
 					<cfif structKeyExists(ftFieldMetadata,'ftLibraryDataTypename')>
 						<cfset stURLParams.ftLibraryDataTypename = "#ftFieldMetadata.ftLibraryDataTypename#">
+					</cfif>
+					<cfif structKeyExists(ftFieldMetadata,'ftAllowLibraryAddNew')>
+						<cfset stURLParams.ftAllowLibraryAddNew = "#ftFieldMetadata.ftAllowLibraryAddNew#">
 					</cfif>
 							
 					<cfset request.inHead.libraryPopupJS = true />

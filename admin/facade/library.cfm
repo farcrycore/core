@@ -50,6 +50,7 @@ $Developer: $
 <cfparam name="url.ftLibrarySelectedListClass" default="thumbNailsWrap">
 <cfparam name="url.ftLibrarySelectedListStyle" default="">
 
+<cfparam name="url.ftAllowLibraryAddNew" default="true"><!--- Method to Add New Object --->
 
 <cfparam name="url.PackageType" default="types"><!--- Could be types or rules.. --->
 
@@ -381,7 +382,7 @@ LIBRARY DATA
 	<div id="container1" class="tab-container">
 		<ul class="tabs">
 			<li id="tab1" class="tab-active"><a href="##" onclick="return false;">Attach</a></li>
-			<li id="tab2" class="tab-disabled"><a href="#cgi.SCRIPT_NAME#?#variables.QueryString#&librarySection=addnew">Add New</a></li>
+			<cfif url.ftAllowLibraryAddNew><li id="tab2" class="tab-disabled"><a href="#cgi.SCRIPT_NAME#?#variables.QueryString#&librarySection=addnew">Add New</a></li></cfif>
 		</ul>
 		
 		<div class="tab-panes">
