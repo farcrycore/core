@@ -164,7 +164,7 @@ VIEW:
 			<cfset request.ftDateFormatMask = "dd mmm yyyy">
 			<cfset request.ftTimeFormatMask = "hh:mm tt">
 			<cfset request.ftCalendarFormatMask = "%d %b %Y %I:%M %p">
-			<cfparam name="stConfig.contenttype.typename..builttodate" default="" />
+			<cfparam name="stConfig.contenttype.#typename#.builttodate" default="" />
 			
 			<h3>Last Built To Date</h3>			
 
