@@ -147,6 +147,9 @@ $in: objectid -- $
 						
 	
 
+
+		<cfset application.farcryLib = structNew() />
+		
 		<cfinclude template="/farcry/#attributes.name#/config/_serverSpecificVars.cfm" />
 		
 		
