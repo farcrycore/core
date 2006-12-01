@@ -229,101 +229,129 @@ $out:$
 		
 	<cfsavecontent variable="RequiredHead">	
 		<cfif isDefined("Request.RequiredInHead.prototypeLiteJS") AND Request.RequiredInHead.prototypeLiteJS AND Request.RequiredInHead.prototypeJS EQ 0>
-			<cfoutput><script src="#application.url.farcry#/js/prototype/prototype.lite.js" type="text/javascript"></script></cfoutput>
+			<cfoutput>
+				<script src="#application.url.farcry#/js/prototype/prototype.lite.js" type="text/javascript"></script></cfoutput>
 		</cfif>
 		
 		<cfif isDefined("Request.RequiredInHead.prototypeJS") AND Request.RequiredInHead.prototypeJS>
-			<cfoutput><script src="#application.url.farcry#/js/prototype/prototype.js" type="text/javascript"></script></cfoutput>
+			<cfoutput>
+				<script src="#application.url.farcry#/js/prototype/prototype.js" type="text/javascript"></script></cfoutput>
 		</cfif>
 		
 		<cfif isDefined("Request.RequiredInHead.mooFxJS") AND Request.RequiredInHead.mooFxJS>
-			<cfoutput><script src="#application.url.farcry#/js/moofx/moo.fx.js" type="text/javascript"></script></cfoutput>
+			<cfoutput>
+				<script src="#application.url.farcry#/js/moofx/moo.fx.js" type="text/javascript"></script></cfoutput>
 		</cfif>
 		<cfif isDefined("Request.RequiredInHead.mooFxPackJS") AND Request.RequiredInHead.mooFxPackJS>
-			<cfoutput><script src="#application.url.farcry#/js/moofx/moo.fx.pack.js" type="text/javascript"></script></cfoutput>
+			<cfoutput>
+				<script src="#application.url.farcry#/js/moofx/moo.fx.pack.js" type="text/javascript"></script></cfoutput>
 		</cfif>
 		<cfif isDefined("Request.RequiredInHead.mooAjaxJS") AND Request.RequiredInHead.mooAjaxJS>
-			<cfoutput><script src="#application.url.farcry#/js/moofx/moo.ajax.js" type="text/javascript"></script></cfoutput>
+			<cfoutput>
+				<script src="#application.url.farcry#/js/moofx/moo.ajax.js" type="text/javascript"></script></cfoutput>
 		</cfif>
 		<cfif isDefined("Request.RequiredInHead.mooDOMJS") AND Request.RequiredInHead.mooDOMJS>
-			<cfoutput><script src="#application.url.farcry#/js/moofx/moo.dom.js" type="text/javascript"></script></cfoutput>
+			<cfoutput>
+				<script src="#application.url.farcry#/js/moofx/moo.dom.js" type="text/javascript"></script></cfoutput>
 		</cfif>
 		
 		<cfif isDefined("Request.RequiredInHead.scriptaculousJS") AND Request.RequiredInHead.scriptaculousJS>
-			<cfoutput><script src="#application.url.farcry#/js/scriptaculous/scriptaculous.js" type="text/javascript"></script></cfoutput>
+			<cfoutput>
+				<script src="#application.url.farcry#/js/scriptaculous/scriptaculous.js" type="text/javascript"></script></cfoutput>
 		</cfif>
 		<cfif isDefined("Request.RequiredInHead.ScriptaculousDragAndDropJS") AND Request.RequiredInHead.ScriptaculousDragAndDropJS>
-			<cfoutput><script src="#application.url.farcry#/js/scriptaculous/dragdrop.js" type="text/javascript"></script></cfoutput>
+			<cfoutput>
+				<script src="#application.url.farcry#/js/scriptaculous/dragdrop.js" type="text/javascript"></script></cfoutput>
 		</cfif>
 		<cfif isDefined("Request.RequiredInHead.ScriptaculousEffectsJS") AND Request.RequiredInHead.ScriptaculousEffectsJS>
-			<cfoutput><script src="#application.url.farcry#/js/scriptaculous/effects.js" type="text/javascript"></script></cfoutput>
+			<cfoutput>
+				<script src="#application.url.farcry#/js/scriptaculous/effects.js" type="text/javascript"></script></cfoutput>
 		</cfif>
 		<cfif isDefined("Request.RequiredInHead.ScriptaculousBuilderJS") AND Request.RequiredInHead.ScriptaculousBuilderJS>
-			<cfoutput><script src="#application.url.farcry#/js/scriptaculous/builder.js" type="text/javascript"></script></cfoutput>
+			<cfoutput>
+				<script src="#application.url.farcry#/js/scriptaculous/builder.js" type="text/javascript"></script></cfoutput>
 		</cfif>
 		<cfif isDefined("Request.RequiredInHead.ScriptaculousSliderJS") AND Request.RequiredInHead.ScriptaculousSliderJS>
-			<cfoutput><script src="#application.url.farcry#/js/scriptaculous/slider.js" type="text/javascript"></script></cfoutput>
+			<cfoutput>
+				<script src="#application.url.farcry#/js/scriptaculous/slider.js" type="text/javascript"></script></cfoutput>
 		</cfif>
 		<cfif isDefined("Request.RequiredInHead.ScriptaculousControlsJS") AND Request.RequiredInHead.ScriptaculousControlsJS>
-			<cfoutput><script src="#application.url.farcry#/js/scriptaculous/controls.js" type="text/javascript"></script></cfoutput>
+			<cfoutput>
+				<script src="#application.url.farcry#/js/scriptaculous/controls.js" type="text/javascript"></script></cfoutput>
 		</cfif>
 		<cfif isDefined("Request.RequiredInHead.lightboxJS") AND Request.RequiredInHead.lightboxJS>
-			<cfoutput><script src="#application.url.farcry#/js/lightbox/lightbox.js" type="text/javascript"></script></cfoutput>
+			<cfoutput>
+				<script src="#application.url.farcry#/js/lightbox/lightbox.js" type="text/javascript"></script></cfoutput>
 		</cfif>
 		<cfif isDefined("Request.RequiredInHead.lightboxCSS") AND Request.RequiredInHead.lightboxCSS>
-			<cfoutput><link rel="stylesheet" href="#application.url.webroot#/js/lightbox/css/lightbox.css" type="text/css" media="screen" /></cfoutput>
+			<cfoutput>
+				<link rel="stylesheet" href="#application.url.webroot#/js/lightbox/css/lightbox.css" type="text/css" media="screen" /></cfoutput>
 		</cfif>
 		<cfif isDefined("Request.RequiredInHead.TabsJS") AND Request.RequiredInHead.TabsJS>
-			<cfoutput><script src="#application.url.farcry#/js/tabs/tabs.js" type="text/javascript"></script></cfoutput>
+			<cfoutput>
+				<script src="#application.url.farcry#/js/tabs/tabs.js" type="text/javascript"></script></cfoutput>
 		</cfif>
 		<cfif isDefined("Request.RequiredInHead.TabStyle1CSS") AND Request.RequiredInHead.TabStyle1CSS>
-			<cfoutput><link rel="stylesheet" href="#application.url.farcry#/css/tabs/TabStyle1.css" type="text/css" media="screen" /></cfoutput>
+			<cfoutput>
+				<link rel="stylesheet" href="#application.url.farcry#/css/tabs/TabStyle1.css" type="text/css" media="screen" /></cfoutput>
 		</cfif>
 		<cfif isDefined("Request.RequiredInHead.TabStyle6CSS") AND Request.RequiredInHead.TabStyle6CSS>
-			<cfoutput><link rel="stylesheet" href="#application.url.farcry#/css/tabs/TabStyle6.css" type="text/css" media="screen" /></cfoutput>
+			<cfoutput>
+				<link rel="stylesheet" href="#application.url.farcry#/css/tabs/TabStyle6.css" type="text/css" media="screen" /></cfoutput>
 		</cfif>
 		<cfif isDefined("Request.RequiredInHead.DateTimePickerJS") AND Request.RequiredInHead.DateTimePickerJS>
-			<cfoutput><script src="#application.url.farcry#/js/DateTimePicker/DateTimePicker.js" type="text/javascript"></script></cfoutput>
+			<cfoutput>
+				<script src="#application.url.farcry#/js/DateTimePicker/DateTimePicker.js" type="text/javascript"></script></cfoutput>
 		</cfif>
 		
 		<cfif isDefined("Request.RequiredInHead.CalendarJS") AND Request.RequiredInHead.CalendarJS>
-			<cfoutput><script src="#application.url.farcry#/js/calendar/calendar.js" type="text/javascript"></script></cfoutput>
-			<cfoutput><script src="#application.url.farcry#/js/calendar/lang/calendar-en.js" type="text/javascript"></script></cfoutput>
+			<cfoutput>
+				<script src="#application.url.farcry#/js/calendar/calendar.js" type="text/javascript"></script>
+				<script src="#application.url.farcry#/js/calendar/lang/calendar-en.js" type="text/javascript"></script></cfoutput>
 		</cfif>
 		<cfif isDefined("Request.RequiredInHead.CalendarSetupJS") AND Request.RequiredInHead.CalendarSetupJS>
-			<cfoutput><script src="#application.url.farcry#/js/calendar/calendar-setup.js" type="text/javascript"></script></cfoutput>
+			<cfoutput>
+				<script src="#application.url.farcry#/js/calendar/calendar-setup.js" type="text/javascript"></script></cfoutput>
 		</cfif>
 		<cfif isDefined("Request.RequiredInHead.CalendarStyle1CSS") AND Request.RequiredInHead.CalendarStyle1CSS>
-			<cfoutput><link rel="stylesheet" href="#application.url.farcry#/css/calendar/calendar-win2k-1.css" type="text/css" media="screen" /></cfoutput>
+			<cfoutput>
+				<link rel="stylesheet" href="#application.url.farcry#/css/calendar/calendar-win2k-1.css" type="text/css" media="screen" /></cfoutput>
 		</cfif>
 		
 		
 		<cfif isDefined("Request.RequiredInHead.TinyMCEJS") AND Request.RequiredInHead.TinyMCEJS>
-			<cfoutput><script src="#application.url.farcry#/js/tiny_mce/tiny_mce.js" type="text/javascript"></script></cfoutput>
+			<cfoutput>
+				<script src="#application.url.farcry#/js/tiny_mce/tiny_mce.js" type="text/javascript"></script></cfoutput>
 		</cfif>
 		<cfif isDefined("Request.RequiredInHead.JSONJS") AND Request.RequiredInHead.JSONJS>
-			<cfoutput><script src="#application.url.farcry#/includes/lib/json.js" type="text/javascript"></script></cfoutput>
+			<cfoutput>
+				<script src="#application.url.farcry#/includes/lib/json.js" type="text/javascript"></script></cfoutput>
 		</cfif>
 		
 		<cfif isDefined("Request.RequiredInHead.FormValidationJS") AND Request.RequiredInHead.FormValidationJS>
-			<cfoutput><script src="#application.url.farcry#/js/formvalidation/validation.js" type="text/javascript"></script></cfoutput>
+			<cfoutput>
+				<script src="#application.url.farcry#/js/formvalidation/validation.js" type="text/javascript"></script></cfoutput>
 		</cfif>
 		
 		<cfif isDefined("Request.RequiredInHead.prototypeTreeJS") AND Request.RequiredInHead.prototypeTreeJS>
-			<cfoutput><script src="#application.url.farcry#/js/prototypeTree/prototypeTree.js" type="text/javascript"></script></cfoutput>
+			<cfoutput>
+				<script src="#application.url.farcry#/js/prototypeTree/prototypeTree.js" type="text/javascript"></script></cfoutput>
 		</cfif>
 		<cfif isDefined("Request.RequiredInHead.prototypeTreeCSS") AND Request.RequiredInHead.prototypeTreeCSS>
-			<cfoutput><link rel="stylesheet" href="#application.url.farcry#/js/prototypeTree/prototypeTree.css" type="text/css" media="screen" /></cfoutput>
+			<cfoutput>
+				<link rel="stylesheet" href="#application.url.farcry#/js/prototypeTree/prototypeTree.css" type="text/css" media="screen" /></cfoutput>
 		</cfif>
 		
 		
 		<cfif isDefined("Request.RequiredInHead.jQueryJS") AND Request.RequiredInHead.jQueryJS>
-			<cfoutput><script src="#application.url.farcry#/js/jquery/jquery.js" type="text/javascript"></script></cfoutput>
+			<cfoutput>
+				<script src="#application.url.farcry#/js/jquery/jquery.js" type="text/javascript"></script></cfoutput>
 		</cfif>
 		
 		
 		<cfif isDefined("Request.RequiredInHead.WizardCSS") AND Request.RequiredInHead.WizardCSS>
-			<cfoutput><link rel="stylesheet" href="#application.url.farcry#/css/wizard.css" type="text/css" media="screen" /></cfoutput>
+			<cfoutput>
+				<link rel="stylesheet" href="#application.url.farcry#/css/wizard.css" type="text/css" media="screen" /></cfoutput>
 		</cfif>
 		
 		<cfif isDefined("Request.RequiredInHead.FormsCSS") AND Request.RequiredInHead.FormsCSS>
@@ -349,26 +377,31 @@ $out:$
 		
 		
 		<cfif isDefined("Request.RequiredInHead.ricoJS") AND Request.RequiredInHead.ricoJS>
-			<cfoutput><script language="JavaScript" type="text/javascript" src="#application.url.farcry#/js/rico/rico.js"></script></cfoutput>
+			<cfoutput>
+				<script language="JavaScript" type="text/javascript" src="#application.url.farcry#/js/rico/rico.js"></script></cfoutput>
 		</cfif>
 		
 		
 		
 		<cfif isDefined("Request.RequiredInHead.spryAccordionJS") AND Request.RequiredInHead.spryAccordionJS>
-			<cfoutput><script language="JavaScript" type="text/javascript" src="#application.url.farcry#/js/spry/SpryAccordion.js"></script></cfoutput>
+			<cfoutput>
+				<script language="JavaScript" type="text/javascript" src="#application.url.farcry#/js/spry/SpryAccordion.js"></script></cfoutput>
 		</cfif>
 		<cfif isDefined("Request.RequiredInHead.spryxpathJS") AND Request.RequiredInHead.spryxpathJS>
-			<cfoutput><script language="JavaScript" type="text/javascript" src="#application.url.farcry#/js/spry/xpath.js"></script></cfoutput>
+			<cfoutput>
+				<script language="JavaScript" type="text/javascript" src="#application.url.farcry#/js/spry/xpath.js"></script></cfoutput>
 		</cfif>
 		<cfif isDefined("Request.RequiredInHead.spryAccordionCSS") AND Request.RequiredInHead.spryAccordionCSS>
-			<cfoutput><link href="#application.url.farcry#/js/spry/css/SpryAccordion.css" rel="stylesheet" type="text/css" /></cfoutput>
+			<cfoutput>
+				<link href="#application.url.farcry#/js/spry/css/SpryAccordion.css" rel="stylesheet" type="text/css" /></cfoutput>
 		</cfif>
 		
 
 
 
 		<cfif isDefined("Request.RequiredInHead.swfObjectJS") AND Request.RequiredInHead.swfObjectJS EQ "true">
-			<cfoutput><script language="JavaScript" type="text/javascript" src="#application.url.farcry#/js/swfObject.js"></script></cfoutput>
+			<cfoutput>
+				<script language="JavaScript" type="text/javascript" src="#application.url.farcry#/js/swfObject.js"></script></cfoutput>
 		</cfif>
 
 
