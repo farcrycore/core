@@ -69,6 +69,18 @@ object methods
 	<cfreturn qNav>
 </cffunction>
 
+<cffunction name="getSiblings" access="public" returntype="query" output="false" hint="Returns the sibblings of a node navigation ">
+	<cfargument name="objectid" required="yes" type="UUID" hint="Object ID of children's parent to be returned">
+	<cfargument name="dsn" required="yes" type="string" default="#application.dsn#">
+	<cfargument name="status" required="no" type="string" default="approved">
+		<cfset var o = createObject("component", "#application.packagepath#.farcry.tree")>
+		<cfset var navFilter=arrayNew(1)>
+		<cfset navfilter[1]="status = '#arguments.status#'">
+		<cfset qNav = o.getDescendants(objectid=arguments.objectid, lColumns='title,lNavIDAlias, status', depth=0, afilter=navfilter)>
+	<cfreturn qNav>
+</cffunction>
+
+
 <cffunction name="delete" access="public" hint="Specific delete method for dmNavigation. Removes all descendants">
 	<cfargument name="objectid" required="yes" type="UUID" hint="Object ID of the object being deleted">
 	<cfargument name="dsn" required="yes" type="string" default="#application.dsn#">
