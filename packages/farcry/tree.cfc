@@ -222,23 +222,51 @@ $out:$
 			<cfset stLocal.cachewithinTime = 0>
 		</cfif>
 
-<cfsavecontent variable="stLocal.sql"><cfoutput>
-SELECT	ntm.objectid,ntm.parentid,ntm.typename,ntm.nleft,ntm.nright,ntm.nlevel,ntm.ObjectName #columns#
-FROM 	#arguments.dbowner#nested_tree_objects ntm
- INNER JOIN #arguments.dbowner##q.typename# t ON t.#stLocal.primaryKeyField# = ntm.objectid
-	AND ntm.nleft<cfif arguments.bIncludeSelf>>=<cfelse>></cfif>#q.nleft#
-	AND ntm.nleft < #q.nright#
-	AND ntm.typename = '#q.typename#'<cfif arguments.depth GT 0>
-	AND ntm.nlevel <= #nlevel#</cfif>
-	<cfif arrayLen(arguments.afilter)><cfloop from="1" to="#arrayLen(arguments.afilter)#" index="i">
-	AND #replace(arguments.afilter[i],"''","'","all")#</cfloop></cfif>
-ORDER BY ntm.nleft</cfoutput>
-</cfsavecontent>
+		<cfsavecontent variable="stLocal.sql">
+		<cfoutput>
+		SELECT ntm.objectid,ntm.parentid,ntm.typename,ntm.nleft,ntm.nright,ntm.nlevel,ntm.ObjectName #columns#
+		FROM #arguments.dbowner#nested_tree_objects ntm
+		INNER JOIN #arguments.dbowner##q.typename# t ON t.#stLocal.primaryKeyField# = ntm.objectid
+		AND ntm.nleft
+		<cfif arguments.bIncludeSelf>
+			>=			
+		<cfelse>
+			>		
+		</cfif>
+		#q.nleft#
+		AND ntm.nleft < #q.nright#
+		AND ntm.typename = '#q.typename#'
+		
+		<cfif arguments.depth GT 0>
+			AND ntm.nlevel <= #nlevel#
+		</cfif>
+		
+		<cfif arrayLen(arguments.afilter)>
+			<cfloop from="1" to="#arrayLen(arguments.afilter)#" index="i">
+				AND #replace(arguments.afilter[i],"''","'","all")#
+			</cfloop>
+		</cfif>				
+
+		<cfif arguments.bHideEmptyNodes and len(arguments.l404Check)>
+		AND (<cfif listFindNoCase(arguments.l404Check,'externalLink')>
+		     (t.externalLink <> '')
+		     OR</cfif>
+		     t.objectId in (SELECT da.objectid
+		                    FROM #q.typename#_aObjectIds da
+		                    INNER JOIN refObjects r ON da.data = r.objectid
+		                    AND r.typename in (#listQualify(arguments.l404Check,"'")#)))
+		     </cfif>
+
+				
+		ORDER BY ntm.nleft
+				
+		</cfoutput>
+		</cfsavecontent>
 
 		<cfif stLocal.cachewithinTime EQ 0>
-<cfquery datasource="#arguments.dsn#" name="qReturn">#preservesinglequotes(stLocal.sql)#</cfquery>
+			<cfquery datasource="#arguments.dsn#" name="qReturn">#preservesinglequotes(stLocal.sql)#</cfquery>
 		<cfelse>
-<cfquery datasource="#arguments.dsn#" name="qReturn" cachedwithin="#stLocal.cachewithinTime#">#preservesinglequotes(stLocal.sql)#</cfquery>
+			<cfquery datasource="#arguments.dsn#" name="qReturn" cachedwithin="#stLocal.cachewithinTime#">#preservesinglequotes(stLocal.sql)#</cfquery>
 		</cfif>
 
     <cfelse>
