@@ -619,7 +619,7 @@
 				<cfset itemData = aField[pos] />
 			</cfif>
 			
-			<cfif len(itemTypename) and structKeyExists(application.types, iTypename)>
+			<cfif len(itemTypename) and structKeyExists(application.types, itemTypename)>
 				
 				<cftry>
 					<cfset oData = createObject("component", application.types[itemTypename].typePath) />
