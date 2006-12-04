@@ -619,34 +619,39 @@
 				<cfset itemData = aField[pos] />
 			</cfif>
 			
-			<cftry><cfset oData = createObject("component", application.types[itemTypename].typePath) /><cfcatch><cfdump var="#itemTypename#"><cfdump var="#aField[pos]#"><cfabort></cfcatch></cftry>
-			<cfset stData = oData.getData(objectID=itemData) />	
-			
-
-			<!--- Use the label as the item value. --->
-			<cfif len(arguments.Webskin)>
-				<cfset item = oData.getView(objectid="#stData.objectid#", template="#arguments.Webskin#", alternateHTML="#stData.label#") />
-			<cfelse>
-				<cfset item = stData.label />
+			<cfif len(itemTypename) and structKeyExists(application.types, iTypename)>
+				
+				<cftry>
+					<cfset oData = createObject("component", application.types[itemTypename].typePath) />
+					<cfcatch><cfdump var="#itemTypename#"><cfdump var="#aField[pos]#"><cfabort></cfcatch>
+				</cftry>
+				<cfset stData = oData.getData(objectID=itemData) />	
+				
+	
+				<!--- Use the label as the item value. --->
+				<cfif len(arguments.Webskin)>
+					<cfset item = oData.getView(objectid="#stData.objectid#", template="#arguments.Webskin#", alternateHTML="#stData.label#") />
+				<cfelse>
+					<cfset item = stData.label />
+				</cfif>
+							
+				<!--- add the link if requested --->
+				<cfif arguments.bIncludeLink>
+					<cfsavecontent variable="item">							
+						<skin:buildlink objectid="#itemData#"><cfoutput>#item#</cfoutput></skin:buildlink>
+					</cfsavecontent>
+				</cfif>
+				
+				<!--- If in a list, then append with li tags otherwise append to list --->
+				<cfswitch expression="#arguments.listType#">
+				<cfcase value="unordered,ordered">
+					<cfset result = "#result#<li>#item#</li>" />
+				</cfcase>
+				<cfdefaultcase>
+					<cfset result= listAppend(result, item) />
+				</cfdefaultcase>
+				</cfswitch>
 			</cfif>
-						
-			<!--- add the link if requested --->
-			<cfif arguments.bIncludeLink>
-				<cfsavecontent variable="item">							
-					<skin:buildlink objectid="#itemData#"><cfoutput>#item#</cfoutput></skin:buildlink>
-				</cfsavecontent>
-			</cfif>
-			
-			<!--- If in a list, then append with li tags otherwise append to list --->
-			<cfswitch expression="#arguments.listType#">
-			<cfcase value="unordered,ordered">
-				<cfset result = "#result#<li>#item#</li>" />
-			</cfcase>
-			<cfdefaultcase>
-				<cfset result= listAppend(result, item) />
-			</cfdefaultcase>
-			</cfswitch>
-			
 		</cfloop>
 		
 		<cfif arguments.listType EQ "unordered">
