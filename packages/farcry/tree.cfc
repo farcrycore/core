@@ -251,7 +251,7 @@ $out:$
 		AND (<cfif listFindNoCase(arguments.l404Check,'externalLink')>
 		     (t.externalLink <> '')
 		     OR</cfif>
-		     t.objectId in (SELECT da.objectid
+		     t.objectId in (SELECT da.parentid
 		                    FROM #q.typename#_aObjectIds da
 		                    INNER JOIN refObjects r ON da.data = r.objectid
 		                    AND r.typename in (#listQualify(arguments.l404Check,"'")#)))
