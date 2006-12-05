@@ -1138,7 +1138,7 @@ $out:$
 	<cfargument name="dsn" default="#application.dsn#" required="false">
 
 	<cfswitch expression="#application.dbtype#">
-		<cfcase value="odbc">
+		<cfcase value="mssql">
 			<!--- check for constraint --->
 			<cfquery NAME="qCheck" DATASOURCE="#application.dsn#">
 				SELECT c_obj.name as CONSTRAINT_NAME, col.name	as COLUMN_NAME, com.text as DEFAULT_CLAUSE
@@ -1150,12 +1150,11 @@ $out:$
 							AND con.colid = col.colid
 				WHERE c_obj.xtype	= 'D'
 					AND t_obj.name = '#arguments.typename#'
-					AND col.name = '#arguments.srcColumn#'
+					AND (col.name = '#arguments.srcColumn#')
 			</cfquery>
 			<cfset defaultL = len(qCheck.Default_Clause)-2>
 
-			<!--- drop constraint --->
-			<cfif qCheck.recordcount>
+			<cfif qCheck.recordcount GT 0>
 				<cfquery NAME="qDrop" DATASOURCE="#application.dsn#">
 					ALTER TABLE #application.dbowner##arguments.typename# DROP CONSTRAINT #qCheck.Constraint_Name#
 				</cfquery>
