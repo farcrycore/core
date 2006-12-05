@@ -213,6 +213,8 @@ input.validation-failed, textarea.validation-failed {border: 1px solid ##FF3300;
 	form.formtool div.array div.fieldAlign {margin: 0px 0px 30px 0px; padding: 0px;}
 
 	form.formtool div.array div.fieldAlign ul {margin: 0px 0px 5px 0px; padding: 0px;}
+	form.formtool div.array div.fieldAlign table {margin: 0px; padding: 0px; float: none !important; width: auto !important;}
+	form.formtool div.array div.fieldAlign table, form.formtool div.array div.fieldAlign tr, form.formtool div.array div.fieldAlign td {background-color: transparent !important;}
 
 	/* array component : detail view layout styles */
 	ul.arrayDetailView {width: auto; height: auto; display: block;}
