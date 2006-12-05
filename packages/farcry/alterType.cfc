@@ -1138,7 +1138,7 @@ $out:$
 	<cfargument name="dsn" default="#application.dsn#" required="false">
 
 	<cfswitch expression="#application.dbtype#">
-		<cfcase value="mssql">
+		<cfcase value="mssql,odbc">
 			<!--- check for constraint --->
 			<cfquery NAME="qCheck" DATASOURCE="#application.dsn#">
 				SELECT c_obj.name as CONSTRAINT_NAME, col.name	as COLUMN_NAME, com.text as DEFAULT_CLAUSE
