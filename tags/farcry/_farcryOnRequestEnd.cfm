@@ -426,6 +426,20 @@ $out:$
 			</script>
 			</cfoutput>
 		</cfif>
+		
+		
+		<!--- any miscellaneous stuff to be placed in the head, is put into an array aMisc --->
+		<cfparam name="request.inhead" default="#structNew()#" />
+		<cfparam name="request.inhead.aMisc" default="#arrayNew(1)#" />
+		
+		<cfif arrayLen(request.inhead.aMisc)>
+			<cfloop from="1" to="#arrayLen(request.inhead.aMisc)#" index="i">
+				<cfoutput>
+				#request.inhead.aMisc[i]#
+				</cfoutput>
+			</cfloop>
+		</cfif>
+		
 
 		
 	</cfsavecontent>
