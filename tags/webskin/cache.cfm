@@ -15,7 +15,6 @@ $Revision: 1.12.4.5 $
 $Description: Content caches blocks of code. This tag will handle cache nesting.$
 
 || DEVELOPER ||
-$Developer: Brendan Sisson (brendan@daemon.com.au) $
 $Developer: Geoff Bowers (modius@deamon.com.au) $
 
 || USAGE ||
@@ -179,11 +178,13 @@ r_output			: optional, return variable to put the cached content into.
 	<!--- if not in flushcase mode, write to cache --->
 	<cfelseif not request.mode.flushcache and caller.cacheRead eq "false">
 		
+		<cfparam name="request.inHead" default="#structNew()#" />
 		<cfscript>
 			contentcache = StructNew() ;
 			contentcache.cache = ThisTag.GeneratedContent;
 			contentcache.cachetimestamp = Now() - 0;
 			contentcache.cachetimeout = dtCachetimeout;
+			contentcache.inHead = duplicate(request.inHead);
 			application.factory.oCache.cacheWrite(cacheBlockName=attributes.cacheBlockName,cacheName=attributes.cachename,stcacheblock=contentcache);
 		</cfscript>
 	</cfif>

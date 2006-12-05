@@ -28,6 +28,14 @@ $out:$
 	<cfif structkeyexists(contentcache, cachelookupname)>
 		<cfif contentcache[cachelookupname].cachetimestamp gt arguments.dtCachetimeout>
 			<cfoutput>#contentcache[cachelookupname].cache#</cfoutput>
+			
+			<!--- Place any request.inHead variables back into the request scope from which it came. --->
+			<cfif structKeyExists(contentcache[cachelookupname], "inHead")>
+				<cfparam name="request.inHead" default="#structNew()#" />
+				<cfloop list="#structKeyList(contentcache[cachelookupname].inHead)#" index="i">
+					<cfset request.inhead[i] = contentcache[cachelookupname].inHead[i] />
+				</cfloop>
+			</cfif>
 			<cfset read = true>
 		<cfelse>
 			<cfset read = false>
