@@ -57,6 +57,10 @@ WHERE name LIKE '#application.applicationname#%'
 </cfoutput>
 
 <cfform name="veritybuild">
+
+
+Max Number of Items in each type: <input type="text" name="maxRows" value="1000"><br /><br />
+	
 <input type="submit" name="update" value="Update &amp; Build Collections">
 
 <table>
@@ -78,9 +82,13 @@ WHERE name LIKE '#application.applicationname#%'
 <tr>
 	<td><input type="checkbox" name="lcollections" id="lcollections" value="#collection#"></td>
 	<td>#collection#</td>
-	<cfif structkeyexists(stcollections, collection) AND isArray(stcollections[collection].aprops)>
+	<cfif structkeyexists(stcollections, collection) AND structKeyExists(stcollections[collection], "aprops") AND isArray(stcollections[collection].aprops)>
 	<td>#arraytolist(stcollections[collection].aprops)#</td>
-	<td>#stcollections[collection].custom3#, #stcollections[collection].custom4#</td>
+	<td>
+		<cfif structKeyExists(stCollections[collection], "custom3")>#stcollections[collection].custom3#</cfif>
+		<cfif structKeyExists(stCollections[collection], "custom4")>, #stcollections[collection].custom4#</cfif>
+	</td>
+		
 	<!--- todo: remove.. temp repair for incomplete config files --->
 	<cfparam name="stcollections[collection].FileCollectionProperty" default="" type="string" />
 	<cfparam name="stcollections[collection].builttodate" default="" type="Any" />
@@ -124,7 +132,10 @@ Collections To Be Built
 		<td>#key#</td>
 		<cfif structKeyExists(stCollections[key], "aprops") AND isArray(stcollections[key].aprops)>
 		<td>#arraytolist(stcollections[key].aprops)#</td>
-		<td>#stcollections[key].custom3#, #stcollections[key].custom4#</td>
+		<td>
+			<cfif structKeyExists(stCollections[key], "custom3")>#stcollections[key].custom3#</cfif>
+			<cfif structKeyExists(stCollections[key], "custom4")>, #stcollections[key].custom4#</cfif>
+		</td>
 		<cfelse>
 		<td>-</td>
 		<td>-</td>
@@ -179,6 +190,7 @@ Associated File Collections To Be Built
 <cfparam name="form.lcollectionstocreate" default="">
 <cfparam name="form.lfilecollectionstocreate" default="">
 <cfparam name="form.lcollections" default="">
+<cfparam name="form.maxrows" default="1000">
 
 
 <!-----------------------------------
@@ -228,9 +240,9 @@ ACTION:
 	<cfset oVerity=createObject("component", "#application.packagepath#.farcry.verity") />
 	<cfloop list="#form.lcollections#" index="collection">
 		<cfif findnocase("_files",collection)>
-			<cfset oVerity.updateFileCollection(collection)>
+			<cfset oVerity.updateFileCollection(collection=collection,maxRows=form.maxrows)>
 		<cfelse>
-			<cfset oVerity.updateCollection(collection)>
+			<cfset oVerity.updateCollection(collection=collection,maxRows=form.maxrows)>
 		</cfif>
 	</cfloop>
 	
