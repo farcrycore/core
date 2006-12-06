@@ -106,11 +106,12 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 <cffunction name="updateTypeCollection" access="public" hint="Update a Verity database collection based on a FarCry content type." output="false" returntype="struct">
 	<cfargument name="collection" required="yes" hint="Name of type based collection to be updated; without application name prefix." type="string" />
 	<cfargument name="lExcludeObjectID" required="false" hint="List of object IDs to be excluded from the collection." type="string">
+	<cfargument name="maxRows" required="false" hint="The maximum rows to update." type="numeric" default="99999999">
 	<cfset var stResult = structNew()>
 	<cfset var key = arguments.collection>
 	<cfset var rpt1 = "">
 	<cfset var rpt2 = "">
-	<cfset var q = getCollectionData(arguments.collection)>
+	<cfset var q = getCollectionData(typename=arguments.collection,maxrows=arguments.maxrows)>
 	<cfset var builstatusid=createUUID()>
 	<cfset var typename=arguments.collection />
 	<cfset stresult.bsuccess="true">
@@ -140,7 +141,9 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 		<!--- ensure CUSTOM fields have defaults --->
 		<cfset setCustomFieldDefaults(key)>
 		<cfset arrayAppend(application.verity.buildstatus[builstatusid].aStatus, "#timeformat(now())#: Begin collection update complete.") />
- 		<cfindex 
+				
+
+<cfindex 
 			action="UPDATE" 
 			query="q" 
 			body="#arrayToList(application.config.verity.contenttype[key].aprops)#" 
@@ -151,6 +154,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 			key="objectid" 
 			title="label" 
 			collection="#application.applicationname#_#key#">
+			
 		<cfset arrayAppend(application.verity.buildstatus[builstatusid].aStatus, "#timeformat(now())#: Collection update complete.") />
 	</cfif>
 	
@@ -331,7 +335,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	<cfargument name="builttodate" required="false" hint="Date to which the collection has been previously built." type="date" />
 	<cfargument name="lExcludeObjectID" required="false" hint="List of objectids to exclude from the collection." type="string" />
 	<cfargument name="bBuildFromScratch" required="false" default="false" hint="Flag to override builttodate setting." type="boolean" />
-	<cfargument name="maxRows" required="false" default="1000" hint="Number of records to update." type="numeric" />
+	<cfargument name="maxRows" required="false" default="99999999" hint="Number of records to update." type="numeric" />
 	<cfset var lSelectColumns=getSelectColumns(arguments.typename)>
 	<cfset var qContent=queryNew(lSelectColumns) />
 	
