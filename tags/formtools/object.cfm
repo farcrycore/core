@@ -523,7 +523,14 @@
 					<cfoutput><div class="fieldSection #lcase(ftFieldMetadata.ftType)# #ftFieldMetadata.ftClass# #helpSectionClass#"></cfoutput>
 				</cfif>
 	
-				<cfif isDefined("Attributes.IncludeLabel") AND attributes.IncludeLabel EQ 1>
+	
+				<cfif structKeyExists(ftFieldMetadata, "ftshowlabel")>
+					<cfset bShowLabel = ftFieldMetadata.ftShowLabel />
+				<cfelse>
+					<cfset bShowLabel = true />
+				</cfif>
+	
+				<cfif bShowLabel AND isDefined("Attributes.IncludeLabel") AND attributes.IncludeLabel EQ 1>
 					<cfif Attributes.InTable EQ 1>
 						<cfoutput>
 							<th>
