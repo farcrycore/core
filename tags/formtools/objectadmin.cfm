@@ -621,7 +621,7 @@ oAuthorisation=request.dmsec.oAuthorisation;
 		<cfoutput>
 		<tr>
 			<cfif attributes.bSelectCol><td nowrap="true">#st.select# #st.currentRow#</td></cfif>
-	 		<cfif listContainsNoCase(stRecordset.q.columnlist,"bHasMultipleVersion")>
+	 		<cfif listContainsNoCase(stRecordset.q.columnlist,"bHasMultipleVersion") AND structkeyexists(st, "status")>
 		 		<td nowrap="true">#st.status#</td>
 			</cfif>
 			<td>#st.action#</td>
