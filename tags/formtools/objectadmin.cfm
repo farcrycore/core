@@ -19,6 +19,11 @@ $Description:  -- $
 $Developer: Matthew Bryant (mat@daemon.com.au)$
 --->
 
+<!--- import tag libraries --->
+<cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/farcry_core/tags/formtools/" prefix="ft">
+
+
 <cfif thistag.executionMode eq "Start">
 	<cfparam name="attributes.title" default="Type Admin" />
 	<cfparam name="attributes.typename" default="" />
@@ -28,8 +33,6 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
         get multiple users in pagination
     --->
 
-<cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
-<cfimport taglib="/farcry/farcry_core/tags/formtools/" prefix="ft">
 
 <!---<cfset editobjectURL = "#application.url.farcry#/conjuror/invocation.cfm?objectid=##recordset.objectID[recordset.currentrow]##&typename=avnArticle&method=edit&ref=typeadmin&module=customlists/avnArticle.cfm" />
  --->
@@ -546,7 +549,7 @@ oAuthorisation=request.dmsec.oAuthorisation;
 
 <cfset stRecordset = oFormtoolUtil.getRecordset(paginationID="#attributes.typename#", sqlColumns="objectid,locked,lockedby,#attributes.columnlist#", typename="#attributes.typename#", RecordsPerPage="20", sqlOrderBy="#session.typeadminFilterObjects[attributes.typename].sqlOrderBy#", sqlWhere="#attributes.sqlWhere#", lCategories="#attributes.lCategories#") />	
 
-<tags:pagination 
+<ft:pagination 
 	paginationID="#attributes.typename#"
 	qRecordSet="#stRecordset.q#"
 	typename="#attributes.typename#"
@@ -613,10 +616,8 @@ oAuthorisation=request.dmsec.oAuthorisation;
 		</cfif>
 	</cfoutput>
 	
-	<tags:paginateLoop r_stObject="st" bIncludeFields="true" bIncludeObjects="false" stpermissions="#stpermissions#">
+	<ft:paginateLoop r_stObject="st" bIncludeFields="true" bIncludeObjects="false" stpermissions="#stpermissions#">
 	
-	
-		
 		<cfoutput>
 		<tr>
 			<cfif attributes.bSelectCol><td nowrap="true">#st.select# #st.currentRow#</td></cfif>
@@ -637,13 +638,13 @@ oAuthorisation=request.dmsec.oAuthorisation;
 			</cfloop>
 		</tr>
 		</cfoutput>
-	</tags:paginateLoop>
+	</ft:paginateLoop>
 	
 	<cfoutput></table></cfoutput>
 
 
 
-</tags:pagination> 
+</ft:pagination> 
 
 </ft:form>
 

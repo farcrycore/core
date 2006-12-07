@@ -15,27 +15,20 @@ $Revision: $
 || DESCRIPTION || 
 $Description:  -- $
 
-
 || DEVELOPER ||
 $Developer: Matthew Bryant (mat@daemon.com.au)$
-
-|| ATTRIBUTES ||
-$in: objectid -- $
 --->
 
-
+<!--- import tag libraries --->
 <cfimport taglib="/farcry/farcry_core/tags/formtools/" prefix="ft" >
 
-	
-
 <cfif thistag.executionMode eq "Start">
-
 	
 	<!--- Get the BaseTagData  --->
 	<cfset PaginateData = getBaseTagData("cf_pagination")>
 	<cfset structAppend(attributes, PaginateData.attributes,false) />
 		
-
+	<!--- optional attributes --->
 	<cfparam name="attributes.r_stObject" default="stObject">
 	<cfparam name="attributes.editWebskin" default="edit">
 	<cfparam name="attributes.CustomList" default="#attributes.typename#">
@@ -43,6 +36,7 @@ $in: objectid -- $
 	<cfparam name="attributes.lArrayProps" default="">
 	<cfparam name="attributes.bIncludeFields" default="false">
 	<cfparam name="attributes.bIncludeObjects" default="true">
+	<cfparam name="attributes.BINCLUDEALLCOLUMNS" default="false">
 	<cfparam name="attributes.bTypeAdmin" default="true">
 	<cfparam name="attributes.stpermissions" default="#structNew()#">
 	
@@ -53,7 +47,6 @@ $in: objectid -- $
 		<cfset PrimaryPackage = application.rules[attributes.typename] />
 		<cfset PrimaryPackagePath = application.rules[attributes.typename].rulepath />
 	</cfif>
-	
 	
 	<cfset variables.currentRow = attributes.startRow />
 
@@ -75,24 +68,36 @@ $in: objectid -- $
 		<cfif attributes.bIncludeObjects>
 			<cfset caller[attributes.r_stobject].stObject = aObjects[variables.currentRow] />
 		</cfif>		
-		
-		<cfset caller[attributes.r_stobject].select = "<input type='checkbox' name='objectid' value='#attributes.qRecordSet.objectid[variables.currentRow]#' onclick='setRowBackground(this);' class='formCheckbox' />" />
-		<cfset caller[attributes.r_stobject].currentRow = (attributes.CurrentPage - 1) * attributes.RecordsPerPage + variables.currentRow - attributes.startRow + 1 />
-		
-		<cfif listContainsNoCase(attributes.qRecordSet.columnlist,"locked") AND attributes.qRecordSet.locked[variables.currentRow]>
-			<cfset caller[attributes.r_stobject].currentRow = "#caller[attributes.r_stobject].currentRow# <img src='#application.url.farcry#/images/treeImages/customIcons/padlock.gif'>" />
-		</cfif>
-		
-		
-		
+		<cfif attributes.bIncludeAllColumns>
+			<cfparam name="caller['#attributes.r_stobject#'].stFields" default="#structNew()#" type="struct" />
+			<cfloop list="#attributes.qRecordSet.columnlist#" index="col">
+				<cfif NOT structKeyExists(caller[attributes.r_stobject].stFields, col)>
+					<cfset caller[attributes.r_stobject].stFields[col] = attributes.qRecordSet[col][variables.currentRow] />
+				</cfif>
+			</cfloop>
+		</cfif>	
+			
 		<!---------------------------------------------------
 		ONLY REQUIRE THE FOLLOWING IF CALLED FROM TYPEADMIN
 		 --------------------------------------------------->
-		<cfif attributes.bTypeAdmin>
+		<cfif attributes.bTypeAdmin>	
+			<cfset caller[attributes.r_stobject].select = "<input type='checkbox' name='objectid' value='#attributes.qRecordSet.objectid[variables.currentRow]#' onclick='setRowBackground(this);' class='formCheckbox' />" />
+			<cfset caller[attributes.r_stobject].currentRow = (attributes.CurrentPage - 1) * attributes.RecordsPerPage + variables.currentRow - attributes.startRow + 1 />
+			
+			<cfif listContainsNoCase(attributes.qRecordSet.columnlist,"locked") AND attributes.qRecordSet.locked[variables.currentRow]>
+				<cfset caller[attributes.r_stobject].currentRow = "#caller[attributes.r_stobject].currentRow# <img src='#application.url.farcry#/images/treeImages/customIcons/padlock.gif'>" />
+			</cfif>
+		
+		
+
 			<cfif listContainsNoCase(attributes.qRecordSet.columnlist,"bHasMultipleVersion") AND attributes.qRecordSet.bHasMultipleVersion[variables.currentrow]>
 				<cfset caller[attributes.r_stobject].status = "<span style='color:red;'>versioned</span>" />
-			<cfelseif listFindNoCase(attributes.qRecordSet.columnlist,"status")>
-				<cfset caller[attributes.r_stobject].status = attributes.qRecordSet.status[variables.currentrow] />
+			<cfelse>
+				<cfloop list="#attributes.qRecordSet.columnlist#" index="col">
+					<cfif attributes.qRecordSet.columnlist eq "status">
+						<cfset caller[attributes.r_stobject].status = attributes.qRecordSet.status[variables.currentrow] />
+					</cfif>
+				</cfloop>
 			</cfif>
 			
 			
@@ -157,7 +162,7 @@ $in: objectid -- $
 					</cfif>
 					
 					
-					<option value="delete">Delete</option>
+					<!--- <option value="delete">Delete</option> --->
 				</select>
 				</cfoutput>
 			</cfsavecontent>
@@ -187,24 +192,38 @@ $in: objectid -- $
 		</cfif>
 		<cfif attributes.bIncludeObjects>
 			<cfset caller[attributes.r_stobject].stObject = aObjects[variables.currentRow] />
-		</cfif>		
-		
-		<cfset caller[attributes.r_stobject].select = "<input type='checkbox' name='objectid' value='#attributes.qRecordSet.objectid[variables.currentRow]#' onclick='setRowBackground(this);' class='formCheckbox' />" />
-		<cfset caller[attributes.r_stobject].currentRow = (attributes.CurrentPage - 1) * attributes.RecordsPerPage + variables.currentRow - attributes.startRow + 1 />		
-		
-		<cfif listContainsNoCase(attributes.qRecordSet.columnlist,"locked") AND attributes.qRecordSet.locked[variables.currentRow]>
-			<cfset caller[attributes.r_stobject].currentRow = "#caller[attributes.r_stobject].currentRow# <img src='#application.url.farcry#/images/treeImages/customIcons/padlock.gif'>" />
-		</cfif>
-				
+		</cfif>			
+
+		<cfif attributes.bIncludeAllColumns>
+			<cfparam name="caller['#attributes.r_stobject#'].stFields" default="#structNew()#" type="struct" />
+			<cfloop list="#attributes.qRecordSet.columnlist#" index="col">
+				<cfif NOT structKeyExists(caller[attributes.r_stobject].stFields, col)>
+					<cfset caller[attributes.r_stobject].stFields[col] = attributes.qRecordSet[col][variables.currentRow] />
+				</cfif>
+			</cfloop>
+		</cfif>	
 		
 		<!---------------------------------------------------
 		ONLY REQUIRE THE FOLLOWING IF CALED FROM TYPEADMIN
 		 --------------------------------------------------->
-		<cfif attributes.bTypeAdmin>
+		<cfif attributes.bTypeAdmin>	
+			<cfset caller[attributes.r_stobject].select = "<input type='checkbox' name='objectid' value='#attributes.qRecordSet.objectid[variables.currentRow]#' onclick='setRowBackground(this);' class='formCheckbox' />" />
+			<cfset caller[attributes.r_stobject].currentRow = (attributes.CurrentPage - 1) * attributes.RecordsPerPage + variables.currentRow - attributes.startRow + 1 />
+			
+			<cfif listContainsNoCase(attributes.qRecordSet.columnlist,"locked") AND attributes.qRecordSet.locked[variables.currentRow]>
+				<cfset caller[attributes.r_stobject].currentRow = "#caller[attributes.r_stobject].currentRow# <img src='#application.url.farcry#/images/treeImages/customIcons/padlock.gif'>" />
+			</cfif>
+		
+		
+
 			<cfif listContainsNoCase(attributes.qRecordSet.columnlist,"bHasMultipleVersion") AND attributes.qRecordSet.bHasMultipleVersion[variables.currentrow]>
 				<cfset caller[attributes.r_stobject].status = "<span style='color:red;'>versioned</span>" />
-			<cfelseif listFindNoCase(attributes.qRecordSet.columnlist,"status")>
-				<cfset caller[attributes.r_stobject].status = attributes.qRecordSet.status[variables.currentrow] />
+			<cfelse>
+				<cfloop list="#attributes.qRecordSet.columnlist#" index="col">
+					<cfif attributes.qRecordSet.columnlist eq "status">
+						<cfset caller[attributes.r_stobject].status = attributes.qRecordSet.status[variables.currentrow] />
+					</cfif>
+				</cfloop>
 			</cfif>
 			
 			
@@ -269,7 +288,7 @@ $in: objectid -- $
 					</cfif>
 					
 					
-					<option value="delete">Delete</option>
+					<!--- <option value="delete">Delete</option> --->
 				</select>
 				</cfoutput>
 			</cfsavecontent>
