@@ -1,5 +1,4 @@
 <cfsetting enablecfoutputonly="yes">
-
 <!--- 
 || LEGAL ||
 $Copyright: Daemon Internet 2002-2006, http://www.daemon.com.au $
@@ -18,11 +17,7 @@ $Description:  -- $
 
 || DEVELOPER ||
 $Developer: Matthew Bryant (mat@daemon.com.au)$
-
-|| ATTRIBUTES ||
-$in: objectid -- $
 --->
-
 
 <cfif thistag.executionMode eq "Start">
 	<cfparam name="attributes.title" default="Type Admin" />
@@ -35,8 +30,6 @@ $in: objectid -- $
 
 <cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
 <cfimport taglib="/farcry/farcry_core/tags/formtools/" prefix="ft">
-<cfimport taglib="/farcry/farcry_avn/tags/" prefix="tags">
-<!---<cfimport taglib="/farcry/farcry_core/tags/widgets/" prefix="widgets"> --->
 
 <!---<cfset editobjectURL = "#application.url.farcry#/conjuror/invocation.cfm?objectid=##recordset.objectID[recordset.currentrow]##&typename=avnArticle&method=edit&ref=typeadmin&module=customlists/avnArticle.cfm" />
  --->
