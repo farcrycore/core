@@ -41,7 +41,7 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 
 <cfparam name="form.Criteria" default="" />
 
-<cfparam name="session.typeadmin" default="#structnew()#" type="struct">
+<cfparam name="session.objectadmin" default="#structnew()#" type="struct">
 
 <cfparam name="attributes.title" default="#attributes.typename# Administration" type="string">
 <cfparam name="attributes.ColumnList" default="" type="string">
@@ -83,8 +83,8 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 <cfparam name="attributes.PackageType" default="types" type="string">
 
 
-<cfif NOT structKeyExists(session.typeadmin, attributes.typename)>
-	<cfset structInsert(session.typeadmin, attributes.typename, structnew())>
+<cfif NOT structKeyExists(session.objectadmin, attributes.typename)>
+	<cfset structInsert(session.objectadmin, attributes.typename, structnew())>
 </cfif>
 
 <cfif attributes.PackageType EQ "rules">
@@ -104,7 +104,7 @@ user --->
 	<cfset structInsert(PrimaryPackage, "permissionset", "news", "yes")>
 </cfif>
 
-<cfset oTypeAdmin = createobject("component", "#application.packagepath#.farcry.typeadmin").init(stprefs=session.typeadmin[attributes.typename], attributes=attributes)>
+<cfset oTypeAdmin = createobject("component", "#application.packagepath#.farcry.objectadmin").init(stprefs=session.objectadmin[attributes.typename], attributes=attributes)>
 
 <!--- check if the type has a status property --->
 <!--- <cfset bUsesStatus = false>
@@ -125,9 +125,9 @@ user --->
 --->
 
 <!--- refactored to here... 
-<cfset session.typeadmin[attributes.typename]=oTypeadmin.getprefs()>
+<cfset session.objectadmin[attributes.typename]=oTypeadmin.getprefs()>
 <cfset stpermissions=oTypeAdmin.getBasePermissions()>
-<!--- <cfdump var="#session.typeadmin[attributes.typename]#"> --->
+<!--- <cfdump var="#session.objectadmin[attributes.typename]#"> --->
  /refactored --->
 
 
@@ -168,9 +168,9 @@ user --->
 	<cfset form.objectid = form.selectedObjectID />
 </cfif>
 
-<cfparam name="session.typeadminFilterObjects" default="#structNew()#" />
-<cfif not structKeyExists(session.typeadminFilterObjects, attributes.typename)>
-	<cfset session.typeadminFilterObjects[attributes.typename] = structNew() />
+<cfparam name="session.objectadminFilterObjects" default="#structNew()#" />
+<cfif not structKeyExists(session.objectadminFilterObjects, attributes.typename)>
+	<cfset session.objectadminFilterObjects[attributes.typename] = structNew() />
 </cfif>
 
 
@@ -179,34 +179,34 @@ user --->
 	<cfset oFilterType = createObject("component", PrimaryPackagePath) />
 	
 	
-	<cfif not structKeyExists(session.typeadminFilterObjects[attributes.typename], "stObject")>
+	<cfif not structKeyExists(session.objectadminFilterObjects[attributes.typename], "stObject")>
 		
-		<cfset session.typeadminFilterObjects[attributes.typename].stObject = oFilterType.getData(objectid="#createUUID()#") />
+		<cfset session.objectadminFilterObjects[attributes.typename].stObject = oFilterType.getData(objectid="#createUUID()#") />
 		
 					
-		<cfset session.typeadminFilterObjects[attributes.typename].stObject.label = "" />
-		<cfset stResult = oFilterType.setData(stProperties=session.typeadminFilterObjects[attributes.typename].stObject, bSessionOnly=true) />
+		<cfset session.objectadminFilterObjects[attributes.typename].stObject.label = "" />
+		<cfset stResult = oFilterType.setData(stProperties=session.objectadminFilterObjects[attributes.typename].stObject, bSessionOnly=true) />
 
-		<cfset session.typeadminFilterObjects[attributes.typename].stObject = oFilterType.getData(objectID = session.typeadminFilterObjects[attributes.typename].stObject.objectid) />
+		<cfset session.objectadminFilterObjects[attributes.typename].stObject = oFilterType.getData(objectID = session.objectadminFilterObjects[attributes.typename].stObject.objectid) />
 		
 	</cfif>
 	
 	<ft:processform action="apply filter" url="refresh">
-		<ft:processformObjects objectid="#session.typeadminFilterObjects[attributes.typename].stObject.objectid#" bSessionOnly="true" />	
+		<ft:processformObjects objectid="#session.objectadminFilterObjects[attributes.typename].stObject.objectid#" bSessionOnly="true" />	
 	</ft:processForm>
 	
 	<ft:processform action="clear filter" url="refresh">
-		<cfset structDelete(session.typeadminFilterObjects, attributes.typename) />
+		<cfset structDelete(session.objectadminFilterObjects, attributes.typename) />
 	</ft:processForm>
 	
 	
 	<cfset request.inHead.scriptaculouseffects = 1 />
-<!--- <cfdump var="#session.typeadminFilterObjects[attributes.typename].stObject#">
+<!--- <cfdump var="#session.objectadminFilterObjects[attributes.typename].stObject#">
 <cfdump var="#attributes.lFilterFields#"> --->
-<cfset session.typeadminFilterObjects[attributes.typename].stObject = oFilterType.getData(objectID = session.typeadminFilterObjects[attributes.typename].stObject.objectid) />
+<cfset session.objectadminFilterObjects[attributes.typename].stObject = oFilterType.getData(objectID = session.objectadminFilterObjects[attributes.typename].stObject.objectid) />
 <cfset HTMLfiltersAttributes = "">
 <cfloop list="#attributes.lFilterFields#" index="criteria">
-	<cfif session.typeadminFilterObjects[attributes.typename].stObject[criteria] neq "">
+	<cfif session.objectadminFilterObjects[attributes.typename].stObject[criteria] neq "">
 		<cfset thisCriteria = lcase(criteria)>
 		<cfif isDefined("application.types.#attributes.typename#.stProps.#criteria#.metadata.ftLabel")>
 			<cfset thisCriteria = lcase(application.types[attributes.typename].stProps[criteria].metadata.ftLabel)>
@@ -230,14 +230,14 @@ user --->
 		</div>
 		</cfoutput>
 		<cfoutput><div id="filterForm" style="display:none;padding:5px;"></cfoutput>
-			<ft:object objectid="#session.typeadminFilterObjects[attributes.typename].stObject.objectid#" typename="#attributes.typename#" lFields="#attributes.lFilterFields#" lExcludeFields="" includeFieldset="false" />
+			<ft:object objectid="#session.objectadminFilterObjects[attributes.typename].stObject.objectid#" typename="#attributes.typename#" lFields="#attributes.lFilterFields#" lExcludeFields="" includeFieldset="false" />
 			<ft:farcryButton value="apply filter" />
 			<br/>
 		<cfoutput></div></cfoutput>
 	</ft:form>
 	
 	
-	<cfset session.typeadminFilterObjects[attributes.typename].stObject = oFilterType.getData(objectID = session.typeadminFilterObjects[attributes.typename].stObject.objectid) />
+	<cfset session.objectadminFilterObjects[attributes.typename].stObject = oFilterType.getData(objectID = session.objectadminFilterObjects[attributes.typename].stObject.objectid) />
 	
 
 	<!------------------------
@@ -251,28 +251,28 @@ user --->
 			
 			
 			<cfloop list="#attributes.lFilterFields#" index="i">
-				<cfif len(session.typeadminFilterObjects[attributes.typename].stObject[i])>
+				<cfif len(session.objectadminFilterObjects[attributes.typename].stObject[i])>
 					<cfswitch expression="#PrimaryPackage.stProps[i].metadata.ftType#">
 					
 					<cfcase value="string,nstring,list">	
-						<cfif len(session.typeadminFilterObjects[attributes.typename].stObject[i])>
-							<cfloop list="#session.typeadminFilterObjects[attributes.typename].stObject[i]#" index="j">
+						<cfif len(session.objectadminFilterObjects[attributes.typename].stObject[i])>
+							<cfloop list="#session.objectadminFilterObjects[attributes.typename].stObject[i]#" index="j">
 								AND lower(#i#) LIKE '%#trim(LCase(j))#%'
 							</cfloop>
 						</cfif>
 					</cfcase>
 					
 					<cfcase value="boolean">	
-						<cfif len(session.typeadminFilterObjects[attributes.typename].stObject[i])>
-							<cfloop list="#session.typeadminFilterObjects[attributes.typename].stObject[i]#" index="j">
+						<cfif len(session.objectadminFilterObjects[attributes.typename].stObject[i])>
+							<cfloop list="#session.objectadminFilterObjects[attributes.typename].stObject[i]#" index="j">
 								AND lower(#i#) = '#j#'
 							</cfloop>
 						</cfif>
 					</cfcase>
 					
 					<cfcase value="category">
-						<cfif len(session.typeadminFilterObjects[attributes.typename].stObject[i])>
-							<cfloop list="#session.typeadminFilterObjects[attributes.typename].stObject[i]#" index="j">
+						<cfif len(session.objectadminFilterObjects[attributes.typename].stObject[i])>
+							<cfloop list="#session.objectadminFilterObjects[attributes.typename].stObject[i]#" index="j">
 								<cfset attributes.lCategories = listAppend(attributes.lCategories, trim(j)) />
 							</cfloop>
 						</cfif>
@@ -280,8 +280,8 @@ user --->
 
 					<cfdefaultcase>	
 						
-						<cfif len(session.typeadminFilterObjects[attributes.typename].stObject[i])>
-							<cfloop list="#session.typeadminFilterObjects[attributes.typename].stObject[i]#" index="j">
+						<cfif len(session.objectadminFilterObjects[attributes.typename].stObject[i])>
+							<cfloop list="#session.objectadminFilterObjects[attributes.typename].stObject[i]#" index="j">
 								<cfif listcontains("string,nstring,longchar", PrimaryPackage.stProps[i].metadata.type)>
 									AND lower(#i#) LIKE '%#trim(j)#%'
 								<cfelseif listcontains("numeric", PrimaryPackage.stProps[i].metadata.type)>
@@ -306,12 +306,12 @@ SQL ORDER BY CLAUSE
  ------------------------>
 <cfif len(attributes.sortableColumns)>
 	<cfif isDefined("form.sqlOrderBy") and len(form.sqlOrderby)>
-		<cfset session.typeadminFilterObjects[attributes.typename].sqlOrderBy = form.sqlOrderby />
+		<cfset session.objectadminFilterObjects[attributes.typename].sqlOrderBy = form.sqlOrderby />
 	</cfif>
 </cfif>
 
-<cfif not structKeyExists(session.typeadminFilterObjects[attributes.typename], "sqlOrderBy") >
-	<cfset session.typeadminFilterObjects[attributes.typename].sqlOrderBy = attributes.sqlorderby />
+<cfif not structKeyExists(session.objectadminFilterObjects[attributes.typename], "sqlOrderBy") >
+	<cfset session.objectadminFilterObjects[attributes.typename].sqlOrderBy = attributes.sqlorderby />
 </cfif>
 
 		
@@ -328,6 +328,7 @@ SQL ORDER BY CLAUSE
 
 <ft:processForm action="edit">
 	<!--- TODO: Check Permissions. --->
+	<cfabort>
 	<cflocation URL="#application.url.farcry#/conjuror/invocation.cfm?objectid=#form.objectid#&typename=#attributes.typename#&method=#attributes.editMethod#&ref=typeadmin&module=customlists/#attributes.customList#.cfm" addtoken="false">
 </ft:processForm>
 
@@ -364,7 +365,7 @@ SQL ORDER BY CLAUSE
 ------------------------------------------------>
 <!--- TODO: retest permissions on form action, otherwise you can circumnavigate permissions with your own dummy form submission GB --->
 <cfscript>
-// response: action message container for typeadmin
+// response: action message container for objectadmin
 response="";
 message_error = "";
 
@@ -485,7 +486,7 @@ if (isDefined("form.unlock") AND isDefined("form.objectid")) {
 
 
 
-<ft:form style="width: 100%;" Name="typeadmin">
+<ft:form style="width: 100%;" Name="objectadmin">
 <!--- output user responses --->
 <cfif len(message_error)><cfoutput><p id="error" class="fade"><span class="error">#message_error#</span></p></cfoutput></cfif>
 <cfif len(response)><cfoutput><p id="response" class="fade">#response#</p></cfoutput></cfif>
@@ -501,6 +502,7 @@ oAuthorisation=request.dmsec.oAuthorisation;
 <cfsavecontent variable="html_buttonbar">
 <cfoutput>
 <div class="">
+
 <cfloop from="1" to="#arraylen(attributes.aButtons)#" index="i">
 	<!--- (#attributes.aButtons[i].name#: #attributes.aButtons[i].permission#) --->
 	<cfif NOT len(attributes.aButtons[i].permission) OR oAuthorisation.checkPermission(permissionName=attributes.aButtons[i].permission,reference="PolicyGroup") EQ 1>
@@ -555,7 +557,7 @@ oAuthorisation=request.dmsec.oAuthorisation;
 		<cfset bhasstatus=true />
 	</cfif>
 </cfif>
-<cfset stRecordset = oFormtoolUtil.getRecordset(paginationID="#attributes.typename#", sqlColumns=sqlColumns, typename="#attributes.typename#", RecordsPerPage="20", sqlOrderBy="#session.typeadminFilterObjects[attributes.typename].sqlOrderBy#", sqlWhere="#attributes.sqlWhere#", lCategories="#attributes.lCategories#") />	
+<cfset stRecordset = oFormtoolUtil.getRecordset(paginationID="#attributes.typename#", sqlColumns=sqlColumns, typename="#attributes.typename#", RecordsPerPage="20", sqlOrderBy="#session.objectadminFilterObjects[attributes.typename].sqlOrderBy#", sqlWhere="#attributes.sqlWhere#", lCategories="#attributes.lCategories#") />	
 
 <ft:pagination 
 	paginationID="#attributes.typename#"
@@ -612,8 +614,8 @@ oAuthorisation=request.dmsec.oAuthorisation;
 					<cfif listContainsNoCase(attributes.SortableColumns,i)>
 						<select name="#i#sqlOrderBy" onchange="javascript:$('sqlOrderBy').value=this.value;submit();" style="width:80px;">
 							<option value=""></option>
-							<option value="#i# asc" <cfif session.typeadminFilterObjects[attributes.typename].sqlOrderBy EQ "#i# asc">selected</cfif>>asc</option>
-							<option value="#i# desc" <cfif session.typeadminFilterObjects[attributes.typename].sqlOrderBy EQ "#i# desc">selected</cfif>>desc</option>
+							<option value="#i# asc" <cfif session.objectadminFilterObjects[attributes.typename].sqlOrderBy EQ "#i# asc">selected</cfif>>asc</option>
+							<option value="#i# desc" <cfif session.objectadminFilterObjects[attributes.typename].sqlOrderBy EQ "#i# desc">selected</cfif>>desc</option>
 						</select>
 					<cfelse>
 						&nbsp;
