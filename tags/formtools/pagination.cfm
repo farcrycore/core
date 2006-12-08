@@ -1,3 +1,4 @@
+
 <!--- 
 || LEGAL ||
 $Copyright: Breathe Creativity 2002-2006, http://www.breathecreativity.com.au $
@@ -22,14 +23,15 @@ $Description:  -- This is a subtag that will add the links to enable the user to
 
 || DEVELOPER ||
 $Developer: Matthew Bryant (mat@bcreative.com.au)$
+
+|| ATTRIBUTES ||
+$in:  $
 --->
-<!--- import tag library --->
+
+
+
 <cfimport taglib="/farcry/farcry_core/tags/formtools/" prefix="ft" >
 
-<!--- check for end tag --->
-<cfif NOT thistag.hasEndTag>
-	<cfthrow errorcode="tags.formtools.pagination" message="Pagination tag requires end tag.">
-</cfif>
 
 <cfif thistag.executionMode eq "Start">
 

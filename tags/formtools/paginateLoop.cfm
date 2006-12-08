@@ -15,20 +15,27 @@ $Revision: $
 || DESCRIPTION || 
 $Description:  -- $
 
+
 || DEVELOPER ||
 $Developer: Matthew Bryant (mat@daemon.com.au)$
+
+|| ATTRIBUTES ||
+$in: objectid -- $
 --->
 
-<!--- import tag libraries --->
+
 <cfimport taglib="/farcry/farcry_core/tags/formtools/" prefix="ft" >
 
+	
+
 <cfif thistag.executionMode eq "Start">
+
 	
 	<!--- Get the BaseTagData  --->
 	<cfset PaginateData = getBaseTagData("cf_pagination")>
 	<cfset structAppend(attributes, PaginateData.attributes,false) />
 		
-	<!--- optional attributes --->
+
 	<cfparam name="attributes.r_stObject" default="stObject">
 	<cfparam name="attributes.editWebskin" default="edit">
 	<cfparam name="attributes.CustomList" default="#attributes.typename#">
@@ -78,7 +85,7 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 		</cfif>	
 			
 		<!---------------------------------------------------
-		ONLY REQUIRE THE FOLLOWING IF CALLED FROM TYPEADMIN
+		ONLY REQUIRE THE FOLLOWING IF CALED FROM TYPEADMIN
 		 --------------------------------------------------->
 		<cfif attributes.bTypeAdmin>	
 			<cfset caller[attributes.r_stobject].select = "<input type='checkbox' name='objectid' value='#attributes.qRecordSet.objectid[variables.currentRow]#' onclick='setRowBackground(this);' class='formCheckbox' />" />
@@ -92,12 +99,8 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 
 			<cfif listContainsNoCase(attributes.qRecordSet.columnlist,"bHasMultipleVersion") AND attributes.qRecordSet.bHasMultipleVersion[variables.currentrow]>
 				<cfset caller[attributes.r_stobject].status = "<span style='color:red;'>versioned</span>" />
-			<cfelse>
-				<cfloop list="#attributes.qRecordSet.columnlist#" index="col">
-					<cfif attributes.qRecordSet.columnlist eq "status">
-						<cfset caller[attributes.r_stobject].status = attributes.qRecordSet.status[variables.currentrow] />
-					</cfif>
-				</cfloop>
+			<cfelseif listContainsNoCase(attributes.qRecordSet.columnlist,"status")>
+				<cfset caller[attributes.r_stobject].status = attributes.qRecordSet.status[variables.currentrow] />
 			</cfif>
 			
 			
@@ -146,14 +149,14 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 					
 					<cfif structKeyExists(attributes.stPermissions, "iRequestApproval") 
 							AND attributes.stPermissions.iRequestApproval
-						AND listFindNoCase(attributes.qRecordSet.columnlist,"status") 
+						AND listContainsNoCase(attributes.qRecordSet.columnlist,"status") 
 						AND attributes.qRecordSet.status[variables.currentRow] EQ "draft">
 						<option value="requestApproval">Request Approval</option>
 					</cfif>
 					
 					<cfif structKeyExists(attributes.stPermissions, "iApprove") 
 						AND attributes.stPermissions.iApprove
-						AND listFindNoCase(attributes.qRecordSet.columnlist,"status")
+						AND listContainsNoCase(attributes.qRecordSet.columnlist,"status")
 						AND (
 							attributes.qRecordSet.status[variables.currentRow] EQ "draft" 
 							OR attributes.qRecordSet.status[variables.currentRow] EQ "pending"
@@ -218,12 +221,8 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 
 			<cfif listContainsNoCase(attributes.qRecordSet.columnlist,"bHasMultipleVersion") AND attributes.qRecordSet.bHasMultipleVersion[variables.currentrow]>
 				<cfset caller[attributes.r_stobject].status = "<span style='color:red;'>versioned</span>" />
-			<cfelse>
-				<cfloop list="#attributes.qRecordSet.columnlist#" index="col">
-					<cfif attributes.qRecordSet.columnlist eq "status">
-						<cfset caller[attributes.r_stobject].status = attributes.qRecordSet.status[variables.currentrow] />
-					</cfif>
-				</cfloop>
+			<cfelseif listContainsNoCase(attributes.qRecordSet.columnlist,"status")>
+				<cfset caller[attributes.r_stobject].status = attributes.qRecordSet.status[variables.currentrow] />
 			</cfif>
 			
 			
@@ -272,14 +271,14 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 					
 					<cfif structKeyExists(attributes.stPermissions, "iRequestApproval") 
 							AND attributes.stPermissions.iRequestApproval
-						AND listFindNoCase(attributes.qRecordSet.columnlist,"status") 
+						AND listContainsNoCase(attributes.qRecordSet.columnlist,"status") 
 						AND attributes.qRecordSet.status[variables.currentRow] EQ "draft">
 						<option value="requestApproval">Request Approval</option>
 					</cfif>
 					
 					<cfif structKeyExists(attributes.stPermissions, "iApprove") 
 						AND attributes.stPermissions.iApprove
-						AND listFindNoCase(attributes.qRecordSet.columnlist,"status")
+						AND listContainsNoCase(attributes.qRecordSet.columnlist,"status")
 						AND (
 							attributes.qRecordSet.status[variables.currentRow] EQ "draft" 
 							OR attributes.qRecordSet.status[variables.currentRow] EQ "pending"

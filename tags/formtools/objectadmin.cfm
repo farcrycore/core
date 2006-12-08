@@ -328,7 +328,6 @@ SQL ORDER BY CLAUSE
 
 <ft:processForm action="edit">
 	<!--- TODO: Check Permissions. --->
-	<cfabort>
 	<cflocation URL="#application.url.farcry#/conjuror/invocation.cfm?objectid=#form.objectid#&typename=#attributes.typename#&method=#attributes.editMethod#&ref=typeadmin&module=customlists/#attributes.customList#.cfm" addtoken="false">
 </ft:processForm>
 
@@ -549,14 +548,14 @@ oAuthorisation=request.dmsec.oAuthorisation;
 
 <cfset oFormtoolUtil = createObject("component", "farcry.farcry_core.packages.farcry.formtools") />
 <cfset sqlColumns="objectid,locked,lockedby,#attributes.columnlist#" />
-<cfset bhasstatus=false />
+<!---<cfset bhasstatus=false />
 <!--- check if the type has a status property --->
 <cfif structKeyExists(application.types[attributes.typename].STPROPS, "status")>
 	<cfif not findNocase(attributes.ColumnList, "status") or not findNocase(attributes.ColumnList, "*")>
 		<cfset sqlColumns = listAppend(sqlColumns,"status")>
 		<cfset bhasstatus=true />
 	</cfif>
-</cfif>
+</cfif> --->
 <cfset stRecordset = oFormtoolUtil.getRecordset(paginationID="#attributes.typename#", sqlColumns=sqlColumns, typename="#attributes.typename#", RecordsPerPage="20", sqlOrderBy="#session.objectadminFilterObjects[attributes.typename].sqlOrderBy#", sqlWhere="#attributes.sqlWhere#", lCategories="#attributes.lCategories#") />	
 
 <ft:pagination 
@@ -581,7 +580,7 @@ oAuthorisation=request.dmsec.oAuthorisation;
 	<table width="100%">
 		<tr>
 	 		<cfif attributes.bSelectCol><th>Select</th></cfif>
-	 		<cfif listContainsNoCase(stRecordset.q.columnlist,"bHasMultipleVersion") OR bHasStatus>
+	 		<cfif listContainsNoCase(stRecordset.q.columnlist,"bHasMultipleVersion")>
 		 		<th>Status</th>
 			</cfif>
 			<th>Action</th>
@@ -602,7 +601,7 @@ oAuthorisation=request.dmsec.oAuthorisation;
 		<cfif len(attributes.SortableColumns)>
 		<tr>
 	 		<cfif attributes.bSelectCol><th>&nbsp;</th></cfif>	 		
-	 		<cfif listContainsNoCase(stRecordset.q.columnlist,"bHasMultipleVersion") OR bHasStatus>
+	 		<cfif listContainsNoCase(stRecordset.q.columnlist,"bHasMultipleVersion")>
 		 		<th>&nbsp;</th>
 			</cfif>
 			<th>&nbsp;</th>
@@ -631,10 +630,8 @@ oAuthorisation=request.dmsec.oAuthorisation;
 		<cfoutput>
 		<tr>
 			<cfif attributes.bSelectCol><td nowrap="true">#st.select# #st.currentRow#</td></cfif>
-	 		<cfif (listContainsNoCase(stRecordset.q.columnlist,"bHasMultipleVersion") OR bHasStatus) AND structkeyexists(st, "status")>
+	 		<cfif listContainsNoCase(stRecordset.q.columnlist,"bHasMultipleVersion")>
 		 		<td nowrap="true">#st.status#</td>
-		 	<cfelseif bHasStatus AND NOT structkeyexists(st, "status")>
-		 		<td>&nbsp;</td>
 			</cfif>
 			<td>#st.action#</td>
 			<!---<cfif attributes.bEditCol><td>#st.editLink#</td></cfif>
