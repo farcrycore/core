@@ -68,7 +68,7 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 <cfparam name="attributes.numitems" default="#application.config.general.GENERICADMINNUMITEMS#" type="numeric">
 <cfparam name="attributes.numPageDisplay" default="5" type="numeric">
 
-<cfparam name="attributes.lButtons" default="add,unlock,delete" type="string">
+<cfparam name="attributes.lButtons" default="*" type="string">
 <cfparam name="attributes.bPaginateTop" default="true" type="boolean">
 <cfparam name="attributes.bPaginateBottom" default="true" type="boolean">
 <cfparam name="attributes.bSelectCol" default="true" type="boolean">
@@ -503,17 +503,20 @@ oAuthorisation=request.dmsec.oAuthorisation;
 <div class="">
 
 <cfloop from="1" to="#arraylen(attributes.aButtons)#" index="i">
-	<!--- (#attributes.aButtons[i].name#: #attributes.aButtons[i].permission#) --->
-	<cfif NOT len(attributes.aButtons[i].permission) OR oAuthorisation.checkPermission(permissionName=attributes.aButtons[i].permission,reference="PolicyGroup") EQ 1>
-		
-		<cfif len(attributes.aButtons[i].onclick)> 
-			<cfset onclickJS="#attributes.aButtons[i].onclick#" />
-		<cfelse>
-			<cfset onclickJS="" />
+	
+	<cfif attributes.lButtons EQ "*" or listFindNoCase(attributes.lButtons,attributes.aButtons[i].value)>
+		<!--- (#attributes.aButtons[i].name#: #attributes.aButtons[i].permission#) --->
+		<cfif NOT len(attributes.aButtons[i].permission) OR oAuthorisation.checkPermission(permissionName=attributes.aButtons[i].permission,reference="PolicyGroup") EQ 1>
+			
+			<cfif len(attributes.aButtons[i].onclick)> 
+				<cfset onclickJS="#attributes.aButtons[i].onclick#" />
+			<cfelse>
+				<cfset onclickJS="" />
+			</cfif>
+			
+			<ft:farcryButton value="#attributes.aButtons[i].value#" class="formButton"  onclick="#onclickJS#" />
+			<!---<input type="#attributes.aButtons[i].type#" name="#attributes.aButtons[i].name#" value="#attributes.aButtons[i].value#" class="formButton"<cfif len(attributes.aButtons[i].onclick)> onclick="#attributes.aButtons[i].onclick#"</cfif> /> --->
 		</cfif>
-		
-		<ft:farcryButton value="#attributes.aButtons[i].value#" class="formButton"  onclick="#onclickJS#" />
-		<!---<input type="#attributes.aButtons[i].type#" name="#attributes.aButtons[i].name#" value="#attributes.aButtons[i].value#" class="formButton"<cfif len(attributes.aButtons[i].onclick)> onclick="#attributes.aButtons[i].onclick#"</cfif> /> --->
 	</cfif>
 </cfloop>
 </div>
