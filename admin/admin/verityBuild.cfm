@@ -242,7 +242,7 @@ ACTION:
 		<cfif findnocase("_files",collection)>
 			<cfset oVerity.updateFileCollection(collection=collection,maxRows=form.maxrows)>
 		<cfelse>
-			<cfset oVerity.updateCollection(collection=collection,maxRows=form.maxrows)>
+			<cfset oVerity.updateTypeCollection(collection=collection,maxRows=form.maxrows)>
 		</cfif>
 	</cfloop>
 	
