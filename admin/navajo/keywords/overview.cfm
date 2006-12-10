@@ -23,6 +23,34 @@ $out:$
 --->
 <cfprocessingDirective pageencoding="utf-8">
 
+<cfimport taglib="/farcry/farcry_core/tags/formtools/" prefix="ft" >
+
+
+<ft:processForm action="Sort Children Ascending">
+	<cfif len(form.categoryID)>
+		<cfset qChildren = application.factory.oTree.getDescendants(objectid=form.categoryid, bIncludeSelf=false, depth=1) />
+		
+		
+		<cfquery dbtype="query" name="qSortedChildren">
+		SELECT objectid,parentid,UPPER(objectname) as catname FROM qChildren
+		ORDER BY catname desc
+		</cfquery>
+		
+		<cfif qSortedChildren.recordCount>
+			<cfloop query="qSortedChildren">
+				<cfset stResult = application.factory.oTree.moveBranch(objectid=qSortedChildren.objectid, parentid=form.categoryID, pos=1) />
+			</cfloop>
+		</cfif>
+	</cfif>
+	
+	<cfoutput>
+	<script type="text/javascript">
+	parent.cattreeframe.document.location.reload();
+	</script>
+	</cfoutput>
+</ft:processForm>
+
+
 <cfoutput><LINK href="#application.url.farcry#/css/admin.css" rel="stylesheet" type="text/css"></cfoutput>
 
 <cfif isDefined("form.submit")>
@@ -133,4 +161,13 @@ function doSubmit(objForm)
 	<input type="hidden" name="objectid" value="#objectid#">
 	</form>
 	</cfoutput>
+	
+	
+	<cfif isDefined("url.objectid") AND len(url.objectid)>
+		<cfoutput><hr /></cfoutput>
+		<ft:form>
+			<cfoutput><input type="hidden" name="categoryID" value="#url.objectid#"></cfoutput>
+			<ft:farcryButton value="Sort Children Ascending" />
+		</ft:form>
+	</cfif>
 </cfif>
