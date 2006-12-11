@@ -41,7 +41,7 @@
 	<cfset attributes.lExcludeFields = ListAppend(attributes.lExcludeFields,"objectid,locked,lockedby,lastupdatedby,ownedby,datetimelastupdated,createdby,datetimecreated,versionID,status")>
 	
 	<!--- Add Form Tools Specific CSS --->
-	<cfset Request.InHead.FormsCSS = 1>
+	<cfparam name="Request.InHead.FormsCSS" default="true" />
 	
 	<cfif NOT structIsEmpty(attributes.stObject)>
 		<cfset attributes.ObjectID = attributes.stObject.ObjectID>
