@@ -22,7 +22,7 @@ Cute safe stuff like coloured scroll bars.
 No important standards were harmed in the making of this stylesheet.
 
 */
-body {scrollbar-base-color: ##7476a6; scrollbar-arrow-color: ##FFFFFF; scrollbar-3dlight-color: ##eaebf1; scrollbar-darkshadow-color: ##61638b; scrollbar-face-color: ##8e8fb1; scrollbar-highlight-color: ##8e8fb1; scrollbar-shadow-color: ##8e8fb1;scrollbar-track-color: ##aeafc7;}
+body {overflow:auto;scrollbar-base-color: ##7476a6; scrollbar-arrow-color: ##FFFFFF; scrollbar-3dlight-color: ##eaebf1; scrollbar-darkshadow-color: ##61638b; scrollbar-face-color: ##8e8fb1; scrollbar-highlight-color: ##8e8fb1; scrollbar-shadow-color: ##8e8fb1;scrollbar-track-color: ##aeafc7;}
 
 </cfoutput>
 <!--- end css output --->
