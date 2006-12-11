@@ -257,7 +257,7 @@ user --->
 					<cfcase value="string,nstring,list">	
 						<cfif len(session.objectadminFilterObjects[attributes.typename].stObject[i])>
 							<cfloop list="#session.objectadminFilterObjects[attributes.typename].stObject[i]#" index="j">
-								AND lower(#i#) LIKE '%#trim(LCase(j))#%'
+								AND lower(#i#) LIKE '%#preserveSingleQuotes(trim(LCase(j)))#%'
 							</cfloop>
 						</cfif>
 					</cfcase>
@@ -265,7 +265,7 @@ user --->
 					<cfcase value="boolean">	
 						<cfif len(session.objectadminFilterObjects[attributes.typename].stObject[i])>
 							<cfloop list="#session.objectadminFilterObjects[attributes.typename].stObject[i]#" index="j">
-								AND lower(#i#) = '#j#'
+								AND lower(#i#) = '#preserveSingleQuotes(j)#'
 							</cfloop>
 						</cfif>
 					</cfcase>
@@ -283,9 +283,9 @@ user --->
 						<cfif len(session.objectadminFilterObjects[attributes.typename].stObject[i])>
 							<cfloop list="#session.objectadminFilterObjects[attributes.typename].stObject[i]#" index="j">
 								<cfif listcontains("string,nstring,longchar", PrimaryPackage.stProps[i].metadata.type)>
-									AND lower(#i#) LIKE '%#trim(j)#%'
+									AND lower(#i#) LIKE '%#preserveSingleQuotes(trim(j))#%'
 								<cfelseif listcontains("numeric", PrimaryPackage.stProps[i].metadata.type)>
-									AND #i# = #j#
+									AND #i# = #preserveSingleQuotes(j)#
 								</cfif>
 							</cfloop>
 						</cfif>
