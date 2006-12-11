@@ -142,8 +142,9 @@
 		
 		
 		<!--- APPEND the object that is currently in the wizzard to the form submitted object --->
-		<cfset bResult = structAppend(Caller[attributes.r_stProperties], stWizzard.data[Caller[attributes.r_stProperties].objectid], false )  />
-		
+		<cfif structKeyExists(stWizzard.data, Caller[attributes.r_stProperties].objectid)>
+			<cfset bResult = structAppend(Caller[attributes.r_stProperties], stWizzard.data[Caller[attributes.r_stProperties].objectid], false )  />
+		</cfif>
 
 		<cfif attributes.bimageautogenerate>
 			<cfset oFormTools = createObject("component", "farcry.farcry_core.packages.farcry.formtools") />
