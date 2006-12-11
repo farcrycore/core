@@ -53,9 +53,15 @@ return REFindNoCase("^[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{16}$", str);
 	
 	<cfif isDefined("stWizzard.Data")>
 		<!--- only run this if the wddx packet has not already been extracted into a struct --->
-		<cfif  not isStruct(stWizzard.Data)>
-			<cfwddx action="WDDX2CFML" input="#stWizzard.Data#" output="stWizzardData">
-			<cfset stWizzard.Data = duplicate(stWizzardData) />
+		<cfif not isStruct(stWizzard.Data)>
+			<cfif IsWDDX(stWizzard.Data)>
+				<cfwddx action="WDDX2CFML" input="#stWizzard.Data#" output="stWizzardData">
+				<cfset stWizzard.Data = duplicate(stWizzardData) />
+			<cfelse>
+				<cfset stWizzard = Create(ReferenceID=stWizzard.ReferenceID,UserLogin=arguments.UserLogin)>
+				<cfwddx action="WDDX2CFML" input="#stWizzard.Data#" output="stWizzardData">
+				<cfset stWizzard.Data = duplicate(stWizzardData) />
+			</cfif>
 		</cfif>
 	<cfelse>
 		<cfabort showerror="Farcy could not find or create the wizzard requested." />
