@@ -270,7 +270,8 @@ function deSelectAll()
 				</cfif>
 			</cfif>
 									
-			<cfoutput>Changing status....<br></cfoutput><cfflush>
+			<cfoutput>Changing status....<br></cfoutput>
+			<cfflush>
 			
 			<!--- update the structure data for object update --->
 			<cfloop list="#keyList#" index="key">
@@ -334,7 +335,7 @@ function deSelectAll()
 if(window.opener && window.opener.parent)
 	window.close();
 else{
-	if(parent['sidebar'].frames['sideTree'])
+	//if(parent['sidebar'].frames['sideTree'])
 	location.href = "#application.url.farcry#/edittabOverview.cfm?objectid=#returnObjectId#";
 }
 </script></cfoutput>
