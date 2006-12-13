@@ -91,7 +91,7 @@ $in: objectid -- $
 			<cfset caller[attributes.r_stobject].select = "<input type='checkbox' name='objectid' value='#attributes.qRecordSet.objectid[variables.currentRow]#' onclick='setRowBackground(this);' class='formCheckbox' />" />
 			<cfset caller[attributes.r_stobject].currentRow = (attributes.CurrentPage - 1) * attributes.RecordsPerPage + variables.currentRow - attributes.startRow + 1 />
 			
-			<cfif listContainsNoCase(attributes.qRecordSet.columnlist,"locked") AND attributes.qRecordSet.locked[variables.currentRow]>
+			<cfif listFindNoCase(attributes.qRecordSet.columnlist,"locked") AND attributes.qRecordSet.locked[variables.currentRow]>
 				<cfset caller[attributes.r_stobject].currentRow = "#caller[attributes.r_stobject].currentRow# <img src='#application.url.farcry#/images/treeImages/customIcons/padlock.gif'>" />
 			</cfif>
 		
@@ -99,7 +99,7 @@ $in: objectid -- $
 
 			<cfif listContainsNoCase(attributes.qRecordSet.columnlist,"bHasMultipleVersion") AND attributes.qRecordSet.bHasMultipleVersion[variables.currentrow]>
 				<cfset caller[attributes.r_stobject].status = "<span style='color:red;'>versioned</span>" />
-			<cfelseif listContainsNoCase(attributes.qRecordSet.columnlist,"status")>
+			<cfelseif listFindNoCase(attributes.qRecordSet.columnlist,"status")>
 				<cfset caller[attributes.r_stobject].status = attributes.qRecordSet.status[variables.currentrow] />
 			</cfif>
 			
@@ -124,7 +124,7 @@ $in: objectid -- $
 	
 					<option value="overview">Overview</option>
 								
-					<cfif listContainsNoCase(attributes.qRecordSet.columnlist,"locked") AND attributes.qRecordSet.locked[variables.currentRow] AND attributes.qRecordSet.lockedby[variables.currentRow] neq '#session.dmSec.authentication.userlogin#_#session.dmSec.authentication.userDirectory#'>
+					<cfif listFindNoCase(attributes.qRecordSet.columnlist,"locked") AND attributes.qRecordSet.locked[variables.currentRow] AND attributes.qRecordSet.lockedby[variables.currentRow] neq '#session.dmSec.authentication.userlogin#_#session.dmSec.authentication.userDirectory#'>
 						<cfif structKeyExists(attributes.stPermissions, "iApprove") AND attributes.stPermissions.iApprove>
 							<option value="unlock">Unlock</option>
 						</cfif>		
@@ -149,14 +149,14 @@ $in: objectid -- $
 					
 					<cfif structKeyExists(attributes.stPermissions, "iRequestApproval") 
 							AND attributes.stPermissions.iRequestApproval
-						AND listContainsNoCase(attributes.qRecordSet.columnlist,"status") 
+						AND listFindNoCase(attributes.qRecordSet.columnlist,"status") 
 						AND attributes.qRecordSet.status[variables.currentRow] EQ "draft">
 						<option value="requestApproval">Request Approval</option>
 					</cfif>
 					
 					<cfif structKeyExists(attributes.stPermissions, "iApprove") 
 						AND attributes.stPermissions.iApprove
-						AND listContainsNoCase(attributes.qRecordSet.columnlist,"status")
+						AND listFindNoCase(attributes.qRecordSet.columnlist,"status")
 						AND (
 							attributes.qRecordSet.status[variables.currentRow] EQ "draft" 
 							OR attributes.qRecordSet.status[variables.currentRow] EQ "pending"
@@ -213,7 +213,7 @@ $in: objectid -- $
 			<cfset caller[attributes.r_stobject].select = "<input type='checkbox' name='objectid' value='#attributes.qRecordSet.objectid[variables.currentRow]#' onclick='setRowBackground(this);' class='formCheckbox' />" />
 			<cfset caller[attributes.r_stobject].currentRow = (attributes.CurrentPage - 1) * attributes.RecordsPerPage + variables.currentRow - attributes.startRow + 1 />
 			
-			<cfif listContainsNoCase(attributes.qRecordSet.columnlist,"locked") AND attributes.qRecordSet.locked[variables.currentRow]>
+			<cfif listFindNoCase(attributes.qRecordSet.columnlist,"locked") AND attributes.qRecordSet.locked[variables.currentRow]>
 				<cfset caller[attributes.r_stobject].currentRow = "#caller[attributes.r_stobject].currentRow# <img src='#application.url.farcry#/images/treeImages/customIcons/padlock.gif'>" />
 			</cfif>
 		
@@ -221,7 +221,7 @@ $in: objectid -- $
 
 			<cfif listContainsNoCase(attributes.qRecordSet.columnlist,"bHasMultipleVersion") AND attributes.qRecordSet.bHasMultipleVersion[variables.currentrow]>
 				<cfset caller[attributes.r_stobject].status = "<span style='color:red;'>versioned</span>" />
-			<cfelseif listContainsNoCase(attributes.qRecordSet.columnlist,"status")>
+			<cfelseif listFindNoCase(attributes.qRecordSet.columnlist,"status")>
 				<cfset caller[attributes.r_stobject].status = attributes.qRecordSet.status[variables.currentrow] />
 			</cfif>
 			
@@ -246,7 +246,7 @@ $in: objectid -- $
 	
 					<option value="overview">Overview</option>
 								
-					<cfif listContainsNoCase(attributes.qRecordSet.columnlist,"locked") AND attributes.qRecordSet.locked[variables.currentRow] AND attributes.qRecordSet.lockedby[variables.currentRow] neq '#session.dmSec.authentication.userlogin#_#session.dmSec.authentication.userDirectory#'>
+					<cfif listFindNoCase(attributes.qRecordSet.columnlist,"locked") AND attributes.qRecordSet.locked[variables.currentRow] AND attributes.qRecordSet.lockedby[variables.currentRow] neq '#session.dmSec.authentication.userlogin#_#session.dmSec.authentication.userDirectory#'>
 						<cfif structKeyExists(attributes.stPermissions, "iApprove") AND attributes.stPermissions.iApprove>
 							<option value="unlock">Unlock</option>
 						</cfif>		
@@ -271,14 +271,14 @@ $in: objectid -- $
 					
 					<cfif structKeyExists(attributes.stPermissions, "iRequestApproval") 
 							AND attributes.stPermissions.iRequestApproval
-						AND listContainsNoCase(attributes.qRecordSet.columnlist,"status") 
+						AND listFindNoCase(attributes.qRecordSet.columnlist,"status") 
 						AND attributes.qRecordSet.status[variables.currentRow] EQ "draft">
 						<option value="requestApproval">Request Approval</option>
 					</cfif>
 					
 					<cfif structKeyExists(attributes.stPermissions, "iApprove") 
 						AND attributes.stPermissions.iApprove
-						AND listContainsNoCase(attributes.qRecordSet.columnlist,"status")
+						AND listFindNoCase(attributes.qRecordSet.columnlist,"status")
 						AND (
 							attributes.qRecordSet.status[variables.currentRow] EQ "draft" 
 							OR attributes.qRecordSet.status[variables.currentRow] EQ "pending"
