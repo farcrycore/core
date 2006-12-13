@@ -68,6 +68,7 @@ $out:$
 		
 		<cfparam name="Request.RequiredInHead.WizardCSS" default = "0">
 		<cfparam name="Request.RequiredInHead.FormsCSS" default = "0">
+		<cfparam name="Request.RequiredInHead.iehtcCSS" default = "true">
 		
 		
 		<cfparam name="Request.RequiredInHead.swfObjectJS" default = "0">
@@ -171,8 +172,11 @@ $out:$
 		<cfif isdefined("Request.InHead.Wizard")>
 			<cfset Request.RequiredInHead.WizardCSS = 1>
 		</cfif>
-		<cfif isdefined("Request.InHead.FormsCSS")>
+		<cfif isdefined("Request.InHead.FormsCSS") AND Request.InHead.FormsCSS>
 			<cfset Request.RequiredInHead.FormsCSS = 1>
+		</cfif>
+		<cfif isdefined("Request.InHead.iehtcCSS") AND Request.InHead.iehtcCSS>
+			<cfset Request.RequiredInHead.iehtcCSS = true>
 		</cfif>
 		
 		<cfif isDefined("Request.InHead.prototypeTree")>
@@ -357,14 +361,20 @@ $out:$
 		<cfif isDefined("Request.RequiredInHead.FormsCSS") AND Request.RequiredInHead.FormsCSS>
 			<cfoutput>
 				<link rel="stylesheet" type="text/css" href="#application.url.farcry#/css/forms.cfm" media="all" />
-				<!--[if lt IE 8]>
-				<link rel="stylesheet" href="#application.url.farcry#/css/custom/customstuff.cfm" type="text/css" media="screen" />
-				<![endif]-->
-				<!--[if lt IE 7]>
-				<link rel="stylesheet" href="#application.url.farcry#/css/htc/iehtc.cfm" type="text/css" media="screen" />
-				<![endif]-->
 			</cfoutput>
 		</cfif>
+		
+
+		<cfif isDefined("Request.RequiredInHead.iehtcCSS") AND Request.RequiredInHead.iehtcCSS>
+			<cfoutput>
+				<!--[if lt IE 7]>
+				<link rel="stylesheet" href="#application.url.farcry#/css/htc/iehtc.cfm" type="text/css" media="screen" />
+				<![endif]-->				
+			</cfoutput>
+		</cfif>
+				
+				
+				
 		
 		<cfif isDefined("Request.RequiredInHead.prototypeWindowJS") AND Request.RequiredInHead.prototypeWindowJS>
 			<cfoutput>
