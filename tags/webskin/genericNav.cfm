@@ -164,7 +164,7 @@
 					if(attributes.bIncludeHome){
 						writeOutput("<li");
 						if(request.sectionObjectID eq application.navid.home){
-							writeOutput(" class=""active""");
+							writeOutput(" class=""active home""");
 						}
 						writeOutput("><a href=""#application.url.webroot#/"">Home</a></li>");
 					}
