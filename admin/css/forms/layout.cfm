@@ -19,10 +19,6 @@
 	/* form notes component */
 	notesWidth = "150px";
 
-	/* temporary url string pointing to images on skunkworks */
-	skunkworks = "http://skunkworks.farcrycms.com/grae/farcry/formtools";
-
-
 	/*
 	new layout variables
 	*/
