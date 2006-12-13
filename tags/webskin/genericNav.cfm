@@ -139,7 +139,7 @@
 				if(attributes.bLast and qNav.nRight[i] eq qMaxRight.maxRight){
 					itemclass=itemclass & 'last ';
 				}
-				if(attributes.bActive and trim(qNav.ObjectID[i]) eq request.sectionObjectID or listfind(lAncestors, trim(qNav.ObjectID[i]))){
+				if(attributes.bActive and (trim(qNav.ObjectID[i]) eq request.sectionObjectID or listfind(lAncestors, trim(qNav.ObjectID[i])))){
 					itemclass=itemclass & 'active ';
 				}
 				// update counters
