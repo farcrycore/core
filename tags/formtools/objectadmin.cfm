@@ -337,7 +337,12 @@ SQL ORDER BY CLAUSE
 
 <ft:processForm action="view">
 	<!--- TODO: Check Permissions. --->
-	<cflocation URL="#application.url.webroot#/index.cfm?objectID=#form.objectid#&flushcache=1" addtoken="false" />
+	<cfoutput>
+		<script language="javascript">
+			var newWin = window.open("#application.url.webroot#/index.cfm?objectID=#form.objectid#&flushcache=1","viewWindow","resizable=yes,menubar=yes,width=800,height=600");
+		</script>
+	</cfoutput>
+	<!--- <cflocation URL="#application.url.webroot#/index.cfm?objectID=#form.objectid#&flushcache=1" addtoken="false" /> --->
 </ft:processForm>
 
 <cfif structKeyExists(application.farcrylib, "flow")>
