@@ -102,34 +102,34 @@ form.formtool ##wizard-content table, form.formtool ##wizard-content table tr, f
 
 /* formtool form components */
 	/* formtool input : formButton webskin styles */	
-	form.formtool input.formButton {background: ##FFFFFF url("#application.url.farcry#/css/images/form_button_bg.gif") no-repeat 0px -2px; border-top: 1px solid ##AEAFC7; border-right: 1px solid ##5A5B85; border-bottom: 1px solid ##5A5B85; border-left: 1px solid ##AEAFC7; cursor: pointer; color: inherit;}
-	form.formtool input.formButton:hover {background: url("#application.url.farcry#/css/images/form_button_bg.gif") no-repeat 0px -58px;}
+	form.formtool input.formButton {background: ##FFFFFF url("images/form_button_bg.gif") no-repeat 0px -2px; border-top: 1px solid ##AEAFC7; border-right: 1px solid ##5A5B85; border-bottom: 1px solid ##5A5B85; border-left: 1px solid ##AEAFC7; cursor: pointer; color: inherit;}
+	form.formtool input.formButton:hover {background: url("images/form_button_bg.gif") no-repeat 0px -58px;}
 	/* formtool select webskin styles */
 	form.formtool select {background-color: ##FFFFFF; border-top: 1px solid ##5A5B85; border-right: 1px solid ##AEAFC7; border-bottom: 1px solid ##AEAFC7; border-left: 1px solid ##5A5B85; color: inherit;}
 	form.formtool select option {background-color: ##FFFFFF; color: inherit;}
 
 /* formtool html button webskin styles */
 	/* formtool default html button webskin styles */
-	form.formtool div.buttonStandard {background: url("#application.url.farcry#/css/images/form_button_bg.gif") no-repeat -2px -2px; border-top: 1px solid ##AEAFC7; border-right: 1px solid ##5A5B85; border-bottom: 1px solid ##5A5B85; border-left: 1px solid ##AEAFC7; cursor: pointer;}
-		form.formtool div.buttonStandard a:hover {background: url("#application.url.farcry#/css/images/form_button_bg.gif") no-repeat -2px -58px;}
+	form.formtool div.buttonStandard {background: url("images/form_button_bg.gif") no-repeat -2px -2px; border-top: 1px solid ##AEAFC7; border-right: 1px solid ##5A5B85; border-bottom: 1px solid ##5A5B85; border-left: 1px solid ##AEAFC7; cursor: pointer;}
+		form.formtool div.buttonStandard a:hover {background: url("images/form_button_bg.gif") no-repeat -2px -58px;}
 	/* formtool default html view method button webskin styles */
-	form.formtool div.buttonViewMethod {background: ##FFFFFF url("#application.url.farcry#/css/images/form_button_bg.gif") no-repeat -2px -2px; border-top: 1px solid ##AEAFC7; border-right: 1px solid ##5A5B85; border-bottom: 1px solid ##5A5B85; border-left: 1px solid ##AEAFC7; cursor: pointer; color: inherit;}
-		form.formtool div.buttonViewMethod a:hover {background: url("#application.url.farcry#/css/images/form_button_bg.gif") no-repeat -2px -58px;}
-		form.formtool div.buttonViewMethod a.selected {background: url("#application.url.farcry#/css/images/form_button_bg.gif") no-repeat -2px -58px;}
+	form.formtool div.buttonViewMethod {background: ##FFFFFF url("images/form_button_bg.gif") no-repeat -2px -2px; border-top: 1px solid ##AEAFC7; border-right: 1px solid ##5A5B85; border-bottom: 1px solid ##5A5B85; border-left: 1px solid ##AEAFC7; cursor: pointer; color: inherit;}
+		form.formtool div.buttonViewMethod a:hover {background: url("images/form_button_bg.gif") no-repeat -2px -58px;}
+		form.formtool div.buttonViewMethod a.selected {background: url("images/form_button_bg.gif") no-repeat -2px -58px;}
 
 /* formtool array component webskin styles */
-	form.formtool div.array div.fieldAlign ul {border: 1px solid ##AEAFC7;}
-	form.formtool div.array div.fieldAlign ul {list-style-type: none;}
+	form.formtool div.array div.fieldAlign ul {border: 1px solid ##AEAFC7;list-style-type: none;}
+	form.formtool div.array div.fieldAlign table , form.formtool div.array div.fieldAlign tr, form.formtool div.array div.fieldAlign th, form.formtool div.array div.fieldAlign td {border:none;border-collapse:collapse;}
 
 	/* array component : detail view webskin styles */
 	ul.arrayDetailView li {border-bottom: 1px solid ##eaeaf0; background-image: none;}
 	ul.arrayDetailView li:hover {background-color: ##eaeaf0; cursor: pointer; color: inherit;}
-		ul.arrayDetailView li div.buttonGripper p {background: url("#application.url.farcry#/css/images/form_button_gripper.gif") no-repeat 0px 0px;}
-		ul.arrayDetailView li div.arrayDetail p {background: transparent url("#application.url.farcry#/css/images/content_type_icon_contact.gif") no-repeat 0px 3px;}
+		ul.arrayDetailView li div.buttonGripper p {background: url("images/form_button_gripper.gif") no-repeat 0px 0px;}
+		ul.arrayDetailView li div.arrayDetail p {background: transparent url("images/content_type_icon_contact.gif") no-repeat 0px 3px;}
 
 	/* array component : thumbnail view webskin styles */
 	ul.arrayThumbnailView li { background-image: none; background-color: ##7476a6; border-top: 1px solid ##8e8fb6; border-right: 1px solid ##61638b; border-bottom: 1px solid ##61638b; border-left: 1px solid ##8e8fb6; cursor: pointer; color: inherit;}
-		ul.arrayThumbnailView li div.buttonGripper p {background: url("#application.url.farcry#/css/images/form_button_gripper.gif") no-repeat 100% -29px; border-left: 1px solid ##696a8c;}
+		ul.arrayThumbnailView li div.buttonGripper p {background: url("images/form_button_gripper.gif") no-repeat 100% -29px; border-left: 1px solid ##696a8c;}
 		ul.arrayThumbnailView li div.arrayThumbnail img {border: 1px solid ##FFFFFF;}
 		ul.arrayThumbnailView li:hover div.arrayThumbnail img {border: 1px solid ##e17000;}
 
