@@ -191,6 +191,21 @@ $in: objectid -- $
 		</cfif>
 		
 
+		<!--- SETUP CATEGORY APPLICATION STRUCTURE --->
+		<cfquery datasource="#application.dsn#" name="qCategories">
+		SELECT categoryID, categoryLabel
+		FROM dbo.categories
+		</cfquery>
+		
+		<cfparam name="application.catid" default="#structNew()#" />
+		<cfloop query="qCategories">
+			<cfset application.catID[qCategories.categoryID] = qCategories.categoryLabel>
+		</cfloop>
+		
+		
+		
+		
+		<!--- CALL THE PROJECTS SERVER SPECIFIC AFTER INIT VARIABLES. --->
 		<cfif fileExists("#application.path.project#/config/_serverSpecificVarsAfterInit.cfm") >
 			<cfinclude template="/farcry/#attributes.name#/config/_serverSpecificVarsAfterInit.cfm" />
 		</cfif>
