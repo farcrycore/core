@@ -41,7 +41,7 @@
 	
 	
 	<!--- Add Form Tools Specific CSS --->
-	<cfset Request.InHead.FormsCSS = 1>
+	<cfparam name="Request.InHead.FormsCSS" default="true" />
 	
 	
 	<!--- If the attributes [IncludeFieldSet] has not been explicitly defined, work out the value. --->
