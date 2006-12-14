@@ -106,8 +106,21 @@
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 		
+		<cfset var html = "" />
+		<cfset var catid = "" />
+		
 		<cfparam name="arguments.stMetadata.ftAlias" default="">
 	
+		<cfif listLen(stObject[stMetadata.name])>
+			<cfloop list="#stObject[stMetadata.name]#" index="catid">
+				<cfif structKeyExists(application.catID, catid) >				
+					<cfset html = listAppend(html,application.catID[catid]) />
+				</cfif>
+			</cfloop>
+		</cfif>
+		
+		<!---
+		
 		<cfinvoke component="#application.packagepath#.farcry.category" method="getCategories" returnvariable="lSelectedCategoryID">
 			<cfinvokeargument name="objectID" value="#stObject.ObjectID#"/>
 			<cfinvokeargument name="bReturnCategoryIDs" value="false"/>
@@ -116,7 +129,7 @@
 		
 		<cfsavecontent variable="html">
 			<cfoutput>#lSelectedCategoryID#</cfoutput>
-		</cfsavecontent>
+		</cfsavecontent> --->
 		
 		<cfreturn html>
 	</cffunction>
