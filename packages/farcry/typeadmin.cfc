@@ -311,6 +311,9 @@ environment references (might be nice to clean these up)
 		//remember to delimit dynamic expressions ##
 		aDefaultColumns=arrayNew(1);
 		editobjectURL = "#application.url.farcry#/conjuror/invocation.cfm?objectid=##recordset.objectID[recordset.currentrow]##&typename=#attributes.typename#&ref=typeadmin&module=#url.module#";
+		
+		// check for library and append it if present
+		if (StructKeyExists(URL,"lib")) editobjectURL = editObjectURL&"&lib="&URL.lib;
 
 		//select
 		stCol=structNew();
@@ -392,6 +395,8 @@ environment references (might be nice to clean these up)
 		//remember to delimit dynamic expressions ##
 		aDefaultButtons=arrayNew(1);
 		editobjectURL = "#application.url.farcry#/conjuror/invocation.cfm?objectid=##recordset.objectID[recordset.currentrow]##&typename=#attributes.typename#&ref=typeadmin&module=#url.module#";
+		if (IsDefined("url.Lib")) editObjectURL = editObjectURL&"&lib="&url.lib;
+
 		// check for base permissions
 		oAuthorisation=request.dmsec.oAuthorisation;
 		// set bunlock for now, needs to be set if locked objects exist
@@ -404,7 +409,10 @@ environment references (might be nice to clean these up)
 			stBut.name="add";
 			stBut.value="#application.adminBundle[session.dmProfile.locale].add#";
 			stBut.class="f-submit";
-			stBut.onClick="window.location='#application.url.farcry#/conjuror/evocation.cfm?typename=#attributes.typename#&ref=typeadmin&module=#url.module#';";
+			stBut.addLink = application.url.farcry&"/conjuror/evocation.cfm?typename="&attributes.typename&"&ref=typeadmin&module="&url.module;
+			if (IsDefined("url.Lib")) stBut.addLink = stBut.addLink&"&lib="&url.lib;
+			
+			stBut.onClick="window.location='#stBut.addLink#';";
 			stBut.permission="#attributes.permissionset#Create";
 			stBut.buttontype="add";
 			arrayAppend(aDefaultButtons,stBut);

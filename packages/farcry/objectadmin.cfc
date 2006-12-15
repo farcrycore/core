@@ -392,6 +392,8 @@ environment references (might be nice to clean these up)
 		//remember to delimit dynamic expressions ##
 		aDefaultButtons=arrayNew(1);
 		editobjectURL = "#application.url.farcry#/conjuror/invocation.cfm?objectid=##recordset.objectID[recordset.currentrow]##&typename=#attributes.typename#&ref=typeadmin&module=#url.module#";
+		if (IsDefined("url.Lib")) editObjectURL = editObjectURL&"&lib="&url.lib;
+
 		// check for base permissions
 		oAuthorisation=request.dmsec.oAuthorisation;
 		// set bunlock for now, needs to be set if locked objects exist
