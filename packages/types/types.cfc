@@ -64,10 +64,10 @@ default handlers
 		</cfif>
 
 		<cfif NOT structIsEmpty(stObj)>
-			<cfif NOT fileExists("#ExpandPath(displayTemplatePath(typename=stObj.typename, template=arguments.template))#")>
+			<cfif NOT fileExists("#ExpandPath(getWebskinPath(typename=stObj.typename, template=arguments.template))#")>
 				<cfthrow type="Application" detail="Error: Template not found [#ExpandPath(displayTemplatePath(typename=stObj.typename, template=arguments.template))#]." />
 			</cfif>
-			<cfinclude template="#displayTemplatePath(typename=stObj.typename, template=arguments.template)#">
+			<cfinclude template="#getWebskinPath(typename=stObj.typename, template=arguments.template)#">
 		</cfif>
 	</cffunction>
 	
@@ -179,7 +179,7 @@ default handlers
 						<cfif NOT qDupe.Recordcount>
 							<cfset queryaddrow(qresult,1) />
 							<cfloop list="#qlibresult.columnlist#" index="col">
-								<cfset querysetcell(qresult, col, qlibresult[col][1]) />
+								<cfset querysetcell(qresult, col, qlibresult[col][#qLibResult.currentrow#]) />
 							</cfloop>
 						</cfif>
 						
