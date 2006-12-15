@@ -130,10 +130,11 @@ Pseudo:
 		<cfparam name="url.ref" default="sitetree" type="string">
 		
 		<cfset stOnExit = StructNew() />
-		<cfif url.ref eq "typeadmin" AND isDefined("url.module")> 
+		<cfif url.ref eq "typeadmin" AND (isDefined("url.module") AND Len(url.module))>
 			<!--- typeadmin redirect --->
 			<cfset stOnExit.Type = "URL" />
 			<cfset stOnExit.Content = "#application.url.farcry#/admin/customadmin.cfm?module=#url.module#" />
+			<cfif IsDefined("URL.lib")><cfset stOnExit.Content = stOnExit.Content & "&lib="&url.lib /></cfif>
 		<cfelseif url.ref eq "closewin"> 
 			<!--- close win has no official redirector as it closes open window --->
 			<cfset stOnExit.Type = "HTML" />

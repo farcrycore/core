@@ -205,13 +205,13 @@ type properties
 	<cfif not structIsEmpty(stObject)>
 		<cfswitch expression="#lcase(imageType)#">
 			<cfcase value="thumb">
-				<cfreturn rendorURLImagePath(stObject.thumbnailImagePath, stObject.thumbnail)>
+				<cfreturn stObject.ThumbnailImage>
 			</cfcase>
 			<cfcase value="optimised">
-				<cfreturn rendorURLImagePath(stObject.optimisedImagePath, stObject.optimisedImage)>
+				<cfreturn stObject.StandardImage>
 			</cfcase>
 			<cfcase value="original">
-				<cfreturn rendorURLImagePath(stObject.originalImagePath, stObject.imagefile)>
+				<cfreturn stObject.SourceImage>
 			</cfcase>
 			<cfdefaultcase>
 				<cfthrow message="You must pass either thumb, optimised or original for the imageType argument">

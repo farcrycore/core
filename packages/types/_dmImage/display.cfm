@@ -24,16 +24,17 @@ $out:$
 
 <cfsetting enablecfoutputonly="Yes">
 <!--- display all images --->
-<cfif stObj.imageFile neq "">
-	<cfoutput>#application.adminBundle[application.config.general.locale].imageLabel# <br /><div style="margin-left:20px;margin-top:20px;"><img src="#application.url.webroot#/images/#stObj.imageFile#" alt="#stObj.alt#" border="0"></div></cfoutput>
+<cfif stObj.thumbnailimage neq "">
+	<cfoutput>#application.adminBundle[application.config.general.locale].thumbnailLabel# <br /><div style="margin-left:20px;margin-top:20px;"><img src="#application.url.webroot##stObj.thumbnailimage#" alt="#stObj.alt#" border="0"></div></cfoutput>
 </cfif>
-<cfif stObj.thumbnail neq "">
-	<cfoutput>#application.adminBundle[application.config.general.locale].thumbnailLabel# <br /><div style="margin-left:20px;margin-top:20px;"><img src="#application.url.webroot#/images/#stObj.thumbnail#" alt="#stObj.alt#" border="0"></div></cfoutput>
+<cfif stObj.standardimage neq "">
+	<cfoutput>Standard Image <br /><div style="margin-left:20px;margin-top:20px;"><img src="#application.url.webroot##stObj.StandardImage#" alt="#stObj.alt#" border="0"></div></cfoutput>
 </cfif>
-<cfif stObj.optimisedImage neq "">
-	<cfoutput>#application.adminBundle[application.config.general.locale].highResLabel# <br /><div style="margin-left:20px;margin-top:20px;"><img src="#application.url.webroot#/images/#stObj.optimisedImage#" alt="#stObj.alt#" border="0"></div></cfoutput>
+<cfif stObj.sourceimage neq "">
+	<cfoutput>#application.adminBundle[application.config.general.locale].imageLabel# <br /><div style="margin-left:20px;margin-top:20px;"><img src="#application.url.webroot##stObj.sourceimage#" alt="#stObj.alt#" border="0"></div></cfoutput>
 </cfif>
-<cfif stObj.imageFile eq "" and stObj.thumbnail eq "" and stObj.optimisedImage eq "">
+
+<cfif stObj.sourceimage eq "" and stObj.thumbnailimage eq "" and stObj.standardimage eq "">
 	<cfoutput><div style="margin-left:20px;margin-top:20px;">File does not exist.</div></cfoutput>
 </cfif> 
 <cfsetting enablecfoutputonly="No">
