@@ -36,7 +36,7 @@
 	<cfif NOT structisEmpty(stItem) AND stItem.typeName eq typeName> <!--- check item exist and is the type we want --->
 		<cfswitch expression="#typeName#">
 			<cfcase value="dmImage">
-				<cfif stItem.imagefile neq "">
+				<cfif stItem.sourceImage neq "">
 					<cfset iCounter = iCounter + 1>
 					<cfset aLibraryItem[iCounter] = StructNew()>
 					<cfset aLibraryItem[iCounter].text = stItem.title>
