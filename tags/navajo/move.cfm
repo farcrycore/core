@@ -74,10 +74,10 @@ $out:$
 	else{	
 		oNav = createObject("component", application.types.dmNavigation.typePath);
 		qGetParent = oNav.getParent(objectid=srcObj.objectID);
-		srcParentObjectID = qGetParent.objectID;
+		srcParentObjectID = qGetParent.parentID;
 		destNavObjectID = destObj.objectId;
 		qGetParent = oNav.getParent(objectid=destObj.objectID);
-		destParentObjectID = qGetParent.objectID;
+		destParentObjectID = qGetParent.parentID;
 	}	
 </cfscript>
 

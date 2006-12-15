@@ -53,7 +53,7 @@ $out:$
 	{
 		// likely to be a parent object with aObjects property (eg. dmHTML, dmNews)
 		qGetParent = oNav.getParent(objectid=stObj.objectID);
-		parentObjectID = qGetParent.objectID;
+		parentObjectID = qGetParent.parentID;
 	}	
 	//get permissions for this action
 	//iState = request.dmsec.oAuthorisation.checkInheritedPermission(permissionName="Edit",objectid=parentobjectid,bThrowOnError=1);	
