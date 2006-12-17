@@ -221,8 +221,7 @@
 			drop table ##thetops
 							
 			</cfquery>
-				
-			
+
 			
 			
 						
@@ -530,52 +529,52 @@
 	
 
 	
-	<cfif structKeyExists(application.types, arguments.typename)>
-		<cfset PrimaryPackage = application.types[arguments.typename] />
-		<cfset PrimaryPackagePath = application.types[arguments.typename].typepath />
-	<cfelse>
-		<cfset PrimaryPackage = application.rules[arguments.typename] />
-		<cfset PrimaryPackagePath = application.rules[arguments.typename].rulepath />
-	</cfif>
-
-	<cfset stTmp.typename = arguments.typename />
+		<cfif structKeyExists(application.types, arguments.typename)>
+			<cfset PrimaryPackage = application.types[arguments.typename] />
+			<cfset PrimaryPackagePath = application.types[arguments.typename].typepath />
+		<cfelse>
+			<cfset PrimaryPackage = application.rules[arguments.typename] />
+			<cfset PrimaryPackagePath = application.rules[arguments.typename].rulepath />
+		</cfif>
 	
-	<cfloop list="#arguments.recordset.columnlist#" index="i">
-		<cfif structkeyexists(PrimaryPackage.stProps, i)>
-			<cfif PrimaryPackage.stProps[i].metadata.type NEQ "array">
-				<cfset stTmp[i] = arguments.recordset[i][row] />
-			<cfelse>
-				
-				<cfif listContains(arguments.larrayprops, i)>	
+		<cfset stTmp.typename = arguments.typename />
+		
+		<cfloop list="#arguments.recordset.columnlist#" index="i">
+			<cfif structkeyexists(PrimaryPackage.stProps, i)>
+				<cfif PrimaryPackage.stProps[i].metadata.type NEQ "array">
+					<cfset stTmp[i] = arguments.recordset[i][row] />
+				<cfelse>
 					
-					<cfset stTmp[i] = arrayNew(1) />
-												
-					<cfset key = i>
+					<cfif listContains(arguments.larrayprops, i)>	
 						
-					<!--- getdata for array properties --->
-					<cfquery datasource="#arguments.dsn#" name="qArrayData">
-		  			select data from #arguments.dbowner##tablename#_#key#
-					where parentID = '#arguments.recordset.objectID[arguments.row]#'
-					order by seq
-					</cfquery>
-	
-					<cfset aTmp = arrayNew(1) />
-						<cfloop from="1" to="#qArrayData.recordcount#" index="j">
-						<cfset ArrayAppend(aTmp, qArrayData.data[j])>
-					</cfloop>
-					<cfset stTmp[key] = aTmp>
-																
+						<cfset stTmp[i] = arrayNew(1) />
+													
+						<cfset key = i>
+							
+						<!--- getdata for array properties --->
+						<cfquery datasource="#arguments.dsn#" name="qArrayData">
+			  			select data from #arguments.dbowner##tablename#_#key#
+						where parentID = '#arguments.recordset.objectID[arguments.row]#'
+						order by seq
+						</cfquery>
+		
+						<cfset aTmp = arrayNew(1) />
+							<cfloop from="1" to="#qArrayData.recordcount#" index="j">
+							<cfset ArrayAppend(aTmp, qArrayData.data[j])>
+						</cfloop>
+						<cfset stTmp[key] = aTmp>
+																	
+					</cfif>
 				</cfif>
 			</cfif>
+		</cfloop>
+		
+		<cfif arguments.bFormToolMetadata>
+			<ft:object stobject="#stTmp#" typename="#arguments.typename#" lFields="#structKeyList(stTmp)#" lExcludeFields="" bIncludeSystemProperties="true" format="display" includeFieldSet="false" r_stFields="stResult" />
+		<cfelse>
+			<cfset stResult=stTmp />
 		</cfif>
-	</cfloop>
-	
-	<cfif arguments.bFormToolMetadata>
-		<ft:object stobject="#stTmp#" typename="#arguments.typename#" lFields="#structKeyList(stTmp)#" lExcludeFields="" bIncludeSystemProperties="true" format="display" includeFieldSet="false" r_stFields="stResult" />
-	<cfelse>
-		<cfset stResult=stTmp />
-	</cfif>
-	
+
 	<cfreturn stResult />
 </cffunction>
 
@@ -669,6 +668,7 @@
 <cffunction name="ImageAutoGenerateBeforeSave" access="public" output="true" returntype="struct">
 	<cfargument name="stProperties" required="yes" type="struct">
 	<cfargument name="stFields" required="yes" type="struct">
+	<cfargument name="stFormPost" required="no" type="struct" default="#structNew()#">
 		
 
 	<cfset oImage = createobject("component", "farcry.farcry_core.packages.formtools.image") />
