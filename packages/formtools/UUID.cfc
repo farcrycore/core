@@ -13,6 +13,8 @@
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 
 		<cfset var stobj = structnew() / >
+		<cfset var libraryData = "" />
+		<cfset var qLibraryList = queryNew("blah") />
 		
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedWebskin" default="LibrarySelected" type="string" />
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedListClass" default="arrayDetail" type="string" />
@@ -45,7 +47,16 @@
 				
 				<!--- use ftlibrarydata method from primary content type --->
 				<cfif structkeyexists(oprimary, stMetadata.ftLibraryData)>
-					<cfinvoke component="#oPrimary#" method="#stMetadata.ftLibraryData#" returnvariable="qLibraryList" />
+					<cfinvoke component="#oPrimary#" method="#stMetadata.ftLibraryData#" returnvariable="libraryData">
+						<cfinvokeargument name="primaryID" value="#arguments.stobject.objectid#" />
+						<cfinvokeargument name="qFilter" value="#queryNew('blah')#" />
+					</cfinvoke>
+					
+					<cfif isStruct(libraryData)>
+						<cfset qLibraryList = libraryData.q>
+					<cfelse>
+						<cfset qLibraryList = libraryData />
+					</cfif>
 				</cfif>
 			</cfif>
 			<!--- if nothing exists to generate library data then cobble something together --->
