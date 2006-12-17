@@ -106,6 +106,9 @@ user --->
 
 <cfset oTypeAdmin = createobject("component", "#application.packagepath#.farcry.objectadmin").init(stprefs=session.objectadmin[attributes.typename], attributes=attributes)>
 
+
+
+
 <!--- check if the type has a status property --->
 <!--- <cfset bUsesStatus = false>
 <cfif structKeyExists(application.types[attributes.typename].STPROPS, "status")>
@@ -114,6 +117,7 @@ user --->
 		<cfset attributes.ColumnList = listAppend(attributes.ColumnList,"status")>
 	</cfif>
 </cfif> --->
+
 
 
 
@@ -136,6 +140,9 @@ user --->
 
 <cfset stPrefs = oTypeAdmin.getPrefs() />
 <cfset stpermissions=oTypeAdmin.getBasePermissions()>
+
+
+
 
 
 <ft:processform action="delete">
@@ -176,318 +183,335 @@ user --->
 
 <cfif len(attributes.lFilterFields)>
 
-	<cfset oFilterType = createObject("component", PrimaryPackagePath) />
+		<cfset oFilterType = createObject("component", PrimaryPackagePath) />
+	
+
+	
+
+		<cfif not structKeyExists(session.objectadminFilterObjects[attributes.typename], "stObject")>
+			
+			<cfset session.objectadminFilterObjects[attributes.typename].stObject = oFilterType.getData(objectid="#createUUID()#") />
+			
+						
+			<cfset session.objectadminFilterObjects[attributes.typename].stObject.label = "" />
+			<cfset stResult = oFilterType.setData(stProperties=session.objectadminFilterObjects[attributes.typename].stObject, bSessionOnly=true) />
+	
+			<cfset session.objectadminFilterObjects[attributes.typename].stObject = oFilterType.getData(objectID = session.objectadminFilterObjects[attributes.typename].stObject.objectid) />
+			
+		</cfif>
+		
+		<ft:processform action="apply filter" url="refresh">
+			<ft:processformObjects objectid="#session.objectadminFilterObjects[attributes.typename].stObject.objectid#" bSessionOnly="true" />	
+		</ft:processForm>
+		
+		<ft:processform action="clear filter" url="refresh">
+			<cfset structDelete(session.objectadminFilterObjects, attributes.typename) />
+		</ft:processForm>
+		
+		
+		<cfset request.inHead.scriptaculouseffects = 1 />
+		<!--- <cfdump var="#session.objectadminFilterObjects[attributes.typename].stObject#">
+		<cfdump var="#attributes.lFilterFields#"> --->
+		
+		<cfset session.objectadminFilterObjects[attributes.typename].stObject = oFilterType.getData(objectID = session.objectadminFilterObjects[attributes.typename].stObject.objectid) />
+		<cfset HTMLfiltersAttributes = "">
+		<cfloop list="#attributes.lFilterFields#" index="criteria">
+			<cfif session.objectadminFilterObjects[attributes.typename].stObject[criteria] neq "">
+				<cfset thisCriteria = lcase(criteria)>
+				<cfif isDefined("application.types.#attributes.typename#.stProps.#criteria#.metadata.ftLabel")>
+					<cfset thisCriteria = lcase(application.types[attributes.typename].stProps[criteria].metadata.ftLabel)>
+				</cfif>
+				<cfset HTMLfiltersAttributes = listAppend(HTMLfiltersAttributes," "&lcase(thisCriteria)&" ",'&')>
+			</cfif>
+		</cfloop>
+	
+		
+		<cfif trim(HTMLfiltersAttributes) neq "">
+			<cfset HTMLfiltersAttributes = "<div style='display:inline;color:##000'>result filtered by:</div> " & HTMLfiltersAttributes >
+		</cfif>
 	
 	
-	<cfif not structKeyExists(session.objectadminFilterObjects[attributes.typename], "stObject")>
-		
-		<cfset session.objectadminFilterObjects[attributes.typename].stObject = oFilterType.getData(objectid="#createUUID()#") />
-		
-					
-		<cfset session.objectadminFilterObjects[attributes.typename].stObject.label = "" />
-		<cfset stResult = oFilterType.setData(stProperties=session.objectadminFilterObjects[attributes.typename].stObject, bSessionOnly=true) />
+
+
+	
+
+		<ft:form style="padding:0px; border-bottom: 1px solid ##000; ">
+			<cfoutput>
+			<div style="display:inline;color:##E17000">
+				Listing Filter:
+				<cfif HTMLfiltersAttributes eq "">
+					<a onclick="Effect.toggle('filterForm','blind');">set</a>
+				<cfelse>
+					<a onclick="Effect.toggle('filterForm','blind');">edit</a> <ft:farcryButton value="clear filter" /><div style="font-size:90%;margin-left:10px;border:1px solid ##000;padding:2px;float:right;background-color:##fff">#HTMLfiltersAttributes# &nbsp;</div>
+				</cfif>		
+			</div>
+			</cfoutput>
+			<cfoutput><div id="filterForm" style="display:none;padding:5px;"></cfoutput>
+				<ft:object objectid="#session.objectadminFilterObjects[attributes.typename].stObject.objectid#" typename="#attributes.typename#" lFields="#attributes.lFilterFields#" lExcludeFields="" includeFieldset="false" />
+				<ft:farcryButton value="apply filter" />
+				<br/>
+			<cfoutput></div></cfoutput>
+		</ft:form>
+
+	
+	
 
 		<cfset session.objectadminFilterObjects[attributes.typename].stObject = oFilterType.getData(objectID = session.objectadminFilterObjects[attributes.typename].stObject.objectid) />
-		
-	</cfif>
-	
-	<ft:processform action="apply filter" url="refresh">
-		<ft:processformObjects objectid="#session.objectadminFilterObjects[attributes.typename].stObject.objectid#" bSessionOnly="true" />	
-	</ft:processForm>
-	
-	<ft:processform action="clear filter" url="refresh">
-		<cfset structDelete(session.objectadminFilterObjects, attributes.typename) />
-	</ft:processForm>
-	
-	
-	<cfset request.inHead.scriptaculouseffects = 1 />
-<!--- <cfdump var="#session.objectadminFilterObjects[attributes.typename].stObject#">
-<cfdump var="#attributes.lFilterFields#"> --->
-<cfset session.objectadminFilterObjects[attributes.typename].stObject = oFilterType.getData(objectID = session.objectadminFilterObjects[attributes.typename].stObject.objectid) />
-<cfset HTMLfiltersAttributes = "">
-<cfloop list="#attributes.lFilterFields#" index="criteria">
-	<cfif session.objectadminFilterObjects[attributes.typename].stObject[criteria] neq "">
-		<cfset thisCriteria = lcase(criteria)>
-		<cfif isDefined("application.types.#attributes.typename#.stProps.#criteria#.metadata.ftLabel")>
-			<cfset thisCriteria = lcase(application.types[attributes.typename].stProps[criteria].metadata.ftLabel)>
-		</cfif>
-		<cfset HTMLfiltersAttributes = listAppend(HTMLfiltersAttributes," "&lcase(thisCriteria)&" ",'&')>
-	</cfif>
-</cfloop>
 
-<cfif trim(HTMLfiltersAttributes) neq "">
-	<cfset HTMLfiltersAttributes = "<div style='display:inline;color:##000'>result filtered by:</div> " & HTMLfiltersAttributes >
-</cfif>
-	<ft:form style="padding:0px; border-bottom: 1px solid ##000; ">
-		<cfoutput>
-		<div style="display:inline;color:##E17000">
-			Listing Filter:
-			<cfif HTMLfiltersAttributes eq "">
-				<a onclick="Effect.toggle('filterForm','blind');">set</a>
-			<cfelse>
-				<a onclick="Effect.toggle('filterForm','blind');">edit</a> <ft:farcryButton value="clear filter" /><div style="font-size:90%;margin-left:10px;border:1px solid ##000;padding:2px;float:right;background-color:##fff">#HTMLfiltersAttributes# &nbsp;</div>
-			</cfif>		
-		</div>
-		</cfoutput>
-		<cfoutput><div id="filterForm" style="display:none;padding:5px;"></cfoutput>
-			<ft:object objectid="#session.objectadminFilterObjects[attributes.typename].stObject.objectid#" typename="#attributes.typename#" lFields="#attributes.lFilterFields#" lExcludeFields="" includeFieldset="false" />
-			<ft:farcryButton value="apply filter" />
-			<br/>
-		<cfoutput></div></cfoutput>
-	</ft:form>
-	
-	
-	<cfset session.objectadminFilterObjects[attributes.typename].stObject = oFilterType.getData(objectID = session.objectadminFilterObjects[attributes.typename].stObject.objectid) />
-	
 
 	<!------------------------
 	SQL WHERE CLAUSE
 	 ------------------------>
-	<cfsavecontent variable="attributes.sqlWhere">
-		
-		<cfoutput>
-			#attributes.sqlWhere#
-			
-			
-			
-			<cfloop list="#attributes.lFilterFields#" index="i">
-				<cfif len(session.objectadminFilterObjects[attributes.typename].stObject[i])>
-					<cfswitch expression="#PrimaryPackage.stProps[i].metadata.ftType#">
-					
-					<cfcase value="string,nstring,list">	
-						<cfif len(session.objectadminFilterObjects[attributes.typename].stObject[i])>
-							<cfloop list="#session.objectadminFilterObjects[attributes.typename].stObject[i]#" index="j">
-								<cfset whereValue = ReplaceNoCase(trim(LCase(j)),"'", "''", "all") />
-								AND lower(#i#) LIKE '%#whereValue#%'
-							</cfloop>
-						</cfif>
-					</cfcase>
-					
-					<cfcase value="boolean">	
-						<cfif len(session.objectadminFilterObjects[attributes.typename].stObject[i])>
-							<cfloop list="#session.objectadminFilterObjects[attributes.typename].stObject[i]#" index="j">
-								<cfset whereValue = ReplaceNoCase(j,"'", "''", "all") />
-								AND lower(#i#) = '#j#'
-							</cfloop>
-						</cfif>
-					</cfcase>
-					
-					<cfcase value="category">
-						<cfif len(session.objectadminFilterObjects[attributes.typename].stObject[i])>
-							<cfloop list="#session.objectadminFilterObjects[attributes.typename].stObject[i]#" index="j">
-								<cfset attributes.lCategories = listAppend(attributes.lCategories, trim(j)) />
-							</cfloop>
-						</cfif>
-					</cfcase>
 
-					<cfdefaultcase>	
+		<cfsavecontent variable="attributes.sqlWhere">
+			
+			<cfoutput>
+				#attributes.sqlWhere#
+				
+				
+				
+				<cfloop list="#attributes.lFilterFields#" index="i">
+					<cfif len(session.objectadminFilterObjects[attributes.typename].stObject[i])>
+						<cfswitch expression="#PrimaryPackage.stProps[i].metadata.ftType#">
 						
-						<cfif len(session.objectadminFilterObjects[attributes.typename].stObject[i])>
-							<cfloop list="#session.objectadminFilterObjects[attributes.typename].stObject[i]#" index="j">
-								<cfif listcontains("string,nstring,longchar", PrimaryPackage.stProps[i].metadata.type)>
-									<cfset whereValue = ReplaceNoCase(trim(j),"'", "''", "all") />
+						<cfcase value="string,nstring,list">	
+							<cfif len(session.objectadminFilterObjects[attributes.typename].stObject[i])>
+								<cfloop list="#session.objectadminFilterObjects[attributes.typename].stObject[i]#" index="j">
+									<cfset whereValue = ReplaceNoCase(trim(LCase(j)),"'", "''", "all") />
 									AND lower(#i#) LIKE '%#whereValue#%'
-								<cfelseif listcontains("numeric", PrimaryPackage.stProps[i].metadata.type)>
+								</cfloop>
+							</cfif>
+						</cfcase>
+						
+						<cfcase value="boolean">	
+							<cfif len(session.objectadminFilterObjects[attributes.typename].stObject[i])>
+								<cfloop list="#session.objectadminFilterObjects[attributes.typename].stObject[i]#" index="j">
 									<cfset whereValue = ReplaceNoCase(j,"'", "''", "all") />
-									AND #i# = #whereValue#
-								</cfif>
-							</cfloop>
-						</cfif>
-					</cfdefaultcase>
-					
-					</cfswitch>
-					
-				</cfif>
-			</cfloop>
-		</cfoutput>
-	</cfsavecontent>
-</cfif>
-
-
-
-<!------------------------
-SQL ORDER BY CLAUSE
- ------------------------>
-<cfif len(attributes.sortableColumns)>
-	<cfif isDefined("form.sqlOrderBy") and len(form.sqlOrderby)>
-		<cfset session.objectadminFilterObjects[attributes.typename].sqlOrderBy = form.sqlOrderby />
-	</cfif>
-</cfif>
-
-<cfif not structKeyExists(session.objectadminFilterObjects[attributes.typename], "sqlOrderBy") >
-	<cfset session.objectadminFilterObjects[attributes.typename].sqlOrderBy = attributes.sqlorderby />
-</cfif>
-
-		
-
-
-
-<ft:processForm action="add" url="#application.url.farcry#/conjuror/invocation.cfm?objectid=#createUUID()#&typename=#attributes.typename#&method=#attributes.editMethod#&ref=typeadmin&module=customlists/#attributes.customList#.cfm" />
-
-
-<ft:processForm action="overview">
-	<!--- TODO: Check Permissions. --->
-	<cflocation URL="#application.url.farcry#/editTabOverview.cfm?objectid=#form.objectid#&typename=#attributes.typename#&method=#attributes.editMethod#&ref=typeadmin&module=customlists/#attributes.customList#.cfm" addtoken="false">
-</ft:processForm>
-
-<ft:processForm action="edit">
-	<!--- TODO: Check Permissions. --->
-	<cflocation URL="#application.url.farcry#/conjuror/invocation.cfm?objectid=#form.objectid#&typename=#attributes.typename#&method=#attributes.editMethod#&ref=typeadmin&module=customlists/#attributes.customList#.cfm" addtoken="false">
-</ft:processForm>
-
-<ft:processForm action="view">
-	<!--- TODO: Check Permissions. --->
-	<cfoutput>
-		<script language="javascript">
-			var newWin = window.open("#application.url.webroot#/index.cfm?objectID=#form.objectid#&flushcache=1","viewWindow","resizable=yes,menubar=yes,width=800,height=600");
-		</script>
-	</cfoutput>
-	<!--- <cflocation URL="#application.url.webroot#/index.cfm?objectID=#form.objectid#&flushcache=1" addtoken="false" /> --->
-</ft:processForm>
-
-<cfif structKeyExists(application.farcrylib, "flow")>
-	<ft:processForm action="flow">
-		<!--- TODO: Check Permissions. --->
-		<cflocation URL="#application.farcrylib.flow.url#/?startid=#form.objectid#&flushcache=1" addtoken="false" />
-	</ft:processForm>
-</cfif>
-
-<ft:processForm action="requestapproval">
-	<!--- TODO: Check Permissions. --->
-	<cflocation URL="#application.url.farcry#/conjuror/changestatus.cfm?objectid=#form.objectid#&typename=#attributes.typename#&status=requestapproval&ref=typeadmin&module=customlists/#attributes.customList#.cfm" addtoken="false" />
-</ft:processForm>
-
-<ft:processForm action="approve">
-	<!--- TODO: Check Permissions. --->
-	<cflocation URL="#application.url.farcry#/conjuror/changestatus.cfm?objectid=#form.objectid#&typename=#attributes.typename#&status=approved&ref=typeadmin&module=customlists/#attributes.customList#.cfm" addtoken="false" />
-</ft:processForm>
-
-<ft:processForm action="createdraft">
-	<!--- TODO: Check Permissions. --->
-	<cflocation URL="#application.url.farcry#/navajo/createDraftObject.cfm?objectID=#form.objectID#" addtoken="false" />
-</ft:processForm>
-
-
-<!-----------------------------------------------
-    Form Actions for Type Admin Grid
------------------------------------------------->
-<!--- TODO: retest permissions on form action, otherwise you can circumnavigate permissions with your own dummy form submission GB --->
-<cfscript>
-// response: action message container for objectadmin
-response="";
-message_error = "";
-
-// add: content item added
-// JS window.location from button press
+									AND lower(#i#) = '#j#'
+								</cfloop>
+							</cfif>
+						</cfcase>
+						
+						<cfcase value="category">
+							<cfif len(session.objectadminFilterObjects[attributes.typename].stObject[i])>
+								<cfloop list="#session.objectadminFilterObjects[attributes.typename].stObject[i]#" index="j">
+									<cfset attributes.lCategories = listAppend(attributes.lCategories, trim(j)) />
+								</cfloop>
+							</cfif>
+						</cfcase>
 	
-// delete: content items deleted
-if (isDefined("form.delete") AND form.delete AND isDefined("form.objectid")){
-	objType = CreateObject("component","#PrimaryPackagePath#");
-	aDeleteObjectID = ListToArray(form.objectid);
+						<cfdefaultcase>	
+							
+							<cfif len(session.objectadminFilterObjects[attributes.typename].stObject[i])>
+								<cfloop list="#session.objectadminFilterObjects[attributes.typename].stObject[i]#" index="j">
+									<cfif listcontains("string,nstring,longchar", PrimaryPackage.stProps[i].metadata.type)>
+										<cfset whereValue = ReplaceNoCase(trim(j),"'", "''", "all") />
+										AND lower(#i#) LIKE '%#whereValue#%'
+									<cfelseif listcontains("numeric", PrimaryPackage.stProps[i].metadata.type)>
+										<cfset whereValue = ReplaceNoCase(j,"'", "''", "all") />
+										AND #i# = #whereValue#
+									</cfif>
+								</cfloop>
+							</cfif>
+						</cfdefaultcase>
+						
+						</cfswitch>
+						
+					</cfif>
+				</cfloop>
+			</cfoutput>
+		</cfsavecontent>
 
-	for(i=1;i LTE Arraylen(aDeleteObjectID);i = i+1){
-		returnstruct = objType.delete(aDeleteObjectID[i]);
-		if(StructKeyExists(returnstruct,"bSuccess") AND NOT returnstruct.bSuccess)
-			message_error = message_error & returnstruct.message;
-	}
-}
-</cfscript>
-
-<!---// dump: content items to dump
-// TODO: implement object dump code! --->
-<cfif isDefined("form.dump") AND isDefined("form.objectid") AND len(form.objectid)>
-	<!---response="DUMP (field: #form.dump#)actioned for: #form.objectid#."; --->
-	<cfsavecontent variable="response">
-		<cfloop list="#form.objectid#" index="i">
-			<cfset st = createObject("component", PrimaryPackagePath).getData(objectid=i) />
-			<cfdump var="#st#" expand="false" label="Dump of #st.label#">
-		</cfloop>
-		
-	</cfsavecontent>
 </cfif>
 
-<cfscript>
-// status: change status of the selected content items
-// todo: make three unique buttons, match on buttontype *not* resource bundle label
-statusurl="";
-if (isDefined("form.status")) {
-	if (isDefined("form.objectID")) {
-		if (form.status contains application.adminBundle[session.dmProfile.locale].approve)
-			status = 'approved';
-		else if (form.status contains application.adminBundle[session.dmProfile.locale].sendToDraft)
-			status = 'draft';
-		else if (form.status contains application.adminBundle[session.dmProfile.locale].requestApproval)
-			status = 'requestApproval';
-		else
-			status = 'unknown';
-		// pass list of objectids to comment template to add user comments
-		statusurl = "#application.url.farcry#/conjuror/changestatus.cfm?typename=#attributes.typename#&status=#status#&objectID=#form.objectID#&finishURL=#URLEncodedFormat(cgi.script_name)#?#URLEncodedFormat(cgi.query_string)#";
-		if (isDefined("stgrid.approveURL"))
-			statusurl = statusurl & "&approveURL=#URLEncodedFormat(stGrid.approveURL)#";
-	} else
-		response = "#application.adminBundle[session.dmProfile.locale].noObjSelected#";
-}
-</cfscript>
-<!--- redirect user on status change --->
-<cfif len(statusurl)><cflocation url="#statusurl#" addtoken="false"></cfif>
 
-<cfscript>
-// unlock: unlock content items
-if (isDefined("form.unlock") AND isDefined("form.objectid")) {
-	aObjectids = listToArray(form.objectid);
-	//loop over all selected objects
-	for(i = 1;i LTE arrayLen(aObjectids);i=i+1) {
-		// set unlock permmission to false by default
-		bAllowUnlock=false;
-		// get content item data
-		o=createobject("component", "#PrimaryPackagePath#");
-		stObj = o.getData(objectid=aObjectids[i]);
-		if(stObj.locked)
-		{
-			// allow owner of the object or the person who has locked the content item to unlock
-			if (stObj.lockedby IS "#session.dmSec.authentication.userlogin#_#session.dmSec.authentication.userDirectory#"
-				OR stObj.ownedby IS "#session.dmSec.authentication.userlogin#_#session.dmSec.authentication.userDirectory#") {
-				bAllowUnlock=true;
-			// allow users with approve permission to unlock
-			} else if (stPermissions.iApprove eq 1) {
-				bAllowUnlock=true;
-			// if the user doesn't have permission, push error response
-			} else {
-				response=application.adminBundle[session.dmProfile.locale].noPermissionUnlockAll;
+
+	<!------------------------
+	SQL ORDER BY CLAUSE
+	 ------------------------>
+	<cfif len(attributes.sortableColumns)>
+		<cfif isDefined("form.sqlOrderBy") and len(form.sqlOrderby)>
+			<cfset session.objectadminFilterObjects[attributes.typename].sqlOrderBy = form.sqlOrderby />
+		</cfif>
+	</cfif>
+	
+	<cfif not structKeyExists(session.objectadminFilterObjects[attributes.typename], "sqlOrderBy") >
+		<cfset session.objectadminFilterObjects[attributes.typename].sqlOrderBy = attributes.sqlorderby />
+	</cfif>
+	
+			
+	
+	
+	
+	<ft:processForm action="add" url="#application.url.farcry#/conjuror/invocation.cfm?objectid=#createUUID()#&typename=#attributes.typename#&method=#attributes.editMethod#&ref=typeadmin&module=customlists/#attributes.customList#.cfm" />
+	
+	
+	<ft:processForm action="overview">
+		<!--- TODO: Check Permissions. --->
+		<cflocation URL="#application.url.farcry#/editTabOverview.cfm?objectid=#form.objectid#&typename=#attributes.typename#&method=#attributes.editMethod#&ref=typeadmin&module=customlists/#attributes.customList#.cfm" addtoken="false">
+	</ft:processForm>
+	
+	<ft:processForm action="edit">
+		<!--- TODO: Check Permissions. --->
+		<cflocation URL="#application.url.farcry#/conjuror/invocation.cfm?objectid=#form.objectid#&typename=#attributes.typename#&method=#attributes.editMethod#&ref=typeadmin&module=customlists/#attributes.customList#.cfm" addtoken="false">
+	</ft:processForm>
+	
+	<ft:processForm action="view">
+		<!--- TODO: Check Permissions. --->
+		<cfoutput>
+			<script language="javascript">
+				var newWin = window.open("#application.url.webroot#/index.cfm?objectID=#form.objectid#&flushcache=1","viewWindow","resizable=yes,menubar=yes,width=800,height=600");
+			</script>
+		</cfoutput>
+		<!--- <cflocation URL="#application.url.webroot#/index.cfm?objectID=#form.objectid#&flushcache=1" addtoken="false" /> --->
+	</ft:processForm>
+	
+	<cfif structKeyExists(application.farcrylib, "flow")>
+		<ft:processForm action="flow">
+			<!--- TODO: Check Permissions. --->
+			<cflocation URL="#application.farcrylib.flow.url#/?startid=#form.objectid#&flushcache=1" addtoken="false" />
+		</ft:processForm>
+	</cfif>
+	
+	<ft:processForm action="requestapproval">
+		<!--- TODO: Check Permissions. --->
+		<cflocation URL="#application.url.farcry#/conjuror/changestatus.cfm?objectid=#form.objectid#&typename=#attributes.typename#&status=requestapproval&ref=typeadmin&module=customlists/#attributes.customList#.cfm" addtoken="false" />
+	</ft:processForm>
+	
+	<ft:processForm action="approve">
+		<!--- TODO: Check Permissions. --->
+		<cflocation URL="#application.url.farcry#/conjuror/changestatus.cfm?objectid=#form.objectid#&typename=#attributes.typename#&status=approved&ref=typeadmin&module=customlists/#attributes.customList#.cfm" addtoken="false" />
+	</ft:processForm>
+	
+	<ft:processForm action="createdraft">
+		<!--- TODO: Check Permissions. --->
+		<cflocation URL="#application.url.farcry#/navajo/createDraftObject.cfm?objectID=#form.objectID#" addtoken="false" />
+	</ft:processForm>
+
+
+
+
+	<!-----------------------------------------------
+	    Form Actions for Type Admin Grid
+	------------------------------------------------>
+	<!--- TODO: retest permissions on form action, otherwise you can circumnavigate permissions with your own dummy form submission GB --->
+	<cfscript>
+	// response: action message container for objectadmin
+	response="";
+	message_error = "";
+	
+	// add: content item added
+	// JS window.location from button press
+		
+	// delete: content items deleted
+	if (isDefined("form.delete") AND form.delete AND isDefined("form.objectid")){
+		objType = CreateObject("component","#PrimaryPackagePath#");
+		aDeleteObjectID = ListToArray(form.objectid);
+	
+		for(i=1;i LTE Arraylen(aDeleteObjectID);i = i+1){
+			returnstruct = objType.delete(aDeleteObjectID[i]);
+			if(StructKeyExists(returnstruct,"bSuccess") AND NOT returnstruct.bSuccess)
+				message_error = message_error & returnstruct.message;
+		}
+	}
+	</cfscript>
+	
+	<!---// dump: content items to dump
+	// TODO: implement object dump code! --->
+	<cfif isDefined("form.dump") AND isDefined("form.objectid") AND len(form.objectid)>
+		<!---response="DUMP (field: #form.dump#)actioned for: #form.objectid#."; --->
+		<cfsavecontent variable="response">
+			<cfloop list="#form.objectid#" index="i">
+				<cfset st = createObject("component", PrimaryPackagePath).getData(objectid=i) />
+				<cfdump var="#st#" expand="false" label="Dump of #st.label#">
+			</cfloop>
+			
+		</cfsavecontent>
+	</cfif>
+	
+	<cfscript>
+	// status: change status of the selected content items
+	// todo: make three unique buttons, match on buttontype *not* resource bundle label
+	statusurl="";
+	if (isDefined("form.status")) {
+		if (isDefined("form.objectID")) {
+			if (form.status contains application.adminBundle[session.dmProfile.locale].approve)
+				status = 'approved';
+			else if (form.status contains application.adminBundle[session.dmProfile.locale].sendToDraft)
+				status = 'draft';
+			else if (form.status contains application.adminBundle[session.dmProfile.locale].requestApproval)
+				status = 'requestApproval';
+			else
+				status = 'unknown';
+			// pass list of objectids to comment template to add user comments
+			statusurl = "#application.url.farcry#/conjuror/changestatus.cfm?typename=#attributes.typename#&status=#status#&objectID=#form.objectID#&finishURL=#URLEncodedFormat(cgi.script_name)#?#URLEncodedFormat(cgi.query_string)#";
+			if (isDefined("stgrid.approveURL"))
+				statusurl = statusurl & "&approveURL=#URLEncodedFormat(stGrid.approveURL)#";
+		} else
+			response = "#application.adminBundle[session.dmProfile.locale].noObjSelected#";
+	}
+	</cfscript>
+	<!--- redirect user on status change --->
+	<cfif len(statusurl)><cflocation url="#statusurl#" addtoken="false"></cfif>
+	
+	<cfscript>
+	// unlock: unlock content items
+	if (isDefined("form.unlock") AND isDefined("form.objectid")) {
+		aObjectids = listToArray(form.objectid);
+		//loop over all selected objects
+		for(i = 1;i LTE arrayLen(aObjectids);i=i+1) {
+			// set unlock permmission to false by default
+			bAllowUnlock=false;
+			// get content item data
+			o=createobject("component", "#PrimaryPackagePath#");
+			stObj = o.getData(objectid=aObjectids[i]);
+			if(stObj.locked)
+			{
+				// allow owner of the object or the person who has locked the content item to unlock
+				if (stObj.lockedby IS "#session.dmSec.authentication.userlogin#_#session.dmSec.authentication.userDirectory#"
+					OR stObj.ownedby IS "#session.dmSec.authentication.userlogin#_#session.dmSec.authentication.userDirectory#") {
+					bAllowUnlock=true;
+				// allow users with approve permission to unlock
+				} else if (stPermissions.iApprove eq 1) {
+					bAllowUnlock=true;
+				// if the user doesn't have permission, push error response
+				} else {
+					response=application.adminBundle[session.dmProfile.locale].noPermissionUnlockAll;
+				}
+			}
+			if (bAllowUnlock) {
+				// TODO: replace with types.setlock()
+				oLocking=createObject("component",'#application.packagepath#.farcry.locking');
+				oLocking.unLock(objectid=aObjectids[i],typename=stObj.typename);
+				// TODO: i18n
+				response="Content items unlocked.";
 			}
 		}
-		if (bAllowUnlock) {
-			// TODO: replace with types.setlock()
-			oLocking=createObject("component",'#application.packagepath#.farcry.locking');
-			oLocking.unLock(objectid=aObjectids[i],typename=stObj.typename);
-			// TODO: i18n
-			response="Content items unlocked.";
-		}
 	}
-}
-</cfscript>
-<!--- 
-// custom: custom button action
---->
-<cfif NOT structisempty(form)>
-	<cfif NOT isDefined("form.objectid")>
-		<cfscript>
-			form.objectid = createUUID();
-		</cfscript>
-	</cfif>
-	<cfloop collection="#form#" item="fieldname">
-		<!--- match for custom button action --->
-		<cfif reFind("CB.*", fieldname) AND NOT reFind("CB.*_DATA", fieldname)>
-			<cfset wcustomdata=evaluate("form.#fieldname#_data")>
-			<cfwddx action="wddx2cfml" input="#wcustomdata#" output="stcustomdata">
-			<cfif len(stcustomdata.method)>
-				<cflocation url="#application.url.farcry#/conjuror/invocation.cfm?objectid=#form.objectID#&typename=#attributes.typename#&ref=typeadmin&method=#stcustomdata.method#" addtoken="false">
-			<cfelse>
-				<cflocation url="#stcustomdata.url#" addtoken="false">
-			</cfif>
+	</cfscript>
+	<!--- 
+	// custom: custom button action
+	--->
+	<cfif NOT structisempty(form)>
+		<cfif NOT isDefined("form.objectid")>
+			<cfscript>
+				form.objectid = createUUID();
+			</cfscript>
 		</cfif>
-	</cfloop>
-</cfif>
+		<cfloop collection="#form#" item="fieldname">
+			<!--- match for custom button action --->
+			<cfif reFind("CB.*", fieldname) AND NOT reFind("CB.*_DATA", fieldname)>
+				<cfset wcustomdata=evaluate("form.#fieldname#_data")>
+				<cfwddx action="wddx2cfml" input="#wcustomdata#" output="stcustomdata">
+				<cfif len(stcustomdata.method)>
+					<cflocation url="#application.url.farcry#/conjuror/invocation.cfm?objectid=#form.objectID#&typename=#attributes.typename#&ref=typeadmin&method=#stcustomdata.method#" addtoken="false">
+				<cfelse>
+					<cflocation url="#stcustomdata.url#" addtoken="false">
+				</cfif>
+			</cfif>
+		</cfloop>
+	</cfif>
+
 
 
 
@@ -495,44 +519,48 @@ if (isDefined("form.unlock") AND isDefined("form.objectid")) {
 
 
 <ft:form style="width: 100%;" Name="objectadmin">
-<!--- output user responses --->
-<cfif len(message_error)><cfoutput><p id="error" class="fade"><span class="error">#message_error#</span></p></cfoutput></cfif>
-<cfif len(response)><cfoutput><p id="response" class="fade">#response#</p></cfoutput></cfif>
-
-<!--- delete flag; modified to 1 on delete confirm --->
-<cfoutput><input name="delete" type="Hidden" value="0"></cfoutput>
 
 
-<cfscript>
-// todo:refactoring... get rid of it, tests being done in cfc now GB
-oAuthorisation=request.dmsec.oAuthorisation;
-</cfscript>
-<cfsavecontent variable="html_buttonbar">
-<cfoutput>
-<div class="">
 
-<cfloop from="1" to="#arraylen(attributes.aButtons)#" index="i">
+
+	<!--- output user responses --->
+	<cfif len(message_error)><cfoutput><p id="error" class="fade"><span class="error">#message_error#</span></p></cfoutput></cfif>
+	<cfif len(response)><cfoutput><p id="response" class="fade">#response#</p></cfoutput></cfif>
 	
-	<cfif attributes.lButtons EQ "*" or listFindNoCase(attributes.lButtons,attributes.aButtons[i].value)>
-		<!--- (#attributes.aButtons[i].name#: #attributes.aButtons[i].permission#) --->
-		<cfif NOT len(attributes.aButtons[i].permission) OR oAuthorisation.checkPermission(permissionName=attributes.aButtons[i].permission,reference="PolicyGroup") EQ 1>
-			
-			<cfif len(attributes.aButtons[i].onclick)> 
-				<cfset onclickJS="#attributes.aButtons[i].onclick#" />
-			<cfelse>
-				<cfset onclickJS="" />
+	<!--- delete flag; modified to 1 on delete confirm --->
+	<cfoutput><input name="delete" type="Hidden" value="0"></cfoutput>
+	
+	
+	<cfscript>
+	// todo:refactoring... get rid of it, tests being done in cfc now GB
+	oAuthorisation=request.dmsec.oAuthorisation;
+	</cfscript>
+	<cfsavecontent variable="html_buttonbar">
+	<cfoutput>
+	<div class="">
+	
+	<cfloop from="1" to="#arraylen(attributes.aButtons)#" index="i">
+		
+		<cfif attributes.lButtons EQ "*" or listFindNoCase(attributes.lButtons,attributes.aButtons[i].value)>
+			<!--- (#attributes.aButtons[i].name#: #attributes.aButtons[i].permission#) --->
+			<cfif NOT len(attributes.aButtons[i].permission) OR oAuthorisation.checkPermission(permissionName=attributes.aButtons[i].permission,reference="PolicyGroup") EQ 1>
+				
+				<cfif len(attributes.aButtons[i].onclick)> 
+					<cfset onclickJS="#attributes.aButtons[i].onclick#" />
+				<cfelse>
+					<cfset onclickJS="" />
+				</cfif>
+				
+				<ft:farcryButton value="#attributes.aButtons[i].value#" class="formButton"  onclick="#onclickJS#" />
+				<!---<input type="#attributes.aButtons[i].type#" name="#attributes.aButtons[i].name#" value="#attributes.aButtons[i].value#" class="formButton"<cfif len(attributes.aButtons[i].onclick)> onclick="#attributes.aButtons[i].onclick#"</cfif> /> --->
 			</cfif>
-			
-			<ft:farcryButton value="#attributes.aButtons[i].value#" class="formButton"  onclick="#onclickJS#" />
-			<!---<input type="#attributes.aButtons[i].type#" name="#attributes.aButtons[i].name#" value="#attributes.aButtons[i].value#" class="formButton"<cfif len(attributes.aButtons[i].onclick)> onclick="#attributes.aButtons[i].onclick#"</cfif> /> --->
 		</cfif>
-	</cfif>
-</cfloop>
-</div>
-<br class="clearer" />
-</cfoutput>
-</cfsavecontent>
-<cfoutput>#html_buttonbar#</cfoutput>
+	</cfloop>
+	</div>
+	<br class="clearer" />
+	</cfoutput>
+	</cfsavecontent>
+	<cfoutput>#html_buttonbar#</cfoutput>
 
 
 
@@ -558,17 +586,25 @@ oAuthorisation=request.dmsec.oAuthorisation;
 </cfif>	 --->
 
 
-<cfset oFormtoolUtil = createObject("component", "farcry.farcry_core.packages.farcry.formtools") />
-<cfset sqlColumns="objectid,locked,lockedby,#attributes.columnlist#" />
-<!---<cfset bhasstatus=false />
-<!--- check if the type has a status property --->
-<cfif structKeyExists(application.types[attributes.typename].STPROPS, "status")>
-	<cfif not findNocase(attributes.ColumnList, "status") or not findNocase(attributes.ColumnList, "*")>
-		<cfset sqlColumns = listAppend(sqlColumns,"status")>
-		<cfset bhasstatus=true />
-	</cfif>
-</cfif> --->
-<cfset stRecordset = oFormtoolUtil.getRecordset(paginationID="#attributes.typename#", sqlColumns=sqlColumns, typename="#attributes.typename#", RecordsPerPage="20", sqlOrderBy="#session.objectadminFilterObjects[attributes.typename].sqlOrderBy#", sqlWhere="#attributes.sqlWhere#", lCategories="#attributes.lCategories#") />	
+
+	<cfset oFormtoolUtil = createObject("component", "farcry.farcry_core.packages.farcry.formtools") />
+	<cfset sqlColumns="objectid,locked,lockedby,#attributes.columnlist#" />
+	<!---<cfset bhasstatus=false />
+	<!--- check if the type has a status property --->
+	<cfif structKeyExists(application.types[attributes.typename].STPROPS, "status")>
+		<cfif not findNocase(attributes.ColumnList, "status") or not findNocase(attributes.ColumnList, "*")>
+			<cfset sqlColumns = listAppend(sqlColumns,"status")>
+			<cfset bhasstatus=true />
+		</cfif>
+	</cfif> --->
+
+
+
+
+	<cfset stRecordset = oFormtoolUtil.getRecordset(paginationID="#attributes.typename#", sqlColumns=sqlColumns, typename="#attributes.typename#", RecordsPerPage="20", sqlOrderBy="#session.objectadminFilterObjects[attributes.typename].sqlOrderBy#", sqlWhere="#attributes.sqlWhere#", lCategories="#attributes.lCategories#") />	
+
+
+
 
 <ft:pagination 
 	paginationID="#attributes.typename#"
@@ -637,35 +673,42 @@ oAuthorisation=request.dmsec.oAuthorisation;
 		</cfif>
 	</cfoutput>
 	
-	<ft:paginateLoop r_stObject="st" bIncludeFields="true" bIncludeObjects="false" stpermissions="#stpermissions#">
 	
-		<cfoutput>
-		<tr>
-			<cfif attributes.bSelectCol><td nowrap="true">#st.select# #st.currentRow#</td></cfif>
-	 		<cfif listContainsNoCase(stRecordset.q.columnlist,"bHasMultipleVersion")>
-		 		<td nowrap="true">#st.status#</td>
-			</cfif>
-			<td>#st.action#</td>
-			<!---<cfif attributes.bEditCol><td>#st.editLink#</td></cfif>
-			<cfif attributes.bViewCol><td>#st.viewLink#</td></cfif>
-			<cfif attributes.bFlowCol><td>#st.flowLink#</td></cfif> --->
-			<cfloop list="#attributes.columnlist#" index="i">
-				<cfif structKeyExists(st.stFields, i)>
-					<td>#st.stFields[i].HTML#</td>				
-				<cfelse>
-					<td>-- not available --</td>				
-				</cfif>
-				
-			</cfloop>
-		</tr>
-		</cfoutput>
-	</ft:paginateLoop>
+		
+		<ft:paginateLoop r_stObject="st" bIncludeFields="true" bIncludeObjects="false" stpermissions="#stpermissions#">
+			
+				<cfoutput>
+				<tr>
+					<cfif attributes.bSelectCol><td nowrap="true">#st.select# #st.currentRow#</td></cfif>
+			 		<cfif listContainsNoCase(stRecordset.q.columnlist,"bHasMultipleVersion")>
+				 		<td nowrap="true">#st.status#</td>
+					</cfif>
+					<td>#st.action#</td>
+					<!---<cfif attributes.bEditCol><td>#st.editLink#</td></cfif>
+					<cfif attributes.bViewCol><td>#st.viewLink#</td></cfif>
+					<cfif attributes.bFlowCol><td>#st.flowLink#</td></cfif> --->
+					<cfloop list="#attributes.columnlist#" index="i">
+						<cfif structKeyExists(st.stFields, i)>
+							<td>#st.stFields[i].HTML#</td>				
+						<cfelse>
+							<td>-- not available --</td>				
+						</cfif>
+						
+					</cfloop>
+				</tr>
+				</cfoutput>
+			
+			
+		</ft:paginateLoop>
 	
 	<cfoutput></table></cfoutput>
 
 
 
 </ft:pagination> 
+
+
+
 
 </ft:form>
 
