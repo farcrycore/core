@@ -75,8 +75,8 @@ window.close();
 
 <!--- get all child categories --->
 <cfset stPageination.qList = qList>
-<cfset stPageination.urlParameters = "typeName=#typeName#&categoryID=#categoryID#&bSearchFormSubmitted=#bSearchFormSubmitted#&searchField=#searchField#&searchText=#searchText#">
-<cfset stPageination.urlParametersWithOutFilter = "typeName=#typeName#">
+<cfset stPageination.urlParameters = "typeName=#typeName#&categoryID=#categoryID#&bSearchFormSubmitted=#bSearchFormSubmitted#&searchField=#searchField#&searchText=#searchText#&fieldName=#fieldName#">
+<cfset stPageination.urlParametersWithOutFilter = "typeName=#typeName#&fieldName=#fieldName#">
 <cfset strRefreshUrl = cgi.script_name & "?#stPageination.urlParameters#">
 
 <cfinvoke component="#application.packagepath#.farcry.category" method="getAllCategories" returnvariable="qListCategory" />
@@ -133,7 +133,7 @@ window.close();
 						<label for="objectPicker_#qList.currentrow#">
 						<input type="radio" id="objectPicker_#qList.currentrow#"<cfif lSelection EQ qList.objectid> checked="checked"</cfif> name="lSelection" value="#qList.objectid#" />
 						<span>
-						<cfif qList.thumbnail NEQ "">
+						<cfif qList.ThumbnailImage NEQ "">
 							<widgets:imageDisplay objectid="#qList.objectid#" alt="#qList.alt#">
 						<cfelse>
 							<img src="../images/no_thumbnail.gif" alt="currently no thumbnail" />
