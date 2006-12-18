@@ -1,8 +1,9 @@
 <cfsetting enablecfoutputonly="true">
+<cfparam name="url.pg" default="1">
 <cfparam name="bFormSubmission" default="no">
 <cfparam name="typeName" default="">
 <cfparam name="categoryID" default="">
-<cfparam name="currentpage" default="1">
+<cfparam name="currentpage" default="#url.pg#">
 <cfparam name="lSelection" default="">
 <cfparam name="fieldName" default="">
 <cfparam name="searchText" default="">
@@ -43,6 +44,7 @@ window.close();
 <cfset stPageination = StructNew()>
 <cfset stPageination.currentpage = currentpage>
 <cfset stPageination.maxRow = 20>
+<cfset stPageination.startRow = ((currentpage-1)*stPageination.maxRow)+1>
 <cfset objCategories = CreateObject("component","#application.packagepath#.farcry.category")>
 <!--- check if the appliaction has paging set up NEED THE stoired procedure SELECT_WITH_PAGING --->
 <cfif StructKeyExists(Application,"bAllowPaging") AND Application.bAllowPaging>
