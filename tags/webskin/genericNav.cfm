@@ -132,6 +132,11 @@
 					href = application.url.conjurer & "?objectid=" & object;
 				}
 				itemclass='';
+				
+				if(qNav.nLevel[i] lt attributes.startlevel+attributes.depth - 1  and qNav.nRight[i]-qNav.nleft[i] neq 1) {
+					itemclass=itemclass & 'parent ';	
+				}
+				
 				if(i eq 1 and attributes.bFirst){
 					itemclass=itemclass & 'first ';
 				}
