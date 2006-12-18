@@ -38,7 +38,7 @@
 	<cfparam name="attributes.PackageType" default="types"><!--- Could be types or rules.. --->
 	<cfparam name="attributes.bIncludeSystemProperties" default="false"><!--- Allow system properties to be displayed.. --->
 	<cfparam name="attributes.lock" default="true"><!--- Lock if editing. --->
-	
+	<cfparam name="attributes.bShowLibraryLink" default="true" type="boolean"><!--- Flag to determine if the libraryLink is to be displayed. --->
 	
 	<!--- Add Form Tools Specific CSS --->
 	<cfparam name="Request.InHead.FormsCSS" default="true" />
@@ -414,7 +414,8 @@
 				- add library link for library properties, if required
 			-------------------------------------------------------------->	
 			<cfif 
-				attributes.Format EQ "Edit" 
+				attributes.bShowLibraryLink
+				AND attributes.Format EQ "Edit" 
 				AND (ftFieldMetadata.Type EQ "array" 
 				OR ftFieldMetadata.Type EQ "UUID") 
 				AND isDefined("ftFieldMetadata.ftJoin")>

@@ -36,7 +36,7 @@
 	<cfparam name="attributes.stPropValues" default="#structNew()#">
 	<cfparam name="attributes.PackageType" default="types"><!--- Could be types or rules.. --->
 	<cfparam name="attributes.r_stWizzard" default="stWizzard"><!--- The name of the CALLER variable that contains the stWizzard structure --->
-	
+	<cfparam name="attributes.bShowLibraryLink" default="true" type="boolean"><!--- Flag to determine if the libraryLink is to be displayed. --->
 	
 	<cfset attributes.lExcludeFields = ListAppend(attributes.lExcludeFields,"objectid,locked,lockedby,lastupdatedby,ownedby,datetimelastupdated,createdby,datetimecreated,versionID,status")>
 	
@@ -403,7 +403,8 @@
 				- add library link for library properties, if required
 			-------------------------------------------------------------->	
 			<cfif 
-				attributes.Format EQ "Edit" 
+				attributes.bShowLibraryLink
+				AND attributes.Format EQ "Edit" 
 				AND (ftFieldMetadata.Type EQ "array" 
 				OR ftFieldMetadata.Type EQ "UUID") 
 				AND isDefined("ftFieldMetadata.ftJoin")>
