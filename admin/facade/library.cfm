@@ -295,7 +295,7 @@ LIBRARY DATA
 		<cfset SQLWhere = " #SQLWhere# AND objectid IN (#ListQualify(FilterList,"'")#)" />
 	</cfif>
 	
-	<cfset SQLOrderBy = "label" />
+	<cfset SQLOrderBy = "datetimelastupdated desc" />
 	<cfif structKeyExists(PrimaryPackage.stProps[url.primaryFieldName].Metadata, "ftLibraryDataSQLOrderBy")>
 		<cfset SQLOrderBy = PrimaryPackage.stProps[url.primaryFieldName].Metadata.ftLibraryDataSQLOrderBy />
 	</cfif>
