@@ -27,26 +27,26 @@ $out:$
 	<!--- delete --->
 	<cfset super.delete(stObj.objectId)>
 
-	<!--- delete normal image --->
-	<cfif len(stObj.imagefile)>
+	<!--- delete Source Image --->
+	<cfif len(stObj.SourceImage)>
 		<cftry>
-			<cffile action="delete" file="#stObj.originalImagePath#/#stObj.imagefile#">
+      <cffile action="delete" file="#expandPath("#application.url.webroot#/#stObj.SourceImage#")#">
 			<cfcatch type="any"></cfcatch>
 		</cftry>
 	</cfif>
 	
-	<!--- delete thumbnail image --->
-	<cfif len(stObj.thumbnail)>
+	<!--- delete Standard Image --->
+	<cfif len(stObj.StandardImage)>
 		<cftry>
-			<cffile action="delete" file="#stObj.thumbnailImagePath#/#stObj.thumbnail#">
+			<cffile action="delete" file="#expandPath("#application.url.webroot#/#stObj.StandardImage#")#">
 			<cfcatch type="any"></cfcatch>
 		</cftry>
 	</cfif>
 	
-	<!--- delete optimised image --->
-	<cfif len(stObj.optimisedImage)>
+	<!--- delete Thumbnail Image --->
+	<cfif len(stObj.ThumbnailImage)>
 		<cftry>
-			<cffile action="delete" file="#stObj.optimisedImagePath#/#stObj.optimisedImage#">
+			<cffile action="delete" file="#expandPath("#application.url.webroot#/#stObj.ThumbnailImage#")#">
 			<cfcatch type="any"></cfcatch>
 		</cftry>
 	</cfif>	
