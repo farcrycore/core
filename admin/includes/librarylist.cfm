@@ -139,7 +139,7 @@ WHERE	status is not null
 				<li>
 					<label for="libcheck#qLibraryList.currentrow#"><input type="checkbox" id="libcheck#qLibraryList.currentrow#" name="lLibrarySelection" value="#qLibraryList.objectid#" />
 					<span>
-					<cfif qLibraryList.thumbnail NEQ "">
+					<cfif qLibraryList.ThumbnailImage NEQ "">
 						<widgets:imageDisplay objectid="#qLibraryList.objectid#" alt="#qLibraryList.alt#">
 					<cfelse>
 						<img src="../images/no_thumbnail.gif" alt="currently no thumbnail" />
