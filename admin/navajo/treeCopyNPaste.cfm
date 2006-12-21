@@ -115,14 +115,14 @@ $out:$
 							}
 							case "dmImage" :
 							{
-								if(len(trim(stObj.imagefile)))
+								if(len(trim(stObj.sourceImage)))
 								{
-									if(len(stObj.imagefile))
-										stObj.imagefile = copyFile(filename=stObj.imagefile,filepath=application.defaultimagepath);
-									if(len(stObj.thumbnail))	
-										stObj.thumbnail = copyFile(filename=stObj.thumbnail,filepath=application.defaultimagepath);
-									if(len(stObj.optimisedImage))	
-										stObj.optimisedImage = copyFile(filename=stObj.optimisedImage,filepath=application.defaultimagepath);	
+									if(len(stObj.sourceImage))
+										stObj.sourceImage = copyFile(filename=stObj.sourceImage,filepath=application.defaultimagepath);
+									if(len(stObj.thumbnailImage))	
+										stObj.thumbnailImage = copyFile(filename=stObj.thumbnailImage,filepath=application.defaultimagepath);
+									if(len(stObj.standardImage))	
+										stObj.standardImage = copyFile(filename=stObj.standardImage,filepath=application.defaultimagepath);	
 										
 								}
 								break;
