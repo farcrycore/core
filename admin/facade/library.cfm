@@ -477,6 +477,32 @@ LIBRARY DATA
 					
 				</ft:form>
 	
+	
+	
+			<cfset Request.InHead.ScriptaculousEffects = 1>
+			<cfoutput>
+			<script type="text/javascript">
+			 
+				
+				<cfif URL.LibraryType EQ "array">
+							
+					//call on initial page load
+					opener.libraryCallback_#url.primaryFormFieldname#('sort','#stPrimary[url.primaryFieldName]#');
+					
+					
+				<cfelse>
+					<cfif len(stPrimary[url.primaryFieldName]) >
+						//call on initial page load
+						opener.libraryCallback_#url.primaryFormFieldname#('add','#stPrimary[url.primaryFieldName]#');
+					</cfif>
+				</cfif>
+				
+		
+			 </script>
+			</cfoutput>
+			
+			
+				
 	<cfoutput>		
 			</div>
 		</div>
