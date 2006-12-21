@@ -80,7 +80,6 @@ $out:$
 	<cfset section = "container_contents">
 </cfif> --->
 
-
 <cfif not len(section) or section EQ "container_rules"> <!--- delete the current rule id in the session as we are out of the rules management section --->
 	<cfset StructDelete(session,"ruleid")>
 	<cfset StructDelete(session,"ruleTypeName")>
@@ -88,6 +87,9 @@ $out:$
 	<cfif StructKeyExists(form,"ruleID")>
 		<cfset session.ruleid = ruleid>
 		<cfset session.ruleTypeName = oCon.findType(objectid=ruleid)>
+	<cfelseif NOT StructKeyExists(session,"ruleid")>
+		<cfset session.ruleid = stObj.aRules[1]>
+		<cfset session.ruleTypeName = oCon.findType(objectid=session.ruleid)>
 	</cfif>
 </cfif>
 
