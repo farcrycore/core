@@ -425,6 +425,9 @@ if (isDefined("form.unlock") AND isDefined("form.objectid")) {
 <cfif isDefined("url.module")>
 	<cfset urlParameters = "&module=#url.module#">
 </cfif>
+<cfif StructKeyExists(url,"lib")>
+	<cfset urlParameters = urlParameters&"&lib="&url.lib>
+</cfif>
 <cfparam name="url.pg" default="#session.typeadmin[attributes.typename].pg#" />
 <cfsavecontent variable="html_pagination">
 <cfoutput><div class="pagination">
