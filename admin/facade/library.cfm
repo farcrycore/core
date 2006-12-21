@@ -481,13 +481,15 @@ LIBRARY DATA
 	
 			<cfset Request.InHead.ScriptaculousEffects = 1>
 			<cfoutput>
+			
+
 			<script type="text/javascript">
 			 
 				
 				<cfif URL.LibraryType EQ "array">
 							
 					//call on initial page load
-					opener.libraryCallback_#url.primaryFormFieldname#('sort','#stPrimary[url.primaryFieldName]#');
+					opener.libraryCallback_#url.primaryFormFieldname#('sort','#lBasketIDs#');
 					
 					
 				<cfelse>
