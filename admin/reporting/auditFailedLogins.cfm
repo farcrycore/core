@@ -1,3 +1,4 @@
+<cfsetting enablecfoutputonly="true" />
 <!--- 
 || LEGAL ||
 $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
@@ -33,13 +34,11 @@ $out:$
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 <cfif iAuditTab eq 1>
-	<h3>
 	<cfif isdefined("url.view")>
-		<cfoutput>#application.adminBundle[session.dmProfile.locale].allFailedLogins#</cfoutput>
+		<cfoutput>	<h3>#application.adminBundle[session.dmProfile.locale].allFailedLogins#</h3></cfoutput>
 	<cfelse>
-		<cfoutput>#application.adminBundle[session.dmProfile.locale].recentFailedLogins#</cfoutput>
+		<cfoutput>	<h3>#application.adminBundle[session.dmProfile.locale].recentFailedLogins#</h3></cfoutput>
 	</cfif> 
-	</h3>
 	
 	<cfscript>
 		if (not isdefined("url.view")) {
@@ -50,16 +49,15 @@ $out:$
 		qFailed = application.factory.oAudit.getAuditLog(maxrows=maxrows, audittype="dmSec.loginfailed");
 	</cfscript>	
 	
+<cfoutput>
 	<table class="table-3" cellspacing="0">
-	<cfoutput>
 	<tr>
 		<th>#application.adminBundle[session.dmProfile.locale].date#</th>
 		<th>#application.adminBundle[session.dmProfile.locale].location#</th>
 		<th>#application.adminBundle[session.dmProfile.locale].note#</th>
 		<th>#application.adminBundle[session.dmProfile.locale].user#</th>
-	</tr>
-	</cfoutput>
-	<cfoutput query="qFailed">
+	</tr></cfoutput>
+	<cfloop query="qFailed"><cfoutput>
 		<tr class="#IIF(currentrow MOD 2, de(""), de("alt"))#">
 			<td>
 			#application.thisCalendar.i18nDateFormat(Datetimestamp,session.dmProfile.locale,application.shortF)# 
@@ -68,23 +66,22 @@ $out:$
 			<td>#Location#</td>
 			<td>#Note#</td>
 			<td><cfif username neq "">#Username#<cfelse><i>#application.adminBundle[session.dmProfile.locale].unknown#</i></cfif></td>
-		</tr>	
-	</cfoutput>
+		</tr></cfoutput>
+  </cfloop><cfoutput>
 	</table>
 
 	<hr />
 	
-	<ul>
-	<li>
+	<ul></cfoutput>
 	
-	<cfif not isdefined("url.view")>
-		<a href="auditFailedLogins.cfm?view=all"><cfoutput>#application.adminBundle[session.dmProfile.locale].viewAllFailedLogins#</cfoutput></a>
-	<cfelse>
-		<a href="auditFailedLogins.cfm"><cfoutput>#application.adminBundle[session.dmProfile.locale].viewRecentFailedLogins#</cfoutput></a>
+	<cfif not isdefined("url.view")><cfoutput>
+		<li><a href="auditFailedLogins.cfm?view=all">#application.adminBundle[session.dmProfile.locale].viewAllFailedLogins#</a></li></cfoutput>
+	<cfelse><cfoutput>
+		<li><a href="auditFailedLogins.cfm">#application.adminBundle[session.dmProfile.locale].viewRecentFailedLogins#</a></li></cfoutput>
 	</cfif>
 	
-	</li>
-	</ul>
+  <cfoutput>
+	</ul></cfoutput>
 
 <cfelse>
 	<admin:permissionError>
@@ -92,3 +89,5 @@ $out:$
 
 <!--- setup footer --->
 <admin:footer>
+
+<cfsetting enablecfoutputonly="false" />
