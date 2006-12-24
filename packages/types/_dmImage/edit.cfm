@@ -159,7 +159,7 @@ $Developer: Guy (guy@daemon.com.au)$
 			<cfset originalImage = stProperties.originalImagePath & "\" & stProperties.imageFile>
 			<cfdirectory action="list" directory="#stProperties.originalImagePath#" filter="#stProperties.imageFile#" name="qList">
 			<cfif qList.recordCount>
-				<cfset returnstruct = imageUtilsObj.fCreatePresets("thumbnail",originalImage)>
+				<cfset returnstruct = imageUtilsObj.fCreatePresets(imagePreset="thumbnailImage", originalFile="#application.config.image.sourceImagePath#/#stProperties.imageFile#") />
 				<cfset stProperties.thumbnail = returnstruct.filename>
 				<cfset stProperties.thumbnailImagePath = returnstruct.path>	
 			</cfif>

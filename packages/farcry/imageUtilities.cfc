@@ -5,7 +5,7 @@
 		<cfargument name="destinationFile" type="string" required="false" default="" hint="Resized image path, either local or absolute">
 		<cfargument name="maxWidth" type="numeric" required="false" default="100" hint="New width (pixels). Default to 100">
 		<cfargument name="maxHeight" type="numeric" required="false" default="100" hint="New width (pixels). Default to 100">
-				
+
 		<cfset var stLocal = StructNew()>
 		<cfset stLocal.stReturn = StructNew()>
 		<cfset stLocal.bufferedImage = fRead(arguments.originalFile)>
@@ -47,33 +47,50 @@
 	</cffunction>
 
 	<cffunction name="fCreatePresets" access="public" returntype="struct" hint="Create image presets for image content item.">
-		<cfargument name="imagePreset" type="string" required="true" hint="image style to resize as eg. thumb, defualt etc">
-		<cfargument name="originalFile" type="string" required="true" hint="Path to the image">
-		<cfargument name="destinationFile" type="string" required="false" default="" hint="Resized image path, either local or absolute">
+		<cfargument name="imagePreset" type="string" required="true" hint="options are: thumbnailsImage &amp; standardImage (default: thumnailImage)" />
+		<cfargument name="originalFile" type="string" required="true" hint="Absolute path to source image (including image name)" />
+		<cfargument name="destinationFile" type="string" required="false" default="" hint="Absolute path to new resized image (including image name) [Optional]" />
 		
-		<cfset var stLocal = StructNew()>
-		<cfset stLocal.stReturn = StructNew()>
+		<cfset var stLocal = StructNew() />
+		<cfset stLocal.stReturn = StructNew() />
+		<cfset arguments.originalFile = replace(arguments.originalFile, "\", "/", "all") />
 
 		<!--- can create other image presets too --->
 		<cfswitch expression="#arguments.imagePreset#">
-			<cfcase value="thumbnail">
-				<cfset stLocal.maxWidth = application.config.image.thumbnailWidth>
-				<cfset stLocal.maxHeight = application.config.image.thumbnailHeight>
-				<cfset arguments.destinationFile = fGetDefaultDestinationFilePath(arguments.originalFile,'_#arguments.imagePreset#')>
-				<cfset arguments.destinationFile = "#application.config.image.folderpath_thumbnail#/#ListLast(arguments.destinationFile,'\')#">
+			<cfcase value="thumbnailImage">
+				<cfset stLocal.maxWidth = application.config.image.thumbnailImageWidth />
+				<cfset stLocal.maxHeight = application.config.image.thumbnailImageHeight />
+				<!--- <cfset arguments.destinationFile = fGetDefaultDestinationFilePath(arguments.originalFile,'_#arguments.imagePreset#')> --->
+				<!--- <cfset arguments.destinationFile = "#application.config.image.folderpath_thumbnail#/#ListLast(arguments.destinationFile,'\')#"> --->
+				<cfif arguments.destinationFile eq ''>
+					<cfset arguments.destinationFile = "#application.config.image.thumbnailImagePath#/#listLast(arguments.originalFile, '/')#" />
+				</cfif>
+			</cfcase>
+			<cfcase value="standardImage">
+				<cfset stLocal.maxWidth = application.config.image.standardImageWidth />
+				<cfset stLocal.maxHeight = application.config.image.standardImageHeight />
+				<!--- <cfset arguments.destinationFile = fGetDefaultDestinationFilePath(arguments.originalFile,'_#arguments.imagePreset#')> --->
+				<!--- <cfset arguments.destinationFile = "#application.config.image.folderpath_thumbnail#/#ListLast(arguments.destinationFile,'\')#"> --->
+				<cfif arguments.destinationFile eq ''>
+					<cfset arguments.destinationFile = "#application.config.image.standardImagePath#/#listLast(arguments.originalFile, '/')#" />
+				</cfif>
 			</cfcase>
 
 			<cfdefaultcase>
-				<cfset stLocal.maxWidth = application.config.image.imageWidth>
-				<cfset stLocal.maxHeight = application.config.image.imageHeight>
-				<cfset arguments.destinationFile = "#fGetDefaultDestinationFilePath(arguments.originalFile,'_#arguments.imagePreset#')#">
+				<!--- Default: thumnailImage --->
+				<cfset stLocal.maxWidth = application.config.image.thumbnailImageWidth />
+				<cfset stLocal.maxHeight = application.config.image.thumbnailImageHeight />
+				<cfif arguments.destinationFile eq ''>
+					<cfset arguments.destinationFile = "#application.config.image.thumbnailImagePath#/#listLast(arguments.originalFile, '/')#" />
+				</cfif>
 			</cfdefaultcase>
 		</cfswitch>
 
-	 	<cfset arguments.destinationFile = replace(arguments.destinationFile, "\", "/", "all")>
-		<cfset fResize(arguments.originalFile,arguments.destinationFile,stLocal.maxWidth,stLocal.maxHeight)>
-		<cfset stLocal.stReturn = fGetProperties(arguments.destinationFile)>
-		<cfreturn stLocal.stReturn>
+	 	<cfset arguments.destinationFile = replace(arguments.destinationFile, "\", "/", "all") />
+		<cfset fResize(originalFile=arguments.originalFile, destinationFile=arguments.destinationFile, maxWidth=stLocal.maxWidth, maxHeight=stLocal.maxHeight) />
+		<cfset stLocal.stReturn = fGetProperties(originalFile=arguments.destinationFile) />
+
+		<cfreturn stLocal.stReturn />
 	</cffunction>
 
 	<cffunction name="fGetProperties" access="public" returntype="struct" hint="Get properties for image file.">
