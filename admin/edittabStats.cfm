@@ -50,13 +50,13 @@ out:
 		
 			<!--- see if object is in tree --->
 			<cfset qParent = oNav.getParent(url.objectId)>
-			
+
 			<cfif qParent.recordcount>
 				<!--- clear title variable --->
 				<cfset title = "">
 				
 				<!--- get ancestors --->
-				<cfset qAncestors = request.factory.oTree.getAncestors(qParent.objectid)>
+				<cfset qAncestors = request.factory.oTree.getAncestors(qParent.parentid)>
 				
 				<!--- build breadcrumb --->
 				<cfloop query="qAncestors">
