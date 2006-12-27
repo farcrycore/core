@@ -30,8 +30,24 @@
 		<cfparam name="arguments.stMetadata.ftAutoGenerateType" default="FitInside">
 		<cfparam name="arguments.stMetadata.ftPadColor" default="##ffffff">
 		
-		
-		
+
+
+
+		<!--- TODO: This is a temp fix since you can't set dynamic values in cfproperty tags for dmImage.cfc.  Please advise (JSC 2006-12-26) --->
+		<cfif arguments.stMetadata.name eq "StandardImage">
+			<cfset arguments.stMetadata.ftImageWidth = application.config.image.standardImageWidth />
+			<cfset arguments.stMetadata.ftImageHeight = application.config.image.standardImageHeight />
+			<cfset arguments.stMetadata.ftDestination = application.config.image.standardImageUrl />
+		</cfif>
+		<cfif arguments.stMetadata.name eq "ThumnailImage">
+			<cfset arguments.stMetadata.ftImageWidth = application.config.image.thumbnailImageWidth />
+			<cfset arguments.stMetadata.ftImageHeight = application.config.image.thumbnailImageHeight />
+			<cfset arguments.stMetadata.ftDestination = application.config.image.thumbnailImageUrl />
+		</cfif>
+
+
+
+
 		<cfset Request.inHead.Scriptaculous = 1>
 		
 		<cfsavecontent variable="html">
