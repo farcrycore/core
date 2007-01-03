@@ -143,7 +143,7 @@ stCollections = application.config.verity.contenttype;
 		
 		<cflock name="verity" timeout="60">
 			<cfindex 
-				collection="#arguments.collection#" 
+				collection="#application.applicationname#_#key#" 
 		    	action="delete"
 				type="custom"
 				query="qDelete"
