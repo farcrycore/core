@@ -190,7 +190,7 @@ out:
 			rotated = "no" 
 			showLegend = "yes" 
 			tipStyle = "MouseOver"
-			gridlines = "#q1.max#">
+			gridlines = "#q1.max+1#">
 		<cfchartseries type="line" query="q1.qGetPageStats" itemcolumn="viewday" valuecolumn="count_Ip" serieslabel="#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].sessionsPerDayBetween,subS)#" paintstyle="shade"></cfchartseries>
 		</cfchart>
 	<cfelse>

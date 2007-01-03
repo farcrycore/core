@@ -101,17 +101,26 @@ $out:$
 	</cfdefaultcase>
 </cfswitch>	
 
-<!--- get max record for y axis of grid --->
-<cfquery name="max" dbtype="query">
-	select max(count_views) as maxcount
-	from qGetPageStats
+<!--- get max, min, sum, and avg (max is used for y axis of grid in <cfchart>) --->
+<cfquery name="math" dbtype="query">
+	SELECT
+		max(count_views) as maxCount,
+		min(count_views) as minCount,
+		sum(count_views) as sumCount,
+		avg(count_views) as avgCount
+	FROM
+		qGetPageStats
 </cfquery>
 
-<!--- create structure to return --->
-<cfset stReturn = structNew()>
-<cfset stReturn.qGetPageStats = qGetPageStats>
-<cfif len(max.maxcount)>
-	<cfset stReturn.max = evaluate(max.maxcount+1)>
-<cfelse>
-	<cfset stReturn.max = 0>
-</cfif>
+<!--- Create structure to return --->
+<cfset stReturn = structNew() />
+<cfset stReturn.qGetPageStats = qGetPageStats />
+
+<!--- Add some quick info to the struct (max, min, avg, and sum --->
+<cfloop index="i" list="max,min,avg,sum">
+	<cfif len("math.#i#Count") gt 0>
+		<cfset "stReturn.#i#" = "#evaluate("math.#i#Count")#" />
+	<cfelse>
+		<cfset "stReturn.#i# = 0" />
+	</cfif>
+</cfloop>

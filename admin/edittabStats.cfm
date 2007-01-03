@@ -234,7 +234,7 @@ out:
 							rotated = "no" 
 							showLegend = "yes" 
 							tipStyle = "MouseOver"
-							gridlines = "#q1.max#">
+							gridlines = "#q1.max+1#">
 						<!--- i18n: for readability --->
 						<cfset tA=application.thisCalendar.i18nDateFormat(form.after,session.dmProfile.locale,application.mediumF)>
 						<cfset tB=application.thisCalendar.i18nDateFormat(form.before,session.dmProfile.locale,application.mediumF)>
@@ -404,7 +404,7 @@ out:
 						rotated = "no" 
 						showLegend = "yes" 
 						tipStyle = "MouseOver"
-						gridlines = "#q1.max#">
+						gridlines = "#q1.max+1#">
 					<!--- i18n: for readability --->
 					<cfset tA=application.thisCalendar.i18nDateFormat(form.after,session.dmProfile.locale,application.mediumF)>
 					<cfset tB=application.thisCalendar.i18nDateFormat(form.before,session.dmProfile.locale,application.mediumF)>
