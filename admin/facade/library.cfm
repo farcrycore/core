@@ -489,13 +489,13 @@ LIBRARY DATA
 				<cfif URL.LibraryType EQ "array">
 							
 					//call on initial page load
-					opener.libraryCallback_#url.primaryFormFieldname#('sort','#lBasketIDs#');
+					opener.libraryCallbackArray('#url.primaryFormFieldname#', 'sort','#lBasketIDs#');
 					
 					
 				<cfelse>
 					<cfif len(stPrimary[url.primaryFieldName]) >
 						//call on initial page load
-						opener.libraryCallback_#url.primaryFormFieldname#('add','#stPrimary[url.primaryFieldName]#');
+						opener.libraryCallbackUUID('#url.primaryFormFieldname#', 'add','#stPrimary[url.primaryFieldName]#');
 					</cfif>
 				</cfif>
 				
@@ -685,7 +685,7 @@ GENERATE THE LIBRARY PICKER
 			
 			<cfoutput>				
 			<div>
-				<ft:farcrybutton type="button" value="Close" onclick="self.blur();window.close();" />	
+				<ft:farcrybutton type="button" value="Closee" onclick="self.blur();window.close();return false;" />	
 			</div>	
 			</cfoutput>
 			
@@ -707,21 +707,21 @@ GENERATE THE LIBRARY PICKER
 						constraint:false,
 						onUpdate:function(element) {
 							
-							opener.libraryCallback_#url.primaryFormFieldname#('sort',Sortable.sequence('sortableListTo'));
+							opener.libraryCallbackArray('#url.primaryFormFieldname#','sort',Sortable.sequence('sortableListTo'));
 							new Effect.Highlight('sortableListTo',{startcolor:'##FFECD9',duration: 2});
 					             				
 						}
 					});
 					
 					//call on initial page load
-					opener.libraryCallback_#url.primaryFormFieldname#('sort',Sortable.sequence('sortableListTo'));
+					opener.libraryCallbackArray('#url.primaryFormFieldname#','sort',Sortable.sequence('sortableListTo'));
 					
 					
 				<cfelse>
 					Droppables.add('sortableListTo', {
 					   onDrop: function(element) {
 					   		$('sortableListTo').innerHTML = $(element).innerHTML;
-					   		opener.libraryCallback_#url.primaryFormFieldname#('add',$(element).id);
+					   		opener.libraryCallbackUUID('#url.primaryFormFieldname#','add',$(element).id);
 							new Effect.Highlight('sortableListTo',{startcolor:'##FFECD9',duration: 2});
 		
 					   }
@@ -729,7 +729,7 @@ GENERATE THE LIBRARY PICKER
 					
 					<cfif len(stPrimary[url.primaryFieldName]) >
 						//call on initial page load
-						opener.libraryCallback_#url.primaryFormFieldname#('add','#stPrimary[url.primaryFieldName]#');
+						opener.libraryCallbackUUID('#url.primaryFormFieldname#','add','#stPrimary[url.primaryFieldName]#');
 					</cfif>
 				</cfif>
 				

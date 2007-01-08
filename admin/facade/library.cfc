@@ -20,6 +20,7 @@
 	
 	<cfargument name="packageType" type="string" default="types">
 
+
 	
 	<cfif arguments.PackageType EQ "rules" OR not StructKeyExists(application.types, arguments.primaryTypeName) >
 		<!--- If the developer has not specifid the packageType and the primaryTypename does not exist as a type then we will assume it is a rule. --->
@@ -39,7 +40,6 @@
 	<cfset stPrimary = oPrimary.getData(objectid=arguments.PrimaryObjectID)>
 
 	<cfset oData = createObject("component",application.types[arguments.DataTypename].typepath)>
-	
 
 
 	<cfif arguments.Action NEQ "Refresh">
@@ -86,7 +86,9 @@
 			<cfset st = stWizzard.Data[PrimaryObjectID]>
 		<cfelse>
 		
-			
+				
+				
+				
 			<cfif arguments.LibraryType EQ "UUID">
 				<cfif arguments.Action EQ "Add">
 					<cfset stPrimary[arguments.PrimaryFieldname] = arguments.DataObjectID>
@@ -110,11 +112,16 @@
 				</cfif>			
 			</cfif>
 		
-			
-			
+		
 			<cfparam name="session.dmSec.authentication.userlogin" default="anonymous" />
 			<cfset st = oPrimary.setData(stProperties="#stPrimary#",user="#session.dmSec.authentication.userlogin#")>
+			
+						
+
 			<cfset st = oPrimary.getData(objectid="#stPrimary.objectid#")>
+			
+
+
 		</cfif>
 	</cfif>
 	
@@ -122,10 +129,14 @@
 	<cfset stPropMetadata[arguments.PrimaryFieldName] = structNew() />
 	<cfset stPropMetadata[arguments.PrimaryFieldName].ftEditMethod = "libraryCallback" >
 
+
+
 	<ft:object objectID="#arguments.PrimaryObjectID#" WizzardID="#arguments.WizzardID#" lFields="#arguments.PrimaryFieldName#" stPropMetadata="#stPropMetadata#" inTable=0 IncludeLabel=0 IncludeFieldSet=0 r_stFields="stFields" IncludeLibraryWrapper="false" packageType="#arguments.packageType#" />
 		
+
+
 	<cfoutput>
-		#stFields[arguments.PrimaryFieldName].HTML#
+	#stFields[arguments.PrimaryFieldName].HTML#
 	</cfoutput>
 
 </cffunction>
