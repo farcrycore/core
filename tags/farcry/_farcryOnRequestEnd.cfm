@@ -75,7 +75,7 @@ $out:$
 		
 		<cfparam name="Request.RequiredInHead.libraryPopupJS" default = "0">
 		
-		<cfparam name="request.requiredInHead." default="0">
+		
 
 		
 		
@@ -219,7 +219,7 @@ $out:$
 			<cfset Request.RequiredInHead.swfObjectJS = 1>
 		</cfif>
 		
-		<cfif isDefined("Request.InHead.libraryPopupJS") AND Request.InHead.libraryPopupJS>
+		<cfif isDefined("Request.InHead.libraryPopup") AND Request.InHead.libraryPopup>
 			<cfset Request.RequiredInHead.libraryPopupJS = 1>
 		</cfif>
 		
@@ -417,13 +417,7 @@ $out:$
 
 		<cfif isDefined("Request.RequiredInHead.libraryPopupJS") AND Request.RequiredInHead.libraryPopupJS EQ "true">
 			<cfoutput>
-				<script language="JavaScript" type="text/javascript">
-				function openLibrary(target,ftJoin,url) {
-					win=window.open(url + '&ftJoin=' + ftJoin, target);
-					win.focus();
-				}
-				</script>
-			</cfoutput>
+				<script src="#application.url.farcry#/js/LibraryPopup.js" type="text/javascript"></script>	</cfoutput>
 		</cfif>
 		
 		<cfif isDefined("request.requiredInHead.flashWrapperToggle") and request.requiredInHead.flashWrapperToggle EQ true>

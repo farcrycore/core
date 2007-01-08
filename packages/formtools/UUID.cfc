@@ -135,71 +135,29 @@
 							</ul>
 						</div>
 						<div class="buttonGroup">
-							<ft:farcryButton type="button" value="Remove Selected" onclick="deleteSelected#arguments.fieldname#();return false;" confirmText="Are you sure you want to remove the selected item" / >						
+							<ft:farcryButton type="button" value="Remove Selected" onclick="deleteSelectedFromUUIDField('#arguments.fieldname#');return false;" confirmText="Are you sure you want to remove the selected item" / >						
 						</div>
 
 						<br class="clearer" />
 					</cfoutput>
 				
 	
+					
+					<cfset request.inHead.libraryPopup = true />
 					<cfoutput>
 					<script type="text/javascript" language="javascript" charset="utf-8">
-						
-							
-					function deleteSelected#arguments.fieldname#(){
-						
-						aInputs = $$("###ULID# input");
-						aInputs.each(function(child) {
-							if(child.checked == true){
-								Element.remove('#arguments.fieldname#_' + child.value);
-							}
-						});
-						Sortable.create('#ULID#');
-						$('#arguments.fieldname#').value = Sortable.sequence('#ULID#');
-						libraryCallback_#arguments.fieldname#('remove',$('#arguments.fieldname#').value);
-					}
-					
-					function libraryCallback_#arguments.fieldname#(action,ids){
-						$('#arguments.fieldname#').value = ids;
-						
-						
-						new Ajax.Updater('#arguments.fieldname#-libraryCallback', '/farcry/facade/library.cfc?method=ajaxUpdateArray', {
-								//onLoading:function(request){Element.show('indicator')},
-								parameters:'Action=' + action + '&LibraryType=UUID&primaryObjectID=#arguments.stObject.ObjectID#&primaryTypename=#arguments.typename#&primaryFieldname=#arguments.stMetaData.Name#&primaryFormFieldname=#arguments.fieldname#&WizzardID=&DataObjectID=' + encodeURIComponent($('#arguments.fieldname#').value) + '&DataTypename=#ListFirst(arguments.stMetadata.ftJoin)#', evalScripts:true, asynchronous:true
-							})
-												
-					}
-					
-
+								
+					var obj#arguments.fieldname# = new Object();					
+					obj#arguments.fieldname#.primaryFormFieldname="#arguments.fieldname#";
+					obj#arguments.fieldname#.primaryObjectID="#arguments.stObject.ObjectID#";
+					obj#arguments.fieldname#.primaryTypename="#arguments.typename#";
+					obj#arguments.fieldname#.primaryFieldname="#arguments.stMetaData.Name#";
+					obj#arguments.fieldname#.WizzardID="";
+					obj#arguments.fieldname#.DataTypename="#ListFirst(arguments.stMetadata.ftJoin)#";
 					</script>
 					</cfoutput>	
-						<!---				
-								
-			<cfsavecontent variable="returnHTML">
-			<cfoutput>
-				<input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="#arguments.stObject[arguments.stMetaData.Name]#" />
-				<div id="#arguments.fieldname#_1">
-				<cfif Len(arguments.stObject[arguments.stMetaData.Name])>
-				
-					<cfset stobj = oData.getData(objectid=#arguments.stObject[arguments.stMetaData.Name]#)>
-						
-					<cfif FileExists("#application.path.project#/webskin/#arguments.stMetadata.ftJoin#/#arguments.stMetadata.ftLibrarySelectedWebskin#.cfm")>
-						<cfset oData.getDisplay(stObject=stobj, template="#arguments.stMetadata.ftLibrarySelectedWebskin#") />
-						<!---<cfinclude template="/farcry/#application.applicationname#/webskin/#arguments.stMetadata.ftJoin#/#arguments.stMetadata.ftLibrarySelectedWebskin#.cfm"> --->
-					<cfelse>
-						<cfif isDefined("stobj.label") AND len(stobj.label)>#stobj.Label#<cfelse>#stobj.ObjectID#</cfif>
-					</cfif>
-					<a href="##" onclick="new Effect.Fade($('#arguments.fieldname#_1'));Element.remove('#arguments.fieldname#_1');$('#arguments.fieldname#').value = ''; return false;"><img src="#application.url.farcry#/images/crystal/22x22/actions/button_cancel.png" style="width:16px;height:16px;" /></a>
-				</cfif>
-				</div>
-			
-				<script type="text/javascript" language="javascript" charset="utf-8">
-				function update_#arguments.fieldname#_wrapper(HTML){
-					$('#arguments.fieldname#-wrapper').innerHTML = HTML;
-							 
-				}
-				</script>
-			</cfoutput>	 --->
+					
+					
 			</cfsavecontent>
 		</cfdefaultcase>
 		</cfswitch>

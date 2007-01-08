@@ -186,86 +186,29 @@
 							</ul>
 						</div>
 						<div class="buttonGroup">
-							<ft:farcryButton type="button" value="Select All" onclick="toggleOn#arguments.fieldname#();return false;" / >
-							<ft:farcryButton type="button" value="De-select All" onclick="toggleOff#arguments.fieldname#();return false;" / >
-							<ft:farcryButton type="button" value="Remove Selected" onclick="deleteSelected#arguments.fieldname#();return false;" confirmText="Are you sure you want to remove the selected item(s)" / >
+							<ft:farcryButton type="button" value="Select All" onclick="toggleOnArrayField('#arguments.fieldname#');return false;" / >
+							<ft:farcryButton type="button" value="De-select All" onclick="toggleOffArrayField('#arguments.fieldname#');return false;" / >
+							<ft:farcryButton type="button" value="Remove Selected" onclick="deleteSelectedFromArrayField('#arguments.fieldname#');return false;" confirmText="Are you sure you want to remove the selected item(s)" / >
 						</div>
 
 						<br class="clearer" />
 					</cfoutput>
 
-					<cfoutput>
-						<script type="text/javascript" charset="utf-8">
-							function toggleOn#arguments.fieldname#() {
-								aInputs = $$("###ULID# input");
-								aInputs.each(function(child) {
-									child.checked = true;
-								});
-							}
-							function toggleOff#arguments.fieldname#() {
-								aInputs = $$("###ULID# input");
-								aInputs.each(function(child) {
-									child.checked = false;
-								});
-							}
-							
-							function deleteSelected#arguments.fieldname#(){
-								
-								aInputs = $$("###ULID# input");
-								aInputs.each(function(child) {
-									if(child.checked == true){
-										Element.remove('#arguments.fieldname#_' + child.value);
-									}
-								});
-								
-								$('#arguments.fieldname#').value = Sortable.sequence('#ULID#');
-								libraryCallback_#arguments.fieldname#('sort',$('#arguments.fieldname#').value);
-							}
 
-						// <![CDATA[
-							  Sortable.create('#ULID#',
-							  	{ghosting:false,constraint:false,hoverclass:'over',handle:'#ULID#handle',
-							    onChange:function(element){
-							    	$('#arguments.fieldname#').value = Sortable.sequence('#ULID#');
-							    },
-							    onUpdate:function(element){
-							    	libraryCallback_#arguments.fieldname#('sort',$('#arguments.fieldname#').value);
-						   			//update_#arguments.fieldname#('sort',element);
-							    }
-							  });
-						// ]]>
-						</script>
-					</cfoutput>
-				
+					<cfset request.inHead.libraryPopup = true />
+			
 	
 					<cfoutput>
 					<script type="text/javascript" language="javascript" charset="utf-8">
-						
-					function libraryCallback_#arguments.fieldname#(action,ids){
-						$('#arguments.fieldname#').value = ids;
-						
-						new Ajax.Updater('#arguments.fieldname#-libraryCallback', '/farcry/facade/library.cfc?method=ajaxUpdateArray', {
-								//onLoading:function(request){Element.show('indicator')},
-								onComplete:function(request){
-									// <![CDATA[
-										Sortable.create('#ULID#',
-									  	{ghosting:false,constraint:false,hoverclass:'over',handle:'#ULID#handle',
-									    onChange:function(element){
-									    	$('#arguments.fieldname#').value = Sortable.sequence('#ULID#');
-									    },
-										    onUpdate:function(element){
-									   			libraryCallback_#arguments.fieldname#('sort',$('#arguments.fieldname#').value);
-									   			//update_#arguments.fieldname#('sort',element);
-										    }
-										  });
-									// ]]>
-								},
-								parameters:'Action=' + action + '&LibraryType=Array&primaryObjectID=#arguments.stObject.ObjectID#&primaryTypename=#arguments.typename#&primaryFieldname=#arguments.stMetaData.Name#&primaryFormFieldname=#arguments.fieldname#&WizzardID=&DataObjectID=' + encodeURIComponent($('#arguments.fieldname#').value) + '&DataTypename=#ListFirst(arguments.stMetadata.ftJoin)#', evalScripts:true, asynchronous:true
-							})
-												
-					}
+					initArrayField('#arguments.fieldname#');
 					
-
+					var obj#arguments.fieldname# = new Object();					
+					obj#arguments.fieldname#.primaryFormFieldname="#arguments.fieldname#";
+					obj#arguments.fieldname#.primaryObjectID="#arguments.stObject.ObjectID#";
+					obj#arguments.fieldname#.primaryTypename="#arguments.typename#";
+					obj#arguments.fieldname#.primaryFieldname="#arguments.stMetaData.Name#";
+					obj#arguments.fieldname#.WizzardID="";
+					obj#arguments.fieldname#.DataTypename="#ListFirst(arguments.stMetadata.ftJoin)#";
 					</script>
 					</cfoutput>		
 				
@@ -308,6 +251,7 @@
 			<cfset ULID = "#arguments.fieldname#_list">
 			
 			<cfif q.RecordCount>
+			 
 				<div id="#ULID#" class="#arguments.stMetadata.ftLibrarySelectedListClass#" style="#arguments.stMetadata.ftLibrarySelectedListStyle#">
 					<cfloop query="q">
 						<!---<li id="#arguments.fieldname#_#q.objectid#"> --->
