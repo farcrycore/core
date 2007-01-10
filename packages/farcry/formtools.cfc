@@ -178,51 +178,65 @@
 				<cfset thisDiff = RecordsPerPage - (qrecordcount.CountAll mod  arguments.RecordsPerPage)>
 			</cfif>
 		
-			
-			<cfquery name="qFormToolRecordset" datasource="#application.dsn#">
-
-			IF OBJECT_ID('tempdb..##thetops') IS NOT NULL 	drop table ##thetops
-			CREATE TABLE ##thetops (objectID varchar(40), myint int IDENTITY(1,1) NOT NULL);
-			
-			INSERT ##thetops (objectID)
-			SELECT TOP #theSQLTop# tbl.objectid
-			FROM #arguments.typename# tbl 
-			WHERE #preserveSingleQuotes(arguments.SqlWhere)#
-			
-			<cfif arrayLen(arguments.aCategoryFilters)>
-				<cfloop from="1" to="#arrayLen(arguments.aCategoryFilters)#" index="i">
-					<cfif arguments.aCategoryFilters[i] neq ''>
-						AND objectid in (
-						    select distinct objectid 
-						    from refCategories 
-						    where categoryID in (#listQualify(arguments.aCategoryFilters[i],"'")#)
-						    )
-					</cfif>
-				</cfloop>
+			<cfif ucase(application.dbtype) eq "MSSQL">
+				<cfquery name="qFormToolRecordset" datasource="#application.dsn#">
+	
+				IF OBJECT_ID('tempdb..##thetops') IS NOT NULL 	drop table ##thetops
+				CREATE TABLE ##thetops (objectID varchar(40), myint int IDENTITY(1,1) NOT NULL);
+				
+				INSERT ##thetops (objectID)
+				SELECT TOP #theSQLTop# tbl.objectid
+				FROM #arguments.typename# tbl 
+				WHERE #preserveSingleQuotes(arguments.SqlWhere)#
+				
+				<cfif arrayLen(arguments.aCategoryFilters)>
+					<cfloop from="1" to="#arrayLen(arguments.aCategoryFilters)#" index="i">
+						<cfif arguments.aCategoryFilters[i] neq ''>
+							AND objectid in (
+							    select distinct objectid 
+							    from refCategories 
+							    where categoryID in (#listQualify(arguments.aCategoryFilters[i],"'")#)
+							    )
+						</cfif>
+					</cfloop>
+				</cfif>
+				<cfif bHasVersionID>
+					AND (tbl.versionid = '' OR tbl.versionid IS NULL)
+				</cfif>
+				<cfif len(trim(arguments.sqlOrderBy))>
+					ORDER BY #preserveSingleQuotes(arguments.sqlOrderBy)#
+				</cfif>
+				
+				SELECT #arguments.sqlColumns#
+				<cfif bHasversionID>
+					,(SELECT count(d.objectid) FROM #arguments.typename# d WHERE d.versionid = tbl.objectid) as bHasMultipleVersion
+				</cfif>
+				FROM #arguments.typename# tbl
+				inner join  ##thetops t on tbl.objectid = t.objectid where t.myint > ((select count(*) from ##thetops) - #RecordsPerPage-thisDiff#)
+				
+				<cfif len(trim(arguments.sqlOrderBy))>
+					ORDER BY #preserveSingleQuotes(arguments.sqlOrderBy)#
+				</cfif>
+				
+				drop table ##thetops
+								
+				</cfquery>
+			<cfelseif ListFindNoCase("mysql,PostgreSQL",application.dbtype)>
+				<cfset offset = RecordsPerPage-thisDiff-1>
+				<cfquery name="qFormToolRecordset" datasource="#application.dsn#" result="rsResult">
+				SELECT #arguments.sqlColumns#
+				<cfif bHasversionID>
+					,(SELECT count(d.objectid) FROM #arguments.typename# d WHERE d.versionid = tbl.objectid) as bHasMultipleVersion
+				</cfif>
+				FROM #arguments.typename# tbl
+				<cfif len(trim(arguments.sqlOrderBy))>
+					ORDER BY #preserveSingleQuotes(arguments.sqlOrderBy)#
+				</cfif>
+				LIMIT #theSQLTop# <cfif offset GT 0>OFFSET #offset#</cfif>
+				</cfquery>
+			<cfelse>
+				<!--- TO DO : Oracle equivalent query --->
 			</cfif>
-			<cfif bHasVersionID>
-				AND (tbl.versionid = '' OR tbl.versionid IS NULL)
-			</cfif>
-			<cfif len(trim(arguments.sqlOrderBy))>
-				ORDER BY #preserveSingleQuotes(arguments.sqlOrderBy)#
-			</cfif>
-			
-			SELECT #arguments.sqlColumns#
-			<cfif bHasversionID>
-				,(SELECT count(d.objectid) FROM #arguments.typename# d WHERE d.versionid = tbl.objectid) as bHasMultipleVersion
-			</cfif>
-			FROM #arguments.typename# tbl
-			inner join  ##thetops t on tbl.objectid = t.objectid where t.myint > ((select count(*) from ##thetops) - #RecordsPerPage-thisDiff#)
-			
-			<cfif len(trim(arguments.sqlOrderBy))>
-				ORDER BY #preserveSingleQuotes(arguments.sqlOrderBy)#
-			</cfif>
-			
-			drop table ##thetops
-							
-			</cfquery>
-
-			
 			
 						
 			<!---<cfstoredproc procedure="sp_selectview_bycat" datasource="#application.dsn#" result="spresult">
