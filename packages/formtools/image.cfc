@@ -208,6 +208,8 @@
 					<cfset stGeneratedImageArgs.PadColor = "#arguments.stMetadata.ftPadColor#" />
 
 					<cfset stGeneratedImage = GenerateImage(Source="#stGeneratedImageArgs.Source#", Destination="#stGeneratedImageArgs.Destination#", Width="#stGeneratedImageArgs.Width#", Height="#stGeneratedImageArgs.Height#", AutoGenerateType="#stGeneratedImageArgs.AutoGenerateType#", PadColor="#stGeneratedImageArgs.PadColor#") />
+					
+					
 					<cfif stGeneratedImage.bSuccess>
 						<cfset stResult.value = "#arguments.stMetadata.ftDestination#/#file.serverFile#" />
 					</cfif>
@@ -232,6 +234,7 @@
 	</cffunction>
 
 
+
 	<cffunction name="GenerateImage" access="public" output="true" returntype="struct">
 		<cfargument name="Source" required="true" hint="The absolute path where the image that is being used to generate this new image is located.">
 		<cfargument name="Destination" required="false" default="" hint="The absolute path where the image will be stored.">
@@ -241,8 +244,20 @@
 		<cfargument name="PadColor" required="false" default="##ffffff" hint="If AutoGenerateType='Pad', image will be padded with this colour">
 		<cfargument name="Bevel" required="false" default="no" hint="Will this image have a bevel edge">
 		
+		<cfset var stLocal = StructNew()>
 		<cfset var ImageDestination = arguments.Source />
 		<cfset var stResult = structNew() />
+		<cfset var imageUtilsObj = CreateObject("component","#application.packagepath#.farcry.imageUtilities")>
+		
+         <cfset var at = "" />
+         <cfset var op = "" />  
+         <cfset var w = "" />
+         <cfset var h = "" />
+         <cfset var scale = 1 />  
+         <cfset var resizedImage = "" />  
+         <cfset var myimage =  ""/>
+         <cfset var extension = "" />
+         
 		<cfset stResult.bSuccess = true />
 		<cfset stResult.message = "" />
 		<cfset stResult.filename = "" />
@@ -273,7 +288,6 @@
 			</cfif>
 					
 			<!--- We need to check to see if the image we are copying already exists. If so, we need to create a unique filename --->
-			<cfset imageUtilsObj = CreateObject("component","#application.packagepath#.farcry.imageUtilities")>
 			<cfset returnstruct = imageUtilsObj.fGetProperties(arguments.Source)>			
 							
 			<cfif fileExists("#ImageDestination#/#returnstruct.filename#")>
@@ -292,18 +306,58 @@
 			<cfset stResult.filename = returnstruct.filename />	
 		</cfif>
 		
+		<cfset myImage = CreateObject("Component", "farcry.farcry_core.packages.farcry.simpleImage") />
+
+		<cfset myImage.readImage("#ImageDestination#") />
+		
+		
 		<cfswitch expression="#arguments.AutoGenerateType#">
 		
 			<cfcase value="ForceSize">
 				<!--- Simply force the resize of the image into the width/height provided --->
-				<cfx_image action="resize"
+				<cfset myImage.resize(arguments.Width,arguments.Height) />
+				<cfset myImage.writeImage("#ImageDestination#") />
+					
+				
+				<!--- <cfx_image action="resize"
 					file="#ImageDestination#"
 					output="#ImageDestination#"
 					X="#arguments.Width#"
-					Y="#arguments.Height#">
+					Y="#arguments.Height#"> --->
 			</cfcase>
 			
 			<cfcase value="FitInside">
+			
+				<cfif myImage.Width() LTE arguments.Width>
+					<cfset arguments.Width = 0 />
+				</cfif>
+				<cfif myImage.Height() LTE arguments.Height>
+					<cfset arguments.Height = 0 />
+				</cfif>
+				<cfif arguments.Width GT 0 OR arguments.Height GT 0>
+					<cfset myImage.resize(arguments.Width,arguments.Height) />
+					<cfset myImage.writeImage("#ImageDestination#") />
+				</cfif>
+				
+				<!--- <cfset stLocal.stReturn = StructNew()>
+				<cfset stLocal.bufferedImage = imageUtilsObj.fRead(ImageDestination)>
+				<cfset stLocal.height = stLocal.bufferedImage.getHeight()>
+				<cfset stLocal.width = stLocal.bufferedImage.getWidth()>
+				<cfset stLocal.scaling = imageUtilsObj.fCalculateRatioWidth(stLocal.width,stLocal.height,arguments.Width,arguments.Height)>
+		
+				<cfset stLocal.bi = createObject("java","java.awt.image.BufferedImage").init(JavaCast("int", stLocal.width/stLocal.scaling), JavaCast("int", stLocal.height/stLocal.scaling), JavaCast("int", 1))>
+				<cfset stLocal.graphics = stLocal.bi.getGraphics()>
+				<cfset stLocal.jTransform = createObject("java","java.awt.geom.AffineTransform").init()>
+				<cfset stLocal.jTransform.Scale(1/stLocal.scaling, 1/stLocal.scaling)>
+				<cfset stLocal.graphics.drawRenderedImage(stLocal.bufferedImage, stLocal.jTransform)>
+				<cfset stLocal.outFile = createObject("java","java.io.File").init(ImageDestination)>
+				<cfset createObject("java","javax.imageio.ImageIO").write(stLocal.bi,"jpg",stLocal.outFile)>
+				 --->
+				
+				
+				
+				
+				<!--- 
 				<!--- If the Width of the image is wider than the requested width, resize the image in the correct proportions to be the width requested --->
 				<cfx_image action="read"
 					file="#ImageDestination#">
@@ -324,11 +378,16 @@
 						file="#ImageDestination#"
 						output="#ImageDestination#"
 						Y="#arguments.Height#">
-				</cfif>
+				</cfif> --->
 				
 			</cfcase>
 			
 			<cfcase value="Pad">
+				
+				<cfset myImage.resize(arguments.Width,arguments.Height) />
+				<cfset myImage.writeImage("#ImageDestination#") />
+				
+				<!--- 
 				<cfx_image action="resize"
 					file="#ImageDestination#"
 					output="#ImageDestination#"
@@ -336,13 +395,14 @@
 					Y="#arguments.Height#"
 					Thumbnail=yes
 					bevel="#lCase(yesnoformat(arguments.Bevel))#"
-					backcolor="#arguments.PadColor#">
+					backcolor="#arguments.PadColor#"> --->
 			</cfcase>
 		
 		</cfswitch>
 		 		
 		<cfreturn stResult />
 	</cffunction>
+	
 	
 	
 </cfcomponent> 
