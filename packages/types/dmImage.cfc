@@ -31,7 +31,7 @@ type properties
 <cfproperty ftSeq="12" ftFieldset="Image Files" name="ThumbnailImage" type="string" hint="The URL location of the thumnail of the uploaded image that should be used in " required="no" default="" ftType="Image"  ftDestination="/images/ThumbnailImage" ftImageWidth="80" ftImageHeight="80" ftAutoGenerateType="Pad" ftPadColor="##000000" ftSourceField="SourceImage" ftCreateFromSourceDefault="true" ftAllowUpload="true" ftlabel="Thumbnail Image" />  
 
 <!--- image categorisation --->
-<cfproperty ftSeq="20" ftFieldset="Categorisation" name="imageCategory" type="string" hint="Image categorisation." required="no" default="" ftlabel="Category" fttype="category" ftalias="dmimage" ftselectmultiple="true" />
+<cfproperty ftSeq="20" ftFieldset="Categorisation" name="catImage" type="string" hint="Image categorisation." required="no" default="" ftlabel="Category" fttype="category" ftalias="dmimage" ftselectmultiple="true" />
 
 <!--- deprecated: legacy image properties --->
 <cfproperty name="width" type="nstring" hint="Image width (blank for default)" required="no" default="">  
