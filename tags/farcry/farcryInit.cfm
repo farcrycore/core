@@ -194,7 +194,7 @@ $in: objectid -- $
 		<!--- SETUP CATEGORY APPLICATION STRUCTURE --->
 		<cfquery datasource="#application.dsn#" name="qCategories">
 		SELECT categoryID, categoryLabel
-		FROM dbo.categories
+		FROM #application.dbowner#categories
 		</cfquery>
 		
 		<cfparam name="application.catid" default="#structNew()#" />
