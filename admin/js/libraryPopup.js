@@ -96,8 +96,8 @@
 					
 					function libraryCallbackUUID(fieldname,action,ids){
 						$(fieldname).value = ids;	
-											
-						var sURLParams = "LibraryType=Array&Action=" + action + '&DataObjectID=' + encodeURIComponent($(fieldname).value);
+						var objParams = eval('obj' + fieldname);										
+						var sURLParams = "LibraryType=UUID&Action=" + action + '&DataObjectID=' + encodeURIComponent($(fieldname).value);
 						for (i in objParams){
 							sURLParams+= "&" + i + "=" + objParams[i];							
 						}
