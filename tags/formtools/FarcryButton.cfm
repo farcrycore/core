@@ -13,6 +13,7 @@
 <cfparam  name="attributes.Style" default="">
 <cfparam name="attributes.SelectedObjectID" default="">
 <cfparam name="attributes.ConfirmText" default="">
+<cfparam name="attributes.validate" default="true">
 
 
 
@@ -33,6 +34,17 @@
 	 
 	
 	<cfset attributes.onClick = "#attributes.onClick#;$('FarcryFormSubmitButtonClicked#Request.farcryForm.Name#').value = '#attributes.Value#';">
+
+
+	
+	<cfif Request.farcryForm.Validation AND Attributes.validate>
+		<!--- Confirm the click before submitting --->
+		<cfset attributes.OnClick = "#attributes.OnClick#;return realeasyvalidation.validate();">
+		
+		
+		
+	</cfif>	
+	
 
 	<cfoutput><input type="#attributes.Type#" name="FarcryFormSubmitButton" value="#attributes.Value#" onclick="#attributes.Onclick#" class="formButton #attributes.Class#" style="#attributes.Style#" /></cfoutput>
 </cfif>
