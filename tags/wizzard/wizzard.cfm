@@ -164,10 +164,18 @@ $in: SessionID -- $
 					$('FarcryFormSubmitButtonClicked#Request.farcryForm.Name#').value=state;
 					$('#Request.farcryForm.Name#').submit();	
 				} 
-				else if ( valid.validate() ) {
-					$('FarcryFormSubmitButtonClicked#Request.farcryForm.Name#').value=state;
-					$('#Request.farcryForm.Name#').submit();	
-				}
+				
+				<cfif Request.farcryForm.Validation>					
+					else if ( realeasyvalidation.validate() ) {
+						$('FarcryFormSubmitButtonClicked#Request.farcryForm.Name#').value=state;
+						$('#Request.farcryForm.Name#').submit();	
+					}
+				<cfelse>
+					else {
+						$('FarcryFormSubmitButtonClicked#Request.farcryForm.Name#').value=state;
+						$('#Request.farcryForm.Name#').submit();	
+					}
+				</cfif>
 			}
 			function WizzardCancelConfirm(){
 				if( window.confirm("Changes made will not be saved.\nDo you still wish to Cancel?")){
