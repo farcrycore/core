@@ -12,6 +12,8 @@
 		
 		<cfparam name="arguments.stMetadata.ftImageListField" default="">
 		<cfparam name="arguments.stMetadata.ftConfig" default=""><!--- tinyMCE.tinyMCE_config --->
+		<cfparam name="arguments.stMetadata.ftImageTypename" default="dmImage" />
+		<cfparam name="arguments.stMetadata.ftImageFields" default="StandardImage,ThumbnailImage,SourceImage" />
 	
 		<!--- crude block for safari -- not supported by tinyMCE --->
 		<!--- todo: update this to a specific version set, this will be fixed soon apparently --->
@@ -37,11 +39,15 @@
 				<cfoutput>
 					tinyMCE.init({
 						mode : "exact",
+						farcryobjectid: "#arguments.stObject.ObjectID#",
+						farcrytypename: "#arguments.stobject.Typename#",
+						farcryrichtextfield: "#arguments.stMetadata.name#",
 						<cfif len(arguments.stMetadata.ftConfig) and isdefined("application.config.#arguments.stMetadata.ftConfig#")>
 							#Evaluate("application.config.#arguments.stMetadata.ftConfig#")#,
 						<cfelse>
 							theme : "advanced",
-							plugins : "table,advhr,advlink,preview,zoom,searchreplace,print,contextmenu,paste,directionality,fullscreen",		
+							plugins : "table,advhr,farcrycontenttemplates,advimage,advlink,preview,zoom,searchreplace,print,contextmenu,paste,directionality,fullscreen",		<!--- farcryimage --->
+							theme_advanced_buttons2_add : "separator,farcrycontenttemplates",
 							theme_advanced_buttons3_add : "separator,fullscreen,pasteword",
 							
 							theme_advanced_toolbar_location : "top",
@@ -57,9 +63,9 @@
 						<!--- <cfif NOT ListFindNoCase("none,default", application.config.tinyMCE.file_browser_callback) AND application.config.tinyMCE.file_browser_callback NEQ "">
 							file_browser_callback : "#application.config.tinyMCE.file_browser_callback#",
 						</cfif> --->
-						file_browser_callback : "fileBrowserCallBack",
-						<cfif len(arguments.stMetadata.ftImageListField)>
-							external_image_list_url : "#application.url.farcry#/facade/tinyMCEImageList.cfm?objectID=#arguments.stObject.ObjectID#&Typename=#arguments.stobject.Typename#&FieldName=#arguments.stMetadata.ftImageListField#",
+						//file_browser_callback : "fileBrowserCallBack",
+						<cfif len(arguments.stMetadata.ftImageArrayField) and len(arguments.stMetadata.ftImageTypename) and len(arguments.stMetadata.ftImageField)>
+							external_image_list_url : "#application.url.farcry#/facade/tinyMCEImageList.cfm?objectID=#arguments.stObject.ObjectID#&typename=#arguments.typename#&ImageArrayField=#arguments.stMetadata.ftImageArrayField#&ImageTypename=#arguments.stMetadata.ftImageTypename#&ImageField=#arguments.stMetadata.ftImageField#",
 						</cfif>			
 						external_link_list_url : "#application.url.farcry#/facade/tinyMCELinkList.cfm"						
 					});
@@ -69,7 +75,7 @@
 					
 					<cfset Request.TinyMCEBrowserCallbackJS = 1><!--- Make sure this is only placced once per request. --->
 					
-					<cfoutput>
+					<!--- <cfoutput>
 						function fileBrowserCallBack(field_name, url, type, win) {
 						// This is where you insert your custom filebrowser logic
 						//alert("Example of filebrowser callback: field_name: " + field_name + ", url: " + url + ", type: " + type);
@@ -103,7 +109,7 @@
 							// Skip it
 						}
 					}
-					</cfoutput>
+					</cfoutput> --->
 					
 					
 				</cfif>
