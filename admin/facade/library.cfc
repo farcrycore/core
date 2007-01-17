@@ -2,6 +2,51 @@
 
 <cfimport taglib="/farcry/farcry_core/tags/formtools/" prefix="ft" >
 
+<cffunction name="ajaxGetView" access="remote" output="true" returntype="void">
+ 	<cfargument name="objectid" required="yes" type="uuid" hint="ObjectID of the object to be rendered.">
+ 	<cfargument name="typename" required="no" default="" type="string" hint="typename of the object to be rendered.">
+ 	<cfargument name="webskin" required="yes" type="string">
+
+	<cfset var q4 = "" />
+	<cfset var o = "" />
+
+	<cfif not len(arguments.typename)>
+		<cfset q4 = createObject("component", "farcry.fourq.fourq")>
+		<cfset arguments.typename = q4.findType(objectid=arguments.objectid)>
+	</cfif>	
+	
+	<cfset o = createObject("component", application.types[arguments.typename].packagepath) />
+	<cfset HTML = o.getView(objectid=arguments.objectid, template=arguments.webskin, alternateHTML="webskin not available") />	
+	
+	<cfoutput>#HTML#</cfoutput>
+
+
+</cffunction>
+
+<cffunction name="ajaxGetValue" access="remote" output="true" returntype="void">
+ 	<cfargument name="objectid" required="yes" type="string" hint="ObjectID of the object to be rendered.">
+ 	<cfargument name="typename" required="no" default="" type="string" hint="typename of the object to be rendered.">
+ 	<cfargument name="fieldname" required="yes" type="string">
+
+ 	<cfset var q4 = "" />
+	<cfset var o = "" />
+	<cfset var st = structNew() />
+
+	<cfif len(arguments.objectid)>
+		<cfif not len(arguments.typename)>
+			<cfset q4 = createObject("component", "farcry.fourq.fourq")>
+			<cfset arguments.typename = q4.findType(objectid=arguments.objectid)>
+		</cfif>	
+		
+		<cfset o = createObject("component", application.types[arguments.typename].packagepath) />
+		<cfset st = o.getData(objectid=arguments.objectid) />	
+		
+		<cfoutput>#st[arguments.fieldname]#</cfoutput>
+	</cfif>
+	
+</cffunction>
+
+
 <cffunction name="ajaxUpdateArray" access="remote" output="true" returntype="void">
  	<cfargument name="LibraryType" required="yes" type="string" hint="Can be Array or UUID. If UUID, only 1 value can be stored.">
  	<cfargument name="PrimaryObjectID" required="yes" type="UUID">
