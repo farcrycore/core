@@ -178,6 +178,7 @@
 				<cfset thisDiff = RecordsPerPage - (qrecordcount.CountAll mod  arguments.RecordsPerPage)>
 			</cfif>
 		
+			
 			<cfif ucase(application.dbtype) eq "MSSQL">
 				<cfquery name="qFormToolRecordset" datasource="#application.dsn#">
 	
@@ -237,20 +238,6 @@
 			<cfelse>
 				<!--- TO DO : Oracle equivalent query --->
 			</cfif>
-			
-						
-			<!---<cfstoredproc procedure="sp_selectview_bycat" datasource="#application.dsn#" result="spresult">
-			    <cfprocresult name="q" resultset="1">
-			    <cfprocresult name="qrecordcount" resultset="2">
-			    
-			    <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="TableName"  value="#arguments.typename#">
-			    <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="Columns" value="#arguments.sqlColumns#">
-			    <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="GroupNumber" value="#arguments.CurrentPage#">
-			    <cfprocparam type="In"  cfsqltype="CF_SQL_VARCHAR" dbvarname="GroupSize" value="#arguments.recordsPerPage#">
-			    <cfprocparam type="In" cfsqltype="CF_SQL_LONGVARCHAR" dbvarname="SqlWhere" value="#arguments.SqlWhere#">
-			    <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="SqlOrderBy" value="#arguments.sqlOrderBy#">
-			    <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="lCategories" value="#preserveSingleQuotes(arguments.lCategories)#">
-			</cfstoredproc> --->
 		
 
 		<!------------------------------
@@ -341,22 +328,6 @@
 			</cfquery>
 				
 			
-
-						
-			<!---
-			<!--- query --->
-			<cfstoredproc procedure="sp_selectview_bycat" datasource="#application.dsn#">
-			    <cfprocresult name="q" resultset="1">
-			    <cfprocresult name="qrecordcount" resultset="2">
-			    
-			    <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="TableName"  value="#arguments.typename#">
-			    <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="Columns" value="#arguments.sqlColumns#">
-			    <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="GroupNumber" value="#arguments.CurrentPage#">
-			    <cfprocparam type="In"  cfsqltype="CF_SQL_VARCHAR" dbvarname="GroupSize" value="#arguments.recordsPerPage#">
-			    <cfprocparam type="In" cfsqltype="CF_SQL_LONGVARCHAR" dbvarname="SqlWhere" value="#arguments.SqlWhere#">
-			    <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="SqlOrderBy" value="#arguments.sqlOrderBy#">
-			    <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="lCategories" value="#preserveSingleQuotes(arguments.lCategories)#">
-			</cfstoredproc> --->
 		</cfif>			
 		
 		<cfif isNumeric(qrecordcount.countAll) AND qrecordcount.countAll GT 0>
@@ -543,52 +514,52 @@
 	
 
 	
-		<cfif structKeyExists(application.types, arguments.typename)>
-			<cfset PrimaryPackage = application.types[arguments.typename] />
-			<cfset PrimaryPackagePath = application.types[arguments.typename].typepath />
-		<cfelse>
-			<cfset PrimaryPackage = application.rules[arguments.typename] />
-			<cfset PrimaryPackagePath = application.rules[arguments.typename].rulepath />
-		</cfif>
+	<cfif structKeyExists(application.types, arguments.typename)>
+		<cfset PrimaryPackage = application.types[arguments.typename] />
+		<cfset PrimaryPackagePath = application.types[arguments.typename].typepath />
+	<cfelse>
+		<cfset PrimaryPackage = application.rules[arguments.typename] />
+		<cfset PrimaryPackagePath = application.rules[arguments.typename].rulepath />
+	</cfif>
+
+	<cfset stTmp.typename = arguments.typename />
 	
-		<cfset stTmp.typename = arguments.typename />
-		
-		<cfloop list="#arguments.recordset.columnlist#" index="i">
-			<cfif structkeyexists(PrimaryPackage.stProps, i)>
-				<cfif PrimaryPackage.stProps[i].metadata.type NEQ "array">
-					<cfset stTmp[i] = arguments.recordset[i][row] />
-				<cfelse>
+	<cfloop list="#arguments.recordset.columnlist#" index="i">
+		<cfif structkeyexists(PrimaryPackage.stProps, i)>
+			<cfif PrimaryPackage.stProps[i].metadata.type NEQ "array">
+				<cfset stTmp[i] = arguments.recordset[i][row] />
+			<cfelse>
+				
+				<cfif listContains(arguments.larrayprops, i)>	
 					
-					<cfif listContains(arguments.larrayprops, i)>	
+					<cfset stTmp[i] = arrayNew(1) />
+												
+					<cfset key = i>
 						
-						<cfset stTmp[i] = arrayNew(1) />
-													
-						<cfset key = i>
-							
-						<!--- getdata for array properties --->
-						<cfquery datasource="#arguments.dsn#" name="qArrayData">
-			  			select data from #arguments.dbowner##tablename#_#key#
-						where parentID = '#arguments.recordset.objectID[arguments.row]#'
-						order by seq
-						</cfquery>
-		
-						<cfset aTmp = arrayNew(1) />
-							<cfloop from="1" to="#qArrayData.recordcount#" index="j">
-							<cfset ArrayAppend(aTmp, qArrayData.data[j])>
-						</cfloop>
-						<cfset stTmp[key] = aTmp>
-																	
-					</cfif>
+					<!--- getdata for array properties --->
+					<cfquery datasource="#arguments.dsn#" name="qArrayData">
+		  			select data from #arguments.dbowner##tablename#_#key#
+					where parentID = '#arguments.recordset.objectID[arguments.row]#'
+					order by seq
+					</cfquery>
+	
+					<cfset aTmp = arrayNew(1) />
+						<cfloop from="1" to="#qArrayData.recordcount#" index="j">
+						<cfset ArrayAppend(aTmp, qArrayData.data[j])>
+					</cfloop>
+					<cfset stTmp[key] = aTmp>
+																
 				</cfif>
 			</cfif>
-		</cfloop>
-		
-		<cfif arguments.bFormToolMetadata>
-			<ft:object stobject="#stTmp#" typename="#arguments.typename#" lFields="#structKeyList(stTmp)#" lExcludeFields="" bIncludeSystemProperties="true" format="display" includeFieldSet="false" r_stFields="stResult" />
-		<cfelse>
-			<cfset stResult=stTmp />
 		</cfif>
-
+	</cfloop>
+	
+	<cfif arguments.bFormToolMetadata>
+		<ft:object stobject="#stTmp#" typename="#arguments.typename#" lFields="#structKeyList(stTmp)#" lExcludeFields="" bIncludeSystemProperties="true" format="display" includeFieldSet="false" r_stFields="stResult" />
+	<cfelse>
+		<cfset stResult=stTmp />
+	</cfif>
+	
 	<cfreturn stResult />
 </cffunction>
 
@@ -682,7 +653,6 @@
 <cffunction name="ImageAutoGenerateBeforeSave" access="public" output="true" returntype="struct">
 	<cfargument name="stProperties" required="yes" type="struct">
 	<cfargument name="stFields" required="yes" type="struct">
-	<cfargument name="stFormPost" required="no" type="struct" default="#structNew()#">
 		
 
 	<cfset oImage = createobject("component", "farcry.farcry_core.packages.formtools.image") />
