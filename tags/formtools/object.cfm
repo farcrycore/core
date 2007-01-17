@@ -148,6 +148,11 @@
 	<cfloop list="#attributes.lFields#" index="i">
 		<cfif ListFindNoCase(variables.lFields,i)>
 			<cfset lFieldsToRender =  listappend(lFieldsToRender,i)>
+			
+			<!--- If the user explicitly wants a field to appear, remove it from the exclusion list. --->
+			<cfif ListFindNoCase(attributes.lExcludeFields,i)>
+				<cfset attributes.lExcludeFields =  listdeleteat(attributes.lExcludeFields,ListFindNoCase(attributes.lExcludeFields,i))>
+			</cfif>
 		</cfif>
 	</cfloop>
 
@@ -155,6 +160,11 @@
 	<cfloop list="#attributes.lHiddenFields#" index="i">
 		<cfif ListFindNoCase(variables.lFields,i)>
 			<cfset lFieldsToRender =  listappend(lFieldsToRender,i)>
+		</cfif>
+		
+		<!--- If the user explicitly wants a field to appear as a hidden form field, remove it from the exclusion list. --->
+		<cfif ListFindNoCase(attributes.lExcludeFields,i)>
+			<cfset attributes.lExcludeFields =  listdeleteat(attributes.lExcludeFields,ListFindNoCase(attributes.lExcludeFields,i))>
 		</cfif>
 	</cfloop>	
 	
@@ -466,7 +476,7 @@
 						<cfset stURLParams.ftAllowLibraryAddNew = "#ftFieldMetadata.ftAllowLibraryAddNew#">
 					</cfif>
 							
-					<cfset request.inHead.libraryPopupJS = true />
+					<cfset request.inHead.libraryPopup = true />
 					
 					<ws:buildLink href="#application.url.farcry#/facade/library.cfm" stParameters="#stURLParams#" r_url="libraryPopupJS" />
 
