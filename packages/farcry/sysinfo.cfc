@@ -6,7 +6,12 @@
 </cffunction>
 
 <cffunction name="getInstanceName" returntype="string" output="false" access="public" hint="Returns the active server instance name.">
-	<cfset var instanceName=createObject("java", "jrunx.kernel.JRun").getServerName()>
+	<cfset var instanceName="" />
+	
+	<cfif NOT structkeyexists(server, "bluedragon")>
+		<cfset instancename=createObject("java", "jrunx.kernel.JRun").getServerName() />
+	</cfif>
+	
 	<cfreturn instanceName>
 </cffunction>
 
