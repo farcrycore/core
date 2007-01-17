@@ -23,21 +23,36 @@
 			<cfset Request.InHead.ScriptaculousEffects = 1>
 
 			
+			<cfif len(arguments.stMetadata.value) AND DateDiff('yyyy', now(), arguments.stMetadata.value) GT 100>
+				<cfset bfieldvisible = 0>
+				<cfset fieldvisibletoggletext = "show...">
+				<cfset fieldStyle = "display:none;">
+			<cfelse>
+				<cfset bfieldvisible = 1>
+				<cfset fieldvisibletoggletext = "remove...">
+				<cfset fieldStyle = "">
+			</cfif>	
+			
+			
 			<cfsavecontent variable="ToggleOffDateTimeJS">
 				<cfoutput>
 					<script language="javascript">
-					function toggle#arguments.fieldname#(){
-						//if ($('#arguments.fieldname#include').checked == false) {
-						//	$('#arguments.fieldname#include').checked = true;	
-						//}
-						//else {
-						//	$('#arguments.fieldname#include').checked = false;		
-						//}
-						Effect.toggle('#arguments.fieldname#','appear');
-						Effect.toggle('#arguments.fieldname#DatePicker','appear');
-						//return true;
-					}
+					var bfieldvisible#arguments.fieldname# = #bfieldvisible#;
 					
+					function toggle#arguments.fieldname#(){
+							
+						if (bfieldvisible#arguments.fieldname# == 0){
+							Effect.BlindDown('#arguments.fieldname#DIV');
+							$('#arguments.fieldname#includelabel').innerHTML = 'remove...';
+							bfieldvisible#arguments.fieldname# = 1;
+						} else {
+							Effect.BlindUp('#arguments.fieldname#DIV');
+							$('#arguments.fieldname#includelabel').innerHTML = 'show...';
+							bfieldvisible#arguments.fieldname# = 0;
+						}
+						
+						//return true;
+					}					
 
 					</script>
 				</cfoutput>
@@ -46,28 +61,27 @@
 			<cfhtmlhead text="#ToggleOffDateTimeJS#">
 		</cfif>
 			
-
-		<cfif len(arguments.stMetadata.value) AND DateDiff('yyyy', now(), arguments.stMetadata.value) GT 100>
-			<cfset datetimefieldvisible = 0>
-			<cfset datetimefieldvisibletoggletext = "show...">
-			<cfset arguments.stMetadata.ftStyle = "#arguments.stMetadata.ftStyle#;display:none;">
-		<cfelse>
-			<cfset datetimefieldvisible = 1>
-			<cfset datetimefieldvisibletoggletext = "remove...">
-		</cfif>		
+	
 
 		
 		<cfsavecontent variable="html">
 			<cfoutput>
 				<cfif arguments.stMetadata.ftToggleOffDateTime>
-					<input type="checkbox" name="#arguments.fieldname#include" id="#arguments.fieldname#include" value="1" onclick="javascript:toggle#arguments.fieldname#();" <cfif datetimefieldvisible>checked="true"</cfif> >
-					<input type="hidden" name="#arguments.fieldname#include" id="#arguments.fieldname#include" value="0">
+					<div>
+						<input type="checkbox" name="#arguments.fieldname#include" id="#arguments.fieldname#include" value="1" onclick="javascript:toggle#arguments.fieldname#();" <cfif bfieldvisible>checked="true"</cfif> >
+						<input type="hidden" name="#arguments.fieldname#include" id="#arguments.fieldname#include" value="0">
+						<span id="#arguments.fieldname#includelabel">#fieldvisibletoggletext#</span>
+					</div>
 				<cfelse>
 					<input type="hidden" name="#arguments.fieldname#include" id="#arguments.fieldname#include" value="1">
 				</cfif>	
-				<input type="Text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#DateFormat(arguments.stMetadata.value,arguments.stMetadata.ftDateFormatMask)# #TimeFormat(arguments.stMetadata.value,arguments.stMetadata.ftTimeFormatMask)#" style="#arguments.stMetadata.ftstyle#" />
-				<a id="#arguments.fieldname#DatePicker" <cfif datetimefieldvisible EQ 0>style="display:none;"</cfif>><img src="#application.url.farcry#/js/DateTimePicker/cal.gif" width="16" height="16" border="0" alt="Pick a date"></a>
 				
+				<div id="#arguments.fieldname#DIV" style="#fieldstyle#">
+					<div>
+						<input type="Text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#DateFormat(arguments.stMetadata.value,arguments.stMetadata.ftDateFormatMask)# #TimeFormat(arguments.stMetadata.value,arguments.stMetadata.ftTimeFormatMask)#" style="#arguments.stMetadata.ftstyle#" />
+						<a id="#arguments.fieldname#DatePicker"><img src="#application.url.farcry#/js/DateTimePicker/cal.gif" width="16" height="16" border="0" alt="Pick a date"></a>
+					</div>
+				</div>
 				
 				<script type="text/javascript">
 				  Calendar.setup(
