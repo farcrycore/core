@@ -550,19 +550,24 @@ GENERATE THE LIBRARY PICKER
 		
 			
 			<cfoutput>
-			<table border="1" style="width:100%">
+			<table border="3" style="width:100%;">
 			<tr>
-				<td style="width:50%">
-					<h3>Selected <cfif URL.LibraryType EQ "UUID"><em>(only 1 permitted)</em></cfif></h3>
+				<td style="width:50%;"><h3>Selected <cfif URL.LibraryType EQ "UUID"><em>(only 1 permitted)</em></cfif></h3></td>
+				<td style="width:50%;"><h3>Drag To Select</h3></td>
+			</tr>
+			<tr>
+				<td style="background-color:##a0a0a0;" id="sortableListTo" class="arrayDetailView">
 					
 					
 					
-				
+					
+				<!--- 
 				<cfif URL.LibraryType EQ "array">
-					<ul id="sortableListTo" class="arrayDetailView" style="background-color:##F1F1F1;min-height:500px;_height:500px;">
+					<!--- <div id="sortableListTo" class="arrayDetailView" style="background-color:##F1F1F1;height:100% !important;border:1px solid red;"> --->
 				<cfelse>
-					<div id="sortableListTo" style="background-color:##F1F1F1;min-height:500px;_height:500px;">
-				</cfif>	
+					<!--- <div id="sortableListTo" style="background-color:##F1F1F1;min-height:500px;_height:500px;"> --->
+				</cfif>	 
+				--->
 		
 			</cfoutput>	
 			
@@ -590,11 +595,11 @@ GENERATE THE LIBRARY PICKER
 							BECAUSE THE JAVASCRIPT STRIPS THE "FIELDNAME_" TO DETERMINE THE OBJECTID
 							 ------------------------------------------------------------------------->			
 							<cfoutput>
-							<li id="sortableListFrom_#stCurrentArrayItem.data#" class="sortableHandle">
+							<div id="sortableListFrom_#stCurrentArrayItem.data#" class="sortableHandle">
 								<div class="arrayDetail">
 									<p>#HTML#</p>
 								</div>								
-							</li>
+							</div>
 							</cfoutput>
 						</cfloop>
 					<cfelse>
@@ -623,16 +628,17 @@ GENERATE THE LIBRARY PICKER
 					
 				
 				<cfoutput>
-					
+				<!--- 	
 				<cfif URL.LibraryType EQ "array">
-					</ul>
+					<!--- </div> --->
 				<cfelse>
-					</div>
+					<!--- </div> --->
 				</cfif>
+				 --->
 				
 				</td>
-				<td style="width:50%">
-					<h3>Drag To Select</h3>
+				<td>
+					
 				</cfoutput>
 				
 				
@@ -640,7 +646,7 @@ GENERATE THE LIBRARY PICKER
 
 				
 				<cfoutput>
-					<ul id="sortableListFrom" class="arrayDetailView" style="border:1px solid ##F1F1F1;min-height:500px;_height:500px;">
+					<div id="sortableListFrom" class="arrayDetailView" style="border:1px solid ##F1F1F1;min-height:500px;_height:500px;">
 				</cfoutput>
 					
 									
@@ -659,20 +665,20 @@ GENERATE THE LIBRARY PICKER
 							 ------------------------------------------------------------------------->			
 							<cfoutput>
 								<cfif URL.LibraryType EQ "array">
-									<li id="sortableListFrom_#stLibraryObject.stObject.ObjectID#" class="sortableHandle">
+									<div id="sortableListFrom_#stLibraryObject.stObject.ObjectID#" class="sortableHandle">
 								<cfelse>
-									<li id="#stLibraryObject.stObject.ObjectID#" class="sortableHandle">
+									<div id="#stLibraryObject.stObject.ObjectID#" class="sortableHandle">
 								</cfif>
 									<div class="arrayDetail">
 										<p>#HTML#</p>
 									</div>								
-								</li>
+								</div>
 							</cfoutput>
 						<!---</ws:paginateRecords> --->
 						</ft:paginateLoop>
 						
 				<cfoutput>
-					</ul>
+					</div>
 				</cfoutput>
 					
 					</ft:pagination>
@@ -685,7 +691,7 @@ GENERATE THE LIBRARY PICKER
 			
 			<cfoutput>				
 			<div>
-				<ft:farcrybutton type="button" value="Closee" onclick="self.blur();window.close();return false;" />	
+				<ft:farcrybutton type="button" value="Close" onclick="self.blur();window.close();return false;" />	
 			</div>	
 			</cfoutput>
 			
@@ -696,6 +702,7 @@ GENERATE THE LIBRARY PICKER
 			 // <![CDATA[
 				Sortable.create("sortableListFrom",{
 					dropOnEmpty:true,
+					tag:'div',
 					containment:["sortableListFrom","sortableListTo"],
 					constraint:false
 				});
@@ -703,10 +710,10 @@ GENERATE THE LIBRARY PICKER
 				<cfif URL.LibraryType EQ "array">
 					Sortable.create("sortableListTo",{
 						dropOnEmpty:true,
+						tag:'div',
 						containment:["sortableListFrom","sortableListTo"],
 						constraint:false,
 						onUpdate:function(element) {
-							
 							opener.libraryCallbackArray('#url.primaryFormFieldname#','sort',Sortable.sequence('sortableListTo'));
 							new Effect.Highlight('sortableListTo',{startcolor:'##FFECD9',duration: 2});
 					             				
@@ -718,6 +725,7 @@ GENERATE THE LIBRARY PICKER
 					
 					
 				<cfelse>
+				
 					Droppables.add('sortableListTo', {
 					   onDrop: function(element) {
 					   		$('sortableListTo').innerHTML = $(element).innerHTML;
@@ -726,9 +734,8 @@ GENERATE THE LIBRARY PICKER
 		
 					   }
 					}); 
-					
 					<cfif len(stPrimary[url.primaryFieldName]) >
-						//call on initial page load
+						//call on initial page load						
 						opener.libraryCallbackUUID('#url.primaryFormFieldname#','add','#stPrimary[url.primaryFieldName]#');
 					</cfif>
 				</cfif>
