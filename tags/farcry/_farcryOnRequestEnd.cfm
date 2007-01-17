@@ -423,9 +423,20 @@ $out:$
 		<cfif isDefined("request.requiredInHead.flashWrapperToggle") and request.requiredInHead.flashWrapperToggle EQ true>
 			<cfoutput>
 			<script type="text/javascript">
-			function toggleFlashWrapper(id,width,height) {
-				Element.setStyle(id, {width:width})
+			function toggleFlashWrapper(id,width,height,displayselects) {
+				//Element.setStyle(id, {width:width})
 				Element.setStyle(id, {height:height})
+				
+				aInputs = $$("select");
+				aInputs.each(function(child) {
+					if(displayselects != true){
+						Element.show(child);
+					} else {
+						Element.hide(child);
+					}
+				});
+				
+				
 			}
 			</script>
 			</cfoutput>
