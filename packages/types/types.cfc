@@ -149,16 +149,17 @@ default handlers
 		<cfargument name="typename" type="string" default="#gettablename()#" hint="Typename of instance." />
 		<cfargument name="prefix" type="string" required="false" default="" hint="Prefix to filter template results." />
 		
-		<cfset var qResult=queryNew("name,directory,size,type,datelastmodified,attributes,mode") />
+		<cfset var qResult=queryNew("name,directory,size,type,datelastmodified,attributes,mode,displayname") />
 		<cfset var qLibResult=queryNew("name,directory,size,type,datelastmodified,attributes,mode") />
 		<cfset var qDupe=queryNew("name,directory,size,type,datelastmodified,attributes,mode") />
 		<cfset var webskinPath = ExpandPath("/farcry/#application.applicationname#/webskin/#arguments.typename#") />
 		<cfset var library="" />
 		<cfset var col="" />
+		<cfset var WebskinDisplayName = "" />
 
 		<!--- check project webskins --->
 		<cfif directoryExists(webskinPath)>
-			<cfdirectory action="list" directory="#webskinPath#" filter="#arguments.prefix#*" name="qResult" recurse="true" sort="asc" />
+			<cfdirectory action="list" directory="#webskinPath#" filter="#arguments.prefix#*.cfm" name="qResult" recurse="true" sort="asc" />
 		</cfif>
 		
 		<!--- check library webskins --->
@@ -172,14 +173,15 @@ default handlers
 
 					<cfloop query="qLibResult">
 						<cfquery dbtype="query" name="qDupe">
-						SELECT * FROM qResult
+						SELECT *
+						FROM qResult
 						WHERE name = '#qLibResult.name#'
 						</cfquery>
 						
 						<cfif NOT qDupe.Recordcount>
 							<cfset queryaddrow(qresult,1) />
 							<cfloop list="#qlibresult.columnlist#" index="col">
-								<cfset querysetcell(qresult, col, qlibresult[col][#qLibResult.currentrow#]) />
+								<cfset querysetcell(qresult, col, qlibresult[col][1]) />
 							</cfloop>
 						</cfif>
 						
@@ -190,10 +192,18 @@ default handlers
 			
 		</cfif>
  		<cfquery dbtype="query" name="qResult">
-		SELECT * FROM qResult
+		SELECT *,  name as displayname
+		FROM qResult
 		ORDER BY name
 		</cfquery>
-
+		
+		<cfoutput query="qResult">
+			<cfset WebskinDisplayName = getWebskinDisplayname(typename="#arguments.typename#", template="#ReplaceNoCase(qResult.name, '.cfm', '','ALL')#") />
+			<cfif len(WebskinDisplayName)>
+				<cfset querysetcell(qresult, 'displayname', WebskinDisplayName, qResult.currentRow) />			
+			</cfif>
+		</cfoutput>
+		
 		<cfreturn qresult />
 	</cffunction>
 
@@ -710,7 +720,7 @@ default handlers
 				<cfoutput>
 				<div class="fieldwrap">
 					<ft:farcrybutton value="Save" /> 
-					<ft:farcrybutton value="Cancel" />
+					<ft:farcrybutton value="Cancel" validate="false" />
 				</div>
 				</cfoutput>
 		
