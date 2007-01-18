@@ -33,7 +33,7 @@ type properties
 
 <cfproperty ftSeq="12" ftWizzardStep="Body" ftFieldset="Body" name="Body" type="longchar" hint="Main body of content." required="no" default="" ftType="richtext" ftLabel="Body" 
 	ftImageArrayField="aObjectIDs" ftImageTypename="dmImage" ftImageField="StandardImage" 
-	ftTemplateTypeList="dmImage,dmFile,dmNavigation,dmHTML" ftTemplateWebskinPrefixList=""
+	ftTemplateTypeList="dmImage,dmFile,dmNavigation,dmHTML" ftTemplateWebskinPrefixList="insertHTML_"
 	ftTemplateGenericWebskinPrefix="insertgeneric">
 
 <cfproperty ftSeq="13" ftWizzardStep="Body" ftFieldset="Relationships" name="aObjectIDs" type="array" hint="Holds objects to be displayed at this particular node.  Can be of mixed types." required="no" default="" ftLabel="Associated Media" ftJoin="dmImage,dmFile">
