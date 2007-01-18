@@ -1,3 +1,4 @@
+<cfsetting enablecfoutputonly="true" />
 <!--- 
 || LEGAL ||
 $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
@@ -22,23 +23,22 @@ $in: $
 $out:$
 --->
 
-<cfsetting enablecfoutputonly="yes">
 <cfprocessingDirective pageencoding="utf-8">
-<cfparam name="errormessage" default="">
+<cfparam name="errormessage" default="" />
 
 <!--- check permissions --->
-<cfset iStatsTab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="ReportingStatsTab")>
+<cfset iStatsTab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="ReportingStatsTab") />
 
 <!--- set up page header --->
 <cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
-<cfset returnStruct = application.factory.oStats.getOwnedBy()>
+<cfset returnStruct = application.factory.oStats.getOwnedBy() />
 <cfif returnStruct.returnCode EQ 1>
-	<cfset stReport = returnStruct.owners>
+	<cfset stReport = returnStruct.owners />
 <cfelse>
-	<cfset errormessage = returnStruct.returnmessage>
+	<cfset errormessage = returnStruct.returnmessage />
 </cfif>
 
-<cfsetting enablecfoutputonly="no">
+<cfoutput>
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 <script type="text/javascript">
 function doToggle(tglItem)
@@ -52,27 +52,51 @@ function doToggle(tglItem)
 	return false;
 }
 </script>
+</cfoutput>
 <cfif iStatsTab EQ 0>
 	<admin:permissionError>
 <cfelse>
-<h3>Owned By Report</h3><cfif errorMessage NEQ "">
-<p id="fading1" class="fade"><span class="error"><cfoutput>#errormessage#</cfoutput></span></p><cfelse>
-<table class="table-3" cellspacing="0">
-<tr>
-	<th colspan="2">Owned By</th>
-	<th>Total</th>
-</tr><cfset iCounter = 0><cfoutput><cfloop collection="#stReport#" item="key"><cfset iCounter = iCounter + 1>
-<tr<cfif iCounter MOD 2> class="alt"</cfif>>
-	<td colspan="2"><!--- <a href="##" onclick="return doToggle('#key#');"> --->#key#<!--- </a> ---></td>
-	<td>#stReport[key].items.total#</td>
-</tr>
-<!--- <tbody id="tgl_#key#" style="display:none;"> ---><cfloop collection="#stReport[key].items#" item="subItemKey"><cfif subItemKey NEQ "total"><cfset iCounter = iCounter + 1>
-	<tr<cfif iCounter MOD 2> class="alt"</cfif>>
-		<td>&nbsp;</td>
-		<td>#subItemKey#</td>
-		<td>#stReport[key].items[subItemKey]#</td>
-	</tr></cfif></cfloop>
-<!--- </tbody> ---></cfloop></cfoutput>
-</table></cfif>
+  <cfoutput><h3>Owned By Report</h3></cfoutput>
+
+  <cfif errorMessage NEQ "">
+    <cfoutput>
+      <p id="fading1" class="fade"><span class="error">#errormessage#</span></p>
+    </cfoutput>
+  <cfelse>
+	  <cfoutput>
+	    <table class="table-3" cellspacing="0">
+	      <tr>
+	        <th colspan="2">Owned By</th>
+	        <th>Total</th>
+	      </tr>
+	      </cfoutput>
+	      <cfset iCounter = 0 />
+	      <cfloop collection="#stReport#" item="key">
+	        <cfset iCounter = iCounter + 1 />
+	        <cfoutput>
+	        <tr<cfif iCounter MOD 2> class="alt"</cfif>>
+	          <td colspan="2"><!--- <a href="##" onclick="return doToggle('#key#');"> --->#key#<!--- </a> ---></td>
+	          <td>#stReport[key].items.total#</td>
+	        </tr>
+	        <!--- <tbody id="tgl_#key#" style="display:none;"> --->
+	        </cfoutput>
+	        <cfloop collection="#stReport[key].items#" item="subItemKey">
+	          <cfif subItemKey NEQ "total">
+	            <cfset iCounter = iCounter + 1 />
+	            <cfoutput>
+	            <tr<cfif iCounter MOD 2> class="alt"</cfif>>
+	              <td>&nbsp;</td>
+	              <td>#subItemKey#</td>
+	              <td>#stReport[key].items[subItemKey]#</td>
+	            </tr>
+              </cfoutput>
+	          </cfif>
+	        </cfloop>
+	        <!--- </tbody> --->
+	      </cfloop>
+	      <cfoutput>
+	    </table>
+	    </cfoutput>
+  </cfif>
 </cfif>
 <admin:footer>
