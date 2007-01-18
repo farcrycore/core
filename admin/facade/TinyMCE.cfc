@@ -57,6 +57,7 @@
 	<cfset var oObject = createobject("component", application.types[arguments.typename].packagepath)>
 	<cfset var stObject = oObject.getData(objectid="#arguments.objectid#") />
 	
+	<cfparam name="stprops[arguments.richtextfield].metadata.ftTemplateTypeList" default="" />
 	
 	<!--- <cfquery datasource="#application.dsn#" name="qImages">
 	select top 10 * 
