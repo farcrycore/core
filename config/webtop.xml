@@ -34,6 +34,7 @@
 			</menu>
 			<menu id="categorisation" permission="ContentCategorisationTab" label="application.adminBundle[session.dmProfile.locale].CategoryManagement" labelType="evaluate">
 				<menuitem id="managekeywords" label="application.adminBundle[session.dmProfile.locale].ManageKeywords" labelType="evaluate" link="/navajo/keywords/hierarchyedit.cfm" />		
+				<menuitem id="managekeywords" label="Manage keywords Flex beta" labelType="value" link="/admin/hierarchyFlexEditor.cfm" />		
 			</menu>
 			<menu id="containermanagement" label="application.adminBundle[session.dmProfile.locale].ContainerManagement" labelType="evaluate">
 				<menuitem id="containerreflections" label="application.adminBundle[session.dmProfile.locale].Reflections" labelType="evaluate" link="/content/reflections.cfm" />		
