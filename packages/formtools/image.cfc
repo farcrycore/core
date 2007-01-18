@@ -238,12 +238,12 @@
 	<cffunction name="GenerateImage" access="public" output="true" returntype="struct">
 		<cfargument name="Source" required="true" hint="The absolute path where the image that is being used to generate this new image is located.">
 		<cfargument name="Destination" required="false" default="" hint="The absolute path where the image will be stored.">
-		<cfargument name="Width" required="false" default="#application.config.image.StandardImageWidth#" hint="The maximum width of the new image.">
-		<cfargument name="Height" required="false" default="#application.config.image.StandardImageHeight#" hint="The maximum height of the new image.">
+		<cfargument name="width" required="false" default="0" type="numeric" hint="The maximum width of the new image.">
+		<cfargument name="height" required="false" default="0" type="numeric" hint="The maximum height of the new image.">
 		<cfargument name="AutoGenerateType" required="false" default="FitInside" hint="How is the new image to be generated (ForceSize,FitInside,Pad)">
 		<cfargument name="PadColor" required="false" default="##ffffff" hint="If AutoGenerateType='Pad', image will be padded with this colour">
 		<cfargument name="Bevel" required="false" default="no" hint="Will this image have a bevel edge">
-		
+
 		<cfset var stLocal = StructNew()>
 		<cfset var ImageDestination = arguments.Source />
 		<cfset var stResult = structNew() />
@@ -262,7 +262,15 @@
 		<cfset stResult.message = "" />
 		<cfset stResult.filename = "" />
 		
-			
+		<!--- try and help those with legacy coding issues, by picking up config values --->
+		<cfif isDefined("application.config.image.standardimagewidth") AND len(application.config.image.standardimagewidth) and isNumeric(application.config.image.standardimagewidth)>
+			<cfset arguments.width=application.config.image.standardimagewidth />
+		</cfif>
+		<cfif isDefined("application.config.image.standardimageheight") AND len(application.config.image.standardimageheight) and isNumeric(application.config.image.standardimageheight)>
+			<cfset arguments.height=application.config.image.standardimageheight />
+		</cfif>
+		
+		
 		<!---
 		FTAUTOGENERATETYPE OPTIONS
 		ForceSize - Ignores source image aspect ratio and forces the new image to be the size set in the metadata width/height
