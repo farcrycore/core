@@ -288,10 +288,12 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 		<cfargument name="dbowner" required="No" default="#application.dbowner#">
 		<cfset var q="">
 		
+		
 		<cfquery name="q" datasource="#arguments.dsn#">
-			SELECT	*
-			FROM 	#arguments.dbowner#nested_tree_objects
-			WHERE 	lower(typename) = 'categories'
+			SELECT	ntm.*, cat.alias
+			FROM 	#arguments.dbowner#nested_tree_objects ntm, #arguments.dbowner#categories cat
+			WHERE 	ntm.objectid *= cat.categoryid 
+			AND lower(typename) = 'categories'
 			ORDER BY nleft
 		</cfquery>
 
