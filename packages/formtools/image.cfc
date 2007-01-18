@@ -261,15 +261,7 @@
 		<cfset stResult.bSuccess = true />
 		<cfset stResult.message = "" />
 		<cfset stResult.filename = "" />
-		
-		<!--- try and help those with legacy coding issues, by picking up config values --->
-		<cfif isDefined("application.config.image.standardimagewidth") AND len(application.config.image.standardimagewidth) and isNumeric(application.config.image.standardimagewidth)>
-			<cfset arguments.width=application.config.image.standardimagewidth />
-		</cfif>
-		<cfif isDefined("application.config.image.standardimageheight") AND len(application.config.image.standardimageheight) and isNumeric(application.config.image.standardimageheight)>
-			<cfset arguments.height=application.config.image.standardimageheight />
-		</cfif>
-		
+
 		
 		<!---
 		FTAUTOGENERATETYPE OPTIONS
