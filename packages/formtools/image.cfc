@@ -327,18 +327,18 @@
 			</cfcase>
 			
 			<cfcase value="FitInside">
-			
-				<cfif myImage.Width() LTE arguments.Width>
+
+				<cfif myImage.Width() LTE arguments.Width OR NOT len(arguments.width)>
 					<cfset arguments.Width = 0 />
 				</cfif>
-				<cfif myImage.Height() LTE arguments.Height>
+				<cfif myImage.Height() LTE arguments.Height OR NOT len(arguments.height)>
 					<cfset arguments.Height = 0 />
 				</cfif>
 				<cfif arguments.Width GT 0 OR arguments.Height GT 0>
 					<cfset myImage.resize(arguments.Width,arguments.Height) />
 					<cfset myImage.writeImage("#ImageDestination#") />
 				</cfif>
-				
+
 				<!--- <cfset stLocal.stReturn = StructNew()>
 				<cfset stLocal.bufferedImage = imageUtilsObj.fRead(ImageDestination)>
 				<cfset stLocal.height = stLocal.bufferedImage.getHeight()>
