@@ -11,6 +11,12 @@
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 		
 		<cfparam name="arguments.stMetadata.ftImageListField" default="">
+		
+		<cfparam name="arguments.stMetadata.ftImageArrayField" default="">
+		<cfparam name="arguments.stMetadata.ftImageTypename" default="">
+		<cfparam name="arguments.stMetadata.ftImageField" default="">
+		
+		
 		<cfparam name="arguments.stMetadata.ftConfig" default=""><!--- tinyMCE.tinyMCE_config --->
 		<cfparam name="arguments.stMetadata.ftImageTypename" default="dmImage" />
 		<cfparam name="arguments.stMetadata.ftImageFields" default="StandardImage,ThumbnailImage,SourceImage" />
