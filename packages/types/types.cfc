@@ -181,7 +181,7 @@ default handlers
 						<cfif NOT qDupe.Recordcount>
 							<cfset queryaddrow(qresult,1) />
 							<cfloop list="#qlibresult.columnlist#" index="col">
-								<cfset querysetcell(qresult, col, qlibresult[col][1]) />
+								<cfset querysetcell(qresult, col, qlibresult[col][#qlibresult.currentrow#]) />
 							</cfloop>
 						</cfif>
 						
