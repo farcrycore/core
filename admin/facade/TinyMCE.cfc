@@ -58,6 +58,7 @@
 	<cfset var stObject = oObject.getData(objectid="#arguments.objectid#") />
 	
 	<cfparam name="stprops[arguments.richtextfield].metadata.ftTemplateTypeList" default="" />
+	<cfparam name="stprops[arguments.richtextfield].metadata.ftTemplateGenericWebskinPrefix" default="insertHTML" />
 	
 	<!--- <cfquery datasource="#application.dsn#" name="qImages">
 	select top 10 * 
