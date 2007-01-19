@@ -291,9 +291,9 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 		
 		<cfquery name="q" datasource="#arguments.dsn#">
 			SELECT	ntm.*, cat.alias
-			FROM 	#arguments.dbowner#nested_tree_objects ntm, #arguments.dbowner#categories cat
-			WHERE 	ntm.objectid *= cat.categoryid 
-			AND lower(typename) = 'categories'
+			FROM 	#arguments.dbowner#nested_tree_objects ntm
+			LEFT JOIN #arguments.dbowner#categories cat ON ntm.objectid = cat.categoryid
+			WHERE lower(typename) = 'categories'
 			ORDER BY nleft
 		</cfquery>
 
