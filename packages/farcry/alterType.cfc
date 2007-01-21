@@ -1161,7 +1161,7 @@ $out:$
 			</cfif>
 			<!--- drop column --->
 			<cfquery NAME="qDrop" DATASOURCE="#application.dsn#">
-				ALTER TABLE #application.dbowner##arguments.typename# DROP COLUMN #arguments.srcColumn#
+				ALTER TABLE #application.dbowner##arguments.typename# DROP COLUMN [#arguments.srcColumn#]
 			</cfquery>
 		</cfcase>
 
@@ -1203,7 +1203,7 @@ $out:$
 		}
 		default:
 		{
-			sql = "ALTER TABLE #application.dbowner##arguments.typename#	ADD #arguments.srcColumn# #arguments.srcColumnType# ";
+			sql = "ALTER TABLE #application.dbowner##arguments.typename#	ADD [#arguments.srcColumn#] #arguments.srcColumnType# ";
 			if (arguments.bNull) sql = sql & "NULL";
 
 			else sql = sql & "NOT NULL";
