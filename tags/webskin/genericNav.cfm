@@ -37,7 +37,7 @@
 <cfparam name="attributes.bDump" default="0">
 <cfparam name="attributes.class" default="">
 <cfparam name="attributes.style" default="">
-<cfparam name="request.sectionObjectID" default="#attributes.navID#">
+<cfparam name="request.sectionObjectID" default="#request.navID#">
 <cfparam name="attributes.diplayStyle" default="unorderedList">
 <cfparam name="attributes.bHideSecuredNodes" default="0"><!--- MJB: check if option to Hide Nav Node Items that user does't have permission to access: default to 0 for backward compatibility --->
 
