@@ -595,7 +595,7 @@ GENERATE THE LIBRARY PICKER
 							BECAUSE THE JAVASCRIPT STRIPS THE "FIELDNAME_" TO DETERMINE THE OBJECTID
 							 ------------------------------------------------------------------------->			
 							<cfoutput>
-							<div id="sortableListFrom_#stCurrentArrayItem.data#" class="sortableHandle">
+							<div id="sortableListTo_#stCurrentArrayItem.data#" class="sortableHandle">
 								<div class="arrayDetail">
 									<p>#HTML#</p>
 								</div>								
