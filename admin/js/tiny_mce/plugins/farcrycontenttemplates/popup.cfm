@@ -55,8 +55,9 @@
 </head>
 <body onload="tinyMCEPopup.executeOnLoad('init();');"> 
 	<form onsubmit="insertSomething();return false;">
-		<h1>Insert Content Template</h1>
-
+		<h3>Related Content</h2>
+		<br />
+		 
 		<!-- Gets filled with the selected elements name -->
 <!--- 		<div style="margin-top: 10px; margin-bottom: 10px">
 			The selected element name: <input type="text" name="nodename" />

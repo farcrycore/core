@@ -56,9 +56,11 @@
 	<cfset var stProps = duplicate(application.types[arguments.typename].stprops) />
 	<cfset var oObject = createobject("component", application.types[arguments.typename].packagepath)>
 	<cfset var stObject = oObject.getData(objectid="#arguments.objectid#") />
+	<cfset var templateTypename = "" />
+	<cfset var templateDisplayname = "" />
 	
 	<cfparam name="stprops[arguments.richtextfield].metadata.ftTemplateTypeList" default="" />
-	<cfparam name="stprops[arguments.richtextfield].metadata.ftTemplateGenericWebskinPrefix" default="insertHTML" />
+	<cfparam name="stprops[arguments.richtextfield].metadata.ftTemplateSnippetWebskinPrefix" default="insertSnippet" />
 	
 	<!--- <cfquery datasource="#application.dsn#" name="qImages">
 	select top 10 * 
@@ -80,7 +82,7 @@
 					<cfset bCurrent = false />
 				</cfloop>
 				
-				<cfif structKeyExists(stProps[arguments.richtextfield].metadata, "ftTemplateGenericWebskinPrefix")>
+				<cfif structKeyExists(stProps[arguments.richtextfield].metadata, "ftTemplateSnippetWebskinPrefix")>
 					<li id="generic_tab"><span><a href="javascript:mcTabs.displayTab('generic_tab','generic_panel');" onmousedown="return false;">Generic Templates</a></span></li>
 				</cfif>
 			</ul>
@@ -99,7 +101,13 @@
 	
 	
 	<cfloop list="#stprops[arguments.richtextfield].metadata.ftTemplateTypeList#" index="templateTypename">
-	
+		
+		<cfif structKeyExists(application.types[templateTypename], "displayname")>
+			<cfset templateDisplayname = application.types[templateTypename].displayname />
+		<cfelse>
+			<cfset templateDisplayname = templateTypename />
+		</cfif>
+		
 		<cfif listfind(stprops[arguments.richtextfield].metadata.ftTemplateTypeList,templateTypename) LTE listLen(stprops[arguments.richtextfield].metadata.ftTemplateWebskinPrefixList)>
 			<cfset templateWebskinPrefix = listgetat(stprops[arguments.richtextfield].metadata.ftTemplateWebskinPrefixList,listfind(stprops[arguments.richtextfield].metadata.ftTemplateTypeList,templateTypename)) />
 		<cfelse>
@@ -152,7 +160,7 @@
 							<td class="column1"><label id="#templateTypename#objectidlabel" for="#templateTypename#objectid">Item</label></td> 
 							<td>
 								<select id="#templateTypename#objectid" name="#templateTypename#objectid" onchange="Element.setStyle('insert#templateTypename#', {display:'none'});">
-									<option value="">--select a #templateTypename#--</option>
+									<option value="">-- Select #templateDisplayname# --</option>
 									<cfloop query="qObjects">
 										<option value="#qObjects.objectid#">#qObjects.label#</option>
 									</cfloop>
@@ -163,7 +171,7 @@
 							<td class="column1"><label id="#templateTypename#webskinlabel" for="#templateTypename#webskin">Template</label></td> 
 							<td>
 								<select id="#templateTypename#webskin" name="#templateTypename#webskin" onchange="Element.setStyle('insert#templateTypename#', {display:'none'});">
-									<option value="">--select a display type--</option>
+									<option value="">-- Select a display type --</option>
 									<cfloop query="qWebskins">
 										<option value="#ReplaceNoCase(qWebskins.name, ".cfm", "", "all")#">#qWebskins.displayname#</option>
 									</cfloop>									
@@ -223,11 +231,10 @@
 	
 	
 	
-	<cfif structKeyExists(stProps[arguments.richtextfield].metadata, "ftTemplateGenericWebskinPrefix")>
+	<cfif structKeyExists(stProps[arguments.richtextfield].metadata, "ftTemplateSnippetWebskinPrefix")>
 		<cfset oObject = createobject("component", application.types[arguments.typename].packagepath) />
-		<cfset qObjectWebskins = oObject.getWebskins(typename="#arguments.typename#", prefix="#stProps[arguments.richtextfield].metadata.ftTemplateGenericWebskinPrefix#") />
-		
-		
+		<cfset qObjectWebskins = oObject.getWebskins(typename="#arguments.typename#", prefix="#stProps[arguments.richtextfield].metadata.ftTemplateSnippetWebskinPrefix#") />
+				
 		
 		<cfoutput>		
 			
