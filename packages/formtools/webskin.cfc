@@ -16,48 +16,18 @@
 		<cfif NOT len(arguments.stMetadata.ftTypename)>
 			<cfset arguments.stMetadata.ftTypename = arguments.typename />
 		</cfif>
-	
-		<!--- 
-		<cfif directoryExists("#application.path.project#/webskin/#arguments.stMetadata.ftTypename#")>
-			<cfdirectory action="list" directory="#application.path.project#/webskin/#arguments.stMetadata.ftTypename#" name="qWebskin" filter="*.cfm" >
-		</cfif>
-		 --->
+
 		<cfset oType=createobject("component", application.types[arguments.stmetadata.fttypename].typepath) />
-		<cfset qWebskin=oType.getWebskins(prefix=arguments.stMetadata.ftPrefix) />
-		 
-		<!--- This is to overcome casesensitivity issues on mac/linux machines --->
-		<cfquery name="qWebskin" dbtype="query">
-			SELECT *
-			FROM qWebskin
-			WHERE lower(qWebskin.name) LIKE '#lCase(arguments.stMetadata.ftPrefix)#%'
-			AND lower(qWebskin.name) LIKE '%.cfm'
-		</cfquery>
+		<cfset qWebskins=oType.getWebskins(typename='#arguments.stmetadata.fttypename#', prefix=arguments.stMetadata.ftPrefix) />
 
-		<cfset qMethods = queryNew("methodname, displayname")>
-
-		<cfloop query="qWebskin">
-			<cfset displayname=oType.getWebskinDisplayname(typename=arguments.stmetadata.fttypename, template="#listfirst(qWebskin.name, ".")#") />
-			
-			<cfset queryAddRow(qMethods, 1)>
-			<cfset querySetCell(qMethods, "methodname", listfirst(qWebskin.name, "."))>
-			<cfset querySetCell(qMethods, "displayname", displayname)>
-		</cfloop>
-		
-
-		<!--- de-dupe and reorder method list --->
-		<cfquery name="qMethods" dbtype="query">
-		SELECT DISTINCT methodname, displayname
-		FROM qMethods
-		ORDER BY DisplayName
-		</cfquery>
-		
 		<cfsavecontent variable="html">
 			<!--- Place custom code here! --->
+
 			<cfoutput>
-			<cfif isDefined("qMethods") AND qMethods.RecordCount>
+			<cfif isDefined("qWebskins") AND qWebskins.RecordCount>
 				<select name="#arguments.fieldname#" id="#arguments.fieldname#">
-					<cfloop query="qMethods">						
-						<option value="#qMethods.methodname#" <cfif qmethods.methodname eq arguments.stMetadata.value>selected</cfif>>#qMethods.displayname#</option>
+					<cfloop query="qWebskins">						
+						<option value="#qWebskins.name#" <cfif qWebskins.name eq arguments.stMetadata.value>selected</cfif>>#qWebskins.displayname#</option>
 					</cfloop>
 				</select>
 			<cfelse>
