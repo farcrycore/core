@@ -203,7 +203,13 @@
 					<cfset stGeneratedImageArgs.Source = "#application.path.project#/www#arguments.stMetadata.ftDestination#/#File.ServerFile#" />
 					<cfset stGeneratedImageArgs.Destination = "" />			
 					<cfset stGeneratedImageArgs.Width = "#arguments.stMetadata.ftImageWidth#" />
+					<cfif NOT isNumeric(stGeneratedImageArgs.Width)>
+						<cfset stGeneratedImageArgs.Width = 0 />
+					</cfif>					
 					<cfset stGeneratedImageArgs.Height = "#arguments.stMetadata.ftImageHeight#" />
+					<cfif NOT isNumeric(stGeneratedImageArgs.Height)>
+						<cfset stGeneratedImageArgs.Height = 0 />
+					</cfif>
 					<cfset stGeneratedImageArgs.AutoGenerateType = "#arguments.stMetadata.ftAutoGenerateType#" />
 					<cfset stGeneratedImageArgs.PadColor = "#arguments.stMetadata.ftPadColor#" />
 
