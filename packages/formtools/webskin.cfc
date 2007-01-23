@@ -27,14 +27,13 @@
 			<cfif isDefined("qWebskins") AND qWebskins.RecordCount>
 				<select name="#arguments.fieldname#" id="#arguments.fieldname#">
 					<cfloop query="qWebskins">						
-						<option value="#ReplaceNoCase(qWebskins.name, '.cfm', '','ALL')#" <cfif qWebskins.name eq arguments.stMetadata.value>selected</cfif>>#qWebskins.displayname#</option>
+						<option value="#ReplaceNoCase(qWebskins.name, '.cfm', '','ALL')#" <cfif ReplaceNoCase(qWebskins.name, '.cfm', '','ALL')  eq arguments.stMetadata.value>selected</cfif>>#qWebskins.displayname#</option>
 					</cfloop>
 				</select>
 			<cfelse>
 				No Display Methods Defined
 				<input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value="" />
 			</cfif>
-			
 			</cfoutput>
 		</cfsavecontent>
 		
