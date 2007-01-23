@@ -176,8 +176,7 @@
 			
 			<cfif qrecordcount.CountAll mod  RecordsPerPage neq 0 and theSQLTop GT qrecordcount.CountAll>
 				<cfset thisDiff = RecordsPerPage - (qrecordcount.CountAll mod  arguments.RecordsPerPage)>
-			</cfif>
-		
+			</cfif>		
 			
 			<cfif ucase(application.dbtype) eq "MSSQL">
 				<cfquery name="qFormToolRecordset" datasource="#application.dsn#">
@@ -682,7 +681,13 @@
 					<cfset stArgs.Source = "#application.path.project#/www#arguments.stProperties[sourceFieldName]#" />
 					<cfset stArgs.Destination = "#application.path.project#/www#arguments.stFields['#i#'].metadata.ftDestination#" />
 					<cfset stArgs.Width = "#arguments.stFields['#i#'].metadata.ftImageWidth#" />
+					<cfif NOT isNumeric(stArgs.Width)>
+						<cfset stArgs.Width = 0 />				
+					</cfif>
 					<cfset stArgs.Height = "#arguments.stFields['#i#'].metadata.ftImageHeight#" />
+					<cfif NOT isNumeric(stArgs.Height)>
+						<cfset stArgs.Height = 0 />				
+					</cfif>
 					<cfset stArgs.AutoGenerateType = "#arguments.stFields['#i#'].metadata.ftAutoGenerateType#" />
 					<cfset stArgs.padColor = "#arguments.stFields['#i#'].metadata.ftpadColor#" />
 				
@@ -704,4 +709,4 @@
 	<cfreturn stProperties />
 	
 </cffunction>
-</cfcomponent> 
+</cfcomponent>
