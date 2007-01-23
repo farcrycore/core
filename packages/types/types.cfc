@@ -140,7 +140,14 @@ default handlers
 			</cfloop>
 			
 		</cfif>
+		
+		<!--- If it hasnt been found yet, check in core. --->
+		<cfif not len(webskinPath) AND fileExists(ExpandPath("/farcry/farcry_core/webskin/#arguments.typename#/#arguments.template#.cfm"))>
 			
+			<cfset webskinPath = "/farcry/farcry_core/webskin/#arguments.typename#/#arguments.template#.cfm" />
+			
+		</cfif>
+		
 		<cfreturn webskinPath>
 		
 	</cffunction>
@@ -151,6 +158,7 @@ default handlers
 		
 		<cfset var qResult=queryNew("name,directory,size,type,datelastmodified,attributes,mode,displayname") />
 		<cfset var qLibResult=queryNew("name,directory,size,type,datelastmodified,attributes,mode") />
+		<cfset var qCoreResult=queryNew("name,directory,size,type,datelastmodified,attributes,mode") />
 		<cfset var qDupe=queryNew("name,directory,size,type,datelastmodified,attributes,mode") />
 		<cfset var webskinPath = ExpandPath("/farcry/#application.applicationname#/webskin/#arguments.typename#") />
 		<cfset var library="" />
@@ -181,7 +189,7 @@ default handlers
 						<cfif NOT qDupe.Recordcount>
 							<cfset queryaddrow(qresult,1) />
 							<cfloop list="#qlibresult.columnlist#" index="col">
-								<cfset querysetcell(qresult, col, qlibresult[col][#qlibresult.currentrow#]) />
+								<cfset querysetcell(qresult, col, qlibresult[col][qLibResult.currentrow]) />
 							</cfloop>
 						</cfif>
 						
@@ -191,6 +199,33 @@ default handlers
 			</cfloop>
 			
 		</cfif>
+		
+		
+		<!--- CHECK CORE WEBSKINS --->		
+		<cfset webskinpath=ExpandPath("/farcry/farcry_core/webskin/#arguments.typename#") />
+		
+		<cfif directoryExists(webskinpath)>
+			<cfdirectory action="list" directory="#webskinPath#" filter="#arguments.prefix#*" name="qCoreResult" sort="asc" />
+
+			<cfloop query="qCoreResult">
+				<cfquery dbtype="query" name="qDupe">
+				SELECT *
+				FROM qResult
+				WHERE name = '#qCoreResult.name#'
+				</cfquery>
+				
+				<cfif NOT qDupe.Recordcount>
+					<cfset queryaddrow(qresult,1) />
+					<cfloop list="#qCoreResult.columnlist#" index="col">
+						<cfset querysetcell(qresult, col, qCoreResult[col][qCoreResult.currentRow]) />
+					</cfloop>
+				</cfif>
+				
+			</cfloop>
+		</cfif>	
+		
+		
+		<!--- ORDER AND SET DISPLAYNAME FOR COMBINED WEBSKIN RESULTS --->		
  		<cfquery dbtype="query" name="qResult">
 		SELECT *,  name as displayname
 		FROM qResult
@@ -213,7 +248,6 @@ default handlers
 		<cfargument name="path" type="string" required="false" />
 	
 		<cfset var result = "" />
-		
 		<cfif NOT structKeyExists(arguments, "path")>
 			<cfif len(arguments.typename) AND len(arguments.template)>
 				<cfset arguments.path = getWebskinPath(typename=arguments.typename, template=arguments.template) />
