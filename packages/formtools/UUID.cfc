@@ -177,31 +177,20 @@
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedListClass" default="thumbNailsWrap">
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedListStyle" default="">
 		
+		<cfset var returnHTML = "" />
 		
 		<!--- A UUID type MUST have a 'ftJoin' property --->
 		<cfif not structKeyExists(stMetadata,"ftJoin")>
-			<cfreturn "">
+			<cfreturn returnHTML />
 		</cfif>
 				
 		<!--- Create the Linked Table Type as an object  --->
 		<cfset oData = createObject("component",application.types[stMetadata.ftJoin].typepath)>
 		
-
-		<cfsavecontent variable="returnHTML">
-		
-			
-			<cfif Len(arguments.stObject[arguments.stMetaData.Name])>
-				<cfset stobj = oData.getData(objectid=#arguments.stObject[arguments.stMetaData.Name]#)>
-				<cfif FileExists("#application.path.project#/webskin/#arguments.stMetadata.ftJoin#/#arguments.stMetadata.ftLibrarySelectedWebskin#.cfm")>
-					
-					<cfinclude template="/farcry/#application.applicationname#/webskin/#arguments.stMetadata.ftJoin#/#arguments.stMetadata.ftLibrarySelectedWebskin#.cfm">
-				<cfelse>
-					<cfoutput>#stobj.label#</cfoutput>
-				</cfif>
-			</cfif>
-				
-		
-		</cfsavecontent>
+		<cfif Len(arguments.stObject[arguments.stMetaData.Name])>
+			<cfset stobj = oData.getData(objectid=#arguments.stObject[arguments.stMetaData.Name]#)>
+			<cfset returnHTML = oData.getView(stObject=stobj, template=arguments.stMetaData.ftLibrarySelectedWebskin, alternateHtml=stobj.label) />
+		</cfif>
 		
 		<cfreturn returnHTML>
 	</cffunction>
