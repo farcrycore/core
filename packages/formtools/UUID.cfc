@@ -173,12 +173,12 @@
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 
+		<cfset var returnHTML = "" />
+		
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedWebskin" default="librarySelected">
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedListClass" default="thumbNailsWrap">
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedListStyle" default="">
-		
-		<cfset var returnHTML = "" />
-		
+				
 		<!--- A UUID type MUST have a 'ftJoin' property --->
 		<cfif not structKeyExists(stMetadata,"ftJoin")>
 			<cfreturn returnHTML />
