@@ -105,7 +105,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 
 <cffunction name="updateTypeCollection" access="public" hint="Update a Verity database collection based on a FarCry content type." output="false" returntype="struct">
 	<cfargument name="collection" required="yes" hint="Name of type based collection to be updated; without application name prefix." type="string" />
-	<cfargument name="lExcludeObjectID" required="false" hint="List of object IDs to be excluded from the collection." type="string">
+	<cfargument name="lExcludeObjectID" required="false" hint="List of object IDs to be excluded from the collection." type="string" default="">
 	<cfargument name="maxRows" required="false" hint="The maximum rows to update." type="numeric" default="99999999">
 	<cfset var stResult = structNew()>
 	<cfset var key = arguments.collection>
@@ -171,7 +171,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 			FROM #key#
 			WHERE <!--- datetimelastupdated > #application.config.verity.contenttype[key].lastupdated# --->
 				upper(status) IN ('DRAFT','PENDING')
-			<cfif lExcludeObjectID NEQ "">
+			<cfif arguments.lExcludeObjectID NEQ "">
 				OR objectid IN (#preserveSingleQuotes(lExcludeObjectID)#)
 			</cfif>					
 		</cfquery>
