@@ -76,11 +76,11 @@
 	
 	<cfset var thisDiff = 0 /><!--- var used if recordcount/RecordsPerPage remainder is not 0, occurs at the end of pagination --->
 	
-	<cfif len(arguments.lCategories)>
-		<cfset arrayAppend(aCategoryFilters, arguments.lCategories) />
+	<cfif listlen(arguments.lCategories)>
+		<cfloop list="#arguments.lCategories#" index="i">
+			<cfset arrayAppend(aCategoryFilters, i) />
+		</cfloop>
 	</cfif>
-	
-	
 	
 	<cfif structKeyExists(application.types, arguments.typename)>
 		<cfset PrimaryPackage = application.types[arguments.typename] />
