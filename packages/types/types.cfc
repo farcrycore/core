@@ -167,9 +167,17 @@ default handlers
 
 		<!--- check project webskins --->
 		<cfif directoryExists(webskinPath)>
-			<cfdirectory action="list" directory="#webskinPath#" filter="#arguments.prefix#*.cfm" name="qResult" recurse="true" sort="asc" />
+			<cfdirectory action="list" directory="#webskinPath#" name="qResult" recurse="true" sort="asc" />
+			
+			<cfquery name="qResult" dbtype="query">
+				SELECT *
+				FROM qResult
+				WHERE lower(qResult.name) LIKE '#lCase(arguments.prefix)#%'
+				AND lower(qResult.name) LIKE '%.cfm'
+			</cfquery>
+			
 		</cfif>
-		
+
 		<!--- check library webskins --->
 		<cfif structKeyExists(application, "lFarcryLib") and Len(application.lFarcryLib)>
 
@@ -177,8 +185,15 @@ default handlers
 				<cfset webskinpath=ExpandPath("/farcry/farcry_lib/#library#/webskin/#arguments.typename#") />
 				
 				<cfif directoryExists(webskinpath)>
-					<cfdirectory action="list" directory="#webskinPath#" filter="#arguments.prefix#*" name="qLibResult" sort="asc" />
+					<cfdirectory action="list" directory="#webskinPath#" name="qLibResult" sort="asc" />
 
+					<cfquery name="qLibResult" dbtype="query">
+						SELECT *
+						FROM qLibResult
+						WHERE lower(qLibResult.name) LIKE '#lCase(arguments.prefix)#%'
+						AND lower(qLibResult.name) LIKE '%.cfm'
+					</cfquery>
+					
 					<cfloop query="qLibResult">
 						<cfquery dbtype="query" name="qDupe">
 						SELECT *
@@ -205,8 +220,15 @@ default handlers
 		<cfset webskinpath=ExpandPath("/farcry/farcry_core/webskin/#arguments.typename#") />
 		
 		<cfif directoryExists(webskinpath)>
-			<cfdirectory action="list" directory="#webskinPath#" filter="#arguments.prefix#*" name="qCoreResult" sort="asc" />
+			<cfdirectory action="list" directory="#webskinPath#" name="qCoreResult" sort="asc" />
 
+			<cfquery name="qCoreResult" dbtype="query">
+				SELECT *
+				FROM qCoreResult
+				WHERE lower(qCoreResult.name) LIKE '#lCase(arguments.prefix)#%'
+				AND lower(qCoreResult.name) LIKE '%.cfm'
+			</cfquery>
+			
 			<cfloop query="qCoreResult">
 				<cfquery dbtype="query" name="qDupe">
 				SELECT *
