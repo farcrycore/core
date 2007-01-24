@@ -1,5 +1,6 @@
 <cfsetting enablecfoutputonly="yes">
 
+<cfparam name="URL.typename" default="" />
 
 <!--- check permissions --->
 <cfif NOT request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="AdminCOAPITab")>	
@@ -23,6 +24,10 @@
 	<cfset var result = "">
 	<cfset var fullpath = "">
 	<cfset var docContent = docProps.content />
+	<cfset var stTypeProperties = structNew() />
+	<cfset var lColumnList = "" />
+	<cfset var lSortableColumns = "" />
+	<cfset var lFilterFields = "" />
 	
 	
 	<cfset docProps.filename = replaceNoCase(docProps.filename,"[TYPENAME]",lcase(typeName)) />
@@ -31,6 +36,41 @@
 	
 	<cfset docContent = replaceNoCase(docContent, "[PROJECTNAME]", projectName, "all") />
 	<cfset docContent = replaceNoCase(docContent, "[TYPENAME]", typeName, "all") />
+	
+	 <!--- set the values of ColumnList, SortableColumns and lFilterFields. If none are checked default to label --->
+	<cfset stTypeProperties = getTypeProperties(form.sTypeName) />
+	<cfloop list="#structKeyList(stTypeProperties)#" index="key">
+		
+		<!--- user wants this property in the ColumnList of objectAdmin --->
+		<cfif structKeyExists(form, "#key#_columnList")>
+			<cfset lColumnList = listAppend(lColumnList, key) />
+		</cfif>
+		
+		<!--- user wants this property in the SortableColumns of objectAdmin --->
+		<cfif structKeyExists(form, "#key#_sortableColumns")>
+			<cfset lSortableColumns = listAppend(lSortableColumns, key) />		
+		</cfif>
+		
+		<!--- user wants this property in the lFilterFields of objectAdmin --->
+		<cfif structKeyExists(form, "#key#_filterFields")>
+			<cfset lFilterFields = listAppend(lFilterFields, key) />		
+		</cfif>				
+		
+	</cfloop>
+	<cfif NOT len(lColumnList)>
+		<cfset lColumnList = "label" />
+	</cfif>
+	<cfif NOT len(lSortableColumns)>
+		<cfset lSortableColumns = "label" />
+	</cfif>
+	<cfif NOT len(lFilterFields)>
+		<cfset lFilterFields = "label" />
+	</cfif>		
+	
+	<cfset docContent = replaceNoCase(docContent, "[COLUMNLIST]", lColumnList, "all") />
+	<cfset docContent = replaceNoCase(docContent, "[SORTABLECOLUMNS]", lSortableColumns, "all") />
+	<cfset docContent = replaceNoCase(docContent, "[FILTERFIELDS]", lFilterFields, "all") />
+	
 	
 	<cfset fullpath = "#projectDir##docProps.package#">
 
@@ -143,6 +183,38 @@
 	</cfloop>
 	</table>
 	
+	
+	<h1>Type Properties</h1>
+	<cfset stTypeProperties = getTypeProperties(URL.typename) />
+	
+	<input type="hidden" name="sTypeName" id="sTypeName" value="#URL.typeName#" />
+	<table border="1" cellpadding="5">
+		<tr>
+			<th>Property Name</th>
+			<th>Column List</th>
+			<th>Sortable Columns</th>
+			<th>Filter Fields</th>
+		</tr>
+		
+		<cfloop list="#structKeyList(stTypeProperties)#" index="key">
+			
+			<!--- we're not interested in array types --->
+			<cfif stTypeProperties[key].type NEQ "array">
+				
+				<tr>
+					<td>#stTypeProperties[key].name#</td>
+					<td><input type="checkbox" name="#stTypeProperties[key].name#_columnList" id="#stTypeProperties[key].name#_columnList" value="1" /></td>
+					<td><input type="checkbox" name="#stTypeProperties[key].name#_sortableColumns" id="#stTypeProperties[key].name#_sortableColumns" value="1" /></td>
+					<td><input type="checkbox" name="#stTypeProperties[key].name#_filterFields" id="#stTypeProperties[key].name#_filterFields" value="1" /></td>
+				</tr>
+				
+			</cfif>
+			
+		</cfloop>
+	
+	</table>
+
+
 	
 <!--- 	<cfabort>
 	
@@ -298,6 +370,26 @@
 		<cfreturn stResult />
 	</cffunction>
 	
+	
+	<cffunction name="getTypeProperties" access="private" output="false" returntype="struct" hint="Introspect the current 'type' and return a structure of properties so the user can decide what to use in the scaffolding">
+		<cfargument name="typeName" type="string" required="true" hint="Typename to introspect" />
+		
+		<cfscript>
+	
+			var stReturn = structNew();
+			var oCustomType = "";
+			var oTypeMetadata = "";
+			
+			oCustomType = createObject("component", "farcry.#application.applicationName#.packages.types.#arguments.typeName#");	//instantiate the custom type to introspect
+			oTypeMetadata = createObject("component", "farcry.fourq.TableMetadata").init();	//instansiate the Fourq class to access introspection methods
+			oTypeMetadata.parseMetadata(md=getMetadata(oCustomType));	//generate the metadata
+			stReturn = oTypeMetadata.getTableDefinition();	//retrieve the generated metadata
+		
+			return stReturn;
+		
+		</cfscript>
+		
+	</cffunction>
 	
 	
 <cfsetting enablecfoutputonly="no">
