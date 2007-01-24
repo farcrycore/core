@@ -94,7 +94,7 @@ need to call tag or fourq function that has status as an option somehow
 		<cfquery name="qChildren" datasource="#application.dsn#">
 		SELECT a.data AS objectID, b.title AS objectname from #application.dbowner##attributes.typename#_aObjectIDs a
 		JOIN #application.dbowner##attributes.typename# b ON a.data = b.objectID
-		WHERE a.objectID =  '#attributes.objectID#'
+		WHERE a.parentID =  '#attributes.objectID#'
 		</cfquery>
 	<cfelse>
 		<cfset qChildren = QueryNew("objectid")>
