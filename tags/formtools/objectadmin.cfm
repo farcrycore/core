@@ -78,9 +78,10 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 
 
 <cfparam name="attributes.editMethod" default="edit" type="string">
-<cfparam name="attributes.customList" default="#attributes.typename#" type="string">
 
 <cfparam name="attributes.PackageType" default="types" type="string">
+
+<cfparam name="attributes.module" default="customlists/#attributes.typename#.cfm">
 
 
 <cfif NOT structKeyExists(session.objectadmin, attributes.typename)>
@@ -343,17 +344,17 @@ user --->
 	
 	
 	
-	<ft:processForm action="add" url="#application.url.farcry#/conjuror/invocation.cfm?objectid=#createUUID()#&typename=#attributes.typename#&method=#attributes.editMethod#&ref=typeadmin&module=customlists/#attributes.customList#.cfm" />
+	<ft:processForm action="add" url="#application.url.farcry#/conjuror/invocation.cfm?objectid=#createUUID()#&typename=#attributes.typename#&method=#attributes.editMethod#&ref=typeadmin&module=#attributes.module#" />
 	
 	
 	<ft:processForm action="overview">
 		<!--- TODO: Check Permissions. --->
-		<cflocation URL="#application.url.farcry#/editTabOverview.cfm?objectid=#form.objectid#&typename=#attributes.typename#&method=#attributes.editMethod#&ref=typeadmin&module=customlists/#attributes.customList#.cfm" addtoken="false">
+		<cflocation URL="#application.url.farcry#/editTabOverview.cfm?objectid=#form.objectid#&typename=#attributes.typename#&method=#attributes.editMethod#&ref=typeadmin&module=#attributes.module#" addtoken="false">
 	</ft:processForm>
 	
 	<ft:processForm action="edit">
 		<!--- TODO: Check Permissions. --->
-		<cflocation URL="#application.url.farcry#/conjuror/invocation.cfm?objectid=#form.objectid#&typename=#attributes.typename#&method=#attributes.editMethod#&ref=typeadmin&module=customlists/#attributes.customList#.cfm" addtoken="false">
+		<cflocation URL="#application.url.farcry#/conjuror/invocation.cfm?objectid=#form.objectid#&typename=#attributes.typename#&method=#attributes.editMethod#&ref=typeadmin&module=#attributes.module#" addtoken="false">
 	</ft:processForm>
 	
 	<ft:processForm action="view">
