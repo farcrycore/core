@@ -148,13 +148,14 @@
 	<cfloop list="#attributes.lFields#" index="i">
 		<cfif ListFindNoCase(variables.lFields,i)>
 			<cfset lFieldsToRender =  listappend(lFieldsToRender,i)>
-			
+<!--- 			
 			<!--- If the user explicitly wants a field to appear, remove it from the exclusion list. --->
 			<cfif ListFindNoCase(attributes.lExcludeFields,i)>
 				<cfset attributes.lExcludeFields =  listdeleteat(attributes.lExcludeFields,ListFindNoCase(attributes.lExcludeFields,i))>
-			</cfif>
+			</cfif> --->
 		</cfif>
 	</cfloop>
+
 
 	<!--- Determine fields to render but as hidden fields --->
 	<cfloop list="#attributes.lHiddenFields#" index="i">
