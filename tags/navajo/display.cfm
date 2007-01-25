@@ -263,18 +263,26 @@ the latter is the policy group for anonymous...
 		<cfset o.getDisplay(stObject=stObj, template=stObj.displayMethod)>
 	</cfif>
 	
-<cfelseif fileExists("#application.path.project#/webskin/#stobj.typename#/displayPageStandard.cfm")>
-	<cfset o = createObject("component", application.types[stObj.typename].typePath)>
-	<cfset HTML = o.getView(stobject=stObj, Template="displayPageStandard") />
-	<cfoutput>#HTML#</cfoutput>		
-
 <cfelse>
-	<!--- Invoke default display method of page --->
-	<cftrace text="Default display method used" />
-	<q4:contentobject
-		typename="#application.types[stObj.typename].typePath#"
-		objectid="#stObj.ObjectID#"
-		method="display">
+
+	<cfset o = createObject("component", application.types[stObj.typename].typePath)>
+	<cfset HTML = o.getView(stobject=stObj, Template="displayPageStandard", alternateHtml="") />
+	<cfif len(trim(HTML))>
+		<cfoutput>#HTML#</cfoutput>
+	<cfelse>
+		<!--- Invoke default display method of page --->
+		<cftrace text="Default display method used" />
+		
+		<cftry>
+			<cfoutput>#o.display(objectid=stObj.objectId)#</cfoutput>
+			<cfcatch type="any">
+				<cftrace text="Object not found" />
+				<cfabort showerror="Object not found" />
+			</cfcatch>
+		</cftry>
+			
+	</cfif>
+
 </cfif>
 
 <!---------------------------
