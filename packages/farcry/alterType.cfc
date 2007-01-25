@@ -1201,6 +1201,16 @@ $out:$
 			if (not arguments.bNull) sql = sql & "; ALTER TABLE #application.dbowner##arguments.typename# ALTER COLUMN #arguments.srcColumn# set NOT NULL";
 			break;
 		}
+		case "mysql":
+		{
+			sql = "ALTER TABLE #application.dbowner##arguments.typename# ADD #arguments.srcColumn# #arguments.srcColumnType# ";
+			if (arguments.bNull) sql = sql & "NULL";
+
+			else sql = sql & "NOT NULL";
+
+			if (Len(arguments.stDefault) OR NOT arguments.bNull) sql = sql & " DEFAULT '#stDefault#'";
+			break;
+		}
 		default:
 		{
 			sql = "ALTER TABLE #application.dbowner##arguments.typename#	ADD [#arguments.srcColumn#] #arguments.srcColumnType# ";
