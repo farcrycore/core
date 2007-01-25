@@ -51,7 +51,7 @@
 		<cfif isNumeric(stFieldPost.Value)>
 			<cfset stResult.value = stFieldPost.Value>
 		<cfelse>
-			<cfset stResult.value = 99>
+			<cfset stResult.value = 0 />
 		</cfif>
 		
 		
