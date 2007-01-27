@@ -94,8 +94,10 @@
 		<!--- --------------------------- --->
 		<cfif NOT DirectoryExists("#filePath##arguments.stMetadata.ftDestination#")>
 			<cfdirectory action="create" directory="#filePath##arguments.stMetadata.ftDestination#">
-		</cfif>		
+		</cfif>	
 		
+
+			
 		
 		<cfif len(FORM["#stMetadata.FormFieldPrefix##stMetadata.Name#New"])>
 	
@@ -103,10 +105,29 @@
 		        filefield="#stMetadata.FormFieldPrefix##stMetadata.Name#New" 
 		        destination="#filePath##arguments.stMetadata.ftDestination#"
 				nameconflict="MAKEUNIQUE">					
+			
+			
+			<!--- Replace all none alphanumeric characters --->
+			<cfset cleanFileName = reReplaceNoCase(File.ServerFile, "[^a-z0-9.]", "", "all") />
+			
+			<!--- If the filename has changed, rename the file
+			Note: doing a quick check to make sure the cleanfilename doesnt exist. If it does, prepend the count+1 to the end.
+			 --->
+			<cfif cleanFileName NEQ File.ServerFile>
+				<cfif fileExists("#filePath##arguments.stMetadata.ftDestination#/#cleanFileName#")>
+					<cfdirectory action="list" directory="#filePath##arguments.stMetadata.ftDestination#" filter="#listFirst(cleanFileName, '.')#*" name="qDuplicates" />
+					<cfif qDuplicates.RecordCount>
+						<cfset cleanFileName = "#listFirst(cleanFileName, '.')##qDuplicates.recordCount+1#.#listLast(cleanFileName,'.')#">
+					</cfif>
+					 
+				</cfif>
+				
+				<cffile action="rename" source="#filePath##arguments.stMetadata.ftDestination#/#File.ServerFile#" destination="#cleanFileName#" / >
+			</cfif>			
 									
 			<!--- </cfif> --->
-			<cfset stResult.value = "#arguments.stMetadata.ftDestination#/#File.ServerFile#">
-			
+			<cfset stResult.value = "#arguments.stMetadata.ftDestination#/#cleanFileName#">
+
 			
 		</cfif>
 		
@@ -119,5 +140,6 @@
 		<cfreturn stResult>
 		
 	</cffunction>
+
 
 </cfcomponent> 
