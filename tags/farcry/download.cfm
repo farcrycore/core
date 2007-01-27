@@ -25,89 +25,127 @@ $out:$
 <cfsetting enablecfoutputonly="Yes">
 <cfimport taglib="/farcry/fourq/tags/" prefix="q4">
 
-<cfif isdefined("attributes.downloadfile")>
+
+
+<cfif isdefined("attributes.downloadfile") and len(attributes.downloadfile)>
 	<cfset url.downloadfile = attributes.downloadfile>
+</cfif>
+
+<cfif isdefined("attributes.fieldname") and len(attributes.fieldname)>
+	<cfset url.fieldname = attributes.fieldname>
+<cfelse>
+	<cfset url.fieldname = "" />
+</cfif>
+
+<cfif isdefined("attributes.typename") and len(attributes.typename)>
+	<cfset url.typename = attributes.typename>
+<cfelse>
+	<cfset q4 = createObject("component", "farcry.fourq.fourq") />
+	<cfset url.typename = q4.findType(objectid="#url.downloadFile#") />	
 </cfif>
 
 
 <!--- should not be able to get object unless authorised. --->
 <cfif isDefined("url.DownloadFile") and len(trim(url.DownloadFile))>
+	<cfset o = createObject("component", application.types[url.typename].packagePath) />
+	
+	<cfset stFile = o.getData(objectid="#url.downloadfile#") />
 
-	<q4:contentobjectget objectid="#url.DownloadFile#" r_stobject="stFile">
+	<cfif not len(url.fieldname)>
+		<!--- Name of the file field has not been sent. We need to loop though the type to determine which field contains the file path --->
 
-    <!--- work out file type --->
-    <cfif stFile.typeName eq "dmImage">
-        <cfset pos = find(".", stFile.imageFile)>
-        <cfset suffix = removeChars(stFile.imageFile, 1, pos)>
-    <cfelse>
-		<cfset pos = find(".", stFile.filename)>
-        <cfset suffix = removeChars(stFile.filename, 1, pos)>
-    </cfif>
-
-	<!--- pick a mime type (if required) --->
-	<cfswitch expression="#lCase(suffix)#">
-		<cfcase value="mpg,mpeg">
-			<cfset mime = "video/mpeg">
-		</cfcase>
-		<cfcase value="avi">
-			<cfset mime = "video/x-msvideo">
-		</cfcase>
-        <cfcase value="gif">
-            <cfset mime = "image/gif">
-        </cfcase>
-        <cfcase value="jpg">
-            <cfset mime = "image/jpg">
-        </cfcase>
-        <cfcase value="jpeg">
-            <cfset mime = "image/jpeg">
-        </cfcase>
-		<cfcase value="pdf">
-			<cfset mime = "application/pdf">
-		</cfcase>
-		<cfdefaultcase>
-			<cfset mime = "application/unknown">
-		</cfdefaultcase>
-	</cfswitch>
-
-	<!--- log download --->
-	<cfinvoke component="#application.packagepath#.farcry.stats" method="logEntry">
-		<cfinvokeargument name="pageId" value="#url.DownloadFile#"/>
-		<cfinvokeargument name="navId" value="#url.DownloadFile#"/>
-		<cfinvokeargument name="remoteIP" value="#cgi.REMOTE_ADDR#"/>
-		<cfinvokeargument name="sessionId" value="#trim(session.sessionId)#"/>
-		<cftry>
-			<cfinvokeargument name="browser" value="#trim(cgi.HTTP_USER_AGENT)#"/>
-			<cfcatch><cfinvokeargument name="browser" value="Unknown"/></cfcatch>
-		</cftry>
-		<!--- check is a user is logged in --->
-		<cfif request.LoggedIn>
-			<cfinvokeargument name="userid" value="#session.dmSec.authentication.userlogin#"/>
+		<cfloop list="#structKeyList(application.types[url.typename].stprops)#" index="i">
+			<cfif structKeyExists(application.types[url.typename].stprops[i].metadata, "ftType") and application.types[url.typename].stprops[i].metadata.ftType EQ "file" >
+				<cfset url.fieldname = i />
+			</cfif>
+		</cfloop>
+	</cfif>
+	
+	<cfif len(url.fieldname)>
+	
+	
+		<cfset pos = find(".", stFile[url.fieldname])>
+        <cfset suffix = removeChars(stFile[url.fieldname], 1, pos)>
+	
+	
+		<!--- pick a mime type (if required) --->
+		<cfswitch expression="#lCase(suffix)#">
+			<cfcase value="mpg,mpeg">
+				<cfset mime = "video/mpeg">
+			</cfcase>
+			<cfcase value="avi">
+				<cfset mime = "video/x-msvideo">
+			</cfcase>
+	        <cfcase value="gif">
+	            <cfset mime = "image/gif">
+	        </cfcase>
+	        <cfcase value="jpg">
+	            <cfset mime = "image/jpg">
+	        </cfcase>
+	        <cfcase value="jpeg">
+	            <cfset mime = "image/jpeg">
+	        </cfcase>
+			<cfcase value="pdf">
+				<cfset mime = "application/pdf">
+			</cfcase>
+			<cfdefaultcase>
+				<cfset mime = "application/unknown">
+			</cfdefaultcase>
+		</cfswitch>
+	
+		<!--- log download --->
+		<cfinvoke component="#application.packagepath#.farcry.stats" method="logEntry">
+			<cfinvokeargument name="pageId" value="#url.DownloadFile#"/>
+			<cfinvokeargument name="navId" value="#url.DownloadFile#"/>
+			<cfinvokeargument name="remoteIP" value="#cgi.REMOTE_ADDR#"/>
+			<cfinvokeargument name="sessionId" value="#trim(session.sessionId)#"/>
+			<cftry>
+				<cfinvokeargument name="browser" value="#trim(cgi.HTTP_USER_AGENT)#"/>
+				<cfcatch><cfinvokeargument name="browser" value="Unknown"/></cfcatch>
+			</cftry>
+			<!--- check is a user is logged in --->
+			<cfif request.LoggedIn>
+				<cfinvokeargument name="userid" value="#session.dmSec.authentication.userlogin#"/>
+			<cfelse>
+				<cfinvokeargument name="userid" value="Anonymous"/>
+			</cfif>
+		</cfinvoke>
+	
+	
+		<!--- Determine the base filepath --->
+		<cfif structKeyExists(application.types[url.typename].stprops[url.fieldname].metadata, "ftSecure") and application.types[url.typename].stprops[url.fieldname].metadata.ftSecure >
+			<cfset baseFilepath = application.path.secureFilePath />
 		<cfelse>
-			<cfinvokeargument name="userid" value="Anonymous"/>
+			<cfset baseFilepath = application.path.defaultFilePath />
 		</cfif>
-	</cfinvoke>
+		
+		
+		<!--- Ensure that the first character of the path in the DB is a  "/" --->
+		<cfif left(stFile[url.fieldname],1) NEQ "/">
+			<cfset stFile[url.fieldname] = "/#stFile[url.fieldname]#" />
+		</cfif>
+		<!--- Replace any  "\" with "/" for compatibility with everything --->
+		<cfset filepath = replace("#baseFilepath##stFile[url.fieldname]#","\","/","all")>
+		<!--- Determine the ACTUAL filename --->
+		<cfset fileName = listLast(filepath,"/")>
 
-	<!--- download --->
-    <cfif stFile.typeName eq "dmImage">
- 		<cfheader name="content-disposition" VALUE="inline; filename=#stFile.imageFile#">
+	
+		<!--- download --->
+
+ 		<cfheader name="content-disposition" VALUE="inline; filename=#fileName#">
 		<cfheader name="cache-control" value="">
 		<cfheader name="pragma" value="">
 	    <cftry>
-	        <cfcontent type="#mime#" file="#stFile.originalImagePath#/#stFile.imageFile#" deletefile="No" reset="Yes">
+	        <cfcontent type="#mime#" file="#filepath#" deletefile="No" reset="Yes">
 		<cfcatch><!--- prevent unnecessary log entries when user cancels download whilst it is in progress ---></cfcatch>
 	    </cftry>
-    <cfelse>
-		<cfheader name="Content-Disposition" VALUE="attachment;filename=#stFile.filename#">
-		<cfheader name="cache-control" value="">
-		<cfheader name="pragma" value="">
-	    <cftry>
-			<cfcontent type="#mime#" file="#application.path.defaultfilepath#/#stFile.filename#" deletefile="No" reset="Yes">
-		<cfcatch><!--- prevent unnecessary log entries when user cancels download whilst it is in progress ---></cfcatch>
-	    </cftry>
-    </cfif>
-	<cfabort>
-
+	    
+		<cfabort>
+	</cfif>
+	
+	
 <!--- ext file --->
+<!--- TODO: this is legacy and needs to be looked at for 4.0 --->
 <cfelseif isdefined("url.extFile") and isDefined("application.config.verity.contentType.extFiles.aProps.uncpath")>
 
 	<!--- get filename --->
