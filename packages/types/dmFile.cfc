@@ -27,9 +27,9 @@ $out:$
 <!------------------------------------------------------------------------
 type properties
 ------------------------------------------------------------------------->
-<cfproperty name="title" type="nstring" hint="Meaningful reference title for file" required="no" default=""> 
+<cfproperty ftSeq="1" ftFieldset="File Details" name="title" type="nstring" hint="Meaningful reference title for file" required="no" default="" ftLabel="Title"> 
+<cfproperty ftSeq="2" ftFieldset="File Details" name="filepath" type="string" hint="The location of the file on the webserver" required="no" default="" ftType="file" ftLabel="File" ftDestination="/dmfile" ftSecure="false">  
 <cfproperty name="filename" type="string" hint="The name of the file to be uploaded" required="no" default="">  
-<cfproperty name="filepath" type="string" hint="The location of the file on the webserver" required="no" default="" ftType="file" ftDestination="/dmfile" ftSecure="false">  
 <cfproperty name="fileSize" type="numeric" hint="The size of the file on the webserver (in bytes)" required="no" default="0">  
 <cfproperty name="fileType" type="string" hint="MIME content type of the saved file" required="no" default="">
 <cfproperty name="fileSubType" type="string" hint="MIME content subtype of the saved file" required="no" default="">
