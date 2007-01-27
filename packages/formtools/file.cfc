@@ -52,11 +52,19 @@
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 
+<!--- 		<cfset var filePath = "" />
+		
+		<cfparam name="arguments.stMetadata.ftSecure" default="false">
 		<cfparam name="arguments.stMetadata.ftDestination" default="/files">
 	
+		<cfif arguments.stMetadata.ftSecure>
+			<cfset filePath = application.path.defaultFilePath />
+		<cfelse>
+			<cfset filePath = application.path.secureFilePath />
+		</cfif> --->
 
 		<cfsavecontent variable="html">
-			<cfoutput><a target="_blank" href="#arguments.stMetadata.value#">#arguments.stMetadata.value#</a></cfoutput>			
+			<cfoutput><a target="_blank" href="#application.url.webroot#/download.cfm?downloadfile=#arguments.stobject.objectid#&field=#arguments.stmetadata.name#">#arguments.stMetadata.value#</a></cfoutput>			
 			
 		</cfsavecontent>
 		
@@ -67,20 +75,25 @@
 		<cfargument name="stFieldPost" required="true" type="struct" hint="The fields that are relevent to this field type. Includes Value and stSupporting">
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		
+		<cfset var filePath = "" />
 		<cfset var stResult = structNew()>		
 		<cfset stResult.bSuccess = true>
 		<cfset stResult.value = stFieldPost.value>
 		<cfset stResult.stError = StructNew()>
 		
-		<cfparam name="arguments.stMetadata.ftDestination" default="/files">
+		<cfparam name="arguments.stMetadata.ftSecure" default="false">
+		<cfparam name="arguments.stMetadata.ftDestination" default="">
 
-		
+		<cfif arguments.stMetadata.ftSecure>
+			<cfset filePath = application.path.secureFilePath />
+		<cfelse>
+			<cfset filePath = application.path.defaultFilePath />
+		</cfif>
 		<!--- --------------------------- --->
 		<!--- Perform any validation here --->
 		<!--- --------------------------- --->
-		
-		<cfif NOT DirectoryExists("#application.path.project#/www#arguments.stMetadata.ftDestination#")>
-			<cfdirectory action="create" directory="#application.path.project#/www#arguments.stMetadata.ftDestination#">
+		<cfif NOT DirectoryExists("#filePath##arguments.stMetadata.ftDestination#")>
+			<cfdirectory action="create" directory="#filePath##arguments.stMetadata.ftDestination#">
 		</cfif>		
 		
 		
@@ -88,7 +101,7 @@
 	
 			<cffile action="UPLOAD"
 		        filefield="#stMetadata.FormFieldPrefix##stMetadata.Name#New" 
-		        destination="#application.path.project#/www#arguments.stMetadata.ftDestination#"
+		        destination="#filePath##arguments.stMetadata.ftDestination#"
 				nameconflict="MAKEUNIQUE">					
 									
 			<!--- </cfif> --->
