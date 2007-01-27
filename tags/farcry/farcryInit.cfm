@@ -95,6 +95,9 @@ $in: objectid -- $
 		<cfset application.path.core = expandpath("/farcry/farcry_core") />
 		<cfset application.path.library = expandpath("/farcry/farcry_lib") />
 		
+		<cfset application.path.defaultFilePath = "#application.path.project#/www/files">
+		<cfset application.path.secureFilePath = "#application.path.project#/securefiles">
+		
 		<!----------------------------------------
 		 WEB URL PATHS
 		 ---------------------------------------->
