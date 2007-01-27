@@ -150,11 +150,12 @@ $out:$
 	<cfargument name="stProps" type="struct" required="true" />
 	
 	
-	<cfset var qMetadataSetup = queryNew("typename,propertyname,ftSeq,ftFieldset,ftWizzardStep","varchar,varchar,Integer,varchar,varchar") /><!--- Prepare a temporary metadata query that will later be sorted and sent into the types metadata structure. --->
-	<cfset var qMetadata = queryNew("typename,propertyname,ftSeq,ftFieldset,ftWizzardStep","varchar,varchar,Integer,varchar,varchar") /><!--- Prepare a temporary metadata query that will later be sorted and sent into the types metadata structure. --->	
+	<cfset var qMetadataSetup = queryNew("typename,propertyname,ftSeq,ftFieldset,ftWizzardStep,ftType","varchar,varchar,Integer,varchar,varchar,varchar") /><!--- Prepare a temporary metadata query that will later be sorted and sent into the types metadata structure. --->
+	<cfset var qMetadata = queryNew("typename,propertyname,ftSeq,ftFieldset,ftWizzardStep,ftType","varchar,varchar,Integer,varchar,varchar,varchar") /><!--- Prepare a temporary metadata query that will later be sorted and sent into the types metadata structure. --->	
 	<cfset var Seq = "" />
 	<cfset var Fieldset = "" />
 	<cfset var WizzardStep = "" />
+	<cfset var Type = "" />
 	
 	<!--------------------------------- 
 	WE NEED TO SETUP FTSEQ, FTFIELDSET & FTWIZZARDSTEP
@@ -189,12 +190,20 @@ $out:$
 			<cfset WizzardStep = typename />
 		</cfif>
 		
+		<!--- SETUP ftType --->
+		<cfif structKeyExists(arguments.stProps[i].METADATA, "ftType")>
+			<cfset Type = arguments.stProps[i].METADATA.ftType />
+		<cfelse>
+			<cfset Type = arguments.stProps[i].METADATA.type />
+		</cfif>
+		
 	   <cfset temp = QueryAddRow(qMetadataSetup)>
 	   <cfset Temp = QuerySetCell(qMetadataSetup,"typename", typename) />
 	   <cfset Temp = QuerySetCell(qMetadataSetup,"propertyname", i) />
 	   <cfset Temp = QuerySetCell(qMetadataSetup,"ftSeq", Seq) />
 	   <cfset Temp = QuerySetCell(qMetadataSetup,"ftFieldset", Fieldset) />
 	   <cfset Temp = QuerySetCell(qMetadataSetup,"ftWizzardStep", WizzardStep) />
+	   <cfset Temp = QuerySetCell(qMetadataSetup,"ftType", Type) />
 		
 		
 	</cfloop>
