@@ -465,7 +465,44 @@ LIBRARY DATA
 					<cfif len(HTML)>
 						<cfoutput>#HTML#</cfoutput>
 					<cfelse>
-						<ft:object typename="#request.ftJoin#" lfields="" inTable=0 />
+					
+						<cfset qMetadata = application.types[request.ftJoin].qMetadata >
+		
+						<cfquery dbtype="query" name="qFieldSets">
+						SELECT ftWizzardStep, ftFieldset
+						FROM qMetadata
+						WHERE ftFieldset <> '#request.ftJoin#'
+						AND ftType <> 'uuid'
+						AND ftType <> 'array'
+						Group By ftWizzardStep, ftFieldset
+						ORDER BY ftSeq
+						</cfquery>				
+														
+						<cfif qFieldSets.recordcount GTE 1>
+							
+							<cfloop query="qFieldSets">
+								<cfquery dbtype="query" name="qFieldset">
+								SELECT *
+								FROM qMetadata
+								WHERE ftFieldset = '#qFieldsets.ftFieldset#'
+								AND ftType <> 'uuid'
+								AND ftType <> 'array'
+								ORDER BY ftSeq
+								</cfquery>
+								
+								<ft:object typename="#request.ftJoin#" format="edit"  lFields="#valuelist(qFieldset.propertyname)#" inTable=false IncludeFieldSet=1 Legend="#qFieldSets.ftFieldset#" />
+							</cfloop>
+							
+							
+						<cfelse>
+						
+							<!--- default edit handler --->
+							<ft:object typename="#request.ftJoin#" format="edit"  lFields="" IncludeFieldSet=1 Legend="ADD NEW" />
+							
+						</cfif>
+							
+							
+					
 					</cfif>
 					
 					<cfoutput>
