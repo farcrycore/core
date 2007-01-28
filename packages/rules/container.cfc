@@ -1,6 +1,6 @@
 <!--- 
 || LEGAL ||
-$Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
+$Copyright: Daemon Pty Limited 1995-2007, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
@@ -13,12 +13,11 @@ $Revision: 1.41.2.1 $
 || DESCRIPTION || 
 $Description: Core container management component. $
 
-
 || DEVELOPER ||
 $Developer: Geoff Bowers (modius@daemon.com.au) $
 --->
-<cfcomponent extends="farcry.fourq.fourq" displayname="Container Management" hint="Manages all core functions for container instance management." version="1.1">
-	<cfproperty name="objectID" hint="Container instance primary key." type="uuid">
+<cfcomponent extends="farcry.fourq.fourq" displayname="Container Management" hint="Manages all core functions for container instance management.">
+	<cfproperty name="objectID" hint="Container instance primary key." type="uuid" required="true" />
 	<cfproperty name="label" hint="Label for the container instance."  type="nstring" default="(unspecified)">
 	<cfproperty name="aRules" hint="Array of rule objects to be managed by this container." type="array"> 
 	<cfproperty name="bShared" hint="Flags whether or not this container is to be shared amongst various objects and scheduled by publishing rule." type="boolean" default="0">
