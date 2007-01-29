@@ -2,50 +2,6 @@
 
 <cfimport taglib="/farcry/farcry_core/tags/formtools/" prefix="ft" >
 
-<cffunction name="ajaxGetImageFields" access="remote" output="true" returntype="string">
- 	<cfargument name="objectid" required="yes" type="uuid" hint="ObjectID of the object to be rendered.">
- 	<cfargument name="typename" required="yes" default="" type="string" hint="typename of the object to be rendered.">
- 	<cfargument name="richtextfield" required="yes" type="string" hint="name of the richtext field.">
-
-	<cfset stMetadata = duplicate(application.types[arguments.typename].stprops[arguments.richtextfield].metadata) />
-	
-	<!--- <cfquery datasource="#application.dsn#" name="qImages">
-	select top 10 * 
-	from avnImage
-	where label <> ''
-	</cfquery> --->
-	
-<!--- 	<cfquery datasource="#application.dsn#" name="qImages">
-	select * 
-	from #arguments.typename#_#arguments.ftImageTypename#
-	where parentid = '#arguments.objectid#'
-	</cfquery> --->
-	<cfquery datasource="#application.dsn#" name="qImages">
-	select top 10 * 
-	from avnImage
-	where label <> ''
-	</cfquery>
-	<cfoutput>
-		
-	<!--- &nbsp; --->
-	<select id="imagelistsrc" name="imagelistsrc" onchange="getImageSRC();">
-		<option value="">--select a library image--</option>
-		<cfloop query="qImages">
-			<option value="#qImages.objectid#">#qImages.label#</option>
-		</cfloop>
-	</select>
-	<select id="imagefieldname" name="imagefieldname" onchange="getImageSRC();">
-		<option value="standardimage">Standard</option>										
-		<option value="thumbnailimage">Thumbnail</option>										
-		<option value="sourceimage">Source</option>										
-	</select>
-	
-	<div id="imageSRC" style="display:none;"></div>
-	
-	</cfoutput>
-
-</cffunction>
-
 
 
 <cffunction name="ajaxGetTemplateDropdowns" access="remote" output="true" returntype="string">
