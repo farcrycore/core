@@ -675,9 +675,9 @@
 <cffunction name="ImageAutoGenerateBeforeSave" access="public" output="true" returntype="struct">
 	<cfargument name="stProperties" required="yes" type="struct">
 	<cfargument name="stFields" required="yes" type="struct">
-		
-
-	<cfset oImage = createobject("component", "farcry.farcry_core.packages.formtools.image") />
+	
+	<cfset var imagerootPath = expandpath(application.url.imageroot) />	
+	<cfset var oImage = createobject("component", "farcry.farcry_core.packages.formtools.image") />
 
 	<cfloop list="#StructKeyList(arguments.stFields)#" index="i">
 
@@ -694,15 +694,15 @@
 				<cfif structKeyExists(arguments.stProperties, sourceFieldName) AND len(arguments.stProperties[sourceFieldName])>
 													
 
-					<cfparam name="arguments.stFields['#i#'].metadata.ftDestination" default="#application.config.image.StandardImageURL#">		
+					<cfparam name="arguments.stFields['#i#'].metadata.ftDestination" default="">		
 					<cfparam name="arguments.stFields['#i#'].metadata.ftImageWidth" default="#application.config.image.StandardImageWidth#">
 					<cfparam name="arguments.stFields['#i#'].metadata.ftImageHeight" default="#application.config.image.StandardImageHeight#">
 					<cfparam name="arguments.stFields['#i#'].metadata.ftAutoGenerateType" default="FitInside">
 					<cfparam name="arguments.stFields['#i#'].metadata.ftPadColor" default="##ffffff">
 					
 					<cfset stArgs = StructNew() />
-					<cfset stArgs.Source = "#application.path.project#/www#arguments.stProperties[sourceFieldName]#" />
-					<cfset stArgs.Destination = "#application.path.project#/www#arguments.stFields['#i#'].metadata.ftDestination#" />
+					<cfset stArgs.Source = "#imagerootPath##arguments.stProperties[sourceFieldName]#" />
+					<cfset stArgs.Destination = "#imagerootPath##arguments.stFields['#i#'].metadata.ftDestination#" />
 					<cfset stArgs.Width = "#arguments.stFields['#i#'].metadata.ftImageWidth#" />
 					<cfif NOT isNumeric(stArgs.Width)>
 						<cfset stArgs.Width = 0 />				
