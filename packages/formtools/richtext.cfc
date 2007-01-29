@@ -61,6 +61,7 @@
 							theme_advanced_path_location : "bottom",
 							theme_advanced_resize_horizontal : true,
 							theme_advanced_resizing : true,
+							extended_valid_elements: "object[classid|codebase|width|height],param[name|value],embed[src|quality|width|height|type|pluginspage|bgcolor]",
 						</cfif>						
 						elements : "#arguments.fieldname#",
 						<!---<cfif NOT ListFindNoCase("none,default", application.config.tinyMCE.insertimage_callback) AND application.config.tinyMCE.insertimage_callback NEQ "">
