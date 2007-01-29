@@ -1,4 +1,10 @@
 <!--- @@displayname: Thumbnail Image for Library Select --->
-<!--- @@author: Stephen Moretti --->
+<!--- @@author: Matthew Bryant --->
 
-<cfoutput><img src="#stobj.thumbnailImage#"></cfoutput>
+<cfif len(stobj.thumbnailImage)>
+	<cfoutput><img src="#stobj.thumbnailImage#"></cfoutput>
+<cfelseif len(stobj.label)>
+	<cfoutput>#stobj.label#</cfoutput>
+<cfelse>
+	<cfoutput>#stobj.objectid#</cfoutput>
+</cfif>
