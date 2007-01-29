@@ -103,6 +103,8 @@ $in: objectid -- $
 		 ---------------------------------------->
 		<cfset application.url.webroot = attributes.projectURL />
 		<cfset application.url.farcry = "#attributes.projectURL#/farcry" />
+		<cfset application.url.imageroot = "#application.url.webroot#/images">
+		<cfset application.url.flashroot = "#application.url.webroot#/swf">
 		
 		
 		<!----------------------------------------
