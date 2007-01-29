@@ -130,8 +130,10 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	<cfsavecontent variable="rpt1">
 	<cfoutput>
 		<span class="frameMenuBullet">&raquo;</span> #application.rB.formatRBString(application.adminBundle[session.dmProfile.locale].updatingRecsFor,subS)#<br>
-		<cfif len(application.config.verity.contenttype[key].custom3) OR len(application.config.verity.contenttype[key].custom4)>
-		<span class="frameMenuBullet">&raquo;</span> Including Custom Fields (custom3: #application.config.verity.contenttype[key].custom3#, custom4:#application.config.verity.contenttype[key].custom4#)<br>
+		<cfif structKeyExists(application.config.verity.contenttype[key], "custom3") AND  structKeyExists(application.config.verity.contenttype[key], "custom4")>
+			<cfif len(application.config.verity.contenttype[key].custom3) OR len(application.config.verity.contenttype[key].custom4)>
+			<span class="frameMenuBullet">&raquo;</span> Including Custom Fields (custom3: #application.config.verity.contenttype[key].custom3#, custom4:#application.config.verity.contenttype[key].custom4#)<br>
+			</cfif>
 		</cfif>
 	</cfoutput>
 	</cfsavecontent>
@@ -160,6 +162,14 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	
 	<!--- set builttodate on completion to last record --->
 	<cfif q.recordcount>
+		<cfloop query="q">
+			<cfset stSearchBuildTo = structNew() />
+			<cfset stSearchBuildTo.IndexedObjectID = q.ObjectID />
+			<cfset stSearchBuildTo.DateTimelastIndexed = q.DateTimeLastUpdated />
+			<cfset stSearchBuildTo.MachineName = "dragonballz" />
+			<cfset stResult = createobject("component", application.types.searchBuildTo.packagepath).createData(stProperties=stSearchBuildTo) />
+			
+		</cfloop>
 		<cfset lastbuilttodate=q.datetimelastupdated[q.recordcount] />
 		<cfset setBuiltToDate(typename, lastbuilttodate) />
 	</cfif>	
@@ -338,7 +348,8 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	<cfargument name="maxRows" required="false" default="99999999" hint="Number of records to update." type="numeric" />
 	<cfset var lSelectColumns=getSelectColumns(arguments.typename)>
 	<cfset var qContent=queryNew(lSelectColumns) />
-	
+	<cfset var bFirst = true />
+		
 	<cfif NOT isDefined("arguments.builttodate") AND structKeyExists(application.config.verity.contenttype[arguments.typename], "builttodate") AND isDate(application.config.verity.contenttype[arguments.typename].builttodate)>
 		<cfset arguments.builttodate=application.config.verity.contenttype[arguments.typename].builttodate />
 	</cfif>
@@ -353,24 +364,39 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	<cfquery datasource="#application.dsn#" name="qContent" result="res">
 		
 		<cfif application.dbtype EQ "mssql">
-			SELECT TOP #arguments.maxRows# #lSelectColumns#
+			SELECT TOP #arguments.maxRows# 
 		<cfelse>
-			SELECT #lSelectColumns#
+			SELECT
 		</cfif>	
-			
-		FROM #arguments.typename#
-		WHERE 1 = 1
+
+		<cfloop list="#lSelectColumns#" index="i">	 
+			<cfif not bFirst>
+				,
+			</cfif>	
+			a.#i#	
+			<cfset bFirst = false />
+		</cfloop>
 		
-		<cfif  isDefined("arguments.builttodate") AND NOT arguments.bBuildFromScratch>
-			AND datetimelastupdated > #createODBCDate(arguments.builttodate)#
-			AND datetimelastupdated < #createODBCDate(arguments.builttodate+365)#
-		</cfif>
+
+		from #arguments.typename# a
+		LEFT JOIN searchBuildTo s ON a.objectid = s.IndexedObjectID
+		where 1=1
+		and (
+		    a.datetimelastupdated > s.DateTimeLastIndexed
+		    or s.DateTimeLastIndexed is null
+		    )
 		
+		and (
+		    s.machineName = 'dragon'
+		    or s.machineName is null
+		    )
+		
+	
 		<cfif structKeyExists(application.types[arguments.typename].stProps, "status")>
-			AND upper(status) = 'APPROVED'
+			AND upper(a.status) = 'APPROVED'
 		</cfif>
 		
-		ORDER BY datetimelastupdated
+		ORDER BY a.datetimelastupdated
 		
 		<cfif listcontainsNoCase("mysql,mysql5,postgresql", application.dbtype)>
 			LIMIT #arguments.maxRows#
