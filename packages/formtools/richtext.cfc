@@ -9,12 +9,14 @@
 		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
-		
-		<cfparam name="arguments.stMetadata.ftImageListField" default="">
-		
+				
 		<cfparam name="arguments.stMetadata.ftImageArrayField" default="">
 		<cfparam name="arguments.stMetadata.ftImageTypename" default="">
 		<cfparam name="arguments.stMetadata.ftImageField" default="">
+		
+		<cfparam name="arguments.stMetadata.ftFlashArrayField" default="">
+		<cfparam name="arguments.stMetadata.ftFlashTypename" default="">
+		<cfparam name="arguments.stMetadata.ftFlashField" default="">
 		
 		
 		<cfparam name="arguments.stMetadata.ftConfig" default=""><!--- tinyMCE.tinyMCE_config --->
@@ -39,8 +41,8 @@
 		<cfset Request.InHead.TinyMCE = 1>
 	
 		<cfsavecontent variable="html">
-			
-			<cfoutput><script language="javascript" type="text/javascript">	</cfoutput>
+			<cfoutput>
+			<script language="javascript" type="text/javascript">	</cfoutput>
 
 				<cfoutput>
 					tinyMCE.init({
@@ -61,7 +63,7 @@
 							theme_advanced_path_location : "bottom",
 							theme_advanced_resize_horizontal : true,
 							theme_advanced_resizing : true,
-							extended_valid_elements: "object[classid|codebase|width|height],param[name|value],embed[src|quality|width|height|type|pluginspage|bgcolor]",
+							extended_valid_elements: "script[type],img[style|class|src|border=0|alt|title|hspace|vspace|width|height|align|onmouseover|onmouseout|name]",
 						</cfif>						
 						elements : "#arguments.fieldname#",
 						<!---<cfif NOT ListFindNoCase("none,default", application.config.tinyMCE.insertimage_callback) AND application.config.tinyMCE.insertimage_callback NEQ "">
@@ -73,7 +75,14 @@
 						//file_browser_callback : "fileBrowserCallBack",
 						<cfif len(arguments.stMetadata.ftImageArrayField) and len(arguments.stMetadata.ftImageTypename) and len(arguments.stMetadata.ftImageField)>
 							external_image_list_url : "#application.url.farcry#/facade/tinyMCEImageList.cfm?objectID=#arguments.stObject.ObjectID#&typename=#arguments.typename#&ImageArrayField=#arguments.stMetadata.ftImageArrayField#&ImageTypename=#arguments.stMetadata.ftImageTypename#&ImageField=#arguments.stMetadata.ftImageField#",
-						</cfif>			
+						</cfif>									
+						<!--- <cfif len(arguments.stMetadata.ftFlashArrayField) and len(arguments.stMetadata.ftFlashTypename) and len(arguments.stMetadata.ftFlashField)>
+							flash_external_list_url : "#application.url.farcry#/facade/tinyMCEFlashList.cfm?objectID=#arguments.stObject.ObjectID#&typename=#arguments.typename#&FlashArrayField=#arguments.stMetadata.ftFlashArrayField#&FlashTypename=#arguments.stMetadata.ftFlashTypename#&FlashField=#arguments.stMetadata.ftFlashField#",
+							flash_wmode : "transparent",
+							flash_quality : "high",
+							flash_menu : "false",
+														
+						</cfif>	 --->
 						external_link_list_url : "#application.url.farcry#/facade/tinyMCELinkList.cfm"						
 					});
 				</cfoutput>
