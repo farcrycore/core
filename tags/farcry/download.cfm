@@ -27,9 +27,19 @@ $out:$
 
 
 
+
 <cfif isdefined("attributes.downloadfile") and len(attributes.downloadfile)>
 	<cfset url.downloadfile = attributes.downloadfile>
 </cfif>
+<cfif isDefined(url.downloadfile)>
+	<cfset url.objectid = url.downloadfile />
+</cfif>
+
+
+<cfif isdefined("attributes.objectid") and len(attributes.objectid)>
+	<cfset url.objectid = attributes.objectid>
+</cfif>
+
 
 <cfif isdefined("attributes.fieldname") and len(attributes.fieldname)>
 	<cfset url.fieldname = attributes.fieldname>
@@ -41,15 +51,15 @@ $out:$
 	<cfset url.typename = attributes.typename>
 <cfelse>
 	<cfset q4 = createObject("component", "farcry.fourq.fourq") />
-	<cfset url.typename = q4.findType(objectid="#url.downloadFile#") />	
+	<cfset url.typename = q4.findType(objectid="#url.objectid#") />	
 </cfif>
 
 
 <!--- should not be able to get object unless authorised. --->
-<cfif isDefined("url.DownloadFile") and len(trim(url.DownloadFile))>
+<cfif isDefined("url.objectid") and len(trim(url.objectid))>
 	<cfset o = createObject("component", application.types[url.typename].packagePath) />
 	
-	<cfset stFile = o.getData(objectid="#url.downloadfile#") />
+	<cfset stFile = o.getData(objectid="#url.objectid#") />
 
 	<cfif not len(url.fieldname)>
 		<!--- Name of the file field has not been sent. We need to loop though the type to determine which field contains the file path --->
@@ -95,8 +105,8 @@ $out:$
 	
 		<!--- log download --->
 		<cfinvoke component="#application.packagepath#.farcry.stats" method="logEntry">
-			<cfinvokeargument name="pageId" value="#url.DownloadFile#"/>
-			<cfinvokeargument name="navId" value="#url.DownloadFile#"/>
+			<cfinvokeargument name="pageId" value="#url.objectid#"/>
+			<cfinvokeargument name="navId" value="#url.objectid#"/>
 			<cfinvokeargument name="remoteIP" value="#cgi.REMOTE_ADDR#"/>
 			<cfinvokeargument name="sessionId" value="#trim(session.sessionId)#"/>
 			<cftry>
