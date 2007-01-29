@@ -152,12 +152,17 @@
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 
 		<cfparam name="arguments.stMetadata.ftAutoGenerateType" default="FitInside">
-		<cfparam name="arguments.stMetadata.ftImageWidth" default="#application.config.image.standardImageWidth#">
-		<cfparam name="arguments.stMetadata.ftImageHeight" default="#application.config.image.standardImageHeight#">
+		<cfparam name="arguments.stMetadata.ftImageWidth" default="0">
+		<cfparam name="arguments.stMetadata.ftImageHeight" default="0">
 		
 		<cfsavecontent variable="html">
 			<cfif len(arguments.stMetadata.value)>
-				<cfoutput><img src="#arguments.stMetadata.value#" <cfif arguments.stMetadata.ftAutoGenerateType EQ "ForceSise" OR arguments.stMetadata.ftAutoGenerateType EQ "Pad" >width="#arguments.stMetadata.ftImageWidth#" height="#arguments.stMetadata.ftImageHeight#"</cfif>></cfoutput>			
+				<cfoutput><img src="#arguments.stMetadata.value#" 
+					<cfif arguments.stMetadata.ftAutoGenerateType EQ "ForceSize" OR arguments.stMetadata.ftAutoGenerateType EQ "Pad" >
+						<cfif len(arguments.stMetadata.ftImageWidth) and arguments.stMetadata.ftImageWidth GT 0>width="#arguments.stMetadata.ftImageWidth#"</cfif>
+						<cfif len(arguments.stMetadata.ftImageHeight) and arguments.stMetadata.ftImageHeight GT 0>height="#arguments.stMetadata.ftImageHeight#"</cfif>
+					</cfif>
+				/></cfoutput>			
 			</cfif>
 		</cfsavecontent>
 		
@@ -171,12 +176,13 @@
 		<cfset var stResult = structNew()>
 		<cfset var stGeneratedImageArgs = StructNew() />		
 		<cfset var stGeneratedImage = structNew() />
+		<cfset var imagerootPath = expandpath(application.url.imageroot) />
 		
 		<cfset stResult.bSuccess = true>
 		<cfset stResult.value = stFieldPost.value>
 		<cfset stResult.stError = StructNew()>
 		
-		<cfparam name="arguments.stMetadata.ftDestination" default="#application.config.image.SourceImageURL#">
+		<cfparam name="arguments.stMetadata.ftDestination" default="">
 		<cfparam name="arguments.stMetadata.ftImageWidth" default="0" />
 		<cfparam name="arguments.stMetadata.ftImageHeight" default="0" />
 		<cfparam name="arguments.stMetadata.ftAutoGenerateType" default="FitInside">
@@ -187,8 +193,13 @@
 		<!--- Perform any validation here --->
 		<!--- --------------------------- --->
 		
-		<cfif NOT DirectoryExists("#application.path.project#/www#arguments.stMetadata.ftDestination#")>
-			<cfdirectory action="create" directory="#application.path.project#/www#arguments.stMetadata.ftDestination#">
+		<!--- If developer has entered an ftDestination, make sure it starts with a slash --->
+		<cfif len(arguments.stMetadata.ftDestination) AND left(arguments.stMetadata.ftDestination,1) NEQ "/">
+			<cfset arguments.stMetadata.ftDestination = "/#arguments.stMetadata.ftDestination#" />
+		</cfif>
+		
+		<cfif NOT DirectoryExists("#imagerootPath##arguments.stMetadata.ftDestination#")>
+			<cfdirectory action="create" directory="#imagerootPath##arguments.stMetadata.ftDestination#">
 		</cfif>		
 		
 		
@@ -196,11 +207,11 @@
 	
 			<cffile action="UPLOAD"
 		        filefield="#stMetadata.FormFieldPrefix##stMetadata.Name#New" 
-		        destination="#application.path.project#/www#arguments.stMetadata.ftDestination#"
+		        destination="#imagerootPath##arguments.stMetadata.ftDestination#"
 				nameconflict="MAKEUNIQUE">
 
 				<cfif len(arguments.stMetaData.ftImageWidth) OR len(arguments.stMetaData.ftImageHeight)>
-					<cfset stGeneratedImageArgs.Source = "#application.path.project#/www#arguments.stMetadata.ftDestination#/#File.ServerFile#" />
+					<cfset stGeneratedImageArgs.Source = "#imagerootPath##arguments.stMetadata.ftDestination#/#File.ServerFile#" />
 					<cfset stGeneratedImageArgs.Destination = "" />			
 					<cfset stGeneratedImageArgs.Width = "#arguments.stMetadata.ftImageWidth#" />
 					<cfif NOT isNumeric(stGeneratedImageArgs.Width)>
