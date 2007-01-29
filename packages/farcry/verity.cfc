@@ -162,14 +162,6 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	
 	<!--- set builttodate on completion to last record --->
 	<cfif q.recordcount>
-		<cfloop query="q">
-			<cfset stSearchBuildTo = structNew() />
-			<cfset stSearchBuildTo.IndexedObjectID = q.ObjectID />
-			<cfset stSearchBuildTo.DateTimelastIndexed = q.DateTimeLastUpdated />
-			<cfset stSearchBuildTo.MachineName = "dragonballz" />
-			<cfset stResult = createobject("component", application.types.searchBuildTo.packagepath).createData(stProperties=stSearchBuildTo) />
-			
-		</cfloop>
 		<cfset lastbuilttodate=q.datetimelastupdated[q.recordcount] />
 		<cfset setBuiltToDate(typename, lastbuilttodate) />
 	</cfif>	
@@ -348,8 +340,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	<cfargument name="maxRows" required="false" default="99999999" hint="Number of records to update." type="numeric" />
 	<cfset var lSelectColumns=getSelectColumns(arguments.typename)>
 	<cfset var qContent=queryNew(lSelectColumns) />
-	<cfset var bFirst = true />
-		
+	
 	<cfif NOT isDefined("arguments.builttodate") AND structKeyExists(application.config.verity.contenttype[arguments.typename], "builttodate") AND isDate(application.config.verity.contenttype[arguments.typename].builttodate)>
 		<cfset arguments.builttodate=application.config.verity.contenttype[arguments.typename].builttodate />
 	</cfif>
@@ -364,39 +355,24 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	<cfquery datasource="#application.dsn#" name="qContent" result="res">
 		
 		<cfif application.dbtype EQ "mssql">
-			SELECT TOP #arguments.maxRows# 
+			SELECT TOP #arguments.maxRows# #lSelectColumns#
 		<cfelse>
-			SELECT
+			SELECT #lSelectColumns#
 		</cfif>	
-
-		<cfloop list="#lSelectColumns#" index="i">	 
-			<cfif not bFirst>
-				,
-			</cfif>	
-			a.#i#	
-			<cfset bFirst = false />
-		</cfloop>
+			
+		FROM #arguments.typename#
+		WHERE 1 = 1
 		
-
-		from #arguments.typename# a
-		LEFT JOIN searchBuildTo s ON a.objectid = s.IndexedObjectID
-		where 1=1
-		and (
-		    a.datetimelastupdated > s.DateTimeLastIndexed
-		    or s.DateTimeLastIndexed is null
-		    )
-		
-		and (
-		    s.machineName = 'dragon'
-		    or s.machineName is null
-		    )
-		
-	
-		<cfif structKeyExists(application.types[arguments.typename].stProps, "status")>
-			AND upper(a.status) = 'APPROVED'
+		<cfif  isDefined("arguments.builttodate") AND NOT arguments.bBuildFromScratch>
+			AND datetimelastupdated > #createODBCDate(arguments.builttodate)#
+			AND datetimelastupdated < #createODBCDate(arguments.builttodate+365)#
 		</cfif>
 		
-		ORDER BY a.datetimelastupdated
+		<cfif structKeyExists(application.types[arguments.typename].stProps, "status")>
+			AND upper(status) = 'APPROVED'
+		</cfif>
+		
+		ORDER BY datetimelastupdated
 		
 		<cfif listcontainsNoCase("mysql,mysql5,postgresql", application.dbtype)>
 			LIMIT #arguments.maxRows#
