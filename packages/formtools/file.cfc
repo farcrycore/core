@@ -16,7 +16,6 @@
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 
 		<cfparam name="arguments.stMetadata.ftstyle" default="">
-		<cfparam name="arguments.stMetadata.ftDestination" default="/files">
 		
 		<cfset Request.inHead.Scriptaculous = 1>
 		
@@ -64,7 +63,7 @@
 		</cfif> --->
 
 		<cfsavecontent variable="html">
-			<cfoutput><a target="_blank" href="#application.url.webroot#/download.cfm?downloadfile=#arguments.stobject.objectid#&field=#arguments.stmetadata.name#">#arguments.stMetadata.value#</a></cfoutput>			
+			<cfoutput><a target="_blank" href="#application.url.webroot#/download.cfm?downloadfile=#arguments.stobject.objectid#&typename=#arguments.typename#&field=#arguments.stmetadata.name#">#arguments.stMetadata.value#</a></cfoutput>			
 			
 		</cfsavecontent>
 		
