@@ -32,11 +32,11 @@ type properties
 
 
 <cfproperty ftSeq="12" ftWizzardStep="Body" ftFieldset="Body" name="Body" type="longchar" hint="Main body of content." required="no" default="" ftType="richtext" ftLabel="Body" 
-	ftImageArrayField="aObjectIDs" ftImageTypename="dmImage" ftImageField="StandardImage" 
-	ftTemplateTypeList="dmImage,dmFile,dmNavigation,dmHTML" ftTemplateWebskinPrefixList="insertHTML"
+	ftImageArrayField="aObjectIDs" ftImageTypename="dmImage" ftImageField="StandardImage"
+	ftTemplateTypeList="dmImage,dmFile,dmFlash,dmNavigation,dmHTML" ftTemplateWebskinPrefixList="insertHTML"
 	ftTemplateSnippetWebskinPrefix="insertSnippet">
 
-<cfproperty ftSeq="13" ftWizzardStep="Body" ftFieldset="Relationships" name="aObjectIDs" type="array" hint="Holds objects to be displayed at this particular node.  Can be of mixed types." required="no" default="" ftLabel="Associated Media" ftJoin="dmImage,dmFile">
+<cfproperty ftSeq="13" ftWizzardStep="Body" ftFieldset="Relationships" name="aObjectIDs" type="array" hint="Holds objects to be displayed at this particular node.  Can be of mixed types." required="no" default="" ftLabel="Associated Media" ftJoin="dmImage,dmFile,dmFlash">
 <cfproperty ftSeq="14" ftWizzardStep="Body" ftFieldset="Relationships" name="aRelatedIDs" type="array" hint="Holds object pointers to related objects.  Can be of mixed types." required="no" default="" ftJoin="dmNavigation,dmHTML" ftLabel="Associated Content">
 
 <cfproperty ftSeq="10" ftWizzardStep="Body" ftFieldset="Teaser" name="Teaser" type="longchar" hint="Teaser text." required="no" default="">
