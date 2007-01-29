@@ -14,14 +14,8 @@
 		<cfparam name="arguments.stMetadata.ftImageTypename" default="">
 		<cfparam name="arguments.stMetadata.ftImageField" default="">
 		
-		<cfparam name="arguments.stMetadata.ftFlashArrayField" default="">
-		<cfparam name="arguments.stMetadata.ftFlashTypename" default="">
-		<cfparam name="arguments.stMetadata.ftFlashField" default="">
-		
 		
 		<cfparam name="arguments.stMetadata.ftConfig" default=""><!--- tinyMCE.tinyMCE_config --->
-		<cfparam name="arguments.stMetadata.ftImageTypename" default="dmImage" />
-		<cfparam name="arguments.stMetadata.ftImageFields" default="StandardImage,ThumbnailImage,SourceImage" />
 	
 		<!--- crude block for safari -- not supported by tinyMCE --->
 		<!--- todo: update this to a specific version set, this will be fixed soon apparently --->
