@@ -466,6 +466,8 @@ LIBRARY DATA
 						<cfoutput>#HTML#</cfoutput>
 					<cfelse>
 					
+						<cfset stNew = oData.getData(objectid=createUUID()) />
+					
 						<cfset qMetadata = application.types[request.ftJoin].qMetadata >
 		
 						<cfquery dbtype="query" name="qFieldSets">
@@ -490,14 +492,14 @@ LIBRARY DATA
 								ORDER BY ftSeq
 								</cfquery>
 								
-								<ft:object typename="#request.ftJoin#" format="edit"  lFields="#valuelist(qFieldset.propertyname)#" inTable=false IncludeFieldSet=1 Legend="#qFieldSets.ftFieldset#" />
+								<ft:object objectid="#stNew.objectid#" typename="#request.ftJoin#" format="edit"  lFields="#valuelist(qFieldset.propertyname)#" inTable=false IncludeFieldSet=1 Legend="#qFieldSets.ftFieldset#" />
 							</cfloop>
 							
 							
 						<cfelse>
 						
 							<!--- default edit handler --->
-							<ft:object typename="#request.ftJoin#" format="edit"  lFields="" IncludeFieldSet=1 Legend="ADD NEW" />
+							<ft:object objectid="#stNew.objectid#" typename="#request.ftJoin#" format="edit"  lFields="" IncludeFieldSet=1 Legend="ADD NEW" />
 							
 						</cfif>
 							
