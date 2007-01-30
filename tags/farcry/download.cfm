@@ -31,7 +31,7 @@ $out:$
 <cfif isdefined("attributes.downloadfile") and len(attributes.downloadfile)>
 	<cfset url.downloadfile = attributes.downloadfile>
 </cfif>
-<cfif isDefined(url.downloadfile)>
+<cfif isDefined("url.downloadfile")>
 	<cfset url.objectid = url.downloadfile />
 </cfif>
 
