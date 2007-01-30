@@ -82,6 +82,7 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 <cfparam name="attributes.PackageType" default="types" type="string">
 
 <cfparam name="attributes.module" default="customlists/#attributes.typename#.cfm">
+<cfparam name="attributes.libraryname" default="" />
 
 
 <cfif NOT structKeyExists(session.objectadmin, attributes.typename)>
@@ -354,7 +355,9 @@ user --->
 	
 	<ft:processForm action="edit">
 		<!--- TODO: Check Permissions. --->
-		<cflocation URL="#application.url.farcry#/conjuror/invocation.cfm?objectid=#form.objectid#&typename=#attributes.typename#&method=#attributes.editMethod#&ref=typeadmin&module=#attributes.module#" addtoken="false">
+		<cfset EditURL = "#application.url.farcry#/conjuror/invocation.cfm?objectid=#form.objectid#&typename=#attributes.typename#&method=#attributes.editMethod#&ref=typeadmin&module=#attributes.module#">
+		<cfif Len(attributes.LibraryName)><cfset EditURL = EditURL&"&lib=#attributes.LibraryName#"></cfif>
+		<cflocation URL="#EditURL#" addtoken="false">
 	</ft:processForm>
 	
 	<ft:processForm action="view">
