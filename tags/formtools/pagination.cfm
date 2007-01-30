@@ -46,7 +46,7 @@ $in:  $
 	<cfparam name="attributes.bShowResultTotal" default="true" type="boolean" />
 	<cfparam name="attributes.bShowPageDropdown" default="true" type="boolean" />
 	<cfparam name="attributes.paginationID" default="" />	
-	<cfparam name="attributes.CurrentPage" default="0" />
+	<cfparam name="attributes.CurrentPage" default="1" />
 	<cfparam name="attributes.maxPages" default="0" type="numeric">
 	<cfparam name="attributes.totalRecords" default="0" type="numeric">
 	<cfparam name="attributes.pageLinks" default="0" type="numeric">
@@ -80,12 +80,18 @@ $in:  $
 		</cfif>
 			
 	<cfelse>
-		<cfset attributes.startRow = 1 />
-		<cfset attributes.endRow = attributes.recordsPerPage />
+		<cfset attributes.startRow = attributes.currentPage * attributes.recordsPerPage - attributes.recordsPerPage + 1 />
+		<cfif attributes.StartRow GT attributes.totalRecords>
+			<cfset attributes.startRow = 1 />
+		</cfif>
+		
+		<cfset attributes.endRow = attributes.currentPage * attributes.recordsPerPage />
 		<cfif attributes.endRow GT attributes.qRecordSet.recordcount>
 			<cfset attributes.endRow = attributes.qRecordSet.recordcount />
 		</cfif>
 	</cfif>
+	
+
 	
 	<cfscript>
 		bShowPaginate = true;
