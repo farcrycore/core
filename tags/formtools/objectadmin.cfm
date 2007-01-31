@@ -345,7 +345,10 @@ user --->
 	
 	
 	
-	<ft:processForm action="add" url="#application.url.farcry#/conjuror/invocation.cfm?objectid=#createUUID()#&typename=#attributes.typename#&method=#attributes.editMethod#&ref=typeadmin&module=#attributes.module#" />
+	<cfset addURL = "#application.url.farcry#/conjuror/invocation.cfm?objectid=#createUUID()#&typename=#attributes.typename#&method=#attributes.editMethod#&ref=typeadmin&module=#attributes.module#" />	
+	<cfif Len(attributes.LibraryName)><cfset addURL = addURL&"&lib=#attributes.LibraryName#" /></cfif>
+	<ft:processForm action="add" url="#addURL#" />
+
 	
 	
 	<ft:processForm action="overview">
