@@ -22,7 +22,7 @@
 		</cfif>
 		
 		<cfsavecontent variable="html">
-			<cfoutput><input type="Text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#arguments.stMetadata.ftCurrencySymbol##arguments.stMetadata.value#" <cfif structKeyExists(arguments.stMetadata,'ftStyle')>style="#arguments.stMetadata.ftstyle#"</cfif> /></cfoutput>
+			<cfoutput><input type="Text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#arguments.stMetadata.ftCurrencySymbol##arguments.stMetadata.value#" <cfif structKeyExists(arguments.stMetadata,'ftStyle')>style="#arguments.stMetadata.ftstyle#"</cfif> class="#arguments.stMetadata.ftclass#" /></cfoutput>
 		</cfsavecontent>
 		
 		<cfreturn html>
