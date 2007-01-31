@@ -220,18 +220,23 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 				</cfsavecontent>
 			</cfif>
 		</cfif>
-<!--- TODO: this is potentiall a VERY slow QUERY, especailly on typeadmin NAV, cache for a few seconds when people nav, look for alternative to make speedier --->
-		<cfquery name="qGetData" datasource="#arguments.dsn#" cachedwithin="#CreateTimeSpan(0,0,0,20)#">
-		#preservesingleQuotes(strSQL)#
-		</cfquery>
-		
-		<!--- to prevent duplicate results (when 1 typeobject belongs to many categories) --->
-		<cfquery dbtype="query" name="qGetData">
-		SELECT	DISTINCT *
-		FROM	qGetData
-		ORDER BY #arguments.orderBy# #arguments.orderDirection#
-		</cfquery>
 
+		<cfif listLen(arguments.lcategoryids) LTE 1><!--- no need to run a query of query as no duplicates should be selected by the query--->			
+			<cfset strSQL = strSQL & " ORDER BY #arguments.orderBy# #arguments.orderDirection#">
+			<cfquery name="qGetData" datasource="#arguments.dsn#" cachedwithin="#CreateTimeSpan(0,0,0,20)#">
+			#preservesingleQuotes(strSQL)#
+			</cfquery>
+		<cfelse><!--- to prevent duplicate results (when 1 typeobject belongs to more than one category) --->
+			<!--- TODO: this is potentiall a VERY slow QUERY, especailly on typeadmin NAV, cache for a few seconds when people nav, look for alternative to make speedier --->
+			<cfquery name="qGetData" datasource="#arguments.dsn#" cachedwithin="#CreateTimeSpan(0,0,0,20)#">
+			#preservesingleQuotes(strSQL)#
+			</cfquery>			
+			<cfquery dbtype="query" name="qGetData">
+			SELECT	DISTINCT *
+			FROM	qGetData
+			ORDER BY #arguments.orderBy# #arguments.orderDirection#
+			</cfquery>
+		</cfif>
 		<cfreturn qGetData>
 	</cffunction>
 	
