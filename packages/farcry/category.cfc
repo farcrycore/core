@@ -194,7 +194,6 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 						AND refCat#i#.objectId = type.objectId
 					</cfloop>
 					
-					ORDER BY #arguments.orderBy# #arguments.orderDirection#
 					</cfoutput>
 				</cfsavecontent>
 	
@@ -217,7 +216,6 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 					<cfif listlen(arguments.lCategoryIDs)>
 					AND refCat.categoryid IN ('#ListChangeDelims(arguments.lCategoryIDs,"','",",")#')
 					</cfif>
-					ORDER BY #arguments.orderBy# #arguments.orderDirection#
 					</cfoutput>
 				</cfsavecontent>
 			</cfif>
@@ -231,6 +229,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 		<cfquery dbtype="query" name="qGetData">
 		SELECT	DISTINCT *
 		FROM	qGetData
+		ORDER BY #arguments.orderBy# #arguments.orderDirection#
 		</cfquery>
 
 		<cfreturn qGetData>
