@@ -121,21 +121,21 @@
 	
 	<cffunction name="writeImage" access="public" output="true">
 		<cfargument name="outputFile" required="yes" type="string">
-		<cfscript>
-			var extension = lcase(listLast(outputFile,"."));
-			if (listFindNoCase(validExtensionsToWrite, extension) gt 0)
-			{
-				outFile.init(arguments.outputFile);
-				try {
-					imageIO.write(myImage, extension, outFile);
-				} catch (Any e) {
-					return false;
-				}
-				return true;
-			} else {
-				return false;
-			}
-		</cfscript>
+		
+			<cfset var extension = lcase(listLast(outputFile,".")) />
+			<cfif (listFindNoCase(validExtensionsToWrite, extension) gt 0) >
+
+				<cfset outFile.init(arguments.outputFile) />
+				<cftry>
+					<cfset imageIO.write(myImage, extension, outFile) />
+					<cfcatch type="any">
+						<cfreturn false />
+					</cfcatch>
+				</cftry>
+				<cfreturn true />
+			<cfelse>
+				<cfreturn false />
+			</cfif>
 	</cffunction>
 
 	<cffunction name="width" access="public" output="false" returnType="any">
