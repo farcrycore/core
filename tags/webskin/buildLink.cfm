@@ -111,16 +111,19 @@ $in: xCode -- eXtra code to be placed inside the anchor tag $
 			<cfset stLocal.iCount = stLocal.iCount + 1>
 		</cfloop>
 
-		<!--- check for friendly url --->
-		<cfif application.config.plugins.fu>
-			<!--- if FU is turned on then append extra URL parameters with a leading '?' --->
-			<cfset href = href & "?" & stLocal.parameters>
-		<cfelse>
-		  	<!--- if FU is turned off then append extra URL parameters with a leading '&' as there will already be URL params (i.e. "?objectid=") --->
-			<cfset href = href & "&" & stLocal.parameters>
+		<cfset existQS = false />
+		<cfif Find("?",href)>
+			<cfset existQS = true />
+		</cfif>
+	
+		<cfif ListFind("&,?",Right(href,1))><!--- check to see if the last character is a ? or & and don't append one between the params and the href --->
+			<cfset href=href&stLocal.parameters>
+		<cfelseif existsQS> <!--- If there is already a ? in the href, just concat the params with & --->
+			<cfset href=href&"&"&stLocal.parameters>
+		<cfelse> <!--- No query string on the href, so add a new one using ? and the params --->
+			<cfset href=href&"?"&stLocal.parameters>		
 		</cfif>
 	</cfif>
-
 	
 	<!--- Are we meant to use the Javascript Popup Window? --->
 	<cfif attributes.JSWindow>
