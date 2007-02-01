@@ -232,10 +232,6 @@ user --->
 			<cfset HTMLfiltersAttributes = "<div style='display:inline;color:##000'>result filtered by:</div> " & HTMLfiltersAttributes >
 		</cfif>
 	
-	
-
-
-	
 
 		<ft:form style="padding:0px; border-bottom: 1px solid ##000; ">
 			<cfoutput>
@@ -527,9 +523,6 @@ user --->
 
 <ft:form style="width: 100%;" Name="objectadmin">
 
-
-
-
 	<!--- output user responses --->
 	<cfif len(message_error)><cfoutput><p id="error" class="fade"><span class="error">#message_error#</span></p></cfoutput></cfif>
 	<cfif len(response)><cfoutput><p id="response" class="fade">#response#</p></cfoutput></cfif>
@@ -605,20 +598,17 @@ user --->
 		</cfif>
 	</cfif> --->
 
+	<!--- import function libraries --->
 
+<cfset stRecordset = oFormtoolUtil.getRecordset(paginationID="#attributes.typename#", sqlColumns=sqlColumns, typename="#attributes.typename#", RecordsPerPage="20", sqlOrderBy="#session.objectadminFilterObjects[attributes.typename].sqlOrderBy#", sqlWhere="#attributes.sqlWhere#", lCategories="#attributes.lCategories#") />	
 
-
-	<cfset stRecordset = oFormtoolUtil.getRecordset(paginationID="#attributes.typename#", sqlColumns=sqlColumns, typename="#attributes.typename#", RecordsPerPage="20", sqlOrderBy="#session.objectadminFilterObjects[attributes.typename].sqlOrderBy#", sqlWhere="#attributes.sqlWhere#", lCategories="#attributes.lCategories#") />	
-
-
-
+<cfset currentPage = oFormtoolUtil.getCurrentPaginationPage(paginationID=attributes.typename, currentPage=stRecordset.currentPage) />
 
 <ft:pagination 
 	paginationID="#attributes.typename#"
 	qRecordSet="#stRecordset.q#"
-	typename="#attributes.typename#"
 	totalRecords="#stRecordset.countAll#" 
-	currentPage="#stRecordset.currentPage#"
+	currentPage="#currentPage#"
 	Step="10"  
 	pageLinks="5"
 	recordsPerPage="#stRecordset.recordsPerPage#" 
@@ -679,24 +669,22 @@ user --->
 		</tr>
 		</cfif>
 	</cfoutput>
-	
-	
 		
-		<ft:paginateLoop r_stObject="st" bIncludeFields="true" bIncludeObjects="false" stpermissions="#stpermissions#">
-			
+		<ft:paginateLoop r_stObject="currentItem" qRecordSet="#stRecordset.q#" typename="#attributes.typename#" bIncludeFields="true" bIncludeObjects="false" stpermissions="#stpermissions#">
+
 				<cfoutput>
 				<tr>
-					<cfif attributes.bSelectCol><td nowrap="true">#st.select# #st.currentRow#</td></cfif>
+					<cfif attributes.bSelectCol><td nowrap="true">#currentItem.select# #currentItem.currentRow#</td></cfif>
 			 		<cfif listContainsNoCase(stRecordset.q.columnlist,"bHasMultipleVersion")>
-				 		<td nowrap="true">#st.status#</td>
+				 		<td nowrap="true">#currentItem.status#</td>
 					</cfif>
-					<td>#st.action#</td>
-					<!---<cfif attributes.bEditCol><td>#st.editLink#</td></cfif>
-					<cfif attributes.bViewCol><td>#st.viewLink#</td></cfif>
-					<cfif attributes.bFlowCol><td>#st.flowLink#</td></cfif> --->
+					<td>#currentItem.action#</td>
+					<!---<cfif attributes.bEditCol><td>#currentItem.editLink#</td></cfif>
+					<cfif attributes.bViewCol><td>#currentItem.viewLink#</td></cfif>
+					<cfif attributes.bFlowCol><td>#currentItem.flowLink#</td></cfif> --->
 					<cfloop list="#attributes.columnlist#" index="i">
-						<cfif structKeyExists(st.stFields, i)>
-							<td>#st.stFields[i].HTML#</td>				
+						<cfif structKeyExists(currentItem.stFields, i)>
+							<td>#currentItem.stFields[i].HTML#</td>				
 						<cfelse>
 							<td>-- not available --</td>				
 						</cfif>
@@ -704,8 +692,6 @@ user --->
 					</cfloop>
 				</tr>
 				</cfoutput>
-			
-			
 		</ft:paginateLoop>
 	
 	<cfoutput></table></cfoutput>

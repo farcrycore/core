@@ -304,11 +304,11 @@ LIBRARY DATA
 	<cfset stLibraryData = oFormTools.getRecordset(typename="#request.ftJoin#", sqlColumns="*", sqlOrderBy="#SQLOrderBy#", SQLWhere="#SQLWhere#", RecordsPerPage="20") />
 
 	
-	<!---<cfinvoke component="#oData#" method="getLibraryData" returnvariable="qLibraryList" /> --->
+	<!--- <cfinvoke component="#oData#" method="getLibraryData" returnvariable="qLibraryList" /> --->
 	
 </cfif>
 
-<!---<cfif listLen(lBasketIDs)>
+<!--- <cfif listLen(lBasketIDs)>
 	<cfquery dbtype="query" name="qLibraryList">
 	SELECT * FROM qLibraryList
 	WHERE ObjectID NOT IN (#ListQualify(lBasketIDs,"'")#)
@@ -602,9 +602,9 @@ GENERATE THE LIBRARY PICKER
 					
 				<!--- 
 				<cfif URL.LibraryType EQ "array">
-					<!--- <div id="sortableListTo" class="arrayDetailView" style="background-color:##F1F1F1;height:100% !important;border:1px solid red;"> --->
+					 <div id="sortableListTo" class="arrayDetailView" style="background-color:##F1F1F1;height:100% !important;border:1px solid red;"> 
 				<cfelse>
-					<!--- <div id="sortableListTo" style="background-color:##F1F1F1;min-height:500px;_height:500px;"> --->
+					 <div id="sortableListTo" style="background-color:##F1F1F1;min-height:500px;_height:500px;"> 
 				</cfif>	 
 				--->
 		
@@ -667,30 +667,21 @@ GENERATE THE LIBRARY PICKER
 					
 				
 				<cfoutput>
-				<!--- 	
-				<cfif URL.LibraryType EQ "array">
-					<!--- </div> --->
-				<cfelse>
-					<!--- </div> --->
-				</cfif>
-				 --->
-				
+				<!--- </div> --->
 				</td>
 				<td>
-					
 				</cfoutput>
 				
 				
-					<ft:pagination qRecordSet="#stLibraryData.q#" typename="#request.ftJoin#" submissionType="URL" recordsPerPage="#stLibraryData.recordsPerPage#" totalRecords="#stLibraryData.CountAll#" pageLinks="5" top="true" bottom="true">
-				<!--- TODO: removed current page from ft:pagination tag as it is not available in all scenarios. I will look into fixing. --->
-				<!---  currentpage="#stLibraryData.currentPage#" --->
+					<ft:pagination  totalRecords="#stLibraryData.CountAll#" currentpage="#stLibraryData.currentPage#"  submissionType="URL" recordsPerPage="#stLibraryData.recordsPerPage#" pageLinks="5" top="true" bottom="true">
+	
 				
 				<cfoutput>
 					<div id="sortableListFrom" class="arrayDetailView" style="border:1px solid ##F1F1F1;min-height:500px;_height:500px;">
 				</cfoutput>
 					
 									
-						<ft:paginateLoop r_stObject="stLibraryObject" bTypeAdmin="false">
+						<ft:paginateLoop r_stObject="stLibraryObject" bTypeAdmin="false" typename="#request.ftJoin#" recordsPerPage="#stLibraryData.recordsPerPage#" totalRecords="#stLibraryData.CountAll#" qRecordSet="#stLibraryData.q#">
 						<!---<ws:paginateRecords r_stRecord="stObject"> --->
 							<cfif isDefined("stLibraryObject.stObject.label") AND len(stLibraryObject.stObject.label)>
 								<cfset variables.alternateHTML = stLibraryObject.stObject.Label />
