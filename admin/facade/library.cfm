@@ -53,7 +53,7 @@ $Developer: $
 <cfparam name="url.ftAllowLibraryAddNew" default="true"><!--- Method to Add New Object --->
 
 <cfparam name="url.PackageType" default="types"><!--- Could be types or rules.. --->
-
+<cfparam name="url.currentpage" default="1">
 
 
 	
@@ -258,6 +258,7 @@ LIBRARY DATA
 			<cfset stLibraryData.q = libraryDataResult />
 			<cfset stLibraryData.recordsPerPage = 20 />
 			<cfset stLibraryData.CountAll = libraryDataResult.recordCount />
+			<cfset stLibraryData.currentPage = URL.currentPage />
 		<cfelseif structKeyExists(libraryDataResult, "q")>
 			<cfset stLibraryData = LibraryDataResult />
 		</cfif>
@@ -292,7 +293,7 @@ LIBRARY DATA
 	<cfif structKeyExists(session.stLibraryFilter[request.ftJoin], "qResults") AND session.stLibraryFilter[request.ftJoin].qResults.recordCount>
 		<cfset qFilter = session.stLibraryFilter[request.ftJoin].qResults />
 		<cfset FilterList = valuelist(qFilter.key) />
-		<cfset SQLWhere = " #SQLWhere# AND objectid IN (#ListQualify(FilterList,"'")#)" />
+		<cfset SQLWhere = " "&SQLWhere&" AND objectid IN ("&ListQualify(FilterList,"'")&")" />
 	</cfif>
 	
 	<cfset SQLOrderBy = "datetimelastupdated desc" />

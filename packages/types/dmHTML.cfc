@@ -121,7 +121,7 @@ object methods
 	Run the entire query and return in to the library. Let the library handle the pagination.
 	 --->
 	<cfquery datasource="#application.dsn#" name="q">
-	SELECT data as objectid, dmImage.label
+	SELECT data as objectid, dmImage.label, dmImage.thumbnailimage, dmImage.title
 	FROM dmHTML_aObjectIDs 
 	INNER JOIN 
 		 dmImage ON dmHTML_aObjectIDs.data = dmImage.objectid
