@@ -382,12 +382,12 @@ user --->
 	
 	<ft:processForm action="requestapproval">
 		<!--- TODO: Check Permissions. --->
-		<cflocation URL="#application.url.farcry#/conjuror/changestatus.cfm?objectid=#form.objectid#&typename=#attributes.typename#&status=requestapproval&ref=typeadmin&module=customlists/#attributes.customList#.cfm" addtoken="false" />
+		<cflocation URL="#application.url.farcry#/conjuror/changestatus.cfm?objectid=#form.objectid#&typename=#attributes.typename#&status=requestapproval&ref=typeadmin&module=#attributes.module#" addtoken="false" />
 	</ft:processForm>
 	
 	<ft:processForm action="approve">
 		<!--- TODO: Check Permissions. --->
-		<cflocation URL="#application.url.farcry#/conjuror/changestatus.cfm?objectid=#form.objectid#&typename=#attributes.typename#&status=approved&ref=typeadmin&module=customlists/#attributes.customList#.cfm" addtoken="false" />
+		<cflocation URL="#application.url.farcry#/conjuror/changestatus.cfm?objectid=#form.objectid#&typename=#attributes.typename#&status=approved&ref=typeadmin&module=#attributes.module#" addtoken="false" />
 	</ft:processForm>
 	
 	<ft:processForm action="createdraft">
