@@ -681,8 +681,9 @@ GENERATE THE LIBRARY PICKER
 				</cfoutput>
 				
 				
-					<ft:pagination qRecordSet="#stLibraryData.q#" typename="#request.ftJoin#" submissionType="URL" recordsPerPage="#stLibraryData.recordsPerPage#" totalRecords="#stLibraryData.CountAll#" currentpage="#stLibraryData.currentPage#" pageLinks="5" top="true" bottom="true">
-
+					<ft:pagination qRecordSet="#stLibraryData.q#" typename="#request.ftJoin#" submissionType="URL" recordsPerPage="#stLibraryData.recordsPerPage#" totalRecords="#stLibraryData.CountAll#" pageLinks="5" top="true" bottom="true">
+				<!--- TODO: removed current page from ft:pagination tag as it is not available in all scenarios. I will look into fixing. --->
+				<!---  currentpage="#stLibraryData.currentPage#" --->
 				
 				<cfoutput>
 					<div id="sortableListFrom" class="arrayDetailView" style="border:1px solid ##F1F1F1;min-height:500px;_height:500px;">
