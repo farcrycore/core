@@ -149,7 +149,6 @@
 			<cfset arguments.sqlWhere = "0=0" />
 		</cfif>
 
-		<cfset theSQLTop = arguments.CurrentPage * arguments.recordsPerPage>
 			
 		<cfquery name="qrecordcount" datasource="#application.dsn#">
 		SELECT count(distinct tbl.objectid) as CountAll 
@@ -173,15 +172,25 @@
 		
 		</cfquery>
 		
+		<cfset theSQLTop = arguments.CurrentPage * arguments.recordsPerPage>
 		
 		<cfif qrecordcount.CountAll mod  RecordsPerPage neq 0 and theSQLTop GT qrecordcount.CountAll>
 			<cfset thisDiff = RecordsPerPage - (qrecordcount.CountAll mod  arguments.RecordsPerPage)>
 		</cfif>		
-		
-		<cfswitch expression="#application.dbtype#">
-		<cfcase value="MSSQL">
-			<cfquery name="qFormToolRecordset" datasource="#application.dsn#">
 
+		<!------------------------------
+		DETERMINE THE TOTAL PAGES
+		 ------------------------------>
+		<cfif isNumeric(qrecordcount.countAll) AND qrecordcount.countAll GT 0>
+			<cfset stReturn.TotalPages = ceiling(qrecordcount.countAll / arguments.RecordsPerPage)>
+		<cfelse>
+			<cfset stReturn.TotalPages = 0>
+		</cfif>
+			
+		<cfif application.dbtype EQ "MSSQL">
+			
+			<cfquery name="qFormToolRecordset" datasource="#application.dsn#">
+	
 			IF OBJECT_ID('tempdb..##thetops') IS NOT NULL 	drop table ##thetops
 			CREATE TABLE ##thetops (objectID varchar(40), myint int IDENTITY(1,1) NOT NULL);
 			
@@ -222,73 +231,43 @@
 			drop table ##thetops
 							
 			</cfquery>
-		</cfcase>
-		
-		<cfdefaultcase>
-			<cfset offset = RecordsPerPage-thisDiff>
-			<cfquery name="qFormToolRecordset" datasource="#application.dsn#" result="rsResult">
-			SELECT #arguments.sqlColumns#
-			<cfif bHasversionID>
-				,(SELECT count(d.objectid) FROM #arguments.typename# d WHERE d.versionid = tbl.objectid) as bHasMultipleVersion
-			</cfif>
-			FROM #arguments.typename# tbl
-			<cfif len(trim(arguments.sqlOrderBy))>
-				ORDER BY #preserveSingleQuotes(arguments.sqlOrderBy)#
-			</cfif>
-			<!--- TODO: this is incorrect. Please fix --->
-			LIMIT #theSQLTop# <!--- <cfif offset GT 0>OFFSET #offset#</cfif> --->
-			</cfquery>
-		</cfdefaultcase>
-		</cfswitch>
-		
-
-		<!------------------------------
-		DETERMINE THE TOTAL PAGES
-		 ------------------------------>
-		<cfif isNumeric(qrecordcount.countAll) AND qrecordcount.countAll GT 0>
-			<cfset stReturn.TotalPages = ceiling(qrecordcount.countAll / arguments.RecordsPerPage)>
-		<cfelse>
-			<cfset stReturn.TotalPages = 0>
-		</cfif>
+	
+			<!------------------------------
+			IF THE CURRENT PAGE IS GREATER THAN THE TOTAL PAGES, REDO THE RECORDSET FOR PAGE 1
+			 ------------------------------>		
+			<cfif arguments.CurrentPage GT stReturn.TotalPages and arguments.CurrentPage GT 1>
+				
+				<cfset arguments.currentPage = getCurrentPaginationPage(paginationID=arguments.paginationID,CurrentPage=1) />
 			
-		<!------------------------------
-		IF THE CURRENT PAGE IS GREATER THAN THE TOTAL PAGES, REDO THE RECORDSET FOR PAGE 1
-		 ------------------------------>		
-		<cfif arguments.CurrentPage GT stReturn.TotalPages and arguments.CurrentPage GT 1>
+				<cfquery name="qrecordcount" datasource="#application.dsn#">
+				SELECT count(distinct tbl.objectid) as CountAll 
+				FROM #arguments.typename# tbl 			
+				WHERE #preserveSingleQuotes(arguments.SqlWhere)#
+				
+				<cfif arrayLen(arguments.aCategoryFilters)>
+					<cfloop from="1" to="#arrayLen(arguments.aCategoryFilters)#" index="i">
+						<cfif arguments.aCategoryFilters[i] neq ''>
+							AND objectid in (
+							    select distinct objectid 
+							    from refCategories 
+							    where categoryID in (#listQualify(arguments.aCategoryFilters[i],"'")#)
+							    )
+						</cfif>
+					</cfloop>
+				</cfif>
+				<cfif bHasVersionID>
+					AND (tbl.versionid = '' OR tbl.versionid IS NULL)
+				</cfif>
+				
+				</cfquery>
+				
 			
-			<cfset arguments.currentPage = getCurrentPaginationPage(paginationID=arguments.paginationID,CurrentPage=1) />
-		
-			<cfquery name="qrecordcount" datasource="#application.dsn#">
-			SELECT count(distinct tbl.objectid) as CountAll 
-			FROM #arguments.typename# tbl 			
-			WHERE #preserveSingleQuotes(arguments.SqlWhere)#
+				<cfif qrecordcount.CountAll mod  RecordsPerPage neq 0 and theSQLTop GT qrecordcount.CountAll>
+					<cfset thisDiff = RecordsPerPage - (qrecordcount.CountAll mod  arguments.RecordsPerPage)>
+				</cfif>
 			
-			<cfif arrayLen(arguments.aCategoryFilters)>
-				<cfloop from="1" to="#arrayLen(arguments.aCategoryFilters)#" index="i">
-					<cfif arguments.aCategoryFilters[i] neq ''>
-						AND objectid in (
-						    select distinct objectid 
-						    from refCategories 
-						    where categoryID in (#listQualify(arguments.aCategoryFilters[i],"'")#)
-						    )
-					</cfif>
-				</cfloop>
-			</cfif>
-			<cfif bHasVersionID>
-				AND (tbl.versionid = '' OR tbl.versionid IS NULL)
-			</cfif>
-			
-			</cfquery>
-			
-		
-			<cfif qrecordcount.CountAll mod  RecordsPerPage neq 0 and theSQLTop GT qrecordcount.CountAll>
-				<cfset thisDiff = RecordsPerPage - (qrecordcount.CountAll mod  arguments.RecordsPerPage)>
-			</cfif>
-		
-			
-			
-			<cfswitch expression="#application.dbtype#">
-			<cfcase value="MSSQL">	
+				
+							
 				<cfquery name="qFormToolRecordset" datasource="#application.dsn#">
 	
 				IF OBJECT_ID('tempdb..##thetops') IS NOT NULL 	drop table ##thetops
@@ -331,33 +310,47 @@
 				drop table ##thetops
 								
 				</cfquery>
-
-			</cfcase>
+			</cfif>			
 			
-			<cfdefaultcase>
-				<cfset offset = RecordsPerPage-thisDiff-1>
-				<cfquery name="qFormToolRecordset" datasource="#application.dsn#" result="rsResult">
-				SELECT #arguments.sqlColumns#
+			<cfif isNumeric(qrecordcount.countAll) AND qrecordcount.countAll GT 0>
+				<cfset stReturn.TotalPages = ceiling(qrecordcount.countAll / arguments.RecordsPerPage)>
+			<cfelse>
+				<cfset stReturn.TotalPages = 0>
+			</cfif>
+		<cfelse><!--- MySQL or Postgres--->
+
+			<cfif arguments.currentpage GT stReturn.totalPages>
+				<cfset arguments.currentpage = 1>
+			</cfif>
+			<cfset toprow = ((arguments.currentpage * arguments.RecordsPerPage)- arguments.RecordsPerPage) +1 >
+
+			<cfquery name="qFormToolRecordset" datasource="#application.dsn#">
+			SELECT #arguments.sqlColumns#
 				<cfif bHasversionID>
 					,(SELECT count(d.objectid) FROM #arguments.typename# d WHERE d.versionid = tbl.objectid) as bHasMultipleVersion
-				</cfif>
-				FROM #arguments.typename# tbl
-				<cfif len(trim(arguments.sqlOrderBy))>
-					ORDER BY #preserveSingleQuotes(arguments.sqlOrderBy)#
-				</cfif>
-				LIMIT #theSQLTop#
-				</cfquery>
-			</cfdefaultcase>
-			</cfswitch>
+				</cfif> 
+			FROM #arguments.typename# tbl 			
+			WHERE #preserveSingleQuotes(arguments.SqlWhere)#
+			
+			<cfif arrayLen(arguments.aCategoryFilters)>
+				<cfloop from="1" to="#arrayLen(arguments.aCategoryFilters)#" index="i">
+					<cfif arguments.aCategoryFilters[i] neq ''>
+						AND objectid in (
+						    select distinct objectid 
+						    from refCategories 
+						    where categoryID in (#listQualify(arguments.aCategoryFilters[i],"'")#)
+						    )
+					</cfif>
+				</cfloop>
+			</cfif>
+			<cfif bHasVersionID>
+				AND (tbl.versionid = '' OR tbl.versionid IS NULL)
+			</cfif>
+			LIMIT #arguments.RecordsPerPage# OFFSET #toprow#
+			</cfquery>
+	
 			
 		</cfif>			
-		
-		<cfif isNumeric(qrecordcount.countAll) AND qrecordcount.countAll GT 0>
-			<cfset stReturn.TotalPages = ceiling(qrecordcount.countAll / arguments.RecordsPerPage)>
-		<cfelse>
-			<cfset stReturn.TotalPages = 0>
-		</cfif>
-			
 		
 		<!--- NOW THAT WE HAVE OUR QUERY, POPULATE THE RETURN STRUCTURE --->
 		<cfset stReturn.q = qFormToolRecordset />
