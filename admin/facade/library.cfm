@@ -349,8 +349,8 @@ LIBRARY DATA
 	
 	<ft:form>
 		<cfoutput><input type="text" name="criteria" id="criteria" value="#session.stLibraryFilter[request.ftJoin].Criteria#" /></cfoutput>
-		<ft:farcrybutton value="Search" />
-		<ft:farcrybutton value="Refresh" />
+		<ft:farcryButton value="Search" />
+		<ft:farcryButton value="Refresh" />
 	</ft:form>
 	
 	
@@ -429,8 +429,8 @@ LIBRARY DATA
 					
 					<cfoutput>
 					<div>
-						<ft:farcrybutton value="Attach" />	
-						<ft:farcrybutton type="button" value="Close" onclick="self.blur();window.close();" />	
+						<ft:farcryButton value="Attach" />	
+						<ft:farcryButton type="button" value="Close" onclick="self.blur();window.close();" />	
 					</div>
 					</cfoutput>
 					
@@ -510,8 +510,8 @@ LIBRARY DATA
 					
 					<cfoutput>
 					<div>
-						<ft:farcrybutton value="Attach" />	
-						<ft:farcrybutton type="button" value="Close" onclick="self.blur();window.close();" />	
+						<ft:farcryButton value="Attach" />	
+						<ft:farcryButton type="button" value="Close" onclick="self.blur();window.close();" />	
 					</div>
 					</cfoutput>
 					
@@ -720,7 +720,7 @@ GENERATE THE LIBRARY PICKER
 			
 			<cfoutput>				
 			<div>
-				<ft:farcrybutton type="button" value="Close" onclick="self.blur();window.close();return false;" />	
+				<ft:farcryButton type="button" value="Close" onclick="self.blur();window.close();return false;" />	
 			</div>	
 			</cfoutput>
 			

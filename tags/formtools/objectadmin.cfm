@@ -577,15 +577,15 @@ user --->
 	<cfoutput><div class="buttons"></cfoutput>
 		
 		<cfif listFindNoCase(attributes.lButtons, "add")>
-			<ft:farcrybutton value="add" />
+			<ft:farcryButton value="add" />
 		</cfif>
 		
 		<cfif listFindNoCase(attributes.lButtons, "unlock")>
-			<ft:farcrybutton value="unlock" />
+			<ft:farcryButton value="unlock" />
 		</cfif>
 		
 		<cfif listFindNoCase(attributes.lButtons, "delete")>
-			<ft:farcrybutton value="delete" onclick="if(confirm('Are you sure you wish to delete these objects?')){return true};{return false};" />
+			<ft:farcryButton value="delete" onclick="if(confirm('Are you sure you wish to delete these objects?')){return true};{return false};" />
 		</cfif>
 		
 	<cfoutput></div></cfoutput>

@@ -33,7 +33,7 @@
 						<td valign="top">
 							<div id="#arguments.fieldname#previewfile">
 								#arguments.stMetadata.value#
-								<ft:farcrybutton type="button" value="Delete Video" onclick="if(confirm('Are you sure you want to remove this file?')) {} else {return false};$('#arguments.fieldname#').value='';Effect.Fade('#arguments.fieldname#previewfile');" />
+								<ft:farcryButton type="button" value="Delete Video" onclick="if(confirm('Are you sure you want to remove this file?')) {} else {return false};$('#arguments.fieldname#').value='';Effect.Fade('#arguments.fieldname#previewfile');" />
 							</div>
 						</td>
 					</cfif>				

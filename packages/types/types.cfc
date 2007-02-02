@@ -531,8 +531,8 @@ default handlers
 		
 			<ft:object objectID="#arguments.objectID#" lfields="#arguments.lFields#" inTable=0 />
 			
-			<ft:farcrybutton value="Save" />
-			<ft:farcrybutton value="Cancel" />	
+			<ft:farcryButton value="Save" />
+			<ft:farcryButton value="Cancel" />	
 		</ft:form>
 		
 		<!--- <cfimport taglib="/farcry/farcry_core/tags/wizzard/" prefix="wiz" >
@@ -775,8 +775,8 @@ default handlers
 				
 				<cfoutput>
 				<div class="fieldwrap">
-					<ft:farcrybutton value="Save" /> 
-					<ft:farcrybutton value="Cancel" validate="false" />
+					<ft:farcryButton value="Save" /> 
+					<ft:farcryButton value="Cancel" validate="false" />
 				</div>
 				</cfoutput>
 		

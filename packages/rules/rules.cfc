@@ -212,8 +212,8 @@ $out:$
 				
 				<cfoutput>
 				<div class="fieldwrap">
-					<ft:farcrybutton value="Save" /> 
-					<ft:farcrybutton value="Cancel" />
+					<ft:farcryButton value="Save" /> 
+					<ft:farcryButton value="Cancel" />
 				</div>
 				</cfoutput>
 		

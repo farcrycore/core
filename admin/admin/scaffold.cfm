@@ -224,8 +224,8 @@
  
 
 	<div class="formsection">
-		<ft:farcrybutton value="Create Now" />	
-		<ft:farcrybutton value="Cancel" />
+		<ft:farcryButton value="Create Now" />	
+		<ft:farcryButton value="Cancel" />
 	</div>
 	</cfoutput>
 </ft:form>
@@ -379,6 +379,8 @@
 			var stReturn = structNew();
 			var oCustomType = "";
 			var oTypeMetadata = "";
+			
+			//Try using application.types.qMetaData
 			
 			oCustomType = createObject("component", "farcry.#application.applicationName#.packages.types.#arguments.typeName#");	//instantiate the custom type to introspect
 			oTypeMetadata = createObject("component", "farcry.fourq.TableMetadata").init();	//instansiate the Fourq class to access introspection methods
