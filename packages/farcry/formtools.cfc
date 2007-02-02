@@ -322,7 +322,8 @@
 			<cfif arguments.currentpage GT stReturn.totalPages>
 				<cfset arguments.currentpage = 1>
 			</cfif>
-			<cfset toprow = ((arguments.currentpage * arguments.RecordsPerPage)- arguments.RecordsPerPage) +1 >
+			<cfset toprow = ((arguments.currentpage * arguments.RecordsPerPage)- arguments.RecordsPerPage) >
+			
 
 			<cfquery name="qFormToolRecordset" datasource="#application.dsn#">
 			SELECT #arguments.sqlColumns#
