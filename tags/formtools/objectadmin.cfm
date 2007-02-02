@@ -152,7 +152,7 @@ user --->
 		
 		<cfloop list="#form.objectid#" index="i">
 			<cfset o = createObject("component", PrimaryPackagePath) />
-			<cfset bSuccess = o.deleteData(objectid=i) />
+			<cfset bSuccess = o.delete(objectid=i) />
 		</cfloop>
 	</cfif>
 </ft:processForm>
