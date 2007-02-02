@@ -2,7 +2,18 @@
 <!--- @@author: Matthew Bryant --->
 
 <cfif StructKeyExists(stObj,"thumbnailImage") AND len(stobj.thumbnailImage)>
-	<cfoutput><img src="#stobj.thumbnailImage#" title="#stObj.title#">&nbsp;#stObj.label#</cfoutput>
+	<cfoutput>
+		<table>
+		<tr>
+			<td><img src="#stobj.thumbnailImage#" title="#stObj.title#"></td>
+			<td>&nbsp;</td>
+			<td>
+				#stObj.title#<br />
+				<em>(#stobj.alt#)</em>
+			</td>
+		</tr>
+		</table>
+	</cfoutput>
 <cfelseif len(stobj.label)>
 	<cfoutput>#stobj.label#</cfoutput>
 <cfelse>
