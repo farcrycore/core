@@ -672,17 +672,14 @@ GENERATE THE LIBRARY PICKER
 				</td>
 				<td>
 				</cfoutput>
-				
-				
-					<ft:pagination  totalRecords="#stLibraryData.CountAll#" currentpage="#stLibraryData.currentPage#"  submissionType="URL" recordsPerPage="#stLibraryData.recordsPerPage#" pageLinks="5" top="true" bottom="true">
-	
-				
+					<ft:pagination qRecordSet="#stLibraryData.q#" typename="#request.ftJoin#" submissionType="URL" recordsPerPage="#stLibraryData.recordsPerPage#" totalRecords="#stLibraryData.CountAll#" pageLinks="5" top="true" bottom="true">
+					<!--- <ft:pagination qRecordSet="#stLibraryData.q#" typename="#request.ftJoin#" submissionType="URL" recordsPerPage="#stLibraryData.recordsPerPage#" totalRecords="#stLibraryData.CountAll#" currentpage="#stLibraryData.currentPage#" pageLinks="5" top="true" bottom="true"> --->
 				<cfoutput>
 					<div id="sortableListFrom" class="arrayDetailView" style="border:1px solid ##F1F1F1;min-height:500px;_height:500px;">
 				</cfoutput>
 					
-									
-						<ft:paginateLoop r_stObject="stLibraryObject" bTypeAdmin="false" typename="#request.ftJoin#" recordsPerPage="#stLibraryData.recordsPerPage#" totalRecords="#stLibraryData.CountAll#" qRecordSet="#stLibraryData.q#">
+						<ft:paginateLoop r_stObject="stLibraryObject" bTypeAdmin="false">
+	<!--- 					<ft:paginateLoop r_stObject="stLibraryObject" bTypeAdmin="false" recordsPerPage="#stLibraryData.recordsPerPage#"> --->
 						<!---<ws:paginateRecords r_stRecord="stObject"> --->
 							<cfif isDefined("stLibraryObject.stObject.label") AND len(stLibraryObject.stObject.label)>
 								<cfset variables.alternateHTML = stLibraryObject.stObject.Label />
