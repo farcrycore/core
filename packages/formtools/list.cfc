@@ -59,17 +59,17 @@
 						<cfsavecontent variable="html">
 							
 							<cfoutput>
-								<cfloop list="#arguments.stMetadata.ftList#" index="i">
-									
-									<div class="fieldsection optional">
-										<div class="fieldwrap">
-										<input type="checkbox" name="#arguments.fieldname#" class="formCheckbox" id="#arguments.fieldname#" value="#ListFirst(i,":")#" <cfif listFindNoCase(arguments.stMetadata.value,i)>checked</cfif> />
-										<label class="fieldsectionlabel" class="fieldsectionlabel" for="#arguments.fieldname#">#ListLast(i , ":")#</label>
-										</div>
-										<br class="fieldsectionbreak" />
-									</div>
-									
-								</cfloop>												
+								<div class="fieldsection optional">
+									<div class="fieldwrap">
+										<cfloop list="#arguments.stMetadata.ftList#" index="i">
+											<input type="checkbox" name="#arguments.fieldname#" class="formCheckbox" id="#arguments.fieldname#" value="#ListFirst(i,":")#"<cfif listFindNoCase(arguments.stMetadata.value,listFirst(i, ":"))> checked="checked"</cfif> />										
+											<!--- <label class="fieldsectionlabel" class="fieldsectionlabel" for="#arguments.fieldname#">#ListLast(i , ":")#</label> --->
+											<!--- MPS: styles aren't working so we are removing label for now until we have time to look at the css --->
+											#ListLast(i , ":")#
+											<br class="fieldsectionbreak" />
+										</cfloop>
+									</div>										
+								</div>																					
 							</cfoutput>
 										
 						</cfsavecontent>
@@ -79,15 +79,17 @@
 						<cfsavecontent variable="html">
 							
 							<cfoutput>
-								<cfloop list="#arguments.stMetadata.ftList#" index="i">
-									
-										
-										<input type="radio" name="#arguments.fieldname#" id="#arguments.fieldname#" class="formRadio" value="#ListFirst(i,":")#" <cfif listFindNoCase(arguments.stMetadata.value,i)>checked</cfif> />
-										<label class="fieldsectionlabel" class="fieldsectionlabel" for="#arguments.fieldname#">#ListLast(i , ":")#</label>
-										<br />
-									
-									
-								</cfloop>												
+								<div class="fieldsection optional">
+									<div class="fieldwrap">
+										<cfloop list="#arguments.stMetadata.ftList#" index="i">
+											<input type="radio" name="#arguments.fieldname#" id="#arguments.fieldname#" class="formCheckbox" value="#ListFirst(i,":")#"<cfif listFindNoCase(arguments.stMetadata.value,listFirst(i, ":"))> checked="checked"</cfif> />
+											<!--- <label class="fieldsectionlabel" class="fieldsectionlabel" for="#arguments.fieldname#">#ListLast(i , ":")#</label> --->
+											<!--- MPS: styles aren't working so we are removing label for now until we have time to look at the css --->
+											#ListLast(i , ":")#
+											<br class="fieldsectionbreak" />
+										</cfloop>												
+									</div>
+								</div>
 							</cfoutput>
 										
 						</cfsavecontent>
