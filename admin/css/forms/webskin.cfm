@@ -125,7 +125,7 @@ form.formtool ##wizard-content table, form.formtool ##wizard-content table tr, f
 	ul.arrayDetailView li {border-bottom: 1px solid ##eaeaf0; background-image: none;}
 	ul.arrayDetailView li:hover {background-color: ##eaeaf0; cursor: pointer; color: inherit;}
 		ul.arrayDetailView li div.buttonGripper p {background: url("images/form_button_gripper.gif") no-repeat 0px 0px;}
-		ul.arrayDetailView li div.arrayDetail p {background: transparent url("images/content_type_icon_contact.gif") no-repeat 0px 3px;}
+		/*ul.arrayDetailView li div.arrayDetail p {background: transparent url("images/content_type_icon_default4.gif") no-repeat 0px 3px;}*/
 
 	/* array component : thumbnail view webskin styles */
 	ul.arrayThumbnailView li { background-image: none; background-color: ##7476a6; border-top: 1px solid ##8e8fb6; border-right: 1px solid ##61638b; border-bottom: 1px solid ##61638b; border-left: 1px solid ##8e8fb6; cursor: pointer; color: inherit;}
