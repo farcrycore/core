@@ -219,7 +219,7 @@ input.validation-failed, textarea.validation-failed {border: 1px solid ##FF3300;
 				ul.arrayDetailView li div.buttonGripper p {margin: 0px; padding: 0px; width: 7px; height: 17px; display: block;}
 		 	ul.arrayDetailView li input.formCheckbox {margin: 4px 2px 0px 0px; padding: 0px; display: block; float: right; overflow: hidden;}
 			ul.arrayDetailView li div.arrayDetail {margin: 0px; padding: 0px 0px 0px 10px; display: block;}
-				ul.arrayDetailView li div.arrayDetail p {margin: 0px 0px 0px 4px; padding: 3px 0px 0px 18px; width: auto; height: auto; display: block;}
+				ul.arrayDetailView li div.arrayDetail p {margin: 0px 0px 0px 4px; padding: 3px 0px 0px 0px; width: auto; height: auto; display: block;}
 			ul.arrayDetailView li div.arrayThumbnail {margin: 0px; padding: 0px; display: none;}
 
 	/* array component : thumbnail view layout styles */
