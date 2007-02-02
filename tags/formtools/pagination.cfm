@@ -28,6 +28,8 @@ $Developer: Matthew Bryant (mat@bcreative.com.au)$
 $in:  $
 --->
 
+
+
 <cfimport taglib="/farcry/farcry_core/tags/formtools/" prefix="ft" >
 
 
@@ -44,16 +46,47 @@ $in:  $
 	<cfparam name="attributes.bShowResultTotal" default="true" type="boolean" />
 	<cfparam name="attributes.bShowPageDropdown" default="true" type="boolean" />
 	<cfparam name="attributes.paginationID" default="" />	
-	<cfparam name="attributes.CurrentPage" default="1" />
+	<cfparam name="attributes.CurrentPage" default="0" />
 	<cfparam name="attributes.maxPages" default="0" type="numeric">
 	<cfparam name="attributes.totalRecords" default="0" type="numeric">
 	<cfparam name="attributes.pageLinks" default="0" type="numeric">
 	<cfparam name="attributes.recordsPerPage" default="1" type="numeric">
 	<cfparam name="attributes.submissionType" default="url" type="string">
 	
+	<cfif not isDefined("attributes.qRecordSet") or not isQuery(attributes.qRecordSet)>
+		<cfabort showerror="you must pass a recordset into pagination." />
+	</cfif>
+	<cfif not isDefined("attributes.typename") or not len(attributes.typename)>
+		<cfabort showerror="you must pass a typename into pagination." />
+	</cfif>
+
 	<!--- import function libraries --->
 	<cfinclude template="/farcry/farcry_core/admin/includes/utilityFunctions.cfm" >
+	<cfset oFormtoolUtil = createObject("component", "farcry.farcry_core.packages.farcry.formtools") />
+	
+	<cfset attributes.currentPage = oFormtoolUtil.getCurrentPaginationPage(paginationID=attributes.paginationID, currentPage=attributes.currentPage) />
 
+	<cfif attributes.totalRecords LTE 0 or NOT isnumeric(attributes.totalRecords)>
+		<!--- This means that we have passed in an entire recordset and not just the page of relevent data --->
+		<cfset attributes.totalRecords = attributes.qRecordSet.recordCount />
+		<cfset attributes.startRow = attributes.currentPage * attributes.recordsPerPage - attributes.recordsPerPage + 1 />
+		<cfif attributes.StartRow GT attributes.totalRecords>
+			<cfset attributes.startRow = 1 />
+		</cfif>
+		
+		<cfset attributes.endRow = attributes.currentPage * attributes.recordsPerPage />
+		<cfif attributes.endRow GT attributes.qRecordSet.recordcount>
+			<cfset attributes.endRow = attributes.qRecordSet.recordcount />
+		</cfif>
+			
+	<cfelse>
+		<cfset attributes.startRow = 1 />
+		<cfset attributes.endRow = attributes.recordsPerPage />
+		<cfif attributes.endRow GT attributes.qRecordSet.recordcount>
+			<cfset attributes.endRow = attributes.qRecordSet.recordcount />
+		</cfif>
+	</cfif>
+	
 	<cfscript>
 		bShowPaginate = true;
 		bShowDropDown = true;
@@ -118,6 +151,10 @@ $in:  $
 		</div>
 	<br class="clearer" />
 	</cfoutput>
+	
+	
+
+		
 	
 </cfif>
 
