@@ -134,7 +134,7 @@ span.#attributes.prefix#MenuItemNull {
 }
 
 </style>
-<div class="#attributes.prefix#Gutter">&nbsp;</div>
+<!--- <div class="#attributes.prefix#Gutter">&nbsp;</div> --->
 <div class="#attributes.prefix#Menu" onmouseover="Javascript:#attributes.prefix#ShowMenu();" onmouseout="Javascript:#attributes.prefix#ResetTimer();" id="#attributes.prefix#MenuID">
 	<cfloop from="1" to="#arraylen(attributes.aItems)#" index="i">
 		<cfif isStruct(attributes.aItems[i])>
