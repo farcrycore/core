@@ -84,6 +84,9 @@ default handlers
 		<cfset var stObj = StructNew() />
 		<cfset var WebskinPath = "" />
 		
+		<cfif listLast(arguments.template,".") EQ "cfm">
+			<cfset arguments.template = ReplaceNoCase(arguments.template,".cfm", "", "all") />
+		</cfif>
 		
 		<cfif isDefined("arguments.stobject")>
 			<cfset stobj=arguments.stobject />
