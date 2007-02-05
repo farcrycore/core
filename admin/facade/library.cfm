@@ -50,7 +50,10 @@ $Developer: $
 <cfparam name="url.ftLibrarySelectedListClass" default="thumbNailsWrap">
 <cfparam name="url.ftLibrarySelectedListStyle" default="">
 
-<cfparam name="url.ftAllowLibraryAddNew" default="true"><!--- Method to Add New Object --->
+
+<cfparam name="url.ftAllowLibraryAddNew" default=""><!--- Method to Add New Object --->
+<cfparam name="url.ftAllowLibraryEdit" default=""><!--- Method to Edit Object --->
+
 
 <cfparam name="url.PackageType" default="types"><!--- Could be types or rules.. --->
 <cfparam name="url.currentpage" default="1">
@@ -74,15 +77,23 @@ $Developer: $
 
 
 
-
-
 <!--- Cleanup the Query_String so that we can paginate correctly --->
 <cfscript>
 	stURL = Duplicate(url);
-	stURL = filterStructure(stURL,'Page,ftJoin');
+	stURL = filterStructure(stURL,'Page,ftJoin,librarySection');
 	queryString=structToNamePairs(stURL);
 </cfscript>
 
+
+
+<ft:processForm action="Save Changes" url="#cgi.script_name#?#querystring#&ftJoin=#request.ftJoin#&librarySection=attach">
+	<ft:processFormObjects typename="#request.ftJoin#">
+	</ft:processFormObjects><!--- Returns variables.lSavedObjectIDs --->
+	
+<!--- 	<cfoutput>
+	#cgi.script_name#?#querystring#&ftJoin=#request.ftJoin#&librarySection=attach<cfabort>
+	</cfoutput> --->
+</ft:processForm>
 
 
 
@@ -360,7 +371,6 @@ LIBRARY DATA
 
 <cfoutput>
 	<br style="clear:both;" />
-	<br style="clear:both;" />
 </cfoutput>
 
 
@@ -383,7 +393,7 @@ LIBRARY DATA
 	<div id="container1" class="tab-container">
 		<ul class="tabs">
 			<li id="tab1" class="tab-active"><a href="##" onclick="return false;">Attach</a></li>
-			<cfif url.ftAllowLibraryAddNew><li id="tab2" class="tab-disabled"><a href="#cgi.SCRIPT_NAME#?#variables.QueryString#&librarySection=addnew">Add New</a></li></cfif>
+			<cfif listFindNoCase(url.ftAllowLibraryAddNew,request.ftJoin)><li id="tab2" class="tab-disabled"><a href="#cgi.SCRIPT_NAME#?#variables.QueryString#&librarySection=addnew">Add New</a></li></cfif>
 		</ul>
 		
 		<div class="tab-panes">
@@ -400,8 +410,7 @@ LIBRARY DATA
 	</cfoutput>
 
 
-	
-<cfelseif url.librarySection EQ "edit">
+<cfelseif url.librarySection EQ "edit" AND listFindNoCase(url.ftAllowLibraryEdit,request.ftJoin) AND structKeyExists(url, "editObjectID")>
 
 	<cfset variables.QueryString = structToNamePairs(filterStructure(Duplicate(url), "librarySection")) />
 
@@ -419,17 +428,17 @@ LIBRARY DATA
 				
 					<cfset stparam = structNew() />
 					<cfset stparam.stPrimary = stPrimary />
-					<cfset HTML = oData.getView(template="#url.ftLibraryAddNewWebskin#", alternateHTML="", stparam=stparam) />	
+					<cfset HTML = oData.getView(objectid="#url.editObjectID#", template="#url.ftLibraryAddNewWebskin#", alternateHTML="", stparam=stparam) />	
 						
 					<cfif len(HTML)>
 						<cfoutput>#HTML#</cfoutput>
 					<cfelse>
-						<ft:object typename="#request.ftJoin#" lfields="" inTable=0 />
+						<ft:object objectID="#url.editObjectID#" lfields="" inTable=0 />
 					</cfif>
 					
 					<cfoutput>
 					<div>
-						<ft:farcryButton value="Attach" />	
+						<ft:farcryButton value="Save Changes" />	
 						<ft:farcryButton type="button" value="Close" onclick="self.blur();window.close();" />	
 					</div>
 					</cfoutput>
@@ -442,7 +451,7 @@ LIBRARY DATA
 	</div>
 	</cfoutput>
 	
-<cfelse>
+<cfelseif listFindNoCase(url.ftAllowLibraryAddNew,request.ftJoin)>
 
 	<cfset variables.QueryString = structToNamePairs(filterStructure(Duplicate(url), "librarySection")) />
 
@@ -596,7 +605,7 @@ GENERATE THE LIBRARY PICKER
 				<td style="width:50%;"><h3>Drag To Select</h3></td>
 			</tr>
 			<tr>
-				<td style="background-color:##a0a0a0;" id="sortableListTo" class="arrayDetailView">
+				<td style="background-color:##FFEBD7;" id="sortableListTo" class="arrayDetailView">
 					
 					
 					
@@ -612,7 +621,7 @@ GENERATE THE LIBRARY PICKER
 			</cfoutput>	
 			
 			
-<cfset variables.QueryString = structToNamePairs(filterStructure(Duplicate(url), "librarySection")) />
+					<cfset variables.QueryString = structToNamePairs(filterStructure(Duplicate(url), "librarySection")) />
 
 					
 				
@@ -637,7 +646,16 @@ GENERATE THE LIBRARY PICKER
 							<cfoutput>
 							<div id="sortableListTo_#stCurrentArrayItem.data#" class="sortableHandle">
 								<div class="arrayDetail">
-									<p>#HTML#</p>
+									<div>
+										
+										#HTML#
+										<!--- <cfif listFindNoCase(url.ftAllowLibraryEdit,stCurrentArrayItem.typename)>
+										
+											<cfset editLink = "#cgi.SCRIPT_NAME#?#variables.QueryString#&librarySection=edit&editObjectid=#stCurrentArrayItem.data#" />
+											<span  style="border:1px solid red;"><a href="#editLink#">edit</a></span>
+										</cfif> --->
+									
+									</div>
 								</div>								
 							</div>
 							</cfoutput>
@@ -645,7 +663,6 @@ GENERATE THE LIBRARY PICKER
 					<cfelse>
 						<cfif listLen(lBasketIDs)>
 						
-							<cfset editLink = "#cgi.SCRIPT_NAME#?#variables.QueryString#&librarySection=edit&editObjectid=#stPrimary[url.primaryFieldName]#" />
 
 							<cfset HTML = oData.getView(objectid=stPrimary[url.primaryFieldName], template="LibrarySelected", alternateHTML="") />
 							<cfif NOT len(trim(HTML))>
@@ -661,7 +678,14 @@ GENERATE THE LIBRARY PICKER
 							BECAUSE THE JAVASCRIPT STRIPS THE "FIELDNAME_" TO DETERMINE THE OBJECTID
 							 ------------------------------------------------------------------------->			
 							<cfoutput>
-							<p><!---<a href="#editLink#">edit</a> --->#HTML#</p>
+							<div>
+								#HTML#
+								<!--- <cfif listFindNoCase(url.ftAllowLibraryEdit,request.ftJoin)>								
+									<cfset editLink = "#cgi.SCRIPT_NAME#?#variables.QueryString#&librarySection=edit&editObjectid=#stPrimary[url.primaryFieldName]#" />
+									<div><a href="#editLink#">edit</a></div>
+								</cfif> --->
+								
+							</div>
 							</cfoutput>
 						</cfif>
 					</cfif>
