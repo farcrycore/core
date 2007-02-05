@@ -24,13 +24,26 @@ by a regular expression match here???
 
 <!--- if we send in a path then only get templates from that path --->
 <cfif len(attributes.path)>
+
 	<cfdirectory action="LIST" filter="*.cfm" name="qTemplates" directory="#attributes.path#">
 
 <!---
 OTHERWISE WE NEED TO LOOP THROUGH ALL THE LIBRARIES AND GET ALL RELEVENT TEMPLATES
  --->
 <cfelse>
-	<cfdirectory action="LIST" filter="*.cfm" name="qTemplates" directory="#application.path.webskin#/#attributes.typename#">
+	
+		
+	<cfif structKeyExists(application.types, attributes.typename)>
+		<cfset stPackage = application.types[attributes.typename] />
+		<cfset packagePath = application.types[attributes.typename].typepath />
+	<cfelse>
+		<cfset stPackage = application.rules[attributes.typename] />
+		<cfset packagePath = application.rules[attributes.typename].rulepath />
+	</cfif>
+	
+	<cfset qTemplates = createObject("component", packagePath).getWebskins(typename="#attributes.typename#", prefix="#attributes.prefix#") />
+	<cfset caller[attributes.r_qMethods] = qTemplates>
+<!--- 	<cfdirectory action="LIST" filter="*.cfm" name="qTemplates" directory="#application.path.webskin#/#attributes.typename#">
 	
 	<cfset stLibraryTemplates = structNew() />
 	
@@ -43,67 +56,9 @@ OTHERWISE WE NEED TO LOOP THROUGH ALL THE LIBRARIES AND GET ALL RELEVENT TEMPLAT
 			
 			</cfif>
 		</cfloop>
-	</cfif>
+	</cfif> --->
 	
 	
 </cfif>
-
-<!--- This is to overcome casesensitivity issues on mac/linux machines --->
-<cfquery name="qTemplates" dbtype="query">
-	SELECT * FROM qTemplates
-	WHERE lower(qTemplates.name) LIKE '#lCase(attributes.prefix)#%'
-</cfquery>
-
-<!--- If we found any matching templates in the libraries, then we need to union them in. --->
-<cfif isDefined("stLibraryTemplates")>
-	<cfloop list="#structKeyList(stLibraryTemplates)#" index="library">
-		<cfset qLibraryTemplates = stLibraryTemplates[library].qTemplates />
-		
-		<cfquery name="qTemplates" dbtype="query">
-			SELECT * FROM qTemplates		
-			
-			UNION
-			
-			SELECT * FROM qLibraryTemplates
-			WHERE lower(qLibraryTemplates.name) LIKE '#lCase(attributes.prefix)#%'
-		</cfquery>
-		
-	</cfloop>
-</cfif>
-
-<cfset qMethods = queryNew("methodname, displayname")>
-
-<cfloop query="qTemplates">
-<!--- TODO
-must be able to do this more neatly with a regEX, especially if we 
-want more than one bit of template metadata --->
-	<cffile action="READ" file="#qTemplates.directory#/#qTemplates.name#" variable="template">
-
-	<cfset pos = findNoCase('@@displayname:', template)>
-	<cfif pos eq 0>
-		<cfset displayname = listfirst(qTemplates.name, ".")>
-	<cfelse>
-		<cfset pos = pos + 14>
-		<cfset count = findNoCase('--->', template, pos)-pos>
-		<cfset displayname = listLast(mid(template,  pos, count), ":")>
-	</cfif>
-
-	<cfset queryAddRow(qMethods, 1)>
-	<cfset querySetCell(qMethods, "methodname", listfirst(qTemplates.name, "."))>
-	<cfset querySetCell(qMethods, "displayname", displayname)>
-</cfloop>
-
-<!--- 
-<cfdump var="#qTemplates#">
-<cfdump var="#qMethods#">
- --->
-<!--- Reorder List --->
-<cfquery name="qOrderedMethods" dbtype="query">
-SELECT *
-FROM qMethods
-ORDER BY DisplayName
-</cfquery>
-
-<cfset caller[attributes.r_qMethods] = qOrderedMethods>
 
 
