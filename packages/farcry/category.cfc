@@ -137,16 +137,35 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 		<cfargument name="orderBy" type="string" required="False" default="dateTimeLastUpdated" hint="Property field to order by">
 		<cfargument name="orderDirection" type="string" required="False" default="desc" hint="order in which direction? descending or ascending">
 		<cfargument name="lStatus" type="string" required="False" default="approved" hint="the list of statuses to match on">
+		<cfargument name="maxRows" type="numeric" required="false" default="0" hint="maximum of rows returned">
 		
 		<cfset var i=0>
 		<cfset var qGetData = QueryNew("objectid")>
 		<cfset var strSQL = "">
 		<cfset var stLocal = StructNew()>
+		<cfset var sqlMaxRows = "">
+		<cfset var bSqlMaxPre = 0>
+		
+		<cfif arguments.maxRows neq 0>
+			<cfswitch expression="#application.dbtype#">
+				<cfcase value="mssql">
+					<cfset sqlMaxRows = " top #arguments.maxRows# ">
+					<cfset bSqlMaxPre = 1>
+				</cfcase>
+				<cfcase value="mysql,oracle,postgres">
+					<cfset sqlMaxRows = " LIMIT 1, #arguments.maxRows# ">
+				</cfcase>
+				<cfdefaultcase>
+					<cfthrow detail="The method getData of  category.cfc does not support your database type" type="Application" />				
+				</cfdefaultcase>
+			</cfswitch>
+		</cfif>
+		
 		
 		<cfif arguments.lcategoryids EQ ""> <!--- if no categories passed then return all unassigned --->
 			<cfsavecontent variable="strSQL">
 				<cfoutput>
-				SELECT	type.*
+				SELECT #IIF(sqlMaxRows neq "" and bSqlMaxPre,DE(sqlMaxRows),DE(""))# type.*
 				<cfif StructKeyExists(application.types[arguments.typename].stprops,"versionid")>
 					, (SELECT count(d.objectid) FROM #arguments.typename# d WHERE d.versionid = type.objectid) as bHasMultipleVersion
 				</cfif>
@@ -156,6 +175,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 					AND type.status in (#listqualify(arguments.lstatus,"'")#)
 				</cfif>
 				AND type.objectid NOT IN (SELECT objectid FROM #application.dbowner#refCategories)
+				#IIF(sqlMaxRows neq "" and not bSqlMaxPre,DE(sqlMaxRows),DE(""))#
 				</cfoutput>
 			</cfsavecontent>
 		<cfelse>
@@ -167,7 +187,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 				<!--- must match all categories --->
 				<cfsavecontent variable="strSQL">
 					<cfoutput>
-					SELECT type.*
+					SELECT #IIF(sqlMaxRows neq "" and bSqlMaxPre,DE(sqlMaxRows),DE(""))# type.*
 					<cfif StructKeyExists(application.types[arguments.typename].stprops,"versionid")>
 						, (SELECT count(d.objectid) FROM #arguments.typename# d WHERE d.versionid = type.objectid) as bHasMultipleVersion
 					<cfelse>
@@ -193,14 +213,14 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 						AND refCat#i#.categoryID = '#listGetAt(arguments.lCategoryIDs,i)#'
 						AND refCat#i#.objectId = type.objectId
 					</cfloop>
-					
+					#IIF(sqlMaxRows neq "" and not bSqlMaxPre,DE(sqlMaxRows),DE(""))#
 					</cfoutput>
 				</cfsavecontent>
 	
 			<cfelse>
 				<cfsavecontent variable="strSQL">
 					<cfoutput>
-					SELECT type.*
+					SELECT #IIF(sqlMaxRows neq "" and bSqlMaxPre,DE(sqlMaxRows),DE(""))# type.*
 					<cfif StructKeyExists(application.types[arguments.typename].stprops,"versionid")>
 						, (SELECT count(d.objectid) FROM #arguments.typename# d WHERE d.versionid = type.objectid) as bHasMultipleVersion
 					<cfelse>
@@ -216,12 +236,16 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 					<cfif listlen(arguments.lCategoryIDs)>
 					AND refCat.categoryid IN ('#ListChangeDelims(arguments.lCategoryIDs,"','",",")#')
 					</cfif>
+					#IIF(sqlMaxRows neq "" and not bSqlMaxPre,DE(sqlMaxRows),DE(""))#
+					
 					</cfoutput>
 				</cfsavecontent>
 			</cfif>
 		</cfif>
+		
 
-		<cfif listLen(arguments.lcategoryids) LTE 1><!--- no need to run a query of query as no duplicates should be selected by the query--->			
+
+		<cfif listLen(arguments.lcategoryids) LTE 0><!--- no need to run a query of query as no duplicates should be selected by the query--->			
 			<cfset strSQL = strSQL & " ORDER BY #arguments.orderBy# #arguments.orderDirection#">
 			<cfquery name="qGetData" datasource="#arguments.dsn#" cachedwithin="#CreateTimeSpan(0,0,0,20)#">
 			#preservesingleQuotes(strSQL)#
@@ -231,12 +255,18 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 			<cfquery name="qGetData" datasource="#arguments.dsn#" cachedwithin="#CreateTimeSpan(0,0,0,20)#">
 			#preservesingleQuotes(strSQL)#
 			</cfquery>			
+			
 			<cfquery dbtype="query" name="qGetData">
 			SELECT	DISTINCT *
 			FROM	qGetData
 			ORDER BY #arguments.orderBy# #arguments.orderDirection#
 			</cfquery>
+			
+			
 		</cfif>
+		
+		
+		
 		<cfreturn qGetData>
 	</cffunction>
 	
