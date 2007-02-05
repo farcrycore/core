@@ -31,17 +31,17 @@ type properties
 <cfproperty ftSeq="3" ftFieldSet="General Details" name="displayMethod" type="string" hint="Display method to render this HTML object with." required="yes" default="display" ftType="webskin" ftPrefix="displayPage">
 <cfproperty ftSeq="4" ftFieldSet="General Details" name="metaKeywords" type="nstring" hint="HTML head section metakeywords." required="no" default="">
 
-<cfproperty ftSeq="10" ftFieldSet="Movie Details" name="flashMovie" type="string" hint="The name of the flash movie" required="No" default="" ftType="file" ftDestination="/dmFlash/flashMovie"> 
-<cfproperty ftSeq="11" ftFieldSet="Movie Details" name="flashVersion" type="string" hint="version of flash player required" required="No" default="6,0,0,0">
-<cfproperty ftSeq="12" ftFieldSet="Movie Details"  name="flashParams" type="string" hint="paremeters to be passed to flash movie" required="No" default="">
-<cfproperty ftSeq="13" ftFieldSet="Movie Details"  name="flashHeight" type="numeric" hint="height of flash movie in pixels" required="No" default="0">
-<cfproperty ftSeq="14" ftFieldSet="Movie Details"  name="flashWidth" type="numeric" hint="width of flash movie in pixels" required="No" default="0">
-<cfproperty ftSeq="15" ftFieldSet="Movie Details"  name="flashQuality" type="string" hint="The quality of the flash movie" required="no" default="high"> 
-<cfproperty ftSeq="16" ftFieldSet="Movie Details"  name="flashAlign" type="string" hint="The alignment of the flash movie" required="no" default="center"> 
-<cfproperty ftSeq="17" ftFieldSet="Movie Details"  name="flashBgcolor" type="string" hint="The background colour of the flash movie" required="no" default="##FFFFFF"> 
-<cfproperty ftSeq="18" ftFieldSet="Movie Details"  name="flashLoop" type="boolean" hint="Whether or not to loop over flash movie" required="yes" default="0" ftType="list" ftList="1:true,0:false"> 
-<cfproperty ftSeq="19" ftFieldSet="Movie Details"  name="flashPlay" type="boolean" hint="Play flash movie straight away?" required="yes" default="1" ftType="list" ftList="1:true,0:false"> 
-<cfproperty ftSeq="20" ftFieldSet="Movie Details"  name="flashMenu" type="boolean" hint="Display options menu in flash movie" required="yes" default="0" ftType="list" ftList="1:true,0:false"> 
+<cfproperty ftSeq="10" ftFieldSet="Movie Details" name="flashMovie" type="string" hint="The name of the flash movie" required="No" default="" ftLabel="Flash Movie" ftType="file" ftDestination="/dmFlash/flashMovie"> 
+<cfproperty ftSeq="11" ftFieldSet="Movie Details" name="flashVersion" type="string" hint="version of flash player required" required="No" default="6,0,0,0" ftLabel="Required Version">
+<cfproperty ftSeq="12" ftFieldSet="Movie Details"  name="flashParams" type="string" hint="paremeters to be passed to flash movie" required="No" default="" flLabel="Misc Parameters">
+<cfproperty ftSeq="13" ftFieldSet="Movie Details"  name="flashHeight" type="numeric" hint="height of flash movie in pixels" required="No" default="0" ftLabel="Height" ftIncludeDecimal="false" />
+<cfproperty ftSeq="14" ftFieldSet="Movie Details"  name="flashWidth" type="numeric" hint="width of flash movie in pixels" required="No" default="0" ftLabel="Width" ftIncludeDecimal="false" />
+<cfproperty ftSeq="15" ftFieldSet="Movie Details"  name="flashQuality" type="string" hint="The quality of the flash movie" required="no" default="high" ftLabel="Quality" ftType="list" ftList="high:High,medium:Medium,low:Low"> 
+<cfproperty ftSeq="16" ftFieldSet="Movie Details"  name="flashAlign" type="string" hint="The alignment of the flash movie" required="no" default="center" ftLabel="ALignment"> 
+<cfproperty ftSeq="17" ftFieldSet="Movie Details"  name="flashBgcolor" type="string" hint="The background colour of the flash movie" required="no" default="##FFFFFF" ftLabel="Background Color" ftDefault="##FFFFFF"> 
+<cfproperty ftSeq="18" ftFieldSet="Movie Details"  name="flashLoop" type="boolean" hint="Whether or not to loop over flash movie" required="yes" default="0" ftLabel="Loop" ftType="list" ftList="1:true,0:false"> 
+<cfproperty ftSeq="19" ftFieldSet="Movie Details"  name="flashPlay" type="boolean" hint="Play flash movie straight away?" required="yes" default="1" ftLabel="Play" ftType="list" ftList="1:true,0:false"> 
+<cfproperty ftSeq="20" ftFieldSet="Movie Details"  name="flashMenu" type="boolean" hint="Display options menu in flash movie" required="yes" default="0" ftLabel="Menu" ftType="list" ftList="1:true,0:false"> 
 
 <cfproperty name="bLibrary" type="boolean" hint="Flag to indictae if in file library or not" required="no" default="1">
 <cfproperty name="commentlog" type="longchar" hint="Workflow comment log." required="no" default="">
