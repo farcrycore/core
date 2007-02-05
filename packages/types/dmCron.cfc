@@ -21,26 +21,26 @@ $Developer: Brendan Sisson (brendan@daemon.com.au) $
 <!------------------------------------------------------------------------
 type properties
 ------------------------------------------------------------------------->	
-<cfproperty name="title" type="nstring" hint="Title of the feed" required="no" default="">
-<cfproperty name="description" type="longchar" hint="Description of the feed" required="no" default="">
-<cfproperty name="template" type="string" hint="Url of file to be scheduled" required="no" default="">
-<cfproperty name="parameters" type="string" hint="Url parameters for file" required="no" default="">
-<cfproperty name="frequency" type="string" hint="How often task is run" required="no" default="daily">
-<cfproperty name="startDate" type="date" hint="Start date for task" required="no" default="">
-<cfproperty name="endDate" type="date" hint="End date for task" required="no" default="">
-<cfproperty name="timeOut" type="numeric" hint="time out period" required="no" default="60">
+<cfproperty ftSeq="1" ftFieldset="General Details" name="title" ftLabel="Title" type="nstring" hint="Title of the feed" required="no" default="">
+<cfproperty ftSeq="2" ftFieldset="General Details" name="description" ftLabel="Description" type="longchar" hint="Description of the feed" required="no" default="">
+<cfproperty ftSeq="3" ftFieldset="General Details" name="template" ftLabel="Template" type="string" hint="Url of file to be scheduled" required="no" default="" ftType="list" ftListData="getTemplateList">
+<cfproperty ftSeq="9" ftFieldset="Settings" name="parameters" type="string" hint="Url parameters for file" required="no" default="">
+<cfproperty ftSeq="10" ftFieldset="Settings" name="frequency" type="string" hint="How often task is run" required="no" default="daily" ftType="list" ftList="Once,Daily,Weekly,Monthly">
+<cfproperty ftSeq="11" ftFieldset="Settings" name="startDate" ftType="datetime" type="date" hint="Start date for task" required="no" default="">
+<cfproperty ftSeq="12" ftFieldset="Settings" name="endDate" ftType="datetime" type="date" hint="End date for task" required="no" default="">
+<cfproperty ftSeq="13" ftFieldset="Settings" name="timeOut" type="numeric" hint="time out period" required="no" default="60" ftType="int">
 
 
 <!------------------------------------------------------------------------
 object methods 
 ------------------------------------------------------------------------->	
-<cffunction name="edit" access="public" output="true" hint="edit handler for dmCron objects">
+<!--- <cffunction name="edit" access="public" output="true" hint="edit handler for dmCron objects">
 	<cfargument name="objectid" required="yes" type="UUID">
 	
 	<!--- getData for object edit --->
 	<cfset stObj = getData(arguments.objectid)>
 	<cfinclude template="_dmCron/edit.cfm">
-</cffunction>
+</cffunction> --->
 
 <cffunction name="display" access="public" output="true" hint="runs the scheduled task">
 	<cfargument name="objectid" required="yes" type="UUID">
@@ -84,7 +84,17 @@ object methods
 	<cfreturn qTemplates>
 </cffunction>
 
-<cffunction name="delete" access="public" output="false" hint="Deletes the scheduled task and actual dmCron object" returntype="struct">
+
+<cffunction name="getTemplateList" returntype="string" output="false" hint="returns a list (column name 'tmeplate') of available templates.">
+	<cfset var lTemplates = "">
+	<cfset var qListTemplates = listTemplates()>
+	<cfloop query="qListTemplates">
+		<cfset lTemplates = listAppend(lTemplates,"#qListTemplates.path#:#qListTemplates.displayname#")>
+	</cfloop>
+	<cfreturn lTemplates>
+</cffunction>
+
+<!--- <cffunction name="delete" access="public" output="false" hint="Deletes the scheduled task and actual dmCron object" returntype="struct">
 	<cfargument name="objectid" required="yes" type="UUID">
 	
 	<!--- getData for object deletion --->
@@ -100,7 +110,7 @@ object methods
 	<cfset super.delete(stObj.objectId)>
 
 	<cfreturn stReturn>
-</cffunction>
+</cffunction> --->
 
 <cffunction name="setData" access="public" output="true" hint="Creates a scheduled task and actual dmCron object">
 	<cfargument name="stProperties" required="true">
