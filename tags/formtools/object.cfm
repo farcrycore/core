@@ -475,6 +475,13 @@
 					</cfif>
 					<cfif structKeyExists(ftFieldMetadata,'ftAllowLibraryAddNew')>
 						<cfset stURLParams.ftAllowLibraryAddNew = "#ftFieldMetadata.ftAllowLibraryAddNew#">
+					<cfelse>
+						<cfset stURLParams.ftAllowLibraryAddNew = "#ftFieldMetadata.ftJoin#">
+					</cfif>
+					<cfif structKeyExists(ftFieldMetadata,'ftAllowLibraryEdit')>
+						<cfset stURLParams.ftAllowLibraryEdit = "#ftFieldMetadata.ftAllowLibraryEdit#">
+					<cfelse>
+						<cfset stURLParams.ftAllowLibraryEdit = "#ftFieldMetadata.ftJoin#">
 					</cfif>
 							
 					<cfset request.inHead.libraryPopup = true />
