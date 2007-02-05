@@ -22,7 +22,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 <!------------------------------------------------------------------------
 type properties
 ------------------------------------------------------------------------->	
-<cfproperty ftSeq="1" ftWizzardStep="Start" ftFieldset="General Details" name="Title" type="nstring" hint="Title of object.  *perhaps this should be deprecated for object label*" required="no" default="">
+<cfproperty ftSeq="1" ftWizzardStep="Start" ftFieldset="General Details" name="Title" type="nstring" hint="Title of object.  *perhaps this should be deprecated for object label*" required="no" default="" ftValidation="required">
 <cfproperty ftSeq="2" ftWizzardStep="Start" ftFieldset="General Details" name="reviewDate" type="date" hint="The date for which the object will be reviewed" required="no" default="" ftType="datetime" ftToggleOffDateTime="true" ftLabel="Review Date">
 <cfproperty ftSeq="3" ftWizzardStep="Start" ftFieldset="General Details" name="ownedby" displayname="Owned by" type="nstring" hint="Username for owner." required="No" default="" ftLabel="Owned By" ftType="list" ftRenderType="dropdown" ftListData="getOwners">
 <cfproperty ftSeq="4" ftWizzardStep="Start" ftFieldset="General Details" name="displayMethod" type="string" hint="Display method to render this HTML object with." required="yes" default="display" ftLabel="Display Method" ftType="webskin" ftPrefix="displayPage">
