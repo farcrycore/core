@@ -249,7 +249,7 @@ default handlers
 		
 		<!--- ORDER AND SET DISPLAYNAME FOR COMBINED WEBSKIN RESULTS --->		
  		<cfquery dbtype="query" name="qResult">
-		SELECT *,  name as displayname
+		SELECT *,  name as displayname,  name as methodname
 		FROM qResult
 		ORDER BY name
 		</cfquery>
