@@ -262,6 +262,7 @@ default handlers
 			<cfif len(WebskinDisplayName)>
 				<cfset querysetcell(qresult, 'displayname', WebskinDisplayName, qResult.currentRow) />			
 			</cfif>
+			<cfset querysetcell(qresult,'methodname',listfirst(qResult.methodName[qResult.currentRow],"."),qResult.currentRow)>
 		</cfoutput>
 		
 		<cfreturn qresult />
