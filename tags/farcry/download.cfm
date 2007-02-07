@@ -142,7 +142,7 @@ $out:$
 	
 		<!--- download --->
 
- 		<cfheader name="content-disposition" VALUE="inline; filename=#fileName#">
+ 		<cfheader name="content-disposition" VALUE="attachment; filename=#fileName#">
 		<cfheader name="cache-control" value="">
 		<cfheader name="pragma" value="">
 	    <cftry>

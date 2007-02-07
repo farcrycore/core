@@ -27,21 +27,21 @@ $out:$
 <!------------------------------------------------------------------------
 type properties
 ------------------------------------------------------------------------->
-<cfproperty ftSeq="1" ftFieldset="File Details" name="title" type="nstring" hint="Meaningful reference title for file" required="no" default="" ftLabel="Title"> 
-<cfproperty ftSeq="2" ftFieldset="File Details" name="filepath" type="string" hint="The location of the file on the webserver" required="no" default="" ftType="file" ftLabel="File" ftDestination="/dmfile" ftSecure="false">  
-<cfproperty name="filename" type="string" hint="The name of the file to be uploaded" required="no" default="">  
+<cfproperty ftSeq="1" ftFieldset="File Details" name="title" type="nstring" hint="Meaningful reference title for file" required="no" default="" ftLabel="Title" blabel="true"> 
+<cfproperty ftSeq="2" ftFieldset="File Details" name="description" type="longchar" hint="A description of the file to be uploaded" required="No" default="" ftLabel="Description"> 
+<cfproperty ftSeq="3" ftFieldset="File Details" name="filename" type="string" hint="The name of the file to be uploaded" required="no" default=""  ftType="file" ftLabel="File" ftDestination="/" ftSecure="false">  
+<cfproperty ftSeq="4" ftFieldset="Publishing Details" name="documentDate" type="date" hint="The date of a file object" required="no" default="" ftLabel="Publish Date" ftDefaultType="Evaluate" ftDefault="now()" ftType="datetime" ftDateFormatMask="dd mmm yyyy" ftTimeFormatMask="hh:mm tt" ftToggleOffDateTime="false">
+<cfproperty ftSeq="5" ftFieldset="Publishing Details" name="bLibrary" type="numeric" hint="Flag to indictae if in file library or not" required="no" default="1" ftLabel="Add file to library?" ftType="boolean">
+<cfproperty name="filepath" type="string" hint="The location of the file on the webserver" required="no" default="">  
 <cfproperty name="fileSize" type="numeric" hint="The size of the file on the webserver (in bytes)" required="no" default="0">  
 <cfproperty name="fileType" type="string" hint="MIME content type of the saved file" required="no" default="">
 <cfproperty name="fileSubType" type="string" hint="MIME content subtype of the saved file" required="no" default="">
 <cfproperty name="fileExt" type="string" hint="The extension of the file on the webserver (without the period)" required="no" default="">
-<cfproperty name="documentDate" type="date" hint="The date of a file object" required="no" default="">
-<cfproperty name="bLibrary" type="numeric" hint="Flag to indictae if in file library or not" required="no" default="1">
-<cfproperty name="description" type="longchar" hint="A description of the file to be uploaded" required="No" default=""> 
 <cfproperty name="status" type="string" hint="Status of the node (draft, pending, approved)." required="yes" default="draft">
 <!--- Object Methods --->
 
 <cfimport taglib="/farcry/farcry_core/tags/formtools/" prefix="ft" >
-
+<!---
 <cffunction name="edit" access="public">
 	<cfargument name="objectid" required="yes" type="UUID">
 	
@@ -54,7 +54,7 @@ type properties
 	<!--- include edit handler --->	
 	<cfinclude template="_dmFile/edit.cfm">
 </cffunction>
-
+--->
 <cffunction name="display" access="public" output="true">
 	<cfargument name="objectid" required="yes" type="UUID">
 	
