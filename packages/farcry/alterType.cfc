@@ -572,6 +572,10 @@ $out:$
 			db.type = 'date';
 			db.length = 7;
 			stPropTypes['date'] = duplicate(db);
+			//integer
+			db.type = 'integer';
+			db.length = 4;//?
+			stPropTypes['integer'] = duplicate(db);
 			//numeric
 			db.type = 'number';
 			db.length = 22;
@@ -618,6 +622,10 @@ $out:$
 			db.type = 'datetime';
 			db.length = 8;
 			stPropTypes['date'] = duplicate(db);
+			//integer
+			db.type = 'int';
+			db.length = 4;//?
+			stPropTypes['integer'] = duplicate(db);
 			//numeric
 			db.type = 'decimal';
 			db.length = '(10,2)';
@@ -687,6 +695,10 @@ $out:$
 			db.type = 'timestamp';
 			db.length = 8;
 			stPropTypes['date'] = duplicate(db);
+			//integer
+			db.type = 'integer';
+			db.length = 4;//?
+			stPropTypes['integer'] = duplicate(db);			
 			//numeric
 			db.type = 'numeric';
 			db.length = 4;
@@ -731,6 +743,10 @@ $out:$
 			db.type = 'datetime';
 			db.length = 8;
 			stPropTypes['date'] = duplicate(db);
+			//integer
+			db.type = 'int';
+			db.length = 4;//?
+			stPropTypes['integer'] = duplicate(db);			
 			//numeric
 			db.type = 'numeric';
 			db.length = 4;
@@ -1357,7 +1373,7 @@ $out:$
 					<!--- alter column --->
 					<cfquery NAME="qAlter" DATASOURCE="#application.dsn#">
 						ALTER TABLE #application.dbowner##arguments.typename#
-						ALTER COLUMN #arguments.srcColumn# #arguments.srcColumnType# <cfif NOT listContainsNoCase("NTEXT,INT,NUMBER",arguments.srcColumnType)>(#length#)</cfif>
+						ALTER COLUMN #arguments.srcColumn# #arguments.srcColumnType# <cfif NOT listContainsNoCase("NTEXT,INT,INTEGER,NUMBER",arguments.srcColumnType)>(#length#)</cfif>
 					</cfquery>
 
 					<!--- add constraint --->
