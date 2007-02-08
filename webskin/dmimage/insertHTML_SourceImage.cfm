@@ -1,4 +1,4 @@
 <!--- @@displayname: Source Image --->
 <!--- @@author: Matthew Bryant --->
 
-<cfoutput><img src="#stobj.sourceImage#"></cfoutput>
+<cfoutput><img src="#application.url.webroot#/#stobj.sourceImage#"></cfoutput>
