@@ -25,7 +25,7 @@ var tinyMCEImageList = new Array(
 	
 	<cfset currentrow = 1>
 	<cfloop query="qImages">
-		["<cfif len(qImages.label)>#qImages.label#<cfelse>#qImages[url.imageField][currentRow]#</cfif>", "#qImages[url.imageField][currentRow]#"]<cfif currentRow LT qImages.RecordCount>,<cfset currentrow = currentrow + 1></cfif>
+		["<cfif len(qImages.label)>#qImages.label#<cfelse>#qImages[url.imageField][currentRow]#</cfif>", "#application.url.webroot#/#qImages[url.imageField][currentRow]#"]<cfif currentRow LT qImages.RecordCount>,<cfset currentrow = currentrow + 1></cfif>
 	</cfloop>
 );
 </cfoutput>
