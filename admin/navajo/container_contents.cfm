@@ -42,23 +42,29 @@ $Developer: Guy Phanvongsa (guy@daemon.com.au) $
 		<cfset ruletype = oCon.findType(objectid=stObj.aRules[i])>
 		<cfset querySetCell(qActiveRules,"objectID",stObj.aRules[i])>
 		<cfset querySetCell(qActiveRules,"typename",ruletype)>
-		<cfif ruleID EQ stObj.aRules[i]>
-			<cfset selectedRuleTypeName = ruleType>
-		</cfif>
 	</cfloop>
 
-	<cfif ruleID EQ ""> <!--- default the selected ruleid --->
-		<cfif StructKeyExists(session,"ruleid")> <!--- rule currently editing form the plp --->
-			<cfset ruleID = session.ruleID>
-			<cfset selectedRuleTypeName = session.ruleTypeName>
-		<cfelseif qActiveRules.recordCount GT 0>
-			<cfset ruleID = qActiveRules.objectid[1]>
-			<cfset selectedRuleTypeName = qActiveRules.typename[1]>
-		</cfif>
+	<cfif StructKeyExists(form,"ruleid")>
+		<cfset variables.RuleID = form.ruleid />
+	<cfelseif StructKeyExists(url,"ruleid") >
+		<cfset variables.RuleID = URL.RuleID />
+	<cfelseif StructKeyExists(session,"RuleID")>
+		<cfset variables.RuleID = session.RuleID>
+	</cfif>
+
+	<cfquery name="currentRule" dbtype="query">
+	SELECT * FROM qActiveRules
+	WHERE ObjectID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#variables.RuleID#">
+	</cfquery>
+	<cfif currentRule.recordcount EQ 1>
+		<cfset selectedRuleTypeName = currentRule.TypeName[1] />
+	<cfelse>
+		<cfset selectedRuleTypeName = qActiveRules.TypeName[1] />
+		<cfset variables.ruleID = qActiveRules.ObjectID[1] />
 	</cfif>
 
 	<!--- create rule object for display method --->
-	<cfset objRule = createObject("component","#application.rules[selectedRuleTypeName].rulepath#")>
+	<cfset objRule = createObject("component", application.rules[selectedRuleTypeName].rulepath)>
 <cfelse>
 	<cfset errormessage = errormessage & "Invalid Container ID: [not passed]">
 </cfif>
@@ -83,5 +89,5 @@ $Developer: Guy Phanvongsa (guy@daemon.com.au) $
 </form></cfoutput>
 
 <!--- generate rules editform --->
-<cfset objRule.update(objectid="#ruleID#")>
+<cfset objRule.update(objectid=variables.ruleID)>
 
