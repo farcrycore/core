@@ -5,7 +5,7 @@
 	<cfoutput>
 		<table>
 		<tr>
-			<td><img src="#application.url.webroot#/#stobj.thumbnailImage#" title="#stObj.title#"></td>
+			<td><img src="#application.url.webroot##stobj.thumbnailImage#" title="#stObj.title#"></td>
 			<td>&nbsp;</td>
 			<td>
 				#stObj.title#<br />
