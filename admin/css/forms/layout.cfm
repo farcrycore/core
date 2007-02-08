@@ -231,8 +231,10 @@ input.validation-failed, textarea.validation-failed {border: 1px solid ##FF3300;
 			ul.arrayThumbnailView li div.arrayDetail {margin: 0px; padding: 0px; display: none;}
 			ul.arrayThumbnailView li div.arrayThumbnail {margin: 0px; padding: 0px;}
 
+  /* formtool tinymce textarea layout styles */
+  form.formtool div.richtext label {text-align: left;}
 	/* formtool richtext component layout styles */
-	form.formtool div.richtext div.fieldAlign {float: none; width: auto;}
+	form.formtool div.richtext div.fieldAlign {clear: left; float: none; width: auto;}
 			
 <!--- end css output --->
 </cfoutput>
