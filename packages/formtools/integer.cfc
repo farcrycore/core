@@ -1,4 +1,4 @@
-<cfcomponent name="integer" displayname="integer" hint="Field component to liase with all int types"> 
+<cfcomponent name="integer" displayname="integer" extends="field" hint="Field component to liase with all integer types"> 
 	
 	
 	<cffunction name="init" access="public" returntype="farcry.farcry_core.packages.formtools.integer" output="false" hint="Returns a copy of this initialised object">
@@ -57,7 +57,8 @@
 		<cfif isNumeric(arguments.stFieldPost.Value)>
 			<cfset stResult.value = stFieldPost.Value />
 		<cfelse>
-			<cfset stResult.value = 0 />
+			<!--- not a valid number...default to empty string --->
+			<cfset stResult.value = "" />
 		</cfif>		
 		
 		
