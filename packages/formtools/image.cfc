@@ -88,7 +88,7 @@
 							</cfif>
 							<cfif structKeyExists(arguments.stMetadata, "ftAutoGenerateType")>
 								<cfif arguments.stMetadata.ftAutoGenerateType EQ "Pad">
-									<cfoutput><div>Padding image with #arguments.stMetadata.ftPadColor#)</div></cfoutput>
+									<cfoutput><div>Padding image with #arguments.stMetadata.ftPadColor#</div></cfoutput>
 								<cfelse>
 									<cfoutput><div>#arguments.stMetadata.ftAutoGenerateType#</div></cfoutput>
 								</cfif>
@@ -104,7 +104,8 @@
 						<cfoutput>
 						<td valign="top">
 							<div id="#arguments.fieldname#previewimage">
-								<img src="#arguments.stMetadata.value#" width="50px">
+								<img src="#arguments.stMetadata.value#" width="50px" title="#listLast(arguments.stMetadata.value,"/")#"><br>
+								#listLast(arguments.stMetadata.value,"/")#
 								<ft:farcryButton type="button" value="Delete Image" onclick="if(confirm('Are you sure you want to remove this image?')) {} else {return false};$('#arguments.fieldname#').value='';Effect.Fade('#arguments.fieldname#previewimage');" />
 							</div>
 						</td>
