@@ -1,8 +1,3 @@
-
-
-
-
-
 <cfcomponent extends="field" name="category" displayname="category" hint="Field component to liase with all category field types"> 
 
 	<cfimport taglib="/farcry/farcry_core/tags/widgets/" prefix="widgets">
