@@ -265,6 +265,12 @@ default handlers
 			<cfset querysetcell(qresult,'methodname',listfirst(qResult.methodName[qResult.currentRow],"."),qResult.currentRow)>
 		</cfoutput>
 		
+		<!--- resort the query now that we finally have all the information we need so that display templates are order by displayname --->
+		<cfquery name="qResult" dbtype="query">
+		SELECT * FROM qResult
+		ORDER BY DisplayName
+		</cfquery>
+		
 		<cfreturn qresult />
 	</cffunction>
 
@@ -641,13 +647,13 @@ default handlers
 		<cfargument name="ObjectID" required="yes" type="string" default="">
 		<cfargument name="onExit" required="no" type="any" default="Refresh">
 		
+		
 		<cfset var stObj = getData(objectid=arguments.objectid) />
+		
 		<cfset var qMetadata = application.types[stobj.typename].qMetadata >
 		
-		<!-------------------------------------------------- 
-		WIZARD:
-		- build default formtool wizard
-		--------------------------------------------------->
+		
+		
 		<cfquery dbtype="query" name="qWizzardSteps">
 		SELECT ftWizzardStep
 		FROM qMetadata
@@ -709,7 +715,7 @@ default handlers
 								</cfquery>
 								
 								
-								<wiz:object ObjectID="#stObj.ObjectID#" lfields="#valuelist(qFieldset.propertyname)#" format="edit" intable="false" legend="#qFieldset.ftFieldset#" helptitle="#qFieldset.fthelptitle#" helpsection="#qFieldset.fthelpsection#" />
+								<wiz:object ObjectID="#stObj.ObjectID#" lfields="#valuelist(qFieldset.propertyname)#" format="edit" intable="false" legend="#qFieldset.ftFieldset#" />
 							</cfloop>
 						<cfelse>
 							
@@ -765,12 +771,13 @@ default handlers
 						ORDER BY ftSeq
 						</cfquery>
 						
-						<ft:object ObjectID="#arguments.ObjectID#" format="edit" lExcludeFields="label" lFields="#valuelist(qFieldset.propertyname)#" inTable="false" IncludeFieldSet="true" Legend="#qFieldSets.ftFieldset#" helptitle="#qFieldset.fthelptitle#" helpsection="#qFieldset.fthelpsection#" />
-							
+						<ft:object ObjectID="#arguments.ObjectID#" format="edit" lExcludeFields="label" lFields="#valuelist(qFieldset.propertyname)#" inTable=false IncludeFieldSet=1 Legend="#qFieldSets.ftFieldset#" />
 					</cfloop>
 					
+					
 				<cfelse>
-					<!--- All Fields: default edit handler --->
+				
+					<!--- default edit handler --->
 					<ft:object ObjectID="#arguments.ObjectID#" format="edit" lExcludeFields="label" lFields="" IncludeFieldSet=1 Legend="#stObj.Label#" />
 					
 				</cfif>
