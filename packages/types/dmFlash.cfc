@@ -26,56 +26,46 @@ $out:$
 <!------------------------------------------------------------------------
 type properties
 ------------------------------------------------------------------------->	
-<cfproperty ftSeq="1" ftFieldSet="General Details" name="Title" type="nstring" hint="Title of object.  *perhaps this should be deprecated for object label*" required="no" default="">
-<cfproperty ftSeq="2" ftFieldSet="General Details" name="Teaser" type="longchar" hint="Teaser text." required="no" default="">
-<cfproperty ftSeq="3" ftFieldSet="General Details" name="displayMethod" type="string" hint="Display method to render this HTML object with." required="yes" default="display" ftType="webskin" ftPrefix="displayPage">
-<cfproperty ftSeq="4" ftFieldSet="General Details" name="metaKeywords" type="nstring" hint="HTML head section metakeywords." required="no" default="">
+<cfproperty ftSeq="1" ftFieldSet="General Details" name="title" type="string" hint="Title of content item." required="no" default="" ftlabel="Title" ftvalidation="required" />
+<cfproperty ftSeq="2" ftFieldSet="General Details" name="teaser" type="longchar" hint="Teaser text." required="no" default="" ftlabel="Teaser" />
+<cfproperty ftSeq="3" ftFieldSet="General Details" name="displayMethod" type="string" hint="Display template to render this Flash content." required="yes" default="display" ftType="webskin" ftPrefix="displayPage" ftlabel="Display" />
+<cfproperty ftSeq="4" ftFieldSet="General Details" name="metaKeywords" type="nstring" hint="Keywords or tags to describe this content." required="no" default="" ftlabel="Keywords/Tags">
+<cfproperty ftSeq="5" ftFieldSet="General Details" name="bLibrary" type="boolean" hint="Flag to make the Flash movie shared." required="no" default="1" ftlabel="Add to Shared Library">
 
-<cfproperty ftSeq="10" ftFieldSet="Movie Details" name="flashMovie" type="string" hint="The name of the flash movie" required="No" default="" ftLabel="Flash Movie" ftType="file" ftDestination="/dmFlash/flashMovie"> 
-<cfproperty ftSeq="11" ftFieldSet="Movie Details" name="flashVersion" type="string" hint="version of flash player required" required="No" default="6,0,0,0" ftLabel="Required Version">
-<cfproperty ftSeq="12" ftFieldSet="Movie Details"  name="flashParams" type="string" hint="paremeters to be passed to flash movie" required="No" default="" flLabel="Misc Parameters">
-<cfproperty ftSeq="13" ftFieldSet="Movie Details"  name="flashHeight" type="numeric" hint="height of flash movie in pixels" required="No" default="0" ftLabel="Height" ftIncludeDecimal="false" />
-<cfproperty ftSeq="14" ftFieldSet="Movie Details"  name="flashWidth" type="numeric" hint="width of flash movie in pixels" required="No" default="0" ftLabel="Width" ftIncludeDecimal="false" />
-<cfproperty ftSeq="15" ftFieldSet="Movie Details"  name="flashQuality" type="string" hint="The quality of the flash movie" required="no" default="high" ftLabel="Quality" ftType="list" ftList="high:High,medium:Medium,low:Low"> 
-<cfproperty ftSeq="16" ftFieldSet="Movie Details"  name="flashAlign" type="string" hint="The alignment of the flash movie" required="no" default="center" ftLabel="ALignment"> 
-<cfproperty ftSeq="17" ftFieldSet="Movie Details"  name="flashBgcolor" type="string" hint="The background colour of the flash movie" required="no" default="##FFFFFF" ftLabel="Background Color" ftDefault="##FFFFFF"> 
-<cfproperty ftSeq="18" ftFieldSet="Movie Details"  name="flashLoop" type="boolean" hint="Whether or not to loop over flash movie" required="yes" default="0" ftLabel="Loop" ftType="list" ftList="1:true,0:false"> 
-<cfproperty ftSeq="19" ftFieldSet="Movie Details"  name="flashPlay" type="boolean" hint="Play flash movie straight away?" required="yes" default="1" ftLabel="Play" ftType="list" ftList="1:true,0:false"> 
-<cfproperty ftSeq="20" ftFieldSet="Movie Details"  name="flashMenu" type="boolean" hint="Display options menu in flash movie" required="yes" default="0" ftLabel="Menu" ftType="list" ftList="1:true,0:false"> 
+<cfproperty ftSeq="10" ftFieldSet="Flash File" name="flashURL" type="string" hint="The url to a remote flash movie file." required="No" default="" ftLabel="Remote File" ftType="url" 
+			fthelptitle="Location of the Flash File"
+			fthelpsection="You can choose to either upload a SWF to the server or point to a remote Flash file using a URL.  If a URL is nominated the Flash file field will be ignored." /> 
+<cfproperty ftSeq="11" ftFieldSet="Flash File" name="flashMovie" type="string" hint="The name of the physical flash movie file." required="No" default="" ftLabel="Flash File" ftType="file" ftDestination="/dmFlash/flashMovie" /> 
+<cfproperty ftSeq="12" ftFieldSet="Flash File" name="flashWidth" type="numeric" hint="width of flash movie in pixels" required="No" default="0" ftLabel="Width" ftIncludeDecimal="false" ftvalidation="validate-digits,required" /> 
+<cfproperty ftSeq="13" ftFieldSet="Flash File" name="flashHeight" type="numeric" hint="height of flash movie in pixels" required="No" default="0" ftLabel="Height" ftIncludeDecimal="false" ftvalidation="validate-digits,required" />
+<cfproperty ftSeq="14" ftFieldSet="Flash File" name="flashParams" type="string" hint="paremeters to be passed to flash movie" required="No" default="" ftLabel="Parameters" />
 
-<cfproperty name="bLibrary" type="boolean" hint="Flag to indictae if in file library or not" required="no" default="1">
+<!--- flash categorisation --->
+<cfproperty ftSeq="20" ftFieldset="Categorisation" name="catFlash" type="string" hint="Flash categorisation." required="no" default="" ftlabel="Category" fttype="category" ftalias="dmflash" ftselectmultiple="true" />
+
+<cfproperty ftSeq="31" ftFieldSet="Flash Player Settings" name="flashVersion" type="string" hint="version of flash player required" required="No" default="8,0,0,0" ftLabel="Required Version" 
+			fthelptitle="Detailed Settings"
+			fthelpsection="If in doubt accept the default Flash Player settings.  They should be fine for most settings." />
+<cfproperty ftSeq="35" ftFieldSet="Flash Player Settings"  name="flashQuality" type="string" hint="The quality of the flash movie" required="no" default="high" ftLabel="Quality" ftType="list" ftList="high:High,medium:Medium,low:Low"> 
+<cfproperty ftSeq="36" ftFieldSet="Flash Player Settings"  name="flashAlign" type="string" hint="The alignment of the flash movie" required="no" default="center" ftLabel="Alignment"> 
+<cfproperty ftSeq="37" ftFieldSet="Flash Player Settings"  name="flashBgcolor" type="string" hint="The background colour of the flash movie" required="no" default="##FFFFFF" ftLabel="Background Color" ftDefault="##FFFFFF"> 
+<cfproperty ftSeq="38" ftFieldSet="Flash Player Settings"  name="flashLoop" type="boolean" hint="Whether or not to loop over flash movie" required="yes" default="0" ftLabel="Loop" ftType="list" ftList="1:true,0:false"> 
+<cfproperty ftSeq="39" ftFieldSet="Flash Player Settings"  name="flashPlay" type="boolean" hint="Play flash movie straight away?" required="yes" default="1" ftLabel="Play" ftType="list" ftList="1:true,0:false"> 
+<cfproperty ftSeq="40" ftFieldSet="Flash Player Settings"  name="flashMenu" type="boolean" hint="Display options menu in flash movie" required="yes" default="0" ftLabel="Menu" ftType="list" ftList="1:true,0:false"> 
+
+<!--- system properties --->
 <cfproperty name="commentlog" type="longchar" hint="Workflow comment log." required="no" default="">
 <cfproperty name="status" type="string" hint="Status of movie - draft,pending or approved" required="No" default="">
 
 <!------------------------------------------------------------------------
 object methods 
 ------------------------------------------------------------------------->	
-<!--- <cffunction name="edit" access="public" output="true">
-	<cfargument name="objectid" required="yes" type="UUID">
-	
-	<!--- getData for object edit --->
-	<cfset stObj = this.getData(arguments.objectid)>
-	<cfinclude template="_dmFlash/edit.cfm">
-</cffunction>
 
-<cffunction name="display" access="public" output="true">
-	<cfargument name="objectid" required="yes" type="UUID">
-	
-	<!--- getData for object edit --->
-	<cfset stObj = this.getData(arguments.objectid)>
-	<cfinclude template="_dmFlash/display.cfm">
-</cffunction>
 
-<cffunction name="delete" access="public" hint="Specific delete method for dmFlash. Removes physical files from ther server." returntype="struct">
+<!---
+><cffunction name="delete" access="public" hint="Specific delete method for dmFlash. Removes physical files from ther server." returntype="struct">
 	<cfargument name="objectid" required="yes" type="UUID" hint="Object ID of the object being deleted">
 	
-	<!--- get object details --->
-	<cfset var stObj = getData(arguments.objectid)>
-	<cfset var stReturn = StructNew()>
-	<cfset stReturn.bSuccess = 1>
-	<cfset stReturn.message = "dmFlash item successfully dleted.">
-	
-	<cfinclude template="_dmFlash/delete.cfm">
 	<cfreturn stReturn>
 </cffunction> --->
 
