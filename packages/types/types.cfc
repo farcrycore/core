@@ -641,13 +641,13 @@ default handlers
 		<cfargument name="ObjectID" required="yes" type="string" default="">
 		<cfargument name="onExit" required="no" type="any" default="Refresh">
 		
-		
 		<cfset var stObj = getData(objectid=arguments.objectid) />
-		
 		<cfset var qMetadata = application.types[stobj.typename].qMetadata >
 		
-		
-		
+		<!-------------------------------------------------- 
+		WIZARD:
+		- build default formtool wizard
+		--------------------------------------------------->
 		<cfquery dbtype="query" name="qWizzardSteps">
 		SELECT ftWizzardStep
 		FROM qMetadata
@@ -709,7 +709,7 @@ default handlers
 								</cfquery>
 								
 								
-								<wiz:object ObjectID="#stObj.ObjectID#" lfields="#valuelist(qFieldset.propertyname)#" format="edit" intable="false" legend="#qFieldset.ftFieldset#" />
+								<wiz:object ObjectID="#stObj.ObjectID#" lfields="#valuelist(qFieldset.propertyname)#" format="edit" intable="false" legend="#qFieldset.ftFieldset#" helptitle="#qFieldset.fthelptitle#" helpsection="#qFieldset.fthelpsection#" />
 							</cfloop>
 						<cfelse>
 							
@@ -765,13 +765,12 @@ default handlers
 						ORDER BY ftSeq
 						</cfquery>
 						
-						<ft:object ObjectID="#arguments.ObjectID#" format="edit" lExcludeFields="label" lFields="#valuelist(qFieldset.propertyname)#" inTable=false IncludeFieldSet=1 Legend="#qFieldSets.ftFieldset#" />
+						<ft:object ObjectID="#arguments.ObjectID#" format="edit" lExcludeFields="label" lFields="#valuelist(qFieldset.propertyname)#" inTable="false" IncludeFieldSet="true" Legend="#qFieldSets.ftFieldset#" helptitle="#qFieldset.fthelptitle#" helpsection="#qFieldset.fthelpsection#" />
+							
 					</cfloop>
 					
-					
 				<cfelse>
-				
-					<!--- default edit handler --->
+					<!--- All Fields: default edit handler --->
 					<ft:object ObjectID="#arguments.ObjectID#" format="edit" lExcludeFields="label" lFields="" IncludeFieldSet=1 Legend="#stObj.Label#" />
 					
 				</cfif>
