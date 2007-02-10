@@ -121,7 +121,7 @@ default handlers
 	</cffunction>
 		
 		
-	<cffunction name="getWebskinPath" returntype="string" access="public" output="false" hint="Returns the path to a webskin. Search through project first, then any library's that have been included.">
+	<cffunction name="getWebskinPath" returntype="string" access="public" output="true" hint="Returns the path to a webskin. Search through project first, then any library's that have been included.">
 		<cfargument name="typename" type="string" required="true" />
 		<cfargument name="template" type="string" required="true" />
 		
@@ -159,7 +159,7 @@ default handlers
 		<cfargument name="typename" type="string" default="#gettablename()#" hint="Typename of instance." />
 		<cfargument name="prefix" type="string" required="false" default="" hint="Prefix to filter template results." />
 		
-		<cfset var qResult=queryNew("name,directory,size,type,datelastmodified,attributes,mode,displayname") />
+		<cfset var qResult=queryNew("name,directory,size,type,datelastmodified,attributes,mode,displayname","varchar,varchar,integer,varchar,date,varchar,varchar,varchar") />
 		<cfset var qLibResult=queryNew("name,directory,size,type,datelastmodified,attributes,mode") />
 		<cfset var qCoreResult=queryNew("name,directory,size,type,datelastmodified,attributes,mode") />
 		<cfset var qDupe=queryNew("name,directory,size,type,datelastmodified,attributes,mode") />
@@ -173,7 +173,7 @@ default handlers
 			<cfdirectory action="list" directory="#webskinPath#" name="qResult" recurse="true" sort="asc" />
 			
 			<cfquery name="qResult" dbtype="query">
-				SELECT *
+				SELECT *, name as displayname
 				FROM qResult
 				WHERE lower(qResult.name) LIKE '#lCase(arguments.prefix)#%'
 				AND lower(qResult.name) LIKE '%.cfm'
@@ -218,7 +218,6 @@ default handlers
 			
 		</cfif>
 		
-		
 		<!--- CHECK CORE WEBSKINS --->		
 		<cfset webskinpath=ExpandPath("/farcry/farcry_core/webskin/#arguments.typename#") />
 		
@@ -249,10 +248,9 @@ default handlers
 			</cfloop>
 		</cfif>	
 		
-		
 		<!--- ORDER AND SET DISPLAYNAME FOR COMBINED WEBSKIN RESULTS --->		
  		<cfquery dbtype="query" name="qResult">
-		SELECT *,  name as displayname,  name as methodname
+		SELECT *,   name as methodname
 		FROM qResult
 		ORDER BY name
 		</cfquery>
@@ -264,6 +262,7 @@ default handlers
 			</cfif>
 			<cfset querysetcell(qresult,'methodname',listfirst(qResult.methodName[qResult.currentRow],"."),qResult.currentRow)>
 		</cfoutput>
+
 		
 		<!--- resort the query now that we finally have all the information we need so that display templates are order by displayname --->
 		<cfquery name="qResult" dbtype="query">
