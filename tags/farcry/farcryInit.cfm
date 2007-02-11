@@ -52,6 +52,7 @@ $in: objectid -- $
 	
 	
 	<cfparam name="attributes.bObjectBroker" default="true" />
+	<cfparam name="attributes.ObjectBrokerMaxObjectsDefault" default="100" />
 
 
 	<cfapplication name="#attributes.name#" 
@@ -124,6 +125,7 @@ $in: objectid -- $
 		USE OBJECT BROKER?
 		 ------------------------------------------>
 		<cfset application.bObjectBroker = attributes.bObjectBroker />
+		<cfset application.ObjectBrokerMaxObjectsDefault = attributes.ObjectBrokerMaxObjectsDefault />
 		
 		
 		<!----------------------------------------
