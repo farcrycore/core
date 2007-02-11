@@ -21,6 +21,8 @@ by a regular expression match here???
 <cfparam name="attributes.path" default="">
 <cfparam name="attributes.r_qMethods" default="r_qMethods">
 
+<cfset qTemplates = queryNew("blah") />
+
 
 <!--- if we send in a path then only get templates from that path --->
 <cfif len(attributes.path)>
@@ -33,16 +35,15 @@ OTHERWISE WE NEED TO LOOP THROUGH ALL THE LIBRARIES AND GET ALL RELEVENT TEMPLAT
 <cfelse>
 	
 		
-	<cfif structKeyExists(application.types, attributes.typename)>
-		<cfset stPackage = application.types[attributes.typename] />
-		<cfset packagePath = application.types[attributes.typename].typepath />
+	<cfif structKeyExists(application.stcoapi, attributes.typename)>		
+			
+		<cfset qTemplates = createObject("component", application.stcoapi[attributes.typename].packagepath).getWebskins(typename="#attributes.typename#", prefix="#attributes.prefix#") />
+		<cfset caller[attributes.r_qMethods] = qTemplates>
 	<cfelse>
-		<cfset stPackage = application.rules[attributes.typename] />
-		<cfset packagePath = application.rules[attributes.typename].rulepath />
+		<cfset caller[attributes.r_qMethods] = queryNew("name,directory,size,type,datelastmodified,attributes,mode,displayname,methodname") />
+			
 	</cfif>
-	
-	<cfset qTemplates = createObject("component", packagePath).getWebskins(typename="#attributes.typename#", prefix="#attributes.prefix#") />
-	<cfset caller[attributes.r_qMethods] = qTemplates>
+
 <!--- 	<cfdirectory action="LIST" filter="*.cfm" name="qTemplates" directory="#application.path.webskin#/#attributes.typename#">
 	
 	<cfset stLibraryTemplates = structNew() />
