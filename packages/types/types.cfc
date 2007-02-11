@@ -71,7 +71,7 @@ default handlers
 		</cfif>
 	</cffunction>
 	
-	<cffunction name="getView" access="public" output="no" returntype="string" hint="Returns the HTML of a view from the webskin content type folder.">
+	<cffunction name="getView" access="public" output="false" returntype="string" hint="Returns the HTML of a view from the webskin content type folder.">
 		<cfargument name="objectid" required="no" type="UUID" hint="ObjectID of the object that is to be rendered by the webskin view." />
 		<cfargument name="template" required="yes" type="string" hint="Name of the template in the corresponding content type webskin folder, without the .cfm extension." />
 		<cfargument name="stparam" required="false" type="struct" default="#structNew()#" hint="Structure of parameters to be passed into the display handler." />
@@ -80,13 +80,20 @@ default handlers
 		<cfargument name="OnExit" required="no" type="any" default="">
 		<cfargument name="alternateHTML" required="no" type="string" hint="If the webskin template does not exist, if this argument is sent in, its value will be passed back as the result.">
 		
-		<cfset var result = "" />
+		<cfset var stResult = structNew() />
 		<cfset var stObj = StructNew() />
 		<cfset var WebskinPath = "" />
+		<cfset var webskinHTML = "" />
+		<cfset var oObjectBroker = createObject("component", "farcry.fourq.objectBroker").init() />
+		
+		
+		
 		
 		<cfif listLast(arguments.template,".") EQ "cfm">
 			<cfset arguments.template = ReplaceNoCase(arguments.template,".cfm", "", "all") />
 		</cfif>
+		
+		
 		
 		<cfif isDefined("arguments.stobject")>
 			<cfset stobj=arguments.stobject />
@@ -98,30 +105,43 @@ default handlers
 			<cfset stObj = getData(objectid=arguments.objectID,dsn=arguments.dsn)>		
 		</cfif>
 
-		<cfif NOT structIsEmpty(stObj)>
+		<cftimer label="getView (#stObj.typename#:#arguments.template#:#stobj.objectid#)">
 			
-			<cfset webskinPath = getWebskinPath(typename=stObj.typename, template=arguments.template) />
-						
-			<cfif len(webskinPath)>
+		<cfif NOT structIsEmpty(stObj)>		
+		
+			<!--- Check to see if the webskin is in the object broker --->
+			<cfset webskinHTML = oObjectBroker.getWebskin(objectid=stobj.objectid, typename=stobj.typename, template=arguments.template) />		
 
-				<cfsavecontent variable="result">
-					<cfinclude template="#WebskinPath#">
-				</cfsavecontent>
-				
-			<cfelseif structKeyExists(arguments, "alternateHTML")>
-				<cfset result = arguments.alternateHTML />
-			<cfelse>
-				<cfthrow type="Application" detail="Error: Template not found [/webskin/#stObj.typename#/#arguments.template#.cfm] and no alternate html provided." />
-			</cfif>			
+			
+			<cfif not len(webskinHTML)>
+				<cfset webskinPath = getWebskinPath(typename=stObj.typename, template=arguments.template) />
+							
+				<cfif len(webskinPath)>
+	
+					<cfsavecontent variable="webskinHTML">
+						<cfinclude template="#WebskinPath#">
+					</cfsavecontent>
+					
+					<!--- Add the webskin to the object broker if required --->
+					<cfset oObjectBroker.addWebskin(objectid=stobj.objectid, typename=stobj.typename, template=arguments.template, html=webskinHTML) />		
+					
+				<cfelseif structKeyExists(arguments, "alternateHTML")>
+					<cfset webskinHTML = arguments.alternateHTML />
+				<cfelse>
+					<cfthrow type="Application" detail="Error: Template not found [/webskin/#stObj.typename#/#arguments.template#.cfm] and no alternate html provided." />
+				</cfif>	
+			</cfif>		
 		<cfelse>
 			<cfthrow type="Application" detail="Error: When trying to render [/webskin/#stObj.typename#/#arguments.template#.cfm] the object was not created correctly." />	
 		</cfif>
 		
-		<cfreturn result />
+		</cftimer>
+		
+		<cfreturn webskinHTML />
 	</cffunction>
 		
 		
-	<cffunction name="getWebskinPath" returntype="string" access="public" output="true" hint="Returns the path to a webskin. Search through project first, then any library's that have been included.">
+	<cffunction name="getWebskinPath" returntype="string" access="public" output="false" hint="Returns the path to a webskin. Search through project first, then any library's that have been included.">
 		<cfargument name="typename" type="string" required="true" />
 		<cfargument name="template" type="string" required="true" />
 		
@@ -159,7 +179,18 @@ default handlers
 		<cfargument name="typename" type="string" default="#gettablename()#" hint="Typename of instance." />
 		<cfargument name="prefix" type="string" required="false" default="" hint="Prefix to filter template results." />
 		
+		<cfset var qWebskins = application.stcoapi[arguments.typename].qWebskins />
 		<cfset var qResult=queryNew("name,directory,size,type,datelastmodified,attributes,mode,displayname","varchar,varchar,integer,varchar,date,varchar,varchar,varchar") />
+		
+		<cfif len(arguments.prefix)>
+			<cfquery dbtype="query" name="qResult">
+			SELECT * FROM qWebskins
+			WHERE lower(qWebskins.name) LIKE '#lCase(arguments.prefix)#%'
+			</cfquery>
+		</cfif>
+		
+		<cfreturn qResult />
+		<!--- <cfset var qResult=queryNew("name,directory,size,type,datelastmodified,attributes,mode,displayname,methodname") />
 		<cfset var qLibResult=queryNew("name,directory,size,type,datelastmodified,attributes,mode") />
 		<cfset var qCoreResult=queryNew("name,directory,size,type,datelastmodified,attributes,mode") />
 		<cfset var qDupe=queryNew("name,directory,size,type,datelastmodified,attributes,mode") />
@@ -218,6 +249,7 @@ default handlers
 			
 		</cfif>
 		
+		
 		<!--- CHECK CORE WEBSKINS --->		
 		<cfset webskinpath=ExpandPath("/farcry/farcry_core/webskin/#arguments.typename#") />
 		
@@ -256,6 +288,11 @@ default handlers
 		</cfquery>
 		
 		<cfoutput query="qResult">
+			
+			<!--- Strip the .cfm from the filename --->
+			<cfset querysetcell(qresult, 'methodname', ReplaceNoCase(qResult.name, '.cfm', '','ALL'), qResult.currentRow) />	
+			
+			<!--- See if the DisplayName is defined in the webskin and if so, replace displayName field in the query. --->
 			<cfset WebskinDisplayName = getWebskinDisplayname(typename="#arguments.typename#", template="#ReplaceNoCase(qResult.name, '.cfm', '','ALL')#") />
 			<cfif len(WebskinDisplayName)>
 				<cfset querysetcell(qresult, 'displayname', WebskinDisplayName, qResult.currentRow) />			
@@ -270,7 +307,7 @@ default handlers
 		ORDER BY DisplayName
 		</cfquery>
 		
-		<cfreturn qresult />
+		<cfreturn qresult /> --->
 	</cffunction>
 
 	<cffunction name="getWebskinDisplayname" returntype="string" access="public" output="false" hint="">
@@ -300,6 +337,7 @@ default handlers
 		
 		<cfreturn result />
 	</cffunction>
+
 	
 	<cffunction name="displayTemplatePath" returntype="string" access="private" output="no" hint="Returns a template path for a webskin view.">
 		<cfargument name="typename" type="string" required="yes" />
@@ -564,6 +602,187 @@ default handlers
 		
 	</cffunction>
 	
+		
+	
+	<cffunction name="getField" access="public" output="false" returntype="any">
+		<cfargument name="objectid" type="uuiD" required="false" hint="objectid of the object to be retrieved." />
+		<cfargument name="stobject" type="struct" required="false" hint="structure of the object that has already been retrieved and passed through" />
+		<cfargument name="fieldname" type="string" required="true" hint="the name of the field" />
+		<cfargument name="format" type="string" required="false" default="display" hint="Can be either Edit or Display." />
+		<cfargument name="lock" type="boolean" required="false" default="true" hint="When format EQ edit and this is set to true, the object is locked by the </ft:form>" />
+		<cfargument name="stPropMetadata" type="struct" required="false" default="#structNew()#" hint="Any metadata that the developer wishes to append/override" />
+		<cfargument name="value" type="any" required="false" hint="The developer can force the value to be used by the formtool type" />
+		<cfargument name="default" type="any" required="false" hint="The developer can force the value to be used by the formtool type" />
+		<cfargument name="defaultOnEmpty" type="string" required="false" default="" hint="The developer can force the value to be used by the formtool type if the result is an empty string" />
+		
+		<cfset var prefix = "" />
+		<cfset var ftFieldMetadata = structNew() />
+		<cfset var packagePath = "" />
+		<cfset var stPackage = structNew() />
+		<cfset var oType = "" />
+		<cfset var resultHTML = "" />
+		
+		
+		
+		<cfif structKeyExists(arguments, "stobject") and structKeyExists(arguments.stobject, "objectid")>
+			<!--- arguments.stobject is the correct object to use --->
+		<cfelse>
+			<cfset arguments.stobject = getData(objectid=arguments.objectid) />		
+		</cfif>
+		
+		
+		<cfif structKeyExists(application.types, arguments.stobject.typename)>
+			<cfset stPackage = application.types[arguments.stobject.typename] />
+			<cfset packagePath = application.types[arguments.stobject.typename].typepath />
+		<cfelse>
+			<cfset stPackage = application.rules[arguments.stobject.typename] />
+			<cfset packagePath = application.rules[arguments.stobject.typename].rulepath />
+		</cfif>
+		<cfset oType = createObject("component", packagePath) />
+				
+		
+		<!--- CHECK TO SEE IF OBJECTED HAS ALREADY BEEN RENDERED. IF SO, USE SAME PREFIX --->
+		<cfif not isDefined("Request.farcryForm.stObjects")>
+			<!--- If the call to this tag is not made within the confines of a <ft:form> tag, then we need to create a temp one and then delete it at the end of the tag. --->
+			<cfset Request.farcryForm.stObjects = StructNew()>	
+		</cfif>
+		
+		<cfloop list="#StructKeyList(Request.farcryForm.stObjects)#" index="key">
+			<cfif structKeyExists(request.farcryForm.stObjects,'#key#') 
+				AND structKeyExists(request.farcryForm.stObjects[key],'farcryformobjectinfo')
+				AND structKeyExists(request.farcryForm.stObjects[key].farcryformobjectinfo,'ObjectID')
+				AND request.farcryForm.stObjects[key].farcryformobjectinfo.ObjectID EQ arguments.stobject.ObjectID>
+					<cfset prefix = key>
+			</cfif>				
+		</cfloop>
+
+		<cfparam  name="prefix" default="#ReplaceNoCase(arguments.stobject.ObjectID,'-', '', 'all')#">			
+		<cfset Request.farcryForm.stObjects[prefix] = StructNew()>
+	
+		<cfset Request.farcryForm.stObjects[prefix].farcryformobjectinfo.ObjectID = arguments.stobject.ObjectID>				
+		<cfset Request.farcryForm.stObjects[prefix].farcryformobjectinfo.typename = arguments.stobject.typename>		
+		<cfif arguments.lock AND arguments.format EQ "Edit">
+			<cfset Request.farcryForm.stObjects[prefix].farcryformobjectinfo.lock = true />
+		</cfif>
+		
+		
+		
+		<cfset Request.farcryForm.stObjects[prefix]['MetaData'][arguments.fieldname] = Duplicate(stPackage.stprops[arguments.fieldname].MetaData)>		
+
+		
+		<!--- If we have been sent stPropValues for this field then we need to set it to this value  --->
+		<cfif structKeyExists(arguments, "value")>
+			<cfset Request.farcryForm.stObjects[prefix]['MetaData'][arguments.fieldname].value = arguments.value>
+		<cfelse>
+			<cfset Request.farcryForm.stObjects[prefix]['MetaData'][arguments.fieldname].value = arguments.stobject[arguments.fieldname]>				
+		</cfif>
+		
+		<cfset Request.farcryForm.stObjects[prefix]['MetaData'][arguments.fieldname].formFieldName = "#prefix##arguments.fieldname#">
+		
+				
+		<!--- SETUP THE METADATA FOR THE FIELD --->		
+		<cfset ftFieldMetadata = request.farcryForm.stObjects[prefix].MetaData[arguments.fieldname]>
+		
+		<!--- If we have been sent stPropMetadata for this field then we need to append it to the default metatdata setup in the type.cfc  --->
+		<cfif structKeyExists(arguments.stPropMetadata,ftFieldMetadata.Name)>
+			<cfset StructAppend(ftFieldMetadata, arguments.stPropMetadata[ftFieldMetadata.Name])>
+		</cfif>
+	
+		<!--- CHECK TO ENSURE THE FORMTOOL TYPE EXISTS. OTHERWISE USE THE DEFAULT [FIELD] --->
+		<cfif NOT StructKeyExists(application.formtools,ftFieldMetadata.ftType)>
+			<cfif StructKeyExists(application.formtools,ftFieldMetadata.Type)>
+				<cfset ftFieldMetadata.ftType = ftFieldMetadata.Type>
+			<cfelse>
+				<cfset ftFieldMetadata.ftType = "Field">
+			</cfif>
+		</cfif>		
+		
+		<cfif NOT StructKeyExists(application.formtools,ftFieldMetadata.ftType)>
+			<cfif StructKeyExists(application.formtools,ftFieldMetadata.Type)>
+				<cfset ftFieldMetadata.ftType = ftFieldMetadata.Type>
+			<cfelse>
+				<cfset ftFieldMetadata.ftType = "Field">
+			</cfif>
+		</cfif>
+
+		
+		<!--- CHECK TO ENSURE THE FORMTOOL TYPE EXISTS. OTHERWISE USE THE DEFAULT [FIELD] --->
+		<cfif NOT StructKeyExists(application.formtools,ftFieldMetadata.ftType)>
+			<cfif StructKeyExists(application.formtools,ftFieldMetadata.Type)>
+				<cfset ftFieldMetadata.ftType = ftFieldMetadata.Type>
+			<cfelse>
+				<cfset ftFieldMetadata.ftType = "Field">
+			</cfif>
+		</cfif>		
+				
+		<cfif structKeyExists(arguments, "defaultValue")>
+			<cfset ftFieldMetadata.default = arguments.defaultValue />
+		</cfif>						
+		
+		<cfset oFieldType = application.formtools[ftFieldMetadata.ftType].oFactory.init() />
+
+		<!--- Need to determine which method to run on the field --->		
+		<cfif structKeyExists(ftFieldMetadata, "ftDisplayOnly") AND ftFieldMetadata.ftDisplayOnly OR ftFieldMetadata.ftType EQ "arrayList">
+			<cfset FieldMethod = "display" />
+		<cfelseif structKeyExists(ftFieldMetadata,"Method")><!--- Have we been requested to run a specific method on the field. This can enable the user to run a display method inside an edit form for instance --->
+			<cfset FieldMethod = ftFieldMetadata.method>
+		<cfelse>
+			<cfif arguments.Format EQ "Edit">
+				<cfif structKeyExists(ftFieldMetadata,"ftEditMethod")>
+					<cfset FieldMethod = ftFieldMetadata.ftEditMethod>
+					
+					<!--- Check to see if this method exists in the current oType CFC. if so. Change oFieldType the Current oType --->
+					<cfif structKeyExists(oType,ftFieldMetadata.ftEditMethod)>
+						<cfset oFieldType = oType>
+					</cfif>
+				<cfelse>
+					<cfif structKeyExists(oType,"ftEdit#ftFieldMetadata.Name#")>
+						<cfset FieldMethod = "ftEdit#ftFieldMetadata.Name#">						
+						<cfset oFieldType = oType>
+					<cfelse>
+						<cfset FieldMethod = "Edit">
+					</cfif>
+					
+				</cfif>
+			<cfelse>
+					
+				<cfif structKeyExists(ftFieldMetadata,"ftDisplayMethod")>
+					<cfset FieldMethod = ftFieldMetadata.ftDisplayMethod>
+					<!--- Check to see if this method exists in the current oType CFC. if so. Change oFieldType the Current oType --->
+					
+					<cfif structKeyExists(oType,ftFieldMetadata.ftDisplayMethod)>
+						<cfset oFieldType = oType>
+					</cfif>
+				<cfelse>
+					<cfif structKeyExists(oType,"ftDisplay#ftFieldMetadata.Name#")>
+						<cfset FieldMethod = "ftDisplay#ftFieldMetadata.Name#">						
+						<cfset oFieldType = oType>
+					<cfelse>
+						<cfset FieldMethod = "display">
+					</cfif>
+					
+				</cfif>
+			</cfif>
+		</cfif>	
+
+			
+		<cfinvoke component="#oFieldType#" method="#FieldMethod#" returnvariable="resultHTML">
+			<cfinvokeargument name="typename" value="#arguments.stobject.typename#">
+			<cfinvokeargument name="stObject" value="#arguments.stobject#">
+			<cfinvokeargument name="stMetadata" value="#ftFieldMetadata#">
+			<cfinvokeargument name="fieldname" value="#prefix##ftFieldMetadata.Name#">
+			<cfinvokeargument name="stPackage" value="#application.types[arguments.stobject.typename]#">
+		</cfinvoke>
+		
+		<!--- <cfif len(trim(resultHTML))>
+			<cfoutput>#trim(resultHTML)#</cfoutput>
+		<cfelse>
+			<cfoutput>#arguments.defaultOnEmpty#</cfoutput>
+		</cfif>
+		 --->
+		<cfreturn trim(resultHTML) />
+		
+	</cffunction>
 	
 	<cffunction name="AddNew" access="public" output="true" returntype="void">
 		<cfargument name="typename" required="true" type="string">
