@@ -232,6 +232,7 @@
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedWebskin" default="librarySelected">
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedListClass" default="thumbNailsWrap">
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedListStyle" default="">
+		<cfparam name="arguments.stMetadata.ftJoin" default="">
 		
 		<!--- We need to get the Array Field Items as a query --->
 		<cfset o = createObject("component",application.types[arguments.typename].typepath)>
@@ -257,14 +258,18 @@
 						<!---<li id="#arguments.fieldname#_#q.objectid#"> --->
 							
 							<div>
-							<cfset stobj = stJoinObjects[q.typename].getData(objectid=q.data) />
-							<cfif FileExists("#application.path.project#/webskin/#q.typename#/#arguments.stMetadata.ftLibrarySelectedWebskin#.cfm")>
-								<cfset html = stJoinObjects[q.typename].getView(stObject=stobj,template="#arguments.stMetadata.ftLibrarySelectedWebskin#") />
-								#html#								
-								<!---<cfinclude template="/farcry/#application.applicationname#/webskin/#q.typename#/#arguments.stMetadata.ftLibrarySelectedWebskin#.cfm"> --->
-							<cfelse>
-								#stobj.label#
-							</cfif>
+								<cfif listContainsNoCase(structKeyList(stJoinObjects),q.typename)>
+									<cfset stobj = stJoinObjects[q.typename].getData(objectid=q.data) />
+									<cfif FileExists("#application.path.project#/webskin/#q.typename#/#arguments.stMetadata.ftLibrarySelectedWebskin#.cfm")>
+										<cfset html = stJoinObjects[q.typename].getView(stObject=stobj,template="#arguments.stMetadata.ftLibrarySelectedWebskin#") />
+										#html#								
+										<!---<cfinclude template="/farcry/#application.applicationname#/webskin/#q.typename#/#arguments.stMetadata.ftLibrarySelectedWebskin#.cfm"> --->
+									<cfelse>
+										#stobj.label#
+									</cfif>
+								<cfelse>
+									INVALID ATTACHMENT (#q.typename#)
+								</cfif>
 							</div>
 													
 						<!---</li> --->
