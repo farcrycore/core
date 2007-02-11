@@ -554,6 +554,13 @@ $out:$
 			</cfif>
 	</cfloop>
 	
+	<cfset application.stcoapi = structNew() />
+	<cfloop list="#structKeyList(application.types)#" index="i">
+		<cfset application.stcoapi[i] = duplicate(application.types[i]) />
+	</cfloop>
+	<cfloop list="#structKeyList(application.rules)#" index="i">
+		<cfset application.stcoapi[i] = duplicate(application.rules[i]) />
+	</cfloop>
 	
 	<!--- 
 	We want to search NTM types so we can flag them as a bTreeNode.
