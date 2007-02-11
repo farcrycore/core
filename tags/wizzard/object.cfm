@@ -245,69 +245,82 @@
 	
 
 	<cfloop list="#lFieldsToRender#" index="i">
-		
 		<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i] = StructNew()>
 
-		<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i] = Duplicate(stFields[i].MetaData)>
-		
-		<cfif isDefined("variables.stObj") and not structIsEmpty(variables.stObj)>					
-			<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i].value = variables.stObj[i]>
-		<cfelseif isDefined("stFields.#i#.MetaData.Default")>
-			<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i].value = stFields[i].MetaData.Default>
-		<cfelse>
-			<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i].value = "">
-		</cfif>
+		<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i] = Duplicate(stFields[i].MetaData)>		
+
 		
 		<!--- If we have been sent stPropValues for this field then we need to set it to this value  --->
 		<cfif structKeyExists(attributes.stPropValues,i)>
 			<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i].value = attributes.stPropValues[i]>
 			<cfset variables.stObj[i] = attributes.stPropValues[i]>
+		<cfelse>
+			<cfif isDefined("variables.stObj") and not structIsEmpty(variables.stObj)>					
+				<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i].value = variables.stObj[i]>
+			<cfelseif structKeyExists(stFields[i].MetaData, "ftDefault")>
+				<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i].value = stFields[i].MetaData.ftDefault>
+			<cfelseif structKeyExists(stFields[i].MetaData, "Default")>
+				<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i].value = stFields[i].MetaData.Default>
+			<cfelse>
+				<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i].value = "">
+			</cfif>
+								
 		</cfif>
 		
 		<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i].formFieldName = "#variables.prefix##stFields[i].MetaData.Name#">
 			
 		
-		<!--- CAPTURE THE HTML FOR THE FIELD --->
-		
+		<!--- CAPTURE THE HTML FOR THE FIELD --->		
 		<cfset ftFieldMetadata = request.farcryForm.stObjects[variables.prefix].MetaData[i]>
 		
 		<!--- If we have been sent stPropMetadata for this field then we need to append it to the default metatdata setup in the type.cfc  --->
 		<cfif structKeyExists(attributes.stPropMetadata,ftFieldMetadata.Name)>
 			<cfset StructAppend(ftFieldMetadata, attributes.stPropMetadata[ftFieldMetadata.Name])>
 		</cfif>
-	
-		<!--- SETUP REQUIRED PARAMETERS --->
-		<cfif not isDefined("ftFieldMetadata.ftType")>
-			<cfset ftFieldMetadata.ftType = ftFieldMetadata.Type>
-		</cfif>
 		
+		
+		<!--- Prepare Form Validation (from Andrew Tetlaw http://tetlaw.id.au/view/home/) --->
+		<!--- 
+		Here's the list of classes available to add to your field elements:
+	
+	    * required (not blank)
+	    * validate-number (a valid number)
+	    * validate-digits (digits only)
+	    * validate-alpha (letters only)
+	    * validate-alphanum (only letters and numbers)
+	    * validate-date (a valid date value)
+	    * validate-email (a valid email address)
+	    * validate-date-au (a date formatted as; dd/mm/yyyy)
+	    * validate-currency-dollar (a valid dollar value)
+		 --->		 
+		<cfif attributes.bValidation>
+			<cfif len(ftFieldMetadata.ftValidation)>
+				<cfloop list="#ftFieldMetadata.ftValidation#" index="i">
+					<cfset ftFieldMetadata.ftClass = "#ftFieldMetadata.ftClass# #lcase(i)#">
+				</cfloop>
+			</cfif>
+		</cfif>
+		<cfset ftFieldMetadata.ftClass = Trim(ftFieldMetadata.ftClass)>
+		
+		
+	
+		<!--- CHECK TO ENSURE THE FORMTOOL TYPE EXISTS. OTHERWISE USE THE DEFAULT [FIELD] --->
 		<cfif NOT StructKeyExists(application.formtools,ftFieldMetadata.ftType)>
 			<cfif StructKeyExists(application.formtools,ftFieldMetadata.Type)>
 				<cfset ftFieldMetadata.ftType = ftFieldMetadata.Type>
 			<cfelse>
 				<cfset ftFieldMetadata.ftType = "Field">
 			</cfif>
-		</cfif>
-
-		
-		<cfif not isDefined("ftFieldMetadata.ftlabel")>
-
-			<cfset ftFieldMetadata.ftlabel = ftFieldMetadata.Name>
-
-		</cfif>
-		
-		
-		
-		<!--- Default to using the FormTools Field CFC --->
-		<cfif structKeyExists(application.formtools, ftFieldMetadata.ftType)>
-			<cfset tFieldType = application.formtools[ftFieldMetadata.ftType].oFactory.init() />
-		<cfelse>
-			<cfset tFieldType = application.formtools["field"].oFactory.init() />
-		</cfif>
+		</cfif>		
 				
-		<!--- Need to determine which method to run on the field --->
+				
+				
+		
+		<cfset tFieldType = application.formtools[ftFieldMetadata.ftType].oFactory.init() />
+
+		<!--- Need to determine which method to run on the field --->		
 		<cfif structKeyExists(ftFieldMetadata, "ftDisplayOnly") AND ftFieldMetadata.ftDisplayOnly OR ftFieldMetadata.ftType EQ "arrayList">
-			<cfset FieldMethod = "display" />				
+			<cfset FieldMethod = "display" />
 		<cfelseif structKeyExists(ftFieldMetadata,"Method")><!--- Have we been requested to run a specific method on the field. This can enable the user to run a display method inside an edit form for instance --->
 			<cfset FieldMethod = ftFieldMetadata.method>
 		<cfelse>
@@ -349,36 +362,7 @@
 			</cfif>
 		</cfif>	
 
-		<!--- Make sure ftStyle and ftClass exist --->
-		<cfparam name="ftFieldMetadata.ftStyle" default="">
-		<cfparam name="ftFieldMetadata.ftClass" default="">
-
-		<!--- Prepare Form Validation (from Andrew Tetlaw http://tetlaw.id.au/view/home/) --->
-		<!--- 
-		Here's the list of classes available to add to your field elements:
 	
-	    * required (not blank)
-	    * validate-number (a valid number)
-	    * validate-digits (digits only)
-	    * validate-alpha (letters only)
-	    * validate-alphanum (only letters and numbers)
-	    * validate-date (a valid date value)
-	    * validate-email (a valid email address)
-	    * validate-date-au (a date formatted as; dd/mm/yyyy)
-	    * validate-currency-dollar (a valid dollar value)
-
-		 --->
-		 
-		<cfif attributes.bValidation>
-			<cfif structKeyExists(ftFieldMetadata, "ftValidation")>
-				<cfloop list="#ftFieldMetadata.ftValidation#" index="i">
-					<cfset ftFieldMetadata.ftClass = "#ftFieldMetadata.ftClass# #lcase(i)#">
-				</cfloop>
-			</cfif>
-		</cfif>
-		<cfset ftFieldMetadata.ftClass = Trim(ftFieldMetadata.ftClass)>
-		
-		
 		
 		
 		<!---If the field is supposed to be hidden --->
