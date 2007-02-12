@@ -37,7 +37,7 @@ out:
 	<!--- i18n: get week starts for later use --->
 	<cfset weekStartDay=application.thisCalendar.weekStarts(session.dmProfile.locale)>
 
-	<cfimport taglib="/farcry/fourq/tags/" prefix="q4">
+	<cfimport taglib="/farcry/farcry_core/fourq/tags/" prefix="q4">
 	<cfoutput>
 	<h3>#application.adminBundle[session.dmProfile.locale].sessionPerHourLast3Days#</h3>
 	</cfoutput>

@@ -22,7 +22,7 @@ $in: $
 $out:$
 --->
 
-<cfimport taglib="/farcry/fourq/tags" prefix="q4">
+<cfimport taglib="/farcry/farcry_core/fourq/tags/" prefix="q4">
 
 <!--- get maxrows if not defined --->
 <cfif arguments.maxRows eq "all">

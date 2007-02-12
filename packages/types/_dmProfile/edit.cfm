@@ -27,7 +27,7 @@ Peter Alexandrou (suspiria@daemon.com.au)
 <cfset locales=listToArray(application.i18nUtils.getLocales())>
 <cfset localeNames=listToArray(application.i18nUtils.getLocaleNames())>
 
-<cfimport taglib="/farcry/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/farcry_core/fourq/tags/" prefix="q4">
 <cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
 
 <cfset bShowForm = "true">

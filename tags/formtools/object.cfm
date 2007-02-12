@@ -65,7 +65,7 @@
 	
 
 		<cfif not isDefined("attributes.typename") or not len(attributes.typename)>
-			<cfset q4 = createObject("component", "farcry.fourq.fourq")>
+			<cfset q4 = createObject("component", "farcry.farcry_core.fourq.fourq")>
 			<cfset attributes.typename = q4.findType(objectid=attributes.objectid)>
 		</cfif>		
 	

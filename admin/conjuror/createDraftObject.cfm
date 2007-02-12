@@ -13,7 +13,7 @@ Creates a draft object
 --->
 
 <cfsetting enablecfoutputonly="no">
-<cfimport taglib="/farcry/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/farcry_core/fourq/tags/" prefix="q4">
 <cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
 <cfoutput>
 	<link rel="stylesheet" type="text/css" href="#application.url.farcry#/navajo/navajo_popup.css">

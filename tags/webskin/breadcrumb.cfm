@@ -51,7 +51,7 @@ out:
 </cfscript>
 
 <cfif attributes.includeSelf>
-	<cfimport taglib="/farcry/fourq/tags/" prefix="q4">
+	<cfimport taglib="/farcry/farcry_core/fourq/tags/" prefix="q4">
 	<q4:contentobjectget objectId="#attributes.objectId#" r_stObject="stSelf">
 </cfif>
 

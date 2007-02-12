@@ -30,7 +30,7 @@ $out:$
 <cfsetting requesttimeout="90">
 
 <cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
-<cfimport taglib="/farcry/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/farcry_core/fourq/tags/" prefix="q4">
 <cfinclude template="/farcry/farcry_core/admin/includes/cfFunctionWrappers.cfm">
 
 <cfparam name="url.objectId">

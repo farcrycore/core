@@ -49,7 +49,7 @@ $out:$
 		URL.typename = URL.type;
 	// auto-type lookup if required
 	if (NOT len(url.typename)) {
-		q4 = createObject("component", "farcry.fourq.fourq");
+		q4 = createObject("component", "farcry.farcry_core.fourq.fourq");
 		url.typename = q4.findType(objectid=url.objectid);
 		//its possible that missing objects will kill this so we only want to create object if we actually get a typename result
 		if (NOT len(url.typename))
@@ -70,7 +70,7 @@ $out:$
 <cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
 <admin:header>
 
-<cfimport taglib="/farcry/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/farcry_core/fourq/tags/" prefix="q4">
 
 <!--- work out package epath --->
 <cfscript>

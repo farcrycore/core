@@ -25,7 +25,7 @@ $in: r_qLinks (optional - variable for return query)$
 
 <cfsetting enablecfoutputonly="yes">
 
-<cfimport taglib="/farcry/fourq/tags" prefix="q4">
+<cfimport taglib="/farcry/farcry_core/fourq/tags/" prefix="q4">
 
 <!--- required attributes --->
 <cfparam name="attributes.objectId">

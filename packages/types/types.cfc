@@ -18,7 +18,7 @@ This class defines default handlers and system attributes.$
 $Developer: Geoff Bowers (geoff@daemon.com.au) $
 --->
 
-<cfcomponent extends="farcry.fourq.fourq" bAbstract="true" displayname="Base Content Type" hint="Abstract class. Provides default handlers and system attributes for content object types.  This component should never be instantiated directly -- it should only be inherited.">
+<cfcomponent extends="farcry.farcry_core.fourq.fourq" bAbstract="true" displayname="Base Content Type" hint="Abstract class. Provides default handlers and system attributes for content object types.  This component should never be instantiated directly -- it should only be inherited.">
 
 <!--------------------------------------------------------------------
 system attributes
@@ -84,7 +84,7 @@ default handlers
 		<cfset var stObj = StructNew() />
 		<cfset var WebskinPath = "" />
 		<cfset var webskinHTML = "" />
-		<cfset var oObjectBroker = createObject("component", "farcry.fourq.objectBroker").init() />
+		<cfset var oObjectBroker = createObject("component", "farcry.farcry_core.fourq.objectBroker").init() />
 		
 		
 		

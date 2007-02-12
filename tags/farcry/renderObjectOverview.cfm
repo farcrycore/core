@@ -5,7 +5,7 @@
 <cfif objectid EQ "">
 	<cfset errormessage = "Invalid ObjectID: object overview can not be render.<br />">
 <cfelse>								
-	<cfset q4 = createObject("component","farcry.fourq.fourq")>
+	<cfset q4 = createObject("component","farcry.farcry_core.fourq.fourq")>
 	<cfset typename = q4.findType(url.objectid)>
 	<cfset objType = createObject("component",application.types['#typename#'].typepath)>
 	

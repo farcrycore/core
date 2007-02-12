@@ -29,7 +29,7 @@ $out:$
 <cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
 <admin:headerv23 onLoad="startTimer();">
 
-<cfimport taglib="/farcry/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/farcry_core/fourq/tags/" prefix="q4">
 <cfimport taglib="/farcry/farcry_core/tags/misc/" prefix="misc">
 <cfinclude template="/farcry/farcry_core/admin/includes/utilityFunctions.cfm">
 
@@ -53,7 +53,7 @@ $out:$
 		<cfscript>
 			//determine appropriate security priveleges for this user.  These will be used to determine the presence of menu items
 			oAuthorisation = request.dmSec.oAuthorisation;
-			q4 = createObject("component","farcry.fourq.fourq");
+			q4 = createObject("component","farcry.farcry_core.fourq.fourq");
 			iMyFarcryTab = oAuthorisation.checkPermission(reference="policyGroup",permissionName="MainNavMyFarcryTab");
 			iSiteTab = oAuthorisation.checkPermission(reference="policyGroup",permissionName="MainNavSiteTab");
 			iContentTab = oAuthorisation.checkPermission(reference="policyGroup",permissionName="MainNavContentTab");

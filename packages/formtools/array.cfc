@@ -20,7 +20,7 @@
 		<cfset var stJoinObjects = structNew() /> <!--- This will contain a structure of object components that match the ftJoin list from the metadata --->
 
 		<!---
-		<cfset var oFourQ = createObject("component","farcry.fourq.fourq")><!--- TODO: this needs to be removed when we add typename to array tables. ---> 
+		<cfset var oFourQ = createObject("component","farcry.farcry_core.fourq.fourq")><!--- TODO: this needs to be removed when we add typename to array tables. ---> 
 		 --->
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedWebskin" default="LibrarySelected" type="string" />
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedListClass" default="arrayDetail" type="string" />
@@ -307,7 +307,7 @@
 		</cfloop>
 		
 		<cfif not len(arguments.typename)>
-			<cfset q4 = createObject("component","farcry.fourq.fourq")>
+			<cfset q4 = createObject("component","farcry.farcry_core.fourq.fourq")>
 			<cfset arguments.typename = q4.findType(objectid=arguments.objectid)>
 		</cfif>
 		
@@ -319,10 +319,10 @@
 			<cfabort showerror="arguments.typename does not exist as a rule or a type" />
 		</cfif>
 		
-		<cfset variables.tableMetadata = createobject('component','farcry.fourq.TableMetadata').init() />
+		<cfset variables.tableMetadata = createobject('component','farcry.farcry_core.fourq.TableMetadata').init() />
 		<cfset tableMetadata.parseMetadata(md=getMetadata(oPrimary)) />		
 		<cfset stFields = variables.tableMetadata.getTableDefinition() />
-		<!---<cfset o = createObject("component","farcry.fourq.gateway.dbGateway").init(dsn=application.dsn,dbowner="")> --->
+		<!---<cfset o = createObject("component","farcry.farcry_core.fourq.gateway.dbGateway").init(dsn=application.dsn,dbowner="")> --->
 		<cfset aProps = oPrimary.createArrayTableData(tableName=Typename & "_" & arguments.stMetadata.name,objectid=arguments.ObjectID,tabledef=stFields[arguments.stMetadata.name].Fields,aprops=aField)>
 
 
@@ -348,7 +348,7 @@
 		<cfset var stJoinObjects = structNew() /> <!--- This will contain a structure of object components that match the ftJoin list from the metadata --->
 
 		<!---
-		<cfset var oFourQ = createObject("component","farcry.fourq.fourq")><!--- TODO: this needs to be removed when we add typename to array tables. ---> 
+		<cfset var oFourQ = createObject("component","farcry.farcry_core.fourq.fourq")><!--- TODO: this needs to be removed when we add typename to array tables. ---> 
 		 --->
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedWebskin" default="LibrarySelected" type="string" />
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedListClass" default="arrayDetail" type="string" />

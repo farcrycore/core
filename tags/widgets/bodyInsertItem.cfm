@@ -1,5 +1,5 @@
 <cfsetting enablecfoutputonly="true">
-<cfimport taglib="/farcry/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/farcry_core/fourq/tags/" prefix="q4">
 <cfimport taglib="/farcry/farcry_core/tags/navajo" prefix="nj">
 <cfparam name="caller.output" default="#StructNew()#">
 <cfparam name="caller.delaObjectID" default="">

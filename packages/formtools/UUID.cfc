@@ -233,7 +233,7 @@
 		<cfset var joinTypename = "" />
 		
 		<!---
-		<cfset var oFourQ = createObject("component","farcry.fourq.fourq")><!--- TODO: this needs to be removed when we add typename to array tables. ---> 
+		<cfset var oFourQ = createObject("component","farcry.farcry_core.fourq.fourq")><!--- TODO: this needs to be removed when we add typename to array tables. ---> 
 		 --->
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedWebskin" default="LibrarySelected" type="string" />
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedListClass" default="arrayDetail" type="string" />
@@ -320,7 +320,7 @@
 					<cfif Len(arguments.stObject[arguments.stMetaData.Name])>
 										
 						<cfif listLen(arguments.stMetadata.ftJoin)>						
-							<cfset q4 = createObject("component", "farcry.fourq.fourq")>
+							<cfset q4 = createObject("component", "farcry.farcry_core.fourq.fourq")>
 							<cfset joinTypename = q4.findType(objectid=arguments.stObject[arguments.stMetaData.Name])>
 							<cfset oData = createObject("component", application.types[joinTypename].packagePath) />
 						<cfelse>

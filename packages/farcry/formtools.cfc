@@ -614,7 +614,7 @@
 				<cfset itemData = aField[pos].data />
 			<cfelse>
 				<!--- TODO: MJB use query on array table to get all the typenames in 1 go.  --->
-				<cfset q4 = createObject("component", "farcry.fourq.fourq")>
+				<cfset q4 = createObject("component", "farcry.farcry_core.fourq.fourq")>
 				<cfset itemTypename = q4.findType(objectid=aField[pos])>
 				<cfset itemData = aField[pos] />
 			</cfif>

@@ -184,7 +184,7 @@ $out:$
 	    </cfscript>
 
 		
-	    <cfimport taglib="/farcry/fourq/tags/" prefix="q4">
+	    <cfimport taglib="/farcry/farcry_core/fourq/tags/" prefix="q4">
 	
 	    <cfloop index="i" from="1" to="#arrayLen(htmlItems)#">
 	        <q4:contentobjectcreate typename="#application.types[htmlItems[i].typeName].typePath#" stProperties="#htmlItems[i]#" bAudit="false">

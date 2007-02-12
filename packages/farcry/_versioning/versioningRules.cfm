@@ -22,10 +22,10 @@ $in: $
 $out:$
 --->
 
-<cfimport taglib="/farcry/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/farcry_core/fourq/tags/" prefix="q4">
 		
 <cfif NOT isDefined("arguments.typename")>
-	<cfinvoke component="farcry.fourq.fourq" returnvariable="thisTypename" method="findType" objectID="#arguments.ObjectId#">
+	<cfinvoke component="farcry.farcry_core.fourq.fourq" returnvariable="thisTypename" method="findType" objectID="#arguments.ObjectId#">
 	<cfset typename = thisTypename> 					
 </cfif>
 

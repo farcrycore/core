@@ -262,7 +262,7 @@ $out:$
 	<cfloop query="qDir">
 		
 			
-	
+	<cftry>
 			<cfset typename = left(qDir.name, len(qDir.name)-4) /> <!---remove the .cfc from the filename --->
 			<cfset o = createObject("Component", "#application.packagepath#.types.#typeName#") />			
 
@@ -282,7 +282,7 @@ $out:$
 				<!--- Remove typename if it is an abstract class. --->
 				<cfset structDelete(application.types, typename) />
 			</cfif>
-
+	<cfcatch ><cfdump var="#cfcatch#"><cfoutput>#application.packagepath#.types.#typeName#</cfoutput><cfabort></cfcatch></cftry>
 		
 	</cfloop>
 	

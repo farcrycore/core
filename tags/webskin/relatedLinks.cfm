@@ -23,7 +23,7 @@ Example of Usage From Webskin Template:
 	<skin:relatedLinks aRelatedIDs="#stObj.aRelatedIDs#" clas="relatedLinks">
 </cfif>
 ------------------------------------------------------------------------->
-<cfimport taglib="/farcry/fourq/tags" prefix="q4">
+<cfimport taglib="/farcry/farcry_core/fourq/tags/" prefix="q4">
 
 <!--- required attributes --->
 <cfparam name="attributes.aRelatedIDs" type="array">

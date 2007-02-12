@@ -5,7 +5,7 @@
 <cfscript>
 		
 	bDelete = request.dmSec.oAuthorisation.checkInheritedPermission(objectid="#application.navid.rubbish#",permissionName="delete");
-	q4 = createObject("component","farcry.fourq.fourq");
+	q4 = createObject("component","farcry.farcry_core.fourq.fourq");
 	if(bDelete)
 	{
 		oTree = createObject("component","#application.packagepath#.farcry.tree");

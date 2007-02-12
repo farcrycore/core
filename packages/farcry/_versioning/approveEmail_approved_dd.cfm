@@ -24,7 +24,7 @@ $out:$
 
 <cfsetting enablecfoutputonly="Yes">
 
-<cfimport taglib="/farcry/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/farcry_core/fourq/tags/" prefix="q4">
 
 <!--- get object details --->
 <q4:contentobjectget objectID="#arguments.objectID#" r_stObject="stObj">

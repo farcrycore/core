@@ -37,7 +37,7 @@ $out:$
 
 <cfif iStatsTab eq 1>
 	<cfimport taglib="/farcry/farcry_core/tags/webskin/" prefix="skin">
-	<cfimport taglib="/farcry/fourq/tags" prefix="q4">
+	<cfimport taglib="/farcry/farcry_core/fourq/tags/" prefix="q4">
 	
 	<!--- get stats --->
 	<cfscript>

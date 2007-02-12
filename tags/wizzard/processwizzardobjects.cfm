@@ -264,7 +264,7 @@
 		<cfelse>
 			
 			<cfif not isDefined("arguments.typename") or not len(arguments.typename)>
-				<cfset q4 = createObject("component", "farcry.fourq.fourq")>
+				<cfset q4 = createObject("component", "farcry.farcry_core.fourq.fourq")>
 				<cfset arguments.typename = q4.findType(objectid=arguments.objectid)>
 			</cfif>
 			

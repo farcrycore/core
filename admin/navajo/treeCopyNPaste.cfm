@@ -54,7 +54,7 @@ $out:$
 <cfscript>
 	
 	// get descendants
-	q4 =createObject("component","farcry.fourq.fourq");
+	q4 =createObject("component","farcry.farcry_core.fourq.fourq");
 	qGetDescendants = request.factory.oTree.getDescendants(objectid=URL.srcobjectID,bIncludeSelf=1);
 	oNav = createObject("component", application.types.dmNavigation.typePath);
 	oTree = createObject("component", "#application.packagepath#.farcry.tree");

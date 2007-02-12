@@ -28,7 +28,7 @@ $
 $Developer: Geoff Bowers (modius@daemon.com.au)$
 --->
 <!--- include tag libraries --->
-<cfimport taglib="/farcry/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/farcry_core/fourq/tags/" prefix="q4">
 <cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
 
 <!--- include function libraries --->

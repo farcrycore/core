@@ -131,7 +131,7 @@ $out:$
 	        }
 	    </cfscript>
 	
-	    <cfimport taglib="/farcry/fourq/tags/" prefix="q4">		
+	    <cfimport taglib="/farcry/farcry_core/fourq/tags/" prefix="q4">		
 	    <cfscript>
 	        o_farcrytree = createObject("component", "#application.packagepath#.farcry.tree");
 	        oCat = createObject("component", "#application.packagepath#.farcry.category");

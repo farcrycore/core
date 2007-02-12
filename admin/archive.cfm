@@ -41,7 +41,7 @@ $out:$
 	<cfif structKeyExists(url, "archiveid")>
 		
 		<!--- get type --->
-		<cfset oFourq = createObject("component","farcry.fourq.fourq") />
+		<cfset oFourq = createObject("component","farcry.farcry_core.fourq.fourq") />
 		<cfset typename = oFourq.findType(url.objectid) />
 		<cfset oType = createObject("component",application.types[typename].typepath) />
 		

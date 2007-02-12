@@ -29,7 +29,7 @@ $out:$
 </cfif>
 
 <!--- import tag libraries --->
-<cfimport taglib="/farcry/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/farcry_core/fourq/tags/" prefix="q4">
 <cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
 
 <!--- import function libraries --->
@@ -54,7 +54,7 @@ $out:$
 <cfscript>
 	// auto-type lookup if required
 	if (NOT len(attributes.typename)) {
-		q4 = createObject("component", "farcry.fourq.fourq");
+		q4 = createObject("component", "farcry.farcry_core.fourq.fourq");
 		attributes.typename = q4.findType(objectid=attributes.objectid);
 		//its possible that missing objects will kill this so we only want to create object if we actually get a typename result
 		if (NOT len(attributes.typename))

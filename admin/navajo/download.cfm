@@ -3,7 +3,7 @@
 <cfprocessingDirective pageencoding="utf-8">
 
 <cfmodule template="#application.url.webroot#/download.cfm" DownloadFile="#url.downloadfile#">
-<!--- <cfimport taglib="/farcry/fourq/tags/" prefix="q4">
+<!--- <cfimport taglib="/farcry/farcry_core/fourq/tags/" prefix="q4">
 
 	<!--- should not be able to get object unless authorised. --->
 	<cfif isDefined("url.DownloadFile") and len(trim(url.DownloadFile))>
