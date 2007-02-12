@@ -49,29 +49,31 @@
 		<cfset var webskinHTML = "" />
 		<cfset var i = "" />
 		
-		<cfif listContainsNoCase(application.stcoapi[arguments.typename].lObjectBrokerWebskins, arguments.template)>
-			<cfif structKeyExists(application.objectbroker, arguments.typename)
-				AND 	structKeyExists(application.objectbroker[arguments.typename], arguments.objectid)
-				AND 	structKeyExists(application.objectbroker[arguments.typename][arguments.objectid], "stWebskins")
-				AND 	structKeyExists(application.objectbroker[arguments.typename][arguments.objectid].stWebskins, arguments.template)
-				AND 	structKeyExists(application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template], "datetimecreated")
-				AND 	structKeyExists(application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template], "webskinHTML")
-				>
-				<cfif DateDiff('n', application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template].datetimecreated, now()) LT application.stcoapi[arguments.typename].stObjectBrokerWebskins[arguments.template].timeout >
-					<cfset webskinHTML = application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template].webskinHTML />
-					
-					<!--- Place any request.inHead variables back into the request scope from which it came. --->
-					<cfparam name="request.inHead" default="#structNew()#" />
-					<cfloop list="#structKeyList(application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template].inHead)#" index="i">
-						<cfset request.inHead[i] = application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template].inHead[i] />
-					</cfloop>
-				</cfif>	
-			</cfif>		
+		<cfif request.mode.design eq 1>
+			<!--- DO NOT USE CACHE IF IN DESIGN MODE --->
+		<cfelse>
+			
+			<cfif listContainsNoCase(application.stcoapi[arguments.typename].lObjectBrokerWebskins, arguments.template)>
+				<cfif structKeyExists(application.objectbroker, arguments.typename)
+					AND 	structKeyExists(application.objectbroker[arguments.typename], arguments.objectid)
+					AND 	structKeyExists(application.objectbroker[arguments.typename][arguments.objectid], "stWebskins")
+					AND 	structKeyExists(application.objectbroker[arguments.typename][arguments.objectid].stWebskins, arguments.template)
+					AND 	structKeyExists(application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template], "datetimecreated")
+					AND 	structKeyExists(application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template], "webskinHTML")
+					>
+					<cfif DateDiff('n', application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template].datetimecreated, now()) LT application.stcoapi[arguments.typename].stObjectBrokerWebskins[arguments.template].timeout >
+						<cfset webskinHTML = application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template].webskinHTML />
+						
+						<!--- Place any request.inHead variables back into the request scope from which it came. --->
+						<cfparam name="request.inHead" default="#structNew()#" />
+						<cfloop list="#structKeyList(application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template].inHead)#" index="i">
+							<cfset request.inHead[i] = application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template].inHead[i] />
+						</cfloop>
+					</cfif>	
+				</cfif>		
+			</cfif>
 		</cfif>
 		
-		<cfif len(webskinHTML) AND request.mode.design eq 1 AND not isDefined("request.noContentCacheDebug")>
-			<cfset webskinHTML = "<div style='font-size: 10px;position:absolute;background:##ffaa00;z-index:9999;'>Webskin Cache (#arguments.typename#:#arguments.objectid#)</div>#webskinHTML#" />
-		</cfif>
 		<cfreturn webskinHTML />
 	</cffunction>
 			
@@ -85,20 +87,24 @@
 		<cfset var bSuccess = "true" />
 		
 		
-		<cfif listContainsNoCase(application.stcoapi[arguments.typename].lObjectBrokerWebskins, arguments.template) and len(arguments.HTML)>
-			<cfif structKeyExists(application.objectbroker[arguments.typename], arguments.objectid)>
-				<cfif not structKeyExists(application.objectbroker[arguments.typename][arguments.objectid], "stWebskins")>
-					<cfset application.objectbroker[arguments.typename][arguments.objectid].stWebskins = structNew() />
+		<cfif request.mode.design eq 1>
+			<!--- DO NOT ADD TO CACHE IF IN DESIGN MODE --->
+		<cfelse>
+			<cfif listContainsNoCase(application.stcoapi[arguments.typename].lObjectBrokerWebskins, arguments.template) and len(arguments.HTML)>
+				<cfif structKeyExists(application.objectbroker[arguments.typename], arguments.objectid)>
+					<cfif not structKeyExists(application.objectbroker[arguments.typename][arguments.objectid], "stWebskins")>
+						<cfset application.objectbroker[arguments.typename][arguments.objectid].stWebskins = structNew() />
+					</cfif>
+					
+					<cfset application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template] = structNew() />
+					<cfset application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template].datetimecreated = now() />
+					<cfset application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template].webskinHTML = trim(arguments.HTML) />
+					
+					<!--- Add the current State of the request.inHead scope into the broker --->
+					<cfparam name="request.inHead" default="#structNew()#">
+					<cfset application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template].inHead = duplicate(request.inHead) />
+	
 				</cfif>
-				
-				<cfset application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template] = structNew() />
-				<cfset application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template].datetimecreated = now() />
-				<cfset application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template].webskinHTML = trim(arguments.HTML) />
-				
-				<!--- Add the current State of the request.inHead scope into the broker --->
-				<cfparam name="request.inHead" default="#structNew()#">
-				<cfset application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template].inHead = duplicate(request.inHead) />
-
 			</cfif>
 		</cfif>
 		

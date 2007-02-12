@@ -137,6 +137,12 @@ default handlers
 		
 		</cftimer>
 		
+		
+		
+		<cfif len(webskinHTML) AND request.mode.design eq 1 AND not isDefined("request.noContentCacheDebug")>
+			<cfset webskinHTML = "<div style='font-size: 10px;position:absolute;background:##ffaa00;z-index:9999;'>Webskin Cache (#stobj.typename#:#stobj.objectid#)</div>#webskinHTML#" />
+		</cfif>
+		
 		<cfreturn webskinHTML />
 	</cffunction>
 		
