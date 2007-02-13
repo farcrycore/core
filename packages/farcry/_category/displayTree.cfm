@@ -10,7 +10,7 @@ body {background:##fff}
 </cfoutput>
 
 
-<cfimport taglib="/farcry/farcry_core/tags/navajo" prefix="nj">
+<cfimport taglib="/farcry/core/tags/navajo" prefix="nj">
 
 <cfparam name="attributes.zoom" default="16">
 <cfif isDefined("url.zoom")><cfset attributes.zoom=url.zoom></cfif>

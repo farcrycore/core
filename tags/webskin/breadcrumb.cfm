@@ -5,7 +5,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/webskin/breadcrumb.cfm,v 1.18.6.2 2006/01/20 01:23:48 gstewart Exp $
+$Header: /cvs/farcry/core/tags/webskin/breadcrumb.cfm,v 1.18.6.2 2006/01/20 01:23:48 gstewart Exp $
 $Author: gstewart $
 $Date: 2006/01/20 01:23:48 $
 $Name: milestone_3-0-1 $
@@ -26,7 +26,7 @@ in: - separator (shown between levels)
 out:
 --->
 <!--- import tag library --->
-<cfimport taglib="/farcry/farcry_core/tags/webskin" prefix="skin">
+<cfimport taglib="/farcry/core/tags/webskin" prefix="skin">
 
 <!--- allow developers to close custom tag by exiting on end --->
 <cfif thistag.ExecutionMode eq "end">
@@ -51,7 +51,7 @@ out:
 </cfscript>
 
 <cfif attributes.includeSelf>
-	<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
+	<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
 	<q4:contentobjectget objectId="#attributes.objectId#" r_stObject="stSelf">
 </cfif>
 

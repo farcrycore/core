@@ -5,7 +5,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmInclude/edit.cfm,v 1.19.2.1 2006/04/04 05:53:16 gstewart Exp $
+$Header: /cvs/farcry/core/packages/types/_dmInclude/edit.cfm,v 1.19.2.1 2006/04/04 05:53:16 gstewart Exp $
 $Author: gstewart $
 $Date: 2006/04/04 05:53:16 $
 $Name: milestone_3-0-1 $
@@ -18,9 +18,9 @@ $Description: dmInclude edit handler$
 $Developer: Geoff Bowers (modius@daemon.com.au)$
 --->
 <!--- import tag libraries --->
-<cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
-<cfimport taglib="/farcry/farcry_core/tags/widgets" prefix="widgets">
-<cfimport taglib="/farcry/farcry_core/tags/formtools/" prefix="ft" >
+<cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
+<cfimport taglib="/farcry/core/tags/widgets" prefix="widgets">
+<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" >
 
 <!--- determine where the edit handler has been called from to provide the right return url --->
 <cfparam name="url.ref" default="sitetree" type="string">

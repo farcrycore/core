@@ -5,7 +5,7 @@ $License: Released Under the "Common Public License 1.0", http://www.opensource.
 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_stats/deploy.cfm,v 1.22 2005/09/16 07:25:39 guy Exp $
+$Header: /cvs/farcry/core/packages/farcry/_stats/deploy.cfm,v 1.22 2005/09/16 07:25:39 guy Exp $
 $Author: guy $
 $Date: 2005/09/16 07:25:39 $
 $Name: p300_b113 $

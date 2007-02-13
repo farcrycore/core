@@ -30,7 +30,7 @@ $in:  $
 
 
 
-<cfimport taglib="/farcry/farcry_core/tags/formtools/" prefix="ft" >
+<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" >
 
 
 <cfif thistag.executionMode eq "Start">
@@ -61,8 +61,8 @@ $in:  $
 	</cfif>
 
 	<!--- import function libraries --->
-	<cfinclude template="/farcry/farcry_core/admin/includes/utilityFunctions.cfm" >
-	<cfset oFormtoolUtil = createObject("component", "farcry.farcry_core.packages.farcry.formtools") />
+	<cfinclude template="/farcry/core/admin/includes/utilityFunctions.cfm" >
+	<cfset oFormtoolUtil = createObject("component", "farcry.core.packages.farcry.formtools") />
 	
 	<cfset attributes.currentPage = oFormtoolUtil.getCurrentPaginationPage(paginationID=attributes.paginationID, currentPage=attributes.currentPage) />
 

@@ -1,5 +1,5 @@
- <cfimport taglib="/farcry/farcry_core/tags/formtools/" prefix="ft" >
- <cfimport taglib="/farcry/farcry_core/tags/webskin/" prefix="ws" >
+ <cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" >
+ <cfimport taglib="/farcry/core/tags/webskin/" prefix="ws" >
 
 <cfif not thistag.HasEndTag>
 	<cfabort showerror="Does not have an end tag...">
@@ -50,7 +50,7 @@
 	
 	<cfif len(attributes.ObjectID)>		
 			<cfif not isDefined("attributes.typename") or not len(attributes.typename)>
-				<cfset q4 = createObject("component", "farcry.farcry_core.packages.fourq.fourq")>
+				<cfset q4 = createObject("component", "farcry.core.packages.fourq.fourq")>
 				<cfset attributes.typename = q4.findType(objectid=attributes.objectid)>
 			</cfif>
 

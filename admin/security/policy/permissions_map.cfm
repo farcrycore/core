@@ -2,7 +2,7 @@
 <cfparam name="form.filterPolicyGroupId" default="" />
 <cfparam name="form.filterPermissionId" default="" />
 
-<cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
 
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
@@ -131,7 +131,7 @@
 <cfset bFilter = form.action eq "filter" />
 
 <!--- set up page header --->
-<cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
 
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 <cfoutput>

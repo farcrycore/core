@@ -76,7 +76,7 @@ $in: objectid -- $
 	<cfif NOT IsDefined("application.bInit") OR IsDefined("url.updateapp")>
 		
 		
-	<!---	<cfinclude template="/farcry/farcry_core/tags/farcry/flightcheck.cfm" /> --->
+	<!---	<cfinclude template="/farcry/core/tags/farcry/flightcheck.cfm" /> --->
 		
 		<!----------------------------------------
 		 SET THE DATABASE SPECIFIC INFORMATION 
@@ -93,7 +93,7 @@ $in: objectid -- $
 		 SET THE MAIN PHYSICAL PATH INFORMATION
 		 ---------------------------------------->
 		<cfset application.path.project = expandpath("/farcry/#attributes.projectDirectoryName#") />
-		<cfset application.path.core = expandpath("/farcry/farcry_core") />
+		<cfset application.path.core = expandpath("/farcry/core") />
 		<cfset application.path.library = expandpath("/farcry/farcry_lib") />
 		
 		<cfset application.path.defaultFilePath = "#application.path.project#/www/files">
@@ -111,9 +111,9 @@ $in: objectid -- $
 		<!----------------------------------------
 		SHORTCUT PACKAGE PATHS
 		 ---------------------------------------->
-		<cfset application.packagepath = "farcry.farcry_core.packages" />
+		<cfset application.packagepath = "farcry.core.packages" />
 		<cfset application.custompackagepath = "farcry.#attributes.projectDirectoryName#.packages" />
-		<cfset application.securitypackagepath = "farcry.farcry_core.packages.security" />
+		<cfset application.securitypackagepath = "farcry.core.packages.security" />
 		
 		<!----------------------------------------
 		LIBRARYs To INCLUDE
@@ -176,19 +176,19 @@ $in: objectid -- $
 		<!--------------------------------- 
 		INITIALISE DMSEC
 		 --------------------------------->
-		<cfinclude template="/farcry/farcry_core/tags/farcry/_dmSec.cfm">
+		<cfinclude template="/farcry/core/tags/farcry/_dmSec.cfm">
 	
 		<!--------------------------------- 
 		FARCRY CORE INITIALISATION
 		 --------------------------------->
-		<cfinclude template="/farcry/farcry_core/tags/farcry/_farcryApplicationInit.cfm">
+		<cfinclude template="/farcry/core/tags/farcry/_farcryApplicationInit.cfm">
 
 
 		<!------------------------------------
 		OBJECT BROKER
 		 ------------------------------------>		
 		<cfif structkeyexists(application, "bObjectBroker") AND application.bObjectBroker>
-			<cfset objectBroker = createObject("component","farcry.farcry_core.packages.fourq.objectBroker")>
+			<cfset objectBroker = createObject("component","farcry.core.packages.fourq.objectBroker")>
 			
 			<cfloop list="#structKeyList(application.types)#" index="typename">
 				<cfif application.types[typename].bObjectBroker>
@@ -228,7 +228,7 @@ $in: objectid -- $
 
 
 	<!--- general application code --->
-	<cfinclude template="/farcry/farcry_core/tags/farcry/_farcryApplication.cfm">
+	<cfinclude template="/farcry/core/tags/farcry/_farcryApplication.cfm">
 	
 		
 

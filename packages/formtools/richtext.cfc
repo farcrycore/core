@@ -1,6 +1,6 @@
 <cfcomponent extends="field" name="richtext" displayname="Rich Text Editor" hint="Used to liase with longchar type fields"> 
 	
-	<cffunction name="init" access="public" returntype="farcry.farcry_core.packages.formtools.richtext" output="false" hint="Returns a copy of this initialised object">
+	<cffunction name="init" access="public" returntype="farcry.core.packages.formtools.richtext" output="false" hint="Returns a copy of this initialised object">
 		<cfreturn this>
 	</cffunction>
 	

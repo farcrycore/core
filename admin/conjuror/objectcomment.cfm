@@ -4,7 +4,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/conjuror/objectcomment.cfm,v 1.2 2005/07/14 23:49:33 guy Exp $
+$Header: /cvs/farcry/core/admin/conjuror/objectcomment.cfm,v 1.2 2005/07/14 23:49:33 guy Exp $
 $Author: guy $
 $Date: 2005/07/14 23:49:33 $
 $Name: milestone_3-0-1 $
@@ -24,9 +24,9 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
 <cfprocessingDirective pageencoding="utf-8">
 
 <!--- imported tag libraries --->
-<cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
-<cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
-<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
+<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
 	
 <!--- required parameters --->
 <cfparam name="url.finishURL">

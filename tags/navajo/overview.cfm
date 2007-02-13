@@ -6,7 +6,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/navajo/overview.cfm,v 1.115.2.1 2006/02/16 01:21:33 paul Exp $
+$Header: /cvs/farcry/core/tags/navajo/overview.cfm,v 1.115.2.1 2006/02/16 01:21:33 paul Exp $
 $Author: paul $
 $Date: 2006/02/16 01:21:33 $
 $Name: milestone_3-0-1 $
@@ -20,10 +20,10 @@ $Developer: Paul Harrison (paul@enpresiv.com)$
 $Developer: Brendan Sisson (brendan@daemon.com.au)$
 --->
 <!--- include tag library --->
-<cfimport taglib="/farcry/farcry_core/tags/navajo" prefix="nj">
+<cfimport taglib="/farcry/core/tags/navajo" prefix="nj">
 
 <!--- include function library --->
-<cfinclude template="/farcry/farcry_core/admin/includes/cfFunctionWrappers.cfm">
+<cfinclude template="/farcry/core/admin/includes/cfFunctionWrappers.cfm">
 
 <!--- optional attributes --->
 <cfparam name="attributes.zoom" default="16">

@@ -5,7 +5,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/webskin/cache.cfm,v 1.12.4.5 2006/01/22 23:49:39 gstewart Exp $
+$Header: /cvs/farcry/core/tags/webskin/cache.cfm,v 1.12.4.5 2006/01/22 23:49:39 gstewart Exp $
 $Author: gstewart $
 $Date: 2006/01/22 23:49:39 $
 $Name: milestone_3-0-1 $
@@ -18,7 +18,7 @@ $Description: Content caches blocks of code. This tag will handle cache nesting.
 $Developer: Geoff Bowers (modius@deamon.com.au) $
 
 || USAGE ||
-<cfimport taglib="/farcry/farcry_core/tags/webskin" prefix="skin">
+<cfimport taglib="/farcry/core/tags/webskin" prefix="skin">
 <skin:cache hours="6" CacheBlockName="topbanneradd" cacheName="#Request.section#" paging=true>
 	content!!
 </skin:cache>

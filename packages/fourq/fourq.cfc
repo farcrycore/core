@@ -51,10 +51,10 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
     <cfif not structKeyExists(variables,'dbFactory')>
 	    <cfset variables.dbFactory = createObject('component','DBGatewayFactory').init() />
 	    <cfset variables.gateways = structNew() />
-		<cfset variables.tableMetadata = createobject('component','farcry.farcry_core.packages.fourq.TableMetadata').init() />
+		<cfset variables.tableMetadata = createobject('component','farcry.core.packages.fourq.TableMetadata').init() />
 		<cfset tableMetadata.parseMetadata(getMetadata(this)) />	
 	
-		<cfset variables.objectBroker = createObject("component", "farcry.farcry_core.packages.fourq.objectBroker").init() />
+		<cfset variables.objectBroker = createObject("component", "farcry.core.packages.fourq.objectBroker").init() />
 	
 		<cfset variables.typename = variables.tableMetadata.getTableName() />
 				
@@ -194,7 +194,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 	</cffunction>
 	
 	
-  <cffunction name="getGateway" access="private" output="false" returntype="farcry.farcry_core.packages.fourq.gateway.DBGateway" hint="Gets the gateway for the given db connection parameters">
+  <cffunction name="getGateway" access="private" output="false" returntype="farcry.core.packages.fourq.gateway.DBGateway" hint="Gets the gateway for the given db connection parameters">
 	<cfargument name="dsn" type="string" required="false" default="#application.dsn#">
    	<cfargument name="dbtype" type="string" required="false" default="#application.dbtype#">
 	<cfargument name="dbowner" type="string" required="false" default="#ucase(application.dbowner)#">
@@ -824,7 +824,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset var i=0 />
 		<cfset var j=0 />
 		<cfset var k=0 />		
-		<cfset var oCoapiAdmin = createObject("component", "farcry.farcry_core.packages.coapi.coapiadmin") />
+		<cfset var oCoapiAdmin = createObject("component", "farcry.core.packages.coapi.coapiadmin") />
 		
 		<!--- If we are updating a type that already exists then we need to update only the metadata that has changed. --->
 		<cfif structKeyExists(stReturnMetadata, "stProps")>			

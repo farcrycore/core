@@ -4,7 +4,7 @@ Merge of ..admin/navajo/approve.cfm and ../tags/navajo/objectstatus.cfm
 
 <cfsetting enablecfoutputonly="Yes">
 <cfprocessingDirective pageencoding="utf-8">
-<cfimport taglib="/farcry/farcry_core/tags/navajo" prefix="nj">
+<cfimport taglib="/farcry/core/tags/navajo" prefix="nj">
 
 <!--- 
 || LEGAL ||
@@ -12,7 +12,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/conjuror/approve.cfm,v 1.3 2005/08/09 03:54:40 geoff Exp $
+$Header: /cvs/farcry/core/admin/conjuror/approve.cfm,v 1.3 2005/08/09 03:54:40 geoff Exp $
 $Author: geoff $
 $Date: 2005/08/09 03:54:40 $
 $Name: milestone_3-0-1 $
@@ -33,8 +33,8 @@ $out:$
 
 <cfsetting enablecfoutputonly="Yes">
 <cfprocessingDirective pageencoding="utf-8">
-<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
-<cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
+<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
  
 <cfparam name="url.objectId">
 <cfparam name="url.status" default="0">
@@ -42,7 +42,7 @@ $out:$
 
 
 <!--- set up page header --->
-<cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
 <admin:header>
 <cfoutput>
 <span class="FormTitle">

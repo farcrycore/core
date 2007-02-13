@@ -3,7 +3,7 @@
 $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/dmEmail.cfc,v 1.4 2005/09/02 06:27:36 guy Exp $
+$Header: /cvs/farcry/core/packages/types/dmEmail.cfc,v 1.4 2005/09/02 06:27:36 guy Exp $
 $Author: guy $
 $Date: 2005/09/02 06:27:36 $
 $Name: milestone_3-0-1 $
@@ -16,7 +16,7 @@ $Description: Email object. Allows administrators to send an email to members of
 $Developer: Brendan Sisson (brendan@daemon.com.au) $
 ---> 
 
-<cfcomponent extends="farcry.farcry_core.packages.types.types" displayname="Emails" hint="Email management object that allows emails to be sent to farcry groups" bCustomType="true">
+<cfcomponent extends="farcry.core.packages.types.types" displayname="Emails" hint="Email management object that allows emails to be sent to farcry groups" bCustomType="true">
 <!------------------------------------------------------------------------
 type properties
 ------------------------------------------------------------------------->	

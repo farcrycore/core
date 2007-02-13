@@ -2,7 +2,7 @@
 
 <cfcomponent extends="field" name="password" displayname="password" hint="Used to liase with password type fields"> 
 	
-	<cffunction name="init" access="public" returntype="farcry.farcry_core.packages.formtools.password" output="false" hint="Returns a copy of this initialised object">
+	<cffunction name="init" access="public" returntype="farcry.core.packages.formtools.password" output="false" hint="Returns a copy of this initialised object">
 		<cfreturn this>
 	</cffunction>
 	

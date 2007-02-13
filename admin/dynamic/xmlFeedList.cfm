@@ -2,7 +2,7 @@
 
 <cfprocessingDirective pageencoding="utf-8">
 
-<cfimport taglib="/farcry/farcry_core/tags/display/" prefix="display">
+<cfimport taglib="/farcry/core/tags/display/" prefix="display">
 
 <cfparam name="stargs.typename" default="dmXMLExport">
 

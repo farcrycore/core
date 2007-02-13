@@ -5,7 +5,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmFile/edit.cfm,v 1.57.2.4 2006/03/08 00:18:18 paul Exp $
+$Header: /cvs/farcry/core/packages/types/_dmFile/edit.cfm,v 1.57.2.4 2006/03/08 00:18:18 paul Exp $
 $Author: paul $
 $Date: 2006/03/08 00:18:18 $
 $Name: milestone_3-0-1 $
@@ -18,8 +18,8 @@ $Description: dmFile edit handler$
 $Developer: Guy (guy@daemon.com.au)$
 --->
 <!--- import tag libraries --->
-<cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
-<cfimport taglib="/farcry/farcry_core/tags/widgets/" prefix="widgets">
+<cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
+<cfimport taglib="/farcry/core/tags/widgets/" prefix="widgets">
 
 <!--- local variables --->
 <cfset localeMonths=application.thisCalendar.getMonths(session.dmProfile.locale)>
@@ -132,7 +132,7 @@ $Developer: Guy (guy@daemon.com.au)$
 
 		<cfif primaryObjectID NEQ "">
 			<!--- JSON encode and decode functions [jsonencode(str), jsondecode(str)]--->
-			<cfinclude template="/farcry/farcry_core/admin/includes/json.cfm">
+			<cfinclude template="/farcry/core/admin/includes/json.cfm">
 			
 			<cfset objplp = CreateObject("component","#application.packagepath#.farcry.plpUtilities")>
 			<cfset objplp.fAddArrayObjects(primaryObjectID,stObj.objectid)>
@@ -269,7 +269,7 @@ function fCancelAction(){<cfif primaryObjectID NEQ "">
 </script>
 <hr />
 <cfif primaryObjectID EQ "">
-<cfinclude template="/farcry/farcry_core/admin/includes/file_tips.cfm">
+<cfinclude template="/farcry/core/admin/includes/file_tips.cfm">
 </cfif>
 </cfoutput>
 </cfif>

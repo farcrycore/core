@@ -4,7 +4,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/farcry/_config.cfm,v 1.48 2005/09/08 15:53:36 tom Exp $
+$Header: /cvs/farcry/core/tags/farcry/_config.cfm,v 1.48 2005/09/08 15:53:36 tom Exp $
 $Author: tom $
 $Date: 2005/09/08 15:53:36 $
 $Name: milestone_3-0-1 $
@@ -118,7 +118,7 @@ test for the existance of each and act accordingly
 	if (NOT isDefined("application.path.tempfiles"))
 		application.path.tempfiles = application.path.core & "/plps/tempfiles";
 	application.fourq.plpstorage = application.path.core & "/plps/plpstorage"; // deprecated
-	application.fourq.plppath = "/farcry/farcry_core/plps"; // deprecated
+	application.fourq.plppath = "/farcry/core/plps"; // deprecated
 
 
 	//initialise factory objects 

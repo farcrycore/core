@@ -6,7 +6,7 @@ Daemon Pty Limited 1995-2002
 http://www.daemon.com.au
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/security/_NTsecurity/getGroupDescription.cfm,v 1.3 2003/09/10 23:27:33 brendan Exp $
+$Header: /cvs/farcry/core/packages/security/_NTsecurity/getGroupDescription.cfm,v 1.3 2003/09/10 23:27:33 brendan Exp $
 $Author: brendan $
 $Date: 2003/09/10 23:27:33 $
 $Name: milestone_3-0-1 $

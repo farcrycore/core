@@ -4,7 +4,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmhtml/plpEdit/files.cfm,v 1.18 2005/08/17 06:50:52 pottery Exp $
+$Header: /cvs/farcry/core/packages/types/_dmhtml/plpEdit/files.cfm,v 1.18 2005/08/17 06:50:52 pottery Exp $
 $Author: pottery $
 $Date: 2005/08/17 06:50:52 $
 $Name: milestone_3-0-1 $
@@ -20,9 +20,9 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 <cfsetting enablecfoutputonly="yes">
 <cfprocessingDirective pageencoding="utf-8">
 
-<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
-<cfimport taglib="/farcry/farcry_core/tags/farcry" prefix="tags">
-<cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
+<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/core/tags/farcry" prefix="tags">
+<cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
 
 <cfset localeMonths=application.thisCalendar.getMonths(session.dmProfile.locale)>
 
@@ -190,7 +190,7 @@ function removeUploadBtn()
 	<cfset aFileArray = arrayNew(1)>
 	<cfloop from="1" to="#arrayLen(output.aObjectIds)#" index="i">
 		<!--- get the objectType --->
-		<cfinvoke component="farcry.farcry_core.packages.fourq.fourq" returnvariable="typename" method="findType" objectID="#output.aObjectIds[i]#">
+		<cfinvoke component="farcry.core.packages.fourq.fourq" returnvariable="typename" method="findType" objectID="#output.aObjectIds[i]#">
 		<cfif typename IS "dmFile">
 			<cfscript>
 				arrayAppend(aFileArray,output.aObjectIds[i]);

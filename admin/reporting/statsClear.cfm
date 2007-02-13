@@ -4,7 +4,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/reporting/statsClear.cfm,v 1.5.2.1 2006/03/24 01:05:36 daniela Exp $
+$Header: /cvs/farcry/core/admin/reporting/statsClear.cfm,v 1.5.2.1 2006/03/24 01:05:36 daniela Exp $
 $Author: daniela $
 $Date: 2006/03/24 01:05:36 $
 $Name: milestone_3-0-1 $
@@ -67,7 +67,7 @@ out:
 
 
 <!--- set up page header --->
-<cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 <cfif iStatsTab eq 1><cfoutput>

@@ -4,7 +4,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/navajo/objectStatus.cfm,v 1.47.2.5 2006/01/23 22:30:32 geoff Exp $
+$Header: /cvs/farcry/core/tags/navajo/objectStatus.cfm,v 1.47.2.5 2006/01/23 22:30:32 geoff Exp $
 $Author: geoff $
 $Date: 2006/01/23 22:30:32 $
 $Name:  $
@@ -25,8 +25,8 @@ $out:$
 
 <cfsetting enablecfoutputonly="Yes">
 <cfprocessingDirective pageencoding="utf-8">
-<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
-<cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
+<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
  
 <cfparam name="url.objectId">
 <cfparam name="url.status" default="0">
@@ -34,7 +34,7 @@ $out:$
 
 
 <!--- set up page header --->
-<cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
 <admin:header>
 
 <cfinvoke component="#application.packagepath#.farcry.versioning" method="getVersioningRules" objectID="#url.objectID#" returnvariable="stRules">

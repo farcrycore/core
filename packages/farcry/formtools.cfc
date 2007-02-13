@@ -1,8 +1,8 @@
 <cfcomponent displayname="FormTools" hint="All the methods required to run Farcry Form Tools">
 
 
-<cfimport prefix="skin" taglib="/farcry/farcry_core/tags/webskin" />
-<cfimport taglib="/farcry/farcry_core/tags/formtools/" prefix="ft" >
+<cfimport prefix="skin" taglib="/farcry/core/tags/webskin" />
+<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" >
 
 
 <cffunction name="getCurrentPaginationPage" access="public" output="true" returntype="numeric">
@@ -614,7 +614,7 @@
 				<cfset itemData = aField[pos].data />
 			<cfelse>
 				<!--- TODO: MJB use query on array table to get all the typenames in 1 go.  --->
-				<cfset q4 = createObject("component", "farcry.farcry_core.packages.fourq.fourq")>
+				<cfset q4 = createObject("component", "farcry.core.packages.fourq.fourq")>
 				<cfset itemTypename = q4.findType(objectid=aField[pos])>
 				<cfset itemData = aField[pos] />
 			</cfif>
@@ -671,7 +671,7 @@
 	<cfargument name="stFields" required="yes" type="struct">
 	
 	<cfset var imagerootPath = "#application.path.project#/www" />	
-	<cfset var oImage = createobject("component", "farcry.farcry_core.packages.formtools.image") />
+	<cfset var oImage = createobject("component", "farcry.core.packages.formtools.image") />
 
 	<cfloop list="#StructKeyList(arguments.stFields)#" index="i">
 

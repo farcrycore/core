@@ -22,14 +22,14 @@ $DEVELOPER:Paul Harrison (harrisonp@cbs.curtin.edu.au)$
 --->
 
 <!--- import tag libraries --->
-<cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
-<cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
-<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
-<cfimport taglib="/farcry/farcry_core/tags/farcry/" prefix="farcry">
+<cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
+<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry">
 
 <!--- check permissions --->
 <cfset iOverviewTab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="ObjectOverviewTab")>
-<cfset q4 = createObject("component","farcry.farcry_core.packages.fourq.fourq")>
+<cfset q4 = createObject("component","farcry.core.packages.fourq.fourq")>
 <cfset typename = q4.findType(url.objectid)>
 <cfset o = createObject("component",application.types['#typename#'].typepath)>
 <cfset stObject = o.getData(objectid)>

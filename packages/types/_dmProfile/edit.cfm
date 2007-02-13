@@ -5,7 +5,7 @@ $Copyright: Daemon Pty Limited 1995-2005, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmProfile/edit.cfm,v 1.16 2005/08/16 05:53:23 pottery Exp $
+$Header: /cvs/farcry/core/packages/types/_dmProfile/edit.cfm,v 1.16 2005/08/16 05:53:23 pottery Exp $
 $Author: pottery $
 $Date: 2005/08/16 05:53:23 $
 $Name: milestone_3-0-1 $
@@ -19,7 +19,7 @@ Peter Alexandrou (suspiria@daemon.com.au)
 --->
 
 <!--- set up page header --->
-<cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 
@@ -27,8 +27,8 @@ Peter Alexandrou (suspiria@daemon.com.au)
 <cfset locales=listToArray(application.i18nUtils.getLocales())>
 <cfset localeNames=listToArray(application.i18nUtils.getLocaleNames())>
 
-<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
-<cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
+<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
 
 <cfset bShowForm = "true">
 

@@ -5,7 +5,7 @@ $Copyright: Daemon Pty Limited 1995-2006, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/widgets/dateSelector.cfm,v 1.13.2.1 2006/01/26 11:36:12 geoff Exp $
+$Header: /cvs/farcry/core/tags/widgets/dateSelector.cfm,v 1.13.2.1 2006/01/26 11:36:12 geoff Exp $
 $Author: geoff $
 $Date: 2006/01/26 11:36:12 $
 $Name: milestone_3-0-1 $

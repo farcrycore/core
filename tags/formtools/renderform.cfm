@@ -1,4 +1,4 @@
-<cfimport taglib="/farcry/farcry_core/tags/widgets" prefix="widgets">
+<cfimport taglib="/farcry/core/tags/widgets" prefix="widgets">
 
 <cfif not thistag.HasEndTag>
 

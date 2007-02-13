@@ -4,7 +4,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/navajo/objectStatus_dd.cfm,v 1.24.2.1 2006/01/23 22:30:32 geoff Exp $
+$Header: /cvs/farcry/core/tags/navajo/objectStatus_dd.cfm,v 1.24.2.1 2006/01/23 22:30:32 geoff Exp $
 $Author: geoff $
 $Date: 2006/01/23 22:30:32 $
 $Name: milestone_3-0-1 $
@@ -24,8 +24,8 @@ $out:$
 
 <cfsetting enablecfoutputonly="Yes">
 <cfprocessingDirective pageencoding="utf-8">
-<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
-<cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
+<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
 
 <cfparam name="attributes.lObjectIDs" default=""> <!---objects to have their status changed-required --->
 <cfparam name="attributes.status" default=""> <!--- status to change to - required --->

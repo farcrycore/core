@@ -4,7 +4,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/help/reportBug.cfm,v 1.5 2005/08/09 03:54:40 geoff Exp $
+$Header: /cvs/farcry/core/admin/help/reportBug.cfm,v 1.5 2005/08/09 03:54:40 geoff Exp $
 $Author: geoff $
 $Date: 2005/08/09 03:54:40 $
 $Name: milestone_3-0-1 $
@@ -30,7 +30,7 @@ $out:$
 </cfscript>
 
 <!--- set up page header --->
-<cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 <cfif iHelpTab eq 1>

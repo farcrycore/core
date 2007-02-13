@@ -1,6 +1,6 @@
 <cfsetting enablecfoutputonly="yes">
 
-<cfset wt = CreateObject("component", "farcry.farcry_core.packages.farcry.WebtopRoot")>
+<cfset wt = CreateObject("component", "farcry.core.packages.farcry.WebtopRoot")>
 <cfset wt.init(application.factory.oWebtop.xmlwebtop)>
 <cfset wt.transformLabels()>
 
@@ -192,7 +192,7 @@
 
 
 <cffunction name="getTransformedPermissionMap" returnType="string">
-  <cfargument name="webtopRoot" type="farcry.farcry_core.packages.farcry.WebtopRoot" required="yes">
+  <cfargument name="webtopRoot" type="farcry.core.packages.farcry.WebtopRoot" required="yes">
   <cfargument name="policyGroupID" type="numeric" required="yes">
   <cfargument name="xslString" type="string" required="yes">
   

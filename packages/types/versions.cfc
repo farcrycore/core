@@ -4,7 +4,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/versions.cfc,v 1.4.2.2 2006/01/23 22:30:32 geoff Exp $
+$Header: /cvs/farcry/core/packages/types/versions.cfc,v 1.4.2.2 2006/01/23 22:30:32 geoff Exp $
 $Author: geoff $
 $Date: 2006/01/23 22:30:32 $
 $Name: milestone_3-0-1 $
@@ -17,7 +17,7 @@ This class defines default handlers and system attributes.$
 || DEVELOPER ||
 $Developer: Geoff Bowers (geoff@daemon.com.au) $
 --->
-<cfcomponent extends="farcry.farcry_core.packages.types.types" bAbstract="true" displayname="Versions Abstract Class" hint="Provides default properties and handlers for content object types using farcry versioning.  This component should never be instantiated directly -- it should only be inherited.">
+<cfcomponent extends="farcry.core.packages.types.types" bAbstract="true" displayname="Versions Abstract Class" hint="Provides default properties and handlers for content object types using farcry versioning.  This component should never be instantiated directly -- it should only be inherited.">
 <!--------------------------------------------------------------------
 system attributes
   properties that all content types require in FarCry

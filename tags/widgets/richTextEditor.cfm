@@ -4,7 +4,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/widgets/richTextEditor.cfm,v 1.7.2.5 2006/02/28 23:49:10 tom Exp $
+$Header: /cvs/farcry/core/tags/widgets/richTextEditor.cfm,v 1.7.2.5 2006/02/28 23:49:10 tom Exp $
 $Author: tom $
 $Date: 2006/02/28 23:49:10 $
 $Name: milestone_3-0-1 $
@@ -23,8 +23,8 @@ $out:$
 --->
 <cfsetting enablecfoutputonly="yes">
 
-<cfimport taglib="/farcry/farcry_core/tags/farcry" prefix="tags">
-<cfinclude template="/farcry/farcry_core/admin/includes/utilityFunctions.cfm">
+<cfimport taglib="/farcry/core/tags/farcry" prefix="tags">
+<cfinclude template="/farcry/core/admin/includes/utilityFunctions.cfm">
 <cfparam name="attributes.textareaname" default="body">
 <cfparam name="attributes.fieldLabel" default="">
 
@@ -468,7 +468,7 @@ $out:$
 			<cfhtmlhead text="#fckeditorscript#">	
 			
 			<cfscript>
- 	 			fckEditor = createObject("component", "farcry.farcry_core.admin.includes.lib.fckeditor.fckeditor");
+ 	 			fckEditor = createObject("component", "farcry.core.admin.includes.lib.fckeditor.fckeditor");
 				fckEditor.toolBarSet="#application.config.fckEditor.toolBarSet#";
 	 			fckEditor.instanceName="#attributes.textareaname#";
 	 			fckEditor.basePath="#application.url.farcry#/includes/lib/fckeditor/";

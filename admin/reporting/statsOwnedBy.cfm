@@ -5,7 +5,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/reporting/statsOwnedBy.cfm,v 1.2 2005/08/09 03:54:40 geoff Exp $
+$Header: /cvs/farcry/core/admin/reporting/statsOwnedBy.cfm,v 1.2 2005/08/09 03:54:40 geoff Exp $
 $Author: geoff $
 $Date: 2005/08/09 03:54:40 $
 $Name: milestone_3-0-1 $
@@ -30,7 +30,7 @@ $out:$
 <cfset iStatsTab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="ReportingStatsTab") />
 
 <!--- set up page header --->
-<cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
 <cfset returnStruct = application.factory.oStats.getOwnedBy() />
 <cfif returnStruct.returnCode EQ 1>
 	<cfset stReport = returnStruct.owners />

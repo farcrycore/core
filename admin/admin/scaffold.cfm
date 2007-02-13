@@ -8,7 +8,7 @@
 	<cfabort>
 </cfif>
 
-<cfimport taglib="/farcry/farcry_core/tags/formtools/" prefix="ft" >
+<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" >
 
 
 
@@ -278,7 +278,7 @@
 		</cfif>
 		
 		<!--- check core scaffolds --->
-		<cfset FullScaffoldPath=ExpandPath("/farcry/farcry_core/admin/admin/scaffolds#scaffoldPath#") />
+		<cfset FullScaffoldPath=ExpandPath("/farcry/core/admin/admin/scaffolds#scaffoldPath#") />
 		
 		<cfif directoryExists(FullScaffoldPath)>
 			<cfdirectory action="list" directory="#FullScaffoldPath#" name="qCoreResult" filter="*.txt" sort="asc" />
@@ -383,7 +383,7 @@
 			//Try using application.types.qMetaData
 			
 			oCustomType = createObject("component", "farcry.#application.applicationName#.packages.types.#arguments.typeName#");	//instantiate the custom type to introspect
-			oTypeMetadata = createObject("component", "farcry.farcry_core.packages.fourq.TableMetadata").init();	//instansiate the Fourq class to access introspection methods
+			oTypeMetadata = createObject("component", "farcry.core.packages.fourq.TableMetadata").init();	//instansiate the Fourq class to access introspection methods
 			oTypeMetadata.parseMetadata(md=getMetadata(oCustomType));	//generate the metadata
 			stReturn = oTypeMetadata.getTableDefinition();	//retrieve the generated metadata
 		

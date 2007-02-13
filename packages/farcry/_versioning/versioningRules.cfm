@@ -4,7 +4,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_versioning/versioningRules.cfm,v 1.10 2005/08/09 03:54:40 geoff Exp $
+$Header: /cvs/farcry/core/packages/farcry/_versioning/versioningRules.cfm,v 1.10 2005/08/09 03:54:40 geoff Exp $
 $Author: geoff $
 $Date: 2005/08/09 03:54:40 $
 $Name: milestone_3-0-1 $
@@ -22,10 +22,10 @@ $in: $
 $out:$
 --->
 
-<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
 		
 <cfif NOT isDefined("arguments.typename")>
-	<cfinvoke component="farcry.farcry_core.packages.fourq.fourq" returnvariable="thisTypename" method="findType" objectID="#arguments.ObjectId#">
+	<cfinvoke component="farcry.core.packages.fourq.fourq" returnvariable="thisTypename" method="findType" objectID="#arguments.ObjectId#">
 	<cfset typename = thisTypename> 					
 </cfif>
 

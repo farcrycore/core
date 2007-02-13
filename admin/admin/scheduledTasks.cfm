@@ -4,7 +4,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/admin/scheduledTasks.cfm,v 1.10 2005/09/15 04:40:32 daniela Exp $
+$Header: /cvs/farcry/core/admin/admin/scheduledTasks.cfm,v 1.10 2005/09/15 04:40:32 daniela Exp $
 $Author: daniela $
 $Date: 2005/09/15 04:40:32 $
 $Name: milestone_3-0-1 $
@@ -20,8 +20,8 @@ $Developer: Brendan Sisson (brendan@daemon.com.au) $
 || ATTRIBUTES ||
 --->
 
-<cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
-<cfimport taglib="/farcry/farcry_core/tags/widgets/" prefix="widgets">
+<cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/widgets/" prefix="widgets">
 
 <cfset editobjectURL = "#application.url.farcry#/conjuror/invocation.cfm?objectid=##recordset.objectID[recordset.currentrow]##&typename=dmCron">
 

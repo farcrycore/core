@@ -2,7 +2,7 @@
 
 <cfcomponent extends="field" name="selectTable" displayname="selectTable" hint="Field component to liase with all string types"> 
 	
-	<cffunction name="init" access="public" returntype="farcry.farcry_core.packages.formtools.selectTable" output="false" hint="Returns a copy of this initialised object">
+	<cffunction name="init" access="public" returntype="farcry.core.packages.formtools.selectTable" output="false" hint="Returns a copy of this initialised object">
 		<cfreturn this>
 	</cffunction>
 	

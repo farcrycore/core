@@ -4,7 +4,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/admin/config_custom.cfm,v 1.7 2005/08/16 05:53:23 pottery Exp $
+$Header: /cvs/farcry/core/admin/admin/config_custom.cfm,v 1.7 2005/08/16 05:53:23 pottery Exp $
 $Author: pottery $
 $Date: 2005/08/16 05:53:23 $
 $Name: milestone_3-0-1 $
@@ -26,7 +26,7 @@ $out:$
 
 <cfprocessingDirective pageencoding="utf-8">
 
-<cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
 
 <!--- check permissions --->
 <cfscript>

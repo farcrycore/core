@@ -1,6 +1,6 @@
 <cfprocessingDirective pageencoding="utf-8">
 
-<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
 
 
 <cffunction name="contentobjectget" hint="wrapper to the fourq tag - contentobjectget">
@@ -139,7 +139,7 @@
 
 <cffunction name="updateTree">
 	<cfargument name="objectid" required="true">
-	<cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
+	<cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
 	<nj:updateTree objectId="#arguments.objectid#">
 </cffunction>
 

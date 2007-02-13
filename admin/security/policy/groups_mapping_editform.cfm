@@ -26,9 +26,9 @@
 	</cfif>
 </cfif>
 
-<cfimport taglib="/farcry/farcry_core/tags/security/ui/" prefix="dmsec">
+<cfimport taglib="/farcry/core/tags/security/ui/" prefix="dmsec">
 <!--- set up page header --->
-<cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
 
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 <cfoutput>

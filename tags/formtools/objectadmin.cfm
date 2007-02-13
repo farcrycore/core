@@ -20,8 +20,8 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 --->
 
 <!--- import tag libraries --->
-<cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
-<cfimport taglib="/farcry/farcry_core/tags/formtools/" prefix="ft">
+<cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft">
 
 
 <cfif thistag.executionMode eq "Start">
@@ -594,7 +594,7 @@ user --->
 
 
 
-	<cfset oFormtoolUtil = createObject("component", "farcry.farcry_core.packages.farcry.formtools") />
+	<cfset oFormtoolUtil = createObject("component", "farcry.core.packages.farcry.formtools") />
 	<cfset sqlColumns="objectid,locked,lockedby,#attributes.columnlist#" />
 	<!---<cfset bhasstatus=false />
 	<!--- check if the type has a status property --->

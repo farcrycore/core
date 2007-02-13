@@ -4,7 +4,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_config/defaultTinyMCE.cfm,v 1.1.2.3 2005/11/23 01:21:20 guy Exp $
+$Header: /cvs/farcry/core/packages/farcry/_config/defaultTinyMCE.cfm,v 1.1.2.3 2005/11/23 01:21:20 guy Exp $
 $Author: guy $
 $Date: 2005/11/23 01:21:20 $
 $Name: p300_b113 $

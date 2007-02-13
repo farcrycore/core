@@ -1,8 +1,8 @@
 <cfsetting enablecfoutputonly="true">
 
 <cfif isDefined("caller.output")>
-	<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
-	<cfimport taglib="/farcry/farcry_core/tags/widgets" prefix="widgets">
+	<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
+	<cfimport taglib="/farcry/core/tags/widgets" prefix="widgets">
 	<cfparam name="attributes.fieldLabel" default="#application.adminBundle[session.dmProfile.locale].relatedObjects#">
 	<!--- this is mutually exclusive of the output.arelatedids ie. the value is not stored into the mainContentType_arelatedids table but instead in a list field --->
 	<cfparam name="attributes.fieldName" default="aRelatedIDs">

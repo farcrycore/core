@@ -3,7 +3,7 @@
 relatedLinks (FarCry Core: webskin tag library)
 Copyright Daemon Pty Limited 2002 (http://www.daemon.com.au/)
 
-$Header: /cvs/farcry/farcry_core/tags/webskin/relatedLinks.cfm,v 1.7 2003/10/14 23:54:53 brendan Exp $
+$Header: /cvs/farcry/core/tags/webskin/relatedLinks.cfm,v 1.7 2003/10/14 23:54:53 brendan Exp $
 $Author: brendan $
 $Date: 2003/10/14 23:54:53 $
 $Name: milestone_3-0-1 $
@@ -23,7 +23,7 @@ Example of Usage From Webskin Template:
 	<skin:relatedLinks aRelatedIDs="#stObj.aRelatedIDs#" clas="relatedLinks">
 </cfif>
 ------------------------------------------------------------------------->
-<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
 
 <!--- required attributes --->
 <cfparam name="attributes.aRelatedIDs" type="array">

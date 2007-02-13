@@ -5,7 +5,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/widgets/typeadmin.cfm,v 1.38.2.5 2006/03/15 04:03:40 jason Exp $
+$Header: /cvs/farcry/core/tags/widgets/typeadmin.cfm,v 1.38.2.5 2006/03/15 04:03:40 jason Exp $
 $Author: jason $
 $Date: 2006/03/15 04:03:40 $
 $Name: milestone_3-0-1 $
@@ -59,8 +59,8 @@ Selecting for specific categories re-runs the query rather than attempting filte
 If you are providing a data subset that needs to be protected disable the category filter option.
 --->
 <!--- import tag libraries --->
-<cfimport taglib="/farcry/farcry_core/tags/widgets" prefix="widgets" />
-<cfimport taglib="/farcry/farcry_core/tags/formtools/" prefix="ft" >
+<cfimport taglib="/farcry/core/tags/widgets" prefix="widgets" />
+<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" >
 
 <!--- make sure tag is correctly implemented --->
 <cfif NOT thisTag.HasEndTag>

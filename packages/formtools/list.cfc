@@ -2,11 +2,11 @@
 
 
 	<!--- import tag libraries --->
-	<cfimport taglib="/farcry/farcry_core/tags/widgets/" prefix="widgets" />
-	<cfimport taglib="/farcry/farcry_core/tags/formtools/" prefix="ft" />
+	<cfimport taglib="/farcry/core/tags/widgets/" prefix="widgets" />
+	<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" />
 	
 
-	<cffunction name="init" access="public" returntype="farcry.farcry_core.packages.formtools.list" output="false" hint="Returns a copy of this initialised object">
+	<cffunction name="init" access="public" returntype="farcry.core.packages.formtools.list" output="false" hint="Returns a copy of this initialised object">
 		<cfreturn this>
 	</cffunction>
 

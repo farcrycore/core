@@ -4,7 +4,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/alterType.cfc,v 1.57.2.2 2005/12/30 01:07:10 paul Exp $
+$Header: /cvs/farcry/core/packages/farcry/alterType.cfc,v 1.57.2.2 2005/12/30 01:07:10 paul Exp $
 $Author: paul $
 $Date: 2005/12/30 01:07:10 $
 $Name:  $
@@ -24,7 +24,7 @@ $out:$
 --->
 
 <cfcomponent>
-<cfinclude template="/farcry/farcry_core/admin/includes/cfFunctionWrappers.cfm">
+<cfinclude template="/farcry/core/admin/includes/cfFunctionWrappers.cfm">
 
 <cffunction name="getDataType">
 	<cfargument name="cfctype" required="true">

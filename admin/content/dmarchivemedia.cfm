@@ -19,8 +19,8 @@ $TODO: requires specific permission set for access$
 || DEVELOPER ||
 $Developer: Geoff Bowers (modius@daemon.com.au) $
 --->
-<cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
-<cfimport taglib="/farcry/farcry_core/tags/widgets/" prefix="widgets">
+<cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/widgets/" prefix="widgets">
 
 <cfdirectory action="list" directory="#application.config.general.ARCHIVEDIRECTORY#" name="qFiles" filter="*" />
 

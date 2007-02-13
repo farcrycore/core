@@ -7,7 +7,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmhtml/plpEdit/images.cfm,v 1.20.2.1 2006/03/21 05:03:26 jason Exp $
+$Header: /cvs/farcry/core/packages/types/_dmhtml/plpEdit/images.cfm,v 1.20.2.1 2006/03/21 05:03:26 jason Exp $
 $Author: jason $
 $Date: 2006/03/21 05:03:26 $
 $Name: milestone_3-0-1 $
@@ -21,9 +21,9 @@ $TODO: clean up formatting -- test in Mozilla 20030503 GB$
 $Developer: Brendan Sisson (brendan@daemon.com.au)$
 --->
 
-<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
-<cfimport taglib="/farcry/farcry_core/tags/farcry" prefix="tags">
-<cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
+<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/core/tags/farcry" prefix="tags">
+<cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
 
 
 <cfoutput>
@@ -342,7 +342,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 		<cfset aFileArray = arrayNew(1)>
 		<cfloop from="1" to="#arrayLen(output.aObjectIds)#" index="i">
 			<!--- get the objectType --->
-			<cfinvoke component="farcry.farcry_core.packages.fourq.fourq" returnvariable="typename" method="findType" objectID="#output.aObjectIds[i]#">
+			<cfinvoke component="farcry.core.packages.fourq.fourq" returnvariable="typename" method="findType" objectID="#output.aObjectIds[i]#">
 			<cfif typename IS "dmImage">
 				<cfscript>
 					arrayAppend(aFileArray,output.aObjectIds[i]);

@@ -35,8 +35,8 @@
 				<!--- <cfdump var="#qcomps#" label="project: #packagepath#../../packages/#arguments.package#"> --->
 			</cfif>
 		<cfelseif packagedir eq "corepackage">
-			<cfset packagepath=GetDirectoryFromPath(expandpath("/farcry/farcry_core/packages/#arguments.package#")) />
-			<cfset typepath="farcry.farcry_core.packages.#arguments.package#" />
+			<cfset packagepath=GetDirectoryFromPath(expandpath("/farcry/core/packages/#arguments.package#")) />
+			<cfset typepath="farcry.core.packages.#arguments.package#" />
 			<cfif directoryExists(packagepath)>
 				<cfdirectory directory="#packagepath##arguments.package#" name="qComps" filter="*.cfc" sort="name" />
 				<!--- <cfdump var="#qcomps#" label="core: #packagepath##arguments.package#"> --->
@@ -179,7 +179,7 @@
 		
 		
 		<!--- CHECK CORE WEBSKINS --->		
-		<cfset webskinpath=ExpandPath("/farcry/farcry_core/webskin/#arguments.typename#") />
+		<cfset webskinpath=ExpandPath("/farcry/core/webskin/#arguments.typename#") />
 		
 		<cfif directoryExists(webskinpath)>
 			<cfdirectory action="list" directory="#webskinPath#" name="qCoreResult" sort="asc" />
@@ -256,9 +256,9 @@
 		</cfif>
 		
 		<!--- If it hasnt been found yet, check in core. --->
-		<cfif not len(webskinPath) AND fileExists(ExpandPath("/farcry/farcry_core/webskin/#arguments.typename#/#arguments.template#.cfm"))>
+		<cfif not len(webskinPath) AND fileExists(ExpandPath("/farcry/core/webskin/#arguments.typename#/#arguments.template#.cfm"))>
 			
-			<cfset webskinPath = "/farcry/farcry_core/webskin/#arguments.typename#/#arguments.template#.cfm" />
+			<cfset webskinPath = "/farcry/core/webskin/#arguments.typename#/#arguments.template#.cfm" />
 			
 		</cfif>
 		

@@ -1,6 +1,6 @@
 <cfcomponent extends="field" name="boolean" displayname="boolean" hint="Used to liase with boolean type fields"> 
 		
-	<cffunction name="init" access="public" returntype="farcry.farcry_core.packages.formtools.boolean" output="false" hint="Returns a copy of this initialised object">
+	<cffunction name="init" access="public" returntype="farcry.core.packages.formtools.boolean" output="false" hint="Returns a copy of this initialised object">
 		<cfreturn this>
 	</cffunction>
 

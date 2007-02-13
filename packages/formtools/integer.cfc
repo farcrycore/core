@@ -1,7 +1,7 @@
 <cfcomponent name="integer" displayname="integer" extends="field" hint="Field component to liase with all integer types"> 
 	
 	
-	<cffunction name="init" access="public" returntype="farcry.farcry_core.packages.formtools.integer" output="false" hint="Returns a copy of this initialised object">
+	<cffunction name="init" access="public" returntype="farcry.core.packages.formtools.integer" output="false" hint="Returns a copy of this initialised object">
 		<cfreturn this />
 	</cffunction>
 	

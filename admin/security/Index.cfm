@@ -2,7 +2,7 @@
 
 <cfprocessingDirective pageencoding="utf-8">
 
-<cfimport taglib="/farcry/farcry_core/tags/security/ui" prefix="dmsec">
+<cfimport taglib="/farcry/core/tags/security/ui" prefix="dmsec">
 
 <cfoutput>
 <script>

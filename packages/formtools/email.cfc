@@ -1,7 +1,7 @@
 
 <cfcomponent name="email" displayname="Email" hint="Field component for Email types"> 
 	
-	<cffunction name="init" access="public" returntype="farcry.farcry_core.packages.formtools.email" output="false" hint="Returns a copy of this initialised object">
+	<cffunction name="init" access="public" returntype="farcry.core.packages.formtools.email" output="false" hint="Returns a copy of this initialised object">
 		<cfreturn this>
 	</cffunction>
 	

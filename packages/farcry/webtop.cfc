@@ -325,7 +325,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 	</cfloop>
 </cffunction>
 
-<!--- this function is specifically written for /farcry_core/admin/index.cfm
+<!--- this function is specifically written for /core/admin/index.cfm
       ~line 56.
       Call like: sidebar=oWebTop.getSidebarUrl(aSubsectionToDisplay[1].xmlattributes) 
       author: Tyler Ham (tylerh@austin.utexas.edu) 
@@ -358,7 +358,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 	<cfreturn sReturn>
 </cffunction>
 
-<!--- this function is specifically written for /farcry_core/admin/index.cfm
+<!--- this function is specifically written for /core/admin/index.cfm
       ~line 57
       Call like: content=oWebTop.getContentUrl(aSubsectionToDisplay[1].xmlattributes)
       author: Tyler Ham (tylerh@austin.utexas.edu)

@@ -4,7 +4,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_workflow/getObjectsPendingApproval.cfm,v 1.25.2.6 2006/04/14 06:50:41 geoff Exp $
+$Header: /cvs/farcry/core/packages/farcry/_workflow/getObjectsPendingApproval.cfm,v 1.25.2.6 2006/04/14 06:50:41 geoff Exp $
 $Author: geoff $
 $Date: 2006/04/14 06:50:41 $
 $Name: p300_b113 $

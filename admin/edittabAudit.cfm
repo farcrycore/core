@@ -19,7 +19,7 @@ $DESCRIPTION: Displays an audit log for object$
 $DEVELOPER:Brendan Sisson (brendan@daemon.com.au)$
 --->
 <!--- import tag libraries --->
-<cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
 
 <!--- check permissions --->
 <cfset iAuditTab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="ObjectAuditTab") />

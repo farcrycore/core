@@ -5,11 +5,11 @@
 
 <cfcomponent extends="field" name="navigation" displayname="navigation" hint="Field component to liase with all navigation field types"> 
 
-	<cfimport taglib="/farcry/farcry_core/tags/widgets/" prefix="widgets">
-	<cfimport taglib="/farcry/farcry_core/tags/formtools/" prefix="ft" >
+	<cfimport taglib="/farcry/core/tags/widgets/" prefix="widgets">
+	<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" >
 
 		
-	<cffunction name="init" access="public" returntype="farcry.farcry_core.packages.formtools.navigation" output="false" hint="Returns a copy of this initialised object">
+	<cffunction name="init" access="public" returntype="farcry.core.packages.formtools.navigation" output="false" hint="Returns a copy of this initialised object">
 		<cfreturn this>
 	</cffunction>
 	
@@ -178,7 +178,7 @@
 		</cfloop>
 		
 		<cfif not len(arguments.typename)>
-			<cfset q4 = createObject("component","farcry.farcry_core.packages.fourq.fourq")>
+			<cfset q4 = createObject("component","farcry.core.packages.fourq.fourq")>
 			<cfset arguments.typename = q4.findType(objectid=arguments.objectid)>
 		</cfif>
 		
@@ -190,10 +190,10 @@
 			<cfabort showerror="arguments.typename does not exist as a rule or a type" />
 		</cfif>
 		
-		<cfset variables.tableMetadata = createobject('component','farcry.farcry_core.packages.fourq.TableMetadata').init() />
+		<cfset variables.tableMetadata = createobject('component','farcry.core.packages.fourq.TableMetadata').init() />
 		<cfset tableMetadata.parseMetadata(md=getMetadata(oPrimary)) />		
 		<cfset stFields = variables.tableMetadata.getTableDefinition() />
-		<!---<cfset o = createObject("component","farcry.farcry_core.packages.fourq.gateway.dbGateway").init(dsn=application.dsn,dbowner="")> --->
+		<!---<cfset o = createObject("component","farcry.core.packages.fourq.gateway.dbGateway").init(dsn=application.dsn,dbowner="")> --->
 		<cfset aProps = oPrimary.createArrayTableData(tableName=Typename & "_" & arguments.stMetadata.name,objectid=arguments.ObjectID,tabledef=stFields[arguments.stMetadata.name].Fields,aprops=aField)>
 
 

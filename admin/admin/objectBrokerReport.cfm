@@ -19,7 +19,7 @@ $Description: Verity Configurator Prototype; will have to tie us over till confi
 $Developer: Geoff Bowers (modius@daemon.com.au)$
 --->
 <!--- import tag libraries --->
-<cfimport prefix="admin" taglib="/farcry/farcry_core/tags/admin/" />
+<cfimport prefix="admin" taglib="/farcry/core/tags/admin/" />
 
 <admin:header />
 

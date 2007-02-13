@@ -22,7 +22,7 @@ TODO: this will need cleaning, maybe show previews of images being deleted, and 
 <cfdirectory directory="#application.config.image.standardImagePath#" filter="*.jpg" name="qStandardImageListing">
 <cfdirectory directory="#application.config.image.thumbnailImagePath#" filter="*.jpg" name="qThumbnailImageListing">
 
-<cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
 
 <cfif bFormSubmitted EQ "yes">
 	<cfparam name="form.bThumbnailImageResize" default="false" />

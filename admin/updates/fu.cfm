@@ -1,4 +1,4 @@
-<!--- <cfinclude template="/farcry/farcry_core/ui/updates/fu.cfm"> --->
+<!--- <cfinclude template="/farcry/core/ui/updates/fu.cfm"> --->
 <cfsetting enablecfoutputonly="true">
 
 <!--- re/create the FU table --->

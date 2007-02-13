@@ -40,7 +40,7 @@ $in: objectid -- $
 	<cfset variables.stPrototypeTree.ul=0> <!--- // nested list counter --->
 
 		
-	<cfset variables.stPrototypeTree.o = createObject("component","farcry.farcry_core.packages.farcry.prototypeTree") />
+	<cfset variables.stPrototypeTree.o = createObject("component","farcry.core.packages.farcry.prototypeTree") />
 		
 	<cfset Request>
 	<cfoutput><div id="treewrap_#attributes.id#"></cfoutput>

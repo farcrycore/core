@@ -4,7 +4,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/widgets/plpNavigationMove.cfm,v 1.1 2005/06/03 10:06:04 geoff Exp $
+$Header: /cvs/farcry/core/tags/widgets/plpNavigationMove.cfm,v 1.1 2005/06/03 10:06:04 geoff Exp $
 $Author: geoff $
 $Date: 2005/06/03 10:06:04 $
 $Name: milestone_3-0-1 $

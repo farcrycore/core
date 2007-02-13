@@ -4,7 +4,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/types.cfc,v 1.68.2.17 2006/04/19 13:53:09 geoff Exp $
+$Header: /cvs/farcry/core/packages/types/types.cfc,v 1.68.2.17 2006/04/19 13:53:09 geoff Exp $
 $Author: geoff $
 $Date: 2006/04/19 13:53:09 $
 $Name:  $
@@ -18,7 +18,7 @@ This class defines default handlers and system attributes.$
 $Developer: Geoff Bowers (geoff@daemon.com.au) $
 --->
 
-<cfcomponent extends="farcry.farcry_core.packages.fourq.fourq" bAbstract="true" displayname="Base Content Type" hint="Abstract class. Provides default handlers and system attributes for content object types.  This component should never be instantiated directly -- it should only be inherited.">
+<cfcomponent extends="farcry.core.packages.fourq.fourq" bAbstract="true" displayname="Base Content Type" hint="Abstract class. Provides default handlers and system attributes for content object types.  This component should never be instantiated directly -- it should only be inherited.">
 
 <!--------------------------------------------------------------------
 system attributes
@@ -35,9 +35,9 @@ system attributes
 <cfproperty name="lockedBy" displayname="Locked by" type="nstring" hint="Username for locker." required="no" default="">
 <cfproperty name="locked" displayname="Locked" type="boolean" hint="Flag for object locking." required="yes" default="0">
 
-<cfimport taglib="/farcry/farcry_core/tags/formtools/" prefix="ft" />
-<cfimport taglib="/farcry/farcry_core/tags/wizzard/" prefix="wiz" />
-<cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
+<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" />
+<cfimport taglib="/farcry/core/tags/wizzard/" prefix="wiz" />
+<cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
 
 <!--------------------------------------------------------------------
 default handlers
@@ -84,7 +84,7 @@ default handlers
 		<cfset var stObj = StructNew() />
 		<cfset var WebskinPath = "" />
 		<cfset var webskinHTML = "" />
-		<cfset var oObjectBroker = createObject("component", "farcry.farcry_core.packages.fourq.objectBroker").init() />
+		<cfset var oObjectBroker = createObject("component", "farcry.core.packages.fourq.objectBroker").init() />
 		
 		
 		
@@ -171,9 +171,9 @@ default handlers
 		</cfif>
 		
 		<!--- If it hasnt been found yet, check in core. --->
-		<cfif not len(webskinPath) AND fileExists(ExpandPath("/farcry/farcry_core/webskin/#arguments.typename#/#arguments.template#.cfm"))>
+		<cfif not len(webskinPath) AND fileExists(ExpandPath("/farcry/core/webskin/#arguments.typename#/#arguments.template#.cfm"))>
 			
-			<cfset webskinPath = "/farcry/farcry_core/webskin/#arguments.typename#/#arguments.template#.cfm" />
+			<cfset webskinPath = "/farcry/core/webskin/#arguments.typename#/#arguments.template#.cfm" />
 			
 		</cfif>
 		
@@ -257,7 +257,7 @@ default handlers
 		
 		
 		<!--- CHECK CORE WEBSKINS --->		
-		<cfset webskinpath=ExpandPath("/farcry/farcry_core/webskin/#arguments.typename#") />
+		<cfset webskinpath=ExpandPath("/farcry/core/webskin/#arguments.typename#") />
 		
 		<cfif directoryExists(webskinpath)>
 			<cfdirectory action="list" directory="#webskinPath#" name="qCoreResult" sort="asc" />
@@ -588,7 +588,7 @@ default handlers
 			<ft:farcryButton value="Cancel" />	
 		</ft:form>
 		
-		<!--- <cfimport taglib="/farcry/farcry_core/tags/wizzard/" prefix="wiz" >
+		<!--- <cfimport taglib="/farcry/core/tags/wizzard/" prefix="wiz" >
 		
 		<wiz:wizzard
 			ReferenceID="#arguments.objectID#"

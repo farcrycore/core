@@ -1,9 +1,9 @@
 <cfprocessingDirective pageencoding="utf-8">
 <cfsetting enablecfoutputonly="true">
 <!--- set up page header --->
-<cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
-<cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
-<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
+<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
 <cfparam name="objectid" type="UUID">
 <cfparam name="formSubmitted" default="no">
 

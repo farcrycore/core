@@ -5,7 +5,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmnavigation/edit.cfm,v 1.46.2.1 2006/03/21 05:03:26 jason Exp $
+$Header: /cvs/farcry/core/packages/types/_dmnavigation/edit.cfm,v 1.46.2.1 2006/03/21 05:03:26 jason Exp $
 $Author: jason $
 $Date: 2006/03/21 05:03:26 $
 $Name: milestone_3-0-1 $
@@ -30,9 +30,9 @@ $out:$
 <cfparam name="lNavIDAlias" default="">
 <cfparam name="fu" default="">
 
-<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4"> 
-<cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
-<cfimport taglib="/farcry/farcry_core/tags/display/" prefix="display">
+<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4"> 
+<cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
+<cfimport taglib="/farcry/core/tags/display/" prefix="display">
 
 <!--- editing from site tree --->
 <cfset cancelCompleteURL = "#application.url.farcry#/edittabOverview.cfm?objectid=#stObj.ObjectID#">

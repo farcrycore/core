@@ -20,8 +20,8 @@ $TODO: get rid of this crack edittabEdit.cfm GB$
 $DEVELOPER:Brendan Sisson (brendan@daemon.com.au)$
 --->
 <!--- import tag libraries --->
-<cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
-<cfimport taglib="/farcry/farcry_core/tags/navajo" prefix="nj">
+<cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/navajo" prefix="nj">
 
 <!--- check for content type and objectid--->
 <cfparam name="url.objectid" type="uuid" />
@@ -30,7 +30,7 @@ $DEVELOPER:Brendan Sisson (brendan@daemon.com.au)$
 
 <cfif NOT len(url.typename)>
 	<cfinvoke 
-		component="farcry.farcry_core.packages.fourq.fourq"
+		component="farcry.core.packages.fourq.fourq"
 		method="findType" 
 		returnvariable="typename"
 		objectid="#url.objectid#" />

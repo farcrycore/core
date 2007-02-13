@@ -4,7 +4,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/navajo/editContainer.cfm,v 1.26 2005/07/19 03:59:21 pottery Exp $
+$Header: /cvs/farcry/core/admin/navajo/editContainer.cfm,v 1.26 2005/07/19 03:59:21 pottery Exp $
 $Author: pottery $
 $Date: 2005/07/19 03:59:21 $
 $Name: milestone_3-0-1 $
@@ -23,10 +23,10 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 <cfprocessingDirective pageencoding="utf-8">
 
 <!--- import tag libraries --->
-<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
-<cfimport taglib="/farcry/farcry_core/tags/admin" prefix="farcry">
-<cfimport taglib="/farcry/farcry_core/tags/navajo" prefix="nj">
-<cfinclude template="/farcry/farcry_core/admin/includes/utilityFunctions.cfm">
+<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/core/tags/admin" prefix="farcry">
+<cfimport taglib="/farcry/core/tags/navajo" prefix="nj">
+<cfinclude template="/farcry/core/admin/includes/utilityFunctions.cfm">
 
 <!--- required parameters --->
 <cfparam name="URL.containerID">

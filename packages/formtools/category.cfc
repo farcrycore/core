@@ -1,10 +1,10 @@
 <cfcomponent extends="field" name="category" displayname="category" hint="Field component to liase with all category field types"> 
 
-	<cfimport taglib="/farcry/farcry_core/tags/widgets/" prefix="widgets">
-	<cfimport taglib="/farcry/farcry_core/tags/formtools/" prefix="ft" >
+	<cfimport taglib="/farcry/core/tags/widgets/" prefix="widgets">
+	<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" >
 
 		
-	<cffunction name="init" access="public" returntype="farcry.farcry_core.packages.formtools.category" output="false" hint="Returns a copy of this initialised object">
+	<cffunction name="init" access="public" returntype="farcry.core.packages.formtools.category" output="false" hint="Returns a copy of this initialised object">
 		<cfreturn this>
 	</cffunction>
 	
@@ -27,7 +27,7 @@
 			<cfset navid = application.catid['root'] >
 		</cfif>
 
-		<cfset oCategory = createObject("component",'farcry.farcry_core.packages.farcry.category')>
+		<cfset oCategory = createObject("component",'farcry.core.packages.farcry.category')>
 		
 		<cfset lSelectedCategoryID = oCategory.getCategories(objectid=arguments.stObject.ObjectID,bReturnCategoryIDs=true)>
 

@@ -4,7 +4,7 @@ $Copyright: Daemon Pty Limited 1995-2004, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/rules/rules.cfc,v 1.15 2005/08/09 03:54:40 geoff Exp $
+$Header: /cvs/farcry/core/packages/rules/rules.cfc,v 1.15 2005/08/09 03:54:40 geoff Exp $
 $Author: geoff $
 $Date: 2005/08/09 03:54:40 $
 $Name: milestone_3-0-1 $
@@ -22,13 +22,13 @@ $in: $
 $out:$
 --->
 
-<cfcomponent displayname="Rules Object" bAbstract="true" extends="farcry.farcry_core.packages.fourq.fourq" hint="Rules is an abstract class that contains">
+<cfcomponent displayname="Rules Object" bAbstract="true" extends="farcry.core.packages.fourq.fourq" hint="Rules is an abstract class that contains">
 	<cfproperty name="objectID" type="uuid" required="true" />
 	<cfproperty name="label" type="nstring" default="">
 	
 	
-	<cfimport taglib="/farcry/farcry_core/tags/formtools/" prefix="ft">	
-	<cfimport taglib="/farcry/farcry_core/tags/wizzard/" prefix="wiz">	
+	<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft">	
+	<cfimport taglib="/farcry/core/tags/wizzard/" prefix="wiz">	
 	
 	
 	<cffunction name="createData" access="public" returntype="any" output="false" hint="Creates an instance of an object">

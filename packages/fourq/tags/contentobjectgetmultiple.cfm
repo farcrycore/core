@@ -53,7 +53,7 @@ fixed methodology to work... need to refine
 	will get horrifically inneficient. Find a better solution. $
 	*/
 	contenttype="";
-	q4 = createObject("component", "farcry.farcry_core.packages.fourq.fourq");
+	q4 = createObject("component", "farcry.core.packages.fourq.fourq");
 	contenttype = q4.findType(objectid=i,dsn=attributes.dsn);
 	
 	if (not len(contenttype)) {

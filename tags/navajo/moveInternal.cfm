@@ -7,7 +7,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/navajo/moveInternal.cfm,v 1.21 2005/08/09 03:54:40 geoff Exp $
+$Header: /cvs/farcry/core/tags/navajo/moveInternal.cfm,v 1.21 2005/08/09 03:54:40 geoff Exp $
 $Author: geoff $
 $Date: 2005/08/09 03:54:40 $
 $Name: milestone_3-0-1 $
@@ -29,9 +29,9 @@ $out:$
 <!--- set long timeout for template to prevent data-corruption on incomplete tree.moveBranch() --->
 <cfsetting requesttimeout="90">
 
-<cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
-<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
-<cfinclude template="/farcry/farcry_core/admin/includes/cfFunctionWrappers.cfm">
+<cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
+<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
+<cfinclude template="/farcry/core/admin/includes/cfFunctionWrappers.cfm">
 
 <cfparam name="url.objectId">
 <cfparam name="url.direction">

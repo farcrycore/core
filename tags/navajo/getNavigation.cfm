@@ -1,7 +1,7 @@
 <cfsetting enablecfoutputonly="Yes">
 <!--- import taglibraries --->
-<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
-<cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
+<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
 
 <cfparam name="attributes.objectId">
 <cfparam name="attributes.r_objectId" default="">

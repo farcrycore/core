@@ -282,7 +282,7 @@
 		<cfset aFields = readFields(qObject)>
 
 <cfsavecontent variable="NewComponent">		
-<cfoutput>||cfcomponent extends="farcry.farcry_core.packages.types.types" displayname="#arguments.typename#" hint="#arguments.typename#"></cfoutput>
+<cfoutput>||cfcomponent extends="farcry.core.packages.types.types" displayname="#arguments.typename#" hint="#arguments.typename#"></cfoutput>
 <cfloop from="1" to="#ArrayLen(aFields)#" index="i">
 	<cfif NOT listcontainsNoCase("objectid,label,datetimecreated,createdby,ownedby,datetimelastupdated,lastupdatedby,lockedBy,locked",aFields[i].Name)>
 	<cfoutput>||cfproperty name="#aFields[i].Name#" type="#aFields[i].dbDataType#" hint="" required="No" default="#aFields[i].Default#" PrimaryKey="#aFields[i].PrimaryKey#" Length="#aFields[i].Length#" identity="#aFields[i].identity#" nullable="#aFields[i].nullable#"></cfoutput>

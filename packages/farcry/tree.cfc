@@ -4,7 +4,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/tree.cfc,v 1.49.2.2 2005/12/04 03:26:16 jason Exp $
+$Header: /cvs/farcry/core/packages/farcry/tree.cfc,v 1.49.2.2 2005/12/04 03:26:16 jason Exp $
 $Author: jason $
 $Date: 2005/12/04 03:26:16 $
 $Name: milestone_3-0-1 $
@@ -24,7 +24,7 @@ $out:$
 --->
 
 <cfcomponent displayname="Nested Tree Model" hint="Database tree management based on Joe Celko's nested tree model.">
-<cfinclude template="/farcry/farcry_core/admin/includes/cfFunctionWrappers.cfm"><!--- changed from /farcry/includes/etc dan --->
+<cfinclude template="/farcry/core/admin/includes/cfFunctionWrappers.cfm"><!--- changed from /farcry/includes/etc dan --->
 <cffunction name="deleteBranch" access="public" returntype="struct" hint="Delete a node and the branch beneath it." output="No">
 	<cfargument name="dsn" required="no" type="string" default="#application.dsn#">
 	<cfargument name="objectid" required="yes" type="UUID">

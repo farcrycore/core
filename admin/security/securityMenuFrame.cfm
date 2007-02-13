@@ -10,7 +10,7 @@ Daemon Pty Limited 1995-2003
 http://www.daemon.com.au
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/security/securityMenuFrame.cfm,v 1.15 2004/07/15 01:52:20 brendan Exp $
+$Header: /cvs/farcry/core/admin/security/securityMenuFrame.cfm,v 1.15 2004/07/15 01:52:20 brendan Exp $
 $Author: brendan $
 $Date: 2004/07/15 01:52:20 $
 $Name: milestone_3-0-1 $
@@ -28,7 +28,7 @@ out: none
 
 || END DAEMONDOC||
 --->
-<cfimport taglib="/farcry/farcry_core/tags/misc/" prefix="misc">
+<cfimport taglib="/farcry/core/tags/misc/" prefix="misc">
 
 <!--- check permissions --->
 <cfscript>

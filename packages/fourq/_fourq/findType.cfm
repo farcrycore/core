@@ -3,7 +3,7 @@ findType() (fourQ COAPI)
  - included method
 Copyright Daemon Pty Limited 2002 (http://www.daemon.com.au/)
 
-$Header: /cvs/farcry/farcry_core/packages/fourq/_fourq/findType.cfm,v 1.8 2003/09/12 06:41:24 brendan Exp $
+$Header: /cvs/farcry/core/packages/fourq/_fourq/findType.cfm,v 1.8 2003/09/12 06:41:24 brendan Exp $
 $Author: brendan $
 $Date: 2003/09/12 06:41:24 $
 $Name:  $

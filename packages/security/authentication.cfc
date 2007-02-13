@@ -4,7 +4,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/security/authentication.cfc,v 1.40.2.7 2006/03/08 01:55:51 geoff Exp $
+$Header: /cvs/farcry/core/packages/security/authentication.cfc,v 1.40.2.7 2006/03/08 01:55:51 geoff Exp $
 $Author: geoff $
 $Date: 2006/03/08 01:55:51 $
 $Name: milestone_3-0-1 $
@@ -19,8 +19,8 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
 --->
 
 <cfcomponent displayName="Authentication" hint="Security authentication functions">
-	<cfinclude template="/farcry/farcry_core/admin/includes/cfFunctionWrappers.cfm">
-	<cfinclude template="/farcry/farcry_core/admin/includes/utilityFunctions.cfm">
+	<cfinclude template="/farcry/core/admin/includes/cfFunctionWrappers.cfm">
+	<cfinclude template="/farcry/core/admin/includes/utilityFunctions.cfm">
 	
 	<cffunction name="addUserToGroup" hint="Adds a user to a given group in the preffered userdirectory" output="No">
 		<cfargument name="userlogin" required="true">

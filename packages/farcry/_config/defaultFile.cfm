@@ -4,7 +4,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_config/defaultFile.cfm,v 1.7.2.2 2005/11/28 04:06:54 suspiria Exp $
+$Header: /cvs/farcry/core/packages/farcry/_config/defaultFile.cfm,v 1.7.2.2 2005/11/28 04:06:54 suspiria Exp $
 $Author: suspiria $
 $Date: 2005/11/28 04:06:54 $
 $Name: p300_b113 $

@@ -33,7 +33,7 @@ request.loggedin = stLoggedin.bLoggedIn;
 Run Request Processing
 	_serverSpecificRequestScope.cfm
 -------------------------------------------------------->
-<!--- farcry_core request processing --->
+<!--- core request processing --->
 <cfinclude template="_requestScope.cfm">
 
 <!--- project and library request processing --->

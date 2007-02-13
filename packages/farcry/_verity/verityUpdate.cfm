@@ -4,7 +4,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_verity/verityUpdate.cfm,v 1.8.2.4 2006/04/19 00:45:51 geoff Exp $
+$Header: /cvs/farcry/core/packages/farcry/_verity/verityUpdate.cfm,v 1.8.2.4 2006/04/19 00:45:51 geoff Exp $
 $Author: geoff $
 $Date: 2006/04/19 00:45:51 $
 $Name: p300_b113 $

@@ -4,7 +4,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/overview/home.cfm,v 1.8.2.6 2006/04/14 06:50:41 geoff Exp $
+$Header: /cvs/farcry/core/admin/overview/home.cfm,v 1.8.2.6 2006/04/14 06:50:41 geoff Exp $
 $Author: geoff $
 $Date: 2006/04/14 06:50:41 $
 $Name: p300_b113 $
@@ -18,7 +18,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 --->
 <cfprocessingDirective pageencoding="utf-8">
 <cfsetting enablecfoutputonly="Yes" requestTimeOut="200">
-<cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
 
 <!--- check for customised myFarCry home page --->
 <cfif fileexists(application.path.project & "/customadmin/home.cfm")>
@@ -177,11 +177,11 @@ function Mod(a, b) {
 
 <!--- get objects pending approval --->
 <cfset tableStatus_name = "pending">
-<cfinclude template="/farcry/farcry_core/admin/includes/overviewStatusTable.cfm">
+<cfinclude template="/farcry/core/admin/includes/overviewStatusTable.cfm">
 
 <!--- get all draft objects --->
 <cfset tableStatus_name = "draft">
-<cfinclude template="/farcry/farcry_core/admin/includes/overviewStatusTable.cfm">
+<cfinclude template="/farcry/core/admin/includes/overviewStatusTable.cfm">
 <!--- get all locked objects --->
 <cfif isDefined("qLockedObjects") AND isQuery(qLockedObjects) AND qLockedObjects.recordCount gt 0>
 <h3>#application.adminBundle[session.dmProfile.locale].lockedObjects#</h3>

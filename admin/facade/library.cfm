@@ -24,12 +24,12 @@ $Developer: $
  --->
 
 
-<cfimport taglib="/farcry/farcry_core/tags/webskin/" prefix="ws" >
-<cfimport taglib="/farcry/farcry_core/tags/formtools/" prefix="ft" >
-<cfimport taglib="/farcry/farcry_core/tags/widgets/" prefix="widgets" >
-<cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin" >
+<cfimport taglib="/farcry/core/tags/webskin/" prefix="ws" >
+<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" >
+<cfimport taglib="/farcry/core/tags/widgets/" prefix="widgets" >
+<cfimport taglib="/farcry/core/tags/admin/" prefix="admin" >
 
-<cfinclude template="/farcry/farcry_core/admin/includes/utilityFunctions.cfm">
+<cfinclude template="/farcry/core/admin/includes/utilityFunctions.cfm">
 
 
 <cfparam name="url.primaryObjectID" default="">
@@ -123,11 +123,11 @@ $Developer: $
 			<cfelse><!--- Array --->
 				<cfset arrayAppend(stWizzard.Data[url.PrimaryObjectID][url.PrimaryFieldname],DataObjectID)>
 						
-				<cfset variables.tableMetadata = createobject('component','farcry.farcry_core.packages.fourq.TableMetadata').init() />
+				<cfset variables.tableMetadata = createobject('component','farcry.core.packages.fourq.TableMetadata').init() />
 				<cfset tableMetadata.parseMetadata(md=getMetadata(oPrimary)) />		
 				<cfset stFields = variables.tableMetadata.getTableDefinition() />
 				
-				<cfset o = createObject("component","farcry.farcry_core.packages.fourq.gateway.dbGateway").init(dsn=application.dsn,dbowner="")>
+				<cfset o = createObject("component","farcry.core.packages.fourq.gateway.dbGateway").init(dsn=application.dsn,dbowner="")>
 				<cfset aProps = o.createArrayTableData(tableName=url.PrimaryTypename & "_" & url.PrimaryFieldName,objectid=url.PrimaryObjectID,tabledef=stFields[PrimaryFieldName].Fields,aprops=stWizzard.Data[PrimaryObjectID][url.PrimaryFieldname])>
 		
 				<cfset stWizzard.Data[url.PrimaryObjectID][url.PrimaryFieldname] = aProps>
@@ -312,7 +312,7 @@ LIBRARY DATA
 		<cfset SQLOrderBy = PrimaryPackage.stProps[url.primaryFieldName].Metadata.ftLibraryDataSQLOrderBy />
 	</cfif>
 	
-	<cfset oFormTools = createObject("component","farcry.farcry_core.packages.farcry.formtools")>
+	<cfset oFormTools = createObject("component","farcry.core.packages.farcry.formtools")>
 	<cfset stLibraryData = oFormTools.getRecordset(typename="#request.ftJoin#", sqlColumns="*", sqlOrderBy="#SQLOrderBy#", SQLWhere="#SQLWhere#", RecordsPerPage="20") />
 
 	

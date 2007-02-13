@@ -3,9 +3,9 @@
 <cfcomponent name="File" displayname="File" Extends="field" hint="Field component to liase with all File types"> 
 
 
-	<cfimport taglib="/farcry/farcry_core/tags/formtools/" prefix="ft" >
+	<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" >
 	
-	<cffunction name="init" access="public" returntype="farcry.farcry_core.packages.formtools.file" output="false" hint="Returns a copy of this initialised object">
+	<cffunction name="init" access="public" returntype="farcry.core.packages.formtools.file" output="false" hint="Returns a copy of this initialised object">
 		<cfreturn this>
 	</cffunction>
 	

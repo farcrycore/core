@@ -4,7 +4,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_types/renderOverview.cfm,v 1.14 2005/07/19 03:59:21 pottery Exp $
+$Header: /cvs/farcry/core/packages/types/_types/renderOverview.cfm,v 1.14 2005/07/19 03:59:21 pottery Exp $
 $Author: pottery $
 $Date: 2005/07/19 03:59:21 $
 $Name: milestone_3-0-1 $
@@ -23,7 +23,7 @@ $out:$
 
 <cfprocessingDirective pageencoding="utf-8">
 
-<cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
+<cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
 
 <!--- get navigation parent for permission checks --->
 <nj:getNavigation 

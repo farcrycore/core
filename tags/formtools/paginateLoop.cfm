@@ -24,7 +24,7 @@ $in: objectid -- $
 --->
 
 
-<cfimport taglib="/farcry/farcry_core/tags/formtools/" prefix="ft" >
+<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" >
 
 
 
@@ -59,7 +59,7 @@ $in: objectid -- $
 		<cfset variables.currentRow = attributes.startRow />
 	
 		<cfset o = createObject("component", PrimaryPackagePath) />
-		<cfset oFormtoolUtil = createObject("component", "farcry.farcry_core.packages.farcry.formtools") />
+		<cfset oFormtoolUtil = createObject("component", "farcry.core.packages.farcry.formtools") />
 	
 		<cfif attributes.bIncludeObjects>
 			<cfset aObjects = oFormtoolUtil.getRecordSetObjectStructures(recordset=attributes.qRecordSet,typename=attributes.typename, lArrayProps=attributes.lArrayProps) />

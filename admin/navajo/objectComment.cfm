@@ -4,7 +4,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/navajo/objectComment.cfm,v 1.20 2005/08/09 03:54:40 geoff Exp $
+$Header: /cvs/farcry/core/admin/navajo/objectComment.cfm,v 1.20 2005/08/09 03:54:40 geoff Exp $
 $Author: geoff $
 $Date: 2005/08/09 03:54:40 $
 $Name: milestone_3-0-1 $
@@ -26,14 +26,14 @@ $out:$
 <cfprocessingDirective pageencoding="utf-8">
 
 <!--- set up page header --->
-<cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 <cfparam name="url.finishURL" default="#application.url.farcry#/navajo/GenericAdmin.cfm">
 
 <cfif isdefined("form.submit")>
 	
-	<cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
+	<cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
 	<!--- update status --->
 	<cfparam name="form.lApprovers" default="all">
 	<nj:objectStatus_dd attributecollection="#form#" lApprovers="#form.lApprovers#" rMsg="msg">
@@ -63,7 +63,7 @@ $out:$
 	<!--- show comment form --->
 	
 	<!--- get object details --->
-	<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
+	<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
 	<q4:contentobjectget objectid="#listgetat(url.objectID,1)#" r_stobject="stObj">
 
 	<cfif isdefined("stObj.status")>

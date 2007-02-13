@@ -42,7 +42,7 @@
 			  
 			  A simple implementation of /go.cfm in the webroot would be:
 			  
-			  <cfimport taglib="/farcry/farcry_core/tags/webskin" prefix="skin" />
+			  <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 			  <skin:fuRedirect>
 			  
 

@@ -8,7 +8,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/admin/headerv23.cfm,v 1.1 2005/05/23 10:18:24 geoff Exp $
+$Header: /cvs/farcry/core/tags/admin/headerv23.cfm,v 1.1 2005/05/23 10:18:24 geoff Exp $
 $Author: geoff $
 $Date: 2005/05/23 10:18:24 $
 $Name: milestone_3-0-1 $
@@ -26,7 +26,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 $in: [title] page title for frame $
 $in: [bCacheControl] output cache control headers; default true. $
 --->
-<cfimport taglib="/farcry/farcry_core/tags/misc/" prefix="misc">
+<cfimport taglib="/farcry/core/tags/misc/" prefix="misc">
 
 <cfparam name="attributes.title" default="#application.config.general.siteTitle# :: Administration" type="string">
 <cfparam name="attributes.bCacheControl" default="true" type="boolean">
@@ -79,7 +79,7 @@ $in: [bCacheControl] output cache control headers; default true. $
 
 <cfoutput>
 	<!--- setup javascript source --->
-	<cfinclude template="/farcry/farcry_core/admin/includes/countdown.cfm">
+	<cfinclude template="/farcry/core/admin/includes/countdown.cfm">
 	<script>
 		//browser testing;
 		var ns6 = document.getElementById && ! document.all;

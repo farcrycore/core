@@ -6,7 +6,7 @@ Daemon Pty Limited 1995-2002
 http://www.daemon.com.au
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_versioning/rollbackArchive.cfm,v 1.11 2005/10/05 01:58:12 guy Exp $
+$Header: /cvs/farcry/core/packages/farcry/_versioning/rollbackArchive.cfm,v 1.11 2005/10/05 01:58:12 guy Exp $
 $Author: guy $
 $Date: 2005/10/05 01:58:12 $
 $Name: milestone_3-0-1 $
@@ -25,8 +25,8 @@ ArchiveId - id of archive version which will be sent back to live
 || END FUSEDOC ||
 --->
 
-<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
-<cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
+<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
 <!--- TODO - no where near enough error checking in this CFC --->
 <cfscript>
 	stResult = structNew();
@@ -35,7 +35,7 @@ ArchiveId - id of archive version which will be sent back to live
 </cfscript>
 
 <cfif NOT isDefined("typename")>
-	<cfinvoke component="farcry.farcry_core.packages.fourq.fourq" returnvariable="thisTypename" method="findType" objectID="#ObjectId#">
+	<cfinvoke component="farcry.core.packages.fourq.fourq" returnvariable="thisTypename" method="findType" objectID="#ObjectId#">
 	<cfset typename = thisTypename>	
 </cfif>
 

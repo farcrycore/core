@@ -4,7 +4,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/container/containerControl.cfm,v 1.14 2005/08/15 04:46:03 pottery Exp $
+$Header: /cvs/farcry/core/tags/container/containerControl.cfm,v 1.14 2005/08/15 04:46:03 pottery Exp $
 $Author: pottery $
 $Date: 2005/08/15 04:46:03 $
 $Name: milestone_3-0-1 $

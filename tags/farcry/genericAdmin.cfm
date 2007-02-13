@@ -4,7 +4,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/farcry/genericAdmin.cfm,v 1.72 2005/05/24 02:59:01 gstewart Exp $
+$Header: /cvs/farcry/core/tags/farcry/genericAdmin.cfm,v 1.72 2005/05/24 02:59:01 gstewart Exp $
 $Author: gstewart $
 $Date: 2005/05/24 02:59:01 $
 $Name: milestone_3-0-1 $
@@ -38,9 +38,9 @@ $TODO: there shouldn't be anything scoped from outside of the tag! Make this an 
 
 <cfprocessingDirective pageencoding="utf-8">
 
-<cfimport taglib="/farcry/farcry_core/tags/display/" prefix="display">
-<cfinclude template="/farcry/farcry_core/admin/includes/cfFunctionWrappers.cfm">
-<cfinclude template="/farcry/farcry_core/admin/includes/utilityFunctions.cfm">
+<cfimport taglib="/farcry/core/tags/display/" prefix="display">
+<cfinclude template="/farcry/core/admin/includes/cfFunctionWrappers.cfm">
+<cfinclude template="/farcry/core/admin/includes/utilityFunctions.cfm">
 
 <!--- default general attributes --->
 <cfparam name="attributes.typename" type="string">
@@ -64,7 +64,7 @@ $TODO: there shouldn't be anything scoped from outside of the tag! Make this an 
 		{
 			if (structKeyExists(stTypeMetaData,'extends') AND NOT structIsEmpty(stTypeMetaData.extends))
 			{
-				if(stTypeMetaData.extends.name IS 'farcry.farcry_core.packages.farcry.genericAdmin')
+				if(stTypeMetaData.extends.name IS 'farcry.core.packages.farcry.genericAdmin')
 				{
 					bDeprecated = 0;
 					finished = true;

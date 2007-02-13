@@ -10,7 +10,7 @@ Daemon Pty Limited 1995-2001
 http://www.daemon.com.au/
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/security/ui/dmSec_TestPolicySetup.cfm,v 1.7 2005/08/17 06:50:52 pottery Exp $
+$Header: /cvs/farcry/core/tags/security/ui/dmSec_TestPolicySetup.cfm,v 1.7 2005/08/17 06:50:52 pottery Exp $
 $Author: pottery $
 $Date: 2005/08/17 06:50:52 $
 $Name: milestone_3-0-1 $
@@ -93,7 +93,7 @@ Matt Dawson (mad@daemon.com.au)
 			<a href="?tag=CreatePolicyStoreTables" onClick="return confirm('#application.adminBundle[session.dmProfile.locale].confirmRecreatePolicyTables#');">#application.adminBundle[session.dmProfile.locale].createPolicyStoreTables#</a><br>
 			<br>
 			<!--- Test policy store tables --->
-			<cfimport taglib="/farcry/farcry_core/tags/security/ui/" prefix="dmsec">
+			<cfimport taglib="/farcry/core/tags/security/ui/" prefix="dmsec">
 			<!--- Test for ExternalGroupToPolicyGroup table --->
 			<dmsec:dmSec_TableTest table="dmExternalGroupToPolicyGroup"
 								fields="PolicyGroupId,ExternalGroupUserDirectory,ExternalGroupName"

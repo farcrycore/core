@@ -2,7 +2,7 @@
 fourQ COAPI
 Copyright Daemon Pty Limited 2002 (http://www.daemon.com.au/)
 
-$Header: /cvs/farcry/farcry_core/packages/fourq/fourq_old.cfc,v 1.1 2005/05/24 03:54:27 geoff Exp $
+$Header: /cvs/farcry/core/packages/fourq/fourq_old.cfc,v 1.1 2005/05/24 03:54:27 geoff Exp $
 $Author: geoff $
 $Date: 2005/05/24 03:54:27 $
 $Name:  $

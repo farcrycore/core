@@ -29,7 +29,7 @@ overridden as required for CF7 version. GB 20060403$
 $Developer: Geoff Bowers (modius@daemon.com.au) $
 --->
 <!--- import tag libraries --->
-<cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
 
 <!--- grab CF7 version of the component --->
 <cfset oVerity=createObject("component", "#application.packagepath#.farcry.veritycf7")>

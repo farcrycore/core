@@ -13,7 +13,7 @@
 			st.insertJSdmFlash = form.insertJSdmFlash;
 			st.bAllowDuplicateNavAlias = form.bAllowDuplicateNavAlias;
 
-			st.editHandler = "/farcry/farcry_core/admin/config/overviewTree.cfm";
+			st.editHandler = "/farcry/core/admin/config/overviewTree.cfm";
 			application.config.overviewTree = duplicate(st);
 		</cfscript>		
 	

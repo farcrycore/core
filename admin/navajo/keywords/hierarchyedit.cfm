@@ -5,7 +5,7 @@ $License: Released Under the "Common Public License 1.0", http://www.opensource.
 
 || VERSION CONTROL ||
 
-$Header: /cvs/farcry/farcry_core/admin/navajo/keywords/hierarchyedit.cfm,v 1.17.2.1 2006/01/16 22:55:42 gstewart Exp $
+$Header: /cvs/farcry/core/admin/navajo/keywords/hierarchyedit.cfm,v 1.17.2.1 2006/01/16 22:55:42 gstewart Exp $
 $Author: gstewart $
 $Date: 2006/01/16 22:55:42 $
 $Name: milestone_3-0-1 $

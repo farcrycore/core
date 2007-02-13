@@ -3,9 +3,9 @@
 <cfcomponent name="Image" displayname="Image" Extends="field" hint="Field component to liase with all Image types"> 
 
 
-	<cfimport taglib="/farcry/farcry_core/tags/formtools/" prefix="ft" >
+	<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" >
 	
-	<cffunction name="init" access="public" returntype="farcry.farcry_core.packages.formtools.image" output="false" hint="Returns a copy of this initialised object">
+	<cffunction name="init" access="public" returntype="farcry.core.packages.formtools.image" output="false" hint="Returns a copy of this initialised object">
 		<cfreturn this>
 	</cffunction>
 	
@@ -306,7 +306,7 @@
 			<cfset stResult.filename = returnstruct.filename />	
 		</cfif>
 		
-		<cfset myImage = CreateObject("Component", "farcry.farcry_core.packages.farcry.simpleImage") />
+		<cfset myImage = CreateObject("Component", "farcry.core.packages.farcry.simpleImage") />
 
 		<cfset myImage.readImage("#ImageDestination#") />
 		

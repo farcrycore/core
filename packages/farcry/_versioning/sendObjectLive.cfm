@@ -4,7 +4,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_versioning/sendObjectLive.cfm,v 1.16 2005/09/02 02:32:34 guy Exp $
+$Header: /cvs/farcry/core/packages/farcry/_versioning/sendObjectLive.cfm,v 1.16 2005/09/02 02:32:34 guy Exp $
 $Author: guy $
 $Date: 2005/09/02 02:32:34 $
 $Name: milestone_3-0-1 $
@@ -23,8 +23,8 @@ $in: $
 $out:$
 --->
 
-<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
-<cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
+<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
 
 <cfscript>
 	stResult = structNew();
@@ -32,7 +32,7 @@ $out:$
 	stResult.message = 'No update has taken place';
 	if (NOT isDefined("typename"))
 	{
-		q4 = createObject("component","farcry.farcry_core.packages.fourq.fourq");
+		q4 = createObject("component","farcry.core.packages.fourq.fourq");
 		typename = q4.findType(objectid=objectid);
 	}
 	o = createObject("component",application.types[typename].typePath);	

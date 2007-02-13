@@ -5,7 +5,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/navajo/floatMenu.cfm,v 1.19 2005/08/28 00:19:41 geoff Exp $
+$Header: /cvs/farcry/core/tags/navajo/floatMenu.cfm,v 1.19 2005/08/28 00:19:41 geoff Exp $
 $Author: geoff $
 $Date: 2005/08/28 00:19:41 $
 $Name: milestone_3-0-1 $
@@ -19,7 +19,7 @@ $Developer: Stephen 'Spike' Milligan (spike@spike.org.uk)$
 $Developer: Geoff Bowers (modius@daemon.com.au)$
 --->
 <!--- import tag libraries --->
-<cfimport taglib="/farcry/farcry_core/tags/farcry/" prefix="farcry">
+<cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry">
 
 <!--- Design Mode --->
 <cfset aItems = arrayNew(1)>

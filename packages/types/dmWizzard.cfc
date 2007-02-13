@@ -9,7 +9,7 @@
 <cfproperty name="CurrentStep" type="numeric" displayname="Current Step" hint="Current Step in the Wizzard Process" required="no" default="1" >
 
 
-<cfimport taglib="/farcry/farcry_core/tags/formtools/" prefix="ft" >
+<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" >
 
 
 

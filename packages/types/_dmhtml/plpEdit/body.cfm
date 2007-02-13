@@ -5,7 +5,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmhtml/plpEdit/body.cfm,v 1.21 2005/09/27 09:25:09 geoff Exp $
+$Header: /cvs/farcry/core/packages/types/_dmhtml/plpEdit/body.cfm,v 1.21 2005/09/27 09:25:09 geoff Exp $
 $Author: geoff $
 $Date: 2005/09/27 09:25:09 $
 $Name: milestone_3-0-1 $
@@ -19,8 +19,8 @@ $Developer: Guy Phanvongsa (guy@daemon.com.au)$
 --->
 <cfprocessingDirective pageencoding="utf-8">
 
-<cfimport taglib="/farcry/farcry_core/tags/widgets" prefix="widgets">
-<cfinclude template="/farcry/farcry_core/admin/includes/utilityFunctions.cfm">
+<cfimport taglib="/farcry/core/tags/widgets" prefix="widgets">
+<cfinclude template="/farcry/core/admin/includes/utilityFunctions.cfm">
 
 <cfset onClickEvent = fGetOnclickEvent()>
 

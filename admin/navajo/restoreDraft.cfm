@@ -2,7 +2,7 @@
 
 <cfsetting enablecfoutputonly="true" showdebugoutput="false">
 
-<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
 <cfset resultmsg = "#application.adminBundle[session.dmProfile.locale].liveObjRestoredOK#">
 <cftry>
 	<!--- check permissions on objects nav parent --->
@@ -41,7 +41,7 @@
 	<cfcatch><!--- dont do anything ---></cfcatch>
 </cftry>
 
-<cfinclude template="/farcry/farcry_core/admin/includes/json.cfm">
+<cfinclude template="/farcry/core/admin/includes/json.cfm">
 <cfsetting enablecfoutputonly="false">
 <cfcontent type="text/plain"><cfoutput>
 #jsonencode(resultmsg)#</cfoutput>

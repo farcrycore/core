@@ -34,7 +34,7 @@
     <cfset fieldValue = attributes.fieldValue>
 </cfif>
 
-<cfimport taglib="/farcry/farcry_core/tags/navajo" prefix="nj">
+<cfimport taglib="/farcry/core/tags/navajo" prefix="nj">
 <cfif fileFieldPrefix NEQ ""><cfoutput>
 <label for="#fileFieldPrefix#_file_upload"><b>#fieldLabel#</b>
     <input type="file" name="#fileFieldPrefix#_file_upload" id="#fileFieldPrefix#_file_upload"><br />

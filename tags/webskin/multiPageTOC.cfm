@@ -4,7 +4,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/webskin/multiPageTOC.cfm,v 1.3 2005/01/27 15:37:43 brendan Exp $
+$Header: /cvs/farcry/core/tags/webskin/multiPageTOC.cfm,v 1.3 2005/01/27 15:37:43 brendan Exp $
 $Author: brendan $
 $Date: 2005/01/27 15:37:43 $
 $Name: milestone_3-0-1 $
@@ -25,7 +25,7 @@ $in: r_qLinks (optional - variable for return query)$
 
 <cfsetting enablecfoutputonly="yes">
 
-<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
 
 <!--- required attributes --->
 <cfparam name="attributes.objectId">

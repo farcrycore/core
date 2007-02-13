@@ -5,7 +5,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/navajo/display.cfm,v 1.46.2.1 2005/12/10 13:38:15 paul Exp $
+$Header: /cvs/farcry/core/tags/navajo/display.cfm,v 1.46.2.1 2005/12/10 13:38:15 paul Exp $
 $Author: paul $
 $Date: 2005/12/10 13:38:15 $
 $Name:  $
@@ -23,8 +23,8 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 <cfparam name="attributes.lmethods" default="display" type="string">
 
 <!--- import tag libraries --->
-<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
-<cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
+<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
 
 <!--- set random wacky-tobaccy environment variables --->
 <cfparam name="request.bHideContextMenu" default="false">

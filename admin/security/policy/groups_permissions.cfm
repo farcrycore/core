@@ -90,7 +90,7 @@
 </cfif>
 
 <!--- set up page header --->
-<cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
 
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 <cfoutput>

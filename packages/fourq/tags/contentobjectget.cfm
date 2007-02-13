@@ -34,7 +34,7 @@ A wrapper to get a content object instance and return its structure.
 		
 			// type lookup if required
 			if (NOT len(attributes.typename)) {
-				q4 = createObject("component", "farcry.farcry_core.packages.fourq.fourq");
+				q4 = createObject("component", "farcry.core.packages.fourq.fourq");
 				typename = q4.findType(objectid=attributes.objectid,dsn=attributes.dsn);
 				//its possible that missing objects will kill this so we only want to create object if we actually get a typename result
 				if (len(typename))

@@ -4,7 +4,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/reporting/statsVisitors.cfm,v 1.6 2005/08/17 03:28:39 pottery Exp $
+$Header: /cvs/farcry/core/admin/reporting/statsVisitors.cfm,v 1.6 2005/08/17 03:28:39 pottery Exp $
 $Author: pottery $
 $Date: 2005/08/17 03:28:39 $
 $Name: milestone_3-0-1 $
@@ -30,14 +30,14 @@ out:
 </cfscript>
 
 <!--- set up page header --->
-<cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 <cfif iStatsTab eq 1>
 	<!--- i18n: get week starts for later use --->
 	<cfset weekStartDay=application.thisCalendar.weekStarts(session.dmProfile.locale)>
 
-	<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
+	<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
 	<cfoutput>
 	<h3>#application.adminBundle[session.dmProfile.locale].sessionPerHourLast3Days#</h3>
 	</cfoutput>

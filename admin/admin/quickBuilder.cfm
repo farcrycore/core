@@ -4,7 +4,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/admin/quickBuilder.cfm,v 1.9 2005/09/06 00:51:07 gstewart Exp $
+$Header: /cvs/farcry/core/admin/admin/quickBuilder.cfm,v 1.9 2005/09/06 00:51:07 gstewart Exp $
 $Author: gstewart $
 $Date: 2005/09/06 00:51:07 $
 $Name: milestone_3-0-1 $
@@ -26,9 +26,9 @@ $out:$
 
 <cfprocessingDirective pageencoding="utf-8">
 
-<cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
-<cfimport taglib="/farcry/farcry_core/tags/farcry/" prefix="farcry">
-<cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
+<cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry">
+<cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
 
 <!--- character to indicate levels --->
 <cfset levelToken = "-" />
@@ -184,7 +184,7 @@ $out:$
 	    </cfscript>
 
 		
-	    <cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
+	    <cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
 	
 	    <cfloop index="i" from="1" to="#arrayLen(htmlItems)#">
 	        <q4:contentobjectcreate typename="#application.types[htmlItems[i].typeName].typePath#" stProperties="#htmlItems[i]#" bAudit="false">

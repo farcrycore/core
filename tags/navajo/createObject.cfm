@@ -4,7 +4,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/navajo/createObject.cfm,v 1.20 2005/09/02 06:27:37 guy Exp $
+$Header: /cvs/farcry/core/tags/navajo/createObject.cfm,v 1.20 2005/09/02 06:27:37 guy Exp $
 $Author: guy $
 $Date: 2005/09/02 06:27:37 $
 $Name: milestone_3-0-1 $
@@ -27,9 +27,9 @@ $out:$
 
 <cfprocessingDirective pageencoding="utf-8">
 
-<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
-<cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
-<cfinclude template="/farcry/farcry_core/admin/includes/utilityFunctions.cfm">
+<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
+<cfinclude template="/farcry/core/admin/includes/utilityFunctions.cfm">
 
 
 <cfparam name="url.objectId" default="">

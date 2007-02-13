@@ -2,7 +2,7 @@
 
 <cfprocessingDirective pageencoding="utf-8">
 
-<cfimport taglib="/farcry/farcry_core/tags/misc/" prefix="misc">
+<cfimport taglib="/farcry/core/tags/misc/" prefix="misc">
 
 <!--- check permissions --->
 <cfscript>

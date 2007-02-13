@@ -5,7 +5,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/webskin/sitemap.cfm,v 1.20.2.3 2006/05/06 11:31:34 geoff Exp $
+$Header: /cvs/farcry/core/tags/webskin/sitemap.cfm,v 1.20.2.3 2006/05/06 11:31:34 geoff Exp $
 $Author: geoff $
 $Date: 2006/05/06 11:31:34 $
 $Name: p300_b113 $
@@ -27,7 +27,7 @@ $out: caller.r_navQuery - complete qNav query$
 --->
 
 <!--- import tag library --->
-<cfimport taglib="/farcry/farcry_core/tags/webskin" prefix="skin">
+<cfimport taglib="/farcry/core/tags/webskin" prefix="skin">
 
 <!--- optional attributes --->
 <cfparam name="attributes.depth" default="4" type="numeric">

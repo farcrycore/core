@@ -5,7 +5,7 @@ $Copyright: Daemon Pty Limited 1995-2005, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmCSS/edit.cfm,v 1.34.2.1 2006/03/21 05:03:26 jason Exp $
+$Header: /cvs/farcry/core/packages/types/_dmCSS/edit.cfm,v 1.34.2.1 2006/03/21 05:03:26 jason Exp $
 $Author: jason $
 $Date: 2006/03/21 05:03:26 $
 $Name: milestone_3-0-1 $
@@ -18,8 +18,8 @@ $Description: CSS Stylesheet reference edit handler$
 $Developer: Geoff Bowers (modius@daemon.com.au)$
 --->
 <!--- import tag libraries --->
-<cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj" />
-<cfimport taglib="/farcry/farcry_core/tags/widgets" prefix="widgets">
+<cfimport taglib="/farcry/core/tags/navajo/" prefix="nj" />
+<cfimport taglib="/farcry/core/tags/widgets" prefix="widgets">
 
 <!--- determine where the edit handler has been called from to provide the right return url --->
 <cfparam name="url.ref" default="sitetree" type="string">

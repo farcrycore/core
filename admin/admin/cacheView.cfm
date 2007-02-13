@@ -6,7 +6,7 @@ Daemon Pty Limited 1995-2003
 http://www.daemon.com.au
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/admin/cacheView.cfm,v 1.5 2004/07/15 01:10:24 brendan Exp $
+$Header: /cvs/farcry/core/admin/admin/cacheView.cfm,v 1.5 2004/07/15 01:10:24 brendan Exp $
 $Author: brendan $
 $Date: 2004/07/15 01:10:24 $
 $Name: milestone_3-0-1 $
@@ -35,7 +35,7 @@ out:
 </cfscript>
 
 <!--- set up page header --->
-<cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 <cfif iGeneralTab eq 1>

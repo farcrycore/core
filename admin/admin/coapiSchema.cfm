@@ -4,7 +4,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/admin/coapiSchema.cfm,v 1.7 2005/08/16 05:53:23 pottery Exp $
+$Header: /cvs/farcry/core/admin/admin/coapiSchema.cfm,v 1.7 2005/08/16 05:53:23 pottery Exp $
 $Author: pottery $
 $Date: 2005/08/16 05:53:23 $
 $Name: p300_b113 $
@@ -32,7 +32,7 @@ $out:$
 	iCOAPITab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="AdminCOAPITab");
 </cfscript>
 
-<cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 <cfif iCOAPITab eq 1>

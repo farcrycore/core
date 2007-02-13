@@ -4,7 +4,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/admin/bulkImageUpload.cfm,v 1.9.2.1 2006/03/16 03:38:49 paul Exp $
+$Header: /cvs/farcry/core/admin/admin/bulkImageUpload.cfm,v 1.9.2.1 2006/03/16 03:38:49 paul Exp $
 $Author: paul $
 $Date: 2006/03/16 03:38:49 $
 $Name: milestone_3-0-1 $
@@ -26,12 +26,12 @@ $out:$
 
 <cfprocessingDirective pageencoding="utf-8">
 
-<cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
-<cfimport taglib="/farcry/farcry_core/tags/farcry/" prefix="farcry">
-<cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
-<cfimport taglib="/farcry/farcry_core/tags/widgets/" prefix="widgets">
-<cfinclude template="/farcry/farcry_core/admin/includes/cfFunctionWrappers.cfm">
-<cfinclude template="/farcry/farcry_core/admin/includes/utilityFunctions.cfm">
+<cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry">
+<cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
+<cfimport taglib="/farcry/core/tags/widgets/" prefix="widgets">
+<cfinclude template="/farcry/core/admin/includes/cfFunctionWrappers.cfm">
+<cfinclude template="/farcry/core/admin/includes/utilityFunctions.cfm">
 <cfparam name="bLibrary" default="0">
 <cfparam name="lSelectedCategoryID" default="">
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">

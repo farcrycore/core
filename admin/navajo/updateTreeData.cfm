@@ -2,7 +2,7 @@
 <cfprocessingDirective pageencoding="utf-8">
 
 <!--- import tag library --->
-<cfimport taglib="/farcry/farcry_core/tags/navajo" prefix="nj">
+<cfimport taglib="/farcry/core/tags/navajo" prefix="nj">
 
 <nj:treeData
 	lObjectIds="#url.lObjectIds#"

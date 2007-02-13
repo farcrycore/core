@@ -4,7 +4,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/genericAdmin.cfc,v 1.18 2005/06/03 09:51:50 geoff Exp $
+$Header: /cvs/farcry/core/packages/farcry/genericAdmin.cfc,v 1.18 2005/06/03 09:51:50 geoff Exp $
 $Author: geoff $
 $Date: 2005/06/03 09:51:50 $
 $Name: milestone_3-0-1 $
@@ -23,8 +23,8 @@ $in: $
 $out:$
 --->
 
-<cfcomponent extends="farcry.farcry_core.packages.types.types" displayname="Generic Admin" hint="Functions used to display the Generic Admin section of Farcry. Any types that use the farcry generic admin facility MUST extend this component">
-<cfinclude template="/farcry/farcry_core/admin/includes/cfFunctionWrappers.cfm">
+<cfcomponent extends="farcry.core.packages.types.types" displayname="Generic Admin" hint="Functions used to display the Generic Admin section of Farcry. Any types that use the farcry generic admin facility MUST extend this component">
+<cfinclude template="/farcry/core/admin/includes/cfFunctionWrappers.cfm">
 
 <cffunction name="renderSearchFields" hint="Returns HTML for seach fields in generic Admin" returntype="string">
 	<cfargument name="criteria" required="Yes">

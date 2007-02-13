@@ -2,7 +2,7 @@
 <cfprocessingDirective pageencoding="utf-8">
 
 <!--- import tag libraries --->
-<cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
 
 <!--- environment variables --->
 <cfparam name="url.archiveid" type="uuid" />

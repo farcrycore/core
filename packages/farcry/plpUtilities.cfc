@@ -1,4 +1,4 @@
-<cfcomponent extends="farcry.farcry_core.packages.fourq.fourq" name="plpUtitlities" displayname="plpUtitlities" hint="utilities to handle plp functionalitys">
+<cfcomponent extends="farcry.core.packages.fourq.fourq" name="plpUtitlities" displayname="plpUtitlities" hint="utilities to handle plp functionalitys">
 	<cffunction name="fRead" access="public" output="false" returntype="struct">
 		<cfargument name="objectid" type="uuid" required="true">
 		<cfargument name="bPLPStorage" type="string" required="false" default="yes">
@@ -280,7 +280,7 @@
 		<cfargument name="bPLPStorage" type="string" default="yes" required="false" hint="flag whether to read for plp file or object database">
 
 		<cfset var stLocal = StructNew()>
-		<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">		
+		<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">		
 
 		<cfset stLocal.aObjectIDs = StructNew()>
 		<cfset stLocal.stPLP = fRead(arguments.objectid,arguments.bPLPStorage)>

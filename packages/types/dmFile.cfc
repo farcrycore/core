@@ -4,7 +4,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/dmFile.cfc,v 1.24.2.6 2006/02/14 06:48:26 paul Exp $
+$Header: /cvs/farcry/core/packages/types/dmFile.cfc,v 1.24.2.6 2006/02/14 06:48:26 paul Exp $
 $Author: paul $
 $Date: 2006/02/14 06:48:26 $
 $Name: milestone_3-0-1 $
@@ -40,7 +40,7 @@ type properties
 <cfproperty name="status" type="string" hint="Status of the node (draft, pending, approved)." required="yes" default="draft">
 <!--- Object Methods --->
 
-<cfimport taglib="/farcry/farcry_core/tags/formtools/" prefix="ft" >
+<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" >
 <!---
 <cffunction name="edit" access="public">
 	<cfargument name="objectid" required="yes" type="UUID">

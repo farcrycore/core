@@ -4,7 +4,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/indexv23.cfm,v 1.3 2005/06/03 09:51:50 geoff Exp $
+$Header: /cvs/farcry/core/admin/indexv23.cfm,v 1.3 2005/06/03 09:51:50 geoff Exp $
 $Author: geoff $
 $Date: 2005/06/03 09:51:50 $
 $Name: milestone_3-0-1 $
@@ -26,12 +26,12 @@ $out:$
 <cfprocessingdirective pageencoding="utf-8" />
 
 <!--- set up page header --->
-<cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
 <admin:headerv23 onLoad="startTimer();">
 
-<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
-<cfimport taglib="/farcry/farcry_core/tags/misc/" prefix="misc">
-<cfinclude template="/farcry/farcry_core/admin/includes/utilityFunctions.cfm">
+<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/core/tags/misc/" prefix="misc">
+<cfinclude template="/farcry/core/admin/includes/utilityFunctions.cfm">
 
 <cfparam name="url.section" default="Home">
 
@@ -53,7 +53,7 @@ $out:$
 		<cfscript>
 			//determine appropriate security priveleges for this user.  These will be used to determine the presence of menu items
 			oAuthorisation = request.dmSec.oAuthorisation;
-			q4 = createObject("component","farcry.farcry_core.packages.fourq.fourq");
+			q4 = createObject("component","farcry.core.packages.fourq.fourq");
 			iMyFarcryTab = oAuthorisation.checkPermission(reference="policyGroup",permissionName="MainNavMyFarcryTab");
 			iSiteTab = oAuthorisation.checkPermission(reference="policyGroup",permissionName="MainNavSiteTab");
 			iContentTab = oAuthorisation.checkPermission(reference="policyGroup",permissionName="MainNavContentTab");

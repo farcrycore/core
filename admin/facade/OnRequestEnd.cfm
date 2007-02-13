@@ -1,2 +1,2 @@
 
-<cfinclude template="/farcry/farcry_core/tags/farcry/_farcryOnRequestEnd.cfm">
+<cfinclude template="/farcry/core/tags/farcry/_farcryOnRequestEnd.cfm">

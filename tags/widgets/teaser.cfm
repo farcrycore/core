@@ -1,6 +1,6 @@
 <cfsetting enablecfoutputonly="true">
-<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
-<cfimport taglib="/farcry/farcry_core/tags/farcry" prefix="tags">
+<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/core/tags/farcry" prefix="tags">
 <cfparam name="caller.output" default="#StructNew()#">
 <cfset output = caller.output>
 <cfset relatedItems = ArrayToList(output.aobjectids)>

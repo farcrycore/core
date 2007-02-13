@@ -4,7 +4,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/container/container.cfm,v 1.19 2005/10/30 09:12:41 geoff Exp $
+$Header: /cvs/farcry/core/tags/container/container.cfm,v 1.19 2005/10/30 09:12:41 geoff Exp $
 $Author: geoff $
 $Date: 2005/10/30 09:12:41 $
 $Name: milestone_3-0-1 $
@@ -21,8 +21,8 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au)$
 $in: $
 $out:$
 --->
-<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
-<cfimport taglib="/farcry/farcry_core/tags/container/" prefix="dm">
+<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/core/tags/container/" prefix="dm">
 
 <!--- quit tag if running in end mode --->
 <cfif thistag.executionmode eq "end"><cfexit /></cfif>

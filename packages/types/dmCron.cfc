@@ -4,7 +4,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/dmCron.cfc,v 1.6 2005/08/10 01:18:55 guy Exp $
+$Header: /cvs/farcry/core/packages/types/dmCron.cfc,v 1.6 2005/08/10 01:18:55 guy Exp $
 $Author: guy $
 $Date: 2005/08/10 01:18:55 $
 $Name: milestone_3-0-1 $
@@ -54,7 +54,7 @@ object methods
 
 <cffunction name="listTemplates" access="public" output="true" returnType="query" hint="Lists available scheduled tasks, both core and custom">
 	
-	<cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
+	<cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
 
 	<cfset qTemplates = queryNew("displayName, path")>
 		
@@ -64,7 +64,7 @@ object methods
 	<cfloop query="qCore">
 		<cfset queryAddRow(qTemplates, 1)>
 		<cfset querySetCell(qTemplates, "displayname", "#displayname# #application.adminBundle[session.dmProfile.locale].core#")>
-		<cfset querySetCell(qTemplates, "path", "/farcry/farcry_core/admin/scheduledTasks/#methodName#.cfm")>
+		<cfset querySetCell(qTemplates, "path", "/farcry/core/admin/scheduledTasks/#methodName#.cfm")>
 	</cfloop>
 	
 	<!--- get custom templates --->	

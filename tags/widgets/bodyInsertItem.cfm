@@ -1,6 +1,6 @@
 <cfsetting enablecfoutputonly="true">
-<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
-<cfimport taglib="/farcry/farcry_core/tags/navajo" prefix="nj">
+<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/core/tags/navajo" prefix="nj">
 <cfparam name="caller.output" default="#StructNew()#">
 <cfparam name="caller.delaObjectID" default="">
 <cfparam name="attributes.typename" default="dmImage">

@@ -1,11 +1,11 @@
 <cfprocessingDirective pageencoding="utf-8">
-<cfinclude template="/farcry/farcry_core/admin/includes/utilityFunctions.cfm">
-<cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
+<cfinclude template="/farcry/core/admin/includes/utilityFunctions.cfm">
+<cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
 
 <cfscript>
 		
 	bDelete = request.dmSec.oAuthorisation.checkInheritedPermission(objectid="#application.navid.rubbish#",permissionName="delete");
-	q4 = createObject("component","farcry.farcry_core.packages.fourq.fourq");
+	q4 = createObject("component","farcry.core.packages.fourq.fourq");
 	if(bDelete)
 	{
 		oTree = createObject("component","#application.packagepath#.farcry.tree");

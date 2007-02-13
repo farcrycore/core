@@ -9,7 +9,7 @@ Daemon Pty Limited 1995-2001
 http://www.daemon.com.au/
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/security/ui/dmSecUI_UserGroups.cfm,v 1.5 2005/10/07 04:14:14 daniela Exp $
+$Header: /cvs/farcry/core/tags/security/ui/dmSecUI_UserGroups.cfm,v 1.5 2005/10/07 04:14:14 daniela Exp $
 $Author: daniela $
 $Date: 2005/10/07 04:14:14 $
 $Name: milestone_3-0-1 $

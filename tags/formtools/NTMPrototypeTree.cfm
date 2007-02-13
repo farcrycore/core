@@ -73,7 +73,7 @@
 	<cfdump var="#qNav#">
 </cfif>
 
-	<cfset oPrototypeTree = createObject("component","farcry.farcry_core.packages.farcry.prototypeTree") />
+	<cfset oPrototypeTree = createObject("component","farcry.core.packages.farcry.prototypeTree") />
 
 
 	<cfset levelSpacerIcon = structNew()>

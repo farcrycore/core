@@ -1,6 +1,6 @@
 <cfcomponent name="library" displayname="library" hint="Used by the Library for the ajax callbacks" output="false" > 
 
-<cfimport taglib="/farcry/farcry_core/tags/formtools/" prefix="ft" >
+<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" >
 
 <cffunction name="ajaxGetView" access="remote" output="true" returntype="void">
  	<cfargument name="objectid" required="yes" type="uuid" hint="ObjectID of the object to be rendered.">
@@ -11,7 +11,7 @@
 	<cfset var o = "" />
 
 	<cfif not len(arguments.typename)>
-		<cfset q4 = createObject("component", "farcry.farcry_core.packages.fourq.fourq")>
+		<cfset q4 = createObject("component", "farcry.core.packages.fourq.fourq")>
 		<cfset arguments.typename = q4.findType(objectid=arguments.objectid)>
 	</cfif>	
 	
@@ -34,7 +34,7 @@
 
 	<cfif len(arguments.objectid)>
 		<cfif not len(arguments.typename)>
-			<cfset q4 = createObject("component", "farcry.farcry_core.packages.fourq.fourq")>
+			<cfset q4 = createObject("component", "farcry.core.packages.fourq.fourq")>
 			<cfset arguments.typename = q4.findType(objectid=arguments.objectid)>
 		</cfif>	
 		
@@ -116,11 +116,11 @@
 						<cfset ArrayDeleteAt(stWizzard.Data[PrimaryObjectID][arguments.PrimaryFieldname],pos)>
 					</cfif>
 				</cfif>			
-				<cfset variables.tableMetadata = createobject('component','farcry.farcry_core.packages.fourq.TableMetadata').init() />
+				<cfset variables.tableMetadata = createobject('component','farcry.core.packages.fourq.TableMetadata').init() />
 				<cfset tableMetadata.parseMetadata(md=getMetadata(oPrimary)) />		
 				<cfset stFields = variables.tableMetadata.getTableDefinition() />
 				
-				<cfset o = createObject("component","farcry.farcry_core.packages.fourq.gateway.dbGateway").init(dsn=application.dsn,dbowner="")>
+				<cfset o = createObject("component","farcry.core.packages.fourq.gateway.dbGateway").init(dsn=application.dsn,dbowner="")>
 				<cfset aProps = o.createArrayTableData(tableName=PrimaryTypename & "_" & PrimaryFieldName,objectid=arguments.PrimaryObjectID,tabledef=stFields[PrimaryFieldName].Fields,aprops=stWizzard.Data[PrimaryObjectID][arguments.PrimaryFieldname])>
 		
 				<cfset stWizzard.Data[PrimaryObjectID][arguments.PrimaryFieldname] = aProps>

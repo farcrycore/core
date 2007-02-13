@@ -2,10 +2,10 @@
 <cfprocessingDirective pageencoding="utf-8">
 <cfparam name="stLocal.errormessage" default="">
 
-<cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
-<cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
-<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
-<cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
+<cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
+<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
 <nj:getNavigation objectId="#arguments.objectid#" r_ObjectId="stLocal.parentID" r_stObject="stLocal.stParent" bInclusive="1">
 
 <!--- get the correct version of the object to overview --->

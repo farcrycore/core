@@ -5,7 +5,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmXMLExport/edit.cfm,v 1.9 2005/09/02 05:11:44 guy Exp $
+$Header: /cvs/farcry/core/packages/types/_dmXMLExport/edit.cfm,v 1.9 2005/09/02 05:11:44 guy Exp $
 $Author: guy $
 $Date: 2005/09/02 05:11:44 $
 $Name: milestone_3-0-1 $
@@ -21,7 +21,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 $in: url.killplp (optional)$
 --->
 <!--- import tag libraries --->
-<cfimport taglib="/farcry/farcry_core/tags/widgets" prefix="widgets">
+<cfimport taglib="/farcry/core/tags/widgets" prefix="widgets">
 
 <!--- local variables --->
 <cfparam name="url.killplp" default="0">
@@ -33,7 +33,7 @@ $in: url.killplp (optional)$
 
 <widgets:plp 
 	owner="#session.dmSec.authentication.userlogin#_#stObj.objectID#"
-	stepDir="/farcry/farcry_core/packages/types/_dmXMLExport/plpEdit"
+	stepDir="/farcry/core/packages/types/_dmXMLExport/plpEdit"
 	cancelLocation="#application.url.farcry#/content/xmlFeedList.cfm"
 	iTimeout="15"
 	stInput="#stObj#"

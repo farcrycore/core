@@ -6,7 +6,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/scheduledTasks/updateXMLFeed.cfm,v 1.6.2.1 2006/05/06 11:29:14 geoff Exp $
+$Header: /cvs/farcry/core/admin/scheduledTasks/updateXMLFeed.cfm,v 1.6.2.1 2006/05/06 11:29:14 geoff Exp $
 $Author: geoff $
 $Date: 2006/05/06 11:29:14 $
 $Name: p300_b113 $
@@ -23,7 +23,7 @@ $in: oid - the value is the object id of the XML feed object$
 $out:$
 --->
 <!--- @@displayname: XML Feed Update --->
-<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
 
 <cfparam name="url.oid" default="">
 

@@ -2,7 +2,7 @@
 
 <cfcomponent name="field" displayname="datetime" hint="Field component to liase with all datetime types"> 
 		
-	<cffunction name="init" access="public" returntype="farcry.farcry_core.packages.formtools.datetime" output="false" hint="Returns a copy of this initialised object">
+	<cffunction name="init" access="public" returntype="farcry.core.packages.formtools.datetime" output="false" hint="Returns a copy of this initialised object">
 		<cfreturn this>
 	</cffunction>
 	<cffunction name="edit" access="public" output="true" returntype="string" hint="his will return a string of formatted HTML text to enable the user to edit the data">

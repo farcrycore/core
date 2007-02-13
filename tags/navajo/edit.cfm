@@ -5,7 +5,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/navajo/edit.cfm,v 1.29.2.1 2005/11/30 06:08:50 guy Exp $
+$Header: /cvs/farcry/core/tags/navajo/edit.cfm,v 1.29.2.1 2005/11/30 06:08:50 guy Exp $
 $Author: guy $
 $Date: 2005/11/30 06:08:50 $
 $Name: milestone_3-0-1 $
@@ -29,12 +29,12 @@ $out:$
 </cfif>
 
 <!--- import tag libraries --->
-<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
-<cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
+<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
 
 <!--- import function libraries --->
-<cfinclude template="/farcry/farcry_core/admin/includes/utilityFunctions.cfm">
-<cfinclude template="/farcry/farcry_core/admin/includes/cfFunctionWrappers.cfm">
+<cfinclude template="/farcry/core/admin/includes/utilityFunctions.cfm">
+<cfinclude template="/farcry/core/admin/includes/cfFunctionWrappers.cfm">
 
 <!--- required attributes --->
 <!--- 	looks like refs to URL params are everywhere... 
@@ -54,7 +54,7 @@ $out:$
 <cfscript>
 	// auto-type lookup if required
 	if (NOT len(attributes.typename)) {
-		q4 = createObject("component", "farcry.farcry_core.packages.fourq.fourq");
+		q4 = createObject("component", "farcry.core.packages.fourq.fourq");
 		attributes.typename = q4.findType(objectid=attributes.objectid);
 		//its possible that missing objects will kill this so we only want to create object if we actually get a typename result
 		if (NOT len(attributes.typename))

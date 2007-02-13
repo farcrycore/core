@@ -30,7 +30,7 @@ $in:  $
 	<cfparam name="attributes.r_stRecord" default="stRecord">
 	
 	
-	<cfinclude template="/farcry/farcry_core/admin/includes/utilityFunctions.cfm" >
+	<cfinclude template="/farcry/core/admin/includes/utilityFunctions.cfm" >
 
 	
 	<!--- Get the BaseTagData  --->

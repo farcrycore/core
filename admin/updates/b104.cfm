@@ -69,11 +69,11 @@
 	</tr>
 	<tr>
 		<td>Package Path:</td>
-		<td><input type="text" name="packagepath" value="farcry_core.packages" size="50"></td>
+		<td><input type="text" name="packagepath" value="core.packages" size="50"></td>
 	</tr>
 	<tr>
 		<td>Core directory:</td>
-		<td><input type="text" name="core" value="c:\inetpub\applications\farcry_core" size="50"></td>
+		<td><input type="text" name="core" value="c:\inetpub\applications\core" size="50"></td>
 	</tr>
 	<tr>
 		<td>Project directory:</td>

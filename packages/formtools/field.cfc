@@ -2,7 +2,7 @@
 
 <cfcomponent name="field" displayname="string" hint="Field component to liase with all string types"> 
 		
-	<cffunction name="init" access="public" returntype="farcry.farcry_core.packages.formtools.field" output="false" hint="Returns a copy of this initialised object">
+	<cffunction name="init" access="public" returntype="farcry.core.packages.formtools.field" output="false" hint="Returns a copy of this initialised object">
 		<cfreturn this>
 	</cffunction>
 	

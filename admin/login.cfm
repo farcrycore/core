@@ -4,7 +4,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/login.cfm,v 1.10 2005/08/09 03:54:40 geoff Exp $
+$Header: /cvs/farcry/core/admin/login.cfm,v 1.10 2005/08/09 03:54:40 geoff Exp $
 
 $Author: geoff $
 $Date: 2005/08/09 03:54:40 $
@@ -30,7 +30,7 @@ $out:$
 	<cfif fileExists("#application.path.project#/customadmin/login/login.cfm")>
 	    <cfinclude template="/farcry/#application.applicationName#/customadmin/login/login.cfm">
  	<cfelse>
-		<cfimport taglib="/farcry/farcry_core/tags/navajo" prefix="nj">
+		<cfimport taglib="/farcry/core/tags/navajo" prefix="nj">
    		<nj:Login>
 	</cfif>
 

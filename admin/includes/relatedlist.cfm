@@ -6,7 +6,7 @@ $Community: FarCry CMS http://www.farcrycms.org $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/includes/relatedlist.cfm,v 1.15.2.8 2006/05/06 11:26:54 geoff Exp $
+$Header: /cvs/farcry/core/admin/includes/relatedlist.cfm,v 1.15.2.8 2006/05/06 11:26:54 geoff Exp $
 $Author: geoff $
 $Date: 2006/05/06 11:26:54 $
 $Name: p300_b113 $
@@ -25,14 +25,14 @@ $
 $Developer: Geoff Bowers (modius@daemon.com.au)$
 --->
 <!--- import tag libraries --->
-<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
-<cfimport taglib="/farcry/farcry_core/tags/widgets/" prefix="widgets">
+<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/core/tags/widgets/" prefix="widgets">
 
 <!--- include function libraries --->
 <!--- JSON encode and decode functions [jsonencode(str), jsondecode(str)]--->
-<cfinclude template="/farcry/farcry_core/admin/includes/json.cfm">
+<cfinclude template="/farcry/core/admin/includes/json.cfm">
 <!--- miscellaneous functions --->
-<cfinclude template="/farcry/farcry_core/admin/includes/libraryFunctions.cfm">
+<cfinclude template="/farcry/core/admin/includes/libraryFunctions.cfm">
 
 <!--- environment variables --->
 <!--- todo: these need to be scoped! GB20060314 --->
@@ -47,7 +47,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 <cfparam name="searchField" default="">
 <cfparam name="bSearchFormSubmitted" default="No">
 <cfset plpArrayPropertieName = "#fieldName#">
-<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
 <cfparam name="pg" default="1">
 <cfparam name="categoryID" default=""> <!--- category filter --->
 <cfparam name="currentpage" default="1"> <!--- pagination flag --->

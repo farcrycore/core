@@ -19,7 +19,7 @@ $Description: shows archived objects $
 $Developer: Brendan Sisson (brendan@daemon.com.au)$
 --->
 <!--- import tag libraries --->
-<cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
 
 <!--- environment variables --->
 <cfparam name="url.archiveid" type="uuid" />
@@ -42,7 +42,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 	<cfif isdefined("url.archiveid")>
 		
 		<!--- get type --->
-		<cfset oFourq = createObject("component","farcry.farcry_core.packages.fourq.fourq")>
+		<cfset oFourq = createObject("component","farcry.core.packages.fourq.fourq")>
 		<cfset typename = oFourq.findType(url.objectid)>
 		<cfset oType = createObject("component",application.types[typename].typepath)>
 		

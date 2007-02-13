@@ -5,7 +5,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/conjuror/changestatus.cfm,v 1.3.2.1 2006/02/24 00:31:42 paul Exp $
+$Header: /cvs/farcry/core/admin/conjuror/changestatus.cfm,v 1.3.2.1 2006/02/24 00:31:42 paul Exp $
 $Author: paul $
 $Date: 2006/02/24 00:31:42 $
 $Name: milestone_3-0-1 $
@@ -24,7 +24,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 <cfprocessingDirective pageencoding="utf-8">
 
 <!--- imported tag libraries --->
-<cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
 
 <!--- required parameters as FORM or URL variables --->
 <cfif isDefined("url.objectid") AND len(url.objectid)>
@@ -72,7 +72,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 <cfif len(typename) AND structKeyExists(application.types, typename)>
 	<cfset typepath=application.types[typename].typePath>
 <cfelse>
-	<cfset q4 = createObject("component", "farcry.farcry_core.packages.fourq.fourq")>
+	<cfset q4 = createObject("component", "farcry.core.packages.fourq.fourq")>
 	<cfset typename = q4.findType(objectid=listFirst(objectID))>
 	<cfif len(typename)>
 		<cfset typepath=application.types[typename].typePath>

@@ -4,7 +4,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/farcry/richTextEditor.cfm,v 1.22.2.1 2005/11/29 03:12:39 guy Exp $
+$Header: /cvs/farcry/core/tags/farcry/richTextEditor.cfm,v 1.22.2.1 2005/11/29 03:12:39 guy Exp $
 $Author: guy $
 $Date: 2005/11/29 03:12:39 $
 $Name: milestone_3-0-1 $
@@ -23,8 +23,8 @@ $out:$
 --->
 <cfsetting enablecfoutputonly="yes">
 
-<cfimport taglib="/farcry/farcry_core/tags/farcry" prefix="tags">
-<cfinclude template="/farcry/farcry_core/admin/includes/utilityFunctions.cfm">
+<cfimport taglib="/farcry/core/tags/farcry" prefix="tags">
+<cfinclude template="/farcry/core/admin/includes/utilityFunctions.cfm">
 <cfparam name="attributes.textareaname" default="body">
 <cfparam name="attributes.fieldLabel" default="">
 

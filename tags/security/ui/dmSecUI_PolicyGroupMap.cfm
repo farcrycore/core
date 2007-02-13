@@ -9,7 +9,7 @@ Daemon Pty Limited 1995-2001
 http://www.daemon.com.au/
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/security/ui/dmSecUI_PolicyGroupMap.cfm,v 1.3 2004/07/15 02:03:27 brendan Exp $
+$Header: /cvs/farcry/core/tags/security/ui/dmSecUI_PolicyGroupMap.cfm,v 1.3 2004/07/15 02:03:27 brendan Exp $
 $Author: brendan $
 $Date: 2004/07/15 02:03:27 $
 $Name: milestone_3-0-1 $
@@ -63,7 +63,7 @@ no message
 
 || END FUSEDOC ||
 --->
-<cfimport taglib="/farcry/farcry_core/tags/security/ui/" prefix="dmsec">
+<cfimport taglib="/farcry/core/tags/security/ui/" prefix="dmsec">
 <cfscript>
 	oAuthorisation = request.dmsec.oAuthorisation;
 	oAuthentication = request.dmsec.oAuthentication;

@@ -4,7 +4,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_config/defaultOverviewTree.cfm,v 1.4 2005/09/13 06:34:27 guy Exp $
+$Header: /cvs/farcry/core/packages/farcry/_config/defaultOverviewTree.cfm,v 1.4 2005/09/13 06:34:27 guy Exp $
 $Author: guy $
 $Date: 2005/09/13 06:34:27 $
 $Name: p300_b113 $
@@ -27,7 +27,7 @@ $out:$
 <cfset aTmp = ArrayNew(1)>
 
 <cfscript>
-stConfig.editHandler = "/farcry/farcry_core/admin/config/overviewTree.cfm";
+stConfig.editHandler = "/farcry/core/admin/config/overviewTree.cfm";
 stConfig.bUseHIResInsert = '0';
 stConfig.insertJSdmImageHiRes = "<img alt='""+theNode['ALT']+""' src='#application.url.webroot#/images/""+theNode['OPTIMISEDIMAGE']+""'>";
 stConfig.insertJSdmHTML = "<a href='##stOverview['menu']['insert']['dmHTML']##?objectId=""+lastSelectedId+""'>""+theNode['TITLE']+""</a>";

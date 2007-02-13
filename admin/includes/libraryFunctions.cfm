@@ -7,7 +7,7 @@
 	<cfparam name="arguments.stPageination.urlParameters" default="">
 	<cfparam name="arguments.stPageination.numberOfRecords" default="#arguments.stPageination.qList.recordCount#">
 	<cfset stLocal.noPages = Ceiling(arguments.stPageination.numberOfRecords/arguments.stPageination.maxRow)>
-	<cfimport taglib="/farcry/farcry_core/tags/widgets" prefix="widgets" />
+	<cfimport taglib="/farcry/core/tags/widgets" prefix="widgets" />
 	<widgets:paginationDisplay
         QueryRecordCount="#arguments.stPageination.numberOfRecords#"
         FileName="#cgi.script_name#"

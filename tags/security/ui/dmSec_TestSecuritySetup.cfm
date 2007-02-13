@@ -10,7 +10,7 @@ Daemon Pty Limited 1995-2001
 http://www.daemon.com.au/
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/security/ui/dmSec_TestSecuritySetup.cfm,v 1.7 2005/08/17 06:50:52 pottery Exp $
+$Header: /cvs/farcry/core/tags/security/ui/dmSec_TestSecuritySetup.cfm,v 1.7 2005/08/17 06:50:52 pottery Exp $
 $Author: pottery $
 $Date: 2005/08/17 06:50:52 $
 $Name: milestone_3-0-1 $
@@ -82,7 +82,7 @@ Matt Dawson (mad@daemon.com.au)
 				#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].userDirConnectedOK,"#stUd[udName].datasource#")#<br>
 				<a href="?tag=CreateSecurityTables&userDirectory=#udName#" onClick="return confirm('#application.adminBundle[session.dmProfile.locale].confirmCreateSecurityTables#');">#application.adminBundle[session.dmProfile.locale].createSecurityTables#</a><br>
 				<br>
-				<cfimport taglib="/farcry/farcry_core/tags/security/ui/" prefix="dmsec">
+				<cfimport taglib="/farcry/core/tags/security/ui/" prefix="dmsec">
 				<!--- Test the correct tables are in the user Directory --->
 				<dmsec:dmSec_TableTest table="dmUser"
 						fields="userId,userLogin,userNotes,userPassword,userStatus"

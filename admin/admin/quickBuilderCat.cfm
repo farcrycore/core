@@ -4,7 +4,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/admin/quickBuilderCat.cfm,v 1.2 2005/05/30 07:35:15 pottery Exp $
+$Header: /cvs/farcry/core/admin/admin/quickBuilderCat.cfm,v 1.2 2005/05/30 07:35:15 pottery Exp $
 $Author: pottery $
 $Date: 2005/05/30 07:35:15 $
 $Name: milestone_3-0-1 $
@@ -27,9 +27,9 @@ $out:$
 
 <cfprocessingDirective pageencoding="utf-8">
 
-<cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
-<cfimport taglib="/farcry/farcry_core/tags/farcry/" prefix="farcry">
-<cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
+<cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry">
+<cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
 
 <!--- character to indicate levels --->
 <cfset levelToken = "-" />
@@ -131,7 +131,7 @@ $out:$
 	        }
 	    </cfscript>
 	
-	    <cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">		
+	    <cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">		
 	    <cfscript>
 	        o_farcrytree = createObject("component", "#application.packagepath#.farcry.tree");
 	        oCat = createObject("component", "#application.packagepath#.farcry.category");

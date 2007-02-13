@@ -1,8 +1,8 @@
 <cfcomponent extends="field" name="UUID" displayname="UUID" hint="Used to liase with UUID type fields"> 
 
-	<cfimport taglib="/farcry/farcry_core/tags/formtools/" prefix="ft" >
+	<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" >
 	
-	<cffunction name="init" access="public" returntype="farcry.farcry_core.packages.formtools.UUID" output="false" hint="Returns a copy of this initialised object">
+	<cffunction name="init" access="public" returntype="farcry.core.packages.formtools.UUID" output="false" hint="Returns a copy of this initialised object">
 		<cfreturn this>
 	</cffunction>
 	
@@ -233,7 +233,7 @@
 		<cfset var joinTypename = "" />
 		
 		<!---
-		<cfset var oFourQ = createObject("component","farcry.farcry_core.packages.fourq.fourq")><!--- TODO: this needs to be removed when we add typename to array tables. ---> 
+		<cfset var oFourQ = createObject("component","farcry.core.packages.fourq.fourq")><!--- TODO: this needs to be removed when we add typename to array tables. ---> 
 		 --->
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedWebskin" default="LibrarySelected" type="string" />
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedListClass" default="arrayDetail" type="string" />
@@ -320,7 +320,7 @@
 					<cfif Len(arguments.stObject[arguments.stMetaData.Name])>
 										
 						<cfif listLen(arguments.stMetadata.ftJoin)>						
-							<cfset q4 = createObject("component", "farcry.farcry_core.packages.fourq.fourq")>
+							<cfset q4 = createObject("component", "farcry.core.packages.fourq.fourq")>
 							<cfset joinTypename = q4.findType(objectid=arguments.stObject[arguments.stMetaData.Name])>
 							<cfset oData = createObject("component", application.types[joinTypename].packagePath) />
 						<cfelse>

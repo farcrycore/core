@@ -2,7 +2,7 @@
 
 <cfprocessingDirective pageencoding="utf-8">
 
-<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
 
 <q4:contentobjectgetmultiple bActiveOnly="0" lObjectIds="#url.lObjectIds#" r_stObjects="stObjs">
 <!--- Need to delete certain keys - one of these (not sure which) is breaking the javascript on the calling page

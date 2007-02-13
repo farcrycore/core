@@ -4,7 +4,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/security/authorisation.cfc,v 1.52.2.2 2006/04/20 07:40:00 jason Exp $
+$Header: /cvs/farcry/core/packages/security/authorisation.cfc,v 1.52.2.2 2006/04/20 07:40:00 jason Exp $
 $Author: jason $
 $Date: 2006/04/20 07:40:00 $
 $Name: p300_b113 $
@@ -23,10 +23,10 @@ $out:$
 --->
 
 <cfcomponent displayName="Authorisation" hint="User authorisation">
-	<cfinclude template="/farcry/farcry_core/admin/includes/cfFunctionWrappers.cfm">
-	<cfinclude template="/farcry/farcry_core/admin/includes/utilityFunctions.cfm">
-	<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
-	<cfimport taglib="/farcry/farcry_core/tags/navajo" prefix="nj">
+	<cfinclude template="/farcry/core/admin/includes/cfFunctionWrappers.cfm">
+	<cfinclude template="/farcry/core/admin/includes/utilityFunctions.cfm">
+	<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
+	<cfimport taglib="/farcry/core/tags/navajo" prefix="nj">
 	
 	<cffunction name="collateObjectPermissions" output="No">
 		<cfargument name="objectid" required="true">

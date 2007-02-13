@@ -3,7 +3,7 @@
 $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmEmail/send.cfm,v 1.4 2003/11/05 04:46:09 tom Exp $
+$Header: /cvs/farcry/core/packages/types/_dmEmail/send.cfm,v 1.4 2003/11/05 04:46:09 tom Exp $
 $Author: tom $
 $Date: 2003/11/05 04:46:09 $
 $Name: milestone_3-0-1 $
@@ -21,7 +21,7 @@ $out: $
 --->
 <cfsetting enablecfoutputonly="yes">
 
-<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
 
 <!--- build send to structure --->
 <cfset stSendList = structNew()>

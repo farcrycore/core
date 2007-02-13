@@ -5,7 +5,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmImage/edit.cfm,v 1.62.2.4 2006/02/15 05:17:22 gstewart Exp $
+$Header: /cvs/farcry/core/packages/types/_dmImage/edit.cfm,v 1.62.2.4 2006/02/15 05:17:22 gstewart Exp $
 $Author: gstewart $
 $Date: 2006/02/15 05:17:22 $
 $Name: milestone_3-0-1 $
@@ -18,7 +18,7 @@ $Description: dmImage edit handler$
 $Developer: Guy (guy@daemon.com.au)$
 --->
 <!--- import tag libraries --->
-<cfimport taglib="/farcry/farcry_core/tags/widgets/" prefix="widgets">
+<cfimport taglib="/farcry/core/tags/widgets/" prefix="widgets">
 
 <!--- set up local variables --->
 <cfparam name="primaryObjectID" default="">
@@ -223,7 +223,7 @@ $Developer: Guy (guy@daemon.com.au)$
 		<nj:updateTree objectId="#parentID#">
 <cfif primaryObjectID NEQ "">
 	<!--- JSON encode and decode functions [jsonencode(str), jsondecode(str)]--->
-	<cfinclude template="/farcry/farcry_core/admin/includes/json.cfm">
+	<cfinclude template="/farcry/core/admin/includes/json.cfm">
 	
 	<cfset objplp = CreateObject("component","#application.packagepath#.farcry.plpUtilities")>
 	<cfset objplp.fAddArrayObjects(primaryObjectID,stObj.objectid)>
@@ -384,7 +384,7 @@ function doSubmit(objForm){
 }
 </script><hr />
 <cfif primaryObjectID EQ "">
-<cfinclude template="/farcry/farcry_core/admin/includes/image_tips.cfm">
+<cfinclude template="/farcry/core/admin/includes/image_tips.cfm">
 </cfif>
 <cfif Val(stObj.bAutoGenerateThumbnail) EQ 1>
 <script type="text/javascript">

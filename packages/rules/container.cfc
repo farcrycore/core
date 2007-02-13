@@ -4,7 +4,7 @@ $Copyright: Daemon Pty Limited 1995-2007, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/rules/container.cfc,v 1.41.2.1 2006/01/04 07:50:02 paul Exp $
+$Header: /cvs/farcry/core/packages/rules/container.cfc,v 1.41.2.1 2006/01/04 07:50:02 paul Exp $
 $Author: paul $
 $Date: 2006/01/04 07:50:02 $
 $Name: milestone_3-0-1 $
@@ -16,7 +16,7 @@ $Description: Core container management component. $
 || DEVELOPER ||
 $Developer: Geoff Bowers (modius@daemon.com.au) $
 --->
-<cfcomponent extends="farcry.farcry_core.packages.fourq.fourq" displayname="Container Management" hint="Manages all core functions for container instance management.">
+<cfcomponent extends="farcry.core.packages.fourq.fourq" displayname="Container Management" hint="Manages all core functions for container instance management.">
 	<cfproperty name="objectID" hint="Container instance primary key." type="uuid" required="true" />
 	<cfproperty name="label" hint="Label for the container instance."  type="nstring" default="(unspecified)">
 	<cfproperty name="aRules" hint="Array of rule objects to be managed by this container." type="array"> 
@@ -24,7 +24,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	<cfproperty name="mirrorID" hint="The UUID of a shared container to be used instead of this container; a mirror container if you like." type="UUID" default="">
 	<cfproperty name="displayMethod" hint="The webskin that will encapsulate container content" type="nstring" default=""> 
 	
-	<cfinclude template="/farcry/farcry_core/admin/includes/cfFunctionWrappers.cfm">
+	<cfinclude template="/farcry/core/admin/includes/cfFunctionWrappers.cfm">
 	
 	<cffunction name="createData" access="public" returntype="any" output="false" hint="Creates an instance of a container object.">
 		<cfargument name="stProperties" type="struct" required="true" hint="Structure of properties for the new container instance.">
@@ -450,7 +450,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 		<cftrace type="warning" text="populating container" var="arguments.arules" />
 		
 		<cfset request.aInvocations = arrayNew(1)>
-		<cfset oFourq = createObject("component", "farcry.farcry_core.packages.fourq.fourq")>
+		<cfset oFourq = createObject("component", "farcry.core.packages.fourq.fourq")>
 		<cfloop from="1" to="#arrayLen(arguments.aRules)#" index="i">
 			 <cftry> 
 				<cfset rule = oFourq.findType(objectid=arguments.aRules[i])>

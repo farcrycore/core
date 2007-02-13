@@ -7,7 +7,7 @@ Daemon Pty Limited 1995-2003
 http://www.daemon.com.au
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/webskin/secondaryNav.cfm,v 1.11 2003/12/09 03:14:18 brendan Exp $
+$Header: /cvs/farcry/core/tags/webskin/secondaryNav.cfm,v 1.11 2003/12/09 03:14:18 brendan Exp $
 $Author: brendan $
 $Date: 2003/12/09 03:14:18 $
 $Name: milestone_3-0-1 $

@@ -9,11 +9,11 @@ This dumps out an object based on objectid [replacement for edittabDump.cfm]
 <cfif objectid EQ "">
 	<cfset errormessage = errormessage & "Invalid ObjectID">
 <cfelse>
-	<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
+	<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
 	<q4:contentobjectget objectid="#url.objectid#" r_stobject="stobj">
 </cfif>
 
-<cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
 <cfset bPermission_DumpObject = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="ObjectDumpTab")>
 
 <cfsetting enablecfoutputonly="No">

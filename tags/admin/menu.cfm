@@ -5,7 +5,7 @@ $Copyright: Daemon Pty Limited 1995-2005, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/admin/menu.cfm,v 1.6 2005/10/07 04:06:17 daniela Exp $
+$Header: /cvs/farcry/core/tags/admin/menu.cfm,v 1.6 2005/10/07 04:06:17 daniela Exp $
 $Author: daniela $
 $Date: 2005/10/07 04:06:17 $
 $Name:  $

@@ -31,7 +31,7 @@
 	 ************************************************************
 	 --->
 	<cffunction name="deployType" access="public" output="false" returntype="struct" hint="Deploys the table structure for a FarCry type into a MSSQL database.">
-		<cfargument name="metadata" type="farcry.farcry_core.packages.fourq.TableMetadata" required="true" />
+		<cfargument name="metadata" type="farcry.core.packages.fourq.TableMetadata" required="true" />
 		<cfargument name="bDropTable" type="boolean" required="false" default="false">
 		<cfargument name="bTestRun" type="boolean" required="false" default="true">
 		<cfargument name="dsn" type="string" required="false" default="#variables.dsn#">

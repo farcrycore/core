@@ -1,6 +1,6 @@
 <cfcomponent extends="field" name="webskin" displayname="webskin" hint="Used to liase with webskin type fields"> 
 	
-	<cffunction name="init" access="public" returntype="farcry.farcry_core.packages.formtools.webskin" output="false" hint="Returns a copy of this initialised object">
+	<cffunction name="init" access="public" returntype="farcry.core.packages.formtools.webskin" output="false" hint="Returns a copy of this initialised object">
 		<cfreturn this>
 	</cffunction>
 	

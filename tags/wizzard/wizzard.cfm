@@ -21,8 +21,8 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 || ATTRIBUTES ||
 $in: SessionID -- $
 --->
-<cfimport taglib="/farcry/farcry_core/tags/formtools/" prefix="ft" >
-<cfimport taglib="/farcry/farcry_core/tags/wizzard/" prefix="wiz" >
+<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" >
+<cfimport taglib="/farcry/core/tags/wizzard/" prefix="wiz" >
 
 <cfset oWizzard = createObject("component",application.types['dmWizzard'].typepath)>
 

@@ -13,8 +13,8 @@ Deploys new fckEditor config<br />
 <body style="margin-left:20px;margin-top:20px;">
 
 <cfif isdefined("form.submit")>
-	<cfinclude template="/farcry/farcry_core/admin/includes/cfFunctionWrappers.cfm">
-	<cfinclude template="/farcry/farcry_core/admin/includes/utilityFunctions.cfm">
+	<cfinclude template="/farcry/core/admin/includes/cfFunctionWrappers.cfm">
+	<cfinclude template="/farcry/core/admin/includes/utilityFunctions.cfm">
 		
 	<!--- Add fckEditor config --->
 	

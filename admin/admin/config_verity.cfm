@@ -11,7 +11,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/admin/config_verity.cfm,v 1.10.2.1 2006/04/19 00:45:50 geoff Exp $
+$Header: /cvs/farcry/core/admin/admin/config_verity.cfm,v 1.10.2.1 2006/04/19 00:45:50 geoff Exp $
 $Author: geoff $
 $Date: 2006/04/19 00:45:50 $
 $Name: p300_b113 $
@@ -30,7 +30,7 @@ $DEVELOPER: Geoff Bowers (modius@daemon.com.au)$
 --->
 
 <!--- import tag library --->
-<cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
 
 <!--- check permissions --->
 <cfset iGeneralTab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="AdminGeneralTab")>

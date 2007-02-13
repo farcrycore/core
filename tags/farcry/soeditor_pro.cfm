@@ -2,7 +2,7 @@
 
 <!---
 
-  SourceSafe: $Header: /cvs/farcry/farcry_core/tags/farcry/soeditor_pro.cfm,v 1.2 2003/03/21 01:06:34 brendan Exp $
+  SourceSafe: $Header: /cvs/farcry/core/tags/farcry/soeditor_pro.cfm,v 1.2 2003/03/21 01:06:34 brendan Exp $
   Date Created: 6/6/2001
   Author: James Alexander
   Project: soEditor Pro 2.5

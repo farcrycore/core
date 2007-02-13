@@ -4,7 +4,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/edittabStats.cfm,v 1.19.2.1 2006/02/14 02:55:28 tlucas Exp $
+$Header: /cvs/farcry/core/admin/edittabStats.cfm,v 1.19.2.1 2006/02/14 02:55:28 tlucas Exp $
 $Author: tlucas $
 $Date: 2006/02/14 02:55:28 $
 $Name: milestone_3-0-1 $
@@ -36,13 +36,13 @@ out:
 		<cfcatch type="missingInclude"> <!--- nope - so use the default one --->
 			
 			<!--- set up page header --->
-			<cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
+			<cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
 			<admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 			
 			<!--- i18n: get week starts for later use --->
 			<cfset weekStartDay=application.thisCalendar.weekStarts(session.dmProfile.locale)>
 			<!--- get top level object details --->
-			<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
+			<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
 			<q4:contentobjectget objectid="#url.objectId#" r_stobject="stObj">
 			
 			<!--- create navigation object --->

@@ -4,7 +4,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmhtml/plpEdit/metadata.cfm,v 1.6 2004/07/16 05:52:27 brendan Exp $
+$Header: /cvs/farcry/core/packages/types/_dmhtml/plpEdit/metadata.cfm,v 1.6 2004/07/16 05:52:27 brendan Exp $
 $Author: brendan $
 $Date: 2004/07/16 05:52:27 $
 $Name: milestone_3-0-1 $
@@ -19,7 +19,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 --->
 <cfprocessingDirective pageencoding="utf-8">
 
-<cfimport taglib="/farcry/farcry_core/tags/farcry" prefix="tags">
+<cfimport taglib="/farcry/core/tags/farcry" prefix="tags">
 
 <cfif isDefined("form.bSubmitted")>
 	<cfparam name="form.categoryid" default="">

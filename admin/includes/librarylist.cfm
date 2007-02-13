@@ -1,5 +1,5 @@
-<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
-<cfimport taglib="/farcry/farcry_core/tags/widgets/" prefix="widgets">
+<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/core/tags/widgets/" prefix="widgets">
 <cfparam name="searchText" default="">
 <cfparam name="searchField" default="">
 <cfparam name="bSearchFormSubmitted" default="No">
@@ -15,7 +15,7 @@
 	<!--- <cfset returnstruct = objplp.fGetArrayObjects(primaryObjectID)> --->
 
 	<!--- JSON encode and decode functions [jsonencode(str), jsondecode(str)]--->
-	<cfinclude template="/farcry/farcry_core/admin/includes/json.cfm">
+	<cfinclude template="/farcry/core/admin/includes/json.cfm">
 	<cfset arItems = objplp.fGenerateObjectsArray(primaryObjectID,libraryType)>
 <cfoutput><script type="text/javascript">
 var jsonData = '#jsonencode(arItems)#';

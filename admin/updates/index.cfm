@@ -25,7 +25,7 @@
 		<!--- only if the script already exists --->
 		<cfdirectory action="LIST" filter="#script#.cfm" name="qUpdates" directory="#application.path.core#/admin/updates">
 		<cfif len(qUpdates.name) gt 0>
-			<cfinclude template="/farcry/farcry_core/admin/updates/#script#.cfm">
+			<cfinclude template="/farcry/core/admin/updates/#script#.cfm">
 		<cfelse>
 			<cfoutput><p></p><span class="frameMenuBullet">&raquo;</span> <strong>Cannot find update #script#...</strong><p></p></cfoutput><cfflush>
 		</cfif>
@@ -38,7 +38,7 @@
 		</cfscript>
 	</cfif>
 	<!--- Farcry Core RE - Initialisation --->
-	<cfinclude template="/farcry/farcry_core/tags/farcry/_farcryApplicationInit.cfm">
+	<cfinclude template="/farcry/core/tags/farcry/_farcryApplicationInit.cfm">
 	<!--- finish message and link back to FarCry --->
 	<cfoutput>
 	<p></p><span class="frameMenuBullet">&raquo;</span> <strong>Updates Complete.</strong><p></p>

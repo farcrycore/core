@@ -3,14 +3,14 @@
 
 <cfprocessingDirective pageencoding="utf-8">
 
-<cfimport taglib="/farcry/farcry_core/tags/navajo" prefix="nj">
+<cfimport taglib="/farcry/core/tags/navajo" prefix="nj">
 <!--- 
 || LEGAL ||
 $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/conjuror/edit.cfm,v 1.1 2005/06/11 07:55:24 geoff Exp $
+$Header: /cvs/farcry/core/admin/conjuror/edit.cfm,v 1.1 2005/06/11 07:55:24 geoff Exp $
 $Author: geoff $
 $Date: 2005/06/11 07:55:24 $
 $Name: milestone_3-0-1 $
@@ -32,8 +32,8 @@ $out:$
 
 <cfsetting enablecfoutputonly="yes">
 <cfprocessingDirective pageencoding="utf-8">
-<cfinclude template="/farcry/farcry_core/admin/includes/utilityFunctions.cfm">
-<cfinclude template="/farcry/farcry_core/admin/includes/cfFunctionWrappers.cfm">
+<cfinclude template="/farcry/core/admin/includes/utilityFunctions.cfm">
+<cfinclude template="/farcry/core/admin/includes/cfFunctionWrappers.cfm">
 <!--- Legacy support for old pages referring to URL.type--->
 <cfif isDefined("URL.type") AND NOT isDefined("URL.typename")>
 	<cfset URL.typename = URL.type>
@@ -49,7 +49,7 @@ $out:$
 		URL.typename = URL.type;
 	// auto-type lookup if required
 	if (NOT len(url.typename)) {
-		q4 = createObject("component", "farcry.farcry_core.packages.fourq.fourq");
+		q4 = createObject("component", "farcry.core.packages.fourq.fourq");
 		url.typename = q4.findType(objectid=url.objectid);
 		//its possible that missing objects will kill this so we only want to create object if we actually get a typename result
 		if (NOT len(url.typename))
@@ -67,10 +67,10 @@ $out:$
 </cfif>
 
 <!--- set up page header --->
-<cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
 <admin:header>
 
-<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
 
 <!--- work out package epath --->
 <cfscript>

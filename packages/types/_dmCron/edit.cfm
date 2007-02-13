@@ -5,7 +5,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmCron/edit.cfm,v 1.14.2.1 2006/03/21 05:03:26 jason Exp $
+$Header: /cvs/farcry/core/packages/types/_dmCron/edit.cfm,v 1.14.2.1 2006/03/21 05:03:26 jason Exp $
 $Author: jason $
 $Date: 2006/03/21 05:03:26 $
 $Name: milestone_3-0-1 $
@@ -18,7 +18,7 @@ $Description: dmCron edit handler$
 $Developer: Geoff Bowers (modius@daemon.com.au)$
 --->
 <!--- import tag libraries --->
-<cfimport taglib="/farcry/farcry_core/tags/widgets" prefix="widgets">
+<cfimport taglib="/farcry/core/tags/widgets" prefix="widgets">
 
 <!--- local variables --->
 <cfparam name="errormessage" default="">

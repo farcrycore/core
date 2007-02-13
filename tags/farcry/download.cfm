@@ -4,7 +4,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/farcry/download.cfm,v 1.17.2.1 2005/12/19 07:53:41 suspiria Exp $
+$Header: /cvs/farcry/core/tags/farcry/download.cfm,v 1.17.2.1 2005/12/19 07:53:41 suspiria Exp $
 $Author: suspiria $
 $Date: 2005/12/19 07:53:41 $
 $Name: milestone_3-0-1 $
@@ -23,7 +23,7 @@ $out:$
 --->
 
 <cfsetting enablecfoutputonly="Yes">
-<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
 
 
 
@@ -50,7 +50,7 @@ $out:$
 <cfif isdefined("attributes.typename") and len(attributes.typename)>
 	<cfset url.typename = attributes.typename>
 <cfelse>
-	<cfset q4 = createObject("component", "farcry.farcry_core.packages.fourq.fourq") />
+	<cfset q4 = createObject("component", "farcry.core.packages.fourq.fourq") />
 	<cfset url.typename = q4.findType(objectid="#url.objectid#") />	
 </cfif>
 

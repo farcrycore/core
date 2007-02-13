@@ -6,7 +6,7 @@ $Copyright: Daemon Pty Limited 1995-2005, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/navajo/overview_frame.cfm,v 1.10 2005/08/28 01:34:54 geoff Exp $
+$Header: /cvs/farcry/core/admin/navajo/overview_frame.cfm,v 1.10 2005/08/28 01:34:54 geoff Exp $
 $Author: geoff $
 $Date: 2005/08/28 01:34:54 $
 $Name: milestone_3-0-1 $
@@ -20,7 +20,7 @@ $Description: 	Iframe for the site tree overview page.
 $Developer: Geoff Bowers (modius@daemon.com.au)$
 --->
 <!--- import tag libraries --->
-<cfimport taglib="/farcry/farcry_core/tags/navajo" prefix="nj">
+<cfimport taglib="/farcry/core/tags/navajo" prefix="nj">
 
 <cftry>
 <!--- TODO: not sure how beneficial this lock is. not sure of its history either :( GB --->

@@ -6,7 +6,7 @@ Daemon Pty Limited 1995-2002
 http://www.daemon.com.au
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmProfile/getProfile.cfm,v 1.10 2005/08/15 06:03:00 guy Exp $
+$Header: /cvs/farcry/core/packages/types/_dmProfile/getProfile.cfm,v 1.10 2005/08/15 06:03:00 guy Exp $
 $Author: guy $
 $Date: 2005/08/15 06:03:00 $
 $Name: milestone_3-0-1 $

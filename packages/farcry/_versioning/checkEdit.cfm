@@ -4,7 +4,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/farcry/_versioning/checkEdit.cfm,v 1.16.2.1 2006/02/14 02:55:28 tlucas Exp $
+$Header: /cvs/farcry/core/packages/farcry/_versioning/checkEdit.cfm,v 1.16.2.1 2006/02/14 02:55:28 tlucas Exp $
 $Author: tlucas $
 $Date: 2006/02/14 02:55:28 $
 $Name: milestone_3-0-1 $
@@ -22,7 +22,7 @@ $in: $
 $out:$
 --->
 
-<cfimport taglib="/farcry/farcry_core/tags/display/" prefix="display">
+<cfimport taglib="/farcry/core/tags/display/" prefix="display">
 
 <cfif NOT arguments.stRules.bEdit AND arguments.stRules.versioning>  <!--- User may not edit LIVE/Approved objects - a draft must be created first --->
 

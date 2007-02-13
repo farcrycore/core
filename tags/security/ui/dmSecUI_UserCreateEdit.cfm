@@ -7,7 +7,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/security/ui/dmSecUI_UserCreateEdit.cfm,v 1.18 2005/10/20 06:49:27 guy Exp $
+$Header: /cvs/farcry/core/tags/security/ui/dmSecUI_UserCreateEdit.cfm,v 1.18 2005/10/20 06:49:27 guy Exp $
 $Author: guy $
 $Date: 2005/10/20 06:49:27 $
 $Name: milestone_3-0-1 $
@@ -27,8 +27,8 @@ $in: url.userDirectory: which userdirectory this user belongs to$
 $out:$
 --->
 
-<cfimport taglib="/farcry/farcry_core/tags/security/ui/" prefix="dmsec">
-<cfinclude template="/farcry/farcry_core/admin/includes/cfFunctionWrappers.cfm">
+<cfimport taglib="/farcry/core/tags/security/ui/" prefix="dmsec">
+<cfinclude template="/farcry/core/admin/includes/cfFunctionWrappers.cfm">
 
 <cfparam name="url.userLogin" default="">
 <cfparam name="form.deleteuser" default="0">

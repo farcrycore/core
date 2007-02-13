@@ -5,7 +5,7 @@
 <cfif objectid EQ "">
 	<cfset errormessage = "Invalid ObjectID: object overview can not be render.<br />">
 <cfelse>								
-	<cfset q4 = createObject("component","farcry.farcry_core.packages.fourq.fourq")>
+	<cfset q4 = createObject("component","farcry.core.packages.fourq.fourq")>
 	<cfset typename = q4.findType(url.objectid)>
 	<cfset objType = createObject("component",application.types['#typename#'].typepath)>
 	
@@ -18,7 +18,7 @@
 
 	<!--- check permission --->
 	<cfset stUser = request.dmsec.oAuthentication.getUserAuthenticationData()>
-	<cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
+	<cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
 	<nj:getNavigation objectId="#objectid#" r_ObjectId="parentID" r_stObject="stParent" bInclusive="1">
 	<cfset stPermissions = StructNew()>
 	<cfset stPermissions.iDeveloperPermission = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="developer")>

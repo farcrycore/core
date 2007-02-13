@@ -1,6 +1,6 @@
 <cfprocessingDirective pageencoding="utf-8">
 
-<cfinclude template="/farcry/farcry_core/admin/includes/cfFunctionWrappers.cfm">
+<cfinclude template="/farcry/core/admin/includes/cfFunctionWrappers.cfm">
 
 <cfparam name="url.objectId">
 <cfparam name="url.direction">

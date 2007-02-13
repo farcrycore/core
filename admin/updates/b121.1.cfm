@@ -1,1 +1,1 @@
-<cfinclude template="/farcry/farcry_core/ui/updates/b121.1.cfm">
+<cfinclude template="/farcry/core/ui/updates/b121.1.cfm">

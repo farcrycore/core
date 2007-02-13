@@ -1,4 +1,4 @@
-<cfimport taglib="/farcry/farcry_core/tags/formtools/" prefix="ft" >
+<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" >
 
 <cfsetting enablecfoutputonly="yes">
 <!--- 
@@ -7,7 +7,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmEvent/plpEdit/start.cfm,v 1.19 2005/09/06 22:30:41 daniela Exp $
+$Header: /cvs/farcry/core/packages/types/_dmEvent/plpEdit/start.cfm,v 1.19 2005/09/06 22:30:41 daniela Exp $
 $Author: daniela $
 $Date: 2005/09/06 22:30:41 $
 $Name:  $
@@ -24,9 +24,9 @@ $Developer: Brendan Sisson (brendan@daemon.com.au) $
 
 <cfset localeMonths=application.thisCalendar.getMonths(session.dmProfile.locale)>
 
-<cfimport taglib="/farcry/farcry_core/tags/farcry" prefix="tags">
-<!--- <cfimport taglib="/farcry/farcry_core/tags/display/" prefix="display"> --->
-<cfimport taglib="/farcry/farcry_core/tags/widgets" prefix="widgets">
+<cfimport taglib="/farcry/core/tags/farcry" prefix="tags">
+<!--- <cfimport taglib="/farcry/core/tags/display/" prefix="display"> --->
+<cfimport taglib="/farcry/core/tags/widgets" prefix="widgets">
 
 <cfset thisstep.isComplete = 0>
 <cfset thisstep.name = stplp.currentstep>
@@ -119,7 +119,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au) $
 		<input type="hidden" name="plpAction" value="" />
 		<input style="display:none;" type="submit" name="buttonSubmit" value="submit" />
 	</form>
-	<cfinclude template="/farcry/farcry_core/admin/includes/QFormValidationJS.cfm"> --->
+	<cfinclude template="/farcry/core/admin/includes/QFormValidationJS.cfm"> --->
 	</cfoutput>
 	</widgets:plpWrapper>
 <cfelse>

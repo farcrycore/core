@@ -4,7 +4,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/admin/coapiRules.cfm,v 1.16 2005/09/06 10:19:00 paul Exp $
+$Header: /cvs/farcry/core/admin/admin/coapiRules.cfm,v 1.16 2005/09/06 10:19:00 paul Exp $
 $Author: paul $
 $Date: 2005/09/06 10:19:00 $
 $Name: milestone_3-0-1 $
@@ -23,8 +23,8 @@ $in: $
 $out:$
 --->
 <cfsetting enablecfoutputonly="Yes">
-<cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
-<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
 
 <cfprocessingDirective pageencoding="utf-8">
 

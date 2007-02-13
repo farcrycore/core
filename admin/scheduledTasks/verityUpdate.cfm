@@ -6,7 +6,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/scheduledTasks/verityUpdate.cfm,v 1.5.2.1 2006/03/27 06:22:34 jason Exp $
+$Header: /cvs/farcry/core/admin/scheduledTasks/verityUpdate.cfm,v 1.5.2.1 2006/03/27 06:22:34 jason Exp $
 $Author: jason $
 $Date: 2006/03/27 06:22:34 $
 $Name: milestone_3-0-1 $

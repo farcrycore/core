@@ -1,6 +1,6 @@
 <cfsetting enablecfoutputonly="true">
 <!--- import tag library --->
-<cfimport taglib="/farcry/farcry_core/tags/navajo" prefix="nj">
+<cfimport taglib="/farcry/core/tags/navajo" prefix="nj">
 
 <!--- quit tag if its not start mode --->
 <cfif thistag.ExecutionMode eq "end"><cfexit /></cfif>

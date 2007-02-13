@@ -5,7 +5,7 @@ $Copyright: Daemon Pty Limited 1995-2005, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/Application.cfm,v 1.17.2.2 2005/11/23 06:18:06 suspiria Exp $
+$Header: /cvs/farcry/core/admin/Application.cfm,v 1.17.2.2 2005/11/23 06:18:06 suspiria Exp $
 $Author: suspiria $
 $Date: 2005/11/23 06:18:06 $
 $Name: milestone_3-0-1 $
@@ -28,7 +28,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 <!---------------------------------------------------------
 DETERMINE WHICH PROJECT WE ARE ATTEMPTING TO ADMINISTER
  --------------------------------------------------------->	
-<cfmodule template="/farcry/farcry_core/tags/farcry/callProjectApplication.cfm" libraryName="farcry" />
+<cfmodule template="/farcry/core/tags/farcry/callProjectApplication.cfm" libraryName="farcry" />
 	
 	
 

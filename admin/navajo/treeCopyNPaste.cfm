@@ -4,7 +4,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/navajo/treeCopyNPaste.cfm,v 1.3 2004/07/15 01:51:08 brendan Exp $
+$Header: /cvs/farcry/core/admin/navajo/treeCopyNPaste.cfm,v 1.3 2004/07/15 01:51:08 brendan Exp $
 $Author: brendan $
 $Date: 2004/07/15 01:51:08 $
 $Name: milestone_3-0-1 $
@@ -25,8 +25,8 @@ $out:$
 
 <cfparam name="url.srcObjectId" >
 <cfparam name="url.destObjectId">
-<cfinclude template="/farcry/farcry_core/admin/includes/cfFunctionWrappers.cfm">
-<cfinclude template="/farcry/farcry_core/admin/includes/utilityFunctions.cfm">
+<cfinclude template="/farcry/core/admin/includes/cfFunctionWrappers.cfm">
+<cfinclude template="/farcry/core/admin/includes/utilityFunctions.cfm">
 
 <cffunction name="generateUniqueFilename">
 	<cfargument name="filename" required="yes">
@@ -54,7 +54,7 @@ $out:$
 <cfscript>
 	
 	// get descendants
-	q4 =createObject("component","farcry.farcry_core.packages.fourq.fourq");
+	q4 =createObject("component","farcry.core.packages.fourq.fourq");
 	qGetDescendants = request.factory.oTree.getDescendants(objectid=URL.srcobjectID,bIncludeSelf=1);
 	oNav = createObject("component", application.types.dmNavigation.typePath);
 	oTree = createObject("component", "#application.packagepath#.farcry.tree");

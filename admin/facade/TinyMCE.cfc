@@ -1,6 +1,6 @@
 <cfcomponent name="tinyMCEImageFields" displayname="tinyMCEImageFields" hint="Used by the farcry Advanced Image TinyMCE Rich Text popup for the ajax callbacks" output="false" > 
 
-<cfimport taglib="/farcry/farcry_core/tags/formtools/" prefix="ft" >
+<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" >
 
 
 

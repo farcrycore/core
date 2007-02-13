@@ -4,7 +4,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/admin/messageCentre.cfm,v 1.10 2005/09/02 06:27:37 guy Exp $
+$Header: /cvs/farcry/core/admin/admin/messageCentre.cfm,v 1.10 2005/09/02 06:27:37 guy Exp $
 $Author: guy $
 $Date: 2005/09/02 06:27:37 $
 $Name: milestone_3-0-1 $
@@ -30,12 +30,12 @@ $out:$
 <cfset iGeneralTab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="AdminGeneralTab")>
 
 <!--- set up page header --->
-<cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 <cfif iGeneralTab eq 1>
 
-	<cfimport taglib="/farcry/farcry_core/tags/display/" prefix="display">
+	<cfimport taglib="/farcry/core/tags/display/" prefix="display">
 	
 	<cfparam name="stargs.typename" default="dmEmail">
 	

@@ -23,7 +23,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 $in: [title] page title for frame $
 $in: [bCacheControl] output cache control headers; default true. $
 --->
-<cfimport taglib="/farcry/farcry_core/tags/misc/" prefix="misc">
+<cfimport taglib="/farcry/core/tags/misc/" prefix="misc">
 
 <!--- exit tag if its been closed, ie don't run twice --->
 <cfif thistag.executionmode eq "end">

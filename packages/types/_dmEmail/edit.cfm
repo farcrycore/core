@@ -3,7 +3,7 @@
 $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmEmail/edit.cfm,v 1.8 2005/09/02 05:11:44 guy Exp $
+$Header: /cvs/farcry/core/packages/types/_dmEmail/edit.cfm,v 1.8 2005/09/02 05:11:44 guy Exp $
 $Author: guy $
 $Date: 2005/09/02 05:11:44 $
 $Name: milestone_3-0-1 $
@@ -20,14 +20,14 @@ $in: $
 $out: $
 --->
 <cfsetting enablecfoutputonly="yes">
-<cfimport taglib="/farcry/farcry_core/tags/widgets/" prefix="widgets">
-<!--- <cfimport taglib="/farcry/farcry_core/tags/farcry" prefix="farcry"> --->
+<cfimport taglib="/farcry/core/tags/widgets/" prefix="widgets">
+<!--- <cfimport taglib="/farcry/core/tags/farcry" prefix="farcry"> --->
 
 <cfparam name="url.killplp" default="0">
 
 <widgets:plp 
 	owner="#session.dmSec.authentication.userlogin#_#stObj.objectID#"
-	stepDir="/farcry/farcry_core/packages/types/_dmEmail/plpEdit"
+	stepDir="/farcry/core/packages/types/_dmEmail/plpEdit"
 	cancelLocation="#application.url.farcry#/admin/messageCentre.cfm"
 	iTimeout="15"
 	stInput="#stObj#"

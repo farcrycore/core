@@ -3,7 +3,7 @@
 <!--- 
 TODO:
 Should possibly move this to something under fourq.  Either that or move all 
-audit stuff directly under farcry_core. GB 20061022
+audit stuff directly under core. GB 20061022
  --->
 
 <cffunction name="init" access="public" output="false" returntype="fqaudit" hint="Initialisation function.">

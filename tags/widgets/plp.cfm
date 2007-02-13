@@ -317,7 +317,7 @@ input.f-submit {padding: 1px 3px;background:##666;color:##fff;font-weight:bold;f
 	
 	<cfif structKeyExists(stPLP.plp.steps[stPLP.currentStep],"lFields")>
 		<cfset lFields = duplicate(stPLP.plp.steps[stPLP.currentStep].lFields)>
-		<cfinclude template="/farcry/farcry_core/tags/widgets/plpGenericStep.cfm">
+		<cfinclude template="/farcry/core/tags/widgets/plpGenericStep.cfm">
 	<cfelse>
 		<cfinclude template="#plpfilepath#">
 	</cfif>

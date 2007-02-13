@@ -21,8 +21,8 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 $in: objectid -- $
 --->
 
-<cfimport taglib="/farcry/farcry_core/tags/wizzard/" prefix="wiz" >
-<cfimport taglib="/farcry/farcry_core/tags/security/" prefix="se" >
+<cfimport taglib="/farcry/core/tags/wizzard/" prefix="wiz" >
+<cfimport taglib="/farcry/core/tags/security/" prefix="se" >
 
 <cfset stBaseTag = GetBaseTagData("cf_wizzard")>
 <cfset stWizzard = stBaseTag.stWizzard>

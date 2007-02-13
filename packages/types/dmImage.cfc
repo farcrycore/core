@@ -45,7 +45,7 @@ type properties
 <cfproperty name="optimisedImagePath" editHandler="void" type="string" hint="The location in the filesystem where the optimized image is stored." required="no" default=""> 
 
 <!--- import tag libraries --->
-<cfimport taglib="/farcry/farcry_core/tags/formtools/" prefix="ft" >
+<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" >
 
 
 <cffunction name="ftEdit" access="public" output="true" returntype="void">

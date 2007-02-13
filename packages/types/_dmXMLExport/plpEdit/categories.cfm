@@ -4,7 +4,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmXMLExport/plpEdit/categories.cfm,v 1.7 2005/09/02 05:11:44 guy Exp $
+$Header: /cvs/farcry/core/packages/types/_dmXMLExport/plpEdit/categories.cfm,v 1.7 2005/09/02 05:11:44 guy Exp $
 $Author: guy $
 $Date: 2005/09/02 05:11:44 $
 $Name: milestone_3-0-1 $
@@ -18,7 +18,7 @@ $Description: dmXMLExport Type PLP for edit handler - Categorisation Step $
 $Developer: Brendan Sisson (brendan@daemon.com.au)$
 --->
 <cfprocessingDirective pageencoding="utf-8">
-<cfimport taglib="/farcry/farcry_core/tags/widgets/" prefix="widgets">
+<cfimport taglib="/farcry/core/tags/widgets/" prefix="widgets">
 <cfparam name="lSelectedCategoryID" default="">
 
 <cfif isDefined("form.bSubmitted")>

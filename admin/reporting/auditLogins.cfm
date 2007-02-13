@@ -5,7 +5,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/reporting/auditLogins.cfm,v 1.7 2005/08/16 02:41:08 pottery Exp $
+$Header: /cvs/farcry/core/admin/reporting/auditLogins.cfm,v 1.7 2005/08/16 02:41:08 pottery Exp $
 $Author: pottery $
 $Date: 2005/08/16 02:41:08 $
 $Name: milestone_3-0-1 $
@@ -30,7 +30,7 @@ $out:$
 </cfscript>
 
 <!--- set up page header --->
-<cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 <cfif iAuditTab eq 1>

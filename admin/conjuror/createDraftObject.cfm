@@ -5,7 +5,7 @@ merge of ../admin/navajo/createDraftObject.cfm and ../tags/navajo/createDraftObj
 
 <cfprocessingDirective pageencoding="utf-8">
 
-<cfimport taglib="/farcry/farcry_core/tags/navajo" prefix="nj">
+<cfimport taglib="/farcry/core/tags/navajo" prefix="nj">
 
 <cfprocessingDirective pageencoding="utf-8">
 <!--- createDraftObject.cfm 
@@ -13,8 +13,8 @@ Creates a draft object
 --->
 
 <cfsetting enablecfoutputonly="no">
-<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
-<cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
+<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
 <cfoutput>
 	<link rel="stylesheet" type="text/css" href="#application.url.farcry#/navajo/navajo_popup.css">
 </cfoutput>

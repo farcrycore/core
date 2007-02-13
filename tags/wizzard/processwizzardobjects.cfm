@@ -147,7 +147,7 @@
 		</cfif>
 
 		<cfif attributes.bimageautogenerate>
-			<cfset oFormTools = createObject("component", "farcry.farcry_core.packages.farcry.formtools") />
+			<cfset oFormTools = createObject("component", "farcry.core.packages.farcry.formtools") />
 			<cfset Caller[attributes.r_stProperties] = oFormTools.ImageAutoGenerateBeforeSave(stProperties=Caller[attributes.r_stProperties],stFields=stFields, stFormPost=Request.farcryForm.stObjects[ProcessingFormObjectPrefix]['FormPost']) />
 		</cfif>
 		
@@ -158,7 +158,7 @@
 	
 		<cfif len(attributes.lArrayListGenerate)>
 			
-			<cfset oFormTools = createObject("component", "farcry.farcry_core.packages.farcry.formtools") />
+			<cfset oFormTools = createObject("component", "farcry.core.packages.farcry.formtools") />
 			<cfloop list="#attributes.lArrayListGenerate#" index="i">
 				<cfset arrayField = stFields[i].metadata.ftArrayField />
 				<cfif structKeyExists(stFields[i].metadata, "ftListType")>
@@ -264,7 +264,7 @@
 		<cfelse>
 			
 			<cfif not isDefined("arguments.typename") or not len(arguments.typename)>
-				<cfset q4 = createObject("component", "farcry.farcry_core.packages.fourq.fourq")>
+				<cfset q4 = createObject("component", "farcry.core.packages.fourq.fourq")>
 				<cfset arguments.typename = q4.findType(objectid=arguments.objectid)>
 			</cfif>
 			

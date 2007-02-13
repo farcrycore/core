@@ -1,7 +1,7 @@
 <cfsetting enablecfoutputonly="Yes">
 <cfprocessingDirective pageencoding="utf-8">
-<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
-<cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
+<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
 
 <!--- 
 || BEGIN FUSEDOC ||
@@ -11,7 +11,7 @@ Daemon Pty Limited 1995-2001
 http://www.daemon.com.au/
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/navajo/displayPrinterFriendly.cfm,v 1.6 2004/07/15 02:03:00 brendan Exp $
+$Header: /cvs/farcry/core/tags/navajo/displayPrinterFriendly.cfm,v 1.6 2004/07/15 02:03:00 brendan Exp $
 $Author: brendan $
 $Date: 2004/07/15 02:03:00 $
 $Name: milestone_3-0-1 $

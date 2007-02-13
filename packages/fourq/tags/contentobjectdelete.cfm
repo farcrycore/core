@@ -28,7 +28,7 @@ A wrapper to delete a content object instance.
 
 //type lookup if required
 	if (NOT len(attributes.typename)) {
-		q4 = createObject("component", "farcry.farcry_core.packages.fourq.fourq");
+		q4 = createObject("component", "farcry.core.packages.fourq.fourq");
 		typename = q4.findType(attributes.objectid);
 		setVariable("attributes.typename", application.types[typename].typePath);
 	}	

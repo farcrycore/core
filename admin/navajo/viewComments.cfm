@@ -1,8 +1,8 @@
 <cfprocessingDirective pageencoding="utf-8">
 <!--- set up page header --->
-<cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
-<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
-<cfinclude template="/farcry/farcry_core/admin/includes/utilityFunctions.cfm">
+<cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
+<cfinclude template="/farcry/core/admin/includes/utilityFunctions.cfm">
 
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 

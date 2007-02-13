@@ -1,6 +1,6 @@
 <cfprocessingDirective pageencoding="utf-8">
-<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
-<cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
+<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
 <cfparam name="attributes.nodetype" default="dmNavigation"> 
 
 
@@ -89,7 +89,7 @@ Daemon Pty Limited 1995-2001
 http://www.daemon.com.au/
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/tags/navajo/treeData.cfm,v 1.19 2005/02/07 23:24:23 spike Exp $
+$Header: /cvs/farcry/core/tags/navajo/treeData.cfm,v 1.19 2005/02/07 23:24:23 spike Exp $
 $Author: spike $
 $Date: 2005/02/07 23:24:23 $
 $Name: milestone_3-0-1 $
@@ -154,7 +154,7 @@ Revision 1.5  2002/10/29 01:32:32  brendan
 modified draft object id fields
 
 Revision 1.4  2002/10/16 07:20:57  brendan
-moved tree code out of fourq and into farcry_core
+moved tree code out of fourq and into core
 
 || END FUSEDOC ||
 --->
@@ -172,7 +172,7 @@ moved tree code out of fourq and into farcry_core
 
 <cfloop index="objectId" list="#attributes.lObjectIds#">
 	<cfif len(objectId) eq 35 OR objectId eq '0'>
-	<cfinvoke component="farcry.farcry_core.packages.fourq.fourq" returnvariable="thisTypename" method="findType" objectID="#ObjectId#">
+	<cfinvoke component="farcry.core.packages.fourq.fourq" returnvariable="thisTypename" method="findType" objectID="#ObjectId#">
 	
 	<!--- get all objects that pertain to get --->
 
@@ -242,7 +242,7 @@ lAllowTypes list
 		
 		<cfif isArray(stAllObjects[objId].aObjectIDs) AND arrayLen(stAllObjects[objId].aObjectIDs) GT 0>
 			<cfloop from="#arrayLen(stAllObjects[objId].aObjectIDs)#" to="1" index="i" step="-1">
-				<cfinvoke component="farcry.farcry_core.packages.fourq.fourq" method="findType" returnvariable="rTypeName" objectID="#stAllObjects[objID].aObjectIds[i]#">
+				<cfinvoke component="farcry.core.packages.fourq.fourq" method="findType" returnvariable="rTypeName" objectID="#stAllObjects[objID].aObjectIds[i]#">
 				
 				<cfif NOT listContainsNoCase(lAllowTypes,rTypeName) AND stAllObjects[objID].typename IS "dmHTML">
 					 <cfset tmp = arrayDeleteAt(stAllObjects[objID].aObjectIds,i)> 

@@ -7,7 +7,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/packages/types/_dmhtml/plpEdit/teaser.cfm,v 1.6 2004/07/15 02:00:49 brendan Exp $
+$Header: /cvs/farcry/core/packages/types/_dmhtml/plpEdit/teaser.cfm,v 1.6 2004/07/15 02:00:49 brendan Exp $
 $Author: brendan $
 $Date: 2004/07/15 02:00:49 $
 $Name: milestone_3-0-1 $
@@ -20,8 +20,8 @@ $TODO: clean up formatting -- test in Mozilla 20030503 GB$
 || DEVELOPER ||
 $Developer: Brendan Sisson (brendan@daemon.com.au)$
 --->
-<cfimport taglib="/farcry/farcry_core/tags/farcry" prefix="tags">
-<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/core/tags/farcry" prefix="tags">
+<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
 
 <!--- copy related items to a list for looping --->
 <cfset aRelatedItems = output.aObjectIDs>
@@ -47,7 +47,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 					</cfoutput>
 					<cfloop from="1" to="#arrayLen(aRelatedItems)#" index="id">
 						<!--- get the objectType --->
-						<cfinvoke component="farcry.farcry_core.packages.fourq.fourq" returnVariable="typeName" method="findType" objectID="#aRelatedItems[id]#">
+						<cfinvoke component="farcry.core.packages.fourq.fourq" returnVariable="typeName" method="findType" objectID="#aRelatedItems[id]#">
 						<cfif typename eq "dmImage">
 							<q4:contentObjectGet objectID="#aRelatedItems[id]#" r_stObject="stImage">
 							<cfif stImage.thumbnail neq "">

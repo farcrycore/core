@@ -5,7 +5,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/archive.cfm,v 1.2 2005/10/06 06:18:35 daniela Exp $
+$Header: /cvs/farcry/core/admin/archive.cfm,v 1.2 2005/10/06 06:18:35 daniela Exp $
 $Author: daniela $
 $Date: 2005/10/06 06:18:35 $
 $Name: milestone_3-0-1 $
@@ -30,7 +30,7 @@ $out:$
 <cfset iArchiveTab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="ObjectArchiveTab") />
 
 <!--- set up page header --->
-<cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 <cfif iArchiveTab eq 1>
@@ -41,7 +41,7 @@ $out:$
 	<cfif structKeyExists(url, "archiveid")>
 		
 		<!--- get type --->
-		<cfset oFourq = createObject("component","farcry.farcry_core.packages.fourq.fourq") />
+		<cfset oFourq = createObject("component","farcry.core.packages.fourq.fourq") />
 		<cfset typename = oFourq.findType(url.objectid) />
 		<cfset oType = createObject("component",application.types[typename].typepath) />
 		

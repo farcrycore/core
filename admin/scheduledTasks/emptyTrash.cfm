@@ -6,7 +6,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/farcry_core/admin/scheduledTasks/emptyTrash.cfm,v 1.3 2005/08/09 03:54:40 geoff Exp $
+$Header: /cvs/farcry/core/admin/scheduledTasks/emptyTrash.cfm,v 1.3 2005/08/09 03:54:40 geoff Exp $
 $Author: geoff $
 $Date: 2005/08/09 03:54:40 $
 $Name: milestone_3-0-1 $
@@ -26,14 +26,14 @@ $out:$
 --->
 <cfprocessingDirective pageencoding="utf-8">
 
-<cfinclude template="/farcry/farcry_core/admin/includes/cfFunctionWrappers.cfm">
-<cfinclude template="/farcry/farcry_core/admin/includes/utilityFunctions.cfm">
+<cfinclude template="/farcry/core/admin/includes/cfFunctionWrappers.cfm">
+<cfinclude template="/farcry/core/admin/includes/utilityFunctions.cfm">
 
 <cfparam name="url.timePart" default="m">
 <cfparam name="url.timeValue" default=1>
 
 <cfscript>
-	q4 = createObject("component","farcry.farcry_core.packages.fourq.fourq");
+	q4 = createObject("component","farcry.core.packages.fourq.fourq");
 	oTree = createObject("component","#application.packagepath#.farcry.tree");
 	oNav = createObject("component",application.types['dmNavigation'].typepath);
 	

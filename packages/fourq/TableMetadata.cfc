@@ -1,7 +1,7 @@
 <cfcomponent output="false" hint="This component acts as a generic container for metadata about a database table. It provides utility methods to interact with the metadata and encapsulates the checking for and defalut values of metadata attributes.">
 
 
-	<cffunction name="init" access="public" output="false" hint="Initializes the instance data for the component" returntype="farcry.farcry_core.packages.fourq.TableMetadata">
+	<cffunction name="init" access="public" output="false" hint="Initializes the instance data for the component" returntype="farcry.core.packages.fourq.TableMetadata">
 		<cfset variables.validDataTypes = "array,boolean,datetime,date,numeric,string,nstring,uuid,variablename,color,email,longchar,int,integer,smallint,decimal,text,varchar,datetime" />
 		<cfset variables.tableDefinition = structNew() />
 		<cfreturn this />
@@ -25,7 +25,7 @@
 		<cfset var i = "" />
 		
 		<cfif structKeyExists(arguments.md,'bAbstract') and arguments.bThrowOnAbstract>
-			<cfthrow type="farcry.farcry_core.packages.fourq.tablemetadata.abstractTypeException" message="Abstract components cannot be used for table definitions." detail="An attempt was made to generate database table information for an abstract component #md.name# (#md.path#). Abstract components cannot be used for table definitions. Either extend the component or set the bAbstract attribute of the cfcomponent tag to false.">
+			<cfthrow type="farcry.core.packages.fourq.tablemetadata.abstractTypeException" message="Abstract components cannot be used for table definitions." detail="An attempt was made to generate database table information for an abstract component #md.name# (#md.path#). Abstract components cannot be used for table definitions. Either extend the component or set the bAbstract attribute of the cfcomponent tag to false.">
 		</cfif>
 		
 		<!--- Make sure we set the table name first time through --->
@@ -60,11 +60,11 @@
 		<cfset var prop = structNew() />
 
 		<cfif NOT structKeyExists(arguments.data,'type')>
-			<cfthrow type="farcry.farcry_core.packages.fourq.TableMetadata.InvalidPropertyException" message="The cfproperty tag for #arguments.data.name# does not have a type attribute." detail="The type attribute of the cfproperty tag is required for the fourq persistence layer." />
+			<cfthrow type="farcry.core.packages.fourq.TableMetadata.InvalidPropertyException" message="The cfproperty tag for #arguments.data.name# does not have a type attribute." detail="The type attribute of the cfproperty tag is required for the fourq persistence layer." />
 		</cfif>
 		
 		<cfif not listFindNoCase(variables.validDataTypes,arguments.data.type)>
-			<cfthrow type="farcry.farcry_core.packages.fourq.TableMetadata.InvalidPropertyException" message="The cfproperty tag for #arguments.data.name# has an invalid value for the type attribute." detail="The list of valid datatypes is #variables.validDataTypes#. The type attribute has a value of ""#arguments.data.type#""." />
+			<cfthrow type="farcry.core.packages.fourq.TableMetadata.InvalidPropertyException" message="The cfproperty tag for #arguments.data.name# has an invalid value for the type attribute." detail="The list of valid datatypes is #variables.validDataTypes#. The type attribute has a value of ""#arguments.data.type#""." />
 		</cfif>
 		
 		<cfset prop.type = arguments.data.type />
@@ -132,11 +132,11 @@
 			  <cfset fieldName = listFirst(arrayProps[i],":") />
 			  <cfset dataType = listRest(arrayProps[i],":") />
 			  <cfif listFindNoCase(reservedFieldNames,fieldName)>
-			    <cfthrow type="farcry.farcry_core.packages.fourq.TableMetadata.InvalidArrayPropertyException" message="The cfproperty tag for #arguments.data.name# is using a reserved field name in the arrayProps attribute." detail="The list of reserved field names is #reservedFieldNames#. The arrayProps attribute has a value of ""#arguments.data.arrayProps#""." />
+			    <cfthrow type="farcry.core.packages.fourq.TableMetadata.InvalidArrayPropertyException" message="The cfproperty tag for #arguments.data.name# is using a reserved field name in the arrayProps attribute." detail="The list of reserved field names is #reservedFieldNames#. The arrayProps attribute has a value of ""#arguments.data.arrayProps#""." />
 			  </cfif>
 			  
 			  <cfif not listFindNoCase(variables.validDataTypes,dataType)>
-					<cfthrow type="farcry.farcry_core.packages.fourq.TableMetadata.InvalidArrayPropertyException" message="The cfproperty tag for #arguments.data.name# has an invalid data type in the arrayProps attribute." detail="The list of valid datatypes is #variables.validDataTypes#. The arrayProps attribute has a value of ""#arguments.data.arrayProps#""." />
+					<cfthrow type="farcry.core.packages.fourq.TableMetadata.InvalidArrayPropertyException" message="The cfproperty tag for #arguments.data.name# has an invalid data type in the arrayProps attribute." detail="The list of valid datatypes is #variables.validDataTypes#. The arrayProps attribute has a value of ""#arguments.data.arrayProps#""." />
 				</cfif>
 				
 			  <cfset prop.fields[fieldName] = structNew() />

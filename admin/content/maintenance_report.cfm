@@ -63,7 +63,7 @@
 	</cfdefaultcase>>
 </cfswitch>
 
-<cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
 
 <cfsetting enablecfoutputonly="no">
 <!--- set up page header --->

@@ -19,8 +19,8 @@ $DESCRIPTION: shows rules associated with this object $
 $DEVELOPER: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
 --->
 <!--- import tag libraries --->
-<cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin" />
-<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4" />
+<cfimport taglib="/farcry/core/tags/admin/" prefix="admin" />
+<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4" />
 
 <!--- environment variables --->
 <cfparam name="URL.action" default="">
@@ -100,7 +100,7 @@ function reinstateRuleListing()
 	<cfdefaultcase>
 		<cfif isDefined("url.objectid")>
 			<cfscript>
-				ofourq = createObject("component","farcry.farcry_core.packages.fourq.fourq");
+				ofourq = createObject("component","farcry.core.packages.fourq.fourq");
 				q = oCon.getContainersByObject(objectid=URL.objectid,dsn=application.dsn);
 			</cfscript>
 			<!--- Get all the containers that are more than likely associated with this object. Relies on correct naming of containers at the moment which is not zehr gut. --->
