@@ -1,6 +1,6 @@
 <cfsetting enablecfoutputonly="yes">
 
-<cfparam name="attributes.r_stWizzard" default="stWizzard" type="string" /><!--- Name of structure to return the stWizzard to the Caller. --->
+<cfparam name="attributes.r_stwizard" default="stwizard" type="string" /><!--- Name of structure to return the stwizard to the Caller. --->
 <cfparam name="attributes.excludeAction" default="" ><!--- Any actions to exclude --->
 
 
@@ -22,12 +22,12 @@
 		<cfset FormFieldToProcess = "FarcryFormSubmitButton" />
 		<cfset StringToCheck = attributes.action />
 	<cfelse>
-		<cfset FormFieldToProcess = "currentWizzardStep" />
+		<cfset FormFieldToProcess = "currentwizardStep" />
 		<cfparam name="attributes.step" default="*">
 		<cfset StringToCheck = attributes.step />
 	</cfif>
 
-	<cfset variables.EnterWizzardProcess = false>
+	<cfset variables.EnterwizardProcess = false>
 	
 	<!--- If the String to check is an empty string, we accept everything. --->
 	<cfif not len(StringToCheck)>
@@ -41,21 +41,21 @@
 				
 				<!--- Check to make sure the farcry form button that has been pressed is not in the exclude list --->
 				<cfif NOT listFindNoCase(attributes.excludeAction, form.farcryformsubmitbutton)>
-					<cfset variables.EnterWizzardProcess = true>
+					<cfset variables.EnterwizardProcess = true>
 				</cfif>
 			</cfif>
 		</cfloop>
 	</cfif>
 
-	<!--- Read the Wizzard --->
-	<cfif variables.EnterWizzardProcess and structKeyExists(form, 'WizzardID') and len(form.wizzardID)>
+	<!--- Read the wizard --->
+	<cfif variables.EnterwizardProcess and structKeyExists(form, 'wizardID') and len(form.wizardID)>
 		
 		
 		
-		<cfset oWizzard = createObject("component",application.types['dmWizzard'].typepath) />
-		<cfset stWizzard = oWizzard.Read(WizzardID=form.wizzardID)>
-		<cfloop list="#attributes.r_stWizzard#" index="i">
-			<cfset Caller[i] = stWizzard />
+		<cfset owizard = createObject("component",application.types['dmWizard'].typepath) />
+		<cfset stwizard = owizard.Read(wizardID=form.wizardID)>
+		<cfloop list="#attributes.r_stwizard#" index="i">
+			<cfset Caller[i] = stwizard />
 		</cfloop>
 	<cfelse>
 		<cfsetting enablecfoutputonly="no">
@@ -67,30 +67,30 @@
 
 <cfif thistag.ExecutionMode EQ "End">
 	
-	<!--- Have we been requested to Save the wizzard object? --->
-	<cfif isDefined("attributes.SaveWizzard") and attributes.SaveWizzard EQ "true">
-		<cfloop list="#structKeyList(stWizzard.Data)#" index="i">
-			<cfset stProperties = stWizzard.Data[i]>
+	<!--- Have we been requested to Save the wizard object? --->
+	<cfif isDefined("attributes.Savewizard") and attributes.Savewizard EQ "true">
+		<cfloop list="#structKeyList(stwizard.Data)#" index="i">
+			<cfset stProperties = stwizard.Data[i]>
 			<cfset stProperties.locked = "0" />
 			<cfset stProperties.lockedby = ""/>
-			<cfset typename = oWizzard.FindType(ObjectID=i) />				
-			<cfset otype = createObject("component",application.types["#stWizzard.Data[i]['typename']#"].typepath) />
+			<cfset typename = owizard.FindType(ObjectID=i) />				
+			<cfset otype = createObject("component",application.types["#stwizard.Data[i]['typename']#"].typepath) />
 			<cfset stResult = otype.setData(stProperties=stProperties) />
 		</cfloop>
 		
-		<!--- Wizzard data has been saved, so flag to remove the wizzard --->	
-		<cfset attributes.RemoveWizzard = true />
+		<!--- wizard data has been saved, so flag to remove the wizard --->	
+		<cfset attributes.Removewizard = true />
 	</cfif>
 		
-	<!--- Have we been requested to remove the wizzard object? --->
-	<cfif isDefined("attributes.RemoveWizzard") and attributes.RemoveWizzard EQ "true">
+	<!--- Have we been requested to remove the wizard object? --->
+	<cfif isDefined("attributes.Removewizard") and attributes.Removewizard EQ "true">
 		
 		
-		<cfset stResult = oWizzard.deleteData(objectID=stWizzard.ObjectID) />	
+		<cfset stResult = owizard.deleteData(objectID=stwizard.ObjectID) />	
 		
-		<!--- Do not allow any further processing on this wizzard. --->
+		<!--- Do not allow any further processing on this wizard. --->
 		<cfset structDelete(FORM, "FarcryFormSubmitButton") />	
-		<cfset structDelete(FORM, "currentWizzardStep") />		
+		<cfset structDelete(FORM, "currentwizardStep") />		
 	</cfif>
 	
 	
@@ -112,7 +112,7 @@
 	<!--- have we requested to exit this webskin? --->
 	<cfif isDefined("attributes.Exit") AND attributes.Exit>
 	
-		<cfset Request.FarcryWizzardOnExitRun = true />
+		<cfset Request.FarcrywizardOnExitRun = true />
 
 		<!--- If the onExit doesnt exist, default to Refreshing the page. --->
 		<cfparam name="Caller.onExit" default="Refresh" />

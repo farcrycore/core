@@ -6,8 +6,8 @@
 </cfif>
 
 <!---<cfset ParentTag = GetBaseTagList()>
-<cfif ListFindNoCase(ParentTag, "cf_wizzard")>
-	<cfabort showerror="You must use the wiz:object inside of a wizzard...">
+<cfif ListFindNoCase(ParentTag, "cf_wizard")>
+	<cfabort showerror="You must use the wiz:object inside of a wizard...">
 </cfif> --->
 		
 
@@ -30,7 +30,7 @@
 	<cfparam name="attributes.insidePLP" default="0"><!--- how are we rendering the form --->
 	<cfparam name="attributes.r_stFields" default=""><!--- the name of the structure that is to be returned with the form field information. --->
 	<cfparam name="attributes.stPropMetadata" default="#structNew()#"><!--- This is used to override the default metadata as setup in the type.cfc --->
-	<cfparam name="attributes.WizzardID" default=""><!--- If this object call is part of a wizzard, the object will be retrieved from the wizzard storage --->
+	<cfparam name="attributes.wizardID" default=""><!--- If this object call is part of a wizard, the object will be retrieved from the wizard storage --->
 	<cfparam name="attributes.IncludeLibraryWrapper" default="true"><!--- If this is set to false, the library wrapper is not displayed. This is so that the library can change the inner html of the wrapper without duplicating the wrapping div. --->
 	<cfparam name="attributes.bValidation" default="true"><!--- Flag to determine if client side validation classes are added to this section of the form. --->
 	<cfparam name="attributes.lHiddenFields" default=""><!--- List of fields to render as hidden fields that can be use to inject a value into the form post. --->
@@ -425,9 +425,9 @@
 					<cfset stURLParams.LibraryType = "#ftFieldMetadata.Type#">
 					<cfset stURLParams.PackageType = "#attributes.PackageType#">
 					
-					<!--- If the field is contained in a wizzard, we need to let the library know which wizzard. --->
-					<cfif len(attributes.WizzardID)>
-						<cfset stURLParams.WizzardID = "#attributes.WizzardID#">
+					<!--- If the field is contained in a wizard, we need to let the library know which wizard. --->
+					<cfif len(attributes.wizardID)>
+						<cfset stURLParams.wizardID = "#attributes.wizardID#">
 					</cfif>
 					
 					<cfif structKeyExists(ftFieldMetadata,'ftLibraryAddNewWebskin')>

@@ -28,7 +28,7 @@ $out:$
 	
 	
 	<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft">	
-	<cfimport taglib="/farcry/core/tags/wizzard/" prefix="wiz">	
+	<cfimport taglib="/farcry/core/tags/wizard/" prefix="wiz">	
 	
 	
 	<cffunction name="createData" access="public" returntype="any" output="false" hint="Creates an instance of an object">
@@ -89,52 +89,52 @@ $out:$
 		
 		
 		
-		<cfquery dbtype="query" name="qWizzardSteps">
-		SELECT ftWizzardStep
+		<cfquery dbtype="query" name="qwizardSteps">
+		SELECT ftwizardStep
 		FROM qMetadata
-		WHERE ftWizzardStep <> '#stobj.typename#'
-		Group By ftWizzardStep
+		WHERE ftwizardStep <> '#stobj.typename#'
+		Group By ftwizardStep
 		ORDER BY ftSeq
 		</cfquery>
 		
 		<!------------------------ 
-		Work out if we are creating a wizzard or just a simple form.
-		If there are multiple wizzard steps then we will be creating a wizzard
+		Work out if we are creating a wizard or just a simple form.
+		If there are multiple wizard steps then we will be creating a wizard
 		 ------------------------>
-		<cfif qWizzardSteps.recordcount GT 1>
+		<cfif qwizardSteps.recordcount GT 1>
 			
-			<!--- Always save wizzard WDDX data --->
-			<wiz:processWizzard>
+			<!--- Always save wizard WDDX data --->
+			<wiz:processwizard>
 			
-				<!--- Save the Primary Wizzard Object --->
-				<wiz:processWizzardObjects typename="#stobj.typename#" PackageType="rules" />	
+				<!--- Save the Primary wizard Object --->
+				<wiz:processwizardObjects typename="#stobj.typename#" PackageType="rules" />	
 					
-			</wiz:processWizzard>
+			</wiz:processwizard>
 			
-			<wiz:processWizzard action="Save" SaveWizzard="true" Exit="true" /><!--- Save Wizzard Data to Database and remove Wizzard --->
-			<wiz:processWizzard action="Cancel" RemoveWizzard="true" Exit="true" /><!--- remove Wizzard --->
+			<wiz:processwizard action="Save" Savewizard="true" Exit="true" /><!--- Save wizard Data to Database and remove wizard --->
+			<wiz:processwizard action="Cancel" Removewizard="true" Exit="true" /><!--- remove wizard --->
 			
 			
-			<wiz:wizzard ReferenceID="#stobj.objectid#">
+			<wiz:wizard ReferenceID="#stobj.objectid#">
 			
-				<cfloop query="qWizzardSteps">
+				<cfloop query="qwizardSteps">
 						
-					<cfquery dbtype="query" name="qWizzardStep">
+					<cfquery dbtype="query" name="qwizardStep">
 					SELECT *
 					FROM qMetadata
-					WHERE ftWizzardStep = '#qWizzardSteps.ftWizzardStep#'
+					WHERE ftwizardStep = '#qwizardSteps.ftwizardStep#'
 					ORDER BY ftSeq
 					</cfquery>
 				
-					<wiz:step name="#qWizzardSteps.ftWizzardStep#">
+					<wiz:step name="#qwizardSteps.ftwizardStep#">
 						
 
 						<cfquery dbtype="query" name="qFieldSets">
-						SELECT ftWizzardStep, ftFieldset
+						SELECT ftwizardStep, ftFieldset
 						FROM qMetadata
-						WHERE ftWizzardStep = '#qWizzardSteps.ftWizzardStep#'
+						WHERE ftwizardStep = '#qwizardSteps.ftwizardStep#'
 						AND ftFieldset <> '#stobj.typename#'
-						Group By ftWizzardStep, ftFieldset
+						Group By ftwizardStep, ftFieldset
 						ORDER BY ftSeq
 						</cfquery>
 											
@@ -156,21 +156,21 @@ $out:$
 				
 				</cfloop>
 				
-			</wiz:wizzard>	
+			</wiz:wizard>	
 				
 				
 				
 				
 		<!------------------------ 
-		If there is only 1 wizzard step (typename by default) then we will be creating a simple form
+		If there is only 1 wizard step (typename by default) then we will be creating a simple form
 		 ------------------------>		 
 		<cfelse>
 		
 			<cfquery dbtype="query" name="qFieldSets">
-			SELECT ftWizzardStep, ftFieldset
+			SELECT ftwizardStep, ftFieldset
 			FROM qMetadata
 			WHERE ftFieldset <> '#stobj.typename#'
-			Group By ftWizzardStep, ftFieldset
+			Group By ftwizardStep, ftFieldset
 			ORDER BY ftSeq
 			</cfquery>
 		

@@ -21,11 +21,11 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 $in: objectid -- $
 --->
 
-<cfimport taglib="/farcry/core/tags/wizzard/" prefix="wiz" >
+<cfimport taglib="/farcry/core/tags/wizard/" prefix="wiz" >
 <cfimport taglib="/farcry/core/tags/security/" prefix="se" >
 
-<cfset stBaseTag = GetBaseTagData("cf_wizzard")>
-<cfset stWizzard = stBaseTag.stWizzard>
+<cfset stBaseTag = GetBaseTagData("cf_wizard")>
+<cfset stwizard = stBaseTag.stwizard>
 
 
 <cfif thistag.executionMode eq "Start">
@@ -48,28 +48,28 @@ $in: objectid -- $
 		</cfif>
 	</cfif>
 	
-	<!--- Need to add this step to the list of steps in the Wizzard --->
-	<cfset stWizzard.Steps = ListAppend(stWizzard.Steps,attributes.Name) />
+	<!--- Need to add this step to the list of steps in the wizard --->
+	<cfset stwizard.Steps = ListAppend(stwizard.Steps,attributes.Name) />
 	
 	<!--- Default the output HTML --->
-	<cfparam name="stWizzard.StepHTML" default="">
+	<cfparam name="stwizard.StepHTML" default="">
 
 	<!--- If the current step is not this step, then exit from this step --->
 	
-	<cfif stWizzard.CurrentStep NEQ ListLen(stWizzard.Steps)>
+	<cfif stwizard.CurrentStep NEQ ListLen(stwizard.Steps)>
 		<cfexit method="exittag">
 	</cfif>
 
 	<cfif len(attributes.lFields)>
-		<cfsavecontent variable="stWizzard.StepHTML">
-			<wiz:object legend="#attributes.legend#" ObjectID="#stWizzard.PrimaryObjectID#"  typename="#stWizzard.Data[stWizzard.PrimaryObjectID].typename#" lFields="#attributes.lFields#" InTable=0 />
+		<cfsavecontent variable="stwizard.StepHTML">
+			<wiz:object legend="#attributes.legend#" ObjectID="#stwizard.PrimaryObjectID#"  typename="#stwizard.Data[stwizard.PrimaryObjectID].typename#" lFields="#attributes.lFields#" InTable=0 />
 		</cfsavecontent>
 	</cfif>	
 	
 </cfif>
 
 <cfif thistag.executionMode eq "End">
-	<cfset stWizzard.StepHTML = stWizzard.StepHTML & thistag.GeneratedContent>
+	<cfset stwizard.StepHTML = stwizard.StepHTML & thistag.GeneratedContent>
 	<cfset thistag.GeneratedContent = "">
 	
 </cfif>

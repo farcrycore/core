@@ -150,17 +150,17 @@ $out:$
 	<cfargument name="stProps" type="struct" required="true" />
 	
 	
-	<cfset var qMetadataSetup = queryNew("typename,propertyname,ftSeq,ftFieldset,ftWizzardStep,ftType,fthelptitle,fthelpsection","varchar,varchar,Integer,varchar,varchar,varchar,varchar,varchar") /><!--- Prepare a temporary metadata query that will later be sorted and sent into the types metadata structure. --->
-	<cfset var qMetadata = queryNew("typename,propertyname,ftSeq,ftFieldset,ftWizzardStep,ftType,fthelptitle,fthelpsection","varchar,varchar,Integer,varchar,varchar,varchar,varchar,varchar") /><!--- Prepare a temporary metadata query that will later be sorted and sent into the types metadata structure. --->	
+	<cfset var qMetadataSetup = queryNew("typename,propertyname,ftSeq,ftFieldset,ftwizardStep,ftType,fthelptitle,fthelpsection","varchar,varchar,Integer,varchar,varchar,varchar,varchar,varchar") /><!--- Prepare a temporary metadata query that will later be sorted and sent into the types metadata structure. --->
+	<cfset var qMetadata = queryNew("typename,propertyname,ftSeq,ftFieldset,ftwizardStep,ftType,fthelptitle,fthelpsection","varchar,varchar,Integer,varchar,varchar,varchar,varchar,varchar") /><!--- Prepare a temporary metadata query that will later be sorted and sent into the types metadata structure. --->	
 	<cfset var Seq = "" />
 	<cfset var Fieldset = "" />
-	<cfset var WizzardStep = "" />
+	<cfset var wizardStep = "" />
 	<cfset var Type = "" />
 	<cfset var helpTitle="" />
 	<cfset var helpSection="" />
 	
 	<!--------------------------------- 
-	WE NEED TO SETUP FTSEQ, FTFIELDSET & FTWIZZARDSTEP
+	WE NEED TO SETUP FTSEQ, FTFIELDSET & FTwizardSTEP
 	THESE PROPERTIES ARE USED TO AUTOMATICALLY RENDER FORMS (BOTH DISPLAY AND EDIT) BASED ON THE METADATA IF NO EDIT OR DISPLAY METHOD ARE PROVIDED.
 	 --------------------------------->
 				
@@ -185,11 +185,11 @@ $out:$
 			<cfset Fieldset = typename />
 		</cfif>
 		
-		<!--- SETUP FTWIZZARDSTEP --->
-		<cfif structKeyExists(arguments.stProps[i].METADATA, "ftWizzardStep")>
-			<cfset WizzardStep = arguments.stProps[i].METADATA.ftWizzardStep />
+		<!--- SETUP FTwizardSTEP --->
+		<cfif structKeyExists(arguments.stProps[i].METADATA, "ftwizardStep")>
+			<cfset wizardStep = arguments.stProps[i].METADATA.ftwizardStep />
 		<cfelse>
-			<cfset WizzardStep = typename />
+			<cfset wizardStep = typename />
 		</cfif>
 		
 		<!--- SETUP ftType --->
@@ -216,7 +216,7 @@ $out:$
 	   <cfset Temp = QuerySetCell(qMetadataSetup,"propertyname", i) />
 	   <cfset Temp = QuerySetCell(qMetadataSetup,"ftSeq", Seq) />
 	   <cfset Temp = QuerySetCell(qMetadataSetup,"ftFieldset", Fieldset) />
-	   <cfset Temp = QuerySetCell(qMetadataSetup,"ftWizzardStep", WizzardStep) />
+	   <cfset Temp = QuerySetCell(qMetadataSetup,"ftwizardStep", wizardStep) />
 	   <cfset Temp = QuerySetCell(qMetadataSetup,"ftType", Type) />
 	   <cfset querySetCell(qMetadataSetup,"ftHelpTitle", helpTitle) />
 	   <cfset querySetCell(qMetadataSetup,"ftHelpSection", helpSection) />

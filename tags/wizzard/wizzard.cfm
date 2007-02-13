@@ -22,20 +22,20 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 $in: SessionID -- $
 --->
 <cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" >
-<cfimport taglib="/farcry/core/tags/wizzard/" prefix="wiz" >
+<cfimport taglib="/farcry/core/tags/wizard/" prefix="wiz" >
 
-<cfset oWizzard = createObject("component",application.types['dmWizzard'].typepath)>
+<cfset owizard = createObject("component",application.types['dmWizard'].typepath)>
 
 
 <cfif thistag.executionMode eq "Start">
 
 	<cfparam name="attributes.ReferenceID" default="" /><!--- This can be either a UUID of an object or a typename in which case it will create a default structure of the type --->
 	<cfparam name="attributes.ReturnLocation" default="" />
-	<cfparam name="attributes.Timeout" default="15" /><!--- Default timeout of wizzard of 15 minutes --->
-	<cfparam name="attributes.r_stWizzard" default="stWizzard" /><!--- this is the WDDX packet that will be returned --->
+	<cfparam name="attributes.Timeout" default="15" /><!--- Default timeout of wizard of 15 minutes --->
+	<cfparam name="attributes.r_stwizard" default="stwizard" /><!--- this is the WDDX packet that will be returned --->
 
-	<!--- We only render the form if FarcryWizzard OnExit has not been Fired. --->
-	<cfif isDefined("Request.FarcryWizzardOnExitRun") AND Request.FarcryWizzardOnExitRun >			
+	<!--- We only render the form if Farcrywizard OnExit has not been Fired. --->
+	<cfif isDefined("Request.FarcrywizardOnExitRun") AND Request.FarcrywizardOnExitRun >			
 		<cfexit method="exittag">			
 	</cfif>
 	
@@ -49,9 +49,9 @@ $in: SessionID -- $
 	<!--- Add required CSS to <head> --->
 	<cfset Request.InHead.Wizard = 1>
 	
-	<cfset stWizzard = oWizzard.Read(ReferenceID=attributes.ReferenceID,UserLogin=attributes.UserLogin)>
+	<cfset stwizard = owizard.Read(ReferenceID=attributes.ReferenceID,UserLogin=attributes.UserLogin)>
 	
-	<cfset CALLER[attributes.r_stWizzard] = stWizzard>
+	<cfset CALLER[attributes.r_stwizard] = stwizard>
 	
 	
 	<!--- Need Create a Form. Cant use <ft:form> because of incorrect nesting --->
@@ -98,68 +98,68 @@ $in: SessionID -- $
 
 	
 	
-<!---	<wiz:processWizzard action="Cancel" url="#attributes.ReturnLocation#" >
-		<cfset stResult = oWizzard.deleteData(objectID=stWizzard.ObjectID)>
+<!---	<wiz:processwizard action="Cancel" url="#attributes.ReturnLocation#" >
+		<cfset stResult = owizard.deleteData(objectID=stwizard.ObjectID)>
 		
-		<!--- If a return location is not set, we want to delete the wizzard object and exit the wizzard tag. --->
+		<!--- If a return location is not set, we want to delete the wizard object and exit the wizard tag. --->
 		<cfif not len(attributes.ReturnLocation)>
-			<cfset stResult = oWizzard.deleteData(objectID=stWizzard.ObjectID)>
+			<cfset stResult = owizard.deleteData(objectID=stwizard.ObjectID)>
 			<cfexit method="exittag">	
 		</cfif>
-	</wiz:processWizzard> --->
+	</wiz:processwizard> --->
 
 	
-	<!--- If the wizzard has been submitted then work out the next step. --->
-	<wiz:processWizzard>		
+	<!--- If the wizard has been submitted then work out the next step. --->
+	<wiz:processwizard>		
 		<cfif FORM.FarcryFormSubmitButton EQ "Next">
-			<cfset stWizzard.CurrentStep = stWizzard.CurrentStep + 1>
+			<cfset stwizard.CurrentStep = stwizard.CurrentStep + 1>
 		<cfelseif FORM.FarcryFormSubmitButton EQ "Previous">
-			<cfset stWizzard.CurrentStep = stWizzard.CurrentStep - 1>
-		<cfelseif ListFindNoCase(stWizzard.Steps,FORM.FarcryFormSubmitButton)>
-			<cfset stWizzard.CurrentStep = ListFindNoCase(stWizzard.Steps,FORM.FarcryFormSubmitButton)>
+			<cfset stwizard.CurrentStep = stwizard.CurrentStep - 1>
+		<cfelseif ListFindNoCase(stwizard.Steps,FORM.FarcryFormSubmitButton)>
+			<cfset stwizard.CurrentStep = ListFindNoCase(stwizard.Steps,FORM.FarcryFormSubmitButton)>
 		<cfelse>
-			<cfset stWizzard.CurrentStep = stWizzard.CurrentStep>
+			<cfset stwizard.CurrentStep = stwizard.CurrentStep>
 		</cfif>
 		
-		<cfif stWizzard.CurrentStep LTE 0 OR stWizzard.CurrentStep GT ListLen(stWizzard.Steps)>
-			<cfset stWizzard.CurrentStep = 1>
+		<cfif stwizard.CurrentStep LTE 0 OR stwizard.CurrentStep GT ListLen(stwizard.Steps)>
+			<cfset stwizard.CurrentStep = 1>
 		</cfif>
 			
-	</wiz:processWizzard>
+	</wiz:processwizard>
 	
 	
-<!---	<wiz:processWizzard action="Save" url="#attributes.ReturnLocation#" >
-		<cfloop list="#structKeyList(stWizzard.Data)#" index="i">
-			<cfset stProperties = stWizzard.Data[i]>
-			<cfset typename = oWizzard.FindType(ObjectID=i) />				
-			<cfset otype = createObject("component",application.types["#stWizzard.Data[i]['typename']#"].typepath) />
+<!---	<wiz:processwizard action="Save" url="#attributes.ReturnLocation#" >
+		<cfloop list="#structKeyList(stwizard.Data)#" index="i">
+			<cfset stProperties = stwizard.Data[i]>
+			<cfset typename = owizard.FindType(ObjectID=i) />				
+			<cfset otype = createObject("component",application.types["#stwizard.Data[i]['typename']#"].typepath) />
 			<cfset stResult = otype.setData(stProperties=stProperties) />
 		</cfloop>
 		
-		<!--- If a return location is not set, we want to delete the wizzard object and exit the wizzard tag. --->
+		<!--- If a return location is not set, we want to delete the wizard object and exit the wizard tag. --->
 		<cfif not len(attributes.ReturnLocation)>
-			<cfset stResult = oWizzard.deleteData(objectID=stWizzard.ObjectID)>
+			<cfset stResult = owizard.deleteData(objectID=stwizard.ObjectID)>
 			<cfexit method="exittag">	
 		</cfif>
-	</wiz:processWizzard> --->
+	</wiz:processwizard> --->
 	
 		
 	<!--- Reset the steps just before running them just incase they have changes since last call. --->
-	<cfset stWizzard.Steps = "">
+	<cfset stwizard.Steps = "">
 
 </cfif>
 
 <cfif thistag.executionMode eq "End">
 
 
-	<cfset stResult = oWizzard.Write(ObjectID=stWizzard.ObjectID,Steps=stWizzard.Steps,CurrentStep=stWizzard.CurrentStep,Data=stWizzard.Data)>
+	<cfset stResult = owizard.Write(ObjectID=stwizard.ObjectID,Steps=stwizard.Steps,CurrentStep=stwizard.CurrentStep,Data=stwizard.Data)>
 
 	<!--- Include Prototype light in the head --->
 	<cfset Request.InHead.PrototypeLite = 1>
-	<cfsavecontent variable="WizzardSubmissionJS">
+	<cfsavecontent variable="wizardSubmissionJS">
 		<cfoutput>
 		<script language="javascript">
-			function WizzardSubmission(state) {
+			function wizardSubmission(state) {
 				if (state == 'Cancel') {
 					$('FarcryFormSubmitButtonClicked#Request.farcryForm.Name#').value=state;
 					$('#Request.farcryForm.Name#').submit();	
@@ -177,38 +177,38 @@ $in: SessionID -- $
 					}
 				</cfif>
 			}
-			function WizzardCancelConfirm(){
+			function wizardCancelConfirm(){
 				if( window.confirm("Changes made will not be saved.\nDo you still wish to Cancel?")){
-					WizzardSubmission('Cancel');
+					wizardSubmission('Cancel');
 				}
 			}
 		</script>
 		</cfoutput>
 	</cfsavecontent>
-	<cfhtmlhead text="#WizzardSubmissionJS#" />
+	<cfhtmlhead text="#wizardSubmissionJS#" />
 	
 	<cfoutput>
 	<div id="wizard-wrap">			
 		<div class="wizard-pagination">
 			<ul>
-				<cfif stWizzard.CurrentStep LT ListLen(stWizzard.Steps)><li class="li-next"><a href="javascript:WizzardSubmission('Next');">Next</a></li></cfif>
-				<cfif stWizzard.CurrentStep GT 1><li class="li-prev"><a href="javascript:WizzardSubmission('Previous');">Back</a></li></cfif>
+				<cfif stwizard.CurrentStep LT ListLen(stwizard.Steps)><li class="li-next"><a href="javascript:wizardSubmission('Next');">Next</a></li></cfif>
+				<cfif stwizard.CurrentStep GT 1><li class="li-prev"><a href="javascript:wizardSubmission('Previous');">Back</a></li></cfif>
 			</ul>
 		</div>
 
-		<h1><img src="/farcry/images/icons/HTML.png" alt="HTML" />#ListGetAt(stWizzard.Steps,stWizzard.CurrentStep)#</h1>			
+		<h1><img src="/farcry/images/icons/HTML.png" alt="HTML" />#ListGetAt(stwizard.Steps,stwizard.CurrentStep)#</h1>			
 		<div id="wizard-nav">
 			<ul>
-				<cfloop list="#stWizzard.Steps#" index="i">
-					<li><a href="javascript:WizzardSubmission('#i#')"><cfif ListGetAt(stWizzard.Steps,stWizzard.CurrentStep) EQ i><strong>#i#</strong><cfelse>#i#</cfif></a></li>
+				<cfloop list="#stwizard.Steps#" index="i">
+					<li><a href="javascript:wizardSubmission('#i#')"><cfif ListGetAt(stwizard.Steps,stwizard.CurrentStep) EQ i><strong>#i#</strong><cfelse>#i#</cfif></a></li>
 				</cfloop>
-				<li class="li-complete"><a href="javascript:WizzardSubmission('Save');">Save</a></li>
-				<li class="li-cancel"><a href="javascript:WizzardCancelConfirm();">Cancel</a></li>
+				<li class="li-complete"><a href="javascript:wizardSubmission('Save');">Save</a></li>
+				<li class="li-cancel"><a href="javascript:wizardCancelConfirm();">Cancel</a></li>
 			</ul>
 		</div>
 
 		<div id="wizard-content">
-			#stWizzard.StepHTML#
+			#stwizard.StepHTML#
 		</div>
 		
 		<br style="clear:both;" />
@@ -216,8 +216,8 @@ $in: SessionID -- $
 		
 		<div class="wizard-pagination pg-bot">
 			<ul>
-				<cfif stWizzard.CurrentStep LT ListLen(stWizzard.Steps)><li class="li-next"><a href="javascript:WizzardSubmission('Next');">Next</a></li></cfif>
-				<cfif stWizzard.CurrentStep GT 1><li class="li-prev"><a href="javascript:WizzardSubmission('Previous');">Back</a></li></cfif>
+				<cfif stwizard.CurrentStep LT ListLen(stwizard.Steps)><li class="li-next"><a href="javascript:wizardSubmission('Next');">Next</a></li></cfif>
+				<cfif stwizard.CurrentStep GT 1><li class="li-prev"><a href="javascript:wizardSubmission('Previous');">Back</a></li></cfif>
 			</ul>
 		</div>
 				
@@ -230,8 +230,8 @@ $in: SessionID -- $
 	<!--- Need Create a Form. Cant use </ft:form> because of incorrect nesting --->
 	<cfif isDefined("Variables.CorrectForm")>				
 		<cfoutput>
-			<input type="hidden" id="currentWizzardStep" name="currentWizzardStep" value="#ListGetAt(stWizzard.Steps,stWizzard.CurrentStep)#" />
-			<input type="hidden" id="wizzardID" name="wizzardID" value="#stWizzard.ObjectID#" />
+			<input type="hidden" id="currentwizardStep" name="currentwizardStep" value="#ListGetAt(stwizard.Steps,stwizard.CurrentStep)#" />
+			<input type="hidden" id="wizardID" name="wizardID" value="#stwizard.ObjectID#" />
 		</cfoutput>
 		<ft:renderHTMLformEnd />	
 		<cfset dummy = structdelete(request,"farcryForm")>	

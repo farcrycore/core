@@ -32,8 +32,8 @@
 	<!--- The structure to return the form variables into to process before creating/saving --->
 	<cfparam name="attributes.r_stProperties" default="stProperties" >
 	
-	<!--- The name of the CALLER structure that contains the current stWizzard object. --->
-	<cfparam name="attributes.r_stWizzard" default="stWizzard" >
+	<!--- The name of the CALLER structure that contains the current stwizard object. --->
+	<cfparam name="attributes.r_stwizard" default="stwizard" >
 	
 
 
@@ -56,16 +56,16 @@
 	<cfparam name="FORM.farcryFormPrefixes" default="" >
 	<cfparam name="variables.farcryFormPrefixesToProcess" default="" >
 
-	<!--- Generally the stWizzard is stored in CALLER.stWizzard however this can be overridden in ProcessWizzard --->
-	<cfif not structKeyExists(CALLER,attributes.r_stWizzard)>
-		<cfabort showerror="The stWizzard is not available. Please ensure it is passed correctly" />
+	<!--- Generally the stwizard is stored in CALLER.stwizard however this can be overridden in Processwizard --->
+	<cfif not structKeyExists(CALLER,attributes.r_stwizard)>
+		<cfabort showerror="The stwizard is not available. Please ensure it is passed correctly" />
 	</cfif>	
-	<cfset stWizzard = CALLER[attributes.r_stWizzard] />
+	<cfset stwizard = CALLER[attributes.r_stwizard] />
 
 	<!--- ------------------------------------------------- --->
 	<!--- Setup the main parameters used by this custom tag --->
 	<!--- ------------------------------------------------- --->
-	<cfset stSetup = init(stWizzard=stWizzard,stObj=attributes.stObj,ObjectID=attributes.ObjectID,Typename=attributes.Typename)>
+	<cfset stSetup = init(stwizard=stwizard,stObj=attributes.stObj,ObjectID=attributes.ObjectID,Typename=attributes.Typename)>
 	<cfset oType = stSetup.oType>
 	<cfset stObj = stSetup.stObj>
 	<cfset lFields = stSetup.lFields>
@@ -141,9 +141,9 @@
 		</cfif>
 		
 		
-		<!--- APPEND the object that is currently in the wizzard to the form submitted object --->
-		<cfif structKeyExists(stWizzard.data, Caller[attributes.r_stProperties].objectid)>
-			<cfset bResult = structAppend(Caller[attributes.r_stProperties], stWizzard.data[Caller[attributes.r_stProperties].objectid], false )  />
+		<!--- APPEND the object that is currently in the wizard to the form submitted object --->
+		<cfif structKeyExists(stwizard.data, Caller[attributes.r_stProperties].objectid)>
+			<cfset bResult = structAppend(Caller[attributes.r_stProperties], stwizard.data[Caller[attributes.r_stProperties].objectid], false )  />
 		</cfif>
 
 		<cfif attributes.bimageautogenerate>
@@ -182,15 +182,15 @@
 		</cfif>
 		
 
-		<!--- Not in the wizzard and therefore a new object. Need to save to db and then put in the wizzard --->
-		<cfif NOT structKeyExists(stWizzard.data,Caller[attributes.r_stProperties].objectid)>
+		<!--- Not in the wizard and therefore a new object. Need to save to db and then put in the wizard --->
+		<cfif NOT structKeyExists(stwizard.data,Caller[attributes.r_stProperties].objectid)>
 			<cfset stObj = oType.setData(stProperties=Caller[attributes.r_stProperties],user=Variables.LockedBy)>
-			<cfset stWizzard.data[Caller[attributes.r_stProperties].objectid] =  Duplicate(stObj)>
+			<cfset stwizard.data[Caller[attributes.r_stProperties].objectid] =  Duplicate(stObj)>
 		</cfif>
 		
 		<!--- TO DO. NEED TO ADD ALL PROPERTIES TO DATA AND NOT JUST THE ONES SUBMITTED. --->
 		<cfloop list="#structKeyList(Caller[attributes.r_stProperties])#" index="i">
-			<cfset stWizzard.data[Caller[attributes.r_stProperties].objectid][i] = Caller[attributes.r_stProperties][i]>
+			<cfset stwizard.data[Caller[attributes.r_stProperties].objectid][i] = Caller[attributes.r_stProperties][i]>
 		</cfloop>		
 
 
@@ -218,11 +218,11 @@
 
 	<cfelse>
 		
-		<!--- Save the Wizzard and return it to the CALLER --->
-		<cfset stWizzard = createObject("component",application.types['dmWizzard'].typepath).Write(ObjectID=stWizzard.ObjectID,Data="#stWizzard.Data#")>
+		<!--- Save the wizard and return it to the CALLER --->
+		<cfset stwizard = createObject("component",application.types['dmWizard'].typepath).Write(ObjectID=stwizard.ObjectID,Data="#stwizard.Data#")>
 			
-		<!--- Return the updated stWizzard to the CALLER. --->
-		<cfset CALLER[attributes.r_stWizzard] = stWizzard />
+		<!--- Return the updated stwizard to the CALLER. --->
+		<cfset CALLER[attributes.r_stwizard] = stwizard />
 		
 		
 	</cfif>
@@ -232,7 +232,7 @@
 
 
 <cffunction name="Init" output="true" access="private" returntype="struct" hint="Returns a Structure containing the component,  fieldlist, field metadata and type of object to be processed. If only 1 object is to be processed then it also passes that object back in stObj.">
-	<cfargument name="stWizzard" required="true" type="struct">
+	<cfargument name="stwizard" required="true" type="struct">
 	<cfargument name="stObj" required="true" type="struct">
 	<cfargument name="ObjectID" required="true" type="string">
 	<cfargument name="typename" required="true" type="string">	
@@ -246,8 +246,8 @@
 	</cfif>
 		
 	<cfif  structIsEmpty(arguments.stObj) AND not len(arguments.ObjectID) AND not len(arguments.typename)>
-		<!--- We need to process the the Primary Object of the Wizzard we are processing  --->
-		<cfset arguments.ObjectID = stWizzard.PrimaryObjectID />
+		<!--- We need to process the the Primary Object of the wizard we are processing  --->
+		<cfset arguments.ObjectID = stwizard.PrimaryObjectID />
 	</cfif>
 
 	
@@ -274,8 +274,8 @@
 			<cfset stResult.lFields = StructKeyList(application.types[arguments.typename].stprops)>
 			<cfset stResult.stFields = application.types[arguments.typename].stprops>
 
-			<cfif structKeyExists(stWizzard.data,arguments.objectid)>
-				<cfset stResult.stObj = stWizzard.data[arguments.objectID]>
+			<cfif structKeyExists(stwizard.data,arguments.objectid)>
+				<cfset stResult.stObj = stwizard.data[arguments.objectID]>
 			<cfelse>
 				<!--- Get the object from the DB --->
 				<cfset stResult.stObj = stResult.oType.getData(arguments.objectID)>

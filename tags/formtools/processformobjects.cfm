@@ -175,19 +175,19 @@
 		</cfif>
 		
 		
-		<cfif isDefined("ParentTag") AND ListFindNoCase(ParentTag, "cf_wizzard")>
+		<cfif isDefined("ParentTag") AND ListFindNoCase(ParentTag, "cf_wizard")>
 		
-			<cfset stBaseTag = GetBaseTagData("cf_wizzard")>
-			<cfset stWizzard = stBaseTag.stWizzard>
-			<!--- Not in the wizzard and therefore a new object. Need to save to db and then put in the wizzard --->
-			<cfif NOT structKeyExists(stWizzard.data,Caller[attributes.r_stProperties].objectid)>
+			<cfset stBaseTag = GetBaseTagData("cf_wizard")>
+			<cfset stwizard = stBaseTag.stwizard>
+			<!--- Not in the wizard and therefore a new object. Need to save to db and then put in the wizard --->
+			<cfif NOT structKeyExists(stwizard.data,Caller[attributes.r_stProperties].objectid)>
 				<cfset stObj = stType.setData(stProperties=Caller[attributes.r_stProperties],user=Variables.LockedBy)>
-				<cfset stWizzard.data[Caller[attributes.r_stProperties].objectid] =  Duplicate(stObj)>
+				<cfset stwizard.data[Caller[attributes.r_stProperties].objectid] =  Duplicate(stObj)>
 			</cfif>
 			
 			<!--- TO DO. NEED TO ADD ALL PROPERTIES TO DATA AND NOT JUST THE ONES SUBMITTED. --->
 			<cfloop list="#structKeyList(Caller[attributes.r_stProperties])#" index="i">
-				<cfset stWizzard.data[attributes.objectID][i] = Caller[attributes.r_stProperties][i]>
+				<cfset stwizard.data[attributes.objectID][i] = Caller[attributes.r_stProperties][i]>
 			</cfloop>
 			
 	

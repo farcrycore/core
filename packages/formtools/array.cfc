@@ -207,7 +207,7 @@
 					obj#arguments.fieldname#.primaryObjectID="#arguments.stObject.ObjectID#";
 					obj#arguments.fieldname#.primaryTypename="#arguments.typename#";
 					obj#arguments.fieldname#.primaryFieldname="#arguments.stMetaData.Name#";
-					obj#arguments.fieldname#.WizzardID="";
+					obj#arguments.fieldname#.wizardID="";
 					obj#arguments.fieldname#.DataTypename="#ListFirst(arguments.stMetadata.ftJoin)#";
 					</script>
 					</cfoutput>		

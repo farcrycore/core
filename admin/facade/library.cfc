@@ -55,7 +55,7 @@
  	<cfargument name="PrimaryFormFieldName" required="yes" type="string">
 	<cfargument name="DataObjectID" required="yes" type="string" hint="this could be a UUID to be added or a list of UUID's if we are re-sorting">
 	<cfargument name="DataTypename" required="yes" type="string">
- 	<cfargument name="WizzardID" required="no" type="string" default="">
+ 	<cfargument name="wizardID" required="no" type="string" default="">
  	<cfargument name="Action" required="no" type="string" default="Add" hint="Value can be [Add] or [Remove] or [Sort]">
 
 
@@ -89,31 +89,31 @@
 
 	<cfif arguments.Action NEQ "Refresh">
 	
-		<cfif len(arguments.wizzardID)>
+		<cfif len(arguments.wizardID)>
 			
 			
-			<cfset oWizzard = createObject("component",application.types['dmWizzard'].typepath)>
+			<cfset owizard = createObject("component",application.types['dmWizard'].typepath)>
 			
-			<cfset stWizzard = oWizzard.Read(wizzardID=arguments.WizzardID)>
+			<cfset stwizard = owizard.Read(wizardID=arguments.wizardID)>
 			
 			<cfif arguments.LibraryType EQ "UUID">
 				<cfif arguments.Action EQ "Add">
-					<cfset stWizzard.Data[PrimaryObjectID][arguments.PrimaryFieldname] = arguments.DataObjectID>
+					<cfset stwizard.Data[PrimaryObjectID][arguments.PrimaryFieldname] = arguments.DataObjectID>
 				<cfelse>
-					<cfset stWizzard.Data[PrimaryObjectID][arguments.PrimaryFieldname] = "">
+					<cfset stwizard.Data[PrimaryObjectID][arguments.PrimaryFieldname] = "">
 				</cfif>			
 			<cfelse><!--- Array --->
 				<cfif arguments.Action EQ "Add">
-					<cfset arrayAppend(stWizzard.Data[PrimaryObjectID][arguments.PrimaryFieldname],arguments.DataObjectID)>
+					<cfset arrayAppend(stwizard.Data[PrimaryObjectID][arguments.PrimaryFieldname],arguments.DataObjectID)>
 				<cfelseif arguments.Action EQ "Sort">
-					<cfset stWizzard.Data[PrimaryObjectID][arguments.PrimaryFieldname] = ArrayNew(1)>
+					<cfset stwizard.Data[PrimaryObjectID][arguments.PrimaryFieldname] = ArrayNew(1)>
 					<cfloop list="#arguments.DataObjectID#" index="i">
-						<cfset arrayAppend(stWizzard.Data[PrimaryObjectID][arguments.PrimaryFieldname],i)>
+						<cfset arrayAppend(stwizard.Data[PrimaryObjectID][arguments.PrimaryFieldname],i)>
 					</cfloop>
 				<cfelse>
-					<cfset pos = ListFindNoCase(ArrayToList(stWizzard.Data[PrimaryObjectID][arguments.PrimaryFieldname]), arguments.DataObjectID)>
+					<cfset pos = ListFindNoCase(ArrayToList(stwizard.Data[PrimaryObjectID][arguments.PrimaryFieldname]), arguments.DataObjectID)>
 					<cfif pos GT 0>
-						<cfset ArrayDeleteAt(stWizzard.Data[PrimaryObjectID][arguments.PrimaryFieldname],pos)>
+						<cfset ArrayDeleteAt(stwizard.Data[PrimaryObjectID][arguments.PrimaryFieldname],pos)>
 					</cfif>
 				</cfif>			
 				<cfset variables.tableMetadata = createobject('component','farcry.core.packages.fourq.TableMetadata').init() />
@@ -121,14 +121,14 @@
 				<cfset stFields = variables.tableMetadata.getTableDefinition() />
 				
 				<cfset o = createObject("component","farcry.core.packages.fourq.gateway.dbGateway").init(dsn=application.dsn,dbowner="")>
-				<cfset aProps = o.createArrayTableData(tableName=PrimaryTypename & "_" & PrimaryFieldName,objectid=arguments.PrimaryObjectID,tabledef=stFields[PrimaryFieldName].Fields,aprops=stWizzard.Data[PrimaryObjectID][arguments.PrimaryFieldname])>
+				<cfset aProps = o.createArrayTableData(tableName=PrimaryTypename & "_" & PrimaryFieldName,objectid=arguments.PrimaryObjectID,tabledef=stFields[PrimaryFieldName].Fields,aprops=stwizard.Data[PrimaryObjectID][arguments.PrimaryFieldname])>
 		
-				<cfset stWizzard.Data[PrimaryObjectID][arguments.PrimaryFieldname] = aProps>
+				<cfset stwizard.Data[PrimaryObjectID][arguments.PrimaryFieldname] = aProps>
 			</cfif>
 			
-			<cfset stWizzard = oWizzard.Write(ObjectID=arguments.wizzardID,Data=stWizzard.Data)>
+			<cfset stwizard = owizard.Write(ObjectID=arguments.wizardID,Data=stwizard.Data)>
 			
-			<cfset st = stWizzard.Data[PrimaryObjectID]>
+			<cfset st = stwizard.Data[PrimaryObjectID]>
 		<cfelse>
 		
 				
@@ -176,7 +176,7 @@
 
 
 
-	<ft:object objectID="#arguments.PrimaryObjectID#" WizzardID="#arguments.WizzardID#" lFields="#arguments.PrimaryFieldName#" stPropMetadata="#stPropMetadata#" inTable=0 IncludeLabel=0 IncludeFieldSet=0 r_stFields="stFields" IncludeLibraryWrapper="false" packageType="#arguments.packageType#" />
+	<ft:object objectID="#arguments.PrimaryObjectID#" wizardID="#arguments.wizardID#" lFields="#arguments.PrimaryFieldName#" stPropMetadata="#stPropMetadata#" inTable=0 IncludeLabel=0 IncludeFieldSet=0 r_stFields="stFields" IncludeLibraryWrapper="false" packageType="#arguments.packageType#" />
 		
 
 

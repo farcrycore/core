@@ -37,7 +37,7 @@ $Developer: $
 <cfparam name="url.primaryFieldName" default="">
 <cfparam name="url.primaryFormFieldName" default="">
 <cfparam name="url.ftJoin" default="">
-<cfparam name="url.WizzardID" default="">
+<cfparam name="url.wizardID" default="">
 <cfparam name="url.LibraryType" default="array">
 
 <cfparam name="url.ftLibraryAddNewWebskin" default="libraryAdd"><!--- Method to Add New Object --->
@@ -111,31 +111,31 @@ $Developer: $
 	<cfloop list="#lSavedObjectIDs#" index="DataObjectID">
 
 	
-		<cfif len(url.WizzardID)>		
+		<cfif len(url.wizardID)>		
 			
-			<cfset oWizzard = createObject("component",application.types['dmWizzard'].typepath)>
+			<cfset owizard = createObject("component",application.types['dmWizard'].typepath)>
 			
-			<cfset stWizzard = oWizzard.Read(wizzardID=url.WizzardID)>
+			<cfset stwizard = owizard.Read(wizardID=url.wizardID)>
 			
 			<cfif url.LibraryType EQ "UUID">
-				<cfset stWizzard.Data[url.PrimaryObjectID][url.PrimaryFieldname] = DataObjectID>
+				<cfset stwizard.Data[url.PrimaryObjectID][url.PrimaryFieldname] = DataObjectID>
 		
 			<cfelse><!--- Array --->
-				<cfset arrayAppend(stWizzard.Data[url.PrimaryObjectID][url.PrimaryFieldname],DataObjectID)>
+				<cfset arrayAppend(stwizard.Data[url.PrimaryObjectID][url.PrimaryFieldname],DataObjectID)>
 						
 				<cfset variables.tableMetadata = createobject('component','farcry.core.packages.fourq.TableMetadata').init() />
 				<cfset tableMetadata.parseMetadata(md=getMetadata(oPrimary)) />		
 				<cfset stFields = variables.tableMetadata.getTableDefinition() />
 				
 				<cfset o = createObject("component","farcry.core.packages.fourq.gateway.dbGateway").init(dsn=application.dsn,dbowner="")>
-				<cfset aProps = o.createArrayTableData(tableName=url.PrimaryTypename & "_" & url.PrimaryFieldName,objectid=url.PrimaryObjectID,tabledef=stFields[PrimaryFieldName].Fields,aprops=stWizzard.Data[PrimaryObjectID][url.PrimaryFieldname])>
+				<cfset aProps = o.createArrayTableData(tableName=url.PrimaryTypename & "_" & url.PrimaryFieldName,objectid=url.PrimaryObjectID,tabledef=stFields[PrimaryFieldName].Fields,aprops=stwizard.Data[PrimaryObjectID][url.PrimaryFieldname])>
 		
-				<cfset stWizzard.Data[url.PrimaryObjectID][url.PrimaryFieldname] = aProps>
+				<cfset stwizard.Data[url.PrimaryObjectID][url.PrimaryFieldname] = aProps>
 			</cfif>
 			
-			<cfset stWizzard = oWizzard.Write(ObjectID=url.WizzardID,Data=stWizzard.Data)>
+			<cfset stwizard = owizard.Write(ObjectID=url.wizardID,Data=stwizard.Data)>
 			
-			<cfset st = stWizzard.Data[url.PrimaryObjectID]>
+			<cfset st = stwizard.Data[url.PrimaryObjectID]>
 		<cfelse>
 		
 			<cfset stPrimary = oPrimary.getData(objectid=url.PrimaryObjectID)>
@@ -481,12 +481,12 @@ LIBRARY DATA
 						<cfset qMetadata = application.types[request.ftJoin].qMetadata >
 		
 						<cfquery dbtype="query" name="qFieldSets">
-						SELECT ftWizzardStep, ftFieldset
+						SELECT ftwizardStep, ftFieldset
 						FROM qMetadata
 						WHERE ftFieldset <> '#request.ftJoin#'
 						AND ftType <> 'uuid'
 						AND ftType <> 'array'
-						Group By ftWizzardStep, ftFieldset
+						Group By ftwizardStep, ftFieldset
 						ORDER BY ftSeq
 						</cfquery>				
 														
