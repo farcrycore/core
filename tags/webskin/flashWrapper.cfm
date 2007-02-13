@@ -69,7 +69,7 @@ $in: stRPC -- cfStruct containing additional user defined flashVars for use with
 
 
 	<!--- swfObjectJS : sets boolean in request scope to ensure swfObject JS is included in the head of the page --->
-	<cfset Request.InHead.swfObjectJS = true />
+	<cfset Request.InHead.swfObject = true />
 	<!--- RPCFlashVars : contains output for default flashVars --->
 	<cfset variables.RPCFlashVars = "" />
 	<!--- additionalFlashVars : contains output for additional user defined flashVars --->
