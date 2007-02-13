@@ -495,11 +495,21 @@ default handlers
 	
 	<cffunction name="setLock" access="public" output="true" hint="Lock a content item to prevent simultaneous editing." returntype="void">
 		<cfargument name="locked" type="boolean" required="true" hint="Turn the lock on or off.">
-		<cfargument name="lockedby" type="string" required="false" hint="Name of the user locking the object." default="#session.dmSec.authentication.userlogin#_#session.dmSec.authentication.userDirectory#">
+		<cfargument name="lockedby" type="string" required="false" hint="Name of the user locking the object." default="">
 		<cfargument name="bAudit" type="boolean" required="No" default="1" hint="Pass in 0 if you wish no audit to take place">
 		<cfargument name="dsn" required="No" default="#application.dsn#"> 
 		<cfargument name="stobj" required="No" default="#StructNew()#"> 
-				
+		
+		<!--- Determine who the record is being locked/unlocked by --->		
+		<cfif not len(arguments.lockedBy)>
+			<cfif isDefined("session.dmSec.authentication.userlogin") AND isDefined("session.dmSec.authentication.userDirectory")>
+				<cfset arguments.lockedBy = "#session.dmSec.authentication.userlogin#_#session.dmSec.authentication.userDirectory#" />
+			<cfelse>
+				<cfset arguments.lockedBy = "anonymous" />
+			</cfif>
+		</cfif>
+		
+		
 		<!--- if the properties struct not passed in grab the instance --->
 		<cfif StructIsEmpty(arguments.stObj)>
 			<!--- Default Objects should not be locked as this will create a record in the database. --->
