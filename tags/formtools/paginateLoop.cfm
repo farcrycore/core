@@ -113,8 +113,8 @@ $in: objectid -- $
 				
 				<cfset caller[attributes.r_stObject].viewLink = "<a href='#application.url.webroot#/index.cfm?objectID=#attributes.qRecordSet.objectid[variables.currentrow]#&flushcache=1' target='_blank'><img src='#application.url.farcry#/images/treeImages/preview.gif' alt='View' title='View' /></a>" />
 				
-				<cfif structKeyExists(application.farcrylib, "flow")>
-					<cfset caller[attributes.r_stObject].flowLink = "<a href='#application.farcrylib.flow.url#/?startid=#attributes.qRecordSet.objectid[variables.currentrow]#&flushcache=1' target='_blank'><img src='#application.url.farcry#/images/treeImages/preview.gif' alt='flow' title='flow' /></a>" />
+				<cfif structKeyExists(application.stPlugins, "flow")>
+					<cfset caller[attributes.r_stObject].flowLink = "<a href='#application.stPlugins.flow.url#/?startid=#attributes.qRecordSet.objectid[variables.currentrow]#&flushcache=1' target='_blank'><img src='#application.url.farcry#/images/treeImages/preview.gif' alt='flow' title='flow' /></a>" />
 				</cfif> --->
 				
 				<cfsavecontent variable="ActionDropdown">
@@ -143,7 +143,7 @@ $in: objectid -- $
 						
 						<option value="view">View</option>
 						
-						<cfif structKeyExists(application.farcrylib, "flow")>
+						<cfif structKeyExists(application.stPlugins, "flow")>
 							<option value="flow">Flow</option>
 						</cfif>
 						
@@ -236,8 +236,8 @@ $in: objectid -- $
 				
 				<cfset caller[attributes.r_stObject].viewLink = "<a href='#application.url.webroot#/index.cfm?objectID=#attributes.qRecordSet.objectid[variables.currentrow]#&flushcache=1' target='_blank'><img src='#application.url.farcry#/images/treeImages/preview.gif' alt='View' title='View' /></a>" />
 				
-				<cfif structKeyExists(application.farcrylib, "flow")>
-					<cfset caller[attributes.r_stObject].flowLink = "<a href='#application.farcrylib.flow.url#/?startid=#attributes.qRecordSet.objectid[variables.currentrow]#&flushcache=1' target='_blank'><img src='#application.url.farcry#/images/treeImages/preview.gif' alt='flow' title='flow' /></a>" />
+				<cfif structKeyExists(application.stPlugins, "flow")>
+					<cfset caller[attributes.r_stObject].flowLink = "<a href='#application.stPlugins.flow.url#/?startid=#attributes.qRecordSet.objectid[variables.currentrow]#&flushcache=1' target='_blank'><img src='#application.url.farcry#/images/treeImages/preview.gif' alt='flow' title='flow' /></a>" />
 				</cfif> --->
 				
 				<cfsavecontent variable="ActionDropdown">
@@ -266,7 +266,7 @@ $in: objectid -- $
 						
 						<option value="view">View</option>
 						
-						<cfif structKeyExists(application.farcrylib, "flow")>
+						<cfif structKeyExists(application.stPlugins, "flow")>
 							<option value="flow">Flow</option>
 						</cfif>
 						

@@ -75,11 +75,11 @@ This removes the need to continually check on each request.
 Library Request Processing
 	_serverSpecificRequestScope.cfm
 -------------------------------------------------------->
-<cfif structkeyexists(application, "lfarcrylib")>
+<cfif structkeyexists(application, "plugins")>
 	<cfset application.sysInfo.aServerSpecificRequestScope = arrayNew(1) />
-	<cfloop list="#application.lfarcrylib#" index="lib">
+	<cfloop list="#application.plugins#" index="lib">
 		<cfif fileExists("#application.path.LIBRARY#/#lib#/config/_serverSpecificRequestScope.cfm")>
-			<cfset arrayAppend(application.sysInfo.aServerSpecificRequestScope, "/farcry/farcry_lib/#lib#/config/_serverSpecificRequestScope.cfm") />
+			<cfset arrayAppend(application.sysInfo.aServerSpecificRequestScope, "/farcry/plugins/#lib#/config/_serverSpecificRequestScope.cfm") />
 		</cfif>
 	</cfloop>
 </cfif>

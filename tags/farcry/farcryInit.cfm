@@ -46,7 +46,7 @@ $in: objectid -- $
 	<cfparam name="attributes.dbowner" default="" />
 	
 	<cfparam name="attributes.projectDirectoryName" default="#attributes.name#"  />
-	<cfparam name="attributes.lFarcryLib" default="farcrycms"  />
+	<cfparam name="attributes.plugins" default="farcrycms"  />
 	
 	<cfparam name="attributes.projectURL" default="" />
 	
@@ -94,7 +94,7 @@ $in: objectid -- $
 		 ---------------------------------------->
 		<cfset application.path.project = expandpath("/farcry/#attributes.projectDirectoryName#") />
 		<cfset application.path.core = expandpath("/farcry/core") />
-		<cfset application.path.library = expandpath("/farcry/farcry_lib") />
+		<cfset application.path.library = expandpath("/farcry/plugins") />
 		
 		<cfset application.path.defaultFilePath = "#application.path.project#/www/files">
 		<cfset application.path.secureFilePath = "#application.path.project#/securefiles">
@@ -118,7 +118,7 @@ $in: objectid -- $
 		<!----------------------------------------
 		LIBRARYs To INCLUDE
 		 ---------------------------------------->
-		<cfset application.lFarcryLib = attributes.lFarcryLib />
+		<cfset application.plugins = attributes.plugins />
 		
 		
 		<!------------------------------------------ 
@@ -155,7 +155,7 @@ $in: objectid -- $
 	
 
 
-		<cfset application.farcryLib = structNew() />
+		<cfset application.stPlugins = structNew() />
 		
 		<cfinclude template="/farcry/#attributes.name#/config/_serverSpecificVars.cfm" />
 		
@@ -163,10 +163,10 @@ $in: objectid -- $
 		<!----------------------------------- 
 		INITIALISE THE REQUESTED LIBRARIES
 		 ----------------------------------->
-		<cfif isDefined("application.lFarcryLib")>
-			<cfloop list="#application.lFarcryLib#" index="library">
-				<cfif fileExists("#application.path.library#/#library#/config/librarySpecificVars.cfm")>
-					<cfinclude template="/farcry/farcry_lib/#library#/config/librarySpecificVars.cfm">
+		<cfif isDefined("application.plugins")>
+			<cfloop list="#application.plugins#" index="plugin">
+				<cfif fileExists("#application.path.library#/#plugin#/config/librarySpecificVars.cfm")>
+					<cfinclude template="/farcry/plugins/#plugin#/config/librarySpecificVars.cfm">
 				</cfif>
 			</cfloop>
 		</cfif>

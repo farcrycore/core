@@ -20,18 +20,18 @@ $Description:  -- This tag determines the correct location for the OnRequestEnd.
 $Developer: Matthew Bryant (mat@daemon.com.au)$
 
 || ATTRIBUTES ||
-$in: url -- the url portion that we are searching for in the script_name. eg. /farcry or /libraryName $
+$in: url -- the url portion that we are searching for in the script_name. eg. /farcry or /plugin $
 --->
 
 
 <cfif thistag.executionMode eq "Start">
-	<cfif not isDefined("attributes.libraryName")>
+	<cfif not isDefined("attributes.plugin")>
 		<cfabort showerror="attributes.URL not passed correctly." />
 	</cfif>
 
 	<cfset scriptName = cgi.SCRIPT_NAME />
 	
-	<cfset pos = findNoCase("/#attributes.libraryName#/", scriptName) />
+	<cfset pos = findNoCase("/#attributes.plugin#/", scriptName) />
 	
 	<cfif pos GT 1>
 		<cfset projectName = mid(scriptName, 1, pos - 1) />

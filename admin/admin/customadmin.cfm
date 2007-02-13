@@ -23,11 +23,11 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 
 <!--- environment variables --->
 <cfparam name="URL.module" type="string" />
-<cfparam name="URL.lib" default="" type="string" />
+<cfparam name="URL.plugin" default="" type="string" />
 
-<cfif len(URL.lib)>
-	<!--- load admin from the nominated library --->
-	<cfmodule template="/farcry/farcry_lib/#URL.lib#/customadmin/#URL.module#">
+<cfif len(URL.plugin)>
+	<!--- load admin from the nominated plugin --->
+	<cfmodule template="/farcry/plugins/#URL.plugin#/customadmin/#URL.module#">
 <cfelse>
 	<!--- load admin from the project --->
 	<cfmodule template="/farcry/#application.applicationname#/customadmin/#URL.module#">

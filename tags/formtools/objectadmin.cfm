@@ -82,7 +82,7 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 <cfparam name="attributes.PackageType" default="types" type="string">
 
 <cfparam name="attributes.module" default="customlists/#attributes.typename#.cfm">
-<cfparam name="attributes.libraryname" default="" />
+<cfparam name="attributes.plugin" default="" />
 
 
 <cfif NOT structKeyExists(session.objectadmin, attributes.typename)>
@@ -346,7 +346,7 @@ user --->
 	
 	
 	<cfset addURL = "#application.url.farcry#/conjuror/invocation.cfm?objectid=#createUUID()#&typename=#attributes.typename#&method=#attributes.editMethod#&ref=typeadmin&module=#attributes.module#" />	
-	<cfif Len(attributes.LibraryName)><cfset addURL = addURL&"&lib=#attributes.LibraryName#" /></cfif>
+	<cfif Len(attributes.plugin)><cfset addURL = addURL&"&plugin=#attributes.plugin#" /></cfif>
 	<ft:processForm action="add" url="#addURL#" />
 
 	
@@ -359,7 +359,7 @@ user --->
 	<ft:processForm action="edit">
 		<!--- TODO: Check Permissions. --->
 		<cfset EditURL = "#application.url.farcry#/conjuror/invocation.cfm?objectid=#form.objectid#&typename=#attributes.typename#&method=#attributes.editMethod#&ref=typeadmin&module=#attributes.module#">
-		<cfif Len(attributes.LibraryName)><cfset EditURL = EditURL&"&lib=#attributes.LibraryName#"></cfif>
+		<cfif Len(attributes.plugin)><cfset EditURL = EditURL&"&plugin=#attributes.plugin#"></cfif>
 		<cflocation URL="#EditURL#" addtoken="false">
 	</ft:processForm>
 	
@@ -373,10 +373,10 @@ user --->
 		<!--- <cflocation URL="#application.url.webroot#/index.cfm?objectID=#form.objectid#&flushcache=1" addtoken="false" /> --->
 	</ft:processForm>
 	
-	<cfif structKeyExists(application.farcrylib, "flow")>
+	<cfif structKeyExists(application.stPlugins, "flow")>
 		<ft:processForm action="flow">
 			<!--- TODO: Check Permissions. --->
-			<cflocation URL="#application.farcrylib.flow.url#/?startid=#form.objectid#&flushcache=1" addtoken="false" />
+			<cflocation URL="#application.stPlugins.flow.url#/?startid=#form.objectid#&flushcache=1" addtoken="false" />
 		</ft:processForm>
 	</cfif>
 	

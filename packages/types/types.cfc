@@ -157,13 +157,13 @@ default handlers
 			
 			<cfset webskinPath = "/farcry/#application.applicationname#/webskin/#arguments.typename#/#arguments.template#.cfm" />
 			
-		<cfelseif structKeyExists(application, "lFarcryLib") and listLen(application.lFarcryLib)>
+		<cfelseif structKeyExists(application, "plugins") and listLen(application.plugins)>
 
-			<cfloop list="#application.lFarcryLib#" index="library">
+			<cfloop list="#application.plugins#" index="library">
 				
-				<cfif fileExists(ExpandPath("/farcry/farcry_lib/#library#/webskin/#arguments.typename#/#arguments.template#.cfm"))>
+				<cfif fileExists(ExpandPath("/farcry/plugins/#library#/webskin/#arguments.typename#/#arguments.template#.cfm"))>
 				
-					<cfset webskinPath = "/farcry/farcry_lib/#library#/webskin/#arguments.typename#/#arguments.template#.cfm" />
+					<cfset webskinPath = "/farcry/plugins/#library#/webskin/#arguments.typename#/#arguments.template#.cfm" />
 				</cfif>	
 				
 			</cfloop>
@@ -219,10 +219,10 @@ default handlers
 		</cfif>
 
 		<!--- check library webskins --->
-		<cfif structKeyExists(application, "lFarcryLib") and Len(application.lFarcryLib)>
+		<cfif structKeyExists(application, "plugins") and Len(application.plugins)>
 
-			<cfloop list="#application.lFarcryLib#" index="library">
-				<cfset webskinpath=ExpandPath("/farcry/farcry_lib/#library#/webskin/#arguments.typename#") />
+			<cfloop list="#application.plugins#" index="library">
+				<cfset webskinpath=ExpandPath("/farcry/plugins/#library#/webskin/#arguments.typename#") />
 				
 				<cfif directoryExists(webskinpath)>
 					<cfdirectory action="list" directory="#webskinPath#" name="qLibResult" sort="asc" />

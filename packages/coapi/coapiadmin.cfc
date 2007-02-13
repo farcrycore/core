@@ -7,10 +7,10 @@
 <cffunction name="getCOAPIComponents" access="public" output="false" returntype="query" hint="Get query of COAPI components by package directory.">
 	<cfargument name="project" required="true" type="string" />
 	<cfargument name="package" required="true" type="string" />
-	<cfargument name="lfarcrylib" default="" type="string" />
+	<cfargument name="plugins" default="" type="string" />
 	
 	<cfset var qResult=queryNew("ATTRIBUTES, DATELASTMODIFIED, DIRECTORY, MODE, NAME, SIZE, TYPE, typepath") />
-	<cfset var lDir=arguments.lfarcrylib />
+	<cfset var lDir=arguments.plugins />
 	
 	<!--- 
 	must go in reverse order
@@ -42,8 +42,8 @@
 				<!--- <cfdump var="#qcomps#" label="core: #packagepath##arguments.package#"> --->
 			</cfif>
 		<cfelse>
-			<cfset packagepath=ExpandPath("/farcry/farcry_lib/#packagedir#/packages/#arguments.package#") />
-			<cfset typepath="farcry.farcry_lib.#packagedir#.packages.#arguments.package#" />
+			<cfset packagepath=ExpandPath("/farcry/plugins/#packagedir#/packages/#arguments.package#") />
+			<cfset typepath="farcry.plugins.#packagedir#.packages.#arguments.package#" />
 			<cfif directoryExists(packagepath)>
 				<cfdirectory action="list" directory="#packagepath#" filter="*.cfc" name="qComps" sort="name" />
 				<!--- <cfdump var="#qcomps#" label="#packagedir#: #packagepath#"> --->
@@ -79,15 +79,15 @@
 
 
 <cffunction name="getLibraryInstallers" access="public" output="false" returntype="query" hint="Get query of library install files. Install files limitd to CFM includes.">
-	<cfargument name="lfarcrylib" required="true" type="string" hint="List of farcry libraries to process." />
+	<cfargument name="plugins" required="true" type="string" hint="List of farcry libraries to process." />
 
 	<cfset var qResult=querynew("ATTRIBUTES, DATELASTMODIFIED, DIRECTORY, MODE, NAME, SIZE, TYPE, library") />
 	<cfset var qInstalls=querynew("ATTRIBUTES, DATELASTMODIFIED, DIRECTORY, MODE, NAME, SIZE, TYPE, library") />
 	<cfset var installdir="" />
 	<cfset var aCol=arrayNew(1) />
 
-	<cfloop list="#arguments.lfarcrylib#" index="lib">
-		<cfset installdir=expandpath("/farcry/farcry_lib/#lib#/config/install") />
+	<cfloop list="#arguments.plugins#" index="lib">
+		<cfset installdir=expandpath("/farcry/plugins/#lib#/config/install") />
 		<cfif directoryexists(installdir)>
 			<cfdirectory action="list" directory="#installdir#" filter="*.cfm" name="qInstalls" sort="asc" />
 			
@@ -141,10 +141,10 @@
 		</cfif>
 
 		<!--- check library webskins --->
-		<cfif structKeyExists(application, "lFarcryLib") and Len(application.lFarcryLib)>
+		<cfif structKeyExists(application, "plugins") and Len(application.plugins)>
 
-			<cfloop list="#application.lFarcryLib#" index="library">
-				<cfset webskinpath=ExpandPath("/farcry/farcry_lib/#library#/webskin/#arguments.typename#") />
+			<cfloop list="#application.plugins#" index="library">
+				<cfset webskinpath=ExpandPath("/farcry/plugins/#library#/webskin/#arguments.typename#") />
 				
 				<cfif directoryExists(webskinpath)>
 					<cfdirectory action="list" directory="#webskinPath#" name="qLibResult" sort="asc" />
@@ -242,13 +242,13 @@
 			
 			<cfset webskinPath = "/farcry/#application.applicationname#/webskin/#arguments.typename#/#arguments.template#.cfm" />
 			
-		<cfelseif structKeyExists(application, "lFarcryLib") and listLen(application.lFarcryLib)>
+		<cfelseif structKeyExists(application, "plugins") and listLen(application.plugins)>
 
-			<cfloop list="#application.lFarcryLib#" index="library">
+			<cfloop list="#application.plugins#" index="library">
 				
-				<cfif fileExists(ExpandPath("/farcry/farcry_lib/#library#/webskin/#arguments.typename#/#arguments.template#.cfm"))>
+				<cfif fileExists(ExpandPath("/farcry/plugins/#library#/webskin/#arguments.typename#/#arguments.template#.cfm"))>
 				
-					<cfset webskinPath = "/farcry/farcry_lib/#library#/webskin/#arguments.typename#/#arguments.template#.cfm" />
+					<cfset webskinPath = "/farcry/plugins/#library#/webskin/#arguments.typename#/#arguments.template#.cfm" />
 				</cfif>	
 				
 			</cfloop>

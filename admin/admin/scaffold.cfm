@@ -249,10 +249,10 @@
 		</cfif>
 	
 		<!--- check library webskins --->
-		<cfif structKeyExists(application, "lFarcryLib") and Len(application.lFarcryLib)>
+		<cfif structKeyExists(application, "plugins") and Len(application.plugins)>
 
-			<cfloop list="#application.lFarcryLib#" index="library">
-				<cfset FullScaffoldPath=ExpandPath("/farcry/farcry_lib/#library#/scaffolds#scaffoldPath#") />
+			<cfloop list="#application.plugins#" index="library">
+				<cfset FullScaffoldPath=ExpandPath("/farcry/plugins/#library#/scaffolds#scaffoldPath#") />
 				
 				<cfif directoryExists(FullScaffoldPath)>
 					<cfdirectory action="list" directory="#FullScaffoldPath#" name="qLibResult" filter="*.txt" sort="asc" />

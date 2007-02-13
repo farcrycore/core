@@ -28,7 +28,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 <!---------------------------------------------------------
 DETERMINE WHICH PROJECT WE ARE ATTEMPTING TO ADMINISTER
  --------------------------------------------------------->	
-<cfmodule template="/farcry/core/tags/farcry/callProjectApplication.cfm" libraryName="farcry" />
+<cfmodule template="/farcry/core/tags/farcry/callProjectApplication.cfm" plugin="farcry" />
 	
 	
 
