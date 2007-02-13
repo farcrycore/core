@@ -39,7 +39,7 @@ $out:[attributes.r_lObjectIds]: Objects found as list of ids$
 
 <cfsetting enablecfoutputonly="yes">
 <cfprocessingDirective pageencoding="utf-8">
-<cfimport taglib="/farcry/farcry_core/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
 
 <cfparam name="attributes.objectId" default="">
 <cfparam name="attributes.lobjectIds" default="#attributes.objectId#">

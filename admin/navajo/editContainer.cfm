@@ -23,7 +23,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 <cfprocessingDirective pageencoding="utf-8">
 
 <!--- import tag libraries --->
-<cfimport taglib="/farcry/farcry_core/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
 <cfimport taglib="/farcry/farcry_core/tags/admin" prefix="farcry">
 <cfimport taglib="/farcry/farcry_core/tags/navajo" prefix="nj">
 <cfinclude template="/farcry/farcry_core/admin/includes/utilityFunctions.cfm">

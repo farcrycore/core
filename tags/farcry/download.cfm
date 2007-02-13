@@ -23,7 +23,7 @@ $out:$
 --->
 
 <cfsetting enablecfoutputonly="Yes">
-<cfimport taglib="/farcry/farcry_core/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
 
 
 
@@ -50,7 +50,7 @@ $out:$
 <cfif isdefined("attributes.typename") and len(attributes.typename)>
 	<cfset url.typename = attributes.typename>
 <cfelse>
-	<cfset q4 = createObject("component", "farcry.farcry_core.fourq.fourq") />
+	<cfset q4 = createObject("component", "farcry.farcry_core.packages.fourq.fourq") />
 	<cfset url.typename = q4.findType(objectid="#url.objectid#") />	
 </cfif>
 

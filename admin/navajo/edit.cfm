@@ -37,7 +37,7 @@ $DEVELOPER:Brendan Sisson (brendan@daemon.com.au)$
 
 <cfif NOT len(url.typename)>
 	<cfinvoke 
-		component="farcry.farcry_core.fourq.fourq"
+		component="farcry.farcry_core.packages.fourq.fourq"
 		method="findType" 
 		returnvariable="typename"
 		objectid="#url.objectid#" />

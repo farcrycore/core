@@ -20,7 +20,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 <cfsetting enablecfoutputonly="yes">
 <cfprocessingDirective pageencoding="utf-8">
 
-<cfimport taglib="/farcry/farcry_core/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
 <cfimport taglib="/farcry/farcry_core/tags/farcry" prefix="tags">
 <cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
 
@@ -190,7 +190,7 @@ function removeUploadBtn()
 	<cfset aFileArray = arrayNew(1)>
 	<cfloop from="1" to="#arrayLen(output.aObjectIds)#" index="i">
 		<!--- get the objectType --->
-		<cfinvoke component="farcry.farcry_core.fourq.fourq" returnvariable="typename" method="findType" objectID="#output.aObjectIds[i]#">
+		<cfinvoke component="farcry.farcry_core.packages.fourq.fourq" returnvariable="typename" method="findType" objectID="#output.aObjectIds[i]#">
 		<cfif typename IS "dmFile">
 			<cfscript>
 				arrayAppend(aFileArray,output.aObjectIds[i]);

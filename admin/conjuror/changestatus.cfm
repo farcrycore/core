@@ -72,7 +72,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 <cfif len(typename) AND structKeyExists(application.types, typename)>
 	<cfset typepath=application.types[typename].typePath>
 <cfelse>
-	<cfset q4 = createObject("component", "farcry.farcry_core.fourq.fourq")>
+	<cfset q4 = createObject("component", "farcry.farcry_core.packages.fourq.fourq")>
 	<cfset typename = q4.findType(objectid=listFirst(objectID))>
 	<cfif len(typename)>
 		<cfset typepath=application.types[typename].typePath>

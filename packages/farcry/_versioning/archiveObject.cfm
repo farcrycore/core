@@ -22,7 +22,7 @@ $in: $
 $out:$
 --->
 
-<cfimport taglib="/farcry/farcry_core/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
 <cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
 
 
@@ -32,7 +32,7 @@ $out:$
 	stResult.message = 'No update has taken place';
 	if (NOT isDefined("typename"))
 	{
-		q4 = createObject("component","farcry.farcry_core.fourq.fourq");
+		q4 = createObject("component","farcry.farcry_core.packages.fourq.fourq");
 		typename = q4.findType(objectid=objectid);
 	}
 	o = createObject("component",application.types[typename].typePath);	

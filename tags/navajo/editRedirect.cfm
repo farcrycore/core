@@ -1,6 +1,6 @@
 <cfsetting enablecfoutputonly="Yes">
 <cfprocessingDirective pageencoding="utf-8">
-<cfimport taglib="/farcry/farcry_core/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
 <cfimport taglib="/farcry/farcry_core/tags/navajo" prefix="nj">
 
 <q4:contentobjectget objectid="#url.objectID#" r_stobject="stObj">

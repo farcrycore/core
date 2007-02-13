@@ -16,7 +16,7 @@ $Description: Core container management component. $
 || DEVELOPER ||
 $Developer: Geoff Bowers (modius@daemon.com.au) $
 --->
-<cfcomponent extends="farcry.farcry_core.fourq.fourq" displayname="Container Management" hint="Manages all core functions for container instance management.">
+<cfcomponent extends="farcry.farcry_core.packages.fourq.fourq" displayname="Container Management" hint="Manages all core functions for container instance management.">
 	<cfproperty name="objectID" hint="Container instance primary key." type="uuid" required="true" />
 	<cfproperty name="label" hint="Label for the container instance."  type="nstring" default="(unspecified)">
 	<cfproperty name="aRules" hint="Array of rule objects to be managed by this container." type="array"> 
@@ -450,7 +450,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 		<cftrace type="warning" text="populating container" var="arguments.arules" />
 		
 		<cfset request.aInvocations = arrayNew(1)>
-		<cfset oFourq = createObject("component", "farcry.farcry_core.fourq.fourq")>
+		<cfset oFourq = createObject("component", "farcry.farcry_core.packages.fourq.fourq")>
 		<cfloop from="1" to="#arrayLen(arguments.aRules)#" index="i">
 			 <cftry> 
 				<cfset rule = oFourq.findType(objectid=arguments.aRules[i])>

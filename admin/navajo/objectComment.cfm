@@ -63,7 +63,7 @@ $out:$
 	<!--- show comment form --->
 	
 	<!--- get object details --->
-	<cfimport taglib="/farcry/farcry_core/fourq/tags/" prefix="q4">
+	<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
 	<q4:contentobjectget objectid="#listgetat(url.objectID,1)#" r_stobject="stObj">
 
 	<cfif isdefined("stObj.status")>

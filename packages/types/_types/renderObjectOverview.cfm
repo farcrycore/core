@@ -4,7 +4,7 @@
 
 <cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
 <cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
-<cfimport taglib="/farcry/farcry_core/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
 <cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
 <nj:getNavigation objectId="#arguments.objectid#" r_ObjectId="stLocal.parentID" r_stObject="stLocal.stParent" bInclusive="1">
 

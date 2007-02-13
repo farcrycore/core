@@ -22,7 +22,7 @@ $in: $
 $out:$
 --->
 
-<cfcomponent displayname="Rules Object" bAbstract="true" extends="farcry.farcry_core.fourq.fourq" hint="Rules is an abstract class that contains">
+<cfcomponent displayname="Rules Object" bAbstract="true" extends="farcry.farcry_core.packages.fourq.fourq" hint="Rules is an abstract class that contains">
 	<cfproperty name="objectID" type="uuid" required="true" />
 	<cfproperty name="label" type="nstring" default="">
 	

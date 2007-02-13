@@ -26,7 +26,7 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
 <!--- imported tag libraries --->
 <cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
 <cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
-<cfimport taglib="/farcry/farcry_core/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
 	
 <!--- required parameters --->
 <cfparam name="url.finishURL">

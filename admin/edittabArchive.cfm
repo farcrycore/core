@@ -42,7 +42,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 	<cfif isdefined("url.archiveid")>
 		
 		<!--- get type --->
-		<cfset oFourq = createObject("component","farcry.farcry_core.fourq.fourq")>
+		<cfset oFourq = createObject("component","farcry.farcry_core.packages.fourq.fourq")>
 		<cfset typename = oFourq.findType(url.objectid)>
 		<cfset oType = createObject("component",application.types[typename].typepath)>
 		

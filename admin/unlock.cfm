@@ -20,7 +20,7 @@
 	<!--- loop over selected objects --->
 	<cfloop list="#form.objectid#" index="object">
 		<!--- get object details --->
-		<cfimport taglib="/farcry/farcry_core/fourq/tags/" prefix="q4">
+		<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
 		<q4:contentobjectget objectid="#object#" r_stobject="stobj">
 		<!--- check locked --->
 		<cfif stObj.locked>

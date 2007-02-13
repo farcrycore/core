@@ -24,7 +24,7 @@ $out:$
 --->
 <cfsetting enablecfoutputonly="Yes">
 <cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
-<cfimport taglib="/farcry/farcry_core/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
 
 <cfprocessingDirective pageencoding="utf-8">
 

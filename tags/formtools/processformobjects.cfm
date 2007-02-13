@@ -199,7 +199,7 @@
 				
 				<cfif not isDefined("Caller.stProperties.typename") or not len(Caller.stProperties.typename)>
 		
-					<cfset q4 = createObject("component", "farcry.farcry_core.fourq.fourq")>
+					<cfset q4 = createObject("component", "farcry.farcry_core.packages.fourq.fourq")>
 					<cfset Caller.stProperties.typename = q4.findType(objectid=Caller.stProperties.ObjectID)>
 		
 				</cfif>
@@ -346,7 +346,7 @@
 		
 		<cfif not isDefined("arguments.typename") or not len(arguments.typename)>
 
-			<cfset q4 = createObject("component", "farcry.farcry_core.fourq.fourq")>
+			<cfset q4 = createObject("component", "farcry.farcry_core.packages.fourq.fourq")>
 			<cfset arguments.typename = q4.findType(objectid=arguments.objectid)>
 
 		</cfif>

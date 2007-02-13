@@ -8,7 +8,7 @@
 <cfif action NEQ "" AND lObjectID NEQ "" AND libraryType NEQ "">
 	<!--- JSON encode and decode functions [jsonencode(str), jsondecode(str)]--->
 	<cfinclude template="/farcry/farcry_core/admin/includes/json.cfm">
-	<cfimport taglib="/farcry/farcry_core/fourq/tags/" prefix="q4">
+	<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
 	<cfset objImage = CreateObject("component","#application.types.dmImage.typepath#")>
 	<cfswitch expression="#action#">
 		<cfcase value="delete,reposition"> <!--- manipulation of related item --->

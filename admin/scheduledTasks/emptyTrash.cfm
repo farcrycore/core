@@ -33,7 +33,7 @@ $out:$
 <cfparam name="url.timeValue" default=1>
 
 <cfscript>
-	q4 = createObject("component","farcry.farcry_core.fourq.fourq");
+	q4 = createObject("component","farcry.farcry_core.packages.fourq.fourq");
 	oTree = createObject("component","#application.packagepath#.farcry.tree");
 	oNav = createObject("component",application.types['dmNavigation'].typepath);
 	

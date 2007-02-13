@@ -21,7 +21,7 @@ $TODO: clean up formatting -- test in Mozilla 20030503 GB$
 $Developer: Brendan Sisson (brendan@daemon.com.au)$
 --->
 
-<cfimport taglib="/farcry/farcry_core/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
 <cfimport taglib="/farcry/farcry_core/tags/farcry" prefix="tags">
 <cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
 
@@ -342,7 +342,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 		<cfset aFileArray = arrayNew(1)>
 		<cfloop from="1" to="#arrayLen(output.aObjectIds)#" index="i">
 			<!--- get the objectType --->
-			<cfinvoke component="farcry.farcry_core.fourq.fourq" returnvariable="typename" method="findType" objectID="#output.aObjectIds[i]#">
+			<cfinvoke component="farcry.farcry_core.packages.fourq.fourq" returnvariable="typename" method="findType" objectID="#output.aObjectIds[i]#">
 			<cfif typename IS "dmImage">
 				<cfscript>
 					arrayAppend(aFileArray,output.aObjectIds[i]);

@@ -30,7 +30,7 @@ $out:$
 <cfparam name="lNavIDAlias" default="">
 <cfparam name="fu" default="">
 
-<cfimport taglib="/farcry/farcry_core/fourq/tags/" prefix="q4"> 
+<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4"> 
 <cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
 <cfimport taglib="/farcry/farcry_core/tags/display/" prefix="display">
 

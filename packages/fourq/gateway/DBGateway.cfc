@@ -1,7 +1,7 @@
 <cfcomponent name="DBGateway" output="false" hint="This component provides generic database access for the fourq persistence layer of FarCry">
 
 
-	<cffunction name="init" access="public" returntype="farcry.farcry_core.fourq.gateway.DBGateway" output="false" hint="Initializes the instance data">
+	<cffunction name="init" access="public" returntype="farcry.farcry_core.packages.fourq.gateway.DBGateway" output="false" hint="Initializes the instance data">
 		<cfargument name="dsn" type="string" required="true" />
 		<cfargument name="dbowner" type="string" required="true" />
 		<cfset variables.dbowner = arguments.dbowner />
@@ -12,13 +12,13 @@
 
 
 	<cffunction name="deployType" access="public" output="false" returntype="struct" hint="Deploys the table structure for a FarCry type">
-		<cfargument name="metadata" type="farcry.farcry_core.fourq.TableMetadata" required="true" />
+		<cfargument name="metadata" type="farcry.farcry_core.packages.fourq.TableMetadata" required="true" />
 		<cfargument name="bDropTable" type="boolean" required="false" default="false">
 		<cfargument name="bTestRun" type="boolean" required="false" default="true">
 		<cfargument name="dsn" type="string" required="false" default="#variables.dsn#">
 		<cfargument name="dbowner" type="string" required="false" default="#variables.dbowner#">
 		
-			<cfthrow type="farcry.farcry_core.fourq.DBGATEWAY.UNIMPLEMENTED" message="DBGateway deployType() unimplemented"
+			<cfthrow type="farcry.farcry_core.packages.fourq.DBGATEWAY.UNIMPLEMENTED" message="DBGateway deployType() unimplemented"
 				 detail="The method deployType() was not implemented in a child of DBGateway." />
 	</cffunction>
 	
@@ -33,7 +33,7 @@
 	<cffunction name="createData" access="public" returntype="struct" output="false" hint="Creates a new row in the db for the given properties">
 	  <cfargument name="stProperties" type="struct" required="true" />
 	  <cfargument name="objectid" type="uuid" required="true" />
-	  <cfargument name="metadata" type="farcry.farcry_core.fourq.TableMetadata" required="true" />
+	  <cfargument name="metadata" type="farcry.farcry_core.packages.fourq.TableMetadata" required="true" />
 	  
 	  
 			<cfset var stResult = structNew() />
@@ -400,7 +400,7 @@
 
   	<cffunction name="setData" access="public" returntype="struct" output="false" >
     	<cfargument name="stProperties" type="struct" required="true" />
-	  	<cfargument name="metadata" type="farcry.farcry_core.fourq.TableMetadata" required="true" />
+	  	<cfargument name="metadata" type="farcry.farcry_core.packages.fourq.TableMetadata" required="true" />
 	  	
 	  	<cfset var stFields = arguments.metadata.getTableDefinition() />
 		<cfset var tablename = arguments.metadata.getTableName() />
@@ -582,7 +582,7 @@
 
 
 	<cffunction name="deployArrayTable" access="package" output="false" returntype="struct" hint="Deploys the array table for the given metadata.">
-		<cfargument name="metadata" type="farcry.farcry_core.fourq.TableMetadat" required="true" />
+		<cfargument name="metadata" type="farcry.farcry_core.packages.fourq.TableMetadat" required="true" />
 		<cfargument name="bDropTable" type="boolean" required="false" default="false">
 		<cfargument name="bTestRun" type="boolean" required="false" default="true">
 		<cfargument name="parent" type="string" required="true">
@@ -592,7 +592,7 @@
 		<cfargument name="dbowner" type="string" required="false" default="#variables.dbowner#">
 		
 		
-			<cfthrow type="farcry.farcry_core.fourq.DBGATEWAY.UNIMPLEMENTED" message="DBGateway deleteData() unimplemented"
+			<cfthrow type="farcry.farcry_core.packages.fourq.DBGATEWAY.UNIMPLEMENTED" message="DBGateway deleteData() unimplemented"
 				 detail="The method deleteData() was not implemented in a child of DBGateway." />
 	</cffunction>
 	
@@ -773,7 +773,7 @@
 			
 				<cfcatch>
 					<cfset request.fourqSetMultipleErrorContext = cfcatch>
-					<cfthrow type="farcry.farcry_core.fourq.gateway.dbgateway.setmultiple" message="Query error occurred in farcry.farcry_core.fourq.gateway.dbgateway.cfc setMultiple()" detail="<p>This is a dynamically generated query which can be the mother or all things to debug. Try looking at the stack trace and the sequence of templates parsed to figure out where the function was called from.</p> <p>SQL for the failed query:<br><pre>#reReplaceNoCase(sql,'[#chr(20)##chr(9)#]','','all')#</pre></p> <p>The original cfcatch scope was put into request.fourqSetMultipleErrorContext.</p>">
+					<cfthrow type="farcry.farcry_core.packages.fourq.gateway.dbgateway.setmultiple" message="Query error occurred in farcry.farcry_core.packages.fourq.gateway.dbgateway.cfc setMultiple()" detail="<p>This is a dynamically generated query which can be the mother or all things to debug. Try looking at the stack trace and the sequence of templates parsed to figure out where the function was called from.</p> <p>SQL for the failed query:<br><pre>#reReplaceNoCase(sql,'[#chr(20)##chr(9)#]','','all')#</pre></p> <p>The original cfcatch scope was put into request.fourqSetMultipleErrorContext.</p>">
 				</cfcatch>
 			</cftry>
 		<cfelse>

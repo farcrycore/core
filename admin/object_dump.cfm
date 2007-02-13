@@ -9,7 +9,7 @@ This dumps out an object based on objectid [replacement for edittabDump.cfm]
 <cfif objectid EQ "">
 	<cfset errormessage = errormessage & "Invalid ObjectID">
 <cfelse>
-	<cfimport taglib="/farcry/farcry_core/fourq/tags/" prefix="q4">
+	<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
 	<q4:contentobjectget objectid="#url.objectid#" r_stobject="stobj">
 </cfif>
 

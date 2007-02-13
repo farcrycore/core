@@ -1,4 +1,4 @@
-<cfimport taglib="/farcry/farcry_core/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
 <cfimport taglib="/farcry/farcry_core/tags/widgets/" prefix="widgets">
 <cfparam name="searchText" default="">
 <cfparam name="searchField" default="">

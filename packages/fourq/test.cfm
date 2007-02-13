@@ -58,7 +58,7 @@ module works correctly as long as the data passed to them is correct.
 	<dl>
 		<dt>Gateway factory initialization</dt>
 		<cftry>
-			<cfset factory = createObject('component','farcry.farcry_core.fourq.DBGatewayFactory').init() />
+			<cfset factory = createObject('component','farcry.farcry_core.packages.fourq.DBGatewayFactory').init() />
 			<dd>OK!</dd>
 			<cfcatch>
 				<dd class="failure">FAILED!
@@ -87,13 +87,13 @@ module works correctly as long as the data passed to them is correct.
 	
 	<!--- Parse the metadata for an abstract component --->
 	<dl>
-		<dt>Ensure that we get an exception if we try to parse the metadata for abstract component farcry.farcry_core.fourq.test.Abstract.</dt>
+		<dt>Ensure that we get an exception if we try to parse the metadata for abstract component farcry.farcry_core.packages.fourq.test.Abstract.</dt>
 		<cftry>
-			<cfset tableMetadata = createobject('component','farcry.farcry_core.fourq.TableMetadata').init() />
-			<cfset abstract = createObject('component','farcry.farcry_core.fourq.test.Abstract') />
+			<cfset tableMetadata = createobject('component','farcry.farcry_core.packages.fourq.TableMetadata').init() />
+			<cfset abstract = createObject('component','farcry.farcry_core.packages.fourq.test.Abstract') />
 			<cfset tableMetadata.parseMetadata(getMetadata(abstract)) />
-			<cfthrow type="farcry.farcry_core.fourq.test" message="TableMetadata did not throw an exception." detail="The farcry.farcry_core.fourq.TableMetadata component did not throw an exception when the parseMetadata() method was called on an abstract component.">
-			<cfcatch type="farcry.farcry_core.fourq.tablemetadata.abstractTypeException">
+			<cfthrow type="farcry.farcry_core.packages.fourq.test" message="TableMetadata did not throw an exception." detail="The farcry.farcry_core.packages.fourq.TableMetadata component did not throw an exception when the parseMetadata() method was called on an abstract component.">
+			<cfcatch type="farcry.farcry_core.packages.fourq.tablemetadata.abstractTypeException">
 				<dd>OK!</dd>
 			</cfcatch>
 			<cfcatch>
@@ -107,10 +107,10 @@ module works correctly as long as the data passed to them is correct.
 	
 	<!--- Parse the metadata for a valid component --->
 	<dl>
-		<dt>Ensure that we can create table metadata for component farcry.farcry_core.fourq.test.ValidTest .</dt>
+		<dt>Ensure that we can create table metadata for component farcry.farcry_core.packages.fourq.test.ValidTest .</dt>
 		<cftry>
-			<cfset tableMetadata = createobject('component','farcry.farcry_core.fourq.TableMetadata').init() />
-			<cfset test = createObject('component','farcry.farcry_core.fourq.test.ValidTest') />
+			<cfset tableMetadata = createobject('component','farcry.farcry_core.packages.fourq.TableMetadata').init() />
+			<cfset test = createObject('component','farcry.farcry_core.packages.fourq.test.ValidTest') />
 			<cfset tableMetadata.parseMetadata(getMetadata(test)) />
 			<dd>OK!</dd>
 			<cfcatch>
@@ -179,7 +179,7 @@ module works correctly as long as the data passed to them is correct.
 	<dl>
 		<dt>Component deployment to database using fourq.</dt>
 		<cftry>
-		  <cfset test = createObject('component','farcry.farcry_core.fourq.test.ValidTest') />
+		  <cfset test = createObject('component','farcry.farcry_core.packages.fourq.test.ValidTest') />
 			<cfset result = test.deployType(true,false) />
 			<dd>OK!<br/>
 <pre>
@@ -223,7 +223,7 @@ module works correctly as long as the data passed to them is correct.
 		<cfset stArrayProp.data = createUUID() />
 		<cfset arrayAppend(stProperties.arrayTest,stArrayProp) />
 		<cftry>
-		  <cfset test = createObject('component','farcry.farcry_core.fourq.test.ValidTest') />
+		  <cfset test = createObject('component','farcry.farcry_core.packages.fourq.test.ValidTest') />
 			<cfset result = test.createData(stProperties=stProperties,user='Unit Test',bAudit=false) />
 			<dd>OK!<br/>
 			</dd>
@@ -257,7 +257,7 @@ module works correctly as long as the data passed to them is correct.
 		<cfset stProperties.arrayTest = arrayNew(1) />
 		<cfset arrayAppend(stProperties.arrayTest,"Value 1") />
 		<cftry>
-		  <cfset test = createObject('component','farcry.farcry_core.fourq.test.ValidTest') />
+		  <cfset test = createObject('component','farcry.farcry_core.packages.fourq.test.ValidTest') />
 			<cfset result = test.createData(stProperties=stProperties,user='Unit Test',bAudit=false) />
 			<dd>OK!<br/>
 			</dd>
@@ -291,7 +291,7 @@ module works correctly as long as the data passed to them is correct.
 		<cfset stArrayProp.data = createUUID() />
 		<cfset arrayAppend(stProperties.arrayTest,stArrayProp) />
 		<cftry>
-		  <cfset test = createObject('component','farcry.farcry_core.fourq.test.ValidTest') />
+		  <cfset test = createObject('component','farcry.farcry_core.packages.fourq.test.ValidTest') />
 			<cfset result = test.setData(stProperties=stProperties,user='Unit Test',bAudit=false) />
 			<dd>OK!<br/>
 			</dd>
@@ -312,7 +312,7 @@ module works correctly as long as the data passed to them is correct.
 		<dt>Retrieve the complex array record.</dt>
 		
 		<cftry>
-		  <cfset test = createObject('component','farcry.farcry_core.fourq.test.ValidTest') />
+		  <cfset test = createObject('component','farcry.farcry_core.packages.fourq.test.ValidTest') />
 			<cfset result = test.getData(objectid=complexObjectID,bFullArrayProps=true) />
 			<dd>OK!<br/>
 			<cfdump var="#result#">
@@ -335,7 +335,7 @@ module works correctly as long as the data passed to them is correct.
 		<dt>Retrieve the complex array record with default array props.</dt>
 		
 		<cftry>
-		  <cfset test = createObject('component','farcry.farcry_core.fourq.test.ValidTest') />
+		  <cfset test = createObject('component','farcry.farcry_core.packages.fourq.test.ValidTest') />
 			<cfset result = test.getData(objectid=complexObjectID,bFullArrayProps=false) />
 			<dd>OK!<br/>
 			<cfdump var="#result#">

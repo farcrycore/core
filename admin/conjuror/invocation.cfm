@@ -19,7 +19,7 @@ Pseudo:
 <cfprocessingDirective pageencoding="utf-8">
 <!--- include tag libraries --->
 <cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin">
-<cfimport taglib="/farcry/farcry_core/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
 
 <!--- include function libraries 
 <cfinclude template="/farcry/farcry_core/admin/includes/utilityFunctions.cfm">
@@ -55,7 +55,7 @@ Pseudo:
 
 <!--- auto-typename lookup if required --->
 <cfif NOT len(typename)>
-	<cfset q4 = createObject("component", "farcry.farcry_core.fourq.fourq")>
+	<cfset q4 = createObject("component", "farcry.farcry_core.packages.fourq.fourq")>
 	<cfset typename = q4.findType(objectid=url.objectid)>
 	<!--- stop now if we can't get typename --->
 	<cfif NOT len(typename)>

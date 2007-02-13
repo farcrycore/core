@@ -21,7 +21,7 @@ $TODO: clean up formatting -- test in Mozilla 20030503 GB$
 $Developer: Brendan Sisson (brendan@daemon.com.au)$
 --->
 <cfimport taglib="/farcry/farcry_core/tags/farcry" prefix="tags">
-<cfimport taglib="/farcry/farcry_core/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
 
 <!--- copy related items to a list for looping --->
 <cfset aRelatedItems = output.aObjectIDs>
@@ -47,7 +47,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 					</cfoutput>
 					<cfloop from="1" to="#arrayLen(aRelatedItems)#" index="id">
 						<!--- get the objectType --->
-						<cfinvoke component="farcry.farcry_core.fourq.fourq" returnVariable="typeName" method="findType" objectID="#aRelatedItems[id]#">
+						<cfinvoke component="farcry.farcry_core.packages.fourq.fourq" returnVariable="typeName" method="findType" objectID="#aRelatedItems[id]#">
 						<cfif typename eq "dmImage">
 							<q4:contentObjectGet objectID="#aRelatedItems[id]#" r_stObject="stImage">
 							<cfif stImage.thumbnail neq "">

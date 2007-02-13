@@ -383,7 +383,7 @@
 			//Try using application.types.qMetaData
 			
 			oCustomType = createObject("component", "farcry.#application.applicationName#.packages.types.#arguments.typeName#");	//instantiate the custom type to introspect
-			oTypeMetadata = createObject("component", "farcry.farcry_core.fourq.TableMetadata").init();	//instansiate the Fourq class to access introspection methods
+			oTypeMetadata = createObject("component", "farcry.farcry_core.packages.fourq.TableMetadata").init();	//instansiate the Fourq class to access introspection methods
 			oTypeMetadata.parseMetadata(md=getMetadata(oCustomType));	//generate the metadata
 			stReturn = oTypeMetadata.getTableDefinition();	//retrieve the generated metadata
 		

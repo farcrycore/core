@@ -20,7 +20,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 --->
 <cfprocessingDirective pageencoding="utf-8">
 
-<cfimport taglib="/farcry/farcry_core/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
 <cfimport taglib="/farcry/farcry_core/tags/widgets" prefix="widgets">
 <cfinclude template="/farcry/farcry_core/admin/includes/utilityFunctions.cfm">
 

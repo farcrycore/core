@@ -123,11 +123,11 @@ $Developer: $
 			<cfelse><!--- Array --->
 				<cfset arrayAppend(stWizzard.Data[url.PrimaryObjectID][url.PrimaryFieldname],DataObjectID)>
 						
-				<cfset variables.tableMetadata = createobject('component','farcry.farcry_core.fourq.TableMetadata').init() />
+				<cfset variables.tableMetadata = createobject('component','farcry.farcry_core.packages.fourq.TableMetadata').init() />
 				<cfset tableMetadata.parseMetadata(md=getMetadata(oPrimary)) />		
 				<cfset stFields = variables.tableMetadata.getTableDefinition() />
 				
-				<cfset o = createObject("component","farcry.farcry_core.fourq.gateway.dbGateway").init(dsn=application.dsn,dbowner="")>
+				<cfset o = createObject("component","farcry.farcry_core.packages.fourq.gateway.dbGateway").init(dsn=application.dsn,dbowner="")>
 				<cfset aProps = o.createArrayTableData(tableName=url.PrimaryTypename & "_" & url.PrimaryFieldName,objectid=url.PrimaryObjectID,tabledef=stFields[PrimaryFieldName].Fields,aprops=stWizzard.Data[PrimaryObjectID][url.PrimaryFieldname])>
 		
 				<cfset stWizzard.Data[url.PrimaryObjectID][url.PrimaryFieldname] = aProps>

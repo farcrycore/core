@@ -31,7 +31,7 @@ $in: nextArrow (optional - value to use for next page arrow)$
 
 <cfsetting enablecfoutputonly="yes">
 
-<cfimport taglib="/farcry/farcry_core/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
 
 <!--- required attributes --->
 <cfparam name="attributes.objectId">

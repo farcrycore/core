@@ -1,5 +1,5 @@
 <cfprocessingDirective pageencoding="utf-8">
-<cfimport taglib="/farcry/farcry_core/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
 <cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
 <cfparam name="attributes.nodetype" default="dmNavigation"> 
 
@@ -172,7 +172,7 @@ moved tree code out of fourq and into farcry_core
 
 <cfloop index="objectId" list="#attributes.lObjectIds#">
 	<cfif len(objectId) eq 35 OR objectId eq '0'>
-	<cfinvoke component="farcry.farcry_core.fourq.fourq" returnvariable="thisTypename" method="findType" objectID="#ObjectId#">
+	<cfinvoke component="farcry.farcry_core.packages.fourq.fourq" returnvariable="thisTypename" method="findType" objectID="#ObjectId#">
 	
 	<!--- get all objects that pertain to get --->
 
@@ -242,7 +242,7 @@ lAllowTypes list
 		
 		<cfif isArray(stAllObjects[objId].aObjectIDs) AND arrayLen(stAllObjects[objId].aObjectIDs) GT 0>
 			<cfloop from="#arrayLen(stAllObjects[objId].aObjectIDs)#" to="1" index="i" step="-1">
-				<cfinvoke component="farcry.farcry_core.fourq.fourq" method="findType" returnvariable="rTypeName" objectID="#stAllObjects[objID].aObjectIds[i]#">
+				<cfinvoke component="farcry.farcry_core.packages.fourq.fourq" method="findType" returnvariable="rTypeName" objectID="#stAllObjects[objID].aObjectIds[i]#">
 				
 				<cfif NOT listContainsNoCase(lAllowTypes,rTypeName) AND stAllObjects[objID].typename IS "dmHTML">
 					 <cfset tmp = arrayDeleteAt(stAllObjects[objID].aObjectIds,i)> 

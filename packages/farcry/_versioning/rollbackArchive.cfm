@@ -25,7 +25,7 @@ ArchiveId - id of archive version which will be sent back to live
 || END FUSEDOC ||
 --->
 
-<cfimport taglib="/farcry/farcry_core/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
 <cfimport taglib="/farcry/farcry_core/tags/navajo/" prefix="nj">
 <!--- TODO - no where near enough error checking in this CFC --->
 <cfscript>
@@ -35,7 +35,7 @@ ArchiveId - id of archive version which will be sent back to live
 </cfscript>
 
 <cfif NOT isDefined("typename")>
-	<cfinvoke component="farcry.farcry_core.fourq.fourq" returnvariable="thisTypename" method="findType" objectID="#ObjectId#">
+	<cfinvoke component="farcry.farcry_core.packages.fourq.fourq" returnvariable="thisTypename" method="findType" objectID="#ObjectId#">
 	<cfset typename = thisTypename>	
 </cfif>
 

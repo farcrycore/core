@@ -21,7 +21,7 @@ $DEVELOPER:Brendan Sisson (brendan@daemon.com.au)$
 
 <!--- import tag library --->
 <cfimport taglib="/farcry/farcry_core/tags/admin/" prefix="admin" />
-<cfimport taglib="/farcry/farcry_core/fourq/tags/" prefix="q4" />
+<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4" />
 
 <!--- check permissions --->
 <cfscript>

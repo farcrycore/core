@@ -2,7 +2,7 @@
 
 <cfsetting enablecfoutputonly="true" showdebugoutput="false">
 
-<cfimport taglib="/farcry/farcry_core/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
 <cfset resultmsg = "#application.adminBundle[session.dmProfile.locale].liveObjRestoredOK#">
 <cftry>
 	<!--- check permissions on objects nav parent --->

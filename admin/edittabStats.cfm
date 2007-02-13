@@ -42,7 +42,7 @@ out:
 			<!--- i18n: get week starts for later use --->
 			<cfset weekStartDay=application.thisCalendar.weekStarts(session.dmProfile.locale)>
 			<!--- get top level object details --->
-			<cfimport taglib="/farcry/farcry_core/fourq/tags/" prefix="q4">
+			<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
 			<q4:contentobjectget objectid="#url.objectId#" r_stobject="stObj">
 			
 			<!--- create navigation object --->

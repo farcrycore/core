@@ -1,6 +1,6 @@
 <cfprocessingDirective pageencoding="utf-8">
 
-<cfimport taglib="/farcry/farcry_core/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
 
 
 <cffunction name="contentobjectget" hint="wrapper to the fourq tag - contentobjectget">

@@ -2,7 +2,7 @@
 contentObjectData (fourQ COAPI)
 Copyright Daemon Pty Limited 2002 (http://www.daemon.com.au/)
 
-$Header: /cvs/farcry/farcry_core/fourq/tags/contentobjectdata.cfm,v 1.5 2003/03/19 02:16:42 internal Exp $
+$Header: /cvs/farcry/farcry_core/packages/fourq/tags/contentobjectdata.cfm,v 1.5 2003/03/19 02:16:42 internal Exp $
 $Author: internal $
 $Date: 2003/03/19 02:16:42 $
 $Name:  $

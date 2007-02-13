@@ -43,7 +43,7 @@ STEP 3. CHECK FOR CORRECT LOCATION OF FOURQ DIRECTORY
 <cftry>
 	
 	<cfsavecontent variable="ping">
-		<cfinclude template="/farcry/farcry_core/fourq/ping.cfm" />
+		<cfinclude template="/farcry/farcry_core/packages/fourq/ping.cfm" />
 	</cfsavecontent>
 	
 	<cfoutput><p>Your [ fourq ] directory is is currently located to #expandpath("/farcry/fourq")#</p></cfoutput>

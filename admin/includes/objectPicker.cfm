@@ -9,7 +9,7 @@
 <cfparam name="searchText" default="">
 <cfparam name="searchField" default="">
 <cfparam name="bSearchFormSubmitted" default="No">
-<cfimport taglib="/farcry/farcry_core/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
 <cfimport taglib="/farcry/farcry_core/tags/widgets/" prefix="widgets">
 <cfinclude template="/farcry/farcry_core/admin/includes/libraryFunctions.cfm">
 <!--- if sumbitted then updtae the caller field and close window --->

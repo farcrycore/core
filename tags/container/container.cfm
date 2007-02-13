@@ -21,7 +21,7 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au)$
 $in: $
 $out:$
 --->
-<cfimport taglib="/farcry/farcry_core/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
 <cfimport taglib="/farcry/farcry_core/tags/container/" prefix="dm">
 
 <!--- quit tag if running in end mode --->

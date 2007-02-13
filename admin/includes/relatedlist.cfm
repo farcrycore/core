@@ -25,7 +25,7 @@ $
 $Developer: Geoff Bowers (modius@daemon.com.au)$
 --->
 <!--- import tag libraries --->
-<cfimport taglib="/farcry/farcry_core/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
 <cfimport taglib="/farcry/farcry_core/tags/widgets/" prefix="widgets">
 
 <!--- include function libraries --->
@@ -47,7 +47,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 <cfparam name="searchField" default="">
 <cfparam name="bSearchFormSubmitted" default="No">
 <cfset plpArrayPropertieName = "#fieldName#">
-<cfimport taglib="/farcry/farcry_core/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/farcry_core/packages/fourq/tags/" prefix="q4">
 <cfparam name="pg" default="1">
 <cfparam name="categoryID" default=""> <!--- category filter --->
 <cfparam name="currentpage" default="1"> <!--- pagination flag --->
