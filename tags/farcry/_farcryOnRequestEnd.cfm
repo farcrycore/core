@@ -27,53 +27,53 @@ $out:$
 
 
 <cfif structKeyExists(Request,"inHead") AND len(structKeyList(Request.InHead))>		
-		<cfparam name="Request.RequiredInHead" default="#StructNew()#">		
+		<cfparam name="variables.stPlaceInHead" default="#StructNew()#">		
 		
-		<cfparam name="Request.RequiredInHead.prototypeJS" default = "0">
-		<cfparam name="Request.RequiredInHead.prototypeLiteJS" default = "0">
-		<cfparam name="Request.RequiredInHead.moofxJS" default = "0">
-		<cfparam name="Request.RequiredInHead.moofxPackJS" default = "0">
-		<cfparam name="Request.RequiredInHead.mooAjaxJS" default = "0">
-		<cfparam name="Request.RequiredInHead.mooDomJS" default = "0">
-		<cfparam name="Request.RequiredInHead.tabsJS" default = "0">
-		<cfparam name="Request.RequiredInHead.scriptaculousJS" default = "0">
-		<cfparam name="Request.RequiredInHead.scriptaculousDragAndDropJS" default = "0">
-		<cfparam name="Request.RequiredInHead.scriptaculousEffectsJS" default = "0">
-		<cfparam name="Request.RequiredInHead.scriptaculousBuilderJS" default = "0">
-		<cfparam name="Request.RequiredInHead.scriptaculousSliderJS" default = "0">
-		<cfparam name="Request.RequiredInHead.scriptaculousControlsJS" default = "0">
-		<cfparam name="Request.RequiredInHead.lightboxJS" default = "0">
-		<cfparam name="Request.RequiredInHead.DateTimePickerJS" default = "0">
-		<cfparam name="Request.RequiredInHead.CalendarJS" default = "0">
-		<cfparam name="Request.RequiredInHead.CalendarSetupJS" default = "0">
-		<cfparam name="Request.RequiredInHead.TinyMCEJS" default = "0">
-		<cfparam name="Request.RequiredInHead.JSONJS" default = "0">
-		<cfparam name="Request.RequiredInHead.FormValidationJS" default = "0">
-		<cfparam name="Request.RequiredInHead.prototypeTreeJS" default = "0">
-		<cfparam name="Request.RequiredInHead.prototypeTreeCSS" default = "0">
-		<cfparam name="Request.RequiredInHead.prototypeWindowJS" default = "0">
-		<cfparam name="Request.RequiredInHead.ricoJS" default = "0">
+		<cfparam name="variables.stPlaceInHead.prototypeJS" default = "0">
+		<cfparam name="variables.stPlaceInHead.prototypeLiteJS" default = "0">
+		<cfparam name="variables.stPlaceInHead.moofxJS" default = "0">
+		<cfparam name="variables.stPlaceInHead.moofxPackJS" default = "0">
+		<cfparam name="variables.stPlaceInHead.mooAjaxJS" default = "0">
+		<cfparam name="variables.stPlaceInHead.mooDomJS" default = "0">
+		<cfparam name="variables.stPlaceInHead.tabsJS" default = "0">
+		<cfparam name="variables.stPlaceInHead.scriptaculousJS" default = "0">
+		<cfparam name="variables.stPlaceInHead.scriptaculousDragAndDropJS" default = "0">
+		<cfparam name="variables.stPlaceInHead.scriptaculousEffectsJS" default = "0">
+		<cfparam name="variables.stPlaceInHead.scriptaculousBuilderJS" default = "0">
+		<cfparam name="variables.stPlaceInHead.scriptaculousSliderJS" default = "0">
+		<cfparam name="variables.stPlaceInHead.scriptaculousControlsJS" default = "0">
+		<cfparam name="variables.stPlaceInHead.lightboxJS" default = "0">
+		<cfparam name="variables.stPlaceInHead.DateTimePickerJS" default = "0">
+		<cfparam name="variables.stPlaceInHead.CalendarJS" default = "0">
+		<cfparam name="variables.stPlaceInHead.CalendarSetupJS" default = "0">
+		<cfparam name="variables.stPlaceInHead.TinyMCEJS" default = "0">
+		<cfparam name="variables.stPlaceInHead.JSONJS" default = "0">
+		<cfparam name="variables.stPlaceInHead.FormValidationJS" default = "0">
+		<cfparam name="variables.stPlaceInHead.prototypeTreeJS" default = "0">
+		<cfparam name="variables.stPlaceInHead.prototypeTreeCSS" default = "0">
+		<cfparam name="variables.stPlaceInHead.prototypeWindowJS" default = "0">
+		<cfparam name="variables.stPlaceInHead.ricoJS" default = "0">
 		
-		<cfparam name="Request.RequiredInHead.spryAccordionJS" default = "0">
-		<cfparam name="Request.RequiredInHead.spryXPathJS" default = "0">
-		<cfparam name="Request.RequiredInHead.spryAccordionCSS" default = "0">
-		
-		
-		<cfparam name="Request.RequiredInHead.jQueryJS" default = "0">
+		<cfparam name="variables.stPlaceInHead.spryAccordionJS" default = "0">
+		<cfparam name="variables.stPlaceInHead.spryXPathJS" default = "0">
+		<cfparam name="variables.stPlaceInHead.spryAccordionCSS" default = "0">
 		
 		
-		<cfparam name="Request.RequiredInHead.TabStyle1CSS" default = "0">
-		<cfparam name="Request.RequiredInHead.TabStyle6CSS" default = "0">
-		<cfparam name="Request.RequiredInHead.CalendarStyle1CSS" default = "0">
-		
-		<cfparam name="Request.RequiredInHead.WizardCSS" default = "0">
-		<cfparam name="Request.RequiredInHead.FormsCSS" default = "0">
-		<cfparam name="Request.RequiredInHead.iehtcCSS" default = "true">
+		<cfparam name="variables.stPlaceInHead.jQueryJS" default = "0">
 		
 		
-		<cfparam name="Request.RequiredInHead.swfObjectJS" default = "0">
+		<cfparam name="variables.stPlaceInHead.TabStyle1CSS" default = "0">
+		<cfparam name="variables.stPlaceInHead.TabStyle6CSS" default = "0">
+		<cfparam name="variables.stPlaceInHead.CalendarStyle1CSS" default = "0">
 		
-		<cfparam name="Request.RequiredInHead.libraryPopupJS" default = "0">
+		<cfparam name="variables.stPlaceInHead.WizardCSS" default = "0">
+		<cfparam name="variables.stPlaceInHead.FormsCSS" default = "0">
+		<cfparam name="variables.stPlaceInHead.iehtcCSS" default = "true">
+		
+		
+		<cfparam name="variables.stPlaceInHead.swfObjectJS" default = "0">
+		
+		<cfparam name="variables.stPlaceInHead.libraryPopupJS" default = "0">
 		
 		
 
@@ -81,291 +81,294 @@ $out:$
 		
 		
 		<cfif isDefined("Request.InHead.PrototypeLite")>
-			<cfset Request.RequiredInHead.prototypeLiteJS = 1>
+			<cfset variables.stPlaceInHead.prototypeLiteJS = 1>
 		</cfif>
 		<cfif isDefined("Request.InHead.MooFX")>
-			<cfset Request.RequiredInHead.prototypeLiteJS = 1>
-			<cfset Request.RequiredInHead.moofxJS = 1>
-			<cfset Request.RequiredInHead.moofxPackJS = 1>
+			<cfset variables.stPlaceInHead.prototypeLiteJS = 1>
+			<cfset variables.stPlaceInHead.moofxJS = 1>
+			<cfset variables.stPlaceInHead.moofxPackJS = 1>
 		</cfif>
 		<cfif isDefined("Request.InHead.MooAjax")>
-			<cfset Request.RequiredInHead.prototypeLiteJS = 1>
-			<cfset Request.RequiredInHead.mooAjaxJS = 1>
+			<cfset variables.stPlaceInHead.prototypeLiteJS = 1>
+			<cfset variables.stPlaceInHead.mooAjaxJS = 1>
 		</cfif>
 		<cfif isDefined("Request.InHead.MooDOM")>
-			<cfset Request.RequiredInHead.prototypeLiteJS = 1>
-			<cfset Request.RequiredInHead.MooDOMJS = 1>
+			<cfset variables.stPlaceInHead.prototypeLiteJS = 1>
+			<cfset variables.stPlaceInHead.MooDOMJS = 1>
 		</cfif>
 		<cfif isDefined("Request.InHead.TabStyle1")>
-			<cfset Request.RequiredInHead.prototypeLiteJS = 1>
-			<cfset Request.RequiredInHead.tabsJS = 1>
-			<cfset Request.RequiredInHead.TabStyle1CSS = 1>
+			<cfset variables.stPlaceInHead.prototypeLiteJS = 1>
+			<cfset variables.stPlaceInHead.tabsJS = 1>
+			<cfset variables.stPlaceInHead.TabStyle1CSS = 1>
 		</cfif>
 		<cfif isDefined("Request.InHead.TabStyle6")>
-			<cfset Request.RequiredInHead.prototypeLiteJS = 1>
-			<cfset Request.RequiredInHead.tabsJS = 1>
-			<cfset Request.RequiredInHead.TabStyle6CSS = 1>
+			<cfset variables.stPlaceInHead.prototypeLiteJS = 1>
+			<cfset variables.stPlaceInHead.tabsJS = 1>
+			<cfset variables.stPlaceInHead.TabStyle6CSS = 1>
 		</cfif>
 		<cfif isDefined("Request.InHead.Scriptaculous")>
-			<cfset Request.RequiredInHead.prototypeJS = 1>
-			<cfset Request.RequiredInHead.prototypeLiteJS = 0>
-			<cfset Request.RequiredInHead.scriptaculousJS = 1>
+			<cfset variables.stPlaceInHead.prototypeJS = 1>
+			<cfset variables.stPlaceInHead.prototypeLiteJS = 0>
+			<cfset variables.stPlaceInHead.scriptaculousJS = 1>
 		</cfif>
 		<cfif isDefined("Request.InHead.ScriptaculousDragAndDrop")>
-			<cfset Request.RequiredInHead.prototypeJS = 1>
-			<cfset Request.RequiredInHead.prototypeLiteJS = 0>
-			<cfset Request.RequiredInHead.scriptaculousJS = 1>
-			<cfset Request.RequiredInHead.scriptaculousDragAndDropJS = 1>
+			<cfset variables.stPlaceInHead.prototypeJS = 1>
+			<cfset variables.stPlaceInHead.prototypeLiteJS = 0>
+			<cfset variables.stPlaceInHead.scriptaculousJS = 1>
+			<cfset variables.stPlaceInHead.scriptaculousDragAndDropJS = 1>
 		</cfif>
 		<cfif isDefined("Request.InHead.ScriptaculousEffects")>
-			<cfset Request.RequiredInHead.prototypeJS = 1>
-			<cfset Request.RequiredInHead.prototypeLiteJS = 0>
-			<cfset Request.RequiredInHead.scriptaculousJS = 1>
-			<cfset Request.RequiredInHead.scriptaculousEffectsJS = 1>
+			<cfset variables.stPlaceInHead.prototypeJS = 1>
+			<cfset variables.stPlaceInHead.prototypeLiteJS = 0>
+			<cfset variables.stPlaceInHead.scriptaculousJS = 1>
+			<cfset variables.stPlaceInHead.scriptaculousEffectsJS = 1>
 		</cfif>
 		<cfif isDefined("Request.InHead.ScriptaculousBuilder")>
-			<cfset Request.RequiredInHead.prototypeJS = 1>
-			<cfset Request.RequiredInHead.prototypeLiteJS = 0>
-			<cfset Request.RequiredInHead.scriptaculousJS = 1>
-			<cfset Request.RequiredInHead.scriptaculousBuilderJS = 1>
+			<cfset variables.stPlaceInHead.prototypeJS = 1>
+			<cfset variables.stPlaceInHead.prototypeLiteJS = 0>
+			<cfset variables.stPlaceInHead.scriptaculousJS = 1>
+			<cfset variables.stPlaceInHead.scriptaculousBuilderJS = 1>
 		</cfif>
 		<cfif isDefined("Request.InHead.ScriptaculousSlider")>
-			<cfset Request.RequiredInHead.prototypeJS = 1>
-			<cfset Request.RequiredInHead.prototypeLiteJS = 0>
-			<cfset Request.RequiredInHead.scriptaculousJS = 1>
-			<cfset Request.RequiredInHead.scriptaculousSliderJS = 1>
+			<cfset variables.stPlaceInHead.prototypeJS = 1>
+			<cfset variables.stPlaceInHead.prototypeLiteJS = 0>
+			<cfset variables.stPlaceInHead.scriptaculousJS = 1>
+			<cfset variables.stPlaceInHead.scriptaculousSliderJS = 1>
 		</cfif>
 		<cfif isDefined("Request.InHead.ScriptaculousControls")>
-			<cfset Request.RequiredInHead.prototypeJS = 1>
-			<cfset Request.RequiredInHead.prototypeLiteJS = 0>
-			<cfset Request.RequiredInHead.scriptaculousJS = 1>
-			<cfset Request.RequiredInHead.scriptaculousControlsJS = 1>
+			<cfset variables.stPlaceInHead.prototypeJS = 1>
+			<cfset variables.stPlaceInHead.prototypeLiteJS = 0>
+			<cfset variables.stPlaceInHead.scriptaculousJS = 1>
+			<cfset variables.stPlaceInHead.scriptaculousControlsJS = 1>
 		</cfif>
 		<cfif isDefined("Request.InHead.Lightbox")>
-			<cfset Request.RequiredInHead.prototypeJS = 1>
-			<cfset Request.RequiredInHead.prototypeLiteJS = 0>
-			<cfset Request.RequiredInHead.scriptaculousJS = 1>
-			<cfset Request.RequiredInHead.lightboxJS = 1>
-			<cfset Request.RequiredInHead.lightboxCSS = 1>
+			<cfset variables.stPlaceInHead.prototypeJS = 1>
+			<cfset variables.stPlaceInHead.prototypeLiteJS = 0>
+			<cfset variables.stPlaceInHead.scriptaculousJS = 1>
+			<cfset variables.stPlaceInHead.lightboxJS = 1>
+			<cfset variables.stPlaceInHead.lightboxCSS = 1>
 		</cfif>
 		<cfif isDefined("Request.InHead.DateTimePicker")>
-			<cfset Request.RequiredInHead.DateTimePickerJS = 1>
+			<cfset variables.stPlaceInHead.DateTimePickerJS = 1>
 		</cfif>
 		<cfif isdefined("Request.InHead.Calendar")>
-			<cfset Request.RequiredInHead.CalendarJS = 1>
-			<cfset Request.RequiredInHead.CalendarSetupJS = 1>
-			<cfset Request.RequiredInHead.CalendarStyle1CSS = 1>
+			<cfset variables.stPlaceInHead.CalendarJS = 1>
+			<cfset variables.stPlaceInHead.CalendarSetupJS = 1>
+			<cfset variables.stPlaceInHead.CalendarStyle1CSS = 1>
 		</cfif>
 		<cfif isdefined("Request.InHead.TinyMCE")>
-			<cfset Request.RequiredInHead.TinyMCEJS = 1>
+			<cfset variables.stPlaceInHead.TinyMCEJS = 1>
 		</cfif>
 		<cfif isdefined("Request.InHead.JSON")>
-			<cfset Request.RequiredInHead.JSONJS = 1>
+			<cfset variables.stPlaceInHead.JSONJS = 1>
 		</cfif>
 		
 		<cfif isdefined("Request.InHead.FormValidation")>
-			<cfset Request.RequiredInHead.FormValidationJS = 1>
-			<cfset Request.RequiredInHead.prototypeJS = 1>
-			<cfset Request.RequiredInHead.scriptaculousEffectsJS = 1>
+			<cfset variables.stPlaceInHead.FormValidationJS = 1>
+			<cfset variables.stPlaceInHead.prototypeJS = 1>
+			<cfset variables.stPlaceInHead.scriptaculousEffectsJS = 1>
 		</cfif>
 		
 		<cfif isdefined("Request.InHead.Wizard")>
-			<cfset Request.RequiredInHead.WizardCSS = 1>
+			<cfset variables.stPlaceInHead.WizardCSS = 1>
 		</cfif>
 		<cfif isdefined("Request.InHead.FormsCSS") AND Request.InHead.FormsCSS>
-			<cfset Request.RequiredInHead.FormsCSS = 1>
+			<cfset variables.stPlaceInHead.FormsCSS = 1>
 		</cfif>
 		<cfif isdefined("Request.InHead.iehtcCSS") AND Request.InHead.iehtcCSS>
-			<cfset Request.RequiredInHead.iehtcCSS = true>
+			<cfset variables.stPlaceInHead.iehtcCSS = true>
 		</cfif>
 		
 		<cfif isDefined("Request.InHead.prototypeTree")>
-			<cfset Request.RequiredInHead.prototypeJS = 1>
-			<cfset Request.RequiredInHead.prototypeLiteJS = 0>
-			<cfset Request.RequiredInHead.scriptaculousJS = 1>
-			<cfset Request.RequiredInHead.scriptaculousEffectsJS = 1>
-			<cfset Request.RequiredInHead.prototypeTreeJS = 1>
-			<cfset Request.RequiredInHead.prototypeTreeCSS = 1>
+			<cfset variables.stPlaceInHead.prototypeJS = 1>
+			<cfset variables.stPlaceInHead.prototypeLiteJS = 0>
+			<cfset variables.stPlaceInHead.scriptaculousJS = 1>
+			<cfset variables.stPlaceInHead.scriptaculousEffectsJS = 1>
+			<cfset variables.stPlaceInHead.prototypeTreeJS = 1>
+			<cfset variables.stPlaceInHead.prototypeTreeCSS = 1>
 		</cfif>
 				
 		
 		<cfif isDefined("Request.InHead.prototypeWindow")>
-			<cfset Request.RequiredInHead.prototypeJS = 1>
-			<cfset Request.RequiredInHead.prototypeLiteJS = 0>
-			<cfset Request.RequiredInHead.scriptaculousJS = 1>
-			<cfset Request.RequiredInHead.scriptaculousEffectsJS = 1>
-			<cfset Request.RequiredInHead.prototypeWindowJS = 1>
+			<cfset variables.stPlaceInHead.prototypeJS = 1>
+			<cfset variables.stPlaceInHead.prototypeLiteJS = 0>
+			<cfset variables.stPlaceInHead.scriptaculousJS = 1>
+			<cfset variables.stPlaceInHead.scriptaculousEffectsJS = 1>
+			<cfset variables.stPlaceInHead.prototypeWindowJS = 1>
 		</cfif>
 				
 		
 		<cfif isDefined("Request.InHead.rico")>
-			<cfset Request.RequiredInHead.prototypeJS = 1>
-			<cfset Request.RequiredInHead.prototypeLiteJS = 0>
-			<cfset Request.RequiredInHead.ricoJS = 1>
+			<cfset variables.stPlaceInHead.prototypeJS = 1>
+			<cfset variables.stPlaceInHead.prototypeLiteJS = 0>
+			<cfset variables.stPlaceInHead.ricoJS = 1>
 		</cfif>
 		<cfif isDefined("Request.InHead.spryAccordion")>
-			<cfset Request.RequiredInHead.spryAccordionJS = 1>
-			<cfset Request.RequiredInHead.spryXpathJS = 1>
-			<cfset Request.RequiredInHead.spryAccordionCSS = 1>
+			<cfset variables.stPlaceInHead.spryAccordionJS = 1>
+			<cfset variables.stPlaceInHead.spryXpathJS = 1>
+			<cfset variables.stPlaceInHead.spryAccordionCSS = 1>
 		</cfif>
 				
 				
 		<cfif isDefined("Request.InHead.jQueryJS")>
-			<cfset Request.RequiredInHead.jQueryJS = 1>
+			<cfset variables.stPlaceInHead.jQueryJS = 1>
 		</cfif>
 		
 		
 		<cfif isDefined("Request.InHead.swfObject") AND Request.InHead.swfObject>
-			<cfset Request.RequiredInHead.swfObjectJS = 1>
+			<cfset variables.stPlaceInHead.swfObjectJS = 1>
 		</cfif>
 		
 		<cfif isDefined("Request.InHead.libraryPopup") AND Request.InHead.libraryPopup>
-			<cfset Request.RequiredInHead.libraryPopupJS = 1>
+			<cfset variables.stPlaceInHead.libraryPopupJS = 1>
 		</cfif>
 		
 		<cfif isDefined("request.inHead.flashWrapperToggle") AND request.inHead.flashWrapperToggle>
-			<cfset request.requiredInHead.prototypeJS = 1 />
-			<cfset Request.RequiredInHead.scriptaculousJS = 1>
-			<cfset request.requiredInHead.flashWrapperToggle = 1/>
+			<cfset variables.stPlaceInHead.prototypeJS = 1 />
+			<cfset variables.stPlaceInHead.scriptaculousJS = 1>
+			<cfset variables.stPlaceInHead.flashWrapperToggle = 1/>
 			
 		</cfif>
 		
-		
-	<cfsavecontent variable="RequiredHead">	
-		<cfif isDefined("Request.RequiredInHead.prototypeLiteJS") AND Request.RequiredInHead.prototypeLiteJS AND Request.RequiredInHead.prototypeJS EQ 0>
+	
+	<!--- Check for each stPlaceInHead variable and output relevent html/css/js --->
+	<cfparam name="request.inhead" default="#structNew()#" />
+			
+	<cfsavecontent variable="variables.placeInHead">	
+		<cfif isDefined("variables.stPlaceInHead.prototypeLiteJS") AND variables.stPlaceInHead.prototypeLiteJS AND Not variables.stPlaceInHead.prototypeJS>
 			<cfoutput>
 				<script src="#application.url.farcry#/js/prototype/prototype.lite.js" type="text/javascript"></script></cfoutput>
 		</cfif>
 		
-		<cfif isDefined("Request.RequiredInHead.prototypeJS") AND Request.RequiredInHead.prototypeJS>
+		<cfif isDefined("variables.stPlaceInHead.prototypeJS") AND variables.stPlaceInHead.prototypeJS>
 			<cfoutput>
 				<script src="#application.url.farcry#/js/prototype/prototype.js" type="text/javascript"></script></cfoutput>
 		</cfif>
 		
-		<cfif isDefined("Request.RequiredInHead.mooFxJS") AND Request.RequiredInHead.mooFxJS>
+		<cfif isDefined("variables.stPlaceInHead.mooFxJS") AND variables.stPlaceInHead.mooFxJS>
 			<cfoutput>
 				<script src="#application.url.farcry#/js/moofx/moo.fx.js" type="text/javascript"></script></cfoutput>
 		</cfif>
-		<cfif isDefined("Request.RequiredInHead.mooFxPackJS") AND Request.RequiredInHead.mooFxPackJS>
+		<cfif isDefined("variables.stPlaceInHead.mooFxPackJS") AND variables.stPlaceInHead.mooFxPackJS>
 			<cfoutput>
 				<script src="#application.url.farcry#/js/moofx/moo.fx.pack.js" type="text/javascript"></script></cfoutput>
 		</cfif>
-		<cfif isDefined("Request.RequiredInHead.mooAjaxJS") AND Request.RequiredInHead.mooAjaxJS>
+		<cfif isDefined("variables.stPlaceInHead.mooAjaxJS") AND variables.stPlaceInHead.mooAjaxJS>
 			<cfoutput>
 				<script src="#application.url.farcry#/js/moofx/moo.ajax.js" type="text/javascript"></script></cfoutput>
 		</cfif>
-		<cfif isDefined("Request.RequiredInHead.mooDOMJS") AND Request.RequiredInHead.mooDOMJS>
+		<cfif isDefined("variables.stPlaceInHead.mooDOMJS") AND variables.stPlaceInHead.mooDOMJS>
 			<cfoutput>
 				<script src="#application.url.farcry#/js/moofx/moo.dom.js" type="text/javascript"></script></cfoutput>
 		</cfif>
 		
-		<cfif isDefined("Request.RequiredInHead.scriptaculousJS") AND Request.RequiredInHead.scriptaculousJS>
+		<cfif isDefined("variables.stPlaceInHead.scriptaculousJS") AND variables.stPlaceInHead.scriptaculousJS>
 			<cfoutput>
 				<script src="#application.url.farcry#/js/scriptaculous/scriptaculous.js" type="text/javascript"></script></cfoutput>
 		</cfif>
-		<cfif isDefined("Request.RequiredInHead.ScriptaculousDragAndDropJS") AND Request.RequiredInHead.ScriptaculousDragAndDropJS>
+		<cfif isDefined("variables.stPlaceInHead.ScriptaculousDragAndDropJS") AND variables.stPlaceInHead.ScriptaculousDragAndDropJS>
 			<cfoutput>
 				<script src="#application.url.farcry#/js/scriptaculous/dragdrop.js" type="text/javascript"></script></cfoutput>
 		</cfif>
-		<cfif isDefined("Request.RequiredInHead.ScriptaculousEffectsJS") AND Request.RequiredInHead.ScriptaculousEffectsJS>
+		<cfif isDefined("variables.stPlaceInHead.ScriptaculousEffectsJS") AND variables.stPlaceInHead.ScriptaculousEffectsJS>
 			<cfoutput>
 				<script src="#application.url.farcry#/js/scriptaculous/effects.js" type="text/javascript"></script></cfoutput>
 		</cfif>
-		<cfif isDefined("Request.RequiredInHead.ScriptaculousBuilderJS") AND Request.RequiredInHead.ScriptaculousBuilderJS>
+		<cfif isDefined("variables.stPlaceInHead.ScriptaculousBuilderJS") AND variables.stPlaceInHead.ScriptaculousBuilderJS>
 			<cfoutput>
 				<script src="#application.url.farcry#/js/scriptaculous/builder.js" type="text/javascript"></script></cfoutput>
 		</cfif>
-		<cfif isDefined("Request.RequiredInHead.ScriptaculousSliderJS") AND Request.RequiredInHead.ScriptaculousSliderJS>
+		<cfif isDefined("variables.stPlaceInHead.ScriptaculousSliderJS") AND variables.stPlaceInHead.ScriptaculousSliderJS>
 			<cfoutput>
 				<script src="#application.url.farcry#/js/scriptaculous/slider.js" type="text/javascript"></script></cfoutput>
 		</cfif>
-		<cfif isDefined("Request.RequiredInHead.ScriptaculousControlsJS") AND Request.RequiredInHead.ScriptaculousControlsJS>
+		<cfif isDefined("variables.stPlaceInHead.ScriptaculousControlsJS") AND variables.stPlaceInHead.ScriptaculousControlsJS>
 			<cfoutput>
 				<script src="#application.url.farcry#/js/scriptaculous/controls.js" type="text/javascript"></script></cfoutput>
 		</cfif>
-		<cfif isDefined("Request.RequiredInHead.lightboxJS") AND Request.RequiredInHead.lightboxJS>
+		<cfif isDefined("variables.stPlaceInHead.lightboxJS") AND variables.stPlaceInHead.lightboxJS>
 			<cfoutput>
 				<script src="#application.url.farcry#/js/lightbox/lightbox.js" type="text/javascript"></script></cfoutput>
 		</cfif>
-		<cfif isDefined("Request.RequiredInHead.lightboxCSS") AND Request.RequiredInHead.lightboxCSS>
+		<cfif isDefined("variables.stPlaceInHead.lightboxCSS") AND variables.stPlaceInHead.lightboxCSS>
 			<cfoutput>
 				<link rel="stylesheet" href="#application.url.webroot#/js/lightbox/css/lightbox.css" type="text/css" media="screen" /></cfoutput>
 		</cfif>
-		<cfif isDefined("Request.RequiredInHead.TabsJS") AND Request.RequiredInHead.TabsJS>
+		<cfif isDefined("variables.stPlaceInHead.TabsJS") AND variables.stPlaceInHead.TabsJS>
 			<cfoutput>
 				<script src="#application.url.farcry#/js/tabs/tabs.js" type="text/javascript"></script></cfoutput>
 		</cfif>
-		<cfif isDefined("Request.RequiredInHead.TabStyle1CSS") AND Request.RequiredInHead.TabStyle1CSS>
+		<cfif isDefined("variables.stPlaceInHead.TabStyle1CSS") AND variables.stPlaceInHead.TabStyle1CSS>
 			<cfoutput>
 				<link rel="stylesheet" href="#application.url.farcry#/css/tabs/TabStyle1.css" type="text/css" media="screen" /></cfoutput>
 		</cfif>
-		<cfif isDefined("Request.RequiredInHead.TabStyle6CSS") AND Request.RequiredInHead.TabStyle6CSS>
+		<cfif isDefined("variables.stPlaceInHead.TabStyle6CSS") AND variables.stPlaceInHead.TabStyle6CSS>
 			<cfoutput>
 				<link rel="stylesheet" href="#application.url.farcry#/css/tabs/TabStyle6.css" type="text/css" media="screen" /></cfoutput>
 		</cfif>
-		<cfif isDefined("Request.RequiredInHead.DateTimePickerJS") AND Request.RequiredInHead.DateTimePickerJS>
+		<cfif isDefined("variables.stPlaceInHead.DateTimePickerJS") AND variables.stPlaceInHead.DateTimePickerJS>
 			<cfoutput>
 				<script src="#application.url.farcry#/js/DateTimePicker/DateTimePicker.js" type="text/javascript"></script></cfoutput>
 		</cfif>
 		
-		<cfif isDefined("Request.RequiredInHead.CalendarJS") AND Request.RequiredInHead.CalendarJS>
+		<cfif isDefined("variables.stPlaceInHead.CalendarJS") AND variables.stPlaceInHead.CalendarJS>
 			<cfoutput>
 				<script src="#application.url.farcry#/js/calendar/calendar.js" type="text/javascript"></script>
 				<script src="#application.url.farcry#/js/calendar/lang/calendar-en.js" type="text/javascript"></script></cfoutput>
 		</cfif>
-		<cfif isDefined("Request.RequiredInHead.CalendarSetupJS") AND Request.RequiredInHead.CalendarSetupJS>
+		<cfif isDefined("variables.stPlaceInHead.CalendarSetupJS") AND variables.stPlaceInHead.CalendarSetupJS>
 			<cfoutput>
 				<script src="#application.url.farcry#/js/calendar/calendar-setup.js" type="text/javascript"></script></cfoutput>
 		</cfif>
-		<cfif isDefined("Request.RequiredInHead.CalendarStyle1CSS") AND Request.RequiredInHead.CalendarStyle1CSS>
+		<cfif isDefined("variables.stPlaceInHead.CalendarStyle1CSS") AND variables.stPlaceInHead.CalendarStyle1CSS>
 			<cfoutput>
 				<link rel="stylesheet" href="#application.url.farcry#/css/calendar/calendar-win2k-1.css" type="text/css" media="screen" /></cfoutput>
 		</cfif>
 		
 		
-		<cfif isDefined("Request.RequiredInHead.TinyMCEJS") AND Request.RequiredInHead.TinyMCEJS>
+		<cfif isDefined("variables.stPlaceInHead.TinyMCEJS") AND variables.stPlaceInHead.TinyMCEJS>
 			<cfoutput>
 				<script src="#application.url.farcry#/js/tiny_mce/tiny_mce.js" type="text/javascript"></script></cfoutput>
 		</cfif>
-		<cfif isDefined("Request.RequiredInHead.JSONJS") AND Request.RequiredInHead.JSONJS>
+		<cfif isDefined("variables.stPlaceInHead.JSONJS") AND variables.stPlaceInHead.JSONJS>
 			<cfoutput>
 				<script src="#application.url.farcry#/includes/lib/json.js" type="text/javascript"></script></cfoutput>
 		</cfif>
 		
-		<cfif isDefined("Request.RequiredInHead.FormValidationJS") AND Request.RequiredInHead.FormValidationJS>
+		<cfif isDefined("variables.stPlaceInHead.FormValidationJS") AND variables.stPlaceInHead.FormValidationJS>
 			<cfoutput>
 				<script src="#application.url.farcry#/js/formvalidation/validation.js" type="text/javascript"></script></cfoutput>
 		</cfif>
 		
-		<cfif isDefined("Request.RequiredInHead.prototypeTreeJS") AND Request.RequiredInHead.prototypeTreeJS>
+		<cfif isDefined("variables.stPlaceInHead.prototypeTreeJS") AND variables.stPlaceInHead.prototypeTreeJS>
 			<cfoutput>
 				<script src="#application.url.farcry#/js/prototypeTree/prototypeTree.js" type="text/javascript"></script></cfoutput>
 		</cfif>
-		<cfif isDefined("Request.RequiredInHead.prototypeTreeCSS") AND Request.RequiredInHead.prototypeTreeCSS>
+		<cfif isDefined("variables.stPlaceInHead.prototypeTreeCSS") AND variables.stPlaceInHead.prototypeTreeCSS>
 			<cfoutput>
 				<link rel="stylesheet" href="#application.url.farcry#/js/prototypeTree/prototypeTree.css" type="text/css" media="screen" /></cfoutput>
 		</cfif>
 		
 		
-		<cfif isDefined("Request.RequiredInHead.jQueryJS") AND Request.RequiredInHead.jQueryJS>
+		<cfif isDefined("variables.stPlaceInHead.jQueryJS") AND variables.stPlaceInHead.jQueryJS>
 			<cfoutput>
 				<script src="#application.url.farcry#/js/jquery/jquery.js" type="text/javascript"></script></cfoutput>
 		</cfif>
 		
 		
-		<cfif isDefined("Request.RequiredInHead.WizardCSS") AND Request.RequiredInHead.WizardCSS>
+		<cfif isDefined("variables.stPlaceInHead.WizardCSS") AND variables.stPlaceInHead.WizardCSS>
 			<cfoutput>
 				<link rel="stylesheet" href="#application.url.farcry#/css/wizard.css" type="text/css" media="screen" /></cfoutput>
 		</cfif>
 		
-		<cfif isDefined("Request.RequiredInHead.FormsCSS") AND Request.RequiredInHead.FormsCSS>
+		<cfif isDefined("variables.stPlaceInHead.FormsCSS") AND variables.stPlaceInHead.FormsCSS>
 			<cfoutput>
 				<link rel="stylesheet" type="text/css" href="#application.url.farcry#/css/forms.cfm" media="all" />
 			</cfoutput>
 		</cfif>
 		
 
-		<cfif isDefined("Request.RequiredInHead.iehtcCSS") AND Request.RequiredInHead.iehtcCSS>
+		<cfif isDefined("variables.stPlaceInHead.iehtcCSS") AND variables.stPlaceInHead.iehtcCSS>
 			<cfoutput>
 				<!--[if lt IE 7]>
 				<link rel="stylesheet" href="#application.url.farcry#/css/htc/iehtc.cfm" type="text/css" media="screen" />
@@ -376,7 +379,7 @@ $out:$
 				
 				
 		
-		<cfif isDefined("Request.RequiredInHead.prototypeWindowJS") AND Request.RequiredInHead.prototypeWindowJS>
+		<cfif isDefined("variables.stPlaceInHead.prototypeWindowJS") AND variables.stPlaceInHead.prototypeWindowJS>
 			<cfoutput>
 				<script src="#application.url.farcry#/js/prototypeWindow/window.js" type="text/javascript"></script>
 				<link rel="stylesheet" type="text/css" href="#application.url.farcry#/js/prototypeWindow/themes/default.css" media="all" />
@@ -386,22 +389,22 @@ $out:$
 		
 		
 		
-		<cfif isDefined("Request.RequiredInHead.ricoJS") AND Request.RequiredInHead.ricoJS>
+		<cfif isDefined("variables.stPlaceInHead.ricoJS") AND variables.stPlaceInHead.ricoJS>
 			<cfoutput>
 				<script language="JavaScript" type="text/javascript" src="#application.url.farcry#/js/rico/rico.js"></script></cfoutput>
 		</cfif>
 		
 		
 		
-		<cfif isDefined("Request.RequiredInHead.spryAccordionJS") AND Request.RequiredInHead.spryAccordionJS>
+		<cfif isDefined("variables.stPlaceInHead.spryAccordionJS") AND variables.stPlaceInHead.spryAccordionJS>
 			<cfoutput>
 				<script language="JavaScript" type="text/javascript" src="#application.url.farcry#/js/spry/SpryAccordion.js"></script></cfoutput>
 		</cfif>
-		<cfif isDefined("Request.RequiredInHead.spryxpathJS") AND Request.RequiredInHead.spryxpathJS>
+		<cfif isDefined("variables.stPlaceInHead.spryxpathJS") AND variables.stPlaceInHead.spryxpathJS>
 			<cfoutput>
 				<script language="JavaScript" type="text/javascript" src="#application.url.farcry#/js/spry/xpath.js"></script></cfoutput>
 		</cfif>
-		<cfif isDefined("Request.RequiredInHead.spryAccordionCSS") AND Request.RequiredInHead.spryAccordionCSS>
+		<cfif isDefined("variables.stPlaceInHead.spryAccordionCSS") AND variables.stPlaceInHead.spryAccordionCSS>
 			<cfoutput>
 				<link href="#application.url.farcry#/js/spry/css/SpryAccordion.css" rel="stylesheet" type="text/css" /></cfoutput>
 		</cfif>
@@ -409,18 +412,18 @@ $out:$
 
 
 
-		<cfif isDefined("Request.RequiredInHead.swfObjectJS") AND Request.RequiredInHead.swfObjectJS EQ "true">
+		<cfif isDefined("variables.stPlaceInHead.swfObjectJS") AND variables.stPlaceInHead.swfObjectJS EQ "true">
 			<cfoutput>
 				<script language="JavaScript" type="text/javascript" src="#application.url.farcry#/js/swfObject.js"></script></cfoutput>
 		</cfif>
 
 
-		<cfif isDefined("Request.RequiredInHead.libraryPopupJS") AND Request.RequiredInHead.libraryPopupJS EQ "true">
+		<cfif isDefined("variables.stPlaceInHead.libraryPopupJS") AND variables.stPlaceInHead.libraryPopupJS EQ "true">
 			<cfoutput>
 				<script src="#application.url.farcry#/js/LibraryPopup.js" type="text/javascript"></script>	</cfoutput>
 		</cfif>
 		
-		<cfif isDefined("request.requiredInHead.flashWrapperToggle") and request.requiredInHead.flashWrapperToggle EQ true>
+		<cfif isDefined("variables.stPlaceInHead.flashWrapperToggle") and variables.stPlaceInHead.flashWrapperToggle EQ true>
 			<cfoutput>
 			<script type="text/javascript">
 			function toggleFlashWrapper(id,width,height,displayselects) {
@@ -444,7 +447,6 @@ $out:$
 		
 		
 		<!--- any miscellaneous stuff to be placed in the head, is put into an array aMisc --->
-		<cfparam name="request.inhead" default="#structNew()#" />
 		<cfparam name="request.inhead.aMisc" default="#arrayNew(1)#" />
 		
 		<cfif arrayLen(request.inhead.aMisc)>
@@ -455,11 +457,25 @@ $out:$
 			</cfloop>
 		</cfif>
 		
+		
+		<!--- any miscellaneous stuff to be placed in the head, is put into an array aMisc --->
+		<cfparam name="request.inhead.stCustom" default="#structNew()#" />
+		<cfparam name="request.inhead.aCustomIDs" default="#arrayNew(1)#" />
+		
+		<cfif arrayLen(request.inhead.aCustomIDs)>
+			<cfloop from="1" to="#arrayLen(request.inHead.aCustomIDs)#" index="i">
+				<cfif structKeyExists(request.inHead.stCustom, request.inHead.aCustomIDs[i])>
+					<cfoutput>
+					#request.inHead.stCustom[request.inHead.aCustomIDs[i]]#
+					</cfoutput>
+				</cfif>
+			</cfloop>
+		</cfif>
 
 		
 	</cfsavecontent>
 	
-	<cfhtmlhead text="#RequiredHead#">
+	<cfhtmlhead text="#variables.placeInHead#">
 </cfif>
 
 
