@@ -71,7 +71,7 @@ default handlers
 		</cfif>
 	</cffunction>
 	
-	<cffunction name="getView" access="public" output="false" returntype="string" hint="Returns the HTML of a view from the webskin content type folder.">
+	<cffunction name="getView" access="public" output="true" returntype="string" hint="Returns the HTML of a view from the webskin content type folder.">
 		<cfargument name="objectid" required="no" type="UUID" hint="ObjectID of the object that is to be rendered by the webskin view." />
 		<cfargument name="template" required="yes" type="string" hint="Name of the template in the corresponding content type webskin folder, without the .cfm extension." />
 		<cfargument name="stparam" required="false" type="struct" default="#structNew()#" hint="Structure of parameters to be passed into the display handler." />
@@ -104,7 +104,8 @@ default handlers
 			<!--- get the data for this instance --->
 			<cfset stObj = getData(objectid=arguments.objectID,dsn=arguments.dsn)>		
 		</cfif>
-
+		
+		
 		<cftimer label="getView (#stObj.typename#:#arguments.template#:#stobj.objectid#)">
 			
 		<cfif NOT structIsEmpty(stObj)>		
@@ -112,10 +113,9 @@ default handlers
 			<!--- Check to see if the webskin is in the object broker --->
 			<cfset webskinHTML = oObjectBroker.getWebskin(objectid=stobj.objectid, typename=stobj.typename, template=arguments.template) />		
 
-			
 			<cfif not len(webskinHTML)>
 				<cfset webskinPath = getWebskinPath(typename=stObj.typename, template=arguments.template) />
-							
+						
 				<cfif len(webskinPath)>
 	
 					<cfsavecontent variable="webskinHTML">
@@ -147,11 +147,15 @@ default handlers
 	</cffunction>
 		
 		
-	<cffunction name="getWebskinPath" returntype="string" access="public" output="false" hint="Returns the path to a webskin. Search through project first, then any library's that have been included.">
+	<cffunction name="getWebskinPath" returntype="string" access="public" output="false" hint="This tag is depricated, you should be calling farcry.core.packages.coapi.coapiadmin.getWebskinpath()">
 		<cfargument name="typename" type="string" required="true" />
 		<cfargument name="template" type="string" required="true" />
 		
-		<cfset var webskinPath = "" />
+		<cfset var webskinPath = createObject("component", "farcry.core.packages.coapi.coapiadmin").getWebskinpath(typename=arguments.typename,template=arguments.template) />
+		<cfreturn webskinPath>
+		
+			
+		<!--- <cfset var webskinPath = "" />
 	
 		<cfif fileExists(ExpandPath("/farcry/#application.applicationname#/webskin/#arguments.typename#/#arguments.template#.cfm"))>
 			
@@ -177,7 +181,7 @@ default handlers
 			
 		</cfif>
 		
-		<cfreturn webskinPath>
+		<cfreturn webskinPath> --->
 		
 	</cffunction>
 	

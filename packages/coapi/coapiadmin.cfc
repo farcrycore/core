@@ -122,7 +122,7 @@
 		<cfset var qLibResult=queryNew("name,directory,size,type,datelastmodified,attributes,mode") />
 		<cfset var qCoreResult=queryNew("name,directory,size,type,datelastmodified,attributes,mode") />
 		<cfset var qDupe=queryNew("name,directory,size,type,datelastmodified,attributes,mode") />
-		<cfset var webskinPath = ExpandPath("/farcry/#application.applicationname#/webskin/#arguments.typename#") />
+		<cfset var webskinPath = "#application.path.project#/webskin/#arguments.typename#" />
 		<cfset var library="" />
 		<cfset var col="" />
 		<cfset var WebskinDisplayName = "" />
@@ -238,17 +238,17 @@
 		
 		<cfset var webskinPath = "" />
 	
-		<cfif fileExists(ExpandPath("/farcry/#application.applicationname#/webskin/#arguments.typename#/#arguments.template#.cfm"))>
+		<cfif fileExists("#application.path.project#/webskin/#arguments.typename#/#arguments.template#.cfm")>
 			
-			<cfset webskinPath = "/farcry/#application.applicationname#/webskin/#arguments.typename#/#arguments.template#.cfm" />
+			<cfset webskinPath = "/farcry/projects/#application.applicationname#/webskin/#arguments.typename#/#arguments.template#.cfm" />
 			
 		<cfelseif structKeyExists(application, "plugins") and listLen(application.plugins)>
 
-			<cfloop list="#application.plugins#" index="library">
+			<cfloop list="#application.plugins#" index="plugin">
 				
-				<cfif fileExists(ExpandPath("/farcry/plugins/#library#/webskin/#arguments.typename#/#arguments.template#.cfm"))>
+				<cfif fileExists(ExpandPath("/farcry/plugins/#plugin#/webskin/#arguments.typename#/#arguments.template#.cfm"))>
 				
-					<cfset webskinPath = "/farcry/plugins/#library#/webskin/#arguments.typename#/#arguments.template#.cfm" />
+					<cfset webskinPath = "/farcry/plugins/#plugin#/webskin/#arguments.typename#/#arguments.template#.cfm" />
 				</cfif>	
 				
 			</cfloop>

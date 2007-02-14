@@ -30,7 +30,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	<cfmodule template="/farcry/plugins/#URL.plugin#/customadmin/#URL.module#">
 <cfelse>
 	<!--- load admin from the project --->
-	<cfmodule template="/farcry/#application.applicationname#/customadmin/#URL.module#">
+	<cfmodule template="/farcry/projects/#application.applicationname#/customadmin/#URL.module#">
 </cfif>
 
 <cfsetting enablecfoutputonly="No">

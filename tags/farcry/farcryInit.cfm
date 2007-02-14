@@ -67,7 +67,7 @@ $in: objectid -- $
 		setdomaincookies="#attributes.setdomaincookies#">
 
 	
-	<!---<cferror type="request" template="/farcry/#attributes.projectDirectoryName#/error/500.cfm"> --->
+	<!---<cferror type="request" template="/farcry/projects/#attributes.projectDirectoryName#/error/500.cfm"> --->
 	
 	
 	<!---------------------------------------- 
@@ -92,7 +92,7 @@ $in: objectid -- $
 		<!----------------------------------------
 		 SET THE MAIN PHYSICAL PATH INFORMATION
 		 ---------------------------------------->
-		<cfset application.path.project = expandpath("/farcry/#attributes.projectDirectoryName#") />
+		<cfset application.path.project = expandpath("/farcry/projects/#attributes.projectDirectoryName#") />
 		<cfset application.path.core = expandpath("/farcry/core") />
 		<cfset application.path.library = expandpath("/farcry/plugins") />
 		
@@ -112,7 +112,7 @@ $in: objectid -- $
 		SHORTCUT PACKAGE PATHS
 		 ---------------------------------------->
 		<cfset application.packagepath = "farcry.core.packages" />
-		<cfset application.custompackagepath = "farcry.#attributes.projectDirectoryName#.packages" />
+		<cfset application.custompackagepath = "farcry.projects.#attributes.projectDirectoryName#.packages" />
 		<cfset application.securitypackagepath = "farcry.core.packages.security" />
 		
 		<!----------------------------------------
@@ -157,7 +157,7 @@ $in: objectid -- $
 
 		<cfset application.stPlugins = structNew() />
 		
-		<cfinclude template="/farcry/#attributes.name#/config/_serverSpecificVars.cfm" />
+		<cfinclude template="/farcry/projects/#attributes.projectDirectoryName#/config/_serverSpecificVars.cfm" />
 		
 		
 		<!----------------------------------- 

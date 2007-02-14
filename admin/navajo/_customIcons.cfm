@@ -121,7 +121,7 @@ customIcons.locked = "#cimages#/padlock.gif";
 </cfscript>
 
 <cfif fileexists("#application.path.project#/system/overviewTree/_customIcons.cfm")>
-	<cfinclude template="/farcry/#application.applicationname#/system/overviewTree/_customIcons.cfm">
+	<cfinclude template="/farcry/projects/#application.applicationname#/system/overviewTree/_customIcons.cfm">
 </cfif>
 
 <cfsetting enablecfoutputonly="No">

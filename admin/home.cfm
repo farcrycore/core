@@ -21,7 +21,7 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au)$
 <cfsetting enablecfoutputonly="Yes" requestTimeOut="200">
 <!--- check for customised myFarCry home page --->
 <cfif fileexists(application.path.project & "/customadmin/home.cfm")>
-    <cfinclude template="/farcry/#application.applicationName#/customadmin/home.cfm">
+    <cfinclude template="/farcry/projects/#application.applicationname#/customadmin/home.cfm">
 <cfelse>
 		<!--- set up page header --->
 		<cfimport taglib="/farcry/core/tags/admin/" prefix="admin">

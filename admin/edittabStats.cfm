@@ -31,7 +31,7 @@ out:
 <cfif iStatsTab eq 1>
 	<cftry> 
 		<!--- try and see if the file can be loaded --->
-	    <cfinclude template="/farcry/#application.applicationName#/customadmin/edittabStats.cfm">
+	    <cfinclude template="/farcry/projects/#application.applicationname#/customadmin/edittabStats.cfm">
 	    
 		<cfcatch type="missingInclude"> <!--- nope - so use the default one --->
 			
