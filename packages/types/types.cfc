@@ -346,7 +346,7 @@ default handlers
 	<cffunction name="displayTemplatePath" returntype="string" access="private" output="no" hint="Returns a template path for a webskin view.">
 		<cfargument name="typename" type="string" required="yes" />
 		<cfargument name="template" type="string" required="yes" />
-		<cfreturn "/farcry/#application.applicationname#/#application.path.handler#/#arguments.typename#/#arguments.template#.cfm" />
+		<cfreturn "/farcry/projects/#application.applicationname#/#application.path.handler#/#arguments.typename#/#arguments.template#.cfm" />
 	</cffunction>
 
 	<cffunction name="display" access="public" returntype="any" output="Yes">

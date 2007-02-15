@@ -78,7 +78,7 @@
 </cffunction>
 
 
-<cffunction name="getLibraryInstallers" access="public" output="false" returntype="query" hint="Get query of library install files. Install files limitd to CFM includes.">
+<cffunction name="getPluginInstallers" access="public" output="false" returntype="query" hint="Get query of library install files. Install files limitd to CFM includes.">
 	<cfargument name="plugins" required="true" type="string" hint="List of farcry libraries to process." />
 
 	<cfset var qResult=querynew("ATTRIBUTES, DATELASTMODIFIED, DIRECTORY, MODE, NAME, SIZE, TYPE, library") />
