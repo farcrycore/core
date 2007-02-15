@@ -85,18 +85,19 @@
 	<cfset var qInstalls=querynew("ATTRIBUTES, DATELASTMODIFIED, DIRECTORY, MODE, NAME, SIZE, TYPE, library") />
 	<cfset var installdir="" />
 	<cfset var aCol=arrayNew(1) />
+	<cfset var pluginName="" />
 
-	<cfloop list="#arguments.plugins#" index="lib">
-		<cfset installdir=expandpath("/farcry/plugins/#lib#/config/install") />
+	<cfloop list="#arguments.plugins#" index="pluginName">
+		<cfset installdir=expandpath("/farcry/plugins/#pluginName#/config/install") />
 		<cfif directoryexists(installdir)>
 			<cfdirectory action="list" directory="#installdir#" filter="*.cfm" name="qInstalls" sort="asc" />
 			
 			<cfif qinstalls.recordcount>
 				<cfset aCol=arrayNew(1) />
 				<cfloop from="1" to="#qinstalls.recordcount#" index="i">
-					<cfset arrayAppend(acol, lib) />
+					<cfset arrayAppend(acol, pluginName) />
 				</cfloop>
-				<cfset queryAddColumn(qinstalls, "library", aCol) />
+				<cfset queryAddColumn(qinstalls, "plugin", aCol) />
 				
 				<cfquery dbtype="query" name="qResult">
 					SELECT * FROM qinstalls
