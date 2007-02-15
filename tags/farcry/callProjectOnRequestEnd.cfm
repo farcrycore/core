@@ -35,7 +35,7 @@ $in: url -- the url portion that we are searching for in the script_name. eg. /f
 	
 	<cfif pos GT 1>
 		<cfset projectName = mid(scriptName, 1, pos - 1) />
-		<cfset loc = trim("/farcry#projectName#/www/OnRequestEnd.cfm") />
+		<cfset loc = trim("/farcry/projects#projectName#/www/OnRequestEnd.cfm") />
 	<cfelse>
 		<cfset loc = "/OnRequestEnd.cfm" />
 	</cfif>
