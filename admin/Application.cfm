@@ -15,20 +15,17 @@ $Revision: 1.17.2.2 $
 $Description: Application.cfm global include for farcry admin. $
 
 || DEVELOPER ||
-$Developer: Geoff Bowers (modius@daemon.com.au)$
---->
-
-<!--- 
- dynamically determine the right farcry application instance to administer
- and include the relevant Application.cfm file from the project; default
- to webroot.
+$Developer: Matthew Bryant (mbryant@daemon.com.au)$
 --->
 
 
-<!---------------------------------------------------------
-DETERMINE WHICH PROJECT WE ARE ATTEMPTING TO ADMINISTER
- --------------------------------------------------------->	
-<cfmodule template="/farcry/core/tags/farcry/callProjectApplication.cfm" plugin="farcry" />
+
+<!---
+Include the Parent Application.cfm
+If the farcry admin area is located inside the project then the Application.cfm location will be correct.
+If the farcry admin area is located inside core, the project location is dynamically determined.
+ --->
+<cfinclude template="../Application.cfm" />
 	
 	
 
