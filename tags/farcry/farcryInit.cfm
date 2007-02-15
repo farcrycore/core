@@ -214,7 +214,7 @@ $in: objectid -- $
 		
 		<!--- CALL THE PROJECTS SERVER SPECIFIC AFTER INIT VARIABLES. --->
 		<cfif fileExists("#application.path.project#/config/_serverSpecificVarsAfterInit.cfm") >
-			<cfinclude template="/farcry/#attributes.name#/config/_serverSpecificVarsAfterInit.cfm" />
+			<cfinclude template="/farcry/projects/#attributes.name#/config/_serverSpecificVarsAfterInit.cfm" />
 		</cfif>
 		
 		
