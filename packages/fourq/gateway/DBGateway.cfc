@@ -59,10 +59,8 @@
 			</cfif>
 			
 			<!--- build query --->
-			<cftransaction>
-			
-			<cftry>
-			
+			<cftransaction>			
+	
 				<cfquery datasource="#variables.dsn#" name="qCreateData">
 					INSERT INTO #variables.dbowner##tablename# ( 
 						objectID
@@ -82,66 +80,31 @@
 						</cfloop>
 					)			
 				</cfquery>
-				
-				<cfcatch>
-					<cfset createDataResult.bSuccess = false>
-					<cfset createDataResult.message = "#cfcatch.message#">
-					<cfset createDataResult.detail = "#cfcatch.detail#">
-					<cfif structKeyExists(cfcatch,'sql')>
-					  <cfset createDataResult.sql = "#cfcatch.sql#">
-					</cfif>
-				</cfcatch>
-			
-			</cftry>
-				
+
 				
 				<!--- Insert any array property data. --->
-				<cftry>
-					<cfloop collection="#stFields#" item="i">
-					  <cfif stFields[i].type eq 'array' AND structKeyExists(stProperties,i)>
-					  	<cfif IsArray(stProperties[i])>
-							<cfset createArrayTableData(tableName&"_"&i,objectid,stFields[i].fields,stProperties[i]) />
-						</cfif>
-					  </cfif>
-					</cfloop>
+				<cfloop collection="#stFields#" item="i">
+				  <cfif stFields[i].type eq 'array' AND structKeyExists(stProperties,i)>
+				  	<cfif IsArray(stProperties[i])>
+						<cfset createArrayTableData(tableName&"_"&i,objectid,stFields[i].fields,stProperties[i]) />
+					</cfif>
+				  </cfif>
+				</cfloop>
 					
-					<cfcatch>						
-						<cfset createDataResult.bSuccess = false>
-						<cfset createDataResult.message = "#cfcatch.message#">
-						<cfset createDataResult.detail = "#cfcatch.detail#">
-						<cfif structKeyExists(cfcatch,'sql')>
-						  <cfset createDataResult.sql = "#cfcatch.sql#">
-						</cfif>
-					</cfcatch>
-					
-				</cftry>
 				
 				
-				<!--- create lookup ref for type --->
-				<cftry>
-				
-					<cfquery datasource="#variables.dsn#" name="qRefData">
-						INSERT INTO #variables.dbowner#refObjects (
-							objectID, 
-							typename
-						)
-						VALUES (
-							<cfqueryparam value="#objectid#" cfsqltype="CF_SQL_VARCHAR">,
-							<cfqueryparam value="#tablename#" cfsqltype="CF_SQL_VARCHAR">
-						)
-					</cfquery>
+				<!--- create lookup ref for type --->			
+				<cfquery datasource="#variables.dsn#" name="qRefData">
+					INSERT INTO #variables.dbowner#refObjects (
+						objectID, 
+						typename
+					)
+					VALUES (
+						<cfqueryparam value="#objectid#" cfsqltype="CF_SQL_VARCHAR">,
+						<cfqueryparam value="#tablename#" cfsqltype="CF_SQL_VARCHAR">
+					)
+				</cfquery>
 					
-					<cfcatch>
-						<!--- THis errer is trapped because if the object was saved to session previously, the refobjects record already exists.  --->
-						<cfset createDataResult.bSuccess = false>
-						<cfset createDataResult.message = "#cfcatch.message#">
-						<cfset createDataResult.detail = "#cfcatch.detail#">
-						<cfif structKeyExists(cfcatch,'sql')>
-						  <cfset createDataResult.sql = "#cfcatch.sql#">
-						</cfif>
-					</cfcatch>
-					
-				</cftry>
 			
 			</cftransaction>
 
@@ -447,8 +410,7 @@
 			<cfset stCreatedObject = t.createData(stProperties=arguments.stProperties, objectID=stProperties.ObjectID,User=userLogin)>
 		</cfif>
 		
-		
-		<cftry>
+
 		<!--- build query --->
 		<cfquery datasource="#variables.dsn#" name="qSetData">
 			UPDATE #variables.dbowner##tablename#
@@ -467,35 +429,16 @@
 			WHERE objectID = <cfqueryparam value="#objectID#" cfsqltype="CF_SQL_VARCHAR">
 		</cfquery>
 		
-		<cfcatch>
-			<!--- <cfrethrow> --->
-			<!---
-			<cfset setDataResult.bSuccess = false>
-			<cfset setDataResult.message = cfcatch.message>
-			--->
-		</cfcatch>
-		</cftry>
 
 
-		<!--- Insert any array property data. --->
-		<cftry>
+
+		<!--- Insert any array property data. --->		
+		<cfloop collection="#stFields#" item="i">
+		  <cfif stFields[i].type eq 'array' AND structKeyExists(stProperties,i)>
+		      <cfset createArrayTableData(tableName&"_"&i,objectid,stFields[i].fields,stProperties[i]) />
+		  </cfif>
+		</cfloop>
 			
-			<cfloop collection="#stFields#" item="i">
-			  <cfif stFields[i].type eq 'array' AND structKeyExists(stProperties,i)>
-			      <cfset createArrayTableData(tableName&"_"&i,objectid,stFields[i].fields,stProperties[i]) />
-			  </cfif>
-			</cfloop>
-			
-			<cfcatch>
-				<cfset stResult.bSuccess = false>
-				<cfset stResult.message = "#cfcatch.message#">
-				<cfset stResult.detail = "#cfcatch.detail#">
-				<cfif structKeyExists(cfcatch,'sql')>
-				  <cfset stResult.sql = "#cfcatch.sql#">
-				</cfif>
-			</cfcatch>
-			
-		</cftry>
 		
 		<cfreturn stResult />
 	</cffunction>
@@ -536,7 +479,7 @@
 						<cfif IsNumeric(propertyValue)>
 							<cfset stField.value = propertyValue />
 						<cfelse>
-							<cfset stField.value = "" />
+							<cfset stField.value = "0" />
 						</cfif>
 						<cfset stField.cfsqltype = "CF_SQL_INTEGER" />
 					</cfcase>
@@ -545,7 +488,7 @@
 						<cfif IsNumeric(propertyValue)>
 							<cfset stField.value = propertyValue />
 						<cfelse>
-							<cfset stField.value = "" />
+							<cfset stField.value = "0" />
 						</cfif>
 						<cfset stField.cfsqltype = "CF_SQL_FLOAT" />
 					</cfcase>
