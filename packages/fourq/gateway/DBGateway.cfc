@@ -92,7 +92,7 @@
 				</cfloop>
 					
 				
-				
+				<cftry>
 				<!--- create lookup ref for type --->			
 				<cfquery datasource="#variables.dsn#" name="qRefData">
 					INSERT INTO #variables.dbowner#refObjects (
@@ -104,8 +104,12 @@
 						<cfqueryparam value="#tablename#" cfsqltype="CF_SQL_VARCHAR">
 					)
 				</cfquery>
-					
-			
+					<cfcatch type="any">
+						<!--- This error can occur because of a duplicate already in the refObjects table caused by the initial create data saving to session.
+						TODO: need a more elegent solution to handle this.
+						 --->
+					</cfcatch>	
+				</cftry>
 			</cftransaction>
 
 			<cfset createDataResult.objectid = objectid>
