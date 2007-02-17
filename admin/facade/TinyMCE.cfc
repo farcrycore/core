@@ -17,6 +17,7 @@
 	
 	<cfparam name="stprops[arguments.richtextfield].metadata.ftTemplateTypeList" default="" />
 	<cfparam name="stprops[arguments.richtextfield].metadata.ftTemplateSnippetWebskinPrefix" default="insertSnippet" />
+	<cfparam name="stprops[arguments.richtextfield].metadata.ftTemplateWebskinPrefixList" default="insertHTML" />
 	
 	<!--- <cfquery datasource="#application.dsn#" name="qImages">
 	select top 10 * 
