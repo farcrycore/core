@@ -36,8 +36,7 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 
 <!---<cfset editobjectURL = "#application.url.farcry#/conjuror/invocation.cfm?objectid=##recordset.objectID[recordset.currentrow]##&typename=avnArticle&method=edit&ref=typeadmin&module=customlists/avnArticle.cfm" />
  --->
-<!--- set up page header --->
-<admin:header title="#attributes.typename#">
+
 
 <cfparam name="form.Criteria" default="" />
 
@@ -720,8 +719,7 @@ user --->
 </ft:form>
 
 
-<!--- setup footer --->
-<admin:footer>
+
 
 
 
