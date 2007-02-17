@@ -1,12 +1,13 @@
 <cfsetting enablecfoutputonly="yes" />
 
+<!--- only allow tag to run once --->
+<cfif thistag.ExecutionMode eq "end">
+	<cfexit method="exittag" />
+</cfif>
+
 <cfif isDefined("request.ver") and request.ver>
 	<cfoutput><!-- _genericNav $Revision: 1.3 $ --></cfoutput>
 </cfif>
-
-
-
-
 
 <cfscript>
 	// 
