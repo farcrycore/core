@@ -31,7 +31,7 @@
 					</cfloop>
 				</select>
 			<cfelse>
-				No Display Methods Defined
+				No Content Templates Available
 				<input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value="" />
 			</cfif>
 			</cfoutput>
