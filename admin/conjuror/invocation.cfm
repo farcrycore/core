@@ -134,7 +134,9 @@ Pseudo:
 			<!--- typeadmin redirect --->
 			<cfset stOnExit.Type = "URL" />
 			<cfset stOnExit.Content = "#application.url.farcry#/admin/customadmin.cfm?module=#url.module#" />
-			<cfif IsDefined("URL.plugin")><cfset stOnExit.Content = stOnExit.Content & "&plugin="&url.plugin /></cfif>
+			<cfif isDefined("URL.plugin")>
+				<cfset stOnExit.Content = stOnExit.Content & "&plugin=" & url.plugin />
+			</cfif>
 		<cfelseif url.ref eq "closewin"> 
 			<!--- close win has no official redirector as it closes open window --->
 			<cfset stOnExit.Type = "HTML" />
