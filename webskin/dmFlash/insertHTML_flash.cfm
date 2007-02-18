@@ -1,4 +1,4 @@
-<cfsetting enablecfoutputonly="yes">
+<cfsetting enablecfoutputonly="true">
 <!--- 
 
 || DESCRIPTION || 
@@ -28,4 +28,4 @@ $Developer: Matthew Bryant (mbryant@daemon.com.au) $
 	</cfoutput>	
 	
 
-<cfsetting enablecfoutputonly="yes">
+<cfsetting enablecfoutputonly="false">

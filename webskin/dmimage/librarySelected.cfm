@@ -1,3 +1,4 @@
+<cfsetting enablecfoutputonly="true">
 <!--- @@displayname: Thumbnail Image for Library Select --->
 <!--- @@author: Matthew Bryant --->
 
@@ -19,3 +20,5 @@
 <cfelse>
 	<cfoutput>#stobj.objectid#</cfoutput>
 </cfif>
+
+<cfsetting enablecfoutputonly="false">

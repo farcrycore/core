@@ -1,4 +1,4 @@
-<cfsetting enablecfoutputonly="yes">
+<cfsetting enablecfoutputonly="true">
 <!--- 
 
 || DESCRIPTION || 
@@ -15,4 +15,4 @@ $Developer: Matthew Bryant (mbryant@daemon.com.au) $
 
 <cfoutput><a href="#application.url.webroot#/download.cfm?downloadfile=#stobj.objectid#&typename=#stobj.typename#&fieldname=filepath">#stobj.title#</a></cfoutput>
 
-<cfsetting enablecfoutputonly="yes">
+<cfsetting enablecfoutputonly="false">
