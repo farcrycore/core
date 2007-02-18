@@ -16,8 +16,9 @@
 </cffunction>
 
 <cffunction name="getVersionTagline" access="public" output="false" hint="Returns a string detailing the current FarCry CMS build details." returntype="string">
-	<cfreturn "FarCry 4.0 Beta 2 (Gonzales) #getBuildNumber()#" />
+	<cfreturn "FarCry #getMajorVersion()#-#getMinorVersion()# (#getBuildNumber()#)" />
 </cffunction>
+
 <cffunction name="getBuildNumber" access="public" output="false" hint="Returns the contents of the build file if it exists, otherwise assumes it to be under subversion" returntype="string">
 	<cfset var returnBuild = "SVN" /><!--- Return --->
 	
@@ -27,6 +28,27 @@
 	
 	<cfreturn returnBuild />
 </cffunction>
+
+<cffunction name="getMajorVersion" access="public" output="false" hint="Returns the contents of the major version file if it exists" returntype="string">
+	<cfset var returnVersion = "UNKNOWN" /><!--- Return --->
+	
+	<cfif fileExists("#application.path.core#/major.version")>
+		<cffile action="read" file="#application.path.core#/major.version" variable="returnVersion">
+	</cfif>
+	
+	<cfreturn returnVersion />
+</cffunction>
+
+<cffunction name="getMinorVersion" access="public" output="false" hint="Returns the contents of the minor version file if it exists" returntype="string">
+	<cfset var returnVersion = "0" /><!--- Return --->
+	
+	<cfif fileExists("#application.path.core#/minor.version")>
+		<cffile action="read" file="#application.path.core#/minor.version" variable="returnVersion">
+	</cfif>
+	
+	<cfreturn returnVersion />
+</cffunction>
+
 
 </cfcomponent>
 
