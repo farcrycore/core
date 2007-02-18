@@ -154,19 +154,20 @@ $in: objectid -- $
 						
 	
 
-
-		<cfset application.stPlugins = structNew() />
 		
 		<cfinclude template="/farcry/projects/#attributes.projectDirectoryName#/config/_serverSpecificVars.cfm" />
 		
+		
+
+		<cfset application.stPlugins = structNew() />
 		
 		<!----------------------------------- 
 		INITIALISE THE REQUESTED LIBRARIES
 		 ----------------------------------->
 		<cfif isDefined("application.plugins")>
 			<cfloop list="#application.plugins#" index="plugin">
-				<cfif fileExists("#application.path.library#/#plugin#/config/librarySpecificVars.cfm")>
-					<cfinclude template="/farcry/plugins/#plugin#/config/librarySpecificVars.cfm">
+				<cfif fileExists("#application.path.library#/#plugin#/config/_serverSpecificVars.cfm")>
+					<cfinclude template="/farcry/plugins/#plugin#/config/_serverSpecificVars.cfm">
 				</cfif>
 			</cfloop>
 		</cfif>
