@@ -27,7 +27,7 @@ type properties
 
 <!--- image file locations --->
 <cfproperty ftSeq="10" ftFieldset="Image Files" name="SourceImage" type="string" hint="The URL location of the uploaded image" required="No" default="" ftType="Image" ftCreateFromSourceOption="false" ftDestination="/images/SourceImage" ftlabel="Source Image" ftImageWidth="" ftImageHeight=""  />
-<cfproperty ftSeq="11" ftFieldset="Image Files" name="StandardImage" type="string" hint="The URL location of the optimised uploaded image that should be used for general display" required="no" default="" ftType="Image" ftDestination="/images/StandardImage" ftImageWidth="400" ftImageHeight="400" ftAutoGenerateType="FitInside" ftSourceField="SourceImage" ftCreateFromSourceDefault="true" ftAllowUpload="true" ftlabel="Mid Size Image" />  
+<cfproperty ftSeq="11" ftFieldset="Image Files" name="StandardImage" type="string" hint="The URL location of the optimised uploaded image that should be used for general display" required="no" default="" ftType="Image" ftDestination="/images/StandardImage" ftImageWidth="400" ftImageHeight="1000" ftAutoGenerateType="FitInside" ftSourceField="SourceImage" ftCreateFromSourceDefault="true" ftAllowUpload="true" ftlabel="Mid Size Image" />  
 <cfproperty ftSeq="12" ftFieldset="Image Files" name="ThumbnailImage" type="string" hint="The URL location of the thumnail of the uploaded image that should be used in " required="no" default="" ftType="Image"  ftDestination="/images/ThumbnailImage" ftImageWidth="80" ftImageHeight="80" ftAutoGenerateType="Pad" ftPadColor="##000000" ftSourceField="SourceImage" ftCreateFromSourceDefault="true" ftAllowUpload="true" ftlabel="Thumbnail Image" />  
 
 <!--- image categorisation --->
