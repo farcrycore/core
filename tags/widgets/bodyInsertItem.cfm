@@ -91,9 +91,9 @@
 					<cfset aLibraryItem[iCounter].text = stItem.title>
 					<!--- check whether to link directly to file or use download.cfm --->
 					<cfif application.config.general.fileDownloadDirectLink eq "false">
-						<cfset aLibraryItem[iCounter].value = "#stItem.objectID#|<a href='#application.url.webroot#/download.cfm?DownloadFile=#stItem.objectID#' target='_blank'>#stItem.title#</a>">
+						<cfset aLibraryItem[iCounter].value = "#stItem.objectID#|<a href='#application.url.webroot#/download.cfm?DownloadFile=#stItem.objectID#'>#stItem.title#</a>">
 					<cfelse>
-						<cfset aLibraryItem[iCounter].value = "#stItem.objectID#|<a href='#application.url.webroot#/files/#stItem.filename#' target='_blank'>#stItem.title#</a>">
+						<cfset aLibraryItem[iCounter].value = "#stItem.objectID#|<a href='#application.url.webroot#/files/#stItem.filename#'>#stItem.title#</a>">
 					</cfif>
 				</cfif>			
 			</cfcase>		
