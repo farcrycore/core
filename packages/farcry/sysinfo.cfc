@@ -16,7 +16,16 @@
 </cffunction>
 
 <cffunction name="getVersionTagline" access="public" output="false" hint="Returns a string detailing the current FarCry CMS build details." returntype="string">
-	<cfreturn "FarCry 4.0 Beta (Gonzales)" />
+	<cfreturn "FarCry 4.0 Beta 2 (Gonzales) #getBuildNumber()#" />
+</cffunction>
+<cffunction name="getBuildNumber" access="public" output="false" hint="Returns the contents of the build file if it exists, otherwise assumes it to be under subversion" returntype="string">
+	<cfset var returnBuild = "SVN" /><!--- Return --->
+	
+	<cfif fileExists("#application.path.core#/build.number")>
+		<cffile action="read" file="#application.path.core#/build.number" variable="returnbuild">
+	</cfif>
+	
+	<cfreturn returnBuild />
 </cffunction>
 
 </cfcomponent>
