@@ -39,6 +39,8 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 
 
 <cfparam name="form.Criteria" default="" />
+<cfparam name="pluginURL" default="" /><!--- used in case we are in a plugin object admin --->
+
 
 <cfparam name="session.objectadmin" default="#structnew()#" type="struct">
 
@@ -345,7 +347,10 @@ user --->
 	
 	
 	<cfset addURL = "#application.url.farcry#/conjuror/invocation.cfm?objectid=#createUUID()#&typename=#attributes.typename#&method=#attributes.editMethod#&ref=typeadmin&module=#attributes.module#" />	
-	<cfif Len(attributes.plugin)><cfset addURL = addURL&"&plugin=#attributes.plugin#" /></cfif>
+	<cfif Len(attributes.plugin)>
+		<cfset addURL = addURL&"&plugin=#attributes.plugin#" />
+		<cfset pluginURL = "&plugin=#attributes.plugin#" /><!--- we need this when using a plugin like farcrycms, to be able to redirect back to the plugin object admin instead of the project or core object admin --->
+	</cfif>
 	<ft:processForm action="add" url="#addURL#" />
 
 	
@@ -381,12 +386,12 @@ user --->
 	
 	<ft:processForm action="requestapproval">
 		<!--- TODO: Check Permissions. --->
-		<cflocation URL="#application.url.farcry#/conjuror/changestatus.cfm?objectid=#form.objectid#&typename=#attributes.typename#&status=requestapproval&ref=typeadmin&module=#attributes.module#" addtoken="false" />
+		<cflocation URL="#application.url.farcry#/conjuror/changestatus.cfm?objectid=#form.objectid#&typename=#attributes.typename#&status=requestapproval&ref=typeadmin&module=#attributes.module##pluginURL#" addtoken="false" />
 	</ft:processForm>
 	
 	<ft:processForm action="approve">
 		<!--- TODO: Check Permissions. --->
-		<cflocation URL="#application.url.farcry#/conjuror/changestatus.cfm?objectid=#form.objectid#&typename=#attributes.typename#&status=approved&ref=typeadmin&module=#attributes.module#" addtoken="false" />
+		<cflocation URL="#application.url.farcry#/conjuror/changestatus.cfm?objectid=#form.objectid#&typename=#attributes.typename#&status=approved&ref=typeadmin&module=#attributes.module##pluginURL#" addtoken="false" />
 	</ft:processForm>
 	
 	<ft:processForm action="createdraft">

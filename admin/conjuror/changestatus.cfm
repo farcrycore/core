@@ -62,6 +62,8 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	<cfset finishURL=url.finishURL>
 <cfelseif isDefined("form.finishURL") AND len(form.finishURL)>
 	<cfset finishURL=form.finishURL>
+<cfelseif isDefined("url.module") AND isDefined("url.plugin")>
+	<cfset finishURL = "#application.url.farcry#/admin/customadmin.cfm?module=#url.module#&plugin=#URL.plugin#" />
 <cfelseif isDefined("url.module")>
 	<cfset finishURL = "#application.url.farcry#/admin/customadmin.cfm?module=#url.module#" />
 <cfelse>
@@ -213,7 +215,7 @@ function deSelectAll()
 
 <fieldset>
 <label for="commentLog"><b>#application.adminBundle[session.dmProfile.locale].addComment#:</b>
-	<textarea id="commentLog" name="commentLog"></textarea>
+	<textarea id="commentLog" name="commentLog" rows="10" cols="60"></textarea>
 </label>
 </fieldset>
 
