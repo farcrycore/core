@@ -46,14 +46,14 @@ OTHERWISE WE NEED TO LOOP THROUGH ALL THE LIBRARIES AND GET ALL RELEVENT TEMPLAT
 
 <!--- 	<cfdirectory action="LIST" filter="*.cfm" name="qTemplates" directory="#application.path.webskin#/#attributes.typename#">
 	
-	<cfset stLibraryTemplates = structNew() />
+	<cfset stPluginTemplates = structNew() />
 	
 	<cfif structKeyExists(application, "plugins") and listLen(application.plugins)>
 	
-		<cfloop list="#application.plugins#" index="library">
+		<cfloop list="#application.plugins#" index="plugin">
 			
-			<cfif directoryExists("#application.path.library#/#library#/webskin/#attributes.typename#")>
-				<cfdirectory directory="#application.path.library#/#library#/webskin/#attributes.typename#" name="stLibraryTemplates.#library#.qTemplates" filter="*.cfm" sort="name">
+			<cfif directoryExists("#application.path.plugins#/#plugin#/webskin/#attributes.typename#")>
+				<cfdirectory directory="#application.path.plugins#/#plugin#/webskin/#attributes.typename#" name="stPluginTemplates.#plugin#.qTemplates" filter="*.cfm" sort="name">
 			
 			</cfif>
 		</cfloop>

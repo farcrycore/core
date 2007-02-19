@@ -94,7 +94,7 @@ $in: objectid -- $
 		 ---------------------------------------->
 		<cfset application.path.project = expandpath("/farcry/projects/#attributes.projectDirectoryName#") />
 		<cfset application.path.core = expandpath("/farcry/core") />
-		<cfset application.path.library = expandpath("/farcry/plugins") />
+		<cfset application.path.plugins = expandpath("/farcry/plugins") />
 		
 		<cfset application.path.defaultFilePath = "#application.path.project#/www/files">
 		<cfset application.path.secureFilePath = "#application.path.project#/securefiles">
@@ -116,7 +116,7 @@ $in: objectid -- $
 		<cfset application.securitypackagepath = "farcry.core.packages.security" />
 		
 		<!----------------------------------------
-		LIBRARYs To INCLUDE
+		PLUGINS TO INCLUDE
 		 ---------------------------------------->
 		<cfset application.plugins = attributes.plugins />
 		
@@ -166,7 +166,7 @@ $in: objectid -- $
 		 ----------------------------------->
 		<cfif isDefined("application.plugins")>
 			<cfloop list="#application.plugins#" index="plugin">
-				<cfif fileExists("#application.path.library#/#plugin#/config/_serverSpecificVars.cfm")>
+				<cfif fileExists("#application.path.plugins#/#plugin#/config/_serverSpecificVars.cfm")>
 					<cfinclude template="/farcry/plugins/#plugin#/config/_serverSpecificVars.cfm">
 				</cfif>
 			</cfloop>

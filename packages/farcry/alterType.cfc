@@ -289,17 +289,17 @@ $out:$
 	
 	<cfif structKeyExists(application, "plugins") and listLen(application.plugins)>
 
-		<cfloop list="#application.plugins#" index="library">
+		<cfloop list="#application.plugins#" index="plugin">
 			
-			<cfif directoryExists("#application.path.library#/#library#/packages/types")>
+			<cfif directoryExists("#application.path.plugins#/#plugin#/packages/types")>
 			
-				<cfdirectory directory="#application.path.library#/#library#/packages/types" name="qDir" filter="*.cfc" sort="name">
+				<cfdirectory directory="#application.path.plugins#/#plugin#/packages/types" name="qDir" filter="*.cfc" sort="name">
 				
-				<!--- Init all LIBRARY types --->
+				<!--- Init all PLUGIN types --->
 				<cfloop query="qDir">
 					
 					<cfset typename = left(qDir.name, len(qDir.name)-4) /> <!---remove the .cfc from the filename --->
-					<cfset o = createObject("Component", "farcry.plugins.#library#.packages.types.#typename#") />			
+					<cfset o = createObject("Component", "farcry.plugins.#plugin#.packages.types.#typename#") />			
 					<cfset stMetaData = getMetaData(o) />
 					<cfif not structKeyExists(stMetadata,"bAbstract") or stMetadata.bAbstract EQ "False">
 						
@@ -309,8 +309,8 @@ $out:$
 						<cfset stTypeMD = o.initmetadata(application.types[typename]) />
 						<cfset stTypeMD.bCustomType = 1 />
 						<cfset stTypeMD.bLibraryType = 1 />
-						<cfset stTypeMD.typePath = "farcry.plugins.#library#.packages.types.#typename#" />							
-						<cfset stTypeMD.packagePath = "farcry.plugins.#library#.packages.types.#typename#" />							
+						<cfset stTypeMD.typePath = "farcry.plugins.#plugin#.packages.types.#typename#" />							
+						<cfset stTypeMD.packagePath = "farcry.plugins.#plugin#.packages.types.#typename#" />							
 						<cfset stTypeMD.qMetadata = setupMetadataQuery(typename=typename,stProps=stTypeMD.stProps) />
 						<cfset application.types[typename]=duplicate(stTypeMD) />
 					</cfif>	
@@ -405,19 +405,19 @@ $out:$
 	
 	<cfif structKeyExists(application, "plugins") and listLen(application.plugins)>
 
-		<cfloop list="#application.plugins#" index="library">
+		<cfloop list="#application.plugins#" index="plugin">
 			
-			<cfif directoryExists("#application.path.library#/#library#/packages/formtools")>
+			<cfif directoryExists("#application.path.plugins#/#plugin#/packages/formtools")>
 			
-				<cfdirectory directory="#application.path.library#/#library#/packages/formtools" name="qDir" filter="*.cfc" sort="name">
+				<cfdirectory directory="#application.path.plugins#/#plugin#/packages/formtools" name="qDir" filter="*.cfc" sort="name">
 				
-				<!--- Init all LIBRARY types --->
+				<!--- Init all PLUGIN types --->
 				<cfloop query="qDir">
 
 						
 						<cfset formtoolname = left(qDir.name, len(qDir.name)-4) /> <!---remove the .cfc from the filename --->
 						
-							<cfset oFactory = createObject("Component", "farcry.plugins.#library#.packages.formtools.#formtoolname#").init() />
+							<cfset oFactory = createObject("Component", "farcry.plugins.#plugin#.packages.formtools.#formtoolname#").init() />
 							<cfset stMetaData = getMetaData(oFactory) />
 							<cfif not structKeyExists(stMetadata,"bAbstract") or stMetadata.bAbstract EQ "False">			
 								<cfset stTypeMD = structNew() />
@@ -425,8 +425,8 @@ $out:$
 
 								<cfset stTypeMD.bCustomformtool = 1 />
 								<cfset stTypeMD.bLibraryformtool = 1 />
-								<cfset stTypeMD.formtoolPath = "farcry.plugins.#library#.packages.formtools.#formtoolname#" />
-								<cfset stTypeMD.packagePath = "farcry.plugins.#library#.packages.formtools.#formtoolname#" />
+								<cfset stTypeMD.formtoolPath = "farcry.plugins.#plugin#.packages.formtools.#formtoolname#" />
+								<cfset stTypeMD.packagePath = "farcry.plugins.#plugin#.packages.formtools.#formtoolname#" />
 								
 								<cfset application.formtools[formtoolname] = duplicate(stTypeMD) />
 								<cfset application.formtools[formtoolname].oFactory = oFactory /><!--- you can't duplicate an object --->
@@ -494,21 +494,21 @@ $out:$
 	</cfloop>
 	
 	
-	<!--- Init all LIBRARY RULES --->	
+	<!--- Init all PLUGIN RULES --->	
 	<cfif structKeyExists(application, "plugins") and listLen(application.plugins)>
 
-		<cfloop list="#application.plugins#" index="library">
+		<cfloop list="#application.plugins#" index="plugin">
 			
-			<cfif directoryExists("#application.path.library#/#library#/packages/rules")>
+			<cfif directoryExists("#application.path.plugins#/#plugin#/packages/rules")>
 			
-				<cfdirectory directory="#application.path.library#/#library#/packages/rules" name="qDir" filter="rule*.cfc" sort="name">
+				<cfdirectory directory="#application.path.plugins#/#plugin#/packages/rules" name="qDir" filter="rule*.cfc" sort="name">
 				
-				<!--- Init all LIBRARY types --->
+				<!--- Init all PLUGIN types --->
 				<cfloop query="qDir">
 
 						
 						<cfset typename = left(qDir.name, len(qDir.name)-4) /> <!---remove the .cfc from the filename --->
-						<cfset o = createObject("Component", "farcry.plugins.#library#.packages.rules.#typename#") />			
+						<cfset o = createObject("Component", "farcry.plugins.#plugin#.packages.rules.#typename#") />			
 						<cfset stMetaData = getMetaData(o) />
 						<cfif not structKeyExists(stMetadata,"bAbstract") or stMetadata.bAbstract EQ "False">			
 							<cfset stTypeMD = structNew() />
@@ -516,8 +516,8 @@ $out:$
 							<cfset stTypeMD = o.initmetadata(application.rules[typename]) />
 							<cfset stTypeMD.bCustomRule = 1 />
 							<cfset stTypeMD.bLibraryRule = 1 />
-							<cfset stTypeMD.rulePath = "farcry.plugins.#library#.packages.rules.#typename#" />							
-							<cfset stTypeMD.packagePath = "farcry.plugins.#library#.packages.rules.#typename#" />							
+							<cfset stTypeMD.rulePath = "farcry.plugins.#plugin#.packages.rules.#typename#" />							
+							<cfset stTypeMD.packagePath = "farcry.plugins.#plugin#.packages.rules.#typename#" />							
 							<cfset stTypeMD.qMetadata = setupMetadataQuery(typename=typename,stProps=stTypeMD.stProps) />
 							<cfset application.rules[typename] = duplicate(stTypeMD) />
 						</cfif>

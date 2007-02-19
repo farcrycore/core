@@ -80,17 +80,17 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 		
 	<cfif structKeyExists(application, "plugins") and listLen(application.plugins)>
 
-		<cfloop list="#application.plugins#" index="library">
+		<cfloop list="#application.plugins#" index="plugin">
 			
-			<cfif directoryExists("#application.path.library#/#library#/customadmin")>
-				<cfdirectory action="list" directory="#application.path.library#/#library#/customadmin" filter="*.xml" name="qCustomAdmin" />
+			<cfif directoryExists("#application.path.plugins#/#plugin#/customadmin")>
+				<cfdirectory action="list" directory="#application.path.plugins#/#plugin#/customadmin" filter="*.xml" name="qCustomAdmin" />
 	
 
 				<cfif qCustomAdmin.RecordCount>
 					
 					<cfloop query="qCustomAdmin">
-						<cfset xmlpathfull="#application.path.library#/#library#/customadmin/#qCustomAdmin.Name#" />
-						<cffile action="read" file="#application.path.library#/#library#/customadmin/#qCustomAdmin.Name#" variable="arguments.xCustomAdmin">
+						<cfset xmlpathfull="#application.path.plugins#/#plugin#/customadmin/#qCustomAdmin.Name#" />
+						<cffile action="read" file="#application.path.plugins#/#plugin#/customadmin/#qCustomAdmin.Name#" variable="arguments.xCustomAdmin">
 						
 						<cftry>
 							<!--- validate custom admin xml --->
