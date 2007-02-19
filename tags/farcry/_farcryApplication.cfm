@@ -38,8 +38,8 @@ Run Request Processing
 
 <!--- project and library request processing --->
 <cfif application.sysInfo.bServerSpecificRequestScope>
-	<cfloop from="1" to="#arraylen(application.sysinfo.ASERVERSPECIFICREQUESTSCOPE)#" index="i">
-		<cfinclude template="#application.sysinfo.ASERVERSPECIFICREQUESTSCOPE[i]#" />
+	<cfloop from="1" to="#arraylen(application.sysinfo.aServerSpecificRequestScope)#" index="i">
+		<cfinclude template="#application.sysinfo.aServerSpecificRequestScope[i]#" />
 	</cfloop>
 </cfif>
 
