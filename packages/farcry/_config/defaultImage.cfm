@@ -39,9 +39,9 @@ stConfig.thumbnailWidth = 80;
 stConfig.thumbnailHeight = 80;
 stConfig.insertHTML = "<a href='*imagefile*' target='_blank'><img src='*thumbnail*' border=0 alt='*alt*'></a>";
 
-stConfig.sourceImagePath = "#application.path.project#\www\images\sourceImages"; // Server path of Source Images
-stConfig.thumbnailImagePath = "#application.path.project#\www\images\thumbnailImages"; // Server path of Thumbnail Images
-stConfig.standardImagePath = "#application.path.project#\www\images\standardImages"; // Server path of Standard Images
+stConfig.sourceImagePath = "#application.path.project#\www\images\sourceImage"; // Server path of Source Images
+stConfig.thumbnailImagePath = "#application.path.project#\www\images\thumbnailImage"; // Server path of Thumbnail Images
+stConfig.standardImagePath = "#application.path.project#\www\images\standardImage"; // Server path of Standard Images
 stConfig.sourceImageURL = "/images/sourceImages"; // URL path of Standard Images
 stConfig.thumbnailImageURL = "/images/thumbnailImages"; // URL path of Thumbnail Images
 stConfig.standardImageURL = "/images/standardImages"; // URL path of Standard Images
