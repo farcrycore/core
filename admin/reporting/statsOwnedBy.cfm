@@ -58,45 +58,47 @@ function doToggle(tglItem)
 <cfelse>
   <cfoutput><h3>Owned By Report</h3></cfoutput>
 
-  <cfif errorMessage NEQ "">
-    <cfoutput>
-      <p id="fading1" class="fade"><span class="error">#errormessage#</span></p>
-    </cfoutput>
-  <cfelse>
-	  <cfoutput>
-	    <table class="table-3" cellspacing="0">
-	      <tr>
-	        <th colspan="2">Owned By</th>
-	        <th>Total</th>
-	      </tr>
-	      </cfoutput>
-	      <cfset iCounter = 0 />
-	      <cfloop collection="#stReport#" item="key">
-	        <cfset iCounter = iCounter + 1 />
-	        <cfoutput>
-	        <tr<cfif iCounter MOD 2> class="alt"</cfif>>
-	          <td colspan="2"><!--- <a href="##" onclick="return doToggle('#key#');"> --->#key#<!--- </a> ---></td>
-	          <td>#stReport[key].items.total#</td>
-	        </tr>
-	        <!--- <tbody id="tgl_#key#" style="display:none;"> --->
-	        </cfoutput>
-	        <cfloop collection="#stReport[key].items#" item="subItemKey">
-	          <cfif subItemKey NEQ "total">
-	            <cfset iCounter = iCounter + 1 />
-	            <cfoutput>
-	            <tr<cfif iCounter MOD 2> class="alt"</cfif>>
-	              <td>&nbsp;</td>
-	              <td>#subItemKey#</td>
-	              <td>#stReport[key].items[subItemKey]#</td>
-	            </tr>
-              </cfoutput>
-	          </cfif>
-	        </cfloop>
-	        <!--- </tbody> --->
-	      </cfloop>
-	      <cfoutput>
-	    </table>
-	    </cfoutput>
-  </cfif>
+	<cfif errorMessage NEQ "">
+    	<cfoutput>
+      		<p id="fading1" class="fade"><span class="error">#errormessage#</span></p>
+    	</cfoutput>
+  	<cfelse>
+		<cfoutput>
+			<table class="table-3" cellspacing="0">
+	    		<tr>
+	        		<th colspan="2">Owned By</th>
+		        	<th>Total</th>
+		      	</tr>
+		</cfoutput>
+		<cfif isDefined("stReport")>
+			<cfset iCounter = 0 />
+			<cfloop collection="#stReport#" item="key">
+				<cfset iCounter = iCounter + 1 />
+			    <cfoutput>
+			    	<tr<cfif iCounter MOD 2> class="alt"</cfif>>
+			        	<td colspan="2"><!--- <a href="##" onclick="return doToggle('#key#');"> --->#key#<!--- </a> ---></td>
+			          	<td>#stReport[key].items.total#</td>
+			        </tr>
+			        <!--- <tbody id="tgl_#key#" style="display:none;"> --->
+				</cfoutput>
+			    <cfloop collection="#stReport[key].items#" item="subItemKey">
+			    	<cfif subItemKey NEQ "total">
+			        	<cfset iCounter = iCounter + 1 />
+			            <cfoutput>
+			            <tr<cfif iCounter MOD 2> class="alt"</cfif>>
+			              <td>&nbsp;</td>
+			              <td>#subItemKey#</td>
+			              <td>#stReport[key].items[subItemKey]#</td>
+			            </tr>
+		              	</cfoutput>
+			        </cfif>
+				</cfloop>
+			    <!--- </tbody> --->
+			</cfloop>
+		</cfif>
+		<cfoutput>
+		</table>
+	</cfoutput>
+	</cfif>
 </cfif>
 <admin:footer>
