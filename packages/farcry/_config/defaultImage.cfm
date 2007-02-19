@@ -39,12 +39,12 @@ stConfig.thumbnailWidth = 80;
 stConfig.thumbnailHeight = 80;
 stConfig.insertHTML = "<a href='*imagefile*' target='_blank'><img src='*thumbnail*' border=0 alt='*alt*'></a>";
 
-stConfig.SourceImagePath = "#application.path.project#\www\images\SourceImages"; // Server path of Source Images
-stConfig.ThumbnailImagePath = "#application.path.project#\www\images\ThumbnailImages"; // Server path of Thumbnail Images
-stConfig.StandardImagePath = "#application.path.project#\www\images\StandardImages"; // Server path of Standard Images
-stConfig.SourceImageURL = "/images/SourceImages"; // URL path of Standard Images
-stConfig.ThumbnailImageURL = "/images/ThumbnailImages"; // URL path of Thumbnail Images
-stConfig.StandardImageURL = "/images/StandardImages"; // URL path of Standard Images
+stConfig.sourceImagePath = "#application.path.project#\www\images\sourceImages"; // Server path of Source Images
+stConfig.thumbnailImagePath = "#application.path.project#\www\images\thumbnailImages"; // Server path of Thumbnail Images
+stConfig.standardImagePath = "#application.path.project#\www\images\standardImages"; // Server path of Standard Images
+stConfig.sourceImageURL = "/images/sourceImages"; // URL path of Standard Images
+stConfig.thumbnailImageURL = "/images/thumbnailImages"; // URL path of Thumbnail Images
+stConfig.standardImageURL = "/images/standardImages"; // URL path of Standard Images
 
 // added by bowden 7/23/2006. taken from b300.cfm
 stConfig.folderpath_optimised = "#application.path.project#/www/images";
@@ -52,10 +52,10 @@ stConfig.folderpath_original = "#application.path.project#/www/images";
 stConfig.folderpath_thumbnail = "#application.path.project#/www/images";
 //end of add
 // added by bowden 7/23/2006. taken from b310.cfm
-stConfig.ThumbnailImageWidth = "80" ;
-stConfig.ThumbnailImageHeight = "80" ;
-stConfig.StandardImageWidth = "400" ;
-stConfig.StandardImageHeight = "400" ;
+stConfig.thumbnailImageWidth = "80" ;
+stConfig.thumbnailImageHeight = "80" ;
+stConfig.standardImageWidth = "400" ;
+stConfig.standardImageHeight = "400" ;
 //end of add
 </cfscript>
 
