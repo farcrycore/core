@@ -78,7 +78,7 @@ Library Request Processing
 <cfif structkeyexists(application, "plugins")>
 	<cfset application.sysInfo.aServerSpecificRequestScope = arrayNew(1) />
 	<cfloop list="#application.plugins#" index="lib">
-		<cfif fileExists("#application.path.LIBRARY#/#lib#/config/_serverSpecificRequestScope.cfm")>
+		<cfif fileExists("#application.path.plugins#/#lib#/config/_serverSpecificRequestScope.cfm")>
 			<cfset arrayAppend(application.sysInfo.aServerSpecificRequestScope, "/farcry/plugins/#lib#/config/_serverSpecificRequestScope.cfm") />
 		</cfif>
 	</cfloop>
