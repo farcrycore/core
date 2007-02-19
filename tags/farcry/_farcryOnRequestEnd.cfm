@@ -414,7 +414,7 @@ $out:$
 
 		<cfif isDefined("variables.stPlaceInHead.swfObjectJS") AND variables.stPlaceInHead.swfObjectJS EQ "true">
 			<cfoutput>
-				<script language="JavaScript" type="text/javascript" src="#application.url.farcry#/js/swfObject.js"></script></cfoutput>
+				<script language="JavaScript" type="text/javascript" src="#application.url.farcry#/js/swfobject.js"></script></cfoutput>
 		</cfif>
 
 
