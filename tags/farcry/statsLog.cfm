@@ -73,9 +73,12 @@ $out:$
 				referer="#cgi.http_referer#";
 			else
 				referer="Unknown";
-			
-			// log stats
-			application.factory.oStats.logEntry(pageId=request.stObj.objectid,navId=request.navid,remoteIP=session.remoteIP,sessionId=session.statsSession,browser=session.userBrowser,userid=userid,referer=referer,locale=session.dmProfile.locale,os=session.userOS);
+				
+			if (isDefined("request.stObj") AND isDefined("request.navId"))	//if these don't exist it most likely means a user is previewing from the webtop, in this case we don't want to log stats
+			{
+				// log stats
+				application.factory.oStats.logEntry(pageId=request.stObj.objectid,navId=request.navid,remoteIP=session.remoteIP,sessionId=session.statsSession,browser=session.userBrowser,userid=userid,referer=referer,locale=session.dmProfile.locale,os=session.userOS);
+			}
 			</cfscript>
 			<cfcatch type="any"></cfcatch>
 		</cftry>
