@@ -187,7 +187,7 @@
 			
 			<cfset aObjectIds = ListToArray(arguments.lObjectIDs)>
 			
-			<cflock name="objectBroker" scope="Application" type="exclusive" timeout="20" throwontimeout="true">
+			<cflock name="objectBroker" type="exclusive" timeout="20" throwontimeout="true">
 				<cfset application.objectBroker[arguments.typename].aObjects.removeAll(aObjectIds) >
 			</cflock>
 			
