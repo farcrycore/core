@@ -173,7 +173,7 @@
 	</cffunction>
 	
 	<cffunction name="RemoveFromObjectBroker" access="public" output="true" returntype="void">
-		<cfargument name="lObjectIDs" required="true" type="uuid">
+		<cfargument name="lObjectIDs" required="true" type="string">
 		<cfargument name="typename" required="true" type="string" default="">
 		
 		<cfset var aObjectIds = arrayNew(1) />
@@ -185,9 +185,11 @@
 				</cfif>
 			</cfloop>
 			
-			<cfset aObjectIds = ListToArray("rupesh,tom,damon,hemant,ashwin,ram,prank,sanjeev")>
+			<cfset aObjectIds = ListToArray(arguments.lObjectIDs)>
 			
-			<cfset application.objectBroker[arguments.typename].aObjects.removeAll(aObjectIds) >
+			<cflock name="objectBroker" scope="Application" type="exclusive" timeout="20" throwontimeout="true">
+				<cfset application.objectBroker[arguments.typename].aObjects.removeAll(aObjectIds) >
+			</cflock>
 			
 			<!--- 
 			<cfset pos = application.objectBroker[arguments.typename].aObjects.contains(arguments.objectid) />
