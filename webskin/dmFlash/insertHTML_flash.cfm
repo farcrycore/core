@@ -12,7 +12,7 @@ $Developer: Matthew Bryant (mbryant@daemon.com.au) $
 <cfif len(stobj.flashmovie)>
 	<cfset swfpath = application.url.fileroot & stobj.flashMovie />
 <cfelse>
-	<cfset swfpath = flashURL />
+	<cfset swfpath = stobj.flashURL />
 </cfif>
 	
 	<cfoutput>	
