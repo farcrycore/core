@@ -1603,6 +1603,7 @@ $out:$
 </cffunction>
 
 
+
 <cffunction name="buildDBStructure">
 	<cfargument name="scope" default="types" required="No">
 	<cfset var stTypes = structNew() />
