@@ -2,6 +2,8 @@
 <!--- @@displayname: Standard Image --->
 <!--- @@author: Matthew Bryant --->
 
-<cfoutput><img src="#application.url.webroot##stobj.standardImage#"></cfoutput>
+<cfparam name="stObj.title" default="" type="string" />
+
+<cfoutput><img src="#application.url.webroot##stobj.standardImage#" alt="#stObj.title#" /></cfoutput>
 
 <cfsetting enablecfoutputonly="false">
