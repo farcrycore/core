@@ -27,8 +27,8 @@ $out:$
 <cfinclude template="/farcry/core/admin/includes/cfFunctionWrappers.cfm">
 
 <cffunction name="getDataType">
-	<cfargument name="cfctype" required="true">
-	<cfargument name="bReturnTypeOnly" required="No" default="false">
+	<cfargument name="cfctype" required="true" />
+	<cfargument name="bReturnTypeOnly" required="No" default="false" />
 
 	<cfscript>
 		stDefaultTypes = getTypeDefaults();
@@ -48,13 +48,13 @@ $out:$
 			}
 		}
 	</cfscript>
-	<cfreturn datatype>
+	<cfreturn datatype />
 </cffunction>
 
 <cffunction name="dropArrayTable">
-	<cfargument name="typename" required="true">
-	<cfargument name="property" required="true">
-	<cfargument name="dsn" default="#application.dsn#" required="false">
+	<cfargument name="typename" required="true" />
+	<cfargument name="property" required="true" />
+	<cfargument name="dsn" default="#application.dsn#" required="false" />
 
 	<cfquery datasource="#arguments.dsn#">
 	DROP TABLE #application.dbowner##arguments.typename#_#arguments.property#
@@ -1167,13 +1167,18 @@ $out:$
 		  </cfquery>
 		</cfcase>
 		<cfdefaultcase>
-		  <cfset srcObject = "#arguments.typename#.[#arguments.srcColumn#]">
-
+		  <cfset srcObject = "#application.dbowner##arguments.typename#.[#arguments.srcColumn#]">
+		  <cftry>
 		  <cfstoredproc procedure="sp_rename" datasource="#arguments.dsn#">
 			  <cfprocparam cfsqltype="cf_sql_varchar" type="in" value="#srcObject#">
-			  <cfprocparam cfsqltype="cf_sql_varchar" type="in" value="#destColumn#">
+			  <cfprocparam cfsqltype="cf_sql_varchar" type="in" value="#arguments.destColumn#">
 			  <cfprocparam cfsqltype="cf_sql_varchar" type="in" value="COLUMN">
 		  </cfstoredproc>
+		  <cfcatch>
+			<cflog type="information" text="srcObject=#srcObject# destColumn=#arguments.destColumn#">  
+			<cfthrow type="Application" detail="#cfcatch.Detail# #cfcatch.Message#">
+		  </cfcatch>
+		  </cftry>
 		</cfdefaultcase>
 	</cfswitch>
 
@@ -1420,14 +1425,10 @@ $out:$
 	</cftransaction>
 </cffunction>
 
-<cffunction name="buildDBStructure">
-	<cfargument name="scope" default="types" required="No">
-	
-	<cfset var stTypes = structNew() />
+<cffunction name="queryTableInfo" returntype="query">
+	<cfargument name="typename" type="string">
 	<cfset var TableId="" />
-	
-	<cfloop collection="#application[arguments.scope]#" item="typename">
-		<cfswitch expression="#application.dbtype#">
+	<cfswitch expression="#application.dbtype#">
 		<cfcase value="ora">
 	        <!--- Changed by bowden to use (+) syntax rather than inner join.
     	    Oracle didn't support the join syntax until version 9 --->
@@ -1439,7 +1440,7 @@ $out:$
 		    			uc.DATA_TYPE AS Type
 			FROM USER_TABLES ut
 			    , USER_TAB_COLUMNS uc
-			WHERE ut.TABLE_NAME = '#ucase(typename)#'
+			WHERE ut.TABLE_NAME = '#ucase(arguments.typename)#'
 			and   (ut.TABLE_NAME = uc.TABLE_NAME (+))
 			GROUP BY ut.TABLE_NAME,
         					uc.COLUMN_NAME,
@@ -1451,7 +1452,7 @@ $out:$
 		<cfcase value="mysql,mysql5">
 			<!--- Get all tables in database--->
 			<cfquery name="getMySQLTables" datasource="#application.dsn#">
-				SHOW TABLES like '#typename#'
+				SHOW TABLES like '#arguments.typename#'
 			</cfquery>
 			<!--- Create new query to be filled with db metadata--->
 			<cfset GetTables = queryNew("TableName,ColumnName,length,isnullable,Type")>
@@ -1498,7 +1499,7 @@ $out:$
          FROM pg_catalog.pg_class c
               LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
          WHERE pg_catalog.pg_table_is_visible(c.oid)
-               AND upper(c.relname) ~ upper('^#typename#$')
+               AND upper(c.relname) ~ upper('^#arguments.typename#$')
          ORDER BY 2, 3;
          </cfquery>
 
@@ -1540,7 +1541,7 @@ $out:$
             </cfif>
 
             <cfset temp = queryAddRow(GetTables)>
-            <cfset temp = querySetCell(GetTables, "TableName", typename)>
+            <cfset temp = querySetCell(GetTables, "TableName", arguments.typename)>
             <cfset temp = querySetCell(GetTables, "ColumnName", attname)>
             <cfset temp = querySetCell(GetTables, "length", truelen)>
             <cfset temp = querySetCell(GetTables, "isnullable", yesnoformat(isnullable))>
@@ -1560,7 +1561,7 @@ $out:$
 			INNER JOIN dbo.syscolumns ON (dbo.sysobjects.id = dbo.syscolumns.id)
 			INNER JOIN 	dbo.systypes ON (dbo.syscolumns.xtype = dbo.systypes.xusertype)
 			WHERE dbo.sysobjects.xtype = 'U'
-			AND	dbo.sysobjects.name = '#typename#'
+			AND	dbo.sysobjects.name = '#arguments.typename#'
 			AND dbo.sysobjects.name <> 'dtproperties'
 			GROUP BY dbo.sysobjects.name,
         					dbo.syscolumns.name,
@@ -1570,6 +1571,44 @@ $out:$
 			</CFQUERY>
 		</cfdefaultcase>
 		</cfswitch>
+
+	<cfreturn GetTables>
+</cffunction>
+
+<cffunction name="buildDBTableStructure">
+	<cfargument name="typeName" required="yes">
+	<cfset var stType = structNew() />
+
+		<cfset getTables=queryTableInfo('#arguments.typeName#') />
+
+		<cfscript>
+		qArrayTables = getArrayTables(typename='#arguments.typeName#');
+		for(i = 1;i LTE qArrayTables.recordCount;i=i+1)
+		{
+			queryAddRow(getTables,1);
+			querySetCell(getTables,'columnname',replacenocase(qArrayTables.name[i],"#arguments.typeName#_",""));
+			querySetCell(getTables,'type','array');
+		}
+
+		for(i = 1;i LTE getTables.recordCount;i = i+1){
+			stThisRow = structNew();
+			stThisRow.length = getTables.length[i];
+			stThisRow.isNullable = getTables.isNullable[i];
+			stThisRow.type = getTables.type[i];
+			stType['#getTables.columnname[i]#'] = Duplicate(stThisRow);
+		}
+		</cfscript>
+
+	<cfreturn stType>
+</cffunction>
+
+
+<cffunction name="buildDBStructure">
+	<cfargument name="scope" default="types" required="No">
+	<cfset var stTypes = structNew() />
+
+	<cfloop collection="#application[arguments.scope]#" item="typename">
+		<cfset getTables=queryTableInfo('#typename#') />
 
 		<cfscript>
 		qArrayTables = getArrayTables(typename='#typename#');
