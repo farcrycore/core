@@ -86,14 +86,12 @@ default handlers
 		<cfset var webskinHTML = "" />
 		<cfset var oObjectBroker = createObject("component", "farcry.core.packages.fourq.objectBroker").init() />
 		
-		
-		
-		
+				
+		<!--- make sure that .cfm isn't passed to this method in the template argument --->
 		<cfif listLast(arguments.template,".") EQ "cfm">
 			<cfset arguments.template = ReplaceNoCase(arguments.template,".cfm", "", "all") />
 		</cfif>
-		
-		
+
 		
 		<cfif isDefined("arguments.stobject")>
 			<cfset stobj=arguments.stobject />

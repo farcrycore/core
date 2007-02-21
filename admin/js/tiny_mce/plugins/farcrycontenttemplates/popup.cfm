@@ -34,7 +34,8 @@
 				//onLoading:function(request){Element.show('indicator')},
 				onComplete:function(request){
 					//$('prevDIV').innerHTML = request.responseText;
-					tinyMCE.execCommand('mceInsertContent',false, request.responseText);
+					//tinyMCE.execCommand('mceInsertContent',false, request.responseText);
+					tinyMCE.execCommand('mceInsertContent',false, request.responseText.replace(/^\s*|\s*$/g,""));	//make sure to trim the return value
 								
 					// Close the dialog
 					tinyMCEPopup.close();					

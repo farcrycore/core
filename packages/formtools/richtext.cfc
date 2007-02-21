@@ -59,6 +59,7 @@
 							theme_advanced_resizing : true,
 							extended_valid_elements: "textarea[name|class|cols|rows],script[type],img[style|class|src|border=0|alt|title|hspace|vspace|width|height|align|onmouseover|onmouseout|name]",
 							remove_linebreaks : false,
+							relative_urls : false,
 						</cfif>						
 						elements : "#arguments.fieldname#",
 						<!---<cfif NOT ListFindNoCase("none,default", application.config.tinyMCE.insertimage_callback) AND application.config.tinyMCE.insertimage_callback NEQ "">
