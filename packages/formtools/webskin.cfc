@@ -17,7 +17,7 @@
 			<cfset arguments.stMetadata.ftTypename = arguments.typename />
 		</cfif>
 
-		<cfset oType=createobject("component", application.types[arguments.stmetadata.fttypename].typepath) />
+		<cfset oType=createobject("component", application.stCoapi[arguments.stmetadata.fttypename].packagepath) />
 		<cfset qWebskins=oType.getWebskins(typename='#arguments.stmetadata.fttypename#', prefix=arguments.stMetadata.ftPrefix) />
 
 		<cfsavecontent variable="html">
@@ -56,7 +56,7 @@
 		
 
 		<cfif len(arguments.stMetadata.value)>
-			<cfset oType=createobject("component", application.types[webskinTypename].typepath) />
+			<cfset oType=createobject("component", application.stCoapi[webskinTypename].packagePath) />
 			
 			<cfset displayname=oType.getWebskinDisplayname(typename=webskinTypename, template="#arguments.stMetadata.value#") />
 		</cfif>	
