@@ -29,10 +29,9 @@ type properties
 <cfproperty ftSeq="1" ftFieldSet="General Details" name="title" type="nstring" hint="Object title.  Same as Label, but required for overview tree render." required="no" default="" ftLabel="Title" />
 
 <cfproperty ftSeq="5" ftFieldSet="Advanced" name="lNavIDAlias" type="string" hint="A Nav alias provides a human interpretable link to this navigation node.  Each Nav alias is set up as key in the structure application.navalias.<i>aliasname</i> with a value equal to the navigation node's UUID." required="no" default="" ftLabel="Alias" />
-<cfproperty ftSeq="6" ftFieldSet="Advanced" name="fu" type="string" hint="Friendly URL for this node." required="no" default="" ftLabel="Friendly URL" />
+<cfproperty ftSeq="10" ftFieldSet="Advanced" name="ExternalLink" type="string" hint="URL to an external (ie. off site) link." required="no" default="" ftType="list" ftLabel="Redirect to" ftListData="getExternalLinks" />
 
-<cfproperty ftSeq="10" ftFieldSet="Redirection" name="ExternalLink" type="string" hint="URL to an external (ie. off site) link." required="no" default="" ftType="list" ftLabel="Redirect to" ftListData="getExternalLinks" />
-
+<cfproperty name="fu" type="string" hint="Friendly URL for this node." required="no" default="" ftLabel="Friendly URL" />
 <cfproperty name="aObjectIDs" type="array" hint="Holds objects to be displayed at this particular node.  Can be of mixed types." required="no" default="" ftJoin="dmImage" />
 <cfproperty name="options" type="string" hint="No idea what this is for." required="no" default="" ftLabel="Options" />
 <cfproperty name="status" type="string" hint="Status of the node (draft, pending, approved)." required="yes" default="draft" ftLabel="Status" />
