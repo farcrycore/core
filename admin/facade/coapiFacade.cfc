@@ -2,7 +2,7 @@
 
 	<cffunction name="init" returntype="void" hint="ensure coapiManager is available (should implement security model for security)">
 		<cfif not structKeyExists(application,"coapiManager")>
-			<cfset application.coapiManager = createObject("component","coapiManager")>
+			<cfset application.coapiManager = createObject("component","farcry.core.packages.coapi.coapiManager")>
 			<cfset application.coapiManager.init()>
 		</cfif>
 	</cffunction>
