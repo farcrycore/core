@@ -26,25 +26,55 @@ $out:$
 <!------------------------------------------------------------------------
 type properties
 ------------------------------------------------------------------------->	
-<cfproperty ftSeq="1" name="title" type="nstring" hint="Object title.  Same as Label, but required for overview tree render." required="no" default="" ftLabel="Title" />
-<cfproperty ftSeq="2" name="aObjectIDs" type="array" hint="Holds objects to be displayed at this particular node.  Can be of mixed types." required="no" default="" ftJoin="dmImage" />
-<cfproperty ftSeq="3" name="ExternalLink" type="string" hint="URL to an external (ie. off site) link." required="no" default="" ftLabel="External Link" />
-<cfproperty ftSeq="4" name="lNavIDAlias" type="string" hint="A Nav alias provides a human interpretable link to this navigation node.  Each Nav alias is set up as key in the structure application.navalias.<i>aliasname</i> with a value equal to the navigation node's UUID." required="no" default="" ftLabel="Alias" />
-<cfproperty ftSeq="5" name="options" type="string" hint="No idea what this is for." required="no" default="" ftLabel="Options" />
-<cfproperty ftSeq="6" name="status" type="string" hint="Status of the node (draft, pending, approved)." required="yes" default="draft" ftLabel="Status" />
-<cfproperty ftSeq="7" name="fu" type="string" hint="Friendly URL for this node." required="no" default="" ftLabel="Friendly URL" />
+<cfproperty ftSeq="1" ftFieldSet="General Details" name="title" type="nstring" hint="Object title.  Same as Label, but required for overview tree render." required="no" default="" ftLabel="Title" />
 
+<cfproperty ftSeq="5" ftFieldSet="Advanced" name="lNavIDAlias" type="string" hint="A Nav alias provides a human interpretable link to this navigation node.  Each Nav alias is set up as key in the structure application.navalias.<i>aliasname</i> with a value equal to the navigation node's UUID." required="no" default="" ftLabel="Alias" />
+<cfproperty ftSeq="6" ftFieldSet="Advanced" name="fu" type="string" hint="Friendly URL for this node." required="no" default="" ftLabel="Friendly URL" />
+
+<cfproperty ftSeq="10" ftFieldSet="Redirection" name="ExternalLink" type="string" hint="URL to an external (ie. off site) link." required="no" default="" ftType="list" ftLabel="Redirect to" ftListData="getExternalLinks" />
+
+<cfproperty name="aObjectIDs" type="array" hint="Holds objects to be displayed at this particular node.  Can be of mixed types." required="no" default="" ftJoin="dmImage" />
+<cfproperty name="options" type="string" hint="No idea what this is for." required="no" default="" ftLabel="Options" />
+<cfproperty name="status" type="string" hint="Status of the node (draft, pending, approved)." required="yes" default="draft" ftLabel="Status" />
 <!------------------------------------------------------------------------
 object methods 
 ------------------------------------------------------------------------->	
-<cffunction name="edit" access="public" output="true">
+<!--- <cffunction name="edit" access="public" output="true">
 	<cfargument name="objectid" required="yes" type="UUID">
 	
 	<!--- getData for object edit --->
 	<cfset stObj = this.getData(arguments.objectid)>
 	
 	<cfinclude template="_dmNavigation/edit.cfm">
+</cffunction> --->
+
+
+<cffunction name="getExternalLinks" access="public" returntype="string" output="false" hint="Returns a list of all navigation nodes in the system with an alias">
+
+	<cfset var lResult = ":#application.adminBundle[session.dmProfile.locale].noneForSelect#" />
+	<cfset var aNavalias = listToArray(listSort(structKeyList(application.navid),'textnocase'))>
+	
+
+	<cfloop from="1" to="#arraylen(aNavalias)#" index="i">
+		<cfset lResult = listAppend(lResult, "#application.navid[aNavalias[i]]#:#aNavalias[i]#") />
+	</cfloop>
+
+	<cfreturn lResult />
 </cffunction>
+
+
+
+<cffunction name="AfterSave" access="public" output="true" returntype="struct" hint="Called from ProcessFormObjects and run after the object has been saved.">
+	<cfargument name="stProperties" required="yes" type="struct" hint="A structure containing the contents of the properties that were saved to the object.">
+	
+	<cflock scope="Application" timeout="20">
+		<cfset application.navid = getNavAlias()>
+	</cflock>
+	
+	<cfreturn stProperties />
+</cffunction>
+		
+			
 
 <cffunction name="getParent" access="public" returntype="query" output="false" hint="Returns the navigation parent of child (dmHTML page for example)">
 	<cfargument name="objectid" required="yes" type="UUID" hint="Object ID of element needing a parent">
