@@ -356,7 +356,13 @@ $out:$
 
 			
 			<cfset typename = left(qCustomTypesDir.name, len(qCustomTypesDir.name)-4)> <!---//remove the .cfc from the filename --->
+			<cftry>
 			<cfset o = createObject("Component", "#application.custompackagepath#.types.#typename#") />			
+			<cfcatch>
+				<cfoutput>#application.custompackagepath#.types.#typename#</cfoutput>
+				<cfabort>
+			</cfcatch>
+			</cftry>
 			<cfset stMetaData = getMetaData(o) />
 			<cfif not structKeyExists(stMetadata,"bAbstract") or stMetadata.bAbstract EQ "False">			
 

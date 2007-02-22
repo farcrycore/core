@@ -1,0 +1,479 @@
+<cfcomponent displayname="coapiManager" output="false">
+	<cfscript>
+		variables.stDB = structNew();//holds an image of the database
+		variables.stCfc2Db = structNew();// holds mapping between farcry types and the database application server
+		variables.initialised = false;
+		variables.MAXEXTCLASS = "farcry.fourq.fourq"; // constant
+		variables.oAltType = createObject("component","farcry.core.packages.farcry.alterType");
+	</cfscript>
+
+	<cffunction name="init" access="public" returntype="coapiManager">
+		<cfif variables.initialised>
+			<cfthrow type="Application" detail="coapiManager instace already intialised">
+		<cfelse>
+			<cfset variables.stCfc2Db = getCFC2DBMapping(application.dbType)>
+			<cfset variables.initialised = true>
+		</cfif>
+		<cfreturn this>
+	</cffunction>
+	
+	<cffunction name="getCFC2DBMapping" access="private" hint="I return the mapping between farcry and the supported databases" returntype="struct">
+		<cfargument name="dbType" type="string">
+		<cfset stDBMapping=StructNew()>
+		<cfscript>
+		// TO DO: this should come from an external module ie Fourq
+		// cfc property type to db data type translation
+			switch(arguments.dbType){
+				case "ora":
+				{
+					stDBMapping.boolean = "NUMBER|1";
+					stDBMapping.date = "DATE";
+					stDBMapping.numeric = "NUMBER";
+					stDBMapping.string = "VARCHAR2|255";
+					stDBMapping.nstring = "NVARCHAR2|255";
+					stDBMapping.uuid = "VARCHAR2|50";
+					stDBMapping.variablename = "VARCHAR2|64";
+					stDBMapping.color = "VARCHAR2|20";
+					stDBMapping.email = "VARCHAR2|255";
+					stDBMapping.longchar = "NCLOB";
+					stDBMapping.Array = "array";
+					break;
+				}
+				case "mysql":
+				{
+					stDBMapping.boolean = "INT";
+					stDBMapping.date = "DATETIME";
+					stDBMapping.numeric = "NUMERIC";
+					stDBMapping.string = "VARCHAR|255";
+					stDBMapping.nstring = "VARCHAR|255";
+					stDBMapping.uuid = "VARCHAR|50";
+					stDBMapping.variablename = "VARCHAR|64";
+					stDBMapping.color = "VARCHAR|20";
+					stDBMapping.email = "VARCHAR|255";
+					stDBMapping.longchar = "LONGTEXT";	
+					stDBMapping.Array = "array";
+					break;
+				}
+				case "postgresql":
+				{
+					stDBMapping.boolean = "INT";
+					stDBMapping.date = "TIMESTAMP";
+					stDBMapping.numeric = "NUMERIC";
+					stDBMapping.string = "VARCHAR|255";
+					stDBMapping.nstring = "VARCHAR|255";
+					stDBMapping.uuid = "VARCHAR|50";
+					stDBMapping.variablename = "VARCHAR|64";
+					stDBMapping.color = "VARCHAR|20";
+					stDBMapping.email = "VARCHAR|255";
+					stDBMapping.longchar = "TEXT";
+					stDBMapping.Array = "array";
+					break;
+				}
+				case "mssql":
+				{	
+					stDBMapping.boolean = "int";
+					stDBMapping.date = "DATETIME";
+					stDBMapping.numeric = "NUMERIC";
+					stDBMapping.string = "VARCHAR|255";
+					stDBMapping.nstring = "NVARCHAR|1024";
+					stDBMapping.uuid = "VARCHAR|50";
+					stDBMapping.variablename = "VARCHAR|64";
+					stDBMapping.color = "VARCHAR|20";
+					stDBMapping.email = "VARCHAR|255";
+					stDBMapping.longchar = "NTEXT";
+					stDBMapping.Array = "array";
+				}
+				default:
+					
+				break;
+			}	
+		</cfscript>
+		<cfreturn stDBMapping>
+	</cffunction>
+	
+	<cffunction name="setFarcryScopeDbStruct" access="private" returntype="void">
+		<cfargument name="scope" required="true" type="string" hint="types or rules"  />
+		<cfset variables.stDB[arguments.scope] = variables.oAltType.buildDBStructure(arguments.scope)>
+	</cffunction>
+	
+	<cffunction name="updateStDBTable" hint="I update the image of the database for specified table, I should run after any table update" access="private" returntype="void">
+		<cfargument name="scope" required="true" type="string">
+		<cfargument name="cfcName" required="true" type="string">
+		<cfset var stTmp = variables.oAltType.buildDBTableStructure(arguments.cfcName)>
+		<cfset structInsert(variables.stDB[arguments.scope], arguments.cfcName, stTmp ,true)>
+	</cffunction>
+	
+	<cffunction name="getFarcryScopeConflicts" hint="returns all conflicts of all the farcry components for a specified FarcryScope" access="public" returntype="array">
+		<cfargument name="scope" required="true" type="string" hint="Argument is types or rules" />
+		<cfargument name="refresh" required="false" type="boolean" default="false" hint="refresh stDB structure image" />
+		<cfset var arResult = arrayNew(1)>
+		<cfset var typePath = "">
+		<cfscript>
+			if(not structKeyExists(variables.stDB,arguments.scope) OR arguments.refresh)setFarcryScopeDbStruct(arguments.scope);
+		</cfscript>
+
+		<cfloop collection="#application[arguments.scope]#" item="cfcName">		
+			<cfset tmpObj = getCFCStatus(arguments.scope,cfcName)>
+			<cfset arrayAppend(arResult, tmpObj)>	
+		</cfloop>
+			
+		<cfreturn arResult>
+	</cffunction>
+		
+	<cffunction name="getCFCStatus" hint="returns conflicts of a specified farcry component from a given FarcryScope" access="public" output="false" returntype="struct">
+		<cfargument name="scope" required="true" type="string">
+		<cfargument name="cfcName" required="true" type="string">
+		<cfargument name="bUpdateStDBTable" required="false" default="false" type="boolean">
+		
+		<cfset var tmpObj = structNew()>
+		<cfset var oType = createObject("Component", application[arguments.scope][arguments.cfcName].PACKAGEPATH) />
+		
+		<cfscript>
+			if(not structKeyExists(variables.stDB,arguments.scope))setFarcryScopeDbStruct(arguments.scope);
+			if(arguments.bUpdateStDBTable)updateStDBTable(arguments.scope,arguments.cfcName);
+		</cfscript>
+
+
+		<cfset tmpObj["typeName"] = arguments.cfcName>
+		<cfset tmpObj["props"] = arrayNew(1)>
+		
+		<!--- get metadata class info --->
+		<cfset stMetaData = getMetaData(oType) />
+		
+		<cfset extendsDepth = getExtendsDepth(stMetaData)>
+
+		<!--- set temporary values for the cussent class type --->
+		<cfif structKeyExists(variables.stDB[arguments.scope],arguments.cfcName)>
+			<cfset tmpObj["dbStatus"] = "deployed">
+			<cfset propNotFoundMess = "conflict">
+		<cfelse>
+			<cfset tmpObj["dbStatus"] = "undeployed">
+			<cfset propNotFoundMess = "undeployed">
+		</cfif>
+		
+		<!--- create a struct to flag checked properties/dbfields  --->
+		<cfset checkedDbProps = structNew()>
+		
+			<!--- parse component properties including properties inherited from parents until it reaches fourq parent type--->		
+		<cfset propKey = "stMetaData">
+		<cfset DbTypeConflict = tmpObj["dbStatus"]>
+		<!--- looping over type struct including parent classes structs--->
+		<cfloop from="0" to="#extendsDepth#" index="depth">
+			<cfif depth GT 0>
+				<cfset propKey = listAppend(propKey,"Extends",".")>
+			</cfif>					
+			<cfset struct2Parse = evaluate(propKey)>
+			<cfif struct2Parse.name eq variables.MAXEXTCLASS>
+				
+				<cfbreak><!--- reached maximum inheritence for class so exit loop and do not check DB properties for parents class --->
+			</cfif>								
+			<!--- looping over properties of class incl extended classes is properties struct exists--->
+			<cfif structKeyExists(struct2Parse,"properties")>
+				
+				<cfloop from="1" to="#arrayLen(struct2Parse.properties)#" index="propId">
+					<cfset thisPropName = trim(struct2Parse.properties[propId].name)>
+
+					<cfif tmpObj["dbStatus"] eq "deployed" and structKeyExists(variables.stDB[arguments.scope][arguments.cfcName],thisPropName)>
+						<cfset structDBProp = variables.stDB[arguments.scope][arguments.cfcName][thisPropName]>
+					<cfelse>
+						<cfset structDBProp = structNew()>
+					</cfif>
+	
+					<cfset thisProp = setProperty(cfcName=arguments.cfcName,propName=thisPropName, dbStruct=structDBProp, metaStruct=struct2Parse.properties[propId], typeDeployed=tmpObj["dbStatus"])>
+					<cfif thisProp.propDBType eq "n/a" or thisProp.cfc2Db eq "conflict">
+						<cfset DbTypeConflict = propNotFoundMess>
+					</cfif>
+					<cfset checkedDbProps[trim(thisPropName)] = true>
+					<cfset arrayAppend( tmpObj["props"],thisProp)>
+				</cfloop>
+				
+			</cfif>
+		</cfloop>
+		<cfset tmpObj["dbStatus"] = DbTypeConflict>	
+		
+		<!--- There is a DB table matching the type --->
+		<cfif structkeyExists(variables.stDB[arguments.scope],arguments.cfcName)>
+			<!--- looping thru the fields of the database table  --->
+			<cfloop collection="#variables.stDB[arguments.scope][arguments.cfcName]#" item="DBPropName">
+				<!--- no match in the CFC property --->
+				<cfif not structKeyExists(checkedDbProps,DBPropName)>
+					<cfoutput><strong>#DBPropName#</strong></cfoutput>
+					<cfset tmpPropObj = structNew()>
+					<cfset tmpPropObj["propDBType"] = variables.stDB[arguments.scope][arguments.cfcName][DBPropName].type>
+					<cfset tmpPropObj["propDBPrecision"] = variables.stDB[arguments.scope][arguments.cfcName][DBPropName].LENGTH>
+					<cfset tmpPropObj["propName"] = DBPropName>
+					<cfset tmpPropObj["propCfcType"] = "n/a">
+					<cfset tmpPropObj["propAppType"] = "">
+					<cfset tmpPropObj["propAppDefault"] = "">
+					<cfset tmpPropObj["cfc2Db"] = "n/a">
+					<cfset arrayAppend( tmpObj["props"],tmpPropObj)>
+					<cfif  tmpObj["dbStatus"] eq "deployed">
+						<cfset tmpObj["dbStatus"] = "conflict">
+					</cfif>	
+					
+				</cfif>
+			</cfloop>
+			
+		</cfif>
+		<cfreturn tmpObj>
+	</cffunction>
+	
+	<cffunction name="getCFCProps" hint="I return the properties of a type by reading introspecting only the cfc" output="false" access="public">
+		<cfargument name="scope" required="true" type="string">
+		<cfargument name="cfcName" required="true" type="string">
+		<cfscript>
+			var objModel = createObject("Component", application[arguments.scope][arguments.cfcName].PACKAGEPATH);
+			var stMetaData = getMetaData(objModel);
+			var stProps = structNew();
+		</cfscript>
+		<cfset propKey = "stMetaData">
+		<cfset extendsDepth = getExtendsDepth(stMetaData)>
+		<!--- looping over type struct including parent classes structs--->
+		<cfloop from="0" to="#extendsDepth#" index="depth">
+			<cfif depth GT 0>
+				<cfset propKey = listAppend(propKey,"Extends",".")>
+			</cfif>					
+			<cfset struct2Parse = evaluate(propKey)>
+			<cfif struct2Parse.name eq variables.MAXEXTCLASS>
+				<cfbreak><!--- reached maximum inheritence for class so exit loop and do not check DB properties for parents class --->
+			</cfif>								
+			<!--- looping over properties of class incl extended classes is properties struct exists--->
+			<cfif structKeyExists(struct2Parse,"properties")>
+				
+				<cfloop from="1" to="#arrayLen(struct2Parse.properties)#" index="propId">
+					
+					<cfset thisPropName = trim(struct2Parse.properties[propId].name)>
+					<cfset stProps[thisPropName] = structNew()>
+		
+					<cfset stProps[thisPropName] = structNew()>
+					<cfset stProps[thisPropName].type = struct2Parse.properties[propId].TYPE>
+					
+					<cfset stProps[thisPropName].isNullable = "yes">
+					<cfif structKeyExists(struct2Parse.properties[propId],"REQUIRED")>
+						<cfset stProps[thisPropName].isNullable = struct2Parse.properties[propId].REQUIRED>
+					</cfif>
+					
+					<cfset stProps[thisPropName].defaultValue = "">
+					<cfif structKeyExists(struct2Parse.properties[propId],"DEFAULT")>
+						<cfset stProps[thisPropName].defaultValue = struct2Parse.properties[propId].DEFAULT>
+					</cfif>
+				</cfloop>
+				
+			</cfif>
+		</cfloop>
+		<cfreturn stProps>
+	</cffunction>
+	
+	<cffunction name="setProperty" hint="I define the conflicts for a given farcry component property" output="false" returntype="struct" access="private">
+		<cfargument name="cfcName" required="true" type="string">
+		<cfargument name="propName" required="true" type="string">
+		<cfargument name="dbStruct" required="true" type="struct">
+		<cfargument name="metaStruct" required="true" type="struct">
+		<cfargument name="typeDeployed" required="true" type="string">
+		
+		<cfset var stObjResult = structNew()>
+		<!--- set DB properties --->
+		<cfset var isPropDeployed = false>
+		
+		<cfset stObjResult["propName"] = arguments.propName>
+		<cfset stObjResult["propCfcType"] = arguments.metaStruct.type>
+
+		<cfif arguments.typeDeployed eq "deployed" and not structIsEmpty(arguments.dbStruct)>
+			<!--- setting local variables to gain visual clarity in next conditional statement --->
+			<cfset typeMatch = listFirst(variables.stCfc2Db[arguments.metaStruct.type],"|") eq arguments.dbStruct.type>
+			<cfset bPrecision = listLen(variables.stCfc2Db[arguments.metaStruct.type],"|") eq 2>
+		
+			<cfif not typeMatch>
+				<cfset stObjResult["cfc2Db"] = "conflict">				
+			<cfelseif bPrecision and arguments.dbStruct.LENGTH neq listLast(variables.stCfc2Db[arguments.metaStruct.type],"|")>
+				<cfset stObjResult["cfc2Db"] = "conflict"><!--- could be flagged as precision conflict --->
+			<cfelse>
+				<cfset stObjResult["cfc2Db"] = "ok">	
+			</cfif>
+			
+			<cfset isPropDeployed = true>
+			<cfset stObjResult["propDBType"] = arguments.dbStruct.type>
+			<cfset stObjResult["propDBPrecision"] = arguments.dbStruct.LENGTH>
+		<cfelse>	
+			<cfset stObjResult["propDBType"] = "n/a">
+			<cfset stObjResult["propDBPrecision"] = "n/a">
+			<cfset stObjResult["cfc2Db"] = "undeployed">
+		</cfif>
+		<cftry>
+		<cfif structKeyExists(application.types, arguments.cfcName) and structKeyExists(application.types[arguments.cfcName].stProps, propName) >
+			<cfset stObjResult["propAppType"] = application.types[arguments.cfcName].stProps[propName].METADATA.type>
+			<cfset stObjResult["propAppDefault"] = application.types[arguments.cfcName].stProps[propName].METADATA.DEFAULT>
+		<cfelse>
+			<cfset stObjResult["propAppType"] = "">
+			<cfset stObjResult["propAppDefault"] = "">
+		</cfif>
+		<cfcatch>
+			<cfoutput>#propName#</cfoutput>
+			<cfdump var="#application.types[arguments.cfcName]#">
+			<cfabort>
+		</cfcatch>
+		</cftry>
+				
+		<cfreturn stObjResult>	
+	</cffunction>
+	
+	<cffunction name="getExtendsDepth" hint="I'm a recursive function to get the depth of inheritance" returntype="numeric" output="false" access="private">
+		<cfargument name="object" type="struct" required="true">
+		<cfargument name="thisDepth" type="numeric" required="false" default="0">
+		
+		<cfif structKeyExists(arguments.object,"Extends")>
+			<cfset arguments.thisDepth = arguments.thisDepth + 1>
+			<cfset arguments.thisDepth = getExtendsDepth(arguments.object.extends,arguments.thisDepth)>	
+		</cfif>
+		<cfreturn arguments.thisDepth>
+	</cffunction>
+	
+	<cffunction name="refreshCFCMetaData" access="public" hint="refreshes type or rule in farcry application scope" returntype="boolean">
+		<cfargument name="componentName" type="string" hint="name of a farcry type or rule to refresh in the application scope">
+		<cfset var scope="types">
+		<cfif left(arguments.componentName,4) eq "rule">
+			<cfset scope="rules">
+		</cfif>
+		<cfset updateStDBTable(scope,componentName)>
+		<cfset variables.oAltType.refreshCFCAppData(typename=arguments.componentName,scope=scope)>
+		
+		<cfreturn true>
+	</cffunction>	
+	
+	<cffunction name="deployCFC" access="public">
+		<cfargument name="componentName" required="true">
+		<cfset var scope="types">
+		<cfset var o = "" />
+		<cfset var stResult = structNew() />
+		<cfif left(arguments.componentName,4) eq "rule">
+			<cfset scope="rules">
+		</cfif>
+		
+		<cfif scope EQ "types">
+			<cfset o = createObject("component", application.types[arguments.componentName].typepath) />
+		<cfelseif scope EQ "rules">
+			<cfset o = createObject("component", application.rules[arguments.componentName].rulepath) />
+		</cfif>
+		<cfscript>
+			stResult["success"] = o.deployType(btestRun="false");
+			stResult["message"] = "component  #arguments.componentName# deployed";
+		</cfscript>
+
+		<cfreturn stResult>
+	</cffunction>
+
+	<!--- ********************************
+		  *  property update methods 	 *
+		  ******************************** --->
+	<cffunction name="renameProperty" hint="update property type and default value" returntype="struct"  access="public">
+		<cfargument name="componentName" type="string" hint="name of the component for the type or rule">
+		<cfargument name="propertyName" type="string" hint="name of the component property">
+		<cfargument name="renameto" type="string" hint="new name for the db column">
+		<cfargument name="colType" type="string" hint="DB type content type or rule property">
+		<cfargument name="colLength" type="numeric" hint="length for the db content type or rule property">
+		<cfscript>
+			var stResult = structNew();
+			variables.oAltType.alterPropertyName(typename=arguments.componentName, srcColumn=arguments.propertyName, destColumn=arguments.renameto, colType=arguments.colType, colLength=arguments.colLength);
+		 	stResult["success"] = true;
+			stResult["message"] = "property #arguments.propertyName# renamed to #arguments.renameto#";
+		</cfscript>
+		<cfreturn stResult>
+	</cffunction>
+	
+	<cffunction name="deployProperty" returntype="struct" access="public">
+		<cfargument name="componentName" required="true" type="string">	
+		<cfargument name="propertyName" required="true" type="string">
+		<cfargument name="cfcType" required="true" type="string">
+		
+		<cfset var scope = "types">
+		<cfset var stProps = structNew()>
+		<cfset var stResult = structNew()>
+		<cfif left(arguments.componentName,4) eq "rule">
+			<cfset scope="rules">
+		</cfif>
+		
+		<cfscript>
+			
+			switch(arguments.cfcType){
+				case "array":
+				{
+					variables.oAltType.deployArrayProperty(typename=arguments.componentName,property=arguments.propertyName,scope=scope);
+					break;
+				}
+				 
+				default:
+			 	{
+					stProps = getCFCProps(scope, arguments.componentName);			
+					//is the property nullable
+					isNullable = false;
+					if(stProps[arguments.propertyName].ISNULLABLE eq 'yes')isNullable = true;
+					//do we have a default value
+					defaultVal = stProps[arguments.propertyName].DEFAULTVALUE;
+					variables.oAltType.addProperty(typename=arguments.componentName,srcColumn=arguments.propertyName,srcColumnType=listFirst(variables.stCfc2Db[arguments.cfcType],"|"),bNull=isNullable,stDefault=defaultVal);
+					break;
+				}
+			}
+			
+			refreshCFCMetaData(componentName=arguments.componentName);
+			
+			stResult["success"] = true;
+			stResult["message"] = "property #arguments.propertyName# for component #arguments.componentName# deployed";
+		</cfscript>
+		<cfreturn stResult>
+	</cffunction>
+
+	<cffunction name="repairProperty" access="public" returntype="struct">
+		<cfargument name="componentName" required="true" type="string">	
+		<cfargument name="propertyName" required="true" type="string">
+		<cfargument name="dbType" required="true" type="string">
+		<cfscript>
+			var stResult = structNew();
+			
+			variables.oAltType.repairProperty(typename=arguments.componentName,srcColumn=arguments.propertyName,srcColumnType=arguments.dbType);
+			refreshCFCMetaData(componentName=arguments.componentName);
+			
+			stResult["success"] = true;
+			stResult["message"] = "property #propertyName# for type #arguments.dbType# repaired";			
+		</cfscript>
+		<cfreturn stResult>
+	</cffunction>
+	
+	<cffunction name="deleteProperty" access="public" returntype="struct">
+		<cfargument name="componentName" required="true" type="string">	
+		<cfargument name="propertyName" required="true" type="string">
+		<cfargument name="cfcType" required="true" type="string">
+
+		<cfscript>
+		var stResult = structNew();	
+			
+		switch(arguments.cfcType){
+			 case "array":
+			 {
+			 	variables.oAltType.dropArrayTable(typename=arguments.componentName,property=arguments.propertyName);
+				break;
+			 }
+			 default:
+			 {
+				variables.oAltType.deleteProperty(typename=arguments.componentName,srcColumn=arguments.propertyName);				
+				break;
+			 }
+		}
+		stResult["message"] = "property #arguments.propertyName# deleted";
+		stResult["success"] = true;
+
+		</cfscript>
+		<cfreturn stResult>
+	</cffunction>
+	
+	<!--- debug methods --->
+	
+	<cffunction name="getDBTableStruct"  access="public" returntype="struct">
+		<cfargument name="componentName" required="true" type="string">	
+		<cfreturn variables.oAltType.buildDBTableStructure(arguments.componentName)>
+	</cffunction>
+
+	<cffunction name="stDB" returntype="Any">
+		<cfreturn variables.stDB>
+	</cffunction>
+	
+</cfcomponent>

@@ -34,7 +34,7 @@
 			</menu>
 			<menu id="categorisation" permission="ContentCategorisationTab" label="application.adminBundle[session.dmProfile.locale].CategoryManagement" labelType="evaluate">
 				<menuitem id="managekeywords" label="application.adminBundle[session.dmProfile.locale].ManageKeywords" labelType="evaluate" link="/navajo/keywords/hierarchyedit.cfm" />		
-				<menuitem id="managekeywords" label="Manage keywords Flex beta" labelType="value" link="/admin/hierarchyFlexEditor.cfm" />		
+				<menuitem id="managekeywordsFlexUI" label="Manage keywords Flex beta" labelType="value" link="/admin/hierarchyFlexEditor.cfm" />		
 			</menu>
 			<menu id="containermanagement" label="application.adminBundle[session.dmProfile.locale].ContainerManagement" labelType="evaluate">
 				<menuitem id="containerreflections" label="application.adminBundle[session.dmProfile.locale].Reflections" labelType="evaluate" link="/content/reflections.cfm" />		
@@ -100,6 +100,7 @@
 				<menuitem id="typeclasses" label="application.adminBundle[session.dmProfile.locale].TypeClasses" labelType="evaluate" link="/admin/coapiTypes.cfm" />
 				<menuitem id="ruleclasses" label="application.adminBundle[session.dmProfile.locale].RuleClasses" labelType="evaluate" link="/admin/coapiRules.cfm" />
 				<menuitem id="coapimetadata" label="application.adminBundle[session.dmProfile.locale].COAPIMetadata" labelType="evaluate" link="/admin/coapiMetaData.cfm" />
+				<menuitem id="coapiFlexUI" label="COAPI Flex beta" labelType="value" link="/admin/coapiFlexUI.cfm" />
 				<menuitem id="coapischema" label="application.adminBundle[session.dmProfile.locale].COAPISchema" labelType="evaluate" link="/admin/coapiSchema.cfm" />
 			</menu>
 			<menu id="diagnostics" label="application.adminBundle[session.dmProfile.locale].Diagnostics" labelType="evaluate">
