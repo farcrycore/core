@@ -671,7 +671,7 @@
 	<cfargument name="stFields" required="yes" type="struct">
 	
 	<cfset var imagerootPath = "#application.path.project#/www" />	
-	<cfset var oImage = createobject("component", "farcry.core.packages.formtools.image") />
+	<cfset var oImage = createobject("component", application.formtools.image.packagePath) />
 
 	<cfloop list="#StructKeyList(arguments.stFields)#" index="i">
 
