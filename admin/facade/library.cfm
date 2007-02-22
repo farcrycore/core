@@ -182,7 +182,7 @@ $Developer: $
 
 <ft:processForm action="Search">
 
-	<cfset session.stLibraryFilter['#request.ftJoin#'].Criteria = form.criteria />
+	<cfset session.stLibraryFilter['#request.ftJoin#'].Criteria = lCase(form.criteria) />
 
 </ft:processForm>
 
@@ -195,7 +195,7 @@ $Developer: $
 
 <cfif len(session.stLibraryFilter[request.ftJoin].Criteria)>
 	<cfset filterCriteria = session.stLibraryFilter[request.ftJoin].Criteria />
-	<cfsearch collection="#application.applicationName#_#request.ftJoin#" criteria="#filterCriteria#" name="qSearchResults" type="internet" />
+	<cfsearch collection="#application.applicationName#_#request.ftJoin#" criteria="#filterCriteria#" name="qSearchResults" type=""  />
 	
 
 	
