@@ -41,9 +41,10 @@ $out:$
 </cfif>
 
 
+
 <cfif isdefined("attributes.fieldname") and len(attributes.fieldname)>
 	<cfset url.fieldname = attributes.fieldname>
-<cfelse>
+<cfelseif not isdefined("url.fieldname") or not len(url.fieldname)>
 	<cfset url.fieldname = "" />
 </cfif>
 
@@ -70,10 +71,9 @@ $out:$
 			</cfif>
 		</cfloop>
 	</cfif>
-	
+
 	<cfif len(url.fieldname)>
-	
-	
+
 		<cfset pos = find(".", stFile[url.fieldname])>
         <cfset suffix = removeChars(stFile[url.fieldname], 1, pos)>
 	
