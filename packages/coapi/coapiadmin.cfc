@@ -29,7 +29,7 @@
 		<!--- get directory listing of components --->
 		<cfif packagedir eq "projectpackage">
 			<cfset packagepath=GetDirectoryFromPath(GetBaseTemplatePath()) />
-			<cfset typepath="farcry.#arguments.project#.packages.#arguments.package#" />
+			<cfset typepath="farcry.projects.#arguments.project#.packages.#arguments.package#" />
 			<cfif directoryExists(packagepath)>
 				<cfdirectory directory="#packagepath#../../packages/#arguments.package#" name="qComps" filter="*.cfc" sort="name" />
 				<!--- <cfdump var="#qcomps#" label="project: #packagepath#../../packages/#arguments.package#"> --->
