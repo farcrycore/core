@@ -18,6 +18,7 @@
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 
 		<cfset var html = "" />
+		<cfset var optionValue = "" />
 
 		<cfparam name="arguments.stMetadata.ftList" default="">
 		<cfparam name="arguments.stMetadata.ftRenderType" default="dropdown">
@@ -37,6 +38,7 @@
 			</cfif>
 			
 			<cfinvoke component="#oList#" method="#arguments.stMetadata.ftListData#" returnvariable="arguments.stMetadata.ftList" />
+			
 		</cfif>
 		
 
@@ -48,7 +50,12 @@
 						
 						<cfoutput><select id="#arguments.fieldname#" name="#arguments.fieldname#" class="formList #arguments.stMetadata.ftClass#" style="#arguments.stMetadata.ftStyle#"<cfif arguments.stMetadata.ftSelectMultiple> multiple="multiple"</cfif>></cfoutput>
 						<cfloop list="#arguments.stMetadata.ftList#" index="i">
-							<cfoutput><option value="#ListFirst(i,":")#"<cfif listFindNoCase(arguments.stMetadata.value,#ListFirst(i,":")#)> selected="selected"</cfif>>#ListLast(i , ":")#</option></cfoutput>
+							<cfif Left(i, 1) EQ ":">
+								<cfset optionValue = "" /><!--- This means that the developer wants the value to be an empty string --->
+							<cfelse>
+								<cfset optionValue = ListFirst(i,":") />
+							</cfif>
+							<cfoutput><option value="#optionValue#" <cfif listFindNoCase(arguments.stMetadata.value, optionValue)> selected="selected"</cfif>>#ListLast(i , ":")#</option></cfoutput>
 						</cfloop>
 						<cfoutput></select></cfoutput>
 						
@@ -62,7 +69,12 @@
 							<div class="fieldsection optional">
 								<div class="fieldwrap">
 									<cfloop list="#arguments.stMetadata.ftList#" index="i">
-										<input type="checkbox" name="#arguments.fieldname#" class="formCheckbox" id="#arguments.fieldname#" value="#ListFirst(i,":")#"<cfif listFindNoCase(arguments.stMetadata.value,listFirst(i, ":"))> checked="checked"</cfif> />										
+										<cfif Left(i, 1) EQ ":">
+											<cfset optionValue = "" /><!--- This means that the developer wants the value to be an empty string --->
+										<cfelse>
+											<cfset optionValue = ListFirst(i,":") />
+										</cfif>
+										<input type="checkbox" name="#arguments.fieldname#" class="formCheckbox" id="#arguments.fieldname#" value="#optionValue#"<cfif listFindNoCase(arguments.stMetadata.value, optionValue)> checked="checked"</cfif> />										
 										<!--- <label class="fieldsectionlabel" class="fieldsectionlabel" for="#arguments.fieldname#">#ListLast(i , ":")#</label> --->
 										<!--- MPS: styles aren't working so we are removing label for now until we have time to look at the css --->
 										#ListLast(i , ":")#
@@ -82,7 +94,12 @@
 							<div class="fieldsection optional">
 								<div class="fieldwrap">
 									<cfloop list="#arguments.stMetadata.ftList#" index="i">
-										<input type="radio" name="#arguments.fieldname#" id="#arguments.fieldname#" class="formCheckbox" value="#ListFirst(i,":")#"<cfif listFindNoCase(arguments.stMetadata.value,listFirst(i, ":"))> checked="checked"</cfif> />
+										<cfif Left(i, 1) EQ ":">
+											<cfset optionValue = "" /><!--- This means that the developer wants the value to be an empty string --->
+										<cfelse>
+											<cfset optionValue = ListFirst(i,":") />
+										</cfif>
+										<input type="radio" name="#arguments.fieldname#" id="#arguments.fieldname#" class="formCheckbox" value="#optionValue#"<cfif listFindNoCase(arguments.stMetadata.value, optionValue)> checked="checked"</cfif> />
 										<!--- <label class="fieldsectionlabel" class="fieldsectionlabel" for="#arguments.fieldname#">#ListLast(i , ":")#</label> --->
 										<!--- MPS: styles aren't working so we are removing label for now until we have time to look at the css --->
 										#ListLast(i , ":")#
