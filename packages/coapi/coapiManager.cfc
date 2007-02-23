@@ -409,7 +409,9 @@
 					if(stProps[arguments.propertyName].ISNULLABLE eq 'yes')isNullable = true;
 					//do we have a default value
 					defaultVal = stProps[arguments.propertyName].DEFAULTVALUE;
-					variables.oAltType.addProperty(typename=arguments.componentName,srcColumn=arguments.propertyName,srcColumnType=listFirst(variables.stCfc2Db[arguments.cfcType],"|"),bNull=isNullable,stDefault=defaultVal);
+					dbType = listFirst(variables.stCfc2Db[arguments.cfcType],"|");
+					if(listLen(variables.stCfc2Db[arguments.cfcType],"|") eq 2){dbType = dbType & "(" & listLast(variables.stCfc2Db[arguments.cfcType],"|") & ")";};
+					variables.oAltType.addProperty(typename=arguments.componentName,srcColumn=arguments.propertyName,srcColumnType=dbType,bNull=isNullable,stDefault=defaultVal);
 					break;
 				}
 			}
