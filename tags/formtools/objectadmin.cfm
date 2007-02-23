@@ -153,7 +153,11 @@ user --->
 		
 		<cfloop list="#form.objectid#" index="i">
 			<cfset o = createObject("component", PrimaryPackagePath) />
-			<cfset bSuccess = o.delete(objectid=i) />
+			<cfset stResult = o.delete(objectid=i) />
+			
+			<cfif isDefined("stResult.bSuccess") AND not stResult.bSuccess>
+				<cfoutput><div class="error">#stResult.message#</div></cfoutput>
+			</cfif>
 		</cfloop>
 	</cfif>
 </ft:processForm>
