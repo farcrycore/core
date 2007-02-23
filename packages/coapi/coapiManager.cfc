@@ -27,7 +27,7 @@
 				case "ora":
 				{
 					stDBMapping.boolean = "NUMBER|1";
-					stDBMapping.integer = "integer"
+					stDBMapping.integer = "integer";
 					stDBMapping.date = "DATE";
 					stDBMapping.numeric = "NUMBER";
 					stDBMapping.string = "VARCHAR2|255";
