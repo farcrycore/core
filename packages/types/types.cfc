@@ -1028,7 +1028,7 @@ default handlers
 	
 	<cffunction name="delete" access="public" hint="Basic delete method for all objects. Deletes content item and removes Verity entries." returntype="struct" output="false">
 		<cfargument name="objectid" required="yes" type="UUID" hint="Object ID of the object being deleted">
-		<cfargument name="user" type="string" required="true" hint="Username for object creator" default="#session.dmSec.authentication.userlogin#">
+		<cfargument name="user" type="string" required="true" hint="Username for object creator" default="">
 		<cfargument name="auditNote" type="string" required="true" hint="Note for audit trail" default="">
 		
 		<!--- get the data for this instance --->
@@ -1043,6 +1043,14 @@ default handlers
 		<cfset var collectionName = "">
 		<cfset var stlocal = StructNew()>
 		<cfset var stReturn = StructNew()>
+		
+		<cfif not len(arguments.user)>
+			<cfif isDefined("session.dmSec.authentication.userlogin")>
+				<cfset arguments.user = session.dmSec.authentication.userlogin />
+			<cfelse>
+				<cfset arguments.user = 'anonymous' />
+			</cfif>
+		</cfif>
 		
 		<cfif structisempty(stobj)>
 			<cfset stReturn.bSuccess = false>
