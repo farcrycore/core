@@ -27,6 +27,7 @@
 				case "ora":
 				{
 					stDBMapping.boolean = "NUMBER|1";
+					stDBMapping.integer = "integer"
 					stDBMapping.date = "DATE";
 					stDBMapping.numeric = "NUMBER";
 					stDBMapping.string = "VARCHAR2|255";
@@ -42,6 +43,7 @@
 				case "mysql":
 				{
 					stDBMapping.boolean = "INT";
+					stDBMapping.integer = "INT";
 					stDBMapping.date = "DATETIME";
 					stDBMapping.numeric = "NUMERIC";
 					stDBMapping.string = "VARCHAR|255";
@@ -57,6 +59,7 @@
 				case "postgresql":
 				{
 					stDBMapping.boolean = "INT";
+					stDBMapping.integer = "INT";
 					stDBMapping.date = "TIMESTAMP";
 					stDBMapping.numeric = "NUMERIC";
 					stDBMapping.string = "VARCHAR|255";
@@ -71,7 +74,8 @@
 				}
 				case "mssql":
 				{	
-					stDBMapping.boolean = "int";
+					stDBMapping.boolean = "INT";
+					stDBMapping.integer = "INT";
 					stDBMapping.date = "DATETIME";
 					stDBMapping.numeric = "NUMERIC";
 					stDBMapping.string = "VARCHAR|255";
