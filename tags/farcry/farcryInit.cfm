@@ -154,12 +154,14 @@ $in: objectid -- $
 						
 	
 
+		<!--- Initialise the stPlugins structure that will hold all the plugin specific settings. --->
+		<cfset application.stPlugins = structNew() />
+		
 		
 		<cfinclude template="/farcry/projects/#attributes.projectDirectoryName#/config/_serverSpecificVars.cfm" />
 		
 		
 
-		<cfset application.stPlugins = structNew() />
 		
 		<!----------------------------------- 
 		INITIALISE THE REQUESTED LIBRARIES
