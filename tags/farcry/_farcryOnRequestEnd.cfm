@@ -420,7 +420,7 @@ $out:$
 
 		<cfif isDefined("variables.stPlaceInHead.libraryPopupJS") AND variables.stPlaceInHead.libraryPopupJS EQ "true">
 			<cfoutput>
-				<script src="#application.url.farcry#/js/LibraryPopup.js" type="text/javascript"></script>	</cfoutput>
+				<script src="#application.url.farcry#/js/libraryPopup.js" type="text/javascript"></script>	</cfoutput>
 		</cfif>
 		
 		<cfif isDefined("variables.stPlaceInHead.flashWrapperToggle") and variables.stPlaceInHead.flashWrapperToggle EQ true>
