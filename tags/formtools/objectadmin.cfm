@@ -361,7 +361,7 @@ user --->
 	
 	<ft:processForm action="overview">
 		<!--- TODO: Check Permissions. --->
-		<cflocation URL="#application.url.farcry#/editTabOverview.cfm?objectid=#form.objectid#&typename=#attributes.typename#&method=#attributes.editMethod#&ref=typeadmin&module=#attributes.module#" addtoken="false">
+		<cflocation URL="#application.url.farcry#/edittabOverview.cfm?objectid=#form.objectid#&typename=#attributes.typename#&method=#attributes.editMethod#&ref=typeadmin&module=#attributes.module#" addtoken="false">
 	</ft:processForm>
 	
 	<ft:processForm action="edit">
