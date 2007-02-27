@@ -4,6 +4,6 @@
 
 <cfparam name="stObj.title" default="" type="string" />
 
-<cfoutput><img src="#application.url.webroot##stobj.standardImage#" alt="#stObj.title#" /></cfoutput>
+<cfoutput><img src="#application.url.imageRoot##stobj.standardImage#" alt="#stObj.title#" /></cfoutput>
 
 <cfsetting enablecfoutputonly="false">
