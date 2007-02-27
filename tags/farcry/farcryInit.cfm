@@ -97,15 +97,19 @@ $in: objectid -- $
 		<cfset application.path.plugins = expandpath("/farcry/plugins") />
 		
 		<cfset application.path.defaultFilePath = "#application.path.project#/www/files">
-		<cfset application.path.secureFilePath = "#application.path.project#/securefiles">
+		<cfset application.path.secureFilePath = "#application.path.project#/securefiles">		
+		
+		<cfset application.path.imageRoot = "#application.path.project#/www">
+		
+		
 		
 		<!----------------------------------------
 		 WEB URL PATHS
 		 ---------------------------------------->
 		<cfset application.url.webroot = attributes.projectURL />
 		<cfset application.url.farcry = "#attributes.projectURL#/farcry" />
-		<cfset application.url.imageroot = "#application.url.webroot#/images">
-		<cfset application.url.fileroot = "#application.url.webroot#/files">
+		<cfset application.url.imageRoot = "#application.url.webroot#">
+		<cfset application.url.fileRoot = "#application.url.webroot#/files">
 		
 		
 		<!----------------------------------------
