@@ -181,8 +181,8 @@
 			<cfset arguments.stMetadata.ftDestination = "/#arguments.stMetadata.ftDestination#" />
 		</cfif>
 		
-		<cfif NOT DirectoryExists("#application.path.project#/www#arguments.stMetadata.ftDestination#")>
-			<cfdirectory action="create" directory="#application.path.project#/www#arguments.stMetadata.ftDestination#">
+		<cfif NOT DirectoryExists("#application.path.imageRoot##arguments.stMetadata.ftDestination#")>
+			<cfdirectory action="create" directory="#application.path.imageRoot##arguments.stMetadata.ftDestination#">
 		</cfif>		
 		
 		
@@ -190,11 +190,11 @@
 	
 			<cffile action="UPLOAD"
 		        filefield="#stMetadata.FormFieldPrefix##stMetadata.Name#New" 
-		        destination="#application.path.project#/www#arguments.stMetadata.ftDestination#"
+		        destination="#application.path.imageRoot##arguments.stMetadata.ftDestination#"
 				nameconflict="MAKEUNIQUE">
 				
 				<cfif len(arguments.stMetaData.ftImageWidth) OR len(arguments.stMetaData.ftImageHeight)>
-					<cfset stGeneratedImageArgs.Source = "#application.path.project#/www#arguments.stMetadata.ftDestination#/#File.ServerFile#" />
+					<cfset stGeneratedImageArgs.Source = "#application.path.imageRoot##arguments.stMetadata.ftDestination#/#File.ServerFile#" />
 					<cfset stGeneratedImageArgs.Destination = "" />			
 					<cfset stGeneratedImageArgs.Width = "#arguments.stMetadata.ftImageWidth#" />
 					<cfif NOT isNumeric(stGeneratedImageArgs.Width)>
