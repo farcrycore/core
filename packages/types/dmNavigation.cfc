@@ -70,6 +70,13 @@ object methods
 		<cfset application.navid = getNavAlias()>
 	</cflock>
 	
+	<cfquery datasource="#application.dsn#">
+	UPDATE #application.dbowner#nested_tree_objects 
+	SET objectName = <cfqueryparam cfsqltype="cf_sql_varchar" value="#stProperties.title#">
+	WHERE objectID = '#stProperties.ObjectID#'
+	</cfquery>
+	
+	
 	<cfreturn stProperties />
 </cffunction>
 		
