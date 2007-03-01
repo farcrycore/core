@@ -337,7 +337,7 @@ $out:$
 		
 		<cfif isDefined("variables.stPlaceInHead.FormValidationJS") AND variables.stPlaceInHead.FormValidationJS>
 			<cfoutput>
-				<script src="#application.url.farcry#/js/formvalidation/validation.js" type="text/javascript"></script></cfoutput>
+				<script src="#application.url.farcry#/js/formValidation/validation.js" type="text/javascript"></script></cfoutput>
 		</cfif>
 		
 		<cfif isDefined("variables.stPlaceInHead.prototypeTreeJS") AND variables.stPlaceInHead.prototypeTreeJS>
