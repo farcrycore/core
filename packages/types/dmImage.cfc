@@ -21,7 +21,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au) $
 type properties
 ------------------------------------------------------------------------->
 <cfproperty ftSeq="1" ftFieldset="General Details" name="title" type="nstring" hint="Image title." required="no" default="" blabel="true" ftlabel="Image Title" /> 
-<cfproperty ftSeq="2" ftFieldset="General Details" name="alt" type="nstring" hint="Alternate text" required="no" default="" ftlabel="Alternative Text" /> 
+<cfproperty ftSeq="2" ftFieldset="General Details" name="alt" type="nstring" hint="Alternate text" required="no" default="" fttype="longchar" ftlabel="Alternative Text" /> 
 <cfproperty ftSeq="5" ftFieldset="General Details" name="bLibrary" type="numeric" hint="Flag to indictae if in file library or not" required="no" default="1" ftType="boolean" ftlabel="Add to Library" />
 <cfproperty ftSeq="6" ftFieldset="General Details" name="status" type="string" hint="Status of the node (draft, pending, approved)." required="yes" default="draft" ftlabel="Status" />
 
