@@ -51,3 +51,34 @@ $Developer: Guy Phanvongsa (guy@daemon.com.au)$
 		<cfset oHTML.deleteRelatedIds(objectid=stObj.objectid)>
 	</cfif>
 </cfif>
+
+<!--- if this objecttype is used in tree, then it may have been used as a tree Item  --->
+<cfif structKeyExists(application.types[stObj.typename],"bUseInTree")>
+	
+	<cfif isBoolean(application.types[stObj.typename].bUseInTree) AND application.types[stObj.typename].bUseInTree>
+		
+		<!--- Has the item been included in the tree? --->
+		<cfquery datasource="#application.dsn#" name="qNavigationChildren">
+		SELECT *
+		FROM dmNavigation_aObjectIDs
+		WHERE data = '#stObj.objectid#'
+		</cfquery>
+		
+		<!--- Loop through any nav nodes that include the object we are deleting and remove its reference from is aObjectIDs  --->
+		<cfif qNavigationChildren.recordCount>
+			
+			<cfset oNav = createObject("component",application.types["dmNavigation"].typepath) />
+			
+			<cfloop query="qNavigationChildren">
+				<cfset stNav = oNav.getData(objectid=qNavigationChildren.parentID) />
+							
+				<cfset aDeleteObjectIds = ListToArray(stObj.objectid)>
+			
+				<cfset stNav.aObjectIDs.removeAll(aDeleteObjectIds) >
+				<cfset stResult = oNav.setData(stproperties=stNav) />
+			</cfloop>
+		</cfif>
+
+	</cfif>
+</cfif>
+
