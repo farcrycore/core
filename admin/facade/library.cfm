@@ -195,9 +195,12 @@ $Developer: $
 
 <cfif len(session.stLibraryFilter[request.ftJoin].Criteria)>
 	<cfset filterCriteria = session.stLibraryFilter[request.ftJoin].Criteria />
-	<cfsearch collection="#application.applicationName#_#request.ftJoin#" criteria="#filterCriteria#" name="qSearchResults" type="internet"  />
-	
-
+	<!--- <cfsearch collection="#application.applicationName#_#request.ftJoin#" criteria="#filterCriteria#" name="qSearchResults" type="internet"  /> --->
+	<cfquery datasource="#application.dsn#" name="qSearchResults">
+		SELECT objectID as [key] , label FROM #application.dbowner#[#request.ftJoin#]	
+		WHERE label like '%#filterCriteria#%'
+		Order by label
+	</cfquery>
 	
 	<cfif NOT qSearchResults.RecordCount>
 		<cfoutput><h3>No Results matched search. All records have been returned</h3></cfoutput>
