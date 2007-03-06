@@ -7,7 +7,7 @@
 		variables.oAltType = createObject("component","farcry.core.packages.farcry.alterType");
 	</cfscript>
 
-	<cffunction name="init" access="public" returntype="coapiManager">
+	<cffunction name="init" access="public" output="false" returntype="coapiManager">
 		<cfif variables.initialised>
 			<cfthrow type="Application" detail="coapiManager instace already intialised">
 		<cfelse>
@@ -17,7 +17,7 @@
 		<cfreturn this>
 	</cffunction>
 	
-	<cffunction name="getCFC2DBMapping" access="private" hint="I return the mapping between farcry and the supported databases" returntype="struct">
+	<cffunction name="getCFC2DBMapping" output="false" access="private" hint="I return the mapping between farcry and the supported databases" returntype="struct">
 		<cfargument name="dbType" type="string">
 		<cfset stDBMapping=StructNew()>
 		<cfscript>
@@ -95,19 +95,19 @@
 		<cfreturn stDBMapping>
 	</cffunction>
 	
-	<cffunction name="setFarcryScopeDbStruct" access="private" returntype="void">
+	<cffunction name="setFarcryScopeDbStruct"  output="false" access="private" returntype="void">
 		<cfargument name="scope" required="true" type="string" hint="types or rules"  />
 		<cfset variables.stDB[arguments.scope] = variables.oAltType.buildDBStructure(arguments.scope)>
 	</cffunction>
 	
-	<cffunction name="updateStDBTable" hint="I update the image of the database for specified table, I should run after any table update" access="private" returntype="void">
+	<cffunction name="updateStDBTable" output="false" hint="I update the image of the database for specified table, I should run after any table update" access="private" returntype="void">
 		<cfargument name="scope" required="true" type="string">
 		<cfargument name="cfcName" required="true" type="string">
 		<cfset var stTmp = variables.oAltType.buildDBTableStructure(arguments.cfcName)>
 		<cfset structInsert(variables.stDB[arguments.scope], arguments.cfcName, stTmp ,true)>
 	</cffunction>
 	
-	<cffunction name="getFarcryScopeConflicts" hint="returns all conflicts of all the farcry components for a specified FarcryScope" access="public" returntype="array">
+	<cffunction name="getFarcryScopeConflicts"  output="false" hint="returns all conflicts of all the farcry components for a specified FarcryScope" access="public" returntype="array">
 		<cfargument name="scope" required="true" type="string" hint="Argument is types or rules" />
 		<cfargument name="refresh" required="false" type="boolean" default="false" hint="refresh stDB structure image" />
 		<cfset var arResult = arrayNew(1)>
@@ -124,7 +124,7 @@
 		<cfreturn arResult>
 	</cffunction>
 		
-	<cffunction name="getCFCStatus" hint="returns conflicts of a specified farcry component from a given FarcryScope" access="public" output="false" returntype="struct">
+	<cffunction name="getCFCStatus"  hint="returns conflicts of a specified farcry component from a given FarcryScope" access="public" output="false" returntype="struct">
 		<cfargument name="scope" required="true" type="string">
 		<cfargument name="cfcName" required="true" type="string">
 		<cfargument name="bUpdateStDBTable" required="false" default="false" type="boolean">
@@ -347,7 +347,7 @@
 		<cfreturn arguments.thisDepth>
 	</cffunction>
 	
-	<cffunction name="refreshCFCMetaData" access="public" hint="refreshes type or rule in farcry application scope" returntype="boolean">
+	<cffunction name="refreshCFCMetaData" output="false" access="public" hint="refreshes type or rule in farcry application scope" returntype="boolean">
 		<cfargument name="componentName" type="string" hint="name of a farcry type or rule to refresh in the application scope">
 		<cfset var scope="types">
 		<cfif left(arguments.componentName,4) eq "rule">
@@ -359,7 +359,7 @@
 		<cfreturn true>
 	</cffunction>	
 	
-	<cffunction name="deployCFC" access="public">
+	<cffunction name="deployCFC" access="public"  output="false">
 		<cfargument name="componentName" required="true">
 
 		<cfset var o = createObject("component", application.stCoapi[arguments.componentName].packagepath) />
@@ -381,7 +381,7 @@
 	<!--- ********************************
 		  *  property update methods 	 *
 		  ******************************** --->
-	<cffunction name="renameProperty" hint="update property type and default value" returntype="struct"  access="public">
+	<cffunction name="renameProperty" hint="update property type and default value" output="false" returntype="struct"  access="public">
 		<cfargument name="componentName" type="string" hint="name of the component for the type or rule">
 		<cfargument name="propertyName" type="string" hint="name of the component property">
 		<cfargument name="renameto" type="string" hint="new name for the db column">
@@ -396,7 +396,7 @@
 		<cfreturn stResult>
 	</cffunction>
 	
-	<cffunction name="deployProperty" returntype="struct" access="public">
+	<cffunction name="deployProperty" returntype="struct" output="false" access="public">
 		<cfargument name="componentName" required="true" type="string">	
 		<cfargument name="propertyName" required="true" type="string">
 		<cfargument name="cfcType" required="true" type="string">
@@ -443,7 +443,7 @@
 		<cfreturn stResult>
 	</cffunction>
 
-	<cffunction name="repairProperty" access="public" returntype="struct">
+	<cffunction name="repairProperty"  output="false" access="public" returntype="struct">
 		<cfargument name="componentName" required="true" type="string">	
 		<cfargument name="propertyName" required="true" type="string">
 		<cfargument name="dbType" required="true" type="string">
@@ -459,7 +459,7 @@
 		<cfreturn stResult>
 	</cffunction>
 	
-	<cffunction name="deleteProperty" access="public" returntype="struct">
+	<cffunction name="deleteProperty"  output="false" access="public" returntype="struct">
 		<cfargument name="componentName" required="true" type="string">	
 		<cfargument name="propertyName" required="true" type="string">
 		<cfargument name="cfcType" required="true" type="string">
@@ -488,7 +488,7 @@
 	
 	<!--- debug methods --->
 	
-	<cffunction name="getDBTableStruct"  access="public" returntype="struct">
+	<cffunction name="getDBTableStruct" output="false" access="public" returntype="struct">
 		<cfargument name="componentName" required="true" type="string">	
 		<cfreturn variables.oAltType.buildDBTableStructure(arguments.componentName)>
 	</cffunction>
