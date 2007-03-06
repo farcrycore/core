@@ -45,7 +45,7 @@
 					stDBMapping.boolean = "INT";
 					stDBMapping.integer = "INT";
 					stDBMapping.date = "DATETIME";
-					stDBMapping.numeric = "NUMERIC";
+					stDBMapping.numeric = "NUMERIC|(10,2)";
 					stDBMapping.string = "VARCHAR|255";
 					stDBMapping.nstring = "VARCHAR|255";
 					stDBMapping.uuid = "VARCHAR|50";
@@ -229,8 +229,11 @@
 			var objModel = createObject("Component", application[arguments.scope][arguments.cfcName].PACKAGEPATH);
 			var stMetaData = getMetaData(objModel);
 			var stProps = structNew();
+			var thisPropName = "";
+			var propKey = "stMetaData";
+			var extendsDepth = 0;
+			var struct2Parse = "";
 		</cfscript>
-		<cfset propKey = "stMetaData">
 		<cfset extendsDepth = getExtendsDepth(stMetaData)>
 		<!--- looping over type struct including parent classes structs--->
 		<cfloop from="0" to="#extendsDepth#" index="depth">
@@ -252,14 +255,26 @@
 					<cfset stProps[thisPropName] = structNew()>
 					<cfset stProps[thisPropName].type = struct2Parse.properties[propId].TYPE>
 					
-					<cfset stProps[thisPropName].isNullable = "yes">
+					
 					<cfif structKeyExists(struct2Parse.properties[propId],"REQUIRED")>
-						<cfset stProps[thisPropName].isNullable = struct2Parse.properties[propId].REQUIRED>
+						<cfif listFindNoCase("false,no,0",struct2Parse.properties[propId].REQUIRED)>
+							<cfset stProps[thisPropName].isNullable = true>
+						<cfelse>
+							<cfset stProps[thisPropName].isNullable = false>
+						</cfif>
+					<cfelse>
+						<cfset stProps[thisPropName].isNullable = true>
 					</cfif>
 					
 					<cfset stProps[thisPropName].defaultValue = "">
 					<cfif structKeyExists(struct2Parse.properties[propId],"DEFAULT")>
 						<cfset stProps[thisPropName].defaultValue = struct2Parse.properties[propId].DEFAULT>
+					</cfif>
+					
+					<cfif not stProps[thisPropName].isNullable and listFindNoCase("boolean,integer,numeric",stProps[thisPropName].type)>
+						<cfif structKeyExists(stProps[thisPropName],"defaultValue") and not isNumeric(stProps[thisPropName].defaultValue)>
+							<cfset stProps[thisPropName].defaultValue = 0>
+						</cfif>					
 					</cfif>
 				</cfloop>
 				
@@ -312,7 +327,7 @@
 			<cfset stObjResult["propAppDefault"] = "">
 		</cfif>
 		<cfcatch>
-			<cfoutput>#propName#</cfoutput>
+			<cflog type="information" text="#cfcatch.Message# #cfcatch.ExtendedInfo# #cfcatch.Detail#">
 			<cfdump var="#application.types[arguments.cfcName]#">
 			<cfabort>
 		</cfcatch>
@@ -346,22 +361,19 @@
 	
 	<cffunction name="deployCFC" access="public">
 		<cfargument name="componentName" required="true">
-		<cfset var scope="types">
-		<cfset var o = "" />
-		<cfset var stResult = structNew() />
-		<cfif left(arguments.componentName,4) eq "rule">
-			<cfset scope="rules">
-		</cfif>
-		
-		<cfif scope EQ "types">
-			<cfset o = createObject("component", application.types[arguments.componentName].typepath) />
-		<cfelseif scope EQ "rules">
-			<cfset o = createObject("component", application.rules[arguments.componentName].rulepath) />
-		</cfif>
-		<cfscript>
-			stResult["success"] = o.deployType(btestRun="false");
-			stResult["message"] = "component  #arguments.componentName# deployed";
-		</cfscript>
+
+		<cfset var o = createObject("component", application.stCoapi[arguments.componentName].packagepath) />
+		<cfset var stResult = structNew()>
+		<cftry>
+			<cfscript>
+				stResult["success"] = o.deployType(btestRun="false");
+				stResult["message"] = "component  #arguments.componentName# deployed";
+			</cfscript>
+			<cfcatch>
+				<cflog type="information" text="#cfcatch.Message# #cfcatch.ExtendedInfo# #cfcatch.Detail#">
+				<cfrethrow>
+			</cfcatch>
+		</cftry>
 
 		<cfreturn stResult>
 	</cffunction>
@@ -409,13 +421,16 @@
 			 	{
 					stProps = getCFCProps(scope, arguments.componentName);			
 					//is the property nullable
-					isNullable = false;
-					if(stProps[arguments.propertyName].ISNULLABLE eq 'yes')isNullable = true;
+					isNullable = stProps[arguments.propertyName].ISNULLABLE;
+					//if(stProps[arguments.propertyName].ISNULLABLE eq 'yes')isNullable = true;
 					//do we have a default value
 					defaultVal = stProps[arguments.propertyName].DEFAULTVALUE;
 					dbType = listFirst(variables.stCfc2Db[arguments.cfcType],"|");
 					if(listLen(variables.stCfc2Db[arguments.cfcType],"|") eq 2){dbType = dbType & "(" & listLast(variables.stCfc2Db[arguments.cfcType],"|") & ")";};
-					variables.oAltType.addProperty(typename=arguments.componentName,srcColumn=arguments.propertyName,srcColumnType=dbType,bNull=isNullable,stDefault=defaultVal);
+					if(not isNullable){
+						variables.oAltType.addProperty(typename=arguments.componentName,srcColumn=arguments.propertyName,srcColumnType=dbType,bNull=isNullable,stDefault=defaultVal);
+					}
+					else variables.oAltType.addProperty(typename=arguments.componentName,srcColumn=arguments.propertyName,srcColumnType=dbType,bNull=isNullable);
 					break;
 				}
 			}
