@@ -317,7 +317,7 @@
 			<cfelse>
 				<cfset stReturn.TotalPages = 0>
 			</cfif>
-		<cfelse><!--- MySQL or Postgres--->
+		<cfelse><!--- Everything Else --->
 
 			<cfif arguments.currentpage GT stReturn.totalPages>
 				<cfset arguments.currentpage = 1>
@@ -347,7 +347,13 @@
 			<cfif bHasVersionID>
 				AND (tbl.versionid = '' OR tbl.versionid IS NULL)
 			</cfif>
-			LIMIT #arguments.RecordsPerPage# OFFSET #toprow#
+			
+			<cfif application.dbtype EQ "ora">
+				AND rownum <= #arguments.RecordsPerPage#
+			<cfelse>
+				LIMIT #arguments.RecordsPerPage# OFFSET #toprow#
+			</cfif>
+			
 			</cfquery>
 	
 			
