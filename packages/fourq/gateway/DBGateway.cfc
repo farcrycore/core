@@ -320,6 +320,16 @@
 			</cfloop>
 			
 		</cfcase>
+		<cfcase value="ora">
+			<cfquery name="update" datasource="#application.dsn#">
+			UPDATE #variables.dbowner##tablename#
+			SET #variables.dbowner##tablename#.typename = (SELECT refObjects.typename
+			                                    FROM refObjects
+			                                    WHERE #variables.dbowner##tablename#.data=refObjects.objectid
+			                                    )
+			WHERE parentID = '#arguments.objectid#'
+			</cfquery> 
+		</cfcase>
 		<cfdefaultcase>
 		<!--- anything else --->
 			<cfquery name="update" datasource="#application.dsn#">
