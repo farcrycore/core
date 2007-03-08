@@ -112,9 +112,9 @@ $out:$
 <cfswitch expression="#application.dbtype#">
 	<cfcase value="ora">
 	<!--- Back slashes are escaped  in mysql--->
-	<cfif arguments.dbtype EQ "mysql">
+	<!--- <cfif arguments.dbtype EQ "mysql">
         <cfset wConfig = replaceNoCase(wConfig,"\","\\","ALL") >
-    </cfif>
+    </cfif> --->
 	
 	
 	<cfquery datasource="#arguments.dsn#" name="qUpdate">
