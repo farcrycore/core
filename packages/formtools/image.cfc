@@ -165,7 +165,7 @@
 		<cfset stResult.value = stFieldPost.value>
 		<cfset stResult.stError = StructNew()>
 		
-		<cfparam name="arguments.stMetadata.ftDestination" default="">
+		<cfparam name="arguments.stMetadata.ftDestination" default="/images">
 		<cfparam name="arguments.stMetadata.ftImageWidth" default="0" />
 		<cfparam name="arguments.stMetadata.ftImageHeight" default="0" />
 		<cfparam name="arguments.stMetadata.ftAutoGenerateType" default="FitInside">
