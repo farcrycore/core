@@ -644,7 +644,7 @@
 				<!--- add the link if requested --->
 				<cfif arguments.bIncludeLink>
 					<cfsavecontent variable="item">							
-						<skin:buildlink objectid="#itemData#"><cfoutput>#item#</cfoutput></skin:buildlink>
+						<skin:buildLink objectid="#itemData#"><cfoutput>#item#</cfoutput></skin:buildLink>
 					</cfsavecontent>
 				</cfif>
 				
