@@ -2,9 +2,9 @@ function toggletree(parentnode) {
 		Effect.toggle($(parentnode + '_wrap_content'),'slide', {duration:.3});
 
  		if (Element.visible($(parentnode + '_wrap_content')) == true) {
-			$(parentnode + '_icon').src = '/farcry/images/treeimages/' + $(parentnode + '_icon').getAttribute('closedIcon') ;
+			$(parentnode + '_icon').src = '/farcry/images/treeImages/' + $(parentnode + '_icon').getAttribute('closedIcon') ;
 		} else{
-			$(parentnode + '_icon').src = '/farcry/images/treeimages/' + $(parentnode + '_icon').getAttribute('openIcon') ;
+			$(parentnode + '_icon').src = '/farcry/images/treeImages/' + $(parentnode + '_icon').getAttribute('openIcon') ;
 		}
 
 	}

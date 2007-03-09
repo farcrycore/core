@@ -13,7 +13,7 @@
 		<cfargument name="bSelectMultiple" type="boolean" default="true">
 		<cfargument name="bAllowSelection" type="boolean" default="true"> <!--- Should we render the checkbox/radio formfield? --->
 		<cfargument name="lSelectedItems" type="string" default=""><!--- list of items currently selected in the tree --->		
-		<cfargument name="stlevelSpacerIcon" type="struct" default="#structNew()#"><!--- name of icon (minus suffix) located in /farcry/images/treeimages/ --->
+		<cfargument name="stlevelSpacerIcon" type="struct" default="#structNew()#"><!--- name of icon (minus suffix) located in /farcry/images/treeImages/ --->
 	
 		<cfset var.useIcon = arguments.openIcon>
 		<cfset var.inputType = "checkbox">
@@ -43,12 +43,12 @@
 				<tr>
 					<cfif arguments.level GT 0>
 						<cfloop from="1" to="#arguments.level-1#" index="i">
-							<td style="background-image: url(#application.url.farcry#/images/treeimages/#arguments.stLevelSpacerIcon[i]#.gif); background-repeat: repeat-y;width:16px;"><img width="16"
+							<td style="background-image: url(#application.url.farcry#/images/treeImages/#arguments.stLevelSpacerIcon[i]#.gif); background-repeat: repeat-y;width:16px;"><img width="16"
 							    height="16"
-							    src="#application.url.farcry#/images/treeimages/#arguments.stLevelSpacerIcon[i]#.gif" /></td>
+							    src="#application.url.farcry#/images/treeImages/#arguments.stLevelSpacerIcon[i]#.gif" /></td>
 						</cfloop>
 					</cfif>
-					<td style="width:16px;"><img id='#arguments.NodeID#_icon' src='#application.url.farcry#/images/treeimages/#variables.useIcon#.gif' class='nodeicon' openIcon='#arguments.openIcon#.gif' closedIcon='#arguments.closedIcon#.gif' /></td>
+					<td style="width:16px;"><img id='#arguments.NodeID#_icon' src='#application.url.farcry#/images/treeImages/#variables.useIcon#.gif' class='nodeicon' openIcon='#arguments.openIcon#.gif' closedIcon='#arguments.closedIcon#.gif' /></td>
 			</cfoutput>
 			
 			<cfif arguments.bAllowSelection>
