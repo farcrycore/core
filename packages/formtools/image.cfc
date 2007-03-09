@@ -182,7 +182,7 @@
 		</cfif>
 		
 		<cfif NOT DirectoryExists("#application.path.imageRoot##arguments.stMetadata.ftDestination#")>
-			<cfdirectory action="create" directory="#application.path.imageRoot##arguments.stMetadata.ftDestination#">
+			<cfset b = createFolderPath("#application.path.imageRoot##arguments.stMetadata.ftDestination#")>
 		</cfif>		
 		
 		
@@ -233,7 +233,42 @@
 		
 	</cffunction>
 
-
+	
+	<cffunction name="createFolderPath" output="true" hint="Creates a folder branch" returntype="boolean">
+		<cfargument name="folderPath" type="string" required="true">
+		<cfargument name="mode" type="string" default="" required="false">
+		<cfscript>
+			var thePath = replace(arguments.folderPath,"\", "/","ALL");
+			var arFolders = "";
+			var pathLen = 0;
+			var workingPath = "";
+		</cfscript>
+		<cfif left(arguments.folderPath,1) eq "/"><!--- *nix path --->
+			<cfset workingPath = "/">
+		<cfelse>
+			<cfset workingPath = listFirst(thePath, "/")&"/"><!--- windows path --->
+			<cfset thePath = listDeleteAt(thePath,1, "/")>
+		</cfif>
+		<cfset arFolders = listToArray(thePath, "/")>
+		
+		
+		<cfloop from="1" to="#arrayLen(arFolders)#" index="depth">
+			<cfset  workingPath = workingPath.concat(arFolders[depth]&"/")>
+			<cfif not directoryExists(workingPath)>
+				<cftry>
+				<cfif arguments.mode eq "">
+					<cfdirectory action="create" directory="#workingPath#">			
+				<cfelse>
+					<cfdirectory action="create" directory="#workingPath#" mode="#arguments.mode#">
+				</cfif>
+				<cfcatch>
+					<cfreturn false>
+				</cfcatch>
+				</cftry>
+			</cfif>
+		</cfloop>
+		<cfreturn true>
+	</cffunction>
 
 	<cffunction name="GenerateImage" access="public" output="true" returntype="struct">
 		<cfargument name="Source" required="true" hint="The absolute path where the image that is being used to generate this new image is located.">
