@@ -636,7 +636,7 @@
 					<!--- getdata for array properties --->
 					<cfquery datasource="#variables.dsn#" name="qArrayData">
 						select * from #variables.dbowner##arguments.tableName#_#key#
-						where objectid = '#qMultipleObjects.objectid#'
+						where parentid = '#qMultipleObjects.objectid#'
 						order by seq
 					</cfquery>
 				
