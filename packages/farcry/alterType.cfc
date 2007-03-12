@@ -568,6 +568,13 @@ $out:$
 		<cfset application.stcoapi[i] = duplicate(application.rules[i]) />
 	</cfloop>
 	
+	<cfloop list="#structKeyList(application.stcoapi)#" index="i">	
+		<cfset o = createObject("Component", "#application.stcoapi[i].packagePath#") />	
+		<cfset variables.tableMetadata = createobject('component','farcry.core.packages.fourq.TableMetadata').init() />
+		<cfset variables.tableMetadata.parseMetadata(getMetadata(o)) />
+		<cfset application.stcoapi[i].tableDefinition = variables.tableMetadata.getTableDefinition() />
+	</cfloop>
+	
 	<!--- 
 	We want to search NTM types so we can flag them as a bTreeNode.
 	MJB: THIS SEEMS TO HAVE BEEN DEPRICATED BY bUseInTree flag set on the <cfcomponent> tag.
