@@ -30,6 +30,108 @@ $out:$
 	<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft">	
 	<cfimport taglib="/farcry/core/tags/wizard/" prefix="wiz">	
 	
+
+	<cffunction name="getView" access="public" output="true" returntype="string" hint="Returns the HTML of a view from the webskin content type folder.">
+		<cfargument name="objectid" required="no" type="UUID" hint="ObjectID of the object that is to be rendered by the webskin view." />
+		<cfargument name="template" required="yes" type="string" hint="Name of the template in the corresponding content type webskin folder, without the .cfm extension." />
+		<cfargument name="stparam" required="false" type="struct" default="#structNew()#" hint="Structure of parameters to be passed into the display handler." />
+		<cfargument name="stobject" required="no" type="struct" hint="Property structure to render in view.  Overrides any property structure mapped to arguments.objectid. Useful if you want to render a view with a modified content item.">
+		<cfargument name="dsn" required="no" type="string" default="#application.dsn#">
+		<cfargument name="OnExit" required="no" type="any" default="">
+		<cfargument name="alternateHTML" required="no" type="string" hint="If the webskin template does not exist, if this argument is sent in, its value will be passed back as the result.">
+		
+		<cfset var stResult = structNew() />
+		<cfset var stObj = StructNew() />
+		<cfset var WebskinPath = "" />
+		<cfset var webskinHTML = "" />
+		<cfset var oObjectBroker = createObject("component", "farcry.core.packages.fourq.objectBroker").init() />
+		<cfset var oCoapiAdmin = createObject("component", "farcry.core.packages.coapi.coapiadmin").init() />
+		<cfset var stCurrentView = structNew() />		
+			
+		<!--- make sure that .cfm isn't passed to this method in the template argument --->
+		<cfif listLast(arguments.template,".") EQ "cfm">
+			<cfset arguments.template = ReplaceNoCase(arguments.template,".cfm", "", "all") />
+		</cfif>
+
+		
+		<cfif isDefined("arguments.stobject")>
+			<cfset stobj=arguments.stobject />
+			<cfset instance.stobj = stObj />
+		<cfelse>
+			<!--- If the objectid has not been sent, we need to create a default object. --->
+			<cfparam name="arguments.objectid" default="#CreateUUID()#" type="uuid">
+			<!--- get the data for this instance --->
+			<cfset stObj = getData(objectid=arguments.objectID,dsn=arguments.dsn)>
+		</cfif>
+					
+		<cfif NOT structIsEmpty(stObj)>		
+		
+			<!--- Check to see if the webskin is in the object broker --->
+			<cfset webskinHTML = oObjectBroker.getWebskin(objectid=stobj.objectid, typename=stobj.typename, template=arguments.template) />		
+			
+			<cfif not len(webskinHTML)>
+				<cfset webskinPath = oCoapiAdmin.getWebskinPath(typename=stObj.typename, template=arguments.template) />
+						
+				<cfif len(webskinPath)>
+					
+					<!--- Setup the current request.aAncestorWebskins in case this does not yet exist --->
+					<cfif not structKeyExists(request, "aAncestorWebskins")>
+						<cfset request.aAncestorWebskins = arrayNew(1) />
+					</cfif>	
+					<!--- Add the current view to the array --->
+					<cfset stCurrentView.objectid = stobj.objectid />
+					<cfset stCurrentView.typename = stobj.typename />
+					<cfset stCurrentView.template = arguments.template />
+					<cfset arrayAppend(request.aAncestorWebskins, stCurrentView) />
+	
+					<cfsavecontent variable="webskinHTML">
+						<cfinclude template="#WebskinPath#">
+					</cfsavecontent>
+					
+					<!--- Add the webskin to the object broker if required --->
+					<cfset oObjectBroker.addWebskin(objectid=stobj.objectid, typename=stobj.typename, template=arguments.template, html=webskinHTML) />	
+					
+					<cfif arrayLen(request.aAncestorWebskins)>
+						
+						<cfset oWebskinAncestor = createObject("component", application.stcoapi.dmWebskinAncestor.packagePath) />						
+						
+						<cfloop from="1" to="#arrayLen(request.aAncestorWebskins)#" index="i">
+							<cfif stobj.objectid NEQ request.aAncestorWebskins[i].objectID>
+								<cfset bAncestorExists = oWebskinAncestor.checkAncestorExists(webskinObjectID=stobj.objectid, ancestorID=request.aAncestorWebskins[i].objectID, ancestorTemplate=request.aAncestorWebskins[i].template) />
+									
+								<cfif not bAncestorExists>
+									<cfset stProperties = structNew() />
+									<cfset stProperties.webskinObjectID = stobj.objectid />
+									<cfset stProperties.ancestorID = request.aAncestorWebskins[i].objectID />
+									<cfset stProperties.ancestorTypename = request.aAncestorWebskins[i].typename />
+									<cfset stProperties.ancestorTemplate = request.aAncestorWebskins[i].template />
+									
+									<cfset stResult = oWebskinAncestor.createData(stProperties=stProperties) />
+								</cfif>
+							</cfif>
+						</cfloop>
+					</cfif>
+					
+					<!--- Remove the current view (last item in the array) from the Ancestor Webskins array --->
+					<cfset ArrayDeleteAt(request.aAncestorWebskins, arrayLen(request.aAncestorWebskins)) />	
+					
+				<cfelseif structKeyExists(arguments, "alternateHTML")>
+					<cfset webskinHTML = arguments.alternateHTML />
+				<cfelse>
+					<cfthrow type="Application" detail="Error: Template not found [/webskin/#stObj.typename#/#arguments.template#.cfm] and no alternate html provided." />
+				</cfif>	
+			<cfelse>
+				<cf>
+			</cfif>		
+		<cfelse>
+			<cfthrow type="Application" detail="Error: When trying to render [/webskin/#stObj.typename#/#arguments.template#.cfm] the object was not created correctly." />	
+		</cfif>
+		
+		
+		
+		<cfreturn webskinHTML />
+	</cffunction>
+		
 	
 	<cffunction name="createData" access="public" returntype="any" output="false" hint="Creates an instance of an object">
 		<cfargument name="stProperties" type="struct" required="true" hint="Structure of properties for the new object instance">
