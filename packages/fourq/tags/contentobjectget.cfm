@@ -22,58 +22,26 @@ A wrapper to get a content object instance and return its structure.
 
 <cfif thisTag.executionmode eq "start">
 
-	<cfinclude template="_funclibrary.cfm">
-
-	<cftry>
-		<cfscript>
-			// attributes
-			reqParam("objectid");
-			optParam("typename", "");
-			optParam("r_stObject", "stObject");
-		    optParam("dsn", application.dsn);
-		
-			// type lookup if required
-			if (NOT len(attributes.typename)) {
-				q4 = createObject("component", "farcry.core.packages.fourq.fourq");
-				typename = q4.findType(objectid=attributes.objectid,dsn=attributes.dsn);
-				//its possible that missing objects will kill this so we only want to create object if we actually get a typename result
-				if (len(typename))
-				{
-					setVariable("attributes.typename", application.types[typename].typePath);
-				}
-			}
-			
-			// using type
-			//if typename is empty - we cant create an object, return an empty structure instead
-			if(len(attributes.typename))
-			{
-				// check for request cache of obj instance
-				uniqueId = replace(attributes.objectid,'-','','all');
-				objcall="request.o#uniqueid#";
-				bcacheused=1;
-				if (NOT isDefined(objcall)) {
-					request["o#uniqueid#"] = createObject("component", "#attributes.typename#");
-					bcacheused=0;
-				}
-				stObj= request["o#uniqueid#"].getData(objectid=attributes.objectid,dsn=attributes.dsn);
-			}
-			else
-				stObj = structNew();
-			
-			// return result
-			SetVariable("caller.#attributes.r_stObject#", stObj);
-		</cfscript>
-		<cfcatch>
-			<cfdump var="#cfcatch#">
-			<cfabort>
-		</cfcatch>
-	</cftry>
-	
-	<!--- debug output --->
-	<cfif isDefined("bcacheused") AND bcacheused>
-		<cftrace type="information" category="coapi" text="Request cache used for #attributes.typename#.getdata()" var="stObj.objectid">
-	<cfelse>
-		<cftrace type="information" category="coapi" text="Instance created #attributes.typename#.getdata()" var="stObj.objectid">
+	<cfif not isDefined("attributes.objectid")>
+		<cfabort showerror="objectid must be passed to contentobjectget" />
 	</cfif>
+	<cfparam name="attributes.typename" default="" />
+	<cfparam name="attributes.r_stObject" default="stObject" />
+	
+	<cfif not len(attributes.typename)>
+		<cfset variables.oFourQ = createObject("component", "farcry.core.packages.fourq.fourq") />
+		<cfset attributes.typename = variables.oFourQ.findType(objectid=attributes.objectid) />
+	</cfif>
+	
+	<cfif len(attributes.typename)>
+		<!--- Just in case the whole package path has been passed in, we only need the actual typename --->
+		<cfset attributes.typename = listLast(attributes.typename,".") />
+	
+		<cfset oType  = createObject("component", application.stcoapi[attributes.typename].packagePath) />
+		<cfset caller[attributes.r_stObject] = oType.getData(objectid=attributes.objectid) />
+	<cfelse>
+		<cfset caller[attributes.r_stObject] = structNew() />
+	</cfif>
+
 
 </cfif>
