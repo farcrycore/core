@@ -7,8 +7,11 @@
 
 <cfsetting enablecfoutputonly="true">
 
-<!--- tag libraries --->
-<cfimport taglib="/farcry/farcry_core/tags/formtools/" prefix="ft" />
+<cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
+<cfimport taglib="/farcry/core/tags/admin/" prefix="admin" />
+
+<!--- set up page header --->
+<admin:header title="Articles" />
 
 <ft:objectAdmin
 	title="[TYPENAME]"
@@ -18,4 +21,6 @@
 	lFilterFields="[FILTERFIELDS]"
 	sqlorderby="" />
 
-<cfsetting enablecfoutputonly="false">
+<admin:footer />
+
+<cfsetting enablecfoutputonly="no">
