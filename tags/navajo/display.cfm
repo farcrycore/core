@@ -213,7 +213,7 @@ the latter is the policy group for anonymous...
 <!--- check permissions on the current nav node --->
 <cfset oAuthorisation = request.dmsec.oAuthorisation />
 <cfset oAuthentication = request.dmsec.oAuthentication />
-<cfset iHasViewPermission = oAuthorisation.(objectid=request.navid,permissionName="View",lpolicyGroupIds=lpolicyGroupIds) />
+<cfset iHasViewPermission = oAuthorisation.checkInheritedPermission(objectid=request.navid,permissionName="View",lpolicyGroupIds=lpolicyGroupIds) />
 
 <!--- if the user is unable to view the object, then logout and send to login form --->
 <cfif iHasViewPermission NEQ 1>
