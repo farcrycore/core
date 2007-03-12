@@ -197,9 +197,9 @@ $in: objectid -- $
 		<cfif structkeyexists(application, "bObjectBroker") AND application.bObjectBroker>
 			<cfset objectBroker = createObject("component","farcry.core.packages.fourq.objectBroker")>
 			
-			<cfloop list="#structKeyList(application.types)#" index="typename">
-				<cfif application.types[typename].bObjectBroker>
-					<cfset bSuccess = objectBroker.configureType(typename=typename, MaxObjects=application.types[typename].ObjectBrokerMaxObjects) />
+			<cfloop list="#structKeyList(application.stcoapi)#" index="typename">
+				<cfif application.stcoapi[typename].bObjectBroker>
+					<cfset bSuccess = objectBroker.configureType(typename=typename, MaxObjects=application.stcoapi[typename].ObjectBrokerMaxObjects) />
 				</cfif>
 			</cfloop>
 		</cfif>
