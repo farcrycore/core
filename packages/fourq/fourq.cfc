@@ -325,7 +325,6 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfargument name="bArraysAsStructs" type="boolean" required="false" default="false" hint="Setting to true returns array properties as an array of structs instead of an array of strings.">
 		
 		<cfset var stobj=structnew()>
-		<cfset var tablename="">
 		<cfset var aprops="">
 		<cfset var sqlSelect="">
 		<cfset var i=0>
@@ -342,18 +341,12 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset fourqInit() />
 		
 		
-		
-		
-		
-		
-		<cfparam name="instance.stobj.typename" default="#tablename#">
-		
 		<cfif isdefined("instance.bgetdata") AND instance.bgetdata EQ arguments.objectid AND arguments.bUseInstanceCache AND NOT arguments.bArraysAsStructs>
 			<!--- get local instance cache --->
 			<cfset stObj = instance.stobj>
 			<cftrace type="information" category="coapi" var="stobj.typename" text="getData() used instance cache.">
 		
-		
+
 		<!--- Check to see if the object is in the temporary object store --->
 		<cfelseif structKeyExists(Session,"TempObjectStore") AND structKeyExists(Session.TempObjectStore,arguments.objectid) AND arguments.bUseInstanceCache AND NOT arguments.bArraysAsStructs>
 			<!--- get from the temp object stroe --->
@@ -361,25 +354,20 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			<cftrace type="information" category="coapi" var="stobj.typename" text="getData() used Temporary Object Store (Session.tempObjectStore).">
 	
 		<cfelse>
-		
 			<cfif arguments.bUseInstanceCache AND NOT arguments.bArraysAsStructs>
 				<!--- Attempt to get the object from the ObjectBroker --->
 				<!--- getFromObjectBroker returns an empty struct if the object is not in the broker --->
 				<cfset stobj = variables.objectBroker.getFromObjectBroker(ObjectID=arguments.objectid,typename=variables.typename)>
 			</cfif>
-		
+
 			<cfif structisEmpty(stObj)>
+				<cftimer label="getData: #variables.typename#">
 				<!--- Didn't find the object in the objectBroker --->
 				<!--- build a local instance cache --->
-				<cfinclude template="_fourq/getData.cfm">
-				
-				
-				<cfset stobj.typename = tablename />
-				
-				
+				<cfinclude template="_fourq/getData.cfm">				
 				
 					
-				<cftimer label="getData: #stobj.typename#">
+				
 				
 				
 				<!--- MJB TODO: This piece of code needs to be added somewhere to allow the access to any field that has been run through the relevent display function of its formtool cfc  --->
