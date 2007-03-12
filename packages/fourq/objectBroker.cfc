@@ -1,8 +1,13 @@
 <cfcomponent name="objectBroker" displayname="objectBroker" access="public" hint="Stores and manages cache of objects to enable faster access">
 
 	<cffunction name="init" access="public" output="false" returntype="struct">
+				
+		<cfif not structKeyExists(application, "objectBroker")>
+			<cflock name="objectBroker" type="exclusive" timeout="2" throwontimeout="true">	
+				<cfset application.objectbroker =  structNew() />
+			</cflock>
+		</cfif>	
 		
-		<cfparam name="application.objectbroker" default="#structNew()#">
 		<cfreturn this />
 	</cffunction>
 	
@@ -13,11 +18,11 @@
 		
 		<cfset var bResult = "true" />
 		
-		<cfscript>		
-		application.objectbroker[arguments.typename]=structnew();
-		application.objectbroker[arguments.typename].aobjects=arraynew(1);
-		application.objectbroker[arguments.typename].maxobjects=arguments.MaxObjects;
-		</cfscript>
+		<cflock name="objectBroker" type="exclusive" timeout="2" throwontimeout="true">			
+			<cfset application.objectbroker[arguments.typename]=structnew() />
+			<cfset application.objectbroker[arguments.typename].aobjects=arraynew(1) />
+			<cfset application.objectbroker[arguments.typename].maxobjects=arguments.MaxObjects />			
+		</cflock>
 		
 		<cfreturn bResult />
 	</cffunction>
@@ -69,7 +74,7 @@
 						<cfloop list="#structKeyList(application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template].inHead)#" index="i">
 							<cfset request.inHead[i] = application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template].inHead[i] />
 						</cfloop>
-					</cfif>	
+					</cfif>					
 				</cfif>		
 			</cfif>
 		</cfif>
@@ -92,18 +97,21 @@
 		<cfelse>
 			<cfif listContainsNoCase(application.stcoapi[arguments.typename].lObjectBrokerWebskins, arguments.template) and len(arguments.HTML)>
 				<cfif structKeyExists(application.objectbroker[arguments.typename], arguments.objectid)>
-					<cfif not structKeyExists(application.objectbroker[arguments.typename][arguments.objectid], "stWebskins")>
-						<cfset application.objectbroker[arguments.typename][arguments.objectid].stWebskins = structNew() />
-					</cfif>
-					
-					<cfset application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template] = structNew() />
-					<cfset application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template].datetimecreated = now() />
-					<cfset application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template].webskinHTML = trim(arguments.HTML) />
-					
-					<!--- Add the current State of the request.inHead scope into the broker --->
-					<cfparam name="request.inHead" default="#structNew()#">
-					<cfset application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template].inHead = duplicate(request.inHead) />
+					<cflock name="objectBroker" type="exclusive" timeout="2" throwontimeout="true">
+						<cfif not structKeyExists(application.objectbroker[arguments.typename][arguments.objectid], "stWebskins")>
+							<cfset application.objectbroker[arguments.typename][arguments.objectid].stWebskins = structNew() />
+						</cfif>
+																	
+						<cfset application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template] = structNew() />
+						<cfset application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template].datetimecreated = now() />
+						<cfset application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template].webskinHTML = trim(arguments.HTML) />
 	
+						
+						<!--- Add the current State of the request.inHead scope into the broker --->
+						<cfparam name="request.inHead" default="#structNew()#">
+					
+						<cfset application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template].inHead = duplicate(request.inHead) />
+					</cflock>
 				</cfif>
 			</cfif>
 		</cfif>
@@ -112,6 +120,31 @@
 		
 	</cffunction>
 	
+	<cffunction name="removeWebskin" access="public" output="false" returntype="boolean" hint="Searches the object broker in an attempt to locate the requested webskin template">
+		<cfargument name="ObjectID" required="yes" type="UUID">
+		<cfargument name="typename" required="true" type="string">
+		<cfargument name="template" required="true" type="string">
+		
+		<cfset var bSuccess = "true" />
+		
+		
+		
+		
+		<cfif structKeyExists(application.objectbroker[arguments.typename], arguments.objectid)>
+			<cfif structKeyExists(application.objectbroker[arguments.typename][arguments.objectid], "stWebskins")>
+				<cflock name="objectBroker" type="exclusive" timeout="2" throwontimeout="true">
+					<cfset structDelete(application.objectbroker[arguments.typename][arguments.objectid].stWebskins, arguments.template) />
+				</cflock>
+			</cfif>
+		</cfif>
+		
+	
+		
+		<cfreturn bSuccess />
+		
+	</cffunction>
+	
+	
 	
 	<cffunction name="AddToObjectBroker" access="public" output="true" returntype="boolean">
 		<cfargument name="stObj" required="yes" type="struct">
@@ -119,19 +152,20 @@
 		
 		<!--- if the type is to be stored in the objectBroker --->
 		<cfif structkeyexists(arguments.stObj, "objectid") AND structkeyexists(application.objectbroker, arguments.typename)>
+			<cflock name="objectBroker" type="exclusive" timeout="2" throwontimeout="true">
+				<!--- Create a key in the types object broker using the object id --->
+				<cfset application.objectbroker[arguments.typename][arguments.stObj.objectid] = structNew() />
+				
+				<!--- Add the stobj into the new key. --->
+				<cfset application.objectbroker[arguments.typename][arguments.stObj.objectid].stobj = duplicate(arguments.stObj) />
+				
+				<!--- Prepare for any webskins that may be placed in the object broker --->
+				<cfset application.objectbroker[arguments.typename][arguments.stObj.objectid].stWebskins = structNew() />
+				
+				<!--- Add the objectid to the end of the FIFO array so we know its the latest to be added --->
+				<cfset arrayappend(application.objectbroker[arguments.typename].aObjects,arguments.stObj.ObjectID)>
+			</cflock>
 			
-			<!--- Create a key in the types object broker using the object id --->
-			<cfset application.objectbroker[arguments.typename][arguments.stObj.objectid] = structNew() />
-			
-			<!--- Add the stobj into the new key. --->
-			<cfset application.objectbroker[arguments.typename][arguments.stObj.objectid].stobj = duplicate(arguments.stObj) />
-			
-			<!--- Prepare for any webskins that may be placed in the object broker --->
-			<cfset application.objectbroker[arguments.typename][arguments.stObj.objectid].stWebskins = structNew() />
-			
-			<!--- Add the objectid to the end of the FIFO array so we know its the latest to be added --->
-			<cfset arrayappend(application.objectbroker[arguments.typename].aObjects,arguments.stObj.ObjectID)>
-
 			<!--- Cleanup the object broker just in case we have reached our limit of objects as defined by the metadata. --->
 			<cfset cleanupObjectBroker(typename=arguments.typename)>
 			<cfreturn true>
@@ -177,17 +211,32 @@
 		<cfargument name="typename" required="true" type="string" default="">
 		
 		<cfset var aObjectIds = arrayNew(1) />
-		
+		<cfset var oWebskinAncestor = createObject("component", application.stcoapi.dmWebskinAncestor.packagePath) />						
+		<cfset var qWebskinAncestors = queryNew("blah") />
+
 		<cfif structkeyexists(application.objectbroker, arguments.typename)>
 			<cfloop list="#arguments.lObjectIDs#" index="i">				
 				<cfif structkeyexists(application.objectbroker[arguments.typename], i)>
-					<cfset StructDelete(application.objectbroker[arguments.typename], i)>
+					
+					
+					<!--- Find any ancestor webskins and delete them as well --->
+					<cfset qWebskinAncestors = oWebskinAncestor.getAncestorWebskins(webskinObjectID=i) />
+					
+					<cfif qWebskinAncestors.recordCount>
+						<cfloop query="qWebskinAncestors">
+							<cfset bSuccess = removeWebskin(objectid=qWebskinAncestors.ancestorID,typename=qWebskinAncestors.ancestorTypename,template=qWebskinAncestors.ancestorTemplate) />
+							<cfset stResult = oWebskinAncestor.delete(objectid=qWebskinAncestors.objectid) />
+						</cfloop>
+					</cfif>
+					<cflock name="objectBroker" type="exclusive" timeout="2" throwontimeout="true">
+						<cfset StructDelete(application.objectbroker[arguments.typename], i)>
+					</cflock>
 				</cfif>
 			</cfloop>
 			
 			<cfset aObjectIds = ListToArray(arguments.lObjectIDs)>
 			
-			<cflock name="objectBroker" type="exclusive" timeout="20" throwontimeout="true">
+			<cflock name="objectBroker" type="exclusive" timeout="2" throwontimeout="true">
 				<cfset application.objectBroker[arguments.typename].aObjects.removeAll(aObjectIds) >
 			</cflock>
 			
