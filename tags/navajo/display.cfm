@@ -35,6 +35,8 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 <cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
 <cfparam name="request.bHideContextMenu" default="false">
 
+
+<cftimer label="NAVAJO DISPLAY">
 <!--- 
 todo: 	versioning object will be deprecated.. 
 		this needs to be *totally* revised.. ie. should never have been put here
@@ -209,11 +211,9 @@ the latter is the policy group for anonymous...
 </cfif>
 
 <!--- check permissions on the current nav node --->
-<cfscript>
-	oAuthorisation = request.dmsec.oAuthorisation;
-	oAuthentication = request.dmsec.oAuthentication;
-	iHasViewPermission = oAuthorisation.checkInheritedPermission(objectid=request.navid,permissionName="View",lpolicyGroupIds=lpolicyGroupIds);
-</cfscript>
+<cfset oAuthorisation = request.dmsec.oAuthorisation />
+<cfset oAuthentication = request.dmsec.oAuthentication />
+<cfset iHasViewPermission = oAuthorisation.(objectid=request.navid,permissionName="View",lpolicyGroupIds=lpolicyGroupIds) />
 
 <!--- if the user is unable to view the object, then logout and send to login form --->
 <cfif iHasViewPermission NEQ 1>
@@ -298,17 +298,14 @@ a whole new set of permission checks, have trapped any errors and suppressed GB 
 	bLoggedIn = stLoggedInUser.bLoggedIn;
 </cfscript>
 
-<cfif bLoggedIn>
+<cfif bLoggedIn AND NOT request.bHideContextMenu>
 	<!--- check they are admin --->
 	<!--- check they are able to comment --->
-	<cfscript>
-		iAdmin = oAuthorisation.checkPermission(permissionName="Admin",reference="PolicyGroup");
-		iCanCommentOnContent = oAuthorisation.checkInheritedPermission(objectid=request.navid,permissionName='CanCommentOnContent');
-	</cfscript>
-	
-	
-	
-	<cfif (iAdmin eq 1 or iCanCommentOnContent eq 1) AND NOT request.bHideContextMenu>
+
+	<cfset iAdmin = oAuthorisation.checkPermission(permissionName="Admin",reference="PolicyGroup") />
+	<cfset iCanCommentOnContent = oAuthorisation.checkInheritedPermission(objectid=request.navid,permissionName='CanCommentOnContent') />
+
+	<cfif (iAdmin eq 1 or iCanCommentOnContent eq 1)>
 		<cfset request.floaterIsOnPage = true>
 		<cfinclude template="floatMenu.cfm">
 	</cfif>
@@ -318,5 +315,6 @@ a whole new set of permission checks, have trapped any errors and suppressed GB 
 <!--- suppress error --->
 </cfcatch>
 </cftry>
+</cftimer>
 <cfsetting enablecfoutputonly="No">
 
