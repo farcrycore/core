@@ -33,25 +33,33 @@
 			<cfset variables.tableName = listLast(arguments.md.name,'.') />
 		</cfif>
 		
-		
-		<!--- If there are no properties at this level go to the next level --->
-		<cfif structKeyExists(md,'properties')>
-		
-			<!--- If we got to here there should be some properties to parse --->
-			<cfloop from="1" to="#arrayLen(arguments.md.properties)#" index="i">
-				<cfif not structKeyExists(variables.tableDefinition,arguments.md.properties[i].name)>
-					<cfset variables.tableDefinition[arguments.md.properties[i].name] = parseProperty(arguments.md.properties[i])>
-				</cfif>
-			</cfloop>
 			
+		<!--- 
+		REPLACED WITH SIMPLE CALL FROM THE APPLICATION.STCOAPI IF ALREADY AVAILABLE
+		 --->
+		<cfif structKeyExists(application, "stcoapi") AND structKeyExists(application.stcoapi, variables.tablename) AND structKeyExists(application.stcoapi[variables.tablename], "tableDefinition")>
+			<cfset variables.tableDefinition = application.stcoapi[variables.tablename].tableDefinition />
+		<cfelse>
+			<!--- If there are no properties at this level go to the next level --->
+			<cfif structKeyExists(md,'properties')>
+			
+				<!--- If we got to here there should be some properties to parse --->
+				<cfloop from="1" to="#arrayLen(arguments.md.properties)#" index="i">
+					<cfif not structKeyExists(variables.tableDefinition,arguments.md.properties[i].name)>
+						<cfset variables.tableDefinition[arguments.md.properties[i].name] = parseProperty(arguments.md.properties[i])>
+					</cfif>
+				</cfloop>
+				
+				
+			</cfif>
+				
+			<!--- Parse the next level if it exists --->
+			<cfif structKeyExists(arguments.md,'extends')>
+				<cfset parseMetadata(arguments.md.extends,false) />
+			</cfif>
 			
 		</cfif>
 			
-		<!--- Parse the next level if it exists --->
-		<cfif structKeyExists(arguments.md,'extends')>
-			<cfset parseMetadata(arguments.md.extends,false) />
-		</cfif>
-		
 	</cffunction>
 	
 	
