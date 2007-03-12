@@ -454,7 +454,16 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 		<cfloop from="1" to="#arrayLen(arguments.aRules)#" index="i">
 			 <cftry> 
 				<cfset rule = oFourq.findType(objectid=arguments.aRules[i])>
-				<cfinvoke objectID="#arguments.aRules[i]#" component="#application.rules[rule].rulePath#" method="execute"/>										
+				
+				<cfset oRule = createObject("component", application.stcoapi[rule].packagepath) />
+				
+				<cfset ruleHTML = oRule.getView(objectid=arguments.aRules[i], template="execute", alternateHTML="") />
+				<cfif len(trim(ruleHTML))>
+					<cfset arrayappend(request.aInvocations, ruleHTML) />
+				<cfelse>
+					<cfset oRule.execute(objectid=arguments.aRules[i]) />
+				</cfif>
+							
 			  	<cfcatch type="any">
 					<!--- show error if debugging --->
 					<cfif isdefined("url.debug")>
@@ -470,8 +479,8 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 					 	-->
 					 </cfoutput>
 				</cfcatch>
-			</cftry>  
-		</cfloop>		 
+			</cftry>
+		</cfloop>			 
 		<cfloop from="1" to="#arrayLen(request.aInvocations)#" index="i">
 			<cfif isStruct(request.aInvocations[i])>
 				<cfif structKeyExists(request.aInvocations[i],"preHTML")>
@@ -489,8 +498,8 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 				<cfoutput>
 					#request.aInvocations[i]#
 				</cfoutput>	
-			</cfif>	
-		</cfloop>
+			</cfif>	 
+		</cfloop>				
 	</cffunction>
 	
 	<cffunction name="getSharedContainers" access="public" hint="Returns a query of containers with bShared true." returntype="query" output="false">
