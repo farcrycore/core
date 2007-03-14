@@ -156,7 +156,7 @@ object methods
 	<cfelse>
 		
 		<cfset stReturn.bSuccess = false>
-		<cfset stReturn.message = "#stObj.label# (#stObj.typename#) not found.">
+		<cfset stReturn.message = "#arguments.objectid# (dmHTML) not found.">
 		<cfreturn stReturn>
 		
 	</cfif>
