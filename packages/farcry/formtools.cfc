@@ -387,10 +387,10 @@
 			<cfset arguments.sqlWhere = "0=0" />
 		</cfif>
 		
-		<cfquery name="getRecords" datasource="#application.dsn#">		
+		<cfquery name="getRecords" datasource="#application.dsn#" result="sqlResult">		
 				SELECT #arguments.sqlColumns# 
 				FROM #arguments.typename# tbl 
-				<cfif arguments.SqlWhere neq ''>WHERE #arguments.SqlWhere#</cfif>
+				<cfif arguments.SqlWhere neq ''>WHERE #preserveSingleQuotes(arguments.SqlWhere)#</cfif>
 				<cfif arrayLen(arguments.aCategoryFilters)>
 					<cfloop from="1" to="#arrayLen(arguments.aCategoryFilters)#" index="i">
 						<cfif arguments.aCategoryFilters[i] neq ''>
@@ -413,6 +413,8 @@
 				<cfif arguments.sqlOrderBy neq ''>ORDER BY #arguments.sqlOrderBy#</cfif>
 		</cfquery>
 		<cfset stReturn.q = getRecords />
+		<cfset stReturn.debug = sqlResult />
+		
 		<cfset stReturn.countAll = getRecords.recordcount />
 	</cfif>
 	
