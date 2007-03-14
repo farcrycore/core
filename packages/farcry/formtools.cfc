@@ -197,7 +197,7 @@
 			
 		<cfif application.dbtype EQ "MSSQL">
 			
-			<cfquery name="qFormToolRecordset" datasource="#application.dsn#"  result="debugQUery">
+			<cfquery name="qFormToolRecordset" datasource="#application.dsn#">
 	
 			IF OBJECT_ID('tempdb..##thetops') IS NOT NULL 	drop table ##thetops
 			CREATE TABLE ##thetops (objectID varchar(40), myint int IDENTITY(1,1) NOT NULL);
@@ -268,7 +268,7 @@
 			
 				
 							
-				<cfquery name="qFormToolRecordset" datasource="#application.dsn#" result="debugQUery">
+				<cfquery name="qFormToolRecordset" datasource="#application.dsn#">
 	
 				IF OBJECT_ID('tempdb..##thetops') IS NOT NULL 	drop table ##thetops
 				CREATE TABLE ##thetops (objectID varchar(40), myint int IDENTITY(1,1) NOT NULL);
@@ -323,7 +323,7 @@
 			
 			
 
-			<cfquery name="qFormToolRecordset" datasource="#application.dsn#"  result="debugQUery">
+			<cfquery name="qFormToolRecordset" datasource="#application.dsn#">
 			SELECT #arguments.sqlColumns#
 				<cfif bHasversionID>
 					,(SELECT count(d.objectid) FROM #arguments.typename# d WHERE d.versionid = tbl.objectid) as bHasMultipleVersion
@@ -357,7 +357,6 @@
 		<!--- NOW THAT WE HAVE OUR QUERY, POPULATE THE RETURN STRUCTURE --->
 		<cfset stReturn.q = qFormToolRecordset />
 		<cfset stReturn.countAll = qrecordcount.countAll />
-		<cfset stReturn.debug = debugQUery />
 		<cfset stReturn.CurrentPage = arguments.CurrentPage />
 		
 		
@@ -383,7 +382,7 @@
 			<cfset arguments.sqlWhere = "0=0" />
 		</cfif>
 	
-		<cfquery name="getRecords" datasource="#application.dsn#" result="sqlResult">		
+		<cfquery name="getRecords" datasource="#application.dsn#">		
 				SELECT #arguments.sqlColumns# 
 				FROM #arguments.typename# tbl 
 				<cfif arguments.SqlWhere neq ''>WHERE #preserveSingleQuotes(arguments.SqlWhere)#</cfif>
@@ -393,20 +392,10 @@
 							    from refCategories 
 							    where categoryID in (#listQualify(l_sqlCatIds,"'")#)
 							    )				
-				</cfif>
-								
-				<!---<cfif arguments.lCategories neq ''>
-					, refCategories cat where cat.objectId = tbl.ObjectID
-				<cfelse>
-					where 0=0
-				</cfif>
-				
-				<cfif arguments.lCategories neq ''>	AND cat.categoryID in(#preserveSingleQuotes(arguments.lCategories)#)</cfif> --->
+				</cfif>	
 				<cfif arguments.sqlOrderBy neq ''>ORDER BY #arguments.sqlOrderBy#</cfif>
 		</cfquery>
-		<cfset stReturn.q = getRecords />
-		<cfset stReturn.debug = sqlResult />
-		
+		<cfset stReturn.q = getRecords />	
 		<cfset stReturn.countAll = getRecords.recordcount />
 	</cfif>
 	
