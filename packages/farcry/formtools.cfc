@@ -63,6 +63,8 @@
 	<cfargument name="aCategoryFilters" required="No" type="array" default="#arrayNew(1)#" />
 	
 	
+	
+	
 	<cfset var PrimaryPackage = "" />
 	<cfset var PrimaryPackagePath = "" />
 		
@@ -75,6 +77,17 @@
 	<cfset var bHasVersionID = false />
 	
 	<cfset var thisDiff = 0 /><!--- var used if recordcount/RecordsPerPage remainder is not 0, occurs at the end of pagination --->
+	
+	
+	<cfset var l_sqlCatIds = "">
+	
+	<cfif arrayLen(arguments.aCategoryFilters)>
+		<cfloop from="1" to="#arrayLen(arguments.aCategoryFilters)#" index="i">
+			<cfif arguments.aCategoryFilters[i] neq ''>
+				<cfset l_sqlCatIds = listAppend(l_sqlCatIds,arguments.aCategoryFilters[i])>
+			</cfif>
+		</cfloop>
+	</cfif>
 	
 	<cfif listlen(arguments.lCategories)>
 		<cfloop list="#arguments.lCategories#" index="i">
@@ -154,17 +167,12 @@
 		SELECT count(distinct tbl.objectid) as CountAll 
 		FROM #arguments.typename# tbl 			
 		WHERE #preserveSingleQuotes(arguments.SqlWhere)#
-		
-		<cfif arrayLen(arguments.aCategoryFilters)>
-			<cfloop from="1" to="#arrayLen(arguments.aCategoryFilters)#" index="i">
-				<cfif arguments.aCategoryFilters[i] neq ''>
-					AND objectid in (
-					    select distinct objectid 
-					    from refCategories 
-					    where categoryID in (#listQualify(arguments.aCategoryFilters[i],"'")#)
-					    )
-				</cfif>
-			</cfloop>
+		<cfif l_sqlCatIds neq "">
+							AND objectid in (
+							    select distinct objectid 
+							    from refCategories 
+							    where categoryID in (#listQualify(l_sqlCatIds,"'")#)
+							    )				
 		</cfif>
 		<cfif bHasVersionID>
 			AND (tbl.versionid = '' OR tbl.versionid IS NULL)
@@ -189,7 +197,7 @@
 			
 		<cfif application.dbtype EQ "MSSQL">
 			
-			<cfquery name="qFormToolRecordset" datasource="#application.dsn#">
+			<cfquery name="qFormToolRecordset" datasource="#application.dsn#"  result="debugQUery">
 	
 			IF OBJECT_ID('tempdb..##thetops') IS NOT NULL 	drop table ##thetops
 			CREATE TABLE ##thetops (objectID varchar(40), myint int IDENTITY(1,1) NOT NULL);
@@ -199,16 +207,12 @@
 			FROM #arguments.typename# tbl 
 			WHERE #preserveSingleQuotes(arguments.SqlWhere)#
 			
-			<cfif arrayLen(arguments.aCategoryFilters)>
-				<cfloop from="1" to="#arrayLen(arguments.aCategoryFilters)#" index="i">
-					<cfif arguments.aCategoryFilters[i] neq ''>
-						AND objectid in (
-						    select distinct objectid 
-						    from refCategories 
-						    where categoryID in (#listQualify(arguments.aCategoryFilters[i],"'")#)
-						    )
-					</cfif>
-				</cfloop>
+			<cfif l_sqlCatIds neq "">
+							AND objectid in (
+							    select distinct objectid 
+							    from refCategories 
+							    where categoryID in (#listQualify(l_sqlCatIds,"'")#)
+							    )				
 			</cfif>
 			<cfif bHasVersionID>
 				AND (tbl.versionid = '' OR tbl.versionid IS NULL)
@@ -244,16 +248,12 @@
 				FROM #arguments.typename# tbl 			
 				WHERE #preserveSingleQuotes(arguments.SqlWhere)#
 				
-				<cfif arrayLen(arguments.aCategoryFilters)>
-					<cfloop from="1" to="#arrayLen(arguments.aCategoryFilters)#" index="i">
-						<cfif arguments.aCategoryFilters[i] neq ''>
+				<cfif l_sqlCatIds neq "">
 							AND objectid in (
 							    select distinct objectid 
 							    from refCategories 
-							    where categoryID in (#listQualify(arguments.aCategoryFilters[i],"'")#)
-							    )
-						</cfif>
-					</cfloop>
+							    where categoryID in (#listQualify(l_sqlCatIds,"'")#)
+							    )				
 				</cfif>
 				<cfif bHasVersionID>
 					AND (tbl.versionid = '' OR tbl.versionid IS NULL)
@@ -268,7 +268,7 @@
 			
 				
 							
-				<cfquery name="qFormToolRecordset" datasource="#application.dsn#">
+				<cfquery name="qFormToolRecordset" datasource="#application.dsn#" result="debugQUery">
 	
 				IF OBJECT_ID('tempdb..##thetops') IS NOT NULL 	drop table ##thetops
 				CREATE TABLE ##thetops (objectID varchar(40), myint int IDENTITY(1,1) NOT NULL);
@@ -278,16 +278,12 @@
 				FROM #arguments.typename# tbl 
 				WHERE #preserveSingleQuotes(arguments.SqlWhere)#
 				
-				<cfif arrayLen(arguments.aCategoryFilters)>
-					<cfloop from="1" to="#arrayLen(arguments.aCategoryFilters)#" index="i">
-						<cfif arguments.aCategoryFilters[i] neq ''>
+				<cfif l_sqlCatIds neq "">
 							AND objectid in (
 							    select distinct objectid 
 							    from refCategories 
-							    where categoryID in (#listQualify(arguments.aCategoryFilters[i],"'")#)
-							    )
-						</cfif>
-					</cfloop>
+							    where categoryID in (#listQualify(l_sqlCatIds,"'")#)
+							    )				
 				</cfif>
 				<cfif bHasVersionID>
 					AND (tbl.versionid = '' OR tbl.versionid IS NULL)
@@ -324,8 +320,10 @@
 			</cfif>
 			<cfset toprow = ((arguments.currentpage * arguments.RecordsPerPage)- arguments.RecordsPerPage) >
 			
+			
+			
 
-			<cfquery name="qFormToolRecordset" datasource="#application.dsn#">
+			<cfquery name="qFormToolRecordset" datasource="#application.dsn#"  result="debugQUery">
 			SELECT #arguments.sqlColumns#
 				<cfif bHasversionID>
 					,(SELECT count(d.objectid) FROM #arguments.typename# d WHERE d.versionid = tbl.objectid) as bHasMultipleVersion
@@ -333,17 +331,14 @@
 			FROM #arguments.typename# tbl 			
 			WHERE #preserveSingleQuotes(arguments.SqlWhere)#
 			
-			<cfif arrayLen(arguments.aCategoryFilters)>
-				<cfloop from="1" to="#arrayLen(arguments.aCategoryFilters)#" index="i">
-					<cfif arguments.aCategoryFilters[i] neq ''>
-						AND objectid in (
-						    select distinct objectid 
-						    from refCategories 
-						    where categoryID in (#listQualify(arguments.aCategoryFilters[i],"'")#)
-						    )
-					</cfif>
-				</cfloop>
+			<cfif l_sqlCatIds neq "">
+							AND objectid in (
+							    select distinct objectid 
+							    from refCategories 
+							    where categoryID in (#listQualify(l_sqlCatIds,"'")#)
+							    )				
 			</cfif>
+			
 			<cfif bHasVersionID>
 				AND (tbl.versionid = '' OR tbl.versionid IS NULL)
 			</cfif>
@@ -362,6 +357,7 @@
 		<!--- NOW THAT WE HAVE OUR QUERY, POPULATE THE RETURN STRUCTURE --->
 		<cfset stReturn.q = qFormToolRecordset />
 		<cfset stReturn.countAll = qrecordcount.countAll />
+		<cfset stReturn.debug = debugQUery />
 		<cfset stReturn.CurrentPage = arguments.CurrentPage />
 		
 		
@@ -386,21 +382,17 @@
 		<cfif NOT len(arguments.sqlWhere)>
 			<cfset arguments.sqlWhere = "0=0" />
 		</cfif>
-		
-		<cfquery name="getRecords" datasource="#application.dsn#">		
+	
+		<cfquery name="getRecords" datasource="#application.dsn#" result="sqlResult">		
 				SELECT #arguments.sqlColumns# 
 				FROM #arguments.typename# tbl 
 				<cfif arguments.SqlWhere neq ''>WHERE #preserveSingleQuotes(arguments.SqlWhere)#</cfif>
-				<cfif arrayLen(arguments.aCategoryFilters)>
-					<cfloop from="1" to="#arrayLen(arguments.aCategoryFilters)#" index="i">
-						<cfif arguments.aCategoryFilters[i] neq ''>
+				<cfif l_sqlCatIds neq "">
 							AND objectid in (
 							    select distinct objectid 
 							    from refCategories 
-							    where categoryID in (#listQualify(arguments.aCategoryFilters[i],"'")#)
-							    )
-						</cfif>
-					</cfloop>
+							    where categoryID in (#listQualify(l_sqlCatIds,"'")#)
+							    )				
 				</cfif>
 								
 				<!---<cfif arguments.lCategories neq ''>
@@ -412,7 +404,9 @@
 				<cfif arguments.lCategories neq ''>	AND cat.categoryID in(#preserveSingleQuotes(arguments.lCategories)#)</cfif> --->
 				<cfif arguments.sqlOrderBy neq ''>ORDER BY #arguments.sqlOrderBy#</cfif>
 		</cfquery>
-		<cfset stReturn.q = getRecords />	
+		<cfset stReturn.q = getRecords />
+		<cfset stReturn.debug = sqlResult />
+		
 		<cfset stReturn.countAll = getRecords.recordcount />
 	</cfif>
 	
