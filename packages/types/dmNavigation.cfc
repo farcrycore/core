@@ -122,9 +122,48 @@ object methods
 	<cfargument name="dsn" required="yes" type="string" default="#application.dsn#">
 	
 	<!--- get object details --->
-	<cfset stObj = getData(arguments.objectid)>
+	<cfset var stObj = getData(arguments.objectid)>
+	
+	<cfset var oHTML = createObject("component", application.stcoapi.dmHTML.packagePath) />
+	<cfset var stHTML = structNew() />
+	<cfset var qRelated = queryNew("blah") />
+	<cfset var qDeleteRelated = queryNew("blah") />
+	
+	<cfset var stReturn = StructNew()>
+	
 	<cfif NOT structIsEmpty(stObj)>
 		<cfinclude template="_dmNavigation/delete.cfm">
+		
+		<!--- Find any dmHTML pages that reference this navigation node. --->
+		<cfquery datasource="#application.dsn#" name="qRelated">
+		SELECT * FROM dmHTML_aRelatedIDs
+		WHERE data = '#stobj.objectid#'
+		</cfquery>
+		
+		<cfif qRelated.recordCount>
+
+			<!--- Delete any of these relationships --->
+			<cfquery datasource="#application.dsn#" name="qDeleteRelated">
+			DELETE FROM dmHTML_aRelatedIDs
+			WHERE data = '#stobj.objectid#'
+			</cfquery>
+						
+			<!--- Loop over and refresh the object broker if required --->
+			<cfloop query="qRelated">
+				<cfset stHTML = oHTML.getData(objectid=qRelated.parentid, bUseInstanceCache=false) />				
+			</cfloop>		
+						
+		</cfif>
+		
+		<cfset stReturn.bSuccess = true>
+		<cfset stReturn.message = "#stObj.label# (#stObj.typename#) deleted.">
+		<cfreturn stReturn>
+	<cfelse>
+		
+		<cfset stReturn.bSuccess = false>
+		<cfset stReturn.message = "#stObj.label# (#stObj.typename#) not found.">
+		<cfreturn stReturn>
+	
 	</cfif>
 </cffunction>
 

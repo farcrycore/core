@@ -111,6 +111,57 @@ object methods
 	
 </cffunction>
 
+
+<cffunction name="delete" access="public" hint="Specific delete method for dmHTML. Removes all descendants">
+	<cfargument name="objectid" required="yes" type="UUID" hint="Object ID of the object being deleted">
+	<cfargument name="dsn" required="yes" type="string" default="#application.dsn#">
+	
+	<!--- get object details --->
+	<cfset var stObj = getData(arguments.objectid)>
+	
+	<cfset var oHTML = createObject("component", application.stcoapi.dmHTML.packagePath) />
+	<cfset var stHTML = structNew() />
+	<cfset var qRelated = queryNew("blah") />
+	<cfset var qDeleteRelated = queryNew("blah") />
+	
+	<cfset var stReturn = structNew() />
+	
+	<cfif NOT structIsEmpty(stObj)>
+		
+		<!--- Find any dmHTML pages that reference this navigation node. --->
+		<cfquery datasource="#application.dsn#" name="qRelated">
+		SELECT * FROM dmHTML_aRelatedIDs
+		WHERE data = '#stobj.objectid#'
+		</cfquery>
+		
+		<cfif qRelated.recordCount>
+
+			<!--- Delete any of these relationships --->
+			<cfquery datasource="#application.dsn#" name="qDeleteRelated">
+			DELETE FROM dmHTML_aRelatedIDs
+			WHERE data = '#stobj.objectid#'
+			</cfquery>
+						
+			<!--- Loop over and refresh the object broker if required --->
+			<cfloop query="qRelated">
+				<cfset stHTML = oHTML.getData(objectid=qRelated.parentid, bUseInstanceCache=false) />				
+			</cfloop>		
+						
+		</cfif>
+		
+		
+		<cfset stReturn.bSuccess = true>
+		<cfset stReturn.message = "#stObj.label# (#stObj.typename#) deleted.">
+		<cfreturn stReturn>
+	<cfelse>
+		
+		<cfset stReturn.bSuccess = false>
+		<cfset stReturn.message = "#stObj.label# (#stObj.typename#) not found.">
+		<cfreturn stReturn>
+		
+	</cfif>
+</cffunction>
+
 <cffunction name="getTeaserImageLibraryData" access="public" output="false" returntype="query" hint="Return a query for all images already associated to this object.">
 	<cfargument name="primaryID" type="uuid" required="true" hint="ObjectID of the object that we are attaching to" />
 	<cfargument name="qFilter" type="query" required="true" hint="If a library verity search has been run, this is the qResultset of that search" />
