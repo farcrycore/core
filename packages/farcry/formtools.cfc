@@ -387,7 +387,7 @@
 			<cfset arguments.sqlWhere = "0=0" />
 		</cfif>
 		
-		<cfquery name="getRecords" datasource="#application.dsn#" result="sqlResult">		
+		<cfquery name="getRecords" datasource="#application.dsn#">		
 				SELECT #arguments.sqlColumns# 
 				FROM #arguments.typename# tbl 
 				<cfif arguments.SqlWhere neq ''>WHERE #preserveSingleQuotes(arguments.SqlWhere)#</cfif>
@@ -412,9 +412,7 @@
 				<cfif arguments.lCategories neq ''>	AND cat.categoryID in(#preserveSingleQuotes(arguments.lCategories)#)</cfif> --->
 				<cfif arguments.sqlOrderBy neq ''>ORDER BY #arguments.sqlOrderBy#</cfif>
 		</cfquery>
-		<cfset stReturn.q = getRecords />
-		<cfset stReturn.debug = sqlResult />
-		
+		<cfset stReturn.q = getRecords />	
 		<cfset stReturn.countAll = getRecords.recordcount />
 	</cfif>
 	
