@@ -76,7 +76,11 @@ out:
 				<cfset title = title & stObj.title>			
 			<cfelse>
 				<!--- no breadcrumb --->
-				<cfset title = stObj.title>
+        <cfif isDefined("stObj.title")>
+	  			<cfset title = stObj.title />
+        <cfelse>
+  				<cfset title = stObj.label />
+        </cfif>
 			</cfif>
 					
 			<!--- display object title and breadcrumb --->
