@@ -414,80 +414,86 @@
 				AND (ftFieldMetadata.Type EQ "array" 
 				OR ftFieldMetadata.Type EQ "UUID") 
 				AND isDefined("ftFieldMetadata.ftJoin")>
-				<!--- AND (structKeyExists(ftfieldmetadata, "ftrendertype") AND ftfieldmetadata.rendertype neq "list")> --->
-				<cfsavecontent variable="LibraryLink">
-
-					<cfset stURLParams = structNew()>
-					<cfset stURLParams.primaryObjectID = "#stObj.ObjectID#">
-					<cfset stURLParams.primaryTypename = "#typename#">
-					<cfset stURLParams.primaryFieldName = "#ftFieldMetadata.Name#">
-					<cfset stURLParams.primaryFormFieldName = "#variables.prefix##ftFieldMetadata.Name#">
-					<cfset stURLParams.LibraryType = "#ftFieldMetadata.Type#">
-					<cfset stURLParams.PackageType = "#attributes.PackageType#">
-					
-					<!--- If the field is contained in a wizard, we need to let the library know which wizard. --->
-					<cfif len(attributes.wizardID)>
-						<cfset stURLParams.wizardID = "#attributes.wizardID#">
-					</cfif>
-					
-					<cfif structKeyExists(ftFieldMetadata,'ftLibraryAddNewWebskin')>
-						<cfset stURLParams.ftLibraryAddNewWebskin = "#ftFieldMetadata.ftLibraryAddNewWebskin#">
-					</cfif>
-					<cfif structKeyExists(ftFieldMetadata,'ftLibraryPickWebskin')>
-						<cfset stURLParams.ftLibraryPickWebskin = "#ftFieldMetadata.ftLibraryPickWebskin#">
-					</cfif>
-					<cfif structKeyExists(ftFieldMetadata,'ftLibraryPickListClass')>
-						<cfset stURLParams.ftLibraryPickListClass = "#ftFieldMetadata.ftLibraryPickListClass#">
-					</cfif>
-					<cfif structKeyExists(ftFieldMetadata,'ftLibraryPickListStyle')>
-						<cfset stURLParams.ftLibraryPickListStyle = "#ftFieldMetadata.ftLibraryPickListStyle#">
-					</cfif>
-					<cfif structKeyExists(ftFieldMetadata,'ftLibrarySelectedWebskin')>
-						<cfset stURLParams.ftLibrarySelectedWebskin = "#ftFieldMetadata.ftLibrarySelectedWebskin#">
-					</cfif>
-					<cfif structKeyExists(ftFieldMetadata,'ftLibrarySelectedListClass')>
-						<cfset stURLParams.ftLibrarySelectedListClass = "#ftFieldMetadata.ftLibrarySelectedListClass#">
-					</cfif>
-					<cfif structKeyExists(ftFieldMetadata,'ftLibrarySelectedListStyle')>
-						<cfset stURLParams.ftLibrarySelectedListStyle = "#ftFieldMetadata.ftLibrarySelectedListStyle#">
-					</cfif>
-					<cfif structKeyExists(ftFieldMetadata,'ftLibraryData')>
-						<cfset stURLParams.ftLibraryData = "#ftFieldMetadata.ftLibraryData#">
-					</cfif>
-					<cfif structKeyExists(ftFieldMetadata,'ftLibraryDataTypename')>
-						<cfset stURLParams.ftLibraryDataTypename = "#ftFieldMetadata.ftLibraryDataTypename#">
-					</cfif>
-					<cfif structKeyExists(ftFieldMetadata,'ftAllowLibraryAddNew')>
-						<cfset stURLParams.ftAllowLibraryAddNew = "#ftFieldMetadata.ftAllowLibraryAddNew#">
-					<cfelse>
-						<cfset stURLParams.ftAllowLibraryAddNew = "#ftFieldMetadata.ftJoin#">
-					</cfif>
-					<cfif structKeyExists(ftFieldMetadata,'ftAllowLibraryEdit')>
-						<cfset stURLParams.ftAllowLibraryEdit = "#ftFieldMetadata.ftAllowLibraryEdit#">
-					<cfelse>
-						<cfset stURLParams.ftAllowLibraryEdit = "#ftFieldMetadata.ftJoin#">
-					</cfif>
-							
-					<cfset request.inHead.libraryPopup = true />
-					
-					<ws:buildLink href="#application.url.farcry#/facade/library.cfm" stParameters="#stURLParams#" r_url="libraryPopupJS" />
-
-					<cfoutput>
-						<input type="button" name="libraryOpen" value="Open Library" class="formButton" onClick="openLibrary('#Replace(stObj.ObjectID,"-", "", "ALL")#', $('#variables.prefix##ftFieldMetadata.Name#Join').value,'#libraryPopupJS#')" />
-
-						<cfif listLen(ftFieldMetadata.ftJoin) GT 1>
-							<select id="#variables.prefix##ftFieldMetadata.Name#Join" name="#variables.prefix##ftFieldMetadata.Name#Join" >
-								<cfloop list="#ftFieldMetadata.ftJoin#" index="i">
-									<option value="#i#">#application.types[i].displayname#</option>
-								</cfloop>
-							</select>
-						<cfelse>
-							<input type="hidden" id="#variables.prefix##ftFieldMetadata.Name#Join" name="#variables.prefix##ftFieldMetadata.Name#Join" value="#ftFieldMetadata.ftJoin#" >
-						</cfif>
-					</cfoutput>
+				
+				<cfif NOT structKeyExists(ftFieldMetadata, "ftShowLibraryLink") OR ftFieldMetadata.ftShowLibraryLink>
+					<!--- AND (structKeyExists(ftfieldmetadata, "ftrendertype") AND ftfieldmetadata.rendertype neq "list")> --->
+					<cfsavecontent variable="LibraryLink">
+	
+						<cfset stURLParams = structNew()>
+						<cfset stURLParams.primaryObjectID = "#stObj.ObjectID#">
+						<cfset stURLParams.primaryTypename = "#typename#">
+						<cfset stURLParams.primaryFieldName = "#ftFieldMetadata.Name#">
+						<cfset stURLParams.primaryFormFieldName = "#variables.prefix##ftFieldMetadata.Name#">
+						<cfset stURLParams.LibraryType = "#ftFieldMetadata.Type#">
+						<cfset stURLParams.PackageType = "#attributes.PackageType#">
 						
+						<!--- If the field is contained in a wizard, we need to let the library know which wizard. --->
+						<cfif len(attributes.wizardID)>
+							<cfset stURLParams.wizardID = "#attributes.wizardID#">
+						</cfif>
+						
+						<cfif structKeyExists(ftFieldMetadata,'ftLibraryAddNewWebskin')>
+							<cfset stURLParams.ftLibraryAddNewWebskin = "#ftFieldMetadata.ftLibraryAddNewWebskin#">
+						</cfif>
+						<cfif structKeyExists(ftFieldMetadata,'ftLibraryPickWebskin')>
+							<cfset stURLParams.ftLibraryPickWebskin = "#ftFieldMetadata.ftLibraryPickWebskin#">
+						</cfif>
+						<cfif structKeyExists(ftFieldMetadata,'ftLibraryPickListClass')>
+							<cfset stURLParams.ftLibraryPickListClass = "#ftFieldMetadata.ftLibraryPickListClass#">
+						</cfif>
+						<cfif structKeyExists(ftFieldMetadata,'ftLibraryPickListStyle')>
+							<cfset stURLParams.ftLibraryPickListStyle = "#ftFieldMetadata.ftLibraryPickListStyle#">
+						</cfif>
+						<cfif structKeyExists(ftFieldMetadata,'ftLibrarySelectedWebskin')>
+							<cfset stURLParams.ftLibrarySelectedWebskin = "#ftFieldMetadata.ftLibrarySelectedWebskin#">
+						</cfif>
+						<cfif structKeyExists(ftFieldMetadata,'ftLibrarySelectedListClass')>
+							<cfset stURLParams.ftLibrarySelectedListClass = "#ftFieldMetadata.ftLibrarySelectedListClass#">
+						</cfif>
+						<cfif structKeyExists(ftFieldMetadata,'ftLibrarySelectedListStyle')>
+							<cfset stURLParams.ftLibrarySelectedListStyle = "#ftFieldMetadata.ftLibrarySelectedListStyle#">
+						</cfif>
+						<cfif structKeyExists(ftFieldMetadata,'ftLibraryData')>
+							<cfset stURLParams.ftLibraryData = "#ftFieldMetadata.ftLibraryData#">
+						</cfif>
+						<cfif structKeyExists(ftFieldMetadata,'ftLibraryDataTypename')>
+							<cfset stURLParams.ftLibraryDataTypename = "#ftFieldMetadata.ftLibraryDataTypename#">
+						</cfif>
+						<cfif structKeyExists(ftFieldMetadata,'ftAllowLibraryAddNew')>
+							<cfset stURLParams.ftAllowLibraryAddNew = "#ftFieldMetadata.ftAllowLibraryAddNew#">
+						<cfelse>
+							<cfset stURLParams.ftAllowLibraryAddNew = "#ftFieldMetadata.ftJoin#">
+						</cfif>
+						<cfif structKeyExists(ftFieldMetadata,'ftAllowLibraryEdit')>
+							<cfset stURLParams.ftAllowLibraryEdit = "#ftFieldMetadata.ftAllowLibraryEdit#">
+						<cfelse>
+							<cfset stURLParams.ftAllowLibraryEdit = "#ftFieldMetadata.ftJoin#">
+						</cfif>
+								
+						<cfset request.inHead.libraryPopup = true />
+						
+						<ws:buildLink href="#application.url.farcry#/facade/library.cfm" stParameters="#stURLParams#" r_url="libraryPopupJS" />
+	
+						<cfoutput>
+							<input type="button" name="libraryOpen" value="Open Library" class="formButton" onClick="openLibrary('#Replace(stObj.ObjectID,"-", "", "ALL")#', $('#variables.prefix##ftFieldMetadata.Name#Join').value,'#libraryPopupJS#')" />
+	
+							<cfif listLen(ftFieldMetadata.ftJoin) GT 1>
+								<select id="#variables.prefix##ftFieldMetadata.Name#Join" name="#variables.prefix##ftFieldMetadata.Name#Join" >
+									<cfloop list="#ftFieldMetadata.ftJoin#" index="i">
+										<option value="#i#">#application.types[i].displayname#</option>
+									</cfloop>
+								</select>
+							<cfelse>
+								<input type="hidden" id="#variables.prefix##ftFieldMetadata.Name#Join" name="#variables.prefix##ftFieldMetadata.Name#Join" value="#ftFieldMetadata.ftJoin#" >
+							</cfif>
+						</cfoutput>
+							
+						
+					</cfsavecontent>
 					
-				</cfsavecontent>
+				<cfelse>
+					<cfset libraryLink = "">	
+				</cfif>
 			<cfelse>
 				<cfset libraryLink = "">	
 			</cfif>
