@@ -31,13 +31,11 @@
 		<cfif len(arguments.stMetadata.ftListData) >
 			<cfparam name="arguments.stMetadata.ftListDataTypename" default="#arguments.typename#" />
 			
-			<cfif structKeyExists(application.types, arguments.typename)>
-				<cfset oList = createObject("component", application.types[arguments.stMetadata.ftListDataTypename].packagePath) />
-			<cfelse>
-				<cfset oList = createObject("component", application.rules[arguments.stMetadata.ftListDataTypename].packagePath) />
-			</cfif>
+			<cfset oList = createObject("component", application.stcoapi[arguments.stMetadata.ftListDataTypename].packagePath) />
 			
-			<cfinvoke component="#oList#" method="#arguments.stMetadata.ftListData#" returnvariable="arguments.stMetadata.ftList" />
+			<cfinvoke component="#oList#" method="#arguments.stMetadata.ftListData#" returnvariable="arguments.stMetadata.ftList">
+				<cfinvokeargument name="objectid" value="#arguments.stObject.objectID#" />
+			</cfinvoke>
 			
 		</cfif>
 		
@@ -129,6 +127,19 @@
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 
 		<cfparam name="arguments.stMetadata.ftList" default="" />
+		
+		<cfif len(arguments.stMetadata.ftListData) >
+			<cfparam name="arguments.stMetadata.ftListDataTypename" default="#arguments.typename#" />
+			
+			<cfset oList = createObject("component", application.stcoapi[arguments.stMetadata.ftListDataTypename].packagePath) />
+			
+			<cfinvoke component="#oList#" method="#arguments.stMetadata.ftListData#" returnvariable="arguments.stMetadata.ftList">
+				<cfinvokeargument name="objectid" value="#arguments.stObject.objectID#" />
+			</cfinvoke>
+			
+		</cfif>
+		
+				
 		<cfsavecontent variable="html">
 			<cfloop list="#arguments.stMetadata.ftList#" index="i">			
 				<cfif ListFirst(i,":") EQ arguments.stMetadata.value>
