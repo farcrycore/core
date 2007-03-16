@@ -274,7 +274,7 @@ user --->
 			
 			<cfoutput>
 				#attributes.sqlWhere#
-				
+			</cfoutput>	
 				
 				
 				<cfloop list="#attributes.lFilterFields#" index="i">
@@ -285,7 +285,7 @@ user --->
 							<cfif len(session.objectadminFilterObjects[attributes.typename].stObject[i])>
 								<cfloop list="#session.objectadminFilterObjects[attributes.typename].stObject[i]#" index="j">
 									<cfset whereValue = ReplaceNoCase(trim(LCase(j)),"'", "''", "all") />
-									AND lower(#i#) LIKE '%#whereValue#%'
+									<cfoutput>AND lower(#i#) LIKE '%#whereValue#%'</cfoutput>
 								</cfloop>
 							</cfif>
 						</cfcase>
@@ -294,7 +294,7 @@ user --->
 							<cfif len(session.objectadminFilterObjects[attributes.typename].stObject[i])>
 								<cfloop list="#session.objectadminFilterObjects[attributes.typename].stObject[i]#" index="j">
 									<cfset whereValue = ReplaceNoCase(j,"'", "''", "all") />
-									AND lower(#i#) = '#j#'
+									<cfoutput>AND lower(#i#) = '#j#'</cfoutput>
 								</cfloop>
 							</cfif>
 						</cfcase>
@@ -313,10 +313,10 @@ user --->
 								<cfloop list="#session.objectadminFilterObjects[attributes.typename].stObject[i]#" index="j">
 									<cfif listcontains("string,nstring,longchar", PrimaryPackage.stProps[i].metadata.type)>
 										<cfset whereValue = ReplaceNoCase(trim(j),"'", "''", "all") />
-										AND lower(#i#) LIKE '%#whereValue#%'
+										<cfoutput>AND lower(#i#) LIKE '%#whereValue#%'</cfoutput>
 									<cfelseif listcontains("numeric", PrimaryPackage.stProps[i].metadata.type)>
 										<cfset whereValue = ReplaceNoCase(j,"'", "''", "all") />
-										AND #i# = #whereValue#
+										<cfoutput>AND #i# = #whereValue#</cfoutput>
 									</cfif>
 								</cfloop>
 							</cfif>
@@ -326,7 +326,7 @@ user --->
 						
 					</cfif>
 				</cfloop>
-			</cfoutput>
+			
 		</cfsavecontent>
 
 </cfif>
@@ -553,6 +553,7 @@ user --->
 	<cfsavecontent variable="html_buttonbar">
 	<cfoutput>
 	<div class="">
+	</cfoutput>
 	
 	<cfloop from="1" to="#arraylen(attributes.aButtons)#" index="i">
 		
@@ -571,10 +572,14 @@ user --->
 			</cfif>
 		</cfif>
 	</cfloop>
+	
+	<cfoutput>
 	</div>
 	<br class="clearer" />
 	</cfoutput>
+	
 	</cfsavecontent>
+	
 	<cfoutput>#html_buttonbar#</cfoutput>
 
 
@@ -641,52 +646,86 @@ user --->
 	
 	<cfoutput>
 	<table width="100%">
-		<tr>
-	 		<cfif attributes.bSelectCol><th>Select</th></cfif>
+		<tr>			
+	</cfoutput>
+	
+	 		<cfif attributes.bSelectCol><cfoutput><th>Select</th></cfoutput></cfif>
 	 		<cfif listContainsNoCase(stRecordset.q.columnlist,"bHasMultipleVersion")>
-		 		<th>Status</th>
+		 		<cfoutput><th>Status</th></cfoutput>
 			</cfif>
-			<th>Action</th>
+			<cfoutput><th>Action</th></cfoutput>
 			<!---<cfif attributes.bEditCol><th>Edit</th></cfif>
 			<cfif attributes.bViewCol><th>View</th></cfif>
 			<cfif attributes.bFlowCol><th>Flow</th></cfif> --->
-			<cfloop list="#attributes.columnlist#" index="i">
-				<th>
+			
+			<cfif arrayLen(attributes.aColumns)>
+				<cfloop from="1" to="#arrayLen(attributes.aColumns)#" index="i">
 					
-					<cfif isDefined("PrimaryPackage.stProps.#trim(i)#.metadata.ftLabel")>
-						#PrimaryPackage.stProps[trim(i)].metadata.ftLabel#
+					<cfif isStruct(attributes.aColumns[i]) and structKeyExists(attributes.aColumns[i], "label")>
+						<cfoutput><th>#attributes.aColumns[i].label#</th></cfoutput>
 					<cfelse>
-						#i#
+						<cfoutput><th>&nbsp;</th></cfoutput>
 					</cfif>
-				</th>
-			</cfloop>
-		</tr>
-		<cfif len(attributes.SortableColumns)>
-		<tr>
-	 		<cfif attributes.bSelectCol><th>&nbsp;</th></cfif>	 		
-	 		<cfif listContainsNoCase(stRecordset.q.columnlist,"bHasMultipleVersion")>
-		 		<th>&nbsp;</th>
+					
+				</cfloop>
 			</cfif>
-			<th>&nbsp;</th>
-			<!---<cfif attributes.bEditCol><th>&nbsp;</th></cfif>
-			<cfif attributes.bViewCol><th>&nbsp;</th></cfif>
-			<cfif attributes.bFlowCol><th>&nbsp;</th></cfif> --->
-			<cfloop list="#attributes.columnlist#" index="i">
-				<th>					
-					<cfif listContainsNoCase(attributes.SortableColumns,i)>
-						<select name="#i#sqlOrderBy" onchange="javascript:$('sqlOrderBy').value=this.value;submit();" style="width:80px;">
-							<option value=""></option>
-							<option value="#i# asc" <cfif session.objectadminFilterObjects[attributes.typename].sqlOrderBy EQ "#i# asc">selected</cfif>>asc</option>
-							<option value="#i# desc" <cfif session.objectadminFilterObjects[attributes.typename].sqlOrderBy EQ "#i# desc">selected</cfif>>desc</option>
-						</select>
-					<cfelse>
-						&nbsp;
-					</cfif>
-				</th>
+			
+			<cfloop list="#attributes.columnlist#" index="i">				
+					
+				<cfif isDefined("PrimaryPackage.stProps.#trim(i)#.metadata.ftLabel")>
+					<cfoutput><th>#PrimaryPackage.stProps[trim(i)].metadata.ftLabel#</th></cfoutput>
+				<cfelse>
+					<cfoutput><th>#i#</th></cfoutput>
+				</cfif>
+				
 			</cfloop>
+			
+		<cfoutput>
 		</tr>
+		</cfoutput>
+		
+		
+		<cfif len(attributes.SortableColumns)>
+			<cfoutput>
+			<tr>
+			</cfoutput>
+			
+		 		<cfif attributes.bSelectCol><cfoutput><th>&nbsp;</th></cfoutput></cfif>	 	
+		 			
+		 		<cfif listContainsNoCase(stRecordset.q.columnlist,"bHasMultipleVersion")>
+			 		<cfoutput><th>&nbsp;</th></cfoutput>
+				</cfif>
+				<cfoutput><th>&nbsp;</th></cfoutput>
+				<!---<cfif attributes.bEditCol><th>&nbsp;</th></cfif>
+				<cfif attributes.bViewCol><th>&nbsp;</th></cfif>
+				<cfif attributes.bFlowCol><th>&nbsp;</th></cfif> --->					
+				<cfif arrayLen(attributes.aColumns)>
+					<cfset oType = createObject("component", PrimaryPackagePath) />
+					<cfloop from="1" to="#arrayLen(attributes.aColumns)#" index="i">
+						<cfoutput><th>&nbsp;</th></cfoutput>
+					</cfloop>
+				</cfif>
+		
+				<cfloop list="#attributes.columnlist#" index="i">
+					<cfoutput><th></cfoutput>					
+						<cfif listContainsNoCase(attributes.SortableColumns,i)>
+							<cfoutput>
+							<select name="#i#sqlOrderBy" onchange="javascript:$('sqlOrderBy').value=this.value;submit();" style="width:80px;">
+								<option value=""></option>
+								<option value="#i# asc" <cfif session.objectadminFilterObjects[attributes.typename].sqlOrderBy EQ "#i# asc">selected</cfif>>asc</option>
+								<option value="#i# desc" <cfif session.objectadminFilterObjects[attributes.typename].sqlOrderBy EQ "#i# desc">selected</cfif>>desc</option>
+							</select>
+							</cfoutput>
+						<cfelse>
+							<cfoutput>&nbsp;</cfoutput>
+						</cfif>
+					<cfoutput></th></cfoutput>
+				</cfloop>
+			<cfoutput>
+			</tr>
+			</cfoutput>
 		</cfif>
-	</cfoutput>
+
 	
 	
 		
@@ -694,22 +733,40 @@ user --->
 			
 				<cfoutput>
 				<tr>
-					<cfif attributes.bSelectCol><td nowrap="true">#st.select# #st.currentRow#</td></cfif>
-			 		<cfif listContainsNoCase(stRecordset.q.columnlist,"bHasMultipleVersion")>
-				 		<td nowrap="true">#st.status#</td>
+				</cfoutput>
+				
+					<cfif attributes.bSelectCol>
+						<cfoutput><td nowrap="true">#st.select# #st.currentRow#</td></cfoutput>
 					</cfif>
-					<td>#st.action#</td>
+			 		<cfif listContainsNoCase(stRecordset.q.columnlist,"bHasMultipleVersion")>
+				 		<cfoutput><td nowrap="true">#st.status#</td></cfoutput>
+					</cfif>
+					<cfoutput><td>#st.action#</td></cfoutput>
 					<!---<cfif attributes.bEditCol><td>#st.editLink#</td></cfif>
 					<cfif attributes.bViewCol><td>#st.viewLink#</td></cfif>
 					<cfif attributes.bFlowCol><td>#st.flowLink#</td></cfif> --->
+					<cfif arrayLen(attributes.aColumns)>
+						<cfset oType = createObject("component", PrimaryPackagePath) />
+						<cfloop from="1" to="#arrayLen(attributes.aColumns)#" index="i">
+							
+							<cfif isStruct(attributes.aColumns[i]) and structKeyExists(attributes.aColumns[i], "webskin")>
+								<cfset HTML = oType.getView(objectid="#st.stFields.objectid.value#", template="#attributes.aColumns[i].webskin#")>
+								<cfoutput><td>#HTML#</td></cfoutput>
+							<cfelse>
+								<cfoutput><td>&nbsp;</td></cfoutput>
+							</cfif>
+							
+						</cfloop>
+					</cfif>
 					<cfloop list="#attributes.columnlist#" index="i">
 						<cfif structKeyExists(st.stFields, i)>
-							<td>#st.stFields[i].HTML#</td>				
+							<cfoutput><td>#st.stFields[i].HTML#</td>	</cfoutput>			
 						<cfelse>
-							<td>-- not available --</td>				
+							<cfoutput><td>-- not available --</td>	</cfoutput>			
 						</cfif>
 						
 					</cfloop>
+				<cfoutput>
 				</tr>
 				</cfoutput>
 			
