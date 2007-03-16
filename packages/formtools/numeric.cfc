@@ -64,6 +64,7 @@
 		
 		<cfif isDefined("arguments.stMetadata.ftCurrencySymbol") AND len(arguments.stMetadata.ftCurrencySymbol)>
 			<cfset stResult.value = ReplaceNoCase(stResult.value, arguments.stMetadata.ftCurrencySymbol, "","all")>
+			<cfset stResult.value = trim(stResult.value) />
 		</cfif>
 		
 		
