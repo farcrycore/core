@@ -14,6 +14,13 @@
 
 		<cfparam name="arguments.stMetadata.ftIncludeDecimal" default="true">
 		<cfparam name="arguments.stMetadata.ftCurrencySymbol" default="">
+		<cfparam name="arguments.stMetadata.ftPrefix" default="">
+		<cfparam name="arguments.stMetadata.ftSuffix" default="">
+		
+		<!--- This is for legacy. You should use just ftPrefix and ftSuffix --->
+		<cfif len(arguments.stMetadata.ftCurrencySymbol)>
+			<cfset arguments.stMetadata.ftPrefix = arguments.stMetadata.ftCurrencySymbol />
+		</cfif>
 		
 		<cfif stMetadata.ftIncludeDecimal>
 			<cfset arguments.stMetadata.value = DecimalFormat(arguments.stMetadata.value)>
@@ -22,7 +29,7 @@
 		</cfif>
 		
 		<cfsavecontent variable="html">
-			<cfoutput><input type="Text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#arguments.stMetadata.ftCurrencySymbol##arguments.stMetadata.value#" <cfif structKeyExists(arguments.stMetadata,'ftStyle')>style="#arguments.stMetadata.ftstyle#"</cfif> class="#arguments.stMetadata.ftclass#" /></cfoutput>
+			<cfoutput><input type="Text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#arguments.stMetadata.ftPrefix##arguments.stMetadata.value##arguments.stMetadata.ftSuffix#" <cfif structKeyExists(arguments.stMetadata,'ftStyle')>style="#arguments.stMetadata.ftstyle#"</cfif> class="#arguments.stMetadata.ftclass#" /></cfoutput>
 		</cfsavecontent>
 		
 		<cfreturn html>
@@ -34,15 +41,22 @@
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 		
-		<cfparam name="stMetadata.ftIncludeDecimal" default="true">
-		<cfparam name="stMetadata.ftCurrencySymbol" default="">
+		<cfparam name="arguments.stMetadata.ftIncludeDecimal" default="true">
+		<cfparam name="arguments.stMetadata.ftCurrencySymbol" default="">
+		<cfparam name="arguments.stMetadata.ftPrefix" default="">
+		<cfparam name="arguments.stMetadata.ftSuffix" default="">
+		
+		<!--- This is for legacy. You should use just ftPrefix and ftSuffix --->
+		<cfif len(arguments.stMetadata.ftCurrencySymbol)>
+			<cfset arguments.stMetadata.ftPrefix = arguments.stMetadata.ftCurrencySymbol />
+		</cfif>
 		
 		<cfif NOT stMetadata.ftIncludeDecimal>
 			<cfset arguments.stMetadata.value = NumberFormat(arguments.stMetadata.value)>
 		</cfif>
 		
 		<cfsavecontent variable="html">
-			<cfoutput>#stMetadata.ftCurrencySymbol##arguments.stMetadata.value#</cfoutput>
+			<cfoutput>#arguments.stMetadata.ftPrefix##arguments.stMetadata.value##arguments.stMetadata.ftSuffix#</cfoutput>
 		</cfsavecontent>
 		
 		<cfreturn html>
@@ -52,7 +66,17 @@
 		<cfargument name="stFieldPost" required="true" type="struct" hint="The fields that are relevent to this field type.">
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		
-		<cfset var stResult = structNew()>		
+		<cfset var stResult = structNew()>	
+
+		<cfparam name="arguments.stMetadata.ftCurrencySymbol" default="">
+		<cfparam name="arguments.stMetadata.ftPrefix" default="">
+		<cfparam name="arguments.stMetadata.ftSuffix" default="">
+		
+		<!--- This is for legacy. You should use just ftPrefix and ftSuffix --->
+		<cfif len(arguments.stMetadata.ftCurrencySymbol)>
+			<cfset arguments.stMetadata.ftPrefix = arguments.stMetadata.ftCurrencySymbol />
+		</cfif>		
+		
 		<cfset stResult.bSuccess = true>
 		<cfset stResult.value = "#stFieldPost.Value#">
 		<cfset stResult.stError = StructNew()>
@@ -62,12 +86,16 @@
 		<!--- --------------------------- --->
 		<cfset stResult.value = ReplaceNoCase(stResult.value, ",","","all")>
 		
-		<cfif isDefined("arguments.stMetadata.ftCurrencySymbol") AND len(arguments.stMetadata.ftCurrencySymbol)>
-			<cfset stResult.value = ReplaceNoCase(stResult.value, arguments.stMetadata.ftCurrencySymbol, "","all")>
-			<cfset stResult.value = trim(stResult.value) />
+		<cfif len(trim(arguments.stMetadata.ftPrefix))>
+			<cfset stResult.value = ReplaceNoCase(stResult.value, trim(arguments.stMetadata.ftPrefix), "","all")>
+		</cfif>
+		<cfif len(trim(arguments.stMetadata.ftSuffix))>
+			<cfset stResult.value = ReplaceNoCase(stResult.value, trim(arguments.stMetadata.ftSuffix), "","all")>
 		</cfif>
 		
 		
+		<cfset stResult.value = trim(stResult.value) />
+	
 		<!--- ----------------- --->
 		<!--- Return the Result --->
 		<!--- ----------------- --->

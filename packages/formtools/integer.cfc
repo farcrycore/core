@@ -16,9 +16,11 @@
 	
 		<cfparam name="arguments.stMetadata.ftClass" default="" />
 		<cfparam name="arguments.stMetadata.ftStyle" default="width:50px;" />
+		<cfparam name="arguments.stMetadata.ftPrefix" default="">
+		<cfparam name="arguments.stMetadata.ftSuffix" default="">
 	
 		<cfsavecontent variable="html">
-			<cfoutput><input type="text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#arguments.stMetadata.value#" style="#arguments.stMetadata.ftstyle#" class="#arguments.stMetadata.ftClass#" /></cfoutput>
+			<cfoutput><input type="text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#arguments.stMetadata.ftPrefix##arguments.stMetadata.value##arguments.stMetadata.ftSuffix#" style="#arguments.stMetadata.ftstyle#" class="#arguments.stMetadata.ftClass#" /></cfoutput>
 		</cfsavecontent>
 		
 		<cfreturn html />
@@ -33,8 +35,11 @@
 
 		<cfset var html = "" />		
 		
+		<cfparam name="arguments.stMetadata.ftPrefix" default="">
+		<cfparam name="arguments.stMetadata.ftSuffix" default="">
+		
 		<cfsavecontent variable="html">
-			<cfoutput>#arguments.stMetadata.value#</cfoutput>
+			<cfoutput>#arguments.stMetadata.ftPrefix##arguments.stMetadata.value##arguments.stMetadata.ftSuffix#</cfoutput>
 		</cfsavecontent>
 		
 		<cfreturn html />
@@ -47,25 +52,34 @@
 		
 		<cfset var stResult = structNew() />
 		
-		<cfset stResult.bSuccess = true />
-		<cfset stResult.value = "" />
-		<cfset stResult.stError = structNew() />
+		<cfparam name="arguments.stMetadata.ftPrefix" default="">
+		<cfparam name="arguments.stMetadata.ftSuffix" default="">
+		
+		
+		<cfset stResult.bSuccess = true>
+		<cfset stResult.value = "#stFieldPost.Value#">
+		<cfset stResult.stError = StructNew()>
 		
 		<!--- --------------------------- --->
 		<!--- Perform any validation here --->
 		<!--- --------------------------- --->
-		<cfif isNumeric(arguments.stFieldPost.Value)>
-			<cfset stResult.value = stFieldPost.Value />
-		<cfelse>
-			<!--- not a valid number...default to empty string --->
-			<cfset stResult.value = "" />
-		</cfif>		
+		<cfset stResult.value = ReplaceNoCase(stResult.value, ",","","all")>
+		
+		<cfif len(trim(arguments.stMetadata.ftPrefix))>
+			<cfset stResult.value = ReplaceNoCase(stResult.value, trim(arguments.stMetadata.ftPrefix), "","all")>
+		</cfif>
+		<cfif len(trim(arguments.stMetadata.ftSuffix))>
+			<cfset stResult.value = ReplaceNoCase(stResult.value, trim(arguments.stMetadata.ftSuffix), "","all")>
+		</cfif>
 		
 		
+		<cfset stResult.value = trim(stResult.value) />
+	
 		<!--- ----------------- --->
 		<!--- Return the Result --->
 		<!--- ----------------- --->
-		<cfreturn stResult />		
+		<cfreturn stResult>
+		
 	</cffunction>
 
 
