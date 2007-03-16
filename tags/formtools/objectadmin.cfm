@@ -51,6 +51,7 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 <cfparam name="attributes.description" default="" type="string">
 <cfparam name="attributes.datasource" default="#application.dsn#" type="string">
 <cfparam name="attributes.aColumns" default="#arrayNew(1)#" type="array">
+<cfparam name="attributes.aCustomColumns" default="#arrayNew(1)#" type="array">
 <cfparam name="attributes.aButtons" default="#arrayNew(1)#" type="array">
 <cfparam name="attributes.bdebug" default="false" type="boolean">
 <cfparam name="attributes.bFilterCategories" default="true" type="boolean">
@@ -530,9 +531,6 @@ user --->
 
 
 
-
-
-
 <ft:form style="width: 100%;" Name="objectadmin">
 
 
@@ -658,11 +656,11 @@ user --->
 			<cfif attributes.bViewCol><th>View</th></cfif>
 			<cfif attributes.bFlowCol><th>Flow</th></cfif> --->
 			
-			<cfif arrayLen(attributes.aColumns)>
-				<cfloop from="1" to="#arrayLen(attributes.aColumns)#" index="i">
+			<cfif arrayLen(attributes.aCustomColumns)>
+				<cfloop from="1" to="#arrayLen(attributes.aCustomColumns)#" index="i">
 					
-					<cfif isStruct(attributes.aColumns[i]) and structKeyExists(attributes.aColumns[i], "label")>
-						<cfoutput><th>#attributes.aColumns[i].label#</th></cfoutput>
+					<cfif isStruct(attributes.aCustomColumns[i]) and structKeyExists(attributes.aCustomColumns[i], "title")>
+						<cfoutput><th>#attributes.aCustomColumns[i].title#</th></cfoutput>
 					<cfelse>
 						<cfoutput><th>&nbsp;</th></cfoutput>
 					</cfif>
@@ -699,9 +697,9 @@ user --->
 				<!---<cfif attributes.bEditCol><th>&nbsp;</th></cfif>
 				<cfif attributes.bViewCol><th>&nbsp;</th></cfif>
 				<cfif attributes.bFlowCol><th>&nbsp;</th></cfif> --->					
-				<cfif arrayLen(attributes.aColumns)>
+				<cfif arrayLen(attributes.aCustomColumns)>
 					<cfset oType = createObject("component", PrimaryPackagePath) />
-					<cfloop from="1" to="#arrayLen(attributes.aColumns)#" index="i">
+					<cfloop from="1" to="#arrayLen(attributes.aCustomColumns)#" index="i">
 						<cfoutput><th>&nbsp;</th></cfoutput>
 					</cfloop>
 				</cfif>
@@ -745,12 +743,12 @@ user --->
 					<!---<cfif attributes.bEditCol><td>#st.editLink#</td></cfif>
 					<cfif attributes.bViewCol><td>#st.viewLink#</td></cfif>
 					<cfif attributes.bFlowCol><td>#st.flowLink#</td></cfif> --->
-					<cfif arrayLen(attributes.aColumns)>
+					<cfif arrayLen(attributes.aCustomColumns)>
 						<cfset oType = createObject("component", PrimaryPackagePath) />
-						<cfloop from="1" to="#arrayLen(attributes.aColumns)#" index="i">
+						<cfloop from="1" to="#arrayLen(attributes.aCustomColumns)#" index="i">
 							
-							<cfif isStruct(attributes.aColumns[i]) and structKeyExists(attributes.aColumns[i], "webskin")>
-								<cfset HTML = oType.getView(objectid="#st.stFields.objectid.value#", template="#attributes.aColumns[i].webskin#")>
+							<cfif isStruct(attributes.aCustomColumns[i]) and structKeyExists(attributes.aCustomColumns[i], "webskin")>
+								<cfset HTML = oType.getView(objectid="#st.stFields.objectid.value#", template="#attributes.aCustomColumns[i].webskin#")>
 								<cfoutput><td>#HTML#</td></cfoutput>
 							<cfelse>
 								<cfoutput><td>&nbsp;</td></cfoutput>
