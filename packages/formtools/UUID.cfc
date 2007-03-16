@@ -60,7 +60,7 @@
 				</cfif>
 			</cfif>
 			<!--- if nothing exists to generate library data then cobble something together --->
-			<cfif NOT isDefined("qLibraryList")>
+			<cfif not qLibraryList.recordCount>
 				<cfinvoke component="#oData#" method="getLibraryData" returnvariable="qLibraryList" />
 			</cfif>
 
