@@ -352,25 +352,16 @@ LIBRARY DATA
 </cfif>
 
 
+<cfoutput><div></cfoutput>
 
-<cfif structKeyExists(application.config.verity, "CONTENTTYPE") AND structKeyExists(application.config.verity.CONTENTTYPE,request.ftJoin)>
-	
-	<cfoutput><div></cfoutput>
+<ft:form>
+	<cfoutput><input type="text" name="criteria" id="criteria" value="#session.stLibraryFilter[request.ftJoin].Criteria#" /></cfoutput>
+	<ft:farcryButton value="Search" />
+	<ft:farcryButton value="Refresh" />
+</ft:form>
 
 
-
-	
-	
-	<ft:form>
-		<cfoutput><input type="text" name="criteria" id="criteria" value="#session.stLibraryFilter[request.ftJoin].Criteria#" /></cfoutput>
-		<ft:farcryButton value="Search" />
-		<ft:farcryButton value="Refresh" />
-	</ft:form>
-	
-	
-	<cfoutput></div></cfoutput>
-	
-</cfif>
+<cfoutput></div></cfoutput>
 
 <cfoutput>
 	<br style="clear:both;" />
