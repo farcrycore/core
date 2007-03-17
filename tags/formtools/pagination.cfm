@@ -66,7 +66,15 @@ $in:  $
 	
 	<cfset attributes.currentPage = oFormtoolUtil.getCurrentPaginationPage(paginationID=attributes.paginationID, currentPage=attributes.currentPage) />
 
-	<cfif attributes.totalRecords LTE 0 or NOT isnumeric(attributes.totalRecords)>
+	<cfif attributes.totalRecords GT attributes.qRecordSet.recordCount>
+		<!--- This means we have passed in only the page of recordset information we need for rendering --->
+		<cfset attributes.startRow = 1 />
+		<cfset attributes.endRow = attributes.recordsPerPage />
+		<cfif attributes.endRow GT attributes.qRecordSet.recordcount>
+			<cfset attributes.endRow = attributes.qRecordSet.recordcount />
+		</cfif>
+			
+	<cfelse>
 		<!--- This means that we have passed in an entire recordset and not just the page of relevent data --->
 		<cfset attributes.totalRecords = attributes.qRecordSet.recordCount />
 		<cfset attributes.startRow = attributes.currentPage * attributes.recordsPerPage - attributes.recordsPerPage + 1 />
@@ -75,13 +83,6 @@ $in:  $
 		</cfif>
 		
 		<cfset attributes.endRow = attributes.currentPage * attributes.recordsPerPage />
-		<cfif attributes.endRow GT attributes.qRecordSet.recordcount>
-			<cfset attributes.endRow = attributes.qRecordSet.recordcount />
-		</cfif>
-			
-	<cfelse>
-		<cfset attributes.startRow = 1 />
-		<cfset attributes.endRow = attributes.recordsPerPage />
 		<cfif attributes.endRow GT attributes.qRecordSet.recordcount>
 			<cfset attributes.endRow = attributes.qRecordSet.recordcount />
 		</cfif>

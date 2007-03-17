@@ -271,7 +271,7 @@ LIBRARY DATA
 		<cfif isQuery(libraryDataResult)>
 			<cfset stLibraryData.q = libraryDataResult />
 			<cfset stLibraryData.recordsPerPage = 20 />
-			<cfset stLibraryData.CountAll = libraryDataResult.recordCount />
+			<cfset stLibraryData.CountAll = q.RecordCount />
 			<cfset stLibraryData.currentPage = URL.currentPage />
 		<cfelseif structKeyExists(libraryDataResult, "q")>
 			<cfset stLibraryData = LibraryDataResult />
