@@ -198,7 +198,7 @@ $Developer: $
 	<!--- <cfsearch collection="#application.applicationName#_#request.ftJoin#" criteria="#filterCriteria#" name="qSearchResults" type="internet"  /> --->
 	<cfquery datasource="#application.dsn#" name="qSearchResults">
 		SELECT objectID as [key] , label FROM #application.dbowner#[#request.ftJoin#]	
-		WHERE label like '%#filterCriteria#%'
+		WHERE label like <cfqueryparam cfsqltype="cf_sql_varchar" value="%#filterCriteria#%">
 		Order by label
 	</cfquery>
 	
