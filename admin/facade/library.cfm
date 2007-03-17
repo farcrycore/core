@@ -204,6 +204,8 @@ $Developer: $
 	
 	<cfif NOT qSearchResults.RecordCount>
 		<cfoutput><h3>No Results matched search. All records have been returned</h3></cfoutput>
+		<cfset session.stLibraryFilter['#request.ftJoin#'].qResults = queryNew("objectid,label") />
+		
 	<cfelse>
 		<cfif qSearchResults.RecordCount GT 100>
 			<cfoutput><h3>#qSearchResults.RecordCount# results matched search. Results have been limited to 100.</h3></cfoutput>
