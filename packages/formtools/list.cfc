@@ -128,7 +128,7 @@
 
 		<cfparam name="arguments.stMetadata.ftList" default="" />
 		
-		<cfif len(arguments.stMetadata.ftListData) >
+		<cfif isDefined("arguments.stMetadata.ftListData") AND len(arguments.stMetadata.ftListData) >
 			<cfparam name="arguments.stMetadata.ftListDataTypename" default="#arguments.typename#" />
 			
 			<cfset oList = createObject("component", application.stcoapi[arguments.stMetadata.ftListDataTypename].packagePath) />
