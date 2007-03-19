@@ -19,6 +19,7 @@ collection if needed$
 $Developer: Guy Phanvongsa (guy@daemon.com.au)$
 --->
 
+<cfparam name="application.config.verity.bUpdateCollectionOnDelete" default="1" type="boolean">
 <!--- delete actual object --->
 <cfset deleteData(stObj.objectId)>
 
@@ -39,8 +40,8 @@ $Developer: Guy Phanvongsa (guy@daemon.com.au)$
 	<cfset application.config.verity = oConfig.getConfig("verity")>
 </cfif>
 <cfset stCollections = application.config.verity.contenttype>
-<cfif structKeyExists(stCollections,stObj.typename)>
-	<cfset collectionName = application.applicationname & "_" & stObj.typename>
+<cfif structKeyExists(stCollections,stObj.typename) and application.config.verity.bUpdateCollectionOnDelete>
+	<cfset collectionName = lcase(application.applicationname & "_" & stObj.typename)>
 	<cfset application.factory.oVerity.deleteFromCollection(collection=collectionName,objectid=stObj.objectid)>
 </cfif>
 
