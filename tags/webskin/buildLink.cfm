@@ -32,6 +32,7 @@ $in: xCode -- eXtra code to be placed inside the anchor tag $
 	<cfparam name="attributes.target" default="_self">
 	<cfparam name="attributes.bShowTarget" default="false">
 	<cfparam name="attributes.externallink" default="">
+	<cfparam name="attributes.id" default="">
 	<cfparam name="attributes.class" default="">
 	<cfparam name="attributes.urlOnly" default="false">
 	<cfparam name="attributes.r_url" default="">
@@ -148,6 +149,9 @@ $in: xCode -- eXtra code to be placed inside the anchor tag $
 	<cfelse>
 		<!--- display link --->
 		<cfset tagoutput='<a href="#href#"'>
+		<cfif len(attributes.id)>
+			<cfset tagoutput=tagoutput & ' id="#attributes.id#"'>
+		</cfif>
 		<cfif len(attributes.class)>
 			<cfset tagoutput=tagoutput & ' class="#attributes.class#"'>
 		</cfif>
