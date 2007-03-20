@@ -128,6 +128,8 @@ object methods
 	
 	<cfif NOT structIsEmpty(stObj)>
 		
+		<cfset stReturn = super.delete(stObj.objectId) />
+		
 		<!--- Find any dmHTML pages that reference this navigation node. --->
 		<cfquery datasource="#application.dsn#" name="qRelated">
 		SELECT * FROM dmHTML_aRelatedIDs
@@ -149,9 +151,6 @@ object methods
 						
 		</cfif>
 		
-		
-		<cfset stReturn.bSuccess = true>
-		<cfset stReturn.message = "#stObj.label# (#stObj.typename#) deleted.">
 		<cfreturn stReturn>
 	<cfelse>
 		
