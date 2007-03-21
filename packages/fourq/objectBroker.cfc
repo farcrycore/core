@@ -33,7 +33,7 @@
 		
 		<cfset var stobj = structNew()>
 		
-		<cfif application.bObjectBroker>
+		<cfif structKeyExists(application, "bObjectBroker") and application.bObjectBroker>
 			<!--- If the type is stored in the objectBroker and the Object is currently in the ObjectBroker --->
 			<cfif structkeyexists(application.objectbroker, arguments.typename) 
 					AND structkeyexists(application.objectbroker[arguments.typename], arguments.objectid)
@@ -156,7 +156,7 @@
 		<cfargument name="stObj" required="yes" type="struct">
 		<cfargument name="typename" required="true" type="string">
 		
-		<cfif application.bObjectBroker>
+		<cfif structKeyExists(application, "bObjectBroker") and application.bObjectBroker>
 			<!--- if the type is to be stored in the objectBroker --->
 			<cfif structkeyexists(arguments.stObj, "objectid") AND structkeyexists(application.objectbroker, arguments.typename)>
 				<cflock name="objectBroker" type="exclusive" timeout="2" throwontimeout="true">
