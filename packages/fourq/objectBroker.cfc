@@ -135,14 +135,15 @@
 		
 		<cfif application.bObjectBroker>
 		
-			<cfif structKeyExists(application.objectbroker[arguments.typename], arguments.objectid)>
-				<cfif structKeyExists(application.objectbroker[arguments.typename][arguments.objectid], "stWebskins")>
-					<cflock name="objectBroker" type="exclusive" timeout="2" throwontimeout="true">
-						<cfset structDelete(application.objectbroker[arguments.typename][arguments.objectid].stWebskins, arguments.template) />
-					</cflock>
+			<cfif structKeyExists(application.objectbroker, arguments.typename)>
+				<cfif structKeyExists(application.objectbroker[arguments.typename], arguments.objectid)>
+					<cfif structKeyExists(application.objectbroker[arguments.typename][arguments.objectid], "stWebskins")>
+						<cflock name="objectBroker" type="exclusive" timeout="2" throwontimeout="true">
+							<cfset structDelete(application.objectbroker[arguments.typename][arguments.objectid].stWebskins, arguments.template) />
+						</cflock>
+					</cfif>
 				</cfif>
 			</cfif>
-		
 		</cfif>
 	
 		
