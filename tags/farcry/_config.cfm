@@ -160,9 +160,10 @@ test for the existance of each and act accordingly
 
 	<cfif StructKeyExists( stAnon, "policyGroupId" )>
 		<cfset Application.dmSec.lDefaultPolicyGroups=stAnon.policyGroupId>
-		<!--- <cftrace inline="yes" var="stAnon.policyGroupId" text="stAnon.policyGroupId"> --->
+		<!--- <cftrace inline="yes" var="stAnon.policyGroupId" text="stAnon.policyGroupId"> --->	
+	<cfelse>
+		<cfset Application.dmSec.lDefaultPolicyGroups="">	
 	</cfif>
-
 	<cfcatch type="All"><cfdump var="#cfcatch#"></cfcatch>
 </cftry>
 
