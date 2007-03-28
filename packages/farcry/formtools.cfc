@@ -81,17 +81,19 @@
 	
 	<cfset var l_sqlCatIds = "">
 	
+	
+	
+	<cfif listlen(arguments.lCategories)>
+		<cfloop list="#arguments.lCategories#" index="i">
+			<cfset arrayAppend(aCategoryFilters, i) />
+		</cfloop>
+	</cfif>
+	
 	<cfif arrayLen(arguments.aCategoryFilters)>
 		<cfloop from="1" to="#arrayLen(arguments.aCategoryFilters)#" index="i">
 			<cfif arguments.aCategoryFilters[i] neq ''>
 				<cfset l_sqlCatIds = listAppend(l_sqlCatIds,arguments.aCategoryFilters[i])>
 			</cfif>
-		</cfloop>
-	</cfif>
-	
-	<cfif listlen(arguments.lCategories)>
-		<cfloop list="#arguments.lCategories#" index="i">
-			<cfset arrayAppend(aCategoryFilters, i) />
 		</cfloop>
 	</cfif>
 	
