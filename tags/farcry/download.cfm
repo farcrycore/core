@@ -55,6 +55,14 @@ $out:$
 	<cfset url.typename = q4.findType(objectid="#url.objectid#") />	
 </cfif>
 
+<!--- report missing file if no typename can be determined --->
+<cfif NOT len(url.typename)>
+	<cfoutput>
+		<h1>File not found.</h1>
+		<p>The file you are trying to download could not be found.</p>
+	</cfoutput>
+	<cfabort />
+</cfif>
 
 <!--- should not be able to get object unless authorised. --->
 <cfif isDefined("url.objectid") and len(trim(url.objectid))>
