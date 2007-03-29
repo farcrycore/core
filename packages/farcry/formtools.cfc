@@ -81,7 +81,9 @@
 	
 	<cfset var l_sqlCatIds = "">
 	
-	
+	<cfif arguments.sqlColumns eq "objectid">
+		<cfset arguments.sqlColumns = "tbl.objectid">
+	</cfif>
 	
 	<cfif listlen(arguments.lCategories)>
 		<cfloop list="#arguments.lCategories#" index="i">
