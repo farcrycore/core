@@ -238,10 +238,6 @@ user --->
 			<cfset HTMLfiltersAttributes = "<div style='display:inline;color:##000'>result filtered by:</div> " & HTMLfiltersAttributes >
 		</cfif>
 	
-	
-
-
-	
 
 		<ft:form style="padding:0px; border-bottom: 1px solid ##000; ">
 			<cfoutput>
@@ -619,7 +615,7 @@ user --->
 
 
 
-	<cfset stRecordset = oFormtoolUtil.getRecordset(paginationID="#attributes.typename#", sqlColumns=sqlColumns, typename="#attributes.typename#", RecordsPerPage="20", sqlOrderBy="#session.objectadminFilterObjects[attributes.typename].sqlOrderBy#", sqlWhere="#attributes.sqlWhere#", lCategories="#attributes.lCategories#") />	
+	<cfset stRecordset = oFormtoolUtil.getRecordset(paginationID="#attributes.typename#", sqlColumns=sqlColumns, typename="#attributes.typename#", RecordsPerPage="20", sqlOrderBy="#session.objectadminFilterObjects[attributes.typename].sqlOrderBy#", sqlWhere="#attributes.sqlWhere#", lCategories="#attributes.lCategories#", bCheckVersions=true) />	
 
 
 

@@ -46,7 +46,7 @@
 </cffunction>
 
 
-<cffunction name="getRecordset" access="public" output="false" returntype="struct">
+<cffunction name="getRecordset" access="public" output="false" returntype="struct"> 
 	<cfargument name="typename" required="No" type="string" default="" />
 	<cfargument name="identityColumn" required="No" type="string" default="ObjectID" />
 	<cfargument name="sqlColumns" required="No" type="string" default="tbl.ObjectID" />
@@ -55,16 +55,16 @@
 	<cfargument name="lCategories" required="No" type="string" default="" />
 	<!--- <cfargument name="lCategoriesMust" required="No" type="string" default="" /> --->
 	
+	<cfargument name="bCheckVersions" required="No" type="boolean" default="false" hint="should be true when called from objectadmin or any use for admin purpose" />	
 	<cfargument name="paginationID" required="No" type="string" default="" />	
 	<cfargument name="CurrentPage" required="No" type="numeric" default="0" />
 	<cfargument name="RecordsPerPage" required="No" type="numeric" default="10" />
 	<cfargument name="PageLinksShown" required="No" type="numeric" default="5" />
+	<cfargument name="cacheTimeSpan" required="No" type="numeric" default="0" hint="duration in days, need non empty argument paginationID to work, recommendation: use createTimeSpan" />
 	
 	<cfargument name="aCategoryFilters" required="No" type="array" default="#arrayNew(1)#" />
-	
-	
-	
-	
+
+		
 	<cfset var PrimaryPackage = "" />
 	<cfset var PrimaryPackagePath = "" />
 		
@@ -107,8 +107,6 @@
 		<cfset PrimaryPackagePath = application.rules[arguments.typename].rulepath />
 	</cfif>
 
-	
-	
 	<cfset arguments.identityColumn = "tbl." & arguments.identityColumn>
 	
 	<cfset arguments.currentPage = getCurrentPaginationPage(paginationID=arguments.paginationID,CurrentPage=arguments.CurrentPage) />
@@ -141,11 +139,11 @@
 			<cfset arguments.sqlColumns="tbl.ObjectID," & sqlColumns>
 		</cfif>
 		
-		<cfif bHasStatus AND NOT listContainsNoCase(arguments.sqlColumns, "status") >
+		<cfif arguments.bCheckVersions AND bHasStatus AND NOT listContainsNoCase(arguments.sqlColumns, "status") >
 			<cfset arguments.sqlColumns = listAppend(arguments.sqlColumns, "status") />
 		</cfif>
 		
-		<cfif bHasVersionID AND NOT listContainsNoCase(arguments.sqlColumns, "versionid") >
+		<cfif arguments.bCheckVersions AND bHasVersionID AND NOT listContainsNoCase(arguments.sqlColumns, "versionid") >
 			<cfset arguments.sqlColumns = listAppend(arguments.sqlColumns, "versionid") />
 		</cfif>
 	<cfelse>
@@ -165,9 +163,20 @@
 		<cfif NOT len(arguments.sqlWhere)>
 			<cfset arguments.sqlWhere = "0=0" />
 		</cfif>
-
+		
+		<cfif arguments.cacheTimeSpan GT 0 and arguments.paginationID neq "">	
+			<cfset qCountName = "q" & replace(arguments.paginationID,"-","","ALL") &"_count">
+			<cfset qName = "qcache" & replace(arguments.paginationID,"-","","ALL") & arguments.RecordsPerPage & "_" & arguments.CurrentPage>
+			<cfset bQueryCached = 1>
+		<cfelse>
+			<cfset qCountName = "qrecordcount">
+			<cfset qName = "qFormToolRecordset">
+			<cfset arguments.cacheTimeSpan = 0>
+			<cfset bQueryCached = 0>
+		</cfif>
+		
 			
-		<cfquery name="qrecordcount" datasource="#application.dsn#">
+		<cfquery name="#qCountName#" datasource="#application.dsn#" cachedwithin="#arguments.cacheTimeSpan#">
 		SELECT count(distinct tbl.objectid) as CountAll 
 		FROM #arguments.typename# tbl 			
 		WHERE #preserveSingleQuotes(arguments.SqlWhere)#
@@ -181,8 +190,11 @@
 		<cfif bHasVersionID>
 			AND (tbl.versionid = '' OR tbl.versionid IS NULL)
 		</cfif>
-		
 		</cfquery>
+		
+		<cfif bQueryCached>
+			<cfset qrecordcount = evaluate("q" & replace(arguments.paginationID,"-","","ALL") &"_count")>
+		</cfif>
 		
 		<cfset theSQLTop = arguments.CurrentPage * arguments.recordsPerPage>
 		
@@ -200,8 +212,9 @@
 		</cfif>
 			
 		<cfif application.dbtype EQ "MSSQL">
+	
 			
-			<cfquery name="qFormToolRecordset" datasource="#application.dsn#">
+			<cfquery name="#qName#" datasource="#application.dsn#" cachedwithin="#arguments.cacheTimeSpan#">
 	
 			IF OBJECT_ID('tempdb..##thetops') IS NOT NULL 	drop table ##thetops
 			CREATE TABLE ##thetops (objectID varchar(40), myint int IDENTITY(1,1) NOT NULL);
@@ -225,21 +238,32 @@
 				ORDER BY #preserveSingleQuotes(arguments.sqlOrderBy)#
 			</cfif>
 			
-			SELECT #arguments.sqlColumns#
-			<cfif bHasversionID>
-				,(SELECT count(d.objectid) FROM #arguments.typename# d WHERE d.versionid = tbl.objectid) as bHasMultipleVersion
-			</cfif>
-			FROM #arguments.typename# tbl
-			inner join  ##thetops t on tbl.objectid = t.objectid where t.myint > ((select count(*) from ##thetops) - #RecordsPerPage-thisDiff#)
-			
-			<cfif len(trim(arguments.sqlOrderBy))>
-				ORDER BY #preserveSingleQuotes(arguments.sqlOrderBy)#
-			</cfif>
+				<cfif arguments.sqlColumns neq "tbl.objectID">
+					SELECT #arguments.sqlColumns#
+					<cfif bHasversionID and arguments.bCheckVersions>
+						,(SELECT count(d.objectid) FROM #arguments.typename# d WHERE d.versionid = tbl.objectid) as bHasMultipleVersion
+					</cfif>
+					FROM #arguments.typename# tbl
+					inner join  ##thetops t on tbl.objectid = t.objectid where t.myint >  ((select count(*) from ##thetops) - #arguments.RecordsPerPage-thisDiff#)
+					
+					<cfif len(trim(arguments.sqlOrderBy))>
+						ORDER BY #preserveSingleQuotes(arguments.sqlOrderBy)#
+					</cfif>
+				<cfelse>
+					SELECT objectID
+					<cfif bHasversionID and arguments.bCheckVersions>
+						,(SELECT count(d.objectid) FROM #arguments.typename# d WHERE d.versionid = t.objectid) as bHasMultipleVersion
+					</cfif>		
+					FROM ##thetops t where t.myint >  ((select count(*) from ##thetops) - #arguments.RecordsPerPage-thisDiff#)
+				</cfif>
 			
 			drop table ##thetops
 							
 			</cfquery>
-	
+			<cfif bQueryCached>
+				<cfset qFormToolRecordset = evaluate("qcache" & replace(arguments.paginationID,"-","","ALL") & arguments.RecordsPerPage & "_" & arguments.CurrentPage)>
+			</cfif>
+		
 			<!------------------------------
 			IF THE CURRENT PAGE IS GREATER THAN THE TOTAL PAGES, REDO THE RECORDSET FOR PAGE 1
 			 ------------------------------>		
@@ -259,7 +283,7 @@
 							    where categoryID in (#listQualify(l_sqlCatIds,"'")#)
 							    )				
 				</cfif>
-				<cfif bHasVersionID>
+				<cfif bHasversionID and arguments.bCheckVersions>
 					AND (tbl.versionid = '' OR tbl.versionid IS NULL)
 				</cfif>
 				
@@ -296,15 +320,23 @@
 					ORDER BY #preserveSingleQuotes(arguments.sqlOrderBy)#
 				</cfif>
 				
-				SELECT #arguments.sqlColumns#
-				<cfif bHasversionID>
-					,(SELECT count(d.objectid) FROM #arguments.typename# d WHERE d.versionid = tbl.objectid) as bHasMultipleVersion
-				</cfif>
-				FROM #arguments.typename# tbl
-				inner join  ##thetops t on tbl.objectid = t.objectid where t.myint >  ((select count(*) from ##thetops) - #arguments.RecordsPerPage-thisDiff#)
-				
-				<cfif len(trim(arguments.sqlOrderBy))>
-					ORDER BY #preserveSingleQuotes(arguments.sqlOrderBy)#
+				<cfif arguments.sqlColumns neq "tbl.objectID">
+					SELECT #arguments.sqlColumns#
+					<cfif bHasversionID and arguments.bCheckVersions>
+						,(SELECT count(d.objectid) FROM #arguments.typename# d WHERE d.versionid = tbl.objectid) as bHasMultipleVersion
+					</cfif>
+					FROM #arguments.typename# tbl
+					inner join  ##thetops t on tbl.objectid = t.objectid where t.myint >  ((select count(*) from ##thetops) - #arguments.RecordsPerPage-thisDiff#)
+					
+					<cfif len(trim(arguments.sqlOrderBy))>
+						ORDER BY #preserveSingleQuotes(arguments.sqlOrderBy)#
+					</cfif>
+				<cfelse>
+					SELECT objectID
+					<cfif bHasversionID and arguments.bCheckVersions>
+						,(SELECT count(d.objectid) FROM #arguments.typename# d WHERE d.versionid = t.objectid) as bHasMultipleVersion
+					</cfif>
+					FROM ##thetops t where t.myint >  ((select count(*) from ##thetops) - #arguments.RecordsPerPage-thisDiff#)
 				</cfif>
 				
 				drop table ##thetops
