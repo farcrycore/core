@@ -4,11 +4,17 @@
 <cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
 
 <cfparam name="attributes.objectId">
+<cfparam name="attributes.stObject" default="#structNew()#">
 <cfparam name="attributes.r_objectId" default="">
 <cfparam name="attributes.r_stObject" default="">
 <cfparam name="attributes.bInclusive" default="0">
 
-<q4:contentobjectget objectId="#attributes.objectId#" r_stObject="stObject">
+<cfif isStruct(attributes.stObject) and not structIsEmpty(attributes.stObject)>
+	<cfset stObject attributes.stObject />
+<cfelse>
+	<q4:contentobjectget objectId="#attributes.objectId#" r_stObject="stObject">
+</cfif>
+
 <cfscript>
 	/*if we are trying to find the navigation node a version is in,
 	then we need to find the object that this is a version of*/
