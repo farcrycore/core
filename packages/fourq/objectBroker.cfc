@@ -40,7 +40,7 @@
 					AND structkeyexists(application.objectbroker[arguments.typename][arguments.objectid], "stobj" )>
 				
 				<cfset stobj = duplicate(application.objectbroker[arguments.typename][arguments.objectid].stobj)>
-				<cftrace type="information" category="coapi" var="stobj.typename" text="getData() used objectpool cache.">
+				<!--- <cftrace type="information" category="coapi" var="stobj.typename" text="getData() used objectpool cache."> --->
 				
 			</cfif>
 		</cfif>
@@ -214,7 +214,7 @@
 				</cfif>
 				
 				
-				<cftrace type="information" category="coapi" text="ObjectBroker Removed #numberToRemove# objects from FIFO #arguments.typename# stack.">
+				<!--- <cftrace type="information" category="coapi" text="ObjectBroker Removed #numberToRemove# objects from FIFO #arguments.typename# stack."> --->
 			</cfif>
 		</cfif>
 	</cffunction>
