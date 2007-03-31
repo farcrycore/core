@@ -214,7 +214,7 @@
 					<cfelse>
 						<cfset defaultValue = "">
 					</cfif>
-				<cfelseif defaultValue eq "NULL">
+				<cfelseif defaultValue eq "NULL" OR not len(trim(defaultValue))>
 					<cfset defaultValue = "" />
 				<cfelse>
 					<cfset defaultValue = "default '#defaultValue#'">
