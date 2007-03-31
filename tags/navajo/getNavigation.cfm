@@ -10,7 +10,7 @@
 <cfparam name="attributes.bInclusive" default="0">
 
 <cfif isStruct(attributes.stObject) and not structIsEmpty(attributes.stObject)>
-	<cfset stObject attributes.stObject />
+	<cfset stObject = attributes.stObject />
 <cfelse>
 	<q4:contentobjectget objectId="#attributes.objectId#" r_stObject="stObject">
 </cfif>
