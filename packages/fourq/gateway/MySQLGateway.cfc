@@ -176,12 +176,20 @@
 				<cfset SQLType = variables.dataMappings[type] />
 			  	<cfset defaultValue = fields[fieldArray[i]].default />
 				<cfif listFindNoCase(variables.numericTypes,fields[fieldArray[i]].type)>
+					<cfif fields[fieldArray[i]].type EQ "boolean">
+						<cfif ListFindNoCase("Yes,True,Y,1", trim(defaultValue))>
+							<cfset defaultValue = 1>
+						<cfelse>
+							<cfset defaultValue = 0>
+						</cfif>
+					</cfif>
+									
 					<cfif len(trim(defaultValue))>
 						<cfset defaultValue = "default #defaultValue#">
 					<cfelse>
 						<cfset defaultValue = "">
 					</cfif>
-				<cfelseif defaultValue eq "NULL">
+				<cfelseif defaultValue eq "NULL" OR not len(trim(defaultValue))>
 					<cfset defaultValue = "" />
 				<cfelse>
 					<cfset defaultValue = "default '#defaultValue#'">
