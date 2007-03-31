@@ -3,7 +3,7 @@
 <cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
 <cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
 
-<cfparam name="attributes.objectId">
+<cfparam name="attributes.objectId" default="">
 <cfparam name="attributes.stObject" default="#structNew()#">
 <cfparam name="attributes.r_objectId" default="">
 <cfparam name="attributes.r_stObject" default="">
@@ -11,8 +11,10 @@
 
 <cfif isStruct(attributes.stObject) and not structIsEmpty(attributes.stObject)>
 	<cfset stObject = attributes.stObject />
-<cfelse>
+<cfelseif len(attributes.objectid)>
 	<q4:contentobjectget objectId="#attributes.objectId#" r_stObject="stObject">
+<cfelse>
+	<cfabort showerror="object id must be passed to getNavigation" />
 </cfif>
 
 <cfscript>
@@ -30,7 +32,7 @@
 	else	
 	{	
 		
-		q = oNav.getParent(objectid=attributes.objectid);
+		q = oNav.getParent(objectid=stObject.objectid);
 		if(NOT q.recordcount)  //this condition should never happen. Keeping in for legacy support only.
 		{
 			lObjectIds = '';
