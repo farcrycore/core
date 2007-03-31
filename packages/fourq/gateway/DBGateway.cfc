@@ -6,7 +6,7 @@
 		<cfargument name="dbowner" type="string" required="true" />
 		<cfset variables.dbowner = arguments.dbowner />
 		<cfset variables.dsn = arguments.dsn />
-		<cfset variables.numericTypes = "boolean,date,numeric" />
+		<cfset variables.numericTypes = "boolean,date,numeric,integer" />
 		<cfreturn this />
 	</cffunction>
 
