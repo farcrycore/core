@@ -20,6 +20,8 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 <cfsetting enablecfoutputonly="Yes">
 <cfprocessingdirective pageencoding="utf-8" />
 
+<cftimer label="NAVAJO DISPLAY">
+	
 <!--- optional attributes --->
 <cfparam name="attributes.method" default="display" type="string">
 <cfparam name="attributes.lmethods" default="display" type="string">
@@ -36,7 +38,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 <cfparam name="request.bHideContextMenu" default="false">
 
 
-<cftimer label="NAVAJO DISPLAY">
+
 <!--- 
 todo: 	versioning object will be deprecated.. 
 		this needs to be *totally* revised.. ie. should never have been put here
