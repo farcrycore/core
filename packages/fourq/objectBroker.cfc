@@ -57,6 +57,11 @@
 		<cfset var i = "" />
 		
 		<cfif application.bObjectBroker>
+		
+			<cfif request.mode.flushcache EQ 1>
+				<cfset bFlushCache = removeWebskin(objectid=arguments.objectid, typename=arguments.typename, template=template) />
+			</cfif>
+		
 			<cfif request.mode.design eq 1>
 				<!--- DO NOT USE CACHE IF IN DESIGN MODE --->
 			<cfelse>
