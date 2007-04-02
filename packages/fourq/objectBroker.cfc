@@ -55,6 +55,7 @@
 		
 		<cfset var webskinHTML = "" />
 		<cfset var i = "" />
+		<cfset var bFlushCache = 0 />
 		
 		<cfif application.bObjectBroker>
 		
