@@ -196,7 +196,7 @@ $in: SessionID -- $
 			</ul>
 		</div>
 
-		<h1><img src="/farcry/images/icons/HTML.png" alt="HTML" />#ListGetAt(stwizard.Steps,stwizard.CurrentStep)#</h1>			
+		<h1><img src="/farcry/images/icons/html.png" alt="HTML" />#ListGetAt(stwizard.Steps,stwizard.CurrentStep)#</h1>			
 		<div id="wizard-nav">
 			<ul>
 				<cfloop list="#stwizard.Steps#" index="i">
