@@ -18,17 +18,17 @@ $in: flexAssetsPath -- Location of the flex assets : optional $
 <!--- SWFSource : defines SWF source --->
 <cfparam name="attributes.SWFSource" default="" />
 <cfparam name="attributes.SWFID" default="" />
+<cfparam name="attributes.flashVars" default="" />
 <cfparam name="attributes.flexAssetsPath" default="/farcry/admin/ui/flexassets" />
 
+<cfif attributes.flashVars neq "">
+	<cfset attributes.flashVars="#attributes.flashVars#&">
+</cfif>
+
+<cfsavecontent variable="flexInHead">
 <cfoutput>
-<html lang="en">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title></title>
 <script src="#attributes.flexAssetsPath#/AC_OETags.js" language="javascript"></script>
-<style>
-body { margin: 0px; overflow:hidden }
-</style>
+
 <script language="JavaScript" type="text/javascript">
 <!--
 // -----------------------------------------------------------------------------
@@ -42,9 +42,10 @@ var requiredRevision = 0;
 // -----------------------------------------------------------------------------
 // -->
 </script>
-</head>
-
-<body scroll="no">
+</cfoutput>
+</cfsavecontent>
+<cfhtmlhead text="#flexInHead#">
+<cfoutput>
 <script language="JavaScript" type="text/javascript" src="#attributes.flexAssetsPath#/history.js"></script>
 
 <script language="JavaScript" type="text/javascript">
@@ -93,7 +94,7 @@ if ( hasProductInstall && !hasRequestedVersion ) {
 			"quality", "high",
 			"bgcolor", "##ffffff",
 			"name", "#attributes.SWFID#",
-			"flashvars",'historyUrl=#attributes.flexAssetsPath#/history.htm%3F&lconid=' + lc_id + '',
+			"flashvars",'#attributes.flashVars#historyUrl=#attributes.flexAssetsPath#/history.htm%3F&lconid=' + lc_id + '',
 			"allowScriptAccess","sameDomain",
 			"type", "application/x-shockwave-flash",
 			"pluginspage", "http://www.adobe.com/go/getflashplayer"
@@ -108,17 +109,19 @@ if ( hasProductInstall && !hasRequestedVersion ) {
 </script>
 <noscript>
   	<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"
-			id="Category" width="100%" height="100%"
+			id="#attributes.SWFID#" width="100%" height="100%"
 			codebase="http://fpdownload.macromedia.com/get/flashplayer/current/swflash.cab">
 			<param name="movie" value="#attributes.SWFSource#" />
 			<param name="quality" value="high" />
 			<param name="bgcolor" value="##ffffff" />
+			<param name="flashvars" value="#attributes.flashVars#" />
 			<param name="allowScriptAccess" value="sameDomain" />
 			<embed src="#attributes.SWFSource#" quality="high" bgcolor="##ffffff"
-				width="100%" height="100%" name="Category" align="middle"
+				width="100%" height="100%" name="#attributes.SWFID#" align="middle"
 				play="true"
 				loop="false"
 				quality="high"
+				flashvars="#attributes.flashVars#"
 				allowScriptAccess="sameDomain"
 				type="application/x-shockwave-flash"
 				pluginspage="http://www.adobe.com/go/getflashplayer">
@@ -126,8 +129,7 @@ if ( hasProductInstall && !hasRequestedVersion ) {
 	</object>
 </noscript>
 <iframe name="_history" src="#attributes.flexAssetsPath#/history.htm" frameborder="0" scrolling="no" width="22" height="0"></iframe>
-</body>
-</html>
+
 </cfoutput>
 </cfif>
 
