@@ -379,9 +379,15 @@
 				AND (tbl.versionid = '' OR tbl.versionid IS NULL)
 			</cfif>
 			
-			<cfif application.dbtype EQ "ora">
+			<cfif application.dbtype EQ "ora"><!--- Record limiting for oracle --->
 				AND rownum <= #arguments.RecordsPerPage#
-			<cfelse>
+			</cfif>
+			
+			<cfif len(trim(arguments.sqlOrderBy))>
+				ORDER BY #preserveSingleQuotes(arguments.sqlOrderBy)#
+			</cfif>			
+
+			<cfif application.dbtype NEQ "ora"> <!--- record limiting for everyone else --->
 				LIMIT #arguments.RecordsPerPage# OFFSET #toprow#
 			</cfif>
 			
