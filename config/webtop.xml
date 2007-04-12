@@ -29,7 +29,7 @@
 		</subsection>
 		<subsection id="contentUtilities" permission="MainNavAdminTab" label="application.adminBundle[session.dmProfile.locale].ContentUtilities" labelType="evaluate" sidebar="content/sidebar.cfm" content="inc/content_overview.html">
 			<menu id="export" label="application.adminBundle[session.dmProfile.locale].Export" labelType="evaluate">
-				<menuitem id="exportrss" label="application.adminBundle[session.dmProfile.locale].RssFeeds" labelType="evaluate" link="/content/xmlfeedlist.cfm" />
+				<menuitem id="exportrss" label="application.adminBundle[session.dmProfile.locale].RssFeeds" labelType="evaluate" link="/content/xmlFeedList.cfm" />
 				<menuitem id="exportgeneral" label="application.adminBundle[session.dmProfile.locale].Export" labelType="evaluate" link="/content/export.cfm" />
 			</menu>
 			<menu id="categorisation" permission="ContentCategorisationTab" label="application.adminBundle[session.dmProfile.locale].CategoryManagement" labelType="evaluate">
