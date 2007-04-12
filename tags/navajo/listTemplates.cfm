@@ -28,7 +28,47 @@ by a regular expression match here???
 <cfif len(attributes.path)>
 
 	<cfdirectory action="LIST" filter="*.cfm" name="qTemplates" directory="#attributes.path#">
+	
+	<cfset qMethods = queryNew("methodname, displayname")>
+	
+	<!--- This is to overcome casesensitivity issues on mac/linux machines --->
+<cfquery name="qTemplates" dbtype="query">
+	SELECT * FROM qTemplates
+	WHERE lower(qTemplates.name) LIKE '#lCase(attributes.prefix)#%'
+</cfquery>
+	
+	<cfloop query="qTemplates">
+	<!--- TODO
+	must be able to do this more neatly with a regEX, especially if we 
+	want more than one bit of template metadata --->
+		<cffile action="READ" file="#qTemplates.directory#/#qTemplates.name#" variable="template">
+	
+		<cfset pos = findNoCase('@@displayname:', template)>
+		<cfif pos eq 0>
+			<cfset displayname = listfirst(qTemplates.name, ".")>
+		<cfelse>
+			<cfset pos = pos + 14>
+			<cfset count = findNoCase('--->', template, pos)-pos>
+			<cfset displayname = listLast(mid(template,  pos, count), ":")>
+		</cfif>
+	
+		<cfset queryAddRow(qMethods, 1)>
+		<cfset querySetCell(qMethods, "methodname", listfirst(qTemplates.name, "."))>
+		<cfset querySetCell(qMethods, "displayname", displayname)>
+	</cfloop>
+	
+	<!--- 
+	<cfdump var="#qTemplates#">
+	<cfdump var="#qMethods#">
+	 --->
+	<!--- Reorder List --->
+	<cfquery name="qOrderedMethods" dbtype="query">
+	SELECT *
+	FROM qMethods
+	ORDER BY DisplayName
+	</cfquery>
 
+	<cfset caller[attributes.r_qMethods] = qOrderedMethods>
 <!---
 OTHERWISE WE NEED TO LOOP THROUGH ALL THE LIBRARIES AND GET ALL RELEVENT TEMPLATES
  --->
@@ -61,5 +101,8 @@ OTHERWISE WE NEED TO LOOP THROUGH ALL THE LIBRARIES AND GET ALL RELEVENT TEMPLAT
 	
 	
 </cfif>
+
+
+
 
 
