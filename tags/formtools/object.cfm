@@ -469,6 +469,9 @@
 						<cfelse>
 							<cfset stURLParams.ftAllowLibraryEdit = "#ftFieldMetadata.ftJoin#">
 						</cfif>
+						<cfif structKeyExists(ftFieldMetadata,'ftShowRemoveSelected')>
+							<cfset stURLParams.ftShowRemoveSelected = "#ftFieldMetadata.ftShowRemoveSelected#">
+						</cfif>
 								
 						<cfset request.inHead.libraryPopup = true />
 						

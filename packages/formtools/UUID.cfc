@@ -23,6 +23,7 @@
 		<cfparam name="arguments.stMetadata.ftLibraryListItemHeight" default="" type="string" />
 		<cfparam name="arguments.stMetadata.ftRenderType" default="Library">
 		<cfparam name="arguments.stMetadata.ftFirstListLabel" default="-- SELECT --">
+		<cfparam name="arguments.stMetadata.ftShowRemoveSelected" default="true">
 
 		<!--- A UUID type MUST have a 'ftJoin' property --->
 		<cfif not structKeyExists(stMetadata,"ftJoin")>
@@ -121,8 +122,9 @@
 							<cfoutput>
 							<li id="#arguments.fieldname#_#arguments.stObject[arguments.stMetaData.Name]#" class="#ULID#handle" style="<cfif len(arguments.stMetadata.ftLibraryListItemWidth)>width:#arguments.stMetadata.ftLibraryListItemWidth#;</cfif><cfif len(arguments.stMetadata.ftLibraryListItemheight)>height:#arguments.stMetadata.ftLibraryListItemHeight#;</cfif>">
 								<div class="buttonGripper"><p>&nbsp;</p></div>
-								<input type="checkbox" name="#arguments.fieldname#Selected" id="#arguments.fieldname#Selected" class="formCheckbox" value="#arguments.stObject[arguments.stMetaData.Name]#" />
-
+								<cfif arguments.stMetadata.ftShowRemoveSelected>
+									<input type="checkbox" name="#arguments.fieldname#Selected" id="#arguments.fieldname#Selected" class="formCheckbox" value="#arguments.stObject[arguments.stMetaData.Name]#" />
+								</cfif>
 								<div class="#arguments.stMetadata.ftLibrarySelectedListClass#">
 									<p>#HTML#</p>
 								</div>
@@ -134,10 +136,11 @@
 					<cfoutput>
 							</ul>
 						</div>
-						<div class="buttonGroup">
-							<ft:farcryButton type="button" value="Remove Selected" onclick="deleteSelectedFromUUIDField('#arguments.fieldname#');return false;" confirmText="Are you sure you want to remove the selected item" / >						
-						</div>
-
+						<cfif arguments.stMetadata.ftShowRemoveSelected>
+							<div class="buttonGroup">
+								<ft:farcryButton type="button" value="Remove Selected" onclick="deleteSelectedFromUUIDField('#arguments.fieldname#');return false;" confirmText="Are you sure you want to remove the selected item" / >						
+							</div>
+						</cfif>
 						<br class="clearer" />
 					</cfoutput>
 				
