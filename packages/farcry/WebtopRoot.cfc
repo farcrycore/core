@@ -76,6 +76,9 @@ $Developer: Tyler Ham (tylerh@austin.utexas.edu)$
   
   --->
   
+  <!--- this is the name of the xml attribute used to order items --->
+  <cfset this.orderAttrib = "sequence">
+  
   <cfset this.isInitialized = "false">
   <cfset this.stAttributes = StructNew()>
   <cfset this.aSections = ArrayNew(1)>
@@ -84,6 +87,9 @@ $Developer: Tyler Ham (tylerh@austin.utexas.edu)$
   <!--- other possible values: 'mergeNoReplace', 'replace', 'none' --->
   <!--- see above for more info on mergeTypes --->
   <cfset this.stAttributes.mergeType = "merge">
+  
+  <!--- set the default order attribute --->
+  <cfset this.stAttributes[this.orderAttrib] = "500000">
   
 <!--- {{{ PUBLIC functions --->
 
@@ -186,7 +192,8 @@ $Developer: Tyler Ham (tylerh@austin.utexas.edu)$
     <cfinvoke component="WebtopSection" method="init" returnVariable="newChild">
       <cfinvokeargument name="SectionXmlElement" value="#root.XmlChildren[i]#">
     </cfinvoke>
-    <cfset ArrayAppend(this.aSections, newChild)>
+    
+    <cfset insertChildWithOrder(newChild)>
   </cfloop>
   
   <!--- we are officially initialized, now getXml will work --->
@@ -385,11 +392,37 @@ $Developer: Tyler Ham (tylerh@austin.utexas.edu)$
   
   <cfif not matchFound>
     <!--- a match was not found, so we should append the menuitem --->
-    <cfset ArrayAppend(this.aSections, arguments.child)>
+    
+    <cfset insertChildWithOrder(arguments.child)>
   </cfif>
   
 </cffunction>
 <!--- }}} private mergeChild(WebtopSection child) --->
+
+<!--- {{{ private insertChildWithOrder(WebtopSection child) --->
+<cffunction name="insertChildWithOrder" access="private" output="no" returnType="void"
+  hint="inserts the child into aSections with order">
+  
+  <cfargument name="child" type="WebtopSection" required="true"
+    hint="section to insert into this root's children">
+  
+  <cfset var i = 0>
+  <cfset var inserted = "false">
+  
+  <cfloop index="i" from="1" to="#ArrayLen(this.aSections)#">
+    <cfif arguments.child.stAttributes[this.orderAttrib] lt this.aSections[i].stAttributes[this.orderAttrib]>
+      <cfset ArrayInsertAt(this.aSections, i, arguments.child)>
+      <cfset inserted="true">
+      <cfbreak>
+    </cfif>
+  </cfloop>
+  
+  <cfif not inserted>
+    <cfset ArrayAppend(this.aSections, arguments.child)>
+    <cfset inserted="true">
+  </cfif>
+</cffunction>
+<!--- }}} private insertChildWithOrder(WebtopSection child) --->
 
 
 <!--- {{{ private getPermissions() --->

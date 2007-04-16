@@ -21,6 +21,9 @@ $Developer: Tyler Ham (tylerh@austin.utexas.edu)$
   hint="Represents a webtop menu, can merge with another menu,
   and translate to and from xml.">
   
+  <!--- this is the name of the xml attribute used to order items --->
+  <cfset this.orderAttrib = "sequence">
+  
   <cfset this.isInitialized = "false">
   <cfset this.stAttributes = StructNew()>
   <cfset this.aMenuitems = ArrayNew(1)>
@@ -29,6 +32,9 @@ $Developer: Tyler Ham (tylerh@austin.utexas.edu)$
   <!--- other possible values: 'mergeNoReplace', 'replace', 'none' --->
   <!--- see WebtopRoot.cfc for more info on mergeTypes --->
   <cfset this.stAttributes.mergeType = "merge">
+  
+  <!--- TODO: set default order attribute --->
+  <cfset this.stAttributes[this.orderAttrib] = "500000">
   
 <!--- {{{ PACKAGE functions --->
 
@@ -176,7 +182,8 @@ $Developer: Tyler Ham (tylerh@austin.utexas.edu)$
     <cfinvoke component="WebtopMenuitem" method="init" returnVariable="newChild">
       <cfinvokeargument name="MenuitemXmlElement" value="#arguments.MenuXmlElement.XmlChildren[i]#">
     </cfinvoke>
-    <cfset ArrayAppend(this.aMenuitems, newChild)>
+    
+    <cfset insertChildWithOrder(newChild)>
   </cfloop>
   
   <!--- we are officially initialized, now getXml will work --->
@@ -337,12 +344,37 @@ $Developer: Tyler Ham (tylerh@austin.utexas.edu)$
   
   <cfif not matchFound>
     <!--- a match was not found, so we should append the menuitem --->
-    <cfset ArrayAppend(this.aMenuitems, arguments.child)>
+    
+    <cfset insertChildWithOrder(arguments.child)>
   </cfif>
   
 </cffunction>
 <!--- }}} private mergeChild(WebtopMenuitem child) --->
 
+<!--- {{{ private insertChildWithOrder(WebtopMenuitem child) --->
+<cffunction name="insertChildWithOrder" access="private" output="no" returnType="void"
+  hint="inserts the child into aMenuitems with order">
+  
+  <cfargument name="child" type="WebtopMenuitem" required="true"
+    hint="menuitem to insert into this menu's children">
+  
+  <cfset var i = 0>
+  <cfset var inserted = "false">
+  
+  <cfloop index="i" from="1" to="#ArrayLen(this.aMenuitems)#">
+    <cfif arguments.child.stAttributes[this.orderAttrib] lt this.amenuitems[i].stAttributes[this.orderAttrib]>
+      <cfset ArrayInsertAt(this.aMenuitems, i, arguments.child)>
+      <cfset inserted="true">
+      <cfbreak>
+    </cfif>
+  </cfloop>
+  
+  <cfif not inserted>
+    <cfset ArrayAppend(this.aMenuitems, arguments.child)>
+    <cfset inserted = "true">
+  </cfif>
+</cffunction>
+<!--- }}} private insertChildWithOrder(WebtopMenuitem child) --->
 
 <!--- }}} PRIVATE functions --->
 

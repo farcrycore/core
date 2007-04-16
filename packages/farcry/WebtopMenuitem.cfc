@@ -21,6 +21,9 @@ $Developer: Tyler Ham (tylerh@austin.utexas.edu)$
   hint="Represents a webtop menuitem, can merge with another menuitem,
   and translate to and from xml.">
   
+  <!--- this is the name of the xml attribute used to order items --->
+  <cfset this.orderAttrib = "sequence">
+  
   <cfset this.isInitialized = "false">
   <cfset this.stAttributes = StructNew()>
   
@@ -28,6 +31,9 @@ $Developer: Tyler Ham (tylerh@austin.utexas.edu)$
   <!--- other possible values: 'mergeNoReplace', 'replace', 'none' --->
   <!--- see WebtopRoot.cfc for more info on mergeTypes --->
   <cfset this.stAttributes.mergeType = "merge">
+  
+  <!--- set default order attribute --->
+  <cfset this.stAttributes[this.orderAttrib] = "500000">
   
 <!--- {{{ PACKAGE functions --->
 
