@@ -635,7 +635,7 @@ GENERATE THE LIBRARY PICKER
 							
 							<cfset stCurrentArrayItem = stPrimary[url.primaryFieldName][i] />
 							
-							<cfset HTML = stJoinObjects[stCurrentArrayItem.typename].getView(objectid=stCurrentArrayItem.data, template="LibrarySelected", alternateHTML="") />
+							<cfset HTML = stJoinObjects[stCurrentArrayItem.typename].getView(objectid=stCurrentArrayItem.data, template="librarySelected", alternateHTML="") />
 							<cfif NOT len(trim(HTML))>
 								<cfset stTemp = stJoinObjects[stCurrentArrayItem.typename].getData(objectid=stCurrentArrayItem.data) />
 								<cfif structKeyExists(stTemp, "label") AND len(stTemp.label)>
@@ -669,7 +669,7 @@ GENERATE THE LIBRARY PICKER
 						<cfif listLen(lBasketIDs)>
 						
 
-							<cfset HTML = oData.getView(objectid=stPrimary[url.primaryFieldName], template="LibrarySelected", alternateHTML="") />
+							<cfset HTML = oData.getView(objectid=stPrimary[url.primaryFieldName], template="librarySelected", alternateHTML="") />
 							<cfif NOT len(trim(HTML))>
 								<cfset stTemp = oData.getData(objectid=stPrimary[url.primaryFieldName]) />
 								<cfif structKeyExists(stTemp, "label") AND len(stTemp.label)>
@@ -715,7 +715,7 @@ GENERATE THE LIBRARY PICKER
 							<cfelse>
 								<cfset variables.alternateHTML = stLibraryObject.stObject.ObjectID />
 							</cfif>					
-							<cfset HTML = oData.getView(stObject=stLibraryObject.stObject, template="LibrarySelected", alternateHTML=variables.alternateHTML) />
+							<cfset HTML = oData.getView(stObject=stLibraryObject.stObject, template="librarySelected", alternateHTML=variables.alternateHTML) />
 									
 							<!------------------------------------------------------------------------
 							THE ID OF THE LIST ELEMENT MUST BE "FIELDNAME_OBJECTID" 
