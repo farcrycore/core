@@ -14,7 +14,7 @@ $License: Released Under the "Common Public License 1.0", http://www.opensource.
 $Description: Represents a webtop configuration, can merge with other webtop roots, and translate to and from xml. $
 
 || DEVELOPER ||
-$Developer: Tyler Ham (tylerh@austin.utexas.edu)$
+$Developer: Tyler Ham (tylerh@austin.utexas.edu )$
 }}} --->
 
 <cfcomponent displayname="Webtop Menu"
