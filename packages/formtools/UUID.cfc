@@ -16,7 +16,7 @@
 		<cfset var libraryData = "" />
 		<cfset var qLibraryList = queryNew("blah") />
 		
-		<cfparam name="arguments.stMetadata.ftLibrarySelectedWebskin" default="LibrarySelected" type="string" />
+		<cfparam name="arguments.stMetadata.ftLibrarySelectedWebskin" default="librarySelected" type="string" />
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedListClass" default="arrayDetail" type="string" />
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedListStyle" default="" type="string" />
 		<cfparam name="arguments.stMetadata.ftLibraryListItemWidth" default="" type="string" />
