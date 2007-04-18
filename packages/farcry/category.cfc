@@ -87,7 +87,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 				lResult=ListAppend(lResult, aID[i]);
 		}
 		</cfscript>
-		<cftrace type="information" category="farcry.category.getCategoryBranchAsList" var="lresult">
+		
 		<!--- return deduped list of categoryids --->
 		<cfreturn lResult>
 	</cffunction>
