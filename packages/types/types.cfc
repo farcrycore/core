@@ -122,16 +122,20 @@ default handlers
 					<cfset stCurrentView.objectid = stobj.objectid />
 					<cfset stCurrentView.typename = stobj.typename />
 					<cfset stCurrentView.template = arguments.template />
-					<cfset arrayAppend(request.aAncestorWebskins, stCurrentView) />
-					
+					<cfset stCurrentView.timeout = oCoapiAdmin.getWebskinTimeOut(typename=stObj.typename, template=arguments.template) />
+					<cfset stCurrentView.okToCache = 1 />
+					<cfset arrayAppend(request.aAncestorWebskins, stCurrentView) />					
 					
 					<!--- Include the View --->
 					<cfsavecontent variable="webskinHTML">
 						<cfinclude template="#WebskinPath#">
 					</cfsavecontent>
-					
-					<!--- Add the webskin to the object broker if required --->
-					<cfset oObjectBroker.addWebskin(objectid=stobj.objectid, typename=stobj.typename, template=arguments.template, html=webskinHTML) />		
+										
+					<!--- If the current view (Last Item In the array) is still OkToCache --->
+					<cfif request.aAncestorWebskins[arrayLen(request.aAncestorWebskins)].okToCache>
+						<!--- Add the webskin to the object broker if required --->
+						<cfset bAdded = oObjectBroker.addWebskin(objectid=stobj.objectid, typename=stobj.typename, template=arguments.template, html=webskinHTML) />	
+					</cfif>
 					
 					<cfif arrayLen(request.aAncestorWebskins)>
 						
@@ -150,6 +154,10 @@ default handlers
 									
 									<cfset stResult = oWebskinAncestor.createData(stProperties=stProperties) />
 								</cfif>
+							</cfif>
+							
+							<cfif stCurrentView.timeout EQ 0>
+								<cfset request.aAncestorWebskins[i].okToCache = 0 />
 							</cfif>
 						</cfloop>
 					</cfif>
