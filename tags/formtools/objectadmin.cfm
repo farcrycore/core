@@ -696,7 +696,19 @@ user --->
 				<cfif arrayLen(attributes.aCustomColumns)>
 					<cfset oType = createObject("component", PrimaryPackagePath) />
 					<cfloop from="1" to="#arrayLen(attributes.aCustomColumns)#" index="i">
-						<cfoutput><th>&nbsp;</th></cfoutput>
+						<cfif structKeyExists(attributes.aCustomColumns[i],"sortable") and attributes.aCustomColumns[i].sortable>
+							<cfoutput>
+							<th>
+							<select name="#attributes.aCustomColumns[i].property#sqlOrderBy" onchange="javascript:$('sqlOrderBy').value=this.value;submit();" style="width:80px;">
+								<option value=""></option>
+								<option value="#attributes.aCustomColumns[i].property# asc" <cfif session.objectadminFilterObjects[attributes.typename].sqlOrderBy EQ "#attributes.aCustomColumns[i].property# asc">selected</cfif>>asc</option>
+								<option value="#attributes.aCustomColumns[i].property# desc" <cfif session.objectadminFilterObjects[attributes.typename].sqlOrderBy EQ "#attributes.aCustomColumns[i].property# desc">selected</cfif>>desc</option>
+							</select>
+							</th>
+							</cfoutput>						
+						<cfelse>
+							<cfoutput><th>&nbsp;</th></cfoutput>
+						</cfif>
 					</cfloop>
 				</cfif>
 		
