@@ -16,7 +16,7 @@ $Description: Core container management component. $
 || DEVELOPER ||
 $Developer: Geoff Bowers (modius@daemon.com.au) $
 --->
-<cfcomponent extends="farcry.core.packages.fourq.fourq" displayname="Container Management" hint="Manages all core functions for container instance management.">
+<cfcomponent extends="farcry.core.packages.fourq.fourq" displayname="Container Management" hint="Manages all core functions for container instance management." bObjectBroker="true">
 	<cfproperty name="objectID" hint="Container instance primary key." type="uuid" required="true" />
 	<cfproperty name="label" hint="Label for the container instance."  type="nstring" default="(unspecified)">
 	<cfproperty name="aRules" hint="Array of rule objects to be managed by this container." type="array"> 
@@ -480,7 +480,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 					 </cfoutput>
 				</cfcatch>
 			</cftry>
-		</cfloop>			 
+		</cfloop>		 
 		<cfloop from="1" to="#arrayLen(request.aInvocations)#" index="i">
 			<cfif isStruct(request.aInvocations[i])>
 				<cfif structKeyExists(request.aInvocations[i],"preHTML")>
