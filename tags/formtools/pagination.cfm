@@ -134,7 +134,28 @@ $in:  $
 	<div class="ruleContentVanilla">
 		<div class="ruleListPagination">
 	</cfoutput>
-					
+				
+				
+	<cfsavecontent variable="caller.paginationHTML">
+		<cfif bShowPaginate>
+			<cfoutput>#DisplayPaginationScroll(bShowResultTotal="#attributes.bShowResultTotal#",bShowPageDropdown="#attributes.bShowPageDropdown#")#</cfoutput>
+			
+		<cfelse>
+			
+			<cfif attributes.bShowResultTotal>
+				<cfif attributes.totalRecords GT 0>
+					<cfoutput><div class="pageDetails"><h2>Displaying <strong>1-#attributes.totalRecords#</strong> of <strong>#attributes.totalRecords#</strong> results</h2></div></cfoutput>
+				<cfelse>
+					<cfoutput><div class="pageDetails"><h2><strong>0</strong> records found.</h2></div></cfoutput>			
+				</cfif>	
+			</cfif>
+		</cfif>
+	</cfsavecontent>
+		
+	<cfif attributes.Top>	
+		<cfoutput>#caller.paginationHTML#</cfoutput>
+	</cfif>
+	<!--- 			
 	<cfif attributes.Top and bShowPaginate>
 		<cfoutput>#DisplayPaginationScroll(bShowResultTotal="#attributes.bShowResultTotal#",bShowPageDropdown="#attributes.bShowPageDropdown#")#</cfoutput>
 	</cfif>
@@ -146,7 +167,7 @@ $in:  $
 			<cfoutput><div class="pageDetails"><h2><strong>0</strong> records found.</h2></div></cfoutput>			
 		</cfif>	
 	</cfif> 
-	
+	 --->
 	<cfoutput>	
 	</div>
 		</div>
@@ -166,17 +187,9 @@ $in:  $
 		<div class="ruleListPagination">
 	</cfoutput>
 					
-	<cfif attributes.Bottom and bShowPaginate>
-		<cfoutput>#DisplayPaginationScroll(bShowResultTotal="#attributes.bShowResultTotal#",bShowPageDropdown="#attributes.bShowPageDropdown#")#</cfoutput>
+	<cfif attributes.Bottom>	
+		<cfoutput>#caller.paginationHTML#</cfoutput>
 	</cfif>
-
-	<cfif not bShowPaginate AND attributes.bShowResultTotal>
-		<cfif attributes.totalRecords GT 0>
-			<cfoutput><div class="pageDetails"><h2>Displaying <strong>1-#attributes.totalRecords#</strong> of <strong>#attributes.totalRecords#</strong> results</h2></div></cfoutput>
-		<cfelse>
-			<cfoutput><div class="pageDetails"><h2><strong>0</strong> records found.</h2></div></cfoutput>			
-		</cfif>	
-	</cfif> 
 	
 	<cfoutput>	
 		</div>
