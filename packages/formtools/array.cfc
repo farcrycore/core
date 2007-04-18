@@ -306,26 +306,26 @@
 			<cfset ArrayAppend(aField,i)>
 		</cfloop>
 		
-		<cfif not len(arguments.typename)>
+		<!--------------------------------------------------------------------------------------------- 
+		WE SHOULD NOT HAVE TO CREATEARRAYTABLEDATA HERE AS IT WILL BE DONE BY THE SUBSEQUENT SETDATA.
+		THIS FUNCTION SIMPLY CONVERTS THE LIST OF OBJECTIDS INTO AN ARRAY OF OBJECTIDS.
+		 --------------------------------------------------------------------------------------------->
+		 
+		<!--- <cfif not len(arguments.typename)>
 			<cfset q4 = createObject("component","farcry.core.packages.fourq.fourq")>
 			<cfset arguments.typename = q4.findType(objectid=arguments.objectid)>
 		</cfif>
 		
-		<cfif structKeyExists(application.types, arguments.typename)>
-			<cfset oPrimary = createObject("component",application.types[arguments.Typename].packagePath)>
-		<cfelseif structKeyExists(application.rules, arguments.typename)>
-			<cfset oPrimary = createObject("component",application.rules[arguments.Typename].packagePath)>
-		<cfelse>
-			<cfabort showerror="arguments.typename does not exist as a rule or a type" />
-		</cfif>
+		<cfset oPrimary = createObject("component",application.stcoapi[arguments.Typename].packagePath)>
 		
-		<cfset variables.tableMetadata = createobject('component','farcry.core.packages.fourq.TableMetadata').init() />
+		<!--- <cfset variables.tableMetadata = createobject('component','farcry.core.packages.fourq.TableMetadata').init() />
 		<cfset tableMetadata.parseMetadata(md=getMetadata(oPrimary)) />		
-		<cfset stFields = variables.tableMetadata.getTableDefinition() />
+		<cfset stFields = variables.tableMetadata.getTableDefinition() /> --->
+		<cfset stFields = application.stcoapi[arguments.typename].tableDefinition />
 		<!---<cfset o = createObject("component","farcry.core.packages.fourq.gateway.dbGateway").init(dsn=application.dsn,dbowner="")> --->
 		<cfset aProps = oPrimary.createArrayTableData(tableName=Typename & "_" & arguments.stMetadata.name,objectid=arguments.ObjectID,tabledef=stFields[arguments.stMetadata.name].Fields,aprops=aField)>
 
-
+		 --->
 		<cfset stResult.value = aField>
 
 		<!--- ----------------- --->
