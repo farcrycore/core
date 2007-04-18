@@ -31,25 +31,28 @@ $
 // get table name for db schema
 	tablename = getTablename();
 // get extended properties for this instance
-	aProps = getProperties();
+	stTableDef = variables.tableMetadata.getTableDefinition();
 // sql select statement list
 	sqlSelect="";
 </cfscript>
 
-<cfloop from="1" to="#arraylen(aprops)#" index="i">
-<cfif aprops[i].type neq "array">
-	<cfif arguments.bShallow AND aprops[i].type eq "longchar">
-	<!--- do nothing --->
-	<cfelse>
-	<!--- add property to select list --->
-		<cfif listlen(sqlSelect)>
-			<cfset sqlSelect=sqlSelect & "," & aprops[i].name>
+
+
+
+<cfloop list="#structKeyList(stTableDef)#" index="i">
+	<cfif stTableDef[i].type neq "array">
+		<cfif arguments.bShallow AND stTableDef[i].type eq "longchar">
+			<!--- do nothing --->
 		<cfelse>
-			<cfset sqlSelect=aprops[i].name>
+			<!--- add property to select list --->
+			<cfset sqlSelect = listAppend(sqlSelect, stTableDef[i].name)>
 		</cfif>
 	</cfif>
-</cfif>
 </cfloop>
+
+
+
+
 
 <cfquery datasource="#arguments.dsn#" name="qgetData">
 	SELECT #sqlSelect# 
@@ -61,7 +64,7 @@ $
 	<!--- convert query to structure --->
 	<cfloop list="#qGetData.columnlist#" index="key">
 		<!--- <cfset stObj[key]=qGetData[key]> bugged out with duplicate() 20050527GB --->
-		<cfset stObj[key]=Evaluate("qGetData.#key#")>
+		<cfset stObj[key]=qGetData[key][1]>
 	</cfloop>
 	
 	<!--- append typename to stObj --->
@@ -74,9 +77,9 @@ $
 
 	<!--- begin: process array data --->
 	<!--- determine array properties --->
-	<cfloop from="1" to="#ArrayLen(aProps)#" index="i">
-		<cfif aProps[i].type eq "array">
-			<cfset key = aProps[i].name>
+	<cfloop list="#structKeyList(stTableDef)#" index="i">
+		<cfif stTableDef[i].type eq "array">
+			<cfset key = stTableDef[i].name>
 	
 			<!--- getdata for array properties --->
 			<cfquery datasource="#arguments.dsn#" name="qArrayData">
@@ -111,3 +114,5 @@ $
 
 </cfif>
 <!--- end: process array data --->
+
+
