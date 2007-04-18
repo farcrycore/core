@@ -344,14 +344,14 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfif isdefined("instance.bgetdata") AND instance.bgetdata EQ arguments.objectid AND arguments.bUseInstanceCache AND NOT arguments.bArraysAsStructs>
 			<!--- get local instance cache --->
 			<cfset stObj = instance.stobj>
-			<cftrace type="information" category="coapi" var="stobj.typename" text="getData() used instance cache.">
+			<!--- <cftrace type="information" category="coapi" var="stobj.typename" text="getData() used instance cache."> --->
 		
 
 		<!--- Check to see if the object is in the temporary object store --->
 		<cfelseif structKeyExists(Session,"TempObjectStore") AND structKeyExists(Session.TempObjectStore,arguments.objectid) AND arguments.bUseInstanceCache AND NOT arguments.bArraysAsStructs>
 			<!--- get from the temp object stroe --->
 			<cfset stObj = Session.TempObjectStore[arguments.objectid] />
-			<cftrace type="information" category="coapi" var="stobj.typename" text="getData() used Temporary Object Store (Session.tempObjectStore).">
+			<!--- <cftrace type="information" category="coapi" var="stobj.typename" text="getData() used Temporary Object Store (Session.tempObjectStore)."> --->
 	
 		<cfelse>
 			<cfif arguments.bUseInstanceCache AND NOT arguments.bArraysAsStructs>
@@ -361,7 +361,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			</cfif>
 
 			<cfif structisEmpty(stObj)>
-				<cftimer label="getData: #variables.typename#">
+				
 				<!--- Didn't find the object in the objectBroker --->
 				<!--- build a local instance cache --->
 				<cfinclude template="_fourq/getData.cfm">				
@@ -395,18 +395,20 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 				</cfif> --->
 			
 				
-				<cftrace type="information" category="coapi" var="stobj.typename" text="getData() used database.">
+				<!--- <cftrace type="information" category="coapi" var="stobj.typename" text="getData() used database."> --->
 			
 				<!--- Attempt to add the object to the broker --->
 				<cfif NOT arguments.bArraysAsStructs AND NOT arguments.bShallow>
 					<cfset addedtoBroker = variables.objectBroker.AddToObjectBroker(stobj=stobj,typename=variables.typename)>
 	
+					<!---
 					<cfif addedToBroker>
 						<!--- Successfully added object to the broker --->
 						<cftrace type="information" category="coapi" var="arguments.objectid" text="getData() added object to Broker.">
 					</cfif>
+					 --->
 				</cfif>
-				</cftimer>
+				
 			</cfif>	
 
 					
@@ -475,7 +477,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			<cfset stDefaultProperties = this.getData(objectid=stProperties.ObjectID,typename=variables.typename) />
 		  	
 		  	<!--- need to add this in case the object has been put in the instance cache in the getdata above. --->
-	    	<cfset structdelete(instance,"bgetdata")>
+	   	 	<cfset structdelete(instance,"bgetdata")>
 	    	
 			<!--- 
 			Append the default properties of this object into the properties that have been passed.
