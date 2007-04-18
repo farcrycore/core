@@ -161,10 +161,6 @@
 			<cfset prop.nullable = true />
 		</cfif>
 		
-		<cfif structKeyExists(arguments.data,'default')>
-		  <cftrace type="warning" text="The cfproperty tag for array property #arguments.data.name# has a default attribute. This will be ignored by the fourq database layer.">
-		</cfif>
-		
 		<cfreturn prop />
 	</cffunction>
 		
