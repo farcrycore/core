@@ -82,20 +82,27 @@ $out:$
 					<cfset stCurrentView.objectid = stobj.objectid />
 					<cfset stCurrentView.typename = stobj.typename />
 					<cfset stCurrentView.template = arguments.template />
+					<cfset stCurrentView.timeout = oCoapiAdmin.getWebskinTimeOut(typename=stObj.typename, template=arguments.template) />
+					<cfset stCurrentView.okToCache = 1 />
 					<cfset arrayAppend(request.aAncestorWebskins, stCurrentView) />
 	
 					<cfsavecontent variable="webskinHTML">
 						<cfinclude template="#WebskinPath#">
 					</cfsavecontent>
 					
-					<!--- Add the webskin to the object broker if required --->
-					<cfset oObjectBroker.addWebskin(objectid=stobj.objectid, typename=stobj.typename, template=arguments.template, html=webskinHTML) />	
+					<!--- If the current view (Last Item In the array) is still OkToCache --->
+					<cfif request.aAncestorWebskins[arrayLen(request.aAncestorWebskins)].okToCache>
+						<!--- Add the webskin to the object broker if required --->
+						<cfset bAdded = oObjectBroker.addWebskin(objectid=stobj.objectid, typename=stobj.typename, template=arguments.template, html=webskinHTML) />
+					</cfif>
 					
 					<cfif arrayLen(request.aAncestorWebskins)>
 						
 						<cfset oWebskinAncestor = createObject("component", application.stcoapi.dmWebskinAncestor.packagePath) />						
 						
 						<cfloop from="1" to="#arrayLen(request.aAncestorWebskins)#" index="i">
+							
+							<!--- Add the ancestor records so we know where this webskin is located throughout the site. --->
 							<cfif stobj.objectid NEQ request.aAncestorWebskins[i].objectID>
 								<cfset bAncestorExists = oWebskinAncestor.checkAncestorExists(webskinObjectID=stobj.objectid, ancestorID=request.aAncestorWebskins[i].objectID, ancestorTemplate=request.aAncestorWebskins[i].template) />
 									
@@ -109,6 +116,10 @@ $out:$
 									<cfset stResult = oWebskinAncestor.createData(stProperties=stProperties) />
 								</cfif>
 							</cfif>
+							
+							<cfif stCurrentView.timeout EQ 0>
+								<cfset request.aAncestorWebskins[i].okToCache = 0 />
+							</cfif>
 						</cfloop>
 					</cfif>
 					
@@ -120,8 +131,6 @@ $out:$
 				<cfelse>
 					<cfthrow type="Application" detail="Error: Template not found [/webskin/#stObj.typename#/#arguments.template#.cfm] and no alternate html provided." />
 				</cfif>	
-			<cfelse>
-				<cf>
 			</cfif>		
 		<cfelse>
 			<cfthrow type="Application" detail="Error: When trying to render [/webskin/#stObj.typename#/#arguments.template#.cfm] the object was not created correctly." />	
