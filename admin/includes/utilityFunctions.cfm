@@ -561,9 +561,15 @@
 		var arFolders = "";
 		var pathLen = 0;
 		var workingPath = "";
+		var bUNC = false;
+		var indexStart = 1;
 	</cfscript>
 	<cfif left(arguments.folderPath,1) eq "/"><!--- *nix path --->
 		<cfset workingPath = "/">
+	<cfelseif left(arguments.folderPath,2) eq "\\"><!--- UNC Path --->
+		<cfset bUNC = true>
+		<cfset workingPath = "\\" & listFirst(arguments.folderPath, "\") & "\">
+		<cfset indexStart = 2>
 	<cfelse>
 		<cfset workingPath = listFirst(thePath, "/")&"/"><!--- windows path --->
 		<cfset thePath = listDeleteAt(thePath,1, "/")>
@@ -571,8 +577,15 @@
 	<cfset arFolders = listToArray(thePath, "/")>
 	
 	
-	<cfloop from="1" to="#arrayLen(arFolders)#" index="depth">
-		<cfset  workingPath = workingPath.concat(arFolders[depth]&"/")>
+	<cfloop from="#indexStart#" to="#arrayLen(arFolders)#" index="depth">
+		
+		<cfif bUNC>
+			<cfset workingPath = workingPath.concat(arFolders[depth]&"\")>
+		<cfelse>
+			<cfset workingPath = workingPath.concat(arFolders[depth]&"/")>
+		</cfif>
+
+		
 		<cfif not directoryExists(workingPath)>
 			<cftry>
 			<cfif arguments.mode eq "">
@@ -581,13 +594,16 @@
 				<cfdirectory action="create" directory="#workingPath#" mode="#arguments.mode#">
 			</cfif>
 			<cfcatch>
+				<cfoutput>failed creating folder #workingPath#</cfoutput>
 				<cfreturn false>
 			</cfcatch>
 			</cftry>
 		</cfif>
+	
 	</cfloop>
 	<cfreturn true>
 </cffunction>
+
 
 
 
