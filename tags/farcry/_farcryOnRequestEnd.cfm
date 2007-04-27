@@ -83,6 +83,10 @@ $out:$
 		<cfif isDefined("Request.InHead.PrototypeLite")>
 			<cfset variables.stPlaceInHead.prototypeLiteJS = 1>
 		</cfif>
+		<cfif isDefined("Request.InHead.Prototype")>
+			<cfset variables.stPlaceInHead.prototypeJS = 1>
+			<cfset variables.stPlaceInHead.prototypeLiteJS = 0>
+		</cfif>
 		<cfif isDefined("Request.InHead.MooFX")>
 			<cfset variables.stPlaceInHead.prototypeLiteJS = 1>
 			<cfset variables.stPlaceInHead.moofxJS = 1>
