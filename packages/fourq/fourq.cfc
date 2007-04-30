@@ -815,6 +815,9 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset var j=0 />
 		<cfset var k=0 />		
 		<cfset var oCoapiAdmin = createObject("component", "farcry.core.packages.coapi.coapiadmin") />
+		<cfset var filteredWebskins = "" />
+		<cfset var filterWebskinName = "" />
+		<cfset var filterWebskinTimeout = "" />
 		
 		<!--- If we are updating a type that already exists then we need to update only the metadata that has changed. --->
 		<cfif structKeyExists(stReturnMetadata, "stProps")>			
@@ -885,25 +888,60 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		
 		<cfset stReturnMetadata.qWebskins = oCoapiAdmin.getWebskins(componentname) />
 		
-		<cfif stReturnMetadata.lObjectBrokerWebskins EQ "*">
-			<cfset stReturnMetadata.lObjectBrokerWebskins = valueList(stReturnMetadata.qWebskins.methodname) />
-		</cfif>
+		<!--- 
+		NEED TO LOOP THROUGH ALL THE WEBSKINS AND CHECK EACH ONE FOR WILDCARDS.
+		IF WILD CARDS EXIST, FIND ALL WEBSKINS THAT MATCH AND ADD THEM TO THE LIST
+		 --->
+		<cfset aFilteredWebskins = arrayNew(1) />
 		
-		<!---  --->
+		<cfloop list="#stReturnMetadata.lObjectBrokerWebskins#" index="ixFilter">
+		
+			<cfset filterWebskinName = replaceNoCase(listFirst(ixFilter,":"),"*", "%", "all") />
+			<cfif listLast(ixFilter,":") NEQ listFirst(ixFilter,":") AND isNumeric(listLast(ixFilter,":")) AND listLast(ixFilter,":") GTE 0>
+				<cfset filterWebskinTimeout = listLast(ixFilter,":")>
+			<cfelse>
+				<cfset filterWebskinTimeout = stReturnMetadata.ObjectBrokerWebskinTimeOut />
+			</cfif>
+			
+			<cfquery dbtype="query" name="qFilter" result="res">
+			SELECT * 
+			FROM stReturnMetadata.qWebskins
+			<cfif FindNoCase("%", filterWebskinName)>
+				WHERE methodname like '#filterWebskinName#'
+			<cfelse>
+				WHERE methodname = '#filterWebskinName#'			
+			</cfif>			
+			</cfquery>
+			
+			<cfloop query="qFilter">
+				
+				<cfset stFilterDetails = structNew() />
+				<cfset stFilterDetails.methodname = qFilter.methodname />
+				<cfset stFilterDetails.WebskinTimeout = filterWebskinTimeout />
+				<cfset arrayAppend(aFilteredWebskins, stFilterDetails) />
+
+			</cfloop>
+		</cfloop>
+	
+		
+		
+		
+		<!--- NOW THAT WE HAVE ALL THE WEBSKINS TO BE CACHED, ADD THE DETAILS TO stObjectBrokerWebskins --->
 		<cfset stReturnMetadata.stObjectBrokerWebskins = structNew() />
 		
-		<cfloop list="#stReturnMetadata.lObjectBrokerWebskins#" index="i">
+		<!--- Initialize lObjectBrokerWebskins because we are going to re-add them without any timeout values in the list --->
+		<cfset stReturnMetadata.lObjectBrokerWebskins = "" />
+		
+		<cfif arrayLen(aFilteredWebskins)>
+			<cfloop from="1" to="#arrayLen(aFilteredWebskins)#" index="i">
 			
-			<!--- This checks to see if the webskin broker timeout is overridden by sending a name:value pair (eg. displayPageStandard:60,displayTeaser:1440) --->
-			<cfif listLast(i,":") NEQ listFirst(i,":") AND isNumeric(listLast(i,":")) AND listLast(i,":") GTE 0>
-				<cfset stReturnMetadata.stObjectBrokerWebskins[listFirst(i,":")] = structNew() />
-				<cfset stReturnMetadata.stObjectBrokerWebskins[listFirst(i,":")].timeout = listLast(i,":")>
-			<cfelse>
-				<cfset stReturnMetadata.stObjectBrokerWebskins[i] = structNew() />
-				<cfset stReturnMetadata.stObjectBrokerWebskins[i].timeout = stReturnMetadata.ObjectBrokerWebskinTimeOut />
-			</cfif>
-		</cfloop>
-
+				<cfif not structKeyExists(stReturnMetadata.stObjectBrokerWebskins, aFilteredWebskins[i].methodname)>
+					<cfset stReturnMetadata.stObjectBrokerWebskins[aFilteredWebskins[i].methodname] = structNew() />
+					<cfset stReturnMetadata.stObjectBrokerWebskins[aFilteredWebskins[i].methodname].timeout = aFilteredWebskins[i].webskinTimeout>
+					<cfset stReturnMetadata.lObjectBrokerWebskins = listAppend(stReturnMetadata.lObjectBrokerWebskins, aFilteredWebskins[i].methodname)>
+				</cfif>
+			</cfloop>
+		</cfif>
 
 		<cfif stReturnMetadata.bObjectBroker>
 			<cfparam name="stReturnMetadata.ObjectBrokerMaxObjects" default="#application.ObjectBrokerMaxObjectsDefault#" />
