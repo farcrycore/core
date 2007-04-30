@@ -266,7 +266,7 @@
 						<cfif qWebskinAncestors.recordCount>
 							<cfloop query="qWebskinAncestors">
 								<cfset bSuccess = removeWebskin(objectid=qWebskinAncestors.ancestorID,typename=qWebskinAncestors.ancestorTypename,template=qWebskinAncestors.ancestorTemplate) />
-								<cfset stResult = oWebskinAncestor.delete(objectid=qWebskinAncestors.objectid) />
+								<!--- <cfset stResult = oWebskinAncestor.delete(objectid=qWebskinAncestors.objectid) /> --->
 							</cfloop>
 						</cfif>
 						<cflock name="objectBroker" type="exclusive" timeout="2" throwontimeout="true">
