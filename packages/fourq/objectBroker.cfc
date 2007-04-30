@@ -67,7 +67,7 @@
 			<cfif request.mode.design eq 1>
 				<!--- DO NOT USE CACHE IF IN DESIGN MODE --->
 			<cfelse>
-				<cfif listContainsNoCase(application.stcoapi[arguments.typename].lObjectBrokerWebskins, arguments.template)>
+				<cfif listFindNoCase(application.stcoapi[arguments.typename].lObjectBrokerWebskins, arguments.template)>
 					<cfif structKeyExists(application.objectbroker, arguments.typename)
 						AND 	structKeyExists(application.objectbroker[arguments.typename], arguments.objectid)
 						AND 	structKeyExists(application.objectbroker[arguments.typename][arguments.objectid], "stWebskins")
