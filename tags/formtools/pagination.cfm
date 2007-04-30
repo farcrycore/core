@@ -52,6 +52,7 @@ $in:  $
 	<cfparam name="attributes.pageLinks" default="0" type="numeric">
 	<cfparam name="attributes.recordsPerPage" default="1" type="numeric">
 	<cfparam name="attributes.submissionType" default="url" type="string">
+	<cfparam name="attributes.actionURL" default="#cgi.SCRIPT_NAME#" type="string">
 	
 	<cfif not isDefined("attributes.qRecordSet") or not isQuery(attributes.qRecordSet)>
 		<cfabort showerror="you must pass a recordset into pagination." />
@@ -138,7 +139,7 @@ $in:  $
 				
 	<cfsavecontent variable="caller.paginationHTML">
 		<cfif bShowPaginate>
-			<cfoutput>#DisplayPaginationScroll(bShowResultTotal="#attributes.bShowResultTotal#",bShowPageDropdown="#attributes.bShowPageDropdown#")#</cfoutput>
+			<cfoutput>#DisplayPaginationScroll(actionURL="#attributes.actionURL#", bShowResultTotal="#attributes.bShowResultTotal#",bShowPageDropdown="#attributes.bShowPageDropdown#")#</cfoutput>
 			
 		<cfelse>
 			
@@ -201,6 +202,7 @@ $in:  $
 <!--- user defined function, for generating pagination scroll --->
 <cffunction name="displayPaginationScroll" access="private" output="false" returntype="string">
 	
+	<cfparam name="arguments.actionURL" default="#cgi.SCRIPT_NAME#" type="string" />
 	<cfparam name="arguments.bShowResultTotal" default="true" type="boolean" />
 	<cfparam name="arguments.bShowPageDropdown" default="true" type="boolean" />
 	
@@ -229,7 +231,7 @@ $in:  $
 						$('paginationpage').value=page;
 						$('#Request.farcryForm.Name#').submit();
 					<cfelse>
-						window.location = '#cgi.SCRIPT_NAME#?#queryString#&page=' + page;
+						window.location = '#arguments.actionURL#?#queryString#&page=' + page;
 					</cfif>
 				}
 				</script>
@@ -258,24 +260,24 @@ $in:  $
 			<cfoutput><li><a href="##">#attributes.htmlPrevious#</a></li></cfoutput>
 		<cfelse>
 			<cfif pTotalPages GT attributes.pageLinks>
-				<cfoutput><li><a href="#cgi.SCRIPT_NAME#?#queryString#&amp;page=1" onclick="javascript:paginationSubmission(1);return false;">#attributes.htmlFirst#</a></li></cfoutput>
+				<cfoutput><li><a href="#arguments.actionURL#?#queryString#&amp;page=1" onclick="javascript:paginationSubmission(1);return false;">#attributes.htmlFirst#</a></li></cfoutput>
 		   	</cfif>
-		   	<cfoutput><li><a href="#cgi.SCRIPT_NAME#?#queryString#&amp;page=#attributes.currentPage-1#" onclick="javascript:paginationSubmission(#attributes.currentPage-1#);return false;">#attributes.htmlPrevious#</a></li></cfoutput>
+		   	<cfoutput><li><a href="#arguments.actionURL#?#queryString#&amp;page=#attributes.currentPage-1#" onclick="javascript:paginationSubmission(#attributes.currentPage-1#);return false;">#attributes.htmlPrevious#</a></li></cfoutput>
 		</cfif>		
 		
 		<cfloop from="#pFirstPage#" to="#pLastPage#" index="i">
 		    <cfif attributes.currentPage EQ i>
 				<cfoutput><li class="active"><a href="##">#i#</a></li></cfoutput>
 		   <cfelse>
-		   	<cfoutput><li><a href="#cgi.SCRIPT_NAME#?#queryString#&amp;page=#i#" onclick="javascript:paginationSubmission(#i#);return false;">#i#</a></li></cfoutput>	   
+		   	<cfoutput><li><a href="#arguments.actionURL#?#queryString#&amp;page=#i#" onclick="javascript:paginationSubmission(#i#);return false;">#i#</a></li></cfoutput>	   
 		    </cfif>
 		</cfloop>
 	
 		<cfif attributes.currentPage * attributes.recordsPerPage LT attributes.totalRecords>
 		
-		   	<cfoutput><li><a href="#cgi.SCRIPT_NAME#?#queryString#&amp;page=#attributes.currentPage+1#" onclick="javascript:paginationSubmission(#attributes.currentPage+1#);return false;">#attributes.htmlNext#</a></li></cfoutput>
+		   	<cfoutput><li><a href="#arguments.actionURL#?#queryString#&amp;page=#attributes.currentPage+1#" onclick="javascript:paginationSubmission(#attributes.currentPage+1#);return false;">#attributes.htmlNext#</a></li></cfoutput>
 		   <cfif pTotalPages GT attributes.pageLinks>
-			   <cfoutput><li><a href="#cgi.SCRIPT_NAME#?#queryString#&amp;page=#pTotalPages#" onclick="javascript:paginationSubmission(#pTotalPages#);return false;">#attributes.htmlLast#</a></li></cfoutput>
+			   <cfoutput><li><a href="#arguments.actionURL#?#queryString#&amp;page=#pTotalPages#" onclick="javascript:paginationSubmission(#pTotalPages#);return false;">#attributes.htmlLast#</a></li></cfoutput>
 		   	</cfif>
 		<cfelse>
 			<cfoutput><li><a href="##">#attributes.htmlNext#</a></li></cfoutput>
