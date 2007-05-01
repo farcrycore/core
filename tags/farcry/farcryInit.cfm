@@ -73,159 +73,176 @@ $in: objectid -- $
 	<!---------------------------------------- 
 	BEGIN: Application Initialise 
 	----------------------------------------->
-	<cfif NOT IsDefined("application.bInit") OR IsDefined("url.updateapp")>
-		
-		
-	<!---	<cfinclude template="/farcry/core/tags/farcry/flightcheck.cfm" /> --->
-		
-		<!----------------------------------------
-		 SET THE DATABASE SPECIFIC INFORMATION 
-		---------------------------------------->
-		<cfset application.dsn = attributes.dsn />
-		<cfset application.dbtype = attributes.dbtype />
-		<cfset application.dbowner = attributes.dbowner />
-		
-		<cfif application.dbtype EQ "mssql" AND NOT len(application.dbowner)>
-			<cfset application.dbowner = "dbo." />
-		</cfif>
-		
-		<!----------------------------------------
-		 SET THE MAIN PHYSICAL PATH INFORMATION
-		 ---------------------------------------->
-		<cfset application.path.project = expandpath("/farcry/projects/#attributes.projectDirectoryName#") />
-		<cfset application.path.core = expandpath("/farcry/core") />
-		<cfset application.path.plugins = expandpath("/farcry/plugins") />
-		
-		<cfset application.path.defaultFilePath = "#application.path.project#/www/files">
-		<cfset application.path.secureFilePath = "#application.path.project#/securefiles">		
-		
-		<cfset application.path.imageRoot = "#application.path.project#/www">
-		
-		
-		
-		<!----------------------------------------
-		 WEB URL PATHS
-		 ---------------------------------------->
-		<cfset application.url.webroot = attributes.projectURL />
-		<cfset application.url.farcry = "#attributes.projectURL#/farcry" />
-		<cfset application.url.imageRoot = "#application.url.webroot#">
-		<cfset application.url.fileRoot = "#application.url.webroot#/files">
-		
-		
-		<!----------------------------------------
-		SHORTCUT PACKAGE PATHS
-		 ---------------------------------------->
-		<cfset application.packagepath = "farcry.core.packages" />
-		<cfset application.custompackagepath = "farcry.projects.#attributes.projectDirectoryName#.packages" />
-		<cfset application.securitypackagepath = "farcry.core.packages.security" />
-		
-		<!----------------------------------------
-		PLUGINS TO INCLUDE
-		 ---------------------------------------->
-		<cfset application.plugins = attributes.plugins />
-		
-		
-		<!------------------------------------------ 
-		USE OBJECT BROKER?
-		 ------------------------------------------>
-		<cfset application.bObjectBroker = attributes.bObjectBroker />
-		<cfset application.ObjectBrokerMaxObjectsDefault = attributes.ObjectBrokerMaxObjectsDefault />
-		
-		
-		<!----------------------------------------
-		SECURITY
-		 ---------------------------------------->		
-		<!---// dmSecurity settings --->
-		<!---//Init Application dmsec scope --->
-		<cfset Application.dmSec=StructNew() />
-		<!---// --- Initialise the userdirectories --- --->
-		<cfset Application.dmSec.UserDirectory = structNew() />
-		
-		<!---// Client User Directory --->
-		<cfset Application.dmSec.UserDirectory.ClientUD = structNew() />
-		<cfset temp = Application.dmSec.UserDirectory.ClientUD />
-		<cfset temp.type = "Daemon" />
-		<cfset temp.datasource = application.dsn />
-		
-		<!---//Policy Store settings --->
-		<cfset Application.dmSec.PolicyStore = StructNew() />
-		<cfset ps = Application.dmSec.PolicyStore />
-		<cfset ps.dataSource = application.dsn />
-		<cfset ps.permissionTable = "dmPermission" />
-		<cfset ps.policyGroupTable = "dmPolicyGroup" />
-		<cfset ps.permissionBarnacleTable = "dmPermissionBarnacle" />
-		<cfset ps.externalGroupToPolicyGroupTable = "dmExternalGroupToPolicyGroup" />
-						
-	
-
-		<!--- Initialise the stPlugins structure that will hold all the plugin specific settings. --->
-		<cfset application.stPlugins = structNew() />
-		
-		
-		<cfinclude template="/farcry/projects/#attributes.projectDirectoryName#/config/_serverSpecificVars.cfm" />
-		
-		
-
-		
-		<!----------------------------------- 
-		INITIALISE THE REQUESTED LIBRARIES
-		 ----------------------------------->
-		<cfif isDefined("application.plugins")>
-			<cfloop list="#application.plugins#" index="plugin">
-				<cfif fileExists("#application.path.plugins#/#plugin#/config/_serverSpecificVars.cfm")>
-					<cfinclude template="/farcry/plugins/#plugin#/config/_serverSpecificVars.cfm">
-				</cfif>
-			</cfloop>
-		</cfif>
-
-		
-						
-		<!--------------------------------- 
-		INITIALISE DMSEC
-		 --------------------------------->
-		<cfinclude template="/farcry/core/tags/farcry/_dmSec.cfm">
-	
-		<!--------------------------------- 
-		FARCRY CORE INITIALISATION
-		 --------------------------------->
-		<cfinclude template="/farcry/core/tags/farcry/_farcryApplicationInit.cfm">
-
-
-		<!------------------------------------
-		OBJECT BROKER
-		 ------------------------------------>		
-		<cfif structkeyexists(application, "bObjectBroker") AND application.bObjectBroker>
-			<cfset objectBroker = createObject("component","farcry.core.packages.fourq.objectBroker")>
-			
-			<cfloop list="#structKeyList(application.stcoapi)#" index="typename">
-				<cfif application.stcoapi[typename].bObjectBroker>
-					<cfset bSuccess = objectBroker.configureType(typename=typename, MaxObjects=application.stcoapi[typename].ObjectBrokerMaxObjects) />
-				</cfif>
-			</cfloop>
-		</cfif>
-		
-
-		<!--- SETUP CATEGORY APPLICATION STRUCTURE --->
-		<cfquery datasource="#application.dsn#" name="qCategories">
-		SELECT categoryID, categoryLabel
-		FROM #application.dbowner#categories
-		</cfquery>
-		
-		<cfparam name="application.catid" default="#structNew()#" />
-		<cfloop query="qCategories">
-			<cfset application.catID[qCategories.categoryID] = qCategories.categoryLabel>
-		</cfloop>
-		
-		
-		
-		
-		<!--- CALL THE PROJECTS SERVER SPECIFIC AFTER INIT VARIABLES. --->
-		<cfif fileExists("#application.path.project#/config/_serverSpecificVarsAfterInit.cfm") >
-			<cfinclude template="/farcry/projects/#attributes.name#/config/_serverSpecificVarsAfterInit.cfm" />
-		</cfif>
-		
-		
+	<cfif NOT structkeyExists(url, "updateapp")>
+		<cfset url.updateapp=false />
 	</cfif>
+	
+	<cftry>
+	
+	<cfif (NOT structkeyexists(application, "bInit") OR NOT application.binit) OR url.updateapp>
+		<cflock name="#application.applicationName#_init" type="exclusive" timeout="30" throwontimeout="true">
+			<cfif (NOT structkeyexists(application, "bInit") OR NOT application.binit) OR url.updateapp>
+				
+				<!--- set binit to false to block users accessing on restart --->
+				<cfset application.bInit =  false />
+				
+				<!----------------------------------------
+				 SET THE DATABASE SPECIFIC INFORMATION 
+				---------------------------------------->
+				<cfset application.dsn = attributes.dsn />
+				<cfset application.dbtype = attributes.dbtype />
+				<cfset application.dbowner = attributes.dbowner />
+				
+				<cfif application.dbtype EQ "mssql" AND NOT len(application.dbowner)>
+					<cfset application.dbowner = "dbo." />
+				</cfif>
+				
+				<!----------------------------------------
+				 SET THE MAIN PHYSICAL PATH INFORMATION
+				 ---------------------------------------->
+				<cfset application.path.project = expandpath("/farcry/projects/#attributes.projectDirectoryName#") />
+				<cfset application.path.core = expandpath("/farcry/core") />
+				<cfset application.path.plugins = expandpath("/farcry/plugins") />
+				
+				<cfset application.path.defaultFilePath = "#application.path.project#/www/files">
+				<cfset application.path.secureFilePath = "#application.path.project#/securefiles">		
+				
+				<cfset application.path.imageRoot = "#application.path.project#/www">
+				
+				
+				
+				<!----------------------------------------
+				 WEB URL PATHS
+				 ---------------------------------------->
+				<cfset application.url.webroot = attributes.projectURL />
+				<cfset application.url.farcry = "#attributes.projectURL#/farcry" />
+				<cfset application.url.imageRoot = "#application.url.webroot#">
+				<cfset application.url.fileRoot = "#application.url.webroot#/files">
+				
+				
+				<!----------------------------------------
+				SHORTCUT PACKAGE PATHS
+				 ---------------------------------------->
+				<cfset application.packagepath = "farcry.core.packages" />
+				<cfset application.custompackagepath = "farcry.projects.#attributes.projectDirectoryName#.packages" />
+				<cfset application.securitypackagepath = "farcry.core.packages.security" />
+				
+				<!----------------------------------------
+				PLUGINS TO INCLUDE
+				 ---------------------------------------->
+				<cfset application.plugins = attributes.plugins />
+				
+				
+				<!------------------------------------------ 
+				USE OBJECT BROKER?
+				 ------------------------------------------>
+				<cfset application.bObjectBroker = attributes.bObjectBroker />
+				<cfset application.ObjectBrokerMaxObjectsDefault = attributes.ObjectBrokerMaxObjectsDefault />
+				
+				
+				<!----------------------------------------
+				SECURITY
+				 ---------------------------------------->		
+				<!---// dmSecurity settings --->
+				<!---//Init Application dmsec scope --->
+				<cfset Application.dmSec=StructNew() />
+				<!---// --- Initialise the userdirectories --- --->
+				<cfset Application.dmSec.UserDirectory = structNew() />
+				
+				<!---// Client User Directory --->
+				<cfset Application.dmSec.UserDirectory.ClientUD = structNew() />
+				<cfset temp = Application.dmSec.UserDirectory.ClientUD />
+				<cfset temp.type = "Daemon" />
+				<cfset temp.datasource = application.dsn />
+				
+				<!---//Policy Store settings --->
+				<cfset Application.dmSec.PolicyStore = StructNew() />
+				<cfset ps = Application.dmSec.PolicyStore />
+				<cfset ps.dataSource = application.dsn />
+				<cfset ps.permissionTable = "dmPermission" />
+				<cfset ps.policyGroupTable = "dmPolicyGroup" />
+				<cfset ps.permissionBarnacleTable = "dmPermissionBarnacle" />
+				<cfset ps.externalGroupToPolicyGroupTable = "dmExternalGroupToPolicyGroup" />
+								
+			
+		
+				<!--- Initialise the stPlugins structure that will hold all the plugin specific settings. --->
+				<cfset application.stPlugins = structNew() />
+				
+				
+				<cfinclude template="/farcry/projects/#attributes.projectDirectoryName#/config/_serverSpecificVars.cfm" />
+				
+				
+		
+				
+				<!----------------------------------- 
+				INITIALISE THE REQUESTED LIBRARIES
+				 ----------------------------------->
+				<cfif isDefined("application.plugins")>
+					<cfloop list="#application.plugins#" index="plugin">
+						<cfif fileExists("#application.path.plugins#/#plugin#/config/_serverSpecificVars.cfm")>
+							<cfinclude template="/farcry/plugins/#plugin#/config/_serverSpecificVars.cfm">
+						</cfif>
+					</cfloop>
+				</cfif>
+		
+				
+								
+				<!--------------------------------- 
+				INITIALISE DMSEC
+				 --------------------------------->
+				<cfinclude template="/farcry/core/tags/farcry/_dmSec.cfm">
+			
+				<!--------------------------------- 
+				FARCRY CORE INITIALISATION
+				 --------------------------------->
+				<cfinclude template="/farcry/core/tags/farcry/_farcryApplicationInit.cfm">
+		
+		
+				<!------------------------------------
+				OBJECT BROKER
+				 ------------------------------------>		
+				<cfif structkeyexists(application, "bObjectBroker") AND application.bObjectBroker>
+					<cfset objectBroker = createObject("component","farcry.core.packages.fourq.objectBroker")>
+					
+					<cfloop list="#structKeyList(application.stcoapi)#" index="typename">
+						<cfif application.stcoapi[typename].bObjectBroker>
+							<cfset bSuccess = objectBroker.configureType(typename=typename, MaxObjects=application.stcoapi[typename].ObjectBrokerMaxObjects) />
+						</cfif>
+					</cfloop>
+				</cfif>
+				
+		
+				<!--- SETUP CATEGORY APPLICATION STRUCTURE --->
+				<cfquery datasource="#application.dsn#" name="qCategories">
+				SELECT categoryID, categoryLabel
+				FROM #application.dbowner#categories
+				</cfquery>
+				
+				<cfparam name="application.catid" default="#structNew()#" />
+				<cfloop query="qCategories">
+					<cfset application.catID[qCategories.categoryID] = qCategories.categoryLabel>
+				</cfloop>
+				
+				
+				<!--- CALL THE PROJECTS SERVER SPECIFIC AFTER INIT VARIABLES. --->
+				<cfif fileExists("#application.path.project#/config/_serverSpecificVarsAfterInit.cfm") >
+					<cfinclude template="/farcry/projects/#attributes.name#/config/_serverSpecificVarsAfterInit.cfm" />
+				</cfif>
+				
+				<!--- set the initialised flag --->
+				<cfset application.bInit = true />
+			</cfif>
+		</cflock>
+	</cfif>
+	
+	<cfcatch>
+		<cfoutput><h1>Application Restarting</h1><p>Please come back in a few minutes.</p></cfoutput>
+		<cfdump var="#cfcatch#">
+		<cfabort />
+	</cfcatch>
+	
+	</cftry>
 	<!---------------------------------------- 
 	END: Application Initialise 
 	----------------------------------------->
