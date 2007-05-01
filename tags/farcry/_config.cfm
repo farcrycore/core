@@ -207,7 +207,5 @@ Build NavIDs from Navigation Nodes
 <!--- $TODO: ferret through and remove this code GB $--->
 <cfset application.stTypes = structNew()>
 
-<!--- set the initialised flag --->
-<cfset application.bInit = true>
 
 <cfsetting enablecfoutputonly="no">
