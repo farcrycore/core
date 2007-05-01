@@ -44,7 +44,7 @@ $in: url -- the url portion that we are searching for in the script_name. eg. /f
 		<cfinclude template="#loc#">
 		
 		<cfcatch type="missinginclude">
-			<cfthrow type="Application" message="could not find project application" detail="this usually means that your mappings are incorectly setup. Please see your administrator.">	
+			<cfthrow type="Application" message="Could not find project application." detail="Check that your mappings are correctly setup.">	
 		</cfcatch>
 	
 	</cftry>
