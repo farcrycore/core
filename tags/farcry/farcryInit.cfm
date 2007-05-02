@@ -238,7 +238,6 @@ $in: objectid -- $
 	
 	<cfcatch>
 		<cfoutput><h1>Application Restarting</h1><p>Please come back in a few minutes.</p></cfoutput>
-		<cfdump var="#cfcatch#">
 		<cfabort />
 	</cfcatch>
 	
