@@ -126,7 +126,7 @@
 			<cfif request.mode.design eq 1 OR structKeyExists(url, "updateapp") AND url.updateapp EQ 1>
 				<!--- DO NOT ADD TO CACHE IF IN DESIGN MODE or UPDATING APP --->
 			<cfelse>
-				<cfif listContainsNoCase(application.stcoapi[arguments.typename].lObjectBrokerWebskins, arguments.template) and len(arguments.HTML)>
+				<cfif listFindNoCase(application.stcoapi[arguments.typename].lObjectBrokerWebskins, arguments.template) and len(arguments.HTML)>
 					<cfif application.stcoapi[arguments.typename].stObjectBrokerWebskins[arguments.template].timeout NEQ 0>
 						<cfif structKeyExists(application.objectbroker[arguments.typename], arguments.objectid)>
 							<cflock name="objectBroker" type="exclusive" timeout="2" throwontimeout="true">
