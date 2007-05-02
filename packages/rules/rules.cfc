@@ -26,7 +26,9 @@ $out:$
 	<cfproperty name="objectID" type="uuid" required="true" />
 	<cfproperty name="label" type="nstring" default="">
 	
-	
+	<cfproperty name="datetimelastupdated" displayname="Datetime lastupdated" type="date" hint="Timestamp for record last modified." required="no" default="" ftType="datetime" ftLabel="Last Updated"> 
+
+
 	<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft">	
 	<cfimport taglib="/farcry/core/tags/wizard/" prefix="wiz">	
 	
@@ -83,6 +85,7 @@ $out:$
 					<cfset stCurrentView.typename = stobj.typename />
 					<cfset stCurrentView.template = arguments.template />
 					<cfset stCurrentView.timeout = oCoapiAdmin.getWebskinTimeOut(typename=stObj.typename, template=arguments.template) />
+					<cfset stCurrentView.hashURL = oCoapiAdmin.getWebskinHashURL(typename=stObj.typename, template=arguments.template) />
 					<cfset stCurrentView.okToCache = 1 />
 					<cfset arrayAppend(request.aAncestorWebskins, stCurrentView) />
 	
@@ -93,7 +96,7 @@ $out:$
 					<!--- If the current view (Last Item In the array) is still OkToCache --->
 					<cfif request.aAncestorWebskins[arrayLen(request.aAncestorWebskins)].okToCache>
 						<!--- Add the webskin to the object broker if required --->
-						<cfset bAdded = oObjectBroker.addWebskin(objectid=stobj.objectid, typename=stobj.typename, template=arguments.template, html=webskinHTML) />
+						<cfset bAdded = oObjectBroker.addWebskin(objectid=stobj.objectid, typename=stobj.typename, template=arguments.template, html=webskinHTML, hashURL=stCurrentView.hashURL) />
 					</cfif>
 					
 					<cfif arrayLen(request.aAncestorWebskins)>
@@ -117,8 +120,14 @@ $out:$
 								</cfif>
 							</cfif>
 							
+							<!--- If this webskin is to never cache, make sure all ancestors also never cache --->
 							<cfif stCurrentView.timeout EQ 0>
 								<cfset request.aAncestorWebskins[i].okToCache = 0 />
+							</cfif>
+							
+							<!--- If this webskin is to have its url hashed, make sure all ancestors also have their webskins hashed --->
+							<cfif stCurrentView.hashURL>
+								<cfset request.aAncestorWebskins[i].hashURL = true />
 							</cfif>
 						</cfloop>
 					</cfif>
@@ -378,6 +387,11 @@ $out:$
 		
 		<cfset var stReturn=structNew()>
 					    
+		<cfif NOT structKeyExists(arguments.stProperties, "datetimelastupdated")>
+			<cfset arguments.stProperties.datetimelastupdated = createODBCDateTime(now()) />
+		</cfif>
+				
+									    
 		<cfset stReturn=super.setData(stProperties=arguments.stProperties, dsn=arguments.dsn, bSessionOnly=arguments.bSessionOnly) />
 		<!--- log update --->
 		<cfif arguments.bAudit>
