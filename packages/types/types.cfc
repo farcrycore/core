@@ -181,7 +181,6 @@ default handlers
 		<cfelse>
 			<cfthrow type="Application" detail="Error: When trying to render [/webskin/#stObj.typename#/#arguments.template#.cfm] the object was not created correctly." />	
 		</cfif>
-		</cftimer>
 		<cfreturn webskinHTML />
 	</cffunction>
 		
