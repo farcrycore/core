@@ -25,6 +25,11 @@ $in: objectid -- $
 
 
 <cfif thistag.executionMode eq "Start">
+
+	<!--- USED TO DETERMINE OVERALL PAGE TICKCOUNT --->
+	<cfset request.farcryPageTimerStart = getTickCount() />
+	
+	<!--- DEFAULT ATTRIBUTES THAT CAN BE PASSED IN TO FARCRYINIT TO SET SOME MAJOR APPLICATION SCOPE VARIABLES --->
 	<cfif not isDefined("attributes.name")>
 		<cfabort showerror="attributes.name not passed.">
 	</cfif>
@@ -53,6 +58,9 @@ $in: objectid -- $
 	
 	<cfparam name="attributes.bObjectBroker" default="true" />
 	<cfparam name="attributes.ObjectBrokerMaxObjectsDefault" default="100" />
+	
+	<!--- Option to archive --->
+	<cfparam name="attributes.bUseMediaArchive" default="false" />
 
 
 	<cfapplication name="#attributes.name#" 
@@ -109,6 +117,7 @@ $in: objectid -- $
 				
 				<cfset application.path.imageRoot = "#application.path.project#/www">
 				
+				<cfset application.path.mediaArchive = "#application.path.project#/mediaArchive">
 				
 				
 				<!----------------------------------------
@@ -140,6 +149,12 @@ $in: objectid -- $
 				<cfset application.ObjectBrokerMaxObjectsDefault = attributes.ObjectBrokerMaxObjectsDefault />
 				
 				
+				<!------------------------------------------ 
+				USE MEDIA ARCHIVE?
+				 ------------------------------------------>
+				<cfset application.bUseMediaArchive = attributes.bUseMediaArchive />
+				
+								
 				<!----------------------------------------
 				SECURITY
 				 ---------------------------------------->		
