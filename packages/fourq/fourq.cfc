@@ -938,6 +938,10 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 				<cfif not structKeyExists(stReturnMetadata.stObjectBrokerWebskins, aFilteredWebskins[i].methodname)>
 					<cfset stReturnMetadata.stObjectBrokerWebskins[aFilteredWebskins[i].methodname] = structNew() />
 					<cfset stReturnMetadata.stObjectBrokerWebskins[aFilteredWebskins[i].methodname].timeout = aFilteredWebskins[i].webskinTimeout>
+					<cfset stReturnMetadata.stObjectBrokerWebskins[aFilteredWebskins[i].methodname].hashURL = oCoapiAdmin.getWebskinHashURL(typename="#componentname#", template="#aFilteredWebskins[i].methodname#") />
+					<cfset stReturnMetadata.stObjectBrokerWebskins[aFilteredWebskins[i].methodname].displayName = oCoapiAdmin.getWebskinDisplayname(typename="#componentname#", template="#aFilteredWebskins[i].methodname#") />
+					<cfset stReturnMetadata.stObjectBrokerWebskins[aFilteredWebskins[i].methodname].author = oCoapiAdmin.getWebskinAuthor(typename="#componentname#", template="#aFilteredWebskins[i].methodname#") />
+					<cfset stReturnMetadata.stObjectBrokerWebskins[aFilteredWebskins[i].methodname].description = oCoapiAdmin.getWebskinDescription(typename="#componentname#", template="#aFilteredWebskins[i].methodname#") />
 					<cfset stReturnMetadata.lObjectBrokerWebskins = listAppend(stReturnMetadata.lObjectBrokerWebskins, aFilteredWebskins[i].methodname)>
 				</cfif>
 			</cfloop>
