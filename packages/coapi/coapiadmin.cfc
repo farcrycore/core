@@ -127,6 +127,9 @@
 		<cfset var library="" />
 		<cfset var col="" />
 		<cfset var WebskinDisplayName = "" />
+		<cfset var WebskinAuthor = "" />
+		<cfset var WebskinDescription = "" />
+		<cfset var WebskinHashURL = "" />
 
 		<!--- check project webskins --->
 		<cfif directoryExists(webskinPath)>
@@ -212,7 +215,7 @@
 		
 		<!--- ORDER AND SET DISPLAYNAME FOR COMBINED WEBSKIN RESULTS --->		
  		<cfquery dbtype="query" name="qResult">
-		SELECT *,  name as displayname,  name as methodname
+		SELECT *,  name as displayname,  name as methodname, 'anonymous' as author, '' as description, '0' as HashURL
 		FROM qResult
 		ORDER BY name
 		</cfquery>
@@ -226,6 +229,29 @@
 			<cfset WebskinDisplayName = getWebskinDisplayname(typename="#arguments.typename#", template="#ReplaceNoCase(qResult.name, '.cfm', '','ALL')#") />
 			<cfif len(WebskinDisplayName)>
 				<cfset querysetcell(qresult, 'displayname', WebskinDisplayName, qResult.currentRow) />			
+			</cfif>	
+			
+			<!--- See if the Author is defined in the webskin and if so, replace author field in the query. --->
+			<cfset WebskinAuthor = getWebskinAuthor(typename="#arguments.typename#", template="#ReplaceNoCase(qResult.name, '.cfm', '','ALL')#") />
+			<cfif len(WebskinAuthor)>
+				<cfset querysetcell(qresult, 'author', WebskinAuthor, qResult.currentRow) />			
+			</cfif>	
+			
+			<!--- See if the description is defined in the webskin and if so, replace author field in the query. --->
+			<cfset WebskinDescription = getWebskinAuthor(typename="#arguments.typename#", template="#ReplaceNoCase(qResult.name, '.cfm', '','ALL')#") />
+			<cfif len(WebskinDescription)>
+				<cfset querysetcell(qresult, 'description', WebskinDescription, qResult.currentRow) />			
+			</cfif>	
+			
+			<!--- See if the description is defined in the webskin and if so, replace author field in the query. --->
+			<cfset WebskinHashURL = getWebskinHashURL(typename="#arguments.typename#", template="#ReplaceNoCase(qResult.name, '.cfm', '','ALL')#") />
+			<cfif isBoolean(WebskinHashURL)>
+				<cfif WebskinHashURL>
+					<cfset querysetcell(qresult, 'HashURL', 1, qResult.currentRow) />
+				<cfelse>
+					<cfset querysetcell(qresult, 'HashURL', 0, qResult.currentRow) />
+				</cfif>
+							
 			</cfif>	
 		</cfoutput>
 		
@@ -283,6 +309,41 @@
 	</cffunction>
 		
 	
+	<cffunction name="getWebskinHashURL" returntype="string" access="public" output="false" hint="Returns the objectbroker HashURL boolean value of a webskin. A result of true will HASH the cgi.QUERY_STRING on all ancestor webskins in the cache.">
+		<cfargument name="typename" type="string" required="false" default="" />
+		<cfargument name="template" type="string" required="false" default="" />
+		<cfargument name="path" type="string" required="false" />
+	
+		<cfset var result = "false" />	
+		<cfif NOT structKeyExists(arguments, "path")>
+			<cfif len(arguments.typename) AND len(arguments.template)>
+				<cfset arguments.path = getWebskinPath(typename=arguments.typename, template=arguments.template) />
+			<cfelse>
+				<cfthrow type="Application" detail="Error: [getWebskinHashURL] You must pass in a path or both the typename and template" />	
+			</cfif>
+		</cfif>
+		
+		<cfif len(arguments.path) and fileExists(Expandpath(arguments.path))>
+			<cffile action="READ" file="#Expandpath(arguments.path)#" variable="template">
+		
+			<cfset pos = findNoCase('@@hashURL:', template)>
+			<cfif pos GT 0>
+				<cfset pos = pos + 10>
+				<cfset count = findNoCase('--->', template, pos)-pos>
+				<cfset result = trim(listLast(mid(template,  pos, count), ":"))>
+			</cfif>	
+		</cfif>
+		
+		<cfif not isBoolean(result)>
+			<cfset result = false>
+		</cfif>
+	
+	
+		<cfreturn result />
+	</cffunction>
+	
+		
+	
 	<cffunction name="getWebskinDisplayname" returntype="string" access="public" output="false" hint="">
 		<cfargument name="typename" type="string" required="false" />
 		<cfargument name="template" type="string" required="false" />
@@ -304,7 +365,61 @@
 			<cfif pos GT 0>
 				<cfset pos = pos + 14>
 				<cfset count = findNoCase('--->', template, pos)-pos>
-				<cfset result = listLast(mid(template,  pos, count), ":")>
+				<cfset result = trim(listLast(mid(template,  pos, count), ":"))>
+			</cfif>	
+		</cfif>
+		
+		<cfreturn result />
+	</cffunction>	
+	<cffunction name="getWebskinAuthor" returntype="string" access="public" output="false" hint="">
+		<cfargument name="typename" type="string" required="false" />
+		<cfargument name="template" type="string" required="false" />
+		<cfargument name="path" type="string" required="false" />
+	
+		<cfset var result = "" />
+		<cfif NOT structKeyExists(arguments, "path")>
+			<cfif len(arguments.typename) AND len(arguments.template)>
+				<cfset arguments.path = getWebskinPath(typename=arguments.typename, template=arguments.template) />
+			<cfelse>
+				<cfthrow type="Application" detail="Error: [getWebskinAuthor] You must pass in a path or both the typename and template" />	
+			</cfif>
+		</cfif>
+		
+		<cfif len(arguments.path) and fileExists(Expandpath(arguments.path))>
+			<cffile action="READ" file="#Expandpath(arguments.path)#" variable="template">
+		
+			<cfset pos = findNoCase('@@author:', template)>
+			<cfif pos GT 0>
+				<cfset pos = pos + 9>
+				<cfset count = findNoCase('--->', template, pos)-pos>
+				<cfset result = trim(listLast(mid(template,  pos, count), ":"))>
+			</cfif>	
+		</cfif>
+		
+		<cfreturn result />
+	</cffunction>
+	<cffunction name="getWebskinDescription" returntype="string" access="public" output="false" hint="">
+		<cfargument name="typename" type="string" required="false" />
+		<cfargument name="template" type="string" required="false" />
+		<cfargument name="path" type="string" required="false" />
+	
+		<cfset var result = "" />
+		<cfif NOT structKeyExists(arguments, "path")>
+			<cfif len(arguments.typename) AND len(arguments.template)>
+				<cfset arguments.path = getWebskinPath(typename=arguments.typename, template=arguments.template) />
+			<cfelse>
+				<cfthrow type="Application" detail="Error: [getWebskinDescription] You must pass in a path or both the typename and template" />	
+			</cfif>
+		</cfif>
+		
+		<cfif len(arguments.path) and fileExists(Expandpath(arguments.path))>
+			<cffile action="READ" file="#Expandpath(arguments.path)#" variable="template">
+		
+			<cfset pos = findNoCase('@@description:', template)>
+			<cfif pos GT 0>
+				<cfset pos = pos + 14>
+				<cfset count = findNoCase('--->', template, pos)-pos>
+				<cfset result = trim(listLast(mid(template,  pos, count), ":"))>
 			</cfif>	
 		</cfif>
 		
