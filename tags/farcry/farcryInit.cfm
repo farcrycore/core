@@ -80,7 +80,7 @@ $in: objectid -- $
 	<cftry>
 	
 	<cfif (NOT structkeyexists(application, "bInit") OR NOT application.binit) OR url.updateapp>
-		<cflock name="#application.applicationName#_init" type="exclusive" timeout="30" throwontimeout="true">
+		<cflock name="#application.applicationName#_init" type="exclusive" timeout="3" throwontimeout="true">
 			<cfif (NOT structkeyexists(application, "bInit") OR NOT application.binit) OR url.updateapp>
 				
 				<!--- set binit to false to block users accessing on restart --->
