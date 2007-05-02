@@ -116,10 +116,7 @@
 						<cfset ArrayDeleteAt(stwizard.Data[PrimaryObjectID][arguments.PrimaryFieldname],pos)>
 					</cfif>
 				</cfif>			
-				<cfset variables.tableMetadata = createobject('component','farcry.core.packages.fourq.TableMetadata').init() />
-				<cfset tableMetadata.parseMetadata(md=getMetadata(oPrimary)) />		
-				<cfset stFields = variables.tableMetadata.getTableDefinition() />
-				
+				<cfset stFields = application.stcoapi[PrimaryTypename].tableDefinition />				
 				<cfset o = createObject("component","farcry.core.packages.fourq.gateway.dbGateway").init(dsn=application.dsn,dbowner="")>
 				<cfset aProps = o.createArrayTableData(tableName=PrimaryTypename & "_" & PrimaryFieldName,objectid=arguments.PrimaryObjectID,tabledef=stFields[PrimaryFieldName].Fields,aprops=stwizard.Data[PrimaryObjectID][arguments.PrimaryFieldname])>
 		
