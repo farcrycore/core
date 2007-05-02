@@ -123,6 +123,7 @@ default handlers
 					<cfset stCurrentView.typename = stobj.typename />
 					<cfset stCurrentView.template = arguments.template />
 					<cfset stCurrentView.timeout = oCoapiAdmin.getWebskinTimeOut(typename=stObj.typename, template=arguments.template) />
+					<cfset stCurrentView.hashURL = oCoapiAdmin.getWebskinHashURL(typename=stObj.typename, template=arguments.template) />
 					<cfset stCurrentView.okToCache = 1 />
 					<cfset arrayAppend(request.aAncestorWebskins, stCurrentView) />					
 					
@@ -134,7 +135,7 @@ default handlers
 					<!--- If the current view (Last Item In the array) is still OkToCache --->
 					<cfif request.aAncestorWebskins[arrayLen(request.aAncestorWebskins)].okToCache>
 						<!--- Add the webskin to the object broker if required --->
-						<cfset bAdded = oObjectBroker.addWebskin(objectid=stobj.objectid, typename=stobj.typename, template=arguments.template, html=webskinHTML) />	
+						<cfset bAdded = oObjectBroker.addWebskin(objectid=stobj.objectid, typename=stobj.typename, template=arguments.template, html=webskinHTML, hashURL=stCurrentView.hashURL) />	
 					</cfif>
 					
 					<cfif arrayLen(request.aAncestorWebskins)>
@@ -156,8 +157,14 @@ default handlers
 								</cfif>
 							</cfif>
 							
+							<!--- If this webskin is to never cache, make sure all ancestors also never cache --->
 							<cfif stCurrentView.timeout EQ 0>
 								<cfset request.aAncestorWebskins[i].okToCache = 0 />
+							</cfif>
+							
+							<!--- If this webskin is to have its url hashed, make sure all ancestors also have their webskins hashed --->
+							<cfif stCurrentView.hashURL>
+								<cfset request.aAncestorWebskins[i].hashURL = true />
 							</cfif>
 						</cfloop>
 					</cfif>
@@ -174,7 +181,7 @@ default handlers
 		<cfelse>
 			<cfthrow type="Application" detail="Error: When trying to render [/webskin/#stObj.typename#/#arguments.template#.cfm] the object was not created correctly." />	
 		</cfif>
-		
+		</cftimer>
 		<cfreturn webskinHTML />
 	</cffunction>
 		
