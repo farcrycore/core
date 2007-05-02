@@ -75,11 +75,15 @@
 						
 						
 						<cfif structKeyExists(application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template], hash(cgi.query_string))>
+							
 							<cfset stCacheWebskin = application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template]["#hash(cgi.query_string)#"] />
-						<cfelse>
-							<!--- Page Not Cached --->
-						</cfif>
 						
+						<cfelseif structKeyExists(application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template], "standard") >
+							
+							<cfset stCacheWebskin = application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template].standard />
+							
+						</cfif>
+							
 						<cfif structKeyExists(stCacheWebskin, "datetimecreated")
 							AND 	structKeyExists(stCacheWebskin, "webskinHTML") >
 						
@@ -96,7 +100,7 @@
 							</cfif>	
 							
 						</cfif>	
-									
+							
 					</cfif>		
 					
 				</cfif>
@@ -104,7 +108,6 @@
 			</cfif>
 			
 		</cfif>
-		
 		<cfreturn webskinHTML />
 	</cffunction>
 			
@@ -113,11 +116,12 @@
 		<cfargument name="typename" required="true" type="string">
 		<cfargument name="template" required="true" type="string">
 		<cfargument name="HTML" required="true" type="string">
+		<cfargument name="hashURL" required="true" type="boolean">
 		
 		<cfset var webskinHTML = "" />
 		<cfset var bAdded = "false" />
 		<cfset var stCacheWebskin = structNew() />
-				
+		
 		<cfif application.bObjectBroker>
 			<cfif request.mode.design eq 1 OR structKeyExists(url, "updateapp") AND url.updateapp EQ 1>
 				<!--- DO NOT ADD TO CACHE IF IN DESIGN MODE or UPDATING APP --->
@@ -137,9 +141,12 @@
 								<cfset stCacheWebskin.webskinHTML = trim(arguments.HTML) />	
 								<cfset stCacheWebskin.inHead = duplicate(request.inHead) />							
 
-								<cfset application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template][hash(cgi.query_string)] = stCacheWebskin />
-
-								
+								<cfif arguments.hashURL>
+									<cfset application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template][hash(cgi.query_string)] = stCacheWebskin />
+								<cfelse>
+									<cfset application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template]["standard"] = stCacheWebskin />
+								</cfif>
+																
 								<cfset bAdded = true />
 							</cflock>
 						</cfif>
