@@ -391,7 +391,7 @@
 
 
   	<cffunction name="setData" access="public" returntype="struct" output="false" >
-    	<cfargument name="stProperties" type="struct" required="true" />
+    		<cfargument name="stProperties" type="struct" required="true" />
 	  	<cfargument name="metadata" type="farcry.core.packages.fourq.TableMetadata" required="true" />
 	  	
 	  	<cfset var stFields = arguments.metadata.getTableDefinition() />
@@ -495,12 +495,12 @@
 				
 					<cfcase value="date">
 						<cfif IsDate(propertyValue)>
-	            			<cfset stField.cfsqltype = "CF_SQL_TIMESTAMP" />
+	            				<cfset stField.cfsqltype = "CF_SQL_TIMESTAMP" />
 							<cfset stField.value = propertyValue />
 						<cfelseif tableDef[field].nullable>
 							<cfset stField.value = "NULL" />
 						<cfelse>
-							<cfabort showerror="Error: #propertyName# must be a date (#propertyValue#).">
+							<cfabort showerror="Error: #field# must be a date (#propertyValue#).">
 						</cfif>
 					</cfcase>
 					
