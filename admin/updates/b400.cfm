@@ -11,7 +11,7 @@ Populate each new typename field.
 <cfoutput>
 <html>
 <head>
-<title>Farcry Core 3.1.0 Update - #application.applicationname#</title>
+<title>Farcry Core 4.0.0 Update - #application.applicationname#</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link href="#application.url.farcry#/css/admin.css" rel="stylesheet" type="text/css">
 </head>
@@ -505,7 +505,7 @@ Populate each new typename field.
 	</p>
 	<form action="" method="post">
 		<input type="hidden" name="dummy" value="1">
-		<input type="submit" value="Run 3.1.0 Update" name="submit">
+		<input type="submit" value="Run 4.0.0 Update" name="submit">
 	</form>
 
 	</cfoutput>
