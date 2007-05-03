@@ -1,12 +1,5 @@
 <!--- @@description:
-Update Image Config<br />
-Adds the SourceImage, StandardImage and ThumbnailImage entry to dmImage table<br />
-Create SourceImages, thumbnailImages and StandardImages directories<br />
-Update SourceImage, StandardImage and ThumbnailImage initial values<br />
-Copy Files from Old Locations to New Locations
-Add Typename Field to each array table.
-Populate each new typename field.
-
+Adds datetimelastupdate field to all rule tables<br />
 --->
 <cfoutput>
 <html>
