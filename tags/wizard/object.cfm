@@ -55,22 +55,18 @@
 			</cfif>
 
 	
-			<cfif attributes.PackageType EQ "types">
-				<cfset stPackage = application[attributes.PackageType][attributes.typename]>
-				<cfset packagePath = application[attributes.PackageType][attributes.typename].typepath>
-			<cfelse>
-				<cfset stPackage = application[attributes.PackageType][attributes.typename]>
-				<cfset packagePath = application[attributes.PackageType][attributes.typename].rulepath>
-			</cfif>
+			
+			<cfset stPackage = application.stcoapi[attributes.typename]>
+			<cfset packagePath = application.stcoapi[attributes.typename].packagepath>
 			
 			<!--- populate the primary values --->
 			<cfset typename = attributes.typename>
-			<cfset oType = createobject("component",application.types[attributes.typename].typepath)>
+			<cfset oType = createobject("component",application.stcoapi[attributes.typename].packagepath)>
 			
-			<cfset qMetadata = application.types[attributes.typename].qMetadata />
+			<cfset qMetadata = application.stcoapi[attributes.typename].qMetadata />
 			<cfset lFields = ValueList(qMetadata.propertyname)>
 			
-			<cfset stFields = application.types[attributes.typename].stprops>
+			<cfset stFields = application.stcoapi[attributes.typename].stprops>
 			<cfset ObjectID = attributes.ObjectID>
 			
 			<!--- Retrieve the Wizard structure from the calling page --->
@@ -90,7 +86,7 @@
 				<cfset stwizard.Data[attributes.objectid] = stObj>
 				
 				<!--- Write the Wizard structure back to the DB --->
-				<cfset stwizard = createObject("component",application.types['dmWizard'].typepath).Write(ObjectID=stwizard.ObjectID,Data="#stwizard.Data#")>
+				<cfset stwizard = createObject("component",application.stcoapi['dmWizard'].packagepath).Write(ObjectID=stwizard.ObjectID,Data="#stwizard.Data#")>
 
 				
 				<cfset CALLER[attributes.r_stwizard] = stwizard />
@@ -99,21 +95,16 @@
 	
 	<cfelse>
 	
-		<cfset oType = createobject("component",application.types[attributes.typename].typepath)>
+		<cfset oType = createobject("component",application.stcoapi[attributes.typename].packagepath)>
 			
 
 	
-		<cfif attributes.PackageType EQ "types">
-			<cfset stPackage = application[attributes.PackageType][attributes.typename]>
-			<cfset packagePath = application[attributes.PackageType][attributes.typename].typepath>
-		<cfelse>
-			<cfset stPackage = application[attributes.PackageType][attributes.typename]>
-			<cfset packagePath = application[attributes.PackageType][attributes.typename].rulepath>
-		</cfif>
+		<cfset stPackage = application.stcoapi[attributes.typename]>
+		<cfset packagePath = application.stcoapi[attributes.typename].packagepath>
 					
-		<cfset qMetadata = application.types[attributes.typename].qMetadata />
+		<cfset qMetadata = application.stcoapi[attributes.typename].qMetadata />
 		<cfset lFields = ValueList(qMetadata.propertyname)>
-		<cfset stFields = application.types[attributes.typename].stprops>
+		<cfset stFields = application.stcoapi[attributes.typename].stprops>
 		<cfset typename = attributes.typename>
 		
 		<cfset stObj = oType.getData(objectID="#CreateUUID()#")>
@@ -471,7 +462,7 @@
 							<cfif listLen(ftFieldMetadata.ftJoin) GT 1>
 								<select id="#variables.prefix##ftFieldMetadata.Name#Join" name="#variables.prefix##ftFieldMetadata.Name#Join" >
 									<cfloop list="#ftFieldMetadata.ftJoin#" index="i">
-										<option value="#i#">#application.types[i].displayname#</option>
+										<option value="#i#">#application.stcoapi[i].displayname#</option>
 									</cfloop>
 								</select>
 							<cfelse>
