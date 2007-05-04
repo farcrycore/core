@@ -29,8 +29,12 @@ return REFindNoCase("^[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{16}$", str);
 
 <cffunction name="Read" access="public" output="true" returntype="struct" hint="Returns the wizard Object with the WDDX Data field converted to a CF Structure">
 	<cfargument name="wizardID" required="no" type="UUID">
-	<cfargument name="UserLogin" required="no" type="String">
+	<cfargument name="UserLogin" required="no" type="String" default="unknown">
 	<cfargument name="ReferenceID" required="no" type="String">
+	
+	<cfif arguments.userLogin EQ "unknown" AND isDefined("session.dmSec.authentication.userlogin")>
+		<cfset arguments.userlogin = session.dmSec.authentication.userlogin>
+	</cfif>
 	
 	<cfif isDefined("arguments.wizardID") and len(arguments.wizardID)>
 		<cfset stwizard = getData(objectID=arguments.wizardID) />
@@ -82,14 +86,14 @@ return REFindNoCase("^[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{16}$", str);
 <cfset stProperties.ReferenceID = arguments.ReferenceID>
 
 <cfif isUUID(arguments.ReferenceID)>
-<cfset typename = findType(ObjectID=arguments.ReferenceID) />
-<cfset o = createObject("component",application.types["#variables.typename#"].typepath) />
-<cfset st = o.getData(objectid=arguments.ReferenceID) />
+	<cfset typename = findType(ObjectID=arguments.ReferenceID) />
+	<cfset o = createObject("component",application.stcoapi["#variables.typename#"].packagepath) />
+	<cfset st = o.getData(objectid=arguments.ReferenceID) />
 <cfelse>
-<cfif structKeyExists(application.types,arguments.ReferenceID)>
-<cfset o = createObject("component",application.types["#arguments.ReferenceID#"].typepath) />
-<cfset st = o.getData(objectid=CreateUUID()) />
-</cfif>
+	<cfif structKeyExists(application.stcoapi,arguments.ReferenceID)>
+		<cfset o = createObject("component",application.stcoapi["#arguments.ReferenceID#"].packagepath) />
+		<cfset st = o.getData(objectid=CreateUUID()) />
+	</cfif>
 </cfif>
 
 <cfset stProperties.PrimaryObjectID = st.ObjectID>
@@ -110,41 +114,44 @@ return REFindNoCase("^[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{16}$", str);
 
 
 <cffunction name="Write" access="public" output="true" returntype="struct" hint="Saves the wizard to the DB and returns the wizard Data as a structure">
-<cfargument name="ObjectID" required="yes" type="UUID">
-<cfargument name="CurrentStep" required="no" type="numeric">
-<cfargument name="Steps" required="no" type="string" default="">
-<cfargument name="Data" required="no" type="Struct">
-
-<cfset stwizard = getData(objectID=arguments.objectid) />
-
-<cfif isDefined("arguments.CurrentStep") AND len(arguments.CurrentStep)>
-<cfset stwizard.CurrentStep = arguments.CurrentStep>
-</cfif>
-
-<cfif isDefined("arguments.Steps") AND len(arguments.steps)>
-<cfset stwizard.Steps = arguments.Steps>
-</cfif>
-
-<cfif isDefined("arguments.Data")>
-	<cfwddx action="CFML2wddx" input="#arguments.data#" output="stwizard.Data">
-</cfif>
-
-<cfset stResult = setData(stProperties=stwizard,user=stwizard.UserLogin) />
-
-<cfset stwizard = getData(objectID=arguments.objectid) />
-
-<cfwddx action="WDDX2CFML" input="#stwizard.Data#" output="stwizardData">
-<cfset stwizard.Data = stwizardData />
-
-<!--- we need to loop through each wizard object and save to the session --->
-<cfloop list="#structKeyList(stwizard.Data)#" index="i">
-	<cfset stProperties = stwizard.Data[i] />
+	<cfargument name="ObjectID" required="yes" type="UUID">
+	<cfargument name="CurrentStep" required="no" type="numeric">
+	<cfargument name="Steps" required="no" type="string" default="">
+	<cfargument name="Data" required="no" type="Struct">
 	
-	<cfset bsuccess = createObject("component", application.types[stProperties.typename].typepath).setdata(stProperties=stProperties,bSessionOnly="true") />
-</cfloop>
+	<cfset stwizard = getData(objectID=arguments.objectid) />
+		
 
-<!--- return the struct --->
-<cfreturn stwizard>
+	<cfif isDefined("arguments.CurrentStep") AND len(arguments.CurrentStep)>
+		<cfset stwizard.CurrentStep = arguments.CurrentStep>
+	</cfif>
+	
+	<cfif isDefined("arguments.Steps") AND len(arguments.steps)>
+		<cfset stwizard.Steps = arguments.Steps>
+	</cfif>
+	
+	<cfif isDefined("arguments.Data")>
+		<cfwddx action="CFML2wddx" input="#arguments.data#" output="stwizard.Data">
+	</cfif>
+	
+
+	<cfset stResult = setData(stProperties=stwizard,user=stwizard.UserLogin) />
+	
+	<cfset stwizard = getData(objectID=arguments.objectid) />
+	
+	<cfwddx action="WDDX2CFML" input="#stwizard.Data#" output="stwizardData">
+	<cfset stwizard.Data = stwizardData />
+	
+	<!--- we need to loop through each wizard object and save to the session --->
+	<cfloop list="#structKeyList(stwizard.Data)#" index="i">
+		<cfset stProperties = stwizard.Data[i] />
+
+		<cfset bsuccess = createObject("component", application.stcoapi[stProperties.typename].packagepath).setdata(stProperties=stProperties,bSessionOnly="true") />
+
+	</cfloop>
+	
+	<!--- return the struct --->
+	<cfreturn stwizard>
 
 </cffunction>
 
