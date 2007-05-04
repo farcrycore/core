@@ -188,78 +188,136 @@ $out:$
 		
 		<cfset var qMetadata = application.rules[stobj.typename].qMetadata >
 		
-		
-		<!--- IF THE ONLY PROPS ARE OBJECTID and LABEL, then let the user know that we have nothing to edit here. --->
-		<cfif listLen(structKeyList(application.rules[stobj.typename].stProps)) LTE 2>
-			<cfoutput><h3>No Parameters required</h3></cfoutput>
-		</cfif>
-		<cfif isDefined("url.saved")>
-			<cfset request.inhead.scriptaculousEffects = true />
-			<cfoutput>
-				<h3 id="ruleSaveMessage">Rule has been saved</h3>
-				<script type="text/javascript">
-				new Effect.Highlight($('ruleSaveMessage'), {startcolor:'##E17000',duration:3})
-				</script>
-			</cfoutput>
-		</cfif>
-		
-		<cfset onExit = StructNew() />		
-		<cfset onExit.Type = "URL" />
-		<cfset onExit.Content = "#cgi.SCRIPT_NAME#?#cgi.QUERY_STRING#&saved=1" />
+		<cfset var updateHTML = getView(stobject="#stobj#", template="update", alternateHTML="") />
 		
 		
 		
-		<cfquery dbtype="query" name="qwizardSteps">
-		SELECT ftwizardStep
-		FROM qMetadata
-		WHERE ftwizardStep <> '#stobj.typename#'
-		Group By ftwizardStep
-		ORDER BY ftSeq
-		</cfquery>
-		
-		<!------------------------ 
-		Work out if we are creating a wizard or just a simple form.
-		If there are multiple wizard steps then we will be creating a wizard
-		 ------------------------>
-		<cfif qwizardSteps.recordcount GT 1>
+		<cfif len(updateHTML)>
+			<cfoutput>#updateHTML#</cfoutput>
+		<cfelse>
+			<!--- IF THE ONLY PROPS ARE OBJECTID and LABEL, then let the user know that we have nothing to edit here. --->
+			<cfif listLen(structKeyList(application.rules[stobj.typename].stProps)) LTE 2>
+				<cfoutput><h3>No Parameters required</h3></cfoutput>
+			</cfif>
+			<cfif isDefined("url.saved")>
+				<cfset request.inhead.scriptaculousEffects = true />
+				<cfoutput>
+					<h3 id="ruleSaveMessage">Rule has been saved</h3>
+					<script type="text/javascript">
+					new Effect.Highlight($('ruleSaveMessage'), {startcolor:'##E17000',duration:3})
+					</script>
+				</cfoutput>
+			</cfif>
 			
-			<!--- Always save wizard WDDX data --->
-			<wiz:processwizard>
-			
-				<!--- Save the Primary wizard Object --->
-				<wiz:processwizardObjects typename="#stobj.typename#" PackageType="rules" />	
-					
-			</wiz:processwizard>
-			
-			<wiz:processwizard action="Save" Savewizard="true" Exit="true" /><!--- Save wizard Data to Database and remove wizard --->
-			<wiz:processwizard action="Cancel" Removewizard="true" Exit="true" /><!--- remove wizard --->
+			<cfset onExit = StructNew() />		
+			<cfset onExit.Type = "URL" />
+			<cfset onExit.Content = "#cgi.SCRIPT_NAME#?#cgi.QUERY_STRING#&saved=1" />
 			
 			
-			<wiz:wizard ReferenceID="#stobj.objectid#">
 			
-				<cfloop query="qwizardSteps">
-						
-					<cfquery dbtype="query" name="qwizardStep">
-					SELECT *
-					FROM qMetadata
-					WHERE ftwizardStep = '#qwizardSteps.ftwizardStep#'
-					ORDER BY ftSeq
-					</cfquery>
+			<cfquery dbtype="query" name="qwizardSteps">
+			SELECT ftwizardStep
+			FROM qMetadata
+			WHERE ftwizardStep <> '#stobj.typename#'
+			Group By ftwizardStep
+			ORDER BY ftSeq
+			</cfquery>
+			
+			<!------------------------ 
+			Work out if we are creating a wizard or just a simple form.
+			If there are multiple wizard steps then we will be creating a wizard
+			 ------------------------>
+			<cfif qwizardSteps.recordcount GT 1>
 				
-					<wiz:step name="#qwizardSteps.ftwizardStep#">
+				<!--- Always save wizard WDDX data --->
+				<wiz:processwizard>
+				
+					<!--- Save the Primary wizard Object --->
+					<wiz:processwizardObjects typename="#stobj.typename#" PackageType="rules" />	
 						
-
-						<cfquery dbtype="query" name="qFieldSets">
-						SELECT ftwizardStep, ftFieldset
+				</wiz:processwizard>
+				
+				<wiz:processwizard action="Save" Savewizard="true" Exit="true" /><!--- Save wizard Data to Database and remove wizard --->
+				<wiz:processwizard action="Cancel" Removewizard="true" Exit="true" /><!--- remove wizard --->
+				
+				
+				<wiz:wizard ReferenceID="#stobj.objectid#">
+				
+					<cfloop query="qwizardSteps">
+							
+						<cfquery dbtype="query" name="qwizardStep">
+						SELECT *
 						FROM qMetadata
 						WHERE ftwizardStep = '#qwizardSteps.ftwizardStep#'
-						AND ftFieldset <> '#stobj.typename#'
-						Group By ftwizardStep, ftFieldset
 						ORDER BY ftSeq
 						</cfquery>
-											
-						<cfloop query="qFieldSets">
+					
+						<wiz:step name="#qwizardSteps.ftwizardStep#">
+							
+	
+							<cfquery dbtype="query" name="qFieldSets">
+							SELECT ftwizardStep, ftFieldset
+							FROM qMetadata
+							WHERE ftwizardStep = '#qwizardSteps.ftwizardStep#'
+							AND ftFieldset <> '#stobj.typename#'
+							Group By ftwizardStep, ftFieldset
+							ORDER BY ftSeq
+							</cfquery>
+												
+							<cfloop query="qFieldSets">
+							
+								<cfquery dbtype="query" name="qFieldset">
+								SELECT *
+								FROM qMetadata
+								WHERE ftFieldset = '#qFieldsets.ftFieldset#'
+								ORDER BY ftSeq
+								</cfquery>
+								
+								
+								<wiz:object ObjectID="#stObj.ObjectID#" PackageType="rules" lfields="#valuelist(qFieldset.propertyname)#" format="edit" intable="false" legend="#qFieldset.ftFieldset#" />
+							</cfloop>
+							
+							
+						</wiz:step>
+					
+					</cfloop>
+					
+				</wiz:wizard>	
+					
+					
+					
+					
+			<!------------------------ 
+			If there is only 1 wizard step (typename by default) then we will be creating a simple form
+			 ------------------------>		 
+			<cfelse>
+			
+				<cfquery dbtype="query" name="qFieldSets">
+				SELECT ftwizardStep, ftFieldset
+				FROM qMetadata
+				WHERE ftFieldset <> '#stobj.typename#'
+				Group By ftwizardStep, ftFieldset
+				ORDER BY ftSeq
+				</cfquery>
+			
+			
+				<!---------------------------------------
+				ACTION:
+				 - default form processing
+				---------------------------------------->
+				<ft:processForm action="Save" Exit="true">
+					<ft:processFormObjects typename="#stobj.typename#" PackageType="rules" />
+				</ft:processForm>
+				
+				<ft:processForm action="Cancel" Exit="true" />
+				
+				
+				
+				<ft:form>
+			
+					<cfif qFieldSets.recordcount GT 1>
 						
+						<cfloop query="qFieldSets">
 							<cfquery dbtype="query" name="qFieldset">
 							SELECT *
 							FROM qMetadata
@@ -267,81 +325,81 @@ $out:$
 							ORDER BY ftSeq
 							</cfquery>
 							
-							
-							<wiz:object ObjectID="#stObj.ObjectID#" PackageType="rules" lfields="#valuelist(qFieldset.propertyname)#" format="edit" intable="false" legend="#qFieldset.ftFieldset#" />
+							<ft:object ObjectID="#arguments.ObjectID#" PackageType="rules" format="edit" lExcludeFields="label" lFields="#valuelist(qFieldset.propertyname)#" inTable=false IncludeFieldSet=1 Legend="#qFieldSets.ftFieldset#" />
 						</cfloop>
 						
 						
-					</wiz:step>
-				
-				</cfloop>
-				
-			</wiz:wizard>	
-				
-				
-				
-				
-		<!------------------------ 
-		If there is only 1 wizard step (typename by default) then we will be creating a simple form
-		 ------------------------>		 
-		<cfelse>
-		
-			<cfquery dbtype="query" name="qFieldSets">
-			SELECT ftwizardStep, ftFieldset
-			FROM qMetadata
-			WHERE ftFieldset <> '#stobj.typename#'
-			Group By ftwizardStep, ftFieldset
-			ORDER BY ftSeq
-			</cfquery>
-		
-		
-			<!---------------------------------------
-			ACTION:
-			 - default form processing
-			---------------------------------------->
-			<ft:processForm action="Save" Exit="true">
-				<ft:processFormObjects typename="#stobj.typename#" PackageType="rules" />
-			</ft:processForm>
-			
-			<ft:processForm action="Cancel" Exit="true" />
-			
-			
-			
-			<ft:form>
-		
-				<cfif qFieldSets.recordcount GT 1>
+					<cfelse>
 					
-					<cfloop query="qFieldSets">
-						<cfquery dbtype="query" name="qFieldset">
-						SELECT *
-						FROM qMetadata
-						WHERE ftFieldset = '#qFieldsets.ftFieldset#'
-						ORDER BY ftSeq
-						</cfquery>
-						
-						<ft:object ObjectID="#arguments.ObjectID#" PackageType="rules" format="edit" lExcludeFields="label" lFields="#valuelist(qFieldset.propertyname)#" inTable=false IncludeFieldSet=1 Legend="#qFieldSets.ftFieldset#" />
-					</cfloop>
+						<!--- default edit handler --->
+						<ft:object ObjectID="#arguments.ObjectID#" PackageType="rules" format="edit" lExcludeFields="label" lFields="" inTable=false IncludeFieldSet=1 Legend="#stObj.Label#" />
+					</cfif>
 					
 					
-				<cfelse>
-				
-					<!--- default edit handler --->
-					<ft:object ObjectID="#arguments.ObjectID#" PackageType="rules" format="edit" lExcludeFields="label" lFields="" inTable=false IncludeFieldSet=1 Legend="#stObj.Label#" />
-				</cfif>
-				
-				
-				<cfoutput>
-				<div class="fieldwrap">
-					<ft:farcryButton value="Save" /> 
-					<ft:farcryButton value="Cancel" />
-				</div>
-				</cfoutput>
+					<cfoutput>
+					<div class="fieldwrap">
+						<ft:farcryButton value="Save" /> 
+						<ft:farcryButton value="Cancel" />
+					</div>
+					</cfoutput>
+			
+				</ft:form>
+			</cfif>
 		
-			</ft:form>
+			
 		</cfif>
-		
 				
 	</cffunction> 
+	
+
+	<cffunction name="setLock" access="public" output="true" hint="Lock a content item to prevent simultaneous editing." returntype="void">
+		<cfargument name="locked" type="boolean" required="true" hint="Turn the lock on or off.">
+		<cfargument name="lockedby" type="string" required="false" hint="Name of the user locking the object." default="">
+		<cfargument name="bAudit" type="boolean" required="No" default="1" hint="Pass in 0 if you wish no audit to take place">
+		<cfargument name="dsn" required="No" default="#application.dsn#"> 
+		<cfargument name="stobj" required="No" default="#StructNew()#"> 
+		
+		<!--- Determine who the record is being locked/unlocked by --->		
+		<cfif not len(arguments.lockedBy)>
+			<cfif isDefined("session.dmSec.authentication.userlogin") AND isDefined("session.dmSec.authentication.userDirectory")>
+				<cfset arguments.lockedBy = "#session.dmSec.authentication.userlogin#_#session.dmSec.authentication.userDirectory#" />
+			<cfelse>
+				<cfset arguments.lockedBy = "anonymous" />
+			</cfif>
+		</cfif>
+		
+		
+		<!--- if the properties struct not passed in grab the instance --->
+		<cfif StructIsEmpty(arguments.stObj)>
+			<!--- Default Objects should not be locked as this will create a record in the database. --->
+			<cfif structKeyExists(instance, "stobj") AND (NOT structKeyExists(instance.stobj, "bDefaultObject") OR NOT instance.stobj.bDefaultObject)>
+				<cfset instance.stobj.locked=arguments.locked>
+				<cfif arguments.locked>
+					<cfset instance.stobj.lockedby=arguments.lockedby>
+				<cfelse>
+					<cfset instance.stobj.lockedby="">
+				</cfif>
+				<!--- call fourq.setdata() (ie super) to bypass prepop of sys attributes by types.setdata() --->
+				<cfset setdata(instance.stobj, arguments.lockedby, 0)>
+			</cfif>
+		<cfelseif NOT structKeyExists(arguments.stobj, "bDefaultObject") or NOT arguments.stobj.bDefaultObject >
+			<cfset arguments.stobj.locked = arguments.locked>
+			<cfif arguments.locked>
+				<cfset arguments.stobj.lockedby=arguments.lockedby>
+			<cfelse>
+				<cfset arguments.stobj.lockedby="">
+			</cfif>
+			<!--- call fourq.setdata() (ie super) to bypass prepop of sys attributes by types.setdata() --->
+			<cfset setdata(arguments.stobj, arguments.lockedby, 0)>
+		</cfif>
+
+	
+		<!--- log event --->
+		<cfif arguments.bAudit and isDefined("instance.stobj.objectid")>
+			<cfset application.factory.oAudit.logActivity(auditType="Lock", username=arguments.lockedby, location=cgi.remote_host, note="Locked: #yesnoformat(arguments.locked)#",objectid=instance.stobj.objectid,dsn=arguments.dsn)>
+		</cfif>
+	</cffunction>
+		
 	
 	<cffunction access="public" name="execute" output="true">
 		<cfargument name="label" required="no" type="string" default="">
