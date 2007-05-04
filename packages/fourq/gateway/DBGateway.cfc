@@ -72,8 +72,12 @@
 					
 						<cfqueryparam value="#objectid#" cfsqltype="CF_SQL_VARCHAR">
 						<cfloop from="1" to="#arrayLen(SQLArray)#" index="i">
-						  <cfif structKeyExists(sqlArray[i],'cfsqltype')>
+						  <!--- temp fix for mySQL, looks as though the datatype decimal and bind type float don't live peacefully together :( --->
+						  <cfif structKeyExists(sqlArray[i],'cfsqltype') AND sqlArray[i].cfsqltype NEQ "CF_SQL_FLOAT">
 						    , <cfqueryparam cfsqltype="#sqlArray[i].cfsqltype#" value="#sqlArray[i].value#" / >
+						  <cfelseif structKeyExists(sqlArray[i],'cfsqltype') AND sqlArray[i].cfsqltype EQ "CF_SQL_FLOAT">
+							<!--- make sure we are only passing 2 places after the decimal point --->
+							, #numberFormat(sqlArray[i].value, "99999999999999.00")#
 						   <cfelse>
 						    , #sqlArray[i].value#
 						  </cfif>
@@ -445,11 +449,14 @@
 			UPDATE #variables.dbowner##tablename#
 			SET
 			<cfloop from="1" to="#arrayLen(SQLArray)#" index="i">
-				
 			  <cfif structKeyExists(arguments.stProperties,sqlArray[i].column) and sqlArray[i].column neq "objectid" and sqlArray[i].column neq "typename">
 				  <cfif i GT 1>,</cfif>#sqlArray[i].column# = 
-					<cfif structKeyExists(sqlArray[i],'cfsqltype')>
+					<!--- temp fix for mySQL, looks as though the datatype decimal and bind type float don't live peacefully together :( --->
+					<cfif structKeyExists(sqlArray[i],'cfsqltype') AND sqlArray[i].cfsqltype NEQ "CF_SQL_FLOAT">
 					  <cfqueryparam cfsqltype="#sqlArray[i].cfsqltype#" value="#SQLArray[i].value#" />
+					<cfelseif structKeyExists(sqlArray[i],'cfsqltype') AND sqlArray[i].cfsqltype EQ "CF_SQL_FLOAT">
+						<!--- make sure we are only passing 2 places after the decimal point --->
+						#numberFormat(sqlArray[i].value, "99999999999999.00")#
 					<cfelse>
 					  #sqlArray[i].value#
 					</cfif>
