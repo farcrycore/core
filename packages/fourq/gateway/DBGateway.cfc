@@ -445,7 +445,8 @@
 			UPDATE #variables.dbowner##tablename#
 			SET
 			<cfloop from="1" to="#arrayLen(SQLArray)#" index="i">
-			  <cfif structKeyExists(arguments.stProperties,sqlArray[i].column)>
+				
+			  <cfif structKeyExists(arguments.stProperties,sqlArray[i].column) and sqlArray[i].column neq "objectid" and sqlArray[i].column neq "typename">
 				  <cfif i GT 1>,</cfif>#sqlArray[i].column# = 
 					<cfif structKeyExists(sqlArray[i],'cfsqltype')>
 					  <cfqueryparam cfsqltype="#sqlArray[i].cfsqltype#" value="#SQLArray[i].value#" />
