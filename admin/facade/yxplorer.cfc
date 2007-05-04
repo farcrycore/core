@@ -148,18 +148,18 @@ isXMLDoc(x)) return "xml";
 		<cfset var myArray = arrayNew(1)>
 		<cfscript>
 			var mycounter = 0;
-			
-			if(isdefined("application.types")){
+			if(isdefined("application.stCoapi")){
 				mycounter = mycounter + 1;
 				myArray[mycounter] = structNew();
-				myArray[mycounter].scope = "application.types";
+				myArray[mycounter].scope = "application.stCoapi";
 			}
 			
-			if(isdefined("application.rules")){
+			if(isdefined("application.objectBroker")){
 				mycounter = mycounter + 1;
 				myArray[mycounter] = structNew();
-				myArray[mycounter].scope = "application.rules";
+				myArray[mycounter].scope = "application.objectBroker";
 			}
+	
 			if(isdefined("server")){
 				mycounter = mycounter + 1;
 				myArray[mycounter] = structNew();
