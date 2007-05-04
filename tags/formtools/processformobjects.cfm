@@ -142,13 +142,8 @@
 	<cfelse>
 		
 					
-		<cfif structKeyExists(application.types, typename)>
-			<cfset stPackage = application.types[typename]>
-			<cfset packagePath = application.types[typename].typepath>
-		<cfelse>
-			<cfset stPackage = application.rules[typename]>
-			<cfset packagePath = application.rules[typename].rulepath>
-		</cfif>
+		<cfset stPackage = application.stcoapi[typename]>
+		<cfset packagePath = application.stcoapi[typename].packagepath>
 		
 
 
@@ -204,7 +199,7 @@
 		
 				</cfif>
 													
-				<cfset stType = createobject("component",application.types[Caller.stProperties.typename].typepath)>	
+				<cfset stType = createobject("component",application.stcoapi[Caller.stProperties.typename].packagepath)>	
 				<cfset stObj = stType.getData(Caller.stProperties.ObjectID)>	
 				<cfset CALLER.inputObjects[Caller.stProperties.ObjectID] = Duplicate(stObj)>	
 				<cfset CALLER.outputObjects[Caller.stProperties.ObjectID] = Duplicate(stObj)>	
@@ -326,13 +321,8 @@
 		<cfset stResult.typename = arguments.stObj.typename>
 		
 			
-		<cfif structKeyExists(application.types, stResult.typename)>
-			<cfset stPackage = application.types[stResult.typename]>
-			<cfset packagePath = application.types[stResult.typename].typepath>
-		<cfelse>
-			<cfset stPackage = application.rules[stResult.typename]>
-			<cfset packagePath = application.rules[stResult.typename].rulepath>
-		</cfif>
+		<cfset stPackage = application.stcoapi[stResult.typename]>
+		<cfset packagePath = application.stcoapi[stResult.typename].packagepath>
 		
 		
 		<cfset stResult.stType = createobject("component",packagePath)>
@@ -354,14 +344,8 @@
 		
 		<cfset stResult.typename = arguments.typename>
 			
-			
-		<cfif structKeyExists(application.types, stResult.typename)>
-			<cfset stPackage = application.types[stResult.typename]>
-			<cfset packagePath = application.types[stResult.typename].typepath>
-		<cfelse>
-			<cfset stPackage = application.rules[stResult.typename]>
-			<cfset packagePath = application.rules[stResult.typename].rulepath>
-		</cfif>
+		<cfset stPackage = application.stcoapi[stResult.typename]>
+		<cfset packagePath = application.stcoapi[stResult.typename].packagepath>
 		
 		
 		<cfset stResult.stType = createobject("component",packagePath)>
@@ -377,13 +361,8 @@
 		<cfset stResult.stObj = StructNew()>
 		<cfset stResult.typename = arguments.typename>
 			
-		<cfif structKeyExists(application.types, stResult.typename)>
-			<cfset stPackage = application.types[stResult.typename]>
-			<cfset packagePath = application.types[stResult.typename].typepath>
-		<cfelse>
-			<cfset stPackage = application.rules[stResult.typename]>
-			<cfset packagePath = application.rules[stResult.typename].rulepath>
-		</cfif>
+		<cfset stPackage = application.stcoapi[stResult.typename]>
+		<cfset packagePath = application.stcoapi[stResult.typename].packagepath>
 		
 		
 		

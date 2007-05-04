@@ -35,7 +35,6 @@
 	<cfparam name="attributes.bValidation" default="true"><!--- Flag to determine if client side validation classes are added to this section of the form. --->
 	<cfparam name="attributes.lHiddenFields" default=""><!--- List of fields to render as hidden fields that can be use to inject a value into the form post. --->
 	<cfparam name="attributes.stPropValues" default="#structNew()#">
-	<cfparam name="attributes.PackageType" default="types"><!--- Could be types or rules.. --->
 	<cfparam name="attributes.bIncludeSystemProperties" default="false"><!--- Allow system properties to be displayed.. --->
 	<cfparam name="attributes.lock" default="true"><!--- Lock if editing. --->
 	<cfparam name="attributes.bShowLibraryLink" default="true" type="boolean"><!--- Flag to determine if the libraryLink is to be displayed. --->
@@ -70,15 +69,9 @@
 		</cfif>		
 	
 		
-		<cfif structKeyExists(application.types, attributes.typename)>
-			<cfset stPackage = application.types[attributes.typename] />
-			<cfset packagePath = application.types[attributes.typename].typepath />
-		<cfelse>
-			<cfset stPackage = application.rules[attributes.typename] />
-			<cfset packagePath = application.rules[attributes.typename].rulepath />
-			<cfset attributes.PackageType = "rules" />
-		</cfif>
-		
+		<cfset stPackage = application.stcoapi[attributes.typename] />
+		<cfset packagePath = application.stcoapi[attributes.typename].packagepath />
+
 		
 		
 		<cfset oType = createobject("component",packagePath)>
@@ -96,14 +89,8 @@
 		<cfset attributes.typename = stObj.typename>	
 		
 	
-		<cfif structKeyExists(application.types, attributes.typename)>
-			<cfset stPackage = application.types[attributes.typename] />
-			<cfset packagePath = application.types[attributes.typename].typepath />
-		<cfelse>
-			<cfset stPackage = application.rules[attributes.typename] />
-			<cfset packagePath = application.rules[attributes.typename].rulepath />
-			<cfset attributes.PackageType = "rules" />
-		</cfif>
+		<cfset stPackage = application.stcoapi[attributes.typename] />
+		<cfset packagePath = application.stcoapi[attributes.typename].packagepath />
 				
 		<cfset oType = createobject("component",packagePath)>
 		<cfset lFields = ValueList(stPackage.qMetadata.propertyname)>
@@ -114,14 +101,8 @@
 	<cfelseif len(attributes.typename)>
 	
 	
-		<cfif structKeyExists(application.types, attributes.typename)>
-			<cfset stPackage = application.types[attributes.typename] />
-			<cfset packagePath = application.types[attributes.typename].typepath />
-		<cfelse>
-			<cfset stPackage = application.rules[attributes.typename] />
-			<cfset packagePath = application.rules[attributes.typename].rulepath />
-			<cfset attributes.PackageType = "rules" />
-		</cfif>
+		<cfset stPackage = application.stcoapi[attributes.typename] />
+		<cfset packagePath = application.stcoapi[attributes.typename].packagepath />
 	
 		<cfset oType = createobject("component",packagePath)>
 		<cfset lFields = ValueList(stPackage.qMetadata.propertyname)>
@@ -425,7 +406,6 @@
 						<cfset stURLParams.primaryFieldName = "#ftFieldMetadata.Name#">
 						<cfset stURLParams.primaryFormFieldName = "#variables.prefix##ftFieldMetadata.Name#">
 						<cfset stURLParams.LibraryType = "#ftFieldMetadata.Type#">
-						<cfset stURLParams.PackageType = "#attributes.PackageType#">
 						
 						<!--- If the field is contained in a wizard, we need to let the library know which wizard. --->
 						<cfif len(attributes.wizardID)>
@@ -483,7 +463,7 @@
 							<cfif listLen(ftFieldMetadata.ftJoin) GT 1>
 								<select id="#variables.prefix##ftFieldMetadata.Name#Join" name="#variables.prefix##ftFieldMetadata.Name#Join" >
 									<cfloop list="#ftFieldMetadata.ftJoin#" index="i">
-										<option value="#i#">#application.types[i].displayname#</option>
+										<option value="#i#">#application.stcoapi[i].displayname#</option>
 									</cfloop>
 								</select>
 							<cfelse>

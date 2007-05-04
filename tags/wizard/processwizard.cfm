@@ -52,7 +52,7 @@
 		
 		
 		
-		<cfset owizard = createObject("component",application.types['dmWizard'].typepath) />
+		<cfset owizard = createObject("component",application.stcoapi['dmWizard'].packagepath) />
 		<cfset stwizard = owizard.Read(wizardID=form.wizardID)>
 		<cfloop list="#attributes.r_stwizard#" index="i">
 			<cfset Caller[i] = stwizard />
@@ -74,7 +74,7 @@
 			<cfset stProperties.locked = "0" />
 			<cfset stProperties.lockedby = ""/>
 			<cfset typename = owizard.FindType(ObjectID=i) />				
-			<cfset otype = createObject("component",application.types["#stwizard.Data[i]['typename']#"].typepath) />
+			<cfset otype = createObject("component",application.stcoapi["#stwizard.Data[i]['typename']#"].packagepath) />
 			<cfset stResult = otype.setData(stProperties=stProperties) />
 		</cfloop>
 		

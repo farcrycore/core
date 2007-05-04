@@ -15,7 +15,7 @@
 		<cfset arguments.typename = q4.findType(objectid=arguments.objectid)>
 	</cfif>	
 	
-	<cfset o = createObject("component", application.types[arguments.typename].packagepath) />
+	<cfset o = createObject("component", application.stcoapi[arguments.typename].packagepath) />
 	<cfset HTML = o.getView(objectid=arguments.objectid, template=arguments.webskin, alternateHTML="webskin not available") />	
 	
 	<cfoutput>#HTML#</cfoutput>
@@ -38,7 +38,7 @@
 			<cfset arguments.typename = q4.findType(objectid=arguments.objectid)>
 		</cfif>	
 		
-		<cfset o = createObject("component", application.types[arguments.typename].packagepath) />
+		<cfset o = createObject("component", application.stcoapi[arguments.typename].packagepath) />
 		<cfset st = o.getData(objectid=arguments.objectid) />	
 		
 		<cfoutput>#st[arguments.fieldname]#</cfoutput>
@@ -67,24 +67,15 @@
 
 
 	
-	<cfif arguments.PackageType EQ "rules" OR not StructKeyExists(application.types, arguments.primaryTypeName) >
-		<!--- If the developer has not specifid the packageType and the primaryTypename does not exist as a type then we will assume it is a rule. --->
-		<cfset arguments.PackageType = "rules" />
-			
-		<cfset PrimaryPackage = application.rules[arguments.primaryTypeName] />
-		<cfset PrimaryPackagePath = application.rules[arguments.primaryTypeName].packagePath />	
-		
-	<cfelse>	
-		<cfset PrimaryPackage = application.types[arguments.primaryTypeName] />
-		<cfset PrimaryPackagePath = application.types[arguments.primaryTypeName].packagePath />
-	</cfif>
+	<cfset PrimaryPackage = application.stcoapi[arguments.primaryTypeName] />
+	<cfset PrimaryPackagePath = application.stcoapi[arguments.primaryTypeName].packagePath />	
 
 
 
 	<cfset oPrimary = createObject("component",PrimaryPackagePath)>
 	<cfset stPrimary = oPrimary.getData(objectid=arguments.PrimaryObjectID)>
 
-	<cfset oData = createObject("component",application.types[arguments.DataTypename].typepath)>
+	<cfset oData = createObject("component",application.stcoapi[arguments.DataTypename].packagepath)>
 
 
 	<cfif arguments.Action NEQ "Refresh">
@@ -92,7 +83,7 @@
 		<cfif len(arguments.wizardID)>
 			
 			
-			<cfset owizard = createObject("component",application.types['dmWizard'].typepath)>
+			<cfset owizard = createObject("component",application.stcoapi['dmWizard'].packagepath)>
 			
 			<cfset stwizard = owizard.Read(wizardID=arguments.wizardID)>
 			

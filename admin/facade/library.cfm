@@ -60,13 +60,9 @@ $Developer: $
 
 
 	
-<cfif url.PackageType EQ "rules">
-	<cfset PrimaryPackage = application.rules[url.primaryTypeName] />
-	<cfset PrimaryPackagePath = application.rules[url.primaryTypeName].rulepath />
-<cfelse>
-	<cfset PrimaryPackage = application.types[url.primaryTypeName] />
-	<cfset PrimaryPackagePath = application.types[url.primaryTypeName].typepath />
-</cfif>
+
+<cfset PrimaryPackage = application.stcoapi[url.primaryTypeName] />
+<cfset PrimaryPackagePath = application.stcoapi[url.primaryTypeName].packagepath />
 
 <!--- TODO: dynamically determine the typename to join. --->
 <cfset request.ftJoin = listFirst(url.ftJoin) />
@@ -105,7 +101,7 @@ $Developer: $
 
 	<cfset oPrimary = createObject("component",PrimaryPackagePath)>
 	
-	<cfset oData = createObject("component",application.types[request.ftJoin].typepath)>
+	<cfset oData = createObject("component",application.stcoapi[request.ftJoin].packagepath)>
 	
 
 	<cfloop list="#lSavedObjectIDs#" index="DataObjectID">
@@ -113,7 +109,7 @@ $Developer: $
 	
 		<cfif len(url.wizardID)>		
 			
-			<cfset owizard = createObject("component",application.types['dmWizard'].typepath)>
+			<cfset owizard = createObject("component",application.stcoapi['dmWizard'].packagepath)>
 			
 			<cfset stwizard = owizard.Read(wizardID=url.wizardID)>
 			
@@ -233,7 +229,7 @@ $Developer: $
 
 
 <cfset oPrimary = createObject("component",PrimaryPackagePath)>
-<cfset oData = createObject("component",application.types[request.ftJoin].typepath)>
+<cfset oData = createObject("component",application.stcoapi[request.ftJoin].packagepath)>
 <cfset stPrimary = oPrimary.getData(objectid=url.primaryObjectID, bArraysAsStructs=true)>
 
 
@@ -261,11 +257,7 @@ LIBRARY DATA
 	
 	<cfparam name="url.ftLibraryDataTypename" default="#url.ftJoin#" />
 	
-	<cfif structKeyExists(application.types, url.ftLibraryDataTypename)>
-		<cfset oLibraryData = createObject("component", application.types[url.ftLibraryDataTypename].packagePath) />
-	<cfelse>
-		<cfset oLibraryData = createObject("component", application.rules[url.ftLibraryDataTypename].packagePath) />
-	</cfif>
+	<cfset oLibraryData = createObject("component", application.stcoapi[url.ftLibraryDataTypename].packagePath) />
 
 	<cfif structkeyexists(oLibraryData, url.ftLibraryData)>
 		<cfinvoke component="#oLibraryData#" method="#url.ftLibraryData#" returnvariable="LibraryDataResult">
@@ -345,7 +337,7 @@ LIBRARY DATA
 <cfset Request.InHead.TabStyle1 = 1>
 
 
-<cfoutput><h1>#application.types[request.ftJoin].displayname# Library...</h1></cfoutput>
+<cfoutput><h1>#application.stcoapi[request.ftJoin].displayname# Library...</h1></cfoutput>
 
 
 <cfif listLen(PrimaryPackage.stProps[url.primaryFieldname].metadata.ftJoin) GT 1>
@@ -355,7 +347,7 @@ LIBRARY DATA
 		Change To: 
 		<select name="ftJoin" id="ftJoin" onchange="javascript:window.location='#cgi.script_name#?#querystring#&ftJoin=' + this[selectedIndex].value;"></cfoutput>
 		<cfloop list="#PrimaryPackage.stProps[url.primaryFieldname].metadata.ftJoin#" index="i">
-			<cfoutput><option value="#i#" <cfif url.ftJoin EQ i>selected</cfif>>#application.types[i].displayname#</option></cfoutput>
+			<cfoutput><option value="#i#" <cfif url.ftJoin EQ i>selected</cfif>>#application.stcoapi[i].displayname#</option></cfoutput>
 		</cfloop>
 	<cfoutput></select></cfoutput>
 	
@@ -483,7 +475,7 @@ LIBRARY DATA
 					
 						<cfset stNew = oData.getData(objectid=createUUID()) />
 					
-						<cfset qMetadata = application.types[request.ftJoin].qMetadata >
+						<cfset qMetadata = application.stcoapi[request.ftJoin].qMetadata >
 		
 						<cfquery dbtype="query" name="qFieldSets">
 						SELECT ftwizardStep, ftFieldset
@@ -599,7 +591,7 @@ GENERATE THE LIBRARY PICKER
 	
 			<!--- Create each of the the Linked Table Types as an object  --->
 			<cfloop list="#PrimaryPackage.stProps[url.primaryFieldname].metadata.ftJoin#" index="i">		
-				<cfset stJoinObjects[i] = createObject("component",application.types[i].typepath)>
+				<cfset stJoinObjects[i] = createObject("component",application.stcoapi[i].packagepath)>
 			</cfloop>
 		
 			

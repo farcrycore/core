@@ -34,7 +34,6 @@
 	<cfparam name="attributes.bValidation" default="true"><!--- Flag to determine if client side validation classes are added to this section of the form. --->
 	<cfparam name="attributes.lHiddenFields" default=""><!--- List of fields to render as hidden fields that can be use to inject a value into the form post. --->
 	<cfparam name="attributes.stPropValues" default="#structNew()#">
-	<cfparam name="attributes.PackageType" default="types"><!--- Could be types or rules.. --->
 	<cfparam name="attributes.r_stwizard" default="stwizard"><!--- The name of the CALLER variable that contains the stwizard structure --->
 	<cfparam name="attributes.bShowLibraryLink" default="true" type="boolean"><!--- Flag to determine if the libraryLink is to be displayed. --->
 	
@@ -53,8 +52,6 @@
 				<cfset q4 = createObject("component", "farcry.core.packages.fourq.fourq")>
 				<cfset attributes.typename = q4.findType(objectid=attributes.objectid)>
 			</cfif>
-
-	
 			
 			<cfset stPackage = application.stcoapi[attributes.typename]>
 			<cfset packagePath = application.stcoapi[attributes.typename].packagepath>
@@ -404,7 +401,6 @@
 						<cfset stURLParams.primaryFieldName = "#ftFieldMetadata.Name#">
 						<cfset stURLParams.primaryFormFieldName = "#variables.prefix##ftFieldMetadata.Name#">
 						<cfset stURLParams.LibraryType = "#ftFieldMetadata.Type#">
-						<cfset stURLParams.PackageType = "#attributes.PackageType#">
 						
 						<!--- If the field is contained in a wizard, we need to let the library know which wizard. --->
 						<cfif len(attributes.wizardID)>

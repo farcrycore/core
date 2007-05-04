@@ -133,7 +133,7 @@
 
 	<cfelse>
 
-		<cfset oType = createobject("component",application.types[typename].typepath)>
+		<cfset oType = createobject("component",application.stcoapi[typename].packagepath)>
 		<cfif isDefined("session.dmSec.authentication.userlogin")>
 			<cfset "CALLER.stProperties.lastupdatedby" = session.dmSec.authentication.userlogin>
 		<cfelse>
@@ -154,7 +154,6 @@
 		<cfif structKeyExists(oType,"BeforeSave")>
 			<cfset Caller[attributes.r_stProperties] = oType.BeforeSave(stProperties=Caller[attributes.r_stProperties],stFields=stFields, stFormPost=Request.farcryForm.stObjects[ProcessingFormObjectPrefix]['FormPost']) />	
 		</cfif>
-		
 	
 		<cfif len(attributes.lArrayListGenerate)>
 			
@@ -181,7 +180,7 @@
 
 		</cfif>
 		
-
+	
 		<!--- Not in the wizard and therefore a new object. Need to save to db and then put in the wizard --->
 		<cfif NOT structKeyExists(stwizard.data,Caller[attributes.r_stProperties].objectid)>
 			<cfset stObj = oType.setData(stProperties=Caller[attributes.r_stProperties],user=Variables.LockedBy)>
@@ -219,7 +218,7 @@
 	<cfelse>
 		
 		<!--- Save the wizard and return it to the CALLER --->
-		<cfset stwizard = createObject("component",application.types['dmWizard'].typepath).Write(ObjectID=stwizard.ObjectID,Data="#stwizard.Data#")>
+		<cfset stwizard = createObject("component",application.stcoapi['dmWizard'].packagepath).Write(ObjectID=stwizard.ObjectID,Data="#stwizard.Data#")>
 			
 		<!--- Return the updated stwizard to the CALLER. --->
 		<cfset CALLER[attributes.r_stwizard] = stwizard />
@@ -255,10 +254,10 @@
 		<!--- We are processing the Object/ObjectID passed --->
 		<cfif isStruct(arguments.stObj) and NOT structIsEmpty(arguments.stObj)>
 	
-			<cfset stResult.oType = createobject("component",application.types[arguments.stObj.typename].typepath)>
+			<cfset stResult.oType = createobject("component",application.stcoapi[arguments.stObj.typename].packagepath)>
 			<cfset stResult.stObj = arguments.stObj>
-			<cfset stResult.lFields = StructKeyList(application.types[arguments.stObj.typename].stprops)>
-			<cfset stResult.stFields = application.types[arguments.stObj.typename].stprops>
+			<cfset stResult.lFields = StructKeyList(application.stcoapi[arguments.stObj.typename].stprops)>
+			<cfset stResult.stFields = application.stcoapi[arguments.stObj.typename].stprops>
 			<cfset stResult.typename = arguments.stObj.typename>
 		
 		<cfelse>
@@ -270,9 +269,9 @@
 			
 			<!--- populate the primary values --->
 			<cfset stResult.typename = arguments.typename>
-			<cfset stResult.oType = createobject("component",application.types[arguments.typename].typepath)>
-			<cfset stResult.lFields = StructKeyList(application.types[arguments.typename].stprops)>
-			<cfset stResult.stFields = application.types[arguments.typename].stprops>
+			<cfset stResult.oType = createobject("component",application.stcoapi[arguments.typename].packagepath)>
+			<cfset stResult.lFields = StructKeyList(application.stcoapi[arguments.typename].stprops)>
+			<cfset stResult.stFields = application.stcoapi[arguments.typename].stprops>
 
 			<cfif structKeyExists(stwizard.data,arguments.objectid)>
 				<cfset stResult.stObj = stwizard.data[arguments.objectID]>
@@ -286,10 +285,10 @@
 
 	<cfelseif len(arguments.typename)>
 
-		<cfset stResult.oType = createobject("component",application.types[arguments.typename].typepath)>
+		<cfset stResult.oType = createobject("component",application.stcoapi[arguments.typename].packagepath)>
 		<cfset stResult.stObj = StructNew()>
-		<cfset stResult.lFields = StructKeyList(application.types[arguments.typename].stprops)>
-		<cfset stResult.stFields = application.types[arguments.typename].stprops>
+		<cfset stResult.lFields = StructKeyList(application.stcoapi[arguments.typename].stprops)>
+		<cfset stResult.stFields = application.stcoapi[arguments.typename].stprops>
 		<cfset stResult.typename = arguments.typename>
 		
 	<cfelse>
@@ -412,4 +411,6 @@
 	<cfif structKeyExists(FORM,"#ProcessingFormObjectPrefix#typename")>
 		<cfset "Caller.#attributes.r_stProperties#.typename" = Evaluate("FORM['#ProcessingFormObjectPrefix#typename']")>
 	</cfif>
+	
+		
 </cffunction>
