@@ -33,6 +33,17 @@ $in: objectid -- $
 	<cfparam name="attributes.lFields" default="" >
 	<cfparam name="attributes.legend" default="" >
 	<cfparam name="attributes.RequiredPermissions" default="" ><!--- If the user sends through a list of permissions for this step, only users with correct permissions will be granted access. --->
+
+	<cfif attributes.lFields eq "">
+		<cfset baseType = stwizard.data[stwizard.primaryObjectID].TYPENAME>
+		<cfset myQ = application.stcoapi["#baseType#"].qMetadata>
+		<cfquery dbtype="query" name="qFields">
+			select * from myQ
+			where FTWIZARDSTEP = '#attributes.Name#'
+			order by ftseq
+		</cfquery>
+		<cfset attributes.lFields=valueList(qFields.PROPERTYNAME)>
+	</cfif>
 	
 	<cfif len(attributes.RequiredPermissions)>
 		<cfset permitted = 1>
@@ -62,7 +73,38 @@ $in: objectid -- $
 
 	<cfif len(attributes.lFields)>
 		<cfsavecontent variable="stwizard.StepHTML">
-			<wiz:object legend="#attributes.legend#" ObjectID="#stwizard.PrimaryObjectID#"  typename="#stwizard.Data[stwizard.PrimaryObjectID].typename#" lFields="#attributes.lFields#" InTable=0 />
+			<cfif isDefined("qFields")>
+				<cfquery dbtype="query" name="qFieldSets">
+				SELECT ftwizardStep, ftFieldset
+				FROM qFields
+				WHERE ftFieldset <> '#baseType#'
+				Group By ftwizardStep, ftFieldset
+				ORDER BY ftSeq
+				</cfquery>
+				
+				<cfif qFieldSets.recordCount>
+									
+					<cfloop query="qFieldSets">
+					
+						<cfquery dbtype="query" name="qFieldset">
+						SELECT *
+						FROM qFields
+						WHERE ftFieldset = '#qFieldsets.ftFieldset#'
+						ORDER BY ftSeq
+						</cfquery>
+						
+						<wiz:object ObjectID="#stwizard.PrimaryObjectID#" lfields="#valuelist(qFieldset.propertyname)#" format="edit" intable="false" legend="#qFieldset.ftFieldset#" helptitle="#qFieldset.fthelptitle#" helpsection="#qFieldset.fthelpsection#" />
+					</cfloop>
+				<cfelse>
+					
+					<wiz:object ObjectID="#stwizard.PrimaryObjectID#" lfields="#valuelist(qwizardStep.propertyname)#" format="edit" intable="false" />
+				
+				</cfif>
+		
+			<cfelse>
+				<wiz:object legend="#attributes.legend#" ObjectID="#stwizard.PrimaryObjectID#"  typename="#stwizard.Data[stwizard.PrimaryObjectID].typename#" lFields="#attributes.lFields#" InTable=0 />
+			</cfif>
+
 		</cfsavecontent>
 	</cfif>	
 	
