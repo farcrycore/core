@@ -291,6 +291,8 @@
 		<cfargument name="stFieldPost" required="true" type="struct" hint="The fields that are relevent to this field type.">
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		
+		<cfset var aField = ArrayNew(1) />
+		<cfset var qArrayRecords = queryNew("blah") />
 		<cfset var stResult = structNew()>		
 		<cfset stResult.bSuccess = true>
 		<cfset stResult.value = "">
@@ -300,32 +302,41 @@
 		<!--- Perform any validation here --->
 		<!--- --------------------------- --->
 		
+		<cfquery datasource="#application.dsn#" name="qArrayRecords">
+	    SELECT * 
+	    FROM #application.dbowner##arguments.typename#_#stMetadata.name#
+	    WHERE parentID = '#arguments.objectid#'
+		AND data IN (#ListQualify(stFieldPost.value,"'")#)
+	    </cfquery>
+	    	
 		
-		<cfset aField = ArrayNew(1)>				
 		<cfloop list="#stFieldPost.value#" index="i">
-			<cfset ArrayAppend(aField,i)>
+			
+			<!--- If it is an extended array (more than the standard 4 fields), we return the array as an array of structs --->
+			<cfif listlen(qArrayRecords.columnlist) GT 4>
+				<cfset stArrayData = structNew() />
+				
+				<cfquery dbtype="query" name="qArrayRecordRow">
+				SELECT * FROM qArrayRecords
+				WHERE data = '#i#'
+				</cfquery>
+				
+				<cfloop list="#qArrayRecords.columnList#" index="iColumn">
+					<cfif qArrayRecordRow.recordCount>
+						<cfset stArrayData[iColumn] = qArrayRecordRow[iColumn][1] />
+					<cfelse>
+						<cfset stArrayData[iColumn] = "" />
+					</cfif>
+				</cfloop>
+				
+				
+				<cfset ArrayAppend(aField,stArrayData)>
+			<cfelse>
+				<!--- Otherwise it is just an array of value --->
+				<cfset ArrayAppend(aField,i)>
+			</cfif>
 		</cfloop>
 		
-		<!--------------------------------------------------------------------------------------------- 
-		WE SHOULD NOT HAVE TO CREATEARRAYTABLEDATA HERE AS IT WILL BE DONE BY THE SUBSEQUENT SETDATA.
-		THIS FUNCTION SIMPLY CONVERTS THE LIST OF OBJECTIDS INTO AN ARRAY OF OBJECTIDS.
-		 --------------------------------------------------------------------------------------------->
-		 
-		<!--- <cfif not len(arguments.typename)>
-			<cfset q4 = createObject("component","farcry.core.packages.fourq.fourq")>
-			<cfset arguments.typename = q4.findType(objectid=arguments.objectid)>
-		</cfif>
-		
-		<cfset oPrimary = createObject("component",application.stcoapi[arguments.Typename].packagePath)>
-		
-		<!--- <cfset variables.tableMetadata = createobject('component','farcry.core.packages.fourq.TableMetadata').init() />
-		<cfset tableMetadata.parseMetadata(md=getMetadata(oPrimary)) />		
-		<cfset stFields = variables.tableMetadata.getTableDefinition() /> --->
-		<cfset stFields = application.stcoapi[arguments.typename].tableDefinition />
-		<!---<cfset o = createObject("component","farcry.core.packages.fourq.gateway.dbGateway").init(dsn=application.dsn,dbowner="")> --->
-		<cfset aProps = oPrimary.createArrayTableData(tableName=Typename & "_" & arguments.stMetadata.name,objectid=arguments.ObjectID,tabledef=stFields[arguments.stMetadata.name].Fields,aprops=aField)>
-
-		 --->
 		<cfset stResult.value = aField>
 
 		<!--- ----------------- --->
