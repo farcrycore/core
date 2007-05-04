@@ -344,15 +344,12 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfif isdefined("instance.bgetdata") AND instance.bgetdata EQ arguments.objectid AND arguments.bUseInstanceCache AND NOT arguments.bArraysAsStructs>
 			<!--- get local instance cache --->
 			<cfset stObj = instance.stobj>
-			<!--- <cftrace type="information" category="coapi" var="stobj.typename" text="getData() used instance cache."> --->
-		
 
 		<!--- Check to see if the object is in the temporary object store --->
 		<cfelseif structKeyExists(Session,"TempObjectStore") AND structKeyExists(Session.TempObjectStore,arguments.objectid) AND arguments.bUseInstanceCache AND NOT arguments.bArraysAsStructs>
 			<!--- get from the temp object stroe --->
 			<cfset stObj = Session.TempObjectStore[arguments.objectid] />
-			<!--- <cftrace type="information" category="coapi" var="stobj.typename" text="getData() used Temporary Object Store (Session.tempObjectStore)."> --->
-	
+
 		<cfelse>
 			<cfif arguments.bUseInstanceCache AND NOT arguments.bArraysAsStructs>
 				<!--- Attempt to get the object from the ObjectBroker --->
@@ -364,10 +361,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 				
 				<!--- Didn't find the object in the objectBroker --->
 				<!--- build a local instance cache --->
-				<cfinclude template="_fourq/getData.cfm">				
-				
-					
-				
+				<cfinclude template="_fourq/getData.cfm">	
 				
 				
 				<!--- MJB TODO: This piece of code needs to be added somewhere to allow the access to any field that has been run through the relevent display function of its formtool cfc  --->
@@ -408,7 +402,6 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 					</cfif>
 					 --->
 				</cfif>
-				
 			</cfif>	
 
 					
