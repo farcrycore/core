@@ -119,7 +119,7 @@ $in: xCode -- eXtra code to be placed inside the anchor tag $
 	
 		<cfif ListFind("&,?",Right(href,1))><!--- check to see if the last character is a ? or & and don't append one between the params and the href --->
 			<cfset href=href&stLocal.parameters>
-		<cfelseif existsQS> <!--- If there is already a ? in the href, just concat the params with & --->
+		<cfelseif existQS> <!--- If there is already a ? in the href, just concat the params with & --->
 			<cfset href=href&"&"&stLocal.parameters>
 		<cfelse> <!--- No query string on the href, so add a new one using ? and the params --->
 			<cfset href=href&"?"&stLocal.parameters>		
