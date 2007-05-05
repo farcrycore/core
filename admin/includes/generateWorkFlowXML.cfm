@@ -40,6 +40,6 @@
 			<cfset iCounter = iCounter + 1>
 		</cfloop>
 	</cfif>
-	<cfcontent type="text/plain"><cfoutput>
+	<cfcontent type="text/plain; charset=utf-8"><cfoutput>
 	#jsonencode(jsonstruct)#</cfoutput>
 </cfif>
