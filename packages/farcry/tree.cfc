@@ -216,11 +216,6 @@ $out:$
     <cfif q.recordCount>
     	<!--- set reset nlevel based on arguments.depth --->
    		<cfset nlevel = q.nlevel + arguments.depth />
-		<cfif StructKeyExists(Application.config.general, "categoryCacheTimespan") AND Application.config.general.categoryCacheTimespan NEQ "0">
-			<cfset stLocal.cachewithinTime = CreateTimeSpan(0,Application.config.general.categoryCacheTimespan,0,0)>
-		<cfelse>
-			<cfset stLocal.cachewithinTime = 0>
-		</cfif>
 
 		<cfsavecontent variable="stLocal.sql">
 		<cfoutput>
@@ -263,10 +258,10 @@ $out:$
 		</cfoutput>
 		</cfsavecontent>
 
-		<cfif stLocal.cachewithinTime EQ 0>
-			<cfquery datasource="#arguments.dsn#" name="qReturn">#preservesinglequotes(stLocal.sql)#</cfquery>
+		<cfif StructKeyExists(Application.config.general, "categoryCacheTimespan") AND Application.config.general.categoryCacheTimespan NEQ "0">
+			<cfquery datasource="#arguments.dsn#" name="qReturn" cachedwithin="#CreateTimeSpan(0,Application.config.general.categoryCacheTimespan,0,0)#">#preservesinglequotes(stLocal.sql)#</cfquery>
 		<cfelse>
-			<cfquery datasource="#arguments.dsn#" name="qReturn" cachedwithin="#stLocal.cachewithinTime#">#preservesinglequotes(stLocal.sql)#</cfquery>
+			<cfquery datasource="#arguments.dsn#" name="qReturn">#preservesinglequotes(stLocal.sql)#</cfquery>
 		</cfif>
 
     <cfelse>
