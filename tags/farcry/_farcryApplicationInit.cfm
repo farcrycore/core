@@ -100,7 +100,7 @@ Apps Processing
 	/farcry/apps.cfm
 	DEPRECATED: you should not need this crack anymore
 -------------------------------------------------------->
-<cfif fileExists("/farcry/apps.cfm")>
+<cfif fileExists(expandpath("/farcry/apps.cfm"))>
 	<cfset application.sysInfo.bApps = "true" />
 <cfelse>
 	<cfset application.sysInfo.bApps = "false" />
