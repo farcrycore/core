@@ -301,41 +301,43 @@
 		<!--- --------------------------- --->
 		<!--- Perform any validation here --->
 		<!--- --------------------------- --->
+		<cfif listLen(stFieldPost.value)>
 		
-		<cfquery datasource="#application.dsn#" name="qArrayRecords">
-	    SELECT * 
-	    FROM #application.dbowner##arguments.typename#_#stMetadata.name#
-	    WHERE parentID = '#arguments.objectid#'
-		AND data IN (#ListQualify(stFieldPost.value,"'")#)
-	    </cfquery>
-	    	
-		
-		<cfloop list="#stFieldPost.value#" index="i">
+			<cfquery datasource="#application.dsn#" name="qArrayRecords">
+		    SELECT * 
+		    FROM #application.dbowner##arguments.typename#_#stMetadata.name#
+		    WHERE parentID = '#arguments.objectid#'
+			AND data IN (#ListQualify(stFieldPost.value,"'")#)
+		    </cfquery>
+		    	
 			
-			<!--- If it is an extended array (more than the standard 4 fields), we return the array as an array of structs --->
-			<cfif listlen(qArrayRecords.columnlist) GT 4>
-				<cfset stArrayData = structNew() />
+			<cfloop list="#stFieldPost.value#" index="i">
 				
-				<cfquery dbtype="query" name="qArrayRecordRow">
-				SELECT * FROM qArrayRecords
-				WHERE data = '#i#'
-				</cfquery>
-				
-				<cfloop list="#qArrayRecords.columnList#" index="iColumn">
-					<cfif qArrayRecordRow.recordCount>
-						<cfset stArrayData[iColumn] = qArrayRecordRow[iColumn][1] />
-					<cfelse>
-						<cfset stArrayData[iColumn] = "" />
-					</cfif>
-				</cfloop>
-				
-				
-				<cfset ArrayAppend(aField,stArrayData)>
-			<cfelse>
-				<!--- Otherwise it is just an array of value --->
-				<cfset ArrayAppend(aField,i)>
-			</cfif>
-		</cfloop>
+				<!--- If it is an extended array (more than the standard 4 fields), we return the array as an array of structs --->
+				<cfif listlen(qArrayRecords.columnlist) GT 4>
+					<cfset stArrayData = structNew() />
+					
+					<cfquery dbtype="query" name="qArrayRecordRow">
+					SELECT * FROM qArrayRecords
+					WHERE data = '#i#'
+					</cfquery>
+					
+					<cfloop list="#qArrayRecords.columnList#" index="iColumn">
+						<cfif qArrayRecordRow.recordCount>
+							<cfset stArrayData[iColumn] = qArrayRecordRow[iColumn][1] />
+						<cfelse>
+							<cfset stArrayData[iColumn] = "" />
+						</cfif>
+					</cfloop>
+					
+					
+					<cfset ArrayAppend(aField,stArrayData)>
+				<cfelse>
+					<!--- Otherwise it is just an array of value --->
+					<cfset ArrayAppend(aField,i)>
+				</cfif>
+			</cfloop>
+		</cfif>
 		
 		<cfset stResult.value = aField>
 
