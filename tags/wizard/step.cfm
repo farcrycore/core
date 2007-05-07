@@ -32,9 +32,10 @@ $in: objectid -- $
 	<cfparam name="attributes.Name" default="" >
 	<cfparam name="attributes.lFields" default="" >
 	<cfparam name="attributes.legend" default="" >
+	<cfparam name="attributes.autoGetFields" default="0" >
 	<cfparam name="attributes.RequiredPermissions" default="" ><!--- If the user sends through a list of permissions for this step, only users with correct permissions will be granted access. --->
 
-	<cfif attributes.lFields eq "">
+	<cfif attributes.lFields eq "" and attributes.autoGetFields>
 		<cfset baseType = stwizard.data[stwizard.primaryObjectID].TYPENAME>
 		<cfset myQ = application.stcoapi["#baseType#"].qMetadata>
 		<cfquery dbtype="query" name="qFields">
