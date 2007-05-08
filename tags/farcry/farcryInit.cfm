@@ -251,8 +251,14 @@ $in: objectid -- $
 		</cflock>
 	</cfif>
 	
-	<cfcatch>
+	<cfcatch type="lock">
 		<cfoutput><h1>Application Restarting</h1><p>Please come back in a few minutes.</p></cfoutput>
+		<cfabort />
+	</cfcatch>
+	
+	<cfcatch type="any">
+		<cfoutput><h1>Application Failed to Initialise</h1></cfoutput>
+		<cfdump var="#cfcatch#" expand="false" />
 		<cfabort />
 	</cfcatch>
 	
