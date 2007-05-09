@@ -15,6 +15,7 @@
 		<cfset var stobj = structnew() />
 		<cfset var libraryData = "" />
 		<cfset var qLibraryList = queryNew("blah") />
+		<cfset var uuidTypename = "" />
 		
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedWebskin" default="librarySelected" type="string" />
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedListClass" default="arrayDetail" type="string" />
@@ -30,9 +31,21 @@
 			<cfreturn "" />
 		</cfif>
 		
-		<!--- Create the Linked Table Type as an object  --->
-		<cfset oData = createObject("component",application.types[stMetadata.ftJoin].typepath)>
-
+		<!--- Determine the the type we are using --->
+		<cfif listLen(arguments.stMetadata.ftJoin) GT 1>
+			<cfif len(arguments.stObject[arguments.stMetaData.Name])>
+				<cfset uuidTypename = createObject("component", "farcry.core.packages.fourq.fourq").findType(objectid=arguments.stObject[arguments.stMetaData.Name]) />
+			</cfif>
+		<cfelse>
+			<cfset uuidTypename = arguments.stMetadata.ftJoin />
+		</cfif>
+		
+		<cfif len(uuidTypename)>
+			<!--- Create the Linked Table Type as an object  --->
+			<cfset oData = createObject("component",application.types[uuidTypename].typepath)>
+		</cfif>
+		
+		
 		<!--------------------------------------------- 
 		RENDER TYPE SWITCH
 			- select specific form element output
@@ -177,24 +190,35 @@
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 
 		<cfset var returnHTML = "" />
+		<cfset var uuidTypename = "" />
+		
 		
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedWebskin" default="librarySelected">
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedListClass" default="thumbNailsWrap">
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedListStyle" default="">
-				
+			
 		<!--- A UUID type MUST have a 'ftJoin' property --->
 		<cfif not structKeyExists(stMetadata,"ftJoin")>
 			<cfreturn returnHTML />
 		</cfif>
-				
-		<!--- Create the Linked Table Type as an object  --->
-		<cfset oData = createObject("component",application.types[stMetadata.ftJoin].typepath)>
 		
-		<cfif Len(arguments.stObject[arguments.stMetaData.Name])>
-			<cfset stobj = oData.getData(objectid=#arguments.stObject[arguments.stMetaData.Name]#)>
-			<cfset returnHTML = oData.getView(stObject=stobj, template=arguments.stMetaData.ftLibrarySelectedWebskin, alternateHtml=stobj.label) />
+		
+		<cfif listLen(arguments.stMetadata.ftJoin) GT 1>
+			<cfif len(arguments.stObject[arguments.stMetaData.Name])>
+				<cfset uuidTypename = createObject("component", "farcry.core.packages.fourq.fourq").findType(objectid=arguments.stObject[arguments.stMetaData.Name]) />
+			</cfif>
+		<cfelse>
+			<cfset uuidTypename = arguments.stMetadata.ftJoin />
 		</cfif>
 		
+		<cfif len(uuidTypename)>
+			<cfset oData = createObject("component",application.types[uuidTypename].typepath)>
+			
+			<cfif Len(arguments.stObject[arguments.stMetaData.Name])>
+				<cfset stobj = oData.getData(objectid=#arguments.stObject[arguments.stMetaData.Name]#)>
+				<cfset returnHTML = oData.getView(stObject=stobj, template=arguments.stMetaData.ftLibrarySelectedWebskin, alternateHtml=stobj.label) />
+			</cfif>
+		</cfif>
 		<cfreturn returnHTML>
 	</cffunction>
 
