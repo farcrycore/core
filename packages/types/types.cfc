@@ -65,7 +65,7 @@ default handlers
 
 		<cfif NOT structIsEmpty(stObj)>
 			<cfif NOT fileExists("#ExpandPath(getWebskinPath(typename=stObj.typename, template=arguments.template))#")>
-				<cfthrow type="Application" detail="Error: Template not found [#ExpandPath(displayTemplatePath(typename=stObj.typename, template=arguments.template))#]." />
+				<cfthrow type="Application" detail="Error: Template not found [#ExpandPath(getWebskinPath(typename=stObj.typename, template=arguments.template))#]." />
 			</cfif>
 			<cfinclude template="#getWebskinPath(typename=stObj.typename, template=arguments.template)#">
 		</cfif>
