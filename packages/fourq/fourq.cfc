@@ -874,13 +874,43 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			</cfif>
 		</cfloop>
 		
+		
+		
+		<!--- This sets up the array which will contain the name of all types this type extends --->
+		<cfset stReturnMetadata.aExtends = oCoapiAdmin.getExtendedTypeArray(packagePath=md.name)>
+		
+		
 		<cfparam name="stReturnMetadata.bObjectBroker" default="false" />
 		<cfparam name="stReturnMetadata.lObjectBrokerWebskins" default="" />
 		<cfparam name="stReturnMetadata.ObjectBrokerWebskinTimeOut" default="1400" /> <!--- This a value in minutes (ie. 1 day) --->
 		
 		
-		<cfset stReturnMetadata.qWebskins = oCoapiAdmin.getWebskins(componentname) />
+		<cfset stReturnMetadata.qWebskins = oCoapiAdmin.getWebskins(typename="#componentname#", bForceRefresh="true") />
 		
+		<cfset qAllWebskins = stReturnMetadata.qWebskins />
+		
+		<cfloop list="#arrayToList(stReturnMetadata.aExtends)#" index="i">
+			<cfset qExtendedWebskin = oCoapiAdmin.getWebskins(typename=i, bForceRefresh="true") />
+			<cfloop query="qExtendedWebskin">
+				<cfset extendedWebskinName = qExtendedWebskin.name />
+
+				<cfquery dbtype="query" name="qDupe">
+				SELECT *
+				FROM qAllWebskins
+				WHERE cast(name as varchar) = '#extendedWebskinName#'
+				</cfquery>
+				
+				<cfif NOT qDupe.Recordcount>
+					<cfset queryaddrow(stReturnMetadata.qWebskins,1) />
+					<cfloop list="#qExtendedWebskin.columnlist#" index="col">
+						<cfset querysetcell(stReturnMetadata.qWebskins, col, qExtendedWebskin[col][qExtendedWebskin.currentrow]) />
+					</cfloop>
+				</cfif>
+				
+			</cfloop>
+
+		</cfloop>
+
 		<!--- 
 		NEED TO LOOP THROUGH ALL THE WEBSKINS AND CHECK EACH ONE FOR WILDCARDS.
 		IF WILD CARDS EXIST, FIND ALL WEBSKINS THAT MATCH AND ADD THEM TO THE LIST
