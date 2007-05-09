@@ -249,7 +249,8 @@ $out:$
 	
 	<cfset application.types = structNew() />
 	<cfset application.formtools = structNew() />
-	<cfset application.rules = structNew() />
+	<cfset application.rules = structNew() />	
+	<cfset application.stcoapi = structNew() />
 	 
 	<!--- Find all types, base, extended & custom --->
 	<cfdirectory directory="#application.path.core#/packages/types" name="qDir" filter="dm*.cfc" sort="name">
