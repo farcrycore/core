@@ -258,14 +258,15 @@ $out:$
 
 
 
-	<!--- Init all CORE types --->
+	<!--------------------------------------------
+	// Init all CORE types 
+	---------------------------------------------->
 	<cfloop query="qDir">
-		
 			
-	<cftry>
+		<cftry>
 			<cfset typename = left(qDir.name, len(qDir.name)-4) /> <!---remove the .cfc from the filename --->
 			<cfset o = createObject("Component", "#application.packagepath#.types.#typeName#") />			
-
+	
 			<cfif NOT structkeyexists(application.types, typename)>
 				<cfset application.types[typename]=structNew() />
 			</cfif>
@@ -277,16 +278,24 @@ $out:$
 				<cfset stTypeMD.packagePath = "#application.packagepath#.types.#typename#" />
 				<cfset stTypeMD.qMetadata = setupMetadataQuery(typename=typename,stProps=stTypeMD.stProps) />
 				<cfset application.types[typename]=duplicate(stTypeMD) />
-
+	
 			<cfelse>
 				<!--- Remove typename if it is an abstract class. --->
 				<cfset structDelete(application.types, typename) />
 			</cfif>
-	<cfcatch ><cfdump var="#cfcatch#"><cfoutput>#application.packagepath#.types.#typeName#</cfoutput><cfabort></cfcatch></cftry>
+		
+		<cfcatch>
+			<cfoutput><h2>Failed to initialise core type: #qDir.name#</h2></cfoutput>
+			<cfdump var="#cfcatch#" expand="false" label="Init Error" />
+			<cfabort>
+		</cfcatch>
+		</cftry>
 		
 	</cfloop>
 	
-	
+	<!--------------------------------------------
+	// Init all PLUGIN types 
+	---------------------------------------------->
 	<cfif structKeyExists(application, "plugins") and listLen(application.plugins)>
 
 		<cfloop list="#application.plugins#" index="plugin">
@@ -294,27 +303,30 @@ $out:$
 			<cfif directoryExists("#application.path.plugins#/#plugin#/packages/types")>
 			
 				<cfdirectory directory="#application.path.plugins#/#plugin#/packages/types" name="qDir" filter="*.cfc" sort="name">
-				
-				<!--- Init all PLUGIN types --->
+					
 				<cfloop query="qDir">
+					<cftry>
+						<cfset typename = left(qDir.name, len(qDir.name)-4) /> <!---remove the .cfc from the filename --->
+						<cfset o = createObject("Component", "farcry.plugins.#plugin#.packages.types.#typename#") />			
+						<cfset stMetaData = getMetaData(o) />
+						<cfif not structKeyExists(stMetadata,"bAbstract") or stMetadata.bAbstract EQ "False">
+							
+							<cfset stTypeMD = structNew() />
+							<cfparam name="application.types.#typename#" default="#structNew()#" />
+							
+							<cfset stTypeMD = o.initmetadata(application.types[typename]) />
+							<cfset stTypeMD.bCustomType = 1 />
+							<cfset stTypeMD.bLibraryType = 1 />
+							<cfset stTypeMD.typePath = "farcry.plugins.#plugin#.packages.types.#typename#" />							
+							<cfset stTypeMD.packagePath = "farcry.plugins.#plugin#.packages.types.#typename#" />							
+							<cfset stTypeMD.qMetadata = setupMetadataQuery(typename=typename,stProps=stTypeMD.stProps) />
+							<cfset application.types[typename]=duplicate(stTypeMD) />
+						</cfif>	
 					
-					<cfset typename = left(qDir.name, len(qDir.name)-4) /> <!---remove the .cfc from the filename --->
-					<cfset o = createObject("Component", "farcry.plugins.#plugin#.packages.types.#typename#") />			
-					<cfset stMetaData = getMetaData(o) />
-					<cfif not structKeyExists(stMetadata,"bAbstract") or stMetadata.bAbstract EQ "False">
-						
-						<cfset stTypeMD = structNew() />
-						<cfparam name="application.types.#typename#" default="#structNew()#" />
-						
-						<cfset stTypeMD = o.initmetadata(application.types[typename]) />
-						<cfset stTypeMD.bCustomType = 1 />
-						<cfset stTypeMD.bLibraryType = 1 />
-						<cfset stTypeMD.typePath = "farcry.plugins.#plugin#.packages.types.#typename#" />							
-						<cfset stTypeMD.packagePath = "farcry.plugins.#plugin#.packages.types.#typename#" />							
-						<cfset stTypeMD.qMetadata = setupMetadataQuery(typename=typename,stProps=stTypeMD.stProps) />
-						<cfset application.types[typename]=duplicate(stTypeMD) />
-					</cfif>	
-					
+					<cfcatch>
+						<cflog application="true" log="Application" type="warning" text="Failed to initialise #plugin# component #qDir.name#; #cfcatch.message# (#cfcatch.detail#).">
+					</cfcatch>
+					</cftry>
 				</cfloop>
 				
 			</cfif>
@@ -322,13 +334,14 @@ $out:$
 		</cfloop>	
 		
 	</cfif>
+
 	
-	
-	
-	
-	<!--- Init all EXTENDED CORE types --->
+	<!--------------------------------------------
+	// Init all EXTENDED CORE types 
+	---------------------------------------------->
 	<cfloop query="qExtendedTypesDir">
-		
+
+		<cftry>
 			<cfset typename = left(qExtendedTypesDir.name, len(qExtendedTypesDir.name)-4) /> <!---remove the .cfc from the filename --->
 			<cfset o = createObject("Component", "#application.custompackagepath#.system.#typename#") />			
 			<cfset stMetaData = getMetaData(o) />
@@ -345,24 +358,23 @@ $out:$
 				<cfset stTypeMD.qMetadata = setupMetadataQuery(typename=typename,stProps=stTypeMD.stProps) />
 				<cfset application.types[typename]=duplicate(stTypeMD) />
 			</cfif>
-	
+
+		<cfcatch>
+			<cflog application="true" log="Application" type="warning" text="Failed to initialise extended component #qExtendedTypesDir.name#; #cfcatch.message# (#cfcatch.detail#).">
+		</cfcatch>
+		</cftry>
 				
 	</cfloop>
 	
 	
-	
-	<!--- Now init all Custom Types --->
+	<!--------------------------------------------
+	// Init all Project Custom Types 
+	---------------------------------------------->
 	<cfloop query="qCustomTypesDir">
 
-			
+		<cftry>
 			<cfset typename = left(qCustomTypesDir.name, len(qCustomTypesDir.name)-4)> <!---//remove the .cfc from the filename --->
-			<cftry>
 			<cfset o = createObject("Component", "#application.custompackagepath#.types.#typename#") />			
-			<cfcatch>
-				<cfoutput>#application.custompackagepath#.types.#typename#</cfoutput>
-				<cfabort>
-			</cfcatch>
-			</cftry>
 			<cfset stMetaData = getMetaData(o) />
 			<cfif not structKeyExists(stMetadata,"bAbstract") or stMetadata.bAbstract EQ "False">			
 
@@ -377,9 +389,13 @@ $out:$
 				<cfset stTypeMD.qMetadata = setupMetadataQuery(typename=typename,stProps=stTypeMD.stProps) />
 				<cfset application.types[typename]=duplicate(stTypeMD) />
 			</cfif>
+		
+		<cfcatch>
+			<cflog application="true" log="Application" type="warning" text="Failed to initialise custom component #qCustomTypesDir.name#; #cfcatch.message# (#cfcatch.detail#).">
+		</cfcatch>
+		</cftry>
+		
 	</cfloop>
-	
-	
 	
 	
 
