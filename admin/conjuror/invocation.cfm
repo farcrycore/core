@@ -168,15 +168,17 @@ Pseudo:
 
 		<admin:header>	
 		
-		
-			<cfif FileExists("#application.path.project#/webskin/#Typename#/#method#.cfm")>
-				<cfset oType.getDisplay(stObject=returnStruct, template="#method#", OnExit="#stOnExit#") /><!--- #application.url.farcry#/edittabOverview.cfm?objectid=#stObj.ObjectID# --->
+   			<cfset html = oType.getView(stObject=returnStruct, template="#method#", OnExit="#stOnExit#", alternateHTML="") />
+			
+			<cfif len(html)>
+			    <cfoutput>#html#</cfoutput>
 			<cfelse>
-				<!--- <cfset evaluate("oType.#method#(objectid='#objectid#',OnExit=#stOnExit#)")> --->
-				<cfinvoke component="#PackagePath#" method="#method#">
-					<cfinvokeargument name="objectId" value="#objectId#" />
-					<cfinvokeargument name="onExit" value="#stOnExit#" />
-				</cfinvoke>
+				<!--- THIS IS THE LEGACY WAY OF DOING THINGS AND STAYS FOR BACKWARDS COMPATIBILITY --->
+			    <!--- <cfset evaluate("oType.#method#(objectid='#objectid#',OnExit=#stOnExit#)")> --->
+			    <cfinvoke component="#PackagePath#" method="#method#">
+			        <cfinvokeargument name="objectId" value="#objectId#" />
+			        <cfinvokeargument name="onExit" value="#stOnExit#" />
+			    </cfinvoke>
 			</cfif>
 
 			
