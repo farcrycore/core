@@ -112,55 +112,17 @@
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 
-		<cfset var returnHTML = ""/>
-
-		<cfparam name="arguments.stMetadata.ftLibrarySelectedWebskin" default="librarySelected">
-		<cfparam name="arguments.stMetadata.ftLibrarySelectedListClass" default="thumbNailsWrap">
-		<cfparam name="arguments.stMetadata.ftLibrarySelectedListStyle" default="">
+		<cfset var html = "" />
+		<cfset var stNav = structNew() />
 		
-		<!--- We need to get the Array Field Items as a query --->
-		<cfset o = createObject("component",application.types[arguments.typename].typepath)>
-		<cfset q = o.getArrayFieldAsQuery(objectid="#arguments.stObject.ObjectID#", Typename="#arguments.typename#", Fieldname="#stMetadata.Name#", ftJoin="#stMetadata.ftJoin#")>
-	
-		<cfset stJoinObjects = StructNew() />
+		<cfif len(arguments.stmetadata.value)>
+			<cfset stNav = createobject("component", application.types.dmnavigation.typepath).getdata(objectid=arguments.stmetadata.value) />
+			<cfset html=stNav.title />
+		<cfelse>
+			<cfset html="No navigation folder defined.">
+		</cfif>
 		
-		<!--- Create each of the the Linked Table Types as an object  --->
-		<cfloop list="#arguments.stMetadata.ftJoin#" index="i">			
-			<cfset stJoinObjects[i] = createObject("component",application.types[i].typepath)>
-		</cfloop>
-
-		
-		<cfsavecontent variable="returnHTML">
-		<cfoutput>
-				
-			<cfset ULID = "#arguments.fieldname#_list">
-			
-			<cfif q.RecordCount>
-				<div id="#ULID#" class="#arguments.stMetadata.ftLibrarySelectedListClass#" style="#arguments.stMetadata.ftLibrarySelectedListStyle#">
-					<cfloop query="q">
-						<!---<li id="#arguments.fieldname#_#q.objectid#"> --->
-							
-							<div>
-							<cfset stobj = stJoinObjects[q.typename].getData(objectid=q.data) />
-							<cfif FileExists("#application.path.project#/webskin/#q.typename#/#arguments.stMetadata.ftLibrarySelectedWebskin#.cfm")>
-								<cfset html = stJoinObjects[q.typename].getView(stObject=stobj,template="#arguments.stMetadata.ftLibrarySelectedWebskin#") />
-								#html#								
-								<!---<cfinclude template="/farcry/projects/#application.applicationname#/webskin/#q.typename#/#arguments.stMetadata.ftLibrarySelectedWebskin#.cfm"> --->
-							<cfelse>
-								#stobj.label#
-							</cfif>
-							</div>
-													
-						<!---</li> --->
-					</cfloop>
-				</div>
-			</cfif>
-
-				
-		</cfoutput>
-		</cfsavecontent>
-
-		<cfreturn returnHTML>
+		<cfreturn html>
 	</cffunction>
 
 	<cffunction name="validate" access="public" output="true" returntype="struct" hint="This will return a struct with bSuccess and stError">
