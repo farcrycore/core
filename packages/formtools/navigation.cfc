@@ -1,8 +1,5 @@
 
 
-
-
-
 <cfcomponent extends="field" name="navigation" displayname="navigation" hint="Field component to liase with all navigation field types"> 
 
 	<cfimport taglib="/farcry/core/tags/widgets/" prefix="widgets">
@@ -18,7 +15,10 @@
 		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
-
+		
+		<cfset var navid = "" />
+		<cfset var lSelectedNaviIDs = "" />
+		
 		<cfparam name="arguments.stMetadata.ftAlias" default="" type="string" />
 		<cfparam name="arguments.stMetadata.ftLegend" default="" type="string" />
 		<cfparam name="arguments.stMetadata.ftRenderType" default="Tree" type="string" />
@@ -32,16 +32,22 @@
 			<cfset navid = application.navid['root'] >
 		</cfif>
 
-		
-		<cfset lSelectedNaviIDs = arrayToList(arguments.stObject['#arguments.stMetadata.name#']) />
+		<cfset lSelectedNaviIDs = arguments.stObject['#arguments.stMetadata.name#'] />
 
 		<cfswitch expression="#arguments.stMetadata.ftRenderType#">
 			
-			<cfcase value="dropdown">
+			<cfcase value="dropdownDoesNotWorkJustNow">
 				<cfset lCategoryBranch = oCategory.getCategoryBranchAsList(lCategoryIDs=navid) />
 							
 				<cfsavecontent variable="html">
-					<cfoutput><fieldset></cfoutput>
+					<cfoutput><fieldset>
+					<p>Not quite ready yet.  Please use tree option.</p>
+					</cfoutput>
+					<!--- 
+					TODO: 
+						- this is slap dash copy from category picker; needs to be updated to Navigation nodes GB 20070511
+						- see http://bugs.farcrycms.org:8080/browse/FC-731
+					--->	
 					<cfoutput><select id="#arguments.fieldname#" name="#arguments.fieldname#"  <cfif arguments.stMetadata.ftSelectMultiple>size="#arguments.stMetadata.ftSelectSize#" multiple="true"</cfif>></cfoutput>
 					<cfloop list="#lCategoryBranch#" index="i">
 						<!--- If the item is the actual alias requested then it is not selectable. --->
@@ -60,6 +66,7 @@
 						
 					</cfloop>
 					<cfoutput></select></cfoutput>
+					 
 					<cfoutput></fieldset></cfoutput>
 				</cfsavecontent>
 			</cfcase>
@@ -170,34 +177,7 @@
 		<!--- --------------------------- --->
 		<!--- Perform any validation here --->
 		<!--- --------------------------- --->
-		
-		
-		<cfset aField = ArrayNew(1)>				
-		<cfloop list="#stFieldPost.value#" index="i">
-			<cfset ArrayAppend(aField,i)>
-		</cfloop>
-		
-		<cfif not len(arguments.typename)>
-			<cfset q4 = createObject("component","farcry.core.packages.fourq.fourq")>
-			<cfset arguments.typename = q4.findType(objectid=arguments.objectid)>
-		</cfif>
-		
-		<cfif structKeyExists(application.types, arguments.typename)>
-			<cfset oPrimary = createObject("component",application.types[arguments.Typename].packagePath)>
-		<cfelseif structKeyExists(application.rules, arguments.typename)>
-			<cfset oPrimary = createObject("component",application.rules[arguments.Typename].packagePath)>
-		<cfelse>
-			<cfabort showerror="arguments.typename does not exist as a rule or a type" />
-		</cfif>
-		
-		<cfset variables.tableMetadata = createobject('component','farcry.core.packages.fourq.TableMetadata').init() />
-		<cfset tableMetadata.parseMetadata(md=getMetadata(oPrimary)) />		
-		<cfset stFields = variables.tableMetadata.getTableDefinition() />
-		<!---<cfset o = createObject("component","farcry.core.packages.fourq.gateway.dbGateway").init(dsn=application.dsn,dbowner="")> --->
-		<cfset aProps = oPrimary.createArrayTableData(tableName=Typename & "_" & arguments.stMetadata.name,objectid=arguments.ObjectID,tabledef=stFields[arguments.stMetadata.name].Fields,aprops=aField)>
-
-
-		<cfset stResult.value = aField>
+		<cfset stResult.value = stFieldPost.Value>
 
 		<!--- ----------------- --->
 		<!--- Return the Result --->
