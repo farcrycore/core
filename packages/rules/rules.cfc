@@ -150,6 +150,22 @@ $out:$
 		<cfreturn webskinHTML />
 	</cffunction>
 		
+	<cffunction name="getWebskins" returntype="query" access="public" output="false" hint="Returns a query of all available webskins. Search through project first, then any library's that have been included.">
+		<cfargument name="typename" type="string" default="#gettablename()#" hint="Typename of instance." />
+		<cfargument name="prefix" type="string" required="false" default="" hint="Prefix to filter template results." />
+		
+		<cfset var qWebskins = application.stcoapi[arguments.typename].qWebskins />
+		<cfset var qResult=queryNew("name,directory,size,type,datelastmodified,attributes,mode,displayname","varchar,varchar,integer,varchar,date,varchar,varchar,varchar") />
+		
+		<cfif len(arguments.prefix)>
+			<cfquery dbtype="query" name="qResult">
+			SELECT * FROM qWebskins
+			WHERE lower(qWebskins.name) LIKE '#lCase(arguments.prefix)#%'
+			</cfquery>
+		</cfif>
+		
+		<cfreturn qResult />
+	</cffunction>
 	
 	<cffunction name="createData" access="public" returntype="any" output="false" hint="Creates an instance of an object">
 		<cfargument name="stProperties" type="struct" required="true" hint="Structure of properties for the new object instance">
