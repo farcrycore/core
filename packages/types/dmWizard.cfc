@@ -142,18 +142,56 @@ return REFindNoCase("^[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{16}$", str);
 	<cfwddx action="WDDX2CFML" input="#stwizard.Data#" output="stwizardData">
 	<cfset stwizard.Data = stwizardData />
 	
+	
+	<!--- 
 	<!--- we need to loop through each wizard object and save to the session --->
 	<cfloop list="#structKeyList(stwizard.Data)#" index="i">
 		<cfset stProperties = stwizard.Data[i] />
 
 		<cfset bsuccess = createObject("component", application.stcoapi[stProperties.typename].packagepath).setdata(stProperties=stProperties,bSessionOnly="true") />
 
-	</cfloop>
+	</cfloop> --->
 	
 	<!--- return the struct --->
 	<cfreturn stwizard>
 
 </cffunction>
+
+<cffunction name="setWizardObject" access="public" output="true" returntype="struct" hint="updates a single object in the wizard, and">
+	<cfargument name="wizardID" required="no" type="UUID">
+	<cfargument name="stProperties" required="no" type="Struct">
+	
+	<cfset var stResult = structNew() />
+	<cfset var stwizard = read(wizardID=arguments.wizardID) />
+
+	
+	<cfif structKeyExists(stWizard.data, arguments.stProperties.objectid)>
+		<!--- Make sure the struct passed in has an objectid --->
+		<cfif structKeyExists(arguments.stProperties, "objectid")>	
+			
+			<!--- Loop through all the properties passed in and update the object in the wizard --->
+			<cfloop collection="#arguments.stProperties#" item="prop">
+
+				<cfset stWizard.data[arguments.stProperties.objectid][prop] = stProperties[prop] />
+
+			</cfloop>
+			
+			<!--- Write the updated data back into the wizard --->
+			<cfset stwizard = Write(objectid=arguments.wizardID, Data=stWizard.data) />
+		<cfelse>
+			<cfabort showerror="arguments.stProperties must contain an objectid" />
+		</cfif>
+	<cfelse>
+		<cfabort showerror="The wizard object passed in must already be in the wizards dataset" />
+	</cfif>
+	
+	
+	<!--- return the struct --->
+	<cfreturn stwizard>
+
+</cffunction>
+
+
 
 
 <cffunction name="deleteData" access="public" output="false" returntype="struct" hint="Delete the specified objectid and corresponding data, including array properties and refObjects.">
