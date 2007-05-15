@@ -185,13 +185,12 @@ $in: objectid -- $
 				<cfset application.stPlugins = structNew() />
 				
 				
+				<!--- CALL THE PROJECTS SERVER SPECIFIC VARIABLES. --->
 				<cfinclude template="/farcry/projects/#attributes.projectDirectoryName#/config/_serverSpecificVars.cfm" />
 				
 				
-		
-				
 				<!----------------------------------- 
-				INITIALISE THE REQUESTED LIBRARIES
+				INITIALISE THE REQUESTED PLUGINS
 				 ----------------------------------->
 				<cfif isDefined("application.plugins")>
 					<cfloop list="#application.plugins#" index="plugin">
@@ -257,6 +256,9 @@ $in: objectid -- $
 	</cfcatch>
 	
 	<cfcatch type="any">
+		<!--- remove binit to force reinitialisation on next page request --->
+		<cfset structdelete(application,"bInit") />
+		<!--- report error to user --->
 		<cfoutput><h1>Application Failed to Initialise</h1></cfoutput>
 		<cfdump var="#cfcatch#" expand="false" />
 		<cfabort />
@@ -268,20 +270,14 @@ $in: objectid -- $
 	----------------------------------------->
 
 
-		
-
-
 	<!--- general application code --->
 	<cfinclude template="/farcry/core/tags/farcry/_farcryApplication.cfm">
 	
-		
 
 </cfif>
 
 <cfif thistag.executionMode eq "End">
-	
-	<!--- DO NOTHING --->
-	
+	<!--- DO NOTHING IN CLOSING TAG --->
 </cfif>
 
-<cfsetting enablecfoutputonly="no">
+<cfsetting enablecfoutputonly="false" />
