@@ -40,6 +40,8 @@
 <cfparam name="request.sectionObjectID" default="#request.navID#">
 <cfparam name="attributes.displayStyle" default="unorderedList">
 <cfparam name="attributes.bHideSecuredNodes" default="0"><!--- MJB: check if option to Hide Nav Node Items that user does't have permission to access: default to 0 for backward compatibility --->
+<cfparam name="attributes.afilter" default="#arrayNew(1)#">
+
 
 <cfif application.config.plugins.fu>
 	<cfset fu = createObject("component","#application.packagepath#.farcry.fu")>
@@ -49,8 +51,8 @@
 		
 <!--- // get navigation items --->
 <cfset o = createObject("component", "#application.packagepath#.farcry.tree")>
-<cfset navFilter=arrayNew(1)>
-<cfset navfilter[1]="status IN (#listQualify(request.mode.lvalidstatus, '''')#)">
+<cfset navFilter=duplicate(attributes.afilter)>
+<cfset arrayAppend(navFilter, "status IN (#listQualify(request.mode.lvalidstatus, '''')#)") />
 <cfset qNav = evaluate("o."&attributes.functionMethod&"(objectid=attributes.navID, lColumns='externallink', "&attributes.functionArgs&", afilter=navFilter)")>
 
 <!--- // get ansestors of attributes.navID --->
