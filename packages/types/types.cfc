@@ -450,6 +450,14 @@ default handlers
 		<cfargument name="dsn" required="No" default="#application.dsn#"> 
 		
 		<cfset var stNewObject = "" />
+		<cfset var bAudit = true />
+		
+		<!--- 
+		MJB: This may or may not be cancer. Need to investigate
+		It is required though just incase the variables.typename has not yet been set.
+		 --->
+		<cfset fourqInit() />
+		
 		
 		<cfif not len(arguments.user)>
 			<cfif isDefined("session.dmSec.authentication.userlogin")>
@@ -476,8 +484,16 @@ default handlers
 				arguments.stProperties.lastupdatedby = arguments.user;	
 				
 			stNewObject = super.createData(arguments.stProperties,arguments.stProperties.objectid,arguments.dsn);
-			application.factory.oAudit.logActivity(auditType="Create", username=arguments.user, location=cgi.remote_host, note=arguments.auditNote,objectid=stNewObject.objectid);
+			
 		</cfscript>
+		
+		<cfif structKeyExists(application.stcoapi[variables.typename], "bAudit")>
+			<cfset  bAudit = application.stcoapi[variables.typename].bAudit />
+		</cfif>
+
+		<cfif bAudit>
+			<cfset application.factory.oAudit.logActivity(auditType="Create", username=arguments.user, location=cgi.remote_host, note=arguments.auditNote,objectid=stNewObject.objectid) />
+		</cfif>
 		
 		<cfreturn stNewObject>
 	</cffunction>
