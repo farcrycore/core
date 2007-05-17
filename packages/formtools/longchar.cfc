@@ -76,7 +76,12 @@
 						function UpdateCounter_#arguments.fieldname#(FormName, FieldName) {
 						
 							counter = (window.document.forms[FormName][FieldName].value.length);
-							if (counter < #arguments.stMetadata.ftLimit#){
+							if (counter > #arguments.stMetadata.ftLimit#) {
+								window.document.forms[FormName][FieldName].value = window.document.forms[FormName][FieldName].value.substr(0,#arguments.stMetadata.ftLimit#);
+								counter = #arguments.stMetadata.ftLimit#;
+								alert("The text was too long and has been truncated to #arguments.stMetadata.ftLimit# characters");
+							}		
+							if (counter <= #arguments.stMetadata.ftLimit#){
 							<cfif bIsGoodBrowser>
 								objCounter = document.getElementById("dm_ct_countDown_" + FieldName);
 								objCounter.innerText = counter;
@@ -85,7 +90,8 @@
 								window.document.forms[FormName][FieldName].value = counter;
 								oldvalue = window.document.forms[FormName][FieldName].value;
 							</cfif>
-							} else {
+							} 					
+							else {
 							<cfif bIsGoodBrowser>
 								<!--- (8:Backspace) (45:Insert) (46:Delete) (33-40:Up,Down,Left,Right,PgUp,PgDown,Home,End) --->
 								if (!(event.keyCode == "8" || event.keyCode == "46" || (event.keyCode >= "33" && event.keyCode <= "40"))) {
@@ -94,12 +100,14 @@
 								objCounter = document.getElementById("dm_ct_countDown_" + FieldName);
 								objCounter.innerText = "#arguments.stMetadata.ftLimit#";
 								objCounter.innerHTML = "#arguments.stMetadata.ftLimit#";
+								
 							<cfelse>
 								if (counter > #arguments.stMetadata.ftLimit#) {
 										window.document.forms[FormName][FieldName].value = oldvalue;
 								}
 								window.document.forms[FormName][FieldName].value = "#arguments.stMetadata.ftLimit#";
 							</cfif>
+							
 							}
 						}
 						// end hiding contents from old browsers  -->
@@ -128,21 +136,22 @@
 			<cfoutput>
 				<div id="#arguments.fieldname#DIV" style="#fieldStyle#">
 					<div>
-						<textarea name="#arguments.fieldname#" id="#arguments.fieldname#" class="#arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" onkeyup="#onKeyUp#" onkeydown="#onKeyDown#">#arguments.stMetadata.value#</textarea>
-						<cfif arguments.stMetadata.ftLimit>	
+						<cfif arguments.stMetadata.ftLimit>							
 							<cfset onKeyUp = "javascript:UpdateCounter_#arguments.fieldname#('#request.farcryForm.name#', '#arguments.FieldName#')" />
 							<cfset onKeyDown = "javascript:UpdateCounter_#arguments.fieldname#('#request.farcryForm.name#', '#arguments.FieldName#')" />
+							<textarea name="#arguments.fieldname#" id="#arguments.fieldname#" class="#arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" onkeyup="#onKeyUp#" onkeydown="#onKeyDown#">#arguments.stMetadata.value#</textarea>
 							<cfif bIsGoodBrowser>
 								<p id="dm_ct_Text_#arguments.fieldname#"><span id="dm_ct_countDown_#arguments.fieldname#">0</span>/#arguments.stMetadata.ftLimit#</p>
 							<cfelse>
 								<p id="dm_ct_Text_#arguments.fieldname#"><input id="dm_ct_countDown_#arguments.fieldname#" disabled type="text" name="counter" size="#len(arguments.stMetadata.ftLimit)#" value="#arguments.stMetadata.ftLimit# characters Max">/#arguments.stMetadata.ftLimit#</p>
 							</cfif>
-							
 							<script type="text/javascript">
 							<!--  to hide script contents from old browsers
 								UpdateCounter_#arguments.fieldname#('#request.farcryForm.name#','#arguments.FieldName#');
 							// end hiding contents from old browsers  -->
 							</script>
+						<cfelse>
+							<textarea name="#arguments.fieldname#" id="#arguments.fieldname#" class="#arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" onkeyup="#onKeyUp#" onkeydown="#onKeyDown#">#arguments.stMetadata.value#</textarea>
 						</cfif>
 					</div>
 				</div>
