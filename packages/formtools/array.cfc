@@ -18,6 +18,7 @@
 		<cfset var returnHTML = "" />
 		<cfset var stobj = structnew() / >
 		<cfset var stJoinObjects = structNew() /> <!--- This will contain a structure of object components that match the ftJoin list from the metadata --->
+		<cfset var tmpTypename="" />
 
 		<!---
 		<cfset var oFourQ = createObject("component","farcry.core.packages.fourq.fourq")><!--- TODO: this needs to be removed when we add typename to array tables. ---> 
@@ -155,6 +156,14 @@
 											<cfset variables.alternateHTML = "" />
 										</cfif>
 										
+										<!--- if typename is missing from query (ie. array data is corrupted) --->
+										<cfif NOT len(qArrayField.typename)>
+											<cfset tmpTypename=createobject("component", "farcry.core.packages.fourq.fourq").findtype(objectid=qarrayfield.data) />
+											<cfset qArrayField.typename[qarrayfield.currentrow] = tmpTypename />
+											<cfif NOT len(tmpTypename)>
+												<cfthrow message="Typename not available." detail="Typename is not specified for the array data reference; data: #qArrayField.data# parentid: #qArrayField.parentid#" type="Application" errorcode="formtools.array" />
+											</cfif>
+										</cfif>
 						
 										<cfset HTML = stJoinObjects[qArrayField.typename].getView(objectID=qArrayField.data, template="#arguments.stMetadata.ftLibrarySelectedWebskin#", alternateHTML=variables.alternateHTML) />
 										<cfif NOT len(trim(HTML))>
@@ -502,4 +511,4 @@
 
 	</cffunction>
 			
-</cfcomponent> 
+</cfcomponent>
