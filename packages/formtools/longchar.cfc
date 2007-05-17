@@ -128,6 +128,7 @@
 			<cfoutput>
 				<div id="#arguments.fieldname#DIV" style="#fieldStyle#">
 					<div>
+						<textarea name="#arguments.fieldname#" id="#arguments.fieldname#" class="#arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" onkeyup="#onKeyUp#" onkeydown="#onKeyDown#">#arguments.stMetadata.value#</textarea>
 						<cfif arguments.stMetadata.ftLimit>	
 							<cfset onKeyUp = "javascript:UpdateCounter_#arguments.fieldname#('#request.farcryForm.name#', '#arguments.FieldName#')" />
 							<cfset onKeyDown = "javascript:UpdateCounter_#arguments.fieldname#('#request.farcryForm.name#', '#arguments.FieldName#')" />
@@ -143,7 +144,6 @@
 							// end hiding contents from old browsers  -->
 							</script>
 						</cfif>
-						<textarea name="#arguments.fieldname#" id="#arguments.fieldname#" class="#arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" onkeyup="#onKeyUp#" onkeydown="#onKeyDown#">#arguments.stMetadata.value#</textarea>
 					</div>
 				</div>
 			</cfoutput>
