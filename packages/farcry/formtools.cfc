@@ -378,10 +378,14 @@
 			<cfif bHasVersionID>
 				AND (tbl.versionid = '' OR tbl.versionid IS NULL)
 			</cfif>
-			
-			<cfif application.dbtype EQ "ora"><!--- Record limiting for oracle --->
-				AND rownum <= #arguments.RecordsPerPage#
-			</cfif>
+
+			<!--- Record limiting for oracle --->
+			<!--- 
+				Commented this as not necessary. Number to display per page is processed elsewhere.
+				<cfif application.dbtype EQ "ora">
+					AND rownum <= #arguments.RecordsPerPage#
+				</cfif>
+			 --->
 			
 			<cfif len(trim(arguments.sqlOrderBy))>
 				ORDER BY #preserveSingleQuotes(arguments.sqlOrderBy)#
@@ -392,6 +396,8 @@
 			</cfif>
 			
 			</cfquery>
+
+
 	
 			
 		</cfif>			
