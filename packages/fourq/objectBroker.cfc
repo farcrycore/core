@@ -93,10 +93,28 @@
 								
 								<!--- Place any request.inHead variables back into the request scope from which it came. --->
 								<cfparam name="request.inHead" default="#structNew()#" />
-								<cfloop list="#structKeyList(stCacheWebskin.inHead)#" index="i">
-									<cfset request.inHead[i] = stCacheWebskin.inHead[i] />
-								</cfloop>
+								<cfparam name="request.inhead.stCustom" default="#structNew()#" />
+								<cfparam name="request.inhead.aCustomIDs" default="#arrayNew(1)#" />
 								
+								<cfloop list="#structKeyList(stCacheWebskin.inHead)#" index="i">
+									<cfswitch expression="#i#">
+										<cfcase value="stCustom">
+											<cfloop list="#structKeyList(stCacheWebskin.inHead.stCustom)#" index="j">
+												<cfset request.inHead.stCustom[j] = stCacheWebskin.inHead.stCustom[j] />
+											</cfloop>
+										</cfcase>
+										<cfcase value="aCustomIDs">
+											<cfloop from="1" to="#arrayLen(stCacheWebskin.inHead.aCustomIDs)#" index="k">
+												<cfset arrayAppend(request.inHead.aCustomIDs,stCacheWebskin.inHead.aCustomIDs[k]) />
+											</cfloop>
+										</cfcase>
+										<cfdefaultcase>
+											<cfset request.inHead[i] = stCacheWebskin.inHead[i] />
+										</cfdefaultcase>
+									</cfswitch>
+						
+								</cfloop>
+
 							</cfif>	
 							
 						</cfif>	
@@ -139,8 +157,8 @@
 								
 								<cfset stCacheWebskin.datetimecreated = now() />
 								<cfset stCacheWebskin.webskinHTML = trim(arguments.HTML) />	
-								<cfset stCacheWebskin.inHead = duplicate(request.inHead) />							
-
+								<cfset stCacheWebskin.inHead = duplicate(request.inHead) />	
+								
 								<cfif arguments.hashURL>
 									<cfset application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template][hash(cgi.query_string)] = stCacheWebskin />
 								<cfelse>
