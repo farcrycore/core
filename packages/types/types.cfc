@@ -487,7 +487,8 @@ default handlers
 			
 		</cfscript>
 		
-		<cfif structKeyExists(application.stcoapi[variables.typename], "bAudit")>
+		<!--- needs to be isDefined because application.stcoapi may not exist yet --->
+		<cfif isDefined("application.stcoapi.#variables.typename#.bAudit")>
 			<cfset  bAudit = application.stcoapi[variables.typename].bAudit />
 		</cfif>
 
