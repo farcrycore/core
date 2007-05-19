@@ -1,21 +1,16 @@
 <cfsetting enablecfoutputonly="yes">
 <!--- 
 || LEGAL ||
-$Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
+$Copyright: Daemon Pty Limited 1995-2007, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
-
-|| VERSION CONTROL ||
-$Header: /cvs/farcry/core/packages/types/_dmInclude/edit.cfm,v 1.19.2.1 2006/04/04 05:53:16 gstewart Exp $
-$Author: gstewart $
-$Date: 2006/04/04 05:53:16 $
-$Name: milestone_3-0-1 $
-$Revision: 1.19.2.1 $
 
 || DESCRIPTION || 
 $Description: dmInclude edit handler$
 
 || DEVELOPER ||
 $Developer: Geoff Bowers (modius@daemon.com.au)$
+
+TODO: rip this out and replace with native form tools interface.
 --->
 <!--- import tag libraries --->
 <cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
@@ -78,7 +73,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 
 <ft:form>
 
-	<ft:object stobject="#stObj#" lfields="title,Teaser,include,displayMethod,catInclude" />
+	<ft:object stobject="#stObj#" lfields="title,Teaser,teaserimage,include,displayMethod,catInclude" />
 	
 	<ft:farcryButton value="Save" />
 	<ft:farcryButton value="cancel" onClick="fCancelAction();return false;" />

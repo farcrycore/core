@@ -18,18 +18,23 @@ $Description: dmInclude type $
 $Developer: Brendan Sisson (brendan@daemon.com.au) $
 --->
 
-<cfcomponent extends="types" displayname="Include" hint="Include files" bSchedule="true" bUseInTree="1" bObjectBroker="true">
+<cfcomponent extends="types" displayname="Include" hint="Include files" bSchedule="true" bUseInTree="true" bObjectBroker="true">
 <!------------------------------------------------------------------------
 type properties
 ------------------------------------------------------------------------->
-<cfproperty name="title" type="nstring" hint="Meaningful reference title for include file" required="no" default=""> 
-<cfproperty name="teaser" type="nstring" hint="A brief description of the nature of the include file" required="no" default="" ftType="longchar">  
-<cfproperty name="displayMethod" type="string" hint="" required="No" default="" ftType="webskin" ftPrefix="displayPage"> 
-<cfproperty name="include" type="string" hint="The name of the include file" required="No" default="" ftType="list" ftListData="getIncludeList"> 
-<cfproperty name="status" type="string" hint="Status of file - draft or approved" required="No" default="draft"> 
+<cfproperty name="title" type="nstring" hint="Meaningful reference title for include file" required="no" default="" ftlabel="Title" ftvalidation="required" /> 
+<cfproperty name="teaser" type="nstring" hint="A brief description of the nature of the include file" required="no" default="" ftType="longchar" ftlabel="Teaser" />  
+<cfproperty name="displayMethod" type="string" hint="" required="No" default="" ftType="webskin" ftPrefix="displayPage" ftlabel="Content Template" /> 
+<cfproperty name="include" type="string" hint="The name of the include file" required="No" default="" ftType="list" ftListData="getIncludeList" ftLabel="Included CF Template" /> 
+<cfproperty name="teaserImage" type="uuid" hint="UUID of image to display in teaser" required="no" default="" fttype="uuid" ftjoin="dmimage" ftlabel="Teaser Image">
+<cfproperty name="catInclude" type="string" hint="category of the include" required="no" default="" ftType="category" ftlabel="Categorisation" />
+
+<!--- system only properties --->
+<cfproperty name="status" type="string" hint="Status of file - draft or approved" required="No" default="draft">
+
+<!--- deprecated legacy properties --->
 <cfproperty name="commentlog" type="longchar" hint="Workflow comment log." required="no" default=""> 
-<cfproperty name="teaserImage" type="string" hint="UUID of image to display in teaser" required="no" default="">
-<cfproperty name="catInclude" type="string" hint="category of the include" required="no" default="" ftType="category" />
+
 
 <!--- Object Methods --->
 
