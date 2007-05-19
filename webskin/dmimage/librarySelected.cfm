@@ -6,11 +6,11 @@
 	<cfoutput>
 		<table>
 		<tr>
-			<td><img src="#application.url.imageRoot##stobj.thumbnailImage#" title="#stObj.title#"></td>
+			<td><img src="#application.url.imageRoot##stobj.thumbnailImage#" title="#stObj.title#" /></td>
 			<td>&nbsp;</td>
 			<td>
-				#stObj.title#<br />
-				<em>(#stobj.alt#)</em>
+				#stObj.title#
+				<cfif len(stobj.alt)><br /><em>(#stobj.alt#)</em></cfif>
 			</td>
 		</tr>
 		</table>
