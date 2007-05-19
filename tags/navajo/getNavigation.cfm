@@ -32,7 +32,7 @@
 	else	
 	{	
 		
-		q = oNav.getParent(objectid=stObject.objectid);
+		q = oNav.getParent(objectid=attributes.objectid);
 		if(NOT q.recordcount)  //this condition should never happen. Keeping in for legacy support only.
 		{
 			lObjectIds = '';
