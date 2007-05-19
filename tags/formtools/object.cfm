@@ -57,22 +57,22 @@
 	<cfif NOT attributes.bIncludeSystemProperties OR attributes.format EQ "edit">
 		<cfset attributes.lExcludeFields = ListAppend(attributes.lExcludeFields,"objectid,locked,lockedby,lastupdatedby,ownedby,datetimelastupdated,createdby,datetimecreated,versionID,status")>
 	</cfif>
-	
 
 	
 	<cfif len(attributes.ObjectID)>
+	<!--- build metadata from objectid --->
 	
-
 		<cfif not isDefined("attributes.typename") or not len(attributes.typename)>
 			<cfset q4 = createObject("component", "farcry.core.packages.fourq.fourq")>
 			<cfset attributes.typename = q4.findType(objectid=attributes.objectid)>
 		</cfif>		
 	
+		<cfif NOT len(attributes.typename)>
+			<cfthrow type="Application" errorcode="tags.formtools.object" message="Typename could not be resolved for #attributes.objectid#." detail="Tried to look up typename and got nothing.  Content item does not exist in refObjects." />
+		</cfif>
 		
 		<cfset stPackage = application.stcoapi[attributes.typename] />
 		<cfset packagePath = application.stcoapi[attributes.typename].packagepath />
-
-		
 		
 		<cfset oType = createobject("component",packagePath)>
 		<cfset lFields = ValueList(stPackage.qMetadata.propertyname)>
@@ -82,8 +82,9 @@
 		
 		<cfset stObj = oType.getData(attributes.objectID)>
 	
-	<cfelseif isStruct(attributes.stObject)>
 	
+	<cfelseif isStruct(attributes.stObject)>
+	<!--- build metadata from complete object structure --->
 		
 		<cfset stObj = attributes.stObject>		
 		<cfset attributes.typename = stObj.typename>	
@@ -97,10 +98,10 @@
 		<cfset stFields = stPackage.stprops>
 		<cfset typename = attributes.typename>
 		<cfset ObjectID = attributes.stObject.ObjectID>
-		
+
+
 	<cfelseif len(attributes.typename)>
-	
-	
+	<!--- build metadata from type details --->
 		<cfset stPackage = application.stcoapi[attributes.typename] />
 		<cfset packagePath = application.stcoapi[attributes.typename].packagepath />
 	
@@ -112,12 +113,17 @@
 		<cfset stObj = oType.getData(objectID="#CreateUUID()#")>
 		
 		<cfset ObjectID = stObj.objectID>
+
+	
+	<cfelse>
+	<!--- nothing relevant passed into tag; throw --->
+		<cfthrow type="Application" errorcode="tags.formtools.object" message="Object metadata could not be determined." detail="Make sure you actually passed in a value for either objectid, stobject or typename attributes." />
 	</cfif>
 
 	<cfset lFieldsToRender =  "">
 	
 	<cfif not len(attributes.lFields)>
-		<cfset attributes.lFields = variables.lFields>
+		<cfset attributes.lFields = variables.lFields />
 	</cfif>	
 	
 	<!--- allow for whitespace in field list attributes by trimming --->
@@ -126,6 +132,7 @@
 	<cfset attributes.lExcludeFields = replacenocase(attributes.lExcludeFields, " ", "", "ALL") />
 	
 	<!--- Determine fields to render --->
+
 	<cfloop list="#attributes.lFields#" index="i">
 		<cfif ListFindNoCase(variables.lFields,i)>
 			<cfset lFieldsToRender =  listappend(lFieldsToRender,i)>
@@ -136,7 +143,7 @@
 			</cfif> --->
 		</cfif>
 	</cfloop>
-
+	
 
 	<!--- Determine fields to render but as hidden fields --->
 	<cfloop list="#attributes.lHiddenFields#" index="i">
