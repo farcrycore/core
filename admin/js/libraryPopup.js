@@ -58,7 +58,7 @@
 							}
 														
 							
-							new Ajax.Updater(fieldname + '-libraryCallback', '/farcry/facade/library.cfc?method=ajaxUpdateArray', {
+							new Ajax.Updater(fieldname + '-libraryCallback', '/farcry/facade/library.cfc?method=ajaxUpdateArray&noCache=' + Math.random(), {
 									//onLoading:function(request){Element.show('indicator')},
 									onComplete:function(request){
 										// <![CDATA[
@@ -104,7 +104,7 @@
 						
 						
 						
-						new Ajax.Updater(fieldname + '-libraryCallback', '/farcry/facade/library.cfc?method=ajaxUpdateArray', {
+						new Ajax.Updater(fieldname + '-libraryCallback', '/farcry/facade/library.cfc?method=ajaxUpdateArray&noCache=' + Math.random(), {
 							//onLoading:function(request){Element.show('indicator')},
 							parameters:sURLParams, evalScripts:true, asynchronous:true
 						})
