@@ -244,7 +244,7 @@
 						,(SELECT count(d.objectid) FROM #arguments.typename# d WHERE d.versionid = tbl.objectid) as bHasMultipleVersion
 					</cfif>
 					FROM #arguments.typename# tbl
-					inner join  ##thetops t on tbl.objectid = t.objectid where t.myint >  ((select count(*) from ##thetops) - #arguments.RecordsPerPage-thisDiff#)
+					inner join  ##thetops t on tbl.objectid = t.objectid collate Latin1_general_CI_AS where t.myint >  ((select count(*) from ##thetops) - #arguments.RecordsPerPage-thisDiff#)
 					
 					<cfif len(trim(arguments.sqlOrderBy))>
 						ORDER BY #preserveSingleQuotes(arguments.sqlOrderBy)#
@@ -326,7 +326,7 @@
 						,(SELECT count(d.objectid) FROM #arguments.typename# d WHERE d.versionid = tbl.objectid) as bHasMultipleVersion
 					</cfif>
 					FROM #arguments.typename# tbl
-					inner join  ##thetops t on tbl.objectid = t.objectid where t.myint >  ((select count(*) from ##thetops) - #arguments.RecordsPerPage-thisDiff#)
+					inner join  ##thetops t on tbl.objectid = t.objectid collate Latin1_general_CI_AS where t.myint >  ((select count(*) from ##thetops) - #arguments.RecordsPerPage-thisDiff#)
 					
 					<cfif len(trim(arguments.sqlOrderBy))>
 						ORDER BY #preserveSingleQuotes(arguments.sqlOrderBy)#
