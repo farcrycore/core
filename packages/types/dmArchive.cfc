@@ -30,30 +30,28 @@ type properties
 <cfproperty name="objectWDDX" type="longchar" hint="WDDX packet that defines the object being archived" required="no" default="">  
 
 <!--- Object Methods --->
-
-<cffunction name="edit" access="public">
-	<cfargument name="objectid" required="yes" type="UUID">
-	
-	<!--- getData for object edit --->
-	<cfset stObj = this.getData(arguments.objectid)>
-	<cfinclude template="_dmArchive/edit.cfm">
-</cffunction>
-
 <cffunction name="fArchiveObject" access="public" hint="archiving of related items to content types (eg. files and images)" returntype="struct">
 	<cfargument name="stObj" required="yes" type="struct">
 
 	<cfset var stLocal = StructNew()>
+	<cfset var pathSep = "\"><!--- default is windows path separator --->
 	<cfset stlocal.returnStruct = StructNew()>
 	<cfset stLocal.stObj = StructCopy(arguments.stObj)>
 	
-	<cfset application.config.general.archivedirectory = replaceNoCase("#application.config.general.archivedirectory#","/","\","all")>
-	<cfif Right(application.config.general.archivedirectory,1) NEQ "\">
-		<cfset application.config.general.archivedirectory = "#application.config.general.archivedirectory#\">
+	<cfif left(application.config.general.archivedirectory,1) neq "/"><!--- not *nix path --->
+		<cfset application.config.general.archivedirectory = replaceNoCase("#application.config.general.archivedirectory#","/","\","all")>
+	<cfelse>
+		<cfset application.config.general.archivedirectory = replaceNoCase("#application.config.general.archivedirectory#","\","/","all")>
+		<cfset pathSep = "/">
+	</cfif>
+	
+	<cfif Right(application.config.general.archivedirectory,1) NEQ pathSep>
+		<cfset application.config.general.archivedirectory = "#application.config.general.archivedirectory##pathSep#">
 	</cfif>
 
-	<cfset stLocal.directoryToCheck = ListDeleteAt(application.config.general.archivedirectory,ListLen(application.config.general.archivedirectory,"\"),"\")>
-	<cfset stLocal.directoryNameToCheck = ListLast(application.config.general.archivedirectory,"\")>
-
+		<cfset stLocal.directoryToCheck = ListDeleteAt(application.config.general.archivedirectory,ListLen(application.config.general.archivedirectory,pathSep),pathSep)>
+		<cfset stLocal.directoryNameToCheck = ListLast(application.config.general.archivedirectory,pathSep)>
+	
 	<!--- create archive directorys if needed --->
 	<cfdirectory action="list" directory="#stLocal.directoryToCheck#" name="stLocal.qDirectory" filter="#stLocal.directoryNameToCheck#">
 
@@ -78,15 +76,13 @@ type properties
 		<!--- struct to hold the information on where to move files to --->
 		<cfset stLocal.stFile = StructNew()>
 
-		<cfset application.config.general.archivedirectory = replaceNoCase("#application.config.general.archivedirectory#","/","\","all")>
-
 		<cfdirectory action="list" directory="#application.config.general.archivedirectory#" name="stLocal.qDirectory" filter="#stLocal.stObj.typename#">
 		<!--- create a files directory --->
 		<cfif stLocal.qDirectory.recordcount EQ 0>
-			<cfdirectory action="create" directory="#application.config.general.archivedirectory#/#stLocal.stObj.typename#">
+			<cfdirectory action="create" directory="#application.config.general.archivedirectory##pathSep##stLocal.stObj.typename#">
 		</cfif>
 
-		<cfset stLocal.stFile.destinationDir = "#application.config.general.archivedirectory##stLocal.stObj.typename#/">
+		<cfset stLocal.stFile.destinationDir = "#application.config.general.archivedirectory##stLocal.stObj.typename##pathSep#">
 				
 		<!--- check if item is part of library, if so then move a copy as others may reference it --->
 		<cfif structKeyExists(stLocal.stObj,"bLibrary") AND stLocal.stObj.bLibrary EQ 1>
@@ -99,7 +95,7 @@ type properties
 			<!--- archive file --->
 			<cfcase value="dmFile">
 				<cfif StructKeyExists(application.config.file,"archivefiles") AND application.config.file.archivefiles EQ "true">
-					<cfset stLocal.stFile.sourceDir = "#application.path.project#/www/files/">
+					<cfset stLocal.stFile.sourceDir = "#application.path.project##pathSep#www#pathSep#files#pathSep#">
 					<cfset stLocal.stFile.sourceFileName = "#stLocal.stObj.fileName#">
 					<cfset stLocal.stFile.destinationFileName = "#stLocal.stProps.archiveID#.#ListLast(stLocal.stFile.sourceFileName,'.')#">
 					<cfset stLocal.fReturnStruct = fMoveFile(stLocal.stFile)>
@@ -110,19 +106,19 @@ type properties
 			<cfcase value="dmimage">
 				<cfif StructKeyExists(application.config.image,"archivefiles") AND application.config.file.archivefiles EQ "true">
 					<!--- default image --->
-					<cfset stLocal.stFile.sourceDir = "#stLocal.stObj.originalImagePath#/">
+					<cfset stLocal.stFile.sourceDir = "#stLocal.stObj.originalImagePath##pathSep#">
 					<cfset stLocal.stFile.sourceFileName = "#stLocal.stObj.imageFile#">
 					<cfset stLocal.stFile.destinationFileName = "#stLocal.stProps.archiveID#_default.#ListLast(stLocal.stFile.sourceFileName,'.')#">
 					<cfset stLocal.fReturnStruct = fMoveFile(stLocal.stFile)>
 		
 					<!--- thumbnail image --->
-					<cfset stLocal.stFile.sourceDir = "#stLocal.stObj.thumbnailImagePath#/">
+					<cfset stLocal.stFile.sourceDir = "#stLocal.stObj.thumbnailImagePath##pathSep#">
 					<cfset stLocal.stFile.sourceFileName = "#stLocal.stObj.thumbnail#">
 					<cfset stLocal.stFile.destinationFileName = "#stLocal.stProps.archiveID#_thumb.#ListLast(stLocal.stFile.sourceFileName,'.')#">
 					<cfset stLocal.fReturnStruct = fMoveFile(stLocal.stFile)>
 		
 					<!--- optimised image --->				
-					<cfset stLocal.stFile.sourceDir = "#stLocal.stObj.optimisedImagePath#/">
+					<cfset stLocal.stFile.sourceDir = "#stLocal.stObj.optimisedImagePath##pathSep#">
 					<cfset stLocal.stFile.sourceFileName = "#stLocal.stObj.optimisedImage#">
 					<cfset stLocal.stFile.destinationFileName = "#stLocal.stProps.archiveID#_optimised.#ListLast(stLocal.stFile.sourceFileName,'.')#">
 					<cfset stLocal.fReturnStruct = fMoveFile(stLocal.stFile)>
@@ -232,6 +228,7 @@ type properties
 	<cfargument name="stFile" required="yes" type="struct">
 
 	<cfset var stLocal = StructNew()>
+	<cfset var pathSep = "\"><!--- windows by default --->
 	<cfset stLocal.stFile = StructCopy(arguments.stFile)>
 
 	<!---
@@ -239,19 +236,26 @@ type properties
 					destinationdir		=	destination directory
 					sourceFilename		=	file to copy
 					destinationFilename	=	file name which to rename it to
+					
+	TODO: need to be reviewed originally with nothing in the catch block - pt
 	--->
 
 	<cftry>
-
 		<!--- extra precautions to check that directory is correct --->
- 		<cfset stLocal.stFile.sourceDir = replaceNoCase("#stLocal.stFile.sourceDir#","/","\","all")>
-		<cfset stLocal.stFile.destinationdir = replaceNoCase("#stLocal.stFile.destinationdir#","/","\","all")>
-
-		<cfif right(stLocal.stFile.sourceDir,1) NEQ "\">
-			<cfset stLocal.stFile.sourceDir = stLocal.stFile.sourceDir & "\">
+		<cfif left(stLocal.stFile.sourceDir,1) neq "/"><!--- not *nix path --->
+			<cfset stLocal.stFile.sourceDir = replaceNoCase("#stLocal.stFile.sourceDir#","/","\","all")>
+			<cfset stLocal.stFile.destinationdir = replaceNoCase("#stLocal.stFile.destinationdir#","/","\","all")>
+		<cfelse>
+			<cfset stLocal.stFile.sourceDir = replaceNoCase("#stLocal.stFile.sourceDir#","\","/","all")>
+			<cfset stLocal.stFile.destinationdir = replaceNoCase("#stLocal.stFile.destinationdir#","\","/","all")>
+			<cfset pathSep = "/">
 		</cfif>
-		<cfif right(stLocal.stFile.destinationdir,1) NEQ "\">
-			<cfset stLocal.stFile.destinationdir = stLocal.stFile.destinationdir & "\">
+
+		<cfif right(stLocal.stFile.sourceDir,1) NEQ pathSep>
+			<cfset stLocal.stFile.sourceDir = stLocal.stFile.sourceDir & pathSep>
+		</cfif>
+		<cfif right(stLocal.stFile.destinationdir,1) NEQ pathSep>
+			<cfset stLocal.stFile.destinationdir = stLocal.stFile.destinationdir & pathSep>
 		</cfif>
 
 		<cfif fileExists("#stLocal.stFile.sourceDir##stLocal.stFile.sourceFilename#")>
@@ -264,6 +268,8 @@ type properties
 		</cfif>
 
 		<cfcatch type="any">
+			<cfoutput>dmArchive: Error in fMoveFile method call </cfoutput>
+			<cfdump var="#cfcatch#">
 		</cfcatch>
 	</cftry>
 
