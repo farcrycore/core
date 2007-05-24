@@ -45,7 +45,12 @@
 		<cfset var result = structNew() />
 		<cfset var SQLArray = generateDeploymentSQLArray(fields) />
 		<cfset var local = structNew() />
-		<cfset local.dbowner = left( arguments.dbowner, len(arguments.dbowner) - 1) >
+		
+		<cfif arguments.dbowner is not ""> 
+			<cfset local.dbowner = left( arguments.dbowner, len(arguments.dbowner) - 1) />
+		<cfelse> 
+			<cfset local.dbowner = application.dbowner />
+		</cfif> 
 
     <cfset result.bSuccess = true />
 
@@ -102,8 +107,14 @@
 		<cfset var SQLArray  = generateDeploymentSQLArray(arguments.fields) />
 		<cfset var SQL       = "" />
 		<cfset var local     = structNew() />
-		<cfset local.dbowner     = left(arguments.tablename, find(".",arguments.tablename) - 1) />
-		<cfset local.tablename   = right(arguments.tablename, len(arguments.tablename) - find(".",arguments.tablename)  )/>
+				
+		<cfif find(".",arguments.tablename) is not 0> 
+			<cfset local.dbowner = left(arguments.tablename, find(".",arguments.tablename) - 1) />
+			<cfset local.tablename = listLast(arguments.tablename,".") /> 
+		<cfelse> 
+			<cfset local.dbowner = "" />
+			<cfset local.tablename = arguments.tablename> 
+		</cfif> 
 
 		<cfif arguments.bDropTable>
 			<cfquery name="local.qryTableExists2" datasource="#variables.dsn#">
