@@ -51,7 +51,7 @@
 							plugins : "table,advhr,farcrycontenttemplates,advimage,advlink,preview,zoom,searchreplace,print,contextmenu,paste,directionality,fullscreen",		<!--- farcryimage --->
 							theme_advanced_buttons2_add : "separator,farcrycontenttemplates",
 							theme_advanced_buttons3_add_before : "tablecontrols,separator",			
-							theme_advanced_buttons3_add : "separator,fullscreen,pasteword",				
+							theme_advanced_buttons3_add : "separator,fullscreen,pasteword,pastetext",				
 							theme_advanced_toolbar_location : "top",
 							theme_advanced_toolbar_align : "left",
 							theme_advanced_path_location : "bottom",
