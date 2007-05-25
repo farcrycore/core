@@ -1,6 +1,10 @@
 <cfcomponent name="coapiadmin">
 
+
 <cffunction name="init" access="public" output="false" hint="Initialise component." returntype="coapiadmin">
+	
+	<cfset variables.qIncludedObjects = initializeIncludes() />
+	
 	<cfreturn this />
 </cffunction>
 
@@ -429,7 +433,9 @@
 		</cfif>
 		
 		<cfreturn result />
-	</cffunction>	
+	</cffunction>
+	
+		
 	<cffunction name="getWebskinAuthor" returntype="string" access="public" output="false" hint="">
 		<cfargument name="typename" type="string" required="false" />
 		<cfargument name="template" type="string" required="false" />
@@ -484,5 +490,200 @@
 		
 		<cfreturn result />
 	</cffunction>
+
+
+	<cffunction name="getIncludes" returntype="query" access="public" output="false" hint="Returns a query of all available included objects. Search through project first, then any library's that have been included.">
+		
+		<cfreturn variables.qIncludedObjects />
+
+	</cffunction>
+	
+	<cffunction name="initializeIncludes" returntype="query" access="public" output="false" hint="Returns a query of all available included objects. Search through project first, then any library's that have been included.">
+	
+		<cfset var qResult=queryNew("name,directory,size,type,datelastmodified,attributes,mode") />
+		<cfset var qLibResult=queryNew("name,directory,size,type,datelastmodified,attributes,mode") />
+		<cfset var qCoreResult=queryNew("name,directory,size,type,datelastmodified,attributes,mode") />
+		<cfset var qDupe=queryNew("name,directory,size,type,datelastmodified,attributes,mode") />
+		<cfset var includePath = "#application.path.project#/includedObj" />
+		<cfset var library="" />
+		<cfset var col="" />
+		<cfset var includeDisplayName = "" />
+		<cfset var includeAuthor = "" />
+		<cfset var includeDescription = "" />
+		<cfset var includeHashURL = "" />
+		<cfset var includeFilePath = "" />
+
+
+			<!--- check project includes --->
+			<cfif directoryExists(includePath)>
+				<cfdirectory action="list" directory="#includePath#" name="qResult" recurse="true" sort="asc" />
+				
+				<cfquery name="qResult" dbtype="query">
+					SELECT *
+					FROM qResult
+					WHERE lower(qResult.name) LIKE '%.cfm'
+				</cfquery>
+				
+			</cfif>
+	
+			<!--- check library includes --->
+			<cfif structKeyExists(application, "plugins") and Len(application.plugins)>
+	
+				<cfloop list="#application.plugins#" index="library">
+					<cfset includepath=ExpandPath("/farcry/plugins/#library#/includedObj") />
+					
+					<cfif directoryExists(includepath)>
+						<cfdirectory action="list" directory="#includePath#" name="qLibResult" sort="asc" />
+	
+						<cfquery name="qLibResult" dbtype="query">
+							SELECT *
+							FROM qLibResult
+							WHERE lower(qLibResult.name) LIKE '%.cfm'
+						</cfquery>
+						
+						<cfloop query="qLibResult">
+							<cfquery dbtype="query" name="qDupe">
+							SELECT *
+							FROM qResult
+							WHERE name = '#qLibResult.name#'
+							</cfquery>
+							
+							<cfif NOT qDupe.Recordcount>
+								<cfset queryaddrow(qresult,1) />
+								<cfloop list="#qlibresult.columnlist#" index="col">
+									<cfset querysetcell(qresult, col, qlibresult[col][qLibResult.currentrow]) />
+								</cfloop>
+							</cfif>
+							
+						</cfloop>
+					</cfif>	
+					
+				</cfloop>
+				
+			</cfif>
+			
+			
+			
+			
+			<!--- ORDER AND SET DISPLAYNAME FOR COMBINED include RESULTS --->		
+	 		<cfquery dbtype="query" name="qResult">
+			SELECT *, name as displayname,  name as methodname, 'anonymous' as author, '' as description, '' as path
+			FROM qResult
+			ORDER BY name
+			</cfquery>
+
+			<cfoutput query="qResult">				
+
+				<!--- Strip the .cfm from the filename --->
+				<cfset querysetcell(qresult, 'methodname', ReplaceNoCase(qResult.name, '.cfm', '','ALL'), qResult.currentRow) />	
+
+				<!--- See if the DisplayName is defined in the include and if so, replace displayName field in the query. --->
+				<cfset includeDisplayName = getincludeDisplayname(template="#qResult.name#", directory="#qResult.directory#") />
+				<cfif len(includeDisplayName)>
+					<cfset querysetcell(qresult, 'displayname', includeDisplayName, qResult.currentRow) />			
+				</cfif>	
+				
+				<!--- See if the Author is defined in the include and if so, replace author field in the query. --->
+				<cfset includeAuthor = getincludeAuthor(template="#qResult.name#", directory="#qResult.directory#") />
+				<cfif len(includeAuthor)>
+					<cfset querysetcell(qresult, 'author', includeAuthor, qResult.currentRow) />			
+				</cfif>	
+				
+				<!--- See if the description is defined in the include and if so, replace author field in the query. --->
+				<cfset includeDescription = getincludeDescription(template="#qResult.name#", directory="#qResult.directory#") />
+				<cfif len(includeDescription)>
+					<cfset querysetcell(qresult, 'description', includeDescription, qResult.currentRow) />			
+				</cfif>	
+				
+				
+				<!--- See if the description is defined in the include and if so, replace author field in the query. --->
+				<cfset includeFilePath = getincludePath(template="#qResult.name#", directory="#qResult.directory#") />
+				<cfif len(includeFilePath)>
+					<cfset querysetcell(qresult, 'Path', includeFilePath, qResult.currentRow) />								
+				</cfif>
+			</cfoutput>
+
+		
+		<cfreturn qresult />
+	</cffunction>
+	
+	
+	<cffunction name="getIncludeDisplayname" returntype="string" access="public" output="false" hint="">
+		<cfargument name="template" type="string" required="true" />
+		<cfargument name="directory" type="string" required="true" />
+	
+		<cfset var result = "" />
+		<cfset var pos = "" />
+		<cfset var count = "" />
+		
+		<cfif fileExists("#arguments.directory#/#arguments.template#")>
+			<cffile action="READ" file="#arguments.directory#/#arguments.template#" variable="template">
+		
+			<cfset pos = findNoCase('@@displayname:', template)>
+			<cfif pos GT 0>
+				<cfset pos = pos + 14>
+				<cfset count = findNoCase('--->', template, pos)-pos>
+				<cfset result = trim(listLast(mid(template,  pos, count), ":"))>
+			</cfif>	
+		</cfif>
+		
+		<cfreturn result />
+	</cffunction>
+		
+	<cffunction name="getIncludePath" returntype="string" access="public" output="false" hint="Returns the cfmapping path to an include. Search through project first, then any library's that have been included.">
+		<cfargument name="template" type="string" required="true" />
+		<cfargument name="directory" type="string" required="true" />
+		
+		<cfset var result = "" />
+		<cfset var includePath = "#arguments.directory#/#arguments.template#" />
+	
+		<cfset includePath = replaceNoCase(includePath, expandPath("/farcry"), "/farcry") />
+		
+		<cfreturn includePath>
+		
+	</cffunction>
+	
+		
+	<cffunction name="getincludeAuthor" returntype="string" access="public" output="false" hint="">
+		<cfargument name="template" type="string" required="true" />
+		<cfargument name="directory" type="string" required="true" />
+		
+		<cfset var result = "" />
+		<cfset var includePath = "#arguments.directory#/#arguments.template#" />
+		
+		<cffile action="READ" file="#includePath#" variable="template">
+	
+		<cfset pos = findNoCase('@@author:', template)>
+		<cfif pos GT 0>
+			<cfset pos = pos + 9>
+			<cfset count = findNoCase('--->', template, pos)-pos>
+			<cfset result = trim(listLast(mid(template,  pos, count), ":"))>
+		</cfif>
+		
+		<cfreturn result />
+	</cffunction>
+	
+	<cffunction name="getincludeDescription" returntype="string" access="public" output="false" hint="">
+		<cfargument name="template" type="string" required="true" />
+		<cfargument name="directory" type="string" required="true" />
+		
+		<cfset var result = "" />
+		<cfset var includePath = "#arguments.directory#/#arguments.template#" />
+
+		<cffile action="READ" file="#includePath#" variable="template">
+	
+		<cfset pos = findNoCase('@@description:', template)>
+		<cfif pos GT 0>
+			<cfset pos = pos + 14>
+			<cfset count = findNoCase('--->', template, pos)-pos>
+			<cfset result = trim(listLast(mid(template,  pos, count), ":"))>
+		</cfif>	
+
+		
+		<cfreturn result />
+	</cffunction>
+
+
+
 
 </cfcomponent>

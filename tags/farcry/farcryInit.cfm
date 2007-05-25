@@ -185,6 +185,11 @@ $in: objectid -- $
 				<cfset application.stPlugins = structNew() />
 				
 				
+				
+				<!--- INITIALISE THE COAPIADMIN SINGLETON --->
+				<cfset application.coapi.coapiadmin = createObject("component", "farcry.core.packages.coapi.coapiadmin").init() />
+	
+	
 				<!--- CALL THE PROJECTS SERVER SPECIFIC VARIABLES. --->
 				<cfinclude template="/farcry/projects/#attributes.projectDirectoryName#/config/_serverSpecificVars.cfm" />
 				

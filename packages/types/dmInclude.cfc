@@ -77,20 +77,13 @@ type properties
 	<cfset var qDir = queryNew("blah") />
 	<cfset var includeAlias = "" />
 	
+	<cfset var qIncludes = application.coapi.coapiadmin.getIncludes() />
 	
-	<cfif NOT directoryExists(includePath)>
-		<cfdirectory action="create" directory="#includePath#" /> 
-	</cfif>
-	
-	<cfdirectory directory="#includePath#" name="qDir" filter="*.cfm" sort="name">
-
-	<cfloop query="qDir">
-		<cfif qDir.name neq "_donotdelete.cfm">
-			<cfset includeAlias = left(qDir.name, len(qDir.name)-4)>			
-			<cfset returnList = listAppend(returnList, "#qDir.name#:#includeAlias#") />
-		</cfif>
+	<cfloop query="qIncludes">	
+		<cfset includeAlias = left(qIncludes.name, len(qIncludes.name)-4)>			
+		<cfset returnList = listAppend(returnList, "#qIncludes.PATH#:#qIncludes.displayName#") />
 	</cfloop>
-	
+
 	<cfreturn returnList>	
 </cffunction>
 	
