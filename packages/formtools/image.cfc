@@ -219,12 +219,14 @@
 			</cfif>
 			<cfif NOT DirectoryExists("#application.path.mediaArchive##arguments.stMetadata.ftDestination#")>
 				<cfdirectory action="create" directory="#application.path.mediaArchive##arguments.stMetadata.ftDestination#">
+			</cfif>	
+		 	<cfif fileExists("#application.path.imageRoot##FORM['#stMetadata.FormFieldPrefix##stMetadata.Name#Delete']#")>
+			 	
+			 	<cffile 
+				   action = "move"
+				   source = "#application.path.imageRoot##FORM['#stMetadata.FormFieldPrefix##stMetadata.Name#Delete']#"
+				   destination = "#application.path.mediaArchive##arguments.stMetadata.ftDestination#/#arguments.objectid#-#DateDiff('s', 'January 1 1970 00:00', now())#-#listLast(FORM['#stMetadata.FormFieldPrefix##stMetadata.Name#Delete'], '/')#">
 			</cfif>
-						
-		 	<cffile 
-			   action = "move"
-			   source = "#application.path.imageRoot##FORM['#stMetadata.FormFieldPrefix##stMetadata.Name#Delete']#"
-			   destination = "#application.path.mediaArchive##arguments.stMetadata.ftDestination#/#arguments.objectid#-#DateDiff('s', 'January 1 1970 00:00', now())#-#listLast(FORM['#stMetadata.FormFieldPrefix##stMetadata.Name#Delete'], '/')#">
 
 		</cfif>
 				
@@ -236,21 +238,31 @@
 				<!--- This means there is currently a file associated with this object. We need to override this file --->
 				
 				<cfset uploadFileName = listLast(FORM["#stMetadata.FormFieldPrefix##stMetadata.Name#"], "/") />
+		 	
+		 	
+				<!--- MOVE THE OLD FILE INTO THE ARCHIVE --->
+		 		<cfif fileExists("#application.path.imageRoot##arguments.stMetadata.ftDestination#/#uploadFileName#")>
+				 	<cffile 
+					   action = "move"
+					   source = "#application.path.imageRoot##arguments.stMetadata.ftDestination#/#uploadFileName#"
+					   destination = "#application.path.mediaArchive##arguments.stMetadata.ftDestination#/#arguments.objectid#-#DateDiff('s', 'January 1 1970 00:00', now())#-#uploadFileName#">
+				</cfif>
+		
 				
-				<cffile action="UPLOAD"
+				<cffile
+					action="upload"
 					filefield="#stMetadata.FormFieldPrefix##stMetadata.Name#New" 
 					destination="#application.path.imageRoot##arguments.stMetadata.ftDestination#/#uploadFileName#"		        	
 					nameconflict="Overwrite">
-				
+								
 			<cfelse>
 				<!--- There is no image currently so we simply upload the image and make it unique  --->
-				<cffile action="UPLOAD"
+				<cffile action="upload"
 					filefield="#stMetadata.FormFieldPrefix##stMetadata.Name#New" 
 					destination="#application.path.imageRoot##arguments.stMetadata.ftDestination#"		        	
 					nameconflict="MakeUnique">
 			</cfif>
 	
-			
 				
 				<cfif len(arguments.stMetaData.ftImageWidth) OR len(arguments.stMetaData.ftImageHeight)>
 					<cfset stGeneratedImageArgs.Source = "#application.path.imageRoot##arguments.stMetadata.ftDestination#/#File.ServerFile#" />
@@ -265,6 +277,7 @@
 					</cfif>
 					<cfset stGeneratedImageArgs.AutoGenerateType = "#arguments.stMetadata.ftAutoGenerateType#" />
 					<cfset stGeneratedImageArgs.PadColor = "#arguments.stMetadata.ftPadColor#" />
+
 
 					<cfset stGeneratedImage = GenerateImage(Source="#stGeneratedImageArgs.Source#", Destination="#stGeneratedImageArgs.Destination#", Width="#stGeneratedImageArgs.Width#", Height="#stGeneratedImageArgs.Height#", AutoGenerateType="#stGeneratedImageArgs.AutoGenerateType#", PadColor="#stGeneratedImageArgs.PadColor#") />
 					
@@ -282,7 +295,6 @@
 			
 		</cfif>
 		
-
 	
 <!--- 		 --->
 		<!--- ----------------- --->
