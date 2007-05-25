@@ -99,7 +99,19 @@ todo: 	versioning object will be deprecated..
 		<cfset request.externalLinkNavid = stObj.objectid>
 		
 		
-    </cfif>
+    </cfif>	
+
+	<!--- CHECK TO SEE IF NAV NODE IS IN DRAFT --->
+	<cfif stObj.status EQ "draft">
+		
+		<!--- If the current user is not permitted to see draft objects, then make them login --->
+	   	<cfif NOT ListContains(request.mode.lValidStatus, stObj.status)>
+
+			<!--- send to login page and return in draft mode --->
+			<cflocation url="#application.url.farcry#/login.cfm?returnUrl=#URLEncodedFormat(cgi.script_name&'?'&cgi.query_string)#&error=draft&showdraft=1" addtoken="No">
+
+		</cfif>
+	</cfif>
 
     <cfif structKeyExists(stObj,"aObjectIds")
 	      AND arrayLen(stObj.aObjectIds)>
