@@ -32,11 +32,12 @@ $out:$
 	<cfset var stTmp = structNew()>
 	<cfset var stReturn = structNew()>
 	<cfset var sql = ''>
-	<cfset var q = ''>
+	<cfset var q = queryNew("blah")>
 	<cfset var oldleft = ''>
 	<cfset var typename = ''>
 	<cfset var nLeftSql = ''>
-	<cfset var qNLeft = ''>
+	<cfset var qNLeft = queryNew("blah")>
+	<cfset var qNRight = queryNew("blah")>
 	<cfset var count = ''>
 	<cfinclude template="_tree/deleteBranch.cfm">
 	<cfreturn stReturn>
@@ -65,15 +66,16 @@ $out:$
 	<cfargument name="nLevel" required="no" type="numeric">
 	<cfargument name="dbowner" required="no" type="string" default="#application.dbowner#">
 	<cfset var parentID = ''>
-	<cfset var qnode = ''>
+	<cfset var qnode = queryNew("blah")>
 	<cfset var rowindex = 1>
-	<cfset var qParentIDs = ''>
+	<cfset var qParentIDs = queryNew("blah")>
 	<cfset var sql = ''>
 	<cfset var ancestors = ''>
 	<cfset var q = ''>
 	<cfset var objID = ''>
 	<cfset var nLev = -1>
-	<cfset var qSelf = ''>
+	<cfset var qSelf = queryNew("blah")>
+	<cfset var qReturn = queryNew("blah")>
 	<cfinclude template="_tree/getAncestors.cfm">
 	<cfreturn qReturn>
 </cffunction>
@@ -83,8 +85,8 @@ $out:$
 	<cfargument name="objectid" required="yes" type="UUID">
 	<cfargument name="dbowner" required="no" type="string" default="#application.dbowner#">
 	<cfset var sql = ''>
-	<cfset var qChildren = ''>
-	<cfset var qReturn = ''>
+	<cfset var qChildren = queryNew("blah")>
+	<cfset var qReturn = queryNew("blah")>
 	<cfinclude template="_tree/getChildren.cfm">
 	<cfreturn qReturn>
 </cffunction>
@@ -184,10 +186,10 @@ $out:$
     <cfargument name="bHideEmptyNodes" required="false" type="boolean" hint="Hides empty nodes from results." default="0" />
     <cfargument name="l404Check" required="false" type="string" default="externalLink,dmHTML,dmLink,dmInclude,dmFlash,dmImage,dmFile" />
     <cfargument name="dbowner" required="false" type="string" default="#application.dbowner#" />
-	<cfset var qreturn = "" />
+	<cfset var qreturn = queryNew("blah") />
     <cfset var sql = structNew() />
     <cfset var nlevel = 0 /> <!--- unlikely that we should ever have a table this deep --->
-    <cfset var q = '' />
+    <cfset var q = queryNew("blah") />
     <cfset var i = 1 />
     <cfset var columns = "" />
 	<cfset var stLocal = StructNew()>
@@ -277,9 +279,9 @@ $out:$
 	<cfargument name="lColumns" required="no" type="string" default="">
 	<cfargument name="aFilter" required="no" type="array" default="#arrayNew(1)#">
 	<cfargument name="bIncludeSelf" required="no" type="boolean" default="0" hint="set this to 1 if you want to include the objectid you are passing">
-	<cfset var qParent = ''>
+	<cfset var qParent = queryNew("blah")>
 	<cfset var temp = ''>
-	<cfset var qReturn = ''>
+	<cfset var qReturn = queryNew("blah")>
 	<cfinclude template="_tree/getSiblings.cfm">
 	<cfreturn qReturn>
 </cffunction>
@@ -297,14 +299,14 @@ $out:$
 	<cfargument name="dsn" required="yes" type="string" default="#application.dsn#">
 	<cfargument name="objectid" required="yes" type="UUID">
 	<cfargument name="dbowner" required="false" type="string" default="#application.dbowner#">
-	<cfset var q = ''>
+	<cfset var q = queryNew("blah")>
 	<cfset var nlevel = ''>
 	<cfset var sql = ''>
 	<cfset var nleft = ''>
 	<cfset var nright = ''>
-	<cfset var qReturn = ''>
+	<cfset var qReturn = queryNew("blah")>
 	<cfset var leaf = ''>
-	<cfset var qParent = ''>
+	<cfset var qParent = queryNew("blah")>
 	<cfset var parent = ''>
 	<cfset var grandpa = ''>
 	<cfset var secondaryNav = ''>
@@ -324,7 +326,7 @@ $out:$
 	<cfargument name="objectid" type="string" required="true">
 	<cfargument name="dsn" required="false" default="#application.dsn#">
 	<cfargument name="dbowner" required="false" type="string" default="#application.dbowner#">
-	<cfset var q = ''>
+	<cfset var q = queryNew("blah")>
 	<cfquery datasource="#arguments.dsn#" name="q">
 		select parentid from #arguments.dbowner#nested_tree_objects
     	where objectid  = '#arguments.objectid#'
@@ -336,8 +338,8 @@ $out:$
 	<cfargument name="typename" required="yes" type="string">
 	<cfargument name="dbowner" required="false" type="string" default="#application.dbowner#">
 	
-	<cfset var qRoot = ''>
-	<cfset var qReturn = ''>
+	<cfset var qRoot = queryNew("blah")>
+	<cfset var qReturn = queryNew("blah")>
 	<cfinclude template="_tree/getRootNode.cfm">
 	<cfreturn qReturn>
 </cffunction>
@@ -360,9 +362,9 @@ $out:$
 	<cfset var minr = 1>
 	<cfset var nleft = ''>
 	<cfset var nright = ''>
-	<cfset var q = ''>
-	<cfset var qChildren = ''>
-	<cfset var qTemp = ''>
+	<cfset var q = queryNew("blah")>
+	<cfset var qChildren = queryNew("blah")>
+	<cfset var qTemp = queryNew("blah")>
 	<cfset var rowindex = 1>
 	<cfset var stTmp = structNew()>
 	<cfset var stReturn = structNew()>
@@ -378,7 +380,7 @@ $out:$
 	<cfargument name="objectid" required="true" type="uuid">
     <cfargument name="dsn" required="no" type="string" default="#application.dsn#">
 	<cfargument name="dbowner" required="no" type="string" default="#application.dbowner#">
-	<cfset var q = ''>
+	<cfset var q = queryNew("blah")>
 	<cfset var sql = ''>
 	<cfset var objCount = 0>
 	<cfscript>
@@ -394,7 +396,7 @@ $out:$
     <cfargument name="dsn" required="false" type="string" default="#application.dsn#">
 	<cfargument name="dbowner" required="false" type="string" default="#application.dbowner#">
 	<cfset var bRootNodeExists = false>
-	<cfset var q = ''>
+	<cfset var q = queryNew("blah")>
 	<cfset var sql = ''>
 	<cfscript>
 	bRootNodeExists = false;
@@ -437,8 +439,8 @@ $out:$
 	<cfset var stTmp = structNew()>
 	<cfset var stReturn = structNew()>
 	<cfset var sql = ''>
-	<cfset var q = ''>
-	<cfset var qNrightSeq = ''>
+	<cfset var q = queryNew("blah")>
+	<cfset var qNrightSeq = queryNew("blah")>
 	<cfset var minr = 1>
 	<cfset var maxr = ''>
 	<cfset var plevel = ''>
@@ -459,9 +461,9 @@ $out:$
 	<cfset var stTmp = structNew()>
 	<cfset var stReturn = structNew()>
 	<cfset var sql = ''>
-	<cfset var q = ''>
+	<cfset var q = queryNew("blah")>
 	<cfset var tempsql = ''>
-	<cfset var tempResult = ''>
+	<cfset var tempResult = queryNew("blah")>
 	<cfset var pleft = ''>
 	<cfset var plevel = ''>
 
@@ -478,11 +480,11 @@ $out:$
 	<cfargument name="typename" required="yes" type="string">
 	<cfargument name="dbowner" required="no" type="string" default="#application.dbowner#">
 
-	<cfset var qChildren = ''>
+	<cfset var qChildren = queryNew("blah")>
 	<cfset var stTmp = structNew()>
 	<cfset var stReturn = structNew()>
 	<cfset var sql = ''>
-	<cfset var q = ''>
+	<cfset var q = queryNew("blah")>
 	<cfset var maxr = ''>
 	<cfset var plevel = ''>
 
@@ -502,10 +504,10 @@ $out:$
 	<cfargument name="dbowner" required="yes" type="string" default="#application.dbowner#">
 	
 	<cfset var sql = ''>
-	<cfset var q = ''>
+	<cfset var q = queryNew("blah")>
 	<cfset var vlObjectID = ''>
 	<cfset var bloodline = ''>
-	<cfset var qReturn = ''>
+	<cfset var qReturn = queryNew("blah")>
 
 	<cfinclude template="_tree/getBloodLine.cfm">
 	<cfreturn qReturn>
@@ -516,7 +518,7 @@ $out:$
 	<cfargument name="dsn" required="yes" type="string" default="#application.dsn#">
 	<cfargument name="dbowner" required="false" type="string" default="#application.dbowner#">
 	
-	<cfset var q=0>
+	<cfset var q=queryNew("blah")>
 	<cfset var aObjs = arraynew(1)>
 	<cfset var stObj = structnew()>
 	<cfquery datasource="#arguments.dsn#" name="q">
@@ -540,7 +542,7 @@ $out:$
 	<cfargument name="typename" required="yes" type="string" default="dmNavigation">
 	<cfargument name="dsn" required="yes" type="string" default="#application.dsn#">
 	<cfargument name="dbowner" required="false" type="string" default="#application.dbowner#">
-	<cfset var qRootNode = ''>
+	<cfset var qRootNode = queryNew("blah")>
 	<cfset var nNodes = 1>
 	
 	<cfquery name="qRootNode" datasource="#application.dsn#">
@@ -572,7 +574,7 @@ $out:$
 	<cfset var nNewLeft = 0>
 	<cfset var nReturn = "">
 	
-	<cfset var qChildren = ''>
+	<cfset var qChildren = queryNew("blah")>
 
 	<cfset arguments.dsn = "#application.dsn#">
 
