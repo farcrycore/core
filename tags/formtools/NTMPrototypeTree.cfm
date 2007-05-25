@@ -230,10 +230,7 @@
 			<!--- // write the link --->
 			<cfset node = oPrototypeTree.nodeicon(id='#attributes.id#', NodeID='#NodeID#',text='#qNav.ObjectName#',level='#ul#', value='#qNav.objectID#', openIcon='#openIcon#',closedIcon='#closedIcon#', bAllowSelection='#bAllowSelection#', lSelectedItems='#attributes.lSelectedItems#',stLevelSpacerIcon='#levelSpacerIcon#', state='#state#',bSelectMultiple=attributes.bSelectMultiple) />
 			
-			<cfoutput>
-				#node#
-				<div id="#NodeID#_wrap_content" class="node_wrap_content" <cfif state EQ "closed"> style="display:none;" </cfif> > 
-			</cfoutput>
+			<cfoutput>#node#<div id="#NodeID#_wrap_content" class="node_wrap_content" <cfif state EQ "closed"> style="display:none;" </cfif> ></cfoutput>
 			
 			<!--- <cfoutput> ><a href="#href#">#trim(qNav.ObjectName)#</a> </cfoutput> --->
 			
