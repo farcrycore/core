@@ -51,6 +51,6 @@ function popUpWindow(URLStr, left, top, width, height)
 <cfoutput>
 <cfset Attributes.label = reReplaceNoCase(attributes.label,"$*.*_","")>
 <div class="container-edit">
-	<a href="##" onclick="popUpWindow('#application.url.farcry#/navajo/container_index.cfm?containerID=#attributes.objectID#',100,200,620,550);return false;"><strong>EDIT:</strong> #attributes.label#<span class="spanner"></span></a>
+	<a href="##" onclick="popUpWindow('#application.url.farcry#/navajo/container_index.cfm?containerID=#attributes.objectID#',100,200,900,650);return false;"><strong>EDIT:</strong> #attributes.label#<span class="spanner"></span></a>
 </div>	
 </cfoutput>	
