@@ -153,6 +153,7 @@
 		<cfargument name="typename" type="string" default="#gettablename()#" hint="Typename of instance." />
 		<cfargument name="prefix" type="string" required="false" default="" hint="Prefix to filter template results." />
 		<cfargument name="bForceRefresh" type="boolean" required="false" default="false" hint="Force to reload and not use application scope." />
+		<cfargument name="excludeWebskins" type="string" required="false" default="" hint="Allows developers to exclude webskins that might be contained in plugins." />
 		
 		<cfset var qResult=queryNew("name,directory,size,type,datelastmodified,attributes,mode") />
 		<cfset var qLibResult=queryNew("name,directory,size,type,datelastmodified,attributes,mode") />
@@ -301,6 +302,13 @@
 					<cfset querysetcell(qresult, 'Path', WebskinFilePath, qResult.currentRow) />								
 				</cfif>	
 			</cfoutput>
+		</cfif>
+		
+		<cfif listLen(arguments.excludeWebskins)>
+			<cfquery dbtype="query" name="qResult" result="res">
+			SELECT * FROM qResult
+			WHERE lower(qResult.methodname) NOT IN (#listQualify(lCase(arguments.excludeWebskins), "'")#)
+			</cfquery>
 		</cfif>
 		
 		<cfreturn qresult />

@@ -883,14 +883,14 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfparam name="stReturnMetadata.bObjectBroker" default="false" />
 		<cfparam name="stReturnMetadata.lObjectBrokerWebskins" default="" />
 		<cfparam name="stReturnMetadata.ObjectBrokerWebskinTimeOut" default="1400" /> <!--- This a value in minutes (ie. 1 day) --->
-		
-		
-		<cfset stReturnMetadata.qWebskins = oCoapiAdmin.getWebskins(typename="#componentname#", bForceRefresh="true") />
+ 		<cfparam name="stReturnMetadata.excludeWebskins" default="" /> <!--- This enables projects to exclude webskins that may be contained in plugins. ---> 
+
+		<cfset stReturnMetadata.qWebskins = oCoapiAdmin.getWebskins(typename="#componentname#", bForceRefresh="true", excludeWebskins="#stReturnMetadata.excludeWebskins#") />
 		
 		<cfset qAllWebskins = stReturnMetadata.qWebskins />
 		
 		<cfloop list="#arrayToList(stReturnMetadata.aExtends)#" index="i">
-			<cfset qExtendedWebskin = oCoapiAdmin.getWebskins(typename=i, bForceRefresh="true") />
+			<cfset qExtendedWebskin = oCoapiAdmin.getWebskins(typename=i, bForceRefresh="true", excludeWebskins="#stReturnMetadata.excludeWebskins#") />
 			<cfloop query="qExtendedWebskin">
 				<cfset extendedWebskinName = qExtendedWebskin.name />
 
