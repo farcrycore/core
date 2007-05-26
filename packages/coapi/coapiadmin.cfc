@@ -170,7 +170,18 @@
 
 
 		<cfif not bForceRefresh AND isdefined("application.stcoapi.#arguments.typename#.qWebskins")>
-			<cfreturn application.stcoapi[arguments.typename].qWebskins />
+			
+			<cfset qResult = application.stcoapi[arguments.typename].qWebskins />
+			
+			<cfif len(arguments.prefix)>
+				<cfquery dbtype="query" name="qResult">
+				SELECT *
+				FROM qResult
+				WHERE lower(qResult.name) LIKE '#lCase(arguments.prefix)#%'
+				</cfquery>
+			</cfif>
+		
+			<cfreturn qResult />
 		<cfelse>
 			
 			<!--- check project webskins --->
@@ -691,7 +702,21 @@
 		<cfreturn result />
 	</cffunction>
 
+	<cffunction name="findType" access="public" output="false" returntype="string" hint="Determine the typename for an objectID. Returns empty string if object not found">
+		<cfargument name="objectid"  required="true">
+		<cfargument name="dsn" type="string" required="false" default="#application.dsn#">
+		<cfargument name="dbowner" type="string" required="false" default="#ucase(application.dbowner)#">
+		
+		<cfset var qFindType = queryNew("init") />
 
+		<cfquery datasource="#arguments.dsn#" name="qFindType">
+		select typename from #arguments.dbowner#refObjects
+		where objectID = '#arguments.objectID#'
+		</cfquery>
+		
+		<cfreturn qFindType.typename>
+		
+	</cffunction>
 
 
 </cfcomponent>
