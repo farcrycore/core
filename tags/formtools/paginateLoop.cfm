@@ -120,7 +120,7 @@ $in: objectid -- $
 				<cfsavecontent variable="ActionDropdown">
 					<cfset request.inhead.prototype = 1 />
 					<cfoutput>
-					<select name="action#variables.currentrow#" id="action#variables.currentrow#" onchange="$('SelectedObjectID#Request.farcryForm.Name#').value='#attributes.qRecordSet.objectid[variables.currentrow]#';$('FarcryFormSubmitButtonClicked#Request.farcryForm.Name#').value=this.value;submit();" style="width:100px;">
+					<select name="action#variables.currentrow#" id="action#variables.currentrow#" class="actionDropdown" onchange="$('SelectedObjectID#Request.farcryForm.Name#').value='#attributes.qRecordSet.objectid[variables.currentrow]#';$('FarcryFormSubmitButtonClicked#Request.farcryForm.Name#').value=this.value;submit();">
 						<option value="">-- action --</option>
 		
 						<option value="overview">Overview</option>
@@ -209,7 +209,7 @@ $in: objectid -- $
 			</cfif>	
 			
 			<!---------------------------------------------------
-			ONLY REQUIRE THE FOLLOWING IF CALED FROM TYPEADMIN
+			ONLY REQUIRE THE FOLLOWING IF CALLED FROM TYPEADMIN
 			 --------------------------------------------------->
 			<cfif attributes.bTypeAdmin>	
 				<cfset caller[attributes.r_stobject].select = "<input type='checkbox' name='objectid' value='#attributes.qRecordSet.objectid[variables.currentRow]#' onclick='setRowBackground(this);' class='formCheckbox' />" />
@@ -243,7 +243,7 @@ $in: objectid -- $
 				<cfsavecontent variable="ActionDropdown">
 					<cfset request.inhead.prototype = 1 />
 					<cfoutput>
-					<select name="action#variables.currentrow#" id="action#variables.currentrow#" onchange="$('SelectedObjectID#Request.farcryForm.Name#').value='#attributes.qRecordSet.objectid[variables.currentrow]#';$('FarcryFormSubmitButtonClicked#Request.farcryForm.Name#').value=this.value;submit();" style="width:100px;">
+					<select name="action#variables.currentrow#" id="action#variables.currentrow#" class="actionDropdown" onchange="$('SelectedObjectID#Request.farcryForm.Name#').value='#attributes.qRecordSet.objectid[variables.currentrow]#';$('FarcryFormSubmitButtonClicked#Request.farcryForm.Name#').value=this.value;submit();">
 						<option value="">-- action --</option>
 		
 						<option value="overview">Overview</option>

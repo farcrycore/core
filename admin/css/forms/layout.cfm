@@ -104,8 +104,8 @@ form.formtool .error p.error {margin: 0px 0px 0px 118px; width: 200px;}
 form.formtool input,
 	form.formtool textarea {margin: 0px 0px 0px 0px; padding: 1px 3px 1px 3px; width: 200px;}
 
-	form.formtool select  {margin: 0px 0px 0px 0px; padding: 1px 3px 1px 3px; width: auto;}
-	
+	form.formtool select  {margin: 0 5px 4px 0; padding: 1px 3px 1px 3px; width: auto; float: left;}
+	form.formtool select.actionDropdown  {margin: 1px 0; width:100px;}
 	
 	form.formtool textarea {height: 8.0em;}
 	form.formtool .richtext textarea {height: auto;}
@@ -184,11 +184,11 @@ input.validation-failed, textarea.validation-failed {border: 1px solid ##FF3300;
 
 /* formtool form components */
 	/* formtool input : formButton layout styles */	
-	form.formtool input.formButton {margin: 0px; padding: 0px; width: auto !important; height: 18px; vertical-align: top;}
+	form.formtool input.formButton {margin: 0 0 4px 0; padding: 0px; width: auto !important; height: 18px; vertical-align: top;}
 	/* formtool input : formCheckbox layout styles */	
 	form.formtool input.formCheckbox {margin: 0px; padding: 0px; width: 12px; height: 12px;}
 	/* formtool select layout styles */
-	form.formtool select {margin: 0px; padding: 0px; float: left; display: block;}
+	/* form.formtool select {margin: 0px; padding: 0px; float: left; display: block;} */
 
 /* formtool html button layout styles */
 	/* formtool default html button group layout styles */
