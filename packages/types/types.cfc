@@ -228,134 +228,15 @@ default handlers
 		<cfargument name="prefix" type="string" required="false" default="" hint="Prefix to filter template results." />
 		
 		<cfset var qWebskins = application.stcoapi[arguments.typename].qWebskins />
-		<cfset var qResult=queryNew("name,directory,size,type,datelastmodified,attributes,mode,displayname","varchar,varchar,integer,varchar,date,varchar,varchar,varchar") />
 		
 		<cfif len(arguments.prefix)>
-			<cfquery dbtype="query" name="qResult">
+			<cfquery dbtype="query" name="qWebskins">
 			SELECT * FROM qWebskins
 			WHERE lower(qWebskins.name) LIKE '#lCase(arguments.prefix)#%'
 			</cfquery>
 		</cfif>
 		
-		<cfreturn qResult />
-		<!--- <cfset var qResult=queryNew("name,directory,size,type,datelastmodified,attributes,mode,displayname,methodname") />
-		<cfset var qLibResult=queryNew("name,directory,size,type,datelastmodified,attributes,mode") />
-		<cfset var qCoreResult=queryNew("name,directory,size,type,datelastmodified,attributes,mode") />
-		<cfset var qDupe=queryNew("name,directory,size,type,datelastmodified,attributes,mode") />
-		<cfset var webskinPath = ExpandPath("/farcry/#application.applicationname#/webskin/#arguments.typename#") />
-		<cfset var library="" />
-		<cfset var col="" />
-		<cfset var WebskinDisplayName = "" />
-
-		<!--- check project webskins --->
-		<cfif directoryExists(webskinPath)>
-			<cfdirectory action="list" directory="#webskinPath#" name="qResult" recurse="true" sort="asc" />
-			
-			<cfquery name="qResult" dbtype="query">
-				SELECT *, name as displayname
-				FROM qResult
-				WHERE lower(qResult.name) LIKE '#lCase(arguments.prefix)#%'
-				AND lower(qResult.name) LIKE '%.cfm'
-			</cfquery>
-			
-		</cfif>
-
-		<!--- check library webskins --->
-		<cfif structKeyExists(application, "plugins") and Len(application.plugins)>
-
-			<cfloop list="#application.plugins#" index="library">
-				<cfset webskinpath=ExpandPath("/farcry/plugins/#library#/webskin/#arguments.typename#") />
-				
-				<cfif directoryExists(webskinpath)>
-					<cfdirectory action="list" directory="#webskinPath#" name="qLibResult" sort="asc" />
-
-					<cfquery name="qLibResult" dbtype="query">
-						SELECT *
-						FROM qLibResult
-						WHERE lower(qLibResult.name) LIKE '#lCase(arguments.prefix)#%'
-						AND lower(qLibResult.name) LIKE '%.cfm'
-					</cfquery>
-					
-					<cfloop query="qLibResult">
-						<cfquery dbtype="query" name="qDupe">
-						SELECT *
-						FROM qResult
-						WHERE name = '#qLibResult.name#'
-						</cfquery>
-						
-						<cfif NOT qDupe.Recordcount>
-							<cfset queryaddrow(qresult,1) />
-							<cfloop list="#qlibresult.columnlist#" index="col">
-								<cfset querysetcell(qresult, col, qlibresult[col][qLibResult.currentrow]) />
-							</cfloop>
-						</cfif>
-						
-					</cfloop>
-				</cfif>	
-				
-			</cfloop>
-			
-		</cfif>
-		
-		
-		<!--- CHECK CORE WEBSKINS --->		
-		<cfset webskinpath=ExpandPath("/farcry/core/webskin/#arguments.typename#") />
-		
-		<cfif directoryExists(webskinpath)>
-			<cfdirectory action="list" directory="#webskinPath#" name="qCoreResult" sort="asc" />
-
-			<cfquery name="qCoreResult" dbtype="query">
-				SELECT *
-				FROM qCoreResult
-				WHERE lower(qCoreResult.name) LIKE '#lCase(arguments.prefix)#%'
-				AND lower(qCoreResult.name) LIKE '%.cfm'
-			</cfquery>
-			
-			<cfloop query="qCoreResult">
-				<cfquery dbtype="query" name="qDupe">
-				SELECT *
-				FROM qResult
-				WHERE name = '#qCoreResult.name#'
-				</cfquery>
-				
-				<cfif NOT qDupe.Recordcount>
-					<cfset queryaddrow(qresult,1) />
-					<cfloop list="#qCoreResult.columnlist#" index="col">
-						<cfset querysetcell(qresult, col, qCoreResult[col][qCoreResult.currentRow]) />
-					</cfloop>
-				</cfif>
-				
-			</cfloop>
-		</cfif>	
-		
-		<!--- ORDER AND SET DISPLAYNAME FOR COMBINED WEBSKIN RESULTS --->		
- 		<cfquery dbtype="query" name="qResult">
-		SELECT *,   name as methodname
-		FROM qResult
-		ORDER BY name
-		</cfquery>
-		
-		<cfoutput query="qResult">
-			
-			<!--- Strip the .cfm from the filename --->
-			<cfset querysetcell(qresult, 'methodname', ReplaceNoCase(qResult.name, '.cfm', '','ALL'), qResult.currentRow) />	
-			
-			<!--- See if the DisplayName is defined in the webskin and if so, replace displayName field in the query. --->
-			<cfset WebskinDisplayName = getWebskinDisplayname(typename="#arguments.typename#", template="#ReplaceNoCase(qResult.name, '.cfm', '','ALL')#") />
-			<cfif len(WebskinDisplayName)>
-				<cfset querysetcell(qresult, 'displayname', WebskinDisplayName, qResult.currentRow) />			
-			</cfif>
-			<cfset querysetcell(qresult,'methodname',listfirst(qResult.methodName[qResult.currentRow],"."),qResult.currentRow)>
-		</cfoutput>
-
-		
-		<!--- resort the query now that we finally have all the information we need so that display templates are order by displayname --->
-		<cfquery name="qResult" dbtype="query">
-		SELECT * FROM qResult
-		ORDER BY DisplayName
-		</cfquery>
-		
-		<cfreturn qresult /> --->
+		<cfreturn qWebskins />
 	</cffunction>
 
 	<cffunction name="getWebskinDisplayname" returntype="string" access="public" output="false" hint="">
