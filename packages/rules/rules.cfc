@@ -155,16 +155,15 @@ $out:$
 		<cfargument name="prefix" type="string" required="false" default="" hint="Prefix to filter template results." />
 		
 		<cfset var qWebskins = application.stcoapi[arguments.typename].qWebskins />
-		<cfset var qResult=queryNew("name,directory,size,type,datelastmodified,attributes,mode,displayname","varchar,varchar,integer,varchar,date,varchar,varchar,varchar") />
 		
 		<cfif len(arguments.prefix)>
-			<cfquery dbtype="query" name="qResult">
+			<cfquery dbtype="query" name="qWebskins">
 			SELECT * FROM qWebskins
 			WHERE lower(qWebskins.name) LIKE '#lCase(arguments.prefix)#%'
 			</cfquery>
 		</cfif>
 		
-		<cfreturn qResult />
+		<cfreturn qWebskins />
 	</cffunction>
 	
 	<cffunction name="createData" access="public" returntype="any" output="false" hint="Creates an instance of an object">
