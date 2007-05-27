@@ -47,6 +47,7 @@ $in: objectid -- $
 		<cfparam name="attributes.BINCLUDEALLCOLUMNS" default="false">
 		<cfparam name="attributes.bTypeAdmin" default="true">
 		<cfparam name="attributes.stpermissions" default="#structNew()#">
+		<cfparam name="attributes.lCustomActions" default="">
 		
 		<cfif structKeyExists(application.types, attributes.typename)>
 			<cfset PrimaryPackage = application.types[attributes.typename] />
@@ -165,7 +166,11 @@ $in: objectid -- $
 							<option value="approve">Approve</option>
 						</cfif>
 						
-						
+						<cfif listLen(attributes.lCustomActions)>
+							<cfloop list="#attributes.lCustomActions#" index="i">
+								<option value="#listFirst(i, ":")#">#listLast(i, ":")#</option>
+							</cfloop>
+						</cfif>
 						<!--- <option value="delete">Delete</option> --->
 					</select>
 					</cfoutput>

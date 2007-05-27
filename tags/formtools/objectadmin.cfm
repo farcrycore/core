@@ -85,6 +85,7 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 
 <cfparam name="attributes.module" default="customlists/#attributes.typename#.cfm">
 <cfparam name="attributes.plugin" default="" />
+<cfparam name="attributes.lCustomActions" default="" />
 
 
 <cfif NOT structKeyExists(session.objectadmin, attributes.typename)>
@@ -358,7 +359,9 @@ user --->
 	
 	<ft:processForm action="overview">
 		<!--- TODO: Check Permissions. --->
-		<cflocation URL="#application.url.farcry#/edittabOverview.cfm?objectid=#form.objectid#&typename=#attributes.typename#&method=#attributes.editMethod#&ref=typeadmin&module=#attributes.module#" addtoken="false">
+		<cfset EditURL = "#application.url.farcry#/edittabOverview.cfm?objectid=#form.objectid#&typename=#attributes.typename#&method=#attributes.editMethod#&ref=typeadmin&module=#attributes.module#">
+		<cfif Len(attributes.plugin)><cfset EditURL = EditURL&"&plugin=#attributes.plugin#"></cfif>
+		<cflocation URL="#EditURL#" addtoken="false">
 	</ft:processForm>
 	
 	<ft:processForm action="edit">
@@ -735,7 +738,7 @@ user --->
 	
 	
 		
-		<ft:paginateLoop r_stObject="st" bIncludeFields="true" bIncludeObjects="false" stpermissions="#stpermissions#">
+		<ft:paginateLoop r_stObject="st" bIncludeFields="true" bIncludeObjects="false" stpermissions="#stpermissions#" lCustomActions="#attributes.lCustomActions#">
 			
 				<cfoutput>
 				<tr>
