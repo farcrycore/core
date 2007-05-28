@@ -245,8 +245,10 @@ function deSelectAll()
 			<!--- If we are approving the whole branch - then we will be wanting all objectIDS --->
 			<cfif isDefined("URL.approveBranch")>
 				<cfset keyList = attributes.objectID>
-				<cfif isArray(stObj.aObjectIds)>
-					<cfset keyList = listAppend(keyList,arrayToList(stObj.aObjectIds))>
+				<cfif stObj.typename EQ "dmNavigation">
+					<cfif isArray(stObj.aObjectIds)>
+						<cfset keyList = listAppend(keyList,arrayToList(stObj.aObjectIds))>
+					</cfif>
 				</cfif>
 				<cfscript>
 					qGetDescendants = request.factory.oTree.getDescendants(objectid=attributes.objectID);
@@ -255,9 +257,11 @@ function deSelectAll()
 				<cfset keyList = listAppend(keyList,valueList(qGetDescendants.objectId))>
 				<cfloop query="qGetDescendants">
 					<q4:contentobjectget objectId="#qGetDescendants.objectId#" r_stObject="stThisObj">
-					<cfif isArray(stThisObj.aObjectIds)>
-						<cfset keyList = listAppend(keyList,arrayToList(stThisObj.aObjectIds))>
-					</cfif>	
+					<cfif stObj.typename EQ "dmNavigation">
+						<cfif isArray(stThisObj.aObjectIds)>
+							<cfset keyList = listAppend(keyList,arrayToList(stThisObj.aObjectIds))>
+						</cfif>	
+					</cfif>
 				</cfloop>
 			<cfelse>  <!--- else - just get the objectIDS in this nodes aObjects array --->
 				<cfif isDefined("URL.draftObjectID")>
@@ -265,8 +269,10 @@ function deSelectAll()
 				<cfelse>	
 					<cfset keyList = attributes.objectID>
 				</cfif>	
-				<cfif isdefined("stObj.aObjectIds") and isArray(stObj.aObjectIds)>
-					<cfset keyList = listAppend(keyList,arrayToList(stObj.aObjectIds))>
+				<cfif stObj.typename EQ "dmNavigation">
+					<cfif isdefined("stObj.aObjectIds") and isArray(stObj.aObjectIds)>
+						<cfset keyList = listAppend(keyList,arrayToList(stObj.aObjectIds))>
+					</cfif>
 				</cfif>
 			</cfif>
 									

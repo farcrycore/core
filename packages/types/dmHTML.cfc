@@ -37,7 +37,7 @@ type properties
 	ftLinkListRelatedTypenames="dmFile"
 	ftTemplateSnippetWebskinPrefix="insertSnippet">
 
-<cfproperty ftSeq="13" ftwizardStep="Body" ftFieldset="Relationships" name="aObjectIDs" type="array" hint="Holds objects to be displayed at this particular node.  Can be of mixed types." required="no" default="" ftLabel="Associated Media" ftJoin="dmImage,dmFile,dmFlash">
+<cfproperty ftSeq="13" ftwizardStep="Body" ftFieldset="Relationships" name="aObjectIDs" type="array" hint="Holds objects to be displayed at this particular node.  Can be of mixed types." required="no" default="" ftLabel="Associated Media" ftJoin="dmImage,dmFile,dmFlash" bSyncStatus="true">
 <cfproperty ftSeq="14" ftwizardStep="Body" ftFieldset="Relationships" name="aRelatedIDs" type="array" hint="Holds object pointers to related objects.  Can be of mixed types." required="no" default="" ftJoin="dmNavigation,dmHTML" ftLabel="Associated Content">
 
 <cfproperty ftSeq="10" ftwizardStep="Body" ftFieldset="Teaser" name="Teaser" type="longchar" hint="Teaser text." required="no" default="">

@@ -237,6 +237,7 @@ default handlers
 		</cfif>
 		
 		<cfreturn qWebskins />
+
 	</cffunction>
 
 	<cffunction name="getWebskinDisplayname" returntype="string" access="public" output="false" hint="">
@@ -424,7 +425,12 @@ default handlers
 		</cfscript>				
 				
 		<cfset stresult = super.setData(stProperties=arguments.stProperties, dsn=arguments.dsn, bSessionOnly=arguments.bSessionOnly) />
-
+		
+		<!--- ONLY RUN THROUGH IF SAVING TO DB --->
+		<cfif not arguments.bSessionOnly>				   	
+	   	 	<cfset stAfterSave = afterSave(stProperties=arguments.stProperties) />
+		</cfif>
+		
 		<!--- set friendly url for content item,if applicable 
 		TODO: sort out FU allocation.. have moved this to status approval step for now.. so introducing a catch all for non-status based content types. --->
 		<cfif NOT structkeyexists(arguments.stproperties, "status")>
@@ -442,6 +448,134 @@ default handlers
 		<cfreturn stresult>
 	</cffunction>
 	
+	
+
+	<cffunction name="AfterSave" access="public" output="false" returntype="struct" hint="Called from setData and createData and run after the object has been saved.">
+		<cfargument name="stProperties" required="yes" type="struct" hint="A structure containing the contents of the properties that were saved to the object.">
+
+		<cfset var stObject = structNew() />
+		<cfset var lRelatedTypenames = "" />
+		<cfset var oType = "" />
+		<cfset var iField = "" />
+		<cfset var iJoinTypename = "" />
+		<cfset var iArrayItem = "" />
+		<cfset var iTypename = "" />
+		<cfset var qRelated = queryNew("blah") />
+		<cfset var stProps = structNew() />
+		<cfset var aAllRelated = arrayNew(1) />
+		<cfset var changeStatus = "" >
+		<cfset var stVersionRules = structNew() />	
+
+		<!------------------------------------------------------------------ 
+		IF THIS OBJECT HAS A STATUS PROPERTY SUBMITTED THEN CHANGE STATUS 
+		--------------------------------------------------------------->
+		<cfif structKeyExists(arguments.stProperties, "status") AND structKeyExists(application.stcoapi[stProperties.typename].stprops, "status")>
+						
+			<cfif arguments.stProperties.status EQ "approved">
+				<!--- IF CHANGING TO APPROVED, THEN WE WANT TO APPROVE ALL RELATED CONTENT --->
+				<cfset changeStatus = "approved" />
+			<cfelseif arguments.stProperties.status EQ "draft">
+				<!--- IF CHANGING TO DRAFT AND NO LIVE VERSION EXISTS THEN SEND RELATED CONTENT TO DRAFT --->
+				<cfset stVersionRules = createObject("component", "#application.packagepath#.farcry.versioning").getVersioningRules(objectID=arguments.stProperties.objectid) />
+				<cfif NOT stVersionRules.bLiveVersionExists>
+					<cfset changeStatus = "draft" />
+				</cfif>
+			</cfif>
+			<cfif len(changeStatus)>
+				<cfset stObject = getData(objectid=arguments.stProperties.objectid) />
+				
+				<!--- LOOP TRHOUGH ALL THE FIELDS IN THIS OBJECT SEARCHING FOR ARRAY OR UUID PROPERTIES --->
+				<cfloop list="#structKeyList(application.stcoapi[stProperties.typename].stprops)#" index="iField">
+				
+					<!--- ADD ARRAY PROPERTIES AND THEIR VALUES TO THE LIST --->
+					<cfif application.stcoapi[stProperties.typename].stprops[iField].metadata.type EQ "array"
+						AND structKeyExists(application.stcoapi[stProperties.typename].stprops[iField].metadata, "bSyncStatus")
+						AND application.stcoapi[stProperties.typename].stprops[iField].metadata.bSyncStatus>
+						<cfif arrayLen(stObject[iField]) AND structKeyExists(application.stcoapi[stProperties.typename].stprops[iField].metadata, "ftJoin")>
+
+							<cfloop list="#application.stcoapi[stProperties.typename].stprops[iField].metadata.ftJoin#" index="iJoinTypename">
+								<cfif not listFindNoCase(lRelatedTypenames, iJoinTypename) AND structKeyExists(application.stcoapi[iJoinTypename].stprops, "status")>
+									<cfset lRelatedTypenames = listAppend(lRelatedTypenames, iJoinTypename)>
+								</cfif>
+							</cfloop>
+							
+							
+							<cfloop from="1" to="#arrayLen(stObject[iField])#" index="iArrayItem">
+								
+								<!--- WE ARE ONLY GOING TO CHANGE THE STATUS IF THIS IS THE ONLY CONTENT ITEM THE RELATED OBJECT IS RELATED TO --->
+								<cfquery datasource="#application.dsn#" name="qDuplicate">
+								SELECT count(parentID) as counter
+								FROM #stProperties.typename#_#iField#
+								WHERE data = '#stObject[iField][iArrayItem]#'
+								</cfquery>
+								<cfif qDuplicate.counter EQ 1>
+									<cfset arrayAppend(aAllRelated, stObject[iField][iArrayItem]) />
+								</cfif>
+							</cfloop>
+						</cfif>				
+					</cfif>
+					
+					<!--- ADD UUID PROPERTIES AND THEIR VALUES TO THE LIST --->
+					<cfif application.stcoapi[stProperties.typename].stprops[iField].metadata.type EQ "UUID"
+						AND structKeyExists(application.stcoapi[stProperties.typename].stprops[iField].metadata, "bSyncStatus")
+						AND application.stcoapi[stProperties.typename].stprops[iField].metadata.bSyncStatus>
+						<cfif len(stObject[iField]) AND structKeyExists(application.stcoapi[stProperties.typename].stprops[iField].metadata, "ftJoin")>
+							
+							<cfloop list="#application.stcoapi[stProperties.typename].stprops[iField].metadata.ftJoin#" index="iJoinTypename">
+								<cfif not listFindNoCase(lRelatedTypenames, iJoinTypename) AND structKeyExists(application.stcoapi[iJoinTypename].stprops, "status")>
+									<cfset lRelatedTypenames = listAppend(lRelatedTypenames, iJoinTypename)>
+								</cfif>
+							</cfloop>
+							
+							<!--- WE ARE ONLY GOING TO CHANGE THE STATUS IF THIS IS THE ONLY CONTENT ITEM THE RELATED OBJECT IS RELATED TO --->
+							<cfquery datasource="#application.dsn#" name="qDuplicate">
+							SELECT count(objectid) as counter
+							FROM #stProperties.typename#
+							WHERE #iField# = '#stObject[iField]#'
+							</cfquery>
+							<cfif qDuplicate.counter EQ 1>
+								<cfset arrayAppend(aAllRelated, stObject[iField]) />
+							</cfif>
+						</cfif>				
+					</cfif>
+					
+				</cfloop>
+
+				<!--- LOOP THROUGH THE ARRAY OF RELATED OBJECTS TO FIND ALL OBJECTS NOT APPROVED AND APPROVE THEM --->
+				<cfif arrayLen(aAllRelated)>			
+					
+					<cfloop list="#lRelatedTypenames#" index="iTypename">					
+					
+						<cfquery datasource="#application.dsn#" name="qRelated">
+						SELECT objectid, status
+						FROM #iTypename# 
+						WHERE objectid IN (#ListQualify(arrayToList(aAllRelated), "'")#)
+						AND status <> '#changeStatus#'
+						</cfquery>
+	
+						<cfset oType = createobject("component", application.types[iTypename].typePath) />
+						
+						<cfif qRelated.recordCount>
+							<cfloop query="qRelated">
+								<cfset stProps = structNew() />
+								<cfset stProps.objectid = qRelated.objectid />
+								<cfset stProps.status = changeStatus />
+								
+								<cfset stResult = oType.setData(stProperties=stProps,auditNote="Status changed to #changeStatus#") />
+							</cfloop>
+						</cfif>
+		
+					</cfloop>
+		
+				</cfif>
+			</cfif>
+		</cfif>
+		
+
+		<cfreturn stProperties />
+	</cffunction>
+
+			
 	<cffunction name="setLock" access="public" output="true" hint="Lock a content item to prevent simultaneous editing." returntype="void">
 		<cfargument name="locked" type="boolean" required="true" hint="Turn the lock on or off.">
 		<cfargument name="lockedby" type="string" required="false" hint="Name of the user locking the object." default="">
@@ -546,24 +680,7 @@ default handlers
 			<ft:farcryButton value="Save" />
 			<ft:farcryButton value="Cancel" />	
 		</ft:form>
-		
-		<!--- <cfimport taglib="/farcry/core/tags/wizard/" prefix="wiz" >
-		
-		<wiz:wizard
-			ReferenceID="#arguments.objectID#"
-			ReturnLocation="wizard.cfm"
-			Timeout="15"
-			r_stwizard="stwizard">
-		
-			
-			<wiz:step name="start" lFields="Title" />
-			<wiz:step name="media" lFields="aObjectIDs,aRelatedIDs" />
-			<wiz:step name="detail">
-				<ft:object ObjectID="#stwizard.PrimaryObjectID#" lFields="Body" InTable=0 />
-			</wiz:step>
-			
-			
-		</wiz:wizard> --->
+
 		
 	</cffunction>
 	
@@ -804,27 +921,6 @@ default handlers
 		<cfreturn stProperties>
 	</cffunction>
 	
-	<cffunction name="AfterSave" access="public" output="true" returntype="struct" hint="Called from ProcessFormObjects and run after the object has been saved.">
-		<cfargument name="stProperties" required="yes" type="struct" hint="A structure containing the contents of the properties that were saved to the object.">
-<!--- 
-		<cfset var searchData = structNew() />
-		
-		
-		TODO: Add ability to reindex object if required based on verity metadata info in the component. 
-		This would be nice if it used the new Event Queue ;)
-		
-		<cfif structKeyExists(application, "searchCollection")>
-			<cfset searchData = structNew() />
-			<cfset searchData.CollectionName = application.searchCollection.Name />
-			<cfset searchData.CollectionPath = "C:/CFusionMX7/verity/collections/" />
-			<cfset searchData.Typename = stProperties.typename />
-			<cfset searchData.stProps = application.types[stProperties.typename].stprops />
-			<cfset searchData.stObject = arguments.stProperties />
-			<cfset status = SendGatewayMessage("FarcrySearchIndexing", searchData) />
-		</cfif>
-		--->
-		<cfreturn stProperties />
-	</cffunction>
 	
 	<cffunction name="Edit" access="public" output="true" returntype="void" hint="Default edit handler.">
 		<cfargument name="ObjectID" required="yes" type="string" default="" />
@@ -832,6 +928,10 @@ default handlers
 		
 		<cfset var stObj = getData(objectid=arguments.objectid) />
 		<cfset var qMetadata = application.types[stobj.typename].qMetadata />
+		
+		
+		
+		
 		
 		<!-------------------------------------------------- 
 		WIZARD:
@@ -928,6 +1028,8 @@ default handlers
 			ORDER BY ftSeq
 			</cfquery>
 		
+			<!--- PERFORM SERVER SIDE VALIDATION --->
+			<!--- <ft:serverSideValidation /> --->
 		
 			<!---------------------------------------
 			ACTION:
@@ -936,7 +1038,7 @@ default handlers
 			<ft:processForm action="Save" Exit="true">
 				<ft:processFormObjects typename="#stobj.typename#" />
 			</ft:processForm>
-			
+
 			<ft:processForm action="Cancel" Exit="true" />
 			
 			
