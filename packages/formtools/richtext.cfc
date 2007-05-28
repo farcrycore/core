@@ -13,6 +13,7 @@
 		<cfparam name="arguments.stMetadata.ftImageArrayField" default="">
 		<cfparam name="arguments.stMetadata.ftImageTypename" default="">
 		<cfparam name="arguments.stMetadata.ftImageField" default="">
+		<cfparam name="arguments.stMetadata.ftLinkListRelatedTypenames" default="">
 		
 		
 		<cfparam name="arguments.stMetadata.ftConfig" default=""><!--- tinyMCE.tinyMCE_config --->
@@ -79,7 +80,7 @@
 							flash_menu : "false",
 														
 						</cfif>	 --->
-						external_link_list_url : "#application.url.farcry#/facade/tinyMCELinkList.cfm"						
+						external_link_list_url : "#application.url.farcry#/facade/tinyMCELinkList.cfm?objectID=#arguments.stObject.ObjectID#&typename=#arguments.typename#&relatedTypenames=#arguments.stMetadata.ftLinkListRelatedTypenames#"						
 					});
 				</cfoutput>
 			

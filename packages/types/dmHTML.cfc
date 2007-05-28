@@ -34,6 +34,7 @@ type properties
 <cfproperty ftSeq="12" ftwizardStep="Body" ftFieldset="Body" name="Body" type="longchar" hint="Main body of content." required="no" default="" ftType="richtext" ftLabel="Body" 
 	ftImageArrayField="aObjectIDs" ftImageTypename="dmImage" ftImageField="StandardImage"
 	ftTemplateTypeList="dmImage,dmFile,dmFlash,dmNavigation,dmHTML" ftTemplateWebskinPrefixList="insertHTML"
+	ftLinkListRelatedTypenames="dmFile"
 	ftTemplateSnippetWebskinPrefix="insertSnippet">
 
 <cfproperty ftSeq="13" ftwizardStep="Body" ftFieldset="Relationships" name="aObjectIDs" type="array" hint="Holds objects to be displayed at this particular node.  Can be of mixed types." required="no" default="" ftLabel="Associated Media" ftJoin="dmImage,dmFile,dmFlash">
@@ -130,7 +131,7 @@ object methods
 		
 		<cfset stReturn = super.delete(stObj.objectId) />
 		
-		<!--- Find any dmHTML pages that reference this navigation node. --->
+		<!--- Find any dmHTML pages that reference this html page. --->
 		<cfquery datasource="#application.dsn#" name="qRelated">
 		SELECT * FROM dmHTML_aRelatedIDs
 		WHERE data = '#stobj.objectid#'
@@ -144,12 +145,18 @@ object methods
 			WHERE data = '#stobj.objectid#'
 			</cfquery>
 						
-			<!--- Loop over and refresh the object broker if required --->
+			<!--- Remove deleted objects from object broker if required --->
+			<cfset oObjectBroker = createObject("component", "farcry.core.packages.fourq.objectBroker") />
+			<cfset oObjectBroker.RemoveFromObjectBroker(lObjectIDs="#valueList(qRelated.parentID)#", typename="dmHTML") />
+			
+			
+			
 			<cfloop query="qRelated">
 				<cfset stHTML = oHTML.getData(objectid=qRelated.parentid, bUseInstanceCache=false) />				
 			</cfloop>		
 						
 		</cfif>
+
 		
 		<cfreturn stReturn>
 	<cfelse>
