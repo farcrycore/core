@@ -14,6 +14,13 @@
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 
+		<cfset var html = "" />
+		<cfset var navid = "" />
+		<cfset var oCategory = createObject("component",'farcry.core.packages.farcry.category')>
+		<cfset var lSelectedCategoryID = oCategory.getCategories(objectid=arguments.stObject.ObjectID,bReturnCategoryIDs=true)>
+		<cfset var lCategoryBranch = "" />
+		<cfset var CategoryName = "" />
+
 		<cfparam name="arguments.stMetadata.ftAlias" default="" type="string" />
 		<cfparam name="arguments.stMetadata.ftLegend" default="" type="string" />
 		<cfparam name="arguments.stMetadata.ftRenderType" default="Tree" type="string" />
@@ -27,9 +34,7 @@
 			<cfset navid = application.catid['root'] >
 		</cfif>
 
-		<cfset oCategory = createObject("component",'farcry.core.packages.farcry.category')>
 		
-		<cfset lSelectedCategoryID = oCategory.getCategories(objectid=arguments.stObject.ObjectID,bReturnCategoryIDs=true)>
 
 		<cfswitch expression="#arguments.stMetadata.ftRenderType#">
 			
@@ -70,13 +75,7 @@
 													
 								<div class="fieldwrap">
 								</cfoutput>
-<!---									<ft:prototypeTree id="#arguments.fieldname#" navid="#navid#" depth="99" bIncludeHome=1 lSelectedItems="#lSelectedCategoryID#" bSelectMultiple="#arguments.stMetadata.ftSelectMultiple#">
-										<ft:prototypeTreeNode>
-											<ft:prototypeTreeNode>
-											
-											</ft:prototypeTreeNode>
-										</ft:prototypeTreeNode>
-									</ft:prototypeTree> --->
+
 									<ft:NTMPrototypeTree id="#arguments.fieldname#" navid="#navid#" depth="99" bIncludeHome=1 lSelectedItems="#lSelectedCategoryID#" bSelectMultiple="#arguments.stMetadata.ftSelectMultiple#">
 								
 								<cfoutput>
