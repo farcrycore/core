@@ -487,7 +487,6 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 					<cfoutput>#request.aInvocations[i].preHTML#</cfoutput>
 				</cfif>
 
-				<cfset request.i = i />
 				<cfset html = createObject("component", "#request.aInvocations[i].typename#").getView(objectid=request.aInvocations[i].objectID, template=request.aInvocations[i].method, alternateHTML="[#request.aInvocations[i].method#] does not exist") />	
 				<cfoutput>#html#</cfoutput>
 
