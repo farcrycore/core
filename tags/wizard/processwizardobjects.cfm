@@ -193,11 +193,6 @@
 		</cfloop>		
 
 
-		
-			
-		<cfif structKeyExists(oType,"AfterSave")>
-			<cfset stResult = oType.AfterSave(stProperties=Caller[attributes.r_stProperties])>		
-		</cfif>
 		<cfset caller.lSavedObjectIDs = listappend(caller.lSavedObjectIDs,Caller[attributes.r_stProperties].ObjectID)>
 	
 	</cfif>
