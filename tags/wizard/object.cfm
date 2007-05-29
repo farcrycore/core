@@ -364,8 +364,7 @@
 			
 			<cfif structKeyExists(tFieldType,FieldMethod)>
 			
-	
-				<cftry>	
+				
 					<cfinvoke component="#tFieldType#" method="#FieldMethod#" returnvariable="variables.returnHTML">
 						<cfinvokeargument name="typename" value="#typename#">
 						<cfinvokeargument name="stObject" value="#stObj#">
@@ -373,10 +372,7 @@
 						<cfinvokeargument name="fieldname" value="#variables.prefix##ftFieldMetadata.Name#">
 						<cfinvokeargument name="stPackage" value="#stPackage#">
 					</cfinvoke>
-					<cfcatch><cfdump var="#cfcatch#"><cfabort></cfcatch>
-					
-				</cftry>
-		
+				
 				
 			</cfif>
 				
