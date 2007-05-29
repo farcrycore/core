@@ -276,9 +276,6 @@
 		
 
 		
-		<cfif structKeyExists(stType,"AfterSave")>
-			<cfset stResult = stType.AfterSave(stProperties=Caller[attributes.r_stProperties])>		
-		</cfif>
 		<cfset caller.lSavedObjectIDs = listappend(caller.lSavedObjectIDs,Caller[attributes.r_stProperties].ObjectID)>
 
 
