@@ -68,7 +68,7 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 
 <!--- admin configuration options --->
 <cfparam name="attributes.numitems" default="#application.config.general.GENERICADMINNUMITEMS#" type="numeric">
-<cfparam name="attributes.numPageDisplay" default="10" type="numeric">
+<cfparam name="attributes.numPageDisplay" default="5" type="numeric">
 
 <cfparam name="attributes.lButtons" default="*" type="string">
 <cfparam name="attributes.bPaginateTop" default="true" type="boolean">
