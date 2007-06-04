@@ -29,7 +29,7 @@ system attributes
 <cfproperty name="datetimecreated" displayname="Datetime created" type="date" hint="Timestamp for record creation." required="yes" default="" ftType="datetime" ftLabel="Created"> 
 <cfproperty name="createdby" displayname="Created by" type="nstring" hint="Username for creator." required="yes" default="">
 <!--- bowden --->
-<cfproperty name="ownedby" displayname="Owned by" type="nstring" hint="Username for owner." required="No" default="">
+<cfproperty name="ownedby" displayname="Owned by" type="nstring" hint="Username for owner." required="No" default="" ftLabel="Owned By" ftType="list" ftRenderType="dropdown" ftListData="getOwners">
 <cfproperty name="datetimelastupdated" displayname="Datetime lastupdated" type="date" hint="Timestamp for record last modified." required="yes" default="" ftType="datetime" ftLabel="Last Updated"> 
 <cfproperty name="lastupdatedby" displayname="Last updated by" type="nstring" hint="Username for modifier." required="yes" default="">
 <cfproperty name="lockedBy" displayname="Locked by" type="nstring" hint="Username for locker." required="no" default="">
@@ -1435,4 +1435,32 @@ default handlers
 		<cfreturn qLibraryList />
 	</cffunction>
 	
+	<cffunction name="getOwners" access="public" output="false" returntype="string">
+	
+		<cfset var errormessage = "" />
+		<cfset var name = "" />
+		<cfset var q = queryNew("value,name") />
+		<cfset var lResult =  "" />
+		
+		<cfset objProfile = CreateObject("component",application.types.dmprofile.packagepath)>
+		<cfset returnstruct = objProfile.fListProfileByPermission("Admin")>
+		<cfif returnstruct.bSuccess>
+			<cfset q = returnstruct.queryObject>
+	
+			<cfloop query="q">
+				<cfif Trim(q.lastName) EQ "" AND Trim(q.firstName) EQ "">
+					<cfset name = q.username />
+				<cfelse>
+					<cfset name = "#q.lastName# #q.firstName#" />
+				</cfif>
+				<cfset lResult = listAppend(lResult, HTMLEditFormat("#q.objectid#:#name#")) />
+			</cfloop>
+		
+		</cfif>
+		
+		<cfreturn lResult />
+	
+	
+	</cffunction>
+
 </cfcomponent>

@@ -508,7 +508,11 @@ $out:$
 	<cfset var vlObjectID = ''>
 	<cfset var bloodline = ''>
 	<cfset var qReturn = queryNew("blah")>
+	<cfparam name="request.mode.lvalidstatus" default="">
 
+	<cfif arguments.status eq "">
+		<cfset arguments.status = "#request.mode.lvalidstatus#">
+	</cfif>
 	<cfinclude template="_tree/getBloodLine.cfm">
 	<cfreturn qReturn>
 </cffunction>
