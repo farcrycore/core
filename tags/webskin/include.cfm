@@ -27,14 +27,12 @@ $in: template -- the template to be included. Noramlly this would be the complet
 		<cfabort showerror="skin:include must be passed the template to be included" />
 	</cfif>
 	
-	<cfset templatePath = attributes.template />
-	
 	<!--- If the template passed in is simply a filename (ie. no path) then we assume the path is the projects includedObj directory --->
-	<cfif NOT findNoCase("/", templatePath)>
-		<cfset templatePath = "/farcry/projects/#application.applicationname#/includedObj/#stObj.include#" />
+	<cfif NOT findNoCase("/", attributes.template)>
+		<cfset attributes.template = "/farcry/projects/#application.applicationname#/includedObj/#attributes.template#" />
 	</cfif>
 	
-	<cfinclude template="#templatePath#">
+	<cfinclude template="#attributes.template#">
 </cfif>
 
 
