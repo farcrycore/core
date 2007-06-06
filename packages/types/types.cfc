@@ -85,9 +85,8 @@ default handlers
 		<cfset var WebskinPath = "" />
 		<cfset var webskinHTML = "" />
 		<cfset var oObjectBroker = createObject("component", "farcry.core.packages.fourq.objectBroker").init() />
-		<cfset var oCoapiAdmin = createObject("component", "farcry.core.packages.coapi.coapiadmin").init() />
 		<cfset var stCurrentView = structNew() />
-		
+
 		<!--- make sure that .cfm isn't passed to this method in the template argument --->
 		<cfif listLast(arguments.template,".") EQ "cfm">
 			<cfset arguments.template = ReplaceNoCase(arguments.template,".cfm", "", "all") />
@@ -110,7 +109,7 @@ default handlers
 			<cfset webskinHTML = oObjectBroker.getWebskin(objectid=stobj.objectid, typename=stobj.typename, template=arguments.template) />		
 
 			<cfif not len(webskinHTML)>
-				<cfset webskinPath = oCoapiAdmin.getWebskinPath(typename=stObj.typename, template=arguments.template) />
+				<cfset webskinPath = application.coapi.coapiadmin.getWebskinPath(typename=stObj.typename, template=arguments.template) />
 						
 				<cfif len(webskinPath)>
 					
@@ -122,8 +121,8 @@ default handlers
 					<cfset stCurrentView.objectid = stobj.objectid />
 					<cfset stCurrentView.typename = stobj.typename />
 					<cfset stCurrentView.template = arguments.template />
-					<cfset stCurrentView.timeout = oCoapiAdmin.getWebskinTimeOut(typename=stObj.typename, template=arguments.template) />
-					<cfset stCurrentView.hashURL = oCoapiAdmin.getWebskinHashURL(typename=stObj.typename, template=arguments.template) />
+					<cfset stCurrentView.timeout = application.coapi.coapiadmin.getWebskinTimeOut(typename=stObj.typename, template=arguments.template) />
+					<cfset stCurrentView.hashURL = application.coapi.coapiadmin.getWebskinHashURL(typename=stObj.typename, template=arguments.template) />
 					<cfset stCurrentView.okToCache = 1 />
 					<cfset arrayAppend(request.aAncestorWebskins, stCurrentView) />					
 					
@@ -189,7 +188,7 @@ default handlers
 		<cfargument name="typename" type="string" required="true" />
 		<cfargument name="template" type="string" required="true" />
 		
-		<cfset var webskinPath = createObject("component", "farcry.core.packages.coapi.coapiadmin").getWebskinpath(typename=arguments.typename,template=arguments.template) />
+		<cfset var webskinPath = application.coapi.coapiadmin.getWebskinpath(typename=arguments.typename,template=arguments.template) />
 		<cfreturn webskinPath>
 		
 			
