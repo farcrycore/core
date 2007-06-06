@@ -331,6 +331,9 @@
 		<cfargument name="template" type="string" required="true" />
 		
 		<cfset var webskinPath = "" />
+		<cfset var qWebskinMetadata = queryNew("blah") />
+		<cfset var qWebskinPath = queryNew("blah") />
+		<cfset var plugin = "" />
 	
 		<!--- If the webskin is in the application.stcoapi then just use it --->
 		<cfif isdefined("application.stcoapi.#arguments.typename#.qWebskins")>
