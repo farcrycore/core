@@ -14,7 +14,15 @@
 	<cfargument name="plugins" default="" type="string" />
 	
 	<cfset var qResult=queryNew("ATTRIBUTES, DATELASTMODIFIED, DIRECTORY, MODE, NAME, SIZE, TYPE, typepath") />
+	<cfset var qComps=queryNew("blah") />
+	<cfset var qDupe=queryNew("blah") />
+	<cfset var qResult=queryNew("blah") />
 	<cfset var lDir=arguments.plugins />
+	<cfset var packagedir = "" />
+	<cfset var packagepath = "" />
+	<cfset var typepath = "" />
+	<cfset var col = "" />
+	
 	
 	<!--- 
 	must go in reverse order
@@ -90,6 +98,7 @@
 	<cfset var installdir="" />
 	<cfset var aCol=arrayNew(1) />
 	<cfset var pluginName="" />
+	<cfset var i="" />
 
 	<cfloop list="#arguments.plugins#" index="pluginName">
 		<cfset installdir=expandpath("/farcry/plugins/#pluginName#/config/install") />
@@ -399,7 +408,12 @@
 		<cfargument name="template" type="string" required="false" default="" />
 		<cfargument name="path" type="string" required="false" />
 	
-		<cfset var result = "false" />	
+		<cfset var result = "false" />
+		<cfset var template = "" />
+		<cfset var pos = "" />	
+		<cfset var count = "" />	
+		
+		
 		<cfif NOT structKeyExists(arguments, "path")>
 			<cfif len(arguments.typename) AND len(arguments.template)>
 				<cfset arguments.path = getWebskinPath(typename=arguments.typename, template=arguments.template) />
@@ -435,6 +449,10 @@
 		<cfargument name="path" type="string" required="false" />
 	
 		<cfset var result = "" />
+		<cfset var template = "" />
+		<cfset var pos = "" />	
+		<cfset var count = "" />
+		
 		<cfif NOT structKeyExists(arguments, "path")>
 			<cfif len(arguments.typename) AND len(arguments.template)>
 				<cfset arguments.path = getWebskinPath(typename=arguments.typename, template=arguments.template) />
@@ -464,6 +482,10 @@
 		<cfargument name="path" type="string" required="false" />
 	
 		<cfset var result = "" />
+		<cfset var template = "" />
+		<cfset var pos = "" />	
+		<cfset var count = "" />
+		
 		<cfif NOT structKeyExists(arguments, "path")>
 			<cfif len(arguments.typename) AND len(arguments.template)>
 				<cfset arguments.path = getWebskinPath(typename=arguments.typename, template=arguments.template) />
@@ -491,6 +513,10 @@
 		<cfargument name="path" type="string" required="false" />
 	
 		<cfset var result = "" />
+		<cfset var template = "" />
+		<cfset var pos = "" />	
+		<cfset var count = "" />
+		
 		<cfif NOT structKeyExists(arguments, "path")>
 			<cfif len(arguments.typename) AND len(arguments.template)>
 				<cfset arguments.path = getWebskinPath(typename=arguments.typename, template=arguments.template) />
@@ -637,6 +663,7 @@
 		<cfset var result = "" />
 		<cfset var pos = "" />
 		<cfset var count = "" />
+		<cfset var template = "" />
 		
 		<cfif fileExists("#arguments.directory#/#arguments.template#")>
 			<cffile action="READ" file="#arguments.directory#/#arguments.template#" variable="template">
@@ -672,6 +699,9 @@
 		
 		<cfset var result = "" />
 		<cfset var includePath = "#arguments.directory#/#arguments.template#" />
+		<cfset var template = "" />
+		<cfset var pos = "" />
+		<cfset var count = "" />
 		
 		<cffile action="READ" file="#includePath#" variable="template">
 	
@@ -691,6 +721,9 @@
 		
 		<cfset var result = "" />
 		<cfset var includePath = "#arguments.directory#/#arguments.template#" />
+		<cfset var template = "" />
+		<cfset var pos = "" />
+		<cfset var count = "" />
 
 		<cffile action="READ" file="#includePath#" variable="template">
 	

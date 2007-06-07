@@ -19,7 +19,7 @@
 	
 	<cffunction name="getCFC2DBMapping" output="false" access="private" hint="I return the mapping between farcry and the supported databases" returntype="struct">
 		<cfargument name="dbType" type="string">
-		<cfset stDBMapping=StructNew()>
+		<cfset var stDBMapping=StructNew()>
 		<cfscript>
 		// TO DO: this should come from an external module ie Fourq
 		// cfc property type to db data type translation
@@ -112,6 +112,7 @@
 		<cfargument name="refresh" required="false" type="boolean" default="false" hint="refresh stDB structure image" />
 		<cfset var arResult = arrayNew(1)>
 		<cfset var typePath = "">
+		<cfset var tmpObj = "">
 		<cfscript>
 			if(not structKeyExists(variables.stDB,arguments.scope) OR arguments.refresh)setFarcryScopeDbStruct(arguments.scope);
 		</cfscript>
@@ -131,6 +132,19 @@
 		
 		<cfset var tmpObj = structNew()>
 		<cfset var oType = createObject("Component", application[arguments.scope][arguments.cfcName].PACKAGEPATH) />
+		<cfset var depth = "">
+		<cfset var propId = "">
+		<cfset var stMetaData = structNew()>
+		<cfset var extendsDepth = "">
+		<cfset var propNotFoundMess = "">
+		<cfset var checkedDbProps = "">
+		<cfset var propKey = "">
+		<cfset var DbTypeConflict = "">
+		<cfset var struct2Parse = structNew()>
+		<cfset var thisPropName = "">
+		<cfset var structDBProp = structNew()>
+		<cfset var thisProp = "">
+		<cfset var tmpPropObj = "">
 		
 		<cfscript>
 			if(not structKeyExists(variables.stDB,arguments.scope))setFarcryScopeDbStruct(arguments.scope);
@@ -225,15 +239,20 @@
 	<cffunction name="getCFCProps" hint="I return the properties of a type by reading introspecting only the cfc" output="false" access="public">
 		<cfargument name="scope" required="true" type="string">
 		<cfargument name="cfcName" required="true" type="string">
-		<cfscript>
-			var objModel = createObject("Component", application[arguments.scope][arguments.cfcName].PACKAGEPATH);
-			var stMetaData = getMetaData(objModel);
-			var stProps = structNew();
-			var thisPropName = "";
-			var propKey = "stMetaData";
-			var extendsDepth = 0;
-			var struct2Parse = "";
-		</cfscript>
+
+		<cfset var objModel = createObject("Component", application[arguments.scope][arguments.cfcName].PACKAGEPATH) />
+		<cfset var stMetaData = getMetaData(objModel) />
+		<cfset var stProps = structNew() />
+		<cfset var thisPropName = "" />
+		<cfset var propKey = "stMetaData" />
+		<cfset var extendsDepth = 0 />
+		<cfset var struct2Parse = "" />
+		<cfset var depth = "" />
+		<cfset var propId = "" />
+		<cfset var stProps = structNew() />
+		<cfset var typeMatch = "" />
+		<cfset var bPrecision = "" />
+
 		<cfset extendsDepth = getExtendsDepth(stMetaData)>
 		<!--- looping over type struct including parent classes structs--->
 		<cfloop from="0" to="#extendsDepth#" index="depth">
@@ -293,6 +312,8 @@
 		<cfset var stObjResult = structNew()>
 		<!--- set DB properties --->
 		<cfset var isPropDeployed = false>
+		<cfset var typeMatch = "" />
+		<cfset var bPrecision = "" />
 		
 		<cfset stObjResult["propName"] = arguments.propName>
 		<cfset stObjResult["propCfcType"] = arguments.metaStruct.type>
