@@ -45,8 +45,8 @@
       		<cfset var SQLArray = generateSQLNameValueArray(stFields,stProperties) />
       		<cfset var qCreateData = queryNew("blah") />
       		<cfset var qRefData = queryNew("blah") />
-      		<cfset var createDataResult = "" />
-      		<cfset var objectid = "" />
+      		<cfset var createDataResult = structNew() />
+      		<cfset var currentObjectID = "" />
 	    
 			<!--- set defaults for status --->
 			<cfset createDataResult.bSuccess = true>
@@ -55,11 +55,11 @@
 
 			<!--- check objectid passed --->
 			<cfif structKeyExists(arguments.stProperties,"objectid")>
-				<cfset objectid=arguments.stProperties.objectid>
+				<cfset currentObjectID=arguments.stProperties.objectid>
 			<cfelseif structKeyExists(arguments,"objectid")>
-				<cfset objectid=arguments.objectid>
+				<cfset currentObjectID=arguments.objectid>
 			<cfelse>
-				<cfset objectid = CreateUUID()>
+				<cfset currentObjectID = CreateUUID()>
 			</cfif>
 			
 			<!--- build query --->
@@ -74,7 +74,7 @@
 					)
 					VALUES ( 
 					
-						<cfqueryparam value="#objectid#" cfsqltype="CF_SQL_VARCHAR">
+						<cfqueryparam value="#currentObjectID#" cfsqltype="CF_SQL_VARCHAR">
 						<cfloop from="1" to="#arrayLen(SQLArray)#" index="i">
 						  <!--- temp fix for mySQL, looks as though the datatype decimal and bind type float don't live peacefully together :( --->
 						  <cfif structKeyExists(sqlArray[i],'cfsqltype') AND sqlArray[i].cfsqltype NEQ "CF_SQL_FLOAT">
@@ -94,7 +94,7 @@
 				<cfloop collection="#stFields#" item="i">
 				  <cfif stFields[i].type eq 'array' AND structKeyExists(stProperties,i)>
 				  	<cfif IsArray(stProperties[i])>
-						<cfset createArrayTableData(tableName&"_"&i,objectid,stFields[i].fields,stProperties[i]) />
+						<cfset createArrayTableData(tableName&"_"&i,currentObjectID,stFields[i].fields,stProperties[i]) />
 					</cfif>
 				  </cfif>
 				</cfloop>
@@ -108,7 +108,7 @@
 						typename
 					)
 					VALUES (
-						<cfqueryparam value="#objectid#" cfsqltype="CF_SQL_VARCHAR">,
+						<cfqueryparam value="#currentObjectID#" cfsqltype="CF_SQL_VARCHAR">,
 						<cfqueryparam value="#tablename#" cfsqltype="CF_SQL_VARCHAR">
 					)
 				</cfquery>
@@ -120,7 +120,7 @@
 				</cftry>
 			</cftransaction>
 
-			<cfset createDataResult.objectid = objectid>
+			<cfset createDataResult.objectid = currentObjectID>
 			
 			<cfreturn createDataResult>
 	</cffunction>
