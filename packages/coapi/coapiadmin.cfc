@@ -408,7 +408,7 @@
 		<cfargument name="path" type="string" required="false" />
 	
 		<cfset var result = "false" />
-		<cfset var template = "" />
+		<cfset var templateCode = "" />
 		<cfset var pos = "" />	
 		<cfset var count = "" />	
 		
@@ -422,13 +422,13 @@
 		</cfif>
 		
 		<cfif len(arguments.path) and fileExists(Expandpath(arguments.path))>
-			<cffile action="READ" file="#Expandpath(arguments.path)#" variable="template">
+			<cffile action="READ" file="#Expandpath(arguments.path)#" variable="templateCode">
 		
-			<cfset pos = findNoCase('@@hashURL:', template)>
+			<cfset pos = findNoCase('@@hashURL:', templateCode)>
 			<cfif pos GT 0>
 				<cfset pos = pos + 10>
-				<cfset count = findNoCase('--->', template, pos)-pos>
-				<cfset result = trim(listLast(mid(template,  pos, count), ":"))>
+				<cfset count = findNoCase('--->', templateCode, pos)-pos>
+				<cfset result = trim(listLast(mid(templateCode,  pos, count), ":"))>
 			</cfif>	
 		</cfif>
 		
@@ -448,7 +448,7 @@
 		<cfargument name="path" type="string" required="false" />
 	
 		<cfset var result = "" />
-		<cfset var template = "" />
+		<cfset var templateCode = "" />
 		<cfset var pos = "" />	
 		<cfset var count = "" />
 		
@@ -461,13 +461,13 @@
 		</cfif>
 		
 		<cfif len(arguments.path) and fileExists(Expandpath(arguments.path))>
-			<cffile action="READ" file="#Expandpath(arguments.path)#" variable="template">
+			<cffile action="READ" file="#Expandpath(arguments.path)#" variable="templateCode">
 		
-			<cfset pos = findNoCase('@@displayname:', template)>
+			<cfset pos = findNoCase('@@displayname:', templateCode)>
 			<cfif pos GT 0>
 				<cfset pos = pos + 14>
-				<cfset count = findNoCase('--->', template, pos)-pos>
-				<cfset result = trim(listLast(mid(template,  pos, count), ":"))>
+				<cfset count = findNoCase('--->', templateCode, pos)-pos>
+				<cfset result = trim(listLast(mid(templateCode,  pos, count), ":"))>
 			</cfif>	
 		</cfif>
 		
@@ -481,7 +481,7 @@
 		<cfargument name="path" type="string" required="false" />
 	
 		<cfset var result = "" />
-		<cfset var template = "" />
+		<cfset var templateCode = "" />
 		<cfset var pos = "" />	
 		<cfset var count = "" />
 		
@@ -494,13 +494,13 @@
 		</cfif>
 		
 		<cfif len(arguments.path) and fileExists(Expandpath(arguments.path))>
-			<cffile action="READ" file="#Expandpath(arguments.path)#" variable="template">
+			<cffile action="READ" file="#Expandpath(arguments.path)#" variable="templateCode">
 		
-			<cfset pos = findNoCase('@@author:', template)>
+			<cfset pos = findNoCase('@@author:', templateCode)>
 			<cfif pos GT 0>
 				<cfset pos = pos + 9>
-				<cfset count = findNoCase('--->', template, pos)-pos>
-				<cfset result = trim(listLast(mid(template,  pos, count), ":"))>
+				<cfset count = findNoCase('--->', templateCode, pos)-pos>
+				<cfset result = trim(listLast(mid(templateCode,  pos, count), ":"))>
 			</cfif>	
 		</cfif>
 		
@@ -512,7 +512,7 @@
 		<cfargument name="path" type="string" required="false" />
 	
 		<cfset var result = "" />
-		<cfset var template = "" />
+		<cfset var templateCode = "" />
 		<cfset var pos = "" />	
 		<cfset var count = "" />
 		
@@ -525,13 +525,13 @@
 		</cfif>
 		
 		<cfif len(arguments.path) and fileExists(Expandpath(arguments.path))>
-			<cffile action="READ" file="#Expandpath(arguments.path)#" variable="template">
+			<cffile action="READ" file="#Expandpath(arguments.path)#" variable="templateCode">
 		
-			<cfset pos = findNoCase('@@description:', template)>
+			<cfset pos = findNoCase('@@description:', templateCode)>
 			<cfif pos GT 0>
 				<cfset pos = pos + 14>
-				<cfset count = findNoCase('--->', template, pos)-pos>
-				<cfset result = trim(listLast(mid(template,  pos, count), ":"))>
+				<cfset count = findNoCase('--->', templateCode, pos)-pos>
+				<cfset result = trim(listLast(mid(templateCode,  pos, count), ":"))>
 			</cfif>	
 		</cfif>
 		
@@ -662,16 +662,16 @@
 		<cfset var result = "" />
 		<cfset var pos = "" />
 		<cfset var count = "" />
-		<cfset var template = "" />
+		<cfset var templateCode = "" />
 		
 		<cfif fileExists("#arguments.directory#/#arguments.template#")>
-			<cffile action="READ" file="#arguments.directory#/#arguments.template#" variable="template">
+			<cffile action="READ" file="#arguments.directory#/#arguments.template#" variable="templateCode">
 		
-			<cfset pos = findNoCase('@@displayname:', template)>
+			<cfset pos = findNoCase('@@displayname:', templateCode)>
 			<cfif pos GT 0>
 				<cfset pos = pos + 14>
-				<cfset count = findNoCase('--->', template, pos)-pos>
-				<cfset result = trim(listLast(mid(template,  pos, count), ":"))>
+				<cfset count = findNoCase('--->', templateCode, pos)-pos>
+				<cfset result = trim(listLast(mid(templateCode,  pos, count), ":"))>
 			</cfif>	
 		</cfif>
 		
@@ -698,17 +698,17 @@
 		
 		<cfset var result = "" />
 		<cfset var includePath = "#arguments.directory#/#arguments.template#" />
-		<cfset var template = "" />
+		<cfset var templateCode = "" />
 		<cfset var pos = "" />
 		<cfset var count = "" />
 		
-		<cffile action="READ" file="#includePath#" variable="template">
+		<cffile action="READ" file="#includePath#" variable="templateCode">
 	
-		<cfset pos = findNoCase('@@author:', template)>
+		<cfset pos = findNoCase('@@author:', templateCode)>
 		<cfif pos GT 0>
 			<cfset pos = pos + 9>
-			<cfset count = findNoCase('--->', template, pos)-pos>
-			<cfset result = trim(listLast(mid(template,  pos, count), ":"))>
+			<cfset count = findNoCase('--->', templateCode, pos)-pos>
+			<cfset result = trim(listLast(mid(templateCode,  pos, count), ":"))>
 		</cfif>
 		
 		<cfreturn result />
@@ -720,17 +720,17 @@
 		
 		<cfset var result = "" />
 		<cfset var includePath = "#arguments.directory#/#arguments.template#" />
-		<cfset var template = "" />
+		<cfset var templateCode = "" />
 		<cfset var pos = "" />
 		<cfset var count = "" />
 
-		<cffile action="READ" file="#includePath#" variable="template">
+		<cffile action="READ" file="#includePath#" variable="templateCode">
 	
-		<cfset pos = findNoCase('@@description:', template)>
+		<cfset pos = findNoCase('@@description:', templateCode)>
 		<cfif pos GT 0>
 			<cfset pos = pos + 14>
-			<cfset count = findNoCase('--->', template, pos)-pos>
-			<cfset result = trim(listLast(mid(template,  pos, count), ":"))>
+			<cfset count = findNoCase('--->', templateCode, pos)-pos>
+			<cfset result = trim(listLast(mid(templateCode,  pos, count), ":"))>
 		</cfif>	
 
 		
