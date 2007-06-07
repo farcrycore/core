@@ -12,6 +12,10 @@
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 
 		<cfset var fieldStyle = "">
+		<cfset var ToggleOffDateTimeJS = "" />
+		<cfset var html = "" />
+		<cfset var bfieldvisible = "" />
+		<cfset var fieldvisibletoggletext = "" />
 		
 		<cfparam name="arguments.stMetadata.ftStyle" default="width:160px;">
 		<cfparam name="arguments.stMetadata.ftDateFormatMask" default="dd mmm yyyy">
@@ -113,6 +117,9 @@
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 
+		<cfset var html = "" />
+		
+		
 		<cfparam name="arguments.stMetadata.ftDateMask" default="d-mmm-yy">
 		<cfparam name="arguments.stMetadata.ftTimeMask" default="short">
 		<cfparam name="arguments.stMetadata.ftShowTime" default="false">
@@ -141,9 +148,9 @@
 		<!--- --------------------------- --->
 		<!--- Perform any validation here --->
 		<!--- --------------------------- --->
-		<cfparam name="stFieldPost.stSupporting.Include" default="true">
+		<cfparam name="arguments.stFieldPost.stSupporting.Include" default="true">
 		
-		<cfif ListGetAt(stFieldPost.stSupporting.Include,1)>
+		<cfif ListGetAt(arguments.stFieldPost.stSupporting.Include,1)>
 		
 			<cfif len(trim(arguments.stFieldPost.Value))>
 				<cfset stResult.value = CreateODBCDateTime("#arguments.stFieldPost.Value#")>

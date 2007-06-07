@@ -16,6 +16,8 @@
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 
+		<cfset var html = "" />
+		
 		<cfparam name="arguments.stMetadata.ftstyle" default="">
 		
 		<cfset Request.inHead.Scriptaculous = 1>
@@ -79,16 +81,7 @@
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 
-<!--- 		<cfset var filePath = "" />
-		
-		<cfparam name="arguments.stMetadata.ftSecure" default="false">
-		<cfparam name="arguments.stMetadata.ftDestination" default="/files">
-	
-		<cfif arguments.stMetadata.ftSecure>
-			<cfset filePath = application.path.defaultFilePath />
-		<cfelse>
-			<cfset filePath = application.path.secureFilePath />
-		</cfif> --->
+		<cfset var html = "" />
 
 		<cfsavecontent variable="html">
 			<cfoutput><a target="_blank" href="#application.url.webroot#/download.cfm?downloadfile=#arguments.stobject.objectid#&typename=#arguments.typename#&field=#arguments.stmetadata.name#">#arguments.stMetadata.value#</a></cfoutput>			
@@ -105,6 +98,8 @@
 		<cfset var filePath = "" />
 		<cfset var stResult = structNew()>	
 		<cfset var uploadFileName = "" />
+		<cfset var qDuplicates = queryNew("blah") />
+		<cfset var cleanFileName = "" />
 			
 		<cfset stResult.bSuccess = true>
 		<cfset stResult.value = stFieldPost.value>

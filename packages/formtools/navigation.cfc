@@ -18,6 +18,10 @@
 		
 		<cfset var navid = "" />
 		<cfset var lSelectedNaviIDs = "" />
+		<cfset var i = "" />
+		<cfset var html = "" />
+		<cfset var lCategoryBranch = "" />
+		<cfset var CategoryName = "" />
 		
 		<cfparam name="arguments.stMetadata.ftAlias" default="" type="string" />
 		<cfparam name="arguments.stMetadata.ftLegend" default="" type="string" />

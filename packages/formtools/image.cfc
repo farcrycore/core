@@ -20,6 +20,7 @@
 		
 		<cfset var html = "" />
 		<cfset var dimensionAlert = "" />
+		<cfset var ToggleOffGenerateImageJS = "" />
 		
 		<cfparam name="arguments.stMetadata.ftstyle" default="">
 		<cfparam name="arguments.stMetadata.ftDestination" default="/images">
@@ -161,6 +162,8 @@
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 
+		<cfset var html = "" />
+		
 		<cfparam name="arguments.stMetadata.ftAutoGenerateType" default="FitInside">
 		<cfparam name="arguments.stMetadata.ftImageWidth" default="0">
 		<cfparam name="arguments.stMetadata.ftImageHeight" default="0">
@@ -187,6 +190,7 @@
 		<cfset var stGeneratedImageArgs = StructNew() />		
 		<cfset var stGeneratedImage = structNew() />
 		<cfset var uploadFileName = "" />
+		<cfset var b = "" />
 		
 		<cfset stResult.bSuccess = true>
 		<cfset stResult.value = stFieldPost.value>
@@ -308,14 +312,16 @@
 	<cffunction name="createFolderPath" output="true" hint="Creates a folder branch" returntype="boolean">
 		<cfargument name="folderPath" type="string" required="true">
 		<cfargument name="mode" type="string" default="" required="false">
-		<cfscript>
-			var thePath = replace(arguments.folderPath,"\", "/","ALL");
-			var arFolders = "";
-			var pathLen = 0;
-			var workingPath = "";
-			var bUNC = false;
-			var indexStart = 1;
-		</cfscript>
+		
+		
+		<cfset var depth = "" />
+		<cfset var thePath = replace(arguments.folderPath,"\", "/","ALL") />
+		<cfset var arFolders = "" />
+		<cfset var pathLen = 0 />
+		<cfset var workingPath = "" />
+		<cfset var bUNC = false />
+		<cfset var indexStart = 1 />
+
 		<cfif left(arguments.folderPath,1) eq "/"><!--- *nix path --->
 			<cfset workingPath = "/">
 		<cfelseif left(arguments.folderPath,2) eq "\\"><!--- UNC Path --->
@@ -378,6 +384,7 @@
          <cfset var resizedImage = "" />  
          <cfset var myimage =  ""/>
          <cfset var extension = "" />
+		<cfset var returnstruct = "" />
          
 		<cfset stResult.bSuccess = true />
 		<cfset stResult.message = "" />

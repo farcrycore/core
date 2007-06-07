@@ -12,6 +12,9 @@
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 
+		<cfset var html = "" />
+		
+		
 		<cfparam name="arguments.stMetadata.ftSelectTable" default="true">
 		<cfparam name="arguments.stMetadata.ftSelectTableField" default="">
 		
@@ -36,6 +39,10 @@
 		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
+		
+		<cfset var html = "" />
+		<cfset var stMetadata = structNew() />
+		
 		
 		<cfparam name="stMetadata.ftIncludeDecimal" default="true">
 		<cfparam name="stMetadata.ftCurrencySymbol" default="">

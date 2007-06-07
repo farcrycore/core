@@ -20,7 +20,9 @@
 		<cfset var lSelectedCategoryID = oCategory.getCategories(objectid=arguments.stObject.ObjectID,bReturnCategoryIDs=true)>
 		<cfset var lCategoryBranch = "" />
 		<cfset var CategoryName = "" />
-
+		<cfset var i = "" />
+		
+		
 		<cfparam name="arguments.stMetadata.ftAlias" default="" type="string" />
 		<cfparam name="arguments.stMetadata.ftLegend" default="" type="string" />
 		<cfparam name="arguments.stMetadata.ftRenderType" default="Tree" type="string" />

@@ -18,6 +18,7 @@
 		<cfset var fieldstyle = "" />
 		<cfset var onkeyup = "" />
 		<cfset var onkeydown = "" /> 
+		<cfset var bIsGoodBrowser = "" />
 		
 		<cfparam name="arguments.stMetadata.ftToggle" default="false">
 		<cfparam name="arguments.stMetadata.ftStyle" default="">
@@ -167,6 +168,7 @@
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 
+		<cfset var html = "" />
 		
 		<cfsavecontent variable="html">
 			<!--- Place custom code here! --->
@@ -181,6 +183,7 @@
 		<cfargument name="stFieldPost" required="true" type="struct" hint="The fields that are relevent to this field type.It consists of value and stSupporting">
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		
+		<cfset var stFieldPost = structNew() />
 		<cfset var stResult = structNew()>		
 		<cfset stResult.bSuccess = true>
 		<cfset stResult.value = stFieldPost.Value>

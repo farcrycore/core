@@ -16,6 +16,13 @@
 		<cfset var libraryData = "" />
 		<cfset var qLibraryList = queryNew("blah") />
 		<cfset var uuidTypename = "" />
+		<cfset var returnHTML = "" />
+		<cfset var oData = "" />
+		<cfset var oPrimary = "" />
+		<cfset var stPrimary = structNew() />
+		<cfset var ULID = "" />
+		<cfset var html = "" />
+		<cfset var stTemp = structNew() />
 		
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedWebskin" default="librarySelected" type="string" />
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedListClass" default="arrayDetail" type="string" />
@@ -191,6 +198,8 @@
 
 		<cfset var returnHTML = "" />
 		<cfset var uuidTypename = "" />
+		<cfset var oData = "" />
+		<cfset var stobj = structNew() />
 		
 		
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedWebskin" default="librarySelected">
@@ -258,6 +267,12 @@
 		<cfset var oData = "" />
 		<cfset var q4 = "" />
 		<cfset var joinTypename = "" />
+		<cfset var i = "" />
+		<cfset var oPrimary = "" />
+		<cfset var qLibraryList = queryNew("blah") />
+		<cfset var ULID = "" />
+		<cfset var HTML = "" />
+		<cfset var stTemp = structNew() />
 		
 		<!---
 		<cfset var oFourQ = createObject("component","farcry.core.packages.fourq.fourq")><!--- TODO: this needs to be removed when we add typename to array tables. ---> 

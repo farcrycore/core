@@ -19,6 +19,14 @@
 		<cfset var stobj = structnew() / >
 		<cfset var stJoinObjects = structNew() /> <!--- This will contain a structure of object components that match the ftJoin list from the metadata --->
 		<cfset var tmpTypename="" />
+		<cfset var i = "" />	
+		<cfset var qArrayField = queryNew("blah") />
+		<cfset var oPrimary = "" />
+		<cfset var qLibraryList = queryNew("blah") />
+		<cfset var ULID = "" />
+		<cfset var typeName = "" />
+		<cfset var HTML = "" />
+		<cfset var stTemp = structNew() />
 
 		<!---
 		<cfset var oFourQ = createObject("component","farcry.core.packages.fourq.fourq")><!--- TODO: this needs to be removed when we add typename to array tables. ---> 
@@ -237,6 +245,13 @@
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 
 		<cfset var returnHTML = ""/>
+		<cfset var i = "" />
+		<cfset var o = "" />
+		<cfset var q = "" />
+		<cfset var stJoinObjects = "" />
+		<cfset var ULID = "" />
+		<cfset var stobj = "" />
+		<cfset var html = "" />
 
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedWebskin" default="librarySelected">
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedListClass" default="thumbNailsWrap">
@@ -302,7 +317,13 @@
 		
 		<cfset var aField = ArrayNew(1) />
 		<cfset var qArrayRecords = queryNew("blah") />
-		<cfset var stResult = structNew()>		
+		<cfset var stResult = structNew()>	
+		<cfset var i = "" />
+		<cfset var lColumn = "" />
+		<cfset var qArrayRecordRow = queryNew("blah") />
+		<cfset var stArrayData = structNew() />
+		<cfset var iColumn = "" />
+			
 		<cfset stResult.bSuccess = true>
 		<cfset stResult.value = "">
 		<cfset stResult.stError = StructNew()>
@@ -369,6 +390,16 @@
 		<cfset var stobj = structnew() / >
 		<cfset var stJoinObjects = structNew() /> <!--- This will contain a structure of object components that match the ftJoin list from the metadata --->
 
+		<cfset var i = "" />
+		<cfset var qArrayField = queryNew("blah") />
+		<cfset var oPrimary = "" />
+		<cfset var qLibraryList = queryNew("blah") />
+		<cfset var ULID = "" />
+		<cfset var HTML = "" />
+		<cfset var stTemp = structNew() />
+		
+		
+		
 		<!---
 		<cfset var oFourQ = createObject("component","farcry.core.packages.fourq.fourq")><!--- TODO: this needs to be removed when we add typename to array tables. ---> 
 		 --->
