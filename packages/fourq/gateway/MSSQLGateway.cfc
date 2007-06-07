@@ -42,6 +42,7 @@
 		<cfset var tablename = variables.dbowner & arguments.metadata.getTableName() />
 		<cfset var result = structNew() />
 		<cfset var SQLArray = generateDeploymentSQLArray(fields) />
+   		<cfset var sysTableName = "" />
 		
     	<cfset result.bSuccess = true />
 		
@@ -118,6 +119,8 @@
 		<cfset var i = "" />
 		<cfset var SQLArray = generateDeploymentSQLArray(arguments.fields) />
 		<cfset var SQL = "" />
+   		<cfset var arrayTableName = "" />
+   		<cfset var sysTableName = "" />
 
 		<cfset arguments.tablename = ListLast(arguments.tablename,".")>
 		<!--- <cfif ListFindNoCase(arguments.tablename,variables.dbowner,".")>

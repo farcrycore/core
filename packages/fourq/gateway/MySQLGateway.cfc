@@ -227,6 +227,15 @@
 	    <cfset var stTmp = "" />
 		<cfset var lNewData = "" />
 		<cfset var o = "" />	
+   		<cfset var qArrayRecordsToDelete = queryNew("blah") />
+   		<cfset var qCurrentArrayRecords = queryNew("blah") />
+   		<cfset var qDuplicate = queryNew("blah") />
+   		<cfset var qCreateData = queryNew("blah") />
+   		<cfset var update = "" />
+   		<cfset var qUpdateSeq = queryNew("blah") />
+   		<cfset var stResult = structNew() />
+   		<cfset var aReturn = arrayNew(1) />
+   		<cfset var sortorder = "" />
 
 		<!--- MJB
 		Only delete records that are not contained in the Array of objects passed. This ensures that any extended array properties are not deleted.

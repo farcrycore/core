@@ -71,6 +71,18 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 	   	<cfargument name="dbtype" type="string" required="false" default="#application.dbtype#">
 		<cfargument name="dbowner" type="string" required="false" default="#ucase(application.dbowner)#">
 		
+		<cfset var stDefaultProperties = structNew() />
+		<cfset var qRefDataDupe = queryNew("blah") />
+		<cfset var qRefData = queryNew("blah") />
+		<cfset var qObjectDupe = queryNew("blah") />
+		<cfset var userlogin = "" />
+		<cfset var dmProfileID = "" />
+		<cfset var stProps = structNew() />
+		<cfset var PrimaryPackage = "" />
+		<cfset var PrimaryPackagePath = "" />
+		
+		
+		
 		<cfif isDefined("session.dmSec.authentication.userlogin")>
 			<cfset userlogin = session.dmSec.authentication.userlogin>
 		<cfelse>
@@ -269,7 +281,9 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		
 		<cfset var stResult = structNew()>
 		<cfset var gateway = "" />
-    <cfset var fields = "" />
+	    <cfset var fields = "" />
+		<cfset var md = structNew() />
+	
     <cfset fourqInit() />
     
     <cfset md = getMetaData()>
@@ -336,6 +350,11 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset var col=0>
 		<cfset var j=0>
 		<cfset var stPackage = structNew() />
+		<cfset var fieldname = "" />
+		<cfset var stobjDisplay = structNew() />
+		<cfset var oType = "" />
+		<cfset var addedtoBroker = "" />
+		<cfset var instance = "" />
 		
 		<!--- init fourq --->
 		<cfset fourqInit() />
@@ -438,6 +457,8 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		
 	    <cfset var stResult = StructNew() />
 	    <cfset var gateway = "" />
+	    <cfset var stProperties = structNew() />
+	    <cfset var stDefaultProperties = "" />
 
 	    
 	    <cfset fourqInit() />
@@ -513,6 +534,8 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		
 		<!--- set status here... if something goes wrong expect a thrown error --->
 		<cfset var stResult = structNew()>
+		<cfset var stobj = structNew() />
+		
 		<cfset stResult.bSuccess = true>
 		<cfset stResult.message = "Object deleted successfully">
 		
@@ -664,13 +687,13 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		*including* inherited properties that have not been overloaded
 		20020518 GB
 		 --->
-		 <cfset var stExtends = structNew()>
-		 
+		 <cfset var stExtends = structNew()>		 
 		<cfset var md=getMetaData(this)>
-
 		<!--- container for processed propertynames --->
 		<cfset var lPropsProcessed = "">
 		<cfset var aProps = ArrayNew(1)>
+		<cfset var prop = "">
+		<cfset var thisprop = "">
 		
 		<cftrace inline="false" type="warning" text="The getProperties() method in fourq is deprecated. Use variables.tableMetadata.getTableDefinition() instead.">
 		
@@ -770,6 +793,8 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset var stProperties = StructNew()>
 		<cfset var curAncestor = "">
 		<cfset var curProperty = "">
+		<cfset var i = "">
+		<cfset var j = "">
 		
 		<cfloop index="i" from="1" to="#ArrayLen(aAncestors)#">
 			<cfset curAncestor = aAncestors[i]>
@@ -811,6 +836,15 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset var filteredWebskins = "" />
 		<cfset var filterWebskinName = "" />
 		<cfset var filterWebskinTimeout = "" />
+		<cfset var col = "">
+		<cfset var ixFilter = "">
+		<cfset var qDupe = queryNew("blah") />
+		<cfset var qFilter = queryNew("blah") />
+		<cfset var qAllWebskins = queryNew("blah") />
+		<cfset var qExtendedWebskin = queryNew("blah") />
+		<cfset var extendedWebskinName = "">
+		<cfset var aFilteredWebskins = arrayNew(1) />
+		<cfset var stFilterDetails = structNew() />
 		
 		<!--- If we are updating a type that already exists then we need to update only the metadata that has changed. --->
 		<cfif structKeyExists(stReturnMetadata, "stProps")>			
@@ -988,6 +1022,9 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
     <cfargument name="tabledef" type="struct" required="true" />
     <cfargument name="aProps" type="array" required="true" />
 
+		<cfset var gateway =  "" />
+		<cfset var stResult =  structNew() />
+		
     	<cfset fourqInit() />
     
 		<cfset gateway = getGateway()  />

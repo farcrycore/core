@@ -55,6 +55,8 @@
 		
 		<cfset var webskinHTML = "" />
 		<cfset var i = "" />
+		<cfset var j = "" />
+		<cfset var k = "" />
 		<cfset var bFlushCache = 0 />
 		<cfset var stCacheWebskin = structNew() />
 		
@@ -244,6 +246,8 @@
 		
 		<cfset var numberToRemove = 0 />
 		<cfset var lRemoveObjectIDs = "" />
+		<cfset var i = "" />
+		<cfset var objectToDelete = "" />
 		
 		<cfif application.bObjectBroker>
 			<cfif arraylen(application.objectbroker[arguments.typename].aObjects) GT application.objectbroker[arguments.typename].maxObjects>
@@ -252,14 +256,6 @@
 				<cfif numberToRemove GT 0>
 					<cfloop from="1" to="#numberToRemove#" index="i">		
 						<cfset lRemoveObjectIDs = listAppend(lRemoveObjectIDs, application.objectbroker[arguments.typename].aObjects[i]) />			
-					<!--- 	<!--- Get the objectid in the first (oldest) position  --->
-						<cfset ObjectToDelete = application.objectbroker[arguments.typename].aObjects[1]>
-						
-						<!--- Delete the structure that has the key of this objectid --->
-						<cfset StructDelete(application.objectbroker[arguments.typename],ObjectToDelete)>
-						
-						<!--- Now delete the first (oldest) position of the array  --->
-						<cfset arrayDeleteAt(application.objectbroker[arguments.typename].aObjects,1)>  --->
 					</cfloop>
 					
 					<cfset removeFromObjectBroker(lObjectIDs=lRemoveObjectIDs, typename=arguments.typename) />
@@ -278,6 +274,12 @@
 		<cfset var aObjectIds = arrayNew(1) />
 		<cfset var oWebskinAncestor = createObject("component", application.stcoapi.dmWebskinAncestor.packagePath) />						
 		<cfset var qWebskinAncestors = queryNew("blah") />
+		<cfset var i = "" />
+		<cfset var bSuccess = "" />
+		<cfset var stResult = structNew() />
+		<cfset var pos = "" />
+		<cfset var arrayList = "" />
+		<cfset var deleted = "" />
 
 		<cfif application.bObjectBroker>
 			<cfif structkeyexists(application.objectbroker, arguments.typename)>

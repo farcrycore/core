@@ -6,6 +6,8 @@
 		
 		
 		<cfset var qObjects = QueryNew("typename","VarChar")>
+   		<cfset var qDBObjects = queryNew("blah") />
+   		<cfset var newRow = "" />
 		
 		
 		<!--- MYSQL --->
@@ -41,6 +43,7 @@
 		
 		<cfargument name="DSN" hint="I am the CF datasource name" required="yes" type="string">
 		<cfargument name="ObjectName" hint="I am the object to check on." required="yes" type="string" />
+   		<cfset var qObject = queryNew("blah") />
 		
 		<!--- MySQL --->
 		<!---
@@ -70,8 +73,8 @@
 		<cfset var Field = 0 />
 		<cfset var dataType = 0 />
 		<cfset var length = 0 />
+   		<cfset var aFields = arrayNew(1) />
 			
-		<cfset aFields = ArrayNew(1)>
 			
 		<cfoutput query="qFields">
 			<!--- 
@@ -274,26 +277,26 @@
 
 	<cffunction name="CreateFarcryPackage" access="public" output="false" returntype="any">
 		<cfargument name="typename" required="yes" type="string">
+		<cfargument name="DSN" hint="I am the CF datasource name" required="yes" type="string">
 		
-		
-		
-		<cfset qObject = readObject("breathe",arguments.typename)>
-		
-		<cfset aFields = readFields(qObject)>
+		<cfset var qObject = readObject(arguments.DSN,arguments.typename)>		
+		<cfset var aFields = readFields(qObject)>		
+		<cfset var NewComponent = "">		
+		<cfset var i = "">
 
-<cfsavecontent variable="NewComponent">		
-<cfoutput>||cfcomponent extends="farcry.core.packages.types.types" displayname="#arguments.typename#" hint="#arguments.typename#"></cfoutput>
-<cfloop from="1" to="#ArrayLen(aFields)#" index="i">
-	<cfif NOT listcontainsNoCase("objectid,label,datetimecreated,createdby,ownedby,datetimelastupdated,lastupdatedby,lockedBy,locked",aFields[i].Name)>
-	<cfoutput>||cfproperty name="#aFields[i].Name#" type="#aFields[i].dbDataType#" hint="" required="No" default="#aFields[i].Default#" PrimaryKey="#aFields[i].PrimaryKey#" Length="#aFields[i].Length#" identity="#aFields[i].identity#" nullable="#aFields[i].nullable#"></cfoutput>
-	</cfif>
-</cfloop>
-<cfoutput>||/cfcomponent></cfoutput>
-</cfsavecontent>
+		<cfsavecontent variable="NewComponent">		
+			<cfoutput>||cfcomponent extends="farcry.core.packages.types.types" displayname="#arguments.typename#" hint="#arguments.typename#"></cfoutput>
+			<cfloop from="1" to="#ArrayLen(aFields)#" index="i">
+				<cfif NOT listcontainsNoCase("objectid,label,datetimecreated,createdby,ownedby,datetimelastupdated,lastupdatedby,lockedBy,locked",aFields[i].Name)>
+				<cfoutput>||cfproperty name="#aFields[i].Name#" type="#aFields[i].dbDataType#" hint="" required="No" default="#aFields[i].Default#" PrimaryKey="#aFields[i].PrimaryKey#" Length="#aFields[i].Length#" identity="#aFields[i].identity#" nullable="#aFields[i].nullable#"></cfoutput>
+				</cfif>
+			</cfloop>
+			<cfoutput>||/cfcomponent></cfoutput>
+		</cfsavecontent>
 				
-	<cfset NewComponent = "#ReplaceNoCase(NewComponent, '#Chr(10)##Chr(10)#', '' , 'All')#">
-	<cfset NewComponent = "#ReplaceNoCase(NewComponent, '		#Chr(10)#', '' , 'All')#">
-	<cfset NewComponent = "#ReplaceNoCase(NewComponent, '||', '<' , 'All')#">
+		<cfset NewComponent = "#ReplaceNoCase(NewComponent, '#Chr(10)##Chr(10)#', '' , 'All')#">
+		<cfset NewComponent = "#ReplaceNoCase(NewComponent, '		#Chr(10)#', '' , 'All')#">
+		<cfset NewComponent = "#ReplaceNoCase(NewComponent, '||', '<' , 'All')#">
 
 		
 		

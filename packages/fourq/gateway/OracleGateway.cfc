@@ -231,6 +231,7 @@
 	  <cfset var field = "" />
 	  <cfset var SQLArray = arrayNew(1) />
 	  <cfset var propertyValue = "" />
+   		<cfset var stField = structNew() />
 
     <cfloop collection="#tableDef#" item="field">
 

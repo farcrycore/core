@@ -43,6 +43,10 @@
 			
 			<cfset var stFields = arguments.metadata.getTableDefinition() />      
       		<cfset var SQLArray = generateSQLNameValueArray(stFields,stProperties) />
+      		<cfset var qCreateData = queryNew("blah") />
+      		<cfset var qRefData = queryNew("blah") />
+      		<cfset var createDataResult = "" />
+      		<cfset var objectid = "" />
 	    
 			<!--- set defaults for status --->
 			<cfset createDataResult.bSuccess = true>
@@ -135,6 +139,19 @@
 	    <cfset var stTmp = "" />
 		<cfset var lNewData = "" />
 		<cfset var o = "" />
+   		<cfset var qArrayRecordsToDelete = queryNew("blah") />
+   		<cfset var qDeleteRecords = queryNew("blah") />
+   		<cfset var qCurrentArrayRecords = queryNew("blah") />
+   		<cfset var qDuplicate = queryNew("blah") />
+   		<cfset var qCreateData = queryNew("blah") />
+   		<cfset var update = "" />
+   		<cfset var qArrayData = queryNew("blah") />
+   		<cfset var qTypename = queryNew("blah") />
+   		<cfset var qUpdateSeq = queryNew("blah") />
+   		<cfset var stResult = structNew() />
+   		<cfset var insertSEQ = "" />
+   		<cfset var aReturn = arrayNew(1) />
+   		<cfset var sortorder = "" />
 	
 		<!--- 
 		IF THE ARRAY TABLE HAS HAD A CFC CREATED FOR IT IN ORDER TO EXTEND IT THEN WE USE STANDARD GET, SET & DELETE.
@@ -401,8 +418,18 @@
 	  	<cfset var stFields = arguments.metadata.getTableDefinition() />
 		<cfset var tablename = arguments.metadata.getTableName() />
 		<cfset var SQLArray = generateSQLNameValueArray(stFields,stProperties) />
+   		<cfset var i = "" />
+   		<cfset var qRecordExists = queryNew("blah") />
+   		<cfset var qSetData = queryNew("blah") />
+   		<cfset var stResult = structNew() />
+   		<cfset var objectid = "" />
+   		<cfset var stPackage = structNew() />
+   		<cfset var packagePath = "" />
+   		<cfset var userLogin = "" />
+   		<cfset var t = "" />
+   		<cfset var stDefaultProperties = structNew() />
+   		<cfset var stCreatedObject = structNew() />
 
-		<cfset stResult = structNew() />
 		<cfset stResult.bSuccess = true />
 		<cfset stResult.message = "" />
 		
@@ -488,6 +515,7 @@
 	  	<cfset var field = "" />
 	  	<cfset var SQLArray = arrayNew(1) />
 	  	<cfset var propertyValue = "" />
+   		<cfset var stField = structNew() />
 
     	<cfloop collection="#tableDef#" item="field">
     
@@ -589,6 +617,9 @@
 		<cfset var prop = "" />
 		<cfset var key = "" />
 		<cfset var stObjects = "" />
+   		<cfset var qMultipleObjects = queryNew("blah") />
+   		<cfset var qArrayData = queryNew("blah") />
+   		<cfset var sql = "" />
 		
 		<cfsavecontent variable="sql">
 		<cfoutput>
@@ -679,6 +710,8 @@
 		<cfset var prop = "" />
 		<cfset var key = "" />
 		<cfset var stObjects = "" />
+   		<cfset var qMultipleObjects = queryNew("blah") />
+   		<cfset var sql = "" />
 		
 		<cfsavecontent variable="sql">
 		<cfoutput>
@@ -738,6 +771,11 @@
 		<cfargument name="value" type="string" required="yes">
 		<cfargument name="whereclause" type="string" required="false" default="WHERE 0=1">
 		
+		
+   		<cfset var qSetMultipleObjects = queryNew("blah") />
+   		<cfset var sql = "" />
+	
+	
 		<cfif stProps[arguments.prop].metadata.type neq 'array'>
 			<cfsavecontent variable="sql">
 				<cfoutput>
