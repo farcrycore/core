@@ -111,9 +111,7 @@
 
 	<cfset lFieldsToRender =  "">
 	
-	<cfif not len(attributes.lFields)>
-		<cfset attributes.lFields = variables.lFields>
-	</cfif>	
+
 
 	<!--- allow for whitespace in field list attributes by trimming --->
 	<cfset attributes.lFields = replacenocase(attributes.lFields, " ", "", "ALL") />
@@ -130,6 +128,11 @@
 				<cfset attributes.lExcludeFields =  listdeleteat(attributes.lExcludeFields,ListFindNoCase(attributes.lExcludeFields,i))>
 			</cfif> --->
 		</cfif>
+		
+		<!--- If the user explicitly wants a field to appear, remove it from the exclusion list. --->
+		<cfif ListFindNoCase(attributes.lExcludeFields,i)>
+			<cfset attributes.lExcludeFields =  listdeleteat(attributes.lExcludeFields,ListFindNoCase(attributes.lExcludeFields,i))>
+		</cfif>
 	</cfloop>
 
 	<!--- Determine fields to render but as hidden fields --->
@@ -143,6 +146,12 @@
 			<cfset attributes.lExcludeFields =  listdeleteat(attributes.lExcludeFields,ListFindNoCase(attributes.lExcludeFields,i))>
 		</cfif>
 	</cfloop>	
+	
+	<!--- If still no fields, just default to all the fields in the type --->
+	<cfif not len(attributes.lFields)>
+		<cfset attributes.lFields = variables.lFields>
+	</cfif>	
+	
 	
 	<!--- Determine fields to exclude from render --->
 	<cfif isDefined("attributes.lExcludeFields") and len(attributes.lExcludeFields)>
