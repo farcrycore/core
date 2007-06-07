@@ -108,6 +108,7 @@ default handlers
 			<!--- Check to see if the webskin is in the object broker --->
 			<cfset webskinHTML = oObjectBroker.getWebskin(objectid=stobj.objectid, typename=stobj.typename, template=arguments.template) />		
 
+			<cftimer label="getView: #stobj.typename# (#arguments.template#)">
 			<cfif not len(webskinHTML)>
 				<cfset webskinPath = application.coapi.coapiadmin.getWebskinPath(typename=stObj.typename, template=arguments.template) />
 						
@@ -177,6 +178,7 @@ default handlers
 					<cfthrow type="Application" detail="Error: Template not found [/webskin/#stObj.typename#/#arguments.template#.cfm] and no alternate html provided." />
 				</cfif>	
 			</cfif>		
+			</cftimer>
 		<cfelse>
 			<cfthrow type="Application" detail="Error: When trying to render [/webskin/#stObj.typename#/#arguments.template#.cfm] the object was not created correctly." />	
 		</cfif>
