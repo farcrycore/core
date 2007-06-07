@@ -457,7 +457,6 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		
 	    <cfset var stResult = StructNew() />
 	    <cfset var gateway = "" />
-	    <cfset var stProperties = structNew() />
 	    <cfset var stDefaultProperties = "" />
 
 	    
@@ -470,7 +469,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		
 	    <!--- Make sure we remove the object from the objectBroker if we update something --->
 	    <cfif structkeyexists(stProperties, "objectid")>
-		    <cfset variables.objectBroker.RemoveFromObjectBroker(lObjectIDs=stProperties.ObjectID,typename=variables.typename)>
+		    <cfset variables.objectBroker.RemoveFromObjectBroker(lObjectIDs=arguments.stProperties.ObjectID,typename=variables.typename)>
 	    </cfif>	    
 
 	   	
@@ -488,7 +487,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			<cfparam name="stProperties.ObjectID" default="#CreateUUID()#" />				
 			
 			<!--- Get the default properties for this object --->
-			<cfset stDefaultProperties = this.getData(objectid=stProperties.ObjectID,typename=variables.typename) />
+			<cfset stDefaultProperties = this.getData(objectid=arguments.stProperties.ObjectID,typename=variables.typename) />
 		  	
 		  	<!--- need to add this in case the object has been put in the instance cache in the getdata above. --->
 	   	 	<cfset structdelete(instance,"bgetdata")>
@@ -500,11 +499,11 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			<cfset StructAppend(arguments.stProperties,stDefaultProperties,false)>	
 						
 			<!--- Add object to temporary object store --->
-			<cfset Session.TempObjectStore[stProperties.ObjectID] = arguments.stProperties />
+			<cfset Session.TempObjectStore[arguments.stProperties.ObjectID] = arguments.stProperties />
 			
 			<cfset stResult.bSuccess = true />
 			<cfset stResult.message = "Object Saved to the Temporary Object Store." />
-			<cfset stResult.ObjectID = stProperties.ObjectID />
+			<cfset stResult.ObjectID = arguments.stProperties.ObjectID />
 			
 			
 			
@@ -513,12 +512,12 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		----------------------------------------->	
 	   	<cfelse>
 		   	
-	   		<cfset stResult = gateway.setData(stProperties,variables.tableMetadata) />	   	
+	   		<cfset stResult = gateway.setData(arguments.stProperties,variables.tableMetadata) />	   	
 	   	 
 	    
 		   	<!--- Make sure we remove the object from the TempObjectStore if we update something --->
-	   		<cfif structKeyExists(session, "TempObjectStore") AND structKeyExists(Session.TempObjectStore,stProperties.ObjectID)>
-		   		<cfset structdelete(Session.TempObjectStore, stProperties.ObjectID) />
+	   		<cfif structKeyExists(session, "TempObjectStore") AND structKeyExists(Session.TempObjectStore,arguments.stProperties.ObjectID)>
+		   		<cfset structdelete(Session.TempObjectStore, arguments.stProperties.ObjectID) />
 		   	</cfif>
 		   		   	 
 	   	</cfif>		   	
