@@ -16,7 +16,6 @@
 	<cfset var qResult=queryNew("ATTRIBUTES, DATELASTMODIFIED, DIRECTORY, MODE, NAME, SIZE, TYPE, typepath") />
 	<cfset var qComps=queryNew("blah") />
 	<cfset var qDupe=queryNew("blah") />
-	<cfset var qResult=queryNew("blah") />
 	<cfset var lDir=arguments.plugins />
 	<cfset var packagedir = "" />
 	<cfset var packagepath = "" />
