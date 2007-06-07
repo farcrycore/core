@@ -24,7 +24,6 @@
 		<cfset var oPrimary = "" />
 		<cfset var qLibraryList = queryNew("blah") />
 		<cfset var ULID = "" />
-		<cfset var typeName = "" />
 		<cfset var HTML = "" />
 		<cfset var stTemp = structNew() />
 
@@ -115,36 +114,7 @@
 			<cfsavecontent variable="returnHTML">
 				<!--- Contains a list of objectID's currently associated with this field' --->
 				<cfoutput><input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="#valuelist(qArrayField.data)#" /></cfoutput>
-
-				
-					<!---<cfoutput><div id="#ULID#" class="#arguments.stMetadata.ftLibrarySelectedListClass#" style="#arguments.stMetadata.ftLibrarySelectedListStyle#"></cfoutput>
-						<cfloop query="qArrayField">
-							<cfoutput><div id="#arguments.fieldname#_#qArrayField.data#">
-								<img src="#application.url.farcry#/images/dragbar.gif" class="#ULID#handle" style="cursor:move;" align="center">
-								<div></cfoutput>
-								<!---
-								<!--------------------------------------------------------------- 
-								Need to determine the type of the object.
-								TODO: array tables will include a typename field by default so we know what type they are and will not need to lookup the refObjects table.
-								 --------------------------------------------------------------->
-								<cfset typeName = oFourQ.findType(objectid=i) />
-								 --->	
-								<cfset stobj = stJoinObjects[qArrayField.typename].getData(objectid=qArrayField.data)>
-								<cfif FileExists("#application.path.project#/webskin/#qArrayField.typename#/#arguments.stMetadata.ftLibrarySelectedWebskin#.cfm")>
-									<cfset stJoinObjects[qArrayField.typename].getDisplay(stObject=stobj, template="#arguments.stMetadata.ftLibrarySelectedWebskin#") />
-								<cfelse>
-									<cfif isDefined("stobj.label") AND len(stobj.label)>
-										<cfoutput>#stobj.Label#</cfoutput>
-									<cfelse>
-										<cfoutput>#stobj.ObjectID#</cfoutput>
-									</cfif>
-								</cfif>
-												
-								<cfoutput><a href="##" onclick="new Effect.Fade($('#arguments.fieldname#_#qArrayField.data#'));Element.remove('#arguments.fieldname#_#qArrayField.data#');$('#arguments.fieldname#').value = Sortable.sequence('#ULID#');update_#arguments.fieldname#('sort',$('#arguments.fieldname#')); return false;"><img src="#application.url.farcry#/images/crystal/22x22/actions/button_cancel.png" style="width:16px;height:16px;" /></a>
-								</div>
-							</div></cfoutput>
-						</cfloop>
-					<cfoutput></div></cfoutput> --->
+	
 
 					<!-----------------------
 					NEW ARRAY LAYOUT

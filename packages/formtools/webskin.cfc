@@ -12,7 +12,7 @@
 		
 		<cfset var html = "" />
 		<cfset var oType = "" />
-		<cfset var qWebskins = queryNew() />
+		<cfset var qWebskins = queryNew("blah") />
 		
 		
 		<cfparam name="arguments.stMetadata.ftPrefix" default="">

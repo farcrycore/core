@@ -183,7 +183,6 @@
 		<cfargument name="stFieldPost" required="true" type="struct" hint="The fields that are relevent to this field type.It consists of value and stSupporting">
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		
-		<cfset var stFieldPost = structNew() />
 		<cfset var stResult = structNew()>		
 		<cfset stResult.bSuccess = true>
 		<cfset stResult.value = stFieldPost.Value>
@@ -192,9 +191,9 @@
 		<!--- --------------------------- --->
 		<!--- Perform any validation here --->
 		<!--- --------------------------- --->
-		<cfparam name="stFieldPost.stSupporting.Include" default="true">
+		<cfparam name="arguments.stFieldPost.stSupporting.Include" default="true">
 		
-		<cfif ListGetAt(stFieldPost.stSupporting.Include,1)>
+		<cfif ListGetAt(arguments.stFieldPost.stSupporting.Include,1)>
 		
 			<cfif len(trim(arguments.stFieldPost.Value))>
 				<cfset stResult.value = trim(arguments.stFieldPost.Value)>
