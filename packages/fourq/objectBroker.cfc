@@ -87,10 +87,9 @@
 						</cfif>
 							
 						<cfif structKeyExists(stCacheWebskin, "datetimecreated")
-							AND 	structKeyExists(stCacheWebskin, "webskinHTML") >
-						
-						
-							<cfif NOT structKeyExists(stCacheWebskin, "timeout") OR DateDiff('n', stCacheWebskin.datetimecreated, now()) LT stCacheWebskin.timeout >
+							AND structKeyExists(stCacheWebskin, "webskinHTML") >
+
+							<cfif DateDiff('n', stCacheWebskin.datetimecreated, now()) LT application.stcoapi[arguments.typename].stObjectBrokerWebskins[arguments.template].timeout >
 								<cfset webskinHTML = stCacheWebskin.webskinHTML />
 								
 								<!--- Place any request.inHead variables back into the request scope from which it came. --->
@@ -102,12 +101,16 @@
 									<cfswitch expression="#i#">
 										<cfcase value="stCustom">
 											<cfloop list="#structKeyList(stCacheWebskin.inHead.stCustom)#" index="j">
-												<cfset request.inHead.stCustom[j] = stCacheWebskin.inHead.stCustom[j] />
+												<cfif not structKeyExists(request.inHead.stCustom, j)>
+													<cfset request.inHead.stCustom[j] = stCacheWebskin.inHead.stCustom[j] />
+												</cfif>
 											</cfloop>
 										</cfcase>
 										<cfcase value="aCustomIDs">
 											<cfloop from="1" to="#arrayLen(stCacheWebskin.inHead.aCustomIDs)#" index="k">
-												<cfset arrayAppend(request.inHead.aCustomIDs,stCacheWebskin.inHead.aCustomIDs[k]) />
+												<cfif NOT listFindNoCase(arrayToList(request.inHead.aCustomIDs), stCacheWebskin.inHead.aCustomIDs[k])>
+													<cfset arrayAppend(request.inHead.aCustomIDs,stCacheWebskin.inHead.aCustomIDs[k]) />
+												</cfif>
 											</cfloop>
 										</cfcase>
 										<cfdefaultcase>
