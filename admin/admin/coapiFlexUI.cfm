@@ -10,7 +10,7 @@
 </cfif>
 
 <admin:header title="#application.adminBundle[session.dmProfile.locale].COAPIrules#" writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
-<skin:flexWrapper SWFSource="/farcry/admin/ui/swf/Coapi.swf" id="CoapiUI" />
+<skin:flexWrapper SWFSource="#application.url.farcry#/admin/ui/swf/Coapi.swf" id="CoapiUI" />
 <admin:footer>
 
 <cfsetting enablecfoutputonly="no">

@@ -5,6 +5,6 @@
 
 <admin:header title="Category manager" writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<skin:flexWrapper SWFSource="/farcry/admin/ui/swf/Category.swf" id="FarcryCategory" />
+<skin:flexWrapper SWFSource="#application.url.farcry#/admin/ui/swf/Category.swf" id="FarcryCategory" />
 <admin:footer>
 <cfsetting enablecfoutputonly="no">
