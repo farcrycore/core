@@ -112,7 +112,7 @@ for(i=0;i < objSelect.length;i++)
 	</label>
 	<label for="dest"><b>#application.adminBundle[session.dmProfile.locale].activeRules#</b>
 	<select multiple name="dest" id="dest" size="6" style="width:200px"><cfloop query="qActiveRules"><!--- need check here for displayname key --->
-	<option value="#qActiveRules.objectid#">#application.rules[typename].displayname#</option></cfloop>
+	<option value="#qActiveRules.objectid#">#application.rules[qActiveRules.typename].displayname#</option></cfloop>
 	</select><br />
 		<span class="f-toolwrap">
 		<!-- TODO: i18n -->
