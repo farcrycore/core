@@ -249,7 +249,6 @@
 		<cfset var struct2Parse = "" />
 		<cfset var depth = "" />
 		<cfset var propId = "" />
-		<cfset var stProps = structNew() />
 		<cfset var typeMatch = "" />
 		<cfset var bPrecision = "" />
 
