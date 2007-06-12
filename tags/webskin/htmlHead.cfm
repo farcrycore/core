@@ -41,10 +41,13 @@ $in: id -- an id for the content to be added to the head. If the key already exi
 	
 	<!--- If we are currently inside of a webskin we need to add this id to the current webskin --->
 	<cfif structKeyExists(request, "aAncestorWebskins") AND arrayLen(request.aAncestorWebskins)>
-		<cfif NOT structKeyExists(request.aAncestorWebskins[arrayLen(request.aAncestorWebskins)].inhead.stCustom, attributes.id)>
-			<cfset request.aAncestorWebskins[arrayLen(request.aAncestorWebskins)].inHead.stCustom[attributes.id] = thisTag.generatedContent />
-			<cfset arrayAppend(request.aAncestorWebskins[arrayLen(request.aAncestorWebskins)].inHead.aCustomIDs, attributes.id) />
-		</cfif>
+	
+		<cfloop from="1" to="#arrayLen(request.aAncestorWebskins)#" index="iWebskin">
+			<cfif NOT structKeyExists(request.aAncestorWebskins[iWebskin].inhead.stCustom, attributes.id)>
+				<cfset request.aAncestorWebskins[iWebskin].inHead.stCustom[attributes.id] = thisTag.generatedContent />
+				<cfset arrayAppend(request.aAncestorWebskins[iWebskin].inHead.aCustomIDs, attributes.id) />
+			</cfif>
+		</cfloop>
 	</cfif>	
 	
 	
