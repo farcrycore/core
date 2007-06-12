@@ -87,6 +87,9 @@ $out:$
 					<cfset stCurrentView.timeout = oCoapiAdmin.getWebskinTimeOut(typename=stObj.typename, template=arguments.template) />
 					<cfset stCurrentView.hashURL = oCoapiAdmin.getWebskinHashURL(typename=stObj.typename, template=arguments.template) />
 					<cfset stCurrentView.okToCache = 1 />
+					<cfset stCurrentView.inHead = structNew() />
+					<cfset stCurrentView.inHead.stCustom = structNew() />
+					<cfset stCurrentView.inHead.aCustomIDs = arrayNew(1) />
 					<cfset arrayAppend(request.aAncestorWebskins, stCurrentView) />
 	
 					<cfsavecontent variable="webskinHTML">
@@ -96,7 +99,7 @@ $out:$
 					<!--- If the current view (Last Item In the array) is still OkToCache --->
 					<cfif request.aAncestorWebskins[arrayLen(request.aAncestorWebskins)].okToCache>
 						<!--- Add the webskin to the object broker if required --->
-						<cfset bAdded = oObjectBroker.addWebskin(objectid=stobj.objectid, typename=stobj.typename, template=arguments.template, html=webskinHTML, hashURL=stCurrentView.hashURL) />
+						<cfset bAdded = oObjectBroker.addWebskin(objectid=stobj.objectid, typename=stobj.typename, template=arguments.template, html=webskinHTML, stCurrentView=stCurrentView) />
 					</cfif>
 					
 					<cfif arrayLen(request.aAncestorWebskins)>

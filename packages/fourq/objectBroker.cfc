@@ -139,7 +139,7 @@
 		<cfargument name="typename" required="true" type="string">
 		<cfargument name="template" required="true" type="string">
 		<cfargument name="HTML" required="true" type="string">
-		<cfargument name="hashURL" required="true" type="boolean">
+		<cfargument name="stCurrentView" required="true" type="struct">
 		
 		<cfset var webskinHTML = "" />
 		<cfset var bAdded = "false" />
@@ -162,9 +162,9 @@
 								
 								<cfset stCacheWebskin.datetimecreated = now() />
 								<cfset stCacheWebskin.webskinHTML = trim(arguments.HTML) />	
-								<cfset stCacheWebskin.inHead = duplicate(request.inHead) />	
+								<cfset stCacheWebskin.inHead = duplicate(stCurrentView.inHead) />	
 								
-								<cfif arguments.hashURL>
+								<cfif arguments.stCurrentView.hashURL>
 									<cfset application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template][hash(cgi.query_string)] = stCacheWebskin />
 								<cfelse>
 									<cfset application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template]["standard"] = stCacheWebskin />
