@@ -148,8 +148,8 @@
 	</cfloop>	
 	
 	<!--- If still no fields, just default to all the fields in the type --->
-	<cfif not len(attributes.lFields)>
-		<cfset attributes.lFields = variables.lFields>
+	<cfif not len(lFieldsToRender)>
+		<cfset lFieldsToRender = variables.lFields>
 	</cfif>	
 	
 	
