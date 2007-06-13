@@ -59,7 +59,6 @@
 			</cfif>
 			
 			<!--- build query --->
-			<cftransaction>			
 	
 				<cfquery datasource="#variables.dsn#" name="qCreateData">
 					INSERT INTO #variables.dbowner##tablename# ( 
@@ -114,7 +113,6 @@
 						 --->
 					</cfcatch>	
 				</cftry>
-			</cftransaction>
 
 			<cfset createDataResult.objectid = objectid>
 			
