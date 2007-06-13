@@ -501,7 +501,9 @@ $out:$
 	<cfargument name="levelsabove" required="yes" type="numeric" default="2">
 	<cfargument name="levelsbelow" required="no" type="numeric" default="1">
 	<cfargument name="status" required="no" type="string" default=""><!--- if passed, will filter the joined table by the field in it named "status", by whatever value is passed in this param (so don't pass it if the table doesn't have a 'status' field)  --->
-	<cfargument name="dbowner" required="yes" type="string" default="#application.dbowner#">
+	<cfargument name="dbowner" required="no" type="string" default="#application.dbowner#">
+	<cfargument name="maxdepth" required="no" type="numeric" default="0" displayname="Max depth" hint="Sets the maximum depth the tree will go. 0 means unlimited">
+	
 	
 	<cfset var sql = ''>
 	<cfset var q = queryNew("blah")>

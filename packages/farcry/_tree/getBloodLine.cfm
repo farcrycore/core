@@ -23,7 +23,11 @@ $out:$
 --->
 
 <cfsetting enablecfoutputonly="yes">
-
+<cfif arguments.maxdepth gt 0>
+   <cfset maxDepth =  "and nlevel <= #arguments.maxdepth#">
+<cfelse>
+   <cfset maxDepth =  "">
+</cfif>
 <cfscript>
 	// allow joining to tables that dont have an objectID field
 	if(jointable EQ "categories")
@@ -70,12 +74,14 @@ $out:$
 		and nto.objectid = j.#joinTableObjectIDField# (+)
 		and ( nto.parentid in (#vlParentID#)
 		or nto.objectid in (#vlObjectID#)	)
+		#maxDepth#
 		order by nto.nleft";
 	} else {
 		sql = "select distinct nto.*, j.* from #arguments.dbowner#nested_tree_objects nto
 		inner join #arguments.dbowner##arguments.joinTable# j on nto.objectid = j.#joinTableObjectIDField# #statusClause#
 		and ( nto.parentid in (#vlParentID#)
 		or nto.objectid in (#vlObjectID#)	)
+		#maxDepth#
 		order by nto.nleft";
 	}
 
