@@ -106,20 +106,31 @@ $out:$
 						
 						<cfset oWebskinAncestor = createObject("component", application.stcoapi.dmWebskinAncestor.packagePath) />						
 						
+						<!--- 
+						Loop through ancestors to determine whether to add to dmWebskinAncestor Table
+						Only webskins that are cached are added to the table.
+						 --->						
 						<cfloop from="1" to="#arrayLen(request.aAncestorWebskins)#" index="i">
 							
 							<!--- Add the ancestor records so we know where this webskin is located throughout the site. --->
 							<cfif stobj.objectid NEQ request.aAncestorWebskins[i].objectID>
-								<cfset bAncestorExists = oWebskinAncestor.checkAncestorExists(webskinObjectID=stobj.objectid, ancestorID=request.aAncestorWebskins[i].objectID, ancestorTemplate=request.aAncestorWebskins[i].template) />
-									
-								<cfif not bAncestorExists>
-									<cfset stProperties = structNew() />
-									<cfset stProperties.webskinObjectID = stobj.objectid />
-									<cfset stProperties.ancestorID = request.aAncestorWebskins[i].objectID />
-									<cfset stProperties.ancestorTypename = request.aAncestorWebskins[i].typename />
-									<cfset stProperties.ancestorTemplate = request.aAncestorWebskins[i].template />
-									
-									<cfset stResult = oWebskinAncestor.createData(stProperties=stProperties) />
+								<cftimer label="Indexing webskin: #request.aAncestorWebskins[i].typename#/request.aAncestorWebskins[i].template "/>
+							
+								<cfif listFindNoCase(application.stcoapi[request.aAncestorWebskins[i].typename].lObjectBrokerWebskins, request.aAncestorWebskins[i].template)>
+									<cfif application.stcoapi[request.aAncestorWebskins[i].typename].stObjectBrokerWebskins[request.aAncestorWebskins[i].template].timeout NEQ 0>
+							
+										<cfset bAncestorExists = oWebskinAncestor.checkAncestorExists(webskinObjectID=stobj.objectid, ancestorID=request.aAncestorWebskins[i].objectID, ancestorTemplate=request.aAncestorWebskins[i].template) />
+											
+										<cfif not bAncestorExists>
+											<cfset stProperties = structNew() />
+											<cfset stProperties.webskinObjectID = stobj.objectid />
+											<cfset stProperties.ancestorID = request.aAncestorWebskins[i].objectID />
+											<cfset stProperties.ancestorTypename = request.aAncestorWebskins[i].typename />
+											<cfset stProperties.ancestorTemplate = request.aAncestorWebskins[i].template />
+											
+											<cfset stResult = oWebskinAncestor.createData(stProperties=stProperties) />
+										</cfif>
+									</cfif>
 								</cfif>
 							</cfif>
 							
