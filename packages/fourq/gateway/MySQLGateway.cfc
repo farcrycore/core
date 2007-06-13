@@ -236,6 +236,7 @@
    		<cfset var stResult = structNew() />
    		<cfset var aReturn = arrayNew(1) />
    		<cfset var sortorder = "" />
+   		<cfset var sorted = "" />
 
 		<!--- MJB
 		Only delete records that are not contained in the Array of objects passed. This ensures that any extended array properties are not deleted.
@@ -392,22 +393,31 @@
 		
 		<!--- MJB:
 		Because we are no longer deleting the array table records, we need to re-do the sort  --->
-		<cfset variables.sortorder = 1>
-		<cfset variables.sorted = "">	<!--- MJB: This ensures that if a duplicate ObjectID is attempted to be attached, the sorting will not get out of wack. 
+		<cfset sortorder = 1>
+		<cfset sorted = "">	<!--- MJB: This ensures that if a duplicate ObjectID is attempted to be attached, the sorting will not get out of wack. 
 										This would occur if a user added an object to the end of the array that already existed previously. --->
 		
 		<cfset aReturn = ArrayNew(1)>
 		
 		<cfloop from ="1" to="#arrayLen(aProps)#" index="i">
-			<cfif not listContainsNoCase(variables.sorted,arguments.aProps[i].data)>		
+			<cfif not listContainsNoCase(sorted,arguments.aProps[i].data)>	
+				<cftry>	
 				<cfquery datasource="#variables.dsn#" name="qUpdateSeq">
 				UPDATE #variables.dbowner##tablename#
 				SET seq = #sortorder#
 				WHERE parentID = '#arguments.objectid#'
 				AND data = <cfqueryparam value="#arguments.aProps[i].data#" cfsqltype="CF_SQL_VARCHAR">
 				</cfquery>
+				<cfcatch>
+					<cfoutput><p>
+				UPDATE #variables.dbowner##tablename#
+				SET seq = #sortorder#
+				WHERE parentID = '#arguments.objectid#'
+				AND data = '#arguments.aProps[i].data#'</p></cfoutput><cfabort showerror="debugging" />
+				</cfcatch>
+				</cftry>
 				<cfset sortorder = sortorder + 1>
-				<cfset variables.sorted = ListAppend(variables.sorted,arguments.aProps[i].data)>
+				<cfset sorted = ListAppend(sorted,arguments.aProps[i].data)>
 				<cfset ArrayAppend(aReturn,arguments.aProps[i].data)>
 			</cfif>
 	 	</cfloop>
