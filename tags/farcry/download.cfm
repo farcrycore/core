@@ -110,6 +110,7 @@ $out:$
 				<cfset mime = "application/unknown">
 			</cfdefaultcase>
 		</cfswitch>
+
 	
 		<!--- log download --->
 		<cfinvoke component="#application.packagepath#.farcry.stats" method="logEntry">
@@ -147,10 +148,10 @@ $out:$
 		<!--- Determine the ACTUAL filename --->
 		<cfset fileName = listLast(filepath,"/")>
 
-	
+
 		<!--- download --->
 
- 		<cfheader name="content-disposition" VALUE="attachment; filename=#fileName#">
+ 		<cfheader name="content-disposition" VALUE='attachment; filename="#fileName#"'>
 		<cfheader name="cache-control" value="">
 		<cfheader name="pragma" value="">
 	    <cftry>
