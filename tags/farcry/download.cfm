@@ -201,7 +201,7 @@ $out:$
 	</cfswitch>
 
 	<!--- download file via unc path specified for external files --->
-	<cfheader name="content-disposition" value="attachment; filename=#fileName#" />
+	<cfheader name="content-disposition" value='attachment; filename="#fileName#"' />
 	<cfheader name="cache-control" value="">
 	<cfheader name="pragma" value="">
 
