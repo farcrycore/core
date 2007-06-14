@@ -390,17 +390,23 @@ user --->
 	
 	<ft:processForm action="requestapproval">
 		<!--- TODO: Check Permissions. --->
-		<cflocation URL="#application.url.farcry#/conjuror/changestatus.cfm?objectid=#form.objectid#&typename=#attributes.typename#&status=requestapproval&ref=typeadmin&module=#attributes.module##pluginURL#" addtoken="false" />
+		<cfif listLen(form.objectid) EQ 1>
+			<cflocation URL="#application.url.farcry#/navajo/approve.cfm?objectid=#form.objectid#&status=requestapproval" addtoken="false" />
+		</cfif>
 	</ft:processForm>
 	
 	<ft:processForm action="approve">
 		<!--- TODO: Check Permissions. --->
-		<cflocation URL="#application.url.farcry#/conjuror/changestatus.cfm?objectid=#form.objectid#&typename=#attributes.typename#&status=approved&ref=typeadmin&module=#attributes.module##pluginURL#" addtoken="false" />
+		<cfif listLen(form.objectid) EQ 1>
+			<cflocation URL="#application.url.farcry#/navajo/approve.cfm?objectid=#form.objectid#&status=approved" addtoken="false" />
+		</cfif>
 	</ft:processForm>
 	
 	<ft:processForm action="createdraft">
 		<!--- TODO: Check Permissions. --->
-		<cflocation URL="#application.url.farcry#/navajo/createDraftObject.cfm?objectID=#form.objectID#" addtoken="false" />
+		<cfif listLen(form.objectid) EQ 1>
+			<cflocation URL="#application.url.farcry#/navajo/createDraftObject.cfm?objectID=#form.objectID#" addtoken="false" />
+		</cfif>
 	</ft:processForm>
 
 
