@@ -66,7 +66,7 @@
 				<cfset bFlushCache = removeWebskin(objectid=arguments.objectid, typename=arguments.typename, template=template) />
 			</cfif>
 		
-			<cfif request.mode.design eq 1>
+			<cfif request.mode.design eq 1 OR request.mode.lvalidstatus NEQ "approved">
 				<!--- DO NOT USE CACHE IF IN DESIGN MODE --->
 			<cfelse>
 				<cfif listFindNoCase(application.stcoapi[arguments.typename].lObjectBrokerWebskins, arguments.template)>
@@ -134,7 +134,7 @@
 		<cfreturn webskinHTML />
 	</cffunction>
 			
-	<cffunction name="addWebskin" access="public" output="false" returntype="boolean" hint="Adds webskin to object broker if all conditions are met">
+	<cffunction name="addWebskin" access="public" output="true" returntype="boolean" hint="Adds webskin to object broker if all conditions are met">
 		<cfargument name="ObjectID" required="yes" type="UUID">
 		<cfargument name="typename" required="true" type="string">
 		<cfargument name="template" required="true" type="string">
@@ -146,7 +146,8 @@
 		<cfset var stCacheWebskin = structNew() />
 		
 		<cfif application.bObjectBroker>
-			<cfif request.mode.design eq 1 OR structKeyExists(url, "updateapp") AND url.updateapp EQ 1>
+			<cfif request.mode.design eq 1 OR request.mode.lvalidstatus NEQ "approved" OR structKeyExists(url, "updateapp") AND url.updateapp EQ 1>
+				<cfoutput><h1>request.mode.lvalidstatus: #request.mode.lvalidstatus#</h1></cfoutput>
 				<!--- DO NOT ADD TO CACHE IF IN DESIGN MODE or UPDATING APP --->
 			<cfelse>
 				<cfif listFindNoCase(application.stcoapi[arguments.typename].lObjectBrokerWebskins, arguments.template) and len(arguments.HTML)>
