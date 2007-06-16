@@ -1,4 +1,5 @@
 <cfsetting enablecfoutputonly="true" />
+<cfsetting showdebugoutput="false" />
 
 <!--- <cfset oTree = createObject("component","#application.packagepath#.farcry.tree")>
 <cfset qSiteMap = oTree.getDescendants(objectid='#application.navid.home#',bIncludeSelf=1)>
