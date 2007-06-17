@@ -11,6 +11,7 @@
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 				
 		<cfset var html = "" />	
+		<cfset var configJS = "" />
 		
 		<cfparam name="arguments.stMetadata.ftImageArrayField" default="">
 		<cfparam name="arguments.stMetadata.ftImageTypename" default="">
@@ -19,6 +20,12 @@
 		
 		
 		<cfparam name="arguments.stMetadata.ftConfig" default=""><!--- tinyMCE.tinyMCE_config --->
+	
+		<cfif len(arguments.stMetadata.ftConfig) and isdefined("application.config.#arguments.stMetadata.ftConfig#")>
+			<cfset configJS =  Evaluate("application.config.#arguments.stMetadata.ftConfig#") />
+		<cfelse>
+			<cfset configJS = getConfig() />
+		</cfif>	
 	
 		<!--- crude block for safari -- not supported by tinyMCE --->
 		<!--- todo: update this to a specific version set, this will be fixed soon apparently --->
@@ -36,7 +43,9 @@
 		</cfif>
 	
 		<cfset Request.InHead.TinyMCE = 1>
-	
+
+		
+		
 		<cfsavecontent variable="html">
 			<cfoutput>
 			<script language="javascript" type="text/javascript">	</cfoutput>
@@ -47,87 +56,14 @@
 						farcryobjectid: "#arguments.stObject.ObjectID#",
 						farcrytypename: "#arguments.stobject.Typename#",
 						farcryrichtextfield: "#arguments.stMetadata.name#",
-						<cfif len(arguments.stMetadata.ftConfig) and isdefined("application.config.#arguments.stMetadata.ftConfig#")>
-							#Evaluate("application.config.#arguments.stMetadata.ftConfig#")#,
-						<cfelse>
-							theme : "advanced",
-							plugins : "table,advhr,farcrycontenttemplates,advimage,advlink,preview,zoom,searchreplace,print,contextmenu,paste,directionality,fullscreen",		<!--- farcryimage --->
-							theme_advanced_buttons2_add : "separator,farcrycontenttemplates",
-							theme_advanced_buttons3_add_before : "tablecontrols,separator",			
-							theme_advanced_buttons3_add : "separator,fullscreen,pasteword,pastetext",				
-							theme_advanced_toolbar_location : "top",
-							theme_advanced_toolbar_align : "left",
-							theme_advanced_path_location : "bottom",
-							theme_advanced_resize_horizontal : true,
-							theme_advanced_resizing : true,
-							extended_valid_elements: "textarea[name|class|cols|rows],script[type],img[style|class|src|border=0|alt|title|hspace|vspace|width|height|align|onmouseover|onmouseout|name]",
-							remove_linebreaks : false,
-							relative_urls : false,
-						</cfif>						
 						elements : "#arguments.fieldname#",
-						<!---<cfif NOT ListFindNoCase("none,default", application.config.tinyMCE.insertimage_callback) AND application.config.tinyMCE.insertimage_callback NEQ "">
-							insertimage_callback : "#application.config.tinyMCE.insertimage_callback#",
-						</cfif> --->
-						<!--- <cfif NOT ListFindNoCase("none,default", application.config.tinyMCE.file_browser_callback) AND application.config.tinyMCE.file_browser_callback NEQ "">
-							file_browser_callback : "#application.config.tinyMCE.file_browser_callback#",
-						</cfif> --->
-						//file_browser_callback : "fileBrowserCallBack",
+						#configJS#,
 						<cfif len(arguments.stMetadata.ftImageArrayField) and len(arguments.stMetadata.ftImageTypename) and len(arguments.stMetadata.ftImageField)>
 							external_image_list_url : "#application.url.farcry#/facade/tinyMCEImageList.cfm?objectID=#arguments.stObject.ObjectID#&typename=#arguments.typename#&ImageArrayField=#arguments.stMetadata.ftImageArrayField#&ImageTypename=#arguments.stMetadata.ftImageTypename#&ImageField=#arguments.stMetadata.ftImageField#",
 						</cfif>									
-						<!--- <cfif len(arguments.stMetadata.ftFlashArrayField) and len(arguments.stMetadata.ftFlashTypename) and len(arguments.stMetadata.ftFlashField)>
-							flash_external_list_url : "#application.url.farcry#/facade/tinyMCEFlashList.cfm?objectID=#arguments.stObject.ObjectID#&typename=#arguments.typename#&FlashArrayField=#arguments.stMetadata.ftFlashArrayField#&FlashTypename=#arguments.stMetadata.ftFlashTypename#&FlashField=#arguments.stMetadata.ftFlashField#",
-							flash_wmode : "transparent",
-							flash_quality : "high",
-							flash_menu : "false",
-														
-						</cfif>	 --->
 						external_link_list_url : "#application.url.farcry#/facade/tinyMCELinkList.cfm?objectID=#arguments.stObject.ObjectID#&typename=#arguments.typename#&relatedTypenames=#arguments.stMetadata.ftLinkListRelatedTypenames#"						
 					});
 				</cfoutput>
-			
-				<cfif not isDefined("Request.TinyMCEBrowserCallbackJS")>
-					
-					<cfset Request.TinyMCEBrowserCallbackJS = 1><!--- Make sure this is only placced once per request. --->
-					
-					<!--- <cfoutput>
-						function fileBrowserCallBack(field_name, url, type, win) {
-						// This is where you insert your custom filebrowser logic
-						//alert("Example of filebrowser callback: field_name: " + field_name + ", url: " + url + ", type: " + type);
-						this.field = field_name;
-						this.callerWindow = win;
-						this.inTinyMCE = true;
-							
-						urlLocation = '/scratch/tinymce/examples/libraryPopup.cfm?objectid=x-y-z&field_name=' + field_name + '&url=' + url + '&type=' + type;
-						librarywin=window.open(urlLocation, '_blank', ''); 
-						librarywin.focus();
-						//return false;
-						// Insert new URL, this would normaly be done in a popup
-						win.document.forms[0].elements[field_name].value = url;
-					}
-				
-					function insertIt(url) {
-				
-						// Handle old and new style
-				<!--- 		if (typeof(TinyMCE_convertURL) != "undefined")
-							url = TinyMCE_convertURL(url, null, true);
-						else
-							url = tinyMCE.convertURL(url, null, true);
-				 --->
-						// Set URL
-						this.callerWindow.document.forms[0].elements[this.field].value = url;
-				
-						// Try to fire the onchange event
-						try {
-							this.callerWindow.document.forms[0].elements[this.field].onchange();
-						} catch (e) {alert("hop")
-							// Skip it
-						}
-					}
-					</cfoutput> --->
-					
-					
-				</cfif>
 				
 			<cfoutput></script></cfoutput>
 			
@@ -136,7 +72,6 @@
 
 			<cfoutput>
 				<textarea  name="#arguments.fieldname#" id="#arguments.fieldname#" style="width: 600px;" class="richtext tinymce">#arguments.stMetadata.value#</textarea>
-				<!--- <div><textarea name="#arguments.fieldname#" id="#arguments.fieldname#" style="#arguments.stMetadata.ftstyle#;width:100%;" >#arguments.stMetadata.value#</textarea></div> --->
 			</cfoutput>
 		</cfsavecontent>
 		
@@ -181,5 +116,30 @@
 		
 	</cffunction>
 
+
+	<cffunction name="getConfig" access="public" output="false" returntype="string" hint="This will return the configuration that will be used by the richtext field">
+	
+		<cfset var configJS = "" />
+		
+		<cfsavecontent variable="configJS">
+			<cfoutput>			
+				theme : "advanced",
+				plugins : "table,advhr,farcrycontenttemplates,advimage,advlink,preview,zoom,searchreplace,print,contextmenu,paste,directionality,fullscreen",		<!--- farcryimage --->
+				theme_advanced_buttons2_add : "separator,farcrycontenttemplates",
+				theme_advanced_buttons3_add_before : "tablecontrols,separator",			
+				theme_advanced_buttons3_add : "separator,fullscreen,pasteword,pastetext",				
+				theme_advanced_toolbar_location : "top",
+				theme_advanced_toolbar_align : "left",
+				theme_advanced_path_location : "bottom",
+				theme_advanced_resize_horizontal : true,
+				theme_advanced_resizing : true,
+				extended_valid_elements: "textarea[name|class|cols|rows],script[type],img[style|class|src|border=0|alt|title|hspace|vspace|width|height|align|onmouseover|onmouseout|name]",
+				remove_linebreaks : false,
+				relative_urls : false
+			</cfoutput>
+		</cfsavecontent>
+		
+		<cfreturn configJS />
+	</cffunction>
 
 </cfcomponent>
