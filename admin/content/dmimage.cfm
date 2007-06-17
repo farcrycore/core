@@ -16,19 +16,23 @@ $Description: Generic type administration. $
 || DEVELOPER ||
 $Developer: Geoff Bowers (modius@daemon.com.au) $
 --->
-<cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
-<cfimport taglib="/farcry/core/tags/widgets/" prefix="widgets">
 
-<cfset editobjectURL = "#application.url.farcry#/conjuror/invocation.cfm?objectid=##recordset.objectID[recordset.currentrow]##&typename=dmimage">
+
+<cfimport taglib="/farcry/core/tags/admin/" prefix="admin" />
+<cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 
 <!--- set up page header --->
-<admin:header title="Image Admin" writingDir="#session.writingDir#" userLanguage="#session.userLanguage#" onload="setupPanes('container1');">
+<admin:header title="Image Admin" />
 
-<widgets:typeadmin 
+<ft:objectadmin 
 	typename="dmImage"
 	permissionset="news"
 	title="#application.adminBundle[session.dmProfile.locale].MediaLibraryImageAdministration#"
-	bdebug="0">
-</widgets:typeadmin>
+	columnList="label,datetimelastUpdated,status,datetimelastUpdated"
+	sortableColumns="label,datetimelastUpdated,status,datetimelastUpdated"
+	lFilterFields="label"
+	sqlorderby="datetimelastUpdated desc" />
 
-<admin:footer>
+<admin:footer />
+
+
