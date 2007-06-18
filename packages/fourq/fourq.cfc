@@ -354,7 +354,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset var stobjDisplay = structNew() />
 		<cfset var oType = "" />
 		<cfset var addedtoBroker = "" />
-		<cfset var instance = structNew() />
+		<cfset instance = structNew() />
 		
 		<!--- init fourq --->
 		<cfset fourqInit() />
