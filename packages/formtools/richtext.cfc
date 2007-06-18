@@ -133,7 +133,7 @@
 				theme_advanced_path_location : "bottom",
 				theme_advanced_resize_horizontal : true,
 				theme_advanced_resizing : true,
-				extended_valid_elements: "textarea[name|class|cols|rows],script[type],img[style|class|src|border=0|alt|title|hspace|vspace|width|height|align|onmouseover|onmouseout|name]",
+				extended_valid_elements: "code,colgroup,col,thead,tfoot,tbody,abbr,blockquote,cite,button,textarea[name|class|cols|rows],script[type],img[style|class|src|border=0|alt|title|hspace|vspace|width|height|align|onmouseover|onmouseout|name]",
 				remove_linebreaks : false,
 				relative_urls : false
 			</cfoutput>
