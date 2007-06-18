@@ -27,8 +27,8 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	typename="dmFile"
 	permissionset="news"
 	title="#application.adminBundle[session.dmProfile.locale].MediaLibraryFileAdministration#"
-	columnList="label,datetimelastUpdated,status,datetimelastUpdated"
-	sortableColumns="label,datetimelastUpdated,status,datetimelastUpdated"
+	columnList="label,datetimelastUpdated,status"
+	sortableColumns="label,datetimelastUpdated,status"
 	lFilterFields="label"
 	sqlorderby="datetimelastUpdated desc" />
 
