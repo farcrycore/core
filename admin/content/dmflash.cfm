@@ -27,7 +27,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	typename="dmFlash"
 	permissionset="news"
 	title="#application.adminBundle[session.dmProfile.locale].MediaLibraryFlashAdministration#"
-	columnList="label,datetimelastUpdated,status"
+	columnList="label,datetimelastUpdated,status" 
 	sortableColumns="label,datetimelastUpdated,status"
 	lFilterFields="label"
 	sqlorderby="datetimelastUpdated desc" />
