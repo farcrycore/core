@@ -1,6 +1,7 @@
 <cfcomponent name="library" displayname="library" hint="Used by the Library for the ajax callbacks" output="false" > 
 
 <cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" >
+<cfimport taglib="/farcry/core/tags/wizard/" prefix="wiz" >
 
 <cffunction name="ajaxGetView" access="remote" output="true" returntype="void">
  	<cfargument name="objectid" required="yes" type="uuid" hint="ObjectID of the object to be rendered.">
@@ -67,15 +68,13 @@
 
 
 	
-	<cfset PrimaryPackage = application.stcoapi[arguments.primaryTypeName] />
-	<cfset PrimaryPackagePath = application.stcoapi[arguments.primaryTypeName].packagePath />	
-
-
-
-	<cfset oPrimary = createObject("component",PrimaryPackagePath)>
-	<cfset stPrimary = oPrimary.getData(objectid=arguments.PrimaryObjectID)>
-
-	<cfset oData = createObject("component",application.stcoapi[arguments.DataTypename].packagepath)>
+	<cfset var PrimaryPackage = application.stcoapi[arguments.primaryTypeName] />
+	<cfset var PrimaryPackagePath = application.stcoapi[arguments.primaryTypeName].packagePath />
+	<cfset var oPrimary = createObject("component",PrimaryPackagePath)>
+	<cfset var stPrimary = oPrimary.getData(objectid=arguments.PrimaryObjectID)>
+	<cfset var oData = createObject("component",application.stcoapi[arguments.DataTypename].packagepath)>
+	<cfset var oWizard = "" />
+	<cfset var stwizard = structNew() />
 
 
 	<cfif arguments.Action NEQ "Refresh">
@@ -114,13 +113,11 @@
 				<cfset stwizard.Data[PrimaryObjectID][arguments.PrimaryFieldname] = aProps>
 			</cfif>
 			
-			<cfset stwizard = owizard.Write(ObjectID=arguments.wizardID,Data=stwizard.Data)>
-			
-			<cfset st = stwizard.Data[PrimaryObjectID]>
+			<cfset stResult = owizard.Write(ObjectID=arguments.wizardID,Data=stwizard.Data)>
 		<cfelse>
 		
 				
-				
+			
 				
 			<cfif arguments.LibraryType EQ "UUID">
 				<cfif arguments.Action EQ "Add">
@@ -147,12 +144,7 @@
 		
 		
 			<cfparam name="session.dmSec.authentication.userlogin" default="anonymous" />
-			<cfset st = oPrimary.setData(stProperties="#stPrimary#",user="#session.dmSec.authentication.userlogin#")>
-			
-						
-
-			<cfset st = oPrimary.getData(objectid="#stPrimary.objectid#")>
-			
+			<cfset stResult = oPrimary.setData(stProperties="#stPrimary#",user="#session.dmSec.authentication.userlogin#")>
 
 
 		</cfif>
@@ -163,9 +155,11 @@
 	<cfset stPropMetadata[arguments.PrimaryFieldName].ftEditMethod = "libraryCallback" >
 
 
-
-	<ft:object objectID="#arguments.PrimaryObjectID#" wizardID="#arguments.wizardID#" lFields="#arguments.PrimaryFieldName#" stPropMetadata="#stPropMetadata#" inTable=0 IncludeLabel=0 IncludeFieldSet=0 r_stFields="stFields" IncludeLibraryWrapper="false" packageType="#arguments.packageType#" />
-		
+	<cfif len(arguments.wizardID)>
+		<wiz:object objectID="#arguments.PrimaryObjectID#" wizardID="#arguments.wizardID#" lFields="#arguments.PrimaryFieldName#" stPropMetadata="#stPropMetadata#" inTable=0 IncludeLabel=0 IncludeFieldSet=0 r_stFields="stFields" IncludeLibraryWrapper="false" packageType="#arguments.packageType#" />
+	<cfelse>
+		<ft:object objectID="#arguments.PrimaryObjectID#" lFields="#arguments.PrimaryFieldName#" stPropMetadata="#stPropMetadata#" inTable=0 IncludeLabel=0 IncludeFieldSet=0 r_stFields="stFields" IncludeLibraryWrapper="false" packageType="#arguments.packageType#" />
+	</cfif>	
 
 
 	<cfoutput>
