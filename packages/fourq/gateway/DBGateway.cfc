@@ -154,7 +154,7 @@
 		<!--- 
 		IF THE ARRAY TABLE HAS HAD A CFC CREATED FOR IT IN ORDER TO EXTEND IT THEN WE USE STANDARD GET, SET & DELETE.
 		 --->
-		<cfif structKeyExists(application, "types") AND structKeyExists(application.types, tableName)>
+		<cfif structKeyExists(application, "stcoapi") AND structKeyExists(application.stcoapi, tableName)>
 			
 			<!--- MJB
 			Only delete records that are not contained in the Array of objects passed. This ensures that any extended array properties are not deleted.
@@ -178,7 +178,7 @@
 		
 				
 		    <cfquery datasource="#variables.dsn#" name="qArrayRecordsToDelete">
-		    SELECT parentID FROM #variables.dbowner##arguments.tableName#
+		    SELECT objectid FROM #variables.dbowner##arguments.tableName#
 		    WHERE parentID = '#arguments.objectid#'
 			<cfif listlen(lNewData)>
 				AND data NOT IN (#ListQualify(lNewData,"'")#)
@@ -186,7 +186,7 @@
 		    </cfquery>
 		    
 		    <cfloop query="qArrayRecordsToDelete">
-				<cfset stResult = o.deleteData(objectID=qArrayRecordsToDelete.parentID) />
+				<cfset stResult = o.deleteData(objectID=qArrayRecordsToDelete.objectid) />
 			</cfloop>
 		    
 		<!---
