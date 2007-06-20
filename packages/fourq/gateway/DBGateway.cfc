@@ -450,6 +450,7 @@
    		<cfset var t = "" />
    		<cfset var stDefaultProperties = structNew() />
    		<cfset var stCreatedObject = structNew() />
+		<cfset var bFirst = true />
 
 		<cfset stResult.bSuccess = true />
 		<cfset stResult.message = "" />
