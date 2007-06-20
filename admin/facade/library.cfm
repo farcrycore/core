@@ -232,14 +232,16 @@ $Developer: $
 <cfset oData = createObject("component",application.stcoapi[request.ftJoin].packagepath)>
 <cfset stPrimary = oPrimary.getData(objectid=url.primaryObjectID, bArraysAsStructs=true)>
 
-
+<cfset lBasketIDs = "" />
 <cfif URL.LibraryType EQ "array">
 	<cfquery datasource="#application.dsn#" name="q">
 	SELECT * FROM #url.primaryTypeName#_#url.primaryFieldName#
 	WHERE parentID = '#url.primaryObjectID#'
 	</cfquery>
-		
-	<cfset lBasketIDs = valueList(q.data) />
+	
+	<cfloop query="q">	
+		<cfset lBasketIDs = listAppend(lBasketIDs, "#q.data#:#q.seq#") />
+	</cfloop>
 <cfelse>
 	<cfset lBasketIDs = stPrimary[url.primaryFieldName] />
 </cfif>
@@ -641,7 +643,7 @@ GENERATE THE LIBRARY PICKER
 							BECAUSE THE JAVASCRIPT STRIPS THE "FIELDNAME_" TO DETERMINE THE OBJECTID
 							 ------------------------------------------------------------------------->			
 							<cfoutput>
-							<div id="sortableListTo_#stCurrentArrayItem.data#" class="sortableHandle">
+							<div id="sortableListTo_#stCurrentArrayItem.data#:#stCurrentArrayItem.seq#" class="sortableHandle">
 								<div class="arrayDetail">
 									<div>
 										

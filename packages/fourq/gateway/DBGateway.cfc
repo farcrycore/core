@@ -150,7 +150,27 @@
    		<cfset var insertSEQ = "" />
    		<cfset var aReturn = arrayNew(1) />
    		<cfset var sortorder = "" />
+		<cfset var aPropsPassedIn = arrayNew(1) />
+		<cfset var stArrayProp = structNew() />
+		
+		<cfloop from ="1" to="#arrayLen(arguments.aProps)#" index="i">
+			<cfif NOT isStruct(arguments.aProps[i])>
+				<cfset stArrayProp = structNew() />
+				<cfset stArrayProp.parentID = arguments.objectid />
+				<cfset stArrayProp.data = listFirst(arguments.aProps[i],":") />
+				<cfif listLast(arguments.aProps[i],":") NEQ listFirst(arguments.aProps[i],":")><!--- SEQ PASSED IN --->
+					<cfset stArrayProp.seq = listLast(arguments.aProps[i],":") />
+				<cfelse>
+					<cfset stArrayProp.seq = i />
+				</cfif>
+				
+				<cfset arguments.aProps[i] = stArrayProp>
+			</cfif>
+			
+		</cfloop>
 	
+		
+		
 		<!--- 
 		IF THE ARRAY TABLE HAS HAD A CFC CREATED FOR IT IN ORDER TO EXTEND IT THEN WE USE STANDARD GET, SET & DELETE.
 		 --->
@@ -164,31 +184,34 @@
 			This is required because in the case of extended arrays, the objectids are contained in a structure.
 			--->	
 		
-			<cfset o = createObject("component",application.types[tablename].typepath) />
+			<cfset o = createObject("component",application.stcoapi[tablename].packagepath) />
 		
-		
-			<cfloop from ="1" to="#arrayLen(aProps)#" index="i">
-				<cfif isStruct(arguments.aProps[i]) AND structKeyExists(arguments.aProps[i],"data")>
-					<cfset lNewData = ListAppend(lNewData,arguments.aProps[i].data)>
-				<cfelse>
-					<cfset lNewData = ListAppend(lNewData,arguments.aProps[i])>
-				</cfif>
+
 				
-			</cfloop>
-		
-				
-		    <cfquery datasource="#variables.dsn#" name="qArrayRecordsToDelete">
-		    SELECT objectid FROM #variables.dbowner##arguments.tableName#
+		    <cfquery datasource="#variables.dsn#" name="qCurrentArrayRecords">
+		    SELECT * FROM #variables.dbowner##arguments.tableName#
 		    WHERE parentID = '#arguments.objectid#'
-			<cfif listlen(lNewData)>
-				AND data NOT IN (#ListQualify(lNewData,"'")#)
-			</cfif>
 		    </cfquery>
+		  
+		    <cfloop query="qCurrentArrayRecords">
 		    
-		    <cfloop query="qArrayRecordsToDelete">
-				<cfset stResult = o.deleteData(objectID=qArrayRecordsToDelete.objectid) />
+		    	<!--- Only delete items where they are not passed in.  --->
+		    	<cfset bDeleteArrayItem = true />
+			    <cfloop from ="1" to="#arrayLen(arguments.aProps)#" index="i">
+					<cfif arguments.aProps[i].data EQ qCurrentArrayRecords.data AND arguments.aProps[i].seq EQ qCurrentArrayRecords.seq >
+						<cfset bDeleteArrayItem = false />
+						
+						<!--- Add objectid to the struct if it is an extended array. This will make it easier to find shortly. --->
+						<cfif listContainsNoCase(qCurrentArrayRecords.columnList, "objectid")>
+							<cfset arguments.aProps[i].objectid = qCurrentArrayRecords.objectID />
+						</cfif>
+					</cfif>
+				</cfloop>
+				<cfif bDeleteArrayItem>
+					<cfset stResult = o.deleteData(objectID=qCurrentArrayRecords.objectid) />
+				</cfif>
 			</cfloop>
-		    
+		      
 		<!---
 		IT IS JUST A STANDARD ARRAY TABLE SO HAVE TO DELETE THE OBJECTS MANUALLY AND WE DONT HAVE TO WORRY ABOUT EXTENDED METADATA
 		 --->	
@@ -209,8 +232,10 @@
 			
 		</cfif>
 	
+			
 	
 		
+			
 		<!--- MJB:
 		This will allow us to ensure that any new objects to be placed in the array table will have a unique SEQ by setting the start to qCurrentArrayRecords.RecordCount.
 		We could use a MAX(Seq) but unsure about DB compatibility.
@@ -221,38 +246,36 @@
 	    WHERE parentID = '#arguments.objectid#'
 	    </cfquery>
 		
-		<cfset insertSEQ = 0 />
-				
 		<cfloop from ="1" to="#arrayLen(aProps)#" index="i">
 		
-			
-			<cfset insertSEQ = insertSEQ + 1 />
-				
-				
-			<cfif NOT isStruct(arguments.aProps[i])>
-				<cfset stTmp = structNew() />
-				<cfset stTmp.parentID = arguments.objectid />
-				<cfset stTmp.data = arguments.aProps[i] />
-				<cfset stTmp.seq = insertSEQ />
-				<cfset arguments.aProps[i] = stTmp />
-			</cfif>
-			
-		
-			
-	
-			
 			<cfquery datasource="#variables.dsn#" name="qDuplicate">
-			SELECT parentID 
+			SELECT * 
 			FROM #variables.dbowner##tablename#
 			WHERE parentID = '#arguments.objectid#'
-			AND data = <cfqueryparam value="#arguments.aProps[i].data#" cfsqltype="CF_SQL_VARCHAR">
-			AND seq = <cfqueryparam value="#arguments.aProps[i].seq#" cfsqltype="cf_sql_integer">
+			<cfif structKeyExists(arguments.aProps[i], "objectid")>
+				AND objectid = <cfqueryparam value="#arguments.aProps[i].objectid#" cfsqltype="CF_SQL_VARCHAR">
+			<cfelse>
+				AND data = <cfqueryparam value="#arguments.aProps[i].data#" cfsqltype="CF_SQL_VARCHAR">
+				AND seq = <cfqueryparam value="#arguments.aProps[i].seq#" cfsqltype="cf_sql_integer">
+			</cfif>
 			</cfquery>
 			
 			
+			<cfif qDuplicate.RecordCount>
 			
+				<!--- 
+				IF THE ARRAY TABLE HAS HAD A CFC CREATED FOR IT IN ORDER TO EXTEND IT THEN WE USE STANDARD GET, SET & DELETE.
+				 --->
+				<cfif structKeyExists(application, "types") AND structKeyExists(application.types, tableName)>
 					
-			<cfif NOT qDuplicate.RecordCount>
+					<!--- Use the extended arrayTable's' objectid and Set the seq to the new position in the array --->
+					<cfset arguments.aProps[i].objectid = qDuplicate.objectid />	
+					<cfset arguments.aProps[i].seq = i />	
+					<cfset stResult = o.setdata(stProperties=arguments.aProps[i]) />	
+				</cfif>
+				
+				
+			<cfelse>
 			
 				<!--- 
 				IF THE ARRAY TABLE HAS HAD A CFC CREATED FOR IT IN ORDER TO EXTEND IT THEN WE USE STANDARD GET, SET & DELETE.

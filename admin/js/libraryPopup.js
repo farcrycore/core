@@ -44,8 +44,8 @@
 									}
 								});
 								
-								$(fieldname).value = Sortable.sequence(fieldname + '_list');
-								libraryCallbackArray(fieldname,'sort',$(fieldname).value);
+								libraryCallbackArray(fieldname,'sort',Sortable.sequence(fieldname + '_list'));
+								
 							}
 									
 						function libraryCallbackArray(fieldname,action,ids){
@@ -71,6 +71,7 @@
 										   			libraryCallbackArray(fieldname,'sort',$(fieldname).value);
 											    }
 											  });
+											$(fieldname).value = Sortable.sequence(fieldname + '_list');
 										// ]]>
 									},
 									

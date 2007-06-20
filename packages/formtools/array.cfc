@@ -26,6 +26,7 @@
 		<cfset var ULID = "" />
 		<cfset var HTML = "" />
 		<cfset var stTemp = structNew() />
+		<cfset var lArrayList =  ""/>
 
 		<!---
 		<cfset var oFourQ = createObject("component","farcry.core.packages.fourq.fourq")><!--- TODO: this needs to be removed when we add typename to array tables. ---> 
@@ -112,8 +113,11 @@
 			<cfset ULID = "#arguments.fieldname#_list">
 			
 			<cfsavecontent variable="returnHTML">
-				<!--- Contains a list of objectID's currently associated with this field' --->
-				<cfoutput><input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="#valuelist(qArrayField.data)#" /></cfoutput>
+				<!--- Contains a list of objectID_SEQ's' currently associated with this field' --->
+				<cfloop query="qArrayField">
+					<cfset lArrayList = listAppend(lArrayList, "#qArrayField.data#:#qArrayField.seq#") />
+				</cfloop>
+				<cfoutput><input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="#lArrayList#" style="width:400px;" /></cfoutput>
 	
 
 					<!-----------------------
@@ -155,9 +159,9 @@
 
 										
 										<cfoutput>
-										<li id="#arguments.fieldname#_#qArrayField.data#" class="#ULID#handle" style="<cfif len(arguments.stMetadata.ftLibraryListItemWidth)>width:#arguments.stMetadata.ftLibraryListItemWidth#;</cfif><cfif len(arguments.stMetadata.ftLibraryListItemheight)>height:#arguments.stMetadata.ftLibraryListItemHeight#;</cfif>">
+										<li id="#arguments.fieldname#_#qArrayField.data#:#qArrayField.seq#" class="#ULID#handle" style="<cfif len(arguments.stMetadata.ftLibraryListItemWidth)>width:#arguments.stMetadata.ftLibraryListItemWidth#;</cfif><cfif len(arguments.stMetadata.ftLibraryListItemheight)>height:#arguments.stMetadata.ftLibraryListItemHeight#;</cfif>">
 											<div class="buttonGripper"><p>&nbsp;</p></div>
-											<input type="checkbox" name="#arguments.fieldname#Selected" id="#arguments.fieldname#Selected" class="formCheckbox" value="#qArrayField.data#" />
+											<input type="checkbox" name="#arguments.fieldname#Selected" id="#arguments.fieldname#Selected" class="formCheckbox" value="#qArrayField.data#:#qArrayField.seq#" />
 		
 											<div class="#arguments.stMetadata.ftLibrarySelectedListClass#">
 												<p>#HTML#</p>
@@ -293,6 +297,7 @@
 		<cfset var qArrayRecordRow = queryNew("blah") />
 		<cfset var stArrayData = structNew() />
 		<cfset var iColumn = "" />
+		<cfset var qCurrentArrayItem = queryNew("blah") />
 			
 		<cfset stResult.bSuccess = true>
 		<cfset stResult.value = "">
@@ -301,46 +306,57 @@
 		<!--- --------------------------- --->
 		<!--- Perform any validation here --->
 		<!--- --------------------------- --->
+		<!---
+		IT IS IMPORTANT TO NOTE THAT THE STANDARD ARRAY TABLE UI, PASSES IN A LIST OF DATA IDS WITH THEIR SEQ
+		ie. dataid1:seq1,dataid2:seq2...
+		 --->
+		
 		<cfif listLen(stFieldPost.value)>
 		
 			<cfquery datasource="#application.dsn#" name="qArrayRecords">
 		    SELECT * 
 		    FROM #application.dbowner##arguments.typename#_#stMetadata.name#
 		    WHERE parentID = '#arguments.objectid#'
-			AND data IN (#ListQualify(stFieldPost.value,"'")#)
 		    </cfquery>
 		    	
 			
-			<cfloop list="#stFieldPost.value#" index="i">
-				
+			<cfloop list="#stFieldPost.value#" index="i">			
+						
+				<cfquery dbtype="query" name="qCurrentArrayItem">
+			    SELECT * 
+			    FROM qArrayRecords
+			    WHERE data = '#listFirst(i,":")#'
+			    <cfif listLast(i,":") NEQ listFirst(i,":")><!--- SEQ PASSED IN --->
+			    	AND seq = #listLast(i,":")#
+			    </cfif>
+			    </cfquery>
+			
 				<!--- If it is an extended array (more than the standard 4 fields), we return the array as an array of structs --->
-				<cfif listlen(qArrayRecords.columnlist) GT 4>
+				<cfif listlen(qCurrentArrayItem.columnlist) GT 4>
 					<cfset stArrayData = structNew() />
 					
-					<cfquery dbtype="query" name="qArrayRecordRow">
-					SELECT * FROM qArrayRecords
-					WHERE data = '#i#'
-					</cfquery>
-					
-					<cfloop list="#qArrayRecords.columnList#" index="iColumn">
-						<cfif qArrayRecordRow.recordCount>
-							<cfset stArrayData[iColumn] = qArrayRecordRow[iColumn][1] />
+					<cfloop list="#qCurrentArrayItem.columnList#" index="iColumn">
+						<cfif qCurrentArrayItem.recordCount>
+							<cfset stArrayData[iColumn] = qCurrentArrayItem[iColumn][1] />
 						<cfelse>
+							<cfdump var="#qArrayRecords#" expand="false" label="qArrayRecords" />
+							<cfdump var="#qCurrentArrayItem#" expand="false" label="qCurrentArrayItem" />
+							<cfabort>
 							<cfset stArrayData[iColumn] = "" />
 						</cfif>
 					</cfloop>
 					
-					
+					<cfset stArrayData.seq = arrayLen(aField) + 1 />
+					 
 					<cfset ArrayAppend(aField,stArrayData)>
 				<cfelse>
 					<!--- Otherwise it is just an array of value --->
-					<cfset ArrayAppend(aField,i)>
+					<cfset ArrayAppend(aField, listFirst(i,":"))>
 				</cfif>
 			</cfloop>
 		</cfif>
 		
 		<cfset stResult.value = aField>
-
 		<!--- ----------------- --->
 		<!--- Return the Result --->
 		<!--- ----------------- --->
@@ -485,9 +501,9 @@
 						</cfif>
 						
 						<cfoutput>							
-						<li id="#arguments.fieldname#_#qArrayField.data#" class="#ULID#handle" style="<cfif len(arguments.stMetadata.ftLibraryListItemWidth)>width:#arguments.stMetadata.ftLibraryListItemWidth#;</cfif><cfif len(arguments.stMetadata.ftLibraryListItemheight)>height:#arguments.stMetadata.ftLibraryListItemHeight#;</cfif>">
+						<li id="#arguments.fieldname#_#qArrayField.data#:#qArrayField.seq#" class="#ULID#handle" style="<cfif len(arguments.stMetadata.ftLibraryListItemWidth)>width:#arguments.stMetadata.ftLibraryListItemWidth#;</cfif><cfif len(arguments.stMetadata.ftLibraryListItemheight)>height:#arguments.stMetadata.ftLibraryListItemHeight#;</cfif>">
 							<div class="buttonGripper"><p>&nbsp;</p></div>
-							<input type="checkbox" name="#arguments.fieldname#Selected" id="#arguments.fieldname#Selected" class="formCheckbox" value="#qArrayField.data#" />
+							<input type="checkbox" name="#arguments.fieldname#Selected" id="#arguments.fieldname#Selected" class="formCheckbox" value="#qArrayField.data#:#qArrayField.seq#" />
 
 							<div class="#arguments.stMetadata.ftLibrarySelectedListClass#">
 								<p>#HTML#</p>
