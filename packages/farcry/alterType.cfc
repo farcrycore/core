@@ -64,26 +64,13 @@ $out:$
 <cffunction name="deployArrayProperty">
 	<cfargument name="typename" required="true">
 	<cfargument name="property" required="true">
-	<cfargument name="scope" required="false" default="types">
 
 
-	<cfswitch expression="#arguments.scope#">
+	<cfif not structKeyExists(application.stCoapi,arguments.typeName)>
+		<cfthrow type="AlterType" message="Type does not exists"  >
+	</cfif>
 
-		<cfcase value="rules">
-			<cfset typeInstance = createObject("component", "#application.rules[arguments.typename].rulepath#")>
-		</cfcase>
-
-		<cfcase value="types">
-			<cfset typeInstance = createObject("component", "#application.types[arguments.typename].typepath#")>
-		</cfcase>
-
-		<cfdefaultcase>
-			<cfthrow type="AlterType" message="Unknown scope passed to deployArrayProperty"  >
-		</cfdefaultcase>
-
-	</cfswitch>
-
-	<cfset typeInstance.deployArrayTable(bTestRun='0',parent='#application.dbowner##arguments.typename#',property=arguments.property)>
+	<cfset createObject("component", "#application.stCoapi[arguments.typename].packagePath#").deployArrayTable(bTestRun='0',parent='#application.dbowner##arguments.typename#',property=arguments.property)>
 
 </cffunction>
 

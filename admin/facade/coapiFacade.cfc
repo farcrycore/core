@@ -49,9 +49,11 @@
 		<cfargument name="cfcType" required="true" type="string">
 		<cfscript>
 			var stResult = structNew();
+			
 			init();
 			stResult = application.coapiManager.deployProperty(arguments.componentName,arguments.propertyName,arguments.cfcType);
 		</cfscript>
+			
 		<cfreturn stResult>
 	</cffunction>
 

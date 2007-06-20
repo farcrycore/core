@@ -237,10 +237,9 @@
 	</cffunction>
 	
 	<cffunction name="getCFCProps" hint="I return the properties of a type by reading introspecting only the cfc" output="false" access="public">
-		<cfargument name="scope" required="true" type="string">
 		<cfargument name="cfcName" required="true" type="string">
 
-		<cfset var objModel = createObject("Component", application[arguments.scope][arguments.cfcName].PACKAGEPATH) />
+		<cfset var objModel = createObject("Component", application.stCoapi[arguments.cfcName].PACKAGEPATH) />
 		<cfset var stMetaData = getMetaData(objModel) />
 		<cfset var stProps = structNew() />
 		<cfset var thisPropName = "" />
@@ -370,9 +369,15 @@
 	<cffunction name="refreshCFCMetaData" output="false" access="public" hint="refreshes type or rule in farcry application scope" returntype="boolean">
 		<cfargument name="componentName" type="string" hint="name of a farcry type or rule to refresh in the application scope">
 		<cfset var scope="types">
-		<cfif left(arguments.componentName,4) eq "rule">
-			<cfset scope="rules">
+		
+		<cfif structKeyExists(application.types,arguments.componentName)>
+			<cfset scope = 'types'>
+		<cfelseif structKeyExists(application.rules,arguments.componentName)>
+			<cfset scope = 'rules'>
+		<cfelse>
+			<cfabort showerror="no component exists">
 		</cfif>
+		
 		<cfset updateStDBTable(scope,componentName)>
 		<cfset variables.oAltType.refreshCFCAppData(typename=arguments.componentName,scope=scope)>
 		
@@ -421,32 +426,29 @@
 		<cfargument name="propertyName" required="true" type="string">
 		<cfargument name="cfcType" required="true" type="string">
 		
-		<cfset var scope = "types">
 		<cfset var stProps = structNew()>
 		<cfset var stResult = structNew()>
-		<cfif left(arguments.componentName,4) eq "rule">
-			<cfset scope="rules">
-		</cfif>
+		
 		
 		<cfscript>
 			
 			switch(arguments.cfcType){
 				case "array":
 				{
-					variables.oAltType.deployArrayProperty(typename=arguments.componentName,property=arguments.propertyName,scope=scope);
+					variables.oAltType.deployArrayProperty(typename=arguments.componentName,property=arguments.propertyName);
 					break;
 				}
 				 
 				default:
 			 	{
-					stProps = getCFCProps(scope, arguments.componentName);			
+					stProps = getCFCProps(cfcName=arguments.componentName);			
 					//is the property nullable
 					isNullable = stProps[arguments.propertyName].ISNULLABLE;
 					//if(stProps[arguments.propertyName].ISNULLABLE eq 'yes')isNullable = true;
 					//do we have a default value
 					defaultVal = stProps[arguments.propertyName].DEFAULTVALUE;
-					dbType = listFirst(variables.stCfc2Db[arguments.cfcType],"|");
-					if(listLen(variables.stCfc2Db[arguments.cfcType],"|") eq 2){dbType = dbType & "(" & listLast(variables.stCfc2Db[arguments.cfcType],"|") & ")";};
+					dbType = setDBDeployValue(variables.stCfc2Db[arguments.cfcType]);
+					
 					if(not isNullable){
 						variables.oAltType.addProperty(typename=arguments.componentName,srcColumn=arguments.propertyName,srcColumnType=dbType,bNull=isNullable,stDefault=defaultVal);
 					}
@@ -462,7 +464,20 @@
 		</cfscript>
 		<cfreturn stResult>
 	</cffunction>
+	
+	<cffunction name="setDBDeployValue" returntype="string" >
+		<cfargument name="farcryType" required="true" type="string"><!--- a list with delimited by "|". 2nd element is optional for the precision --->
+		<cfset var SLQTypeValue = listFirst(arguments.farcryType,"|")>
 
+		<cfif listLen(arguments.farcryType,"|") eq 2 and SLQTypeValue eq "NVARCHAR"><!---  Precision with nvarchar  --->	
+			<cfset  SLQTypeValue = SLQTypeValue & "(" & (listLast(arguments.farcryType,"|")/2) & ")">		
+		<cfelseif listLen(arguments.farcryType,"|") eq 2>
+			<cfset SLQTypeValue = SLQTypeValue & "(" & listLast(arguments.farcryType,"|") & ")">	
+		</cfif>
+		
+		<cfreturn SLQTypeValue>
+	</cffunction>
+	
 	<cffunction name="repairProperty"  output="false" access="public" returntype="struct">
 		<cfargument name="componentName" required="true" type="string">	
 		<cfargument name="propertyName" required="true" type="string">
