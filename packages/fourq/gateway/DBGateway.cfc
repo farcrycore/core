@@ -493,12 +493,13 @@
 		
 
 		<!--- build query --->
+		<cfset bFirst = true />
 		<cfquery datasource="#variables.dsn#" name="qSetData">
 			UPDATE #variables.dbowner##tablename#
 			SET
 			<cfloop from="1" to="#arrayLen(SQLArray)#" index="i">
 			  <cfif structKeyExists(arguments.stProperties,sqlArray[i].column) and sqlArray[i].column neq "objectid" and sqlArray[i].column neq "typename">
-				  <cfif i GT 1>,</cfif>#sqlArray[i].column# = 
+				  <cfif NOT bFirst>,</cfif><cfset bFirst = false /> #sqlArray[i].column# = 
 					<!--- temp fix for mySQL, looks as though the datatype decimal and bind type float don't live peacefully together :( --->
 					<cfif structKeyExists(sqlArray[i],'cfsqltype') AND sqlArray[i].cfsqltype NEQ "CF_SQL_FLOAT">
 					  <cfqueryparam cfsqltype="#sqlArray[i].cfsqltype#" value="#SQLArray[i].value#" />
