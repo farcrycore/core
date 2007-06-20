@@ -67,8 +67,10 @@ $out:$
 		<cfparam name="variables.stPlaceInHead.CalendarStyle1CSS" default = "0">
 		
 		<cfparam name="variables.stPlaceInHead.WizardCSS" default = "0">
-		<cfparam name="variables.stPlaceInHead.FormsCSS" default = "0">
-		<cfparam name="variables.stPlaceInHead.iehtcCSS" default = "true">
+		<cfparam name="variables.stPlaceInHead.FormsCSS" default = "0"> 
+		
+		<cfparam name="variables.stPlaceInHead.iehtcCSS" default = "false">
+		<cfparam name="Request.InHead.iehtcCSS" default="true">
 		
 		
 		<cfparam name="variables.stPlaceInHead.swfObjectJS" default = "0">
