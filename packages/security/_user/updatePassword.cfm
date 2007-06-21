@@ -24,7 +24,7 @@ $out:$
 
 <!--- get user details --->
 <cfscript>
-	stUser = request.dmsec.oAuthentication.getUser(userlogin="#session.dmsec.authentication.userlogin#",userDirectory="#session.dmsec.authentication.userdirectory#");
+	stUser = request.dmsec.oAuthentication.getUser(userlogin="#arguments.userId#",userDirectory="#session.dmsec.authentication.userdirectory#");
 </cfscript>
 
 <!--- check if UD has password encryption --->
@@ -47,3 +47,4 @@ $out:$
 <cfelse>
 	<cfset bUpdate = false>
 </cfif>
+<cfoutput>#stUser.userPassword# eq #oldPassword#</cfoutput>
