@@ -20,7 +20,7 @@ this stylesheet links an ie specific .htc file to the body tag to enable
 psuedo classes such as :hover to behave in the same manner as in other browsers
 
 */
-body {behavior:url("/farcry/css/htc/csshover2.htc");}
+body {behavior:url("#application.url.farcry#/css/htc/csshover2.htc");}
 
 </cfoutput>
 <!--- end css output --->

@@ -8,7 +8,7 @@ author:		pete ottery | daemon | pottery at daemon dot com dot au
 
 .browse form.f-wrap-1 {width:35em}
 
-.tab-container .tab-panes, .browse .tab-panes, body.filebrowse .tab-panes {padding: 15px 10px 0;background:#f1f1f1 url("/farcry/css/images/wizard_bg.gif") repeat-y 125px 0}
+.tab-container .tab-panes, .browse .tab-panes, body.filebrowse .tab-panes {padding: 15px 10px 0;background:#f1f1f1 url("../images/wizard_bg.gif") repeat-y 125px 0}
 .browse #libutility, body.filebrowse #libutility {float:left;width:160px;font-size:92%;position:relative}
 .browse #libutility p, body.filebrowse #libutility p {font-size:92%}
 .browse #libutility li, body.filebrowse #libutility li {background-color:#f1f1f1;font-size:100%}
@@ -32,26 +32,26 @@ author:		pete ottery | daemon | pottery at daemon dot com dot au
 #tab2,
 #tab3, 
 #tab4
-{background:url("/farcry/css/images/nav_left_both.gif") no-repeat 0 -300px;border-top: 1px solid #D6D6D6;border-bottom: none}
+{background:url("../images/nav_left_both.gif") no-repeat 0 -300px;border-top: 1px solid #D6D6D6;border-bottom: none}
 
 /* styles for the de-selected tabs, add more tab ids if theres more than 6 tabs */
 #tab1.tab-disabled, 
 #tab2.tab-disabled, 
 #tab3.tab-disabled , 
 #tab4.tab-disabled  
-{background:url("/farcry/css/images/nav_left_both.gif") no-repeat 0 -450px;border-top: none;border-bottom: 1px solid #fff}
+{background:url("../images/nav_left_both.gif") no-repeat 0 -450px;border-top: none;border-bottom: 1px solid #fff}
 
 #tab1 a, 
 #tab2 a, 
 #tab3 a, 
 #tab4 a 
-{background: #F1F1F1 url("/farcry/css/images/nav_right_both.gif") no-repeat 100% -300px;color:#fff;text-decoration:none;font-weight:bold;font-size:90%}
+{background: #F1F1F1 url("../images/nav_right_both.gif") no-repeat 100% -300px;color:#fff;text-decoration:none;font-weight:bold;font-size:90%}
 
 #tab1.tab-disabled a, 
 #tab2.tab-disabled a, 
 #tab3.tab-disabled a,
 #tab4.tab-disabled a  
-{background: #FFF url("/farcry/css/images/nav_right_both.gif") no-repeat 100% -450px;color:#AEAEAE}
+{background: #FFF url("../images/nav_right_both.gif") no-repeat 100% -450px;color:#AEAEAE}
 
 #tab1.tab-disabled a:hover, 
 #tab2.tab-disabled a:hover, 

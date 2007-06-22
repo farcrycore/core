@@ -19,7 +19,7 @@ $in: flexAssetsPath -- Location of the flex assets : optional $
 <cfparam name="attributes.SWFSource" default="" />
 <cfparam name="attributes.SWFID" default="" />
 <cfparam name="attributes.flashVars" default="" />
-<cfparam name="attributes.flexAssetsPath" default="/farcry/admin/ui/flexassets" />
+<cfparam name="attributes.flexAssetsPath" default="#application.url.farcry#/admin/ui/flexassets" />
 
 <cfif attributes.flashVars neq "">
 	<cfset attributes.flashVars="#attributes.flashVars#&">
