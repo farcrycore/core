@@ -165,9 +165,9 @@ environment references (might be nice to clean these up)
 		<!--- if record count is 0 then fake query object --->
 		<cfif NOT recordset.recordcount>
 			<cfquery datasource="#attributes.datasource#" name="recordset" maxrows="1">
-			SELECT 	*, 0 as bHasMultipleVersion
-			FROM 	#arguments.dbowner##attributes.typename#
-			WHERE 	0 = 1
+			SELECT tp.*, 0 AS bHasMultipleVersion
+			FROM #arguments.dbowner##attributes.typename# tp
+			WHERE 0 = 1
 			</cfquery>
 		</cfif>
 		<!--- <cfdump var="#recordset#" label="Category Filtered Recordset"> --->
