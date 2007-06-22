@@ -28,9 +28,12 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 <cfif len(URL.plugin)>
 	<!--- load admin from the nominated plugin --->
 	<cfmodule template="/farcry/plugins/#URL.plugin#/customadmin/#URL.module#">
-<cfelse>
+<cfelseif fileExists(expandPath("/farcry/projects/#application.applicationname#/customadmin/#URL.module#"))>
 	<!--- load admin from the project --->
 	<cfmodule template="/farcry/projects/#application.applicationname#/customadmin/#URL.module#">
+<cfelseif fileExists(expandPath("/farcry/core/admin/customadmin/#URL.module#"))>
+	<!--- load admin from the project --->
+	<cfmodule template="/farcry/core/admin/customadmin/#URL.module#">
 </cfif>
 
 <cfsetting enablecfoutputonly="No">
