@@ -1,6 +1,12 @@
 <!--- allow output only from cfoutput tags --->
 <cfsetting enablecfoutputonly="yes" />
 
+<cfif not isDefined("application.url.farcry")>
+  <cfset variables.farcryRoot = "/farcry" />
+<cfelse>
+  <cfset variables.farcryRoot = application.url.farcry />
+</cfif>
+
 <!--- set content type of cfm to css to enable output to be parsed as css by all browsers --->
 <cfcontent type="text/css; charset=UTF-8">
 
@@ -20,7 +26,7 @@ this stylesheet links an ie specific .htc file to the body tag to enable
 psuedo classes such as :hover to behave in the same manner as in other browsers
 
 */
-body {behavior:url("#application.url.farcry#/css/htc/csshover2.htc");}
+body {behavior:url("#variables.farcryRoot#/css/htc/csshover2.htc");}
 
 </cfoutput>
 <!--- end css output --->
