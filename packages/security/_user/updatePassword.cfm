@@ -47,4 +47,3 @@ $out:$
 <cfelse>
 	<cfset bUpdate = false>
 </cfif>
-<cfoutput>#stUser.userPassword# eq #oldPassword#</cfoutput>
