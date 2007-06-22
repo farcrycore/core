@@ -2,18 +2,12 @@
 <cfprocessingDirective pageencoding="utf-8">
 <!--- 
 || LEGAL ||
-$Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
+$Copyright: Daemon Pty Limited 1995-2007, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
-|| VERSION CONTROL ||
-$Header: /cvs/farcry/core/admin/navajo/container_reflections.cfm,v 1.4 2005/10/31 04:10:52 guy Exp $
-$Author: guy $
-$Date: 2005/10/31 04:10:52 $
-$Name: milestone_3-0-1 $
-$Revision: 1.4 $ 
-
 || DESCRIPTION || 
-$Description: Container management editing interface, this page is specificall for listing the availables and selected rules for this container only. $
+$Description: Container management editing interface, this page is specifically
+for listing the availables and selected rules for this container only. $
 
 || DEVELOPER ||
 $Developer: Guy Phanvongsa (guy@daemon.com.au) $
@@ -70,7 +64,7 @@ $Developer: Guy Phanvongsa (guy@daemon.com.au) $
 		<cfif successmessage NEQ "">
 		<p id="fading2" class="fade"><span class="success">#successmessage#</span></p></cfif>
 	
-		<label for="reflectionid"><b>Relection:</b>
+		<label for="reflectionid"><b>Reflection:</b>
 			<select id="reflectionid" name="reflectionid">
 				<option value=""<cfif stObj.mirrorid EQ ""> selected="selected"</cfif>>no reflections</option><cfloop query="qListReflections">
 				<option value="#qListReflections.objectid#"<cfif stObj.mirrorid EQ qListReflections.objectid> selected="selected"</cfif>>#qListReflections.label#</option></cfloop>
