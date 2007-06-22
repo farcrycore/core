@@ -979,7 +979,7 @@ default handlers
 			<wiz:processwizard action="Cancel" Removewizard="true" Exit="true" /><!--- remove wizard --->
 			
 			
-			<wiz:wizard ReferenceID="#stobj.objectid#">
+			<wiz:wizard ReferenceID="#stobj.objectid#" title="#stobj.label#">
 			
 				<cfloop query="qwizardSteps">
 						

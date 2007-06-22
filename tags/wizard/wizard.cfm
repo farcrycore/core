@@ -33,6 +33,7 @@ $in: SessionID -- $
 	<cfparam name="attributes.ReturnLocation" default="" />
 	<cfparam name="attributes.Timeout" default="15" /><!--- Default timeout of wizard of 15 minutes --->
 	<cfparam name="attributes.r_stwizard" default="stwizard" /><!--- this is the WDDX packet that will be returned --->
+	<cfparam name="attributes.title" default="" />
 
 	<!--- We only render the form if Farcrywizard OnExit has not been Fired. --->
 	<cfif isDefined("Request.FarcrywizardOnExitRun") AND Request.FarcrywizardOnExitRun >			
@@ -196,7 +197,7 @@ $in: SessionID -- $
 			</ul>
 		</div>
 
-		<h1><img src="#application.url.farcry#/images/icons/html.png" alt="HTML" />#ListGetAt(stwizard.Steps,stwizard.CurrentStep)#</h1>			
+		<h1><img src="#application.url.farcry#/images/icons/html.png" alt="HTML" /><cfif len(attributes.title)>#attributes.title#<cfelse>#ListGetAt(stwizard.Steps,stwizard.CurrentStep)#</cfif></h1>			
 		<div id="wizard-nav">
 			<ul>
 				<cfloop list="#stwizard.Steps#" index="i">
