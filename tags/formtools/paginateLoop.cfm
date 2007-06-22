@@ -293,6 +293,12 @@ $in: objectid -- $
 							<option value="approve">Approve</option>
 						</cfif>
 						
+						<cfif listLen(attributes.lCustomActions)>
+							<cfloop list="#attributes.lCustomActions#" index="i">
+								<option value="#listFirst(i, ":")#">#listLast(i, ":")#</option>
+							</cfloop>
+						</cfif>
+						
 						
 						<!--- <option value="delete">Delete</option> --->
 					</select>
