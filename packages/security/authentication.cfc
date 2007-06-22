@@ -856,26 +856,35 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
 	<cffunction name="logout" access="public" hint="Logs the user out of the system" output="No">
 		<cfargument name="bAudit" type="boolean" required="false" default="false" >
 		<cfargument name="note" type="string" required="false" default="REFERRER #CGI.HTTP_REFERER#">
+		
+		<cfset var bLoggedIn = 0 />
+		<cfset var username =  ""/>
+		
 		<cflock timeout=20 scope="Session" type="Exclusive">		
-		<cfscript>
-			bLoggedIn=0;
-			if( isDefined("session.dmSec") AND isDefined("session.dmSec.authentication") )
-				bLoggedIn=1;
-			if (bLoggedin)
-			{	username =  session.dmSec.authentication.userlogin;
-				structDelete(session.dmSec, "authentication");
-				structDelete(session, "dmProfile");
-				// remove editing preferences
-				structDelete(session,"genericadmin");
-				structDelete(session,"typeadmin");
-				// audit logout
-				if (arguments.bAudit)
-				{
-					oAudit = createObject("component","#application.packagepath#.farcry.audit");
-					oAudit.logActivity(auditType="dmSec.logout", username=username, location=cgi.remote_host, note="#arguments.note#");
-				}
-			}		
-		</cfscript>
+
+			
+			<cfif isDefined("session.dmSec") AND isDefined("session.dmSec.authentication")>
+				<cfset bLoggedIn=1 />
+			</cfif>
+			
+			<cfif bLoggedin>
+				<cfset username =  session.dmSec.authentication.userlogin />
+				
+				<!--- DELETING ALL KEYS FROM SESSION.DMSEC --->
+				<cfloop list="#structKeyList(session.dmSec)#" index="i">
+					<cfset structDelete(session.dmSec, i) />
+				</cfloop>
+				<cfset structDelete(session, "dmProfile") />
+				<!--- // remove editing preferences --->
+				<cfset structDelete(session,"genericadmin") />
+				<cfset structDelete(session,"typeadmin") />
+				<!--- // audit logout --->
+				<cfif (arguments.bAudit) >
+					<cfset oAudit = createObject("component","#application.packagepath#.farcry.audit") />
+					<cfset oAudit.logActivity(auditType="dmSec.logout", username=username, location=cgi.remote_host, note="#arguments.note#") />
+				</cfif>
+			</cfif>		
+		
 		</cflock>
 	</cffunction>
 	
