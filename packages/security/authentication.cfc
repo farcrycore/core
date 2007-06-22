@@ -870,10 +870,8 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
 			<cfif bLoggedin>
 				<cfset username =  session.dmSec.authentication.userlogin />
 				
-				<!--- DELETING ALL KEYS FROM SESSION.DMSEC --->
-				<cfloop list="#structKeyList(session.dmSec)#" index="i">
-					<cfset structDelete(session.dmSec, i) />
-				</cfloop>
+				<cfset session.dmSec = structNew() />
+				
 				<cfset structDelete(session, "dmProfile") />
 				<!--- // remove editing preferences --->
 				<cfset structDelete(session,"genericadmin") />
