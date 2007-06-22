@@ -119,7 +119,7 @@
 	</cfif>
 	
 	<!--- create child objects --->
-	<cfif StructKeyExists(stPermissions,"iCreate")>
+	<cfif StructKeyExists(stPermissions,"iCreate") and stPermissions.iCreate eq 1>
 		<cfset objType = CreateObject("component","#Application.types[stObject.typename].typepath#")>
 		<cfset lPreferredTypeSeq = "dmNavigation,dmHTML"> <!--- this list will determine preffered order of objects in create menu - maybe this should be configurable. --->
 		<!--- <cfset aTypesUseInTree = objType.buildTreeCreateTypes(lPreferredTypeSeq)> --->
