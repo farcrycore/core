@@ -969,12 +969,13 @@ $out:$
 			
 				//cache the permission 
 				if (NOT isDefined("server.dmSec") OR NOT StructKeyExists(server.dmSec,application.applicationname) OR NOT isStruct(server.dmSec[application.applicationname]) OR NOT StructKeyExists(server.dmSec[application.applicationname], "dmSecSCache"))
-					server.dmSec[application.applicationname].dmSecSCache = StructNew();
+					server['dmSec'][application.applicationname]['dmSecSCache'] = StructNew();
 
 			 	server.dmSec[application.applicationname].dmSecSCache[arguments.Reference]=duplicate(stObjectPermissions);	
 			}
 		</cfscript>
 		</cfloop>
+		<cfabort showerror="debugging" />
 
 		<cfreturn stObjectPermissions>
 		
