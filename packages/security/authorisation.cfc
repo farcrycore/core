@@ -975,7 +975,6 @@ $out:$
 			}
 		</cfscript>
 		</cfloop>
-		<cfabort showerror="debugging" />
 
 		<cfreturn stObjectPermissions>
 		
