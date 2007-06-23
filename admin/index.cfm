@@ -63,7 +63,7 @@ $Developer: Pete Ottery (pot@daemon.com.au)$
 <html xmlns="http://www.w3.org/1999/xhtml" dir="#session.writingDir#" lang="#session.userLanguage#">
 <head>
 <meta content="text/html; charset=UTF-8" http-equiv="content-type">
-<title>FarCry</title>
+<title>#application.config.general.sitetitle# - FarCry Admin</title>
 <style type="text/css" title="default" media="screen">@import url(#application.url.farcry#/css/main.css);</style>
 <script type="text/javascript" src="#application.url.farcry#/js/prototype.js"></script>
 </head>
