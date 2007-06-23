@@ -166,14 +166,15 @@ $in: xCode -- eXtra code to be placed inside the anchor tag $
 
 <!--- thistag.ExecutionMode is END --->
 <cfelse>
-	<!--- Was only the URL requested? If so, we don't need to close any tags --->
-	<cfif attributes.urlOnly EQ false and not len(attributes.r_url)>
-		<cfif len(attributes.linktext)>
-			<cfset tagoutput=tagoutput & trim(attributes.linktext) & '</a>'>
-		<cfelse>
-			<cfset tagoutput=tagoutput & trim(thistag.generatedcontent) & '</a>'>
+	<cfif not len(attributes.r_url)>
+		<!--- Was only the URL requested? If so, we don't need to close any tags --->
+		<cfif attributes.urlOnly EQ false>
+			<cfif len(attributes.linktext)>
+				<cfset tagoutput=tagoutput & trim(attributes.linktext) & '</a>'>
+			<cfelse>
+				<cfset tagoutput=tagoutput & trim(thistag.generatedcontent) & '</a>'>
+			</cfif>
 		</cfif>
-	
 
 		<!--- clean up whitespace --->
 		<cfset thistag.GeneratedContent=tagoutput>
