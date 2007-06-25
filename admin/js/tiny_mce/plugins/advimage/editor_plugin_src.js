@@ -1,8 +1,8 @@
 /**
- * $Id: editor_plugin_src.js 59 2006-08-20 20:53:19Z spocke $
+ * $Id: editor_plugin_src.js 201 2007-02-12 15:56:56Z spocke $
  *
  * @author Moxiecode
- * @copyright Copyright © 2004-2006, Moxiecode Systems AB, All rights reserved.
+ * @copyright Copyright © 2004-2007, Moxiecode Systems AB, All rights reserved.
  */
 
 /* Import plugin specific language pack */
@@ -12,9 +12,9 @@ var TinyMCE_AdvancedImagePlugin = {
 	getInfo : function() {
 		return {
 			longname : 'Advanced image',
-			author : 'Moxiecode Systems',
+			author : 'Moxiecode Systems AB',
 			authorurl : 'http://tinymce.moxiecode.com',
-			infourl : 'http://tinymce.moxiecode.com/tinymce/docs/plugin_advimage.html',
+			infourl : 'http://wiki.moxiecode.com/index.php/TinyMCE:Plugins/advimage',
 			version : tinyMCE.majorVersion + "." + tinyMCE.minorVersion
 		};
 	},

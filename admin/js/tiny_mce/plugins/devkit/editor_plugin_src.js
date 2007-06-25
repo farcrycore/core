@@ -2,7 +2,7 @@
  * $Id: editor_plugin_src.js 42 2006-08-08 14:32:24Z spocke $
  *
  * @author Moxiecode
- * @copyright Copyright © 2004-2006, Moxiecode Systems AB, All rights reserved.
+ * @copyright Copyright © 2004-2007, Moxiecode Systems AB, All rights reserved.
  */
 
 tinyMCE.importPluginLanguagePack('devkit');
@@ -20,7 +20,7 @@ var TinyMCE_DevKitPlugin = {
 			longname : 'Development Kit',
 			author : 'Moxiecode Systems AB',
 			authorurl : 'http://tinymce.moxiecode.com',
-			infourl : 'http://tinymce.moxiecode.com/tinymce/docs/plugin_devkit.html',
+			infourl : 'http://wiki.moxiecode.com/index.php/TinyMCE:Plugins/devkit',
 			version : tinyMCE.majorVersion + "." + tinyMCE.minorVersion
 		};
 	},
@@ -51,8 +51,8 @@ var TinyMCE_DevKitPlugin = {
 		document.body.appendChild(ifr);
 
 		// Workaround for strange IE reload bug
-		if (tinyMCE.isMSIE && !tinyMCE.isOpera)
-			document.getElementById('devkit').outerHTML = document.getElementById('devkit').outerHTML;
+		//if (tinyMCE.isRealIE)
+		//	document.getElementById('devkit').outerHTML = document.getElementById('devkit').outerHTML;
 
 		tinyMCE.importCSS(document, tinyMCE.baseURL + '/plugins/devkit/css/devkit_ui.css');
 	},
