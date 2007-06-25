@@ -406,7 +406,7 @@ environment references (might be nice to clean these up)
 			stBut.name="add";
 			stBut.value="#application.adminBundle[session.dmProfile.locale].add#";
 			stBut.class="f-submit";
-			stBut.onClick="this.form.submit();";
+			stBut.onClick="";
 			stBut.permission="#attributes.permissionset#Create";
 			stBut.buttontype="add";
 			arrayAppend(aDefaultButtons,stBut);
