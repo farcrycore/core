@@ -79,9 +79,12 @@ type properties
 	
 	<cfset var qIncludes = application.coapi.coapiadmin.getIncludes() />
 	
-	<cfloop query="qIncludes">	
-		<cfset includeAlias = left(qIncludes.name, len(qIncludes.name)-4)>			
-		<cfset returnList = listAppend(returnList, "#qIncludes.PATH#:#qIncludes.displayName#") />
+
+	<cfloop query="qIncludes">
+		<cfif left(qIncludes.name,1) EQ "_">
+			<cfset includeAlias = left(qIncludes.name, len(qIncludes.name)-4)>			
+			<cfset returnList = listAppend(returnList, "#qIncludes.PATH#:#qIncludes.displayName#") />
+		</cfif>	
 	</cfloop>
 
 	<cfreturn returnList>	
