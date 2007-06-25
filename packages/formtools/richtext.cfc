@@ -27,24 +27,7 @@
 			<cfset configJS = getConfig() />
 		</cfif>	
 	
-		<!--- crude block for safari -- not supported by tinyMCE --->
-		<!--- todo: update this to a specific version set, this will be fixed soon apparently --->
-		<cfif findnocase("safari", cgi.HTTP_USER_AGENT)>
-			<cfsavecontent variable="html">
-				<cfoutput>
-				<div style="border: navy 2px dashed; padding: 10px; margin: 10px; text-align: center;">
-					<p><strong>Warning</strong>: the rich text editor tinyMCE does not support 
-					Safari at this time.  If you need to edit content here then you will need 
-					to use Firefox.</p>
-				</div>
-				</cfoutput>
-			</cfsavecontent>
-			<cfreturn html />
-		</cfif>
-	
-		<cfset Request.InHead.TinyMCE = 1>
-
-		
+		<cfset Request.InHead.TinyMCE = 1 />
 		
 		<cfsavecontent variable="html">
 			<cfoutput>
