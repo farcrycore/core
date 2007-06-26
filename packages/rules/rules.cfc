@@ -432,7 +432,7 @@ $out:$
 	
 	<cffunction access="public" name="execute" output="true">
 		<cfargument name="label" required="no" type="string" default="">
-		<cfoutput><p>#arguments[1]# : No execute method specified</cfoutput>
+		<cfoutput><!-- #arguments[1]# : RULE IS EMPTY --></cfoutput>
 	</cffunction>  
 	
 	<cffunction access="public" name="getRules" returntype="query" hint="Returns a two column query (rulename, bCustom) of available rules. Assumes that rule names are rule*.cfc">
