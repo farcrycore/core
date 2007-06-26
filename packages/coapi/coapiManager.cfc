@@ -114,10 +114,12 @@
 		<cfset var typePath = "">
 		<cfset var tmpObj = "">
 		<cfscript>
-			if(not structKeyExists(variables.stDB,arguments.scope) OR arguments.refresh)setFarcryScopeDbStruct(arguments.scope);
+			setFarcryScopeDbStruct(arguments.scope);
+			// uncomment line below and delete line above to cache variable stCfc2Db on first request of the flex UI
+			//if(not structKeyExists(variables.stDB,arguments.scope) OR arguments.refresh)setFarcryScopeDbStruct(arguments.scope);
 		</cfscript>
 
-		<cfloop collection="#application[arguments.scope]#" item="cfcName">		
+		<cfloop collection="#application[arguments.scope]#" item="cfcName">	
 			<cfset tmpObj = getCFCStatus(arguments.scope,cfcName)>
 			<cfset arrayAppend(arResult, tmpObj)>	
 		</cfloop>
@@ -404,7 +406,7 @@
 	</cffunction>
 
 	<!--- ********************************
-		  *  property update methods 	 *
+		  *   update properties methods 	 *
 		  ******************************** --->
 	<cffunction name="renameProperty" hint="update property type and default value" output="false" returntype="struct"  access="public">
 		<cfargument name="componentName" type="string" hint="name of the component for the type or rule">
