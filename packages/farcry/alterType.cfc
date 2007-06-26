@@ -101,7 +101,7 @@ $out:$
 		<cfset application.types[arguments.typename].bLibraryType = bLibraryType />
 		<cfset application.types[arguments.typename].typePath = path />
 		<cfset application.types[arguments.typename].packagePath = path />
-
+		<cfset application.stcoapi[arguments.typename] = duplicate(application.types[arguments.typename]) />
 	<cfelseif arguments.scope IS 'rules' >
 
 		<cfset path = application.rules[arguments.typename].rulePath />
@@ -114,7 +114,7 @@ $out:$
 		<cfset application.rules[arguments.typename].bLibraryRule = bLibraryRule />
 		<cfset application.rules[arguments.typename].rulePath = path />
 		<cfset application.rules[arguments.typename].packagePath = path />
-	
+		<cfset application.stcoapi[arguments.typename] = duplicate(application.rules[arguments.typename]) />
 	<cfelseif  arguments.scope IS 'formtools' >
 	
 		<cfset path = application.formtools[arguments.typename].FormToolPath />
@@ -240,9 +240,9 @@ $out:$
 	<cfset application.stcoapi = structNew() />
 	 
 	<!--- Find all types, base, extended & custom --->
-	<cfdirectory directory="#application.path.core#/packages/types" name="qDir" filter="dm*.cfc" sort="name">
-	<cfdirectory directory="#application.path.project#/packages/system" name="qExtendedTypesDir" filter="*.cfc" sort="name">
-	<cfdirectory directory="#application.path.project#/packages/types" name="qCustomTypesDir" filter="*.cfc" sort="name">
+	<cfdirectory directory="#application.path.core#/packages/types" name="qDir" filter="dm*.cfc" sort="name" />
+	<cfdirectory directory="#application.path.project#/packages/system" name="qExtendedTypesDir" filter="*.cfc" sort="name" />
+	<cfdirectory directory="#application.path.project#/packages/types" name="qCustomTypesDir" filter="*.cfc" sort="name" />
 
 
 
@@ -1302,11 +1302,10 @@ $out:$
 	<cfargument name="srcColumn" required="true">
 	<cfargument name="srcColumnType" required="true">
 	<cfargument name="dsn" default="#application.dsn#" required="false">
-	<cfargument name="scope" default="types" required="No">
 
 	<!--- work out default field length --->
 	<cfset length = getTypeDefaults()>
-	<cfset length = length[application[arguments.scope][arguments.typename].stProps[arguments.srcColumn].metadata.type].length>
+	<cfset length = length[application.stCoapi[arguments.typename].stProps[arguments.srcColumn].metadata.type].length>
 
 	<cftransaction>
 		<cftry>
@@ -1436,6 +1435,7 @@ $out:$
 		<cfcatch>
 			<cfoutput>
 			<cfdump var="#cfcatch#">
+			<cflog file="coapi" text="repair on property failed: #cfcatch.message# #cfcatch.detail#" >
 			#cfcatch.message#<p></p>#cfcatch.detail#<p></p></cfoutput>
 		</cfcatch>
 		</cftry>
@@ -1663,11 +1663,7 @@ $out:$
 	<cfset var o = "" />
 	<cfset var result = "" />
 	
-	<cfif arguments.scope EQ "types">
-		<cfset o = createObject("component", application.types[arguments.typename].typepath) />
-	<cfelseif arguments.scope EQ "rules">
-		<cfset o = createObject("component", application.rules[arguments.typename].rulepath) />
-	</cfif>
+	<cfset o = createObject("component", application.stCoapi[arguments.typename].packagePath) />
 	
 	<cfset result = o.deployType(btestRun="false") />
 
