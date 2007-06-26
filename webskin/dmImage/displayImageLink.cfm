@@ -104,7 +104,6 @@
                 <cfset filePath = "#application.path.imageroot##arguments.stObj.SourceImage#">
             </cfcase>
         </cfswitch>
-        <cfdump var="#filePath#">
 
         <cfset sStruct = imageUtilsObj.fGetProperties(filePath)>
     <cfreturn sStruct>
