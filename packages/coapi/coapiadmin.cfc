@@ -33,8 +33,6 @@
 	<cfset ldir=listprepend(ldir, "projectpackage") />
 	<cfset ldir=listappend(ldir, "corepackage") />
 	
-	<cfdump var="#arguments#" />
-	
 	<cfloop list="#lDir#" index="packagedir">
 
 		<!--- get directory listing of components --->
