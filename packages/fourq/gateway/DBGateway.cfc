@@ -68,13 +68,16 @@
 					INSERT INTO #variables.dbowner##tablename# ( 
 						objectID
 						<cfloop from="1" to="#arrayLen(SQLArray)#" index="i">
-								, #sqlArray[i].column#						
+							<cfif not structKeyExists(application.stCoapi[tableName].STPROPS[sqlArray[i].column].METADATA,"BSAVE") OR application.stCoapi[tableName].STPROPS[sqlArray[i].column].METADATA.bSave>
+							  , #sqlArray[i].column#	
+							</cfif>
 						</cfloop>
 					)
 					VALUES ( 
 					
 						<cfqueryparam value="#currentObjectID#" cfsqltype="CF_SQL_VARCHAR">
 						<cfloop from="1" to="#arrayLen(SQLArray)#" index="i">
+						  <cfif not structKeyExists(application.stCoapi[tableName].STPROPS[sqlArray[i].column].METADATA,"BSAVE") OR application.stCoapi[tableName].STPROPS[sqlArray[i].column].METADATA.bSave>
 						  <!--- temp fix for mySQL, looks as though the datatype decimal and bind type float don't live peacefully together :( --->
 						  <cfif structKeyExists(sqlArray[i],'cfsqltype') AND sqlArray[i].cfsqltype NEQ "CF_SQL_FLOAT">
 						    , <cfqueryparam cfsqltype="#sqlArray[i].cfsqltype#" value="#sqlArray[i].value#" / >
@@ -83,6 +86,7 @@
 							, #numberFormat(sqlArray[i].value, "99999999999999.00")#
 						   <cfelse>
 						    , #sqlArray[i].value#
+						  </cfif>
 						  </cfif>
 						</cfloop>
 					)			
@@ -433,7 +437,7 @@
 
 
   	<cffunction name="setData" access="public" returntype="struct" output="false" >
-    		<cfargument name="stProperties" type="struct" required="true" />
+    	<cfargument name="stProperties" type="struct" required="true" />
 	  	<cfargument name="metadata" type="farcry.core.packages.fourq.TableMetadata" required="true" />
 	  	
 	  	<cfset var stFields = arguments.metadata.getTableDefinition() />
@@ -499,8 +503,12 @@
 			UPDATE #variables.dbowner##tablename#
 			SET
 			<cfloop from="1" to="#arrayLen(SQLArray)#" index="i">
-			  <cfif structKeyExists(arguments.stProperties,sqlArray[i].column) and sqlArray[i].column neq "objectid" and sqlArray[i].column neq "typename">
-				  <cfif NOT bFirst>,</cfif><cfset bFirst = false /> #sqlArray[i].column# = 
+				<cfset setProp = false>
+			  	<cfif not structKeyExists(application.stCoapi[tableName].STPROPS[sqlArray[i].column].METADATA,"BSAVE") OR application.stCoapi[tableName].STPROPS[sqlArray[i].column].METADATA.bSave>
+				  	<cfset setProp = true>
+				</cfif>
+				<cfif setProp and structKeyExists(arguments.stProperties,sqlArray[i].column) and sqlArray[i].column neq "objectid" and sqlArray[i].column neq "typename">
+				  	<cfif NOT bFirst>,</cfif><cfset bFirst = false /> #sqlArray[i].column# = 
 					<!--- temp fix for mySQL, looks as though the datatype decimal and bind type float don't live peacefully together :( --->
 					<cfif structKeyExists(sqlArray[i],'cfsqltype') AND sqlArray[i].cfsqltype NEQ "CF_SQL_FLOAT">
 					  <cfqueryparam cfsqltype="#sqlArray[i].cfsqltype#" value="#SQLArray[i].value#" />
@@ -511,6 +519,8 @@
 					  #sqlArray[i].value#
 					</cfif>
 				</cfif>
+				
+			
 			</cfloop>
 			
 			WHERE objectID = <cfqueryparam value="#objectID#" cfsqltype="CF_SQL_VARCHAR">
@@ -539,7 +549,6 @@
 	  	<cfset var SQLArray = arrayNew(1) />
 	  	<cfset var propertyValue = "" />
    		<cfset var stField = structNew() />
-
     	<cfloop collection="#tableDef#" item="field">
     
 			<cfif StructKeyExists(arguments.stProperties, field) 
