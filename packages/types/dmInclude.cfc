@@ -80,7 +80,7 @@ type properties
 	<cfset var qIncludes = application.coapi.coapiadmin.getIncludes() />
 	
 	<cfloop query="qIncludes">
-		<cfif left(qIncludes.name,1) EQ "_" AND qIncludes.Directory EQ "#application.path.project#/includedObj">
+		<cfif left(qIncludes.name,1) EQ "_" AND right(qIncludes.Directory, 12) EQ "/includedObj">
 			<cfset returnList = listAppend(returnList, "#qIncludes.PATH#:#qIncludes.displayName#") />
 		</cfif>	
 	</cfloop>
