@@ -874,6 +874,7 @@ Revision Information (Changelog):
 <cfparam name="attributes.LayoutNumber" default="1" />
 <cfparam name="attributes.FirstLastPage" default="none" />
 <cfparam name="attributes.CenterPageOffset" default="1" /> <!--- Default for "even" --->
+<cfparam name="attributes.showCurrentPageDetails" default="false" /> <!--- Show Page [x] of [y] --->
 <!--- "Layout attributes" Text/Ascii (All have the option to be set to blank) --->
 <cfscript>
   // Using IsDefined() allows the user to send "" (blank) for a value
@@ -1411,6 +1412,12 @@ Revision Information (Changelog):
     <cfelse>
       <cfoutput>#Layout_preNext#<cfif variables.LinkStyle1 neq ''><span id="#variables.LinkStyle1#"></cfif><a href="#variables.FileName#?#variables.ExtraURLString#<cfif variables.bEnablePageNumber>&amp;#variables.PageNumber_string#=#variables.nextPageNumber#<cfelse>&amp;#variables.strt_string#=#Evaluate(variables.strt + variables.show)#&amp;#variables.show_string#=#variables.show#</cfif>#attributes.bookmark#">#variables.layout_next#</a><cfif variables.LinkStyle1 neq ''></span></cfif>#Layout_postNext#</cfoutput>
     </cfif>
+  </cfif>
+
+  <cfif attributes.showCurrentPageDetails>
+	  <cfoutput>
+	  <h4>Page #variables.ThisPageNumber# of #variables.Last_PageNumber#</h4>
+	  </cfoutput>  
   </cfif>
   <!--- END - Next records --->
 
