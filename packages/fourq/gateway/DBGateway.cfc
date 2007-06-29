@@ -68,7 +68,8 @@
 					INSERT INTO #variables.dbowner##tablename# ( 
 						objectID
 						<cfloop from="1" to="#arrayLen(SQLArray)#" index="i">
-							<cfif not structKeyExists(application.stCoapi[tableName].STPROPS[sqlArray[i].column].METADATA,"BSAVE") OR application.stCoapi[tableName].STPROPS[sqlArray[i].column].METADATA.bSave>
+							<!--- Check to make sure property is to be saved in the db. --->
+							<cfif not structKeyExists(application.stCoapi, tablename) OR not structKeyExists(application.stCoapi[tableName].STPROPS[sqlArray[i].column].METADATA,"BSAVE") OR application.stCoapi[tableName].STPROPS[sqlArray[i].column].METADATA.bSave>
 							  , #sqlArray[i].column#	
 							</cfif>
 						</cfloop>
@@ -77,17 +78,18 @@
 					
 						<cfqueryparam value="#currentObjectID#" cfsqltype="CF_SQL_VARCHAR">
 						<cfloop from="1" to="#arrayLen(SQLArray)#" index="i">
-						  <cfif not structKeyExists(application.stCoapi[tableName].STPROPS[sqlArray[i].column].METADATA,"BSAVE") OR application.stCoapi[tableName].STPROPS[sqlArray[i].column].METADATA.bSave>
-						  <!--- temp fix for mySQL, looks as though the datatype decimal and bind type float don't live peacefully together :( --->
-						  <cfif structKeyExists(sqlArray[i],'cfsqltype') AND sqlArray[i].cfsqltype NEQ "CF_SQL_FLOAT">
-						    , <cfqueryparam cfsqltype="#sqlArray[i].cfsqltype#" value="#sqlArray[i].value#" / >
-						  <cfelseif structKeyExists(sqlArray[i],'cfsqltype') AND sqlArray[i].cfsqltype EQ "CF_SQL_FLOAT">
-							<!--- make sure we are only passing 2 places after the decimal point --->
-							, #numberFormat(sqlArray[i].value, "99999999999999.00")#
-						   <cfelse>
-						    , #sqlArray[i].value#
-						  </cfif>
-						  </cfif>
+							<!--- Check to make sure property is to be saved in the db. --->
+							<cfif not structKeyExists(application.stCoapi, tablename) OR not structKeyExists(application.stCoapi[tableName].STPROPS[sqlArray[i].column].METADATA,"BSAVE") OR application.stCoapi[tableName].STPROPS[sqlArray[i].column].METADATA.bSave>
+							  <!--- temp fix for mySQL, looks as though the datatype decimal and bind type float don't live peacefully together :( --->
+							  <cfif structKeyExists(sqlArray[i],'cfsqltype') AND sqlArray[i].cfsqltype NEQ "CF_SQL_FLOAT">
+							    , <cfqueryparam cfsqltype="#sqlArray[i].cfsqltype#" value="#sqlArray[i].value#" / >
+							  <cfelseif structKeyExists(sqlArray[i],'cfsqltype') AND sqlArray[i].cfsqltype EQ "CF_SQL_FLOAT">
+								<!--- make sure we are only passing 2 places after the decimal point --->
+								, #numberFormat(sqlArray[i].value, "99999999999999.00")#
+							   <cfelse>
+							    , #sqlArray[i].value#
+							  </cfif>
+							</cfif>
 						</cfloop>
 					)			
 				</cfquery>
@@ -504,22 +506,24 @@
 			SET
 			<cfloop from="1" to="#arrayLen(SQLArray)#" index="i">
 				<cfset setProp = false>
-			  	<cfif not structKeyExists(application.stCoapi[tableName].STPROPS[sqlArray[i].column].METADATA,"BSAVE") OR application.stCoapi[tableName].STPROPS[sqlArray[i].column].METADATA.bSave>
-				  	<cfset setProp = true>
-				</cfif>
-				<cfif setProp and structKeyExists(arguments.stProperties,sqlArray[i].column) and sqlArray[i].column neq "objectid" and sqlArray[i].column neq "typename">
-				  	<cfif NOT bFirst>,</cfif><cfset bFirst = false /> #sqlArray[i].column# = 
-					<!--- temp fix for mySQL, looks as though the datatype decimal and bind type float don't live peacefully together :( --->
-					<cfif structKeyExists(sqlArray[i],'cfsqltype') AND sqlArray[i].cfsqltype NEQ "CF_SQL_FLOAT">
-					  <cfqueryparam cfsqltype="#sqlArray[i].cfsqltype#" value="#SQLArray[i].value#" />
-					<cfelseif structKeyExists(sqlArray[i],'cfsqltype') AND sqlArray[i].cfsqltype EQ "CF_SQL_FLOAT">
-						<!--- make sure we are only passing 2 places after the decimal point --->
-						#numberFormat(sqlArray[i].value, "99999999999999.00")#
-					<cfelse>
-					  #sqlArray[i].value#
-					</cfif>
-				</cfif>
 				
+				<!--- Check to make sure property is to be saved in the db. --->
+			  	<cfif not structKeyExists(application.stCoapi, tablename) OR not structKeyExists(application.stCoapi[tableName].STPROPS[sqlArray[i].column].METADATA,"BSAVE") OR application.stCoapi[tableName].STPROPS[sqlArray[i].column].METADATA.bSave>
+
+					<cfif structKeyExists(arguments.stProperties,sqlArray[i].column) and sqlArray[i].column neq "objectid" and sqlArray[i].column neq "typename">
+					  	<cfif NOT bFirst>,</cfif><cfset bFirst = false /> #sqlArray[i].column# = 
+						<!--- temp fix for mySQL, looks as though the datatype decimal and bind type float don't live peacefully together :( --->
+						<cfif structKeyExists(sqlArray[i],'cfsqltype') AND sqlArray[i].cfsqltype NEQ "CF_SQL_FLOAT">
+						  <cfqueryparam cfsqltype="#sqlArray[i].cfsqltype#" value="#SQLArray[i].value#" />
+						<cfelseif structKeyExists(sqlArray[i],'cfsqltype') AND sqlArray[i].cfsqltype EQ "CF_SQL_FLOAT">
+							<!--- make sure we are only passing 2 places after the decimal point --->
+							#numberFormat(sqlArray[i].value, "99999999999999.00")#
+						<cfelse>
+						  #sqlArray[i].value#
+						</cfif>
+					</cfif>
+				
+				</cfif>
 			
 			</cfloop>
 			
