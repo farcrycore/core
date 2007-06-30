@@ -185,7 +185,9 @@ $in: objectid -- $
 				<cfset application.stPlugins = structNew() />
 				
 				
-				
+				<!--- ENSURE SYSINFO IS UPDATED EACH INITIALISATION --->
+				<cfset application.sysInfo = structNew() />
+
 				<!--- INITIALISE THE COAPIADMIN SINGLETON --->
 				<cfset application.coapi.coapiadmin = createObject("component", "farcry.core.packages.coapi.coapiadmin").init() />
 	
