@@ -368,39 +368,15 @@
 			</cfloop>
 			
 		</cfcase>
-		<cfcase value="ora">
-			
-			<cfquery name="qArrayData" datasource="#application.dsn#">
-				SELECT data as arrayobjid
-				FROM #variables.dbowner##tablename#
-				WHERE parentID = '#arguments.objectid#'
-			</cfquery>
-			
-			<cfloop query="qArrayData">
-				<cfquery name="qTypename" datasource="#application.dsn#">
-				SELECT typename
-				FROM refobjects
-				WHERE objectID = '#qarraydata.arrayobjid#'
-				</cfquery>
-				
-				<cfquery name="update" datasource="#application.dsn#">
-				UPDATE #variables.dbowner##tablename#
-				SET 
-				typename = '#qtypename.typename#'
-				WHERE
-				data = '#qarraydata.arrayobjid#'
-				</cfquery>
-			</cfloop>
-
-		</cfcase>
 		<cfdefaultcase>
-		<!--- anything else --->
+			<!--- anything else --->
 			<cfquery name="update" datasource="#application.dsn#">
 			UPDATE #variables.dbowner##tablename#
-			SET #variables.dbowner##tablename#.typename = refObjects.typename		
-			FROM #variables.dbowner##tablename# INNER JOIN refObjects
-			ON #variables.dbowner##tablename#.data=refObjects.objectid	
-			WHERE parentID = '#arguments.objectid#'			
+			SET #variables.dbowner##tablename#.typename =
+				(SELECT refObjects.typename
+				FROM refObjects 
+				WHERE #variables.dbowner##tablename#.data = refObjects.objectid) 
+			WHERE parentID = '#arguments.objectid#'    
 			</cfquery>		
 		</cfdefaultcase>
 		</cfswitch>
