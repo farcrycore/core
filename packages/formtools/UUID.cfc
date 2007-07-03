@@ -361,12 +361,17 @@
 				
 					<cfif Len(arguments.stObject[arguments.stMetaData.Name])>
 										
-						<cfif listLen(arguments.stMetadata.ftJoin)>						
+						<cfif listLen(arguments.stMetadata.ftJoin) GT 1 >						
 							<cfset q4 = createObject("component", "farcry.core.packages.fourq.fourq")>
 							<cfset joinTypename = q4.findType(objectid=arguments.stObject[arguments.stMetaData.Name])>
-							<cfset oData = createObject("component", application.types[joinTypename].packagePath) />
+							<cfif len(joinTypename)>
+								<cfset oData = createObject("component", application.stcoapi[joinTypename].packagePath) />
+							<cfelse>
+								<cfoutput><p>#arguments.stObject[arguments.stMetaData.Name]#: objectid does not exist in the database.</p></cfoutput>
+								<cfabort>
+							</cfif>
 						<cfelse>
-							<cfset oData = createObject("component", application.types[arguments.stMetadata.ftJoin].packagePath) />
+							<cfset oData = createObject("component", application.stcoapi[arguments.stMetadata.ftJoin].packagePath) />
 						</cfif>
 						
 						<cfset HTML = oData.getView(objectID=arguments.stObject[arguments.stMetaData.Name], template="#arguments.stMetadata.ftLibrarySelectedWebskin#", alternateHTML="") />
