@@ -23,6 +23,11 @@ $in: template -- the template to be included. Noramlly this would be the complet
 
 
 <cfif thistag.executionMode eq "Start">
+
+	<cfif structKeyExists(caller, "stobj")>
+		<cfset variables.stobj = caller.stobj />
+	</cfif>
+
 	<cfif not structKeyExists(attributes, "template")>
 		<cfabort showerror="skin:include must be passed the template to be included" />
 	</cfif>
