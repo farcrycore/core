@@ -47,16 +47,16 @@ this stylesheet defines the following page elements:
 /* form formatting styles */
 
 /* start legacy formtool css  */
-form.formtool {font-size: 100%;}
-form.formtool fieldset {font-size: 100%;}
-form.formtool fieldset legend {font-size: 150%; font-weight: normal; color: #hexPrimaryDark#;}
+form.formtool {}
+form.formtool fieldset {}
+form.formtool fieldset legend {font-weight: normal; color: #hexPrimaryDark#;}
 
 form.formtool label u {font-style: normal; text-decoration: underline;}
-input, select, textarea {font-family: Tahoma, Arial, sans-serif; font-size: 100%; color: ##000000;}
-form fieldset div.notes {color: ##666666; font-size: 88%;}
-form fieldset div.notes h4 {color: ##666666; font-size: 120%;}
+input, select, textarea {font-family: Tahoma, Arial, sans-serif; color: ##000000;}
+form fieldset div.notes {color: ##666666; }
+form fieldset div.notes h4 {color: ##666666; }
 form fieldset div.notes p {color: ##666666;}
-form div fieldset legend {font-size: 100%;}
+form div fieldset legend {}
 form div.required fieldset legend {font-weight: bold;}
 form.formtool label {text-align: right;}
 form.formtool div.optional label, form.formtool label.optional {font-weight: normal;}
@@ -64,10 +64,10 @@ form.formtool div.required label, form.formtool label.required {font-weight: bol
 form.formtool label.labelCheckbox, form.formtool label.labelRadio {text-align: left;}
 p.error {color: ##ffffff;}
 form div.error {color: ##666666;}
-form div.error p.error {font-size: 80%; font-weight: bold; color: ##ff0000;}
+form div.error p.error {font-weight: bold; color: ##ff0000;}
 form div.submit div {text-align: left;}
 form div input.inputSubmit, form div input.inputButton, input.inputSubmit, input.inputButton {color: ##000000;}
-form div small {font-size: 88%;}
+form div small {}
 
 form fieldset legend {line-height: 150%;}
 form.formtool label.labelCheckbox, form.formtool label.labelRadio, form.formtool label.labelCheckbox, form.formtool label.labelRadio {text-indent: -18px; line-height: 120%;}
@@ -80,23 +80,23 @@ form div.notes p, form div small {line-height: 125%;}
 
 /* start new formtool formatting styles */
 	/* formtool form layout styles */
-	form.formtool label {font: normal 120%/1.0 "Trebuchet MS",arial,helvetica,sans-serif; color: ##324e7c; letter-spacing: 0.0em; background-color: inherit;}
+	form.formtool label {color: ##324e7c; letter-spacing: 0.0em; background-color: inherit;}
 
 /* formtool form components */
 	/* formtool input : formButton layout styles */	
-	form.formtool input.formButton {font-size: 90%; color: ##30326F; background-color: inherit;}
+	form.formtool input.formButton {color: ##30326F; background-color: inherit;}
 	/* formtool select layout styles */
-	form.formtool select {font-size: 100%; color: ##324e7c; line-height: normal; background-color: inherit;}
+	form.formtool select {color: ##324e7c; line-height: normal; background-color: inherit;}
 
 /* formtool html button formatting styles */
 	/* formtool default html button formatting styles */
-	form.formtool div.buttonStandard a {font-size: 80%;}
+	form.formtool div.buttonStandard a {}
 	form.formtool div.buttonStandard a {color: ##30326F; background-color: inherit; text-decoration: none;}
 
 	/* array component : detail view formatting styles */
 	ul.arrayDetailView li {line-height: normal;}
 		ul.arrayDetailView li div.buttonGripper p {font-size: 0%; line-height: normal;}
-		ul.arrayDetailView li div.arrayDetail p {color: ##30326F; font-size: 100%; background-color: inherit;}
+		ul.arrayDetailView li div.arrayDetail p {color: ##30326F; background-color: inherit;}
 
 	/* array component : thumbnail view formatting styles */
 	ul.arrayThumbnailView li div.buttonGripper p {font-size: 0%; line-height: normal;}

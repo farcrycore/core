@@ -33,10 +33,10 @@
 	request.formtool.widthMax = "800px";
 
 	/* left column */
-	request.formtool.widthLeft = "180px";
+	request.formtool.widthLeft = "25%";
 
 	/* right column */
-	request.formtool.widthRight = "400px";
+	request.formtool.widthRight = "70%";
 
 
 </cfscript>
