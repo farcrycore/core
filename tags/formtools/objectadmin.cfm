@@ -86,6 +86,7 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 <cfparam name="attributes.module" default="customlists/#attributes.typename#.cfm">
 <cfparam name="attributes.plugin" default="" />
 <cfparam name="attributes.lCustomActions" default="" />
+<cfparam name="attributes.stFilterMetaData" default="#structNew()#" />
 
 
 <cfif NOT structKeyExists(session.objectadmin, attributes.typename)>
@@ -252,7 +253,7 @@ user --->
 			</div>
 			</cfoutput>
 			<cfoutput><div id="filterForm" style="display:none;padding:5px;"></cfoutput>
-				<ft:object objectid="#session.objectadminFilterObjects[attributes.typename].stObject.objectid#" typename="#attributes.typename#" lFields="#attributes.lFilterFields#" lExcludeFields="" includeFieldset="false" />
+				<ft:object objectid="#session.objectadminFilterObjects[attributes.typename].stObject.objectid#" typename="#attributes.typename#" lFields="#attributes.lFilterFields#" lExcludeFields="" includeFieldset="false" stPropMetaData="#attributes.stFilterMetaData#" />
 				<ft:farcryButton value="apply filter" />
 				<br/>
 			<cfoutput></div></cfoutput>
