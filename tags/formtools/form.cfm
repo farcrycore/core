@@ -33,6 +33,7 @@ It just ignores the inner ones.
 		<cfparam name="attributes.Heading" default="">
 		<cfparam name="attributes.Validation" default="1">
 		<cfparam name="attributes.bAjaxSubmission" default="false">
+		<cfparam name="attributes.bProjectSubmission" default="false"><!--- used so we know if a form is submitted inside a project, so the facade won't be called from within farcry --->
 		
 		
 		<!--- We only render the form if FarcryForm OnExit has not been Fired. --->
@@ -59,7 +60,11 @@ It just ignores the inner ones.
 			
 			<!---<cfdump var="#attributes#"> --->
 			<cfif NOT len(attributes.Action)>
-				<cfset attributes.Action = "#application.url.farcry#/facade/ajaxFormSubmission.cfm?typename=#attributes.typename#&webskin=#attributes.webskin#&objectid=#attributes.ObjectID#" />
+				<cfif attributes.bProjectSubmission>
+					<cfset attributes.Action = "/facade/ajaxFormSubmission.cfm?typename=#attributes.typename#&webskin=#attributes.webskin#&objectid=#attributes.ObjectID#" />				
+				<cfelse>
+					<cfset attributes.Action = "#application.url.farcry#/facade/ajaxFormSubmission.cfm?typename=#attributes.typename#&webskin=#attributes.webskin#&objectid=#attributes.ObjectID#" />
+				</cfif>
 			</cfif>
 			<cfset request.inHead.prototypelite = "true" />
 			<cfset attributes.onSubmit = "#attributes.onSubmit#;$('#attributes.Name#ajaxsubmission').innerHTML='saving changes';new Ajax.Updater('#attributes.Name#formwrap', '#attributes.Action#', {asynchronous:true, parameters:Form.serialize(this)}); return false;" />
