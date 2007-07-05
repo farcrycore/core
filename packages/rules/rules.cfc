@@ -47,7 +47,6 @@ $out:$
 		<cfset var WebskinPath = "" />
 		<cfset var webskinHTML = "" />
 		<cfset var oObjectBroker = createObject("component", "farcry.core.packages.fourq.objectBroker").init() />
-		<cfset var oCoapiAdmin = createObject("component", "farcry.core.packages.coapi.coapiadmin").init() />
 		<cfset var stCurrentView = structNew() />		
 			
 		<!--- make sure that .cfm isn't passed to this method in the template argument --->
@@ -72,7 +71,7 @@ $out:$
 			<cfset webskinHTML = oObjectBroker.getWebskin(objectid=stobj.objectid, typename=stobj.typename, template=arguments.template) />		
 			
 			<cfif not len(webskinHTML)>
-				<cfset webskinPath = oCoapiAdmin.getWebskinPath(typename=stObj.typename, template=arguments.template) />
+				<cfset webskinPath = application.coapi.coapiadmin.getWebskinPath(typename=stObj.typename, template=arguments.template) />
 						
 				<cfif len(webskinPath)>
 					
@@ -84,8 +83,8 @@ $out:$
 					<cfset stCurrentView.objectid = stobj.objectid />
 					<cfset stCurrentView.typename = stobj.typename />
 					<cfset stCurrentView.template = arguments.template />
-					<cfset stCurrentView.timeout = oCoapiAdmin.getWebskinTimeOut(typename=stObj.typename, template=arguments.template) />
-					<cfset stCurrentView.hashURL = oCoapiAdmin.getWebskinHashURL(typename=stObj.typename, template=arguments.template) />
+					<cfset stCurrentView.timeout = application.coapi.coapiadmin.getWebskinTimeOut(typename=stObj.typename, template=arguments.template) />
+					<cfset stCurrentView.hashURL = application.coapi.coapiadmin.getWebskinHashURL(typename=stObj.typename, template=arguments.template) />
 					<cfset stCurrentView.okToCache = 1 />
 					<cfset stCurrentView.inHead = structNew() />
 					<cfset stCurrentView.inHead.stCustom = structNew() />
