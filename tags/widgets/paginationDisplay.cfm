@@ -1307,6 +1307,14 @@ Revision Information (Changelog):
 
 <cfoutput><cfif variables.DivStyle neq ''><div id="#variables.DivStyle#"></cfif><cfif variables.PageText neq ''><cfif variables.TextStyle1 neq ''><span class="#variables.TextStyle1#"></cfif>#variables.PageText#<cfif variables.TextStyle1 neq ''></span></cfif></cfif></cfoutput>
 
+
+  <cfif attributes.showCurrentPageDetails>
+	  <cfoutput>
+	  <h4>Page #variables.ThisPageNumber# of #variables.Last_PageNumber#</h4>
+	  </cfoutput>  
+  </cfif>
+
+
   <!--- START - Previous link --->
   <cfif variables.ThisPageNumber NEQ 1>
     <!--- Note: I've left this code in here since v1.00.  If you'd like to use it remember to remark the other code below it instead.
@@ -1414,11 +1422,6 @@ Revision Information (Changelog):
     </cfif>
   </cfif>
 
-  <cfif attributes.showCurrentPageDetails>
-	  <cfoutput>
-	  <h4>Page #variables.ThisPageNumber# of #variables.Last_PageNumber#</h4>
-	  </cfoutput>  
-  </cfif>
   <!--- END - Next records --->
 
   <!--- Display Version Info --->
