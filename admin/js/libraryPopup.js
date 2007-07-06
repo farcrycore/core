@@ -7,15 +7,16 @@
 				}
 				
 				
-				function initArrayField(fieldname) {
+				function initArrayField(fieldname,virtualDir) {
 						// <![CDATA[
+							 if(virtualDir==null){virtualDir="";}
 							  Sortable.create(fieldname + '_list',
 							  	{ghosting:false,constraint:false,hoverclass:'over',handle:fieldname + '_listhandle',
 							    onChange:function(element){
 							    	$(fieldname).value = Sortable.sequence(fieldname + '_list');
 							    },
 							    onUpdate:function(element){
-							    	libraryCallbackArray(fieldname, 'sort', $(fieldname).value);
+							    	libraryCallbackArray(fieldname, 'sort', $(fieldname).value,virtualDir);
 							    }
 							  });
 						// ]]>
@@ -36,7 +37,8 @@
 								});
 							}
 							
-							function deleteSelectedFromArrayField(fieldname){								
+							function deleteSelectedFromArrayField(fieldname,virtualDir){
+								if(virtualDir==null){virtualDir="";}							
 								aInputs = $$("#" + fieldname + "_list input");
 								aInputs.each(function(child) {
 									if(child.checked == true){
@@ -44,7 +46,7 @@
 									}
 								});
 								
-								libraryCallbackArray(fieldname,'sort',Sortable.sequence(fieldname + '_list'));
+								libraryCallbackArray(fieldname,'sort',Sortable.sequence(fieldname + '_list'),virtualDir);
 								
 							}
 									
@@ -68,7 +70,7 @@
 										    	$(fieldname).value = Sortable.sequence(fieldname + '_list');
 										    },
 											    onUpdate:function(element){
-										   			libraryCallbackArray(fieldname,'sort',$(fieldname).value);
+										   			libraryCallbackArray(fieldname,'sort',$(fieldname).value,virtualDir);
 											    }
 											  });
 											$(fieldname).value = Sortable.sequence(fieldname + '_list');

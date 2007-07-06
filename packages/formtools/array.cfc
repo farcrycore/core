@@ -179,7 +179,7 @@
 						<div class="buttonGroup">
 							<ft:farcryButton type="button" value="Select All" onclick="toggleOnArrayField('#arguments.fieldname#');return false;" / >
 							<ft:farcryButton type="button" value="De-select All" onclick="toggleOffArrayField('#arguments.fieldname#');return false;" / >
-							<ft:farcryButton type="button" value="Remove Selected" onclick="deleteSelectedFromArrayField('#arguments.fieldname#');return false;" confirmText="Are you sure you want to remove the selected item(s)" / >
+							<ft:farcryButton type="button" value="Remove Selected" onclick="deleteSelectedFromArrayField('#arguments.fieldname#','#application.url.webroot#');return false;" confirmText="Are you sure you want to remove the selected item(s)" / >
 						</div>
 
 						<br class="clearer" />
@@ -191,7 +191,7 @@
 	
 					<cfoutput>
 					<script type="text/javascript" language="javascript" charset="utf-8">
-					initArrayField('#arguments.fieldname#');
+					initArrayField('#arguments.fieldname#','#application.url.webroot#');
 					
 					var obj#arguments.fieldname# = new Object();					
 					obj#arguments.fieldname#.primaryFormFieldname="#arguments.fieldname#";
