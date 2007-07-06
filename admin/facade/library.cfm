@@ -537,13 +537,13 @@ LIBRARY DATA
 				<cfif URL.LibraryType EQ "array">
 							
 					//call on initial page load
-					opener.libraryCallbackArray('#url.primaryFormFieldname#', 'sort','#lBasketIDs#');
+					opener.libraryCallbackArray('#url.primaryFormFieldname#', 'sort','#lBasketIDs#','#application.url.webroot#');
 					
 					
 				<cfelse>
 					<cfif len(stPrimary[url.primaryFieldName]) >
 						//call on initial page load
-						opener.libraryCallbackUUID('#url.primaryFormFieldname#', 'add','#stPrimary[url.primaryFieldName]#');
+						opener.libraryCallbackUUID('#url.primaryFormFieldname#', 'add','#stPrimary[url.primaryFieldName]#','#application.url.webroot#');
 					</cfif>
 				</cfif>
 				
@@ -766,14 +766,14 @@ GENERATE THE LIBRARY PICKER
 						containment:["sortableListFrom","sortableListTo"],
 						constraint:false,
 						onUpdate:function(element) {
-							opener.libraryCallbackArray('#url.primaryFormFieldname#','sort',Sortable.sequence('sortableListTo'));
+							opener.libraryCallbackArray('#url.primaryFormFieldname#','sort',Sortable.sequence('sortableListTo'),'#application.url.webroot#');
 							new Effect.Highlight('sortableListTo',{startcolor:'##FFECD9',duration: 2});
 					             				
 						}
 					});
 					
 					//call on initial page load
-					opener.libraryCallbackArray('#url.primaryFormFieldname#','sort',Sortable.sequence('sortableListTo'));
+					opener.libraryCallbackArray('#url.primaryFormFieldname#','sort',Sortable.sequence('sortableListTo'),'#application.url.webroot#');
 					
 					
 				<cfelse>
@@ -781,14 +781,14 @@ GENERATE THE LIBRARY PICKER
 					Droppables.add('sortableListTo', {
 					   onDrop: function(element) {
 					   		$('sortableListTo').innerHTML = $(element).innerHTML;
-					   		opener.libraryCallbackUUID('#url.primaryFormFieldname#','add',$(element).id);
+					   		opener.libraryCallbackUUID('#url.primaryFormFieldname#','add',$(element).id,'#application.url.webroot#');
 							new Effect.Highlight('sortableListTo',{startcolor:'##FFECD9',duration: 2});
 		
 					   }
 					}); 
 					<cfif len(stPrimary[url.primaryFieldName]) >
 						//call on initial page load						
-						opener.libraryCallbackUUID('#url.primaryFormFieldname#','add','#stPrimary[url.primaryFieldName]#');
+						opener.libraryCallbackUUID('#url.primaryFormFieldname#','add','#stPrimary[url.primaryFieldName]#','#application.url.webroot#');
 					</cfif>
 				</cfif>
 				

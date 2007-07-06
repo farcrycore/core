@@ -48,9 +48,9 @@
 								
 							}
 									
-						function libraryCallbackArray(fieldname,action,ids){
-							$(fieldname).value = ids;							
-												
+						function libraryCallbackArray(fieldname,action,ids,virtualDir){
+							$(fieldname).value = ids;						
+							if(virtualDir==null){virtualDir="";}				
 							var objParams = eval('obj' + fieldname);
 							var sURLParams = "LibraryType=Array&Action=" + action + '&DataObjectID=' + encodeURIComponent($(fieldname).value);
 							for (i in objParams){
@@ -58,7 +58,7 @@
 							}
 														
 							
-							new Ajax.Updater(fieldname + '-libraryCallback', '/farcry/facade/library.cfc?method=ajaxUpdateArray&noCache=' + Math.random(), {
+							new Ajax.Updater(fieldname + '-libraryCallback', virtualDir+'/farcry/facade/library.cfc?method=ajaxUpdateArray&noCache=' + Math.random(), {
 									//onLoading:function(request){Element.show('indicator')},
 									onComplete:function(request){
 										// <![CDATA[
@@ -95,7 +95,8 @@
 						libraryCallbackUUID(fieldname,'remove',$(fieldname).value);
 					}
 					
-					function libraryCallbackUUID(fieldname,action,ids){
+					function libraryCallbackUUID(fieldname,action,ids,virtualDir){
+						if(virtualDir==null){virtualDir="";}	
 						$(fieldname).value = ids;	
 						var objParams = eval('obj' + fieldname);										
 						var sURLParams = "LibraryType=UUID&Action=" + action + '&DataObjectID=' + encodeURIComponent($(fieldname).value);
@@ -105,7 +106,7 @@
 						
 						
 						
-						new Ajax.Updater(fieldname + '-libraryCallback', '/farcry/facade/library.cfc?method=ajaxUpdateArray&noCache=' + Math.random(), {
+						new Ajax.Updater(fieldname + '-libraryCallback', virtualDir+'/farcry/facade/library.cfc?method=ajaxUpdateArray&noCache=' + Math.random(), {
 							//onLoading:function(request){Element.show('indicator')},
 							parameters:sURLParams, evalScripts:true, asynchronous:true
 						})
