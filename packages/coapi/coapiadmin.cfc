@@ -160,11 +160,11 @@
 		<cfargument name="prefix" type="string" required="false" default="" hint="Prefix to filter template results." />
 		<cfargument name="bForceRefresh" type="boolean" required="false" default="false" hint="Force to reload and not use application scope." />
 		<cfargument name="excludeWebskins" type="string" required="false" default="" hint="Allows developers to exclude webskins that might be contained in plugins." />
-		
-		<cfset var qResult=queryNew("name,directory,size,type,datelastmodified,attributes,mode") />
-		<cfset var qLibResult=queryNew("name,directory,size,type,datelastmodified,attributes,mode") />
-		<cfset var qCoreResult=queryNew("name,directory,size,type,datelastmodified,attributes,mode") />
-		<cfset var qDupe=queryNew("name,directory,size,type,datelastmodified,attributes,mode") />
+								
+		<cfset var qResult=queryNew("attributes,author,datelastmodified,description,directory,displayname,hashurl,methodname,mode,name,path,size,type","VarChar,VarChar,date,VarChar,VarChar,VarChar,Integer,VarChar,VarChar,VarChar,VarChar,BigInt,VarChar") />
+		<cfset var qLibResult=queryNew("attributes,author,datelastmodified,description,directory,displayname,hashurl,methodname,mode,name,path,size,type","VarChar,VarChar,date,VarChar,VarChar,VarChar,Integer,VarChar,VarChar,VarChar,VarChar,BigInt,VarChar") />
+		<cfset var qCoreResult=queryNew("attributes,author,datelastmodified,description,directory,displayname,hashurl,methodname,mode,name,path,size,type","VarChar,VarChar,date,VarChar,VarChar,VarChar,Integer,VarChar,VarChar,VarChar,VarChar,BigInt,VarChar") />
+		<cfset var qDupe=queryNew("attributes,author,datelastmodified,description,directory,displayname,hashurl,methodname,mode,name,path,size,type","VarChar,VarChar,date,VarChar,VarChar,VarChar,Integer,VarChar,VarChar,VarChar,VarChar,BigInt,VarChar") />
 		<cfset var webskinPath = "#application.path.project#/webskin/#arguments.typename#" />
 		<cfset var library="" />
 		<cfset var col="" />
@@ -274,7 +274,7 @@
 			
 			<!--- ORDER AND SET DISPLAYNAME FOR COMBINED WEBSKIN RESULTS --->		
 	 		<cfquery dbtype="query" name="qResult">
-			SELECT *, name as displayname,  name as methodname, 'anonymous' as author, '' as description, '0' as HashURL, '' as path
+			SELECT attributes,'anonymous' as author,datelastmodified,'' as description,directory,name as displayname,'0' as HashURL,name as methodname,mode,name,'' as path,size,type
 			FROM qResult
 			ORDER BY name
 			</cfquery>
