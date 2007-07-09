@@ -102,7 +102,7 @@
 						
 			<cfcase value="URL">
 				<cfif structKeyExists(stOnExit, "Content")>
-					<cfif stOnExit.Content EQ "refresh">
+					<cfif not len(stOnExit.Content) OR stOnExit.Content EQ "refresh">
 						<cflocation url="#cgi.SCRIPT_NAME#?#cgi.QUERY_STRING#" addtoken="false">
 					<cfelse>
 						<cflocation url="#stOnExit.Content#" addtoken="false">
