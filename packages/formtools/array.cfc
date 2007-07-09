@@ -131,6 +131,7 @@
 					
 								<cfif qArrayField.Recordcount>
 									<cfloop query="qArrayField">
+										<cfset HTML = "">
 										
 										<cfif isDefined("qArrayField.label") AND len(qArrayField.label)>
 											<cfset variables.alternateHTML = qArrayField.Label />
@@ -143,20 +144,20 @@
 											<cfset tmpTypename=createobject("component", "farcry.core.packages.fourq.fourq").findtype(objectid=qarrayfield.data) />
 											<cfset qArrayField.typename[qarrayfield.currentrow] = tmpTypename />
 											<cfif NOT len(tmpTypename)>
-												<cfthrow message="Typename not available." detail="Typename is not specified for the array data reference; data: #qArrayField.data# parentid: #qArrayField.parentid#" type="Application" errorcode="formtools.array" />
+												<cfset HTML = "Object Not Found">
 											</cfif>
 										</cfif>
-						
-										<cfset HTML = stJoinObjects[qArrayField.typename].getView(objectID=qArrayField.data, template="#arguments.stMetadata.ftLibrarySelectedWebskin#", alternateHTML=variables.alternateHTML) />
-										<cfif NOT len(trim(HTML))>
-											<cfset stTemp = stJoinObjects[qArrayField.typename].getData(objectid=qArrayField.data) />
-											<cfif structKeyExists(stTemp, "label") AND len(stTemp.label)>
-												<cfset HTML = stTemp.label />
-											<cfelse>
-												<cfset HTML = stTemp.objectid />
+										<cfif NOT len(HTML)>
+											<cfset HTML = stJoinObjects[qArrayField.typename].getView(objectID=qArrayField.data, template="#arguments.stMetadata.ftLibrarySelectedWebskin#", alternateHTML=variables.alternateHTML) />																			
+											<cfif NOT len(trim(HTML))>
+												<cfset stTemp = stJoinObjects[qArrayField.typename].getData(objectid=qArrayField.data) />
+												<cfif structKeyExists(stTemp, "label") AND len(stTemp.label)>
+													<cfset HTML = stTemp.label />
+												<cfelse>
+													<cfset HTML = stTemp.objectid />
+												</cfif>
 											</cfif>
 										</cfif>
-
 										
 										<cfoutput>
 										<li id="#arguments.fieldname#_#qArrayField.data#:#qArrayField.seq#" class="#ULID#handle" style="<cfif len(arguments.stMetadata.ftLibraryListItemWidth)>width:#arguments.stMetadata.ftLibraryListItemWidth#;</cfif><cfif len(arguments.stMetadata.ftLibraryListItemheight)>height:#arguments.stMetadata.ftLibraryListItemHeight#;</cfif>">
