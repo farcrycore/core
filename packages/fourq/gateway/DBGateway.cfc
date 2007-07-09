@@ -367,8 +367,16 @@
 			</cfloop>
 			
 		</cfcase>
-		<cfdefaultcase>
-			<!--- anything else --->
+		<cfcase value="mssql">
+			<cfquery name="update" datasource="#application.dsn#">
+				UPDATE #variables.dbowner##tablename#
+				SET #variables.dbowner##tablename#.typename = refObjects.typename		
+				FROM #variables.dbowner##tablename# INNER JOIN refObjects
+				ON #variables.dbowner##tablename#.data=refObjects.objectid	
+				WHERE parentID = '#arguments.objectid#'			
+			</cfquery>
+		</cfcase>
+		<cfcase value="ora">
 			<cfquery name="update" datasource="#application.dsn#">
 			UPDATE #variables.dbowner##tablename#
 			SET #variables.dbowner##tablename#.typename =
@@ -376,7 +384,17 @@
 				FROM refObjects 
 				WHERE #variables.dbowner##tablename#.data = refObjects.objectid) 
 			WHERE parentID = '#arguments.objectid#'    
-			</cfquery>		
+			</cfquery>
+		</cfcase>	
+		<cfdefaultcase>
+			<!--- anything else / needs to be checked as this does not work for all databases--->
+			<cfquery name="update" datasource="#application.dsn#">
+				UPDATE #variables.dbowner##tablename#
+				SET #variables.dbowner##tablename#.typename = refObjects.typename		
+				FROM #variables.dbowner##tablename# INNER JOIN refObjects
+				ON #variables.dbowner##tablename#.data=refObjects.objectid	
+				WHERE parentID = '#arguments.objectid#'			
+			</cfquery>	
 		</cfdefaultcase>
 		</cfswitch>
 		
