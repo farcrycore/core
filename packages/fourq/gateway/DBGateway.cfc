@@ -69,7 +69,7 @@
 						objectID
 						<cfloop from="1" to="#arrayLen(SQLArray)#" index="i">
 							<!--- Check to make sure property is to be saved in the db. --->
-							<cfif not structKeyExists(application.stCoapi, tablename) OR not structKeyExists(application.stCoapi[tableName].STPROPS[sqlArray[i].column].METADATA,"BSAVE") OR application.stCoapi[tableName].STPROPS[sqlArray[i].column].METADATA.bSave>
+							<cfif not structKeyExists(application, "stcoapi") OR  not structKeyExists(application.stCoapi, tablename) OR not structKeyExists(application.stCoapi[tableName].STPROPS[sqlArray[i].column].METADATA,"BSAVE") OR application.stCoapi[tableName].STPROPS[sqlArray[i].column].METADATA.bSave>
 							  , #sqlArray[i].column#	
 							</cfif>
 						</cfloop>
@@ -79,7 +79,7 @@
 						<cfqueryparam value="#currentObjectID#" cfsqltype="CF_SQL_VARCHAR">
 						<cfloop from="1" to="#arrayLen(SQLArray)#" index="i">
 							<!--- Check to make sure property is to be saved in the db. --->
-							<cfif not structKeyExists(application.stCoapi, tablename) OR not structKeyExists(application.stCoapi[tableName].STPROPS[sqlArray[i].column].METADATA,"BSAVE") OR application.stCoapi[tableName].STPROPS[sqlArray[i].column].METADATA.bSave>
+							<cfif not structKeyExists(application, "stcoapi") OR  not structKeyExists(application.stCoapi, tablename) OR not structKeyExists(application.stCoapi[tableName].STPROPS[sqlArray[i].column].METADATA,"BSAVE") OR application.stCoapi[tableName].STPROPS[sqlArray[i].column].METADATA.bSave>
 							  <!--- temp fix for mySQL, looks as though the datatype decimal and bind type float don't live peacefully together :( --->
 							  <cfif structKeyExists(sqlArray[i],'cfsqltype') AND sqlArray[i].cfsqltype NEQ "CF_SQL_FLOAT">
 							    , <cfqueryparam cfsqltype="#sqlArray[i].cfsqltype#" value="#sqlArray[i].value#" / >
