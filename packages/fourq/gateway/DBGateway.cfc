@@ -332,15 +332,14 @@
 		 --------------------------------------------------------------->	
 		<!--- todo: work out most efficient way for each dbtype and break out into the relevant gateway --->
 		<cfswitch expression="#application.dbtype#">
-		<cfcase value="mysql5">
+		<cfcase value="mysql,mysql5">
 			<!--- This works for mySQL 5; see mysql5 specific gateway --->
 			<cfquery name="update" datasource="#application.dsn#">
-			UPDATE #variables.dbowner##tablename#
-			SET #variables.dbowner##tablename#.typename = (SELECT refObjects.typename
-			                                    FROM refObjects
-			                                    WHERE #variables.dbowner##tablename#.data=refObjects.objectid
-			                                    )
-			WHERE parentID = '#arguments.objectid#'
+			UPDATE ruleHandpicked_aObjects p
+			INNER JOIN refObjects pp
+			ON p.data = pp.objectid
+			SET p.typename = pp.typename
+			WHERE p.parentID = '#arguments.objectid#'
 			</cfquery> 
 		</cfcase>
 		<cfcase value="postgresql">
