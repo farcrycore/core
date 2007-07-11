@@ -13,7 +13,7 @@
 		
 		<cfif Request.farcryForm.Validation EQ 1>
 			<script type="text/javascript">
-				var realeasyvalidation = new Validation('#Request.farcryForm.Name#', {onSubmit:false});
+				var realeasyvalidation#Request.farcryForm.Name# = new Validation('#Request.farcryForm.Name#', {onSubmit:false});
 			</script>
 		</cfif>
 

@@ -39,7 +39,7 @@
 	
 	<cfif Request.farcryForm.Validation AND Attributes.validate>
 		<!--- Confirm the click before submitting --->
-		<cfset attributes.OnClick = "#attributes.OnClick#;return realeasyvalidation.validate();">
+		<cfset attributes.OnClick = "#attributes.OnClick#;return realeasyvalidation#Request.farcryForm.Name#.validate();">
 		
 		
 		
