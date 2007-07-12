@@ -88,8 +88,7 @@
 		<cfset var html = "" />
 
 		<cfsavecontent variable="html">
-			<cfoutput><a target="_blank" href="#application.url.webroot#/download.cfm?downloadfile=#arguments.stobject.objectid#&typename=#arguments.typename#&field=#arguments.stmetadata.name#">#arguments.stMetadata.value#</a></cfoutput>			
-			
+			<cfoutput><a target="_blank" href="#application.url.webroot#/download.cfm?downloadfile=#arguments.stobject.objectid#&typename=#arguments.typename#&fieldname=#arguments.stmetadata.name#">#arguments.stMetadata.value#</a></cfoutput>
 		</cfsavecontent>
 		
 		<cfreturn html>
