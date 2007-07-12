@@ -241,22 +241,28 @@ user --->
 		</cfif>
 	
 
-		<ft:form style="padding:0px; border-bottom: 1px solid ##000; ">
+		<ft:form style="padding:10px; border: 1px solid ##000;margin-bottom:10px; ">
 			<cfoutput>
 			<div style="display:inline;color:##E17000">
 				Listing Filter:
 				<cfif HTMLfiltersAttributes eq "">
 					<a onclick="Effect.toggle('filterForm','blind');">set</a>
 				<cfelse>
-					<a onclick="Effect.toggle('filterForm','blind');">edit</a> <ft:farcryButton value="clear filter" /><div style="font-size:90%;margin-left:10px;border:1px solid ##000;padding:2px;float:right;background-color:##fff">#HTMLfiltersAttributes# &nbsp;</div>
+					<a onclick="Effect.toggle('filterForm','blind');">edit</a> 
+					
+					<div style="font-size:90%;margin-left:10px;border:1px solid ##000;padding:2px;float:right;background-color:##fff">
+						#HTMLfiltersAttributes#
+						<ft:farcryButton value="clear filter" />
+						<br class="clearer" />
+					</div>
 				</cfif>		
 			</div>
 			</cfoutput>
-			<cfoutput><div id="filterForm" style="display:none;padding:5px;"></cfoutput>
+			<cfoutput><div id="filterForm" style="display:none;"><div style="padding:5px;"></cfoutput>
 				<ft:object objectid="#session.objectadminFilterObjects[attributes.typename].stObject.objectid#" typename="#attributes.typename#" lFields="#attributes.lFilterFields#" lExcludeFields="" includeFieldset="false" stPropMetaData="#attributes.stFilterMetaData#" />
-				<ft:farcryButton value="apply filter" validate="false" />
-				<br/>
-			<cfoutput></div></cfoutput>
+				<ft:farcryButton value="apply filter" />
+				
+			<cfoutput><br class="clearer" /></div></div></cfoutput>
 		</ft:form>
 
 	
@@ -556,7 +562,7 @@ user --->
 	</cfscript>
 	<cfsavecontent variable="html_buttonbar">
 	<cfoutput>
-	<div class="">
+	<div class="" style="border:1px solid grey;">
 	</cfoutput>
 	
 	<cfloop from="1" to="#arraylen(attributes.aButtons)#" index="i">
@@ -571,15 +577,15 @@ user --->
 					<cfset onclickJS="" />
 				</cfif>
 				
-				<ft:farcryButton value="#attributes.aButtons[i].value#" class="formButton"  onclick="#onclickJS#" />
+				<ft:farcryButton value="#attributes.aButtons[i].value#"  onclick="#onclickJS#" />
 				<!---<input type="#attributes.aButtons[i].type#" name="#attributes.aButtons[i].name#" value="#attributes.aButtons[i].value#" class="formButton"<cfif len(attributes.aButtons[i].onclick)> onclick="#attributes.aButtons[i].onclick#"</cfif> /> --->
 			</cfif>
 		</cfif>
 	</cfloop>
 	
 	<cfoutput>
-	</div>
 	<br class="clearer" />
+	</div>
 	</cfoutput>
 	
 	</cfsavecontent>
