@@ -33,11 +33,9 @@
 			
 			<cfif len(arguments.stMetadata.value) AND (DateDiff('yyyy', now(), arguments.stMetadata.value) GT 100 OR dateformat(arguments.stMetadata.value, 'dd/mm/yyyy') eq '01/01/2050') >
 				<cfset bfieldvisible = 0>
-				<cfset fieldvisibletoggletext = "show...">
 				<cfset fieldStyle = "display:none;">
 			<cfelse>
 				<cfset bfieldvisible = 1>
-				<cfset fieldvisibletoggletext = "remove...">
 				<cfset fieldStyle = "">
 			</cfif>	
 			
@@ -51,11 +49,9 @@
 							
 						if (bfieldvisible#arguments.fieldname# == 0){
 							Effect.BlindDown('#arguments.fieldname#DIV');
-							$('#arguments.fieldname#includelabel').innerHTML = 'remove...';
 							bfieldvisible#arguments.fieldname# = 1;
 						} else {
 							Effect.BlindUp('#arguments.fieldname#DIV');
-							$('#arguments.fieldname#includelabel').innerHTML = 'show...';
 							bfieldvisible#arguments.fieldname# = 0;
 						}
 						
@@ -74,20 +70,22 @@
 		
 		<cfsavecontent variable="html">
 			<cfoutput>
-				<cfif arguments.stMetadata.ftToggleOffDateTime>
-					<div>
-						<input type="checkbox" name="#arguments.fieldname#include" id="#arguments.fieldname#include" value="1" onclick="javascript:toggle#arguments.fieldname#();" <cfif bfieldvisible>checked="true"</cfif> >
-						<input type="hidden" name="#arguments.fieldname#include" id="#arguments.fieldname#include" value="0">
-						<span id="#arguments.fieldname#includelabel">#fieldvisibletoggletext#</span>
-					</div>
-				<cfelse>
-					<input type="hidden" name="#arguments.fieldname#include" id="#arguments.fieldname#include" value="1">
-				</cfif>	
+
 				
-				<div id="#arguments.fieldname#DIV" style="#fieldstyle#">
+				<div>
 					<div>
-						<input type="Text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#DateFormat(arguments.stMetadata.value,arguments.stMetadata.ftDateFormatMask)# #TimeFormat(arguments.stMetadata.value,arguments.stMetadata.ftTimeFormatMask)#" style="#arguments.stMetadata.ftstyle#" />
-						<a id="#arguments.fieldname#DatePicker"><img src="#application.url.farcry#/js/DateTimePicker/cal.gif" width="16" height="16" border="0" alt="Pick a date"></a>
+						<cfif arguments.stMetadata.ftToggleOffDateTime>
+							<div style="float:left;">
+								<input type="checkbox" name="#arguments.fieldname#include" id="#arguments.fieldname#include" value="1" onclick="javascript:toggle#arguments.fieldname#();" <cfif bfieldvisible>checked="true"</cfif> >
+								<input type="hidden" name="#arguments.fieldname#include" id="#arguments.fieldname#include" value="0">
+							</div>
+						<cfelse>
+							<input type="hidden" name="#arguments.fieldname#include" id="#arguments.fieldname#include" value="1">
+						</cfif>
+						<div  id="#arguments.fieldname#DIV" style="float:left;margin-left:10px;#fieldstyle#">						
+							<input type="Text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#DateFormat(arguments.stMetadata.value,arguments.stMetadata.ftDateFormatMask)# #TimeFormat(arguments.stMetadata.value,arguments.stMetadata.ftTimeFormatMask)#" style="#arguments.stMetadata.ftstyle#" />
+							<a id="#arguments.fieldname#DatePicker"><img src="#application.url.farcry#/js/DateTimePicker/cal.gif" width="16" height="16" border="0" alt="Pick a date"></a>
+						</div>	
 					</div>
 				</div>
 				
