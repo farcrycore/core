@@ -254,7 +254,7 @@ user --->
 			</cfoutput>
 			<cfoutput><div id="filterForm" style="display:none;padding:5px;"></cfoutput>
 				<ft:object objectid="#session.objectadminFilterObjects[attributes.typename].stObject.objectid#" typename="#attributes.typename#" lFields="#attributes.lFilterFields#" lExcludeFields="" includeFieldset="false" stPropMetaData="#attributes.stFilterMetaData#" />
-				<ft:farcryButton value="apply filter" />
+				<ft:farcryButton value="apply filter" validate="false" />
 				<br/>
 			<cfoutput></div></cfoutput>
 		</ft:form>
