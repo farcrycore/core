@@ -60,23 +60,41 @@ type properties
 	
 	<cfset arguments.stProperties.datetimelastupdated = now() />
 	
-	<cfif structKeyExists(arguments.stProperties,"filename")>
+	<cfif structKeyExists(arguments.stProperties,"filename") AND len(trim(arguments.stProperties.filename))>
+	
 		<cfif structKeyExists(arguments.stFields.filename.Metadata,"ftSecure") AND arguments.stFields.filename.Metadata.ftSecure>
 			<cfset filepath = application.path.secureFilePath />
 		<cfelse>
 			<cfset filepath = application.path.defaultFilePath />
 		</cfif>
+		
+		<cfset fullFilePath = "#filepath##arguments.stProperties.filename#" />
+		<cfset fileRead = createObject("java","java.io.FileInputStream").init(fullFilePath) />	
+		
+		<cfset arguments.stProperties.fileSize = fileRead.available() />
+		<cfset arguments.stProperties.fileExt = "#listLast(arguments.stProperties.filename,".")#" />
 
-		<cffile action="read" file="#filepath##arguments.stProperties.filename#" variable="fileContents">
-		
-		<cfset arguments.stProperties.fileSize = cffile.FileSize />
-		<cfset arguments.stProperties.fileExt = "#cffile.ServerFileExt#" />
-		<cfset arguments.stProperties.fileType = "#cffile.ContentType#" />
-		<cfset arguments.stProperties.fileSubType = "#cffile.ContentSubType#" />
-		
+		<cfset fileRead.close() />	
 	</cfif>
 	
 	<cfreturn stProperties>
 </cffunction>
+
+<cffunction name="fileInfo" output="false" returntype="query" access="private">
+	<cfargument name="fileName" type="string" required="true">
+	
+	<cfset var directory = "">
+	<cfset var getFile = queryNew("")>
+	
+	<cfif not fileExists(fileName)>
+	<cfthrow message="fileInfo error: #fileName# does not exist.">
+	</cfif>
+	<cfset directory = getDirectoryFromPath(fileName)>
+	<cfdirectory name="getFile" directory="#directory#" filter="#getFileFromPath(fileName)#">
+	<cfreturn getFile>
+</cffunction>
+
+
+
 	
 </cfcomponent>
