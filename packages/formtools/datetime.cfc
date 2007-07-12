@@ -31,7 +31,7 @@
 			<cfset Request.InHead.ScriptaculousEffects = 1>
 
 			
-			<cfif len(arguments.stMetadata.value) AND DateDiff('yyyy', now(), arguments.stMetadata.value) GT 100>
+			<cfif len(arguments.stMetadata.value) AND (DateDiff('yyyy', now(), arguments.stMetadata.value) GT 100 OR dateformat(arguments.stMetadata.value, 'dd/mm/yyyy') eq '01/01/2050') >
 				<cfset bfieldvisible = 0>
 				<cfset fieldvisibletoggletext = "show...">
 				<cfset fieldStyle = "display:none;">
