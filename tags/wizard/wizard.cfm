@@ -167,7 +167,7 @@ $in: SessionID -- $
 				} 
 				
 				<cfif Request.farcryForm.Validation>					
-					else if ( realeasyvalidation.validate() ) {
+					else if ( realeasyvalidation#request.farcryForm.name#.validate() ) {
 						$('FarcryFormSubmitButtonClicked#Request.farcryForm.Name#').value=state;
 						$('#Request.farcryForm.Name#').submit();	
 					}
