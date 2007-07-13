@@ -75,14 +75,14 @@
 				<div>
 					<div>
 						<cfif arguments.stMetadata.ftToggleOffDateTime>
-							<div style="float:left;">
+							<div style="float:left;margin-right:10px;">
 								<input type="checkbox" name="#arguments.fieldname#include" id="#arguments.fieldname#include" value="1" onclick="javascript:toggle#arguments.fieldname#();" <cfif bfieldvisible>checked="true"</cfif> >
 								<input type="hidden" name="#arguments.fieldname#include" id="#arguments.fieldname#include" value="0">
 							</div>
 						<cfelse>
 							<input type="hidden" name="#arguments.fieldname#include" id="#arguments.fieldname#include" value="1">
 						</cfif>
-						<div  id="#arguments.fieldname#DIV" style="float:left;margin-left:10px;#fieldstyle#">						
+						<div  id="#arguments.fieldname#DIV" style="float:left;#fieldstyle#">						
 							<input type="Text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#DateFormat(arguments.stMetadata.value,arguments.stMetadata.ftDateFormatMask)# #TimeFormat(arguments.stMetadata.value,arguments.stMetadata.ftTimeFormatMask)#" style="#arguments.stMetadata.ftstyle#" />
 							<a id="#arguments.fieldname#DatePicker"><img src="#application.url.farcry#/js/DateTimePicker/cal.gif" width="16" height="16" border="0" alt="Pick a date"></a>
 						</div>	
