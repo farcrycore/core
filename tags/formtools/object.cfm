@@ -251,7 +251,11 @@
 
 		
 		<!--- If we have been sent stPropValues for this field then we need to set it to this value  --->
-		<cfif structKeyExists(attributes.stPropValues,i)>
+		<cfif structKeyExists(request, "stFarcryFormValidation")
+			AND structKeyExists(request.stFarcryFormValidation, stObj.ObjectID)
+			AND structKeyExists(request.stFarcryFormValidation[stObj.ObjectID], i) >
+			<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i].value = request.stFarcryFormValidation['#stObj.ObjectID#']['#i#'].value />
+		<cfelseif structKeyExists(attributes.stPropValues,i)>
 			<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i].value = attributes.stPropValues[i]>
 			<cfset variables.stObj[i] = attributes.stPropValues[i]>
 		<cfelse>
@@ -562,6 +566,14 @@
 						</cfif>
 						
 						#variables.returnHTML#
+						
+						<cfif structKeyExists(request, "stFarcryFormValidation")
+							AND structKeyExists(request.stFarcryFormValidation, stObj.ObjectID)
+							AND structKeyExists(request.stFarcryFormValidation[stObj.ObjectID], i)
+							AND structKeyExists(request.stFarcryFormValidation[stObj.ObjectID][i], "bSuccess")
+							AND NOT request.stFarcryFormValidation[stObj.ObjectID][i].bSuccess >
+							<div class="#request.stFarcryFormValidation[stObj.ObjectID][i].stError.class#">#request.stFarcryFormValidation[stObj.ObjectID][i].stError.message#</div>
+						</cfif>
 					</div>
 				</cfoutput>
 				

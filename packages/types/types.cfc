@@ -1045,7 +1045,7 @@ default handlers
 			</cfquery>
 		
 			<!--- PERFORM SERVER SIDE VALIDATION --->
-			<!--- <ft:serverSideValidation /> --->
+			<ft:serverSideValidation />
 		
 			<!---------------------------------------
 			ACTION:
