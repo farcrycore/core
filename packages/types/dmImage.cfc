@@ -47,32 +47,6 @@ type properties
 <!--- import tag libraries --->
 <cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" >
 
-
-<cffunction name="ftEdit" access="public" output="true" returntype="void">
-	<cfargument name="ObjectID" required="no" type="string" default="">
-	
-	<ft:object typename="#getTablename()#" objectID="#arguments.ObjectID#" lFields="ImageFile" inTable=0 />
-	<cfoutput>
-	<a href="##" onclick="Effect.toggle('edsubpanel','slide');">Advanced options</a>
-	<div id="edsubpanel" style="display:none;">
-	<div>		
-		<ft:object typename="#getTablename()#" objectID="#arguments.ObjectID#" lFields="Title,Alt,width,height,bLibrary,status" inTable=0 />
-	</div>
-	</div>
-	</cfoutput>
-</cffunction>
-
-
-<cffunction name="AddNew" access="public" output="true" returntype="void">
-	<cfargument name="typename" required="true" type="string">
-	<cfargument name="lFields" required="false" type="string" default="">
-	
-	<ft:object typename="#arguments.typename#" lfields="Title,SourceImage" inTable=0 />
-
-</cffunction>
-
-
-
 <cffunction name="ftDisplayThumbnail" access="public" output="true" returntype="string" hint="This will return a string of formatted HTML text to display.">
 	<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
 	<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
