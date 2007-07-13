@@ -23,7 +23,6 @@ type properties
 <cfproperty ftSeq="1" ftFieldset="General Details" name="title" type="nstring" hint="Image title." required="no" default="" blabel="true" ftlabel="Image Title" /> 
 <cfproperty ftSeq="2" ftFieldset="General Details" name="alt" type="nstring" hint="Alternate text" required="no" default="" fttype="longchar" ftlabel="Alternative Text" /> 
 <cfproperty ftSeq="5" ftFieldset="General Details" name="bLibrary" type="numeric" hint="Flag to indictae if in file library or not" required="no" default="1" ftType="boolean" ftlabel="Add to Library" />
-<cfproperty ftSeq="6" ftFieldset="General Details" name="status" type="string" hint="Status of the node (draft, pending, approved)." required="yes" default="draft" ftlabel="Status" />
 
 <!--- image file locations --->
 <cfproperty ftSeq="10" ftFieldset="Image Files" name="SourceImage" type="string" hint="The URL location of the uploaded image" required="No" default="" ftType="Image" ftCreateFromSourceOption="false" ftDestination="/images/SourceImage" ftlabel="Source Image" ftImageWidth="" ftImageHeight=""  />
@@ -32,6 +31,10 @@ type properties
 
 <!--- image categorisation --->
 <cfproperty ftSeq="20" ftFieldset="Categorisation" name="catImage" type="string" hint="Image categorisation." required="no" default="" ftlabel="Category" fttype="category" ftalias="dmimage" ftselectmultiple="true" />
+
+<!--- system property; ie. not in default edit handlers --->
+<cfproperty name="status" type="string" hint="Status of the node (draft, pending, approved)." required="yes" default="draft" ftlabel="Status" />
+
 
 <!--- deprecated: legacy image properties --->
 <cfproperty name="width" type="nstring" hint="Image width (blank for default)" required="no" default="">  
