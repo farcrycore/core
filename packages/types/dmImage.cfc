@@ -77,16 +77,6 @@ type properties
 </cffunction>
 	
 
-
-<cffunction name="editdud" access="public">
-	<cfargument name="objectid" required="yes" type="UUID">
-	
-	<!--- getData for object edit --->
-	<cfset stObj = this.getData(arguments.objectid)>
-	
-	<cfinclude template="_dmImage/edit.cfm">
-</cffunction>
-
 <cffunction name="display" access="public" output="true">
 	<cfargument name="objectid" required="yes" type="UUID">
 	
