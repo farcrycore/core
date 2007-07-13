@@ -5,7 +5,7 @@
 <cfif thistag.ExecutionMode EQ "Start">
 
 
-	<cfif structKeyExists(form, "FARCRYFORMPREFIXES")>
+	<cfif structKeyExists(form, "FARCRYFORMPREFIXES") AND structKeyExists(form, "farcryFormValidation") AND form.farcryFormValidation>
 		<cfloop list="#form.FARCRYFORMPREFIXES#" index="prefix">
 			<cfif structKeyExists(form, "#prefix#objectid")>
 				<ft:validateFormObjects objectid="#ListGetAt(form['#prefix#objectid'],1)#" />

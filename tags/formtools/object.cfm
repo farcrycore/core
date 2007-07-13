@@ -299,8 +299,8 @@
 		 --->		 
 		<cfif attributes.bValidation>
 			<cfif len(ftFieldMetadata.ftValidation)>
-				<cfloop list="#ftFieldMetadata.ftValidation#" index="i">
-					<cfset ftFieldMetadata.ftClass = "#ftFieldMetadata.ftClass# #lcase(i)#">
+				<cfloop list="#ftFieldMetadata.ftValidation#" index="iValidation">
+					<cfset ftFieldMetadata.ftClass = "#ftFieldMetadata.ftClass# #lcase(iValidation)#">
 				</cfloop>
 			</cfif>
 		</cfif>
@@ -480,8 +480,8 @@
 	
 							<cfif listLen(ftFieldMetadata.ftJoin) GT 1>
 								<select id="#variables.prefix##ftFieldMetadata.Name#Join" name="#variables.prefix##ftFieldMetadata.Name#Join" >
-									<cfloop list="#ftFieldMetadata.ftJoin#" index="i">
-										<option value="#i#">#application.stcoapi[i].displayname#</option>
+									<cfloop list="#ftFieldMetadata.ftJoin#" index="iJoin">
+										<option value="#iJoin#">#application.stcoapi[iJoin].displayname#</option>
 									</cfloop>
 								</select>
 							<cfelse>

@@ -1,6 +1,6 @@
 
 
-<cfcomponent name="field" displayname="datetime" hint="Field component to liase with all datetime types"> 
+<cfcomponent name="datetime" extends="field" displayname="datetime" hint="Field component to liase with all datetime types"> 
 		
 	<cffunction name="init" access="public" returntype="farcry.core.packages.formtools.datetime" output="false" hint="Returns a copy of this initialised object">
 		<cfreturn this>
