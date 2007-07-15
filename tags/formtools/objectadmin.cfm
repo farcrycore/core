@@ -259,10 +259,15 @@ user --->
 			</div>
 			</cfoutput>
 			<cfoutput><div id="filterForm" style="display:none;"><div style="padding:5px;"></cfoutput>
+			
 				<ft:object objectid="#session.objectadminFilterObjects[attributes.typename].stObject.objectid#" typename="#attributes.typename#" lFields="#attributes.lFilterFields#" lExcludeFields="" includeFieldset="false" stPropMetaData="#attributes.stFilterMetaData#" />
-				<ft:farcryButton value="apply filter" />
+				
+				<ft:farcryButtonPanel>
+					<ft:farcryButton value="apply filter" />
+				</ft:farcryButtonPanel>
 				
 			<cfoutput><br class="clearer" /></div></div></cfoutput>
+			
 		</ft:form>
 
 	
@@ -561,10 +566,8 @@ user --->
 	oAuthorisation=request.dmsec.oAuthorisation;
 	</cfscript>
 	<cfsavecontent variable="html_buttonbar">
-	<cfoutput>
-	<div class="" style="border:1px solid grey;">
-	</cfoutput>
 	
+	<ft:farcryButtonPanel>
 	<cfloop from="1" to="#arraylen(attributes.aButtons)#" index="i">
 		
 		<cfif attributes.lButtons EQ "*" or listFindNoCase(attributes.lButtons,attributes.aButtons[i].value)>
@@ -582,11 +585,7 @@ user --->
 			</cfif>
 		</cfif>
 	</cfloop>
-	
-	<cfoutput>
-	<br class="clearer" />
-	</div>
-	</cfoutput>
+	</ft:farcryButtonPanel>
 	
 	</cfsavecontent>
 	
