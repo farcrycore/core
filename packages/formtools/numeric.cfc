@@ -19,16 +19,21 @@
 		<cfparam name="arguments.stMetadata.ftCurrencySymbol" default="">
 		<cfparam name="arguments.stMetadata.ftPrefix" default="">
 		<cfparam name="arguments.stMetadata.ftSuffix" default="">
+		<cfparam name="arguments.stMetadata.ftMask" default="">
 		
-		<!--- This is for legacy. You should use just ftPrefix and ftSuffix --->
-		<cfif len(arguments.stMetadata.ftCurrencySymbol)>
-			<cfset arguments.stMetadata.ftPrefix = arguments.stMetadata.ftCurrencySymbol />
-		</cfif>
-		
-		<cfif stMetadata.ftIncludeDecimal>
-			<cfset arguments.stMetadata.value = DecimalFormat(arguments.stMetadata.value)>
+		<cfif len(arguments.stMetadata.ftMask)>
+			<cfset arguments.stMetadata.value = NumberFormat(arguments.stMetadata.value, arguments.stMetadata.ftMask)>
 		<cfelse>
-			<cfset arguments.stMetadata.value = NumberFormat(arguments.stMetadata.value)>
+			<!--- This is for legacy. You should use just ftPrefix and ftSuffix --->
+			<cfif len(arguments.stMetadata.ftCurrencySymbol)>
+				<cfset arguments.stMetadata.ftPrefix = arguments.stMetadata.ftCurrencySymbol />
+			</cfif>
+
+			<cfif stMetadata.ftIncludeDecimal>
+				<cfset arguments.stMetadata.value = DecimalFormat(arguments.stMetadata.value)>
+			<cfelse>
+				<cfset arguments.stMetadata.value = NumberFormat(arguments.stMetadata.value)>
+			</cfif>
 		</cfif>
 		
 		<cfsavecontent variable="html">
@@ -51,14 +56,19 @@
 		<cfparam name="arguments.stMetadata.ftCurrencySymbol" default="">
 		<cfparam name="arguments.stMetadata.ftPrefix" default="">
 		<cfparam name="arguments.stMetadata.ftSuffix" default="">
+		<cfparam name="arguments.stMetadata.ftMask" default="">
 		
-		<!--- This is for legacy. You should use just ftPrefix and ftSuffix --->
-		<cfif len(arguments.stMetadata.ftCurrencySymbol)>
-			<cfset arguments.stMetadata.ftPrefix = arguments.stMetadata.ftCurrencySymbol />
-		</cfif>
-		
-		<cfif NOT stMetadata.ftIncludeDecimal>
-			<cfset arguments.stMetadata.value = NumberFormat(arguments.stMetadata.value)>
+		<cfif len(arguments.stMetadata.ftMask)>
+			<cfset arguments.stMetadata.value = NumberFormat(arguments.stMetadata.value, arguments.stMetadata.ftMask)>
+		<cfelse>
+			<!--- This is for legacy. You should use just ftPrefix and ftSuffix --->
+			<cfif len(arguments.stMetadata.ftCurrencySymbol)>
+				<cfset arguments.stMetadata.ftPrefix = arguments.stMetadata.ftCurrencySymbol />
+			</cfif>
+			
+			<cfif NOT stMetadata.ftIncludeDecimal>
+				<cfset arguments.stMetadata.value = NumberFormat(arguments.stMetadata.value)>
+			</cfif>
 		</cfif>
 		
 		<cfsavecontent variable="html">
@@ -67,7 +77,7 @@
 		
 		<cfreturn html>
 	</cffunction>
-
+	
 	<cffunction name="validate" access="public" output="true" returntype="struct" hint="This will return a struct with bSuccess and stError">
 		<cfargument name="stFieldPost" required="true" type="struct" hint="The fields that are relevent to this field type.">
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
