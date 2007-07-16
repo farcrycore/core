@@ -363,14 +363,11 @@ $out:$
 						<ft:object ObjectID="#arguments.ObjectID#" PackageType="rules" format="edit" lExcludeFields="label" lFields="" inTable=false IncludeFieldSet=1 Legend="#stObj.Label#" />
 					</cfif>
 					
-					
-					<cfoutput>
-					<div class="fieldwrap">
+					<ft:farcryButtonPanel>
 						<ft:farcryButton value="Save" /> 
-						<ft:farcryButton value="Cancel" />
-					</div>
-					</cfoutput>
-			
+						<ft:farcryButton value="Cancel" validate="false" />
+					</ft:farcryButtonPanel>
+					
 				</ft:form>
 			</cfif>
 		

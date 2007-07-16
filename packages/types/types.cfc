@@ -1082,14 +1082,11 @@ default handlers
 					
 				</cfif>
 				
-				
-				<cfoutput>
-				<div class="fieldwrap">
+				<ft:farcryButtonPanel>
 					<ft:farcryButton value="Save" /> 
 					<ft:farcryButton value="Cancel" validate="false" />
-				</div>
-				</cfoutput>
-		
+				</ft:farcryButtonPanel>
+				
 			</ft:form>
 		</cfif>
 
