@@ -83,11 +83,11 @@
 			}
 			.x-btn-left{
 				width:3px;
-				background:url(#application.url.webroot#/farcry/js/ext/resources/images/default/basic-dialog/btn-sprite.gif) no-repeat 0 0;
+				background:url(#application.url.farcry#/js/ext/resources/images/default/basic-dialog/btn-sprite.gif) no-repeat 0 0;
 			}
 			.x-btn-right{
 				width:3px;
-				background:url(/farcry/js/ext/resources/images/default/basic-dialog/btn-sprite.gif) no-repeat 0 -21px;
+				background:url(#application.url.farcry#/js/ext/resources/images/default/basic-dialog/btn-sprite.gif) no-repeat 0 -21px;
 			}
 			.x-btn-left i, .x-btn-right i{
 				display:block;
@@ -97,7 +97,7 @@
 			    line-height:1px;
 			}
 			.x-btn-center{
-				background:url(/farcry/js/ext/resources/images/default/basic-dialog/btn-sprite.gif) repeat-x 0 -42px;
+				background:url(#application.url.farcry#/js/ext/resources/images/default/basic-dialog/btn-sprite.gif) repeat-x 0 -42px;
 				vertical-align: middle;
 				text-align:center;
 				padding:0 5px;
