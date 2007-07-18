@@ -151,47 +151,47 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 					}
 				}
 			}	
-			
-						
-			for(index = 1;index LTE qSrcCon.recordcount;index=index+1)
-			{	
-				st = getData(objectid=qSrcCon.containerid[index]);
-				//dump(st,'before');
-				//need to copy all rules now.
-				aRules = arrayNew(1);
-				if(not structIsEmpty(st))
-				{
-					for(x=1;x LTE arrayLen(st.aRules);x=x+1)
-					{
-						ruletype = findType(objectid=st.aRules[x]);
-						if(structKeyExists(application.rules,ruletype))
-						{
-						o = createObject("component",application.rules[ruletype].rulepath);
-						stRule = o.getData(objectid=st.aRules[x]);
-						stRule.objectid = createUUID();
-						//create the rule
-						o.createData(stProperties=stRule,dsn=arguments.dsn);
-						//now create the new array reference to it
-						arrayAppend(aRules,stRule.objectid);
-						}
-					}
-					st.aRules = aRules;
-					//change the label - containers are currently obtained by label
-					st.label = replace(st.label,arguments.srcObjectId,arguments.destObjectId,"ALL");
-					st.objectid = createUUID();
-					//now we want to create this new container
-					qGetContainer = getContainer(dsn=arguments.dsn,label=st.label);
-					
-					if(NOT qGetContainer.recordCount)
-					{
-						createData(stProperties=st,dsn=arguments.dsn);
-						//and log a reference to it in refContainers
-						createDataRefContainer(objectid=arguments.destObjectid,containerid=st.objectid);
-					}
-				}
+		</cfscript>	
 				
-			}
+		<cfif qSrcCon.recordcount>
+			<cfloop from="1" to="#qSrcCon.recordcount#" index="index">
+				<cfset st = getData(objectid=qSrcCon.containerid[index]) />
+				<!--- //dump(st,'before'); --->
+				<!--- //need to copy all rules now. --->
+				<cfset aRules = arrayNew(1) />
+				<cfif (not structIsEmpty(st))>
+				
+					<cfloop from="1" to="#arrayLen(st.aRules)#" index="x">
+						<cfset ruletype = findType(objectid=st.aRules[x]) />
+						<cfif (structKeyExists(application.rules,ruletype))>
+						
+							<cfset o = createObject("component",application.rules[ruletype].rulepath) />
+							<cfset stRule = application.coapi.coapiUtilities.createCopy(objectid=st.aRules[x]) />							
+							<!--- //create the rule --->
+							<cfset o.createData(stProperties=stRule,dsn=arguments.dsn) />
+							<!--- //now create the new array reference to it --->
+							<cfset arrayAppend(aRules,stRule.objectid) />
+						</cfif>
+					</cfloop>
+					<cfset st.aRules = aRules />
+					<!--- //change the label - containers are currently obtained by label --->
+					<cfset st.label = replace(st.label,arguments.srcObjectId,arguments.destObjectId,"ALL") />
+					<cfset st.objectid = createUUID() />
+					<!--- //now we want to create this new container --->
+					<cfset qGetContainer = getContainer(dsn=arguments.dsn,label=st.label) />
+					
+					<cfif (NOT qGetContainer.recordCount)>
+						<cfset createData(stProperties=st,dsn=arguments.dsn) />
+						<!--- //and log a reference to it in refContainers --->
+						<cfset createDataRefContainer(objectid=arguments.destObjectid,containerid=st.objectid) />
+					</cfif>
+				</cfif>
+			</cfloop> 
+		</cfif>
+
 			
+			
+		<cfscript>	
 			if(arguments.bDeleteSrcData)
 			{
 				for(index = 1;index LTE qSrcCon.recordcount;index=index+1)
