@@ -68,13 +68,17 @@ type properties
 			<cfset filepath = application.path.defaultFilePath />
 		</cfif>
 		
-		<cfset fullFilePath = "#filepath##arguments.stProperties.filename#" />
-		<cfset fileRead = createObject("java","java.io.FileInputStream").init(fullFilePath) />	
-		
-		<cfset arguments.stProperties.fileSize = fileRead.available() />
-		<cfset arguments.stProperties.fileExt = "#listLast(arguments.stProperties.filename,".")#" />
-
-		<cfset fileRead.close() />	
+		<cftry>
+			<cfset fullFilePath = "#filepath##arguments.stProperties.filename#" />
+			<cfset fileRead = createObject("java","java.io.FileInputStream").init(fullFilePath) />
+					
+			<cfset arguments.stProperties.fileSize = fileRead.available() />
+			<cfset arguments.stProperties.fileExt = "#listLast(arguments.stProperties.filename,".")#" />
+					
+			<cfset fileRead.close() />
+						
+			<cfcatch type="any"><!--- File may not exist i.e. development environments ---></cfcatch>
+		</cftry>
 	</cfif>
 	
 	<cfreturn stProperties>
