@@ -14,16 +14,13 @@
 	<cfif not structKeyExists(attributes, "typename") or not structKeyExists(application.stCoapi, attributes.typename)>
 		<cfabort showerror="invalid typename passed" />
 	</cfif>	
-	<cfparam name="attributes.stObject" default="#structNew()#">
-	<cfparam name="attributes.objectid" default="">
-	<cfparam name="attributes.key" default="">
+	<cfparam name="attributes.stObject" default="#structNew()#"><!--- use to get an existing object that has already been fetched by the calling page. --->
+	<cfparam name="attributes.objectid" default=""><!--- used to get an existing object --->
+	<cfparam name="attributes.key" default=""><!--- use to generate a new object --->
 	<cfparam name="attributes.template" default=""><!--- can be used as an alternative to webskin. Best practice is to use webskin. --->
 	<cfparam name="attributes.webskin" default=""><!--- the webskin to be called with the object --->
 	<cfparam name="attributes.r_stProperties" default="stproperties">
 
-	<cfif not len(attributes.objectid) and not len(attributes.key) and structIsEmpty(attributes.stObject)>
-		<cfabort showerror="Requires an objectid, key or stobject" />
-	</cfif>
 
 	<!--- use template if its passed otherwise webskin. --->
 	<cfif len(attributes.template)>
