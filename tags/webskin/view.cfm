@@ -33,15 +33,18 @@
 	
 	<cfset o = createObject("component", application.stcoapi["#attributes.typename#"].packagePath) />
 
-
 	<cfif structKeyExists(attributes.stObject, objectid) and len(attributes.stObject.objectid)>
 		<cfset st = attributes.stObject />	
 	<cfelse>
 			
-		<cfparam name="session.stTempObjectStoreKeys" default="#structNew()#" />
-		<cfparam name="session.stTempObjectStoreKeys[attributes.typename]" default="#structNew()#" />
-		
-		<cfif len(attributes.key)>
+		<cfif not len(attributes.objectID)>
+			<cfparam name="session.stTempObjectStoreKeys" default="#structNew()#" />
+			<cfparam name="session.stTempObjectStoreKeys[attributes.typename]" default="#structNew()#" />
+			
+			<cfif not len(attributes.key)>
+				<cfset attributes.key = attributes.typename />
+			</cfif>
+			
 			<cfif structKeyExists(session.stTempObjectStoreKeys[attributes.typename], attributes.key)>
 				<cfif structKeyExists(Session.TempObjectStore, session.stTempObjectStoreKeys[attributes.typename][attributes.key])>
 					<cfset attributes.objectid = session.stTempObjectStoreKeys[attributes.typename][attributes.key] />
@@ -50,10 +53,6 @@
 			<cfif not len(attributes.objectid)>
 				<cfset attributes.objectid = createUUID() />
 				<cfset session.stTempObjectStoreKeys[attributes.typename][attributes.key] = attributes.objectid>
-			</cfif>
-		<cfelse>			
-			<cfif not len(attributes.objectid)>
-				<cfset attributes.objectid = createUUID() />
 			</cfif>
 		</cfif>
 		
