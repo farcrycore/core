@@ -335,7 +335,7 @@
 		<cfcase value="mysql,mysql5">
 			<!--- This works for mySQL 5; see mysql5 specific gateway --->
 			<cfquery name="update" datasource="#application.dsn#">
-			UPDATE ruleHandpicked_aObjects p
+			UPDATE #tablename# p
 			INNER JOIN refObjects pp
 			ON p.data = pp.objectid
 			SET p.typename = pp.typename

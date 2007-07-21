@@ -491,13 +491,23 @@
 							<cfset variables.alternateHTML = "" />
 						</cfif>
 						
-						<cfset HTML = stJoinObjects[qArrayField.typename].getView(objectID=qArrayField.data, template="#arguments.stMetadata.ftLibrarySelectedWebskin#", alternateHTML=variables.alternateHTML) />
-						<cfif NOT len(trim(HTML))>
-							<cfset stTemp = stJoinObjects[qArrayField.typename].getData(objectid=qArrayField.data) />
-							<cfif structKeyExists(stTemp, "label") AND len(stTemp.label)>
-								<cfset HTML = stTemp.label />
-							<cfelse>
-								<cfset HTML = stTemp.objectid />
+						<!--- if typename is missing from query (ie. array data is corrupted) --->
+						<cfif NOT len(qArrayField.typename)>
+							<cfset tmpTypename=createobject("component", "farcry.core.packages.fourq.fourq").findtype(objectid=qarrayfield.data) />
+							<cfset qArrayField.typename[qarrayfield.currentrow] = tmpTypename />
+							<cfif NOT len(tmpTypename)>
+								<cfset HTML = "Object Not Found">
+							</cfif>
+						</cfif>
+						<cfif NOT len(HTML)>
+							<cfset HTML = stJoinObjects[qArrayField.typename].getView(objectID=qArrayField.data, template="#arguments.stMetadata.ftLibrarySelectedWebskin#", alternateHTML=variables.alternateHTML) />																			
+							<cfif NOT len(trim(HTML))>
+								<cfset stTemp = stJoinObjects[qArrayField.typename].getData(objectid=qArrayField.data) />
+								<cfif structKeyExists(stTemp, "label") AND len(stTemp.label)>
+									<cfset HTML = stTemp.label />
+								<cfelse>
+									<cfset HTML = stTemp.objectid />
+								</cfif>
 							</cfif>
 						</cfif>
 						

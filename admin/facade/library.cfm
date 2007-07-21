@@ -584,6 +584,7 @@ GENERATE THE LIBRARY PICKER
 	<cfset var HTML = "" />
 	<cfset var stTemp = structNew() />
 	<cfset var stLibraryObject = structNew() />
+	<cfset var tmpTypename = '' />
 	
 	<cfset Request.InHead.FormsCSS = true />
 		
@@ -628,16 +629,28 @@ GENERATE THE LIBRARY PICKER
 						<cfloop from="1" to="#arrayLen(stPrimary[url.primaryFieldName])#" index="i">
 							
 							<cfset stCurrentArrayItem = stPrimary[url.primaryFieldName][i] />
-							
-							<cfset HTML = stJoinObjects[stCurrentArrayItem.typename].getView(objectid=stCurrentArrayItem.data, template="librarySelected", alternateHTML="") />
-							<cfif NOT len(trim(HTML))>
-								<cfset stTemp = stJoinObjects[stCurrentArrayItem.typename].getData(objectid=stCurrentArrayItem.data) />
-								<cfif structKeyExists(stTemp, "label") AND len(stTemp.label)>
-									<cfset HTML = stTemp.label />
-								<cfelse>
-									<cfset HTML = stTemp.objectid />
+							<cfset HTML = '' />
+
+							<!--- if typename is missing from query (ie. array data is corrupted) --->
+							<cfif NOT len(stCurrentArrayItem.typename)>
+								<cfset tmpTypename=createobject("component", "farcry.core.packages.fourq.fourq").findtype(objectid=stCurrentArrayItem.data) />
+								<cfset stCurrentArrayItem.typename = tmpTypename />
+								<cfif NOT len(tmpTypename)>
+									<cfset HTML = "Object Not Found">
 								</cfif>
-							</cfif>		
+							</cfif>	
+
+							<cfif NOT Len(trim(HTML))>
+								<cfset HTML = stJoinObjects[stCurrentArrayItem.typename].getView(objectid=stCurrentArrayItem.data, template="librarySelected", alternateHTML="") />
+								<cfif NOT len(trim(HTML))>
+									<cfset stTemp = stJoinObjects[stCurrentArrayItem.typename].getData(objectid=stCurrentArrayItem.data) />
+									<cfif structKeyExists(stTemp, "label") AND len(stTemp.label)>
+										<cfset HTML = stTemp.label />
+									<cfelse>
+										<cfset HTML = stTemp.objectid />
+									</cfif>
+								</cfif>
+							</cfif>
 							<!------------------------------------------------------------------------
 							THE ID OF THE LIST ELEMENT MUST BE "FIELDNAME_OBJECTID" 
 							BECAUSE THE JAVASCRIPT STRIPS THE "FIELDNAME_" TO DETERMINE THE OBJECTID
@@ -646,14 +659,12 @@ GENERATE THE LIBRARY PICKER
 							<div id="sortableListTo_#stCurrentArrayItem.data#:#stCurrentArrayItem.seq#" class="sortableHandle">
 								<div class="arrayDetail">
 									<div>
-										
 										#HTML#
 										<!--- <cfif listFindNoCase(url.ftAllowLibraryEdit,stCurrentArrayItem.typename)>
 										
 											<cfset editLink = "#cgi.SCRIPT_NAME#?#variables.QueryString#&librarySection=edit&editObjectid=#stCurrentArrayItem.data#" />
 											<span  style="border:1px solid red;"><a href="#editLink#">edit</a></span>
 										</cfif> --->
-									
 									</div>
 								</div>								
 							</div>
