@@ -214,7 +214,7 @@ input.validation-failed, textarea.validation-failed {border: 1px solid ##FF3300;
 
 	/* array component : detail view layout styles */
 	ul.arrayDetailView {width: auto; height: auto; display: block;}
-		ul.arrayDetailView li {margin: 0px; padding: 0px; height: auto;}
+		ul.arrayDetailView li {margin: 0px; padding: 0px; height: auto; zoom: 1;} 
 			ul.arrayDetailView li div.buttonGripper {margin: 0px; padding: 1px 0px 0px 0px; width: 7px; height: 17px; display: block; float: left;}
 				ul.arrayDetailView li div.buttonGripper p {margin: 0px; padding: 0px; width: 7px; height: 17px; display: block;}
 		 	ul.arrayDetailView li input.formCheckbox {margin: 4px 2px 0px 0px; padding: 0px; display: block; float: right; overflow: hidden;}
