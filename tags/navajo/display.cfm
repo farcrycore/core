@@ -274,7 +274,7 @@ the latter is the policy group for anonymous...
 		
 	<cfelse>
 		<cfset o = createObject("component", application.types[stObj.typename].typePath)>
-		<cfset HTML = o.getView(stobject=stObj, Template="#stObj.displayMethod#", alternateHtml="") />
+		<cfset HTML = o.getView(stobject=stObj, Template="#stObj.displayMethod#") />
 		<cfoutput>#HTML#</cfoutput>
 	</cfif>
 	
@@ -291,8 +291,7 @@ the latter is the policy group for anonymous...
 		<cftry>
 			<cfoutput>#o.display(objectid=stObj.objectId)#</cfoutput>
 			<cfcatch type="any">
-				<cftrace text="Object not found" />
-				<cfabort showerror="Object not found" />
+				<cfthrow type="core.tags.navajo.display" message="Default display method for object could not be found." />
 			</cfcatch>
 		</cftry>
 			
@@ -306,28 +305,29 @@ $TODO: This should respond to request.mode settings and not require a
 a whole new set of permission checks, have trapped any errors and suppressed GB 20031024 $
 ---------------------------->
 <cftry>
-<!--- begin: logged in user? --->
-<cfscript>
-	stLoggedInUser = oAuthentication.getUserAuthenticationData();
-	bLoggedIn = stLoggedInUser.bLoggedIn;
-</cfscript>
-
-<cfif bLoggedIn AND NOT request.bHideContextMenu>
-	<!--- check they are admin --->
-	<!--- check they are able to comment --->
-
-	<cfset iAdmin = oAuthorisation.checkPermission(permissionName="Admin",reference="PolicyGroup") />
-	<cfset iCanCommentOnContent = oAuthorisation.checkInheritedPermission(objectid=request.navid,permissionName='CanCommentOnContent') />
-
-	<cfif (iAdmin eq 1 or iCanCommentOnContent eq 1)>
-		<cfset request.floaterIsOnPage = true>
-		<cfinclude template="floatMenu.cfm">
+	<!--- begin: logged in user? --->
+	<cfscript>
+		stLoggedInUser = oAuthentication.getUserAuthenticationData();
+		bLoggedIn = stLoggedInUser.bLoggedIn;
+	</cfscript>
+	
+	<cfif bLoggedIn AND NOT request.bHideContextMenu>
+		<!--- check they are admin --->
+		<!--- check they are able to comment --->
+	
+		<cfset iAdmin = oAuthorisation.checkPermission(permissionName="Admin",reference="PolicyGroup") />
+		<cfset iCanCommentOnContent = oAuthorisation.checkInheritedPermission(objectid=request.navid,permissionName='CanCommentOnContent') />
+	
+		<cfif (iAdmin eq 1 or iCanCommentOnContent eq 1)>
+			<cfset request.floaterIsOnPage = true>
+			<cfinclude template="floatMenu.cfm">
+		</cfif>
 	</cfif>
-</cfif>
-<!--- end: logged in user? --->
-<cfcatch>
-<!--- suppress error --->
-</cfcatch>
+	<!--- end: logged in user? --->
+	<cfcatch>
+	<!--- suppress error --->
+	<cftrace text="Float menu failed: #cfcatch.message#" />
+	</cfcatch>
 </cftry>
 </cftimer>
 <cfsetting enablecfoutputonly="No">
