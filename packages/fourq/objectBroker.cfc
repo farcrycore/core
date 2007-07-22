@@ -76,9 +76,9 @@
 						AND 	structKeyExists(application.objectbroker[arguments.typename][arguments.objectid].stWebskins, arguments.template)>
 						
 						
-						<cfif structKeyExists(application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template], hash(cgi.query_string))>
+						<cfif structKeyExists(application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template], hash("#cgi.http_host##cgi.script_name##cgi.query_string#"))>
 							
-							<cfset stCacheWebskin = application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template]["#hash(cgi.query_string)#"] />
+							<cfset stCacheWebskin = application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template]["#hash('#cgi.http_host##cgi.script_name##cgi.query_string#')#"] />
 						
 						<cfelseif structKeyExists(application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template], "standard") >
 							
@@ -165,7 +165,7 @@
 								<cfset stCacheWebskin.inHead = duplicate(stCurrentView.inHead) />	
 								
 								<cfif arguments.stCurrentView.hashURL>
-									<cfset application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template][hash(cgi.query_string)] = stCacheWebskin />
+									<cfset application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template][hash("#cgi.http_host##cgi.script_name##cgi.query_string#")] = stCacheWebskin />
 								<cfelse>
 									<cfset application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template]["standard"] = stCacheWebskin />
 								</cfif>
