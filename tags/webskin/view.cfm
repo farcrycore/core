@@ -21,7 +21,8 @@
 	<cfparam name="attributes.webskin" default=""><!--- the webskin to be called with the object --->
 	<cfparam name="attributes.stProps" default="#structNew()#">
 
-
+	<cfparam name="session.tempObjectStore" default="#structNew()#">
+	
 	<!--- use template if its passed otherwise webskin. --->
 	<cfif len(attributes.template)>
 		<cfset attributes.webskin = attributes.template />
