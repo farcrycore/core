@@ -29,6 +29,7 @@
 	<cfparam name="attributes.InTable" default="0">
 	<cfparam name="attributes.insidePLP" default="0"><!--- how are we rendering the form --->
 	<cfparam name="attributes.r_stFields" default=""><!--- the name of the structure that is to be returned with the form field information. --->
+	<cfparam name="attributes.r_stPrefix" default=""><!--- the name of the structure that is to be returned with the form field prefix used. --->
 	<cfparam name="attributes.stPropMetadata" default="#structNew()#"><!--- This is used to override the default metadata as setup in the type.cfc --->
 	<cfparam name="attributes.wizardID" default=""><!--- If this object call is part of a wizard, the object will be retrieved from the wizard storage --->
 	<cfparam name="attributes.IncludeLibraryWrapper" default="true"><!--- If this is set to false, the library wrapper is not displayed. This is so that the library can change the inner html of the wrapper without duplicating the wrapping div. --->
@@ -401,6 +402,19 @@
 				</cftry>
 				
 				
+				<cfif structKeyExists(request, "stFarcryFormValidation")
+					AND structKeyExists(request.stFarcryFormValidation, stObj.ObjectID)
+					AND structKeyExists(request.stFarcryFormValidation[stObj.ObjectID], i)
+					AND structKeyExists(request.stFarcryFormValidation[stObj.ObjectID][i], "bSuccess")
+					AND NOT request.stFarcryFormValidation[stObj.ObjectID][i].bSuccess >
+					<cfsavecontent variable="variables.formValidationMessage">
+						<cfoutput><div class="#request.stFarcryFormValidation[stObj.ObjectID][i].stError.class#">#request.stFarcryFormValidation[stObj.ObjectID][i].stError.message#</div></cfoutput>
+					</cfsavecontent>
+					
+					<cfset variables.returnHTML = "#variables.returnHTML# #variables.formValidationMessage#">
+				</cfif>
+				
+				
 			</cfif>
 
 			<!-------------------------------------------------------------
@@ -567,13 +581,6 @@
 						
 						#variables.returnHTML#
 						
-						<cfif structKeyExists(request, "stFarcryFormValidation")
-							AND structKeyExists(request.stFarcryFormValidation, stObj.ObjectID)
-							AND structKeyExists(request.stFarcryFormValidation[stObj.ObjectID], i)
-							AND structKeyExists(request.stFarcryFormValidation[stObj.ObjectID][i], "bSuccess")
-							AND NOT request.stFarcryFormValidation[stObj.ObjectID][i].bSuccess >
-							<div class="#request.stFarcryFormValidation[stObj.ObjectID][i].stError.class#">#request.stFarcryFormValidation[stObj.ObjectID][i].stError.message#</div>
-						</cfif>
 					</div>
 				</cfoutput>
 				
@@ -613,6 +620,12 @@
 			<cfelse>
 				<cfset CALLER[i] = StructNew()>
 			</cfif>
+		</cfloop>
+	</cfif>
+	
+	<cfif len(Attributes.r_stPrefix)>
+		<cfloop list="#attributes.r_stPrefix#" index="i">
+			<cfset CALLER[i] = variables.prefix>
 		</cfloop>
 	</cfif>
 	
