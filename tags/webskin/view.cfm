@@ -19,7 +19,7 @@
 	<cfparam name="attributes.key" default=""><!--- use to generate a new object --->
 	<cfparam name="attributes.template" default=""><!--- can be used as an alternative to webskin. Best practice is to use webskin. --->
 	<cfparam name="attributes.webskin" default=""><!--- the webskin to be called with the object --->
-	<cfparam name="attributes.r_stProperties" default="stproperties">
+	<cfparam name="attributes.stProps" default="#structNew()#">
 
 
 	<!--- use template if its passed otherwise webskin. --->
@@ -57,20 +57,29 @@
 		<cfset st = o.getData(objectID = attributes.objectid) />	
 	</cfif>
 	
-					
+						
 	
-	<cfset caller[attributes.r_stProperties] = st />
+	<cfif not structIsEmpty(attributes.stProps)>
+		
+		<cfif structKeyExists(attributes.stProps, "objectid") or structKeyExists(attributes.stProps, "typename")>
+			<cfthrow type="application" message="You can not override the objectid or typename with attributes.stProps" />
+		</cfif>
+		<!--- If attributes.stProps has been passed in, then append them to the struct --->
+		<cfset StructAppend(attributes.stProps, st, false)>
+		
+		<cfset stResult = o.setData(stProperties=attributes.stProps, bSessionOnly=true) />
+	</cfif>
+	
+	<cfset html = o.getView(objectid=st.objectid, template="#attributes.webskin#")>	
+	
+	<cfoutput>#html#</cfoutput>	
+	
 	
 
 </cfif>
 
 <cfif thistag.executionMode eq "End">
-
-	<cfset stResult = o.setData(stProperties=caller[attributes.r_stProperties], bSessionOnly=true) />
-	
-	<cfset html = o.getView(objectid=caller[attributes.r_stProperties].objectid, template="#attributes.webskin#")>	
-	
-	<cfoutput>#html#</cfoutput>	
+	<!--- DO NOTHING --->
 </cfif>
 
 
