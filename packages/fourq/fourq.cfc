@@ -466,17 +466,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		
 		<!--- Make sure that the temporary object store exists in the session scope. --->
 		<cfparam name="Session.TempObjectStore" default="#structNew()#" />
-		
-	    <!--- Make sure we remove the object from the objectBroker if we update something --->
-	    <cfif structkeyexists(stProperties, "objectid")>
-		    <cfset variables.objectBroker.RemoveFromObjectBroker(lObjectIDs=arguments.stProperties.ObjectID,typename=variables.typename)>
-	    </cfif>	    
 
-	   	
-	   	
-	    <!--- need to add this in case the object has been put in the instance cache. --->
-	    <cfset structdelete(instance,"bgetdata")>
-		
 		
 		<!--------------------------------------- 
 		If the object is to be stored in the session scope only.
@@ -510,8 +500,15 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<!--------------------------------------- 
 		If the object is to be stored in the Database then run the appropriate gateway
 		----------------------------------------->	
-	   	<cfelse>
+	   	<cfelse>			<!--- Make sure we remove the object from the objectBroker if we update something --->
+		    <cfif structkeyexists(stProperties, "objectid")>
+			    <cfset variables.objectBroker.RemoveFromObjectBroker(lObjectIDs=arguments.stProperties.ObjectID,typename=variables.typename)>
+		    </cfif>	    	   	
 		   	
+		    <!--- need to add this in case the object has been put in the instance cache. --->
+		    <cfset structdelete(instance,"bgetdata")>	
+	   	
+	   		
 	   		<cfset stResult = gateway.setData(arguments.stProperties,variables.tableMetadata) />	   	
 	   	 
 	    
