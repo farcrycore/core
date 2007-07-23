@@ -79,13 +79,15 @@
 						<cfoutput>
 							<div class="fieldsection optional">
 								<div class="fieldwrap">
+									<cfset tmpCount=0>
 									<cfloop list="#arguments.stMetadata.ftList#" index="i">
+										<cfset tmpCount=tmpCount + 1>
 										<cfif Left(i, 1) EQ ":">
 											<cfset optionValue = "" /><!--- This means that the developer wants the value to be an empty string --->
 										<cfelse>
 											<cfset optionValue = ListFirst(i,":") />
 										</cfif>
-										<input type="checkbox" name="#arguments.fieldname#" class="formCheckbox" id="#arguments.fieldname#" value="#optionValue#"<cfif listFindNoCase(arguments.stMetadata.value, optionValue)> checked="checked"</cfif> />										
+										<input type="checkbox" name="#arguments.fieldname#" class="formCheckbox #IIF(listLen(arguments.stMetadata.ftList) eq tmpCount ,DE(" #arguments.stMetadata.ftClass#"),DE(""))#" id="#arguments.fieldname#" value="#optionValue#"<cfif listFindNoCase(arguments.stMetadata.value, optionValue)> checked="checked"</cfif> />										
 										<!--- <label class="fieldsectionlabel" class="fieldsectionlabel" for="#arguments.fieldname#">#ListLast(i , ":")#</label> --->
 										<!--- MPS: styles aren't working so we are removing label for now until we have time to look at the css --->
 										#ListLast(i , ":")#
@@ -104,13 +106,15 @@
 						<cfoutput>
 							<div class="fieldsection optional">
 								<div class="fieldwrap">
+									<cfset tmpCount=0>
 									<cfloop list="#arguments.stMetadata.ftList#" index="i">
+										<cfset tmpCount=tmpCount + 1>
 										<cfif Left(i, 1) EQ ":">
 											<cfset optionValue = "" /><!--- This means that the developer wants the value to be an empty string --->
 										<cfelse>
 											<cfset optionValue = ListFirst(i,":") />
 										</cfif>
-										<input type="radio" name="#arguments.fieldname#" id="#arguments.fieldname#" class="formCheckbox" value="#optionValue#"<cfif listFindNoCase(arguments.stMetadata.value, optionValue)> checked="checked"</cfif> />
+										<input type="radio" name="#arguments.fieldname#" id="#arguments.fieldname#"  class="formCheckbox #IIF(listLen(arguments.stMetadata.ftList) eq tmpCount,DE(" #arguments.stMetadata.ftClass#"),DE(""))#" value="#optionValue#"<cfif listFindNoCase(arguments.stMetadata.value, optionValue)> checked="checked"</cfif> />
 										<!--- <label class="fieldsectionlabel" class="fieldsectionlabel" for="#arguments.fieldname#">#ListLast(i , ":")#</label> --->
 										<!--- MPS: styles aren't working so we are removing label for now until we have time to look at the css --->
 										#ListLast(i , ":")#
