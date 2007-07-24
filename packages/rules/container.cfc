@@ -261,7 +261,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 		
 		<cfset variables.containerBody = arguments.containerBody>
 		<cftry>
-			<cfinclude template="/farcry/projects/#application.applicationname#/webskin/container/#template#.cfm">
+			<cfinclude template="/farcry/projects/#application.projectDirectoryName#/webskin/container/#template#.cfm">
 			
 			<cfcatch>
 				<cfdump var="#cfcatch#">

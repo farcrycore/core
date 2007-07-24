@@ -52,7 +52,7 @@ $out:$
 	
 	<!--- get config structure --->
 	<cftry>
-		<cfinclude template="/farcry/projects/#application.applicationname#/system/dmConfig/#arguments.config#">
+		<cfinclude template="/farcry/projects/#application.projectDirectoryName#/system/dmConfig/#arguments.config#">
 		<cfcatch><cfdump var="#cfcatch#"><cfabort></cfcatch>
 	</cftry>
 	

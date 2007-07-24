@@ -358,7 +358,7 @@
 	
 		<cfif fileExists("#application.path.project#/webskin/#arguments.typename#/#arguments.template#.cfm")>
 			
-			<cfset webskinPath = "/farcry/projects/#application.applicationname#/webskin/#arguments.typename#/#arguments.template#.cfm" />
+			<cfset webskinPath = "/farcry/projects/#application.projectDirectoryName#/webskin/#arguments.typename#/#arguments.template#.cfm" />
 			
 		<cfelseif structKeyExists(application, "plugins") and listLen(application.plugins)>
 

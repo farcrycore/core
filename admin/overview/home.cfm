@@ -22,7 +22,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 
 <!--- check for customised myFarCry home page --->
 <cfif fileexists(application.path.project & "/customadmin/home.cfm")>
-    <cfinclude template="/farcry/projects/#application.applicationname#/customadmin/home.cfm">
+    <cfinclude template="/farcry/projects/#application.projectDirectoryName#/customadmin/home.cfm">
 <cfelse>
 <!--- otherwise use the default myFarCry overview/home page --->
 

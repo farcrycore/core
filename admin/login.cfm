@@ -28,7 +28,7 @@ $out:$
 <cfprocessingDirective pageencoding="utf-8">
 
 	<cfif fileExists("#application.path.project#/customadmin/login/login.cfm")>
-	    <cfinclude template="/farcry/projects/#application.applicationname#/customadmin/login/login.cfm">
+	    <cfinclude template="/farcry/projects/#application.projectDirectoryName#/customadmin/login/login.cfm">
  	<cfelse>
 		<cfimport taglib="/farcry/core/tags/navajo" prefix="nj">
    		<nj:Login>

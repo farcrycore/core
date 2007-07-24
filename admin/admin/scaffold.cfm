@@ -243,7 +243,7 @@
 		<cfset var col="" />
 
 		<!--- check project webskins --->
-		<cfset FullScaffoldPath = ExpandPath("/farcry/projects/#application.applicationname#/scaffolds#scaffoldPath#") />
+		<cfset FullScaffoldPath = ExpandPath("/farcry/projects/#application.projectDirectoryName#/scaffolds#scaffoldPath#") />
 		<cfif directoryExists(FullScaffoldPath)>
 			<cfdirectory action="list" directory="#FullScaffoldPath#" name="qResult" filter="*.txt" sort="asc" />
 		</cfif>

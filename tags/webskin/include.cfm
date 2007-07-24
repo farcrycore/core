@@ -27,7 +27,7 @@ $in: template -- the template to be included. Noramlly this would be the complet
 	
 	<!--- If the template passed in is simply a filename (ie. no path) then we assume the path is the projects includedObj directory --->
 	<cfif NOT findNoCase("/", attributes.template)>
-		<cfset attributes.template = "/farcry/projects/#application.applicationname#/includedObj/#attributes.template#" />
+		<cfset attributes.template = "/farcry/projects/#application.projectDirectoryName#/includedObj/#attributes.template#" />
 	</cfif>
 	
 	<cfinclude template="#attributes.template#">

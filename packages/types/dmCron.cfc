@@ -60,7 +60,7 @@ object methods
 			<cfif methodName neq "_donotdelete">
 				<cfset queryAddRow(qTemplates, 1)>
 				<cfset querySetCell(qTemplates, "displayname", "#displayname# #application.adminBundle[session.dmProfile.locale].custom#")>
-				<cfset querySetCell(qTemplates, "path", "/farcry/projects/#application.applicationName#/system/dmCron/#methodName#.cfm")>
+				<cfset querySetCell(qTemplates, "path", "/farcry/projects/#application.projectDirectoryName#/system/dmCron/#methodName#.cfm")>
 			</cfif>
 		</cfloop>
 		<cfcatch></cfcatch>
