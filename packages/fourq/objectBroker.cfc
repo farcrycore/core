@@ -169,7 +169,7 @@
 								<cfif arguments.stCurrentView.hashURL>
 									<cfset hashString = "#hashString##cgi.http_host##cgi.script_name##cgi.query_string#" />
 								</cfif>
-								<cfoutput><p>#hashString#: #hash("#hashString#")#</p></cfoutput>
+								
 								<cfif len(hashString)>
 									<cfset application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template][hash("#hashString#")] = stCacheWebskin />
 								<cfelse>
