@@ -41,7 +41,8 @@ $out:$
 		<cfargument name="dsn" required="no" type="string" default="#application.dsn#">
 		<cfargument name="OnExit" required="no" type="any" default="">
 		<cfargument name="alternateHTML" required="no" type="string" hint="If the webskin template does not exist, if this argument is sent in, its value will be passed back as the result.">
-		
+		<cfargument name="hashKey" required="no" default="" type="string" hint="Pass in a key to be used to hash the objectBroker webskin cache">
+				
 		<cfset var stResult = structNew() />
 		<cfset var stObj = StructNew() />
 		<cfset var WebskinPath = "" />
@@ -68,8 +69,8 @@ $out:$
 		<cfif NOT structIsEmpty(stObj)>		
 		
 			<!--- Check to see if the webskin is in the object broker --->
-			<cfset webskinHTML = oObjectBroker.getWebskin(objectid=stobj.objectid, typename=stobj.typename, template=arguments.template) />		
-			
+			<cfset webskinHTML = oObjectBroker.getWebskin(objectid=stobj.objectid, typename=stobj.typename, template=arguments.template, hashKey="#arguments.hashKey#") />		
+
 			<cfif not len(webskinHTML)>
 				<cfset webskinPath = application.coapi.coapiadmin.getWebskinPath(typename=stObj.typename, template=arguments.template) />
 						
@@ -83,6 +84,7 @@ $out:$
 					<cfset stCurrentView.objectid = stobj.objectid />
 					<cfset stCurrentView.typename = stobj.typename />
 					<cfset stCurrentView.template = arguments.template />
+					<cfset stCurrentView.hashKey = arguments.hashKey />
 					<cfset stCurrentView.timeout = application.coapi.coapiadmin.getWebskinTimeOut(typename=stObj.typename, template=arguments.template) />
 					<cfset stCurrentView.hashURL = application.coapi.coapiadmin.getWebskinHashURL(typename=stObj.typename, template=arguments.template) />
 					<cfset stCurrentView.okToCache = 1 />
@@ -141,6 +143,10 @@ $out:$
 							<!--- If this webskin is to have its url hashed, make sure all ancestors also have their webskins hashed --->
 							<cfif stCurrentView.hashURL>
 								<cfset request.aAncestorWebskins[i].hashURL = true />
+							</cfif>
+							<!--- If this webskin is to add a hashKey, make sure all ancestors also have the hashKey added --->
+							<cfif len(stCurrentView.hashKey)>
+								<cfset request.aAncestorWebskins[i].hashKey = "#request.aAncestorWebskins[i].hashKey##stCurrentView.hashKey#" />
 							</cfif>
 						</cfloop>
 					</cfif>
