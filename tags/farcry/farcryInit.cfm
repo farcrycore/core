@@ -74,6 +74,9 @@
 				<!--- set binit to false to block users accessing on restart --->
 				<cfset application.bInit =  false />
 				
+				<!--- Project directory name can be changed from the default which is the applicationname --->
+				<cfset application.projectDirectoryName =  attributes.projectDirectoryName />
+				
 				<!----------------------------------------
 				 SET THE DATABASE SPECIFIC INFORMATION 
 				---------------------------------------->
@@ -88,7 +91,7 @@
 				<!----------------------------------------
 				 SET THE MAIN PHYSICAL PATH INFORMATION
 				 ---------------------------------------->
-				<cfset application.path.project = expandpath("/farcry/projects/#attributes.projectDirectoryName#") />
+				<cfset application.path.project = expandpath("/farcry/projects/#application.projectDirectoryName#") />
 				<cfset application.path.core = expandpath("/farcry/core") />
 				<cfset application.path.plugins = expandpath("/farcry/plugins") />
 				
@@ -113,7 +116,7 @@
 				SHORTCUT PACKAGE PATHS
 				 ---------------------------------------->
 				<cfset application.packagepath = "farcry.core.packages" />
-				<cfset application.custompackagepath = "farcry.projects.#attributes.projectDirectoryName#.packages" />
+				<cfset application.custompackagepath = "farcry.projects.#application.projectDirectoryName#.packages" />
 				<cfset application.securitypackagepath = "farcry.core.packages.security" />
 				
 				<!----------------------------------------
@@ -143,7 +146,7 @@
 				<cfset application.sysInfo = structNew() />
 
 				<!--- CALL THE PROJECTS SERVER SPECIFIC VARIABLES. --->
-				<cfinclude template="/farcry/projects/#attributes.projectDirectoryName#/config/_serverSpecificVars.cfm" />
+				<cfinclude template="/farcry/projects/#application.projectDirectoryName#/config/_serverSpecificVars.cfm" />
 				
 				
 				<!----------------------------------- 
@@ -229,7 +232,7 @@
 				
 				<!--- CALL THE PROJECTS SERVER SPECIFIC AFTER INIT VARIABLES. --->
 				<cfif fileExists("#application.path.project#/config/_serverSpecificVarsAfterInit.cfm") >
-					<cfinclude template="/farcry/projects/#attributes.name#/config/_serverSpecificVarsAfterInit.cfm" />
+					<cfinclude template="/farcry/projects/#application.projectDirectoryName#/config/_serverSpecificVarsAfterInit.cfm" />
 				</cfif>
 				
 				<!--- set the initialised flag --->
