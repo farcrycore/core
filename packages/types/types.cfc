@@ -948,7 +948,7 @@ default handlers
 			
 		</cfif>
 		
-		<cfreturn newLabel />
+		<cfreturn trim(newLabel) />
 	</cffunction>
 	
 	<cffunction name="Edit" access="public" output="true" returntype="void" hint="Default edit handler.">
