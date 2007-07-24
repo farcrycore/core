@@ -42,7 +42,7 @@
 			<menu id="menuquickbuilder" sequence="40" label="application.adminBundle[session.dmProfile.locale].QuickSiteBuilder" labelType="evaluate">
 				<menuitem id="quicksitebuilder" sequence="10" label="application.adminBundle[session.dmProfile.locale].QuickSiteBuilder" labelType="evaluate" link="/admin/quickBuilder.cfm" />
 				<menuitem id="quickcategorybuilder" sequence="20" label="application.adminBundle[session.dmProfile.locale].CatTreeQuickBuilder" labelType="evaluate" link="/admin/quickBuilderCat.cfm" />
-				<menuitem id="bulkimageupload" sequence="30" label="application.adminBundle[session.dmProfile.locale].BulkImageUpload" labelType="evaluate" link="/admin/bulkImageUpload.cfm" />
+				<menuitem id="bulkimageupload" sequence="30" label="application.adminBundle[session.dmProfile.locale].BulkImageUpload" labelType="evaluate" link="/admin/multipleImagesUploader.cfm" />
 				<menuitem id="bulkfileupload" sequence="40" label="application.adminBundle[session.dmProfile.locale].BulkFileUpload" labelType="evaluate" link="/admin/bulkFileUpload.cfm" />
 			</menu>
 			<!-- todo: i18n resource bundle update required -->
