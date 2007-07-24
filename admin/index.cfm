@@ -36,12 +36,23 @@ $Developer: Pete Ottery (pot@daemon.com.au)$
 --->
 <cfprocessingDirective pageencoding="utf-8">
 
-<!--- resolve default iframes for this section view --->
-<cfparam name="url.sec" default="home" type="string">
-<cfparam name="url.sub" default="" type="string">
-
 <cfset oWebTop=application.factory.owebtop>
 <cfset xmlWebtop=owebtop.xmlWebtop>
+
+<!--- resolve default iframes for this section view --->
+<cfset aSections = oWebTop.getSectionsAsArray()>
+<cfset defaultsectionid="">
+<cfloop from="1" to="#arraylen(aSections)#" index="i">
+	<cfif request.dmsec.oAuthorisation.fCheckXMLPermission(aSections[i].xmlAttributes)>
+		<cfset defaultsectionid=aSections[i].xmlAttributes.id>
+		<cfbreak>
+	</cfif>
+</cfloop>
+<cfif not len(defaultsectionid)>
+	<cfthrow type="application" message="You do not have permission to access this area">
+</cfif>
+<cfparam name="url.sec" default="#defaultsectionid#" type="string">
+<cfparam name="url.sub" default="" type="string">
 
 <!--- get subsection to display --->
 <cfset aSubectionToDisplay = oWebTop.getSubSectionAsArray(url.sec, url.sub)>
