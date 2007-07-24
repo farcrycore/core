@@ -910,6 +910,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset stReturnMetadata.aExtends = oCoapiAdmin.getExtendedTypeArray(packagePath=md.name)>
 		
 		
+		<cfparam name="stReturnMetadata.bAutoSetLabel" default="true" />
 		<cfparam name="stReturnMetadata.bObjectBroker" default="false" />
 		<cfparam name="stReturnMetadata.lObjectBrokerWebskins" default="" />
 		<cfparam name="stReturnMetadata.ObjectBrokerWebskinTimeOut" default="1400" /> <!--- This a value in minutes (ie. 1 day) --->
