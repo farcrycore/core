@@ -1,4 +1,6 @@
 <cfsetting enablecfoutputonly="Yes">
+
+<cfsilent>
 <!--- 
 || LEGAL ||
 $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
@@ -44,6 +46,8 @@ out:
 <cfparam name="attributes.prefix" default="">
 <cfparam name="attributes.suffix" default="">
 <cfparam name="attributes.includeSelf" default="0">
+<cfparam name="attributes.linkSelf" default="true">
+<cfparam name="attributes.homeNavID" default="#application.navid.home#">
 
 <cfscript>
 // get navigation elements
@@ -56,8 +60,7 @@ out:
 </cfif>
 
 <!--- check to see we are not displaying a page under something other than home --->
-<cfif valueList(qAncestors.objectid) CONTAINS application.navid.home>
-
+</cfsilent><cfif valueList(qAncestors.objectid) CONTAINS attributes.homeNavID><cfsilent>
 	<!--- order and remove application root --->
 	<cfquery dbtype="query" name="qCrumb">
 		SELECT * FROM qAncestors
@@ -65,16 +68,23 @@ out:
 		ORDER BY nLevel
 	</cfquery>
 	
+	</cfsilent>
 	<!--- output prefix HTML --->
-	<cfoutput>#attributes.prefix#</cfoutput>
+	<cfoutput>#attributes.prefix#</cfoutput><cfsilent>
+		
 	<!--- output breadcrumb --->
 	<cfset iCount = 1>
+	</cfsilent>
 	<cfloop query="qCrumb">
-		<skin:buildLink objectid="#qCrumb.objectid#" class="#attributes.linkClass#"><cfoutput>#trim(qCrumb.objectName)#</cfoutput></skin:buildLink><cfif iCount neq qCrumb.recordCount><cfoutput>#attributes.separator#</cfoutput></cfif>
-		<cfset iCount = iCount + 1>
+		<cfoutput><skin:buildLink objectid="#qCrumb.objectid#" class="#attributes.linkClass#">#trim(qCrumb.objectName)#</skin:buildLink><cfif iCount neq qCrumb.recordCount>#attributes.separator#</cfif></cfoutput>
+		<cfsilent><cfset iCount = iCount + 1></cfsilent>
 	</cfloop>
 	<cfif attributes.includeSelf>
-		<cfoutput>#attributes.separator#</cfoutput><skin:buildLink objectid="#attributes.objectid#" class="#attributes.linkClass#"><cfoutput>#stSelf.title#</cfoutput></skin:buildLink>
+		<cfif attributes.linkSelf>
+			<cfoutput>#attributes.separator#</cfoutput><skin:buildLink objectid="#attributes.objectid#" class="#attributes.linkClass#"><cfoutput>#stSelf.title#</cfoutput></skin:buildLink>
+		<cfelse>
+			<cfoutput>#attributes.separator# #stSelf.title#</cfoutput>
+		</cfif>		
 	</cfif>
 	<cfif len(attributes.here)>
 		<cfoutput>#attributes.separator##attributes.here#</cfoutput>
