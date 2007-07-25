@@ -63,7 +63,7 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 <cfparam name="attributes.defaultorder" default="desc" type="string">
 <cfparam name="attributes.id" default="#attributes.typename#" type="string">
 <cfparam name="attributes.sqlorderby" default="datetimelastupdated desc" type="string" />
-<cfparam name="attributes.sqlWhere" default="0=0" />
+<cfparam name="attributes.sqlWhere" default="" />
 <cfparam name="attributes.lCategories" default="" />
 
 <!--- admin configuration options --->
@@ -101,6 +101,9 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 	<cfset PrimaryPackagePath = application.types[attributes.typename].typepath />
 </cfif>
 
+<cfif not len(attributes.sqlWhere)>
+	<cfset attributes.sqlWhere = "0=0" />
+</cfif>
 
 <cfif NOT structKeyExists(PrimaryPackage, "news")>
 
