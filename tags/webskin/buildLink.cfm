@@ -1,4 +1,5 @@
 <cfsetting enablecfoutputonly="Yes">
+<cfsilent>
 <!--- 
 || LEGAL ||
 $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
@@ -28,6 +29,7 @@ $in: xCode -- eXtra code to be placed inside the anchor tag $
 --->
 
 <cfif thistag.executionMode eq "Start">
+
 	<cfparam name="attributes.linktext" default="">
 	<cfparam name="attributes.target" default="_self">
 	<cfparam name="attributes.bShowTarget" default="false">
@@ -180,5 +182,5 @@ $in: xCode -- eXtra code to be placed inside the anchor tag $
 		<cfset thistag.GeneratedContent=tagoutput>
 	</cfif>
 </cfif>
-
+</cfsilent>
 <cfsetting enablecfoutputonly="No">
