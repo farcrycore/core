@@ -17,7 +17,6 @@
 		
 		<cfset var returnHTML = "" />
 		<cfset var stobj = structnew() / >
-		<cfset var stJoinObjects = structNew() /> <!--- This will contain a structure of object components that match the ftJoin list from the metadata --->
 		<cfset var tmpTypename="" />
 		<cfset var i = "" />	
 		<cfset var qArrayField = queryNew("blah") />
@@ -27,6 +26,7 @@
 		<cfset var HTML = "" />
 		<cfset var stTemp = structNew() />
 		<cfset var lArrayList =  ""/>
+		<cfset var oData =  ""/>
 
 		<!---
 		<cfset var oFourQ = createObject("component","farcry.core.packages.fourq.fourq")><!--- TODO: this needs to be removed when we add typename to array tables. ---> 
@@ -45,13 +45,6 @@
 			<cfreturn "">
 		</cfif>
 		
-		<cfset stJoinObjects = StructNew() />
-		
-		<!--- Create each of the the Linked Table Types as an object  --->
-		<cfloop list="#arguments.stMetadata.ftJoin#" index="i">			
-			<cfset stJoinObjects[i] = createObject("component",application.types[i].typepath)>
-		</cfloop>
-
 		<!--- Make sure scriptaculous libraries are included. --->
 		<cfset Request.InHead.ScriptaculousDragAndDrop = 1>
 		<cfset Request.InHead.ScriptaculousEffects = 1>	
@@ -141,16 +134,17 @@
 										
 										<!--- if typename is missing from query (ie. array data is corrupted) --->
 										<cfif NOT len(qArrayField.typename)>
-											<cfset tmpTypename=createobject("component", "farcry.core.packages.fourq.fourq").findtype(objectid=qarrayfield.data) />
+											<cfset tmpTypename=application.coapi.coapiUtilities.findtype(objectid=qarrayfield.data) />
 											<cfset qArrayField.typename[qarrayfield.currentrow] = tmpTypename />
 											<cfif NOT len(tmpTypename)>
 												<cfset HTML = "Object Not Found">
 											</cfif>
 										</cfif>
 										<cfif NOT len(HTML)>
-											<cfset HTML = stJoinObjects[qArrayField.typename].getView(objectID=qArrayField.data, template="#arguments.stMetadata.ftLibrarySelectedWebskin#", alternateHTML=variables.alternateHTML) />																			
+											<cfset oData = createObject("component",application.stcoapi[qArrayField.typename].packagepath) />
+											<cfset HTML = oData.getView(objectID=qArrayField.data, template="#arguments.stMetadata.ftLibrarySelectedWebskin#", alternateHTML=variables.alternateHTML) />																			
 											<cfif NOT len(trim(HTML))>
-												<cfset stTemp = stJoinObjects[qArrayField.typename].getData(objectid=qArrayField.data) />
+												<cfset stTemp = oData.getData(objectid=qArrayField.data) />
 												<cfif structKeyExists(stTemp, "label") AND len(stTemp.label)>
 													<cfset HTML = stTemp.label />
 												<cfelse>
@@ -223,10 +217,10 @@
 		<cfset var i = "" />
 		<cfset var o = "" />
 		<cfset var q = "" />
-		<cfset var stJoinObjects = "" />
 		<cfset var ULID = "" />
 		<cfset var stobj = "" />
 		<cfset var html = "" />
+		<cfset var oData = "" />
 
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedWebskin" default="librarySelected">
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedListClass" default="thumbNailsWrap">
@@ -237,13 +231,6 @@
 		<cfset o = createObject("component",application.types[arguments.typename].typepath)>
 		<cfset q = o.getArrayFieldAsQuery(objectid="#arguments.stObject.ObjectID#", Typename="#arguments.typename#", Fieldname="#stMetadata.Name#", ftJoin="#stMetadata.ftJoin#")>
 	
-		<cfset stJoinObjects = StructNew() />
-		
-		<!--- Create each of the the Linked Table Types as an object  --->
-		<cfloop list="#arguments.stMetadata.ftJoin#" index="i">			
-			<cfset stJoinObjects[i] = createObject("component",application.types[i].typepath)>
-		</cfloop>
-
 		
 		<cfsavecontent variable="returnHTML">
 		<cfoutput>
@@ -257,10 +244,11 @@
 						<!---<li id="#arguments.fieldname#_#q.objectid#"> --->
 							
 							<div>
-								<cfif listContainsNoCase(structKeyList(stJoinObjects),q.typename)>
-									<cfset stobj = stJoinObjects[q.typename].getData(objectid=q.data) />
+								<cfif listContainsNoCase(arguments.stMetadata.ftJoin,q.typename)>
+									<cfset oData = createObject("component",application.stcoapi[q.typename].packagepath) />
+									<cfset stobj = oData.getData(objectid=q.data) />
 									<cfif FileExists("#application.path.project#/webskin/#q.typename#/#arguments.stMetadata.ftLibrarySelectedWebskin#.cfm")>
-										<cfset html = stJoinObjects[q.typename].getView(stObject=stobj,template="#arguments.stMetadata.ftLibrarySelectedWebskin#") />
+										<cfset html = oData.getView(stObject=stobj,template="#arguments.stMetadata.ftLibrarySelectedWebskin#") />
 										#html#								
 										<!---<cfinclude template="/farcry/projects/#application.projectDirectoryName#/webskin/#q.typename#/#arguments.stMetadata.ftLibrarySelectedWebskin#.cfm"> --->
 									<cfelse>
@@ -375,8 +363,6 @@
 		
 		<cfset var returnHTML = "" />
 		<cfset var stobj = structnew() / >
-		<cfset var stJoinObjects = structNew() /> <!--- This will contain a structure of object components that match the ftJoin list from the metadata --->
-
 		<cfset var i = "" />
 		<cfset var qArrayField = queryNew("blah") />
 		<cfset var oPrimary = "" />
@@ -384,6 +370,10 @@
 		<cfset var ULID = "" />
 		<cfset var HTML = "" />
 		<cfset var stTemp = structNew() />
+		<cfset var dataID = "" />
+		<cfset var dataLabel = "" />
+		<cfset var dataSEQ = "" />
+		<cfset var oData = "" />
 		
 		
 		
@@ -403,13 +393,6 @@
 		<cfif not structKeyExists(arguments.stMetadata,"ftJoin") or not len(arguments.stMetadata.ftJoin)>
 			<cfreturn "">
 		</cfif>
-		
-		<cfset stJoinObjects = StructNew() />
-		
-		<!--- Create each of the the Linked Table Types as an object  --->
-		<cfloop list="#arguments.stMetadata.ftJoin#" index="i">			
-			<cfset stJoinObjects[i] = createObject("component",application.types[i].typepath)>
-		</cfloop>
 
 		<!--- Make sure scriptaculous libraries are included. --->
 		<cfset Request.InHead.ScriptaculousDragAndDrop = 1>
@@ -472,7 +455,6 @@
 			<cfset ULID = "#arguments.fieldname#_list">
 			
 			<cfsavecontent variable="returnHTML">
-
 				
 				<cfoutput>
 				<ul id="#ULID#" class="#arguments.stMetadata.ftLibrarySelectedListClass#View" style="#arguments.stMetadata.ftLibrarySelectedListStyle#">
@@ -484,25 +466,30 @@
 					NEW ARRAY LAYOUT
 					 ----------------------->					
 					<cfloop query="qArrayField">
-
-						<cfif isDefined("qArrayField.label") AND len(qArrayField.label)>
+						
+						<cfset dataID = qArrayField.data />
+						<cfset dataSEQ = qArrayField.seq />
+						<cfset dataTypename = qArrayField.typename />
+						<cfset HTML = "" />
+					
+ 						<cfif isDefined("qArrayField.label") AND len(qArrayField.label)>
 							<cfset variables.alternateHTML = qArrayField.Label />
 						<cfelse>
 							<cfset variables.alternateHTML = "" />
 						</cfif>
-						
+				
 						<!--- if typename is missing from query (ie. array data is corrupted) --->
-						<cfif NOT len(qArrayField.typename)>
-							<cfset tmpTypename=createobject("component", "farcry.core.packages.fourq.fourq").findtype(objectid=qarrayfield.data) />
-							<cfset qArrayField.typename[qarrayfield.currentrow] = tmpTypename />
-							<cfif NOT len(tmpTypename)>
+						<cfif NOT len(dataTypename)>
+							<cfset dataTypename=application.coapi.coapiUtilities.findtype(objectid=dataID) />
+							<cfif NOT len(dataTypename)>
 								<cfset HTML = "Object Not Found">
 							</cfif>
-						</cfif>
+						</cfif> 
 						<cfif NOT len(HTML)>
-							<cfset HTML = stJoinObjects[qArrayField.typename].getView(objectID=qArrayField.data, template="#arguments.stMetadata.ftLibrarySelectedWebskin#", alternateHTML=variables.alternateHTML) />																			
+							<cfset oData = createObject("component",application.stcoapi[dataTypename].packagepath) />
+							<cfset HTML = oData.getView(objectID="#dataID#", template="#arguments.stMetadata.ftLibrarySelectedWebskin#", alternateHTML=variables.alternateHTML) />
 							<cfif NOT len(trim(HTML))>
-								<cfset stTemp = stJoinObjects[qArrayField.typename].getData(objectid=qArrayField.data) />
+								<cfset stTemp = oData.getData(objectid=dataID) />
 								<cfif structKeyExists(stTemp, "label") AND len(stTemp.label)>
 									<cfset HTML = stTemp.label />
 								<cfelse>
@@ -512,9 +499,9 @@
 						</cfif>
 						
 						<cfoutput>							
-						<li id="#arguments.fieldname#_#qArrayField.data#:#qArrayField.seq#" class="#ULID#handle" style="<cfif len(arguments.stMetadata.ftLibraryListItemWidth)>width:#arguments.stMetadata.ftLibraryListItemWidth#;</cfif><cfif len(arguments.stMetadata.ftLibraryListItemheight)>height:#arguments.stMetadata.ftLibraryListItemHeight#;</cfif>">
+						<li id="#arguments.fieldname#_#dataID#:#dataSEQ#" class="#ULID#handle" style="<cfif len(arguments.stMetadata.ftLibraryListItemWidth)>width:#arguments.stMetadata.ftLibraryListItemWidth#;</cfif><cfif len(arguments.stMetadata.ftLibraryListItemheight)>height:#arguments.stMetadata.ftLibraryListItemHeight#;</cfif>">
 							<div class="buttonGripper"><p>&nbsp;</p></div>
-							<input type="checkbox" name="#arguments.fieldname#Selected" id="#arguments.fieldname#Selected" class="formCheckbox" value="#qArrayField.data#:#qArrayField.seq#" />
+							<input type="checkbox" name="#arguments.fieldname#Selected" id="#arguments.fieldname#Selected" class="formCheckbox" value="#dataID#:#dataSEQ#" />
 
 							<div class="#arguments.stMetadata.ftLibrarySelectedListClass#">
 								<p>#HTML#</p>
