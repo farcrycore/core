@@ -87,6 +87,7 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 <cfparam name="attributes.plugin" default="" />
 <cfparam name="attributes.lCustomActions" default="" />
 <cfparam name="attributes.stFilterMetaData" default="#structNew()#" />
+<cfparam name="attributes.bShowActionList" default="true" />
 
 
 <cfif NOT structKeyExists(session.objectadmin, attributes.typename)>
@@ -294,7 +295,7 @@ user --->
 					<cfif len(session.objectadminFilterObjects[attributes.typename].stObject[i])>
 						<cfswitch expression="#PrimaryPackage.stProps[i].metadata.ftType#">
 						
-						<cfcase value="string,nstring,list">	
+						<cfcase value="string,nstring,list,uuid">	
 							<cfif len(session.objectadminFilterObjects[attributes.typename].stObject[i])>
 								<cfloop list="#session.objectadminFilterObjects[attributes.typename].stObject[i]#" index="j">
 									<cfset whereValue = ReplaceNoCase(trim(LCase(j)),"'", "''", "all") />
@@ -665,7 +666,10 @@ user --->
 	 		<cfif listContainsNoCase(stRecordset.q.columnlist,"bHasMultipleVersion")>
 		 		<cfoutput><th>Status</th></cfoutput>
 			</cfif>
-			<cfoutput><th>Action</th></cfoutput>
+			
+			<cfif attributes.bShowActionList>
+				<cfoutput><th>Action</th></cfoutput>
+			</cfif>
 			<!---<cfif attributes.bEditCol><th>Edit</th></cfif>
 			<cfif attributes.bViewCol><th>View</th></cfif>
 			<cfif attributes.bFlowCol><th>Flow</th></cfif> --->
@@ -707,7 +711,9 @@ user --->
 		 		<cfif listContainsNoCase(stRecordset.q.columnlist,"bHasMultipleVersion")>
 			 		<cfoutput><th>&nbsp;</th></cfoutput>
 				</cfif>
-				<cfoutput><th>&nbsp;</th></cfoutput>
+				<cfif attributes.bShowActionList>
+					<cfoutput><th>&nbsp;</th></cfoutput>
+				</cfif>
 				<!---<cfif attributes.bEditCol><th>&nbsp;</th></cfif>
 				<cfif attributes.bViewCol><th>&nbsp;</th></cfif>
 				<cfif attributes.bFlowCol><th>&nbsp;</th></cfif> --->					
@@ -765,7 +771,9 @@ user --->
 			 		<cfif listContainsNoCase(stRecordset.q.columnlist,"bHasMultipleVersion")>
 				 		<cfoutput><td nowrap="true">#st.status#</td></cfoutput>
 					</cfif>
-					<cfoutput><td>#st.action#</td></cfoutput>
+					<cfif attributes.bShowActionList>
+						<cfoutput><td>#st.action#</td></cfoutput>
+					</cfif>
 					<!---<cfif attributes.bEditCol><td>#st.editLink#</td></cfif>
 					<cfif attributes.bViewCol><td>#st.viewLink#</td></cfif>
 					<cfif attributes.bFlowCol><td>#st.flowLink#</td></cfif> --->
