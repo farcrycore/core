@@ -11,17 +11,30 @@
 
 
 <cfif thistag.executionMode eq "Start">
-	<cfif not structKeyExists(attributes, "typename") or not structKeyExists(application.stCoapi, attributes.typename)>
-		<cfabort showerror="invalid typename passed" />
-	</cfif>	
+
 	<cfparam name="attributes.stObject" default="#structNew()#"><!--- use to get an existing object that has already been fetched by the calling page. --->
+	<cfparam name="attributes.typename" default=""><!--- typename of the object. --->
 	<cfparam name="attributes.objectid" default=""><!--- used to get an existing object --->
 	<cfparam name="attributes.key" default=""><!--- use to generate a new object --->
 	<cfparam name="attributes.template" default=""><!--- can be used as an alternative to webskin. Best practice is to use webskin. --->
 	<cfparam name="attributes.webskin" default=""><!--- the webskin to be called with the object --->
 	<cfparam name="attributes.stProps" default="#structNew()#">
+	<cfparam name="attributes.r_html" default=""><!--- Empty will render the html inline --->
+
 
 	<cfparam name="session.tempObjectStore" default="#structNew()#">
+	
+	<cfif not len(attributes.typename)>
+		<cfif structKeyExists(attributes.stObject, "typename")>
+			<cfset attributes.typename = stobject.typename />
+		<cfelseif len(attributes.objectid)>
+			<cfset attributes.typename = application.coapi.coapiUtilities.findType(objectid=attributes.objectid) />
+		</cfif>
+	</cfif>
+	
+	<cfif not len(attributes.typename) or not structKeyExists(application.stCoapi, attributes.typename)>
+		<cfabort showerror="invalid typename passed" />
+	</cfif>	
 	
 	<!--- use template if its passed otherwise webskin. --->
 	<cfif len(attributes.template)>
@@ -71,9 +84,20 @@
 		<cfset stResult = o.setData(stProperties=attributes.stProps, bSessionOnly=true) />
 	</cfif>
 	
-	<cfset html = o.getView(objectid=st.objectid, template="#attributes.webskin#")>	
+	<!--- Developer can pass in alternate HTML to render if the webskin does not exist --->
+	<cfif structKeyExists(attributes, "alternateHTML")>
+		<cfset html = o.getView(objectid=st.objectid, template="#attributes.webskin#", alternateHTML="#attributes.alternateHTML#")>
+	<cfelse>
+		<cfset html = o.getView(objectid=st.objectid, template="#attributes.webskin#")>
+	</cfif>
+		
 	
-	<cfoutput>#html#</cfoutput>	
+	<cfif len(attributes.r_html)>
+		<cfset caller[attributes.r_html] = html />
+	<cfelse>
+		<cfoutput>#html#</cfoutput>	
+	</cfif>
+	
 	
 	
 
