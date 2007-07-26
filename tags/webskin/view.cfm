@@ -44,7 +44,7 @@
 	
 	<cfset o = createObject("component", application.stcoapi["#attributes.typename#"].packagePath) />
 
-	<cfif structKeyExists(attributes.stObject, objectid) and len(attributes.stObject.objectid)>
+	<cfif structKeyExists(attributes.stObject, "objectid") and len(attributes.stObject.objectid)>
 		<cfset st = attributes.stObject />	
 	<cfelse>
 			
