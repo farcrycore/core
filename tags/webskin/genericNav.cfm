@@ -59,6 +59,10 @@
 <cfset qAncestors = o.getAncestors(attributes.sectionObjectID)>
 <cfset lAncestors = valuelist(qAncestors.objectid)>
 
+<cfif attributes.bIncludeHome>
+	<!--- // get application.navid.home objectName --->
+	<cfset homeNode = o.getNode(objectID=#application.navid.home#)>
+</cfif>
 
 <cfif attributes.bLast>
 	<!--- here we get the most right nav so we can add a last class to it if needed --->
@@ -173,7 +177,7 @@
 						if(request.sectionObjectID eq application.navid.home){
 							writeOutput(" class=""active home""");
 						}
-						writeOutput("><a href=""#application.url.webroot#/"">Home</a></li>");
+						writeOutput("><a href=""#application.url.webroot#/"">#homeNode.objectName#</a></li>");
 					}
 					ul=ul+1;
 				}
@@ -226,7 +230,7 @@
 			{
 				writeOutput(" class=""active""");
 			}
-			writeOutput("><a href=""#application.url.webroot#/"">Home</a></li></ul>");
+			writeOutput("><a href=""#application.url.webroot#/"">#homeNode.objectName#</a></li></ul>");
 		}
 			
 </cfscript>
