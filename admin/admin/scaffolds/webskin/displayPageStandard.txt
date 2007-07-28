@@ -12,8 +12,8 @@
 
 <!--- tag libraries --->
 <cfimport taglib="/farcry/[PROJECTNAME]/tags" prefix="tags">
-<cfimport taglib="/farcry/farcry_core/tags/container" prefix="con">
-<cfimport taglib="/farcry/farcry_core/tags/formtools" prefix="ft">
+<cfimport taglib="/farcry/core/tags/container" prefix="con">
+<cfimport taglib="/farcry/core/tags/formtools" prefix="ft">
 
 <tags:pagewrap title="#stobj.label#">
 
@@ -28,4 +28,4 @@
 
 </tags:pagewrap>
 	
-<cfsetting enablecfoutputonly="no">
+<cfsetting enablecfoutputonly="false" />

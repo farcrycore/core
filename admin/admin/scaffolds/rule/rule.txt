@@ -20,7 +20,7 @@ $Developer: DEVELOPER NAME  $
 
 --->
 
-<cfcomponent displayname="Lists latest objects ([TYPENAME])" extends="farcry.farcry_core.packages.rules.rules" hint="Creates a List Table for the latest objects from ([TYPENAME]).">
+<cfcomponent displayname="Lists latest objects ([TYPENAME])" extends="farcry.core.packages.rules.rules" hint="Creates a List Table for the latest objects from ([TYPENAME]).">
 
 	<cfproperty ftSeq="1" ftFieldset="General" name="intro" type="longchar" hint="Introduction Text." required="false" default="" ftType="RichText" ftLabel="Introduction Text">
 	<cfproperty ftSeq="2" ftFieldset="General" name="suffix" type="longchar" hint="Suffix Text." required="false" default="" ftType="RichText" ftLabel="Suffix Text">	
@@ -47,7 +47,7 @@ $Developer: DEVELOPER NAME  $
 		
 		
 		<cfif listLen(stObj.Category)>
-			<cfset qObjectsMatchingCategories = createObject("component","farcry.farcry_core.packages.farcry.category").getData(typename="[TYPENAME]", lCategoryids=stobj.Category) />
+			<cfset qObjectsMatchingCategories = createObject("component","farcry.core.packages.farcry.category").getData(typename="[TYPENAME]", lCategoryids=stobj.Category) />
 			<cfset lCategoryObjectIDs = valueList(qObjectsMatchingCategories.objectid) />
 		</cfif>		
 		

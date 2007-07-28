@@ -16,8 +16,8 @@
 
 
 <!--- tag libraries --->
-<cfimport taglib="/farcry/farcry_core/tags/webskin/" prefix="skin" >
-<cfimport taglib="/farcry/farcry_core/tags/formtools/" prefix="ft" >
+<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin">
+<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft">
 
 	<cfoutput>
 	<div class="teaser">
@@ -34,4 +34,4 @@
 	</cfoutput>
 
 
-<cfsetting enablecfoutputonly="no">
+<cfsetting enablecfoutputonly="false" />
