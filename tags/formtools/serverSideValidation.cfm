@@ -9,18 +9,21 @@
 	<!--- optional attributes --->
 	<cfparam name="attributes.lrequiredfields" default="" type="string" />
 
-
+	<!--- If required fields, check they have been passed. --->
+	<cfif structKeyExists(form, "FARCRYFORMPREFIXES") AND listlen(attributes.lrequiredfields)>
+		<cfloop list="#form.FARCRYFORMPREFIXES#" index="prefix">			
+			<!--- test for required fields; ie. must be part of the actual form post (can be used to block scripted posting) --->
+			<cfloop list="#attributes.lrequiredfields#" index="field">
+				<cfif NOT structKeyExists(form, "#prefix##field#")>
+					<cfthrow message="<b>Server-side validation</b> Required form fields missing; #attributes.lrequiredfields#." />
+				</cfif>
+			</cfloop>
+		</cfloop>
+	</cfif>
+			
+			
 	<cfif structKeyExists(form, "FARCRYFORMPREFIXES") AND structKeyExists(form, "farcryFormValidation") AND form.farcryFormValidation>
 		<cfloop list="#form.FARCRYFORMPREFIXES#" index="prefix">
-			
-			<!--- test for required fields; ie. must be part of the actual form post (can be used to block scripted posting) --->
-			<cfif listlen(attributes.lrequiredfields)>
-				<cfloop list="#attributes.lrequiredfields#" index="field">
-					<cfif NOT structKeyExists(form, "#prefix##field#")>
-						<cfthrow message="<b>Server-side validation</b> Required form fields missing; #attributes.lrequiredfields#." />
-					</cfif>
-				</cfloop>
-			</cfif>
 			
 			<cfif structKeyExists(form, "#prefix#objectid")>
 					
