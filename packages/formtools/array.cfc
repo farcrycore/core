@@ -62,6 +62,48 @@
 			- select specific form element output
  		----------------------------------------------->
 		<cfswitch expression="#arguments.stMetadata.ftRenderType#">
+		<cfcase value="checkbox">
+			
+			<!-------------------------------------------------------------------------- 
+			generate library data query to populate library interface 
+			--------------------------------------------------------------------------->
+			<cfif structkeyexists(stMetadata, "ftLibraryData") AND len(stMetadata.ftLibraryData)>	
+				<cfset oPrimary = createObject("component", arguments.stPackage.packagePath) />
+				
+				<!--- use ftlibrarydata method from primary content type --->
+				<cfif structkeyexists(oprimary, stMetadata.ftLibraryData)>
+					<cfinvoke component="#oPrimary#" method="#stMetadata.ftLibraryData#" returnvariable="qLibraryList" />
+				</cfif>
+			<cfelse>
+				<!--- if nothing exists to generate library data then cobble something together --->
+				<cfset qLibraryList = createObject("component", application.types[listFirst(arguments.stMetadata.ftJoin)].typepath).getLibraryData() />
+			</cfif>
+			<cfsavecontent variable="returnHTML">
+			
+			<cfif qLibraryList.recordcount>
+				<cfoutput>
+				<div class="fieldsection optional">
+					<div class="fieldwrap">
+						<cfloop query="qLibraryList">
+							<input type="checkbox"  name="#arguments.fieldname#" value="#qLibraryList.objectid#" <cfif valuelist(qArrayField.data) contains qLibraryList.objectid>checked</cfif>>
+							<cfif isDefined("qLibraryList.label")>#qLibraryList.label#<cfelse>#qLibraryList.objectid#</cfif>
+							<br class="fieldsectionbreak" />
+						</cfloop>
+					</div>										
+				</div>																					
+				</cfoutput>
+				
+			<cfelse>
+				<!--- todo: i18n --->
+				<cfoutput>
+				<em>No options available.</em>
+				<input type="hidden" name="#arguments.fieldname#" value="" />
+				</cfoutput>
+			</cfif>
+			
+			</cfsavecontent>
+		
+		</cfcase>
 		<cfcase value="list">
 			
 			<!-------------------------------------------------------------------------- 
@@ -74,9 +116,8 @@
 				<cfif structkeyexists(oprimary, stMetadata.ftLibraryData)>
 					<cfinvoke component="#oPrimary#" method="#stMetadata.ftLibraryData#" returnvariable="qLibraryList" />
 				</cfif>
-			</cfif>
-			<!--- if nothing exists to generate library data then cobble something together --->
-			<cfif NOT isDefined("qLibraryList")>
+			<cfelse>
+				<!--- if nothing exists to generate library data then cobble something together --->
 				<cfset qLibraryList = createObject("component", application.types[listFirst(arguments.stMetadata.ftJoin)].typepath).getLibraryData() />
 			</cfif>
 	
