@@ -42,6 +42,8 @@
 	</cfif>
 	
 	
+	<!--- Initialise variables --->
+	<cfset st = structNew() />
 	<cfset o = createObject("component", application.stcoapi["#attributes.typename#"].packagePath) />
 
 	<cfif structKeyExists(attributes.stObject, "objectid") and len(attributes.stObject.objectid)>
@@ -64,11 +66,15 @@
 			<cfif not len(attributes.objectid)>
 				<cfset attributes.objectid = createUUID() />
 				<cfset session.stTempObjectStoreKeys[attributes.typename][attributes.key] = attributes.objectid>
+				<cfset st = o.getData(objectID = attributes.objectid) />
+				<cfset stResult = o.setData(stProperties=st, bSessionOnly="true") />
 			</cfif>
 		</cfif>
 		
-		<!--- Go get a default object --->
-		<cfset st = o.getData(objectID = attributes.objectid) />	
+		<cfif structIsEmpty(st)>
+			<!--- Go get a default object --->
+			<cfset st = o.getData(objectID = attributes.objectid) />
+		</cfif>	
 	</cfif>
 	
 						
