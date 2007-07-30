@@ -133,8 +133,22 @@
 
 <cfif thistag.ExecutionMode EQ "End">
 	
+	<!--- 
+	Have we flagged this object to be saved to the session only?
+	This is done by calling <ft:sessionOnly /> often used for inline server side validation
+	 --->
+	<cfif (isDefined("Request.SaveCurrentFormObjectSessionOnly") AND Request.SaveCurrentFormObjectSessionOnly)>
+		
+		<cfset variables.bSessionOnly = true />
+		
+		<!--- SAVE THIS OBJECT TO SESSION ONLY --->
+		<cfset Request.SaveCurrentFormObjectSessionOnly = false>
+	<cfelse>
+		<!--- If not, use the value passed in attributes --->
+		<cfset variables.bSessionOnly = attributes.bSessionOnly />		
+	</cfif>
 
-	<cfif (isDefined("Request.BreakProcessingCurrentFormObject") AND Request.BreakProcessingCurrentFormObject EQ 1)>
+	<cfif (isDefined("Request.BreakProcessingCurrentFormObject") AND Request.BreakProcessingCurrentFormObject)>
 		
 		<!--- DO NOT PROCESS THIS LOOP --->
 		<cfset Request.BreakProcessingCurrentFormObject = 0>
@@ -229,7 +243,7 @@
 
 			
 			<!--- Save the object with new properties --->
-			<cfset stObj = stType.setData(stProperties=Caller[attributes.r_stProperties],user=Variables.LockedBy, bSessionONly="#attributes.bSessionOnly#")>		
+			<cfset stObj = stType.setData(stProperties=Caller[attributes.r_stProperties],user=Variables.LockedBy, bSessionONly="#variables.bSessionOnly#")>		
 			
 			<!--- We need to return the new structure if requested. --->
 			<cfif isDefined("attributes.r_stObject") AND len(attributes.r_stObject)>
