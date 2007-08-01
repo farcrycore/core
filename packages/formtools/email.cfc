@@ -1,5 +1,4 @@
-
-<cfcomponent name="email" displayname="Email" hint="Field component for Email types"> 
+<cfcomponent extends="field" name="email" displayname="Email" hint="Field component for Email types"> 
 	
 	<cffunction name="init" access="public" returntype="farcry.core.packages.formtools.email" output="false" hint="Returns a copy of this initialised object">
 		<cfreturn this>
@@ -47,7 +46,10 @@
 		<!--- --------------------------- --->
 		<!--- Perform any validation here --->
 		<!--- --------------------------- --->
-		<cfset stResult.value = stFieldPost.Value>
+		<cfset stResult = super.validate(objectid=arguments.objectid, typename=arguments.typename, stFieldPost=arguments.stFieldPost, stMetadata=arguments.stMetadata )>
+		<cfif stResult.bSuccess and len(stFieldPost.Value) and not isvalid("email",stFieldPost.value)>
+			<cfset stResult = failed(value="#arguments.stFieldPost.value#", message="This is not a valid email address.") />
+		</cfif>
 		
 		
 		<!--- ----------------- --->
