@@ -36,7 +36,11 @@
 			<cfset navid = application.navid['root'] >
 		</cfif>
 
-		<cfset lSelectedNaviIDs = arguments.stObject['#arguments.stMetadata.name#'] />
+		<cfif isArray(arguments.stObject['#arguments.stMetadata.name#'])>
+			<cfset lSelectedNaviIDs = arrayToList(arguments.stObject['#arguments.stMetadata.name#']) />
+		<cfelse>
+			<cfset lSelectedNaviIDs = arguments.stObject['#arguments.stMetadata.name#'] />
+		</cfif>
 
 		<cfswitch expression="#arguments.stMetadata.ftRenderType#">
 			
