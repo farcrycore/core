@@ -369,9 +369,6 @@
 						<cfif qCurrentArrayItem.recordCount>
 							<cfset stArrayData[iColumn] = qCurrentArrayItem[iColumn][1] />
 						<cfelse>
-							<cfdump var="#qArrayRecords#" expand="false" label="qArrayRecords" />
-							<cfdump var="#qCurrentArrayItem#" expand="false" label="qCurrentArrayItem" />
-							<cfabort>
 							<cfset stArrayData[iColumn] = "" />
 						</cfif>
 					</cfloop>
