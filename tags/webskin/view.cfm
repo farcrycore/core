@@ -1,17 +1,13 @@
-
-
 <cfsetting enablecfoutputonly="true">
-
+<cfsilent>
 <!--- @@displayname: Embedded View Tag --->
 <!--- @@description: 
 	This tag will run the view on an object with the same objectid until it is saved to the database.
  --->
 <!--- @@author:  Mat Bryant (mat@daemon.com.au) --->
-
-
-
+</cfsilent>
 <cfif thistag.executionMode eq "Start">
-
+	<cfsilent>
 	<cfparam name="attributes.stObject" default="#structNew()#"><!--- use to get an existing object that has already been fetched by the calling page. --->
 	<cfparam name="attributes.typename" default=""><!--- typename of the object. --->
 	<cfparam name="attributes.objectid" default=""><!--- used to get an existing object --->
@@ -95,24 +91,16 @@
 		<cfset html = o.getView(objectid=st.objectid, template="#attributes.webskin#", alternateHTML="#attributes.alternateHTML#")>
 	<cfelse>
 		<cfset html = o.getView(objectid=st.objectid, template="#attributes.webskin#")>
-	</cfif>
-		
+	</cfif>		
+	</cfsilent>
 	
 	<cfif len(attributes.r_html)>
 		<cfset caller[attributes.r_html] = html />
 	<cfelse>
 		<cfoutput>#html#</cfoutput>	
 	</cfif>
-	
-	
-	
-
 </cfif>
 
-<cfif thistag.executionMode eq "End">
-	<!--- DO NOTHING --->
-</cfif>
-
-
+<cfif thistag.executionMode eq "End"><!--- DO NOTHING ---></cfif>
 
 <cfsetting enablecfoutputonly="false">
