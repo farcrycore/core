@@ -1,5 +1,8 @@
 <cfsetting enablecfoutputonly="yes">
 
+<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
+
+
 <cfif not thistag.HasEndTag>
 
 	<cfabort showerror="Does not have an end tag..." >
@@ -128,7 +131,7 @@
 				.x-btn-center input {height:21px;}
 				</style>
 			</cfoutput>
-			</skin:html>	
+			</skin:htmlhead>	
 			
 			<cfset buttonID = createUUID() />
 			<cfoutput>
