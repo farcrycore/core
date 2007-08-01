@@ -248,12 +248,19 @@ the latter is the policy group for anonymous...
 <!--- $TODO: refactor object calls... for now put stOBj into request$ --->
 
 <cfif attributes.method neq "display" AND  attributes.lmethods contains attributes.method>
-	<!--- ie. if a method has been passed in deliberately and is allowed use this --->
-	<cftrace var="attributes.method" text="Passed in attribute method used" />
-	<q4:contentobject
-		typename="#application.types[stObj.typename].typePath#"
-		objectid="#stObj.ObjectID#"
-		method="#attributes.method#">
+
+	<cfset o = createObject("component", application.types[stObj.typename].typePath)>
+	<cfset HTML = o.getView(stobject=stObj, Template=attributes.method, alternateHtml="") />
+	<cfif len(trim(HTML))>
+		<cfoutput>#HTML#</cfoutput>
+	<cfelse>
+		<!--- ie. if a method has been passed in deliberately and is allowed use this --->
+		<cftrace var="attributes.method" text="Passed in attribute method used" />
+		<q4:contentobject
+			typename="#application.types[stObj.typename].typePath#"
+			objectid="#stObj.ObjectID#"
+			method="#attributes.method#">
+	</cfif>
 	
 <cfelseif IsDefined("stObj.displayMethod") AND len(stObj.displayMethod)>
 	<!--- Invoke display method of page --->
