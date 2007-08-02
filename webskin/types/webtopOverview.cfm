@@ -14,6 +14,9 @@ FARCRY INCLUDE FILES
 START WEBSKIN
  ------------------>
 
+<cfset iDeveloperPermission = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="developer") />
+	
+	
 <cfoutput>
 <dl class="dl-style1">
 	<dt>#application.adminBundle[session.dmProfile.locale].objTitleLabel#</dt>
@@ -42,7 +45,7 @@ START WEBSKIN
 			<cfset subS=listToArray('#application.thisCalendar.i18nDateFormat(stobj.dateTimeLastUpdated,session.dmProfile.locale,application.mediumF)#,#stobj.lockedby#')>
 		#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].lockedBy,subS)#
 			<!--- check if current user is a sysadmin so they can unlock --->
-			<cfif stPermissions.iDeveloperPermission eq 1><!--- show link to unlock --->
+			<cfif iDeveloperPermission eq 1><!--- show link to unlock --->
 			<a href="navajo/unlock.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#">[#application.adminBundle[session.dmProfile.locale].unlockUC#]</a>
 			</cfif><cfelse><!--- no locking --->
 			#application.adminBundle[session.dmProfile.locale].unlocked#</cfif>
@@ -71,7 +74,6 @@ START WEBSKIN
 		<dt>#application.adminBundle[session.dmProfile.locale].thumbnailLabel#</dt>
 		<dd><img src="#application.url.webroot#/images/#stobj.thumbnail#"></dd>
 	</cfif>
-	<cfset iDeveloperPermission = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="developer") />
 	<cfif iDeveloperPermission eq 1>
 		<dt>ObjectID</dt>
 		<dd>#stobj.objectid#</dd>
