@@ -36,10 +36,11 @@ $out: caller.r_navQuery - complete qNav query$
 <!--- deprecated attributes --->
 <cfparam name="attributes.bDisplay" default="true">
 <cfparam name="attributes.r_navQuery" default="r_navQuery">
+<cfparam name="attributes.id" default="sitemapNav">
 
 
 
 <!--- build site map & display --->
-<skin:genericNav navID="#attributes.startPoint#" depth="#attributes.depth#">
+<skin:genericNav id="#attributes.id#" navID="#attributes.startPoint#" depth="#attributes.depth#">
 
 <cfsetting enablecfoutputonly="no">
