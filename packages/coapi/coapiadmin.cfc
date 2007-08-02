@@ -322,11 +322,16 @@
 		</cfif>
 		
 		<cfif listLen(arguments.excludeWebskins)>
-			<cfquery dbtype="query" name="qResult" result="res">
+			<cfquery dbtype="query" name="qResult">
 			SELECT * FROM qResult
 			WHERE lower(qResult.methodname) NOT IN (#listQualify(lCase(arguments.excludeWebskins), "'")#)
 			</cfquery>
 		</cfif>
+	
+		<cfquery dbtype="query" name="qResult">
+		SELECT * FROM qResult
+		ORDER BY displayname
+		</cfquery>	
 		
 		<cfreturn qresult />
 	</cffunction>
