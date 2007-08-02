@@ -28,11 +28,11 @@ SAMPLE USAGE:
 <!--- required attributes --->
 <cfparam name="attributes.objectid" type="uuid" />
 <cfparam name="attributes.arrayProperty" type="string" /><!--- propertyname of the array to render --->
+<cfparam name="attributes.webskin" type="string" /><!--- webskin to render related content view --->
 
 <!--- optional attributes --->
 <cfparam name="attributes.typename" default="" type="string" /><!--- content typename of parent; providing improves performance --->
 <cfparam name="attributes.filter" default="" type="string" /><!--- content typename to filter by for mixed type arrays --->
-<cfparam name="attributes.webskin" default="" type="string" /><!--- webskin to render related content view --->
 <cfparam name="attributes.rendertype" default="none" type="string" /><!--- render options: unordered, ordered, none --->
 <cfparam name="attributes.alternateHTML" default="#attributes.webskin# template unavailable." type="string" /><!--- alternative HTML if webskin is missing --->
 <cfparam name="attributes.r_html" default="" type="string" /><!--- Empty will render the html inline --->
