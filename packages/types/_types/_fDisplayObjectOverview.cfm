@@ -1,6 +1,7 @@
 
 <cfparam name="stObject.bAlwaysShowEdit" default="0">
 
+<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
 <cfsavecontent variable="displayContent"><cfoutput>
 	<div class="wizard-nav">
@@ -147,67 +148,9 @@
         <cfoutput><img src="#application.url.farcry#/images/icons/custom.png" alt="alt text" class="icon" /></cfoutput>
     </cfif>
 	
-	<dl class="dl-style1">
-	<dt>#application.adminBundle[session.dmProfile.locale].objTitleLabel#</dt>
-	<dd><cfif stObject.label NEQ "">
-		#stObject.label#<cfelse>
-		<i>#application.adminBundle[session.dmProfile.locale].undefined#</i></cfif>
-	</dd>
-	<dt>#application.adminBundle[session.dmProfile.locale].objTypeLabel#</dt>
-	<dd><cfif structKeyExists(application.types[stObject.typename],"displayname")>
-		#application.types[stObject.typename].displayname#<cfelse>
-		#stObject.typename#</cfif>
-	</dd><cfif StructKeyExists(stObject,"lnavidalias")>
-	<dt>Navigation Alias(es):</dt>
-	<dd>#stObject.lnavidalias#</dd></cfif>
-	<dt>#application.adminBundle[session.dmProfile.locale].createdByLabel#</dt>
-	<dd>#stObject.createdby#</dd>
-	<dt>#application.adminBundle[session.dmProfile.locale].dateCreatedLabel#</dt>
-	<dd>#application.thisCalendar.i18nDateFormat(stObject.datetimecreated,session.dmProfile.locale,application.shortF)#</dd>
-	<dt>#application.adminBundle[session.dmProfile.locale].lockingLabel#</dt>
-	<dd><cfif stObject.locked and stObject.lockedby eq "#session.dmSec.authentication.userlogin#_#session.dmSec.authentication.userDirectory#">
-			<!--- locked by current user --->
-			<cfset tDT=application.thisCalendar.i18nDateTimeFormat(stObject.dateTimeLastUpdated,session.dmProfile.locale,application.mediumF)>
-		<span style="color:red">#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].locked,tDT)#</span> <a href="navajo/unlock.cfm?objectid=#stObject.objectid#&typename=#stObject.typename#">[#application.adminBundle[session.dmProfile.locale].unLock#]</a>
-		<cfelseif stObject.locked>
-			<!--- locked by another user --->
-			<cfset subS=listToArray('#application.thisCalendar.i18nDateFormat(stObject.dateTimeLastUpdated,session.dmProfile.locale,application.mediumF)#,#stObject.lockedby#')>
-		#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].lockedBy,subS)#
-			<!--- check if current user is a sysadmin so they can unlock --->
-			<cfif stPermissions.iDeveloperPermission eq 1><!--- show link to unlock --->
-			<a href="navajo/unlock.cfm?objectid=#stObject.objectid#&typename=#stObject.typename#">[#application.adminBundle[session.dmProfile.locale].unlockUC#]</a>
-			</cfif><cfelse><!--- no locking --->
-			#application.adminBundle[session.dmProfile.locale].unlocked#</cfif>
-	</dd>
-	<cfif StructKeyExists(stObject, "datetimelastupdated")>
-		<dt>#application.adminBundle[session.dmProfile.locale].lastUpdatedLabel#</dt>
-		<dd>#application.thisCalendar.i18nDateFormat(stObject.datetimelastupdated,session.dmProfile.locale,application.mediumF)#</dd>
-	</cfif>
-	<cfif StructKeyExists(stObject, "lastupdatedby")>
-		<dt>#application.adminBundle[session.dmProfile.locale].lastUpdatedByLabel#</dt>
-		<dd>#stObject.lastupdatedby#</dd>
-	</cfif>
-	<cfif StructKeyExists(stObject, "status")>	
-		<dt>#application.adminBundle[session.dmProfile.locale].currentStatusLabel#</dt>
-		<dd>#stObject.status#</dd>
-	</cfif>
-	<cfif StructKeyExists(stObject, "displaymethod")>		
-		<dt>#application.adminBundle[session.dmProfile.locale].templateLabel#</dt>
-		<dd>#stObject.displaymethod#</dd>
-	</cfif>
-	<cfif StructKeyExists(stObject, "teaser")>
-		<dt>#application.adminBundle[session.dmProfile.locale].teaserLabel#</dt>
-		<dd>#stObject.teaser#</dd>
-	</cfif>
-	<cfif StructKeyExists(stObject, "thumbnailimagepath") AND stObject.thumbnailimagepath NEQ "">
-		<dt>#application.adminBundle[session.dmProfile.locale].thumbnailLabel#</dt>
-		<dd><img src="#application.url.webroot#/images/#stObject.thumbnail#"></dd>
-	</cfif>
-	<cfif stPermissions.iDeveloperPermission eq 1>
-		<dt>ObjectID</dt>
-		<dd>#stObject.objectid#</dd>
-	</cfif>
-	</dl>
+	<skin:view objectid="#stobject.objectid#" webskin="webtopOverview" />
+	
+	
 	<ul class="object-overview-actions">
 
 <!--- check user can edit Friendly URLs --->
