@@ -137,6 +137,11 @@
 				 ------------------------------------------>
 				<cfset application.bUseMediaArchive = attributes.bUseMediaArchive />
 			
+				<!---------------------------------------------- 
+				INITIALISE THE COAPIUTILITIES SINGLETON
+				----------------------------------------------->
+				<cfset application.coapi.coapiUtilities = createObject("component", "farcry.core.packages.coapi.coapiUtilities").init() />
+	
 		
 				<!--- Initialise the stPlugins structure that will hold all the plugin specific settings. --->
 				<cfset application.stPlugins = structNew() />
@@ -145,11 +150,6 @@
 				<!--- ENSURE SYSINFO IS UPDATED EACH INITIALISATION --->
 				<cfset application.sysInfo = structNew() />
 
-
-				<!--- INITIALISE COAPI UTILITIES --->				
-				<cfset application.coapi.coapiUtilities = createObject("component", "farcry.core.packages.coapi.coapiUtilities").init() />
-				
-				
 				<!--- CALL THE PROJECTS SERVER SPECIFIC VARIABLES. --->
 				<cfinclude template="/farcry/projects/#application.projectDirectoryName#/config/_serverSpecificVars.cfm" />
 				
@@ -189,6 +189,7 @@
 				<cfset ps.policyGroupTable = "dmPolicyGroup" />
 				<cfset ps.permissionBarnacleTable = "dmPermissionBarnacle" />
 				<cfset ps.externalGroupToPolicyGroupTable = "dmExternalGroupToPolicyGroup" />								
+
 				<!--------------------------------- 
 				INITIALISE DMSEC
 				 --------------------------------->
@@ -196,10 +197,9 @@
 
 
 				<!---------------------------------------------- 
-				INITIALISE THE COAPIADMIN SINGLETON 
+				INITIALISE THE COAPIADMIN SINGLETON
 				----------------------------------------------->
 				<cfset application.coapi.coapiadmin = createObject("component", "farcry.core.packages.coapi.coapiadmin").init() />
-	
 
 			
 				<!--------------------------------- 
