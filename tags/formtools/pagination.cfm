@@ -198,6 +198,7 @@ user defined functions
 		<cfscript>
 			stURL = Duplicate(url);
 			stURL = filterStructure(stURL,'Page');
+			stURL = filterStructure(stURL,'updateapp');
 			queryString=structToNamePairs(stURL);
 		</cfscript>
 		
