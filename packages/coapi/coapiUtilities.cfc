@@ -80,6 +80,14 @@
 		<cfreturn qgetType.typename>
 	</cffunction>
 	
+	<cffunction name="loadPlugin" access="public" output="false" returntype="void" hint="Loads a plugin; makes plugin active for application">
+		<cfthrow message="loadPlugin() has not been implemented." />
+	</cffunction>
 	
-	
+	<cffunction name="unloadPlugin" access="public" output="false" returntype="void" hint="Unloads a plugin; makes plugin inactive for application">
+		<cfargument name="plugin" required="true" type="string" hint="Name of the plugin to remove." />
+		<cfset var pos = listFind(application.plugins, arguments.plugin) />
+		<cfset listdeleteat(application.plugins, pos) />
+	</cffunction>
+
 </cfcomponent>
