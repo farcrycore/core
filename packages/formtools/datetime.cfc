@@ -28,8 +28,10 @@
 		
 		<cfcase value="dropdown">
 			<cfparam name="arguments.stMetadata.ftDateFormatMask" default="dd mmm yyyy">
-			<cfparam name="arguments.stMetadata.ftStartYear" default="#year(now())#">
-			<cfparam name="arguments.stMetadata.ftEndYear" default="#year(now()) - 100#">
+			<cfparam name="arguments.stMetadata.ftStartYearShift" default="0">
+			<cfparam name="arguments.stMetadata.ftEndYearShift" default="-100">
+			<cfparam name="arguments.stMetadata.ftStartYear" default="#year(now()) + arguments.stMetadata.ftStartYearShift#">
+			<cfparam name="arguments.stMetadata.ftEndYear" default="#year(now()) + arguments.stMetadata.ftEndYearShift#">
 			
 			<cfif arguments.stMetadata.ftStartYear gt arguments.stMetadata.ftEndYear>
 				<cfset step=-1 />
