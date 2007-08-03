@@ -145,6 +145,11 @@
 				<!--- ENSURE SYSINFO IS UPDATED EACH INITIALISATION --->
 				<cfset application.sysInfo = structNew() />
 
+
+				<!--- INITIALISE COAPI UTILITIES --->				
+				<cfset application.coapi.coapiUtilities = createObject("component", "farcry.core.packages.coapi.coapiUtilities").init() />
+				
+				
 				<!--- CALL THE PROJECTS SERVER SPECIFIC VARIABLES. --->
 				<cfinclude template="/farcry/projects/#application.projectDirectoryName#/config/_serverSpecificVars.cfm" />
 				
@@ -194,7 +199,6 @@
 				INITIALISE THE COAPIADMIN SINGLETON 
 				----------------------------------------------->
 				<cfset application.coapi.coapiadmin = createObject("component", "farcry.core.packages.coapi.coapiadmin").init() />
-				<cfset application.coapi.coapiUtilities = createObject("component", "farcry.core.packages.coapi.coapiUtilities").init() />
 	
 
 			
