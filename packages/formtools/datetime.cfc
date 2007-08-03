@@ -19,6 +19,7 @@
 		<cfset var locale = "">
 		<cfset var localeMonths = "">
 		<cfset var i = "">
+		<cfset var step=1>
 		
 		<cfparam name="arguments.stMetadata.ftRenderType" default="calendar">
 		
@@ -29,6 +30,10 @@
 			<cfparam name="arguments.stMetadata.ftDateFormatMask" default="dd mmm yyyy">
 			<cfparam name="arguments.stMetadata.ftStartYear" default="#year(now())#">
 			<cfparam name="arguments.stMetadata.ftEndYear" default="#year(now()) - 100#">
+			
+			<cfif arguments.stMetadata.ftStartYear gt arguments.stMetadata.ftEndYear>
+				<cfset step=-1 />
+			</cfif>
 			
 			<cfif isDefined("session.dmProfile.locale") AND len(session.dmProfile.locale)>
 				<cfset locale = session.dmProfile.locale>
@@ -59,7 +64,7 @@
 			
 				<select name="#arguments.fieldname#Year" id="#arguments.fieldname#Year">
 					<option value="">--</option>
-					<cfloop from="#arguments.stMetadata.ftStartYear#" to="#arguments.stMetadata.ftEndYear#" index="i" step="-1">
+					<cfloop from="#arguments.stMetadata.ftStartYear#" to="#arguments.stMetadata.ftEndYear#" index="i" step="#step#">
 						<option value="#i#"<cfif isDate(arguments.stMetadata.value) AND Year(arguments.stMetadata.value) EQ i> selected="selected"</cfif>>#i#</option>
 					</cfloop>
 				</select>	
