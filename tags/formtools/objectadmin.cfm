@@ -571,7 +571,7 @@ user --->
 	</cfscript>
 	<cfsavecontent variable="html_buttonbar">
 	
-	<ft:farcryButtonPanel>
+	<ft:farcryButtonPanel indentForLabel="false">
 	<cfloop from="1" to="#arraylen(attributes.aButtons)#" index="i">
 		
 		<cfif attributes.lButtons EQ "*" or listFindNoCase(attributes.lButtons,attributes.aButtons[i].value)>
