@@ -70,6 +70,11 @@ $Developer: $
 	<cfset request.ftJoin = listFirst(PrimaryPackage.stProps[url.primaryFieldname].metadata.ftJoin) />
 </cfif>
 
+<cfif structKeyExists(application.stcoapi[url.PrimaryTypename].stProps[url.PrimaryFieldname].metadata, "ftInstantLibraryUpdate") >
+	<cfset InstantLibraryUpdate = application.stcoapi[url.PrimaryTypename].stProps[url.PrimaryFieldname].metadata.ftInstantLibraryUpdate />
+<cfelse>
+	<cfset InstantLibraryUpdate = true />
+</cfif>
 
 
 
@@ -751,17 +756,27 @@ GENERATE THE LIBRARY PICKER
 			</tr>
 			</table>
 			</cfoutput>
-			
-			<cfoutput>				
-			<div>
-				<ft:farcryButton type="button" value="Close" onclick="self.blur();window.close();return false;" />	
-			</div>	
-			</cfoutput>
+						
+			<ft:farcryButtonPanel indentForLabel="false">
+				<ft:farcryButton type="button" value="Save & Close" confirmText="You are about to save your changes. Please wait until the library window closes." onclick="needToConfirm = false;$(this).disabled=true;opener.libraryCallbackArray('#url.primaryFormFieldname#','sort',Sortable.sequence('sortableListTo'),'#application.url.webroot#',window);" />
+				<ft:farcryButton type="button" value="Cancel" confirmText="Are you sure you want to cancel?" onclick="needToConfirm = false;self.blur();window.close();return false;" />
+			</ft:farcryButtonPanel>	
 			
 			
 			<cfset Request.InHead.ScriptaculousEffects = 1>
 			<cfoutput>
 			<script type="text/javascript">
+				<cfif NOT InstantLibraryUpdate >
+					  var needToConfirm = false;
+					
+					  window.onbeforeunload = confirmExit;
+					  function confirmExit()
+					  {
+					    if (needToConfirm)
+					     opener.libraryCallbackArray('#url.primaryFormFieldname#','sort',Sortable.sequence('sortableListTo'),'#application.url.webroot#');
+					     needToConfirm = false;
+					  }
+				</cfif>
 			 // <![CDATA[
 				Sortable.create("sortableListFrom",{
 					dropOnEmpty:true,
@@ -777,14 +792,17 @@ GENERATE THE LIBRARY PICKER
 						containment:["sortableListFrom","sortableListTo"],
 						constraint:false,
 						onUpdate:function(element) {
-							opener.libraryCallbackArray('#url.primaryFormFieldname#','sort',Sortable.sequence('sortableListTo'),'#application.url.webroot#');
+							<cfif InstantLibraryUpdate >
+								opener.libraryCallbackArray('#url.primaryFormFieldname#','sort',Sortable.sequence('sortableListTo'),'#application.url.webroot#');
+							<cfelse>
+								needToConfirm = true;
+							</cfif>							
 							new Effect.Highlight('sortableListTo',{startcolor:'##FFECD9',duration: 2});
-					             				
 						}
 					});
 					
 					//call on initial page load
-					opener.libraryCallbackArray('#url.primaryFormFieldname#','sort',Sortable.sequence('sortableListTo'),'#application.url.webroot#');
+					<!--- opener.libraryCallbackArray('#url.primaryFormFieldname#','sort',Sortable.sequence('sortableListTo'),'#application.url.webroot#'); --->
 					
 					
 				<cfelse>

@@ -50,7 +50,7 @@
 								
 							}
 									
-						function libraryCallbackArray(fieldname,action,ids,virtualDir){
+						function libraryCallbackArray(fieldname,action,ids,virtualDir,callingWindow){
 							$(fieldname).value = ids;						
 							if(virtualDir==null){virtualDir="";}				
 							var objParams = eval('obj' + fieldname);
@@ -59,7 +59,7 @@
 								sURLParams+= "&" + i + "=" + objParams[i];							
 							}
 														
-							
+							$(fieldname + '-libraryCallback').innerHTML = 'PLEASE WAIT... CURRENTLY UPDATING';
 							new Ajax.Updater(fieldname + '-libraryCallback', virtualDir+'/farcry/facade/library.cfc?method=ajaxUpdateArray&noCache=' + Math.random(), {
 									//onLoading:function(request){Element.show('indicator')},
 									onComplete:function(request){
@@ -74,6 +74,7 @@
 											    }
 											  });
 											$(fieldname).value = Sortable.sequence(fieldname + '_list');
+											if(callingWindow!=null){callingWindow.close();}	
 										// ]]>
 									},
 									
