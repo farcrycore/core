@@ -19,6 +19,8 @@
 <cfparam name="attributes.validate" default="true">
 <cfparam name="attributes.bInPanel" default="">
 <cfparam name="attributes.src" default="">
+<cfparam name="attributes.url" default="">
+<cfparam name="attributes.title" default="">
 
 
 
@@ -37,7 +39,7 @@
 	
 	<cfif len(Attributes.ConfirmText)>
 		<!--- Confirm the click before submitting --->
-		<cfset attributes.OnClick = "#attributes.OnClick#;if(confirm('#Attributes.ConfirmText#')) {dummyconfirmvalue=1} else {return false};">
+		<cfset attributes.OnClick = "if(confirm('#Attributes.ConfirmText#')) {dummyconfirmvalue=1} else {return false};#attributes.OnClick#;">
 	</cfif>	
 	 
 	
@@ -47,10 +49,13 @@
 	
 	<cfif Request.farcryForm.Validation AND Attributes.validate>
 		<!--- Confirm the click before submitting --->
-		<cfset attributes.OnClick = "#attributes.OnClick#;return realeasyvalidation#Request.farcryForm.Name#.validate();">
+		<cfset attributes.OnClick = "#attributes.OnClick#;if(realeasyvalidation#Request.farcryForm.Name#.validate()) {dummyconfirmvalue=1} else {return false};">
 
 	</cfif>	
 
+	<cfif len(attributes.url)>
+		<cfset attributes.OnClick = "#attributes.OnClick#;window.location='#attributes.url#';return false;">
+	</cfif>
 
 	<cfif not len(attributes.bInPanel)>
 		<cfset ParentTag = GetBaseTagList()>
@@ -70,10 +75,13 @@
 			<cfoutput>
 				<style type="text/css">
 				
-				.x-btn {
+				table.x-btn {
 					width: 75px;
 					float:left;
 					margin-right:15px;
+					border-width:0px;
+					padding:0px;
+					margin:0px 10px 0px 0px;
 				}
 				
 				input.x-btn-text{
@@ -135,12 +143,12 @@
 			
 			<cfset buttonID = createUUID() />
 			<cfoutput>
-			<table id="#buttonID#" class="x-btn-wrap x-btn" border="0" cellpadding="0" cellspacing="0" onmouseover="$(this).addClassName('x-btn-over');" onmouseout="$(this).removeClassName('x-btn-over');" style="border-width:0px;width:0px;padding:0px;margin:0px 10px 0px 0px;">
+			<table id="#buttonID#" class="x-btn-wrap x-btn" border="0" cellpadding="0" cellspacing="0" onmouseover="$(this).addClassName('x-btn-over');" onmouseout="$(this).removeClassName('x-btn-over');" style="#attributes.style#">
 				<tbody>
 					<tr>
-						<td class="x-btn-left" style="border-width:0px;height:21px;width:0px;padding:0px;margin:0px;"><i>&nbsp;</i></td>
-						<td class="x-btn-center" style="border-width:0px;height:21px;width:0px;padding:0px;margin:0px;"><input name="FarcryFormSubmitButton" value="#attributes.Value#" type="#attributes.Type#" onclick="#attributes.Onclick#" class="x-btn-text #attributes.Class#" style="#attributes.Style#" /></td>
-						<td class="x-btn-right" style="border-width:0px;height:21px;width:0px;padding:0px;margin:0px;"><i>&nbsp;</i></td>
+						<td class="x-btn-left" style="border-width:0px;height:21px;width:1px;padding:0px;margin:0px;"><i>&nbsp;</i></td>
+						<td class="x-btn-center" style="border-width:0px;height:21px;padding:0px;margin:0px;"><input name="FarcryFormSubmitButton" value="#attributes.Value#" type="#attributes.Type#" onclick="#attributes.Onclick#" class="x-btn-text #attributes.Class#" style="#attributes.Style#" title="#attributes.title#"  /></td>
+						<td class="x-btn-right" style="border-width:0px;height:21px;width:1px;padding:0px;margin:0px;"><i>&nbsp;</i></td>
 					</tr>
 				</tbody>
 			</table>
