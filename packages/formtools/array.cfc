@@ -412,6 +412,7 @@
 		<cfset var dataLabel = "" />
 		<cfset var dataSEQ = "" />
 		<cfset var oData = "" />
+		<cfset var stO = structNew() />
 		
 		
 		
@@ -524,10 +525,12 @@
 							</cfif>
 						</cfif> 
 						<cfif NOT len(HTML)>
-							<cfset oData = createObject("component",application.stcoapi[dataTypename].packagepath) />
-							<cfset HTML = oData.getView(objectID="#dataID#", template="#arguments.stMetadata.ftLibrarySelectedWebskin#", alternateHTML=variables.alternateHTML) />
+							<cfif not structKeyExists(stO, dataTypename) >
+								<cfset stO[dataTypename] = createObject("component",application.stcoapi[dataTypename].packagepath) />
+							</cfif>
+							<cfset HTML = stO[dataTypename].getView(objectID="#dataID#", template="#arguments.stMetadata.ftLibrarySelectedWebskin#", alternateHTML=variables.alternateHTML) />
 							<cfif NOT len(trim(HTML))>
-								<cfset stTemp = oData.getData(objectid=dataID) />
+								<cfset stTemp = stO[dataTypename].getData(objectid=dataID) />
 								<cfif structKeyExists(stTemp, "label") AND len(stTemp.label)>
 									<cfset HTML = stTemp.label />
 								<cfelse>
