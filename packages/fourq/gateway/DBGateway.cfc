@@ -247,16 +247,16 @@
 		We could use a MAX(Seq) but unsure about DB compatibility.
 		 --->
 		<cfquery datasource="#variables.dsn#" name="qCurrentArrayRecords">
-	    SELECT parentID
+	    SELECT *
 		FROM #variables.dbowner##arguments.tableName#
 	    WHERE parentID = '#arguments.objectid#'
 	    </cfquery>
 		
 		<cfloop from ="1" to="#arrayLen(aProps)#" index="i">
 		
-			<cfquery datasource="#variables.dsn#" name="qDuplicate">
+			<cfquery dbtype="query" name="qDuplicate">
 			SELECT * 
-			FROM #variables.dbowner##tablename#
+			FROM qCurrentArrayRecords
 			WHERE parentID = '#arguments.objectid#'
 			<cfif structKeyExists(arguments.aProps[i], "objectid")>
 				AND objectid = <cfqueryparam value="#arguments.aProps[i].objectid#" cfsqltype="CF_SQL_VARCHAR">
@@ -272,7 +272,7 @@
 				<!--- 
 				IF THE ARRAY TABLE HAS HAD A CFC CREATED FOR IT IN ORDER TO EXTEND IT THEN WE USE STANDARD GET, SET & DELETE.
 				 --->
-				<cfif structKeyExists(application, "types") AND structKeyExists(application.types, tableName)>
+				<cfif structKeyExists(application, "types") AND structKeyExists(application.types, tableName) AND arguments.aProps[i].seq NEQ i>
 					
 					<!--- Use the extended arrayTable's' objectid and Set the seq to the new position in the array --->
 					<cfset arguments.aProps[i].objectid = qDuplicate.objectid />	
