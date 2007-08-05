@@ -57,6 +57,9 @@
 					<cfcase value="longtext,longchar">
 						<!--- No Default Allowed on BLOB fields --->
 					</cfcase>
+					<cfcase value="datetime,date,timestamp,time">
+						'#SQLArray[i].defaultValue#'
+					</cfcase>
 					<cfdefaultcase>
 						#SQLArray[i].defaultValue#
 					</cfdefaultcase>
