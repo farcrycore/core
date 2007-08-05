@@ -77,6 +77,8 @@
 	<cfset var stwizard = structNew() />
 
 
+	<cfset session.ajaxUpdatingArray = true />
+	
 	<cfif arguments.Action NEQ "Refresh">
 	
 		<cfif len(arguments.wizardID)>
@@ -160,7 +162,8 @@
 	<cfelse>
 		<ft:object objectID="#arguments.PrimaryObjectID#" lFields="#arguments.PrimaryFieldName#" stPropMetadata="#stPropMetadata#" inTable=0 IncludeLabel=0 IncludeFieldSet=0 r_stFields="stFields" IncludeLibraryWrapper="false" packageType="#arguments.packageType#" />
 	</cfif>	
-
+	
+	<cfset session.ajaxUpdatingArray = false />
 
 	<cfoutput>
 	#stFields[arguments.PrimaryFieldName].HTML#

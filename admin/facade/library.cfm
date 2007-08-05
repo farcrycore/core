@@ -86,6 +86,16 @@ $Developer: $
 </cfscript>
 
 
+<!--- 
+THE SESSION.AJAXUPDATINGARRAY VARIABLE IS USED TO KEEP TRACK OF THE SYSTEM UPDATING THE ARRAY PROPERTY IN THE BACKGROUND.
+THIS IS AN ATTEMPT TO CONTROL PEOPLE UPDATING THE ARRAY WHILE IT IS STILL BEING UPDATED BY THE AJAX CALL
+IT IS SET IN  AJAXUPDATEARRAY FUNCTION OF THE LIBRARY.CFC
+ --->
+<ft:processForm action="Force Refresh">
+	<cfset session.ajaxUpdatingArray = false />
+</ft:processForm>
+
+
 
 <ft:processForm action="Save Changes" url="#cgi.script_name#?#querystring#&ftJoin=#request.ftJoin#&librarySection=attach">
 	<ft:processFormObjects typename="#request.ftJoin#">
@@ -605,163 +615,192 @@ GENERATE THE LIBRARY PICKER
 			
 			<cfoutput>
 			<table border="3" style="width:100%;">
-			<tr>
-				<td style="width:50%;"><h3>Selected <cfif URL.LibraryType EQ "UUID"><em>(only 1 permitted)</em></cfif></h3></td>
-				<td style="width:50%;"><h3>Drag To Select</h3></td>
-			</tr>
-			<tr>
-				<td style="background-color:##FFEBD7;" id="sortableListTo" class="arrayDetailView">
-					
-					
-					
-					
-				<!--- 
-				<cfif URL.LibraryType EQ "array">
-					 <div id="sortableListTo" class="arrayDetailView" style="background-color:##F1F1F1;height:100% !important;border:1px solid red;"> 
-				<cfelse>
-					 <div id="sortableListTo" style="background-color:##F1F1F1;min-height:500px;_height:500px;"> 
-				</cfif>	 
-				--->
-		
-			</cfoutput>	
-			
-			
-					<cfset variables.QueryString = structToNamePairs(filterStructure(Duplicate(url), "librarySection")) />
+			</cfoutput>
 
-					
-				
+
+			<!--- 
+			IF THE SESSION.AJAXUPDATINGARRAY VARIABLE IS SET AND TRUE IT MEANS THE AJAX UPDATE IS STILL RUNNING. THIS IS POSSIBLE IN VERY LONG ARRAYS.
+			 --->
+			<cfif structKeyExists(session, "ajaxUpdatingArray") AND session.ajaxUpdatingArray EQ true>
+				<tr>
+					<td colspan="2">
+						<ft:farcryButtonPanel>
+							<ft:farcryButton value="Still Updating... Try Again" url="#cgi.SCRIPT_NAME#?#cgi.QUERY_STRING#" />
+							<ft:farcryButton value="Force Refresh" confirmText="Are you sure you want to force the refresh" />
+						</ft:farcryButtonPanel>
+					</td>
+				</tr>
+			<cfelse>
+			
+				<cfoutput>
+				<tr>
+					<td style="width:50%;"><h3>Selected <cfif URL.LibraryType EQ "UUID"><em>(only 1 permitted)</em></cfif></h3></td>
+					<td style="width:50%;"><h3>Drag To Select</h3></td>
+				</tr>
+				<tr>
+					<td style="background-color:##FFEBD7;" id="sortableListTo" class="arrayDetailView">
+						
+						
+						
+						
+					<!--- 
 					<cfif URL.LibraryType EQ "array">
-						<cfloop from="1" to="#arrayLen(stPrimary[url.primaryFieldName])#" index="i">
-							
-							<cfset stCurrentArrayItem = stPrimary[url.primaryFieldName][i] />
-							<cfset HTML = '' />
-
-							<!--- if typename is missing from query (ie. array data is corrupted) --->
-							<cfif NOT len(stCurrentArrayItem.typename)>
-								<cfset tmpTypename=createobject("component", "farcry.core.packages.fourq.fourq").findtype(objectid=stCurrentArrayItem.data) />
-								<cfset stCurrentArrayItem.typename = tmpTypename />
-								<cfif NOT len(tmpTypename)>
-									<cfset HTML = "Object Not Found">
+						 <div id="sortableListTo" class="arrayDetailView" style="background-color:##F1F1F1;height:100% !important;border:1px solid red;"> 
+					<cfelse>
+						 <div id="sortableListTo" style="background-color:##F1F1F1;min-height:500px;_height:500px;"> 
+					</cfif>	 
+					--->
+			
+				</cfoutput>	
+				
+				
+						<cfset variables.QueryString = structToNamePairs(filterStructure(Duplicate(url), "librarySection")) />
+	
+						
+					
+						<cfif URL.LibraryType EQ "array">
+							<cfloop from="1" to="#arrayLen(stPrimary[url.primaryFieldName])#" index="i">
+								
+								<cfset stCurrentArrayItem = stPrimary[url.primaryFieldName][i] />
+								<cfset HTML = '' />
+	
+								<!--- if typename is missing from query (ie. array data is corrupted) --->
+								<cfif NOT len(stCurrentArrayItem.typename)>
+									<cfset tmpTypename=createobject("component", "farcry.core.packages.fourq.fourq").findtype(objectid=stCurrentArrayItem.data) />
+									<cfset stCurrentArrayItem.typename = tmpTypename />
+									<cfif NOT len(tmpTypename)>
+										<cfset HTML = "Object Not Found">
+									</cfif>
+								</cfif>	
+	
+								<cfif NOT Len(trim(HTML))>
+									<cfset HTML = stJoinObjects[stCurrentArrayItem.typename].getView(objectid=stCurrentArrayItem.data, template="librarySelected", alternateHTML="") />
+									<cfif NOT len(trim(HTML))>
+										<cfset stTemp = stJoinObjects[stCurrentArrayItem.typename].getData(objectid=stCurrentArrayItem.data) />
+										<cfif structKeyExists(stTemp, "label") AND len(stTemp.label)>
+											<cfset HTML = stTemp.label />
+										<cfelse>
+											<cfset HTML = stTemp.objectid />
+										</cfif>
+									</cfif>
 								</cfif>
-							</cfif>	
-
-							<cfif NOT Len(trim(HTML))>
-								<cfset HTML = stJoinObjects[stCurrentArrayItem.typename].getView(objectid=stCurrentArrayItem.data, template="librarySelected", alternateHTML="") />
+								<!------------------------------------------------------------------------
+								THE ID OF THE LIST ELEMENT MUST BE "FIELDNAME_OBJECTID" 
+								BECAUSE THE JAVASCRIPT STRIPS THE "FIELDNAME_" TO DETERMINE THE OBJECTID
+								 ------------------------------------------------------------------------->			
+								<cfoutput>
+								<div id="sortableListTo_#stCurrentArrayItem.data#:#stCurrentArrayItem.seq#" class="sortableHandle">
+									<div class="arrayDetail">
+										<div>
+											#HTML#
+											<!--- <cfif listFindNoCase(url.ftAllowLibraryEdit,stCurrentArrayItem.typename)>
+											
+												<cfset editLink = "#cgi.SCRIPT_NAME#?#variables.QueryString#&librarySection=edit&editObjectid=#stCurrentArrayItem.data#" />
+												<span  style="border:1px solid red;"><a href="#editLink#">edit</a></span>
+											</cfif> --->
+										</div>
+									</div>								
+								</div>
+								</cfoutput>
+							</cfloop>
+						<cfelse>
+							<cfif listLen(lBasketIDs)>
+							
+	
+								<cfset HTML = oData.getView(objectid=stPrimary[url.primaryFieldName], template="librarySelected", alternateHTML="") />
 								<cfif NOT len(trim(HTML))>
-									<cfset stTemp = stJoinObjects[stCurrentArrayItem.typename].getData(objectid=stCurrentArrayItem.data) />
+									<cfset stTemp = oData.getData(objectid=stPrimary[url.primaryFieldName]) />
 									<cfif structKeyExists(stTemp, "label") AND len(stTemp.label)>
 										<cfset HTML = stTemp.label />
 									<cfelse>
 										<cfset HTML = stTemp.objectid />
 									</cfif>
-								</cfif>
-							</cfif>
-							<!------------------------------------------------------------------------
-							THE ID OF THE LIST ELEMENT MUST BE "FIELDNAME_OBJECTID" 
-							BECAUSE THE JAVASCRIPT STRIPS THE "FIELDNAME_" TO DETERMINE THE OBJECTID
-							 ------------------------------------------------------------------------->			
-							<cfoutput>
-							<div id="sortableListTo_#stCurrentArrayItem.data#:#stCurrentArrayItem.seq#" class="sortableHandle">
-								<div class="arrayDetail">
-									<div>
-										#HTML#
-										<!--- <cfif listFindNoCase(url.ftAllowLibraryEdit,stCurrentArrayItem.typename)>
-										
-											<cfset editLink = "#cgi.SCRIPT_NAME#?#variables.QueryString#&librarySection=edit&editObjectid=#stCurrentArrayItem.data#" />
-											<span  style="border:1px solid red;"><a href="#editLink#">edit</a></span>
-										</cfif> --->
-									</div>
-								</div>								
-							</div>
-							</cfoutput>
-						</cfloop>
-					<cfelse>
-						<cfif listLen(lBasketIDs)>
-						
-
-							<cfset HTML = oData.getView(objectid=stPrimary[url.primaryFieldName], template="librarySelected", alternateHTML="") />
-							<cfif NOT len(trim(HTML))>
-								<cfset stTemp = oData.getData(objectid=stPrimary[url.primaryFieldName]) />
-								<cfif structKeyExists(stTemp, "label") AND len(stTemp.label)>
-									<cfset HTML = stTemp.label />
-								<cfelse>
-									<cfset HTML = stTemp.objectid />
-								</cfif>
-							</cfif>		
-							<!------------------------------------------------------------------------
-							THE ID OF THE LIST ELEMENT MUST BE "FIELDNAME_OBJECTID" 
-							BECAUSE THE JAVASCRIPT STRIPS THE "FIELDNAME_" TO DETERMINE THE OBJECTID
-							 ------------------------------------------------------------------------->			
-							<cfoutput>
-							<div>
-								#HTML#
-								<!--- <cfif listFindNoCase(url.ftAllowLibraryEdit,request.ftJoin)>								
-									<cfset editLink = "#cgi.SCRIPT_NAME#?#variables.QueryString#&librarySection=edit&editObjectid=#stPrimary[url.primaryFieldName]#" />
-									<div><a href="#editLink#">edit</a></div>
-								</cfif> --->
-								
-							</div>
-							</cfoutput>
-						</cfif>
-					</cfif>
-					
-				
-				<cfoutput>
-				<!--- </div> --->
-				</td>
-				<td>
-				</cfoutput>
-					<ft:pagination qRecordSet="#stLibraryData.q#" typename="#request.ftJoin#" submissionType="URL" recordsPerPage="#stLibraryData.recordsPerPage#" totalRecords="#stLibraryData.CountAll#" pageLinks="5" top="true" bottom="true">
-					<!--- <ft:pagination qRecordSet="#stLibraryData.q#" typename="#request.ftJoin#" submissionType="URL" recordsPerPage="#stLibraryData.recordsPerPage#" totalRecords="#stLibraryData.CountAll#" currentpage="#stLibraryData.currentPage#" pageLinks="5" top="true" bottom="true"> --->
-				<cfoutput>
-					<div id="sortableListFrom" class="arrayDetailView" style="border:1px solid ##F1F1F1;min-height:500px;_height:500px;">
-				</cfoutput>
-					
-						<ft:paginateLoop r_stObject="stLibraryObject" bTypeAdmin="false">
-	<!--- 					<ft:paginateLoop r_stObject="stLibraryObject" bTypeAdmin="false" recordsPerPage="#stLibraryData.recordsPerPage#"> --->
-						<!---<ws:paginateRecords r_stRecord="stObject"> --->
-							<cfif isDefined("stLibraryObject.stObject.label") AND len(stLibraryObject.stObject.label)>
-								<cfset variables.alternateHTML = stLibraryObject.stObject.Label />
-							<cfelse>
-								<cfset variables.alternateHTML = stLibraryObject.stObject.ObjectID />
-							</cfif>					
-							<cfset HTML = oData.getView(stObject=stLibraryObject.stObject, template="librarySelected", alternateHTML=variables.alternateHTML) />
+								</cfif>		
+								<!------------------------------------------------------------------------
+								THE ID OF THE LIST ELEMENT MUST BE "FIELDNAME_OBJECTID" 
+								BECAUSE THE JAVASCRIPT STRIPS THE "FIELDNAME_" TO DETERMINE THE OBJECTID
+								 ------------------------------------------------------------------------->			
+								<cfoutput>
+								<div>
+									#HTML#
+									<!--- <cfif listFindNoCase(url.ftAllowLibraryEdit,request.ftJoin)>								
+										<cfset editLink = "#cgi.SCRIPT_NAME#?#variables.QueryString#&librarySection=edit&editObjectid=#stPrimary[url.primaryFieldName]#" />
+										<div><a href="#editLink#">edit</a></div>
+									</cfif> --->
 									
-							<!------------------------------------------------------------------------
-							THE ID OF THE LIST ELEMENT MUST BE "FIELDNAME_OBJECTID" 
-							BECAUSE THE JAVASCRIPT STRIPS THE "FIELDNAME_" TO DETERMINE THE OBJECTID
-							 ------------------------------------------------------------------------->			
-							<cfoutput>
-								<cfif URL.LibraryType EQ "array">
-									<div id="sortableListFrom_#stLibraryObject.stObject.ObjectID#" class="sortableHandle">
-								<cfelse>
-									<div id="#stLibraryObject.stObject.ObjectID#" class="sortableHandle">
-								</cfif>
-									<div class="arrayDetail">
-										<p>#HTML#</p>
-									</div>								
 								</div>
-							</cfoutput>
-						<!---</ws:paginateRecords> --->
-						</ft:paginateLoop>
+								</cfoutput>
+							</cfif>
+						</cfif>
 						
-				<cfoutput>
-					</div>
-				</cfoutput>
 					
-					</ft:pagination>
-					
-			<cfoutput>			
-				</td>
-			</tr>
+					<cfoutput>
+					<!--- </div> --->
+					</td>
+					<td>
+					</cfoutput>	
+							
+						
+						<ft:pagination qRecordSet="#stLibraryData.q#" typename="#request.ftJoin#" submissionType="URL" recordsPerPage="#stLibraryData.recordsPerPage#" totalRecords="#stLibraryData.CountAll#" pageLinks="5" top="true" bottom="true">
+						<!--- <ft:pagination qRecordSet="#stLibraryData.q#" typename="#request.ftJoin#" submissionType="URL" recordsPerPage="#stLibraryData.recordsPerPage#" totalRecords="#stLibraryData.CountAll#" currentpage="#stLibraryData.currentPage#" pageLinks="5" top="true" bottom="true"> --->
+						<cfoutput>
+							<div id="sortableListFrom" class="arrayDetailView" style="border:1px solid ##F1F1F1;min-height:500px;_height:500px;">
+						</cfoutput>
+							
+								<ft:paginateLoop r_stObject="stLibraryObject" bTypeAdmin="false">
+			<!--- 					<ft:paginateLoop r_stObject="stLibraryObject" bTypeAdmin="false" recordsPerPage="#stLibraryData.recordsPerPage#"> --->
+								<!---<ws:paginateRecords r_stRecord="stObject"> --->
+									<cfif isDefined("stLibraryObject.stObject.label") AND len(stLibraryObject.stObject.label)>
+										<cfset variables.alternateHTML = stLibraryObject.stObject.Label />
+									<cfelse>
+										<cfset variables.alternateHTML = stLibraryObject.stObject.ObjectID />
+									</cfif>					
+									<cfset HTML = oData.getView(stObject=stLibraryObject.stObject, template="librarySelected", alternateHTML=variables.alternateHTML) />
+											
+									<!------------------------------------------------------------------------
+									THE ID OF THE LIST ELEMENT MUST BE "FIELDNAME_OBJECTID" 
+									BECAUSE THE JAVASCRIPT STRIPS THE "FIELDNAME_" TO DETERMINE THE OBJECTID
+									 ------------------------------------------------------------------------->			
+									<cfoutput>
+										<cfif URL.LibraryType EQ "array">
+											<div id="sortableListFrom_#stLibraryObject.stObject.ObjectID#" class="sortableHandle">
+										<cfelse>
+											<div id="#stLibraryObject.stObject.ObjectID#" class="sortableHandle">
+										</cfif>
+											<div class="arrayDetail">
+												<p>#HTML#</p>
+											</div>								
+										</div>
+									</cfoutput>
+								<!---</ws:paginateRecords> --->
+								</ft:paginateLoop>
+								
+						<cfoutput>
+							</div>
+						</cfoutput>
+							
+						</ft:pagination>
+				<cfoutput>			
+					</td>
+				</tr>
+			</cfoutput>
+			
+			
+			</cfif>
+			
+			<cfoutput>
 			</table>
 			</cfoutput>
-						
-			<ft:farcryButtonPanel indentForLabel="false">
-				<ft:farcryButton type="button" value="Save & Close" confirmText="You are about to save your changes. Please wait until the library window closes." onclick="needToConfirm = false;$(this).disabled=true;opener.libraryCallbackArray('#url.primaryFormFieldname#','sort',Sortable.sequence('sortableListTo'),'#application.url.webroot#',window);" />
-				<ft:farcryButton type="button" value="Cancel" confirmText="Are you sure you want to cancel?" onclick="needToConfirm = false;self.blur();window.close();return false;" />
-			</ft:farcryButtonPanel>	
+				
 			
+			<cfif structKeyExists(session, "ajaxUpdatingArray") AND session.ajaxUpdatingArray EQ true>	
+				<!--- do nothing --->
+			<cfelse>	
+				<ft:farcryButtonPanel indentForLabel="false">
+					<ft:farcryButton type="button" value="Save & Close" confirmText="You are about to save your changes. Please wait until the library window closes." onclick="needToConfirm = false;$(this).disabled=true;opener.libraryCallbackArray('#url.primaryFormFieldname#','sort',Sortable.sequence('sortableListTo'),'#application.url.webroot#',window);" />
+					<ft:farcryButton type="button" value="Cancel" confirmText="Are you sure you want to cancel?" onclick="needToConfirm = false;self.blur();window.close();return false;" />
+				</ft:farcryButtonPanel>	
+			</cfif>
 			
 			<cfset Request.InHead.ScriptaculousEffects = 1>
 			<cfoutput>
