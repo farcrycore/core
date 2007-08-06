@@ -114,7 +114,7 @@ SAMPLE USAGE:
 
 <!--- return to caller scope or output inline --->
 <cfif len(attributes.r_html)>
-	<cfset setVariable(caller[attributes.r_html], html) />
+	<cfset caller[attributes.r_html] = html />
 <cfelse>
 	<cfoutput>#html#</cfoutput>	
 </cfif>
