@@ -298,7 +298,7 @@ $out:$
 		</cfif>
 		<cfif isDefined("variables.stPlaceInHead.lightboxCSS") AND variables.stPlaceInHead.lightboxCSS>
 			<cfoutput>
-				<link rel="stylesheet" href="#application.url.webroot#/js/lightbox/css/lightbox.css" type="text/css" media="screen" /></cfoutput>
+				<link rel="stylesheet" href="#application.url.farcry#/css/lightbox/lightbox.css" type="text/css" media="screen" /></cfoutput>
 		</cfif>
 		<cfif isDefined("variables.stPlaceInHead.TabsJS") AND variables.stPlaceInHead.TabsJS>
 			<cfoutput>
