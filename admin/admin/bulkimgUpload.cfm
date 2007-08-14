@@ -43,8 +43,3 @@
 	
 </cfif>
 
-<cfsavecontent variable="urls">
-	<cfdump var="#stResult#">
-</cfsavecontent>
-
-<cffile action="write" file="/farcry/projects/eureka/www/testme.htm" output="#urls#" >
