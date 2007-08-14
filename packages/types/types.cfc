@@ -1073,8 +1073,7 @@ default handlers
 			
 			
 			<ft:form>
-		
-				<cfif qFieldSets.recordcount GT 1>
+				<cfif qFieldSets.recordcount GTE 1>
 					
 					<cfloop query="qFieldSets">
 						<cfquery dbtype="query" name="qFieldset">

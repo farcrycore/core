@@ -22,12 +22,12 @@ $Developer: Brendan Sisson (brendan@daemon.com.au) $
 <!------------------------------------------------------------------------
 type properties
 ------------------------------------------------------------------------->
-<cfproperty name="title" type="nstring" hint="Meaningful reference title for include file" required="no" default="" ftlabel="Title" ftvalidation="required" /> 
-<cfproperty name="teaser" type="nstring" hint="A brief description of the nature of the include file" required="no" default="" ftType="longchar" ftlabel="Teaser" />  
-<cfproperty name="displayMethod" type="string" hint="" required="No" default="" ftType="webskin" ftPrefix="displayPage" ftlabel="Content Template" /> 
-<cfproperty name="include" type="string" hint="The name of the include file" required="No" default="" ftType="list" ftListData="getIncludeList" ftLabel="Included CF Template" /> 
-<cfproperty name="teaserImage" type="uuid" hint="UUID of image to display in teaser" required="no" default="" fttype="uuid" ftjoin="dmimage" ftlabel="Teaser Image">
-<cfproperty name="catInclude" type="string" hint="category of the include" required="no" default="" ftType="category" ftlabel="Categorisation" />
+<cfproperty ftSeq="1" ftFieldset="Include Details" name="title" type="nstring" hint="Meaningful reference title for include file" required="no" default="" ftlabel="Title" ftvalidation="required" /> 
+<cfproperty ftSeq="2" ftFieldset="Include Details" name="teaser" type="nstring" hint="A brief description of the nature of the include file" required="no" default="" ftType="longchar" ftlabel="Teaser" />  
+<cfproperty ftSeq="3" ftFieldset="Include Details" name="teaserImage" type="uuid" hint="UUID of image to display in teaser" required="no" default="" fttype="uuid" ftjoin="dmimage" ftlabel="Teaser Image">
+<cfproperty ftSeq="4" ftFieldset="Include Details" name="displayMethod" type="string" hint="" required="No" default="" ftType="webskin" ftPrefix="displayPage" ftlabel="Content Template" /> 
+<cfproperty ftSeq="5" ftFieldset="Include Details" name="include" type="string" hint="The name of the include file" required="No" default="" ftType="list" ftListData="getIncludeList" ftLabel="Included CF Template" /> 
+<cfproperty ftSeq="6" ftFieldset="Include Details" name="catInclude" type="string" hint="category of the include" required="no" default="" ftType="category" ftlabel="Categorisation" />
 
 <!--- system only properties --->
 <cfproperty name="status" type="string" hint="Status of file - draft or approved" required="No" default="draft">
@@ -37,39 +37,6 @@ type properties
 
 
 <!--- Object Methods --->
-
-<cffunction name="edit" access="public">
-	<cfargument name="objectid" required="yes" type="UUID">
-	
-	<!--- getData for object edit --->
-	<cfset stObj = this.getData(arguments.objectid)>
-	<cfinclude template="_dmInclude/edit.cfm">
-</cffunction>
-
-<cffunction access="public" name="getIncludes" returntype="query" hint="returns a single column query (column name 'include') of available includes.">
-	<!--- TODO : can't hardcode path --->
-	<cfset includePath = application.path.project & "/includedObj">
-	<cfif NOT directoryExists(includePath)>
-		<cfdirectory action="create" directory="#includePath#"> 
-	</cfif>
-	<cfdirectory directory="#includePath#" name="qDir" filter="*.cfm" sort="name">
-	<cfset qIncludes = queryNew("include,includeAlias")>
-	<cfset thisRow = 1>
-	<cfloop query="qDir">
-		<cfif qDir.name neq "_donotdelete.cfm">
-			<cfset newRow  = queryAddRow(qIncludes, 1)>
-			<cfset includeAlias = left(qDir.name, len(qDir.name)-4)>
-			<cfset newCell = querySetCell(qIncludes,"include","#qDir.name#",thisRow)>
-			<cfset newCell = querySetCell(qIncludes,"includeAlias","#includeAlias#",thisRow)>
-			<cfset thisRow = thisRow + 1>
-		</cfif>
-	</cfloop>
-	
-	<cfreturn qIncludes>	
-</cffunction>
-	
-	
-
 <cffunction access="public" name="getIncludeList" returntype="string" hint="returns a list (column name 'include') of available includes.">
 	
 	<cfset var returnList = "" />
@@ -81,7 +48,7 @@ type properties
 
 	<cfloop query="qIncludes">
 		<cfif left(qIncludes.name,1) EQ "_" AND right(qIncludes.Directory, 11) EQ "includedObj">
-			<cfset returnList = listAppend(returnList, "#qIncludes.PATH#:#qIncludes.displayName#") />
+			<cfset returnList = listAppend(returnList, "#qIncludes.NAME#:#qIncludes.displayName#") />
 		</cfif>	
 	</cfloop>
 
