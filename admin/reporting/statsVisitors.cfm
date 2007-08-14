@@ -109,7 +109,7 @@ out:
 	<hr />
 	
 	<h3>#application.adminBundle[session.dmProfile.locale].sessionsPerDayLast4Weeks#</h3>
-	
+	<div style="z-index:100">
 	<cfchart 
 		format="flash" 
 		chartHeight="400" 
@@ -135,6 +135,7 @@ out:
 	<cfchartseries type="bar" query="q3" itemcolumn="name" valuecolumn="count_Ip" serieslabel="#application.adminBundle[session.dmProfile.locale].twoWeeksBefore#" paintstyle="shade"></cfchartseries>
 	<cfchartseries type="bar" query="q4" itemcolumn="name" valuecolumn="count_Ip" serieslabel="#application.adminBundle[session.dmProfile.locale].threeWeeksBefore#" paintstyle="shade"></cfchartseries>
 	</cfchart>
+	</div>
 	</cfoutput>
 	
 	</cfif>
@@ -152,6 +153,9 @@ out:
 		<cfset form.after = temp>
 	</cfif>
 	
+	<cfset form.before = createODBCDate(form.before)>
+	<cfset form.after = createODBCDate(form.after)> 
+	
 	<!--- call method --->
 	<cfscript>
 	q1 = application.factory.oStats.getVisitorStatsByDate(before=createodbcdate(form.before),after=createodbcdate(form.after));
@@ -162,9 +166,10 @@ out:
 	<cfoutput>
 
 	<hr />
-	
+
 	<h3>
-	<cfset subS=listToArray('#application.thisCalendar.i18nDateFormat(form.after,session.dmProfile.locale,application.fullF)#,#application.thisCalendar.i18nDateFormat(form.before,session.dmProfile.locale,application.fullF)#')>
+	<cfset subS=listToArray('#application.thisCalendar.i18nDateFormat(form.after,session.dmProfile.locale,application.fullF)#^#application.thisCalendar.i18nDateFormat(form.before,session.dmProfile.locale,application.fullF)#',"^")>
+
 	#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].sessionsPerDayBetween,subS)#
 	</h3>
 	
@@ -198,31 +203,61 @@ out:
 	</cfif>
 	
 	<hr />
-	
-	<!--- show form to change date range --->
-	
+	<cfset Request.InHead.Calendar = 1>
+	<div>
 	<form method="post" class="f-wrap-1 f-bg-short" action="">
 	<fieldset>
 	
 		<h3>Edit range</h3>
-		
 		<label>
 		<b>#application.adminBundle[session.dmProfile.locale].betweenLabel#</b>
-		<input type="text" style="width:200px" name="after" value="#application.thisCalendar.i18nDateFormat(form.after,session.dmProfile.locale,application.fullF)#" /><br />
+		<input type="text" id="afterDate" style="width:200px" name="after" value="#application.thisCalendar.i18nDateFormat(form.after,session.dmProfile.locale,application.fullF)#" />
+		<input type="button" id"afterDateButton" value="select" /><br />
 		</label>
 		
 		<label>
 		<b>#application.adminBundle[session.dmProfile.locale].andLabel#</b>
-		<input type="text" style="width:200px" name="before" value="#application.thisCalendar.i18nDateFormat(form.before,session.dmProfile.locale,application.fullF)#" /><br />
+		<input type="text" id="beforeDate" style="width:200px" name="before" value="#application.thisCalendar.i18nDateFormat(form.before,session.dmProfile.locale,application.fullF)#" />
+		<input type="button" id="beforeDateButton" value="select" /><br />
 		</label>
+		
+		
 		
 		<div class="f-submit-wrap">
 		<input type="submit" value="Change Date Range" class="f-submit" />
 		</div>
+		<div id="calendarContainer" style="width:300px; height:200px">
 		
+		</div>
 	<fieldset>
 	</form>
-
+	</div>
+	<script type="text/javascript">
+					  Calendar.setup(
+					    {
+					    
+						  inputField	: "afterDate",         // ID of the input field
+					      ifFormat		: "%d/%m/%Y",    // the date format
+					      button		: "afterDateButton",       // ID of the button
+					      showsTime		: false,
+					      align         : "bR"
+					      
+					    }
+					  );
+					  
+					  Calendar.setup(
+					    {
+					    
+						  inputField	: "beforeDate",         // ID of the input field
+					      ifFormat		: "%d/%m/%Y",    // the date format
+					      button		: "beforeDateButton",       // ID of the button
+					      showsTime		: false,
+					      align         : "bR"
+					      
+					    }
+					  );
+					  
+	</script>	
 	</cfoutput>
 
 <cfelse>
