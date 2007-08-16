@@ -217,11 +217,11 @@
 
 	
 
-	<cfif attributes.IncludeFieldSet>
+	<cfif not len(attributes.r_stFields) and attributes.IncludeFieldSet>
 		<cfoutput><fieldset class="formSection #attributes.class#"></cfoutput>
 	</cfif>
 	
-	<cfif isDefined("attributes.legend") and len(attributes.legend)>
+	<cfif not len(attributes.r_stFields) and isDefined("attributes.legend") and len(attributes.legend)>
 		<cfoutput><legend class="#attributes.class#">#attributes.legend#</legend></cfoutput>
 	</cfif>	
 	
@@ -644,7 +644,7 @@
 		</cfif>
 	</cfif>
 	
-		<cfif attributes.IncludeFieldSet>
+		<cfif NOT len(Attributes.r_stFields) and attributes.IncludeFieldSet>
 			<cfoutput></fieldset></cfoutput>
 		</cfif>
 	
