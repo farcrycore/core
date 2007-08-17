@@ -187,7 +187,10 @@
 			<cfif structKeyExists(request.farcryForm.stObjects,'#key#') 
 				AND structKeyExists(request.farcryForm.stObjects[key],'farcryformobjectinfo')
 				AND structKeyExists(request.farcryForm.stObjects[key].farcryformobjectinfo,'ObjectID')
-				AND request.farcryForm.stObjects[key].farcryformobjectinfo.ObjectID EQ stObj.ObjectID>
+				AND (
+						request.farcryForm.stObjects[key].farcryformobjectinfo.ObjectID EQ stObj.ObjectID
+						OR (not len(attributes.objectid) AND not len(attributes.stobject))
+					)>
 					<cfset variables.prefix = key>
 			</cfif>			
 			
@@ -217,11 +220,11 @@
 
 	
 
-	<cfif not len(attributes.r_stFields) and attributes.IncludeFieldSet>
+	<cfif attributes.IncludeFieldSet>
 		<cfoutput><fieldset class="formSection #attributes.class#"></cfoutput>
 	</cfif>
 	
-	<cfif not len(attributes.r_stFields) and isDefined("attributes.legend") and len(attributes.legend)>
+	<cfif isDefined("attributes.legend") and len(attributes.legend)>
 		<cfoutput><legend class="#attributes.class#">#attributes.legend#</legend></cfoutput>
 	</cfif>	
 	
@@ -644,7 +647,7 @@
 		</cfif>
 	</cfif>
 	
-		<cfif NOT len(Attributes.r_stFields) and attributes.IncludeFieldSet>
+		<cfif attributes.IncludeFieldSet>
 			<cfoutput></fieldset></cfoutput>
 		</cfif>
 	
