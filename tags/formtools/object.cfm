@@ -189,7 +189,6 @@
 				AND structKeyExists(request.farcryForm.stObjects[key].farcryformobjectinfo,'ObjectID')
 				AND (
 						request.farcryForm.stObjects[key].farcryformobjectinfo.ObjectID EQ stObj.ObjectID
-						OR (not len(attributes.objectid) AND not len(attributes.stobject))
 					)>
 					<cfset variables.prefix = key>
 			</cfif>			
