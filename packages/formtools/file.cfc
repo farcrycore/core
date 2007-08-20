@@ -186,7 +186,7 @@
 					 
 				</cfif>
 				
-				<cffile action="rename" source="#filePath##arguments.stMetadata.ftDestination#/#File.ServerFile#" destination="#cleanFileName#" / >
+				<cffile action="rename" source="#filePath##arguments.stMetadata.ftDestination#/#File.ServerFile#" destination="#cleanFileName#" />
 			</cfif>			
 									
 			<!--- </cfif> --->

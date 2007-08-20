@@ -16,7 +16,7 @@
 		<cfargument name="stPackage" required="true" type="struct" hint="Contains the metadata for the all fields for the current typename.">
 		
 		<cfset var returnHTML = "" />
-		<cfset var stobj = structnew() / >
+		<cfset var stobj = structnew() />
 		<cfset var tmpTypename="" />
 		<cfset var i = "" />	
 		<cfset var qArrayField = queryNew("blah") />
@@ -213,9 +213,9 @@
 							</ul>
 						</div>
 						<div class="buttonGroup">
-							<ft:farcryButton type="button" value="Select All" onclick="toggleOnArrayField('#arguments.fieldname#');return false;" / >
-							<ft:farcryButton type="button" value="De-select All" onclick="toggleOffArrayField('#arguments.fieldname#');return false;" / >
-							<ft:farcryButton type="button" value="Remove Selected" onclick="deleteSelectedFromArrayField('#arguments.fieldname#','#application.url.webroot#');return false;" confirmText="Are you sure you want to remove the selected item(s)" / >
+							<ft:farcryButton type="button" value="Select All" onclick="toggleOnArrayField('#arguments.fieldname#');return false;" />
+							<ft:farcryButton type="button" value="De-select All" onclick="toggleOffArrayField('#arguments.fieldname#');return false;" />
+							<ft:farcryButton type="button" value="Remove Selected" onclick="deleteSelectedFromArrayField('#arguments.fieldname#','#application.url.webroot#');return false;" confirmText="Are you sure you want to remove the selected item(s)" />
 						</div>
 
 						<br class="clearer" />
@@ -400,7 +400,7 @@
 		<cfargument name="stPackage" required="true" type="struct" hint="Contains the metadata for the all fields for the current typename.">
 		
 		<cfset var returnHTML = "" />
-		<cfset var stobj = structnew() / >
+		<cfset var stobj = structnew() />
 		<cfset var i = "" />
 		<cfset var qArrayField = queryNew("blah") />
 		<cfset var oPrimary = "" />

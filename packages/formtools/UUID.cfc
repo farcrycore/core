@@ -158,7 +158,7 @@
 						</div>
 						<cfif arguments.stMetadata.ftShowRemoveSelected>
 							<div class="buttonGroup">
-								<ft:farcryButton type="button" value="Remove Selected" onclick="deleteSelectedFromUUIDField('#arguments.fieldname#');return false;" confirmText="Are you sure you want to remove the selected item" / >						
+								<ft:farcryButton type="button" value="Remove Selected" onclick="deleteSelectedFromUUIDField('#arguments.fieldname#');return false;" confirmText="Are you sure you want to remove the selected item" />						
 							</div>
 						</cfif>
 						<br class="clearer" />
@@ -261,7 +261,7 @@
 		<cfargument name="stPackage" required="true" type="struct" hint="Contains the metadata for the all fields for the current typename.">
 		
 		<cfset var returnHTML = "" />
-		<cfset var stobj = structnew() / >
+		<cfset var stobj = structnew() />
 		<cfset var stJoinObjects = structNew() /> <!--- This will contain a structure of object components that match the ftJoin list from the metadata --->
 
 		<cfset var oData = "" />
