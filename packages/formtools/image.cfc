@@ -185,24 +185,31 @@
 	<cffunction name="validate" access="public" output="true" returntype="struct" hint="This will return a struct with bSuccess and stError">
 		<cfargument name="stFieldPost" required="true" type="struct" hint="The fields that are relevent to this field type. Includes Value and stSupporting">
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
+		<cfargument name="objectid" required="true" type="uuid" hint="objectid of image object" />
 		
-		<cfset var stResult = structNew()>
-		<cfset var stGeneratedImageArgs = StructNew() />		
-		<cfset var stGeneratedImage = structNew() />
+		<cfset var stResult = structNew() />
+		<cfset var stGeneratedImageArgs = structNew() />
 		<cfset var uploadFileName = "" />
 		<cfset var b = "" />
+
+		<cfset stResult.bSuccess = true />
+		<cfset stResult.value = stFieldPost.value />
+		<cfset stResult.stError = StructNew() />
 		
-		<cfset stResult.bSuccess = true>
-		<cfset stResult.value = stFieldPost.value>
-		<cfset stResult.stError = StructNew()>
-		
-		<cfparam name="arguments.stMetadata.ftDestination" default="/images">
+		<cfparam name="arguments.stMetadata.ftDestination" default="/images" />
 		<cfparam name="arguments.stMetadata.ftImageWidth" default="0" />
 		<cfparam name="arguments.stMetadata.ftImageHeight" default="0" />
-		<cfparam name="arguments.stMetadata.ftAutoGenerateType" default="FitInside">
-		<cfparam name="arguments.stMetadata.ftPadColor" default="##ffffff">
-		<cfparam name="arguments.stMetadata.ftThumbnailBevel" default="No">
-		
+		<cfparam name="arguments.stMetadata.ftAutoGenerateType" default="FitInside" />
+		<cfparam name="arguments.stMetadata.ftPadColor" default="##ffffff" />
+		<cfparam name="arguments.stMetadata.ftThumbnailBevel" default="No" />
+		<!--- New features to support CFIMAGE --->
+		<cfparam name="arguments.stMetadata.ftcustomEffectsObjName" default="imageeffects" />
+		<cfparam name="arguments.stMetadata.ftlCustomEffects" default="" />
+		<cfparam name="arguments.stMetadata.ftConvertImageToFormat" default="" />
+		<cfparam name="arguments.stMetadata.ftbSetAntialiasing" default="true" />
+		<cfparam name="arguments.stMetadata.ftinterpolation" default="highestQuality" />
+
+
 		<!--- --------------------------- --->
 		<!--- Perform any validation here --->
 		<!--- --------------------------- --->
@@ -211,16 +218,17 @@
 		<cfif len(arguments.stMetadata.ftDestination) AND left(arguments.stMetadata.ftDestination,1) NEQ "/">
 			<cfset arguments.stMetadata.ftDestination = "/#arguments.stMetadata.ftDestination#" />
 		</cfif>
-		
+
 		<cfif NOT DirectoryExists("#application.path.imageRoot##arguments.stMetadata.ftDestination#")>
 			<cfset b = createFolderPath("#application.path.imageRoot##arguments.stMetadata.ftDestination#")>
-		</cfif>		
-		
+		</cfif>
+
 		<cfif len(FORM["#stMetadata.FormFieldPrefix##stMetadata.Name#Delete"]) AND fileExists("#application.path.imageRoot##FORM['#stMetadata.FormFieldPrefix##stMetadata.Name#Delete']#")>
 					
 			<cfif NOT DirectoryExists("#application.path.mediaArchive#")>
 				<cfdirectory action="create" directory="#application.path.mediaArchive#">
 			</cfif>
+
 			<cfif NOT DirectoryExists("#application.path.mediaArchive##arguments.stMetadata.ftDestination#")>
 				<cfdirectory action="create" directory="#application.path.mediaArchive##arguments.stMetadata.ftDestination#">
 			</cfif>	
@@ -234,9 +242,7 @@
 
 		</cfif>
 				
-		
-		
-		<cfif len(FORM["#stMetadata.FormFieldPrefix##stMetadata.Name#New"])>
+		<cfif len(FORM["#stMetadata.FormFieldPrefix##stMetadata.Name#New"]) gt 0>
 		
 			<cfif structKeyExists(form, "#stMetadata.FormFieldPrefix##stMetadata.Name#") AND  len(FORM["#stMetadata.FormFieldPrefix##stMetadata.Name#"])>
 				<!--- This means there is currently a file associated with this object. We need to override this file --->
@@ -252,7 +258,6 @@
 					   destination = "#application.path.mediaArchive##arguments.stMetadata.ftDestination#/#arguments.objectid#-#DateDiff('s', 'January 1 1970 00:00', now())#-#uploadFileName#">
 				</cfif>
 		
-				
 				<cffile
 					action="upload"
 					filefield="#stMetadata.FormFieldPrefix##stMetadata.Name#New" 
@@ -266,7 +271,7 @@
 					destination="#application.path.imageRoot##arguments.stMetadata.ftDestination#"		        	
 					nameconflict="MakeUnique">
 			</cfif>
-	
+
 				
 				<cfif len(arguments.stMetaData.ftImageWidth) OR len(arguments.stMetaData.ftImageHeight)>
 					<cfset stGeneratedImageArgs.Source = "#application.path.imageRoot##arguments.stMetadata.ftDestination#/#File.ServerFile#" />
@@ -281,10 +286,14 @@
 					</cfif>
 					<cfset stGeneratedImageArgs.AutoGenerateType = "#arguments.stMetadata.ftAutoGenerateType#" />
 					<cfset stGeneratedImageArgs.PadColor = "#arguments.stMetadata.ftPadColor#" />
+					<!--- New features to support CFIMAGE --->
+					<cfset stGeneratedImageArgs.customEffectsObjName = arguments.stMetadata.ftcustomEffectsObjName />
+					<cfset stGeneratedImageArgs.lCustomEffects = arguments.stMetadata.ftlCustomEffects />
+					<cfset stGeneratedImageArgs.convertImageToFormat = arguments.stMetadata.ftConvertImageToFormat />
+					<cfset stGeneratedImageArgs.bSetAntialiasing = arguments.stMetadata.ftBSetAntialiasing />
+					<cfset stGeneratedImageArgs.interpolation = arguments.stMetadata.ftInterpolation />
 
-
-					<cfset stGeneratedImage = GenerateImage(Source="#stGeneratedImageArgs.Source#", Destination="#stGeneratedImageArgs.Destination#", Width="#stGeneratedImageArgs.Width#", Height="#stGeneratedImageArgs.Height#", AutoGenerateType="#stGeneratedImageArgs.AutoGenerateType#", PadColor="#stGeneratedImageArgs.PadColor#") />
-					
+					<cfset stGeneratedImage = GenerateImage(argumentCollection=stGeneratedImageArgs) />
 					
 					<cfif stGeneratedImage.bSuccess>
 						<cfset stResult.value = "#arguments.stMetadata.ftDestination#/#file.serverFile#" />
@@ -292,19 +301,13 @@
 				<cfelse>
 					<cfset stResult.value = "#arguments.stMetadata.ftDestination#/#file.serverFile#" />	
 				</cfif>
-				
-
-		
-		
 			
 		</cfif>
-		
 	
-<!--- 		 --->
 		<!--- ----------------- --->
 		<!--- Return the Result --->
 		<!--- ----------------- --->
-		<cfreturn stResult>
+		<cfreturn stResult />
 		
 	</cffunction>
 

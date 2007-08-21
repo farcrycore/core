@@ -730,7 +730,12 @@
 					<cfparam name="arguments.stFields['#i#'].metadata.ftImageHeight" default="#application.config.image.StandardImageHeight#">
 					<cfparam name="arguments.stFields['#i#'].metadata.ftAutoGenerateType" default="FitInside">
 					<cfparam name="arguments.stFields['#i#'].metadata.ftPadColor" default="##ffffff">
-					
+					<cfparam name="arguments.stFields['#i#'].metadata.ftCustomEffectsObjName" default="imageEffects" />
+					<cfparam name="arguments.stFields['#i#'].metadata.ftLCustomEffects" default="" />
+					<cfparam name="arguments.stFields['#i#'].metadata.ftConvertImageToFormat" default="" />
+					<cfparam name="arguments.stFields['#i#'].metadata.ftBSetAntialiasing" default="true" />
+					<cfparam name="arguments.stFields['#i#'].metadata.ftInterpolation" default="highestQuality" />
+
 					<cfset stArgs = StructNew() />
 					<cfset stArgs.Source = "#imagerootPath##arguments.stProperties[sourceFieldName]#" />
 					<cfset stArgs.Destination = "#imagerootPath##arguments.stFields['#i#'].metadata.ftDestination#" />
@@ -744,9 +749,16 @@
 					</cfif>
 					<cfset stArgs.AutoGenerateType = "#arguments.stFields['#i#'].metadata.ftAutoGenerateType#" />
 					<cfset stArgs.padColor = "#arguments.stFields['#i#'].metadata.ftpadColor#" />
-				
+          <cfset stArgs.customEffectsObjName = "#arguments.stFields['#i#'].metadata.ftCustomEffectsObjName#" />
+          <cfset stArgs.lCustomEffects = "#arguments.stFields['#i#'].metadata.ftLCustomEffects#" />
+          <cfset stArgs.convertImageToFormat = "#arguments.stFields['#i#'].metadata.ftConvertImageToFormat#" />
+          <cfset stArgs.bSetAntialiasing = "#arguments.stFields['#i#'].metadata.ftBSetAntialiasing#" />
+          <cfset stArgs.interpolation = "#arguments.stFields['#i#'].metadata.ftInterpolation#" />
+          
+
 												
-					<cfset stGenerateImageResult = oImage.GenerateImage(Source="#stArgs.Source#", Destination="#stArgs.Destination#", Width="#stArgs.Width#", Height="#stArgs.Height#", AutoGenerateType="#stArgs.AutoGenerateType#", padColor="#stArgs.padColor#") />
+					<!--- <cfset stGenerateImageResult = oImage.GenerateImage(Source="#stArgs.Source#", Destination="#stArgs.Destination#", Width="#stArgs.Width#", Height="#stArgs.Height#", AutoGenerateType="#stArgs.AutoGenerateType#", padColor="#stArgs.padColor#") /> --->
+					<cfset stGenerateImageResult = oImage.GenerateImage(argumentCollection=stArgs) />
 					
 					<cfif stGenerateImageResult.bSuccess>
 						<cfset stProperties['#i#'] = "#arguments.stFields['#i#'].metadata.ftDestination#/#stGenerateImageResult.filename#" />
