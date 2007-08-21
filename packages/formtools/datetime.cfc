@@ -91,9 +91,8 @@
 			
 			<cfif arguments.stMetadata.ftToggleOffDateTime>
 				<cfset Request.InHead.ScriptaculousEffects = 1>
-	
 				
-				<cfif len(arguments.stMetadata.value) AND (DateDiff('yyyy', now(), arguments.stMetadata.value) GT 100 OR dateformat(arguments.stMetadata.value, 'dd/mm/yyyy') eq '01/01/2050') >
+				<cfif len(arguments.stMetadata.value) AND (not IsDate(arguments.stMetadata.value) OR DateDiff('yyyy', now(), arguments.stMetadata.value) GT 100 OR dateformat(arguments.stMetadata.value, 'dd/mm/yyyy') eq '01/01/2050') >
 					<cfset bfieldvisible = 0>
 					<cfset fieldStyle = "display:none;">
 				<cfelse>
