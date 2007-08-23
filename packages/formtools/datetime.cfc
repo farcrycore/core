@@ -237,10 +237,13 @@
 							<cfset stResult = failed(value="#arguments.stFieldPost.value#", message="You need to select a valid date.") />
 						</cfcatch>
 					</cftry>
+				<cfelseif structKeyExists(arguments.stMetadata, "ftValidation") AND listFindNoCase(arguments.stMetadata.ftValidation, "required")>
+					<cfset stResult = failed(value="#arguments.stFieldPost.value#", message="This is a required field") />
 				</cfif>
-			</cfif>			
-			
-		
+			<cfelseif structKeyExists(arguments.stMetadata, "ftValidation") AND listFindNoCase(arguments.stMetadata.ftValidation, "required")>
+				<cfset stResult = failed(value="#arguments.stFieldPost.value#", message="This is a required field") />
+			</cfif>
+					
 			<cfif stResult.bSuccess>
 				<cfset arguments.stFieldPost.value = stResult.value />
 				<cfset stResult = super.validate(objectid=arguments.objectid, typename=arguments.typename, stFieldPost=arguments.stFieldPost, stMetadata=arguments.stMetadata )>
