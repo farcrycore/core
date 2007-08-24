@@ -68,7 +68,7 @@
 							</cfif>
 							<cfoutput><option value="#optionValue#" <cfif listFindNoCase(arguments.stMetadata.value, optionValue)> selected="selected"</cfif>>#ListLast(i , ":")#</option></cfoutput>
 						</cfloop>
-						<cfoutput></select></cfoutput>
+						<cfoutput></select><br style="clear: both;"/></cfoutput>
 						
 					</cfsavecontent>					
 				</cfcase>
