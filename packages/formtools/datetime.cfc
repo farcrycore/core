@@ -84,8 +84,21 @@
 			<cfparam name="arguments.stMetadata.ftStyle" default="width:160px;">
 			<cfparam name="arguments.stMetadata.ftDateFormatMask" default="dd mmm yyyy">
 			<cfparam name="arguments.stMetadata.ftTimeFormatMask" default="hh:mm tt">
-			<cfparam name="arguments.stMetadata.ftCalendarFormatMask" default="%d %b %Y %I:%M %p">
+			<cfparam name="arguments.stMetadata.ftCalendarFormatMask" default="">
+			<cfparam name="arguments.stMetadata.ftCalendarShowTime" default="true">			
 			<cfparam name="arguments.stMetadata.ftToggleOffDateTime" default="0">
+			
+			<!--------------------------------------------------------------------------------- 
+			This dynamically sets up the format of the date returned by the javascript calendar.
+			It only adds time if requested to do so via the metadata.
+			 --------------------------------------------------------------------------------->
+			<cfif not len(arguments.stMetadata.ftCalendarFormatMask)>
+				<cfif arguments.stMetadata.ftCalendarShowTime>
+					<cfset arguments.stMetadata.ftCalendarFormatMask = "%d %b %Y %I:%M %p" />						
+				<cfelse>
+					<cfset arguments.stMetadata.ftCalendarFormatMask = "%d %b %Y" />
+				</cfif>
+			</cfif>
 		
 			<cfset Request.InHead.Calendar = 1>
 			
@@ -145,7 +158,7 @@
 								<input type="hidden" name="#arguments.fieldname#rendertype" id="#arguments.fieldname#rendertype" value="#arguments.stMetadata.ftRenderType#">
 							</cfif>
 							<div  id="#arguments.fieldname#DIV" style="float:left;#fieldstyle#">						
-								<input type="Text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#DateFormat(arguments.stMetadata.value,arguments.stMetadata.ftDateFormatMask)# #TimeFormat(arguments.stMetadata.value,arguments.stMetadata.ftTimeFormatMask)#" style="#arguments.stMetadata.ftstyle#" />
+								<input type="Text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#DateFormat(arguments.stMetadata.value,arguments.stMetadata.ftDateFormatMask)# <cfif arguments.stMetadata.ftCalendarShowTime>#TimeFormat(arguments.stMetadata.value,arguments.stMetadata.ftTimeFormatMask)#</cfif>" style="#arguments.stMetadata.ftstyle#" />
 								<a id="#arguments.fieldname#DatePicker"><img src="#application.url.farcry#/js/DateTimePicker/cal.gif" width="16" height="16" border="0" alt="Pick a date"></a>
 							</div>	
 						</div>
@@ -157,7 +170,7 @@
 						  inputField	: "#arguments.fieldname#",         // ID of the input field
 					      ifFormat		: "#arguments.stMetadata.ftCalendarFormatMask#",    // the date format
 					      button		: "#arguments.fieldname#DatePicker",       // ID of the button
-					      showsTime		: true
+					      showsTime		: #arguments.stMetadata.ftCalendarShowTime#
 					    }
 					  );
 					</script>				
