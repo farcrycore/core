@@ -191,6 +191,8 @@
 		<cfset var stGeneratedImageArgs = structNew() />
 		<cfset var uploadFileName = "" />
 		<cfset var b = "" />
+		<cfset var newFileName = "" />
+		<cfset var lFormField = "" />
 
 		<cfset stResult.bSuccess = true />
 		<cfset stResult.value = stFieldPost.value />
@@ -247,7 +249,8 @@
 			<cfif structKeyExists(form, "#stMetadata.FormFieldPrefix##stMetadata.Name#") AND  len(FORM["#stMetadata.FormFieldPrefix##stMetadata.Name#"])>
 				<!--- This means there is currently a file associated with this object. We need to override this file --->
 				
-				<cfset uploadFileName = listLast(FORM["#stMetadata.FormFieldPrefix##stMetadata.Name#"], "/") />
+				<cfset lFormField = replace(FORM["#stMetadata.FormFieldPrefix##stMetadata.Name#"], '\', '/')>			
+				<cfset uploadFileName = listLast(lFormField, "/") />
 		 	
 		 	
 				<!--- MOVE THE OLD FILE INTO THE ARCHIVE --->
@@ -261,8 +264,10 @@
 				<cffile
 					action="upload"
 					filefield="#stMetadata.FormFieldPrefix##stMetadata.Name#New" 
-					destination="#application.path.imageRoot##arguments.stMetadata.ftDestination#/#uploadFileName#"		        	
-					nameconflict="Overwrite">
+					destination="#application.path.imageRoot##arguments.stMetadata.ftDestination#"		        	
+					nameconflict="MakeUnique">
+				<cffile action="rename" source="#application.path.imageRoot##arguments.stMetadata.ftDestination#/#File.ServerFile#" destination="#uploadFileName#" />
+				<cfset newFileName = uploadFileName>
 								
 			<cfelse>
 				<!--- There is no image currently so we simply upload the image and make it unique  --->
@@ -270,11 +275,12 @@
 					filefield="#stMetadata.FormFieldPrefix##stMetadata.Name#New" 
 					destination="#application.path.imageRoot##arguments.stMetadata.ftDestination#"		        	
 					nameconflict="MakeUnique">
+				<cfset newFileName = File.ServerFile>
 			</cfif>
 
 				
 				<cfif len(arguments.stMetaData.ftImageWidth) OR len(arguments.stMetaData.ftImageHeight)>
-					<cfset stGeneratedImageArgs.Source = "#application.path.imageRoot##arguments.stMetadata.ftDestination#/#File.ServerFile#" />
+					<cfset stGeneratedImageArgs.Source = "#application.path.imageRoot##arguments.stMetadata.ftDestination#/#newFileName#" />
 					<cfset stGeneratedImageArgs.Destination = "" />			
 					<cfset stGeneratedImageArgs.Width = "#arguments.stMetadata.ftImageWidth#" />
 					<cfif NOT isNumeric(stGeneratedImageArgs.Width)>
@@ -296,10 +302,10 @@
 					<cfset stGeneratedImage = GenerateImage(argumentCollection=stGeneratedImageArgs) />
 					
 					<cfif stGeneratedImage.bSuccess>
-						<cfset stResult.value = "#arguments.stMetadata.ftDestination#/#file.serverFile#" />
+						<cfset stResult.value = "#arguments.stMetadata.ftDestination#/#newFileName#" />
 					</cfif>
 				<cfelse>
-					<cfset stResult.value = "#arguments.stMetadata.ftDestination#/#file.serverFile#" />	
+					<cfset stResult.value = "#arguments.stMetadata.ftDestination#/#newFileName#" />	
 				</cfif>
 			
 		</cfif>

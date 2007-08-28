@@ -103,6 +103,8 @@
 		<cfset var uploadFileName = "" />
 		<cfset var qDuplicates = queryNew("blah") />
 		<cfset var cleanFileName = "" />
+		<cfset var newFileName = "" />
+		<cfset var lFormField = "" />
 			
 		<cfset stResult.bSuccess = true>
 		<cfset stResult.value = stFieldPost.value>
@@ -154,30 +156,33 @@
 			<cfif structKeyExists(form, "#stMetadata.FormFieldPrefix##stMetadata.Name#") AND  len(FORM["#stMetadata.FormFieldPrefix##stMetadata.Name#"])>
 				<!--- This means there is currently a file associated with this object. We need to override this file --->
 				
-				<cfset uploadFileName = listLast(FORM["#stMetadata.FormFieldPrefix##stMetadata.Name#"], "/") />
+				<cfset lFormField = replace(FORM["#stMetadata.FormFieldPrefix##stMetadata.Name#"], '\', '/')>			
+				<cfset uploadFileName = listLast(lFormField, "/") />
 				
 				<cffile action="UPLOAD"
 					filefield="#stMetadata.FormFieldPrefix##stMetadata.Name#New" 
-					destination="#filePath##arguments.stMetadata.ftDestination#/#uploadFileName#"		        	
-					nameconflict="Overwrite" />
-				
+					destination="#filePath##arguments.stMetadata.ftDestination#"		        	
+					nameconflict="MakeUnique" />
+				<cffile action="rename" source="#filePath##arguments.stMetadata.ftDestination#/#File.ServerFile#" destination="#uploadFileName#" />
+				<cfset newFileName = uploadFileName>
 			<cfelse>
 				<!--- There is no image currently so we simply upload the image and make it unique  --->
 				<cffile action="UPLOAD"
 					filefield="#stMetadata.FormFieldPrefix##stMetadata.Name#New" 
 					destination="#filePath##arguments.stMetadata.ftDestination#"		        	
 					nameconflict="MakeUnique">
+				<cfset newFileName = File.ServerFile>
 			</cfif>
 
 	
 			
 			<!--- Replace all none alphanumeric characters --->
-			<cfset cleanFileName = reReplaceNoCase(File.ServerFile, "[^a-z0-9.]", "", "all") />
+			<cfset cleanFileName = reReplaceNoCase(newFileName, "[^a-z0-9.]", "", "all") />
 			
 			<!--- If the filename has changed, rename the file
 			Note: doing a quick check to make sure the cleanfilename doesnt exist. If it does, prepend the count+1 to the end.
 			 --->
-			<cfif cleanFileName NEQ File.ServerFile>
+			<cfif cleanFileName NEQ newFileName>
 				<cfif fileExists("#filePath##arguments.stMetadata.ftDestination#/#cleanFileName#")>
 					<cfdirectory action="list" directory="#filePath##arguments.stMetadata.ftDestination#" filter="#listFirst(cleanFileName, '.')#*" name="qDuplicates" />
 					<cfif qDuplicates.RecordCount>
@@ -186,7 +191,7 @@
 					 
 				</cfif>
 				
-				<cffile action="rename" source="#filePath##arguments.stMetadata.ftDestination#/#File.ServerFile#" destination="#cleanFileName#" />
+				<cffile action="rename" source="#filePath##arguments.stMetadata.ftDestination#/#newFileName#" destination="#cleanFileName#" />
 			</cfif>			
 									
 			<!--- </cfif> --->
