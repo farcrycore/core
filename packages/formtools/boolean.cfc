@@ -18,7 +18,7 @@
 		
 		<cfsavecontent variable="html">
 			<cfoutput>
-				<input type="checkbox" name="#arguments.fieldname#" id="#arguments.fieldname#" value="1" class="formCheckbox #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" <cfif arguments.stMetadata.value NEQ 0>checked</cfif> />
+				<input type="checkbox" name="#arguments.fieldname#" id="#arguments.fieldname#" value="1" class="formCheckbox #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" <cfif arguments.stMetadata.value EQ 1>checked</cfif> />
 				<input type="hidden" name="#arguments.fieldname#" value="0" />
 			</cfoutput>
 		
