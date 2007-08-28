@@ -58,7 +58,6 @@
 				
 				<cfcase value="dropdown">								
 					<cfsavecontent variable="html">
-						
 						<cfoutput><select id="#arguments.fieldname#" name="#arguments.fieldname#" class="formList #arguments.stMetadata.ftClass#" style="#arguments.stMetadata.ftStyle#"<cfif arguments.stMetadata.ftSelectMultiple> multiple="multiple"</cfif>></cfoutput>
 						<cfloop list="#arguments.stMetadata.ftList#" index="i">
 							<cfif Left(i, 1) EQ ":">
@@ -66,7 +65,7 @@
 							<cfelse>
 								<cfset optionValue = ListFirst(i,":") />
 							</cfif>
-							<cfoutput><option value="#optionValue#" <cfif listFindNoCase(arguments.stMetadata.value, optionValue)> selected="selected"</cfif>>#ListLast(i , ":")#</option></cfoutput>
+							<cfoutput><option value="#optionValue#" <cfif listFindNoCase(arguments.stMetadata.value, optionValue) or arguments.stMetadata.value eq optionValue> selected</cfif>>#ListLast(i , ":")#</option></cfoutput>
 						</cfloop>
 						<cfoutput></select><br style="clear: both;"/></cfoutput>
 						
