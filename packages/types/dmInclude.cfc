@@ -18,7 +18,7 @@ $Description: dmInclude type $
 $Developer: Brendan Sisson (brendan@daemon.com.au) $
 --->
 
-<cfcomponent extends="types" displayname="Include" hint="Include files" bSchedule="true" bUseInTree="true" bObjectBroker="true">
+<cfcomponent extends="types" displayname="Include" hint="Include files" bSchedule="true" bUseInTree="true" bObjectBroker="true" bFriendly="true">
 <!------------------------------------------------------------------------
 type properties
 ------------------------------------------------------------------------->
