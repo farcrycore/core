@@ -583,8 +583,11 @@ user --->
 				<cfelse>
 					<cfset onclickJS="" />
 				</cfif>
+				<cfif not structKeyExists(attributes.aButtons[i], "confirmText")> 
+					<cfset attributes.aButtons[i].confirmText = "" />
+				</cfif>
 				
-				<ft:farcryButton value="#attributes.aButtons[i].value#"  onclick="#onclickJS#" />
+				<ft:farcryButton value="#attributes.aButtons[i].value#"  onclick="#onclickJS#" confirmText="#attributes.aButtons[i].confirmText#" />
 				<!---<input type="#attributes.aButtons[i].type#" name="#attributes.aButtons[i].name#" value="#attributes.aButtons[i].value#" class="formButton"<cfif len(attributes.aButtons[i].onclick)> onclick="#attributes.aButtons[i].onclick#"</cfif> /> --->
 			</cfif>
 		</cfif>
