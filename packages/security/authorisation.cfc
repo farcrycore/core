@@ -628,7 +628,7 @@ $out:$
 					if (len(agroupNames[index]))
 						sql = sql & " AND upper(e.ExternalGroupName) = '#ucase(aGroupNames[index])#' ";
 					if (arguments.policyGroupID NEQ -1)
-						sql = sql & "AND e.policyGroupId = '#attributes.policyGroupId#' ";	
+						sql = sql & "AND e.policyGroupId = '#arguments.policyGroupId#' ";	
 					sql = sql & " ORDER BY p.policyGroupName, e.ExternalGroupUserDirectory, e.ExternalGroupName";
 					qGetmapping = query(sql=sql,dsn=stPolicyStore.datasource);
 					theArray = QueryToArrayOfStructures(qGetMapping,theArray);						
