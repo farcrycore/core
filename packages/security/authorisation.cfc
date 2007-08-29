@@ -167,51 +167,48 @@ $out:$
 	
 	<cffunction name="checkPermission" hint="Checks whether you have permission to perform an action on an object. Note: A positive permission from one group overides a negative permission from another group, i.e. they are permissive(heh!)." output="No">
 		<cfargument name="permissionName" required="true">
-		<cfargument name="reference">
-		<cfargument name="objectID">
-		<cfargument name="lPolicyGroupIDs">
+		<cfargument name="reference" required="false" default="">
+		<cfargument name="objectID" required="false" default="">
+		<cfargument name="lPolicyGroupIDs" required="false" default="">
 				
-		<cfscript>
-			//oAuthentication = createObject("component","#application.securitypackagepath#.authentication");
-			oAuthentication =request.dmsec.oAuthentication;
-			if (not isDefined("arguments.lPolicyGroupIds"))
-			{
-				stLoggedInUser = oAuthentication.getUserAuthenticationData();
-				if(stLoggedInUser.bLoggedIn)
-					arguments.lPolicyGroupIds = stLoggedInUser.lPolicyGroupIDs;
-				else
-					arguments.lPolicyGroupIds = application.dmsec.ldefaultpolicygroups;	
-			}
+				
+		<cfset oAuthentication = request.dmsec.oAuthentication />
+		
+		<cfif not len(arguments.lPolicyGroupIds)>
+			<cfset stLoggedInUser = oAuthentication.getUserAuthenticationData() />
+			<cfif stLoggedInUser.bLoggedIn>
+				<cfset arguments.lPolicyGroupIds = stLoggedInUser.lPolicyGroupIDs />
+			<cfelse>
+				<cfset arguments.lPolicyGroupIds = application.dmsec.ldefaultpolicygroups />
+			</cfif>
+		</cfif>
+		
+		<cfif len(arguments.objectid)>
+			<cfset stObjectPermissions = collateObjectPermissions(objectid=arguments.objectid) />
+			<cfset permissionType = 'dmNavigation' />
+		<cfelseif len(arguments.reference)>		
+			<cfset stObjectPermissions = getObjectPermission(reference=arguments.reference) />
+			<cfset permissionType = arguments.reference />
+		</cfif>
+		
+		
+		<cfset bHasPermission = 0 />
+		
+		<cfif permissionType NEQ "">		
+			<cfset stPermission = getPermission(permissionName=arguments.permissionName,permissionType=permissionType) />
 			
-			if (isDefined("arguments.objectid"))
-			{
-				stObjectPermissions = collateObjectPermissions(objectid=arguments.objectid); //need to write this
-				//stObj = contentObjectGet(objectid=arguments.objectid);
-				permissionType = 'dmNavigation';//stObj.typename;
-			}
-			else
-			{
-				stObjectPermissions = getObjectPermission(reference=arguments.reference);
-				permissionType = arguments.reference;
-			}
-			
-			stPermission = getPermission(permissionName=arguments.permissionName,permissionType=permissionType);
-			bHasPermission = 0;
-			
-			if (not StructIsEmpty(stPermission))
-			{
-				aPolicyGroupIDs = listToArray(arguments.lPolicyGroupIds);
-				for(i=1;i LTE arrayLen(aPolicyGroupIds);i=i+1)
-				{
-					perm = 0;
-					if (StructKeyExists(stObjectPermissions,aPolicyGroupIds[i]) AND StructKeyExists(stObjectPermissions[aPolicyGroupIds[i]],stPermission.permissionId))
-						perm = stObjectPermissions[aPolicyGroupIds[i]][stPermission.permissionId].T;
-					if (bHasPermission EQ 0 OR (bHasPermission eq -1 AND perm eq 1))
-						bHasPermission = perm;
-				}	
-			}							
-					
-		</cfscript>
+			<cfif not StructIsEmpty(stPermission)>
+				<cfloop list="#arguments.lpolicyGroupIds#" index="policyGroupId">
+					<cfset perm = 0 />
+					<cfif StructKeyExists(stObjectPermissions,policyGroupId) AND StructKeyExists(stObjectPermissions[policyGroupId],stPermission.permissionId)>
+						<cfset perm = stObjectPermissions[policyGroupId][stPermission.permissionId].T />
+					</cfif>
+					<cfif bHasPermission EQ 0 OR (bHasPermission eq -1 AND perm eq 1) >
+						<cfset bHasPermission = perm />
+					</cfif>
+				</cfloop>	
+			</cfif>
+		</cfif>
 		
 		<cfreturn bHasPermission>	
 			
@@ -373,54 +370,9 @@ $out:$
 		<cfreturn stLocal.streturn>		
 	</cffunction>
 
-	<cffunction name="checkInheritedPermission" hint="checks whether you have inherited permission to perform an action on an object." output="no">
-		<cfargument name="permissionName" required="true">
-		<cfargument name="objectid" required="false">
-		<cfargument name="reference" required="false">
-		<cfargument name="lPolicyGroupIDs" required="false">
-
-		<cfset oAuthentication = request.dmsec.oAuthentication>
-		<cfif NOT isDefined("arguments.lPolicyGroupIds")>
-			<cfset stLoggedInUser = oAuthentication.getUserAuthenticationData()>
-			<cfif structKeyExists(stLoggedInUser,"lPolicyGroupIds")>
-				<cfset arguments.lPolicyGroupIds = stLoggedInUser.lPolicyGroupIDs>
-			</cfif>
-		</cfif>
-		
-				
-		<cfset permissionType = "">
-		<cfif Len(arguments.objectid)>
-			<cfset stObjectPermissions = collateObjectPermissions(objectid=arguments.objectid)>
-			<!--- Dont need this - if we are pasing in an objcetid - then it will always be a tree based permission, therefore permissiontype = 'dmnavigation' --->
-			<!--- stObj = contentObjectGet(objectid=arguments.objectID) --->
-			<cfset permissionType = "dmNavigation">
-		<cfelseif IsDefined("arguments.reference")>
-			<cfset stObjectPermissions = getObjectPermission(reference=arguments.reference)>
-			<cfset permissionType = arguments.reference>
-		</cfif>
-		
-		
-		<cfset bHasPermission = 0>
-		<cfif permissionType NEQ "">
-			<cfset stPermission = getPermission(permissionname=arguments.permissionName,permissionType=permissionType)>
-			
-			<cfif NOT StructIsEmpty(stPermission)>
-				<cfloop index="policyGroupId" list="#arguments.lpolicyGroupIds#">
-					<cfset perm = 0>
-					<cfif StructKeyExists(stObjectPermissions,policyGroupId) AND StructKeyExists(stObjectPermissions[policyGroupId],stPermission.permissionId)>
-						<cfset perm = stObjectPermissions[policyGroupId][stPermission.permissionId].T>
-					</cfif>
-					
-					<cfif bhasPermission EQ 0>
-						<cfset bhasPermission = perm>
-					<cfelseif bhasPermission EQ -1 AND perm EQ 1>
-						<cfset bhasPermission = perm>
-					</cfif>
-				</cfloop>			
-			</cfif>
-		</cfif>
-
-		<cfreturn bHasPermission>
+	<cffunction name="checkInheritedPermission" hint="DEPRICATED... USE checkPermission instead." output="no">
+		<cfreturn checkPermission(argumentCollection=arguments) />
+		<!--- TODO: log depricated --->
 	</cffunction> 
 	
 	<cffunction name="createPolicyGroupMapping" hint="Creates a new policy group mapping"  returntype="struct" output="No">
