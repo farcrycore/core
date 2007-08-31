@@ -350,13 +350,14 @@ user --->
 	<!------------------------
 	SQL ORDER BY CLAUSE
 	 ------------------------>
+	<cfset session.objectadminFilterObjects[attributes.typename].sqlOrderBy = "" />
 	<cfif len(attributes.sortableColumns)>
 		<cfif isDefined("form.sqlOrderBy") and len(form.sqlOrderby)>
 			<cfset session.objectadminFilterObjects[attributes.typename].sqlOrderBy = form.sqlOrderby />
 		</cfif>
 	</cfif>
 	
-	<cfif not structKeyExists(session.objectadminFilterObjects[attributes.typename], "sqlOrderBy") >
+	<cfif not len(session.objectadminFilterObjects[attributes.typename].sqlOrderBy) >
 		<cfset session.objectadminFilterObjects[attributes.typename].sqlOrderBy = attributes.sqlorderby />
 	</cfif>
 	
