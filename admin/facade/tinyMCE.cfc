@@ -8,8 +8,8 @@
 	 	<cfargument name="typename" required="yes" default="" type="string" hint="typename of the object to be rendered.">
 	 	<cfargument name="richtextfield" required="yes" type="string" hint="name of the richtext field.">
 	
-		<cfset var stProps = duplicate(application.types[arguments.typename].stprops) />
-		<cfset var oObject = createobject("component", application.types[arguments.typename].packagepath)>
+		<cfset var stProps = duplicate(application.stcoapi[arguments.typename].stprops) />
+		<cfset var oObject = createobject("component", application.stcoapi[arguments.typename].packagepath)>
 		<cfset var stObject = oObject.getData(objectid="#arguments.objectid#") />
 		<cfset var templateTypename = "" />
 		<cfset var templateDisplayname = "" />
@@ -34,7 +34,7 @@
 				<ul>
 					<cfset bCurrent = true />
 					<cfloop list="#stprops[arguments.richtextfield].metadata.ftTemplateTypeList#" index="templateTypename">
-						<li id="#templateTypename#_tab" class="<cfif bCurrent>current</cfif>"><span><a href="javascript:mcTabs.displayTab('#templateTypename#_tab','#templateTypename#_panel');" onmousedown="return false;">#application.types[templateTypename].displayName#</a></span></li>
+						<li id="#templateTypename#_tab" class="<cfif bCurrent>current</cfif>"><span><a href="javascript:mcTabs.displayTab('#templateTypename#_tab','#templateTypename#_panel');" onmousedown="return false;">#application.stcoapi[templateTypename].displayName#</a></span></li>
 						<cfset bCurrent = false />
 					</cfloop>
 					
@@ -58,8 +58,8 @@
 		
 		<cfloop list="#stprops[arguments.richtextfield].metadata.ftTemplateTypeList#" index="templateTypename">
 			
-			<cfif structKeyExists(application.types[templateTypename], "displayname")>
-				<cfset templateDisplayname = application.types[templateTypename].displayname />
+			<cfif structKeyExists(application.stcoapi[templateTypename], "displayname")>
+				<cfset templateDisplayname = application.stcoapi[templateTypename].displayname />
 			<cfelse>
 				<cfset templateDisplayname = templateTypename />
 			</cfif>
@@ -71,7 +71,7 @@
 			</cfif>
 			
 			
-			<cfset o = createobject("component", application.types[templatetypename].packagepath) />
+			<cfset o = createobject("component", application.stcoapi[templatetypename].packagepath) />
 			<cfset qWebskins = o.getWebskins(typename="#templateTypename#", prefix="#templateWebskinPrefix#") />
 			
 			<cfset lRelatedObjectIDs = "" />
@@ -166,7 +166,7 @@
 							</div>
 						
 						<cfelse>
-							<p>No Related #application.types[TemplateTypename].displayname#(s)</p>
+							<p>No Related #application.stcoapi[TemplateTypename].displayname#(s)</p>
 						</cfif>	
 							
 						
@@ -188,7 +188,7 @@
 		
 		
 		<cfif structKeyExists(stProps[arguments.richtextfield].metadata, "ftTemplateSnippetWebskinPrefix")>
-			<cfset oObject = createobject("component", application.types[arguments.typename].packagepath) />
+			<cfset oObject = createobject("component", application.stcoapi[arguments.typename].packagepath) />
 			<cfset qObjectWebskins = oObject.getWebskins(typename="#arguments.typename#", prefix="#stProps[arguments.richtextfield].metadata.ftTemplateSnippetWebskinPrefix#") />
 					
 			
@@ -269,7 +269,7 @@
 	 	<cfargument name="typename" required="yes" default="" type="string" hint="typename of the object to be rendered.">
 	 	<cfargument name="webskin" required="yes" type="string" hint="name of the webskin to use to render the object template.">
 	
-		<cfset var o = createobject("component", application.types[arguments.typename].packagepath) />
+		<cfset var o = createobject("component", application.stcoapi[arguments.typename].packagepath) />
 		<cfset var HTML = o.getView(objectid="#arguments.objectid#", template="#arguments.webskin#") />	
 	
 		<cfoutput>#trim(HTML)#</cfoutput>	
