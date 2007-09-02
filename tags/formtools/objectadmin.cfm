@@ -538,7 +538,7 @@ user --->
 		</cfif>
 		<cfloop collection="#form#" item="fieldname">
 			<!--- match for custom button action --->
-			<cfif reFind("CB.*", fieldname) AND NOT reFind("CB.*_DATA", fieldname)>
+			<cfif reFind("CB.*", fieldname) AND NOT reFind("CB.*_DATA", fieldname) and structKeyExists(form, "#fieldname#_data")>
 				<cfset wcustomdata=evaluate("form.#fieldname#_data")>
 				<cfwddx action="wddx2cfml" input="#wcustomdata#" output="stcustomdata">
 				<cfif len(stcustomdata.method)>
