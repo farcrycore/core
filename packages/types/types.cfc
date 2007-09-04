@@ -85,7 +85,6 @@ default handlers
 		<cfset var stObj = StructNew() />
 		<cfset var WebskinPath = "" />
 		<cfset var webskinHTML = "" />
-		<cfset var oObjectBroker = createObject("component", "farcry.core.packages.fourq.objectBroker").init() />
 		<cfset var stCurrentView = structNew() />
 
 		<!--- make sure that .cfm isn't passed to this method in the template argument --->
@@ -107,7 +106,7 @@ default handlers
 		<cfif NOT structIsEmpty(stObj)>	
 		
 			<!--- Check to see if the webskin is in the object broker --->
-			<cfset webskinHTML = oObjectBroker.getWebskin(objectid=stobj.objectid, typename=stobj.typename, template=arguments.template, hashKey="#arguments.hashKey#") />		
+			<cfset webskinHTML = application.coapi.objectBroker.getWebskin(objectid=stobj.objectid, typename=stobj.typename, template=arguments.template, hashKey="#arguments.hashKey#") />		
 
 			<cftimer label="getView: #stobj.typename# (#arguments.template#)">
 			<cfif not len(webskinHTML)>
@@ -140,7 +139,7 @@ default handlers
 					<!--- If the current view (Last Item In the array) is still OkToCache --->
 					<cfif request.aAncestorWebskins[arrayLen(request.aAncestorWebskins)].okToCache>
 						<!--- Add the webskin to the object broker if required --->
-						<cfset bAdded = oObjectBroker.addWebskin(objectid=stobj.objectid, typename=stobj.typename, template=arguments.template, html=webskinHTML, stCurrentView=stCurrentView) />	
+						<cfset bAdded = application.coapi.objectBroker.addWebskin(objectid=stobj.objectid, typename=stobj.typename, template=arguments.template, html=webskinHTML, stCurrentView=stCurrentView) />	
 					</cfif>
 					
 					<cfif arrayLen(request.aAncestorWebskins)>
