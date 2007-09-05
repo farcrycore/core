@@ -432,7 +432,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		We therefore need to return a default object of this typename.
 		 --->
 		<cfif NOT structKeyExists(stObj,'objectID')>
-			<cfset stObj = getDefaultObject(objectID=arguments.objectid)>	
+			<cfset stObj = getDefaultObject(argumentCollection=arguments)>	
 			<cfset stObj.bDefaultObject = true />
 		</cfif>
 		
