@@ -23,6 +23,8 @@
 		<cfset var ULID = "" />
 		<cfset var html = "" />
 		<cfset var stTemp = structNew() />
+		<cfset var i = "" />
+		<cfset var stLibraryList = structNew() />
 		
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedWebskin" default="librarySelected" type="string" />
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedListClass" default="arrayDetail" type="string" />
@@ -37,6 +39,10 @@
 		<cfif not structKeyExists(stMetadata,"ftJoin")>
 			<cfreturn "" />
 		</cfif>
+		
+		<!--- Make sure scriptaculous libraries are included. --->
+		<cfset Request.InHead.ScriptaculousDragAndDrop = 1>
+		<cfset Request.InHead.ScriptaculousEffects = 1>	
 		
 		<!--- Determine the the type we are using --->
 		<cfif listLen(arguments.stMetadata.ftJoin) GT 1>
@@ -82,7 +88,21 @@
 			</cfif>
 			<!--- if nothing exists to generate library data then cobble something together --->
 			<cfif not qLibraryList.recordCount>
-				<cfinvoke component="#oData#" method="getLibraryData" returnvariable="qLibraryList" />
+				<cfloop list="#arguments.stMetadata.ftJoin#" index="i">
+					<cfset oData = createObject("component", application.stcoapi[i].packagePath) />					
+					<cfinvoke component="#oData#" method="getLibraryData" returnvariable="qLibraryList#i#" />
+				</cfloop>
+				<cfquery dbtype="query" name="qLibraryList">
+					<cfloop list="#arguments.stMetadata.ftJoin#" index="i">
+						SELECT objectid,label,'#i#' as typename FROM qLibraryList#i#
+						<cfif i NEQ listLast(arguments.stMetadata.ftJoin)>UNION</cfif>
+					</cfloop>
+				</cfquery>
+				
+				<cfquery dbtype="query" name="qLibraryList">
+				SELECT * FROM qLibraryList
+				ORDER BY typename,label
+				</cfquery>
 			</cfif>
 
 			<cfsavecontent variable="returnHTML">
@@ -131,10 +151,14 @@
 							<cfset HTML = oData.getView(objectID=#arguments.stObject[arguments.stMetaData.Name]#, template="#arguments.stMetadata.ftLibrarySelectedWebskin#", alternateHTML="") />
 							<cfif NOT len(trim(HTML))>
 								<cfset stTemp = oData.getData(objectid=#arguments.stObject[arguments.stMetaData.Name]#)>
-								<cfif structKeyExists(stTemp, "label") AND len(stTemp.label)>
-									<cfset HTML = stTemp.label />
+								<cfif structKeyExists(stTemp, "BDEFAULTOBJECT") AND stTemp.BDEFAULTOBJECT>
+									<cfset HTML = "DELETED OBJECT. PLEASE REMOVE." />
 								<cfelse>
-									<cfset HTML = stTemp.objectid />
+									<cfif structKeyExists(stTemp, "label") AND len(stTemp.label)>
+										<cfset HTML = stTemp.label />
+									<cfelse>
+										<cfset HTML = stTemp.objectid />
+									</cfif>
 								</cfif>
 							</cfif>
 
@@ -169,6 +193,7 @@
 					<cfset request.inHead.libraryPopup = true />
 					<cfoutput>
 					<script type="text/javascript" language="javascript" charset="utf-8">
+					initUUIDField('#arguments.fieldname#','#application.url.webroot#');
 								
 					var obj#arguments.fieldname# = new Object();					
 					obj#arguments.fieldname#.primaryFormFieldname="#arguments.fieldname#";

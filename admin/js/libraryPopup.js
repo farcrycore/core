@@ -83,7 +83,22 @@
 											
 						}
 						
-						
+				
+				function initUUIDField(fieldname,virtualDir) {
+						// <![CDATA[
+							 if(virtualDir==null){virtualDir="";}
+							  Sortable.create(fieldname + '_list',
+							  	{ghosting:false,constraint:false,hoverclass:'over',handle:fieldname + '_listhandle',
+							    onChange:function(element){
+							    	$(fieldname).value = Sortable.sequence(fieldname + '_list');
+							    },
+							    onUpdate:function(element){
+							    	libraryCallbackUUID(fieldname, 'sort', $(fieldname).value,virtualDir);
+							    }
+							  });
+						// ]]>
+
+				}
 									
 					function deleteSelectedFromUUIDField(fieldname){
 						
