@@ -1,9 +1,0 @@
-/*
- * Ext JS Library 1.1.1
- * Copyright(c) 2006-2007, Ext JS, LLC.
- * licensing@extjs.com
- * 
- * http://www.extjs.com/license
- */
-
-Ext.dd.ScrollManager=function(){var C=Ext.dd.DragDropMgr;var E={};var B=null;var H={};var G=function(K){B=null;A()};var I=function(){if(C.dragCurrent){C.refreshCache(C.dragCurrent.groups)}};var D=function(){if(C.dragCurrent){var K=Ext.dd.ScrollManager;if(!K.animate){if(H.el.scroll(H.dir,K.increment)){I()}}else{H.el.scroll(H.dir,K.increment,true,K.animDuration,I)}}};var A=function(){if(H.id){clearInterval(H.id)}H.id=0;H.el=null;H.dir=""};var F=function(L,K){A();H.el=L;H.dir=K;H.id=setInterval(D,Ext.dd.ScrollManager.frequency)};var J=function(Q,L){if(L||!C.dragCurrent){return }var K=Ext.dd.ScrollManager;if(!B||B!=C.dragCurrent){B=C.dragCurrent;K.refreshCache()}var P=Ext.lib.Event.getXY(Q);var O=new Ext.lib.Point(P[0],P[1]);for(var R in E){var M=E[R],N=M._region;if(N&&N.contains(O)&&M.isScrollable()){if(N.bottom-O.y<=K.thresh){if(H.el!=M){F(M,"down")}return }else{if(N.right-O.x<=K.thresh){if(H.el!=M){F(M,"left")}return }else{if(O.y-N.top<=K.thresh){if(H.el!=M){F(M,"up")}return }else{if(O.x-N.left<=K.thresh){if(H.el!=M){F(M,"right")}return }}}}}}A()};C.fireEvents=C.fireEvents.createSequence(J,C);C.stopDrag=C.stopDrag.createSequence(G,C);return{register:function(M){if(M instanceof Array){for(var L=0,K=M.length;L<K;L++){this.register(M[L])}}else{M=Ext.get(M);E[M.id]=M}},unregister:function(M){if(M instanceof Array){for(var L=0,K=M.length;L<K;L++){this.unregister(M[L])}}else{M=Ext.get(M);delete E[M.id]}},thresh:25,increment:100,frequency:500,animate:true,animDuration:0.4,refreshCache:function(){for(var K in E){if(typeof E[K]=="object"){E[K]._region=E[K].getRegion()}}}}}();

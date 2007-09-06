@@ -1,9 +1,0 @@
-/*
- * Ext JS Library 1.1.1
- * Copyright(c) 2006-2007, Ext JS, LLC.
- * licensing@extjs.com
- * 
- * http://www.extjs.com/license
- */
-
-Ext.grid.EditorGrid=function(A,B){Ext.grid.EditorGrid.superclass.constructor.call(this,A,B);this.getGridEl().addClass("xedit-grid");if(!this.selModel){this.selModel=new Ext.grid.CellSelectionModel()}this.activeEditor=null;this.addEvents({"beforeedit":true,"afteredit":true,"validateedit":true});this.on("bodyscroll",this.stopEditing,this);this.on(this.clicksToEdit==1?"cellclick":"celldblclick",this.onCellDblClick,this)};Ext.extend(Ext.grid.EditorGrid,Ext.grid.Grid,{clicksToEdit:2,isEditor:true,trackMouseOver:false,onCellDblClick:function(B,C,A){this.startEditing(C,A)},onEditComplete:function(B,D,A){this.editing=false;this.activeEditor=null;B.un("specialkey",this.selModel.onEditorKey,this.selModel);if(String(D)!==String(A)){var C=B.record;var F=this.colModel.getDataIndex(B.col);var E={grid:this,record:C,field:F,originalValue:A,value:D,row:B.row,column:B.col,cancel:false};if(this.fireEvent("validateedit",E)!==false&&!E.cancel){C.set(F,E.value);delete E.cancel;this.fireEvent("afteredit",E)}}this.view.focusCell(B.row,B.col)},startEditing:function(F,B){this.stopEditing();if(this.colModel.isCellEditable(B,F)){this.view.ensureVisible(F,B,true);var C=this.dataSource.getAt(F);var E=this.colModel.getDataIndex(B);var D={grid:this,record:C,field:E,value:C.data[E],row:F,column:B,cancel:false};if(this.fireEvent("beforeedit",D)!==false&&!D.cancel){this.editing=true;var A=this.colModel.getCellEditor(B,F);if(!A.rendered){A.render(A.parentEl||document.body)}(function(){A.row=F;A.col=B;A.record=C;A.on("complete",this.onEditComplete,this,{single:true});A.on("specialkey",this.selModel.onEditorKey,this.selModel);this.activeEditor=A;var G=C.data[E];A.startEdit(this.view.getCell(F,B),G)}).defer(50,this)}}},stopEditing:function(){if(this.activeEditor){this.activeEditor.completeEdit()}this.activeEditor=null}});
