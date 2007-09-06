@@ -29,7 +29,7 @@
 		
 		<cfif len(arguments.typename)>
 			<cfset o = createObject("component", application.stcoapi["#arguments.typename#"].packagePath) />
-			<cfset st = o.getData(objectid=arguments.objectid) />
+			<cfset st = duplicate(o.getData(objectid=arguments.objectid)) />
 			<cfset st.objectid = createUUID() />
 			
 			<cfset st.lastupdatedby = userlogin />
