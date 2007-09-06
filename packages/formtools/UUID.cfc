@@ -55,7 +55,10 @@
 		
 		<cfif len(uuidTypename)>
 			<!--- Create the Linked Table Type as an object  --->
-			<cfset oData = createObject("component",application.types[uuidTypename].typepath)>
+			<cfset oData = createObject("component",application.stcoapi[uuidTypename].packagePath)>
+		<cfelse>		
+			<!--- Couldnt find the type so try the first type in the list. --->
+			<cfset oData = createObject("component",application.stcoapi[listFirst(arguments.stMetadata.ftJoin)].packagePath)>
 		</cfif>
 		
 		
