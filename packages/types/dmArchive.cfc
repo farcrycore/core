@@ -35,29 +35,35 @@ type properties
 
 	<cfset var stLocal = StructNew()>
 	<cfset var pathSep = "\"><!--- default is windows path separator --->
+	<cfset var archiveDirectory = application.config.general.archivedirectory><!--- archive directory from config --->
+	
+	<cfif not directoryExists("#archiveDirectory#")>
+		<cfset archiveDirectory = "#application.path.project#/archive" />
+	</cfif>
+	
 	<cfset stlocal.returnStruct = StructNew()>
 	<cfset stLocal.stObj = StructCopy(arguments.stObj)>
 	
-	<cfif left(application.config.general.archivedirectory,1) neq "/"><!--- not *nix path --->
-		<cfset application.config.general.archivedirectory = replaceNoCase("#application.config.general.archivedirectory#","/","\","all")>
+	<cfif left(archiveDirectory,1) neq "/"><!--- not *nix path --->
+		<cfset archiveDirectory = replaceNoCase("#archiveDirectory#","/","\","all")>
 	<cfelse>
-		<cfset application.config.general.archivedirectory = replaceNoCase("#application.config.general.archivedirectory#","\","/","all")>
+		<cfset archiveDirectory = replaceNoCase("#archiveDirectory#","\","/","all")>
 		<cfset pathSep = "/">
 	</cfif>
 	
-	<cfif Right(application.config.general.archivedirectory,1) NEQ pathSep>
-		<cfset application.config.general.archivedirectory = "#application.config.general.archivedirectory##pathSep#">
+	<cfif Right(archiveDirectory,1) NEQ pathSep>
+		<cfset archiveDirectory= "#archiveDirectory##pathSep#">
 	</cfif>
 
-		<cfset stLocal.directoryToCheck = ListDeleteAt(application.config.general.archivedirectory,ListLen(application.config.general.archivedirectory,pathSep),pathSep)>
-		<cfset stLocal.directoryNameToCheck = ListLast(application.config.general.archivedirectory,pathSep)>
+		<cfset stLocal.directoryToCheck = ListDeleteAt(archiveDirectory,ListLen(archiveDirectory,pathSep),pathSep)>
+		<cfset stLocal.directoryNameToCheck = ListLast(archiveDirectory,pathSep)>
 	
 	<!--- create archive directorys if needed --->
 	<cfdirectory action="list" directory="#stLocal.directoryToCheck#" name="stLocal.qDirectory" filter="#stLocal.directoryNameToCheck#">
 
 	<!--- create a files directory --->
 	<cfif stLocal.qDirectory.recordcount EQ 0>
-		<cfdirectory action="create" directory="#application.config.general.archivedirectory#">
+		<cfdirectory action="create" directory="#archiveDirectory#">
 	</cfif>
 		
 	<cfwddx input="#stLocal.stObj#" output="stLocal.stLiveWDDX"  action="cfml2wddx">
@@ -76,13 +82,13 @@ type properties
 		<!--- struct to hold the information on where to move files to --->
 		<cfset stLocal.stFile = StructNew()>
 
-		<cfdirectory action="list" directory="#application.config.general.archivedirectory#" name="stLocal.qDirectory" filter="#stLocal.stObj.typename#">
+		<cfdirectory action="list" directory="#archiveDirectory#" name="stLocal.qDirectory" filter="#stLocal.stObj.typename#">
 		<!--- create a files directory --->
 		<cfif stLocal.qDirectory.recordcount EQ 0>
-			<cfdirectory action="create" directory="#application.config.general.archivedirectory##pathSep##stLocal.stObj.typename#">
+			<cfdirectory action="create" directory="#archiveDirectory##pathSep##stLocal.stObj.typename#">
 		</cfif>
 
-		<cfset stLocal.stFile.destinationDir = "#application.config.general.archivedirectory##stLocal.stObj.typename##pathSep#">
+		<cfset stLocal.stFile.destinationDir = "#archiveDirectory##stLocal.stObj.typename##pathSep#">
 				
 		<!--- check if item is part of library, if so then move a copy as others may reference it --->
 		<cfif structKeyExists(stLocal.stObj,"bLibrary") AND stLocal.stObj.bLibrary EQ 1>
@@ -139,6 +145,12 @@ type properties
 	<cfargument name="stObj" required="yes" type="struct">
 
 	<cfset var stLocal = StructNew()>
+	<cfset var archiveDirectory = application.config.general.archivedirectory><!--- archive directory from config --->
+	
+	<cfif not directoryExists("#archiveDirectory#")>
+		<cfset archiveDirectory = "#application.path.project#/archive" />
+	</cfif>
+	
 	<cfset stLocal.stObj = StructCopy(arguments.stObj)>
 
 	<cfif StructKeyExists(stLocal.stObj,"aObjectIDs")>
@@ -147,10 +159,10 @@ type properties
 			<cfset stLocal.archiveType = findType(stLocal.stObj.aObjectIDs[stLocal.i])>
 
 			<!--- create files directorys if needed --->
-			<cfdirectory action="list" directory="#application.config.general.archiveDirectory#" name="qDirectory" filter="#stLocal.archiveType#">
+			<cfdirectory action="list" directory="#archiveDirectory#" name="qDirectory" filter="#stLocal.archiveType#">
 			<!--- create a files directory --->
 			<cfif qDirectory.recordCount EQ 0>
-				<cfdirectory action="create" directory="#application.config.general.archiveDirectory#/#stLocal.archiveType#">
+				<cfdirectory action="create" directory="#archiveDirectory#/#stLocal.archiveType#">
 			</cfif>
 
 			<cfset stLocal.archiveObjectId = createUUID()>
@@ -172,10 +184,10 @@ type properties
 	
 				<!--- struct to hold the information on where to move files to --->
 				<cfset stLocal.stFile = StructNew()>
-				<cfif (Right(application.config.general.archivedirectory,1) NEQ "\") AND (Right(application.config.general.archivedirectory,1) NEQ "/")>
-					<cfset stLocal.stFile.destinationDir = "#application.config.general.archivedirectory#/#stLocal.archiveType#/">
+				<cfif (Right(archiveDirectory,1) NEQ "\") AND (Right(archiveDirectory,1) NEQ "/")>
+					<cfset stLocal.stFile.destinationDir = "#archiveDirectory#/#stLocal.archiveType#/">
 				<cfelse>
-					<cfset stLocal.stFile.destinationDir = "#application.config.general.archivedirectory##stLocal.archiveType#/">
+					<cfset stLocal.stFile.destinationDir = "#archiveDirectory##stLocal.archiveType#/">
 				</cfif>
 	
 				<!--- check if item is part of library, if so then move a copy as others may reference it --->
