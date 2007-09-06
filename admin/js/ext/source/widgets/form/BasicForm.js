@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -17,7 +17,7 @@
 Ext.form.BasicForm = function(el, config){
     Ext.apply(this, config);
     /*
-     * The Ext.form.Field items in this form
+     * The Ext.form.Field items in this form.
      * @type MixedCollection
      */
     this.items = new Ext.util.MixedCollection(false, function(o){
@@ -33,14 +33,14 @@ Ext.form.BasicForm = function(el, config){
         beforeaction: true,
         /**
          * @event actionfailed
-         * Fires when an action fails
+         * Fires when an action fails.
          * @param {Form} this
          * @param {Action} action The action that failed
          */
         actionfailed : true,
         /**
-         * @event actioncomplete 
-         * Fires when an action is completed
+         * @event actioncomplete
+         * Fires when an action is completed.
          * @param {Form} this
          * @param {Action} action The action that completed
          */
@@ -55,32 +55,32 @@ Ext.form.BasicForm = function(el, config){
 Ext.extend(Ext.form.BasicForm, Ext.util.Observable, {
     /**
      * @cfg {String} method
-     * The request method to use (GET or POST) for form actions if one isn't supplied in the action options
+     * The request method to use (GET or POST) for form actions if one isn't supplied in the action options.
      */
     /**
      * @cfg {DataReader} reader
-     * An Ext.data.DataReader (e.g. {@link Ext.data.XmlReader} to be used to read data when executing "load" actions.
-     * This is completely optional as there is built-in support for processing JSON.
+     * An Ext.data.DataReader (e.g. {@link Ext.data.XmlReader}) to be used to read data when executing "load" actions.
+     * This is optional as there is built-in support for processing JSON.
      */
     /**
      * @cfg {DataReader} errorReader
-     * An Ext.data.DataReader (e.g. {@link Ext.data.XmlReader} to be used to read data when reading validation errors on "submit" actions.
+     * An Ext.data.DataReader (e.g. {@link Ext.data.XmlReader}) to be used to read data when reading validation errors on "submit" actions.
      * This is completely optional as there is built-in support for processing JSON.
      */
     /**
      * @cfg {String} url
-     * The url to use for form actions if one isn't supplied in the action options
+     * The URL to use for form actions if one isn't supplied in the action options.
      */
     /**
      * @cfg {Boolean} fileUpload
-     * Set to true if this form is a file upload
+     * Set to true if this form is a file upload.
      */
     /**
      * @cfg {Object} baseParams
-     * Parameters to pass with all requests. e.g. baseParams: {id: '123', foo: 'bar'}
+     * Parameters to pass with all requests. e.g. baseParams: {id: '123', foo: 'bar'}.
      */
     /**
-     * @cfg {Number} timeout
+     * @cfg {Number} timeout Timeout for form actions in seconds (default is 30 seconds).
      */
     timeout: 30,
 
@@ -89,7 +89,7 @@ Ext.extend(Ext.form.BasicForm, Ext.util.Observable, {
 
     /**
      * @cfg {Boolean} trackResetOnLoad If set to true, form.reset() resets to the last loaded
-     * or setValues() data instead of the when the form was first created.
+     * or setValues() data instead of when the form was first created.
      */
     trackResetOnLoad : false,
 
@@ -114,7 +114,7 @@ Ext.extend(Ext.form.BasicForm, Ext.util.Observable, {
     },
 
     /**
-     * Returns true is client-side validation on the form is successful
+     * Returns true if client-side validation on the form is successful.
      * @return Boolean
      */
     isValid : function(){
@@ -128,7 +128,7 @@ Ext.extend(Ext.form.BasicForm, Ext.util.Observable, {
     },
 
     /**
-     * Returns true if any fields in this form have changed since their original load
+     * Returns true if any fields in this form have changed since their original load.
      * @return Boolean
      */
     isDirty : function(){
@@ -143,9 +143,20 @@ Ext.extend(Ext.form.BasicForm, Ext.util.Observable, {
     },
 
     /**
-     * Performs a predefined action (submit or load) or custom actions you define on this form
+     * Performs a predefined action (submit or load) or custom actions you define on this form.
      * @param {String} actionName The name of the action type
-     * @param {Object} options The options to pass to the action
+     * @param {Object} options (optional) The options to pass to the action.  All of the config options listed
+     * below are supported by both the submit and load actions unless otherwise noted (custom actions could also
+     * accept other config options):
+     * <pre>
+Property          Type             Description
+----------------  ---------------  ----------------------------------------------------------------------------------
+url               String           The url for the action (defaults to the form's url)
+method            String           The form method to use (defaults to the form's method, or POST if not defined)
+params            String/Object    The params to pass (defaults to the form's baseParams, or none if not defined)
+clientValidation  Boolean          Applies to submit only.  Pass true to call form.isValid() prior to posting to
+                                   validate the form on the client (defaults to false)
+     * </pre>
      * @return {BasicForm} this
      */
     doAction : function(action, options){
@@ -160,8 +171,8 @@ Ext.extend(Ext.form.BasicForm, Ext.util.Observable, {
     },
 
     /**
-     * Shortcut to do a submit action
-     * @param {Object} options The options to pass to the action
+     * Shortcut to do a submit action.
+     * @param {Object} options The options to pass to the action (see {@link #doAction} for details)
      * @return {BasicForm} this
      */
     submit : function(options){
@@ -170,8 +181,8 @@ Ext.extend(Ext.form.BasicForm, Ext.util.Observable, {
     },
 
     /**
-     * Shortcut to do a load action
-     * @param {Object} options The options to pass to the action
+     * Shortcut to do a load action.
+     * @param {Object} options The options to pass to the action (see {@link #doAction} for details)
      * @return {BasicForm} this
      */
     load : function(options){
@@ -198,7 +209,7 @@ Ext.extend(Ext.form.BasicForm, Ext.util.Observable, {
     },
 
     /**
-     * Loads an Ext.data.Record into this form
+     * Loads an Ext.data.Record into this form.
      * @param {Record} record The record to load
      * @return {BasicForm} this
      */
@@ -324,7 +335,7 @@ Ext.extend(Ext.form.BasicForm, Ext.util.Observable, {
     },
 
     /**
-     * Returns the fields in this form as an object with key value pair. If multiple fields exist with the same name
+     * Returns the fields in this form as an object with key/value pairs. If multiple fields exist with the same name
      * they are returned as an array.
      * @param {Boolean} asString
      * @return {Object}
@@ -338,7 +349,7 @@ Ext.extend(Ext.form.BasicForm, Ext.util.Observable, {
     },
 
     /**
-     * Clears all invalid messages in this form
+     * Clears all invalid messages in this form.
      * @return {BasicForm} this
      */
     clearInvalid : function(){
@@ -349,7 +360,7 @@ Ext.extend(Ext.form.BasicForm, Ext.util.Observable, {
     },
 
     /**
-     * Resets this form
+     * Resets this form.
      * @return {BasicForm} this
      */
     reset : function(){
@@ -360,7 +371,7 @@ Ext.extend(Ext.form.BasicForm, Ext.util.Observable, {
     },
 
     /**
-     * Add Ext.form components to this form
+     * Add Ext.form components to this form.
      * @param {Field} field1
      * @param {Field} field2 (optional)
      * @param {Field} etc (optional)
@@ -373,7 +384,7 @@ Ext.extend(Ext.form.BasicForm, Ext.util.Observable, {
 
 
     /**
-     * Removes a field from the items collection (does NOT remove its markup)
+     * Removes a field from the items collection (does NOT remove its markup).
      * @param {Field} field
      * @return {BasicForm} this
      */
@@ -383,8 +394,8 @@ Ext.extend(Ext.form.BasicForm, Ext.util.Observable, {
     },
 
     /**
-     * Looks at the fields in this form, checks them for an id attribute
-     * and call applyTo on the existing dom element with that id
+     * Looks at the fields in this form, checks them for an id attribute,
+     * and calls applyTo on the existing dom element with that id.
      * @return {BasicForm} this
      */
     render : function(){
@@ -397,7 +408,7 @@ Ext.extend(Ext.form.BasicForm, Ext.util.Observable, {
     },
 
     /**
-     * Calls {@link Ext#apply} for all field in this form with the passed object
+     * Calls {@link Ext#apply} for all fields in this form with the passed object.
      * @param {Object} values
      * @return {BasicForm} this
      */
@@ -409,7 +420,7 @@ Ext.extend(Ext.form.BasicForm, Ext.util.Observable, {
     },
 
     /**
-     * Calls {@link Ext#applyIf} for all field in this form with the passed object
+     * Calls {@link Ext#applyIf} for all field in this form with the passed object.
      * @param {Object} values
      * @return {BasicForm} this
      */

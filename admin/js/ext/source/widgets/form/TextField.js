@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -135,6 +135,17 @@ Ext.extend(Ext.form.TextField, Ext.form.Field,  {
         }
     },
 
+    processValue : function(value){
+        if(this.stripCharsRe){
+            var newValue = value.replace(this.stripCharsRe, '');
+            if(newValue !== value){
+                this.setRawValue(newValue);
+                return newValue;
+            }
+        }
+        return value;
+    },
+
     filterValidation : function(e){
         if(!e.isNavKeyPress()){
             this.validationTask.delay(this.validationDelay);
@@ -167,7 +178,7 @@ Ext.extend(Ext.form.TextField, Ext.form.Field,  {
     // private
     preFocus : function(){
         if(this.emptyText){
-            if(this.getRawValue() == this.emptyText){
+            if(this.el.dom.value == this.emptyText){
                 this.setRawValue('');
             }
             this.el.removeClass(this.emptyClass);
@@ -188,20 +199,22 @@ Ext.extend(Ext.form.TextField, Ext.form.Field,  {
         if(!Ext.isIE && (e.isNavKeyPress() || k == e.BACKSPACE || (k == e.DELETE && e.button == -1))){
             return;
         }
-        if(Ext.isIE && (k == e.BACKSPACE || k == e.DELETE || e.isNavKeyPress() || k == e.HOME || k == e.END)){
+        var c = e.getCharCode(), cc = String.fromCharCode(c);
+        if(Ext.isIE && (e.isSpecialKey() || !cc)){
             return;
         }
-        var c = e.getCharCode();
-        if(!this.maskRe.test(String.fromCharCode(c) || '')){
+        if(!this.maskRe.test(cc)){
             e.stopEvent();
         }
     },
 
     setValue : function(v){
-        if(this.emptyText && v !== undefined && v !== null && v !== ''){
+        if(this.emptyText && this.el && v !== undefined && v !== null && v !== ''){
             this.el.removeClass(this.emptyClass);
         }
         Ext.form.TextField.superclass.setValue.apply(this, arguments);
+        this.applyEmptyText();
+        this.autoSize();
     },
 
     /**
@@ -273,7 +286,7 @@ Ext.extend(Ext.form.TextField, Ext.form.Field,  {
 
     /**
      * Automatically grows the field to accomodate the width of the text up to the maximum field width allowed.
-     * This only takes effect if grow = true and fires the autosize event.
+     * This only takes effect if grow = true, and fires the autosize event.
      */
     autoSize : function(){
         if(!this.grow || !this.rendered){

@@ -1,10 +1,9 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://www.extjs.com/license
  */
 
-
-Ext.data.MemoryProxy=function(_1){Ext.data.MemoryProxy.superclass.constructor.call(this);this.data=_1;};Ext.extend(Ext.data.MemoryProxy,Ext.data.DataProxy,{load:function(_2,_3,_4,_5,_6){_2=_2||{};var _7;try{_7=_3.readRecords(this.data);}catch(e){this.fireEvent("loadexception",this,_6,null,e);_4.call(_5,null,_6,false);return;}_4.call(_5,_7,_6,true);},update:function(_8,_9){}});
+Ext.data.MemoryProxy=function(A){Ext.data.MemoryProxy.superclass.constructor.call(this);this.data=A};Ext.extend(Ext.data.MemoryProxy,Ext.data.DataProxy,{load:function(F,C,G,D,B){F=F||{};var A;try{A=C.readRecords(this.data)}catch(E){this.fireEvent("loadexception",this,B,null,E);G.call(D,null,B,false);return }G.call(D,A,B,true)},update:function(B,A){}});

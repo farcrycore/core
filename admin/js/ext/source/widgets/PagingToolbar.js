@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -25,6 +25,10 @@ Ext.PagingToolbar = function(el, ds, config){
 };
 
 Ext.extend(Ext.PagingToolbar, Ext.Toolbar, {
+    /**
+     * @cfg {Boolean} displayInfo
+     * True to display the displayMsg (defaults to false)
+     */
     /**
      * @cfg {Number} pageSize
      * The number of records to display per page (defaults to 20)
@@ -121,7 +125,6 @@ Ext.extend(Ext.PagingToolbar, Ext.Toolbar, {
         this.loading = this.addButton({
             tooltip: this.refreshText,
             cls: "x-btn-icon x-grid-loading",
-            disabled: true,
             handler: this.onClick.createDelegate(this, ["refresh"])
         });
 

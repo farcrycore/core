@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -36,7 +36,7 @@ Ext.extend(Ext.form.NumberField, Ext.form.TextField,  {
      */
     decimalPrecision : 2,
     /**
-     * @cfg {Boolean} allowNegative False to require only positive numbers (defaults to true)
+     * @cfg {Boolean} allowNegative False to prevent entering a negative sign (defaults to true)
      */
     allowNegative : true,
     /**
@@ -71,9 +71,10 @@ Ext.extend(Ext.form.NumberField, Ext.form.TextField,  {
         if(this.allowNegative){
             allowed += "-";
         }
+        this.stripCharsRe = new RegExp('[^'+allowed+']', 'gi');
         var keyPress = function(e){
             var k = e.getKey();
-            if(!Ext.isIE && (e.isNavKeyPress() || k == e.BACKSPACE || (k == e.DELETE && e.button == -1))){
+            if(!Ext.isIE && (e.isSpecialKey() || k == e.BACKSPACE || k == e.DELETE)){
                 return;
             }
             var c = e.getCharCode();
@@ -92,12 +93,11 @@ Ext.extend(Ext.form.NumberField, Ext.form.TextField,  {
         if(value.length < 1){ // if it's blank and textfield didn't flag it then it's valid
              return true;
         }
-        value = String(value).replace(this.decimalSeparator, ".");
-        if(isNaN(value)){
+        var num = this.parseValue(value);
+        if(isNaN(num)){
             this.markInvalid(String.format(this.nanText, value));
             return false;
         }
-        var num = this.parseValue(value);
         if(num < this.minValue){
             this.markInvalid(String.format(this.minText, this.minValue));
             return false;
@@ -109,30 +109,38 @@ Ext.extend(Ext.form.NumberField, Ext.form.TextField,  {
         return true;
     },
 
+    getValue : function(){
+        return this.fixPrecision(this.parseValue(Ext.form.NumberField.superclass.getValue.call(this)));
+    },
+
     // private
     parseValue : function(value){
-        return parseFloat(String(value).replace(this.decimalSeparator, "."));
+        value = parseFloat(String(value).replace(this.decimalSeparator, "."));
+        return isNaN(value) ? '' : value;
     },
 
     // private
     fixPrecision : function(value){
-       if(!this.allowDecimals || this.decimalPrecision == -1 || isNaN(value) || value == 0 || !value){
-           return value;
-       }
-       // this should work but doesn't due to precision error in JS
-       // var scale = Math.pow(10, this.decimalPrecision);
-       // var fixed = this.decimalPrecisionFcn(value * scale);
-       // return fixed / scale;
-       //
-       // so here's our workaround:
-       var scale = Math.pow(10, this.decimalPrecision+1);
-       var fixed = this.decimalPrecisionFcn(value * scale);
-       fixed = this.decimalPrecisionFcn(fixed/10);
-       return fixed / (scale/10);
+        var nan = isNaN(value);
+        if(!this.allowDecimals || this.decimalPrecision == -1 || nan || !value){
+            return nan ? '' : value;
+        }
+        return parseFloat(value).toFixed(this.decimalPrecision);
+    },
+
+    setValue : function(v){
+        Ext.form.NumberField.superclass.setValue.call(this, String(v).replace(".", this.decimalSeparator));
     },
 
     // private
     decimalPrecisionFcn : function(v){
         return Math.floor(v);
+    },
+
+    beforeBlur : function(){
+        var v = this.parseValue(this.getRawValue());
+        if(v){
+            this.setValue(this.fixPrecision(v));
+        }
     }
 });

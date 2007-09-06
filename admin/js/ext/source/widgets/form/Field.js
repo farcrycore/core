@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -33,11 +33,11 @@ Ext.extend(Ext.form.Field, Ext.BoxComponent,  {
     focusClass : "x-form-focus",
     /**
      * @cfg {String/Boolean} validationEvent The event that should initiate field validation. Set to false to disable
-      automatic validation. (defaults to "keyup")
+      automatic validation (defaults to "keyup").
      */
     validationEvent : "keyup",
     /**
-     * @cfg {String/Boolean} validateOnBlur Defaults to true.
+     * @cfg {Boolean} validateOnBlur Whether the field should validate when it loses focus (defaults to true).
      */
     validateOnBlur : true,
     /**
@@ -52,7 +52,7 @@ Ext.extend(Ext.form.Field, Ext.BoxComponent,  {
     /**
      * @cfg {String} fieldClass The default CSS class for the field (defaults to "x-form-field")
      */
-    fieldClass: "x-form-field",
+    fieldClass : "x-form-field",
     /**
      * @cfg {String} msgTarget The location where error text should display.  Should be one of the following values (defaults to 'qtip'):
      *<pre>
@@ -65,21 +65,32 @@ side          Add an error icon to the right of the field with a popup on hover
 [element id]  Add the error text directly to the innerHTML of the specified element
 </pre>
      */
-    msgTarget: 'qtip',
+    msgTarget : 'qtip',
     /**
      * @cfg {String} msgFx <b>Experimental</b> The effect used when displaying a validation message under the field (defaults to 'normal').
      */
     msgFx : 'normal',
 
     /**
-     * @cfg {Boolean} readOnly True to mark the field as readOnly in HTML - Note: this only sets the readOnly attribute.
+     * @cfg {Boolean} readOnly True to mark the field as readOnly in HTML (defaults to false) -- Note: this only sets the element's readOnly DOM attribute.
      */
-    
+    readOnly : false,
+
     /**
-     * @cfg {String} inputType The type attribute for input fields - e.g. radio, text, password. (defaults to "text")
+     * @cfg {Boolean} disabled True to disable the field (defaults to false).
+     */
+    disabled : false,
+
+    /**
+     * @cfg {String} inputType The type attribute for input fields -- e.g. radio, text, password (defaults to "text").
      */
     inputType : undefined,
-
+    
+    /**
+     * @cfg {Number} tabIndex The tabIndex for this field. Note this only applies to fields that are rendered, not those which are built via applyTo (defaults to undefined).
+	 */
+	tabIndex : undefined,
+	
     // private
     isFormField : true,
 
@@ -87,18 +98,19 @@ side          Add an error icon to the right of the field with a popup on hover
     hasFocus : false,
 
     /**
-     * @cfg {Mixed} value A value to initialize this field with
+     * @cfg {Mixed} value A value to initialize this field with.
      */
     value : undefined,
 
     /**
-     * @cfg {String} name The field's HTML name attribute
+     * @cfg {String} name The field's HTML name attribute.
      */
     /**
-     * @cfg {String} cls A CSS class to apply to the field's underlying element
+     * @cfg {String} cls A CSS class to apply to the field's underlying element.
      */
 
-    initComponent : function(){
+	// private ??
+	initComponent : function(){
         Ext.form.Field.superclass.initComponent.call(this);
         this.addEvents({
             /**
@@ -125,8 +137,8 @@ side          Add an error icon to the right of the field with a popup on hover
              * @event change
              * Fires just before the field blurs if the field value has changed.
              * @param {Ext.form.Field} this
-             * @param {Mixed} value The changed value
-             * @param {Mixed} value The original value
+             * @param {Mixed} newValue The new value
+             * @param {Mixed} oldValue The original value
              */
             change : true,
             /**
@@ -153,18 +165,6 @@ side          Add an error icon to the right of the field with a popup on hover
          return this.rendered && this.el.dom.name ? this.el.dom.name : (this.hiddenName || '');
     },
 
-    /**
-     * Apply the behaviors of this component to an existing element. <b>This is used instead of render().</b>
-     * @param {String/HTMLElement/Element} el The id of the node, a DOM Node or an existing Element
-     * @return {Ext.form.Field} this
-     */
-    applyTo : function(target){
-        this.allowDomMove = false;
-        this.el = Ext.get(target);
-        this.render(this.el.dom.parentNode);
-        return this;
-    },
-
     // private
     onRender : function(ct, position){
         Ext.form.Field.superclass.onRender.call(this, ct, position);
@@ -175,9 +175,6 @@ side          Add an error icon to the right of the field with a popup on hover
             }
             if(this.inputType){
                 cfg.type = this.inputType;
-            }
-            if(this.tabIndex !== undefined){
-                cfg.tabIndex = this.tabIndex;
             }
             this.el = ct.createChild(cfg, position);
         }
@@ -191,9 +188,24 @@ side          Add an error icon to the right of the field with a popup on hover
         if(this.readOnly){
             this.el.dom.readOnly = true;
         }
+        if(this.tabIndex !== undefined){
+            this.el.dom.setAttribute('tabIndex', this.tabIndex);
+        }
 
         this.el.addClass([this.fieldClass, this.cls]);
         this.initValue();
+    },
+
+    /**
+     * Apply the behaviors of this component to an existing element. <b>This is used instead of render().</b>
+     * @param {String/HTMLElement/Element} el The id of the node, a DOM node or an existing Element
+     * @return {Ext.form.Field} this
+     */
+    applyTo : function(target){
+        this.allowDomMove = false;
+        this.el = Ext.get(target);
+        this.render(this.el.dom.parentNode);
+        return this;
     },
 
     // private
@@ -206,7 +218,7 @@ side          Add an error icon to the right of the field with a popup on hover
     },
 
     /**
-     * Returns true if this field has ben changed since it was originally loaded and is not disabled.
+     * Returns true if this field has been changed since it was originally loaded and is not disabled.
      */
     isDirty : function() {
         if(this.disabled) {
@@ -229,7 +241,7 @@ side          Add an error icon to the right of the field with a popup on hover
     },
 
     /**
-     * Resets the current field value to the originally-loaded value and clears any validation messages
+     * Resets the current field value to the originally loaded value and clears any validation messages
      */
     reset : function(){
         this.setValue(this.originalValue);
@@ -248,23 +260,30 @@ side          Add an error icon to the right of the field with a popup on hover
 
     // private
     onFocus : function(){
-        if(!Ext.isOpera){ // don't touch in Opera
+        if(!Ext.isOpera && this.focusClass){ // don't touch in Opera
             this.el.addClass(this.focusClass);
         }
-        this.hasFocus = true;
-        this.startValue = this.getValue();
-        this.fireEvent("focus", this);
+        if(!this.hasFocus){
+            this.hasFocus = true;
+            this.startValue = this.getValue();
+            this.fireEvent("focus", this);
+        }
     },
+
+    beforeBlur : Ext.emptyFn,
 
     // private
     onBlur : function(){
-        this.el.removeClass(this.focusClass);
+        this.beforeBlur();
+        if(!Ext.isOpera && this.focusClass){ // don't touch in Opera
+            this.el.removeClass(this.focusClass);
+        }
         this.hasFocus = false;
         if(this.validationEvent !== false && this.validateOnBlur && this.validationEvent != "blur"){
             this.validate();
         }
         var v = this.getValue();
-        if(v != this.startValue){
+        if(String(v) !== String(this.startValue)){
             this.fireEvent('change', this, v, this.startValue);
         }
         this.fireEvent("blur", this);
@@ -281,7 +300,7 @@ side          Add an error icon to the right of the field with a popup on hover
         }
         var restore = this.preventMark;
         this.preventMark = preventMark === true;
-        var v = this.validateValue(this.getRawValue());
+        var v = this.validateValue(this.processValue(this.getRawValue()));
         this.preventMark = restore;
         return v;
     },
@@ -291,11 +310,15 @@ side          Add an error icon to the right of the field with a popup on hover
      * @return {Boolean} True if the value is valid, else false
      */
     validate : function(){
-        if(this.disabled || this.validateValue(this.getRawValue())){
+        if(this.disabled || this.validateValue(this.processValue(this.getRawValue()))){
             this.clearInvalid();
             return true;
         }
         return false;
+    },
+
+    processValue : function(value){
+        return value;
     },
 
     // private
@@ -343,6 +366,7 @@ side          Add an error icon to the right of the field with a popup on hover
                 this.errorIcon.dom.qtip = msg;
                 this.errorIcon.dom.qclass = 'x-form-invalid-tip';
                 this.errorIcon.show();
+                this.on('resize', this.alignErrorIcon, this);
                 break;
             default:
                 var t = Ext.getDom(this.msgTarget);
@@ -382,6 +406,7 @@ side          Add an error icon to the right of the field with a popup on hover
                 if(this.errorIcon){
                     this.errorIcon.dom.qtip = '';
                     this.errorIcon.hide();
+                    this.un('resize', this.alignErrorIcon, this);
                 }
                 break;
             default:
@@ -398,7 +423,11 @@ side          Add an error icon to the right of the field with a popup on hover
      * @return {Mixed} value The field value
      */
     getRawValue : function(){
-        return this.el.getValue();
+        var v = this.el.getValue();
+        if(v === this.emptyText){
+            v = '';
+        }
+        return v;
     },
 
     /**
@@ -407,7 +436,7 @@ side          Add an error icon to the right of the field with a popup on hover
      */
     getValue : function(){
         var v = this.el.getValue();
-        if(v == this.emptyText || v === undefined){
+        if(v === this.emptyText || v === undefined){
             v = '';
         }
         return v;
@@ -449,8 +478,6 @@ side          Add an error icon to the right of the field with a popup on hover
                 if(tag = 'textarea'){
                     return w-2;
                 }
-            }else if(Ext.isGecko && tag == 'textarea'){
-                return w-6;
             }else if(Ext.isOpera){
                 if(tag == 'input'){
                     return w + 2;

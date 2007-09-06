@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -42,8 +42,8 @@ Ext.tree.TreeSorter = function(tree, config){
                 return -1;
             }
         }
-    	var v1 = sortType ? sortType(n1) : (cs ? n1[p] : n1[p].toUpperCase());
-    	var v2 = sortType ? sortType(n2) : (cs ? n2[p] : n2[p].toUpperCase());
+    	var v1 = sortType ? sortType(n1) : (cs ? n1.attributes[p] : n1.attributes[p].toUpperCase());
+    	var v2 = sortType ? sortType(n2) : (cs ? n2.attributes[p] : n2.attributes[p].toUpperCase());
     	if(v1 < v2){
 			return dsc ? +1 : -1;
 		}else if(v1 > v2){
@@ -60,7 +60,6 @@ Ext.tree.TreeSorter.prototype = {
     },
     
     compareNodes : function(n1, n2){
-        
         return (n1.text.toUpperCase() > n2.text.toUpperCase() ? 1 : -1);
     },
     

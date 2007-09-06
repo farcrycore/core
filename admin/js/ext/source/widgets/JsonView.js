@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -9,39 +9,39 @@
 /**
  * @class Ext.JsonView
  * @extends Ext.View
- * Shortcut class to create a JSON + UpdateManager template view. Usage:
- <pre><code>
- var view = new Ext.JsonView("my-element",
- '&lt;div id="{id}"&gt;{foo} - {bar}&lt;/div&gt;', // auto create template
- { multiSelect: true, jsonRoot: "data" });
+ * Shortcut class to create a JSON + {@link Ext.UpdateManager} template view. Usage:
+<pre><code>
+var view = new Ext.JsonView("my-element",
+    '&lt;div id="{id}"&gt;{foo} - {bar}&lt;/div&gt;', // auto create template
+    { multiSelect: true, jsonRoot: "data" }
+);
 
- // listen for node click?
- view.on("click", function(vw, index, node, e){
- alert('Node "' + node.id + '" at index: ' + index + " was clicked.");
- });
+// listen for node click?
+view.on("click", function(vw, index, node, e){
+    alert('Node "' + node.id + '" at index: ' + index + " was clicked.");
+});
 
- // direct load of JSON data
- view.load("foobar.php");
+// direct load of JSON data
+view.load("foobar.php");
 
+// Example from my blog list
+var tpl = new Ext.Template(
+    '&lt;div class="entry"&gt;' +
+    '&lt;a class="entry-title" href="{link}"&gt;{title}&lt;/a&gt;' +
+    "&lt;h4&gt;{date} by {author} | {comments} Comments&lt;/h4&gt;{description}" +
+    "&lt;/div&gt;&lt;hr /&gt;"
+);
 
- // Example from my blog list
- var tpl = new Ext.Template(
- '&lt;div class="entry"&gt;' +
- '&lt;a class="entry-title" href="{link}"&gt;{title}&lt;/a&gt;' +
- "&lt;h4&gt;{date} by {author} | {comments} Comments&lt;/h4&gt;{description}" +
- "&lt;/div&gt;&lt;hr /&gt;"
- );
-
- var moreView = new Ext.JsonView("entry-list", tpl, {
- jsonRoot: "posts"
- });
- moreView.on("beforerender", this.sortEntries, this);
- moreView.load({
- url:"/blog/get-posts.php",
- params: "allposts=true",
- text:"Loading Blog Entries..."
- });
- </code></pre>
+var moreView = new Ext.JsonView("entry-list", tpl, {
+    jsonRoot: "posts"
+});
+moreView.on("beforerender", this.sortEntries, this);
+moreView.load({
+    url: "/blog/get-posts.php",
+    params: "allposts=true",
+    text: "Loading Blog Entries..."
+});
+</code></pre>
  * @constructor
  * Create a new JsonView
  * @param {String/HTMLElement/Element} container The container element where the view is to be rendered.
@@ -58,21 +58,21 @@ Ext.JsonView = function(container, tpl, config){
 
     /**
      * @event beforerender
-     * Fires before rendering of the downloaded json data.
-     * @param {Ext.View} this
-     * @param {Object} data The json data loaded
+     * Fires before rendering of the downloaded JSON data.
+     * @param {Ext.JsonView} this
+     * @param {Object} data The JSON data loaded
      */
     /**
      * @event load
      * Fires when data is loaded.
-     * @param {Ext.View} this
-     * @param {Object} data The json data loaded
+     * @param {Ext.JsonView} this
+     * @param {Object} data The JSON data loaded
      * @param {Object} response The raw Connect response object
      */
     /**
      * @event loadexception
      * Fires when loading fails.
-     * @param {Ext.View} this
+     * @param {Ext.JsonView} this
      * @param {Object} response The raw Connect response object
      */
     this.addEvents({
@@ -83,7 +83,7 @@ Ext.JsonView = function(container, tpl, config){
 };
 Ext.extend(Ext.JsonView, Ext.View, {
     /**
-     * The root property in the loaded json object that contains the data
+     * The root property in the loaded JSON object that contains the data
      * @type {String}
      */
     jsonRoot : "",
@@ -110,26 +110,26 @@ Ext.extend(Ext.JsonView, Ext.View, {
     },
 
     /**
-     * Performs an async request, loading the JSON from the response. If params are specified it uses POST, otherwise it uses GET.
-     * @param {Object/String/Function} url The url for this request or a function to call to get the url or a config object containing any of the following options:
+     * Performs an async HTTP request, and loads the JSON from the response. If <i>params</i> are specified it uses POST, otherwise it uses GET.
+     * @param {Object/String/Function} url The URL for this request, or a function to call to get the URL, or a config object containing any of the following options:
      <pre><code>
      view.load({
-     url: "your-url.php",<br/>
-     params: {param1: "foo", param2: "bar"}, // or a URL encoded string<br/>
-     callback: yourFunction,<br/>
-     scope: yourObject, //(optional scope)  <br/>
-     discardUrl: false, <br/>
-     nocache: false,<br/>
-     text: "Loading...",<br/>
-     timeout: 30,<br/>
-     scripts: false<br/>
+         url: "your-url.php",
+         params: {param1: "foo", param2: "bar"}, // or a URL encoded string
+         callback: yourFunction,
+         scope: yourObject, //(optional scope)
+         discardUrl: false,
+         nocache: false,
+         text: "Loading...",
+         timeout: 30,
+         scripts: false
      });
      </code></pre>
-     * The only required property is url. The optional properties nocache, text and scripts
-     * are shorthand for disableCaching, indicatorText and loadScripts and are used to set their associated property on this UpdateManager instance.
-     * @param {String/Object} params (optional) The parameters to pass as either a url encoded string "param1=1&amp;param2=2" or an object {param1: 1, param2: 2}
+     * The only required property is <i>url</i>. The optional properties <i>nocache</i>, <i>text</i> and <i>scripts</i>
+     * are respectively shorthand for <i>disableCaching</i>, <i>indicatorText</i>, and <i>loadScripts</i> and are used to set their associated property on this UpdateManager instance.
+     * @param {String/Object} params (optional) The parameters to pass, as either a URL encoded string "param1=1&amp;param2=2" or an object {param1: 1, param2: 2}
      * @param {Function} callback (optional) Callback when transaction is complete - called with signature (oElement, bSuccess)
-     * @param {Boolean} discardUrl (optional) By default when you execute an update the defaultUrl is changed to the last used url. If true, it will not store the url.
+     * @param {Boolean} discardUrl (optional) By default when you execute an update the defaultUrl is changed to the last used URL. If true, it will not store the URL.
      */
     load : function(){
         var um = this.el.getUpdateManager();
@@ -148,7 +148,7 @@ Ext.extend(Ext.JsonView, Ext.View, {
         } catch(e){
         }
         /**
-         * The current json data or null
+         * The current JSON data or null
          */
         this.jsonData = o;
         this.beforeRender();
@@ -200,7 +200,7 @@ Ext.extend(Ext.JsonView, Ext.View, {
  * Filter the data by a specific property.
  * @param {String} property A property on your JSON objects
  * @param {String/RegExp} value Either string that the property values
- * should start with or a RegExp to test against the property
+ * should start with, or a RegExp to test against the property
  */
     filter : function(property, value){
         if(this.jsonData){
@@ -236,7 +236,7 @@ Ext.extend(Ext.JsonView, Ext.View, {
 
 /**
  * Filter by a function. The passed function will be called with each
- * object in the current dataset. If the function returns true, the value is kept
+ * object in the current dataset. If the function returns true the value is kept,
  * otherwise it is filtered.
  * @param {Function} fn
  * @param {Object} scope (optional) The scope of the function (defaults to this JsonView)
@@ -270,7 +270,7 @@ Ext.extend(Ext.JsonView, Ext.View, {
 /**
  * Sorts the data for this view and refreshes it.
  * @param {String} property A property on your JSON objects to sort on
- * @param {String} direction (optional) desc or asc (defaults to asc)
+ * @param {String} direction (optional) "desc" or "asc" (defaults to "asc")
  * @param {Function} sortType (optional) A function to call to convert the data to a sortable value.
  */
     sort : function(property, dir, sortType){

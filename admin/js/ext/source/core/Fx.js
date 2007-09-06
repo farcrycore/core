@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -46,9 +46,9 @@ br     The bottom right corner
  * @cfg {String} afterCls A css class to apply after the effect
  * @cfg {Number} duration The length of time (in seconds) that the effect should last
  * @cfg {Boolean} remove Whether the Element should be removed from the DOM and destroyed after the effect finishes
- * @cfg {Boolean} useDisplay Whether to use the display style attribute instead of visibility when hiding Elements (only applies to 
+ * @cfg {Boolean} useDisplay Whether to use the <i>display</i> CSS property instead of <i>visibility</i> when hiding Elements (only applies to 
  * effects that end with the element being visually hidden, ignored otherwise)
- * @cfg {String/Object/Function} afterStyle A style specification string eg "width:100px", or object in the form {width:"100px"}, or
+ * @cfg {String/Object/Function} afterStyle A style specification string, e.g. "width:100px", or an object in the form {width:"100px"}, or
  * a function which returns such a specification that will be applied to the Element after the effect finishes
  * @cfg {Boolean} block Whether the effect should block other effects from queueing while it runs
  * @cfg {Boolean} concurrent Whether to allow subsequently-queued effects to run at the same time as the current effect, or to ensure that they run in sequence
@@ -68,14 +68,14 @@ el.slideIn();
 el.slideIn('r', { duration: 2 });
 
 // common config options shown with default values
-el.slideIn('t', {<br/>
-    easing: 'easeOut', <br/>
-    duration: .5<br/>
+el.slideIn('t', {
+    easing: 'easeOut',
+    duration: .5
 });
-	</code></pre>
+</code></pre>
 	 * @param {String} anchor (optional) One of the valid Fx anchor positions (defaults to top: 't')
 	 * @param {Object} options (optional) Object literal with any of the Fx config options
-	 * @return {Element} The Element
+	 * @return {Ext.Element} The Element
 	 */
     slideIn : function(anchor, o){
         var el = this.getFxEl();
@@ -185,16 +185,16 @@ el.slideOut();
 el.slideOut('r', { duration: 2 });
 
 // common config options shown with default values
-el.slideOut('t', {<br/>
-    easing: 'easeOut', <br/>
-    duration: .5,<br/>
-    remove: false,<br />
+el.slideOut('t', {
+    easing: 'easeOut',
+    duration: .5,
+    remove: false,
     useDisplay: false
 });
-	</code></pre>
+</code></pre>
 	 * @param {String} anchor (optional) One of the valid Fx anchor positions (defaults to top: 't')
 	 * @param {Object} options (optional) Object literal with any of the Fx config options
-	 * @return {Element} The Element
+	 * @return {Ext.Element} The Element
 	 */
     slideOut : function(anchor, o){
         var el = this.getFxEl();
@@ -290,15 +290,15 @@ el.slideOut('t', {<br/>
 el.puff();
 
 // common config options shown with default values
-el.puff({<br/>
-    easing: 'easeOut', <br/>
-    duration: .5,<br/>
-    remove: false,<br />
+el.puff({
+    easing: 'easeOut',
+    duration: .5,
+    remove: false,
     useDisplay: false
 });
-	</code></pre>
+</code></pre>
 	 * @param {Object} options (optional) Object literal with any of the Fx config options
-	 * @return {Element} The Element
+	 * @return {Ext.Element} The Element
 	 */
     puff : function(o){
         var el = this.getFxEl();
@@ -349,22 +349,22 @@ el.puff({<br/>
 	/**
 	 * Blinks the element as if it was clicked and then collapses on its center (similar to switching off a television).
 	 * When the effect is completed, the element will be hidden (visibility = 'hidden') but block elements will still 
-	 * take up space in the document. The element must be removed from the using the 'remove' config option if desired.
+	 * take up space in the document. The element must be removed from the DOM using the 'remove' config option if desired.
 	 * Usage:
 	 *<pre><code>
 // default
 el.switchOff();
 
 // all config options shown with default values
-el.switchOff({<br/>
-    easing: 'easeIn', <br/>
-    duration: .3,<br/>
-    remove: false,<br />
+el.switchOff({
+    easing: 'easeIn',
+    duration: .3,
+    remove: false,
     useDisplay: false
 });
-	</code></pre>
+</code></pre>
 	 * @param {Object} options (optional) Object literal with any of the Fx config options
-	 * @return {Element} The Element
+	 * @return {Ext.Element} The Element
 	 */
     switchOff : function(o){
         var el = this.getFxEl();
@@ -419,16 +419,16 @@ el.highlight();
 el.highlight("0000ff", { attr: 'color', duration: 2 });
 
 // common config options shown with default values
-el.highlight("ffff9c", {<br/>
-    attr: "background-color", //can be any valid css attribute that supports a color value<br/>
-    endColor: (current color) or "ffffff",<br/>
-    easing: 'easeIn',<br/>
-    duration: 1<br/>
+el.highlight("ffff9c", {
+    attr: "background-color", //can be any valid CSS property (attribute) that supports a color value
+    endColor: (current color) or "ffffff",
+    easing: 'easeIn',
+    duration: 1
 });
 </code></pre>
      * @param {String} color (optional) The highlight color. Should be a 6 char hex color without the leading # (defaults to yellow: 'ffff9c')
      * @param {Object} options (optional) Object literal with any of the Fx config options
-     * @return {Element} The Element
+     * @return {Ext.Element} The Element
      */	
     highlight : function(color, o){
         var el = this.getFxEl();
@@ -472,15 +472,15 @@ el.frame();
 el.frame("ff0000", 3, { duration: 3 });
 
 // common config options shown with default values
-el.frame("C3DAF9", 1, {<br/>
-    duration: 1 //duration of entire animation (not each individual ripple)<br/>
+el.frame("C3DAF9", 1, {
+    duration: 1 //duration of entire animation (not each individual ripple)
     // Note: Easing is not configurable and will be ignored if included
 });
 </code></pre>
     * @param {String} color (optional) The color of the border.  Should be a 6 char hex color without the leading # (defaults to light blue: 'C3DAF9').
     * @param {Number} count (optional) The number of ripples to display (defaults to 1)
     * @param {Object} options (optional) Object literal with any of the Fx config options
-    * @return {Element} The Element
+    * @return {Ext.Element} The Element
     */
     frame : function(color, count, o){
         var el = this.getFxEl();
@@ -498,7 +498,7 @@ el.frame("C3DAF9", 1, {<br/>
             var b = this.getBox();
             var animFn = function(){
                 var proxy = this.createProxy({
-                     tag:"div",
+
                      style:{
                         visbility:"hidden",
                         position:"absolute",
@@ -530,13 +530,13 @@ el.frame("C3DAF9", 1, {<br/>
 
    /**
     * Creates a pause before any subsequent queued effects begin.  If there are
-    * no effects queued after the pause it will have no affect.
+    * no effects queued after the pause it will have no effect.
     * Usage:
 <pre><code>
 el.pause(1);
 </code></pre>
     * @param {Number} seconds The length of time to pause (in seconds)
-    * @return {Element} The Element
+    * @return {Ext.Element} The Element
     */
     pause : function(seconds){
         var el = this.getFxEl();
@@ -555,21 +555,21 @@ el.pause(1);
     * using the "endOpacity" config option.
     * Usage:
 <pre><code>
-// default: fade in from opactiy 0 to 100%
+// default: fade in from opacity 0 to 100%
 el.fadeIn();
 
-// custom: fade in from opcaity 0 to 75% over 2 seconds
+// custom: fade in from opacity 0 to 75% over 2 seconds
 el.fadeIn({ endOpacity: .75, duration: 2});
 
 // common config options shown with default values
-el.fadeIn({<br/>
-	endOpacity: 1, //can be any value between 0 and 1 (e.g. .5)<br/>
-    easing: 'easeOut',<br/>
-    duration: .5<br/>
+el.fadeIn({
+    endOpacity: 1, //can be any value between 0 and 1 (e.g. .5)
+    easing: 'easeOut',
+    duration: .5
 });
 </code></pre>
     * @param {Object} options (optional) Object literal with any of the Fx config options
-    * @return {Element} The Element
+    * @return {Ext.Element} The Element
     */
     fadeIn : function(o){
         var el = this.getFxEl();
@@ -602,16 +602,16 @@ el.fadeOut();
 el.fadeOut({ endOpacity: .25, duration: 2});
 
 // common config options shown with default values
-el.fadeOut({<br/>
-	endOpacity: 0, //can be any value between 0 and 1 (e.g. .5)<br/>
-    easing: 'easeOut',<br/>
-    duration: .5<br/>
-    remove: false,<br />
+el.fadeOut({
+    endOpacity: 0, //can be any value between 0 and 1 (e.g. .5)
+    easing: 'easeOut',
+    duration: .5
+    remove: false,
     useDisplay: false
 });
 </code></pre>
     * @param {Object} options (optional) Object literal with any of the Fx config options
-    * @return {Element} The Element
+    * @return {Ext.Element} The Element
     */
     fadeOut : function(o){
         var el = this.getFxEl();
@@ -642,16 +642,16 @@ el.scale(100, 100);
 // common config options shown with default values.  The height and width will default to
 // the element's existing values if passed as null.
 el.scale(
-	[element's width],<br/>
-	[element's height], {<br/>
-    easing: 'easeOut',<br/>
-    duration: .35<br/>
+    [element's width],
+    [element's height], {
+    easing: 'easeOut',
+    duration: .35
 });
 </code></pre>
     * @param {Number} width  The new width (pass undefined to keep the original width)
     * @param {Number} height  The new height (pass undefined to keep the original height)
     * @param {Object} options (optional) Object literal with any of the Fx config options
-    * @return {Element} The Element
+    * @return {Ext.Element} The Element
     */
     scale : function(w, h, o){
         this.shift(Ext.apply({}, o, {
@@ -665,7 +665,7 @@ el.scale(
     * Animates the transition of any combination of an element's dimensions, xy position and/or opacity.
     * Any of these properties not specified in the config object will not be changed.  This effect 
     * requires that at least one new dimension, position or opacity setting must be passed in on
-    * the config object in order for the function to have any affect.
+    * the config object in order for the function to have any effect.
     * Usage:
 <pre><code>
 // slide the element horizontally to x position 200 while changing the height and opacity
@@ -673,17 +673,17 @@ el.shift({ x: 200, height: 50, opacity: .8 });
 
 // common config options shown with default values.
 el.shift({
-	width: [element's width],<br/>
-	height: [element's height],<br/>
-	x: [element's x position],<br/>
-	y: [element's y position],<br/>
-	opacity: [element's opacity],<br/>
-    easing: 'easeOut',<br/>
-    duration: .35<br/>
+    width: [element's width],
+    height: [element's height],
+    x: [element's x position],
+    y: [element's y position],
+    opacity: [element's opacity],
+    easing: 'easeOut',
+    duration: .35
 });
 </code></pre>
     * @param {Object} options  Object literal with any of the Fx config options
-    * @return {Element} The Element
+    * @return {Ext.Element} The Element
     */
     shift : function(o){
         var el = this.getFxEl();
@@ -728,16 +728,16 @@ el.ghost();
 el.ghost('r', { duration: 2 });
 
 // common config options shown with default values
-el.ghost('b', {<br/>
-    easing: 'easeOut', <br/>
-    duration: .5<br/>
-    remove: false,<br />
+el.ghost('b', {
+    easing: 'easeOut',
+    duration: .5
+    remove: false,
     useDisplay: false
 });
-	</code></pre>
+</code></pre>
 	 * @param {String} anchor (optional) One of the valid Fx anchor positions (defaults to bottom: 'b')
 	 * @param {Object} options (optional) Object literal with any of the Fx config options
-	 * @return {Element} The Element
+	 * @return {Ext.Element} The Element
 	 */
     ghost : function(anchor, o){
         var el = this.getFxEl();
@@ -808,7 +808,7 @@ el.ghost('b', {<br/>
 	/**
 	 * Ensures that all effects queued after syncFx is called on the element are
 	 * run concurrently.  This is the opposite of {@link #sequenceFx}.
-	 * @return {Element} The Element
+	 * @return {Ext.Element} The Element
 	 */
     syncFx : function(){
         this.fxDefaults = Ext.apply(this.fxDefaults || {}, {
@@ -822,7 +822,7 @@ el.ghost('b', {<br/>
 	/**
 	 * Ensures that all effects queued after sequenceFx is called on the element are
 	 * run in sequence.  This is the opposite of {@link #syncFx}.
-	 * @return {Element} The Element
+	 * @return {Ext.Element} The Element
 	 */
     sequenceFx : function(){
         this.fxDefaults = Ext.apply(this.fxDefaults || {}, {
@@ -852,7 +852,7 @@ el.ghost('b', {<br/>
 	/**
 	 * Stops any running effects and clears the element's internal effects queue if it contains
 	 * any additional effects that haven't started yet.
-	 * @return {Element} The Element
+	 * @return {Ext.Element} The Element
 	 */
     stopFx : function(){
         if(this.hasActiveFx()){

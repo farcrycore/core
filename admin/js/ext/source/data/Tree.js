@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -12,7 +12,7 @@
  * Represents a tree data structure and bubbles all the events for its nodes. The nodes
  * in the tree have most standard DOM functionality.
  * @constructor
- * @param {Node} root (optional) The root node 
+ * @param {Node} root (optional) The root node
  */
 Ext.data.Tree = function(root){
    this.nodeHash = {};
@@ -103,17 +103,21 @@ Ext.data.Tree = function(root){
 
 Ext.extend(Ext.data.Tree, Ext.util.Observable, {
     pathSeparator: "/",
-    
+
+    proxyNodeEvent : function(){
+        return this.fireEvent.apply(this, arguments);
+    },
+
     /**
-     * Returns this root node for this tree
+     * Returns the root node for this tree.
      * @return {Node}
      */
     getRootNode : function(){
         return this.root;
     },
-    
+
     /**
-     * Sets the root node for this tree
+     * Sets the root node for this tree.
      * @param {Node} node
      * @return {Node}
      */
@@ -124,27 +128,27 @@ Ext.extend(Ext.data.Tree, Ext.util.Observable, {
         this.registerNode(node);
         return node;
     },
-    
+
     /**
-     * Gets a node in this tree by its id
+     * Gets a node in this tree by its id.
      * @param {String} id
      * @return {Node}
      */
     getNodeById : function(id){
         return this.nodeHash[id];
     },
-    
+
     registerNode : function(node){
         this.nodeHash[node.id] = node;
     },
-    
+
     unregisterNode : function(node){
         delete this.nodeHash[node.id];
     },
-    
+
     toString : function(){
         return "[Tree"+(this.id?" "+this.id:"")+"]";
-    }  
+    }
 });
 
 /**
@@ -153,7 +157,7 @@ Ext.extend(Ext.data.Tree, Ext.util.Observable, {
  * @cfg {Boolean} leaf true if this node is a leaf and does not have children
  * @cfg {String} id The id for this node. If one is not specified, one is generated.
  * @constructor
- * @param {Object} attributes The attributes/config for the node 
+ * @param {Object} attributes The attributes/config for the node
  */
 Ext.data.Node = function(attributes){
     /**
@@ -202,7 +206,7 @@ Ext.data.Node = function(attributes){
      * The node immediately following this node in the tree, or null if there is no sibling node. @type Node
      */
     this.nextSibling = null;
-    
+
     this.addEvents({
        /**
         * @event append
@@ -295,46 +299,46 @@ Ext.extend(Ext.data.Node, Ext.util.Observable, {
         }
         return true;
     },
-    
+
     /**
-     * Returns true if this node is a leaf 
+     * Returns true if this node is a leaf
      * @return {Boolean}
      */
     isLeaf : function(){
-        return this.leaf === true;  
+        return this.leaf === true;
     },
-    
+
     // private
     setFirstChild : function(node){
-        this.firstChild = node;  
+        this.firstChild = node;
     },
-    
+
     //private
     setLastChild : function(node){
         this.lastChild = node;
     },
-    
-    
+
+
     /**
      * Returns true if this node is the last child of its parent
      * @return {Boolean}
      */
     isLast : function(){
-       return (!this.parentNode ? true : this.parentNode.lastChild == this);   
+       return (!this.parentNode ? true : this.parentNode.lastChild == this);
     },
-    
+
     /**
      * Returns true if this node is the first child of its parent
      * @return {Boolean}
      */
     isFirst : function(){
-       return (!this.parentNode ? true : this.parentNode.firstChild == this);   
+       return (!this.parentNode ? true : this.parentNode.firstChild == this);
     },
-    
+
     hasChildNodes : function(){
         return !this.isLeaf() && this.childNodes.length > 0;
     },
-    
+
     /**
      * Insert node(s) as the last child node of this node.
      * @param {Node/Array} node The node or Array of nodes to append
@@ -388,7 +392,7 @@ Ext.extend(Ext.data.Node, Ext.util.Observable, {
             return node;
         }
     },
-    
+
     /**
      * Removes a child node from this node.
      * @param {Node} node The node to remove
@@ -402,10 +406,10 @@ Ext.extend(Ext.data.Node, Ext.util.Observable, {
         if(this.fireEvent("beforeremove", this.ownerTree, this, node) === false){
             return false;
         }
-            
+
         // remove it from childNodes collection
         this.childNodes.splice(index, 1);
-        
+
         // update siblings
         if(node.previousSibling){
             node.previousSibling.nextSibling = node.nextSibling;
@@ -413,7 +417,7 @@ Ext.extend(Ext.data.Node, Ext.util.Observable, {
         if(node.nextSibling){
             node.nextSibling.previousSibling = node.previousSibling;
         }
-        
+
         // update child refs
         if(this.firstChild == node){
             this.setFirstChild(node.nextSibling);
@@ -421,7 +425,7 @@ Ext.extend(Ext.data.Node, Ext.util.Observable, {
         if(this.lastChild == node){
             this.setLastChild(node.previousSibling);
         }
-        
+
         node.setOwnerTree(null);
         // clear any references from the node
         node.parentNode = null;
@@ -430,7 +434,7 @@ Ext.extend(Ext.data.Node, Ext.util.Observable, {
         this.fireEvent("remove", this.ownerTree, this, node);
         return node;
     },
-    
+
     /**
      * Inserts the first node before the second node in this nodes childNodes collection.
      * @param {Node} node The node to insert
@@ -445,19 +449,19 @@ Ext.extend(Ext.data.Node, Ext.util.Observable, {
         if(node == refNode){
             return false;
         }
-        
+
         if(this.fireEvent("beforeinsert", this.ownerTree, this, node, refNode) === false){
             return false;
         }
         var index = this.childNodes.indexOf(refNode);
         var oldParent = node.parentNode;
         var refIndex = index;
-        
+
         // when moving internally, indexes will change after remove
         if(oldParent == this && this.childNodes.indexOf(node) < index){
             refIndex--;
         }
-        
+
         // it's a move, make sure we move it cleanly
         if(oldParent){
             if(node.fireEvent("beforemove", node.getOwnerTree(), node, oldParent, this, index, refNode) === false){
@@ -493,9 +497,9 @@ Ext.extend(Ext.data.Node, Ext.util.Observable, {
      * @return {Node}
      */
     item : function(index){
-        return this.childNodes[index];  
+        return this.childNodes[index];
     },
-    
+
     /**
      * Replaces one child node in this node with another.
      * @param {Node} newChild The replacement node
@@ -507,16 +511,16 @@ Ext.extend(Ext.data.Node, Ext.util.Observable, {
         this.removeChild(oldChild);
         return oldChild;
     },
-    
+
     /**
      * Returns the index of a child node
      * @param {Node} node
      * @return {Number} The index of the node or -1 if it was not found
      */
     indexOf : function(child){
-        return this.childNodes.indexOf(child);  
+        return this.childNodes.indexOf(child);
     },
-    
+
     /**
      * Returns the tree this node is in.
      * @return {Tree}
@@ -535,7 +539,7 @@ Ext.extend(Ext.data.Node, Ext.util.Observable, {
         }
         return this.ownerTree;
     },
-    
+
     /**
      * Returns depth of this node (the root node has a depth of 0)
      * @return {Number}
@@ -567,7 +571,7 @@ Ext.extend(Ext.data.Node, Ext.util.Observable, {
             }
         }
     },
-    
+
     /**
      * Returns the path for this node. The path can be used to expand or select this node programmatically.
      * @param {String} attr (optional) The attr to use for the path (defaults to the node's id)
@@ -584,11 +588,11 @@ Ext.extend(Ext.data.Node, Ext.util.Observable, {
         var sep = this.getOwnerTree().pathSeparator;
         return sep + b.join(sep);
     },
-    
+
     /**
-     * Bubbles up the tree from this node, calling the specified function with each node. The scope (<i>this</i>) of 
+     * Bubbles up the tree from this node, calling the specified function with each node. The scope (<i>this</i>) of
      * function call will be the scope provided or the current node. The arguments to the function
-     * will be the args provided or the current node. If the function returns false at any point, 
+     * will be the args provided or the current node. If the function returns false at any point,
      * the bubble is stopped.
      * @param {Function} fn The function to call
      * @param {Object} scope (optional) The scope of the function (defaults to current node)
@@ -603,11 +607,11 @@ Ext.extend(Ext.data.Node, Ext.util.Observable, {
             p = p.parentNode;
         }
     },
-    
+
     /**
-     * Cascades down the tree from this node, calling the specified function with each node. The scope (<i>this</i>) of 
+     * Cascades down the tree from this node, calling the specified function with each node. The scope (<i>this</i>) of
      * function call will be the scope provided or the current node. The arguments to the function
-     * will be the args provided or the current node. If the function returns false at any point, 
+     * will be the args provided or the current node. If the function returns false at any point,
      * the cascade is stopped on that branch.
      * @param {Function} fn The function to call
      * @param {Object} scope (optional) The scope of the function (defaults to current node)
@@ -621,11 +625,11 @@ Ext.extend(Ext.data.Node, Ext.util.Observable, {
             }
         }
     },
-    
+
     /**
-     * Interates the child nodes of this node, calling the specified function with each node. The scope (<i>this</i>) of 
+     * Interates the child nodes of this node, calling the specified function with each node. The scope (<i>this</i>) of
      * function call will be the scope provided or the current node. The arguments to the function
-     * will be the args provided or the current node. If the function returns false at any point, 
+     * will be the args provided or the current node. If the function returns false at any point,
      * the iteration stops.
      * @param {Function} fn The function to call
      * @param {Object} scope (optional) The scope of the function (defaults to current node)
@@ -639,7 +643,7 @@ Ext.extend(Ext.data.Node, Ext.util.Observable, {
         	}
         }
     },
-    
+
     /**
      * Finds the first child that has the attribute with the specified value.
      * @param {String} attribute The attribute name
@@ -697,7 +701,7 @@ Ext.extend(Ext.data.Node, Ext.util.Observable, {
             }
         }
     },
-    
+
     /**
      * Returns true if this node is an ancestor (at any point) of the passed node.
      * @param {Node} node
@@ -706,7 +710,7 @@ Ext.extend(Ext.data.Node, Ext.util.Observable, {
     contains : function(node){
         return node.isAncestor(this);
     },
-    
+
     /**
      * Returns true if the passed node is an ancestor (at any point) of this node.
      * @param {Node} node
@@ -722,7 +726,7 @@ Ext.extend(Ext.data.Node, Ext.util.Observable, {
         }
         return false;
     },
-    
+
     toString : function(){
         return "[Node"+(this.id?" "+this.id:"")+"]";
     }

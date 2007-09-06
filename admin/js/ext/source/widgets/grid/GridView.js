@@ -1,11 +1,18 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://www.extjs.com/license
  */
 
+/**
+ * @class Ext.grid.GridView
+ * @extends Ext.util.Observable
+ *
+ * @constructor
+ * @param {Object} config
+ */
 Ext.grid.GridView = function(config){
     Ext.grid.GridView.superclass.constructor.call(this);
     this.el = null;
@@ -56,11 +63,11 @@ Ext.extend(Ext.grid.GridView, Ext.grid.AbstractGridView, {
     bind : function(ds, cm){
         if(this.ds){
             this.ds.un("load", this.onLoad, this);
-            this.ds.un("datachanged", this.onDataChange);
-            this.ds.un("add", this.onAdd);
-            this.ds.un("remove", this.onRemove);
-            this.ds.un("update", this.onUpdate);
-            this.ds.un("clear", this.onClear);
+            this.ds.un("datachanged", this.onDataChange, this);
+            this.ds.un("add", this.onAdd, this);
+            this.ds.un("remove", this.onRemove, this);
+            this.ds.un("update", this.onUpdate, this);
+            this.ds.un("clear", this.onClear, this);
         }
         if(ds){
             ds.on("load", this.onLoad, this);
@@ -220,8 +227,6 @@ Ext.extend(Ext.grid.GridView, Ext.grid.AbstractGridView, {
         }else{
             index = ds.indexOf(record);
         }
-        var rows = this.getRowComposite(index);
-        var cls = [];
         this.insertRows(ds, index, index, true);
         this.onRemove(ds, record, index+1, true);
         this.syncRowHeights(index, index);
@@ -588,7 +593,8 @@ Ext.extend(Ext.grid.GridView, Ext.grid.AbstractGridView, {
     },
 
     generateRules : function(cm){
-        var ruleBuf = [];
+        var ruleBuf = [], rulesId = this.grid.id + '-cssrules';
+        Ext.util.CSS.removeStyleSheet(rulesId);
         for(var i = 0, len = cm.getColumnCount(); i < len; i++){
             var cid = cm.getColumnId(i);
             var align = '';
@@ -606,7 +612,7 @@ Ext.extend(Ext.grid.GridView, Ext.grid.AbstractGridView, {
                     this.tdSelector, cid, " {\n",hidden,"\n}\n",
                     this.splitSelector, cid, " {\n", hidden , "\n}\n");
         }
-        return Ext.util.CSS.createStyleSheet(ruleBuf.join(""));
+        return Ext.util.CSS.createStyleSheet(ruleBuf.join(""), rulesId);
     },
 
     updateSplitters : function(){
@@ -1154,7 +1160,7 @@ Ext.extend(Ext.grid.GridView, Ext.grid.AbstractGridView, {
                 delete Ext.dd.DDM.ids['gridHeader' + this.grid.getGridEl().id];
             }
         }
-
+        Ext.util.CSS.removeStyleSheet(this.grid.id + '-cssrules');
         this.bind(null, null);
         Ext.EventManager.removeResizeListener(this.onWindowResize, this);
     },

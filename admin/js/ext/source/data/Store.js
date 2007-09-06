@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -67,9 +67,9 @@ Ext.data.Store = function(config){
         datachanged : true,
         /**
          * @event metachange
-         * Fires when this stores reader provides new meta data (fields). This is currently only support for JsonReaders.
+         * Fires when this store's reader provides new metadata (fields). This is currently only support for JsonReaders.
          * @param {Store} this
-         * @param {Object} meta The JSON meta data
+         * @param {Object} meta The JSON metadata
          */
         metachange : true,
         /**
@@ -82,7 +82,7 @@ Ext.data.Store = function(config){
         add : true,
         /**
          * @event remove
-         * Fires when Records have been removed from the Store
+         * Fires when a Record has been removed from the Store
          * @param {Store} this
          * @param {Ext.data.Record} record The Record that was removed
          * @param {Number} index The index at which the record was removed
@@ -90,7 +90,7 @@ Ext.data.Store = function(config){
         remove : true,
         /**
          * @event update
-         * Fires when Records have been updated
+         * Fires when a Record has been updated
          * @param {Store} this
          * @param {Ext.data.Record} record The Record that was updated
          * @param {String} operation The update operation being performed.  Value may be one of:
@@ -148,7 +148,7 @@ Ext.extend(Ext.data.Store, Ext.util.Observable, {
     * @cfg {Ext.data.DataProxy} proxy The Proxy object which provides access to a data object.
     */
     /**
-    * @cfg {Array} data Inline data to be l;oaded when the store is initialized.
+    * @cfg {Array} data Inline data to be loaded when the store is initialized.
     */
     /**
     * @cfg {Ext.data.Reader} reader The Reader object which processes the data object and returns
@@ -166,6 +166,12 @@ Ext.extend(Ext.data.Store, Ext.util.Observable, {
     * version of the data object in sorted order, as opposed to sorting the Record cache in place (defaults to false).
     */
     remoteSort : false,
+
+    /**
+    * @cfg {boolean} pruneModifiedRecords True to clear all modified record information each time the store is
+     * loaded or when a record is removed. (defaults to false).
+    */
+    pruneModifiedRecords : false,
 
     // private
     lastOptions : null,
@@ -191,6 +197,9 @@ Ext.extend(Ext.data.Store, Ext.util.Observable, {
     remove : function(record){
         var index = this.data.indexOf(record);
         this.data.removeAt(index);
+        if(this.pruneModifiedRecords){
+            this.modified.remove(record);
+        }
         this.fireEvent("remove", this, record, index);
     },
 
@@ -199,6 +208,9 @@ Ext.extend(Ext.data.Store, Ext.util.Observable, {
      */
     removeAll : function(){
         this.data.clear();
+        if(this.pruneModifiedRecords){
+            this.modified = [];
+        }
         this.fireEvent("clear", this);
     },
 
@@ -331,8 +343,15 @@ Ext.extend(Ext.data.Store, Ext.util.Observable, {
         }
         var r = o.records, t = o.totalRecords || r.length;
         if(!options || options.add !== true){
+            if(this.pruneModifiedRecords){
+                this.modified = [];
+            }
             for(var i = 0, len = r.length; i < len; i++){
                 r[i].join(this);
+            }
+            if(this.snapshot){
+                this.data = this.snapshot;
+                delete this.snapshot;
             }
             this.data.clear();
             this.data.addAll(r);
@@ -373,7 +392,7 @@ Ext.extend(Ext.data.Store, Ext.util.Observable, {
     },
 
     /**
-     * Gets the total number of records in the dataset.
+     * Gets the total number of records in the dataset as returned by the server.
      * <p>
      * <em>If using paging, for this to be accurate, the data object used by the Reader must contain
      * the dataset size</em>
@@ -455,7 +474,8 @@ Ext.extend(Ext.data.Store, Ext.util.Observable, {
     },
 
     /**
-     * Get all records modified since the last load, or since the last commit.
+     * Gets all records modified since the last commit.  Modified records are persisted across load operations
+     * (e.g., during paging).
      * @return {Ext.data.Record[]} An array of Records containing outstanding modifications.
      */
     getModifiedRecords : function(){
@@ -467,7 +487,7 @@ Ext.extend(Ext.data.Store, Ext.util.Observable, {
         if(!value.exec){ // not a regex
             value = String(value);
             if(value.length == 0){
-                return this.clearFilter();
+                return false;
             }
             value = new RegExp((anyMatch === true ? '' : '^') + Ext.escapeRe(value), "i");
         }
@@ -502,7 +522,8 @@ Ext.extend(Ext.data.Store, Ext.util.Observable, {
      * @param {Boolean} anyMatch True to match any part not just the beginning
      */
     filter : function(property, value, anyMatch){
-        this.filterBy(this.createFilterFn(property, value, anyMatch));
+        var fn = this.createFilterFn(property, value, anyMatch);
+        return fn ? this.filterBy(fn) : this.clearFilter();
     },
 
     /**
@@ -527,7 +548,8 @@ Ext.extend(Ext.data.Store, Ext.util.Observable, {
      * @return {MixedCollection} Returns an Ext.util.MixedCollection of the matched records
      */
     query : function(property, value, anyMatch){
-        return this.queryBy(this.createFilterFn(property, value, anyMatch));
+        var fn = this.createFilterFn(property, value, anyMatch);
+        return fn ? this.queryBy(fn) : this.data.clone();
     },
 
     /**
@@ -541,6 +563,28 @@ Ext.extend(Ext.data.Store, Ext.util.Observable, {
     queryBy : function(fn, scope){
         var data = this.snapshot || this.data;
         return data.filterBy(fn, scope||this);
+    },
+
+    /**
+     * Collects unique values for a particular dataIndex from this store.
+     * @param {String} dataIndex The property to collect
+     * @param {Boolean} allowNull (optional) Pass true to allow null, undefined or empty string values
+     * @param {Boolean} bypassFilter (optional) Pass true to collect from all records, even ones which are filtered
+     * @return {Array} An array of the unique values
+     **/
+    collect : function(dataIndex, allowNull, bypassFilter){
+        var d = (bypassFilter === true && this.snapshot) ?
+                this.snapshot.items : this.data.items;
+        var v, sv, r = [], l = {};
+        for(var i = 0, len = d.length; i < len; i++){
+            v = d[i].data[dataIndex];
+            sv = String(v);
+            if((allowNull || !Ext.isEmpty(v)) && !l[sv]){
+                l[sv] = true;
+                r[r.length] = v;
+            }
+        }
+        return r;
     },
 
     /**

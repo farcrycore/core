@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -24,6 +24,8 @@
  * @cfg {String} qtipCfg An Ext QuickTip config for the node (used instead of qtip)
  * @cfg {Boolean} singleClickExpand True for single click expand on this node
  * @cfg {Function} uiProvider A UI <b>class</b> to use for this node (defaults to Ext.tree.TreeNodeUI)
+ * @cfg {Boolean} checked True to render a checked checkbox for this node, false to render an unchecked checkbox
+ * (defaults to undefined with no checkbox rendered)
  * @constructor
  * @param {Object/String} attributes The attributes/config for the node or just a string with the text for the node
  */
@@ -102,6 +104,13 @@ Ext.tree.TreeNode = function(attributes){
         * @param {Ext.EventObject} e The event object
         */
         "beforeclick":true,
+        /**
+        * @event checkchange
+        * Fires when a node with a checkbox's checked property changes
+        * @param {Node} this This node
+        * @param {Boolean} checked
+        */
+        "checkchange":true,
         /**
         * @event click
         * Fires when this node is clicked
@@ -204,6 +213,9 @@ Ext.extend(Ext.tree.TreeNode, Ext.data.Node, {
             this.collapse(false, false);
         }else{
             this.ui.updateExpandIcon();
+        }
+        if(!this.firstChild) {
+            this.childrenRendered = false;
         }
         return node;
     },
@@ -366,7 +378,7 @@ Ext.extend(Ext.tree.TreeNode, Ext.data.Node, {
      */
     ensureVisible : function(callback){
         var tree = this.getOwnerTree();
-        tree.expandPath(this.getPath(), false, function(){
+        tree.expandPath(this.parentNode.getPath(), false, function(){
             tree.getTreeEl().scrollChildIntoView(this.ui.anchor);
             Ext.callback(callback);
         }.createDelegate(this));

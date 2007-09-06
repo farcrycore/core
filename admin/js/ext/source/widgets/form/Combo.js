@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -49,17 +49,16 @@ Ext.form.ComboBox = function(config){
          * @event beforequery
          * Fires before all queries are processed. Return false to cancel the query or set cancel to true.
          * The event object passed has these properties:
-         * <ul style="padding:5px;padding-left:16px;">
-	     * <li>{Ext.form.ComboBox} combo - This combo box</li>
-	     * <li>{String} query - The query</li>
-	     * <li>{Boolean} forceAll - true to force "all" query</li>
-	     * <li>{Boolean} cancel - set to true to cancel the query.</li>
-	     * </ul>
+	     * @param {Ext.form.ComboBox} combo This combo box
+	     * @param {String} query The query
+	     * @param {Boolean} forceAll true to force "all" query
+	     * @param {Boolean} cancel true to cancel the query
 	     * @param {Object} e The query event object
 	     */
         'beforequery': true
     });
     if(this.transform){
+        this.allowDomMove = false;
         var s = Ext.getDom(this.transform);
         if(!this.hiddenName){
             this.hiddenName = s.name;
@@ -117,6 +116,13 @@ Ext.extend(Ext.form.ComboBox, Ext.form.TriggerField, {
      * @cfg {Boolean/Object} autoCreate A DomHelper element spec, or true for a default element spec (defaults to:
      * {tag: "input", type: "text", size: "24", autocomplete: "off"})
      */
+    /**
+     * @cfg {Ext.data.Store} store The data store to which this combo is bound (defaults to undefined)
+     */
+    /**
+     * @cfg {String} title If supplied, a header element is created containing this text and added into the top of
+     * the dropdown list (defaults to undefined, with no header element)
+     */
 
     // private
     defaultAutoCreate : {tag: "input", type: "text", size: "24", autocomplete: "off"},
@@ -131,7 +137,8 @@ Ext.extend(Ext.form.ComboBox, Ext.form.TriggerField, {
     displayField: undefined,
     /**
      * @cfg {String} valueField The underlying data value name to bind to this CombBox (defaults to undefined if
-     * mode = 'remote' or 'value' if mode = 'local')
+     * mode = 'remote' or 'value' if mode = 'local'). Note: use of a valueField requires the user make a selection
+     * in order for a value to be mapped.
      */
     valueField: undefined,
     /**
@@ -251,7 +258,7 @@ Ext.extend(Ext.form.ComboBox, Ext.form.TriggerField, {
     onRender : function(ct, position){
         Ext.form.ComboBox.superclass.onRender.call(this, ct, position);
         if(this.hiddenName){
-            this.hiddenField = this.el.insertSibling({tag:'input', type:'hidden', name: this.hiddenName, id: this.hiddenName},
+            this.hiddenField = this.el.insertSibling({tag:'input', type:'hidden', name: this.hiddenName, id:  (this.hiddenId||this.hiddenName)},
                     'before', true);
             this.hiddenField.value =
                 this.hiddenValue !== undefined ? this.hiddenValue :
@@ -364,7 +371,9 @@ Ext.extend(Ext.form.ComboBox, Ext.form.TriggerField, {
                    return Ext.KeyNav.prototype.doRelay.apply(this, arguments);
                 }
                 return true;
-            }
+            },
+
+            forceKeyDown: true
         });
         this.queryDelay = Math.max(this.queryDelay || 10,
                 this.mode == 'local' ? 10 : 250);
@@ -416,9 +425,10 @@ Ext.extend(Ext.form.ComboBox, Ext.form.TriggerField, {
     },
 
     /**
-     * Allow or prevent the user from directly editing the field text.  If false is passed in,
+     * Allow or prevent the user from directly editing the field text.  If false is passed,
      * the user will only be able to select from the items defined in the dropdown list.  This method
-     * is the runtime equivalent of setting the editable config option at config time.
+     * is the runtime equivalent of setting the 'editable' config option at config time.
+     * @param {Boolean} value True to allow the user to directly edit the field text
      */
     setEditable : function(value){
         if(value == this.editable){
@@ -498,7 +508,7 @@ Ext.extend(Ext.form.ComboBox, Ext.form.TriggerField, {
     },
 
     /**
-     * Returns the currently-selected field value or empty string if no value is set.
+     * Returns the currently selected field value or empty string if no value is set.
      * @return {String} value The selected value
      */
     getValue : function(){
@@ -518,6 +528,7 @@ Ext.extend(Ext.form.ComboBox, Ext.form.TriggerField, {
         }
         this.setRawValue('');
         this.lastSelectionText = '';
+        this.applyEmptyText();
     },
 
     /**
@@ -618,7 +629,7 @@ Ext.extend(Ext.form.ComboBox, Ext.form.TriggerField, {
      * @param {String} value The data value of the item to select
      * @param {Boolean} scrollIntoView False to prevent the dropdown list from autoscrolling to display the
      * selected item if it is not currently in view (defaults to true)
-     * @return {Boolean} valueFound True if the value matched an item in the list, else false
+     * @return {Boolean} True if the value matched an item in the list, else false
      */
     selectByValue : function(v, scrollIntoView){
         if(v !== undefined && v !== null){
@@ -703,7 +714,7 @@ Ext.extend(Ext.form.ComboBox, Ext.form.TriggerField, {
     /**
      * Execute a query to filter the dropdown list.  Fires the beforequery event prior to performing the
      * query allowing the query action to be canceled if needed.
-     * @param {String} query The sql query to execute
+     * @param {String} query The SQL query to execute
      * @param {Boolean} forceAll True to force the query to execute even if there are currently fewer characters
      * in the field than the minimum specified by the minChars config option.  It also clears any filter previously
      * saved in the current store (defaults to false)
@@ -768,6 +779,7 @@ Ext.extend(Ext.form.ComboBox, Ext.form.TriggerField, {
         }
         this.list.hide();
         Ext.get(document).un('mousedown', this.collapseIf, this);
+        Ext.get(document).un('mousewheel', this.collapseIf, this);
         this.fireEvent('collapse', this);
     },
 
@@ -788,6 +800,7 @@ Ext.extend(Ext.form.ComboBox, Ext.form.TriggerField, {
         this.list.alignTo(this.el, this.listAlign);
         this.list.show();
         Ext.get(document).on('mousedown', this.collapseIf, this);
+        Ext.get(document).on('mousewheel', this.collapseIf, this);
         this.fireEvent('expand', this);
     },
 

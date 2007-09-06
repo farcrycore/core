@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -7,9 +7,6 @@
  */
 
 /*
- * List compiled by mystix on the extjs.com forums.
- * Thank you Mystix!
- *
  * Dutch Translations
  * by Bas van Oostveen (04 April 2007)
  */
@@ -96,6 +93,8 @@ if(Ext.DatePicker){
        monthYearText     : 'Kies een maand (Control+Omhoog/Beneden volgend/vorige jaar)',
        todayTip          : "{0} (Spatie)",
        format            : "d-m-y",
+       okText		 : "&#160;OK&#160;",
+       cancelText	 : "Annuleren",
        startDay          : 1
     });
 }
@@ -156,6 +155,84 @@ if(Ext.form.VTypes){
        urlText      : 'Dit veld moet een URL zijn in het formaat "http:/'+'/www.domein.nl"',
        alphaText    : 'Dit veld mag alleen letters en _ bevatten',
        alphanumText : 'Dit veld mag alleen letters, cijfers en _ bevatten'
+    });
+}
+
+if(Ext.form.HtmlEditor){
+   Ext.apply(Ext.form.HtmlEditor.prototype, {
+	createLinkText : 'Vul hier het Internet adres voor de link in:',
+	buttonTips : {
+            bold : {
+                title: 'Vet (Ctrl+B)',
+                text: 'Maak de geselecteerde tekst vet gedrukt.',
+                cls: 'x-html-editor-tip'
+            },
+            italic : {
+                title: 'Cursief (Ctrl+I)',
+                text: 'Maak de geselecteerde tekst cursief.',
+                cls: 'x-html-editor-tip'
+            },
+            underline : {
+                title: 'Onderstrepen (Ctrl+U)',
+                text: 'Onderstreep de geselecteerde tekst.',
+                cls: 'x-html-editor-tip'
+            },
+            increasefontsize : {
+                title: 'Tekst Vergroten',
+                text: 'Vergroot het lettertype.',
+                cls: 'x-html-editor-tip'
+            },
+            decreasefontsize : {
+                title: 'Tekst Verkleinen',
+                text: 'Verklein het lettertype.',
+                cls: 'x-html-editor-tip'
+            },
+            backcolor : {
+                title: 'Tekst Achtergrond Kleur',
+                text: 'Verander de achtergrond kleur van de geselecteerde tekst.',
+                cls: 'x-html-editor-tip'
+            },
+            forecolor : {
+                title: 'Lettertype Kleur',
+                text: 'Verander de kleur van de geselecteerde tekst.',
+                cls: 'x-html-editor-tip'
+            },
+            justifyleft : {
+                title: 'Tekst Links Uitlijnen',
+                text: 'Lijn de tekst links uit.',
+                cls: 'x-html-editor-tip'
+            },
+            justifycenter : {
+                title: 'Tekst Centreren',
+                text: 'Centreer de tekst in de editor.',
+                cls: 'x-html-editor-tip'
+            },
+            justifyright : {
+                title: 'Tekst Richts Uitlijnen',
+                text: 'Lijn de tekst rechts uit.',
+                cls: 'x-html-editor-tip'
+            },
+            insertunorderedlist : {
+                title: 'Punten Lijst',
+                text: 'Begin een ongenummerde lijst.',
+                cls: 'x-html-editor-tip'
+            },
+            insertorderedlist : {
+                title: 'Genummerde Lijst',
+                text: 'Begin een genummerde lijst.',
+                cls: 'x-html-editor-tip'
+            },
+            createlink : {
+                title: 'Hyperlink',
+                text: 'Maak van de geselecteerde tekst een hyperlink.',
+                cls: 'x-html-editor-tip'
+            },
+            sourceedit : {
+                title: 'Bron Aanpassen',
+                text: 'Schakel modus over naar bron aanpassen.',
+                cls: 'x-html-editor-tip'
+            }
+        }
     });
 }
 

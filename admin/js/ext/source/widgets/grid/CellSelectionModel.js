@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -7,10 +7,11 @@
  */
 
 /**
- @class Ext.grid.CellSelectionModel
+ * @class Ext.grid.CellSelectionModel
  * @extends Ext.grid.AbstractSelectionModel
- @constructor
- * @param {Object} config
+ * This class provides the basic implementation for cell selection in a grid.
+ * @constructor
+ * @param {Object} config The object containing the configuration of this model.
  */
 Ext.grid.CellSelectionModel = function(config){
     Ext.apply(this, config);
@@ -64,26 +65,34 @@ Ext.extend(Ext.grid.CellSelectionModel, Ext.grid.AbstractSelectionModel,  {
         }
     },
 
+	//private
     beforeEdit : function(e){
         this.select(e.row, e.column, false, true, e.record);
     },
 
+	//private
     onRowUpdated : function(v, index, r){
         if(this.selection && this.selection.record == r){
             v.onCellSelect(index, this.selection.cell[1]);
         }
     },
 
+	//private
     onViewChange : function(){
         this.clearSelections(true);
     },
 
+	/**
+	 * Returns the currently selected cell,.
+	 * @return {Object} The selected cell or null if none selected.
+	 */
     getSelectedCell : function(){
         return this.selection ? this.selection.cell : null;
     },
 
     /**
      * Clears all selections.
+     * @param {Boolean} true to prevent the gridview from being notified about the change.
      */
     clearSelections : function(preventNotify){
         var s = this.selection;
@@ -97,7 +106,7 @@ Ext.extend(Ext.grid.CellSelectionModel, Ext.grid.AbstractSelectionModel,  {
     },
 
     /**
-     * Returns True if there is a selection.
+     * Returns true if there is a selection.
      * @return {Boolean}
      */
     hasSelection : function(){
@@ -142,6 +151,7 @@ Ext.extend(Ext.grid.CellSelectionModel, Ext.grid.AbstractSelectionModel,  {
         }
     },
 
+	//private
     isSelectable : function(rowIndex, colIndex, cm){
         return !cm.isHidden(colIndex);
     },

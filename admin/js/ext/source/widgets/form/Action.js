@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -105,11 +105,13 @@ Ext.extend(Ext.form.Action.Submit, Ext.form.Action, {
 
     run : function(){
         var o = this.options;
-        var isPost = this.getMethod() == 'POST';
+        var method = this.getMethod();
+        var isPost = method == 'POST';
         if(o.clientValidation === false || this.form.isValid()){
             Ext.Ajax.request(Ext.apply(this.createCallback(), {
                 form:this.form.el.dom,
                 url:this.getUrl(!isPost),
+                method: method,
                 params:isPost ? this.getParams() : null,
                 isUpload: this.form.fileUpload
             }));

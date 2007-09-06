@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -39,7 +39,7 @@ Ext.extend(Ext.form.DateField, Ext.form.TriggerField,  {
     format : "m/d/y",
     /**
      * @cfg {String} altFormats
-     * Multiple date formats separated by | to try when parsing a user input value and it doesn't match the defined
+     * Multiple date formats separated by "|" to try when parsing a user input value and it doesn't match the defined
      * format (defaults to 'm/d/Y|m-d-y|m-d-Y|m/d|m-d|d').
      */
     altFormats : "m/d/Y|m-d-y|m-d-Y|m/d|m-d|md|mdy|mdY|d",
@@ -90,16 +90,16 @@ Ext.extend(Ext.form.DateField, Ext.form.TriggerField,  {
      * The error text to display when the date in the cell is before minValue (defaults to
      * 'The date in this field must be after {minValue}').
      */
-    minText : "The date in this field must be after {0}",
+    minText : "The date in this field must be equal to or after {0}",
     /**
      * @cfg {String} maxText
-     * The error text to display when the date in the cell is before maxValue (defaults to
+     * The error text to display when the date in the cell is after maxValue (defaults to
      * 'The date in this field must be before {maxValue}').
      */
-    maxText : "The date in this field must be before {0}",
+    maxText : "The date in this field must be equal to or before {0}",
     /**
      * @cfg {String} invalidText
-     * The error to display when the date in the field is invalid (defaults to
+     * The error text to display when the date in the field is invalid (defaults to
      * '{value} is not a valid date - it must be in the format {format}').
      */
     invalidText : "{0} is not a valid date - it must be in the format {1}",
@@ -167,8 +167,8 @@ Ext.extend(Ext.form.DateField, Ext.form.TriggerField,  {
     },
 
     /**
-     * Returns the current date value of the date field
-     * @return {Date} value The date value
+     * Returns the current date value of the date field.
+     * @return {Date} The date value
      */
     getValue : function(){
         return this.parseDate(Ext.form.DateField.superclass.getValue.call(this)) || "";

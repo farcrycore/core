@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -16,22 +16,22 @@
  * A KeyMap can also handle a string representation of keys.<br />
  * Usage:
  <pre><code>
- // map one key by key code
- var map = new Ext.KeyMap("my-element", {
-     key: 13, // or Ext.EventObject.ENTER
-     fn: myHandler,
-     scope: myObject
- });
- 
- // map multiple keys to one action by string
- var map = new Ext.KeyMap("my-element", {
-     key: "a\r\n\t",
-     fn: myHandler,
-     scope: myObject
- });
- 
- // map multiple keys to multiple actions by strings and array of codes
- var map = new Ext.KeyMap("my-element", [
+// map one key by key code
+var map = new Ext.KeyMap("my-element", {
+    key: 13, // or Ext.EventObject.ENTER
+    fn: myHandler,
+    scope: myObject
+});
+
+// map multiple keys to one action by string
+var map = new Ext.KeyMap("my-element", {
+    key: "a\r\n\t",
+    fn: myHandler,
+    scope: myObject
+});
+
+// map multiple keys to multiple actions by strings and array of codes
+var map = new Ext.KeyMap("my-element", [
     {
         key: [10,13],
         fn: function(){ alert("Return was pressed"); }
@@ -46,24 +46,19 @@
     }
 ]);
 </code></pre>
- * <b>Note: A KepMap starts enabled</b>
+ * <b>Note: A KeyMap starts enabled</b>
  * @constructor
  * @param {String/HTMLElement/Ext.Element} el The element to bind to
- * @param {Object} config The config
+ * @param {Object} config The config (see {@link #addBinding})
  * @param {String} eventName (optional) The event to bind to (defaults to "keydown")
  */
 Ext.KeyMap = function(el, config, eventName){
     this.el  = Ext.get(el);
     this.eventName = eventName || "keydown";
     this.bindings = [];
-    if(config instanceof Array){
-	    for(var i = 0, len = config.length; i < len; i++){
-	        this.addBinding(config[i]);
-	    }
-    }else{
+    if(config){
         this.addBinding(config);
     }
-    this.keyDownDelegate = Ext.EventManager.wrap(this.handleKeyDown, this, true);
     this.enable();
 };
 
@@ -105,10 +100,16 @@ map.addBinding({
     scope: this
 });
 </code></pre>
-     * @param {Object} config A single KeyMap config
+     * @param {Object/Array} config A single KeyMap config or an array of configs
      */
 	addBinding : function(config){
-        var keyCode = config.key, 
+        if(config instanceof Array){
+            for(var i = 0, len = config.length; i < len; i++){
+                this.addBinding(config[i]);
+            }
+            return;
+        }
+        var keyCode = config.key,
             shift = config.shift, 
             ctrl = config.ctrl, 
             alt = config.alt,
@@ -149,6 +150,34 @@ map.addBinding({
         this.bindings.push(handler);  
 	},
 
+    /**
+     * Shorthand for adding a single key listener
+     * @param {Number/Array/Object} key Either the numeric key code, array of key codes or an object with the
+     * following options:
+     * {key: (number or array), shift: (true/false), ctrl: (true/false), alt: (true/false)}
+     * @param {Function} fn The function to call
+     * @param {Object} scope (optional) The scope of the function
+     */
+    on : function(key, fn, scope){
+        var keyCode, shift, ctrl, alt;
+        if(typeof key == "object" && !(key instanceof Array)){
+            keyCode = key.key;
+            shift = key.shift;
+            ctrl = key.ctrl;
+            alt = key.alt;
+        }else{
+            keyCode = key;
+        }
+        this.addBinding({
+            key: keyCode,
+            shift: shift,
+            ctrl: ctrl,
+            alt: alt,
+            fn: fn,
+            scope: scope
+        })
+    },
+
     // private
     handleKeyDown : function(e){
 	    if(this.enabled){ //just in case
@@ -160,7 +189,7 @@ map.addBinding({
 	},
 	
 	/**
-	 * Returns true if this KepMap is enabled
+	 * Returns true if this KeyMap is enabled
 	 * @return {Boolean} 
 	 */
 	isEnabled : function(){
@@ -168,11 +197,11 @@ map.addBinding({
 	},
 	
 	/**
-	 * Enable this KeyMap
+	 * Enables this KeyMap
 	 */
 	enable: function(){
 		if(!this.enabled){
-		    this.el.on(this.eventName, this.keyDownDelegate);
+		    this.el.on(this.eventName, this.handleKeyDown, this);
 		    this.enabled = true;
 		}
 	},
@@ -182,7 +211,7 @@ map.addBinding({
 	 */
 	disable: function(){
 		if(this.enabled){
-		    this.el.removeListener(this.eventName, this.keyDownDelegate);
+		    this.el.removeListener(this.eventName, this.handleKeyDown, this);
 		    this.enabled = false;
 		}
 	}

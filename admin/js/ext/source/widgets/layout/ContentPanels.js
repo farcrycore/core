@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -11,21 +11,21 @@
  * @extends Ext.util.Observable
  * A basic ContentPanel element.
  * @cfg {Boolean} fitToFrame True for this panel to adjust its size to fit when the region resizes  (defaults to false)
- * @cfg {Boolean} fitContainer When using fitToFrame and resizeEl, you can also fit the parent container  (defaults to false)
- * @cfg {Boolean/Object} autoCreate True to auto generate the DOM element for this panel, or a DomHelper config of the element to create
+ * @cfg {Boolean} fitContainer When using {@link #fitToFrame} and {@link #resizeEl}, you can also fit the parent container  (defaults to false)
+ * @cfg {Boolean/Object} autoCreate True to auto generate the DOM element for this panel, or a {@link Ext.DomHelper} config of the element to create
  * @cfg {Boolean} closable True if the panel can be closed/removed
  * @cfg {Boolean} background True if the panel should not be activated when it is added (defaults to false)
- * @cfg {String/HTMLElement/Element} resizeEl An element to resize if fitToFrame is true (instead of this panel's element)
+ * @cfg {String/HTMLElement/Element} resizeEl An element to resize if {@link #fitToFrame} is true (instead of this panel's element)
  * @cfg {Toolbar} toolbar A toolbar for this panel
- * @cfg {Boolean} autoScroll True to scroll overflow in this panel (use with fitToFrame)
+ * @cfg {Boolean} autoScroll True to scroll overflow in this panel (use with {@link #fitToFrame})
  * @cfg {String} title The title for this panel
- * @cfg {Array} adjustments Values to <b>add</b> to the width/height when doing a fitToFrame (default is [0, 0])
- * @cfg {String} url Calls setUrl() with this value
- * @cfg {String/Object} params When used with "url", calls setUrl() with this value
- * @cfg {Boolean} loadOnce Calls When used with "url", calls setUrl() with this value
+ * @cfg {Array} adjustments Values to <b>add</b> to the width/height when doing a {@link #fitToFrame} (default is [0, 0])
+ * @cfg {String} url Calls {@link #setUrl} with this value
+ * @cfg {String/Object} params When used with {@link #url}, calls {@link #setUrl} with this value
+ * @cfg {Boolean} loadOnce When used with {@link #url}, calls {@link #setUrl} with this value
  * @constructor
  * Create a new ContentPanel.
- * @param {String/HTMLElement/Element} el The container element for this panel
+ * @param {String/HTMLElement/Ext.Element} el The container element for this panel
  * @param {String/Object} config A string to set only the title or a config object
  * @param {String} content (optional) Set the HTML content for this panel
  */
@@ -148,26 +148,26 @@ Ext.extend(Ext.ContentPanel, Ext.util.Observable, {
         return this.el.getUpdateManager();
     },
      /**
-     * Loads this content panel immediately with content from XHR. Note: to delay loading until the panel is activated, use setUrl.
+     * Loads this content panel immediately with content from XHR. Note: to delay loading until the panel is activated, use {@link #setUrl}.
      * @param {Object/String/Function} url The url for this request or a function to call to get the url or a config object containing any of the following options:
 <pre><code>
-panel.load({<br/>
-    url: "your-url.php",<br/>
-    params: {param1: "foo", param2: "bar"}, // or a URL encoded string<br/>
-    callback: yourFunction,<br/>
-    scope: yourObject, //(optional scope)  <br/>
-    discardUrl: false, <br/>
-    nocache: false,<br/>
-    text: "Loading...",<br/>
-    timeout: 30,<br/>
-    scripts: false<br/>
+panel.load({
+    url: "your-url.php",
+    params: {param1: "foo", param2: "bar"}, // or a URL encoded string
+    callback: yourFunction,
+    scope: yourObject, //(optional scope)
+    discardUrl: false,
+    nocache: false,
+    text: "Loading...",
+    timeout: 30,
+    scripts: false
 });
 </code></pre>
-     * The only required property is url. The optional properties nocache, text and scripts 
-     * are shorthand for disableCaching, indicatorText and loadScripts and are used to set their associated property on this panel UpdateManager instance.
-     * @param {String/Object} params (optional) The parameters to pass as either a url encoded string "param1=1&amp;param2=2" or an object {param1: 1, param2: 2}
-     * @param {Function} callback (optional) Callback when transaction is complete - called with signature (oElement, bSuccess, oResponse)
-     * @param {Boolean} discardUrl (optional) By default when you execute an update the defaultUrl is changed to the last used url. If true, it will not store the url.
+     * The only required property is <i>url</i>. The optional properties <i>nocache</i>, <i>text</i> and <i>scripts</i>
+     * are shorthand for <i>disableCaching</i>, <i>indicatorText</i> and <i>loadScripts</i> and are used to set their associated property on this panel UpdateManager instance.
+     * @param {String/Object} params (optional) The parameters to pass as either a URL encoded string "param1=1&amp;param2=2" or an object {param1: 1, param2: 2}
+     * @param {Function} callback (optional) Callback when transaction is complete -- called with signature (oElement, bSuccess, oResponse)
+     * @param {Boolean} discardUrl (optional) By default when you execute an update the defaultUrl is changed to the last used URL. If true, it will not store the URL.
      * @return {Ext.ContentPanel} this
      */
     load : function(){
@@ -179,7 +179,7 @@ panel.load({<br/>
 
     /**
      * Set a URL to be used to load the content for this panel. When this panel is activated, the content will be loaded from that URL.
-     * @param {String/Function} url The url to load the content from or a function to call to get the url
+     * @param {String/Function} url The URL to load the content from or a function to call to get the URL
      * @param {String/Object} params (optional) The string params for the update call or an object of the params. See {@link Ext.UpdateManager#update} for more details. (Defaults to null)
      * @param {Boolean} loadOnce (optional) Whether to only load the content once. If this is false it makes the Ajax call every time this panel is activated. (Defaults to false)
      * @return {Ext.UpdateManager} The UpdateManager
@@ -286,8 +286,8 @@ panel.load({<br/>
     },
     
     /**
-     *   Force a content refresh from the URL specified in the setUrl() method.
-     *   Will fail silently if the setUrl method has not been called.
+     *   Force a content refresh from the URL specified in the {@link #setUrl} method.
+     *   Will fail silently if the {@link #setUrl} method has not been called.
      *   This does not activate the panel, just updates its content.
      */
     refresh : function(){
@@ -316,7 +316,7 @@ panel.load({<br/>
  * @constructor
  * Create a new GridPanel.
  * @param {Ext.grid.Grid} grid The grid for this panel
- * @param {String/Object} config A string to set only the title or a config object
+ * @param {String/Object} config A string to set only the panel's title, or a config object
  */
 Ext.GridPanel = function(grid, config){
     this.wrapper = Ext.DomHelper.append(document.body, // wrapper for IE7 strict & safari scroll issue

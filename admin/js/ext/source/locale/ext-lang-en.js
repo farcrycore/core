@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -90,7 +90,10 @@ if(Ext.DatePicker){
       prevText          : 'Previous Month (Control+Left)',
       monthYearText     : 'Choose a month (Control+Up/Down to move years)',
       todayTip          : "{0} (Spacebar)",
-      format            : "m/d/y"
+      format            : "m/d/y",
+      okText		: "&#160;OK&#160;",
+      cancelText	: "Cancel",
+      startDay		: 0
    });
 }
 
@@ -153,6 +156,84 @@ if(Ext.form.VTypes){
    });
 }
 
+if(Ext.form.HtmlEditor){
+   Ext.apply(Ext.form.HtmlEditor.prototype, {
+	 createLinkText : 'Please enter the URL for the link:',
+	 buttonTips : {
+            bold : {
+               title: 'Bold (Ctrl+B)',
+               text: 'Make the selected text bold.',
+               cls: 'x-html-editor-tip'
+            },
+            italic : {
+               title: 'Italic (Ctrl+I)',
+               text: 'Make the selected text italic.',
+               cls: 'x-html-editor-tip'
+            },
+            underline : {
+               title: 'Underline (Ctrl+U)',
+               text: 'Underline the selected text.',
+               cls: 'x-html-editor-tip'
+           },
+           increasefontsize : {
+               title: 'Grow Text',
+               text: 'Increase the font size.',
+               cls: 'x-html-editor-tip'
+           },
+           decreasefontsize : {
+               title: 'Shrink Text',
+               text: 'Decrease the font size.',
+               cls: 'x-html-editor-tip'
+           },
+           backcolor : {
+               title: 'Text Highlight Color',
+               text: 'Change the background color of the selected text.',
+               cls: 'x-html-editor-tip'
+           },
+           forecolor : {
+               title: 'Font Color',
+               text: 'Change the color of the selected text.',
+               cls: 'x-html-editor-tip'
+           },
+           justifyleft : {
+               title: 'Align Text Left',
+               text: 'Align text to the left.',
+               cls: 'x-html-editor-tip'
+           },
+           justifycenter : {
+               title: 'Center Text',
+               text: 'Center text in the editor.',
+               cls: 'x-html-editor-tip'
+           },
+           justifyright : {
+               title: 'Align Text Right',
+               text: 'Align text to the right.',
+               cls: 'x-html-editor-tip'
+           },
+           insertunorderedlist : {
+               title: 'Bullet List',
+               text: 'Start a bulleted list.',
+               cls: 'x-html-editor-tip'
+           },
+           insertorderedlist : {
+               title: 'Numbered List',
+               text: 'Start a numbered list.',
+               cls: 'x-html-editor-tip'
+           },
+           createlink : {
+               title: 'Hyperlink',
+               text: 'Make the selected text a hyperlink.',
+               cls: 'x-html-editor-tip'
+           },
+           sourceedit : {
+               title: 'Source Edit',
+               text: 'Switch to source editing mode.',
+               cls: 'x-html-editor-tip'
+           }
+        }
+   });
+}
+
 if(Ext.grid.GridView){
    Ext.apply(Ext.grid.GridView.prototype, {
       sortAscText  : "Sort Ascending",
@@ -177,3 +258,4 @@ if(Ext.SplitLayoutRegion){
       collapsibleSplitTip : "Drag to resize. Double click to hide."
    });
 }
+

@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -35,10 +35,16 @@ Ext.extend(Ext.menu.Item, Ext.menu.BaseItem, {
      * @cfg {Boolean} canActivate True if this item can be visually activated (defaults to true)
      */
     canActivate : true,
+    /**
+     * @cfg {Number} showDelay Length of time in milliseconds to wait before showing this item (defaults to 200)
+     */
+    showDelay: 200,
+    // doc'd in BaseItem
+    hideDelay: 200,
 
     // private
     ctype: "Ext.menu.Item",
-
+    
     // private
     onRender : function(container, position){
         var el = document.createElement("a");
@@ -109,19 +115,37 @@ Ext.extend(Ext.menu.Item, Ext.menu.BaseItem, {
     // private
     expandMenu : function(autoActivate){
         if(!this.disabled && this.menu){
-            if(!this.menu.isVisible()){
-                this.menu.show(this.container, this.parentMenu.subMenuAlign || "tl-tr?", this.parentMenu);
-            }
-            if(autoActivate){
+            clearTimeout(this.hideTimer);
+            delete this.hideTimer;
+            if(!this.menu.isVisible() && !this.showTimer){
+                this.showTimer = this.deferExpand.defer(this.showDelay, this, [autoActivate]);
+            }else if (this.menu.isVisible() && autoActivate){
                 this.menu.tryActivate(0, 1);
             }
         }
     },
 
     // private
-    hideMenu : function(){
-        if(this.menu && this.menu.isVisible()){
-            this.menu.hide();
+    deferExpand : function(autoActivate){
+        delete this.showTimer;
+        this.menu.show(this.container, this.parentMenu.subMenuAlign || "tl-tr?", this.parentMenu);
+        if(autoActivate){
+            this.menu.tryActivate(0, 1);
         }
+    },
+
+    // private
+    hideMenu : function(){
+        clearTimeout(this.showTimer);
+        delete this.showTimer;
+        if(!this.hideTimer && this.menu && this.menu.isVisible()){
+            this.hideTimer = this.deferHide.defer(this.hideDelay, this);
+        }
+    },
+
+    // private
+    deferHide : function(){
+        delete this.hideTimer;
+        this.menu.hide();
     }
 });

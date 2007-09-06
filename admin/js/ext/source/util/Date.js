@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -8,11 +8,11 @@
 
 /**
  * @class Date
- * 
- * The date parsing and format syntax is a subset of 
+ *
+ * The date parsing and format syntax is a subset of
  * <a href="http://www.php.net/date">PHP's date() function</a>, and the formats that are
  * supported will provide results equivalent to their PHP versions.
- * 
+ *
  * Following is the list of all currently supported formats:
  *<pre>
 Sample date:
@@ -36,7 +36,7 @@ Format  Output      Description
   L      0          Whether it's a leap year (1 if it is a leap year, else 0)
   Y      2007       A full numeric representation of a year, 4 digits
   y      07         A two digit representation of a year
-  a      pm         Lowercase Ante meridiem and Post meridiem	
+  a      pm         Lowercase Ante meridiem and Post meridiem
   A      PM         Uppercase Ante meridiem and Post meridiem
   g      3          12-hour format of an hour without leading zeros
   G      15         24-hour format of an hour without leading zeros
@@ -56,7 +56,7 @@ document.write(dt.format('Y-m-d'));                         //2007-01-10
 document.write(dt.format('F j, Y, g:i a'));                 //January 10, 2007, 3:05 pm
 document.write(dt.format('l, \\t\\he dS of F Y h:i:s A'));  //Wednesday, the 10th of January 2007 03:05:01 PM
  </code></pre>
- * 
+ *
  * Here are some standard date/time patterns that you might find helpful.  They
  * are not part of the source of Date.js, but to use them you can simply copy this
  * block of code into any script that is included after Date.js and they will also become
@@ -86,8 +86,8 @@ document.write(dt.format(Date.patterns.ShortDate));
 
 /*
  * Most of the date-formatting functions below are the excellent work of Baron Schwartz.
- * They generate precompiled functions from date formats instead of parsing and 
- * processing the pattern every time you format a date.  These functions are available 
+ * They generate precompiled functions from date formats instead of parsing and
+ * processing the pattern every time you format a date.  These functions are available
  * on every Date object (any javascript function).
  *
  * The original article and download are here:
@@ -183,11 +183,11 @@ Date.getFormatCode = function(character) {
     case "A":
         return "(this.getHours() < 12 ? 'AM' : 'PM') + ";
     case "g":
-        return "((this.getHours() %12) ? this.getHours() % 12 : 12) + ";
+        return "((this.getHours() % 12) ? this.getHours() % 12 : 12) + ";
     case "G":
         return "this.getHours() + ";
     case "h":
-        return "String.leftPad((this.getHours() %12) ? this.getHours() % 12 : 12, 2, '0') + ";
+        return "String.leftPad((this.getHours() % 12) ? this.getHours() % 12 : 12, 2, '0') + ";
     case "H":
         return "String.leftPad(this.getHours(), 2, '0') + ";
     case "i":
@@ -246,7 +246,7 @@ Date.createParser = function(format) {
     Date.parseFunctions[format] = funcName;
 
     var code = "Date." + funcName + " = function(input){\n"
-        + "var y = -1, m = -1, d = -1, h = -1, i = -1, s = -1;\n"
+        + "var y = -1, m = -1, d = -1, h = -1, i = -1, s = -1, o, z, v;\n"
         + "var d = new Date();\n"
         + "y = d.getFullYear();\n"
         + "m = d.getMonth();\n"
@@ -276,19 +276,22 @@ Date.createParser = function(format) {
         }
     }
 
-    code += "if (y > 0 && m >= 0 && d > 0 && h >= 0 && i >= 0 && s >= 0)\n"
-        + "{return new Date(y, m, d, h, i, s);}\n"
-        + "else if (y > 0 && m >= 0 && d > 0 && h >= 0 && i >= 0)\n"
-        + "{return new Date(y, m, d, h, i);}\n"
-        + "else if (y > 0 && m >= 0 && d > 0 && h >= 0)\n"
-        + "{return new Date(y, m, d, h);}\n"
-        + "else if (y > 0 && m >= 0 && d > 0)\n"
-        + "{return new Date(y, m, d);}\n"
-        + "else if (y > 0 && m >= 0)\n"
-        + "{return new Date(y, m);}\n"
-        + "else if (y > 0)\n"
-        + "{return new Date(y);}\n"
-        + "}return null;}";
+    code += "if (y >= 0 && m >= 0 && d > 0 && h >= 0 && i >= 0 && s >= 0)\n"
+        + "{v = new Date(y, m, d, h, i, s);}\n"
+        + "else if (y >= 0 && m >= 0 && d > 0 && h >= 0 && i >= 0)\n"
+        + "{v = new Date(y, m, d, h, i);}\n"
+        + "else if (y >= 0 && m >= 0 && d > 0 && h >= 0)\n"
+        + "{v = new Date(y, m, d, h);}\n"
+        + "else if (y >= 0 && m >= 0 && d > 0)\n"
+        + "{v = new Date(y, m, d);}\n"
+        + "else if (y >= 0 && m >= 0)\n"
+        + "{v = new Date(y, m);}\n"
+        + "else if (y >= 0)\n"
+        + "{v = new Date(y);}\n"
+        + "}return (v && (z || o))?\n" // favour UTC offset over GMT offset
+        + "    ((z)? v.add(Date.SECOND, (v.getTimezoneOffset() * 60) + (z*1)) :\n" // reset to UTC, then add offset
+        + "        v.add(Date.HOUR, (v.getGMTOffset() / 100) + (o / -100))) : v\n" // reset to GMT, then add offset
+        + ";}";
 
     Date.parseRegexes[regexNum] = new RegExp("^" + regex + "$");
     eval(code);
@@ -302,10 +305,13 @@ Date.formatCodeToRegex = function(character, currentGroup) {
         c:null,
         s:"(?:Sun|Mon|Tue|Wed|Thu|Fri|Sat)"};
     case "j":
+        return {g:1,
+            c:"d = parseInt(results[" + currentGroup + "], 10);\n",
+            s:"(\\d{1,2})"}; // day of month without leading zeroes
     case "d":
         return {g:1,
             c:"d = parseInt(results[" + currentGroup + "], 10);\n",
-            s:"(\\d{1,2})"};
+            s:"(\\d{2})"}; // day of month with leading zeroes
     case "l":
         return {g:0,
             c:null,
@@ -335,10 +341,13 @@ Date.formatCodeToRegex = function(character, currentGroup) {
             c:"m = parseInt(Date.monthNumbers[results[" + currentGroup + "]], 10);\n",
             s:"(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)"};
     case "n":
+        return {g:1,
+            c:"m = parseInt(results[" + currentGroup + "], 10) - 1;\n",
+            s:"(\\d{1,2})"}; // Numeric representation of a month, without leading zeros
     case "m":
         return {g:1,
             c:"m = parseInt(results[" + currentGroup + "], 10) - 1;\n",
-            s:"(\\d{1,2})"};
+            s:"(\\d{2})"}; // Numeric representation of a month, with leading zeros
     case "t":
         return {g:0,
             c:null,
@@ -370,11 +379,14 @@ Date.formatCodeToRegex = function(character, currentGroup) {
             s:"(AM|PM)"};
     case "g":
     case "G":
+        return {g:1,
+            c:"h = parseInt(results[" + currentGroup + "], 10);\n",
+            s:"(\\d{1,2})"}; // 12/24-hr format  format of an hour without leading zeroes
     case "h":
     case "H":
         return {g:1,
             c:"h = parseInt(results[" + currentGroup + "], 10);\n",
-            s:"(\\d{1,2})"};
+            s:"(\\d{2})"}; //  12/24-hr format  format of an hour with leading zeroes
     case "i":
         return {g:1,
             c:"i = parseInt(results[" + currentGroup + "], 10);\n",
@@ -384,17 +396,25 @@ Date.formatCodeToRegex = function(character, currentGroup) {
             c:"s = parseInt(results[" + currentGroup + "], 10);\n",
             s:"(\\d{2})"};
     case "O":
-        return {g:0,
-            c:null,
-            s:"[+-]\\d{4}"};
+        return {g:1,
+            c:[
+                "o = results[", currentGroup, "];\n",
+                "var sn = o.substring(0,1);\n", // get + / - sign
+                "var hr = o.substring(1,3)*1 + Math.floor(o.substring(3,5) / 60);\n", // get hours (performs minutes-to-hour conversion also)
+                "var mn = o.substring(3,5) % 60;\n", // get minutes
+                "o = ((-12 <= (hr*60 + mn)/60) && ((hr*60 + mn)/60 <= 14))?\n", // -12hrs <= GMT offset <= 14hrs
+                "    (sn + String.leftPad(hr, 2, 0) + String.leftPad(mn, 2, 0)) : null;\n"
+            ].join(""),
+            s:"([+\-]\\d{4})"};
     case "T":
         return {g:0,
             c:null,
-            s:"[A-Z]{3}"};
+            s:"[A-Z]{1,4}"}; // timezone abbrev. may be between 1 - 4 chars
     case "Z":
-        return {g:0,
-            c:null,
-            s:"[+-]\\d{1,5}"};
+        return {g:1,
+            c:"z = results[" + currentGroup + "];\n" // -43200 <= UTC offset <= 50400
+                  + "z = (-43200 <= z*1 && z*1 <= 50400)? z : null;\n",
+            s:"([+\-]?\\d{1,5})"}; // leading '+' sign is optional for UTC offset
     default:
         return {g:0,
             c:null,
@@ -407,9 +427,7 @@ Date.formatCodeToRegex = function(character, currentGroup) {
  * @return {String} The abbreviated timezone name (e.g. 'CST')
  */
 Date.prototype.getTimezone = function() {
-    return this.toString().replace(
-        /^.*? ([A-Z]{3}) [0-9]{4}.*$/, "$1").replace(
-        /^.*?\(([A-Z])[a-z]+ ([A-Z])[a-z]+ ([A-Z])[a-z]+\)$/, "$1$2$3");
+    return this.toString().replace(/^.*? ([A-Z]{1,4})[\-+][0-9]{4} .*$/, "$1");
 };
 
 /**
@@ -418,13 +436,13 @@ Date.prototype.getTimezone = function() {
  */
 Date.prototype.getGMTOffset = function() {
     return (this.getTimezoneOffset() > 0 ? "-" : "+")
-        + String.leftPad(Math.floor(this.getTimezoneOffset() / 60), 2, "0")
+        + String.leftPad(Math.abs(Math.floor(this.getTimezoneOffset() / 60)), 2, "0")
         + String.leftPad(this.getTimezoneOffset() % 60, 2, "0");
 };
 
 /**
  * Get the numeric day number of the year, adjusted for leap year.
- * @return {Number} 0 through 365 (366 in leap years)
+ * @return {Number} 0 through 364 (365 in leap years)
  */
 Date.prototype.getDayOfYear = function() {
     var num = 0;
@@ -492,7 +510,7 @@ Date.prototype.getLastDayOfMonth = function() {
 
 
 /**
- * Get a Date of the first day of this date's month
+ * Get the first date of this date's month
  * @return {Date}
  */
 Date.prototype.getFirstDateOfMonth = function() {
@@ -500,7 +518,7 @@ Date.prototype.getFirstDateOfMonth = function() {
 };
 
 /**
- * Get a Date of the late day of this date's month
+ * Get the last date of this date's month
  * @return {Date}
  */
 Date.prototype.getLastDateOfMonth = function() {
@@ -559,7 +577,7 @@ Date.monthNames =
     "October",
     "November",
     "December"];
-    
+
 /**
  * An array of textual day names.
  * Override these values for international dates, for example...
@@ -595,8 +613,8 @@ Date.monthNumbers = {
 
 /**
  * Creates and returns a new Date instance with the exact same date value as the called instance.
- * Dates are copied and passed by reference, so if a copied date variable is modified later, the original 
- * variable will also be changed.  When the intention is to create a new variable that will not 
+ * Dates are copied and passed by reference, so if a copied date variable is modified later, the original
+ * variable will also be changed.  When the intention is to create a new variable that will not
  * modify the original instance, you should create a clone.
  *
  * Example of correctly cloning a date:
@@ -667,7 +685,7 @@ Date.MONTH = "mo";
 /** Date interval constant @static @type String */
 Date.YEAR = "y";
 
-/** 
+/**
  * Provides a convenient method of performing basic date arithmetic.  This method
  * does not modify the Date instance being called - it creates and returns
  * a new Date instance containing the resulting date value.

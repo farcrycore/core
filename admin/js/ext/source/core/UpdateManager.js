@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -143,11 +143,13 @@ Ext.UpdateManager = function(el, forceNew){
      */
     this.failureDelegate = this.processFailure.createDelegate(this);
 
+    if(!this.renderer){
      /**
       * The renderer for this UpdateManager. Defaults to {@link Ext.UpdateManager.BasicRenderer}.
       */
     this.renderer = new Ext.UpdateManager.BasicRenderer();
-
+    }
+    
     Ext.UpdateManager.superclass.constructor.call(this);
 };
 
@@ -228,7 +230,7 @@ um.update({<br/>
 
     /**
      * Performs an async form post, updating this element with the response. If the form has the attribute enctype="multipart/form-data", it assumes it's a file upload.
-     * Uses this.sslBlankUrl for SSL file uploads to prevent IE security warning. See YUI docs for more info.
+     * Uses this.sslBlankUrl for SSL file uploads to prevent IE security warning.
      * @param {String/HTMLElement} form The form Id or form element
      * @param {String} url (optional) The url to pass the form to. If omitted the action attribute on the form will be used.
      * @param {Boolean} reset (optional) Whether to try to reset the form after the update

@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -9,20 +9,20 @@
 /**
  * @class Ext.data.ScriptTagProxy
  * An implementation of Ext.data.DataProxy that reads a data object from a URL which may be in a domain
- * other than the originating domain of the running page.<br>
+ * other than the originating domain of the running page.<br><br>
  * <p>
- * <em>Note that this class must be used to retrieve data from a domain other than the domain
- * from which the running page was served.</em><br>
+ * <em>Note that if you are retrieving data from a page that is in a domain that is NOT the same as the originating domain
+ * of the running page, you must use this class, rather than DataProxy.</em><br><br>
  * <p>
- * The content passed back from a server resource requested by a ScriptTagProxy is executable javascript
- * source code that is used as the source inside a &lt;script> tag.<br>
+ * The content passed back from a server resource requested by a ScriptTagProxy is executable JavaScript
+ * source code that is used as the source inside a &lt;script> tag.<br><br>
  * <p>
  * In order for the browser to process the returned data, the server must wrap the data object
  * with a call to a callback function, the name of which is passed as a parameter by the ScriptTagProxy.
  * Below is a Java example for a servlet which returns data for either a ScriptTagProxy, or an HttpProxy
  * depending on whether the callback name was passed:
  * <p>
- * <pre><code.
+ * <pre><code>
 boolean scriptTag = false;
 String cb = request.getParameter("callback");
 if (cb != null) {
@@ -40,7 +40,7 @@ if (scriptTag) {
     out.write(");");
 }
 </pre></code>
- * 
+ *
  * @constructor
  * @param {Object} config A configuration object.
  */
@@ -54,7 +54,7 @@ Ext.data.ScriptTagProxy.TRANS_ID = 1000;
 
 Ext.extend(Ext.data.ScriptTagProxy, Ext.data.DataProxy, {
     /**
-     * @cfg {String} url The url from which to request the data object.
+     * @cfg {String} url The URL from which to request the data object.
      */
     /**
      * @cfg {Number} timeout (Optional) The number of milliseconds to wait for a response. Defaults to 30 seconds.
@@ -72,7 +72,7 @@ Ext.extend(Ext.data.ScriptTagProxy, Ext.data.DataProxy, {
      * name to the request.
      */
     nocache : true,
-    
+
     /**
      * Load data from the configured URL, read the data object into
      * a block of Ext.data.Records using the passed Ext.data.DataReader implementation, and
@@ -92,9 +92,9 @@ Ext.extend(Ext.data.ScriptTagProxy, Ext.data.DataProxy, {
      */
     load : function(params, reader, callback, scope, arg){
         if(this.fireEvent("beforeload", this, params) !== false){
-            
+
             var p = Ext.urlEncode(Ext.apply(params, this.extraParams));
-            
+
             var url = this.url;
             url += (url.indexOf("?") != -1 ? "&" : "?") + p;
             if(this.nocache){
@@ -113,25 +113,25 @@ Ext.extend(Ext.data.ScriptTagProxy, Ext.data.DataProxy, {
                 reader : reader
             };
             var conn = this;
-            
+
             window[trans.cb] = function(o){
                 conn.handleResponse(o, trans);
             };
-            
+
             url += String.format("&{0}={1}", this.callbackParam, trans.cb);
-            
+
             if(this.autoAbort !== false){
                 this.abort();
             }
-            
+
             trans.timeoutId = this.handleFailure.defer(this.timeout, this, [trans]);
-            
+
             var script = document.createElement("script");
             script.setAttribute("src", url);
             script.setAttribute("type", "text/javascript");
             script.setAttribute("id", trans.scriptId);
             this.head.appendChild(script);
-            
+
             this.trans = trans;
         }else{
             callback.call(scope||this, null, arg, false);
@@ -140,7 +140,7 @@ Ext.extend(Ext.data.ScriptTagProxy, Ext.data.DataProxy, {
 
     // private
     isLoading : function(){
-        return this.trans ? true : false;  
+        return this.trans ? true : false;
     },
 
     /**
@@ -151,7 +151,7 @@ Ext.extend(Ext.data.ScriptTagProxy, Ext.data.DataProxy, {
             this.destroyTrans(this.trans);
         }
     },
-    
+
     // private
     destroyTrans : function(trans, isLoaded){
         this.head.removeChild(document.getElementById(trans.scriptId));
@@ -168,10 +168,10 @@ Ext.extend(Ext.data.ScriptTagProxy, Ext.data.DataProxy, {
                 try{
                     delete window[trans.cb];
                 }catch(e){}
-            }; 
+            };
         }
     },
-    
+
     // private
     handleResponse : function(o, trans){
         this.trans = false;
@@ -187,7 +187,7 @@ Ext.extend(Ext.data.ScriptTagProxy, Ext.data.DataProxy, {
         this.fireEvent("load", this, o, trans.arg);
         trans.callback.call(trans.scope||window, result, trans.arg, true);
     },
-    
+
     // private
     handleFailure : function(trans){
         this.trans = false;

@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -30,6 +30,13 @@ Ext.EventManager = function(){
             if(Ext.isGecko || Ext.isOpera) {
                 document.removeEventListener("DOMContentLoaded", fireDocReady, false);
             }
+            if(Ext.isIE){
+                var defer = document.getElementById("ie-deferred-loader");
+                if(defer){
+                    defer.onreadystatechange = null;
+                    defer.parentNode.removeChild(defer);
+                }
+            }
             if(docReadyEvent){
                 docReadyEvent.fire();
                 docReadyEvent.clearListeners();
@@ -42,14 +49,11 @@ Ext.EventManager = function(){
         if(Ext.isGecko || Ext.isOpera) {
             document.addEventListener("DOMContentLoaded", fireDocReady, false);
         }else if(Ext.isIE){
-            // inspired by  http://www.thefutureoftheweb.com/blog/2006/6/adddomloadevent
             document.write("<s"+'cript id="ie-deferred-loader" defer="defer" src="/'+'/:"></s'+"cript>");
             var defer = document.getElementById("ie-deferred-loader");
             defer.onreadystatechange = function(){
                 if(this.readyState == "complete"){
                     fireDocReady();
-                    defer.onreadystatechange = null;
-                    defer.parentNode.removeChild(defer);
                 }
             };
         }else if(Ext.isSafari){ 
@@ -171,7 +175,7 @@ Ext.EventManager = function(){
         }
     };
 
-    var propRe = /^(?:scope|delay|buffer|single|stopEvent|preventDefault|stopPropagation|normalized)$/;
+    var propRe = /^(?:scope|delay|buffer|single|stopEvent|preventDefault|stopPropagation|normalized|args|delegate)$/;
     var pub = {
         
         /** 
@@ -297,7 +301,9 @@ el.on({
          */
         onDocumentReady : function(fn, scope, options){
             if(docReadyState){ // if it already fired
-                fn.call(scope || window, scope);
+                docReadyEvent.addListener(fn, scope, options);
+                docReadyEvent.fire();
+                docReadyEvent.clearListeners();
                 return;
             }
             if(!docReadyEvent){
@@ -362,7 +368,8 @@ el.on({
                 resizeEvent.removeListener(fn, scope);
             }
         },
-        
+
+        // private
         fireResize : function(){
             if(resizeEvent){
                 resizeEvent.fire(D.getViewWidth(), D.getViewHeight());
@@ -372,6 +379,9 @@ el.on({
          * Url used for onDocumentReady with using SSL (defaults to Ext.SSL_SECURE_URL)
          */
         ieDeferSrc : false,
+        /**
+         * The frequency, in milliseconds, to check for text resize events (defaults to 50)
+         */
         textResizeInterval : 50
     };
      /**
@@ -458,18 +468,31 @@ Ext.onReady = Ext.EventManager.onDocumentReady;
 Ext.onReady(function(){
     var bd = Ext.get(document.body);
     if(!bd){ return; }
-    var cls = Ext.isIE ? "ext-ie"
+
+    var cls = [
+            Ext.isIE ? "ext-ie"
             : Ext.isGecko ? "ext-gecko"
             : Ext.isOpera ? "ext-opera"
-            : Ext.isSafari ? "ext-safari" : "";
+            : Ext.isSafari ? "ext-safari" : ""];
+
+    if(Ext.isMac){
+        cls.push("ext-mac");
+    }
+    if(Ext.isLinux){
+        cls.push("ext-linux");
+    }
     if(Ext.isBorderBox){
-        cls += ' ext-border-box';
+        cls.push('ext-border-box');
     }
-    if(Ext.isStrict){
-        cls += ' ext-strict';
+    if(Ext.isStrict){ // add to the parent to allow for selectors like ".ext-strict .ext-ie"
+        var p = bd.dom.parentNode;
+        if(p){
+            p.className += ' ext-strict';
+        }
     }
-    bd.addClass(cls);
+    bd.addClass(cls.join(' '));
 });
+
 /**
  * @class Ext.EventObject
  * EventObject exposes the Yahoo! UI Event functionality directly on the object
@@ -576,6 +599,7 @@ Ext.EventObject = function(){
                 if(e.type == 'click' && this.button == -1){
                     this.button = 0;
                 }
+                this.type = e.type;
                 this.shiftKey = e.shiftKey;
                 // mac metaKey behaves like ctrlKey
                 this.ctrlKey = e.ctrlKey || e.metaKey;
@@ -630,7 +654,7 @@ Ext.EventObject = function(){
 
         isSpecialKey : function(){
             var k = this.keyCode;
-            return k == 9 || k == 13  || k == 40 || k == 27 ||
+            return (this.type == 'keypress' && this.ctrlKey) || k == 9 || k == 13  || k == 40 || k == 27 ||
             (k == 16) || (k == 17) ||
             (k >= 18 && k <= 20) ||
             (k >= 33 && k <= 35) ||
@@ -642,7 +666,7 @@ Ext.EventObject = function(){
          */
         stopPropagation : function(){
             if(this.browserEvent){
-                if(this.browserEvent.type == 'mousedown'){
+                if(this.type == 'mousedown'){
                     Ext.EventManager.stoppedMouseDownEvent.fire(this);
                 }
                 E.stopPropagation(this.browserEvent);
@@ -732,8 +756,6 @@ Ext.EventObject = function(){
             var delta = 0;
             if(e.wheelDelta){ /* IE/Opera. */
                 delta = e.wheelDelta/120;
-                /* In Opera 9, delta differs in sign as compared to IE. */
-                if(window.opera) delta = -delta;
             }else if(e.detail){ /* Mozilla case. */
                 delta = -e.detail/3;
             }
@@ -745,7 +767,7 @@ Ext.EventObject = function(){
          * @return {Boolean}
          */
         hasModifier : function(){
-            return ((this.ctrlKey || this.altKey) || this.shiftKey) ? true : false;
+            return !!((this.ctrlKey || this.altKey) || this.shiftKey);
         },
 
         /**

@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -95,22 +95,28 @@ Ext.extend(Ext.util.MixedCollection, Ext.util.Observable, {
    
 /**
   * MixedCollection has a generic way to fetch keys if you implement getKey.
-    <pre><code>
-    // normal way
-    var mc = new Ext.util.MixedCollection();
-    mc.add(someEl.dom.id, someEl);
-    mc.add(otherEl.dom.id, otherEl);
-    //and so on
-    
-    // using getKey
-    var mc = new Ext.util.MixedCollection();
-    mc.getKey = function(el){
-       return el.dom.id;
-    }
-    mc.add(someEl);
-    mc.add(otherEl);
-    // etc
-    </code>
+<pre><code>
+// normal way
+var mc = new Ext.util.MixedCollection();
+mc.add(someEl.dom.id, someEl);
+mc.add(otherEl.dom.id, otherEl);
+//and so on
+
+// using getKey
+var mc = new Ext.util.MixedCollection();
+mc.getKey = function(el){
+   return el.dom.id;
+};
+mc.add(someEl);
+mc.add(otherEl);
+
+// or via the constructor
+var mc = new Ext.util.MixedCollection(false, function(el){
+   return el.dom.id;
+});
+mc.add(someEl);
+mc.add(otherEl);
+</code></pre>
  * @param o {Object} The item for which to find the key.
  * @return {Object} The key for the passed item.
  */
@@ -154,7 +160,7 @@ Ext.extend(Ext.util.MixedCollection, Ext.util.Observable, {
         }else{
             for(var key in objs){
                 if(this.allowFunctions || typeof objs[key] != "function"){
-                    this.add(objs[key], key);
+                    this.add(key, objs[key]);
                 }
             }
         }

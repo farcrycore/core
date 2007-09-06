@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -35,20 +35,20 @@ Ext.LayoutManager = function(container, config){
         /**
          * @event regionresized
          * Fires when the user resizes a region. 
-         * @param {Ext.LayoutRegion} region
+         * @param {Ext.LayoutRegion} region The resized region
          * @param {Number} newSize The new size (width for east/west, height for north/south)
          */
         "regionresized" : true,
         /**
          * @event regioncollapsed
          * Fires when a region is collapsed. 
-         * @param {Ext.LayoutRegion} region
+         * @param {Ext.LayoutRegion} region The collapsed region
          */
         "regioncollapsed" : true,
         /**
          * @event regionexpanded
          * Fires when a region is expanded.  
-         * @param {Ext.LayoutRegion} region
+         * @param {Ext.LayoutRegion} region The expanded region
          */
         "regionexpanded" : true
     });
@@ -102,7 +102,7 @@ Ext.extend(Ext.LayoutManager, Ext.util.Observable, {
     },
         
     /**
-     * Returns the size of the current view, This method normalizes document.body and element embedded layouts and
+     * Returns the size of the current view. This method normalizes document.body and element embedded layouts and
      * performs box-model adjustments.
      * @return {Object} The size as an object {width: (the width), height: (the height)}
      */
@@ -119,7 +119,7 @@ Ext.extend(Ext.LayoutManager, Ext.util.Observable, {
     },
     
     /**
-     * Returns the element this layout is bound to.
+     * Returns the Element this layout is bound to.
      * @return {Ext.Element}
      */
     getEl : function(){
@@ -128,7 +128,7 @@ Ext.extend(Ext.LayoutManager, Ext.util.Observable, {
     
     /**
      * Returns the specified region.
-     * @param {String} target The region key
+     * @param {String} target The region key ('center', 'north', 'south', 'east' or 'west')
      * @return {Ext.LayoutRegion}
      */
     getRegion : function(target){

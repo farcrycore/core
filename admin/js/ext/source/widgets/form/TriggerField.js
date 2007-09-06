@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -29,17 +29,18 @@ trigger.applyTo('my-field');
  * to the base TextField)
  */
 Ext.form.TriggerField = function(config){
-    Ext.form.TriggerField.superclass.constructor.call(this, config);
     this.mimicing = false;
-    this.on('disable', this.disableWrapper, this);
-    this.on('enable', this.enableWrapper, this);
+    Ext.form.TriggerField.superclass.constructor.call(this, config);
 };
 
 Ext.extend(Ext.form.TriggerField, Ext.form.TextField,  {
     /**
-     * @cfg {String} triggerClass A css class to apply to the trigger
+     * @cfg {String} triggerClass A CSS class to apply to the trigger
      */
-    // private
+    /**
+     * @cfg {String/Object} autoCreate A DomHelper element spec, or true for a default element spec (defaults to
+     * {tag: "input", type: "text", size: "16", autocomplete: "off"})
+     */
     defaultAutoCreate : {tag: "input", type: "text", size: "16", autocomplete: "off"},
     /**
      * @cfg {Boolean} hideTrigger True to hide the trigger element and display only the base text field (defaults to false)
@@ -55,9 +56,9 @@ Ext.extend(Ext.form.TriggerField, Ext.form.TextField,  {
      * @method
      */
     autoSize: Ext.emptyFn,
-
+    // private
     monitorTab : true,
-
+    // private
     deferHeight : true,
 
     // private
@@ -68,12 +69,15 @@ Ext.extend(Ext.form.TriggerField, Ext.form.TextField,  {
         }
     },
 
+    // private
     adjustSize : Ext.BoxComponent.prototype.adjustSize,
 
+    // private
     getResizeEl : function(){
         return this.wrap;
     },
 
+    // private
     getPositionEl : function(){
         return this.wrap;
     },
@@ -98,12 +102,14 @@ Ext.extend(Ext.form.TriggerField, Ext.form.TextField,  {
         }
     },
 
+    // private
     initTrigger : function(){
         this.trigger.on("click", this.onTriggerClick, this, {preventDefault:true});
         this.trigger.addClassOnOver('x-form-trigger-over');
         this.trigger.addClassOnClick('x-form-trigger-click');
     },
 
+    // private
     onDestroy : function(){
         if(this.trigger){
             this.trigger.removeAllListeners();
@@ -154,12 +160,9 @@ Ext.extend(Ext.form.TriggerField, Ext.form.TextField,  {
         if(this.monitorTab){
             this.el.un("keydown", this.checkTab, this);
         }
-        this.beforeBlur();
         this.wrap.removeClass('x-trigger-wrap-focus');
         Ext.form.TriggerField.superclass.onBlur.call(this);
     },
-
-    beforeBlur : Ext.emptyFn, 
 
     // private
     // This should be overriden by any subclass that needs to check whether or not the field can be blurred.
@@ -168,14 +171,16 @@ Ext.extend(Ext.form.TriggerField, Ext.form.TextField,  {
     },
 
     // private
-    disableWrapper : function(){
+    onDisable : function(){
+        Ext.form.TriggerField.superclass.onDisable.call(this);
         if(this.wrap){
             this.wrap.addClass('x-item-disabled');
         }
     },
 
     // private
-    enableWrapper : function(){
+    onEnable : function(){
+        Ext.form.TriggerField.superclass.onEnable.call(this);
         if(this.wrap){
             this.wrap.removeClass('x-item-disabled');
         }
@@ -196,13 +201,16 @@ Ext.extend(Ext.form.TriggerField, Ext.form.TextField,  {
 
     /**
      * The function that should handle the trigger's click event.  This method does nothing by default until overridden
-     * by a handler implementation.
+     * by an implementing function.
      * @method
      * @param {EventObject} e
      */
     onTriggerClick : Ext.emptyFn
 });
 
+// TwinTriggerField is not a public class to be used directly.  It is meant as an abstract base class
+// to be extended by an implementing class.  For an example of implementing this class, see the custom
+// SearchField implementation here: http://extjs.com/deploy/ext/examples/form/custom.html
 Ext.form.TwinTriggerField = Ext.extend(Ext.form.TriggerField, {
     initComponent : function(){
         Ext.form.TwinTriggerField.superclass.initComponent.call(this);

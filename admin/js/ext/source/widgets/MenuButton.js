@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -7,7 +7,7 @@
  */
 
 /**
- * @class Ext.MenuButton
+ * @class Ext.SplitButton
  * @extends Ext.Button
  * A split button that provides a built-in dropdown arrow that can fire an event separately from the default
  * click event of the button.  Typically this would be used to display a dropdown menu that provides additional
@@ -19,18 +19,18 @@
  * @param {String/HTMLElement/Element} renderTo The element to append the button to
  * @param {Object} config The config object
  */
-Ext.MenuButton = function(renderTo, config){
-    Ext.MenuButton.superclass.constructor.call(this, renderTo, config);
+Ext.SplitButton = function(renderTo, config){
+    Ext.SplitButton.superclass.constructor.call(this, renderTo, config);
     /**
      * @event arrowclick
      * Fires when this button's arrow is clicked
-     * @param {MenuButton} this
+     * @param {SplitButton} this
      * @param {EventObject} e The click event
      */
     this.addEvents({"arrowclick":true});
 };
 
-Ext.extend(Ext.MenuButton, Ext.Button, {
+Ext.extend(Ext.SplitButton, Ext.Button, {
     render : function(renderTo){
         // this is one sweet looking template!
         var tpl = new Ext.Template(
@@ -43,14 +43,20 @@ Ext.extend(Ext.MenuButton, Ext.Button, {
             "</tbody></table></td></tr></table>"
         );
         var btn = tpl.append(renderTo, [this.text, this.type], true);
+        var btnEl = btn.child("button");
         if(this.cls){
             btn.addClass(this.cls);
         }
         if(this.icon){
-            btn.child("button").setStyle('background-image', 'url(' +this.icon +')');
+            btnEl.setStyle('background-image', 'url(' +this.icon +')');
+        }
+        if(this.iconCls){
+            btnEl.addClass(this.iconCls);
+            if(!this.cls){
+                btn.addClass(this.text ? 'x-btn-text-icon' : 'x-btn-icon');
+            }
         }
         this.el = btn;
-
         if(this.handleMouseEvents){
             btn.on("mouseover", this.onMouseOver, this);
             btn.on("mouseout", this.onMouseOut, this);
@@ -59,7 +65,6 @@ Ext.extend(Ext.MenuButton, Ext.Button, {
         }
         btn.on(this.clickEvent, this.onClick, this);
         if(this.tooltip){
-            var btnEl = btn.child("button:first");
             if(typeof this.tooltip == 'object'){
                 Ext.QuickTips.tips(Ext.apply({
                       target: btnEl.id
@@ -69,14 +74,16 @@ Ext.extend(Ext.MenuButton, Ext.Button, {
             }
         }
         if(this.arrowTooltip){
-            var btnEl = btn.child("button:nth(2)");
-            btnEl.dom[this.tooltipType] = this.arrowTooltip;
+            btn.child("button:nth(2)").dom[this.tooltipType] = this.arrowTooltip;
         }
         if(this.hidden){
             this.hide();
         }
         if(this.disabled){
             this.disable();
+        }
+        if(this.pressed){
+            this.el.addClass("x-btn-pressed");
         }
         if(Ext.isIE && !Ext.isIE7){
             this.autoWidth.defer(1, this);
@@ -177,3 +184,6 @@ Ext.extend(Ext.MenuButton, Ext.Button, {
         Ext.fly(e.getTarget("table")).removeClass("x-btn-click");
     }   
 });
+
+// backwards compat
+Ext.MenuButton = Ext.SplitButton;

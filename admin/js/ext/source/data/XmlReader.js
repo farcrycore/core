@@ -1,21 +1,21 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://www.extjs.com/license
  */
 
-/**
+	/**
  * @class Ext.data.XmlReader
  * @extends Ext.data.DataReader
  * Data reader class to create an Array of {@link Ext.data.Record} objects from an XML document
- * based on mappings in a provided Ext.data.Record constructor.<br>
+ * based on mappings in a provided Ext.data.Record constructor.<br><br>
  * <p>
  * <em>Note that in order for the browser to parse a returned XML document, the Content-Type
- * header in the HTTP response must be set to "text/xml"</em>
+ * header in the HTTP response must be set to "text/xml".</em>
  * <p>
- * Example code:.
+ * Example code:
  * <pre><code>
 var RecordDef = Ext.data.Record.create([
    {name: 'name', mapping: 'name'},     // "mapping" property not needed if it's the same as "name"
@@ -36,12 +36,12 @@ var myReader = new Ext.data.XmlReader({
  &lt;row>
    &lt;id>1&lt;/id>
    &lt;name>Bill&lt;/name>
-   &lt;occupation>Gardener&lt;/name>
+   &lt;occupation>Gardener&lt;/occupation>
  &lt;/row>
  &lt;row>
    &lt;id>2&lt;/id>
    &lt;name>Ben&lt;/name>
-   &lt;occupation>Horticulturalist&lt;/name>
+   &lt;occupation>Horticulturalist&lt;/occupation>
  &lt;/row>
 &lt;/dataset>
 </code></pre>
@@ -60,7 +60,8 @@ var myReader = new Ext.data.XmlReader({
  * Ext.data.Record.create.  See the {@link Ext.data.Record} class for more details.
  */
 Ext.data.XmlReader = function(meta, recordType){
-    Ext.data.XmlReader.superclass.constructor.call(this, meta, recordType);
+    meta = meta || {};
+    Ext.data.XmlReader.superclass.constructor.call(this, meta, recordType||meta.fields);
 };
 Ext.extend(Ext.data.XmlReader, Ext.data.DataReader, {
     /**

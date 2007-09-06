@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -12,6 +12,7 @@
  * A base editor field that handles displaying/hiding on demand and has some built-in sizing and event handling logic.
  * @constructor
  * Create a new Editor
+ * @param {Ext.form.Field} field The Field object (or descendant)
  * @param {Object} config The config object
  */
 Ext.Editor = function(field, config){
@@ -54,9 +55,12 @@ Ext.Editor = function(field, config){
 	     */
         "complete" : true,
         /**
-	     * @event specialkey
-	     * Fires when special key is pressed
-	     */
+         * @event specialkey
+         * Fires when any key related to navigation (arrows, tab, enter, esc, etc.) is pressed.  You can check
+         * {@link Ext.EventObject#getKey} to determine which key was pressed.
+         * @param {Ext.form.Field} this
+         * @param {Ext.EventObject} e The event object
+         */
         "specialkey" : true
     });
 };
@@ -101,8 +105,17 @@ Ext.extend(Ext.Editor, Ext.Component, {
      * @cfg {Boolean} constrain True to constrain the editor to the viewport
      */
     constrain : false,
-
-    // private
+    /**
+     * @cfg {Boolean} completeOnEnter True to complete the edit when the enter key is pressed (defaults to false)
+     */
+    completeOnEnter : false,
+    /**
+     * @cfg {Boolean} cancelOnEsc True to cancel the edit when the escape key is pressed (defaults to false)
+     */
+    cancelOnEsc : false,
+    /**
+     * @cfg {Boolean} updateEl True to update the innerHTML of the bound element when the update completes (defaults to false)
+     */
     updateEl : false,
 
     // private
@@ -113,7 +126,8 @@ Ext.extend(Ext.Editor, Ext.Component, {
             parentEl : ct,
             shim : this.shim,
             shadowOffset:4,
-            id: this.id
+            id: this.id,
+            constrain: this.constrain
         });
         this.el.setStyle("overflow", Ext.isGecko ? "auto" : "hidden");
         if(this.field.msgTarget != 'title'){
@@ -123,15 +137,34 @@ Ext.extend(Ext.Editor, Ext.Component, {
         if(Ext.isGecko){
             this.field.el.dom.setAttribute('autocomplete', 'off');
         }
+        this.field.on("specialkey", this.onSpecialKey, this);
+        if(this.swallowKeys){
+            this.field.el.swallowEvent(['keydown','keypress']);
+        }
         this.field.show();
         this.field.on("blur", this.onBlur, this);
-        this.relayEvents(this.field,  ["specialkey"]);
         if(this.field.grow){
             this.field.on("autosize", this.el.sync,  this.el, {delay:1});
         }
     },
 
-    // private
+    onSpecialKey : function(field, e){
+        if(this.completeOnEnter && e.getKey() == e.ENTER){
+            e.stopEvent();
+            this.completeEdit();
+        }else if(this.cancelOnEsc && e.getKey() == e.ESC){
+            this.cancelEdit();
+        }else{
+            this.fireEvent('specialkey', field, e);
+        }
+    },
+
+    /**
+     * Starts the editing process and shows the editor.
+     * @param {String/HTMLElement/Element} el The element to edit
+     * @param {String} value (optional) A value to initialize the editor with. If a value is not provided, it defaults
+      * to the innerHTML of el.
+     */
     startEdit : function(el, value){
         if(this.editing){
             this.completeEdit();
@@ -168,7 +201,7 @@ Ext.extend(Ext.Editor, Ext.Component, {
     },
 
     /**
-     * Sets the height and width of this editor
+     * Sets the height and width of this editor.
      * @param {Number} width The new width
      * @param {Number} height The new height
      */
@@ -187,7 +220,7 @@ Ext.extend(Ext.Editor, Ext.Component, {
     },
 
     /**
-     * Ends the editing process, persist the changed value to the underlying field and hides the editor.
+     * Ends the editing process, persists the changed value to the underlying field, and hides the editor.
      * @param {Boolean} remainVisible Override the default behavior and keep the editor visible after edit (defaults to false)
      */
     completeEdit : function(remainVisible){
@@ -199,7 +232,7 @@ Ext.extend(Ext.Editor, Ext.Component, {
             v = this.startValue;
             this.cancelEdit(true);
         }
-        if(String(v) == String(this.startValue) && this.ignoreNoChange){
+        if(String(v) === String(this.startValue) && this.ignoreNoChange){
             this.editing = false;
             this.hide();
             return;
@@ -289,7 +322,7 @@ Ext.extend(Ext.Editor, Ext.Component, {
 
     /**
      * Gets the data value of the editor
-     * @return {Mixed} value The data value
+     * @return {Mixed} The data value
      */
     getValue : function(){
         return this.field.getValue();

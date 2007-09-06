@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -10,6 +10,7 @@
  * Swedish translation (utf8-encoding)
  * By Erik Andersson, Monator Technologies
  * 24 April 2007
+ * Changed by Cariad, 29 July 2007
  */
 
 Ext.UpdateManager.defaults.indicatorText = '<div class="loading-indicator">Laddar...</div>';
@@ -23,7 +24,7 @@ if(Ext.grid.Grid){
 }
 
 if(Ext.TabPanelItem){
-   Ext.TabPanelItem.prototype.closeText = "Stäng denna tabb";
+   Ext.TabPanelItem.prototype.closeText = "Stäng denna flik";
 }
 
 if(Ext.form.Field){
@@ -31,32 +32,32 @@ if(Ext.form.Field){
 }
 
 if(Ext.LoadMask){
-    Ext.LoadMask.prototype.msg = "Laddar...";
+   Ext.LoadMask.prototype.msg = "Laddar...";
 }
 
 Date.monthNames = [
-   "Januari",
-   "Februari",
-   "Mars",
-   "April",
-   "Maj",
-   "Juni",
-   "Juli",
-   "Augusti",
-   "September",
-   "Oktober",
-   "November",
-   "December"
+   "januari",
+   "februari",
+   "mars",
+   "april",
+   "maj",
+   "juni",
+   "juli",
+   "augusti",
+   "september",
+   "oktober",
+   "november",
+   "december"
 ];
 
 Date.dayNames = [
-   "Söndag",
-   "Måndag",
-   "Tisdag",
-   "Onsdag",
-   "Torsdag",
-   "Fredag",
-   "Lördag"
+   "söndag",
+   "måndag",
+   "tisdag",
+   "onsdag",
+   "torsdag",
+   "fredag",
+   "lördag"
 ];
 
 if(Ext.MessageBox){
@@ -85,11 +86,11 @@ if(Ext.DatePicker){
       disabledDatesText : "",
       monthNames	: Date.monthNames,
       dayNames		: Date.dayNames,
-      nextText          : 'Nästa Månad (Ctrl + höger piltangent)',
-      prevText          : 'Föregående Månad (Ctrl + vänster piltangent)',
-      monthYearText     : 'Välj en månad (Ctrl + Uppåt/Neråt pil för att ändra årtal)',
-      todayTip          : "{0} (Mellanslag)",
-      format            : "y-m-d",
+      nextText          : 'Nästa månad (Ctrl + högerpil)',
+      prevText          : 'Föregående månad (Ctrl + vänsterpil)',
+      monthYearText     : 'Välj en månad (Ctrl + uppåtpil/neråtpil för att ändra årtal)',
+      todayTip          : "{0} (mellanslag)",
+      format            : "Y-m-d",
       startDay          : 1
    });
 }
@@ -132,8 +133,8 @@ if(Ext.form.DateField){
       disabledDatesText : "Inaktiverad",
       minText           : "Datumet i detta fält måste inträffa efter {0}",
       maxText           : "Datumet i detta fält måste inträffa före {0}",
-      invalidText       : "{0} är inte ett tillåtet datum - datum skall anges i formatet {1}",
-      format            : "y/m/d"
+      invalidText       : "{0} är inte ett tillåtet datum - datum ska anges i formatet {1}",
+      format            : "Y-m-d"
    });
 }
 
@@ -146,8 +147,8 @@ if(Ext.form.ComboBox){
 
 if(Ext.form.VTypes){
    Ext.apply(Ext.form.VTypes, {
-      emailText    : 'Detta fält skall vara en e-post adress i formatet "user@domain.com"',
-      urlText      : 'Detta fält skall vara en länk (URL) i formatet "http:/'+'/www.domain.com"',
+      emailText    : 'Detta fält ska innehålla en e-post adress i formatet "användare@domän.se"',
+      urlText      : 'Detta fält ska innehålla en länk (URL) i formatet "http:/'+'/www.domän.se"',
       alphaText    : 'Detta fält får bara innehålla bokstäver och "_"',
       alphanumText : 'Detta fält får bara innehålla bokstäver, nummer och "_"'
    });
@@ -167,13 +168,13 @@ if(Ext.grid.PropertyColumnModel){
    Ext.apply(Ext.grid.PropertyColumnModel.prototype, {
       nameText   : "Namn",
       valueText  : "Värde",
-      dateFormat : "Y/m/d"
+      dateFormat : "Y-m-d"
    });
 }
 
 if(Ext.SplitLayoutRegion){
    Ext.apply(Ext.SplitLayoutRegion.prototype, {
       splitTip            : "Dra för att ändra storleken.",
-      collapsibleSplitTip : "Drag för att ändra storleken. Dubbelklicka för att gömma."
+      collapsibleSplitTip : "Dra för att ändra storleken. Dubbelklicka för att gömma."
    });
 }

@@ -1,10 +1,9 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://www.extjs.com/license
  */
 
-
-Ext.tree.TreeFilter=function(_1,_2){this.tree=_1;this.filtered={};Ext.apply(this,_2,{clearBlank:false,reverse:false,autoClear:false,remove:false});};Ext.tree.TreeFilter.prototype={filter:function(_3,_4,_5){_4=_4||"text";var f;if(typeof _3=="string"){var _7=_3.length;if(_7==0&&this.clearBlank){this.clearFilter();return;}_3=_3.toLowerCase();f=function(n){return n.attributes[_4].substr(0,_7).toLowerCase()==_3;};}else{if(_3.exec){f=function(n){return _3.test(n.attributes[_4]);};}else{throw"Illegal filter type, must be string or regex";}}this.filterBy(f,null,_5);},filterBy:function(fn,_b,_c){_c=_c||this.tree.root;if(this.autoClear){this.clearFilter();}var af=this.filtered,rv=this.reverse;var f=function(n){if(n==_c){return true;}if(af[n.id]){return false;}var m=fn.call(_b||n,n);if(!m||rv){af[n.id]=n;n.ui.hide();return false;}return true;};_c.cascade(f);if(this.remove){for(var id in af){if(typeof id!="function"){var n=af[id];if(n&&n.parentNode){n.parentNode.removeChild(n);}}}}},clear:function(){var t=this.tree;var af=this.filtered;for(var id in af){if(typeof id!="function"){var n=af[id];if(n){n.ui.show();}}}this.filtered={};}};
+Ext.tree.TreeFilter=function(A,B){this.tree=A;this.filtered={};Ext.apply(this,B)};Ext.tree.TreeFilter.prototype={clearBlank:false,reverse:false,autoClear:false,remove:false,filter:function(D,A,B){A=A||"text";var C;if(typeof D=="string"){var E=D.length;if(E==0&&this.clearBlank){this.clear();return }D=D.toLowerCase();C=function(F){return F.attributes[A].substr(0,E).toLowerCase()==D}}else{if(D.exec){C=function(F){return D.test(F.attributes[A])}}else{throw"Illegal filter type, must be string or regex"}}this.filterBy(C,null,B)},filterBy:function(D,C,B){B=B||this.tree.root;if(this.autoClear){this.clear()}var A=this.filtered,H=this.reverse;var E=function(J){if(J==B){return true}if(A[J.id]){return false}var I=D.call(C||J,J);if(!I||H){A[J.id]=J;J.ui.hide();return false}return true};B.cascade(E);if(this.remove){for(var G in A){if(typeof G!="function"){var F=A[G];if(F&&F.parentNode){F.parentNode.removeChild(F)}}}}},clear:function(){var B=this.tree;var A=this.filtered;for(var D in A){if(typeof D!="function"){var C=A[D];if(C){C.ui.show()}}}this.filtered={}}};

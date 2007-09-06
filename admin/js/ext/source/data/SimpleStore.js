@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -9,9 +9,9 @@
 /**
  * @class Ext.data.SimpleStore
  * @extends Ext.data.Store
- * Smaller help class to make creating Stores from Array data easier.
- * @cfg {Number} id The index in the array that be used for record ids. Leave blank to auto generate ids.
- * @cfg {Array} fields An standard field array consisting of string name or object literal field definitions
+ * Small helper class to make creating Stores from Array data easier.
+ * @cfg {Number} id The array index of the record id. Leave blank to auto generate ids.
+ * @cfg {Array} fields An array of field definition objects, or field name strings.
  * @cfg {Array} data The multi-dimensional array of data
  * @constructor
  * @param {Object} config

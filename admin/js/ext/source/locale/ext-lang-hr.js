@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -28,6 +28,10 @@ if(Ext.TabPanelItem){
 
 if(Ext.form.Field){
    Ext.form.Field.prototype.invalidText = "Unesena vrijednost u ovom polju je neispravna";
+}
+
+if(Ext.LoadMask){
+    Ext.LoadMask.prototype.msg = "Učitavanje...";
 }
 
 Date.monthNames = [

@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -63,6 +63,8 @@ Ext.extend(Ext.tree.TreeEditor, Ext.Editor, {
      */
     maxWidth: 250,
 
+    editDelay : 350,
+
     // private
     fitToTree : function(ed, el){
         var td = this.tree.getTreeEl().dom, nd = el.dom;
@@ -89,7 +91,9 @@ Ext.extend(Ext.tree.TreeEditor, Ext.Editor, {
 
     // private
     beforeNodeClick : function(node, e){
-        if(this.tree.getSelectionModel().isSelected(node)){
+        var sinceLast = (this.lastClick ? this.lastClick.getElapsed() : 0);
+        this.lastClick = new Date();
+        if(sinceLast > this.editDelay && this.tree.getSelectionModel().isSelected(node)){
             e.stopEvent();
             this.triggerEdit(node);
             return false;
@@ -100,6 +104,14 @@ Ext.extend(Ext.tree.TreeEditor, Ext.Editor, {
     updateNode : function(ed, value){
         this.tree.getTreeEl().un('scroll', this.cancelEdit, this);
         this.editNode.setText(value);
+    },
+
+    // private
+    onHide : function(){
+        Ext.tree.TreeEditor.superclass.onHide.call(this);
+        if(this.editNode){
+            this.editNode.ui.focus();
+        }
     },
 
     // private

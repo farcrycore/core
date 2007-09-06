@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -15,9 +15,11 @@
  * <br><br>
  * All methods return <i>this</i> and can be chained.
  <pre><code>
- var els = getEls("#some-el div.some-class");
- // or
- var els = Ext.Element.select("#some-el div.some-class");
+ var els = Ext.select("#some-el div.some-class", true);
+ // or select directly from an existing element
+ var el = Ext.get('some-el');
+ el.select('div.some-class', true);
+
  els.setWidth(100); // all elements become 100 width
  els.hide(true); // all elements fade out and hide
  // or
@@ -38,10 +40,38 @@ Ext.CompositeElement.prototype = {
         var yels = this.elements;
         var index = yels.length-1;
         for(var i = 0, len = els.length; i < len; i++) {
-        	yels[++index] = Ext.get(els[i], true);
+        	yels[++index] = Ext.get(els[i]);
         }
         return this;
     },
+
+    /**
+    * Clears this composite and adds the elements returned by the passed selector.
+    * @param {String/Array} els A string CSS selector, an array of elements or an element
+    * @return {CompositeElement} this
+    */
+    fill : function(els){
+        this.elements = [];
+        this.add(els);
+        return this;
+    },
+
+    /**
+    * Filters this composite to only elements that match the passed selector.
+    * @param {String} selector A string CSS selector
+    * @return {CompositeElement} this
+    */
+    filter : function(selector){
+        var els = [];
+        this.each(function(el){
+            if(el.is(selector)){
+                els[els.length] = el.dom;
+            }
+        });
+        this.fill(els);
+        return this;
+    },
+
     invoke : function(fn, args){
         var els = this.elements;
         for(var i = 0, len = els.length; i < len; i++) {
@@ -86,7 +116,104 @@ Ext.CompositeElement.prototype = {
      * @return {Ext.Element}
      */
     item : function(index){
-        return this.elements[index];
+        return this.elements[index] || null;
+    },
+
+    /**
+     * Returns the first Element
+     * @return {Ext.Element}
+     */
+    first : function(){
+        return this.item(0);
+    },
+
+    /**
+     * Returns the last Element
+     * @return {Ext.Element}
+     */
+    last : function(){
+        return this.item(this.elements.length-1);
+    },
+
+    /**
+     * Returns the number of elements in this composite
+     * @return Number
+     */
+    getCount : function(){
+        return this.elements.length;
+    },
+
+    /**
+     * Returns true if this composite contains the passed element
+     * @return Boolean
+     */
+    contains : function(el){
+        return this.indexOf(el) !== -1;
+    },
+
+    /**
+     * Returns true if this composite contains the passed element
+     * @return Boolean
+     */
+    indexOf : function(el){
+        return this.elements.indexOf(Ext.get(el));
+    },
+
+
+    /**
+    * Removes the specified element(s).
+    * @param {Mixed} el The id of an element, the Element itself, the index of the element in this composite
+    * or an array of any of those.
+    * @param {Boolean} removeDom (optional) True to also remove the element from the document
+    * @return {CompositeElement} this
+    */
+    removeElement : function(el, removeDom){
+        if(el instanceof Array){
+            for(var i = 0, len = el.length; i < len; i++){
+                this.removeElement(el[i]);
+            }
+            return this;
+        }
+        var index = typeof el == 'number' ? el : this.indexOf(el);
+        if(index !== -1){
+            if(removeDom){
+                var d = this.elements[index];
+                if(d.dom){
+                    d.remove();
+                }else{
+                    d.parentNode.removeChild(d);
+                }
+            }
+            this.elements.splice(index, 1);
+        }
+        return this;
+    },
+
+    /**
+    * Replaces the specified element with the passed element.
+    * @param {String/HTMLElement/Element/Number} el The id of an element, the Element itself, the index of the element in this composite
+    * to replace.
+    * @param {String/HTMLElement/Element} replacement The id of an element or the Element itself.
+    * @param {Boolean} domReplace (Optional) True to remove and replace the element in the document too.
+    * @return {CompositeElement} this
+    */
+    replaceElement : function(el, replacement, domReplace){
+        var index = typeof el == 'number' ? el : this.indexOf(el);
+        if(index !== -1){
+            if(domReplace){
+                this.elements[index].replaceWith(replacement);
+            }else{
+                this.elements.splice(index, 1, Ext.get(replacement))
+            }
+        }
+        return this;
+    },
+
+    /**
+     * Removes all elements.
+     */
+    clear : function(){
+        this.elements = [];
     }
 };
 (function(){
@@ -108,14 +235,22 @@ for(var fnName in Ext.Element.prototype){
  * @class Ext.CompositeElementLite
  * @extends Ext.CompositeElement
  * Flyweight composite class. Reuses the same Ext.Element for element operations.
- * <br><br>
+ <pre><code>
+ var els = Ext.select("#some-el div.some-class");
+ // or select directly from an existing element
+ var el = Ext.get('some-el');
+ el.select('div.some-class');
+
+ els.setWidth(100); // all elements become 100 width
+ els.hide(true); // all elements fade out and hide
+ // or
+ els.setWidth(100).hide(true);
+ </code></pre><br><br>
  * <b>NOTE: Although they are not listed, this class supports all of the set/update methods of Ext.Element. All Ext.Element
  * actions will be performed on all the elements in this collection.</b>
  */
 Ext.CompositeElementLite = function(els){
     Ext.CompositeElementLite.superclass.constructor.call(this, els);
-    var flyEl = function(){};
-    flyEl.prototype = Ext.Element.prototype;
     this.el = new Ext.Element.Flyweight();
 };
 Ext.extend(Ext.CompositeElementLite, Ext.CompositeElement, {
@@ -148,6 +283,9 @@ Ext.extend(Ext.CompositeElementLite, Ext.CompositeElement, {
      * @return {Ext.Element}
      */
     item : function(index){
+        if(!this.elements[index]){
+            return null;
+        }
         this.el.dom = this.elements[index];
         return this.el;
     },
@@ -177,6 +315,24 @@ Ext.extend(Ext.CompositeElementLite, Ext.CompositeElement, {
         	if(fn.call(scope || el, el, this, i) === false){
                 break;
             }
+        }
+        return this;
+    },
+
+    indexOf : function(el){
+        return this.elements.indexOf(Ext.getDom(el));
+    },
+
+    replaceElement : function(el, replacement, domReplace){
+        var index = typeof el == 'number' ? el : this.indexOf(el);
+        if(index !== -1){
+            replacement = Ext.getDom(replacement);
+            if(domReplace){
+                var d = this.elements[index];
+                d.parentNode.insertBefore(replacement, d);
+                d.parentNode.removeChild(d);
+            }
+            this.elements.splice(index, 1, replacement);
         }
         return this;
     }

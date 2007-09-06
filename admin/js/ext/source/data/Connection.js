@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -10,13 +10,22 @@
  * @class Ext.data.Connection
  * @extends Ext.util.Observable
  * The class encapsulates a connection to the page's originating domain, allowing requests to be made
- * either to a configured URL, or to a URL specified at request time.<br>
+ * either to a configured URL, or to a URL specified at request time.<br><br>
  * <p>
  * Requests made by this class are asynchronous, and will return immediately. No data from
  * the server will be available to the statement immediately following the {@link #request} call.
- * To process returned data, use a callback in the request options object.
+ * To process returned data, use a callback in the request options object, or an event listener.</p><br>
+ * <p>
+ * Note: If you are doing a file upload, you will not get a normal response object sent back to
+ * your callback or event handler.  Since the upload is handled via in IFRAME, there is no XMLHttpRequest.
+ * The response object is created using the innerHTML of the IFRAME's document as the responseText
+ * property and, if present, the IFRAME's XML document as the responseXML property.</p><br>
+ * This means that a valid XML or HTML document must be returned. If JSON data is required, it is suggested
+ * that it be placed either inside a &lt;textarea> in an HTML document and retrieved from the responseText
+ * using a regex, or inside a CDATA section in an XML document and retrieved from the responseXML using
+ * standard DOM methods.
  * @constructor
- * @param config {Object} a configuration object.
+ * @param {Object} config a configuration object.
  */
 Ext.data.Connection = function(config){
     Ext.apply(this, config);
@@ -30,20 +39,20 @@ Ext.data.Connection = function(config){
         "beforerequest" : true,
         /**
          * @event requestcomplete
-         * Fires before a network request is made to retrieve a data object.
+         * Fires if the request was successfully completed.
          * @param {Connection} conn This Connection object.
          * @param {Object} response The XHR object containing the response data.
-         * See http://www.w3.org/TR/XMLHttpRequest/ for details.
+         * See {@link http://www.w3.org/TR/XMLHttpRequest/} for details.
          * @param {Object} options The options config object passed to the {@link #request} method.
          */
         "requestcomplete" : true,
         /**
          * @event requestexception
          * Fires if an error HTTP status was returned from the server.
-         * See http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html for details of HTTP status codes.
+         * See {@link http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html} for details of HTTP status codes.
          * @param {Connection} conn This Connection object.
          * @param {Object} response The XHR object containing the response data.
-         * See http://www.w3.org/TR/XMLHttpRequest/ for details.
+         * See {@link http://www.w3.org/TR/XMLHttpRequest/} for details.
          * @param {Object} options The options config object passed to the {@link #request} method.
          */
         "requestexception" : true
@@ -53,24 +62,34 @@ Ext.data.Connection = function(config){
 
 Ext.extend(Ext.data.Connection, Ext.util.Observable, {
     /**
-     * @cfg {String} url (Optional) The default URL to be used for requests to the server.
+     * @cfg {String} url (Optional) The default URL to be used for requests to the server. (defaults to undefined)
      */
     /**
      * @cfg {Object} extraParams (Optional) An object containing properties which are used as
-     * extra parameters to each request made by this object.
+     * extra parameters to each request made by this object. (defaults to undefined)
      */
     /**
      * @cfg {Object} defaultHeaders (Optional) An object containing request headers which are added
-     *  to each request made by this object.
+     *  to each request made by this object. (defaults to undefined)
      */
     /**
-     * @cfg {String} method (Optional) The default HTTP method to be used for requests.
+     * @cfg {String} method (Optional) The default HTTP method to be used for requests. (defaults to undefined; if not set but parms are present will use POST, otherwise GET)
      */
     /**
-     * @cfg  {Number} timeout (Optional) The timeout in milliseconds to be used for requests. Defaults
-     * to 30000.
+     * @cfg {Number} timeout (Optional) The timeout in milliseconds to be used for requests. (defaults to 30000)
      */
     timeout : 30000,
+    /**
+     * @cfg {Boolean} autoAbort (Optional) Whether this request should abort any pending requests. (defaults to false)
+     * @type Boolean
+     */
+    autoAbort:false,
+
+    /**
+     * @cfg {Boolean} disableCaching (Optional) True to add a unique cache-buster param to GET requests. (defaults to true)
+     * @type Boolean
+     */
+    disableCaching: true,
 
     /**
      * Sends an HTTP request to a remote server.
@@ -101,6 +120,9 @@ Ext.extend(Ext.data.Connection, Ext.util.Observable, {
      * <li><b>form</b> {Object/String} (Optional) A form object or id to pull parameters from.</li>
      * <li><b>isUpload</b> {Boolean} (Optional) True if the form object is a file upload (will usually be automatically detected).</li>
      * <li><b>headers</b> {Object} (Optional) Request headers to set for the request.</li>
+     * <li><b>xmlData</b> {Object} (Optional) XML document to use for the post. Note: This will be used instead of
+     * params for the post data. Any params will be appended to the URL.</li>
+     * <li><b>disableCaching</b> {Boolean} (Optional) True to add a unique cache-buster param to GET requests.</li>
      * </ul>
      * @return {Number} transactionId
      */
@@ -134,24 +156,29 @@ Ext.extend(Ext.data.Connection, Ext.util.Observable, {
                 }
                 var f = Ext.lib.Ajax.serializeForm(form);
                 p = p ? (p + '&' + f) : f;
-
-
             }
-            
+
             var hs = o.headers;
             if(this.defaultHeaders){
                 hs = Ext.apply(hs || {}, this.defaultHeaders);
+                if(!o.headers){
+                    o.headers = hs;
+                }
             }
 
             var cb = {
                 success: this.handleResponse,
                 failure: this.handleFailure,
                 scope: this,
-        		argument: {options: o},
-        		timeout : this.timeout
+                argument: {options: o},
+                timeout : this.timeout
             };
 
             var method = o.method||this.method||(p ? "POST" : "GET");
+
+            if(method == 'GET' && (this.disableCaching && o.disableCaching !== false) || o.disableCaching === true){
+                url += (url.indexOf('?') != -1 ? '&' : '?') + '_dc=' + (new Date().getTime());
+            }
 
             if(typeof o.autoAbort == 'boolean'){ // options gets top priority
                 if(o.autoAbort){
@@ -161,7 +188,7 @@ Ext.extend(Ext.data.Connection, Ext.util.Observable, {
                 this.abort();
             }
 
-            if(method == 'GET' && p){
+            if((method == 'GET' && p) || o.xmlData){
                 url += (url.indexOf('?') != -1 ? '&' : '?') + p;
                 p = '';
             }
@@ -228,6 +255,9 @@ Ext.extend(Ext.data.Connection, Ext.util.Observable, {
         }
         document.body.appendChild(frame);
 
+        if(Ext.isIE){
+           document.frames[id].name = id;
+        }
 
         var form = Ext.getDom(o.form);
         form.target = id;
@@ -258,6 +288,8 @@ Ext.extend(Ext.data.Connection, Ext.util.Observable, {
                 responseText : '',
                 responseXML : null
             };
+
+            r.argument = o ? o.argument : null;
 
             try { //
                 var doc;
@@ -308,7 +340,7 @@ Ext.extend(Ext.data.Connection, Ext.util.Observable, {
  */
 Ext.Ajax = new Ext.data.Connection({
     // fix up the docs
-    /**
+   /**
      * @cfg {String} url @hide
      */
     /**
@@ -321,36 +353,52 @@ Ext.Ajax = new Ext.data.Connection({
      * @cfg {String} method (Optional) @hide
      */
     /**
-     * @cfg  {Number} timeout (Optional) @hide
+     * @cfg {Number} timeout (Optional) @hide
+     */
+    /**
+     * @cfg {Boolean} autoAbort (Optional) @hide
      */
 
     /**
-     *  The default URL to be used for requests to the server. (defaults to undefined)
-     * @type String
-     * @property  url
+     * @cfg {Boolean} disableCaching (Optional) @hide
+     */
+
+    /**
+     * @property  disableCaching
+     * True to add a unique cache-buster param to GET requests. (defaults to true)
+     * @type Boolean
      */
     /**
+     * @property  url
+     * The default URL to be used for requests to the server. (defaults to undefined)
+     * @type String
+     */
+    /**
+     * @property  extraParams
      * An object containing properties which are used as
      * extra parameters to each request made by this object. (defaults to undefined)
      * @type Object
-     * @property  extraParams
      */
     /**
-     * An object containing request headers which are added
-     *  to each request made by this object. (defaults to undefined)
-     * @type Object
      * @property  defaultHeaders
+     * An object containing request headers which are added to each request made by this object. (defaults to undefined)
+     * @type Object
      */
     /**
-     * The default HTTP method to be used for requests. (defaults to undefined)
-     * @type String
      * @property  method
+     * The default HTTP method to be used for requests. (defaults to undefined; if not set but parms are present will use POST, otherwise GET)
+     * @type String
      */
     /**
-     * The timeout in milliseconds to be used for requests. (defaults
-     * to 30000)
-     * @type Number
      * @property  timeout
+     * The timeout in milliseconds to be used for requests. (defaults to 30000)
+     * @type Number
+     */
+
+    /**
+     * @property  autoAbort
+     * Whether a new request should abort any pending requests. (defaults to false)
+     * @type Boolean
      */
     autoAbort : false,
 

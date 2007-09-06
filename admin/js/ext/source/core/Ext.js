@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -14,7 +14,7 @@ window["undefined"] = window["undefined"];
 
 /**
  * @class Ext
- * Ext core utilties and functions
+ * Ext core utilities and functions.
  * @singleton
  */
 
@@ -52,6 +52,7 @@ Ext.apply = function(o, c, defaults){
         isBorderBox = isIE && !isStrict,
         isWindows = (ua.indexOf("windows") != -1 || ua.indexOf("win32") != -1),
         isMac = (ua.indexOf("macintosh") != -1 || ua.indexOf("mac os x") != -1),
+        isLinux = (ua.indexOf("linux") != -1),
         isSecure = window.location.href.toLowerCase().indexOf("https") === 0;
 
     // remove css image flicker
@@ -85,7 +86,7 @@ Ext.apply = function(o, c, defaults){
         enableGarbageCollector : true,
 
         /**
-         * True to automatically purge event listeners after uncaching an element (defaults to false). 
+         * True to automatically purge event listeners after uncaching an element (defaults to false).
          * Note: this only happens if enableGarbageCollector is true.
          * @type Boolean
          */
@@ -208,7 +209,6 @@ Ext.addBehaviors({
                     Ext.override(sb, o);
                 };
                 sbp.override = io;
-                sbp.__extcls = sb;
                 Ext.override(sb, overrides);
                 return sb;
             };
@@ -240,7 +240,12 @@ Ext.override(MyClass, {
             }
         },
         /**
-         * Creates namespaces but does not assume YAHOO is the root.
+         * Creates namespaces to be used for scoping variables and classes so that they are not global.  Usage:
+         * <pre><code>
+Ext.namespace('Company', 'Company.data');
+Company.Widget = function() { ... }
+Company.data.CustomStore = function(config) { ... }
+</code></pre>
          * @param {String} namespace1
          * @param {String} namespace2
          * @param {String} etc
@@ -270,16 +275,20 @@ Ext.override(MyClass, {
             }
             var buf = [];
             for(var key in o){
-                var ov = o[key];
+                var ov = o[key], k = encodeURIComponent(key);
                 var type = typeof ov;
                 if(type == 'undefined'){
-                    buf.push(encodeURIComponent(key), "=&");
+                    buf.push(k, "=&");
                 }else if(type != "function" && type != "object"){
-                    buf.push(encodeURIComponent(key), "=", encodeURIComponent(ov), "&");
+                    buf.push(k, "=", encodeURIComponent(ov), "&");
                 }else if(ov instanceof Array){
-                    for(var i = 0, len = ov.length; i < len; i++) {
-                        buf.push(encodeURIComponent(key), "=", encodeURIComponent(ov[i] === undefined ? '' : ov[i]), "&");
-                    }
+                    if (ov.length) {
+	                    for(var i = 0, len = ov.length; i < len; i++) {
+	                        buf.push(k, "=", encodeURIComponent(ov[i] === undefined ? '' : ov[i]), "&");
+	                    }
+	                } else {
+	                    buf.push(k, "=&");
+	                }
                 }
             }
             buf.pop();
@@ -374,7 +383,7 @@ Ext.override(MyClass, {
 
         /**
          * Return the dom node for the passed string (id), dom node, or Ext.Element
-         * @param {String/HTMLElement/Element) el
+         * @param {String/HTMLElement/Ext.Element} el
          * @return HTMLElement
          */
         getDom : function(el){
@@ -419,21 +428,77 @@ Ext.override(MyClass, {
             }
         },
 
-        /* @type Boolean */
+        // inpired by a similar function in mootools library
+        /**
+         * Returns the type of object that is passed in. If the object passed in is null or undefined it
+         * return false otherwise it returns one of the following values:<ul>
+         * <li><b>string</b>: If the object passed is a string</li>
+         * <li><b>number</b>: If the object passed is a number</li>
+         * <li><b>boolean</b>: If the object passed is a boolean value</li>
+         * <li><b>function</b>: If the object passed is a function reference</li>
+         * <li><b>object</b>: If the object passed is an object</li>
+         * <li><b>array</b>: If the object passed is an array</li>
+         * <li><b>regexp</b>: If the object passed is a regular expression</li>
+         * <li><b>element</b>: If the object passed is a DOM Element</li>
+         * <li><b>nodelist</b>: If the object passed is a DOM NodeList</li>
+         * <li><b>textnode</b>: If the object passed is a DOM text node and contains something other than whitespace</li>
+         * <li><b>whitespace</b>: If the object passed is a DOM text node and contains only whitespace</li>
+         * @param {Mixed} object
+         * @return {String}
+         */
+        type : function(o){
+            if(o === undefined || o === null){
+                return false;
+            }
+            if(o.htmlElement){
+                return 'element';
+            }
+            var t = typeof o;
+            if(t == 'object' && o.nodeName) {
+                switch(o.nodeType) {
+                    case 1: return 'element';
+                    case 3: return (/\S/).test(o.nodeValue) ? 'textnode' : 'whitespace';
+                }
+            }
+            if(t == 'object' || t == 'function') {
+                switch(o.constructor) {
+                    case Array: return 'array';
+                    case RegExp: return 'regexp';
+                }
+                if(typeof o.length == 'number' && typeof o.item == 'function') {
+                    return 'nodelist';
+                }
+            }
+            return t;
+        },
+
+        /**
+         * Returns true if the passed value is null, undefined or an empty string (optional).
+         * @param {Mixed} value The value to test
+         * @param {Boolean} allowBlank (optional) Pass true if an empty string is not considered empty
+         * @return {Boolean}
+         */
+        isEmpty : function(v, allowBlank){
+            return v === null || v === undefined || (!allowBlank ? v === '' : false);
+        },
+        
+        /** @type Boolean */
         isOpera : isOpera,
-        /* @type Boolean */
+        /** @type Boolean */
         isSafari : isSafari,
-        /* @type Boolean */
+        /** @type Boolean */
         isIE : isIE,
-        /* @type Boolean */
+        /** @type Boolean */
         isIE7 : isIE7,
-        /* @type Boolean */
+        /** @type Boolean */
         isGecko : isGecko,
-        /* @type Boolean */
+        /** @type Boolean */
         isBorderBox : isBorderBox,
-        /* @type Boolean */
+        /** @type Boolean */
         isWindows : isWindows,
-        /* @type Boolean */
+        /** @type Boolean */
+        isLinux : isLinux,
+        /** @type Boolean */
         isMac : isMac,
 
     /**
@@ -448,7 +513,7 @@ Ext.override(MyClass, {
 })();
 
 Ext.namespace("Ext", "Ext.util", "Ext.grid", "Ext.dd", "Ext.tree", "Ext.data",
-                "Ext.form", "Ext.menu", "Ext.state", "Ext.lib", "Ext.layout", "Ext.app");
+                "Ext.form", "Ext.menu", "Ext.state", "Ext.lib", "Ext.layout", "Ext.app", "Ext.ux");
 
 
 /**
@@ -621,17 +686,50 @@ var s = String.format('<div class="{0}">{1}</div>', cls, text);
     }
 });
 
+/**
+ * Utility function that allows you to easily switch a string between two alternating values.  The passed value
+ * is compared to the current string, and if they are equal, the other value that was passed in is returned.  If
+ * they are already different, the first value passed in is returned.  Note that this method returns the new value
+ * but does not change the current string.
+ * <pre><code>
+// alternate sort directions
+sort = sort.toggle('ASC', 'DESC');
+
+// instead of conditional logic:
+sort = (sort == 'ASC' ? 'DESC' : 'ASC');
+</code></pre>
+ * @param {String} value The value to compare to the current string
+ * @param {String} other The new value to use if the string already equals the first value passed in
+ * @return {String} The new value
+ */
 String.prototype.toggle = function(value, other){
     return this == value ? other : value;
 };
-
+/**
+ * @class Number
+ */
 Ext.applyIf(Number.prototype, {
+    /**
+     * Checks whether or not the current number is within a desired range.  If the number is already within the
+     * range it is returned, otherwise the min or max value is returned depending on which side of the range is
+     * exceeded.  Note that this method returns the constrained value but does not change the current number.
+     * @param {Number} min The minimum number in the range
+     * @param {Number} max The maximum number in the range
+     * @return {Number} The constrained value if outside the range, otherwise the current value
+     */
     constrain : function(min, max){
         return Math.min(Math.max(this, min), max);
     }
 });
-
+/**
+ * @class Array
+ */
 Ext.applyIf(Array.prototype, {
+    /**
+     * Checks whether or not the specified object exists in the array.
+     * @param {Object} o The object to check for
+     * @return {Number} The index of o in the array (or -1 if it is not found)
+     */
     indexOf : function(o){
        for (var i = 0, len = this.length; i < len; i++){
  	      if(this[i] == o) return i;
@@ -639,6 +737,10 @@ Ext.applyIf(Array.prototype, {
  	   return -1;
     },
 
+    /**
+     * Removes the specified object from the array.  If the object is not found nothing happens.
+     * @param {Object} o The object to remove
+     */
     remove : function(o){
        var index = this.indexOf(o);
        if(index != -1){

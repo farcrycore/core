@@ -1,10 +1,9 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://www.extjs.com/license
  */
 
-
-Ext.menu.Separator=function(_1){Ext.menu.Separator.superclass.constructor.call(this,_1);};Ext.extend(Ext.menu.Separator,Ext.menu.BaseItem,{itemCls:"x-menu-sep",hideOnClick:false,onRender:function(li){var s=document.createElement("span");s.className=this.itemCls;s.innerHTML="&#160;";this.el=s;li.addClass("x-menu-sep-li");Ext.menu.Separator.superclass.onRender.apply(this,arguments);}});
+Ext.menu.Separator=function(A){Ext.menu.Separator.superclass.constructor.call(this,A)};Ext.extend(Ext.menu.Separator,Ext.menu.BaseItem,{itemCls:"x-menu-sep",hideOnClick:false,onRender:function(A){var B=document.createElement("span");B.className=this.itemCls;B.innerHTML="&#160;";this.el=B;A.addClass("x-menu-sep-li");Ext.menu.Separator.superclass.onRender.apply(this,arguments)}});

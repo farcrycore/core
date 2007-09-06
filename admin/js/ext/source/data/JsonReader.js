@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -12,7 +12,7 @@
  * Data reader class to create an Array of Ext.data.Record objects from a JSON response
  * based on mappings in a provided Ext.data.Record constructor.
  * <p>
- * Example code:.
+ * Example code:
  * <pre><code>
 var RecordDef = Ext.data.Record.create([
     {name: 'name', mapping: 'name'},     // "mapping" property not needed if it's the same as "name"
@@ -45,7 +45,8 @@ var myReader = new Ext.data.JsonReader({
  * or an {@link Ext.data.Record} object created using {@link Ext.data.Record#create}.
  */
 Ext.data.JsonReader = function(meta, recordType){
-    Ext.data.JsonReader.superclass.constructor.call(this, meta, recordType);
+    meta = meta || {};
+    Ext.data.JsonReader.superclass.constructor.call(this, meta, recordType||meta.fields);
 };
 Ext.extend(Ext.data.JsonReader, Ext.data.DataReader, {
     /**

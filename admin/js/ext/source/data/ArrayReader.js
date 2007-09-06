@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -33,8 +33,10 @@ var myReader = new Ext.data.ArrayReader({
  * @constructor
  * Create a new JsonReader
  * @param {Object} meta Metadata configuration options.
- * @param {Object} recordType Either an Array of field definition objects,
- * or an {@link Ext.data.Record} object created using {@link Ext.data.Record#create}.
+ * @param {Object} recordType Either an Array of field definition objects
+ * as specified to {@link Ext.data.Record#create},
+ * or an {@link Ext.data.Record} object
+ * created using {@link Ext.data.Record#create}.
  */
 Ext.data.ArrayReader = function(meta, recordType){
     Ext.data.ArrayReader.superclass.constructor.call(this, meta, recordType);

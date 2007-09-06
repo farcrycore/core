@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -13,9 +13,9 @@
  * <br><br><b>Note: The focus/blur and validation marking functionality inherited from Ext.form.Field is NOT
  * supported by this editor.</b><br/><br/>
  * An Editor is a sensitive component that can't be used in all spots standard fields can be used. Putting an Editor within
- * any element that has display set to 'none' can cause problems in Safari and FireFox.
+ * any element that has display set to 'none' can cause problems in Safari and Firefox.<br/><br/>
+ * <b>Note:</b> In Ext 1.1 there can only be one HtmlEditor on a page at a time.  This restriction does not apply in Ext 2.0+.
  */
-
 Ext.form.HtmlEditor = Ext.extend(Ext.form.Field, {
     /**
      * @cfg {Boolean} enableFormat Enable the bold, italic and underline buttons (defaults to true)
@@ -49,17 +49,14 @@ Ext.form.HtmlEditor = Ext.extend(Ext.form.Field, {
      * @cfg {Boolean} enableFont Enable font selection. Not available in Safari. (defaults to true)
      */
     enableFont : true,
-
     /**
      * @cfg {String} createLinkText The default text for the create link prompt
      */
     createLinkText : 'Please enter the URL for the link:',
-
     /**
      * @cfg {String} defaultLinkValue The default value for the create link prompt (defaults to http:/ /)
      */
     defaultLinkValue : 'http:/'+'/',
-
     /**
      * @cfg {Array} fontFamilies An array of available font families
      */
@@ -96,6 +93,13 @@ Ext.form.HtmlEditor = Ext.extend(Ext.form.Field, {
              * @param {HtmlEditor} this
              */
             initialize: true,
+            /**
+             * @event activate
+             * Fires when the editor is first receives the focus. Any insertion must wait
+             * until after this event.
+             * @param {HtmlEditor} this
+             */
+            activate: true,
              /**
              * @event beforesync
              * Fires before the textarea is updated with content from the editor iframe. Return false
@@ -182,6 +186,7 @@ Ext.form.HtmlEditor = Ext.extend(Ext.form.Field, {
         if(this.enableFont && !Ext.isSafari){
             this.fontSelect = tb.el.createChild({
                 tag:'select',
+                tabIndex: -1,
                 cls:'x-font-select',
                 html: this.createFontOptions()
             });
@@ -311,6 +316,7 @@ Ext.form.HtmlEditor = Ext.extend(Ext.form.Field, {
     onRender : function(ct, position){
         Ext.form.HtmlEditor.superclass.onRender.call(this, ct, position);
         this.el.dom.style.border = '0 none';
+        this.el.dom.setAttribute('tabIndex', -1);
         this.el.addClass('x-hidden');
         if(Ext.isIE){ // fix IE 1px bogus margin
             this.el.applyStyles('margin-top:-1px;margin-bottom:-1px;')
@@ -332,7 +338,7 @@ Ext.form.HtmlEditor = Ext.extend(Ext.form.Field, {
         iframe.name = Ext.id();
         iframe.frameBorder = 'no';
 
-        iframe.src="javascript:false";
+        iframe.src = (Ext.SSL_SECURE_URL || "javascript:false");
 
         this.wrap.dom.appendChild(iframe);
 
@@ -412,6 +418,7 @@ Ext.form.HtmlEditor = Ext.extend(Ext.form.Field, {
             this.syncValue();
             this.iframe.className = 'x-hidden';
             this.el.removeClass('x-hidden');
+            this.el.dom.removeAttribute('tabIndex');
             this.el.focus();
         }else{
             if(this.initialized){
@@ -422,6 +429,7 @@ Ext.form.HtmlEditor = Ext.extend(Ext.form.Field, {
             this.pushValue();
             this.iframe.className = '';
             this.el.addClass('x-hidden');
+            this.el.dom.setAttribute('tabIndex', -1);
             this.deferFocus();
         }
         this.setSize(this.wrap.getSize());
@@ -473,8 +481,8 @@ Ext.form.HtmlEditor = Ext.extend(Ext.form.Field, {
     /**
      * Protected method that will not generally be called directly. If you need/want
      * custom HTML cleanup, this is the method you should override.
-     * @param {String} html
-     * return {String} The cleaned html
+     * @param {String} html The HTML to be cleaned
+     * return {String} The cleaned HTML
      */
     cleanHtml : function(html){
         html = String(html);
@@ -607,6 +615,7 @@ Ext.form.HtmlEditor = Ext.extend(Ext.form.Field, {
                 this.execCmd('styleWithCSS', false);
             }catch(e){}
         }
+        this.fireEvent('activate', this);
     },
 
     // private
@@ -658,10 +667,7 @@ Ext.form.HtmlEditor = Ext.extend(Ext.form.Field, {
             btns.insertorderedlist.toggle(doc.queryCommandState('insertorderedlist'));
             btns.insertunorderedlist.toggle(doc.queryCommandState('insertunorderedlist'));
         }
-        if(this.enableColors){
-            btns.forecolor.menu.hide();
-            btns.backcolor.menu.hide();
-        }
+        Ext.menu.MenuMgr.hideAll();
 
         this.syncValue();
     },
@@ -693,6 +699,7 @@ Ext.form.HtmlEditor = Ext.extend(Ext.form.Field, {
      */
     execCmd : function(cmd, value){
         this.doc.execCommand(cmd, false, value === undefined ? null : value);
+        this.syncValue();
     },
 
     // private
@@ -722,6 +729,34 @@ Ext.form.HtmlEditor = Ext.extend(Ext.form.Field, {
         }
     },
 
+    /**
+     * Inserts the passed text at the current cursor position. Note: the editor must be initialized and activated
+     * to insert text.
+     * @param {String} text
+     */
+    insertAtCursor : function(text){
+        if(!this.activated){
+            return;
+        }
+        if(Ext.isIE){
+            this.win.focus();
+            var r = this.doc.selection.createRange();
+            if(r){
+                r.collapse(true);
+                r.pasteHTML(text);
+                this.syncValue();
+                this.deferFocus();
+            }
+        }else if(Ext.isGecko || Ext.isOpera){
+            this.win.focus();
+            this.execCmd('InsertHTML', text);
+            this.deferFocus();
+        }else if(Ext.isSafari){
+            this.execCmd('InsertText', text);
+            this.deferFocus();
+        }
+    },
+
     // private
     fixKeys : function(){ // load time branching for fastest keydown performance
         if(Ext.isIE){
@@ -735,13 +770,16 @@ Ext.form.HtmlEditor = Ext.extend(Ext.form.Field, {
                         r.pasteHTML('&nbsp;&nbsp;&nbsp;&nbsp;');
                         this.deferFocus();
                     }
-                }else if(k == e.ENTER && !e.getTarget('li')){
-                    e.stopEvent();
+                }else if(k == e.ENTER){
                     r = this.doc.selection.createRange();
                     if(r){
-                        r.pasteHTML('<br />');
-                        r.collapse(false);
-                        r.select();
+                        var target = r.parentElement();
+                        if(!target || target.tagName.toLowerCase() != 'li'){
+                            e.stopEvent();
+                            r.pasteHTML('<br />');
+                            r.collapse(false);
+                            r.select();
+                        }
                     }
                 }
             };
@@ -778,7 +816,7 @@ Ext.form.HtmlEditor = Ext.extend(Ext.form.Field, {
     /**
      * Object collection of toolbar tooltips for the buttons in the editor. The key
      * is the command id associated with that button and the value is a valid QuickTips object.
-     * For Example:
+     * For example:
 <pre><code>
 {
     bold : {
@@ -871,6 +909,10 @@ Ext.form.HtmlEditor = Ext.extend(Ext.form.Field, {
     // hide stuff that is not compatible
     /**
      * @event blur
+     * @hide
+     */
+    /**
+     * @event change
      * @hide
      */
     /**

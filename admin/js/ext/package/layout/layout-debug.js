@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -134,7 +134,7 @@ Ext.extend(Ext.BorderLayout, Ext.LayoutManager, {
         r.on("collapsed", this.onRegionCollapsed, this);
         r.on("expanded", this.onRegionExpanded, this);
     },
-    
+
     
     layout : function(){
         if(this.updating) return;
@@ -142,7 +142,7 @@ Ext.extend(Ext.BorderLayout, Ext.LayoutManager, {
         var w = size.width, h = size.height;
         var centerW = w, centerH = h, centerY = 0, centerX = 0;
         
-        
+
         var rs = this.regions;
         var n = rs["north"], s = rs["south"], west = rs["west"], e = rs["east"], c = rs["center"];
         
@@ -205,25 +205,26 @@ Ext.extend(Ext.BorderLayout, Ext.LayoutManager, {
         this.el.repaint();
         this.fireEvent("layout", this);
     },
+
     
     safeBox : function(box){
         box.width = Math.max(0, box.width);
         box.height = Math.max(0, box.height);
         return box;
     },
-    
+
     
     add : function(target, panel){
         target = target.toLowerCase();
         return this.regions[target].add(panel);
     },
-    
+
     
     remove : function(target, panel){
         target = target.toLowerCase();
         return this.regions[target].remove(panel);
     },
-    
+
     
     findPanel : function(panelId){
         var rs = this.regions;
@@ -237,7 +238,7 @@ Ext.extend(Ext.BorderLayout, Ext.LayoutManager, {
         }
         return null;
     },
-    
+
     
     showPanel : function(panelId) {
       var rs = this.regions;
@@ -251,7 +252,7 @@ Ext.extend(Ext.BorderLayout, Ext.LayoutManager, {
       }
       return null;
    },
-   
+
    
     restoreState : function(provider){
         if(!provider){
@@ -261,7 +262,7 @@ Ext.extend(Ext.BorderLayout, Ext.LayoutManager, {
         sm.init(this, provider);
     },
 
-
+    
     batchAdd : function(regions){
         this.beginUpdate();
         for(var rname in regions){
@@ -294,6 +295,7 @@ Ext.extend(Ext.BorderLayout, Ext.LayoutManager, {
     }
 });
 
+
 Ext.BorderLayout.create = function(config, targetEl){
     var layout = new Ext.BorderLayout(targetEl || document.body, config);
     layout.beginUpdate();
@@ -310,8 +312,11 @@ Ext.BorderLayout.create = function(config, targetEl){
     return layout;
 };
 
+
 Ext.BorderLayout.RegionFactory = {
+    
     validRegions : ["north","south","east","west","center"],
+
     
     create : function(target, mgr, config){
         target = target.toLowerCase();
@@ -926,7 +931,7 @@ Ext.extend(Ext.LayoutRegion, Ext.BasicLayoutRegion, {
     add : function(panel){
         if(arguments.length > 1){
             for(var i = 0, len = arguments.length; i < len; i++) {
-            	this.add(arguments[i]);
+                this.add(arguments[i]);
             }
             return null;
         }
@@ -1068,7 +1073,7 @@ Ext.extend(Ext.SplitLayoutRegion, Ext.LayoutRegion, {
             if(typeof config.maxSize != "undefined"){
                 this.split.maxSize = config.maxSize;
             }
-            if(config.hideWhenEmpty || config.hidden){
+            if(config.hideWhenEmpty || config.hidden || config.collapsed){
                 this.hideSplitter();
             }
         }

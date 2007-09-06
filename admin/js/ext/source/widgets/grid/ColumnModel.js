@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -29,27 +29,30 @@
  * config objects for details.
 */
 Ext.grid.ColumnModel = function(config){
-	Ext.grid.ColumnModel.superclass.constructor.call(this);
-    /**
+	/**
      * The config passed into the constructor
      */
     this.config = config;
     this.lookup = {};
 
-    // if id, create one
+    // if no id, create one
     // if the column does not have a dataIndex mapping,
     // map it to the order it is in the config
     for(var i = 0, len = config.length; i < len; i++){
-        if(typeof config[i].dataIndex == "undefined"){
-            config[i].dataIndex = i;
+        var c = config[i];
+        if(typeof c.dataIndex == "undefined"){
+            c.dataIndex = i;
         }
-        if(typeof config[i].renderer == "string"){
-            config[i].renderer = Ext.util.Format[config[i].renderer];
+        if(typeof c.renderer == "string"){
+            c.renderer = Ext.util.Format[c.renderer];
         }
-        if(typeof config[i].id == "undefined"){
-            config[i].id = i;
+        if(typeof c.id == "undefined"){
+            c.id = i;
         }
-        this.lookup[config[i].id] = config[i];
+        if(c.editor && c.editor.isFormField){
+            c.editor = new Ext.grid.GridEditor(c.editor);
+        }
+        this.lookup[c.id] = c;
     }
 
     /**
@@ -67,7 +70,7 @@ Ext.grid.ColumnModel = function(config){
     this.addEvents({
         /**
 	     * @event widthchange
-	     * Fires when the width of a column changes
+	     * Fires when the width of a column changes.
 	     * @param {ColumnModel} this
 	     * @param {Number} columnIndex The column index
 	     * @param {Number} newWidth The new width
@@ -75,7 +78,7 @@ Ext.grid.ColumnModel = function(config){
 	    "widthchange": true,
         /**
 	     * @event headerchange
-	     * Fires when the text of a header changes
+	     * Fires when the text of a header changes.
 	     * @param {ColumnModel} this
 	     * @param {Number} columnIndex The column index
 	     * @param {Number} newText The new header text
@@ -83,15 +86,15 @@ Ext.grid.ColumnModel = function(config){
 	    "headerchange": true,
         /**
 	     * @event hiddenchange
-	     * Fires when a column is hidden or "unhidden"
+	     * Fires when a column is hidden or "unhidden".
 	     * @param {ColumnModel} this
 	     * @param {Number} columnIndex The column index
-	     * @param {Number} hidden true if hidden, false otherwise
+	     * @param {Boolean} hidden true if hidden, false otherwise
 	     */
 	    "hiddenchange": true,
 	    /**
          * @event columnmoved
-         * Fires when a column is moved
+         * Fires when a column is moved.
          * @param {ColumnModel} this
          * @param {Number} oldIndex
          * @param {Number} newIndex
@@ -122,12 +125,15 @@ Ext.extend(Ext.grid.ColumnModel, Ext.util.Observable, {
      * instead of {@link Ext.grid.Grid#autoSizeColumns} is more efficient.
      */
     /**
-     * @cfg {Boolean} sortable (Optional) True if sorting is to be allowed on this column. Defaults to true.
+     * @cfg {Boolean} sortable (Optional) True if sorting is to be allowed on this column.
+     * Defaults to the value of the {@link #defaultSortable} property.
      * Whether local/remote sorting is used is specified in {@link Ext.data.Store#remoteSort}.
      */
     /**
-     * @cfg {Boolean} locked (Optional) True to lock the column in place while scrolling the Grid.
-     * Defaults to false.
+     * @cfg {Boolean} locked (Optional) True to lock the column in place while scrolling the Grid.  Defaults to false.
+     */
+    /**
+     * @cfg {Boolean} fixed (Optional) True if the column width cannot be changed.  Defaults to false.
      */
     /**
      * @cfg {Boolean} resizable (Optional) False to disable column resizing. Defaults to true.
@@ -140,20 +146,33 @@ Ext.extend(Ext.grid.ColumnModel, Ext.util.Observable, {
      * given the cell's data value. See {@link #setRenderer}. If not specified, the
      * default renderer uses the raw data value.
      */
+    /**
+     * @cfg {String} align (Optional) Set the CSS text-align property of the column.  Defaults to undefined.
+     */
 
     /**
-     * Returns the id of the column at the specified index
-     * @param {Number} index
+     * Returns the id of the column at the specified index.
+     * @param {Number} index The column index
      * @return {String} the id
      */
     getColumnId : function(index){
         return this.config[index].id;
     },
 
+    /**
+     * Returns the column for a specified id.
+     * @param {String} id The column id
+     * @return {Object} the column
+     */
     getColumnById : function(id){
         return this.lookup[id];
     },
 
+    /**
+     * Returns the index for a specified column id.
+     * @param {String} id The column id
+     * @return {Number} the index, or -1 if not found
+     */
     getIndexById : function(id){
         for(var i = 0, len = this.config.length; i < len; i++){
             if(this.config[i].id == id){

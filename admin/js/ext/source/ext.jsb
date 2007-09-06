@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<project path="" name="Ext - JS Lib" author="Ext JS, LLC" version="1.1 Beta 1" copyright="Ext JS Library $version&#xD;&#xA;Copyright(c) 2006-2007, $author.&#xD;&#xA;licensing@extjs.com&#xD;&#xA;&#xD;&#xA;http://www.extjs.com/license" output="C:\apps\www\deploy\ext-1.1-beta1\" source="True" source-dir="$output\source" minify="True" min-dir="$output\build" doc="False" doc-dir="$output\docs" min-dair="$output\build">
+<project path="" name="Ext - JS Lib" author="Ext JS, LLC" version="1.1.1" copyright="Ext JS Library $version&#xD;&#xA;Copyright(c) 2006-2007, $author.&#xD;&#xA;licensing@extjs.com&#xD;&#xA;&#xD;&#xA;http://www.extjs.com/license" output="C:\apps\www\deploy\ext-1.1.1\" source="True" source-dir="$output\source" minify="True" min-dir="$output\build" doc="False" doc-dir="$output\docs" min-dair="$output\build">
   <directory name="" />
   <target name="Core" file="$output\ext-core.js" debug="True" shorthand="False" shorthand-list="YAHOO.util.Dom.setStyle&#xD;&#xA;YAHOO.util.Dom.getStyle&#xD;&#xA;YAHOO.util.Dom.getRegion&#xD;&#xA;YAHOO.util.Dom.getViewportHeight&#xD;&#xA;YAHOO.util.Dom.getViewportWidth&#xD;&#xA;YAHOO.util.Dom.get&#xD;&#xA;YAHOO.util.Dom.getXY&#xD;&#xA;YAHOO.util.Dom.setXY&#xD;&#xA;YAHOO.util.CustomEvent&#xD;&#xA;YAHOO.util.Event.addListener&#xD;&#xA;YAHOO.util.Event.getEvent&#xD;&#xA;YAHOO.util.Event.getTarget&#xD;&#xA;YAHOO.util.Event.preventDefault&#xD;&#xA;YAHOO.util.Event.stopEvent&#xD;&#xA;YAHOO.util.Event.stopPropagation&#xD;&#xA;YAHOO.util.Event.stopEvent&#xD;&#xA;YAHOO.util.Anim&#xD;&#xA;YAHOO.util.Motion&#xD;&#xA;YAHOO.util.Connect.asyncRequest&#xD;&#xA;YAHOO.util.Connect.setForm&#xD;&#xA;YAHOO.util.Dom&#xD;&#xA;YAHOO.util.Event">
     <include name="core\DomHelper.js" />
@@ -31,6 +31,8 @@
     <include name="util\MixedCollection.js" />
     <include name="util\JSON.js" />
     <include name="util\Format.js" />
+    <include name="util\MasterTemplate.js" />
+    <include name="util\XTemplate.js" />
     <include name="util\CSS.js" />
     <include name="util\ClickRepeater.js" />
     <include name="util\KeyNav.js" />
@@ -49,6 +51,7 @@
     <include name="data\Record.js" />
     <include name="data\Store.js" />
     <include name="data\SimpleStore.js" />
+    <include name="data\JsonStore.js" />
     <include name="data\DataField.js" />
     <include name="data\DataReader.js" />
     <include name="data\DataProxy.js" />
@@ -331,6 +334,7 @@
   </target>
   <target name="Button" file="$output\package\button\button.js" debug="True" shorthand="False" shorthand-list="YAHOO.util.Dom.setStyle&#xD;&#xA;YAHOO.util.Dom.getStyle&#xD;&#xA;YAHOO.util.Dom.getRegion&#xD;&#xA;YAHOO.util.Dom.getViewportHeight&#xD;&#xA;YAHOO.util.Dom.getViewportWidth&#xD;&#xA;YAHOO.util.Dom.get&#xD;&#xA;YAHOO.util.Dom.getXY&#xD;&#xA;YAHOO.util.Dom.setXY&#xD;&#xA;YAHOO.util.CustomEvent&#xD;&#xA;YAHOO.util.Event.addListener&#xD;&#xA;YAHOO.util.Event.getEvent&#xD;&#xA;YAHOO.util.Event.getTarget&#xD;&#xA;YAHOO.util.Event.preventDefault&#xD;&#xA;YAHOO.util.Event.stopEvent&#xD;&#xA;YAHOO.util.Event.stopPropagation&#xD;&#xA;YAHOO.util.Event.stopEvent&#xD;&#xA;YAHOO.util.Anim&#xD;&#xA;YAHOO.util.Motion&#xD;&#xA;YAHOO.util.Connect.asyncRequest&#xD;&#xA;YAHOO.util.Connect.setForm&#xD;&#xA;YAHOO.util.Dom&#xD;&#xA;YAHOO.util.Event">
     <include name="widgets\Button.js" />
+    <include name="widgets\MenuButton.js" />
   </target>
   <target name="Grid - Edit" file="$output\package\grid\edit-grid.js" debug="True" shorthand="False" shorthand-list="YAHOO.util.Dom.setStyle&#xD;&#xA;YAHOO.util.Dom.getStyle&#xD;&#xA;YAHOO.util.Dom.getRegion&#xD;&#xA;YAHOO.util.Dom.getViewportHeight&#xD;&#xA;YAHOO.util.Dom.getViewportWidth&#xD;&#xA;YAHOO.util.Dom.get&#xD;&#xA;YAHOO.util.Dom.getXY&#xD;&#xA;YAHOO.util.Dom.setXY&#xD;&#xA;YAHOO.util.CustomEvent&#xD;&#xA;YAHOO.util.Event.addListener&#xD;&#xA;YAHOO.util.Event.getEvent&#xD;&#xA;YAHOO.util.Event.getTarget&#xD;&#xA;YAHOO.util.Event.preventDefault&#xD;&#xA;YAHOO.util.Event.stopEvent&#xD;&#xA;YAHOO.util.Event.stopPropagation&#xD;&#xA;YAHOO.util.Event.stopEvent&#xD;&#xA;YAHOO.util.Anim&#xD;&#xA;YAHOO.util.Motion&#xD;&#xA;YAHOO.util.Connect.asyncRequest&#xD;&#xA;YAHOO.util.Connect.setForm&#xD;&#xA;YAHOO.util.Dom&#xD;&#xA;YAHOO.util.Event">
     <include name="widgets\grid\EditorGrid.js" />
@@ -391,6 +395,7 @@
   </target>
   <target name="Widget Core" file="$output\package\widget-core.js" debug="False" shorthand="False" shorthand-list="YAHOO.util.Dom.setStyle&#xD;&#xA;YAHOO.util.Dom.getStyle&#xD;&#xA;YAHOO.util.Dom.getRegion&#xD;&#xA;YAHOO.util.Dom.getViewportHeight&#xD;&#xA;YAHOO.util.Dom.getViewportWidth&#xD;&#xA;YAHOO.util.Dom.get&#xD;&#xA;YAHOO.util.Dom.getXY&#xD;&#xA;YAHOO.util.Dom.setXY&#xD;&#xA;YAHOO.util.CustomEvent&#xD;&#xA;YAHOO.util.Event.addListener&#xD;&#xA;YAHOO.util.Event.getEvent&#xD;&#xA;YAHOO.util.Event.getTarget&#xD;&#xA;YAHOO.util.Event.preventDefault&#xD;&#xA;YAHOO.util.Event.stopEvent&#xD;&#xA;YAHOO.util.Event.stopPropagation&#xD;&#xA;YAHOO.util.Event.stopEvent&#xD;&#xA;YAHOO.util.Anim&#xD;&#xA;YAHOO.util.Motion&#xD;&#xA;YAHOO.util.Connect.asyncRequest&#xD;&#xA;YAHOO.util.Connect.setForm&#xD;&#xA;YAHOO.util.Dom&#xD;&#xA;YAHOO.util.Event">
     <include name="widgets\Component.js" />
+    <include name="widgets\BoxComponent.js" />
     <include name="widgets\Layer.js" />
     <include name="widgets\Shadow.js" />
   </target>
@@ -469,9 +474,29 @@
   <file name="experimental\ext-bridge.js" path="experimental" />
   <target name="Ext Base" file="$output\adapter\ext\ext-base.js" debug="False" shorthand="False" shorthand-list="YAHOO.util.Dom.setStyle&#xD;&#xA;YAHOO.util.Dom.getStyle&#xD;&#xA;YAHOO.util.Dom.getRegion&#xD;&#xA;YAHOO.util.Dom.getViewportHeight&#xD;&#xA;YAHOO.util.Dom.getViewportWidth&#xD;&#xA;YAHOO.util.Dom.get&#xD;&#xA;YAHOO.util.Dom.getXY&#xD;&#xA;YAHOO.util.Dom.setXY&#xD;&#xA;YAHOO.util.CustomEvent&#xD;&#xA;YAHOO.util.Event.addListener&#xD;&#xA;YAHOO.util.Event.getEvent&#xD;&#xA;YAHOO.util.Event.getTarget&#xD;&#xA;YAHOO.util.Event.preventDefault&#xD;&#xA;YAHOO.util.Event.stopEvent&#xD;&#xA;YAHOO.util.Event.stopPropagation&#xD;&#xA;YAHOO.util.Event.stopEvent&#xD;&#xA;YAHOO.util.Anim&#xD;&#xA;YAHOO.util.Motion&#xD;&#xA;YAHOO.util.Connect.asyncRequest&#xD;&#xA;YAHOO.util.Connect.setForm&#xD;&#xA;YAHOO.util.Dom&#xD;&#xA;YAHOO.util.Event">
     <include name="core\Ext.js" />
-    <include name="experimental\ext-base.js" />
+    <include name="adapter\ext-base.js" />
   </target>
   <file name="widgets\form\Editor.js" path="widgets\form" />
+  <file name="experimental\ext-base.js" path="experimental" />
+  <file name="locale\ext-lang-fr_FR.js" path="locale" />
+  <file name="locale\ext-lang-pt_br.js" path="locale" />
+  <file name="locale\ext-lang-sv_se.js" path="locale" />
+  <target name="Slickspeed" file="c:\apps\www\playpen\slickspeed\frameworks\ext.js" debug="True" shorthand="False" shorthand-list="YAHOO.util.Dom.setStyle&#xD;&#xA;YAHOO.util.Dom.getStyle&#xD;&#xA;YAHOO.util.Dom.getRegion&#xD;&#xA;YAHOO.util.Dom.getViewportHeight&#xD;&#xA;YAHOO.util.Dom.getViewportWidth&#xD;&#xA;YAHOO.util.Dom.get&#xD;&#xA;YAHOO.util.Dom.getXY&#xD;&#xA;YAHOO.util.Dom.setXY&#xD;&#xA;YAHOO.util.CustomEvent&#xD;&#xA;YAHOO.util.Event.addListener&#xD;&#xA;YAHOO.util.Event.getEvent&#xD;&#xA;YAHOO.util.Event.getTarget&#xD;&#xA;YAHOO.util.Event.preventDefault&#xD;&#xA;YAHOO.util.Event.stopEvent&#xD;&#xA;YAHOO.util.Event.stopPropagation&#xD;&#xA;YAHOO.util.Event.stopEvent&#xD;&#xA;YAHOO.util.Anim&#xD;&#xA;YAHOO.util.Motion&#xD;&#xA;YAHOO.util.Connect.asyncRequest&#xD;&#xA;YAHOO.util.Connect.setForm&#xD;&#xA;YAHOO.util.Dom&#xD;&#xA;YAHOO.util.Event">
+    <include name="core\Ext.js" />
+    <include name="adapter\ext-base.js" />
+    <include name="core\DomHelper.js" />
+    <include name="core\Template.js" />
+    <include name="core\DomQuery.js" />
+    <include name="util\Observable.js" />
+    <include name="core\EventManager.js" />
+    <include name="core\Element.js" />
+    <include name="core\Fx.js" />
+    <include name="core\CompositeElement.js" />
+    <include name="data\Connection.js" />
+    <include name="core\UpdateManager.js" />
+    <include name="util\DelayedTask.js" />
+  </target>
+  <file name="adapter\ext-base.js" path="adapter" />
   <file name="adapter\jquery-bridge.js" path="adapter" />
   <file name="adapter\prototype-bridge.js" path="adapter" />
   <file name="adapter\yui-bridge.js" path="adapter" />
@@ -491,6 +516,7 @@
   <file name="data\DataReader.js" path="data" />
   <file name="data\HttpProxy.js" path="data" />
   <file name="data\JsonReader.js" path="data" />
+  <file name="data\JsonStore.js" path="data" />
   <file name="data\MemoryProxy.js" path="data" />
   <file name="data\Record.js" path="data" />
   <file name="data\ScriptTagProxy.js" path="data" />
@@ -507,13 +533,16 @@
   <file name="dd\Registry.js" path="dd" />
   <file name="dd\ScrollManager.js" path="dd" />
   <file name="dd\StatusProxy.js" path="dd" />
-  <file name="experimental\ext-base.js" path="experimental" />
+  <file name="locale\ext-lang-af.js" path="locale" />
   <file name="locale\ext-lang-cs.js" path="locale" />
   <file name="locale\ext-lang-da.js" path="locale" />
   <file name="locale\ext-lang-de.js" path="locale" />
   <file name="locale\ext-lang-el_GR.js" path="locale" />
   <file name="locale\ext-lang-en.js" path="locale" />
+  <file name="locale\ext-lang-en_UK.js" path="locale" />
+  <file name="locale\ext-lang-fr.js" path="locale" />
   <file name="locale\ext-lang-fr_CA.js" path="locale" />
+  <file name="locale\ext-lang-gr.js" path="locale" />
   <file name="locale\ext-lang-hr.js" path="locale" />
   <file name="locale\ext-lang-hu.js" path="locale" />
   <file name="locale\ext-lang-it.js" path="locale" />
@@ -523,14 +552,14 @@
   <file name="locale\ext-lang-nl.js" path="locale" />
   <file name="locale\ext-lang-no.js" path="locale" />
   <file name="locale\ext-lang-pl.js" path="locale" />
-  <file name="locale\ext-lang-pt_br.js" path="locale" />
+  <file name="locale\ext-lang-pt_BR.js" path="locale" />
   <file name="locale\ext-lang-ro.js" path="locale" />
   <file name="locale\ext-lang-ru.js" path="locale" />
   <file name="locale\ext-lang-sk.js" path="locale" />
   <file name="locale\ext-lang-sl.js" path="locale" />
   <file name="locale\ext-lang-sp.js" path="locale" />
   <file name="locale\ext-lang-sr_RS.js" path="locale" />
-  <file name="locale\ext-lang-sv_se.js" path="locale" />
+  <file name="locale\ext-lang-sv_SE.js" path="locale" />
   <file name="locale\ext-lang-tr.js" path="locale" />
   <file name="locale\ext-lang-vn.js" path="locale" />
   <file name="locale\ext-lang-zh_CN.js" path="locale" />
@@ -544,10 +573,12 @@
   <file name="util\JSON.js" path="util" />
   <file name="util\KeyMap.js" path="util" />
   <file name="util\KeyNav.js" path="util" />
+  <file name="util\MasterTemplate.js" path="util" />
   <file name="util\MixedCollection.js" path="util" />
   <file name="util\Observable.js" path="util" />
   <file name="util\TaskMgr.js" path="util" />
   <file name="util\TextMetrics.js" path="util" />
+  <file name="util\XTemplate.js" path="util" />
   <file name="widgets\form\Action.js" path="widgets\form" />
   <file name="widgets\form\BasicForm.js" path="widgets\form" />
   <file name="widgets\form\Checkbox.js" path="widgets\form" />

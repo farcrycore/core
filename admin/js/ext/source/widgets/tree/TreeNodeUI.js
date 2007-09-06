@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -7,7 +7,7 @@
  */
 
 /**
- * The TreeNode UI implementation is separate from the 
+ * The TreeNode UI implementation is separate from the
  * tree implementation. Unless you are customizing the tree UI,
  * you should never have to use this directly.
  */
@@ -22,32 +22,32 @@ Ext.tree.TreeNodeUI.prototype = {
     removeChild : function(node){
         if(this.rendered){
             this.ctNode.removeChild(node.ui.getEl());
-        } 
+        }
     },
-    
+
     beforeLoad : function(){
          this.addClass("x-tree-node-loading");
     },
-    
+
     afterLoad : function(){
          this.removeClass("x-tree-node-loading");
     },
-    
+
     onTextChange : function(node, text, oldText){
         if(this.rendered){
             this.textNode.innerHTML = text;
         }
     },
-    
+
     onDisableChange : function(node, state){
         this.disabled = state;
         if(state){
             this.addClass("x-tree-node-disabled");
         }else{
             this.removeClass("x-tree-node-disabled");
-        } 
+        }
     },
-    
+
     onSelectedChange : function(state){
         if(state){
             this.focus();
@@ -57,7 +57,7 @@ Ext.tree.TreeNodeUI.prototype = {
             this.removeClass("x-tree-selected");
         }
     },
-    
+
     onMove : function(tree, node, oldParent, newParent, index, refNode){
         this.childIndent = null;
         if(this.rendered){
@@ -85,7 +85,7 @@ Ext.tree.TreeNodeUI.prototype = {
 
     removeClass : function(cls){
         if(this.elNode){
-            Ext.fly(this.elNode).removeClass(cls);  
+            Ext.fly(this.elNode).removeClass(cls);
         }
     },
 
@@ -93,34 +93,40 @@ Ext.tree.TreeNodeUI.prototype = {
         if(this.rendered){
             this.holder = document.createElement("div");
             this.holder.appendChild(this.wrap);
-        }  
+        }
     },
-    
+
     fireEvent : function(){
-        return this.node.fireEvent.apply(this.node, arguments);  
+        return this.node.fireEvent.apply(this.node, arguments);
     },
-    
+
     initEvents : function(){
         this.node.on("move", this.onMove, this);
         var E = Ext.EventManager;
         var a = this.anchor;
-        
-        var el = Ext.fly(a);
-        
+
+        var el = Ext.fly(a, '_treeui');
+
         if(Ext.isOpera){ // opera render bug ignores the CSS
             el.setStyle("text-decoration", "none");
         }
-        
+
         el.on("click", this.onClick, this);
         el.on("dblclick", this.onDblClick, this);
+
+        if(this.checkbox){
+            Ext.EventManager.on(this.checkbox,
+                    Ext.isIE ? 'click' : 'change', this.onCheckChange, this);
+        }
+
         el.on("contextmenu", this.onContextMenu, this);
-        
+
         var icon = Ext.fly(this.iconNode);
         icon.on("click", this.onClick, this);
         icon.on("dblclick", this.onDblClick, this);
         icon.on("contextmenu", this.onContextMenu, this);
         E.on(this.ecNode, "click", this.ecClick, this, true);
-        
+
         if(this.node.disabled){
             this.addClass("x-tree-node-disabled");
         }
@@ -132,30 +138,36 @@ Ext.tree.TreeNodeUI.prototype = {
         if(dd && (!this.node.isRoot || ot.rootVisible)){
             Ext.dd.Registry.register(this.elNode, {
                 node: this.node,
-                handles: [this.iconNode, this.textNode],
+                handles: this.getDDHandles(),
                 isHandle: false
             });
         }
     },
-    
+
+    getDDHandles : function(){
+        return [this.iconNode, this.textNode];
+    },
+
     hide : function(){
         if(this.rendered){
             this.wrap.style.display = "none";
-        }  
+        }
     },
-    
+
     show : function(){
         if(this.rendered){
             this.wrap.style.display = "";
-        } 
+        }
     },
-    
+
     onContextMenu : function(e){
-        e.preventDefault();
-        this.focus();
-        this.fireEvent("contextmenu", this.node, e);
+        if (this.node.hasListener("contextmenu") || this.node.getOwnerTree().hasListener("contextmenu")) {
+            e.preventDefault();
+            this.focus();
+            this.fireEvent("contextmenu", this.node, e);
+        }
     },
-    
+
     onClick : function(e){
         if(this.dropping){
             e.stopEvent();
@@ -170,43 +182,54 @@ Ext.tree.TreeNodeUI.prototype = {
             if(this.disabled){
                 return;
             }
+
             if(this.node.attributes.singleClickExpand && !this.animating && this.node.hasChildNodes()){
                 this.node.toggle();
             }
+
             this.fireEvent("click", this.node, e);
         }else{
             e.stopEvent();
         }
     },
-    
+
     onDblClick : function(e){
         e.preventDefault();
         if(this.disabled){
             return;
+        }
+        if(this.checkbox){
+            this.toggleCheck();
         }
         if(!this.animating && this.node.hasChildNodes()){
             this.node.toggle();
         }
         this.fireEvent("dblclick", this.node, e);
     },
-    
+
+    onCheckChange : function(){
+        var checked = this.checkbox.checked;
+        this.node.attributes.checked = checked;
+        this.fireEvent('checkchange', this.node, checked);
+    },
+
     ecClick : function(e){
         if(!this.animating && this.node.hasChildNodes()){
             this.node.toggle();
         }
     },
-    
+
     startDrop : function(){
         this.dropping = true;
     },
-    
+
     // delayed drop so the click event doesn't get fired on a drop
-    endDrop : function(){ 
+    endDrop : function(){
        setTimeout(function(){
            this.dropping = false;
-       }.createDelegate(this), 50); 
+       }.createDelegate(this), 50);
     },
-    
+
     expand : function(){
         this.updateExpandIcon();
         this.ctNode.style.display = "";
@@ -225,13 +248,20 @@ Ext.tree.TreeNodeUI.prototype = {
             }catch(e){}
         }
     },
-    
+
+    toggleCheck : function(value){
+        var cb = this.checkbox;
+        if(cb){
+            cb.checked = (value === undefined ? !cb.checked : value);
+        }
+    },
+
     blur : function(){
         try{
             this.anchor.blur();
-        }catch(e){} 
+        }catch(e){}
     },
-    
+
     animExpand : function(callback){
         var ct = Ext.get(this.ctNode);
         ct.stopFx();
@@ -243,7 +273,7 @@ Ext.tree.TreeNodeUI.prototype = {
         }
         this.animating = true;
         this.updateExpandIcon();
-        
+
         ct.slideIn('t', {
            callback : function(){
                this.animating = false;
@@ -253,7 +283,7 @@ Ext.tree.TreeNodeUI.prototype = {
             duration: this.node.ownerTree.duration || .25
         });
     },
-    
+
     highlight : function(){
         var tree = this.node.getOwnerTree();
         Ext.fly(this.wrap).highlight(
@@ -261,12 +291,12 @@ Ext.tree.TreeNodeUI.prototype = {
             {endColor: tree.hlBaseColor}
         );
     },
-    
+
     collapse : function(){
         this.updateExpandIcon();
         this.ctNode.style.display = "none";
     },
-    
+
     animCollapse : function(callback){
         var ct = Ext.get(this.ctNode);
         ct.enableDisplayMode('block');
@@ -284,31 +314,32 @@ Ext.tree.TreeNodeUI.prototype = {
             duration: this.node.ownerTree.duration || .25
         });
     },
-    
+
     getContainer : function(){
-        return this.ctNode;  
+        return this.ctNode;
     },
-    
+
     getEl : function(){
-        return this.wrap;  
+        return this.wrap;
     },
-    
+
     appendDDGhost : function(ghostNode){
         ghostNode.appendChild(this.elNode.cloneNode(true));
     },
-    
+
     getDDRepairXY : function(){
         return Ext.lib.Dom.getXY(this.iconNode);
     },
-    
+
     onRender : function(){
-        this.render();    
+        this.render();
     },
-    
+
     render : function(bulkRender){
         var n = this.node, a = n.attributes;
         var targetNode = n.parentNode ?
               n.parentNode.ui.getContainer() : n.ownerTree.innerCt.dom;
+
         if(!this.rendered){
             this.rendered = true;
 
@@ -344,12 +375,15 @@ Ext.tree.TreeNodeUI.prototype = {
     renderElements : function(n, a, targetNode, bulkRender){
         // add some indent caching, this helps performance when rendering a large tree
         this.indentMarkup = n.parentNode ? n.parentNode.ui.getChildIndent() : '';
-        
+
+        var cb = typeof a.checked == 'boolean';
+        var href = a.href ? a.href : Ext.isGecko ? "" : "#";
         var buf = ['<li class="x-tree-node"><div class="x-tree-node-el ', a.cls,'">',
             '<span class="x-tree-node-indent">',this.indentMarkup,"</span>",
-            '<img src="', this.emptyIcon, '" class="x-tree-ec-icon">',
-            '<img src="', a.icon || this.emptyIcon, '" class="x-tree-node-icon',(a.icon ? " x-tree-node-inline-icon" : ""),(a.iconCls ? " "+a.iconCls : ""),'" unselectable="on">',
-            '<a hidefocus="on" href="',a.href ? a.href : "#",'" tabIndex="1" ',
+            '<img src="', this.emptyIcon, '" class="x-tree-ec-icon" />',
+            '<img src="', a.icon || this.emptyIcon, '" class="x-tree-node-icon',(a.icon ? " x-tree-node-inline-icon" : ""),(a.iconCls ? " "+a.iconCls : ""),'" unselectable="on" />',
+            cb ? ('<input class="x-tree-node-cb" type="checkbox" ' + (a.checked ? 'checked="checked" />' : ' />')) : '',
+            '<a hidefocus="on" href="',href,'" tabIndex="1" ',
              a.hrefTarget ? ' target="'+a.hrefTarget+'"' : "", '><span unselectable="on">',n.text,"</span></a></div>",
             '<ul class="x-tree-node-ct" style="display:none;"></ul>',
             "</li>"];
@@ -367,26 +401,34 @@ Ext.tree.TreeNodeUI.prototype = {
         this.indentNode = cs[0];
         this.ecNode = cs[1];
         this.iconNode = cs[2];
-        this.anchor = cs[3];
-        this.textNode = cs[3].firstChild;
+        var index = 3;
+        if(cb){
+            this.checkbox = cs[3];
+            index++;
+        }
+        this.anchor = cs[index];
+        this.textNode = cs[index].firstChild;
     },
 
     getAnchor : function(){
         return this.anchor;
     },
-    
+
     getTextEl : function(){
         return this.textNode;
     },
-    
+
     getIconEl : function(){
         return this.iconNode;
     },
-    
+
+    isChecked : function(){
+        return this.checkbox ? this.checkbox.checked : false;
+    },
+
     updateExpandIcon : function(){
         if(this.rendered){
             var n = this.node, c1, c2;
-            //console.log(n.id)
             var cls = n.isLast() ? "x-tree-elbow-end" : "x-tree-elbow";
             var hasChild = n.hasChildNodes();
             if(hasChild){
@@ -422,7 +464,7 @@ Ext.tree.TreeNodeUI.prototype = {
             }
         }
     },
-    
+
     getChildIndent : function(){
         if(!this.childIndent){
             var buf = [];
@@ -430,9 +472,9 @@ Ext.tree.TreeNodeUI.prototype = {
             while(p){
                 if(!p.isRoot || (p.isRoot && p.ownerTree.rootVisible)){
                     if(!p.isLast()) {
-                        buf.unshift('<img src="'+this.emptyIcon+'" class="x-tree-elbow-line">');
+                        buf.unshift('<img src="'+this.emptyIcon+'" class="x-tree-elbow-line" />');
                     } else {
-                        buf.unshift('<img src="'+this.emptyIcon+'" class="x-tree-icon">');
+                        buf.unshift('<img src="'+this.emptyIcon+'" class="x-tree-icon" />');
                     }
                 }
                 p = p.parentNode;
@@ -441,7 +483,7 @@ Ext.tree.TreeNodeUI.prototype = {
         }
         return this.childIndent;
     },
-    
+
     renderIndent : function(){
         if(this.rendered){
             var indent = "";

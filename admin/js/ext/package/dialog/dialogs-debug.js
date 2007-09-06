@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -22,7 +22,7 @@ Ext.BasicDialog = function(el, config){
                         {tag: "div", id: el, style:'visibility:hidden;'}, true);
         }
     }
-    el = this.el;                                                                                                                                                                                                                                                                                                                                                                                                  
+    el = this.el;
     el.setDisplayed(true);
     el.hide = this.hideAction;
     this.id = el.id;
@@ -340,7 +340,7 @@ Ext.extend(Ext.BasicDialog, Ext.util.Observable, {
         }
         if(!this.btnContainer){
             var tb = this.footer.createChild({
-                tag:"div",
+
                 cls:"x-dlg-btns x-dlg-btns-"+this.buttonAlign,
                 html:'<table cellspacing="0"><tbody><tr></tr></tbody></table><div class="x-clear"></div>'
             }, null, true);
@@ -1011,7 +1011,7 @@ Ext.MessageBox = function(){
                 buttons["no"] = dlg.addButton(bt["no"], handleButton.createCallback("no"));
                 buttons["cancel"] = dlg.addButton(bt["cancel"], handleButton.createCallback("cancel"));
                 bodyEl = dlg.body.createChild({
-                    tag:"div",
+
                     html:'<span class="ext-mb-text"></span><br /><input type="text" class="ext-mb-input" /><textarea class="ext-mb-textarea"></textarea><div class="ext-mb-progress-wrap"><div class="ext-mb-progress"><div class="ext-mb-progress-bar">&#160;</div></div></div>'
                 });
                 msgEl = bodyEl.dom.firstChild;

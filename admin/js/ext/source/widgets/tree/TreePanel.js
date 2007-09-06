@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -21,12 +21,13 @@
  * @cfg {String} ddAppendOnly True if the tree should only allow append drops (use for trees which are sorted)
  * @cfg {Boolean} ddScroll true to enable YUI body scrolling
  * @cfg {Boolean} containerScroll true to register this container with ScrollManager
- * @cfg {Boolean} hlDrop false to disable node highlight on drop (defaults to true)
+ * @cfg {Boolean} hlDrop false to disable node highlight on drop (defaults to the value of Ext.enableFx)
  * @cfg {String} hlColor The color of the node highlight (defaults to C3DAF9)
- * @cfg {Boolean} animate true to enable animated expand/collapse
+ * @cfg {Boolean} animate true to enable animated expand/collapse (defaults to the value of Ext.enableFx)
  * @cfg {Boolean} singleExpand true if only 1 node per branch may be expanded
  * @cfg {Boolean} selModel A tree selection model to use with this TreePanel (defaults to a {@link Ext.tree.DefaultSelectionModel})
  * @cfg {Boolean} loader A TreeLoader for use with this TreePanel
+  * @cfg {String} pathSeparator The token used to separate sub-paths in path strings (defaults to '/')
  * @constructor
  * @param {String/HTMLElement/Element} el The container element
  * @param {Object} config
@@ -103,6 +104,13 @@ Ext.tree.TreePanel = function(el, config){
         * @param {Ext.EventObject} e The event object
         */
         "beforeclick":true,
+        /**
+        * @event checkchange
+        * Fires when a node with a checkbox's checked property changes
+        * @param {Node} this This node
+        * @param {Boolean} checked
+        */
+        "checkchange":true,
         /**
         * @event click
         * Fires when a node is clicked
@@ -218,10 +226,6 @@ Ext.extend(Ext.tree.TreePanel, Ext.data.Tree, {
     enableDD : false,
     hlDrop : Ext.enableFx,
 
-    proxyNodeEvent : function(){
-        this.fireEvent.apply(this, arguments);
-    },
-
     // private
     restrictExpand : function(node){
         var p = node.parentNode;
@@ -278,6 +282,24 @@ Ext.extend(Ext.tree.TreePanel, Ext.data.Tree, {
             this.selModel = new Ext.tree.DefaultSelectionModel();
         }
         return this.selModel;
+    },
+
+    /**
+     * Retrieve an array of checked nodes, or an array of a specific attribute of checked nodes (e.g. "id")
+     * @param {String} attribute (optional) Defaults to null (return the actual nodes)
+     * @param {TreeNode} startNode (optional) The node to start from, defaults to the root
+     * @return {Array}
+     */
+    getChecked : function(a, startNode){
+        startNode = startNode || this.root;
+        var r = [];
+        var f = function(){
+            if(this.attributes.checked){
+                r.push(!a ? this : (a == 'id' ? this.id : this.attributes[a]));
+            }
+        }
+        startNode.cascade(f);
+        return r;
     },
 
     /**
@@ -338,6 +360,8 @@ Ext.extend(Ext.tree.TreePanel, Ext.data.Tree, {
                         if(callback){
                             callback(true, n);
                         }
+                    }else if(callback){
+                        callback(false, n);
                     }
                 }else{
                     if(callback){

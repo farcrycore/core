@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -43,6 +43,15 @@ Ext.util.Format = function(){
          */
         htmlEncode : function(value){
             return !value ? value : String(value).replace(/&/g, "&amp;").replace(/>/g, "&gt;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
+        },
+
+        /**
+         * Convert certain characters (&, <, >, and ') from their HTML character equivalents.
+         * @param {String} value The string to decode
+         * @return {String} The decoded text
+         */
+        htmlDecode : function(value){
+            return !value ? value : String(value).replace(/&amp;/g, "&").replace(/&gt;/g, ">").replace(/&lt;/g, "<").replace(/&quot;/g, '"');
         },
 
         /**
@@ -111,7 +120,15 @@ Ext.util.Format = function(){
         usMoney : function(v){
             v = (Math.round((v-0)*100))/100;
             v = (v == Math.floor(v)) ? v + ".00" : ((v*10 == Math.floor(v*10)) ? v + "0" : v);
-            return "$" + v ;
+            v = String(v);
+            var ps = v.split('.');
+            var whole = ps[0];
+            var sub = ps[1] ? '.'+ ps[1] : '.00';
+            var r = /(\d+)(\d{3})/;
+            while (r.test(whole)) {
+                whole = whole.replace(r, '$1' + ',' + '$2');
+            }
+            return "$" + whole + sub ;
         },
 
         /**

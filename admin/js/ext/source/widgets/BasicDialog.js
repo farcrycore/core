@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -11,27 +11,27 @@
  * @extends Ext.util.Observable
  * Lightweight Dialog Class.  The code below shows the creation of a typical dialog using existing HTML markup:
  * <pre><code>
-    var dlg = new Ext.BasicDialog("my-dlg", {
-        height: 200,
-        width: 300,
-        minHeight: 100,
-        minWidth: 150,
-        modal: true,
-        proxyDrag: true,
-        shadow: true
-    });
-    dlg.addKeyListener(27, dlg.hide, dlg); // ESC can also close the dialog
-    dlg.addButton('OK', dlg.hide, dlg);    // Could call a save function instead of hiding
-    dlg.addButton('Cancel', dlg.hide, dlg);
-    dlg.show();
-  </code></pre>
+var dlg = new Ext.BasicDialog("my-dlg", {
+    height: 200,
+    width: 300,
+    minHeight: 100,
+    minWidth: 150,
+    modal: true,
+    proxyDrag: true,
+    shadow: true
+});
+dlg.addKeyListener(27, dlg.hide, dlg); // ESC can also close the dialog
+dlg.addButton('OK', dlg.hide, dlg);    // Could call a save function instead of hiding
+dlg.addButton('Cancel', dlg.hide, dlg);
+dlg.show();
+</code></pre>
   <b>A Dialog should always be a direct child of the body element.</b>
  * @cfg {Boolean/DomHelper} autoCreate True to auto create from scratch, or using a DomHelper Object (defaults to false)
  * @cfg {String} title Default text to display in the title bar (defaults to null)
  * @cfg {Number} width Width of the dialog in pixels (can also be set via CSS).  Determined by browser if unspecified.
  * @cfg {Number} height Height of the dialog in pixels (can also be set via CSS).  Determined by browser if unspecified.
- * @cfg {Number} x The default top page coordinate of the dialog (defaults to center screen)
- * @cfg {Number} y The default left page coordinate of the dialog (defaults to center screen)
+ * @cfg {Number} x The default left page coordinate of the dialog (defaults to center screen)
+ * @cfg {Number} y The default top page coordinate of the dialog (defaults to center screen)
  * @cfg {String/Element} animateTarget Id or element from which the dialog should animate while opening
  * (defaults to null with no animation)
  * @cfg {Boolean} resizable False to disable manual dialog resizing (defaults to true)
@@ -77,7 +77,7 @@ Ext.BasicDialog = function(el, config){
                         {tag: "div", id: el, style:'visibility:hidden;'}, true);
         }
     }
-    el = this.el;                                                                                                                                                                                                                                                                                                                                                                                                  
+    el = this.el;
     el.setDisplayed(true);
     el.hide = this.hideAction;
     this.id = el.id;
@@ -471,7 +471,7 @@ Ext.extend(Ext.BasicDialog, Ext.util.Observable, {
         }
         if(!this.btnContainer){
             var tb = this.footer.createChild({
-                tag:"div",
+
                 cls:"x-dlg-btns x-dlg-btns-"+this.buttonAlign,
                 html:'<table cellspacing="0"><tbody><tr></tr></tbody></table><div class="x-clear"></div>'
             }, null, true);
@@ -1091,23 +1091,24 @@ Ext.DialogManager = function(){
  * @class Ext.LayoutDialog
  * @extends Ext.BasicDialog
  * Dialog which provides adjustments for working with a layout in a Dialog.
- * Add your neccessary layout config options to the dialogs config.<br>
- * Example Usage (including a nested layout):
- * <pre><code>    if(!dialog){
+ * Add your necessary layout config options to the dialog's config.<br>
+ * Example usage (including a nested layout):
+ * <pre><code>
+if(!dialog){
     dialog = new Ext.LayoutDialog("download-dlg", {
-            modal: true,
-            width:600,
-            height:450,
-            shadow:true,
-            minWidth:500,
-            minHeight:350,
-            autoTabs:true,
-            proxyDrag:true,
-            // layout config merges with the dialog config
-            center:{
-                tabPosition: "top",
-                alwaysShowTabs: true
-            }
+        modal: true,
+        width:600,
+        height:450,
+        shadow:true,
+        minWidth:500,
+        minHeight:350,
+        autoTabs:true,
+        proxyDrag:true,
+        // layout config merges with the dialog config
+        center:{
+            tabPosition: "top",
+            alwaysShowTabs: true
+        }
     });
     dialog.addKeyListener(27, dialog.hide, dialog);
     dialog.setDefaultButton(dialog.addButton("Close", dialog.hide, dialog));
@@ -1136,7 +1137,9 @@ Ext.DialogManager = function(){
     layout.add("center", new Ext.NestedLayoutPanel(innerLayout,
                {title: "Build your own ext.js"}));
     layout.getRegion("center").showPanel(sp);
-    layout.endUpdate();</code></pre>
+    layout.endUpdate();
+}
+</code></pre>
     * @constructor
     * @param {String/HTMLElement/Ext.Element} el The id of or container element
     * @param {Object} config configuration options

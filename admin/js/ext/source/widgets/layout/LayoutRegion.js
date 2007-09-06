@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -17,12 +17,12 @@
  * @cfg {Object} cmargins Margins for the element when collapsed (defaults to: north/south {top: 2, left: 0, right:0, bottom: 2} or east/west {top: 0, left: 2, right:2, bottom: 0})
  * @cfg {String} tabPosition "top" or "bottom" (defaults to "bottom")
  * @cfg {String} collapsedTitle Optional string message to display in the collapsed block of a north or south region
- * @cfg {Boolean} alwaysShowTabs True to always display tabs even when only 1 panel (defaults to false)
+ * @cfg {Boolean} alwaysShowTabs True to always display tabs even when there is only 1 panel (defaults to false)
  * @cfg {Boolean} autoScroll True to enable overflow scrolling (defaults to false)
  * @cfg {Boolean} titlebar True to display a title bar (defaults to true)
  * @cfg {String} title The title for the region (overrides panel titles)
  * @cfg {Boolean} animate True to animate expand/collapse (defaults to false)
- * @cfg {Boolean} autoHide False to disable autoHide when the mouse leaves the "floated" region (defaults to true)
+ * @cfg {Boolean} autoHide False to disable auto hiding when the mouse leaves the "floated" region (defaults to true)
  * @cfg {Boolean} preservePanels True to preserve removed panels so they can be readded later (defaults to false)
  * @cfg {Boolean} closeOnTab True to place the close icon on the tabs instead of the region titlebar (defaults to false)
  * @cfg {Boolean} hideTabs True to hide the tab strip (defaults to false)
@@ -31,23 +31,23 @@
  * @cfg {Number} minTabWidth The minimum tab width (defaults to 40)
  * @cfg {Number} preferredTabWidth The preferred tab width (defaults to 150)
  * @cfg {Boolean} showPin True to show a pin button
-* @cfg {Boolean} hidden True to start the region hidden
+* @cfg {Boolean} hidden True to start the region hidden (defaults to false)
 * @cfg {Boolean} hideWhenEmpty True to hide the region when it has no panels
 * @cfg {Boolean} disableTabTips True to disable tab tooltips
  */
 Ext.LayoutRegion = function(mgr, config, pos){
     Ext.LayoutRegion.superclass.constructor.call(this, mgr, config, pos, true);
     var dh = Ext.DomHelper;
-    /** This regions container element @type Ext.Element */
+    /** This region's container element @type Ext.Element */
     this.el = dh.append(mgr.el.dom, {tag: "div", cls: "x-layout-panel x-layout-panel-" + this.position}, true);
-    /** This regions title element @type Ext.Element */
+    /** This region's title element @type Ext.Element */
 
     this.titleEl = dh.append(this.el.dom, {tag: "div", unselectable: "on", cls: "x-unselectable x-layout-panel-hd x-layout-title-"+this.position, children:[
         {tag: "span", cls: "x-unselectable x-layout-panel-hd-text", unselectable: "on", html: "&#160;"},
         {tag: "div", cls: "x-unselectable x-layout-panel-hd-tools", unselectable: "on"}
     ]}, true);
     this.titleEl.enableDisplayMode();
-    /** This regions title text element @type HTMLElement */
+    /** This region's title text element @type HTMLElement */
     this.titleTextEl = this.titleEl.dom.firstChild;
     this.tools = Ext.get(this.titleEl.dom.childNodes[1], true);
     this.closeBtn = this.createTool(this.tools.dom, "x-layout-close");
@@ -70,7 +70,7 @@ Ext.LayoutRegion = function(mgr, config, pos){
 Ext.extend(Ext.LayoutRegion, Ext.BasicLayoutRegion, {
 
     createBody : function(){
-        /** This regions body element @type Ext.Element */
+        /** This region's body element @type Ext.Element */
         this.bodyEl = this.el.createChild({tag: "div", cls: "x-layout-panel-body"});
     },
 
@@ -150,7 +150,8 @@ Ext.extend(Ext.LayoutRegion, Ext.BasicLayoutRegion, {
     },
 
     /**
-     * Updates the collapsed text for north/south regions (used with collapsedTitle config option)
+     * Updates the title for collapsed north/south regions (used with {@link #collapsedTitle} config option)
+     * @param {String} title (optional) The title text (accepts HTML markup, defaults to the numeric character reference for a non-breaking space, "&amp;#160;")
      */
     setCollapsedTitle : function(title){
         title = title || "&#160;";
@@ -312,7 +313,7 @@ Ext.extend(Ext.LayoutRegion, Ext.BasicLayoutRegion, {
     },
 
     /**
-     * Expand this region if it was previously collapsed.
+     * Expands this region if it was previously collapsed.
      * @param {Ext.EventObject} e The event that triggered the expand (or null if calling manually)
      * @param {Boolean} skipAnim (optional) true to expand the element without animation (if animate is true)
      */
@@ -420,9 +421,9 @@ Ext.extend(Ext.LayoutRegion, Ext.BasicLayoutRegion, {
     },
 
     /**
-     * Show the specified panel.
-     * @param {Number/String/ContentPanel} panelId The panels index, id or the panel itself
-     * @return {Ext.ContentPanel} The shown panel or null
+     * Shows the specified panel.
+     * @param {Number/String/ContentPanel} panelId The panel's index, id or the panel itself
+     * @return {Ext.ContentPanel} The shown panel, or null if a panel could not be found from panelId
      */
     showPanel : function(panel){
         if(panel = this.getPanel(panel)){
@@ -460,14 +461,14 @@ Ext.extend(Ext.LayoutRegion, Ext.BasicLayoutRegion, {
     },
 
     /**
-     * Add the passed ContentPanel(s)
+     * Adds the passed ContentPanel(s) to this region.
      * @param {ContentPanel...} panel The ContentPanel(s) to add (you can pass more than one)
-     * @return {Ext.ContentPanel} The panel added (if only one was added)
+     * @return {Ext.ContentPanel} The panel added (if only one was added; null otherwise)
      */
     add : function(panel){
         if(arguments.length > 1){
             for(var i = 0, len = arguments.length; i < len; i++) {
-            	this.add(arguments[i]);
+                this.add(arguments[i]);
             }
             return null;
         }
@@ -499,7 +500,7 @@ Ext.extend(Ext.LayoutRegion, Ext.BasicLayoutRegion, {
 
     /**
      * Hides the tab for the specified panel.
-     * @param {Number/String/ContentPanel} panel The panels index, id or the panel itself
+     * @param {Number/String/ContentPanel} panel The panel's index, id or the panel itself
      */
     hidePanel : function(panel){
         if(this.tabs && (panel = this.getPanel(panel))){
@@ -509,7 +510,7 @@ Ext.extend(Ext.LayoutRegion, Ext.BasicLayoutRegion, {
 
     /**
      * Unhides the tab for a previously hidden panel.
-     * @param {Number/String/ContentPanel} panel The panels index, id or the panel itself
+     * @param {Number/String/ContentPanel} panel The panel's index, id or the panel itself
      */
     unhidePanel : function(panel){
         if(this.tabs && (panel = this.getPanel(panel))){
@@ -525,7 +526,7 @@ Ext.extend(Ext.LayoutRegion, Ext.BasicLayoutRegion, {
 
     /**
      * Removes the specified panel. If preservePanel is not true (either here or in the config), the panel is destroyed.
-     * @param {Number/String/ContentPanel} panel The panels index, id or the panel itself
+     * @param {Number/String/ContentPanel} panel The panel's index, id or the panel itself
      * @param {Boolean} preservePanel Overrides the config preservePanel option
      * @return {Ext.ContentPanel} The panel that was removed
      */

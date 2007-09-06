@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -8,9 +8,11 @@
 
 /**
  * @class Ext.KeyNav
- * Provides a convenient wrapper for normalized keyboard navigation.  KeyNav allows you to bind
- * navigation keys to function calls that will get called when the keys are pressed.
- * <br />Usage:
+ * <p>Provides a convenient wrapper for normalized keyboard navigation.  KeyNav allows you to bind
+ * navigation keys to function calls that will get called when the keys are pressed, providing an easy
+ * way to implement custom navigation schemes for any UI component.</p>
+ * <p>The following are all of the possible keys that can be implemented: enter, left, right, up, down, tab, esc,
+ * pageUp, pageDown, del, home, end.  Usage:</p>
  <pre><code>
 var nav = new Ext.KeyNav("my-element", {
     "left" : function(e){
@@ -39,9 +41,27 @@ Ext.KeyNav = function(el, config){
 };
 
 Ext.KeyNav.prototype = {
+    /**
+     * @cfg {Boolean} disabled
+     * True to disable this KeyNav instance (defaults to false)
+     */
     disabled : false,
+    /**
+     * @cfg {String} defaultEventAction
+     * The method to call on the {@link Ext.EventObject} after this KeyNav intercepts a key.  Valid values are
+     * {@link Ext.EventObject#stopEvent}, {@link Ext.EventObject#preventDefault} and
+     * {@link Ext.EventObject#stopPropagation} (defaults to 'stopEvent')
+     */
     defaultEventAction: "stopEvent",
+    /**
+     * @cfg {Boolean} forceKeyDown
+     * Handle the keydown event instead of keypress (defaults to false).  KeyNav automatically does this for IE since
+     * IE does not propagate special keys on keypress, but setting this to true will force other browsers to also
+     * handle keydown instead of keypress.
+     */
+    forceKeyDown : false,
 
+    // private
     prepareEvent : function(e){
         var k = e.getKey();
         var h = this.keyToHandler[k];
@@ -53,6 +73,7 @@ Ext.KeyNav.prototype = {
         }
     },
 
+    // private
     relay : function(e){
         var k = e.getKey();
         var h = this.keyToHandler[k];
@@ -63,6 +84,7 @@ Ext.KeyNav.prototype = {
         }
     },
 
+    // private
     doRelay : function(e, h, hname){
         return h.call(this.scope || this, e);
     },
@@ -104,7 +126,7 @@ Ext.KeyNav.prototype = {
 		if(this.disabled){
             // ie won't do special keys on keypress, no one else will repeat keys with keydown
             // the EventObject will normalize Safari automatically
-            if(Ext.isIE){
+            if(this.forceKeyDown || Ext.isIE || Ext.isAir){
                 this.el.on("keydown", this.relay,  this);
             }else{
                 this.el.on("keydown", this.prepareEvent,  this);
@@ -119,7 +141,7 @@ Ext.KeyNav.prototype = {
 	 */
 	disable: function(){
 		if(!this.disabled){
-		    if(Ext.isIE){
+		    if(this.forceKeyDown || Ext.isIE || Ext.isAir){
                 this.el.un("keydown", this.relay);
             }else{
                 this.el.un("keydown", this.prepareEvent);

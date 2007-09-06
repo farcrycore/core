@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -9,7 +9,7 @@
 /**
  * @class Ext.SplitBar
  * @extends Ext.util.Observable
- * Creates draggable splitter bar functionality from two elements.
+ * Creates draggable splitter bar functionality from two elements (element to be dragged and element to be resized).
  * <br><br>
  * Usage:
  * <pre><code>
@@ -23,11 +23,11 @@ split.on('moved', splitterMoved);
 </code></pre>
  * @constructor
  * Create a new SplitBar
- * @param {String/HTMLElement/Element} dragElement The element to be dragged and act as the SplitBar. 
- * @param {String/HTMLElement/Element} resizingElement The element to be resized based on where the SplitBar element is dragged 
+ * @param {String/HTMLElement/Ext.Element} dragElement The element to be dragged and act as the SplitBar. 
+ * @param {String/HTMLElement/Ext.Element} resizingElement The element to be resized based on where the SplitBar element is dragged 
  * @param {Number} orientation (optional) Either Ext.SplitBar.HORIZONTAL or Ext.SplitBar.VERTICAL. (Defaults to HORIZONTAL)
  * @param {Number} placement (optional) Either Ext.SplitBar.LEFT or Ext.SplitBar.RIGHT for horizontal or  
-                        Ext.SplitBar.TOP or Ext.SplitBar.BOTTOM for vertical. (By default, this is determined automatically by the intial position 
+                        Ext.SplitBar.TOP or Ext.SplitBar.BOTTOM for vertical. (By default, this is determined automatically by the initial
                         position of the SplitBar).
  */
 Ext.SplitBar = function(dragElement, resizingElement, orientation, placement, existingProxy){
@@ -110,7 +110,7 @@ Ext.SplitBar = function(dragElement, resizingElement, orientation, placement, ex
     this.addEvents({
         /**
          * @event resize
-         * Fires when the splitter is moved (alias for moved)
+         * Fires when the splitter is moved (alias for {@link #event-moved})
          * @param {Ext.SplitBar} this
          * @param {Number} newSize the new width or height
          */
@@ -323,7 +323,7 @@ Ext.SplitBar.BasicLayoutAdapter.prototype = {
      * Called after drag operations to set the size of the resizing element.
      * @param {Ext.SplitBar} s The SplitBar using this adapter
      * @param {Number} newSize The new size to set
-     * @param {Function} onComplete A function to be invoke when resizing is complete
+     * @param {Function} onComplete A function to be invoked when resizing is complete
      */
     setElementSize : function(s, newSize, onComplete){
         if(s.orientation == Ext.SplitBar.HORIZONTAL){
@@ -354,7 +354,7 @@ Ext.SplitBar.BasicLayoutAdapter.prototype = {
  * @extends Ext.SplitBar.BasicLayoutAdapter
  * Adapter that  moves the splitter element to align with the resized sizing element. 
  * Used with an absolute positioned SplitBar.
- * @param {String/HTMLElement/Element} container The container that wraps around the absolute positioned content. If it's
+ * @param {String/HTMLElement/Ext.Element} container The container that wraps around the absolute positioned content. If it's
  * document.body, make sure you assign an id to the body element.
  */
 Ext.SplitBar.AbsoluteLayoutAdapter = function(container){

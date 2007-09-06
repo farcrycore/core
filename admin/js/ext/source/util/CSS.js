@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -23,17 +23,22 @@ Ext.util.CSS = function(){
     * Very simple dynamic creation of stylesheets from a text blob of rules.  The text will wrapped in a style
     * tag and appended to the HEAD of the document.
     * @param {String} cssText The text containing the css rules
-    * @return {StyleSheet} 
+    * @param {String} id An id to add to the stylesheet for later removal
+    * @return {StyleSheet}
     */
-   createStyleSheet : function(cssText){
+   createStyleSheet : function(cssText, id){
        var ss;
+       var head = doc.getElementsByTagName("head")[0];
+       var rules = doc.createElement("style");
+       rules.setAttribute("type", "text/css");
+       if(id){
+           rules.setAttribute("id", id);
+       }
        if(Ext.isIE){
-           ss = doc.createStyleSheet();
+           head.appendChild(rules);
+           ss = rules.styleSheet;
            ss.cssText = cssText;
        }else{
-           var head = doc.getElementsByTagName("head")[0];
-           var rules = doc.createElement("style");
-           rules.setAttribute("type", "text/css");
            try{
                 rules.appendChild(doc.createTextNode(cssText));
            }catch(e){

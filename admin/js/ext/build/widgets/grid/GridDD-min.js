@@ -1,10 +1,9 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://www.extjs.com/license
  */
 
-
-Ext.grid.GridDragZone=function(_1,_2){this.view=_1.getView();Ext.grid.GridDragZone.superclass.constructor.call(this,this.view.mainBody.dom,_2);if(this.view.lockedBody){this.setHandleElId(Ext.id(this.view.mainBody.dom));this.setOuterHandleElId(Ext.id(this.view.lockedBody.dom));}this.scroll=false;this.grid=_1;this.ddel=document.createElement("div");this.ddel.className="x-grid-dd-wrap";};Ext.extend(Ext.grid.GridDragZone,Ext.dd.DragZone,{ddGroup:"GridDD",getDragData:function(e){var t=Ext.lib.Event.getTarget(e);var _5=this.view.findRowIndex(t);if(_5!==false){var sm=this.grid.selModel;if(!sm.isSelected(_5)||e.hasModifier()){sm.handleMouseDown(e,t);}return{grid:this.grid,ddel:this.ddel,rowIndex:_5,selections:sm.getSelections()};}return false;},onInitDrag:function(e){var _8=this.dragData;this.ddel.innerHTML=this.grid.getDragDropText();this.proxy.update(this.ddel);},afterRepair:function(){this.dragging=false;},getRepairXY:function(e,_a){return false;},onEndDrag:function(_b,e){},onValidDrop:function(dd,e,id){this.hideProxy();},beforeInvalidDrop:function(e,id){}});
+Ext.grid.GridDragZone=function(B,A){this.view=B.getView();Ext.grid.GridDragZone.superclass.constructor.call(this,this.view.mainBody.dom,A);if(this.view.lockedBody){this.setHandleElId(Ext.id(this.view.mainBody.dom));this.setOuterHandleElId(Ext.id(this.view.lockedBody.dom))}this.scroll=false;this.grid=B;this.ddel=document.createElement("div");this.ddel.className="x-grid-dd-wrap"};Ext.extend(Ext.grid.GridDragZone,Ext.dd.DragZone,{ddGroup:"GridDD",getDragData:function(B){var A=Ext.lib.Event.getTarget(B);var D=this.view.findRowIndex(A);if(D!==false){var C=this.grid.selModel;if(!C.isSelected(D)||B.hasModifier()){C.handleMouseDown(B,A)}return{grid:this.grid,ddel:this.ddel,rowIndex:D,selections:C.getSelections()}}return false},onInitDrag:function(B){var A=this.dragData;this.ddel.innerHTML=this.grid.getDragDropText();this.proxy.update(this.ddel)},afterRepair:function(){this.dragging=false},getRepairXY:function(B,A){return false},onEndDrag:function(A,B){},onValidDrop:function(A,B,C){this.hideProxy()},beforeInvalidDrop:function(A,B){}});

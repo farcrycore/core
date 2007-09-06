@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -12,7 +12,7 @@
  * 04-07-2007
  */
 
-Ext.UpdateManager.defaults.indicatorText = '<div class="loading-indicator">Übertrage Daten ...</div>';
+Ext.UpdateManager.defaults.indicatorText = '<div class="loading-indicator">Übertrage Daten...</div>';
 
 if(Ext.View){
    Ext.View.prototype.emptyText = "";
@@ -28,6 +28,10 @@ if(Ext.TabPanelItem){
 
 if(Ext.form.Field){
    Ext.form.Field.prototype.invalidText = "Der Wert des Feldes ist nicht korrekt";
+}
+
+if(Ext.LoadMask){
+    Ext.LoadMask.prototype.msg = "Übertrage Daten...";
 }
 
 Date.monthNames = [
@@ -85,7 +89,8 @@ if(Ext.DatePicker){
       prevText          : "Vorheriger Monat (Strg/Control + Links)",
       monthYearText     : "Monat auswählen (Strg/Control + Hoch/Runter, um ein Jahr auszuwählen)",
       todayTip          : "Heute ({0}) (Leertaste)",
-      format            : "d.m.Y"
+      format            : "d.m.Y",
+      startDay		: 1
    });
 }
 
@@ -128,7 +133,7 @@ if(Ext.form.DateField){
       minText           : "Das Datum in diesem Feld muß nach dem {0} liegen",
       maxText           : "Das Datum in diesem Feld muß vor dem {0} liegen",
       invalidText       : "{0} ist kein valides Datum - es muß im Format {1} eingegeben werden",
-      format            : "Tag.Monat.Jahr"
+      format            : "d.m.Y"
    });
 }
 

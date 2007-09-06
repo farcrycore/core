@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -8,19 +8,20 @@
 
 /**
  * @class Ext.data.HttpProxy
- * An implementation of Ext.data.DataProxy that reads a data object from an Ext.data.Connection object
- * configured to reference a certain URL.<br>
+ * An implementation of {@link Ext.data.DataProxy} that reads a data object from an {@link Ext.data.Connection} object
+ * configured to reference a certain URL.<br><br>
  * <p>
  * <em>Note that this class cannot be used to retrieve data from a domain other than the domain
- * from which the running page was served.<br>
+ * from which the running page was served.<br><br>
  * <p>
- * For cross-domain access to remote data, use an {@link Ext.data.ScriptTagProxy}.</em><br>
+ * For cross-domain access to remote data, use an {@link Ext.data.ScriptTagProxy}.</em><br><br>
  * <p>
  * Be aware that to enable the browser to parse an XML document, the server must set
  * the Content-Type header in the HTTP response to "text/xml".
  * @constructor
- * @param {Object} conn A set of Connection options to add to each request (e.g. {url: 'foo.php'} or
- * an {@link Ext.data.Connection} object
+ * @param {Object} conn Connection config options to add to each request (e.g. {url: 'foo.php'} or
+ * an {@link Ext.data.Connection} object.  If a Connection config is passed, the singleton {@link Ext.Ajax} object
+ * will be used to make the request.
  */
 Ext.data.HttpProxy = function(conn){
     Ext.data.HttpProxy.superclass.constructor.call(this);
@@ -40,8 +41,8 @@ Ext.extend(Ext.data.HttpProxy, Ext.data.DataProxy, {
     },
 
     /**
-     * Load data from the configured Ext.data.Connection, read the data object into
-     * a block of Ext.data.Records using the passed Ext.data.DataReader implementation, and
+     * Load data from the configured {@link Ext.data.Connection}, read the data object into
+     * a block of Ext.data.Records using the passed {@link Ext.data.DataReader} implementation, and
      * process that block using the passed callback.
      * @param {Object} params An object containing properties which are to be used as HTTP parameters
      * for the request to the remote server.
@@ -67,13 +68,14 @@ Ext.extend(Ext.data.HttpProxy, Ext.data.DataProxy, {
                 },
                 reader: reader,
                 callback : this.loadResponse,
-                scope: this,
-                autoAbort : true
-
+                scope: this
             };
             if(this.useAjax){
                 Ext.applyIf(o, this.conn);
-                Ext.Ajax.request(o);
+                if(this.activeRequest){
+                    Ext.Ajax.abort(this.activeRequest);
+                }
+                this.activeRequest = Ext.Ajax.request(o);
             }else{
                 this.conn.request(o);
             }
@@ -84,6 +86,7 @@ Ext.extend(Ext.data.HttpProxy, Ext.data.DataProxy, {
 
     // private
     loadResponse : function(o, success, response){
+        delete this.activeRequest;
         if(!success){
             this.fireEvent("loadexception", this, o, response);
             o.request.callback.call(o.request.scope, null, o.request.arg, false);

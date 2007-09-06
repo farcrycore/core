@@ -1,10 +1,9 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://www.extjs.com/license
  */
 
-
-Ext.util.DelayedTask=function(fn,_2,_3){var id=null,d,t;var _7=function(){var _8=new Date().getTime();if(_8-t>=d){clearInterval(id);id=null;fn.apply(_2,_3||[]);}};this.delay=function(_9,_a,_b,_c){if(id&&_9!=d){this.cancel();}d=_9;t=new Date().getTime();fn=_a||fn;_2=_b||_2;_3=_c||_3;if(!id){id=setInterval(_7,d);}};this.cancel=function(){if(id){clearInterval(id);id=null;}};};
+Ext.util.DelayedTask=function(E,D,A){var G=null,F,B;var C=function(){var H=new Date().getTime();if(H-B>=F){clearInterval(G);G=null;E.apply(D,A||[])}};this.delay=function(I,K,J,H){if(G&&I!=F){this.cancel()}F=I;B=new Date().getTime();E=K||E;D=J||D;A=H||A;if(!G){G=setInterval(C,F)}};this.cancel=function(){if(G){clearInterval(G);G=null}}};

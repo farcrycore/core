@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -68,8 +68,9 @@ layout.endUpdate();
 </code></pre>
 
 <b>The container the layout is rendered into can be either the body element or any other element.
-If it is not the body element, the element needs to either be an absolute positioned element,
-or you will need to add "position:relative" to the css of the element.</b>
+If it is not the body element, the container needs to either be an absolute positioned element,
+or you will need to add "position:relative" to the css of the container.  You will also need to specify
+the container size if it is not the body element.</b>
 
 * @constructor
 * Create a new BorderLayout
@@ -114,7 +115,7 @@ Ext.extend(Ext.BorderLayout, Ext.LayoutManager, {
         r.on("collapsed", this.onRegionCollapsed, this);
         r.on("expanded", this.onRegionExpanded, this);
     },
-    
+
     /**
      * Performs a layout update.
      */
@@ -124,7 +125,7 @@ Ext.extend(Ext.BorderLayout, Ext.LayoutManager, {
         var w = size.width, h = size.height;
         var centerW = w, centerH = h, centerY = 0, centerX = 0;
         //var x = 0, y = 0;
-        
+
         var rs = this.regions;
         var n = rs["north"], s = rs["south"], west = rs["west"], e = rs["east"], c = rs["center"];
         //if(this.hideOnLayout){ // not supported anymore
@@ -187,13 +188,14 @@ Ext.extend(Ext.BorderLayout, Ext.LayoutManager, {
         this.el.repaint();
         this.fireEvent("layout", this);
     },
-    
+
+    // private
     safeBox : function(box){
         box.width = Math.max(0, box.width);
         box.height = Math.max(0, box.height);
         return box;
     },
-    
+
     /**
      * Adds a ContentPanel (or subclass) to this layout.
      * @param {String} target The target region key (north, south, east, west or center).
@@ -204,7 +206,7 @@ Ext.extend(Ext.BorderLayout, Ext.LayoutManager, {
         target = target.toLowerCase();
         return this.regions[target].add(panel);
     },
-    
+
     /**
      * Remove a ContentPanel (or subclass) to this layout.
      * @param {String} target The target region key (north, south, east, west or center).
@@ -215,7 +217,7 @@ Ext.extend(Ext.BorderLayout, Ext.LayoutManager, {
         target = target.toLowerCase();
         return this.regions[target].remove(panel);
     },
-    
+
     /**
      * Searches all regions for a panel with the specified id
      * @param {String} panelId
@@ -233,7 +235,7 @@ Ext.extend(Ext.BorderLayout, Ext.LayoutManager, {
         }
         return null;
     },
-    
+
     /**
      * Searches all regions for a panel with the specified id and activates (shows) it.
      * @param {String/ContentPanel} panelId The panels id or the panel itself
@@ -251,9 +253,9 @@ Ext.extend(Ext.BorderLayout, Ext.LayoutManager, {
       }
       return null;
    },
-   
+
    /**
-     * Restores this layouts state using Ext.state.Manager or the state provided by the passed provider.
+     * Restores this layout's state using Ext.state.Manager or the state provided by the passed provider.
      * @param {Ext.state.Provider} provider (optional) An alternate state provider
      */
     restoreState : function(provider){
@@ -264,7 +266,43 @@ Ext.extend(Ext.BorderLayout, Ext.LayoutManager, {
         sm.init(this, provider);
     },
 
+    /**
+     * Adds a batch of multiple ContentPanels dynamically by passing a special regions config object.  This config
+     * object should contain properties for each region to add ContentPanels to, and each property's value should be
+     * a valid ContentPanel config object.  Example:
+     * <pre><code>
+// Create the main layout
+var layout = new Ext.BorderLayout('main-ct', {
+    west: {
+        split:true,
+        minSize: 175,
+        titlebar: true
+    },
+    center: {
+        title:'Components'
+    }
+}, 'main-ct');
 
+// Create and add multiple ContentPanels at once via configs
+layout.batchAdd({
+   west: {
+       id: 'source-files',
+       autoCreate:true,
+       title:'Ext Source Files',
+       autoScroll:true,
+       fitToFrame:true
+   },
+   center : {
+       el: cview,
+       autoScroll:true,
+       fitToFrame:true,
+       toolbar: tb,
+       resizeEl:'cbody'
+   }
+});
+</code></pre>
+     * @param {Object} regions An object containing ContentPanel configs by region name
+     */
     batchAdd : function(regions){
         this.beginUpdate();
         for(var rname in regions){
@@ -276,7 +314,7 @@ Ext.extend(Ext.BorderLayout, Ext.LayoutManager, {
         this.endUpdate();
     },
 
-    /* @private */
+    // private
     addTypedPanels : function(lr, ps){
         if(typeof ps == 'string'){
             lr.add(new Ext.ContentPanel(ps));
@@ -297,6 +335,66 @@ Ext.extend(Ext.BorderLayout, Ext.LayoutManager, {
     }
 });
 
+/**
+ * Shortcut for creating a new BorderLayout object and adding one or more ContentPanels to it in a single step, handling
+ * the beginUpdate and endUpdate calls internally.  The key to this method is the <b>panels</b> property that can be
+ * provided with each region config, which allows you to add ContentPanel configs in addition to the region configs
+ * during creation.  The following code is equivalent to the constructor-based example at the beginning of this class:
+ * <pre><code>
+// shorthand
+var CP = Ext.ContentPanel;
+
+var layout = Ext.BorderLayout.create({
+    north: {
+        initialSize: 25,
+        titlebar: false,
+        panels: [new CP("north", "North")]
+    },
+    west: {
+        split:true,
+        initialSize: 200,
+        minSize: 175,
+        maxSize: 400,
+        titlebar: true,
+        collapsible: true,
+        panels: [new CP("west", {title: "West"})]
+    },
+    east: {
+        split:true,
+        initialSize: 202,
+        minSize: 175,
+        maxSize: 400,
+        titlebar: true,
+        collapsible: true,
+        panels: [new CP("autoTabs", {title: "Auto Tabs", closable: true})]
+    },
+    south: {
+        split:true,
+        initialSize: 100,
+        minSize: 100,
+        maxSize: 200,
+        titlebar: true,
+        collapsible: true,
+        panels: [new CP("south", {title: "South", closable: true})]
+    },
+    center: {
+        titlebar: true,
+        autoScroll:true,
+        resizeTabs: true,
+        minTabWidth: 50,
+        preferredTabWidth: 150,
+        panels: [
+            new CP("center1", {title: "Close Me", closable: true}),
+            new CP("center2", {title: "Center Panel", closable: false})
+        ]
+    }
+}, document.body);
+
+layout.getRegion("center").showPanel("center1");
+</code></pre>
+ * @param config
+ * @param targetEl
+ */
 Ext.BorderLayout.create = function(config, targetEl){
     var layout = new Ext.BorderLayout(targetEl || document.body, config);
     layout.beginUpdate();
@@ -313,9 +411,12 @@ Ext.BorderLayout.create = function(config, targetEl){
     return layout;
 };
 
+// private
 Ext.BorderLayout.RegionFactory = {
+    // private
     validRegions : ["north","south","east","west","center"],
-    
+
+    // private
     create : function(target, mgr, config){
         target = target.toLowerCase();
         if(config.lightweight || config.basic){

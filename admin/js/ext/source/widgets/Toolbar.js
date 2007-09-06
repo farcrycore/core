@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -15,21 +15,21 @@
  * @param {Array} buttons (optional) array of button configs or elements to add
  * @param {Object} config The config object
  */ 
- Ext.Toolbar = function(container, buttons, config){
-     if(container instanceof Array){ // omit the container for later rendering
-         buttons = container;
-         config = buttons;
-         container = null;
-     }
-     Ext.apply(this, config);
-     this.buttons = buttons;
-     if(container){
-         this.render(container);
-     }
+Ext.Toolbar = function(container, buttons, config){
+    if(container instanceof Array){ // omit the container for later rendering
+        buttons = container;
+        config = buttons;
+        container = null;
+    }
+    Ext.apply(this, config);
+    this.buttons = buttons;
+    if(container){
+        this.render(container);
+    }
 };
 
 Ext.Toolbar.prototype = {
-
+    // private
     render : function(ct){
         this.el = Ext.get(ct);
         if(this.cls){
@@ -49,13 +49,22 @@ Ext.Toolbar.prototype = {
     },
 
     /**
-     * Adds element(s) to the toolbar - this function takes a variable number of 
+     * Adds element(s) to the toolbar -- this function takes a variable number of 
      * arguments of mixed type and adds them to the toolbar.
-     * @param {Mixed} arg1 If arg is a Toolbar.Button, it is added. If arg is a string, it is wrapped 
-     * in a ytb-text element and added unless the text is "separator" in which case a separator
-     * is added. Otherwise, it is assumed the element is an HTMLElement and it is added directly.
+     * @param {Mixed} arg1 The following types of arguments are all valid:<br />
+     * <ul>
+     * <li>{@link Ext.Toolbar.Button} config: A valid button config object (equivalent to {@link #addButton})</li>
+     * <li>HtmlElement: Any standard HTML element (equivalent to {@link #addElement})</li>
+     * <li>Field: Any form field (equivalent to {@link #addField})</li>
+     * <li>Item: Any subclass of {@link Ext.Toolbar.Item} (equivalent to {@link #addItem})</li>
+     * <li>String: Any generic string (gets wrapped in a {@link Ext.Toolbar.TextItem}, equivalent to {@link #addText}).
+     * Note that there are a few special strings that are treated differently as explained next.</li>
+     * <li>'separator' or '-': Creates a separator element (equivalent to {@link #addSeparator})</li>
+     * <li>' ': Creates a spacer element (equivalent to {@link #addSpacer})</li>
+     * <li>'->': Creates a fill element (equivalent to {@link #addFill})</li>
+     * </ul>
      * @param {Mixed} arg2
-     * @param {Mixed} etc
+     * @param {Mixed} etc.
      */
     add : function(){
         var a = arguments, l = a.length;
@@ -84,7 +93,7 @@ Ext.Toolbar.prototype = {
     },
     
     /**
-     * Returns the element for this toolbar
+     * Returns the Element for this toolbar.
      * @return {Ext.Element}
      */
     getEl : function(){
@@ -126,7 +135,7 @@ Ext.Toolbar.prototype = {
     
     /**
      * Adds any Toolbar.Item or subclass
-     * @param {Toolbar.Item} item
+     * @param {Ext.Toolbar.Item} item
      * @return {Ext.Toolbar.Item} The item
      */
     addItem : function(item){
@@ -137,7 +146,7 @@ Ext.Toolbar.prototype = {
     },
     
     /**
-     * Add a button (or buttons), see {@link Ext.Toolbar.Button} for more info on the config
+     * Adds a button (or buttons). See {@link Ext.Toolbar.Button} for more info on the config.
      * @param {Object/Array} config A button config or array of configs
      * @return {Ext.Toolbar.Button/Array}
      */
@@ -145,13 +154,15 @@ Ext.Toolbar.prototype = {
         if(config instanceof Array){
             var buttons = [];
             for(var i = 0, len = config.length; i < len; i++) {
-            	buttons.push(this.addButton(config[i]));
+                buttons.push(this.addButton(config[i]));
             }
             return buttons;
         }
         var b = config;
         if(!(config instanceof Ext.Toolbar.Button)){
-             b = new Ext.Toolbar.Button(config);
+            b = config.split ?
+                new Ext.Toolbar.SplitButton(config) :
+                new Ext.Toolbar.Button(config);
         }
         var td = this.nextBlock();
         b.render(td);
@@ -169,9 +180,9 @@ Ext.Toolbar.prototype = {
     },
     
     /**
-     * Inserts any Toolbar.Item/Toolbar.Button at the specified index
+     * Inserts any {@link Ext.Toolbar.Item}/{@link Ext.Toolbar.Button} at the specified index.
      * @param {Number} index The index where the item is to be inserted
-     * @param {Object/Toolbar.Item/Toolbar.Button (may be Array)} item The button, or button config object to be inserted.
+     * @param {Object/Ext.Toolbar.Item/Ext.Toolbar.Button (may be Array)} item The button, or button config object to be inserted.
      * @return {Ext.Toolbar.Button/Item}
      */
     insertButton : function(index, item){
@@ -193,7 +204,7 @@ Ext.Toolbar.prototype = {
     },
     
     /**
-     * Adds a new element to the toolbar from the passed DomHelper config
+     * Adds a new element to the toolbar from the passed {@link Ext.DomHelper} config.
      * @param {Object} config
      * @return {Ext.Toolbar.Item} The element's item
      */
@@ -207,10 +218,10 @@ Ext.Toolbar.prototype = {
     },
 
     /**
-     * Add a dynamically rendered Ext.form field (TextField, ComboBox, etc). Note: the field should not have
-     * been rendered yet. For a field that has already been rendered, use addElement.
-     * @param {Field} field
-     * @return {ToolbarItem}
+     * Adds a dynamically rendered Ext.form field (TextField, ComboBox, etc). Note: the field should not have
+     * been rendered yet. For a field that has already been rendered, use {@link #addElement}.
+     * @param {Ext.form.Field} field
+     * @return {Ext.ToolbarItem}
      */
     addField : function(field){
         var td = this.nextBlock();
@@ -228,6 +239,7 @@ Ext.Toolbar.prototype = {
         return td;
     },
 
+    // private
     destroy : function(){
         if(this.items){ // rendered?
             Ext.destroy.apply(Ext, this.items.items);
@@ -266,14 +278,14 @@ Ext.Toolbar.Item.prototype = {
     },
     
     /**
-     * Remove and destroy this button
+     * Removes and destroys this item.
      */
     destroy : function(){
         this.td.parentNode.removeChild(this.td);
     },
     
     /**
-     * Show this item
+     * Shows this item.
      */
     show: function(){
         this.hidden = false;
@@ -281,7 +293,7 @@ Ext.Toolbar.Item.prototype = {
     },
     
     /**
-     * Hide this item
+     * Hides this item.
      */
     hide: function(){
         this.hidden = true;
@@ -289,7 +301,7 @@ Ext.Toolbar.Item.prototype = {
     },
     
     /**
-     * Convenience function for boolean show/hide
+     * Convenience function for boolean show/hide.
      * @param {Boolean} visible true to show/false to hide
      */
     setVisible: function(visible){
@@ -301,14 +313,14 @@ Ext.Toolbar.Item.prototype = {
     },
     
     /**
-     * Try to focus this item
+     * Try to focus this item.
      */
     focus : function(){
         Ext.fly(this.el).focus();
     },
     
     /**
-     * Disable this item
+     * Disables this item.
      */
     disable : function(){
         Ext.fly(this.td).addClass("x-item-disabled");
@@ -317,7 +329,7 @@ Ext.Toolbar.Item.prototype = {
     },
     
     /**
-     * Enable this item
+     * Enables this item.
      */
     enable : function(){
         Ext.fly(this.td).removeClass("x-item-disabled");
@@ -363,7 +375,13 @@ Ext.extend(Ext.Toolbar.Spacer, Ext.Toolbar.Item, {
     focus:Ext.emptyFn
 });
 
-
+/**
+ * @class Ext.Toolbar.Fill
+ * @extends Ext.Toolbar.Spacer
+ * A simple element that adds a greedy (100% width) horizontal space to a toolbar.
+ * @constructor
+ * Creates a new Spacer
+ */
 Ext.Toolbar.Fill = Ext.extend(Ext.Toolbar.Spacer, {
     // private
     render : function(td){
@@ -410,7 +428,7 @@ Ext.extend(Ext.Toolbar.Button, Ext.Button, {
     },
     
     /**
-     * Remove and destroy this button
+     * Removes and destroys this button
      */
     destroy : function(){
         Ext.Toolbar.Button.superclass.destroy.call(this);
@@ -418,7 +436,7 @@ Ext.extend(Ext.Toolbar.Button, Ext.Button, {
     },
     
     /**
-     * Show this button
+     * Shows this button
      */
     show: function(){
         this.hidden = false;
@@ -426,7 +444,7 @@ Ext.extend(Ext.Toolbar.Button, Ext.Button, {
     },
     
     /**
-     * Hide this button
+     * Hides this button
      */
     hide: function(){
         this.hidden = true;
@@ -434,7 +452,7 @@ Ext.extend(Ext.Toolbar.Button, Ext.Button, {
     },
 
     /**
-     * Disable this item
+     * Disables this item
      */
     disable : function(){
         Ext.fly(this.td).addClass("x-item-disabled");
@@ -442,7 +460,7 @@ Ext.extend(Ext.Toolbar.Button, Ext.Button, {
     },
 
     /**
-     * Enable this item
+     * Enables this item
      */
     enable : function(){
         Ext.fly(this.td).removeClass("x-item-disabled");
@@ -453,32 +471,32 @@ Ext.extend(Ext.Toolbar.Button, Ext.Button, {
 Ext.ToolbarButton = Ext.Toolbar.Button;
 
 /**
- * @class Ext.Toolbar.MenuButton
- * @extends Ext.MenuButton
+ * @class Ext.Toolbar.SplitButton
+ * @extends Ext.SplitButton
  * A menu button that renders into a toolbar.
  * @constructor
- * Creates a new MenuButton
- * @param {Object} config A standard {@link Ext.MenuButton} config object
+ * Creates a new SplitButton
+ * @param {Object} config A standard {@link Ext.SplitButton} config object
  */
-Ext.Toolbar.MenuButton = function(config){
-    Ext.Toolbar.MenuButton.superclass.constructor.call(this, null, config);
+Ext.Toolbar.SplitButton = function(config){
+    Ext.Toolbar.SplitButton.superclass.constructor.call(this, null, config);
 };
-Ext.extend(Ext.Toolbar.MenuButton, Ext.MenuButton, {
+Ext.extend(Ext.Toolbar.SplitButton, Ext.SplitButton, {
     render : function(td){
         this.td = td;
-        Ext.Toolbar.MenuButton.superclass.render.call(this, td);
+        Ext.Toolbar.SplitButton.superclass.render.call(this, td);
     },
     
     /**
-     * Remove and destroy this button
+     * Removes and destroys this button
      */
     destroy : function(){
-        Ext.Toolbar.MenuButton.superclass.destroy.call(this);
+        Ext.Toolbar.SplitButton.superclass.destroy.call(this);
         this.td.parentNode.removeChild(this.td);
     },
     
     /**
-     * Show this button
+     * Shows this button
      */
     show: function(){
         this.hidden = false;
@@ -486,7 +504,7 @@ Ext.extend(Ext.Toolbar.MenuButton, Ext.MenuButton, {
     },
     
     /**
-     * Hide this button
+     * Hides this button
      */
     hide: function(){
         this.hidden = true;
@@ -494,3 +512,5 @@ Ext.extend(Ext.Toolbar.MenuButton, Ext.MenuButton, {
     }
 });
 
+// backwards compat
+Ext.Toolbar.MenuButton = Ext.Toolbar.SplitButton;

@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -33,6 +33,10 @@ if(Ext.TabPanelItem){
 
 if(Ext.form.Field){
    Ext.form.Field.prototype.invalidText = "Giá trị của ô này không hợp lệ.";
+}
+
+if(Ext.LoadMask){
+    Ext.LoadMask.prototype.msg = "Đang tải...";
 }
 
 Date.monthNames = [

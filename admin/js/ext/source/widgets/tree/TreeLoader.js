@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -38,7 +38,7 @@ Ext.tree.TreeLoader = function(config){
     this.baseParams = {};
     this.requestMethod = "POST";
     Ext.apply(this, config);
-    
+
     this.addEvents({
         /**
          * @event beforeload
@@ -65,7 +65,7 @@ Ext.tree.TreeLoader = function(config){
          */
         "loadexception" : true
     });
-    
+
     Ext.tree.TreeLoader.superclass.constructor.call(this);
 };
 
@@ -79,7 +79,11 @@ Ext.extend(Ext.tree.TreeLoader, Ext.util.Observable, {
     * @cfg {Object} baseParams (optional) An object containing properties which
     * specify HTTP parameters to be passed to each request for child nodes.
     */
-
+    /**
+    * @cfg {Object} baseAttrs (optional) An object containing attributes to be added to all nodes
+    * created by this loader. If the attributes sent by the server have an attribute in this object,
+    * they take priority.
+    */
     /**
     * @cfg {Object} uiProviders (optional) An object containing properties which
     * specify custom {@link Ext.tree.TreeNodeUI} implementations. If the optional
@@ -95,11 +99,13 @@ Ext.extend(Ext.tree.TreeLoader, Ext.util.Observable, {
     */
     clearOnLoad : true,
 
-	/**
-	 * Load an {@link Ext.tree.TreeNode} from the URL specified in the constructor.
-	 * This is called automatically when a node is expanded, but may be used to reload
-	 * a node (or append new children if the {@link #clearOnLoad} option is false.)
-	 */
+    /**
+     * Load an {@link Ext.tree.TreeNode} from the URL specified in the constructor.
+     * This is called automatically when a node is expanded, but may be used to reload
+     * a node (or append new children if the {@link #clearOnLoad} option is false.)
+     * @param {Ext.tree.TreeNode} node
+     * @param {Function} callback
+     */
     load : function(node, callback){
         if(this.clearOnLoad){
             while(node.firstChild){
@@ -118,7 +124,7 @@ Ext.extend(Ext.tree.TreeLoader, Ext.util.Observable, {
             this.requestData(node, callback);
         }
     },
-    
+
     getParams: function(node){
         var buf = [], bp = this.baseParams;
         for(var key in bp){
@@ -129,7 +135,7 @@ Ext.extend(Ext.tree.TreeLoader, Ext.util.Observable, {
         buf.push("node=", encodeURIComponent(node.id));
         return buf.join("");
     },
-    
+
     requestData : function(node, callback){
         if(this.fireEvent("beforeload", this, node, callback) !== false){
             this.transId = Ext.Ajax.request({
@@ -138,22 +144,22 @@ Ext.extend(Ext.tree.TreeLoader, Ext.util.Observable, {
                 success: this.handleResponse,
                 failure: this.handleFailure,
                 scope: this,
-        		argument: {callback: callback, node: node},
+                argument: {callback: callback, node: node},
                 params: this.getParams(node)
             });
         }else{
-            // if the load is cancelled, make sure we notify 
+            // if the load is cancelled, make sure we notify
             // the node that we are done
             if(typeof callback == "function"){
                 callback();
             }
         }
     },
-    
+
     isLoading : function(){
-        return this.transId ? true : false;  
+        return this.transId ? true : false;
     },
-    
+
     abort : function(){
         if(this.isLoading()){
             Ext.Ajax.abort(this.transId);
@@ -164,6 +170,10 @@ Ext.extend(Ext.tree.TreeLoader, Ext.util.Observable, {
     * Override this function for custom TreeNode node implementation
     */
     createNode : function(attr){
+        // apply baseAttrs, nice idea Corey!
+        if(this.baseAttrs){
+            Ext.applyIf(attr, this.baseAttrs);
+        }
         if(this.applyLoader !== false){
             attr.loader = this;
         }
@@ -171,35 +181,35 @@ Ext.extend(Ext.tree.TreeLoader, Ext.util.Observable, {
            attr.uiProvider = this.uiProviders[attr.uiProvider] || eval(attr.uiProvider);
         }
         return(attr.leaf ?
-                        new Ext.tree.TreeNode(attr) : 
-                        new Ext.tree.AsyncTreeNode(attr));  
+                        new Ext.tree.TreeNode(attr) :
+                        new Ext.tree.AsyncTreeNode(attr));
     },
-    
+
     processResponse : function(response, node, callback){
         var json = response.responseText;
         try {
             var o = eval("("+json+")");
-	        for(var i = 0, len = o.length; i < len; i++){
+            for(var i = 0, len = o.length; i < len; i++){
                 var n = this.createNode(o[i]);
                 if(n){
-                    node.appendChild(n); 
+                    node.appendChild(n);
                 }
-	        }
-	        if(typeof callback == "function"){
+            }
+            if(typeof callback == "function"){
                 callback(this, node);
             }
         }catch(e){
             this.handleFailure(response);
         }
     },
-    
+
     handleResponse : function(response){
         this.transId = false;
         var a = response.argument;
         this.processResponse(response, a.node, a.callback);
         this.fireEvent("load", this, a.node, response);
     },
-    
+
     handleFailure : function(response){
         this.transId = false;
         var a = response.argument;

@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -50,7 +50,7 @@ Ext.data.Field = function(config){
                 cv = function(v){ return v; };
                 break;
             case "string":
-                cv = function(v){ return String(v); };
+                cv = function(v){ return (v === undefined || v === null) ? '' : String(v); };
                 break;
             case "int":
                 cv = function(v){

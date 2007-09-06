@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -9,7 +9,7 @@
 /**
  * @class Ext.SplitLayoutRegion
  * @extends Ext.LayoutRegion
- * Adds a splitbar and other (private) useful functionality to a LayoutRegion
+ * Adds a splitbar and other (private) useful functionality to a {@link Ext.LayoutRegion}.
  */
 Ext.SplitLayoutRegion = function(mgr, config, pos, cursor){
     this.cursor = cursor;
@@ -45,7 +45,7 @@ Ext.extend(Ext.SplitLayoutRegion, Ext.LayoutRegion, {
             if(typeof config.maxSize != "undefined"){
                 this.split.maxSize = config.maxSize;
             }
-            if(config.hideWhenEmpty || config.hidden){
+            if(config.hideWhenEmpty || config.hidden || config.collapsed){
                 this.hideSplitter();
             }
         }
@@ -68,7 +68,7 @@ Ext.extend(Ext.SplitLayoutRegion, Ext.LayoutRegion, {
     },
     
     /** 
-     * Returns the SplitBar for this region.
+     * Returns the {@link Ext.SplitBar} for this region.
      * @return {Ext.SplitBar}
      */
     getSplitBar : function(){

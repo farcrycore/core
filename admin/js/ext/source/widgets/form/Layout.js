@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -25,7 +25,7 @@ Ext.extend(Ext.form.Layout, Ext.Component, {
      */
     /**
      * @cfg {String/Object/Function} style
-     * A style specification string eg "width:100px", or object in the form {width:"100px"}, or
+     * A style specification string, e.g. "width:100px", or object in the form {width:"100px"}, or
      * a function which returns such a specification.
      */
     /**
@@ -140,8 +140,8 @@ Ext.form.Column = function(config){
 
 Ext.extend(Ext.form.Column, Ext.form.Layout, {
     /**
-     * @cfg {Number} width
-     * The fixed width of the column in pixels (defaults to auto)
+     * @cfg {Number/String} width
+     * The fixed width of the column in pixels or CSS value (defaults to "auto")
      */
     /**
      * @cfg {String/Object} autoCreate

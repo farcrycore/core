@@ -1,10 +1,9 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://www.extjs.com/license
  */
 
-
-Ext.data.SimpleStore=function(_1){Ext.data.SimpleStore.superclass.constructor.call(this,{reader:new Ext.data.ArrayReader({id:_1.id},Ext.data.Record.create(_1.fields)),proxy:new Ext.data.MemoryProxy(_1.data)});this.load();};Ext.extend(Ext.data.SimpleStore,Ext.data.Store);
+Ext.data.SimpleStore=function(A){Ext.data.SimpleStore.superclass.constructor.call(this,{reader:new Ext.data.ArrayReader({id:A.id},Ext.data.Record.create(A.fields)),proxy:new Ext.data.MemoryProxy(A.data)});this.load()};Ext.extend(Ext.data.SimpleStore,Ext.data.Store);

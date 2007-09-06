@@ -1,10 +1,9 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://www.extjs.com/license
  */
 
-
-Ext.data.HttpProxy=function(_1){Ext.data.HttpProxy.superclass.constructor.call(this);this.conn=_1;this.useAjax=!_1||!_1.events;};Ext.extend(Ext.data.HttpProxy,Ext.data.DataProxy,{getConnection:function(){return this.useAjax?Ext.Ajax:this.conn;},load:function(_2,_3,_4,_5,_6){if(this.fireEvent("beforeload",this,_2)!==false){var o={params:_2||{},request:{callback:_4,scope:_5,arg:_6},reader:_3,callback:this.loadResponse,scope:this,autoAbort:true};if(this.useAjax){Ext.applyIf(o,this.conn);Ext.Ajax.request(o);}else{this.conn.request(o);}}else{_4.call(_5||this,null,_6,false);}},loadResponse:function(o,_9,_a){if(!_9){this.fireEvent("loadexception",this,o,_a);o.request.callback.call(o.request.scope,null,o.request.arg,false);return;}var _b;try{_b=o.reader.read(_a);}catch(e){this.fireEvent("loadexception",this,o,_a,e);o.request.callback.call(o.request.scope,null,o.request.arg,false);return;}this.fireEvent("load",this,o,o.request.arg);o.request.callback.call(o.request.scope,_b,o.request.arg,true);},update:function(_c){},updateResponse:function(_d){}});
+Ext.data.HttpProxy=function(A){Ext.data.HttpProxy.superclass.constructor.call(this);this.conn=A;this.useAjax=!A||!A.events};Ext.extend(Ext.data.HttpProxy,Ext.data.DataProxy,{getConnection:function(){return this.useAjax?Ext.Ajax:this.conn},load:function(E,B,F,C,A){if(this.fireEvent("beforeload",this,E)!==false){var D={params:E||{},request:{callback:F,scope:C,arg:A},reader:B,callback:this.loadResponse,scope:this};if(this.useAjax){Ext.applyIf(D,this.conn);if(this.activeRequest){Ext.Ajax.abort(this.activeRequest)}this.activeRequest=Ext.Ajax.request(D)}else{this.conn.request(D)}}else{F.call(C||this,null,A,false)}},loadResponse:function(E,D,B){delete this.activeRequest;if(!D){this.fireEvent("loadexception",this,E,B);E.request.callback.call(E.request.scope,null,E.request.arg,false);return }var A;try{A=E.reader.read(B)}catch(C){this.fireEvent("loadexception",this,E,B,C);E.request.callback.call(E.request.scope,null,E.request.arg,false);return }this.fireEvent("load",this,E,E.request.arg);E.request.callback.call(E.request.scope,A,E.request.arg,true)},update:function(A){},updateResponse:function(A){}});

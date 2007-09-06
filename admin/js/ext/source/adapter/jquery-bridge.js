@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -72,68 +72,61 @@ Ext.lib.Dom = {
         var p, pe, b, scroll, bd = document.body;
         el = Ext.getDom(el);
 
-        if(el.getBoundingClientRect){ // IE
+        if (el.getBoundingClientRect) {
             b = el.getBoundingClientRect();
             scroll = fly(document).getScroll();
             return [b.left + scroll.left, b.top + scroll.top];
-        } else{
-            var x = el.offsetLeft, y = el.offsetTop;
-            p = el.offsetParent;
+        }
+        var x = 0, y = 0;
 
-            // ** flag if a parent is positioned for Safari
-            var hasAbsolute = false;
+        p = el;
 
-            if(p != el){
-                while(p){
-                    x += p.offsetLeft;
-                    y += p.offsetTop;
+        var hasAbsolute = fly(el).getStyle("position") == "absolute";
 
-                    // ** flag Safari abs position bug - only check if needed
-                    if(Ext.isSafari && !hasAbsolute && fly(p).getStyle("position") == "absolute"){
-                        hasAbsolute = true;
-                    }
+        while (p) {
 
-                    // ** Fix gecko borders measurements
-                    // Credit jQuery dimensions plugin for the workaround
-                    if(Ext.isGecko){
-                        pe = fly(p);
-                        var bt = parseInt(pe.getStyle("borderTopWidth"), 10) || 0;
-                        var bl = parseInt(pe.getStyle("borderLeftWidth"), 10) || 0;
+            x += p.offsetLeft;
+            y += p.offsetTop;
 
-                        // add borders to offset
-                        x += bl;
-                        y += bt;
+            if (!hasAbsolute && fly(p).getStyle("position") == "absolute") {
+                hasAbsolute = true;
+            }
 
-                        // Mozilla removes the border if the parent has overflow property other than visible
-                        if(p != el && pe.getStyle('overflow') != 'visible'){
-                            x += bl;
-                            y += bt;
-                        }
-                    }
-                    p = p.offsetParent;
+            if (Ext.isGecko) {
+                pe = fly(p);
+
+                var bt = parseInt(pe.getStyle("borderTopWidth"), 10) || 0;
+                var bl = parseInt(pe.getStyle("borderLeftWidth"), 10) || 0;
+
+
+                x += bl;
+                y += bt;
+
+
+                if (p != el && pe.getStyle('overflow') != 'visible') {
+                    x += bl;
+                    y += bt;
                 }
             }
-            // ** safari doubles in some cases, use flag from offsetParent's as well
-            if(Ext.isSafari && (hasAbsolute || fly(el).getStyle("position") == "absolute")){
-                x -= bd.offsetLeft;
-                y -= bd.offsetTop;
-            }
+            p = p.offsetParent;
+        }
+
+        if (Ext.isSafari && hasAbsolute) {
+            x -= bd.offsetLeft;
+            y -= bd.offsetTop;
+        }
+
+        if (Ext.isGecko && !hasAbsolute) {
+            var dbd = fly(bd);
+            x += parseInt(dbd.getStyle("borderLeftWidth"), 10) || 0;
+            y += parseInt(dbd.getStyle("borderTopWidth"), 10) || 0;
         }
 
         p = el.parentNode;
-
-        while(p && p != bd){
-            // ** opera TR has bad scroll values, so filter them jvs
-            if(!Ext.isOpera || (Ext.isOpera && p.tagName != 'TR' && fly(p).getStyle("display") != "inline")){
+        while (p && p != bd) {
+            if (!Ext.isOpera || (p.tagName != 'TR' && fly(p).getStyle("display") != "inline")) {
                 x -= p.scrollLeft;
                 y -= p.scrollTop;
-            }
-            if (Ext.isGecko) {
-                pe = fly(p);
-                if(pe.getStyle('overflow') != 'visible'){
-                    x += parseInt(pe.getStyle("borderLeftWidth"), 10) || 0;
-                    y += parseInt(pe.getStyle("borderTopWidth"), 10) || 0;
-                }
             }
             p = p.parentNode;
         }
@@ -290,12 +283,20 @@ Ext.lib.Ajax = function(){
                 timeout: cb.timeout,
                 complete: createComplete(cb)
             };
-            if(options && options.headers){
-                o.beforeSend = function(xhr){
-                    var hs = options.headers;
-                    for(var h in hs){
-                        if(hs.hasOwnProperty(h)){
-                            xhr.setRequestHeader(h, hs[h]);
+            if(options){
+                if(options.xmlData){
+                    o.data = options.xmlData;
+                    o.processData = false;
+                    o.type = 'POST';
+                    o.contentType = 'text/xml';
+                }
+                if(options.headers){
+                    o.beforeSend = function(xhr){
+                        var hs = options.headers;
+                        for(var h in hs){
+                            if(hs.hasOwnProperty(h)){
+                                xhr.setRequestHeader(h, hs[h]);
+                            }
                         }
                     }
                 }
@@ -350,8 +351,12 @@ Ext.lib.Anim = function(){
             // scroll anim not supported so just scroll immediately
             var anim = createAnim(cb, scope);
             el = Ext.getDom(el);
-            el.scrollLeft = args.scroll.to[0];
-            el.scrollTop = args.scroll.to[1];
+            if(typeof args.scroll.to[0] == 'number'){
+                el.scrollLeft = args.scroll.to[0];
+            }
+            if(typeof args.scroll.to[1] == 'number'){
+                el.scrollTop = args.scroll.to[1];
+            }
             anim.proxyCallback();
             return anim;
         },
@@ -368,12 +373,17 @@ Ext.lib.Anim = function(){
         },
 
         run : function(el, args, duration, easing, cb, scope, type){
-            var anim = createAnim(cb, scope);
+            var anim = createAnim(cb, scope), e = Ext.fly(el, '_animrun');
             var o = {};
             for(var k in args){
+                if(args[k].from){
+                    if(k != 'points'){
+                        e.setStyle(k, args[k].from);
+                    }
+                }
                 switch(k){   // jquery doesn't support, so convert
                     case 'points':
-                        var by, pts, e = Ext.fly(el, '_animrun');
+                        var by, pts;
                         e.position();
                         if(by = args.points.by){
                             var xy = e.getXY();
@@ -389,6 +399,9 @@ Ext.lib.Anim = function(){
                         if(!parseInt(e.getStyle('top'), 10)){
                             e.setTop(0);
                         }
+                        if(args.points.from){
+                            e.setXY(args.points.from);
+                        }
                     break;
                     case 'width':
                         o.width = args.width.to;
@@ -398,6 +411,12 @@ Ext.lib.Anim = function(){
                     break;
                     case 'opacity':
                         o.opacity = args.opacity.to;
+                    break;
+                    case 'left':
+                   	    o.left = args.left.to;
+                    break;
+                    case 'top':
+                   	    o.top = args.top.to;
                     break;
                     default:
                         o[k] = args[k].to;
@@ -487,14 +506,17 @@ Ext.lib.Point = function(x, y) {
 Ext.lib.Point.prototype = new Ext.lib.Region();
 
 // prevent IE leaks
-if(Ext.isIE){
-    jQuery(window).unload(function(){
+if(Ext.isIE) {
+    function fnCleanUp() {
         var p = Function.prototype;
         delete p.createSequence;
         delete p.defer;
         delete p.createDelegate;
         delete p.createCallback;
         delete p.createInterceptor;
-    });
+
+        window.detachEvent("onunload", fnCleanUp);
+    }
+    window.attachEvent("onunload", fnCleanUp);
 }
 })();

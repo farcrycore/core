@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -66,43 +66,45 @@ Ext.util.Observable.prototype = {
      * <b>Combining Options</b><br>
      * Using the options argument, it is possible to combine different types of listeners:<br>
      * <br>
-     * A normalized, delayed, one-time listener that auto stops the event and passes a custom argument (forumId)<div style="margin: 5px 20px 20px;">
-     * Code:<pre><code>
-el.on('click', this.onClick, this, {
-    single: true,
-    delay: 100,
-    forumId: 4
-});</code></pre>
+     * A normalized, delayed, one-time listener that auto stops the event and passes a custom argument (forumId)
+		<pre><code>
+		el.on('click', this.onClick, this, {
+ 			single: true,
+    		delay: 100,
+    		forumId: 4
+		});
+		</code></pre>
      * <p>
      * <b>Attaching multiple handlers in 1 call</b><br>
-      * The method also allows for a single argument to be passed which is a config object containing properties
+     * The method also allows for a single argument to be passed which is a config object containing properties
      * which specify multiple handlers.
+     * <pre><code>
+		el.on({
+			'click': {
+        		fn: this.onClick,
+        		scope: this,
+        		delay: 100
+    		}, 
+    		'mouseover': {
+        		fn: this.onMouseOver,
+        		scope: this
+    		},
+    		'mouseout': {
+        		fn: this.onMouseOut,
+        		scope: this
+    		}
+		});
+		</code></pre>
      * <p>
-     * Code:<pre><code>
-foo.on({
-    'click' : {
-        fn: this.onClick
-        scope: this,
-        delay: 100
-    }, 
-    'mouseover' : {
-        fn: this.onMouseOver
-        scope: this
-    },
-    'mouseout' : {
-        fn: this.onMouseOut
-        scope: this
-    }
-});</code></pre>
-     * <p>
-     * Or a shorthand syntax:<br>
-     * Code:<pre><code>
-foo.on({
-    'click' : this.onClick,
-    'mouseover' : this.onMouseOver,
-    'mouseout' : this.onMouseOut
-    scope: this
-});</code></pre>
+     * Or a shorthand syntax which passes the same scope object to all handlers:
+     	<pre><code>
+		el.on({
+			'click': this.onClick,
+    		'mouseover': this.onMouseOver,
+    		'mouseout': this.onMouseOut,
+    		scope: this
+		});
+		</code></pre>
      */
     addListener : function(eventName, fn, scope, o){
         if(typeof eventName == "object"){

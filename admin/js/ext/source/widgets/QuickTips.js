@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -82,14 +82,11 @@ Ext.QuickTips = function(){
             if(tm.hideOnClick){
                 hide();
                 tm.disable();
+                tm.enable.defer(100, tm);
             }
         }
     };
     
-    var onUp = function(e){
-        tm.enable();
-    };
-
     var getPad = function(){
         return bdLeft.getPadding('l')+bdRight.getPadding('r');
     };
@@ -292,7 +289,6 @@ Ext.QuickTips = function(){
               close.on("click", hide);
               var d = Ext.get(document);
               d.on("mousedown", onDown);
-              d.on("mouseup", onUp);
               d.on("mouseover", onOver);
               d.on("mouseout", onOut);
               d.on("mousemove", onMove);
@@ -313,7 +309,13 @@ Ext.QuickTips = function(){
        },
 
     /**
-     * Configures a new quick tip instance and assigns it to a target element (should be passed as config.target).
+     * Configures a new quick tip instance and assigns it to a target element.  The following config options
+     * are supported:
+     * <pre>
+Property    Type                   Description
+----------  ---------------------  ------------------------------------------------------------------------
+target      Element/String/Array   An Element, id or array of ids that this quick tip should be tied to
+     * </ul>
      * @param {Object} config The config object
      */
        register : function(config){
@@ -327,21 +329,22 @@ Ext.QuickTips = function(){
                            tagEls[target[j]] = c;
                        }
                    }else{
-                       tagEls[typeof target == 'string' ? target : Ext.id(target.id)] = c;
+                       tagEls[typeof target == 'string' ? target : Ext.id(target)] = c;
                    }
                }
            }
        },
 
     /**
-     * Removes this quick tip from its element and destroys it
+     * Removes this quick tip from its element and destroys it.
+     * @param {String/HTMLElement/Element} el The element from which the quick tip is to be removed.
      */
        unregister : function(el){
            delete tagEls[Ext.id(el)];
        },
 
     /**
-     * Enable this quick tip
+     * Enable this quick tip.
      */
        enable : function(){
            if(inited && disabled){
@@ -353,7 +356,7 @@ Ext.QuickTips = function(){
        },
 
     /**
-     * Disable this quick tip
+     * Disable this quick tip.
      */
        disable : function(){
           disabled = true;
@@ -367,7 +370,7 @@ Ext.QuickTips = function(){
        },
 
     /**
-     * Returns true if the quick tip is enabled, else false
+     * Returns true if the quick tip is enabled, else false.
      */
        isEnabled : function(){
             return !disabled;

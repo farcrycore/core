@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -42,6 +42,10 @@ Ext.extend(Ext.form.TextArea, Ext.form.TextField,  {
      * in the field (equivalent to setting overflow: hidden, defaults to false)
      */
     preventScrollbars: false,
+    /**
+     * @cfg {String/Object} autoCreate A DomHelper element spec, or true for a default element spec (defaults to
+     * {tag: "textarea", style: "width:300px;height:60px;", autocomplete: "off"})
+     */
 
     // private
     onRender : function(ct, position){
@@ -66,7 +70,7 @@ Ext.extend(Ext.form.TextArea, Ext.form.TextField,  {
 
     onDestroy : function(){
         if(this.textSizeEl){
-            this.textSizeEl.remove();
+            this.textSizeEl.parentNode.removeChild(this.textSizeEl);
         }
         Ext.form.TextArea.superclass.onDestroy.call(this);
     },
@@ -80,7 +84,7 @@ Ext.extend(Ext.form.TextArea, Ext.form.TextField,  {
 
     /**
      * Automatically grows the field to accomodate the height of the text up to the maximum field height allowed.
-     * This only takes effect if grow = true and fires the autosize event.
+     * This only takes effect if grow = true, and fires the autosize event if the height changes.
      */
     autoSize : function(){
         if(!this.grow || !this.textSizeEl){
@@ -110,11 +114,5 @@ Ext.extend(Ext.form.TextArea, Ext.form.TextField,  {
             this.el.setHeight(h);
             this.fireEvent("autosize", this, h);
         }
-    },
-
-    // private
-    setValue : function(v){
-        Ext.form.TextArea.superclass.setValue.call(this, v);
-        this.autoSize();
     }
 });

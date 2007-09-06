@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -8,19 +8,25 @@
 
 /**
  * @class Ext.ComponentMgr
- * Provides a common registry of all components on a page so that they can be easily accessed by component id.
+ * Provides a common registry of all components on a page so that they can be easily accessed by component id (see {@link Ext.getCmp}).
  * @singleton
  */
 Ext.ComponentMgr = function(){
     var all = new Ext.util.MixedCollection();
 
     return {
-        // private
+        /**
+         * Registers a component.
+         * @param {Ext.Component} c The component
+         */
         register : function(c){
             all.add(c);
         },
 
-        // private
+        /**
+         * Unregisters a component.
+         * @param {Ext.Component} c The component
+         */
         unregister : function(c){
             all.remove(c);
         },
@@ -53,7 +59,11 @@ Ext.ComponentMgr = function(){
 /**
  * @class Ext.Component
  * @extends Ext.util.Observable
- * Base class for all Ext form controls that provides a common set of events and functionality shared by all components.
+ * Base class for all major Ext components.  All subclasses of Component can automatically participate in the standard
+ * Ext component lifecycle of creation, rendering and destruction.  They also have automatic support for basic hide/show
+ * and enable/disable behavior.  Component allows any subclass to be lazy-rendered into any {@link Ext.Container} and
+ * to be automatically registered with the {@link Ext.ComponentMgr} so that it can be referenced at any time via {@link Ext.getCmp}.
+ * All visual components (widgets) that require rendering into a layout should subclass Component.
  * @constructor
  * @param {Ext.Element/String/Object} config The configuration options.  If an element is passed, it is set as the internal
  * element and its id used as the component id.  If a string is passed, it is assumed to be the id of an existing element
@@ -70,61 +80,61 @@ Ext.Component = function(config){
     this.addEvents({
         /**
          * @event disable
-         * Fires after the component is disabled
+         * Fires after the component is disabled.
 	     * @param {Ext.Component} this
 	     */
         disable : true,
         /**
          * @event enable
-         * Fires after the component is enabled
+         * Fires after the component is enabled.
 	     * @param {Ext.Component} this
 	     */
         enable : true,
         /**
          * @event beforeshow
-         * Fires before the component is shown
+         * Fires before the component is shown.  Return false to stop the show.
 	     * @param {Ext.Component} this
 	     */
         beforeshow : true,
         /**
          * @event show
-         * Fires after the component is shown
+         * Fires after the component is shown.
 	     * @param {Ext.Component} this
 	     */
         show : true,
         /**
          * @event beforehide
-         * Fires before the component is hidden
+         * Fires before the component is hidden. Return false to stop the hide.
 	     * @param {Ext.Component} this
 	     */
         beforehide : true,
         /**
          * @event hide
-         * Fires after the component is hidden
+         * Fires after the component is hidden.
 	     * @param {Ext.Component} this
 	     */
         hide : true,
         /**
          * @event beforerender
-         * Fires before the component is rendered
+         * Fires before the component is rendered. Return false to stop the render.
 	     * @param {Ext.Component} this
 	     */
         beforerender : true,
         /**
          * @event render
-         * Fires after the component is rendered
+         * Fires after the component is rendered.
 	     * @param {Ext.Component} this
 	     */
         render : true,
         /**
          * @event beforedestroy
-         * Fires before the component is destroyed
+         * Fires before the component is destroyed. Return false to stop the destroy.
 	     * @param {Ext.Component} this
 	     */
         beforedestroy : true,
         /**
          * @event destroy
-         * Fires after the component is destroyed
+         * Fires after the component is destroyed.
 	     * @param {Ext.Component} this
 	     */
         destroy : true
@@ -154,15 +164,24 @@ Ext.extend(Ext.Component, Ext.util.Observable, {
      */
     disabled : false,
     /**
-     * CSS class added to the component when it is disabled.
-     */
-    disabledClass : "x-item-disabled",
-    /**
      * true if this component has been rendered. Read-only.
      */
     rendered : false,
-
-    allowDomMove: true,
+    
+    /** @cfg {String} disableClass
+     * CSS class added to the component when it is disabled (defaults to "x-item-disabled").
+     */
+    disabledClass : "x-item-disabled",
+	/** @cfg {Boolean} allowDomMove
+	 * Whether the component can move the Dom node when rendering (defaults to true).
+	 */
+    allowDomMove : true,
+    /** @cfg {String} hideMode
+     * How this component should hidden. Supported values are
+     * "visibility" (css visibility), "offsets" (negative offset position) and
+     * "display" (css display) - defaults to "display".
+     */
+    hideMode: 'display',
 
     // private
     ctype : "Ext.Component",
@@ -175,16 +194,9 @@ Ext.extend(Ext.Component, Ext.util.Observable, {
         return this[this.actionMode];
     },
 
-    /** @cfg {String} hideMode
-     * How this component should hidden. Supported values are
-     * "visibility" (css visibility), "offsets" (negative offset position) and
-     * "display" (css display) - defaults to display
-     */
-    hideMode: 'display',
-
     initComponent : Ext.emptyFn,
     /**
-     * If this is a lazy rendering component, render it to its container element
+     * If this is a lazy rendering component, render it to its container element.
      * @param {String/HTMLElement/Element} container (optional) The element this component should be rendered into. If it is being applied to existing markup, this should be left off.
      */
     render : function(container, position){
@@ -248,7 +260,10 @@ Ext.extend(Ext.Component, Ext.util.Observable, {
     // private
     afterRender : Ext.emptyFn,
 
-    // private
+    /**
+     * Destroys this component by purging any event listeners, removing the component's element from the DOM,
+     * removing the component from its {@link Ext.Container} (if applicable) and unregistering it from {@link Ext.ComponentMgr}.
+     */
     destroy : function(){
         if(this.fireEvent("beforedestroy", this) !== false){
             this.purgeListeners();
@@ -266,16 +281,18 @@ Ext.extend(Ext.Component, Ext.util.Observable, {
         }
     },
 
+	// private
     beforeDestroy : function(){
 
     },
 
-    onDestroy : function(){
+	// private
+	onDestroy : function(){
 
     },
 
     /**
-     * Returns the underlying {@link Ext.Element}
+     * Returns the underlying {@link Ext.Element}.
      * @return {Ext.Element} The element
      */
     getEl : function(){
@@ -283,7 +300,7 @@ Ext.extend(Ext.Component, Ext.util.Observable, {
     },
 
     /**
-     * Returns the id of this component
+     * Returns the id of this component.
      * @return {String}
      */
     getId : function(){
@@ -291,8 +308,9 @@ Ext.extend(Ext.Component, Ext.util.Observable, {
     },
 
     /**
-     * Try to focus this component
+     * Try to focus this component.
      * @param {Boolean} selectText True to also select the text in this component (if applicable)
+     * @return {Ext.Component} this
      */
     focus : function(selectText){
         if(this.rendered){
@@ -313,7 +331,8 @@ Ext.extend(Ext.Component, Ext.util.Observable, {
     },
 
     /**
-     * Disable this component
+     * Disable this component.
+     * @return {Ext.Component} this
      */
     disable : function(){
         if(this.rendered){
@@ -324,13 +343,15 @@ Ext.extend(Ext.Component, Ext.util.Observable, {
         return this;
     },
 
+	// private
     onDisable : function(){
         this.getActionEl().addClass(this.disabledClass);
         this.el.dom.disabled = true;
     },
 
     /**
-     * Enable this component
+     * Enable this component.
+     * @return {Ext.Component} this
      */
     enable : function(){
         if(this.rendered){
@@ -341,13 +362,14 @@ Ext.extend(Ext.Component, Ext.util.Observable, {
         return this;
     },
 
+	// private
     onEnable : function(){
         this.getActionEl().removeClass(this.disabledClass);
         this.el.dom.disabled = false;
     },
 
     /**
-     * Convenience function for setting disabled/enabled by boolean
+     * Convenience function for setting disabled/enabled by boolean.
      * @param {Boolean} disabled
      */
     setDisabled : function(disabled){
@@ -355,7 +377,8 @@ Ext.extend(Ext.Component, Ext.util.Observable, {
     },
 
     /**
-     * Show this component
+     * Show this component.
+     * @return {Ext.Component} this
      */
     show: function(){
         if(this.fireEvent("beforeshow", this) !== false){
@@ -381,7 +404,8 @@ Ext.extend(Ext.Component, Ext.util.Observable, {
     },
 
     /**
-     * Hide this component
+     * Hide this component.
+     * @return {Ext.Component} this
      */
     hide: function(){
         if(this.fireEvent("beforehide", this) !== false){
@@ -407,8 +431,9 @@ Ext.extend(Ext.Component, Ext.util.Observable, {
     },
 
     /**
-     * Convenience function to hide or show this component by boolean
+     * Convenience function to hide or show this component by boolean.
      * @param {Boolean} visible True to show, false to hide
+     * @return {Ext.Component} this
      */
     setVisible: function(visible){
         if(visible) {
@@ -420,7 +445,7 @@ Ext.extend(Ext.Component, Ext.util.Observable, {
     },
 
     /**
-     * Returns true if this component is visible
+     * Returns true if this component is visible.
      */
     isVisible : function(){
         return this.getActionEl().isVisible();
@@ -431,6 +456,6 @@ Ext.extend(Ext.Component, Ext.util.Observable, {
         var id = overrides.id || Ext.id();
         var cfg = Ext.applyIf(overrides, this.initialConfig);
         cfg.id = id; // prevent dup id
-        return new this.__extcls(cfg);
+        return new this.constructor(cfg);
     }
 });

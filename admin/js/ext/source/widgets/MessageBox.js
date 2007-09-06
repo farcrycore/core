@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -29,7 +29,7 @@ Ext.Msg.show({
    fn: processResult,
    animEl: 'elId'
 });
- </code></pre>
+</code></pre>
  * @singleton
  */
 Ext.MessageBox = function(){
@@ -93,7 +93,7 @@ Ext.MessageBox = function(){
     return {
         /**
          * Returns a reference to the underlying {@link Ext.BasicDialog} element
-         * @return {Ext.BasicDialog} dialog The BasicDialog element
+         * @return {Ext.BasicDialog} The BasicDialog element
          */
         getDialog : function(){
            if(!dlg){
@@ -127,7 +127,7 @@ Ext.MessageBox = function(){
                 buttons["no"] = dlg.addButton(bt["no"], handleButton.createCallback("no"));
                 buttons["cancel"] = dlg.addButton(bt["cancel"], handleButton.createCallback("cancel"));
                 bodyEl = dlg.body.createChild({
-                    tag:"div",
+
                     html:'<span class="ext-mb-text"></span><br /><input type="text" class="ext-mb-input" /><textarea class="ext-mb-textarea"></textarea><div class="ext-mb-progress-wrap"><div class="ext-mb-progress"><div class="ext-mb-progress-bar">&#160;</div></div></div>'
                 });
                 msgEl = bodyEl.dom.firstChild;
@@ -156,8 +156,8 @@ Ext.MessageBox = function(){
         /**
          * Updates the message box body text
          * @param {String} text (optional) Replaces the message box element's innerHTML with the specified string (defaults to
-         * the XHTML-compliant non-breaking space character &amp;#160;)
-         * @return {Ext.MessageBox} messageBox This message box
+         * the XHTML-compliant non-breaking space character '&amp;#160;')
+         * @return {Ext.MessageBox} This message box
          */
         updateText : function(text){
             if(!dlg.isVisible() && !opt.width){
@@ -183,8 +183,8 @@ Ext.MessageBox = function(){
          * Updates a progress-style message box's text and progress bar.  Only relevant on message boxes
          * initiated via {@link Ext.MessageBox#progress} or by calling {@link Ext.MessageBox#show} with progress: true.
          * @param {Number} value Any number between 0 and 1 (e.g., .5)
-         * @param {String} text If defined, the message box's body text is replaced with the specified string (defaults to undefined)
-         * @return {Ext.MessageBox} messageBox This message box
+         * @param {String} text (optional) If defined, the message box's body text is replaced with the specified string (defaults to undefined)
+         * @return {Ext.MessageBox} This message box
          */
         updateProgress : function(value, text){
             if(text){
@@ -196,7 +196,7 @@ Ext.MessageBox = function(){
 
         /**
          * Returns true if the message box is currently displayed
-         * @return {Boolean} isVisible True if the message box is visible, else false
+         * @return {Boolean} True if the message box is visible, else false
          */
         isVisible : function(){
             return dlg && dlg.isVisible();  
@@ -217,21 +217,40 @@ Ext.MessageBox = function(){
          * The following config object properties are supported:
          * <pre>
 Property    Type             Description
-----------  ---------------  ----------------------------------------------------------------------
-title       String           The title text
-closable    Boolean          False to hide the top-right close box (defaults to true)
-prompt      Boolean          True to prompt the user to enter single-line text (defaults to false)
-multiline   Boolean          True to prompt the user to enter multi-line text (defaults to false)
-progress    Boolean          True to display a progress bar (defaults to false)
-value       String           The string value to set into the active textbox element if displayed
-buttons     Object/Boolean   A button config object (e.g., Ext.MessageBox.OKCANCEL or {ok:'Foo',
-                             cancel:'Bar'}), or false to not show any buttons (defaults to false)
-msg         String           A string that will replace the existing message box body text (defaults
-                             to the XHTML-compliant non-breaking space character &#160;)
-cls         String           A custom CSS class to apply to the message box element
-proxyDrag   Boolean          True to display a lightweight proxy while dragging (defaults to false)
-modal       Boolean          False to allow user interaction with the page while the message box is
-                             displayed (defaults to true)
+----------  ---------------  ------------------------------------------------------------------------------------
+animEl            String/Element   An id or Element from which the message box should animate as it opens and
+                                   closes (defaults to undefined)
+buttons           Object/Boolean   A button config object (e.g., Ext.MessageBox.OKCANCEL or {ok:'Foo',
+                                   cancel:'Bar'}), or false to not show any buttons (defaults to false)
+closable          Boolean          False to hide the top-right close button (defaults to true).  Note that
+                                   progress and wait dialogs will ignore this property and always hide the
+                                   close button as they can only be closed programmatically.
+cls               String           A custom CSS class to apply to the message box element
+defaultTextHeight Number           The default height in pixels of the message box's multiline textarea if
+                                   displayed (defaults to 75)
+fn                Function         A callback function to execute after closing the dialog.  The arguments to the
+                                   function will be btn (the name of the button that was clicked, if applicable,
+                                   e.g. "ok"), and text (the value of the active text field, if applicable).
+                                   Progress and wait dialogs will ignore this option since they do not respond to
+                                   user actions and can only be closed programmatically, so any required function
+                                   should be called by the same code after it closes the dialog.
+icon              String           A CSS class that provides a background image to be used as an icon for
+                                   the dialog (e.g., Ext.MessageBox.WARNING or 'custom-class', defaults to '')
+maxWidth          Number           The maximum width in pixels of the message box (defaults to 600)
+minWidth          Number           The minimum width in pixels of the message box (defaults to 100)
+modal             Boolean          False to allow user interaction with the page while the message box is
+                                   displayed (defaults to true)
+msg               String           A string that will replace the existing message box body text (defaults
+                                   to the XHTML-compliant non-breaking space character '&#160;')
+multiline         Boolean          True to prompt the user to enter multi-line text (defaults to false)
+progress          Boolean          True to display a progress bar (defaults to false)
+progressText      String           The text to display inside the progress bar if progress = true (defaults to '')
+prompt            Boolean          True to prompt the user to enter single-line text (defaults to false)
+proxyDrag         Boolean          True to display a lightweight proxy while dragging (defaults to false)
+title             String           The title text
+value             String           The string value to set into the active textbox element if displayed
+wait              Boolean          True to display a progress bar (defaults to false)
+width             Number           The width of the dialog in pixels
 </pre>
          *
          * Example usage:
@@ -247,7 +266,7 @@ Ext.Msg.show({
 });
 </code></pre>
          * @param {Object} config Configuration options
-         * @return {Ext.MessageBox} messageBox This message box
+         * @return {Ext.MessageBox} This message box
          */
         show : function(options){
             if(this.isVisible()){
@@ -312,7 +331,7 @@ Ext.Msg.show({
          * and closing the message box when the process is complete.
          * @param {String} title The title bar text
          * @param {String} msg The message box body text
-         * @return {Ext.MessageBox} messageBox This message box
+         * @return {Ext.MessageBox} This message box
          */
         progress : function(title, msg){
             this.show({
@@ -327,15 +346,15 @@ Ext.Msg.show({
         },
 
         /**
-         * Displays a standard read-only message box (comparable to the basic JavaScript alert prompt) with an OK
-         * button. If a callback function is passed it will be called after the user clicks the button, and the
+         * Displays a standard read-only message box with an OK button (comparable to the basic JavaScript Window.alert).
+         * If a callback function is passed it will be called after the user clicks the button, and the
          * id of the button that was clicked will be passed as the only parameter to the callback
          * (could also be the top-right close button).
          * @param {String} title The title bar text
          * @param {String} msg The message box body text
          * @param {Function} fn (optional) The callback function invoked after the message box is closed
          * @param {Object} scope (optional) The scope of the callback function
-         * @return {Ext.MessageBox} messageBox This message box
+         * @return {Ext.MessageBox} This message box
          */
         alert : function(title, msg, fn, scope){
             this.show({
@@ -354,7 +373,7 @@ Ext.Msg.show({
          * You are responsible for closing the message box when the process is complete.
          * @param {String} msg The message box body text
          * @param {String} title (optional) The title bar text
-         * @return {Ext.MessageBox} messageBox This message box
+         * @return {Ext.MessageBox} This message box
          */
         wait : function(msg, title){
             this.show({
@@ -377,14 +396,14 @@ Ext.Msg.show({
         },
 
         /**
-         * Displays a confirmation message box with Yes and No buttons.  If a callback function is passed it will
-         * be called after the user clicks either button, and the id of the button that was clicked
-         * will be passed as the only parameter to the callback (could also be the top-right close button).
+         * Displays a confirmation message box with Yes and No buttons (comparable to JavaScript's Window.confirm).
+         * If a callback function is passed it will be called after the user clicks either button, and the id of the
+         * button that was clicked will be passed as the only parameter to the callback (could also be the top-right close button).
          * @param {String} title The title bar text
          * @param {String} msg The message box body text
          * @param {Function} fn (optional) The callback function invoked after the message box is closed
          * @param {Object} scope (optional) The scope of the callback function
-         * @return {Ext.MessageBox} messageBox This message box
+         * @return {Ext.MessageBox} This message box
          */
         confirm : function(title, msg, fn, scope){
             this.show({
@@ -398,17 +417,18 @@ Ext.Msg.show({
         },
 
         /**
-         * Displays a message box with OK and Cancel buttons prompting the user to enter some text.  The prompt can
-         * be a single-line or multi-line textbox.  If a callback function is passed it will be called after the user
-         * clicks either button, and the id of the button that was clicked (could also be the top-right
-         * close button) and the text that was entered will be passed as the two parameters to the callback.
+         * Displays a message box with OK and Cancel buttons prompting the user to enter some text (comparable to
+         * JavaScript's Window.prompt).  The prompt can be a single-line or multi-line textbox.  If a callback function
+         * is passed it will be called after the user clicks either button, and the id of the button that was clicked
+         * (could also be the top-right close button) and the text that was entered will be passed as the two
+         * parameters to the callback.
          * @param {String} title The title bar text
          * @param {String} msg The message box body text
          * @param {Function} fn (optional) The callback function invoked after the message box is closed
          * @param {Object} scope (optional) The scope of the callback function
          * @param {Boolean/Number} multiline (optional) True to create a multiline textbox using the defaultTextHeight
          * property, or the height in pixels to create the textbox (defaults to false / single-line)
-         * @return {Ext.MessageBox} messageBox This message box
+         * @return {Ext.MessageBox} This message box
          */
         prompt : function(title, msg, fn, scope, multiline){
             this.show({
@@ -461,14 +481,15 @@ Ext.Msg.show({
          */
         minWidth : 100,
         /**
-         * The minimum width in pixels of the message box progress bar if displayed (defaults to 250)
+         * The minimum width in pixels of the message box if it is a progress-style dialog.  This is useful
+         * for setting a different minimum width than text-only dialogs may need (defaults to 250)
          * @type Number
          */
         minProgressWidth : 250,
         /**
          * An object containing the default button text strings that can be overriden for localized language support.
          * Supported properties are: ok, cancel, yes and no.
-         * Customize the default text like so: Ext.MessageBox.buttonText.yes = "Si";
+         * Customize the default text like so: Ext.MessageBox.buttonText.yes = "S�";
          * @type Object
          */
         buttonText : {

@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -23,7 +23,8 @@ Ext.dd.DragSource = function(el, config){
     if(!this.proxy){
         this.proxy = new Ext.dd.StatusProxy();
     }
-    Ext.dd.DragSource.superclass.constructor.call(this, this.el.dom, this.ddGroup || this.group, 
+
+    Ext.dd.DragSource.superclass.constructor.call(this, this.el.dom, this.ddGroup || this.group,
           {dragElId : this.proxy.id, resizeFrame: false, isTarget: false, scroll: this.scroll === true});
     
     this.dragging = false;
@@ -189,6 +190,7 @@ Ext.extend(Ext.dd.DragSource, Ext.dd.DDProxy, {
                 this.afterDragDrop(target, e, id);
             }
         }
+        delete this.cachedTarget;
     },
 
     /**

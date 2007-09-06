@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -27,17 +27,24 @@ Ext.extend(Ext.form.Field, Ext.BoxComponent,  {
     
     defaultAutoCreate : {tag: "input", type: "text", size: "20", autocomplete: "off"},
     
-    fieldClass: "x-form-field",
+    fieldClass : "x-form-field",
     
-    msgTarget: 'qtip',
+    msgTarget : 'qtip',
     
     msgFx : 'normal',
 
     
+    readOnly : false,
+
     
+    disabled : false,
+
     
     inputType : undefined,
-
+    
+    
+	tabIndex : undefined,
+	
         isFormField : true,
 
         hasFocus : false,
@@ -48,7 +55,7 @@ Ext.extend(Ext.form.Field, Ext.BoxComponent,  {
     
     
 
-    initComponent : function(){
+		initComponent : function(){
         Ext.form.Field.superclass.initComponent.call(this);
         this.addEvents({
             
@@ -71,14 +78,6 @@ Ext.extend(Ext.form.Field, Ext.BoxComponent,  {
          return this.rendered && this.el.dom.name ? this.el.dom.name : (this.hiddenName || '');
     },
 
-    
-    applyTo : function(target){
-        this.allowDomMove = false;
-        this.el = Ext.get(target);
-        this.render(this.el.dom.parentNode);
-        return this;
-    },
-
         onRender : function(ct, position){
         Ext.form.Field.superclass.onRender.call(this, ct, position);
         if(!this.el){
@@ -88,9 +87,6 @@ Ext.extend(Ext.form.Field, Ext.BoxComponent,  {
             }
             if(this.inputType){
                 cfg.type = this.inputType;
-            }
-            if(this.tabIndex !== undefined){
-                cfg.tabIndex = this.tabIndex;
             }
             this.el = ct.createChild(cfg, position);
         }
@@ -104,9 +100,20 @@ Ext.extend(Ext.form.Field, Ext.BoxComponent,  {
         if(this.readOnly){
             this.el.dom.readOnly = true;
         }
+        if(this.tabIndex !== undefined){
+            this.el.dom.setAttribute('tabIndex', this.tabIndex);
+        }
 
         this.el.addClass([this.fieldClass, this.cls]);
         this.initValue();
+    },
+
+    
+    applyTo : function(target){
+        this.allowDomMove = false;
+        this.el = Ext.get(target);
+        this.render(this.el.dom.parentNode);
+        return this;
     },
 
         initValue : function(){
@@ -151,21 +158,27 @@ Ext.extend(Ext.form.Field, Ext.BoxComponent,  {
     },
 
         onFocus : function(){
-        if(!Ext.isOpera){             this.el.addClass(this.focusClass);
+        if(!Ext.isOpera && this.focusClass){             this.el.addClass(this.focusClass);
         }
-        this.hasFocus = true;
-        this.startValue = this.getValue();
-        this.fireEvent("focus", this);
+        if(!this.hasFocus){
+            this.hasFocus = true;
+            this.startValue = this.getValue();
+            this.fireEvent("focus", this);
+        }
     },
 
+    beforeBlur : Ext.emptyFn,
+
         onBlur : function(){
-        this.el.removeClass(this.focusClass);
+        this.beforeBlur();
+        if(!Ext.isOpera && this.focusClass){             this.el.removeClass(this.focusClass);
+        }
         this.hasFocus = false;
         if(this.validationEvent !== false && this.validateOnBlur && this.validationEvent != "blur"){
             this.validate();
         }
         var v = this.getValue();
-        if(v != this.startValue){
+        if(String(v) !== String(this.startValue)){
             this.fireEvent('change', this, v, this.startValue);
         }
         this.fireEvent("blur", this);
@@ -178,18 +191,22 @@ Ext.extend(Ext.form.Field, Ext.BoxComponent,  {
         }
         var restore = this.preventMark;
         this.preventMark = preventMark === true;
-        var v = this.validateValue(this.getRawValue());
+        var v = this.validateValue(this.processValue(this.getRawValue()));
         this.preventMark = restore;
         return v;
     },
 
     
     validate : function(){
-        if(this.disabled || this.validateValue(this.getRawValue())){
+        if(this.disabled || this.validateValue(this.processValue(this.getRawValue()))){
             this.clearInvalid();
             return true;
         }
         return false;
+    },
+
+    processValue : function(value){
+        return value;
     },
 
             validateValue : function(value){
@@ -230,6 +247,7 @@ Ext.extend(Ext.form.Field, Ext.BoxComponent,  {
                 this.errorIcon.dom.qtip = msg;
                 this.errorIcon.dom.qclass = 'x-form-invalid-tip';
                 this.errorIcon.show();
+                this.on('resize', this.alignErrorIcon, this);
                 break;
             default:
                 var t = Ext.getDom(this.msgTarget);
@@ -265,6 +283,7 @@ Ext.extend(Ext.form.Field, Ext.BoxComponent,  {
                 if(this.errorIcon){
                     this.errorIcon.dom.qtip = '';
                     this.errorIcon.hide();
+                    this.un('resize', this.alignErrorIcon, this);
                 }
                 break;
             default:
@@ -278,13 +297,17 @@ Ext.extend(Ext.form.Field, Ext.BoxComponent,  {
 
     
     getRawValue : function(){
-        return this.el.getValue();
+        var v = this.el.getValue();
+        if(v === this.emptyText){
+            v = '';
+        }
+        return v;
     },
 
     
     getValue : function(){
         var v = this.el.getValue();
-        if(v == this.emptyText || v === undefined){
+        if(v === this.emptyText || v === undefined){
             v = '';
         }
         return v;
@@ -320,8 +343,6 @@ Ext.extend(Ext.form.Field, Ext.BoxComponent,  {
                 if(tag = 'textarea'){
                     return w-2;
                 }
-            }else if(Ext.isGecko && tag == 'textarea'){
-                return w-6;
             }else if(Ext.isOpera){
                 if(tag == 'input'){
                     return w + 2;
@@ -369,7 +390,6 @@ Ext.form.Field.msgFx = {
         }
     }
 };
-
 
 Ext.form.TextField = function(config){
     Ext.form.TextField.superclass.constructor.call(this, config);
@@ -442,6 +462,17 @@ Ext.extend(Ext.form.TextField, Ext.form.Field,  {
         }
     },
 
+    processValue : function(value){
+        if(this.stripCharsRe){
+            var newValue = value.replace(this.stripCharsRe, '');
+            if(newValue !== value){
+                this.setRawValue(newValue);
+                return newValue;
+            }
+        }
+        return value;
+    },
+
     filterValidation : function(e){
         if(!e.isNavKeyPress()){
             this.validationTask.delay(this.validationDelay);
@@ -469,7 +500,7 @@ Ext.extend(Ext.form.TextField, Ext.form.Field,  {
 
         preFocus : function(){
         if(this.emptyText){
-            if(this.getRawValue() == this.emptyText){
+            if(this.el.dom.value == this.emptyText){
                 this.setRawValue('');
             }
             this.el.removeClass(this.emptyClass);
@@ -488,20 +519,22 @@ Ext.extend(Ext.form.TextField, Ext.form.Field,  {
         if(!Ext.isIE && (e.isNavKeyPress() || k == e.BACKSPACE || (k == e.DELETE && e.button == -1))){
             return;
         }
-        if(Ext.isIE && (k == e.BACKSPACE || k == e.DELETE || e.isNavKeyPress() || k == e.HOME || k == e.END)){
+        var c = e.getCharCode(), cc = String.fromCharCode(c);
+        if(Ext.isIE && (e.isSpecialKey() || !cc)){
             return;
         }
-        var c = e.getCharCode();
-        if(!this.maskRe.test(String.fromCharCode(c) || '')){
+        if(!this.maskRe.test(cc)){
             e.stopEvent();
         }
     },
 
     setValue : function(v){
-        if(this.emptyText && v !== undefined && v !== null && v !== ''){
+        if(this.emptyText && this.el && v !== undefined && v !== null && v !== ''){
             this.el.removeClass(this.emptyClass);
         }
         Ext.form.TextField.superclass.setValue.apply(this, arguments);
+        this.applyEmptyText();
+        this.autoSize();
     },
 
     
@@ -583,15 +616,14 @@ Ext.extend(Ext.form.TextField, Ext.form.Field,  {
 });
 
 Ext.form.TriggerField = function(config){
-    Ext.form.TriggerField.superclass.constructor.call(this, config);
     this.mimicing = false;
-    this.on('disable', this.disableWrapper, this);
-    this.on('enable', this.enableWrapper, this);
+    Ext.form.TriggerField.superclass.constructor.call(this, config);
 };
 
 Ext.extend(Ext.form.TriggerField, Ext.form.TextField,  {
     
-        defaultAutoCreate : {tag: "input", type: "text", size: "16", autocomplete: "off"},
+    
+    defaultAutoCreate : {tag: "input", type: "text", size: "16", autocomplete: "off"},
     
     hideTrigger:false,
 
@@ -601,10 +633,8 @@ Ext.extend(Ext.form.TriggerField, Ext.form.TextField,  {
 
     
     autoSize: Ext.emptyFn,
-
-    monitorTab : true,
-
-    deferHeight : true,
+        monitorTab : true,
+        deferHeight : true,
 
         onResize : function(w, h){
         Ext.form.TriggerField.superclass.onResize.apply(this, arguments);
@@ -613,13 +643,13 @@ Ext.extend(Ext.form.TriggerField, Ext.form.TextField,  {
         }
     },
 
-    adjustSize : Ext.BoxComponent.prototype.adjustSize,
+        adjustSize : Ext.BoxComponent.prototype.adjustSize,
 
-    getResizeEl : function(){
+        getResizeEl : function(){
         return this.wrap;
     },
 
-    getPositionEl : function(){
+        getPositionEl : function(){
         return this.wrap;
     },
 
@@ -641,13 +671,13 @@ Ext.extend(Ext.form.TriggerField, Ext.form.TextField,  {
         }
     },
 
-    initTrigger : function(){
+        initTrigger : function(){
         this.trigger.on("click", this.onTriggerClick, this, {preventDefault:true});
         this.trigger.addClassOnOver('x-form-trigger-over');
         this.trigger.addClassOnClick('x-form-trigger-click');
     },
 
-    onDestroy : function(){
+        onDestroy : function(){
         if(this.trigger){
             this.trigger.removeAllListeners();
             this.trigger.remove();
@@ -691,24 +721,23 @@ Ext.extend(Ext.form.TriggerField, Ext.form.TextField,  {
         if(this.monitorTab){
             this.el.un("keydown", this.checkTab, this);
         }
-        this.beforeBlur();
         this.wrap.removeClass('x-trigger-wrap-focus');
         Ext.form.TriggerField.superclass.onBlur.call(this);
     },
-
-    beforeBlur : Ext.emptyFn, 
 
             validateBlur : function(e, t){
         return true;
     },
 
-        disableWrapper : function(){
+        onDisable : function(){
+        Ext.form.TriggerField.superclass.onDisable.call(this);
         if(this.wrap){
             this.wrap.addClass('x-item-disabled');
         }
     },
 
-        enableWrapper : function(){
+        onEnable : function(){
+        Ext.form.TriggerField.superclass.onEnable.call(this);
         if(this.wrap){
             this.wrap.removeClass('x-item-disabled');
         }
@@ -792,6 +821,7 @@ Ext.extend(Ext.form.TextArea, Ext.form.TextField,  {
     growMax: 1000,
     
     preventScrollbars: false,
+    
 
         onRender : function(ct, position){
         if(!this.el){
@@ -815,7 +845,7 @@ Ext.extend(Ext.form.TextArea, Ext.form.TextField,  {
 
     onDestroy : function(){
         if(this.textSizeEl){
-            this.textSizeEl.remove();
+            this.textSizeEl.parentNode.removeChild(this.textSizeEl);
         }
         Ext.form.TextArea.superclass.onDestroy.call(this);
     },
@@ -855,11 +885,6 @@ Ext.extend(Ext.form.TextArea, Ext.form.TextField,  {
             this.el.setHeight(h);
             this.fireEvent("autosize", this, h);
         }
-    },
-
-        setValue : function(v){
-        Ext.form.TextArea.superclass.setValue.call(this, v);
-        this.autoSize();
     }
 });
 
@@ -898,9 +923,10 @@ Ext.extend(Ext.form.NumberField, Ext.form.TextField,  {
         if(this.allowNegative){
             allowed += "-";
         }
+        this.stripCharsRe = new RegExp('[^'+allowed+']', 'gi');
         var keyPress = function(e){
             var k = e.getKey();
-            if(!Ext.isIE && (e.isNavKeyPress() || k == e.BACKSPACE || (k == e.DELETE && e.button == -1))){
+            if(!Ext.isIE && (e.isSpecialKey() || k == e.BACKSPACE || k == e.DELETE)){
                 return;
             }
             var c = e.getCharCode();
@@ -917,12 +943,11 @@ Ext.extend(Ext.form.NumberField, Ext.form.TextField,  {
         }
         if(value.length < 1){              return true;
         }
-        value = String(value).replace(this.decimalSeparator, ".");
-        if(isNaN(value)){
+        var num = this.parseValue(value);
+        if(isNaN(num)){
             this.markInvalid(String.format(this.nanText, value));
             return false;
         }
-        var num = this.parseValue(value);
         if(num < this.minValue){
             this.markInvalid(String.format(this.minText, this.minValue));
             return false;
@@ -934,22 +959,36 @@ Ext.extend(Ext.form.NumberField, Ext.form.TextField,  {
         return true;
     },
 
+    getValue : function(){
+        return this.fixPrecision(this.parseValue(Ext.form.NumberField.superclass.getValue.call(this)));
+    },
+
         parseValue : function(value){
-        return parseFloat(String(value).replace(this.decimalSeparator, "."));
+        value = parseFloat(String(value).replace(this.decimalSeparator, "."));
+        return isNaN(value) ? '' : value;
     },
 
         fixPrecision : function(value){
-       if(!this.allowDecimals || this.decimalPrecision == -1 || isNaN(value) || value == 0 || !value){
-           return value;
-       }
-                                                 var scale = Math.pow(10, this.decimalPrecision+1);
-       var fixed = this.decimalPrecisionFcn(value * scale);
-       fixed = this.decimalPrecisionFcn(fixed/10);
-       return fixed / (scale/10);
+        var nan = isNaN(value);
+        if(!this.allowDecimals || this.decimalPrecision == -1 || nan || !value){
+            return nan ? '' : value;
+        }
+        return parseFloat(value).toFixed(this.decimalPrecision);
+    },
+
+    setValue : function(v){
+        Ext.form.NumberField.superclass.setValue.call(this, String(v).replace(".", this.decimalSeparator));
     },
 
         decimalPrecisionFcn : function(v){
         return Math.floor(v);
+    },
+
+    beforeBlur : function(){
+        var v = this.parseValue(this.getRawValue());
+        if(v){
+            this.setValue(this.fixPrecision(v));
+        }
     }
 });
 
@@ -987,9 +1026,9 @@ Ext.extend(Ext.form.DateField, Ext.form.TriggerField,  {
     
     maxValue : null,
     
-    minText : "The date in this field must be after {0}",
+    minText : "The date in this field must be equal to or after {0}",
     
-    maxText : "The date in this field must be before {0}",
+    maxText : "The date in this field must be equal to or before {0}",
     
     invalidText : "{0} is not a valid date - it must be in the format {1}",
     
@@ -1135,13 +1174,13 @@ Ext.form.Checkbox = function(config){
 
 Ext.extend(Ext.form.Checkbox, Ext.form.Field,  {
     
-    focusClass : "x-form-check-focus",
+    focusClass : undefined,
     
     fieldClass: "x-form-field",
     
     checked: false,
-
-        defaultAutoCreate : { tag: "input", type: 'checkbox', autocomplete: "off"},
+    
+    defaultAutoCreate : { tag: "input", type: 'checkbox', autocomplete: "off"},
     
     boxLabel : undefined,
     
@@ -1158,7 +1197,7 @@ Ext.extend(Ext.form.Checkbox, Ext.form.Field,  {
         this.el.on("change", this.onClick,  this);
     },
 
-    
+
     getResizeEl : function(){
         return this.wrap;
     },
@@ -1178,6 +1217,8 @@ Ext.extend(Ext.form.Checkbox, Ext.form.Field,  {
         }
         if(this.checked){
             this.setValue(true);
+        }else{
+            this.checked = this.el.dom.checked;
         }
     },
 
@@ -1191,7 +1232,7 @@ Ext.extend(Ext.form.Checkbox, Ext.form.Field,  {
         return false;
     },
 
-    onClick : function(){
+	    onClick : function(){
         if(this.el.dom.checked != this.checked){
             this.setValue(this.el.dom.checked);
         }
@@ -1199,9 +1240,10 @@ Ext.extend(Ext.form.Checkbox, Ext.form.Field,  {
 
     
     setValue : function(v){
-        this.checked = (v === true || v === 'true' || v == '1');
+        this.checked = (v === true || v === 'true' || v == '1' || String(v).toLowerCase() == 'on');
         if(this.el && this.el.dom){
             this.el.dom.checked = this.checked;
+            this.el.dom.defaultChecked = this.checked;
         }
         this.fireEvent("check", this, this.checked);
     }
@@ -1234,6 +1276,7 @@ Ext.form.ComboBox = function(config){
         'beforequery': true
     });
     if(this.transform){
+        this.allowDomMove = false;
         var s = Ext.getDom(this.transform);
         if(!this.hiddenName){
             this.hiddenName = s.name;
@@ -1277,6 +1320,8 @@ Ext.form.ComboBox = function(config){
 };
 
 Ext.extend(Ext.form.ComboBox, Ext.form.TriggerField, {
+    
+    
     
     
     
@@ -1340,7 +1385,7 @@ Ext.extend(Ext.form.ComboBox, Ext.form.TriggerField, {
         onRender : function(ct, position){
         Ext.form.ComboBox.superclass.onRender.call(this, ct, position);
         if(this.hiddenName){
-            this.hiddenField = this.el.insertSibling({tag:'input', type:'hidden', name: this.hiddenName, id: this.hiddenName},
+            this.hiddenField = this.el.insertSibling({tag:'input', type:'hidden', name: this.hiddenName, id:  (this.hiddenId||this.hiddenName)},
                     'before', true);
             this.hiddenField.value =
                 this.hiddenValue !== undefined ? this.hiddenValue :
@@ -1450,7 +1495,9 @@ Ext.extend(Ext.form.ComboBox, Ext.form.TriggerField, {
                    return Ext.KeyNav.prototype.doRelay.apply(this, arguments);
                 }
                 return true;
-            }
+            },
+
+            forceKeyDown: true
         });
         this.queryDelay = Math.max(this.queryDelay || 10,
                 this.mode == 'local' ? 10 : 250);
@@ -1588,6 +1635,7 @@ Ext.extend(Ext.form.ComboBox, Ext.form.TriggerField, {
         }
         this.setRawValue('');
         this.lastSelectionText = '';
+        this.applyEmptyText();
     },
 
     
@@ -1793,6 +1841,7 @@ Ext.extend(Ext.form.ComboBox, Ext.form.TriggerField, {
         }
         this.list.hide();
         Ext.get(document).un('mousedown', this.collapseIf, this);
+        Ext.get(document).un('mousewheel', this.collapseIf, this);
         this.fireEvent('collapse', this);
     },
 
@@ -1810,6 +1859,7 @@ Ext.extend(Ext.form.ComboBox, Ext.form.TriggerField, {
         this.list.alignTo(this.el, this.listAlign);
         this.list.show();
         Ext.get(document).on('mousedown', this.collapseIf, this);
+        Ext.get(document).on('mousewheel', this.collapseIf, this);
         this.fireEvent('expand', this);
     },
 
@@ -1867,8 +1917,12 @@ Ext.extend(Ext.Editor, Ext.Component, {
     shadow : "frame",
     
     constrain : false,
-
-        updateEl : false,
+    
+    completeOnEnter : false,
+    
+    cancelOnEsc : false,
+    
+    updateEl : false,
 
         onRender : function(ct, position){
         this.el = new Ext.Layer({
@@ -1877,7 +1931,8 @@ Ext.extend(Ext.Editor, Ext.Component, {
             parentEl : ct,
             shim : this.shim,
             shadowOffset:4,
-            id: this.id
+            id: this.id,
+            constrain: this.constrain
         });
         this.el.setStyle("overflow", Ext.isGecko ? "auto" : "hidden");
         if(this.field.msgTarget != 'title'){
@@ -1887,15 +1942,30 @@ Ext.extend(Ext.Editor, Ext.Component, {
         if(Ext.isGecko){
             this.field.el.dom.setAttribute('autocomplete', 'off');
         }
+        this.field.on("specialkey", this.onSpecialKey, this);
+        if(this.swallowKeys){
+            this.field.el.swallowEvent(['keydown','keypress']);
+        }
         this.field.show();
         this.field.on("blur", this.onBlur, this);
-        this.relayEvents(this.field,  ["specialkey"]);
         if(this.field.grow){
             this.field.on("autosize", this.el.sync,  this.el, {delay:1});
         }
     },
 
-        startEdit : function(el, value){
+    onSpecialKey : function(field, e){
+        if(this.completeOnEnter && e.getKey() == e.ENTER){
+            e.stopEvent();
+            this.completeEdit();
+        }else if(this.cancelOnEsc && e.getKey() == e.ESC){
+            this.cancelEdit();
+        }else{
+            this.fireEvent('specialkey', field, e);
+        }
+    },
+
+    
+    startEdit : function(el, value){
         if(this.editing){
             this.completeEdit();
         }
@@ -1953,7 +2023,7 @@ Ext.extend(Ext.Editor, Ext.Component, {
             v = this.startValue;
             this.cancelEdit(true);
         }
-        if(String(v) == String(this.startValue) && this.ignoreNoChange){
+        if(String(v) === String(this.startValue) && this.ignoreNoChange){
             this.editing = false;
             this.hide();
             return;
@@ -2601,11 +2671,13 @@ Ext.extend(Ext.form.Action.Submit, Ext.form.Action, {
 
     run : function(){
         var o = this.options;
-        var isPost = this.getMethod() == 'POST';
+        var method = this.getMethod();
+        var isPost = method == 'POST';
         if(o.clientValidation === false || this.form.isValid()){
             Ext.Ajax.request(Ext.apply(this.createCallback(), {
                 form:this.form.el.dom,
                 url:this.getUrl(!isPost),
+                method: method,
                 params:isPost ? this.getParams() : null,
                 isUpload: this.form.fileUpload
             }));

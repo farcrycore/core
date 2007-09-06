@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -9,19 +9,19 @@
 /**
  * @class Ext.Layer
  * @extends Ext.Element
- * An extended Element object that supports a shadow and shim, constrain to viewport and
+ * An extended {@link Ext.Element} object that supports a shadow and shim, constrain to viewport and
  * automatic maintaining of shadow/shim positions.
  * @cfg {Boolean} shim False to disable the iframe shim in browsers which need one (defaults to true)
- * @cfg {String/Boolean} shadow True to create a shadow element with default class "x-layer-shadow" or
- * you can pass a string with a css class name. False turns off the shadow.
+ * @cfg {String/Boolean} shadow True to create a shadow element with default class "x-layer-shadow", or
+ * you can pass a string with a CSS class name. False turns off the shadow.
  * @cfg {Object} dh DomHelper object config to create element with (defaults to {tag: "div", cls: "x-layer"}).
  * @cfg {Boolean} constrain False to disable constrain to viewport (defaults to true)
  * @cfg {String} cls CSS class to add to the element
- * @cfg {Number} zindex Starting z-index (defaults to 11000!)
+ * @cfg {Number} zindex Starting z-index (defaults to 11000)
  * @cfg {Number} shadowOffset Number of pixels to offset the shadow (defaults to 3)
  * @constructor
- * @param {Object} config
- * @param {String/HTMLElement} existingEl (optional) Uses an existing dom element. If the element is not found it creates it.
+ * @param {Object} config An object with config options.
+ * @param {String/HTMLElement} existingEl (optional) Uses an existing DOM element. If the element is not found it creates it.
  */
 (function(){ 
 Ext.Layer = function(config, existingEl){
@@ -435,7 +435,7 @@ Ext.extend(Ext.Layer, Ext.Element, {
     },
     
     /**
-     * Set the z-index of this layer and adjusts any shadow and shim z-indexes. The layer z-index is automatically
+     * Sets the z-index of this layer and adjusts any shadow and shim z-indexes. The layer z-index is automatically
      * incremented by two more than the value passed in so that it always shows above any shadow or shim (the shadow
      * element, if any, will be assigned z-index + 1, and the shim element, if any, will be assigned the unmodified z-index).
      * @param {Number} zindex The new z-index to set

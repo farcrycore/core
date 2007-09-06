@@ -1,10 +1,9 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://www.extjs.com/license
  */
 
-
-Ext.data.SortTypes={none:function(s){return s;},stripTagsRE:/<\/?[^>]+>/gi,asText:function(s){return String(s).replace(this.stripTagsRE,"");},asUCText:function(s){return String(s).toUpperCase().replace(this.stripTagsRE,"");},asUCString:function(s){return String(s).toUpperCase();},asDate:function(s){if(!s){return 0;}if(s instanceof Date){return s.getTime();}return Date.parse(String(s));},asFloat:function(s){var _7=parseFloat(String(s).replace(/,/g,""));if(isNaN(_7)){_7=0;}return _7;},asInt:function(s){var _9=parseInt(String(s).replace(/,/g,""));if(isNaN(_9)){_9=0;}return _9;}};
+Ext.data.SortTypes={none:function(A){return A},stripTagsRE:/<\/?[^>]+>/gi,asText:function(A){return String(A).replace(this.stripTagsRE,"")},asUCText:function(A){return String(A).toUpperCase().replace(this.stripTagsRE,"")},asUCString:function(A){return String(A).toUpperCase()},asDate:function(A){if(!A){return 0}if(A instanceof Date){return A.getTime()}return Date.parse(String(A))},asFloat:function(A){var B=parseFloat(String(A).replace(/,/g,""));if(isNaN(B)){B=0}return B},asInt:function(A){var B=parseInt(String(A).replace(/,/g,""));if(isNaN(B)){B=0}return B}};

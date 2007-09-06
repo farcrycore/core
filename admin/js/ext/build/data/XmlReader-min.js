@@ -1,10 +1,9 @@
 /*
- * Ext JS Library 1.1 Beta 1
+ * Ext JS Library 1.1.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://www.extjs.com/license
  */
 
-
-Ext.data.XmlReader=function(_1,_2){Ext.data.XmlReader.superclass.constructor.call(this,_1,_2);};Ext.extend(Ext.data.XmlReader,Ext.data.DataReader,{read:function(_3){var _4=_3.responseXML;if(!_4){throw{message:"XmlReader.read: XML Document not available"};}return this.readRecords(_4);},readRecords:function(_5){this.xmlData=_5;var _6=_5.documentElement||_5;var q=Ext.DomQuery;var _8=this.recordType,_9=_8.prototype.fields;var _a=this.meta.id;var _b=0,_c=true;if(this.meta.totalRecords){_b=q.selectNumber(this.meta.totalRecords,_6,0);}if(this.meta.success){var sv=q.selectValue(this.meta.success,_6,true);_c=sv!==false&&sv!=="false";}var _e=[];var ns=q.select(this.meta.record,_6);for(var i=0,len=ns.length;i<len;i++){var n=ns[i];var _13={};var id=_a?q.selectValue(_a,n):undefined;for(var j=0,_16=_9.length;j<_16;j++){var f=_9.items[j];var v=q.selectValue(f.mapping||f.name,n,f.defaultValue);v=f.convert(v);_13[f.name]=v;}var _19=new _8(_13,id);_19.node=n;_e[_e.length]=_19;}return{success:_c,records:_e,totalRecords:_b||_e.length};}});
+Ext.data.XmlReader=function(A,B){A=A||{};Ext.data.XmlReader.superclass.constructor.call(this,A,B||A.fields)};Ext.extend(Ext.data.XmlReader,Ext.data.DataReader,{read:function(A){var B=A.responseXML;if(!B){throw {message:"XmlReader.read: XML Document not available"}}return this.readRecords(B)},readRecords:function(T){this.xmlData=T;var N=T.documentElement||T;var I=Ext.DomQuery;var B=this.recordType,L=B.prototype.fields;var D=this.meta.id;var G=0,E=true;if(this.meta.totalRecords){G=I.selectNumber(this.meta.totalRecords,N,0)}if(this.meta.success){var K=I.selectValue(this.meta.success,N,true);E=K!==false&&K!=="false"}var Q=[];var U=I.select(this.meta.record,N);for(var P=0,R=U.length;P<R;P++){var M=U[P];var A={};var J=D?I.selectValue(D,M):undefined;for(var O=0,H=L.length;O<H;O++){var S=L.items[O];var F=I.selectValue(S.mapping||S.name,M,S.defaultValue);F=S.convert(F);A[S.name]=F}var C=new B(A,J);C.node=M;Q[Q.length]=C}return{success:E,records:Q,totalRecords:G||Q.length}}});
