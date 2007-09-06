@@ -23,15 +23,15 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 
 <!--- check permissions --->
 <cfscript>
-	iSecurityTab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="SecurityUserManagementTab");
-	iSecurityTab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="SecurityPolicyManagementTab");
+	iSecurityUser = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="SecurityUserManagementTab");
+	iSecurityPolicy = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="SecurityPolicyManagementTab");
 </cfscript>
 
 <!--- set up page header --->
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<cfif iSecurityTab eq 1 or iSecurityTab eq 1>
+<cfif iSecurityUser eq 1 or iSecurityPolicy eq 1>
 
 	<cfmodule template="/farcry/core/tags/security/ui/dmSecUI_Redirect.cfm">
 
