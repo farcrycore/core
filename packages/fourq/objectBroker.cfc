@@ -161,7 +161,7 @@
 								
 								<cfset stCacheWebskin.datetimecreated = now() />
 								<cfset stCacheWebskin.webskinHTML = trim(arguments.HTML) />	
-								<cfset stCacheWebskin.inHead = duplicate(stCurrentView.inHead) />
+								<cfset stCacheWebskin.inHead = duplicate(arguments.stCurrentView.inHead) />
 	
 								<cfif len(arguments.stCurrentView.hashKey)>
 									<cfset hashString = arguments.stCurrentView.hashKey />
