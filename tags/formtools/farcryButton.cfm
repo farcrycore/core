@@ -71,7 +71,7 @@
 			<cfoutput><input name="FarcryFormSubmitButton" value="#attributes.Value#" type="#attributes.Type#" onclick="#attributes.Onclick#" class="#attributes.Class#" style="#attributes.Style#" src="#attributes.src#" /></cfoutput>
 		<cfelse>
 		
-			<skin:htmlhead id="farcrybuttoncss">
+			<skin:htmlHead id="farcrybuttoncss">
 			<cfoutput>
 				<style type="text/css">
 				
