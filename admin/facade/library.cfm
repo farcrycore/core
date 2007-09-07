@@ -70,7 +70,7 @@ $Developer: $
 	<cfset request.ftJoin = listFirst(PrimaryPackage.stProps[url.primaryFieldname].metadata.ftJoin) />
 </cfif>
 
-<cfif structKeyExists(application.stcoapi[url.PrimaryTypename].stProps[url.PrimaryFieldname].metadata, "ftInstantLibraryUpdate") >
+<cfif url.LibraryType EQ "Array" AND structKeyExists(application.stcoapi[url.PrimaryTypename].stProps[url.PrimaryFieldname].metadata, "ftInstantLibraryUpdate") >
 	<cfset InstantLibraryUpdate = application.stcoapi[url.PrimaryTypename].stProps[url.PrimaryFieldname].metadata.ftInstantLibraryUpdate />
 <cfelse>
 	<cfset InstantLibraryUpdate = true />
@@ -795,11 +795,17 @@ GENERATE THE LIBRARY PICKER
 			
 			<cfif structKeyExists(session, "ajaxUpdatingArray") AND session.ajaxUpdatingArray EQ true>	
 				<!--- do nothing --->
-			<cfelse>	
-				<ft:farcryButtonPanel indentForLabel="false">
-					<ft:farcryButton type="button" value="Save & Close" confirmText="You are about to save your changes. Please wait until the library window closes." onclick="needToConfirm = false;$(this).disabled=true;opener.libraryCallbackArray('#url.primaryFormFieldname#','sort',Sortable.sequence('sortableListTo'),'#application.url.webroot#',window);" />
-					<ft:farcryButton type="button" value="Cancel" confirmText="Are you sure you want to cancel?" onclick="needToConfirm = false;self.blur();window.close();return false;" />
-				</ft:farcryButtonPanel>	
+			<cfelse>
+				<cfif NOT InstantLibraryUpdate >
+					<ft:farcryButtonPanel indentForLabel="false">
+						<ft:farcryButton type="button" value="Save & Close" confirmText="You are about to save your changes. Please wait until the library window closes." onclick="needToConfirm = false;$(this).disabled=true;opener.libraryCallbackArray('#url.primaryFormFieldname#','sort',Sortable.sequence('sortableListTo'),'#application.url.webroot#',window);" />
+						<ft:farcryButton type="button" value="Cancel" confirmText="Are you sure you want to cancel?" onclick="needToConfirm = false;self.blur();window.close();return false;" />
+					</ft:farcryButtonPanel>	
+				<cfelse>
+					<ft:farcryButtonPanel indentForLabel="false">
+						<ft:farcryButton type="button" value="Close" onclick="self.blur();window.close();return false;" />	
+					</ft:farcryButtonPanel>	
+				</cfif>	
 			</cfif>
 			
 			<cfset Request.InHead.ScriptaculousEffects = 1>
