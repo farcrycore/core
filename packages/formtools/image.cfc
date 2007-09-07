@@ -185,10 +185,11 @@
 	<cffunction name="validate" access="public" output="true" returntype="struct" hint="This will return a struct with bSuccess and stError">
 		<cfargument name="stFieldPost" required="true" type="struct" hint="The fields that are relevent to this field type. Includes Value and stSupporting">
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
+		<cfargument name="stImageArgs" required="true" type="struct" default="#structNew()#" hint="Append any additional image arguments for image generation.">
 		<cfargument name="objectid" required="true" type="uuid" hint="objectid of image object" />
 		
 		<cfset var stResult = structNew() />
-		<cfset var stGeneratedImageArgs = structNew() />
+		<cfset var stGeneratedImageArgs = arguments.stImageArgs />
 		<cfset var uploadFileName = "" />
 		<cfset var b = "" />
 		<cfset var newFileName = "" />
@@ -204,12 +205,6 @@
 		<cfparam name="arguments.stMetadata.ftAutoGenerateType" default="FitInside" />
 		<cfparam name="arguments.stMetadata.ftPadColor" default="##ffffff" />
 		<cfparam name="arguments.stMetadata.ftThumbnailBevel" default="No" />
-		<!--- New features to support CFIMAGE --->
-		<cfparam name="arguments.stMetadata.ftcustomEffectsObjName" default="imageeffects" />
-		<cfparam name="arguments.stMetadata.ftlCustomEffects" default="" />
-		<cfparam name="arguments.stMetadata.ftConvertImageToFormat" default="" />
-		<cfparam name="arguments.stMetadata.ftbSetAntialiasing" default="true" />
-		<cfparam name="arguments.stMetadata.ftinterpolation" default="highestQuality" />
 
 
 		<!--- --------------------------- --->
@@ -292,12 +287,6 @@
 					</cfif>
 					<cfset stGeneratedImageArgs.AutoGenerateType = "#arguments.stMetadata.ftAutoGenerateType#" />
 					<cfset stGeneratedImageArgs.PadColor = "#arguments.stMetadata.ftPadColor#" />
-					<!--- New features to support CFIMAGE --->
-					<cfset stGeneratedImageArgs.customEffectsObjName = arguments.stMetadata.ftcustomEffectsObjName />
-					<cfset stGeneratedImageArgs.lCustomEffects = arguments.stMetadata.ftlCustomEffects />
-					<cfset stGeneratedImageArgs.convertImageToFormat = arguments.stMetadata.ftConvertImageToFormat />
-					<cfset stGeneratedImageArgs.bSetAntialiasing = arguments.stMetadata.ftBSetAntialiasing />
-					<cfset stGeneratedImageArgs.interpolation = arguments.stMetadata.ftInterpolation />
 
 					<cfset stGeneratedImage = GenerateImage(argumentCollection=stGeneratedImageArgs) />
 					
@@ -584,7 +573,8 @@
 					<cfset stArgs.padColor = "#arguments.stFields['#i#'].metadata.ftpadColor#" />
 				
 												
-					<cfset stGenerateImageResult = oImage.GenerateImage(Source="#stArgs.Source#", Destination="#stArgs.Destination#", Width="#stArgs.Width#", Height="#stArgs.Height#", AutoGenerateType="#stArgs.AutoGenerateType#", padColor="#stArgs.padColor#") />
+					<!--- <cfset stGenerateImageResult = oImage.GenerateImage(Source="#stArgs.Source#", Destination="#stArgs.Destination#", Width="#stArgs.Width#", Height="#stArgs.Height#", AutoGenerateType="#stArgs.AutoGenerateType#", padColor="#stArgs.padColor#") /> --->
+					<cfset stGenerateImageResult = oImage.GenerateImage(argumentCollection=stArgs) />
 					
 					<cfif stGenerateImageResult.bSuccess>
 						<cfset stProperties['#i#'] = "#arguments.stFields['#i#'].metadata.ftDestination#/#stGenerateImageResult.filename#" />
