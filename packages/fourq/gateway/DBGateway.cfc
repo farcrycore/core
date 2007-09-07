@@ -434,6 +434,7 @@
   	<cffunction name="setData" access="public" returntype="struct" output="false" >
     	<cfargument name="stProperties" type="struct" required="true" />
 	  	<cfargument name="metadata" type="farcry.core.packages.fourq.TableMetadata" required="true" />
+		<cfargument name="dsn" type="string" required="false" default="#variables.dsn#">
 	  	
 	  	<cfset var stFields = arguments.metadata.getTableDefinition() />
 		<cfset var tablename = arguments.metadata.getTableName() />
@@ -473,7 +474,7 @@
 		</cfif>	
 		
 		<!--- Check to see if the objectID already exists in the database, if not, create it quickly with the objectid passed in stProperties. --->
-		<cfquery datasource="#variables.dsn#" name="qRecordExists">
+		<cfquery datasource="#arguments.dsn#" name="qRecordExists">
 		SELECT objectID FROM #variables.dbowner##tablename#
 		WHERE objectID = <cfqueryparam value="#objectID#" cfsqltype="CF_SQL_VARCHAR">
 		</cfquery>
@@ -486,9 +487,9 @@
 			</cfif>
 			<cfset t = createObject("component",packagePath)>
 			
-			<cfset stDefaultProperties = t.getDefaultObject(objectid=objectID,typename=tablename)>
+			<cfset stDefaultProperties = t.getDefaultObject(objectid=objectID,typename=tablename,dsn=arguments.dsn)>
 			<cfset StructAppend(arguments.stProperties,stDefaultProperties,false)>			
-			<cfset stCreatedObject = t.createData(stProperties=arguments.stProperties, objectID=stProperties.ObjectID,User=userLogin)>
+			<cfset stCreatedObject = t.createData(stProperties=arguments.stProperties, objectID=stProperties.ObjectID,User=userLogin,dsn=arguments.dsn)>
 		</cfif>
 		
 

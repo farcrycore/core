@@ -509,7 +509,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		    <cfset structdelete(instance,"bgetdata")>	
 	   	
 	   		
-	   		<cfset stResult = gateway.setData(arguments.stProperties,variables.tableMetadata) />	   	
+	   		<cfset stResult = gateway.setData(stProperties=arguments.stProperties,metadata=variables.tableMetadata,dsn=arguments.dsn) />	   	
 	   	 
 	    
 		   	<!--- Make sure we remove the object from the TempObjectStore if we update something --->
