@@ -27,7 +27,7 @@
 		
 		<cfparam name="arguments.stMetadata.ftAlias" default="" type="string" />
 		<cfparam name="arguments.stMetadata.ftLegend" default="" type="string" />
-		<cfparam name="arguments.stMetadata.ftRenderType" default="Tree" type="string" />
+		<cfparam name="arguments.stMetadata.ftRenderType" default="prototype" type="string" />
 		<cfparam name="arguments.stMetadata.ftSelectMultiple" default="true" type="boolean" />
 		<cfparam name="arguments.stMetadata.ftSelectSize" default="5" type="numeric" />
 		<cfparam name="arguments.stMetadata.ftDropdownFirstItem" default="" type="string" />
