@@ -219,15 +219,15 @@
 
 	
 
-	<cfif attributes.IncludeFieldSet>
+	<cfif attributes.IncludeFieldSet and not len(attributes.r_stFields)>
 		<cfoutput><fieldset class="formSection #attributes.class#"></cfoutput>
 	</cfif>
 	
-	<cfif isDefined("attributes.legend") and len(attributes.legend)>
+	<cfif isDefined("attributes.legend") and len(attributes.legend) and not len(attributes.r_stFields)>
 		<cfoutput><legend class="#attributes.class#">#attributes.legend#</legend></cfoutput>
 	</cfif>	
 	
-	<cfif structKeyExists(attributes,"HelpSection") and len(attributes.HelpSection)>
+	<cfif structKeyExists(attributes,"HelpSection") and len(attributes.HelpSection) and not len(attributes.r_stFields)>
 		<cfoutput>
 			<div class="helpsection">
 				<cfif structKeyExists(attributes,"HelpTitle") and len(attributes.HelpTitle)>
@@ -646,16 +646,16 @@
 		</cfif>
 	</cfif>
 	
-		<cfif attributes.IncludeFieldSet>
-			<cfoutput></fieldset></cfoutput>
-		</cfif>
-	
+	<cfif attributes.IncludeFieldSet and not len(attributes.r_stFields)>
+		<cfoutput></fieldset></cfoutput>
+	</cfif>
 	
 	<cfparam name="Request.lFarcryObjectsRendered" default="">
 
 	<cfif attributes.format EQ "edit"
 		AND StructKeyExists(Request.farcryForm.stObjects[variables.prefix].farcryformobjectinfo,"ObjectID")
-		AND  NOT ListContains(Request.lFarcryObjectsRendered, Request.farcryForm.stObjects[variables.prefix].farcryformobjectinfo.ObjectID)>
+		AND  NOT ListContains(Request.lFarcryObjectsRendered, Request.farcryForm.stObjects[variables.prefix].farcryformobjectinfo.ObjectID)
+		and not len(attributes.r_stFields)>
 			
 		<cfoutput>
 			<input type="hidden" name="#variables.prefix#ObjectID" value="#Request.farcryForm.stObjects[variables.prefix].farcryformobjectinfo.ObjectID#">
