@@ -17,15 +17,15 @@ should be provided by the invoked template. --->
 
 <cfif len(URL.plugin)>
 	<!--- load admin from the nominated plugin --->
-	<cfmodule template="/farcry/plugins/#URL.plugin#/customadmin/#URL.module#">
+	<cfmodule template="/farcry/plugins/#URL.plugin#/customadmin/#URL.module#" attributecollection="#duplicate(url)#">
 
 <cfelseif fileExists(expandPath("/farcry/projects/#application.projectDirectoryName#/customadmin/#URL.module#"))>
 	<!--- load admin from the project --->
-	<cfmodule template="/farcry/projects/#application.projectDirectoryName#/customadmin/#URL.module#">
+	<cfmodule template="/farcry/projects/#application.projectDirectoryName#/customadmin/#URL.module#" attributecollection="#duplicate(url)#">
 
 <cfelseif fileExists(expandPath("/farcry/core/admin/customadmin/#URL.module#"))>
 	<!--- load admin from the project --->
-	<cfmodule template="/farcry/core/admin/customadmin/#URL.module#">
+	<cfmodule template="/farcry/core/admin/customadmin/#URL.module#" attributecollection="#duplicate(url)#">
 
 <cfelse>
 	<cfsavecontent variable="errorHTML">
