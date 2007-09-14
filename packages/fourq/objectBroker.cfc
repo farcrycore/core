@@ -102,6 +102,9 @@
 												<cfif not structKeyExists(request.inHead.stCustom, j)>
 													<cfset request.inHead.stCustom[j] = stCacheWebskin.inHead.stCustom[j] />
 												</cfif>
+												
+												<cfset application.coapi.objectbroker.addHTMLHeadToWebskins(id="#j#", text="#stCacheWebskin.inHead.stCustom[j]#") />
+	
 											</cfloop>
 										</cfcase>
 										<cfcase value="aCustomIDs">
@@ -132,6 +135,27 @@
 		<cfreturn webskinHTML />
 	</cffunction>
 			
+	<cffunction name="addHTMLHeadToWebskins" access="public" output="false" returntype="void" hint="Adds the result of a skin:htmlHead to all relevent webskin caches">
+		<cfargument name="id" type="string" required="true" />
+		<cfargument name="text" type="string" required="true" />
+		
+		<cfset var iWebskin = "">
+	
+		<!--- If we are currently inside of a webskin we need to add this id to the current webskin --->
+		<cfif structKeyExists(request, "aAncestorWebskins") AND arrayLen(request.aAncestorWebskins)>
+		
+			<cfloop from="1" to="#arrayLen(request.aAncestorWebskins)#" index="iWebskin">
+				<cfif NOT structKeyExists(request.aAncestorWebskins[iWebskin].inhead.stCustom, arguments.id)>
+					<cfset request.aAncestorWebskins[iWebskin].inHead.stCustom[arguments.id] = arguments.text />
+					<cfset arrayAppend(request.aAncestorWebskins[iWebskin].inHead.aCustomIDs, arguments.id) />
+				</cfif>
+			</cfloop>
+		</cfif>	
+		
+		
+	</cffunction>		
+	
+	
 	<cffunction name="addWebskin" access="public" output="true" returntype="boolean" hint="Adds webskin to object broker if all conditions are met">
 		<cfargument name="ObjectID" required="yes" type="UUID">
 		<cfargument name="typename" required="true" type="string">
