@@ -55,10 +55,17 @@
 				#SQLArray[i].datatype# 
 				
 				<cfswitch expression="#SQLArray[i].datatype#">
-					<cfcase value="longtext,longchar">
+					<cfcase value="blob,text,longtext,longchar">
 						<!--- No Default Allowed on BLOB fields --->
 					</cfcase>
 					<cfcase value="datetime,date,timestamp,time">
+							<cfif Len(SQLArray[i].defaultValue)>
+								<!--- Only put the default value on if there is a value.
+								MySQL only takes static values and requires quotes around the value --->
+								'#SQLArray[i].defaultValue#'
+							</cfif>
+					</cfcase>
+					<cfcase value="char,varchar">
 						'#SQLArray[i].defaultValue#'
 					</cfcase>
 					<cfdefaultcase>
