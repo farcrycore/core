@@ -122,8 +122,9 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 		<th style="border-right:none">Doc</th>
 	</tr>
 </cfoutput>
-	
-<cfloop collection="#application.types#" item="componentName">
+
+<cfset componentList = ListSort(lcase(StructKeyList(application.types)),"text") />	
+<cfloop list="#componentList#" index="componentname">
 <cfif application.types[componentname].bcustomtype>
 	<cfscript>
 		if (structKeyExists(stTypes,componentname))
@@ -211,7 +212,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 </cfoutput>
 	
 <!--- output core types --->
-<cfloop collection="#application.types#" item="componentName">
+<cfloop list="#componentList#" index="componentname">
 <cfif NOT application.types[componentname].bcustomtype>
 	<cfscript>
 		if (structKeyExists(stTypes,componentname))
