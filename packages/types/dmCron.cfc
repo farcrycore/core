@@ -48,12 +48,24 @@ object methods
 	
 	<cfloop query="qCore">
 		<cfset queryAddRow(qTemplates, 1)>
-		<cfset querySetCell(qTemplates, "displayname", "#displayname# #application.adminBundle[session.dmProfile.locale].core#")>
+		<cfset querySetCell(qTemplates, "displayname", "#displayname# (#plugin#)")>
 		<cfset querySetCell(qTemplates, "path", "/farcry/core/admin/scheduledTasks/#methodName#.cfm")>
 	</cfloop>
 	
 	<!--- get custom templates --->	
 	<cftry>
+		<cfloop list="#application.plugins#" index="plugin">
+			<nj:listTemplates typename="dmCron" path="#application.path.plugins#/#plugin#/system/dmCron" prefix="" r_qMethods="qCustom">
+			<cfloop query="qCustom">
+				<!--- ignore cvs file --->
+				<cfif methodName neq "_donotdelete">
+					<cfset queryAddRow(qTemplates, 1)>
+					<cfset querySetCell(qTemplates, "displayname", "#displayname# #application.adminBundle[session.dmProfile.locale].custom#")>
+					<cfset querySetCell(qTemplates, "path", "/farcry/plugins/#plugin#/system/dmCron/#methodName#.cfm")>
+				</cfif>
+			</cfloop>
+		</cfloop>
+		
 		<nj:listTemplates typename="dmCron" path="#application.path.project#/system/dmCron" prefix="" r_qMethods="qCustom">
 		<cfloop query="qCustom">
 			<!--- ignore cvs file --->
