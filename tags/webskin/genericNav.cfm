@@ -187,8 +187,10 @@
 					ul=ul+1;
 				}
 				else if(currentlevel lt previouslevel){
-					// if end of level, close items and lists until at correct level
-					writeOutput(repeatString("</li></ul></li>",previousLevel-currentLevel));
+					// if end of level, close current item
+					writeOutput("</li>");
+					// close lists until at correct level
+					writeOutput(repeatString("</ul></li>",previousLevel-currentLevel));
 					ul=ul-(previousLevel-currentLevel);
 				}
 				else{
