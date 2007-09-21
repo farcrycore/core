@@ -111,6 +111,8 @@
 						.x-tree-node img.categoryIconCls,  .x-tree-node-collapsed img.categoryIconCls, .x-tree-node-expanded img.categoryIconCls{
 						    background-image:url(/farcry/images/treeimages/customIcons/NavApproved.gif);
 						}
+						/*The following style fixes an IE bug where expanded ul tags have some hidden content*/
+						ul {position:static;}
 						</style>
 					</cfoutput>
 				</skin:htmlHead>
