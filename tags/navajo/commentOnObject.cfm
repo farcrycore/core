@@ -41,7 +41,8 @@
 	<cfif StructIsEmpty(stNav)>
 		<cfset iCanCommentOnContent = oAuthorisation.checkPermission(objectid=objectID,permissionName='view')>
 	<cfelse>
-		<cfset iCanCommentOnContent = oAuthorisation.checkPermission(permissionName="view",reference="PolicyGroup")>
+		<cfset permsissionSet = "news">
+		<cfset iCanCommentOnContent = oAuthorisation.checkPermission(permissionName="#permsissionSet#Edit",reference="PolicyGroup")>
 	</cfif>
 <cfelse>
 	<cfset permsissionSet = "news">
