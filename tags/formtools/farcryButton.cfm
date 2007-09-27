@@ -2,11 +2,8 @@
 
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
-
 <cfif not thistag.HasEndTag>
-
 	<cfabort showerror="Does not have an end tag..." >
-
 </cfif>
 
 <cfparam  name="attributes.Type" default="submit">
@@ -24,8 +21,6 @@
 
 <cfif thistag.ExecutionMode EQ "Start">
 
-	
-	
 	<cfset buttonID = createUUID() />
 
 	<!--- Include Prototype light in the head --->
