@@ -20,7 +20,6 @@
 <cfparam name="attributes.bInPanel" default="">
 <cfparam name="attributes.src" default="">
 <cfparam name="attributes.url" default="">
-<cfparam name="attributes.title" default="">
 <cfparam name="attributes.target" default="_self">
 
 <cfif thistag.ExecutionMode EQ "Start">
