@@ -21,14 +21,13 @@
 <cfparam name="attributes.src" default="">
 <cfparam name="attributes.url" default="">
 <cfparam name="attributes.title" default="">
-
-
-
+<cfparam name="attributes.target" default="_self">
 
 <cfif thistag.ExecutionMode EQ "Start">
 
 	
 	
+	<cfset buttonID = createUUID() />
 
 	<!--- Include Prototype light in the head --->
 	<cfset Request.InHead.PrototypeLite = 1>
@@ -54,7 +53,7 @@
 	</cfif>	
 
 	<cfif len(attributes.url)>
-		<cfset attributes.OnClick = "#attributes.OnClick#;window.location='#attributes.url#';return false;">
+		<cfset attributes.OnClick = "#attributes.OnClick#;return farcryButtonURL('#buttonid#','#attributes.url#','#attributes.target#');">
 	</cfif>
 
 	<cfif not len(attributes.bInPanel)>
@@ -71,92 +70,93 @@
 			<cfoutput><input name="FarcryFormSubmitButton" value="#attributes.Value#" type="#attributes.Type#" onclick="#attributes.Onclick#" class="#attributes.Class#" style="#attributes.Style#" src="#attributes.src#" /></cfoutput>
 		<cfelse>
 		
-			<skin:htmlHead id="farcrybuttoncss">
+			<skin:htmlhead id="farcryButtonHTMLHead">
 			<cfoutput>
 				<style type="text/css">
 				
-				table.x-btn {
-					width: 75px;
+				div.farcryButtonWrap-outer{
+					background:transparent url(#application.url.farcry#/css/forms/images/farcryButtonSprite-left.gif) no-repeat top left;##
+					border:0px;
+					padding:0px 15px 0px 0px;
+					margin:0px 0px 0px 0px;
+					height:21px;
 					float:left;
-					margin-right:15px;
-					border-width:0px;
-					padding:0px;
-					margin:0px 10px 0px 0px;
+					
 				}
-				
-				input.x-btn-text{
-					width:auto !important;
-					cursor:pointer;
-					white-space: nowrap;
-				    padding:0;
-				    border-width:0px;
-				    background:transparent;	   
-				}
-				
-				.x-btn-left, .x-btn-right{
-					font-size:1px;
-				    line-height:1px;
-				}
-				.x-btn-left{
-					width:3px;
-					background:url(#application.url.farcry#/js/ext/resources/images/default/basic-dialog/btn-sprite.gif) no-repeat 0 0;
-				}
-				.x-btn-right{
-					width:3px;
-					background:url(#application.url.farcry#/js/ext/resources/images/default/basic-dialog/btn-sprite.gif) no-repeat 0 -21px;
-				}
-				.x-btn-left i, .x-btn-right i{
-					display:block;
-				    width:3px;
-				    overflow:hidden;
-				    font-size:1px;
-				    line-height:1px;
-				}
-				.x-btn-center{
-					background:url(#application.url.farcry#/js/ext/resources/images/default/basic-dialog/btn-sprite.gif) repeat-x 0 -42px;
-					vertical-align: middle;
-					text-align:center;
-					padding:0 5px;
-					cursor:pointer;
-					white-space:nowrap;
-				}
-				.x-btn-over .x-btn-left{
-					background-position:0 -63px;
-				}
-				.x-btn-over .x-btn-right{
-					background-position:0 -84px;
-				}
-				.x-btn-over .x-btn-center{
-					background-position:0 -105px;
-				}
-				.x-btn-click .x-btn-center, .x-btn-menu-active .x-btn-center{
-					background-position:0 -126px;
-				}
-				.x-btn-disabled *{
-					color:gray !important;
-					cursor:default !important;
+				div.farcryButtonWrap-inner{
+					background:transparent url(#application.url.farcry#/css/forms/images/farcryButtonSprite-right.gif) no-repeat top right;##
+					border:0px solid green;
+					padding:0px 3px 0px 0px;
+					margin:0px 0px 0px 3px;
+					height:21px;
+					float:none;
 				}	
-				.x-btn-center input {height:21px;}
+				
+				button.farcryButton{
+					border:0px solid red;
+					padding:0px 0px 0px 0px;
+					margin:0px 0px 0px 0px;
+					vertical-align:middle;					
+					background:transparent;
+					background-image:none;
+					height:21px;
+					width:auto;
+					text-align:center;
+					overflow:hidden;
+					font-size:11px;
+				}			
+				div.farcryButtonWrap-outer-hover{
+					background-position: bottom left;					
+				}
+				div.farcryButtonWrap-inner-hover{
+					background-position: center right;
+				}
+				div.farcryButtonWrap-outer-click{
+					background-position: bottom left;					
+				}
+				div.farcryButtonWrap-inner-click{
+					background-position: bottom right;
+				}
 				</style>
+				
+				<script type="text/javascript">
+				function farcryButtonOnMouseOver(buttonID) {
+					$(buttonID + '-outer').addClassName('farcryButtonWrap-outer-hover');
+					$(buttonID + '-inner').addClassName('farcryButtonWrap-inner-hover');
+				}
+				function farcryButtonOnClick(buttonID) {
+					$(buttonID + '-outer').addClassName('farcryButtonWrap-outer-click');
+					$(buttonID + '-inner').addClassName('farcryButtonWrap-inner-click');
+				}
+				function farcryButtonOnMouseOut(buttonID) {
+					$(buttonID + '-outer').removeClassName('farcryButtonWrap-outer-hover');
+					$(buttonID + '-inner').removeClassName('farcryButtonWrap-inner-hover');
+					$(buttonID + '-outer').removeClassName('farcryButtonWrap-outer-click');
+					$(buttonID + '-inner').removeClassName('farcryButtonWrap-inner-click');
+				}
+				function farcryButtonURL(buttonID,url,target) {
+					if (target == 'undefined' || target == '_self'){
+						location.href=url;			
+						return false;
+					} else {
+						win = window.open('',target);	
+						win.location=url;	
+						win.focus;			
+						return false;
+					}
+				}
+				</script>
 			</cfoutput>
 			</skin:htmlhead>	
-			
-			<cfset buttonID = createUUID() />
+						
 			<cfoutput>
-			<table id="#buttonID#" class="x-btn-wrap x-btn" border="0" cellpadding="0" cellspacing="0" onmouseover="$(this).addClassName('x-btn-over');" onmouseout="$(this).removeClassName('x-btn-over');" style="#attributes.style#">
-				<tbody>
-					<tr>
-						<td class="x-btn-left" style="border-width:0px;height:21px;width:1px;padding:0px;margin:0px;"><i>&nbsp;</i></td>
-						<td class="x-btn-center" style="border-width:0px;height:21px;padding:0px;margin:0px;"><input name="FarcryFormSubmitButton" value="#attributes.Value#" type="#attributes.Type#" onclick="#attributes.Onclick#" class="x-btn-text #attributes.Class#" style="#attributes.Style#" title="#attributes.title#"  /></td>
-						<td class="x-btn-right" style="border-width:0px;height:21px;width:1px;padding:0px;margin:0px;"><i>&nbsp;</i></td>
-					</tr>
-				</tbody>
-			</table>
+				<div id="#buttonID#-outer" class="farcryButtonWrap-outer" onmouseover="farcryButtonOnMouseOver('#buttonID#');" onmouseout="farcryButtonOnMouseOut('#buttonID#');" onclick="farcryButtonOnClick('#buttonID#');"><div id="#buttonID#-inner" class="farcryButtonWrap-inner"><button id="#buttonID#" type="#attributes.Type#" name="FarcryForm#attributes.Type#Button" onclick="#attributes.Onclick#" class="farcryButton #attributes.Class#" style="#attributes.Style#">#attributes.Value#</button></div></div>
 			</cfoutput>
-		
+	
+			
 		</cfif>
 	<cfelse>
-		<cfoutput><input type="#attributes.Type#" name="FarcryFormSubmitButton" value="#attributes.Value#" onclick="#attributes.Onclick#" class="formButton #attributes.Class#" style="#attributes.Style#" /></cfoutput>
+		<cfoutput><button type="#attributes.Type#" name="FarcryForm#attributes.Type#Button" onclick="#attributes.Onclick#" class="formButton #attributes.Class#" style="#attributes.Style#">#attributes.Value#</button></cfoutput>
 	</cfif>
 
 </cfif>
