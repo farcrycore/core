@@ -14,7 +14,7 @@
 <cfparam name="attributes.SelectedObjectID" default="">
 <cfparam name="attributes.ConfirmText" default="">
 <cfparam name="attributes.validate" default="true">
-<cfparam name="attributes.bInPanel" default="">
+<cfparam name="attributes.bInPanel" default="true">
 <cfparam name="attributes.src" default="">
 <cfparam name="attributes.url" default="">
 <cfparam name="attributes.target" default="_self">
