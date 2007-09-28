@@ -1,14 +1,6 @@
-<scaffold>
-	<label>Core display page standard</label>
-	<description>Displays full content</description>
-	<package>/webskin/[TYPENAME]</package>
-	<filename>displayPageStandard.cfm</filename>
-</scaffold>
-<cfsetting enablecfoutputonly="yes">
-
+<cfsetting enablecfoutputonly="true" />
 <!--- @@displayname: Standard Page Display for [TYPENAME] --->
-<!--- @@author: DEVELOPER NAME--->
-
+<!--- @@author: Scaffold--->
 
 <!--- tag libraries --->
 <cfimport taglib="/farcry/[PROJECTNAME]/tags" prefix="tags">
@@ -19,12 +11,9 @@
 
 	<con:container label="[TYPENAME]_top" />
 	
-	
 	<ft:object stObject="#stobj#" format="display" />
 	
-
 	<con:container label="[TYPENAME]_bottom" />
-			
 
 </tags:pagewrap>
 	

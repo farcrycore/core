@@ -1,20 +1,13 @@
-<scaffold>
-	<label>CORE custom list</label>
-	<description>CORE custom list</description>
-	<package>/customadmin/customlists</package>
-	<filename>[TYPENAME].cfm</filename>
-</scaffold>
-
 <cfsetting enablecfoutputonly="true">
 
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin" />
 
 <!--- set up page header --->
-<admin:header title="Articles" />
+<admin:header title="[title]" />
 
 <ft:objectAdmin
-	title="[TYPENAME]"
+	title="[title]"
 	typename="[TYPENAME]"
 	ColumnList="[COLUMNLIST]"
 	SortableColumns="[SORTABLECOLUMNS]"

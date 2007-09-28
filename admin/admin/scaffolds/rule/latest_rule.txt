@@ -1,0 +1,12 @@
+<cfcomponent displayname="[DISPLAYNAME]: List latest" extends="farcry.core.packages.rules.rules" hint="Creates a DIV list of the latest objects from [TYPENAME]">
+	<cfproperty ftseq="1" ftFieldset="General" name="title" type="nstring" hint="title" ftLabel="Title" />
+	<cfproperty ftSeq="2" ftFieldset="General" name="teaser" type="longchar" hint="Teaser" required="false" default="" ftType="RichText" ftLabel="Teaser">
+	<cfproperty ftSeq="3" ftFieldset="General" name="numItems" type="numeric" hint="The number of items to display." required="false" default="5" ftType="numeric" ftLabel="Number of Items" ftIncludeDecimal="false">
+
+	<cfproperty ftSeq="6" ftFieldset="Categorisation" name="Category" type="longchar" hint="Limit by Category" required="false" default="0" ftLabel="Limit by Category" ftType="category"  />
+	
+	<cfproperty ftSeq="7" ftFieldset="Pagination" name="bPaginate" type="boolean" hint="Should we include pagination?" required="false" default="0" ftLabel="Include Pagination?" ftType="boolean"  />
+	<cfproperty ftSeq="8" ftFieldset="Pagination" name="itemsPerPage" type="numeric" hint="how many items per page?" required="false" default="10" ftLabel="Number of items per page?" ftType="numeric" ftIncludeDecimal="false"  />
+	<cfproperty ftSeq="9" ftFieldset="Pagination" name="pageLinksShown" type="numeric" hint="How many page links?" required="false" default="5" ftLabel="Number of page links" ftType="numeric" ftIncludeDecimal="false"  />
+	
+</cfcomponent>

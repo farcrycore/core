@@ -1,0 +1,6 @@
+<cfcomponent displayname="[DISPLAYNAME]: List selected" extends="farcry.core.packages.rules.rules" hint="Creates a DIV list of the selected objects from [TYPENAME]">
+	<cfproperty ftseq="1" name="title" type="nstring" hint="title" ftLabel="Title" />
+	<cfproperty ftseq="2" name="teaser" type="longchar" hint="A teaser to introduce" ftType="richtext" ftLabel="Teaser" />
+	<cfproperty ftSeq="3" name="aObjectIDs" type="array" hint="The items to be displayed" ftLabel="Items" ftJoin="[TYPENAME]" />
+	
+</cfcomponent>

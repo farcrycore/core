@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<webtop>
+	<section mergeType="merge" id="[sectionid]">
+		<subsection mergeType="merge" id="[subsectionid]">
+			<menu mergeType="merge" id="[menuid]" label="[menulabel]" labelType="value">
+				<menuitem mergeType="merge" id="[itemid]" label="[itemlabel]" link="/admin/customadmin.cfm?module=customlists/[filename].cfm" />
+			</menu>
+		</subsection>
+	</section>
+</webtop>
