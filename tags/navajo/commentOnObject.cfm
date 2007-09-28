@@ -7,6 +7,7 @@
 <cfparam name="objectid" type="UUID">
 <cfparam name="formSubmitted" default="no">
 
+
 <q4:contentobjectget objectid="#objectId#"  r_stobject="stObj">
 <!--- check if object is a underlying draft page (used for redirection) --->
 <cfif stobj.typename eq "dmHTML" and len(trim(stObj.versionId))>
