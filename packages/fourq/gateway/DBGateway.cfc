@@ -262,7 +262,7 @@
 				AND objectid = <cfqueryparam value="#arguments.aProps[i].objectid#" cfsqltype="CF_SQL_VARCHAR">
 			<cfelse>
 				AND data = <cfqueryparam value="#arguments.aProps[i].data#" cfsqltype="CF_SQL_VARCHAR">
-				AND seq = <cfqueryparam value="#arguments.aProps[i].seq#" cfsqltype="cf_sql_integer">
+				AND seq = <cfqueryparam value="#arguments.aProps[i].seq#" cfsqltype="cf_sql_numeric">
 			</cfif>
 			</cfquery>
 			
