@@ -92,7 +92,7 @@ START WEBSKIN
 					<!--- check user can edit --->
 					<cfif stOverviewParams.stPermissions.iEdit EQ 1>
 						<!--- MJB: added url.ref so that the edit methods know they were initially called by the overview page and they can return here if they so desire. --->
-						<ft:farcryButton value="#application.adminBundle[session.dmProfile.locale].editObj#" bInPanel="true" url="edittabEdit.cfm?objectid=#stobj.objectid#&ref=overview&typename=#stobj.typeName#" target="_blank" />
+						<ft:farcryButton value="#application.adminBundle[session.dmProfile.locale].editObj#" bInPanel="true" url="edittabEdit.cfm?objectid=#stobj.objectid#&ref=overview&typename=#stobj.typeName#" />
 					</cfif>
 		
 					<!--- check user can approve object --->
