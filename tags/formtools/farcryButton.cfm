@@ -69,7 +69,7 @@
 				<style type="text/css">
 				
 				div.farcryButtonWrap-outer{
-					background:transparent url(#application.url.farcry#/css/forms/images/farcryButtonSprite-left.gif) no-repeat top left;##
+					background:transparent url(#application.url.farcry#/css/forms/images/farcryButtonSprite-left.gif) no-repeat top left;
 					border:0px;
 					padding:0px 15px 0px 0px;
 					margin:0px 0px 0px 0px;
@@ -78,7 +78,7 @@
 					
 				}
 				div.farcryButtonWrap-inner{
-					background:transparent url(#application.url.farcry#/css/forms/images/farcryButtonSprite-right.gif) no-repeat top right;##
+					background:transparent url(#application.url.farcry#/css/forms/images/farcryButtonSprite-right.gif) no-repeat top right;
 					border:0px solid green;
 					padding:0px 3px 0px 0px;
 					margin:0px 0px 0px 3px;
