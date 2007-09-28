@@ -148,10 +148,10 @@
         <cfoutput><img src="#application.url.farcry#/images/icons/custom.png" alt="alt text" class="icon" /></cfoutput>
     </cfif>
 	
-	<skin:view objectid="#stobject.objectid#" webskin="webtopOverview" />
 	
+	<skin:view objectid="#stobject.objectid#" webskin="webtopOverviewSummary" />
 	
-	<ul class="object-overview-actions">
+	<ul class="object-overview-actions" style="border:1px solid red;">
 
 <!--- check user can edit Friendly URLs --->
 <cfif stPermissions.iEdit EQ 1 AND Application.config.plugins.fu AND StructKeyExists(stObject,"qListFriendlyURL")>
