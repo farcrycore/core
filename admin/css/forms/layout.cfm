@@ -112,6 +112,7 @@ form.formtool input,
 	
 
 form.formtool input.inputFile {width: 211px;}
+form.formtool input.farcryButton {width: auto;}
 
 form.formtool select.selectOne,
 	form.formtool select.selectMultiple {padding: 1px 3px 1px 3px; width: 211px;}
