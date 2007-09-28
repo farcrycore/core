@@ -9,7 +9,12 @@
 	<table>
 		<tr>
 			<td align="right"><input type="checkbox" value="true" name="generateTypeAdmin" id="generateTypeAdmin" /></td>
-			<td><label for="generateTypeAdmin">Create type admin interface</label></td>
+			<td>
+				<label for="generateTypeAdmin">Create type admin interface</label>
+				<cfif fileexists("#application.path.project#/customadmin/#url.typename#.xml") or fileexists("#application.path.project#/customadmin/customlists/#url.typename#.cfm")>
+					<span style="color:red;">(file/s exist and would be overwritten)</span>
+				</cfif>
+			</td>
 		</tr>
 		<tr>
 			<td align="right"><label for="typeadminTitle">Title</label></td>

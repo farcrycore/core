@@ -9,11 +9,21 @@
 	<table>
 		<tr>
 			<td align="right"><input type="checkbox" value="true" name="generateRuleLatest" id="generateRuleLatest" /></td>
-			<td><label for="generateRuleLatest">Create "List latest" rule</label></td>
+			<td>
+				Create "List latest" rule
+				<cfif fileexists("#application.path.project#/packages/rules/ruleLatest#url.typename#.cfc") or fileexists("#application.path.project#/webskin/ruleLatest#url.typename#/execute.cfm")>
+					<span style="color:red;">(file/s exist and would be overwritten)</span>
+				</cfif>
+			</td>
 		</tr>
-		<tr align="right">
-			<td><input type="checkbox" value="true" name="generateRuleSelected" id="generateRuleSelected" /></td>
-			<td><label for="generateRuleSelected">Create "List selected" rule</label></td>
+		<tr>
+			<td align="right"><input type="checkbox" value="true" name="generateRuleSelected" id="generateRuleSelected" /></td>
+			<td>
+				Create "List selected" rule
+				<cfif fileexists("#application.path.project#/packages/rules/ruleSelected#url.typename#.cfc") or fileexists("#application.path.project#/webskin/ruleSelected#url.typename#/execute.cfm")>
+					<span style="color:red;">(file/s exist and would be overwritten)</span>
+				</cfif>
+			</td>
 		</tr>
 	</table>
 </cfoutput>

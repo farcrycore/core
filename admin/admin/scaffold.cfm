@@ -64,11 +64,7 @@
 
 </cfoutput>
 
-<ft:form>
-
-	<cfoutput>
-		<input type="hidden" name="typename" value="#url.typename#" />
-	</cfoutput>
+<ft:form action="#cgi.SCRIPT_NAME#?#cgi.QUERY_STRING#">
 	
 	<extjs:tab title="Type administration" style="width:400px;">
 		<ft:processForm action="Create">

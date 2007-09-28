@@ -7,11 +7,11 @@
 	<cfset values.subsectionid = "farcrycmsSubSection" />
 	<cfset values.menuid = "#application.applicationname#SubSection" />
 	<cfset values.menulabel = "Custom Content" />
-	<cfset values.itemid = "#form.typename#list" />
-	<cfset values.itemlabel = "#application.stCOAPI[form.typename].displayname#" />
-	<cfset values.filename = "#form.typename#" />
+	<cfset values.itemid = "#url.typename#list" />
+	<cfset values.itemlabel = "#application.stCOAPI[url.typename].displayname#" />
+	<cfset values.filename = "#url.typename#" />
 	<cfset content = substitute(content,values) />
-	<cffile action="write" file="#application.path.project#/customadmin/#form.typename#.xml" output="#content#" />
+	<cffile action="write" file="#application.path.project#/customadmin/#url.typename#.xml" output="#content#" />
 	
 	<!--- Create object admin --->
 	<cffile action="read" file="#application.path.core#/admin/admin/scaffolds/typeadmin/objectadmin.txt" variable="content" />
@@ -20,12 +20,12 @@
 	<cfset values.columnlist = form.typeadminColumns />
 	<cfset values.sortablecolumns = "" />
 	<cfset values.filterfields = "" />
-	<cfset values.typename = form.typename />
+	<cfset values.typename = url.typename />
 	<cfset content = substitute(content,values) />
 	<cfif not directoryexists("#application.path.project#/customadmin/customlists")>
 		<cfdirectory action="create" directory="#application.path.project#/customadmin/customlists" />
 	</cfif>
-	<cffile action="write" file="#application.path.project#/customadmin/customlists/#form.typename#.cfm" output="#content#" />
+	<cffile action="write" file="#application.path.project#/customadmin/customlists/#url.typename#.cfm" output="#content#" />
 	
 	<cfoutput>
 		<p class="success">Type administration page created</p>
