@@ -203,7 +203,7 @@ $in: SessionID -- $
 				<cfloop list="#stwizard.Steps#" index="i">
 					<li><a href="javascript:wizardSubmission('#i#')"><cfif ListGetAt(stwizard.Steps,stwizard.CurrentStep) EQ i><strong>#i#</strong><cfelse>#i#</cfif></a></li>
 				</cfloop>
-				<li class="li-complete"><a href="javascript:wizardSubmission('Save');">Save</a></li>
+				<li class="li-complete"><a href="javascript:wizardSubmission('Save');">Complete</a></li>
 				<li class="li-cancel"><a href="javascript:wizardCancelConfirm();">Cancel</a></li>
 			</ul>
 		</div>
