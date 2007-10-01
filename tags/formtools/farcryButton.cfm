@@ -25,8 +25,13 @@
 
 	<!--- Include Prototype light in the head --->
 	<cfset Request.InHead.PrototypeLite = 1>
+
+	<!--- If not in a farcry form, make it a button. --->
+	<cfif NOT isDefined("Request.farcryForm.Name")>
+		<cfset attributes.Type = "button" />
+	</cfif>
 	
-	<cfif len(attributes.SelectedObjectID)>		
+	<cfif len(attributes.SelectedObjectID) AND isDefined("Request.farcryForm.Name")>		
 		<cfset attributes.Onclick = "#attributes.OnClick#;$('SelectedObjectID#Request.farcryForm.Name#').value='#attributes.SelectedObjectID#';">
 	</cfif>
 	
@@ -35,12 +40,12 @@
 		<cfset attributes.OnClick = "if(confirm('#Attributes.ConfirmText#')) {dummyconfirmvalue=1} else {return false};#attributes.OnClick#;">
 	</cfif>	
 	 
-	
-	<cfset attributes.onClick = "#attributes.onClick#;$('FarcryFormSubmitButtonClicked#Request.farcryForm.Name#').value = '#attributes.Value#';">
+	<cfif isDefined("Request.farcryForm.Name")>
+		<cfset attributes.onClick = "#attributes.onClick#;$('FarcryFormSubmitButtonClicked#Request.farcryForm.Name#').value = '#attributes.Value#';">
+	</cfif>
 
-
 	
-	<cfif Request.farcryForm.Validation AND Attributes.validate>
+	<cfif isDefined("Request.farcryForm.Name") AND Request.farcryForm.Validation AND Attributes.validate>
 		<!--- Confirm the click before submitting --->
 		<cfset attributes.OnClick = "#attributes.OnClick#;if(realeasyvalidation#Request.farcryForm.Name#.validate()) {dummyconfirmvalue=1} else {return false};">
 
