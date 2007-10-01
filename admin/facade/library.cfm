@@ -59,6 +59,9 @@ $Developer: $
 <cfparam name="url.currentpage" default="1">
 
 
+<cfparam name="url.refreshOpener" default="false"><!--- This variable will be set if a new object is added and attached --->
+
+	
 	
 
 <cfset PrimaryPackage = application.stcoapi[url.primaryTypeName] />
@@ -81,7 +84,7 @@ $Developer: $
 <!--- Cleanup the Query_String so that we can paginate correctly --->
 <cfscript>
 	stURL = Duplicate(url);
-	stURL = filterStructure(stURL,'Page,ftJoin,librarySection');
+	stURL = filterStructure(stURL,'Page,ftJoin,librarySection,refreshOpener');
 	queryString=structToNamePairs(stURL);
 </cfscript>
 
@@ -166,8 +169,12 @@ IT IS SET IN  AJAXUPDATEARRAY FUNCTION OF THE LIBRARY.CFC
 		</cfif>
 	</cfloop>
 	
+	<cfset url.refreshOpener = true />
+	
 </ft:processForm>
 
+
+<ft:processForm action="Attach & Add Another" url="#cgi.script_name#?#querystring#&ftJoin=#request.ftJoin#&librarySection=Add&refreshOpener=#url.refreshOpener#" />
 
 	
 <ft:processForm action="Close,Cancel">
@@ -180,9 +187,8 @@ IT IS SET IN  AJAXUPDATEARRAY FUNCTION OF THE LIBRARY.CFC
 	<cfabort>
 </ft:processForm>
 
-<ft:processForm action="Attach & Add Another" url="#cgi.script_name#?#querystring#&ftJoin=#request.ftJoin#&librarySection=Add" />
 
-<ft:processForm action="*" excludeAction="Search,Refresh" url="#cgi.script_name#?#querystring#&ftJoin=#request.ftJoin#" />
+<ft:processForm action="*" excludeAction="Search,Refresh" url="#cgi.script_name#?#querystring#&ftJoin=#request.ftJoin#&refreshOpener=#url.refreshOpener#" />
 
 
 
@@ -354,38 +360,41 @@ LIBRARY DATA
 <cfset Request.InHead.TabStyle1 = 1>
 
 
-<cfoutput><h1>#application.stcoapi[request.ftJoin].displayname# Library...</h1></cfoutput>
-
-
 <cfif listLen(PrimaryPackage.stProps[url.primaryFieldname].metadata.ftJoin) GT 1>
 	<ft:form>
 	
-	<cfoutput>
-		Change To: 
-		<select name="ftJoin" id="ftJoin" onchange="javascript:window.location='#cgi.script_name#?#querystring#&ftJoin=' + this[selectedIndex].value;"></cfoutput>
-		<cfloop list="#PrimaryPackage.stProps[url.primaryFieldname].metadata.ftJoin#" index="i">
-			<cfoutput><option value="#i#" <cfif url.ftJoin EQ i>selected</cfif>>#application.stcoapi[i].displayname#</option></cfoutput>
-		</cfloop>
-	<cfoutput></select></cfoutput>
 	
 	</ft:form>
 </cfif>
 
-
-<cfoutput><div></cfoutput>
-
-<ft:form>
-	<cfoutput><input type="text" name="criteria" id="criteria" value="#session.stLibraryFilter[request.ftJoin].Criteria#" /></cfoutput>
-	<ft:farcryButton value="Search" />
-	<ft:farcryButton value="Refresh" />
-</ft:form>
-
-
-<cfoutput></div></cfoutput>
-
 <cfoutput>
 	<br style="clear:both;" />
 </cfoutput>
+
+
+<ft:form>
+	<cfoutput>
+	<table>
+	<tr>
+		<td>
+			<select name="ftJoin" id="ftJoin" onchange="javascript:window.location='#cgi.script_name#?#querystring#&ftJoin=' + this[selectedIndex].value;">
+				<cfloop list="#PrimaryPackage.stProps[url.primaryFieldname].metadata.ftJoin#" index="i">
+					<option value="#i#" <cfif url.ftJoin EQ i>selected</cfif>>#application.stcoapi[i].displayname# Library</option>
+				</cfloop>
+			</select>
+		</td>
+		<td>Search: <input type="text" name="criteria" id="criteria" value="#session.stLibraryFilter[request.ftJoin].Criteria#" /></td>
+		<td>
+			<ft:farcryButton value="Search" />
+			<ft:farcryButton value="Refresh" />
+		</td>
+	</tr>
+	</table>
+	</cfoutput>
+</ft:form>
+
+
+
 
 
 	
@@ -846,9 +855,10 @@ GENERATE THE LIBRARY PICKER
 						}
 					});
 					
-					//call on initial page load
-					<!--- opener.libraryCallbackArray('#url.primaryFormFieldname#','sort',Sortable.sequence('sortableListTo'),'#application.url.webroot#'); --->
-					
+					<cfif url.refreshOpener>
+						//call on initial page load
+						opener.libraryCallbackArray('#url.primaryFormFieldname#','sort',Sortable.sequence('sortableListTo'),'#application.url.webroot#');
+					</cfif>
 					
 				<cfelse>
 				

@@ -144,6 +144,7 @@
 					 ----------------------->
 					<cfoutput>
 						<br class="clearer"/>
+						<div id="#arguments.fieldname#-librarySummary" <cfif not len(arguments.stObject[arguments.stMetaData.Name])> style="display:none;"</cfif> >
 						<div id="#arguments.fieldname#-libraryCallback">						
 							<ul id="#ULID#" class="#arguments.stMetadata.ftLibrarySelectedListClass#View" style="#arguments.stMetadata.ftLibrarySelectedListStyle#">
 					</cfoutput>
@@ -185,9 +186,10 @@
 						</div>
 						<cfif arguments.stMetadata.ftShowRemoveSelected>
 							<div class="buttonGroup">
-								<ft:farcryButton type="button" value="Remove Selected" onclick="deleteSelectedFromUUIDField('#arguments.fieldname#');return false;" confirmText="Are you sure you want to remove the selected item" />						
+								<ft:farcryButton type="button" value="Remove Item" onclick="deleteSelectedFromUUIDField('#arguments.fieldname#');return false;" confirmText="Are you sure you want to remove the selected item" />						
 							</div>
 						</cfif>
+						</div>
 						<br class="clearer" />
 					</cfoutput>
 				

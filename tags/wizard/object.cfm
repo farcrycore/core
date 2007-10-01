@@ -458,8 +458,6 @@
 						<ws:buildLink href="#application.url.farcry#/facade/library.cfm" stParameters="#stURLParams#" r_url="libraryPopupJS" />
 	
 						<cfoutput>
-							<input type="button" name="libraryOpen" value="Open Library" class="formButton" onClick="openLibrary('#Replace(stObj.ObjectID,"-", "", "ALL")#', $('#variables.prefix##ftFieldMetadata.Name#Join').value,'#libraryPopupJS#')" />
-	
 							<cfif listLen(ftFieldMetadata.ftJoin) GT 1>
 								<select id="#variables.prefix##ftFieldMetadata.Name#Join" name="#variables.prefix##ftFieldMetadata.Name#Join" >
 									<cfloop list="#ftFieldMetadata.ftJoin#" index="iJoin">
@@ -469,6 +467,9 @@
 							<cfelse>
 								<input type="hidden" id="#variables.prefix##ftFieldMetadata.Name#Join" name="#variables.prefix##ftFieldMetadata.Name#Join" value="#ftFieldMetadata.ftJoin#" >
 							</cfif>
+							<ft:farcryButton Type="button" value="Open Library" onClick="openLibrary('#Replace(stObj.ObjectID,"-", "", "ALL")#', $('#variables.prefix##ftFieldMetadata.Name#Join').value,'#libraryPopupJS#')" />
+	
+	
 						</cfoutput>
 							
 						

@@ -159,6 +159,7 @@
 					 ----------------------->
 					<cfoutput>
 						<br class="clearer"/>
+						<div id="#arguments.fieldname#-librarySummary" <cfif not listLen(lArrayList)> style="display:none;"</cfif> >
 						<div id="#arguments.fieldname#-libraryCallback">						
 							<ul id="#ULID#" class="#arguments.stMetadata.ftLibrarySelectedListClass#View" style="#arguments.stMetadata.ftLibrarySelectedListStyle#">
 					</cfoutput>
@@ -217,7 +218,7 @@
 							<ft:farcryButton type="button" value="De-select All" onclick="toggleOffArrayField('#arguments.fieldname#');return false;" />
 							<ft:farcryButton type="button" value="Remove Selected" onclick="deleteSelectedFromArrayField('#arguments.fieldname#','#application.url.webroot#');return false;" confirmText="Are you sure you want to remove the selected item(s)" />
 						</div>
-
+						</div>
 						<br class="clearer" />
 					</cfoutput>
 

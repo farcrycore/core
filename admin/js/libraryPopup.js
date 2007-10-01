@@ -74,6 +74,11 @@
 											    }
 											  });
 											$(fieldname).value = Sortable.sequence(fieldname + '_list');
+											if($(fieldname).value.length){
+												Element.show(fieldname + '-librarySummary')
+											} else {
+												Element.hide(fieldname + '-librarySummary')
+											}
 											if(callingWindow!=null){callingWindow.close();}	
 										// ]]>
 									},
@@ -126,7 +131,14 @@
 						
 						new Ajax.Updater(fieldname + '-libraryCallback', virtualDir+'/farcry/facade/library.cfc?method=ajaxUpdateArray&noCache=' + Math.random(), {
 							//onLoading:function(request){Element.show('indicator')},
-							parameters:sURLParams, evalScripts:true, asynchronous:true
+							parameters:sURLParams, evalScripts:true, asynchronous:true,
+							onComplete:function(request){
+								if($(fieldname).value.length){
+									Element.show(fieldname + '-librarySummary')
+								} else {
+									Element.hide(fieldname + '-librarySummary')
+								}
+							}
 						})
 						
 												
