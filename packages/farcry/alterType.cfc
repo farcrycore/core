@@ -26,6 +26,8 @@ $out:$
 <cfcomponent>
 <cfinclude template="/farcry/core/admin/includes/cfFunctionWrappers.cfm">
 
+<cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
+
 <cffunction name="getDataType">
 	<cfargument name="cfctype" required="true" />
 	<cfargument name="bReturnTypeOnly" required="No" default="false" />
@@ -985,7 +987,7 @@ $out:$
 					<th>&nbsp;</th>
 				</tr>
 				<cfloop collection="#arguments.stCFC#" item="key">
-				<form name="CFCForm" action="#cgi.SCRIPT_NAME#" method="post">
+				<ft:form name="CFCForm" action="#cgi.SCRIPT_NAME#" method="post">
 				<tr>
 				<cfif NOT arguments.stCFC[key].bPropertyExists>
 					<td>
@@ -1010,7 +1012,8 @@ $out:$
 					<td>
 						<input type="hidden" name="property" value="#key#" />
 						<input type="hidden" name="typename" value="#arguments.typename#" />
-						<input type="submit" value="Go" class="f-submit" />
+						<ft:farcryButton value="Go" />
+						
 					</td>
 				<cfelseif arguments.stCFC[key].bTypeConflict>
 					<td>
@@ -1027,7 +1030,7 @@ $out:$
 
 				</cfif>
 				</tr>
-				</form>
+				</ft:form>
 				</cfloop>
 			</table>
 		</td>
@@ -1081,7 +1084,7 @@ $out:$
 				</script>
 
 				<cfloop collection="#arguments.stDB#" item="key">
-				<form name="#arguments.typename#_#key#_DBForm" action="#cgi.SCRIPT_NAME#" method="post">
+				<ft:form name="#arguments.typename#_#key#_DBForm" action="#cgi.SCRIPT_NAME#" method="post">
 				<tr>
 				<cfif NOT arguments.stDB[key].bPropertyExists>
 					<td>
@@ -1118,7 +1121,8 @@ $out:$
 					<td>
 						<input type="hidden" name="property" value="#key#" />
 						<input type="hidden" name="typename" value="#arguments.typename#" />
-						<input type="submit" value="Go" class="f-submit" />
+						<!--- <input type="submit" value="Go" class="f-submit" /> --->
+						<ft:farcryButton value="Go" />
 					</td>
 				<cfelseif arguments.stDB[key].bTypeConflict>
 					<td>
@@ -1141,11 +1145,12 @@ $out:$
 					<td>
 						<input type="hidden" name="property" value="#key#" />
 						<input type="hidden" name="typename" value="#arguments.typename#" />
-						<input type="submit" value="Go" class="f-submit" />
+						<!--- <input type="submit" value="Go" class="f-submit" /> --->
+						<ft:farcryButton value="Go" />
 					</td>
 				</cfif>
 				</tr>
-				</form>
+				</ft:form>
 				</cfloop>
 			</table>
 		</td>

@@ -26,6 +26,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin" />
 <cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
 <cfimport taglib="/farcry/core/tags/extjs/" prefix="extjs" />
+<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" />
 
 <!--- check permissions --->
 <cfif NOT request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="AdminCOAPITab")>	
@@ -196,8 +197,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 					<a href="#CGI.SCRIPT_NAME#?deploy=#componentName#">#application.adminBundle[session.dmProfile.locale].deploy#</a>
 				<cfelse>
 					<extjs:iframeDialog url="#application.url.farcry#/admin/scaffold.cfm?typename=#componentName#" title="#application.stCOAPI[componentName].displayname# Scaffold" id="#componentName#Scaffold" height="400" />
-					<a href="#application.url.farcry#/admin/scaffold.cfm?typename=#componentname#" target="_blank" id="#componentName#Scaffold">Scaffold</a>
-					<!---#application.adminBundle[session.dmProfile.locale].notAvailable# --->
+					<ft:farcryButton url="#application.url.farcry#/admin/scaffold.cfm?typename=#componentname#" target="_blank" id="#componentName#Scaffold" value="Scaffold" />
 				</cfif>
 			</td>
 			<!--- <td><em>Create Permissions</em>
@@ -205,7 +205,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 			if not assume typename* --->
 			</td>
 			<td style="border-right:none">
-			<a href="#variables.documentURL#?component=#application.types[componentname].name#">Doc</a>
+			<ft:farcryButton value="Doc" url="#variables.documentURL#?component=#application.types[componentname].name#" />
 			</td>
 		</tr>
 	</cfoutput>
@@ -271,7 +271,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 				</cfif>
 			</td>
 			<td style="border-right:none">
-			<a href="#variables.documentURL#?component=#application.types[componentname].name#">Doc</a>
+			<ft:farcryButton value="Doc" url="#variables.documentURL#?component=#application.types[componentname].name#" />
 			</td>
 		</tr>
 	</cfoutput>
