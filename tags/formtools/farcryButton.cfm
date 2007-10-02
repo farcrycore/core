@@ -6,6 +6,7 @@
 	<cfabort showerror="Does not have an end tag..." >
 </cfif>
 
+<cfparam  name="attributes.id" default="#createUUID()#">
 <cfparam  name="attributes.Type" default="submit">
 <cfparam  name="attributes.Value" default="#Attributes.Type#">
 <cfparam  name="attributes.Onclick" default="">
@@ -20,8 +21,6 @@
 <cfparam name="attributes.target" default="_self">
 
 <cfif thistag.ExecutionMode EQ "Start">
-
-	<cfset buttonID = createUUID() />
 
 	<!--- Include Prototype light in the head --->
 	<cfset Request.InHead.PrototypeLite = 1>
@@ -52,7 +51,7 @@
 	</cfif>	
 
 	<cfif len(attributes.url)>
-		<cfset attributes.OnClick = "#attributes.OnClick#;return farcryButtonURL('#buttonid#','#attributes.url#','#attributes.target#');">
+		<cfset attributes.OnClick = "#attributes.OnClick#;return farcryButtonURL('#attributes.id#','#attributes.url#','#attributes.target#');">
 	</cfif>
 
 	<cfif not len(attributes.bInPanel)>
@@ -119,21 +118,21 @@
 				</style>
 				
 				<script type="text/javascript">
-				function farcryButtonOnMouseOver(buttonID) {
-					$(buttonID + '-outer').addClassName('farcryButtonWrap-outer-hover');
-					$(buttonID + '-inner').addClassName('farcryButtonWrap-inner-hover');
+				function farcryButtonOnMouseOver(id) {
+					$(id + '-outer').addClassName('farcryButtonWrap-outer-hover');
+					$(id + '-inner').addClassName('farcryButtonWrap-inner-hover');
 				}
-				function farcryButtonOnClick(buttonID) {
-					$(buttonID + '-outer').addClassName('farcryButtonWrap-outer-click');
-					$(buttonID + '-inner').addClassName('farcryButtonWrap-inner-click');
+				function farcryButtonOnClick(id) {
+					$(id + '-outer').addClassName('farcryButtonWrap-outer-click');
+					$(id + '-inner').addClassName('farcryButtonWrap-inner-click');
 				}
-				function farcryButtonOnMouseOut(buttonID) {
-					$(buttonID + '-outer').removeClassName('farcryButtonWrap-outer-hover');
-					$(buttonID + '-inner').removeClassName('farcryButtonWrap-inner-hover');
-					$(buttonID + '-outer').removeClassName('farcryButtonWrap-outer-click');
-					$(buttonID + '-inner').removeClassName('farcryButtonWrap-inner-click');
+				function farcryButtonOnMouseOut(id) {
+					$(id + '-outer').removeClassName('farcryButtonWrap-outer-hover');
+					$(id + '-inner').removeClassName('farcryButtonWrap-inner-hover');
+					$(id + '-outer').removeClassName('farcryButtonWrap-outer-click');
+					$(id + '-inner').removeClassName('farcryButtonWrap-inner-click');
 				}
-				function farcryButtonURL(buttonID,url,target) {
+				function farcryButtonURL(id,url,target) {
 					if (target == 'undefined' || target == '_self'){
 						location.href=url;			
 						return false;
@@ -149,7 +148,7 @@
 			</skin:htmlhead>	
 						
 			<cfoutput>
-				<div id="#buttonID#-outer" class="farcryButtonWrap-outer" onmouseover="farcryButtonOnMouseOver('#buttonID#');" onmouseout="farcryButtonOnMouseOut('#buttonID#');" onclick="farcryButtonOnClick('#buttonID#');"><div id="#buttonID#-inner" class="farcryButtonWrap-inner"><button id="#buttonID#" type="#attributes.Type#" name="FarcryForm#attributes.Type#Button" onclick="#attributes.Onclick#" class="farcryButton #attributes.Class#" style="#attributes.Style#">#attributes.Value#</button></div></div>
+				<div id="#attributes.id#-outer" class="farcryButtonWrap-outer" onmouseover="farcryButtonOnMouseOver('#attributes.id#');" onmouseout="farcryButtonOnMouseOut('#attributes.id#');" onclick="farcryButtonOnClick('#attributes.id#');"><div id="#attributes.id#-inner" class="farcryButtonWrap-inner"><button id="#attributes.id#" type="#attributes.Type#" name="FarcryForm#attributes.Type#Button" onclick="#attributes.Onclick#" class="farcryButton #attributes.Class#" style="#attributes.Style#">#attributes.Value#</button></div></div>
 			</cfoutput>
 	
 			
