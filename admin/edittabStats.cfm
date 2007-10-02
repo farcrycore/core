@@ -84,7 +84,7 @@ out:
 			</cfif>
 					
 			<!--- display object title and breadcrumb --->
-			<cfoutput><h3><a href="#application.url.farcry#/edittabOverview.cfm?objectid=#url.objectId#">#title#</a></h3></cfoutput>
+			<cfoutput><h3>#title#</h3></cfoutput>
 			
 			<cfif stObj.typename eq "dmNavigation">
 			
@@ -155,7 +155,7 @@ out:
 				
 				<cfoutput>
 				<p></p>
-				<div class="formtitle">#application.adminBundle[session.dmProfile.locale].viewPerDay#</div>
+				<h3>#application.adminBundle[session.dmProfile.locale].viewPerDay#</h3>
 				<cfchart 
 					format="flash" 
 					chartHeight="400" 
@@ -210,7 +210,7 @@ out:
 					<cfset tA=application.thisCalendar.i18nDateFormat(form.after,session.dmProfile.locale,application.mediumF)>
 					<cfset tB=application.thisCalendar.i18nDateFormat(form.before,session.dmProfile.locale,application.mediumF)>
 					<cfset subS=listToArray('#stObj.title#,#tA#,#tB#')>
-					<div class="formtitle">#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].totalViewsPerDay,subS)#</div>
+					<h3>#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].totalViewsPerDay,subS)#</h3>
 					
 					<!--- if data, show graph --->
 					<cfif q1.qGetPageStats.recordcount>
@@ -260,9 +260,9 @@ out:
 			
 			<cfelse>
 			
-				<cfoutput><br>
-				<span class="FormTitle">#application.adminBundle[session.dmProfile.locale].viewsPerHour#</span>
-				<p></p></cfoutput>
+				<cfoutput>
+				<h3>#application.adminBundle[session.dmProfile.locale].viewsPerHour#</h3>
+				</cfoutput>
 				
 				<!--- get page log entries --->
 				<cfscript>
@@ -325,8 +325,7 @@ out:
 				</cfscript>
 						
 				<cfoutput>
-				<p></p>
-				<div class="formtitle">#application.adminBundle[session.dmProfile.locale].viewPerDay#</div>
+				<h3>#application.adminBundle[session.dmProfile.locale].viewPerDay#</h3>
 				<cfchart 
 					format="flash" 
 					chartHeight="400" 
@@ -374,13 +373,12 @@ out:
 				</cfscript>
 				
 				<cfoutput>
-				<p></p>
 				<!--- i18n: for readability --->
 
 				<cfset tA=application.thisCalendar.i18nDateFormat(form.after,session.dmProfile.locale,application.mediumF)>
 				<cfset tB=application.thisCalendar.i18nDateFormat(form.before,session.dmProfile.locale,application.mediumF)>
 				<cfset subS=listToArray('#tA#,#tB#')>
-				<div class="formtitle">#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].viewsPerDayBetween,subS)#</div>
+				<h3>#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].viewsPerDayBetween,subS)#</h3>
 				<cfif q1.qGetPageStats.recordcount>
 					<!--- ouput graph --->
 					<cfchart 
