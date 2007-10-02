@@ -22,6 +22,7 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 <!--- import tag libraries --->
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
 <cfimport taglib="/farcry/core/tags/formtools/" prefix="ft">
+<cfimport taglib="/farcry/core/tags/extjs/" prefix="extjs">
 
 
 <cfif thistag.executionMode eq "Start">
@@ -428,6 +429,21 @@ user --->
 
 
 
+	
+	<ft:processForm action="properties">
+		
+		<cfif listLen(form.objectid) EQ 1>
+			<extjs:iframeDialog />
+			
+			<skin:htmlHead>
+				<cfoutput>
+				<script type="text/javascript">
+					openScaffoldDialog('#application.url.farcry#/object_dump.cfm?objectid=#form.objectid#','Properties',500,500,true);
+				</script>
+				</cfoutput>
+			</skin:htmlHead>
+		</cfif>
+	</ft:processForm>
 
 	<!-----------------------------------------------
 	    Form Actions for Type Admin Grid

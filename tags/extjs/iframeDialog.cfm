@@ -5,23 +5,19 @@
 <!--- @@description: Places a nice curved border around content.  --->
 <!--- @@author: Matthew Bryant (mbryant@daemon.com.au) --->
 
-<cfparam name="attributes.url" type="string" />
-<cfparam name="attributes.id" type="string" />
+<cfparam name="attributes.url" type="string" default="" />
+<cfparam name="attributes.id" type="string" default="" />
 <cfparam name="attributes.event" type="string" default="click" />
 <cfparam name="attributes.width" type="integer" default="500" />
 <cfparam name="attributes.height" type="integer" default="500" />
 <cfparam name="attributes.title" type="string" default="" />
 <cfparam name="attributes.resizable" type="boolean" default="false" />
 
-<cfif thistag.executionMode eq "start">
-	<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
+<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
 	
-	<cfif find("?",attributes.url)>
-		<cfset attributes.url = attributes.url & "&iframe" />
-	<cfelse>
-		<cfset attributes.url = attributes.url & "?iframe" />
-	</cfif>
-
+	
+<cfif thistag.executionMode eq "start">
+	
 	<skin:htmlhead id="extJS">
 		<cfoutput>
 		<link rel="stylesheet" type="text/css" href="/farcry/js/ext/resources/css/ext-all.css">
@@ -31,7 +27,8 @@
 		</cfoutput>
 	</skin:htmlhead>
 
-	<skin:htmlhead id="iframedialog"><cfoutput>
+	<skin:htmlhead id="iframedialog">
+	<cfoutput>
 		<script language="javascript">
 			var dialog = {};
 			
@@ -56,16 +53,30 @@
 				return false;
 			}
 		</script>
-	</cfoutput></skin:htmlhead>
-	
-	<cfoutput>
-		<script language="javascript">
-			Ext.addBehaviors({ 
-				'###attributes.id#@#attributes.event#' : function(e,t){
-					openScaffoldDialog('#attributes.url#','#attributes.title#',#attributes.width#,#attributes.height#,#attributes.resizable#);
-					e.preventDefault();
-				}
-			});
-		</script>
 	</cfoutput>
+	</skin:htmlhead>
+		
+
+	
+	
+	<!--- If the user has passed an id, attach the event. --->
+	<cfif len(attributes.id) and len(attributes.url)>	
+			
+		<cfif find("?",attributes.url)>
+			<cfset attributes.url = attributes.url & "&iframe" />
+		<cfelse>
+			<cfset attributes.url = attributes.url & "?iframe" />
+		</cfif>
+		
+		<cfoutput>
+			<script language="javascript">
+				Ext.addBehaviors({ 
+					'###attributes.id#@#attributes.event#' : function(e,t){
+						openScaffoldDialog('#attributes.url#','#attributes.title#',#attributes.width#,#attributes.height#,#attributes.resizable#);
+						e.preventDefault();
+					}
+				});
+			</script>
+		</cfoutput>
+	</cfif>
 </cfif>
