@@ -28,6 +28,11 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 <cfimport taglib="/farcry/core/tags/extjs/" prefix="extjs" />
 <cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" />
 
+
+<!--- Add the extjs iframe dialog to the head --->
+<extjs:iframeDialog />
+
+
 <!--- check permissions --->
 <cfif NOT request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="AdminCOAPITab")>	
 	<admin:permissionError>
@@ -43,6 +48,8 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 <cfelse>
 	<cfset documentURL="/CFIDE/componentutils/componentdetail.cfm">
 </cfif>
+
+
 
 <cfscript>
 /* COAPI Evolution Actions */
@@ -196,8 +203,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 				<cfif NOT alterType.isCFCDeployed(typename=componentName)>
 					<a href="#CGI.SCRIPT_NAME#?deploy=#componentName#">#application.adminBundle[session.dmProfile.locale].deploy#</a>
 				<cfelse>
-					<extjs:iframeDialog url="#application.url.farcry#/admin/scaffold.cfm?typename=#componentName#" title="#application.stCOAPI[componentName].displayname# Scaffold" id="#componentName#Scaffold" height="400" />
-					<ft:farcryButton url="#application.url.farcry#/admin/scaffold.cfm?typename=#componentname#" target="_blank" id="#componentName#Scaffold" value="Scaffold" />
+					<ft:farcryButton type="button" value="Scaffold" onclick="openScaffoldDialog('#application.url.farcry#/admin/scaffold.cfm?typename=#componentName#','Audit',500,500,true);" />
 				</cfif>
 			</td>
 			<!--- <td><em>Create Permissions</em>
