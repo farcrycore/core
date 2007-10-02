@@ -105,9 +105,7 @@ $DEVELOPER:Brendan Sisson (brendan@daemon.com.au)$
 			</tr>
 		</table></cfoutput>
 	</cfif>
-	<cfoutput>
-	<a href="#application.url.farcry#/edittabOverview.cfm?objectid=#url.objectId#">[BACK]</a></cfoutput>
-
+	
 <cfelse>
 	<admin:permissionError>
 </cfif>
