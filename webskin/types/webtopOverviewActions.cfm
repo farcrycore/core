@@ -14,6 +14,10 @@ FARCRY INCLUDE FILES
 <cfimport taglib="/farcry/core/tags/extjs" prefix="extjs" />
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 
+
+<!--- Add the extjs iframe dialog to the head --->
+<extjs:iframeDialog />
+			
 <!------------------ 
 START WEBSKIN
  ------------------>
@@ -304,23 +308,24 @@ START WEBSKIN
 	
 	<extjs:accordionPanel title="Miscellaneous" collapsed="true">	
 
-		<!--- view statistics --->
-		<ft:farcryButton value="#application.adminBundle[session.dmProfile.locale].stats#" bInPanel="true" url="#application.url.farcry#/edittabStats.cfm?objectid=#stobj.objectid#" />		
-	
-		<!--- view audit --->
-		<ft:farcryButton value="#application.adminBundle[session.dmProfile.locale].audit#" bInPanel="true" url="#application.url.farcry#/edittabAudit.cfm?objectid=#stobj.objectid#" />		
-		
+		<!--- view statistics --->	
+		<ft:farcryButton type="button" value="#application.adminBundle[session.dmProfile.locale].stats#" onclick="openScaffoldDialog('#application.url.farcry#/edittabStats.cfm?objectid=#stobj.objectid#','Properties',500,500,true);" />		
+			
+		<!--- view audit --->	
+		<ft:farcryButton type="button" value="#application.adminBundle[session.dmProfile.locale].audit#" onclick="openScaffoldDialog('#application.url.farcry#/edittabAudit.cfm?objectid=#stobj.objectid#','Properties',500,500,true);" />		
+			
 
 		
 		<cfif stOverviewParams.stPermissions.iObjectDumpTab>
 			<!--- dump content --->
-			<ft:farcryButton value="#application.adminBundle[session.dmProfile.locale].dump#" bInPanel="true" url="#application.url.farcry#/object_dump.cfm?objectid=#stobj.objectid#" target="_win_dumpObject" />		
+			
+			<ft:farcryButton type="button" value="#application.adminBundle[session.dmProfile.locale].dump#" onclick="openScaffoldDialog('#application.url.farcry#/object_dump.cfm?objectid=#stobj.objectid#','Properties',500,500,true);" />		
 			<!--- <li id="tgl_dumpobject_#stobj.objectid#" style="display:none;"><cfdump var="#stobj#"></li> --->
 		</cfif>
 		
 		<cfif (stOverviewParams.stPermissions.iApprove eq 1 OR stOverviewParams.stPermissions.iApproveOwn EQ 1) AND StructKeyExists(stobj,"versionid")>
 			<!--- rollback content --->
-			<ft:farcryButton value="Show Archive" bInPanel="true" url="#application.url.farcry#/archive.cfm?objectid=#stobj.objectid#" />
+			<ft:farcryButton type="button" value="Show Archive"  onclick="openScaffoldDialog('#application.url.farcry#/archive.cfm?objectid=#stobj.objectid#','Properties',500,500,true);" />
 		</cfif>
 					
 
