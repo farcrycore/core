@@ -309,23 +309,23 @@ START WEBSKIN
 	<extjs:accordionPanel title="Miscellaneous" collapsed="true">	
 
 		<!--- view statistics --->	
-		<ft:farcryButton type="button" value="#application.adminBundle[session.dmProfile.locale].stats#" onclick="openScaffoldDialog('#application.url.farcry#/edittabStats.cfm?objectid=#stobj.objectid#','Properties',500,500,true);" />		
+		<ft:farcryButton type="button" value="#application.adminBundle[session.dmProfile.locale].stats#" url="#application.url.farcry#/edittabStats.cfm?objectid=#stobj.objectid#" target="objectStatistics" />		
 			
 		<!--- view audit --->	
-		<ft:farcryButton type="button" value="#application.adminBundle[session.dmProfile.locale].audit#" onclick="openScaffoldDialog('#application.url.farcry#/edittabAudit.cfm?objectid=#stobj.objectid#','Properties',500,500,true);" />		
+		<ft:farcryButton type="button" value="#application.adminBundle[session.dmProfile.locale].audit#" onclick="openScaffoldDialog('#application.url.farcry#/edittabAudit.cfm?objectid=#stobj.objectid#','Audit',500,500,true);" />		
 			
 
 		
 		<cfif stOverviewParams.stPermissions.iObjectDumpTab>
 			<!--- dump content --->
 			
-			<ft:farcryButton type="button" value="#application.adminBundle[session.dmProfile.locale].dump#" onclick="openScaffoldDialog('#application.url.farcry#/object_dump.cfm?objectid=#stobj.objectid#','Properties',500,500,true);" />		
+			<ft:farcryButton type="button" value="#application.adminBundle[session.dmProfile.locale].dump#" onclick="openScaffoldDialog('#application.url.farcry#/object_dump.cfm?objectid=#stobj.objectid#','Properties',500,700,true);" />		
 			<!--- <li id="tgl_dumpobject_#stobj.objectid#" style="display:none;"><cfdump var="#stobj#"></li> --->
 		</cfif>
 		
 		<cfif (stOverviewParams.stPermissions.iApprove eq 1 OR stOverviewParams.stPermissions.iApproveOwn EQ 1) AND StructKeyExists(stobj,"versionid")>
 			<!--- rollback content --->
-			<ft:farcryButton type="button" value="Show Archive"  onclick="openScaffoldDialog('#application.url.farcry#/archive.cfm?objectid=#stobj.objectid#','Properties',500,500,true);" />
+			<ft:farcryButton type="button" value="Show Archive"  onclick="openScaffoldDialog('#application.url.farcry#/archive.cfm?objectid=#stobj.objectid#','Archive',500,500,true);" />
 		</cfif>
 					
 
