@@ -674,7 +674,7 @@ user --->
 
 
 	<cfif len(attributes.SortableColumns)>
-		<cfoutput><input type="hidden" id="sqlOrderBy" name="sqlOrderBy" value=""></cfoutput>
+		<cfoutput><input type="hidden" id="sqlOrderBy" name="sqlOrderBy" value="#session.objectadminFilterObjects[attributes.typename].sqlOrderBy#"></cfoutput>
 	</cfif>
 	
 	<cfoutput>
