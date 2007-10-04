@@ -3,18 +3,9 @@
 <!--- @@author: Scaffold--->
 
 <!--- tag libraries --->
-<cfimport taglib="/farcry/[PROJECTNAME]/tags" prefix="tags">
 <cfimport taglib="/farcry/core/tags/container" prefix="con">
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft">
 
-<tags:pagewrap title="#stobj.label#">
-
-	<con:container label="[TYPENAME]_top" />
-	
-	<ft:object stObject="#stobj#" format="display" />
-	
-	<con:container label="[TYPENAME]_bottom" />
-
-</tags:pagewrap>
+<ft:object stObject="#stobj#" format="display" />
 	
 <cfsetting enablecfoutputonly="false" />
