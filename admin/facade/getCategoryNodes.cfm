@@ -14,7 +14,7 @@
 
 
 <cfparam name="form.node" default="#application.catID.root#" />
-<cfparam name="form.selectedObjectIDs" default="#application.catID.fencing#" />
+<cfparam name="form.selectedObjectIDs" default="" />
 <cfparam name="tempLeft" default="1" />
 <cfparam name="tempRight" default="1" />
 
