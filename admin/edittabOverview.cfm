@@ -2,23 +2,19 @@
 <cfprocessingDirective pageencoding="utf-8" />
 <!--- 
 || LEGAL ||
-$Copyright: Daemon Pty Limited 1995-2006, http://www.daemon.com.au $
+$Copyright: Daemon Pty Limited 1995-2007, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
-|| VERSION CONTROL ||
-$Header: $
-$Author: $
-$Date: $
-$Name: $
-$Revision: $
-
 || DESCRIPTION || 
-$DESCRIPTION: Dispalys summary and options for editing/approving/previewing etc for selected object$
-$TODO: make more generic for versioning $ 
+$DESCRIPTION: Displays summary and options for editing/approving/previewing etc for selected object $
+$TODO:
+- Remove inline styles
+- Remove remote references to YUI files
+- basically rewrite.. this is horrible
+GB 20071015 $
 
 || DEVELOPER ||
-$DEVELOPER:Brendan Sisson (brendan@daemon.com.au)$
-$DEVELOPER:Paul Harrison (harrisonp@cbs.curtin.edu.au)$
+$DEVELOPER: Mat Bryant (mbryant@daemon.com.au)$
 --->
 
 <!--- import tag libraries --->
@@ -42,7 +38,7 @@ $DEVELOPER:Paul Harrison (harrisonp@cbs.curtin.edu.au)$
 <html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-	<title>YUI Grids CSS </title>
+	<title>Edit Tab Overview</title>
 	<!-- Source File -->
 	<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.3.0/build/reset-fonts-grids/reset-fonts-grids.css">
 	
