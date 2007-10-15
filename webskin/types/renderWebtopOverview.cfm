@@ -59,7 +59,7 @@ START WEBSKIN
 						
 					</extjs:layoutRegion>
 					
-					<extjs:layoutRegion style="float:left;">
+					<extjs:layoutRegion>
 						
 						<skin:view objectid="#stDraftObject.objectid#" webskin="webtopOverviewSummary" />
 						
@@ -77,7 +77,8 @@ START WEBSKIN
 				<skin:view objectid="#stobj.objectid#" webskin="webtopOverviewActions" />
 			</extjs:layoutRegion>
 			
-			<extjs:layoutRegion style="float:left;">
+			<!--- <extjs:layoutRegion style="float:left;"> --->
+			<extjs:layoutRegion>
 				<skin:view objectid="#stobj.objectid#" webskin="webtopOverviewSummary" />
 			</extjs:layoutRegion>
 			
