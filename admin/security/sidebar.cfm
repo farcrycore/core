@@ -1,6 +1,5 @@
 <!--- resolve default iframe for this section view --->
 <cfparam name="url.sub" default="users" type="string">
-<cfset oWebTop=application.factory.owebtop>
 
 <cfimport taglib="/farcry/core/tags/admin" prefix="admin">
 
