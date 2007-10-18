@@ -88,7 +88,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 
 <!--- This include allows advance developers to manipulate the aItems array before rendering the floater menu. --->
 <cfif fileexists("#application.path.project#/system/floatMenu/_customItems.cfm")>
-	<cfinclude template="/farcry/projects/#application.applicationname#/system/floatMenu/_customItems.cfm">
+	<cfinclude template="/farcry/projects/#application.projectDirectoryName#/system/floatMenu/_customItems.cfm">
 </cfif>
 <!--- show menu --->
 <farcry:floater imagedir="#application.url.farcry#/images/floater/" aItems="#aItems#" prefix="dmfloat" useContextMenu="true">

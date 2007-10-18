@@ -1,6 +1,7 @@
 <cfcomponent extends="field" name="category" displayname="category" hint="Field component to liase with all category field types"> 
 
 	<cfimport taglib="/farcry/core/tags/widgets/" prefix="widgets">
+	<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin">
 	<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" >
 
 		
@@ -20,10 +21,13 @@
 		<cfset var lSelectedCategoryID = oCategory.getCategories(objectid=arguments.stObject.ObjectID,bReturnCategoryIDs=true)>
 		<cfset var lCategoryBranch = "" />
 		<cfset var CategoryName = "" />
-
+		<cfset var i = "" />
+		<cfset var rootNodeText = "" />
+		
+		
 		<cfparam name="arguments.stMetadata.ftAlias" default="" type="string" />
 		<cfparam name="arguments.stMetadata.ftLegend" default="" type="string" />
-		<cfparam name="arguments.stMetadata.ftRenderType" default="Tree" type="string" />
+		<cfparam name="arguments.stMetadata.ftRenderType" default="prototype" type="string" />
 		<cfparam name="arguments.stMetadata.ftSelectMultiple" default="true" type="boolean" />
 		<cfparam name="arguments.stMetadata.ftSelectSize" default="5" type="numeric" />
 		<cfparam name="arguments.stMetadata.ftDropdownFirstItem" default="" type="string" />
@@ -33,6 +37,9 @@
 		<cfelse>
 			<cfset navid = application.catid['root'] >
 		</cfif>
+		
+		<cfset rootNodeText = oCategory.getCategoryNamebyID(categoryid=navid) />
+
 
 		
 
@@ -65,26 +72,126 @@
 				</cfsavecontent>
 			</cfcase>
 			
+			<cfcase value="prototype">
+				<cfsavecontent variable="html">
+				
+					<cfoutput><fieldset style="width: 300px;">
+						<cfif len(arguments.stMetadata.ftLegend)><legend>#arguments.stMetadata.ftLegend#</legend></cfif>
+					
+						<div class="fieldsection optional full">
+												
+							<div class="fieldwrap">
+							</cfoutput>
+
+								<ft:NTMPrototypeTree id="#arguments.fieldname#" navid="#navid#" depth="99" bIncludeHome=1 lSelectedItems="#lSelectedCategoryID#" bSelectMultiple="#arguments.stMetadata.ftSelectMultiple#">
+							
+							<cfoutput>
+							</div>
+							
+							<br class="fieldsectionbreak" />
+						</div>
+						<input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="" />
+					</fieldset></cfoutput>
+							
+				</cfsavecontent>			
+			</cfcase>
+			
 			<cfdefaultcase>
+				<skin:htmlHead id="extJS">
+					<cfoutput>
+						<link rel="stylesheet" type="text/css" href="/farcry/js/ext/resources/css/ext-all.css" />
+					    <link rel="stylesheet" type="text/css" href="/farcry/js/ext/resources/css/xtheme-aero.css" />
+						<!-- LIBS -->     
+						<script type="text/javascript" src="/farcry/js/ext/adapter/ext/ext-base.js"></script>     
+						<!-- ENDLIBS -->
+						<script type="text/javascript" src="/farcry/js/ext/ext-all.js"></script>	
+						
+						<style type="text/css">
+						li.x-tree-node {background-image:none;}
+						.x-tree-node img.categoryIconCls,  .x-tree-node-collapsed img.categoryIconCls, .x-tree-node-expanded img.categoryIconCls{
+						    background-image:url(/farcry/images/treeimages/customIcons/NavApproved.gif);
+						}
+						/*The following style fixes an IE bug where expanded ul tags have some hidden content*/
+						ul {position:static;}
+						</style>
+					</cfoutput>
+				</skin:htmlHead>
+				
 				<cfsavecontent variable="html">
 					
 						<cfoutput><fieldset style="width: 300px;">
 							<cfif len(arguments.stMetadata.ftLegend)><legend>#arguments.stMetadata.ftLegend#</legend></cfif>
 						
+							<!--- <div id="tree-div" style="border:1px solid #c3daf9;"></div> --->
 							<div class="fieldsection optional full">
-													
+												
 								<div class="fieldwrap">
-								</cfoutput>
-
-									<ft:NTMPrototypeTree id="#arguments.fieldname#" navid="#navid#" depth="99" bIncludeHome=1 lSelectedItems="#lSelectedCategoryID#" bSelectMultiple="#arguments.stMetadata.ftSelectMultiple#">
-								
-								<cfoutput>
+									
+									<div id="#arguments.fieldname#-tree-div"></div>	
+									
 								</div>
 								
 								<br class="fieldsectionbreak" />
 							</div>
-							<input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="" />
-						</fieldset></cfoutput>
+							<input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="#lSelectedCategoryID#" />
+						</fieldset>
+						<script type="text/javascript">
+						Ext.onReady(function(){
+						    // shorthand
+						    var Tree = Ext.tree;
+						    
+						    tree = new Tree.TreePanel('#arguments.fieldname#-tree-div', {
+						        animate:true, 
+						        loader: new Tree.TreeLoader({
+						            dataUrl:'#application.url.webroot#/farcry/facade/getCategoryNodes.cfm',
+						            baseAttrs: {checked:false,iconCls:'categoryIconCls'},
+						            baseParams: {selectedObjectIDs:'#lSelectedCategoryID#'}
+						        }),
+						        enableDD:true,
+						        containerScroll: true
+						       
+						    });
+						
+							tree.on('checkchange', function(n,c) {
+								var newList = "";
+								var currentTreeList = Ext.getDom('#arguments.fieldname#').value;
+								if(c){ 
+									if(currentTreeList.length){
+								  		currentTreeList = currentTreeList + ','
+								  	}
+									Ext.getDom('#arguments.fieldname#').value = currentTreeList + n.id
+								} else {
+									var valueArray = currentTreeList.split(",");
+									for(var i=0; i<valueArray.length; i++){
+									  //do something by accessing valueArray[i];
+									  if(n.id != valueArray[i]){
+									  	if(newList.length){
+									  		newList = newList + ',';
+									  	}
+									  	newList = newList + valueArray[i]
+									  }
+									}
+									Ext.getDom('#arguments.fieldname#').value = newList;
+								}	
+		
+							});
+						    // set the root node
+						    var root = new Tree.AsyncTreeNode({
+						        text: '#rootNodeText#',
+						        draggable:false,
+						        id:'#navid#',
+						        iconCls:'categoryIconCls',
+						        checked:false
+						    });
+						    tree.setRootNode(root);
+						
+						    // render the tree
+						    tree.render();
+						    root.expand();
+						    
+						});
+						</script>								
+						</cfoutput>
 								
 				</cfsavecontent>
 			</cfdefaultcase>

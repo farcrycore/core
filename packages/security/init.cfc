@@ -1,21 +1,8 @@
-<!--- 
-|| LEGAL ||
-$Copyright: Daemon Pty Limited 1995-2006, http://www.daemon.com.au $
-$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
-
-|| VERSION CONTROL ||
-$Header: $
-$Author: $
-$Date: $
-$Name: $
-$Revision: $
-
-|| DESCRIPTION || 
-$Description: FarCry security intilisation functions $
-
-|| DEVELOPER ||
-$Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
---->
+<!--- @@Copyright: Daemon Pty Limited 1995-2007, http://www.daemon.com.au --->
+<!--- @@License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php --->
+<!--- @@displayname: Security Initialisation --->
+<!--- @@Description: FarCry security intilisation functions. --->
+<!--- @@Developer: Geoff Bowers (modius@daemon.com.au) --->
 <cfcomponent displayName="Security Initiatlisation" hint="FarCry security intilisation functions">
 
 	<cffunction name="initPolicyGroupsDatabase">
@@ -289,6 +276,13 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
 		<cfargument name="bTest" required="false" default="0">
 		<cfargument name="bDropTables" required="false" default="true">	
 
+		<!--- TODO: 
+				errors generated from these table drops etc should be 
+				handled the same way.  Seem to have a different approach 
+				for every dbtype. 
+				20070908 GB 
+		--->
+
 		<cfif arguments.bDropTables AND not isDefined("URL.recreate")>
 		<cfset URL.recreate = arguments.bDropTables>
 		</cfif>
@@ -296,111 +290,133 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
 		<cfif arguments.bTest eq 0>
 			<cfset url.recreate=1>
 			<cfif isDefined("url.recreate") and url.recreate eq 1>
-		
-			<cfswitch expression="#application.dbtype#">
-			<cfcase value="ora">
-				<cftry>
-					<cfquery datasource="#application.dsn#">
+			
+				<cfswitch expression="#application.dbtype#">
+	
+				<cfcase value="ora">
+					<cftry>
+						<cfquery datasource="#application.dsn#">
 						DROP TABLE #application.dbowner#DMGROUP
-					</cfquery>
-					<cfquery datasource="#application.dsn#">
+						</cfquery>
+						<cfcatch>
+							<cfoutput><b style="color:red;font-size:14pt"> #cfcatch.Detail#</b></cfoutput>
+						</cfcatch>
+					</cftry>
+					<cftry>
+						<cfquery datasource="#application.dsn#">
 						DROP TABLE #application.dbowner#DMUSER
-					</cfquery>
-					<cfquery datasource="#application.dsn#">
+						</cfquery>
+						<cfcatch>
+							<cfoutput><b style="color:red;font-size:14pt"> #cfcatch.Detail#</b></cfoutput>
+						</cfcatch>
+					</cftry>
+					<cftry>
+						<cfquery datasource="#application.dsn#">
 						DROP TABLE #application.dbowner#DMUSERTOGROUP
-					</cfquery>
-					<cfquery datasource="#application.dsn#">
+						</cfquery>
+						<cfcatch>
+							<cfoutput><b style="color:red;font-size:14pt"> #cfcatch.Detail#</b></cfoutput>
+						</cfcatch>
+					</cftry>
+					<cftry>
+						<cfquery datasource="#application.dsn#">
 						DROP #application.dbowner#SEQUENCE DMGROUP_SEQ
-					</cfquery>
-					<cfquery datasource="#application.dsn#">	
+						</cfquery>
+						<cfcatch>
+							<cfoutput><b style="color:red;font-size:14pt"> #cfcatch.Detail#</b></cfoutput>
+						</cfcatch>
+					</cftry>
+					<cftry>
+						<cfquery datasource="#application.dsn#">
 						DROP SEQUENCE #application.dbowner#DMUSER_SEQ
-					</cfquery> 
-					
-					<cfcatch>
-						<cfoutput><b style="color:red;font-size:14pt"> #cfcatch.Detail#</b></cfoutput>
-					</cfcatch>
-				</cftry>
-			</cfcase>
-			<cfcase value="postgresql">
-				<cftry>
-					<cfquery datasource="#application.dsn#">
-					DROP TABLE #application.dbowner#DMGROUP
+						</cfquery>
+						<cfcatch>
+							<cfoutput><b style="color:red;font-size:14pt"> #cfcatch.Detail#</b></cfoutput>
+						</cfcatch>
+					</cftry>
+				</cfcase> 
+	
+				<cfcase value="postgresql">
+					<cftry>
+						<cfquery datasource="#application.dsn#">
+						DROP TABLE #application.dbowner#DMGROUP
+						</cfquery>
+	
+						<cfcatch>
+							<cflog text="#cfcatch.message# #cfcatch.detail# [SQL: #cfcatch.sql#]" file="coapi" type="warning" application="yes">
+						</cfcatch>
+					</cftry>
+	
+					<cftry>
+						<cfquery datasource="#application.dsn#">
+						DROP TABLE #application.dbowner#DMUSER
+						</cfquery>
+	
+						<cfcatch>
+							<cflog text="#cfcatch.message# #cfcatch.detail# [SQL: #cfcatch.sql#]" file="coapi" type="warning" application="yes">
+						</cfcatch>
+					</cftry>
+	
+					<cftry>
+						<cfquery datasource="#application.dsn#">
+						DROP TABLE #application.dbowner#DMUSERTOGROUP
+						</cfquery>
+						<cfcatch>
+							<cflog text="#cfcatch.message# #cfcatch.detail# [SQL: #cfcatch.sql#]" file="coapi" type="warning" application="yes">
+						</cfcatch>
+					</cftry>
+	
+					<cftry>				
+						<cfquery datasource="#application.dsn#">
+						DROP #application.dbowner#SEQUENCE DMGROUP_SEQ
+						</cfquery>
+						<cfcatch>
+							<cflog text="#cfcatch.message# #cfcatch.detail# [SQL: #cfcatch.sql#]" file="coapi" type="warning" application="yes">
+						</cfcatch>
+					</cftry>
+	
+					<cftry>
+						<cfquery datasource="#application.dsn#">	
+						DROP SEQUENCE #application.dbowner#DMUSER_SEQ
+						</cfquery> 
+						
+						<cfcatch>
+							<cflog text="#cfcatch.message# #cfcatch.detail# [SQL: #cfcatch.sql#]" file="coapi" type="warning" application="yes">
+						</cfcatch>
+					</cftry>
+					<!--- <cfoutput><b style="color:red;font-size:14pt"> #cfcatch.Detail#</b></cfoutput> --->
+				</cfcase>
+				<cfcase value="mysql,mysql5">
+					<cfquery datasource="#arguments.datasource#">
+					DROP TABLE IF EXISTS #application.dbowner#dmGroup
 					</cfquery>
-
-					<cfcatch>
-						<cflog text="#cfcatch.message# #cfcatch.detail# [SQL: #cfcatch.sql#]" file="coapi" type="warning" application="yes">
-					</cfcatch>
-				</cftry>
-
-				<cftry>
-					<cfquery datasource="#application.dsn#">
-					DROP TABLE #application.dbowner#DMUSER
+					<cfquery datasource="#arguments.datasource#">
+					DROP TABLE IF EXISTS #application.dbowner#dmUser
 					</cfquery>
-
-					<cfcatch>
-						<cflog text="#cfcatch.message# #cfcatch.detail# [SQL: #cfcatch.sql#]" file="coapi" type="warning" application="yes">
-					</cfcatch>
-				</cftry>
-
-				<cftry>
-					<cfquery datasource="#application.dsn#">
-					DROP TABLE #application.dbowner#DMUSERTOGROUP
+					<cfquery datasource="#arguments.datasource#">
+					DROP TABLE IF EXISTS #application.dbowner#dmUserToGroup
 					</cfquery>
-					<cfcatch>
-						<cflog text="#cfcatch.message# #cfcatch.detail# [SQL: #cfcatch.sql#]" file="coapi" type="warning" application="yes">
-					</cfcatch>
-				</cftry>
-
-				<cftry>				
-					<cfquery datasource="#application.dsn#">
-					DROP #application.dbowner#SEQUENCE DMGROUP_SEQ
-					</cfquery>
-					<cfcatch>
-						<cflog text="#cfcatch.message# #cfcatch.detail# [SQL: #cfcatch.sql#]" file="coapi" type="warning" application="yes">
-					</cfcatch>
-				</cftry>
-
-				<cftry>
-					<cfquery datasource="#application.dsn#">	
-					DROP SEQUENCE #application.dbowner#DMUSER_SEQ
-					</cfquery> 
-					
-					<cfcatch>
-						<cflog text="#cfcatch.message# #cfcatch.detail# [SQL: #cfcatch.sql#]" file="coapi" type="warning" application="yes">
-					</cfcatch>
-				</cftry>
-				<!--- <cfoutput><b style="color:red;font-size:14pt"> #cfcatch.Detail#</b></cfoutput> --->
-			</cfcase>
-			<cfcase value="mysql,mysql5">
-				<cfquery datasource="#arguments.datasource#">
-				DROP TABLE IF EXISTS #application.dbowner#dmGroup
-				</cfquery>
-				<cfquery datasource="#arguments.datasource#">
-				DROP TABLE IF EXISTS #application.dbowner#dmUser
-				</cfquery>
-				<cfquery datasource="#arguments.datasource#">
-				DROP TABLE IF EXISTS #application.dbowner#dmUserToGroup
-				</cfquery>
-			</cfcase>
-			
-			<cfdefaultcase>
-				<cfquery name="qCreateTables" datasource="#arguments.datasource#" dbtype="ODBC">
-				if exists (select * from sysobjects where id = object_id(N'#application.dbowner#dmGroup') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
-				drop table #application.dbowner#dmGroup
+				</cfcase>
 				
-				if exists (select * from sysobjects where id = object_id(N'#application.dbowner#dmUser') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
-				drop table #application.dbowner#dmUser
+				<cfdefaultcase>
+					<cfquery name="qCreateTables" datasource="#arguments.datasource#" dbtype="ODBC">
+					if exists (select * from sysobjects where id = object_id(N'#application.dbowner#dmGroup') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+					drop table #application.dbowner#dmGroup
+					
+					if exists (select * from sysobjects where id = object_id(N'#application.dbowner#dmUser') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+					drop table #application.dbowner#dmUser
+					
+					if exists (select * from sysobjects where id = object_id(N'#application.dbowner#dmUserToGroup') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+					drop table #application.dbowner#dmUserToGroup
 				
-				if exists (select * from sysobjects where id = object_id(N'#application.dbowner#dmUserToGroup') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
-				drop table #application.dbowner#dmUserToGroup
-			
-				-- return recordset to stop CF bombing out?!?
-				select count(*) as blah from sysobjects
-				</cfquery>
-			</cfdefaultcase>	
-			
-			</cfswitch>	
-			<cfoutput><span style="color:orange;">Warning:</span>Dropped all Security tables for '#arguments.datasource#'.<br></cfoutput>
+					-- return recordset to stop CF bombing out?!?
+					select count(*) as blah from sysobjects
+					</cfquery>
+				</cfdefaultcase>	
+				
+				</cfswitch>	
+
+				<cfoutput><span style="color:orange;">Warning:</span>Dropped all Security tables for '#arguments.datasource#'.<br></cfoutput>
 			</cfif>
 			
 			<cfswitch expression="#application.dbtype#">
@@ -542,28 +558,59 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
 		<cfif arguments.bTest eq 0>
 			<cfif isDefined("url.recreate") and url.recreate eq 1>
 			<cfswitch expression="#application.dbtype#">
+
 				<cfcase value="ora">
 					<cftry>
 						<cfquery datasource="#application.dsn#">
-							DROP TABLE #application.dbowner#dmExternalGroupToPolicyGroup
+						DROP TABLE #application.dbowner#dmExternalGroupToPolicyGroup
 						</cfquery>
+						<cfcatch type="any">
+							<cfoutput><b style="color:red;font-size:14pt"> #cfcatch.Detail#</b></cfoutput> 
+						</cfcatch>
+					</cftry>
+					
+					<cftry>
 						<cfquery datasource="#application.dsn#">
-							DROP TABLE #application.dbowner#dmPolicyGroup
+						DROP TABLE #application.dbowner#dmPolicyGroup
 						</cfquery>
+						<cfcatch type="any">
+							<cfoutput><b style="color:red;font-size:14pt"> #cfcatch.Detail#</b></cfoutput> 
+						</cfcatch>
+					</cftry>
+					
+					<cftry>
 						<cfquery datasource="#application.dsn#">
-							DROP TABLE #application.dbowner#dmPermissionBarnacle
+						DROP TABLE #application.dbowner#dmPermissionBarnacle
 						</cfquery>
+						<cfcatch type="any">
+							<cfoutput><b style="color:red;font-size:14pt"> #cfcatch.Detail#</b></cfoutput> 
+						</cfcatch>
+					</cftry>
+					
+					<cftry>
 						<cfquery datasource="#application.dsn#">
-							DROP TABLE #application.dbowner#dmPermission
+						DROP TABLE #application.dbowner#dmPermission
 						</cfquery>
+						<cfcatch type="any">
+							<cfoutput><b style="color:red;font-size:14pt"> #cfcatch.Detail#</b></cfoutput> 
+						</cfcatch>
+					</cftry>
+					
+					<cftry>
 						<cfquery datasource="#application.dsn#">
-							DROP SEQUENCE #application.dbowner#DMPOLICYGROUP_SEQ
+						DROP SEQUENCE #application.dbowner#DMPOLICYGROUP_SEQ
 						</cfquery>
+						<cfcatch type="any">
+							<cfoutput><b style="color:red;font-size:14pt"> #cfcatch.Detail#</b></cfoutput> 
+						</cfcatch>
+					</cftry>
+					
+					<cftry>
 						<cfquery datasource="#application.dsn#">
-							DROP SEQUENCE #application.dbowner#DMPERMISSION_SEQ
+						DROP SEQUENCE #application.dbowner#DMPERMISSION_SEQ
 						</cfquery>
-						<cfcatch>
-						
+						<cfcatch type="any">
+							<cfoutput><b style="color:red;font-size:14pt"> #cfcatch.Detail#</b></cfoutput> 
 						</cfcatch>
 					</cftry>
 				</cfcase>

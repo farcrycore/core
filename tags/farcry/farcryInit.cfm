@@ -1,28 +1,8 @@
-<cfsetting enablecfoutputonly="yes">
-
-<!--- 
-|| LEGAL ||
-$Copyright: Daemon Internet 2002-2006, http://www.daemon.com.au $
-$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
-
-|| VERSION CONTROL ||
-$Header:  $
-$Author: $
-$Date:  $
-$Name:  $
-$Revision: $
-
-|| DESCRIPTION || 
-$Description:  -- $
-
-
-|| DEVELOPER ||
-$Developer: Matthew Bryant (mat@daemon.com.au)$
-
-|| ATTRIBUTES ||
-$in: objectid -- $
---->
-
+<cfsetting enablecfoutputonly="true" />
+<!--- @@copyright: Daemon Internet 2002-2007, http://www.daemon.com.au --->
+<!--- @@license: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php --->
+<!--- @@displayname: farcryInit --->
+<!--- @@description: Application initialisation tag. --->
 
 <cfif thistag.executionMode eq "Start">
 
@@ -94,6 +74,9 @@ $in: objectid -- $
 				<!--- set binit to false to block users accessing on restart --->
 				<cfset application.bInit =  false />
 				
+				<!--- Project directory name can be changed from the default which is the applicationname --->
+				<cfset application.projectDirectoryName =  attributes.projectDirectoryName />
+				
 				<!----------------------------------------
 				 SET THE DATABASE SPECIFIC INFORMATION 
 				---------------------------------------->
@@ -108,7 +91,7 @@ $in: objectid -- $
 				<!----------------------------------------
 				 SET THE MAIN PHYSICAL PATH INFORMATION
 				 ---------------------------------------->
-				<cfset application.path.project = expandpath("/farcry/projects/#attributes.projectDirectoryName#") />
+				<cfset application.path.project = expandpath("/farcry/projects/#application.projectDirectoryName#") />
 				<cfset application.path.core = expandpath("/farcry/core") />
 				<cfset application.path.plugins = expandpath("/farcry/plugins") />
 				
@@ -133,7 +116,7 @@ $in: objectid -- $
 				SHORTCUT PACKAGE PATHS
 				 ---------------------------------------->
 				<cfset application.packagepath = "farcry.core.packages" />
-				<cfset application.custompackagepath = "farcry.projects.#attributes.projectDirectoryName#.packages" />
+				<cfset application.custompackagepath = "farcry.projects.#application.projectDirectoryName#.packages" />
 				<cfset application.securitypackagepath = "farcry.core.packages.security" />
 				
 				<!----------------------------------------
@@ -153,6 +136,35 @@ $in: objectid -- $
 				USE MEDIA ARCHIVE?
 				 ------------------------------------------>
 				<cfset application.bUseMediaArchive = attributes.bUseMediaArchive />
+			
+				<!---------------------------------------------- 
+				INITIALISE THE COAPIUTILITIES SINGLETON
+				----------------------------------------------->
+				<cfset application.coapi = structNew() />
+				<cfset application.coapi.coapiUtilities = createObject("component", "farcry.core.packages.coapi.coapiUtilities").init() />
+	
+		
+				<!--- Initialise the stPlugins structure that will hold all the plugin specific settings. --->
+				<cfset application.stPlugins = structNew() />
+				
+				
+				<!--- ENSURE SYSINFO IS UPDATED EACH INITIALISATION --->
+				<cfset application.sysInfo = structNew() />
+
+				<!--- CALL THE PROJECTS SERVER SPECIFIC VARIABLES. --->
+				<cfinclude template="/farcry/projects/#application.projectDirectoryName#/config/_serverSpecificVars.cfm" />
+				
+				
+				<!----------------------------------- 
+				INITIALISE THE REQUESTED PLUGINS
+				 ----------------------------------->
+				<cfif isDefined("application.plugins")>
+					<cfloop list="#application.plugins#" index="plugin">
+						<cfif fileExists("#application.path.plugins#/#plugin#/config/_serverSpecificVars.cfm")>
+							<cfinclude template="/farcry/plugins/#plugin#/config/_serverSpecificVars.cfm">
+						</cfif>
+					</cfloop>
+				</cfif>
 				
 								
 				<!----------------------------------------
@@ -177,45 +189,25 @@ $in: objectid -- $
 				<cfset ps.permissionTable = "dmPermission" />
 				<cfset ps.policyGroupTable = "dmPolicyGroup" />
 				<cfset ps.permissionBarnacleTable = "dmPermissionBarnacle" />
-				<cfset ps.externalGroupToPolicyGroupTable = "dmExternalGroupToPolicyGroup" />
-								
-			
-		
-				<!--- Initialise the stPlugins structure that will hold all the plugin specific settings. --->
-				<cfset application.stPlugins = structNew() />
-				
-				
-				
-				<!--- INITIALISE THE COAPIADMIN SINGLETON --->
-				<cfset application.coapi.coapiadmin = createObject("component", "farcry.core.packages.coapi.coapiadmin").init() />
-	
-	
-				<!--- CALL THE PROJECTS SERVER SPECIFIC VARIABLES. --->
-				<cfinclude template="/farcry/projects/#attributes.projectDirectoryName#/config/_serverSpecificVars.cfm" />
-				
-				
-				<!----------------------------------- 
-				INITIALISE THE REQUESTED PLUGINS
-				 ----------------------------------->
-				<cfif isDefined("application.plugins")>
-					<cfloop list="#application.plugins#" index="plugin">
-						<cfif fileExists("#application.path.plugins#/#plugin#/config/_serverSpecificVars.cfm")>
-							<cfinclude template="/farcry/plugins/#plugin#/config/_serverSpecificVars.cfm">
-						</cfif>
-					</cfloop>
-				</cfif>
-		
-				
-								
+				<cfset ps.externalGroupToPolicyGroupTable = "dmExternalGroupToPolicyGroup" />								
+
 				<!--------------------------------- 
 				INITIALISE DMSEC
 				 --------------------------------->
 				<cfinclude template="/farcry/core/tags/farcry/_dmSec.cfm">
+
+
+				<!---------------------------------------------- 
+				INITIALISE THE COAPIADMIN SINGLETON
+				----------------------------------------------->
+				<cfset application.coapi.coapiadmin = createObject("component", "farcry.core.packages.coapi.coapiadmin").init() />
+				<cfset application.coapi.objectBroker = createObject("component", "farcry.core.packages.fourq.objectBroker").init() />
+
 			
 				<!--------------------------------- 
 				FARCRY CORE INITIALISATION
 				 --------------------------------->
-				<cfinclude template="/farcry/core/tags/farcry/_farcryApplicationInit.cfm">
+				<cfinclude template="/farcry/core/tags/farcry/_farcryApplicationInit.cfm" />
 		
 		
 				<!------------------------------------
@@ -246,7 +238,7 @@ $in: objectid -- $
 				
 				<!--- CALL THE PROJECTS SERVER SPECIFIC AFTER INIT VARIABLES. --->
 				<cfif fileExists("#application.path.project#/config/_serverSpecificVarsAfterInit.cfm") >
-					<cfinclude template="/farcry/projects/#attributes.name#/config/_serverSpecificVarsAfterInit.cfm" />
+					<cfinclude template="/farcry/projects/#application.projectDirectoryName#/config/_serverSpecificVarsAfterInit.cfm" />
 				</cfif>
 				
 				<!--- set the initialised flag --->

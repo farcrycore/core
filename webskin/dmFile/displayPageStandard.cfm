@@ -1,0 +1,2 @@
+<!--- We need to simply reloacate to the download page. --->
+<cflocation url="#application.url.webroot#/download.cfm?downloadfile=#stobj.objectid#&typename=#stobj.typename#&fieldname=filename" addtoken="false" />

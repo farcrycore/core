@@ -1,397 +1,106 @@
-<cfsetting enablecfoutputonly="yes">
+<cfsetting enablecfoutputonly="true" />
 
-<cfparam name="URL.typename" default="" />
+<cffunction name="substitute" access="public" output="false" returntype="string" hint="Substitutes values in a string">
+	<cfargument name="string1" type="string" required="true" />
+	<cfargument name="values" type="struct" required="true" />
+	<cfargument name="brackets" type="string" required="false" default="[,]">
+	
+	<cfset var key="" />
+	
+	<cfloop collection="#arguments.values#" item="key">
+		<cfset arguments.string1 = replacenocase(arguments.string1,listfirst(arguments.brackets) & key & listlast(arguments.brackets),arguments.values[key],"ALL") />
+	</cfloop>
+	
+	<cfreturn arguments.string1 />
+</cffunction>
 
-<!--- check permissions --->
-<cfif NOT request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="AdminCOAPITab")>	
-	<admin:permissionError>
-	<cfabort>
-</cfif>
+<cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
+<cfimport taglib="/farcry/core/tags/admin/" prefix="admin" />
+<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
+<cfimport taglib="/farcry/core/tags/extjs/" prefix="extjs" />
 
-<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" >
-
-
-
-<ft:processForm Action="Create Now">
-
+<cfoutput>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>Scaffold</title>
+	<!-- Source File -->
+	<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.3.0/build/reset-fonts-grids/reset-fonts-grids.css">
 	
-<cffunction name="genDocument" returntype="string">
-	<cfargument name="docProps" type="struct" required="true" />
-	<cfargument name="typeName" type="string" required="true" />
-	<cfargument name="projectName" type="string" required="true" />
-	<cfargument name="projectDir" type="string" required="true" />
-	
-	<cfset var result = "">
-	<cfset var fullpath = "">
-	<cfset var docContent = docProps.content />
-	<cfset var stTypeProperties = structNew() />
-	<cfset var lColumnList = "" />
-	<cfset var lSortableColumns = "" />
-	<cfset var lFilterFields = "" />
-	
-	
-	<cfset docProps.filename = replaceNoCase(docProps.filename,"[TYPENAME]",lcase(typeName)) />
-	<cfset docProps.package = replaceNoCase(docProps.package,"[TYPENAME]",lcase(typeName)) />
-	
-	
-	<cfset docContent = replaceNoCase(docContent, "[PROJECTNAME]", projectName, "all") />
-	<cfset docContent = replaceNoCase(docContent, "[TYPENAME]", typeName, "all") />
-	
-	 <!--- set the values of ColumnList, SortableColumns and lFilterFields. If none are checked default to label --->
-	<cfset stTypeProperties = getTypeProperties(form.sTypeName) />
-	<cfloop list="#structKeyList(stTypeProperties)#" index="key">
-		
-		<!--- user wants this property in the ColumnList of objectAdmin --->
-		<cfif structKeyExists(form, "#key#_columnList")>
-			<cfset lColumnList = listAppend(lColumnList, key) />
+	<style type="text/css">
+		body {text-align:left;}
+		<cfif structkeyexists(url,"iframe")>
+			body { background:transparent url(#application.url.farcry#/admin/js/ext/resources/images/default/layout/gradient-bg.gif) repeat scroll 0%; }
 		</cfif>
 		
-		<!--- user wants this property in the SortableColumns of objectAdmin --->
-		<cfif structKeyExists(form, "#key#_sortableColumns")>
-			<cfset lSortableColumns = listAppend(lSortableColumns, key) />		
+		<!--- p {margin:5px 0px 10px 0px;} --->
+		/* =DEFINITION LISTS */
+		dl {margin: 0 0 1.5em}
+		dt {clear:left;font-weight:bold;margin:3px 0}
+		dd {margin:3px 0;padding:0}
+		dd.thumbnail {float:left;width:100px;margin-right:6px;border: 1px solid ##000;margin-bottom:0}
+		dd.thumbnail img {display:block}
+	
+		dl.dl-style1 {border-top: 1px solid ##fff;font-size:86%}
+		.tab-panes dl.dl-style1 {margin-right:140px}
+		dl.dl-style1 dt {float:left;clear:left;width:130px;margin:0;_height:1.5em;min-height:1.5em;border:none;}
+		.tab-panes dl.dl-style1 dt {width:28%}
+		dl.dl-style1 dd {width: auto;margin: 0;border-bottom: 1px solid ##fff;padding: 1px 0;_height:1.5em;min-height:1.5em}
+		.tab-panes dl.dl-style1 dd {margin-left:28%;_margin-left:20%}
+	
+		.tab-content {padding:25px;}
+		
+		.icon {margin: 0 0 10px}
+	
+		.webtopOverviewActions {float:right;width:220px;}
+		.webtopOverviewActions .farcryButtonWrap-outer {margin-bottom:5px;}
+		.webtopOverviewActions .farcryButton {width:200px;}
+		
+		td { padding: 3px; }
+	</style>
+</head>
+<body>
+
+</cfoutput>
+
+<ft:form action="#cgi.SCRIPT_NAME#?#cgi.QUERY_STRING#">
+	
+	<extjs:tab title="Type administration" style="width:400px;">
+		<ft:processForm action="Create">
+			
+			<extjs:tabPanel title="Results">
+				<cfinclude template="scaffolds/typeadmin/process.cfm" />
+				<cfinclude template="scaffolds/webskins/process.cfm" />
+				<cfinclude template="scaffolds/rule/process.cfm" />
+			</extjs:tabPanel>
+		
+		</ft:processForm>
+		<extjs:tabPanel title="Administration">
+			<cfinclude template="scaffolds/typeadmin/ui.cfm" />
+		</extjs:tabPanel>
+		<extjs:tabPanel title="Webskins">
+			<cfinclude template="scaffolds/webskins/ui.cfm" />
+		</extjs:tabPanel>
+		<extjs:tabPanel title="Rules">
+			<cfinclude template="scaffolds/rule/ui.cfm" />
+		</extjs:tabPanel>
+	</extjs:tab>
+	
+	
+	
+	<ft:farcryButtonPanel>
+		<ft:farcryButton value="Create" />
+		<cfif structkeyexists(url,"iframe")>
+			<ft:farcryButton value="Close" onclick="parent.closeDialog();return false;" />
 		</cfif>
-		
-		<!--- user wants this property in the lFilterFields of objectAdmin --->
-		<cfif structKeyExists(form, "#key#_filterFields")>
-			<cfset lFilterFields = listAppend(lFilterFields, key) />		
-		</cfif>				
-		
-	</cfloop>
-	<cfif NOT len(lColumnList)>
-		<cfset lColumnList = "label" />
-	</cfif>
-	<cfif NOT len(lSortableColumns)>
-		<cfset lSortableColumns = "label" />
-	</cfif>
-	<cfif NOT len(lFilterFields)>
-		<cfset lFilterFields = "label" />
-	</cfif>		
-	
-	<cfset docContent = replaceNoCase(docContent, "[COLUMNLIST]", lColumnList, "all") />
-	<cfset docContent = replaceNoCase(docContent, "[SORTABLECOLUMNS]", lSortableColumns, "all") />
-	<cfset docContent = replaceNoCase(docContent, "[FILTERFIELDS]", lFilterFields, "all") />
-	
-	
-	<cfset fullpath = "#projectDir##docProps.package#">
+	</ft:farcryButtonPanel>
 
-	<cfif not directoryExists("#fullpath#")>
-		<cfdirectory action="create" directory="#fullpath#">
-	</cfif>
-	
-	<cfif fileExists("#fullpath#/#docProps.filename#")>
-		<cfset result="<p>#docProps.filename# already exists in #fullpath#/#docProps.filename#</p>">
-	<cfelse>
-		<cftry>
-			<cffile action="write" file="#fullpath#/#docProps.filename#" output="#trim(docContent)#" >
-			<cfset result="<p>CREATED: #fullpath#/#docProps.filename#</p>">
-			
-			<cfcatch type="any">
-				<cfset result="<p>ERROR CREATING: #fullpath#/#docProps.filename#</p>">
-			</cfcatch>
-		</cftry>
-	</cfif>
-
-	<cfreturn result>
-</cffunction>	
-	
-	
-	
-	
-	<cfif structKeyExists(form, "scaffold")>
-
-		<cfloop list="#form.scaffold#" index="FilePath">
-
-			
-			<!--- define folder path --->
-			<cfset docProps = getScaffoldProps(filePath="#FilePath#") />	
-			<cfset result = genDocument(docProps,url.typename, application.applicationname,application.path.PROJECT)>
-			
-			<cfoutput>#result#</cfoutput>
-		</cfloop>
-	
-		
-	</cfif>
-</ft:processForm>
-
-<ft:processForm Action="Cancel" Exit="true" />
-
-
-<ft:form>
-
-	<cfoutput>
-	<p>WHICH SCAFFOLDS WOULD YOU LIKE TO CREATE</p>
-	
-	<h3>CUSTOM ADMIN</h3>
-	<cfset q = getScaffolds(scaffoldPath="/customAdmin") />
-	<table border="1">
-	<cfloop query="q">
-		<cfset stScaffoldProps = getScaffoldProps(filePath="#q.Directory#/#q.Name#") />
-		<tr>
-			<td><input type="checkbox" name="scaffold" value="#q.Directory#/#q.Name#" /></td>
-			<td>
-				<strong>#stScaffoldProps.label#</strong><br />
-				#stScaffoldProps.description#
-			</td>
-		</tr>
-	</cfloop>
-	</table>
-	
-	<h3>CUSTOM LISTS</h3>
-	<cfset q = getScaffolds(scaffoldPath="/customadmin/customLists") />
-	
-	<table border="1">
-	<cfloop query="q">
-		<cfset stScaffoldProps = getScaffoldProps(filePath="#q.Directory#/#q.Name#") />
-		<tr>
-			<td><input type="checkbox" name="scaffold" value="#q.Directory#/#q.Name#" /></td>
-			<td>
-				<strong>#stScaffoldProps.label#</strong><br />
-				#stScaffoldProps.description#
-			</td>
-		</tr>
-	</cfloop>
-	</table>
-	
-	<h3>CUSTOM RULES</h3>
-	<cfset q = getScaffolds(scaffoldPath="/rules") />
-	<table border="1">
-	<cfloop query="q">
-		<cfset stScaffoldProps = getScaffoldProps(filePath="#q.Directory#/#q.Name#") />
-		<tr>
-			<td><input type="checkbox" name="scaffold" value="#q.Directory#/#q.Name#" /></td>
-			<td>
-				<strong>#stScaffoldProps.label#</strong><br />
-				#stScaffoldProps.description#
-			</td>
-		</tr>
-	</cfloop>
-	</table>
-	
-	
-	<h3>CUSTOM WEBSKINS</h3>
-	<cfset q = getScaffolds(scaffoldPath="/webskin") />
-	<table border="1">
-	<cfloop query="q">
-		<cfset stScaffoldProps = getScaffoldProps(filePath="#q.Directory#/#q.Name#") />
-		<tr>
-			<td><input type="checkbox" name="scaffold" value="#q.Directory#/#q.Name#" /></td>
-			<td>
-				<strong>#stScaffoldProps.label#</strong><br />
-				#stScaffoldProps.description#
-			</td>
-		</tr>
-	</cfloop>
-	</table>
-	
-	
-	<h1>Type Properties</h1>
-	<cfset stTypeProperties = getTypeProperties(URL.typename) />
-	
-	<input type="hidden" name="sTypeName" id="sTypeName" value="#URL.typeName#" />
-	<table border="1" cellpadding="5">
-		<tr>
-			<th>Property Name</th>
-			<th>Column List</th>
-			<th>Sortable Columns</th>
-			<th>Filter Fields</th>
-		</tr>
-		
-		<cfloop list="#structKeyList(stTypeProperties)#" index="key">
-			
-			<!--- we're not interested in array types --->
-			<cfif stTypeProperties[key].type NEQ "array">
-				
-				<tr>
-					<td>#stTypeProperties[key].name#</td>
-					<td><input type="checkbox" name="#stTypeProperties[key].name#_columnList" id="#stTypeProperties[key].name#_columnList" value="1" /></td>
-					<td><input type="checkbox" name="#stTypeProperties[key].name#_sortableColumns" id="#stTypeProperties[key].name#_sortableColumns" value="1" /></td>
-					<td><input type="checkbox" name="#stTypeProperties[key].name#_filterFields" id="#stTypeProperties[key].name#_filterFields" value="1" /></td>
-				</tr>
-				
-			</cfif>
-			
-		</cfloop>
-	
-	</table>
-
-
-	
-<!--- 	<cfabort>
-	
-	<input type="checkbox" name="scaffold" value="customAdmin" /> Custom Admin<br />
-	<input type="checkbox" name="scaffold" value="webskin" /> Webskins<br />
-	<input type="checkbox" name="scaffold" value="rule" /> Rule<br /> --->
- 
-
-	<div class="formsection">
-		<ft:farcryButton value="Create Now" />	
-		<ft:farcryButton value="Cancel" />
-	</div>
-	</cfoutput>
 </ft:form>
 
+<cfoutput>
+</body>
+</html>
+</cfoutput>
 
-
-	<cffunction name="getScaffolds" returntype="query" access="public" output="false" hint="Returns a query of all available webskins. Search through project first, then any library's that have been included.">
-		<cfargument name="scaffoldPath" required="true" type="string">
-		
-		<cfset var qResult=queryNew("name,directory,size,type,datelastmodified,attributes,mode") />
-		<cfset var qLibResult=queryNew("name,directory,size,type,datelastmodified,attributes,mode") />
-		<cfset var qDupe=queryNew("name,directory,size,type,datelastmodified,attributes,mode") />
-		<cfset var FullScaffoldPath = "" />
-		<cfset var library="" />
-		<cfset var col="" />
-
-		<!--- check project webskins --->
-		<cfset FullScaffoldPath = ExpandPath("/farcry/projects/#application.applicationname#/scaffolds#scaffoldPath#") />
-		<cfif directoryExists(FullScaffoldPath)>
-			<cfdirectory action="list" directory="#FullScaffoldPath#" name="qResult" filter="*.txt" sort="asc" />
-		</cfif>
-	
-		<!--- check library webskins --->
-		<cfif structKeyExists(application, "plugins") and Len(application.plugins)>
-
-			<cfloop list="#application.plugins#" index="library">
-				<cfset FullScaffoldPath=ExpandPath("/farcry/plugins/#library#/scaffolds#scaffoldPath#") />
-				
-				<cfif directoryExists(FullScaffoldPath)>
-					<cfdirectory action="list" directory="#FullScaffoldPath#" name="qLibResult" filter="*.txt" sort="asc" />
-
-					<cfloop query="qLibResult">
-						<cfquery dbtype="query" name="qDupe">
-						SELECT * FROM qResult
-						WHERE lower(name) = '#lcase(qLibResult.name)#'
-						</cfquery>
-						
-						<cfif NOT qDupe.Recordcount>
-							<cfset queryaddrow(qresult,1) />
-							<cfloop list="#qlibresult.columnlist#" index="col">
-								<cfset querysetcell(qresult, col, qlibresult[col][1]) />
-							</cfloop>
-						</cfif>
-						
-					</cfloop>
-				</cfif>	
-				
-			</cfloop>
-			
-		</cfif>
-		
-		<!--- check core scaffolds --->
-		<cfset FullScaffoldPath=ExpandPath("/farcry/core/admin/admin/scaffolds#scaffoldPath#") />
-		
-		<cfif directoryExists(FullScaffoldPath)>
-			<cfdirectory action="list" directory="#FullScaffoldPath#" name="qCoreResult" filter="*.txt" sort="asc" />
-			
-			
-			<cfloop query="qCoreResult">
-				<cfquery dbtype="query" name="qDupe">
-				SELECT * FROM qResult
-				WHERE lower(name) = '#lCase(qCoreResult.name)#'
-				</cfquery>
-				
-				<cfif NOT qDupe.Recordcount>
-					<cfset queryaddrow(qresult,1) />
-					<cfloop list="#qlibresult.columnlist#" index="col">
-						<cfset querysetcell(qresult, col, qCoreResult[col][1]) />
-					</cfloop>
-				</cfif>
-				
-			</cfloop>
-					
-								
-		</cfif>
-		
-					
- 		<cfquery dbtype="query" name="qResult">
-		SELECT * FROM qResult
-		ORDER BY name
-		</cfquery>
-
-		<cfreturn qresult />
-	</cffunction>
-	
-		
-	<cffunction name="getScaffoldProps" returntype="struct" output="true" hint="return package, filename and content from scaffold file">
-		<cfargument name="filePath" required="true" />
-		
-		<cfset var stResult = structNew() />
-		<cfset var startPos = "" />
-		<cfset var endPos = "" />
-		
-
-		<!--- EXTRACT THE SCAFFOLD METADATA --->
-		<cffile action="read" file="#arguments.filePath#" variable="fileContent" />
-
-		<cfset startPos = findNocase("<scaffold>", fileContent) />
-		<cfset endPos = findNocase("</scaffold>", fileContent) />
-				
-		
-				
-		<cfif startPos neq 0 and endPos neq 0>
-			<cfset endPos = endPos + len("</scaffold>") />
-			<cfset scaffoldString = mid(fileContent, startPos, endPos-startPos) />
-	
-			<cfxml variable="ScaffXML">
-			  <cfoutput>#scaffoldString#</cfoutput>
-			</cfxml>
-			
-			<cfset tmpXmlnode = XmlSearch(ScaffXML, "/scaffold/label") />
-			<cfif arraylen(tmpXmlnode) gt 0>
-				<cfset stResult.label = tmpXmlnode[1].XmlText />
-			<cfelse>
-				<cfset stResult.label = "not found" />
-			</cfif>
-			
-			<cfset tmpXmlnode = XmlSearch(ScaffXML, "/scaffold/description") />	
-			<cfif arraylen(tmpXmlnode) gt 0>
-				<cfset stResult.description = tmpXmlnode[1].XmlText />
-			<cfelse>
-				<cfset stResult.description = "not found" />
-			</cfif>
-			
-			<cfset tmpXmlnode = XmlSearch(ScaffXML, "/scaffold/filename") />
-			<cfif arraylen(tmpXmlnode) gt 0>
-				<cfset stResult.filename = tmpXmlnode[1].XmlText />
-			<cfelse>
-				<cfset stResult.filename = "not found" />
-			</cfif>
-			
-			<cfset tmpXmlnode = XmlSearch(ScaffXML, "/scaffold/package") />	
-			<cfif arraylen(tmpXmlnode) gt 0>
-				<cfset stResult.package = tmpXmlnode[1].XmlText />
-			<cfelse>
-				<cfset stResult.package = "not found" />
-			</cfif>
-	
-			<cfset stResult.content = replace(fileContent,scaffoldString,"") />
-		</cfif>	
-				
-		<cfreturn stResult />
-	</cffunction>
-	
-	
-	<cffunction name="getTypeProperties" access="private" output="false" returntype="struct" hint="Introspect the current 'type' and return a structure of properties so the user can decide what to use in the scaffolding">
-		<cfargument name="typeName" type="string" required="true" hint="Typename to introspect" />
-		
-		<cfscript>
-	
-			var stReturn = structNew();
-			var oCustomType = "";
-			var oTypeMetadata = "";
-			
-			//Try using application.types.qMetaData
-			
-			oCustomType = createObject("component", "#application.types[arguments.typeName].packagepath#");	//instantiate the custom type to introspect
-			oTypeMetadata = createObject("component", "farcry.core.packages.fourq.TableMetadata").init();	//instansiate the Fourq class to access introspection methods
-			oTypeMetadata.parseMetadata(md=getMetadata(oCustomType));	//generate the metadata
-			stReturn = oTypeMetadata.getTableDefinition();	//retrieve the generated metadata
-		
-			return stReturn;
-		
-		</cfscript>
-		
-	</cffunction>
-	
-	
-<cfsetting enablecfoutputonly="no">
+<cfsetting enablecfoutputonly="false" />

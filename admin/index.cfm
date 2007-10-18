@@ -36,12 +36,23 @@ $Developer: Pete Ottery (pot@daemon.com.au)$
 --->
 <cfprocessingDirective pageencoding="utf-8">
 
-<!--- resolve default iframes for this section view --->
-<cfparam name="url.sec" default="home" type="string">
-<cfparam name="url.sub" default="" type="string">
-
 <cfset oWebTop=application.factory.owebtop>
 <cfset xmlWebtop=owebtop.xmlWebtop>
+
+<!--- resolve default iframes for this section view --->
+<cfset aSections = oWebTop.getSectionsAsArray()>
+<cfset defaultsectionid="">
+<cfloop from="1" to="#arraylen(aSections)#" index="i">
+	<cfif request.dmsec.oAuthorisation.fCheckXMLPermission(aSections[i].xmlAttributes)>
+		<cfset defaultsectionid=aSections[i].xmlAttributes.id>
+		<cfbreak>
+	</cfif>
+</cfloop>
+<cfif not len(defaultsectionid)>
+	<cfthrow type="application" message="You do not have permission to access this area">
+</cfif>
+<cfparam name="url.sec" default="#defaultsectionid#" type="string">
+<cfparam name="url.sub" default="" type="string">
 
 <!--- get subsection to display --->
 <cfset aSubectionToDisplay = oWebTop.getSubSectionAsArray(url.sec, url.sub)>
@@ -63,7 +74,7 @@ $Developer: Pete Ottery (pot@daemon.com.au)$
 <html xmlns="http://www.w3.org/1999/xhtml" dir="#session.writingDir#" lang="#session.userLanguage#">
 <head>
 <meta content="text/html; charset=UTF-8" http-equiv="content-type">
-<title>FarCry</title>
+<title>#application.config.general.sitetitle# - FarCry Admin</title>
 <style type="text/css" title="default" media="screen">@import url(#application.url.farcry#/css/main.css);</style>
 <script type="text/javascript" src="#application.url.farcry#/js/prototype.js"></script>
 </head>

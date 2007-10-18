@@ -111,7 +111,6 @@
 	
 	<!--- have we requested to exit this webskin? --->
 	<cfif isDefined("attributes.Exit") AND attributes.Exit>
-	
 		<cfset Request.FarcrywizardOnExitRun = true />
 
 		<!--- If the onExit doesnt exist, default to Refreshing the page. --->
@@ -149,8 +148,9 @@
 			</cfcase>
 						
 			<cfcase value="URL">
+				
 				<cfif structKeyExists(stOnExit, "Content")>
-					<cfif stOnExit.Content EQ "refresh">
+					<cfif not len(stOnExit.Content) OR stOnExit.Content EQ "refresh">
 						<cflocation url="#cgi.SCRIPT_NAME#?#cgi.QUERY_STRING#" addtoken="false">
 					<cfelse>
 						<cflocation url="#stOnExit.Content#" addtoken="false">

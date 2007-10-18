@@ -14,7 +14,14 @@
 	<cfargument name="plugins" default="" type="string" />
 	
 	<cfset var qResult=queryNew("ATTRIBUTES, DATELASTMODIFIED, DIRECTORY, MODE, NAME, SIZE, TYPE, typepath") />
+	<cfset var qComps=queryNew("blah") />
+	<cfset var qDupe=queryNew("blah") />
 	<cfset var lDir=arguments.plugins />
+	<cfset var packagedir = "" />
+	<cfset var packagepath = "" />
+	<cfset var typepath = "" />
+	<cfset var col = "" />
+	
 	
 	<!--- 
 	must go in reverse order
@@ -25,8 +32,6 @@
 	
 	<cfset ldir=listprepend(ldir, "projectpackage") />
 	<cfset ldir=listappend(ldir, "corepackage") />
-	
-	<cfdump var="#arguments#" />
 	
 	<cfloop list="#lDir#" index="packagedir">
 
@@ -90,6 +95,7 @@
 	<cfset var installdir="" />
 	<cfset var aCol=arrayNew(1) />
 	<cfset var pluginName="" />
+	<cfset var i="" />
 
 	<cfloop list="#arguments.plugins#" index="pluginName">
 		<cfset installdir=expandpath("/farcry/plugins/#pluginName#/config/install") />
@@ -154,11 +160,11 @@
 		<cfargument name="prefix" type="string" required="false" default="" hint="Prefix to filter template results." />
 		<cfargument name="bForceRefresh" type="boolean" required="false" default="false" hint="Force to reload and not use application scope." />
 		<cfargument name="excludeWebskins" type="string" required="false" default="" hint="Allows developers to exclude webskins that might be contained in plugins." />
-		
-		<cfset var qResult=queryNew("name,directory,size,type,datelastmodified,attributes,mode") />
-		<cfset var qLibResult=queryNew("name,directory,size,type,datelastmodified,attributes,mode") />
-		<cfset var qCoreResult=queryNew("name,directory,size,type,datelastmodified,attributes,mode") />
-		<cfset var qDupe=queryNew("name,directory,size,type,datelastmodified,attributes,mode") />
+								
+		<cfset var qResult=queryNew("attributes,author,datelastmodified,description,directory,displayname,hashurl,methodname,mode,name,path,size,type","VarChar,VarChar,date,VarChar,VarChar,VarChar,Integer,VarChar,VarChar,VarChar,VarChar,BigInt,VarChar") />
+		<cfset var qLibResult=queryNew("attributes,author,datelastmodified,description,directory,displayname,hashurl,methodname,mode,name,path,size,type","VarChar,VarChar,date,VarChar,VarChar,VarChar,Integer,VarChar,VarChar,VarChar,VarChar,BigInt,VarChar") />
+		<cfset var qCoreResult=queryNew("attributes,author,datelastmodified,description,directory,displayname,hashurl,methodname,mode,name,path,size,type","VarChar,VarChar,date,VarChar,VarChar,VarChar,Integer,VarChar,VarChar,VarChar,VarChar,BigInt,VarChar") />
+		<cfset var qDupe=queryNew("attributes,author,datelastmodified,description,directory,displayname,hashurl,methodname,mode,name,path,size,type","VarChar,VarChar,date,VarChar,VarChar,VarChar,Integer,VarChar,VarChar,VarChar,VarChar,BigInt,VarChar") />
 		<cfset var webskinPath = "#application.path.project#/webskin/#arguments.typename#" />
 		<cfset var library="" />
 		<cfset var col="" />
@@ -268,7 +274,7 @@
 			
 			<!--- ORDER AND SET DISPLAYNAME FOR COMBINED WEBSKIN RESULTS --->		
 	 		<cfquery dbtype="query" name="qResult">
-			SELECT *, name as displayname,  name as methodname, 'anonymous' as author, '' as description, '0' as HashURL, '' as path
+			SELECT attributes,'anonymous' as author,datelastmodified,'' as description,directory,name as displayname,'0' as HashURL,name as methodname,mode,name,'' as path,size,type
 			FROM qResult
 			ORDER BY name
 			</cfquery>
@@ -316,11 +322,16 @@
 		</cfif>
 		
 		<cfif listLen(arguments.excludeWebskins)>
-			<cfquery dbtype="query" name="qResult" result="res">
+			<cfquery dbtype="query" name="qResult">
 			SELECT * FROM qResult
 			WHERE lower(qResult.methodname) NOT IN (#listQualify(lCase(arguments.excludeWebskins), "'")#)
 			</cfquery>
 		</cfif>
+	
+		<cfquery dbtype="query" name="qResult">
+		SELECT * FROM qResult
+		ORDER BY displayname
+		</cfquery>	
 		
 		<cfreturn qresult />
 	</cffunction>
@@ -331,6 +342,9 @@
 		<cfargument name="template" type="string" required="true" />
 		
 		<cfset var webskinPath = "" />
+		<cfset var qWebskinMetadata = queryNew("blah") />
+		<cfset var qWebskinPath = queryNew("blah") />
+		<cfset var plugin = "" />
 	
 		<!--- If the webskin is in the application.stcoapi then just use it --->
 		<cfif isdefined("application.stcoapi.#arguments.typename#.qWebskins")>
@@ -339,7 +353,7 @@
 			<cfquery dbtype="query" name="qWebskinPath">
 			SELECT * 
 			FROM qWebskinMetadata
-			WHERE methodname = '#arguments.template#'
+			WHERE cast(methodname as varchar) = '#arguments.template#'
 			</cfquery>
 			
 			<cfif qWebskinPath.recordCount>
@@ -349,7 +363,7 @@
 	
 		<cfif fileExists("#application.path.project#/webskin/#arguments.typename#/#arguments.template#.cfm")>
 			
-			<cfset webskinPath = "/farcry/projects/#application.applicationname#/webskin/#arguments.typename#/#arguments.template#.cfm" />
+			<cfset webskinPath = "/farcry/projects/#application.projectDirectoryName#/webskin/#arguments.typename#/#arguments.template#.cfm" />
 			
 		<cfelseif structKeyExists(application, "plugins") and listLen(application.plugins)>
 
@@ -396,7 +410,12 @@
 		<cfargument name="template" type="string" required="false" default="" />
 		<cfargument name="path" type="string" required="false" />
 	
-		<cfset var result = "false" />	
+		<cfset var result = "false" />
+		<cfset var templateCode = "" />
+		<cfset var pos = "" />	
+		<cfset var count = "" />	
+		
+		
 		<cfif NOT structKeyExists(arguments, "path")>
 			<cfif len(arguments.typename) AND len(arguments.template)>
 				<cfset arguments.path = getWebskinPath(typename=arguments.typename, template=arguments.template) />
@@ -406,13 +425,13 @@
 		</cfif>
 		
 		<cfif len(arguments.path) and fileExists(Expandpath(arguments.path))>
-			<cffile action="READ" file="#Expandpath(arguments.path)#" variable="template">
+			<cffile action="READ" file="#Expandpath(arguments.path)#" variable="templateCode">
 		
-			<cfset pos = findNoCase('@@hashURL:', template)>
+			<cfset pos = findNoCase('@@hashURL:', templateCode)>
 			<cfif pos GT 0>
 				<cfset pos = pos + 10>
-				<cfset count = findNoCase('--->', template, pos)-pos>
-				<cfset result = trim(listLast(mid(template,  pos, count), ":"))>
+				<cfset count = findNoCase('--->', templateCode, pos)-pos>
+				<cfset result = trim(listLast(mid(templateCode,  pos, count), ":"))>
 			</cfif>	
 		</cfif>
 		
@@ -432,6 +451,10 @@
 		<cfargument name="path" type="string" required="false" />
 	
 		<cfset var result = "" />
+		<cfset var templateCode = "" />
+		<cfset var pos = "" />	
+		<cfset var count = "" />
+		
 		<cfif NOT structKeyExists(arguments, "path")>
 			<cfif len(arguments.typename) AND len(arguments.template)>
 				<cfset arguments.path = getWebskinPath(typename=arguments.typename, template=arguments.template) />
@@ -441,13 +464,13 @@
 		</cfif>
 		
 		<cfif len(arguments.path) and fileExists(Expandpath(arguments.path))>
-			<cffile action="READ" file="#Expandpath(arguments.path)#" variable="template">
+			<cffile action="READ" file="#Expandpath(arguments.path)#" variable="templateCode">
 		
-			<cfset pos = findNoCase('@@displayname:', template)>
+			<cfset pos = findNoCase('@@displayname:', templateCode)>
 			<cfif pos GT 0>
 				<cfset pos = pos + 14>
-				<cfset count = findNoCase('--->', template, pos)-pos>
-				<cfset result = trim(listLast(mid(template,  pos, count), ":"))>
+				<cfset count = findNoCase('--->', templateCode, pos)-pos>
+				<cfset result = trim(listLast(mid(templateCode,  pos, count), ":"))>
 			</cfif>	
 		</cfif>
 		
@@ -461,6 +484,10 @@
 		<cfargument name="path" type="string" required="false" />
 	
 		<cfset var result = "" />
+		<cfset var templateCode = "" />
+		<cfset var pos = "" />	
+		<cfset var count = "" />
+		
 		<cfif NOT structKeyExists(arguments, "path")>
 			<cfif len(arguments.typename) AND len(arguments.template)>
 				<cfset arguments.path = getWebskinPath(typename=arguments.typename, template=arguments.template) />
@@ -470,13 +497,13 @@
 		</cfif>
 		
 		<cfif len(arguments.path) and fileExists(Expandpath(arguments.path))>
-			<cffile action="READ" file="#Expandpath(arguments.path)#" variable="template">
+			<cffile action="READ" file="#Expandpath(arguments.path)#" variable="templateCode">
 		
-			<cfset pos = findNoCase('@@author:', template)>
+			<cfset pos = findNoCase('@@author:', templateCode)>
 			<cfif pos GT 0>
 				<cfset pos = pos + 9>
-				<cfset count = findNoCase('--->', template, pos)-pos>
-				<cfset result = trim(listLast(mid(template,  pos, count), ":"))>
+				<cfset count = findNoCase('--->', templateCode, pos)-pos>
+				<cfset result = trim(listLast(mid(templateCode,  pos, count), ":"))>
 			</cfif>	
 		</cfif>
 		
@@ -488,6 +515,10 @@
 		<cfargument name="path" type="string" required="false" />
 	
 		<cfset var result = "" />
+		<cfset var templateCode = "" />
+		<cfset var pos = "" />	
+		<cfset var count = "" />
+		
 		<cfif NOT structKeyExists(arguments, "path")>
 			<cfif len(arguments.typename) AND len(arguments.template)>
 				<cfset arguments.path = getWebskinPath(typename=arguments.typename, template=arguments.template) />
@@ -497,13 +528,13 @@
 		</cfif>
 		
 		<cfif len(arguments.path) and fileExists(Expandpath(arguments.path))>
-			<cffile action="READ" file="#Expandpath(arguments.path)#" variable="template">
+			<cffile action="READ" file="#Expandpath(arguments.path)#" variable="templateCode">
 		
-			<cfset pos = findNoCase('@@description:', template)>
+			<cfset pos = findNoCase('@@description:', templateCode)>
 			<cfif pos GT 0>
 				<cfset pos = pos + 14>
-				<cfset count = findNoCase('--->', template, pos)-pos>
-				<cfset result = trim(listLast(mid(template,  pos, count), ":"))>
+				<cfset count = findNoCase('--->', templateCode, pos)-pos>
+				<cfset result = trim(listLast(mid(templateCode,  pos, count), ":"))>
 			</cfif>	
 		</cfif>
 		
@@ -634,15 +665,16 @@
 		<cfset var result = "" />
 		<cfset var pos = "" />
 		<cfset var count = "" />
+		<cfset var templateCode = "" />
 		
 		<cfif fileExists("#arguments.directory#/#arguments.template#")>
-			<cffile action="READ" file="#arguments.directory#/#arguments.template#" variable="template">
+			<cffile action="READ" file="#arguments.directory#/#arguments.template#" variable="templateCode">
 		
-			<cfset pos = findNoCase('@@displayname:', template)>
+			<cfset pos = findNoCase('@@displayname:', templateCode)>
 			<cfif pos GT 0>
 				<cfset pos = pos + 14>
-				<cfset count = findNoCase('--->', template, pos)-pos>
-				<cfset result = trim(listLast(mid(template,  pos, count), ":"))>
+				<cfset count = findNoCase('--->', templateCode, pos)-pos>
+				<cfset result = trim(listLast(mid(templateCode,  pos, count), ":"))>
 			</cfif>	
 		</cfif>
 		
@@ -669,14 +701,17 @@
 		
 		<cfset var result = "" />
 		<cfset var includePath = "#arguments.directory#/#arguments.template#" />
+		<cfset var templateCode = "" />
+		<cfset var pos = "" />
+		<cfset var count = "" />
 		
-		<cffile action="READ" file="#includePath#" variable="template">
+		<cffile action="READ" file="#includePath#" variable="templateCode">
 	
-		<cfset pos = findNoCase('@@author:', template)>
+		<cfset pos = findNoCase('@@author:', templateCode)>
 		<cfif pos GT 0>
 			<cfset pos = pos + 9>
-			<cfset count = findNoCase('--->', template, pos)-pos>
-			<cfset result = trim(listLast(mid(template,  pos, count), ":"))>
+			<cfset count = findNoCase('--->', templateCode, pos)-pos>
+			<cfset result = trim(listLast(mid(templateCode,  pos, count), ":"))>
 		</cfif>
 		
 		<cfreturn result />
@@ -688,14 +723,17 @@
 		
 		<cfset var result = "" />
 		<cfset var includePath = "#arguments.directory#/#arguments.template#" />
+		<cfset var templateCode = "" />
+		<cfset var pos = "" />
+		<cfset var count = "" />
 
-		<cffile action="READ" file="#includePath#" variable="template">
+		<cffile action="READ" file="#includePath#" variable="templateCode">
 	
-		<cfset pos = findNoCase('@@description:', template)>
+		<cfset pos = findNoCase('@@description:', templateCode)>
 		<cfif pos GT 0>
 			<cfset pos = pos + 14>
-			<cfset count = findNoCase('--->', template, pos)-pos>
-			<cfset result = trim(listLast(mid(template,  pos, count), ":"))>
+			<cfset count = findNoCase('--->', templateCode, pos)-pos>
+			<cfset result = trim(listLast(mid(templateCode,  pos, count), ":"))>
 		</cfif>	
 
 		

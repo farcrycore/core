@@ -12,6 +12,9 @@
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 
+		<cfset var html = "" />
+		
+		
 		<cfparam name="arguments.stMetadata.ftSelectTable" default="true">
 		<cfparam name="arguments.stMetadata.ftSelectTableField" default="">
 		
@@ -37,15 +40,18 @@
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 		
-		<cfparam name="stMetadata.ftIncludeDecimal" default="true">
-		<cfparam name="stMetadata.ftCurrencySymbol" default="">
+		<cfset var html = "" />
 		
-		<cfif NOT stMetadata.ftIncludeDecimal>
+		
+		<cfparam name="arguments.stMetadata.ftIncludeDecimal" default="true">
+		<cfparam name="arguments.stMetadata.ftCurrencySymbol" default="">
+		
+		<cfif NOT arguments.stMetadata.ftIncludeDecimal>
 			<cfset arguments.stMetadata.value = NumberFormat(arguments.stMetadata.value)>
 		</cfif>
 		
 		<cfsavecontent variable="html">
-			<cfoutput>#stMetadata.ftCurrencySymbol##arguments.stMetadata.value#</cfoutput>
+			<cfoutput>#arguments.stMetadata.ftCurrencySymbol##arguments.stMetadata.value#</cfoutput>
 		</cfsavecontent>
 		
 		<cfreturn html>

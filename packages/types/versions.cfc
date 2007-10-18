@@ -66,6 +66,47 @@ default handlers
  		<cfreturn stResult>
 	</cffunction>
 
+	<cffunction name="delete" access="public" hint="Basic delete method for all objects. Deletes content item and removes Verity entries." returntype="struct" output="false">
+		<cfargument name="objectid" required="yes" type="UUID" hint="Object ID of the object being deleted">
+		<cfargument name="user" type="string" required="true" hint="Username for object creator" default="">
+		<cfargument name="auditNote" type="string" required="true" hint="Note for audit trail" default="">
+		
+		<!--- get the data for this instance --->
+		<cfset var stObj = getData(arguments.objectID)>
+		<cfset var stResult = StructNew()>
+		<cfset var stReturn = StructNew()>
+		
 
+		<cfif not len(arguments.user)>
+			<cfif isDefined("session.dmSec.authentication.userlogin")>
+				<cfset arguments.user = session.dmSec.authentication.userlogin />
+			<cfelse>
+				<cfset arguments.user = 'anonymous' />
+			</cfif>
+		</cfif>
+		
+		<cfif structisempty(stobj)>
+			<cfset stReturn.bSuccess = false>
+			<cfset stReturn.message = "Content item (#arguments.objectid#) does not exsit.">
+			<cfreturn stReturn>
+		</cfif>
+
+		<!--- Find any draft objects of this object and delete them first. --->
+		<cfquery datasource="#application.dsn#" name="qVersionedObjects">
+		SELECT objectid
+		FROM #stobj.typename#
+		WHERE versionid = '#stobj.objectid#'
+		</cfquery>
+		<cfif qVersionedObjects.recordcount>
+			<cfloop query="qVersionedObjects">
+				<cfset stResult = delete(objectid="#qVersionedObjects.objectid#", user="#arguments.user#", auditNote="#arguments.auditNote#") />
+				
+			</cfloop>
+		</cfif>
+				
+		<cfset stReturn = super.delete(objectid="#arguments.objectid#", user="#arguments.user#", auditNote="#arguments.auditNote#") />
+		<cfreturn stReturn />
+		
+	</cffunction>
 </cfcomponent>
 

@@ -111,9 +111,7 @@
 
 	<cfset lFieldsToRender =  "">
 	
-	<cfif not len(attributes.lFields)>
-		<cfset attributes.lFields = variables.lFields>
-	</cfif>	
+
 
 	<!--- allow for whitespace in field list attributes by trimming --->
 	<cfset attributes.lFields = replacenocase(attributes.lFields, " ", "", "ALL") />
@@ -130,6 +128,11 @@
 				<cfset attributes.lExcludeFields =  listdeleteat(attributes.lExcludeFields,ListFindNoCase(attributes.lExcludeFields,i))>
 			</cfif> --->
 		</cfif>
+		
+		<!--- If the user explicitly wants a field to appear, remove it from the exclusion list. --->
+		<cfif ListFindNoCase(attributes.lExcludeFields,i)>
+			<cfset attributes.lExcludeFields =  listdeleteat(attributes.lExcludeFields,ListFindNoCase(attributes.lExcludeFields,i))>
+		</cfif>
 	</cfloop>
 
 	<!--- Determine fields to render but as hidden fields --->
@@ -143,6 +146,12 @@
 			<cfset attributes.lExcludeFields =  listdeleteat(attributes.lExcludeFields,ListFindNoCase(attributes.lExcludeFields,i))>
 		</cfif>
 	</cfloop>	
+	
+	<!--- If still no fields, just default to all the fields in the type --->
+	<cfif not len(lFieldsToRender)>
+		<cfset lFieldsToRender = variables.lFields>
+	</cfif>	
+	
 	
 	<!--- Determine fields to exclude from render --->
 	<cfif isDefined("attributes.lExcludeFields") and len(attributes.lExcludeFields)>
@@ -283,8 +292,8 @@
 		 --->		 
 		<cfif attributes.bValidation>
 			<cfif len(ftFieldMetadata.ftValidation)>
-				<cfloop list="#ftFieldMetadata.ftValidation#" index="i">
-					<cfset ftFieldMetadata.ftClass = "#ftFieldMetadata.ftClass# #lcase(i)#">
+				<cfloop list="#ftFieldMetadata.ftValidation#" index="iValidation">
+					<cfset ftFieldMetadata.ftClass = "#ftFieldMetadata.ftClass# #lcase(iValidation)#">
 				</cfloop>
 			</cfif>
 		</cfif>
@@ -449,17 +458,18 @@
 						<ws:buildLink href="#application.url.farcry#/facade/library.cfm" stParameters="#stURLParams#" r_url="libraryPopupJS" />
 	
 						<cfoutput>
-							<input type="button" name="libraryOpen" value="Open Library" class="formButton" onClick="openLibrary('#Replace(stObj.ObjectID,"-", "", "ALL")#', $('#variables.prefix##ftFieldMetadata.Name#Join').value,'#libraryPopupJS#')" />
-	
 							<cfif listLen(ftFieldMetadata.ftJoin) GT 1>
 								<select id="#variables.prefix##ftFieldMetadata.Name#Join" name="#variables.prefix##ftFieldMetadata.Name#Join" >
-									<cfloop list="#ftFieldMetadata.ftJoin#" index="i">
-										<option value="#i#">#application.stcoapi[i].displayname#</option>
+									<cfloop list="#ftFieldMetadata.ftJoin#" index="iJoin">
+										<option value="#iJoin#">#application.stcoapi[iJoin].displayname#</option>
 									</cfloop>
 								</select>
 							<cfelse>
 								<input type="hidden" id="#variables.prefix##ftFieldMetadata.Name#Join" name="#variables.prefix##ftFieldMetadata.Name#Join" value="#ftFieldMetadata.ftJoin#" >
 							</cfif>
+							<ft:farcryButton Type="button" value="Open Library" onClick="openLibrary('#Replace(stObj.ObjectID,"-", "", "ALL")#', $('#variables.prefix##ftFieldMetadata.Name#Join').value,'#libraryPopupJS#')" />
+	
+	
 						</cfoutput>
 							
 						

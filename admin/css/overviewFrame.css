@@ -1,5 +1,11 @@
 * {margin:0;padding:0}
-body {color:#000;font: 11px arial,tahoma,verdana,sans-serif;background: #5B7FB9 url("images/g2_sidebar_bg.gif") no-repeat fixed -14px -96px 0px}
+body {
+	color:#000;
+	font: 11px arial,tahoma,verdana,sans-serif;
+	background: #5B7FB9 url("/farcry/css/images/g2_sidebar_bg.gif") no-repeat fixed;
+	background-position: -14px -96px;
+}
+	
 img {border:none}
 
 h5 {width:200px;font-size: 13px;border-bottom: 1px solid #f1f1f1;margin-bottom:13px;padding-bottom:3px}

@@ -71,6 +71,18 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 	   	<cfargument name="dbtype" type="string" required="false" default="#application.dbtype#">
 		<cfargument name="dbowner" type="string" required="false" default="#ucase(application.dbowner)#">
 		
+		<cfset var stDefaultProperties = structNew() />
+		<cfset var qRefDataDupe = queryNew("blah") />
+		<cfset var qRefData = queryNew("blah") />
+		<cfset var qObjectDupe = queryNew("blah") />
+		<cfset var userlogin = "" />
+		<cfset var dmProfileID = "" />
+		<cfset var stProps = structNew() />
+		<cfset var PrimaryPackage = "" />
+		<cfset var PrimaryPackagePath = "" />
+		
+		
+		
 		<cfif isDefined("session.dmSec.authentication.userlogin")>
 			<cfset userlogin = session.dmSec.authentication.userlogin>
 		<cfelse>
@@ -269,7 +281,9 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		
 		<cfset var stResult = structNew()>
 		<cfset var gateway = "" />
-    <cfset var fields = "" />
+	    <cfset var fields = "" />
+		<cfset var md = structNew() />
+	
     <cfset fourqInit() />
     
     <cfset md = getMetaData()>
@@ -336,6 +350,11 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset var col=0>
 		<cfset var j=0>
 		<cfset var stPackage = structNew() />
+		<cfset var fieldname = "" />
+		<cfset var stobjDisplay = structNew() />
+		<cfset var oType = "" />
+		<cfset var addedtoBroker = "" />
+		<cfset instance = structNew() />
 		
 		<!--- init fourq --->
 		<cfset fourqInit() />
@@ -413,7 +432,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		We therefore need to return a default object of this typename.
 		 --->
 		<cfif NOT structKeyExists(stObj,'objectID')>
-			<cfset stObj = getDefaultObject(objectID=arguments.objectid)>	
+			<cfset stObj = getDefaultObject(argumentCollection=arguments)>	
 			<cfset stObj.bDefaultObject = true />
 		</cfif>
 		
@@ -438,6 +457,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		
 	    <cfset var stResult = StructNew() />
 	    <cfset var gateway = "" />
+	    <cfset var stDefaultProperties = "" />
 
 	    
 	    <cfset fourqInit() />
@@ -446,17 +466,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		
 		<!--- Make sure that the temporary object store exists in the session scope. --->
 		<cfparam name="Session.TempObjectStore" default="#structNew()#" />
-		
-	    <!--- Make sure we remove the object from the objectBroker if we update something --->
-	    <cfif structkeyexists(stProperties, "objectid")>
-		    <cfset variables.objectBroker.RemoveFromObjectBroker(lObjectIDs=stProperties.ObjectID,typename=variables.typename)>
-	    </cfif>	    
 
-	   	
-	   	
-	    <!--- need to add this in case the object has been put in the instance cache. --->
-	    <cfset structdelete(instance,"bgetdata")>
-		
 		
 		<!--------------------------------------- 
 		If the object is to be stored in the session scope only.
@@ -467,7 +477,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			<cfparam name="stProperties.ObjectID" default="#CreateUUID()#" />				
 			
 			<!--- Get the default properties for this object --->
-			<cfset stDefaultProperties = this.getData(objectid=stProperties.ObjectID,typename=variables.typename) />
+			<cfset stDefaultProperties = this.getData(objectid=arguments.stProperties.ObjectID,typename=variables.typename) />
 		  	
 		  	<!--- need to add this in case the object has been put in the instance cache in the getdata above. --->
 	   	 	<cfset structdelete(instance,"bgetdata")>
@@ -479,25 +489,32 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			<cfset StructAppend(arguments.stProperties,stDefaultProperties,false)>	
 						
 			<!--- Add object to temporary object store --->
-			<cfset Session.TempObjectStore[stProperties.ObjectID] = arguments.stProperties />
+			<cfset Session.TempObjectStore[arguments.stProperties.ObjectID] = arguments.stProperties />
 			
 			<cfset stResult.bSuccess = true />
 			<cfset stResult.message = "Object Saved to the Temporary Object Store." />
-			<cfset stResult.ObjectID = stProperties.ObjectID />
+			<cfset stResult.ObjectID = arguments.stProperties.ObjectID />
 			
 			
 			
 		<!--------------------------------------- 
 		If the object is to be stored in the Database then run the appropriate gateway
 		----------------------------------------->	
-	   	<cfelse>
+	   	<cfelse>			<!--- Make sure we remove the object from the objectBroker if we update something --->
+		    <cfif structkeyexists(stProperties, "objectid")>
+			    <cfset variables.objectBroker.RemoveFromObjectBroker(lObjectIDs=arguments.stProperties.ObjectID,typename=variables.typename)>
+		    </cfif>	    	   	
 		   	
-	   		<cfset stResult = gateway.setData(stProperties,variables.tableMetadata) />	   	
+		    <!--- need to add this in case the object has been put in the instance cache. --->
+		    <cfset structdelete(instance,"bgetdata")>	
+	   	
+	   		
+	   		<cfset stResult = gateway.setData(stProperties=arguments.stProperties,metadata=variables.tableMetadata,dsn=arguments.dsn) />	   	
 	   	 
 	    
 		   	<!--- Make sure we remove the object from the TempObjectStore if we update something --->
-	   		<cfif structKeyExists(session, "TempObjectStore") AND structKeyExists(Session.TempObjectStore,stProperties.ObjectID)>
-		   		<cfset structdelete(Session.TempObjectStore, stProperties.ObjectID) />
+	   		<cfif structKeyExists(session, "TempObjectStore") AND structKeyExists(Session.TempObjectStore,arguments.stProperties.ObjectID)>
+		   		<cfset structdelete(Session.TempObjectStore, arguments.stProperties.ObjectID) />
 		   	</cfif>
 		   		   	 
 	   	</cfif>		   	
@@ -513,6 +530,8 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		
 		<!--- set status here... if something goes wrong expect a thrown error --->
 		<cfset var stResult = structNew()>
+		<cfset var stobj = structNew() />
+		
 		<cfset stResult.bSuccess = true>
 		<cfset stResult.message = "Object deleted successfully">
 		
@@ -664,13 +683,13 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		*including* inherited properties that have not been overloaded
 		20020518 GB
 		 --->
-		 <cfset var stExtends = structNew()>
-		 
+		 <cfset var stExtends = structNew()>		 
 		<cfset var md=getMetaData(this)>
-
 		<!--- container for processed propertynames --->
 		<cfset var lPropsProcessed = "">
 		<cfset var aProps = ArrayNew(1)>
+		<cfset var prop = "">
+		<cfset var thisprop = "">
 		
 		<cftrace inline="false" type="warning" text="The getProperties() method in fourq is deprecated. Use variables.tableMetadata.getTableDefinition() instead.">
 		
@@ -770,6 +789,8 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset var stProperties = StructNew()>
 		<cfset var curAncestor = "">
 		<cfset var curProperty = "">
+		<cfset var i = "">
+		<cfset var j = "">
 		
 		<cfloop index="i" from="1" to="#ArrayLen(aAncestors)#">
 			<cfset curAncestor = aAncestors[i]>
@@ -811,6 +832,15 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset var filteredWebskins = "" />
 		<cfset var filterWebskinName = "" />
 		<cfset var filterWebskinTimeout = "" />
+		<cfset var col = "">
+		<cfset var ixFilter = "">
+		<cfset var qDupe = queryNew("blah") />
+		<cfset var qFilter = queryNew("blah") />
+		<cfset var qAllWebskins = queryNew("blah") />
+		<cfset var qExtendedWebskin = queryNew("blah") />
+		<cfset var extendedWebskinName = "">
+		<cfset var aFilteredWebskins = arrayNew(1) />
+		<cfset var stFilterDetails = structNew() />
 		
 		<!--- If we are updating a type that already exists then we need to update only the metadata that has changed. --->
 		<cfif structKeyExists(stReturnMetadata, "stProps")>			
@@ -880,6 +910,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset stReturnMetadata.aExtends = oCoapiAdmin.getExtendedTypeArray(packagePath=md.name)>
 		
 		
+		<cfparam name="stReturnMetadata.bAutoSetLabel" default="true" />
 		<cfparam name="stReturnMetadata.bObjectBroker" default="false" />
 		<cfparam name="stReturnMetadata.lObjectBrokerWebskins" default="" />
 		<cfparam name="stReturnMetadata.ObjectBrokerWebskinTimeOut" default="1400" /> <!--- This a value in minutes (ie. 1 day) --->
@@ -988,6 +1019,9 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
     <cfargument name="tabledef" type="struct" required="true" />
     <cfargument name="aProps" type="array" required="true" />
 
+		<cfset var gateway =  "" />
+		<cfset var stResult =  structNew() />
+		
     	<cfset fourqInit() />
     
 		<cfset gateway = getGateway()  />

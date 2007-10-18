@@ -16,6 +16,15 @@
 		<cfset var libraryData = "" />
 		<cfset var qLibraryList = queryNew("blah") />
 		<cfset var uuidTypename = "" />
+		<cfset var returnHTML = "" />
+		<cfset var oData = "" />
+		<cfset var oPrimary = "" />
+		<cfset var stPrimary = structNew() />
+		<cfset var ULID = "" />
+		<cfset var html = "" />
+		<cfset var stTemp = structNew() />
+		<cfset var i = "" />
+		<cfset var stLibraryList = structNew() />
 		
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedWebskin" default="librarySelected" type="string" />
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedListClass" default="arrayDetail" type="string" />
@@ -31,6 +40,10 @@
 			<cfreturn "" />
 		</cfif>
 		
+		<!--- Make sure scriptaculous libraries are included. --->
+		<cfset Request.InHead.ScriptaculousDragAndDrop = 1>
+		<cfset Request.InHead.ScriptaculousEffects = 1>	
+		
 		<!--- Determine the the type we are using --->
 		<cfif listLen(arguments.stMetadata.ftJoin) GT 1>
 			<cfif len(arguments.stObject[arguments.stMetaData.Name])>
@@ -42,7 +55,10 @@
 		
 		<cfif len(uuidTypename)>
 			<!--- Create the Linked Table Type as an object  --->
-			<cfset oData = createObject("component",application.types[uuidTypename].typepath)>
+			<cfset oData = createObject("component",application.stcoapi[uuidTypename].packagePath)>
+		<cfelse>		
+			<!--- Couldnt find the type so try the first type in the list. --->
+			<cfset oData = createObject("component",application.stcoapi[listFirst(arguments.stMetadata.ftJoin)].packagePath)>
 		</cfif>
 		
 		
@@ -75,7 +91,21 @@
 			</cfif>
 			<!--- if nothing exists to generate library data then cobble something together --->
 			<cfif not qLibraryList.recordCount>
-				<cfinvoke component="#oData#" method="getLibraryData" returnvariable="qLibraryList" />
+				<cfloop list="#arguments.stMetadata.ftJoin#" index="i">
+					<cfset oData = createObject("component", application.stcoapi[i].packagePath) />					
+					<cfinvoke component="#oData#" method="getLibraryData" returnvariable="qLibraryList#i#" />
+				</cfloop>
+				<cfquery dbtype="query" name="qLibraryList">
+					<cfloop list="#arguments.stMetadata.ftJoin#" index="i">
+						SELECT objectid,label,'#i#' as typename FROM qLibraryList#i#
+						<cfif i NEQ listLast(arguments.stMetadata.ftJoin)>UNION</cfif>
+					</cfloop>
+				</cfquery>
+				
+				<cfquery dbtype="query" name="qLibraryList">
+				SELECT * FROM qLibraryList
+				ORDER BY typename,label
+				</cfquery>
 			</cfif>
 
 			<cfsavecontent variable="returnHTML">
@@ -114,6 +144,7 @@
 					 ----------------------->
 					<cfoutput>
 						<br class="clearer"/>
+						<div id="#arguments.fieldname#-librarySummary" <cfif not len(arguments.stObject[arguments.stMetaData.Name])> style="display:none;"</cfif> >
 						<div id="#arguments.fieldname#-libraryCallback">						
 							<ul id="#ULID#" class="#arguments.stMetadata.ftLibrarySelectedListClass#View" style="#arguments.stMetadata.ftLibrarySelectedListStyle#">
 					</cfoutput>
@@ -124,10 +155,14 @@
 							<cfset HTML = oData.getView(objectID=#arguments.stObject[arguments.stMetaData.Name]#, template="#arguments.stMetadata.ftLibrarySelectedWebskin#", alternateHTML="") />
 							<cfif NOT len(trim(HTML))>
 								<cfset stTemp = oData.getData(objectid=#arguments.stObject[arguments.stMetaData.Name]#)>
-								<cfif structKeyExists(stTemp, "label") AND len(stTemp.label)>
-									<cfset HTML = stTemp.label />
+								<cfif structKeyExists(stTemp, "BDEFAULTOBJECT") AND stTemp.BDEFAULTOBJECT>
+									<cfset HTML = "DELETED OBJECT. PLEASE REMOVE." />
 								<cfelse>
-									<cfset HTML = stTemp.objectid />
+									<cfif structKeyExists(stTemp, "label") AND len(stTemp.label)>
+										<cfset HTML = stTemp.label />
+									<cfelse>
+										<cfset HTML = stTemp.objectid />
+									</cfif>
 								</cfif>
 							</cfif>
 
@@ -151,9 +186,10 @@
 						</div>
 						<cfif arguments.stMetadata.ftShowRemoveSelected>
 							<div class="buttonGroup">
-								<ft:farcryButton type="button" value="Remove Selected" onclick="deleteSelectedFromUUIDField('#arguments.fieldname#');return false;" confirmText="Are you sure you want to remove the selected item" / >						
+								<ft:farcryButton type="button" value="Remove Item" onclick="deleteSelectedFromUUIDField('#arguments.fieldname#');return false;" confirmText="Are you sure you want to remove the selected item" />						
 							</div>
 						</cfif>
+						</div>
 						<br class="clearer" />
 					</cfoutput>
 				
@@ -162,6 +198,7 @@
 					<cfset request.inHead.libraryPopup = true />
 					<cfoutput>
 					<script type="text/javascript" language="javascript" charset="utf-8">
+					initUUIDField('#arguments.fieldname#','#application.url.webroot#');
 								
 					var obj#arguments.fieldname# = new Object();					
 					obj#arguments.fieldname#.primaryFormFieldname="#arguments.fieldname#";
@@ -191,6 +228,8 @@
 
 		<cfset var returnHTML = "" />
 		<cfset var uuidTypename = "" />
+		<cfset var oData = "" />
+		<cfset var stobj = structNew() />
 		
 		
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedWebskin" default="librarySelected">
@@ -252,12 +291,18 @@
 		<cfargument name="stPackage" required="true" type="struct" hint="Contains the metadata for the all fields for the current typename.">
 		
 		<cfset var returnHTML = "" />
-		<cfset var stobj = structnew() / >
+		<cfset var stobj = structnew() />
 		<cfset var stJoinObjects = structNew() /> <!--- This will contain a structure of object components that match the ftJoin list from the metadata --->
 
 		<cfset var oData = "" />
 		<cfset var q4 = "" />
 		<cfset var joinTypename = "" />
+		<cfset var i = "" />
+		<cfset var oPrimary = "" />
+		<cfset var qLibraryList = queryNew("blah") />
+		<cfset var ULID = "" />
+		<cfset var HTML = "" />
+		<cfset var stTemp = structNew() />
 		
 		<!---
 		<cfset var oFourQ = createObject("component","farcry.core.packages.fourq.fourq")><!--- TODO: this needs to be removed when we add typename to array tables. ---> 
@@ -346,12 +391,17 @@
 				
 					<cfif Len(arguments.stObject[arguments.stMetaData.Name])>
 										
-						<cfif listLen(arguments.stMetadata.ftJoin)>						
+						<cfif listLen(arguments.stMetadata.ftJoin) GT 1 >						
 							<cfset q4 = createObject("component", "farcry.core.packages.fourq.fourq")>
 							<cfset joinTypename = q4.findType(objectid=arguments.stObject[arguments.stMetaData.Name])>
-							<cfset oData = createObject("component", application.types[joinTypename].packagePath) />
+							<cfif len(joinTypename)>
+								<cfset oData = createObject("component", application.stcoapi[joinTypename].packagePath) />
+							<cfelse>
+								<cfoutput><p>#arguments.stObject[arguments.stMetaData.Name]#: objectid does not exist in the database.</p></cfoutput>
+								<cfabort>
+							</cfif>
 						<cfelse>
-							<cfset oData = createObject("component", application.types[arguments.stMetadata.ftJoin].packagePath) />
+							<cfset oData = createObject("component", application.stcoapi[arguments.stMetadata.ftJoin].packagePath) />
 						</cfif>
 						
 						<cfset HTML = oData.getView(objectID=arguments.stObject[arguments.stMetaData.Name], template="#arguments.stMetadata.ftLibrarySelectedWebskin#", alternateHTML="") />

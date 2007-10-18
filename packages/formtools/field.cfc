@@ -12,6 +12,7 @@
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 
+		<cfset var html = "" />
 	
 		<cfsavecontent variable="html">
 			<cfoutput><input type="Text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#HTMLEditFormat(arguments.stMetadata.value)#" class="#arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" /></cfoutput>
@@ -26,6 +27,7 @@
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 
+		<cfset var html = "" />
 		
 		<cfsavecontent variable="html">
 			<cfoutput>#arguments.stMetadata.value#</cfoutput>
@@ -35,38 +37,54 @@
 	</cffunction>
 
 	<cffunction name="validate" access="public" output="true" returntype="struct" hint="This will return a struct with bSuccess and stError">
+		<cfargument name="objectid" required="true" type="string" hint="The objectid of the object that this field is part of.">
+		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
 		<cfargument name="stFieldPost" required="true" type="struct" hint="The fields that are relevent to this field type.">
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		
 		<cfset var stResult = structNew()>		
-		<cfset stResult.bSuccess = true>
-		<cfset stResult.value = "">
-		<cfset stResult.stError = StructNew()>
+		<cfset stResult = passed(value=stFieldPost.Value) />
 		
 		<!--- --------------------------- --->
 		<!--- Perform any validation here --->
-		<!--- --------------------------- --->
-		<cfset stResult.value = stFieldPost.Value>
-		
-		
+		<!--- --------------------------- --->	
+		<cfif structKeyExists(arguments.stMetadata, "ftValidation") AND listFindNoCase(arguments.stMetadata.ftValidation, "required") AND NOT len(stFieldPost.Value)>
+			<cfset stResult = failed(value="#arguments.stFieldPost.value#", message="This is a required field.") />
+		</cfif>
+	
 		<!--- ----------------- --->
 		<!--- Return the Result --->
 		<!--- ----------------- --->
 		<cfreturn stResult>
 		
 	</cffunction>
-
+	
+	
+	<cffunction name="failed" access="private" output="false" returntype="struct" hint="This will return a struct with stMessage">
+		<cfargument name="value" required="true" type="any" hint="The value that is to be returned.">
+		<cfargument name="message" required="false" type="string" default="Not a valid value" hint="The message that will appear under the field.">
+		<cfargument name="class" required="false" type="string" default="validation-advice" hint="The class of the div wrapped around the message.">
+	
+		<cfset var r_stResult = structNew() />
+		<cfset r_stResult.value = arguments.value />
+		<cfset r_stResult.bSuccess = false />
+		<cfset r_stResult.stError = structNew() />
+		<cfset r_stResult.stError.message = HTMLEditFormat(arguments.message) />
+		<cfset r_stResult.stError.class = arguments.class />
+		
+		<cfreturn r_stResult />
+	</cffunction>
+	
+	<cffunction name="passed" access="private" output="false" returntype="struct" hint="This will return a struct with stMessage">
+		<cfargument name="value" required="true" type="any" hint="The value that is to be returned.">
+		
+		<cfset var r_stResult = structNew() />
+		<cfset r_stResult.value = arguments.value />
+		<cfset r_stResult.bSuccess = true />
+		<cfset r_stResult.stError = structNew() />
+		<cfset r_stResult.stError.message = "" />
+		<cfset r_stResult.stError.class = "" />
+		
+		<cfreturn r_stResult />
+	</cffunction>
 </cfcomponent> 
-
-
-<!--- 			db.boolean = "INT";
-			db.date = "DATETIME";
-			db.numeric = "NUMERIC";
-			db.string = "VARCHAR(255)";
-			db.nstring = "VARCHAR(255)";
-			db.uuid = "VARCHAR(50)";
-			db.variablename = "VARCHAR(64)";
-			db.color = "VARCHAR(20)";
-			db.email = "VARCHAR(255)";
-			db.longchar = "LONGTEXT";	
-			 --->

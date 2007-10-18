@@ -406,7 +406,7 @@ environment references (might be nice to clean these up)
 			stBut.name="add";
 			stBut.value="#application.adminBundle[session.dmProfile.locale].add#";
 			stBut.class="f-submit";
-			stBut.onClick="this.form.submit();";
+			stBut.onClick="";
 			stBut.permission="#attributes.permissionset#Create";
 			stBut.buttontype="add";
 			arrayAppend(aDefaultButtons,stBut);
@@ -418,7 +418,8 @@ environment references (might be nice to clean these up)
 			stBut.value="#application.adminBundle[session.dmProfile.locale].delete#";
 			stBut.class="f-submit";
 			// todo: i18n
-			stBut.onClick="if(confirm('Are you sure you wish to delete these objects?')){document['typeadmin']['delete'].value=1;this.form.submit();}";
+			stBut.onClick="";
+			stBut.confirmText="Are you sure you wish to delete these objects?";
 			stBut.permission="#attributes.permissionset#Delete";
 			stBut.buttontype="delete";
 			arrayAppend(aDefaultButtons,stBut);

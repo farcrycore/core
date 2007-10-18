@@ -201,17 +201,19 @@ return REFindNoCase("^[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{16}$", str);
 	
 	<cfset var stwizard = read(wizardid=arguments.objectid) />
 	<cfset var WizardObjectID = "" />
-	<cfset var stWizardObject = "" />
+	<cfset var stWizardObject = structNew() />
 	
 	<cfparam name="session.tempObjectStore" default="#structNew()#" />
 	
 	<cfif structKeyExists(stWizard, "data")>
 		<cfloop collection="#stwizard.data#" item="wizardObjectID">
-			<cfset stWizardObject = stWizard.data[wizardObjectID] />
+			<cfset stWizardObject.objectid = stWizard.data[wizardObjectID].objectid />
+			<cfset stWizardObject.typename = stWizard.data[wizardObjectID].typename />
 			<cfset createObject("component", application.stcoapi[stWizardObject.typename].packagepath).setLock(locked=false,stobj=stWizardObject) />
 			
 			<cfset structDelete(Session.TempObjectStore, wizardObjectID) />
 		</cfloop>
+		
 	</cfif>	
 	
 	<cfreturn super.deleteData(objectid=arguments.objectid,dsn=arguments.dsn, dbowner=arguments.dbowner) />

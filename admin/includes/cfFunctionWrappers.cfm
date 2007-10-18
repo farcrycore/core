@@ -37,15 +37,10 @@
 	</cfquery>
 	
 	<!--- This is so we always return a query object - ie update statements may not return a result --->
-	<cftry>
-		<cfif q.recordcount>
-			<!--- blah --->
-		</cfif>	
-		<cfcatch>
-			<cfset q = queryNew('acoloumn')>
-		</cfcatch>
-
-	</cftry>
+	
+	<cfif not isDefined("q.recordcount")>
+		<cfset q = queryNew('acoloumn')>
+	</cfif>
 	
 	<cfreturn q>
 </cffunction>

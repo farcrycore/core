@@ -16,17 +16,14 @@ This dumps out an object based on objectid [replacement for edittabDump.cfm]
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
 <cfset bPermission_DumpObject = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="ObjectDumpTab")>
 
-<cfsetting enablecfoutputonly="No">
-<!--- setup page header --->
-<admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 <cfif bPermission_DumpObject>
-	<cfif errormessage NEQ ""><cfoutput>
-<p class="error">#errormessage#</p></cfoutput>
+	<cfif errormessage NEQ "">
+		<cfoutput><p class="error">#errormessage#</p></cfoutput>
 	<cfelse>
-		<cfdump var="#stObj#">
+		<cfdump var="#stObj#" label="#stobj.label#">
 	</cfif>
 <cfelse>
 	<admin:permissionError>
 </cfif>
-<!--- setup page footer --->
-<admin:footer>
+
+<cfsetting enablecfoutputonly="No">

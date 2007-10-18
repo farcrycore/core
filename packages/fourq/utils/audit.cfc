@@ -35,7 +35,8 @@ for the fourQ COAPI
 	<cfargument name="dbowner" type="string" required="false" default="#ucase(application.dbowner)#">
 	<!--- local vars --->
 	<cfset var datetimestamp = Now()>
-	<cfset var bSuccess = true>
+	<cfset var bSuccess = true>		
+	<cfset var insertLog = queryNew("blah") />
 	
 	<cfquery datasource="#arguments.dsn#" name="insertLog">
 	INSERT INTO #arguments.dbowner#fqAudit
@@ -100,7 +101,10 @@ need a bunch of functions to get audit data here
 	<cfargument name="dbtype" default="#application.dbtype#" type="variableName" required="No">
 	<cfargument name="dbowner" type="string" required="false" default="#ucase(application.dbowner)#">
 	<!--- local vars --->
-	<cfset var qLog = "">	
+	<cfset var qLog = "">
+	<cfset var qDrop = queryNew("blah") />	
+	<cfset var qCreate = queryNew("blah") />	
+	<cfset var qPopulate = queryNew("blah") />			
 	
 	<cfswitch expression="#arguments.dbtype#">
 	    <cfcase value="ora">
@@ -188,6 +192,9 @@ need a bunch of functions to get audit data here
 	<cfargument name="dbowner" type="string" required="false" default="#ucase(application.dbowner)#">
 	<!--- local vars --->
 	<cfset var qLog = "">
+	<cfset var qDrop = queryNew("blah") />	
+	<cfset var qCreate = queryNew("blah") />	
+	<cfset var qPopulate = queryNew("blah") />	
 	
 	<cfswitch expression="#arguments.dbtype#">
 	    <cfcase value="ora">

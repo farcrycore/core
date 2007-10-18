@@ -1,3 +1,6 @@
+<cfsetting enablecfoutputonly="true" />
+<cfsetting showdebugoutput="false" />
+
 <cfset request.inhead.scriptaculous = true />
 
 
@@ -128,3 +131,5 @@
 </body> 
 </html> 
 </cfoutput>
+
+<cfsetting enablecfoutputonly="false" />

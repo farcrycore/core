@@ -140,12 +140,18 @@
 	</cffunction>
 
 	<cffunction name="fCreateDefaultDirectories" access="public" returntype="void" hint="creates the default image directories for original, optimised and thumbnail">		
-		<!--- create origianl image directory --->
-		<cfset fCreateDirectory(application.config.image.folderpath_original)>
-		<!--- create optimised image directory --->
-		<cfset fCreateDirectory(application.config.image.folderpath_optimised)>
-		<!--- create thumbnail image directory --->
-		<cfset fCreateDirectory(application.config.image.folderpath_thumbnail)>
+		<cfif not DirectoryExists(application.config.image.folderpath_original)>
+			<!--- create origianl image directory --->
+			<cfset fCreateDirectory(application.config.image.folderpath_original)>
+		</cfif>
+		<cfif not DirectoryExists(application.config.image.folderpath_optimised)>
+			<!--- create optimised image directory --->
+			<cfset fCreateDirectory(application.config.image.folderpath_optimised)>
+		</cfif>
+		<cfif not DirectoryExists(application.config.image.folderpath_thumbnail)>
+			<!--- create thumbnail image directory --->
+			<cfset fCreateDirectory(application.config.image.folderpath_thumbnail)>
+		</cfif>
 	</cffunction>
 
 	<cffunction name="fCreateDirectory" access="public" returntype="void" hint="creates a directory based on the path">

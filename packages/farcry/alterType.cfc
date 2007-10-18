@@ -26,6 +26,8 @@ $out:$
 <cfcomponent>
 <cfinclude template="/farcry/core/admin/includes/cfFunctionWrappers.cfm">
 
+<cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
+
 <cffunction name="getDataType">
 	<cfargument name="cfctype" required="true" />
 	<cfargument name="bReturnTypeOnly" required="No" default="false" />
@@ -64,26 +66,13 @@ $out:$
 <cffunction name="deployArrayProperty">
 	<cfargument name="typename" required="true">
 	<cfargument name="property" required="true">
-	<cfargument name="scope" required="false" default="types">
 
 
-	<cfswitch expression="#arguments.scope#">
+	<cfif not structKeyExists(application.stCoapi,arguments.typeName)>
+		<cfthrow type="AlterType" message="Type does not exists"  >
+	</cfif>
 
-		<cfcase value="rules">
-			<cfset typeInstance = createObject("component", "#application.rules[arguments.typename].rulepath#")>
-		</cfcase>
-
-		<cfcase value="types">
-			<cfset typeInstance = createObject("component", "#application.types[arguments.typename].typepath#")>
-		</cfcase>
-
-		<cfdefaultcase>
-			<cfthrow type="AlterType" message="Unknown scope passed to deployArrayProperty"  >
-		</cfdefaultcase>
-
-	</cfswitch>
-
-	<cfset typeInstance.deployArrayTable(bTestRun='0',parent='#application.dbowner##arguments.typename#',property=arguments.property)>
+	<cfset createObject("component", "#application.stCoapi[arguments.typename].packagePath#").deployArrayTable(bTestRun='0',parent='#application.dbowner##arguments.typename#',property=arguments.property)>
 
 </cffunction>
 
@@ -114,7 +103,7 @@ $out:$
 		<cfset application.types[arguments.typename].bLibraryType = bLibraryType />
 		<cfset application.types[arguments.typename].typePath = path />
 		<cfset application.types[arguments.typename].packagePath = path />
-
+		<cfset application.stcoapi[arguments.typename] = duplicate(application.types[arguments.typename]) />
 	<cfelseif arguments.scope IS 'rules' >
 
 		<cfset path = application.rules[arguments.typename].rulePath />
@@ -127,7 +116,7 @@ $out:$
 		<cfset application.rules[arguments.typename].bLibraryRule = bLibraryRule />
 		<cfset application.rules[arguments.typename].rulePath = path />
 		<cfset application.rules[arguments.typename].packagePath = path />
-	
+		<cfset application.stcoapi[arguments.typename] = duplicate(application.rules[arguments.typename]) />
 	<cfelseif  arguments.scope IS 'formtools' >
 	
 		<cfset path = application.formtools[arguments.typename].FormToolPath />
@@ -253,9 +242,9 @@ $out:$
 	<cfset application.stcoapi = structNew() />
 	 
 	<!--- Find all types, base, extended & custom --->
-	<cfdirectory directory="#application.path.core#/packages/types" name="qDir" filter="dm*.cfc" sort="name">
-	<cfdirectory directory="#application.path.project#/packages/system" name="qExtendedTypesDir" filter="*.cfc" sort="name">
-	<cfdirectory directory="#application.path.project#/packages/types" name="qCustomTypesDir" filter="*.cfc" sort="name">
+	<cfdirectory directory="#application.path.core#/packages/types" name="qDir" filter="dm*.cfc" sort="name" />
+	<cfdirectory directory="#application.path.project#/packages/system" name="qExtendedTypesDir" filter="*.cfc" sort="name" />
+	<cfdirectory directory="#application.path.project#/packages/types" name="qCustomTypesDir" filter="*.cfc" sort="name" />
 
 
 
@@ -998,7 +987,7 @@ $out:$
 					<th>&nbsp;</th>
 				</tr>
 				<cfloop collection="#arguments.stCFC#" item="key">
-				<form name="CFCForm" action="#cgi.SCRIPT_NAME#" method="post">
+				<ft:form name="CFCForm" action="#cgi.SCRIPT_NAME#" method="post">
 				<tr>
 				<cfif NOT arguments.stCFC[key].bPropertyExists>
 					<td>
@@ -1023,7 +1012,8 @@ $out:$
 					<td>
 						<input type="hidden" name="property" value="#key#" />
 						<input type="hidden" name="typename" value="#arguments.typename#" />
-						<input type="submit" value="Go" class="f-submit" />
+						<ft:farcryButton value="Go" />
+						
 					</td>
 				<cfelseif arguments.stCFC[key].bTypeConflict>
 					<td>
@@ -1040,7 +1030,7 @@ $out:$
 
 				</cfif>
 				</tr>
-				</form>
+				</ft:form>
 				</cfloop>
 			</table>
 		</td>
@@ -1094,7 +1084,7 @@ $out:$
 				</script>
 
 				<cfloop collection="#arguments.stDB#" item="key">
-				<form name="#arguments.typename#_#key#_DBForm" action="#cgi.SCRIPT_NAME#" method="post">
+				<ft:form name="#arguments.typename#_#key#_DBForm" action="#cgi.SCRIPT_NAME#" method="post">
 				<tr>
 				<cfif NOT arguments.stDB[key].bPropertyExists>
 					<td>
@@ -1131,7 +1121,8 @@ $out:$
 					<td>
 						<input type="hidden" name="property" value="#key#" />
 						<input type="hidden" name="typename" value="#arguments.typename#" />
-						<input type="submit" value="Go" class="f-submit" />
+						<!--- <input type="submit" value="Go" class="f-submit" /> --->
+						<ft:farcryButton value="Go" />
 					</td>
 				<cfelseif arguments.stDB[key].bTypeConflict>
 					<td>
@@ -1154,11 +1145,12 @@ $out:$
 					<td>
 						<input type="hidden" name="property" value="#key#" />
 						<input type="hidden" name="typename" value="#arguments.typename#" />
-						<input type="submit" value="Go" class="f-submit" />
+						<!--- <input type="submit" value="Go" class="f-submit" /> --->
+						<ft:farcryButton value="Go" />
 					</td>
 				</cfif>
 				</tr>
-				</form>
+				</ft:form>
 				</cfloop>
 			</table>
 		</td>
@@ -1315,11 +1307,10 @@ $out:$
 	<cfargument name="srcColumn" required="true">
 	<cfargument name="srcColumnType" required="true">
 	<cfargument name="dsn" default="#application.dsn#" required="false">
-	<cfargument name="scope" default="types" required="No">
 
 	<!--- work out default field length --->
 	<cfset length = getTypeDefaults()>
-	<cfset length = length[application[arguments.scope][arguments.typename].stProps[arguments.srcColumn].metadata.type].length>
+	<cfset length = length[application.stCoapi[arguments.typename].stProps[arguments.srcColumn].metadata.type].length>
 
 	<cftransaction>
 		<cftry>
@@ -1449,6 +1440,7 @@ $out:$
 		<cfcatch>
 			<cfoutput>
 			<cfdump var="#cfcatch#">
+			<cflog file="coapi" text="repair on property failed: #cfcatch.message# #cfcatch.detail#" >
 			#cfcatch.message#<p></p>#cfcatch.detail#<p></p></cfoutput>
 		</cfcatch>
 		</cftry>
@@ -1676,11 +1668,7 @@ $out:$
 	<cfset var o = "" />
 	<cfset var result = "" />
 	
-	<cfif arguments.scope EQ "types">
-		<cfset o = createObject("component", application.types[arguments.typename].typepath) />
-	<cfelseif arguments.scope EQ "rules">
-		<cfset o = createObject("component", application.rules[arguments.typename].rulepath) />
-	</cfif>
+	<cfset o = createObject("component", application.stCoapi[arguments.typename].packagePath) />
 	
 	<cfset result = o.deployType(btestRun="false") />
 

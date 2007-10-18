@@ -20,6 +20,8 @@
 		<cfset var html = "" />
 		<cfset var optionValue = "" />
 		<cfset var rListData = "" />
+		<cfset var i = "" />
+		<cfset var oList = "" />
 
 		<cfparam name="arguments.stMetadata.ftList" default="">
 		<cfparam name="arguments.stMetadata.ftRenderType" default="dropdown">
@@ -56,7 +58,6 @@
 				
 				<cfcase value="dropdown">								
 					<cfsavecontent variable="html">
-						
 						<cfoutput><select id="#arguments.fieldname#" name="#arguments.fieldname#" class="formList #arguments.stMetadata.ftClass#" style="#arguments.stMetadata.ftStyle#"<cfif arguments.stMetadata.ftSelectMultiple> multiple="multiple"</cfif>></cfoutput>
 						<cfloop list="#arguments.stMetadata.ftList#" index="i">
 							<cfif Left(i, 1) EQ ":">
@@ -64,9 +65,9 @@
 							<cfelse>
 								<cfset optionValue = ListFirst(i,":") />
 							</cfif>
-							<cfoutput><option value="#optionValue#" <cfif listFindNoCase(arguments.stMetadata.value, optionValue)> selected="selected"</cfif>>#ListLast(i , ":")#</option></cfoutput>
+							<cfoutput><option value="#optionValue#" <cfif listFindNoCase(arguments.stMetadata.value, optionValue) or arguments.stMetadata.value eq optionValue> selected</cfif>>#ListLast(i , ":")#</option></cfoutput>
 						</cfloop>
-						<cfoutput></select></cfoutput>
+						<cfoutput></select><br style="clear: both;"/></cfoutput>
 						
 					</cfsavecontent>					
 				</cfcase>
@@ -77,13 +78,15 @@
 						<cfoutput>
 							<div class="fieldsection optional">
 								<div class="fieldwrap">
+									<cfset tmpCount=0>
 									<cfloop list="#arguments.stMetadata.ftList#" index="i">
+										<cfset tmpCount=tmpCount + 1>
 										<cfif Left(i, 1) EQ ":">
 											<cfset optionValue = "" /><!--- This means that the developer wants the value to be an empty string --->
 										<cfelse>
 											<cfset optionValue = ListFirst(i,":") />
 										</cfif>
-										<input type="checkbox" name="#arguments.fieldname#" class="formCheckbox" id="#arguments.fieldname#" value="#optionValue#"<cfif listFindNoCase(arguments.stMetadata.value, optionValue)> checked="checked"</cfif> />										
+										<input type="checkbox" name="#arguments.fieldname#" class="formCheckbox #IIF(listLen(arguments.stMetadata.ftList) eq tmpCount ,DE(" #arguments.stMetadata.ftClass#"),DE(""))#" id="#arguments.fieldname#" value="#optionValue#"<cfif listFindNoCase(arguments.stMetadata.value, optionValue)> checked="checked"</cfif> />										
 										<!--- <label class="fieldsectionlabel" class="fieldsectionlabel" for="#arguments.fieldname#">#ListLast(i , ":")#</label> --->
 										<!--- MPS: styles aren't working so we are removing label for now until we have time to look at the css --->
 										#ListLast(i , ":")#
@@ -102,13 +105,15 @@
 						<cfoutput>
 							<div class="fieldsection optional">
 								<div class="fieldwrap">
+									<cfset tmpCount=0>
 									<cfloop list="#arguments.stMetadata.ftList#" index="i">
+										<cfset tmpCount=tmpCount + 1>
 										<cfif Left(i, 1) EQ ":">
 											<cfset optionValue = "" /><!--- This means that the developer wants the value to be an empty string --->
 										<cfelse>
 											<cfset optionValue = ListFirst(i,":") />
 										</cfif>
-										<input type="radio" name="#arguments.fieldname#" id="#arguments.fieldname#" class="formCheckbox" value="#optionValue#"<cfif listFindNoCase(arguments.stMetadata.value, optionValue)> checked="checked"</cfif> />
+										<input type="radio" name="#arguments.fieldname#" id="#arguments.fieldname#"  class="formCheckbox #IIF(listLen(arguments.stMetadata.ftList) eq tmpCount,DE(" #arguments.stMetadata.ftClass#"),DE(""))#" value="#optionValue#"<cfif listFindNoCase(arguments.stMetadata.value, optionValue)> checked="checked"</cfif> />
 										<!--- <label class="fieldsectionlabel" class="fieldsectionlabel" for="#arguments.fieldname#">#ListLast(i , ":")#</label> --->
 										<!--- MPS: styles aren't working so we are removing label for now until we have time to look at the css --->
 										#ListLast(i , ":")#
@@ -137,6 +142,11 @@
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 
+		<cfset var i = "" />
+		<cfset var html = "" />
+		<cfset var oList = "" />
+		
+		
 		<cfparam name="arguments.stMetadata.ftList" default="" />
 		
 		<cfif isDefined("arguments.stMetadata.ftListData") AND len(arguments.stMetadata.ftListData) >

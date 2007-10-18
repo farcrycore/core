@@ -10,6 +10,11 @@
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 		
+		<cfset var html = "" />
+		<cfset var oType = "" />
+		<cfset var qWebskins = queryNew("blah") />
+		
+		
 		<cfparam name="arguments.stMetadata.ftPrefix" default="">
 		<cfparam name="arguments.stMetadata.ftTypename" default="#arguments.typename#"><!--- The typename that the webskin is to be selected for. It defaults to the typename of the object this field is contained in. --->
 	

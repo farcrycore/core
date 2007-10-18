@@ -39,6 +39,9 @@ $in: id -- an id for the content to be added to the head. If the key already exi
 		<cfset arrayAppend(request.inHead.aCustomIDs, attributes.id) />
 	</cfif>
 	
+	<cfset application.coapi.objectbroker.addHTMLHeadToWebskins(id="#attributes.id#", text="#thisTag.generatedContent#") />
+	
+	
 	<cfset thisTag.generatedContent = "" />
 	
 </cfif>

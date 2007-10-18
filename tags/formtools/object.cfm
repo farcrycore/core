@@ -29,6 +29,7 @@
 	<cfparam name="attributes.InTable" default="0">
 	<cfparam name="attributes.insidePLP" default="0"><!--- how are we rendering the form --->
 	<cfparam name="attributes.r_stFields" default=""><!--- the name of the structure that is to be returned with the form field information. --->
+	<cfparam name="attributes.r_stPrefix" default=""><!--- the name of the structure that is to be returned with the form field prefix used. --->
 	<cfparam name="attributes.stPropMetadata" default="#structNew()#"><!--- This is used to override the default metadata as setup in the type.cfc --->
 	<cfparam name="attributes.wizardID" default=""><!--- If this object call is part of a wizard, the object will be retrieved from the wizard storage --->
 	<cfparam name="attributes.IncludeLibraryWrapper" default="true"><!--- If this is set to false, the library wrapper is not displayed. This is so that the library can change the inner html of the wrapper without duplicating the wrapping div. --->
@@ -121,11 +122,7 @@
 	</cfif>
 
 	<cfset lFieldsToRender =  "">
-	
-	<cfif not len(attributes.lFields)>
-		<cfset attributes.lFields = variables.lFields />
-	</cfif>	
-	
+
 	<!--- allow for whitespace in field list attributes by trimming --->
 	<cfset attributes.lFields = replacenocase(attributes.lFields, " ", "", "ALL") />
 	<cfset attributes.lHiddenFields = replacenocase(attributes.lHiddenFields, " ", "", "ALL") />
@@ -142,6 +139,11 @@
 				<cfset attributes.lExcludeFields =  listdeleteat(attributes.lExcludeFields,ListFindNoCase(attributes.lExcludeFields,i))>
 			</cfif> --->
 		</cfif>
+		
+		<!--- If the user explicitly wants a field to appear, remove it from the exclusion list. --->
+		<cfif ListFindNoCase(attributes.lExcludeFields,i)>
+			<cfset attributes.lExcludeFields =  listdeleteat(attributes.lExcludeFields,ListFindNoCase(attributes.lExcludeFields,i))>
+		</cfif>
 	</cfloop>
 	
 
@@ -156,6 +158,12 @@
 			<cfset attributes.lExcludeFields =  listdeleteat(attributes.lExcludeFields,ListFindNoCase(attributes.lExcludeFields,i))>
 		</cfif>
 	</cfloop>	
+	
+	<!--- If still no fields, just default to all the fields in the type --->
+	<cfif not len(lFieldsToRender)>
+		<cfset lFieldsToRender = variables.lFields>
+	</cfif>	
+	
 	
 	<!--- Determine fields to exclude from render --->
 	<cfif isDefined("attributes.lExcludeFields") and len(attributes.lExcludeFields)>
@@ -179,7 +187,9 @@
 			<cfif structKeyExists(request.farcryForm.stObjects,'#key#') 
 				AND structKeyExists(request.farcryForm.stObjects[key],'farcryformobjectinfo')
 				AND structKeyExists(request.farcryForm.stObjects[key].farcryformobjectinfo,'ObjectID')
-				AND request.farcryForm.stObjects[key].farcryformobjectinfo.ObjectID EQ stObj.ObjectID>
+				AND (
+						request.farcryForm.stObjects[key].farcryformobjectinfo.ObjectID EQ stObj.ObjectID
+					)>
 					<cfset variables.prefix = key>
 			</cfif>			
 			
@@ -244,7 +254,11 @@
 
 		
 		<!--- If we have been sent stPropValues for this field then we need to set it to this value  --->
-		<cfif structKeyExists(attributes.stPropValues,i)>
+		<cfif structKeyExists(request, "stFarcryFormValidation")
+			AND structKeyExists(request.stFarcryFormValidation, stObj.ObjectID)
+			AND structKeyExists(request.stFarcryFormValidation[stObj.ObjectID], i) >
+			<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i].value = request.stFarcryFormValidation['#stObj.ObjectID#']['#i#'].value />
+		<cfelseif structKeyExists(attributes.stPropValues,i)>
 			<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i].value = attributes.stPropValues[i]>
 			<cfset variables.stObj[i] = attributes.stPropValues[i]>
 		<cfelse>
@@ -288,8 +302,8 @@
 		 --->		 
 		<cfif attributes.bValidation>
 			<cfif len(ftFieldMetadata.ftValidation)>
-				<cfloop list="#ftFieldMetadata.ftValidation#" index="i">
-					<cfset ftFieldMetadata.ftClass = "#ftFieldMetadata.ftClass# #lcase(i)#">
+				<cfloop list="#ftFieldMetadata.ftValidation#" index="iValidation">
+					<cfset ftFieldMetadata.ftClass = "#ftFieldMetadata.ftClass# #lcase(iValidation)#">
 				</cfloop>
 			</cfif>
 		</cfif>
@@ -390,6 +404,19 @@
 				</cftry>
 				
 				
+				<cfif structKeyExists(request, "stFarcryFormValidation")
+					AND structKeyExists(request.stFarcryFormValidation, stObj.ObjectID)
+					AND structKeyExists(request.stFarcryFormValidation[stObj.ObjectID], i)
+					AND structKeyExists(request.stFarcryFormValidation[stObj.ObjectID][i], "bSuccess")
+					AND NOT request.stFarcryFormValidation[stObj.ObjectID][i].bSuccess >
+					<cfsavecontent variable="variables.formValidationMessage">
+						<cfoutput><div class="#request.stFarcryFormValidation[stObj.ObjectID][i].stError.class#">#request.stFarcryFormValidation[stObj.ObjectID][i].stError.message#</div></cfoutput>
+					</cfsavecontent>
+					
+					<cfset variables.returnHTML = "#variables.returnHTML# #variables.formValidationMessage#">
+				</cfif>
+				
+				
 			</cfif>
 
 			<!-------------------------------------------------------------
@@ -465,12 +492,12 @@
 						<ws:buildLink href="#application.url.farcry#/facade/library.cfm" stParameters="#stURLParams#" r_url="libraryPopupJS" />
 	
 						<cfoutput>
-							<input type="button" name="libraryOpen" value="Open Library" class="formButton" onClick="openLibrary('#Replace(stObj.ObjectID,"-", "", "ALL")#', $('#variables.prefix##ftFieldMetadata.Name#Join').value,'#libraryPopupJS#')" />
+							<ft:farcryButton Type="button" value="Open Library" onClick="openLibrary('#Replace(stObj.ObjectID,"-", "", "ALL")#', $('#variables.prefix##ftFieldMetadata.Name#Join').value,'#libraryPopupJS#')" />
 	
 							<cfif listLen(ftFieldMetadata.ftJoin) GT 1>
 								<select id="#variables.prefix##ftFieldMetadata.Name#Join" name="#variables.prefix##ftFieldMetadata.Name#Join" >
-									<cfloop list="#ftFieldMetadata.ftJoin#" index="i">
-										<option value="#i#">#application.stcoapi[i].displayname#</option>
+									<cfloop list="#ftFieldMetadata.ftJoin#" index="iJoin">
+										<option value="#iJoin#">#application.stcoapi[iJoin].displayname#</option>
 									</cfloop>
 								</select>
 							<cfelse>
@@ -555,6 +582,7 @@
 						</cfif>
 						
 						#variables.returnHTML#
+						
 					</div>
 				</cfoutput>
 				
@@ -594,6 +622,12 @@
 			<cfelse>
 				<cfset CALLER[i] = StructNew()>
 			</cfif>
+		</cfloop>
+	</cfif>
+	
+	<cfif len(Attributes.r_stPrefix)>
+		<cfloop list="#attributes.r_stPrefix#" index="i">
+			<cfset CALLER[i] = variables.prefix>
 		</cfloop>
 	</cfif>
 	

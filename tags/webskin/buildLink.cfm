@@ -1,4 +1,5 @@
 <cfsetting enablecfoutputonly="Yes">
+<cfsilent>
 <!--- 
 || LEGAL ||
 $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
@@ -28,6 +29,7 @@ $in: xCode -- eXtra code to be placed inside the anchor tag $
 --->
 
 <cfif thistag.executionMode eq "Start">
+
 	<cfparam name="attributes.linktext" default="">
 	<cfparam name="attributes.target" default="_self">
 	<cfparam name="attributes.bShowTarget" default="false">
@@ -38,6 +40,7 @@ $in: xCode -- eXtra code to be placed inside the anchor tag $
 	<cfparam name="attributes.r_url" default="">
 	<cfparam name="attributes.xCode" default="">
 	<cfparam name="attributes.includeDomain" default="false">
+	<cfparam name="attributes.Domain" default="#cgi.http_host#">
 	<cfparam name="attributes.stParameters" default="#StructNew()#">
 	<cfparam name="attributes.JSWindow" default="0"><!--- Default to not using a Javascript Window popup --->
 	<cfparam name="attributes.stJSParameters" default="#StructNew()#">
@@ -76,7 +79,7 @@ $in: xCode -- eXtra code to be placed inside the anchor tag $
 		</cfif>
 	<cfelse>
 		<cfif attributes.includeDomain>
-	        <cfset href = "http://#cgi.http_host#">
+	        <cfset href = "http://#attributes.Domain#">
 	    <cfelse>
 	        <cfset href = "">
 	    </cfif>
@@ -166,18 +169,19 @@ $in: xCode -- eXtra code to be placed inside the anchor tag $
 
 <!--- thistag.ExecutionMode is END --->
 <cfelse>
-	<!--- Was only the URL requested? If so, we don't need to close any tags --->
-	<cfif attributes.urlOnly EQ false and not len(attributes.r_url)>
-		<cfif len(attributes.linktext)>
-			<cfset tagoutput=tagoutput & trim(attributes.linktext) & '</a>'>
-		<cfelse>
-			<cfset tagoutput=tagoutput & trim(thistag.generatedcontent) & '</a>'>
+	<cfif not len(attributes.r_url)>
+		<!--- Was only the URL requested? If so, we don't need to close any tags --->
+		<cfif attributes.urlOnly EQ false>
+			<cfif len(attributes.linktext)>
+				<cfset tagoutput=tagoutput & trim(attributes.linktext) & '</a>'>
+			<cfelse>
+				<cfset tagoutput=tagoutput & trim(thistag.generatedcontent) & '</a>'>
+			</cfif>
 		</cfif>
-	
 
 		<!--- clean up whitespace --->
 		<cfset thistag.GeneratedContent=tagoutput>
 	</cfif>
 </cfif>
-
+</cfsilent>
 <cfsetting enablecfoutputonly="No">

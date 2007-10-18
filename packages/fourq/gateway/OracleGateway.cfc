@@ -162,9 +162,8 @@
 		<cfreturn stResult />
 	</cffunction>
 
-  <cffunction name="generateDeploymentSQLArray" access="private" output="false" returntype="array" hint="This method generates an array of structs. Each struct contains the keys column, datatype, defaultValue and nullable. The value of each struct key contains a fragment of valid SQL for the current database.">
-    <cfargument name="fields" type="struct" required="true" />
-
+	<cffunction name="generateDeploymentSQLArray" access="private" output="false" returntype="array" hint="This method generates an array of structs. Each struct contains the keys column, datatype, defaultValue and nullable. The value of each struct key contains a fragment of valid SQL for the current database.">
+		<cfargument name="fields" type="struct" required="true" />
 
 		<cfset var i            = "" />
 		<cfset var fieldArray   = structKeyArray(fields) />
@@ -176,7 +175,7 @@
 		<cfset var SQLArray     = arrayNew(1) />
 		<cfset var fieldSQL     = structNew() />
 
-    <cfset arraySort(fieldArray,'textNoCase') />
+		<cfset arraySort(fieldArray,'textNoCase') />
 
 
 		<cfloop from="1" to="#arrayLen(fieldArray)#" index="i">
@@ -184,35 +183,48 @@
 
 			<cfif type neq 'array'>
 
- 		     <cfset column = fields[fieldArray[i]].name />
-			  <cfset SQLType = variables.dataMappings[type] />
-			  <cfset defaultValue = fields[fieldArray[i]].default />
+				<cfset column = fields[fieldArray[i]].name />
+				<cfset SQLType = variables.dataMappings[type] />
+				<cfset defaultValue = fields[fieldArray[i]].default />
+
+				<!--- determine and assign default value for column --->
 				<cfif listFindNoCase(variables.numericTypes,fields[fieldArray[i]].type)>
-					<cfif len(trim(defaultValue))>
+					<cfif Len( Trim( defaultValue ) )>
+						
+						<!--- ensure booleans are recorded as 1/0 --->
+						<cfif fields[fieldArray[i]].type eq 'boolean'>
+							<cfif defaultValue>
+								<cfset defaultValue = 1 />
+							<cfelse>
+								<cfset defaultValue = 0 />
+							</cfif>
+						</cfif>
+						
 						<cfset defaultValue = "default #defaultValue#" />
 					<cfelse>
 						<cfset defaultValue = "" />
 					</cfif>
 				<cfelse>
-				   <cfif defaultValue is not "NULL">
-					   <cfset defaultValue = "default '#defaultValue#'" />
+					<cfif defaultValue is not "NULL">
+						<cfset defaultValue = "default '#defaultValue#'" />
 					<cfelse>
-   				   <cfset defaultValue = "" />
-				  </cfif>
-
+						<cfset defaultValue = "" />
+					</cfif>
 				</cfif>
-
+				
 				<cfif fields[fieldArray[i]].nullable>
 					<cfset nullable = "NULL" />
 				<cfelse>
 					<cfset nullable = "NOT NULL" />
 				</cfif>
-			  <cfset fieldSQL = structNew() />
-			  <cfset fieldSQL.column       = column />
-			  <cfset fieldSQl.defaultValue = defaultValue />
-			  <cfset fieldSQL.dataType     = SQLType />
-			  <cfset fieldSQL.nullable     = nullable />
-			  <cfset arrayAppend(SQLArray,fieldSQL) />
+
+				<cfset fieldSQL = structNew() />
+				<cfset fieldSQL.column       = column />
+				<cfset fieldSQl.defaultValue = defaultValue />
+				<cfset fieldSQL.dataType     = SQLType />
+				<cfset fieldSQL.nullable     = nullable />
+				<cfset arrayAppend(SQLArray,fieldSQL) />
+				
 			</cfif>
 
 		</cfloop>
@@ -231,6 +243,7 @@
 	  <cfset var field = "" />
 	  <cfset var SQLArray = arrayNew(1) />
 	  <cfset var propertyValue = "" />
+   		<cfset var stField = structNew() />
 
     <cfloop collection="#tableDef#" item="field">
 

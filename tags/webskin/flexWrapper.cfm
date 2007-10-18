@@ -19,7 +19,9 @@ $in: flexAssetsPath -- Location of the flex assets : optional $
 <cfparam name="attributes.SWFSource" default="" />
 <cfparam name="attributes.SWFID" default="" />
 <cfparam name="attributes.flashVars" default="" />
-<cfparam name="attributes.flexAssetsPath" default="/farcry/admin/ui/flexassets" />
+<cfparam name="attributes.flexAssetsPath" default="#application.url.farcry#/admin/ui/flexassets" />
+<cfparam name="attributes.FAbridgeJS" default="" />
+
 
 <cfif attributes.flashVars neq "">
 	<cfset attributes.flashVars="#attributes.flashVars#&">
@@ -28,7 +30,12 @@ $in: flexAssetsPath -- Location of the flex assets : optional $
 <cfsavecontent variable="flexInHead">
 <cfoutput>
 <script src="#attributes.flexAssetsPath#/AC_OETags.js" language="javascript"></script>
-
+<cfif attributes.FAbridgeJS neq "">
+	<script src="#attributes.flexAssetsPath#/FABridge.js" language="javascript"></script>
+	<script language="javascript">
+	#attributes.FAbridgeJS#
+	</script>
+</cfif>
 <script language="JavaScript" type="text/javascript">
 <!--
 // -----------------------------------------------------------------------------

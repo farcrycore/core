@@ -874,6 +874,7 @@ Revision Information (Changelog):
 <cfparam name="attributes.LayoutNumber" default="1" />
 <cfparam name="attributes.FirstLastPage" default="none" />
 <cfparam name="attributes.CenterPageOffset" default="1" /> <!--- Default for "even" --->
+<cfparam name="attributes.showCurrentPageDetails" default="false" /> <!--- Show Page [x] of [y] --->
 <!--- "Layout attributes" Text/Ascii (All have the option to be set to blank) --->
 <cfscript>
   // Using IsDefined() allows the user to send "" (blank) for a value
@@ -1306,6 +1307,14 @@ Revision Information (Changelog):
 
 <cfoutput><cfif variables.DivStyle neq ''><div id="#variables.DivStyle#"></cfif><cfif variables.PageText neq ''><cfif variables.TextStyle1 neq ''><span class="#variables.TextStyle1#"></cfif>#variables.PageText#<cfif variables.TextStyle1 neq ''></span></cfif></cfif></cfoutput>
 
+
+  <cfif attributes.showCurrentPageDetails>
+	  <cfoutput>
+	  <h4>Page #variables.ThisPageNumber# of #variables.Last_PageNumber#</h4>
+	  </cfoutput>  
+  </cfif>
+
+
   <!--- START - Previous link --->
   <cfif variables.ThisPageNumber NEQ 1>
     <!--- Note: I've left this code in here since v1.00.  If you'd like to use it remember to remark the other code below it instead.
@@ -1412,6 +1421,7 @@ Revision Information (Changelog):
       <cfoutput>#Layout_preNext#<cfif variables.LinkStyle1 neq ''><span id="#variables.LinkStyle1#"></cfif><a href="#variables.FileName#?#variables.ExtraURLString#<cfif variables.bEnablePageNumber>&amp;#variables.PageNumber_string#=#variables.nextPageNumber#<cfelse>&amp;#variables.strt_string#=#Evaluate(variables.strt + variables.show)#&amp;#variables.show_string#=#variables.show#</cfif>#attributes.bookmark#">#variables.layout_next#</a><cfif variables.LinkStyle1 neq ''></span></cfif>#Layout_postNext#</cfoutput>
     </cfif>
   </cfif>
+
   <!--- END - Next records --->
 
   <!--- Display Version Info --->

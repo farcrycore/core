@@ -24,9 +24,8 @@ $out:$
 
 <!--- get user details --->
 <cfscript>
-	stUser = request.dmsec.oAuthentication.getUser(userlogin="#session.dmsec.authentication.userlogin#",userDirectory="#session.dmsec.authentication.userdirectory#");
+	stUser = request.dmsec.oAuthentication.getUser(userid="#arguments.userId#",userDirectory="#session.dmsec.authentication.userdirectory#");
 </cfscript>
-
 <!--- check if UD has password encryption --->
 <cfif structKeyExists(Application.dmSec.UserDirectory[stUser.userDirectory],"bEncrypted") and Application.dmSec.UserDirectory[stUser.userDirectory].bEncrypted>
 	<cfset newPassword = hash(arguments.newPassword)>
@@ -41,7 +40,7 @@ $out:$
 	<cfquery name="update" datasource="#arguments.dsn#">
 		UPDATE #application.dbowner#dmUser SET
 		userPassword=<cfqueryparam value="#newPassword#" cfsqltype="CF_SQL_VARCHAR"  null="No">
-		WHERE userId=<cfqueryparam value="#arguments.userId#" cfsqltype="CF_SQL_VARCHAR" null="No">
+		WHERE userId=<cfqueryparam value="#stUser.userId#" cfsqltype="CF_SQL_VARCHAR" null="No">
 	</cfquery>
 	<cfset bUpdate = true>
 <cfelse>

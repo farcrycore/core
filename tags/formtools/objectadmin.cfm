@@ -22,6 +22,7 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 <!--- import tag libraries --->
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
 <cfimport taglib="/farcry/core/tags/formtools/" prefix="ft">
+<cfimport taglib="/farcry/core/tags/extjs/" prefix="extjs">
 
 
 <cfif thistag.executionMode eq "Start">
@@ -63,7 +64,7 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 <cfparam name="attributes.defaultorder" default="desc" type="string">
 <cfparam name="attributes.id" default="#attributes.typename#" type="string">
 <cfparam name="attributes.sqlorderby" default="datetimelastupdated desc" type="string" />
-<cfparam name="attributes.sqlWhere" default="0=0" />
+<cfparam name="attributes.sqlWhere" default="" />
 <cfparam name="attributes.lCategories" default="" />
 
 <!--- admin configuration options --->
@@ -86,6 +87,8 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 <cfparam name="attributes.module" default="customlists/#attributes.typename#.cfm">
 <cfparam name="attributes.plugin" default="" />
 <cfparam name="attributes.lCustomActions" default="" />
+<cfparam name="attributes.stFilterMetaData" default="#structNew()#" />
+<cfparam name="attributes.bShowActionList" default="true" />
 
 
 <cfif NOT structKeyExists(session.objectadmin, attributes.typename)>
@@ -100,6 +103,9 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 	<cfset PrimaryPackagePath = application.types[attributes.typename].typepath />
 </cfif>
 
+<cfif not len(attributes.sqlWhere)>
+	<cfset attributes.sqlWhere = "0=0" />
+</cfif>
 
 <cfif NOT structKeyExists(PrimaryPackage, "news")>
 
@@ -240,22 +246,33 @@ user --->
 		</cfif>
 	
 
-		<ft:form style="padding:0px; border-bottom: 1px solid ##000; ">
+		<ft:form style="padding:10px; border: 1px solid ##000;margin-bottom:10px; ">
 			<cfoutput>
 			<div style="display:inline;color:##E17000">
 				Listing Filter:
 				<cfif HTMLfiltersAttributes eq "">
 					<a onclick="Effect.toggle('filterForm','blind');">set</a>
 				<cfelse>
-					<a onclick="Effect.toggle('filterForm','blind');">edit</a> <ft:farcryButton value="clear filter" /><div style="font-size:90%;margin-left:10px;border:1px solid ##000;padding:2px;float:right;background-color:##fff">#HTMLfiltersAttributes# &nbsp;</div>
+					<a onclick="Effect.toggle('filterForm','blind');">edit</a> 
+					
+					<div style="font-size:90%;margin-left:10px;border:1px solid ##000;padding:2px;float:right;background-color:##fff">
+						#HTMLfiltersAttributes#
+						<ft:farcryButton value="clear filter" />
+						<br class="clearer" />
+					</div>
 				</cfif>		
 			</div>
 			</cfoutput>
-			<cfoutput><div id="filterForm" style="display:none;padding:5px;"></cfoutput>
-				<ft:object objectid="#session.objectadminFilterObjects[attributes.typename].stObject.objectid#" typename="#attributes.typename#" lFields="#attributes.lFilterFields#" lExcludeFields="" includeFieldset="false" />
-				<ft:farcryButton value="apply filter" />
-				<br/>
-			<cfoutput></div></cfoutput>
+			<cfoutput><div id="filterForm" style="display:none;"><div style="padding:5px;"></cfoutput>
+			
+				<ft:object objectid="#session.objectadminFilterObjects[attributes.typename].stObject.objectid#" typename="#attributes.typename#" lFields="#attributes.lFilterFields#" lExcludeFields="" includeFieldset="false" stPropMetaData="#attributes.stFilterMetaData#" />
+				
+				<ft:farcryButtonPanel>
+					<ft:farcryButton value="apply filter" />
+				</ft:farcryButtonPanel>
+				
+			<cfoutput><br class="clearer" /></div></div></cfoutput>
+			
 		</ft:form>
 
 	
@@ -279,7 +296,7 @@ user --->
 					<cfif len(session.objectadminFilterObjects[attributes.typename].stObject[i])>
 						<cfswitch expression="#PrimaryPackage.stProps[i].metadata.ftType#">
 						
-						<cfcase value="string,nstring,list">	
+						<cfcase value="string,nstring,list,uuid">	
 							<cfif len(session.objectadminFilterObjects[attributes.typename].stObject[i])>
 								<cfloop list="#session.objectadminFilterObjects[attributes.typename].stObject[i]#" index="j">
 									<cfset whereValue = ReplaceNoCase(trim(LCase(j)),"'", "''", "all") />
@@ -334,13 +351,14 @@ user --->
 	<!------------------------
 	SQL ORDER BY CLAUSE
 	 ------------------------>
+	<cfset session.objectadminFilterObjects[attributes.typename].sqlOrderBy = "" />
 	<cfif len(attributes.sortableColumns)>
 		<cfif isDefined("form.sqlOrderBy") and len(form.sqlOrderby)>
 			<cfset session.objectadminFilterObjects[attributes.typename].sqlOrderBy = form.sqlOrderby />
 		</cfif>
 	</cfif>
 	
-	<cfif not structKeyExists(session.objectadminFilterObjects[attributes.typename], "sqlOrderBy") >
+	<cfif not len(session.objectadminFilterObjects[attributes.typename].sqlOrderBy) >
 		<cfset session.objectadminFilterObjects[attributes.typename].sqlOrderBy = attributes.sqlorderby />
 	</cfif>
 	
@@ -375,7 +393,7 @@ user --->
 		<!--- TODO: Check Permissions. --->
 		<cfoutput>
 			<script language="javascript">
-				var newWin = window.open("#application.url.webroot#/index.cfm?objectID=#form.objectid#&flushcache=1","viewWindow","resizable=yes,menubar=yes,scrollbars=yes,width=800,height=600");
+				var newWin = window.open("#application.url.webroot#/index.cfm?objectID=#form.objectid#&flushcache=1","viewWindow","resizable=yes,menubar=yes,scrollbars=yes,width=800,height=600,location=yes");
 			</script>
 		</cfoutput>
 		<!--- <cflocation URL="#application.url.webroot#/index.cfm?objectID=#form.objectid#&flushcache=1" addtoken="false" /> --->
@@ -390,21 +408,42 @@ user --->
 	
 	<ft:processForm action="requestapproval">
 		<!--- TODO: Check Permissions. --->
-		<cflocation URL="#application.url.farcry#/conjuror/changestatus.cfm?objectid=#form.objectid#&typename=#attributes.typename#&status=requestapproval&ref=typeadmin&module=#attributes.module##pluginURL#" addtoken="false" />
+		<cfif listLen(form.objectid) EQ 1>
+			<cflocation URL="#application.url.farcry#/navajo/approve.cfm?objectid=#form.objectid#&status=requestapproval" addtoken="false" />
+		</cfif>
 	</ft:processForm>
 	
 	<ft:processForm action="approve">
 		<!--- TODO: Check Permissions. --->
-		<cflocation URL="#application.url.farcry#/conjuror/changestatus.cfm?objectid=#form.objectid#&typename=#attributes.typename#&status=approved&ref=typeadmin&module=#attributes.module##pluginURL#" addtoken="false" />
+		<cfif listLen(form.objectid) EQ 1>
+			<cflocation URL="#application.url.farcry#/navajo/approve.cfm?objectid=#form.objectid#&status=approved" addtoken="false" />
+		</cfif>
 	</ft:processForm>
 	
 	<ft:processForm action="createdraft">
 		<!--- TODO: Check Permissions. --->
-		<cflocation URL="#application.url.farcry#/navajo/createDraftObject.cfm?objectID=#form.objectID#" addtoken="false" />
+		<cfif listLen(form.objectid) EQ 1>
+			<cflocation URL="#application.url.farcry#/navajo/createDraftObject.cfm?objectID=#form.objectID#" addtoken="false" />
+		</cfif>
 	</ft:processForm>
 
 
 
+	
+	<ft:processForm action="properties">
+		
+		<cfif listLen(form.objectid) EQ 1>
+			<extjs:iframeDialog />
+			
+			<skin:htmlHead>
+				<cfoutput>
+				<script type="text/javascript">
+					openScaffoldDialog('#application.url.farcry#/object_dump.cfm?objectid=#form.objectid#','Properties',500,500,true);
+				</script>
+				</cfoutput>
+			</skin:htmlHead>
+		</cfif>
+	</ft:processForm>
 
 	<!-----------------------------------------------
 	    Form Actions for Type Admin Grid
@@ -515,7 +554,7 @@ user --->
 		</cfif>
 		<cfloop collection="#form#" item="fieldname">
 			<!--- match for custom button action --->
-			<cfif reFind("CB.*", fieldname) AND NOT reFind("CB.*_DATA", fieldname)>
+			<cfif reFind("CB.*", fieldname) AND NOT reFind("CB.*_DATA", fieldname) and structKeyExists(form, "#fieldname#_data")>
 				<cfset wcustomdata=evaluate("form.#fieldname#_data")>
 				<cfwddx action="wddx2cfml" input="#wcustomdata#" output="stcustomdata">
 				<cfif len(stcustomdata.method)>
@@ -548,10 +587,8 @@ user --->
 	oAuthorisation=request.dmsec.oAuthorisation;
 	</cfscript>
 	<cfsavecontent variable="html_buttonbar">
-	<cfoutput>
-	<div class="">
-	</cfoutput>
 	
+	<ft:farcryButtonPanel indentForLabel="false">
 	<cfloop from="1" to="#arraylen(attributes.aButtons)#" index="i">
 		
 		<cfif attributes.lButtons EQ "*" or listFindNoCase(attributes.lButtons,attributes.aButtons[i].value)>
@@ -563,17 +600,16 @@ user --->
 				<cfelse>
 					<cfset onclickJS="" />
 				</cfif>
+				<cfif not structKeyExists(attributes.aButtons[i], "confirmText")> 
+					<cfset attributes.aButtons[i].confirmText = "" />
+				</cfif>
 				
-				<ft:farcryButton value="#attributes.aButtons[i].value#" class="formButton"  onclick="#onclickJS#" />
+				<ft:farcryButton value="#attributes.aButtons[i].value#"  onclick="#onclickJS#" confirmText="#attributes.aButtons[i].confirmText#" />
 				<!---<input type="#attributes.aButtons[i].type#" name="#attributes.aButtons[i].name#" value="#attributes.aButtons[i].value#" class="formButton"<cfif len(attributes.aButtons[i].onclick)> onclick="#attributes.aButtons[i].onclick#"</cfif> /> --->
 			</cfif>
 		</cfif>
 	</cfloop>
-	
-	<cfoutput>
-	</div>
-	<br class="clearer" />
-	</cfoutput>
+	</ft:farcryButtonPanel>
 	
 	</cfsavecontent>
 	
@@ -638,7 +674,7 @@ user --->
 
 
 	<cfif len(attributes.SortableColumns)>
-		<cfoutput><input type="hidden" id="sqlOrderBy" name="sqlOrderBy" value=""></cfoutput>
+		<cfoutput><input type="hidden" id="sqlOrderBy" name="sqlOrderBy" value="#session.objectadminFilterObjects[attributes.typename].sqlOrderBy#"></cfoutput>
 	</cfif>
 	
 	<cfoutput>
@@ -650,7 +686,10 @@ user --->
 	 		<cfif listContainsNoCase(stRecordset.q.columnlist,"bHasMultipleVersion")>
 		 		<cfoutput><th>Status</th></cfoutput>
 			</cfif>
-			<cfoutput><th>Action</th></cfoutput>
+			
+			<cfif attributes.bShowActionList>
+				<cfoutput><th>Action</th></cfoutput>
+			</cfif>
 			<!---<cfif attributes.bEditCol><th>Edit</th></cfif>
 			<cfif attributes.bViewCol><th>View</th></cfif>
 			<cfif attributes.bFlowCol><th>Flow</th></cfif> --->
@@ -692,7 +731,9 @@ user --->
 		 		<cfif listContainsNoCase(stRecordset.q.columnlist,"bHasMultipleVersion")>
 			 		<cfoutput><th>&nbsp;</th></cfoutput>
 				</cfif>
-				<cfoutput><th>&nbsp;</th></cfoutput>
+				<cfif attributes.bShowActionList>
+					<cfoutput><th>&nbsp;</th></cfoutput>
+				</cfif>
 				<!---<cfif attributes.bEditCol><th>&nbsp;</th></cfif>
 				<cfif attributes.bViewCol><th>&nbsp;</th></cfif>
 				<cfif attributes.bFlowCol><th>&nbsp;</th></cfif> --->					
@@ -750,7 +791,9 @@ user --->
 			 		<cfif listContainsNoCase(stRecordset.q.columnlist,"bHasMultipleVersion")>
 				 		<cfoutput><td nowrap="true">#st.status#</td></cfoutput>
 					</cfif>
-					<cfoutput><td>#st.action#</td></cfoutput>
+					<cfif attributes.bShowActionList>
+						<cfoutput><td>#st.action#</td></cfoutput>
+					</cfif>
 					<!---<cfif attributes.bEditCol><td>#st.editLink#</td></cfif>
 					<cfif attributes.bViewCol><td>#st.viewLink#</td></cfif>
 					<cfif attributes.bFlowCol><td>#st.flowLink#</td></cfif> --->

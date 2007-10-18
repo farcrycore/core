@@ -1,15 +1,8 @@
-
+<cfsetting enablecfoutputonly="true" />
 <!--- 
 || LEGAL ||
-$Copyright: Breathe Creativity 2002-2006, http://www.breathecreativity.com.au $
+$Copyright: Daemon Pty Limited 1995-2007, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
-
-|| VERSION CONTROL ||
-$Header:  $
-$Author: $
-$Date:  $
-$Name:  $
-$Revision: $
 
 || DESCRIPTION || 
 $Description:  -- This is a subtag that will add the links to enable the user to scroll through the entire recordset $
@@ -22,14 +15,10 @@ $Description:  -- This is a subtag that will add the links to enable the user to
 		recordsPerPage="10" />
 
 || DEVELOPER ||
-$Developer: Matthew Bryant (mat@bcreative.com.au)$
-
-|| ATTRIBUTES ||
-$in:  $
+$Developer: Matthew Bryant (mat@daemon.com.au) $
 --->
 
-
-
+<!--- import tag libraries --->
 <cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" >
 
 
@@ -54,7 +43,8 @@ $in:  $
 	<cfparam name="attributes.submissionType" default="url" type="string">
 	<cfparam name="attributes.actionURL" default="" type="string">
 	
-		
+	<cfparam name="attributes.scrollPrefix" default="<div class=""ruleContentVanilla""><div class=""ruleListPagination"">" type="string" />
+	<cfparam name="attributes.scrollSuffix" default='</div></div><br class="clearer" />' type="string" />
 	
 	
 	<cfif not isDefined("attributes.qRecordSet") or not isQuery(attributes.qRecordSet)>
@@ -134,12 +124,9 @@ $in:  $
 		}
 	</cfscript>
 	
-		
-	<cfoutput>
-	<div class="ruleContentVanilla">
-		<div class="ruleListPagination">
-	</cfoutput>
-
+	
+	<!--- pagination scroll --->
+	<cfoutput>#attributes.scrollprefix#</cfoutput>
 				
 	<cfsavecontent variable="caller.paginationHTML">
 		<cfif bShowPaginate>
@@ -173,34 +160,31 @@ $in:  $
 		</cfif>	
 	</cfif> 
 	 --->
-	<cfoutput>	
-	</div>
-		</div>
-	<br class="clearer" />
-	</cfoutput>
+
+	<!--- /pagination scroll --->
+	<cfoutput>#attributes.scrollSuffix#</cfoutput>
 
 	
 </cfif>
 
 <cfif thistag.executionMode eq "End">
 
-	<cfoutput>
-	<div class="ruleContentVanilla">
-		<div class="ruleListPagination">
-	</cfoutput>
+	<!--- pagination scroll --->
+	<cfoutput>#attributes.scrollPrefix#</cfoutput>
 					
 	<cfif attributes.Bottom>	
 		<cfoutput>#caller.paginationHTML#</cfoutput>
 	</cfif>
 	
-	<cfoutput>	
-		</div>
-	</div>
-	<br class="clearer" />
-	</cfoutput>
+	<!--- /pagination scroll --->
+	<cfoutput>#attributes.scrollSuffix#</cfoutput>
+
 </cfif>
 
-<!--- user defined function, for generating pagination scroll --->
+<!----------------------------------------------- 
+user defined functions
+- for generating pagination scroll 
+------------------------------------------------>
 <cffunction name="displayPaginationScroll" access="private" output="false" returntype="string">
 	
 	<cfparam name="arguments.actionURL" default="" type="string" />
@@ -214,6 +198,7 @@ $in:  $
 		<cfscript>
 			stURL = Duplicate(url);
 			stURL = filterStructure(stURL,'Page');
+			stURL = filterStructure(stURL,'updateapp');
 			queryString=structToNamePairs(stURL);
 		</cfscript>
 		
@@ -315,3 +300,4 @@ $in:  $
 	<cfreturn scrollinnards />
 </cffunction>
 
+<cfsetting enablecfoutputonly="false" />

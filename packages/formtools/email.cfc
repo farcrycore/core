@@ -1,5 +1,4 @@
-
-<cfcomponent name="email" displayname="Email" hint="Field component for Email types"> 
+<cfcomponent extends="field" name="email" displayname="Email" hint="Field component for Email types"> 
 	
 	<cffunction name="init" access="public" returntype="farcry.core.packages.formtools.email" output="false" hint="Returns a copy of this initialised object">
 		<cfreturn this>
@@ -11,9 +10,10 @@
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 
+		<cfset var html = "" />
 	
 		<cfsavecontent variable="html">
-			<cfoutput><input type="Text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#HTMLEditFormat(arguments.stMetadata.value)#" class="#arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" /></cfoutput>
+			<cfoutput><input type="Text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#HTMLEditFormat(arguments.stMetadata.value)#" class="validate-email #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" /></cfoutput>
 		</cfsavecontent>
 		
 		<cfreturn html>
@@ -25,6 +25,7 @@
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 
+		<cfset var html = "" />
 		
 		<cfsavecontent variable="html">
 			<cfoutput>#ActivateURL(arguments.stMetadata.value)#</cfoutput>
@@ -45,7 +46,10 @@
 		<!--- --------------------------- --->
 		<!--- Perform any validation here --->
 		<!--- --------------------------- --->
-		<cfset stResult.value = stFieldPost.Value>
+		<cfset stResult = super.validate(objectid=arguments.objectid, typename=arguments.typename, stFieldPost=arguments.stFieldPost, stMetadata=arguments.stMetadata )>
+		<cfif stResult.bSuccess and len(stFieldPost.Value) and not isvalid("email",stFieldPost.value)>
+			<cfset stResult = failed(value="#arguments.stFieldPost.value#", message="This is not a valid email address.") />
+		</cfif>
 		
 		
 		<!--- ----------------- --->

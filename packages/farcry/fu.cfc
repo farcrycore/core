@@ -444,7 +444,7 @@
 		<!--- <cfargument name="dom" required="yes" type="string" default="#cgi.server_name#"> --->
 		
 		<!--- set base URL --->
-		<cfset var fuURL = "#application.url.webroot##application.url.conjurer#?objectid=#arguments.objectid#">
+		<cfset var fuURL = "#application.url.conjurer#?objectid=#arguments.objectid#">
 		
 		<!--- if FU mappings are not in memory load them into memory.. --->
 		<!--- TODO: wrong place for this! GB 20060117 --->

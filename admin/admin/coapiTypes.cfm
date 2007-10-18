@@ -23,7 +23,15 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 --->
 
 <!--- import tag libraries --->
-<cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/admin/" prefix="admin" />
+<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
+<cfimport taglib="/farcry/core/tags/extjs/" prefix="extjs" />
+<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" />
+
+
+<!--- Add the extjs iframe dialog to the head --->
+<extjs:iframeDialog />
+
 
 <!--- check permissions --->
 <cfif NOT request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="AdminCOAPITab")>	
@@ -40,6 +48,8 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 <cfelse>
 	<cfset documentURL="/CFIDE/componentutils/componentdetail.cfm">
 </cfif>
+
+
 
 <cfscript>
 /* COAPI Evolution Actions */
@@ -105,7 +115,36 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 <!--- build page output --->
 <admin:header title="COAPI Types" writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">	
 
+<skin:htmlhead id="extJS">
+	<cfoutput>
+	<link rel="stylesheet" type="text/css" href="/farcry/js/ext/resources/css/ext-all.css">
+	<script type="text/javascript" src="/farcry/js/ext/adapter/yui/yui-utilities.js"></script>
+	<script type="text/javascript" src="/farcry/js/ext/adapter/yui/ext-yui-adapter.js"></script>
+	<script type="text/javascript" src="/farcry/js/ext/ext-all.js"></script>
+	</cfoutput>
+</skin:htmlhead>
+
 <cfoutput>
+	
+<!--- 	<script language="javascript">
+		var dialog = {};
+		
+		function openScaffoldDialog(typename,displayname) {
+			dialog = new Ext.BasicDialog(Ext.DomHelper.insertFirst(Ext.DomQuery.selectNode("body"),"<div></div>",true), {
+				height:		500,
+				width:		500,
+				modal:		true,
+				resizable:	false,
+				title:		displayname+' Scaffolding'
+			});
+			dialog.body.dom.innerHTML="<iframe src='#application.url.farcry#/admin/scaffold.cfm?iframe&typename="+typename+"' frameborder='0' scrolling='no' id='scaffoldiframe' width='450px' height='450px'></iframe>";
+			dialog.addKeyListener(27, dialog.hide, dialog); // ESC can also close the dialog
+			dialog.show();
+			
+			return false;
+		}
+	</script> --->
+	
 	<!--- TODO: i18n --->
 	<h3>Custom Content Types</h3>
 	<table class="table-5" cellspacing="0">
@@ -122,8 +161,9 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 		<th style="border-right:none">Doc</th>
 	</tr>
 </cfoutput>
-	
-<cfloop collection="#application.types#" item="componentName">
+
+<cfset componentList = ListSort(lcase(StructKeyList(application.types)),"text") />	
+<cfloop list="#componentList#" index="componentname">
 <cfif application.types[componentname].bcustomtype>
 	<cfscript>
 		if (structKeyExists(stTypes,componentname))
@@ -163,8 +203,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 				<cfif NOT alterType.isCFCDeployed(typename=componentName)>
 					<a href="#CGI.SCRIPT_NAME#?deploy=#componentName#">#application.adminBundle[session.dmProfile.locale].deploy#</a>
 				<cfelse>
-					<a href="#application.url.farcry#/admin/scaffold.cfm?typename=#componentname#" target="_blank">Scaffold</a>
-					<!---#application.adminBundle[session.dmProfile.locale].notAvailable# --->
+					<ft:farcryButton type="button" value="Scaffold" onclick="openScaffoldDialog('#application.url.farcry#/admin/scaffold.cfm?typename=#componentName#','Audit',500,500,true);" />
 				</cfif>
 			</td>
 			<!--- <td><em>Create Permissions</em>
@@ -172,7 +211,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 			if not assume typename* --->
 			</td>
 			<td style="border-right:none">
-			<a href="#variables.documentURL#?component=#application.types[componentname].name#">Doc</a>
+			<ft:farcryButton value="Doc" url="#variables.documentURL#?component=#application.types[componentname].name#" />
 			</td>
 		</tr>
 	</cfoutput>
@@ -211,7 +250,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 </cfoutput>
 	
 <!--- output core types --->
-<cfloop collection="#application.types#" item="componentName">
+<cfloop list="#componentList#" index="componentname">
 <cfif NOT application.types[componentname].bcustomtype>
 	<cfscript>
 		if (structKeyExists(stTypes,componentname))
@@ -238,7 +277,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 				</cfif>
 			</td>
 			<td style="border-right:none">
-			<a href="#variables.documentURL#?component=#application.types[componentname].name#">Doc</a>
+			<ft:farcryButton value="Doc" url="#variables.documentURL#?component=#application.types[componentname].name#" />
 			</td>
 		</tr>
 	</cfoutput>

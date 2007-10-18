@@ -34,7 +34,6 @@ It just ignores the inner ones.
 		<cfparam name="attributes.Validation" default="1">
 		<cfparam name="attributes.bAjaxSubmission" default="false">
 		
-		
 		<!--- We only render the form if FarcryForm OnExit has not been Fired. --->
 		<cfif isDefined("Request.FarcryFormOnExitRun") AND Request.FarcryFormOnExitRun >			
 			<cfexit method="exittag">			

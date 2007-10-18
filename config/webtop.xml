@@ -9,9 +9,9 @@
 	<section id="content" sequence="3000" permission="MainNavContentTab" label="application.adminBundle[session.dmProfile.locale].content" labelType="evaluate">
 		<subsection id="media" sequence="10" label="application.adminBundle[session.dmProfile.locale].MediaLibrary" labelType="evaluate" sidebar="content/sidebar.cfm" content="inc/content_overview.html">
 			<menu id="MediaLibraryContent" sequence="10" label="application.adminBundle[session.dmProfile.locale].MediaLibraryContent" labelType="evaluate">
-				<menuitem id="listdmimage" sequence="10" label="application.adminBundle[session.dmProfile.locale].MediaLibraryImage" labelType="evaluate" link="/content/dmimage.cfm" />
-				<menuitem id="listdmfile" sequence="20" label="application.adminBundle[session.dmProfile.locale].MediaLibraryFile" labelType="evaluate" link="/content/dmfile.cfm" />
-				<menuitem id="listdmflash" sequence="30" label="application.adminBundle[session.dmProfile.locale].MediaLibraryFlash" labelType="evaluate" link="/content/dmflash.cfm" />
+				<menuitem id="listdmimage" sequence="10" label="application.adminBundle[session.dmProfile.locale].MediaLibraryImage" labelType="evaluate" link="/admin/customadmin.cfm?module=customlists/dmimage.cfm" />
+				<menuitem id="listdmfile" sequence="20" label="application.adminBundle[session.dmProfile.locale].MediaLibraryFile" labelType="evaluate" link="/admin/customadmin.cfm?module=customlists/dmfile.cfm" />
+				<menuitem id="listdmflash" sequence="30" label="application.adminBundle[session.dmProfile.locale].MediaLibraryFlash" labelType="evaluate" link="/admin/customadmin.cfm?module=customlists/dmflash.cfm" />
 			</menu>
 			<menu id="MediaLibraryMaintenance" sequence="20" permission="MainNavAdminTab" label="application.adminBundle[session.dmProfile.locale].MediaLibraryMaintenance" labelType="evaluate">
 				<menuitem id="mediaresizethumbs" sequence="10" label="application.adminBundle[session.dmProfile.locale].MediaLibraryMaintenanceImageResize" labelType="evaluate" link="/content/dmimage_resize.cfm" />
@@ -42,7 +42,7 @@
 			<menu id="menuquickbuilder" sequence="40" label="application.adminBundle[session.dmProfile.locale].QuickSiteBuilder" labelType="evaluate">
 				<menuitem id="quicksitebuilder" sequence="10" label="application.adminBundle[session.dmProfile.locale].QuickSiteBuilder" labelType="evaluate" link="/admin/quickBuilder.cfm" />
 				<menuitem id="quickcategorybuilder" sequence="20" label="application.adminBundle[session.dmProfile.locale].CatTreeQuickBuilder" labelType="evaluate" link="/admin/quickBuilderCat.cfm" />
-				<menuitem id="bulkimageupload" sequence="30" label="application.adminBundle[session.dmProfile.locale].BulkImageUpload" labelType="evaluate" link="/admin/bulkImageUpload.cfm" />
+				<menuitem id="bulkimageupload" sequence="30" label="application.adminBundle[session.dmProfile.locale].BulkImageUpload" labelType="evaluate" link="/admin/multipleImagesUploader.cfm" />
 				<menuitem id="bulkfileupload" sequence="40" label="application.adminBundle[session.dmProfile.locale].BulkFileUpload" labelType="evaluate" link="/admin/bulkFileUpload.cfm" />
 			</menu>
 			<!-- todo: i18n resource bundle update required -->

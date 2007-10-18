@@ -85,7 +85,7 @@ Library Request Processing
 </cfif>
 <!--- add project request scope processing --->
 <cfif fileExists("#application.path.project#/config/_serverSpecificRequestScope.cfm")>
-	<cfset arrayAppend(application.sysInfo.aServerSpecificRequestScope, "/farcry/projects/#application.applicationname#/config/_serverSpecificRequestScope.cfm") />
+	<cfset arrayAppend(application.sysInfo.aServerSpecificRequestScope, "/farcry/projects/#application.projectDirectoryName#/config/_serverSpecificRequestScope.cfm") />
 </cfif>
 <!--- set flag for request processing --->
 <cfif arraylen(application.sysInfo.aServerSpecificRequestScope)>

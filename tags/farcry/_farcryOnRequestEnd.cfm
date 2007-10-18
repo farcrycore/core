@@ -67,8 +67,10 @@ $out:$
 		<cfparam name="variables.stPlaceInHead.CalendarStyle1CSS" default = "0">
 		
 		<cfparam name="variables.stPlaceInHead.WizardCSS" default = "0">
-		<cfparam name="variables.stPlaceInHead.FormsCSS" default = "0">
-		<cfparam name="variables.stPlaceInHead.iehtcCSS" default = "true">
+		<cfparam name="variables.stPlaceInHead.FormsCSS" default = "0"> 
+		
+		<cfparam name="variables.stPlaceInHead.iehtcCSS" default = "false">
+		<cfparam name="Request.InHead.iehtcCSS" default="true">
 		
 		
 		<cfparam name="variables.stPlaceInHead.swfObjectJS" default = "0">
@@ -238,216 +240,224 @@ $out:$
 	<!--- Check for each stPlaceInHead variable and output relevent html/css/js --->
 	<cfparam name="request.inhead" default="#structNew()#" />
 			
-	<cfsavecontent variable="variables.placeInHead">	
-		<cfif isDefined("variables.stPlaceInHead.prototypeLiteJS") AND variables.stPlaceInHead.prototypeLiteJS AND Not variables.stPlaceInHead.prototypeJS>
-			<cfoutput>
-				<script src="#application.url.farcry#/js/prototype/prototype.lite.js" type="text/javascript"></script></cfoutput>
-		</cfif>
-		
-		<cfif isDefined("variables.stPlaceInHead.prototypeJS") AND variables.stPlaceInHead.prototypeJS>
-			<cfoutput>
-				<script src="#application.url.farcry#/js/prototype/prototype.js" type="text/javascript"></script></cfoutput>
-		</cfif>
-		
-		<cfif isDefined("variables.stPlaceInHead.mooFxJS") AND variables.stPlaceInHead.mooFxJS>
-			<cfoutput>
-				<script src="#application.url.farcry#/js/moofx/moo.fx.js" type="text/javascript"></script></cfoutput>
-		</cfif>
-		<cfif isDefined("variables.stPlaceInHead.mooFxPackJS") AND variables.stPlaceInHead.mooFxPackJS>
-			<cfoutput>
-				<script src="#application.url.farcry#/js/moofx/moo.fx.pack.js" type="text/javascript"></script></cfoutput>
-		</cfif>
-		<cfif isDefined("variables.stPlaceInHead.mooAjaxJS") AND variables.stPlaceInHead.mooAjaxJS>
-			<cfoutput>
-				<script src="#application.url.farcry#/js/moofx/moo.ajax.js" type="text/javascript"></script></cfoutput>
-		</cfif>
-		<cfif isDefined("variables.stPlaceInHead.mooDOMJS") AND variables.stPlaceInHead.mooDOMJS>
-			<cfoutput>
-				<script src="#application.url.farcry#/js/moofx/moo.dom.js" type="text/javascript"></script></cfoutput>
-		</cfif>
-		
-		<cfif isDefined("variables.stPlaceInHead.scriptaculousJS") AND variables.stPlaceInHead.scriptaculousJS>
-			<cfoutput>
-				<script src="#application.url.farcry#/js/scriptaculous/scriptaculous.js" type="text/javascript"></script></cfoutput>
-		</cfif>
-		<cfif isDefined("variables.stPlaceInHead.ScriptaculousDragAndDropJS") AND variables.stPlaceInHead.ScriptaculousDragAndDropJS>
-			<cfoutput>
-				<script src="#application.url.farcry#/js/scriptaculous/dragdrop.js" type="text/javascript"></script></cfoutput>
-		</cfif>
-		<cfif isDefined("variables.stPlaceInHead.ScriptaculousEffectsJS") AND variables.stPlaceInHead.ScriptaculousEffectsJS>
-			<cfoutput>
-				<script src="#application.url.farcry#/js/scriptaculous/effects.js" type="text/javascript"></script></cfoutput>
-		</cfif>
-		<cfif isDefined("variables.stPlaceInHead.ScriptaculousBuilderJS") AND variables.stPlaceInHead.ScriptaculousBuilderJS>
-			<cfoutput>
-				<script src="#application.url.farcry#/js/scriptaculous/builder.js" type="text/javascript"></script></cfoutput>
-		</cfif>
-		<cfif isDefined("variables.stPlaceInHead.ScriptaculousSliderJS") AND variables.stPlaceInHead.ScriptaculousSliderJS>
-			<cfoutput>
-				<script src="#application.url.farcry#/js/scriptaculous/slider.js" type="text/javascript"></script></cfoutput>
-		</cfif>
-		<cfif isDefined("variables.stPlaceInHead.ScriptaculousControlsJS") AND variables.stPlaceInHead.ScriptaculousControlsJS>
-			<cfoutput>
-				<script src="#application.url.farcry#/js/scriptaculous/controls.js" type="text/javascript"></script></cfoutput>
-		</cfif>
-		<cfif isDefined("variables.stPlaceInHead.lightboxJS") AND variables.stPlaceInHead.lightboxJS>
-			<cfoutput>
-				<script src="#application.url.farcry#/js/lightbox/lightbox.js" type="text/javascript"></script></cfoutput>
-		</cfif>
-		<cfif isDefined("variables.stPlaceInHead.lightboxCSS") AND variables.stPlaceInHead.lightboxCSS>
-			<cfoutput>
-				<link rel="stylesheet" href="#application.url.webroot#/js/lightbox/css/lightbox.css" type="text/css" media="screen" /></cfoutput>
-		</cfif>
-		<cfif isDefined("variables.stPlaceInHead.TabsJS") AND variables.stPlaceInHead.TabsJS>
-			<cfoutput>
-				<script src="#application.url.farcry#/js/tabs/tabs.js" type="text/javascript"></script></cfoutput>
-		</cfif>
-		<cfif isDefined("variables.stPlaceInHead.TabStyle1CSS") AND variables.stPlaceInHead.TabStyle1CSS>
-			<cfoutput>
-				<link rel="stylesheet" href="#application.url.farcry#/css/tabs/TabStyle1.css" type="text/css" media="screen" /></cfoutput>
-		</cfif>
-		<cfif isDefined("variables.stPlaceInHead.TabStyle6CSS") AND variables.stPlaceInHead.TabStyle6CSS>
-			<cfoutput>
-				<link rel="stylesheet" href="#application.url.farcry#/css/tabs/TabStyle6.css" type="text/css" media="screen" /></cfoutput>
-		</cfif>
-		<cfif isDefined("variables.stPlaceInHead.DateTimePickerJS") AND variables.stPlaceInHead.DateTimePickerJS>
-			<cfoutput>
-				<script src="#application.url.farcry#/js/DateTimePicker/DateTimePicker.js" type="text/javascript"></script></cfoutput>
-		</cfif>
-		
-		<cfif isDefined("variables.stPlaceInHead.CalendarJS") AND variables.stPlaceInHead.CalendarJS>
-			<cfoutput>
-				<script src="#application.url.farcry#/js/calendar/calendar.js" type="text/javascript"></script>
-				<script src="#application.url.farcry#/js/calendar/lang/calendar-en.js" type="text/javascript"></script></cfoutput>
-		</cfif>
-		<cfif isDefined("variables.stPlaceInHead.CalendarSetupJS") AND variables.stPlaceInHead.CalendarSetupJS>
-			<cfoutput>
-				<script src="#application.url.farcry#/js/calendar/calendar-setup.js" type="text/javascript"></script></cfoutput>
-		</cfif>
-		<cfif isDefined("variables.stPlaceInHead.CalendarStyle1CSS") AND variables.stPlaceInHead.CalendarStyle1CSS>
-			<cfoutput>
-				<link rel="stylesheet" href="#application.url.farcry#/css/calendar/calendar-win2k-1.css" type="text/css" media="screen" /></cfoutput>
-		</cfif>
+	<cfsavecontent variable="variables.placeInHead">
 		
 		
-		<cfif isDefined("variables.stPlaceInHead.TinyMCEJS") AND variables.stPlaceInHead.TinyMCEJS>
-			<cfoutput>
-				<script src="#application.url.farcry#/js/tiny_mce/tiny_mce.js" type="text/javascript"></script></cfoutput>
-		</cfif>
-		<cfif isDefined("variables.stPlaceInHead.JSONJS") AND variables.stPlaceInHead.JSONJS>
-			<cfoutput>
-				<script src="#application.url.farcry#/includes/lib/json.js" type="text/javascript"></script></cfoutput>
+		<!--- ONLY ADD THESE IF application.sysinfo.bwebtopaccess allowed --->	
+		<cfif application.sysinfo.bwebtopaccess>
+			<cfif isDefined("variables.stPlaceInHead.prototypeLiteJS") AND variables.stPlaceInHead.prototypeLiteJS AND Not variables.stPlaceInHead.prototypeJS>
+				<cfoutput>
+					<script src="#application.url.farcry#/js/prototype/prototype.lite.js" type="text/javascript"></script></cfoutput>
+			</cfif>
+			
+			<cfif isDefined("variables.stPlaceInHead.prototypeJS") AND variables.stPlaceInHead.prototypeJS>
+				<cfoutput>
+					<script src="#application.url.farcry#/js/prototype/prototype.js" type="text/javascript"></script></cfoutput>
+			</cfif>
+			
+			<cfif isDefined("variables.stPlaceInHead.mooFxJS") AND variables.stPlaceInHead.mooFxJS>
+				<cfoutput>
+					<script src="#application.url.farcry#/js/moofx/moo.fx.js" type="text/javascript"></script></cfoutput>
+			</cfif>
+			<cfif isDefined("variables.stPlaceInHead.mooFxPackJS") AND variables.stPlaceInHead.mooFxPackJS>
+				<cfoutput>
+					<script src="#application.url.farcry#/js/moofx/moo.fx.pack.js" type="text/javascript"></script></cfoutput>
+			</cfif>
+			<cfif isDefined("variables.stPlaceInHead.mooAjaxJS") AND variables.stPlaceInHead.mooAjaxJS>
+				<cfoutput>
+					<script src="#application.url.farcry#/js/moofx/moo.ajax.js" type="text/javascript"></script></cfoutput>
+			</cfif>
+			<cfif isDefined("variables.stPlaceInHead.mooDOMJS") AND variables.stPlaceInHead.mooDOMJS>
+				<cfoutput>
+					<script src="#application.url.farcry#/js/moofx/moo.dom.js" type="text/javascript"></script></cfoutput>
+			</cfif>
+			
+			<cfif isDefined("variables.stPlaceInHead.scriptaculousJS") AND variables.stPlaceInHead.scriptaculousJS>
+				<cfoutput>
+					<script src="#application.url.farcry#/js/scriptaculous/scriptaculous.js" type="text/javascript"></script></cfoutput>
+			</cfif>
+			<cfif isDefined("variables.stPlaceInHead.ScriptaculousDragAndDropJS") AND variables.stPlaceInHead.ScriptaculousDragAndDropJS>
+				<cfoutput>
+					<script src="#application.url.farcry#/js/scriptaculous/dragdrop.js" type="text/javascript"></script></cfoutput>
+			</cfif>
+			<cfif isDefined("variables.stPlaceInHead.ScriptaculousEffectsJS") AND variables.stPlaceInHead.ScriptaculousEffectsJS>
+				<cfoutput>
+					<script src="#application.url.farcry#/js/scriptaculous/effects.js" type="text/javascript"></script></cfoutput>
+			</cfif>
+			<cfif isDefined("variables.stPlaceInHead.ScriptaculousBuilderJS") AND variables.stPlaceInHead.ScriptaculousBuilderJS>
+				<cfoutput>
+					<script src="#application.url.farcry#/js/scriptaculous/builder.js" type="text/javascript"></script></cfoutput>
+			</cfif>
+			<cfif isDefined("variables.stPlaceInHead.ScriptaculousSliderJS") AND variables.stPlaceInHead.ScriptaculousSliderJS>
+				<cfoutput>
+					<script src="#application.url.farcry#/js/scriptaculous/slider.js" type="text/javascript"></script></cfoutput>
+			</cfif>
+			<cfif isDefined("variables.stPlaceInHead.ScriptaculousControlsJS") AND variables.stPlaceInHead.ScriptaculousControlsJS>
+				<cfoutput>
+					<script src="#application.url.farcry#/js/scriptaculous/controls.js" type="text/javascript"></script></cfoutput>
+			</cfif>
+			<cfif isDefined("variables.stPlaceInHead.lightboxJS") AND variables.stPlaceInHead.lightboxJS>
+				<cfoutput>
+					<script src="#application.url.farcry#/js/lightbox/lightbox.js" type="text/javascript"></script></cfoutput>
+			</cfif>
+			<cfif isDefined("variables.stPlaceInHead.lightboxCSS") AND variables.stPlaceInHead.lightboxCSS>
+				<cfoutput>
+					<link rel="stylesheet" href="#application.url.farcry#/css/lightbox/lightbox.css" type="text/css" media="screen" /></cfoutput>
+			</cfif>
+			<cfif isDefined("variables.stPlaceInHead.TabsJS") AND variables.stPlaceInHead.TabsJS>
+				<cfoutput>
+					<script src="#application.url.farcry#/js/tabs/tabs.js" type="text/javascript"></script></cfoutput>
+			</cfif>
+			<cfif isDefined("variables.stPlaceInHead.TabStyle1CSS") AND variables.stPlaceInHead.TabStyle1CSS>
+				<cfoutput>
+					<link rel="stylesheet" href="#application.url.farcry#/css/tabs/TabStyle1.css" type="text/css" media="screen" /></cfoutput>
+			</cfif>
+			<cfif isDefined("variables.stPlaceInHead.TabStyle6CSS") AND variables.stPlaceInHead.TabStyle6CSS>
+				<cfoutput>
+					<link rel="stylesheet" href="#application.url.farcry#/css/tabs/TabStyle6.css" type="text/css" media="screen" /></cfoutput>
+			</cfif>
+			<cfif isDefined("variables.stPlaceInHead.DateTimePickerJS") AND variables.stPlaceInHead.DateTimePickerJS>
+				<cfoutput>
+					<script src="#application.url.farcry#/js/DateTimePicker/DateTimePicker.js" type="text/javascript"></script></cfoutput>
+			</cfif>
+			
+			<cfif isDefined("variables.stPlaceInHead.CalendarJS") AND variables.stPlaceInHead.CalendarJS>
+				<cfoutput>
+					<script src="#application.url.farcry#/js/calendar/calendar.js" type="text/javascript"></script>
+					<script src="#application.url.farcry#/js/calendar/lang/calendar-en.js" type="text/javascript"></script></cfoutput>
+			</cfif>
+			<cfif isDefined("variables.stPlaceInHead.CalendarSetupJS") AND variables.stPlaceInHead.CalendarSetupJS>
+				<cfoutput>
+					<script src="#application.url.farcry#/js/calendar/calendar-setup.js" type="text/javascript"></script></cfoutput>
+			</cfif>
+			<cfif isDefined("variables.stPlaceInHead.CalendarStyle1CSS") AND variables.stPlaceInHead.CalendarStyle1CSS>
+				<cfoutput>
+					<link rel="stylesheet" href="#application.url.farcry#/css/calendar/calendar-win2k-1.css" type="text/css" media="screen" /></cfoutput>
+			</cfif>
+			
+			
+			<cfif isDefined("variables.stPlaceInHead.TinyMCEJS") AND variables.stPlaceInHead.TinyMCEJS>
+				<cfoutput>
+					<script src="#application.url.farcry#/js/tiny_mce/tiny_mce.js" type="text/javascript"></script></cfoutput>
+			</cfif>
+			<cfif isDefined("variables.stPlaceInHead.JSONJS") AND variables.stPlaceInHead.JSONJS>
+				<cfoutput>
+					<script src="#application.url.farcry#/includes/lib/json.js" type="text/javascript"></script></cfoutput>
+			</cfif>
+			
+			<cfif isDefined("variables.stPlaceInHead.FormValidationJS") AND variables.stPlaceInHead.FormValidationJS>
+				<cfoutput>
+					<script src="#application.url.farcry#/js/formValidation/validation.js" type="text/javascript"></script></cfoutput>
+			</cfif>
+			
+			<cfif isDefined("variables.stPlaceInHead.prototypeTreeJS") AND variables.stPlaceInHead.prototypeTreeJS>
+				<cfoutput>
+					<script src="#application.url.farcry#/js/prototypeTree/prototypeTree.js" type="text/javascript"></script></cfoutput>
+			</cfif>
+			<cfif isDefined("variables.stPlaceInHead.prototypeTreeCSS") AND variables.stPlaceInHead.prototypeTreeCSS>
+				<cfoutput>
+					<link rel="stylesheet" href="#application.url.farcry#/js/prototypeTree/prototypeTree.css" type="text/css" media="screen" /></cfoutput>
+			</cfif>
+			
+			
+			<cfif isDefined("variables.stPlaceInHead.jQueryJS") AND variables.stPlaceInHead.jQueryJS>
+				<cfoutput>
+					<script src="#application.url.farcry#/js/jquery/jquery.js" type="text/javascript"></script></cfoutput>
+			</cfif>
+			
+			
+			<cfif isDefined("variables.stPlaceInHead.WizardCSS") AND variables.stPlaceInHead.WizardCSS>
+				<cfoutput>
+					<link rel="stylesheet" href="#application.url.farcry#/css/wizard.css" type="text/css" media="screen" /></cfoutput>
+			</cfif>
+			
+			<cfif isDefined("variables.stPlaceInHead.FormsCSS") AND variables.stPlaceInHead.FormsCSS>
+				<cfoutput>
+					<link rel="stylesheet" type="text/css" href="#application.url.farcry#/css/forms.cfm" media="all" />
+				</cfoutput>
+			</cfif>
+			
+	
+			<cfif isDefined("variables.stPlaceInHead.iehtcCSS") AND variables.stPlaceInHead.iehtcCSS>
+				<cfoutput>
+					<!--[if lt IE 7]>
+					<link rel="stylesheet" href="#application.url.farcry#/css/htc/iehtc.cfm" type="text/css" media="screen" />
+					<![endif]-->				
+				</cfoutput>
+			</cfif>
+					
+					
+					
+			
+			<cfif isDefined("variables.stPlaceInHead.prototypeWindowJS") AND variables.stPlaceInHead.prototypeWindowJS>
+				<cfoutput>
+					<script src="#application.url.farcry#/js/prototypeWindow/window.js" type="text/javascript"></script>
+					<link rel="stylesheet" type="text/css" href="#application.url.farcry#/js/prototypeWindow/themes/default.css" media="all" />
+					<link rel="stylesheet" type="text/css" href="#application.url.farcry#/js/prototypeWindow/themes/mac_os_x.css" media="all"  />   
+				</cfoutput>
+			</cfif>
+			
+			
+			
+			<cfif isDefined("variables.stPlaceInHead.ricoJS") AND variables.stPlaceInHead.ricoJS>
+				<cfoutput>
+					<script language="JavaScript" type="text/javascript" src="#application.url.farcry#/js/rico/rico.js"></script></cfoutput>
+			</cfif>
+			
+			
+			
+			<cfif isDefined("variables.stPlaceInHead.spryAccordionJS") AND variables.stPlaceInHead.spryAccordionJS>
+				<cfoutput>
+					<script language="JavaScript" type="text/javascript" src="#application.url.farcry#/js/spry/SpryAccordion.js"></script></cfoutput>
+			</cfif>
+			<cfif isDefined("variables.stPlaceInHead.spryxpathJS") AND variables.stPlaceInHead.spryxpathJS>
+				<cfoutput>
+					<script language="JavaScript" type="text/javascript" src="#application.url.farcry#/js/spry/xpath.js"></script></cfoutput>
+			</cfif>
+			<cfif isDefined("variables.stPlaceInHead.spryAccordionCSS") AND variables.stPlaceInHead.spryAccordionCSS>
+				<cfoutput>
+					<link href="#application.url.farcry#/js/spry/css/SpryAccordion.css" rel="stylesheet" type="text/css" /></cfoutput>
+			</cfif>
+			
+	
+	
+	
+			<cfif isDefined("variables.stPlaceInHead.swfObjectJS") AND variables.stPlaceInHead.swfObjectJS EQ "true">
+				<cfoutput>
+					<script language="JavaScript" type="text/javascript" src="#application.url.farcry#/js/swfobject.js"></script></cfoutput>
+			</cfif>
+	
+	
+			<cfif isDefined("variables.stPlaceInHead.libraryPopupJS") AND variables.stPlaceInHead.libraryPopupJS EQ "true">
+				<cfoutput>
+					<script src="#application.url.farcry#/js/libraryPopup.js" type="text/javascript"></script>	</cfoutput>
+			</cfif>
+			
+			<cfif isDefined("variables.stPlaceInHead.flashWrapperToggle") and variables.stPlaceInHead.flashWrapperToggle EQ true>
+				<cfoutput>
+				<script type="text/javascript">
+				function toggleFlashWrapper(id,width,height,displayselects) {
+					//Element.setStyle(id, {width:width})
+					Element.setStyle(id, {height:height})
+					
+					aInputs = $$("select");
+					aInputs.each(function(child) {
+						if(displayselects != true){
+							Element.show(child);
+						} else {
+							Element.hide(child);
+						}
+					});
+					
+					
+				}
+				</script>
+				</cfoutput>
+			</cfif>
+			
 		</cfif>
 		
-		<cfif isDefined("variables.stPlaceInHead.FormValidationJS") AND variables.stPlaceInHead.FormValidationJS>
-			<cfoutput>
-				<script src="#application.url.farcry#/js/formValidation/validation.js" type="text/javascript"></script></cfoutput>
-		</cfif>
 		
-		<cfif isDefined("variables.stPlaceInHead.prototypeTreeJS") AND variables.stPlaceInHead.prototypeTreeJS>
-			<cfoutput>
-				<script src="#application.url.farcry#/js/prototypeTree/prototypeTree.js" type="text/javascript"></script></cfoutput>
-		</cfif>
-		<cfif isDefined("variables.stPlaceInHead.prototypeTreeCSS") AND variables.stPlaceInHead.prototypeTreeCSS>
-			<cfoutput>
-				<link rel="stylesheet" href="#application.url.farcry#/js/prototypeTree/prototypeTree.css" type="text/css" media="screen" /></cfoutput>
-		</cfif>
-		
-		
-		<cfif isDefined("variables.stPlaceInHead.jQueryJS") AND variables.stPlaceInHead.jQueryJS>
-			<cfoutput>
-				<script src="#application.url.farcry#/js/jquery/jquery.js" type="text/javascript"></script></cfoutput>
-		</cfif>
-		
-		
-		<cfif isDefined("variables.stPlaceInHead.WizardCSS") AND variables.stPlaceInHead.WizardCSS>
-			<cfoutput>
-				<link rel="stylesheet" href="#application.url.farcry#/css/wizard.css" type="text/css" media="screen" /></cfoutput>
-		</cfif>
-		
-		<cfif isDefined("variables.stPlaceInHead.FormsCSS") AND variables.stPlaceInHead.FormsCSS>
-			<cfoutput>
-				<link rel="stylesheet" type="text/css" href="#application.url.farcry#/css/forms.cfm" media="all" />
-			</cfoutput>
-		</cfif>
-		
-
-		<cfif isDefined("variables.stPlaceInHead.iehtcCSS") AND variables.stPlaceInHead.iehtcCSS>
-			<cfoutput>
-				<!--[if lt IE 7]>
-				<link rel="stylesheet" href="#application.url.farcry#/css/htc/iehtc.cfm" type="text/css" media="screen" />
-				<![endif]-->				
-			</cfoutput>
-		</cfif>
-				
-				
-				
-		
-		<cfif isDefined("variables.stPlaceInHead.prototypeWindowJS") AND variables.stPlaceInHead.prototypeWindowJS>
-			<cfoutput>
-				<script src="#application.url.farcry#/js/prototypeWindow/window.js" type="text/javascript"></script>
-				<link rel="stylesheet" type="text/css" href="#application.url.farcry#/js/prototypeWindow/themes/default.css" media="all" />
-				<link rel="stylesheet" type="text/css" href="#application.url.farcry#/js/prototypeWindow/themes/mac_os_x.css" media="all"  />   
-			</cfoutput>
-		</cfif>
-		
-		
-		
-		<cfif isDefined("variables.stPlaceInHead.ricoJS") AND variables.stPlaceInHead.ricoJS>
-			<cfoutput>
-				<script language="JavaScript" type="text/javascript" src="#application.url.farcry#/js/rico/rico.js"></script></cfoutput>
-		</cfif>
-		
-		
-		
-		<cfif isDefined("variables.stPlaceInHead.spryAccordionJS") AND variables.stPlaceInHead.spryAccordionJS>
-			<cfoutput>
-				<script language="JavaScript" type="text/javascript" src="#application.url.farcry#/js/spry/SpryAccordion.js"></script></cfoutput>
-		</cfif>
-		<cfif isDefined("variables.stPlaceInHead.spryxpathJS") AND variables.stPlaceInHead.spryxpathJS>
-			<cfoutput>
-				<script language="JavaScript" type="text/javascript" src="#application.url.farcry#/js/spry/xpath.js"></script></cfoutput>
-		</cfif>
-		<cfif isDefined("variables.stPlaceInHead.spryAccordionCSS") AND variables.stPlaceInHead.spryAccordionCSS>
-			<cfoutput>
-				<link href="#application.url.farcry#/js/spry/css/SpryAccordion.css" rel="stylesheet" type="text/css" /></cfoutput>
-		</cfif>
-		
-
-
-
-		<cfif isDefined("variables.stPlaceInHead.swfObjectJS") AND variables.stPlaceInHead.swfObjectJS EQ "true">
-			<cfoutput>
-				<script language="JavaScript" type="text/javascript" src="#application.url.farcry#/js/swfobject.js"></script></cfoutput>
-		</cfif>
-
-
-		<cfif isDefined("variables.stPlaceInHead.libraryPopupJS") AND variables.stPlaceInHead.libraryPopupJS EQ "true">
-			<cfoutput>
-				<script src="#application.url.farcry#/js/libraryPopup.js" type="text/javascript"></script>	</cfoutput>
-		</cfif>
-		
-		<cfif isDefined("variables.stPlaceInHead.flashWrapperToggle") and variables.stPlaceInHead.flashWrapperToggle EQ true>
-			<cfoutput>
-			<script type="text/javascript">
-			function toggleFlashWrapper(id,width,height,displayselects) {
-				//Element.setStyle(id, {width:width})
-				Element.setStyle(id, {height:height})
-				
-				aInputs = $$("select");
-				aInputs.each(function(child) {
-					if(displayselects != true){
-						Element.show(child);
-					} else {
-						Element.hide(child);
-					}
-				});
-				
-				
-			}
-			</script>
-			</cfoutput>
-		</cfif>
 		
 		
 		<!--- any miscellaneous stuff to be placed in the head, is put into an array aMisc --->

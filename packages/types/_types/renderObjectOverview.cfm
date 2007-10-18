@@ -9,7 +9,8 @@
 <nj:getNavigation objectId="#arguments.objectid#" r_ObjectId="stLocal.parentID" r_stObject="stLocal.stParent" bInclusive="1">
 
 <!--- get the correct version of the object to overview --->
-<cfset stLocal.stObjectOverview = getData(arguments.objectid)>
+<cfset stLocal.stObjectOverview = getData(objectid=arguments.objectid)>
+
 <cfif structKeyExists(stLocal.stObjectOverview,"versionID") AND stLocal.stObjectOverview.versionID NEQ "">
 	<cfset stLocal.stObjectOverview = getData(stLocal.stObjectOverview.versionID)>
 </cfif>
@@ -78,32 +79,80 @@
 <cfset stLocal.stObjectOverview.bHasDraft = NOT structIsEmpty(stLocal.stObjectOverviewDraft)>
 
 <cfsavecontent variable="stLocal.html">
-<cfif stLocal.errormessage NEQ ""> <!--- check for any errors --->
-	<cfoutput><span class="error">Error:</span> #stLocal.errormessage#</cfoutput>
-<cfelse><cfset iCounter = 1><cfoutput><!--- all good to display --->
-<div class="tab-container" id="container1">
-	<!--- TODO: i18n --->
-	<ul class="tabs"><cfif StructKeyExists(stLocal.stObjectOverview,"status") AND stLocal.stObjectOverview.status NEQ ""><cfif NOT structIsEmpty(stLocal.stObjectOverviewDraft)>
-	<li onclick="return showPane('pane#iCounter#', this)" id="tab#iCounter#"><a href="##pane1-ref">#stLocal.stObjectOverviewDraft.status#</a></li><cfset iCounter = iCounter + 1></cfif>
-	<li onclick="return showPane('pane#iCounter#', this)" id="tab#iCounter#"><a href="##pane2-ref">#stLocal.stObjectOverview.status#</a></li><cfelse>
-	<li onclick="return showPane('pane#iCounter#', this)" id="tab#iCounter#"><a href="##pane2-ref">Approved/Live</a></li></cfif>
-	</ul>
-	<div class="tab-panes"> <!--- panes tabs div --->
-	<cfset iCounter = 1>
-		<cfif NOT structIsEmpty(stLocal.stObjectOverviewDraft)>
-				<a name="pane#iCounter#-ref"></a> <!--- show draft pane --->
-				<div id="pane#iCounter#"> <!--- pane1 --->
-					#fDisplayObjectOverview(stLocal.stObjectOverviewDraft,stLocal.stPermissions)#
-				</div> <!--- // pane1 --->
-			<cfset iCounter = iCounter + 1>
-		</cfif>
-
-		<a name="pane#iCounter#-ref"></a> <!--- show approved pane --->
-		<div id="pane#iCounter#">
-			#fDisplayObjectOverview(stLocal.stObjectOverview,stLocal.stPermissions)#
+	<cfif stLocal.errormessage NEQ ""> <!--- check for any errors --->
+		<cfoutput><span class="error">Error:</span> #stLocal.errormessage#</cfoutput>
+	<cfelse>
+		<cfset iCounter = 1>
+		<cfoutput><!--- all good to display --->
+		<div class="tab-container" id="container1">
+			<!--- TODO: i18n --->
+			<ul class="tabs">
+			<cfif StructKeyExists(stLocal.stObjectOverview,"status") AND stLocal.stObjectOverview.status NEQ "">
+				<cfif NOT structIsEmpty(stLocal.stObjectOverviewDraft)>
+					<li onclick="return showPane('pane#iCounter#', this)" id="tab#iCounter#"><a href="##pane1-ref">#stLocal.stObjectOverviewDraft.status#</a></li>
+					<cfset iCounter = iCounter + 1>
+				</cfif>
+				<li onclick="return showPane('pane#iCounter#', this)" id="tab#iCounter#"><a href="##pane2-ref">#stLocal.stObjectOverview.status#</a></li>
+			<cfelse>
+				<li onclick="return showPane('pane#iCounter#', this)" id="tab#iCounter#"><a href="##pane2-ref">Approved/Live</a></li>
+			</cfif>
+			</ul>
+			<div class="tab-panes"> <!--- panes tabs div --->
+			<cfset iCounter = 1>
+				<cfif NOT structIsEmpty(stLocal.stObjectOverviewDraft)>
+					<a name="pane#iCounter#-ref"></a> <!--- show draft pane --->
+					<div id="pane#iCounter#"> <!--- pane1 --->
+<!--- 						<admin:objectOverview stObject="#stLocal.stObjectOverviewDraft#">
+							<admin:objectOverviewMenuGroup title="Draft Actions" collapsed="false" icon="/extAccordion/img/silk/accept.png">
+								<admin:objectOverviewMenuItem action="EDIT" url="" permissionname="delete" />
+								<admin:objectOverviewMenuItem action="APPROVE" url="http://www.news.com.au" />		
+							</admin:objectOverviewMenuGroup>
+							
+							<admin:objectOverviewMenuGroup title="Workflow" collapsed="true" icon="/extAccordion/img/silk/add.png">
+								<admin:objectOverviewMenuItem action="button 1" url="" />
+								<admin:objectOverviewMenuItem action="News" url="http://www.news.com.au" />	
+								<admin:objectOverviewMenuItem action="button 2" url="" />
+								<admin:objectOverviewMenuItem action="button 3" url="" />					
+							</admin:objectOverviewMenuGroup>
+							
+						</admin:objectOverview> --->
+						#fDisplayObjectOverview(stLocal.stObjectOverviewDraft,stLocal.stPermissions)#
+					</div> <!--- // pane1 --->
+					<cfset iCounter = iCounter + 1>
+				</cfif>
+		
+				<a name="pane#iCounter#-ref"></a> <!--- show approved pane --->
+				<div id="pane#iCounter#">
+<!--- 					<admin:objectOverview stObject="#stLocal.stObjectOverview#" summaryWebskin="webtopOveriewsomthing">
+					
+						<admin:objectOverviewMenuGroup title="Main Actions" collapsed="false" icon="/extAccordion/img/silk/accept.png">
+							<admin:objectOverviewMenuItem action="EDIT" url="" permissionname="delete" />
+							<admin:objectOverviewMenuItem action="APPROVE" url="http://www.news.com.au" />		
+						</admin:objectOverviewMenuGroup>
+						
+						<admin:objectOverviewMenuGroup title="Workflow" collapsed="true" icon="/extAccordion/img/silk/add.png">
+							<admin:objectOverviewMenuItem action="button 1" url="" />
+							<admin:objectOverviewMenuItem action="News" url="http://www.news.com.au" />	
+							<admin:objectOverviewMenuItem action="button 2" url="" />
+							<admin:objectOverviewMenuItem action="button 3" url="" />					
+						</admin:objectOverviewMenuGroup>
+						
+						<admin:objectOverviewMenuGroup title="Miscellaneous" collapsed="true" icon="/extAccordion/img/silk/anchor.png">
+							<admin:objectOverviewMenuItem action="button 1" url="" />
+							<admin:objectOverviewMenuItem action="News" url="http://www.news.com.au" />
+							<admin:objectOverviewMenuItem action="button 2" url="" />
+							<admin:objectOverviewMenuItem action="button 3" url="" />
+							<admin:objectOverviewMenuItem action="button 1" url="" />
+							<admin:objectOverviewMenuItem action="News" url="http://www.news.com.au" />
+							<admin:objectOverviewMenuItem action="button 2" url="" />
+							<admin:objectOverviewMenuItem action="button 3" url="" />
+							
+						</admin:objectOverviewMenuGroup>
+					</admin:objectOverview> --->
+					#fDisplayObjectOverview(stLocal.stObjectOverview,stLocal.stPermissions)#
+				</div>
+			</div> <!--- //panes tabs div --->
 		</div>
-	</div> <!--- //panes tabs div --->
-</div>
-</cfoutput>
-</cfif>	
+		</cfoutput>
+	</cfif>	
 </cfsavecontent>

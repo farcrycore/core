@@ -20,18 +20,21 @@ $Developer: Brendan Sisson (brendan@daemon.com.au) $
 <!------------------------------------------------------------------------
 type properties
 ------------------------------------------------------------------------->
-<cfproperty ftSeq="1" ftFieldset="General Details" name="title" type="nstring" hint="Image title." required="no" default="" blabel="true" ftlabel="Image Title" /> 
-<cfproperty ftSeq="2" ftFieldset="General Details" name="alt" type="nstring" hint="Alternate text" required="no" default="" fttype="longchar" ftlabel="Alternative Text" /> 
-<cfproperty ftSeq="5" ftFieldset="General Details" name="bLibrary" type="numeric" hint="Flag to indictae if in file library or not" required="no" default="1" ftType="boolean" ftlabel="Add to Library" />
-<cfproperty ftSeq="6" ftFieldset="General Details" name="status" type="string" hint="Status of the node (draft, pending, approved)." required="yes" default="draft" ftlabel="Status" />
+<cfproperty ftSeq="2" ftFieldset="General Details" name="title" type="nstring" hint="Image title." required="no" default="" blabel="true" ftlabel="Image Title" /> 
+<cfproperty ftSeq="4" ftFieldset="General Details" name="alt" type="nstring" hint="Alternate text" required="no" default="" fttype="longchar" ftlabel="Alternative Text" /> 
+<cfproperty ftSeq="6" ftFieldset="General Details" name="bLibrary" type="numeric" hint="Flag to indictae if in file library or not" required="no" default="1" ftType="boolean" ftlabel="Add to Library" />
 
 <!--- image file locations --->
-<cfproperty ftSeq="10" ftFieldset="Image Files" name="SourceImage" type="string" hint="The URL location of the uploaded image" required="No" default="" ftType="Image" ftCreateFromSourceOption="false" ftDestination="/images/SourceImage" ftlabel="Source Image" ftImageWidth="" ftImageHeight=""  />
-<cfproperty ftSeq="11" ftFieldset="Image Files" name="StandardImage" type="string" hint="The URL location of the optimised uploaded image that should be used for general display" required="no" default="" ftType="Image" ftDestination="/images/StandardImage" ftImageWidth="400" ftImageHeight="1000" ftAutoGenerateType="FitInside" ftSourceField="SourceImage" ftCreateFromSourceDefault="true" ftAllowUpload="true" ftlabel="Mid Size Image" />  
-<cfproperty ftSeq="12" ftFieldset="Image Files" name="ThumbnailImage" type="string" hint="The URL location of the thumnail of the uploaded image that should be used in " required="no" default="" ftType="Image"  ftDestination="/images/ThumbnailImage" ftImageWidth="80" ftImageHeight="80" ftAutoGenerateType="Pad" ftPadColor="##ffffff" ftSourceField="SourceImage" ftCreateFromSourceDefault="true" ftAllowUpload="true" ftlabel="Thumbnail Image" />  
+<cfproperty ftSeq="22" ftFieldset="Image Files" name="SourceImage" type="string" hint="The URL location of the uploaded image" required="No" default="" ftType="Image" ftCreateFromSourceOption="false" ftDestination="/images/SourceImage" ftlabel="Source Image" ftImageWidth="" ftImageHeight=""  />
+<cfproperty ftSeq="24" ftFieldset="Image Files" name="StandardImage" type="string" hint="The URL location of the optimised uploaded image that should be used for general display" required="no" default="" ftType="Image" ftDestination="/images/StandardImage" ftImageWidth="400" ftImageHeight="1000" ftAutoGenerateType="FitInside" ftSourceField="SourceImage" ftCreateFromSourceDefault="true" ftAllowUpload="true" ftlabel="Mid Size Image" />  
+<cfproperty ftSeq="26" ftFieldset="Image Files" name="ThumbnailImage" type="string" hint="The URL location of the thumnail of the uploaded image that should be used in " required="no" default="" ftType="Image"  ftDestination="/images/ThumbnailImage" ftImageWidth="80" ftImageHeight="80" ftAutoGenerateType="Pad" ftPadColor="##ffffff" ftSourceField="SourceImage" ftCreateFromSourceDefault="true" ftAllowUpload="true" ftlabel="Thumbnail Image" />  
 
 <!--- image categorisation --->
-<cfproperty ftSeq="20" ftFieldset="Categorisation" name="catImage" type="string" hint="Image categorisation." required="no" default="" ftlabel="Category" fttype="category" ftalias="dmimage" ftselectmultiple="true" />
+<cfproperty ftSeq="42" ftFieldset="Categorisation" name="catImage" type="string" hint="Image categorisation." required="no" default="" ftlabel="Category" fttype="category" ftalias="dmimage" ftselectmultiple="true" />
+
+<!--- system property; ie. not in default edit handlers --->
+<cfproperty name="status" type="string" hint="Status of the node (draft, pending, approved)." required="yes" default="draft" ftlabel="Status" />
+
 
 <!--- deprecated: legacy image properties --->
 <cfproperty name="width" type="nstring" hint="Image width (blank for default)" required="no" default="">  
@@ -46,32 +49,6 @@ type properties
 
 <!--- import tag libraries --->
 <cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" >
-
-
-<cffunction name="ftEdit" access="public" output="true" returntype="void">
-	<cfargument name="ObjectID" required="no" type="string" default="">
-	
-	<ft:object typename="#getTablename()#" objectID="#arguments.ObjectID#" lFields="ImageFile" inTable=0 />
-	<cfoutput>
-	<a href="##" onclick="Effect.toggle('edsubpanel','slide');">Advanced options</a>
-	<div id="edsubpanel" style="display:none;">
-	<div>		
-		<ft:object typename="#getTablename()#" objectID="#arguments.ObjectID#" lFields="Title,Alt,width,height,bLibrary,status" inTable=0 />
-	</div>
-	</div>
-	</cfoutput>
-</cffunction>
-
-
-<cffunction name="AddNew" access="public" output="true" returntype="void">
-	<cfargument name="typename" required="true" type="string">
-	<cfargument name="lFields" required="false" type="string" default="">
-	
-	<ft:object typename="#arguments.typename#" lfields="Title,SourceImage" inTable=0 />
-
-</cffunction>
-
-
 
 <cffunction name="ftDisplayThumbnail" access="public" output="true" returntype="string" hint="This will return a string of formatted HTML text to display.">
 	<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
@@ -102,16 +79,6 @@ type properties
 	<cfreturn html>
 </cffunction>
 	
-
-
-<cffunction name="editdud" access="public">
-	<cfargument name="objectid" required="yes" type="UUID">
-	
-	<!--- getData for object edit --->
-	<cfset stObj = this.getData(arguments.objectid)>
-	
-	<cfinclude template="_dmImage/edit.cfm">
-</cffunction>
 
 <cffunction name="display" access="public" output="true">
 	<cfargument name="objectid" required="yes" type="UUID">

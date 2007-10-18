@@ -79,15 +79,14 @@ default handlers
 		<cfargument name="dsn" required="no" type="string" default="#application.dsn#">
 		<cfargument name="OnExit" required="no" type="any" default="">
 		<cfargument name="alternateHTML" required="no" type="string" hint="If the webskin template does not exist, if this argument is sent in, its value will be passed back as the result.">
+		<cfargument name="hashKey" required="no" default="" type="string" hint="Pass in a key to be used to hash the objectBroker webskin cache">
 		
 		<cfset var stResult = structNew() />
 		<cfset var stObj = StructNew() />
 		<cfset var WebskinPath = "" />
 		<cfset var webskinHTML = "" />
-		<cfset var oObjectBroker = createObject("component", "farcry.core.packages.fourq.objectBroker").init() />
-		<cfset var oCoapiAdmin = createObject("component", "farcry.core.packages.coapi.coapiadmin").init() />
 		<cfset var stCurrentView = structNew() />
-		
+
 		<!--- make sure that .cfm isn't passed to this method in the template argument --->
 		<cfif listLast(arguments.template,".") EQ "cfm">
 			<cfset arguments.template = ReplaceNoCase(arguments.template,".cfm", "", "all") />
@@ -107,10 +106,11 @@ default handlers
 		<cfif NOT structIsEmpty(stObj)>	
 		
 			<!--- Check to see if the webskin is in the object broker --->
-			<cfset webskinHTML = oObjectBroker.getWebskin(objectid=stobj.objectid, typename=stobj.typename, template=arguments.template) />		
+			<cfset webskinHTML = application.coapi.objectBroker.getWebskin(objectid=stobj.objectid, typename=stobj.typename, template=arguments.template, hashKey="#arguments.hashKey#") />		
 
+			<cftimer label="getView: #stobj.typename# (#arguments.template#)">
 			<cfif not len(webskinHTML)>
-				<cfset webskinPath = oCoapiAdmin.getWebskinPath(typename=stObj.typename, template=arguments.template) />
+				<cfset webskinPath = application.coapi.coapiadmin.getWebskinPath(typename=stObj.typename, template=arguments.template) />
 						
 				<cfif len(webskinPath)>
 					
@@ -122,9 +122,13 @@ default handlers
 					<cfset stCurrentView.objectid = stobj.objectid />
 					<cfset stCurrentView.typename = stobj.typename />
 					<cfset stCurrentView.template = arguments.template />
-					<cfset stCurrentView.timeout = oCoapiAdmin.getWebskinTimeOut(typename=stObj.typename, template=arguments.template) />
-					<cfset stCurrentView.hashURL = oCoapiAdmin.getWebskinHashURL(typename=stObj.typename, template=arguments.template) />
+					<cfset stCurrentView.hashKey = arguments.hashKey />
+					<cfset stCurrentView.timeout = application.coapi.coapiadmin.getWebskinTimeOut(typename=stObj.typename, template=arguments.template) />
+					<cfset stCurrentView.hashURL = application.coapi.coapiadmin.getWebskinHashURL(typename=stObj.typename, template=arguments.template) />
 					<cfset stCurrentView.okToCache = 1 />
+					<cfset stCurrentView.inHead = structNew() />
+					<cfset stCurrentView.inHead.stCustom = structNew() />
+					<cfset stCurrentView.inHead.aCustomIDs = arrayNew(1) />
 					<cfset arrayAppend(request.aAncestorWebskins, stCurrentView) />					
 					
 					<!--- Include the View --->
@@ -135,25 +139,37 @@ default handlers
 					<!--- If the current view (Last Item In the array) is still OkToCache --->
 					<cfif request.aAncestorWebskins[arrayLen(request.aAncestorWebskins)].okToCache>
 						<!--- Add the webskin to the object broker if required --->
-						<cfset bAdded = oObjectBroker.addWebskin(objectid=stobj.objectid, typename=stobj.typename, template=arguments.template, html=webskinHTML, hashURL=stCurrentView.hashURL) />	
+						<cfset bAdded = application.coapi.objectBroker.addWebskin(objectid=stobj.objectid, typename=stobj.typename, template=arguments.template, html=webskinHTML, stCurrentView=stCurrentView) />	
 					</cfif>
 					
 					<cfif arrayLen(request.aAncestorWebskins)>
 						
 						<cfset oWebskinAncestor = createObject("component", application.stcoapi.dmWebskinAncestor.packagePath) />						
 						
+						<!--- 
+						Loop through ancestors to determine whether to add to dmWebskinAncestor Table
+						Only webskins that are cached are added to the table.
+						 --->
 						<cfloop from="1" to="#arrayLen(request.aAncestorWebskins)#" index="i">
+							
+							<!--- Add the ancestor records so we know where this webskin is located throughout the site. --->
 							<cfif stobj.objectid NEQ request.aAncestorWebskins[i].objectID>
-								<cfset bAncestorExists = oWebskinAncestor.checkAncestorExists(webskinObjectID=stobj.objectid, ancestorID=request.aAncestorWebskins[i].objectID, ancestorTemplate=request.aAncestorWebskins[i].template) />
-									
-								<cfif not bAncestorExists>
-									<cfset stProperties = structNew() />
-									<cfset stProperties.webskinObjectID = stobj.objectid />
-									<cfset stProperties.ancestorID = request.aAncestorWebskins[i].objectID />
-									<cfset stProperties.ancestorTypename = request.aAncestorWebskins[i].typename />
-									<cfset stProperties.ancestorTemplate = request.aAncestorWebskins[i].template />
-									
-									<cfset stResult = oWebskinAncestor.createData(stProperties=stProperties) />
+								<cftimer label="Indexing webskin: #request.aAncestorWebskins[i].typename#/request.aAncestorWebskins[i].template "/>
+								<cfif listFindNoCase(application.stcoapi[request.aAncestorWebskins[i].typename].lObjectBrokerWebskins, request.aAncestorWebskins[i].template)>
+									<cfif application.stcoapi[request.aAncestorWebskins[i].typename].stObjectBrokerWebskins[request.aAncestorWebskins[i].template].timeout NEQ 0>
+							
+										<cfset bAncestorExists = oWebskinAncestor.checkAncestorExists(webskinObjectID=stobj.objectid, ancestorID=request.aAncestorWebskins[i].objectID, ancestorTemplate=request.aAncestorWebskins[i].template) />
+											
+										<cfif not bAncestorExists>
+											<cfset stProperties = structNew() />
+											<cfset stProperties.webskinObjectID = stobj.objectid />
+											<cfset stProperties.ancestorID = request.aAncestorWebskins[i].objectID />
+											<cfset stProperties.ancestorTypename = request.aAncestorWebskins[i].typename />
+											<cfset stProperties.ancestorTemplate = request.aAncestorWebskins[i].template />
+											
+											<cfset stResult = oWebskinAncestor.createData(stProperties=stProperties) />
+										</cfif>
+									</cfif>
 								</cfif>
 							</cfif>
 							
@@ -165,6 +181,10 @@ default handlers
 							<!--- If this webskin is to have its url hashed, make sure all ancestors also have their webskins hashed --->
 							<cfif stCurrentView.hashURL>
 								<cfset request.aAncestorWebskins[i].hashURL = true />
+							</cfif>
+							<!--- If this webskin is to add a hashKey, make sure all ancestors also have the hashKey added --->
+							<cfif len(stCurrentView.hashKey)>
+								<cfset request.aAncestorWebskins[i].hashKey = "#request.aAncestorWebskins[i].hashKey##stCurrentView.hashKey#" />
 							</cfif>
 						</cfloop>
 					</cfif>
@@ -178,6 +198,7 @@ default handlers
 					<cfthrow type="Application" detail="Error: Template not found [/webskin/#stObj.typename#/#arguments.template#.cfm] and no alternate html provided." />
 				</cfif>	
 			</cfif>		
+			</cftimer>
 		<cfelse>
 			<cfthrow type="Application" detail="Error: When trying to render [/webskin/#stObj.typename#/#arguments.template#.cfm] the object was not created correctly." />	
 		</cfif>
@@ -189,7 +210,7 @@ default handlers
 		<cfargument name="typename" type="string" required="true" />
 		<cfargument name="template" type="string" required="true" />
 		
-		<cfset var webskinPath = createObject("component", "farcry.core.packages.coapi.coapiadmin").getWebskinpath(typename=arguments.typename,template=arguments.template) />
+		<cfset var webskinPath = application.coapi.coapiadmin.getWebskinpath(typename=arguments.typename,template=arguments.template) />
 		<cfreturn webskinPath>
 		
 			
@@ -272,7 +293,7 @@ default handlers
 	<cffunction name="displayTemplatePath" returntype="string" access="private" output="no" hint="Returns a template path for a webskin view.">
 		<cfargument name="typename" type="string" required="yes" />
 		<cfargument name="template" type="string" required="yes" />
-		<cfreturn "/farcry/projects/#application.applicationname#/#application.path.handler#/#arguments.typename#/#arguments.template#.cfm" />
+		<cfreturn "/farcry/projects/#application.projectDirectoryName#/#application.path.handler#/#arguments.typename#/#arguments.template#.cfm" />
 	</cffunction>
 
 	<cffunction name="display" access="public" returntype="any" output="Yes">
@@ -388,6 +409,7 @@ default handlers
 		<cfargument name="bAudit" type="boolean" required="No" default="1" hint="Pass in 0 if you wish no audit to take place">
 		<cfargument name="dsn" required="No" default="#application.dsn#">
 		<cfargument name="bSessionOnly" type="boolean" required="false" default="false"><!--- This property allows you to save the changes to the Temporary Object Store for the life of the current session. ---> 
+		<cfargument name="bAfterSave" type="boolean" required="false" default="true" hint="This allows the developer to skip running the types afterSave function.">	
 		
 		<cfset var stResult = StructNew()>
 		<cfset var stresult_friendly = StructNew()>
@@ -427,7 +449,7 @@ default handlers
 		<cfset stresult = super.setData(stProperties=arguments.stProperties, dsn=arguments.dsn, bSessionOnly=arguments.bSessionOnly) />
 		
 		<!--- ONLY RUN THROUGH IF SAVING TO DB --->
-		<cfif not arguments.bSessionOnly>				   	
+		<cfif not arguments.bSessionOnly AND arguments.bAfterSave>				   	
 	   	 	<cfset stAfterSave = afterSave(stProperties=arguments.stProperties) />
 		</cfif>
 		
@@ -614,7 +636,7 @@ default handlers
 				<cfset arguments.stobj.lockedby="">
 			</cfif>
 			<!--- call fourq.setdata() (ie super) to bypass prepop of sys attributes by types.setdata() --->
-			<cfset setdata(arguments.stobj, arguments.lockedby, 0)>
+			<cfset setdata(stProperties="#arguments.stobj#", user="#arguments.lockedby#", bAudit="#arguments.bAudit#", dsn="#arguments.dsn#", bAfterSave="false")>
 		</cfif>
 
 	
@@ -877,42 +899,13 @@ default handlers
 	<cffunction name="BeforeSave" access="public" output="false" returntype="struct">
 		<cfargument name="stProperties" required="true" type="struct">
 		<cfargument name="stFields" required="true" type="struct">
-		<cfargument name="stFormPost" required="false" type="struct">
-		
-		
-		<!--- 
-			This will set the default Label value. It first looks form the bLabel associated metadata.
-			Otherwise it will look for title, then name and then anything with the substring Name.
-		 --->
-		<cfset var NewLabel = "" />
-		
-		<cfparam name="stProperties.label" default="">
-		
-		
-		<cfloop list="#StructKeyList(arguments.stFields)#" index="field">
-			<cfif structKeyExists(arguments.stProperties,field) AND isDefined("arguments.stFields.#field#.Metadata.bLabel") AND arguments.stFields[field].Metadata.bLabel>
-				<cfset NewLabel = "#NewLabel# #arguments.stProperties[field]#">
-			</cfif>
-		</cfloop>
+		<cfargument name="stFormPost" required="false" type="struct">		
 
-		<cfif not len(NewLabel)>
-			<cfif structKeyExists(arguments.stProperties,"Title")>
-				<cfset NewLabel = "#arguments.stProperties.title#">
-			<cfelseif structKeyExists(arguments.stProperties,"Name")>
-				<cfset NewLabel = "#arguments.stProperties.name#">
-			<cfelse>
-				<cfloop list="#StructKeyList(arguments.stProperties)#" index="field">
-					<cfif FindNoCase("Name",field) AND field NEQ "typename">
-						<cfset NewLabel = "#NewLabel# #arguments.stProperties[field]#">
-					</cfif>
-				</cfloop>
-			</cfif>
-		</cfif>
+		<cfset var newLabel = autoSetLabel(stProperties=arguments.stProperties) />
 		
-		<cfif len(trim(NewLabel))>
-			<cfset stProperties.label = trim(NewLabel) />
-		<cfelse>
-			<cfset stProperties.label = stProperties.label />
+		
+		<cfif len(newLabel)>
+			<cfset arguments.stProperties.label = autoSetLabel(stProperties=arguments.stProperties) />
 		</cfif>
 		
 		
@@ -921,6 +914,42 @@ default handlers
 		<cfreturn stProperties>
 	</cffunction>
 	
+	
+	
+ 	<cffunction name="autoSetLabel" access="public" output="false" returntype="string" hint="Automagically sets the label">
+		<cfargument name="stProperties" required="true" type="struct">
+
+		<!--- 
+			This will set the default Label value. It first looks form the bLabel associated metadata.
+			Otherwise it will look for title, then name and then anything with the substring Name.
+		 --->
+		<cfset var newLabel = "" />
+		
+		<cfif structKeyExists(arguments.stProperties, "typename") AND application.stcoapi[arguments.stProperties.typename].bAutoSetLabel>
+			<cfloop list="#StructKeyList(application.stcoapi[arguments.stProperties.typename].stProps)#" index="field">
+				<cfif structKeyExists(arguments.stProperties,field) AND isDefined("application.stcoapi.#arguments.stProperties.typename#.stProps.#field#.Metadata.bLabel") AND application.stcoapi[arguments.stProperties.typename].stProps[field].Metadata.bLabel>
+					<cfset newLabel = "#newLabel# #arguments.stProperties[field]#">
+				</cfif>
+			</cfloop>
+	
+			<cfif not len(newLabel)>
+				<cfif structKeyExists(arguments.stProperties,"Title")>
+					<cfset newLabel = "#arguments.stProperties.title#">
+				<cfelseif structKeyExists(arguments.stProperties,"Name")>
+					<cfset newLabel = "#arguments.stProperties.name#">
+				<cfelse>
+					<cfloop list="#StructKeyList(arguments.stProperties)#" index="field">
+						<cfif FindNoCase("Name",field) AND field NEQ "typename">
+							<cfset newLabel = "#newLabel# #arguments.stProperties[field]#">
+						</cfif>
+					</cfloop>
+				</cfif>
+			</cfif>
+			
+		</cfif>
+		
+		<cfreturn trim(newLabel) />
+	</cffunction>
 	
 	<cffunction name="Edit" access="public" output="true" returntype="void" hint="Default edit handler.">
 		<cfargument name="ObjectID" required="yes" type="string" default="" />
@@ -963,7 +992,7 @@ default handlers
 			<wiz:processwizard action="Cancel" Removewizard="true" Exit="true" /><!--- remove wizard --->
 			
 			
-			<wiz:wizard ReferenceID="#stobj.objectid#">
+			<wiz:wizard ReferenceID="#stobj.objectid#" title="#stobj.label#">
 			
 				<cfloop query="qwizardSteps">
 						
@@ -1044,8 +1073,7 @@ default handlers
 			
 			
 			<ft:form>
-		
-				<cfif qFieldSets.recordcount GT 1>
+				<cfif qFieldSets.recordcount GTE 1>
 					
 					<cfloop query="qFieldSets">
 						<cfquery dbtype="query" name="qFieldset">
@@ -1066,14 +1094,11 @@ default handlers
 					
 				</cfif>
 				
-				
-				<cfoutput>
-				<div class="fieldwrap">
+				<ft:farcryButtonPanel>
 					<ft:farcryButton value="Save" /> 
 					<ft:farcryButton value="Cancel" validate="false" />
-				</div>
-				</cfoutput>
-		
+				</ft:farcryButtonPanel>
+				
 			</ft:form>
 		</cfif>
 

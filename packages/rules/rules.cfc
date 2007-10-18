@@ -41,13 +41,13 @@ $out:$
 		<cfargument name="dsn" required="no" type="string" default="#application.dsn#">
 		<cfargument name="OnExit" required="no" type="any" default="">
 		<cfargument name="alternateHTML" required="no" type="string" hint="If the webskin template does not exist, if this argument is sent in, its value will be passed back as the result.">
-		
+		<cfargument name="hashKey" required="no" default="" type="string" hint="Pass in a key to be used to hash the objectBroker webskin cache">
+				
 		<cfset var stResult = structNew() />
 		<cfset var stObj = StructNew() />
 		<cfset var WebskinPath = "" />
 		<cfset var webskinHTML = "" />
 		<cfset var oObjectBroker = createObject("component", "farcry.core.packages.fourq.objectBroker").init() />
-		<cfset var oCoapiAdmin = createObject("component", "farcry.core.packages.coapi.coapiadmin").init() />
 		<cfset var stCurrentView = structNew() />		
 			
 		<!--- make sure that .cfm isn't passed to this method in the template argument --->
@@ -69,10 +69,10 @@ $out:$
 		<cfif NOT structIsEmpty(stObj)>		
 		
 			<!--- Check to see if the webskin is in the object broker --->
-			<cfset webskinHTML = oObjectBroker.getWebskin(objectid=stobj.objectid, typename=stobj.typename, template=arguments.template) />		
-			
+			<cfset webskinHTML = oObjectBroker.getWebskin(objectid=stobj.objectid, typename=stobj.typename, template=arguments.template, hashKey="#arguments.hashKey#") />		
+
 			<cfif not len(webskinHTML)>
-				<cfset webskinPath = oCoapiAdmin.getWebskinPath(typename=stObj.typename, template=arguments.template) />
+				<cfset webskinPath = application.coapi.coapiadmin.getWebskinPath(typename=stObj.typename, template=arguments.template) />
 						
 				<cfif len(webskinPath)>
 					
@@ -84,9 +84,13 @@ $out:$
 					<cfset stCurrentView.objectid = stobj.objectid />
 					<cfset stCurrentView.typename = stobj.typename />
 					<cfset stCurrentView.template = arguments.template />
-					<cfset stCurrentView.timeout = oCoapiAdmin.getWebskinTimeOut(typename=stObj.typename, template=arguments.template) />
-					<cfset stCurrentView.hashURL = oCoapiAdmin.getWebskinHashURL(typename=stObj.typename, template=arguments.template) />
+					<cfset stCurrentView.hashKey = arguments.hashKey />
+					<cfset stCurrentView.timeout = application.coapi.coapiadmin.getWebskinTimeOut(typename=stObj.typename, template=arguments.template) />
+					<cfset stCurrentView.hashURL = application.coapi.coapiadmin.getWebskinHashURL(typename=stObj.typename, template=arguments.template) />
 					<cfset stCurrentView.okToCache = 1 />
+					<cfset stCurrentView.inHead = structNew() />
+					<cfset stCurrentView.inHead.stCustom = structNew() />
+					<cfset stCurrentView.inHead.aCustomIDs = arrayNew(1) />
 					<cfset arrayAppend(request.aAncestorWebskins, stCurrentView) />
 	
 					<cfsavecontent variable="webskinHTML">
@@ -96,27 +100,38 @@ $out:$
 					<!--- If the current view (Last Item In the array) is still OkToCache --->
 					<cfif request.aAncestorWebskins[arrayLen(request.aAncestorWebskins)].okToCache>
 						<!--- Add the webskin to the object broker if required --->
-						<cfset bAdded = oObjectBroker.addWebskin(objectid=stobj.objectid, typename=stobj.typename, template=arguments.template, html=webskinHTML, hashURL=stCurrentView.hashURL) />
+						<cfset bAdded = oObjectBroker.addWebskin(objectid=stobj.objectid, typename=stobj.typename, template=arguments.template, html=webskinHTML, stCurrentView=stCurrentView) />
 					</cfif>
 					
 					<cfif arrayLen(request.aAncestorWebskins)>
 						
 						<cfset oWebskinAncestor = createObject("component", application.stcoapi.dmWebskinAncestor.packagePath) />						
 						
+						<!--- 
+						Loop through ancestors to determine whether to add to dmWebskinAncestor Table
+						Only webskins that are cached are added to the table.
+						 --->						
 						<cfloop from="1" to="#arrayLen(request.aAncestorWebskins)#" index="i">
 							
 							<!--- Add the ancestor records so we know where this webskin is located throughout the site. --->
 							<cfif stobj.objectid NEQ request.aAncestorWebskins[i].objectID>
-								<cfset bAncestorExists = oWebskinAncestor.checkAncestorExists(webskinObjectID=stobj.objectid, ancestorID=request.aAncestorWebskins[i].objectID, ancestorTemplate=request.aAncestorWebskins[i].template) />
-									
-								<cfif not bAncestorExists>
-									<cfset stProperties = structNew() />
-									<cfset stProperties.webskinObjectID = stobj.objectid />
-									<cfset stProperties.ancestorID = request.aAncestorWebskins[i].objectID />
-									<cfset stProperties.ancestorTypename = request.aAncestorWebskins[i].typename />
-									<cfset stProperties.ancestorTemplate = request.aAncestorWebskins[i].template />
-									
-									<cfset stResult = oWebskinAncestor.createData(stProperties=stProperties) />
+								<cftimer label="Indexing webskin: #request.aAncestorWebskins[i].typename#/request.aAncestorWebskins[i].template "/>
+							
+								<cfif listFindNoCase(application.stcoapi[request.aAncestorWebskins[i].typename].lObjectBrokerWebskins, request.aAncestorWebskins[i].template)>
+									<cfif application.stcoapi[request.aAncestorWebskins[i].typename].stObjectBrokerWebskins[request.aAncestorWebskins[i].template].timeout NEQ 0>
+							
+										<cfset bAncestorExists = oWebskinAncestor.checkAncestorExists(webskinObjectID=stobj.objectid, ancestorID=request.aAncestorWebskins[i].objectID, ancestorTemplate=request.aAncestorWebskins[i].template) />
+											
+										<cfif not bAncestorExists>
+											<cfset stProperties = structNew() />
+											<cfset stProperties.webskinObjectID = stobj.objectid />
+											<cfset stProperties.ancestorID = request.aAncestorWebskins[i].objectID />
+											<cfset stProperties.ancestorTypename = request.aAncestorWebskins[i].typename />
+											<cfset stProperties.ancestorTemplate = request.aAncestorWebskins[i].template />
+											
+											<cfset stResult = oWebskinAncestor.createData(stProperties=stProperties) />
+										</cfif>
+									</cfif>
 								</cfif>
 							</cfif>
 							
@@ -128,6 +143,10 @@ $out:$
 							<!--- If this webskin is to have its url hashed, make sure all ancestors also have their webskins hashed --->
 							<cfif stCurrentView.hashURL>
 								<cfset request.aAncestorWebskins[i].hashURL = true />
+							</cfif>
+							<!--- If this webskin is to add a hashKey, make sure all ancestors also have the hashKey added --->
+							<cfif len(stCurrentView.hashKey)>
+								<cfset request.aAncestorWebskins[i].hashKey = "#request.aAncestorWebskins[i].hashKey##stCurrentView.hashKey#" />
 							</cfif>
 						</cfloop>
 					</cfif>
@@ -350,14 +369,11 @@ $out:$
 						<ft:object ObjectID="#arguments.ObjectID#" PackageType="rules" format="edit" lExcludeFields="label" lFields="" inTable=false IncludeFieldSet=1 Legend="#stObj.Label#" />
 					</cfif>
 					
-					
-					<cfoutput>
-					<div class="fieldwrap">
+					<ft:farcryButtonPanel>
 						<ft:farcryButton value="Save" /> 
-						<ft:farcryButton value="Cancel" />
-					</div>
-					</cfoutput>
-			
+						<ft:farcryButton value="Cancel" validate="false" />
+					</ft:farcryButtonPanel>
+					
 				</ft:form>
 			</cfif>
 		
@@ -418,7 +434,7 @@ $out:$
 	
 	<cffunction access="public" name="execute" output="true">
 		<cfargument name="label" required="no" type="string" default="">
-		<cfoutput><p>#arguments[1]# : No execute method specified</cfoutput>
+		<cfoutput><!-- #arguments[1]# : RULE IS EMPTY --></cfoutput>
 	</cffunction>  
 	
 	<cffunction access="public" name="getRules" returntype="query" hint="Returns a two column query (rulename, bCustom) of available rules. Assumes that rule names are rule*.cfc">

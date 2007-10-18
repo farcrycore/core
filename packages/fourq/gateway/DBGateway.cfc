@@ -43,6 +43,10 @@
 			
 			<cfset var stFields = arguments.metadata.getTableDefinition() />      
       		<cfset var SQLArray = generateSQLNameValueArray(stFields,stProperties) />
+      		<cfset var qCreateData = queryNew("blah") />
+      		<cfset var qRefData = queryNew("blah") />
+      		<cfset var createDataResult = structNew() />
+      		<cfset var currentObjectID = "" />
 	    
 			<!--- set defaults for status --->
 			<cfset createDataResult.bSuccess = true>
@@ -51,11 +55,11 @@
 
 			<!--- check objectid passed --->
 			<cfif structKeyExists(arguments.stProperties,"objectid")>
-				<cfset objectid=arguments.stProperties.objectid>
+				<cfset currentObjectID=arguments.stProperties.objectid>
 			<cfelseif structKeyExists(arguments,"objectid")>
-				<cfset objectid=arguments.objectid>
+				<cfset currentObjectID=arguments.objectid>
 			<cfelse>
-				<cfset objectid = CreateUUID()>
+				<cfset currentObjectID = CreateUUID()>
 			</cfif>
 			
 			<!--- build query --->
@@ -64,22 +68,28 @@
 					INSERT INTO #variables.dbowner##tablename# ( 
 						objectID
 						<cfloop from="1" to="#arrayLen(SQLArray)#" index="i">
-								, #sqlArray[i].column#						
+							<!--- Check to make sure property is to be saved in the db. --->
+							<cfif not structKeyExists(application, "stcoapi") OR  not structKeyExists(application.stCoapi, tablename) OR not structKeyExists(application.stCoapi[tableName].STPROPS[sqlArray[i].column].METADATA,"BSAVE") OR application.stCoapi[tableName].STPROPS[sqlArray[i].column].METADATA.bSave>
+							  , #sqlArray[i].column#	
+							</cfif>
 						</cfloop>
 					)
 					VALUES ( 
 					
-						<cfqueryparam value="#objectid#" cfsqltype="CF_SQL_VARCHAR">
+						<cfqueryparam value="#currentObjectID#" cfsqltype="CF_SQL_VARCHAR">
 						<cfloop from="1" to="#arrayLen(SQLArray)#" index="i">
-						  <!--- temp fix for mySQL, looks as though the datatype decimal and bind type float don't live peacefully together :( --->
-						  <cfif structKeyExists(sqlArray[i],'cfsqltype') AND sqlArray[i].cfsqltype NEQ "CF_SQL_FLOAT">
-						    , <cfqueryparam cfsqltype="#sqlArray[i].cfsqltype#" value="#sqlArray[i].value#" / >
-						  <cfelseif structKeyExists(sqlArray[i],'cfsqltype') AND sqlArray[i].cfsqltype EQ "CF_SQL_FLOAT">
-							<!--- make sure we are only passing 2 places after the decimal point --->
-							, #numberFormat(sqlArray[i].value, "99999999999999.00")#
-						   <cfelse>
-						    , #sqlArray[i].value#
-						  </cfif>
+							<!--- Check to make sure property is to be saved in the db. --->
+							<cfif not structKeyExists(application, "stcoapi") OR  not structKeyExists(application.stCoapi, tablename) OR not structKeyExists(application.stCoapi[tableName].STPROPS[sqlArray[i].column].METADATA,"BSAVE") OR application.stCoapi[tableName].STPROPS[sqlArray[i].column].METADATA.bSave>
+							  <!--- temp fix for mySQL, looks as though the datatype decimal and bind type float don't live peacefully together :( --->
+							  <cfif structKeyExists(sqlArray[i],'cfsqltype') AND sqlArray[i].cfsqltype NEQ "CF_SQL_FLOAT">
+							    , <cfqueryparam cfsqltype="#sqlArray[i].cfsqltype#" value="#sqlArray[i].value#" />
+							  <cfelseif structKeyExists(sqlArray[i],'cfsqltype') AND sqlArray[i].cfsqltype EQ "CF_SQL_FLOAT">
+								<!--- make sure we are only passing 2 places after the decimal point --->
+								, #numberFormat(sqlArray[i].value, "99999999999999.00")#
+							   <cfelse>
+							    , #sqlArray[i].value#
+							  </cfif>
+							</cfif>
 						</cfloop>
 					)			
 				</cfquery>
@@ -89,7 +99,7 @@
 				<cfloop collection="#stFields#" item="i">
 				  <cfif stFields[i].type eq 'array' AND structKeyExists(stProperties,i)>
 				  	<cfif IsArray(stProperties[i])>
-						<cfset createArrayTableData(tableName&"_"&i,objectid,stFields[i].fields,stProperties[i]) />
+						<cfset createArrayTableData(tableName&"_"&i,currentObjectID,stFields[i].fields,stProperties[i]) />
 					</cfif>
 				  </cfif>
 				</cfloop>
@@ -103,7 +113,7 @@
 						typename
 					)
 					VALUES (
-						<cfqueryparam value="#objectid#" cfsqltype="CF_SQL_VARCHAR">,
+						<cfqueryparam value="#currentObjectID#" cfsqltype="CF_SQL_VARCHAR">,
 						<cfqueryparam value="#tablename#" cfsqltype="CF_SQL_VARCHAR">
 					)
 				</cfquery>
@@ -114,7 +124,7 @@
 					</cfcatch>	
 				</cftry>
 
-			<cfset createDataResult.objectid = objectid>
+			<cfset createDataResult.objectid = currentObjectID>
 			
 			<cfreturn createDataResult>
 	</cffunction>
@@ -133,11 +143,44 @@
 	    <cfset var stTmp = "" />
 		<cfset var lNewData = "" />
 		<cfset var o = "" />
+   		<cfset var qArrayRecordsToDelete = queryNew("blah") />
+   		<cfset var qDeleteRecords = queryNew("blah") />
+   		<cfset var qCurrentArrayRecords = queryNew("blah") />
+   		<cfset var qDuplicate = queryNew("blah") />
+   		<cfset var qCreateData = queryNew("blah") />
+   		<cfset var update = "" />
+   		<cfset var qArrayData = queryNew("blah") />
+   		<cfset var qTypename = queryNew("blah") />
+   		<cfset var qUpdateSeq = queryNew("blah") />
+   		<cfset var stResult = structNew() />
+   		<cfset var insertSEQ = "" />
+   		<cfset var aReturn = arrayNew(1) />
+   		<cfset var sortorder = "" />
+		<cfset var aPropsPassedIn = arrayNew(1) />
+		<cfset var stArrayProp = structNew() />
+		
+		<cfloop from ="1" to="#arrayLen(arguments.aProps)#" index="i">
+			<cfif NOT isStruct(arguments.aProps[i])>
+				<cfset stArrayProp = structNew() />
+				<cfset stArrayProp.parentID = arguments.objectid />
+				<cfset stArrayProp.data = listFirst(arguments.aProps[i],":") />
+				<cfif listLast(arguments.aProps[i],":") NEQ listFirst(arguments.aProps[i],":")><!--- SEQ PASSED IN --->
+					<cfset stArrayProp.seq = listLast(arguments.aProps[i],":") />
+				<cfelse>
+					<cfset stArrayProp.seq = i />
+				</cfif>
+				
+				<cfset arguments.aProps[i] = stArrayProp>
+			</cfif>
+			
+		</cfloop>
 	
+		
+		
 		<!--- 
 		IF THE ARRAY TABLE HAS HAD A CFC CREATED FOR IT IN ORDER TO EXTEND IT THEN WE USE STANDARD GET, SET & DELETE.
 		 --->
-		<cfif structKeyExists(application, "types") AND structKeyExists(application.types, tableName)>
+		<cfif structKeyExists(application, "stcoapi") AND structKeyExists(application.stcoapi, tableName)>
 			
 			<!--- MJB
 			Only delete records that are not contained in the Array of objects passed. This ensures that any extended array properties are not deleted.
@@ -147,31 +190,34 @@
 			This is required because in the case of extended arrays, the objectids are contained in a structure.
 			--->	
 		
-			<cfset o = createObject("component",application.types[tablename].typepath) />
+			<cfset o = createObject("component",application.stcoapi[tablename].packagepath) />
 		
-		
-			<cfloop from ="1" to="#arrayLen(aProps)#" index="i">
-				<cfif isStruct(arguments.aProps[i]) AND structKeyExists(arguments.aProps[i],"data")>
-					<cfset lNewData = ListAppend(lNewData,arguments.aProps[i].data)>
-				<cfelse>
-					<cfset lNewData = ListAppend(lNewData,arguments.aProps[i])>
-				</cfif>
+
 				
-			</cfloop>
-		
-				
-		    <cfquery datasource="#variables.dsn#" name="qArrayRecordsToDelete">
-		    SELECT parentID FROM #variables.dbowner##arguments.tableName#
+		    <cfquery datasource="#variables.dsn#" name="qCurrentArrayRecords">
+		    SELECT * FROM #variables.dbowner##arguments.tableName#
 		    WHERE parentID = '#arguments.objectid#'
-			<cfif listlen(lNewData)>
-				AND data NOT IN (#ListQualify(lNewData,"'")#)
-			</cfif>
 		    </cfquery>
+		  
+		    <cfloop query="qCurrentArrayRecords">
 		    
-		    <cfloop query="qArrayRecordsToDelete">
-				<cfset stResult = o.deleteData(objectID=qArrayRecordsToDelete.parentID) />
+		    	<!--- Only delete items where they are not passed in.  --->
+		    	<cfset bDeleteArrayItem = true />
+			    <cfloop from ="1" to="#arrayLen(arguments.aProps)#" index="i">
+					<cfif arguments.aProps[i].data EQ qCurrentArrayRecords.data AND arguments.aProps[i].seq EQ qCurrentArrayRecords.seq >
+						<cfset bDeleteArrayItem = false />
+						
+						<!--- Add objectid to the struct if it is an extended array. This will make it easier to find shortly. --->
+						<cfif listContainsNoCase(qCurrentArrayRecords.columnList, "objectid")>
+							<cfset arguments.aProps[i].objectid = qCurrentArrayRecords.objectID />
+						</cfif>
+					</cfif>
+				</cfloop>
+				<cfif bDeleteArrayItem>
+					<cfset stResult = o.deleteData(objectID=qCurrentArrayRecords.objectid) />
+				</cfif>
 			</cfloop>
-		    
+		      
 		<!---
 		IT IS JUST A STANDARD ARRAY TABLE SO HAVE TO DELETE THE OBJECTS MANUALLY AND WE DONT HAVE TO WORRY ABOUT EXTENDED METADATA
 		 --->	
@@ -192,50 +238,50 @@
 			
 		</cfif>
 	
+			
 	
 		
+			
 		<!--- MJB:
 		This will allow us to ensure that any new objects to be placed in the array table will have a unique SEQ by setting the start to qCurrentArrayRecords.RecordCount.
 		We could use a MAX(Seq) but unsure about DB compatibility.
 		 --->
 		<cfquery datasource="#variables.dsn#" name="qCurrentArrayRecords">
-	    SELECT parentID
+	    SELECT *
 		FROM #variables.dbowner##arguments.tableName#
 	    WHERE parentID = '#arguments.objectid#'
 	    </cfquery>
 		
-		<cfset insertSEQ = 0 />
-				
 		<cfloop from ="1" to="#arrayLen(aProps)#" index="i">
 		
-			
-			<cfset insertSEQ = insertSEQ + 1 />
-				
-				
-			<cfif NOT isStruct(arguments.aProps[i])>
-				<cfset stTmp = structNew() />
-				<cfset stTmp.parentID = arguments.objectid />
-				<cfset stTmp.data = arguments.aProps[i] />
-				<cfset stTmp.seq = insertSEQ />
-				<cfset arguments.aProps[i] = stTmp />
-			</cfif>
-			
-		
-			
-	
-			
-			<cfquery datasource="#variables.dsn#" name="qDuplicate">
-			SELECT parentID 
-			FROM #variables.dbowner##tablename#
+			<cfquery dbtype="query" name="qDuplicate">
+			SELECT * 
+			FROM qCurrentArrayRecords
 			WHERE parentID = '#arguments.objectid#'
-			AND data = <cfqueryparam value="#arguments.aProps[i].data#" cfsqltype="CF_SQL_VARCHAR">
-			AND seq = <cfqueryparam value="#arguments.aProps[i].seq#" cfsqltype="cf_sql_integer">
+			<cfif structKeyExists(arguments.aProps[i], "objectid")>
+				AND objectid = <cfqueryparam value="#arguments.aProps[i].objectid#" cfsqltype="CF_SQL_VARCHAR">
+			<cfelse>
+				AND data = <cfqueryparam value="#arguments.aProps[i].data#" cfsqltype="CF_SQL_VARCHAR">
+				AND seq = <cfqueryparam value="#arguments.aProps[i].seq#" cfsqltype="cf_sql_numeric">
+			</cfif>
 			</cfquery>
 			
 			
+			<cfif qDuplicate.RecordCount>
 			
+				<!--- 
+				IF THE ARRAY TABLE HAS HAD A CFC CREATED FOR IT IN ORDER TO EXTEND IT THEN WE USE STANDARD GET, SET & DELETE.
+				 --->
+				<cfif structKeyExists(application, "types") AND structKeyExists(application.types, tableName) AND arguments.aProps[i].seq NEQ i>
 					
-			<cfif NOT qDuplicate.RecordCount>
+					<!--- Use the extended arrayTable's' objectid and Set the seq to the new position in the array --->
+					<cfset arguments.aProps[i].objectid = qDuplicate.objectid />	
+					<cfset arguments.aProps[i].seq = i />	
+					<cfset stResult = o.setdata(stProperties=arguments.aProps[i]) />	
+				</cfif>
+				
+				
+			<cfelse>
 			
 				<!--- 
 				IF THE ARRAY TABLE HAS HAD A CFC CREATED FOR IT IN ORDER TO EXTEND IT THEN WE USE STANDARD GET, SET & DELETE.
@@ -266,7 +312,7 @@
 						<cfloop from="1" to="#arrayLen(SQLArray)#" index="j">
 							<cfif sqlArray[j].column NEQ "seq" AND sqlArray[j].column NEQ "parentid">
 								<cfif structKeyExists(sqlArray[j],'cfsqltype')>
-								, <cfqueryparam cfsqltype="#sqlArray[j].cfsqltype#" value="#sqlArray[j].value#" / >
+								, <cfqueryparam cfsqltype="#sqlArray[j].cfsqltype#" value="#sqlArray[j].value#" />
 								<cfelse>
 								, #sqlArray[j].value#
 								</cfif>
@@ -286,15 +332,14 @@
 		 --------------------------------------------------------------->	
 		<!--- todo: work out most efficient way for each dbtype and break out into the relevant gateway --->
 		<cfswitch expression="#application.dbtype#">
-		<cfcase value="mysql5">
+		<cfcase value="mysql,mysql5">
 			<!--- This works for mySQL 5; see mysql5 specific gateway --->
 			<cfquery name="update" datasource="#application.dsn#">
-			UPDATE #variables.dbowner##tablename#
-			SET #variables.dbowner##tablename#.typename = (SELECT refObjects.typename
-			                                    FROM refObjects
-			                                    WHERE #variables.dbowner##tablename#.data=refObjects.objectid
-			                                    )
-			WHERE parentID = '#arguments.objectid#'
+			UPDATE #tablename# p
+			INNER JOIN refObjects pp
+			ON p.data = pp.objectid
+			SET p.typename = pp.typename
+			WHERE p.parentID = '#arguments.objectid#'
 			</cfquery> 
 		</cfcase>
 		<cfcase value="postgresql">
@@ -322,40 +367,34 @@
 			</cfloop>
 			
 		</cfcase>
-		<cfcase value="ora">
-			
-			<cfquery name="qArrayData" datasource="#application.dsn#">
-				SELECT data as arrayobjid
-				FROM #variables.dbowner##tablename#
-				WHERE parentID = '#arguments.objectid#'
-			</cfquery>
-			
-			<cfloop query="qArrayData">
-				<cfquery name="qTypename" datasource="#application.dsn#">
-				SELECT typename
-				FROM refobjects
-				WHERE objectID = '#qarraydata.arrayobjid#'
-				</cfquery>
-				
-				<cfquery name="update" datasource="#application.dsn#">
+		<cfcase value="mssql">
+			<cfquery name="update" datasource="#application.dsn#">
 				UPDATE #variables.dbowner##tablename#
-				SET 
-				typename = '#qtypename.typename#'
-				WHERE
-				data = '#qarraydata.arrayobjid#'
-				</cfquery>
-			</cfloop>
-
+				SET #variables.dbowner##tablename#.typename = refObjects.typename		
+				FROM #variables.dbowner##tablename# INNER JOIN refObjects
+				ON #variables.dbowner##tablename#.data=refObjects.objectid	
+				WHERE parentID = '#arguments.objectid#'			
+			</cfquery>
 		</cfcase>
-		<cfdefaultcase>
-		<!--- anything else --->
+		<cfcase value="ora">
 			<cfquery name="update" datasource="#application.dsn#">
 			UPDATE #variables.dbowner##tablename#
-			SET #variables.dbowner##tablename#.typename = refObjects.typename		
-			FROM #variables.dbowner##tablename# INNER JOIN refObjects
-			ON #variables.dbowner##tablename#.data=refObjects.objectid	
-			WHERE parentID = '#arguments.objectid#'			
-			</cfquery>		
+			SET #variables.dbowner##tablename#.typename =
+				(SELECT refObjects.typename
+				FROM refObjects 
+				WHERE #variables.dbowner##tablename#.data = refObjects.objectid) 
+			WHERE parentID = '#arguments.objectid#'    
+			</cfquery>
+		</cfcase>	
+		<cfdefaultcase>
+			<!--- anything else / needs to be checked as this does not work for all databases--->
+			<cfquery name="update" datasource="#application.dsn#">
+				UPDATE #variables.dbowner##tablename#
+				SET #variables.dbowner##tablename#.typename = refObjects.typename		
+				FROM #variables.dbowner##tablename# INNER JOIN refObjects
+				ON #variables.dbowner##tablename#.data=refObjects.objectid	
+				WHERE parentID = '#arguments.objectid#'			
+			</cfquery>	
 		</cfdefaultcase>
 		</cfswitch>
 		
@@ -393,14 +432,26 @@
 
 
   	<cffunction name="setData" access="public" returntype="struct" output="false" >
-    		<cfargument name="stProperties" type="struct" required="true" />
+    	<cfargument name="stProperties" type="struct" required="true" />
 	  	<cfargument name="metadata" type="farcry.core.packages.fourq.TableMetadata" required="true" />
+		<cfargument name="dsn" type="string" required="false" default="#variables.dsn#">
 	  	
 	  	<cfset var stFields = arguments.metadata.getTableDefinition() />
 		<cfset var tablename = arguments.metadata.getTableName() />
 		<cfset var SQLArray = generateSQLNameValueArray(stFields,stProperties) />
+   		<cfset var i = "" />
+   		<cfset var qRecordExists = queryNew("blah") />
+   		<cfset var qSetData = queryNew("blah") />
+   		<cfset var stResult = structNew() />
+   		<cfset var objectid = "" />
+   		<cfset var stPackage = structNew() />
+   		<cfset var packagePath = "" />
+   		<cfset var userLogin = "" />
+   		<cfset var t = "" />
+   		<cfset var stDefaultProperties = structNew() />
+   		<cfset var stCreatedObject = structNew() />
+		<cfset var bFirst = true />
 
-		<cfset stResult = structNew() />
 		<cfset stResult.bSuccess = true />
 		<cfset stResult.message = "" />
 		
@@ -423,7 +474,7 @@
 		</cfif>	
 		
 		<!--- Check to see if the objectID already exists in the database, if not, create it quickly with the objectid passed in stProperties. --->
-		<cfquery datasource="#variables.dsn#" name="qRecordExists">
+		<cfquery datasource="#arguments.dsn#" name="qRecordExists">
 		SELECT objectID FROM #variables.dbowner##tablename#
 		WHERE objectID = <cfqueryparam value="#objectID#" cfsqltype="CF_SQL_VARCHAR">
 		</cfquery>
@@ -436,29 +487,38 @@
 			</cfif>
 			<cfset t = createObject("component",packagePath)>
 			
-			<cfset stDefaultProperties = t.getDefaultObject(objectid=objectID,typename=tablename)>
+			<cfset stDefaultProperties = t.getDefaultObject(objectid=objectID,typename=tablename,dsn=arguments.dsn)>
 			<cfset StructAppend(arguments.stProperties,stDefaultProperties,false)>			
-			<cfset stCreatedObject = t.createData(stProperties=arguments.stProperties, objectID=stProperties.ObjectID,User=userLogin)>
+			<cfset stCreatedObject = t.createData(stProperties=arguments.stProperties, objectID=stProperties.ObjectID,User=userLogin,dsn=arguments.dsn)>
 		</cfif>
 		
 
 		<!--- build query --->
+		<cfset bFirst = true />
 		<cfquery datasource="#variables.dsn#" name="qSetData">
 			UPDATE #variables.dbowner##tablename#
 			SET
 			<cfloop from="1" to="#arrayLen(SQLArray)#" index="i">
-			  <cfif structKeyExists(arguments.stProperties,sqlArray[i].column) and sqlArray[i].column neq "objectid" and sqlArray[i].column neq "typename">
-				  <cfif i GT 1>,</cfif>#sqlArray[i].column# = 
-					<!--- temp fix for mySQL, looks as though the datatype decimal and bind type float don't live peacefully together :( --->
-					<cfif structKeyExists(sqlArray[i],'cfsqltype') AND sqlArray[i].cfsqltype NEQ "CF_SQL_FLOAT">
-					  <cfqueryparam cfsqltype="#sqlArray[i].cfsqltype#" value="#SQLArray[i].value#" />
-					<cfelseif structKeyExists(sqlArray[i],'cfsqltype') AND sqlArray[i].cfsqltype EQ "CF_SQL_FLOAT">
-						<!--- make sure we are only passing 2 places after the decimal point --->
-						#numberFormat(sqlArray[i].value, "99999999999999.00")#
-					<cfelse>
-					  #sqlArray[i].value#
+				<cfset setProp = false>
+				
+				<!--- Check to make sure property is to be saved in the db. --->
+			  	<cfif not structKeyExists(application.stCoapi, tablename) OR not structKeyExists(application.stCoapi[tableName].STPROPS[sqlArray[i].column].METADATA,"BSAVE") OR application.stCoapi[tableName].STPROPS[sqlArray[i].column].METADATA.bSave>
+
+					<cfif structKeyExists(arguments.stProperties,sqlArray[i].column) and sqlArray[i].column neq "objectid" and sqlArray[i].column neq "typename">
+					  	<cfif NOT bFirst>,</cfif><cfset bFirst = false /> #sqlArray[i].column# = 
+						<!--- temp fix for mySQL, looks as though the datatype decimal and bind type float don't live peacefully together :( --->
+						<cfif structKeyExists(sqlArray[i],'cfsqltype') AND sqlArray[i].cfsqltype NEQ "CF_SQL_FLOAT">
+						  <cfqueryparam cfsqltype="#sqlArray[i].cfsqltype#" value="#SQLArray[i].value#" />
+						<cfelseif structKeyExists(sqlArray[i],'cfsqltype') AND sqlArray[i].cfsqltype EQ "CF_SQL_FLOAT">
+							<!--- make sure we are only passing 2 places after the decimal point --->
+							#numberFormat(sqlArray[i].value, "99999999999999.00")#
+						<cfelse>
+						  #sqlArray[i].value#
+						</cfif>
 					</cfif>
+				
 				</cfif>
+			
 			</cfloop>
 			
 			WHERE objectID = <cfqueryparam value="#objectID#" cfsqltype="CF_SQL_VARCHAR">
@@ -486,7 +546,7 @@
 	  	<cfset var field = "" />
 	  	<cfset var SQLArray = arrayNew(1) />
 	  	<cfset var propertyValue = "" />
-
+   		<cfset var stField = structNew() />
     	<cfloop collection="#tableDef#" item="field">
     
 			<cfif StructKeyExists(arguments.stProperties, field) 
@@ -587,6 +647,9 @@
 		<cfset var prop = "" />
 		<cfset var key = "" />
 		<cfset var stObjects = "" />
+   		<cfset var qMultipleObjects = queryNew("blah") />
+   		<cfset var qArrayData = queryNew("blah") />
+   		<cfset var sql = "" />
 		
 		<cfsavecontent variable="sql">
 		<cfoutput>
@@ -677,6 +740,8 @@
 		<cfset var prop = "" />
 		<cfset var key = "" />
 		<cfset var stObjects = "" />
+   		<cfset var qMultipleObjects = queryNew("blah") />
+   		<cfset var sql = "" />
 		
 		<cfsavecontent variable="sql">
 		<cfoutput>
@@ -736,6 +801,11 @@
 		<cfargument name="value" type="string" required="yes">
 		<cfargument name="whereclause" type="string" required="false" default="WHERE 0=1">
 		
+		
+   		<cfset var qSetMultipleObjects = queryNew("blah") />
+   		<cfset var sql = "" />
+	
+	
 		<cfif stProps[arguments.prop].metadata.type neq 'array'>
 			<cfsavecontent variable="sql">
 				<cfoutput>

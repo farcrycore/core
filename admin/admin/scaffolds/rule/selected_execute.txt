@@ -1,0 +1,21 @@
+<cfsetting enablecfoutputonly="true">
+<!--- @@displayname: Display selected [DISPLAYNAME] items --->
+
+<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
+
+<cfset oType = createObject("component",application.stCoapi.[TYPENAME].packagePath)>
+
+<cfoutput><h3>#stObj.title#</h3></cfoutput>
+<cfif len(stObj.teaser)>
+	<cfoutput><p>#stObj.teaser#</p></cfoutput>
+</cfif>
+
+<cfif arraylen(stObj.aObjectIDs)>
+	<cfoutput><div class="selected[TYPENAME]list"></cfoutput>
+	<cfloop from="1" to="#arraylen(stObj.aObjectIDs)#" index="i">
+		<skin:view typename="[TYPENAME]" objectid="#stObj.aObjectIDs[i]#" webskin="displayTeaserStandard" />
+	</cfloop>
+	<cfoutput></div></cfoutput>
+</cfif>
+
+<cfsetting enablecfoutputonly="false">

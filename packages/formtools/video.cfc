@@ -15,6 +15,8 @@
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 
+		<cfset var html = "" />
+		
 		<cfparam name="arguments.stMetadata.ftstyle" default="">
 		<cfparam name="arguments.stMetadata.ftDestination" default="/videos">
 		
@@ -52,6 +54,9 @@
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 
+
+		<cfset var html = "" />
+		
 		<cfparam name="arguments.stMetadata.ftDestination" default="/files">
 	
 

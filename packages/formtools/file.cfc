@@ -16,6 +16,9 @@
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 
+		<cfset var html = "" />
+		<cfset var previewURL = "" />
+		
 		<cfparam name="arguments.stMetadata.ftstyle" default="">
 		
 		<cfset Request.inHead.Scriptaculous = 1>
@@ -58,8 +61,11 @@
 							<div id="#arguments.fieldname#previewfile">
 								<cfif structKeyExists(arguments.stMetadata, "ftSecure") and arguments.stMetadata.ftSecure>
 									<img src="#application.url.farcry#/images/crystal/22x22/actions/lock.png" />
+									#listLast(arguments.stMetadata.value, "/")#
+								<cfelse>
+									<a href="#application.url.fileRoot##arguments.stMetadata.value#" target="preview">#listlast(arguments.stMetadata.value, "/")#</a>
 								</cfif>
-								#arguments.stMetadata.value#
+								
 								<ft:farcryButton type="button" value="Delete File" onclick="if(confirm('Are you sure you want to remove this file?')) {} else {return false};$('#arguments.fieldname#DELETE').value=$('#arguments.fieldname#').value;$('#arguments.fieldname#').value='';Effect.Fade('#arguments.fieldname#previewfile');" />
 							</div>
 						</td>
@@ -79,20 +85,10 @@
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 
-<!--- 		<cfset var filePath = "" />
-		
-		<cfparam name="arguments.stMetadata.ftSecure" default="false">
-		<cfparam name="arguments.stMetadata.ftDestination" default="/files">
-	
-		<cfif arguments.stMetadata.ftSecure>
-			<cfset filePath = application.path.defaultFilePath />
-		<cfelse>
-			<cfset filePath = application.path.secureFilePath />
-		</cfif> --->
+		<cfset var html = "" />
 
 		<cfsavecontent variable="html">
-			<cfoutput><a target="_blank" href="#application.url.webroot#/download.cfm?downloadfile=#arguments.stobject.objectid#&typename=#arguments.typename#&field=#arguments.stmetadata.name#">#arguments.stMetadata.value#</a></cfoutput>			
-			
+			<cfoutput><a target="_blank" href="#application.url.webroot#/download.cfm?downloadfile=#arguments.stobject.objectid#&typename=#arguments.typename#&fieldname=#arguments.stmetadata.name#">#arguments.stMetadata.value#</a></cfoutput>
 		</cfsavecontent>
 		
 		<cfreturn html>
@@ -105,6 +101,10 @@
 		<cfset var filePath = "" />
 		<cfset var stResult = structNew()>	
 		<cfset var uploadFileName = "" />
+		<cfset var qDuplicates = queryNew("blah") />
+		<cfset var cleanFileName = "" />
+		<cfset var newFileName = "" />
+		<cfset var lFormField = "" />
 			
 		<cfset stResult.bSuccess = true>
 		<cfset stResult.value = stFieldPost.value>
@@ -156,30 +156,33 @@
 			<cfif structKeyExists(form, "#stMetadata.FormFieldPrefix##stMetadata.Name#") AND  len(FORM["#stMetadata.FormFieldPrefix##stMetadata.Name#"])>
 				<!--- This means there is currently a file associated with this object. We need to override this file --->
 				
-				<cfset uploadFileName = listLast(FORM["#stMetadata.FormFieldPrefix##stMetadata.Name#"], "/") />
+				<cfset lFormField = replace(FORM["#stMetadata.FormFieldPrefix##stMetadata.Name#"], '\', '/')>			
+				<cfset uploadFileName = listLast(lFormField, "/") />
 				
 				<cffile action="UPLOAD"
 					filefield="#stMetadata.FormFieldPrefix##stMetadata.Name#New" 
-					destination="#filePath##arguments.stMetadata.ftDestination#/#uploadFileName#"		        	
-					nameconflict="Overwrite" />
-				
+					destination="#filePath##arguments.stMetadata.ftDestination#"		        	
+					nameconflict="MakeUnique" />
+				<cffile action="rename" source="#filePath##arguments.stMetadata.ftDestination#/#File.ServerFile#" destination="#uploadFileName#" />
+				<cfset newFileName = uploadFileName>
 			<cfelse>
 				<!--- There is no image currently so we simply upload the image and make it unique  --->
 				<cffile action="UPLOAD"
 					filefield="#stMetadata.FormFieldPrefix##stMetadata.Name#New" 
 					destination="#filePath##arguments.stMetadata.ftDestination#"		        	
 					nameconflict="MakeUnique">
+				<cfset newFileName = File.ServerFile>
 			</cfif>
 
 	
 			
 			<!--- Replace all none alphanumeric characters --->
-			<cfset cleanFileName = reReplaceNoCase(File.ServerFile, "[^a-z0-9.]", "", "all") />
+			<cfset cleanFileName = reReplaceNoCase(newFileName, "[^a-z0-9.]", "", "all") />
 			
 			<!--- If the filename has changed, rename the file
 			Note: doing a quick check to make sure the cleanfilename doesnt exist. If it does, prepend the count+1 to the end.
 			 --->
-			<cfif cleanFileName NEQ File.ServerFile>
+			<cfif cleanFileName NEQ newFileName>
 				<cfif fileExists("#filePath##arguments.stMetadata.ftDestination#/#cleanFileName#")>
 					<cfdirectory action="list" directory="#filePath##arguments.stMetadata.ftDestination#" filter="#listFirst(cleanFileName, '.')#*" name="qDuplicates" />
 					<cfif qDuplicates.RecordCount>
@@ -188,7 +191,7 @@
 					 
 				</cfif>
 				
-				<cffile action="rename" source="#filePath##arguments.stMetadata.ftDestination#/#File.ServerFile#" destination="#cleanFileName#" / >
+				<cffile action="rename" source="#filePath##arguments.stMetadata.ftDestination#/#newFileName#" destination="#cleanFileName#" />
 			</cfif>			
 									
 			<!--- </cfif> --->

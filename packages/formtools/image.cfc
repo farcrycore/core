@@ -20,6 +20,7 @@
 		
 		<cfset var html = "" />
 		<cfset var dimensionAlert = "" />
+		<cfset var ToggleOffGenerateImageJS = "" />
 		
 		<cfparam name="arguments.stMetadata.ftstyle" default="">
 		<cfparam name="arguments.stMetadata.ftDestination" default="/images">
@@ -161,13 +162,15 @@
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 
+		<cfset var html = "" />
+		
 		<cfparam name="arguments.stMetadata.ftAutoGenerateType" default="FitInside">
 		<cfparam name="arguments.stMetadata.ftImageWidth" default="0">
 		<cfparam name="arguments.stMetadata.ftImageHeight" default="0">
 		
 		<cfsavecontent variable="html">
 			<cfif len(arguments.stMetadata.value)>
-				<cfoutput><img src="#arguments.stMetadata.value#" border="0"
+				<cfoutput><img src="#application.url.webroot##arguments.stMetadata.value#" border="0"
 					<cfif arguments.stMetadata.ftAutoGenerateType EQ "ForceSize" OR arguments.stMetadata.ftAutoGenerateType EQ "Pad" >
 						<cfif len(arguments.stMetadata.ftImageWidth) and arguments.stMetadata.ftImageWidth GT 0>width="#arguments.stMetadata.ftImageWidth#"</cfif>
 						<cfif len(arguments.stMetadata.ftImageHeight) and arguments.stMetadata.ftImageHeight GT 0>height="#arguments.stMetadata.ftImageHeight#"</cfif>
@@ -182,23 +185,28 @@
 	<cffunction name="validate" access="public" output="true" returntype="struct" hint="This will return a struct with bSuccess and stError">
 		<cfargument name="stFieldPost" required="true" type="struct" hint="The fields that are relevent to this field type. Includes Value and stSupporting">
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
+		<cfargument name="stImageArgs" required="true" type="struct" default="#structNew()#" hint="Append any additional image arguments for image generation.">
+		<cfargument name="objectid" required="true" type="uuid" hint="objectid of image object" />
 		
-		<cfset var stResult = structNew()>
-		<cfset var stGeneratedImageArgs = StructNew() />		
-		<cfset var stGeneratedImage = structNew() />
+		<cfset var stResult = structNew() />
+		<cfset var stGeneratedImageArgs = arguments.stImageArgs />
 		<cfset var uploadFileName = "" />
+		<cfset var b = "" />
+		<cfset var newFileName = "" />
+		<cfset var lFormField = "" />
+
+		<cfset stResult.bSuccess = true />
+		<cfset stResult.value = stFieldPost.value />
+		<cfset stResult.stError = StructNew() />
 		
-		<cfset stResult.bSuccess = true>
-		<cfset stResult.value = stFieldPost.value>
-		<cfset stResult.stError = StructNew()>
-		
-		<cfparam name="arguments.stMetadata.ftDestination" default="/images">
+		<cfparam name="arguments.stMetadata.ftDestination" default="/images" />
 		<cfparam name="arguments.stMetadata.ftImageWidth" default="0" />
 		<cfparam name="arguments.stMetadata.ftImageHeight" default="0" />
-		<cfparam name="arguments.stMetadata.ftAutoGenerateType" default="FitInside">
-		<cfparam name="arguments.stMetadata.ftPadColor" default="##ffffff">
-		<cfparam name="arguments.stMetadata.ftThumbnailBevel" default="No">
-		
+		<cfparam name="arguments.stMetadata.ftAutoGenerateType" default="FitInside" />
+		<cfparam name="arguments.stMetadata.ftPadColor" default="##ffffff" />
+		<cfparam name="arguments.stMetadata.ftThumbnailBevel" default="No" />
+
+
 		<!--- --------------------------- --->
 		<!--- Perform any validation here --->
 		<!--- --------------------------- --->
@@ -207,16 +215,17 @@
 		<cfif len(arguments.stMetadata.ftDestination) AND left(arguments.stMetadata.ftDestination,1) NEQ "/">
 			<cfset arguments.stMetadata.ftDestination = "/#arguments.stMetadata.ftDestination#" />
 		</cfif>
-		
+
 		<cfif NOT DirectoryExists("#application.path.imageRoot##arguments.stMetadata.ftDestination#")>
 			<cfset b = createFolderPath("#application.path.imageRoot##arguments.stMetadata.ftDestination#")>
-		</cfif>		
-		
+		</cfif>
+
 		<cfif len(FORM["#stMetadata.FormFieldPrefix##stMetadata.Name#Delete"]) AND fileExists("#application.path.imageRoot##FORM['#stMetadata.FormFieldPrefix##stMetadata.Name#Delete']#")>
 					
 			<cfif NOT DirectoryExists("#application.path.mediaArchive#")>
 				<cfdirectory action="create" directory="#application.path.mediaArchive#">
 			</cfif>
+
 			<cfif NOT DirectoryExists("#application.path.mediaArchive##arguments.stMetadata.ftDestination#")>
 				<cfdirectory action="create" directory="#application.path.mediaArchive##arguments.stMetadata.ftDestination#">
 			</cfif>	
@@ -230,14 +239,13 @@
 
 		</cfif>
 				
-		
-		
-		<cfif len(FORM["#stMetadata.FormFieldPrefix##stMetadata.Name#New"])>
+		<cfif len(FORM["#stMetadata.FormFieldPrefix##stMetadata.Name#New"]) gt 0>
 		
 			<cfif structKeyExists(form, "#stMetadata.FormFieldPrefix##stMetadata.Name#") AND  len(FORM["#stMetadata.FormFieldPrefix##stMetadata.Name#"])>
 				<!--- This means there is currently a file associated with this object. We need to override this file --->
 				
-				<cfset uploadFileName = listLast(FORM["#stMetadata.FormFieldPrefix##stMetadata.Name#"], "/") />
+				<cfset lFormField = replace(FORM["#stMetadata.FormFieldPrefix##stMetadata.Name#"], '\', '/')>			
+				<cfset uploadFileName = listLast(lFormField, "/") />
 		 	
 		 	
 				<!--- MOVE THE OLD FILE INTO THE ARCHIVE --->
@@ -248,12 +256,13 @@
 					   destination = "#application.path.mediaArchive##arguments.stMetadata.ftDestination#/#arguments.objectid#-#DateDiff('s', 'January 1 1970 00:00', now())#-#uploadFileName#">
 				</cfif>
 		
-				
 				<cffile
 					action="upload"
 					filefield="#stMetadata.FormFieldPrefix##stMetadata.Name#New" 
-					destination="#application.path.imageRoot##arguments.stMetadata.ftDestination#/#uploadFileName#"		        	
-					nameconflict="Overwrite">
+					destination="#application.path.imageRoot##arguments.stMetadata.ftDestination#"		        	
+					nameconflict="MakeUnique">
+				<cffile action="rename" source="#application.path.imageRoot##arguments.stMetadata.ftDestination#/#File.ServerFile#" destination="#uploadFileName#" />
+				<cfset newFileName = uploadFileName>
 								
 			<cfelse>
 				<!--- There is no image currently so we simply upload the image and make it unique  --->
@@ -261,11 +270,12 @@
 					filefield="#stMetadata.FormFieldPrefix##stMetadata.Name#New" 
 					destination="#application.path.imageRoot##arguments.stMetadata.ftDestination#"		        	
 					nameconflict="MakeUnique">
+				<cfset newFileName = File.ServerFile>
 			</cfif>
-	
+
 				
 				<cfif len(arguments.stMetaData.ftImageWidth) OR len(arguments.stMetaData.ftImageHeight)>
-					<cfset stGeneratedImageArgs.Source = "#application.path.imageRoot##arguments.stMetadata.ftDestination#/#File.ServerFile#" />
+					<cfset stGeneratedImageArgs.Source = "#application.path.imageRoot##arguments.stMetadata.ftDestination#/#newFileName#" />
 					<cfset stGeneratedImageArgs.Destination = "" />			
 					<cfset stGeneratedImageArgs.Width = "#arguments.stMetadata.ftImageWidth#" />
 					<cfif NOT isNumeric(stGeneratedImageArgs.Width)>
@@ -278,29 +288,21 @@
 					<cfset stGeneratedImageArgs.AutoGenerateType = "#arguments.stMetadata.ftAutoGenerateType#" />
 					<cfset stGeneratedImageArgs.PadColor = "#arguments.stMetadata.ftPadColor#" />
 
-
-					<cfset stGeneratedImage = GenerateImage(Source="#stGeneratedImageArgs.Source#", Destination="#stGeneratedImageArgs.Destination#", Width="#stGeneratedImageArgs.Width#", Height="#stGeneratedImageArgs.Height#", AutoGenerateType="#stGeneratedImageArgs.AutoGenerateType#", PadColor="#stGeneratedImageArgs.PadColor#") />
-					
+					<cfset stGeneratedImage = GenerateImage(argumentCollection=stGeneratedImageArgs) />
 					
 					<cfif stGeneratedImage.bSuccess>
-						<cfset stResult.value = "#arguments.stMetadata.ftDestination#/#file.serverFile#" />
+						<cfset stResult.value = "#arguments.stMetadata.ftDestination#/#newFileName#" />
 					</cfif>
 				<cfelse>
-					<cfset stResult.value = "#arguments.stMetadata.ftDestination#/#file.serverFile#" />	
+					<cfset stResult.value = "#arguments.stMetadata.ftDestination#/#newFileName#" />	
 				</cfif>
-				
-
-		
-		
 			
 		</cfif>
-		
 	
-<!--- 		 --->
 		<!--- ----------------- --->
 		<!--- Return the Result --->
 		<!--- ----------------- --->
-		<cfreturn stResult>
+		<cfreturn stResult />
 		
 	</cffunction>
 
@@ -308,14 +310,16 @@
 	<cffunction name="createFolderPath" output="true" hint="Creates a folder branch" returntype="boolean">
 		<cfargument name="folderPath" type="string" required="true">
 		<cfargument name="mode" type="string" default="" required="false">
-		<cfscript>
-			var thePath = replace(arguments.folderPath,"\", "/","ALL");
-			var arFolders = "";
-			var pathLen = 0;
-			var workingPath = "";
-			var bUNC = false;
-			var indexStart = 1;
-		</cfscript>
+		
+		
+		<cfset var depth = "" />
+		<cfset var thePath = replace(arguments.folderPath,"\", "/","ALL") />
+		<cfset var arFolders = "" />
+		<cfset var pathLen = 0 />
+		<cfset var workingPath = "" />
+		<cfset var bUNC = false />
+		<cfset var indexStart = 1 />
+
 		<cfif left(arguments.folderPath,1) eq "/"><!--- *nix path --->
 			<cfset workingPath = "/">
 		<cfelseif left(arguments.folderPath,2) eq "\\"><!--- UNC Path --->
@@ -378,6 +382,7 @@
          <cfset var resizedImage = "" />  
          <cfset var myimage =  ""/>
          <cfset var extension = "" />
+		<cfset var returnstruct = "" />
          
 		<cfset stResult.bSuccess = true />
 		<cfset stResult.message = "" />
@@ -524,6 +529,67 @@
 		<cfreturn stResult />
 	</cffunction>
 	
+
+<cffunction name="ImageAutoGenerateBeforeSave" access="public" output="true" returntype="struct">
+	<cfargument name="stProperties" required="yes" type="struct">
+	<cfargument name="stFields" required="yes" type="struct">
 	
+	<cfset var imagerootPath = "#application.path.imageRoot#" />	
+	<cfset var oImage = createobject("component", application.formtools.image.packagePath) />
+
+	<cfloop list="#StructKeyList(arguments.stFields)#" index="i">
+
+		<cfif structKeyExists(arguments.stFields[i].metadata, "ftType") AND arguments.stFields[i].metadata.ftType EQ "Image" >
+
+			<cfif structKeyExists(arguments.stFormPost, i) AND structKeyExists(arguments.stFormPost[i].stSupporting, "CreateFromSource") AND ListFirst(arguments.stFormPost[i].stSupporting.CreateFromSource)>	
+			
+				<!--- Make sure a ftSourceField --->
+				<cfparam name="arguments.stFields.#i#.metadata.ftSourceField" default="sourceImage" />
+				
+				<cfset sourceFieldName = arguments.stFields[i].metadata.ftSourceField />
+				
+				<!--- IS THE SOURCE IMAGE PROVIDED? --->
+				<cfif structKeyExists(arguments.stProperties, sourceFieldName) AND len(arguments.stProperties[sourceFieldName])>
+													
+
+					<cfparam name="arguments.stFields['#i#'].metadata.ftDestination" default="">		
+					<cfparam name="arguments.stFields['#i#'].metadata.ftImageWidth" default="#application.config.image.StandardImageWidth#">
+					<cfparam name="arguments.stFields['#i#'].metadata.ftImageHeight" default="#application.config.image.StandardImageHeight#">
+					<cfparam name="arguments.stFields['#i#'].metadata.ftAutoGenerateType" default="FitInside">
+					<cfparam name="arguments.stFields['#i#'].metadata.ftPadColor" default="##ffffff">
+					
+					<cfset stArgs = StructNew() />
+					<cfset stArgs.Source = "#imagerootPath##arguments.stProperties[sourceFieldName]#" />
+					<cfset stArgs.Destination = "#imagerootPath##arguments.stFields['#i#'].metadata.ftDestination#" />
+					<cfset stArgs.Width = "#arguments.stFields['#i#'].metadata.ftImageWidth#" />
+					<cfif NOT isNumeric(stArgs.Width)>
+						<cfset stArgs.Width = 0 />				
+					</cfif>
+					<cfset stArgs.Height = "#arguments.stFields['#i#'].metadata.ftImageHeight#" />
+					<cfif NOT isNumeric(stArgs.Height)>
+						<cfset stArgs.Height = 0 />				
+					</cfif>
+					<cfset stArgs.AutoGenerateType = "#arguments.stFields['#i#'].metadata.ftAutoGenerateType#" />
+					<cfset stArgs.padColor = "#arguments.stFields['#i#'].metadata.ftpadColor#" />
+				
+												
+					<!--- <cfset stGenerateImageResult = oImage.GenerateImage(Source="#stArgs.Source#", Destination="#stArgs.Destination#", Width="#stArgs.Width#", Height="#stArgs.Height#", AutoGenerateType="#stArgs.AutoGenerateType#", padColor="#stArgs.padColor#") /> --->
+					<cfset stGenerateImageResult = oImage.GenerateImage(argumentCollection=stArgs) />
+					
+					<cfif stGenerateImageResult.bSuccess>
+						<cfset stProperties['#i#'] = "#arguments.stFields['#i#'].metadata.ftDestination#/#stGenerateImageResult.filename#" />
+					</cfif>
+				
+				</cfif>
+									
+			</cfif>
+
+		</cfif>
+
+	</cfloop>
+	
+	<cfreturn stProperties />
+	
+</cffunction>
 	
 </cfcomponent> 

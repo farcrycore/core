@@ -94,7 +94,13 @@
 	
 	
 	<cfoutput><div id="treewrap_#attributes.id#"></cfoutput>
+	
 	<!--- // build menu [bb: this relies on nLevels, starting from nLevel 2] --->
+	<!--- <cfif qNav.nLevel lt 2>
+		<cfthrow type="core.tags.formtools.ntmprototypetree" message="nLevel must be greater than 1; ie. root not allowed." detail="You must nominate an nLevel greater than one.  Essentially you cannot nominate root as the start point." />
+	</cfif> --->
+	
+	
 	<cfloop query="qNav" ><!--- for(i=1; i lt incrementvalue(qNav.recordcount); i=i+1) --->
 	<!--- { --->
 		<cfif qNav.nLevel gte attributes.startLevel>

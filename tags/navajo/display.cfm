@@ -248,12 +248,19 @@ the latter is the policy group for anonymous...
 <!--- $TODO: refactor object calls... for now put stOBj into request$ --->
 
 <cfif attributes.method neq "display" AND  attributes.lmethods contains attributes.method>
-	<!--- ie. if a method has been passed in deliberately and is allowed use this --->
-	<cftrace var="attributes.method" text="Passed in attribute method used" />
-	<q4:contentobject
-		typename="#application.types[stObj.typename].typePath#"
-		objectid="#stObj.ObjectID#"
-		method="#attributes.method#">
+
+	<cfset o = createObject("component", application.types[stObj.typename].typePath)>
+	<cfset HTML = o.getView(stobject=stObj, Template=attributes.method, alternateHtml="") />
+	<cfif len(trim(HTML))>
+		<cfoutput>#HTML#</cfoutput>
+	<cfelse>
+		<!--- ie. if a method has been passed in deliberately and is allowed use this --->
+		<cftrace var="attributes.method" text="Passed in attribute method used" />
+		<q4:contentobject
+			typename="#application.types[stObj.typename].typePath#"
+			objectid="#stObj.ObjectID#"
+			method="#attributes.method#">
+	</cfif>
 	
 <cfelseif IsDefined("stObj.displayMethod") AND len(stObj.displayMethod)>
 	<!--- Invoke display method of page --->
@@ -261,7 +268,7 @@ the latter is the policy group for anonymous...
 	
 	<cfif isDefined("stArchive")>
 		<cftry>
-				<cfinclude template="/farcry/projects/#application.applicationname#/#application.path.handler#/#stObj.typename#/#stObj.displayMethod#.cfm">
+				<cfinclude template="/farcry/projects/#application.projectDirectoryName#/#application.path.handler#/#stObj.typename#/#stObj.displayMethod#.cfm">
 				<cfcatch>
 					<!--- check to see if the displayMethod template exists --->
 					<cfif NOT fileExists("#application.path.webskin#/#stObj.typename#/#stObj.displayMethod#.cfm")>
@@ -274,7 +281,7 @@ the latter is the policy group for anonymous...
 		
 	<cfelse>
 		<cfset o = createObject("component", application.types[stObj.typename].typePath)>
-		<cfset HTML = o.getView(stobject=stObj, Template="#stObj.displayMethod#", alternateHtml="") />
+		<cfset HTML = o.getView(stobject=stObj, Template="#stObj.displayMethod#") />
 		<cfoutput>#HTML#</cfoutput>
 	</cfif>
 	
@@ -291,8 +298,7 @@ the latter is the policy group for anonymous...
 		<cftry>
 			<cfoutput>#o.display(objectid=stObj.objectId)#</cfoutput>
 			<cfcatch type="any">
-				<cftrace text="Object not found" />
-				<cfabort showerror="Object not found" />
+				<cfthrow type="core.tags.navajo.display" message="Default display method for object could not be found." />
 			</cfcatch>
 		</cftry>
 			
@@ -306,28 +312,29 @@ $TODO: This should respond to request.mode settings and not require a
 a whole new set of permission checks, have trapped any errors and suppressed GB 20031024 $
 ---------------------------->
 <cftry>
-<!--- begin: logged in user? --->
-<cfscript>
-	stLoggedInUser = oAuthentication.getUserAuthenticationData();
-	bLoggedIn = stLoggedInUser.bLoggedIn;
-</cfscript>
-
-<cfif bLoggedIn AND NOT request.bHideContextMenu>
-	<!--- check they are admin --->
-	<!--- check they are able to comment --->
-
-	<cfset iAdmin = oAuthorisation.checkPermission(permissionName="Admin",reference="PolicyGroup") />
-	<cfset iCanCommentOnContent = oAuthorisation.checkInheritedPermission(objectid=request.navid,permissionName='CanCommentOnContent') />
-
-	<cfif (iAdmin eq 1 or iCanCommentOnContent eq 1)>
-		<cfset request.floaterIsOnPage = true>
-		<cfinclude template="floatMenu.cfm">
+	<!--- begin: logged in user? --->
+	<cfscript>
+		stLoggedInUser = oAuthentication.getUserAuthenticationData();
+		bLoggedIn = stLoggedInUser.bLoggedIn;
+	</cfscript>
+	
+	<cfif bLoggedIn AND NOT request.bHideContextMenu>
+		<!--- check they are admin --->
+		<!--- check they are able to comment --->
+	
+		<cfset iAdmin = oAuthorisation.checkPermission(permissionName="Admin",reference="PolicyGroup") />
+		<cfset iCanCommentOnContent = oAuthorisation.checkInheritedPermission(objectid=request.navid,permissionName='CanCommentOnContent') />
+	
+		<cfif (iAdmin eq 1 or iCanCommentOnContent eq 1)>
+			<cfset request.floaterIsOnPage = true>
+			<cfinclude template="floatMenu.cfm">
+		</cfif>
 	</cfif>
-</cfif>
-<!--- end: logged in user? --->
-<cfcatch>
-<!--- suppress error --->
-</cfcatch>
+	<!--- end: logged in user? --->
+	<cfcatch>
+	<!--- suppress error --->
+	<cftrace text="Float menu failed: #cfcatch.message#" />
+	</cfcatch>
 </cftry>
 </cftimer>
 <cfsetting enablecfoutputonly="No">

@@ -21,6 +21,8 @@
 	<cfargument name="dir" type="string" required="yes">
 	<cfargument name="bRecurse" type="boolean" required="no" default="no">
 	<cfset var qDir = "">
+	<cfset var i = "" />	
+	<cfset var j = "" />
 
 	<cfparam name="request.stFiles" type="struct" default="#structNew()#">
 	<cfdirectory action="LIST" directory="#arguments.dir#" name="qDir">
@@ -40,7 +42,13 @@
 <cffunction name="generateXML">
 	<cfargument name="str" type="string" required="Yes">
 	<cfargument name="taglist" type="string" required="no" default="header,author,log,note,desc,date,name,revision">
-	<cfset result = "<document>">
+	
+	<cfset var i = "" />	
+	<cfset var j = "" />	
+	<cfset var result = "<document>">
+	<cfset var start = "" />	
+	<cfset var stEntries = structNew() />	
+	<cfset var substr = "" />	
 
 		<cfloop list="#arguments.taglist#" index="i">
 			<cfset start = 1>

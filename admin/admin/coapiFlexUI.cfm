@@ -9,8 +9,18 @@
 	<cfabort>
 </cfif>
 
+
+
 <admin:header title="#application.adminBundle[session.dmProfile.locale].COAPIrules#" writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
-<skin:flexWrapper SWFSource="/farcry/admin/ui/swf/Coapi.swf" id="CoapiUI" />
+<cfif len(application.url.webroot)>
+	<cfset appRoot = right(application.url.webroot,len(application.url.webroot)-1)>
+	<cfset appRoot = replace(appRoot,"/",".")>
+	<skin:flexWrapper SWFSource="#application.url.farcry#/admin/ui/swf/Coapi.swf" id="CoapiUI" flashVars="appRoot=#appRoot#">
+<cfelse>
+	<skin:flexWrapper SWFSource="#application.url.farcry#/admin/ui/swf/Coapi.swf" id="CoapiUI">
+</cfif>
+
+
 <admin:footer>
 
 <cfsetting enablecfoutputonly="no">

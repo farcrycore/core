@@ -1,0 +1,11 @@
+<cfsetting enablecfoutputonly="true" />
+<!--- @@displayname: Standard Page Display for [TYPENAME] --->
+<!--- @@author: Scaffold--->
+
+<!--- tag libraries --->
+<cfimport taglib="/farcry/core/tags/container" prefix="con">
+<cfimport taglib="/farcry/core/tags/formtools" prefix="ft">
+
+<ft:object stObject="#stobj#" format="display" />
+	
+<cfsetting enablecfoutputonly="false" />

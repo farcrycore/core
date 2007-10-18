@@ -55,7 +55,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 		<cfquery name="qCat" datasource="#arguments.dsn#">
 			SELECT objectid
 			FROM #arguments.dbowner#nested_tree_objects
-			WHERE objectname = <cfqueryparam cfsqltype="CF_SQL_VARCHAR" value="#arguments.categoryname#">
+			WHERE (objectname = <cfqueryparam cfsqltype="CF_SQL_VARCHAR" value="#arguments.categoryname#"> OR objectname = <cfqueryparam cfsqltype="CF_SQL_VARCHAR" value="#replace(arguments.categoryname,"&","&amp;","all")#">) 
 			AND typename = <cfqueryparam cfsqltype="CF_SQL_VARCHAR" value="#arguments.typename#">
 		</cfquery>		
 		<cfif qCat.recordcount>

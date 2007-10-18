@@ -33,10 +33,10 @@
 	request.formtool.widthMax = "800px";
 
 	/* left column */
-	request.formtool.widthLeft = "180px";
+	request.formtool.widthLeft = "25%";
 
 	/* right column */
-	request.formtool.widthRight = "400px";
+	request.formtool.widthRight = "70%";
 
 
 </cfscript>
@@ -112,6 +112,7 @@ form.formtool input,
 	
 
 form.formtool input.inputFile {width: 211px;}
+form.formtool input.farcryButton {width: auto;}
 
 form.formtool select.selectOne,
 	form.formtool select.selectMultiple {padding: 1px 3px 1px 3px; width: 211px;}
@@ -214,7 +215,7 @@ input.validation-failed, textarea.validation-failed {border: 1px solid ##FF3300;
 
 	/* array component : detail view layout styles */
 	ul.arrayDetailView {width: auto; height: auto; display: block;}
-		ul.arrayDetailView li {margin: 0px; padding: 0px; height: auto;}
+		ul.arrayDetailView li {margin: 0px; padding: 0px; height: auto; zoom: 1;} 
 			ul.arrayDetailView li div.buttonGripper {margin: 0px; padding: 1px 0px 0px 0px; width: 7px; height: 17px; display: block; float: left;}
 				ul.arrayDetailView li div.buttonGripper p {margin: 0px; padding: 0px; width: 7px; height: 17px; display: block;}
 		 	ul.arrayDetailView li input.formCheckbox {margin: 4px 2px 0px 0px; padding: 0px; display: block; float: right; overflow: hidden;}

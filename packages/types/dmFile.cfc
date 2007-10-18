@@ -24,6 +24,7 @@ type properties
 <cfproperty ftSeq="1" ftFieldset="File Details" name="title" type="string" hint="Meaningful reference title for file" required="no" default="" ftLabel="Title" blabel="true" />
 <cfproperty ftSeq="2" ftFieldset="File Details" name="description" type="string" hint="A description of the file to be uploaded." required="No" default="" fttype="longchar" ftLabel="Description" />
 <cfproperty ftSeq="3" ftFieldset="File Details" name="filename" type="string" hint="The name of the file to be uploaded" required="no" default="" ftType="file" ftLabel="File" ftDestination="/dmfile" ftSecure="false" />
+
 <cfproperty ftSeq="20" ftFieldset="Publishing Details" name="documentDate" type="date" hint="The date of the attached file." required="no" default="" ftLabel="Publish Date" ftDefaultType="Evaluate" ftDefault="now()" ftType="datetime" ftDateFormatMask="dd mmm yyyy" ftTimeFormatMask="hh:mm tt" ftToggleOffDateTime="false" />
 <cfproperty ftSeq="21" ftFieldset="Publishing Details" name="bLibrary" type="boolean" hint="Flag to make file shared." required="no" default="1" ftLabel="Add file to library?" ftType="boolean" />
 <cfproperty ftSeq="30" ftFieldset="Categorisation" name="catFile" type="string" hint="Flag to make file shared." required="no" ftLabel="Category" ftType="category" ftalias="dmfile" />
@@ -38,4 +39,66 @@ type properties
 <!--- system property --->
 <cfproperty name="status" type="string" hint="Status of the node (draft, pending, approved)." required="yes" default="draft">
 
+<cffunction name="BeforeSave" access="public" output="true" returntype="struct">
+	<cfargument name="stProperties" required="true" type="struct">
+	<cfargument name="stFields" required="true" type="struct">
+	<cfargument name="stFormPost" required="false" type="struct">
+	
+	<!--- 
+		This will set the default Label value. It first looks form the bLabel associated metadata.
+		Otherwise it will look for title, then name and then anything with the substring Name.
+	 --->
+	<cfset var NewLabel = "" />
+	<cfset var filepath = "" />
+	<cfset var fileContents = "" />
+	
+	<cfparam name="arguments.stProperties.label" default="">
+	
+	<cfif structKeyExists(arguments.stProperties,"Title")>
+		<cfset arguments.stProperties.label = "#arguments.stProperties.title#">
+	</cfif>
+	
+	<cfset arguments.stProperties.datetimelastupdated = now() />
+	
+	<cfif structKeyExists(arguments.stProperties,"filename") AND len(trim(arguments.stProperties.filename))>
+	
+		<cfif structKeyExists(arguments.stFields.filename.Metadata,"ftSecure") AND arguments.stFields.filename.Metadata.ftSecure>
+			<cfset filepath = application.path.secureFilePath />
+		<cfelse>
+			<cfset filepath = application.path.defaultFilePath />
+		</cfif>
+		
+		<cftry>
+			<cfset fullFilePath = "#filepath##arguments.stProperties.filename#" />
+			<cfset fileRead = createObject("java","java.io.FileInputStream").init(fullFilePath) />
+					
+			<cfset arguments.stProperties.fileSize = fileRead.available() />
+			<cfset arguments.stProperties.fileExt = "#listLast(arguments.stProperties.filename,".")#" />
+					
+			<cfset fileRead.close() />
+						
+			<cfcatch type="any"><!--- File may not exist i.e. development environments ---></cfcatch>
+		</cftry>
+	</cfif>
+	
+	<cfreturn stProperties>
+</cffunction>
+
+<cffunction name="fileInfo" output="false" returntype="query" access="private">
+	<cfargument name="fileName" type="string" required="true">
+	
+	<cfset var directory = "">
+	<cfset var getFile = queryNew("")>
+	
+	<cfif not fileExists(fileName)>
+	<cfthrow message="fileInfo error: #fileName# does not exist.">
+	</cfif>
+	<cfset directory = getDirectoryFromPath(fileName)>
+	<cfdirectory name="getFile" directory="#directory#" filter="#getFileFromPath(fileName)#">
+	<cfreturn getFile>
+</cffunction>
+
+
+
+	
 </cfcomponent>

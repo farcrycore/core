@@ -310,17 +310,22 @@ function deSelectAll()
 					</cfscript>
 					
 					<cfinvoke component="#application.packagepath#.farcry.versioning" method="getVersioningRules" objectID="#key#" returnvariable="stRules">
-					
+
 					<cfif stRules.bLiveVersionExists and url.status eq "approved">
 						 <!--- Then we want to swap live/draft and archive current live --->
 						<cfinvoke component="#application.packagepath#.farcry.versioning" method="sendObjectLive" objectID="#key#"  stDraftObject="#stObj#" returnvariable="stRules">
 						<cfset returnObjectID=stObj.objectid>
 					<cfelse>
+						
+						<cfset oType = createobject("component", application.types[stObj.typename].typePath) />
+						
+						<!--- Delete the current draft object if one exists. --->
+						<cfif stRules.bDraftVersionExists and len(stRules.draftObjectID)>
+							<cfset stResult = oType.delete(objectid=stRules.draftObjectID) />
+						</cfif>
+						
 						<!--- a normal page, no underlying object --->
-						<cfscript>
-							oType = createobject("component", application.types[stObj.typename].typePath);
-							oType.setData(stProperties=stObj,auditNote="Status changed to #stObj.status#");
-						</cfscript>
+						<cfset oType.setData(stProperties=stObj,auditNote="Status changed to #stObj.status#") />
 						
 						<cfif stObj.typename neq "dmImage" and stObj.typename neq "dmFile">
 							<cfset returnObjectId = url.objectid>

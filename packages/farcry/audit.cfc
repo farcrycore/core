@@ -1,23 +1,18 @@
-<!------------------------------------------------------------------------
+<!---
+|| LEGAL ||
+$Copyright: Daemon Pty Limited 1995-2007, http://www.daemon.com.au $
+$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
+
+|| DESCRIPTION ||
+$Description: 
 audit.cfc (fourQ COAPI)
-Copyright Daemon Pty Limited 2002 (http://www.daemon.com.au/)
-
-$Header: /cvs/farcry/core/packages/farcry/audit.cfc,v 1.9 2005/04/11 03:05:53 paul Exp $
-$Author: paul $
-$Date: 2005/04/11 03:05:53 $
-$Name: p300_b113 $
-$Revision: 1.9 $
-
-Released Under the "Common Public License 1.0"
-http://www.opensource.org/licenses/cpl.php
-
-Contributors:
-Geoff Bowers (modius@daemon.com.au)
-
-Description:
 Provides a basic audit subsystem to record what actions were taken when 
 for the fourQ COAPI
-------------------------------------------------------------------------->
+$
+
+|| DEVELOPER ||
+$Developer: Geoff Bowers (modius@daemon.com.au) $
+--->
 <cfcomponent displayname="Audit" hint="Audit SubSystem for FourQ">
 
 <cffunction name="deployAudit" hint="Deploy table structure for audit subsystem." returntype="struct">
@@ -339,25 +334,27 @@ need a bunch of functions to get audit data here
 				group by hour, hour(fq.datetimestamp) 
 				order by 1 
 			</cfquery>
-	    </cfcase>    
-	    <cfcase value="postgresql">
-            <!------------------------------------------------------------------------------
-               I have no idea if this will work.. KDS20040212
-            ------------------------------------------------------------------------------->
-            <cfquery datasource="#arguments.dsn#" name="qLog">
-   			select distinct hour, date_part('h', fq.datetimestamp) as loginhour, count(fq.auditID) as count_logins
-   			from statsHours
-   			left join (
-   			        select * from #arguments.dbowner#fqaudit
-   			        where auditType = 'dmsec.login'
-   			)fq on date_part('h', fq.datetimestamp) = statsHours.hour
-   			and date_part('d', fq.datetimestamp) = #DatePart("d", arguments.day)# 
-   			and date_part('mon', fq.datetimestamp) = #DatePart("m", arguments.day)# 
-   			and date_part('y', fq.datetimestamp) = #DatePart("yyyy", arguments.day)#
-   			group by hour, date_part('h', fq.datetimestamp)
-   			order by 1 
-   			</cfquery>
-        </cfcase>
+	    </cfcase>
+	    
+		<cfcase value="postgresql">
+			<!---
+			adapted by Friedrich Dimmel (friedrich.dimmel@siemens.com)
+			--->
+			<cfset thisDay = DateFormat(arguments.day, "YYYY-MM-DD")>
+			<cfquery datasource="#arguments.dsn#" name="qLog">
+			SELECT DISTINCT hour, TO_CHAR(j.datetimestamp, 'HH24') AS loginhour, COUNT(j.auditID) AS count_logins
+			FROM statsHours
+			LEFT JOIN (
+			SELECT datetimestamp, auditID
+			FROM #arguments.dbowner#fqAudit
+			WHERE LOWER(auditType) = 'dmsec.login'
+			AND TO_CHAR(datetimestamp, 'YYYY-MM-DD') = '#thisDay#'
+			) j ON TO_CHAR(j.datetimestamp, 'HH24') = statsHours.hour
+			GROUP BY hour, TO_CHAR(j.datetimestamp, 'HH24')
+			ORDER BY hour
+			</cfquery>
+		</cfcase>
+
 		<cfdefaultcase>
 			<!--- run the query to get counts of user activity by hour --->
 			<cfquery datasource="#arguments.dsn#" name="qLog">
@@ -434,20 +431,30 @@ need a bunch of functions to get audit data here
 				group by day, statsDays.name, dayofweek(fq.datetimestamp)
 				order by 1 
 			</cfquery>
-	    </cfcase>    
-	    <cfcase value="postgresql">
-            <cfquery datasource="#arguments.dsn#" name="qLog">
-   			select distinct day, statsDays.name,date_part('dow', fq.datetimestamp) as loginday, count(fq.auditID) as count_logins
-   			from statsDays
-   			left join (
-   			        select * from fqaudit
-   			        where auditType = 'dmsec.login'
-   			)fq on date_part('dow', fq.datetimestamp) = statsDays.day
-   			 and extract('day' from (fq.datetimestamp - '#dateFormat(arguments.day,"mm/dd/yyyy")#')) <=0 and extract('day' from (fq.datetimestamp - '#dateFormat(arguments.day,"mm/dd/yyyy")#')) >=0
-   			group by day, statsDays.name, date_part('dow', fq.datetimestamp)
-   			order by 1 
-   			</cfquery>
-        </cfcase>
+	    </cfcase>
+   
+		<cfcase value="postgresql">
+			<!---
+			adapted by Friedrich Dimmel (friedrich.dimmel@siemens.com)
+			--->
+			<cfset thisWeek = DateFormat(arguments.day, "yyyy-mm-dd")>
+			<cfset nextWeek = DateFormat(DateAdd('d', '7', arguments.day), "yyyy-mm-dd")>
+			
+			<cfquery datasource="#arguments.dsn#" name="qLog">
+			SELECT DISTINCT day, statsDays.name, TO_CHAR(j.datetimestamp, 'D') AS loginday, COUNT(j.auditID) AS count_logins
+			FROM statsDays
+			LEFT JOIN (
+			SELECT datetimestamp, auditID
+			FROM #arguments.dbowner#fqAudit
+			WHERE LOWER(auditType) = 'dmsec.login'
+			AND TO_CHAR(datetimestamp, 'YYYY-MM-DD') >= '#thisWeek#'
+			AND TO_CHAR(datetimestamp, 'YYYY-MM-DD') < '#nextWeek#'
+			) j ON TO_CHAR(j.datetimestamp, 'D') = statsDays.day
+			GROUP BY day, statsDays.name, TO_CHAR(j.datetimestamp, 'D')
+			ORDER BY day
+			</cfquery>
+		</cfcase>
+
 		<cfdefaultcase>
 			<!--- run the query to get counts of user activity by hour --->
 			<cfquery datasource="#arguments.dsn#" name="qLog">
