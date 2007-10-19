@@ -27,6 +27,9 @@ $out:$
 
 
 <cfif structKeyExists(Request,"inHead") AND len(structKeyList(Request.InHead))>		
+
+	<cfdump var="#request.inHead#" expand="false" label="request.inHead" />
+
 		<cfparam name="variables.stPlaceInHead" default="#StructNew()#">		
 		
 		<cfparam name="variables.stPlaceInHead.prototypeJS" default = "0">
@@ -82,100 +85,100 @@ $out:$
 		
 		
 		
-		<cfif isDefined("Request.InHead.PrototypeLite")>
+		<cfif isDefined("Request.InHead.PrototypeLite") AND Request.InHead.PrototypeLite>
 			<cfset variables.stPlaceInHead.prototypeLiteJS = 1>
 		</cfif>
-		<cfif isDefined("Request.InHead.Prototype")>
+		<cfif isDefined("Request.InHead.Prototype") AND Request.InHead.Prototype>
 			<cfset variables.stPlaceInHead.prototypeJS = 1>
 			<cfset variables.stPlaceInHead.prototypeLiteJS = 0>
 		</cfif>
-		<cfif isDefined("Request.InHead.MooFX")>
+		<cfif isDefined("Request.InHead.MooFX") AND Request.InHead.MooFX>
 			<cfset variables.stPlaceInHead.prototypeLiteJS = 1>
 			<cfset variables.stPlaceInHead.moofxJS = 1>
 			<cfset variables.stPlaceInHead.moofxPackJS = 1>
 		</cfif>
-		<cfif isDefined("Request.InHead.MooAjax")>
+		<cfif isDefined("Request.InHead.MooAjax") AND Request.InHead.MooAjax>
 			<cfset variables.stPlaceInHead.prototypeLiteJS = 1>
 			<cfset variables.stPlaceInHead.mooAjaxJS = 1>
 		</cfif>
-		<cfif isDefined("Request.InHead.MooDOM")>
+		<cfif isDefined("Request.InHead.MooDOM") AND Request.InHead.MooDOM>
 			<cfset variables.stPlaceInHead.prototypeLiteJS = 1>
 			<cfset variables.stPlaceInHead.MooDOMJS = 1>
 		</cfif>
-		<cfif isDefined("Request.InHead.TabStyle1")>
+		<cfif isDefined("Request.InHead.TabStyle1") AND Request.InHead.TabStyle1>
 			<cfset variables.stPlaceInHead.prototypeLiteJS = 1>
 			<cfset variables.stPlaceInHead.tabsJS = 1>
 			<cfset variables.stPlaceInHead.TabStyle1CSS = 1>
 		</cfif>
-		<cfif isDefined("Request.InHead.TabStyle6")>
+		<cfif isDefined("Request.InHead.TabStyle6") AND Request.InHead.TabStyle6>
 			<cfset variables.stPlaceInHead.prototypeLiteJS = 1>
 			<cfset variables.stPlaceInHead.tabsJS = 1>
 			<cfset variables.stPlaceInHead.TabStyle6CSS = 1>
 		</cfif>
-		<cfif isDefined("Request.InHead.Scriptaculous")>
+		<cfif isDefined("Request.InHead.Scriptaculous") AND Request.InHead.Scriptaculous>
 			<cfset variables.stPlaceInHead.prototypeJS = 1>
 			<cfset variables.stPlaceInHead.prototypeLiteJS = 0>
 			<cfset variables.stPlaceInHead.scriptaculousJS = 1>
 		</cfif>
-		<cfif isDefined("Request.InHead.ScriptaculousDragAndDrop")>
+		<cfif isDefined("Request.InHead.ScriptaculousDragAndDrop") AND Request.InHead.ScriptaculousDragAndDrop>
 			<cfset variables.stPlaceInHead.prototypeJS = 1>
 			<cfset variables.stPlaceInHead.prototypeLiteJS = 0>
 			<cfset variables.stPlaceInHead.scriptaculousJS = 1>
 			<cfset variables.stPlaceInHead.scriptaculousDragAndDropJS = 1>
 		</cfif>
-		<cfif isDefined("Request.InHead.ScriptaculousEffects")>
+		<cfif isDefined("Request.InHead.ScriptaculousEffects") AND Request.InHead.ScriptaculousEffects>
 			<cfset variables.stPlaceInHead.prototypeJS = 1>
 			<cfset variables.stPlaceInHead.prototypeLiteJS = 0>
 			<cfset variables.stPlaceInHead.scriptaculousJS = 1>
 			<cfset variables.stPlaceInHead.scriptaculousEffectsJS = 1>
 		</cfif>
-		<cfif isDefined("Request.InHead.ScriptaculousBuilder")>
+		<cfif isDefined("Request.InHead.ScriptaculousBuilder") AND Request.InHead.ScriptaculousBuilder>
 			<cfset variables.stPlaceInHead.prototypeJS = 1>
 			<cfset variables.stPlaceInHead.prototypeLiteJS = 0>
 			<cfset variables.stPlaceInHead.scriptaculousJS = 1>
 			<cfset variables.stPlaceInHead.scriptaculousBuilderJS = 1>
 		</cfif>
-		<cfif isDefined("Request.InHead.ScriptaculousSlider")>
+		<cfif isDefined("Request.InHead.ScriptaculousSlider") AND Request.InHead.ScriptaculousSlider>
 			<cfset variables.stPlaceInHead.prototypeJS = 1>
 			<cfset variables.stPlaceInHead.prototypeLiteJS = 0>
 			<cfset variables.stPlaceInHead.scriptaculousJS = 1>
 			<cfset variables.stPlaceInHead.scriptaculousSliderJS = 1>
 		</cfif>
-		<cfif isDefined("Request.InHead.ScriptaculousControls")>
+		<cfif isDefined("Request.InHead.ScriptaculousControls") AND Request.InHead.ScriptaculousControls>
 			<cfset variables.stPlaceInHead.prototypeJS = 1>
 			<cfset variables.stPlaceInHead.prototypeLiteJS = 0>
 			<cfset variables.stPlaceInHead.scriptaculousJS = 1>
 			<cfset variables.stPlaceInHead.scriptaculousControlsJS = 1>
 		</cfif>
-		<cfif isDefined("Request.InHead.Lightbox")>
+		<cfif isDefined("Request.InHead.Lightbox") AND Request.InHead.Lightbox>
 			<cfset variables.stPlaceInHead.prototypeJS = 1>
 			<cfset variables.stPlaceInHead.prototypeLiteJS = 0>
 			<cfset variables.stPlaceInHead.scriptaculousJS = 1>
 			<cfset variables.stPlaceInHead.lightboxJS = 1>
 			<cfset variables.stPlaceInHead.lightboxCSS = 1>
 		</cfif>
-		<cfif isDefined("Request.InHead.DateTimePicker")>
+		<cfif isDefined("Request.InHead.DateTimePicker") AND Request.InHead.DateTimePicker>
 			<cfset variables.stPlaceInHead.DateTimePickerJS = 1>
 		</cfif>
-		<cfif isdefined("Request.InHead.Calendar")>
+		<cfif isdefined("Request.InHead.Calendar") AND Request.InHead.Calendar>
 			<cfset variables.stPlaceInHead.CalendarJS = 1>
 			<cfset variables.stPlaceInHead.CalendarSetupJS = 1>
 			<cfset variables.stPlaceInHead.CalendarStyle1CSS = 1>
 		</cfif>
-		<cfif isdefined("Request.InHead.TinyMCE")>
+		<cfif isdefined("Request.InHead.TinyMCE") AND Request.InHead.TinyMCE>
 			<cfset variables.stPlaceInHead.TinyMCEJS = 1>
 		</cfif>
-		<cfif isdefined("Request.InHead.JSON")>
+		<cfif isdefined("Request.InHead.JSON") AND Request.InHead.JSON>
 			<cfset variables.stPlaceInHead.JSONJS = 1>
 		</cfif>
 		
-		<cfif isdefined("Request.InHead.FormValidation")>
+		<cfif isdefined("Request.InHead.FormValidation") AND Request.InHead.FormValidation>
 			<cfset variables.stPlaceInHead.FormValidationJS = 1>
 			<cfset variables.stPlaceInHead.prototypeJS = 1>
 			<cfset variables.stPlaceInHead.scriptaculousEffectsJS = 1>
 		</cfif>
 		
-		<cfif isdefined("Request.InHead.Wizard")>
+		<cfif isdefined("Request.InHead.Wizard") AND Request.InHead.Wizard>
 			<cfset variables.stPlaceInHead.WizardCSS = 1>
 		</cfif>
 		<cfif isdefined("Request.InHead.FormsCSS") AND Request.InHead.FormsCSS>
@@ -185,7 +188,7 @@ $out:$
 			<cfset variables.stPlaceInHead.iehtcCSS = true>
 		</cfif>
 		
-		<cfif isDefined("Request.InHead.prototypeTree")>
+		<cfif isDefined("Request.InHead.prototypeTree") AND Request.InHead.prototypeTree>
 			<cfset variables.stPlaceInHead.prototypeJS = 1>
 			<cfset variables.stPlaceInHead.prototypeLiteJS = 0>
 			<cfset variables.stPlaceInHead.scriptaculousJS = 1>
@@ -195,7 +198,7 @@ $out:$
 		</cfif>
 				
 		
-		<cfif isDefined("Request.InHead.prototypeWindow")>
+		<cfif isDefined("Request.InHead.prototypeWindow") AND Request.InHead.prototypeWindow>
 			<cfset variables.stPlaceInHead.prototypeJS = 1>
 			<cfset variables.stPlaceInHead.prototypeLiteJS = 0>
 			<cfset variables.stPlaceInHead.scriptaculousJS = 1>
@@ -204,19 +207,19 @@ $out:$
 		</cfif>
 				
 		
-		<cfif isDefined("Request.InHead.rico")>
+		<cfif isDefined("Request.InHead.rico") AND Request.InHead.rico>
 			<cfset variables.stPlaceInHead.prototypeJS = 1>
 			<cfset variables.stPlaceInHead.prototypeLiteJS = 0>
 			<cfset variables.stPlaceInHead.ricoJS = 1>
 		</cfif>
-		<cfif isDefined("Request.InHead.spryAccordion")>
+		<cfif isDefined("Request.InHead.spryAccordion") AND Request.InHead.spryAccordion>
 			<cfset variables.stPlaceInHead.spryAccordionJS = 1>
 			<cfset variables.stPlaceInHead.spryXpathJS = 1>
 			<cfset variables.stPlaceInHead.spryAccordionCSS = 1>
 		</cfif>
 				
 				
-		<cfif isDefined("Request.InHead.jQueryJS")>
+		<cfif isDefined("Request.InHead.jQueryJS") AND Request.InHead.jQueryJS>
 			<cfset variables.stPlaceInHead.jQueryJS = 1>
 		</cfif>
 		
