@@ -115,6 +115,7 @@
 											</cfloop>
 										</cfcase>
 										<cfdefaultcase>
+											<cfset application.coapi.objectbroker.addHTMLHeadToWebskins(library=i) />
 											<cfset request.inHead[i] = stCacheWebskin.inHead[i] />
 										</cfdefaultcase>
 									</cfswitch>
@@ -135,23 +136,32 @@
 		<cfreturn webskinHTML />
 	</cffunction>
 			
-	<cffunction name="addHTMLHeadToWebskins" access="public" output="false" returntype="void" hint="Adds the result of a skin:htmlHead to all relevent webskin caches">
-		<cfargument name="id" type="string" required="true" />
-		<cfargument name="text" type="string" required="true" />
+	<cffunction name="addHTMLHeadToWebskins" access="public" output="true" returntype="void" hint="Adds the result of a skin:htmlHead to all relevent webskin caches">
+		<cfargument name="id" type="string" required="false" default="#createUUID()#" />
+		<cfargument name="text" type="string" required="false" default="" />
+		<cfargument name="library" type="string" required="false" default="" />
+		<cfargument name="libraryState" type="boolean" required="false" default="true" />
 		
 		<cfset var iWebskin = "">
-	
-		<!--- If we are currently inside of a webskin we need to add this id to the current webskin --->
-		<cfif structKeyExists(request, "aAncestorWebskins") AND arrayLen(request.aAncestorWebskins)>
-		
-			<cfloop from="1" to="#arrayLen(request.aAncestorWebskins)#" index="iWebskin">
-				<cfif NOT structKeyExists(request.aAncestorWebskins[iWebskin].inhead.stCustom, arguments.id)>
-					<cfset request.aAncestorWebskins[iWebskin].inHead.stCustom[arguments.id] = arguments.text />
-					<cfset arrayAppend(request.aAncestorWebskins[iWebskin].inHead.aCustomIDs, arguments.id) />
-				</cfif>
-			</cfloop>
-		</cfif>	
-		
+		<cfset var iLibrary = "">
+
+		<cfif len(arguments.id) or listlen(arguments.library)>
+			<cfif structKeyExists(request, "aAncestorWebskins") AND arrayLen(request.aAncestorWebskins)>
+				<cfloop from="1" to="#arrayLen(request.aAncestorWebskins)#" index="iWebskin">
+					<cfif listlen(arguments.library)>
+						<cfloop list="#arguments.library#" index="iLibrary">
+							<cfset request.aAncestorWebskins[iWebskin].inHead[iLibrary] = arguments.libraryState />
+						</cfloop>
+					<cfelse>
+						<!--- If we are currently inside of a webskin we need to add this id to the current webskin --->					
+						<cfif NOT structKeyExists(request.aAncestorWebskins[iWebskin].inhead.stCustom, arguments.id)>
+							<cfset request.aAncestorWebskins[iWebskin].inHead.stCustom[arguments.id] = arguments.text />
+							<cfset arrayAppend(request.aAncestorWebskins[iWebskin].inHead.aCustomIDs, arguments.id) />
+						</cfif>
+					</cfif>
+				</cfloop>
+			</cfif>	
+		</cfif>
 		
 	</cffunction>		
 	
