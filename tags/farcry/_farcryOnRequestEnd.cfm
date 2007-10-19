@@ -28,8 +28,6 @@ $out:$
 
 <cfif structKeyExists(Request,"inHead") AND len(structKeyList(Request.InHead))>		
 
-	<cfdump var="#request.inHead#" expand="false" label="request.inHead" />
-
 		<cfparam name="variables.stPlaceInHead" default="#StructNew()#">		
 		
 		<cfparam name="variables.stPlaceInHead.prototypeJS" default = "0">
