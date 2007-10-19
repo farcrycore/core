@@ -41,7 +41,7 @@ $out:$
 
 <cfset bDisplaySkins = false>
 <cfif directoryExists("#application.path.project#/webskin/container")>
-	<nj:listTemplates typename="container" prefix="" r_qMethods="qContainerSkins">
+	<nj:listTemplates typename="container" prefix="" r_qMethods="qContainerSkins" path="#application.path.project#/webskin/container">
 	<cfif qContainerSkins.recordCount>
 		<cfset bDisplaySkins = true>
 	</cfif>
