@@ -36,19 +36,11 @@ $Developer: Mat Bryant (mat@daemon.com.au)$
     // classpath rb files
     //application.rb=createObject("component","#application.packagepath#.farcry.rbJava");
     // non-classpath rb files, needs full path to rb files
-    application.rb=createObject("component","#application.packagepath#.farcry.javaRB");
+    application.rb=createObject("component",application.factory.oUtils.getPath("resources","RBCFC")).init(application.locales);
     application.thisCalendar=createObject("component","#application.packagepath#.farcry.gregorianCalendar"); // gregorian calendar
     // i18n utils, BIDI, locale names, etc.
     application.i18nUtils=createObject("component","#application.packagepath#.farcry.i18nUtil");
     //check if logged in
-    if(isDefined("session.dmProfile.locale"))
-        //load profile specific rb
-        application.adminBundle[session.dmProfile.locale]=application.rB.getResourceBundle("#application.path.core#/packages/resources/admin.properties",session.dmProfile.locale,false);
-    //Make sure that the default application rb is loaded.
-    //This rb is used by scheduled tasks etc who don't create a session
-    if(NOT structKeyExists(application.adminBundle, application.config.general.locale))
-        //load the application specific rb
-        application.adminBundle[application.config.general.locale]=application.rB.getResourceBundle("#application.path.core#/packages/resources/admin.properties",application.config.general.locale,false);
 
     // refresh the friendly url sub-system
     objFU = createObject("component","#application.packagepath#.farcry.fu");

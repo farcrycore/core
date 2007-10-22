@@ -39,6 +39,8 @@
 	<cfparam name="attributes.bObjectBroker" default="true" />
 	<cfparam name="attributes.ObjectBrokerMaxObjectsDefault" default="100" />
 	
+	<cfparam name="attributes.locales" default="en_AU" />
+	
 	<!--- Option to archive --->
 	<cfparam name="attributes.bUseMediaArchive" default="false" />
 
@@ -76,6 +78,9 @@
 				
 				<!--- Project directory name can be changed from the default which is the applicationname --->
 				<cfset application.projectDirectoryName =  attributes.projectDirectoryName />
+				
+				<!--- Set available locales --->
+				<cfset application.locales = attributes.locales />
 				
 				<!----------------------------------------
 				 SET THE DATABASE SPECIFIC INFORMATION 
