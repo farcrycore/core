@@ -30,6 +30,7 @@ $out:$
 
 		<cfparam name="variables.stPlaceInHead" default="#StructNew()#">		
 		
+		<cfparam name="variables.stPlaceInHead.extJS" default="0">
 		<cfparam name="variables.stPlaceInHead.prototypeJS" default = "0">
 		<cfparam name="variables.stPlaceInHead.prototypeLiteJS" default = "0">
 		<cfparam name="variables.stPlaceInHead.moofxJS" default = "0">
@@ -71,7 +72,6 @@ $out:$
 		<cfparam name="variables.stPlaceInHead.FormsCSS" default = "0"> 
 		
 		<cfparam name="variables.stPlaceInHead.iehtcCSS" default = "false">
-		<cfparam name="Request.InHead.iehtcCSS" default="true">
 		
 		
 		<cfparam name="variables.stPlaceInHead.swfObjectJS" default = "0">
@@ -82,6 +82,9 @@ $out:$
 
 		
 		
+		<cfif isDefined("Request.InHead.extJS") AND Request.InHead.extJS>
+			<cfset variables.stPlaceInHead.extJS = 1>
+		</cfif>
 		
 		<cfif isDefined("Request.InHead.PrototypeLite") AND Request.InHead.PrototypeLite>
 			<cfset variables.stPlaceInHead.prototypeLiteJS = 1>
@@ -246,6 +249,14 @@ $out:$
 		
 		<!--- ONLY ADD THESE IF application.sysinfo.bwebtopaccess allowed --->	
 		<cfif application.sysinfo.bwebtopaccess>
+		
+			<cfif isDefined("variables.stPlaceInHead.extJS") AND variables.stPlaceInHead.extJS>
+				<cfoutput>
+				<link rel="stylesheet" type="text/css" href="/farcry/js/ext/resources/css/ext-all.css">
+				<script type="text/javascript" src="/farcry/js/ext/adapter/ext/ext-base.js"></script>
+				<script type="text/javascript" src="/farcry/js/ext/ext-all.js"></script></cfoutput>
+			</cfif>
+			
 			<cfif isDefined("variables.stPlaceInHead.prototypeLiteJS") AND variables.stPlaceInHead.prototypeLiteJS AND Not variables.stPlaceInHead.prototypeJS>
 				<cfoutput>
 					<script src="#application.url.farcry#/js/prototype/prototype.lite.js" type="text/javascript"></script></cfoutput>
