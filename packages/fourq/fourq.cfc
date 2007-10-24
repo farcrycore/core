@@ -38,31 +38,28 @@ If the application.dbtype is odbc - you may specify application.dbowner as a bla
 So in the case of a database called 'fourq' - the correct application.dbowner variable would be "fourq.dbo." 
 ------------------------------------------------------------------------->
 
-
 <cfcomponent displayname="FourQ COAPI" bAbstract="true">
 
-
-	
 	<!--- constructor --->
 	<cfset instance=structnew()>
 
 
-  <cffunction name="fourqInit" access="public" returntype="fourq" output="false" hint="Initializes the component instance data">
-    <cfif not structKeyExists(variables,'dbFactory')>
-	    <cfset variables.dbFactory = createObject('component','DBGatewayFactory').init() />
-	    <cfset variables.gateways = structNew() />
-		<cfset variables.tableMetadata = createobject('component','farcry.core.packages.fourq.TableMetadata').init() />
-		<cfset tableMetadata.parseMetadata(getMetadata(this)) />	
-	
-		<cfset variables.objectBroker = createObject("component", "farcry.core.packages.fourq.objectBroker").init() />
-	
-		<cfset variables.typename = variables.tableMetadata.getTableName() />
-				
-	</cfif>
+	<cffunction name="fourqInit" access="public" returntype="fourq" output="false" hint="Initializes the component instance data">
+		<cfif not structKeyExists(variables,'dbFactory')>
+			<cfset variables.dbFactory = createObject('component','DBGatewayFactory').init() />
+			<cfset variables.gateways = structNew() />
+			<cfset variables.tableMetadata = createobject('component','farcry.core.packages.fourq.TableMetadata').init() />
+			<cfset tableMetadata.parseMetadata(getMetadata(this)) />	
+			
+			<cfset variables.objectBroker = createObject("component", "farcry.core.packages.fourq.objectBroker").init() />
+			
+			<cfset variables.typename = variables.tableMetadata.getTableName() />
+		
+		</cfif>
+		
 
-	
-    <cfreturn this />
-  </cffunction>
+		<cfreturn this />
+	</cffunction>
   
   	<cffunction name="getDefaultObject" access="public" output="true" returntype="struct">
 		<cfargument name="ObjectID" required="false" type="UUID">
@@ -206,33 +203,30 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 	</cffunction>
 	
 	
-  <cffunction name="getGateway" access="private" output="false" returntype="farcry.core.packages.fourq.gateway.DBGateway" hint="Gets the gateway for the given db connection parameters">
-	<cfargument name="dsn" type="string" required="false" default="#application.dsn#">
-   	<cfargument name="dbtype" type="string" required="false" default="#application.dbtype#">
-	<cfargument name="dbowner" type="string" required="false" default="#ucase(application.dbowner)#">
-    
-    
-    <cfif not structKeyExists(variables.gateways,arguments.dsn)>
-      <cfset variables.gateways[arguments.dsn] = variables.dbFactory.getGateway(arguments.dsn,arguments.dbowner,arguments.dbtype) />
-    </cfif>
-    
-		<cfreturn variables.gateways[arguments.dsn] />
+	<cffunction name="getGateway" access="private" output="false" returntype="farcry.core.packages.fourq.gateway.DBGateway" hint="Gets the gateway for the given db connection parameters">
+		<cfargument name="dsn" type="string" required="false" default="#application.dsn#">
+		<cfargument name="dbtype" type="string" required="false" default="#application.dbtype#">
+		<cfargument name="dbowner" type="string" required="false" default="#ucase(application.dbowner)#">
 		
-  </cffunction>
+		
+		<cfif not structKeyExists(variables.gateways,arguments.dsn)>
+			<cfset variables.gateways[arguments.dsn] = variables.dbFactory.getGateway(arguments.dsn,arguments.dbowner,arguments.dbtype) />
+		</cfif>
+		
+		<cfreturn variables.gateways[arguments.dsn] />
+	</cffunction>
 	
 
 	
 	<!---
- ************************************************************
- *                                                          *
- *                DEPLOYMENT METHODS                        *
- *                                                          *
- ************************************************************
- --->
+	 ************************************************************
+	 *                                                          *
+	 *                DEPLOYMENT METHODS                        *
+	 *                                                          *
+	 ************************************************************
+	 --->
  
  
-	
-	
  	<cffunction name="deployType" access="public" returntype="struct" output="false">
 		<cfargument name="bDropTable" type="boolean" required="false" default="false">
 		<cfargument name="bTestRun" type="boolean" required="false" default="true">
@@ -260,9 +254,9 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset var stResult = structNew()>
 		<cfset var gateway = "" />
      
-    <cfset fourqInit() />
-    
-    <cfset gateway = getGateway(arguments.dsn,arguments.dbtype,arguments.dbowner)  />
+	    <cfset fourqInit() />
+	    
+	    <cfset gateway = getGateway(arguments.dsn,arguments.dbtype,arguments.dbowner)  />
 		
 		<cfset stResult = gateway.deployRefObjects(arguments.bDropTable) />
 		
@@ -284,13 +278,13 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 	    <cfset var fields = "" />
 		<cfset var md = structNew() />
 	
-    <cfset fourqInit() />
-    
-    <cfset md = getMetaData()>
-    
-    <cfset fields = variables.tableMetaData.getTableDefinition() />
-    
-    <cfset gateway = getGateway(arguments.dsn,arguments.dbtype,arguments.dbowner) />
+	    <cfset fourqInit() />
+	    
+	    <cfset md = getMetaData()>
+	    
+	    <cfset fields = variables.tableMetaData.getTableDefinition() />
+	    
+	    <cfset gateway = getGateway(arguments.dsn,arguments.dbtype,arguments.dbowner) />
 		
 		<cfset stResult = gateway.deployArrayTable(fields[arguments.property].fields,variables.tableMetaData.getTablename()&"_"&arguments.property,arguments.bDropTable,arguments.bTestRun) />
 		
@@ -298,18 +292,14 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 	</cffunction>
 
 
-
-
-<!---
- ************************************************************
- *                                                          *
- *                     CRUD METHODS                         *
- *                                                          *
- ************************************************************
- --->
+	<!---
+	 ************************************************************
+	 *                                                          *
+	 *                     CRUD METHODS                         *
+	 *                                                          *
+	 ************************************************************
+	 --->
  
- 
-
 	<cffunction name="createData" access="public" output="true" returntype="struct" hint="Create an object including array properties.  Pass in a structure of property values; arrays should be passed as an array. The objectID can be ommitted and one will be created, passed in as an argument or passed in as a key of stProperties argument.">
 		<cfargument name="stProperties" type="struct" required="true">
 		<cfargument name="objectid" type="UUID" required="false" default="#createUUID()#">
@@ -329,7 +319,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 	</cffunction>
 
 
-<cffunction name="getData" access="public" output="true" returntype="struct" hint="Get data for a specific objectid and return as a structure, including array properties and typename.">
+	<cffunction name="getData" access="public" output="true" returntype="struct" hint="Get data for a specific objectid and return as a structure, including array properties and typename.">
 		<cfargument name="objectid" type="uuid" required="true">
 		<cfargument name="dsn" type="string" required="false" default="#application.dsn#">
 		<cfargument name="dbowner" type="string" required="false" default="#ucase(application.dbowner)#">
@@ -414,17 +404,15 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 				<cfif NOT arguments.bArraysAsStructs AND NOT arguments.bShallow>
 					<cfset addedtoBroker = variables.objectBroker.AddToObjectBroker(stobj=stobj,typename=variables.typename)>
 	
-					<!---
-					<cfif addedToBroker>
+					
+					<!--- <cfif addedToBroker> --->
 						<!--- Successfully added object to the broker --->
-						<cftrace type="information" category="coapi" var="arguments.objectid" text="getData() added object to Broker.">
+						<!--- <cftrace type="information" category="coapi" var="arguments.objectid" text="getData() added object to Broker.">
 					</cfif>
 					 --->
 				</cfif>
 			</cfif>	
 
-					
-			
 		</cfif>
 		
 		<!--- 
@@ -555,13 +543,13 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 	
 	
 	
-<!---
- ************************************************************
- *                                                          *
- *             NON CRUD DB ACCESS METHODS                   *
- *                                                          *
- ************************************************************
- --->
+	<!---
+	 ************************************************************
+	 *                                                          *
+	 *             NON CRUD DB ACCESS METHODS                   *
+	 *                                                          *
+	 ************************************************************
+	 --->
 	
 	
 		
@@ -639,7 +627,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfargument name="prop" type="string" required="yes">
 		<cfargument name="value" type="string" required="yes">
 		<cfargument name="whereclause" type="string" required="false" default="WHERE 0=1">
-
+		
 		<cfset var tn = this.getTableName()>
 		<cfset var stProps = this.getPropsAsStruct()>
 		<cfset var gateway = "" />
@@ -657,13 +645,13 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 	
 	
 	
-<!---
- ************************************************************
- *                                                          *
- *                  METADATA METHODS                        *
- *                                                          *
- ************************************************************
- --->
+	<!---
+	 ************************************************************
+	 *                                                          *
+	 *                  METADATA METHODS                        *
+	 *                                                          *
+	 ************************************************************
+	 --->
 	
 	
 
@@ -674,8 +662,6 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfreturn variables.tableMetadata.getTableName() />
 		
 	</cffunction>
-
-
 
 	<cffunction name="getProperties" access="public" returntype="array" output="false">
 		<!--- 
@@ -702,7 +688,6 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			</cfloop>
 		</cfif>
 			
-		
 		<cfscript>
 			finished = false;
 			if(isStruct(md.extends))
@@ -738,11 +723,10 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			}
 		</cfscript>
 		
-		<cfreturn aProps>
-		
+		<cfreturn aProps />
 	</cffunction>
 	
-<!--- private functions --->
+	<!--- private functions --->
 	<cffunction name="getAncestors" hint="Get all the extended components as an array of isolated component metadata." returntype="array" access="private" output="false">
 		<cfargument name="md" required="Yes" type="struct">
 			<cfset var aAncestors = arrayNew(1)>
@@ -816,6 +800,61 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 
 		<cfreturn stProperties>
 	</cffunction>
+	
+	<cffunction name="mergeWebskins" access="private" hint="Merge webskin result queries, skipping duplicates. Non destructive." output="false" returntype="query">
+		<cfargument name="query1" type="query" required="true" />
+		<cfargument name="query2" type="query" required="true" />
+		
+		<cfset var qDupe = "" />
+		<cfset var qResult = duplicate(arguments.query1)>
+
+		<cfloop query="arguments.query2">
+
+			<!--- Check to see if query1 already contains this webskin --->
+			<cfquery dbtype="query" name="qDupe">
+				SELECT	*
+				FROM	qResult
+				WHERE	cast(name as varchar) = '#arguments.query2.name[currentrow]#'
+			</cfquery>
+			
+			<!--- If it doesn't, add it --->
+			<cfif NOT qDupe.Recordcount>
+				<cfset queryaddrow(qResult,1) />
+				<cfloop list="#arguments.query2.columnlist#" index="col">
+					<cfset querysetcell(qResult, col, arguments.query2[col][currentrow]) />
+				</cfloop>
+			</cfif>
+			
+		</cfloop>
+		
+		<cfreturn qResult>
+	</cffunction>
+	
+	<cffunction name="paramMetaData" access="private" hint="Set up default values for missing meta data attributes. Non destructive." output="false" returntype="struct">
+		<cfargument name="stProps" type="struct" required="true" />
+		<cfargument name="lAttributes" type="string" required="true" />
+		<cfargument name="default" type="string" />
+		
+		<cfset var stResult = duplicate(arguments.stProps)>
+		
+		<cfloop collection="#stResult#" item="prop">
+			<cfloop list="#arguments.lAttributes#" index="att">
+				<cfif not structkeyexists(stResult[prop].metadata,att)>
+					<cfif structkeyexists(arguments,"default")>
+						<cfset stResult[prop].metadata[att] = arguments.default />
+					<cfelseif prop eq "ftType">
+						<cfset stResult[prop].metadata[att] = stResult[prop].metadata.type />
+					<cfelseif prop eq "ftLabel">
+						<cfset stResult[prop].metadata[att] = stResult[prop].metadata.name />
+					<cfelse>
+						<cfset stResult[prop].metadata[att] = "" />
+					</cfif>
+				</cfif>
+			</cfloop>
+		</cfloop>
+		
+		<cfreturn stResult />
+	</cffunction>
 
 	<cffunction name="initMetaData" access="public" hint="Extract all component metadata in a flat format for loading into a shared scope." output="true" returntype="struct">
 		<cfargument name="stMetaData" type="struct" required="false" default="#structNew()#" hint="Structure to which this cfc's parameters are appended" />
@@ -836,63 +875,17 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset var ixFilter = "">
 		<cfset var qDupe = queryNew("blah") />
 		<cfset var qFilter = queryNew("blah") />
-		<cfset var qAllWebskins = queryNew("blah") />
 		<cfset var qExtendedWebskin = queryNew("blah") />
 		<cfset var extendedWebskinName = "">
 		<cfset var aFilteredWebskins = arrayNew(1) />
 		<cfset var stFilterDetails = structNew() />
 		
 		<!--- If we are updating a type that already exists then we need to update only the metadata that has changed. --->
-		<cfif structKeyExists(stReturnMetadata, "stProps")>			
-		
-			<cfloop list="#structKeyList(stNewProps)#" index="i">
-					
-				<cfif StructKeyExists(stReturnMetadata.stProps,i)>
-					<cfloop list="#structKeyList(stNewProps[i])#" index="j">	
-												
-						<cfif StructKeyExists(stReturnMetadata.stProps[i],j)>
-	
-							<cfif isStruct(stNewProps[i][j])>
-								<cfloop list="#structKeyList(stNewProps[i][j])#" index="k">
-									<cfset stReturnMetadata.stProps[i][j][k] = stNewProps[i][j][k]>
-								</cfloop> 
-							<cfelse>
-								<cfset stReturnMetadata.stProps[i][j] = stNewProps[i][j]>
-							</cfif>
-						<cfelse>
-							<cfset stReturnMetadata.stProps[i][j] = stNewProps[i][j]>
-						</cfif>
-					</cfloop>
-				<cfelse>
-					<cfset stReturnMetadata.stProps[i] = stNewProps[i]>
-				</cfif>
-				
-			</cfloop>
-			
-		<cfelse>
-			<cfset stReturnMetadata.stProps = stNewProps />
-		</cfif>
+		<cfparam name="stReturnMetadata.stProps" default="#structnew()#" />
+		<cfset stReturnMetadata.stProps = application.factory.oUtils.structMerge(stReturnMetadata.stProps,stNewProps) />
 
 		<!--- Make sure ALL properties have an ftType, ftLabel,ftStyle and ftClass set. If not explicitly set then use defaults. --->
-		<cfloop list="#structKeyList(stReturnMetadata.stProps)#" index="i">
-			<cfif structKeyExists(stReturnMetadata.stProps[i].metadata, "type") AND NOT structKeyExists(stReturnMetadata.stProps[i].metadata, "ftType")>
-				<cfset stReturnMetadata.stProps[i].metadata.ftType = stReturnMetadata.stProps[i].metadata.Type />
-			</cfif>
-			<cfif NOT structKeyExists(stReturnMetadata.stProps[i].metadata, "ftLabel")>
-				<cfset stReturnMetadata.stProps[i].metadata.ftLabel = stReturnMetadata.stProps[i].metadata.name />
-			</cfif>
-			<cfif NOT structKeyExists(stReturnMetadata.stProps[i].metadata, "ftStyle")>
-				<cfset stReturnMetadata.stProps[i].metadata.ftStyle = "" />
-			</cfif>
-			<cfif NOT structKeyExists(stReturnMetadata.stProps[i].metadata, "ftClass")>
-				<cfset stReturnMetadata.stProps[i].metadata.ftClass = "" />
-			</cfif>
-			<cfif NOT structKeyExists(stReturnMetadata.stProps[i].metadata, "ftValidation")>
-				<cfset stReturnMetadata.stProps[i].metadata.ftValidation = "" />
-			</cfif>
-		</cfloop>
-
-		
+		<cfset stReturnMetadata.stProps = paramMetaData(stReturnMetadata.stProps,"ftType,ftLabel,ftStyle,ftClass,ftValidation") />
 
 		<!--- This will get the components methods and any methods that are from super cfc's --->
 		<cfset stReturnMetadata.stMethods = getMethods()>	
@@ -904,42 +897,20 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			</cfif>
 		</cfloop>
 		
-		
-		
 		<!--- This sets up the array which will contain the name of all types this type extends --->
 		<cfset stReturnMetadata.aExtends = oCoapiAdmin.getExtendedTypeArray(packagePath=md.name)>
 		
-		
+		<!--- Set up default attributes --->
 		<cfparam name="stReturnMetadata.bAutoSetLabel" default="true" />
 		<cfparam name="stReturnMetadata.bObjectBroker" default="false" />
 		<cfparam name="stReturnMetadata.lObjectBrokerWebskins" default="" />
 		<cfparam name="stReturnMetadata.ObjectBrokerWebskinTimeOut" default="1400" /> <!--- This a value in minutes (ie. 1 day) --->
  		<cfparam name="stReturnMetadata.excludeWebskins" default="" /> <!--- This enables projects to exclude webskins that may be contained in plugins. ---> 
 
+		<!--- Get webkins: webskins for this type, then webskins for extends types --->
 		<cfset stReturnMetadata.qWebskins = oCoapiAdmin.getWebskins(typename="#componentname#", bForceRefresh="true", excludeWebskins="#stReturnMetadata.excludeWebskins#") />
-		
-		<cfset qAllWebskins = stReturnMetadata.qWebskins />
-		
 		<cfloop list="#arrayToList(stReturnMetadata.aExtends)#" index="i">
-			<cfset qExtendedWebskin = oCoapiAdmin.getWebskins(typename=i, bForceRefresh="true", excludeWebskins="#stReturnMetadata.excludeWebskins#") />
-			<cfloop query="qExtendedWebskin">
-				<cfset extendedWebskinName = qExtendedWebskin.name />
-
-				<cfquery dbtype="query" name="qDupe">
-				SELECT *
-				FROM qAllWebskins
-				WHERE cast(name as varchar) = '#extendedWebskinName#'
-				</cfquery>
-				
-				<cfif NOT qDupe.Recordcount>
-					<cfset queryaddrow(stReturnMetadata.qWebskins,1) />
-					<cfloop list="#qExtendedWebskin.columnlist#" index="col">
-						<cfset querysetcell(stReturnMetadata.qWebskins, col, qExtendedWebskin[col][qExtendedWebskin.currentrow]) />
-					</cfloop>
-				</cfif>
-				
-			</cfloop>
-
+			<cfset stReturnMetaData.qWebskins = mergeWebskins(stReturnMetaData.qWebskins, oCoapiAdmin.getWebskins(typename=i, bForceRefresh="true", excludeWebskins="#stReturnMetadata.excludeWebskins#")) />
 		</cfloop>
 
 		<!--- 
@@ -964,7 +935,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 				WHERE methodname like '#filterWebskinName#'
 			<cfelse>
 				WHERE methodname = '#filterWebskinName#'			
-			</cfif>			
+			</cfif>
 			</cfquery>
 			
 			<cfloop query="qFilter">
@@ -977,9 +948,6 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			</cfloop>
 		</cfloop>
 	
-		
-		
-		
 		<!--- NOW THAT WE HAVE ALL THE WEBSKINS TO BE CACHED, ADD THE DETAILS TO stObjectBrokerWebskins --->
 		<cfset stReturnMetadata.stObjectBrokerWebskins = structNew() />
 		
@@ -1011,14 +979,12 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		
 	</cffunction> 
 	
-
-
-  <cffunction name="createArrayTableData" access="public" returntype="array" output="true" hint="Inserts the array table data for the given property data and returns the Array Table data as a list of objectids">
-    <cfargument name="tableName" type="string" required="true" />
-    <cfargument name="objectid" type="uuid" required="true" />
-    <cfargument name="tabledef" type="struct" required="true" />
-    <cfargument name="aProps" type="array" required="true" />
-
+	<cffunction name="createArrayTableData" access="public" returntype="array" output="true" hint="Inserts the array table data for the given property data and returns the Array Table data as a list of objectids">
+	    <cfargument name="tableName" type="string" required="true" />
+	    <cfargument name="objectid" type="uuid" required="true" />
+	    <cfargument name="tabledef" type="struct" required="true" />
+	    <cfargument name="aProps" type="array" required="true" />
+	
 		<cfset var gateway =  "" />
 		<cfset var stResult =  structNew() />
 		
@@ -1028,8 +994,104 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset stResult = gateway.createArrayTableData(arguments.tablename,arguments.objectid,arguments.tabledef,arguments.aProps) />
 		
 		<cfreturn stResult>
+	</cffunction>
+
+	<cffunction name="getI18Property" access="public" output="true" returntype="string" hint="Provides access to I18 values for properties">
+		<cfargument name="property" type="string" required="true" hint="The property being queried" default="" />
+		<cfargument name="value" type="string" required="false" hint="The value required i.e. label, helptitle, helpsection" default="label" />
+
+		<cfset meta = "" />
+		<cfset prop = arguments.value />
+
+		<cfset fourqInit() />
+
+		<cfswitch expression="#arguments.value#">
+			<cfcase value="label">
+				<cfif len(application.stCOAPI[variables.typename].stProps[arguments.property].metadata["ftLabel"])>
+					<cfreturn application.rb.getResource("coapi.#variables.typename#.properties.#arguments.property#@#arguments.value#",application.stCOAPI[variables.typename].stProps[arguments.property].metadata["ftLabel"]) />
+				<cfelse>
+					<cfreturn application.rb.getResource("coapi.#variables.typename#.properties.#arguments.property#@#arguments.value#",application.stCOAPI[variables.typename].stProps[arguments.property].metadata["name"]) />
+				</cfif>
+			</cfcase>
+		</cfswitch>
 		
-	
-</cffunction>
+		<cfreturn application.rb.getResource("coapi.#variables.typename#.properties.#arguments.property#@#arguments.value#","") />
+	</cffunction>
+
+	<cffunction name="getI18Step" access="public" output="false" returntype="string" hint="Provides access to I18 values for labels etc">
+		<cfargument name="step" type="numeric" required="true" hint="The step being queried" />
+		<cfargument name="value" type="string" required="false" hint="The value required i.e. label, helptitle, helpsection" default="label" />
+		
+		<cfset var qSteps = "" />
+		<cfset prop = arguments.value />
+
+		<cfset fourqInit() />
+
+		<cfswitch expression="#arguments.value#">
+			<cfcase value="label">
+				<cfset prop = "ftWizardStep" />
+			</cfcase>
+		</cfswitch>
+		
+		<cfquery dbtype="query" name="qSteps">
+			select		ftWizardStep
+			from		application.stCOAPI.#variables.typename#.qMetadata
+			where		ftWizardStep <> '#variables.typename#'
+			group by 	ftWizardStep
+			order by	ftSeq
+		</cfquery>
+		
+		<cfreturn application.rb.getResource("coapi.#variables.typename#.steps.#arguments.step#@#arguments.value#",qSteps[prop][arguments.step]) />
+	</cffunction>
+
+	<cffunction name="getI18Fieldset" access="public" output="false" returntype="string" hint="Provides access to I18 values for labels etc">
+		<cfargument name="step" type="numeric" required="false" hint="The step being queried" default="0" />
+		<cfargument name="fieldset" type="numeric" required="true" hint="The fieldset being queried" default="0" />
+		<cfargument name="value" type="string" required="false" hint="The value required i.e. label, helptitle, helpsection" default="label" />
+		
+		<cfset var qSteps = "" />
+		<cfset var qFieldsets = "" />
+		<cfset prop = arguments.value />
+
+		<cfset fourqInit() />
+
+		<cfswitch expression="#arguments.value#">
+			<cfcase value="label">
+				<cfset prop = "ftFieldset" />
+			</cfcase>
+			<cfcase value="helptitle">
+				<cfset prop = "fthelptitle" />
+			</cfcase>
+			<cfcase value="helpsection">
+				<cfset prop = "fthelpsection" />
+			</cfcase>
+		</cfswitch>
+		
+		<cfif arguments.step>
+			<cfquery dbtype="query" name="qSteps">
+				select		ftWizardStep
+				from		application.stCOAPI.#variables.typename#.qMetadata
+				where		ftWizardStep <> '#variables.typename#'
+				group by 	ftWizardStep
+				order by	ftSeq
+			</cfquery>
+		</cfif>
+		
+		<cfquery dbtype="query" name="qFieldsets">
+			select		ftFieldset, ftHelpTitle, ftHelpSection
+			from		application.stCOAPI.#variables.typename#.qMetadata
+			<cfif arguments.step>
+				where		ftWizardStep = '#qSteps.ftWizardStep[arguments.step]#'
+			</cfif>
+			group by	ftFieldSet, ftHelpTitle, ftHelpSection
+			order by	ftSeq
+		</cfquery>
+		
+		<cfif arguments.step>
+			<cfreturn application.rb.getResource("coapi.#variables.typename#.steps.#arguments.step#.fieldsets.#arguments.fieldset#@#arguments.value#",qFieldsets[prop][arguments.fieldset]) />
+		<cfelse>
+			<cfreturn application.rb.getResource("coapi.#variables.typename#.fieldsets.#arguments.fieldset#@#arguments.value#",qFieldsets[prop][arguments.fieldset]) />
+		</cfif>
+	</cffunction>
 	
 </cfcomponent>
