@@ -101,10 +101,11 @@
 	<cffunction name="formatRBString" access="public" output="no" returnType="string" hint="performs messageFormat like operation on compound rb string">
 		<cfargument name="rbString" required="yes" type="string" />
 		<cfargument name="substituteValues" required="yes" />
-		<cfargument name="default" required="no" default="" />
+		<cfargument name="default" required="no" default="#arguments.rbString#" />
+		<cfargument name="locale" type="string" required="false" default="" />
 		
 		<cfset var i=0 />
-		<cfset var tmpStr=getResource(arguments.rbString,arguments.default) />
+		<cfset var tmpStr=getResource(arguments.rbString,arguments.default,arguments.locale) />
 		
 		<cfif isArray(arguments.substituteValues)>
 			<cfloop index="i" from="1" to="#arrayLen(arguments.substituteValues)#">
