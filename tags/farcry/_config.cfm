@@ -96,30 +96,6 @@ test for the existance of each and act accordingly
 // application web urls
 	application.url.conjurer = application.url.webroot & "/index.cfm"; // general invoker
 
-// load TYPE and RULE metadata structures into memory
-	oAlterType = createObject("component", "#application.packagepath#.farcry.alterType");
-	/***************************************************************************
-	loadCOAPIMetaData() and alterType.refreshAllCFCAppData() were doing the exact
-	same thing line for line, so I removed loadCOAPIMetaData() and we're now using alterType. Altertype
-	is a less than ideal place for this kind of task but it will do until we can agree
-	on some sort ot type initialisation. ~tom
-	*/
-	oAlterType.refreshAllCFCAppData(); // This replaces loadCOAPIMetaData for now. I'm thinking types.init()?? ~tom
-
-// load config files into memory
-	config = createObject("component", "#application.packagepath#.farcry.config");
-	qConfigList = config.list();
-	for (i=1;i LTE qConfigList.Recordcount; i=i+1)
-		application.config[trim(qConfigList.configname[i])] = config.getConfig(configname=qConfigList.configname[i]);
-
-// activate PLP storage
-	if (NOT isDefined("application.path.plpstorage"))
-		application.path.plpstorage = application.path.core & "/plps/plpstorage";
-	if (NOT isDefined("application.path.tempfiles"))
-		application.path.tempfiles = application.path.core & "/plps/tempfiles";
-	application.fourq.plpstorage = application.path.core & "/plps/plpstorage"; // deprecated
-	application.fourq.plppath = "/farcry/core/plps"; // deprecated
-
 
 	//initialise factory objects 
 	application.factory.oAuthorisation = createobject("component","#application.packagepath#.security.authorisation");
@@ -143,6 +119,31 @@ test for the existance of each and act accordingly
 		application.factory.oFU = createObject("component","#application.packagepath#.farcry.FU");
 	}
 	catch (Any excpt) {}
+	
+
+// load TYPE and RULE metadata structures into memory
+	oAlterType = createObject("component", "#application.packagepath#.farcry.alterType");
+	/***************************************************************************
+	loadCOAPIMetaData() and alterType.refreshAllCFCAppData() were doing the exact
+	same thing line for line, so I removed loadCOAPIMetaData() and we're now using alterType. Altertype
+	is a less than ideal place for this kind of task but it will do until we can agree
+	on some sort ot type initialisation. ~tom
+	*/
+	oAlterType.refreshAllCFCAppData(); // This replaces loadCOAPIMetaData for now. I'm thinking types.init()?? ~tom
+
+// load config files into memory
+	config = createObject("component", "#application.packagepath#.farcry.config");
+	qConfigList = config.list();
+	for (i=1;i LTE qConfigList.Recordcount; i=i+1)
+		application.config[trim(qConfigList.configname[i])] = config.getConfig(configname=qConfigList.configname[i]);
+
+// activate PLP storage
+	if (NOT isDefined("application.path.plpstorage"))
+		application.path.plpstorage = application.path.core & "/plps/plpstorage";
+	if (NOT isDefined("application.path.tempfiles"))
+		application.path.tempfiles = application.path.core & "/plps/tempfiles";
+	application.fourq.plpstorage = application.path.core & "/plps/plpstorage"; // deprecated
+	application.fourq.plppath = "/farcry/core/plps"; // deprecated
 
 	
 // initialise the security structuress --->
