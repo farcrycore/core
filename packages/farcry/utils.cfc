@@ -117,6 +117,8 @@
 				<cfset arguments.struct1[key] = duplicate(arguments.struct2[key]) />
 			</cfif>
 		</cfloop>
+		
+		<cfreturn arguments.struct1 />
 	</cffunction>
 
 	<!--- PACKAGE utilities --->
