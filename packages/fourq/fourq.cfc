@@ -1000,8 +1000,8 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfargument name="property" type="string" required="true" hint="The property being queried" default="" />
 		<cfargument name="value" type="string" required="false" hint="The value required i.e. label, helptitle, helpsection" default="label" />
 
-		<cfset meta = "" />
-		<cfset prop = arguments.value />
+		<cfset var meta = "" />
+		<cfset var prop = arguments.value />
 
 		<cfset fourqInit() />
 
@@ -1023,7 +1023,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfargument name="value" type="string" required="false" hint="The value required i.e. label, helptitle, helpsection" default="label" />
 		
 		<cfset var qSteps = "" />
-		<cfset prop = arguments.value />
+		<cfset var prop = arguments.value />
 
 		<cfset fourqInit() />
 
@@ -1051,7 +1051,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		
 		<cfset var qSteps = "" />
 		<cfset var qFieldsets = "" />
-		<cfset prop = arguments.value />
+		<cfset var prop = arguments.value />
 
 		<cfset fourqInit() />
 
