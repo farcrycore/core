@@ -120,6 +120,11 @@
 	<!--- nothing relevant passed into tag; throw --->
 		<cfthrow type="Application" errorcode="tags.formtools.object" message="Object metadata could not be determined." detail="Make sure you actually passed in a value for either objectid, stobject or typename attributes." />
 	</cfif>
+	
+	<!--- I18 conversion of field labels --->
+	<cfloop collection="#stFields#" item="prop">
+		<cfset stFields[prop].metadata.ftLabel = oType.getI18Property(property=prop,value='label') />
+	</cfloop>
 
 	<cfset lFieldsToRender =  "">
 
@@ -250,7 +255,7 @@
 	<cfloop list="#lFieldsToRender#" index="i">
 		<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i] = StructNew()>
 
-		<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i] = Duplicate(stFields[i].MetaData)>		
+		<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i] = Duplicate(stFields[i].MetaData)>
 
 		
 		<!--- If we have been sent stPropValues for this field then we need to set it to this value  --->
@@ -520,7 +525,7 @@
 					
 				<cfoutput>
 					<label for="#variables.prefix##ftFieldMetadata.Name#" class="fieldsectionlabel #attributes.class# <cfif ftFieldMetadata.ftType EQ 'password'>passwordlabel</cfif>">
-					#ftFieldMetadata.ftlabel# :
+						#ftFieldMetadata.ftlabel# :
 					</label>
 				</cfoutput>
 				

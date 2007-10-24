@@ -45,7 +45,7 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 
 <cfparam name="session.objectadmin" default="#structnew()#" type="struct">
 
-<cfparam name="attributes.title" default="#attributes.typename# Administration" type="string">
+<cfparam name="attributes.title" default="#application.rb.formatRBString('forms.headings.typeadministration@text',attributes.typename,'{1} Administration')#" type="string">
 <cfparam name="attributes.ColumnList" default="" type="string">
 <cfparam name="attributes.SortableColumns" default="" type="string">
 <cfparam name="attributes.lFilterFields" default="" type="string">
@@ -90,18 +90,16 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 <cfparam name="attributes.stFilterMetaData" default="#structNew()#" />
 <cfparam name="attributes.bShowActionList" default="true" />
 
+<!--- I18 conversion off text output attributes --->
+<cfset attributes.description = application.rb.getResource("forms.text.#attributes.typename#.#left(rereplace(attributes.description,'[^\w\d]','','ALL'),10)#@text",attributes.description) />
+
 
 <cfif NOT structKeyExists(session.objectadmin, attributes.typename)>
 	<cfset structInsert(session.objectadmin, attributes.typename, structnew())>
 </cfif>
 
-<cfif attributes.PackageType EQ "rules">
-	<cfset PrimaryPackage = application.rules[attributes.typename] />
-	<cfset PrimaryPackagePath = application.rules[attributes.typename].rulepath />
-<cfelse>
-	<cfset PrimaryPackage = application.types[attributes.typename] />
-	<cfset PrimaryPackagePath = application.types[attributes.typename].typepath />
-</cfif>
+<cfset PrimaryPackage = duplicate(application.stCOAPI[attributes.typename]) />
+<cfset PrimaryPackagePath = application.stCOAPI[attributes.typename].packagepath />
 
 <cfif not len(attributes.sqlWhere)>
 	<cfset attributes.sqlWhere = "0=0" />
@@ -242,14 +240,14 @@ user --->
 	
 		
 		<cfif trim(HTMLfiltersAttributes) neq "">
-			<cfset HTMLfiltersAttributes = "<div style='display:inline;color:##000'>result filtered by:</div> " & HTMLfiltersAttributes >
+			<cfset HTMLfiltersAttributes = "<div style='display:inline;color:##000'>#application.rb.getResource('forms.text.resultfilteredby@text','result filtered by')#:</div> " & HTMLfiltersAttributes >
 		</cfif>
 	
 
 		<ft:form style="padding:10px; border: 1px solid ##000;margin-bottom:10px; ">
 			<cfoutput>
 			<div style="display:inline;color:##E17000">
-				Listing Filter:
+				#application.rb.getResource('forms.text.ListingFilter@text','Listing Filter')#:
 				<cfif HTMLfiltersAttributes eq "">
 					<a onclick="Effect.toggle('filterForm','blind');">set</a>
 				<cfelse>
@@ -538,7 +536,7 @@ user --->
 				oLocking=createObject("component",'#application.packagepath#.farcry.locking');
 				oLocking.unLock(objectid=aObjectids[i],typename=stObj.typename);
 				// TODO: i18n
-				response="Content items unlocked.";
+				response="#application.rb.getResource('forms.response.contentitemsunlocked@text','Content items unlocked.')#";
 			}
 		}
 	}
@@ -570,9 +568,6 @@ user --->
 
 
 <ft:form style="width: 100%;" Name="objectadmin">
-
-
-
 
 	<!--- output user responses --->
 	<cfif len(message_error)><cfoutput><p id="error" class="fade"><span class="error">#message_error#</span></p></cfoutput></cfif>
@@ -684,11 +679,11 @@ user --->
 	
 	 		<cfif attributes.bSelectCol><cfoutput><th>Select</th></cfoutput></cfif>
 	 		<cfif listContainsNoCase(stRecordset.q.columnlist,"bHasMultipleVersion")>
-		 		<cfoutput><th>Status</th></cfoutput>
+		 		<cfoutput><th>#application.rb.getResource("forms.columns.Status@label","Status")#</th></cfoutput>
 			</cfif>
 			
 			<cfif attributes.bShowActionList>
-				<cfoutput><th>Action</th></cfoutput>
+				<cfoutput><th>#application.rb.getResource("forms.columns.Action@label","Action")#</th></cfoutput>
 			</cfif>
 			<!---<cfif attributes.bEditCol><th>Edit</th></cfif>
 			<cfif attributes.bViewCol><th>View</th></cfif>
@@ -698,7 +693,7 @@ user --->
 				<cfloop from="1" to="#arrayLen(attributes.aCustomColumns)#" index="i">
 					
 					<cfif isStruct(attributes.aCustomColumns[i]) and structKeyExists(attributes.aCustomColumns[i], "title")>
-						<cfoutput><th>#attributes.aCustomColumns[i].title#</th></cfoutput>
+						<cfoutput><th>#application.rb.getResource("forms.columns.#rereplace(attributes.aCustomColumns[i].title,'[^\w\d]','','ALL')#@label",attributes.aCustomColumns[i].title)#</th></cfoutput>
 					<cfelse>
 						<cfoutput><th>&nbsp;</th></cfoutput>
 					</cfif>
@@ -706,10 +701,11 @@ user --->
 				</cfloop>
 			</cfif>
 			
+			<cfset o = createobject("component",PrimaryPackagepath) />
 			<cfloop list="#attributes.columnlist#" index="i">				
 					
 				<cfif isDefined("PrimaryPackage.stProps.#trim(i)#.metadata.ftLabel")>
-					<cfoutput><th>#PrimaryPackage.stProps[trim(i)].metadata.ftLabel#</th></cfoutput>
+					<cfoutput><th>#o.getI18Property(i,"label")#</th></cfoutput>
 				<cfelse>
 					<cfoutput><th>#i#</th></cfoutput>
 				</cfif>
@@ -789,7 +785,7 @@ user --->
 						<cfoutput><td nowrap="true">#st.select# #st.currentRow#</td></cfoutput>
 					</cfif>
 			 		<cfif listContainsNoCase(stRecordset.q.columnlist,"bHasMultipleVersion")>
-				 		<cfoutput><td nowrap="true">#st.status#</td></cfoutput>
+				 		<cfoutput><td nowrap="true">#application.rb.getResource("constants.status.#st.status#@label",st.status)#</td></cfoutput>
 					</cfif>
 					<cfif attributes.bShowActionList>
 						<cfoutput><td>#st.action#</td></cfoutput>

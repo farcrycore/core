@@ -9,7 +9,24 @@
 <cfif thistag.ExecutionMode EQ "Start">
 	
 	<cfparam name="attributes.action" default="*" >
+	<cfparam name="attributes.rbkey" default="" >
 	<cfparam name="attributes.excludeAction" default="" >
+	
+	<!--- I18 conversion of action and exludeAction lists --->
+	<cfloop from="1" to="#listlen(attributes.action)#" index="i">
+		<cfif listlen(attributes.rbkey) lt i>
+			<cfset listsetat(attributes.action,i,application.rb.getResource('forms.buttons.#rereplacenocase(listgetat(attributes.action,i),"[^\w\d]","","ALL")#@label',listgetat(attributes.action,i))) />
+		<cfelse>
+			<cfset listsetat(attributes.action,i,application.rb.getResource('#listgetat(arguments.rbkey,i)#@label',listgetat(attributes.action,i))) />
+		</cfif>
+	</cfloop>
+	<cfloop from="1" to="#listlen(attributes.excludeAction)#" index="i">
+		<cfif listlen(attributes.rbkey) lt listlen(attributes.action) + i>
+			<cfset listsetat(attributes.excludeAction,i,application.rb.getResource('forms.buttons.#rereplacenocase(listgetat(attributes.excludeAction,i),"[^\w\d]","","ALL")#@label',listgetat(attributes.excludeAction,i))) />
+		<cfelse>
+			<cfset listsetat(attributes.excludeAction,i,application.rb.getResource('#listgetat(arguments.rbkey,listlen(attributes.action) + i)#@label',listgetat(attributes.excludeAction,i))) />
+		</cfif>
+	</cfloop>
 	
 	<cfset variables.EnterFormProcess = false>
 	

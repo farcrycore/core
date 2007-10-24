@@ -9,6 +9,7 @@
 <cfparam  name="attributes.id" default="#createUUID()#">
 <cfparam  name="attributes.Type" default="submit">
 <cfparam  name="attributes.Value" default="#Attributes.Type#">
+<cfparam  name="attributes.rbkey" default="forms.buttons.#rereplacenocase(attributes.value,'[^\w\d]','','ALL')#">
 <cfparam  name="attributes.Onclick" default="">
 <cfparam  name="attributes.Class" default="">
 <cfparam  name="attributes.Style" default="">
@@ -21,7 +22,9 @@
 <cfparam name="attributes.target" default="_self">
 
 <cfif thistag.ExecutionMode EQ "Start">
-
+	<!--- I18 conversion of label --->
+	<cfset attributes.value = application.rb.getResource('#attributes.rbkey#@label',attributes.value) />
+	
 	<!--- Include Prototype light in the head --->
 	<cfset Request.InHead.PrototypeLite = 1>
 
@@ -35,6 +38,9 @@
 	</cfif>
 	
 	<cfif len(Attributes.ConfirmText)>
+			<!--- I18 conversion of label --->
+	<cfset Attributes.ConfirmText = application.rb.getResource('#attributes.rbkey#@confirmtext',Attributes.ConfirmText) />
+	
 		<!--- Confirm the click before submitting --->
 		<cfset attributes.OnClick = "if(confirm('#Attributes.ConfirmText#')) {dummyconfirmvalue=1} else {return false};#attributes.OnClick#;">
 	</cfif>	

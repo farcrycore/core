@@ -63,7 +63,7 @@
 			<cfset qMetadata = application.stcoapi[attributes.typename].qMetadata />
 			<cfset lFields = ValueList(qMetadata.propertyname)>
 			
-			<cfset stFields = application.stcoapi[attributes.typename].stprops>
+			<cfset stFields = duplicate(application.stcoapi[attributes.typename].stprops) />
 			<cfset ObjectID = attributes.ObjectID>
 			
 			<!--- Retrieve the Wizard structure from the calling page --->
@@ -101,7 +101,7 @@
 					
 		<cfset qMetadata = application.stcoapi[attributes.typename].qMetadata />
 		<cfset lFields = ValueList(qMetadata.propertyname)>
-		<cfset stFields = application.stcoapi[attributes.typename].stprops>
+		<cfset stFields = duplicate(application.stcoapi[attributes.typename].stprops) />
 		<cfset typename = attributes.typename>
 		
 		<cfset stObj = oType.getData(objectID="#CreateUUID()#")>
@@ -111,8 +111,6 @@
 
 	<cfset lFieldsToRender =  "">
 	
-
-
 	<!--- allow for whitespace in field list attributes by trimming --->
 	<cfset attributes.lFields = replacenocase(attributes.lFields, " ", "", "ALL") />
 	<cfset attributes.lHiddenFields = replacenocase(attributes.lHiddenFields, " ", "", "ALL") />
@@ -486,7 +484,7 @@
 					
 				<cfoutput>
 					<label for="#variables.prefix##ftFieldMetadata.Name#" class="fieldsectionlabel #attributes.class#">
-					#ftFieldMetadata.ftlabel# :
+						#oType.getI18Property(property=ftFieldMetadata.name,value='label')# :
 					</label>
 				</cfoutput>
 				

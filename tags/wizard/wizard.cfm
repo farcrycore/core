@@ -71,6 +71,11 @@ $in: SessionID -- $
 		<cfparam name="attributes.FormHeading" default="">
 		<cfparam name="attributes.FormValidation" default="1">
 		
+		<!--- I18 conversion of form heading --->
+		<cfif len(attributes.FormHeading)>
+			<cfset attributes.FormHeading = application.rb.getResource("forms.headings.#rereplacenocase(attributes.FormHeading,'[^\w\d]','','ALL')#@text",attributes.FormHeading) />
+		</cfif>
+		
 		<cfparam name="Request.farcryFormList" default="">			
 		
 		<cfif not isDefined("Request.farcryForm.Name")>
@@ -179,7 +184,7 @@ $in: SessionID -- $
 				</cfif>
 			}
 			function wizardCancelConfirm(){
-				if( window.confirm("Changes made will not be saved.\nDo you still wish to Cancel?")){
+				if( window.confirm("#application.rb.getResource('forms.buttons.Cancel@confirmtext','Changes made will not be saved.\nDo you still wish to Cancel?')#")){
 					wizardSubmission('Cancel');
 				}
 			}
@@ -192,8 +197,8 @@ $in: SessionID -- $
 	<div id="wizard-wrap">			
 		<div class="wizard-pagination">
 			<ul>
-				<cfif stwizard.CurrentStep LT ListLen(stwizard.Steps)><li class="li-next"><a href="javascript:wizardSubmission('Next');">Next</a></li></cfif>
-				<cfif stwizard.CurrentStep GT 1><li class="li-prev"><a href="javascript:wizardSubmission('Previous');">Back</a></li></cfif>
+				<cfif stwizard.CurrentStep LT ListLen(stwizard.Steps)><li class="li-next"><a href="javascript:wizardSubmission('Next');">#application.rb.getResource("forms.buttons.Next@label","Next")#</a></li></cfif>
+				<cfif stwizard.CurrentStep GT 1><li class="li-prev"><a href="javascript:wizardSubmission('Previous');">#application.rb.getResource("forms.buttons.Back@label","Back")#</a></li></cfif>
 			</ul>
 		</div>
 
@@ -203,8 +208,8 @@ $in: SessionID -- $
 				<cfloop list="#stwizard.Steps#" index="i">
 					<li><a href="javascript:wizardSubmission('#i#')"><cfif ListGetAt(stwizard.Steps,stwizard.CurrentStep) EQ i><strong>#i#</strong><cfelse>#i#</cfif></a></li>
 				</cfloop>
-				<li class="li-complete"><a href="javascript:wizardSubmission('Save');">Complete</a></li>
-				<li class="li-cancel"><a href="javascript:wizardCancelConfirm();">Cancel</a></li>
+				<li class="li-complete"><a href="javascript:wizardSubmission('Save');">#application.rb.getResource("forms.buttons.Complete@label","Complete")#</a></li>
+				<li class="li-cancel"><a href="javascript:wizardCancelConfirm();">#application.rb.getResource("forms.buttons.Cancel@label","Cancel")#</a></li>
 			</ul>
 		</div>
 
@@ -217,8 +222,8 @@ $in: SessionID -- $
 		
 		<div class="wizard-pagination pg-bot">
 			<ul>
-				<cfif stwizard.CurrentStep LT ListLen(stwizard.Steps)><li class="li-next"><a href="javascript:wizardSubmission('Next');">Next</a></li></cfif>
-				<cfif stwizard.CurrentStep GT 1><li class="li-prev"><a href="javascript:wizardSubmission('Previous');">Back</a></li></cfif>
+				<cfif stwizard.CurrentStep LT ListLen(stwizard.Steps)><li class="li-next"><a href="javascript:wizardSubmission('Next');">#application.rb.getResource("forms.buttons.Next@label","Next")#</a></li></cfif>
+				<cfif stwizard.CurrentStep GT 1><li class="li-prev"><a href="javascript:wizardSubmission('Previous');">#application.rb.getResource("forms.buttons.Back@label","Back")#</a></li></cfif>
 			</ul>
 		</div>
 				
