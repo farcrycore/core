@@ -1,8 +1,8 @@
 <!--- resolve default iframe for this section view --->
-<cfparam name="url.sub" default="dynamic" type="string">
-
 <cfimport taglib="/farcry/core/tags/admin" prefix="admin">
 
+<cfparam name="url.sub" default="dynamic" type="string">
+<cfparam name="url.sec" default="" type="string">
 <cfoutput>
 	<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 	<html xmlns="http://www.w3.org/1999/xhtml">
@@ -14,7 +14,7 @@
 	<body class="iframed">
 </cfoutput>
 		
-<admin:menu sectionid="content" subsectionid="#url.sub#" webTop="#application.factory.owebtop#" />
+<admin:menu sectionid="#url.sec#" subsectionid="#url.sub#" webTop="#application.factory.owebtop#" />
 
 <cfoutput>
 	</body>

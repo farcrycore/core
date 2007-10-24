@@ -33,7 +33,7 @@ $Developer: Guy Phanvongsa (guy@daemon.com.au)$
 	<body class="iframed">
 </cfoutput>
 
-<admin:menu subsectionid="#url.sub#" webTop="#application.factory.owebtop#" />
+<admin:menu sectionid="#url.sec#" subsectionid="#url.sub#" webTop="#application.factory.owebtop#" />
 
 <cfoutput>
 	</body>

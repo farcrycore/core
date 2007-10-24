@@ -22,89 +22,71 @@ $Developer: Guy Phanvongsa (guy@daemon.com.au)$
 --->
 
 <cfswitch expression="#thistag.executionmode#">
-  <cfcase value="start">
-
-    <!--- optional attributes --->
-    <cfparam name="attributes.sectionid" default="" type="string" />
-    <cfparam name="attributes.subsectionid" default="" type="string" />
-    <cfparam name="attributes.webTop" default="" type="any" />
-
-		<!--- local variables --->
-		<cfset sectionID = attributes.sectionid />
-		<cfset subsectionid = attributes.subsectionid />
-		<cfset oWebTop = attributes.webTop />
-    <cfset errorMessage = "" />
-
-    <!--- get sidebar contents based on passed in subsectionid --->
-		<cfif isObject(oWebTop) AND len(subsectionid)>
-			<cfset aSubSections = owebtop.getSubSectionsAsArray(subsection=subsectionid)>
-			<cfloop index="i" from="1" to="#ArrayLen(aSubSections)#">
-				<cfset owebtop.fTranslateXMLElement(aSubSections[i]) />
-			</cfloop>
-			<!--- get section & subsection to display --->
-			<cfset aSubectionToDisplay = xmlSearch(oWebTop.xmlWebTop,"//section/subsection[@id='#attributes.subsectionid#']") />
-			<cfset aMenu = aSubectionToDisplay[1].xmlChildren />
-		<cfelse>
-			<cfset errorMessage = errorMessage & "Invalid SectionID And/Or WebTop Object.<br />" />
-		</cfif>
-		<cfset showListbox = 0 />
-		<cfif arraylen(asubsections)>
-			<cfloop from="1" to="#arraylen(asubsections)#" index="i">
-				<cfif request.dmsec.oAuthorisation.fCheckXMLPermission(asubsections[i].xmlAttributes)>
-					<cfset showListbox = 1 />
-				</cfif>
-			</cfloop>
-		</cfif>
-
-		<!--- errormessage check --->
-		<cfif len(errorMessage)> 
-			<cfoutput>#errormessage#</cfoutput>
-		<cfelse>
-		<!--- output subsection jump menu --->
-		<cfif arraylen(asubsections) and showListbox>
+	<cfcase value="start">
+	
+	<!--- optional attributes --->
+	<cfparam name="attributes.sectionid" type="string" />
+	<cfparam name="attributes.subsectionid" default="" type="string" />
+	<cfparam name="attributes.webTop" default="" type="any" />
+	
+	<cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
+	
+	<!--- Get section --->
+	<cfset stSection = attributes.webtop.getItem(attributes.sectionid) />
+	
+	<!--- Default sub section is the first one --->
+	<cfif len(attributes.subsectionid) and structkeyexists(stSection.children,attributes.subsectionid)>
+		<cfset stSubSection = stSection.children[attributes.subsectionid] />
+	<cfelse>
+		<cfset stSubSection = stSection.children[listfirst(stSection.childorder)] />
+	</cfif>
+	
+	<cfif structcount(stSection.children) gt 1>
+		<!--- Show subsection jump menu --->
 		<cfoutput>
 			<form id="subjump" action="" method="get" class="iframe-nav-form">
-				<select name="sub" onchange="location=this.value;return false;"></cfoutput>
-				<cfloop from="1" to="#arraylen(asubsections)#" index="i">
-					<cfif request.dmsec.oAuthorisation.fCheckXMLPermission(asubsections[i].xmlAttributes)><cfoutput>
-					<option value="#cgi.script_path#?sub=#asubsections[i].xmlAttributes.id#"<cfif subsectionid eq asubsections[i].xmlAttributes.id> selected="selected"</cfif>>#asubsections[i].xmlAttributes.label#</option></cfoutput>
-					</cfif>
-				</cfloop><cfoutput>
+				<select name="sub" onchange="urls=this.value.split('|');location=urls[0];window.open(urls[1],'content');return false;">
+		</cfoutput>
+		
+		<admin:loopwebtop parent="#stSection#" item="subsection">
+			<cfset url.sub = subsection.id />
+			<cfoutput>
+				<option value="#application.url.farcry#/#application.factory.oWebtop.getAttributeURL(subsection,'sidebar',url)#|#application.url.farcry#/#application.factory.oWebtop.getAttributeURL(subsection,'content',url)#"<cfif attributes.subsectionid eq subsection.id> selected="selected"</cfif>>#subsection.label#</option>
+			</cfoutput>
+		</admin:loopwebtop>
+		
+		<cfoutput>
 				</select>
 			</form>
-			</cfoutput>
-		<cfelse>
-			<cfoutput><br /></cfoutput>
-		</cfif>
+		</cfoutput>
+	</cfif>
 	
-		<!--- TODO: clean up and apply permission checks --->
-		<cfloop from="1" to="#arrayLen(aMenu)#" index="i">
-			<cfif request.dmsec.oAuthorisation.fCheckXMLPermission(aMenu[i].xmlAttributes)><cfoutput>
-				<h3>#aMenu[i].xmlattributes.label#</h3></cfoutput>
-				<cfset amenuitems=aMenu[i].xmlchildren />
-				<cfoutput>
-				<ul></cfoutput>
-				<cfloop from="1" to="#arrayLen(amenuitems)#" index="j">
-					<cfif request.dmsec.oAuthorisation.fCheckXMLPermission(amenuitems[j].xmlAttributes)>
-						<cfparam name="amenuitems[j].xmlattributes.linkType" default="farcry" />
-						<cfswitch expression="#amenuitems[j].xmlattributes.linkType#">
-							<cfcase value="External">
-								<cfoutput>
-								<li><a href="#amenuitems[j].xmlattributes.link#" target="content">#amenuitems[j].xmlattributes.label#</a></li></cfoutput>
-							</cfcase>
-							<cfdefaultcase>
-								<cfoutput>
-								<li><a href="#application.url.farcry##ReplaceNoCase(amenuitems[j].xmlattributes.link,'#application.url.farcry#','')#" target="content">#amenuitems[j].xmlattributes.label#</a></li></cfoutput>
-							</cfdefaultcase>
-						</cfswitch>
-					</cfif>
-				</cfloop>
-				<cfoutput>
-				</ul></cfoutput>
-			</cfif>
-		</cfloop>
-		</cfif> 
-		<!--- // errormessage check --->
+	<admin:loopwebtop parent="#stSubSection#" item="menu">
+		<cfoutput>
+			<h2>#menu.label#</h2>
+			<ul>
+		</cfoutput>
+		
+		<admin:loopwebtop parent="#menu#" item="menuitem">
+			<cfswitch expression="#menuitem.linkType#">
+				<cfcase value="External">
+					<cfoutput>
+						<li><a href="#menuitem.link#" target="content">#menuitem.label#</a></li>
+					</cfoutput>
+				</cfcase>
+				<cfdefaultcase>
+					<cfoutput>
+						<li><a href="#application.url.farcry##ReplaceNoCase(menuitem.link,'#application.url.farcry#','')#" target="content">#menuitem.label#</a></li>
+					</cfoutput>
+				</cfdefaultcase>
+			</cfswitch>
+		</admin:loopwebtop>
+		
+		<cfoutput>
+			</ul>
+		</cfoutput>
+	</admin:loopwebtop>
+
 	</cfcase>
 </cfswitch>
 
