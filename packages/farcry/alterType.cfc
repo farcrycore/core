@@ -239,7 +239,6 @@ $out:$
 	<cfset application.types = structNew() />
 	<cfset application.formtools = structNew() />
 	<cfset application.rules = structNew() />	
-	<cfset application.forms = structNew() />	
 	<cfset application.stcoapi = structNew() />
 	 
 	<!--- Find all types, base, extended & custom --->
@@ -473,93 +472,6 @@ $out:$
 				<cfset application.formtools[formtoolname] = duplicate(stTypeMD) />
 				<cfset application.formtools[formtoolname].oFactory = oFactory /><!--- you can't duplicate an object --->
 			</cfif>
-	</cfloop>
-	
-
-	<!--- 
-	 FORMS
-	 --->
-	<cfdirectory directory="#application.path.core#/packages/forms" name="qFormsDir" filter="*.cfc" sort="name">
-	
-	<!--- Init all CORE FORMS --->
-	<cfloop query="qFormsDir">
-
-			<cfset formname = left(qFormsDir.name, len(qFormsDir.name)-4) /><!--- //remove the .cfc from the filename --->			
-			<cfset oFactory = createObject("Component", "#application.packagepath#.forms.#formname#").init() />
-
-			<cfset stMetaData = getMetaData(oFactory) />
-			<cfif not structKeyExists(stMetadata,"bAbstract") or stMetadata.bAbstract EQ "False">
-				<cfset stTypeMD = structnew() />
-				<cfparam name="application.forms.#formname#" default="#structNew()#" />
-				<cfset stTypeMD = oFactory.initmetadata(application.forms[formname]) />
-				<cfset stTypeMD.bCustomForm = 0 />
-				<cfset stTypeMD.bLibraryForm = 0 />
-				<cfset stTypeMD.formPath = "#application.packagepath#.forms.#formname#" />
-				<cfset stTypeMD.packagePath = "#application.packagepath#.forms.#formname#" />
-				<cfset stTypeMD.qMetadata = setupMetadataQuery(typename=typename,stProps=stTypeMD.stProps) />
-				<cfset application.forms[formname] = duplicate(stTypeMD) />
-				<cfset application.forms[formname].oFactory = oFactory /><!--- you can't duplicate an object --->
-			</cfif>
-	</cfloop>	
-	
-	<cfif structKeyExists(application, "plugins") and listLen(application.plugins)>
-
-		<cfloop list="#application.plugins#" index="plugin">
-			
-			<cfif directoryExists("#application.path.plugins#/#plugin#/packages/forms")>
-			
-				<cfdirectory directory="#application.path.plugins#/#plugin#/packages/forms" name="qDir" filter="*.cfc" sort="name">
-				
-				<!--- Init all PLUGIN types --->
-				<cfloop query="qDir">
-
-					<cfset formname = left(qDir.name, len(qDir.name)-4) /> <!---remove the .cfc from the filename --->
-					
-					<cfset oFactory = createObject("Component", "farcry.plugins.#plugin#.packages.forms.#formname#").init() />
-					<cfset stMetaData = getMetaData(oFactory) />
-					<cfif not structKeyExists(stMetadata,"bAbstract") or stMetadata.bAbstract EQ "False">
-						<cfset stTypeMD = structnew() />
-						<cfparam name="application.forms.#formname#" default="#structNew()#" />
-						<cfset stTypeMD = oFactory.initmetadata(application.forms[formname]) />
-						<cfset stTypeMD.bCustomForm = 1 />
-						<cfset stTypeMD.bLibraryForm = 1 />
-						<cfset stTypeMD.formPath = "farcry.plugins.#plugin#.packages.forms.#formname#" />
-						<cfset stTypeMD.packagePath = "farcry.plugins.#plugin#.packages.forms.#formname#" />
-						<cfset stTypeMD.qMetadata = setupMetadataQuery(typename=typename,stProps=stTypeMD.stProps) />
-						
-						<cfset application.forms[formname] = duplicate(stTypeMD) />
-						<cfset application.forms[formname].oFactory = oFactory /><!--- you can't duplicate an object --->
-					</cfif>
-
-				</cfloop>
-				
-			</cfif>
-			
-		</cfloop>	
-		
-	</cfif>	
-	
-	
-	<!--- Init all PROJECT FORMS --->
-	
-	<cfdirectory directory="#application.path.project#/packages/forms" name="qCustomFormsTypesDir" filter="*.cfc" sort="name">
-	<cfloop query="qCustomFormsTypesDir">
-
-		<cfset formname = left(qCustomFormsTypesDir.name, len(qCustomFormsTypesDir.name)-4) /><!--- //remove the .cfc from the filename --->	
-		<cfset oFactory = createObject("Component", "#application.custompackagepath#.forms.#formname#")>	
-		<cfset stMetaData = getMetaData(o) />
-		<cfif not structKeyExists(stMetadata,"bAbstract") or stMetadata.bAbstract EQ "False">
-			<cfset stTypeMD = structnew() />
-			<cfparam name="application.forms.#formname#" default="#structNew()#" />
-			<cfset stTypeMD = oFactory.initmetadata(application.forms[formname]) />
-			<cfset stTypeMD.bCustomForm = 1 />
-			<cfset stTypeMD.bLibraryForm = 0 />
-			<cfset stTypeMD.formPath = "#application.custompackagepath#.formtools.#formname#" />
-			<cfset stTypeMD.packagePath = "#application.custompackagepath#.formtools.#formname#" />
-			<cfset stTypeMD.qMetadata = setupMetadataQuery(typename=typename,stProps=stTypeMD.stProps) />
-			<cfset application.forms[formname] = duplicate(stTypeMD) />
-			<cfset application.forms[formname].oFactory = oFactory /><!--- you can't duplicate an object --->
-		</cfif>
 	</cfloop>		
 		
 	
@@ -660,9 +572,6 @@ $out:$
 	</cfloop>
 	<cfloop list="#structKeyList(application.rules)#" index="i">
 		<cfset application.stcoapi[i] = duplicate(application.rules[i]) />
-	</cfloop>
-	<cfloop list="#structKeyList(application.forms)#" index="i">
-		<cfset application.stcoapi[i] = duplicate(application.forms[i]) />
 	</cfloop>
 	
 	<cfloop list="#structKeyList(application.stcoapi)#" index="i">	
