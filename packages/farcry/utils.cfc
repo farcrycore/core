@@ -186,7 +186,7 @@
 				</cfcase>
 				<cfdefaultcase><!--- Plugin --->
 					<cfif listcontainsnocase(application.plugins,item)>
-						<cfif directoryexists("#application.path.project#/packages/#arguments.package#/")>
+						<cfif directoryexists("#application.path.plugins#/packages/#arguments.package#/")>
 							<cfdirectory action="list" directory="#application.path.plugins#/#item#/packages/#arguments.package#/" filter="*.cfc" name="qItems" />
 						</cfif>
 					</cfif>
