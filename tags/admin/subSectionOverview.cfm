@@ -45,11 +45,11 @@ $Developer: Guy Phanvongsa (guy@daemon.com.au)$
 		<!--- Loop through sections --->
 		<admin:loopwebtop parent="#subsection#" item="menu">
 			<!--- Menu content --->
-			<cfoutput><h3>#menu.label#</h3></cfoutput>
+			<!--- <cfoutput><h3>#menu.label#</h3></cfoutput>
 			<cfif len(menu.description)>
 				<cfoutput><p>#menu.description#</p></cfoutput>
 			</cfif>
-			<cfoutput><ul class="overviewlist"></cfoutput>
+			<cfoutput><ul class="overviewlist"></cfoutput> --->
 			
 			<admin:loopwebtop parent="#menu#" item="menuitem">
 				<!--- If an icon was specified, convert it to the icon facade --->
