@@ -62,9 +62,9 @@ $Developer: Guy Phanvongsa (guy@daemon.com.au)$
 					<cfif structkeyexists(application.stCOAPI,menuitem.relatedtype)>
 						<cfset o = createobject("component",application.stCOAPI[menuitem.relatedType].packagepath) />
 						<cfif structkeyexists(application.stCOAPI[menuitem.relatedType],"description")>
-							<cfset menuitem.description = application.stCOAPI[menuitem.relatedType].description />
+							<cfset menuitem.description = application.rb.getResource("coapi.#menuitem.relatedtype#@description",application.stCOAPI[menuitem.relatedType].description) />
 						<cfelseif structkeyexists(application.stCOAPI[menuitem.relatedType],"hint")>
-							<cfset menuitem.description = application.stCOAPI[menuitem.relatedType].hint />
+							<cfset menuitem.description = application.rb.getResource("coapi.#menuitem.relatedtype#@description",application.stCOAPI[menuitem.relatedType].hint) />
 						</cfif>
 						<cfset menuitem.icon="#application.url.farcry#/facade/icon.cfm?type=#menuitem.relatedType#" />
 					<cfelse>
