@@ -77,16 +77,6 @@
         <cfset request.mode.bAdmin = 1>
         <cfset session.dmSec.authentication.bAdmin = 1>
         
-        <!--- i18n: admin bits --->
-        <cfif NOT structKeyExists(application.adminBundle, session.dmProfile.locale)>
-            <!--- <cfset application.adminBundle[session.dmProfile.locale]=application.rB.getResourceBundle("farcry.admin",session.dmProfile.locale,true)> --->
-            <!--- check if resource exist for this locale if not default to en_AU --->
-            <cfif StructIsEmpty(application.rB.getResourceBundle("#application.path.core#/packages/resources/admin.properties",session.dmProfile.locale,false))>
-                <cfset application.adminBundle[session.dmProfile.locale]=application.rB.getResourceBundle("#application.path.core#/packages/resources/admin.properties",session.dmProfile.locale,false)>
-            <cfelse>
-                <cfset application.adminBundle[session.dmProfile.locale]=application.rB.getResourceBundle("#application.path.core#/packages/resources/admin.properties","en_AU",false)>         
-            </cfif>
-        </cfif>
         <!--- i18n: find out this locale's writing system direction using our special psychic powers --->
         <cfif application.i18nUtils.isBIDI(session.dmProfile.locale)>
             <cfset session.writingDir="rtl">
