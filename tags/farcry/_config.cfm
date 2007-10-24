@@ -122,6 +122,7 @@ test for the existance of each and act accordingly
 
 
 	//initialise factory objects 
+	application.factory.oAuthorisation = createobject("component","#application.packagepath#.security.authorisation").init();
 	application.factory.oWebtop = createobject("component","#application.packagepath#.farcry.webtop").init();
 	application.factory.oUtils = createobject("component","#application.packagepath#.farcry.utils");
 	application.factory.oAudit = createObject("component","#application.packagepath#.farcry.audit");
