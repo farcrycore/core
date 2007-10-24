@@ -51,12 +51,8 @@ If the farcry admin area is located inside core, the project location is dynamic
 </cfif>
 
 
-<!--- begin: initialise webtop factory object --->
-<!--- TODO: move to application initialisation --->
-<cfif application.sysinfo.bwebtopaccess>
-	<!--- grab webtop config file and parse --->
-	<cfset application.factory.owebtop=createobject("component", "#application.packagepath#.farcry.webtop").init()>
-<cfelse>
+<!--- Restrict access if webtop access is disabled --->
+<cfif not application.sysinfo.bwebtopaccess>
 	<cfoutput>
 	<div style="margin: 10% 30% 0% 30%; padding: 10px; border: 2px navy solid; background: ##dedeff; font-family: Verdana; font-color: navy; text-align: center;">
 		<h2>Webtop Access Restricted</h2>
@@ -65,8 +61,6 @@ If the farcry admin area is located inside core, the project location is dynamic
 	</cfoutput>
 	<cfabort />
 </cfif>
-
-<!--- end: initialise webtop factory object --->
 
 
 <cfsetting enablecfoutputonly="no">
