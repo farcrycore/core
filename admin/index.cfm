@@ -34,40 +34,18 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 $Developer: Guy Phanvongsa (guy@daemon.com.au)$
 $Developer: Pete Ottery (pot@daemon.com.au)$
 --->
-<cfprocessingDirective pageencoding="utf-8">
+<cfprocessingDirective pageencoding="utf-8" />
 
-<cfset oWebTop=application.factory.owebtop>
-<cfset xmlWebtop=owebtop.xmlWebtop>
+<cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
 
-<!--- resolve default iframes for this section view --->
-<cfset aSections = oWebTop.getSectionsAsArray()>
-<cfset defaultsectionid="">
-<cfloop from="1" to="#arraylen(aSections)#" index="i">
-	<cfif request.dmsec.oAuthorisation.fCheckXMLPermission(aSections[i].xmlAttributes)>
-		<cfset defaultsectionid=aSections[i].xmlAttributes.id>
-		<cfbreak>
-	</cfif>
-</cfloop>
-<cfif not len(defaultsectionid)>
-	<cfthrow type="application" message="You do not have permission to access this area">
-</cfif>
-<cfparam name="url.sec" default="#defaultsectionid#" type="string">
-<cfparam name="url.sub" default="" type="string">
+<!--- Get sections --->
+<cfset stSections = application.factory.oWebtop.getItem() />
 
-<!--- get subsection to display --->
-<cfset aSubectionToDisplay = oWebTop.getSubSectionAsArray(url.sec, url.sub)>
-<cfset aSections = oWebTop.getSectionsAsArray()>
-<!--- TODO: Please explain? does this need to be done at all? could it be done in component? GB --->
-<cfloop index="i" from="1" to="#ArrayLen(aSections)#">
-	<cfset owebtop.fTranslateXMLElement(aSections[i])>
-</cfloop>
+<!--- Default selected section is the first in the list --->
+<cfparam name="url.sec" default="#listfirst(stSections.childorder)#" />
 
-<cfset secid=url.sec>
-<cfset subid=url.sub>
-<!--- <cfset sidebar=aSubectionToDisplay[1].xmlattributes.sidebar & "?sub=" & aSubectionToDisplay[1].xmlattributes.id & "&" & cgi.query_string>
-<cfset content=aSubectionToDisplay[1].xmlattributes.content & "?" & cgi.query_string> --->
-<cfset variables.sidebar=oWebTop.getSidebarUrl(aSubectionToDisplay[1].XmlAttributes)>
-<cfset variables.content=oWebTop.getContentUrl(aSubectionToDisplay[1].XmlAttributes)> 
+<!--- Default selected subsection is the first in the list --->
+<cfparam name="url.sub" default="#listfirst(stSections.children[url.sec].childorder)#" />
 
 <cfoutput>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -78,7 +56,7 @@ $Developer: Pete Ottery (pot@daemon.com.au)$
 <style type="text/css" title="default" media="screen">@import url(#application.url.farcry#/css/main.css);</style>
 <script type="text/javascript" src="#application.url.farcry#/js/prototype.js"></script>
 </head>
-<body id="sec-#secid#">
+<body id="sec-#url.sec#">
 
 	<div id="header">
 	
@@ -99,10 +77,12 @@ $Developer: Pete Ottery (pot@daemon.com.au)$
 		<div id="nav">
 			<ul>
 </cfoutput>
-			<!--- determine available section tabs --->
-			<cfloop from="1" to="#arraylen(aSections)#" index="i"><cfif request.dmsec.oAuthorisation.fCheckXMLPermission(aSections[i].xmlAttributes)>
-			<cfoutput><li id="nav-#aSections[i].xmlAttributes.id#"<cfif arraylen(aSections) eq i> class="last<cfif url.sec EQ aSections[i].xmlAttributes.id> active</cfif>"<cfelseif url.sec EQ aSections[i].xmlAttributes.id> class="active"</cfif>><a href="index.cfm?sec=#aSections[i].xmlAttributes.id#">#trim(aSections[i].xmlAttributes.label)#</a></li></cfoutput>
-			</cfif></cfloop>
+
+<admin:loopwebtop parent="#stSections#" item="section" class="class">
+	<!--- Output the menu link --->
+	<cfoutput><li id="nav-#section.id#" class="#class#<cfif url.sec eq section.id> active</cfif>"><a href="index.cfm?sec=#section.id#">#trim(section.label)#</a></li></cfoutput>
+</admin:loopwebtop>
+
 <cfoutput> </ul>
 		</div>
 	
@@ -112,11 +92,11 @@ $Developer: Pete Ottery (pot@daemon.com.au)$
 	<div id="content-wrap">
 
 		<div id="sidebar">
-			<iframe src="#variables.sidebar#" name="sidebar" scrolling="auto" frameborder="0" id="iframe-sidebar"></iframe>
+			<iframe src="#application.factory.oWebtop.getAttributeURL('#url.sec#.#url.sub#','sidebar',url)#" name="sidebar" scrolling="auto" frameborder="0" id="iframe-sidebar"></iframe>
 		</div>
 		
 		<div id="content">
-			<iframe src="#variables.content#" name="content" scrolling="auto" frameborder="0" id="iframe-content"></iframe>
+			<iframe src="#application.factory.oWebtop.getAttributeURL('#url.sec#.#url.sub#','content',url)#" name="content" scrolling="auto" frameborder="0" id="iframe-content"></iframe>
 		</div>
 		
 		<div class="clear"></div>
@@ -129,12 +109,24 @@ $Developer: Pete Ottery (pot@daemon.com.au)$
 </cfoutput>
 
 <!--- expander widget for sidebar/content iframes --->
-<!--- 
-TODO: 	should be based on section attribute in webtop.xml not specific sectionid
-		this will enable custom admin sections to choose expander option. Options
-		should include expand, contract, expand/contract and none ideally. GB
- --->
-<cfswitch expression="#secid#">
+<cfset altexpansion = stSections.children[url.sec].altexpansion />
+<cfif altexpansion eq "none">
+	<!--- No expand / contract buttons --->
+<cfelseif altexpansion gt 200>
+	<!--- Alternate size is greater than the default size --->
+	<cfoutput>
+		<a href="##" onclick="$('sidebar').style.width = '#altexpansion#px'; $('iframe-sidebar').style.width = '#altexpansion#px'; $('tree-button-max').style.display = 'none'; $('tree-button-min').style.display = 'block'; $('content-wrap').style.backgroundPosition = '#altexpansion-201#px 0'; $('content').style.marginLeft = '#altexpansion+32#px'; $('sec-#url.sec#').style.backgroundPosition='#altexpansion-605#px 0'; return false;" id="tree-button-max"><span>Expand Sidebar</span></a>
+		<a href="##" onclick="$('sidebar').style.width = '200px'; $('iframe-sidebar').style.width = '200px'; $('tree-button-max').style.display = 'block'; $('tree-button-min').style.display = 'none'; $('content-wrap').style.backgroundPosition = '0 0'; $('content').style.marginLeft = '232px'; $('sec-#url.sec#').style.backgroundPosition = '-404px 0'; return false;" id="tree-button-min"><span>Default Sidebar</span></a>
+	</cfoutput>
+<cfelseif altexpansion lt 200>
+	<!--- Alternate size is smaller than the default size --->
+	<cfoutput>
+		<a href="##" onclick="$('sidebar').style.width = '#altexpansion#px'; $('iframe-sidebar').style.width = '#altexpansion#px'; $('content-button-max').style.display = 'none'; $('content-button-min').style.display = 'block'; $('content-wrap').style.backgroundPosition = '#altexpansion-201#px 0'; $('content').style.marginLeft = '#altexpansion+32#px'; $('sec-#url.sec#').style.backgroundPosition='#altexpansion-605#px 0'; return false;" id="content-button-max"><span>Expand Sidebar</span></a>
+		<a href="##" onclick="$('sidebar').style.width = '200px'; $('iframe-sidebar').style.width = '200px'; $('content-button-max').style.display = 'block'; $('content-button-min').style.display = 'none'; $('content-wrap').style.backgroundPosition = '0 0'; $('content').style.marginLeft = '232px'; $('sec-#url.sec#').style.backgroundPosition = '-404px 0'; return false;" id="content-button-min"><span>Default Sidebar</span></a>
+	</cfoutput>
+</cfif>
+
+<!--- <cfswitch expression="#stSections[url.sec].altexpansion#">
 	<cfcase value="home">
 	<!--- do nothing for overview page --->
 	</cfcase>
@@ -152,7 +144,7 @@ TODO: 	should be based on section attribute in webtop.xml not specific sectionid
 	<a href="##" onclick="$('sidebar').style.width = '200px'; $('iframe-sidebar').style.width = '200px'; $('content-button-max').style.display = 'block'; $('content-button-min').style.display = 'none'; $('content-wrap').style.backgroundPosition = '0 0'; $('content').style.marginLeft = '236px'; $('sec-#secid#').style.backgroundPosition = '-404px 0'; return false;" id="content-button-min"><span>Default Content Width</span></a>
 	</cfoutput>
 	</cfdefaultcase>
-</cfswitch>
+</cfswitch> --->
 
 <cfoutput>
 </body>
