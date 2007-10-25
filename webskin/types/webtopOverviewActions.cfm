@@ -15,6 +15,7 @@ FARCRY INCLUDE FILES
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 
 
+
 <!--- Add the extjs iframe dialog to the head --->
 <extjs:iframeDialog />
 			
@@ -82,12 +83,10 @@ START WEBSKIN
 <cfparam name="stobj.bAlwaysShowEdit" default="0">
 
 
-
 <ft:form>
 
-<extjs:accordion>
-	<extjs:accordionPanel title="Main Actions" collapsed="false">
-	
+
+	<extjs:item title="Main Actions">
 		
 		<!--- work out different options depending on object status --->
 		<cfif StructKeyExists(stobj,"status") AND stobj.status NEQ "">
@@ -96,15 +95,15 @@ START WEBSKIN
 					<!--- check user can edit --->
 					<cfif stOverviewParams.stPermissions.iEdit EQ 1>
 						<!--- MJB: added url.ref so that the edit methods know they were initially called by the overview page and they can return here if they so desire. --->
-						<ft:farcryButton value="#application.adminBundle[session.dmProfile.locale].editObj#" bInPanel="true" url="edittabEdit.cfm?objectid=#stobj.objectid#&ref=overview&typename=#stobj.typeName#" />
+						<ft:farcryButton style="" value="#application.adminBundle[session.dmProfile.locale].editObj#" bInPanel="true" url="edittabEdit.cfm?objectid=#stobj.objectid#&ref=overview&typename=#stobj.typeName#" />
 					</cfif>
 		
 					<!--- check user can approve object --->
 					<cfif stOverviewParams.stPermissions.iApprove eq 1 OR stOverviewParams.stPermissions.iApproveOwn EQ 1>
 						<cfif stobj.objectid NEQ stOverviewParams.objectid_previousversion>
-							<ft:farcryButton value="#application.adminBundle[session.dmProfile.locale].sendObjLive#" bInPanel="true" url="#application.url.farcry#/navajo/approve.cfm?objectid=#stobj.objectid#&status=approved" />		
+							<ft:farcryButton style="" value="#application.adminBundle[session.dmProfile.locale].sendObjLive#" bInPanel="true" url="#application.url.farcry#/navajo/approve.cfm?objectid=#stobj.objectid#&status=approved" />		
 						<cfelse>
-							<ft:farcryButton value="#application.adminBundle[session.dmProfile.locale].approveObjYourself#" bInPanel="true" url="#application.url.farcry#/navajo/approve.cfm?objectid=#stobj.objectid#&status=approved" />
+							<ft:farcryButton style="" value="#application.adminBundle[session.dmProfile.locale].approveObjYourself#" bInPanel="true" url="#application.url.farcry#/navajo/approve.cfm?objectid=#stobj.objectid#&status=approved" />
 						</cfif>
 					</cfif>
 
@@ -113,20 +112,20 @@ START WEBSKIN
 				<cfcase value="pending"> <!--- PENDING STATUS --->
 					<!--- check user can edit --->
 					<cfif stOverviewParams.stPermissions.iEdit EQ 1 AND stobj.bAlwaysShowEdit EQ 1>
-						<ft:farcryButton value="#application.adminBundle[session.dmProfile.locale].editObj#" bInPanel="true" url="edittabEdit.cfm?objectid=#stobj.objectid#&ref=overview&typename=#stobj.typeName#" />
+						<ft:farcryButton style="" value="#application.adminBundle[session.dmProfile.locale].editObj#" bInPanel="true" url="edittabEdit.cfm?objectid=#stobj.objectid#&ref=overview&typename=#stobj.typeName#" />
 					</cfif>
 				</cfcase>
 		
 				<cfcase value="approved">	
 					<!--- check user can edit --->
 					<cfif stOverviewParams.stPermissions.iEdit EQ 1 AND stobj.bAlwaysShowEdit EQ 1>
-						<ft:farcryButton value="#application.adminBundle[session.dmProfile.locale].editObj#" bInPanel="true" url="edittabEdit.cfm?objectid=#stobj.objectid#&ref=overview&typename=#stobj.typeName#" />
+						<ft:farcryButton style="" value="#application.adminBundle[session.dmProfile.locale].editObj#" bInPanel="true" url="edittabEdit.cfm?objectid=#stobj.objectid#&ref=overview&typename=#stobj.typeName#" />
 					</cfif>
 					
 					<!--- check if draft version exists --->
 					<cfset bDraftVersionAllowed = StructKeyExists(stobj,"versionid")>
 					<cfif bHasDraft EQ 0 AND stOverviewParams.stPermissions.iEdit eq 1 AND bDraftVersionAllowed>
-						<ft:farcryButton value="#application.adminBundle[session.dmProfile.locale].createEditableDraft#" bInPanel="true" url="#application.url.farcry#/navajo/createDraftObject.cfm?objectID=#stobj.objectID#&typename=#stobj.typeName#" />
+						<ft:farcryButton style="" value="#application.adminBundle[session.dmProfile.locale].createEditableDraft#" bInPanel="true" url="#application.url.farcry#/navajo/createDraftObject.cfm?objectID=#stobj.objectID#&typename=#stobj.typeName#" />
 					</cfif>
 					<cfif stOverviewParams.stPermissions.iApprove eq 1 OR stOverviewParams.stPermissions.iApproveOwn EQ 1>
 						<cfset buttonValue = application.adminBundle[session.dmProfile.locale].sendBackToDraft />
@@ -134,27 +133,27 @@ START WEBSKIN
 							<cfset buttonValue = "#buttonValue# #application.adminBundle[session.dmProfile.locale].deletingDraftVersion#" />
 						</cfif>
 					
-						<ft:farcryButton value="#buttonValue#" bInPanel="true" url="#application.url.farcry#/navajo/approve.cfm?objectid=#stobj.objectid#&status=draft&typename=#stobj.typeName#" />
+						<ft:farcryButton style="" value="#buttonValue#" bInPanel="true" url="#application.url.farcry#/navajo/approve.cfm?objectid=#stobj.objectid#&status=draft&typename=#stobj.typeName#" />
 					</cfif>
 				</cfcase>
 			</cfswitch>
 		<cfelse>	<!--- content items without a status --->
 			<!--- check user can edit --->
 			<cfif stOverviewParams.stPermissions.iEdit EQ 1>
-				<ft:farcryButton value="#application.adminBundle[session.dmProfile.locale].editObj#" bInPanel="true" url="edittabEdit.cfm?objectid=#stobj.objectid#&ref=overview&typename=#stobj.typeName#" />
+				<ft:farcryButton style="" value="#application.adminBundle[session.dmProfile.locale].editObj#" bInPanel="true" url="edittabEdit.cfm?objectid=#stobj.objectid#&ref=overview&typename=#stobj.typeName#" />
 			</cfif>
 		</cfif>
 		
-
-
-		<!--- preview object --->
-		<ft:farcryButton value="#application.adminBundle[session.dmProfile.locale].preview#" bInPanel="true" url="#application.url.webroot#/index.cfm?objectid=#stobj.objectid#&flushcache=1&showdraft=1" target="_winPreview" />
 		
 
-	</extjs:accordionPanel>
+		<!--- preview object --->
+		<ft:farcryButton style="" value="#application.adminBundle[session.dmProfile.locale].preview#" bInPanel="true" url="#application.url.webroot#/index.cfm?objectid=#stobj.objectid#&flushcache=1&showdraft=1" target="_winPreview" />
+		
+
+	</extjs:item>
 	
 	
-	<extjs:accordionPanel title="Approval & Work Flow" collapsed="true">
+	<extjs:item title="Approval & Work Flow">
 	
 		
 		<!--- work out different options depending on object status --->
@@ -165,16 +164,16 @@ START WEBSKIN
 					<cfif stOverviewParams.stPermissions.iEdit EQ 1>
 						<!--- MJB: added url.ref so that the edit methods know they were initially called by the overview page and they can return here if they so desire. --->
 						<cfif stobj.objectid NEQ stOverviewParams.objectid_previousversion>
-							<ft:farcryButton value="#application.adminBundle[session.dmProfile.locale].restoreLiveObj#" bInPanel="true" onClick="confirmRestore('#stobj.parentid#','#stobj.objectid#');" />
+							<ft:farcryButton style="" value="#application.adminBundle[session.dmProfile.locale].restoreLiveObj#" bInPanel="true" onClick="confirmRestore('#stobj.parentid#','#stobj.objectid#');" />
 						</cfif>
 					</cfif>
 		
 					<!--- Check user can request approval --->
 					<cfif stOverviewParams.stPermissions.iRequest eq 1>
 						<cfif stobj.objectid NEQ stOverviewParams.objectid_previousversion>
-							<ft:farcryButton value="#application.adminBundle[session.dmProfile.locale].requestApproval#" bInPanel="true" url="#application.url.farcry#/navajo/approve.cfm?objectid=#stobj.objectid#&status=requestapproval" />
+							<ft:farcryButton style="" value="#application.adminBundle[session.dmProfile.locale].requestApproval#" bInPanel="true" url="#application.url.farcry#/navajo/approve.cfm?objectid=#stobj.objectid#&status=requestapproval" />
 						<cfelse>
-							<ft:farcryButton value="#application.adminBundle[session.dmProfile.locale].requestObjApproval#" bInPanel="true" url="#application.url.farcry#/navajo/approve.cfm?objectid=#stobj.objectid#&status=requestapproval" />	
+							<ft:farcryButton style="" value="#application.adminBundle[session.dmProfile.locale].requestObjApproval#" bInPanel="true" url="#application.url.farcry#/navajo/approve.cfm?objectid=#stobj.objectid#&status=requestapproval" />	
 						</cfif>
 					</cfif>
 		
@@ -184,16 +183,16 @@ START WEBSKIN
 								<cfif listContains(application.navid.home,stobj.objectid) EQ 0 AND listContains(application.navid.root,stobj.objectid) eq 0>
 								<!--- check user can delete --->
 									<cfif stOverviewParams.stPermissions.iDelete eq 1>
-										<ft:farcryButton value="#application.adminBundle[session.dmProfile.locale].delete#" bInPanel="true" url="navajo/delete.cfm?ObjectId=#stobj.objectId#" confirmText="#application.adminBundle[session.dmProfile.locale].confirmDeleteObj#" />
+										<ft:farcryButton style="" value="#application.adminBundle[session.dmProfile.locale].delete#" bInPanel="true" url="navajo/delete.cfm?ObjectId=#stobj.objectId#" confirmText="#application.adminBundle[session.dmProfile.locale].confirmDeleteObj#" />
 									</cfif>
 											
 									<!--- check user can move to trash and is a navigation obj--->
 									<cfif stOverviewParams.stPermissions.iTreeSendToTrash eq 1 and stobj.typeName eq "dmNavigation">
-										<ft:farcryButton value="#application.adminBundle[session.dmProfile.locale].sendToTrash#" bInPanel="true" url="navajo/move.cfm?srcObjectId=#stobj.objectId#&destobjId=#application.navid.rubbish#" confirmText="#application.adminBundle[session.dmProfile.locale].confirmTrashObj#" />
+										<ft:farcryButton style="" value="#application.adminBundle[session.dmProfile.locale].sendToTrash#" bInPanel="true" url="navajo/move.cfm?srcObjectId=#stobj.objectId#&destobjId=#application.navid.rubbish#" confirmText="#application.adminBundle[session.dmProfile.locale].confirmTrashObj#" />
 									</cfif>
 								</cfif>
 							<cfelse>
-								<ft:farcryButton value="#application.adminBundle[session.dmProfile.locale].deleteDraftVersion#" bInPanel="true" url="edittabEdit.cfm?objectid=#stOverviewParams.objectid_previousversion#&deleteDraftObjectID=#stobj.ObjectID#&typename=#stobj.typeName#" confirmText="#application.adminBundle[session.dmProfile.locale].confirmDeleteObj#" />
+								<ft:farcryButton style="" value="#application.adminBundle[session.dmProfile.locale].deleteDraftVersion#" bInPanel="true" url="edittabEdit.cfm?objectid=#stOverviewParams.objectid_previousversion#&deleteDraftObjectID=#stobj.ObjectID#&typename=#stobj.typeName#" confirmText="#application.adminBundle[session.dmProfile.locale].confirmDeleteObj#" />
 							</cfif>
 					</cfif>
 				</cfcase>
@@ -202,14 +201,14 @@ START WEBSKIN
 					<!--- check user can edit --->
 					<cfif stOverviewParams.stPermissions.iEdit EQ 1 AND stobj.bAlwaysShowEdit EQ 1>
 						<cfif stobj.objectid NEQ stOverviewParams.objectid_previousversion>
-							<ft:farcryButton value="#application.adminBundle[session.dmProfile.locale].restoreLiveObj#" bInPanel="true" url="" onclick="confirmRestore('#stobj.parentid#','#stobj.objectid#')" />
+							<ft:farcryButton style="" value="#application.adminBundle[session.dmProfile.locale].restoreLiveObj#" bInPanel="true" url="" onclick="confirmRestore('#stobj.parentid#','#stobj.objectid#')" />
 						</cfif>
 					</cfif>
 					
 					<cfif stOverviewParams.stPermissions.iApprove eq 1> <!--- check user can approve object --->
-						<ft:farcryButton value="#application.adminBundle[session.dmProfile.locale].sendObjLive#" bInPanel="true" url="#application.url.farcry#/navajo/approve.cfm?objectid=#stobj.objectid#&status=approved" />
+						<ft:farcryButton style="" value="#application.adminBundle[session.dmProfile.locale].sendObjLive#" bInPanel="true" url="#application.url.farcry#/navajo/approve.cfm?objectid=#stobj.objectid#&status=approved" />
 						<!--- send back to draft --->
-						<ft:farcryButton value="#application.adminBundle[session.dmProfile.locale].sendBackToDraft#" bInPanel="true" url="#application.url.farcry#/navajo/approve.cfm?objectid=#stobj.objectid#&status=draft" />
+						<ft:farcryButton style="" value="#application.adminBundle[session.dmProfile.locale].sendBackToDraft#" bInPanel="true" url="#application.url.farcry#/navajo/approve.cfm?objectid=#stobj.objectid#&status=draft" />
 					</cfif>
 				</cfcase>
 		
@@ -217,19 +216,19 @@ START WEBSKIN
 					<!--- check user can edit --->
 					<cfif stOverviewParams.stPermissions.iEdit EQ 1 AND stobj.bAlwaysShowEdit EQ 1>
 						<cfif stobj.objectid NEQ stOverviewParams.objectid_previousversion>
-							<ft:farcryButton value="#application.adminBundle[session.dmProfile.locale].restoreLiveObj#" bInPanel="true" url="" onclick="confirmRestore('#stobj.parentid#','#stobj.objectid#');" />
+							<ft:farcryButton style="" value="#application.adminBundle[session.dmProfile.locale].restoreLiveObj#" bInPanel="true" url="" onclick="confirmRestore('#stobj.parentid#','#stobj.objectid#');" />
 						</cfif>
 					</cfif>
 		
 					<cfif listContains(application.navid.home,stobj.objectid) EQ 0 AND listContains(application.navid.root,stobj.objectid) eq 0>
 						<!--- check user can delete --->
 						<cfif stOverviewParams.stPermissions.iDelete eq 1>
-							<ft:farcryButton value="#application.adminBundle[session.dmProfile.locale].delete#" bInPanel="true" url="navajo/delete.cfm?ObjectId=#stobj.objectId#&typename=#stobj.typeName#" confirmText="#application.adminBundle[session.dmProfile.locale].confirmDeleteObj#" />
+							<ft:farcryButton style="" value="#application.adminBundle[session.dmProfile.locale].delete#" bInPanel="true" url="navajo/delete.cfm?ObjectId=#stobj.objectId#&typename=#stobj.typeName#" confirmText="#application.adminBundle[session.dmProfile.locale].confirmDeleteObj#" />
 						</cfif>
 						
 						<!--- check user can move to trash and is dmNavigation type--->
 						<cfif stOverviewParams.stPermissions.iTreeSendToTrash eq 1 and stobj.typeName eq "dmNavigation">
-							<ft:farcryButton value="#application.adminBundle[session.dmProfile.locale].sendToTrash#" bInPanel="true" url="navajo/move.cfm?srcObjectId=#stobj.objectId#&destobjId=#application.navid.rubbish#" confirmText="#application.adminBundle[session.dmProfile.locale].confirmTrashObj#" />
+							<ft:farcryButton style="" value="#application.adminBundle[session.dmProfile.locale].sendToTrash#" bInPanel="true" url="navajo/move.cfm?srcObjectId=#stobj.objectId#&destobjId=#application.navid.rubbish#" confirmText="#application.adminBundle[session.dmProfile.locale].confirmTrashObj#" />
 						</cfif>
 					</cfif>
 				</cfcase>
@@ -238,16 +237,16 @@ START WEBSKIN
 			
 			<!--- check user can delete --->
 			<cfif stOverviewParams.stPermissions.iDelete eq 1>
-				<ft:farcryButton value="#application.adminBundle[session.dmProfile.locale].delete#" bInPanel="true" url="navajo/delete.cfm?ObjectId=#stobj.objectId#&typename=#stobj.typeName#" confirmText="#application.adminBundle[session.dmProfile.locale].confirmDeleteObj#" />
+				<ft:farcryButton style="" value="#application.adminBundle[session.dmProfile.locale].delete#" bInPanel="true" url="navajo/delete.cfm?ObjectId=#stobj.objectId#&typename=#stobj.typeName#" confirmText="#application.adminBundle[session.dmProfile.locale].confirmDeleteObj#" />
 			</cfif>
 			<!--- check user can move to trash and is dmNavigation type--->
 			<cfif stOverviewParams.stPermissions.iTreeSendToTrash eq 1 and stobj.typeName eq "dmNavigation">
-				<ft:farcryButton value="#application.adminBundle[session.dmProfile.locale].sendToTrash#" bInPanel="true" url="navajo/move.cfm?srcObjectId=#stobj.objectId#&destobjId=#application.navid.rubbish#" confirmText="#application.adminBundle[session.dmProfile.locale].confirmTrashObj#" />
+				<ft:farcryButton style="" value="#application.adminBundle[session.dmProfile.locale].sendToTrash#" bInPanel="true" url="navajo/move.cfm?srcObjectId=#stobj.objectId#&destobjId=#application.navid.rubbish#" confirmText="#application.adminBundle[session.dmProfile.locale].confirmTrashObj#" />
 			</cfif>
 		</cfif>
 
 
-	</extjs:accordionPanel>
+	</extjs:item>
 	
 	
 	
@@ -271,11 +270,11 @@ START WEBSKIN
 				<cfif structKeyExists(stobj, "aObjectIDs") and not arrayLen(stobj.aObjectIDs)>
 					<cfset panelCollapsed = false />
 				</cfif>
-				<extjs:accordionPanel title="Create Pages" collapsed="#panelCollapsed#">
+				<extjs:item title="Create Pages">
 					<cfloop index="i" from="1" to="#ArrayLen(aTypesUseInTree)#">
-						<ft:farcryButton value="Create #aTypesUseInTree[i].description#" bInPanel="true" url="#application.url.farcry#/conjuror/evocation.cfm?parenttype=dmNavigation&objectId=#stobj.objectid#&typename=#aTypesUseInTree[i].typename#" />
+						<ft:farcryButton style="" value="Create #aTypesUseInTree[i].description#" bInPanel="true" url="#application.url.farcry#/conjuror/evocation.cfm?parenttype=dmNavigation&objectId=#stobj.objectid#&typename=#aTypesUseInTree[i].typename#" />
 					</cfloop>	
-				</extjs:accordionPanel>	
+				</extjs:item>	
 			</cfif>
 		</cfif>
 	</cfif>	
@@ -285,12 +284,12 @@ START WEBSKIN
 		<cfset stResult = objectFU.fListFriendlyURL(stobj.objectid,"current")>
 		<cfif stResult.bSuccess>
 			<cfset qListFriendlyURL = stResult.queryObject>
-			<extjs:accordionPanel title="Current Friendly URLs" collapsed="true">
+			<extjs:item title="Current Friendly URLs">
 				<cfloop query="qListFriendlyURL">
 					<cfoutput>#qListFriendlyURL.friendlyURL#<br /></cfoutput>
 				</cfloop>
-				<ft:farcryButton value="Manage" bInPanel="true" url="" onclick="window.open('#application.url.farcry#/manage_friendlyurl.cfm?objectid=#stobj.objectid#','_win_friendlyurl','height=500,width=600,left=100,top=100,resizable=yes,scrollbars=yes,toolbar=no,status=yes').focus();" />		
-			</extjs:accordionPanel>
+				<ft:farcryButton style="" value="Manage" bInPanel="true" url="" onclick="window.open('#application.url.farcry#/manage_friendlyurl.cfm?objectid=#stobj.objectid#','_win_friendlyurl','height=500,width=600,left=100,top=100,resizable=yes,scrollbars=yes,toolbar=no,status=yes').focus();" />		
+			</extjs:item>
 	
 		</cfif>
 	</cfif>		
@@ -298,41 +297,44 @@ START WEBSKIN
 	<cfif StructKeyExists(stobj,"commentLog")>
 		<!--- add comments --->
 		
-		<extjs:accordionPanel title="#application.adminBundle[session.dmProfile.locale].viewComments#" collapsed="true">
+		<extjs:item title="#application.adminBundle[session.dmProfile.locale].viewComments#" autoScroll="true">
+
+			<ft:farcryButton style="" value="#application.adminBundle[session.dmProfile.locale].addComments#" bInPanel="true" url="#application.url.farcry#/navajo/commentOnContent.cfm?objectid=#stobj.objectid#" />					
+			
 			<cfif Trim(stobj.commentLog) NEQ "">
 				<cfoutput><p style="margin-bottom:10px;">#ReplaceNoCase(Trim(stobj.commentLog),"#chr(10)##chr(13)#","<br />", "all")#</p></cfoutput>
 			</cfif>
-			<ft:farcryButton value="#application.adminBundle[session.dmProfile.locale].addComments#" bInPanel="true" url="#application.url.farcry#/navajo/commentOnContent.cfm?objectid=#stobj.objectid#" />		
-		</extjs:accordionPanel>
+
+		</extjs:item>
 	</cfif>
 	
-	<extjs:accordionPanel title="Miscellaneous" collapsed="true">	
+	<extjs:item title="Miscellaneous" >	
 
 		<!--- view statistics --->	
-		<ft:farcryButton type="button" value="#application.adminBundle[session.dmProfile.locale].stats#" url="#application.url.farcry#/edittabStats.cfm?objectid=#stobj.objectid#" target="objectStatistics" />		
+		<ft:farcryButton style="" type="button" value="#application.adminBundle[session.dmProfile.locale].stats#" url="#application.url.farcry#/edittabStats.cfm?objectid=#stobj.objectid#" target="objectStatistics" />		
 			
 		<!--- view audit --->	
-		<ft:farcryButton type="button" value="#application.adminBundle[session.dmProfile.locale].audit#" onclick="openScaffoldDialog('#application.url.farcry#/edittabAudit.cfm?objectid=#stobj.objectid#','Audit',500,500,true);" />		
+		<ft:farcryButton style="" type="button" value="#application.adminBundle[session.dmProfile.locale].audit#" onclick="openScaffoldDialog('#application.url.farcry#/edittabAudit.cfm?objectid=#stobj.objectid#','Audit',500,500,true);" />		
 			
 
 		
 		<cfif stOverviewParams.stPermissions.iObjectDumpTab>
 			<!--- dump content --->
 			
-			<ft:farcryButton type="button" value="#application.adminBundle[session.dmProfile.locale].dump#" onclick="openScaffoldDialog('#application.url.farcry#/object_dump.cfm?objectid=#stobj.objectid#','Properties',500,700,true);" />		
+			<ft:farcryButton style="" type="button" value="#application.adminBundle[session.dmProfile.locale].dump#" onclick="openScaffoldDialog('#application.url.farcry#/object_dump.cfm?objectid=#stobj.objectid#','Properties',500,700,true);" />		
 			<!--- <li id="tgl_dumpobject_#stobj.objectid#" style="display:none;"><cfdump var="#stobj#"></li> --->
 		</cfif>
 		
 		<cfif (stOverviewParams.stPermissions.iApprove eq 1 OR stOverviewParams.stPermissions.iApproveOwn EQ 1) AND StructKeyExists(stobj,"versionid")>
 			<!--- rollback content --->
-			<ft:farcryButton type="button" value="Show Archive"  onclick="openScaffoldDialog('#application.url.farcry#/archive.cfm?objectid=#stobj.objectid#','Archive',500,500,true);" />
+			<ft:farcryButton style="" type="button" value="Show Archive"  onclick="openScaffoldDialog('#application.url.farcry#/archive.cfm?objectid=#stobj.objectid#','Archive',500,500,true);" />
 		</cfif>
 					
 
 
-	</extjs:accordionPanel>
+	</extjs:item>
 	
-</extjs:accordion>
+
 
 </ft:form>
 <cfsetting enablecfoutputonly="false">

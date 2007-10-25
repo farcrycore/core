@@ -31,6 +31,7 @@ $DEVELOPER: Mat Bryant (mbryant@daemon.com.au)$
 <cfset o = createObject("component",application.types['#typename#'].typepath)>
 <cfset stObject = o.getData(objectid)>
 
+<!--- <cflocation url="http://agora.local/scratch/checkWebtopHTML.cfm"> --->
 <!--- <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#" onload="setupPanes('container1','tab1');" /> --->
 <cfoutput>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
@@ -63,13 +64,9 @@ $DEVELOPER: Mat Bryant (mbryant@daemon.com.au)$
 	.tab-content {padding:25px;}
 	
 	.icon {margin: 0 0 10px}
-
-	.webtopOverviewActions {float:right;width:220px;}
-	.webtopOverviewActions .farcryButtonWrap-outer {margin-bottom:5px;}
-	.webtopOverviewActions .farcryButton {width:200px;}
 	
-	
-
+	.webtopOverviewActions .farcryButtonWrap-outer {margin:5px 0px;}
+	.webtopOverviewActions .farcryButton {width:240px;}
 	</style>
 </head>
 <body>

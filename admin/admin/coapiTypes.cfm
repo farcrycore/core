@@ -115,14 +115,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 <!--- build page output --->
 <admin:header title="COAPI Types" writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">	
 
-<skin:htmlhead id="extJS">
-	<cfoutput>
-	<link rel="stylesheet" type="text/css" href="/farcry/js/ext/resources/css/ext-all.css">
-	<script type="text/javascript" src="/farcry/js/ext/adapter/yui/yui-utilities.js"></script>
-	<script type="text/javascript" src="/farcry/js/ext/adapter/yui/ext-yui-adapter.js"></script>
-	<script type="text/javascript" src="/farcry/js/ext/ext-all.js"></script>
-	</cfoutput>
-</skin:htmlhead>
+<skin:htmlhead library="extJS" />
 
 <cfoutput>
 	
@@ -203,7 +196,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 				<cfif NOT alterType.isCFCDeployed(typename=componentName)>
 					<a href="#CGI.SCRIPT_NAME#?deploy=#componentName#">#application.adminBundle[session.dmProfile.locale].deploy#</a>
 				<cfelse>
-					<ft:farcryButton type="button" value="Scaffold" onclick="openScaffoldDialog('#application.url.farcry#/admin/scaffold.cfm?typename=#componentName#','Audit',500,500,true);" />
+					<ft:farcryButton type="button" value="Scaffold" onclick="openScaffoldDialog('#application.url.farcry#/admin/scaffold.cfm?typename=#componentName#&iframe=1','Scaffold',500,400,true);" />
 				</cfif>
 			</td>
 			<!--- <td><em>Create Permissions</em>

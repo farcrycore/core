@@ -20,16 +20,21 @@ START TAG
 	<cfparam name="attributes.id" default="#createUUID()#">
 	<cfparam name="attributes.title" default="">
 	<cfparam name="attributes.icon" default="">
-	<cfparam name="attributes.collapsed" default="true">
+	<cfparam name="attributes.style" default="">
+	<cfparam name="attributes.class" default="">
 	<cfparam name="attributes.html" default="">
+	<cfparam name="attributes.stConfig" default="#structNew()#">
+	<cfparam name="attributes.stConfig.autoScroll" default="true">
 
 
 	<cfset stPanel = structNew() />
 	<cfset stPanel.id = attributes.id />
 	<cfset stPanel.title = attributes.title />
 	<cfset stPanel.icon = attributes.icon />
-	<cfset stPanel.collapsed = attributes.collapsed />
+	<cfset stPanel.style = attributes.style />
+	<cfset stPanel.class = attributes.class />
 	<cfset stPanel.html = attributes.html />
+	<cfset stPanel.stConfig = attributes.stConfig />
 	
 </cfif>
 

@@ -66,7 +66,7 @@
 
 <ft:form action="#cgi.SCRIPT_NAME#?#cgi.QUERY_STRING#">
 	
-	<extjs:tab title="Type administration" style="width:400px;">
+	<extjs:tab title="Type administration">
 		<ft:processForm action="Create">
 			
 			<extjs:tabPanel title="Results">
