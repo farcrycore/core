@@ -14,413 +14,461 @@ $Revision: $
 $Description: Webtop component. $
 
 || DEVELOPER ||
-$Developer: Blair McKenzie (blair@daemon.com.au)$
+$Developer: Geoff Bowers (modius@daemon.com.au)$
 --->
 <cfcomponent>
-	
-	<cfset this.stWebtop = structnew() />
+<!--- TODO: remove REQUEST scope security reference --->
 
-	<cffunction name="init" access="public" output="true" returntype="any" hint="Initialise component with XML configs from core and custom admin.">
-		<cfset var plugin = "" /><!--- Used in the loop of plugins --->
-		<cfset var dirlist = "" /><!--- List of directories to check --->
-		<cfset var thisdir = "" /><!--- Used in loop of directories --->
-		
-		<!--- Put together a list of customadmin directories --->
-		<cfset dirlist = listappend(dirlist,"#application.path.core#/config") />
-		<cfloop list="#application.plugins#" index="plugin">
-			<cfset dirlist = listappend(dirlist,"#application.path.plugins#/#plugin#/customadmin") />
-		</cfloop>
-		<cfset dirlist = listappend(dirlist,"#application.path.project#/customadmin") />
-		
-		<!--- Look for custom admin files in each directory --->
-		<cfloop list="#dirlist#" index="thisdir">
-			<!--- If any custom admin xml files exist, we need to add them to our custom admin XML array --->
-			<cfdirectory action="list" directory="#thisdir#" filter="*.xml" name="qCustomAdmin" />
-			
-			<cfloop query="qCustomAdmin">
-				<!--- For each custom admin --->
-				<cfset mergeWebtopStruct(this.stWebtop,convertToStruct(loadWebtopFile("#thisdir#/#name#").webtop)) />
-			</cfloop>
-		</cfloop>
-		
-		<!--- Update the rb keys --->
-		<cfset updateDerivedAttributes(this.stWebtop) />
-		
-		<cfreturn this>
-	</cffunction>
+<cffunction name="init" access="public" output="false" returntype="any" hint="Initialise component with XML configs from core and custom admin.">
+	<cfargument type="string" required="false" name="xWebtop" default="" hint="Webtop XML config file as a string.">
+	<cfargument type="string" required="false" name="xCustomAdmin" default="" hint="Custom Admin XML config file as a string.">
+	<cfset var xmlWebtop="">
+	<cfset var xmlCustomAdmin="">
+	<cfset var aXMLCustomAdmin= arrayNew(1) />
+	<cfset var xmlpathfull="" />
 	
-	<cffunction name="loadWebtopFile" access="private" output="false" returntype="xml" hint="Loads a webtop xml file and returns is">
-		<cfargument name="file" type="string" required="true" hint="The file to load" />
+	<cfif NOT len(arguments.xWebtop)>
+		<cffile action="read" file="#application.path.core#/config/webtop.xml" variable="arguments.xWebtop">
+	</cfif>
+<!---	<cfif NOT len(arguments.xCustomAdmin) AND fileexists("#application.path.project#/customadmin/customadmin.xml")>
+		<cffile action="read" file="#application.path.project#/customadmin/customadmin.xml" variable="arguments.xCustomAdmin">
+	</cfif> --->
+
+	<!--- parse XML and validate config files --->
+	<cfset xmlWebTop=xmlParse(arguments.xWebtop)>
+
+
+	<!--- If we have passed a custom admin in through arguments, add it as the first item in the custom admin XML array --->
+	<cfif len(arguments.xCustomAdmin)>
+		<cfset bResult = arrayAppend(aXMLCustomAdmin, xmlParse(arguments.xCustomAdmin)) />
+	</cfif>
+	
+	<!--- If any custom admin xml files exist, we need to add them to our custom admin XML array --->
+	<cfdirectory action="list" directory="#application.path.project#/customadmin" filter="*.xml" name="qCustomAdmin" />
+	
+
+	<cfif qCustomAdmin.RecordCount>
 		
-		<cfset var xmlResult = xmlnew() />
-		
-		<!--- Load the file --->
-		<cffile action="read" file="#arguments.file#" variable="xmlResult">
-		
-		<cftry>
-			<!--- validate custom admin xml --->
-			<cfset xmlResult = xmlParse(xmlResult) />
+		<cfloop query="qCustomAdmin">
+			<cffile action="read" file="#application.path.project#/customadmin/#qCustomAdmin.Name#" variable="arguments.xCustomAdmin">
 			
-			<!--- If the file is using the DEPRECIATED version --->
-			<cfif arraylen(xmlsearch(xmlResult, "/customtabs"))>
+			<cftry>
+				<!--- validate custom admin xml --->
+				<cfset xmlCustomAdmin=xmlParse(arguments.xCustomAdmin)>
+				<cfif arraylen(xmlsearch(xmlCustomAdmin, "/customtabs"))>
+					<!--- process old-style custom admin --->
+					<cffile action="read" file="#application.path.core#/config/transform.xsl" variable="xslt">
+					<!--- XSLT transform customadmin --->
+					<cfset xmlCustomAdmin=xmlTransform(xmlCustomAdmin,xslt)>
+					<cfset xmlCustomAdmin=xmlParse(xmlCustomAdmin)>
+					<!--- log deprecated approach --->
+					<cftrace type="warning" category="farcry.webtop" text="../customadmin/customadmin.xml is using an old format.  This was updated to a more modern format with the release of FarCry 2.4." />
+					<cflog application="true" file="deprecated" type="warning" text="../customadmin/customadmin.xml initialised using an old xml format.  This was updated to a more modern format with the release of FarCry 2.4." />
+				</cfif>
+				
+				<!--- add the xml to our array --->
+				<cfset bResult = arrayAppend(aXMLCustomAdmin, xmlCustomAdmin) />
+				
+				<cfcatch>
+					<cftrace type="warning" category="farcry.webtop" text="../customadmin/customadmin.xml was not parsed successfully." var="cfcatch.Detail" />
+				</cfcatch>
+			</cftry>
+			
+		</cfloop>
+	</cfif>
+		
+		
+	<cfif structKeyExists(application, "plugins") and listLen(application.plugins)>
+
+		<cfloop list="#application.plugins#" index="plugin">
+			
+			<cfif directoryExists("#application.path.plugins#/#plugin#/customadmin")>
+				<cfdirectory action="list" directory="#application.path.plugins#/#plugin#/customadmin" filter="*.xml" name="qCustomAdmin" />
+	
+
+				<cfif qCustomAdmin.RecordCount>
+					
+					<cfloop query="qCustomAdmin">
+						<cfset xmlpathfull="#application.path.plugins#/#plugin#/customadmin/#qCustomAdmin.Name#" />
+						<cffile action="read" file="#application.path.plugins#/#plugin#/customadmin/#qCustomAdmin.Name#" variable="arguments.xCustomAdmin">
+						
+						<cftry>
+							<!--- validate custom admin xml --->
+							<cfset xmlCustomAdmin=xmlParse(arguments.xCustomAdmin)>
+							<cfif arraylen(xmlsearch(xmlCustomAdmin, "/customtabs"))>
+								<!--- process old-style custom admin --->
+								<cffile action="read" file="#application.path.core#/config/transform.xsl" variable="xslt">
+								<!--- XSLT transform customadmin --->
+								<cfset xmlCustomAdmin=xmlTransform(xmlCustomAdmin,xslt)>
+								<cfset xmlCustomAdmin=xmlParse(xmlCustomAdmin)>
+								<!--- log deprecated approach --->
+								<cftrace type="warning" category="farcry.webtop" text="#xmlpathfull# is using an old format.  This was updated to a more modern format with the release of FarCry 2.4." />
+								<cflog application="true" file="deprecated" type="warning" text="#xmlpathfull# initialised using an old xml format.  This was updated to a more modern format with the release of FarCry 2.4." />
+							</cfif>
+							
+							<!--- add the xml to our array --->
+							<cfset bResult = arrayAppend(aXMLCustomAdmin, xmlCustomAdmin) />
+							
+							<cfcatch>
+								<cftrace type="warning" category="farcry.webtop" text="#xmlpathfull# was not parsed successfully." var="cfcatch.Detail" />
+							</cfcatch>
+						</cftry>
+						
+					</cfloop>
+				</cfif>
+			</cfif>
+		</cfloop>
+		
+	</cfif>
+			
+	<cfif arrayLen(aXMLCustomAdmin)>
+		
+			
+		<cfinvoke component="WebtopRoot" method="init" returnVariable="webtopRoot"> 
+  			<cfinvokeargument name="WebtopXmlDoc" value="#xmlWebtop#"> 
+		</cfinvoke> 
+		
+		
+		<cfloop from="1" to="#arrayLen(aXMLCustomAdmin)#" index="i">
+
+						
+			<cfinvoke component="WebtopRoot" method="init" returnVariable="webtopCustom"> 
+				<cfinvokeargument name="WebtopXmlDoc" value="#aXMLCustomAdmin[i]#"> 
+			</cfinvoke> 
+			
+			
+			
+			<cfset webtopRoot.mergeRoot(webtopCustom)>  	
+			
+		</cfloop>
+		
+		
+		<cfset xmlWebtop = webtopRoot.getXmlDoc()>
+		
+			
+	</cfif>
+	<cfset this.xmlwebtop=xmlWebtop>
+
+
+<!---
+	<!--- parse XML and validate config files --->
+	<cfset xmlWebTop=xmlParse(arguments.xWebtop)>
+	<cfif len(arguments.xcustomadmin)>
+		
+		<!--- validate custom admin xml --->
+			<cfset xmlCustomAdmin=xmlParse(arguments.xCustomAdmin)>
+			<cfif arraylen(xmlsearch(xmlCustomAdmin, "/customtabs"))>
 				<!--- process old-style custom admin --->
-				<cffile action="read" file="#application.path.core#/config/transform.xsl" variable="xslt" />
-				
+				<cffile action="read" file="#application.path.core#/config/transform.xsl" variable="xslt">
 				<!--- XSLT transform customadmin --->
-				<cfset xmlResult=xmlTransform(xmlResult,xslt) />
-				<cfset xmlResult=xmlParse(xmlResult) />
-				
+				<cfset xmlCustomAdmin=xmlTransform(xmlCustomAdmin,xslt)>
+				<cfset xmlCustomAdmin=xmlParse(xmlCustomAdmin)>
 				<!--- log deprecated approach --->
 				<cftrace type="warning" category="farcry.webtop" text="../customadmin/customadmin.xml is using an old format.  This was updated to a more modern format with the release of FarCry 2.4." />
 				<cflog application="true" file="deprecated" type="warning" text="../customadmin/customadmin.xml initialised using an old xml format.  This was updated to a more modern format with the release of FarCry 2.4." />
 			</cfif>
+
+	</cfif>
+	
+	<!--- merge xml documents--->
+	<cfif len(xmlCustomAdmin)>
+		<cfinvoke component="WebtopRoot" method="init" returnVariable="webtopRoot1"> 
+  			<cfinvokeargument name="WebtopXmlDoc" value="#xmlWebtop#"> 
+		</cfinvoke> 
+
+		<cfinvoke component="WebtopRoot" method="init" returnVariable="webtopRoot2"> 
+			<cfinvokeargument name="WebtopXmlDoc" value="#xmlCustomAdmin#"> 
+		</cfinvoke> 
+
+		<cfset webtopRoot1.mergeRoot(webtopRoot2)> 
+		<cfset xmlWebtop = webtopRoot1.getXmlDoc()> 		
+	</cfif> 
+	
+	<cfset this.xmlwebtop=xmlWebtop>
+	 --->
+	
+	<cfreturn this>
+</cffunction>
+
+<cffunction name="getsubsectionasarray" access="public" output="false" returntype="array" hint="Return a single index array of the subsection detail.">
+	<cfargument name="section" required="false" default="">
+	<cfargument name="subsection" required="false" default="">
+	<cfset var aSubectionToDisplay=arraynew(1)>
+	
+	<!--- get subsection directly, if no section (might get multiples if subsection ids not unique) --->
+	<cfif NOT len(arguments.section) AND len(arguments.subsection)>
+		<cfset aSubectionToDisplay=xmlSearch(this.xmlWebTop,"//subsection[@id='#arguments.subsection#']")>
+		<cfdump var="#aSubectionToDisplay#">
+		<cfabort>
+	</cfif>
+	
+	<!--- get subsection by exact match --->
+	<cfif len(arguments.section) AND len(arguments.subsection)>
+		<cfset aSubectionToDisplay=xmlSearch(this.xmlWebTop,"//section[@id='#arguments.section#']/subsection[@id='#arguments.subsection#']")>
+	</cfif>
+	
+	<!--- if subsection can't be determined default to first subsection --->
+	<cfif arrayisempty(aSubectionToDisplay) AND len(arguments.section)>
+		<cfset aSubectionToDisplay=xmlSearch(this.xmlWebTop,"//section[@id='#arguments.section#']/subsection[1]")>
+	</cfif>
+
+	<!--- if all else fails try first section & subsection --->
+	<cfif arrayisempty(aSubectionToDisplay)>
+		<cfset aSubectionToDisplay=xmlSearch(this.xmlWebTop,"//section[1]/subsection[1]")>
+	</cfif>
+	
+	<cfreturn aSubectionToDisplay>
+</cffunction>
+
+<cffunction name="getSectionsAsArray" access="public" output="false" returntype="array" hint="Return an array of webtop sections, filtered by user permission set.">
+	<!--- determine available section tabs --->
+	<cfset var aSections=this.xmlWebtop.webtop.XMLChildren>
+	<cfset var lsections="">
+	<cfset var i=0>
+	
+	<cfloop from="1" to="#arraylen(aSections)#" index="i">
+	<cfscript>
+		//if there is a permission, then check it exists
+		if(structKeyExists(aSections[i].xmlAttributes,"permission")) {
+			if (NOT request.dmSec.oAuthorisation.checkPermission(permissionname=aSections[i].xmlAttributes.permission,reference='policyGroup'))
+				// remove section if permission not available
+				lSections="#i#,#lsections#";
+		} 
+	</cfscript>
+	</cfloop>
+	<!--- reverse loop to make sure we can delete relevant array position --->
+	<cfloop list="#lSections#" index="i">
+		<cfset arrayDeleteAt(aSections,i)>
+	</cfloop>
+	<cfreturn aSections>
+</cffunction>
+
+<cffunction name="getSubSectionsAsArray" access="public" output="true" returntype="array" hint="Return an array of webtop sub-sections, filtered by user permission set.">
+	<cfargument name="section" required="false" type="string" default="">
+	<cfargument name="subsection" required="false" type="string" default="">
+	<!--- determine available section tabs --->
+	<cfset var aSubSections=arraynew(1)>
+	<cfset var lsubsections="">
+	<cfset var i=0>
+	
+	<cfif len(arguments.section)>
+		<!--- determine by section --->
+		<cfset aSubSections=xmlSearch(this.xmlWebTop,"//section[@id='#arguments.section#']/subsection")>
+	<cfelse>
+		<!--- determine by subsection, getting preceding siblings, self and following siblings --->
+		<cfset aSubSections=xmlSearch(this.xmlWebTop,"//subsection[@id='#arguments.subsection#']/preceding-sibling::*|//subsection[@id='#arguments.subsection#']|//subsection[@id='#arguments.subsection#']/following-sibling::*")>
+	</cfif>
+	
+	<cfloop from="1" to="#arraylen(aSubSections)#" index="i">
+	<cfscript>
+		//if there is a permission, then check it exists
+		if(structKeyExists(aSubSections[i].xmlAttributes,"permission")) {
+			if (NOT request.dmSec.oAuthorisation.checkPermission(permissionname=aSubSections[i].xmlAttributes.permission,reference='policyGroup'))
+				// remove section if permission not available
+				lSubSections="#i#,#lSubsections#";
+		} 
+	</cfscript>
+	</cfloop>
+	<!--- reverse loop to make sure we can delete relevant array position --->
+	<cfloop list="#lSubSections#" index="i">
+		<cfset arrayDeleteAt(aSubSections,i)>
+	</cfloop>
+	<cfreturn aSubSections>
+</cffunction>
+<cffunction name="fTranslateXMLElement" hint="Translate the XmlText based on whether the to evaluate XmlAttributes.label (XmlAttributes.labelEvaluate = True)">
+	<cfargument name="xmlElement" required="true" type="any">
+
+	<!--- local variables --->
+	<cfset var xElement = arguments.xmlElement>
+	<cfset var stLocal = StructNew()>
+	<!--- translate the xmlattributes --->
+
+	<cfif StructKeyExists(xElement.xmlAttributes,"labelType")>
+		<cftry>						
+			<cfswitch expression="#xElement.xmlAttributes.labelType#">
+				<cfcase value="evaluate">
+					<!--- evaluate --->
+					<cfset xElement.xmlAttributes.label = Evaluate(xElement.xmlAttributes.label)>
+				</cfcase>
+	
+				<cfcase value="expression">
+					<!--- expressions --->			
+					<cfset xElement.xmlAttributes.label = Evaluate(xElement.xmlAttributes.label)>
+				</cfcase>
+
+				<cfcase value="text">
+					<!--- text --->			
+					<cfset xElement.xmlAttributes.label = xElement.xmlAttributes.label>
+				</cfcase>
+								
+				<cfdefaultcase>
+
+				</cfdefaultcase>
+			</cfswitch>
 			
-			<cfcatch>
-				<cfthrow type="warning" message="#arguments.file# was not parsed successfully." detail="#cfcatch.Detail#" extendedinfo="#cfcatch.ExtendedInfo#" />
+			<cfcatch type="any">
+				<cfset xElement.xmlAttributes.label = "<font color='red'>#xElement.xmlAttributes.label#</font>">
 			</cfcatch>
 		</cftry>
-		
-		<cfreturn xmlResult />
-	</cffunction>
-	
-	<cffunction name="defaultStruct" access="private" output="false" returntype="struct" hint="Returns a struct containing the default attributes">
-		<cfset var stResult = structnew() />
-		
-		<cfset stResult.itemtype = "unknown" />
-		<cfset stResult.mergeType = "" />
-		<cfset stResult.childorder = "" />
-		<cfset stResult.children = structnew() />
-		
-		<cfreturn stResult />
-	</cffunction>
-	
-	<cffunction name="convertToStruct" access="private" output="false" returntype="struct" hint="Converts a webtop XML file to a struct">
-		<cfargument name="xml" type="string" required="true" hint="The XML to be converted" />
-		
-		<cfset var stResult = defaultStruct() /><!--- Will have structure of item[itemtype='section|subsection|menu|menuitem',attribute*,aChildren] --->
-		<cfset var i = 0 />
-		<cfset var key = "" />
-		<cfset var stChild = structnew() />
-		
-		<!--- Item type --->
-		<cfset stResult.itemtype = arguments.xml.xmlname />
-		
-		<!--- Item attributes --->
-		<cfif structkeyexists(arguments.xml,"xmlAttributes")>
-			<cfloop collection="#arguments.xml.xmlAttributes#" item="key">
-				<cfset stResult[key] = arguments.xml.xmlAttributes[key] />
-			</cfloop>
-		</cfif>
-		
-		<!--- Get label from xmlText if necessary --->
-		<cfif not structkeyexists(stResult,"label") and structkeyexists(arguments.xml,"xmlText") and len(trim(arguments.xml.xmlText))>
-			<cfset stResult.label = trim(arguments.xml.xmlText) />
-		</cfif>
-		
-		<!--- Item children --->
-		<cfif structkeyexists(arguments.xml,"xmlChildren")>
-			<cfloop from="1" to="#arraylen(arguments.xml.xmlChildren)#" index="i">
-				<cfset stChild = convertToStruct(arguments.xml.xmlChildren[i]) />
-				
-				<!--- Make sure the children have ids --->
-				<cfif not structkeyexists(stChild,"id")>
-					<cfset stChild.id = "item#i#" />
-				</cfif>
-				
-				<cfset stResult.children[stChild.id] = stChild />
-			</cfloop>
-		</cfif>
-		
-		<!--- Item type specific defaults --->
-		<cfswitch expression="#stResult.itemtype#">
-			<cfcase value="section">
-				
-			</cfcase>
-			<cfcase value="subsection">
-				
-			</cfcase>
-			<cfcase value="menu">
-				
-			</cfcase>
-			<cfcase value="menuitem">
-				
-			</cfcase>
-		</cfswitch>
-		
-		<cfreturn stResult />
-	</cffunction>
-	
-	<cffunction name="mergeWebtopStruct" access="private" output="false" returntype="struct" hint="Merges two webtop structs together">
-		<cfargument name="struct1" type="struct" required="true" hint="The current struct" />
-		<cfargument name="struct2" type="struct" required="true" hint="The struct to be merged" />
-		
-		<cfset var stResult = arguments.struct1 />
-		<cfset var key = "" />
-		<cfset var id = "" />
-		
-		<cfparam name="stResult.children" default="#structnew()#" />
-		<cfparam name="stResult.mergeType" default="" />
-		
-		<!--- If mergetype is "none" it can't be changed --->
-		<cfif stResult.mergeType eq "none">
-			<cfreturn stResult />
-		</cfif>
-		
-		<cfswitch expression="#arguments.struct2.mergeType#">
-			<cfcase value="replace">
-				<!--- replace ALL data in struct1 with that in struct2 --->
-				<cfset structclear(stResult) />
-				<cfloop collection="#arguments.struct2#" item="key">
-					<cfset stResult[key] = duplicate(arguments.struct2[key]) />
-				</cfloop>
-			</cfcase>
-			
-			<cfcase value="mergeNoReplace">
-				<!--- append root2.stAttributes to root1.stAttributes --->
-				<!--- do not replace duplicate keys --->
-				<!--- normal merge/replace operation on children --->
-				<cfloop collection="#arguments.struct2#" item="key">
-					<cfif key eq "children">
-						<!--- Merge children --->
-						<cfloop collection="#arguments.struct2[key]#" item="id">
-							<cfif not structkeyexists(stResult.children,id)>
-								<cfset stResult.children[id] = duplicate(arguments.struct2.children[id]) />
-							</cfif>
-						</cfloop>
-					<cfelse>
-						<!--- Copy attributes --->
-						<cfif not structkeyexists(stResult,key)>
-							<cfset stResult[key] = arguments.struct2[key] />
-						</cfif>
-					</cfif>
-				</cfloop>
-			</cfcase>
-			
-			<cfdefaultcase><!--- Default case is "merge" --->
-				<!--- append root2.stAttributes to root1.stAttributes --->
-				<!--- replace if duplicate keys --->
-				<!--- normal merge/replace operation on children --->
-				<cfloop collection="#arguments.struct2#" item="key">
-					<cfif key eq "children">
-						<!--- Merge children --->
-						<cfloop collection="#arguments.struct2[key]#" item="id">
-							<cfif structkeyexists(stResult.children,id)>
-								<cfset stResult.children[id] = mergeWebtopStruct(stResult.children[id],arguments.struct2.children[id]) />
-							<cfelse>
-								<cfset stResult.children[id] = duplicate(arguments.struct2.children[id]) />
-							</cfif>
-						</cfloop>
-					<cfelse>
-						<!--- Copy attributes --->
-						<cfset stResult[key] = arguments.struct2[key] />
-					</cfif>
-				</cfloop>
-			</cfdefaultcase>
-		</cfswitch>
-		
-		<cfreturn stResult />
-	</cffunction>
-	
-	<cffunction name="updateDerivedAttributes" access="private" output="false" returntype="struct" hint="Adds an rbkey attribute to each item">
-		<cfargument name="item" type="struct" required="false" default="#this.stWebtop#" hint="The webtop struct to update" />
-		<cfargument name="basekey" type="string" required="false" default="webtop" hint="The base key to build the rest on" />
-		
-		<cfset var id = "" />
-		
-		<!--- Only the webtop element doesn't have an id --->
-		<cfif not structkeyexists(arguments.item,"id")>
-			<cfparam name="arguments.item.id" default="#arguments.basekey#" />
-			
-			<!--- Define default rbkey --->
-			<cfparam name="arguments.item.rbkey" default="#arguments.basekey#" />
-		<cfelse>
-			<!--- Define default rbkey --->
-			<cfparam name="arguments.item.rbkey" default="#arguments.basekey#.#arguments.item.id#" />
-		</cfif>
-		
-		<!--- Default sequence position is last --->
-		<cfparam name="arguments.item.sequence" default="100000" />
-		
-		<!--- Define default label --->
-		<cfparam name="arguments.item.label" default="[add label]" />
-		
-		<!--- Define default label type --->
-		<cfparam name="arguments.item.labelType" default="" />
-		
-		<!--- Default sidebar expander behaviour --->
-		<cfparam name="arguments.item.altexpansion" default="0" />
-		
-		<!--- Update children --->
-		<cfloop collection="#arguments.item.children#" item="id">
-			<cfset updateDerivedAttributes(arguments.item.children[id],arguments.item.rbkey) />
-		</cfloop>
-		
-		<!--- Update child order based on sequence values --->
-		<cfset arguments.item.childorder = arraytolist(structsort(arguments.item.children,"numeric","asc","sequence")) />
-		
-		<!--- Tag specfic defaults --->
-		<cfswitch expression="#arguments.item.itemtype#">
-			<cfcase value="subsection">
-				<cfparam name="arguments.item.description" default="" />
-			</cfcase>
-			<cfcase value="menu">
-				<cfparam name="arguments.item.description" default="" />
-			</cfcase>
-			<cfcase value="menuitem">
-				<cfparam name="arguments.item.linkType" default="" />
-				<cfparam name="arguments.item.description" default="" />
-				<cfparam name="arguments.item.icon" default="" />
-				<cfparam name="arguments.item.relatedType" default="" />
-			</cfcase>
-		</cfswitch>
-		
-		<cfreturn arguments.item />
-	</cffunction>
-	
-	<cffunction name="getItem" access="public" output="false" returntype="struct" hint="Returns a translated webtop struct with all restricted items filtered out">
-		<cfargument name="parent" type="any" required="false" default="#this.stWebtop#" hint="The parent item to retrieve" />
-		<cfargument name="honoursecurity" type="boolean" required="false" default="true" hint="Set to false to ignore security" />
-		<cfargument name="duplicated" type="boolean" required="false" default="false" hint="Used to ensure the struct is only duplicated once" />
-		
-		<cfset var stResult = this.stWebtop />
-		<cfset var id = "" />
-		
-		<cfif isstruct(arguments.parent)>
-			<!--- Use that as stResult --->
-			<cfset stResult = arguments.parent />
-		<cfelseif issimplevalue(arguments.parent)>
-			<!--- Traverse the webtop struct using the ids specified --->
-			<cfloop list="#arguments.parent#" delimiters="." index="id">
-				<cfif structkeyexists(stResult.children,id)>
-					<cfset stResult = stResult.children[id] />
-				<cfelse>
-					<cfthrow message="The parent argument must be a webtop struct or an id path specifying an existing webtop struct" />
-				</cfif>
-			</cfloop>
-		<cfelse>
-			<!--- The parent argument was not valid --->
-			<cfthrow message="The parent argument must be a webtop struct or an id path specifying an existing webtop struct" />
-		</cfif>
-		
-		<!--- If the struct has not been duplicated, then do so --->
-		<cfif not arguments.duplicated>
-			<cfset stResult = duplicate(stResult) />
-		</cfif>
-		
-		<!--- Remove children that the user doesn't have permission for --->
-		<cfloop collection="#stResult.children#" item="id">
-			<cfif not arguments.honoursecurity or not structkeyexists(stResult.children[id],"permission") or application.factory.oAuthorisation.checkPermission(permissionname=stResult.children[id].permission,reference='policyGroup')>
-				<!--- Perform same process on allowed child --->
-				<cfset getItem(stResult.children[id],arguments.honoursecurity,true) />
+	<cfelse>
+		<cfif NOT StructKeyExists(xElement.xmlAttributes,"label")>
+			<cfif StructKeyExists(xElement,"xmlText")>
+				<cfset xElement.xmlAttributes.label = xElement.xmlText>
 			<cfelse>
-				<!--- Remove restricted child --->
-				<cfset structdelete(stResult.children,id) />
+				<cfset xElement.xmlAttributes.label = "[Add Label]">
 			</cfif>
-		</cfloop>
-		
-		<!--- Update child order based on sequence values of filtered children --->
-		<cfset stResult.childorder = arraytolist(structsort(stResult.children,"numeric","asc","sequence")) />
-				
-		<!--- If this is the first (root) call, i.e. it hadn't been duplicated yet, translate the struct --->
-		<cfset translateWebtop(stResult,true) />
-		
-		<cfreturn stResult />
-	</cffunction>
-
-	<cffunction name="translateWebtop" access="public" output="false" returntype="struct" hint="Returns a translated version of the specified webtop struct">
-		<cfargument name="webtop" type="struct" required="true" hint="The webtop struct to translate" />
-		<cfargument name="duplicated" type="boolean" required="false" default="false" hint="Used to ensure a struct is only duplicated the first time" />
-		
-		<cfset var stResult = arguments.webtop />
-		<cfset var attributes = "label,description" />
-		<cfset var attr = "" />
-		<cfset var id = "" />
-		
-		<cfif not arguments.duplicated>
-			<cfset stResult = duplicate(stResult) />
 		</cfif>
-		
-		<cfif not structkeyexists(stResult,"translated")>
-			<!--- For each attribute that needs to be translated --->
-			<cfloop list="#attributes#" index="attr">
-				<!--- Process dynamic labels - pass through result as default value for resource --->
-				<!--- Use the rbkey - this is automatically generated on load if it isn't explicitly defined --->
-				<cfif structkeyexists(stResult,attr)>
-					<cftry>
-						<cfif attr eq "label" and listcontains("evaluate,expression",stResult.labelType)>
-							<cfset stResult[attr] = application.rb.getResource("#stResult.rbkey#@#attr#",Evaluate(stResult[attr])) />
-						</cfif>
-						
-						<cfset stResult[attr] = application.rb.getResource("#stResult.rbkey#@#attr#",stResult[attr]) />
-						
-						<cfcatch type="any">
-							<cfset stResult[attr] = "<font color='red'>#stResult[attr]#</font>" />
-						</cfcatch>
-					</cftry>
-				</cfif>
-			</cfloop>
-			
-			<cfloop collection="#arguments.webtop.children#" item="id">
-				<cfset translateWebtop(arguments.webtop.children[id],true) />
-			</cfloop>
-			
-			<cfset stResult.translated = true />
-		</cfif>
-		
-		<cfreturn stResult />
-	</cffunction>
+	</cfif>
 
-	<cffunction name="getAttributeUrl" access="public" output="false" returntype="string" hint="Takes the webtop struct of a subsection, returns the string of a url to use for the sidebar.">
-		<cfargument name="item" type="any" required="true" hint="The item being queried" />
-		<cfargument name="attr" type="string" required="false" default="sidebar" hint="The attribute that contains the url" />
-		<cfargument name="params" type="struct" required="false" default="#structnew()#" hint="Parameters to add to the query string" />
+	<cfloop index="stLocal.i" from="1" to="#ArrayLen(xElement.xmlChildren)#">
+		<cfset fTranslateXMLElement(xElement.xmlChildren[stLocal.i])>
+	</cfloop>
+</cffunction>
+
+<!--- this function is specifically written for /core/admin/index.cfm
+      ~line 56.
+      Call like: sidebar=oWebTop.getSidebarUrl(aSubsectionToDisplay[1].xmlattributes) 
+      author: Tyler Ham (tylerh@austin.utexas.edu) 
+      date: 2005-10-05 --->
+<cffunction name="getSidebarUrl" access="public" output="false" returntype="string" hint="takes a struct of the xmlattributes of a subsection, returns the string of a url to use for the sidebar.">
+	<cfargument name="stXmlAttributes" type="Struct" required="true">
+	<cfset var sReturn = "custom/sidebar.cfm">  <!--- this seems like a good default url --->
+	<cfset var urlUtil = "">
+	<cfset var stParams = StructNew()>
+
+	<cfobject component="UrlUtility" name="urlUtil">
 	
-		<cfset var sReturn = "custom/#arguments.attr#.cfm">  <!--- this seems like a good default url --->
-		<cfset var urlUtil = createobject("component","urlUtility") />
-		<cfset var stParams = StructNew()>
-		<cfset var id = "" />
-		<cfset var stItem = this.stWebtop />
-		
-		<!--- Item attribute may be webtop struct or an id path to the webtop struct --->
-		<cfif isstruct(arguments.item)>
-			<!--- Use that struct --->
-			<cfset stItem = arguments.item />
-		<cfelseif issimplevalue(arguments.item)>
-			<!--- Retrieve item --->
-			<cfloop list="#arguments.item#" delimiters="." index="id">
-				<cfif structkeyexists(stItem.children,id)>
-					<cfset stItem = stItem.children[id] />
-				<cfelse>
-					<!--- Item doesn't exist --->
-					<cfthrow message="The item argument must be a webtop struct or an id path specifying a webtop struct" />
-				</cfif>
-			</cfloop>
-		</cfif>
-		
-		<!--- if the 'sidebar' attribute exists, make it the base url --->
-		<cfif StructKeyExists(stItem, arguments.attr)>
-			<cfset sReturn = stItem[arguments.attr] />
-		</cfif>
-		
-		<!--- add anything in our query_string to the url params --->
-		<!--- getUrlParamStruct looks for the '?' --->
-		<cfset stParams = urlUtil.getURLParamStruct("?" & CGI.QUERY_STRING)>
-		
-		<!--- if 'id' attribute exists, REPLACE any 'sub' url param with this value --->
-		<cfif StructKeyExists(stItem, "id")>
-			<cfset stParams.sub = stItem.id>
-		</cfif>
-		
-		<!--- Add passed in params --->
-		<cfloop collection="#arguments.params#" item="id">
-			<cfset stParams[id] = arguments.params[id] />
-		</cfloop>
-		
-		<!--- generate the sidebar url by appending the params we've accumulated --->
-		<cfset sReturn = urlUtil.appendURLParams(address=sReturn, paramStruct=stParams, replaceExisting=false)>
-		
-		<cfreturn sReturn>
-	</cffunction>
+	<!--- if the 'sidebar' attribute exists, make it the base url --->
+	<cfif StructKeyExists(arguments.stXmlAttributes, "sidebar")>
+		<cfset sReturn = arguments.stXmlAttributes.sidebar>
+	</cfif>
+	
+	<!--- add anything in our query_string to the url params --->
+	<!--- getUrlParamStruct looks for the '?' --->
+	<cfset stParams = urlUtil.getURLParamStruct("?" & CGI.QUERY_STRING)>
+	
+	<!--- if 'id' attribute exists, REPLACE any 'sub' url param with this value --->
+	<cfif StructKeyExists(arguments.stXmlAttributes, "id")>
+		<cfset stParams.sub = arguments.stXmlAttributes.id>
+	</cfif>
+	
+	<!--- generate the sidebar url by appending the params we've accumulated --->
+	<cfset sReturn = urlUtil.appendURLParams(address=sReturn, paramStruct=stParams, replaceExisting=false)>
+	
+	<cfreturn sReturn>
+</cffunction>
+
+<!--- this function is specifically written for /core/admin/index.cfm
+      ~line 57
+      Call like: content=oWebTop.getContentUrl(aSubsectionToDisplay[1].xmlattributes)
+      author: Tyler Ham (tylerh@austin.utexas.edu)
+      date: 2005-10-05 --->
+<cffunction name="getContentUrl" access="public" output="false" returntype="string" hint="takes a struct of the xmlattributes of a subsection, returns the string of a url to use for the content pane.">
+	<cfargument name="stXmlAttributes" type="Struct" required="true">
+	
+	<cfset var sReturn = "inc/content.html"> <!--- this seems like a good default url --->
+	<cfset var urlUtil = "">
+	<cfset var stParams = StructNew()>
+	
+	<cfobject component="UrlUtility" name="urlUtil">
+	
+	<!--- if the 'content' attribute exists, make it the base url --->
+	<cfif StructKeyExists(arguments.stXmlAttributes, "content")>
+		<cfset sReturn = arguments.stXmlAttributes.content>
+	</cfif>
+	
+	<!--- add anything in our query_string to the url params --->
+	<!--- getUrlParamStruct looks for the '?' --->
+	<cfset stParams = urlUtil.getUrlParamStruct("?" & CGI.QUERY_STRING)>
+	
+	<!--- generate the sidebar url by appending the params we've accumulated --->
+	<cfset sReturn = urlUtil.appendURLParams(address=sReturn, paramStruct=stParams, replaceExisting=false)>
+	
+	<cfreturn sReturn>
+</cffunction>
+
+<cfscript>
+/**
+ * Merges one xml document into another
+ * 
+ * @param xml1 	 The XML object into which you want to merge (Required)
+ * @param xml2 	 The XML object from which you want to merge (Required)
+ * @param overwriteNodes 	 Boolean value for whether you want to overwrite (default is true) (Optional)
+ * @return void (changes the first XML object) 
+ * @author Nathan Dintenfass (nathan@changemedia.com) 
+ * @version 1, November 2, 2003 
+ */
+function xmlMerge(xml1,xml2){
+	var readNodeParent = arguments.xml2;
+	var writeNodeList = arguments.xml1;
+	var writeNodeDoc = arguments.xml1;
+	var readNodeList = "";
+	var writeNode = "";
+	var readNode = "";
+	var nodeName = "";
+	var ii = 0;
+	var writeNodeOffset = 0;
+	var toAppend = 0;
+	var nodesDone = structNew();
+	//by default, overwrite nodes
+	var overwriteNodes = true;
+	//if there's a 3rd arguments, that's the overWriteNodes flag
+	if(structCount(arguments) GT 2)
+		overwriteNodes = arguments[3];
+	//if there's a 4th argument, it's the DOC of the writeNode -- not a user provided argument -- just used when doing recursion, so we know the original XMLDoc object
+	if(structCount(arguments) GT 3)
+		writeNodeDoc = arguments[4];
+	//if we are looking at the whole document, get the root element
+	if(isXMLDoc(arguments.xml2))
+		readNodeParent = arguments.xml2.xmlRoot;
+	//if we are looking at the whole Doc for the first element, get the root element
+	if(isXMLDoc(arguments.xml1))
+		writeNodeList = arguments.xml1.xmlRoot;	
+	//loop through the readNodeParent (recursively) and override all xmlAttributes/xmlText in the first document with those of elements that match in the second document
+	for(nodeName in readNodeParent){
+		writeNodeOffset = 0;
+		//if we haven't yet dealt with nodes of this name, do it
+		if(NOT structKeyExists(nodesDone,nodeName)){
+			readNodeList = readNodeParent[nodeName];
+			//if there aren't any of this node, we need to append however many there are
+			if(NOT structKeyExists(writeNodeList,nodeName)){
+				toAppend = arrayLen(readNodeList);
+			}
+			//if there are already at least one node of this name
+			else{
+				//if we are overwriting nodes, we need to append however many there are minus however many there were (if there none new, it will be 0)
+				if(overWriteNodes){
+					toAppend = arrayLen(readNodeList) - arrayLen(writeNodeList[nodeName]);
+				}
+				//if we are not overwriting, we need to add however many there are
+				else{
+					toAppend = arrayLen(readNodeList);
+					//if we are not overwriting, we need to make the offset of the writeNode equal to however many there already are
+					writeNodeOffset = arrayLen(writeNodeList[nodeName]);
+				}
+			}
+			//append however many nodes necessary of the name
+			for(ii = 1;  ii LTE toAppend; ii = ii + 1){
+				arrayAppend(writeNodeList.xmlChildren,xmlElemNew(writeNodeDoc,nodeName));
+			}
+			//loop through however many of this nodeName there are, writing them to the writeNodes
+			for(ii = 1; ii LTE arrayLen(readNodeList); ii = ii + 1){
+				writeNode = writeNodeList[nodeName][ii + writeNodeOffset];
+				readNode = readNodeList[ii];
+				//set the xmlAttributes and xmlText to this child's values
+				writeNode.xmlAttributes = readNode.xmlAttributes;
+				writeNode.xmlText = readNode.xmlText;
+				//if this element has any children, recurse
+				if(arrayLen(readNode.xmlChildren)){
+					xmlMerge(writeNode,readNode,overwriteNodes,writeNodeDoc);
+				}
+			}
+			//add this node name to those nodes we have done -- we need to do this because an XMLDoc object can have duplicate keys
+			nodesDone[nodeName] = true;
+		}
+	}
+}
+</cfscript>
 
 </cfcomponent>
 
