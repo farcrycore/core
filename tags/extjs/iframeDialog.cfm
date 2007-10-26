@@ -26,8 +26,9 @@ n0<cfsetting enablecfoutputonly="true">
 		<script language="javascript">
 			
 			function openScaffoldDialog(url,title,width,height,resizable) {
-
+				
 		        var win = new Ext.Window({
+		        	
 					height:		height,
 					width:		width,
 					modal:		true,
@@ -35,27 +36,14 @@ n0<cfsetting enablecfoutputonly="true">
 					title:		title,
 					collapsible: false,
 		            plain:true,
-		            modal:'true',
-		            autoScroll:'true',		
-		            html:"<iframe src='"+url+"' frameborder='0' scrolling='no' id='scaffoldiframe' width='"+(width-37)+"px' height='"+(height-37)+"px'></iframe>"
+		            modal:'false',
+		            autoScroll:'true',	
+		            overflow:'auto',
+		            html:"<iframe src='"+url+"' frameborder='0' scrolling='yes' id='scaffoldiframe' width='100%' height='100%'></iframe>"
 		        });
 		
-		        win.show(this);
-		
-				
-			<!--- 	dialog = new Ext.BasicDialog(Ext.DomHelper.insertFirst(Ext.DomQuery.selectNode("body"),"<div></div>",true), {
-					height:		height,
-					width:		width,
-					modal:		true,
-					resizable:	resizable,
-					title:		title,
-					collapsible: false
-				});
-				dialog.body.dom.innerHTML="<iframe src='"+url+"' frameborder='0' scrolling='no' id='scaffoldiframe' width='"+(width-37)+"px' height='"+(height-37)+"px'></iframe>";
-				dialog.addKeyListener(27, dialog.hide, dialog); // ESC can also close the dialog
-				dialog.show(); --->
-				
-				<!--- return false; --->
+		        win.show('');
+		        win.alignTo(Ext.getBody(), 't-t');
 			}
 		</script>
 	</cfoutput>

@@ -1,4 +1,9 @@
-<cfsetting enablecfoutputonly="true" />
+<cfsetting enablecfoutputonly="true">
+<!--- @@Copyright: Daemon Pty Limited 1995-2007, http://www.daemon.com.au --->
+<!--- @@License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php --->
+<!--- @@displayname:  --->
+<!--- @@description:  This is the child tag of the <extjs:layout> used to generate extjs layouts. By nesting item tags <extjs:item> within a layout tag, allows the developer to build a rich application layout. --->
+<!--- @@author: Matthew Bryant (mbryant@daemon.com.au) --->
 
 <cfif thistag.executionMode eq "Start">
 	
