@@ -26,33 +26,37 @@ START TAG
 
 	<cfparam name="attributes.id" default="#createUUID()#">
 	<cfparam name="attributes.title" default="">
+	<cfparam name="attributes.style" default="">
+	<cfparam name="attributes.class" default="">
 	<cfparam name="attributes.icon" default="">
 	<cfparam name="attributes.aPanels" default="#arrayNew(1)#"><!--- An array of Panels --->
+	<cfparam name="attributes.stConfig" default="#structNew()#">
+	<cfparam name="attributes.stConfig.width" default="">
+	<cfparam name="attributes.stConfig.height" default="">
+	<cfparam name="attributes.stConfig.autoWidth" default="true">
+	<cfparam name="attributes.stConfig.autoHeight" default="true">
+	<cfparam name="attributes.stConfig.activeTab" default="0">
+	<cfparam name="attributes.stConfig.frame" default="true">
+	<cfparam name="attributes.stConfig.autoScroll" default="true">
+	<cfparam name="attributes.stConfig.deferredRender" default="false">
 
 		
-	<skin:htmlhead id="extJS">
-	<cfoutput>
-	<link rel="stylesheet" type="text/css" href="/farcry/js/ext/resources/css/ext-all.css">
-	<script type="text/javascript" src="/farcry/js/ext/adapter/yui/yui-utilities.js"></script>
-	<script type="text/javascript" src="/farcry/js/ext/adapter/yui/ext-yui-adapter.js"></script>
-	<script type="text/javascript" src="/farcry/js/ext/ext-all.js"></script>
-	</cfoutput>
-	</skin:htmlhead>
-		
+	
+	<skin:htmlhead library="extJS" />
+	
 </cfif>
 
 <cfif thistag.executionMode eq "End">
 
 	<cfset thisTag.GeneratedContent = "" />
 	
-
+	<cfset activeTab = "" />
 
 	<cfoutput>		
-		<div id="#attributes.id#">			
+		<div id="#attributes.id#" style="#attributes.style#" class="#attributes.class#">			
 			<cfloop from="1" to="#arrayLen(attributes.aPanels)#" index="i">
-			    <div id="#attributes.aPanels[i].id#" class="tab-content">
-				    <img src="/farcry/js/ext/resources/images/default/s.gif"><!--- This is requested to fix a rendering bug in safari 2+ --->
-			        #attributes.aPanels[i].html#
+			    <div id="#attributes.aPanels[i].id#" class=" #attributes.aPanels[i].class#" style="#attributes.aPanels[i].style#">
+			        <p>#attributes.aPanels[i].html#</p>
 			    </div>
 			</cfloop>
 		</div>
@@ -60,25 +64,46 @@ START TAG
 
 
 
-	<cfoutput>
-	<script type="text/javascript">
+	<!--- When rendering nested ui elements like tabs and accordions, we need to render the outer elements first. Hence the position="first" attribute. --->
+	<skin:htmlHead position="first">
+		<cfoutput>
+		<script type="text/javascript">	
+		Ext.onReady(function() {
+			
+			
+			var tab = new Ext.TabPanel({
+						    
+			    renderTo: '#attributes.id#',
+		        items:[
+		            <cfloop from="1" to="#arrayLen(attributes.aPanels)#" index="i">
+			            {
+				            contentEl:'#attributes.aPanels[i].id#'
+				            ,title: '#attributes.aPanels[i].title#'
+					        <cfloop list="#structKeyList(attributes.aPanels[i].stConfig)#" index="j">
+					        	<cfif len(attributes.aPanels[i].stConfig[j])>
+						        	,#j#:#attributes.aPanels[i].stConfig[j]#
+					        	</cfif>
+					        </cfloop>
+						}
+			            <cfif i LT arrayLen(attributes.aPanels)>,</cfif>
+					</cfloop>
+		        ]
+		        <cfif not structIsEmpty(attributes.stConfig)>
+			        <cfloop list="#structKeyList(attributes.stConfig)#" index="i">
+			        	<cfif len(attributes.stConfig[i])>
+				        	,#i#:#attributes.stConfig[i]#
+			        	</cfif>
+			        </cfloop>
+			    </cfif>
+		        
+		    });
+			
+			
+		});
+		</script>
+		</cfoutput>
+	</skin:htmlHead>
 
-	Ext.onReady(function() {
-		var tab_1 = new Ext.TabPanel('#attributes.id#');
-		<cfset activeTab = "" />
-		<cfloop from="1" to="#arrayLen(attributes.aPanels)#" index="i">
-			tab_1.addTab('#attributes.aPanels[i].id#', '#attributes.aPanels[i].title#');
-			<cfif (structKeyExists(attributes.aPanels[i], "activate") and attributes.aPanels[i].activate) OR not len(activeTab)>
-				<cfset activeTab = attributes.aPanels[i].id />
-			</cfif>
-		</cfloop>
-		
-		<cfif len(activeTab)>
-			tab_1.activate('#activeTab#');
-		</cfif>
-	});
-	</script>
-	</cfoutput>
 	
 	
 

@@ -225,7 +225,7 @@ $out:$
 </cffunction>
 
 
-<cffunction name="refreshAllCFCAppData" output="false" hint="Inserts the metadata information for each cfc into the application scope.">
+<cffunction name="refreshAllCFCAppData" output="true" hint="Inserts the metadata information for each cfc into the application scope.">
 	<cfargument name="dsn" required="No" default="#application.dsn#">
 	<cfargument name="dbowner" required="No" default="#application.dbowner#">
 	
@@ -243,10 +243,9 @@ $out:$
 	<cfset application.stcoapi = structNew() />
 	 
 	<!--- Find all types, base, extended & custom --->
-	<cfdirectory directory="#application.path.core#/packages/types" name="qDir" filter="dm*.cfc" sort="name" />
+	<cfdirectory directory="#application.path.core#/packages/types" name="qDir" filter="*.cfc" sort="name" />
 	<cfdirectory directory="#application.path.project#/packages/system" name="qExtendedTypesDir" filter="*.cfc" sort="name" />
 	<cfdirectory directory="#application.path.project#/packages/types" name="qCustomTypesDir" filter="*.cfc" sort="name" />
-
 
 
 	<!--------------------------------------------
@@ -256,13 +255,13 @@ $out:$
 			
 		<cftry>
 			<cfset typename = left(qDir.name, len(qDir.name)-4) /> <!---remove the .cfc from the filename --->
-			<cfset o = createObject("Component", "#application.packagepath#.types.#typeName#") />			
+			<cfset o = createObject("Component", "#application.packagepath#.types.#typeName#") />		
+			<cfset stMetaData = getMetaData(o) />
 	
-			<cfif NOT structkeyexists(application.types, typename)>
-				<cfset application.types[typename]=structNew() />
-			</cfif>
-			<cfset stTypeMD = o.initmetadata(application.types[typename]) />
-			<cfif not structKeyExists(stTypeMD,"bAbstract") or stTypeMD.bAbstract EQ "False">
+			<cfif not structKeyExists(stMetaData,"bAbstract") or stMetaData.bAbstract EQ "False">
+				<cfset stTypeMD = structNew() />
+				<cfparam name="application.types.#typename#" default="#structNew()#" />
+				
 				<cfset stTypeMD.bCustomType = 0 />
 				<cfset stTypeMD.bLibraryType = 0 />
 				<cfset stTypeMD.typePath = "#application.packagepath#.types.#typename#" />

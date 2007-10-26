@@ -36,13 +36,12 @@ $Developer: Mat Bryant (mat@daemon.com.au)$
     // classpath rb files
     //application.rb=createObject("component","#application.packagepath#.farcry.rbJava");
     // non-classpath rb files, needs full path to rb files
-    application.rb=createObject("component",application.factory.oUtils.getPath("resources","RBCFC")).init(application.locales);
+   application.rb=createObject("component",application.factory.oUtils.getPath("resources","RBCFC")).init(application.locales);
     application.thisCalendar=createObject("component","#application.packagepath#.farcry.gregorianCalendar"); // gregorian calendar
     // i18n utils, BIDI, locale names, etc.
     application.i18nUtils=createObject("component","#application.packagepath#.farcry.i18nUtil");
-    //check if logged in
 
-    // refresh the friendly url sub-system
+   // refresh the friendly url sub-system
     objFU = createObject("component","#application.packagepath#.farcry.fu");
     objFU.refreshApplicationScope();
     

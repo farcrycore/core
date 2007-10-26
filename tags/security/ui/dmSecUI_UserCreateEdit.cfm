@@ -55,22 +55,33 @@ $out:$
 		<cfif form.userId eq -1>
 			<cfscript>
 				//Create the new user
-				oAuthentication.createUser(userlogin=form.userlogin,userpassword=form.userpassword,userdirectory=form.userdirectory,usernotes=form.usernotes,userstatus=form.userstatus);
-				
-				//Now create a structure to hold new profile properties
-				stProps = structNew();
-				stProps.userLogin = form.userlogin;
-				stProps.userDirectory = form.userdirectory;
-				
-				//Create new profile. This used to be done as part of the login
-				o_profile = createObject("component", application.types.dmProfile.typePath);
-				stNewProfile = o_profile.createProfile(stProperties=stProps);
-				
-				//Now update the profile with the users home node in the Overview tree
-				structClear(stProps); //clear and reuse stProps
-				stProps.overviewHome = form.overviewHome;
-				stProps.objectId = stNewProfile.objectId;
-				o_profile.setData(stProperties=stProps);	
+				stResult = oAuthentication.createUser(userlogin=form.userlogin,userpassword=form.userpassword,userdirectory=form.userdirectory,usernotes=form.usernotes,userstatus=form.userstatus); //CHG 1235 03/07/07 Coach: added veriable to capture results of call to oAuthentication.createUser
+		
+				//CHG 1235 03/07/07 Coach: Added if statement to trap if the user was created or not from previous call to oAuthentication.createUser
+				if(stResult.bSuccess) 
+				{				
+					//Now create a structure to hold new profile properties
+					stProps = structNew();
+					stProps.userLogin = form.userlogin;
+					stProps.userDirectory = form.userdirectory;
+					
+					//Create new profile. This used to be done as part of the login
+					o_profile = createObject("component", application.types.dmProfile.typePath);
+					stNewProfile = o_profile.createProfile(stProperties=stProps);
+					
+					//Now update the profile with the users home node in the Overview tree
+					structClear(stProps); //clear and reuse stProps
+					stProps.overviewHome = form.overviewHome;
+					stProps.objectId = stNewProfile.objectId;
+					o_profile.setData(stProperties=stProps);	
+				}
+				else //CHG 1235 03/07/07 Coach: added else clause to handle when a user was not created
+				{
+					// For some reason the new user wasn't created. (Most likely user already exists)
+					noError=0;			
+					stProfile = structNew();
+					stProfile.overviewHome = form.overviewHome;
+				}
 			</cfscript>
 		<cfelse>
 
@@ -122,6 +133,11 @@ $out:$
 		
 	<cfelse>
 		<cfset stObj=form>
+		
+		<!--- CHG 1235 03/07/07 Coach: If the error was generated from oAuthentication.createUser, then display the error message it sent --->
+		<cfif isDefined("stResult") And Not stResult.bSuccess>
+			<cfoutput><p id="fading1" class="fade"><span class="error">#stResult.message#</span></p></cfoutput>
+		</cfif>
 	</cfif>
 	
 <cfelseif len(url.userLogin)>

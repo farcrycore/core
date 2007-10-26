@@ -19,7 +19,8 @@ $Developer: Matthew Bryant (mat@daemon.com.au) $
 --->
 
 <!--- import tag libraries --->
-<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" >
+<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" />
+<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
 
 
 <cfif thistag.executionMode eq "Start">
@@ -222,10 +223,9 @@ user defined functions
 
 	<cfif pTotalPages GT 1>
 		<cfif not isDefined("request.paginationpageInputFieldRendered")>
-			<cfset request.inhead.prototypelite = 1>
+			<skin:htmlHead library="prototypelite" />
 			
-			<cfsavecontent variable="jsPagination">
-								
+			<skin:htmlHead>
 				<cfoutput>
 				<script type="text/javascript">
 				function paginationSubmission (page) {
@@ -240,9 +240,7 @@ user defined functions
 				}
 				</script>
 				</cfoutput>
-			</cfsavecontent>
-			
-			<cfhtmlhead text="#jsPagination#">
+			</skin:htmlHead>
 			
 			<cfset request.paginationpageInputFieldRendered = 1 />
 		</cfif>			

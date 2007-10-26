@@ -11,7 +11,7 @@ FARCRY INCLUDE FILES
  ------------------>
 
 
-<cfparam name="attributes.id" default="" />
+<cfparam name="attributes.id" default="layoutRegion#randRange(1,9999999)#" />
 <cfparam name="attributes.title" default="" />
 <cfparam name="attributes.class" default="" />
 <cfparam name="attributes.style" default="" />

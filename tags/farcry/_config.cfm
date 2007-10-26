@@ -95,8 +95,6 @@ test for the existance of each and act accordingly
 	
 // application web urls
 	application.url.conjurer = application.url.webroot & "/index.cfm"; // general invoker
-
-
 	//initialise factory objects 
 	application.factory.oAuthorisation = createobject("component","#application.packagepath#.security.authorisation");
 	application.factory.oWebtop = createobject("component","#application.packagepath#.farcry.webtop").init();
@@ -119,9 +117,8 @@ test for the existance of each and act accordingly
 		application.factory.oFU = createObject("component","#application.packagepath#.farcry.FU");
 	}
 	catch (Any excpt) {}
-	
 
-// load TYPE and RULE metadata structures into memory
+	// load TYPE and RULE metadata structures into memory
 	oAlterType = createObject("component", "#application.packagepath#.farcry.alterType");
 	/***************************************************************************
 	loadCOAPIMetaData() and alterType.refreshAllCFCAppData() were doing the exact
@@ -145,8 +142,7 @@ test for the existance of each and act accordingly
 	application.fourq.plpstorage = application.path.core & "/plps/plpstorage"; // deprecated
 	application.fourq.plppath = "/farcry/core/plps"; // deprecated
 
-	
-// initialise the security structuress --->
+/ initialise the security structuress --->
 	request.dmSec.oAuthorisation = createObject("component","#application.securitypackagepath#.authorisation");
 	request.dmSec.oAuthentication = createObject("component","#application.securitypackagepath#.authentication");
 
