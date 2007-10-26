@@ -40,7 +40,7 @@ START WEBSKIN
 		</cfif>
 	</cfif>
 
-	<extjs:layout container="Viewport" layout="border">
+	<extjs:layout id="webtopOverviewViewport" container="Viewport" layout="border">
 		<extjs:item region="center" container="TabPanel" activeTab="0">
 			<cfif StructKeyExists(stobj,"status")>
 			
