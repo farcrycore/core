@@ -142,7 +142,7 @@ test for the existance of each and act accordingly
 	application.fourq.plpstorage = application.path.core & "/plps/plpstorage"; // deprecated
 	application.fourq.plppath = "/farcry/core/plps"; // deprecated
 
-/ initialise the security structuress --->
+// initialise the security structuress --->
 	request.dmSec.oAuthorisation = createObject("component","#application.securitypackagepath#.authorisation");
 	request.dmSec.oAuthentication = createObject("component","#application.securitypackagepath#.authentication");
 
