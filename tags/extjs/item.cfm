@@ -26,20 +26,22 @@
 	<cfset itemTotal = arrayLen(request.extJS.stLayout.aItems)>
 	
 	<cfif len(trim(thisTag.generatedContent))>
+		<cfset attributes.html = trim(thisTag.generatedContent) />
+		<cfset thisTag.GeneratedContent = "" />
+	</cfif>
+	
+	<cfif structKeyExists(attributes, "html") AND len(attributes.html)>
 		<cfparam name="request.extJS.stLayout.aItems[itemTotal].contentEl" default="contentEl#randRange(1,9999999)#" />
 		
-		<cfsavecontent variable="html">
+		<cfsavecontent variable="variables.html">
 		<cfoutput>
-		<div id="#request.extJS.stLayout.aItems[itemTotal].contentEl#" class="x-hide-display">
-			#thisTag.generatedContent#
+		<div id="#request.extJS.stLayout.aItems[itemTotal].contentEl#">
+			#attributes.html#
 		</div>
 		</cfoutput>	
 		</cfsavecontent>
 		
-		<cfset thisTag.GeneratedContent = "" />
-		
-		<cfset request.extJS.stLayout.aItems[itemTotal].html = html />
-		
+		<cfset request.extJS.stLayout.aItems[itemTotal].html = variables.html />
 	</cfif>
 	
 	<cfif itemTotal EQ 1>

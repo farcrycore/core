@@ -127,6 +127,10 @@
 	<cfset stConfig.text = "text" />
 	<cfset stConfig.handler = "handler" />
 	
+	<!--- Portal config properties --->
+	<cfset stConfig.xtype = "xtype" />
+	<cfset stConfig.columnWidth = "columnWidth" />
+	
 	
 	<cfset aItems = arrayNew(1) />
 	<cfset aHTML = arrayNew(1) />
@@ -206,6 +210,10 @@
 	
 	<cfif structKeyExists(attributes, "renderTo") AND len(attributes.renderTo)>
 		<cfoutput><div id="#attributes.renderTo#"></div></cfoutput>
+	</cfif>
+	
+	<cfif structKeyExists(attributes, "applyTo") AND len(attributes.applyTo)>
+		<cfoutput><div id="#attributes.applyTo#"></div></cfoutput>
 	</cfif>
 	
 	 <!--- Remove the struct once it is complete --->
