@@ -19,21 +19,21 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 <cfcomponent extends="types" displayName="Profiles" hint="FarCry User Profile.  Authentication and authorisation handled seperately by associated user directory model.">
 
     <!--- required properties --->	
-    <cfproperty name="userName" type="nstring" hint="The username/userlogin the profile is associated with." required="yes">
-    <cfproperty name="userDirectory" type="nstring" hint="The user directory the profile is associated with." required="yes">
-    <cfproperty name="bReceiveEmail" type="boolean" hint="Does user receive workflow and system email notices" required="yes" default="1">
-    <cfproperty name="bActive" type="boolean" hint="Is user active" required="yes" default="0">
+    <cfproperty name="userName" type="nstring" hint="The username/userlogin the profile is associated with." required="yes" ftLabel="Username">
+    <cfproperty name="userDirectory" type="nstring" hint="The user directory the profile is associated with." required="yes" ftLabel="User Directory">
+    <cfproperty name="bReceiveEmail" type="boolean" hint="Does user receive workflow and system email notices" required="yes" default="1" ftLabel="Receive Email">
+    <cfproperty name="bActive" type="boolean" hint="Is user active" required="yes" default="0" ftLabel="Active">
     <!--- optional properties --->
-    <cfproperty name="firstName" type="nstring" hint="Profile object first name" required="no">
-    <cfproperty name="lastName" type="nstring" hint="Profile object last name" required="no">
-    <cfproperty name="emailAddress" type="nstring" hint="Profile object email address" required="no" default="">
-    <cfproperty name="phone" type="nstring" hint="Profile object phone number" required="no">
-    <cfproperty name="fax" type="nstring" hint="Profile object fax number" required="no">
-    <cfproperty name="position" type="nstring" hint="Profile object position" required="no">
-    <cfproperty name="department" type="nstring" hint="Profile object department" required="no">
-	<cfproperty name="notes" type="longchar" hint="Additional notes" required="no">
-	<cfproperty name="locale" type="string" hint="Profile object locale" required="yes" default="en_AU">
-	<cfproperty name="overviewHome" type="string" hint="Nav Alias name for this users home node in the overview tree" required="no">
+    <cfproperty name="firstName" type="nstring" hint="Profile object first name" required="no" ftLabel="First Name">
+    <cfproperty name="lastName" type="nstring" hint="Profile object last name" required="no" ftLabel="Last Name">
+    <cfproperty name="emailAddress" type="nstring" hint="Profile object email address" required="no" default="" ftLabel="Email Address">
+    <cfproperty name="phone" type="nstring" hint="Profile object phone number" required="no" ftLabel="Phone Number">
+    <cfproperty name="fax" type="nstring" hint="Profile object fax number" required="no" ftLabel="Fax Number">
+    <cfproperty name="position" type="nstring" hint="Profile object position" required="no" ftLabel="Position">
+    <cfproperty name="department" type="nstring" hint="Profile object department" required="no" ftLabel="Department">
+	<cfproperty name="notes" type="longchar" hint="Additional notes" required="no" ftLabel="Notes">
+	<cfproperty name="locale" type="string" hint="Profile object locale" required="yes" default="en_AU" ftLabel="Locale">
+	<cfproperty name="overviewHome" type="string" hint="Nav Alias name for this users home node in the overview tree" required="no" ftLabel="Home Nav Alias">
 		
     <!--- object methods --->
     <cffunction name="edit" access="PUBLIC" hint="dmProifle edit handler">
