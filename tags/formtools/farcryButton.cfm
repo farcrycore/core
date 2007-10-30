@@ -23,7 +23,7 @@
 <cfif thistag.ExecutionMode EQ "Start">
 
 	<!--- Include Prototype light in the head --->
-	<cfset Request.InHead.PrototypeLite = 1>
+	<skin:htmlHead library="prototypelite" />
 
 	<!--- If not in a farcry form, make it a button. --->
 	<cfif NOT isDefined("Request.farcryForm.Name")>
