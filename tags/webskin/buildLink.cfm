@@ -42,9 +42,17 @@ $in: xCode -- eXtra code to be placed inside the anchor tag $
 	<cfparam name="attributes.includeDomain" default="false">
 	<cfparam name="attributes.Domain" default="#cgi.http_host#">
 	<cfparam name="attributes.stParameters" default="#StructNew()#">
+	<cfparam name="attributes.urlParameters" default="">
 	<cfparam name="attributes.JSWindow" default="0"><!--- Default to not using a Javascript Window popup --->
 	<cfparam name="attributes.stJSParameters" default="#StructNew()#">
 
+
+	<!--- Setup URL Parameters --->
+	<cfif listLen(attributes.urlParameters, "&")>
+		<cfloop list="#attributes.urlParameters#" delimiters="&" index="i">
+			<cfset attributes.stParameters[listFirst(i, "=")] = listLast(i, "=")>
+		</cfloop>
+	</cfif>
 	
 	<cfif attributes.target NEQ "_self" AND NOT attributes.urlOnly> <!--- If target is defined and the user doesn't just want the URL then it is a popup window and must therefore have the following parameters --->		
 		<cfset attributes.JSWindow = 1>
