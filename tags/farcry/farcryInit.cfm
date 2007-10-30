@@ -194,7 +194,7 @@
 				<cfset ps.permissionTable = "dmPermission" />
 				<cfset ps.policyGroupTable = "dmPolicyGroup" />
 				<cfset ps.permissionBarnacleTable = "dmPermissionBarnacle" />
-				<cfset ps.externalGroupToPolicyGroupTable = "dmExternalGroupToPolicyGroup" />								
+				<cfset ps.externalGroupToPolicyGroupTable = "dmExternalGroupToPolicyGroup" />
 
 				<!--------------------------------- 
 				INITIALISE DMSEC
@@ -213,7 +213,14 @@
 				FARCRY CORE INITIALISATION
 				 --------------------------------->
 				<cfinclude template="/farcry/core/tags/farcry/_farcryApplicationInit.cfm" />
-		
+				
+				<!--- New security structure --->
+				<cfloop list="#application.factory.oUtils.getComponents('security')#" index="comp">
+					<cfif application.factory.oUtils.extends(application.factory.oUtils.getPath("security",comp),"farcry.core.packages.security.UserDirectory")>
+						<cfset ud = createobject("component",application.factory.oUtils.getPath("security",comp)) />
+						<cfset application.security.userdirectories[ud.shortcut] = ud />
+					</cfif>
+				</cfloop>
 		
 				<!------------------------------------
 				OBJECT BROKER
