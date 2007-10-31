@@ -35,29 +35,40 @@
 			<!--- If the field already has a value then use that --->
 			<cfwddx action="wddx2cfml" input="#arguments.stMetadata.value#" output="stObj" />
 			
-			<cfsavecontent variable="ReturnHTML">
-				<cfif arguments.stMetadata.ftChangable>
+			<cfif structkeyexists(stObj,"typename") and structkeyexists(application.stCOAPI,stObj.typename)>
+			
+				<cfsavecontent variable="ReturnHTML">
+					<cfif arguments.stMetadata.ftChangable>
+						<cfoutput>
+							<select name="#arguments.fieldname#formname">
+								<cfloop collection="#stForms#" item="thisform">
+									<option value="#thisform#"<cfif thisform eq stObj.typename> selected</cfif>>#stForms[thisform]#</option>
+								</cfloop>
+							</select>
+							<br class="clearer" />
+						</cfoutput>
+					<cfelse>
+						<cfoutput>
+							<input type="hidden" name="#arguments.fieldname#formname" value="#stObj.typename#" />
+						</cfoutput>
+					</cfif>
+					
+					<ft:object typename="#arguments.stMetadata.ftForm#" stObject="#stObj#" r_stPrefix="prefix" />
+					
 					<cfoutput>
-						<select name="#arguments.fieldname#formname">
-							<cfloop collection="#stForms#" item="thisform">
-								<option value="#thisform#"<cfif thisform eq stObj.typename> selected</cfif>>#stForms[thisform]#</option>
-							</cfloop>
-						</select>
-						<br class="clearer" />
+						<input type="hidden" name="#arguments.fieldname#objectid" value="#stObj.objectid#" />
+						<input type="hidden" name="#arguments.fieldname#" value="#htmlEditFormat(arguments.stMetadata.value)#" />
 					</cfoutput>
-				<cfelse>
+				</cfsavecontent>
+			<cfelse>
+			
+				<cfsavecontent variable="ReturnHTML">
 					<cfoutput>
-						<input type="hidden" name="#arguments.fieldname#formname" value="#stObj.typename#" />
+						<p class="error">There is no form for this data. It can not be edited until one is set up.</p>
 					</cfoutput>
-				</cfif>
-				
-				<ft:object typename="#arguments.stMetadata.ftForm#" stObject="#stObj#" r_stPrefix="prefix" />
-				
-				<cfoutput>
-					<input type="hidden" name="#arguments.fieldname#objectid" value="#stObj.objectid#" />
-					<input type="hidden" name="#arguments.fieldname#" value="#htmlEditFormat(arguments.stMetadata.value)#" />
-				</cfoutput>
-			</cfsavecontent>
+				</cfsavecontent>
+			
+			</cfif>
 		<cfelse>
 			<!--- Otherwise just use a default  form --->
 			<cfsavecontent variable="ReturnHTML">
