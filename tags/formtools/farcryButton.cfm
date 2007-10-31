@@ -86,7 +86,6 @@
 					border:0px solid green;
 					padding:0px 3px 0px 0px;
 					margin:0px 0px 0px 3px;
-					height:21px;
 					float:none;
 				}	
 				
