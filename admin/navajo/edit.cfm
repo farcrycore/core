@@ -1,29 +1,13 @@
-<cfprocessingDirective pageencoding="utf-8">
-<cfsetting enablecfoutputonly="Yes">
-<!--- DEPRECATED:
-		To be replaced by a central invocation point.
-		eg. ../conjuror/invocation.cfm
-	 --->
-<!--- 
-|| LEGAL ||
-$Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
-$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
+<cfprocessingDirective pageencoding="utf-8" />
+<cfsetting enablecfoutputonly="true" />
+<!--- @@Copyright: Daemon Pty Limited 1995-2007, http://www.daemon.com.au --->
+<!--- @@License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php --->
+<!--- @@displayname: Edit Invocation --->
+<!--- @@Description: edit object invoker for primarily tree based content; on its way out the door 20050728 GB --->
+<!--- @@Developer: Geoff Bowers (modius@daemon.com.au) --->
 
-|| VERSION CONTROL ||
-$Header: /cvs/farcry/core/admin/navajo/edit.cfm,v 1.5 2005/08/02 02:27:12 geoff Exp $
-$Author: geoff $
-$Date: 2005/08/02 02:27:12 $
-$Name: milestone_3-0-1 $
-$Revision: 1.5 $
-
-|| DESCRIPTION || 
-$DESCRIPTION: edit object invoker for primarily tree based content; on its way out the door 20050728 GB$
-$TODO: get rid of this crack ../navajo/edit.cfm GB$
-
-|| DEVELOPER ||
-$DEVELOPER:Brendan Sisson (brendan@daemon.com.au)$
---->
-<cflog file="deprecated" application="true" type="warning" text="../admin/navajo/edit.cfm should be replaced by call to ../conjuror/invocation.cfm" />
+<cfimport taglib="/farcry/core/tags/farcry" prefix="farcry" />
+<farcry:deprecated message="../admin/navajo/edit.cfm should be replaced by call to ../conjuror/invocation.cfm" />
 
 <!--- import tag libraries --->
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
@@ -50,4 +34,4 @@ $DEVELOPER:Brendan Sisson (brendan@daemon.com.au)$
 <!--- setup footer --->
 <admin:footer>
 
-<cfsetting enablecfoutputonly="No">
+<cfsetting enablecfoutputonly="false" />
