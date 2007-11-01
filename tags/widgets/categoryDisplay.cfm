@@ -1,4 +1,8 @@
 <cfsetting enablecfoutputonly="true">
+
+<cfimport taglib="/farcry/core/tags/farcry" prefix="farcry" />
+<farcry:deprecated message="widgets tag library is deprecated; please use formtools." />
+
 <cfparam name="attributes.lSelectedCategoryID" default="">
 <cfparam name="attributes.naviagtionURL" default="">
 <cfparam name="attributes.naviagtionVariableName" default="categoryID">

@@ -1,3 +1,7 @@
+<cfimport taglib="/farcry/core/tags/farcry" prefix="farcry" />
+<farcry:deprecated message="widgets tag library is deprecated; please use formtools." />
+
+
 <!--- 
 || LEGAL ||
 $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $

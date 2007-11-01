@@ -1,8 +1,12 @@
+<cfsetting enablecfoutputonly="true">
+
+<cfimport taglib="/farcry/core/tags/farcry" prefix="farcry" />
+<farcry:deprecated message="widgets tag library is deprecated; please use formtools." />
+
 <!--- Author: Gavin Stewart
         Date: Jul 27, 2005
      Purpose: custom tag to display images
 --->
-<cfsetting enablecfoutputonly="true">
 
 <!--- make sure the tag only runs once --->
 <cfif thistag.ExecutionMode eq "end"><cfexit></cfif>

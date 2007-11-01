@@ -1,5 +1,8 @@
 <cfsetting enablecfoutputonly="true">
 
+<cfimport taglib="/farcry/core/tags/farcry" prefix="farcry" />
+<farcry:deprecated message="widgets tag library is deprecated; please use formtools." />
+
 <cfparam name="attributes.fieldNameKeywords" default="metakeywords">
 <cfparam name="attributes.fieldNameExtendedMetadata" default="extendedmetadata">
 <cfparam name="attributes.fieldLabelKeywords" default="#application.adminBundle[session.dmProfile.locale].keywordsLabel#">

@@ -1,5 +1,8 @@
 <cfsetting enablecfoutputonly="true">
 
+<cfimport taglib="/farcry/core/tags/farcry" prefix="farcry" />
+<farcry:deprecated message="widgets tag library is deprecated; please use formtools." />
+
 <cfif isDefined("caller.output")>
 	<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
 	<cfimport taglib="/farcry/core/tags/widgets" prefix="widgets">

@@ -1,4 +1,8 @@
 <cfsetting enablecfoutputonly="true">
+
+<cfimport taglib="/farcry/core/tags/farcry" prefix="farcry" />
+<farcry:deprecated message="widgets tag library is deprecated; please use formtools." />
+
 <cfparam name="attributes.typename" default="">
 <cfset typename = attributes.typename>
 <cfif typename NEQ ""> <!--- typename check --->

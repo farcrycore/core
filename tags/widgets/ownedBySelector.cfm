@@ -1,4 +1,8 @@
 <cfsetting enablecfoutputonly="true">
+
+<cfimport taglib="/farcry/core/tags/farcry" prefix="farcry" />
+<farcry:deprecated message="widgets tag library is deprecated; please use formtools." />
+
 <cfparam name="attributes.fieldName" default="ownedBy">
 <cfparam name="attributes.fieldlabel" default="Owned By:">
 <cfparam name="attributes.selectedValue" default="">

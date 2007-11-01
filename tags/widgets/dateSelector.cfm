@@ -1,4 +1,8 @@
 <cfsetting enablecfoutputonly="true">
+
+<cfimport taglib="/farcry/core/tags/farcry" prefix="farcry" />
+<farcry:deprecated message="widgets tag library is deprecated; please use formtools." />
+
 <!--- 
 || LEGAL ||
 $Copyright: Daemon Pty Limited 1995-2006, http://www.daemon.com.au $

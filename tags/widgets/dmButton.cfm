@@ -1,3 +1,9 @@
+<cfprocessingDirective pageencoding="utf-8">
+<cfsetting enablecfoutputonly="yes">
+
+<cfimport taglib="/farcry/core/tags/farcry" prefix="farcry" />
+<farcry:deprecated message="widgets tag library is deprecated; please use formtools." />
+
 <!--- 
 || LEGAL ||
 $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
@@ -27,9 +33,6 @@ in: [Attributes.onclick]: optional : The onclick event definition
 in: [Attributes.disabled]: optional (False) : if the button should be disabled or not 
 out:
 --->
-<cfsetting enablecfoutputonly="yes">
-
-<cfprocessingDirective pageencoding="utf-8">
 
 <cfif ISDEFINED("ATTRIBUTES.Name") and ISDEFINED("ATTRIBUTES.Value")>
 	<cfparam name="ATTRIBUTES.Type" default="Submit">

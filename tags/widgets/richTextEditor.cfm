@@ -23,6 +23,10 @@ $out:$
 --->
 <cfsetting enablecfoutputonly="yes">
 
+<cfimport taglib="/farcry/core/tags/farcry" prefix="farcry" />
+<farcry:deprecated message="widgets tag library is deprecated; please use formtools." />
+
+
 <cfimport taglib="/farcry/core/tags/farcry" prefix="tags">
 <cfinclude template="/farcry/core/admin/includes/utilityFunctions.cfm">
 <cfparam name="attributes.textareaname" default="body">

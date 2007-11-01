@@ -1,3 +1,6 @@
+<cfimport taglib="/farcry/core/tags/farcry" prefix="farcry" />
+<farcry:deprecated message="widgets tag library is deprecated; please use formtools." />
+
 <cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" >
 
 <cfsetting enablecfoutputonly="yes">
