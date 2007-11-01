@@ -9,8 +9,7 @@
 
 	<cfparam name="attributes.message" type="string" />
 
-	<cfif isdefined("application.log.bDeprecated") AND application.log.bDeprecated>
-		
+	<cfif isdefined("application.log.bDeprecated") AND application.log.bDeprecated>		
 		<cftrace type="warning" inline="false" text="#GetBaseTemplatePath()# - #attributes.message#" abort="false" />
 		<cflog file="deprecated" application="true" type="warning" text="#GetBaseTemplatePath()# - #attributes.message#" />
 	</cfif>
