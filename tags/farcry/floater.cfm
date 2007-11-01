@@ -294,7 +294,7 @@ function #attributes.prefix#HideMenu() {
 
 
 function #attributes.prefix#TrackMenu() {
-	var #attributes.prefix#Now = new Date();
+	<!--- var #attributes.prefix#Now = new Date();
 	
 	if (#attributes.prefix#ActiveMenu.style.display != '' && #attributes.prefix#Now.getTime() - #attributes.prefix#RefTime > #attributes.prefix#HideDelay) {
 		#attributes.prefix#HideMenu();
@@ -356,7 +356,7 @@ function #attributes.prefix#TrackMenu() {
 		
 	}
 	
-	#attributes.prefix#ShowDebug();
+	#attributes.prefix#ShowDebug(); --->
 }
 
 
