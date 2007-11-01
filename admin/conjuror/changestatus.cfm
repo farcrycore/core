@@ -65,7 +65,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	<cfabort showerror="<strong>Error:</strong> status is a required parameter.">
 </cfif>
 
-<farcry:depricated message="should be using navajo/approve.cfm" />
+<farcry:deprecated message="should be using navajo/approve.cfm" />
 <cflocation url="#application.url.farcry#/navajo/approve.cfm?objectid=#url.objectid#&status=#url.status#" addtoken="false" />
 
 
