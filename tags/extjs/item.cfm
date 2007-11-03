@@ -47,6 +47,7 @@
 	<cfif itemTotal EQ 1>
 		<!--- This means it is a top level item and therefore needs to go into the layoutItems array --->
 		<cfset arrayAppend(request.extJS.stLayout.aLayoutItems, request.extJS.stLayout.aItems[1]) />
+		<cfset ArrayDeleteAt(request.extJS.stLayout.aItems, itemTotal) />	
 	<cfelse>
 		<!--- This means it is a sub item and therefore needs to go into its parent item list --->
 		<cfset stCurrentItem = request.extJS.stLayout.aItems[itemTotal] />	
