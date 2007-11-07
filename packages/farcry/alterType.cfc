@@ -262,6 +262,7 @@ $out:$
 				<cfset stTypeMD = structNew() />
 				<cfparam name="application.types.#typename#" default="#structNew()#" />
 				
+				<cfset stTypeMD = o.initmetadata(application.types[typename]) />
 				<cfset stTypeMD.bCustomType = 0 />
 				<cfset stTypeMD.bLibraryType = 0 />
 				<cfset stTypeMD.typePath = "#application.packagepath#.types.#typename#" />
