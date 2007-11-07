@@ -96,6 +96,23 @@
 		<cfreturn "" />
 	</cffunction>
 
+	<cffunction name="listFilter" access="public" output="false" returntype="string" hint="Filters the items in a list though a regular expression">
+		<cfargument name="list" type="string" required="true" hint="The list being filtered" />
+		<cfargument name="filter" type="string" required="true" hint="The regular expression to filter by" />
+		<cfargument name="delimiters" type="string" required="false" default="," hint="Delimiters used by list" />
+		
+		<cfset var result = "" />
+		<cfset var thisitem = "" />
+		
+		<cfloop list="#arguments.list#" index="thisitem" delimiters="#arguments.delimeters#">
+			<cfif refind(arguments.filter,thisitem)>
+				<cfset result = listappend(result,thisitem,left(arguments.delimiters,1)) />
+			</cfif>
+		</cfloop>
+		
+		<cfreturn result />
+	</cffunction>
+
 	<!--- STRUCT ulilities --->
 	<cffunction name="structMerge" access="public" output="false" returntype="struct" hint="Performs a deep merge on two structs">
 		<cfargument name="struct1" type="struct" required="true" />
@@ -202,6 +219,23 @@
 		</cfloop>
 		
 		<cfreturn list />
+	</cffunction>
+
+	<cffunction name="extends" access="public" output="false" returntype="boolean" hint="Returns true if the specified component extends another">
+		<cfargument name="desc" type="string" required="true" hint="The component to test" />
+		<cfargument name="anc" type="string" required="true" hint="The ancestor to check for" />
+		
+		<cfset var stDesc = getMetadata(createobject("component",arguments.desc)) />
+		<cfset var stAnc = getMetadata(createobject("component",arguments.anc)) />
+		
+		<cfloop condition="#structkeyexists(stDesc,'extends')#">
+			<cfset stDesc = stDesc.extends />
+			<cfif stDesc.name eq stAnc.name>
+				<cfreturn true />
+			</cfif>
+		</cfloop>
+		
+		<cfreturn false />
 	</cffunction>
 
 </cfcomponent>
