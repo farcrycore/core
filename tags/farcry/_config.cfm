@@ -102,7 +102,6 @@ test for the existance of each and act accordingly
 	application.factory.oAudit = createObject("component","#application.packagepath#.farcry.audit");
 	application.factory.oTree = createObject("component","#application.packagepath#.farcry.tree");
 	application.factory.oCache = createObject("component","#application.packagepath#.farcry.cache");
-	application.factory.oConfig = createObject("component","#application.packagepath#.farcry.config");
 	application.factory.oLocking = createObject("component","#application.packagepath#.farcry.locking");
 	application.factory.oVersioning = createObject("component","#application.packagepath#.farcry.versioning");
 	application.factory.oWorkflow = createObject("component","#application.packagepath#.farcry.workflow");
@@ -112,6 +111,8 @@ test for the existance of each and act accordingly
 	application.factory.oVerity = createObject("component","#application.packagepath#.farcry.verity");
 	application.factory.oCon = createObject("component","#application.packagepath#.rules.container");
 	application.factory.oGeoLocator = createObject("component","#application.packagepath#.farcry.geoLocator");
+	application.factory.oAuthorisation = createObject("component","#application.securitypackagepath#.authorisation");
+	application.factory.oAuthentication = createObject("component","#application.securitypackagepath#.authentication");
 	application.bGeoLocatorInit = application.factory.oGeoLocator.init();
 	try {
 		application.factory.oFU = createObject("component","#application.packagepath#.farcry.FU");
@@ -128,12 +129,6 @@ test for the existance of each and act accordingly
 	*/
 	oAlterType.refreshAllCFCAppData(); // This replaces loadCOAPIMetaData for now. I'm thinking types.init()?? ~tom
 
-// load config files into memory
-	config = createObject("component", "#application.packagepath#.farcry.config");
-	qConfigList = config.list();
-	for (i=1;i LTE qConfigList.Recordcount; i=i+1)
-		application.config[trim(qConfigList.configname[i])] = config.getConfig(configname=qConfigList.configname[i]);
-
 // activate PLP storage
 	if (NOT isDefined("application.path.plpstorage"))
 		application.path.plpstorage = application.path.core & "/plps/plpstorage";
@@ -149,8 +144,17 @@ test for the existance of each and act accordingly
 
 	
 </cfscript>
+
+<!--- Load config data --->
+<cfset oConfig = createobject("component",application.stCOAPI.farConfig.packagepath) />
+<cfloop list="#oConfig.getConfigKeys()#" index="configkey">
+	<cfset application.config[configkey] = oConfig.getConfig(configkey) />
+</cfloop>
+
 <!--- wrap this in a cftry catch in case the policystore isn't initialised yet  --->
 <!--- <cfif StructKeyExists(request,"init") AND request.init eq 0> --->
+
+<cfset application.security.cache = structnew() />
 
 <!--- $TODO: what is this try/catch doing here?? GB$ --->
 <cftry>
