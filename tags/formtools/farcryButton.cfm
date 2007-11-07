@@ -1,5 +1,6 @@
 <cfsetting enablecfoutputonly="yes">
 
+<cfsilent>
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
 <cfif not thistag.HasEndTag>
@@ -20,8 +21,10 @@
 <cfparam name="attributes.url" default="">
 <cfparam name="attributes.target" default="_self">
 
-<cfif thistag.ExecutionMode EQ "Start">
+</cfsilent>
 
+<cfif thistag.ExecutionMode EQ "Start">
+	<cfsilent>
 	<!--- Include Prototype light in the head --->
 	<skin:htmlHead library="prototypelite" />
 
@@ -62,6 +65,9 @@
 			<cfset attributes.bInPanel = false>
 		</cfif>
 	</cfif>
+	
+	
+	<cfsavecontent variable="buttonHTML">
 	
 	<cfif attributes.bInPanel>
 		<cfif attributes.type eq "image" and len(attributes.src)>
@@ -155,7 +161,11 @@
 	<cfelse>
 		<cfoutput><button type="#attributes.Type#" name="FarcryForm#attributes.Type#Button" onclick="#attributes.Onclick#" class="formButton #attributes.Class#" style="#attributes.Style#">#attributes.Value#</button></cfoutput>
 	</cfif>
+	</cfsavecontent>
 
+	</cfsilent>
+	
+	<cfoutput>#Trim(buttonHTML)#</cfoutput>
 </cfif>
 
 
