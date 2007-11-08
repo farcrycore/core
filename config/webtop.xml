@@ -62,10 +62,8 @@
 				<menuitem id="updateapp" label="Reload application" link="/admin/updateapp.cfm" />
 			</menu>
 			<menu id="configuration" sequence="20" label="application.adminBundle[session.dmProfile.locale].Configuration" labelType="evaluate">
-				<menuitem id="configfiles" label="application.adminBundle[session.dmProfile.locale].ConfigFiles" labelType="evaluate" link="/admin/config.cfm" />
-				<!-- <menuitem id="configrestoredefault" label="application.adminBundle[session.dmProfile.locale].RestoreDefaultCoreConfig" labelType="evaluate" link="/admin/config_restore.cfm" /> -->
-				<menuitem id="configcustom" label="application.adminBundle[session.dmProfile.locale].CustomConfig" labelType="evaluate" link="/admin/config_custom.cfm" />
-				<menuitem id="configdump" permission="developer" label="application.adminBundle[session.dmProfile.locale].DumpConfig" labelType="evaluate" link="/admin/configDump.cfm" />
+				<menuitem id="listfarconfig" sequence="1" permission="developer" label="Edit Config" link="/admin/customadmin.cfm?module=customlists/farConfig.cfm" relatedtype="farConfig" />
+				<menuitem id="configdump" sequence="2" permission="developer" label="application.adminBundle[session.dmProfile.locale].DumpConfig" labelType="evaluate" link="/admin/configDump.cfm" />
 			</menu>
 			<menu id="customAdminXML" sequence="30" permission="developer" label="application.adminBundle[session.dmProfile.locale].CustomAdminXML" labelType="evaluate">
 				<menuitem id="DumpCustomAdminXML" label="application.adminBundle[session.dmProfile.locale].DumpCustomAdminXML" labelType="evaluate" link="/admin/customXMLDump.cfm" />
@@ -160,9 +158,14 @@
 		</subsection>
 	</section>
 	<section id="security" sequence="6000" permission="MainNavSecurityTab" label="application.adminBundle[session.dmProfile.locale].Security" labelType="evaluate">
-		<subsection id="rolesandpermissions" sequence="0" permission="SecurityPolicyManagementTab" label="Roles and Permissions">
-			<menu id="rolesandpermissions">
-				<menuitem id="permissions" sequence="10" label="Permissions" link="/admin/customadmin.cfm?module=customlists/farPermission.cfm" />
+		<subsection id="managesecurity" sequence="0" permission="SecurityPolicyManagementTab" label="Manage Security">
+			<menu id="rolesandpermissions" sequence="100" label="Roles and Permissions">
+				<menuitem id="permissions" sequence="10" label="Roles" link="/admin/customadmin.cfm?module=customlists/farRole.cfm" relatedtype="farRole" />
+				<menuitem id="roles" sequence="20" label="Permissions" link="/admin/customadmin.cfm?module=customlists/farPermission.cfm" relatedtype="farPermission" />
+			</menu>
+			<menu id="farcryud" sequence="200" label="FarCry User Directory">
+				<menuitem id="listfaruser" sequence="10" label="Users" link="/admin/customadmin.cfm?module=customlists/farUser.cfm" relatedtype="farUser" />
+				<menuitem id="listfargroup" sequence="20" label="Groups" link="/admin/customadmin.cfm?module=customlists/farGroup.cfm" relatedtype="farGroup" />
 			</menu>
 		</subsection>
 		<subsection id="users" sequence="10" permission="SecurityUserManagementTab" label="application.adminBundle[session.dmProfile.locale].Usermanagement" labelType="evaluate" sidebar="security/sidebar.cfm" content="inc/content_overview.html">
