@@ -15,9 +15,6 @@ Migrates config data<br/>
 </cfoutput>
 
 <cfif isdefined("form.submit")>
-	<cfset alterType = createObject("component","#application.packagepath#.farcry.alterType") />
-	<cfset migrateresult = "" />
-
 
 	<!--- CONFIG --->
 	<cfif NOT alterType.isCFCDeployed(typename="farConfig")>
