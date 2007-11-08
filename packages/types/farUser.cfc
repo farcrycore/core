@@ -23,4 +23,32 @@
 		<cfreturn stResult />
 	</cffunction>
 	
+	<cffunction name="addGroup" access="public" output="false" returntype="void" hint="Adds this user to a group">
+		<cfargument name="user" type="string" required="true" hint="The user to add" />
+		<cfargument name="group" type="string" required="true" hint="The group to add to" />
+		
+		<cfset var stUser = structnew() />
+		<cfset var i = 0 />
+		
+		<!--- Get the user by objectid or userid --->
+		<cfif isvalid("uuid",arguments.user)>
+			<cfset stUser = getData(arguments.user) />
+		<cfelse>
+			<cfset stUser = getByUserID(arguments.user) />
+		</cfif>
+		
+		<!--- Check to see if they are already a member of the group --->
+		<cfparam name="stUser.groups" default="#arraynew(1)#" />
+		<cfloop from="1" to="#arraylen(stUser.groups)#" index="i">
+			<cfif stUser.groups[i] eq arguments.group>
+				<cfset arguments.group = "" />
+			</cfif>
+		</cfloop>
+		
+		<cfif len(arguments.group)>
+			<cfset arrayappend(stUser.groups,arguments.group) />
+			<cfset oUser.setData(stProperties=stUser) />
+		</cfif>
+	</cffunction>
+	
 </cfcomponent>

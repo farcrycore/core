@@ -55,6 +55,8 @@
 		
 		<cfif not structkeyexists(application.security.cache,arguments.role)>
 			<cfset application.security.cache[arguments.role] = structnew() />
+		</cfif>
+		<cfif not structkeyexists(application.security.cache[arguments.role],"barnacles")>
 			<cfset application.security.cache[arguments.role].barnacles = structnew() />
 		</cfif>
 		<cfif not structkeyexists(application.security.cache[arguments.role].barnacles,arguments.object)>

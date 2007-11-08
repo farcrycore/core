@@ -42,7 +42,7 @@
 		<cfreturn stObj />
 	</cffunction>
 	
-	<cffunction name="getConfig" access="public" output="false" returntype="struct" hint="Finds the config for the specified config, create it if it doesn't exist, then return it">
+	<cffunction name="getConfig" access="public" output="true" returntype="struct" hint="Finds the config for the specified config, create it if it doesn't exist, then return it">
 		<cfargument name="key" type="string" required="true" hint="The key of the config to load" />
 		
 		<cfset var stResult = structnew() />
@@ -63,9 +63,15 @@
 		<cfif qConfig.recordcount>
 			<!--- If the config item exists convert the data to a struct --->
 			<cfwddx action="wddx2cfml" input="#qConfig.configdata[1]#" output="stResult" />
-		<cfelse>
+		</cfif>
+		
+		<cfif not qConfig.recordcount or not isstruct(stResult)>
 			<!--- Set up the config item values --->
-			<cfset stObj.objectid = createuuid() />
+			<cfif qConfig.recordcount>
+				<cfset stObj.objectid = qConfig.objectid[1] />
+			<cfelse>
+				<cfset stObj.objectid = createuuid() />
+			</cfif>
 			<cfset stObj.typename = "dmConfig" />
 			<cfset stObj.configkey = arguments.key />
 			
@@ -80,7 +86,7 @@
 			<cfwddx action="cfml2wddx" input="#stConfig#" output="stObj.configdata" />
 			
 			<!--- Save the config data --->
-			<cfset createData(stProperties=stObj) />
+			<cfset setData(stProperties=stObj) />
 		</cfif>
 		
 		<cfif structkeyexists(stResult,"typename")>

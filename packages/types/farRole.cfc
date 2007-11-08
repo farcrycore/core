@@ -59,8 +59,13 @@
 		<cfargument name="permission" type="uuid" required="true" hint="The permission the barnacle is based on" />
 		<cfargument name="right" type="numeric" required="true" hint="The right value to cache" />
 		
+		<cfif not isdefined("application.security.cache")>
+			<cfset application.security.cache = structnew() />
+		</cfif>
 		<cfif not structkeyexists(application.security.cache,arguments.role)>
 			<cfset application.security.cache[arguments.role] = structnew() />
+		</cfif>
+		<cfif not structkeyexists(application.security.cache[arguments.role],"permissions")>
 			<cfset application.security.cache[arguments.role].permissions = structnew() />
 		</cfif>
 		<cfset application.security.cache[arguments.role].permissions[arguments.permission] = arguments.right />
@@ -271,7 +276,7 @@
 		<cfargument name="item" type="uuid" required="true" hint="The item to update the permission for" />
 		<cfargument name="right" type="numeric" required="true" hint="Deny: -1, Inherit: 0, Grant: 1" />
 		
-		<cfset createObject("component", application.stcoapi["farBarnacle"].packagePath).updatePermission(arguments.role,arguments.permission,arguments.item,arguments.right) />
+		<cfset createObject("component", application.stcoapi["farBarnacle"].packagePath).updateRight(role=arguments.role,permission=arguments.permission,object=arguments.item,right=arguments.right) />
 		
 	</cffunction>
 	
@@ -313,7 +318,7 @@
 		<cfset var i = 0 />
 		
 		<!--- Update general permission cache --->
-		<cfif not structkeyexists(application.security.cache,arguments.stProperties.objectid)>
+		<cfif not isdefined("application.security.cache") or not structkeyexists(application.security.cache,arguments.stProperties.objectid)>
 			<cfset application.security.cache[arguments.stProperties.objectid] = structnew() />
 		</cfif>
 		<cfset application.security.cache[arguments.stProperties.objectid].permissions = structnew() />
