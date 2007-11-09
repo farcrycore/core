@@ -15,7 +15,7 @@
 	<cfparam name="attributes.template" default=""><!--- can be used as an alternative to webskin. Best practice is to use webskin. --->
 	<cfparam name="attributes.webskin" default=""><!--- the webskin to be called with the object --->
 	<cfparam name="attributes.stProps" default="#structNew()#">
-	<cfparam name="attributes.stParams" default="#structNew()#">
+	<cfparam name="attributes.stParam" default="#structNew()#">
 	<cfparam name="attributes.r_html" default=""><!--- Empty will render the html inline --->
 
 
@@ -89,9 +89,9 @@
 	
 	<!--- Developer can pass in alternate HTML to render if the webskin does not exist --->
 	<cfif structKeyExists(attributes, "alternateHTML")>
-		<cfset html = o.getView(objectid=st.objectid, template="#attributes.webskin#", alternateHTML="#attributes.alternateHTML#",stParams=attributes.stParams)>
+		<cfset html = o.getView(objectid=st.objectid, template="#attributes.webskin#", alternateHTML="#attributes.alternateHTML#",stParam=attributes.stParam)>
 	<cfelse>
-		<cfset html = o.getView(objectid=st.objectid, template="#attributes.webskin#",stParams=attributes.stParams)>
+		<cfset html = o.getView(objectid=st.objectid, template="#attributes.webskin#",stParam=attributes.stParam)>
 	</cfif>		
 	</cfsilent>
 	
