@@ -29,11 +29,13 @@ $out:$
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
 <cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry">
 <cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
+<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin">
 
 <!--- character to indicate levels --->
 <cfset levelToken = "-" />
 
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
+
 
 <!--- check permissions --->
 <cfscript>
@@ -43,11 +45,14 @@ $out:$
 <cfif iDeveloperPermission eq 1>
 
 	<cfif isDefined("form.submit")>
+	
+		<cfparam name="form.makeHTML" default="" />
+		<cfparam name="form.displayMethod" default="" />
+		
 	    <cfscript>
 		    aliasDelimiter = "||";
 	        startPoint = form.startPoint;
-	        makeHtml = isDefined("form.makeHtml") and form.makeHtml;
-	        if (makeHtml)
+	        if (len(form.makeHTML))
 	            displayMethod = form.displayMethod;
 	        makenavaliases = isDefined("form.makenavaliases") and form.makenavaliases;
 	        if (makenavaliases)
@@ -151,7 +156,7 @@ $out:$
 	            items[i].datetimelastupdated = now();
 	            items[i].lastupdatedby = createdBy;
 	
-	            if (makeHtml) {
+	            if (len(form.makeHtml)) {
 	                htmlItem = structNew();
 	                htmlItem.aObjectIDs = arrayNew(1);
 	                htmlItem.aRelatedIDs = arrayNew(1);
@@ -169,7 +174,7 @@ $out:$
 	                htmlItem.objectID = createUUID();
 	                htmlItem.status = status;
 	                htmlItem.teaser = "";
-	                htmlItem.typeName = "dmHTML";
+	                htmlItem.typeName = form.makeHtml;
 	                htmlItem.versionID = "";
 	                htmlItem.extendedMetaData = "";
 	
@@ -219,7 +224,7 @@ $out:$
 	        qNodes = o.getDescendants(dsn=application.dsn, objectid=application.navid.root);
 	    </cfscript>
 	
-	    <nj:listTemplates typename="dmHTML" prefix="displayPage" r_qMethods="qDisplayTypes">
+	   
 	
 	<cfoutput>
 	<script language="JavaScript">
@@ -255,27 +260,7 @@ $out:$
 		</select><br />
 		</label>
 		
-		<fieldset class="f-checkbox-wrap">
 		
-			<b>#application.adminBundle[session.dmProfile.locale].dmHTMLItems#</b>
-			
-			<fieldset>
-			
-			<label for="makehtml">
-			<input type="checkbox" name="makehtml" id="makehtml" checked="checked" value="1" class="f-checkbox" onclick="updateDisplayBox()" />
-			#application.adminBundle[session.dmProfile.locale].createdmHtmlItems#
-			</label>
-			<select name="displayMethod" id="displayMethod">
-			<cfloop query="qDisplayTypes">
-			<option value="#qDisplayTypes.methodName#" <cfif qDisplayTypes.methodName eq "displayPageStandard">selected="selected"</cfif>>#qDisplayTypes.displayName#</option>
-			</cfloop>
-			</select> 
-			<script>updateDisplayBox()</script><br />
-			#application.adminBundle[session.dmProfile.locale].displayMethod#
-			
-			</fieldset>
-		
-		</fieldset>
 		
 		<fieldset class="f-checkbox-wrap">
 		
@@ -314,6 +299,85 @@ $out:$
 		<textarea name="structure" id="structure" rows="10" cols="40" class="f-comments"></textarea><br />
 		</label>
 
+
+		<skin:htmlHead library="extjs" />
+		
+		<script type="text/javascript">
+		function getDisplayMethod(makehtml) {
+			
+			var el = Ext.get(makehtml);
+		
+			Ext.Ajax.request({
+			   url: '#application.url.farcry#/facade/quickBuilder.cfc?method=listTemplates',
+			   success: getTagsSuccess,
+			   params: { typename: el.getValue() }
+			});			
+			
+		}
+		function getTagsSuccess(response){
+			var el = Ext.get("displayMethods");
+			el.update(response.responseText);
+				
+		}	
+		</script>	
+		
+			<b>Auto Create Children</b>
+
+			<cfset iCreate = request.dmSec.oAuthorisation.checkInheritedPermission(objectid="#application.navid.home#",permissionName="create")>
+			<cfif iCreate eq 1>
+				<cfset objType = CreateObject("component","#Application.stcoapi.dmNavigation.packagePath#")>
+				<cfset lPreferredTypeSeq = "dmHTML"> <!--- this list will determine preffered order of objects in create menu - maybe this should be configurable. --->
+				<!--- <cfset aTypesUseInTree = objType.buildTreeCreateTypes(lPreferredTypeSeq)> --->
+				<cfset lAllTypes = structKeyList(application.types)>
+				<!--- remove preffered types from *all* list --->
+				<cfset aPreferredTypeSeq = listToArray(lPreferredTypeSeq)>
+				<cfloop index="i" from="1" to="#arrayLen(aPreferredTypeSeq)#">
+					<cfset lAlltypes = listDeleteAt(lAllTypes,listFindNoCase(lAllTypes,aPreferredTypeSeq[i]))>
+				</cfloop>
+				<cfset lAlltypes = ListAppend(lPreferredTypeSeq,lAlltypes)>
+				<cfset aTypesUseInTree = objType.buildTreeCreateTypes(lAllTypes)>
+				<cfif ArrayLen(aTypesUseInTree)>
+					
+						<table>
+						<tr>
+							<td style="width:100px;">Type: </td>
+							<td>
+								<select name="makehtml" id="makehtml" onchange="getDisplayMethod(this)">
+									<option value="">NONE</option>
+									<cfloop index="i" from="1" to="#ArrayLen(aTypesUseInTree)#">								
+										<cfif aTypesUseInTree[i].typename NEQ "dmNavigation">
+											<option value="#aTypesUseInTree[i].typename#">#aTypesUseInTree[i].description#</option>
+										</cfif>						
+									</cfloop>	
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<td>Webskin: </td>
+							<td id="displayMethods"></td>
+						</tr>
+						</table>
+					
+				</cfif>
+			</cfif>
+		<!--- 	<fieldset>
+			 <nj:listTemplates typename="dmHTML" prefix="displayPage" r_qMethods="qDisplayTypes">
+			<label for="makehtml">
+			<input type="checkbox" name="makehtml" id="makehtml" checked="checked" value="1" class="f-checkbox" onclick="updateDisplayBox()" />
+			#application.adminBundle[session.dmProfile.locale].createdmHtmlItems#
+			</label>
+			<select name="displayMethod" id="displayMethod">
+			<cfloop query="qDisplayTypes">
+			<option value="#qDisplayTypes.methodName#" <cfif qDisplayTypes.methodName eq "displayPageStandard">selected="selected"</cfif>>#qDisplayTypes.displayName#</option>
+			</cfloop>
+			</select> 
+			<script>updateDisplayBox()</script><br />
+			#application.adminBundle[session.dmProfile.locale].displayMethod#
+			
+			</fieldset> --->
+		
+		
+		
 		<div class="f-submit-wrap">
 		<input type="submit" value="#application.adminBundle[session.dmProfile.locale].buildSiteStructure#" name="submit" class="f-submit" /><br />
 		</div>
