@@ -386,7 +386,7 @@
 		<cfset result = result & "Roles: #structcount(stRoles)#<br/>" />
 		<cfset result = result & "Groups: #structcount(stGroups)#<br/>" />
 		<cfset result = result & "Users: #structcount(stUsers)#<br/>" />
-		<cfset result = result & "User groups: #migrateUserGroups(stUsers,stGroups)#<br/>" />
+		<cfset result = result & "User group membership: #migrateUserGroups(stUsers,stGroups)#<br/>" />
 		<cfset result = result & "Role-group mappings: #migrateMappings(stGroups,stRoles)#<br/>" />
 		<cfset result = result & "Barnacles: #migrateBarnacles(stPermissions,stRoles)#<br/>" />
 		

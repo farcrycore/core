@@ -50,5 +50,61 @@
 			<cfset oUser.setData(stProperties=stUser) />
 		</cfif>
 	</cffunction>
+
+	<cffunction name="removeGroup" access="public" output="false" returntype="void" hint="Removes this user from a group">
+		<cfargument name="user" type="string" required="true" hint="The user to add" />
+		<cfargument name="group" type="string" required="true" hint="The group to add to" />
+		
+		<cfset var stUser = structnew() />
+		<cfset var i = 0 />
+		
+		<!--- Get the user by objectid or userid --->
+		<cfif isvalid("uuid",arguments.user)>
+			<cfset stUser = getData(arguments.user) />
+		<cfelse>
+			<cfset stUser = getByUserID(arguments.user) />
+		</cfif>
+		
+		<!--- Check to see if they are a member of the group --->
+		<cfparam name="stUser.groups" default="#arraynew(1)#" />
+		<cfloop from="#arraylen(stUser.groups)#" to="1" index="i" step="-1">
+			<cfif stUser.groups[i] eq arguments.group>
+				<cfset arraydeleteat(stUser.groups,i) />
+			</cfif>
+		</cfloop>
+		
+		<cfset oUser.setData(stProperties=stUser) />
+	</cffunction>
+
+	<cffunction name="setData" access="public" output="true" hint="Update the record for an objectID including array properties.  Pass in a structure of property values; arrays should be passed as an array.">
+		<cfargument name="stProperties" required="true">
+		<cfargument name="user" type="string" required="true" hint="Username for object creator" default="">
+		<cfargument name="auditNote" type="string" required="true" hint="Note for audit trail" default="Updated">
+		<cfargument name="bAudit" type="boolean" required="No" default="1" hint="Pass in 0 if you wish no audit to take place">
+		<cfargument name="dsn" required="No" default="#application.dsn#">
+		<cfargument name="bSessionOnly" type="boolean" required="false" default="false"><!--- This property allows you to save the changes to the Temporary Object Store for the life of the current session. ---> 
+		<cfargument name="bAfterSave" type="boolean" required="false" default="true" hint="This allows the developer to skip running the types afterSave function.">	
+		
+		<cfset var stUser = getData(objectid=arguments.stProperties.objectid) />
+		
+		<cfif application.security.userdirectories.CLIENTUD.encrypted and arguments.stProperties.password neq stUser.password>
+			<cfset arguments.stProperties.password = hash(arguments.stProperties.password) />
+		</cfif>
+		
+		<cfreturn super.setData(arguments.stProperties,arguments.user,arguments.auditNote,arguments.bAudit,arguments.dsn,arguments.bSessionOnly,arguments.bAfterSave) />
+	</cffunction>
+	
+	<cffunction name="createData" access="public" returntype="any" output="false" hint="Creates an instance of an object">
+		<cfargument name="stProperties" type="struct" required="true" hint="Structure of properties for the new object instance">
+		<cfargument name="user" type="string" required="true" hint="Username for object creator" default="">
+		<cfargument name="auditNote" type="string" required="true" hint="Note for audit trail" default="Created">
+		<cfargument name="dsn" required="No" default="#application.dsn#"> 
+		
+		<cfif application.security.userdirectories.CLIENTUD.encrypted>
+			<cfset arguments.stProperties.password = hash(arguments.stProperties.password) />
+		</cfif>
+		
+		<cfreturn super.createData(arguments.stProperties,arguments.user,arguments.auditNote,arguments.dsn) />
+	</cffunction>
 	
 </cfcomponent>
