@@ -21,85 +21,38 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
 <cfcomponent displayName="Authentication" hint="Security authentication functions">
 	<cfinclude template="/farcry/core/admin/includes/cfFunctionWrappers.cfm">
 	<cfinclude template="/farcry/core/admin/includes/utilityFunctions.cfm">
+	<cfimport taglib="/farcry/core/tags/farcry" prefix="farcry" />
 	
 	<cffunction name="addUserToGroup" hint="Adds a user to a given group in the preffered userdirectory" output="No">
 		<cfargument name="userlogin" required="true">
 		<cfargument name="groupname" required="true">
 		<cfargument name="userdirectory" required="true">
 			
-		<cfscript>
-			stResult = structNew();
-			stResult.bSuccess = true;
-			stResult.message="User added to group successfully";
-			stUser = getUser(userlogin=arguments.userlogin,userdirectory=arguments.userdirectory);
-			stGroup = getGroup(groupName=arguments.groupName,userdirectory=arguments.userdirectory);
-			stUD = getUserDirectory();
-			sql="
-				SELECT * FROM #application.dbowner#dmUserToGroup
-				WHERE userId = #stUser.userId# AND groupId = #stGroup.groupId#";
-			qGroupMemberCheck = query(sql=sql,dsn=stUd[userDirectory].datasource);
-			if (qGroupMemberCheck.recordCount eq 0)
-			{
-				sql=
-				"INSERT INTO #application.dbowner#dmUserToGroup ( userId, groupId )
-				VALUES ( #stUser.userId#, #stGroup.groupId# )";
-				query(sql=sql,dsn=stUd[userDirectory].datasource);
-			}
-			oAudit = createObject("component","#application.packagepath#.farcry.audit");
-			stuser = getUserAuthenticationData();
-				if(stUser.bLoggedIn)
-					oaudit.logActivity(auditType="dmSec.addUserTogroup", username=StUser.userlogin, location=cgi.remote_host, note="#arguments.userlogin# added to #arguments.groupname#");	
-				
-		</cfscript>
+		<cfset var stResult = structNew() />
 		
-	<cfreturn stResult>
+		<farcry:deprecated message="authentication.addUserToGroup() should be replaced by calls to farUser.addGroup()" />
+		
+		<cfset stResult.bSuccess = true />
+		<cfset stResult.message="User added to group successfully" />
+
+		<cfset createObject("component", application.stcoapi["farUser"].packagePath).addGroup(arguments.userlogin,arguments.groupname)>
+		
+		<cfreturn stResult>
 	</cffunction>
-	
 	
 	<cffunction name="createGroup" hint="Creates a new user Group" returntype="struct" output="No">
 		<cfargument name="groupName" required="true">
 		<cfargument name="userDirectory" required="true">
 		<cfargument name="groupNotes" required="false">
 		
-		<cfscript>
-			stResult = structNew();
-			//check to see if this group exists
-			stGroup = getGroup(groupName=arguments.groupName,userDirectory=arguments.userDirectory);
-			if (not structIsEmpty(stGroup))
-			{
-				stResult.bSuccess = false;
-				stResult.message = "User Group already exists";
-			}
-			else
-			{
-				switch (application.dbtype)
-				{
-					case "ora" :
-					{	
-						sql =
-						"INSERT INTO #application.dbowner#dmGroup (groupID, GroupName,GroupNotes )
-						VALUES
-						(DMGROUP_SEQ.nextval,'#arguments.GroupName#','#arguments.GroupNotes#')";
-						query(sql=sql,dsn=stUd[arguments.UserDirectory].datasource);
-						break;
-					}
-					default :
-					{
-						sql = 
-						"INSERT INTO #application.dbowner#dmGroup ( GroupName,GroupNotes )
-						VALUES	('#arguments.GroupName#','#replace(arguments.GroupNotes,"'","","ALL")#')";
-						query(sql = sql,dsn=stUd[arguments.UserDirectory].datasource);
-					}
-				}
-				stResult.bSuccess = true;
-				stResult.message = "New group '#arguments.groupname#' has been successfully added";	
-				oAudit = createObject("component","#application.packagepath#.farcry.audit");
-				stuser = getUserAuthenticationData();
-					if(stUser.bLoggedIn)
-						oaudit.logActivity(auditType="dmSec.creategroup", username=StUser.userlogin, location=cgi.remote_host, note="group #arguments.groupname# created");		
-				
-			}	
-		</cfscript>
+		<cfset var stGroup = structnew() />
+		
+		<farcry:deprecated message="authentication.createGroup() should be replaced by calls to farGroup.createData()" />
+		
+		<cfset stGroup.objectid = createuuid() />
+		<cfset stGroup.title = arguments.groupname />
+		
+		<cfset stGroup = createObject("component", application.stcoapi["farGroup"].packagePath).createData(stProperties=stGroup) />
 		
 		<cfreturn stResult>
 	</cffunction>
@@ -111,169 +64,86 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
 		<cfargument name="userNotes" required="false" default="">
 		<cfargument name="userPassword" required="true">
 		
-		<cfscript>
-			stResult = structNew();
-			stResult.bSuccess = true;
-			stResult.message = "User has been successfully added";
-			stUD = getUserDirectory();	
-			aUsers = getMultipleUsers(userLogin=arguments.userlogin);
-		</cfscript>	
-		<cfif arrayLen(aUsers)>
-			<cfscript>
-				stResult.bSuccess = false;
-				stResult.message = "User already exists";
-			</cfscript>	
-		<cfelse>
-			<!--- check if ud uses password encryption --->
-			<cfif structKeyExists(Application.dmSec.UserDirectory[arguments.userDirectory],"bEncrypted") and Application.dmSec.UserDirectory[arguments.userDirectory].bEncrypted>
-				<cfset userPassword = hash(arguments.userPassword)>
-			<cfelse>
-				<cfset userPassword = arguments.userPassword>
-			</cfif>
-			
-			<cflock name="#createUUID()#" timeout="20">
-				<cftransaction>
-				<cfswitch expression="#application.dbtype#">
-					<cfcase value="ora">
-						<cfquery datasource="#stUd[Userdirectory].datasource#">
-							INSERT INTO #application.dbowner#dmUser (userid, userLogin,userPassword,userNotes,userStatus )
-							VALUES (DMUSER_SEQ.nextval,'#arguments.UserLogin#','#userPassword#',<cfqueryparam cfsqltype="CF_SQL_VARCHAR" value="#arguments.userNotes#">,'#arguments.userstatus#')
-						</cfquery> 
-					</cfcase>
-					
-					<cfdefaultcase>
-						<cfquery datasource="#stUd[Userdirectory].datasource#">
-							INSERT INTO #application.dbowner#dmUser ( userLogin,userPassword,userNotes,userStatus )
-							VALUES ('#arguments.UserLogin#','#userPassword#',<cfqueryparam cfsqltype="CF_SQL_VARCHAR" value="#arguments.userNotes#">,'#arguments.userstatus#')
-						</cfquery> 	
-					</cfdefaultcase>
-				</cfswitch>
-				
-				<cfquery datasource="#stUd[Userdirectory].datasource#" name="q">
-					select max(userID) as thisUserID FROM #application.dbowner#dmUser
-				</cfquery>
-				</cftransaction>	
-				
-				<cfscript>
-					oAudit = createObject("component","#application.packagepath#.farcry.audit");
-					stuser = getUserAuthenticationData();
-						if(stUser.bLoggedIn)
-							oaudit.logActivity(auditType="dmSec.createuser", username=StUser.userlogin, location=cgi.remote_host, note="user #arguments.userlogin# created");
-				</cfscript>
-			</cflock>
-			<cfset stResult.userid = q.thisUserID>
-		</cfif>			
+		<cfset var stUser = structnew() />
+		<cfset var stResult = structnew() />
 		
-	<cfreturn stResult>
-	
+		<farcry:deprecated message="authentication.createUser() should be replaced by calls to farUser.createData()" />
+		
+		<cfset stUser.objectid = createuuid() />
+		<cfset stUser.userid = arguments.userlogin />
+		<cfif stUser.userstatus eq 4>
+			<cfset stUser.userstatus = "active" />
+		<cfelse>
+			<cfset stUser.userstatus = "disabled" />
+		</cfif>
+		<cfset stuser.password = arguments.userpassword />
+		<cfset stUser.password = hash(stUser.password) />
+		<cfset stUser = createObject("component", application.stcoapi["farUser"].packagePath).createData(stProperties=stUser) />
+		
+		<cfset stResult.bSuccess = true />
+		<cfset stResult.message = "User has been successfully added" />
+		
+		<cfreturn stResult>
 	</cffunction>
-	
 			
 	<cffunction name="deleteGroup" hint="Deletes a group from the datastore" output="No">
 		<cfargument name="userdirectory">
 		<cfargument name="groupname">
 		
-		<cfscript>
-			stGroup = getGroup(userdirectory=arguments.userdirectory,groupName=arguments.groupName);
-			groupID = stGroup.groupID;
-			stUD = getUserDirectory();
-			sql = "
-				DELETE FROM #application.dbowner#dmGroup WHERE groupId='#GroupId#'";
-			query(sql=sql,dsn=stUd[Userdirectory].datasource);	
-			oAudit = createObject("component","#application.packagepath#.farcry.audit");
-			stuser = getUserAuthenticationData();
-				if(stUser.bLoggedIn)
-					oaudit.logActivity(auditType="dmSec.deletegroup", username=Stuser.userlogin, location=cgi.remote_host, note="group #arguments.groupname# deleted");	
-		</cfscript>
+		<cfset var oGroup = createObject("component", application.stcoapi["farGroup"].packagePath) />
+		
+		<farcry:deprecated message="authentication.deleteGroup() should be replaced by calls to farGroup.delete()" />
+		
+		<cfset oGroup.delete(objectid=oGroup.getID(arguments.groupname)) />
 	</cffunction>
-	
-	
 	
 	<cffunction name="deleteUser" hint="Deletes a user from the datastore" returntype="struct" output="No">
 		<cfargument name="userid" required="true" hint="Unique userid of user to delete">
 		<cfargument name="userdirectory" required="true" hint="user directory user belongs to" default="clientud">
 		<cfargument name="dsn" required="true">
+
+		<cfset var oUser = createObject("component", application.stcoapi["farUser"].packagePath) />
+		<cfset var stResult = structnew() />
+
+		<farcry:deprecated message="authentication.deleteUser() should be replaced by calls to farUser.delete()" />
 		
-		<cfset var stUD = getUserDirectory()>
-		<!--- get username --->
-		<cfset stUser = getUser(userid=arguments.userid,userdirectory=arguments.userdirectory)>
-			
-		<!--- delete profile --->
-		<cfif structKeyExists(stUser,"userLogin")>
-			<cfquery name="qProfile" datasource="#stUd[arguments.userdirectory].datasource#">
-			SELECT 	objectid 
-			FROM 	#application.dbowner#dmProfile 
-			WHERE 	UPPER(userName) = <cfqueryparam value="#UCASE(stUser.userLogin)#" cfsqltype="CF_SQL_VARCHAR">
-			</cfquery>
-			<cfif qProfile.recordcount>
-				<cfset oProfile = createObject("component", application.types.dmProfile.typepath)>
-				<cfset oProfile.delete(objectid=qProfile.objectid)>
-			</cfif>
+		<cfif findnocase(arguments.userdirectory,arguments.userid)>
+			<cfset arguments.userid = listfirst(arguments.userid,"_") />
 		</cfif>
-		<cfscript>
-			//delete user
-			sql = "DELETE FROM #application.dbowner#dmUser where userID = #arguments.userid#";
-			query(sql=sql,dsn=arguments.dsn);
-			sql = "DELETE FROM #application.dbowner#dmUserToGroup where userID = #arguments.userid#";
-			query(sql=sql,dsn=arguments.dsn);
-			stResult = structNew();
-			stResult.bSuccess = true;
-			stResult.message = "User deleted successfully";
-			oAudit = createObject("component","#application.packagepath#.farcry.audit");
-			stuser = getUserAuthenticationData();
-				if(stUser.bLoggedIn)
-					oaudit.logActivity(auditType="dmSec.deleteuser", username=Stuser.userlogin, location=cgi.remote_host, note="user #arguments.userid# was deleted");
-		</cfscript>
-			
-	<cfreturn stResult>
+		
+		<cfset oUser.delete(objectid=oUser.getByUserID(arguments.userid)) />
+		
+		<cfset stResult.bSuccess = true />
+		<cfset stResult.message = "User deleted successfully" />
+		
+		<cfreturn stResult>
 	</cffunction>
-	
 	
 	<cffunction name="getGroup" returntype="struct" hint="Returns group data" output="No">
 		<cfargument name="userdirectory">
 		<cfargument name="groupName" >
 		<cfargument name="groupId" >
 
-		<cfscript>
-			stUD = getUserDirectory();
-			switch (stUd[Userdirectory].type)
-			{
-				case "daemon":
-				{
-					sql = 
-					"SELECT * FROM #application.dbowner#dmGroup g WHERE ";
-					if (isDefined("arguments.groupName"))
-						sql = sql & " upper(g.groupName)='#ucase(arguments.groupName)#'";
-					else if (isDefined("arguments.groupID"))
-						sql = sql & " g.groupID=#arguments.groupID#";
-					qGetGroup = query(sql=sql,dsn=stUd[Userdirectory].datasource);
-					if (qGetGroup.recordCount)
-					{
-						stGroup = queryToStructure(qGetGroup);
-						stGroup.userDirectory=arguments.userdirectory;
-					}	
-					else
-						stGroup = structNew();
-					break;	
-				}
-				
-				case "adsi":
-				{
-					o_NTsec = createObject("component", "#application.packagepath#.security.NTsecurity");
-					groupNotes = o_NTsec.getGroupDescription(groupName=groupName, domain=stUd[arguments.Userdirectory].domain);
-			
-					stGroup = structNew();
-					stGroup.groupName = groupName;
-					stGroup.groupNotes = groupNotes;
-					break;
-				}	
-			}	
-						
-		</cfscript>
-		<cfreturn stGroup>
-	</cffunction>
-	
+		<cfset var oGroup = createObject("component", application.stcoapi["farGroup"].packagePath) />
+		<cfset var stGroup = structnew() />
+		<cfset var stResult = structnew() />
+
+		<farcry:deprecated message="authentication.getGroup() should be replaced by calls to farGroup.getData()" />
 		
+		<cfif not isvalid('uuid',arguments.groupid)>
+			<cfif findnocase(arguments.userdirectory,arguments.groupname)>
+				<cfset arguments.groupname = listfirst(arguments.groupname,"_") />
+			</cfif>
+			<cfset arguments.groupid = oGroup.getID(arguments.groupname) />
+		</cfif>
+
+		<cfset stGroup = oGroup.getData(objectid=arguments.groupid) />
+		
+		<cfset stResult.groupName = stGroup.title />
+		<cfset stResult.groupNotes = "" />
+		
+		<cfreturn stResult>
+	</cffunction>
 	
 	<cffunction name="getMultipleUsers" hint="Gets all users for userlogin. Can be filtered to specific user directories otherwise is all user directories." output="No">
 		<cfargument name="userid" required="false">
@@ -281,48 +151,9 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
 		<cfargument name="fragment" required="false">
 		<cfargument name="lUserDirectories" required="false">
 
-		<cfscript>
-			aUsers = arrayNew(1);
-			stUD = getUserDirectory();
-			if (isDefined("arguments.lUserDirectories"))
-				lUserDirectories=arguments.lUserdirectories;
-			else
-				lUserDirectories=StructKeyList(stUd);	
-		</cfscript>
-
-		<cfloop index="ud" list="#lUserDirectories#">
-			
-			<cfswitch expression="#stUd[ud].type#">
-			
-				<cfcase value="Daemon">
-					<!--- search for the user --->
-					<cfquery name="qUser" datasource="#stUd[ud].datasource#" >
-						SELECT * FROM #application.dbowner#dmUser
-							<cfif isDefined("arguments.userLogin")>WHERE UPPER(UserLogin) = <cfqueryparam value="#ucase(arguments.userLogin)#" cfsqltype="CF_SQL_VARCHAR"></cfif>
-							<cfif isDefined("arguments.userId")>WHERE userId = <cfqueryparam value="#arguments.userId#" cfsqltype="CF_SQL_VARCHAR"></cfif>
-							<cfif isDefined("arguments.fragment")>WHERE UPPER(UserLogin) like <cfqueryparam value="#ucase(arguments.fragment)#" cfsqltype="CF_SQL_VARCHAR"></cfif>
-						ORDER BY UserLogin ASC
-					</cfquery>
-					<cfscript>
-						for(i=1;i LTE qUser.recordCount;i = i+1)
-						{
-							thisRow = structnew();
-							thisRow.userId = qUser.userId[i];
-							thisRow.userLogin = qUser.userLogin[i];
-							thisRow.userPassword = qUser.userPassword[i];
-							thisRow.userStatus = qUser.userStatus[i];
-							thisRow.userNotes = qUser.userNotes[i];
-							thisRow.userDirectory = ud;
-							ArrayAppend( aUsers, thisRow );
-						}	
-						
-					</cfscript>
-					
-				</cfcase>
-			</cfswitch>
-		</cfloop>
-
-	<cfreturn aUsers>
+		<farcry:deprecated message="authentication.getMultipleUsers() is not supported by the 4.1 security structure" />
+		
+		<cfthrow message="authentication.getMultipleUsers() is not supported by the 4.1 security structure" />
 	</cffunction>
 	
 	<cffunction name="getMultipleGroups" hint="Gets array of groups, filtered by userlogin, userdirectory." output="false" returntype="array">
@@ -330,166 +161,48 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
 		<cfargument name="userdirectory" required="true">
 		<cfargument name="bInvert" required="false" default="0" hint="Flag to get groups userlogin is not a member of. (CRACK! GB)">
 		
-		<cfset var aGroups=arraynew(1)>
+		<cfset var group = "" />
+		<cfset var oGroup = createObject("component", application.stcoapi["farGroup"].packagePath) />
+		<cfset var stGroup = structnew() />
+		<cfset var usergroups = "" />
+		<cfset var stResult = structnew() />
+		<cfset var aResult = arraynew(1) />
 		
-		<cftry>
-		<!--- need to catch if this fails; does if userdirectory missing (which can happen in multi-userdirectory scenarios) --->
-		<cfscript>
-			ud = trim(arguments.userDirectory);
-			//grab the user directorires object
-			stUd = getUserDirectory();
-			switch (stUd[ud].type)
-			{
-				case "Daemon" :
-				{
-					if(NOT arguments.bInvert)
-					{
-						sql = "
-						SELECT *
-						FROM #application.dbowner#dmGroup g ";
-						if (isDefined('arguments.userlogin'))
-						{
-							sql = sql & ", #application.dbowner#dmUserToGroup ug, #application.dbowner#dmUser u
-							WHERE g.groupId = ug.groupid
-							AND upper(u.userLogin) = '#ucase(arguments.userLogin)#'
-							AND u.userId = ug.userId";
-						}
-						sql = sql & " ORDER BY g.groupName";
-					}
-					else
-					{
-						switch (application.dbType)
-						{
-							case "ora":
-							{
-								sql = "
-								SELECT *
-								FROM dmGroup
-								WHERE groupId not in (SELECT g.groupId FROM dmGroup g ";
-								if (isDefined('arguments.userlogin'))
-								{
-									sql = sql & "
-									, dmUserToGroup ug, dmUser u
-									WHERE g.groupId = ug.groupid
-									AND upper(u.userLogin) ='#ucase(arguments.userLogin)#'
-									AND u.userId = ug.userId";
-								}	
-								sql = sql & ") ORDER BY groupName";
-								break;
-							}
-							
-							case "postgresql":
-							{
-								sql = "
-								SELECT *
-								FROM dmGroup
-								WHERE groupId not in (SELECT g.groupId FROM dmGroup g ";
-								if (isDefined('arguments.userlogin'))
-								{
-									sql = sql & "
-									, dmUserToGroup ug, dmUser u
-									WHERE g.groupId = ug.groupid
-									AND upper(u.userLogin) ='#ucase(arguments.userLogin)#'
-									AND u.userId = ug.userId";
-								}	
-								sql = sql & ") ORDER BY groupName";
-								break;
-							}
-							
-							case "mysql":
-							{
-								tempSql = "SELECT g.groupId FROM dmGroup g ";
-								if (isDefined('arguments.userlogin'))
-								{
-									tempSql = tempSql & "
-									, dmUserToGroup ug, dmUser u
-									WHERE g.groupId = ug.groupid
-									AND upper(u.userLogin) ='#ucase(arguments.userLogin)#'
-									AND u.userId = ug.userId";
-								}
-								qTemp = query(sql=tempSql,dsn=stUd[ud].datasource);	
-								// Need to wrap the WHERE clause into a variable, because if the user being managed, isn't a part of
-								// a group yet, MySQL would generated an error
-								// Scott Mebberson [Mitousa]					
-								sqlAdd = "";                                                                                          
-								if (qTemp.recordCount GT 0) sqlAdd = " WHERE groupId not in (" & #valueList(qTemp.groupId)# & ")";
-								sql = "
-								SELECT *
-								FROM dmGroup#sqlAdd# ORDER BY groupName";
-								break;
-							}
-							default: {
-								sql = "
-								SELECT *
-								FROM #application.dbowner#dmGroup
-								WHERE groupId not in (SELECT g.groupId FROM #application.dbowner#dmGroup g ";
-								if (isDefined('arguments.userlogin'))
-								{
-									sql = sql & "
-									, #application.dbowner#dmUserToGroup ug, dmUser u
-									WHERE g.groupId = ug.groupid
-									AND upper(u.userLogin) ='#ucase(arguments.userLogin)#'
-									AND u.userId = ug.userId";
-								}	
-								sql = sql & ") ORDER BY groupName";
-								break;
-							}
-						}
-					}
-					qGetGroup = query(sql=sql,dsn=stUd[ud].datasource);
-					aGroups = queryToArrayOfStructures(qGetGroup);
-				}	
-				break;
-				case "ADSI" :
-				{
+		<farcry:deprecated message="authentication.getMultipleGroups() should be replaced by application.security.userdirectories[ud].getUserGroups()" />
 		
-					o_NTsec = createObject("component", "#application.packagepath#.security.NTsecurity");
-					aGroups = o_NTsec.getDomainGroups(domain=stUd[ud].domain);
-					
-					if (structKeyExists(stUd[ud], "FILTER"))
-						domainFilter = stUd[ud].filter;
-					else
-						domainFilter = "";
-			
-					// convert the array to the daemon group array type 
-					retGroups = ArrayNew(1);
-					for (i=1;i LTE arrayLen(aGroups);i=i+1)
-					{
-						if (domainFilter eq "" OR findNoCase(domainFilter, aGroups[i]) eq 1)
-						{
-							groupNotes = o_NTsec.getGroupDescription(groupName=aGroups[i], domain=stUd[ud].domain);
-							stGroup = structNew();
-							stGroup.groupName = aGroups[i];
-							stGroup.groupNotes = groupNotes;
-							arrayAppend(retGroups, stGroup);
-						}
-					}
-					agroups = retGroups;
-					break;	
-				}					
-			}//end switch	
-		</cfscript>
-
-		<cfcatch>
-			<cftrace type="error" category="farcry.authentication" var="cfcatch.Message">
-		</cfcatch>
-		</cftry>		
-		<cfreturn aGroups>
+		<cfif findnocase(arguments.userdirectory,arguments.userlogin)>
+			<cfset arguments.userlogin = listfirst(arguments.userlogin,"_") />
+		</cfif>
 		
+		<cfset usergroups = application.security.userdirectories.CLIENTUD.getUserGroups(arguments.userlogin) />
+		
+		<cfloop list="#application.security.userdirectories.CLIENTUD.getAllGroups()#" index="group">
+			<cfif arguments.bInvert xor listcontains(usergroups,group)>
+				<cfset stGroup = oGroup.getData(oGroup.getID(group)) />
+				<cfset stResult = structnew() />
+				<cfset stResult.groupName = stGroup.title />
+				<cfset stResult.groupNotes = "" />
+				<cfset arrayappend(aResult,stResult) />
+			</cfif>
+		</cfloop>
+		
+		<cfreturn aResult />
 	</cffunction> 
-	
-	
 	
 	<cffunction name="getUserAuthenticationData" access="public"  hint="If logged in, returns a structur of the users specific session information " returntype="struct" output="No">
 		
 		<cfset var stUser = structNew()>
+		
+		<farcry:deprecated message="authentication.getUserAuthenticationData() should be replaced by ???" />
+		
 		<cfscript>
 			stUser.bLoggedIn = 0;
 			if (isDefined("session.dmsec.authentication"))
 			{	stUser = duplicate(session.dmsec.authentication);
 				stUser.bLoggedin = 1;
 			}
-		</cfscript>		
+		</cfscript>
+		
 		<cfreturn stUser>
 	</cffunction>
 	
@@ -498,84 +211,44 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
 		<cfargument name="userlogin" required="false">
 		<cfargument name="userid" required="false">
 				
-		<cfset var stUD = getUserDirectory()>
-		<cfset var qUser = querynew("userId, userLogin, userPassword, userStatus, userNotes")>
-		<cfset var stUser = structNew()>
-
-		<!--- check that we are searching daemon userdirectories only --->
-		<cfswitch expression="#stUd[arguments.Userdirectory].type#">
-			<cfcase value="Daemon">
-				<!--- search for the user --->
-				<cftry>
-				<cfquery name="qUser" datasource="#stUd[Userdirectory].datasource#" >
-					SELECT	userId, userLogin, userPassword, userStatus, userNotes
-					FROM 	#application.dbowner#dmUser<cfif isDefined("arguments.userLogin")>
-					WHERE 	UPPER(UserLogin) = <cfqueryparam value="#ucase(arguments.userLogin)#" cfsqltype="CF_SQL_VARCHAR"></cfif><cfif isDefined("arguments.userId")>
-					WHERE 	userId = <cfqueryparam value="#arguments.userId#" cfsqltype="CF_SQL_VARCHAR"></cfif>
-					ORDER BY UserLogin ASC
-				</cfquery>
-
-				<cfcatch>
-					<!--- likely failed cos userdirectory a dud --->
-					<cftrace type="warning" category="authentication" var="cfcatch.message">
-					<!--- <cfdump var="#cfcatch#">
-					<cfabort> --->
-					<!--- <cfdump var="#quser#">  --->
-				</cfcatch>
-				</cftry>
-				<!--- if we got a user convert it to a struct --->
-				<cfscript>
-				stUser = structnew();
+		<cfset var stUser = structNew() />
+		<cfset var stResult = structnew() />
+		<cfset var oUser = createObject("component", application.stcoapi["farUser"].packagePath) />
 		
-				if( qUser.recordCount gt 0 )
-				{
-					stUser.userId = qUser.userId;
-					stUser.userLogin = qUser.userLogin;
-					stUser.userPassword = qUser.userPassword;
-					stUser.userStatus = qUser.userStatus;
-					stUser.userNotes = qUser.userNotes;
-					stUser.userDirectory = arguments.Userdirectory;
-				}
-				</cfscript>
-				
-			</cfcase>
-			<cfcase value="ADSI">
-				<cfscript>
-				o_NTsec = createObject("component", "#application.packagepath#.security.NTsecurity");
-				userNotes = o_NTsec.getUserDescription(userName=userLogin, domain=stUd[Userdirectory].domain);
+		<farcry:deprecated message="authentication.getUser() should be replaced by farUser.getData()" />
 		
-				stUser = structNew();
-				stUser.userID = userLogin;
-				stUser.userLogin = userLogin;
-				stUser.status = 4;
-				stUser.userNotes = userNotes;
-				stUser.userDirectory = userDirectory;
-				</cfscript>
-			</cfcase>
-			<cfdefaultcase>
-				<cfthrow detail="dmSec_UnknownUDType">
-			</cfdefaultcase>
-		</cfswitch>
-	
-		<cfreturn stUser>
+		<cfif not isvalid("uudi",arguments.userid)>
+			<cfif findnocase(arguments.userdirectory,arguments.userlogin)>
+				<cfset arguments.userlogin = listfirst(arguments.userlogin,"_") />
+			</cfif>
+			<cfset stUser = oUser.getByUserID(arguments.userlogin) />
+		<cfelse>
+			<cfset stUser = oUser.getData(objectid=arguments.userid) />
+		</cfif>
+
+		<cfset stResult.userid = stUser.objectid />
+		<cfset stResult.userLogin = stUser.userid />
+		<cfset stResult.userPassword = stUser.password />
+		<cfif stUser.userstatus eq "active">
+			<cfset stResult.userStatus = 4 />
+		<cfelse>
+			<cfset stResult.userStatus = 2 />
+		</cfif>
+		<cfset stResult.userNotes = "" />
+		<cfset stResult.userDirectory = "CLIENTUD" />
+		
+		<cfreturn stResult />
 	</cffunction>
-		
 	
 	<cffunction name="getUserDirectory" hint="Gets all the userdirectories filtered by type and returns them as a structure." output="false" returntype="struct">
 		<cfargument name="lFilterTypes" required="false" hint="List of user directory types to filter on." type="string" />
-		<cfargument name="UDScope" required="false" default="#Application.dmSec.UserDirectory#" type="struct" hint="Structure of userdirectories. Defaults to aplication.dmsec.userdirectory" /> 
-		<cfset localUD = duplicate( arguments.UDScope)>
+		<cfargument name="UDScope" required="false" default="#Application.dmSec.UserDirectory#" type="struct" hint="Structure of userdirectories. Defaults to aplication.dmsec.userdirectory" />
 
-		<cfif isDefined("arguments.lFilterTypes")>
-			<cfloop index="i" list="#StructKeyList(localUD)#">
-				<cfif not listFind( arguments.lFilterTypes, localUD[i].type)>
-					<cfscript>structdelete( localUD, i );</cfscript>
-				</cfif>
-			</cfloop>
-		</cfif>
+		<farcry:deprecated message="authentication.getUserDirectory() is not supported by the 4.1 security structure" />
+		
+		<cfthrow message="authentication.getUserDirectory() is not supported by the 4.1 security structure" />
 				
-		<cfreturn localUD>
-	
+		<cfreturn structnew() />
 	</cffunction>
 	
 	<cffunction name="login" hint="Logs in the user using userlogin and password, optionally limited to userdirectory." returntype="boolean">
@@ -585,305 +258,99 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
 		<cfargument name="userdirectory" required="false">
 		
 		<cfset var auditNote = "" />
-		<cfscript>
-			oAuthorisation = createObject("component","#application.securitypackagepath#.authorisation");
-			oAudit = createObject("component","#application.packagepath#.farcry.audit");
-	
-			logout(); //Clear out session details
-			arguments.userlogin = trim(arguments.userlogin);
-			arguments.userpassword = trim(arguments.userpassword);
-			//assume user is not logged in
-			bHasLoggedIn = 0;
-			//grab the user directories (that is ones with relevant dmSec tables)
-			stUD = getUserDirectory(lFilterTypes="ADSI,Daemon");
-			//get the policy store
-			stPolicyStore = oAuthorisation.getPolicyStore();	
-		</cfscript> 
-					
-			<!--- loop through each user directory --->
-			<cfloop index="ud" list="#structKeyList(stUD)#">
-			<cftrace type="information" var="ud">
-				<cfswitch expression="#stUD[ud].type#">
-					<cfcase value="ADSI">
-						<cfset lPolicyGroupIDs = "">
-						<cfset validUD = "">
-			
-						<cfscript>
-						domain = stUD[ud].domain;
-						userLogin = arguments.userLogin;
-						password = arguments.userPassword;
-			
-						// instantiate NT security object
-						o_NTsec = createObject("component", "#application.securitypackagepath#.NTsecurity");
-						// authenticate user against ActiveDirectory
-						bAuth = o_NTsec.authenticateUser(userName=userLogin, password=password, domain=domain);
-						</cfscript>
-						
-						<cfif bAuth>
-							<!--- user is valid --->
-							<cfset validUD = ud>
-							<cfset lPolicyGroupIDs = "">
-			
-							<cftry>
-								<cfset lGroups = o_NTsec.getUserGroups(userName=userLogin, domain=domain)>
-
-								<cfif listLen(lGroups) gt 0 AND lGroups neq "false">
-									<!--- get the group mappings for this policy group on this user directory --->
-									<cfset aGroups = oAuthorisation.getMultiplePolicyGroupMappings(lgroupnames=lgroups,userdirectory=ud)>
-	
-									<!--- loop through the mapped groups and check if the user is in them --->
-									<cfloop index="j" from="1" to="#arrayLen(aGroups)#">
-										<!--- if the user is a member of this group then add the policy group to this users valid policy groups --->
-										<cfscript>
-										stGroup = aGroups[j];
-										lPolicyGroupIDs = listAppend(lPolicyGroupIDs, stGroup.policyGroupID);
-										</cfscript>
-									</cfloop>
-								<cfelse>
-									<cfthrow>
-								</cfif>
-								
-								<cfcatch>
-									<!--- get the group mappings for this policy group on this user directory --->
-									<cfquery name="qUD" datasource="#stPolicyStore.datasource#">
-									SELECT PolicyGroupID, ExternalGroupName
-									FROM #application.dbowner#dmExternalGroupToPolicyGroup
-									WHERE upper(ExternalGroupUserDirectory) = '#ucase(domain)#'
-									ORDER BY PolicyGroupID ASC
-									</cfquery>
-				
-									<!--- loop through the mapped groups and check if the user is in them --->
-									<cfloop query="qUD">
-										<!--- if the user is a member of this group then add the policy group to this users valid policy groups --->
-										<cfscript>
-										bInGroup = o_NTsec.userInGroup(userName=userLogin, groupName=qUD.ExternalGroupName, domain=domain);
-										if (bInGroup) lPolicyGroupIDs = listAppend(lPolicyGroupIDs, qUD.PolicyGroupID);
-										</cfscript>
-									</cfloop>
-								</cfcatch>
-							</cftry>
-			
-							<!--- set the session login information --->
-							<cflock timeout="45" throwontimeout="No" type="EXCLUSIVE" scope="SESSION">
-								<cfscript>
-								//name = o_NTsec.getUserFullName(userName=userLogin, domain=domain);
-								//if (name eq "") name = "<not specified>";
-								//notes = o_NTsec.getUserDescription(userName=userLogin, domain=domain);
-				
-								session.dmSec.authentication = structNew();
-								session.dmSec.authentication.userID = userLogin;
-								session.dmSec.authentication.userLogin = userLogin;
-								session.dmSec.authentication.canonicalName = userLogin;
-								session.dmSec.authentication.userNotes = "";
-								session.dmSec.authentication.lPolicyGroupIDs = lPolicyGroupIDs;
-								session.dmSec.authentication.userDirectory = validUD;
-				
-								bhasLoggedIn = 1;
-								</cfscript>
-							</cflock>
-			
-							<cfif listLen(lPolicyGroupIDs) eq 0>
-								<cfif arguments.bAudit>
-									<cfscript>
-										oAudit.logActivity(auditType="dmSec.loginfailed", username=arguments.userlogin, location=cgi.remote_host, note="not admin group member");
-									</cfscript>
-								</cfif>
-								<!--- throw error --->
-								
-							</cfif>
-						<cfelse> <!--- If bAuth is "false" --->
-							<!--- takes too long to determine if user is in DOMAIN 
-							<cfscript>
-							// login failed so determine if user is a member of the domain
-							bInDir = o_NTsec.userInDirectory(userName=userLogin, domain=domain);
-							</cfscript>
-			
-							<cfif bInDir>--->
-								<cfif arguments.bAudit>
-									<cfscript>
-										oAudit.logActivity(auditType="dmSec.loginfailed", username=arguments.userlogin, location=cgi.remote_host, note="ADSI login failed on domain #domain#");
-									</cfscript>
-								</cfif>
-								<!--- throw error --->
-								<!--- <cf_dmSec_throw errorcode="dmSec_LoginADSIFailed" lextra=""> --->
-							<!--- </cfif> --->
-						</cfif>
-			
-					</cfcase>
-					<cfdefaultcase>
-			
-						<!--- search for the user in ud --->
-						<cfset stUser = getUser(userlogin=arguments.userlogin,userdirectory=ud)>
-						
-						<!--- if we found the user --->
-						<cfif not StructIsEmpty(stUser)>
-			
-							<!--- check the password is correct --->
-							<cfif isdefined("stUser.userStatus")>
-								<cfif stUser.userStatus neq 4>
-									<!--- login failed due to user status --->
-									<cfif arguments.bAudit>
-										<cfscript>
-											oAudit.logActivity(auditType="dmSec.loginfailed", username=arguments.userlogin, location=cgi.remote_host, note="userStatus: #stUser.userstatus#, account disabled");
-											logged=1;
-										</cfscript>
-									</cfif>
-									<!--- throw error --->
-									<cfset bHasLoggedIn = 0>
-									<cfbreak>
-								</cfif>
-							</cfif>
-							
-							<!--- check if UD has password encryption --->
-							<cfif structKeyExists(stUD[ud],"bEncrypted") and stUD[ud].bEncrypted>
-								<cfset userPassword = hash(arguments.userPassword)>
-							<cfelse>
-								<cfset userPassword = arguments.userPassword>
-							</cfif>
-							
-							<cfif trim(stUser.userpassword) IS trim(userPassword)>
-								
-								<!--- get the users groups --->
-								<cfscript>
-									aGroups = GetMultipleGroups(userLogin=arguments.userlogin,userDirectory=ud);
-									lGroupNames = arrayKeyToList(array=aGroups,key='groupName');
-									lPolicyGroupIds = oAuthorisation.getPolicyGroupMappings(userDirectory=ud,lGroupNames=lGroupNames);
-								</cfscript>
-								
-								<!--- map the groups to policy groups --->
-														
-								<!--- set the session login information --->
-								
-								<cflock timeout="45" throwontimeout="No" type="EXCLUSIVE" scope="SESSION">
-									<cfscript>
-										session.dmSec.authentication = duplicate( stUser );
-										if( structKeyExists( session.dmSec.authentication, "userPassword"))
-											structDelete( session.dmSec.authentication, "userPassword" );
-										session.dmSec.authentication.lPolicyGroupIds=lPolicyGroupIds;
-										session.dmSec.authentication.canonicalName = arguments.userlogin;
-										
-										//Check the audit log to see if this user has logged in before.
-										//If they have not then set the firstLogin flag
-										if(oAudit.getAuditLog(username=arguments.userLogin, auditType="dmSec.login").recordcount neq 0)
-											session.firstLogin = false;
-										else
-											session.firstLogin = true;
-										
-										bHasLoggedIn = 1;
-									</cfscript>
-								</cflock>
-								
-								<!--- login has succeded so stop searching the user directories --->
-								<cfif arguments.bAudit>
-									<cfscript>
-										//Make an entry in the Audit Log for this successful login	
-										if(session.firstLogin)
-											auditNote = "userDirectory:" & session.dmSec.authentication.userdirectory & " **First Login**";
-										else
-											auditNote = "userDirectory:" & session.dmSec.authentication.userdirectory;
-											
-										oAudit.logActivity(auditType="dmSec.login", username=arguments.userlogin, location=cgi.remote_host, note=auditNote);
-									</cfscript>
-								</cfif>
-								
-			
-								<!--- break cfloop, finish template (perhaps this should be <cfexit>?) 20020908 GB --->
-								<cfbreak>
-							<cfelse>
-								<!--- login failed due to incorrect password --->
-								<cfif arguments.bAudit>
-									<cfscript>
-										oAudit.logActivity(auditType="dmSec.loginfailed", username=arguments.userlogin, location=cgi.remote_host, note="password incorrect");
-										logged=1;
-									</cfscript>
-								</cfif>
-			
-								<!--- throw error --->
-								<cfset bHasLoggedIn = 0>
-							</cfif>
-						</cfif>
-			
-					</cfdefaultcase>
-				</cfswitch>
-			</cfloop>
-
-<!--- 
-<cfdump var="#session#">
-// overrides policy mapping if they are missing.. debugging only GB
-<cfset session.dmsec.authentication.lpolicygroupids="1,2,3,4,5,6,7,8,9">
-<cfabort />
- --->
+		<cfset var ud = "" />
+		<cfset var stResult = structnew() />
+		<cfset var oUser = createObject("component", application.stcoapi["farUser"].packagePath) />
+		<cfset var oRole = createObject("component", application.stcoapi["farRole"].packagePath) />
+		<cfset var oPermission = createObject("component", application.stcoapi["farPermission"].packagePath) />
+		<cfset var groups = "" />
+		<cfset var group = "" />
 		
-			<!--- we've been through all our userdirectories here, so if we haven't logged in throw a spaz --->
-			<cfif not bHasLoggedIn and not isdefined("logged")>
-				<!--- login failed - user unknown --->
-				<cfif arguments.bAudit>
-					<cfscript>
-						oAudit.logActivity(auditType="dmSec.loginfailed", username=arguments.userlogin, location=cgi.remote_host, note="user unknown");
-					</cfscript>
-				</cfif>
+		<farcry:deprecated message="authentication.login() has been deprectated in favor of UserDirectory.authenticate()" />
+		
+		<!--- Clear session details --->
+		<cfset logout() />
+		
+		<!--- Clean arguments --->
+		<cfset arguments.userlogin = trim(arguments.userlogin) />
+		<cfset arguments.userpassword = trim(arguments.userpassword) />
+		
+		<cfloop collection="#application.security.userdirectories#" item="ud">
+			<!--- Authenticate user --->
+			<cfset stResult = application.security.userdirectories[ud].authenticate() />
 			
+			<cfif structkeyexists(stResult,"authenticated")>
+				<cfif not stResult.authenticated>
+					<cfset application.factory.oAudit.logActivity(auditType="dmSec.loginfailed", username=arguments.userlogin, location=cgi.remote_host, note="password incorrect,") />
+					<cfreturn false />
+				</cfif>
+				
+				<!--- Retrieve user info --->
+				<cfset session.dmSec.authentication = oUser.getByUserID(stResult.userid) />
+				<cfif structkeyexists(session.dmSec.authentication,"password")>
+					<cfset structdelete(session.dmSec.authentication,"password") />
+				</cfif>
+				<cfset session.dmSec.authentication.userlogin = stResult.userid />
+				<cfset session.dmSec.authentication.canonicalname = "#stResult.userid#_#ud#" />
+				<cfset session.dmSec.authentication.userdirectory = ud />
+				
+				<!--- Get user groups and convert them to Farcry roles --->
+				<cfloop list="#application.security.userdirectories[ud].getUserGroups(stResult.userid)#" index="group">
+					<cfset groups = listappend(groups,"#group#_#ud#") />
+				</cfloop>
+				<cfset session.dmSec.authentication.lPolicyGroupIds = oRole.groupsToRoles(groups) />
+				
+				<!--- Admin flag --->
+				<cfset session.dmSec.authentication.bAdmin = oRole.checkPermission(role=session.dmSec.authentication.lPolicyGroupIds,permission=oPermission.getID("Admin")) />
+				
+				<!--- First login flag --->
+				<cfif application.factory.oAudit.getAuditLog(username=session.dmSec.authentication.canonicalname,auditType="dmSec.login").recordcount eq 0>
+					<cfset session.firstLogin = false />
+				<cfelse>
+					<cfset session.firstlogin = true />
+				</cfif>
+				
+				<!--- New structure --->
+				<cfset session.security.userid = "#stResult.userid#_#ud#" />
+				<cfset session.security.roles = oRole.groupsToRoles(groups) />
+				
+				<!--- Log the result --->
+				<cfif arguments.bAudit>
+					<cfif session.firstLogin>
+						<cfset application.factory.oAudit.logActivity(auditType="dmSec.login", username=session.dmSec.authentication.canonicalname, location=cgi.remote_host, note="userDirectory: #ud# **First Login**") />
+					<cfelse>
+						<cfset application.factory.oAudit.logActivity(auditType="dmSec.login", username=session.dmSec.authentication.canonicalname, location=cgi.remote_host, note="userDirectory: #ud#") />
+					</cfif>
+				</cfif>
+				
+				<!--- Return 'success' --->
+				<cfreturn true />
 			</cfif>
-
-		<cfreturn bHasLoggedIn>
+		</cfloop>
+		
+		<!--- If login failed, log that --->
+		<cfset application.factory.oAudit.logActivity(auditType="dmSec.loginfailed", username=arguments.userlogin, location=cgi.remote_host, note="user unknown") />
+		<cfreturn false />
 	</cffunction>
 	
 	<cffunction name="initDMSECSessionVars" returntype="boolean">
 		<cfargument name="userlogin" required="Yes" hint="This user structure can be returned from getUser()">
 		<cfargument name="userdirectory" required="Yes" hint="Daemon,ADSI">		
-		<cftry>
-			<cfscript>
-			oAuthorisation = createObject("component","#application.securitypackagepath#.authorisation");
-			aGroups = GetMultipleGroups(userLogin=arguments.userlogin,userDirectory=arguments.userdirectory);
-			lGroupNames = arrayKeyToList(array=aGroups,key='groupName');
-			lPolicyGroupIds = oAuthorisation.getPolicyGroupMappings(userDirectory=arguments.userdirectory,lGroupNames=lGroupNames);
-			stUser = getUser(userlogin=arguments.userlogin,userdirectory=arguments.userdirectory);
-			session.dmSec.authentication = duplicate( stUser );
-			if( structKeyExists( session.dmSec.authentication, "userPassword"))
-				structDelete( session.dmSec.authentication, "userPassword" );
-			session.dmSec.authentication.lPolicyGroupIds=lPolicyGroupIds;
-			session.dmSec.authentication.canonicalName = arguments.userlogin;
-			bSuccess = 1;
-			</cfscript>
-			<cfcatch>
-				<cfset bSuccess = 0>
-			</cfcatch>
-		</cftry>
-		<cfreturn bSuccess>
+		
+		<farcry:deprecated message="authentication.initDMSECSessionVars() is not supported by the 4.1 security structure" />
+		
+		<cfthrow message="authentication.initDMSECSessionVars() is not supported by the 4.1 security structure" />
+				
+		<cfreturn false />
 	</cffunction>
-	
 	
 	<cffunction name="logout" access="public" hint="Logs the user out of the system" output="No">
 		<cfargument name="bAudit" type="boolean" required="false" default="false" >
 		<cfargument name="note" type="string" required="false" default="REFERRER #CGI.HTTP_REFERER#">
 		
-		<cfset var bLoggedIn = 0 />
-		<cfset var username =  ""/>
+		<farcry:deprecated message="authentication.logout() has been deprectated in favor of ????" />
 		
-		<cflock timeout=20 scope="Session" type="Exclusive">		
-
-			
-			<cfif isDefined("session.dmSec") AND isDefined("session.dmSec.authentication")>
-				<cfset bLoggedIn=1 />
-			</cfif>
-			
-			<cfif bLoggedin>
-				<cfset username =  session.dmSec.authentication.userlogin />
-				
-				<cfset session.dmSec = structNew() />
-				
-				<cfset structDelete(session, "dmProfile") />
-				<!--- // remove editing preferences --->
-				<cfset structDelete(session,"genericadmin") />
-				<cfset structDelete(session,"typeadmin") />
-				<!--- // audit logout --->
-				<cfif (arguments.bAudit) >
-					<cfset oAudit = createObject("component","#application.packagepath#.farcry.audit") />
-					<cfset oAudit.logActivity(auditType="dmSec.logout", username=username, location=cgi.remote_host, note="#arguments.note#") />
-				</cfif>
-			</cfif>		
-		
-		</cflock>
+		<cfset structdelete(session,"security") />
 	</cffunction>
 	
 	<cffunction name="removeUserFromGroup" output="No">
@@ -891,21 +358,18 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
 		<cfargument name="groupName" required="true">
 		<cfargument name="userDirectory" required="true">
 		
-		<cfscript>
-			oAudit = createObject("component","#application.packagepath#.farcry.audit");
-			stuser = getUser(userlogin=arguments.userlogin,userdirectory=arguments.userdirectory);
-			stGroup=getGroup(groupname=arguments.groupname,userdirectory=arguments.userdirectory);
-			stUD = getUserDirectory();
-			
-			sql = "
-				DELETE FROM #application.dbowner#dmUserToGroup
-				WHERE userId = #stUser.userId# AND groupId = #stGroup.groupId#";
-			query(sql=sql,dsn=stUd[userDirectory].datasource);	
-			stuser = getUserAuthenticationData();
-				if(stUser.bLoggedIn)
-					oAudit.logActivity(auditType="dmSec.removeUserFromGroup", username=StUser.userlogin, location=cgi.remote_host, note="#arguments.userlogin# removed from #arguments.groupname#");	
-		</cfscript>
+		<cfset var oUser = createObject("component", application.stcoapi["farUser"].packagePath) />
+		
+		<farcry:deprecated message="authentication.removeUserFromGroup() has been deprectated in favor of farUser.removeGroup()" />
+		
+		<cfif findnocase(arguments.userdirectory,arguments.userlogin)>
+			<cfset arguments.userlogin = listfirst(arguments.userlogin,"_") />
+		</cfif>
+		<cfif findnocase(arguments.userdirectory,arguments.groupName)>
+			<cfset arguments.groupName = listfirst(arguments.groupName,"_") />
+		</cfif>
 
+		<cfset oUser.removeGroup(user=arguments.userlogin,gorup=arguments.groupname) />
 	</cffunction>
 	
 	<cffunction name="updateGroup" hint="Updates group data" returntype="struct" output="No">
@@ -913,21 +377,18 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
 		<cfargument name="groupName" required="true">
 		<cfargument name="groupNotes" required="false">
 		
-		<cfscript>
-		stResult = structNew();
-		stUD = getUserDirectory();
-		sql = "
-		UPDATE #application.dbowner#dmGroup SET
-				GroupName='#arguments.GroupName#',GroupNotes='#replace(arguments.GroupNotes,"'","","ALL")#'
-				WHERE GroupId=#arguments.GroupId#";
-		query(sql=sql,dsn=stUd[arguments.UserDirectory].datasource);		
-		stResult.bSuccess = true;
-		stResult.message = "Group '#arguments.groupname#' has been successfully updated";
-		oAudit = createObject("component","#application.packagepath#.farcry.audit");
-		stuser = getUserAuthenticationData();
-			if(stUser.bLoggedIn)
-				oaudit.logActivity(auditType="dmSec.updategroup", username=StUser.userlogin, location=cgi.remote_host, note="group #arguments.groupname# updated");	
-		</cfscript>
+		<cfset var stGroup = structnew() />
+		<cfset var oGroup = createObject("component", application.stcoapi["farGroup"].packagePath) />
+		<cfset var stResult = structnew() />
+		
+		<farcry:deprecated message="authentication.updateGroup() has been deprectated in favor of farGroup.setData()" />
+		
+		<cfset stGroup = oGroup.getData(objectid=arguments.groupid) />
+		<cfset stGroup.title = arguments.groupName />
+		<cfset oGroup.setData(stProperties=stGroup) />
+		
+		<cfset stResult.bSuccess = true />
+		<cfset stResult.message = "Group '#arguments.groupname#' has been successfully updated" />
 		
 		<cfreturn stResult>
 	</cffunction>
@@ -940,52 +401,25 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
 		<cfargument name="userNotes" required="false" default="">
 		<cfargument name="userPassword" required="true">
 		
-	
-		<cfscript>
-			stResult = structNew();
-			stResult.bSuccess = true;
-			stResult.message = "User has been successfully added";
-			stUD = getUserDirectory();
-			stOriginalUser = getuser(userid=arguments.userid,userdirectory=arguments.userdirectory);
-			if (NOT stOriginalUser.userLogin IS arguments.userLogin)
-			{
-				aUsers = getMultipleUsers(userlogin=arguments.userlogin);
-				if (arrayLen(aUsers))
-				{
-					stResult.bSuccess = false;
-					stResult.message = "User update has not taken place, userlogin already exists";
-				}
-			}
-		</cfscript>
-			
-		<cfif stResult.bSuccess>
-			<!--- check if ud uses password encryption --->
-			<cfif structKeyExists(Application.dmSec.UserDirectory[arguments.userDirectory],"bEncrypted") and Application.dmSec.UserDirectory[arguments.userDirectory].bEncrypted>
-				<!--- check if password has changed --->
-				<cfif arguments.userPassword neq stOriginalUser.userPassword>
-					<cfset userPassword = hash(arguments.userPassword)>
-				<cfelse>
-					<cfset userPassword = arguments.userPassword>
-				</cfif>
-			<cfelse>
-				<cfset userPassword = arguments.userPassword>
-			</cfif>
-			
-			<cfquery datasource="#stUd[Userdirectory].datasource#">
-				UPDATE #application.dbowner#dmUser SET
-				userLogin='#arguments.UserLogin#',userPassword='#userPassword#',userNotes=<cfqueryparam cfsqltype="CF_SQL_VARCHAR" value="#arguments.usernotes#">,userStatus='#arguments.userStatus#'
-				WHERE userId='#arguments.userId#'
-			</cfquery> 
-			<cfscript>
-				oAudit = createObject("component","#application.packagepath#.farcry.audit");
-				stuser = getUserAuthenticationData();
-				if(stUser.bLoggedIn)
-					oaudit.logActivity(auditType="dmSec.updateuser", username=stUser.userlogin, location=cgi.remote_host, note="user #arguments.userlogin# updated");
-			</cfscript>
+		<cfset var stResult = structnew() />
+		<cfset var stUser = structnew() />
+		<cfset var oUser = createObject("component", application.stcoapi["farUser"].packagePath) />
 		
-		</cfif>			
-			
+		<farcry:deprecated message="authentication.updateUser() has been deprectated in favor of farUser.setData()" />
 		
+		<cfset stUser = oUser.getData(objectid=arguments.userid) />
+		<cfset stUser.userid = arguments.userlogin />
+		<cfif arguments.userstatus eq 4>
+			<cfset stUser.userstatus = "active" />
+		<cfelse>
+			<cfset stUser.userstatus = "disabled" />
+		</cfif>
+		<cfset stUser.password = arguments.userPassword />
+		<cfset oUser.setData(stProperties=stUser) />
+			
+		<cfset stResult.bSuccess = true />
+		<cfset stResult.message = "User has been successfully added" />
+			
 		<cfreturn stResult>
 	</cffunction>
 	
