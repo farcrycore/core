@@ -19,4 +19,28 @@
 		</cfif>
 	</cffunction>
 	
+	<cffunction name="delete" access="public" hint="Removes any corresponding entries in farUser" returntype="struct" output="false">
+		<cfargument name="objectid" required="yes" type="UUID" hint="Object ID of the object being deleted">
+		<cfargument name="user" type="string" required="true" hint="Username for object creator" default="">
+		<cfargument name="auditNote" type="string" required="true" hint="Note for audit trail" default="">
+		
+		<cfset var stUser = structnew() />
+		<cfset var qUser = "" />
+		<cfset var oUser = createObject("component", application.stcoapi["farUser"].packagePath) />
+		
+		<cfquery datasource="#application.dsn#" name="qUser">
+			select	*
+			from	#application.dbowner#farUser_groups
+			where	data=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectid#" />
+		</cfquery>
+		
+		<cfloop query="qUser">
+			<cfset stUser = oUser.getData(parentid) />
+			<cfset arraydeleteat(stUser.groups,seq) />
+			<cfset oUser.setData(stProperties=stUser) />
+		</cfloop>
+		
+		<cfreturn super.delete(objectid=arguments.objectid,user=arguments.user,audittype=arguments.audittype) />
+	</cffunction>
+	
 </cfcomponent>

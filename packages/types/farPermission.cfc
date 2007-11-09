@@ -28,14 +28,14 @@
 		
 		<cfif not isdefined("application.security.permissionlookup") or not structkeyexists(application.security.permissionlookup,arguments.name)>
 			<cfquery datasource="#application.dsn#" name="qPermissions">
-				select	objectid,label
+				select	objectid,shortcut
 				from	#application.dbOwner#farPermission
 			</cfquery>
 			
 			<cfparam name="application.security" default="#structnew()#" />
 			<cfparam name="application.security.permissionlookup" default="#structnew()#" />
 			<cfloop query="qPermissions">
-				<cfset application.security.permissionlookup[label] = objectid />
+				<cfset application.security.permissionlookup[shortcut] = objectid />
 			</cfloop>
 		</cfif>
 		
