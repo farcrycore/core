@@ -26,27 +26,20 @@ $out:$
 
 <cfprocessingDirective pageencoding="utf-8">
 
-<!--- check permissions --->
-<cfscript>
-	iGeneralTab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="AdminGeneralTab");
-</cfscript>
-
 <!--- set up page header --->
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
+
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<cfif iGeneralTab eq 1>
-
+<sec:restricted permission="AdminGeneralTab">
 	<h3>Config Dumps</h3>
 	
 	<!--- loop over all configs and dump the contents of them --->
 	<cfloop collection="#application.config#" item="config">
 		<cfdump var="#application.config[config]#" label="#config#"><cfoutput><p>&nbsp;</p></cfoutput>
 	</cfloop>
-
-<cfelse>
-	<admin:permissionError>
-</cfif>
+</sec:restricted>
 
 <!--- setup footer --->
 <admin:footer>

@@ -29,19 +29,14 @@ $out:$
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
 <cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry">
 <cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
+<cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
 
 <!--- character to indicate levels --->
 <cfset levelToken = "-" />
 
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<!--- check permissions --->
-<cfscript>
-	iDeveloperPermission = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="developer");
-</cfscript>
-
-<cfif iDeveloperPermission eq 1>
-
+<sec:restricted permission="developer">
 	<cfif isDefined("form.submit")>
 	    <cfscript>
 		    aliasDelimiter = "||";
@@ -359,10 +354,7 @@ $out:$
 	
 	</cfoutput>
 	</cfif>
-
-<cfelse>
-	<admin:permissionError>
-</cfif>
+</sec:restricted>
 
 <admin:footer>
 

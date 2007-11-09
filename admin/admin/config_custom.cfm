@@ -27,16 +27,11 @@ $out:$
 <cfprocessingDirective pageencoding="utf-8">
 
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
-
-<!--- check permissions --->
-<cfscript>
-	iGeneralTab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="AdminGeneralTab");
-</cfscript>
+<cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
 
 <admin:header title="Custom Config" writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<cfif iGeneralTab eq 1>	
-
+<sec:restricted permission="AdminGeneralTab">
 	<!--- get custom configs --->
 	<cfdirectory action="LIST" directory="#application.path.project#/system/dmConfig" name="qConfigs" filter="*.cfm">
 	<cfscript>
@@ -94,10 +89,7 @@ $out:$
 	<cfelse>
 		<cfoutput><p>#application.adminBundle[session.dmProfile.locale].noCustomConfigNow#</p></cfoutput>
 	</cfif>
-
-<cfelse>
-	<admin:permissionError>
-</cfif>
+</sec:restricted>
 
 <admin:footer>
 <cfsetting enablecfoutputonly="No">

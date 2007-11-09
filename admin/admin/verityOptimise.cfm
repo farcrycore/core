@@ -21,15 +21,12 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 
 <cfprocessingDirective pageencoding="utf-8">
 
-<!--- check permissions --->
-<cfscript>
-	iSearchTab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="AdminSearchTab");
-</cfscript>
-
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
+
 <admin:header title="#application.adminBundle[session.dmProfile.locale].buildVerityIndices#" writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<cfif iSearchTab eq 1>
+<sec:restricted permission="AdminSearchTab">
 	<!--------------------------------------------------------------------
 	Optimisation Routine For CFMX 
 	--------------------------------------------------------------------->
@@ -52,10 +49,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	</cfloop>
 	
 	<cfoutput><p><strong class="success fade" id="fader1">#application.adminBundle[session.dmProfile.locale].allDone#</strong></p></cfoutput>
-
-<cfelse>
-	<admin:permissionError>
-</cfif>
+</sec:restricted>
 
 <!--- setup footer --->
 <admin:footer>

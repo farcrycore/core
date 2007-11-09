@@ -24,12 +24,9 @@ $out:$
 
 <cfprocessingDirective pageencoding="utf-8">
 
-<!--- check permissions --->
-<cfscript>
-	iCOAPITab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="AdminCOAPITab");
-</cfscript>
+<cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
 
-<cfif iCOAPITab eq 1>
+<sec:restricted permission="AdminCOAPITab">
 	<cfscript>
 	if(isDefined("url.typename") AND isDefined("url.ruleid"))
 	{
@@ -41,8 +38,4 @@ $out:$
 		}
 	}
 	</cfscript>
-
-<cfelse>
-	<cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
-	<admin:permissionError>
-</cfif>
+</sec:restricted>

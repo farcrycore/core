@@ -24,17 +24,13 @@ $out:$
 
 <cfprocessingDirective pageencoding="utf-8">
 
-<!--- check permissions --->
-<cfscript>
-	iCOAPITab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="AdminCOAPITab");
-</cfscript>
-
 <!--- set up page header --->
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
+
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<cfif iCOAPITab eq 1>	
-
+<sec:restricted permission="AdminCOAPITab">
 	<cfoutput><h3>#application.adminBundle[session.dmProfile.locale].COAPITypeMetaData#</h3></cfoutput>
 	<cfdump var="#application.types#" label="application.types" expand="no">
 	
@@ -42,10 +38,7 @@ $out:$
 	<h3>#application.adminBundle[session.dmProfile.locale].COAPIRulesMetaData#</h3></cfoutput>
 	
 	<cfdump var="#application.rules#" label="application.rules" expand="no">
-
-<cfelse>
-	<admin:permissionError>
-</cfif>
+</sec:restricted>
 
 <admin:footer>
 

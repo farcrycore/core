@@ -25,17 +25,13 @@ $out:$
 <cfsetting enablecfoutputonly="Yes">
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
 <cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
 
 <cfprocessingDirective pageencoding="utf-8">
 
-<!--- check permissions --->
-<cfscript>
-	iCOAPITab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="AdminCOAPITab");
-</cfscript>
-
 <admin:header title="#application.adminBundle[session.dmProfile.locale].COAPIrules#" writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<cfif iCOAPITab eq 1>	
+<sec:restricted permission="AdminCOAPITab">
 	<cfoutput><h3>#application.adminBundle[session.dmProfile.locale].ruleClasses#</h3></cfoutput>
 	
 	<cfparam name="FORM.action" default="">
@@ -167,10 +163,7 @@ $out:$
 	</table>
 	
 	</cfoutput>
-
-<cfelse>
-	<admin:permissionError>
-</cfif>
+</sec:restricted>
 
 <admin:footer>
 <cfsetting enablecfoutputonly="No">

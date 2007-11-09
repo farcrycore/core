@@ -25,14 +25,13 @@ $out:$
 
 <cfprocessingDirective pageencoding="utf-8">
 
-<!--- check permissions --->
-<cfset iGeneralTab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="AdminGeneralTab")>
-
 <!--- set up page header --->
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
+
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<cfif iGeneralTab eq 1>	
+<sec:restricted permission="AdminCOAPITab">
 	<cfoutput><h3>#application.adminBundle[session.dmProfile.locale].farcryInternalConfigFiles#</h3></cfoutput>
 	<cfparam name="form.action" default="none">
 	
@@ -164,10 +163,7 @@ $out:$
 			</form></cfoutput>
 		</cfcatch>
 	</cftry>
-
-<cfelse>
-	<admin:permissionError>
-</cfif>
+</sec:restricted>
 
 <!--- setup footer --->
 <admin:footer>

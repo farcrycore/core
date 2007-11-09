@@ -26,15 +26,13 @@ $out:$
 
 <cfprocessingDirective pageencoding="utf-8">
 
-<!--- check permissions --->
-<cfset iGeneralTab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="AdminGeneralTab")>
-
 <!--- set up page header --->
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
+
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<cfif iGeneralTab eq 1>
-
+<sec:restricted permission="AdminGeneralTab">
 	<cfimport taglib="/farcry/core/tags/display/" prefix="display">
 	
 	<cfparam name="stargs.typename" default="dmEmail">
@@ -257,10 +255,7 @@ $out:$
 				</form>		
 			
 	</cfoutput>	
-
-<cfelse>
-	<admin:permissionError>
-</cfif>
+</sec:restricted>
 
 <!--- setup footer --->
 <admin:footer>

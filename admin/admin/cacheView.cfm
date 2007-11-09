@@ -29,25 +29,19 @@ out:
 
 <cfprocessingDirective pageencoding="utf-8">
 
-<!--- check permissions --->
-<cfscript>
-	iGeneralTab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="AdminGeneralTab");
-</cfscript>
-
 <!--- set up page header --->
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
+
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<cfif iGeneralTab eq 1>
+<sec:restricted permission="AdminGeneralTab">
 
 	<!--- get cache details --->
 	<cfset contentcache = structget("server.dm_generatedcontentcache.#application.applicationname#")>
 	<!--- show contents of cache --->
 	<cfoutput>#contentcache[url.cache].cache#</cfoutput>
-
-<cfelse>
-	<admin:permissionError>
-</cfif>
+</sec:restricted>
 
 <!--- setup footer --->
 <admin:footer>

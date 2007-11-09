@@ -27,17 +27,13 @@ $out:$
 
 <cfprocessingDirective pageencoding="utf-8">
 
-<!--- check permissions --->
-<cfscript>
-	iCOAPITab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="AdminCOAPITab");
-</cfscript>
-
 <!--- set up page header --->
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
+
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<cfif iCOAPITab eq 1>
-
+<sec:restricted permission="AdminCOAPITab">
 	<!--- find orphans --->
 	<cfswitch expression="#application.dbtype#">
 		<cfcase value="mysql,mysql5">
@@ -134,9 +130,7 @@ $out:$
 		</cfif>
 		
 	</cfif>
-<cfelse>
-	<admin:permissionError>
-</cfif>
+</sec:restricted>
 
 <!--- setup footer --->
 <admin:footer>

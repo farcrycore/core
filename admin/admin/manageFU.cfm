@@ -29,16 +29,13 @@ $out:$
 <cfparam name="form.searchIn" default="">
 <cfparam name="form.searchText" default="">
 
-<!--- check permissions --->
-<cfscript>
-	iGeneralTab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="AdminGeneralTab");
-</cfscript>
-
 <!--- set up page header --->
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
+
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<cfif iGeneralTab eq 1>
+<sec:restricted permission="AdminGeneralTab">
 	<cfset objFU = createObject("component","#application.packagepath#.farcry.FU")>
 	
 	<!--- check if items have been marked for deletion --->
@@ -135,9 +132,7 @@ $out:$
 		
 		</form>
 	</cfoutput>
-<cfelse>
-	<admin:permissionError>
-</cfif>
+</sec:restricted>
 
 <!--- setup footer --->
 <admin:footer>

@@ -30,6 +30,7 @@ $out:$
 <cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry">
 <cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
 <cfimport taglib="/farcry/core/tags/widgets/" prefix="widgets">
+<cfimport taglib="/farcry/core/tags/security/" prefix="sec">
 <cfinclude template="/farcry/core/admin/includes/cfFunctionWrappers.cfm">
 <cfinclude template="/farcry/core/admin/includes/utilityFunctions.cfm">
 
@@ -37,10 +38,8 @@ $out:$
 <cfparam name="lSelectedCategoryID" default="">
 
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
-<!--- check permissions --->
-<cfset iDeveloperPermission = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="developer")>
 
-<cfif iDeveloperPermission eq 1>
+<sec:restricted permission="developer">
 	<cfif isDefined("form.submit")>
 		<cfoutput>
 		<style>
@@ -287,8 +286,7 @@ $out:$
 		
 	</cfoutput>
 	</cfif>
-<cfelse>
-	<admin:permissionError>
-</cfif>
+</sec:restricted>
+
 <admin:footer>
 <cfsetting enablecfoutputonly="No">

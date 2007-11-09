@@ -30,18 +30,14 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 --->
 <!--- import tag libraries --->
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
 
 <!--- grab CF7 version of the component --->
 <cfset oVerity=createObject("component", "#application.packagepath#.farcry.veritycf7")>
 
-<!--- check permissions --->
-<cfscript>
-	iSearchTab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="AdminSearchTab");
-</cfscript>
-
 <admin:header title="#application.adminBundle[session.dmProfile.locale].buildVerityIndices#" writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<cfif iSearchTab eq 1>
+<sec:restricted permission="AdminSearchTab">
 	<cfscript>
 	// get Verity config information
 	oConfig = createObject("component", "#application.packagepath#.farcry.config");
@@ -121,10 +117,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	<cfoutput>
 	<p><strong class="success fade" id="fader1">#application.adminBundle[session.dmProfile.locale].verityConfigUpdated# #application.adminBundle[session.dmProfile.locale].allDone#</strong></p>
 	</cfoutput>
-
-<cfelse>
-	<admin:permissionError>
-</cfif>
+</sec:restricted>
 
 <!--- setup footer --->
 <admin:footer>

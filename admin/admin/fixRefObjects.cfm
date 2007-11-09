@@ -1,17 +1,14 @@
 <cfsetting enablecfoutputonly="Yes" requesttimeout="2000">
 	
 <cfprocessingDirective pageencoding="utf-8">
-	
-<!--- check permissions --->
-<cfscript>
-	iCOAPITab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="AdminCOAPITab");
-</cfscript>
 
 <!--- set up page header --->
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
+
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<cfif iCOAPITab eq 1>
+<sec:restricted permission="AdminCOAPITab">
 	<cfif isDefined("Form.submit")>
 		<cfparam name="Form.bProcessTypes" default=true >
 		<cfparam name="Form.bProcessRules" default=true >
@@ -158,9 +155,7 @@
 		</form>
 		</cfoutput>
 	</cfif>
-<cfelse>
-	<admin:permissionError>
-</cfif>
+</sec:restricted>
 
 <admin:footer>
 <cfsetting enablecfoutputonly="No">

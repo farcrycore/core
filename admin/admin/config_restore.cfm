@@ -26,17 +26,13 @@ $out:$
 
 <cfprocessingDirective pageencoding="utf-8">
 
-<!--- check permissions --->
-<cfscript>
-	iGeneralTab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="AdminGeneralTab");
-</cfscript>
-
 <!--- set up page header --->
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
+
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<cfif iGeneralTab eq 1>
-
+<sec:restricted permission="AdminGeneralTab">
 	<cfoutput><h3>#application.adminBundle[session.dmProfile.locale].restoreDefaultConfig#</h3></cfoutput>
 	
 	<!--- drop tables and recreate --->
@@ -136,12 +132,7 @@ $out:$
 	<cfoutput></ul></cfoutput>
 	
 	<cfoutput><h3 class="fade success" id="fader1">#application.adminBundle[session.dmProfile.locale].allDone#</h3></cfoutput>
-
-	
-	
-<cfelse>
-	<admin:permissionError>
-</cfif>
+</sec:restricted>
 
 <!--- setup footer --->
 <admin:footer>

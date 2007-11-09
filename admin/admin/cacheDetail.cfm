@@ -29,16 +29,13 @@ out:
 
 <cfprocessingDirective pageencoding="utf-8">
 
-<!--- check permissions --->
-<cfscript>
-	iGeneralTab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="AdminGeneralTab");
-</cfscript>
-
 <!--- set up page header --->
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/security/" prefix="sec">
+
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<cfif iGeneralTab eq 1>
+<sec:restricted permission="AdminGeneralTab">
 	<!--- flush selected caches --->
 	<cfif isdefined("form.flush")>
 		<cfinvoke component="#application.packagepath#.farcry.cache" method="cacheFlush">
@@ -127,10 +124,7 @@ out:
 	
 	<!--- show link back to summary page --->
 	<cfoutput><p><span class="frameMenuBullet">&raquo;</span> <a href="cacheSummary.cfm">#application.adminBundle[session.dmProfile.locale].returnCacheSummaryPage#</a></p></cfoutput>
-
-<cfelse>
-	<admin:permissionError>
-</cfif>
+</sec:restricted>
 
 <admin:footer>
 <cfsetting enablecfoutputonly="no">

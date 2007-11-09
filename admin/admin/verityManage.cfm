@@ -21,15 +21,12 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 
 <cfprocessingDirective pageencoding="utf-8">
 
-<!--- check permissions --->
-<cfscript>
-	iSearchTab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="AdminSearchTab");
-</cfscript>
-
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
+
 <admin:header title="#application.adminBundle[session.dmProfile.locale].manageVerityCollections#" writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<cfif iSearchTab eq 1>
+<sec:restricted permission="AdminSearchTab">
 	<cfparam name="url.action" default="">
 	
 	<cfoutput><h3>#application.adminBundle[session.dmProfile.locale].manageCollections#</h3></cfoutput>
@@ -130,11 +127,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 			
 		</cfdefaultcase>
 	</cfswitch>
-	
-	
-<cfelse>
-	<admin:permissionError>
-</cfif>
+</sec:restricted>
 
 <!--- setup footer --->
 <admin:footer>

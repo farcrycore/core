@@ -24,16 +24,13 @@ $out:$
 
 <cfprocessingDirective pageencoding="utf-8">
 
-<!--- check permissions --->
-<cfscript>
-	iCOAPITab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="AdminCOAPITab");
-</cfscript>
-
 <!--- set up page header --->
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
+
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<cfif iCOAPITab eq 1>	
+<sec:restricted permission="AdminCOAPITab">
 	<cfif IsDefined("form.submit")><!--- process the form --->
 	    <cfparam name="form.debug" default="0"><!--- if they ask for debug, this is overwritten--->
 	    
@@ -154,10 +151,7 @@ $out:$
 			<p>#application.adminBundle[session.dmProfile.locale].nestedTreeBlurb#</p>
 	    </cfoutput>
 	</cfif>
-
-<cfelse>
-	<admin:permissionError>
-</cfif>
+</sec:restricted>
 
 <admin:footer>
 

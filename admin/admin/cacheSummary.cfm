@@ -29,16 +29,13 @@ out:
 
 <cfprocessingDirective pageencoding="utf-8">
 
-<!--- check permissions --->
-<cfscript>
-	iGeneralTab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="AdminGeneralTab");
-</cfscript>
-
 <!--- set up page header --->
-<cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/admin/" prefix="admin" />
+<cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
+
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<cfif iGeneralTab eq 1>
+<sec:restricted permission="AdminGeneralTab">
 	<!--- clean selected blocks --->
 	<cfif isdefined("form.cleanBlock")>
 		<cfinvoke component="#application.packagepath#.farcry.cache" method="cacheClean">
@@ -133,10 +130,7 @@ out:
 	<cfelse>
 		<cfoutput><p>#application.adminBundle[session.dmProfile.locale].noBlockCachesNow#</p></cfoutput>
 	</cfif>
-
-<cfelse>
-	<admin:permissionError>
-</cfif>
+</sec:restricted>
 
 <admin:footer>
 <cfsetting enablecfoutputonly="no">
