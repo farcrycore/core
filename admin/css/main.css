@@ -571,4 +571,8 @@ table.dataheader td {font-weight:bold;color: #fff;border-top: 1px solid #A5B9D0;
 table.BorderTable td, table.BorderTable th {border:none;padding:0} 
 
 
+ /* OBJECT ADMIN CLASSES */
+table.objectAdmin {}
+table.objectAdmin th, table.objectAdmin td {padding:3px;}
+
 
