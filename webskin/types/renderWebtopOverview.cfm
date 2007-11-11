@@ -58,7 +58,7 @@ START WEBSKIN
 					<extjs:item title="#stDraftObject.status#" container="Panel" layout="border">
 	
  						<extjs:item region="center" container="Panel" layout="border">			
-							<extjs:item region="center">
+							<extjs:item region="center" autoScroll="true">
 								<skin:view objectid="#stDraftObject.objectid#" webskin="webtopOverviewSummary" />
 							</extjs:item>
 						</extjs:item>	
@@ -74,7 +74,7 @@ START WEBSKIN
 			</cfif>
 			<extjs:item title="#mainTabStatus#" container="Panel" layout="border">
 				<extjs:item region="center" container="Panel" layout="border">			
-					<extjs:item region="center">
+					<extjs:item region="center" autoScroll="true">
 						<skin:view objectid="#stobj.objectid#" webskin="webtopOverviewSummary" />
 					</extjs:item>
 				</extjs:item>			
