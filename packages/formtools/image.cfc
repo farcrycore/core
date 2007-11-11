@@ -62,7 +62,7 @@
 				
 		<cfsavecontent variable="html">
 			<cfoutput>
-				<table style="width: 90%;">
+				<table style="width: 100%;">
 				<tr valign="top">
 					<td>
 			</cfoutput>
@@ -129,7 +129,7 @@
 					</cfoutput>
 					
 					<!--- image preview --->
-					<cfset previewHTML=editPreview(arguments.fieldname, arguments.stmetadata) />
+					<cfset previewHTML=editPreview(typename=arguments.typename, stobject=arguments.stobject, stmetadata=arguments.stmetadata, fieldname=arguments.fieldname ) />
 					<cfoutput><td>#previewHTML#</td></cfoutput>
 					
 			<cfoutput>
@@ -142,8 +142,9 @@
 	</cffunction>
 
 	<cffunction name="editPreview" access="private" output="false" returntype="string" hint="Build a preview table cell for edit view.">
-		<cfargument name="fieldname" required="true" type="string" />
 		<cfargument name="stMetadata" required="true" type="struct" />
+		<cfargument name="fieldname" required="true" type="string" />
+		
 		<cfset var htmlOut = "" />
 		
 		<cfsavecontent variable="htmlOut">
