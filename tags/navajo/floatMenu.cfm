@@ -64,9 +64,17 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 <cfset aItems[arrayLen(aItems)].icon = "admin.gif">
 <cfset aItems[arrayLen(aItems)].target = "farcry_webtop">
 
+
 <cfset aItems[arrayLen(aItems)+1] = structNew()>
-<cfset aItems[arrayLen(aItems)].text = "#application.adminBundle[session.dmProfile.locale].editPage#">
-<cfset aItems[arrayLen(aItems)].href = "#application.url.farcry#/index.cfm?sec=site&rootobjectid=#request.navid#">
+<cfif structKeyExists(request, "stobj") and isDefined("application.stcoapi.#request.stobj.typename#.bUseInTree") AND application.stCoapi[request.stobj.typename].bUseInTree>
+	<cfset aItems[arrayLen(aItems)].text = "#application.adminBundle[session.dmProfile.locale].editPage#">
+	<cfset aItems[arrayLen(aItems)].target = "farcry_webtop">
+	<cfset aItems[arrayLen(aItems)].href = "#application.url.farcry#/index.cfm?sec=site&rootobjectid=#request.navid#">
+<cfelse>
+	<cfset aItems[arrayLen(aItems)].text = "Edit Content">
+	<cfset aItems[arrayLen(aItems)].target = "farcry_webtop_overview">
+	<cfset aItems[arrayLen(aItems)].href = "#application.url.farcry#/edittabOverview.cfm?objectid=#request.stobj.objectid#&ref=overview&typename=#request.stobj.typename#">
+</cfif>
 <cfset aItems[arrayLen(aItems)].icon = "edit.gif">
 <cfset aItems[arrayLen(aItems)].target = "farcry_webtop">
 
