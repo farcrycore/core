@@ -35,7 +35,7 @@
 		
 		<cfsavecontent variable="variables.html">
 		<cfoutput>
-		<div id="#request.extJS.stLayout.aItems[itemTotal].contentEl#">
+		<div id="#request.extJS.stLayout.aItems[itemTotal].contentEl#" class="x-hidden">
 			#attributes.html#
 		</div>
 		</cfoutput>	

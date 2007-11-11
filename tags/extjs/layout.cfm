@@ -18,9 +18,12 @@
 
 	<cfparam name="request.extJS" default="#structNew()#" />
 	
-
-	<!--- tabPannel and inherited config properties --->
+	<!--- Generic config properties --->
 	<cfset stConfig = structNew() />
+	<cfset stConfig.var = "var">
+	
+	
+	<!--- tabPannel and inherited config properties --->
 	<cfset stConfig.activeItem = "activeItem">
 	<cfset stConfig.activeTab = "activeTab" />
 	<cfset stConfig.allowDomMove = "allowDomMove" />
@@ -73,6 +76,7 @@
 	<cfset stConfig.keys = "keys" />
 	<cfset stConfig.layout = "layout" />
 	<cfset stConfig.layoutConfig = "layoutConfig" />
+	<cfset stConfig.listeners = "listeners">
 	<cfset stConfig.maskDisabled = "maskDisabled" />
 	<cfset stConfig.minButtonWidth = "minButtonWidth" />
 	<cfset stConfig.minTabWidth = "minTabWidth" />
@@ -150,8 +154,6 @@
 
 
 <cfif thistag.executionMode eq "End">
-	
-	<!--- <cfdump var="#request.extJS.stLayout.aLayoutItems#" expand="false" label="request.extJS.stLayout.aLayoutItems" /> --->
 	
 	 <cfif variables.primaryLayout>
 		<cfoutput>
@@ -232,6 +234,9 @@
 	<cfset var itemHTML = "">
 
 	<cfsavecontent variable="returnHTML">
+		<cfif structKeyExists(arguments.stProperties, "var") AND len(arguments.stProperties.var)>
+			<cfoutput>var #arguments.stProperties.var# =</cfoutput>
+		</cfif>
 		<cfif structKeyExists(arguments.stProperties, "container") AND len(arguments.stProperties.container)>
 			<cfoutput>new Ext.#arguments.stProperties.container#(</cfoutput>
 		</cfif>
@@ -244,17 +249,22 @@
 	
 		<cfoutput>{</cfoutput>
 		<cfloop list="#structKeyList(arguments.stProperties)#" index="i">
-			<cfif NOT listFindNoCase("container,aItems,html", i) >
+			<cfif NOT listFindNoCase("container,aItems,html,listeners,var", i) >
 				<cfif firstConfigProperty>
 					<cfset firstConfigProperty = false />
 				<cfelse>
-					<cfoutput>,
-					</cfoutput>
+					<cfoutput>,</cfoutput>
 				</cfif>
 				<cfoutput>#stConfig[i]#:'#arguments.stProperties[i]#'
 				</cfoutput>
+				
 			</cfif>
 		</cfloop>
+		
+		<cfif structKeyExists(arguments.stProperties, "listeners") and len(arguments.stProperties.listeners)>
+			<cfoutput>,listeners:#arguments.stProperties.listeners#
+			</cfoutput>
+		</cfif>
 		
 		<cfif structKeyExists(arguments.stProperties, "aItems") and arrayLen(arguments.stProperties.aItems)>
 			<cfoutput>,items:
