@@ -61,9 +61,9 @@
 				
 		<cfsavecontent variable="html">
 			<cfoutput>
-				<table>
-				<tr>
-					<td valign="top">
+				<table style="width: 90%;">
+				<tr valign="top">
+					<td>
 			</cfoutput>
 						<cfif len(arguments.stMetadata.ftSourceField)>
 
@@ -127,9 +127,10 @@
 					</td>
 					</cfoutput>
 					
+					<!--- image preview --->
 					<cfif len(#arguments.stMetadata.value#)>
 						<cfoutput>
-						<td valign="top">
+						<td>
 							<div id="#arguments.fieldname#previewimage">
 								<img src="#arguments.stMetadata.value#" width="50px" title="#listLast(arguments.stMetadata.value,"/")#"><br>
 								#listLast(arguments.stMetadata.value,"/")#
@@ -139,7 +140,7 @@
 						</cfoutput>
 					<cfelse>
 						<cfoutput>
-						<td valign="top">
+						<td>
 							<div id="#arguments.fieldname#previewimage">
 								&nbsp;
 							</div>
