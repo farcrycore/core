@@ -6,7 +6,7 @@
 	<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" >
 	<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" >
 	
-	<cffunction name="init" access="public" returntype="farcry.core.packages.formtools.image" output="false" hint="Returns a copy of this initialised object">
+	<cffunction name="init" access="public" returntype="any" output="false" hint="Returns a copy of this initialised object">
 		<cfreturn this>
 	</cffunction>
 	
