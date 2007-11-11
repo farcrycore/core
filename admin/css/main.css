@@ -41,7 +41,7 @@ br.clearer {clear: both;}
 
 /* =FORMS */
 form {margin: 0 0 1em}
-form.formtool {min-width: 600px; width: 800px; max-width: 900px;}
+form.formtool {min-width: 600px; max-width: 800px; width:100%; _width: 700px; }
 input, textarea, select {font-family:arial}
 input.formButton {width: 75px;}
 
