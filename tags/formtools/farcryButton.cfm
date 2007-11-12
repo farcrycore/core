@@ -15,7 +15,7 @@
 <cfparam  name="attributes.Style" default="">
 <cfparam name="attributes.SelectedObjectID" default="">
 <cfparam name="attributes.ConfirmText" default="">
-<cfparam name="attributes.validate" default="true">
+<cfparam name="attributes.validate" default="">
 <cfparam name="attributes.bInPanel" default="true">
 <cfparam name="attributes.src" default="">
 <cfparam name="attributes.url" default="">
@@ -31,6 +31,15 @@
 	<!--- If not in a farcry form, make it a button. --->
 	<cfif NOT isDefined("Request.farcryForm.Name")>
 		<cfset attributes.Type = "button" />
+	</cfif>
+
+	<!--- Default validate to true if submitting and false if just a button --->
+	<cfif not len(attributes.validate)>
+		<cfif attributes.type EQ "submit">
+			<cfset attributes.validate = true />
+		<cfelse>
+			<cfset attributes.validate = false />
+		</cfif>
 	</cfif>
 	
 	<cfif len(attributes.SelectedObjectID) AND isDefined("Request.farcryForm.Name")>		
