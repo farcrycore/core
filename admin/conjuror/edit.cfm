@@ -59,7 +59,7 @@ $out:$
 
 <!--- First check permissions --->
 <cfscript>
-	bHasPermission = request.dmsec.oAuthorisation.checkInheritedPermission(permissionName='edit',objectid=URL.objectid);
+	bHasPermission = application.security.checkPermission(permission='edit',object=URL.objectid);
 </cfscript>
 <cfif NOT bHasPermission GTE 0>
 	<h1><cfoutput>#application.adminBundle[session.dmProfile.locale].noEditPermissions#</cfoutput></h1>

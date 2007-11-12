@@ -58,8 +58,7 @@ $out: <separate entry for each variable>$
 		qGetParent = oNav.getParent(objectid=stObj.objectID);
 		parentObjectID = qGetParent.objectID;
 	}	
-	oAuthorisation = request.dmSec.oAuthorisation;
-	oAuthorisation.checkInheritedPermission(permissionName="edit",objectid=parentobjectid,bThrowOnError=1);
+	application.security.checkPermission(permission="edit",object=parentobjectid);
 </cfscript>
 
 <!--- get the parentID --->

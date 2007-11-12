@@ -84,7 +84,7 @@ Pseudo:
 --->
 <cfif structKeyExists(stPackage, "BUSEINTREE") AND stPackage.BUSEINTREE>
 	<!--- determine inherited tree based permissions --->
-	<cfset bHasPermission = request.dmsec.oAuthorisation.checkInheritedPermission(permissionName='edit',objectid=URL.objectid)>
+	<cfset bHasPermission = application.security.checkPermission(permission='edit',object=URL.objectid)>
 	<cfif NOT bHasPermission GTE 0>
 		<cfabort showerror="<strong>Error:</strong> #application.adminBundle[session.dmProfile.locale].noEditPermissions#">
 	</cfif>

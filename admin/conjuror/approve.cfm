@@ -193,12 +193,9 @@ $out:$
 		
 		<cfif isstruct(stNav)>
 			<cfscript>
-				oAuthorisation = request.dmsec.oAuthorisation;
-				oAuthentication = request.dmsec.oAuthentication;
-				stUser = oAuthentication.getUserAuthenticationData();
 				for(x = 1;x LTE listLen(permission);x=x+1)
 				{
-					iState = oAuthorisation.checkInheritedPermission(permissionName=listGetAt(permission,x),objectid=stNav.objectId);	
+					iState = application.security.checkPermission(permission=listGetAt(permission,x),object=stNav.objectId);	
 					if(listGetAt(permission,x) IS "canApproveOwnContent" AND iState EQ 1 AND NOT stObj.lastUpdatedBy IS stUser.userLogin)
 						iState = 0;
 					if(iState EQ 1)
@@ -214,13 +211,13 @@ $out:$
 		</cfif>
 		<cfif url.status eq "approve">
 			<cfscript>
-				iState = oAuthorisation.checkInheritedPermission(permissionName="CanApproveOwnContent",objectid=stNav.objectId);	
+				iState = application.security.checkPermission(permission="CanApproveOwnContent",object=stNav.objectId);	
 			</cfscript>
 		
 			<cfif iState neq 1>
 	
 				<cfif request.bLoggedIn>
-					<cfif session.dmSec.authentication.canonicalName eq stObj.attr_lastUpdatedBy>
+					<cfif session.security.userid eq stObj.attr_lastUpdatedBy>
 						<cfoutput>
 						<script>
 							alert("#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].canApproveOwnContent,stNav.title)#");
