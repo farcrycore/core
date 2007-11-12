@@ -138,10 +138,10 @@ $out:$
 	<cfargument name="default" type="string" required="false" default="#application.url.farcry#/images/icons/custom.png" hint="The default icon to use" />
 
 	<cfif fileexists("#application.path.project#/www/wsimages/icons/#arguments.iconname#.png")>
-		<cfreturn "#application.url.webroot#/www/wsimages/icons/#arguments.iconname#.png" />
+		<cfreturn "#application.url.webroot#/wsimages/icons/#arguments.iconname#.png" />
 	</cfif>
 	<cfif fileexists("#application.path.project#/www/images/icons/#arguments.iconname#.png")>
-		<cfreturn "#application.url.webroot#/www/images/icons/#arguments.iconname#.png" />
+		<cfreturn "#application.url.webroot#/images/icons/#arguments.iconname#.png" />
 	</cfif>
 	
 	<cfif fileexists("#application.path.core#/admin/images/icons/#arguments.iconname#.png")>
