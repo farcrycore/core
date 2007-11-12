@@ -8,6 +8,11 @@
 	<!--- ====================
 	  UD Interface functions
 	===================== --->
+	<cffunction name="getLoginForm" access="public" output="false" returntype="component" hint="Returns the form component to use for login">
+		
+		<cfreturn application.factory.oUtils.getPath("forms","FarcryUDLogin") />
+	</cffunction>
+	
 	<cffunction name="authenticate" access="public" output="false" returntype="struct" hint="Attempts to process a user. Runs every time the login form is loaded.">
 		<cfset var stResult = structnew() />
 		<cfset var qUser = "" />

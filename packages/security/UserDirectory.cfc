@@ -4,9 +4,14 @@
 	
 	<cfset this.title = "Abstract UD" /><!--- Used in the interface where the long name of this UD instance is required --->
 	<cfset this.key = "ABSTRACTUD" /><!--- Used in code where a struct key is required --->
+
+	<cffunction name="getLoginForm" access="public" output="false" returntype="component" hint="Returns the form component to use for login">
+		
+		<cfthrow message="The #variables.metadata.displayname# user directory needs to implement the getLoginForm function" />
+	</cffunction>
 	
 	<cffunction name="authenticate" access="public" output="false" returntype="struct" hint="Attempts to process a user. Runs every time the login form is loaded.">
-		<cfthrow message="The #variables.metadata.displayname# user directory needs to implement the login function" />
+		<cfthrow message="The #variables.metadata.displayname# user directory needs to implement the authenticate function" />
 		
 		<!--- This function should return a struct in the form: 
 				.AUTHENTICATED = false
