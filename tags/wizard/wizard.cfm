@@ -187,7 +187,6 @@ $in: SessionID -- $
 		</cfoutput>
 	</cfsavecontent>
 	<cfhtmlhead text="#wizardSubmissionJS#" />
-	
 	<cfoutput>
 	<div id="wizard-wrap">			
 		<div class="wizard-pagination">
@@ -197,7 +196,18 @@ $in: SessionID -- $
 			</ul>
 		</div>
 
-		<h1><img src="#application.url.farcry#/images/icons/html.png" alt="HTML" /><cfif len(attributes.title)>#attributes.title#<cfelse>#ListGetAt(stwizard.Steps,stwizard.CurrentStep)#</cfif></h1>			
+		<h1><img src="#application.url.farcry#/images/icons/html.png" alt="HTML" />
+			<cfif len(attributes.title)>
+				#attributes.title#
+			<cfelse>
+									
+				<cfif structKeyExists(stWizard.data, stWizard.primaryObjectID) and structKeyExists(stWizard.data[stWizard.primaryObjectID], "label")>
+					#stWizard.data['#stWizard.primaryObjectID#'].label#
+				<cfelse>
+					#ListGetAt(stwizard.Steps,stwizard.CurrentStep)#
+				</cfif>
+			</cfif>
+		</h1>			
 		<div id="wizard-nav">
 			<ul>
 				<cfloop list="#stwizard.Steps#" index="i">
