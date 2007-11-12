@@ -25,7 +25,7 @@ $DEVELOPER:Brendan Sisson (brendan@daemon.com.au)$
 
 <!--- check permissions --->
 <cfscript>
-	iDumpTab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="ObjectDumpTab");
+	iDumpTab = application.security.checkPermission(permission="ObjectDumpTab");
 </cfscript>
 
 <!--- set up page header --->

@@ -25,7 +25,7 @@ $DEVELOPER: Mat Bryant (mbryant@daemon.com.au)$
 <cfimport taglib="/farcry/core/tags/webskin/" prefix="skin">
 
 <!--- check permissions --->
-<cfset iOverviewTab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="ObjectOverviewTab")>
+<cfset iOverviewTab = application.security.checkPermission(permission="ObjectOverviewTab")>
 <cfset q4 = createObject("component","farcry.core.packages.fourq.fourq")>
 <cfset typename = q4.findType(url.objectid)>
 <cfset o = createObject("component",application.types['#typename#'].typepath)>

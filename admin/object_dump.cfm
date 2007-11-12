@@ -14,7 +14,7 @@ This dumps out an object based on objectid [replacement for edittabDump.cfm]
 </cfif>
 
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
-<cfset bPermission_DumpObject = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="ObjectDumpTab")>
+<cfset bPermission_DumpObject = application.security.checkPermission(permission="ObjectDumpTab")>
 
 <cfif bPermission_DumpObject>
 	<cfif errormessage NEQ "">

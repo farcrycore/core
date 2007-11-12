@@ -29,7 +29,7 @@ out:
 <cfprocessingDirective pageencoding="utf-8">
 
 <!--- check permissions --->
-<cfset iStatsTab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="ReportingStatsTab")>
+<cfset iStatsTab = application.security.checkPermission(permission="ReportingStatsTab")>
 <cfset nowDate = CreateDate(year(Now()),month(Now()),day(Now()))>
 <cfparam name="purgeDate" default="#DateAdd('q',-1,nowDate)#">
 <cfparam name="bFormSubmitted" default="no">

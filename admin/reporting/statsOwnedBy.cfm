@@ -27,7 +27,7 @@ $out:$
 <cfparam name="errormessage" default="" />
 
 <!--- check permissions --->
-<cfset iStatsTab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="ReportingStatsTab") />
+<cfset iStatsTab = application.security.checkPermission(permission="ReportingStatsTab") />
 
 <!--- set up page header --->
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin">

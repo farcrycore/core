@@ -30,9 +30,9 @@ $out:$
 
 <!--- check permissions --->
 <cfscript>
-	iStatsTab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="ReportingStatsTab");
-	iAuditTab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="ReportingAuditTab");
-	iDeveloper = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="Developer");
+	iStatsTab = application.security.checkPermission(permission="ReportingStatsTab");
+	iAuditTab = application.security.checkPermission(permission="ReportingAuditTab");
+	iDeveloper = application.security.checkPermission(permission="Developer");
 </cfscript>
 
 <cfoutput>

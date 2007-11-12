@@ -22,7 +22,7 @@ $DEVELOPER:Brendan Sisson (brendan@daemon.com.au)$
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
 
 <!--- check permissions --->
-<cfset iAuditTab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="ObjectAuditTab") />
+<cfset iAuditTab = application.security.checkPermission(permission="ObjectAuditTab") />
 
 <!--- set up page header --->
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">

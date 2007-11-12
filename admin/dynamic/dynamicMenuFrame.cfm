@@ -29,9 +29,9 @@ $out:$
 <cfimport taglib="/farcry/core/tags/misc/" prefix="misc">
 <!--- check permissions --->
 <cfscript>
-	iContentTab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="MainNavContentTab");
-	iExportTab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="ContentExportTab");
-	iCategorisationTab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="ContentCategorisationTab");
+	iContentTab = application.security.checkPermission(permission="MainNavContentTab");
+	iExportTab = application.security.checkPermission(permission="ContentExportTab");
+	iCategorisationTab = application.security.checkPermission(permission="ContentCategorisationTab");
 	
 	lDynamicTypes = 'news,event,fact,link';
 	aDynamicTypes = listToArray(lDynamicTypes);
@@ -42,7 +42,7 @@ $out:$
 		'i#aDynamicTypes[x]#' = 0;
 		for(y=1;y LTE arrayLen(aPermissions);y=y+1)
 		{
-			'i#aDynamicTypes[x]#' = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="#aDynamicTypes[x]##aPermissions[y]#");
+			'i#aDynamicTypes[x]#' = application.security.checkPermission(permission="#aDynamicTypes[x]##aPermissions[y]#");
 			if(evaluate('i'& aDynamicTypes[x]) EQ 1)
 				break;
 		}

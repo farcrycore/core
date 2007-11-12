@@ -148,7 +148,7 @@ function doSubmit(objForm)
 			<td><input name="objectname" type="Text" size="35" value="#q.objectname#"></td>
 			<td><input type="Submit" value="#application.adminBundle[session.dmProfile.locale].update#" name="submit" class="normalbttnstyle"></td>
 		</tr>
-		<cfset bDev = request.dmsec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="developer")>
+		<cfset bDev = application.security.checkPermission(permission="developer")>
 		<cfif bDev EQ 1>
 			<td>
 				#application.adminBundle[session.dmProfile.locale].alias#

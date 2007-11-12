@@ -26,7 +26,7 @@ out:
 <cfsetting enablecfoutputonly="yes" requestTimeOut="600">
 
 <!--- check permissions --->
-<cfset iStatsTab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="ObjectStatsTab")>
+<cfset iStatsTab = application.security.checkPermission(permission="ObjectStatsTab")>
 
 <cfif iStatsTab eq 1>
 	<cftry> 

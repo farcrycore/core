@@ -66,8 +66,7 @@ $in: [url.typename]: object type $
 	stGrid.permissionType = permissionType;
 	
 	// check for edit permission
-	oAuthorisation = request.dmSec.oAuthorisation;
-	iObjectEditPermission = oAuthorisation.checkPermission(permissionName="#stGrid.permissionType#Edit",reference="PolicyGroup");		
+	iObjectEditPermission = application.security.checkPermission(permission="#stGrid.permissionType#Edit");		
 	
 	stGrid.finishURL = "#application.url.farcry#/navajo/GenericAdmin.cfm?type=#permissionType#&typename=#typename#"; //this is the url you will end back at after add/edit operations.
 	//stGrid.approveURL = "#cgi.server_name#/farcry/index.cfm?section=Dynamic";

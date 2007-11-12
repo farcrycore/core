@@ -26,7 +26,7 @@ $out:$
 
 <!--- check permissions --->
 <cfscript>
-	iAuditTab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="ReportingAuditTab");
+	iAuditTab = application.security.checkPermission(permission="ReportingAuditTab");
 </cfscript>
 
 <!--- set up page header --->

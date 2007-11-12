@@ -3,12 +3,11 @@
 
 
 <!--- Permissions --->
-<cfset oAuthorisation = request.dmsec.oAuthorisation>
-<cfset iSecurityManagementState = oAuthorisation.checkPermission(permissionName="SecurityManagement",reference="PolicyGroup")>
-<cfset iRootNodeManagement = oAuthorisation.checkPermission(permissionName="RootNodeManagement",reference="PolicyGroup")>	
-<cfset iModifyPermissionsState = oAuthorisation.checkPermission(permissionName="ModifyPermissions",reference="PolicyGroup")>
-<cfset iDeveloperState = oAuthorisation.checkPermission(permissionName="developer",reference="PolicyGroup")>
-<cfset bPermTrash = oAuthorisation.checkInheritedPermission(permissionName="create",objectid="#application.navid.rubbish#")>
+<cfset iSecurityManagementState = application.security.checkPermission(permission="SecurityManagement")>
+<cfset iRootNodeManagement = application.security.checkPermission(permission="RootNodeManagement")>	
+<cfset iModifyPermissionsState = application.security.checkPermission(permission="ModifyPermissions")>
+<cfset iDeveloperState = application.security.checkPermission(permission="developer")>
+<cfset bPermTrash = application.security.checkPermission(permission="create")>
 
 <!--- Sub Naviagtion --->
 
@@ -67,7 +66,7 @@
 	</cfif>
 	<cfset bHasPermission = 0>
 	<cfloop index="permission" list="#lPermissions#">
-		<cfset bHasPermission = request.dmSec.oAuthorisation.checkInheritedPermission(permissionName=permission,objectid=qListChildren.objectid)>
+		<cfset bHasPermission = application.security.checkPermission(permission=permission,object=qListChildren.objectid)>
 		<cfif bHasPermission EQ 1>
 			<cfbreak>
 		</cfif>
@@ -151,7 +150,7 @@ function refreshiFrame(iFrameName){
 		<cfset qParent = request.factory.oTree.getParentID(objectid=URL.rootObjectid,dsn=application.dsn)>
 		<cfif qParent.recordCount>
 			<cfset uponeRootobjectid = qParent.parentid>
-			<cfset bHasViewPermission = request.dmSec.oAuthorisation.checkInheritedPermission(permissionName="view",objectid=upOneRootObjectid)>
+			<cfset bHasViewPermission = application.security.checkPermission(permission="view",object=upOneRootObjectid)>
 			<cfif (NOT upOneRootObjectid is application.navid.root AND bHasViewPermission EQ 1) OR (upOneRootObjectid Is application.navid.root AND iRootNodeManagement EQ 1)>
 				<cfoutput><div class="upone"><a href="#cgi.script_name#?rootobjectid=#upOneRootobjectid#"><img alt='Up one level' src="#application.url.farcry#/images/treeImages/uponefolder.gif"></a></div></cfoutput>
 			</cfif>

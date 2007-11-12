@@ -24,7 +24,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au) $
 
 <!--- check permissions --->
 <cfscript>
-	iExportTab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="ContentExportTab");
+	iExportTab = application.security.checkPermission(permission="ContentExportTab");
 </cfscript>
 
 <!--- set up page header --->

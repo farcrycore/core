@@ -30,7 +30,7 @@ $out:$
 
 <!--- check permissions --->
 <cfscript>
-	iHelpTab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="MainNavHelpTab");
+	iHelpTab = application.security.checkPermission(permission="MainNavHelpTab");
 </cfscript>
 
 <cfoutput>

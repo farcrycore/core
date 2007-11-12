@@ -27,7 +27,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 
 <!--- check permissions --->
 <cfscript>
-	iArchiveTab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="ObjectArchiveTab");
+	iArchiveTab = application.security.checkPermission(permission="ObjectArchiveTab");
 </cfscript>
 
 <!--- set up page header --->

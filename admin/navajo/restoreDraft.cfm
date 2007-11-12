@@ -6,7 +6,7 @@
 <cfset resultmsg = "#application.adminBundle[session.dmProfile.locale].liveObjRestoredOK#">
 <cftry>
 	<!--- check permissions on objects nav parent --->
-	<cfset bEdit = request.dmSec.oAuthorisation.checkInheritedPermission(objectid="#URL.navid#",permissionName="edit")>
+	<cfset bEdit = application.security.checkPermission(object=URL.navid,permission="edit")>
 
 	<!--- Get draft object --->
 	<cfif bEdit>

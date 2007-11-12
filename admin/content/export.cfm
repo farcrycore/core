@@ -29,7 +29,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au) $
 <cfparam name="exportType" default="xml">
 
 <!--- check permissions --->
-<cfset iExportTab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="ContentExportTab")>
+<cfset iExportTab = application.security.checkPermission(permission="ContentExportTab")>
 
 <cfif bFormSubmit EQ "yes"> <!--- form submitted --->
 	<cfset sendTo = trim(sendTo)>

@@ -13,8 +13,7 @@
 <cfelse>
 	<!--- from dynamic section --->
 	<cfscript>
-		oAuthorisation = request.dmSec.oAuthorisation;
-		iDeveloperPermission = oAuthorisation.checkPermission(reference="policyGroup",permissionName="developer");
+		iDeveloperPermission = application.security.checkPermission(permission="developer");
 	</cfscript>
 	<cfset count = 0>
 	<!--- loop over selected objects --->

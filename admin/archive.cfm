@@ -27,7 +27,7 @@ $out:$
 
 <cfparam name="finish_url" default="#cgi.http_referer#" />
 <!--- check permissions --->
-<cfset iArchiveTab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="ObjectArchiveTab") />
+<cfset iArchiveTab = application.security.checkPermission(permission="ObjectArchiveTab") />
 
 <!--- set up page header --->
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin">

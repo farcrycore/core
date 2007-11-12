@@ -40,7 +40,7 @@ $DEVELOPER:Brendan Sisson (brendan@daemon.com.au)$
 <!--- set up page header --->
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<cfif request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="ObjectEditTab")>
+<cfif application.security.checkPermission(permission="ObjectEditTab")>
 	
 	<nj:edit objectid="#url.objectid#" typename="#url.typename#" cancelCompleteURL="#application.url.farcry#/edittabOverview.cfm?objectid=#url.objectid#" />
 

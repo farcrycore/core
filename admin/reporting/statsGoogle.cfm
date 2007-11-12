@@ -28,7 +28,7 @@ $out:$
 
 <!--- check permissions --->
 <cfscript>
-	iStatsTab = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="ReportingStatsTab");
+	iStatsTab = application.security.checkPermission(permission="ReportingStatsTab");
 </cfscript>
 
 <!--- set up page header --->
