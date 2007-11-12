@@ -142,7 +142,7 @@ $out:$
 	</cfif>
 	
 	<cfif fileexists("#application.path.core#/admin/images/icons/#arguments.iconname#.png")>
-		<cfreturn "#application.url.farcry#/admin/images/icons/#arguments.iconname#.png" />
+		<cfreturn "#application.url.farcry#/images/icons/#arguments.iconname#.png" />
 	</cfif>
 	
 	<cfreturn arguments.default />
