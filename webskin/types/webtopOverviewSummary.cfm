@@ -16,12 +16,7 @@ START WEBSKIN
 
 	<cfset iDeveloperPermission = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="developer") />
 		
-	<cfset tIconName = LCase(Right(stobj.typename,len(stobj.typename)-2))>
-    <cfif fileExists(expandPath('images/icons/#tIconName#.png'))>
-        <cfoutput><img src="#application.url.farcry#/images/icons/#tIconName#.png" alt="alt text" class="icon" /></cfoutput>
-    <cfelse>
-        <cfoutput><img src="#application.url.farcry#/images/icons/custom.png" alt="alt text" class="icon" /></cfoutput>
-    </cfif>
+	<cfoutput><img src="#application.url.farcry#/facade/icon.cfm?type=#stObj.typename#" alt="alt text" class="icon" /></cfoutput>
 	
 	<cfoutput>
 	<dl class="dl-style1">
