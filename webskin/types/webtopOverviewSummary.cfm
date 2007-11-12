@@ -16,7 +16,7 @@ START WEBSKIN
 
 	<cfset iDeveloperPermission = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="developer") />
 		
-	<cfoutput><img src="#application.url.farcry#/facade/icon.cfm?type=#stObj.typename#" alt="alt text" class="icon" /></cfoutput>
+	<cfoutput><img src="#application.url.farcry#/facade/icon.cfm?type=#stObj.typename#&usecustom=true" alt="alt text" class="icon" /></cfoutput>
 	
 	<cfoutput>
 	<dl class="dl-style1">
