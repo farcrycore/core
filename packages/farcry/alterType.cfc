@@ -137,18 +137,12 @@ $out:$
 	<cfargument name="iconname" type="string" required="true" hint="The name of the icon to retrieve" />
 	<cfargument name="default" type="string" required="false" default="#application.url.farcry#/images/icons/custom.png" hint="The default icon to use" />
 
-	<cfif fileexists("#application.path.project#/www/images/icons/#url.icon#.png")>
-		<cfreturn "#application.path.project#/www/images/icons/#url.icon#.png" />
+	<cfif fileexists("#application.url.webroot#/www/images/icons/#arguments.iconname#.png")>
+		<cfreturn "#application.url.webroot#/www/images/icons/#arguments.iconname#.png" />
 	</cfif>
 	
-	<cfloop list="#application.factory.oUtils.listReverse(application.plugins)#" index="plugin">
-		<cfif fileexists("#application.path.plugins#/#plugin#/www/images/icon/#url.type#.png")>
-			<cfreturn "#application.path.plugins#/#plugin#/www/images/icon/#url.type#.png" />
-		</cfif>
-	</cfloop>
-	
-	<cfif fileexists("#application.path.core#/admin/images/icons/#url.icon#.png")>
-		<cfreturn "#application.path.core#/admin/images/icons/#url.icon#.png" />
+	<cfif fileexists("#application.url.farcry#/admin/images/icons/#arguments.iconname#.png")>
+		<cfreturn "#application.url.farcry#/admin/images/icons/#arguments.iconname#.png" />
 	</cfif>
 	
 	<cfreturn arguments.default />
