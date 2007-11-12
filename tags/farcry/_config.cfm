@@ -111,13 +111,13 @@ test for the existance of each and act accordingly
 	application.factory.oVerity = createObject("component","#application.packagepath#.farcry.verity");
 	application.factory.oCon = createObject("component","#application.packagepath#.rules.container");
 	application.factory.oGeoLocator = createObject("component","#application.packagepath#.farcry.geoLocator");
-	application.factory.oAuthorisation = createObject("component","#application.securitypackagepath#.authorisation");
-	application.factory.oAuthentication = createObject("component","#application.securitypackagepath#.authentication");
 	application.bGeoLocatorInit = application.factory.oGeoLocator.init();
 	try {
 		application.factory.oFU = createObject("component","#application.packagepath#.farcry.FU");
 	}
 	catch (Any excpt) {}
+	
+	application.security = createobject("component","#application.packagepath#.security.security").init();
 
 	// load TYPE and RULE metadata structures into memory
 	oAlterType = createObject("component", "#application.packagepath#.farcry.alterType");
@@ -137,12 +137,6 @@ test for the existance of each and act accordingly
 	application.fourq.plpstorage = application.path.core & "/plps/plpstorage"; // deprecated
 	application.fourq.plppath = "/farcry/core/plps"; // deprecated
 
-// initialise the security structuress --->
-	request.dmSec.oAuthorisation = createObject("component","#application.securitypackagepath#.authorisation");
-	request.dmSec.oAuthentication = createObject("component","#application.securitypackagepath#.authentication");
-
-
-	
 </cfscript>
 
 <!--- Load config data --->
@@ -153,43 +147,6 @@ test for the existance of each and act accordingly
 
 <!--- wrap this in a cftry catch in case the policystore isn't initialised yet  --->
 <!--- <cfif StructKeyExists(request,"init") AND request.init eq 0> --->
-
-<cfset application.security.cache = structnew() />
-
-<!--- $TODO: what is this try/catch doing here?? GB$ --->
-<cftry>
-	<cfscript>
-		stAnon = request.dmSec.oAuthorisation.getPolicyGroup(policygroupname="anonymous");
-	</cfscript>
-
-	<cfif StructKeyExists( stAnon, "policyGroupId" )>
-		<cfset Application.dmSec.lDefaultPolicyGroups=stAnon.policyGroupId>
-		<!--- <cftrace inline="yes" var="stAnon.policyGroupId" text="stAnon.policyGroupId"> --->	
-	<cfelse>
-		<cfset Application.dmSec.lDefaultPolicyGroups="">	
-	</cfif>
-	<cfcatch type="All"><cfdump var="#cfcatch#"></cfcatch>
-</cftry>
-
-<!--------------------------------------------------------------------
-inialise all permission types
- - for daemon Security Model
---------------------------------------------------------------------->
-<cfscript>
-	aPerms = request.dmSec.oAuthorisation.getAllPermissions();
-</cfscript>
-
-<cfset Application.Permission = StructNew()>
-
-<cfloop from="1" to="#ArrayLen(aPerms)#" index="i">
-	<cfset perm=aPerms[i]>
-	<cfif not StructKeyExists( application.permission, perm.permissionType )>
-		<cfset application.permission[perm.permissionType] = StructNew()>
-	</cfif>
-	
-	<cfset temp = application.permission[perm.permissionType]>
-	<cfset temp[perm.permissionName] = duplicate(perm)>
-</cfloop>
 
 <!--------------------------------------------------------------------
 Build NavIDs from Navigation Nodes 
