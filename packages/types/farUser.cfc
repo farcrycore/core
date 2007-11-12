@@ -1,4 +1,4 @@
-<cfcomponent displayname="FarcryUD User" hint="Used by FarcryUD to store user information" extends="types" output="false" description="Stores login information about a FarCry User Directory user, and the groups they are members of">
+test<cfcomponent displayname="FarcryUD User" hint="Used by FarcryUD to store user information" extends="types" output="false" description="Stores login information about a FarCry User Directory user, and the groups they are members of">
 	<cfproperty name="userid" type="string" default="" hint="The unique id for this user. Used for logging in" ftSeq="1" ftFieldset="" ftLabel="User ID" ftType="string" />
 	<cfproperty name="password" type="string" default="" hint="" ftSeq="2" ftFieldset="" ftLabel="Password" ftType="password" />
 	<cfproperty name="userstatus" type="string" default="invactive" hint="The status of this user" ftSeq="3" ftFieldset="" ftLabel="User status" ftType="list" ftList="active:Active,inactive:Inactive,pending:Pending" />

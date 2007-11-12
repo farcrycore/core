@@ -46,43 +46,7 @@
 			
 		<cfreturn stBarnacle />
 	</cffunction>
-	
-	<cffunction name="setCache" access="private" output="false" returntype="boolean" hint="Sets up the cache structure">
-		<cfargument name="role" type="uuid" required="true" hint="The role the barnacle is attached to" />
-		<cfargument name="permission" type="uuid" required="true" hint="The permission the barnacle is based on" />
-		<cfargument name="object" type="uuid" required="true" hint="The object the barnacle is attached to" />
-		<cfargument name="right" type="numeric" required="true" hint="The right value to cache" />
-		
-		<cfif not structkeyexists(application.security.cache,arguments.role)>
-			<cfset application.security.cache[arguments.role] = structnew() />
-		</cfif>
-		<cfif not structkeyexists(application.security.cache[arguments.role],"barnacles")>
-			<cfset application.security.cache[arguments.role].barnacles = structnew() />
-		</cfif>
-		<cfif not structkeyexists(application.security.cache[arguments.role].barnacles,arguments.object)>
-			<cfset application.security.cache[arguments.role].barnacles[arguments.object] = structnew() />
-		</cfif>
-		<cfset application.security.cache[arguments.role].barnacles[arguments.object][arguments.permission] = arguments.right />
-		
-		<cfreturn arguments.right />
-	</cffunction>
 
-	<cffunction name="isCached" access="private" output="false" returntype="boolean" hint="Returns true if the right is cached">
-		<cfargument name="role" type="uuid" required="true" hint="The role the barnacle is attached to" />
-		<cfargument name="permission" type="uuid" required="true" hint="The permission the barnacle is based on" />
-		<cfargument name="object" type="uuid" required="true" hint="The object the barnacle is attached to" />
-		
-		<cfreturn structkeyexists(application.security.cache,arguments.role) and structkeyexists(application.security.cache[arguments.role].barnacles,arguments.object) and structkeyexists(application.security.cache[arguments.role].barnacles[arguments.object],arguments.permission) />
-	</cffunction>
-	
-	<cffunction name="getCache" access="private" output="false" returntype="boolean" hint="Returns the cached right. Doesn't error check.">
-		<cfargument name="role" type="uuid" required="true" hint="The role the barnacle is attached to" />
-		<cfargument name="permission" type="uuid" required="true" hint="The permission the barnacle is based on" />
-		<cfargument name="object" type="uuid" required="true" hint="The object the barnacle is attached to" />
-		
-		<cfreturn application.security.cache[arguments.role].barnacles[arguments.object][arguments.permission] />
-	</cffunction>
-	
 	<cffunction name="cacheObjectRights" access="public" output="false" returntype="void" hint="Caches all the permissions for a particular object">
 		<cfargument name="object" type="uuid" required="true" hint="The object to cache" />
 		
@@ -104,9 +68,9 @@
 		
 		<cfloop query="qBarnacles">
 			<cfif barnaclevalue eq "">
-				<cfset setCache(role=role,permission=permission,object=arguments.object,right=0) />
+				<cfset application.security.setCache(role=role,permission=permission,object=arguments.object,right=0) />
 			<cfelse>
-				<cfset setCache(role=role,permission=permission,object=arguments.object,right=barnaclevalue) />
+				<cfset application.security.setCache(role=role,permission=permission,object=arguments.object,right=barnaclevalue) />
 			</cfif>
 		</cfloop>
 	</cffunction>
@@ -119,7 +83,6 @@
 		<cfargument name="forcerefresh" type="boolean" required="false" default="false" hint="Should the cache be forcably refreshed" />
 		
 		<cfset stBarnacle = structnew() />
-		<cfset oRole = createObject("component", application.stcoapi["farRole"].packagePath) />
 		<cfset thisrole = "" />
 		<cfset result = -1 />
 		<cfset thisresult = -1 />
@@ -136,7 +99,7 @@
 		<cfelseif isvalid("uuid",arguments.permission) and isvalid("uuid",arguments.object)>
 			
 			<cfif not len(arguments.role)>
-				<cfset arguments.role = oRole.getRoles() />
+				<cfset arguments.role = application.security.factory.role.getRoles() />
 			</cfif>
 			
 		<cfelse>
@@ -148,10 +111,10 @@
 			
 		<cfloop list="#arguments.role#" index="thisrole">
 			<!--- If possible use the cache, otherwise update cache --->
-			<cfif not arguments.forcerefresh and isCached(arguments.role,arguments.permission,arguments.object)>
-				<cfset thisresult = getCache(arguments.role,arguments.permission,arguments.object) />
+			<cfif not arguments.forcerefresh and application.security.isCached(arguments.role,arguments.permission,arguments.object)>
+				<cfset thisresult = application.security.getCache(arguments.role,arguments.permission,arguments.object) />
 			<cfelse>
-				<cfset thisresult = setCache(arguments.role,arguments.permission,arguments.object,getBarnacle(arguments.role,arguments.permission,arguments.object).barnaclevalue) />
+				<cfset thisresult = application.security.setCache(arguments.role,arguments.permission,arguments.object,getBarnacle(arguments.role,arguments.permission,arguments.object).barnaclevalue) />
 			</cfif>
 			
 			<!--- Result is the most permissable right. 1 is the most permissable, so if that is returned we don't need to check any more --->
@@ -261,9 +224,6 @@
 		<!--- Update barnacle --->
 		<cfset stBarnacle.barnaclevalue = arguments.right />
 		<cfset setData(stBarnacle) />
-		
-		<!--- Update cache --->
-		<cfset application.security.cache[stBarnacle.role][stBarnacle.object][stBarnacle.permission] = arguments.right />
 	</cffunction>
 
 	<cffunction name="deleteObjectBarnacles" access="public" output="false" returntype="void" hint="Deletes the barnacles for the specified object">
@@ -283,7 +243,7 @@
 		<cfset arguments.stProperties.objecttype = findType(arguments.stProperties.object) />
 		
 		<!--- Update permission cache --->
-		<cfset setCache(arguments.stProperties.role,arguments.stProperties.permission,arguments.stProperties.object,arguments.stProperties.barnaclevalue) />
+		<cfset application.security.setCache(role=arguments.stProperties.role,permission=arguments.stProperties.permission,object=arguments.stProperties.object,right=arguments.stProperties.barnaclevalue) />
 		
 		<cfreturn arguments.stProperties />
 	</cffunction>
