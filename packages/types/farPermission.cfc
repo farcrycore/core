@@ -139,7 +139,7 @@
 						inner join
 						#application.dbowner#farPermission_relatedtypes pt
 						on p.objectid=pt.parentid
-				where	pt.data=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.realtedtype#" />
+				where	pt.data=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.relatedtype#" />
 			</cfquery>
 		</cfif>
 		

@@ -111,10 +111,10 @@
 			
 		<cfloop list="#arguments.role#" index="thisrole">
 			<!--- If possible use the cache, otherwise update cache --->
-			<cfif not arguments.forcerefresh and application.security.isCached(arguments.role,arguments.permission,arguments.object)>
-				<cfset thisresult = application.security.getCache(arguments.role,arguments.permission,arguments.object) />
+			<cfif not arguments.forcerefresh and application.security.isCached(thisrole,arguments.permission,arguments.object)>
+				<cfset thisresult = application.security.getCache(thisrole,arguments.permission,arguments.object) />
 			<cfelse>
-				<cfset thisresult = application.security.setCache(arguments.role,arguments.permission,arguments.object,getBarnacle(arguments.role,arguments.permission,arguments.object).barnaclevalue) />
+				<cfset thisresult = application.security.setCache(thisrole,arguments.permission,arguments.object,getBarnacle(thisrole,arguments.permission,arguments.object).barnaclevalue) />
 			</cfif>
 			
 			<!--- Result is the most permissable right. 1 is the most permissable, so if that is returned we don't need to check any more --->
@@ -151,7 +151,7 @@
 			<cfset arguments.permission = stBarnacle.permission />
 			<cfset arguments.object = stBarnacle.object />
 			
-		<cfelseif not (isvalid("uuid",arguments.role) and isvalid("uuid",arguments.permission) and isvalid("uuid",arguments.object))>
+		<cfelseif not (len(arguments.role) and isvalid("uuid",arguments.permission) and isvalid("uuid",arguments.object))>
 		
 			<!--- Invalid arguments --->
 			<cfthrow message="farBarnacle.getInheritedRight: required arguments - barnacle or role + permission + object" />
