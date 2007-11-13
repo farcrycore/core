@@ -303,6 +303,7 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
 				<cfset session.dmSec.authentication.userlogin = stResult.userid />
 				<cfset session.dmSec.authentication.canonicalname = "#stResult.userid#_#ud#" />
 				<cfset session.dmSec.authentication.userdirectory = ud />
+				<cfparam name="session.sessionid" default="#createuuid()#" />
 				
 				<!--- Admin flag --->
 				<cfset session.dmSec.authentication.bAdmin = application.security.checkPermission(permission=oPermission.getID("Admin")) />

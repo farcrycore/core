@@ -141,9 +141,9 @@
 		<cfargument name="object" type="string" required="false" default="" hint="The object to find" />
 		
 		<cfif isvalid("uuid",arguments.object)>
-			<cfreturn structkeyexists(this.cache.roles,arguments.role) and structkeyexists(this.cache.roles[arguments.role],"barnacles") and structkeyexists(this.cache.roles[arguments.role].permissions,arguments.permission) />
-		<cfelse>
 			<cfreturn structkeyexists(this.cache.roles,arguments.role) and structkeyexists(this.cache.roles[arguments.role],"barnacles") and structkeyexists(this.cache.roles[arguments.role].barnacles,arguments.object) and structkeyexists(this.cache.roles[arguments.role].barnacles[arguments.object],arguments.permission) />
+		<cfelse>
+			<cfreturn structkeyexists(this.cache.roles,arguments.role) and structkeyexists(this.cache.roles[arguments.role],"permissions") and structkeyexists(this.cache.roles[arguments.role].permissions,arguments.permission) />
 		</cfif>
 	</cffunction>
 	
