@@ -1,21 +1,5 @@
 <cfcomponent displayName="Security Scope" hint="Encapsulates the generic higher-level security functions and variables" output="false">
 
-	<!--- Cache --->
-	<cfset this.cache = structnew() />
-	<cfset this.cache.roles = structnew() />
-	<cfset this.cache.permissionlookup = structnew() />
-	<cfset this.cache.rolelookup = structnew() />
-	
-	<!--- Factory --->
-	<cfset this.factory.role = createObject("component", application.stcoapi["farRole"].packagePath) />
-	<cfset this.factory.permission = createObject("component", application.stcoapi["farPermission"].packagePath) />
-	<cfset this.factory.barnacle = createObject("component", application.stcoapi["farBarnacle"].packagePath) />
-	
-	<!--- User directories --->
-	<cfset this.userdirectories = structnew() />
-	<cfset this.userdirectoryorder = "" />
-	
-	
 	<cfimport taglib="/farcry/core/tags/farcry" prefix="farcry" />
 	
 	
@@ -23,24 +7,15 @@
 		<cfset var permission = "" /><!--- Used in deprecated code --->
 		<cfset var stPermission = structnew() /><!--- Used in deprecated code --->
 		<cfset var i = 0 /><!--- Used in deprecated code --->
-		<cfset var oUtils = createobject("component","farcry.core.packages.farcry.utils") />
 		
-		<cfloop list="#oUtils.getComponents('security')#" index="comp">
-			<cfif oUtils.extends(oUtils.getPath("security",comp),"farcry.core.packages.security.UserDirectory")>
-				<cfset ud = createobject("component",oUtils.getPath("security",comp)) />
-				<cfset this.userdirectories[ud.key] = ud />
-				<cfset this.userdirectoryorder = listappend(this.userdirectoryorder,ud.key) />
-			</cfif>
-		</cfloop>
-		
-		<cfset this.cache.defaultroles = this.factory.role.getDefaultRoles() />
+		<cfset initCache() />
 		
 		<!--- THE FOLLOWING VARIABLES ARE DEPRECATED --->
 		<!--- THIS CODE SHOULD BE BURNT IN A FIRE AND SCATTERED OVER MOVING WATER --->
 		<cfset application.factory.oAuthorisation = createObject("component","#application.securitypackagepath#.authorisation") />
 		<cfset application.factory.oAuthentication = createObject("component","#application.securitypackagepath#.authentication") />
 		
-		<cfset application.dmSec.lDefaultPolicyGroups = this.role.getDefaultRoles() />
+		<cfset application.dmSec.lDefaultPolicyGroups = this.factory.role.getDefaultRoles() />
 		
 		<cfloop list="#this.factory.permission.getAllPermissions()#" index="permission">
 			<cfset stPermission = this.factory.permission.getData(permission) />
@@ -66,6 +41,35 @@
 		<cfreturn this />
 	</cffunction>
 
+	<cffunction name="initCache" access="public" output="false" returntype="void" hint="Initialises the security cache">
+		<cfset var comp = "" />
+		
+		<!--- Cache --->
+		<cfset this.cache = structnew() />
+		<cfset this.cache.roles = structnew() />
+		<cfset this.cache.permissionlookup = structnew() />
+		<cfset this.cache.rolelookup = structnew() />
+		
+		<!--- Factory --->
+		<cfset this.factory.role = createObject("component", application.factory.oUtils.getPath("types","farRole")) />
+		<cfset this.factory.permission = createObject("component", application.factory.oUtils.getPath("types","farPermission")) />
+		<cfset this.factory.barnacle = createObject("component", application.factory.oUtils.getPath("types","farBarnacle")) />
+		
+		<!--- User directories --->
+		<cfset this.userdirectories = structnew() />
+		<cfset this.userdirectoryorder = "" />
+		
+		<cfloop list="#application.factory.oUtils.getComponents('security')#" index="comp">
+			<cfif application.factory.oUtils.extends(application.factory.oUtils.getPath("security",comp),"farcry.core.packages.security.UserDirectory")>
+				<cfset ud = createobject("component",application.factory.oUtils.getPath("security",comp)) />
+				<cfset this.userdirectories[ud.key] = ud />
+				<cfset this.userdirectoryorder = listappend(this.userdirectoryorder,ud.key) />
+			</cfif>
+		</cfloop>
+		
+		<cfset this.cache.defaultroles = this.factory.role.getDefaultRoles() />
+	</cffunction>
+
 	<cffunction name="onRequestStart" access="public" output="false" returntype="void" hint="This function should be executed on page request start">
 
 		<!--- These variables are depreciated --->
@@ -73,14 +77,19 @@
 		<cfset request.dmSec.oAuthentication = createObject("component","#application.securitypackagepath#.authentication") />
 	</cffunction>
 
-	<cffunction name="checkPermission" access="public" output="false" returntype="boolean" hint="Returns true if a user has the specified permission">
-		<cfargument name="object" type="string" required="false" default="" hint="If specified, will check barnacle" />
+	<cffunction name="checkPermission" access="public" output="true" returntype="boolean" hint="Returns true if a user has the specified permission">
 		<cfargument name="permission" type="string" required="true" hint="The permission to check" />
-		<cfargument name="role" type="string" required="false" default="#getCurrentRoles()#" hint="List of roles to check" />
+		<cfargument name="object" type="string" required="false" default="" hint="If specified, will check barnacle" />
+		<cfargument name="role" type="string" required="false" default="" hint="List of roles to check" />
 		
 		<!--- If the permission was specified by name, retrieve the objectid --->
 		<cfif not isvalid("uuid",arguments.permission)>
 			<cfset arguments.permission = this.factory.permission.getID(arguments.permission) />
+		</cfif>
+		
+		<!--- If the role was left empty, use current user's roles --->
+		<cfif not len(arguments.role)>
+			<cfset arguments.role = getCurrentRoles() />
 		</cfif>
 		
 		<!--- If an object was provided check the barnacle for that object, otherwise check the basic permission --->
@@ -101,19 +110,19 @@
 	
 
 	<!--- CACHE FUNCTIONS - SHOULD ONLY BE ACCESSED BY CORE CODE --->
-	<cffunction name="setCache" access="private" output="false" returntype="boolean" hint="Sets up the ermission cache structure">
+	<cffunction name="setCache" access="public" output="false" returntype="boolean" hint="Sets up the ermission cache structure">
 		<cfargument name="role" type="uuid" required="true" hint="The role to cache" />
 		<cfargument name="permission" type="uuid" required="true" hint="The permission to cache" />
 		<cfargument name="object" type="string" required="false" default="" hint="The object to cache" />
 		<cfargument name="right" type="numeric" required="true" hint="The right value to cache" />
 		
-		<cfif not structkeyexists(this.cache,arguments.role)>
+		<cfif not structkeyexists(this.cache.roles,arguments.role)>
 			<cfset this.cache.roles[arguments.role] = structnew() />
 		</cfif>
-		<cfif not structkeyexists(this.cache[arguments.role],"permissions")>
+		<cfif not structkeyexists(this.cache.roles[arguments.role],"permissions")>
 			<cfset this.cache.roles[arguments.role].permissions = structnew() />
 		</cfif>
-		<cfif not structkeyexists(this.cache[arguments.role],"barnacles")>
+		<cfif not structkeyexists(this.cache.roles[arguments.role],"barnacles")>
 			<cfset this.cache.roles[arguments.role].barnacles = structnew() />
 		</cfif>
 		
@@ -126,7 +135,7 @@
 		<cfreturn arguments.right />
 	</cffunction>
 
-	<cffunction name="isCached" access="private" output="false" returntype="boolean" hint="Returns true if the right is cached">
+	<cffunction name="isCached" access="public" output="false" returntype="boolean" hint="Returns true if the right is cached">
 		<cfargument name="role" type="uuid" required="true" hint="The role to find" />
 		<cfargument name="permission" type="uuid" required="true" hint="The permission to find" />
 		<cfargument name="object" type="string" required="false" default="" hint="The object to find" />
@@ -138,7 +147,7 @@
 		</cfif>
 	</cffunction>
 	
-	<cffunction name="getCache" access="private" output="false" returntype="boolean" hint="Returns the cached right. Doesn't error check.">
+	<cffunction name="getCache" access="public" output="false" returntype="boolean" hint="Returns the cached right. Doesn't error check.">
 		<cfargument name="role" type="uuid" required="true" hint="The role to retrieve" />
 		<cfargument name="permission" type="uuid" required="true" hint="The permission to retrieve" />
 		<cfargument name="object" type="string" required="false" default="" hint="The object to retrieve" />
@@ -150,7 +159,7 @@
 		</cfif>
 	</cffunction>
 	
-	<cffunction name="deleteCache" access="private" output="false" returntype="void" hint="Deletes the specified cache. Doesn't error check.">
+	<cffunction name="deleteCache" access="public" output="false" returntype="void" hint="Deletes the specified cache. Doesn't error check.">
 		<cfargument name="role" type="uuid" required="true" hint="The role to find" />
 		<cfargument name="permission" type="string" required="false" default="" hint="The permission to find" />
 		<cfargument name="object" type="string" required="false" default="" hint="The object to find" />
@@ -191,7 +200,7 @@
 		<cfreturn false />
 	</cffunction>
 	
-	<cffunction name="setLookup" access="public" output="uuid" returntype="void" hint="Stores an objectid for a specified label">
+	<cffunction name="setLookup" access="public" output="false" returntype="uuid" hint="Stores an objectid for a specified label">
 		<cfargument name="role" type="string" required="false" default="" hint="The title of the role to lookup" />
 		<cfargument name="permission" type="string" required="false" default="" hint="The title of the permission to lookup" />
 		<cfargument name="objectid" type="uuid" required="true" hint="The objectid of the item to store" />
@@ -213,9 +222,9 @@
 		
 		<cfif len(arguments.role)>
 			<cfif isvalid("uuid",arguments.role)>
-				<cfloop from="1" to="#arraylen(this.cache.rolelookup)#" index="i">
+				<cfloop collection="#this.cache.rolelookup#" item="i">
 					<cfif this.cache.rolelookup[i] eq arguments.role>
-						<cfset arraydeleteat(this.cache.rolelookup,i) />
+						<cfset structdelete(this.cache.rolelookup,i) />
 						<cfbreak />
 					</cfif>
 				</cfloop>
@@ -224,9 +233,9 @@
 			</cfif>
 		<cfelse>
 			<cfif isvalid("uuid",arguments.permission)>
-				<cfloop from="1" to="#arraylen(this.cache.permissionlookup)#" index="i">
+				<cfloop collection="#this.cache.permissionlookup#" item="i">
 					<cfif this.cache.permissionlookup[i] eq arguments.permission>
-						<cfset arraydeleteat(this.cache.permissionlookup,i) />
+						<cfset structdelete(this.cache.permissionlookup,i) />
 						<cfbreak />
 					</cfif>
 				</cfloop>

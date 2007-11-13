@@ -285,6 +285,16 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
 					<cfreturn false />
 				</cfif>
 				
+				<!--- Get user groups and convert them to Farcry roles --->
+				<cfloop list="#application.security.userdirectories[ud].getUserGroups(stResult.userid)#" index="group">
+					<cfset groups = listappend(groups,"#group#_#ud#") />
+				</cfloop>
+				<cfset session.dmSec.authentication.lPolicyGroupIds = oRole.groupsToRoles(groups) />
+				
+				<!--- New structure --->
+				<cfset session.security.userid = "#stResult.userid#_#ud#" />
+				<cfset session.security.roles = oRole.groupsToRoles(groups) />
+				
 				<!--- Retrieve user info --->
 				<cfset session.dmSec.authentication = oUser.getByUserID(stResult.userid) />
 				<cfif structkeyexists(session.dmSec.authentication,"password")>
@@ -294,25 +304,15 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
 				<cfset session.dmSec.authentication.canonicalname = "#stResult.userid#_#ud#" />
 				<cfset session.dmSec.authentication.userdirectory = ud />
 				
-				<!--- Get user groups and convert them to Farcry roles --->
-				<cfloop list="#application.security.userdirectories[ud].getUserGroups(stResult.userid)#" index="group">
-					<cfset groups = listappend(groups,"#group#_#ud#") />
-				</cfloop>
-				<cfset session.dmSec.authentication.lPolicyGroupIds = oRole.groupsToRoles(groups) />
-				
 				<!--- Admin flag --->
-				<cfset session.dmSec.authentication.bAdmin = oRole.checkPermission(role=session.dmSec.authentication.lPolicyGroupIds,permission=oPermission.getID("Admin")) />
+				<cfset session.dmSec.authentication.bAdmin = application.security.checkPermission(permission=oPermission.getID("Admin")) />
 				
 				<!--- First login flag --->
-				<cfif application.factory.oAudit.getAuditLog(username=session.dmSec.authentication.canonicalname,auditType="dmSec.login").recordcount eq 0>
+				<cfif application.factory.oAudit.getAuditLog(username=session.security.userid,auditType="dmSec.login").recordcount eq 0>
 					<cfset session.firstLogin = false />
 				<cfelse>
 					<cfset session.firstlogin = true />
 				</cfif>
-				
-				<!--- New structure --->
-				<cfset session.security.userid = "#stResult.userid#_#ud#" />
-				<cfset session.security.roles = oRole.groupsToRoles(groups) />
 				
 				<!--- Log the result --->
 				<cfif arguments.bAudit>

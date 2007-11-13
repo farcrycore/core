@@ -69,9 +69,8 @@
 <cfif bLoggedIn>
     <!--- dmSecMX automatically sets up session.dmSec.authentication structure --->
     <!--- check for ADMIN permissions --->
-    <cfset oAuthorisation = request.dmSec.oAuthorisation>
-    <cfset iAdminState = oAuthorisation.checkPermission(permissionName="Admin",reference="PolicyGroup")>
-        
+    <cfset iAdminState = application.security.checkPermission(permission="Admin") />
+    
     <cfif iAdminState eq 1>
         <!--- turn on admin permissions --->
         <cfset request.mode.bAdmin = 1>
@@ -82,7 +81,7 @@
             <cfset session.writingDir="rtl">
         <cfelse>
             <cfset session.writingDir="ltr">
-        </cfif> 
+        </cfif>
         <!--- i18n: final bit, grab user language from locale, tarts up html tag --->
         <cfset session.userLanguage=left(session.dmProfile.locale,2)>
     </cfif>

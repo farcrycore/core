@@ -117,7 +117,7 @@
 		
 		<cfif not structkeyexists(arguments,"relatedtype")>
 			<!--- Get all permissions --->
-			<cfquery datasource="#applications.dsn#" name="qPermissions">
+			<cfquery datasource="#application.dsn#" name="qPermissions">
 				select	objectid
 				from	#application.dbowner#farPermission
 			</cfquery>

@@ -23,17 +23,11 @@ $out:$
 --->
 
 <cfcomponent displayName="Authorisation" hint="User authorisation">
-	<cfinclude template="/farcry/core/admin/includes/cfFunctionWrappers.cfm">
-	<cfinclude template="/farcry/core/admin/includes/utilityFunctions.cfm">
-	<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
-	<cfimport taglib="/farcry/core/tags/navajo" prefix="nj">
-	<cfimport taglib="/farcry/core/tags/farcry" prefix="farcry" />
 
 	<cffunction name="collateObjectPermissions" output="No" returntype="struct" hint="Returns a struct containing the actual, inherited, and tranformed rights for a each role on a given object">
 		<cfargument name="objectid" required="true" type="uuid" hint="The object to query" />
 		<cfargument name="typename" required="false" default="dmNavigation" hint="Depreciated. Type is now retrieved via findType.">
 		
-		<cfset var oBarnacle = createObject("component", application.stcoapi["farBarnacle"].packagePath) />
 		<cfset var stResult = structnew() />
 		<cfset var qPermissions = "" />
 		<cfset var qRoles = "" />
@@ -47,7 +41,7 @@ $out:$
 					inner join
 					#application.dbowner#farPermission_relatedtypes pt
 					on p.objectid=pt.parentid
-			where	data=<cfqueryparam cfsqltype="cf_sql_varchar" value="#oBarnacle.findType(arguments.objectid)#" />
+			where	data=<cfqueryparam cfsqltype="cf_sql_varchar" value="#application.security.factory.barnacle.findType(arguments.objectid)#" />
 		</cfquery>
 		
 		<cfquery datasource="#application.dsn#" name="qRoles">
@@ -64,10 +58,10 @@ $out:$
 				<cfset stTemp = stResult[qRoles.label[qRoles.currentrow]][qPermissions.label[qPermissions.currentrow]] />
 				
 				<!--- Actual right set for this item --->
-				<cfset stTemp.A = oBarnacle.getRight(role=qRoles.objectid[qRoles.currentrow],permission=qPermissions.objectid[qPermissions.currentrow],object=arguments.objectid) />
+				<cfset stTemp.A = application.security.factory.barnacle.getRight(role=qRoles.objectid[qRoles.currentrow],permission=qPermissions.objectid[qPermissions.currentrow],object=arguments.objectid) />
 				
 				<!--- IF this permission was inherited, what would it inherit --->
-				<cfset stTemp.I = oBarnacle.getInheritedRight(role=qRoles.objectid[qRoles.currentrow],permission=qPermissions.objectid[qPermissions.currentrow],object=arguments.objectid) />
+				<cfset stTemp.I = application.security.factory.barnacle.getInheritedRight(role=qRoles.objectid[qRoles.currentrow],permission=qPermissions.objectid[qPermissions.currentrow],object=arguments.objectid) />
 				
 				<!--- What value should it actually use (transformed?) - use inherited if actual says inherit --->
 				<cfif stTemp.A>
@@ -90,13 +84,11 @@ $out:$
 		<cfargument name="permissionName" required="false">
 		<cfargument name="permissionType" required="false">
 		
-		<cfset var oRole = createObject("component", application.stcoapi["farRole"].packagePath) />
-		
 		<farcry:deprecated message="authorisation.createPermissionBarnacle() should be replaced with a call to farBarnacle.createData()" />
 		
 		<!--- If permission id was not provided, figure it out --->
 		<cfif not isvalid("uuid",arguments.permissionid) and len(arguments.permissionname)>
-			<cfset arguments.permissionid = createObject("component", application.stcoapi["farPermission"].packagePath).getID(arguments.permissionname) />
+			<cfset arguments.permissionid = application.security.factory.permission.getID(arguments.permissionname) />
 		<cfelseif not isvalid("uuid",arguments.permissionid) and not len(arguments.permissionname)>
 			<!--- Either the id or the name must be provided --->
 			<cfthrow message="Create permission barnacle requires the permission id or name" />
@@ -104,16 +96,16 @@ $out:$
 		
 		<!--- If policy id was not provided, figure it out --->
 		<cfif not isvalid("uuid",arguments.policygroupid) and len(arguments.policygroupname)>
-			<cfset arguments.policygroupid = oRole.getID(arguments.policygroupname) />
+			<cfset arguments.policygroupid = application.security.factory.role.getID(arguments.policygroupname) />
 		<cfelseif not isvalid("uuid",arguments.policygroupid) and not len(arguments.policygroupname)>
 			<!--- Either the id or the name must be provided --->
 			<cfthrow message="Create permission barnacle requires the policy id or name" />
 		</cfif>
 		
 		<cfif isvalid("uuid",arguments.reference)>
-			<cfset oRole.updateBarnacle(role=arguments.policygroupid,permission=arguments.permissionid,item=arguments.reference,right=arguments.status) />
+			<cfset application.security.factory.role.updateBarnacle(role=arguments.policygroupid,permission=arguments.permissionid,item=arguments.reference,right=arguments.status) />
 		<cfelse>
-			<cfset oRole.updatePermission(role=arguments.policygroupid,permission=arguments.permissionid,has=(arguments.status eq 1)) />
+			<cfset application.security.factory.role.updatePermission(role=arguments.policygroupid,permission=arguments.permissionid,has=(arguments.status eq 1)) />
 		</cfif>		
 	</cffunction>
 	
@@ -122,7 +114,7 @@ $out:$
 		
 		<farcry:deprecated message="authorisation.deletePermissionBarnacle() should be replaced with a call to farBarnacle.deleteObjectBarnacles()" />
 		
-		<cfset createObject("component", application.stcoapi["farBarnacle"].packagePath).deleteObjectBarnacles(arguments.objectid) />
+		<cfset application.security.factory.barnacle.deleteObjectBarnacles(arguments.objectid) />
 	</cffunction>
 	
 	<cffunction name="checkPermission" hint="Checks whether you have permission to perform an action on an object. Note: A positive permission from one group overides a negative permission from another group, i.e. they are permissive(heh!)." output="No">
@@ -131,8 +123,6 @@ $out:$
 		<cfargument name="objectID" required="false" default="" />
 		<cfargument name="lPolicyGroupIDs" required="false" default="" />
 		
-		<cfset var oRole = createObject("component", application.stcoapi["farRole"].packagePath) />
-		
 		<farcry:deprecated message="authorisation.checkPermission() should be replaced by call to farRole.checkPermission()" />
 		
 		<cfif isvalid("uuid",arguments.reference)>
@@ -140,9 +130,9 @@ $out:$
 		</cfif>
 		
 		<cfif len(arguments.objectid)>
-			<cfreturn oRole.checkPermission(role=arguments.lPolicyGroupIDs,permission=arguments.permissionname,objectid=arguments.objectid) />
+			<cfreturn application.security.checkPermission(role=arguments.lPolicyGroupIDs,permission=arguments.permissionname,objectid=arguments.objectid) />
 		<cfelse>
-			<cfreturn oRole.checkPermission(role=arguments.lPolicyGroupIDs,permission=arguments.permissionname) />
+			<cfreturn application.security.checkPermission(role=arguments.lPolicyGroupIDs,permission=arguments.permissionname) />
 		</cfif>
 	</cffunction>
 	
@@ -163,7 +153,7 @@ $out:$
 		<cfset stObj.title = arguments.permissionname />
 		<cfset stObj.relatedtypes = arraynew(1) />
 		<cfset stObj.relatedtypes[1] = arguments.permissiontype />
-		<cfset createObject("component", application.stcoapi["farPermission"].packagePath).createdata(stProperties=stObj) />
+		<cfset application.security.factory.permission.createdata(stProperties=stObj) />
 
 		<cfreturn stLocal.streturn>
 	</cffunction>
@@ -172,8 +162,7 @@ $out:$
 		<cfargument name="policyGroupName" required="true" type="string">
 		<cfargument name="policyGroupNotes" required="false" default="" type="string">
 		<cfargument name="policyGroupID" required="false" type="numeric">
-
-		<cfset var oRole = createObject("component", application.stcoapi["farRole"].packagePath) />
+		
 		<cfset var stObj = structnew() />
 		<cfset var stReturn = StructNew() />
 		<cfset stReturn.returncode = 1 />
@@ -185,7 +174,7 @@ $out:$
 		<cfset stObj.title = arguments.policyGroupName />
 		<cfset stObj.groups = arraynew(1) />
 		<cfset stObj.permissions = arraynew(1) />
-		<cfset oRole.createData(stProperties=stObj) />
+		<cfset application.security.factory.role.createData(stProperties=stObj) />
 
 		<cfreturn stReturn />
 	</cffunction>
@@ -199,7 +188,7 @@ $out:$
 		
 		<farcry:deprecated message="authorisation.createPolicyGroup() should be replaced by call to farRole.createData()" />
 
-		<cfset createObject("component", application.stcoapi["farRole"].packagePath).copyRole(arguments.stForm.sourcePolicyGroupID,arguments.stForm.name) />
+		<cfset application.security.factory.role.copyRole(arguments.stForm.sourcePolicyGroupID,arguments.stForm.name) />
 
 		<cfreturn stReturn />		
 	</cffunction>
@@ -218,8 +207,7 @@ $out:$
 		<cfargument name="policyGroupId" type="uuid" required="true" />
 
 		<cfset var stReturn = StructNew() />
-		<cfset var oRole = createObject("component", application.stcoapi["farRole"].packagePath) />
-		<cfset var stRole = oRole.getData(arguments.policyGroupId) />
+		<cfset var stRole = application.security.factory.role.getData(arguments.policyGroupId) />
 		<cfset var i = 0 />
 		
 		<farcry:deprecated message="authorisation.createPolicyGroupMapping() should be replaced by call to farRole.setData()" />
@@ -236,7 +224,7 @@ $out:$
 		</cfloop>
 		
 		<cfset arrayappend(stRole.groups,"#arguments.groupname#_#arguments.userdirectory#") />
-		<cfset oRole.setData(stProperties=stRole) />
+		<cfset application.security.factory.role.setData(stProperties=stRole) />
 		
 		<!--- Return message --->
 		<cfreturn stReturn />
@@ -245,7 +233,6 @@ $out:$
 	<cffunction name="deletePermission" hint="Delets a permission from the datastore" returntype="struct" output="no">
 		<cfargument name="permissionID" type="uuid" required="true" />
 		
-		<cfset var oPermission = createObject("component", application.stcoapi["farPermission"].packagePath) />
 		<cfset var stReturn = StructNew()>
 		
 		<cfset stReturn.returncode = 1>
@@ -253,7 +240,7 @@ $out:$
 		
 		<farcry:deprecated message="authorisation.deletePermission() should be replaced by call to farPermission.delete()" />
 		
-		<cfset oPermission.delete(arguments.permissionID) />
+		<cfset application.security.factory.permission.delete(arguments.permissionID) />
 		
 		<cfreturn stReturn />
 	</cffunction>
@@ -263,7 +250,6 @@ $out:$
 		<cfargument name="PolicyGroupID" required="false" type="string" default="">
 		
 		<cfset var stReturn = StructNew() />
-		<cfset var oRole = createObject("component", application.stcoapi["farRole"].packagePath) />
 		
 		<cfset stReturn.returncode = 1 />
 		<cfset stReturn.returnmessage = "" />
@@ -271,9 +257,9 @@ $out:$
 		<farcry:deprecated message="authorisation.deletePolicyGroup() should be replaced by call to farRole.delete()" />
 		
 		<cfif not isvalid("uuid",arguments.policygroupid)>
-			<cfset arguments.policygroupid = oRole.getID(arguments.policygroupname) />
+			<cfset arguments.policygroupid = application.security.factory.role.getID(arguments.policygroupname) />
 		</cfif>
-		<cfset oRole.delete(arguments.policygroupid) />
+		<cfset application.security.factory.role.delete(arguments.policygroupid) />
 
 		<cfreturn stReturn />
 	</cffunction>
@@ -292,8 +278,7 @@ $out:$
 		<cfargument name="policyGroupID" required="true" type="uuid" hint="The policy to update" />
 		
 		<cfset var stReturn = StructNew() />
-		<cfset var oRole = createObject("component", application.stcoapi["farRole"].packagePath) />
-		<cfset var stRole = oRole.getData(arguments.policyGroupID) />
+		<cfset var stRole = application.security.factory.role.getData(arguments.policyGroupID) />
 		
 		<farcry:deprecated message="authorisation.deletePolicyGroupMapping() should be replaced by call to farRole.setData()" />
 		
@@ -306,7 +291,7 @@ $out:$
 				<cfset arraydeleteat(stRole.groups,i) />
 			</cfif>
 		</cfloop>
-		<cfset oRole.setData(stProperties=stRole) />
+		<cfset application.security.factory.role.setData(stProperties=stRole) />
 
 		<cfreturn stReturn>
 	</cffunction>
@@ -316,16 +301,15 @@ $out:$
 		<cfargument name="permissionName" type="string">
 		<cfargument name="permissionType" type="string" required="false">
 		
-		<cfset var oPermission = createObject("component", application.stcoapi["farPermission"].packagePath) />
 		<cfset var stPermission = structnew() />
 		<cfset var stResult = structnew() />
 		
 		<farcry:deprecated message="authorisation.getPermission() should be replaced by call to farPermission.getData()" />
 		
 		<cfif not isvalid("uuid",arguments.permissionID)>
-			<cfset arguments.permissionID = oPermission.getID(arguments.permissionName) />
+			<cfset arguments.permissionID = application.security.factory.permission.getID(arguments.permissionName) />
 		</cfif>
-		<cfset stPermission = oPermission.getData(arguments.permissionID) />
+		<cfset stPermission = application.security.factory.permission.getData(arguments.permissionID) />
 		
 		<cfset stResult.permissionID = stPermission.objectid />
 		<cfset stResult.permissionName = stPermission.title />
@@ -484,7 +468,6 @@ $out:$
 		<cfargument name="policyGroupName" required="false" default="" type="string">
 		<cfargument name="policyGroupID" required="false" default="" type="string">
 		
-		<cfset var oRole = createObject("component", application.stcoapi["farRole"].packagePath) />
 		<cfset var stResult = structnew() />
 		<cfset var stRole = structnew() />
 		
@@ -492,10 +475,10 @@ $out:$
 		
 		<!--- If the id wasn't provided, get it --->
 		<cfif not isvalid("uuid",arguments.policygroupid)>
-			<cfset arguments.policygroupid = oRole.getID(arguments.policyGroupName) />
+			<cfset arguments.policygroupid = application.security.factory.role.getID(arguments.policyGroupName) />
 		</cfif>
 		
-		<cfset stRole = oRole.getData(arguments.policyGroupId) />
+		<cfset stRole = application.security.factory.role.getData(arguments.policyGroupId) />
 		
 		<cfset stResult.PolicyGroupId = stRole.objectid />
 		<cfset stResult.PolicyGroupName = stRole.title />
@@ -529,9 +512,6 @@ $out:$
 		<cfargument name="lrefs" required="false" default="" />
 		<cfargument name="bUseCache" required="false" default="1" />
 		
-		<cfset var oRole = createObject("component", application.stcoapi["farRole"].packagePath) />
-		<cfset var oPermission = createObject("component", application.stcoapi["farPermission"].packagePath) />
-		<cfset var oBarnacle = createObject("component", application.stcoapi["farBarnacle"].packagePath) />
 		<cfset var role = "" />
 		<cfset var permission = "" />
 		<cfset var stResult = structnew() />
@@ -549,15 +529,15 @@ $out:$
 		<!--- Only the last item is actually returned --->
 		<cfset arguments.objectid = listlast(arguments.lrefs) />
 		
-		<cfloop list="#oRole.getAllRoles()#" index="role">
+		<cfloop list="#application.security.factory.role.getAllRoles()#" index="role">
 			<cfset stResult[role] = structnew() />
 			
-			<cfloop list="#oPermission.getAllPermissions(oPermission.findType(arguments.objectid))#" index="permission">
+			<cfloop list="#application.security.factory.permission.getAllPermissions(application.security.factory.permission.findType(arguments.objectid))#" index="permission">
 				<cfset stResult[role][permission] = structnew() />
 				
 				<cfif isvalid("uuid",arguments.objectid)>
-					<cfset stResult[role][permission].A = oBarnacle.getRight(role=role,permission=permission,object=arguments.objectid,forcerefresh=(not arguments.bUseCache)) />
-					<cfset stResult[role][permission].I = oBarnacle.getInheritedRight(role=role,permission=permission,object=arguments.objectid,forcerefresh=(not arguments.bUseCache)) />
+					<cfset stResult[role][permission].A = application.security.factory.barnacle.getRight(role=role,permission=permission,object=arguments.objectid,forcerefresh=(not arguments.bUseCache)) />
+					<cfset stResult[role][permission].I = application.security.factory.barnacle.getInheritedRight(role=role,permission=permission,object=arguments.objectid,forcerefresh=(not arguments.bUseCache)) />
 					
 					<cfif stResult[role][permission].A eq 0>
 						<cfset stResult[role][permission].T = stResult[role][permission].I />
@@ -565,7 +545,7 @@ $out:$
 						<cfset stResult[role][permission].T = stResult[role][permission].A />
 					</cfif>
 				<cfelse>
-					<cfset stResult[role][permission].A = oRole.getRight(role=role,permission=permission,forcerefresh=(not arguments.bUseCache)) />
+					<cfset stResult[role][permission].A = application.security.factory.role.getRight(role=role,permission=permission,forcerefresh=(not arguments.bUseCache)) />
 					<cfset stResult[role][permission].I = stResult[role][permission].A />
 					<cfset stResult[role][permission].T = stResult[role][permission].A />
 				</cfif>
@@ -582,9 +562,9 @@ $out:$
 		<cfset stReturn.returncode = 1>
 		<cfset stReturn.returnmessage = "Permissions cache has been successfully updated">
 		
-		<farcry:deprecated message="authorisation.reInitPermissionsCache() should be replaced by clearing the application.security.cache struct" />
+		<farcry:deprecated message="authorisation.reInitPermissionsCache() should be replaced with application.security.initCache()" />
 		
-		<cfset application.security.cache = structnew() />
+		<cfset application.security.initCache() />
 
 		<cfreturn stReturn />
 	</cffunction>
@@ -596,7 +576,6 @@ $out:$
 		<cfargument name="permissionNotes" required="false" default="" />
 		
 		<cfset var stReturn = StructNew() />
-		<cfset var oPermission = createObject("component", application.stcoapi["farPermission"].packagePath) />
 		<cfset var stPermission = structnew() />
 		
 		<farcry:deprecated message="authorisation.updatePermission() should be replaced by farPermission.setData()" />
@@ -604,7 +583,7 @@ $out:$
 		<cfset stReturn.returncode = 1>
 		<cfset stReturn.returnmessage = "">		
 
-		<cfset stPermission = oPermission.getData(arguments.permissionID) />
+		<cfset stPermission = application.security.factory.permission.getData(arguments.permissionID) />
 		
 		<cfset stPermission.title = arguments.permissionName />
 		<cfset stPermission.relatedtypes = arraynew(1) />
@@ -612,7 +591,7 @@ $out:$
 			<cfset stPermission.relatedtypes[1] = arguments.permissionType />
 		</cfif>
 		
-		<cfset oPermission.setData(stProperties=stPermission) />
+		<cfset application.security.factory.permission.setData(stProperties=stPermission) />
 
 		<cfreturn stReturn />
 	</cffunction>	
@@ -623,7 +602,6 @@ $out:$
 		<cfargument name="PolicyGroupNotes" required="false" default="">
 		
 		<cfset var stReturn = StructNew() />
-		<cfset var oRole = createObject("component", application.stcoapi["farRole"].packagePath) />
 		<cfset var stRole = structnew() />
 		
 		<farcry:deprecated message="authorisation.updatePolicyGroup() should be replaced by farRole.setData()" />
@@ -631,11 +609,11 @@ $out:$
 		<cfset stReturn.returncode = 1>
 		<cfset stReturn.returnmessage = "">		
 
-		<cfset stRole = oRole.getData(arguments.policygroupid) />
+		<cfset stRole = application.security.factory.role.getData(arguments.policygroupid) />
 		
 		<cfset stRole.title = arguments.PolicyGroupName />
 		
-		<cfset oPermission.setData(stProperties=stPermission) />
+		<cfset application.security.factory.permission.setData(stProperties=stPermission) />
 
 		<cfreturn stReturn />
 	</cffunction>	
@@ -647,15 +625,14 @@ $out:$
 		
 		<cfset var role = "" />
 		<cfset var permission = "" />
-		<cfset var oBarnacle = createObject("component", application.stcoapi["farBarnacle"].packagePath) />
-		<cfset var permissions = createObject("component", application.stcoapi["farPermission"].packagePath).getAllPermissions(arguments.objectid) />
-		<cfset var roles = createObject("component", application.stcoapi["farRole"].packagePath).getAllRoles() />
+		<cfset var permissions = application.security.factory.permission.getAllPermissions(arguments.objectid) />
+		<cfset var roles = application.security.factory.role.getAllRoles() />
 		
 		<farcry:deprecated message="authorisation.updateObjectPermissionCache() should be replaced by clearing application.security.cache struct or calling farBarnacle.getRight with forcerefresh=true" />
 		
 		<cfloop list="#roles#" index="role">
 			<cfloop list="#permissions#" index="permission">
-				<cfset oBarnacle.getRight(role=role,permission=permission,object=arguments.objectid,forcerefresh=true) />
+				<cfset application.security.factory.barnacle.getRight(role=role,permission=permission,object=arguments.objectid,forcerefresh=true) />
 			</cfloop>
 		</cfloop>
 	</cffunction> 
@@ -678,7 +655,6 @@ $out:$
 		<cfargument name="permissionID" required="false" default="" type="string">
 		
 		<cfset var stReturn = StructNew() />
-		<cfset var oPermission = createObject("component", application.stcoapi["farPermission"].packagePath) />
 		<cfset var qRoles = "" />
 		<cfset var qGroups = "" />
 
@@ -686,10 +662,10 @@ $out:$
 		
 		<!--- If Id wasn't provided, get it --->
 		<cfif not isvalid("uuid",arguments.permissionid)>
-			<cfset arguments.permissionid = oPermission.getID(arguments.permissionname) />
+			<cfset arguments.permissionid = application.security.factory.permission.getID(arguments.permissionname) />
 		</cfif>
 		
-		<cfset stReturn.lObjectIDs = oPermission.getUsers(arguments.permissionid) />
+		<cfset stReturn.lObjectIDs = application.security.factory.permission.getUsers(arguments.permissionid) />
 		<cfset stReturn.bSuccess = true />
 		<cfset stResurn.message = "" />
 
