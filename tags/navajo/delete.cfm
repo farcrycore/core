@@ -27,6 +27,7 @@ $out: <separate entry for each variable>$
 
 <cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
 <cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
+<cfimport taglib="/farcry/core/tags/security/" prefix="sec">
 
 <cfif isDefined("URL.objectID")>
 
@@ -44,45 +45,45 @@ $out: <separate entry for each variable>$
 	<cfset qGetParent = oNav.getParent(objectid=stObj.objectID)>
 	<cfset parentObjectID = qGetParent.parentid>
 </cfif>
-<cfset oAuthorisation = request.dmSec.oAuthorisation>
-<cfset oAuthorisation.checkInheritedPermission(permissionName="edit",objectid=parentobjectid,bThrowOnError=1)>
 
-<!--- get the parentID --->
-<q4:contentobjectget objectid="#parentObjectId#" r_stobject="srcObjParent">
-					
-<cfif NOT stObj.typename IS "dmNavigation">
-	<cfset key = 'aobjectids'>
-	<cfloop index="i" from="#ArrayLen(srcObjParent[key])#" to="1" step="-1">
-		<cfif srcObjParent[key][i] eq stObj.objectId>
-			<cfset ArrayDeleteAt( srcObjParent[key], i )>
-		</cfif>
-	</cfloop>
-	<cfscript>
-		// $TODO: may want to check if this is necessary, implies that date value has been changed on get. GB$
-		srcObjParent.datetimecreated = createODBCDate("#datepart('yyyy',srcObjParent.datetimecreated)#-#datepart('m',srcObjParent.datetimecreated)#-#datepart('d',srcObjparent.datetimecreated)#");
-		srcObjParent.datetimelastupdated = createODBCDate(now());
-		
-		// update the parent object instance
-		oParentType = createobject("component", application.types[srcObjParent.typename].typePath);
-		oParentType.setData(stProperties=srcObjParent,auditNote="Child Deleted");
-	</cfscript>
-	<!--- $TODO: may need to remove typename attribute and force a lookup -- what if it's a custom type? GB$ --->
-</cfif>
-
-	<!--- type specific delete options --->
-	<cfset oType.delete(stObj.objectId)>
-
-	<!--- Update the tree view --->
-	<!--- <nj:updateTree objectId="#parentObjectID#"> --->
+<sec:restricted permission="edit" objectid="#parentobjectid#">
+	<!--- get the parentID --->
+	<q4:contentobjectget objectid="#parentObjectId#" r_stobject="srcObjParent">
+						
+	<cfif NOT stObj.typename IS "dmNavigation">
+		<cfset key = 'aobjectids'>
+		<cfloop index="i" from="#ArrayLen(srcObjParent[key])#" to="1" step="-1">
+			<cfif srcObjParent[key][i] eq stObj.objectId>
+				<cfset ArrayDeleteAt( srcObjParent[key], i )>
+			</cfif>
+		</cfloop>
+		<cfscript>
+			// $TODO: may want to check if this is necessary, implies that date value has been changed on get. GB$
+			srcObjParent.datetimecreated = createODBCDate("#datepart('yyyy',srcObjParent.datetimecreated)#-#datepart('m',srcObjParent.datetimecreated)#-#datepart('d',srcObjparent.datetimecreated)#");
+			srcObjParent.datetimelastupdated = createODBCDate(now());
+			
+			// update the parent object instance
+			oParentType = createobject("component", application.types[srcObjParent.typename].typePath);
+			oParentType.setData(stProperties=srcObjParent,auditNote="Child Deleted");
+		</cfscript>
+		<!--- $TODO: may need to remove typename attribute and force a lookup -- what if it's a custom type? GB$ --->
+	</cfif>
 	
-	<!--- update overview page --->
-	<cfoutput><script type="text/javascript">
-	// check if edited from Content or Site (via sidetree)
-	if(parent['sidebar'].frames['sideTree'])
-		parent['sidebar'].frames['sideTree'].location= parent['sidebar'].frames['sideTree'].location;
-	</script></cfoutput>
-<cfelse>
-	<cfthrow detail="URL.objectID not passed">
-</cfif>
+		<!--- type specific delete options --->
+		<cfset oType.delete(stObj.objectId)>
+	
+		<!--- Update the tree view --->
+		<!--- <nj:updateTree objectId="#parentObjectID#"> --->
+		
+		<!--- update overview page --->
+		<cfoutput><script type="text/javascript">
+		// check if edited from Content or Site (via sidetree)
+		if(parent['sidebar'].frames['sideTree'])
+			parent['sidebar'].frames['sideTree'].location= parent['sidebar'].frames['sideTree'].location;
+		</script></cfoutput>
+	<cfelse>
+		<cfthrow detail="URL.objectID not passed">
+	</cfif>
+</sec:restricted>
 
 <cfsetting enablecfoutputonly="No">

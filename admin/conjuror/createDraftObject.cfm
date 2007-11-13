@@ -43,8 +43,7 @@ Creates a draft object
 		oType = createobject("component", application.types[stProps.TypeName].typePath);
 		stNewObj = oType.createData(stProperties=stProps);
 		NewObjId = stNewObj.objectid;
-		oAuthentication = request.dmSec.oAuthentication;	
-		stuser = oAuthentication.getUserAuthenticationData();
+		stuser = application.factory.oAuthentication.getUserAuthenticationData();
 		application.factory.oaudit.logActivity(objectid="#URL.objectid#",auditType="Create", username=StUser.userlogin, location=cgi.remote_host, note="Draft object created");
 		
 		//this will copy containers and there rules from live object to draft

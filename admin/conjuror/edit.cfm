@@ -87,8 +87,7 @@ $out:$
 		//Delete the copied draft object
 		oType.deletedata(objectId="#URL.deleteDraftObjectID#");
 		//Log this activity against live object
-		oAuthentication = request.dmSec.oAuthentication;	
-		stuser = oAuthentication.getUserAuthenticationData();
+		stuser = application.factory.oAuthentication.getUserAuthenticationData();
 		application.factory.oaudit.logActivity(objectid="#url.objectid#",auditType="delete", username=StUser.userlogin, location=cgi.remote_host, note="Deleted Draft Object (#stObj.label#)");
 	</cfscript>
 	<!--- get parent for update tree --->

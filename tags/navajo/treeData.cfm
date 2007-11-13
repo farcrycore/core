@@ -282,14 +282,13 @@ work out suitable solution for reserved names like "typename"
 	
 	<!--- this may be slow, might have to pull from cache myself --->
 	<cfscript>
-	oAuthorisation = request.dmSec.oAuthorisation;
-	stObjectPermissions = oAuthorisation.collateObjectPermissions(objectID=objID);
+	stObjectPermissions = application.factory.oAuthorisation.collateObjectPermissions(objectID=objID);
 	
 	mergePerms=StructNew();
 	
-	for( i=1; i lte ListLen( session.dmSec.authentication.lPolicyGroupIds); i=i+1 )
+	for( i=1; i lte ListLen( session.security.roles ); i=i+1 )
 	{
-		policyGroupId=ListGetAt(session.dmSec.authentication.lPolicyGroupIds,i);
+		policyGroupId=ListGetAt(session.security.roles,i);
 		
 		if( structKeyExists( stObjectPermissions, policyGroupId) )
 			stPolicyGroup = stObjectPermissions[policyGroupId];
@@ -332,23 +331,3 @@ work out suitable solution for reserved names like "typename"
 </cfif>
 
 <cfsetting enablecfoutputonly="No">
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

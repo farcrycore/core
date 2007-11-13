@@ -87,129 +87,129 @@ $out:$
 
 <!--- Check permissions - are you allowed to do this? --->
 <cfscript>
-	oAuthorisation = request.dmSec.oAuthorisation;
 	if (not len(trim(destNavObjectID)))
-		oAuthorisation.checkPermission(permissionName="RootNodeManagement",reference="PolicyGroup",bThrowOnError=1);
+		haspermission = application.security.checkPermission(permission="RootNodeManagement");
 	else
-		oAuthorisation.checkInheritedPermission(permissionName="Create",objectid=destNavObjectID,bThrowOnError=1);	
+		haspermission = application.security.checkPermission(permission="Create",object=destNavObjectID);	
 	//get logged in user
-	oAuthentication = request.dmSec.oAuthentication;	
-	stuser = oAuthentication.getUserAuthenticationData();
+	stuser = application.factory.oAuthentication.getUserAuthenticationData();
 
 </cfscript>
 
-<nj:treeGetRelations get="ancestors" bInclusive="1" objectId="#destObj.objectId#" r_lObjectIds="lAncestorIds">
+<cfif haspermission>
 
-<cfif url.srcObjectId eq url.destObjectId OR ListFind( lAncestorIds, url.srcObjectId )>
-	<cfoutput>
-		<script>
-		parent.alert("#application.adminBundle[session.dmProfile.locale].destinationNodeCantBeChild#");
-		window.close();
-		</script>
-	</cfoutput>
-	<cfabort>
-</cfif>
-
-
- <cfif srcObj.typename IS "dmNavigation">
-	<!--- Move the branch in the NTM --->
+	<nj:treeGetRelations get="ancestors" bInclusive="1" objectId="#destObj.objectId#" r_lObjectIds="lAncestorIds">
 	
- 	<cftry> 
-	<!--- exclusive lock tree.moveBranch() to prevent corruption --->
-	
-	<cflock scope="Application"  type="EXCLUSIVE" timeout="1" throwontimeout="Yes">
-		<cfscript>
-			if (application.config.plugins.fu)
-			{
-				//first delete all old fu's
-				fuUrl = application.factory.oFU.getFU(objectid=srcObj.objectid);
-				application.factory.oFU.deleteFu(fuUrl);
-				//now the descendants if they exist
-				for (i=1;i LTE qGetDescendants.recordcount;i=i+1)
-				{
-					fuUrl = application.factory.oFU.getFU(objectid=qGetDescendants.objectid[i]);
-					application.factory.oFU.deleteFu(fuUrl);
-				}
-			}
-			
-			request.factory.oTree.moveBranch(dsn=application.dsn,objectID=URL.srcObjectID,parentID=URL.destObjectID);
-			
-			if (application.config.plugins.fu)
-			{		
-				//now create the new fu branch	
-
-				fuAlias = application.factory.oFU.createFUAlias(srcObj.objectid);
-				application.factory.oFU.setFU(objectid=srcObj.objectid,alias=fuAlias);
-
-				for (i=1;i LTE qGetDescendants.recordcount;i=i+1)
-				{
-					fuAlias = application.factory.oFU.createFUAlias(objectid=qGetDescendants.objectid[i]);
-					application.factory.oFU.setFu(objectid=qGetDescendants.objectid[i],alias=fuAlias);
-				}
-
-			}	
-			//updatetree(objectid=srcParentObjectID);
-		</cfscript>	
-	</cflock>
-		 <cfcatch>
-		 	<cfdump var="#cfcatch#">
-		 	<cfoutput>
-			<h2>#application.adminBundle[session.dmProfile.locale].moveBranchLockout#</h2>
-			<p>#application.adminBundle[session.dmProfile.locale].branchLockoutBlurb#</p>
+	<cfif url.srcObjectId eq url.destObjectId OR ListFind( lAncestorIds, url.srcObjectId )>
+		<cfoutput>
 			<script>
-				top['frames']['treeFrame'].alert("#application.adminBundle[session.dmProfile.locale].branchLockoutBlurb#");
-				top['frames']['treeFrame'].enableDragAndDrop();
+			parent.alert("#application.adminBundle[session.dmProfile.locale].destinationNodeCantBeChild#");
+			window.close();
 			</script>
-			</cfoutput>
-			<cfabort>
-		</cfcatch>
-	</cftry> 
+		</cfoutput>
+		<cfabort>
+	</cfif>
 	
-<cfelse>
-	<cfset key="AOBJECTIDS">
-</cfif>
-
-<!--- remove srcnav from its parent --->
-<cfif isStruct( srcObjParent ) and structcount(srcObjParent) AND isDefined("key") AND NOT srcObj.typename IS "dmNavigation">
- 	<cfloop index="i" from="#ArrayLen(srcObjParent[key])#" to="1" step="-1">
-		<cfif srcObjParent[key][i] eq srcObj.objectId>
-			<cfset ArrayDeleteAt( srcObjParent[key], i )>
-		</cfif>
-	</cfloop>
-
+	
+	 <cfif srcObj.typename IS "dmNavigation">
+		<!--- Move the branch in the NTM --->
+		
+	 	<cftry> 
+		<!--- exclusive lock tree.moveBranch() to prevent corruption --->
+		
+		<cflock scope="Application"  type="EXCLUSIVE" timeout="1" throwontimeout="Yes">
+			<cfscript>
+				if (application.config.plugins.fu)
+				{
+					//first delete all old fu's
+					fuUrl = application.factory.oFU.getFU(objectid=srcObj.objectid);
+					application.factory.oFU.deleteFu(fuUrl);
+					//now the descendants if they exist
+					for (i=1;i LTE qGetDescendants.recordcount;i=i+1)
+					{
+						fuUrl = application.factory.oFU.getFU(objectid=qGetDescendants.objectid[i]);
+						application.factory.oFU.deleteFu(fuUrl);
+					}
+				}
+				
+				request.factory.oTree.moveBranch(dsn=application.dsn,objectID=URL.srcObjectID,parentID=URL.destObjectID);
+				
+				if (application.config.plugins.fu)
+				{		
+					//now create the new fu branch	
+	
+					fuAlias = application.factory.oFU.createFUAlias(srcObj.objectid);
+					application.factory.oFU.setFU(objectid=srcObj.objectid,alias=fuAlias);
+	
+					for (i=1;i LTE qGetDescendants.recordcount;i=i+1)
+					{
+						fuAlias = application.factory.oFU.createFUAlias(objectid=qGetDescendants.objectid[i]);
+						application.factory.oFU.setFu(objectid=qGetDescendants.objectid[i],alias=fuAlias);
+					}
+	
+				}	
+				//updatetree(objectid=srcParentObjectID);
+			</cfscript>	
+		</cflock>
+			 <cfcatch>
+			 	<cfdump var="#cfcatch#">
+			 	<cfoutput>
+				<h2>#application.adminBundle[session.dmProfile.locale].moveBranchLockout#</h2>
+				<p>#application.adminBundle[session.dmProfile.locale].branchLockoutBlurb#</p>
+				<script>
+					top['frames']['treeFrame'].alert("#application.adminBundle[session.dmProfile.locale].branchLockoutBlurb#");
+					top['frames']['treeFrame'].enableDragAndDrop();
+				</script>
+				</cfoutput>
+				<cfabort>
+			</cfcatch>
+		</cftry> 
+		
+	<cfelse>
+		<cfset key="AOBJECTIDS">
+	</cfif>
+	
+	<!--- remove srcnav from its parent --->
+	<cfif isStruct( srcObjParent ) and structcount(srcObjParent) AND isDefined("key") AND NOT srcObj.typename IS "dmNavigation">
+	 	<cfloop index="i" from="#ArrayLen(srcObjParent[key])#" to="1" step="-1">
+			<cfif srcObjParent[key][i] eq srcObj.objectId>
+				<cfset ArrayDeleteAt( srcObjParent[key], i )>
+			</cfif>
+		</cfloop>
+	
+		<cfscript>
+			srcObjParent.datetimecreated = createODBCDate("#datepart('yyyy',srcObjParent.datetimecreated)#-#datepart('m',srcObjParent.datetimecreated)#-#datepart('d',srcObjparent.datetimecreated)#");
+			srcObjParent.datetimelastupdated = createODBCDate(now());
+			// update the parent object instance
+			oType = createobject("component", application.types[srcObjParent.typename].typePath);
+			oType.setData(stProperties=srcObjParent,auditNote="Child moved");	
+		</cfscript>
+	</cfif> 
+	<!--- add src nav to dest nav --->
 	<cfscript>
-		srcObjParent.datetimecreated = createODBCDate("#datepart('yyyy',srcObjParent.datetimecreated)#-#datepart('m',srcObjParent.datetimecreated)#-#datepart('d',srcObjparent.datetimecreated)#");
-		srcObjParent.datetimelastupdated = createODBCDate(now());
-		// update the parent object instance
-		oType = createobject("component", application.types[srcObjParent.typename].typePath);
-		oType.setData(stProperties=srcObjParent,auditNote="Child moved");	
+		destObj.datetimecreated = createODBCDate("#datepart('yyyy',destObj.datetimecreated)#-#datepart('m',destObj.datetimecreated)#-#datepart('d',destObj.datetimecreated)#");
+		destObj.datetimelastupdated = createODBCDate(now());
+		if (NOT srcObj.typename IS "dmNavigation")
+			arrayAppend( destObj[key], srcObj.objectId);
+		// Now Update the dest object
+		oType = createobject("component", application.types[destObj.typename].typePath);
+		oType.setData(stProperties=destObj,auditNote="Child moved");		
 	</cfscript>
-</cfif> 
-<!--- add src nav to dest nav --->
-<cfscript>
-	destObj.datetimecreated = createODBCDate("#datepart('yyyy',destObj.datetimecreated)#-#datepart('m',destObj.datetimecreated)#-#datepart('d',destObj.datetimecreated)#");
-	destObj.datetimelastupdated = createODBCDate(now());
-	if (NOT srcObj.typename IS "dmNavigation")
-		arrayAppend( destObj[key], srcObj.objectId);
-	// Now Update the dest object
-	oType = createobject("component", application.types[destObj.typename].typePath);
-	oType.setData(stProperties=destObj,auditNote="Child moved");		
-</cfscript>
-
-
-<!--- Update the tree and log--->
-<cfscript>
-if (srcObj.typename IS 'dmNavigation')
-	destParentObjectId = destObj.ObjectID;
-//if they are moving to trash - log this as the audit note	
-if (isDefined("application.navid.rubbish") AND URL.destObjectID IS application.navid.rubbish)	
-	auditNote = "object moved to trash";
-else
-	auditnote = "object moved to new parentid #url.destObjectID#";			
-oaudit.logActivity(objectid="#srcobj.objectid#",auditType="sitetree.movenode", username=StUser.userlogin, location=cgi.remote_host, note="#auditNote#");
-</cfscript>
-
-<!--- update overview page --->
+	
+	
+	<!--- Update the tree and log--->
+	<cfscript>
+	if (srcObj.typename IS 'dmNavigation')
+		destParentObjectId = destObj.ObjectID;
+	//if they are moving to trash - log this as the audit note	
+	if (isDefined("application.navid.rubbish") AND URL.destObjectID IS application.navid.rubbish)	
+		auditNote = "object moved to trash";
+	else
+		auditnote = "object moved to new parentid #url.destObjectID#";			
+	oaudit.logActivity(objectid="#srcobj.objectid#",auditType="sitetree.movenode", username=StUser.userlogin, location=cgi.remote_host, note="#auditNote#");
+	</cfscript>
+	
+	<!--- update overview page --->
 	<cfoutput>
 	
 	<script>
@@ -222,5 +222,7 @@ oaudit.logActivity(objectid="#srcobj.objectid#",auditType="sitetree.movenode", u
 		}
 	</script>
 	</cfoutput>
+
+</cfif>
 
 <cfsetting enablecfoutputonly="No">

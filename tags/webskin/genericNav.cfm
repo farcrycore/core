@@ -89,18 +89,6 @@
 	</cfloop>
 <cfelse>
 
-
-<!--- determine the policy groups (or roles) this user belongs to --->
-<cfif isDefined("session.dmsec.authentication.lPolicyGroupIDs") and listLen(session.dmsec.authentication.lPolicyGroupIDs)>
-	<!--- concatenate logged in group permissions with anonymous group permissions --->
-	<cfset lpolicyGroupIds = session.dmsec.authentication.lPolicyGroupIDs & "," & application.dmsec.ldefaultpolicygroups>
-	
-<cfelse>
-	<!--- user not logged in, assume anonymous permissions --->
-	<cfset lpolicyGroupIds = application.dmsec.ldefaultpolicygroups>
-</cfif>
-
-
 <cfscript>
 	// initialise counters
 	currentlevel=0; // nLevel counter
@@ -114,7 +102,7 @@
 			iHasViewPermission = 1;
 		}
 		else{
-			iHasViewPermission = request.dmsec.oAuthorisation.checkInheritedPermission(objectid=qNav.ObjectID[i],permissionName="View",lpolicyGroupIds=lpolicyGroupIds);
+			iHasViewPermission = application.security.checkPermission(object=qNav.ObjectID[i],permission="View");
 		}
 		
 		if (iHasViewPermission EQ 1)

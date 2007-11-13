@@ -40,7 +40,7 @@ If the farcry admin area is located inside core, the project location is dynamic
 <cfif NOT request.mode.bAdmin>
     <!--- logout illegal users --->
     <cfscript>
-        request.dmsec.oAuthentication.logout();
+        application.factory.oAuthentication.logout();
     </cfscript>
 
     <!--- redirect them to the login page --->

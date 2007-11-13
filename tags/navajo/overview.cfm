@@ -112,7 +112,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 	PermSendToTrash = application.permission.dmnavigation.sendToTrash.permissionId;
 
 	//Permissions
-	oAuthorisation = request.dmsec.oAuthorisation;
+	oAuthorisation = application.factory.oAuthorisation;
 	iSecurityManagementState = oAuthorisation.checkPermission(permissionName="SecurityManagement",reference="PolicyGroup");	
 	iRootNodeManagement = oAuthorisation.checkPermission(permissionName="RootNodeManagement",reference="PolicyGroup");	
 	iModifyPermissionsState = oAuthorisation.checkPermission(permissionName="ModifyPermissions",reference="PolicyGroup");	
@@ -120,7 +120,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 	bPermTrash = oAuthorisation.checkInheritedPermission(permissionName="create",objectid="#application.navid.rubbish#");	
 	
 	//get Current Loggedin user.
-	stUser = request.dmSec.oAuthentication.getUserAuthenticationData();
+	stUser = application.factory.oAuthentication.getUserAuthenticationData();
 		
 	menuOnColor="##97ACCD";
 	menuOffColor="white";
@@ -226,16 +226,14 @@ else
 <cfset imageRoot = "nimages">
 <cfset customIcons = attributes.customIcons>
 
-<cfquery name="q" datasource="#application.dsn#">
-	SELECT permissionID FROM #application.dbowner#dmPermission WHERE permissionType = 'dmNavigation'
-</cfquery>
+<cfset navPermissions = application.security.factory.permission.getAllPermissions('dmNavigation') />
 
 <!-------- PERMISSIONS ------------>
 <cfoutput>
 	<script type="text/javascript">
 		var aPerms = new Array();
-		<cfloop query="q">
-		aPerms[#q.currentrow#] = #q.permissionid#;
+		<cfloop from="1" to="#listlen(navPermissions)#" index="i">
+		aPerms[#i#] = '#listgetat(navPermissions,i)#';
 		</cfloop>
 		// permissions objects
 		p=new Object();
@@ -375,7 +373,7 @@ function renderObject( objId )
 	if( !thisObject ) return "";
 	
 	var elData="";
-	if (hasPermission(objId,#PermNavView#) >= 0)
+	if (hasPermission(objId,'#PermNavView#') >= 0)
 	{
 		if( rootIds.indexOf(objId)!=-1) elData += "<table class=\"tableNode\" cellspacing=\"0\"><tr><td>";
 		else
@@ -478,9 +476,9 @@ function dropDrag(aDropObjectId)
 	}
 	
 	if(aDropObjectId == '#application.navid.rubbish#')
-		permcheck = "hasPermission( lastSelectedId, #PermSendToTrash# ) > 0";
+		permcheck = "hasPermission( lastSelectedId, '#PermSendToTrash#' ) > 0";
 	else
-		permcheck = "hasPermission( aDropObjectId, #PermNavCreate# ) > 0";
+		permcheck = "hasPermission( aDropObjectId, '#PermNavCreate#' ) > 0";
 	
 	if (eval(permcheck))
 	{	if( dragObjectId != aDropObjectId && confirm('#application.adminBundle[session.dmProfile.locale].confirmMoveObj#'))
@@ -1110,7 +1108,7 @@ o = new Object();
 objectMenu['Edit'] = o;
 o.text = "#application.adminBundle[session.dmProfile.locale].Edit#";
 o.js = "menuOption_Edit();";
-o.jsvalidate = "hasPermission( lastSelectedId, #PermNavEdit# );";
+o.jsvalidate = "hasPermission( lastSelectedId, '#PermNavEdit#' );";
 o.bShowDisabled = "1";
 
 function menuOption_Edit()
@@ -1146,7 +1144,7 @@ o.bShowDisabled = "0";
 
 function menuOption_Cut()
 {
-if( hasPermission( lastSelectedId, #PermNavCreate# ) > 0 )
+if( hasPermission( lastSelectedId, '#PermNavCreate#' ) > 0 )
 { copyNodeId = lastSelectedId;
 pasteAction = 'cut';
 return true; }
@@ -1174,7 +1172,7 @@ function menuOption_Paste()
 		return false;
 	}
 
-	if( hasPermission( lastSelectedId, #PermNavCreate# ) > 0 )
+	if( hasPermission( lastSelectedId, '#PermNavCreate#' ) > 0 )
 	{
 		if (objects[copyNodeId]['TYPENAME'].toLowerCase() == '#lCase(attributes.nodetype)#')
 		{
@@ -1203,7 +1201,7 @@ o = new Object();
 objectMenu['Preview'] = o;
 o.text = "#application.adminBundle[session.dmProfile.locale].preview#";
 o.js = "menuOption_Preview()";
-o.jsvalidate = "hasPermission( lastSelectedId, #PermNavView# );";
+o.jsvalidate = "hasPermission( lastSelectedId, '#PermNavView#' );";
 o.bShowDisabled = 1;
 
 function menuOption_Preview()
@@ -1237,9 +1235,9 @@ o = new Object();
 objectMenu['Move'] = o;
 o.text = "#application.adminBundle[session.dmProfile.locale].move#";
 o.submenu = "Move";
-o.jsvalidate = "((objects[lastSelectedId]['TYPENAME'].toLowerCase()=='#lCase(attributes.nodetype)#' && hasPermission(getParentObject(lastSelectedId)['OBJECTID'], #PermNavEdit# ) && countNodes(getParentObject(lastSelectedId)['OBJECTID']) > 1) || (hasPermission(getParentObject(lastSelectedId)['OBJECTID'], #PermNavEdit# ) && countObjects(getParentObject(lastSelectedId)['OBJECTID']) > 1))?1:0";
+o.jsvalidate = "((objects[lastSelectedId]['TYPENAME'].toLowerCase()=='#lCase(attributes.nodetype)#' && hasPermission(getParentObject(lastSelectedId)['OBJECTID'], '#PermNavEdit#' ) && countNodes(getParentObject(lastSelectedId)['OBJECTID']) > 1) || (hasPermission(getParentObject(lastSelectedId)['OBJECTID'], '#PermNavEdit#' ) && countObjects(getParentObject(lastSelectedId)['OBJECTID']) > 1))?1:0";
 
-//o.jsvalidate = "(hasPermission(getParentObject(lastSelectedId)['OBJECTID'], #PermNavEdit# ) && (countObjects(getParentObject(lastSelectedId)['OBJECTID']) > 1 || countNodes(getParentObject(lastSelectedId)['OBJECTID']) > 1 ))?1:0";
+//o.jsvalidate = "(hasPermission(getParentObject(lastSelectedId)['OBJECTID'], '#PermNavEdit#' ) && (countObjects(getParentObject(lastSelectedId)['OBJECTID']) > 1 || countNodes(getParentObject(lastSelectedId)['OBJECTID']) > 1 ))?1:0";
 //o.jsvalidate = 1;
 o.bShowDisabled = 1;
 o.bSeperator = 0;
@@ -1288,7 +1286,7 @@ o = new Object();
 objectMenu['Create'] = o;
 o.text = "#application.adminBundle[session.dmProfile.locale].create#";
 o.submenu = "Create";
-o.jsvalidate = "((hasPermission( lastSelectedId, #PermNavCreate# ) >=0) &&  (objects[lastSelectedId]['TYPENAME'].toLowerCase()=='#lcase(attributes.nodetype)#'))";
+o.jsvalidate = "((hasPermission( lastSelectedId, '#PermNavCreate#' ) >=0) &&  (objects[lastSelectedId]['TYPENAME'].toLowerCase()=='#lcase(attributes.nodetype)#'))";
 o.bShowDisabled = 1;
 
 	createMenu = new Object();
@@ -1352,21 +1350,21 @@ o.bShowDisabled = 1;
 	approveMenu['ApproveItem'] = o;
 	o.text = "#application.adminBundle[session.dmProfile.locale].approve#";
 	o.js = "menuOption_Approve(\\'approved\\')";
-	o.jsvalidate = "((hasPermission( lastSelectedId, #PermNavApprove# )> 0 || (hasPermission(lastSelectedId,#PermNavApproveOwn#) >0 && objects[lastSelectedId]['ATTR_LASTUPDATEDBY'].toLowerCase() == '#lCase(stUser.userlogin)#')) && (objects[lastSelectedId]['STATUS'] == 'draft' || objects[lastSelectedId]['STATUS'] == 'pending'))?1:0";
+	o.jsvalidate = "((hasPermission( lastSelectedId, '#PermNavApprove#' )> 0 || (hasPermission(lastSelectedId,'#PermNavApproveOwn#') >0 && objects[lastSelectedId]['ATTR_LASTUPDATEDBY'].toLowerCase() == '#lCase(stUser.userlogin)#')) && (objects[lastSelectedId]['STATUS'] == 'draft' || objects[lastSelectedId]['STATUS'] == 'pending'))?1:0";
 	o.bShowDisabled = 1;
 	
 	o = new Object();
 	approveMenu['ApproveDraft'] = o;
 	o.text = "#application.adminBundle[session.dmProfile.locale].approveDraft#";
 	o.js = "menuOption_Approve(\\'approved\\')";
-    o.jsvalidate = "( hasPermission(lastSelectedId, #PermNavApprove#)>0 && (hasDraft(lastSelectedId) && objects[lastSelectedId]['DRAFTSTATUS'] == 'pending') )?1:0";
+    o.jsvalidate = "( hasPermission(lastSelectedId, '#PermNavApprove#')>0 && (hasDraft(lastSelectedId) && objects[lastSelectedId]['DRAFTSTATUS'] == 'pending') )?1:0";
 	o.bShowDisabled = 1;
 
 	o = new Object();
 	approveMenu['ApproveBranch'] = o;
 	o.text = "#application.adminBundle[session.dmProfile.locale].approveBranch#";
 	o.js = "menuOption_ApproveBranch(\\'approved\\')";
-	o.jsvalidate = "(hasPermission( lastSelectedId, #PermNavApprove# )>0 && (objects[lastSelectedId]['STATUS'] == 'draft' || objects[lastSelectedId]['STATUS'] == 'pending') && objects[lastSelectedId]['TYPENAME'].toLowerCase() == '#lCase(attributes.nodetype)#')?1:0";
+	o.jsvalidate = "(hasPermission( lastSelectedId, '#PermNavApprove#' )>0 && (objects[lastSelectedId]['STATUS'] == 'draft' || objects[lastSelectedId]['STATUS'] == 'pending') && objects[lastSelectedId]['TYPENAME'].toLowerCase() == '#lCase(attributes.nodetype)#')?1:0";
 	o.bShowDisabled = 1;
 
 	function menuOption_Approve(status) {
@@ -1391,7 +1389,7 @@ o.bShowDisabled = 1;
 	approveMenu['Request'] = o;
 	o.text = "#application.adminBundle[session.dmProfile.locale].request#";
 	o.js = "menuOption_Approve(\\'requestApproval\\')";
-	o.jsvalidate = "(hasPermission( lastSelectedId, #PermNavRequestApprove# )>=0 && ((objects[lastSelectedId]['STATUS'] == 'draft') || (objects[lastSelectedId]['DRAFTOBJECTID'] && objects[lastSelectedId]['DRAFTSTATUS']=='draft')) )?1:0";
+	o.jsvalidate = "(hasPermission( lastSelectedId, '#PermNavRequestApprove#' )>=0 && ((objects[lastSelectedId]['STATUS'] == 'draft') || (objects[lastSelectedId]['DRAFTOBJECTID'] && objects[lastSelectedId]['DRAFTSTATUS']=='draft')) )?1:0";
 	o.bShowDisabled = 1;
 	o.bSeperator = 0;
 	
@@ -1399,28 +1397,28 @@ o.bShowDisabled = 1;
 	approveMenu['RequestBranch'] = o;
 	o.text = "#application.adminBundle[session.dmProfile.locale].requestApprovalForBranch#";
 	o.js = "menuOption_ApproveBranch(\\'requestApproval\\')";
-	o.jsvalidate = "(hasPermission( lastSelectedId, #PermNavRequestApprove# )>=0 && (objects[lastSelectedId]['STATUS'] == 'draft') && objects[lastSelectedId]['TYPENAME'].toLowerCase() == '#lCase(attributes.nodetype)#')?1:0";
+	o.jsvalidate = "(hasPermission( lastSelectedId, '#PermNavRequestApprove#' )>=0 && (objects[lastSelectedId]['STATUS'] == 'draft') && objects[lastSelectedId]['TYPENAME'].toLowerCase() == '#lCase(attributes.nodetype)#')?1:0";
 	o.bShowDisabled = 1;
 	
 	o = new Object();
 	approveMenu['Decline'] = o;
 	o.text = "#application.adminBundle[session.dmProfile.locale].declineDraft#";
 	o.js = "menuOption_Approve(\\'draft\\')";
-    o.jsvalidate = "( hasPermission(lastSelectedId, #PermNavApprove#)>=0 && (hasDraft(lastSelectedId) && objects[lastSelectedId]['DRAFTSTATUS'] == 'pending') )?1:0";
+    o.jsvalidate = "( hasPermission(lastSelectedId, '#PermNavApprove#')>=0 && (hasDraft(lastSelectedId) && objects[lastSelectedId]['DRAFTSTATUS'] == 'pending') )?1:0";
 	o.bShowDisabled = 1;
 
 	o = new Object();
 	approveMenu['Cancel'] = o;
 	o.text = "#application.adminBundle[session.dmProfile.locale].sendToDraft#";
 	o.js = "menuOption_Approve(\\'draft\\')";
-	o.jsvalidate = "((hasPermission( lastSelectedId, #PermNavApprove# )>=0 || (hasPermission(lastSelectedId,#PermNavApproveOwn#) >=0 && objects[lastSelectedId]['ATTR_LASTUPDATEDBY'].toLowerCase() == '#lCase(stUser.userlogin)#'))&& !hasDraft(lastSelectedId) && (objects[lastSelectedId]['STATUS'] == 'approved' || objects[lastSelectedId]['STATUS'] == 'pending'))?1:0";
+	o.jsvalidate = "((hasPermission( lastSelectedId, '#PermNavApprove#' )>=0 || (hasPermission(lastSelectedId,'#PermNavApproveOwn#') >=0 && objects[lastSelectedId]['ATTR_LASTUPDATEDBY'].toLowerCase() == '#lCase(stUser.userlogin)#'))&& !hasDraft(lastSelectedId) && (objects[lastSelectedId]['STATUS'] == 'approved' || objects[lastSelectedId]['STATUS'] == 'pending'))?1:0";
 	o.bShowDisabled = 1;
 	
 	o = new Object();
 	approveMenu['CancelBranch'] = o;
 	o.text = "#application.adminBundle[session.dmProfile.locale].sendBranch2Draft#";
 	o.js = "menuOption_ApproveBranch(\\'draft\\')";
-	o.jsvalidate = "((hasPermission( lastSelectedId, #PermNavApprove# )>=0 || (hasPermission(lastSelectedId,#PermNavApproveOwn#) >=0 && objects[lastSelectedId]['ATTR_LASTUPDATEDBY'].toLowerCase() == '#lCase(stUser.userlogin)#')) && (objects[lastSelectedId]['STATUS'] == 'approved' || objects[lastSelectedId]['STATUS'] == 'pending') && objects[lastSelectedId]['TYPENAME'].toLowerCase() == '#lCase(attributes.nodetype)#')?1:0";
+	o.jsvalidate = "((hasPermission( lastSelectedId, '#PermNavApprove#' )>=0 || (hasPermission(lastSelectedId,'#PermNavApproveOwn#') >=0 && objects[lastSelectedId]['ATTR_LASTUPDATEDBY'].toLowerCase() == '#lCase(stUser.userlogin)#')) && (objects[lastSelectedId]['STATUS'] == 'approved' || objects[lastSelectedId]['STATUS'] == 'pending') && objects[lastSelectedId]['TYPENAME'].toLowerCase() == '#lCase(attributes.nodetype)#')?1:0";
 	o.bShowDisabled = 1;
 
 	
@@ -1518,7 +1516,7 @@ o = new Object();
 objectMenu['Delete'] = o;
 o.text = "#application.adminBundle[session.dmProfile.locale].delete#";
 o.js = "menuOption_Delete()"; //  && countObjects(lastSelectedId) <=0  && countNodes(lastSelectedId) <=0
-o.jsvalidate = "hasPermission(lastSelectedId, #PermNavDelete#)";
+o.jsvalidate = "hasPermission(lastSelectedId, '#PermNavDelete#')";
 o.bShowDisabled = 1;
 o.bSeperator = 0;
 
@@ -1533,7 +1531,7 @@ o = new Object();
 objectMenu['Trash'] = o;
 o.text = "#application.adminBundle[session.dmProfile.locale].sendToTrash#";
 o.js = "menuOption_Trash()"; 
-o.jsvalidate = "hasPermission( lastSelectedId, #PermSendToTrash# );";
+o.jsvalidate = "hasPermission( lastSelectedId, '#PermSendToTrash#' );";
 o.bShowDisabled = 0;
 o.bSeperator = 0;
 
@@ -1547,7 +1545,7 @@ o = new Object();
 objectMenu['EmptyTrash'] = o;
 o.text = "#application.adminBundle[session.dmProfile.locale].emptyTrash#";
 o.js = "menuOption_EmptyTrash()"; 
-o.jsvalidate = "(hasPermission( lastSelectedId, #PermNavDelete#) > 0 && lastSelectedId == '#application.navid.rubbish#')?1:0";
+o.jsvalidate = "(hasPermission( lastSelectedId, '#PermNavDelete#') > 0 && lastSelectedId == '#application.navid.rubbish#')?1:0";
 o.bShowDisabled = 0;
 o.bSeperator = 0;
 
@@ -1867,7 +1865,7 @@ function documentClick()
 function secureTabs()
 {
 	//add more checks here as necessary
-	if ((hasPermission( lastSelectedId, #PermNavEdit#) > 0) && parent.document.getElementById('siteEditEdit')) 
+	if ((hasPermission( lastSelectedId, '#PermNavEdit#') > 0) && parent.document.getElementById('siteEditEdit')) 
 		parent.document.getElementById('siteEditEdit').style.display = 'inline';
 	else if (parent.document.getElementById('siteEditEdit'))	
 		parent.document.getElementById('siteEditEdit').style.display = 'none';
@@ -1876,7 +1874,7 @@ function secureTabs()
 	if (objects[lastSelectedId] && objects[lastSelectedId]['TYPENAME'].toLowerCase()=='dmhtml')
 	{
 		
-		if ((hasPermission(lastSelectedId,#permContainerManagement#) > 0) && parent.document.getElementById('siteEditRules'))
+		if ((hasPermission(lastSelectedId,'#permContainerManagement#') > 0) && parent.document.getElementById('siteEditRules'))
 			parent.document.getElementById('siteEditRules').style.display = 'inline';
 		else if(parent.document.getElementById('siteEditRules'))	
 			parent.document.getElementById('siteEditRules').style.display = 'none';		

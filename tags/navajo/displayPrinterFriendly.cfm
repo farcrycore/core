@@ -127,28 +127,16 @@ the individual object being rendered.
 lpolicyGroupIds="#application.dmsec.ldefaultpolicygroups#"
 the latter is the policy group for anonymous...
 --->
-<cfif isDefined("session.dmsec.lPolicyGroupIDs")>
-	<!--- concatenate logged in group permissions with anonymous group permissions --->
-	<cfset lpolicyGroupIds = session.dmsec.lPolicyGroupIDs & "," & application.dmsec.ldefaultpolicygroups>
-<cfelse>
-	<!--- user not logged in, assume anonymous permissions --->
-	<cfset lpolicyGroupIds = application.dmsec.ldefaultpolicygroups>
-</cfif>
-<cfscript>
-	oAuthorisation = request.dmSec.oAuthorisation;
-	oAuthentication = request.dmSec.oAuthentication;
-</cfscript>
-
 
 <cfif isDefined("request.navid")>
 	<cfscript>
-		iHasViewPermission = oAuthorisation.checkInheritedPermission(permissionName="view",objectid=request.navid,lpolicyGroupIds=lpolicyGroupIds);
+		iHasViewPermission = application.security.checkPermission(permission="view",object=request.navid);
 	</cfscript>
 	
 	<cfif iHasViewPermission neq 1>
 	<!--- log out the user --->
 		<cfscript>
-			oAuthentication.logout();
+			application.factory.oAuthentication.logout();
 		</cfscript>
 		<cflocation url="#application.url.farcry#/login.cfm?returnUrl=#URLEncodedFormat(cgi.script_name&'?'&cgi.query_string)#" addtoken="No">
 		<cfabort>

@@ -63,7 +63,7 @@ $out:$
 </cfscript>
 
 <!--- First check tree permissions --->
-<cfset bHasPermission = request.dmsec.oAuthorisation.checkInheritedPermission(permissionName='edit',objectid=attributes.objectid)>
+<cfset bHasPermission = application.security.checkPermission(permission='edit',object=attributes.objectid)>
 <cfif NOT bHasPermission GTE 0>
 	<cfoutput><h1>#application.adminBundle[session.dmProfile.locale].noEditPermission#</h1></cfoutput>
 	<cfabort>
@@ -81,9 +81,8 @@ $out:$
 		oCon.delete(objectid="#URL.deleteDraftObjectID#");
 		//Delete the copied draft object
 		oType.deletedata(objectId="#URL.deleteDraftObjectID#");
-		//Log this activity against live object
-		oAuthentication = request.dmSec.oAuthentication;	
-		stuser = oAuthentication.getUserAuthenticationData();
+		//Log this activity against live object	
+		stuser = application.factory.oAuthentication.getUserAuthenticationData();
 		application.factory.oaudit.logActivity(objectid="#attributes.objectid#",auditType="delete", username=StUser.userlogin, location=cgi.remote_host, note="Deleted Draft Object (#stObj.label#)");
 	</cfscript>
 	<!--- get parent for update tree --->
@@ -127,7 +126,7 @@ if (structCount(stObj))
 			abort();
 		}
 	}
-	else if (not checkForLockRet.bSuccess and checkForLockRet.lockedBy eq "#session.dmSec.authentication.userlogin#_#session.dmSec.authentication.userDirectory#")
+	else if (not checkForLockRet.bSuccess and checkForLockRet.lockedBy eq session.security.userid)
 	{
 		bAllowEdit = true;
 		//oType.edit(objectid=attributes.objectid);

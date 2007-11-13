@@ -171,27 +171,16 @@ the individual object being rendered.
 lpolicyGroupIds="#application.dmsec.ldefaultpolicygroups#"
 the latter is the policy group for anonymous...
 --->
-<!--- determine the policy groups (or roles) this user belongs to --->
-<cfif isDefined("session.dmsec.authentication.lPolicyGroupIDs") and listLen(session.dmsec.authentication.lPolicyGroupIDs)>
-	<!--- concatenate logged in group permissions with anonymous group permissions --->
-	<cfset lpolicyGroupIds = session.dmsec.authentication.lPolicyGroupIDs & "," & application.dmsec.ldefaultpolicygroups>
-	
-<cfelse>
-	<!--- user not logged in, assume anonymous permissions --->
-	<cfset lpolicyGroupIds = application.dmsec.ldefaultpolicygroups>
-</cfif>
 
 <!--- check permissions on the current nav node --->
 <cfscript>
-	oAuthorisation = request.dmsec.oAuthorisation;
-	oAuthentication = request.dmsec.oAuthentication;
-	iHasViewPermission = oAuthorisation.checkInheritedPermission(objectid=request.navid,permissionName="View",lpolicyGroupIds=lpolicyGroupIds);
+	iHasViewPermission = application.security.checkPermission(object=request.navid,permission="View");
 </cfscript>
 
 <!--- if the user is unable to view the object, then logout and send to login form --->
 <cfif iHasViewPermission NEQ 1>
 	<!--- log out the user --->
-	<cfset oAuthentication.logout()>
+	<cfset application.factory.oAuthentication.logout()>
 	<cflocation url="#application.url.farcry#/login.cfm?returnUrl=#URLEncodedFormat(cgi.script_name&'?'&cgi.query_string)#" addtoken="No">
 	<cfabort>
 </cfif>
@@ -199,7 +188,7 @@ the latter is the policy group for anonymous...
 <!--- If we are in designmode then check the containermanagement permissions --->
 <cfif request.mode.design>
 	<!--- set the users container management permission --->
-	<cfset request.mode.showcontainers = oAuthorisation.checkInheritedPermission(objectid=request.navid,permissionName="ContainerManagement")>
+	<cfset request.mode.showcontainers = application.security.checkPermission(object=request.navid,permission="ContainerManagement")>
 </cfif>
 
 <!--- determine display method for object --->
@@ -260,8 +249,8 @@ a whole new set of permission checks, have trapped any errors and suppressed GB 
 	<!--- check they are admin --->
 	<!--- check they are able to comment --->
 	<cfscript>
-		iAdmin = oAuthorisation.checkPermission(permissionName="Admin",reference="PolicyGroup");
-		iCanCommentOnContent = oAuthorisation.checkInheritedPermission(objectid=request.navid,permissionName='CanCommentOnContent');
+		iAdmin = application.security.checkPermission(permission="Admin");
+		iCanCommentOnContent = application.security.checkPermission(object=request.navid,permission='CanCommentOnContent');
 	</cfscript>
 	
 	

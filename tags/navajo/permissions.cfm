@@ -10,9 +10,7 @@
 <!--- set up page header --->
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<cfset oAuthorisation = request.dmsec.oAuthorisation>
-<cfset oAuthentication = request.dmsec.oAuthentication>
-<cfset isAuthorized = oAuthorisation.checkPermission(permissionName="ModifyPermissions",reference="PolicyGroup")>
+<cfset isAuthorized = application.security.checkPermission(permission="ModifyPermissions")>
 
 
 
@@ -33,9 +31,9 @@
 					if ( state eq "No" ) state=-1;
 					if ( state eq "Inherit" ) state=0;
 					if (isDefined("url.objectId"))
-						request.dmSec.oAuthorisation.createPermissionBarnacle(PolicyGroupId=PolicyGroupId,PermissionId=PermissionId,Reference=url.objectId,status=state);	
+						application.factory.aAuthorisation.createPermissionBarnacle(PolicyGroupId=PolicyGroupId,PermissionId=PermissionId,Reference=url.objectId,status=state);	
 					else
-						request.dmSec.oAuthorisation.createPermissionBarnacle(PolicyGroupId=PolicyGroupId,PermissionId=PermissionId,Reference=url.reference1,status=state);	
+						application.factory.oAuthorisation.createPermissionBarnacle(PolicyGroupId=PolicyGroupId,PermissionId=PermissionId,Reference=url.reference1,status=state);	
 				</cfscript>
 			</cfif>
 			
@@ -50,11 +48,10 @@
 		<cfflush>
 		
 		<cfscript>
-			oAuthorisation = request.dmSec.oAuthorisation;
 			if (isDefined("url.objectId"))
-				oAuthorisation.updateObjectPermissionCache(objectid=url.objectid);
+				application.factory.oAuthorisation.updateObjectPermissionCache(objectid=url.objectid);
 			else
-				oAuthorisation.updateObjectPermissionCache(reference=url.reference1);
+				application.factory.oAuthorisation.updateObjectPermissionCache(reference=url.reference1);
 		</cfscript>
 	
 		<!--- rewrite the permissions cache file, I think this really can take a long time on huge systems --->	
@@ -92,27 +89,27 @@
 		</cfif>
 		
 		<!--- get the objects type, so we can get it's name --->
-		<cfset stObjectPermissions = oAuthorisation.collateObjectPermissions(objectid=url.objectid)>
+		<cfset stObjectPermissions = application.factory.oAuthorisation.collateObjectPermissions(objectid=url.objectid)>
 	<cfelse>
 		<cfset typeName = url.reference1>
 		<cfset stObj.label = url.reference1>
-		<cfset stObjectPermissions = oAuthorisation.getObjectPermission(reference=url.reference1)>
+		<cfset stObjectPermissions = application.factory.oAuthorisation.getObjectPermission(reference=url.reference1)>
 	</cfif>
 
 	<cfscript>
 		//set up the permissions translation table 
-		aPermissions = oAuthorisation.getAllPermissions(permissionType=typename);
+		aPermissions = application.factory.oAuthorisation.getAllPermissions(permissionType=typename);
 		stPermissions=StructNew();
 		for(i=1;i LTE arrayLen(aPermissions);i = i + 1)
 		{	
 			stPermissions[aPermissions[i].permissionId]=aPermissions[i].permissionName;
 		}
-		lPermissionIds = oAuthorisation.arrayKeyToList(key="permissionID",array=aPermissions);
+		lPermissionIds = application.factory.oAuthorisation.arrayKeyToList(key="permissionID",array=aPermissions);
 	</cfscript>
 	
 		<!--- Get all the Policy Groups IE siteadmin,sysadmin,contributor etc ---> 
-		<cfset aPolicyGroups = oAuthorisation.getAllPolicyGroups()>
-		<cfset lPolicyGroupIds = oAuthentication.arrayKeyToList(array=aPolicyGroups,key='policyGroupId')>
+		<cfset aPolicyGroups = application.factory.oAuthorisation.getAllPolicyGroups()>
+		<cfset lPolicyGroupIds = application.factory.oAuthentication.arrayKeyToList(array=aPolicyGroups,key='policyGroupId')>
 		
 		<!--- Setup the default Policy Group to display --->
 		<cfif isDefined("form.selectGroup") and isNumeric(form.selectGroup)>
@@ -198,7 +195,7 @@
 				
 				<cfloop index="PolicyGroupId" list="#lPolicyGroupIds#">
 					<cfscript>
-						stPG=oAuthorisation.getPolicyGroup(policyGroupId=policyGroupId);
+						stPG=application.factory.oAuthorisation.getPolicyGroup(policyGroupId=policyGroupId);
 					</cfscript>
 					<cfoutput><option value="#PolicyGroupId#"<cfif PolicyGroupId eq selectedPolicyGroup> selected</cfif>>#stPG.policyGroupName#</option></cfoutput>
 				</cfloop>

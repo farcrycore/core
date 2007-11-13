@@ -14,7 +14,7 @@ FARCRY INCLUDE FILES
 START WEBSKIN
  ------------------>
 
-<cfset iDeveloperPermission = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="developer") />
+<cfset iDeveloperPermission = application.security.checkPermission(permission="developer") />
 	
 	
 <cfoutput>
@@ -36,7 +36,7 @@ START WEBSKIN
 	<dt>#application.adminBundle[session.dmProfile.locale].dateCreatedLabel#</dt>
 	<dd>#application.thisCalendar.i18nDateFormat(stobj.datetimecreated,session.dmProfile.locale,application.shortF)#</dd>
 	<dt>#application.adminBundle[session.dmProfile.locale].lockingLabel#</dt>
-	<dd><cfif stobj.locked and stobj.lockedby eq "#session.dmSec.authentication.userlogin#_#session.dmSec.authentication.userDirectory#">
+	<dd><cfif stobj.locked and stobj.lockedby eq session.security.userid>
 			<!--- locked by current user --->
 			<cfset tDT=application.thisCalendar.i18nDateTimeFormat(stobj.dateTimeLastUpdated,session.dmProfile.locale,application.mediumF)>
 		<span style="color:red">#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].locked,tDT)#</span> <a href="navajo/unlock.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#">[#application.adminBundle[session.dmProfile.locale].unLock#]</a>

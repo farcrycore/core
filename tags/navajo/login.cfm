@@ -39,7 +39,7 @@
 
 <cfset currentNumberLoginAttempts = 0>
 <cfif isDefined("form.Normal")>
-    <cfset bHasLoggedIn = request.dmSec.oAuthentication.login(userlogin=form.userlogin,userpassword=form.password,baudit=1)>
+    <cfset bHasLoggedIn = application.factory.oAuthentication.login(userlogin=form.userlogin,userpassword=form.password,baudit=1)>
     <cfif bHasLoggedIn>
         <cfset o_userProfile = createObject("component", application.types.dmProfile.typePath)>
         <cfset session.dmProfile = o_userProfile.getProfile(userName=form.userlogin)>
@@ -62,8 +62,7 @@
     </cfif>
 </cfif>
 
-<cfset oAuthentication = request.dmSec.oAuthentication>
-<cfset stLoggedIn = oAuthentication.getUserAuthenticationData()>
+<cfset stLoggedIn = application.factory.oAuthentication.getUserAuthenticationData()>
 <cfset bLoggedin = stLoggedIn.bloggedIn>
 
 <cfif bLoggedIn>

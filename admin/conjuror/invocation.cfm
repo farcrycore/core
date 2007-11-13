@@ -105,7 +105,7 @@ Pseudo:
 		<cftrace category="permissions" type="warning" text="No permission set specified for #typename#. Default permission set NEWS applied.">
 		<!--- TODO: should really log this somewhere as a warning --->
 	</cfif>
-	<cfset bHasPermission = request.dmsec.oAuthorisation.checkPermission(permissionName="#permissionset##method#",reference="PolicyGroup")>
+	<cfset bHasPermission = application.security.checkPermission(permission="#permissionset##method#")>
 	<cfif NOT bHasPermission GTE 0>
 		<cfabort showerror="<strong>Error:</strong> #application.adminBundle[session.dmProfile.locale].noEditPermissions#">
 	</cfif>

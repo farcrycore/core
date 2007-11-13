@@ -5,27 +5,18 @@
 
 
 <cfparam name="attributes.permissionName">
-<cfparam name="attributes.reference" default="policyGroup">
-<cfparam name="attributes.objectID" default="">
+<cfparam name="attributes.reference" default="">
+<cfparam name="attributes.objectID" default="#attributes.reference#">
 <cfparam name="attributes.lPolicyGroupIDs" default="">
 		
 
 
 <cfif thistag.ExecutionMode EQ "Start">
-
-	<cfif not len(attributes.lPolicyGroupIDs)>
-		<cfset stLoggedInUser = request.dmsec.oAuthentication.getUserAuthenticationData() />
-		<cfif stLoggedInUser.bLoggedIn>
-			<cfset attributes.lPolicyGroupIds = stLoggedInUser.lPolicyGroupIDs />
-		<cfelse>
-			<cfset attributes.lPolicyGroupIds = application.dmsec.ldefaultpolicygroups />
-		</cfif>
-	</cfif>
 	
 	<cfset permitted = 0>
 	
 	<cfloop list="#attributes.PermissionName#" index="i">
-		<cfif request.dmsec.oAuthorisation.checkInheritedPermission(permissionName="#i#",reference="#attributes.reference#", objectid="#attributes.objectid#", lPolicyGroupIds="#attributes.lPolicyGroupIds#") EQ 1>
+		<cfif application.security.checkPermission(permission=i,object=attributes.objectid) EQ 1>
 			<cfset permitted = 1>
 		</cfif>
 	</cfloop>	

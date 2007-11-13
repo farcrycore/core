@@ -42,8 +42,7 @@ $out:$
 	typename = stObj.typename;
 	oNav = createObject("component", application.types.dmNavigation.typePath);
 	oAudit = createObject("component","#application.packagepath#.farcry.audit");
-	oAuthentication = request.dmSec.oAuthentication;	
-	stuser = oAuthentication.getUserAuthenticationData();
+	stuser = application.factory.oAuthentication.getUserAuthenticationData();
 	if (stObj.typename IS 'dmNavigation')
 	{
 		qGetParent = request.factory.oTree.getParentID(objectID = stObj.objectID);

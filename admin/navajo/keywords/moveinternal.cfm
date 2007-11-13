@@ -7,8 +7,7 @@
 
 <cflock name="moveBranchNTM" type="EXCLUSIVE" timeout="3" throwontimeout="Yes">
 	<cfscript>
-			oAuthentication = request.dmSec.oAuthentication;	
-			stuser = oAuthentication.getUserAuthenticationData();
+			stuser = application.factory.oAuthentication.getUserAuthenticationData();
 			qparentObject = request.factory.oTree.getParentID(objectid=url.objectid,dsn=application.dsn);
 			parentObjectID = qParentObject.parentid;
 			qGetChildren = request.factory.oTree.getChildren(dsn=application.dsn,objectid=parentObjectID);

@@ -36,28 +36,28 @@ START WEBSKIN
 
 <!--- generate all data required for the overview html --->
 <!--- check/generate permission --->
-<cfset stOverviewParams.stUser = request.dmsec.oAuthentication.getUserAuthenticationData()>
+<cfset stOverviewParams.stUser = application.factory.oAuthentication.getUserAuthenticationData()>
 <cfset stOverviewParams.stPermissions = StructNew()>
 
 <cfif StructKeyExists(application.stcoapi[stobj.typename], "bUseInTree") AND application.stcoapi[stobj.typename].bUseInTree AND len(stOverviewParams.parentID)>
-	<cfset stOverviewParams.stPermissions.iDeveloperPermission = request.dmSec.oAuthorisation.checkPermission(permissionName="developer",reference="policyGroup")>
-	<cfset stOverviewParams.stPermissions.iEdit = request.dmSec.oAuthorisation.checkInheritedPermission(objectid="#stOverviewParams.parentid#",permissionName="edit")>
-	<cfset stOverviewParams.stPermissions.iRequest = request.dmSec.oAuthorisation.checkInheritedPermission(objectid="#stOverviewParams.parentid#",permissionName="RequestApproval")>
-	<cfset stOverviewParams.stPermissions.iApprove = request.dmSec.oAuthorisation.checkInheritedPermission(objectid="#stOverviewParams.parentid#",permissionName="Approve")>
-	<cfset stOverviewParams.stPermissions.iApproveOwn = request.dmSec.oAuthorisation.checkInheritedPermission(objectid="#stOverviewParams.parentid#",permissionName="CanApproveOwnContent")>
-	<cfset stOverviewParams.stPermissions.iObjectDumpTab = request.dmSec.oAuthorisation.checkPermission(reference="PolicyGroup",permissionName="ObjectDumpTab")>
-	<cfset stOverviewParams.stPermissions.iDelete = request.dmSec.oAuthorisation.checkInheritedPermission(objectid="#stOverviewParams.parentid#",permissionName="delete")>
-	<cfset stOverviewParams.stPermissions.iTreeSendToTrash = request.dmSec.oAuthorisation.checkInheritedPermission(objectid="#stOverviewParams.parentid#",permissionName="SendToTrash")>
-	<cfset stOverviewParams.stPermissions.iCreate = request.dmSec.oAuthorisation.checkInheritedPermission(objectid="#stOverviewParams.parentid#",permissionName="create")>
+	<cfset stOverviewParams.stPermissions.iDeveloperPermission = application.security.checkPermission(permission="developer")>
+	<cfset stOverviewParams.stPermissions.iEdit = application.security.checkPermission(object=stOverviewParams.parentid,permission="edit")>
+	<cfset stOverviewParams.stPermissions.iRequest = application.security.checkPermission(object=stOverviewParams.parentid,permission="RequestApproval")>
+	<cfset stOverviewParams.stPermissions.iApprove = application.security.checkPermission(object=stOverviewParams.parentid,permission="Approve")>
+	<cfset stOverviewParams.stPermissions.iApproveOwn = application.security.checkPermission(object=stOverviewParams.parentid,permission="CanApproveOwnContent")>
+	<cfset stOverviewParams.stPermissions.iObjectDumpTab = application.security.checkPermission(object=stOverviewParams.parentid,permission="ObjectDumpTab")>
+	<cfset stOverviewParams.stPermissions.iDelete = application.security.checkPermission(object=stOverviewParams.parentid,permission="delete")>
+	<cfset stOverviewParams.stPermissions.iTreeSendToTrash = application.security.checkPermission(object=stOverviewParams.parentid,permission="SendToTrash")>
+	<cfset stOverviewParams.stPermissions.iCreate = application.security.checkPermission(object=stOverviewParams.parentid,permission="create")>
 <cfelse>
 	<cfset stOverviewParams.permissionSet = "news">
-	<cfset stOverviewParams.stPermissions.iDeveloperPermission = request.dmSec.oAuthorisation.checkPermission(permissionName="developer",reference="policyGroup")>
-	<cfset stOverviewParams.stPermissions.iEdit = request.dmSec.oAuthorisation.checkPermission(permissionName="#stOverviewParams.permissionSet#Edit",reference="PolicyGroup")>
-	<cfset stOverviewParams.stPermissions.iRequest = request.dmSec.oAuthorisation.checkPermission(permissionName="#stOverviewParams.permissionSet#RequestApproval",reference="PolicyGroup")>
-	<cfset stOverviewParams.stPermissions.iApprove = request.dmSec.oAuthorisation.checkPermission(permissionName="#stOverviewParams.permissionSet#Approve",reference="PolicyGroup")>
-	<cfset stOverviewParams.stPermissions.iApproveOwn = request.dmSec.oAuthorisation.checkPermission(permissionName="#stOverviewParams.permissionSet#Approve",reference="PolicyGroup")>
-	<cfset stOverviewParams.stPermissions.iObjectDumpTab = request.dmSec.oAuthorisation.checkPermission(permissionName="#stOverviewParams.permissionSet#Approve",reference="PolicyGroup")>	
-	<cfset stOverviewParams.stPermissions.iDelete = request.dmSec.oAuthorisation.checkPermission(permissionName="#stOverviewParams.permissionSet#Delete",reference="PolicyGroup")>
+	<cfset stOverviewParams.stPermissions.iDeveloperPermission = application.security.checkPermission(permission="developer")>
+	<cfset stOverviewParams.stPermissions.iEdit = application.security.checkPermission(permission="#stOverviewParams.permissionSet#Edit")>
+	<cfset stOverviewParams.stPermissions.iRequest = application.security.checkPermission(permission="#stOverviewParams.permissionSet#RequestApproval")>
+	<cfset stOverviewParams.stPermissions.iApprove = application.security.checkPermission(permission="#stOverviewParams.permissionSet#Approve")>
+	<cfset stOverviewParams.stPermissions.iApproveOwn = application.security.checkPermission(permission="#stOverviewParams.permissionSet#Approve")>
+	<cfset stOverviewParams.stPermissions.iObjectDumpTab = application.security.checkPermission(permission="#stOverviewParams.permissionSet#Approve")>	
+	<cfset stOverviewParams.stPermissions.iDelete = application.security.checkPermission(permission="#stOverviewParams.permissionSet#Delete")>
 	<cfset stOverviewParams.stPermissions.iTreeSendToTrash = 0>
 </cfif>
 

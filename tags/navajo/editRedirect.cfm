@@ -17,18 +17,16 @@
 
 <cfif len(permObjectId)>
 	<cfscript>
-		oAuthorisation = request.dmSec.oAuthorisation;
-		iObjectCreatePermission = oAuthorisation.checkInheritedPermission(permissionName="Edit",objectID=permObjectID,bThrowOnError=1);
+		iObjectCreatePermission = application.security.checkPermission(permission="Edit",object=permObjectID);
 	</cfscript>
 
 <cfelse>
 	<cfscript>
-		oAuthorisation = request.dmSec.oAuthorisation;
-		iObjectCreatePermission = oAuthorisation.checkPermission(permissionName="RootNodeManagement",reference="PolicyGroup",bThrowOnError=1);
+		iObjectCreatePermission = application.security.checkPermission(permission="RootNodeManagement");
 	</cfscript>
 </cfif>
 
-<cfif structCount(stObj)>
+<cfif structCount(stObj) and iObjectCreatePermission>
 
 <cfoutput>
 	<script>

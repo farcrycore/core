@@ -76,8 +76,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 <cfset aItems[arrayLen(aItems)].icon = "logout.gif">
 
 <cfscript>
-	oAuth = request.dmsec.oAuthorisation;
-	isDeveloper = oAuth.checkPermission(permissionname="developer",reference="policygroup");
+	isDeveloper = application.security.checkPermission(permission="developer");
 	if (isDeveloper EQ 1)
 	{
 		 aItems[arrayLen(aItems)+1] = structNew();

@@ -12,7 +12,7 @@
 	<cfset permitted = 0>
 	
 	<cfloop list="#attributes.PermissionName#" index="i">
-		<cfif request.dmsec.oAuthorisation.checkPermission(permissionName="#i#",reference="policyGroup") EQ 1>
+		<cfif application.security.checkPermission(permission=i) EQ 1>
 			<cfset permitted = 1>
 		</cfif>
 	</cfloop>	

@@ -50,7 +50,7 @@ $in: objectid -- $
 		<cfset permitted = 1>
 		
 		<cfloop list="#attributes.RequiredPermissions#" index="i">
-			<cfif NOT request.dmsec.oAuthorisation.checkPermission(permissionName="#i#",reference="policyGroup") EQ 1>
+			<cfif NOT application.security.checkPermission(permission=i) EQ 1>
 				<cfset permitted = 0>
 			</cfif>
 		</cfloop>	

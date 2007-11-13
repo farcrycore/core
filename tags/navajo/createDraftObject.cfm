@@ -29,8 +29,7 @@ Creates a draft object
 	<!--- create the new OBJECT  --->
 	<cfset stResult = oType.createData(stProperties=stProps) />
 	
-	<cfset oAuthentication = request.dmSec.oAuthentication />
-	<cfset stuser = oAuthentication.getUserAuthenticationData() />
+	<cfset stuser = application.factory.oAuthentication.getUserAuthenticationData() />
 	<cfset application.factory.oaudit.logActivity(objectid="#URL.objectid#",auditType="Create", username=StUser.userlogin, location=cgi.remote_host, note="Draft object created") />
 	
 	<!--- //this will copy containers and there rules from live object to draft --->
