@@ -446,18 +446,13 @@ if (isDefined("form.unlock") AND isDefined("form.objectid")) {
 <!--- if more than one page, show pagination --->
 <cfif endrow lte recordset.recordcount AND recordset.recordcount gt 0><cfoutput>#html_pagination#</cfoutput></cfif>
 
-
-<cfscript>
-// todo:refactoring... get rid of it, tests being done in cfc now GB
-oAuthorisation=request.dmsec.oAuthorisation;
-</cfscript>
 <!--- button bar widget --->
 <cfsavecontent variable="html_buttonbar">
 <cfoutput>
 <div class="utilBar f-subdued">
 <cfloop from="1" to="#arraylen(attributes.aButtons)#" index="i">
 <!--- (#attributes.aButtons[i].name#: #attributes.aButtons[i].permission#) --->
-<cfif NOT len(attributes.aButtons[i].permission) OR oAuthorisation.checkPermission(permissionName=attributes.aButtons[i].permission,reference="PolicyGroup") EQ 1>
+<cfif NOT len(attributes.aButtons[i].permission) OR application.security.checkPermission(permission=attributes.aButtons[i].permission) EQ 1>
 	<input type="#attributes.aButtons[i].type#" name="#attributes.aButtons[i].name#" value="#attributes.aButtons[i].value#" class="#attributes.aButtons[i].class#"<cfif len(attributes.aButtons[i].onclick)> onclick="#attributes.aButtons[i].onclick#"</cfif> />
 </cfif>
 </cfloop>

@@ -576,11 +576,6 @@ user --->
 	<!--- delete flag; modified to 1 on delete confirm --->
 	<cfoutput><input name="delete" type="Hidden" value="0"></cfoutput>
 	
-	
-	<cfscript>
-	// todo:refactoring... get rid of it, tests being done in cfc now GB
-	oAuthorisation=request.dmsec.oAuthorisation;
-	</cfscript>
 	<cfsavecontent variable="html_buttonbar">
 	
 	<ft:farcryButtonPanel indentForLabel="false">
@@ -588,7 +583,7 @@ user --->
 		
 		<cfif attributes.lButtons EQ "*" or listFindNoCase(attributes.lButtons,attributes.aButtons[i].value)>
 			<!--- (#attributes.aButtons[i].name#: #attributes.aButtons[i].permission#) --->
-			<cfif NOT len(attributes.aButtons[i].permission) OR oAuthorisation.checkPermission(permissionName=attributes.aButtons[i].permission,reference="PolicyGroup") EQ 1>
+			<cfif NOT len(attributes.aButtons[i].permission) OR application.security.checkPermission(permission=attributes.aButtons[i].permission) EQ 1>
 				
 				<cfif len(attributes.aButtons[i].onclick)> 
 					<cfset onclickJS="#attributes.aButtons[i].onclick#" />
