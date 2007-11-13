@@ -34,18 +34,17 @@ $out:$
 
 <!--- check permissions --->
 <cfscript>
-	oAuthentication = request.dmsec.oAuthentication;
-	stUser = oAuthentication.getUserAuthenticationData();
+	stUser = application.factory.oAuthentication.getUserAuthenticationData();
 
-	iEdit = request.dmSec.oAuthorisation.checkInheritedPermission(objectid="#parentid#",permissionName="edit");
-	iRequest = request.dmSec.oAuthorisation.checkInheritedPermission(objectid="#parentid#",permissionName="RequestApproval");
-	iApprove = request.dmSec.oAuthorisation.checkInheritedPermission(objectid="#parentid#",permissionName="approve");
-	iApproveOwn = request.dmSec.oAuthorisation.checkInheritedPermission(objectid="#parentid#",permissionName="CanApproveOwnContent"); 	
+	iEdit = application.security.checkPermission(object=parentid,permission="edit");
+	iRequest = application.security.checkPermission(object=parentid,permission="RequestApproval");
+	iApprove = application.security.checkPermission(object=parentid,permission="approve");
+	iApproveOwn = application.security.checkPermission(object=parentid,permission="CanApproveOwnContent"); 	
 	if(iApproveOwn EQ 1 AND NOT stObj.lastUpdatedBy IS stUser.userLogin)
 		iApproveOwn = 0;
-	iTreeSendToTrash = request.dmSec.oAuthorisation.checkInheritedPermission(objectid="#parentid#",permissionName="SendToTrash");
-	iObjectDumpTab = request.dmSec.oAuthorisation.checkPermission(reference="PolicyGroup",permissionName="ObjectDumpTab");
-	iDelete = request.dmSec.oAuthorisation.checkInheritedPermission(objectid="#parentid#",permissionName="delete");
+	iTreeSendToTrash = application.security.checkPermission(object=parentid,permission="SendToTrash");
+	iObjectDumpTab = application.security.checkPermission(rpermission="ObjectDumpTab");
+	iDelete = application.security.checkPermission(object=parentid,permission="delete");
 </cfscript>
 
 <cfsavecontent variable="overviewHtml">

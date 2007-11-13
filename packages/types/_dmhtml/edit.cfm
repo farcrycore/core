@@ -117,8 +117,7 @@ function fcleanBody(myString){
  --->
 
 	<!--- check if object is a underlying draft page --->
-	<cfset oAuthentication = request.dmSec.oAuthentication>
-	<cfset stuser = oAuthentication.getUserAuthenticationData()>
+	<cfset stuser = application.factory.oAuthentication.getUserAuthenticationData()>
 	<cfif Len(Trim(stOutput.versionId))>
 		<cfset objId = stOutput.versionId>
 		<cfset auditNote = "Draft object update">

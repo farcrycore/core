@@ -33,27 +33,27 @@
 	<cfset errormessage = "Object overview can not be found.<br />">
 <cfelse> <!--- generate all data required for the overview html --->
 	<!--- check/generate permission --->
-	<cfset stLocal.stUser = request.dmsec.oAuthentication.getUserAuthenticationData()>
+	<cfset stLocal.stUser = application.factory.oAuthentication.getUserAuthenticationData()>
 	<cfset stLocal.stPermissions = StructNew()>
 
 	<cfif StructKeyExists(application.types[stLocal.stObjectOverview.typename], "bUseInTree") AND application.types[stLocal.stObjectOverview.typename].bUseInTree>
-		<cfset stLocal.stPermissions.iDeveloperPermission = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="developer")>
-		<cfset stLocal.stPermissions.iEdit = request.dmSec.oAuthorisation.checkInheritedPermission(objectid="#stLocal.parentid#",permissionName="edit")>
-		<cfset stLocal.stPermissions.iRequest = request.dmSec.oAuthorisation.checkInheritedPermission(objectid="#stLocal.parentid#",permissionName="RequestApproval")>
-		<cfset stLocal.stPermissions.iApprove = request.dmSec.oAuthorisation.checkInheritedPermission(objectid="#stLocal.parentid#",permissionName="Approve")>
-		<cfset stLocal.stPermissions.iApproveOwn = request.dmSec.oAuthorisation.checkInheritedPermission(objectid="#stLocal.parentid#",permissionName="CanApproveOwnContent")>
-		<cfset stLocal.stPermissions.iObjectDumpTab = request.dmSec.oAuthorisation.checkPermission(reference="PolicyGroup",permissionName="ObjectDumpTab")>
-		<cfset stLocal.stPermissions.iDelete = request.dmSec.oAuthorisation.checkInheritedPermission(objectid="#stLocal.parentid#",permissionName="delete")>
-		<cfset stLocal.stPermissions.iTreeSendToTrash = request.dmSec.oAuthorisation.checkInheritedPermission(objectid="#stLocal.parentid#",permissionName="SendToTrash")>
+		<cfset stLocal.stPermissions.iDeveloperPermission = application.security.checkPermission(permission="developer")>
+		<cfset stLocal.stPermissions.iEdit = application.security.checkPermission(object=stLocal.parentid,permission="edit")>
+		<cfset stLocal.stPermissions.iRequest = application.security.checkPermission(object=stLocal.parentid,permission="RequestApproval")>
+		<cfset stLocal.stPermissions.iApprove = application.security.checkPermission(object=stLocal.parentid,permission="Approve")>
+		<cfset stLocal.stPermissions.iApproveOwn = application.security.checkPermission(object=stLocal.parentid,permission="CanApproveOwnContent")>
+		<cfset stLocal.stPermissions.iObjectDumpTab = application.security.checkPermission(permission="ObjectDumpTab")>
+		<cfset stLocal.stPermissions.iDelete = application.security.checkPermission(object=stLocal.parentid,permission="delete")>
+		<cfset stLocal.stPermissions.iTreeSendToTrash = application.security.checkPermission(object=stLocal.parentid,permission="SendToTrash")>
 	<cfelse>
 		<cfset stLocal.permissionSet = "news">
-		<cfset stLocal.stPermissions.iDeveloperPermission = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="developer")>
-		<cfset stLocal.stPermissions.iEdit = request.dmSec.oAuthorisation.checkPermission(permissionName="#stLocal.permissionSet#Edit",reference="PolicyGroup")>
-		<cfset stLocal.stPermissions.iRequest = request.dmSec.oAuthorisation.checkPermission(permissionName="#stLocal.permissionSet#RequestApproval",reference="PolicyGroup")>
-		<cfset stLocal.stPermissions.iApprove = request.dmSec.oAuthorisation.checkPermission(permissionName="#stLocal.permissionSet#Approve",reference="PolicyGroup")>
-		<cfset stLocal.stPermissions.iApproveOwn = request.dmSec.oAuthorisation.checkPermission(permissionName="#stLocal.permissionSet#Approve",reference="PolicyGroup")>
-		<cfset stLocal.stPermissions.iObjectDumpTab = request.dmSec.oAuthorisation.checkPermission(permissionName="#stLocal.permissionSet#Approve",reference="PolicyGroup")>	
-		<cfset stLocal.stPermissions.iDelete = request.dmSec.oAuthorisation.checkPermission(permissionName="#stLocal.permissionSet#Delete",reference="PolicyGroup")>
+		<cfset stLocal.stPermissions.iDeveloperPermission = application.security.oAuthorisation.checkPermission(permission="developer")>
+		<cfset stLocal.stPermissions.iEdit = application.security.checkPermission(permission="#stLocal.permissionSet#Edit")>
+		<cfset stLocal.stPermissions.iRequest = application.security.checkPermission(permission="#stLocal.permissionSet#RequestApproval")>
+		<cfset stLocal.stPermissions.iApprove = application.security.checkPermission(permission="#stLocal.permissionSet#Approve")>
+		<cfset stLocal.stPermissions.iApproveOwn = application.security.checkPermission(permission="#stLocal.permissionSet#Approve")>
+		<cfset stLocal.stPermissions.iObjectDumpTab = application.security.checkPermission(permission="#stLocal.permissionSet#Approve")>	
+		<cfset stLocal.stPermissions.iDelete = application.security.checkPermission(permission="#stLocal.permissionSet#Delete")>
 		<cfset stLocal.stPermissions.iTreeSendToTrash = 0>
 	</cfif>
 

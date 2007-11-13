@@ -28,19 +28,16 @@ $out:$
 
 <!--- check permissions --->
 <cfscript>
-	oAuthentication = request.dmsec.oAuthentication;
-	stUser = oAuthentication.getUserAuthenticationData();
-	
-	iCreate = request.dmSec.oAuthorisation.checkInheritedPermission(objectid="#stObj.objectid#",permissionName="create");
-	iEdit = request.dmSec.oAuthorisation.checkInheritedPermission(objectid="#stObj.objectid#",permissionName="edit");
-	iRequest = request.dmSec.oAuthorisation.checkInheritedPermission(objectid="#stObj.objectid#",permissionName="RequestApproval");
-	iApprove = request.dmSec.oAuthorisation.checkInheritedPermission(objectid="#stObj.objectid#",permissionName="Approve");
-	iApproveOwn = request.dmSec.oAuthorisation.checkInheritedPermission(objectid="#stObj.objectid#",permissionName="CanApproveOwnContent"); 	
+	iCreate = application.security.checkPermission(object=stObj.objectid,permission="create");
+	iEdit = application.security.checkPermission(object=stObj.objectid,permission="edit");
+	iRequest = application.security.checkPermission(object=stObj.objectid,permission="RequestApproval");
+	iApprove = application.security.checkPermission(object=stObj.objectid,permission="Approve");
+	iApproveOwn = application.security.checkPermission(object=stObj.objectid,permission="CanApproveOwnContent"); 	
 	if(iApproveOwn EQ 1 AND NOT stObj.lastUpdatedBy IS stUser.userLogin)
 		iApproveOwn = 0;
-	iTreeSendToTrash = request.dmSec.oAuthorisation.checkInheritedPermission(objectid="#stObj.objectid#",permissionName="SendToTrash");
-	iObjectDumpTab = request.dmSec.oAuthorisation.checkPermission(reference="PolicyGroup",permissionName="ObjectDumpTab");
-	iDelete = request.dmSec.oAuthorisation.checkInheritedPermission(objectid="#stObj.objectid#",permissionName="delete");
+	iTreeSendToTrash = application.security.checkPermission(object=stObj.objectid,permission="SendToTrash");
+	iObjectDumpTab = application.security.checkPermission(permission="ObjectDumpTab");
+	iDelete = application.security.checkPermission(object=stObj.objectid,permission="delete");
 </cfscript>
 
 <cfsavecontent variable="html">

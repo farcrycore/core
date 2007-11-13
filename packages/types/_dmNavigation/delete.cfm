@@ -41,8 +41,7 @@ $out:$
 	request.factory.oTree.deleteBranch(objectid=stObj.objectID);
 	
 	// remove permissions
-	oAuthorisation = request.dmSec.oAuthorisation;
-	oAuthorisation.deletePermissionBarnacle(objectid=stObj.objectID);
+	application.factory.oAuthorisation.deletePermissionBarnacle(objectid=stObj.objectID);
 	
 	// check for associated objects 
 	if(structKeyExists(stObj,"aObjectIds") and arrayLen(stObj.aObjectIds)) {
