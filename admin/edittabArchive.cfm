@@ -20,20 +20,16 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 --->
 <!--- import tag libraries --->
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
 
 <!--- environment variables --->
 <cfparam name="url.archiveid" type="uuid" />
 <cfparam name="url.objectid" type="uuid" />
 
-<!--- check permissions --->
-<cfscript>
-	iArchiveTab = application.security.checkPermission(permission="ObjectArchiveTab");
-</cfscript>
-
 <!--- set up page header --->
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<cfif iArchiveTab eq 1>
+<sec:restricted permission="ObjectArchiveTab">
 	<cfoutput>
 	<h3>#application.adminBundle[session.dmProfile.locale].archive#</h3>
 	</cfoutput>
@@ -99,10 +95,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 	</cfoutput>
 	</cfif>
 	<cfoutput></table></cfoutput>
-
-<cfelse>
-	<admin:permissionError>
-</cfif>
+</sec:restricted>
 
 <!--- setup footer --->
 <admin:footer>

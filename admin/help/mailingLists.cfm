@@ -24,48 +24,43 @@ $out:$
 
 <cfprocessingDirective pageencoding="utf-8">
 
-<!--- check permissions --->
-<cfscript>
-	iHelpTab = application.security.checkPermission(permission="MainNavHelpTab");
-</cfscript>
-
 <!--- set up page header --->
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/security/" prefix="sec">
+
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<cfif iHelpTab eq 1>
-<cfoutput>
-	<div class="formtitle">#application.adminBundle[session.dmProfile.locale].mailingLists#</div>
-	
-	<div style="padding-left:30px;padding-bottom:30px;padding-right:30px;">
-	<p>#application.adminBundle[session.dmProfile.locale].farcryListBlurb#</p>
-	<p>&nbsp;</p>
-	
-	<div class="formtitle">farcry-dev (public)</div>
-	
-	<span class="frameMenuBullet">&raquo;</span> <a href="mailto:farcry-dev@lists.daemon.com.au">farcry-dev@lists.daemon.com.au</a>
-	<p>#application.adminBundle[session.dmProfile.locale].farcryDevListBlurb#</p>
-	<ul>
-	    <li>#application.adminBundle[session.dmProfile.locale].joinDevList#</li>
-	    <li>#application.adminBundle[session.dmProfile.locale].webBasedDevList#</li>
-	    <li>#application.adminBundle[session.dmProfile.locale].nntpDevList#</li>
-	</ul>
-	
-	<p>&nbsp;</p>
-	<div class="formtitle">farcry-user (public)</div>
-	
-	<span class="frameMenuBullet">&raquo;</span> <a href="mailto:farcry-user@lists.daemon.com.au">farcry-user@lists.daemon.com.au</a>
-	<p>#application.adminBundle[session.dmProfile.locale].farcryUserListBlurb#</p>
-	<ul>
-	    <li>#application.adminBundle[session.dmProfile.locale].joinUserList#</li>
-	    <li>#application.adminBundle[session.dmProfile.locale].webBasedUserList#</li>
-	    <li>#application.adminBundle[session.dmProfile.locale].nntpUserList#</li>
-	</ul>
-	
-	</div>
-</cfoutput>
-<cfelse>
-	<admin:permissionError>
-</cfif>
+<sec:restricted permission="MainNavHelpTab">
+	<cfoutput>
+		<div class="formtitle">#application.adminBundle[session.dmProfile.locale].mailingLists#</div>
+		
+		<div style="padding-left:30px;padding-bottom:30px;padding-right:30px;">
+		<p>#application.adminBundle[session.dmProfile.locale].farcryListBlurb#</p>
+		<p>&nbsp;</p>
+		
+		<div class="formtitle">farcry-dev (public)</div>
+		
+		<span class="frameMenuBullet">&raquo;</span> <a href="mailto:farcry-dev@lists.daemon.com.au">farcry-dev@lists.daemon.com.au</a>
+		<p>#application.adminBundle[session.dmProfile.locale].farcryDevListBlurb#</p>
+		<ul>
+		    <li>#application.adminBundle[session.dmProfile.locale].joinDevList#</li>
+		    <li>#application.adminBundle[session.dmProfile.locale].webBasedDevList#</li>
+		    <li>#application.adminBundle[session.dmProfile.locale].nntpDevList#</li>
+		</ul>
+		
+		<p>&nbsp;</p>
+		<div class="formtitle">farcry-user (public)</div>
+		
+		<span class="frameMenuBullet">&raquo;</span> <a href="mailto:farcry-user@lists.daemon.com.au">farcry-user@lists.daemon.com.au</a>
+		<p>#application.adminBundle[session.dmProfile.locale].farcryUserListBlurb#</p>
+		<ul>
+		    <li>#application.adminBundle[session.dmProfile.locale].joinUserList#</li>
+		    <li>#application.adminBundle[session.dmProfile.locale].webBasedUserList#</li>
+		    <li>#application.adminBundle[session.dmProfile.locale].nntpUserList#</li>
+		</ul>
+		
+		</div>
+	</cfoutput>
+</sec:restricted>
 
 <admin:footer>

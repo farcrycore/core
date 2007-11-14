@@ -364,10 +364,7 @@ $out:$
 	        </cfoutput>
 	    </cfif>
 	</cfif>
-
-<cfelse>
-	<admin:permissionError>
-</cfif>
+</sec:restricted>
 
 <admin:footer>
 

@@ -26,9 +26,6 @@ $out:$
 <cfprocessingDirective pageencoding="utf-8">
 <cfparam name="errormessage" default="" />
 
-<!--- check permissions --->
-<cfset iStatsTab = application.security.checkPermission(permission="ReportingStatsTab") />
-
 <!--- set up page header --->
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
 <cfset returnStruct = application.factory.oStats.getOwnedBy() />
@@ -53,9 +50,8 @@ function doToggle(tglItem)
 }
 </script>
 </cfoutput>
-<cfif iStatsTab EQ 0>
-	<admin:permissionError>
-<cfelse>
+
+<sec:restricted permission="ReportingStatsTab">
   <cfoutput><h3>Owned By Report</h3></cfoutput>
 
 	<cfif errorMessage NEQ "">
@@ -100,5 +96,6 @@ function doToggle(tglItem)
 		</table>
 	</cfoutput>
 	</cfif>
-</cfif>
+</sec:restricted>
+
 <admin:footer>

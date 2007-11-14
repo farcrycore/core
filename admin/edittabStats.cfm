@@ -25,10 +25,9 @@ out:
 
 <cfsetting enablecfoutputonly="yes" requestTimeOut="600">
 
-<!--- check permissions --->
-<cfset iStatsTab = application.security.checkPermission(permission="ObjectStatsTab")>
+<cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
 
-<cfif iStatsTab eq 1>
+<sec:restricted permission="ObjectStatsTab">
 	<cftry> 
 		<!--- try and see if the file can be loaded --->
 	    <cfinclude template="/farcry/projects/#application.projectDirectoryName#/customadmin/edittabStats.cfm">
@@ -425,9 +424,7 @@ out:
 			</cfif>
 		</cfcatch>
 	</cftry>		
-<cfelse>
-	<admin:permissionError>
-</cfif>
+</sec:restricted>
 
 <!--- setup footer --->
 <admin:footer>

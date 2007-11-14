@@ -26,16 +26,13 @@ $out:$
 
 <cfprocessingDirective pageencoding="utf-8">
 
-<!--- check permissions --->
-<cfscript>
-	iStatsTab = application.security.checkPermission(permission="ReportingStatsTab");
-</cfscript>
-
 <!--- set up page header --->
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
+
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<cfif iStatsTab eq 1>
+<sec:restricted permission="ReportingStatsTab">
 	<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin">
 	<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
 	
@@ -60,10 +57,7 @@ $out:$
 			<cfcatch></cfcatch>
 		</cftry>
 	</cfloop>
-
-<cfelse>
-	<admin:permissionError>
-</cfif>
+</sec:restricted>
 
 <admin:footer>
 

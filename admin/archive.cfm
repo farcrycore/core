@@ -26,16 +26,15 @@ $out:$
 <cfprocessingDirective pageencoding="utf-8">
 
 <cfparam name="finish_url" default="#cgi.http_referer#" />
-<!--- check permissions --->
-<cfset iArchiveTab = application.security.checkPermission(permission="ObjectArchiveTab") />
 
 <!--- set up page header --->
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
+
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<cfif iArchiveTab eq 1>
-
-<cfoutput>	<h3>#application.adminBundle[session.dmProfile.locale].archive#</h3></cfoutput>
+<sec:restricted permission="ObjectArchiveTab">
+	<cfoutput>	<h3>#application.adminBundle[session.dmProfile.locale].archive#</h3></cfoutput>
 
 	<!--- check if rollback is required --->
 	<cfif structKeyExists(url, "archiveid")>
@@ -108,9 +107,7 @@ $out:$
 	<cfoutput>
 	</table>
 	<a href="#finish_url#">[Cancel]</a></cfoutput>
-<cfelse>
-	<admin:permissionError>
-</cfif>
+</sec:restricted>
 
 <!--- setup footer --->
 <admin:footer>

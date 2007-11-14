@@ -24,16 +24,13 @@ $out:$
 
 <cfprocessingDirective pageencoding="utf-8">
 
-<!--- check permissions --->
-<cfscript>
-	iAuditTab = application.security.checkPermission(permission="ReportingAuditTab");
-</cfscript>
-
 <!--- set up page header --->
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
+
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<cfif iAuditTab eq 1>
+<sec:restricted permission="ReportingAuditTag">
 	<cfif isdefined("url.view")>
 		<cfoutput>	<h3>#application.adminBundle[session.dmProfile.locale].allUserActivity#</h3></cfoutput>
 	<cfelse>
@@ -127,9 +124,7 @@ $out:$
 		</cfloop>
 	<cfoutput>
 	</table></cfoutput>
-<cfelse>
-	<admin:permissionError>
-</cfif>
+</sec:restricted>
 
 <!--- setup footer --->
 <admin:footer>

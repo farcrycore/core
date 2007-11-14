@@ -26,16 +26,13 @@ $out:$
 
 <cfprocessingDirective pageencoding="utf-8">
 
-<!--- check permissions --->
-<cfscript>
-	iStatsTab = application.security.checkPermission(permission="ReportingStatsTab");
-</cfscript>
-
 <!--- set up page header --->
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
+
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<cfif iStatsTab eq 1>
+<sec:restricted permission="ReportingStatsTab">
 	<cfparam name="form.typeName" default="all">
 	<cfparam name="form.dateRange" default="all">
 	<cfparam name="form.maxRows" default="20">
@@ -133,10 +130,7 @@ $out:$
 		<h3>#application.adminBundle[session.dmProfile.locale].noOSnow#</h3>
 	</cfif>
 	</cfoutput>
-	
-<cfelse>
-	<admin:permissionError>
-</cfif>
+</sec:restricted>
 
 <admin:footer>
 

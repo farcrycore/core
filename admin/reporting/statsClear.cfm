@@ -28,8 +28,6 @@ out:
 
 <cfprocessingDirective pageencoding="utf-8">
 
-<!--- check permissions --->
-<cfset iStatsTab = application.security.checkPermission(permission="ReportingStatsTab")>
 <cfset nowDate = CreateDate(year(Now()),month(Now()),day(Now()))>
 <cfparam name="purgeDate" default="#DateAdd('q',-1,nowDate)#">
 <cfparam name="bFormSubmitted" default="no">
@@ -68,40 +66,41 @@ out:
 
 <!--- set up page header --->
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
+
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<cfif iStatsTab eq 1><cfoutput>
-<script type="text/javascript">
-function doSubmit(objForm)
-{	
-	return window.confirm("Are you sure you wish to delete statistices " + objForm.purgedate[objForm.purgedate.selectedIndex].text + ".");
-}
-</script>
-
-
-<form name="editform" action="#cgi.script_name#?#cgi.query_string#" method="post" class="f-wrap-1 wider f-bg-long" onsubmit="return doSubmit(document.editform);">
-	<fieldset>
-		<div class="req"><b>*</b>Required</div>
-		<h3>#application.adminBundle[session.dmProfile.locale].clearStatsLog#</h3>
-		<cfif isDefined("errormessage")>
-			<p id="fading1" class="fade"><span class="error">#errormessage#</span></p>			
-		<cfelseif isDefined("successmessage")>
-			<p id="fading1" class="fade"><span class="success">#successmessage#</span></p>
-		</cfif>
-		<label for="purgedate"><b>Purge Statitistics:<span class="req">*</span></b>
-			<select name="purgedate" id="purgedate"><cfloop index="i" from="1" to="#ArrayLen(aPurgeDates)#">
-				<option value="#aPurgeDates[i].purgedate#"<cfif purgedate EQ aPurgeDates[i].purgedate> selected="selected"</cfif>>#aPurgeDates[i].purgeLabel#</option></cfloop>
-			</select><br />
-		</label> 
-	</fieldset>
-	<input type="hidden" name="bFormSubmitted" id="bFormSubmitted" value="yes">
-	<div class="f-submit-wrap">
-	<input type="Submit" name="Submit" value="#application.adminBundle[session.dmProfile.locale].OK#" class="f-submit">
-	</div>
-</form></cfoutput>
-<cfelse>
-	<admin:permissionError>
-</cfif>
+<sec:restricted permission="ReportingStatsTab">
+	<cfoutput>
+	<script type="text/javascript">
+	function doSubmit(objForm)
+	{	
+		return window.confirm("Are you sure you wish to delete statistices " + objForm.purgedate[objForm.purgedate.selectedIndex].text + ".");
+	}
+	</script>
+	
+	
+	<form name="editform" action="#cgi.script_name#?#cgi.query_string#" method="post" class="f-wrap-1 wider f-bg-long" onsubmit="return doSubmit(document.editform);">
+		<fieldset>
+			<div class="req"><b>*</b>Required</div>
+			<h3>#application.adminBundle[session.dmProfile.locale].clearStatsLog#</h3>
+			<cfif isDefined("errormessage")>
+				<p id="fading1" class="fade"><span class="error">#errormessage#</span></p>			
+			<cfelseif isDefined("successmessage")>
+				<p id="fading1" class="fade"><span class="success">#successmessage#</span></p>
+			</cfif>
+			<label for="purgedate"><b>Purge Statitistics:<span class="req">*</span></b>
+				<select name="purgedate" id="purgedate"><cfloop index="i" from="1" to="#ArrayLen(aPurgeDates)#">
+					<option value="#aPurgeDates[i].purgedate#"<cfif purgedate EQ aPurgeDates[i].purgedate> selected="selected"</cfif>>#aPurgeDates[i].purgeLabel#</option></cfloop>
+				</select><br />
+			</label> 
+		</fieldset>
+		<input type="hidden" name="bFormSubmitted" id="bFormSubmitted" value="yes">
+		<div class="f-submit-wrap">
+		<input type="Submit" name="Submit" value="#application.adminBundle[session.dmProfile.locale].OK#" class="f-submit">
+		</div>
+	</form></cfoutput>
+</sec:restricted>
 
 <!--- setup footer --->
 <admin:footer>

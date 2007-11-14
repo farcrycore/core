@@ -20,14 +20,12 @@ $DEVELOPER:Brendan Sisson (brendan@daemon.com.au)$
 --->
 <!--- import tag libraries --->
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
-
-<!--- check permissions --->
-<cfset iAuditTab = application.security.checkPermission(permission="ObjectAuditTab") />
+<cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
 
 <!--- set up page header --->
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<cfif iAuditTab eq 1>
+<sec:restricted permission="ObjectAuditTab">
 	<cfset oAudit = createObject("component", "#application.packagepath#.farcry.audit") />
 	<cfset qLog = oAudit.getAuditLog(objectid=url.objectid) />
 	
@@ -105,10 +103,7 @@ $DEVELOPER:Brendan Sisson (brendan@daemon.com.au)$
 			</tr>
 		</table></cfoutput>
 	</cfif>
-	
-<cfelse>
-	<admin:permissionError>
-</cfif>
+</sec:restricted>
 
 <!--- setup footer --->
 <admin:footer>

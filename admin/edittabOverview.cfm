@@ -23,9 +23,8 @@ $DEVELOPER: Mat Bryant (mbryant@daemon.com.au)$
 <cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
 <cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry">
 <cfimport taglib="/farcry/core/tags/webskin/" prefix="skin">
+<cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
 
-<!--- check permissions --->
-<cfset iOverviewTab = application.security.checkPermission(permission="ObjectOverviewTab")>
 <cfset q4 = createObject("component","farcry.core.packages.fourq.fourq")>
 <cfset typename = q4.findType(url.objectid)>
 <cfset o = createObject("component",application.types['#typename#'].typepath)>
@@ -108,12 +107,9 @@ function processReqChange(data, obj){
 <cfhtmlhead text="#jshead#" />
 
 
-<cfif iOverviewTab eq 1>
+<sec:restricted permission="ObjectOverviewTab">
 	<skin:view objectid="#url.objectid#" webskin="renderWebtopOverview" />
-	<!--- <cfoutput>#o.renderObjectOverview(objectid=URL.objectid)#</cfoutput> --->
-<cfelse>
-	<admin:permissionError>
-</cfif>
+</sec:restricted>
 
 <!--- setup footer --->
 <!--- <admin:footer>	 --->

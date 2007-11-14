@@ -26,42 +26,38 @@ $out:$
 
 <cfprocessingDirective pageencoding="utf-8">
 
-<cfscript>
-	iHelpTab = application.security.checkPermission(permission="MainNavHelpTab");
-</cfscript>
-
 <!--- set up page header --->
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/security/" prefix="sec">
+
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<cfif iHelpTab eq 1>
-<cfoutput>
-	<div class="formtitle">#application.adminBundle[session.dmProfile.locale].documentation#</div>
+<sec:restricted permission="MainNavHelpTab">
+	<cfoutput>
+		<div class="formtitle">#application.adminBundle[session.dmProfile.locale].documentation#</div>
+		
+		<div style="padding-left:30px;padding-bottom:30px;">
+		<!--- contributor guide --->
+		<strong>#application.adminBundle[session.dmProfile.locale].contributorsGuide#</strong><br />
+		<p>#application.adminBundle[session.dmProfile.locale].farcryIsEasyBlurb#</p>
+		<p><span class="frameMenuBullet">&raquo;</span> <a href="http://farcry.daemon.com.au/go/documentation/users">#application.adminBundle[session.dmProfile.locale].downloadContributorGuide#</a></p>
+		</div>
 	
-	<div style="padding-left:30px;padding-bottom:30px;">
-	<!--- contributor guide --->
-	<strong>#application.adminBundle[session.dmProfile.locale].contributorsGuide#</strong><br />
-	<p>#application.adminBundle[session.dmProfile.locale].farcryIsEasyBlurb#</p>
-	<p><span class="frameMenuBullet">&raquo;</span> <a href="http://farcry.daemon.com.au/go/documentation/users">#application.adminBundle[session.dmProfile.locale].downloadContributorGuide#</a></p>
-	</div>
-
-	<div style="padding-left:30px;padding-bottom:30px;">
-	<!--- admin guide --->
-	<strong>#application.adminBundle[session.dmProfile.locale].adminGuide#</strong><br />
-	<p>#application.adminBundle[session.dmProfile.locale].farcryAdminIsEasyBlurb#</p>
-	<p><span class="frameMenuBullet">&raquo;</span> <a href="http://farcry.daemon.com.au/go/documentation/developers/admin-guide">#application.adminBundle[session.dmProfile.locale].downloadAdminGuide#</a></p>
-	</div>
-	
-	<div style="padding-left:30px;padding-bottom:30px;">
-	<!--- developer guide --->
-	<strong>#application.adminBundle[session.dmProfile.locale].developerGuides#</strong><br />
-	
-	<p><span class="frameMenuBullet">&raquo;</span> <a href="http://farcry.daemon.com.au/go/documentation/developers/how-to">#application.adminBundle[session.dmProfile.locale].howTo#</a></p>
-	<p><span class="frameMenuBullet">&raquo;</span> <a href="http://farcry.daemon.com.au/go/documentation/developers/tech-notes">#application.adminBundle[session.dmProfile.locale].techNotes#</a></p>
-	</div>
-</cfoutput>	
-<cfelse>
-	<admin:permissionError>
-</cfif>
+		<div style="padding-left:30px;padding-bottom:30px;">
+		<!--- admin guide --->
+		<strong>#application.adminBundle[session.dmProfile.locale].adminGuide#</strong><br />
+		<p>#application.adminBundle[session.dmProfile.locale].farcryAdminIsEasyBlurb#</p>
+		<p><span class="frameMenuBullet">&raquo;</span> <a href="http://farcry.daemon.com.au/go/documentation/developers/admin-guide">#application.adminBundle[session.dmProfile.locale].downloadAdminGuide#</a></p>
+		</div>
+		
+		<div style="padding-left:30px;padding-bottom:30px;">
+		<!--- developer guide --->
+		<strong>#application.adminBundle[session.dmProfile.locale].developerGuides#</strong><br />
+		
+		<p><span class="frameMenuBullet">&raquo;</span> <a href="http://farcry.daemon.com.au/go/documentation/developers/how-to">#application.adminBundle[session.dmProfile.locale].howTo#</a></p>
+		<p><span class="frameMenuBullet">&raquo;</span> <a href="http://farcry.daemon.com.au/go/documentation/developers/tech-notes">#application.adminBundle[session.dmProfile.locale].techNotes#</a></p>
+		</div>
+	</cfoutput>	
+</sec:restricted>
 
 <admin:footer>

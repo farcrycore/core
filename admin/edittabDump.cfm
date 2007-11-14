@@ -22,16 +22,12 @@ $DEVELOPER:Brendan Sisson (brendan@daemon.com.au)$
 <!--- import tag library --->
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin" />
 <cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4" />
-
-<!--- check permissions --->
-<cfscript>
-	iDumpTab = application.security.checkPermission(permission="ObjectDumpTab");
-</cfscript>
+<cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
 
 <!--- set up page header --->
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<cfif iDumpTab eq 1>
+<sec:restricted permission="ObjectDumpTab">
 	<cfoutput>
 	<h3>#application.adminBundle[session.dmProfile.locale].objectDump#</h3>
 	</cfoutput>
@@ -39,10 +35,7 @@ $DEVELOPER:Brendan Sisson (brendan@daemon.com.au)$
 	<!--- get object details and dump results --->
 	<q4:contentobjectget objectid="#url.objectid#" r_stobject="stobj">
 	<cfdump var="#stobj#" label="#stobj.label# Dump">
-
-<cfelse>
-	<admin:permissionError>
-</cfif>
+</sec:restricted>
 
 <!--- setup footer --->
 <admin:footer>

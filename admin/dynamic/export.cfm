@@ -22,16 +22,13 @@ $Developer: Brendan Sisson (brendan@daemon.com.au) $
 
 <cfprocessingDirective pageencoding="utf-8">
 
-<!--- check permissions --->
-<cfscript>
-	iExportTab = application.security.checkPermission(permission="ContentExportTab");
-</cfscript>
-
 <!--- set up page header --->
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/security/" prefix="sec">
+
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<cfif iExportTab eq 1>
+<sec:restricted permission="ContentExportTab">
 	<cfoutput><span class="Formtitle">#application.adminBundle[session.dmProfile.locale].xmlExport#</span><p></p></cfoutput>
 
 	<cfset bShowForm=1>
@@ -153,9 +150,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au) $
 		</form>	
 		</cfoutput>
 	</cfif>
-<cfelse>
-	<admin:permissionError>
-</cfif>
+</sec:restricted>
 
 <admin:footer>
 

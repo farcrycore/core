@@ -22,6 +22,7 @@ $DEVELOPER:Brendan Sisson (brendan@daemon.com.au)$
 <!--- import tag libraries --->
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
 <cfimport taglib="/farcry/core/tags/navajo" prefix="nj">
+<cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
 
 <!--- check for content type and objectid--->
 <cfparam name="url.objectid" type="uuid" />
@@ -40,13 +41,9 @@ $DEVELOPER:Brendan Sisson (brendan@daemon.com.au)$
 <!--- set up page header --->
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<cfif application.security.checkPermission(permission="ObjectEditTab")>
-	
+<sec:restricted permission="ObjectEditTab">
 	<nj:edit objectid="#url.objectid#" typename="#url.typename#" cancelCompleteURL="#application.url.farcry#/edittabOverview.cfm?objectid=#url.objectid#" />
-
-<cfelse>
-	<admin:permissionError>
-</cfif>
+</sec:restricted>
 
 <!--- setup footer --->
 <admin:footer>

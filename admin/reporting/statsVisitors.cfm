@@ -24,16 +24,13 @@ out:
 
 <cfprocessingDirective pageencoding="utf-8">
 
-<!--- check permissions --->
-<cfscript>
-	iStatsTab = application.security.checkPermission(permission="ReportingStatsTab");
-</cfscript>
-
 <!--- set up page header --->
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
+
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<cfif iStatsTab eq 1>
+<sec:restricted permission="ReportingStatsTab">
 	<!--- i18n: get week starts for later use --->
 	<cfset weekStartDay=application.thisCalendar.weekStarts(session.dmProfile.locale)>
 
@@ -259,10 +256,7 @@ out:
 					  
 	</script>	
 	</cfoutput>
-
-<cfelse>
-	<admin:permissionError>
-</cfif>
+</sec:restricted>
 
 <!--- setup footer --->
 <admin:footer>
