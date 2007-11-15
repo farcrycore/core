@@ -46,8 +46,7 @@ $out:$
 	bInclusive="1">
 
 <cfscript>
-oAuthorisation = request.dmsec.oAuthorisation;
-stObjectPermissions = oAuthorisation.collateObjectPermissions(objectid=stObj.Objectid,  typename=stObj.typename);
+stObjectPermissions = application.factory.oAuthorisation.collateObjectPermissions(objectid=stObj.Objectid,  typename=stObj.typename);
 </cfscript>
 <!--- if parent returned --->
 <cfif len(ParentID)>

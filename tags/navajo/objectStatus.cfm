@@ -62,22 +62,6 @@ function deSelectAll()
 		<label for="commentLog"><b>#application.adminBundle[session.dmProfile.locale].addCommentsLabel#</b>
 			<textarea name="commentLog" id="commentLog" cols="80" rows="10"></textarea><br />
 		</label>
-		<!--- if requesting approval, list approvers --->
-		<cfif url.status eq "requestApproval">
-		<label for="Log"><b>#application.adminBundle[session.dmProfile.locale].requestApprovalFrom#</b>
-			<input type="checkbox" onclick="if(this.checked)deSelectAll();" name="lApprovers" value="all" checked="checked">#application.adminBundle[session.dmProfile.locale].allApprovers#<br />
-				<!--- get list of approvers for this object --->
-				<cfinvoke component="#application.packagepath#.farcry.workflow" method="getObjectApprovers" returnvariable="stApprovers">
-					<cfinvokeargument name="objectID" value="#url.objectID#"/>
-				</cfinvoke>
-
-				<!--- loop over approvers and display ones that have email profiles --->
-				<cfloop collection="#stApprovers#" item="item">
-				    <cfif stApprovers[item].emailAddress neq "" AND stApprovers[item].bReceiveEmail and stApprovers[item].userName neq session.dmSec.authentication.userLogin>
-						<input type="checkbox" name="lApprovers" onclick="if(this.checked)document.form.lApprovers[0].checked = false;" value="#stApprovers[item].userName#"><cfif len(stApprovers[item].firstName) gt 0>#stApprovers[item].firstName# #stApprovers[item].lastName#<cfelse>#stApprovers[item].userName#</cfif><br />
-					</cfif>
-				</cfloop>
-		</label>
 		</cfif>
 	</fieldset>
 
