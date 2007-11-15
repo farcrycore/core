@@ -159,21 +159,6 @@ function deSelectAll()
 					<cfset pendingObject = "#stObj.objectID#"/>
 				</cfif>
 				
-				<!--- send out emails informing object needs approval --->
-				<cfinvoke component="#application.packagepath#.farcry.versioning" method="approveEmail_pending">
-					<cfinvokeargument name="objectId" value="#pendingObject#"/>
-					<cfinvokeargument name="comment" value="#form.commentlog#"/>
-					<cfif isdefined("form.lApprovers") and len(form.lApprovers)>
-						<cfif listLen(form.lApprovers) gt 1 and listFind(form.lApprovers,"all")>
-							<cfinvokeargument name="lApprovers" value="all"/>
-						<cfelse>
-							<cfinvokeargument name="lApprovers" value="#form.lApprovers#"/>
-						</cfif>					
-					<cfelse>
-						<cfinvokeargument name="lApprovers" value="all"/>
-					</cfif>
-				</cfinvoke>
-					
 			<cfelse>
 				<cfoutput><b>#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].unknownStatusPassed,"#url.status#")#<b><br></cfoutput><cfabort>
 			</cfif>
