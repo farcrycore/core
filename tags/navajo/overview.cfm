@@ -1496,7 +1496,7 @@ o.bSeperator = 0;
 
 function menuOption_Permissions()
 {
-	frameopen( '#application.url.farcry#/navajo/permissions.cfm?objectId='+lastSelectedId, 'editFrame' );
+	frameopen( '#application.url.farcry#/conjuror/invocation.cfm?method=adminPermissions&objectid='+lastSelectedId, 'editFrame' );
 }
 
 o = new Object();

@@ -329,7 +329,10 @@ START WEBSKIN
 			<!--- rollback content --->
 			<ft:farcryButton style="" type="button" value="Show Archive"  onclick="openScaffoldDialog('#application.url.farcry#/archive.cfm?objectid=#stobj.objectid#','Archive',400,400,true);" />
 		</cfif>
-					
+		
+		<cfif application.security.checkPermission("ModifyPermissions") and listlen(application.security.factory.role.getAllRoles(stObj.typename))>
+			<ft:farcryButton style="" type="button" value="Manage Permissions" onclick="window.location='#application.url.farcry#/conjuror/invocation.cfm?objectid=#stObj.objectid#&method=adminPermissions';" />
+		</cfif>
 
 
 	</extjs:item>

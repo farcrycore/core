@@ -95,14 +95,15 @@
 		</cfif>
 	</cffunction>
 
-	<cffunction name="getLabel" access="public" output="false" returntype="uuid" hint="Returns the label for the specified object">
+	<cffunction name="getLabel" access="public" output="false" returntype="string" hint="Returns the label for the specified object">
 		<cfargument name="objectid" type="uuid" required="true" hint="Pass in a role name and the objectid will be returned" />
 		
 		<cfset var qRoles = "" />
 		
 		<cfquery datasource="#application.dsn#" name="qRoles">
-			select	objectid,label
+			select	label
 			from	#application.dbOwner#farRole
+			where	objectid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectid#" />
 		</cfquery>
 		
 		<cfreturn qRoles.label[1] />
@@ -124,8 +125,9 @@
 		<cfset var qRoles = "" />
 
 		<cfquery datasource="#application.dsn#" name="qRoles">
-			select	objectid
-			from	#application.dbowner#farRole
+			select		objectid
+			from		#application.dbowner#farRole
+			order by	title
 		</cfquery>
 		
 		<cfreturn valuelist(qRoles.objectid) />

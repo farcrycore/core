@@ -43,6 +43,20 @@
 		</cfif>
 	</cffunction>
 	
+	<cffunction name="getLabel" access="public" output="false" returntype="string" hint="Returns the label for the specified object">
+		<cfargument name="objectid" type="uuid" required="true" hint="Pass in a role name and the objectid will be returned" />
+		
+		<cfset var qPermissions = "" />
+		
+		<cfquery datasource="#application.dsn#" name="qPermissions">
+			select	label
+			from	#application.dbOwner#farPermission
+			where	objectid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectid#" />
+		</cfquery>
+		
+		<cfreturn qPermissions.label[1] />
+	</cffunction>	
+
 	<cffunction name="afterSave" access="public" output="false" returntype="struct" hint="Processes new type content">
 		<cfargument name="stProperties" type="struct" required="true" hint="The properties that have been saved" />
 		
@@ -118,28 +132,31 @@
 		<cfif not structkeyexists(arguments,"relatedtype")>
 			<!--- Get all permissions --->
 			<cfquery datasource="#application.dsn#" name="qPermissions">
-				select	objectid
-				from	#application.dbowner#farPermission
+				select		objectid
+				from		#application.dbowner#farPermission
+				order by	title asc
 			</cfquery>
 		<cfelseif arguments.relatedtype eq "">
 			<!--- Get all general permissions --->
 			<cfquery datasource="#application.dsn#" name="qPermissions">
-				select	objectid
-				from	#application.dbowner#farPermission
-				where	objectid not in (
-							select distinct parentid
-							from	#application.dbowner#farPermission_relatedtypes
-						)
+				select		objectid
+				from		#application.dbowner#farPermission
+				where		objectid not in (
+								select distinct parentid
+								from	#application.dbowner#farPermission_relatedtypes
+							)
+				order by	title asc
 			</cfquery>
 		<cfelse>
 			<!--- Get type specific permissions --->
 			<cfquery datasource="#application.dsn#" name="qPermissions">
-				select	p.objectid
-				from	#application.dbowner#farPermission p
-						inner join
-						#application.dbowner#farPermission_relatedtypes pt
-						on p.objectid=pt.parentid
-				where	pt.data=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.relatedtype#" />
+				select		p.objectid
+				from		#application.dbowner#farPermission p
+							inner join
+							#application.dbowner#farPermission_relatedtypes pt
+							on p.objectid=pt.parentid
+				where		pt.data=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.relatedtype#" />
+				order by	title asc
 			</cfquery>
 		</cfif>
 		

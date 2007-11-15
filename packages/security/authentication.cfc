@@ -352,6 +352,9 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
 		<farcry:deprecated message="authentication.logout() has been deprectated in favor of ????" />
 		
 		<cfset structdelete(session,"security") />
+		
+		<!--- Depreciated --->
+		<cfset structdelete(session,"dmSec") />
 	</cffunction>
 	
 	<cffunction name="removeUserFromGroup" output="No">

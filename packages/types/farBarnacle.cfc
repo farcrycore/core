@@ -99,7 +99,7 @@
 		<cfelseif isvalid("uuid",arguments.permission) and isvalid("uuid",arguments.object)>
 			
 			<cfif not len(arguments.role)>
-				<cfset arguments.role = application.security.factory.role.getRoles() />
+				<cfset arguments.role = application.security.getCurrentRoles() />
 			</cfif>
 			
 		<cfelse>
@@ -111,7 +111,7 @@
 			
 		<cfloop list="#arguments.role#" index="thisrole">
 			<!--- If possible use the cache, otherwise update cache --->
-			<cfif not arguments.forcerefresh and application.security.isCached(thisrole,arguments.permission,arguments.object)>
+			<cfif not arguments.forcerefresh and application.security.isCached(role=thisrole,permission=arguments.permission,object=arguments.object)>
 				<cfset thisresult = application.security.getCache(thisrole,arguments.permission,arguments.object) />
 			<cfelse>
 				<cfset thisresult = application.security.setCache(thisrole,arguments.permission,arguments.object,getBarnacle(thisrole,arguments.permission,arguments.object).barnaclevalue) />
@@ -236,7 +236,7 @@
 		</cfquery>
 	</cffunction>
 
-	<cffunction name="afterSave" access="public" output="false" returntype="struct" hint="Processes new type content">
+	<cffunction name="AfterSave" access="public" output="false" returntype="struct" hint="Processes new type content">
 		<cfargument name="stProperties" type="struct" required="true" hint="The properties that have been saved" />
 
 		<!--- Update object type --->
@@ -245,7 +245,7 @@
 		<!--- Update permission cache --->
 		<cfset application.security.setCache(role=arguments.stProperties.role,permission=arguments.stProperties.permission,object=arguments.stProperties.object,right=arguments.stProperties.barnaclevalue) />
 		
-		<cfreturn arguments.stProperties />
+		<cfreturn super.AfterSave(arguments.stProperties) />
 	</cffunction>
 	
 </cfcomponent>

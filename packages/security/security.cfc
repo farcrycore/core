@@ -100,10 +100,10 @@
 		</cfif>
 	</cffunction>
 
-	<cffunction name="getCurrentRoles" access="public" output="false" returntype="string" hint="Returns the roles of the current logged in user">
+	<cffunction name="getCurrentRoles" access="public" output="true" returntype="string" hint="Returns the roles of the current logged in user">
 		<cfif isdefined("session.security.roles")>
-			<cfreturn application.factory.oUtils.listMerge(session.security.roles,this.factory.role.getDefaultRoles()) />
-		<cfreturn>
+			<cfreturn application.factory.oUtils.listMerge(this.factory.role.getDefaultRoles(),session.security.roles) />
+		<cfelse>
 			<cfreturn this.factory.role.getDefaultRoles() />
 		</cfif>
 	</cffunction>
