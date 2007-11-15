@@ -27,7 +27,7 @@ $out:$
 
 <!--- check if user can approve news items --->
 <cfscript>
-	iObjectDeletePermission = request.dmSec.oAuthorisation.checkPermission(permissionName="NewsApprove",reference="PolicyGroup");
+	iObjectDeletePermission = application.security.checkPermission(permission="NewsApprove");
 </cfscript>
 
 		

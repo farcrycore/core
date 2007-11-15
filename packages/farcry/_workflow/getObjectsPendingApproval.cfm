@@ -65,8 +65,7 @@ $out:$
 	<cfset stLocal.iCounter = stLocal.iCounter + 1>
 </cfloop>
 
-
- <cftry> 
+ 
 	<!--- returns all pending objects --->
 	<cfquery name="stLocal.qList_unordered" datasource="#application.dsn#">
 	#preserveSingleQuotes(stLocal.sql)#
@@ -120,18 +119,18 @@ $out:$
 			<!--- check permissions --->
 			<cfif structkeyexists(application.types[stLocal.qList.typename],"bUseInTree") AND application.types[stLocal.qList.typename].bUseInTree>
 				<!--- if trre item eg.dmhtml --->
-				<cfset stLocal.bCanApprove = request.dmSec.oAuthorisation.checkInheritedPermission(permissionName="approve",objectid=stLocal.parentid)>
+				<cfset stLocal.bCanApprove = application.security.checkPermission(permission="approve",object=stLocal.parentid) />
 			<cfelse>
 				<!--- check non tree item (BUT standard farcry items) --->
 				<cfset stLocal.permissionName = "#stLocal.qList.typename#Approve">
 				<cfset stLocal.permissionName = Right(stLocal.permissionName,Len(stLocal.permissionName)-2)>
 				<cfif StructKeyExists(application.permission.policyGroup,stLocal.permissionName)>
-					<cfset stLocal.bCanApprove = request.dmSec.oAuthorisation.checkPermission(permissionName=stLocal.permissionName,reference="PolicyGroup")>				
+					<cfset stLocal.bCanApprove = application.security.checkPermission(permission=stLocal.permissionName)>				
 				<cfelse>
 					<!--- Try again minus the assumption were trimming to chars --->
 					<cfset stLocal.permissionName = "#stLocal.qList.typename#Approve">
 					<cfif StructKeyExists(application.permission.policyGroup,stLocal.permissionName)>
-						<cfset stLocal.bCanApprove = request.dmSec.oAuthorisation.checkPermission(permissionName=stLocal.permissionName,reference="PolicyGroup")>				
+						<cfset stLocal.bCanApprove = application.security.checkPermission(permission=stLocal.permissionName)>				
 					<cfelse>	
 						<cfset stLocal.bCanApprove = 0>
 					</cfif>	
@@ -172,8 +171,3 @@ $out:$
 		</cfloop>
 	</cfif>
 
-	<cfcatch>
-		<cfset stReturn.bSuccess = 0>
-		<cfset stReturn.message = "#cfcatch.message#: #cfcatch.detail#<br />">
-	</cfcatch>
-</cftry>

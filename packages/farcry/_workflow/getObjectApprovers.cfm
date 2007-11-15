@@ -53,7 +53,7 @@ stObjectPermissions = application.factory.oAuthorisation.collateObjectPermission
 	
 	<!--- Get policy groups for that object --->
 	<cfscript>
-		stObjectPermissions = oAuthorisation.collateObjectPermissions(objectid=ParentID);
+		stObjectPermissions = application.factory.oAuthorisation.collateObjectPermissions(objectid=ParentID);
 	</cfscript>
 	
 	<!--- Check policy groups can approve (T=1) --->
@@ -71,7 +71,7 @@ stObjectPermissions = application.factory.oAuthorisation.collateObjectPermission
 
 <!--- get usernames for all members of approve policy groups --->
 <cfscript>
-	aUsers = oAuthorisation.getPolicyGroupUsers(lpolicygroupIDs=lApprovePGs);
+	aUsers = application.factory.oAuthorisation.getPolicyGroupUsers(lpolicygroupIDs=lApprovePGs);
 </cfscript>
 
 <!--- build struct of dmProfile objects for each user --->
