@@ -27,7 +27,7 @@
 		
 		<cfparam name="arguments.stMetadata.ftAlias" default="" type="string" />
 		<cfparam name="arguments.stMetadata.ftLegend" default="" type="string" />
-		<cfparam name="arguments.stMetadata.ftRenderType" default="prototype" type="string" />
+		<cfparam name="arguments.stMetadata.ftRenderType" default="ext" type="string" />
 		<cfparam name="arguments.stMetadata.ftSelectMultiple" default="true" type="boolean" />
 		<cfparam name="arguments.stMetadata.ftSelectSize" default="5" type="numeric" />
 		<cfparam name="arguments.stMetadata.ftDropdownFirstItem" default="" type="string" />
@@ -97,15 +97,9 @@
 			</cfcase>
 			
 			<cfdefaultcase>
-				<skin:htmlHead id="extJS">
-					<cfoutput>
-						<link rel="stylesheet" type="text/css" href="/farcry/js/ext/resources/css/ext-all.css" />
-					    <link rel="stylesheet" type="text/css" href="/farcry/js/ext/resources/css/xtheme-aero.css" />
-						<!-- LIBS -->     
-						<script type="text/javascript" src="/farcry/js/ext/adapter/ext/ext-base.js"></script>     
-						<!-- ENDLIBS -->
-						<script type="text/javascript" src="/farcry/js/ext/ext-all.js"></script>	
-						
+				<skin:htmlHead library="extjs" />
+				<skin:htmlHead id="extJSCategory">
+					<cfoutput>						
 						<style type="text/css">
 						li.x-tree-node {background-image:none;}
 						.x-tree-node img.categoryIconCls,  .x-tree-node-collapsed img.categoryIconCls, .x-tree-node-expanded img.categoryIconCls{
@@ -141,7 +135,7 @@
 						    // shorthand
 						    var Tree = Ext.tree;
 						    
-						    tree = new Tree.TreePanel('#arguments.fieldname#-tree-div', {
+						    tree = new Tree.TreePanel({
 						        animate:true, 
 						        loader: new Tree.TreeLoader({
 						            dataUrl:'#application.url.webroot#/farcry/facade/getCategoryNodes.cfm',
@@ -149,10 +143,12 @@
 						            baseParams: {selectedObjectIDs:'#lSelectedCategoryID#'}
 						        }),
 						        enableDD:true,
-						        containerScroll: true
+						        containerScroll: true,
+						        border:false
 						       
 						    });
-						
+						    
+						  
 							tree.on('checkchange', function(n,c) {
 								var newList = "";
 								var currentTreeList = Ext.getDom('#arguments.fieldname#').value;
@@ -187,8 +183,9 @@
 						    tree.setRootNode(root);
 						
 						    // render the tree
-						    tree.render();
-						    root.expand();
+						    tree.render('#arguments.fieldname#-tree-div');
+						    root.expand();				    
+						    
 						    
 						});
 						</script>								
