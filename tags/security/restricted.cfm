@@ -12,8 +12,8 @@
 <cfif thistag.ExecutionMode EQ "Start">
 	<cfset permitted = 0>
 	
-	<cfloop list="#attributes.Permission#" index="i">
-		<cfif application.security.oRole.checkPermission(permission=i,object=attributes.objectid)>
+	<cfloop list="#attributes.Permission#" index="perm">
+		<cfif application.security.checkPermission(permission=perm,object=attributes.objectid)>
 			<cfset permitted = 1>
 		</cfif>
 	</cfloop>	
