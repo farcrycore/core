@@ -31,8 +31,7 @@ $Developer: Brendan Sisson (brendan@dameon.com.au) $
 <!--- show form --->
 <cfif NOT thisstep.isComplete>
 	<!--- get policy groups --->
-	<cfobject component="#application.packagepath#.security.authorisation" name="oAuthorisation">
-	<cfset aPolicyGroups = oAuthorisation.getAllPolicyGroups()>
+	<cfset aPolicyGroups = application.factory.oAuthorisation.getAllPolicyGroups()>
 <widgets:plpWrapper>	
 	<cfoutput>
 	<form action="#cgi.script_name#?#cgi.query_string#" name="editform" class="f-wrap-1 wider f-bg-short" method="post">

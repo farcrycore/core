@@ -181,14 +181,13 @@ $TODO: there shouldn't be anything scoped from outside of the tag! Make this an 
 <cfparam name="stGrid.submit.create.onClick" default="window.location='#application.url.farcry#/navajo/createObject.cfm?typename=#attributes.typename#';">
 
 <cfscript>
-	oAuthorisation = request.dmSec.oAuthorisation;
-	iObjectCreatePermission = oAuthorisation.checkPermission(permissionName="#stGrid.permissionType#Create",reference="PolicyGroup");
-	iObjectDeletePermission = oAuthorisation.checkPermission(permissionName="#stGrid.permissionType#Delete",reference="PolicyGroup");
-	iObjectRequestApprovalPermission = oAuthorisation.checkPermission(permissionName="#stGrid.permissionType#RequestApproval",reference="PolicyGroup");
-	iObjectApprovePermission = oAuthorisation.checkPermission(permissionName="#stGrid.permissionType#Approve",reference="PolicyGroup");
-	iObjectEditPermission = oAuthorisation.checkPermission(permissionName="#stGrid.permissionType#Edit",reference="PolicyGroup");
-	iObjectDumpTab = oAuthorisation.checkPermission(permissionName="ObjectDumpTab",reference="PolicyGroup");
-	iDeveloperPermission = oAuthorisation.checkPermission(reference="policyGroup",permissionName="developer");
+	iObjectCreatePermission = application.security.checkPermission(permission="#stGrid.permissionType#Create");
+	iObjectDeletePermission = application.security.checkPermission(permission="#stGrid.permissionType#Delete");
+	iObjectRequestApprovalPermission = application.security.checkPermission(permission="#stGrid.permissionType#RequestApproval");
+	iObjectApprovePermission = application.security.checkPermission(permission="#stGrid.permissionType#Approve");
+	iObjectEditPermission = application.security.checkPermission(permission="#stGrid.permissionType#Edit");
+	iObjectDumpTab = application.security.checkPermission(permission="ObjectDumpTab");
+	iDeveloperPermission = application.security.checkPermission(permission="developer");
 </cfscript>
 <!--- default sort variables --->
 
@@ -533,7 +532,7 @@ if (recordSet.recordCount GT 0)
 				<td>
 					<!--- First check if they have permission to see this button --->
 					<cfif structKeyExists(stGrid.aCustomButtons[i],'permission')>
-						<cfset bCustomPerm = oAuthorisation.checkPermission(permissionName=stGrid.aCustomButtons[i].permission,reference="PolicyGroup")>
+						<cfset bCustomPerm = application.security.checkPermission(permission=stGrid.aCustomButtons[i].permission) />
 					<cfelse> <!--- Just assume everyone can use it --->
 						<cfset bCustomPerm = 1>
 					</cfif>

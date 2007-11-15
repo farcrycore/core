@@ -53,7 +53,6 @@
 			<cfthrow type="security.init" message="File not found" detail="#arguments.policygroupimport# does not exist." />
 		</cfif>
 		<cfwddx action="WDDX2CFML" input="#qPolicyGroupsWDDX#" output="qPolicyGroups">
-		<cfset oAuthorisation=createObject("component","#arguments.securitypackagepath#.authorisation")>
 		
 		<cfloop query="qPolicyGroups">
 			<cftry>
@@ -63,7 +62,7 @@
 				stObj.PolicyGroupName = qPolicyGroups.PolicyGroupName;
 				stObj.PolicyGroupNotes = qPolicyGroups.PolicyGroupNotes;
 				
-				oAuthorisation.createPolicyGroup(policygroupname=qPolicyGroups.PolicyGroupName,policyGroupNotes=qPolicyGroups.PolicyGroupNotes,policyGroupID=qPolicyGroups.PolicyGroupID);
+				application.factory.oAuthorisation.createPolicyGroup(policygroupname=qPolicyGroups.PolicyGroupName,policyGroupNotes=qPolicyGroups.PolicyGroupNotes,policyGroupID=qPolicyGroups.PolicyGroupID);
 				</cfscript>
 	
 				<cfcatch>
@@ -123,7 +122,6 @@
 		</cfif>
 		
 		<cfwddx action="WDDX2CFML" input="#qPermissionsWDDX#" output="qPermissions" />
-		<cfset oAuthorisation=createObject("component","#arguments.securitypackagepath#.authorisation") />
 
 		<cfloop query="qPermissions">
 			<cfscript>
@@ -132,7 +130,7 @@
 			stObj.PermissionName = qPermissions.PermissionName;
 			stObj.PermissionNotes = qPermissions.PermissionNotes;
 			stObj.PermissionType = qPermissions.PermissionType;
-			oAuthorisation.createPermission(PermissionID = qPermissions.PermissionID,PermissionName = qPermissions.PermissionName,PermissionNotes = qPermissions.PermissionNotes,PermissionType = qPermissions.PermissionType);
+			application.factory.oAuthorisation.createPermission(PermissionID = qPermissions.PermissionID,PermissionName = qPermissions.PermissionName,PermissionNotes = qPermissions.PermissionNotes,PermissionType = qPermissions.PermissionType);
 			</cfscript>
 		</cfloop>
 		

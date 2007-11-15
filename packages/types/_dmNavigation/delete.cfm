@@ -89,7 +89,7 @@ $out:$
 			}
 			
 			// remove permissions
-			oAuthorisation.deletePermissionBarnacle(objectid=qGetDescendants.objectId[loop0]);
+			application.factory.oAuthorisation.deletePermissionBarnacle(objectid=qGetDescendants.objectId[loop0]);
 			
 			// delete descendant
 			super.delete(qGetDescendants.objectId[loop0]);	

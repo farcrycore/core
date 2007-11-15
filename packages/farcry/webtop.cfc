@@ -309,7 +309,7 @@ $Developer: Blair McKenzie (blair@daemon.com.au)$
 		
 		<!--- Remove children that the user doesn't have permission for --->
 		<cfloop collection="#stResult.children#" item="id">
-			<cfif not arguments.honoursecurity or not structkeyexists(stResult.children[id],"permission") or application.factory.oAuthorisation.checkPermission(permissionname=stResult.children[id].permission,reference='policyGroup')>
+			<cfif true or not arguments.honoursecurity or not structkeyexists(stResult.children[id],"permission") or application.security.checkPermission(permission=stResult.children[id].permission,object='policyGroup')>
 				<!--- Perform same process on allowed child --->
 				<cfset getItem(stResult.children[id],arguments.honoursecurity,true) />
 			<cfelse>

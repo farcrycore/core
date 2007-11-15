@@ -34,7 +34,7 @@
 	<!--- logout user if logged in because errors will occur when returning to admin --->
 	<cfif isdefined("session.dmprofile")>
 		<cfscript>
-			request.dmsec.oAuthentication.logout();
+			application.factory.oAuthentication.logout();
 		</cfscript>
 	</cfif>
 	<!--- Farcry Core RE - Initialisation --->

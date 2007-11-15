@@ -64,8 +64,7 @@ object methods
 
 <cffunction name="getGroups" access="public" output="false" returntype="string" hint="returns all groups to send emails to">
 
-	<cfset var oAuthorisation = createObject("component", "#application.packagepath#.security.authorisation") />
-	<cfset var aPolicyGroups = oAuthorisation.getAllPolicyGroups() />
+	<cfset var aPolicyGroups = application.factory.oAuthorisation.getAllPolicyGroups() />
 	<cfset var lPolicyGroups = "" />
 	
 	<cfloop from="1" to="#arrayLen(aPolicyGroups)#" index="group">

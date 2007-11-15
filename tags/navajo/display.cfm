@@ -221,7 +221,7 @@ the latter is the policy group for anonymous...
 <!--- if the user is unable to view the object, then logout and send to login form --->
 <cfif iHasViewPermission NEQ 1>
 	<!--- log out the user --->
-	<cfset oAuthentication.logout()>
+	<cfset application.factory.oAuthentication.logout()>
 	<cflocation url="#attributes.loginpath#" addtoken="No">
 	<cfabort>
 </cfif>
@@ -303,7 +303,7 @@ a whole new set of permission checks, have trapped any errors and suppressed GB 
 <cftry>
 	<!--- begin: logged in user? --->
 	<cfscript>
-		stLoggedInUser = oAuthentication.getUserAuthenticationData();
+		stLoggedInUser = application.factory.oAuthentication.getUserAuthenticationData();
 		bLoggedIn = stLoggedInUser.bLoggedIn;
 	</cfscript>
 	

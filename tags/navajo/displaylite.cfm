@@ -241,7 +241,7 @@ a whole new set of permission checks, have trapped any errors and suppressed GB 
 <cftry>
 <!--- begin: logged in user? --->
 <cfscript>
-	stLoggedInUser = oAuthentication.getUserAuthenticationData();
+	stLoggedInUser = application.oAuthentication.getUserAuthenticationData();
 	bLoggedIn = stLoggedInUser.bLoggedIn;
 </cfscript>
 

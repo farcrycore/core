@@ -17,17 +17,17 @@
 	</cfif>
 
 	<!--- check permission --->
-	<cfset stUser = request.dmsec.oAuthentication.getUserAuthenticationData()>
+	<cfset stUser = application.security.getUserAuthenticationData()>
 	<cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
 	<nj:getNavigation objectId="#objectid#" r_ObjectId="parentID" r_stObject="stParent" bInclusive="1">
 	<cfset stPermissions = StructNew()>
-	<cfset stPermissions.iDeveloperPermission = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="developer")>
-	<cfset stPermissions.iEdit = request.dmSec.oAuthorisation.checkInheritedPermission(objectid="#parentid#",permissionName="edit")>
-	<cfset stPermissions.iRequest = request.dmSec.oAuthorisation.checkInheritedPermission(objectid="#parentid#",permissionName="RequestApproval")>
-	<cfset stPermissions.iApprove = request.dmSec.oAuthorisation.checkInheritedPermission(objectid="#parentid#",permissionName="Approve")>
-	<cfset stPermissions.iApproveOwn = request.dmSec.oAuthorisation.checkInheritedPermission(objectid="#parentid#",permissionName="CanApproveOwnContent")>
-	<cfset stPermissions.iObjectDumpTab = request.dmSec.oAuthorisation.checkPermission(reference="PolicyGroup",permissionName="ObjectDumpTab")>
-	<cfset stPermissions.iDelete = request.dmSec.oAuthorisation.checkInheritedPermission(objectid="#parentid#",permissionName="delete")>
+	<cfset stPermissions.iDeveloperPermission = application.security.checkPermission(permission="developer")>
+	<cfset stPermissions.iEdit = application.security.checkPermission(objectid=parentid,permission="edit")>
+	<cfset stPermissions.iRequest = application.security.checkPermission(objectid=parentid,permission="RequestApproval")>
+	<cfset stPermissions.iApprove = application.security.checkPermission(objectid=parentid,permission="Approve")>
+	<cfset stPermissions.iApproveOwn = application.security.checkPermission(objectid=parentid,permission="CanApproveOwnContent")>
+	<cfset stPermissions.iObjectDumpTab = application.security.checkPermission(permission="ObjectDumpTab")>
+	<cfset stPermissions.iDelete = application.security.checkPermission(objectid=parentid,permission="delete")>
 									
 	<!--- grab draft object overview --->
 	<cfset stObjectOverviewDraft = StructNew()>

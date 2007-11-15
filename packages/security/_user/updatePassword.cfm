@@ -24,7 +24,7 @@ $out:$
 
 <!--- get user details --->
 <cfscript>
-	stUser = request.dmsec.oAuthentication.getUser(userid="#arguments.userId#",userDirectory="#session.dmsec.authentication.userdirectory#");
+	stUser = application.factory.oAuthentication.getUser(userid="#arguments.userId#",userDirectory="#session.dmsec.authentication.userdirectory#");
 </cfscript>
 <!--- check if UD has password encryption --->
 <cfif structKeyExists(Application.dmSec.UserDirectory[stUser.userDirectory],"bEncrypted") and Application.dmSec.UserDirectory[stUser.userDirectory].bEncrypted>

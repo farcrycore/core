@@ -54,22 +54,12 @@ if( StructKeyExists( application.types, "dmNavigation" ) )
  
 
 <cfscript>
-
-	stTypes = duplicate(application.stTypes);
-	PermNavCreate    = application.permission.dmnavigation.Create.permissionId;
-	PermNavEdit   = application.permission.dmnavigation.Edit.permissionId;
-	PermNavView  = application.permission.dmnavigation.View.permissionId;
-	PermNavDelete  = application.permission.dmnavigation.Delete.permissionId;
-	PermNavApprove = application.permission.dmnavigation.Approve.permissionId;
-	PermNavRequestApprove = application.permission.dmnavigation.RequestApproval.permissionId;
-
 	//Permissions
-	oAuthorisation = request.dmsec.oAuthorisation;
-	iSecurityManagementState = oAuthorisation.checkPermission(permissionName="SecurityManagement",reference="PolicyGroup");	
-	iRootNodeManagement = oAuthorisation.checkPermission(permissionName="RootNodeManagement",reference="PolicyGroup");	
-	iModifyPermissionsState = oAuthorisation.checkPermission(permissionName="ModifyPermissions",reference="PolicyGroup");	
-	iDeveloperState = oAuthorisation.checkPermission(permissionName="developer",reference="PolicyGroup");	
-	bPermTrash = oAuthorisation.checkPermission(permissionName="TreeSendToTrash",reference="PolicyGroup");	
+	iSecurityManagementState = application.security.checkPermission(permission="SecurityManagement");	
+	iRootNodeManagement = application.security.checkPermission(permission="RootNodeManagement");	
+	iModifyPermissionsState = application.security.checkPermission(permission="ModifyPermissions");	
+	iDeveloperState = application.security.checkPermission(permission="developer");	
+	bPermTrash = application.security.checkPermission(permission="TreeSendToTrash");	
 	
 	menuOnColor="##dddddd";
 	menuOffColor="white";

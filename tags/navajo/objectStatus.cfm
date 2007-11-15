@@ -62,7 +62,6 @@ function deSelectAll()
 		<label for="commentLog"><b>#application.adminBundle[session.dmProfile.locale].addCommentsLabel#</b>
 			<textarea name="commentLog" id="commentLog" cols="80" rows="10"></textarea><br />
 		</label>
-		</cfif>
 	</fieldset>
 
 	<div class="f-submit-wrap">

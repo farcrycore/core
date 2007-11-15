@@ -57,7 +57,7 @@ $out:$
 						</li>
 						<br><br>
 						<cfif not parentNavID eq "">
-							<cfif arguments.stRules.bDeleteDraft AND request.dmSec.oAuthorisation.checkInheritedPermission(permissionName="delete",objectid="#parentNavID#") EQ 1>
+							<cfif arguments.stRules.bDeleteDraft AND application.security.checkPermission(permission"delete",object=parentNavID) EQ 1>
 							<li type="square">
 							 <a href="edittabEdit.cfm?objectid=#URL.objectID#&deleteDraftObjectID=#arguments.stRules.draftObjectID#" onClick="return confirm('Are you sure you wish to delete this object?');" class="frameMenuItem">Delete draft object</a><br>
 							Delete the DRAFT version of this object. 

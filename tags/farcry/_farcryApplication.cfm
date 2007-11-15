@@ -19,12 +19,10 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 --->
 
 <cfscript>
-request.dmSec.oAuthorisation = createObject("component","#application.securitypackagepath#.authorisation");
-request.dmSec.oAuthentication = createObject("component","#application.securitypackagepath#.authentication");
 request.factory.oTree = createObject("component","#application.packagepath#.farcry.tree");
 if (isDefined("url.logout") and url.logout eq 1)
-	request.dmsec.oAuthentication.logout(bAudit=1);
-stLoggedIn = request.dmsec.oAuthentication.getUserAuthenticationData();
+	application.factory.oAuthentication.logout(bAudit=1);
+stLoggedIn = application.factory.oAuthentication.getUserAuthenticationData();
 request.loggedin = stLoggedin.bLoggedIn;	
 </cfscript>
 

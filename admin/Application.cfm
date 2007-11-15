@@ -37,7 +37,7 @@ If the farcry admin area is located inside core, the project location is dynamic
 <cfset debugRB=true>    <!--- load rb with debug markup? --->
 
 <!--- check to see if the person has general admin permissions --->
-<cfif NOT request.mode.bAdmin>
+<cfif not application.security.checkPermission("Admin")>
     <!--- logout illegal users --->
     <cfscript>
         application.factory.oAuthentication.logout();

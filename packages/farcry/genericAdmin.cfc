@@ -135,7 +135,7 @@ $out:$
     <cfargument name="permission" type="string" required="true" hint="name of permission">
 	    
 		<cfscript>
-			permissionReturn = request.dmSec.oAuthorisation.checkPermission(permissionName="#arguments.permission#",reference="PolicyGroup");
+			permissionReturn = application.security.checkPermission(permission=arguments.permission);
 		</cfscript>
 	
 	<cfreturn permissionReturn>
@@ -229,12 +229,12 @@ Doesn't appear to be used: _genericAdmin/changeStatus.cfm not in code base!
 		{
 			permissionName = "#arguments.typename##listGetAt(lPerms,i)#";
 			
-			st = request.dmSec.oAuthorisation.getPermission(permissionName=permissionName,permissionType='#arguments.permissionType#');
+			st = application.factory.oAuthorisation.getPermission(permissionName=permissionName,permissionType='#arguments.permissionType#');
 			//create permission if it doesn't exist
 			dump(st);
 			if (structIsEmpty(st))
 			{	
-				request.dmSec.oAuthorisation.createPermission(permissionName=permissionName, permissionType=arguments.permissionType, permissionNotes=""); 
+				application.factory.oAuthorisation.createPermission(permissionName=permissionName, permissionType=arguments.permissionType, permissionNotes=""); 
 			}
 		}
 	</cfscript>

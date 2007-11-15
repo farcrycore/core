@@ -112,12 +112,11 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 	PermSendToTrash = application.permission.dmnavigation.sendToTrash.permissionId;
 
 	//Permissions
-	oAuthorisation = application.factory.oAuthorisation;
-	iSecurityManagementState = oAuthorisation.checkPermission(permissionName="SecurityManagement",reference="PolicyGroup");	
-	iRootNodeManagement = oAuthorisation.checkPermission(permissionName="RootNodeManagement",reference="PolicyGroup");	
-	iModifyPermissionsState = oAuthorisation.checkPermission(permissionName="ModifyPermissions",reference="PolicyGroup");	
-	iDeveloperState = oAuthorisation.checkPermission(permissionName="developer",reference="PolicyGroup");	
-	bPermTrash = oAuthorisation.checkInheritedPermission(permissionName="create",objectid="#application.navid.rubbish#");	
+	iSecurityManagementState = application.security.checkPermission(permission="SecurityManagement");	
+	iRootNodeManagement = application.security.checkPermission(permission="RootNodeManagement");	
+	iModifyPermissionsState = application.security.checkPermission(permission="ModifyPermissions");	
+	iDeveloperState = application.security.checkPermission(permission="developer");	
+	bPermTrash = application.security.checkPermission(permission="create",object=application.navid.rubbish);	
 	
 	//get Current Loggedin user.
 	stUser = application.factory.oAuthentication.getUserAuthenticationData();

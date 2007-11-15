@@ -161,15 +161,15 @@ the latter is the policy group for anonymous...
 	---------------------------->
 	<!--- begin: logged in user? --->
 	<cfscript>
-		stLoggedInUser = oAuthentication.getUserAuthenticationData();
+		stLoggedInUser = application.factory.oAuthentication.getUserAuthenticationData();
 		bLoggedIn = stLoggedInUser.bLoggedIn;
 	</cfscript>
 	
 	<cfif bLoggedIn>
 	<!--- check they are admin --->
 	<cfscript>
-		iAdmin = oAuthorisation.checkPermission(permissionName="Admin",reference="PolicyGroup");
-		iCanCommentOnContent = oAuthorisation.checkInheritedPermission(permissionName="CanCommentOnContent",objectid=request.navid);
+		iAdmin = application.security.checkPermission(permission="Admin");
+		iCanCommentOnContent = application.security.checkPermission(permission="CanCommentOnContent",object=request.navid);
 	</cfscript>
 	
 	<cfif iAdmin eq 1 or iCanCommentOnContent eq 1>

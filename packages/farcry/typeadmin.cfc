@@ -286,15 +286,14 @@ environment references (might be nice to clean these up)
 	<cfscript>
 	// determine base permissions for this user
 	// todo: cache permission lookups.. at least remove double up for default button data 20050725 GB
-		oAuthorisation=request.dmsec.oAuthorisation;
 		stPermissions=structnew();
-		stPermissions.iCreate=oAuthorisation.checkPermission(permissionName="#attributes.permissionset#Create",reference="PolicyGroup");
-		stPermissions.iDelete=oAuthorisation.checkPermission(permissionName="#attributes.permissionset#Delete",reference="PolicyGroup");
-		stPermissions.iRequestApproval=oAuthorisation.checkPermission(permissionName="#attributes.permissionset#RequestApproval",reference="PolicyGroup");
-		stPermissions.iApprove=oAuthorisation.checkPermission(permissionName="#attributes.permissionset#Approve",reference="PolicyGroup");
-		stPermissions.iEdit=oAuthorisation.checkPermission(permissionName="#attributes.permissionset#Edit",reference="PolicyGroup");
-		stPermissions.iDumpTab=oAuthorisation.checkPermission(permissionName="ObjectDumpTab",reference="PolicyGroup");
-		stPermissions.iDeveloper=oAuthorisation.checkPermission(reference="policyGroup",permissionName="developer");
+		stPermissions.iCreate=application.security.checkPermission(permission="#attributes.permissionset#Create");
+		stPermissions.iDelete=application.security.checkPermission(permission="#attributes.permissionset#Delete");
+		stPermissions.iRequestApproval=application.security.checkPermission(permission="#attributes.permissionset#RequestApproval");
+		stPermissions.iApprove=application.security.checkPermission(permission="#attributes.permissionset#Approve");
+		stPermissions.iEdit=application.security.checkPermission(permission="#attributes.permissionset#Edit");
+		stPermissions.iDumpTab=application.security.checkPermission(permission="ObjectDumpTab");
+		stPermissions.iDeveloper=application.security.checkPermission(permission="developer");
 	</cfscript>
 	<cfreturn stPermissions />
 </cffunction>
@@ -397,8 +396,6 @@ environment references (might be nice to clean these up)
 		editobjectURL = "#application.url.farcry#/conjuror/invocation.cfm?objectid=##recordset.objectID[recordset.currentrow]##&typename=#attributes.typename#&ref=typeadmin&module=#url.module#";
 		if (IsDefined("url.Lib")) editObjectURL = editObjectURL&"&lib="&url.lib;
 
-		// check for base permissions
-		oAuthorisation=request.dmsec.oAuthorisation;
 		// set bunlock for now, needs to be set if locked objects exist
 		bUnlock=true;
 
