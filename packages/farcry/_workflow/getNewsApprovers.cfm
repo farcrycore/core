@@ -43,8 +43,7 @@ ORDER BY b.PolicyGroupID ASC
 
 
 <cfscript>
-	oAuthorisation = request.dmsec.oAuthorisation;
-	aUsers = oAuthorisation.getPolicyGroupUsers(lPolicyGroupIDs=lApprovePGs);
+	aUsers = application.factory.oAuthorisation.getPolicyGroupUsers(lPolicyGroupIDs=lApprovePGs);
 </cfscript>
 
 

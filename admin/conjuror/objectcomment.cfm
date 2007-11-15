@@ -40,7 +40,7 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
 <!--- status change: change object status and redirect --->
 <cfif isdefined("form.submit")>
 	<!--- update status --->
-	<nj:objectStatus_dd attributecollection="#form#" lApprovers="#form.lApprovers#" rMsg="msg">
+	<nj:objectStatus_dd attributecollection="#form#" lApprovers="" rMsg="msg">
 	<!--- return to overview page --->
 	<cfif isdefined("form.approveURL")>
 		<cfset returnLocation = form.finishURL & "&approveURL=" & form.approveURL>
@@ -89,20 +89,7 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
 		</cfoutput>
 			<!--- if requesting approval, list approvers --->
 			<cfif url.status eq "requestApproval">
-			<cfoutput>
-	<label><b>#application.adminBundle[session.dmProfile.locale].requestApprovalFrom#</b><br />
-		<input type="checkbox" onclick="if(this.checked)deSelectAll();" name="lApprovers" value="#application.adminBundle[session.dmProfile.locale].all#" checked="true">#application.adminBundle[session.dmProfile.locale].allApprovers#<br />	
-			</cfoutput>
-				<!--- get list of approvers for this object --->
-				<cfinvoke component="#application.packagepath#.farcry.workflow" method="getNewsApprovers" returnvariable="stApprovers">
-					<cfinvokeargument name="objectID" value="#listFirst(url.objectID)#"/>
-				</cfinvoke>
-				<!--- loop over approvers and display ones that have email profiles --->
-				<cfloop collection="#stApprovers#" item="item">
-				    <cfif stApprovers[item].emailAddress neq "" AND stApprovers[item].bReceiveEmail and stApprovers[item].userName neq session.dmSec.authentication.userLogin>
-						<cfoutput><input type="checkbox" name="lApprovers" onclick="if(this.checked)document.form.lApprovers[0].checked = false;" value="#stApprovers[item].userName#"><cfif len(stApprovers[item].firstName) gt 0>#stApprovers[item].firstName# #stApprovers[item].lastName#<cfelse>#stApprovers[item].userName#</cfif><br /></cfoutput>
-					</cfif>
-				</cfloop>
+
 			</cfif>
 			<cfoutput>
 	</label>

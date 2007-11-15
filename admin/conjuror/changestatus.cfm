@@ -107,19 +107,6 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 		<cfif stobj.status neq "pending"> --->
 			<cfset stresult=oType.statustopending()>
 			
-			<cfinvoke component="#application.packagepath#.farcry.versioning" method="approveEmail_pending_dd">
-					<cfinvokeargument name="objectId" value="#stObj.objectid#"/>
-					<cfinvokeargument name="comment" value="#form.commentlog#"/>
-					<cfif isdefined("form.lApprovers") and len(form.lApprovers)>
-						<cfif listLen(form.lApprovers) gt 1 and listFind(form.lApprovers,"all")>
-							<cfinvokeargument name="lApprovers" value="all"/>
-						<cfelse>
-							<cfinvokeargument name="lApprovers" value="#form.lApprovers#"/>
-						</cfif>					
-					<cfelse>
-						<cfinvokeargument name="lApprovers" value="all"/>
-					</cfif>
-			</cfinvoke>
 		</cfif> 
 
 	</cfcase>
@@ -152,27 +139,11 @@ get first content item for display options
 
 <!--- if requesting approval, get approvers list --->
 <cfif status eq "requestApproval">
-	<!--- get list of approvers for this object --->
-	<cfinvoke component="#application.packagepath#.farcry.workflow" method="getNewsApprovers" returnvariable="stApprovers">
-		<cfinvokeargument name="objectID" value="#listFirst(objectID)#"/>
-	</cfinvoke>
-	
-	
 	
 	<cfsavecontent variable="approvers">
 	<cfoutput>
 	<fieldset>
-	<label><b>#application.adminBundle[session.dmProfile.locale].requestApprovalFrom#</b></label><br />
-	<input type="checkbox" onclick="if(this.checked)deSelectAll();" name="lApprovers" value="#application.adminBundle[session.dmProfile.locale].all#" checked="true">#application.adminBundle[session.dmProfile.locale].allApprovers#<br />	
 	</cfoutput>
-	<!--- loop over approvers and display ones that have email profiles --->
-	<cfloop collection="#stApprovers#" item="item">
-	    <cfif stApprovers[item].emailAddress neq "" AND stApprovers[item].bReceiveEmail and stApprovers[item].userName neq session.dmSec.authentication.userLogin>
-			<cfoutput><input type="checkbox" name="lApprovers" onclick="if(this.checked)document.changestatus.lApprovers[0].checked = false;" value="#stApprovers[item].userName#"><cfif len(stApprovers[item].firstName) gt 0>#stApprovers[item].firstName# #stApprovers[item].lastName#<cfelse>#stApprovers[item].userName#</cfif><br /></cfoutput>
-		<cfelseif stApprovers[item].userName neq session.dmSec.authentication.userLogin>
-			<cfoutput><input type="checkbox" name="disabled" value="" disabled="disabled"><i><cfif len(stApprovers[item].firstName) gt 0>#stApprovers[item].firstName# #stApprovers[item].lastName#<cfelse>#stApprovers[item].userName#</cfif> (not receiving email)</i><br /></cfoutput>
-		</cfif>
-	</cfloop>
 	<cfoutput></fieldset></cfoutput>
 	</cfsavecontent>
 </cfif>
