@@ -27,8 +27,7 @@ $out: $
 <cfset stSendList = structNew()>
 
 <!--- get users in selected groups --->
-<cfobject component="#application.packagepath#.security.authorisation" name="oAuthorisation">
-<cfset aUsers = oAuthorisation.getPolicyGroupUsers(stObj.lGroups)>
+<cfset aUsers = application.factory.oAuthorisation.getPolicyGroupUsers(stObj.lGroups)>
 
 <!--- get profiles of users and add to send structure if active and has email address --->
 <cfloop index="i" from="1" to="#arrayLen(aUsers)#">
