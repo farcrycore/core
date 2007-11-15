@@ -142,9 +142,15 @@
 	<cffunction name="getPath" access="public" output="false" returntype="string" hint="Finds the component in core/plugins/project, and returns its path">
 		<cfargument name="package" type="string" required="true" />
 		<cfargument name="component" type="string" required="true" />
-		<cfargument name="locations" type="string" required="false" default="project,#listreverse(application.plugins)#,core" />
+		<cfargument name="locations" type="string" required="false" default="" />
 		
 		<cfset var item = "" />
+
+		<cfif not len(arguments.locations) and structkeyexists(application,"plugins")>
+			<cfset arguments.locations = "project,#listreverse(application.plugins)#,core" />
+		<cfelseif not len(arguments.locations)>
+			<cfset arguments.locations = "project,core" />
+		</cfif>
 		
 		<cfloop list="#arguments.locations#" index="item">
 			<cfswitch expression="#item#">
@@ -185,11 +191,17 @@
 
 	<cffunction name="getComponents" access="public" output="false" returntype="string" hint="Returns a list of components for a package">
 		<cfargument name="package" type="string" required="true" />
-		<cfargument name="locations" type="string" required="false" default="project,#listreverse(application.plugins)#,core" />
+		<cfargument name="locations" type="string" required="false" default="" />
 
 		<cfset var item = "" />
 		<cfset var list = "" />
 		<cfset var qItems = querynew("name","varchar") />
+
+		<cfif not len(arguments.locations) and structkeyexists(application,"plugins")>
+			<cfset arguments.locations = "project,#listreverse(application.plugins)#,core" />
+		<cfelseif not len(arguments.locations)>
+			<cfset arguments.locations = "project,core" />
+		</cfif>
 
 		<cfloop list="#arguments.locations#" index="item">
 			<cfswitch expression="#item#">
