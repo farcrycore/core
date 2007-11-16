@@ -18,25 +18,22 @@
 
 		<skin:htmlHead library="extjs" />
 		
-		<skin:htmlHead>
+		<skin:htmlHead id="webskinfilter">
 			<cfoutput>
+				
 			<script type="text/javascript">
 				
-				function updateWebskins(filters) {
+				function updateWebskins(field,filters) {
 					Ext.Ajax.request({
 						url: '#application.url.farcry#/facade/filterwebskins.cfm',
 						success: function(response,options) {
-						   	Ext.get("#arguments.fieldname#webskins").update(response.responseText);
+						   	Ext.get(field+"webskins").update(response.responseText);
 						},
 						params: {
 						 	filters: filters
 						}
 					});
 				}
-				
-				Ext.onReady(function(){
-					Ext.get("#arguments.fieldname#currentFilters").boxWrap();
-				})
 			</script>
 			
 			<style>
@@ -44,11 +41,11 @@
 					border: 0 none transparent;
 					background: transparent none;
 				}
+				table.webskinfilter {
+					width: 100%;
+				}
 				table.webskinfilter td {
 					width: 50%;
-				}
-				table.webskinfilter textarea {
-					width: 100%
 				}
 				table.webskinfilter div {
 					margin-left: 20px;
@@ -61,6 +58,20 @@
 					overflow:-moz-scrollbars-vertical !important;
 				}
 			</style>
+			
+			</cfoutput>
+		</skin:htmlHead>
+				
+		<skin:htmlHead>
+			<cfoutput>
+				
+			<script type="text/javascript">
+				Ext.onReady(function(){
+					Ext.get("#arguments.fieldname#currentFilters").boxWrap();
+					updateWebskins("#arguments.fieldname#",'#jsstringformat(arguments.stMetadata.value)#');
+				})
+			</script>
+			
 			</cfoutput>
 		</skin:htmlHead>
 
@@ -71,7 +82,7 @@
 					<table class="webskinfilter">
 						<tr>
 							<td>
-								<textarea onchange="updateWebskins(this.value);" name="#arguments.fieldname#" id="#arguments.fieldname#">#arguments.stMetadata.value#</textarea><br/>
+								<textarea style="width:100%;" onchange="updateWebskins(this.name,this.value);" name="#arguments.fieldname#" id="#arguments.fieldname#">#arguments.stMetadata.value#</textarea><br/>
 								Filters should be in the form type.(prefix)(*), e.g.<br/>
 								*.display* grants access to all webskins prefixed with display<br/>
 								dmNews.stats grants access to the stats dmNews webskin<br/>
