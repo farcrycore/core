@@ -6,7 +6,7 @@
 
 	<cfset this.description = "Basic resource bundle management" />
 
-	<cffunction name="init" access="public" output="true" returntype="component" hint="Initializes component">
+	<cffunction name="init" access="public" output="false" returntype="component" hint="Initializes component">
 		<cfargument name="locales" type="string" required="false" default="" />
 		
 		<cfset var plugin = "" />
@@ -40,7 +40,7 @@
 		<cfreturn this />
 	</cffunction>
 	
-	<cffunction name="loadSet" access="private" output="true" returntype="struct" hint="Returns requested bundles plus base in a struct">
+	<cffunction name="loadSet" access="private" output="false" returntype="struct" hint="Returns requested bundles plus base in a struct">
 		<cfargument name="dir" type="string" required="true" />
 		<cfargument name="locales" type="string" required="false" default="" />
 		
@@ -73,7 +73,7 @@
 		<cfreturn stResult />
 	</cffunction>
 	
-	<cffunction name="getResource" access="public" output="true" returntype="string" hint="Returns the resource string">
+	<cffunction name="getResource" access="public" output="false" returntype="string" hint="Returns the resource string">
 		<cfargument name="key" type="string" required="true" />
 		<cfargument name="default" type="string" required="false" default="#arguments.key#" />
 		<cfargument name="locale" type="string" required="false" default="" />
