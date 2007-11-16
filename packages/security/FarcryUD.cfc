@@ -194,6 +194,18 @@
 				<cfset stObj.isdefault = true />
 			</cfif>
 			
+			<cfswitch expression="#policygroupname#">
+				<cfcase value="anonymous">
+					<cfset stObj.webskins = "display*" />
+				</cfcase>
+				<cfcase value="Contributors,Publishers,SiteAdmin,SysAdmin" delimiters=",">
+					<cfset stObj.webskins = "*" />
+				</cfcase>
+				<cfdefaultcase>
+					<cfset stObj.webskins = "" />
+				</cfdefaultcase>
+			</cfswitch>
+			
 			<cfset oRole.createData(stProperties=stObj,user="migratescript",auditNote="Data migrated from pre 4.1") />
 			
 			<cfset stResult[policygroupid] = stObj.objectid />

@@ -81,22 +81,36 @@
 		<cfargument name="permission" type="string" required="true" hint="The permission to check" />
 		<cfargument name="object" type="string" required="false" default="" hint="If specified, will check barnacle" />
 		<cfargument name="role" type="string" required="false" default="" hint="List of roles to check" />
-		
-		<!--- If the permission was specified by name, retrieve the objectid --->
-		<cfif not isvalid("uuid",arguments.permission)>
-			<cfset arguments.permission = this.factory.permission.getID(arguments.permission) />
-		</cfif>
+		<cfargument name="type" type="string" required="false" default="" hint="The type for the webskin to check" />
+		<cfargument name="webskin" type="string" required="false" default="" hint="The webskin to check" />
 		
 		<!--- If the role was left empty, use current user's roles --->
 		<cfif not len(arguments.role)>
 			<cfset arguments.role = getCurrentRoles() />
 		</cfif>
 		
-		<!--- If an object was provided check the barnacle for that object, otherwise check the basic permission --->
-		<cfif isvalid("uuid",arguments.object)>
-			<cfreturn this.factory.barnacle.checkPermission(object=arguments.object,permission=arguments.permission,role=arguments.role) />
+		<cfif len(arguments.type) and len(arguments.webskin)>
+		
+			<cfreturn this.factory.role.checkWebskin(role=argument.roles,type=argument.type,webskin=argument.webskin) />
+		
+		<cfelseif len(arguments.permission)>
+		
+			<!--- If the permission was specified by name, retrieve the objectid --->
+			<cfif not isvalid("uuid",arguments.permission)>
+				<cfset arguments.permission = this.factory.permission.getID(arguments.permission) />
+			</cfif>
+			
+			<!--- If an object was provided check the barnacle for that object, otherwise check the basic permission --->
+			<cfif isvalid("uuid",arguments.object)>
+				<cfreturn this.factory.barnacle.checkPermission(object=arguments.object,permission=arguments.permission,role=arguments.role) />
+			<cfelse>
+				<cfreturn this.factory.role.getRight(role=arguments.role,permission=arguments.permission) />
+			</cfif>
+			
 		<cfelse>
-			<cfreturn this.factory.role.getRight(role=arguments.role,permission=arguments.permission) />
+		
+			<cfthrow message="Either a webskin or a permission are required for checkPermission" />
+			
 		</cfif>
 	</cffunction>
 
@@ -114,6 +128,7 @@
 		<cfargument name="role" type="uuid" required="true" hint="The role to cache" />
 		<cfargument name="permission" type="uuid" required="true" hint="The permission to cache" />
 		<cfargument name="object" type="string" required="false" default="" hint="The object to cache" />
+		<cfargument name="webskin" type="string" required="false" default="" hint="The webskin to cache" />
 		<cfargument name="right" type="numeric" required="true" hint="The right value to cache" />
 		
 		<cfif not structkeyexists(this.cache.roles,arguments.role)>
@@ -125,9 +140,14 @@
 		<cfif not structkeyexists(this.cache.roles[arguments.role],"barnacles")>
 			<cfset this.cache.roles[arguments.role].barnacles = structnew() />
 		</cfif>
+		<cfif not structkeyexists(this.cache.roles[arguments.role],"webskins")>
+			<cfset this.cache.roles[arguments.role].webskins = structnew() />
+		</cfif>
 		
 		<cfif isvalid("uuid",arguments.object)>
 			<cfset this.cache.roles[arguments.role].barnacles[arguments.object][arguments.permission] = arguments.right />
+		<cfelseif len(arguments.webskin)>
+			<cfset this.cache.roles[arguments.role].webskins[arguments.webskin] = arguments.right />
 		<cfelse>
 			<cfset this.cache.roles[arguments.role].permissions[arguments.permission] = arguments.right />
 		</cfif>
@@ -139,9 +159,12 @@
 		<cfargument name="role" type="uuid" required="true" hint="The role to find" />
 		<cfargument name="permission" type="uuid" required="true" hint="The permission to find" />
 		<cfargument name="object" type="string" required="false" default="" hint="The object to find" />
+		<cfargument name="webskin" type="string" required="false" default="" hint="The webskin to cache" />
 		
 		<cfif isvalid("uuid",arguments.object)>
 			<cfreturn structkeyexists(this.cache.roles,arguments.role) and structkeyexists(this.cache.roles[arguments.role],"barnacles") and structkeyexists(this.cache.roles[arguments.role].barnacles,arguments.object) and structkeyexists(this.cache.roles[arguments.role].barnacles[arguments.object],arguments.permission) />
+		<cfelseif len(arguments.webskin)>
+			<cfreturn structkeyexists(this.cache.roles,arguments.role) and structkeyexists(this.cache.roles[arguments.role],"webskins") and structkeyexists(this.cache.roles[arguments.role].webskins,arguments.webskin) />
 		<cfelse>
 			<cfreturn structkeyexists(this.cache.roles,arguments.role) and structkeyexists(this.cache.roles[arguments.role],"permissions") and structkeyexists(this.cache.roles[arguments.role].permissions,arguments.permission) />
 		</cfif>
@@ -151,9 +174,12 @@
 		<cfargument name="role" type="uuid" required="true" hint="The role to retrieve" />
 		<cfargument name="permission" type="uuid" required="true" hint="The permission to retrieve" />
 		<cfargument name="object" type="string" required="false" default="" hint="The object to retrieve" />
+		<cfargument name="webskin" type="string" required="false" default="" hint="The webskin to cache" />
 		
 		<cfif isvalid("uuid",arguments.object)>
 			<cfreturn this.cache.roles[arguments.role].barnacles[arguments.object][arguments.permission] />
+		<cfelseif len(arguments.webskin)>
+			<cfreturn this.cache.roles[arguments.role].webskins[arguments.webskin] />
 		<cfelse>
 			<cfreturn this.cache.roles[arguments.role].permissions[arguments.permission] />
 		</cfif>
@@ -163,13 +189,42 @@
 		<cfargument name="role" type="uuid" required="true" hint="The role to find" />
 		<cfargument name="permission" type="string" required="false" default="" hint="The permission to find" />
 		<cfargument name="object" type="string" required="false" default="" hint="The object to find" />
+		<cfargument name="webskin" type="string" required="false" default="" hint="The webskin to cache" />
 		
-		<cfif isvalid("uuid",arguments.object)>
+		<cfif not structkeyexists(this.cache.roles,arguments.role)>
+			<cfset this.cache.roles[arguments.role] = structnew() />
+			<cfset this.cache.roles[arguments.role].barnacles = structnew() />
+			<cfset this.cache.roles[arguments.role].permissions = structnew() />
+			<cfset this.cache.roles[arguments.role].webskins = structnew() />
+		</cfif>
+		
+		<cfif isvalid("uuid",arguments.object) and isvalid("uuid",arguments.permission)>
+			<!--- Remove barnacle --->
 			<cfset structdelete(this.cache.roles[arguments.role].barnacles[arguments.object],arguments.permission) />
+		<cfelseif isvalid("uuid",arguments.object)>
+			<!--- Remove object --->
+			<cfset structdelete(this.cache.roles[arguments.role].barnacles,arguments.object) />
 		<cfelseif isvalid("uuid",arguments.permission)>
-			<cfset structdelete(this.cache.roles[arguments.role].permissions,arguments.permission) />
+			<!--- Remove permission --->
+			<cfif structkeyexistse(this.cache.roles[arguments.role].permissions,arguments.permission)>
+				<!--- Remove permission from general permissions --->
+				<cfset structdelete(this.cache.roles[arguments.role].permissions,arguments.permission) />
+			<cfelse>
+				<!--- Remove permission from all objects --->
+				<cfloop collection="#this.cache.roles[arguments.role].barnacles#" item="arguments.object">
+					<cfif structkeyexists(this.cache.roles[arguments.role].barnacles[arguments.object],arguments.permission)>
+						<cfset structdelete(this.cache.roles[arguments.role].barnacles[arguments.object],arguments.permission) />
+					</cfif>
+				</cfloop>
+			</cfif>
+		<cfelseif len(arguments.webskin)>
+			<!--- Remove webskin --->
+			<cfset structdelete(this.cache.roles[arguments.role].webskins,arguments.webskin) />
 		<cfelse>
-			<cfset structdelete(this.cache.roles[arguments.role],"permissions") />
+			<!--- If only the role was provided, clear the entire role --->
+			<cfset structclear(this.cache.roles[arguments.role].barnacles) />
+			<cfset structclear(this.cache.roles[arguments.role].permissions) />
+			<cfset structclear(this.cache.roles[arguments.role].webskins) />
 		</cfif>
 	</cffunction>
 	
