@@ -183,8 +183,9 @@ $in: SessionID -- $
 					}
 				</cfif>
 			}
+			<cfset confirmation = application.rb.getResource('forms.buttons.Cancel@confirmtext','Changes made will not be saved.\nDo you still wish to Cancel?') />
 			function wizardCancelConfirm(){
-				if( window.confirm("#application.rb.getResource('forms.buttons.Cancel@confirmtext','Changes made will not be saved.\nDo you still wish to Cancel?')#")){
+				if( window.confirm("#confirmation#")){
 					wizardSubmission('Cancel');
 				}
 			}
