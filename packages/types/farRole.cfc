@@ -2,7 +2,7 @@
 	<cfproperty name="title" type="string" default="" hint="The name of the role" bLabel="true" ftSeq="1" ftFieldset="" ftLabel="Title" ftType="string" />
 	<cfproperty name="isdefault" type="boolean" default="0" hint="True if this is a default role. Every user will be assigned these permissions." ftSeq="2" ftFieldset="" ftLabel="Default role" ftType="boolean" />
 	<cfproperty name="permissions" type="array" hint="The simple permissions that are granted as part of this role" ftSeq="3" ftFieldset="" ftLabel="Permissions" ftJoin="farPermission" />
-	<cfproperty name="webskins" type="longchar" default="" hint="A list of wildcard items that match the webkins this role can access" ftSeq="4" ftFieldset="" ftLabel="Webskins" ftType="string" />
+	<cfproperty name="webskins" type="longchar" default="" hint="A list of wildcard items that match the webkins this role can access" ftSeq="4" ftFieldset="" ftLabel="Webskins" ftType="webskinfilter" />
 	<cfproperty name="groups" type="array" default="" hint="The user directory groups that this role has been assigned to" ftSeq="5" ftFieldset="" ftLabel="Groups" ftType="array" ftJoin="farRole" ftRenderType="list" ftLibraryData="getGroups" ftShowLibraryLink="false" />
 	
 	<cffunction name="getGroups" access="public" output="false" returntype="query" hint="Returns a query of UD groups">
