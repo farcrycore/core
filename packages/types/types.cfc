@@ -91,7 +91,6 @@ default handlers
 		<cfif listLast(arguments.template,".") EQ "cfm">
 			<cfset arguments.template = ReplaceNoCase(arguments.template,".cfm", "", "all") />
 		</cfif>
-
 		
 		<cfif isDefined("arguments.stobject")>
 			<cfset stobj=arguments.stobject />
@@ -101,6 +100,12 @@ default handlers
 			<cfparam name="arguments.objectid" default="#CreateUUID()#" type="uuid">
 			<!--- get the data for this instance --->
 			<cfset stObj = getData(objectid=arguments.objectID,dsn=arguments.dsn)>		
+		</cfif>
+
+		<!--- Check permissions on this webskin --->
+		<cfif not application.security.checkPermission(type=stObj.typename,webskin=arguments.template)>
+			<cfsavecontent variable="webskinHTML"><cfinclude template="#getWebskinPath(stObj.typename,'deniedaccess')#" /></cfsavecontent>
+			<cfreturn webskinHTML />
 		</cfif>
 			
 		<cfif NOT structIsEmpty(stObj)>	
@@ -204,7 +209,6 @@ default handlers
 		</cfif>
 		<cfreturn webskinHTML />
 	</cffunction>
-		
 		
 	<cffunction name="getWebskinPath" returntype="string" access="public" output="false" hint="This tag is depricated, you should be calling farcry.core.packages.coapi.coapiadmin.getWebskinpath()">
 		<cfargument name="typename" type="string" required="true" />

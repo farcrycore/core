@@ -106,14 +106,12 @@
 		<!--------------------------------------- 
 		If the object is to be stored in the session scope only.
 		Note sure how this fits with the transitory nature of a form, am assuming this is used for 'unsuccessful' submissions
-		----------------------------------------->		
-		<cfif arguments.bSessionOnly>
+		----------------------------------------->
 			
-			<!--- Add object to temporary object store --->
-			<cfparam name="session.TempObjectStore" default="#structnew()#" />
-			<cfset Session.TempObjectStore[arguments.stProperties.ObjectID] = arguments.stProperties />
-		
-		<cfelse>
+		<!--- Add object to temporary object store --->
+		<cfparam name="session.TempObjectStore" default="#structnew()#" />
+		<cfset Session.TempObjectStore[arguments.stProperties.ObjectID] = arguments.stProperties />
+		<cfif not arguments.bSessionOnly>
 			
 			<cfset arguments.stProperties = this.process(arguments.stProperties) />
 		
@@ -505,6 +503,12 @@
 			<cfparam name="arguments.objectid" default="#CreateUUID()#" type="uuid">
 			<!--- get the data for this instance --->
 			<cfset stObj = getData(objectid=arguments.objectID,dsn=arguments.dsn)>		
+		</cfif>
+
+		<!--- Check permissions on this webskin --->
+		<cfif not application.security.checkPermission(type=stObj.typename,webskin=arguments.template)>
+			<cfsavecontent variable="webskinHTML"><cfinclude template="#application.coapi.coapiadmin.getWebskinPath(stObj.typename,'deniedaccess')#" /></cfsavecontent>
+			<cfreturn webskinHTML />
 		</cfif>
 			
 		<cfif NOT structIsEmpty(stObj)>	

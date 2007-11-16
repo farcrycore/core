@@ -65,6 +65,12 @@ $out:$
 			<!--- get the data for this instance --->
 			<cfset stObj = getData(objectid=arguments.objectID,dsn=arguments.dsn)>
 		</cfif>
+
+		<!--- Check permissions on this webskin --->
+		<cfif not application.security.checkPermission(type=stObj.typename,webskin=arguments.template)>
+			<cfsavecontent variable="webskinHTML"><cfinclude template="#application.coapi.coapiadmin.getWebskinPath(stObj.typename,'deniedaccess')#" /></cfsavecontent>
+			<cfreturn webskinHTML />
+		</cfif>
 					
 		<cfif NOT structIsEmpty(stObj)>		
 		
