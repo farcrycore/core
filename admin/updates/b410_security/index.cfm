@@ -29,6 +29,7 @@
 	delete from #application.dbowner#farBarnacle
 </cfquery>
 
+<cfset application.security = createobject("component","farcry.core.packages.security.security").init() />
 <cfset migrateresult = createobject("component","farcry.core.packages.security.FarcryUD").migrate() />
 
 <cfoutput><p>#migrateresult#</p></cfoutput>
