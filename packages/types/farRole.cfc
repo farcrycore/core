@@ -1,9 +1,9 @@
 <cfcomponent displayname="Role" hint="Used to group permission settings and associate them with user groups" extends="types" output="false" description="Categorises a set of permissions as being necessary for a particular role. This role can then be assigned to a group of users.">
-	<cfproperty name="title" type="string" default="" hint="The name of the role" bLabel="true" ftSeq="1" ftFieldset="" ftLabel="Title" ftType="string" />
-	<cfproperty name="isdefault" type="boolean" default="0" hint="True if this is a default role. Every user will be assigned these permissions." ftSeq="2" ftFieldset="" ftLabel="Default role" ftType="boolean" />
-	<cfproperty name="permissions" type="array" hint="The simple permissions that are granted as part of this role" ftSeq="3" ftFieldset="" ftLabel="Permissions" ftJoin="farPermission" />
-	<cfproperty name="webskins" type="longchar" default="" hint="A list of wildcard items that match the webkins this role can access" ftSeq="4" ftFieldset="" ftLabel="Webskins" ftType="webskinfilter" />
-	<cfproperty name="groups" type="array" default="" hint="The user directory groups that this role has been assigned to" ftSeq="5" ftFieldset="" ftLabel="Groups" ftType="array" ftJoin="farRole" ftRenderType="list" ftLibraryData="getGroups" ftShowLibraryLink="false" />
+	<cfproperty name="title" type="string" default="" hint="The name of the role" bLabel="true" ftSeq="1" ftWizardStep="Groups" ftFieldset="Groups" ftLabel="Title" ftType="string" />
+	<cfproperty name="isdefault" type="boolean" default="0" hint="True if this is a default role. Every user will be assigned these permissions." ftSeq="2" ftWizardStep="Groups" ftFieldset="Groups" ftLabel="Default role" ftType="boolean" />
+	<cfproperty name="groups" type="array" default="" hint="The user directory groups that this role has been assigned to" ftSeq="3" ftWizardStep="Groups" ftFieldset="Groups" ftLabel="Groups" ftType="array" ftJoin="farRole" ftRenderType="list" ftLibraryData="getGroups" ftShowLibraryLink="false" />
+	<cfproperty name="permissions" type="array" hint="The simple permissions that are granted as part of this role" ftSeq="11" ftWizardStep="Permissions" ftFieldset="Permissions" ftLabel="Permissions" ftJoin="farPermission" />
+	<cfproperty name="webskins" type="longchar" default="" hint="A list of wildcard items that match the webkins this role can access" ftSeq="21" ftWizardStep="Webskins" ftFieldset="Webskins" ftLabel="Webskins" ftType="webskinfilter" />
 	
 	<cffunction name="getGroups" access="public" output="false" returntype="query" hint="Returns a query of UD groups">
 		<cfset var qResult = querynew("objectid,label","varchar,varchar") />
@@ -76,6 +76,36 @@
 		</cfloop>
 		
 		<cfreturn result />
+	</cffunction>
+	
+	<cffunction name="checkWebskin" access="public" output="false" returntype="boolean" hint="Returns true if this role grants access the the webskin">
+		<cfargument name="role" type="string" required="true" hint="The roles to check" />
+		<cfargument name="type" type="string" required="true" hint="The type to check" />
+		<cfargument name="webskin" type="string" required="true" hint="The webskin to check" />
+		<cfargument name="forcerefresh" type="boolean" required="false" default="false" hint="Should the cache be forcably refreshed" />
+		
+		<cfset var thisrole = "" />
+		<cfset var stRole = structnew() />
+		<cfset var filter = "" />
+		
+		<cfloop list="#arguments.role#" index="thisrole">
+			<cfif not arguments.forcerefresh and application.security.isCached(role=thisrole,webskin="#arguments.type#.#arguments.webskin#")>
+				<cfif application.security.getCache(role=thisrole,webskin="#arguments.type#.#arguments.webskin#")>
+					<cfreturn true />
+				</cfif>
+			<cfelse>
+				<cfset stRole = getData(thisrole) />
+				<cfloop list="#stRole.webskins#" index="filter">
+					<cfif (not find(".",filter) or listfirst(filter,".") eq "*" or listfirst(filter,".") eq arguments.type) and refind(replace(listlast(filter,"."),"*",".*","ALL"),arguments.webskin)>
+						<cfreturn application.security.setCache(role=thisrole,webskin="#arguments.type#.#arguments.webskin#", right=1) />
+					<cfelse>
+						<cfset application.security.setCache(role=thisrole,webskin="#arguments.type#.#arguments.webskin#", right=0) />
+					</cfif>
+				</cfloop>
+			</cfif>
+		</cfloop>
+		
+		<cfreturn false />
 	</cffunction>
 	
 	<cffunction name="getID" access="public" output="false" returntype="uuid" hint="Returns the objectid for the specified object">
@@ -211,11 +241,8 @@
 		
 		<cfset var i = 0 />
 		
-		<!--- Clear the general permission cache --->
-		<cfset application.security.removeCache(role=arguments.stProperties.objectid) />
-		
-		<!--- Update webskin permission cache --->
-		
+		<!--- Clear the permission cache --->
+		<cfset application.security.deleteCache(role=arguments.stProperties.objectid) />
 		
 		<cfreturn arguments.stProperties />
 	</cffunction>

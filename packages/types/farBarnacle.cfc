@@ -114,7 +114,7 @@
 			<cfif not arguments.forcerefresh and application.security.isCached(role=thisrole,permission=arguments.permission,object=arguments.object)>
 				<cfset thisresult = application.security.getCache(thisrole,arguments.permission,arguments.object) />
 			<cfelse>
-				<cfset thisresult = application.security.setCache(thisrole,arguments.permission,arguments.object,getBarnacle(thisrole,arguments.permission,arguments.object).barnaclevalue) />
+				<cfset thisresult = application.security.setCache(role=thisrole,permission=arguments.permission,object=arguments.object,right=getBarnacle(thisrole,arguments.permission,arguments.object).barnaclevalue) />
 			</cfif>
 			
 			<!--- Result is the most permissable right. 1 is the most permissable, so if that is returned we don't need to check any more --->
