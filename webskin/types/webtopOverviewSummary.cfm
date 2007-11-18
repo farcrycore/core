@@ -16,10 +16,10 @@ START WEBSKIN
 
 	<cfset iDeveloperPermission = request.dmSec.oAuthorisation.checkPermission(reference="policyGroup",permissionName="developer") />
 		
-	<cfoutput><img src="#application.stCOAPI[stObj.typename].icon#" alt="alt text" class="icon" /></cfoutput>
+	<cfoutput><img src="#application.stCOAPI[stObj.typename].icon#" alt="alt text" class="icon" style="float: right; padding: 10px;" /></cfoutput>
 	
 	<cfoutput>
-	<dl class="dl-style1">
+	<dl class="dl-style1" style="padding: 10px;">
 		<dt>#application.adminBundle[session.dmProfile.locale].objTitleLabel#</dt>
 		<dd><cfif stobj.label NEQ "">
 			#stobj.label#<cfelse>
