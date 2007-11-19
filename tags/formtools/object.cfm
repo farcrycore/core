@@ -40,9 +40,6 @@
 	<cfparam name="attributes.lock" default="true"><!--- Lock if editing. --->
 	<cfparam name="attributes.bShowLibraryLink" default="true" type="boolean"><!--- Flag to determine if the libraryLink is to be displayed. --->
 	
-	<!--- Add Form Tools Specific CSS --->
-	<cfparam name="Request.InHead.FormsCSS" default="true" />
-	
 	
 	<!--- If the attributes [IncludeFieldSet] has not been explicitly defined, work out the value. --->
 	<cfif attributes.includeFieldSet EQ "">
