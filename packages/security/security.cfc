@@ -77,6 +77,8 @@
 		<cfset request.dmSec.oAuthentication = createObject("component","#application.securitypackagepath#.authentication") />
 	</cffunction>
 
+
+	<!--- Current user queries --->
 	<cffunction name="checkPermission" access="public" output="true" returntype="boolean" hint="Returns true if a user has the specified permission">
 		<cfargument name="permission" type="string" required="false" default="" hint="The permission to check" />
 		<cfargument name="object" type="string" required="false" default="" hint="If specified, will check barnacle" />
@@ -122,6 +124,92 @@
 		</cfif>
 	</cffunction>
 	
+
+	<!--- User Directory functions --->
+	<cffunction name="getDefaultUD" access="public" output="false" returntype="string" hint="Returns the default user directory for this application">
+		
+		<cfreturn listfirst(this.userdirectoryorder) />
+	</cffunction>
+	
+	<cffunction name="getLoginForm" access="public" output="false" returntype="string" hint="Returns the name of the login form component for the specified user directory">
+		<cfargument name="ud" type="string" required="true" hint="The user directory to query" />
+		
+		<cfreturn this.userdirectories[arguments.ud].getLoginForm() />
+	</cffunction>
+	
+	<cffunction name="authenticate" access="public" output="false" returntype="struct" hint="Attempts to authenticate a user using each directory, and returns true if successful">
+		<cfset var ud = "" />
+		<cfset var stResult = structnew() />
+		<cfset var groups = "" />
+		
+		<cfloop list="#this.userdirectoryorder#" index="ud">
+			<!--- Authenticate user --->
+			<cfset stResult = this.userdirectories[ud].authenticate() />
+			
+			<cfif structkeyexists(stResult,"authenticated")>
+				<cfif not stResult.authenticated>
+					<cfset application.factory.oAudit.logActivity(auditType="security.loginfailed", username="#stResult.userid#_#ud#", location=cgi.remote_host, note=stResult.errormessage) />
+					<cfbreak />
+				</cfif>
+				
+				<!--- Get user groups and convert them to Farcry roles --->
+				<cfloop list="#this.userdirectories[ud].getUserGroups(stResult.userid)#" index="group">
+					<cfset groups = listappend(groups,"#group#_#ud#") />
+				</cfloop>
+				<cfset session.dmSec.authentication.lPolicyGroupIds = this.factory.role.groupsToRoles(groups) />
+				
+				<!--- New structure --->
+				<cfset session.security.userid = "#stResult.userid#_#ud#" />
+				<cfset session.security.roles = this.factory.role.groupsToRoles(groups) />
+				
+				<!--- DEPRECIATED - THESE VARIABLES SHOULD NOT BE USED --->
+				<!--- Retrieve user info --->
+				<cfif ud eq "CLIENTUD">
+					<cfset session.dmSec.authentication = createObject("component", application.stcoapi["farUser"].packagePath).getByUserID(stResult.userid) />
+					<cfif structkeyexists(session.dmSec.authentication,"password")>
+						<cfset structdelete(session.dmSec.authentication,"password") />
+					</cfif>
+				</cfif>
+				<cfset session.dmSec.authentication.userlogin = stResult.userid />
+				<cfset session.dmSec.authentication.canonicalname = "#stResult.userid#_#ud#" />
+				<cfset session.dmSec.authentication.userdirectory = ud />
+				
+				<!--- Admin flag --->
+				<cfset session.dmSec.authentication.bAdmin = checkPermission(permission="Admin") />
+				
+				<!--- First login flag --->
+				<cfif application.factory.oAudit.getAuditLog(username=session.security.userid,auditType="dmSec.login").recordcount eq 0>
+					<cfset session.firstLogin = false />
+					
+					<cfset session.security.firstlogin = false />
+				<cfelse>
+					<cfset session.firstlogin = true />
+					
+					<cfset session.security.firstlogin = true />
+				</cfif>
+				
+				<!--- Log the result --->
+				<cfif session.firstLogin>
+					<cfset application.factory.oAudit.logActivity(auditType="dmSec.login", username=session.dmSec.authentication.canonicalname, location=cgi.remote_host, note="userDirectory: #ud# **First Login**") />
+				<cfelse>
+					<cfset application.factory.oAudit.logActivity(auditType="dmSec.login", username=session.dmSec.authentication.canonicalname, location=cgi.remote_host, note="userDirectory: #ud#") />
+				</cfif>
+				
+				<!--- Return 'success' --->
+				<cfbreak />
+			</cfif>
+		</cfloop>
+		
+		<!--- Returning an empty struct indicates that no authentication attempt was detected --->
+		<cfreturn stResult />
+	</cffunction>
+
+	<cffunction name="logout" access="public" output="false" returntype="void" hint="">
+		<cfset structdelete(session,"security") />
+		
+		<!--- DEPRECIATED VARIABLE --->
+		<cfset structdelete(session,"dmSec") />
+	</cffunction>
 
 	<!--- CACHE FUNCTIONS - SHOULD ONLY BE ACCESSED BY CORE CODE --->
 	<cffunction name="setCache" access="public" output="false" returntype="boolean" hint="Sets up the ermission cache structure">

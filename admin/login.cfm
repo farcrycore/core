@@ -27,11 +27,58 @@ $out:$
 
 <cfprocessingDirective pageencoding="utf-8">
 
-	<cfif fileExists("#application.path.project#/customadmin/login/login.cfm")>
-	    <cfinclude template="/farcry/projects/#application.projectDirectoryName#/customadmin/login/login.cfm">
- 	<cfelse>
-		<cfimport taglib="/farcry/core/tags/navajo" prefix="nj">
-   		<nj:Login>
+<cfif fileExists("#application.path.project#/customadmin/login/login.cfm")>
+	<cfinclude template="/farcry/projects/#application.projectDirectoryName#/customadmin/login/login.cfm">
+<cfelse>
+	<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
+	
+	<cfparam name="url.ud" default="#application.security.getDefaultUD()#" />
+	
+	<cfset stResult = application.security.authenticate() />
+	
+	<cfif structisempty(stResult) and isdefined("url.error") and url.error eq "draft">
+		<!--- TODO: i18n --->
+		<cfset stResult.authenticated = false />
+	    <cfset stResult.errormessage = "This page is in draft. Please login with your details below" />
 	</cfif>
+	
+	<!--- set message [error], if user has logged out --->
+	<cfif structisempty(stResult) and returnUrl contains "logout=1">
+		<cfset application.security.logout() />
+		<cfset stResult.authenticated = false />
+	    <cfset stResult.errormessage = "<b>OK:</b> You have successfully logged out." />
+	</cfif>
+	
+	<cfset stResult.returnUrl = URLDecode(url.returnUrl) />
+	<cfset stResult.returnUrl = replace( stResult.returnUrl, "logout=1", "" ) />
+	<cfset stResult.returnUrl = replace( stResult.returnUrl, "&&", "" ) />
+	
+	<cfif not structkeyexists(stResult,"authenticated") or not stResult.authenticated>
+	
+		<skin:view typename="#application.security.getLoginForm(url.ud)#" template="displayLogin" stParams="#stResult#" />
+		
+	<cfelse>
+		<!--- Get users profile --->
+		<cfset oProfile = createObject("component", application.stcoapi["dmProfile"].packagePath) />
+		<cfset session.dmProfile = oProfile.getProfile(userName=session.security.userid) />
+		<cfif NOT StructKeyExists(session.dmProfile,"firstname")>
+			<cfset session.dmprofile = oProfile.createProfile(session.dmprofile) />
+		</cfif>
+	
+		<!--- i18n: find out this locale's writing system direction using our special psychic powers --->
+        <cfif application.i18nUtils.isBIDI(session.dmProfile.locale)>
+            <cfset session.writingDir = "rtl" />
+        <cfelse>
+            <cfset session.writingDir = "ltr" />
+        </cfif>
+		
+        <!--- i18n: final bit, grab user language from locale, tarts up html tag --->
+        <cfset session.userLanguage = left(session.dmProfile.locale,2) />
+		
+		<!--- relocate to original location --->
+		<cflocation url="#stResult.returnUrl#" addtoken="No">
+		<cfabort>
+	</cfif>
+</cfif>
 
 <cfsetting enablecfoutputonly="No">

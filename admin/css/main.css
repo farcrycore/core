@@ -130,6 +130,12 @@ body#sec-login {background: #5A7EB9 url("images/full_page_bg.gif") repeat-x 0 0;
 	#login fieldset input {margin-top:-1.6em;width:140px;float:right;font-weight:bold}
 	#login fieldset input.f-submit {margin: 5px 0;width:142px;_width:144px}
 
+	form.login { width: 100%; }
+	#login div.fieldsection * { height: auto; margin: 0; padding: 0; }
+	#login br.clearer { display: none; }
+	#login .farcryButtonWrap-outer { float: right; margin-top: 15px; }
+	#login .error {clear:both;}
+
 /* =LAYOUT-CONTENT-AREA */
 #content-wrap {border-top: 7px solid #324E7C;position:relative;height:82.6%;max-height:82.6%;_height:80.6%;background: transparent url("images/g2_content_bg.gif") no-repeat 0 0}
 	

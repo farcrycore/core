@@ -8,13 +8,14 @@
 	<!--- ====================
 	  UD Interface functions
 	===================== --->
-	<cffunction name="getLoginForm" access="public" output="false" returntype="component" hint="Returns the form component to use for login">
+	<cffunction name="getLoginForm" access="public" output="false" returntype="string" hint="Returns the form component to use for login">
 		
-		<cfreturn application.factory.oUtils.getPath("forms","FarcryUDLogin") />
+		<cfreturn "farLogin" />
 	</cffunction>
 	
 	<cffunction name="authenticate" access="public" output="false" returntype="struct" hint="Attempts to process a user. Runs every time the login form is loaded.">
 		<cfset var stResult = structnew() />
+		<cfset var stProperties = structnew() />
 		<cfset var qUser = "" />
 		
 		<cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
@@ -22,6 +23,11 @@
 		<cfif isdefined("Application.dmSec.UserDirectory.CLIENTUD.bEncrypted")>
 			<cfset this.encrypted = Application.dmSec.UserDirectory.CLIENTUD.bEncrypted />
 		</cfif>
+		
+		<!--- Return struct --->
+		<cfset stResult.userid = "" />
+		<cfset stResult.authenticated = false />
+		<cfset stResult.errormessage = "" />
 		
 		<!--- For backward compatability, check for userlogin and password in form. This should be removed once we're willing to not support pre 4.1 login templates --->
 		<cfif structkeyexists(form,"userlogin") and structkeyexists(form,"password")>
@@ -37,33 +43,51 @@
 				where	userid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#form.userlogin#" />
 						and password=<cfqueryparam cfsqltype="cf_sql_varchar" value="#form.password#" />
 			</cfquery>
+			
+			<cfset stResult.userid = form.userlogin />
 		<cfelse>
 			<ft:processform>
-				<ft:processformObjects typename="FarcryUDLogin" r_stObject="stLogin">
+				<ft:processformObjects typename="#getLoginForm()#">
 					<!--- If password encryption is enabled, hash the password --->
 					<cfif this.encrypted>
-						<cfset stLogin.password = hash(stLogin.password) />
+						<cfset stProperties.password = hash(stLogin.password) />
 					</cfif>
 					
 					<!--- Find the user --->
 					<cfquery datasource="#application.dsn#" name="qUser">
 						select	*
 						from	#application.dbowner#farUser
-						where	userid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#stLogin.userlogin#" />
-								and password=<cfqueryparam cfsqltype="cf_sql_varchar" value="#stLogin.password#" />
+						where	userid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#stProperties.username#" />
+								and password=<cfqueryparam cfsqltype="cf_sql_varchar" value="#stProperties.password#" />
 					</cfquery>
+					
+					<cfset stResult.userid = stProperties.username />
 				</ft:processformObjects>
 			</ft:processform>
 		</cfif>
 		
 		<!--- If (somehow) a login was submitted, process the result --->
 		<cfif isquery(qUser)>
+		
+	        <cfset dateTolerance = DateAdd("n","-#application.config.general.loginAttemptsTimeOut#",Now()) />
+	        
+	        <cfquery name="qLogAudit" datasource="#application.dsn#">
+		        select		count(a.datetimeStamp) as numberOfLogin, max(a.datetimeStamp) as lastlogindate, a.username
+		        from		#application.dbowner#fqAudit a
+		        where		a.auditType = 'security.loginfailed'
+		            		and a.datetimeStamp >= <cfqueryparam value="#createODBCDateTime(dateTolerance)#" cfsqltype="cf_sql_timestamp" />
+		            		and a.username = <cfqueryparam cfsqltype="cf_sql_varchar" value="#qUser.userid#_#this.key#" />
+		        group by	a.username
+	        </cfquery>
 					
 			<!--- Set the result --->
-			<cfif qUser.recordcount and qUser.userstatus eq "active">
+			<cfif false and qLogAudit.numberOfLogin gte application.config.general.loginAttemptsAllowed>
+				<!--- User is locked out due to high number of failed logins recently --->
+				<cfset stResult.authenticated = false />
+				<cfset stResult.errormessage = "Your account has been locked due to a high number of failed logins. It will be unlocked automatically in #application.config.general.loginAttemptsTimeOut# minutes." />
+			<cfelseif qUser.recordcount and qUser.userstatus eq "active">
 				<!--- User successfully logged in --->
 				<cfset stResult.authenticated = true />
-				<cfset stResult.userid = qUser.userid />
 			<cfelseif qUser.recordcount>
 				<!--- User's account is disabled --->
 				<cfset stResult.authenticated = false />
