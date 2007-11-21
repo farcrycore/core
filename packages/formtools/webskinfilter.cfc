@@ -20,35 +20,17 @@
 		
 		<skin:htmlHead id="webskinfilter">
 			<cfoutput>
-				
-			<script type="text/javascript">
-				
-				function updateWebskins(field,filters) {
-					Ext.Ajax.request({
-						url: '#application.url.farcry#/facade/filterwebskins.cfm',
-						success: function(response,options) {
-						   	Ext.get(field+"webskins").update(response.responseText);
-						},
-						params: {
-						 	filters: filters
-						}
-					});
-				}
-			</script>
-			
+		
 			<style>
-				table.webskinfilter, table.webskinfilter tr, table.webskinfilter td {
+				table.webskinfilter, tr.webskinfilter, td.webskinfilter {
 					border: 0 none transparent;
 					background: transparent none;
 				}
 				table.webskinfilter {
 					width: 100%;
 				}
-				table.webskinfilter td {
+				td.webskinfilter {
 					width: 50%;
-				}
-				table.webskinfilter div {
-					margin-left: 20px;
 				}
 				
 				div.webskinlist {
@@ -67,11 +49,51 @@
 				
 			<script type="text/javascript">
 				Ext.onReady(function(){
-					Ext.get("#arguments.fieldname#currentFilters").boxWrap();
-					updateWebskins("#arguments.fieldname#",'#jsstringformat(arguments.stMetadata.value)#');
+					var store = new Ext.data.Store({
+						proxy: new Ext.data.HttpProxy({
+							url: "#application.url.farcry#/facade/filterwebskins.cfm",
+							method: 'POST'
+						}),
+						reader: new Ext.data.JsonReader({
+							root: 'rows',
+							fields:["Type","Webskin","Right"]
+						})
+					});
+					
+					// Webskin list
+					var grid = new Ext.grid.GridPanel({
+						applyTo:"#arguments.fieldname#webskins",
+						store: store,
+					    columns:[
+							{header: "Type", dataIndex: "Type", width: 100, sortable: true, locked: true},
+							{id: "webskin", header: "Webskin", dataIndex: "Webskin", width: 150, sortable: true},
+							{header: "Access", width: 100, dataIndex:"Right", sortable: true, resizable: false, renderer: function(value,metadata,record,rowindex,colindex,store) {
+								return (value == "Granted") ? "<span class='success'>Granted</span>" : "<span class='error'>Denied</span>";
+							}}
+						],
+						autoExpandColumn: 'webskin'
+					});
+					store.load({params:{filters:"#arguments.stMetadata.value#"}});
+					grid.render();
+					
+					var input = Ext.get("#arguments.fieldname#");
+					input.on("change",function(){ 
+						store.load({params:{filters:input.getValue()}});
+					});
 				})
 			</script>
 			
+			<style type="text/css">
+				.x-panel table, .x-panel tr, x-panel td {
+					background: transparent none;
+					margin: 0;
+				}
+				
+				.x-panel a.x-grid3-hd-btn {
+					background: ##C3DAF9 url(#application.url.farcry#/js/ext/resources/images/default/grid/grid3-hd-btn.gif) no-repeat scroll left center;
+					cursor:pointer;
+				}
+			</style>
 			</cfoutput>
 		</skin:htmlHead>
 
@@ -80,15 +102,19 @@
 			<cfoutput>
 				<div id="#arguments.fieldname#currentFilters">
 					<table class="webskinfilter">
-						<tr>
-							<td>
-								<textarea style="width:100%;" onchange="updateWebskins(this.name,this.value);" name="#arguments.fieldname#" id="#arguments.fieldname#">#arguments.stMetadata.value#</textarea><br/>
+						<tr class="webskinfilter">
+							<td class="webskinfilter">
+								<textarea style="width:80%;" onchange="" name="#arguments.fieldname#" id="#arguments.fieldname#">#arguments.stMetadata.value#</textarea>
+							</td>
+							<td class="webskinfilter">
 								Filters should be in the form type.(prefix)(*), e.g.<br/>
 								*.display* grants access to all webskins prefixed with display<br/>
 								dmNews.stats grants access to the stats dmNews webskin<br/>
 								dmEvent.* grants access to all event webskins
 							</td>
-							<td>
+						</tr>
+						<tr class="webskinfilter">
+							<td class="webskinfilter" colspan="2">
 								<div id="#arguments.fieldname#webskins" class="webskinlist"></div>
 							</td>
 						</tr>

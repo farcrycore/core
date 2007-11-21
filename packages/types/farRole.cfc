@@ -1,9 +1,9 @@
 <cfcomponent displayname="Role" hint="Used to group permission settings and associate them with user groups" extends="types" output="false" description="Categorises a set of permissions as being necessary for a particular role. This role can then be assigned to a group of users.">
-	<cfproperty name="title" type="string" default="" hint="The name of the role" bLabel="true" ftSeq="1" ftWizardStep="Groups" ftFieldset="Groups" ftLabel="Title" ftType="string" />
-	<cfproperty name="isdefault" type="boolean" default="0" hint="True if this is a default role. Every user will be assigned these permissions." ftSeq="2" ftWizardStep="Groups" ftFieldset="Groups" ftLabel="Default role" ftType="boolean" />
-	<cfproperty name="groups" type="array" default="" hint="The user directory groups that this role has been assigned to" ftSeq="3" ftWizardStep="Groups" ftFieldset="Groups" ftLabel="Groups" ftType="array" ftJoin="farRole" ftRenderType="list" ftLibraryData="getGroups" ftShowLibraryLink="false" />
-	<cfproperty name="permissions" type="array" hint="The simple permissions that are granted as part of this role" ftSeq="11" ftWizardStep="Permissions" ftFieldset="Permissions" ftLabel="Permissions" ftJoin="farPermission" />
-	<cfproperty name="webskins" type="longchar" default="" hint="A list of wildcard items that match the webkins this role can access" ftSeq="21" ftWizardStep="Webskins" ftFieldset="Webskins" ftLabel="Webskins" ftType="webskinfilter" />
+	<cfproperty name="title" type="string" default="" hint="The name of the role" bLabel="true" ftSeq="1" ftWizardStep="Groups" ftLabel="Title" ftType="string" />
+	<cfproperty name="isdefault" type="boolean" default="0" hint="True if this is a default role. Every user will be assigned these permissions." ftSeq="2" ftWizardStep="Groups" ftLabel="Default role" ftType="boolean" />
+	<cfproperty name="groups" type="array" default="" hint="The user directory groups that this role has been assigned to" ftSeq="3" ftWizardStep="Groups" ftLabel="Groups" ftType="array" ftJoin="farRole" ftRenderType="list" ftLibraryData="getGroups" ftShowLibraryLink="false" />
+	<cfproperty name="permissions" type="array" hint="The simple permissions that are granted as part of this role" ftSeq="11" ftWizardStep="Permissions" ftLabel="Permissions" ftJoin="farPermission" />
+	<cfproperty name="webskins" type="longchar" default="" hint="A list of wildcard items that match the webkins this role can access" ftSeq="21" ftWizardStep="Webskins" ftLabel="Webskins" ftType="webskinfilter" />
 	
 	<cffunction name="getGroups" access="public" output="false" returntype="query" hint="Returns a query of UD groups">
 		<cfset var qResult = querynew("objectid,label","varchar,varchar") />

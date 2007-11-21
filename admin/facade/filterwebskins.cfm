@@ -9,14 +9,23 @@
 	<cfset var qResult = "" />
 	
 	<cfquery dbtype="query" name="qResult">
-		select	*
+		select	methodname as name
 		from	arguments.webskins
-		where 	name like <cfqueryparam cfsqltype="cf_sql_varchar" value="#replace(arguments.filter,'*','%')#" />
+		where 	methodname like <cfqueryparam cfsqltype="cf_sql_varchar" value="#replace(arguments.filter,'*','%')#" />
 	</cfquery>
 	
 	<cfreturn qResult />
 </cffunction>
 
+<!--- Initialize webskin result set --->
+<cfset stWebskins = structnew() />
+<cfloop collection="#application.stCOAPI#" item="thistype">
+	<cfloop query="application.stCOAPI.#thistype#.qWebskins">
+		<cfset stWebskins[thistype][methodname] = "Denied" />
+	</cfloop>
+</cfloop>
+
+<!--- Update granted webskins --->
 <cfloop list="#form.filters#" index="filter">
 	<cfif not find(".",filter) or listfirst(filter,".") eq "*">
 		<cfset types = structkeylist(application.stCOAPI) />
@@ -27,9 +36,20 @@
 	<cfloop list="#types#" index="thistype">
 		<cfset qWebskins = filterWebskins(application.stCOAPI[thistype].qWebskins,listlast(filter,".")) />
 		<cfloop query="qWebskins">
-			<cfoutput>#thistype#.#name#<br/></cfoutput>
+			<cfset stWebskins[thistype][name] = "Granted" />
 		</cfloop>
 	</cfloop>
 </cfloop>
+
+<!--- Output result --->
+<cfset rows = "" />
+<cfset total = 0 />
+<cfloop collection="#stWebskins#" item="thistype">
+	<cfloop collection="#stWebskins[thistype]#" item="webskin">
+		<cfset rows = listappend(rows,"{Type:'#thistype#',Webskin:'#Webskin#',Right:'#stWebskins[thistype][webskin]#'}") />
+		<cfset total = total + 1 />
+	</cfloop>
+</cfloop>
+<cfoutput>{rows:[#rows#],total:#total#}</cfoutput>
 
 <cfsetting enablecfoutputonly="false" />
