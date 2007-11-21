@@ -10,7 +10,7 @@
 		<tr>
 			<td align="right"><input type="checkbox" value="true" name="generateWebskinPage" id="generateWebskinPage" /></td>
 			<td>
-				<label for="generateWebskinPage">Create standard page</label>
+				<label for="generateWebskinPage" style="width:auto;">Create standard page</label>
 				<cfif fileexists("#application.path.project#/webskin/#url.typename#/displayPageStandard.cfm")>
 					<span style="color:red;">(file exists and would be overwritten)</span>
 				</cfif>
@@ -19,7 +19,7 @@
 		<tr>
 			<td align="right"><input type="checkbox" value="true" name="generateWebskinTeaser" id="generateWebskinTeaser" /></td>
 			<td>
-				<label for="generateWebskinTeaser">Create standard teaser</label>
+				<label for="generateWebskinTeaser" style="width:auto;">Create standard teaser</label>
 				<cfif fileexists("#application.path.project#/webskin/#url.typename#/displayTeaserStandard.cfm")>
 					<span style="color:red;">(file exists and would be overwritten)</span>
 				</cfif>
