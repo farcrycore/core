@@ -392,8 +392,6 @@
 				<cfset this.cache.permissionlookup[arguments.permission] = arguments.objectid />
 			</cfif>
 		</cfif>
-		
-		<cfreturn arguments.objectid />
 	</cffunction>
 	
 	

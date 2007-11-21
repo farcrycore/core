@@ -17,12 +17,19 @@ $Developer: Blair McKenzie (blair@daemon.com.au) $
 <!--- set up page header --->
 <admin:header title="Permission Admin" />
 
+<cfset aCustomColumns = arraynew(1) />
+<cfset aCustomColumns[1] = structnew() />
+<cfset aCustomColumns[1].webskin = "displayRelatedTypes" />
+<cfset aCustomColumns[1].title = "Related types" />
+<cfset aCustomColumns[1].sortable = false />
+
 <ft:objectadmin 
 	typename="farPermission"
 	permissionset="news"
 	title="Permission Admin"
-	columnList="title,relatedtypes" 
-	sortableColumns="title,relatedtypes"
+	columnList="title"
+	aCustomColumns="#aCustomColumns#"
+	sortableColumns="title"
 	lFilterFields="title"
 	sqlorderby="title asc" />
 
