@@ -82,13 +82,28 @@
 				            groupTextTpl: '{text} ({[values.rs.length]} {[values.rs.length > 1 ? "Webskins" : "Webskin"]})'
 				        }),
 					});
-					store.load({params:{filters:"#arguments.stMetadata.value#"}});
-					grid.render();
 					
+					// Events
 					var input = Ext.get("#arguments.fieldname#");
-					input.on("change",function(){ 
-						store.load({params:{filters:input.getValue()}});
+					grid.on("rowdblclick",function(thegrid,rowindex,e){
+						var r = store.getAt(rowindex);
+						if (r.data.Right == "Denied") {
+							input.dom.value = input.dom.value=="" ? r.data.Type+"."+r.data.Webskin : input.dom.value+"\n"+r.data.Type+"."+r.data.Webskin;
+							r.set("Right","Granted");
+						}
 					});
+					input.on({
+						"change":{
+							fn:function(){ store.load({params:{filters:input.getValue()}}); },
+							options: {
+								delay: 150
+							}
+						}
+					});
+					
+					// Load data
+					store.load({params:{filters:input.dom.value}});
+					grid.render();
 				})
 			</script>
 			

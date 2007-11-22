@@ -220,7 +220,7 @@
 			
 			<cfswitch expression="#policygroupname#">
 				<cfcase value="anonymous">
-					<cfset stObj.webskins = "display*,execute*" />
+					<cfset stObj.webskins = "display*#chr(13)##chr(10)#execute*" />
 				</cfcase>
 				<cfcase value="Contributors,Publishers,SiteAdmin,SysAdmin" delimiters=",">
 					<cfset stObj.webskins = "*" />

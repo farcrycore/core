@@ -28,7 +28,7 @@
 </cfloop>
 
 <!--- Update granted webskins --->
-<cfloop list="#form.filters#" index="filter">
+<cfloop list="#form.filters#" index="filter" delimiters="#chr(10)##chr(13)#,">
 	<cfif not find(".",filter) or listfirst(filter,".") eq "*">
 		<cfset types = structkeylist(application.stCOAPI) />
 	<cfelse>
