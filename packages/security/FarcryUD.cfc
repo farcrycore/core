@@ -1,7 +1,5 @@
-<cfcomponent displayname="Farcry User Directory" hint="Provides the interface for the FarCry user directory" extends="UserDirectory" output="false" title="FarCry User Directory" key="CLIENTUD">
+<cfcomponent displayname="Farcry User Directory" hint="Provides the interface for the FarCry user directory" extends="UserDirectory" output="false" title="FarCry User Directory" key="CLIENTUD" encrypted="false">
 	
-	<cfset this.encrypted = false />
-
 	<!--- ====================
 	  UD Interface functions
 	===================== --->
