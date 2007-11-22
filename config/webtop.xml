@@ -1,116 +1,108 @@
 <?xml version="1.0" encoding="utf-8"?>
 <webtop>
-	<section id="home" sequence="1000" permission="MainNavMyFarcryTab" label="application.adminBundle[session.dmProfile.locale].overview" labelType="evaluate">
-		<subsection id="overview" sidebar="overview/sidebar.cfm" content="overview/home.cfm" label="application.adminBundle[session.dmProfile.locale].overview" labelType="evaluate" />
+	<section id="home" sequence="1000" permission="MainNavMyFarcryTab" label="Overview">
+		<subsection id="overview" sequence="100" sidebar="overview/sidebar.cfm" content="overview/home.cfm" label="Overview" />
 	</section>
-	<section id="site" sequence="2000" permission="MainNavSiteTab" label="application.adminBundle[session.dmProfile.locale].site" labelType="evaluate">
-		<subsection id="tree" permission="MainNavAdminTab" sidebar="site/sidebar.cfm" content="inc/content_overview.html" label="application.adminBundle[session.dmProfile.locale].site" labelType="evaluate" />
+	<section id="site" sequence="2000" permission="MainNavSiteTab" label="Site">
+		<subsection id="tree" sequence="100" permission="MainNavAdminTab" sidebar="site/sidebar.cfm" content="inc/content_overview.html" label="Site" />
 	</section>
-	<section id="content" sequence="3000" permission="MainNavContentTab" label="application.adminBundle[session.dmProfile.locale].content" labelType="evaluate">
-		<subsection id="media" sequence="10" label="application.adminBundle[session.dmProfile.locale].MediaLibrary" labelType="evaluate" sidebar="content/sidebar.cfm" content="inc/content_overview.html">
-			<menu id="MediaLibraryContent" sequence="10" label="application.adminBundle[session.dmProfile.locale].MediaLibraryContent" labelType="evaluate">
-				<menuitem id="listdmimage" sequence="10" label="application.adminBundle[session.dmProfile.locale].MediaLibraryImage" labelType="evaluate" link="/admin/customadmin.cfm?module=customlists/dmimage.cfm" />
-				<menuitem id="listdmfile" sequence="20" label="application.adminBundle[session.dmProfile.locale].MediaLibraryFile" labelType="evaluate" link="/admin/customadmin.cfm?module=customlists/dmfile.cfm" />
-				<menuitem id="listdmflash" sequence="30" label="application.adminBundle[session.dmProfile.locale].MediaLibraryFlash" labelType="evaluate" link="/admin/customadmin.cfm?module=customlists/dmflash.cfm" />
+	<section id="content" sequence="3000" permission="MainNavContentTab" label="Content">
+		<subsection id="media" sequence="10" label="Media Library">
+			<menu id="MediaLibraryContent" sequence="10" label="Media Library Content">
+				<menuitem id="listdmimage" sequence="10" label="Media Library Images" link="/admin/customadmin.cfm?module=customlists/dmimage.cfm" relatedtype="dmImage" />
+				<menuitem id="listdmfile" sequence="20" label="Media Library Files" link="/admin/customadmin.cfm?module=customlists/dmfile.cfm" relatedtype="dmFile" />
+				<menuitem id="listdmflash" sequence="30" label="Media Library Flash" link="/admin/customadmin.cfm?module=customlists/dmflash.cfm" relatedtype="dmFlash" />
 			</menu>
-			<menu id="MediaLibraryMaintenance" sequence="20" permission="MainNavAdminTab" label="application.adminBundle[session.dmProfile.locale].MediaLibraryMaintenance" labelType="evaluate">
-				<menuitem id="mediaresizethumbs" sequence="10" label="application.adminBundle[session.dmProfile.locale].MediaLibraryMaintenanceImageResize" labelType="evaluate" link="/content/dmimage_resize.cfm" />
-				<menuitem id="mediafileswithoutcontent" sequence="20" label="application.adminBundle[session.dmProfile.locale].MediaLibraryMaintenanceFilesWithoutContent" labelType="evaluate" link="/content/maintenance_report.cfm?reportType=filesWithOutContentItem" />
-				<menuitem id="mediacontentwithoutfiles" sequence="30" label="application.adminBundle[session.dmProfile.locale].MediaLibraryMaintenanceContentWithoutFiles" labelType="evaluate" link="/content/maintenance_report.cfm?reportType=contentWithoutFiles" />
-				<menuitem id="mediacontentnorelationship" sequence="40" label="application.adminBundle[session.dmProfile.locale].MediaLibraryMaintenanceContentWithoutRelationship" labelType="evaluate" link="/content/maintenance_report.cfm?reportType=contentWithoutrelationship" />
+			<menu id="MediaLibraryMaintenance" sequence="20" permission="MainNavAdminTab" label="Media Library Maintenance">
+				<menuitem id="mediaresizethumbs" sequence="10" label="Image Resize" link="/content/dmimage_resize.cfm" />
+				<menuitem id="mediafileswithoutcontent" sequence="20" label="Files Without Content" link="/content/maintenance_report.cfm?reportType=filesWithOutContentItem" />
+				<menuitem id="mediacontentwithoutfiles" sequence="30" label="Content Without Files" link="/content/maintenance_report.cfm?reportType=contentWithoutFiles" />
+				<menuitem id="mediacontentnorelationship" sequence="40" label="Content Without Relationship" link="/content/maintenance_report.cfm?reportType=contentWithoutrelationship" />
 			</menu>
 		</subsection>
-		<subsection id="sitetreecontent" sequence="20" permission="MainNavAdminTab" label="application.adminBundle[session.dmProfile.locale].SiteTreeContent" labelType="evaluate" sidebar="content/sidebar.cfm" content="inc/content_overview.html">
-			<menu id="sitetreetypes" sequence="10" label="application.adminBundle[session.dmProfile.locale].SiteTreeContent" labelType="evaluate">
-				<menuitem id="listdmhtml" sequence="10" label="application.adminBundle[session.dmProfile.locale].SiteTreeContentHtmlPage" labelType="evaluate" link="/content/dmhtml.cfm" />
-				<menuitem id="listdmcss" sequence="20" label="application.adminBundle[session.dmProfile.locale].SiteTreeContentCSSStylesheet" labelType="evaluate" link="/content/dmcss.cfm" />
-				<menuitem id="listdminclude" sequence="30" label="application.adminBundle[session.dmProfile.locale].SiteTreeContentdmInclude" labelType="evaluate" link="/content/dminclude.cfm" />
+		<subsection id="sitetreecontent" sequence="20" permission="MainNavAdminTab" label="Site Tree Content">
+			<menu id="sitetreetypes" sequence="10" label="Site Tree Content">
+				<menuitem id="listdmhtml" sequence="10" label="Site Tree Content Html Page" link="/content/dmhtml.cfm" relatedtype="dmHTML" />
+				<menuitem id="listdmcss" sequence="20" label="Site Tree Content CSS Stylesheet" link="/content/dmcss.cfm" relatedtype="dmCSS" />
+				<menuitem id="listdminclude" sequence="30" label="Site Tree Content dmIncludes" link="/content/dminclude.cfm" relatedtype="dmInclude" />
 			</menu>
 		</subsection>
-		<subsection id="contentUtilities" sequence="30" permission="MainNavAdminTab" label="application.adminBundle[session.dmProfile.locale].ContentUtilities" labelType="evaluate" sidebar="content/sidebar.cfm" content="inc/content_overview.html">
-			<menu id="export" sequence="10" label="application.adminBundle[session.dmProfile.locale].Export" labelType="evaluate">
-				<menuitem id="exportrss" sequence="10" label="application.adminBundle[session.dmProfile.locale].RssFeeds" labelType="evaluate" link="/content/xmlFeedList.cfm" />
-				<menuitem id="exportgeneral" sequence="20" label="application.adminBundle[session.dmProfile.locale].Export" labelType="evaluate" link="/content/export.cfm" />
+		<subsection id="contentUtilities" sequence="30" permission="MainNavAdminTab" label="Content Utilities">
+			<menu id="export" sequence="10" label="Export">
+				<menuitem id="exportrss" sequence="10" label="RSS Feeds" link="/content/xmlFeedList.cfm" />
+				<menuitem id="exportgeneral" sequence="20" label="Export" link="/content/export.cfm" />
 			</menu>
-			<menu id="categorisation" sequence="10" permission="ContentCategorisationTab" label="application.adminBundle[session.dmProfile.locale].CategoryManagement" labelType="evaluate">
-				<menuitem id="managekeywords" sequence="10" label="application.adminBundle[session.dmProfile.locale].ManageKeywords" labelType="evaluate" link="/navajo/keywords/hierarchyedit.cfm" />		
-				<menuitem id="managekeywordsFlexUI" sequence="20" label="Manage keywords Flex beta" labelType="value" link="/admin/hierarchyFlexEditor.cfm" />		
+			<menu id="categorisation" sequence="20" permission="ContentCategorisationTab" label="Category Management">
+				<menuitem id="managekeywords" sequence="10" label="Manage Keywords" link="/navajo/keywords/hierarchyedit.cfm" />		
+				<menuitem id="managekeywordsFlexUI" sequence="20" label="Manage keywords Flex beta" link="/admin/hierarchyFlexEditor.cfm" />		
 			</menu>
-			<menu id="containermanagement" sequence="30" label="application.adminBundle[session.dmProfile.locale].ContainerManagement" labelType="evaluate">
-				<menuitem id="containerreflections" sequence="10" label="application.adminBundle[session.dmProfile.locale].Reflections" labelType="evaluate" link="/content/reflections.cfm" />		
+			<menu id="containermanagement" sequence="30" label="Container Management">
+				<menuitem id="containerreflections" sequence="10" label="Shared Containers" link="/content/reflections.cfm" />		
 			</menu>
-			<menu id="menuquickbuilder" sequence="40" label="application.adminBundle[session.dmProfile.locale].QuickSiteBuilder" labelType="evaluate">
-				<menuitem id="quicksitebuilder" sequence="10" label="application.adminBundle[session.dmProfile.locale].QuickSiteBuilder" labelType="evaluate" link="/admin/quickBuilder.cfm" />
-				<menuitem id="quickcategorybuilder" sequence="20" label="application.adminBundle[session.dmProfile.locale].CatTreeQuickBuilder" labelType="evaluate" link="/admin/quickBuilderCat.cfm" />
-				<menuitem id="bulkimageupload" sequence="30" label="application.adminBundle[session.dmProfile.locale].BulkImageUpload" labelType="evaluate" link="/admin/multipleImagesUploader.cfm" />
-				<menuitem id="bulkfileupload" sequence="40" label="application.adminBundle[session.dmProfile.locale].BulkFileUpload" labelType="evaluate" link="/admin/bulkFileUpload.cfm" />
+			<menu id="menuquickbuilder" sequence="40" label="Quick Site Builder">
+				<menuitem id="quicksitebuilder" sequence="10" label="Quick Site Builder" link="/admin/quickBuilder.cfm" />
+				<menuitem id="quickcategorybuilder" sequence="20" label="Category Tree Quick Builder" link="/admin/quickBuilderCat.cfm" />
+				<menuitem id="bulkimageupload" sequence="30" label="Bulk Image Upload" link="/admin/multipleImagesUploader.cfm" />
+				<menuitem id="bulkfileupload" sequence="40" label="Bulk File Upload" link="/admin/bulkFileUpload.cfm" />
 			</menu>
-			<!-- todo: i18n resource bundle update required -->
-			<menu id="archiveutils" sequence="50" label="Archive Utilities" labelType="value">
-				<menuitem id="archiveall" sequence="10" label="All Archived Content" labelType="value" link="/content/dmarchive.cfm" />
-				<menuitem id="archivedeleted" sequence="20" label="Deleted Archived Content" labelType="value" link="/content/dmarchivedeleted.cfm" />
-				<menuitem id="archivedeleted" sequence="30" label="Archived Media Assets" labelType="value" link="/content/dmarchivemedia.cfm" />
+			<menu id="archiveutils" sequence="50" label="Archive Utilities">
+				<menuitem id="archiveall" sequence="10" label="All Archived Content" link="/content/dmarchive.cfm" />
+				<menuitem id="archivedeleted" sequence="20" label="Deleted Archived Content" link="/content/dmarchivedeleted.cfm" />
+				<menuitem id="archivedeleted" sequence="30" label="Archived Media Assets" link="/content/dmarchivemedia.cfm" />
 			</menu>			
-			<menu id="contentreporting" sequence="60" label="application.adminBundle[session.dmProfile.locale].ContentUtilitiesReporting" labelType="evaluate">
-				<menuitem id="rptownedby" sequence="10" label="application.adminBundle[session.dmProfile.locale].ContentUtilitiesOwnedBy" labelType="evaluate" link="/reporting/statsOwnedBy.cfm" />
+			<menu id="contentreporting" sequence="60" label="Content Utilities Reporting">
+				<menuitem id="rptownedby" sequence="10" label="Content Utilities Owned By" link="/reporting/statsOwnedBy.cfm" />
 			</menu>
 		</subsection>
 	</section>
-	<section id="admin" sequence="4000" permission="MainNavAdminTab" label="application.adminBundle[session.dmProfile.locale].Admin" labelType="evaluate">
-		<subsection id="general" sequence="10" label="application.adminBundle[session.dmProfile.locale].General" labelType="evaluate" permission="AdminGeneralTab" sidebar="admin/sidebar.cfm" content="inc/content.html">
+	<section id="admin" sequence="4000" permission="MainNavAdminTab" label="Admin">
+		<subsection id="general" sequence="10" label="General" permission="AdminGeneralTab">
 			<menu id="application" sequence="10" label="Application">
-				<menuitem id="updateapp" label="Reload application" link="/admin/updateapp.cfm" />
+				<menuitem id="updateapp" sequence="10" label="Reload application" link="/admin/updateapp.cfm" />
 			</menu>
-			<menu id="configuration" sequence="20" label="application.adminBundle[session.dmProfile.locale].Configuration" labelType="evaluate">
+			<menu id="configuration" sequence="20" label="Configuration">
 				<menuitem id="listfarconfig" sequence="1" permission="developer" label="Edit Config" link="/admin/customadmin.cfm?module=customlists/farConfig.cfm" relatedtype="farConfig" />
-				<menuitem id="configdump" sequence="2" permission="developer" label="application.adminBundle[session.dmProfile.locale].DumpConfig" labelType="evaluate" link="/admin/configDump.cfm" />
+				<menuitem id="configdump" sequence="2" permission="developer" label="Dump Config" link="/admin/configDump.cfm" />
 			</menu>
-			<menu id="customAdminXML" sequence="30" permission="developer" label="application.adminBundle[session.dmProfile.locale].CustomAdminXML" labelType="evaluate">
-				<menuitem id="DumpCustomAdminXML" label="application.adminBundle[session.dmProfile.locale].DumpCustomAdminXML" labelType="evaluate" link="/admin/customXMLDump.cfm" />
+			<menu id="customAdminXML" sequence="30" permission="developer" label="Custom Admin XML">
+				<menuitem id="DumpCustomAdminXML" label="Dump Custom Admin XML" link="/admin/customXMLDump.cfm" />
 			</menu>
-			<menu id="mennudump" sequence="40" permission="developer" label="application.adminBundle[session.dmProfile.locale].ScopeDump" labelType="evaluate">
-				<menuitem id="scopedump" label="application.adminBundle[session.dmProfile.locale].ScopeDump" labelType="evaluate" link="/admin/yxplorer.cfm" />
+			<menu id="mennudump" sequence="40" permission="developer" label="Scope Dump">
+				<menuitem id="scopedump" label="Scope Dump" link="/admin/yxplorer.cfm" />
 			</menu>
-			<menu id="cachemanagement" sequence="50" label="application.adminBundle[session.dmProfile.locale].CacheManagement" labelType="evaluate">
-				<menuitem id="objbrokersummary" label="Object Broker Report" labelType="value" link="/admin/objectBrokerReport.cfm" />
-				<menuitem id="cachesummary" label="application.adminBundle[session.dmProfile.locale].CacheSummary" labelType="evaluate" link="/admin/cacheSummary.cfm" />
-				<menuitem id="cacheauto" label="application.adminBundle[session.dmProfile.locale].AutoCache" labelType="evaluate" link="/admin/cacheAll.cfm" />
+			<menu id="cachemanagement" sequence="50" label="Cache Management">
+				<menuitem id="objbrokersummary" sequence="10" label="Object Broker Report" link="/admin/objectBrokerReport.cfm" />
+				<menuitem id="cachesummary" sequence="200" label="Cache Summary" link="/admin/cacheSummary.cfm" />
+				<menuitem id="cacheauto" sequence="30" label="Auto Cache" link="/admin/cacheAll.cfm" />
 			</menu>
-			<menu id="menuscheduledtasks" sequence="60" label="application.adminBundle[session.dmProfile.locale].ScheduledTasks" labelType="evaluate">
-				<menuitem id="scheduledtasks" label="application.adminBundle[session.dmProfile.locale].ScheduledTasks" labelType="evaluate" link="/admin/scheduledTasks.cfm" />
+			<menu id="menuscheduledtasks" sequence="60" label="Scheduled Tasks">
+				<menuitem id="scheduledtasks" sequence="10" label="Scheduled Tasks" link="/admin/scheduledTasks.cfm" relatedtype="dmCron" />
 			</menu>
-			<menu id="messagecenter" sequence="70" label="application.adminBundle[session.dmProfile.locale].MessageCenter" labelType="evaluate">
-				<menuitem id="messages" label="application.adminBundle[session.dmProfile.locale].Messages" labelType="evaluate" link="/admin/messageCentre.cfm" />
+			<menu id="messagecenter" sequence="70" label="Message Center">
+				<menuitem id="messages" sequence="10" label="Messages" link="/admin/messageCentre.cfm" />
 			</menu>
-			<menu id="menufumanagement" sequence="80" label="application.adminBundle[session.dmProfile.locale].ManageURLs" labelType="evaluate">
-				<menuitem id="fumanagement" label="application.adminBundle[session.dmProfile.locale].ManageURLs" labelType="evaluate" link="/admin/manageFU.cfm" />
-				<menuitem id="furebuild" label="Rebuild Friendly URLs" link="/admin/rebuildFU.cfm" />
-				<!-- <menuitem id="fureset" label="application.adminBundle[session.dmProfile.locale].ResetURLs" labelType="evaluate" link="/admin/resetFU.cfm" /> -->
-			</menu>
-		</subsection>
-		<subsection id="verity" sequence="20" permission="AdminSearchTab" label="application.adminBundle[session.dmProfile.locale].VerityManagement" labelType="evaluate" sidebar="admin/sidebar.cfm" content="inc/content.html">
-			<menu id="freetextsearch" label="application.adminBundle[session.dmProfile.locale].FreeTextSearch" labelType="evaluate">
-				<menuitem id="managecollections" label="application.adminBundle[session.dmProfile.locale].ManageCollections" labelType="evaluate" link="/admin/verityManage.cfm" />
-				<menuitem id="buildupdateallcollections" label="application.adminBundle[session.dmProfile.locale].UpdateCollections" labelType="evaluate" link="/admin/verityBuild.cfm" />
-				<menuitem id="optimiseallcollections" label="application.adminBundle[session.dmProfile.locale].OptimizeCollections" labelType="evaluate" link="/admin/verityOptimise.cfm" />
-				<menuitem id="verityconfig" label="application.adminBundle[session.dmProfile.locale].verityConfig" labelType="evaluate" link="/admin/verityConfig.cfm" />
+			<menu id="menufumanagement" sequence="80" label="Manage Friendly URLs">
+				<menuitem id="fumanagement" sequence="10" label="Manage Friendly URLs" link="/admin/manageFU.cfm" />
+				<menuitem id="furebuild" sequence="20" label="Rebuild Friendly URLs" link="/admin/rebuildFU.cfm" />
 			</menu>
 		</subsection>
-		<subsection id="coapi" sequence="30" permission="AdminCOAPITab" label="application.adminBundle[session.dmProfile.locale].COAPIManagement" labelType="evaluate" sidebar="admin/sidebar.cfm" content="inc/content.html">
-			<menu id="coapitools" label="application.adminBundle[session.dmProfile.locale].COAPITools" labelType="evaluate">
-				<menuitem id="typeclasses" label="application.adminBundle[session.dmProfile.locale].TypeClasses" labelType="evaluate" link="/admin/coapiTypes.cfm" />
-				<menuitem id="ruleclasses" label="application.adminBundle[session.dmProfile.locale].RuleClasses" labelType="evaluate" link="/admin/coapiRules.cfm" />
-				<menuitem id="coapimetadata" label="application.adminBundle[session.dmProfile.locale].COAPIMetadata" labelType="evaluate" link="/admin/coapiMetaData.cfm" />
-				<menuitem id="coapiFlexUI" label="COAPI Flex beta" labelType="value" link="/admin/coapiFlexUI.cfm" />
-				<menuitem id="coapischema" label="application.adminBundle[session.dmProfile.locale].COAPISchema" labelType="evaluate" link="/admin/coapiSchema.cfm" />
+		<subsection id="verity" sequence="20" permission="AdminSearchTab" label="Verity Management">
+			<menu id="freetextsearch" sequence="10" label="Free Text Search">
+				<menuitem id="managecollections" sequence="10" label="Manage Collections" link="/admin/verityManage.cfm" />
+				<menuitem id="buildupdateallcollections" sequence="20" label="Build/Update All Collections" link="/admin/verityBuild.cfm" />
+				<menuitem id="optimiseallcollections" sequence="30" label="Optimize All Collections" link="/admin/verityOptimise.cfm" />
+				<menuitem id="verityconfig" sequence="40" label="Verity Config" link="/admin/verityConfig.cfm" />
 			</menu>
-			<menu id="diagnostics" label="application.adminBundle[session.dmProfile.locale].Diagnostics" labelType="evaluate">
-				<!--
-				<menuitem id="orphanednodes" label="application.adminBundle[session.dmProfile.locale].DiagOrphanNotes" labelType="evaluate" link="/admin/diagTreeNodes.cfm" />
-				<menuitem id="fix tree levels" label="application.adminBundle[session.dmProfile.locale].FixTreeLevels" labelType="evaluate" link="/admin/fixtree.cfm" />
-				<menuitem id="remove rogue tree data" label="application.adminBundle[session.dmProfile.locale].RemoveRogueTreeData" labelType="evaluate" link="/admin/cleanTree.cfm" />
-				-->
-				<!-- todo: i18n resource bundle update required -->
+		</subsection>
+		<subsection id="coapi" sequence="30" permission="AdminCOAPITab" label="COAPI Management" >
+			<menu id="coapitools" sequence="10" label="COAPI Tools">
+				<menuitem id="typeclasses" sequence="10" label="Types" link="/admin/coapiTypes.cfm" />
+				<menuitem id="ruleclasses" sequence="20" label="Rules" link="/admin/coapiRules.cfm" />
+				<menuitem id="coapimetadata" sequence="30" label="COAPI Metadata" link="/admin/coapiMetaData.cfm" />
+				<menuitem id="coapiFlexUI" sequence="40" label="COAPI Flex beta" link="/admin/coapiFlexUI.cfm" />
+				<menuitem id="coapischema" sequence="50" label="COAPI Schema" link="/admin/coapiSchema.cfm" />
+			</menu>
+			<menu id="diagnostics" sequence="20" label="Diagnostics">
 				<menuitem id="rebuildtree" label="Rebuild Tree Metadata" link="/admin/rebuildTree.cfm" />
 				<menuitem id="fixrefObjects" label="Fix RefObjects Table" link="/admin/fixRefObjects.cfm" />
 				<menuitem id="reattachnodes" label="Reattach Orphan Folders" link="/admin/reattachnodes.cfm" />
@@ -118,46 +110,35 @@
 			</menu>
 		</subsection>
 	</section>
-	<section id="reporting" sequence="5000" permission="MainNavReportingTab" label="application.adminBundle[session.dmProfile.locale].Reporting" labelType="evaluate">
-		<subsection id="webrpt" sequence="10" permission="ReportingStatsTab" label="application.adminBundle[session.dmProfile.locale].ReportingWeb" labelType="evaluate" sidebar="reporting/sidebar.cfm" content="inc/content.html">
-			<menu id="webrptgeneral" label="application.adminBundle[session.dmProfile.locale].General" labelType="evaluate">
-				<menuitem id="webrptoverviewreport" label="application.adminBundle[session.dmProfile.locale].OverViewReport" labelType="evaluate" link="/reporting/statsOverview.cfm" />
-				<menuitem id="webrptviewsummary" label="application.adminBundle[session.dmProfile.locale].ViewSummary" labelType="evaluate" link="/reporting/statsMostPopular.cfm" />
-				<menuitem id="webrptreferersummary" label="application.adminBundle[session.dmProfile.locale].RefererSummary" labelType="evaluate" link="/reporting/statsReferer.cfm" />
-				<menuitem id="webrptlocalesummary" label="application.adminBundle[session.dmProfile.locale].LocaleSummary" labelType="evaluate" link="/reporting/statsLocale.cfm" />
-				<menuitem id="webrptossummary" label="application.adminBundle[session.dmProfile.locale].OSSummary" labelType="evaluate" link="/reporting/statsOS.cfm" />
-				<menuitem id="webrptbrowsersummary" label="application.adminBundle[session.dmProfile.locale].BrowserSummary" labelType="evaluate" link="/reporting/statsBrowsers.cfm" />
+	<section id="reporting" sequence="5000" permission="MainNavReportingTab" label="Reporting">
+		<subsection id="webrpt" sequence="10" permission="ReportingStatsTab" label="Web Reporting">
+			<menu id="webrptgeneral" sequence="10" label="General">
+				<menuitem id="webrptoverviewreport" sequence="10" label="Overview Report" link="/reporting/statsOverview.cfm" />
+				<menuitem id="webrptviewsummary" sequence="20" label="View Summary" link="/reporting/statsMostPopular.cfm" />
+				<menuitem id="webrptreferersummary" sequence="30" label="Referer Summary" link="/reporting/statsReferer.cfm" />
+				<menuitem id="webrptlocalesummary" sequence="40" label="Locale Summary" link="/reporting/statsLocale.cfm" />
+				<menuitem id="webrptossummary" sequence="50" label="Operating System Summary" link="/reporting/statsOS.cfm" />
+				<menuitem id="webrptbrowsersummary" sequence="60" label="Browser Summary" link="/reporting/statsBrowsers.cfm" />
 			</menu>
-			<menu id="webrptsessions" label="application.adminBundle[session.dmProfile.locale].Sessions" labelType="evaluate">
-				<menuitem id="webrptsessionsummary" label="application.adminBundle[session.dmProfile.locale].SessionSummary" labelType="evaluate" link="/reporting/statsVisitors.cfm" />
-				<menuitem id="webrptsessionpaths" label="application.adminBundle[session.dmProfile.locale].SessionPath" labelType="evaluate" link="/reporting/statsVisitorPaths.cfm" />
-				<menuitem id="webrptwhosonnow" label="application.adminBundle[session.dmProfile.locale].WhoOnNow" labelType="evaluate" link="/reporting/statsWhosOn.cfm" />
+			<menu id="webrptsessions" sequence="20" label="Sessions">
+				<menuitem id="webrptsessionsummary" sequence="10" label="Session Summary" link="/reporting/statsVisitors.cfm" />
+				<menuitem id="webrptsessionpaths" sequence="20" label="Session Path" link="/reporting/statsVisitorPaths.cfm" />
+				<menuitem id="webrptwhosonnow" sequence="30" label="Who's On Now" link="/reporting/statsWhosOn.cfm" />
 			</menu>
-			<menu id="searchenginekeywords" label="application.adminBundle[session.dmProfile.locale].KeyWordSearch" labelType="evaluate">
-				<menuitem id="google" label="application.adminBundle[session.dmProfile.locale].GoogleKeyWords" labelType="evaluate" link="/reporting/statsGoogle.cfm" />
+			<menu id="searchenginekeywords" sequence="40" label="Search Engine Keywords">
+				<menuitem id="google" sequence="10" label="Google Key Words" link="/reporting/statsGoogle.cfm" />
 			</menu>
-			<menu id="searchestats" label="application.adminBundle[session.dmProfile.locale].InSiteSearches" labelType="evaluate">
-				<menuitem id="searchrecent" label="application.adminBundle[session.dmProfile.locale].RecentSearches" labelType="evaluate" link="/reporting/statsSearches.cfm" />
-				<menuitem id="searchnoresults" label="application.adminBundle[session.dmProfile.locale].NoResultSiteSearches" labelType="evaluate" link="/reporting/statsSearchesNoResults.cfm" />
-				<menuitem id="searchmostpopular" label="application.adminBundle[session.dmProfile.locale].MostPopularSiteSearches" labelType="evaluate" link="/reporting/statsSearchesMostPopular.cfm" />
+			<menu id="searchestats" sequence="50" label="In-Site Searches">
+				<menuitem id="searchrecent" sequence="10" label="Recent Searches" link="/reporting/statsSearches.cfm" />
+				<menuitem id="searchnoresults" sequence="20" label="Site Searches Returning No Results" link="/reporting/statsSearchesNoResults.cfm" />
+				<menuitem id="searchmostpopular" sequence="30" label="Most Popular Site Searches" link="/reporting/statsSearchesMostPopular.cfm" />
 			</menu>
-			<menu id="maintenance" label="application.adminBundle[session.dmProfile.locale].Maintenance" labelType="evaluate">
-				<menuitem id="clearstatslog" link="/reporting/statsClear.cfm" label="application.adminBundle[session.dmProfile.locale].ClearStatsLog" labelType="evaluate" />
-			</menu>
-		</subsection>
-		<subsection id="auditrpt" sequence="20" permission="ReportingStatsTab" label="application.adminBundle[session.dmProfile.locale].AuditReporting" labelType="evaluate" sidebar="reporting/sidebar.cfm" content="inc/content.html">
-			<menu id="loginactivity" label="application.adminBundle[session.dmProfile.locale].LoginActivity" labelType="evaluate">
-				<menuitem id="loginall" label="application.adminBundle[session.dmProfile.locale].AllLogins" labelType="evaluate" link="/reporting/auditLogins.cfm" />
-				<menuitem id="loginfailed" label="application.adminBundle[session.dmProfile.locale].FailedLogins" labelType="evaluate" link="/reporting/auditFailedLogins.cfm" />
-				<menuitem id="logindaily" label="application.adminBundle[session.dmProfile.locale].DailyUserLoginActivity" labelType="evaluate" link="/reporting/auditUserActivity.cfm?graph=day" />
-				<menuitem id="loginweekly" label="application.adminBundle[session.dmProfile.locale].WeeklyUserLoginActivity" labelType="evaluate" link="/reporting/auditUserActivity.cfm?graph=week" />
-			</menu>
-			<menu id="menuuseractivity" label="application.adminBundle[session.dmProfile.locale].UserActivitiy" labelType="evaluate">
-				<menuitem id="useractivity" label="application.adminBundle[session.dmProfile.locale].UserActivitiy" labelType="evaluate" link="/reporting/auditUser.cfm" />
+			<menu id="maintenance" sequence="60" label="Maintenance">
+				<menuitem id="clearstatslog" sequence="10" link="/reporting/statsClear.cfm" label="Clear Stats Log" />
 			</menu>
 		</subsection>
 	</section>
-	<section id="security" sequence="6000" permission="MainNavSecurityTab" label="application.adminBundle[session.dmProfile.locale].Security" labelType="evaluate">
+	<section id="security" sequence="6000" permission="MainNavSecurityTab" label="Security">
 		<subsection id="managesecurity" sequence="0" permission="SecurityPolicyManagementTab" label="Manage Security">
 			<menu id="rolesandpermissions" sequence="100" label="Roles and Permissions">
 				<menuitem id="permissions" sequence="10" label="Roles" link="/admin/customadmin.cfm?module=customlists/farRole.cfm" relatedtype="farRole" />
@@ -168,39 +149,15 @@
 				<menuitem id="listfargroup" sequence="20" label="Groups" link="/admin/customadmin.cfm?module=customlists/farGroup.cfm" relatedtype="farGroup" />
 			</menu>
 		</subsection>
-		<subsection id="users" sequence="10" permission="SecurityUserManagementTab" label="application.adminBundle[session.dmProfile.locale].Usermanagement" labelType="evaluate" sidebar="security/sidebar.cfm" content="inc/content_overview.html">
-			<menu id="securitysetup" label="application.adminBundle[session.dmProfile.locale].SetUp" labelType="evaluate">
-				<menuitem id="securitysetuptest" label="application.adminBundle[session.dmProfile.locale].TestSecuritySetUp" labelType="evaluate" link="/security/redirect.cfm?tag=TestSecuritySetup" />
+		<subsection id="auditrpt" sequence="20" permission="ReportingStatsTab" label="Audit Reporting">
+			<menu id="loginactivity" sequence="10" label="Login Activity">
+				<menuitem id="loginall" sequence="10" label="All Logins" link="/reporting/auditLogins.cfm" />
+				<menuitem id="loginfailed" sequence="20" label="Failed Logins" link="/reporting/auditFailedLogins.cfm" />
+				<menuitem id="logindaily" sequence="30" label="Daily User Login Activity" link="/reporting/auditUserActivity.cfm?graph=day" />
+				<menuitem id="loginweekly" sequence="40" label="Weekly User Login Activity" link="/reporting/auditUserActivity.cfm?graph=week" />
 			</menu>
-			<menu id="secusers" label="application.adminBundle[session.dmProfile.locale].Users" labelType="evaluate">
-				<menuitem id="usersearch" label="application.adminBundle[session.dmProfile.locale].SearchForUser" labelType="evaluate" link="/security/redirect.cfm?tag=UserSearch" />
-				<menuitem id="usercreate" label="application.adminBundle[session.dmProfile.locale].CreateAUser" labelType="evaluate" link="/security/redirect.cfm?tag=UserCreateEdit" />
-			</menu>
-			<menu id="secgroups" label="application.adminBundle[session.dmProfile.locale].Groups" labelType="evaluate">
-				<menuitem id="groupsearch" label="application.adminBundle[session.dmProfile.locale].SearchForGroup" labelType="evaluate" link="/security/redirect.cfm?tag=GroupSearch" />
-				<menuitem id="groupcreate" label="application.adminBundle[session.dmProfile.locale].CreateGroup" labelType="evaluate" link="/security/redirect.cfm?tag=GroupCreateEdit" />
-			</menu>
-		</subsection>
-		<subsection id="policy" sequence="20" permission="SecurityPolicyManagementTab" label="application.adminBundle[session.dmProfile.locale].Policy" labelType="evaluate" sidebar="security/sidebar.cfm" content="inc/content_overview.html">
-			<menu id="policysetup" label="application.adminBundle[session.dmProfile.locale].Setup" labelType="evaluate">
-				<menuitem id="policysetuptest" label="application.adminBundle[session.dmProfile.locale].TestPolicySetup" labelType="evaluate" link="/security/policy/setup.cfm" />
-			</menu>
-			<menu id="menupolicygroups" label="application.adminBundle[session.dmProfile.locale].PolicyGroups" labelType="evaluate">
-				<menuitem id="policygroups" label="application.adminBundle[session.dmProfile.locale].PolicyGroups" labelType="evaluate" link="/security/policy/groups.cfm" />
-				<menuitem id="policygrouppermissions" label="application.adminBundle[session.dmProfile.locale].PolicyGroupPermissions" labelType="evaluate" link="/security/policy/groups_permissions.cfm" />
-				<menuitem id="policygroupcreate" label="application.adminBundle[session.dmProfile.locale].CreatePolicyGroup" labelType="evaluate" link="/security/policy/groups_editform.cfm" />
-				<menuitem id="policygroupcopy" label="application.adminBundle[session.dmProfile.locale].CopyPolicyGroup" labelType="evaluate" link="/security/policy/groups_editform.cfm?bCopy=1" />
-				<menuitem id="policygroupmappings" label="application.adminBundle[session.dmProfile.locale].ShowPolicyGroupMappings" labelType="evaluate" link="/security/policy/groups_mapping.cfm" />
-				<menuitem id="policygroupmap" label="application.adminBundle[session.dmProfile.locale].MapPolicyGroup" labelType="evaluate" link="/security/policy/groups_mapping_editform.cfm" />
-			</menu>
-			<menu id="menupermissions" label="application.adminBundle[session.dmProfile.locale].Permissions" labelType="evaluate">
-				<menuitem id="permissions" label="application.adminBundle[session.dmProfile.locale].Permissions" labelType="evaluate" link="/security/policy/permissions.cfm" />
-				<menuitem id="permissioncreate" label="application.adminBundle[session.dmProfile.locale].CreatePermission" labelType="evaluate" link="/security/policy/permissions_editform.cfm" />
-				<menuitem id="permissionrebuild" label="application.adminBundle[session.dmProfile.locale].RebuildPermissions" labelType="evaluate" link="/security/policy/permissions_rebuild.cfm" />
-				<menuitem id="permissionmap" label="application.adminBundle[session.dmProfile.locale].PermissionsMap" labelType="evaluate" link="/security/policy/permissions_map.cfm" />
-				<!-- todo: i18n updates -->
-				<menuitem id="permissionmap" label="Old Permission Map" labelType="text" link="/security/redirect.cfm?tag=permissionsMap" />
-				<menuitem id="webtoppermissionmap" label="Webtop Permission Map" labelType="text" link="/security/policy/webtoppermissions.cfm" />
+			<menu id="menuuseractivity" sequence="20" label="User Activitiy">
+				<menuitem id="useractivity" sequence="10" label="User Activitiy" link="/reporting/auditUser.cfm" />
 			</menu>
 		</subsection>
 	</section>
