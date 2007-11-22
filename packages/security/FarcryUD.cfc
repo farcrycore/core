@@ -1,7 +1,4 @@
-<cfcomponent displayname="Farcry User Directory" hint="Provides the interface for the FarCry user directory" extends="UserDirectory" output="false">
-
-	<cfset this.title = "Farcry User Directory" />
-	<cfset this.key = "CLIENTUD" />
+<cfcomponent displayname="Farcry User Directory" hint="Provides the interface for the FarCry user directory" extends="UserDirectory" output="false" title="FarCry User Directory" key="CLIENTUD">
 	
 	<cfset this.encrypted = false />
 
@@ -137,7 +134,11 @@
 
 		<cfreturn valuelist(qGroups.title) />
 	</cffunction>
+
 	
+	<!--- =================================
+	  DEPRECIATED - USED BY AUTHORISATION
+	================================== --->
 	<cffunction name="getGroupUsers" access="public" output="false" returntype="string" hint="Returns all the users in a specified group">
 		<cfargument name="group" type="string" required="true" hint="The group to query" />
 		

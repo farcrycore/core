@@ -61,7 +61,7 @@
 		
 		<cfloop list="#application.factory.oUtils.getComponents('security')#" index="comp">
 			<cfif application.factory.oUtils.extends(application.factory.oUtils.getPath("security",comp),"farcry.core.packages.security.UserDirectory")>
-				<cfset ud = createobject("component",application.factory.oUtils.getPath("security",comp)) />
+				<cfset ud = createobject("component",application.factory.oUtils.getPath("security",comp)).init() />
 				<cfset this.userdirectories[ud.key] = ud />
 				<cfset this.userdirectoryorder = listappend(this.userdirectoryorder,ud.key) />
 			</cfif>
@@ -424,7 +424,7 @@
 			<!--- Get the users for those groups --->
 			<cfloop query="qGroups">
 				<cfif structkeyexist(this.userdirectories,listlast(data,"_"))>
-					<cfloop list="#this.userdirectories[listlast(data,'_')].getGroupUsers(listfirst(data,'_'))#" index="group">
+					<cfloop list="#this.userdirectories['CLIENTUD'].getGroupUsers(listfirst(data,'_'))#" index="group">
 						<cfset result = application.factory.oUtils.listMerge(result,"#group#_#listlast(data,'_')#") />
 					</cfloop>
 				</cfif>

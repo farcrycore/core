@@ -397,7 +397,7 @@ $out:$
 		<cfset var ud = "" />
 		<cfset var user = "" />
 		
-		<farcry:deprecated message="authorisation.getPolicyGroupUsers() should be replaced by farRole and UserDirectory.getGroupUsers()" />
+		<farcry:deprecated message="authorisation.getPolicyGroupUsers() should be replaced by farRole" />
 		
 		<cfquery datasource="#application.dsn#" name="qGroups">
 			select distinct data
@@ -406,7 +406,7 @@ $out:$
 		</cfquery>
 		
 		<cfloop query="qGroups">
-			<cfloop list="#application.security.userdirectories[listlast(data,'_')].getGroupUsers(listfirst(data,'_'))#" index="user">
+			<cfloop list="#application.security.userdirectories['CLIENTUD'].getGroupUsers(listfirst(data,'_'))#" index="user">
 				<cfset arrayappend(aUsers,"#user#_#listlast(data,'_')#") />
 			</cfloop>
 		</cfloop>
