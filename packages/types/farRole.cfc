@@ -95,7 +95,7 @@
 				</cfif>
 			<cfelse>
 				<cfset stRole = getData(thisrole) />
-				<cfloop list="#stRole.webskins#" index="filter">
+				<cfloop list="#stRole.webskins#" index="filter" delimiters="#chr(10)##chr(13)#,">
 					<cfif (not find(".",filter) or listfirst(filter,".") eq "*" or listfirst(filter,".") eq arguments.type) and refind(replace(listlast(filter,"."),"*",".*","ALL"),arguments.webskin)>
 						<cfreturn application.security.setCache(role=thisrole,webskin="#arguments.type#.#arguments.webskin#", right=1) />
 					<cfelse>
