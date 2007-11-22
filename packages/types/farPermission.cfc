@@ -50,12 +50,12 @@
 		<cfset var qPermissions = "" />
 		
 		<cfquery datasource="#application.dsn#" name="qPermissions">
-			select	label
+			select	shortcut
 			from	#application.dbOwner#farPermission
 			where	objectid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectid#" />
 		</cfquery>
 		
-		<cfreturn qPermissions.label[1] />
+		<cfreturn qPermissions.shortcut[1] />
 	</cffunction>	
 
 	<cffunction name="afterSave" access="public" output="false" returntype="struct" hint="Processes new type content">
@@ -212,7 +212,7 @@
 		<!--- Remove name lookup --->
 		<cfset application.security.removeLookup(permission=arguments.objectid) />
 		
-		<cfreturn super.delete(objectid=arguments.objectid,user=arguments.user,audittype=arguments.audittype) />
+		<cfreturn super.delete(objectid=arguments.objectid,user=arguments.user,auditNote=arguments.auditNote) />
 	</cffunction>
 	
 </cfcomponent>

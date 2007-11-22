@@ -73,6 +73,7 @@
 				<cfinclude template="scaffolds/typeadmin/process.cfm" />
 				<cfinclude template="scaffolds/webskins/process.cfm" />
 				<cfinclude template="scaffolds/rule/process.cfm" />
+				<cfinclude template="scaffolds/permissions/process.cfm" />
 			</extjs:tabPanel>
 		
 		</ft:processForm>
@@ -84,6 +85,9 @@
 		</extjs:tabPanel>
 		<extjs:tabPanel title="Rules">
 			<cfinclude template="scaffolds/rule/ui.cfm" />
+		</extjs:tabPanel>
+		<extjs:tabPanel title="Permissions">
+			<cfinclude template="scaffolds/permissions/ui.cfm" />
 		</extjs:tabPanel>
 	</extjs:tab>
 	

@@ -20,7 +20,7 @@ $Developer: Blair McKenzie (blair@daemon.com.au) $
 <cfset aCustomColumns = arraynew(1) />
 <cfset aCustomColumns[1] = structnew() />
 <cfset aCustomColumns[1].webskin = "displayRelatedTypes" />
-<cfset aCustomColumns[1].title = "Related types" />
+<cfset aCustomColumns[1].title = "Join on" />
 <cfset aCustomColumns[1].sortable = false />
 
 <ft:objectadmin 
