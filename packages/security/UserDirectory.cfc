@@ -8,7 +8,7 @@
 		
 		<cfloop condition="not structisempty(stMetadata)">
 			<cfloop collection="#stMetadata#" item="key">
-				<cfif issimplevalue(stMetadata[key]) and not listcontains("bindingname,displayname,extends,fullname,functions,hint,name,namespace,output,path,porttypename,serviceportname,style,type,wsdlfile",key)>
+				<cfif issimplevalue(stMetadata[key]) and not listcontains("bindingname,displayname,extends,fullname,functions,hint,name,namespace,output,path,porttypename,serviceportname,style,type,wsdlfile",key) and not structkeyexists(this,key)>
 					<cfset this[key] = stMetadata.key />
 				</cfif>
 				
