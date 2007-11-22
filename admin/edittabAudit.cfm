@@ -25,7 +25,7 @@ $DEVELOPER:Brendan Sisson (brendan@daemon.com.au)$
 <!--- set up page header --->
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<sec:restricted permission="ObjectAuditTab">
+<sec:CheckPermission error="true" permission="ObjectAuditTab">
 	<cfset oAudit = createObject("component", "#application.packagepath#.farcry.audit") />
 	<cfset qLog = oAudit.getAuditLog(objectid=url.objectid) />
 	
@@ -103,7 +103,7 @@ $DEVELOPER:Brendan Sisson (brendan@daemon.com.au)$
 			</tr>
 		</table></cfoutput>
 	</cfif>
-</sec:restricted>
+</sec:CheckPermission error="true">
 
 <!--- setup footer --->
 <admin:footer>

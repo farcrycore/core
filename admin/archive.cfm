@@ -33,7 +33,7 @@ $out:$
 
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<sec:restricted permission="ObjectArchiveTab">
+<sec:CheckPermission error="true" permission="ObjectArchiveTab">
 	<cfoutput>	<h3>#application.adminBundle[session.dmProfile.locale].archive#</h3></cfoutput>
 
 	<!--- check if rollback is required --->
@@ -107,7 +107,7 @@ $out:$
 	<cfoutput>
 	</table>
 	<a href="#finish_url#">[Cancel]</a></cfoutput>
-</sec:restricted>
+</sec:CheckPermission error="true">
 
 <!--- setup footer --->
 <admin:footer>

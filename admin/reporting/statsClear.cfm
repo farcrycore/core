@@ -70,7 +70,7 @@ out:
 
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<sec:restricted permission="ReportingStatsTab">
+<sec:CheckPermission error="true" permission="ReportingStatsTab">
 	<cfoutput>
 	<script type="text/javascript">
 	function doSubmit(objForm)
@@ -100,7 +100,7 @@ out:
 		<input type="Submit" name="Submit" value="#application.adminBundle[session.dmProfile.locale].OK#" class="f-submit">
 		</div>
 	</form></cfoutput>
-</sec:restricted>
+</sec:CheckPermission error="true">
 
 <!--- setup footer --->
 <admin:footer>

@@ -35,7 +35,7 @@ out:
 
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<sec:restricted permission="AdminGeneralTab">
+<sec:CheckPermission error="true" permission="AdminGeneralTab">
 	<cfoutput><h3>#application.adminBundle[session.dmProfile.locale].autoCache#</h3>
 	
 	<p>#application.adminBundle[session.dmProfile.locale].generatingCaches#</p></cfoutput><cfflush>
@@ -43,7 +43,7 @@ out:
 	<cfinvoke component="#application.packagepath#.farcry.cache" method="cacheAll" />
 	
 	<cfoutput><h4 class="fade success" id="fader1">#application.adminBundle[session.dmProfile.locale].allDone#</h4></cfoutput>
-</sec:restricted>
+</sec:CheckPermission error="true">
 
 <admin:footer>
 

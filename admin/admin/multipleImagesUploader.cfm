@@ -7,7 +7,7 @@
 
 <admin:header title="Multiple image uploader" writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<sec:restricted permission="AdminCOAPITab">
+<sec:CheckPermission error="true" permission="AdminCOAPITab">
 	<cfif len(application.url.webroot)>
 		<cfset appRoot = right(application.url.webroot,len(application.url.webroot)-1)>
 		<cfset appRoot = replace(appRoot,"/",".")>
@@ -15,7 +15,7 @@
 	<cfelse>
 		<skin:flexWrapper SWFSource="#application.url.farcry#/admin/ui/swf/multipleUploader.swf" id="multiple" flashVars="#lcase(session.urltoken)#">
 	</cfif>
-</sec:restricted>
+</sec:CheckPermission error="true">
 
 <admin:footer>
 

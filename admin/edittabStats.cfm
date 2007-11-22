@@ -27,7 +27,7 @@ out:
 
 <cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
 
-<sec:restricted permission="ObjectStatsTab">
+<sec:CheckPermission error="true" permission="ObjectStatsTab">
 	<cftry> 
 		<!--- try and see if the file can be loaded --->
 	    <cfinclude template="/farcry/projects/#application.projectDirectoryName#/customadmin/edittabStats.cfm">
@@ -424,7 +424,7 @@ out:
 			</cfif>
 		</cfcatch>
 	</cftry>		
-</sec:restricted>
+</sec:CheckPermission error="true">
 
 <!--- setup footer --->
 <admin:footer>

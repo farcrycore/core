@@ -32,7 +32,7 @@ $out:$
 
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<sec:restricted permission="AdminGeneralTab">
+<sec:CheckPermission error="true" permission="AdminGeneralTab">
 	<cfoutput><h3>#application.adminBundle[session.dmProfile.locale].restoreDefaultConfig#</h3></cfoutput>
 	
 	<!--- drop tables and recreate --->
@@ -132,7 +132,7 @@ $out:$
 	<cfoutput></ul></cfoutput>
 	
 	<cfoutput><h3 class="fade success" id="fader1">#application.adminBundle[session.dmProfile.locale].allDone#</h3></cfoutput>
-</sec:restricted>
+</sec:CheckPermission error="true">
 
 <!--- setup footer --->
 <admin:footer>

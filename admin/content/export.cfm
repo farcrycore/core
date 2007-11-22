@@ -101,7 +101,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au) $
 <cfsetting enablecfoutputonly="no">
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<sec:restricted permission="ContentExportTab"><cfoutput>
+<sec:CheckPermission error="true" permission="ContentExportTab"><cfoutput>
 	<form action="#cgi.script_name#?#cgi.query_string#" class="f-wrap-1 wider f-bg-medium" name="editform" method="post">
 		<fieldset>
 	<h3>#application.adminBundle[session.dmProfile.locale].xmlExport#</h3>
@@ -131,6 +131,6 @@ $Developer: Brendan Sisson (brendan@daemon.com.au) $
 		<input type="Submit" name="Submit" value="Export" class="f-submit" />
 		</div>
 	</form></cfoutput>
-</sec:restricted>
+</sec:CheckPermission error="true">
 
 <cfsetting enablecfoutputonly="no">

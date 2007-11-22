@@ -32,14 +32,14 @@ $out:$
 
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<sec:restricted permission="AdminGeneralTab">
+<sec:CheckPermission error="true" permission="AdminGeneralTab">
 	<cfoutput><h3>#application.adminBundle[session.dmProfile.locale].customXMLDump#</h3></cfoutput>
 	<cfif isXMLDoc(application.customAdminXML)>
 		<cfdump var="#application.customAdminXML#" label="application.customAdminXML"><cfoutput><p>&nbsp;</p></cfoutput>
 	<cfelse>
 		<cfoutput><h5 class="error">#application.adminBundle[session.dmProfile.locale].noValidCustomXMLDefined#</h5></cfoutput>	
 	</cfif>
-</sec:restricted>
+</sec:CheckPermission error="true">
 
 <!--- setup footer --->
 <admin:footer>

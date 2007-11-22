@@ -32,7 +32,7 @@ $out:$
 
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<sec:restricted permission="ReportingStatsTab">
+<sec:CheckPermission error="true" permission="ReportingStatsTab">
 	<cfparam name="form.dateRange" default="ww">
 		
 	<!--- get stats --->
@@ -212,7 +212,7 @@ $out:$
 	</cfif>
 	
 	</cfoutput>
-</sec:restricted>
+</sec:CheckPermission error="true">
 
 <admin:footer>
 

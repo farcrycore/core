@@ -36,7 +36,7 @@ $out:$
 
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<sec:restricted permission="developer">
+<sec:CheckPermission error="true" permission="developer">
 	<cfif isDefined("form.submit")>
 	    <cfscript>
 		    aliasDelimiter = "||";
@@ -354,7 +354,7 @@ $out:$
 	
 	</cfoutput>
 	</cfif>
-</sec:restricted>
+</sec:CheckPermission error="true">
 
 <admin:footer>
 

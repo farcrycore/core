@@ -31,7 +31,7 @@ $out:$
 
 <admin:header title="Custom Config" writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<sec:restricted permission="AdminGeneralTab">
+<sec:CheckPermission error="true" permission="AdminGeneralTab">
 	<!--- get custom configs --->
 	<cfdirectory action="LIST" directory="#application.path.project#/system/dmConfig" name="qConfigs" filter="*.cfm">
 	<cfscript>
@@ -89,7 +89,7 @@ $out:$
 	<cfelse>
 		<cfoutput><p>#application.adminBundle[session.dmProfile.locale].noCustomConfigNow#</p></cfoutput>
 	</cfif>
-</sec:restricted>
+</sec:CheckPermission error="true">
 
 <admin:footer>
 <cfsetting enablecfoutputonly="No">

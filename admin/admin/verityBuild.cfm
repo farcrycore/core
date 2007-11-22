@@ -29,7 +29,7 @@ ACTION:
 ------------------------------------->
 <admin:header title="#application.adminBundle[session.dmProfile.locale].buildVerityIndices#" writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<sec:restricted permission="AdminSearchTab">
+<sec:CheckPermission error="true" permission="AdminSearchTab">
 
 	<cfif structisEmpty(form)>
 		<!-----------------------------------
@@ -243,7 +243,7 @@ ACTION:
 		<p><strong class="success fade" id="fader1">#application.adminBundle[session.dmProfile.locale].verityConfigUpdated# #application.adminBundle[session.dmProfile.locale].allDone#</strong></p>
 		</cfoutput>
 	</cfif>
-</sec:restricted>
+</sec:CheckPermission error="true">
 
 <!--- setup footer --->
 <admin:footer>

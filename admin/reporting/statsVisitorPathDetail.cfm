@@ -32,7 +32,7 @@ $out:$
 
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<sec:restricted permission="ReportingStatsTab">
+<sec:CheckPermission error="true" permission="ReportingStatsTab">
 	<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin">
 	<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
 	
@@ -57,7 +57,7 @@ $out:$
 			<cfcatch></cfcatch>
 		</cftry>
 	</cfloop>
-</sec:restricted>
+</sec:CheckPermission error="true">
 
 <admin:footer>
 

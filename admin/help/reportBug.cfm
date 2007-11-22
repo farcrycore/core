@@ -30,7 +30,7 @@ $out:$
 
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<sec:restricted permission="MainNavHelpTab">
+<sec:CheckPermission error="true" permission="MainNavHelpTab">
 	<div class="formtitle"><cfoutput>#application.adminBundle[session.dmProfile.locale].reportBug#</cfoutput></div>
 	
 	<cfif isdefined("form.submit")>
@@ -130,6 +130,6 @@ Contact:
 		</div>
 		</cfoutput>			
 	</cfif>
-</sec:restricted>
+</sec:CheckPermission error="true">
 
 <admin:footer>

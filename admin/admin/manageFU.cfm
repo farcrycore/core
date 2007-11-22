@@ -35,7 +35,7 @@ $out:$
 
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<sec:restricted permission="AdminGeneralTab">
+<sec:CheckPermission error="true" permission="AdminGeneralTab">
 	<cfset objFU = createObject("component","#application.packagepath#.farcry.FU")>
 	
 	<!--- check if items have been marked for deletion --->
@@ -132,7 +132,7 @@ $out:$
 		
 		</form>
 	</cfoutput>
-</sec:restricted>
+</sec:CheckPermission error="true">
 
 <!--- setup footer --->
 <admin:footer>

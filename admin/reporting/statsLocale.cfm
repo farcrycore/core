@@ -31,7 +31,7 @@ $out:$
 
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<sec:restricted permission="ReportingStatsTab">
+<sec:CheckPermission error="true" permission="ReportingStatsTab">
 	<cfparam name="form.typeName" default="all">
 	<cfparam name="form.dateRange" default="all">
 	<cfparam name="form.maxRows" default="20">
@@ -156,7 +156,7 @@ $out:$
 		<h3>#application.adminBundle[session.dmProfile.locale].noLocalesNow#</h3>
 	</cfif>
 	</cfoutput>
-</sec:restricted>
+</sec:CheckPermission error="true">
 
 <admin:footer>
 

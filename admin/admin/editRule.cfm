@@ -26,7 +26,7 @@ $out:$
 
 <cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
 
-<sec:restricted permission="AdminCOAPITab">
+<sec:CheckPermission error="true" permission="AdminCOAPITab">
 	<cfscript>
 	if(isDefined("url.typename") AND isDefined("url.ruleid"))
 	{
@@ -38,4 +38,4 @@ $out:$
 		}
 	}
 	</cfscript>
-</sec:restricted>
+</sec:CheckPermission error="true">

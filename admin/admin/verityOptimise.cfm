@@ -26,7 +26,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 
 <admin:header title="#application.adminBundle[session.dmProfile.locale].buildVerityIndices#" writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<sec:restricted permission="AdminSearchTab">
+<sec:CheckPermission error="true" permission="AdminSearchTab">
 	<!--------------------------------------------------------------------
 	Optimisation Routine For CFMX 
 	--------------------------------------------------------------------->
@@ -49,7 +49,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	</cfloop>
 	
 	<cfoutput><p><strong class="success fade" id="fader1">#application.adminBundle[session.dmProfile.locale].allDone#</strong></p></cfoutput>
-</sec:restricted>
+</sec:CheckPermission error="true">
 
 <!--- setup footer --->
 <admin:footer>

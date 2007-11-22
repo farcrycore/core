@@ -31,7 +31,7 @@ $in: attribute -- description $
 <cfparam name="successmessage" default="">
 <cfparam name="errormessage" default="">
 
-<sec:restricted permission="AdminGeneralTab">
+<sec:CheckPermission error="true" permission="AdminGeneralTab">
 	<!--- ENGAGE: make it happen --->
 	<cfif form.bFormSubmitted EQ "true">
 		<cfloop index="currentType" list="#content_types#">
@@ -102,7 +102,7 @@ $in: attribute -- description $
 			<input type="hidden" name="bFormSubmitted" value="yes">
 		</form>
 	</cfoutput>
-</sec:restricted>
+</sec:CheckPermission error="true">
 
 <!--- setup footer --->
 <admin:footer>

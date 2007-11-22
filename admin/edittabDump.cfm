@@ -27,7 +27,7 @@ $DEVELOPER:Brendan Sisson (brendan@daemon.com.au)$
 <!--- set up page header --->
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<sec:restricted permission="ObjectDumpTab">
+<sec:CheckPermission error="true" permission="ObjectDumpTab">
 	<cfoutput>
 	<h3>#application.adminBundle[session.dmProfile.locale].objectDump#</h3>
 	</cfoutput>
@@ -35,7 +35,7 @@ $DEVELOPER:Brendan Sisson (brendan@daemon.com.au)$
 	<!--- get object details and dump results --->
 	<q4:contentobjectget objectid="#url.objectid#" r_stobject="stobj">
 	<cfdump var="#stobj#" label="#stobj.label# Dump">
-</sec:restricted>
+</sec:CheckPermission error="true">
 
 <!--- setup footer --->
 <admin:footer>

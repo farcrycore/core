@@ -41,9 +41,9 @@ $DEVELOPER:Brendan Sisson (brendan@daemon.com.au)$
 <!--- set up page header --->
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<sec:restricted permission="ObjectEditTab">
+<sec:CheckPermission error="true" permission="ObjectEditTab">
 	<nj:edit objectid="#url.objectid#" typename="#url.typename#" cancelCompleteURL="#application.url.farcry#/edittabOverview.cfm?objectid=#url.objectid#" />
-</sec:restricted>
+</sec:CheckPermission error="true">
 
 <!--- setup footer --->
 <admin:footer>

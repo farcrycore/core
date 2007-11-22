@@ -35,7 +35,7 @@ out:
 
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<sec:restricted permission="AdminGeneralTab">
+<sec:CheckPermission error="true" permission="AdminGeneralTab">
 	<!--- flush selected caches --->
 	<cfif isdefined("form.flush")>
 		<cfinvoke component="#application.packagepath#.farcry.cache" method="cacheFlush">
@@ -124,7 +124,7 @@ out:
 	
 	<!--- show link back to summary page --->
 	<cfoutput><p><span class="frameMenuBullet">&raquo;</span> <a href="cacheSummary.cfm">#application.adminBundle[session.dmProfile.locale].returnCacheSummaryPage#</a></p></cfoutput>
-</sec:restricted>
+</sec:CheckPermission error="true">
 
 <admin:footer>
 <cfsetting enablecfoutputonly="no">

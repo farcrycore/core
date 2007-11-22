@@ -10,7 +10,7 @@
 
 	<admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 	
-	<sec:restricted permission="AdminCOAPITab">
+	<sec:CheckPermission error="true" permission="AdminCOAPITab">
 		<cfset dsn = "#application.dsn#" />
 		<!--- get types that use nested tree --->
 	    <cfquery name="qTypeNames" datasource="#dsn#">
@@ -42,7 +42,7 @@
 	
 	        </cfoutput>
 	 	</cfif>
-	</sec:restricted>
+	</sec:CheckPermission error="true">
 <cfelse>
 	 <cfscript>
 		nNodes = request.factory.oTree.rebuildTree("#form.typename#");

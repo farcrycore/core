@@ -16,12 +16,12 @@ This dumps out an object based on objectid [replacement for edittabDump.cfm]
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
 <cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
 
-<sec:restricted permission="ObjectDumpTab">
+<sec:CheckPermission error="true" permission="ObjectDumpTab">
 	<cfif errormessage NEQ "">
 		<cfoutput><p class="error">#errormessage#</p></cfoutput>
 	<cfelse>
 		<cfdump var="#stObj#" label="#stobj.label#">
 	</cfif>
-</sec:restricted>
+</sec:CheckPermission error="true">
 
 <cfsetting enablecfoutputonly="No">

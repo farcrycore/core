@@ -32,7 +32,7 @@ $out:$
 
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<sec:restricted permission="MainNavHelpTab">
+<sec:CheckPermission error="true" permission="MainNavHelpTab">
 	<cfoutput>
 		<div class="formtitle">#application.adminBundle[session.dmProfile.locale].documentation#</div>
 		
@@ -58,6 +58,6 @@ $out:$
 		<p><span class="frameMenuBullet">&raquo;</span> <a href="http://farcry.daemon.com.au/go/documentation/developers/tech-notes">#application.adminBundle[session.dmProfile.locale].techNotes#</a></p>
 		</div>
 	</cfoutput>	
-</sec:restricted>
+</sec:CheckPermission error="true">
 
 <admin:footer>

@@ -31,7 +31,7 @@ $out:$
 
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<sec:restricted permission="ReportingStatsTab">
+<sec:CheckPermission error="true" permission="ReportingStatsTab">
 	<cfparam name="form.order" default="sessionTime">
 	<cfparam name="form.orderDirection" default="asc">
 	
@@ -115,7 +115,7 @@ $out:$
 		<h3>#application.adminBundle[session.dmProfile.locale].noActiveVisitorsNow#</h3>
 	</cfif>
 	</cfoutput>
-</sec:restricted>
+</sec:CheckPermission error="true">
 
 <admin:footer>
 

@@ -30,7 +30,7 @@ $out:$
 
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<sec:restricted permission="ReportingAuditTag">
+<sec:CheckPermission error="true" permission="ReportingAuditTag">
 	<cfif isdefined("url.view")>
 		<cfoutput>	<h3>#application.adminBundle[session.dmProfile.locale].allUserActivity#</h3></cfoutput>
 	<cfelse>
@@ -124,7 +124,7 @@ $out:$
 		</cfloop>
 	<cfoutput>
 	</table></cfoutput>
-</sec:restricted>
+</sec:CheckPermission error="true">
 
 <!--- setup footer --->
 <admin:footer>

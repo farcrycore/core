@@ -30,7 +30,7 @@ $out:$
 
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<sec:restricted permission="MainNavHelpTab">
+<sec:CheckPermission error="true" permission="MainNavHelpTab">
 	<cfoutput>
 		<div class="formtitle">#application.adminBundle[session.dmProfile.locale].mailingLists#</div>
 		
@@ -61,6 +61,6 @@ $out:$
 		
 		</div>
 	</cfoutput>
-</sec:restricted>
+</sec:CheckPermission error="true">
 
 <admin:footer>

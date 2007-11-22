@@ -35,7 +35,7 @@ out:
 
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<sec:restricted permission="AdminGeneralTab">
+<sec:CheckPermission error="true" permission="AdminGeneralTab">
 	<!--- clean selected blocks --->
 	<cfif isdefined("form.cleanBlock")>
 		<cfinvoke component="#application.packagepath#.farcry.cache" method="cacheClean">
@@ -130,7 +130,7 @@ out:
 	<cfelse>
 		<cfoutput><p>#application.adminBundle[session.dmProfile.locale].noBlockCachesNow#</p></cfoutput>
 	</cfif>
-</sec:restricted>
+</sec:CheckPermission error="true">
 
 <admin:footer>
 <cfsetting enablecfoutputonly="no">

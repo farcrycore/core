@@ -33,7 +33,7 @@ $DEVELOPER: Geoff Bowers (modius@daemon.com.au)$
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
 <cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
 
-<sec:restricted permission="AdminGeneralTab">
+<sec:CheckPermission error="true" permission="AdminGeneralTab">
 	<cfswitch expression="#form.action#">
 	
 		<cfcase value="update">
@@ -201,4 +201,4 @@ $DEVELOPER: Geoff Bowers (modius@daemon.com.au)$
 			
 		</cfcase>	
 	</cfswitch>
-</sec:restricted>
+</sec:CheckPermission error="true">

@@ -10,7 +10,7 @@
 <cfset permissiontypes["0"] = application.rb.getResource("forms.labels.inherit","Inherit") />
 <cfset permissiontypes["1"] = application.rb.getResource("forms.labels.grant","Grant") />
 
-<sec:restricted permission="ModifyPermissions">
+<sec:CheckPermission error="true" permission="ModifyPermissions">
 	<ft:processform action="Save">
 		<cfloop list="#form.fieldnames#" index="field">
 			<cfset role = listfirst(field,"_") />
@@ -80,6 +80,6 @@
 			<ft:farcryButton value="Save" />
 		</ft:farcryButtonPanel>
 	</ft:form>
-</sec:restricted>
+</sec:CheckPermission error="true">
 
 <cfsetting enablecfoutputonly="false" />

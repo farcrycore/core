@@ -34,7 +34,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 <extjs:iframeDialog />
 
 
-<sec:restricted permission="AdminCOAPITab">
+<sec:CheckPermission error="true" permission="AdminCOAPITab">
 	<!--- environment variables --->
 	<cfparam name="FORM.action" default="" type="string">
 	
@@ -288,7 +288,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 	</cfif>
 	</cfloop>
 	<cfoutput></table></cfoutput>
-</sec:restricted>
+</sec:CheckPermission error="true">
 
 <admin:footer>
 

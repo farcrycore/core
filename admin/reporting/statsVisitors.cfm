@@ -30,7 +30,7 @@ out:
 
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<sec:restricted permission="ReportingStatsTab">
+<sec:CheckPermission error="true" permission="ReportingStatsTab">
 	<!--- i18n: get week starts for later use --->
 	<cfset weekStartDay=application.thisCalendar.weekStarts(session.dmProfile.locale)>
 
@@ -256,7 +256,7 @@ out:
 					  
 	</script>	
 	</cfoutput>
-</sec:restricted>
+</sec:CheckPermission error="true">
 
 <!--- setup footer --->
 <admin:footer>

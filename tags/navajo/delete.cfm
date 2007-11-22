@@ -46,7 +46,7 @@ $out: <separate entry for each variable>$
 	<cfset parentObjectID = qGetParent.parentid>
 </cfif>
 
-<sec:restricted permission="edit" objectid="#parentobjectid#">
+<sec:CheckPermission error="true" permission="edit" objectid="#parentobjectid#">
 	<!--- get the parentID --->
 	<q4:contentobjectget objectid="#parentObjectId#" r_stobject="srcObjParent">
 						
@@ -84,6 +84,6 @@ $out: <separate entry for each variable>$
 	<cfelse>
 		<cfthrow detail="URL.objectID not passed">
 	</cfif>
-</sec:restricted>
+</sec:CheckPermission error="true">
 
 <cfsetting enablecfoutputonly="No">

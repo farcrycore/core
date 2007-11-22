@@ -32,7 +32,7 @@ $out:$
 
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<sec:restricted permission="AdminGeneralTab">
+<sec:CheckPermission error="true" permission="AdminGeneralTab">
 	<cfoutput>
 
 	
@@ -60,7 +60,7 @@ $out:$
 	<cfif isdefined("form.scope")>
 		<cfdump var="#evaluate(form.scope)#" label=" #application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].scopeLabel,'#form.scope#')#">
 	</cfif>			
-</sec:restricted>
+</sec:CheckPermission error="true">
 
 <!--- setup footer --->
 <admin:footer>

@@ -35,13 +35,13 @@ out:
 
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<sec:restricted permission="AdminGeneralTab">
+<sec:CheckPermission error="true" permission="AdminGeneralTab">
 
 	<!--- get cache details --->
 	<cfset contentcache = structget("server.dm_generatedcontentcache.#application.applicationname#")>
 	<!--- show contents of cache --->
 	<cfoutput>#contentcache[url.cache].cache#</cfoutput>
-</sec:restricted>
+</sec:CheckPermission error="true">
 
 <!--- setup footer --->
 <admin:footer>

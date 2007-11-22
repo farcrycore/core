@@ -30,7 +30,7 @@ $out:$
 
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<sec:restricted permission="AdminCOAPITab">
+<sec:CheckPermission error="true" permission="AdminCOAPITab">
 	<cfif IsDefined("form.submit")><!--- process the form --->
 	    <cfparam name="form.debug" default="0"><!--- if they ask for debug, this is overwritten--->
 	    
@@ -151,7 +151,7 @@ $out:$
 			<p>#application.adminBundle[session.dmProfile.locale].nestedTreeBlurb#</p>
 	    </cfoutput>
 	</cfif>
-</sec:restricted>
+</sec:CheckPermission error="true">
 
 <admin:footer>
 

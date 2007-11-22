@@ -31,7 +31,7 @@ $out:$
 
 <admin:header title="#application.adminBundle[session.dmProfile.locale].COAPIrules#" writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<sec:restricted permission="AdminCOAPITab">
+<sec:CheckPermission error="true" permission="AdminCOAPITab">
 	<cfoutput><h3>#application.adminBundle[session.dmProfile.locale].ruleClasses#</h3></cfoutput>
 	
 	<cfparam name="FORM.action" default="">
@@ -163,7 +163,7 @@ $out:$
 	</table>
 	
 	</cfoutput>
-</sec:restricted>
+</sec:CheckPermission error="true">
 
 <admin:footer>
 <cfsetting enablecfoutputonly="No">

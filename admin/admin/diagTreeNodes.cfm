@@ -33,7 +33,7 @@ $out:$
 
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<sec:restricted permission="AdminCOAPITab">
+<sec:CheckPermission error="true" permission="AdminCOAPITab">
 	<!--- find orphans --->
 	<cfswitch expression="#application.dbtype#">
 		<cfcase value="mysql,mysql5">
@@ -130,7 +130,7 @@ $out:$
 		</cfif>
 		
 	</cfif>
-</sec:restricted>
+</sec:CheckPermission error="true">
 
 <!--- setup footer --->
 <admin:footer>

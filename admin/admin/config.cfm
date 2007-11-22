@@ -31,7 +31,7 @@ $out:$
 
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<sec:restricted permission="AdminCOAPITab">
+<sec:CheckPermission error="true" permission="AdminCOAPITab">
 	<cfoutput><h3>#application.adminBundle[session.dmProfile.locale].farcryInternalConfigFiles#</h3></cfoutput>
 	<cfparam name="form.action" default="none">
 	
@@ -163,7 +163,7 @@ $out:$
 			</form></cfoutput>
 		</cfcatch>
 	</cftry>
-</sec:restricted>
+</sec:CheckPermission error="true">
 
 <!--- setup footer --->
 <admin:footer>

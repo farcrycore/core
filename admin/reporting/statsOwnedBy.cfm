@@ -51,7 +51,7 @@ function doToggle(tglItem)
 </script>
 </cfoutput>
 
-<sec:restricted permission="ReportingStatsTab">
+<sec:CheckPermission error="true" permission="ReportingStatsTab">
   <cfoutput><h3>Owned By Report</h3></cfoutput>
 
 	<cfif errorMessage NEQ "">
@@ -96,6 +96,6 @@ function doToggle(tglItem)
 		</table>
 	</cfoutput>
 	</cfif>
-</sec:restricted>
+</sec:CheckPermission error="true">
 
 <admin:footer>

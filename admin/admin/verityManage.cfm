@@ -26,7 +26,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 
 <admin:header title="#application.adminBundle[session.dmProfile.locale].manageVerityCollections#" writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<sec:restricted permission="AdminSearchTab">
+<sec:CheckPermission error="true" permission="AdminSearchTab">
 	<cfparam name="url.action" default="">
 	
 	<cfoutput><h3>#application.adminBundle[session.dmProfile.locale].manageCollections#</h3></cfoutput>
@@ -127,7 +127,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 			
 		</cfdefaultcase>
 	</cfswitch>
-</sec:restricted>
+</sec:CheckPermission error="true">
 
 <!--- setup footer --->
 <admin:footer>

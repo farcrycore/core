@@ -29,7 +29,7 @@ $out:$
 
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<sec:restricted permission="ReportingAuditTag">
+<sec:CheckPermission error="true" permission="ReportingAuditTag">
 	<!--- i18n: get week starts for later use --->
 	<cfset weekStartDay=application.thisCalendar.weekStarts(session.dmProfile.locale)>
 
@@ -115,7 +115,7 @@ $out:$
 		</cfchart>
 
 	</cfif>
-</sec:restricted>
+</sec:CheckPermission error="true">
 
 <!--- setup footer --->
 <admin:footer>

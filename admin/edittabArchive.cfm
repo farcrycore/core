@@ -29,7 +29,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 <!--- set up page header --->
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<sec:restricted permission="ObjectArchiveTab">
+<sec:CheckPermission error="true" permission="ObjectArchiveTab">
 	<cfoutput>
 	<h3>#application.adminBundle[session.dmProfile.locale].archive#</h3>
 	</cfoutput>
@@ -95,7 +95,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 	</cfoutput>
 	</cfif>
 	<cfoutput></table></cfoutput>
-</sec:restricted>
+</sec:CheckPermission error="true">
 
 <!--- setup footer --->
 <admin:footer>

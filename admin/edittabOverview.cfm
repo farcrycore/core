@@ -107,9 +107,9 @@ function processReqChange(data, obj){
 <cfhtmlhead text="#jshead#" />
 
 
-<sec:restricted permission="ObjectOverviewTab">
+<sec:CheckPermission error="true" permission="ObjectOverviewTab">
 	<skin:view objectid="#url.objectid#" webskin="renderWebtopOverview" />
-</sec:restricted>
+</sec:CheckPermission error="true">
 
 <!--- setup footer --->
 <!--- <admin:footer>	 --->

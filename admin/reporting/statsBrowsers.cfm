@@ -30,7 +30,7 @@ out:
 
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<sec:restricted permission="ReportingStatsTab">
+<sec:CheckPermission error="true" permission="ReportingStatsTab">
 	<cfparam name="form.dateRange" default="all">
 	<cfparam name="form.maxRows" default="20">
 	
@@ -125,7 +125,7 @@ out:
 	<cfelse>
 		<cfoutput><h3>#application.adminBundle[session.dmProfile.locale].noStatsNow#</h3></cfoutput>
 	</cfif>
-</sec:restricted>
+</sec:CheckPermission error="true">
 
 <!--- setup footer --->
 <admin:footer>

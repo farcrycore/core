@@ -30,7 +30,7 @@ $out:$
 
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<sec:restricted permission="AdminCOAPITab">
+<sec:CheckPermission error="true" permission="AdminCOAPITab">
 	<cfoutput><h3>#application.adminBundle[session.dmProfile.locale].COAPITypeMetaData#</h3></cfoutput>
 	<cfdump var="#application.types#" label="application.types" expand="no">
 	
@@ -38,7 +38,7 @@ $out:$
 	<h3>#application.adminBundle[session.dmProfile.locale].COAPIRulesMetaData#</h3></cfoutput>
 	
 	<cfdump var="#application.rules#" label="application.rules" expand="no">
-</sec:restricted>
+</sec:CheckPermission error="true">
 
 <admin:footer>
 

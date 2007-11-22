@@ -32,7 +32,7 @@ $out:$
 
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<sec:restricted permission="ReportingStatsTab">
+<sec:CheckPermission error="true" permission="ReportingStatsTab">
 	<cfparam name="form.remoteIP" default="all">
 	<cfif form.remoteIP eq "">
 		<cfset form.remoteIP = "all">
@@ -121,7 +121,7 @@ $out:$
 		<h3>#application.adminBundle[session.dmProfile.locale].noVisitorsNow#</h3>
 	</cfif>
 	</cfoutput>
-</sec:restricted>
+</sec:CheckPermission error="true">
 
 <admin:footer>
 

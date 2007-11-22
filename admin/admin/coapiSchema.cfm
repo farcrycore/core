@@ -32,7 +32,7 @@ $out:$
 
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<sec:restricted permission="AdminCOAPITab">
+<sec:CheckPermission error="true" permission="AdminCOAPITab">
 	<cfoutput><h3>#application.adminBundle[session.dmProfile.locale].COAPIschema#</h3></cfoutput>
 	
 	<!--
@@ -674,7 +674,7 @@ $out:$
 	</CFOUTPUT>
 		
 	<CFSETTING SHOWDEBUGOUTPUT="No">
-</sec:restricted>
+</sec:CheckPermission error="true">
 
 <admin:footer>
 <cfsetting enablecfoutputonly="No">

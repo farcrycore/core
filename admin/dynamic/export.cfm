@@ -28,7 +28,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au) $
 
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<sec:restricted permission="ContentExportTab">
+<sec:CheckPermission error="true" permission="ContentExportTab">
 	<cfoutput><span class="Formtitle">#application.adminBundle[session.dmProfile.locale].xmlExport#</span><p></p></cfoutput>
 
 	<cfset bShowForm=1>
@@ -150,7 +150,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au) $
 		</form>	
 		</cfoutput>
 	</cfif>
-</sec:restricted>
+</sec:CheckPermission error="true">
 
 <admin:footer>
 
