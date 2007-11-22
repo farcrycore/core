@@ -49,7 +49,7 @@
 				
 			<script type="text/javascript">
 				Ext.onReady(function(){
-					var store = new Ext.data.Store({
+					var store = new Ext.data.GroupingStore({
 						proxy: new Ext.data.HttpProxy({
 							url: "#application.url.farcry#/facade/filterwebskins.cfm",
 							method: 'POST'
@@ -57,7 +57,9 @@
 						reader: new Ext.data.JsonReader({
 							root: 'rows',
 							fields:["Type","Webskin","Right"]
-						})
+						}),
+						sortInfo:{field: 'Webskin', direction: "ASC"},
+						groupField:'Type'
 					});
 					
 					// Webskin list
@@ -71,7 +73,14 @@
 								return (value == "Granted") ? "<span class='success'>Granted</span>" : "<span class='error'>Denied</span>";
 							}}
 						],
-						autoExpandColumn: 'webskin'
+						autoExpandColumn: 'webskin',
+				        view: new Ext.grid.GroupingView({
+				            forceFit:true,
+				            hideGroupedColumn:true,
+				            enableGroupingMenu:true,
+				            startCollapsed:true,
+				            groupTextTpl: '{text} ({[values.rs.length]} {[values.rs.length > 1 ? "Webskins" : "Webskin"]})'
+				        }),
 					});
 					store.load({params:{filters:"#arguments.stMetadata.value#"}});
 					grid.render();

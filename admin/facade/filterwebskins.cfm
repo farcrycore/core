@@ -9,7 +9,7 @@
 	<cfset var qResult = "" />
 	
 	<cfquery dbtype="query" name="qResult">
-		select	methodname as name
+		select	methodname
 		from	arguments.webskins
 		where 	methodname like <cfqueryparam cfsqltype="cf_sql_varchar" value="#replace(arguments.filter,'*','%')#" />
 	</cfquery>
@@ -21,7 +21,9 @@
 <cfset stWebskins = structnew() />
 <cfloop collection="#application.stCOAPI#" item="thistype">
 	<cfloop query="application.stCOAPI.#thistype#.qWebskins">
-		<cfset stWebskins[thistype][methodname] = "Denied" />
+		<cfif methodname neq "deniedaccess">
+			<cfset stWebskins[thistype][methodname] = "Denied" />
+		</cfif>
 	</cfloop>
 </cfloop>
 
@@ -36,7 +38,9 @@
 	<cfloop list="#types#" index="thistype">
 		<cfset qWebskins = filterWebskins(application.stCOAPI[thistype].qWebskins,listlast(filter,".")) />
 		<cfloop query="qWebskins">
-			<cfset stWebskins[thistype][name] = "Granted" />
+			<cfif methodname neq "deniedaccess">
+				<cfset stWebskins[thistype][methodname] = "Granted" />
+			</cfif>
 		</cfloop>
 	</cfloop>
 </cfloop>
