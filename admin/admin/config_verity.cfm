@@ -201,4 +201,4 @@ $DEVELOPER: Geoff Bowers (modius@daemon.com.au)$
 			
 		</cfcase>	
 	</cfswitch>
-</sec:CheckPermission error="true">
+</sec:CheckPermission>

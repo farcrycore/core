@@ -15,7 +15,7 @@
 	<cfelse>
 		<skin:flexWrapper SWFSource="#application.url.farcry#/admin/ui/swf/multipleUploader.swf" id="multiple" flashVars="#lcase(session.urltoken)#">
 	</cfif>
-</sec:CheckPermission error="true">
+</sec:CheckPermission>
 
 <admin:footer>
 

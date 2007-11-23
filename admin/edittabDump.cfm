@@ -35,7 +35,7 @@ $DEVELOPER:Brendan Sisson (brendan@daemon.com.au)$
 	<!--- get object details and dump results --->
 	<q4:contentobjectget objectid="#url.objectid#" r_stobject="stobj">
 	<cfdump var="#stobj#" label="#stobj.label# Dump">
-</sec:CheckPermission error="true">
+</sec:CheckPermission>
 
 <!--- setup footer --->
 <admin:footer>

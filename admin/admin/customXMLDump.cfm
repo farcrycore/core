@@ -39,7 +39,7 @@ $out:$
 	<cfelse>
 		<cfoutput><h5 class="error">#application.adminBundle[session.dmProfile.locale].noValidCustomXMLDefined#</h5></cfoutput>	
 	</cfif>
-</sec:CheckPermission error="true">
+</sec:CheckPermission>
 
 <!--- setup footer --->
 <admin:footer>

@@ -132,7 +132,7 @@ $out:$
 	<cfoutput></ul></cfoutput>
 	
 	<cfoutput><h3 class="fade success" id="fader1">#application.adminBundle[session.dmProfile.locale].allDone#</h3></cfoutput>
-</sec:CheckPermission error="true">
+</sec:CheckPermission>
 
 <!--- setup footer --->
 <admin:footer>

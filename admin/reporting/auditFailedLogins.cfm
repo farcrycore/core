@@ -79,7 +79,7 @@ $out:$
 	
   <cfoutput>
 	</ul></cfoutput>
-</sec:CheckPermission error="true">
+</sec:CheckPermission>
 
 <!--- setup footer --->
 <admin:footer>

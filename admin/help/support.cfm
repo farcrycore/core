@@ -40,6 +40,6 @@ $out:$
 		<p><span class="frameMenuBullet">&raquo;</span> <a href="http://www.daemon.com.au/go/farcry-support">#application.adminBundle[session.dmProfile.locale].daemonCommercialFarcrySupport#</a></p>
 		</div>
 	</cfoutput>
-</sec:CheckPermission error="true">
+</sec:CheckPermission>
 
 <admin:footer>

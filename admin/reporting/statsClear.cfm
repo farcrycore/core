@@ -100,7 +100,7 @@ out:
 		<input type="Submit" name="Submit" value="#application.adminBundle[session.dmProfile.locale].OK#" class="f-submit">
 		</div>
 	</form></cfoutput>
-</sec:CheckPermission error="true">
+</sec:CheckPermission>
 
 <!--- setup footer --->
 <admin:footer>

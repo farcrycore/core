@@ -41,7 +41,7 @@ out:
 	<cfset contentcache = structget("server.dm_generatedcontentcache.#application.applicationname#")>
 	<!--- show contents of cache --->
 	<cfoutput>#contentcache[url.cache].cache#</cfoutput>
-</sec:CheckPermission error="true">
+</sec:CheckPermission>
 
 <!--- setup footer --->
 <admin:footer>

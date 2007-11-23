@@ -121,7 +121,7 @@ $out:$
 		<h3>#application.adminBundle[session.dmProfile.locale].noVisitorsNow#</h3>
 	</cfif>
 	</cfoutput>
-</sec:CheckPermission error="true">
+</sec:CheckPermission>
 
 <admin:footer>
 

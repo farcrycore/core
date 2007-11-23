@@ -84,6 +84,6 @@ $out: <separate entry for each variable>$
 	<cfelse>
 		<cfthrow detail="URL.objectID not passed">
 	</cfif>
-</sec:CheckPermission error="true">
+</sec:CheckPermission>
 
 <cfsetting enablecfoutputonly="No">

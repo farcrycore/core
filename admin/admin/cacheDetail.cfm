@@ -124,7 +124,7 @@ out:
 	
 	<!--- show link back to summary page --->
 	<cfoutput><p><span class="frameMenuBullet">&raquo;</span> <a href="cacheSummary.cfm">#application.adminBundle[session.dmProfile.locale].returnCacheSummaryPage#</a></p></cfoutput>
-</sec:CheckPermission error="true">
+</sec:CheckPermission>
 
 <admin:footer>
 <cfsetting enablecfoutputonly="no">

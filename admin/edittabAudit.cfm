@@ -103,7 +103,7 @@ $DEVELOPER:Brendan Sisson (brendan@daemon.com.au)$
 			</tr>
 		</table></cfoutput>
 	</cfif>
-</sec:CheckPermission error="true">
+</sec:CheckPermission>
 
 <!--- setup footer --->
 <admin:footer>

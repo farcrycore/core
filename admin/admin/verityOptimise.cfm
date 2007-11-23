@@ -49,7 +49,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	</cfloop>
 	
 	<cfoutput><p><strong class="success fade" id="fader1">#application.adminBundle[session.dmProfile.locale].allDone#</strong></p></cfoutput>
-</sec:CheckPermission error="true">
+</sec:CheckPermission>
 
 <!--- setup footer --->
 <admin:footer>

@@ -43,7 +43,7 @@ $DEVELOPER:Brendan Sisson (brendan@daemon.com.au)$
 
 <sec:CheckPermission error="true" permission="ObjectEditTab">
 	<nj:edit objectid="#url.objectid#" typename="#url.typename#" cancelCompleteURL="#application.url.farcry#/edittabOverview.cfm?objectid=#url.objectid#" />
-</sec:CheckPermission error="true">
+</sec:CheckPermission>
 
 <!--- setup footer --->
 <admin:footer>

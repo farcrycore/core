@@ -424,7 +424,7 @@ out:
 			</cfif>
 		</cfcatch>
 	</cftry>		
-</sec:CheckPermission error="true">
+</sec:CheckPermission>
 
 <!--- setup footer --->
 <admin:footer>

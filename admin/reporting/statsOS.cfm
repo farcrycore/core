@@ -130,7 +130,7 @@ $out:$
 		<h3>#application.adminBundle[session.dmProfile.locale].noOSnow#</h3>
 	</cfif>
 	</cfoutput>
-</sec:CheckPermission error="true">
+</sec:CheckPermission>
 
 <admin:footer>
 

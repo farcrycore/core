@@ -58,6 +58,6 @@ $out:$
 		<p><span class="frameMenuBullet">&raquo;</span> <a href="http://farcry.daemon.com.au/go/documentation/developers/tech-notes">#application.adminBundle[session.dmProfile.locale].techNotes#</a></p>
 		</div>
 	</cfoutput>	
-</sec:CheckPermission error="true">
+</sec:CheckPermission>
 
 <admin:footer>

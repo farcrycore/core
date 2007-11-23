@@ -131,6 +131,6 @@ $Developer: Brendan Sisson (brendan@daemon.com.au) $
 		<input type="Submit" name="Submit" value="Export" class="f-submit" />
 		</div>
 	</form></cfoutput>
-</sec:CheckPermission error="true">
+</sec:CheckPermission>
 
 <cfsetting enablecfoutputonly="no">

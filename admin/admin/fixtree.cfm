@@ -364,7 +364,7 @@ $out:$
 	        </cfoutput>
 	    </cfif>
 	</cfif>
-</sec:CheckPermission error="true">
+</sec:CheckPermission>
 
 <admin:footer>
 

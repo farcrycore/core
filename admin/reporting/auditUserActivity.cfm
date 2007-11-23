@@ -115,7 +115,7 @@ $out:$
 		</cfchart>
 
 	</cfif>
-</sec:CheckPermission error="true">
+</sec:CheckPermission>
 
 <!--- setup footer --->
 <admin:footer>

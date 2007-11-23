@@ -38,4 +38,4 @@ $out:$
 		}
 	}
 	</cfscript>
-</sec:CheckPermission error="true">
+</sec:CheckPermission>

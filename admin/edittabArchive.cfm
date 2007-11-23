@@ -95,7 +95,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 	</cfoutput>
 	</cfif>
 	<cfoutput></table></cfoutput>
-</sec:CheckPermission error="true">
+</sec:CheckPermission>
 
 <!--- setup footer --->
 <admin:footer>

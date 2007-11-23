@@ -102,7 +102,7 @@ $out:$
 		<h3>#application.adminBundle[session.dmProfile.locale].noSearchesNow#</h3>
 	</cfif>
 	</cfoutput>
-</sec:CheckPermission error="true">
+</sec:CheckPermission>
 
 <admin:footer>
 

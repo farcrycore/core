@@ -130,7 +130,7 @@ out:
 	<cfelse>
 		<cfoutput><p>#application.adminBundle[session.dmProfile.locale].noBlockCachesNow#</p></cfoutput>
 	</cfif>
-</sec:CheckPermission error="true">
+</sec:CheckPermission>
 
 <admin:footer>
 <cfsetting enablecfoutputonly="no">

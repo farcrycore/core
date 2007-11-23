@@ -674,7 +674,7 @@ $out:$
 	</CFOUTPUT>
 		
 	<CFSETTING SHOWDEBUGOUTPUT="No">
-</sec:CheckPermission error="true">
+</sec:CheckPermission>
 
 <admin:footer>
 <cfsetting enablecfoutputonly="No">

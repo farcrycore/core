@@ -125,7 +125,7 @@ out:
 	<cfelse>
 		<cfoutput><h3>#application.adminBundle[session.dmProfile.locale].noStatsNow#</h3></cfoutput>
 	</cfif>
-</sec:CheckPermission error="true">
+</sec:CheckPermission>
 
 <!--- setup footer --->
 <admin:footer>

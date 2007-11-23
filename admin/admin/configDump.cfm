@@ -39,7 +39,7 @@ $out:$
 	<cfloop collection="#application.config#" item="config">
 		<cfdump var="#application.config[config]#" label="#config#"><cfoutput><p>&nbsp;</p></cfoutput>
 	</cfloop>
-</sec:CheckPermission error="true">
+</sec:CheckPermission>
 
 <!--- setup footer --->
 <admin:footer>

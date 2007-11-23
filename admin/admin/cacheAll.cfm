@@ -43,7 +43,7 @@ out:
 	<cfinvoke component="#application.packagepath#.farcry.cache" method="cacheAll" />
 	
 	<cfoutput><h4 class="fade success" id="fader1">#application.adminBundle[session.dmProfile.locale].allDone#</h4></cfoutput>
-</sec:CheckPermission error="true">
+</sec:CheckPermission>
 
 <admin:footer>
 

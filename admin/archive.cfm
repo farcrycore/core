@@ -107,7 +107,7 @@ $out:$
 	<cfoutput>
 	</table>
 	<a href="#finish_url#">[Cancel]</a></cfoutput>
-</sec:CheckPermission error="true">
+</sec:CheckPermission>
 
 <!--- setup footer --->
 <admin:footer>

@@ -22,6 +22,6 @@ This dumps out an object based on objectid [replacement for edittabDump.cfm]
 	<cfelse>
 		<cfdump var="#stObj#" label="#stobj.label#">
 	</cfif>
-</sec:CheckPermission error="true">
+</sec:CheckPermission>
 
 <cfsetting enablecfoutputonly="No">

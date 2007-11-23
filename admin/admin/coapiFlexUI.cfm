@@ -15,7 +15,7 @@
 	<cfelse>
 		<skin:flexWrapper SWFSource="#application.url.farcry#/admin/ui/swf/Coapi.swf" id="CoapiUI">
 	</cfif>
-</sec:CheckPermission error="true">
+</sec:CheckPermission>
 
 <admin:footer>
 

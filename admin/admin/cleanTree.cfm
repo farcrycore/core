@@ -151,7 +151,7 @@ $out:$
 			<p>#application.adminBundle[session.dmProfile.locale].nestedTreeBlurb#</p>
 	    </cfoutput>
 	</cfif>
-</sec:CheckPermission error="true">
+</sec:CheckPermission>
 
 <admin:footer>
 

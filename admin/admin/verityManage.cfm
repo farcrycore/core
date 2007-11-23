@@ -127,7 +127,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 			
 		</cfdefaultcase>
 	</cfswitch>
-</sec:CheckPermission error="true">
+</sec:CheckPermission>
 
 <!--- setup footer --->
 <admin:footer>

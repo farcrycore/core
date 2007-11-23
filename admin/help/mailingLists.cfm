@@ -61,6 +61,6 @@ $out:$
 		
 		</div>
 	</cfoutput>
-</sec:CheckPermission error="true">
+</sec:CheckPermission>
 
 <admin:footer>

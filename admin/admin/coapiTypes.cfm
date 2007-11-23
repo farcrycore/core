@@ -288,7 +288,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 	</cfif>
 	</cfloop>
 	<cfoutput></table></cfoutput>
-</sec:CheckPermission error="true">
+</sec:CheckPermission>
 
 <admin:footer>
 

@@ -42,7 +42,7 @@
 	
 	        </cfoutput>
 	 	</cfif>
-	</sec:CheckPermission error="true">
+	</sec:CheckPermission>
 <cfelse>
 	 <cfscript>
 		nNodes = request.factory.oTree.rebuildTree("#form.typename#");

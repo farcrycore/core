@@ -109,7 +109,7 @@ function processReqChange(data, obj){
 
 <sec:CheckPermission error="true" permission="ObjectOverviewTab">
 	<skin:view objectid="#url.objectid#" webskin="renderWebtopOverview" />
-</sec:CheckPermission error="true">
+</sec:CheckPermission>
 
 <!--- setup footer --->
 <!--- <admin:footer>	 --->

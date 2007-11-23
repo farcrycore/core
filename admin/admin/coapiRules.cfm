@@ -163,7 +163,7 @@ $out:$
 	</table>
 	
 	</cfoutput>
-</sec:CheckPermission error="true">
+</sec:CheckPermission>
 
 <admin:footer>
 <cfsetting enablecfoutputonly="No">

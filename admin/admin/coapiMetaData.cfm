@@ -38,7 +38,7 @@ $out:$
 	<h3>#application.adminBundle[session.dmProfile.locale].COAPIRulesMetaData#</h3></cfoutput>
 	
 	<cfdump var="#application.rules#" label="application.rules" expand="no">
-</sec:CheckPermission error="true">
+</sec:CheckPermission>
 
 <admin:footer>
 

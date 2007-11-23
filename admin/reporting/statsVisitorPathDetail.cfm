@@ -57,7 +57,7 @@ $out:$
 			<cfcatch></cfcatch>
 		</cftry>
 	</cfloop>
-</sec:CheckPermission error="true">
+</sec:CheckPermission>
 
 <admin:footer>
 

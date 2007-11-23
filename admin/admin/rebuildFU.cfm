@@ -102,7 +102,7 @@ $in: attribute -- description $
 			<input type="hidden" name="bFormSubmitted" value="yes">
 		</form>
 	</cfoutput>
-</sec:CheckPermission error="true">
+</sec:CheckPermission>
 
 <!--- setup footer --->
 <admin:footer>

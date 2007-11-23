@@ -155,7 +155,7 @@
 		</form>
 		</cfoutput>
 	</cfif>
-</sec:CheckPermission error="true">
+</sec:CheckPermission>
 
 <admin:footer>
 <cfsetting enablecfoutputonly="No">

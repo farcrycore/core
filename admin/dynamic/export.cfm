@@ -150,7 +150,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au) $
 		</form>	
 		</cfoutput>
 	</cfif>
-</sec:CheckPermission error="true">
+</sec:CheckPermission>
 
 <admin:footer>
 

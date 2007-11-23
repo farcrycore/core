@@ -80,6 +80,6 @@
 			<ft:farcryButton value="Save" />
 		</ft:farcryButtonPanel>
 	</ft:form>
-</sec:CheckPermission error="true">
+</sec:CheckPermission>
 
 <cfsetting enablecfoutputonly="false" />

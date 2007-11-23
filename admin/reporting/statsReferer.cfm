@@ -151,7 +151,7 @@ $out:$
 		<h3>#application.adminBundle[session.dmProfile.locale].noReferersNow#</h3>
 	</cfif>
 	</cfoutput>
-</sec:CheckPermission error="true">
+</sec:CheckPermission>
 
 <admin:footer>
 
