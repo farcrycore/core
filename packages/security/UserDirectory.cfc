@@ -2,22 +2,22 @@
 	
 	<cfset variables.metadata = structnew() />
 
-	<cffunction name="init" access="public" output="false" returntype="component" hint="Does initialisation of user directory">
+	<cffunction name="init" access="public" output="true" returntype="component" hint="Does initialisation of user directory">
 		<cfset var stMetadata = getMetadata(this) />
-		<cfset var key = "" />
+		<cfset var attr = "" />
 		
 		<cfloop condition="not structisempty(stMetadata)">
-			<cfloop collection="#stMetadata#" item="key">
-				<cfif issimplevalue(stMetadata[key]) and not listcontains("bindingname,displayname,extends,fullname,functions,hint,name,namespace,output,path,porttypename,serviceportname,style,type,wsdlfile",key) and not structkeyexists(this,key)>
-					<cfset this[key] = stMetadata.key />
-				</cfif>
-				
-				<cfif structkeyexists(stMetadata,"extends")>
-					<cfset stMetadata = stMetadata.extends />
-				<cfelse>
-					<cfset stMetadata = structnew() />
+			<cfloop collection="#stMetadata#" item="attr">
+				<cfif issimplevalue(stMetadata[attr]) and not listcontains("bindingname,displayname,extends,fullname,functions,hint,name,namespace,output,path,porttypename,serviceportname,style,type,wsdlfile",attr) and not structkeyexists(this,attr)>
+					<cfset this[attr] = stMetadata[attr] />
 				</cfif>
 			</cfloop>
+			
+			<cfif structkeyexists(stMetadata,"extends")>
+				<cfset stMetadata = stMetadata.extends />
+			<cfelse>
+				<cfset stMetadata = structnew() />
+			</cfif>
 		</cfloop>
 		
 		<cfreturn this />
