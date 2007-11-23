@@ -293,7 +293,13 @@
 			<cfset oUser.createData(stProperties=stObj,user="migratescript",auditNote="Data migrated from pre 4.1") />
 			
 			<cfset stResult[userid] = stObj.objectid />
-		</cfloop>		
+		</cfloop>
+		
+		<!--- Update profiles --->
+		<cfquery datasource="#application.dsn#">
+			update	#application.dbowner#dmProfile
+			set		username=username & '_' & userDirectory
+		</cfquery>
 		
 		<cfreturn stResult />
 	</cffunction>
