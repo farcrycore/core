@@ -25,8 +25,8 @@
 	
 	<cfif isvalid("uuid",attributes.reference)>
 		<cfset attributes.objectid = attributes.reference />
-	<cfelseif not isvalid("uuid",attributes.objectid)>
-		<cfthrow message="ObjectID or reference (depreciated) must be passed into the CheckPermission tag" />
+	<cfelseif len(attributes.objectid) and not isvalid("uuid",attributes.objectid)>
+		<cfthrow message="ObjectID or reference (depreciated) must be a valid uuid" />
 	</cfif>
 	
 	<cfloop list="#attributes.Permission#" index="perm">
