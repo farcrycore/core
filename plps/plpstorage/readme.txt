@@ -1,2 +1,0 @@
-..\projectname\plps\plpstorage
-This directory is for the storage of PLP instances when in file storage mode.  Typically the only function you are likely to want to perform here is deleting instances manually.
