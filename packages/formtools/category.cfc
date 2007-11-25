@@ -1,6 +1,5 @@
 <cfcomponent extends="field" name="category" displayname="category" hint="Field component to liase with all category field types"> 
 
-	<cfimport taglib="/farcry/core/tags/widgets/" prefix="widgets">
 	<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin">
 	<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" >
 
