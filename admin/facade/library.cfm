@@ -26,7 +26,6 @@ $Developer: $
 
 <cfimport taglib="/farcry/core/tags/webskin/" prefix="ws" >
 <cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" >
-<cfimport taglib="/farcry/core/tags/widgets/" prefix="widgets" >
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin" >
 
 <cfinclude template="/farcry/core/admin/includes/utilityFunctions.cfm">

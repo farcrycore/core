@@ -1,8 +1,6 @@
 <cfcomponent extends="field" name="list" displayname="list" hint="Field component to liase with all list field types"> 
 
-
 	<!--- import tag libraries --->
-	<cfimport taglib="/farcry/core/tags/widgets/" prefix="widgets" />
 	<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" />
 	
 

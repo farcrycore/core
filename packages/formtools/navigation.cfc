@@ -1,8 +1,6 @@
-
-
 <cfcomponent extends="field" name="navigation" displayname="navigation" hint="Field component to liase with all navigation field types"> 
 
-	<cfimport taglib="/farcry/core/tags/widgets/" prefix="widgets">
+	<!--- import tag libraries --->
 	<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" >
 
 		
