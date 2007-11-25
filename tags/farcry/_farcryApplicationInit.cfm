@@ -94,14 +94,6 @@ test for the existance of each and act accordingly
 	*/
 	oAlterType.refreshAllCFCAppData(); // This replaces loadCOAPIMetaData for now. I'm thinking types.init()?? ~tom
 
-	// activate PLP storage
-	if (NOT isDefined("application.path.plpstorage"))
-		application.path.plpstorage = application.path.core & "/plps/plpstorage";
-	if (NOT isDefined("application.path.tempfiles"))
-		application.path.tempfiles = application.path.core & "/plps/tempfiles";
-	application.fourq.plpstorage = application.path.core & "/plps/plpstorage"; // deprecated
-	application.fourq.plppath = "/farcry/core/plps"; // deprecated
-
 </cfscript>
 
 <!--- Load config data --->
