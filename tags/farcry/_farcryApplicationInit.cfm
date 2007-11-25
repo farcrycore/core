@@ -1,23 +1,9 @@
 <cfsetting requestTimeOut="200">
 <cfsilent>
-<!---
-|| LEGAL ||
-$Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
-$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
-
-|| VERSION CONTROL ||
-$Header: $
-$Author: $
-$Date: $
-$Name: $
-$Revision: $
-
-|| DESCRIPTION ||
-$Description: initialise application level code. Sets up site config and permissions cache $
-
-|| DEVELOPER ||
-$Developer: Mat Bryant (mat@daemon.com.au)$
---->
+<!--- @@Copyright: Daemon Pty Limited 1995-2007, http://www.daemon.com.au --->
+<!--- @@License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php --->
+<!--- @@Description: initialise application level code. Sets up site config and permissions cache  --->
+<!--- @@Developer: Mat Bryant (mat@daemon.com.au) --->
 
 
 <!--- set up general config variables --->

@@ -24,27 +24,6 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 <!--- empty application.types structure --->
 <cfset application.types = structNew()>
 
-<!---
-*********************************************************************************
- Initialise the "Custom Admin"  variables 
- *********************************************************************************
- --->
-<cfset customAdminXMLPath = "#application.path.project#/customadmin/customadmin.xml">
-<cfif fileExists(customAdminXMLPath)>
-	<cftry>
-	<cffile action="read" file="#application.path.project#/customadmin/customadmin.xml" variable="XMLFile" charset="utf-8">
-	<cfset application.customAdminXML=XmlParse(XMLFile)>
-	<cfif NOT isXMLDoc(application.customAdminXML)>
-		<cfset application.customAdminXML="false">		
-	</cfif>
-	<cfcatch>
-		<cfset application.customAdminXML="false">		
-	</cfcatch>
-	</cftry>
-<cfelse>
-	<!--- When we do a isXMLDoc in the app - this will fail which is useful to determine if customadmin xml has been validly loaded into memmory--->
-	<cfset application.customAdminXML="false">	
-</cfif>
 
 <!--- ########################################################################
 Setup defaults for File and Image assets. Either of these values *might* be set
