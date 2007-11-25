@@ -671,22 +671,6 @@ $out:$
 		<cfset application.stcoapi[i].tableDefinition = variables.tableMetadata.getTableDefinition() />
 	</cfloop>
 	
-	<!--- 
-	We want to search NTM types so we can flag them as a bTreeNode.
-	MJB: THIS SEEMS TO HAVE BEEN DEPRICATED BY bUseInTree flag set on the <cfcomponent> tag.
-	 --->
-	<cfquery datasource="#arguments.dsn#" name="qNTM">
-	SELECT distinct(typename)
-	FROM #arguments.dbowner#nested_tree_objects
-	</cfquery>
-	
-	<cfset lNTMTypes = valueList(qNTM.typename)>
-	
-	<cfloop list="#structKeyList(application.types)#" index="i">
-		<cfif listContainsNoCase(lNTMTypes, i)>
-			<cfset application.types[i].bTreeNode = 1 />
-		</cfif>
-	</cfloop>
 
 </cffunction>
 
