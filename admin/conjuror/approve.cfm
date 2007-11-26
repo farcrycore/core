@@ -217,7 +217,7 @@ $out:$
 				<cfset keyList = listAppend(keyList,arrayToList(stObj.aObjectIds))>
 			</cfif>
 			<cfscript>
-				qGetDescendants = request.factory.oTree.getDescendants(objectid=attributes.objectID);
+				qGetDescendants = application.factory.oTree.getDescendants(objectid=attributes.objectID);
 			</cfscript>
 						
 			<cfset keyList = listAppend(keyList,valueList(qGetDescendants.objectId))>

@@ -13,12 +13,12 @@
 
 
 <!--- Get Level 1 Nodes --->
-<cfset qAncestors = request.factory.oTree.getAncestors(objectid = url.rootObjectid)>
-<cfset getChildrenRet = request.factory.oTree.getChildren(objectid=application.navid.root)>
+<cfset qAncestors = application.factory.oTree.getAncestors(objectid = url.rootObjectid)>
+<cfset getChildrenRet = application.factory.oTree.getChildren(objectid=application.navid.root)>
 <cfset odmNav = createObject("component",application.types.dmNavigation.typePath)>
 <!--- // Subnaviagtion --->
 
-<cfset qNode = request.factory.oTree.getNode(objectid = url.rootObjectid)>
+<cfset qNode = application.factory.oTree.getNode(objectid = url.rootObjectid)>
 <cfquery name="qParentSectionId" dbtype="query">
 	SELECT objectid
 	FROM qAncestors
@@ -56,7 +56,7 @@
 
 <cfset aZoom[iCounter].value = URL.rootobjectID>
 <cfset iCounter = iCounter + 1>
-<cfset qListChildren = request.factory.oTree.getChildren(objectID=url.rootObjectID)>
+<cfset qListChildren = application.factory.oTree.getChildren(objectID=url.rootObjectID)>
 <cfloop query="qListChildren">
 <!--- AND application.navid["#qListChildren.objectname#"] EQ application.navid.hidden --->
 	<cfif isdefined("application.navid.hidden")>
@@ -147,7 +147,7 @@ function refreshiFrame(iFrameName){
 
 	<cfif NOT URL.rootObjectid IS application.navid.root>
 		
-		<cfset qParent = request.factory.oTree.getParentID(objectid=URL.rootObjectid,dsn=application.dsn)>
+		<cfset qParent = application.factory.oTree.getParentID(objectid=URL.rootObjectid,dsn=application.dsn)>
 		<cfif qParent.recordCount>
 			<cfset uponeRootobjectid = qParent.parentid>
 			<cfset bHasViewPermission = application.security.checkPermission(permission="view",object=upOneRootObjectid)>

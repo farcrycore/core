@@ -8,9 +8,9 @@
 <cflock name="moveBranchNTM" type="EXCLUSIVE" timeout="3" throwontimeout="Yes">
 	<cfscript>
 			stuser = application.factory.oAuthentication.getUserAuthenticationData();
-			qparentObject = request.factory.oTree.getParentID(objectid=url.objectid,dsn=application.dsn);
+			qparentObject = application.factory.oTree.getParentID(objectid=url.objectid,dsn=application.dsn);
 			parentObjectID = qParentObject.parentid;
-			qGetChildren = request.factory.oTree.getChildren(dsn=application.dsn,objectid=parentObjectID);
+			qGetChildren = application.factory.oTree.getChildren(dsn=application.dsn,objectid=parentObjectID);
 			bottom = qGetChildren.recordCount;
 			for(i=1;i LTE qGetChildren.recordCount;i = i + 1)
 			{
@@ -31,7 +31,7 @@
 			else if( url.direction eq "bottom" )	
 				newPosition = bottom;
 				//make the move	
-			request.factory.oTree.moveBranch(dsn=application.dsn,objectid=url.objectid,parentid=parentobjectid,pos=newposition);	
+			application.factory.oTree.moveBranch(dsn=application.dsn,objectid=url.objectid,parentid=parentobjectid,pos=newposition);	
 			application.factory.oaudit.logActivity(objectid="#URL.objectid#",auditType="categorisation.movenode", username=StUser.userlogin, location=cgi.remote_host, note="object moved to child position #newposition#");
 	</cfscript>	
 </cflock>

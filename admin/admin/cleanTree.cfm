@@ -38,7 +38,7 @@ $out:$
 		<cfset qRogue = queryNew("objectid,data,typename,removeFrom")>
 		
 		<!--- get tree data --->
-		<cfset qTree = request.factory.oTree.getDescendants(objectid=application.navid.root)>
+		<cfset qTree = application.factory.oTree.getDescendants(objectid=application.navid.root)>
 		
 		<cffunction name="checkRogue">
 			<cfargument name="typename" default="dmNavigation">

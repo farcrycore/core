@@ -49,7 +49,7 @@ $out: <separate entry for each variable>$
 	oNav = createObject("component", application.types.dmNavigation.typePath);
 	if (stObj.typename IS 'dmNavigation')
 	{
-		qGetParent = request.factory.oTree.getParentID(objectID = stObj.objectID);
+		qGetParent = application.factory.oTree.getParentID(objectID = stObj.objectID);
 		parentObjectID = qGetParent.parentID;	
 	}
 	else

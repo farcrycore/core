@@ -73,7 +73,7 @@ $out:$
 		<cflock name="moveBranchNTM" type="EXCLUSIVE" timeout="3" throwontimeout="Yes">
 			<cfloop list="#form.objectid#" index="object">
 				<cfscript>
-					request.factory.oTree.moveBranch(parentid=form.navalias, objectid=object);
+					application.factory.oTree.moveBranch(parentid=form.navalias, objectid=object);
 				</cfscript>
 			</cfloop>
 			<cfoutput>#listlen(form.objectid)# nav node orphan<cfif qOrphans.recordCount neq 1>s</cfif> attached to #form.navalias#.</cfoutput>

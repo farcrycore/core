@@ -2,8 +2,8 @@
 
 <cflock name="moveBranchNTM" type="EXCLUSIVE" timeout="3" throwontimeout="Yes">
 	<cfscript>
-		request.factory.oTree.moveBranch(objectID=URL.srcObjectID,parentID=URL.destObjectID);
-		qGetParent = request.factory.oTree.getParentID(objectid = url.srcObjectID);
+		application.factory.oTree.moveBranch(objectID=URL.srcObjectID,parentID=URL.destObjectID);
+		qGetParent = application.factory.oTree.getParentID(objectid = url.srcObjectID);
 		srcParentObjectID = qGetparent.parentID;
 	</cfscript>	
 </cflock>
