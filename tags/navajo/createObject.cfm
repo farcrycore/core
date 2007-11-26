@@ -96,9 +96,9 @@ $out:$
 			<cfelse>
 				<!--- Insert this node into the tree --->
 				<cfscript>
-					qChildren = request.factory.oTree.getChildren(objectid=stParent.objectID,typename=stParent.typename);
+					qChildren = application.factory.oTree.getChildren(objectid=stParent.objectID,typename=stParent.typename);
 					position = qChildren.recordCount + 1;
-					streturn = request.factory.oTree.setChild(objectName=stProps.label,typename=typename,parentID=stParent.objectID,objectID=newObjId,pos=position);
+					streturn = application.factory.oTree.setChild(objectName=stProps.label,typename=typename,parentID=stParent.objectID,objectID=newObjId,pos=position);
 				</cfscript>
 
 			</cfif>

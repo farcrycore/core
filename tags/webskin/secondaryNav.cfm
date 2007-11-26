@@ -36,7 +36,7 @@ out:
 <cfparam name="attributes.bDisplay" default="false">
 
 <cfscript>
-	qSecondaryNav = request.factory.oTree.getSecondaryNav(objectid=attributes.navid);
+	qSecondaryNav = application.factory.oTree.getSecondaryNav(objectid=attributes.navid);
 </cfscript>
 
 <!--- Get status of Nav Items --->

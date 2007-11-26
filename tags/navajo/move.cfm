@@ -64,10 +64,10 @@ $out:$
 	
 	if (srcObj.typename IS "dmNavigation")
 	{
-		qGetDescendants = request.factory.oTree.getDescendants(objectid=srcObj.objectID);
-		qGetParent = request.factory.oTree.getParentID(objectid = srcObj.objectID);
+		qGetDescendants = application.factory.oTree.getDescendants(objectid=srcObj.objectID);
+		qGetParent = application.factory.oTree.getParentID(objectid = srcObj.objectID);
 		srcParentObjectID = qGetparent.parentID;
-		qGetParent = request.factory.oTree.getParentID(objectid = destObj.objectID);
+		qGetParent = application.factory.oTree.getParentID(objectid = destObj.objectID);
 		destNavObjectID = qGetparent.parentID;
 		
 	}	
@@ -132,7 +132,7 @@ $out:$
 					}
 				}
 				
-				request.factory.oTree.moveBranch(dsn=application.dsn,objectID=URL.srcObjectID,parentID=URL.destObjectID);
+				application.factory.oTree.moveBranch(dsn=application.dsn,objectID=URL.srcObjectID,parentID=URL.destObjectID);
 				
 				if (application.config.plugins.fu)
 				{		

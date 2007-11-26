@@ -72,7 +72,7 @@ stObject
 
 <cfif attributes.get eq "root">
 	<cfscript>
-		qRoot = request.factory.oTree.getRootNode(typename="#attributes.typename#");
+		qRoot = application.factory.oTree.getRootNode(typename="#attributes.typename#");
 	</cfscript>
 	<cfset lObjectIds = qRoot.ObjectID>
 </cfif>
@@ -87,7 +87,7 @@ need to call tag or fourq function that has status as an option somehow
 	<cfset attributes.typename = "dmNavigation">
 </cfif>
 <cfif attributes.typename is attributes.nodetype>
-	<cfset qChildren = request.factory.oTree.getChildren(objectid=attributes.objectid)>
+	<cfset qChildren = application.factory.oTree.getChildren(objectid=attributes.objectid)>
 <cfelse>	
 <!--- only relate to aObjectids if one exists --->
 	<cfif StructKeyExists(application.types[attributes.typename].stProps,"aObjectIDs")>
@@ -136,7 +136,7 @@ this should be a COAPI call and *not* a straight SQL shortcut
 	The parent could be either a dmNavigation or dmHTML object
 	 --->	
  	<cfscript>
-		qAncestors = request.factory.oTree.getAncestors(objectid=attributes.objectid,typename=attributes.nodetype);
+		qAncestors = application.factory.oTree.getAncestors(objectid=attributes.objectid,typename=attributes.nodetype);
 	</cfscript>
 	
 	<cfset lobjectIDs="#ValueList(qAncestors.objectid)#">
@@ -146,7 +146,7 @@ this should be a COAPI call and *not* a straight SQL shortcut
 	<!--- descendants --->
 	<!--- loop while get children, non ordered list/stobjects --->
 		<cfscript>
-			getDescendantsRet = request.factory.oTree.getDescendants(objectid=attributes.objectID);
+			getDescendantsRet = application.factory.oTree.getDescendants(objectid=attributes.objectID);
 		</cfscript>
 		<cfset lObjectIds = valueList(getDescendantsRet.objectID)>
 	<cfelseif attributes.get eq "parents">

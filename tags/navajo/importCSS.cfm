@@ -13,7 +13,7 @@ its navigation node
 <cfif IsDefined("request.navid")>
 <cfscript>
 // get navigation elements to root
-qAncestors = request.factory.oTree.getAncestors(objectid=request.navid);
+qAncestors = application.factory.oTree.getAncestors(objectid=request.navid);
 // loop through and determine which ones have CSS objects
 </cfscript>
 

@@ -192,7 +192,7 @@ if (isDefined("URL.rootObjectID"))
 	rootObjectID = URL.rootObjectID;
 else
 {
-	qRoot = request.factory.oTree.getRootNode(typename=attributes.nodetype);
+	qRoot = application.factory.oTree.getRootNode(typename=attributes.nodetype);
 	rootobjectid = qRoot.objectid;
 }
 
@@ -200,7 +200,7 @@ else
 {
 	if (NOT rootobjectid IS application.navid.root AND len(application.navid.root) EQ 35)
 	{
-		qParent = request.factory.oTree.getParentID(objectid=rootobjectid,dsn=application.dsn);	
+		qParent = application.factory.oTree.getParentID(objectid=rootobjectid,dsn=application.dsn);	
 		upOneRootobjectid = qParent.parentid;
 		if (NOT upOneRootobjectid IS rootobjectid AND iRootNodeManagement EQ 1)
 			writeoutput("<div class=""upone""><a href=""#cgi.script_name#?rootobjectid=#upOneRootobjectid#""><img alt='Up one level' src=""#application.url.farcry#/images/treeImages/uponefolder.gif""></a></div>");	

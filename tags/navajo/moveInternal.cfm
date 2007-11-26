@@ -45,7 +45,7 @@ $out:$
 	stuser = application.factory.oAuthentication.getUserAuthenticationData();
 	if (stObj.typename IS 'dmNavigation')
 	{
-		qGetParent = request.factory.oTree.getParentID(objectID = stObj.objectID);
+		qGetParent = application.factory.oTree.getParentID(objectID = stObj.objectID);
 		parentObjectID = qGetParent.parentID;	
 	}
 	else
@@ -76,7 +76,7 @@ if(len(parentObjectID))
 {
 	if(stObj.typename IS "dmnavigation")
 	{
-		qGetChildren = request.factory.oTree.getChildren(dsn=application.dsn,objectid=parentObjectID);
+		qGetChildren = application.factory.oTree.getChildren(dsn=application.dsn,objectid=parentObjectID);
 		bottom = qGetChildren.recordCount;
 		for(i=1;i LTE qGetChildren.recordCount;i = i + 1)
 		{
@@ -97,7 +97,7 @@ if(len(parentObjectID))
 		else if( url.direction eq "bottom" )	
 			newPosition = bottom;
 		//make the move	
-		request.factory.oTree.moveBranch(dsn=application.dsn,objectid=stobj.objectid,parentid=parentobjectid,pos=newposition);	
+		application.factory.oTree.moveBranch(dsn=application.dsn,objectid=stobj.objectid,parentid=parentobjectid,pos=newposition);	
 		application.factory.oaudit.logActivity(objectid="#URL.objectid#",auditType="sitetree.movenode", username=StUser.userlogin, location=cgi.remote_host, note="object moved to child position #newposition#");
 		updateTree(objectID =parentObjectID);
 	}
@@ -158,7 +158,7 @@ else
 	{
 		if(stObj.typename IS "dmnavigation")
 		{
-			qGetChildren = request.factory.oTree.getChildren(dsn=application.dsn,objectid=parentObjectID);
+			qGetChildren = application.factory.oTree.getChildren(dsn=application.dsn,objectid=parentObjectID);
 			bottom = qGetChildren.recordCount;
 			for(i=1;i LTE qGetChildren.recordCount;i = i + 1)
 			{
@@ -179,7 +179,7 @@ else
 			else if( url.direction eq "bottom" )	
 				newPosition = bottom;
 			//make the move	
-			request.factory.oTree.moveBranch(dsn=application.dsn,objectid=stobj.objectid,parentid=parentobjectid,pos=newposition);	
+			application.factory.oTree.moveBranch(dsn=application.dsn,objectid=stobj.objectid,parentid=parentobjectid,pos=newposition);	
 			application.factory.oaudit.logActivity(objectid="#URL.objectid#",auditType="sitetree.movenode", username=StUser.userlogin, location=cgi.remote_host, note="object moved to child position #newposition#");
 			updateTree(objectID =parentObjectID);
 		}

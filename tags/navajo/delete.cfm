@@ -39,7 +39,7 @@ $out: <separate entry for each variable>$
 <cfset oType = createObject("component", application.types[stObj.typename].typePath)>
 <cfset oNav = createObject("component", application.types.dmNavigation.typePath)>
 <cfif stObj.typename EQ "dmNavigation">
-	<cfset qGetParent = request.factory.oTree.getParentID(objectID = stObj.objectID)>
+	<cfset qGetParent = application.factory.oTree.getParentID(objectID = stObj.objectID)>
 	<cfset parentObjectID = qGetParent.parentID>
 <cfelse> <!--- likely to be a parent object with aObjects property (eg. dmHTML, dmNews) --->
 	<cfset qGetParent = oNav.getParent(objectid=stObj.objectID)>

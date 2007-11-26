@@ -30,7 +30,7 @@ out:
 <!--- get style sheets --->
 <cfscript>
 	// get navigation elements to root
-	qAncestors = request.factory.oTree.getAncestors(objectid=request.navid, bIncludeSelf=true);
+	qAncestors = application.factory.oTree.getAncestors(objectid=request.navid, bIncludeSelf=true);
 	// create query
 	qStylesheets = queryNew("filename,mediaType");
 </cfscript>
