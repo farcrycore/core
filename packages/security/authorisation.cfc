@@ -103,7 +103,7 @@ $out:$
 		</cfif>
 		
 		<cfif isvalid("uuid",arguments.reference)>
-			<cfset application.security.factory.role.updateBarnacle(role=arguments.policygroupid,permission=arguments.permissionid,item=arguments.reference,right=arguments.status) />
+			<cfset application.security.factory.barnacle.updateRight(role=arguments.policygroupid,permission=arguments.permissionid,object=arguments.reference,right=arguments.status) />
 		<cfelse>
 			<cfset application.security.factory.role.updatePermission(role=arguments.policygroupid,permission=arguments.permissionid,has=(arguments.status eq 1)) />
 		</cfif>		
