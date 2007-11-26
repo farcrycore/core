@@ -48,7 +48,7 @@ type properties
 	
 	<cfloop query="qIncludes">
 		<cfif left(qIncludes.name,1) EQ "_" AND right(qIncludes.Directory, 11) EQ "includedObj">
-			<cfset returnList = listAppend(returnList, "#qIncludes.path#:#qIncludes.displayName#") />
+			<cfset returnList = listAppend(returnList, "#qIncludes.name#:#qIncludes.displayName#") />
 		</cfif>	
 	</cfloop>
 	
