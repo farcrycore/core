@@ -271,7 +271,7 @@
 						<cfelseif tableDef[field].nullable>
 							<cfset stField.value = "NULL" />
 						<cfelse>
-							<cfabort showerror="Error: #propertyName# must be a date (#propertyValue#).">
+							<cfabort showerror="Error: #field# must be a date (#propertyValue#)." />
 						</cfif>
 					</cfcase>
 
