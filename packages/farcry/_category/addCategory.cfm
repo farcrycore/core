@@ -36,9 +36,9 @@
 </cfswitch>
 
 <cfscript>
-	qChildren = request.factory.oTree.getChildren(objectid=arguments.parentID,typename='categories');
+	qChildren = application.factory.oTree.getChildren(objectid=arguments.parentID,typename='categories');
 	position = qChildren.recordCount + 1;
-	stReturn = request.factory.oTree.setChild(objectName=arguments.categoryLabel,typename='categories',parentID=arguments.parentID,objectID=arguments.categoryID,pos=position);
+	stReturn = application.factory.oTree.setChild(objectName=arguments.categoryLabel,typename='categories',parentID=arguments.parentID,objectID=arguments.categoryID,pos=position);
 
 	stStatus.message = '#arguments.categoryLabel# successfully added';
 	stStatus.status = true;

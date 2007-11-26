@@ -285,13 +285,13 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 		
 		<cfscript>
 			// Get root node
-			qRoot = request.factory.oTree.getRootNode(typename="categories");
+			qRoot = application.factory.oTree.getRootNode(typename="categories");
 			
 			if (not qRoot.recordcount) {
-				request.factory.oTree.setRootNode(typename="categories",objectid=createUUID(),objectName="root");
-				qRoot = request.factory.oTree.getRootNode(typename="categories");
+				application.factory.oTree.setRootNode(typename="categories",objectid=createUUID(),objectName="root");
+				qRoot = application.factory.oTree.getRootNode(typename="categories");
 			}
-			qHierarchies = request.factory.oTree.getChildren(objectid=qRoot.objectID);
+			qHierarchies = application.factory.oTree.getChildren(objectid=qRoot.objectID);
 		</cfscript>
 				
 		 <cfreturn qHierarchies>  
@@ -506,7 +506,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 		<cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
 		
 		<cfscript>
-			qDescendants=request.factory.oTree.getDescendants(dsn=arguments.dsn,objectid=arguments.objectid);
+			qDescendants=application.factory.oTree.getDescendants(dsn=arguments.dsn,objectid=arguments.objectid);
 		</cfscript>
 		
 		<cfquery name="q" datasource="#arguments.dsn#">
@@ -545,7 +545,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 		
 		<cfloop collection="#stObjects#" item="key">
 		<cfscript>
-			qChildren = request.factory.oTree.getChildren(objectid=key,dsn=arguments.dsn);
+			qChildren = application.factory.oTree.getChildren(objectid=key,dsn=arguments.dsn);
 			stObjects['#key#'].aNavChild = ListToArray(ValueList(qChildren.ObjectID));
 			if (NOT ArrayLen(stObjects['#key#'].aNavChild))
 				stObjects['#key#'].aNavChild = ""; // tree seems to barf on empty array

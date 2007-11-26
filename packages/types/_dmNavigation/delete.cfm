@@ -25,7 +25,7 @@ $out:$
 <cfscript>
 
 	// get descendants
-	qGetDescendants = request.factory.oTree.getDescendants(objectid=stObj.objectID);
+	qGetDescendants = application.factory.oTree.getDescendants(objectid=stObj.objectID);
 	oNavigation = createObject("component", application.types.dmNavigation.typePath);
 	
 	// delete actual object
@@ -38,7 +38,7 @@ $out:$
 	}
 	
 	// delete branch
-	request.factory.oTree.deleteBranch(objectid=stObj.objectID);
+	application.factory.oTree.deleteBranch(objectid=stObj.objectID);
 	
 	// remove permissions
 	application.factory.oAuthorisation.deletePermissionBarnacle(objectid=stObj.objectID);

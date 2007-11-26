@@ -84,7 +84,7 @@ $out:$
 					<!--- delete current fu --->
 					<cfset application.factory.oFU.deleteFu(fuUrl)>
 					<!--- get descendants --->
-					<cfset qGetDescendants = request.factory.oTree.getDescendants(objectid=stObj.objectID)>
+					<cfset qGetDescendants = application.factory.oTree.getDescendants(objectid=stObj.objectID)>
 					<cfif qGetDescendants.recordCount>
 						<cfloop query="qGetDescendants">
 							<!--- get current fu --->

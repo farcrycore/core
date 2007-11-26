@@ -126,7 +126,7 @@ if( StructKeyExists( application.types, "dmNavigation" ) )
 	<cfset rootobjectid = arguments.rootobjectid>	
 <cfelse>
 	<cfscript>
-		qrootObjectID = request.factory.oTree.getRootNode(typename=arguments.typename,dsn=arguments.dsn);
+		qrootObjectID = application.factory.oTree.getRootNode(typename=arguments.typename,dsn=arguments.dsn);
 		rootObjectID = qrootObjectID.objectID;
 	</cfscript>
 </cfif>

@@ -66,7 +66,7 @@ $out:$
 				<cfset title = "">
 				
 				<!--- get ancestors --->
-				<cfset qAncestors = request.factory.oTree.getAncestors(qParent.parentID)>
+				<cfset qAncestors = application.factory.oTree.getAncestors(qParent.parentID)>
 				
 				<!--- build breadcrumb --->
 				<cfloop query="qAncestors">

@@ -33,7 +33,7 @@ $out:$
 
 <cfscript>
 	// get descendants over object
-	qDescendants = request.factory.oTree.getDescendants(arguments.navId);
+	qDescendants = application.factory.oTree.getDescendants(arguments.navId);
 </cfscript>
 
 <!--- run the query to get counts of user activity by hour --->

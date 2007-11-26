@@ -25,9 +25,9 @@ $in: $
 <cfscript>
 	// get navigation elements
 	// getChildren for application.navid.home
-	qPrimary = request.factory.oTree.getChildren(objectid=application.navid.home);
-	qSecondary = request.factory.oTree.getChildren(objectid=request.navid);
-	qAncestors = request.factory.oTree.getAncestors(objectid=request.navid);
+	qPrimary = application.factory.oTree.getChildren(objectid=application.navid.home);
+	qSecondary = application.factory.oTree.getChildren(objectid=request.navid);
+	qAncestors = application.factory.oTree.getAncestors(objectid=request.navid);
 </cfscript>
 
 <cfsetting enablecfoutputonly="yes">

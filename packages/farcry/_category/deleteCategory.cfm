@@ -5,7 +5,7 @@
 	stStatus.status = false;
 </cfscript>
 
-<cfset qDesc = request.factory.oTree.getDescendants(objectid=arguments.categoryID,bIncludeSelf=1)>
+<cfset qDesc = application.factory.oTree.getDescendants(objectid=arguments.categoryID,bIncludeSelf=1)>
 
  <cftry>
 	<cftransaction> 

@@ -98,7 +98,7 @@ $out:$
 
 			<cfswitch expression="#stLocal.qList.typename#">
 				<cfcase value="dmNavigation">
-					<cfset stLocal.parentid = request.factory.oTree.getParentID(objectid=stLocal.qList.objectid,dsn=application.dsn).parentID>
+					<cfset stLocal.parentid = application.factory.oTree.getParentID(objectid=stLocal.qList.objectid,dsn=application.dsn).parentID>
 				</cfcase>
 
 				<cfdefaultcase>

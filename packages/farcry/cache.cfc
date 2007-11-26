@@ -87,7 +87,7 @@ $out:$
 			var qNav = "";
 			navfilter[1]="status IN (#listQualify(request.mode.lvalidstatus, "'")#)";
 			// get navigation elements
-			qNav = request.factory.oTree.getDescendants(objectid=application.navid.home, depth=4, afilter=navFilter);
+			qNav = application.factory.oTree.getDescendants(objectid=application.navid.home, depth=4, afilter=navFilter);
 		</cfscript>
 		
 		<!--- loop over all pages and hit page to create caches --->

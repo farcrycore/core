@@ -314,7 +314,7 @@
 		<cfargument name="bIncludeSelf" required="no" default="1">
 
 		<cfset var stLocal = StructNew()>
-		<cfset stLocal.qListAncestors = request.factory.oTree.getAncestors(objectid=arguments.objectid,bIncludeSelf=arguments.bIncludeSelf)>
+		<cfset stLocal.qListAncestors = application.factory.oTree.getAncestors(objectid=arguments.objectid,bIncludeSelf=arguments.bIncludeSelf)>
 		<cfset stLocal.returnString = "">
 
 		<cfif stLocal.qListAncestors.RecordCount>
@@ -381,7 +381,7 @@
 	<cffunction name="createAll" access="public" returntype="boolean" hint="Deletes old mappings and creates new entries for entire tree, and writes the map file to disk" output="No">
 		
 		<!--- get nav tree --->
-		<cfset var qNav = request.factory.oTree.getDescendants(objectid=application.navid.home, depth=50)>
+		<cfset var qNav = application.factory.oTree.getDescendants(objectid=application.navid.home, depth=50)>
 		<cfset var qAncestors = "">
 		<cfset var qCrumb = "">
 		<cfset var breadCrumb = "">
