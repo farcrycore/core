@@ -33,7 +33,7 @@
 			<cfquery datasource="#application.dsn#" name="qRoles">
 				select	*
 				from	#application.dbowner#farRole_groups
-				where	data=<cfqueryparam cfsqltype="cf_sql_varchar" value="#group#" />
+				where	lcase(data)=<cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(group)#" />
 			</cfquery>
 			
 			<cfset result = application.factory.oUtils.listMerge(result,valuelist(qRoles.parentid)) />		
