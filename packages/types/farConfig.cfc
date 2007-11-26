@@ -49,7 +49,6 @@
 		<cfset var qConfig = "" />
 		<cfset var stObj = structnew() />
 		<cfset var thisform = "" />
-		<cfset var stConfig = "" />
 		<cfset var wConfig = "" />
 		<cfset var configkey = "" />
 		
@@ -83,7 +82,7 @@
 				</cfif>
 			</cfloop>
 			
-			<cfwddx action="cfml2wddx" input="#stConfig#" output="stObj.configdata" />
+			<cfwddx action="cfml2wddx" input="#stresult#" output="stObj.configdata" />
 			
 			<!--- Save the config data --->
 			<cfset setData(stProperties=stObj) />
