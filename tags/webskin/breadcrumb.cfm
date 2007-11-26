@@ -51,7 +51,7 @@ out:
 
 <cfscript>
 // get navigation elements
-	qAncestors = request.factory.oTree.getAncestors(objectid=attributes.objectid);
+	qAncestors = application.factory.oTree.getAncestors(objectid=attributes.objectid);
 </cfscript>
 
 <cfif attributes.includeSelf>
