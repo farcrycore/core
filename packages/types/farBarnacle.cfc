@@ -160,13 +160,17 @@
 		
 		<!--- Get object type --->
 		<cfset typename = findType(arguments.object) />
+		<cfif not len(typename)>
+			<cfset thisobject = getData(objectid=arguments.object) />
+			<cfif structkeyexists(thisobject,"typename")>
+				<cfset typename = thisobject.typename />
+			</cfif>
+		</cfif>
 		
 		<!--- If this is a tree type, get the ancestors --->
-		<cfif structkeyexists(application.stCOAPI[typename],"bUseInTree") and application.stCOAPI[typename].bUseInTree>
-			<cfset qAncestors = application.factory.oTree.getAncestors(arguments.object) />
+		<cfif listcontains("dmNavigation",typename)>
+			<cfset qAncestors = application.factory.oTree.getAncestors(arguments.object,"typename") />
 			<cfset arguments.object = application.factory.oUtils.listReverse(listappend(valuelist(qAncestors.objectid),arguments.object)) />
-		<cfelse>
-			<cfreturn -1 />
 		</cfif>
 		
 		<!--- Check each object --->
