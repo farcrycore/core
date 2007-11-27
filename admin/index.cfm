@@ -126,26 +126,6 @@ $Developer: Pete Ottery (pot@daemon.com.au)$
 	</cfoutput>
 </cfif>
 
-<!--- <cfswitch expression="#stSections[url.sec].altexpansion#">
-	<cfcase value="home">
-	<!--- do nothing for overview page --->
-	</cfcase>
-	<cfcase value="site">
-	<!--- expands tree iframe for access to nested content --->
-	<cfoutput>
-	<a href="##" onclick="$('sidebar').style.width = '500px'; $('iframe-sidebar').style.width = '500px'; $('tree-button-max').style.display = 'none'; $('tree-button-min').style.display = 'block'; $('content-wrap').style.backgroundPosition = '300px 0'; $('content').style.marginLeft = '532px'; $('sec-#secid#').style.backgroundPosition = '-104px 0'; return false;" id="tree-button-max"><span>Maximise Tree</span></a>
-	<a href="##" onclick="$('sidebar').style.width = '200px'; $('iframe-sidebar').style.width = '200px'; $('tree-button-max').style.display = 'block'; $('tree-button-min').style.display = 'none'; $('content-wrap').style.backgroundPosition = '0 0'; $('content').style.marginLeft = '232px'; $('sec-#secid#').style.backgroundPosition = '-404px 0'; return false;" id="tree-button-min"><span>Default Tree Width</span></a>
-	</cfoutput>
-	</cfcase>
-	<cfdefaultcase>
-	<!--- contracts menu iframe to enable larger content editing area --->
-	<cfoutput>
-	<a href="##" onclick="$('sidebar').style.width = '0'; $('iframe-sidebar').style.width = '0'; $('content-button-max').style.display = 'none'; $('content-button-min').style.display = 'block'; $('content-wrap').style.backgroundPosition = '-201px 0'; $('content').style.marginLeft = '35px'; $('sec-#secid#').style.backgroundPosition = '-605px 0'; return false;" id="content-button-max"><span>Maximise Content Width</span></a>
-	<a href="##" onclick="$('sidebar').style.width = '200px'; $('iframe-sidebar').style.width = '200px'; $('content-button-max').style.display = 'block'; $('content-button-min').style.display = 'none'; $('content-wrap').style.backgroundPosition = '0 0'; $('content').style.marginLeft = '236px'; $('sec-#secid#').style.backgroundPosition = '-404px 0'; return false;" id="content-button-min"><span>Default Content Width</span></a>
-	</cfoutput>
-	</cfdefaultcase>
-</cfswitch> --->
-
 <cfoutput>
 </body>
 </html>

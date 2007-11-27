@@ -79,6 +79,14 @@
 
 
 	<!--- Current user queries --->
+	<cffunction name="getCurrentUserID" access="public" output="false" returntype="string" hint="Returns the id of the current user">
+		<cfif isdefined("session.security.userid")>
+			<cfreturn session.security.userid />
+		<cfelse>
+			<cfreturn "" />
+		</cfif>
+	</cffunction>
+
 	<cffunction name="checkPermission" access="public" output="true" returntype="boolean" hint="Returns true if a user has the specified permission">
 		<cfargument name="permission" type="string" required="false" default="" hint="The permission to check" />
 		<cfargument name="object" type="string" required="false" default="" hint="If specified, will check barnacle" />
@@ -124,6 +132,14 @@
 		</cfif>
 	</cffunction>
 	
+	<cffunction name="getCurrentUD" access="public" output="false" returntype="string" hint="Returns the UD of the current user">
+		<cfif isdefined("session.security.userid")>
+			<cfreturn listlast(session.security.userid,"_") />
+		<cfelse>
+			<cfreturn "" />
+		</cfif>		
+	</cffunction>
+
 
 	<!--- User Directory functions --->
 	<cffunction name="getDefaultUD" access="public" output="false" returntype="string" hint="Returns the default user directory for this application">

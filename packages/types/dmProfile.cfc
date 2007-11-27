@@ -16,37 +16,40 @@ $Description: Generic member/user profile object $
 || DEVELOPER ||
 $Developer: Geoff Bowers (modius@daemon.com.au) $
 --->
-<cfcomponent extends="types" displayName="Profiles" hint="FarCry User Profile.  Authentication and authorisation handled seperately by associated user directory model.">
+<cfcomponent extends="types" displayName="FarCry User Profile" hint="FarCry User Profile.  Authentication and authorisation handled seperately by associated user directory model.">
 
-    <!--- required properties --->	
-    <cfproperty name="userName" type="nstring" hint="The username/userlogin the profile is associated with." required="yes">
-    <cfproperty name="userDirectory" type="nstring" hint="The user directory the profile is associated with." required="yes">
-    <cfproperty name="bReceiveEmail" type="boolean" hint="Does user receive workflow and system email notices" required="yes" default="1">
-    <cfproperty name="bActive" type="boolean" hint="Is user active" required="yes" default="0">
-    <!--- optional properties --->
-    <cfproperty name="firstName" type="nstring" hint="Profile object first name" required="no">
-    <cfproperty name="lastName" type="nstring" hint="Profile object last name" required="no">
-    <cfproperty name="emailAddress" type="nstring" hint="Profile object email address" required="no" default="">
-    <cfproperty name="phone" type="nstring" hint="Profile object phone number" required="no">
-    <cfproperty name="fax" type="nstring" hint="Profile object fax number" required="no">
-    <cfproperty name="position" type="nstring" hint="Profile object position" required="no">
-    <cfproperty name="department" type="nstring" hint="Profile object department" required="no">
-	<cfproperty name="notes" type="longchar" hint="Additional notes" required="no">
-	<cfproperty name="locale" type="string" hint="Profile object locale" required="yes" default="en_AU">
-	<cfproperty name="overviewHome" type="string" hint="Nav Alias name for this users home node in the overview tree" required="no">
-		
-    <!--- object methods --->
-    <cffunction name="edit" access="PUBLIC" hint="dmProifle edit handler">
-    	<cfargument name="objectID" type="UUID" required="yes">
+	<cfproperty name="userName" type="string" default="" required="yes" hint="The username/login the profile is associated with" ftSeq="1" ftFieldset="Authentication" ftLabel="User ID" ftType="string" bLabel="true" />
+    <cfproperty name="userDirectory" type="string" default="" required="yes" hint="The user directory the profile is associated with." ftSeq="2" ftFieldset="Authentication" ftLabel="User directory" ftType="string" />
+    <cfproperty name="bActive" type="boolean" default="0" required="yes" hint="Is user active" ftSeq="3" ftFieldset="Authentication" ftLabel="Active" ftType="boolean" />
 	
-        <cfscript>
-        // getData for object edit
-        stObj = this.getData(arguments.objectID);
-        </cfscript>
-
-	    <cfinclude template="_dmProfile/edit.cfm" />
-    </cffunction>
-
+    <cfproperty name="firstName" type="string" default="" required="no" hint="Profile object first name" ftSeq="21" ftFieldset="Contact details" ftLabel="First name" />
+    <cfproperty name="lastName" type="string" default="" required="no" hint="Profile object last name" ftSeq="22" ftFieldset="Contact details" ftLabel="Last name" />
+    <cfproperty name="emailAddress" type="string" default="" required="no" hint="Profile object email address" ftSeq="23" ftFieldset="Contact details" ftLabel="Email address" />
+    <cfproperty name="bReceiveEmail" type="boolean" default="1" required="yes" hint="Does user receive workflow and system email notices" ftSeq="24" ftFieldset="Contact details" ftLabel="Receive emails" ftType="boolean" />
+    <cfproperty name="phone" type="string" default="" required="no" hint="Profile object phone number" ftSeq="25" ftFieldset="Contact details" ftLabel="Phone" />
+    <cfproperty name="fax" type="string" default="" required="no" hint="Profile object fax number" ftSeq="26" ftFieldset="Contact details" ftLabel="Fax" />
+    
+	<cfproperty name="position" type="string" default="" required="no" hint="Profile object position" ftSeq="31" ftFieldSet="Organisation" ftLabel="Position" />
+    <cfproperty name="department" type="string" default="" required="no" hint="Profile object department" ftSeq="32" ftFieldSet="Organisation" ftLabel="Department" />
+	
+	<cfproperty name="locale" type="string" default="application.config.general.locale" required="yes" hint="Profile object locale" ftDefaultType="Expression" ftSeq="41" ftFieldSet="User settings" ftType="list" ftListDataTypename="dmProfile" ftListData="getLocales" ftLabel="Locale" />
+	<cfproperty name="overviewHome" type="string" default="" required="no" hint="Nav Alias name for this users home node in the overview tree" ftSeq="42" ftFieldSet="User settings" ftType="navigation" ftSelectMultiple="false" ftLabel="Home node" />
+	
+	<cfproperty name="notes" type="longchar" default="" required="no" hint="Additional notes" ftSeq="51" ftType="lonchar" ftLabel="Notes" />
+	
+	<cffunction name="getLocales" access="public" output="false" returntype="string" hint="Returns the list of supported locales">
+		<cfset var locales = application.i18nUtils.getLocales() />
+		<cfset var localeNames = application.i18nUtils.getLocaleNames() />
+		<cfset var result = "" />
+		<cfset var locale = "" />
+		
+		<cfloop list="#application.locales#" index="locale">
+			<cfset result = listappend(result,"#locale#:#listgetat(localeNames,listfind(locales,locale))#") />
+		</cfloop>
+		
+		<cfreturn result />
+	</cffunction>
+	
     <cffunction name="createProfile" access="PUBLIC" hint="Create new profile object using existing dmSec information. Returns newly created profile as a struct." returntype="struct" output="false">
         <cfargument name="stProperties" type="struct" required="yes" />
 		<cfset var stuser=arguments.stProperties>
@@ -62,7 +65,10 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 		}
 		stProfile.objectID = createUUID();
 		stProfile.label = stUser.userLogin;
-		stProfile.userName = stUser.userLogin;
+		if (not refind(stUser.userDirectory,stUser.userName))
+			stProfile.userName = stUser.userLogin & "_" & stUser.userDirectory;
+		else
+			stProfile.userName = stUser.userLogin;
 		stProfile.userDirectory = stUser.userDirectory;
 		stProfile.emailAddress = '';
 		stProfile.bReceiveEmail = 1;
@@ -91,15 +97,6 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
         <cfreturn stObj>
     </cffunction>
 	
-	<cffunction name="displaySummary" access="public" output="false" returntype="string">
-		<cfargument name="objectid" required="yes" type="UUID">
-		
-		<!--- getData for object edit --->
-		<cfset stObj = this.getData(arguments.objectid)>
-		<cfinclude template="_dmProfile/displaySummary.cfm">
-		<cfreturn profilehtml>
-	</cffunction>
-
 	<cffunction name="fListProfileByPermission" hint="returns a query of users" access="public" output="false" returntype="struct">
 		<cfargument name="permissionName" required="false" default="" type="string">
 		<cfargument name="permissionID" required="false" default="0" type="numeric">

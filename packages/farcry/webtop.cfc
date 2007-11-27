@@ -375,9 +375,9 @@ $Developer: Blair McKenzie (blair@daemon.com.au)$
 		<cfargument name="attr" type="string" required="false" default="sidebar" hint="The attribute that contains the url" />
 		<cfargument name="params" type="struct" required="false" default="#structnew()#" hint="Parameters to add to the query string" />
 	
-		<cfset var sReturn = "custom/#arguments.attr#.cfm">  <!--- this seems like a good default url --->
+		<cfset var sReturn = "custom/#arguments.attr#.cfm" />  <!--- this seems like a good default url --->
 		<cfset var urlUtil = createobject("component","urlUtility") />
-		<cfset var stParams = StructNew()>
+		<cfset var stParams = StructNew() />
 		<cfset var id = "" />
 		<cfset var stItem = this.stWebtop />
 		
@@ -404,11 +404,11 @@ $Developer: Blair McKenzie (blair@daemon.com.au)$
 		
 		<!--- add anything in our query_string to the url params --->
 		<!--- getUrlParamStruct looks for the '?' --->
-		<cfset stParams = urlUtil.getURLParamStruct("?" & CGI.QUERY_STRING)>
+		<cfset stParams = urlUtil.getURLParamStruct("?" & CGI.QUERY_STRING) />
 		
 		<!--- if 'id' attribute exists, REPLACE any 'sub' url param with this value --->
 		<cfif StructKeyExists(stItem, "id")>
-			<cfset stParams.sub = stItem.id>
+			<cfset stParams.sub = stItem.id />
 		</cfif>
 		
 		<!--- Add passed in params --->
@@ -417,9 +417,9 @@ $Developer: Blair McKenzie (blair@daemon.com.au)$
 		</cfloop>
 		
 		<!--- generate the sidebar url by appending the params we've accumulated --->
-		<cfset sReturn = urlUtil.appendURLParams(address=sReturn, paramStruct=stParams, replaceExisting=false)>
+		<cfset sReturn = urlUtil.appendURLParams(address=sReturn, paramStruct=stParams, replaceExisting=false) />
 		
-		<cfreturn sReturn>
+		<cfreturn sReturn />
 	</cffunction>
 
 </cfcomponent>
