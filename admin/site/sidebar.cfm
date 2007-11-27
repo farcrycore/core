@@ -99,7 +99,7 @@
 
 <cfset upOneRootobjectid = "">
 
-<cfsetting enablecfoutputonly="false">
+<cfoutput>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -116,7 +116,6 @@ function refreshiFrame(iFrameName){
 </head>
 <body class="iframed iframed-tree">
 
-<cfoutput>
 <form style="display:inline" id="subjump" action="" method="get" class="iframe-nav-form" style="margin-bottom:10px">
 	<select name="rootObjectID" onchange="document.getElementById('subjump').parentSectionId.value=document.getElementById('subjump').rootObjectID.value;this.form.submit();">
 		<option value="#application.navid['root']#"<cfif url.parentSectionId EQ application.navid["root"]> selected="true"</cfif>>Root</option>
