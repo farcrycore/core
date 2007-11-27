@@ -65,7 +65,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 		}
 		stProfile.objectID = createUUID();
 		stProfile.label = stUser.userLogin;
-		if (not refind(stUser.userDirectory,stUser.userName))
+		if (not refind(stUser.userDirectory,stUser.userLogin))
 			stProfile.userName = stUser.userLogin & "_" & stUser.userDirectory;
 		else
 			stProfile.userName = stUser.userLogin;
