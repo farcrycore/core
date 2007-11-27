@@ -169,7 +169,7 @@
 		
 		<!--- If this is a tree type, get the ancestors --->
 		<cfif listcontains("dmNavigation",typename)>
-			<cfset qAncestors = application.factory.oTree.getAncestors(arguments.object,"typename") />
+			<cfset qAncestors = application.factory.oTree.getAncestors(objectid=arguments.object) />
 			<cfset arguments.object = application.factory.oUtils.listReverse(listappend(valuelist(qAncestors.objectid),arguments.object)) />
 		</cfif>
 		
