@@ -32,7 +32,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	<cfproperty name="position" type="string" default="" required="no" hint="Profile object position" ftSeq="31" ftFieldSet="Organisation" ftLabel="Position" />
     <cfproperty name="department" type="string" default="" required="no" hint="Profile object department" ftSeq="32" ftFieldSet="Organisation" ftLabel="Department" />
 	
-	<cfproperty name="locale" type="string" default="application.config.general.locale" required="yes" hint="Profile object locale" ftDefaultType="Expression" ftSeq="41" ftFieldSet="User settings" ftType="list" ftListDataTypename="dmProfile" ftListData="getLocales" ftLabel="Locale" />
+	<cfproperty name="locale" type="string" default="application.config.general.locale" required="yes" hint="Profile object locale" ftDefaultType="evaluate" ftSeq="41" ftFieldSet="User settings" ftType="list" ftListDataTypename="dmProfile" ftListData="getLocales" ftLabel="Locale" />
 	<cfproperty name="overviewHome" type="string" default="" required="no" hint="Nav Alias name for this users home node in the overview tree" ftSeq="42" ftFieldSet="User settings" ftType="navigation" ftSelectMultiple="false" ftLabel="Home node" />
 	
 	<cfproperty name="notes" type="longchar" default="" required="no" hint="Additional notes" ftSeq="51" ftType="lonchar" ftLabel="Notes" />
