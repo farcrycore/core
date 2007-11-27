@@ -24,7 +24,7 @@
 	</dl>
 	
 	<!--- link to edit profile and change password --->
-	<h3>Your settings#application.security.getCurrentUD()#</h3>
+	<h3>Your settings</h3>
 	<ul>
 		<li>
 			<small>
