@@ -13,7 +13,7 @@ test<cfcomponent displayname="FarcryUD User" hint="Used by FarcryUD to store use
 		<cfquery datasource="#application.dsn#" name="qUser">
 			select	*
 			from	#application.dbowner#farUser
-			where	userid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.userid#" />
+			where	lower(userid)=<cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(arguments.userid)#" />
 		</cfquery>
 		
 		<cfif qUser.recordcount>

@@ -31,7 +31,7 @@
 			<cfquery datasource="#application.dsn#" name="qPermissions">
 				select	objectid
 				from	#application.dbOwner#farPermission
-				where	shortcut=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.name#" />
+				where	lower(shortcut)=<cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(arguments.name)#" />
 			</cfquery>
 			
 			<cfif qPermissions.recordcount>

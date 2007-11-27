@@ -117,6 +117,7 @@
 			<cfquery datasource="#application.dsn#" name="qRoles">
 				select	objectid,label
 				from	#application.dbOwner#farRole
+				where	lower(title)=<cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(arguments.name)#" />
 			</cfquery>
 			
 			<cfreturn application.security.setLookup(role=arguments.role,objectid=qRoles.objectid[1]) />

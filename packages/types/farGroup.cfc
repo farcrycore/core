@@ -12,7 +12,7 @@
 			<cfquery datasource="#application.dsn#" name="qItem">
 				select	*
 				from	#application.dbOwner#farGroup
-				where	title=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.name#" />
+				where	lower(title)=<cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(arguments.name)#" />
 			</cfquery>
 			
 			<cfreturn qItem.objectid[1] />
