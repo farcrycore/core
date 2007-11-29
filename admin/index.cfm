@@ -47,6 +47,10 @@ $Developer: Pete Ottery (pot@daemon.com.au)$
 <!--- Default selected subsection is the first in the list --->
 <cfparam name="url.sub" default="#listfirst(stSections.children[url.sec].childorder)#" />
 
+<!--- For some reason we are getting here without logging in sometimes, so some variables need to be param'd --->
+<cfparam name="session.writingDir" default="ltr" />
+<cfparam name="session.userLanguage" default="en" />
+
 <cfoutput>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" dir="#session.writingDir#" lang="#session.userLanguage#">
