@@ -688,6 +688,8 @@
 		<cfset var result = "" />
 		<cfset var includePath = "#arguments.directory#/#arguments.template#" />
 	
+		<cfset includePath = replaceNoCase(includePath, application.path.project, "/farcry/projects/#application.projectDirectoryName#") />
+		<cfset includePath = replaceNoCase(includePath, application.path.plugins, "/farcry/plugins") />
 		<cfset includePath = replaceNoCase(includePath, expandPath("/farcry"), "/farcry") />
 		
 		<cfreturn includePath>
