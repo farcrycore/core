@@ -108,7 +108,7 @@
 			from	(
 						#application.dbowner#farUser u
 						inner join
-						#application.dbowner#farUser_Groups ug
+						#application.dbowner#farUser_groups ug
 						on u.objectid=ug.parentid
 					)
 					inner join
@@ -147,7 +147,7 @@
 			from	(
 						#application.dbowner#farUser u
 						inner join
-						#application.dbowner#farUser_Groups ug
+						#application.dbowner#farUser_groups ug
 						on u.objectid=ug.parentid
 					)
 					inner join

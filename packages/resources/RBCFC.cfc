@@ -6,7 +6,7 @@
 
 	<cfset this.description = "Basic resource bundle management" />
 
-	<cffunction name="init" access="public" output="false" returntype="component" hint="Initializes component">
+	<cffunction name="init" access="public" output="false" returntype="any" hint="Initializes component">
 		<cfargument name="locales" type="string" required="false" default="" />
 		
 		<cfset var plugin = "" />

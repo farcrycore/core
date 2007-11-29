@@ -3,7 +3,7 @@
 	<cfimport taglib="/farcry/core/tags/farcry" prefix="farcry" />
 	
 	
-	<cffunction name="init" access="public" output="false" returntype="component" hint="Initialises and returns the security scope component">
+	<cffunction name="init" access="public" output="false" returntype="any" hint="Initialises and returns the security scope component">
 		<cfset var permission = "" /><!--- Used in deprecated code --->
 		<cfset var stPermission = structnew() /><!--- Used in deprecated code --->
 		<cfset var i = 0 /><!--- Used in deprecated code --->

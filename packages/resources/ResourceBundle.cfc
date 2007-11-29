@@ -5,7 +5,7 @@
 	<cfset this.fileexists = false />
 	<cfset this.bundle = structnew() />
 	
-	<cffunction name="init" access="public" output="true" returntype="component" hint="Loads a file into the component">
+	<cffunction name="init" access="public" output="true" returntype="any" hint="Loads a file into the component">
 		<cfargument name="file" type="string" required="true" />
 		
 		<cfset this.file = arguments.file />

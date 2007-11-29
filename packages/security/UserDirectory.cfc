@@ -2,7 +2,7 @@
 	
 	<cfset variables.metadata = structnew() />
 
-	<cffunction name="init" access="public" output="true" returntype="component" hint="Does initialisation of user directory">
+	<cffunction name="init" access="public" output="true" returntype="any" hint="Does initialisation of user directory">
 		<cfset var stMetadata = getMetadata(this) />
 		<cfset var attr = "" />
 		
@@ -23,7 +23,7 @@
 		<cfreturn this />
 	</cffunction>
 
-	<cffunction name="getLoginForm" access="public" output="false" returntype="component" hint="Returns the form component to use for login">
+	<cffunction name="getLoginForm" access="public" output="false" returntype="string" hint="Returns the form component to use for login">
 		
 		<cfthrow message="The #variables.metadata.displayname# user directory needs to implement the getLoginForm function" />
 	</cffunction>

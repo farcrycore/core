@@ -9,7 +9,7 @@
 	<!--- PUBLIC VARIABLES --->
 	<cfset this.metadata = structnew() />
 	
-	<cffunction name="init" access="public" output="false" returntype="component" hint="Initializes component">
+	<cffunction name="init" access="public" output="false" returntype="any" hint="Initializes component">
 		<cfset this.metadata = getMetaData(this) />
 		
 		<cfif not structKeyExists(this.metadata,"bAbstract") or this.metadata.bAbstract EQ "False">
