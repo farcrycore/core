@@ -262,7 +262,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 					<cfif NOT alterType.isCFCDeployed(typename=componentName)>
 						<a href="#CGI.SCRIPT_NAME#?deploy=#componentName#">#application.adminBundle[session.dmProfile.locale].deploy#</a>
 					<cfelse>
-						#application.adminBundle[session.dmProfile.locale].notAvailable#
+						<ft:farcryButton type="button" value="Scaffold" onclick="openScaffoldDialog('#application.url.farcry#/admin/scaffold.cfm?typename=#componentName#&iframe=1','Scaffold',500,400,true);" />
 					</cfif>
 				</td>
 				<td style="border-right:none">
