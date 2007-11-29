@@ -85,7 +85,7 @@
 				<div class="fieldsection optional">
 					<div class="fieldwrap">
 						<cfloop query="qLibraryList">
-							<input type="checkbox"  name="#arguments.fieldname#" value="#qLibraryList.objectid#" <cfif valuelist(qArrayField.data) contains qLibraryList.objectid>checked</cfif>>
+							<input type="checkbox"  name="#arguments.fieldname#" value="#qLibraryList.objectid#"  class="formCheckbox" <cfif valuelist(qArrayField.data) contains qLibraryList.objectid>checked</cfif>>
 							<cfif isDefined("qLibraryList.label")>#qLibraryList.label#<cfelse>#qLibraryList.objectid#</cfif>
 							<br class="fieldsectionbreak" />
 						</cfloop>
@@ -420,7 +420,7 @@
 		<!---
 		<cfset var oFourQ = createObject("component","farcry.core.packages.fourq.fourq")><!--- TODO: this needs to be removed when we add typename to array tables. ---> 
 		 --->
-		<cfparam name="arguments.stMetadata.ftLibrarySelectedWebskin" default="LibrarySelected" type="string" />
+		<cfparam name="arguments.stMetadata.ftLibrarySelectedWebskin" default="librarySelected" type="string" />
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedListClass" default="arrayDetail" type="string" />
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedListStyle" default="" type="string" />
 		<cfparam name="arguments.stMetadata.ftLibraryListItemWidth" default="" type="string" />

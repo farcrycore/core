@@ -26,25 +26,28 @@
 	<cfset itemTotal = arrayLen(request.extJS.stLayout.aItems)>
 	
 	<cfif len(trim(thisTag.generatedContent))>
+		<cfset attributes.html = trim(thisTag.generatedContent) />
+		<cfset thisTag.GeneratedContent = "" />
+	</cfif>
+	
+	<cfif structKeyExists(attributes, "html") AND len(attributes.html)>
 		<cfparam name="request.extJS.stLayout.aItems[itemTotal].contentEl" default="contentEl#randRange(1,9999999)#" />
 		
-		<cfsavecontent variable="html">
+		<cfsavecontent variable="variables.html">
 		<cfoutput>
-		<div id="#request.extJS.stLayout.aItems[itemTotal].contentEl#" class="x-hide-display">
-			#thisTag.generatedContent#
+		<div id="#request.extJS.stLayout.aItems[itemTotal].contentEl#" class="x-hidden">
+			#attributes.html#
 		</div>
 		</cfoutput>	
 		</cfsavecontent>
 		
-		<cfset thisTag.GeneratedContent = "" />
-		
-		<cfset request.extJS.stLayout.aItems[itemTotal].html = html />
-		
+		<cfset request.extJS.stLayout.aItems[itemTotal].html = variables.html />
 	</cfif>
 	
 	<cfif itemTotal EQ 1>
 		<!--- This means it is a top level item and therefore needs to go into the layoutItems array --->
 		<cfset arrayAppend(request.extJS.stLayout.aLayoutItems, request.extJS.stLayout.aItems[1]) />
+		<cfset ArrayDeleteAt(request.extJS.stLayout.aItems, itemTotal) />	
 	<cfelse>
 		<!--- This means it is a sub item and therefore needs to go into its parent item list --->
 		<cfset stCurrentItem = request.extJS.stLayout.aItems[itemTotal] />	

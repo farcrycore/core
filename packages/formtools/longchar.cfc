@@ -123,7 +123,7 @@
 			<cfif arguments.stMetadata.ftToggle>
 				<cfoutput>
 				<div>
-					<input type="checkbox" name="#arguments.fieldname#include" id="#arguments.fieldname#include" value="1" onclick="javascript:toggle#arguments.fieldname#();" <cfif bfieldvisible>checked="true"</cfif> >
+					<input type="checkbox" name="#arguments.fieldname#include" id="#arguments.fieldname#include" class="formCheckbox" value="1" onclick="javascript:toggle#arguments.fieldname#();" <cfif bfieldvisible>checked="true"</cfif> >
 					<input type="hidden" name="#arguments.fieldname#include" id="#arguments.fieldname#include" value="0">
 					<span id="#arguments.fieldname#includelabel">#fieldvisibletoggletext#</span>
 				</div>

@@ -6,7 +6,7 @@
 	<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" >
 	<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" >
 	
-	<cffunction name="init" access="public" returntype="farcry.core.packages.formtools.image" output="false" hint="Returns a copy of this initialised object">
+	<cffunction name="init" access="public" returntype="any" output="false" hint="Returns a copy of this initialised object">
 		<cfreturn this>
 	</cffunction>
 	
@@ -19,6 +19,7 @@
 		
 		
 		<cfset var html = "" />
+		<cfset var previewHTML = "" />
 		<cfset var dimensionAlert = "" />
 		<cfset var ToggleOffGenerateImageJS = "" />
 		
@@ -61,9 +62,9 @@
 				
 		<cfsavecontent variable="html">
 			<cfoutput>
-				<table>
-				<tr>
-					<td valign="top">
+				<table style="width: 100%;">
+				<tr valign="top">
+					<td>
 			</cfoutput>
 						<cfif len(arguments.stMetadata.ftSourceField)>
 
@@ -127,25 +128,9 @@
 					</td>
 					</cfoutput>
 					
-					<cfif len(#arguments.stMetadata.value#)>
-						<cfoutput>
-						<td valign="top">
-							<div id="#arguments.fieldname#previewimage">
-								<img src="#arguments.stMetadata.value#" width="50px" title="#listLast(arguments.stMetadata.value,"/")#"><br>
-								#listLast(arguments.stMetadata.value,"/")#
-								<ft:farcryButton type="button" value="Delete Image" onclick="if(confirm('Are you sure you want to remove this image?')) {} else {return false};$('#arguments.fieldname#DELETE').value=$('#arguments.fieldname#').value;$('#arguments.fieldname#').value='';Effect.Fade('#arguments.fieldname#previewimage');" />
-							</div>
-						</td>
-						</cfoutput>
-					<cfelse>
-						<cfoutput>
-						<td valign="top">
-							<div id="#arguments.fieldname#previewimage">
-								&nbsp;
-							</div>
-						</td>
-						</cfoutput>
-					</cfif>				
+					<!--- image preview --->
+					<cfset previewHTML=editPreview(typename=arguments.typename, stobject=arguments.stobject, stmetadata=arguments.stmetadata, fieldname=arguments.fieldname ) />
+					<cfoutput><td>#previewHTML#</td></cfoutput>
 					
 			<cfoutput>
 				</tr>
@@ -154,6 +139,34 @@
 		</cfsavecontent>
 		
 		<cfreturn html>
+	</cffunction>
+
+	<cffunction name="editPreview" access="private" output="false" returntype="string" hint="Build a preview table cell for edit view.">
+		<cfargument name="stMetadata" required="true" type="struct" />
+		<cfargument name="fieldname" required="true" type="string" />
+		
+		<cfset var htmlOut = "" />
+		
+		<cfsavecontent variable="htmlOut">
+		<cfif len(#arguments.stMetadata.value#)>
+			<cfoutput>
+				<div id="#arguments.fieldname#previewimage">
+					<img src="#arguments.stMetadata.value#" width="50px" title="#listLast(arguments.stMetadata.value,"/")#"><br>
+					#listLast(arguments.stMetadata.value,"/")#
+					<ft:farcryButton type="button" value="Delete Image" onclick="if(confirm('Are you sure you want to remove this image?')) {} else {return false};$('#arguments.fieldname#DELETE').value=$('#arguments.fieldname#').value;$('#arguments.fieldname#').value='';Effect.Fade('#arguments.fieldname#previewimage');" />
+				</div>
+			</cfoutput>
+		<cfelse>
+			<cfoutput>
+				<div id="#arguments.fieldname#previewimage">
+					&nbsp;
+				</div>
+			</cfoutput>
+		</cfif>
+		</cfsavecontent>
+		
+		<cfreturn htmlOut />
+					
 	</cffunction>
 
 	<cffunction name="display" access="public" output="true" returntype="string" hint="This will return a string of formatted HTML text to display.">

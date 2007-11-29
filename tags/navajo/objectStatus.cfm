@@ -45,6 +45,7 @@ $out:$
 <cfif not isdefined("form.commentLog") and listlen(attributes.lObjectIDs) eq 1>
 	<!--- get object details --->
 	<q4:contentobjectget objectid="#attributes.lobjectIDs#" r_stobject="stObj">
+
 	<cfif isdefined("stObj.status")><cfoutput>
 <script type="text/javascript">	
 function deSelectAll()
@@ -72,12 +73,13 @@ function deSelectAll()
 			<!--- display existing comments --->
 			<cfif structKeyExists(stObj,"commentLog")>
 				<cfif len(trim(stObj.commentLog)) AND structKeyExists(stObj,"commentLog")>
-	<label><b>#application.adminBundle[session.dmProfile.locale].previousComments#</b>
-		#htmlcodeformat(stObj.commentLog)#
-	</label>
+					<label><b>#application.adminBundle[session.dmProfile.locale].previousComments#</b>
+						#htmlcodeformat(stObj.commentLog)#
+					</label>
 				</cfif>
 			</cfif>
-</form></cfoutput>
+		</form>
+		</cfoutput>
 		<cfset changestatus = false>
 	</cfif>
 </cfif>
@@ -88,17 +90,24 @@ function deSelectAll()
 	<cfif isDefined("form.submit")> <!--- check that they hit submit --->
 		<cfloop index="attributes.objectID" list="#attributes.lObjectIDs#">
 			<q4:contentobjectget objectId="#attributes.objectId#" r_stObject="stObj">
-			<cfif not structkeyexists(stObj, "status")><cfoutput>
+			
+			<cfinvoke component="#application.packagepath#.farcry.versioning" method="getVersioningRules" objectID="#stObj.objectid#" returnvariable="stRules">
+
+			<cfif not structkeyexists(stObj, "status")>
+				<cfoutput>
 				<script type="text/javascript">
 					alert("#application.adminBundle[session.dmProfile.locale].objNoApprovalProcess#");
 					window.close();
-				</script></cfoutput><cfabort>
+				</script>
+				</cfoutput>
+				<cfabort>
 			</cfif>
 			
 			<!--- get the navigation root navigation of this object to check permissions on it --->
 			<nj:getNavigation objectId="#stObj.objectID#" bInclusive="1" r_stObject="stNav" r_ObjectId="objectId">
 	
 			<cfif url.status eq "approved">
+			
 				<cfset status = "approved">
 				<cfset permission = "approve,canApproveOwnContent">
 				<cfset active = 1>
@@ -249,55 +258,96 @@ function deSelectAll()
 			<cfloop list="#keyList#" index="key">
 				<q4:contentobjectget objectId="#key#" r_stObject="stObj">
 				<cfif NOT structIsEmpty(stObj)>
-				<cfif stObj.label NEQ "(incomplete)"> <!--- incompletet items check .: dont send incomplete items live --->
-					<!--- prepare date fields --->
-					<cfloop collection="#stObj#" item="field">
-						<cfif StructKeyExists(application.types[stObj.typeName].stProps, field) AND application.types[stObj.typeName].stProps[field].metaData.type EQ "date">
-							<cfif IsDate(stObj[field])>
-								<cfset stObj[field] = CreateODBCDateTime(stObj[field])>
-							<cfelse>
-								<cfset tempdate = CreateDate(year(Now()),month(Now()),day(Now()))>
-								<cfset stObj[field] = CreateODBCDateTime(tempdate)>
+					<cfif stObj.label NEQ "(incomplete)"> <!--- incompletet items check .: dont send incomplete items live --->
+						
+						
+						<cfinvoke component="#application.packagepath#.farcry.versioning" method="getVersioningRules" objectID="#key#" returnvariable="stRules">
+						
+						<!--- If the user is trying to approve or request approval an approved object, we will assume they are trying to change the status the draft object if there is one. --->
+						<cfif (url.status eq "approved" OR url.status eq "requestApproval") AND stobj.status EQ "approved" and stRules.bDraftVersionExists AND len(stRules.draftobjectID)>
+							<q4:contentobjectget objectId="#stRules.draftobjectID#" r_stObject="stObj">
+							<cfinvoke component="#application.packagepath#.farcry.versioning" method="getVersioningRules" objectID="#stObj.objectid#" returnvariable="stRules">
+						</cfif>
+						
+						<!--- prepare date fields --->
+						<cfloop collection="#stObj#" item="field">
+							<cfif StructKeyExists(application.types[stObj.typeName].stProps, field) AND application.types[stObj.typeName].stProps[field].metaData.type EQ "date">
+								<cfif IsDate(stObj[field])>
+									<cfset stObj[field] = CreateODBCDateTime(stObj[field])>
+								<cfelse>
+									<cfset tempdate = CreateDate(year(Now()),month(Now()),day(Now()))>
+									<cfset stObj[field] = CreateODBCDateTime(tempdate)>
+								</cfif>
+							</cfif>
+						</cfloop>
+						
+						<cfscript>
+							stObj.datetimelastupdated = createODBCDateTime(now());
+			
+							//only if the comment log exists - do we actually append the entry
+							if (isDefined("FORM.commentLog")) {
+								if (structkeyexists(stObj, "commentLog")){
+									buildLog =  "#chr(13)##chr(10)##session.dmSec.authentication.canonicalName#" & "(#dateformat(now(),'dd/mm/yyyy')# #timeformat(now(), 'HH:mm:ss')#):#chr(13)##chr(10)#     Status changed: #stobj.status# -> #status##chr(13)##chr(10)# #FORM.commentLog#";
+									stObj.commentLog = buildLog & "#chr(10)##chr(13)#" & stObj.commentLog;
+									}
+							}
+							stObj.status = status;	
+						</cfscript>
+						
+
+	
+	<!--- 
+						<cfif stRules.bLiveVersionExists and url.status eq "approved">
+							 <!--- Then we want to swap live/draft and archive current live --->
+							<cfinvoke component="#application.packagepath#.farcry.versioning" method="sendObjectLive" objectID="#key#"  stDraftObject="#stObj#" returnvariable="stRules">
+							<cfset returnObjectID=stObj.objectid>
+						<cfelse>
+							
+							<cfset oType = createobject("component", application.types[stObj.typename].typePath) />
+							
+							<!--- Delete the current draft object if one exists. --->
+							<cfif stRules.bDraftVersionExists and len(stRules.draftObjectID)>
+								<cfset stResult = oType.delete(objectid=stRules.draftObjectID) />
+							</cfif>
+							
+							<!--- a normal page, no underlying object --->
+							<cfset oType.setData(stProperties=stObj,auditNote="Status changed to #stObj.status#") />
+							
+							<cfif stObj.typename neq "dmImage" and stObj.typename neq "dmFile">
+								<cfset returnObjectId = url.objectid>
 							</cfif>
 						</cfif>
-					</cfloop>
-					
-					<cfscript>
-						stObj.datetimelastupdated = createODBCDateTime(now());
-		
-						//only if the comment log exists - do we actually append the entry
-						if (isDefined("FORM.commentLog")) {
-							if (structkeyexists(stObj, "commentLog")){
-								buildLog =  "#chr(13)##chr(10)##session.dmSec.authentication.canonicalName#" & "(#dateformat(now(),'dd/mm/yyyy')# #timeformat(now(), 'HH:mm:ss')#):#chr(13)##chr(10)#     Status changed: #stobj.status# -> #status##chr(13)##chr(10)# #FORM.commentLog#";
-								stObj.commentLog = buildLog & "#chr(10)##chr(13)#" & stObj.commentLog;
-								}
-						}
-						stObj.status = status;	
-					</cfscript>
-					
-					<cfinvoke component="#application.packagepath#.farcry.versioning" method="getVersioningRules" objectID="#key#" returnvariable="stRules">
+						 --->
+						
 
-					<cfif stRules.bLiveVersionExists and url.status eq "approved">
-						 <!--- Then we want to swap live/draft and archive current live --->
-						<cfinvoke component="#application.packagepath#.farcry.versioning" method="sendObjectLive" objectID="#key#"  stDraftObject="#stObj#" returnvariable="stRules">
-						<cfset returnObjectID=stObj.objectid>
-					<cfelse>
 						
-						<cfset oType = createobject("component", application.types[stObj.typename].typePath) />
 						
-						<!--- Delete the current draft object if one exists. --->
-						<cfif stRules.bDraftVersionExists and len(stRules.draftObjectID)>
-							<cfset stResult = oType.delete(objectid=stRules.draftObjectID) />
+						<!---  <cfdump var="#stobj#" expand="false" label="stobj" />
+						<cfdump var="#stRules#" expand="false" label="stRules" />
+						<cfabort showerror="debugging" />	 --->
+						<cfif stRules.bLiveVersionExists and url.status eq "approved">
+							 <!--- Then we want to swap live/draft and archive current live --->
+							<cfinvoke component="#application.packagepath#.farcry.versioning" method="sendObjectLive" objectID="#stObj.objectid#"  stDraftObject="#stObj#" returnvariable="stRules">
+							<cfset returnObjectID=stObj.objectid>
+						<cfelse>
+							<!--- a normal page, no underlying object --->
+							<cfscript>
+								oType = createobject("component", application.types[stObj.typename].typePath);
+								oType.setData(stProperties=stObj,auditNote="Status changed to #stObj.status#");
+							</cfscript>
+							
+							<cfif stObj.typename neq "dmImage" and stObj.typename neq "dmFile">
+								<cfset returnObjectId = url.objectid>
+							</cfif>
 						</cfif>
 						
-						<!--- a normal page, no underlying object --->
-						<cfset oType.setData(stProperties=stObj,auditNote="Status changed to #stObj.status#") />
-						
-						<cfif stObj.typename neq "dmImage" and stObj.typename neq "dmFile">
-							<cfset returnObjectId = url.objectid>
-						</cfif>
-					</cfif>
-				</cfif> <!--- // incomplete items check  --->
+					</cfif> <!--- // incomplete items check  --->
+				
+				
+		
+				
+				
+				
 				</cfif>
 			</cfloop>
 		</cfloop>

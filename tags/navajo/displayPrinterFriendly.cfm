@@ -1,57 +1,20 @@
-<cfsetting enablecfoutputonly="Yes">
+<cfsetting enablecfoutputonly="true" />
 <cfprocessingDirective pageencoding="utf-8">
+
+
+
+<!-------------------------------------------------
+DEPRECATED:  this code should no longer be used.
+-------------------------------------------------->
+<cfimport taglib="/farcry/core/tags/farcry" prefix="farcry" />
+<farcry:deprecated message="./tags/navajo/displayPrinterFriendly.cfm should be replaced with a regular view." />
+
+
+
+
+<!--- import tag libraries --->
 <cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
 <cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
-
-<!--- 
-|| BEGIN FUSEDOC ||
-
-|| Copyright ||
-Daemon Pty Limited 1995-2001
-http://www.daemon.com.au/
-
-|| VERSION CONTROL ||
-$Header: /cvs/farcry/core/tags/navajo/displayPrinterFriendly.cfm,v 1.6 2004/07/15 02:03:00 brendan Exp $
-$Author: brendan $
-$Date: 2004/07/15 02:03:00 $
-$Name: milestone_3-0-1 $
-$Revision: 1.6 $
-
-|| DESCRIPTION || 
-
-|| USAGE ||
-
-|| DEVELOPER ||
-Brendan Sisson (brendan@daemon.com.au)
-
-|| ATTRIBUTES ||
--> objectid: objectid of item to display 
-<- [er]: outbound var or caller var
-
-|| HISTORY ||
-$Log: displayPrinterFriendly.cfm,v $
-Revision 1.6  2004/07/15 02:03:00  brendan
-i18n updates
-
-Revision 1.5  2003/08/12 02:05:49  brendan
-cgi.http_host variable used to show current page
-
-Revision 1.4  2003/04/09 08:04:59  spike
-Major update to remove need for multiple ColdFusion and webserver mappings.
-
-Revision 1.3  2003/04/08 08:40:11  paul
-CFC security updates
-
-Revision 1.2  2002/10/08 05:20:17  brendan
-no message
-
-Revision 1.1  2002/10/01 01:24:07  brendan
-no message
-
-
-
-|| END FUSEDOC ||
---->
 
 <!--- method for dealing with the missing url param... redirect to home page --->
 <cfif not isDefined("url.objectId")>
@@ -66,14 +29,10 @@ no message
 <!--- grab the object we are displaying --->
 <cftry>	  
 	<q4:contentobjectget objectid="#url.ObjectID#" r_stobject="stObj">
-	<CFCATCH type="Any">
-		<cflocation url="#application.url.farcry#/" addtoken="No">
-		<!--- TODO: 
-		log this error if it occurs 
-		or perhaps provide URL 404 type error for user
-		--->
+	<cfcatch type="Any">
+		<cfthrow detail="Print Friendly: cannot find content item." />
 		<cfabort>
-	</CFCATCH>
+	</cfcatch>
 </cftry>
 
 <!--- if we are displaying a navigation point, get the first approved object to display --->
@@ -183,40 +142,8 @@ the latter is the policy group for anonymous...
 	<cfparam name="stObj.PageType" default="">
 	<cfif isDefined("url.displayMethod")>
 		<cfset stObj.displayMethod=url.displayMethod>
-	</cfif> --->
+	</cfif>
 	
-	<!--- 
-	TODO:
-	This session is supposed to persist the parameter state of the 
-	admin user, we need to:
-	 - persist all parameters this way
-	 - not sure that desmodedisplay is going to be used at all in farcry 
-	
-	 
-	<cflock timeout="10" throwontimeout="Yes" type="READONLY" scope="SESSION">
-		<cfif isdefined("session.designmodedisplay") and session.designmodedisplay>
-			<cfset DesModeDisplay = true>
-		<cfelse>
-			<cfset DesModeDisplay = false>
-		</cfif>
-	</cflock>
-	--->
-	
-	<!--- 
-	If the user has admin priveleges and this page has a nav node,
-	check the containermanagement permissions and set request.mode.design
-	--->
-	<!--- <cfif request.mode.design>
-		<!--- set the users container management permission --->
-		<cfif isDefined("request.navid")>
-			<cf_dmSec2_PermissionCheck 
-				permissionName="ContainerManagement" 
-				objectId="#request.navid#" 
-				r_iState="request.mode.showcontainers" 
-				reference1="dmNavigation">
-		</cfif>
-	</cfif> --->
-
 	<!--- output printerfriendly display --->
 	<nj:importCSS>
 	<cfoutput>

@@ -162,6 +162,7 @@
 		<cfreturn stResult />
 	</cffunction>
 
+
 	<cffunction name="generateDeploymentSQLArray" access="private" output="false" returntype="array" hint="This method generates an array of structs. Each struct contains the keys column, datatype, defaultValue and nullable. The value of each struct key contains a fragment of valid SQL for the current database.">
 		<cfargument name="fields" type="struct" required="true" />
 
@@ -177,7 +178,6 @@
 
 		<cfset arraySort(fieldArray,'textNoCase') />
 
-
 		<cfloop from="1" to="#arrayLen(fieldArray)#" index="i">
 			<cfset type = arguments.fields[fieldArray[i]].type>
 
@@ -190,10 +190,10 @@
 				<!--- determine and assign default value for column --->
 				<cfif listFindNoCase(variables.numericTypes,fields[fieldArray[i]].type)>
 					<cfif Len( Trim( defaultValue ) )>
-						
+
 						<!--- ensure booleans are recorded as 1/0 --->
 						<cfif fields[fieldArray[i]].type eq 'boolean'>
-							<cfif defaultValue>
+							<cfif ListFindNoCase("Yes,True,Y,1", trim(defaultValue))>
 								<cfset defaultValue = 1 />
 							<cfelse>
 								<cfset defaultValue = 0 />
@@ -204,6 +204,15 @@
 					<cfelse>
 						<cfset defaultValue = "" />
 					</cfif>
+				
+				<!--- AJM: added date test. Use string converter function --->
+				<cfelseif Trim(fields[fieldArray[i]].type) eq 'date'>
+					<cfif Len( Trim( defaultValue ) )>
+						<cfset defaultValue = "default to_date('#defaultValue#','yyyy-mm-dd')" />
+					<cfelse>
+						<cfset defaultValue = "" />
+					</cfif>
+
 				<cfelse>
 					<cfif defaultValue is not "NULL">
 						<cfset defaultValue = "default '#defaultValue#'" />
@@ -211,7 +220,7 @@
 						<cfset defaultValue = "" />
 					</cfif>
 				</cfif>
-				
+
 				<cfif fields[fieldArray[i]].nullable>
 					<cfset nullable = "NULL" />
 				<cfelse>
@@ -224,16 +233,14 @@
 				<cfset fieldSQL.dataType     = SQLType />
 				<cfset fieldSQL.nullable     = nullable />
 				<cfset arrayAppend(SQLArray,fieldSQL) />
-				
+
 			</cfif>
 
 		</cfloop>
 
-    <cfreturn SQLArray />
+		<cfreturn SQLArray />
 
-  </cffunction>
-
-
+	</cffunction>
 
 
    <!--- bowden - overriden from dbgateway to handle longtext as clob. --->
@@ -264,7 +271,7 @@
 						<cfelseif tableDef[field].nullable>
 							<cfset stField.value = "NULL" />
 						<cfelse>
-							<cfabort showerror="Error: #propertyName# must be a date (#propertyValue#).">
+							<cfabort showerror="Error: #field# must be a date (#propertyValue#)." />
 						</cfif>
 					</cfcase>
 

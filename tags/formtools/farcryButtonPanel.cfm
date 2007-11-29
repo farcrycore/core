@@ -13,11 +13,12 @@
 	<cfabort showerror="Does not have an end tag...">
 </cfif>
 
+<cfparam name="attributes.id" default="#createUUID()#" />
 <cfparam name="attributes.indentForLabel" default="true" />
 
 <cfif thistag.ExecutionMode EQ "Start">
 	<cfoutput>
-		<div class="farcryButtonPanel">
+		<div id="#attributes.id#" class="farcryButtonPanel">
 			<cfif attributes.indentForLabel>
 			<div class="fieldSection">
 				<label class="fieldsectionlabel">&nbsp;</label>

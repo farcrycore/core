@@ -40,8 +40,11 @@ START WEBSKIN
 		</cfif>
 	</cfif>
 
+
+
 	<extjs:layout id="webtopOverviewViewport" container="Viewport" layout="border">
 		<extjs:item region="center" container="TabPanel" activeTab="0">
+			
 			<cfif StructKeyExists(stobj,"status")>
 			
 				<cfif len(stobj.status)>
@@ -53,15 +56,13 @@ START WEBSKIN
 				
 				<cfif stobj.status NEQ "" AND NOT structIsEmpty(stDraftObject)>
 					<extjs:item title="#stDraftObject.status#" container="Panel" layout="border">
-						<extjs:item region="center" container="Panel" layout="border">			
-							<!--- <extjs:item region="north">
-								<cfoutput>Workflow</cfoutput>
-							</extjs:item> --->
-							<extjs:item region="center">
+	
+ 						<extjs:item region="center" container="Panel" layout="border">			
+							<extjs:item region="center" autoScroll="true">
 								<skin:view objectid="#stDraftObject.objectid#" webskin="webtopOverviewSummary" />
 							</extjs:item>
-						</extjs:item>			
-						<extjs:item region="east" title="Actions" layout="accordion" width="250" cls="webtopOverviewActions">
+						</extjs:item>	
+						<extjs:item region="east" layout="accordion" width="250" cls="webtopOverviewActions">
 							<skin:view objectid="#stDraftObject.objectid#" webskin="webtopOverviewActions" />
 						</extjs:item>	
 						
@@ -73,30 +74,16 @@ START WEBSKIN
 			</cfif>
 			<extjs:item title="#mainTabStatus#" container="Panel" layout="border">
 				<extjs:item region="center" container="Panel" layout="border">			
-					<!--- <extjs:item region="north">
-						<cfoutput>Workflow</cfoutput>
-					</extjs:item> --->
-					<extjs:item region="center">
+					<extjs:item region="center" autoScroll="true">
 						<skin:view objectid="#stobj.objectid#" webskin="webtopOverviewSummary" />
 					</extjs:item>
 				</extjs:item>			
-				<extjs:item region="east" title="Actions" layout="accordion" width="250" cls="webtopOverviewActions">
+				<extjs:item region="east" layout="accordion" width="250" cls="webtopOverviewActions">
 					<skin:view objectid="#stobj.objectid#" webskin="webtopOverviewActions" />
 				</extjs:item>	
 				
 				
 			</extjs:item>
-			<!--- <extjs:tabPanel title="#mainTabStatus#">
-				<extjs:layoutRegion class="webtopOverviewActions">
-					<skin:view objectid="#stobj.objectid#" webskin="webtopOverviewActions" />
-				</extjs:layoutRegion>
-				
-				<extjs:layoutRegion>
-					<skin:view objectid="#stobj.objectid#" webskin="webtopOverviewSummary" />
-				</extjs:layoutRegion>
-				
-				<cfoutput><br style="clear:both;" /></cfoutput>
-			</extjs:tabPanel> --->
 		</extjs:item>		
 	</extjs:layout>
 

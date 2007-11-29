@@ -16,15 +16,10 @@ START WEBSKIN
 
 	<cfset iDeveloperPermission = application.security.checkPermission(permission="developer") />
 		
-	<cfset tIconName = LCase(Right(stobj.typename,len(stobj.typename)-2))>
-    <cfif fileExists(expandPath('images/icons/#tIconName#.png'))>
-        <cfoutput><img src="#application.url.farcry#/images/icons/#tIconName#.png" alt="alt text" class="icon" /></cfoutput>
-    <cfelse>
-        <cfoutput><img src="#application.url.farcry#/images/icons/custom.png" alt="alt text" class="icon" /></cfoutput>
-    </cfif>
+	<cfoutput><img src="#application.stCOAPI[stObj.typename].icon#" alt="alt text" class="icon" style="float: right; padding: 10px;" /></cfoutput>
 	
 	<cfoutput>
-	<dl class="dl-style1">
+	<dl class="dl-style1" style="padding: 10px;">
 		<dt>#application.adminBundle[session.dmProfile.locale].objTitleLabel#</dt>
 		<dd><cfif stobj.label NEQ "">
 			#stobj.label#<cfelse>

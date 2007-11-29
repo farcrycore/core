@@ -150,7 +150,7 @@
 						<div>
 							<cfif arguments.stMetadata.ftToggleOffDateTime>
 								<div style="float:left;margin-right:10px;">
-									<input type="checkbox" name="#arguments.fieldname#include" id="#arguments.fieldname#include" value="1" onclick="javascript:toggle#arguments.fieldname#();" <cfif bfieldvisible>checked="true"</cfif> >
+									<input type="checkbox" name="#arguments.fieldname#include" id="#arguments.fieldname#include" class="formCheckbox" value="1" onclick="javascript:toggle#arguments.fieldname#();" <cfif bfieldvisible>checked="true"</cfif> >
 									<input type="hidden" name="#arguments.fieldname#include" id="#arguments.fieldname#include" value="0">
 								</div>
 							<cfelse>

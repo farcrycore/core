@@ -25,12 +25,12 @@ $out:$
 --->
 
 
-
 <cfif structKeyExists(Request,"inHead") AND len(structKeyList(Request.InHead))>		
 
 		<cfparam name="variables.stPlaceInHead" default="#StructNew()#">		
 		
 		<cfparam name="variables.stPlaceInHead.extJS" default="0">
+		<cfparam name="variables.stPlaceInHead.extPortalJS" default="0">
 		<cfparam name="variables.stPlaceInHead.prototypeJS" default = "0">
 		<cfparam name="variables.stPlaceInHead.prototypeLiteJS" default = "0">
 		<cfparam name="variables.stPlaceInHead.moofxJS" default = "0">
@@ -84,6 +84,10 @@ $out:$
 		
 		<cfif isDefined("Request.InHead.extJS") AND Request.InHead.extJS>
 			<cfset variables.stPlaceInHead.extJS = 1>
+		</cfif>
+		<cfif isDefined("Request.InHead.extPortalJS") AND Request.InHead.extPortalJS>
+			<cfset variables.stPlaceInHead.extJS = 1>
+			<cfset variables.stPlaceInHead.extPortalJS = 1>
 		</cfif>
 		
 		<cfif isDefined("Request.InHead.PrototypeLite") AND Request.InHead.PrototypeLite>
@@ -252,10 +256,21 @@ $out:$
 		
 			<cfif isDefined("variables.stPlaceInHead.extJS") AND variables.stPlaceInHead.extJS>
 				<cfoutput>
-				<link rel="stylesheet" type="text/css" href="/farcry/js/ext/resources/css/ext-all.css">
-				<script type="text/javascript" src="/farcry/js/ext/adapter/ext/ext-base.js"></script>
-				<script type="text/javascript" src="/farcry/js/ext/ext-all.js"></script></cfoutput>
+				<link rel="stylesheet" type="text/css" href="#application.url.farcry#/js/ext/resources/css/ext-all.css">
+				<script type="text/javascript" src="#application.url.farcry#/js/ext/adapter/ext/ext-base.js"></script>
+				<script type="text/javascript" src="#application.url.farcry#/js/ext/ext-all.js"></script></cfoutput>
 			</cfif>
+			<cfif isDefined("variables.stPlaceInHead.extPortalJS") AND variables.stPlaceInHead.extPortalJS>
+				<cfoutput>
+				<script type="text/javascript" src="#application.url.farcry#/js/ext/portal/Portal.js"></script>
+			    <script type="text/javascript" src="#application.url.farcry#/js/ext/portal/PortalColumn.js"></script>
+			    <script type="text/javascript" src="#application.url.farcry#/js/ext/portal/Portlet.js"></script>
+			    <link rel="stylesheet" type="text/css" href="#application.url.farcry#/js/ext/portal/portal.css" /></cfoutput>
+			</cfif>
+			
+			
+
+
 			
 			<cfif isDefined("variables.stPlaceInHead.prototypeLiteJS") AND variables.stPlaceInHead.prototypeLiteJS AND Not variables.stPlaceInHead.prototypeJS>
 				<cfoutput>

@@ -668,7 +668,7 @@ user --->
 	</cfif>
 	
 	<cfoutput>
-	<table width="100%">
+	<table width="100%" class="objectAdmin">
 		<tr>			
 	</cfoutput>
 	

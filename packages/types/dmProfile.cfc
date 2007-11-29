@@ -42,7 +42,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 		<cfset var localeNames = application.i18nUtils.getLocaleNames() />
 		<cfset var result = "" />
 		<cfset var locale = "" />
-		
+
 		<cfloop list="#application.locales#" index="locale">
 			<cfset result = listappend(result,"#locale#:#listgetat(localeNames,listfind(locales,locale))#") />
 		</cfloop>

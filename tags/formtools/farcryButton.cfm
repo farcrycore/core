@@ -1,5 +1,6 @@
 <cfsetting enablecfoutputonly="yes">
 
+<cfsilent>
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
 <cfif not thistag.HasEndTag>
@@ -15,22 +16,35 @@
 <cfparam  name="attributes.Style" default="">
 <cfparam name="attributes.SelectedObjectID" default="">
 <cfparam name="attributes.ConfirmText" default="">
-<cfparam name="attributes.validate" default="true">
+<cfparam name="attributes.validate" default="">
 <cfparam name="attributes.bInPanel" default="true">
 <cfparam name="attributes.src" default="">
 <cfparam name="attributes.url" default="">
 <cfparam name="attributes.target" default="_self">
 
+</cfsilent>
+
 <cfif thistag.ExecutionMode EQ "Start">
 	<!--- I18 conversion of label --->
 	<cfset attributes.value = application.rb.getResource('#attributes.rbkey#@label',attributes.value) />
-	
+
+	<cfsilent>
+
 	<!--- Include Prototype light in the head --->
-	<cfset Request.InHead.PrototypeLite = 1>
+	<skin:htmlHead library="prototypelite" />
 
 	<!--- If not in a farcry form, make it a button. --->
 	<cfif NOT isDefined("Request.farcryForm.Name")>
 		<cfset attributes.Type = "button" />
+	</cfif>
+
+	<!--- Default validate to true if submitting and false if just a button --->
+	<cfif not len(attributes.validate)>
+		<cfif attributes.type EQ "submit">
+			<cfset attributes.validate = true />
+		<cfelse>
+			<cfset attributes.validate = false />
+		</cfif>
 	</cfif>
 	
 	<cfif len(attributes.SelectedObjectID) AND isDefined("Request.farcryForm.Name")>		
@@ -69,6 +83,9 @@
 		</cfif>
 	</cfif>
 	
+	
+	<cfsavecontent variable="buttonHTML">
+	
 	<cfif attributes.bInPanel>
 		<cfif attributes.type eq "image" and len(attributes.src)>
 			<cfoutput><input name="FarcryFormSubmitButton" value="#attributes.Value#" type="#attributes.Type#" onclick="#attributes.Onclick#" class="#attributes.Class#" style="#attributes.Style#" src="#attributes.src#" /></cfoutput>
@@ -92,7 +109,6 @@
 					border:0px solid green;
 					padding:0px 3px 0px 0px;
 					margin:0px 0px 0px 3px;
-					height:21px;
 					float:none;
 				}	
 				
@@ -162,7 +178,11 @@
 	<cfelse>
 		<cfoutput><button type="#attributes.Type#" name="FarcryForm#attributes.Type#Button" onclick="#attributes.Onclick#" class="formButton #attributes.Class#" style="#attributes.Style#">#attributes.Value#</button></cfoutput>
 	</cfif>
+	</cfsavecontent>
 
+	</cfsilent>
+	
+	<cfoutput>#Trim(buttonHTML)#</cfoutput>
 </cfif>
 
 

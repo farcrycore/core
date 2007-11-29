@@ -41,7 +41,7 @@ br.clearer {clear: both;}
 
 /* =FORMS */
 form {margin: 0 0 1em}
-form.formtool {min-width: 600px; width: 800px; max-width: 900px;}
+form.formtool {min-width: 600px; max-width: 800px; width:100%; _width: 700px; }
 input, textarea, select {font-family:arial}
 input.formButton {width: 75px;}
 
@@ -576,5 +576,9 @@ table.FormTableClear {border: none}
 table.dataheader td {font-weight:bold;color: #fff;border-top: 1px solid #A5B9D0;border-right: 1px solid #A5B9D0;text-align: left;padding: 3px 10px;background: #9EB4CC url("images/th_bg.gif") repeat-x 0 0;font-size: 110%}
 table.BorderTable td, table.BorderTable th {border:none;padding:0} 
 
+
+ /* OBJECT ADMIN CLASSES */
+table.objectAdmin {}
+table.objectAdmin th, table.objectAdmin td {padding:3px;}
 
 

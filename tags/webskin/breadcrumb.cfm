@@ -80,10 +80,11 @@ out:
 		<cfsilent><cfset iCount = iCount + 1></cfsilent>
 	</cfloop>
 	<cfif attributes.includeSelf>
+		<cfif qCrumb.recordCount><cfoutput>#attributes.separator#</cfoutput></cfif>
 		<cfif attributes.linkSelf>
-			<cfoutput>#attributes.separator#</cfoutput><skin:buildLink objectid="#attributes.objectid#" class="#attributes.linkClass#"><cfoutput>#stSelf.title#</cfoutput></skin:buildLink>
+			<skin:buildLink objectid="#attributes.objectid#" class="#attributes.linkClass#"><cfoutput>#stSelf.title#</cfoutput></skin:buildLink>
 		<cfelse>
-			<cfoutput>#attributes.separator# #stSelf.title#</cfoutput>
+			<cfoutput>#stSelf.title#</cfoutput>
 		</cfif>		
 	</cfif>
 	<cfif len(attributes.here)>
@@ -94,7 +95,12 @@ out:
 	<cfoutput>#attributes.prefix# <a href="#application.url.webroot#/" class="#attributes.linkClass#">Home</a></cfoutput>
 	<!--- #FC-611 if calling page is including itself, display page linked title --->
 	<cfif attributes.includeSelf>
-		<cfoutput>#attributes.separator#</cfoutput><skin:buildLink objectid="#attributes.objectid#" class="#attributes.linkClass#"><cfoutput>#stSelf.title#</cfoutput></skin:buildLink>
+		<cfoutput>#attributes.separator#</cfoutput>
+		<cfif attributes.linkSelf>
+			<skin:buildLink objectid="#attributes.objectid#" class="#attributes.linkClass#"><cfoutput>#stSelf.title#</cfoutput></skin:buildLink>
+		<cfelse>
+			<cfoutput>#stSelf.title#</cfoutput>
+		</cfif>
 	</cfif>
 	<!--- #FC-611 if calling page is including 'here', display value of attributes.here, no link --->
 	<cfif len(attributes.here)>

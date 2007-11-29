@@ -1,3 +1,10 @@
+<!--- 
+THIS IS DEPRICATED PAGE AND SHOULD BE USING navajo/approve.cfm
+A CFLOCATION HAS BEEN ADDED TO REDIRECT
+ --->
+
+
+
 <cfsetting enablecfoutputonly="true">
 <!--- 
 || LEGAL ||
@@ -25,6 +32,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 
 <!--- imported tag libraries --->
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry">
 
 <!--- required parameters as FORM or URL variables --->
 <cfif isDefined("url.objectid") AND len(url.objectid)>
@@ -56,6 +64,10 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 <cfelse>
 	<cfabort showerror="<strong>Error:</strong> status is a required parameter.">
 </cfif>
+
+<farcry:deprecated message="should be using navajo/approve.cfm" />
+<cflocation url="#application.url.farcry#/navajo/approve.cfm?objectid=#url.objectid#&status=#url.status#" addtoken="false" />
+
 
 <!--- finishURL: location to return user post finish --->
 <cfif isDefined("url.finishURL") AND len(url.finishURL)>

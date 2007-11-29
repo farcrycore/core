@@ -133,6 +133,24 @@ $out:$
 	</cfif>
 </cffunction>
 
+<cffunction name="getIconPath" access="public" output="false" returntype="string" hint="Returns the path for the specified icon.">
+	<cfargument name="iconname" type="string" required="true" hint="The name of the icon to retrieve" />
+	<cfargument name="default" type="string" required="false" default="#application.url.farcry#/images/icons/custom.png" hint="The default icon to use" />
+
+	<cfif fileexists("#application.path.project#/www/wsimages/icons/#arguments.iconname#.png")>
+		<cfreturn "#application.url.webroot#/wsimages/icons/#arguments.iconname#.png" />
+	</cfif>
+	<cfif fileexists("#application.path.project#/www/images/icons/#arguments.iconname#.png")>
+		<cfreturn "#application.url.webroot#/images/icons/#arguments.iconname#.png" />
+	</cfif>
+	
+	<cfif fileexists("#application.path.core#/admin/images/icons/#arguments.iconname#.png")>
+		<cfreturn "#application.url.farcry#/images/icons/#arguments.iconname#.png" />
+	</cfif>
+	
+	<cfreturn arguments.default />
+</cffunction>
+
 <cffunction name="setupMetadataQuery" output="false" displayname="Sets up the metadata query containing formtool structure information" returntype="query" access="private">
 	
 	<cfargument name="typename" type="string" required="true" />
@@ -267,6 +285,10 @@ $out:$
 				<cfset stTypeMD.bLibraryType = 0 />
 				<cfset stTypeMD.typePath = "#application.packagepath#.types.#typename#" />
 				<cfset stTypeMD.packagePath = "#application.packagepath#.types.#typename#" />
+				
+				<cfparam name="stTypeMD.icon" default="#LCase(Right(typename,len(typename)-2))#" />
+				<cfset stTypeMD.icon = getIconPath(iconname=stTypeMD.icon) />
+				
 				<cfset stTypeMD.qMetadata = setupMetadataQuery(typename=typename,stProps=stTypeMD.stProps) />
 				<cfset application.types[typename]=duplicate(stTypeMD) />
 	
@@ -309,7 +331,11 @@ $out:$
 							<cfset stTypeMD.bCustomType = 1 />
 							<cfset stTypeMD.bLibraryType = 1 />
 							<cfset stTypeMD.typePath = "farcry.plugins.#plugin#.packages.types.#typename#" />							
-							<cfset stTypeMD.packagePath = "farcry.plugins.#plugin#.packages.types.#typename#" />							
+							<cfset stTypeMD.packagePath = "farcry.plugins.#plugin#.packages.types.#typename#" />
+				
+							<cfparam name="stTypeMD.icon" default="#LCase(Right(typename,len(typename)-2))#" />
+							<cfset stTypeMD.icon = getIconPath(iconname=stTypeMD.icon) />
+				
 							<cfset stTypeMD.qMetadata = setupMetadataQuery(typename=typename,stProps=stTypeMD.stProps) />
 							<cfset application.types[typename]=duplicate(stTypeMD) />
 						</cfif>	
@@ -345,7 +371,11 @@ $out:$
 				<cfset stTypeMD.bCustomType = 0 />
 				<cfset stTypeMD.bLibraryType = 0 />
 				<cfset stTypeMD.typePath = "#application.custompackagepath#.system.#typename#" />				
-				<cfset stTypeMD.packagePath = "#application.custompackagepath#.system.#typename#" />				
+				<cfset stTypeMD.packagePath = "#application.custompackagepath#.system.#typename#" />
+				
+				<cfparam name="stTypeMD.icon" default="#LCase(Right(typename,len(typename)-2))#" />
+				<cfset stTypeMD.icon = getIconPath(iconname=stTypeMD.icon) />
+				
 				<cfset stTypeMD.qMetadata = setupMetadataQuery(typename=typename,stProps=stTypeMD.stProps) />
 				<cfset application.types[typename]=duplicate(stTypeMD) />
 			</cfif>
@@ -377,6 +407,10 @@ $out:$
 				<cfset stTypeMD.bLibraryType = 0 />
 				<cfset stTypeMD.typePath = "#application.custompackagepath#.types.#typename#" />
 				<cfset stTypeMD.packagePath = "#application.custompackagepath#.types.#typename#" />
+				
+				<cfparam name="stTypeMD.icon" default="#LCase(Right(typename,len(typename)-2))#" />
+				<cfset stTypeMD.icon = getIconPath(iconname=stTypeMD.icon) />
+				
 				<cfset stTypeMD.qMetadata = setupMetadataQuery(typename=typename,stProps=stTypeMD.stProps) />
 				<cfset application.types[typename]=duplicate(stTypeMD) />
 			</cfif>
@@ -409,6 +443,10 @@ $out:$
 				<cfset stTypeMD.bLibraryformtool = 0 />
 				<cfset stTypeMD.formtoolPath = "#application.packagepath#.formtools.#formtoolname#" />
 				<cfset stTypeMD.packagePath = "#application.packagepath#.formtools.#formtoolname#" />
+				
+				<cfparam name="stTypeMD.icon" default="#LCase(Right(formtoolname,len(formtoolname)-2))#" />
+				<cfset stTypeMD.icon = getIconPath(iconname=stTypeMD.icon) />
+				
 				<cfset application.formtools[formtoolname] = duplicate(stTypeMD) />
 				<cfset application.formtools[formtoolname].oFactory = oFactory /><!--- you can't duplicate an object --->
 			</cfif>
@@ -440,7 +478,10 @@ $out:$
 								<cfset stTypeMD.bLibraryformtool = 1 />
 								<cfset stTypeMD.formtoolPath = "farcry.plugins.#plugin#.packages.formtools.#formtoolname#" />
 								<cfset stTypeMD.packagePath = "farcry.plugins.#plugin#.packages.formtools.#formtoolname#" />
-								
+				
+								<cfparam name="stTypeMD.icon" default="#LCase(Right(formtoolname,len(formtoolname)-2))#" />
+								<cfset stTypeMD.icon = getIconPath(iconname=stTypeMD.icon) />
+				
 								<cfset application.formtools[formtoolname] = duplicate(stTypeMD) />
 								<cfset application.formtools[formtoolname].oFactory = oFactory /><!--- you can't duplicate an object --->
 							</cfif>
@@ -470,6 +511,10 @@ $out:$
 				<cfset stTypeMD.bLibraryformtool = 0 />
 				<cfset stTypeMD.formtoolPath = "#application.custompackagepath#.formtools.#formtoolname#" />
 				<cfset stTypeMD.packagePath = "#application.custompackagepath#.formtools.#formtoolname#" />
+				
+				<cfparam name="stTypeMD.icon" default="#LCase(Right(formtoolname,len(formtoolname)-2))#" />
+				<cfset stTypeMD.icon = getIconPath(iconname=stTypeMD.icon) />
+				
 				<cfset application.formtools[formtoolname] = duplicate(stTypeMD) />
 				<cfset application.formtools[formtoolname].oFactory = oFactory /><!--- you can't duplicate an object --->
 			</cfif>
@@ -584,7 +629,11 @@ $out:$
 					<cfset stTypeMD.bCustomRule = 0 />
 					<cfset stTypeMD.bLibraryRule = 0 />
 					<cfset stTypeMD.rulePath = "#application.packagepath#.rules.#typename#" />					
-					<cfset stTypeMD.packagePath = "#application.packagepath#.rules.#typename#" />					
+					<cfset stTypeMD.packagePath = "#application.packagepath#.rules.#typename#" />
+				
+					<cfparam name="stTypeMD.icon" default="#LCase(Right(typename,len(typename)-2))#" />
+					<cfset stTypeMD.icon = getIconPath(iconname=stTypeMD.icon) />
+				
 					<cfset stTypeMD.qMetadata = setupMetadataQuery(typename=typename,stProps=stTypeMD.stProps) />
 					<cfset application.rules[typename] = duplicate(stTypeMD) />
 				</cfif>
@@ -616,7 +665,11 @@ $out:$
 							<cfset stTypeMD.bCustomRule = 1 />
 							<cfset stTypeMD.bLibraryRule = 1 />
 							<cfset stTypeMD.rulePath = "farcry.plugins.#plugin#.packages.rules.#typename#" />							
-							<cfset stTypeMD.packagePath = "farcry.plugins.#plugin#.packages.rules.#typename#" />							
+							<cfset stTypeMD.packagePath = "farcry.plugins.#plugin#.packages.rules.#typename#" />
+						
+							<cfparam name="stTypeMD.icon" default="#LCase(Right(typename,len(typename)-2))#" />
+							<cfset stTypeMD.icon = getIconPath(iconname=stTypeMD.icon) />
+						
 							<cfset stTypeMD.qMetadata = setupMetadataQuery(typename=typename,stProps=stTypeMD.stProps) />
 							<cfset application.rules[typename] = duplicate(stTypeMD) />
 						</cfif>
@@ -647,6 +700,9 @@ $out:$
 				<cfset stTypeMD.bLibraryRule = 0 />
 				<cfset stTypeMD.rulePath = "#application.custompackagepath#.rules.#typename#" />
 				<cfset stTypeMD.packagePath = "#application.custompackagepath#.rules.#typename#" />
+				
+				<cfparam name="stTypeMD.icon" default="#LCase(Right(typename,len(typename)-2))#" />
+				<cfset stTypeMD.icon = getIconPath(iconname=stTypeMD.icon) />
 				
 				<cfset stTypeMD.qMetadata = setupMetadataQuery(typename=typename,stProps=stTypeMD.stProps) />
 				<cfset application.rules[typename] = duplicate(stTypeMD) />
