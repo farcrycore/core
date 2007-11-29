@@ -195,14 +195,19 @@ $out:$
 		<cfargument name="stProperties" type="struct" required="true" hint="Structure of properties for the new object instance">
 		<cfargument name="user" type="string" required="true" hint="Username for object creator" default="#session.dmSec.authentication.userlogin#">
 		<cfargument name="auditNote" type="string" required="true" hint="Note for audit trail" default="Created">
-		<cfscript>
-			var stNewObject = "";
-			if(NOT structKeyExists(arguments.stProperties,"objectid"))
-				arguments.stProperties.objectid = createUUID();
-			stNewObject = super.createData(arguments.stProperties);
-			application.factory.oAudit.logActivity(auditType="Create", username=arguments.user, location=cgi.remote_host, note=arguments.auditNote,objectid=stNewObject.objectid);
-		</cfscript>
-		<cfreturn stNewObject>
+		
+		<cfset var stNewObject = "" />
+		
+		<cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry" />
+		
+		<cfif not structKeyExists(arguments.stProperties,"objectid")>
+			<cfset arguments.stProperties.objectid = createUUID() />
+		</cfif>
+		
+		<cfset stNewObject = super.createData(arguments.stProperties) />
+		<farcry:logevent objectid="#arguments.stProperties.objectid#" type="rules" event="create" notes="#arguments.auditNote#" />
+		
+		<cfreturn stNewObject />
 	</cffunction>
 	
 		
@@ -212,11 +217,10 @@ $out:$
 		<cfargument name="auditNote" type="string" required="true" hint="Note for audit trail" default="Deleted">
 		<cfargument name="dsn" required="No" default="#application.dsn#"> 
 		
-		<cfscript>
-			 super.deleteData(arguments.objectid,arguments.dsn);
-			 application.factory.oAudit.logActivity(auditType="Delete", username=arguments.user, location=cgi.remote_host, note=arguments.auditNote,objectid=arguments.objectid);
-		</cfscript>
-
+		<cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry" />
+		
+		<cfset super.deleteData(arguments.objectid,arguments.dsn) />
+		<farcry:logevent objectid="#arguments.objectid#" type="rule" event="delete" notes="#arguments.auditNote#" />
 	</cffunction>	
 	
 	<cffunction access="public" name="update" output="true">
@@ -433,7 +437,7 @@ $out:$
 	
 		<!--- log event --->
 		<cfif arguments.bAudit and isDefined("instance.stobj.objectid")>
-			<cfset application.factory.oAudit.logActivity(auditType="Lock", username=arguments.lockedby, location=cgi.remote_host, note="Locked: #yesnoformat(arguments.locked)#",objectid=instance.stobj.objectid,dsn=arguments.dsn)>
+			<farcry:logevent object="#instance.stObj.objectid#" type="rules" event="lock" notes="Locked: #yesnoformat(arguments.locked)#" />
 		</cfif>
 	</cffunction>
 		
@@ -490,9 +494,10 @@ $out:$
 		<cfset stReturn=super.setData(stProperties=arguments.stProperties, dsn=arguments.dsn, bSessionOnly=arguments.bSessionOnly) />
 		<!--- log update --->
 		<cfif arguments.bAudit>
-			<cfset application.factory.oAudit.logActivity(auditType="Update", username=arguments.user, location=cgi.remote_host, note=arguments.auditNote,objectid=arguments.stProperties.objectid,dsn=arguments.dsn)>	
+			<farcry:logevent object="#arguments.stProperties.objectid#" type="rules" event="update" notes="#arguments.auditNote#" />
 		</cfif>
-		<cfreturn stReturn>
+		
+		<cfreturn stReturn />
 	</cffunction>
 	
 	<cffunction name="BeforeSave" access="public" output="false" returntype="struct">

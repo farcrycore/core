@@ -29,8 +29,10 @@ $out:$
 <!--- set long timeout for template to prevent data-corruption on incomplete tree.moveBranch() --->
 <cfsetting requesttimeout="90">
 
-<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
-<cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
+<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4" />
+<cfimport taglib="/farcry/core/tags/navajo/" prefix="nj" />
+<cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry" />
+ 
 <cfinclude template="/farcry/core/admin/includes/cfFunctionWrappers.cfm">
 
 <cfparam name="url.srcObjectId" default="">
@@ -198,16 +200,16 @@ $out:$
 	
 	
 	<!--- Update the tree and log--->
-	<cfscript>
-	if (srcObj.typename IS 'dmNavigation')
-		destParentObjectId = destObj.ObjectID;
-	//if they are moving to trash - log this as the audit note	
-	if (isDefined("application.navid.rubbish") AND URL.destObjectID IS application.navid.rubbish)	
-		auditNote = "object moved to trash";
-	else
-		auditnote = "object moved to new parentid #url.destObjectID#";			
-	oaudit.logActivity(objectid="#srcobj.objectid#",auditType="sitetree.movenode", username=StUser.userlogin, location=cgi.remote_host, note="#auditNote#");
-	</cfscript>
+	<cfif srcObj.typename IS 'dmNavigation'>
+		<cfset destParentObjectId = destObj.ObjectID />
+	</cfif>
+		
+	<!--- if they are moving to trash - log this as the audit note	 --->
+	<cfif isDefined("application.navid.rubbish") AND URL.destObjectID IS application.navid.rubbish>
+		<farcry:logevent objectid="#srcobj.objectid#" type="sitetree" event="movenode" notes="Object moved to trash" />
+	<cfelse>
+		<farcry:logevent objectid="#srcobj.objectid#" type="sitetree" event="movenode" notes="Object moved to new parentid #url.destObjectID#" />
+	</cfif>
 	
 	<!--- update overview page --->
 	<cfoutput>

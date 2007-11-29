@@ -12,7 +12,7 @@
 <cfparam name="attributes.objectID" default="" />
 
 <cfparam name="attributes.error" default="false" />
-<cfparam name="attributes.errormessage" default="#application.adminBundle[session.dmProfile.locale].noPageViewPermissions#" />
+<cfparam name="attributes.errormessage" default="You don't have permission to view this page" />
 
 <cfif thistag.ExecutionMode EQ "Start">
 	<cfset permitted = 0>
@@ -37,7 +37,8 @@
 
 	<cfif permitted NEQ "1">
 		<cfif attributes.error>
-			<cfoutput>#attributes.errormessage#</cfoutput>
+			<!--- Translate and output error message --->
+			<cfoutput>#application.rb.getResource("general.errors.#rereplace(attributes.errormessage,'[^\w]','','ALL')#",attributes.errormessage)#</cfoutput>
 		</cfif>
 		<cfexit />
 	</cfif>

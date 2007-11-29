@@ -4,6 +4,7 @@
 <cffunction name="init" access="public" output="false" hint="Initialise component." returntype="coapiadmin">
 	
 	<cfset variables.qIncludedObjects = initializeIncludes() />
+	<cfset this.qIncludedObjects = variables.qIncludedObjects />
 	
 	<cfreturn this />
 </cffunction>

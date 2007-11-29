@@ -158,13 +158,15 @@
 		<cfset var stResult = structnew() />
 		<cfset var groups = "" />
 		
+		<cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry" />
+		
 		<cfloop list="#this.userdirectoryorder#" index="ud">
 			<!--- Authenticate user --->
 			<cfset stResult = this.userdirectories[ud].authenticate() />
 			
 			<cfif structkeyexists(stResult,"authenticated")>
 				<cfif not stResult.authenticated>
-					<cfset application.factory.oAudit.logActivity(auditType="security.loginfailed", username="#stResult.userid#_#ud#", location=cgi.remote_host, note=stResult.errormessage) />
+					<farcry:logevent type="security" event="loginfailed" userid="#stResult.userid#_#ud#" notes="#ud#: #stResult.errormessage#" />
 					<cfbreak />
 				</cfif>
 				
@@ -206,9 +208,9 @@
 				
 				<!--- Log the result --->
 				<cfif session.firstLogin>
-					<cfset application.factory.oAudit.logActivity(auditType="dmSec.login", username=session.dmSec.authentication.canonicalname, location=cgi.remote_host, note="userDirectory: #ud# **First Login**") />
+					<farcry:logevent type="security" event="login" userid="#session.security.userid#" notes="#ud#: First login" />
 				<cfelse>
-					<cfset application.factory.oAudit.logActivity(auditType="dmSec.login", username=session.dmSec.authentication.canonicalname, location=cgi.remote_host, note="userDirectory: #ud#") />
+					<farcry:logevent type="security" event="login" userid="#session.security.userid#" notes="#ud#" />
 				</cfif>
 				
 				<!--- Return 'success' --->
@@ -226,6 +228,7 @@
 		<!--- DEPRECIATED VARIABLE --->
 		<cfset structdelete(session,"dmSec") />
 	</cffunction>
+
 
 	<!--- CACHE FUNCTIONS - SHOULD ONLY BE ACCESSED BY CORE CODE --->
 	<cffunction name="setCache" access="public" output="false" returntype="boolean" hint="Sets up the ermission cache structure">

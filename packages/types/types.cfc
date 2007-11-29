@@ -354,10 +354,10 @@ default handlers
 		<cfargument name="stProperties" type="struct" required="true" hint="Structure of properties for the new object instance">
 		<cfargument name="user" type="string" required="true" hint="Username for object creator" default="">
 		<cfargument name="auditNote" type="string" required="true" hint="Note for audit trail" default="Created">
-		<cfargument name="dsn" required="No" default="#application.dsn#"> 
+		<cfargument name="dsn" required="No" default="#application.dsn#">
+		<cfargument name="bAudit" type="boolean" default="true" required="false" hint="Set to false to disable logging" />
 		
 		<cfset var stNewObject = "" />
-		<cfset var bAudit = true />
 		
 		<!--- 
 		MJB: This may or may not be cancer. Need to investigate
@@ -395,14 +395,10 @@ default handlers
 		</cfscript>
 		
 		<!--- needs to be isDefined because application.stcoapi may not exist yet --->
-		<cfif isDefined("application.stcoapi.#variables.typename#.bAudit")>
-			<cfset  bAudit = application.stcoapi[variables.typename].bAudit />
+		<cfif arguments.bAudit and (not isDefined("application.stcoapi.#variables.typename#.bAudit") or application.stcoapi[variables.typename].bAudit)>
+			<farcry:logevent object="#stNewObject.objectid#" type="types" event="create" notes="#arguments.auditNote#" />
 		</cfif>
-
-		<cfif bAudit>
-			<cfset application.factory.oAudit.logActivity(auditType="Create", username=arguments.user, location=cgi.remote_host, note=arguments.auditNote,objectid=stNewObject.objectid) />
-		</cfif>
-		
+				
 		<cfreturn stNewObject>
 	</cffunction>
 	
@@ -417,6 +413,8 @@ default handlers
 		
 		<cfset var stResult = StructNew()>
 		<cfset var stresult_friendly = StructNew()>
+		
+		<cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry" />
 		
 		<!--- If no user has been defined we need to manually set it here. --->
 		<cfif not len(arguments.User)>
@@ -469,8 +467,9 @@ default handlers
 
 		<!--- log update --->
 		<cfif arguments.bAudit>
-			<cfset application.factory.oAudit.logActivity(auditType="Update", username=arguments.user, location=cgi.remote_host, note=arguments.auditNote,objectid=arguments.stProperties.objectid,dsn=arguments.dsn)>	
+			<farcry:logevent objectid="#arguments.stProperties.objectid#" type="types" event="update" notes="#arguments.auditNote#" />
 		</cfif>
+		
 		<cfreturn stresult>
 	</cffunction>
 	
@@ -646,7 +645,7 @@ default handlers
 	
 		<!--- log event --->
 		<cfif arguments.bAudit and isDefined("instance.stobj.objectid")>
-			<cfset application.factory.oAudit.logActivity(auditType="Lock", username=arguments.lockedby, location=cgi.remote_host, note="Locked: #yesnoformat(arguments.locked)#",objectid=instance.stobj.objectid,dsn=arguments.dsn)>
+			<farcry:logevent object="#arguments.stobj.objectid#" type="types" event="lock" notes="Locked: #yesnoformat(arguments.locked)#" />
 		</cfif>
 	</cffunction>
 	
@@ -1155,7 +1154,8 @@ default handlers
 		<cfif not len(arguments.auditNote)>
 			<cfset arguments.auditNote = "#stObj.label# (#stObj.typename#) deleted.">
 		</cfif>
-		<cfset application.factory.oAudit.logActivity(auditType="Delete", username=arguments.user, location=cgi.remote_host, note=arguments.auditNote,objectid=arguments.objectid)>	
+		
+		<farcry:logevent object="#arguments.objectid#" type="types" event="delete" notes="#arguments.auditNote#" />
 
 		<cfset stReturn.bSuccess = true>
 		<cfset stReturn.message = "#stObj.label# (#stObj.typename#) deleted.">

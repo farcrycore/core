@@ -54,13 +54,6 @@ type properties
 <!------------------------------------------------------------------------
 object methods 
 ------------------------------------------------------------------------->	
-<!--- <cffunction name="edit" access="public" output="true">
-	<cfargument name="objectid" required="yes" type="UUID">
-	
-	<!--- getData for object edit --->
-	<cfinclude template="_dmhtml/edit.cfm">
-</cffunction> --->
-
 
 <cffunction name="display" access="public" output="true">
 	<cfargument name="objectid" required="yes" type="UUID">

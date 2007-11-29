@@ -268,70 +268,13 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
 		
 		<farcry:deprecated message="authentication.login() has been deprectated in favor of UserDirectory.authenticate()" />
 		
-		<!--- Clear session details --->
-		<cfset logout() />
+		<!--- Logout --->
+		<cfset application.security.logout() />
 		
-		<!--- Clean arguments --->
-		<cfset arguments.userlogin = trim(arguments.userlogin) />
-		<cfset arguments.userpassword = trim(arguments.userpassword) />
+		<!--- Login --->
+		<cfset application.security.authenticate() />
 		
-		<cfloop collection="#application.security.userdirectories#" item="ud">
-			<!--- Authenticate user --->
-			<cfset stResult = application.security.userdirectories[ud].authenticate() />
-			
-			<cfif structkeyexists(stResult,"authenticated")>
-				<cfif not stResult.authenticated>
-					<cfset application.factory.oAudit.logActivity(auditType="dmSec.loginfailed", username=arguments.userlogin, location=cgi.remote_host, note="password incorrect,") />
-					<cfreturn false />
-				</cfif>
-				
-				<!--- Get user groups and convert them to Farcry roles --->
-				<cfloop list="#application.security.userdirectories[ud].getUserGroups(stResult.userid)#" index="group">
-					<cfset groups = listappend(groups,"#group#_#ud#") />
-				</cfloop>
-				<cfset session.dmSec.authentication.lPolicyGroupIds = oRole.groupsToRoles(groups) />
-				
-				<!--- New structure --->
-				<cfset session.security.userid = "#stResult.userid#_#ud#" />
-				<cfset session.security.roles = oRole.groupsToRoles(groups) />
-				
-				<!--- Retrieve user info --->
-				<cfset session.dmSec.authentication = oUser.getByUserID(stResult.userid) />
-				<cfif structkeyexists(session.dmSec.authentication,"password")>
-					<cfset structdelete(session.dmSec.authentication,"password") />
-				</cfif>
-				<cfset session.dmSec.authentication.userlogin = stResult.userid />
-				<cfset session.dmSec.authentication.canonicalname = "#stResult.userid#_#ud#" />
-				<cfset session.dmSec.authentication.userdirectory = ud />
-				<cfparam name="session.sessionid" default="#createuuid()#" />
-				
-				<!--- Admin flag --->
-				<cfset session.dmSec.authentication.bAdmin = application.security.checkPermission(permission=oPermission.getID("Admin")) />
-				
-				<!--- First login flag --->
-				<cfif application.factory.oAudit.getAuditLog(username=session.security.userid,auditType="dmSec.login").recordcount eq 0>
-					<cfset session.firstLogin = false />
-				<cfelse>
-					<cfset session.firstlogin = true />
-				</cfif>
-				
-				<!--- Log the result --->
-				<cfif arguments.bAudit>
-					<cfif session.firstLogin>
-						<cfset application.factory.oAudit.logActivity(auditType="dmSec.login", username=session.dmSec.authentication.canonicalname, location=cgi.remote_host, note="userDirectory: #ud# **First Login**") />
-					<cfelse>
-						<cfset application.factory.oAudit.logActivity(auditType="dmSec.login", username=session.dmSec.authentication.canonicalname, location=cgi.remote_host, note="userDirectory: #ud#") />
-					</cfif>
-				</cfif>
-				
-				<!--- Return 'success' --->
-				<cfreturn true />
-			</cfif>
-		</cfloop>
-		
-		<!--- If login failed, log that --->
-		<cfset application.factory.oAudit.logActivity(auditType="dmSec.loginfailed", username=arguments.userlogin, location=cgi.remote_host, note="user unknown") />
-		<cfreturn false />
+		<cfreturn isdefined("session.security.userid") />
 	</cffunction>
 	
 	<cffunction name="initDMSECSessionVars" returntype="boolean">
@@ -351,10 +294,7 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
 		
 		<farcry:deprecated message="authentication.logout() has been deprectated in favor of ????" />
 		
-		<cfset structdelete(session,"security") />
-		
-		<!--- Depreciated --->
-		<cfset structdelete(session,"dmSec") />
+		<cfset application.security.logout() />
 	</cffunction>
 	
 	<cffunction name="removeUserFromGroup" output="No">

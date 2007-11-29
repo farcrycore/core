@@ -1,40 +1,38 @@
 <cfprocessingDirective pageencoding="utf-8">
 
-<cfinclude template="/farcry/core/admin/includes/cfFunctionWrappers.cfm">
+<cfinclude template="/farcry/core/admin/includes/cfFunctionWrappers.cfm" />
 
-<cfparam name="url.objectId">
-<cfparam name="url.direction">
+<cfparam name="url.objectId" />
+<cfparam name="url.direction" />
 
 <cflock name="moveBranchNTM" type="EXCLUSIVE" timeout="3" throwontimeout="Yes">
-	<cfscript>
-			stuser = application.factory.oAuthentication.getUserAuthenticationData();
-			qparentObject = application.factory.oTree.getParentID(objectid=url.objectid,dsn=application.dsn);
-			parentObjectID = qParentObject.parentid;
-			qGetChildren = application.factory.oTree.getChildren(dsn=application.dsn,objectid=parentObjectID);
-			bottom = qGetChildren.recordCount;
-			for(i=1;i LTE qGetChildren.recordCount;i = i + 1)
-			{
-				if (qGetChildren.objectid[i] IS url.objectID)
-				{
-					thisPosition = i;
-					break;
-				}
-			}
-				
-			//get the new position
-			if( url.direction is "up" AND thisPosition NEQ 1)
-				newPosition = thisPosition - 1;
-			else if( url.direction is "down" AND thisPosition LT bottom)
-				newPosition = thisPosition + 1;
-			else if ( url.direction is "top" )
-				newPosition = 1;
-			else if( url.direction eq "bottom" )	
-				newPosition = bottom;
-				//make the move	
-			application.factory.oTree.moveBranch(dsn=application.dsn,objectid=url.objectid,parentid=parentobjectid,pos=newposition);	
-			application.factory.oaudit.logActivity(objectid="#URL.objectid#",auditType="categorisation.movenode", username=StUser.userlogin, location=cgi.remote_host, note="object moved to child position #newposition#");
-	</cfscript>	
+	<cfset qparentObject = application.factory.oTree.getParentID(objectid=url.objectid,dsn=application.dsn) />
+	<cfset parentObjectID = qParentObject.parentid />
+	<cfset qGetChildren = application.factory.oTree.getChildren(dsn=application.dsn,objectid=parentObjectID) />
+	<cfset bottom = qGetChildren.recordCount />
+	<cfloop query="qGetChildren">
+		<cfif qGetChildren.objectid[currentrow] eq url.objectID>
+			<cfset thisPosition = currentrow />
+			<cfbreak />
+		</cfif>
+	</cfloop>
+	
+	<!--- get the new position --->
+	<cfif url.direction is "up" AND thisPosition NEQ 1>
+		<cfset newPosition = thisPosition - 1 />
+	<cfelseif url.direction is "down" AND thisPosition LT bottom>
+		<cfset newPosition = thisPosition + 1 />
+	<cfelseif url.direction is "top">
+		<cfset newPosition = 1 />
+	<cfelseif url.direction eq "bottom">
+		<cfset newPosition = bottom />
+	</cfif>
+	
+	<!--- make the move	--->
+	<cfset application.factory.oTree.moveBranch(dsn=application.dsn,objectid=url.objectid,parentid=parentobjectid,pos=newposition) />
+	<farcry:logevent objectid="#url.objectid#" type="categorisation" event="movenode" notes="object moved to child position #newposition#" />
 </cflock>
+
 <cfoutput>
 <script type="text/javascript">
 	parent.location.reload();

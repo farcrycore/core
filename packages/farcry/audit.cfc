@@ -185,20 +185,13 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	<cfargument name="note" type="string" required="No" default="">
 	<cfargument name="dbowner" type="string" required="false" default="#ucase(application.dbowner)#">
 	<cfargument name="dsn" default="#application.dsn#" type="string" required="No">
-	<!--- local vars --->
-	<cfset var datetimestamp = Now()>
-	<cfset var bSuccess = true>
-	<!--- check values --->	
-	<cfif not len(arguments.username)><cfset arguments.username = "unknown"></cfif>
-		
-	<cfquery datasource="#arguments.dsn#" name="insertLog">
-	INSERT INTO #arguments.dbowner#fqAudit
-	(AuditID, objectID, datetimeStamp, username, location, auditType, note)
-	VALUES
-	('#createUUID()#', '#arguments.objectid#', #datetimestamp#, '#arguments.username#', '#arguments.location#', '#arguments.auditType#', '#arguments.note#')
-	</cfquery>
+
+	<cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry" />
+
+	<farcry:deprecated message="logActivity should be replaced with farcry:logevent tag" />
+	<farcry:logevent object="#arguments.objectid#" type="#arguments.auditType#" event="#arguments.auditType#" userid="#arguments.username#" location="#arguments.location#" notes="#arguments.note#" />
 	
-	<cfreturn bSuccess>
+	<cfreturn true />
 </cffunction>
 
 <!--- 
@@ -216,32 +209,38 @@ need a bunch of functions to get audit data here
 	<cfargument name="ordering" required="No" type="string" default="desc">
 	<cfargument name="dsn" default="#application.dsn#" type="string" required="No">
 	<cfargument name="dbowner" type="string" required="false" default="#ucase(application.dbowner)#">
+	
 	<!--- local vars --->
 	<cfset var qLog = "">
+
+	<cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry" />
+
+	<farcry:deprecated message="getAuditLog should be replaced with ????" />
 	
 	<cfquery datasource="#arguments.dsn#" name="qLog" maxrows="#arguments.maxrows#">
-	SELECT * FROM #arguments.dbowner#fqAudit
-	WHERE 1=1
-	<cfif isDefined("arguments.objectid")>
-	AND objectid = '#arguments.objectid#'
-	</cfif>
-	<cfif isDefined("arguments.auditType") and arguments.auditType neq "all">
-	AND auditType = '#arguments.auditType#'
-	</cfif>
-	<cfif isDefined("arguments.username") and arguments.username neq "all">
-	AND username = '#arguments.username#'
-	</cfif>
-	<cfif isDefined("arguments.location")>
-	AND location = '#arguments.location#'
-	</cfif>
-	<cfif isDefined("arguments.before")>
-	AND datetimestamp < #arguments.before#
-	</cfif>
-	<cfif isDefined("arguments.after")>
-	AND datetimestamp > #arguments.after#
-	</cfif>
-	
-	ORDER BY datetimestamp #arguments.ordering#
+		SELECT 	object as objectid, type as auditType, userid as username, location, datetimecreated as datetimestamp
+		FROM 	#arguments.dbowner#farLog
+		WHERE 	1=1
+		<cfif isDefined("arguments.objectid")>
+				AND object = '#arguments.objectid#'
+		</cfif>
+		<cfif isDefined("arguments.auditType") and arguments.auditType neq "all">
+				AND type = '#arguments.auditType#'
+		</cfif>
+		<cfif isDefined("arguments.username") and arguments.username neq "all">
+				AND userid = '#arguments.username#'
+		</cfif>
+		<cfif isDefined("arguments.location")>
+				AND location = '#arguments.location#'
+		</cfif>
+		<cfif isDefined("arguments.before")>
+				AND datetimecreated < #arguments.before#
+		</cfif>
+		<cfif isDefined("arguments.after")>
+				AND datetimecreated > #arguments.after#
+		</cfif>
+		
+		ORDER BY datetimecreated #arguments.ordering#
 	</cfquery>
 	
 	<cfreturn qLog>
@@ -250,13 +249,18 @@ need a bunch of functions to get audit data here
 <cffunction name="getAuditUsers" hint="Returns a query of users in audit log" returntype="query">
 	<cfargument name="dsn" default="#application.dsn#" type="string" required="No">
 	<cfargument name="dbowner" type="string" required="false" default="#ucase(application.dbowner)#">
+	
 	<!--- local vars --->
 	<cfset var qLog = "">
+
+	<cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry" />
+
+	<farcry:deprecated message="getAuditUsers should be replaced with ????" />
 	
 	<cfquery datasource="#arguments.dsn#" name="qLog" maxrows="#arguments.maxrows#">
-	SELECT distinct(username) 
-	FROM #arguments.dbowner#fqAudit
-	ORDER BY username
+		SELECT 	distinct(userid) as username
+		FROM 	#arguments.dbowner#farLog
+		ORDER 	BY userid
 	</cfquery>
 	
 	<cfreturn qLog>
@@ -265,13 +269,18 @@ need a bunch of functions to get audit data here
 <cffunction name="getAuditActivities" hint="Returns a query of activities in audit log" returntype="query">	
 	<cfargument name="dsn" default="#application.dsn#" type="string" required="No">
 	<cfargument name="dbowner" type="string" required="false" default="#ucase(application.dbowner)#">
+	
 	<!--- local vars --->
 	<cfset var qLog = "">
+
+	<cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry" />
+
+	<farcry:deprecated message="getAuditActivities should be replaced with ????" />
 	
 	<cfquery datasource="#arguments.dsn#" name="qLog" maxrows="#arguments.maxrows#">
-	SELECT distinct(auditType) 
-	FROM #arguments.dbowner#fqAudit
-	ORDER BY auditType
+		SELECT		distinct(type) as auditType 
+		FROM 		#arguments.dbowner#farLog
+		ORDER BY 	type
 	</cfquery>
 	
 	<cfreturn qLog>
@@ -283,21 +292,26 @@ need a bunch of functions to get audit data here
 	<cfargument name="dsn" default="#application.dsn#" type="string" required="No">
 	<cfargument name="dbtype" default="#application.dbtype#" type="string" required="No">
 	<cfargument name="dbowner" type="string" required="false" default="#ucase(application.dbowner)#">
+	
 	<!--- local vars --->
 	<cfset var qLog = "">	
+
+	<cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry" />
+
+	<farcry:deprecated message="getUserActivityDaily should be replaced with ????" />
 	
 	<cfswitch expression="#arguments.dbtype#">
 	    <cfcase value="ora">
             <cfquery datasource="#arguments.dsn#" name="qLog">
-            select distinct hour, TO_CHAR(fq.datetimestamp, 'hh24') as loginhour, count(fq.auditID) as count_logins
-   			from #arguments.dbowner#statsHours
+            select distinct hour, TO_CHAR(fq.datetimecreated, 'hh24') as loginhour, count(fq.objectid) as count_logins
+   			from 		#arguments.dbowner#statsHours
    			left join (
-   			        select * from #arguments.dbowner#fqaudit
-   			        where auditType = 'dmSec.login'
+   			        select * from #arguments.dbowner#farLogin
+   			        where type = 'security' and event = 'login'
    			) fq on 
-			    TO_CHAR(fq.datetimestamp, 'hh24') =  statsHours.hour
-   			and TO_CHAR(fq.datetimestamp,'mm/dd/yyyy')   = <cfqueryparam cfsqltype="CF_SQL_CHAR" value="#dateFormat(arguments.day,'mm/dd/yyyy')#" />
-   			group by hour, TO_CHAR(fq.datetimestamp, 'hh24')
+			    TO_CHAR(fq.datetimecreated, 'hh24') =  statsHours.hour
+   			and TO_CHAR(fq.datetimecreated,'mm/dd/yyyy')   = <cfqueryparam cfsqltype="CF_SQL_CHAR" value="#dateFormat(arguments.day,'mm/dd/yyyy')#" />
+   			group by hour, TO_CHAR(fq.datetimecreated, 'hh24')
    			order by 1 
    			</cfquery>
 	    </cfcase>
@@ -318,8 +332,9 @@ need a bunch of functions to get audit data here
 			</cfquery>
 			<cfquery datasource="#arguments.dsn#" name="qPopulate">
 				insert into fqTemp
-				select * from fqAudit
-				where auditType = 'dmsec.login'
+				select	objectid as AuditID, object as objectid, datetimecreated as datetimeStamp, userid as username, location, type as auditType, notes as note
+				from	farLog
+				where	type = 'security' and event = 'login'
 			</cfquery>
 			<cfquery datasource="#arguments.dsn#" name="qLog">
 				select distinct 
@@ -342,15 +357,15 @@ need a bunch of functions to get audit data here
 			--->
 			<cfset thisDay = DateFormat(arguments.day, "YYYY-MM-DD")>
 			<cfquery datasource="#arguments.dsn#" name="qLog">
-			SELECT DISTINCT hour, TO_CHAR(j.datetimestamp, 'HH24') AS loginhour, COUNT(j.auditID) AS count_logins
+			SELECT DISTINCT hour, TO_CHAR(j.datetimecreated, 'HH24') AS loginhour, COUNT(j.objectid) AS count_logins
 			FROM statsHours
 			LEFT JOIN (
-			SELECT datetimestamp, auditID
-			FROM #arguments.dbowner#fqAudit
-			WHERE LOWER(auditType) = 'dmsec.login'
-			AND TO_CHAR(datetimestamp, 'YYYY-MM-DD') = '#thisDay#'
-			) j ON TO_CHAR(j.datetimestamp, 'HH24') = statsHours.hour
-			GROUP BY hour, TO_CHAR(j.datetimestamp, 'HH24')
+			SELECT datetimecreated, objectid
+			FROM #arguments.dbowner#farLog
+			WHERE LOWER(type) = 'security' and LOWER(event) = 'login'
+			AND TO_CHAR(datetimecreated, 'YYYY-MM-DD') = '#thisDay#'
+			) j ON TO_CHAR(j.datetimecreated, 'HH24') = statsHours.hour
+			GROUP BY hour, TO_CHAR(j.datetimecreated, 'HH24')
 			ORDER BY hour
 			</cfquery>
 		</cfcase>
@@ -360,16 +375,16 @@ need a bunch of functions to get audit data here
 			<cfquery datasource="#arguments.dsn#" name="qLog">
 			-- now join our hours table to the fqaudit table, to get the set we want. Note the query requires a day, month and year to be specified, for
 			-- which we return the logins by hour (nulls are returned if no logins during the hour )
-			select distinct hour, datepart(hh, fq.datetimestamp) as loginhour, count(fq.auditID) as count_logins
+			select distinct hour, datepart(hh, fq.datetimecreated) as loginhour, count(fq.objectid) as count_logins
 			from statsHours
 			left join (
-			        select * from #arguments.dbowner#fqaudit
-			        where auditType = 'dmsec.login'
-			)fq on datepart(hh, fq.datetimestamp) = statsHours.hour
-			and datepart(dd, fq.datetimestamp) = #DatePart("d", arguments.day)# 
-			and datepart(mm, fq.datetimestamp) = #DatePart("m", arguments.day)# 
-			and datepart(yyyy, fq.datetimestamp) = #DatePart("yyyy", arguments.day)#
-			group by hour, datepart(hh, fq.datetimestamp)
+			        select * from #arguments.dbowner#farLog
+			        where type = 'security' and event = 'login'
+			)fq on datepart(hh, fq.datetimecreated) = statsHours.hour
+			and datepart(dd, fq.datetimecreated) = #DatePart("d", arguments.day)# 
+			and datepart(mm, fq.datetimecreated) = #DatePart("m", arguments.day)# 
+			and datepart(yyyy, fq.datetimecreated) = #DatePart("yyyy", arguments.day)#
+			group by hour, datepart(hh, fq.datetimecreated)
 			order by 1 
 			</cfquery>
 	    </cfdefaultcase>
@@ -383,8 +398,13 @@ need a bunch of functions to get audit data here
 	<cfargument name="dsn" default="#application.dsn#" type="string" required="No">
 	<cfargument name="dbtype" default="#application.dbtype#" type="string" required="No">
 	<cfargument name="dbowner" type="string" required="false" default="#ucase(application.dbowner)#">
+	
 	<!--- local vars --->
 	<cfset var qLog = "">
+
+	<cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry" />
+
+	<farcry:deprecated message="getUserActivityWeekly should be replaced with ????" />
 	
 	<cfswitch expression="#arguments.dbtype#">
 	    <cfcase value="ora">

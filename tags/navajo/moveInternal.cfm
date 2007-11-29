@@ -29,8 +29,10 @@ $out:$
 <!--- set long timeout for template to prevent data-corruption on incomplete tree.moveBranch() --->
 <cfsetting requesttimeout="90">
 
-<cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
-<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/core/tags/navajo/" prefix="nj" />
+<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4" />
+<cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry" />
+
 <cfinclude template="/farcry/core/admin/includes/cfFunctionWrappers.cfm">
 
 <cfparam name="url.objectId">
@@ -71,168 +73,78 @@ $out:$
 <script type="text/javascript">
 	alert("#application.adminBundle[session.dmProfile.locale].noModifyNodePermission#");
 </script></cfoutput>
-<cfelse><cfscript>
-if(len(parentObjectID))
-{
-	if(stObj.typename IS "dmnavigation")
-	{
-		qGetChildren = application.factory.oTree.getChildren(dsn=application.dsn,objectid=parentObjectID);
-		bottom = qGetChildren.recordCount;
-		for(i=1;i LTE qGetChildren.recordCount;i = i + 1)
-		{
-			if (qGetChildren.objectid[i] IS stObj.objectID)
-			{
-				thisPosition = i;
-				break;
-			}
-		}
+<cfelse>
+	<cfif len(parentObjectID)>
+		<cfif stObj.typename IS "dmnavigation">
+			<cfset qGetChildren = application.factory.oTree.getChildren(dsn=application.dsn,objectid=parentObjectID) />
+			<cfset bottom = qGetChildren.recordCount />
+			<cfloop query="qGetChildren">
+				<cfif qGetChildren.objectid[currentrow] IS stObj.objectID)>
+					<cfset thisPosition = currentrow />
+					<cfbreak />
+				</cfif>
+			</cfloop>
+			
+			<!--- get the new position --->
+			<cfif url.direction is "up" AND thisPosition NEQ 1>
+				<cfset newPosition = thisPosition - 1 />
+			<cfelseif url.direction is "down" AND thisPosition LT bottom>
+				<cfset newPosition = thisPosition + 1 />
+			<cfelseif url.direction is "top">
+				<cfset newPosition = 1 />
+			<cfelseif url.direction eq "bottom">
+				<cfset newPosition = bottom />
+			</cfif>
+			
+			<!--- make the move --->
+			<cfset application.factory.oTree.moveBranch(dsn=application.dsn,objectid=stobj.objectid,parentid=parentobjectid,pos=newposition) />
+			<farcry:logevent object="#url.objectid#" type="sitetree" event="movenode" notes="Object moved to child position #newposition#" />
+			<cfset updateTree(objectID =parentObjectID) />
+		<cfelse>
+			<cfset key = "aObjectIds" />
 		
-		//get the new position
-		if( url.direction is "up" AND thisPosition NEQ 1)
-			newPosition = thisPosition - 1;
-		else if( url.direction is "down" AND thisPosition LT bottom)
-			newPosition = thisPosition + 1;
-		else if ( url.direction is "top" )
-			newPosition = 1;
-		else if( url.direction eq "bottom" )	
-			newPosition = bottom;
-		//make the move	
-		application.factory.oTree.moveBranch(dsn=application.dsn,objectid=stobj.objectid,parentid=parentobjectid,pos=newposition);	
-		application.factory.oaudit.logActivity(objectid="#URL.objectid#",auditType="sitetree.movenode", username=StUser.userlogin, location=cgi.remote_host, note="object moved to child position #newposition#");
-		updateTree(objectID =parentObjectID);
-	}
-	else		
-	{
+			<!--- find the position of the object within the parent that we are moving  --->
+			<cfset pos = ListFind(ArrayToList(stParentObject[key]), stobj.objectID) />
 		
-		key = "aObjectIds";
-	
-		// find the position of the object within the parent that we are moving 
-		pos = ListFind(ArrayToList(stParentObject[key]), stobj.objectID);
-	
-		//  find the objects new position 
-		if( url.direction EQ "up" AND pos NEQ 1)
-		{
-			newPos = pos - 1;
-			arraySwap( stParentObject[key], pos, newPos );
-		}
-		else if( url.direction eq "down" AND (pos lt ArrayLen(stParentObject[key])) )
-		{
-			newPos = pos + 1;
-			arraySwap( stParentObject[key], pos, newPos );
-		}
-		else if ( url.direction eq "top" )
-		{
-			newPos = 1;
-			arrayDeleteAt( stParentObject[key], pos );
-			arrayInsertAt( stParentObject[key], newPos, url.objectID );
-		}
-		else if( url.direction eq "bottom" )
-		{
-			newPos = ArrayLen(stParentObject[key]);
-			arrayDeleteAt( stParentObject[key], pos );
-			arrayAppend( stParentObject[key], url.objectID );
-		}
-		//update the object
-		stParentObject.datetimecreated = createODBCDate("#datepart('yyyy',stParentObject.datetimecreated)#-#datepart('m',stParentObject.datetimecreated)#-#datepart('d',stParentObject.datetimecreated)#");
-		stParentObject.datetimelastupdated = createODBCDate(now());
-		oType = createobject("component", application.types[stParentObject.typename].typePath);
-		oType.setData(stProperties=stParentObject,auditNote="object moved to child position #newpos#");	
-		oaudit.logActivity(objectid="#URL.objectid#",auditType="sitetree.movenode", username=StUser.userlogin, location=cgi.remote_host, note="object moved to child position #newpos#");
-		updateTree(objectID =parentObjectID);
-	}
-}
-</cfscript>
-<cfoutput>
-<script type="text/javascript">
-	var objSideTree = parent.parent['sideTree'];
-	if(objSideTree)
-		objSideTree.location = objSideTree.location;
-</script></cfoutput>
+			<!--- find the objects new position  --->
+			<cfif url.direction EQ "up" AND pos NEQ 1>
+				<cfset newPos = pos - 1 />
+				<cfset arraySwap( stParentObject[key], pos, newPos ) />
+			<cfelseif url.direction eq "down" AND (pos lt ArrayLen(stParentObject[key]))>
+				<cfset newPos = pos + 1 />
+				<cfset arraySwap( stParentObject[key], pos, newPos ) />
+			<cfelseif url.direction eq "top">
+				<cfset newPos = 1 />
+				<cfset arrayDeleteAt( stParentObject[key], pos ) />
+				<cfset arrayInsertAt( stParentObject[key], newPos, url.objectID ) />
+			<cfelseif url.direction eq "bottom">
+				<cfset newPos = ArrayLen(stParentObject[key]) />
+				<cfset arrayDeleteAt( stParentObject[key], pos ) />
+				<cfset arrayAppend( stParentObject[key], url.objectID ) />
+			</cfif>
+			
+			<!--- update the object --->
+			<cfset stParentObject.datetimecreated = createODBCDate("#datepart('yyyy',stParentObject.datetimecreated)#-#datepart('m',stParentObject.datetimecreated)#-#datepart('d',stParentObject.datetimecreated)#") />
+			<cfset stParentObject.datetimelastupdated = createODBCDate(now()) />
+			<cfset oType = createobject("component", application.types[stParentObject.typename].typePath) />
+			<cfset oType.setData(stProperties=stParentObject,auditNote="object moved to child position #newpos#") />
+			
+			<farcry:logevent objectid="#url.objectid#" type="sitetree" event="movenode" notes="Object moved to child position #newpos#" />
+			
+			<cfset updateTree(objectID =parentObjectID) />
+		</cfif>
+	</cfif>
+
+	<cfoutput>
+		<script type="text/javascript">
+			var objSideTree = parent.parent['sideTree'];
+			if(objSideTree)
+				objSideTree.location = objSideTree.location;
+		</script>
+	</cfoutput>
 </cfif>
-<!--- <cfscript>
-if (iState NEQ 1)
-	writeoutput('<script type="text/javascript">alert("#application.adminBundle[session.dmProfile.locale].noModifyNodePermission#");</script>');
-else		
-{
-	if(len(parentObjectID))
-	{
-		if(stObj.typename IS "dmnavigation")
-		{
-			qGetChildren = application.factory.oTree.getChildren(dsn=application.dsn,objectid=parentObjectID);
-			bottom = qGetChildren.recordCount;
-			for(i=1;i LTE qGetChildren.recordCount;i = i + 1)
-			{
-				if (qGetChildren.objectid[i] IS stObj.objectID)
-				{
-					thisPosition = i;
-					break;
-				}
-			}
-			
-			//get the new position
-			if( url.direction is "up" AND thisPosition NEQ 1)
-				newPosition = thisPosition - 1;
-			else if( url.direction is "down" AND thisPosition LT bottom)
-				newPosition = thisPosition + 1;
-			else if ( url.direction is "top" )
-				newPosition = 1;
-			else if( url.direction eq "bottom" )	
-				newPosition = bottom;
-			//make the move	
-			application.factory.oTree.moveBranch(dsn=application.dsn,objectid=stobj.objectid,parentid=parentobjectid,pos=newposition);	
-			application.factory.oaudit.logActivity(objectid="#URL.objectid#",auditType="sitetree.movenode", username=StUser.userlogin, location=cgi.remote_host, note="object moved to child position #newposition#");
-			updateTree(objectID =parentObjectID);
-		}
-		else		
-		{
-			
-			key = "aObjectIds";
-		
-			// find the position of the object within the parent that we are moving 
-			pos = ListFind(ArrayToList(stParentObject[key]), stobj.objectID);
-		
-			//  find the objects new position 
-			if( url.direction EQ "up" AND pos NEQ 1)
-			{
-				newPos = pos - 1;
-				arraySwap( stParentObject[key], pos, newPos );
-			}
-			else if( url.direction eq "down" AND (pos lt ArrayLen(stParentObject[key])) )
-			{
-				newPos = pos + 1;
-				arraySwap( stParentObject[key], pos, newPos );
-			}
-			else if ( url.direction eq "top" )
-			{
-				newPos = 1;
-				arrayDeleteAt( stParentObject[key], pos );
-				arrayInsertAt( stParentObject[key], newPos, url.objectID );
-			}
-			else if( url.direction eq "bottom" )
-			{
-				newPos = ArrayLen(stParentObject[key]);
-				arrayDeleteAt( stParentObject[key], pos );
-				arrayAppend( stParentObject[key], url.objectID );
-			}
-			//update the object
-			stParentObject.datetimecreated = createODBCDate("#datepart('yyyy',stParentObject.datetimecreated)#-#datepart('m',stParentObject.datetimecreated)#-#datepart('d',stParentObject.datetimecreated)#");
-			stParentObject.datetimelastupdated = createODBCDate(now());
-			oType = createobject("component", application.types[stParentObject.typename].typePath);
-			oType.setData(stProperties=stParentObject,auditNote="object moved to child position #newpos#");	
-			oaudit.logActivity(objectid="#URL.objectid#",auditType="sitetree.movenode", username=StUser.userlogin, location=cgi.remote_host, note="object moved to child position #newpos#");
-			updateTree(objectID =parentObjectID);
-		}
-	}
-}
-</cfscript> --->
 
 </cflock>
-	<!--- <cfcatch>
-		<h2>moveBranch Lockout</h2>
-		<p>Another editor is currently modifying the hierarchy.  Please refresh the site overview tree and try again.</p>
-		<cfabort>
-	</cfcatch>
-</cftry> --->
 
 
 <cfsetting enablecfoutputonly="No">

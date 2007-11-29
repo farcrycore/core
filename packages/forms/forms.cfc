@@ -68,15 +68,11 @@
 		<cfargument name="stProperties" type="struct" required="true" hint="Structure of properties for the new object instance">
 		<cfargument name="user" type="string" required="true" hint="Username for object creator" default="">
 		<cfargument name="auditNote" type="string" required="true" hint="Note for audit trail" default="Created">
-		<cfargument name="dsn" required="No" default="#application.dsn#"> 
+		<cfargument name="dsn" required="No" default="#application.dsn#">
 		
-		<cfset var stNewObject = "" />
-		<cfset var bAudit = true />
-		
-		<cfscript>
-			if(NOT structKeyExists(arguments.stProperties,"objectid"))
-				arguments.stProperties.objectid = createUUID();
-		</cfscript>
+		<cfif not structKeyExists(arguments.stProperties,"objectid")>
+			<cfset arguments.stProperties.objectid = createUUID() />
+		</cfif>
 				
 		<cfreturn duplicate(arguments.stProperties) />
 	</cffunction>

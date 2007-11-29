@@ -5,7 +5,10 @@ merge of ../admin/navajo/createDraftObject.cfm and ../tags/navajo/createDraftObj
 
 <cfprocessingDirective pageencoding="utf-8">
 
-<cfimport taglib="/farcry/core/tags/navajo" prefix="nj">
+<cfimport taglib="/farcry/core/tags/navajo" prefix="nj" />
+<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4" />
+<cfimport taglib="/farcry/core/tags/navajo/" prefix="nj" />
+<cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry" />
 
 <cfprocessingDirective pageencoding="utf-8">
 <!--- createDraftObject.cfm 
@@ -13,8 +16,6 @@ Creates a draft object
 --->
 
 <cfsetting enablecfoutputonly="no">
-<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
-<cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
 <cfoutput>
 	<link rel="stylesheet" type="text/css" href="#application.url.farcry#/navajo/navajo_popup.css">
 </cfoutput>
@@ -43,9 +44,7 @@ Creates a draft object
 		oType = createobject("component", application.types[stProps.TypeName].typePath);
 		stNewObj = oType.createData(stProperties=stProps);
 		NewObjId = stNewObj.objectid;
-		stuser = application.factory.oAuthentication.getUserAuthenticationData();
-		application.factory.oaudit.logActivity(objectid="#URL.objectid#",auditType="Create", username=StUser.userlogin, location=cgi.remote_host, note="Draft object created");
-		
+
 		//this will copy containers and there rules from live object to draft
 		oCon = createobject("component","#application.packagepath#.rules.container");
 		oCon.copyContainers(stObject.objectid,stProps.objectid);
@@ -54,6 +53,8 @@ Creates a draft object
 		oCategory = createobject("component","#application.packagepath#.farcry.category");
 		oCategory.copyCategories(stObject.objectid,stProps.objectid);
 	</cfscript>
+	
+	<farcry:logevent object="#url.objectid#" type="coapi" event="createDraftObject" notes="Draft object created" />
 
 	<cfoutput>
 	<script>

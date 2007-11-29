@@ -12,6 +12,7 @@
 	<cfif isdefined("application.log.bDeprecated") AND application.log.bDeprecated>		
 		<cftrace type="warning" inline="false" text="#GetBaseTemplatePath()# - #attributes.message#" abort="false" />
 		<cflog file="deprecated" application="true" type="warning" text="#GetBaseTemplatePath()# - #attributes.message#" />
+		<cf_logevent location="#getCurrentTemplatePath()#" event="depreciated" notes="#attributes.message#" />
 	</cfif>
 	
 </cfif>
