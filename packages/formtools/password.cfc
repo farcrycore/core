@@ -26,7 +26,7 @@
 							<legend>#arguments.stMetadata.ftLabel#</legend>
 							<div class="fieldsection optional">
 								<label class="fieldsectionlabel" for="#arguments.fieldname#">Current Password</label>
-								<div class="fieldwrap"><input type="text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#arguments.stMetadata.value#" class="#arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" /></div>
+								<div class="fieldwrap"><input type="password" name="#arguments.fieldname#" id="#arguments.fieldname#" value="" class="#arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" /></div>
 								<br class="fieldsectionbreak" />
 							</div>
 							
