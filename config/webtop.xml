@@ -43,7 +43,7 @@
 				<menuitem id="quicksitebuilder" sequence="10" label="Quick Site Builder" link="/admin/quickBuilder.cfm" />
 				<menuitem id="quickcategorybuilder" sequence="20" label="Category Tree Quick Builder" link="/admin/quickBuilderCat.cfm" />
 				<menuitem id="bulkimageupload" sequence="30" label="Bulk Image Upload" link="/admin/multipleImagesUploader.cfm" />
-				<menuitem id="bulkfileupload" sequence="40" label="Bulk File Upload" link="/admin/bulkFileUpload.cfm" />
+				<menuitem id="bulkfileupload" sequence="40" label="Bulk File Upload" link="/conjuror/invocation.cfm?typename=bulkFileUpload" />
 			</menu>
 			<menu id="archiveutils" sequence="50" label="Archive Utilities">
 				<menuitem id="archiveall" sequence="10" label="All Archived Content" link="/content/dmarchive.cfm" />
