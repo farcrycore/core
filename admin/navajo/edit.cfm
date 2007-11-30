@@ -14,7 +14,7 @@
 <cfimport taglib="/farcry/core/tags/navajo" prefix="nj">
 
 <!--- check for content type and objectid--->
-<cfparam name="url.objectid" type="uuid">
+<cfparam name="url.objectid" type="uuid" default="#createuuid()#" />
 <!--- type deprecated in favour of typename --->
 <cfparam name="url.type" default="" type="string">
 <cfparam name="url.typename" default="#url.type#" type="string">

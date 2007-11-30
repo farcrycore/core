@@ -21,7 +21,8 @@
 		<cfset stMetadata = structnew() />
 		<cfset stMetadata.password.ftRenderType = "changepassword" />
 	
-		<ft:object objectid="#stObj.objectid#" typename="farUser" lfields="password" stPropMetadata="#stMetadata#" />
+		<ft:object objectid="#stObj.objectid#" typename="farUser" lfields="password" stPropMetadata="#stMetadata#" r_stFields="stFields" />
+		<cfoutput>#stFields.password.html#</cfoutput>
 		
 		<ft:farcrybuttonPanel>
 			<ft:farcrybutton value="Save" />

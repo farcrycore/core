@@ -36,7 +36,7 @@ Pseudo:
 <cfparam name="url.typename" default="" type="string">
 
 <cfif structIsEmpty(form)>
-	<cfparam name="url.objectid" type="string">
+	<cfparam name="url.objectid" default="#createuuid()#" type="string">
 	<cfparam name="url.method" default="#variables.defMethod#" type="string">
 	
 	<cfset typename=url.typename>
@@ -64,17 +64,13 @@ Pseudo:
 </cfif>
 
 
-<cfif structKeyExists(application.types, typename)>
-	<cfset stPackage = application.types[typename] />
-	<cfset packagePath = application.types[typename].typepath />
-<cfelse>
-	<cfset stPackage = application.rules[typename] />
-	<cfset packagePath = application.rules[typename].rulepath />
-	<cfif method EQ "edit">
+<cfif structKeyExists(application.stCOAPI, typename)>
+	<cfset stPackage = application.stCOAPI[typename] />
+	<cfset packagePath = application.stCOAPI[typename].packagepath />
+	<cfif structkeyexists(application.rules,typename) and method EQ "edit">
 		<cfset method = "update" />
 	</cfif>
 </cfif>
-
 
 
 <!--- 
@@ -105,7 +101,7 @@ Pseudo:
 		<cftrace category="permissions" type="warning" text="No permission set specified for #typename#. Default permission set NEWS applied.">
 		<!--- TODO: should really log this somewhere as a warning --->
 	</cfif>
-	<cfset bHasPermission = application.security.checkPermission(permission="#permissionset##method#")>
+	<cfset bHasPermission = application.security.checkPermission(permission="#permissionset#edit")>
 	<cfif NOT bHasPermission GTE 0>
 		<cfabort showerror="<strong>Error:</strong> #application.adminBundle[session.dmProfile.locale].noEditPermissions#">
 	</cfif>

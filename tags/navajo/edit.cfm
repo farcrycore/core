@@ -43,7 +43,7 @@ $out:$
 		refactor the lot. 20050728 GB	--->
 <cfif isdefined("url.objectid")><cfset attributes.objectid=url.objectid></cfif>
 <cfif isdefined("url.typename")><cfset attributes.typename=url.typename></cfif>
-<cfparam name="attributes.objectid" type="uuid">
+<cfparam name="attributes.objectid" type="uuid" default="#createuuid()#">
 <cfparam name="attributes.typename" default="" type="string">
 
 <!--- Legacy support for old pages referring to URL.type--->
@@ -67,7 +67,7 @@ $out:$
 <sec:CheckPermission permission="edit" object="#attributes.objectid#" error="true" errormessage="You do not have permission to edit this item">
 
 	<!--- work out packagee path --->
-	<cfset oType = createObject("component", application.types[attributes.typename].typePath)>
+	<cfset oType = createObject("component", application.stCOAPI[attributes.typename].packagepath)>
 	<cfset stObj = oType.getData(objectid=attributes.objectid,dsn=application.dsn)>
 	
 	<!--- delete underlying draft --->
