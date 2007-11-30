@@ -542,7 +542,6 @@ $out:$
 				<cfset stTypeMD.packagePath = "#application.packagepath#.forms.#formname#" />
 				<cfset stTypeMD.qMetadata = setupMetadataQuery(typename=typename,stProps=stTypeMD.stProps) />
 				<cfset application.forms[formname] = duplicate(stTypeMD) />
-				<cfset application.forms[formname].oFactory = oFactory /><!--- you can't duplicate an object --->
 			</cfif>
 	</cfloop>	
 	
@@ -572,7 +571,6 @@ $out:$
 						<cfset stTypeMD.qMetadata = setupMetadataQuery(typename=typename,stProps=stTypeMD.stProps) />
 						
 						<cfset application.forms[formname] = duplicate(stTypeMD) />
-						<cfset application.forms[formname].oFactory = oFactory /><!--- you can't duplicate an object --->
 					</cfif>
 
 				</cfloop>
@@ -602,7 +600,6 @@ $out:$
 			<cfset stTypeMD.packagePath = "#application.custompackagepath#.formtools.#formname#" />
 			<cfset stTypeMD.qMetadata = setupMetadataQuery(typename=typename,stProps=stTypeMD.stProps) />
 			<cfset application.forms[formname] = duplicate(stTypeMD) />
-			<cfset application.forms[formname].oFactory = oFactory /><!--- you can't duplicate an object --->
 		</cfif>
 	</cfloop>		
 		
