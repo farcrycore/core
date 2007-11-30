@@ -27,7 +27,7 @@
 			
 			<!--- Find the config form component with that key and get the default values --->
 			<cfloop list="#application.factory.oUtils.getComponents('forms')#" index="thisform">
-				<cfif refindnocase("^config",thisform) and application.stCOAPI[thisform].key eq trim(arguments.key)>
+				<cfif left(thisform,6) eq "config" and application.stCOAPI[thisform].key eq trim(arguments.key)>
 					<cfset structappend(stResult,createobject("component",application.stCOAPI[thisform].packagepath).getData(createuuid()),false) />
 					<cfset stResult.typename = thisform />
 				</cfif>
@@ -76,7 +76,7 @@
 			
 			<!--- If it doesn't, find the config form component with that key and get the default values --->
 			<cfloop list="#application.factory.oUtils.getComponents('forms')#" index="thisform">
-				<cfif refindnocase("^config",thisform) and application.stCOAPI[thisform].key eq arguments.key>
+				<cfif left(thisform,6) eq "config" and application.stCOAPI[thisform].key eq arguments.key>
 					<cfset stResult = createobject("component",application.stCOAPI[thisform].packagepath).getData(createuuid()) />
 					<cfset stResult.typename = thisform />
 				</cfif>
@@ -114,7 +114,7 @@
 		<cfset result = valuelist(qConfig.configkey) />
 		
 		<cfloop list="#application.factory.oUtils.getComponents('forms')#" index="thisform">
-			<cfif refindnocase("^config",thisform) and not listcontains(result,application.stCOAPI[thisform].key)>
+			<cfif left(thisform,6) eq "config" and not listcontains(result,application.stCOAPI[thisform].key)>
 				<cfset result = listappend(result,application.stCOAPI[thisform].key) />
 			</cfif>
 		</cfloop>
