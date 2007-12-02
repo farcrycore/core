@@ -44,6 +44,7 @@
 	
 	<cffunction name="getConfig" access="public" output="true" returntype="struct" hint="Finds the config for the specified config, create it if it doesn't exist, then return it">
 		<cfargument name="key" type="string" required="true" hint="The key of the config to load" />
+		<cfargument name="bAudit" type="boolean" default="true" required="false" hint="Allows the installer to not audit" />
 		
 		<cfset var stResult = structnew() />
 		<cfset var qConfig = "" />
@@ -85,7 +86,7 @@
 			<cfwddx action="cfml2wddx" input="#stresult#" output="stObj.configdata" />
 			
 			<!--- Save the config data --->
-			<cfset setData(stProperties=stObj) />
+			<cfset setData(stProperties=stObj,bAudit=arguments.bAudit) />
 		</cfif>
 		
 		<cfif structkeyexists(stResult,"typename")>
