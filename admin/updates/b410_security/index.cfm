@@ -32,4 +32,7 @@
 <cfset application.security = createobject("component","farcry.core.packages.security.security").init() />
 <cfset migrateresult = createobject("component","farcry.core.packages.security.FarcryUD").migrate() />
 
+<!--- Flag the app as uninitialised --->
+<cfset application.bInit = false />
+
 <cfoutput><p>#migrateresult#</p></cfoutput>
