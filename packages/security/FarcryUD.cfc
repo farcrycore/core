@@ -298,7 +298,7 @@
 		<!--- Update profiles --->
 		<cfquery datasource="#application.dsn#">
 			update	#application.dbowner#dmProfile
-			set		username=username & '_' & userDirectory
+			set		username=username + '_' + userDirectory
 		</cfquery>
 		
 		<cfreturn stResult />
@@ -358,7 +358,7 @@
 			<cfparam name="stObj.groups" default="#arraynew(1)#" />
 			
 			<cfoutput>
-				<cfset arrayappend(stObj.groups,"#externalgroupname#_#this.key#") />
+				<cfset arrayappend(stObj.groups,"#externalgroupname#_#ucase(externalgroupuserdirectory)#") />
 				<cfset result = result + 1 />
 			</cfoutput>
 			
@@ -391,28 +391,30 @@
 		
 		<!--- Add data --->
 		<cfoutput query="qBarnacles" group="PolicyGroupId">
-			<cfset stRole = oRole.getData(objectid=arguments.roles[PolicyGroupId]) />
-			<cfparam name="stRole.permissions" default="#arraynew(1)#" />
-			
-			<cfoutput>
-				<cfif structkeyexists(arguments.permissions,permissionid)>
-					<cfif len(reference1) and isvalid("uuid",reference1)>
-						<!--- If this barnacle is related to a particular item, the new barnacle structure (which refers to items in an array) has already been created --->
-						<cfset oBarnacle.updateRight(role=stRole.objectid,permission=arguments.permissions[permissionid],object=reference1,right=status)>
-					<cfelseif reference1 eq "PolicyGroup">
-						<!--- If this barnacle isn't related to a particular item, add it as a generic permission to this role --->
-						<cfset arrayappend(stRole.permissions,arguments.permissions[permissionid]) />
+			<cfif structkeyexists(arguments.roles,PolicyGroupId)>
+				<cfset stRole = oRole.getData(objectid=arguments.roles[PolicyGroupId]) />
+				<cfparam name="stRole.permissions" default="#arraynew(1)#" />
+				
+				<cfoutput>
+					<cfif structkeyexists(arguments.permissions,permissionid)>
+						<cfif len(reference1) and isvalid("uuid",reference1)>
+							<!--- If this barnacle is related to a particular item, the new barnacle structure (which refers to items in an array) has already been created --->
+							<cfset oBarnacle.updateRight(role=stRole.objectid,permission=arguments.permissions[permissionid],object=reference1,right=status)>
+						<cfelseif reference1 eq "PolicyGroup">
+							<!--- If this barnacle isn't related to a particular item, add it as a generic permission to this role --->
+							<cfset arrayappend(stRole.permissions,arguments.permissions[permissionid]) />
+						</cfif>
+						
+						<cfset result = result + 1 />
 					</cfif>
-					
-					<cfset result = result + 1 />
-				</cfif>
-			</cfoutput>
-			
-			<cfloop collection="#stBarnacles#" item="objectid">
-				<cfset oBarnacle.setData(stBarnacles[objectid]) />
-			</cfloop>
-			
-			<cfset oRole.setData(stProperties=stRole,user="migratescript",auditNote="Data migrated from pre 4.1") />
+				</cfoutput>
+				
+				<cfloop collection="#stBarnacles#" item="objectid">
+					<cfset oBarnacle.setData(stBarnacles[objectid]) />
+				</cfloop>
+				
+				<cfset oRole.setData(stProperties=stRole,user="migratescript",auditNote="Data migrated from pre 4.1") />
+			</cfif>
 		</cfoutput>
 		
 		<cfreturn result />
