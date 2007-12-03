@@ -355,7 +355,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			<cfset stObj = instance.stobj>
 
 		<!--- Check to see if the object is in the temporary object store --->
-		<cfelseif structKeyExists(Session,"TempObjectStore") AND structKeyExists(Session.TempObjectStore,arguments.objectid) AND arguments.bUseInstanceCache AND NOT arguments.bArraysAsStructs>
+		<cfelseif arguments.bUseInstanceCache AND NOT arguments.bArraysAsStructs AND structKeyExists(Session,"TempObjectStore") AND structKeyExists(Session.TempObjectStore,arguments.objectid)>
 			<!--- get from the temp object stroe --->
 			<cfset stObj = Session.TempObjectStore[arguments.objectid] />
 
