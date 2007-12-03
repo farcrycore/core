@@ -128,11 +128,7 @@ Build NavIDs from Navigation Nodes
 <!--- /_config.cfm --->
 
 
-<!--- Initialise the permissions cache for navajo/overview.cfm if they don't already exist (which they should) --->
 <cfscript>
-    oInit = createObject("component","#application.packagepath#.security.init");
-    oInit.initPermissionCache(bForceRefresh=true);
-
     /* i18n specific stuff */
     // structure to hold resourceBundles for farcry admin
     application.adminBundle=structNew();
