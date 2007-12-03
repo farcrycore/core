@@ -57,12 +57,6 @@
 		<cfset ps.permissionBarnacleTable = "dmPermissionBarnacle" />
 		<cfset ps.externalGroupToPolicyGroupTable = "dmExternalGroupToPolicyGroup" />								
 
-		<!--------------------------------- 
-		INITIALISE DMSEC
-		 --------------------------------->
-		<cfinclude template="/farcry/core/tags/farcry/_dmSec.cfm">
-
-
 		<!---------------------------------------------- 
 		INITIALISE THE COAPIADMIN SINGLETON
 		----------------------------------------------->
@@ -474,6 +468,7 @@
 
 		<cfparam name="this.dsn" default="#this.name#" />
 		<cfparam name="this.dbowner" default="" />
+		<cfparam name="this.locales" default="en_AU" />
 		
 		<cfparam name="this.projectDirectoryName" default="#this.name#"  />
 		<cfparam name="this.plugins" default="farcrycms"  />
@@ -498,6 +493,7 @@
 		<cfset application.dsn = this.dsn />
 		<cfset application.dbtype = this.dbtype />
 		<cfset application.dbowner = this.dbowner />
+		<cfset application.locales = this.locales />
 		
 		<cfif application.dbtype EQ "mssql" AND NOT len(this.dbowner)>
 			<cfset application.dbowner = "dbo." />
