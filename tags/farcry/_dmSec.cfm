@@ -22,6 +22,8 @@ $in: $
 $out:$
 --->
 
+<farcry:deprecated message="tags.farcry._dmsec is no longer used" />
+
 <cfsetting enablecfoutputonly="Yes">
 
 <!--- initialise any server/session structs that are non existant --->
