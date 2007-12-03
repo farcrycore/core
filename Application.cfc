@@ -1,0 +1,570 @@
+<cfcomponent displayname="Application" output="true" hint="Handle the application.">
+ 
+	
+	<!--- LOCATE THE PROJECTS CONSTRUCTOR FILE --->
+	<cfset this.projectConstructorLocation = getProjectConstructorLocation(plugin="farcry") />
+		
+	<cfinclude template="#this.projectConstructorLocation#" />
+	
+	
+	
+	
+	
+	<cffunction name="OnApplicationStart" access="public" returntype="boolean" output="false" hint="Fires when the application is first created.">
+
+
+
+		<cfset initApplicationScope() />
+		
+
+		<!--- CALL THE PROJECTS SERVER SPECIFIC VARIABLES. --->
+		<cfinclude template="/farcry/projects/#application.projectDirectoryName#/config/_serverSpecificVars.cfm" />
+		
+		
+		<!----------------------------------- 
+		INITIALISE THE REQUESTED PLUGINS
+		 ----------------------------------->
+		<cfif isDefined("application.plugins")>
+			<cfloop list="#application.plugins#" index="plugin">
+				<cfif fileExists("#application.path.plugins#/#plugin#/config/_serverSpecificVars.cfm")>
+					<cfinclude template="/farcry/plugins/#plugin#/config/_serverSpecificVars.cfm">
+				</cfif>
+			</cfloop>
+		</cfif>
+		
+						
+		<!----------------------------------------
+		SECURITY
+		 ---------------------------------------->		
+		<!---// dmSecurity settings --->
+		<!---//Init Application dmsec scope --->
+		<cfset Application.dmSec=StructNew() />
+		<!---// --- Initialise the userdirectories --- --->
+		<cfset Application.dmSec.UserDirectory = structNew() />
+		
+		<!---// Client User Directory --->
+		<cfset Application.dmSec.UserDirectory.ClientUD = structNew() />
+		<cfset temp = Application.dmSec.UserDirectory.ClientUD />
+		<cfset temp.type = "Daemon" />
+		<cfset temp.datasource = application.dsn />
+		
+		<!---//Policy Store settings --->
+		<cfset Application.dmSec.PolicyStore = StructNew() />
+		<cfset ps = Application.dmSec.PolicyStore />
+		<cfset ps.dataSource = application.dsn />
+		<cfset ps.permissionTable = "dmPermission" />
+		<cfset ps.policyGroupTable = "dmPolicyGroup" />
+		<cfset ps.permissionBarnacleTable = "dmPermissionBarnacle" />
+		<cfset ps.externalGroupToPolicyGroupTable = "dmExternalGroupToPolicyGroup" />								
+
+		<!--------------------------------- 
+		INITIALISE DMSEC
+		 --------------------------------->
+		<cfinclude template="/farcry/core/tags/farcry/_dmSec.cfm">
+
+
+		<!---------------------------------------------- 
+		INITIALISE THE COAPIADMIN SINGLETON
+		----------------------------------------------->
+		<cfset application.coapi.coapiadmin = createObject("component", "farcry.core.packages.coapi.coapiadmin").init() />
+		<cfset application.coapi.objectBroker = createObject("component", "farcry.core.packages.fourq.objectBroker").init() />
+
+	
+		<!--------------------------------- 
+		FARCRY CORE INITIALISATION
+		 --------------------------------->
+		<cfinclude template="/farcry/core/tags/farcry/_farcryApplicationInit.cfm" />
+
+
+		<!------------------------------------
+		OBJECT BROKER
+		 ------------------------------------>		
+		<cfif structkeyexists(application, "bObjectBroker") AND application.bObjectBroker>
+			<cfset objectBroker = createObject("component","farcry.core.packages.fourq.objectBroker")>
+			
+			<cfloop list="#structKeyList(application.stcoapi)#" index="typename">
+				<cfif application.stcoapi[typename].bObjectBroker>
+					<cfset bSuccess = objectBroker.configureType(typename=typename, MaxObjects=application.stcoapi[typename].ObjectBrokerMaxObjects) />
+				</cfif>
+			</cfloop>
+		</cfif>
+		
+
+		<!--- SETUP CATEGORY APPLICATION STRUCTURE --->
+		<cfquery datasource="#application.dsn#" name="qCategories">
+		SELECT categoryID, categoryLabel
+		FROM #application.dbowner#categories
+		</cfquery>
+		
+		<cfparam name="application.catid" default="#structNew()#" />
+		<cfloop query="qCategories">
+			<cfset application.catID[qCategories.categoryID] = qCategories.categoryLabel>
+		</cfloop>
+		
+		
+		<!--- CALL THE PROJECTS SERVER SPECIFIC AFTER INIT VARIABLES. --->
+		<cfif fileExists("#application.path.project#/config/_serverSpecificVarsAfterInit.cfm") >
+			<cfinclude template="/farcry/projects/#application.projectDirectoryName#/config/_serverSpecificVarsAfterInit.cfm" />
+		</cfif>
+		
+	
+	
+		<!--- Return out. --->
+		<cfreturn true />
+
+	</cffunction>
+
+ 
+
+ 
+
+	<cffunction name="OnSessionStart" access="public" returntype="void" output="false" hint="Fires when the session is first created.">
+		<!--- Return out. --->
+
+		<cfreturn />
+
+	</cffunction>
+
+ 
+
+ 
+
+	<cffunction name="OnRequestStart" access="public" returntype="boolean" output="true" hint="Fires at first part of page processing.">
+		<!--- Define arguments. --->
+
+		<cfargument name="TargetPage" type="string" required="true" />
+
+
+		<!--- Update the farcry application if instructed --->
+		<cfset farcryUpdateApp() />
+		
+		
+		<!--- Initialize the request as a farcry application --->
+		<cfset farcryRequestInit() />
+		
+
+	
+		<!--- Return out. --->
+
+		<cfreturn true />
+
+	</cffunction>
+
+ 
+
+ 
+
+	<cffunction name="OnRequest" access="public" returntype="void" output="true" hint="Fires after pre page processing is complete.">
+		<!--- Define arguments. --->
+
+		<cfargument name="TargetPage" type="string" required="true" />
+
+		<!--- Including the requested page is up to the project or plugin. --->
+		<!--- <cfinclude template="#ARGUMENTS.TargetPage#" /> --->
+
+		<!--- Return out. --->
+
+		<cfreturn />
+
+	</cffunction>
+
+ 
+
+ 
+
+	<cffunction name="OnRequestEnd" access="public" returntype="void" output="true" hint="Fires after the page processing is complete.">
+		<!--- Return out. --->
+		
+		<cfinclude template="/farcry/core/tags/farcry/_farcryOnRequestEnd.cfm">
+		
+		<cfreturn />
+
+	</cffunction>
+
+ 
+
+ 
+
+	<cffunction name="OnSessionEnd" access="public" returntype="void" output="false" hint="Fires when the session is terminated.">
+		<!--- Define arguments. --->
+
+		<cfargument name="SessionScope" type="struct" required="true" />
+
+ 
+
+		<cfargument name="ApplicationScope" type="struct" required="false" default="#StructNew()#" />
+ 
+
+		<!--- Return out. --->
+
+		<cfreturn />
+
+	</cffunction>
+
+ 
+
+ 
+
+	<cffunction name="OnApplicationEnd" access="public" returntype="void" output="false" hint="Fires when the application is terminated.">
+		<!--- Define arguments. --->
+
+		<cfargument name="ApplicationScope" type="struct" required="false" default="#StructNew()#" />
+
+ 
+
+		<!--- Return out. --->
+
+		<cfreturn />
+
+	</cffunction>
+
+ 
+
+ 
+
+	<cffunction name="OnError" access="public" returntype="void" output="true" hint="Fires when an exception occures that is not caught by a try/catch.">
+		<!--- Define arguments. --->
+
+		<cfargument name="Exception" type="any" required="true" />
+
+ 
+
+		<cfargument name="EventName" type="string" required="false" default="" />
+
+		<cfdump var="#arguments#" expand="false" label="arguments" />
+		<!--- Return out. --->
+
+		<cfreturn />
+
+	</cffunction>
+
+ 
+
+
+
+	<cffunction name="farcryUpdateApp" access="private" output="false" hint="Initialise farcry Application." returntype="void">
+	
+	<!--- @@copyright: Daemon Internet 2002-2007, http://www.daemon.com.au --->
+	<!--- @@license: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php --->
+	<!--- @@displayname: farcryInit --->
+	<!--- @@description: Application initialisation tag. --->
+		
+		
+		<!--- USED TO DETERMINE OVERALL PAGE TICKCOUNT --->
+		<cfset request.farcryPageTimerStart = getTickCount() />
+			
+		
+		<!---<cferror type="request" template="/farcry/projects/#attributes.projectDirectoryName#/error/500.cfm"> --->
+		
+		<!---------------------------------------- 
+		BEGIN: Application Initialise 
+		----------------------------------------->
+		<cfif NOT structkeyExists(url, "updateapp")>
+			<cfset url.updateapp=false />
+		</cfif>
+		
+		<cftry>
+		
+		<cfif (NOT structkeyexists(application, "bInit") OR NOT application.binit) OR url.updateapp>
+			<cflock name="#application.applicationName#_init" type="exclusive" timeout="3" throwontimeout="true">
+				<cfif (NOT structkeyexists(application, "bInit") OR NOT application.binit) OR url.updateapp>
+					
+					<!--- set binit to false to block users accessing on restart --->
+					<cfset application.bInit =  false />
+					
+	
+					<cfset OnApplicationStart() />
+					
+					
+					<!--- set the initialised flag --->
+					<cfset application.bInit = true />
+				</cfif>
+			</cflock>
+		</cfif>
+		
+		<cfcatch type="lock">
+			<cfoutput><h1>Application Restarting</h1><p>Please come back in a few minutes.</p></cfoutput>
+			<cfabort />
+		</cfcatch>
+		
+		<cfcatch type="any">
+			<!--- remove binit to force reinitialisation on next page request --->
+			<cfset structdelete(application,"bInit") />
+			<!--- report error to user --->
+			<cfoutput><h1>Application Failed to Initialise</h1></cfoutput>
+			<cfdump var="#cfcatch#" expand="false" />
+			<cfabort />
+		</cfcatch>
+		
+		</cftry>
+		<!---------------------------------------- 
+		END: Application Initialise 
+		----------------------------------------->
+	
+	
+
+	
+	</cffunction>
+	
+	<cffunction name="farcryRequestInit" access="private" output="false" hint="Initialise farcry Application." returntype="void">
+	
+		<!---------------------------------------- 
+		GENERAL APPLICATION REQUEST PROCESSING
+		- formally /farcry/core/tags/farcry/_farcryApplication.cfm
+		----------------------------------------->
+		
+		<!--- set legacy logout/login parameters --->
+		<cfif isDefined("url.logout") and url.logout eq 1>
+			<cfset application.factory.oAuthentication.logout(bAudit=1) />
+		</cfif>
+		<cfset stLoggedIn = application.factory.oAuthentication.getUserAuthenticationData() />
+		<cfset request.loggedin = stLoggedin.bLoggedIn />
+		
+		
+		<!-------------------------------------------------------
+		Run Request Processing
+			_serverSpecificRequestScope.cfm
+		-------------------------------------------------------->
+		<!--- core request processing --->
+		<cfscript>
+
+		// init request.mode with defaults
+		request.mode = structNew();
+		request.mode.design = 0;
+		request.mode.flushcache = 0;
+		request.mode.showdraft = 0;
+		
+		// Developer Mode
+		request.mode.bDeveloper = 0;
+		
+		// container management
+		// default to off, conjurer determines permissions based on nav-node
+		request.mode.showcontainers = 0; 
+		
+		// TODO other options to be added
+		request.mode.showtables = 0;
+		request.mode.showerror = 0;
+		request.mode.showdebugoutput = 0;
+		
+		// admin options visible in page
+		if (IsDefined("session.dmSec.Authentication.bAdmin")) {
+			request.mode.bAdmin = session.dmSec.Authentication.bAdmin; 
+		} else {
+			request.mode.bAdmin = 0; // default to off
+		}
+		
+		
+			
+		// if user has admin priveleges, determine mode values
+		if (request.mode.bAdmin) {
+		// designmode
+			if (isDefined("url.designmode")) {
+				request.mode.design = val(url.designmode);
+				session.dmSec.Authentication.designmode = request.mode.design;
+			} else if (isDefined("session.dmSec.Authentication.designmode")) {
+				request.mode.design = session.dmSec.Authentication.designmode;
+			} else {
+				request.mode.design = 0;
+			}
+		
+		// bypass caching
+			if (isDefined("url.flushcache")) {
+				request.mode.flushcache = val(url.flushcache);
+				session.dmSec.Authentication.flushcache = request.mode.flushcache;
+			} else if (isDefined("session.dmSec.Authentication.flushcache")) {
+				request.mode.flushcache = session.dmSec.Authentication.flushcache;
+			} else {
+				request.mode.flushcache = 0;
+			}
+		
+		// view content as stage
+			if (isDefined("url.showdraft")) {
+				request.mode.showdraft = val(url.showdraft);
+				session.dmSec.Authentication.showdraft = request.mode.showdraft;
+			} else if (isDefined("session.dmSec.Authentication.showdraft")) {
+				request.mode.showdraft = session.dmSec.Authentication.showdraft;
+			} else {
+				request.mode.showdraft = 0;
+			}
+		
+		}
+		
+		// set valid status for content
+		if (request.mode.showdraft) {
+			request.mode.lValidStatus = "draft,pending,approved";
+		} else {
+			request.mode.lValidStatus = "approved";
+		}
+		
+		// Deprecated variables
+		// TODO remove these when possible
+		request.lValidStatus = request.mode.lValidStatus; //deprecated
+		</cfscript>
+		
+		
+		
+		
+		<!--- project and library request processing --->
+		<cfif application.sysInfo.bServerSpecificRequestScope>
+			<cfloop from="1" to="#arraylen(application.sysinfo.aServerSpecificRequestScope)#" index="i">
+				<cfinclude template="#application.sysinfo.aServerSpecificRequestScope[i]#" />
+			</cfloop>
+		</cfif>
+		
+		
+		<!--- This parameter is used by _farcryOnRequestEnd.cfm to determine which javascript libraries to include in the page <head> --->
+		<cfparam name="Request.inHead" default="#structNew()#">
+		
+		
+		<!--- IF the project has been set to developer mode, we need to refresh the metadata on each page request. --->
+		<cfif request.mode.bDeveloper>
+			<cfset createObject("component","#application.packagepath#.farcry.alterType").refreshAllCFCAppData() />
+		</cfif>
+
+
+
+	</cffunction>
+	
+	
+	<cffunction name="getProjectConstructorLocation" access="public" output="true" hint="returns the location of the farcry project''s constructor is located" returntype="string">
+		
+		<cfargument name="plugin" type="string" hint="The name of the plugin.">
+	
+		<cfset var scriptName = cgi.SCRIPT_NAME />	
+		<cfset var loc = "" />
+		<cfset var projectName = "" />
+		<cfset var pos = 0 />
+		
+		<!--- Try and determine if a webserver virtual has been used. --->
+		<cfset pos = findNoCase("/#arguments.plugin#/", scriptName) />
+		
+		<cfif pos GT 1>
+			<!--- It looks like a virtual has been used. We will assume the virtual is the name of the projects folder --->
+			<cfset projectName = mid(scriptName, 1, pos - 1) />
+			<cfset loc = trim("/farcry/projects/#projectName#/www/farcryConstructor.cfm") />
+		<cfelse>
+			<cfset loc = "/farcryConstructor.cfm" />
+		</cfif>
+		
+		<cfif not fileExists(loc)>
+			<!--- check cookie caper --->
+			
+		</cfif>
+	
+		<cfreturn loc />
+	</cffunction>
+	
+
+	<cffunction name="getPluginName" access="public" output="true" hint="returns the name of this plugin" returntype="string">
+		<cfreturn "farcry" />
+	</cffunction>
+
+	<cffunction name="initApplicationScope" access="private" output="false" hint="Sets up the main farcry application scope variables." returntype="void">
+		
+		
+		
+		<!--- REQUIRED VARIABLES SETUP IN THE FARCRYCONSTRUCTOR --->
+		<cfif not isDefined("this.name")>
+			<cfabort showerror="this.name not defined in your projects farcryConstructor.">
+		</cfif>
+		<cfif not isDefined("this.dbtype")>
+			<cfabort showerror="this.dbtype not defined in your projects farcryConstructor.">
+		</cfif>
+		
+
+		<cfparam name="this.dsn" default="#this.name#" />
+		<cfparam name="this.dbowner" default="" />
+		
+		<cfparam name="this.projectDirectoryName" default="#this.name#"  />
+		<cfparam name="this.plugins" default="farcrycms"  />
+		
+		<cfparam name="this.projectURL" default="" />
+		
+		
+		<cfparam name="this.bObjectBroker" default="true" />
+		<cfparam name="this.ObjectBrokerMaxObjectsDefault" default="100" />
+		
+	
+		<!--- Option to archive --->
+		<cfparam name="this.bUseMediaArchive" default="false" />
+		
+		
+		<!--- Project directory name can be changed from the default which is the applicationname --->
+		<cfset application.projectDirectoryName =  this.projectDirectoryName />
+		
+		<!----------------------------------------
+		 SET THE DATABASE SPECIFIC INFORMATION 
+		---------------------------------------->
+		<cfset application.dsn = this.dsn />
+		<cfset application.dbtype = this.dbtype />
+		<cfset application.dbowner = this.dbowner />
+		
+		<cfif application.dbtype EQ "mssql" AND NOT len(this.dbowner)>
+			<cfset application.dbowner = "dbo." />
+		</cfif>
+		
+		<!----------------------------------------
+		 SET THE MAIN PHYSICAL PATH INFORMATION
+		 ---------------------------------------->
+		<cfset application.path.project = expandpath("/farcry/projects/#application.projectDirectoryName#") />
+		<cfset application.path.core = expandpath("/farcry/core") />
+		<cfset application.path.plugins = expandpath("/farcry/plugins") />
+		
+		<cfset application.path.defaultFilePath = "#application.path.project#/www/files">
+		<cfset application.path.secureFilePath = "#application.path.project#/securefiles">		
+		
+		<cfset application.path.imageRoot = "#application.path.project#/www">
+		
+		<cfset application.path.mediaArchive = "#application.path.project#/mediaArchive">
+		
+		
+		<!----------------------------------------
+		 WEB URL PATHS
+		 ---------------------------------------->
+		<cfset application.url.webroot = this.projectURL />
+		<cfset application.url.farcry = "#this.projectURL#/webtop" />
+		<cfset application.url.imageRoot = "#application.url.webroot#">
+		<cfset application.url.fileRoot = "#application.url.webroot#/files">
+		
+		
+		<!----------------------------------------
+		SHORTCUT PACKAGE PATHS
+		 ---------------------------------------->
+		<cfset application.packagepath = "farcry.core.packages" />
+		<cfset application.custompackagepath = "farcry.projects.#application.projectDirectoryName#.packages" />
+		<cfset application.securitypackagepath = "farcry.core.packages.security" />
+		
+		<!----------------------------------------
+		PLUGINS TO INCLUDE
+		 ---------------------------------------->
+		<cfset application.plugins = this.plugins />
+		
+		
+		<!------------------------------------------ 
+		USE OBJECT BROKER?
+		 ------------------------------------------>
+		<cfset application.bObjectBroker = this.bObjectBroker />
+		<cfset application.ObjectBrokerMaxObjectsDefault = this.ObjectBrokerMaxObjectsDefault />
+		
+		
+		<!------------------------------------------ 
+		USE MEDIA ARCHIVE?
+		 ------------------------------------------>
+		<cfset application.bUseMediaArchive = this.bUseMediaArchive />
+	
+		<!---------------------------------------------- 
+		INITIALISE THE COAPIUTILITIES SINGLETON
+		----------------------------------------------->
+		<cfset application.coapi = structNew() />
+		<cfset application.coapi.coapiUtilities = createObject("component", "farcry.core.packages.coapi.coapiUtilities").init() />
+
+
+		<!--- Initialise the stPlugins structure that will hold all the plugin specific settings. --->
+		<cfset application.stPlugins = structNew() />
+		
+		
+		<!--- ENSURE SYSINFO IS UPDATED EACH INITIALISATION --->
+		<cfset application.sysInfo = structNew() />
+	</cffunction>
+
+</cfcomponent>
