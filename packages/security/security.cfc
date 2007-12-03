@@ -18,7 +18,7 @@
 		<cfset application.dmSec.lDefaultPolicyGroups = this.factory.role.getDefaultRoles() />
 		
 		<cfloop list="#this.factory.permission.getAllPermissions()#" index="permission">
-			<cfset stPermission = this.factory.permission.getData(permission) />
+			<cfset stPermission = this.factory.permission.getData(objectid=permission,bUseInstanceCache=false) />
 			<cfif arraylen(stPermission.relatedtypes)>
 				<cfloop from="1" to="#arraylen(stPermission.relatedtypes)#" index="i">
 					<cfparam name="application.permission.#stPermission.relatedtypes[i]#" default="#structnew()#" />
