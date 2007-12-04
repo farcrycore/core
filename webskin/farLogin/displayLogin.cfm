@@ -66,9 +66,9 @@
 		<ft:object typename="farLogin">
 			<ft:farcryButton value="Log In" />
 			
-			<cfif isdefined("arguments.stParams.errormessage") and len(arguments.stParams.errormessage)>
+			<cfif isdefined("arguments.stParams.message") and len(arguments.stParams.message)>
 				<cfoutput>
-					<div class="error">#arguments.stParams.errormessage#</div>
+					<div class="error">#arguments.stParams.message#</div>
 				</cfoutput>
 			</cfif>
 		</ft:object>

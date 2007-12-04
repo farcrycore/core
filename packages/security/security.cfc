@@ -166,7 +166,7 @@
 			
 			<cfif structkeyexists(stResult,"authenticated")>
 				<cfif not stResult.authenticated>
-					<farcry:logevent type="security" event="loginfailed" userid="#stResult.userid#_#ud#" notes="#ud#: #stResult.errormessage#" />
+					<farcry:logevent type="security" event="loginfailed" userid="#stResult.userid#_#ud#" notes="#ud#: #stResult.message#" />
 					<cfbreak />
 				</cfif>
 				

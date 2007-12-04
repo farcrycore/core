@@ -45,7 +45,8 @@
 		
 		<!--- This function should return a struct in the form: 
 				.AUTHENTICATED = false
-				.ERRORMESSAGE = ""
+				.MESSAGE = ""
+				OTHER VALUES CAN BE ADDED FOR USE BY CUSTOM LOGIN FORMS
 			  OR
 				.AUTHENTICATED = true
 				.USERID = "" (This ID only needs to be unique for this user directory)

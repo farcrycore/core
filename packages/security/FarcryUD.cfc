@@ -22,7 +22,7 @@
 		<!--- Return struct --->
 		<cfset stResult.userid = "" />
 		<cfset stResult.authenticated = false />
-		<cfset stResult.errormessage = "" />
+		<cfset stResult.message = "" />
 		
 		<!--- For backward compatability, check for userlogin and password in form. This should be removed once we're willing to not support pre 4.1 login templates --->
 		<cfif structkeyexists(form,"userlogin") and structkeyexists(form,"password")>
@@ -79,18 +79,18 @@
 			<cfif false and qLogAudit.numberOfLogin gte application.config.general.loginAttemptsAllowed>
 				<!--- User is locked out due to high number of failed logins recently --->
 				<cfset stResult.authenticated = false />
-				<cfset stResult.errormessage = "Your account has been locked due to a high number of failed logins. It will be unlocked automatically in #application.config.general.loginAttemptsTimeOut# minutes." />
+				<cfset stResult.message = "Your account has been locked due to a high number of failed logins. It will be unlocked automatically in #application.config.general.loginAttemptsTimeOut# minutes." />
 			<cfelseif qUser.recordcount and qUser.userstatus eq "active">
 				<!--- User successfully logged in --->
 				<cfset stResult.authenticated = true />
 			<cfelseif qUser.recordcount>
 				<!--- User's account is disabled --->
 				<cfset stResult.authenticated = false />
-				<cfset stResult.errormessage = "Your account is diabled" />
+				<cfset stResult.message = "Your account is diabled" />
 			<cfelse>
 				<!--- User login or password is incorrect --->
 				<cfset stResult.authenticated = false />
-				<cfset stResult.errormessage = "The username or password was incorrect">
+				<cfset stResult.message = "The username or password was incorrect">
 			</cfif>
 		
 		</cfif>
