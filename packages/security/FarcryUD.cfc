@@ -1,4 +1,4 @@
-<cfcomponent displayname="Farcry User Directory" hint="Provides the interface for the FarCry user directory" extends="UserDirectory" output="false" title="FarCry User Directory" key="CLIENTUD" encrypted="false">
+<cfcomponent displayname="Farcry User Directory" hint="Provides the interface for the FarCry user directory" extends="UserDirectory" output="false" key="CLIENTUD" bEncrypted="false">
 	
 	<!--- ====================
 	  UD Interface functions
@@ -16,7 +16,7 @@
 		<cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 		
 		<cfif isdefined("Application.dmSec.UserDirectory.CLIENTUD.bEncrypted")>
-			<cfset this.encrypted = Application.dmSec.UserDirectory.CLIENTUD.bEncrypted />
+			<cfset this.bEncrypted = Application.dmSec.UserDirectory.CLIENTUD.bEncrypted />
 		</cfif>
 		
 		<!--- Return struct --->
@@ -27,7 +27,7 @@
 		<!--- For backward compatability, check for userlogin and password in form. This should be removed once we're willing to not support pre 4.1 login templates --->
 		<cfif structkeyexists(form,"userlogin") and structkeyexists(form,"password")>
 			<!--- If password encryption is enabled, hash the password --->
-			<cfif this.encrypted>
+			<cfif this.bEncrypted>
 				<cfset form.password = hash(form.password) />
 			</cfif>
 			
@@ -44,7 +44,7 @@
 			<ft:processform>
 				<ft:processformObjects typename="#getLoginForm()#">
 					<!--- If password encryption is enabled, hash the password --->
-					<cfif this.encrypted>
+					<cfif this.bEncrypted>
 						<cfset stProperties.password = hash(stLogin.password) />
 					</cfif>
 					

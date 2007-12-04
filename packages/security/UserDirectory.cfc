@@ -7,12 +7,24 @@
 		<cfset var attr = "" />
 		
 		<cfloop condition="not structisempty(stMetadata)">
+			<!--- Get attributes --->
 			<cfloop collection="#stMetadata#" item="attr">
 				<cfif issimplevalue(stMetadata[attr]) and not listcontains("bindingname,displayname,extends,fullname,functions,hint,name,namespace,output,path,porttypename,serviceportname,style,type,wsdlfile",attr) and not structkeyexists(this,attr)>
 					<cfset this[attr] = stMetadata[attr] />
 				</cfif>
 			</cfloop>
 			
+			<!--- If key isn't specified, use the name of the component --->
+			<cfif not structkeyexists(this,"key")>
+				<cfset this.key = listlast(stMetadata.fullname,".") />
+			</cfif>
+			
+			<!--- If title isn't specified, use the displayname --->
+			<cfif not structkeyexists(this,"key")>
+				<cfset this.title = stMetadata.displayname />
+			</cfif>
+			
+			<!--- Do the same for ancestors --->
 			<cfif structkeyexists(stMetadata,"extends")>
 				<cfset stMetadata = stMetadata.extends />
 			<cfelse>
