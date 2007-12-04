@@ -8,14 +8,16 @@
 	<cffunction name="getGroups" access="public" output="false" returntype="query" hint="Returns a query of UD groups">
 		<cfset var qResult = querynew("objectid,label","varchar,varchar") />
 		<cfset var ud = "" />
-		<cfset var group = "" />
+		<cfset var i = 0 />
+		<cfset var aAllGroups = arraynew(1) />
 		
 		<cfif structkeyexists(application,"security") and structkeyexists(application.security,"userdirectories")>
 			<cfloop collection="#application.security.userdirectories#" item="ud">
-				<cfloop list="#application.security.userdirectories[ud].getAllGroups()#" index="group">
+				<cfset aAllGroups = application.security.userdirectories[ud].getAllGroups() />
+				<cfloop from="1" to="#arraylen(aAllGroups)#" index="i">
 					<cfset queryaddrow(qResult) />
-					<cfset querysetcell(qResult,"objectid","#group#_#ud#") />
-					<cfset querysetcell(qResult,"label","#group# (#application.security.userdirectories[ud].title#)")>
+					<cfset querysetcell(qResult,"objectid","#aAllGroups[i]#_#ud#") />
+					<cfset querysetcell(qResult,"label","#aAllGroups[i]# (#application.security.userdirectories[ud].title#)")>
 				</cfloop>
 			</cfloop>
 		</cfif>
@@ -23,17 +25,21 @@
 		<cfreturn qResult />
 	</cffunction>
 	
-	<cffunction name="groupsToRoles" access="public" output="false" returntype="string" hint="Converts a list of user directory groups to their equivilent Farcry roles">
-		<cfargument name="groups" type="string" required="true" hint="The groups to convert" />
+	<cffunction name="groupsToRoles" access="public" output="false" returntype="string" hint="Converts a list/array of user directory groups to their equivilent Farcry roles">
+		<cfargument name="groups" type="Any" required="true" hint="The groups to convert" />
 		
 		<cfset var result = "" />
-		<cfset var group = "" />
+		<cfset var i = "" />
 		
-		<cfloop list="#arguments.groups#" index="group">
+		<cfif not isarray(arguments.groups)>
+			<cfset arguments.groups = listtoarray(arguments.groups) />
+		</cfif>
+		
+		<cfloop from="1" to="#arraylen(arguments.groups)#" index="i">
 			<cfquery datasource="#application.dsn#" name="qRoles">
 				select	*
 				from	#application.dbowner#farRole_groups
-				where	lower(data)=<cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(group)#" />
+				where	lower(data)=<cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(arguments.groups[i])#" />
 			</cfquery>
 			
 			<cfset result = application.factory.oUtils.listMerge(result,valuelist(qRoles.parentid)) />		

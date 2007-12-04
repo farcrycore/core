@@ -161,12 +161,13 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
 		<cfargument name="userdirectory" required="true">
 		<cfargument name="bInvert" required="false" default="0" hint="Flag to get groups userlogin is not a member of. (CRACK! GB)">
 		
-		<cfset var group = "" />
 		<cfset var oGroup = createObject("component", application.stcoapi["farGroup"].packagePath) />
 		<cfset var stGroup = structnew() />
-		<cfset var usergroups = "" />
+		<cfset var aUserGroups = "" />
 		<cfset var stResult = structnew() />
 		<cfset var aResult = arraynew(1) />
+		<cfset var aAllGroups = arraynew(1) />
+		<cfset var i = 0 />
 		
 		<farcry:deprecated message="authentication.getMultipleGroups() should be replaced by application.security.userdirectories[ud].getUserGroups()" />
 		
@@ -174,11 +175,12 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
 			<cfset arguments.userlogin = listfirst(arguments.userlogin,"_") />
 		</cfif>
 		
-		<cfset usergroups = application.security.userdirectories.CLIENTUD.getUserGroups(arguments.userlogin) />
+		<cfset aAllGroups = application.security.userdirectories.CLIENTUD.getAllGroups() />
+		<cfset aUserGroups = application.security.userdirectories.CLIENTUD.getUserGroups(arguments.userlogin) />
 		
-		<cfloop list="#application.security.userdirectories.CLIENTUD.getAllGroups()#" index="group">
-			<cfif arguments.bInvert xor listcontains(usergroups,group)>
-				<cfset stGroup = oGroup.getData(oGroup.getID(group)) />
+		<cfloop from="1" to="#arraylen(aAllGroups)#" index="i">
+			<cfif arguments.bInvert xor application.factory.oUtils.arrayFind(aUserGroups,aAllGroups[i])>
+				<cfset stGroup = oGroup.getData(oGroup.getID(aAllGroups[i])) />
 				<cfset stResult = structnew() />
 				<cfset stResult.groupName = stGroup.title />
 				<cfset stResult.groupNotes = "" />

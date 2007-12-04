@@ -157,6 +157,8 @@
 		<cfset var ud = "" />
 		<cfset var stResult = structnew() />
 		<cfset var groups = "" />
+		<cfset var aUserGroups = arraynew(1) />
+		<cfset var i = 0 />
 		
 		<cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry" />
 		
@@ -171,8 +173,9 @@
 				</cfif>
 				
 				<!--- Get user groups and convert them to Farcry roles --->
-				<cfloop list="#this.userdirectories[ud].getUserGroups(stResult.userid)#" index="group">
-					<cfset groups = listappend(groups,"#group#_#ud#") />
+				<cfset aUserGroups = this.userdirectories[ud].getUserGroups(stResult.userid) />
+				<cfloop from="1" to="#arraylen(aUserGroups)#" index="i">
+					<cfset groups = listappend(groups,"#aUserGroups[i]#_#ud#") />
 				</cfloop>
 				<cfset session.dmSec.authentication.lPolicyGroupIds = this.factory.role.groupsToRoles(groups) />
 				

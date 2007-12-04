@@ -1,5 +1,21 @@
 <cfcomponent displayname="Utilities" hint="Packages generic utilities" output="true">
 
+	<!--- ARRAY utilities --->
+	<cffunction name="arrayFind" access="public" output="false" returntype="numeric" hint="Returns the index of the first element that matches the specified value. 0 if not found.">
+		<cfargument name="ar" type="array" required="true" hint="The array to search" />
+		<cfargument name="value" type="Any" required="true" hint="The value to find" />
+		
+		<cfset var i = 0 />
+		
+		<cfloop from="1" to="#arraylen(arguments.ar)#" index="i">
+			<cfif arguments.ar[i] eq arguments.value>
+				<cfreturn i />
+			</cfif>
+		</cfloop>
+		
+		<cfreturn 0 />
+	</cffunction>
+
 	<!--- LIST utilities --->
 	<cffunction name="listReverse" access="public" output="false" returntype="string" hint="Reverses a list">
 		<cfargument name="list" type="string" required="true" />

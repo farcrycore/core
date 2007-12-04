@@ -57,7 +57,7 @@
 		<cfreturn structnew() />
 	</cffunction>
 	
-	<cffunction name="getUserGroups" access="public" output="false" returntype="string" hint="Returns the groups that the specified user is a member of">
+	<cffunction name="getUserGroups" access="public" output="false" returntype="array" hint="Returns the groups that the specified user is a member of">
 		<cfargument name="UserID" type="string" required="true" hint="The user being queried" />
 		
 		<cfthrow message="The #variables.metadata.displayname# user directory needs to implement the getUserGroups function" />
@@ -65,7 +65,7 @@
 		<cfreturn "" />
 	</cffunction>
 	
-	<cffunction name="getAllGroups" access="public" output="false" returntype="string" hint="Returns all the groups that this user directory supports">
+	<cffunction name="getAllGroups" access="public" output="false" returntype="array" hint="Returns all the groups that this user directory supports">
 		<cfthrow message="The #variables.metadata.displayname# user directory needs to implement the getAllGroups function" />
 		
 		<cfreturn "" />

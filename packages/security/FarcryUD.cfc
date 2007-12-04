@@ -98,10 +98,11 @@
 		<cfreturn stResult />
 	</cffunction>
 	
-	<cffunction name="getUserGroups" access="public" output="false" returntype="string" hint="Returns the groups that the specified user is a member of">
+	<cffunction name="getUserGroups" access="public" output="false" returntype="array" hint="Returns the groups that the specified user is a member of">
 		<cfargument name="UserID" type="string" required="true" hint="The user being queried" />
 		
-		<cfset var qUser = "" />
+		<cfset var qGroups = "" />
+		<cfset var aGroups = arraynew(1) />
 		
 		<cfquery datasource="#application.dsn#" name="qGroups">
 			select	g.title
@@ -117,20 +118,28 @@
 			where	userid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.userid#" />
 		</cfquery>
 		
-		<cfreturn valuelist(qGroups.title) />
+		<cfloop query="qGroups">
+			<cfset arrayappend(aGroups,title) />
+		</cfloop>
+		
+		<cfreturn aGroups />
 	</cffunction>
 	
-	<cffunction name="getAllGroups" access="public" output="false" returntype="string" hint="Returns all the groups that this user directory supports">
+	<cffunction name="getAllGroups" access="public" output="false" returntype="array" hint="Returns all the groups that this user directory supports">
 		<cfset var qGroups = "" />
-		<cfset var result = "" />
+		<cfset var aGroups = arraynew(1) />
 		
 		<cfquery datasource="#application.dsn#" name="qGroups">
 			select		*
 			from		#application.dbowner#farGroup
 			order by	title
 		</cfquery>
+		
+		<cfloop query="qGroups">
+			<cfset arrayappend(aGroups,title) />
+		</cfloop>
 
-		<cfreturn valuelist(qGroups.title) />
+		<cfreturn aGroups />
 	</cffunction>
 
 	
