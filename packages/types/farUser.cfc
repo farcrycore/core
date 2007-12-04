@@ -87,7 +87,7 @@ test<cfcomponent displayname="FarcryUD User" hint="Used by FarcryUD to store use
 		
 		<cfset var stUser = getData(objectid=arguments.stProperties.objectid) />
 		
-		<cfif application.security.userdirectories.CLIENTUD.encrypted and arguments.stProperties.password neq stUser.password>
+		<cfif application.security.userdirectories.CLIENTUD.bEncrypted and arguments.stProperties.password neq stUser.password>
 			<cfset arguments.stProperties.password = hash(arguments.stProperties.password) />
 		</cfif>
 		
@@ -100,7 +100,7 @@ test<cfcomponent displayname="FarcryUD User" hint="Used by FarcryUD to store use
 		<cfargument name="auditNote" type="string" required="true" hint="Note for audit trail" default="Created">
 		<cfargument name="dsn" required="No" default="#application.dsn#"> 
 		
-		<cfif application.security.userdirectories.CLIENTUD.encrypted>
+		<cfif application.security.userdirectories.CLIENTUD.bEncrypted>
 			<cfset arguments.stProperties.password = hash(arguments.stProperties.password) />
 		</cfif>
 		
