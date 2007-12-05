@@ -24,7 +24,7 @@ $Developer: $
  --->
 
 
-<cfimport taglib="/farcry/core/tags/webskin/" prefix="ws" >
+<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" >
 <cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" >
 <cfimport taglib="/farcry/core/tags/widgets/" prefix="widgets" >
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin" >
@@ -550,8 +550,9 @@ LIBRARY DATA
 				</ft:form>
 	
 	
-	
-			<cfset Request.InHead.ScriptaculousEffects = 1>
+			<skin:htmlHead library="ScriptaculousEffects" />
+			<skin:htmlHead library="ScriptaculousDragAndDrop" />
+			
 			<cfoutput>
 			
 
@@ -817,7 +818,9 @@ GENERATE THE LIBRARY PICKER
 				</cfif>	
 			</cfif>
 			
-			<cfset Request.InHead.ScriptaculousEffects = 1>
+			<skin:htmlHead library="ScriptaculousEffects" />
+			<skin:htmlHead library="ScriptaculousDragAndDrop" />
+			
 			<cfoutput>
 			<script type="text/javascript">
 				<cfif NOT InstantLibraryUpdate >
