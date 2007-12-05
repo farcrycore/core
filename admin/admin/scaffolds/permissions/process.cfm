@@ -5,7 +5,7 @@
 		<cfset permissionscreated = listappend(permissionscreated,application.security.factory.permission.getLabel(permission)) />
 	</cfif>
 </cfloop>
-<cfset permissionspossible = "#url.typename#Approve,#url.typename#Create,#url.typename#Delete,#url.typename#Edit,#url.typename#RequestApproval" />
+<cfset permissionspossible = "#url.typename#Approve,#url.typename#CanApproveOwnContent,#url.typename#Create,#url.typename#Delete,#url.typename#Edit,#url.typename#RequestApproval" />
 
 <cfloop list="#permissionspossible#" index="permission">
 	<cfif structkeyexists(form,"generatePermission#permission#") and form["generatePermission#permission#"]>

@@ -9,7 +9,7 @@
 		<cfset permissionscreated = listappend(permissionscreated,application.security.factory.permission.getLabel(permission)) />
 	</cfif>
 </cfloop>
-<cfset permissionspossible = "#url.typename#Approve,#url.typename#Create,#url.typename#Delete,#url.typename#Edit,#url.typename#RequestApproval" />
+<cfset permissionspossible = "#url.typename#Approve,#url.typename#CanApproveOwnContent,#url.typename#Create,#url.typename#Delete,#url.typename#Edit,#url.typename#RequestApproval" />
 
 <cfoutput>
 	<p>Generates the set of generic permissions for your type. For convenience, it also simplifies the process of associating them with roles. Note: if you wish to set up item specific permissions, you will need to do it through the standard security interface.</p>
@@ -40,7 +40,7 @@
 							<td></td>
 							<cfloop list="#permissionspossible#" index="permission">
 								<cfif listcontains(permissionscreated,permission)>
-									<th>#mid(permission,len(url.typename)+1,1)#</th>
+									<th>#mid(permission,len(url.typename)+1,2)#</th>
 								</cfif>
 							</cfloop>
 						</tr>
