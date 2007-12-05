@@ -108,7 +108,7 @@ $out:$
 	<cfif structCount(stObj)>
 		<cfset checkForLockRet=oLocking.checkForLock(objectid=url.objectid) />
 		<cfif checkForLockRet.bSuccess>
-			<cfif lockRet = oLocking.lock(objectid=url.objectid,typename=url.typename) />
+			<cfset lockRet = oLocking.lock(objectid=url.objectid,typename=url.typename) />
 			<cfif lockRet.bSuccess>
 				<cfset oType.edit(objectid=url.objectid) />
 			<cfelse>
