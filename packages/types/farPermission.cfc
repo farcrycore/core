@@ -22,6 +22,29 @@
 		<cfreturn qResult />
 	</cffunction>
 	
+	<cffunction name="permissionExists" access="public" output="false" returntype="boolean" hint="Returns true if the permission exists">
+		<cfargument name="permission" type="string" required="true" hint="The permission shortcut" />
+	
+		<cfset var qPermissions = "" />
+		
+		<cfif not application.security.hasLookup(permission=arguments.name)>
+			<cfquery datasource="#application.dsn#" name="qPermissions">
+				select	objectid
+				from	#application.dbOwner#farPermission
+				where	lower(shortcut)=<cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(arguments.name)#" />
+			</cfquery>
+			
+			<cfif qPermissions.recordcount>
+				<cfset application.security.setLookup(permission=arguments.name,objectid=qPermissions.objectid[1]) />
+				<cfreturn true />
+			<cfelse>
+				<cfreturn false />
+			</cfif>
+		<cfelse>
+			<cfreturn true />
+		</cfif>
+	</cffunction>
+	
 	<cffunction name="getID" access="public" output="false" returntype="uuid" hint="Returns the objectid for the specified object">
 		<cfargument name="name" type="string" required="true" hint="Pass in a permission name and the objectid will be returned" />
 		

@@ -177,6 +177,7 @@
 		<cfset var qPermissions = "" />
 		<cfset var oPermission = createObject("component", application.stcoapi["farPermission"].packagePath) />
 		<cfset var stObj = structnew() />
+		<cfset var perm = "" />
 		
 		<!--- Get data --->
 		<cfquery datasource="#application.dsn#" name="qPermissions">
@@ -199,7 +200,18 @@
 			<cfset oPermission.createData(stProperties=stObj,user="migratescript",auditNote="Data migrated from pre 4.1") />
 			
 			<cfset stResult[permissionid] = stObj.objectid />
-		</cfloop>		
+		</cfloop>
+		
+		<!--- Add new permisions - the generic permission set --->
+		<cfloop list="Approve,Create,Delete,Edit,RequestApproval,CanApproveOwnContent" index="perm">
+			<cfset stObj = structnew() />
+			<cfset stObj.objectid = createuuid() />
+			<cfset stObj.title = "Generic #perm#" />
+			<cfset stObj.shortcut = "generic#perm#" />
+			<cfset stObj.label = "Generic #perm#" />
+			
+			<cfset oPermission.createData(stProperties=stObj,user="migratescript",auditNote="Data migrated from pre 4.1") />
+		</cfloop>
 		
 		<cfreturn stResult />
 	</cffunction>
@@ -241,6 +253,7 @@
 			<cfset oRole.createData(stProperties=stObj,user="migratescript",auditNote="Data migrated from pre 4.1") />
 			
 			<cfset stResult[policygroupid] = stObj.objectid />
+			<cfset stResult[stObj.title] = stObj.objectid />
 		</cfloop>		
 		
 		<cfreturn stResult />
@@ -308,6 +321,7 @@
 		<cfquery datasource="#application.dsn#">
 			update	#application.dbowner#dmProfile
 			set		username=username + '_' + userDirectory
+			where	username not like '%_%'
 		</cfquery>
 		
 		<cfreturn stResult />
@@ -383,12 +397,8 @@
 		
 		<cfset var result = 0 />
 		<cfset var qBarnacles = "" />
-		<cfset var qRoleBarnacles = "" />
 		<cfset var oRole = createObject("component", application.stcoapi["farRole"].packagePath) />
 		<cfset var oBarnacle = createObject("component", application.stcoapi["farBarnacle"].packagePath) />
-		<cfset var stRole = structnew() />
-		<cfset var stBarnacles = structnew() />
-		<cfset var objectid = "" />
 		
 		<!--- Get data --->
 		<cfquery datasource="#application.dsn#" name="qBarnacles">
@@ -401,30 +411,51 @@
 		<!--- Add data --->
 		<cfoutput query="qBarnacles" group="PolicyGroupId">
 			<cfif structkeyexists(arguments.roles,PolicyGroupId)>
-				<cfset stRole = oRole.getData(objectid=arguments.roles[PolicyGroupId]) />
 				<cfparam name="stRole.permissions" default="#arraynew(1)#" />
 				
 				<cfoutput>
 					<cfif structkeyexists(arguments.permissions,permissionid)>
 						<cfif len(reference1) and isvalid("uuid",reference1)>
 							<!--- If this barnacle is related to a particular item, the new barnacle structure (which refers to items in an array) has already been created --->
-							<cfset oBarnacle.updateRight(role=stRole.objectid,permission=arguments.permissions[permissionid],object=reference1,right=status)>
+							<cfset oBarnacle.updateRight(role=arguments.roles[PolicyGroupId],permission=arguments.permissions[permissionid],object=reference1,right=status)>
 						<cfelseif reference1 eq "PolicyGroup">
 							<!--- If this barnacle isn't related to a particular item, add it as a generic permission to this role --->
-							<cfset arrayappend(stRole.permissions,arguments.permissions[permissionid]) />
+							<cfset oRole.updatePermission(role=arguments.roles[PolicyGroupId],permission=arguments.permissions[permissionid],has=true) />
 						</cfif>
 						
 						<cfset result = result + 1 />
 					</cfif>
 				</cfoutput>
-				
-				<cfloop collection="#stBarnacles#" item="objectid">
-					<cfset oBarnacle.setData(stBarnacles[objectid]) />
-				</cfloop>
-				
-				<cfset oRole.setData(stProperties=stRole,user="migratescript",auditNote="Data migrated from pre 4.1") />
 			</cfif>
 		</cfoutput>
+		
+		<!--- Attach the new permissions - the generic permission set --->
+		<cfset oRole.updatePermission(role=arguments.roles["Contributors"],permission="genericCreate",has=true) />
+		<cfset oRole.updatePermission(role=arguments.roles["Contributors"],permission="genericEdit",has=true) />
+		<cfset oRole.updatePermission(role=arguments.roles["Contributors"],permission="genericRequestApproval",has=true) />
+		
+		<cfset oRole.updatePermission(role=arguments.roles["Publishers"],permission="genericApprove",has=true) />
+		<cfset oRole.updatePermission(role=arguments.roles["Publishers"],permission="genericCanApproveOwnContent",has=true) />
+		<cfset oRole.updatePermission(role=arguments.roles["Publishers"],permission="genericCreate",has=true) />
+		<cfset oRole.updatePermission(role=arguments.roles["Publishers"],permission="genericDelete",has=true) />
+		<cfset oRole.updatePermission(role=arguments.roles["Publishers"],permission="genericEdit",has=true) />
+		<cfset oRole.updatePermission(role=arguments.roles["Publishers"],permission="genericRequestApproval",has=true) />
+		
+		<cfset oRole.updatePermission(role=arguments.roles["SiteAdmin"],permission="genericApprove",has=true) />
+		<cfset oRole.updatePermission(role=arguments.roles["SiteAdmin"],permission="genericCanApproveOwnContent",has=true) />
+		<cfset oRole.updatePermission(role=arguments.roles["SiteAdmin"],permission="genericCreate",has=true) />
+		<cfset oRole.updatePermission(role=arguments.roles["SiteAdmin"],permission="genericDelete",has=true) />
+		<cfset oRole.updatePermission(role=arguments.roles["SiteAdmin"],permission="genericEdit",has=true) />
+		<cfset oRole.updatePermission(role=arguments.roles["SiteAdmin"],permission="genericRequestApproval",has=true) />
+		
+		<cfset oRole.updatePermission(role=arguments.roles["SysAdmin"],permission="genericApprove",has=true) />
+		<cfset oRole.updatePermission(role=arguments.roles["SysAdmin"],permission="genericCanApproveOwnContent",has=true) />
+		<cfset oRole.updatePermission(role=arguments.roles["SysAdmin"],permission="genericCreate",has=true) />
+		<cfset oRole.updatePermission(role=arguments.roles["SysAdmin"],permission="genericDelete",has=true) />
+		<cfset oRole.updatePermission(role=arguments.roles["SysAdmin"],permission="genericEdit",has=true) />
+		<cfset oRole.updatePermission(role=arguments.roles["SysAdmin"],permission="genericRequestApproval",has=true) />
+		
+		<cfset result = result + 21 />
 		
 		<cfreturn result />
 	</cffunction>

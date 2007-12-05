@@ -109,8 +109,7 @@
 	
 	<!--- ============ DATA MIGRATION ============ --->
 	
-	<cfset url.updateapp = 1 />
-	<cfinclude template="../application.cfm">
+	<cfapplication name="#form.projectname#" sessionmanagement="true" />
 	
 	<cfoutput><h1>Upgrade results</h1></cfoutput>
 	
@@ -143,6 +142,8 @@
 		<cfset application.config[configkey] = oConfig.getConfig(configkey) />
 		<cfoutput>Config #configkey# migrated<br/></cfoutput>
 	</cfloop>
+	
+	<cfset application.bInit = true />
 	
 <cfelse>
 	<form action="" method="POST" id="updateForm" name="updateForm">
