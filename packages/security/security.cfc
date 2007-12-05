@@ -142,6 +142,11 @@
 
 
 	<!--- User Directory functions --->
+	<cffunction name="getAllUD" access="public" output="false" returntype="string" hint="Returns a list of the user directories this application supports">
+		
+		<cfreturn this.userdirectoryorder />
+	</cffunction>
+	
 	<cffunction name="getDefaultUD" access="public" output="false" returntype="string" hint="Returns the default user directory for this application">
 		
 		<cfreturn listfirst(this.userdirectoryorder) />

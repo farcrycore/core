@@ -2,6 +2,7 @@
 <!--- @@displayname: Farcry UD login form --->
 
 <cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" />
+<cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
 
 <cfoutput>
 	<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -63,15 +64,21 @@
 		</h1>
 </cfoutput>
 		
-		<ft:object typename="farLogin">
-			<ft:farcryButton value="Log In" />
+		<ft:form>
+			<sec:SelectUDLogin />
+			
+			<ft:object typename="farLogin" />
 			
 			<cfif isdefined("arguments.stParams.message") and len(arguments.stParams.message)>
 				<cfoutput>
 					<div class="error">#arguments.stParams.message#</div>
 				</cfoutput>
 			</cfif>
-		</ft:object>
+
+			<cfoutput><fieldset class="formSection"></cfoutput>
+			<ft:farcrybutton value="Log In" />
+			<cfoutput></fieldset></cfoutput>
+		</ft:form>
 
 <cfoutput>
 		<h3><img src="images/powered_by_farcry_watermark.gif" />Tell it to someone who cares</h3>
@@ -85,5 +92,3 @@
 	</body>
 </html>
 </cfoutput>
-
-<cfprocessingDirective pageencoding="utf-8">
