@@ -20,7 +20,7 @@
 		<dd><cfif len(stObj.fax)>#stObj.fax#<cfelse>-</cfif></dd>
 		<dt>#geti18Property("locale")#</dt>
 		<dd><cfif len(stObj.locale)>#stObj.locale#<cfelse>-</cfif></dd>
-		<skin:view typename="dmProfile" objectid="#stObj.objectid#" webskin="displaySummaryDetails#application.security.getCurrentUD()#" />
+		<skin:view typename="dmProfile" objectid="#stObj.objectid#" webskin="displaySummaryDetails#application.security.getCurrentUD()#" alternateHTML="" />
 	</dl>
 	
 	<!--- link to edit profile and change password --->
@@ -31,7 +31,7 @@
 				<a href="#application.url.farcry#/conjuror/invocation.cfm?objectID=#session.dmProfile.objectID#&method=displayUserEdit" onClick="window.open('#application.url.farcry#/conjuror/invocation.cfm?objectID=#session.dmProfile.objectID#&method=displayUserEdit','edit_profile','width=550,height=500,left=200,top=100,scrollbars=1');return false;" title="#application.rb.getResource('coapi.dmProfile.general.editprofile@label','Edit your profile')#">#application.rb.getResource('coapi.dmProfile.general.editprofile@label','Edit your profile')#</a>
 			</small>
 		</li>
-		<skin:view typename="dmProfile" objectid="#stObj.objectid#" webskin="displaySummaryOptions#application.security.getCurrentUD()#" />
+		<skin:view typename="dmProfile" objectid="#stObj.objectid#" webskin="displaySummaryOptions#application.security.getCurrentUD()#" alternateHTML="" />
 	</ul>
 </cfoutput>
 		
