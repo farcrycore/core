@@ -52,41 +52,45 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	
     <cffunction name="createProfile" access="PUBLIC" hint="Create new profile object using existing dmSec information. Returns newly created profile as a struct." returntype="struct" output="false">
         <cfargument name="stProperties" type="struct" required="yes" />
-		<cfset var stuser=arguments.stProperties>
-		<cfset var stProfile=structNew()>
-		<cfset var stResult=structNew()>
-		<cfset var stobj=structNew()>
-
-        <cfscript>
-		// if userlogin missing use user name (bwd compatability hack)
-		if (NOT structkeyexists(stuser, "userlogin") OR NOT structkeyexists(stuser, "userdirectory")) {
-			stuser.userLogin=stuser.username;
-			stuser.userdirectory="CLIENTUD";
-		}
-		stProfile.objectID = createUUID();
-		stProfile.label = stUser.userLogin;
-		if (not refind(stUser.userDirectory,stUser.userLogin))
-			stProfile.userName = stUser.userLogin & "_" & stUser.userDirectory;
-		else
-			stProfile.userName = stUser.userLogin;
-		stProfile.userDirectory = stUser.userDirectory;
-		stProfile.emailAddress = '';
-		stProfile.bReceiveEmail = 1;
-		stProfile.bActive = 1;
-		stProfile.lastupdatedby = stUser.userLogin;
-		stProfile.datetimelastupdated = now();
-		stProfile.createdby = stUser.userLogin;
-		stProfile.datetimecreated = now();
-		stProfile.locked = 0;
-		stProfile.lockedBy = "";
 		
-		stResult = createData(stProperties=stProfile, User=stUser.userLogin);
-		
-		if (stResult.bSuccess) 
-			stObj = getProfile(userName=stUser.userLogin);
-		</cfscript>
+		<cfset var stProfile=duplicate(arguments.stProperties) />
+		<cfset var stResult=structNew() />
+		<cfset var stobj=structNew() />
 
-        <cfreturn stObj />
+        <!--- if userlogin missing use user name (bwd compatability hack) --->
+		<cfif not structkeyexists(stProfile, "userlogin") OR NOT structkeyexists(stProfile, "userdirectory")>
+			<cfset stProfile.userLogin=stProfile.username />
+			<cfset stProfile.userdirectory="CLIENTUD" />
+		</cfif>
+		
+		<cfparam name="stProfile.objectID" default="#createUUID()#" />
+		<cfparam name="stProfile.label" default="#stProfile.userLogin#" />
+		
+		<cfif structkeyexists(stProfile,"userlogin") and not refind(stProfile.userDirectory,stProfile.userlogin)>
+			<cfset stProfile.userName = stProfile.userLogin & "_" & stProfile.userDirectory />
+		<cfelseif structkeyexists(stProfile,"userlogin")>
+			<cfset stProfile.userName = stProfile.userLogin />
+		</cfif>
+		
+		<cfparam name="stProfile.emailAddress" default="" />
+		<cfparam name="stProfile.bReceiveEmail" default="1" />
+		<cfparam name="stProfile.bActive" default="1" />
+		
+		<cfset stProfile.lastupdatedby = stProfile.userLogin />
+		<cfset stProfile.datetimelastupdated = now() />
+		<cfset stProfile.createdby = stProfile.userLogin />
+		<cfset stProfile.datetimecreated = now() />
+		
+		<cfparam name="stProfile.locked" default="0" />
+		<cfparam name="stProfile.lockedBy" default="" />
+			
+		<cfset stResult = createData(stProperties=stProfile, User=stProfile.username) />
+			
+		<cfif stResult.bSuccess>
+			<cfreturn getProfile(userName=stProfile.username) />
+		<cfelse>
+			<cfreturn structnew() />
+		</cfif>
     </cffunction>
 
     <cffunction name="getProfile" access="PUBLIC" hint="Retrieve profile data for given username">

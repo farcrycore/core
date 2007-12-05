@@ -158,12 +158,13 @@
 		<cfreturn this.userdirectories[arguments.ud].getLoginForm() />
 	</cffunction>
 	
-	<cffunction name="authenticate" access="public" output="false" returntype="struct" hint="Attempts to authenticate a user using each directory, and returns true if successful">
+	<cffunction name="authenticate" access="public" output="true" returntype="struct" hint="Attempts to authenticate a user using each directory, and returns true if successful">
 		<cfset var ud = "" />
 		<cfset var stResult = structnew() />
 		<cfset var groups = "" />
 		<cfset var aUserGroups = arraynew(1) />
 		<cfset var i = 0 />
+		<cfset var oProfile = createObject("component", application.stcoapi["dmProfile"].packagePath) />
 		
 		<cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry" />
 		
@@ -188,7 +189,25 @@
 				<cfset session.security.userid = "#stResult.userid#_#ud#" />
 				<cfset session.security.roles = this.factory.role.groupsToRoles(groups) />
 				
-				<!--- DEPRECIATED - THESE VARIABLES SHOULD NOT BE USED --->
+				<!--- Get users profile --->
+				<cfset session.dmProfile = oProfile.getProfile(userName=session.security.userid) />
+				<cfif NOT StructKeyExists(session.dmProfile,"firstname")>
+					<cfset session.dmProfile.userdirectory = ud />
+					<cfset session.dmProfile.username = stResult.userid />
+					<cfset session.dmprofile = oProfile.createProfile(session.dmprofile) />
+				</cfif>
+			
+				<!--- i18n: find out this locale's writing system direction using our special psychic powers --->
+		        <cfif application.i18nUtils.isBIDI(session.dmProfile.locale)>
+		            <cfset session.writingDir = "rtl" />
+		        <cfelse>
+		            <cfset session.writingDir = "ltr" />
+		        </cfif>
+				
+		        <!--- i18n: final bit, grab user language from locale, tarts up html tag --->
+		        <cfset session.userLanguage = left(session.dmProfile.locale,2) />
+				
+				<!--- DEPRECATED - THESE VARIABLES SHOULD NOT BE USED --->
 				<!--- Retrieve user info --->
 				<cfif ud eq "CLIENTUD">
 					<cfset session.dmSec.authentication = createObject("component", application.stcoapi["farUser"].packagePath).getByUserID(stResult.userid) />
@@ -203,15 +222,19 @@
 				<!--- Admin flag --->
 				<cfset session.dmSec.authentication.bAdmin = checkPermission(permission="Admin") />
 				
+				<!--- /DEPRECATED --->
+				
 				<!--- First login flag --->
 				<cfif application.factory.oAudit.getAuditLog(username=session.security.userid,auditType="dmSec.login").recordcount eq 0>
-					<cfset session.firstLogin = false />
-					
 					<cfset session.security.firstlogin = false />
-				<cfelse>
-					<cfset session.firstlogin = true />
 					
+					<!--- DEPRECATED --->
+					<cfset session.firstLogin = false />
+				<cfelse>
 					<cfset session.security.firstlogin = true />
+					
+					<!--- DEPRECATED --->
+					<cfset session.firstlogin = true />
 				</cfif>
 				
 				<!--- Log the result --->
