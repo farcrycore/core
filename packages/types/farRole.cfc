@@ -48,7 +48,7 @@
 		<cfreturn result />
 	</cffunction>
 	
-	<cffunction name="getRight" access="public" output="false" returntype="numeric" hint="Returns the right for the specfied permission">
+	<cffunction name="getRight" access="public" output="true" returntype="numeric" hint="Returns the right for the specfied permission">
 		<cfargument name="role" type="string" required="true" hint="The roles to check" />
 		<cfargument name="permission" type="string" required="false" default="" hint="The permission to retrieve" />
 		<cfargument name="forcerefresh" type="boolean" required="false" default="false" hint="Should the cache be forcably refreshed" />
@@ -59,6 +59,11 @@
 		<cfset qRole = "" />
 		
 		<cfloop list="#arguments.role#" index="thisrole">
+			<!--- If the name of the role was passed in, get the objectid --->
+			<cfif not isvalid("uuid",thisrole)>
+				<cfset thisrole = getID(thisrole) />
+			</cfif>
+			
 			<!--- If possible use the cache, otherwise update cache --->
 			<cfif not arguments.forcerefresh and application.security.isCached(role=thisrole,permission=arguments.permission)>
 				<cfset thisresult = application.security.getCache(role=thisrole,permission=arguments.permission) />
