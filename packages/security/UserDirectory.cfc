@@ -1,4 +1,4 @@
-<cfcomponent displayname="User Directory" hint="Defines an abstract user directory" output="false" bAbstract="true" title="Abstract UD" key="ABSTRACTUD">
+<cfcomponent displayname="User Directory" hint="Defines an abstract user directory" output="false" bAbstract="true">
 	
 	<cfset variables.metadata = structnew() />
 
@@ -20,7 +20,7 @@
 			</cfif>
 			
 			<!--- If title isn't specified, use the displayname --->
-			<cfif not structkeyexists(this,"key")>
+			<cfif not structkeyexists(this,"title")>
 				<cfset this.title = stMetadata.displayname />
 			</cfif>
 			
