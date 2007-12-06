@@ -72,7 +72,7 @@
 			<cfelse>
 				<cfset stObj.objectid = createuuid() />
 			</cfif>
-			<cfset stObj.typename = "dmConfig" />
+			<cfset stObj.typename = "farConfig" />
 			<cfset stObj.configkey = arguments.key />
 			
 			<!--- If it doesn't, find the config form component with that key and get the default values --->
