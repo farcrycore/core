@@ -42,6 +42,99 @@
 
 <cfif structkeyexists(form,"submit")>
 	<cfapplication name="#form.projectname#" />
+	
+		<cfsetting requesttimeout="1620" />
+	<!--- Project directory name can be changed from the default which is the applicationname --->
+		<cfset application.projectDirectoryName =  #form.projectname# />
+		
+		<!----------------------------------------
+		 SET THE DATABASE SPECIFIC INFORMATION 
+		---------------------------------------->
+		<cfset application.dsn = form.dsn />
+		<cfset application.dbtype = form.dbtype />
+		<cfset application.dbowner = form.dbowner />
+		<cfset application.locales =  "en_AU" />
+		
+		<cfif application.dbtype EQ "mssql" AND NOT len(application.dbowner)>
+			<cfset application.dbowner = "dbo." />
+		</cfif>
+		
+		<!----------------------------------------
+		 SET THE MAIN PHYSICAL PATH INFORMATION
+		 ---------------------------------------->
+		<cfset application.path.project = expandpath("/farcry/projects/#application.projectDirectoryName#") />
+		<cfset application.path.core = expandpath("/farcry/core") />
+		<cfset application.path.plugins = expandpath("/farcry/plugins") />
+		
+		<cfset application.path.defaultFilePath = "#application.path.project#/www/files">
+		<cfset application.path.secureFilePath = "#application.path.project#/securefiles">		
+		
+		<cfset application.path.imageRoot = "#application.path.project#/www">
+		
+		<cfset application.path.mediaArchive = "#application.path.project#/mediaArchive">
+		
+		
+		<!----------------------------------------
+		 WEB URL PATHS
+		 ---------------------------------------->
+		<cfset application.url.webroot = "" />
+		<cfset application.url.farcry = "#application.url.webroot#/webtop" />
+		<cfset application.url.imageRoot = "#application.url.webroot#">
+		<cfset application.url.fileRoot = "#application.url.webroot#/files">
+		
+		
+		<!----------------------------------------
+		SHORTCUT PACKAGE PATHS
+		 ---------------------------------------->
+		<cfset application.packagepath = "farcry.core.packages" />
+		<cfset application.custompackagepath = "farcry.projects.#application.projectDirectoryName#.packages" />
+		<cfset application.securitypackagepath = "farcry.core.packages.security" />
+		
+		<!----------------------------------------
+		PLUGINS TO INCLUDE
+		 ---------------------------------------->
+		<cfset application.plugins = "" />
+		
+		
+		<!------------------------------------------ 
+		USE OBJECT BROKER?
+		 ------------------------------------------>
+		<cfset application.bObjectBroker = false />
+		<cfset application.ObjectBrokerMaxObjectsDefault = 100 />
+		
+		
+		<!------------------------------------------ 
+		USE MEDIA ARCHIVE?
+		 ------------------------------------------>
+		<cfset application.bUseMediaArchive = false />
+	
+		<!---------------------------------------------- 
+		INITIALISE THE COAPIUTILITIES SINGLETON
+		----------------------------------------------->
+		<cfset application.coapi = structNew() />
+		<cfset application.coapi.coapiUtilities = createObject("component", "farcry.core.packages.coapi.coapiUtilities").init() />
+
+
+		<!--- Initialise the stPlugins structure that will hold all the plugin specific settings. --->
+		<cfset application.stPlugins = structNew() />
+		
+		
+		<!--- ENSURE SYSINFO IS UPDATED EACH INITIALISATION --->
+		<cfset application.sysInfo = structNew() />
+		
+	<cfparam name="application.factory" default="#structNew()#" />
+	<cfparam name="application.factory.oUtils" default="#createobject("component","#application.packagepath#.farcry.utils")#" />
+	
+	<!---------------------------------------------- 
+	INITIALISE THE COAPIADMIN SINGLETON
+	----------------------------------------------->
+	<cfset application.coapi.coapiadmin = createObject("component", "farcry.core.packages.coapi.coapiadmin").init() />
+	<cfset application.coapi.objectBroker = createObject("component", "farcry.core.packages.fourq.objectBroker").init() />
+		
+	<cfset oAlterType = createObject("component", "#application.packagepath#.farcry.alterType") />
+	<cfset oAlterType.refreshAllCFCAppData(dsn=form.dsn, dbowner=form.dbowner) />
+
+	
 	<cfscript>
 		application.dsn = form.DSN;
 		application.dbType = form.dbType;
