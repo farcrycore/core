@@ -71,4 +71,17 @@
 		<cfreturn "" />
 	</cffunction>
 	
+	<cffunction name="getProfile" access="public" output="false" returntype="struct" hint="Returns profile data available through the user directory">
+		<cfargument name="userid" type="string" required="true" hint="The user directory specific user id" />
+		
+		<!---
+			This struct should contain values that do (or can) map to dmProfile properties.
+			
+			A special "override" flag in this struct should be set to true if these values are intended to replace values stored in dmProfile. Leave out
+			or set to false if these values are only meant to be the initial defaults.
+		 --->
+		
+		<cfreturn structnew() />
+	</cffunction>
+	
 </cfcomponent>

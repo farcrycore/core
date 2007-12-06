@@ -165,6 +165,7 @@
 		<cfset var aUserGroups = arraynew(1) />
 		<cfset var i = 0 />
 		<cfset var oProfile = createObject("component", application.stcoapi["dmProfile"].packagePath) />
+		<cfset var stDefaultProfile = structnew() />
 		
 		<cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry" />
 		
@@ -191,10 +192,17 @@
 				
 				<!--- Get users profile --->
 				<cfset session.dmProfile = oProfile.getProfile(userName=session.security.userid) />
-				<cfif NOT StructKeyExists(session.dmProfile,"firstname")>
+				<cfset stDefaultProfile = this.userdirectories[ud].getProfile(userid=stResult.userid) />
+				<cfparam name="stDefaultProfile.override" default="false" />
+				<cfif not session.dmProfile.bInDB>
+					<cfset structappend(session.dmProfile,stDefaultProfile,stDefaultProfile.override) />
+
 					<cfset session.dmProfile.userdirectory = ud />
 					<cfset session.dmProfile.username = stResult.userid />
 					<cfset session.dmprofile = oProfile.createProfile(session.dmprofile) />
+				<cfelseif stDefaultProfile.override>
+					<cfset structappend(session.dmProfile,stDefaultProfile,true) />
+					<cfset oProfile.setData(stProperties=session.dmProfile) />
 				</cfif>
 			
 				<!--- i18n: find out this locale's writing system direction using our special psychic powers --->
