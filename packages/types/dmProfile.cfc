@@ -50,7 +50,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 		<cfreturn result />
 	</cffunction>
 	
-    <cffunction name="createProfile" access="PUBLIC" hint="Create new profile object using existing dmSec information. Returns newly created profile as a struct." returntype="struct" output="false">
+    <cffunction name="createProfile" access="PUBLIC" hint="Create new profile object using existing dmSec information. Returns newly created profile as a struct." returntype="struct" output="true">
         <cfargument name="stProperties" type="struct" required="yes" />
 		
 		<cfset var stProfile=duplicate(arguments.stProperties) />
@@ -58,10 +58,18 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 		<cfset var stobj=structNew() />
 
         <!--- if userlogin missing use user name (bwd compatability hack) --->
-		<cfif not structkeyexists(stProfile, "userlogin") OR NOT structkeyexists(stProfile, "userdirectory")>
-			<cfset stProfile.userLogin=stProfile.username />
-			<cfset stProfile.userdirectory="CLIENTUD" />
+		<cfif not structkeyexists(stProfile,"username")>
+			<cfset stProfile.username = stProfile.userlogin />
 		</cfif>
+		<cfif not structkeyexists(stProfile, "userdirectory") and find("_",stProfile.username)>
+			<cfset stProfile.userdirectory = listlast(stProfile.username,"_") />
+		<cfelseif not structkeyexists(stProfile,"userdirectory")>
+			<cfset stProfile.userdirectory = "CLIENTUD" />
+		</cfif>
+		<cfif not structkeyexists(stProfile,"userlogin")>
+			<cfset stProfile.userlogin = stProfile.username />
+		</cfif>
+		
 		
 		<cfparam name="stProfile.objectID" default="#createUUID()#" />
 		<cfparam name="stProfile.label" default="#stProfile.userLogin#" />
@@ -83,7 +91,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 		
 		<cfparam name="stProfile.locked" default="0" />
 		<cfparam name="stProfile.lockedBy" default="" />
-			
+		
 		<cfset stResult = createData(stProperties=stProfile, User=stProfile.username) />
 			
 		<cfif stResult.bSuccess>
@@ -96,7 +104,25 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
     <cffunction name="getProfile" access="PUBLIC" hint="Retrieve profile data for given username">
         <cfargument name="userName" type="string" required="yes">
 
-        <cfinclude template="_dmProfile/getProfile.cfm">
+		<cfquery name="qProfile" datasource="#application.dsn#">
+		SELECT objectID FROM #application.dbowner#dmProfile
+		WHERE UPPER(userName) = '#UCase(arguments.userName)#'
+		</cfquery>
+		
+		<cfif qProfile.recordCount>
+		    <cfset stObj = this.getData(qProfile.objectID)>
+		    <cfset stObj.bInDB = "true">
+		<cfelse>
+		    <cfscript>
+		    stObj = structNew();
+		    stObj.emailAddress = '';
+		    stObj.bReceiveEmail = 0;
+		    stObj.bActive = 0;
+		    stObj.locale = 'en_AU';
+		    stObj.bInDB = 'false';
+		    stObj.userName = arguments.userName;
+		    </cfscript>
+		</cfif>
 
         <cfreturn stObj>
     </cffunction>
