@@ -106,9 +106,9 @@
 		<cfelseif len(arguments.type) and len(arguments.permission)>
 		
 			<cfif this.factory.permission.permissionExists("#arguments.type##arguments.permission#")>
-				<cfreturn this.factory.role.getRight(role=arguments.role,this.factory.permission.getID("#arguments.type##arguments.permission#")) />
+				<cfreturn this.factory.role.getRight(role=arguments.role, permission=this.factory.permission.getID("#arguments.type##arguments.permission#")) />
 			<cfelse>
-				<cfreturn this.factory.role.getRight(role=arguments.role,this.factory.permission.getID("generic#arguments.permission#")) />
+				<cfreturn this.factory.role.getRight(role=arguments.role, permission=this.factory.permission.getID("generic#arguments.permission#")) />
 			</cfif>
 		
 		<cfelseif len(arguments.permission)>
