@@ -73,12 +73,7 @@
 	
 	<!--- Check type permissions --->
 	<cfloop list="#attributes.typepermission#" index="perm">
-		<cfif application.security.factory.permission.permissionExists("#attributes.type##perm#")>
-			<cfif application.security.checkPermission(permission="#attributes.type##perm#")>
-				<!--- Permission granted - skip straight to content --->
-				<cfexit method="exittemplate" />
-			</cfif>
-		<cfelseif application.security.checkPermission(permission="generic#perm#")>
+		<cfif  application.security.checkPermission(permission=perm,type=attributes.type)>
 			<!--- Permission granted - skip straight to content --->
 			<cfexit method="exittemplate" />
 		</cfif>

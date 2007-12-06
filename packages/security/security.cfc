@@ -92,7 +92,7 @@
 		<cfargument name="object" type="string" required="false" default="" hint="If specified, will check barnacle" />
 		<cfargument name="role" type="string" required="false" default="" hint="List of roles to check" />
 		<cfargument name="type" type="string" required="false" default="" hint="The type for the webskin to check" />
-		<cfargument name="webskin" type="string" required="false" default="" hint="The webskin to check" />
+		<cfargument name="webskin" type="string" required="false" default="" hint="The webskin or permission set to check" />
 		
 		<!--- If the role was left empty, use current user's roles --->
 		<cfif not len(arguments.role)>
@@ -102,6 +102,14 @@
 		<cfif len(arguments.type) and len(arguments.webskin)>
 		
 			<cfreturn this.factory.role.checkWebskin(role=arguments.role,type=arguments.type,webskin=arguments.webskin) />
+			
+		<cfelseif len(arguments.type) and len(arguments.permission)>
+		
+			<cfif this.factory.permission.permissionExists("#arguments.type##arguments.permission#")>
+				<cfreturn this.factory.role.getRight(role=arguments.role,this.factory.permission.getID("#arguments.type##arguments.permission#")) />
+			<cfelse>
+				<cfreturn this.factory.role.getRight(role=arguments.role,this.factory.permission.getID("generic#arguments.permission#")) />
+			</cfif>
 		
 		<cfelseif len(arguments.permission)>
 		
