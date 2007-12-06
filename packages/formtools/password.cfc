@@ -50,6 +50,11 @@
 					<cfoutput><input type="password" name="#arguments.fieldname#" id="#arguments.fieldname#" value="" class="#arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" /></cfoutput>
 				</cfsavecontent>
 			</cfcase>
+			<cfcase value="editpassword">
+				<cfsavecontent variable="html">
+					<cfoutput><style>form.formtool label.passwordlabel { display: block; }</style><input type="password" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#arguments.stMetadata.value#" class="#arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" /></cfoutput>
+				</cfsavecontent>
+			</cfcase>
 		</cfswitch>
 		
 		<cfreturn html>
@@ -87,23 +92,29 @@
 		
 		<cfparam name="arguments.stMetadata.ftRenderType" default="changepassord" />
 		
-		<cfif arguments.stMetadata.ftRenderType eq "changepassword">
-			<cfset o = createObject("component",application.stCOAPI['#arguments.Typename#'].packagepath)>
-			<cfset st = o.getData(objectid=arguments.objectid)>
-			<!--- --------------------------- --->
-			<!--- Perform any validation here --->
-			<!--- --------------------------- --->
-	
-			<cfset stResult.value = st[arguments.stMetadata.name]>
-			
-			<cfif arguments.stFieldPost.value EQ st[arguments.stMetadata.name]>
-				<cfif len(arguments.stFieldPost.stSupporting.New) AND arguments.stFieldPost.stSupporting.New EQ arguments.stFieldPost.stSupporting.Confirm>
-					<cfset stResult.value = arguments.stFieldPost.stSupporting.New>
-				</cfif>		
-			</cfif>
-		<cfelse>
-			<cfset stResult.value = arguments.stFieldPost.value />
-		</cfif>
+		<cfswitch expression="#arguments.stMetadata.ftRenderType#">
+			<cfcase value="changepassword">
+				<cfset o = createObject("component",application.stCOAPI['#arguments.Typename#'].packagepath)>
+				<cfset st = o.getData(objectid=arguments.objectid)>
+				<!--- --------------------------- --->
+				<!--- Perform any validation here --->
+				<!--- --------------------------- --->
+		
+				<cfset stResult.value = st[arguments.stMetadata.name]>
+				
+				<cfif arguments.stFieldPost.value EQ st[arguments.stMetadata.name]>
+					<cfif len(arguments.stFieldPost.stSupporting.New) AND arguments.stFieldPost.stSupporting.New EQ arguments.stFieldPost.stSupporting.Confirm>
+						<cfset stResult.value = arguments.stFieldPost.stSupporting.New>
+					</cfif>		
+				</cfif>
+			</cfcase>
+			<cfcase value="enterpassword">
+				<cfset stResult.value = arguments.stFieldPost.value />
+			</cfcase>
+			<cfcase value="editpassword">
+				<cfset stResult.value = arguments.stFieldPost.value />
+			</cfcase>
+		</cfswitch>
 		
 		<!--- ----------------- --->
 		<!--- Return the Result --->
@@ -112,17 +123,4 @@
 		
 	</cffunction>
 
-</cfcomponent> 
-
-
-<!--- 			db.boolean = "INT";
-			db.date = "DATETIME";
-			db.numeric = "NUMERIC";
-			db.string = "VARCHAR(255)";
-			db.nstring = "VARCHAR(255)";
-			db.uuid = "VARCHAR(50)";
-			db.variablename = "VARCHAR(64)";
-			db.color = "VARCHAR(20)";
-			db.email = "VARCHAR(255)";
-			db.longchar = "LONGTEXT";	
-			 --->
+</cfcomponent>
