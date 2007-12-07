@@ -76,7 +76,7 @@ $out:$
 		
 		<cfparam name="variables.stPlaceInHead.swfObjectJS" default = "0">
 		
-		<cfparam name="variables.stPlaceInHead.libraryPopupJS" default = "0">
+		<cfparam name="variables.stPlaceInHead.farcryFormJS" default = "0">
 		
 		
 
@@ -233,8 +233,8 @@ $out:$
 			<cfset variables.stPlaceInHead.swfObjectJS = 1>
 		</cfif>
 		
-		<cfif isDefined("Request.InHead.libraryPopup") AND Request.InHead.libraryPopup>
-			<cfset variables.stPlaceInHead.libraryPopupJS = 1>
+		<cfif isDefined("Request.InHead.farcryForm") AND Request.InHead.farcryForm>
+			<cfset variables.stPlaceInHead.farcryFormJS = 1>
 		</cfif>
 		
 		<cfif isDefined("request.inHead.flashWrapperToggle") AND request.inHead.flashWrapperToggle>
@@ -257,8 +257,10 @@ $out:$
 			<cfif isDefined("variables.stPlaceInHead.extJS") AND variables.stPlaceInHead.extJS>
 				<cfoutput>
 				<link rel="stylesheet" type="text/css" href="#application.url.farcry#/js/ext/resources/css/ext-all.css">
-				<script type="text/javascript" src="#application.url.farcry#/js/ext/adapter/ext/ext-base.js"></script>
-				<script type="text/javascript" src="#application.url.farcry#/js/ext/ext-all.js"></script></cfoutput>
+				
+				<script type="text/javascript" src="#application.url.farcry#/js/combine.cfm?library=ext&files=/adapter/ext/ext-base.js,/ext-all.js"></script>
+				<!--- <script type="text/javascript" src="#application.url.farcry#/js/ext/adapter/ext/ext-base.js"></script>
+				<script type="text/javascript" src="#application.url.farcry#/js/ext/ext-all.js"></script> ---></cfoutput>
 			</cfif>
 			<cfif isDefined("variables.stPlaceInHead.extPortalJS") AND variables.stPlaceInHead.extPortalJS>
 				<cfoutput>
@@ -299,30 +301,34 @@ $out:$
 					<script src="#application.url.farcry#/js/moofx/moo.dom.js" type="text/javascript"></script></cfoutput>
 			</cfif>
 			
+			
+			<!--- SCRIPTACULOUS LIBRARY --->
+			<cfset lLibraries = "" />
+			
 			<cfif isDefined("variables.stPlaceInHead.scriptaculousJS") AND variables.stPlaceInHead.scriptaculousJS>
-				<cfoutput>
-					<script src="#application.url.farcry#/js/scriptaculous/scriptaculous.js" type="text/javascript"></script></cfoutput>
-			</cfif>
-			<cfif isDefined("variables.stPlaceInHead.ScriptaculousDragAndDropJS") AND variables.stPlaceInHead.ScriptaculousDragAndDropJS>
-				<cfoutput>
-					<script src="#application.url.farcry#/js/scriptaculous/dragdrop.js" type="text/javascript"></script></cfoutput>
+				<cfset lLibraries = listAppend(lLibraries, "/scriptaculous.js") />
 			</cfif>
 			<cfif isDefined("variables.stPlaceInHead.ScriptaculousEffectsJS") AND variables.stPlaceInHead.ScriptaculousEffectsJS>
-				<cfoutput>
-					<script src="#application.url.farcry#/js/scriptaculous/effects.js" type="text/javascript"></script></cfoutput>
+				<cfset lLibraries = listAppend(lLibraries, "/effects.js") />
+			</cfif>
+			<cfif isDefined("variables.stPlaceInHead.ScriptaculousDragAndDropJS") AND variables.stPlaceInHead.ScriptaculousDragAndDropJS>
+				<cfset lLibraries = listAppend(lLibraries, "/dragdrop.js") />
 			</cfif>
 			<cfif isDefined("variables.stPlaceInHead.ScriptaculousBuilderJS") AND variables.stPlaceInHead.ScriptaculousBuilderJS>
-				<cfoutput>
-					<script src="#application.url.farcry#/js/scriptaculous/builder.js" type="text/javascript"></script></cfoutput>
+				<cfset lLibraries = listAppend(lLibraries, "/builder.js") />
 			</cfif>
 			<cfif isDefined("variables.stPlaceInHead.ScriptaculousSliderJS") AND variables.stPlaceInHead.ScriptaculousSliderJS>
-				<cfoutput>
-					<script src="#application.url.farcry#/js/scriptaculous/slider.js" type="text/javascript"></script></cfoutput>
+				<cfset lLibraries = listAppend(lLibraries, "/slider.js") />
 			</cfif>
 			<cfif isDefined("variables.stPlaceInHead.ScriptaculousControlsJS") AND variables.stPlaceInHead.ScriptaculousControlsJS>
-				<cfoutput>
-					<script src="#application.url.farcry#/js/scriptaculous/controls.js" type="text/javascript"></script></cfoutput>
+				<cfset lLibraries = listAppend(lLibraries, "/controls.js") />
 			</cfif>
+			
+			<cfif len(lLibraries)>
+				<cfoutput>
+					<script type="text/javascript" src="#application.url.farcry#/js/combine.cfm?library=scriptaculous&files=#lLibraries#"></script></cfoutput>
+			</cfif>
+			
 			<cfif isDefined("variables.stPlaceInHead.lightboxJS") AND variables.stPlaceInHead.lightboxJS>
 				<cfoutput>
 					<script src="#application.url.farcry#/js/lightbox/lightbox.js" type="text/javascript"></script></cfoutput>
@@ -348,14 +354,20 @@ $out:$
 					<script src="#application.url.farcry#/js/DateTimePicker/DateTimePicker.js" type="text/javascript"></script></cfoutput>
 			</cfif>
 			
+			
+			<!--- CALENDAR LIBRARY --->
+			<cfset lLibraries = "" />
+
 			<cfif isDefined("variables.stPlaceInHead.CalendarJS") AND variables.stPlaceInHead.CalendarJS>
-				<cfoutput>
-					<script src="#application.url.farcry#/js/calendar/calendar.js" type="text/javascript"></script>
-					<script src="#application.url.farcry#/js/calendar/lang/calendar-en.js" type="text/javascript"></script></cfoutput>
+				<cfset lLibraries = listAppend(lLibraries, "/calendar.js") />
+				<cfset lLibraries = listAppend(lLibraries, "/lang/calendar-en.js") />
 			</cfif>
 			<cfif isDefined("variables.stPlaceInHead.CalendarSetupJS") AND variables.stPlaceInHead.CalendarSetupJS>
+				<cfset lLibraries = listAppend(lLibraries, "/calendar-setup.js") />
+			</cfif>
+			<cfif len(lLibraries)>
 				<cfoutput>
-					<script src="#application.url.farcry#/js/calendar/calendar-setup.js" type="text/javascript"></script></cfoutput>
+					<script type="text/javascript" src="#application.url.farcry#/js/combine.cfm?library=calendar&files=#lLibraries#"></script></cfoutput>
 			</cfif>
 			<cfif isDefined("variables.stPlaceInHead.CalendarStyle1CSS") AND variables.stPlaceInHead.CalendarStyle1CSS>
 				<cfoutput>
@@ -455,9 +467,9 @@ $out:$
 			</cfif>
 	
 	
-			<cfif isDefined("variables.stPlaceInHead.libraryPopupJS") AND variables.stPlaceInHead.libraryPopupJS EQ "true">
+			<cfif isDefined("variables.stPlaceInHead.farcryFormJS") AND variables.stPlaceInHead.farcryFormJS EQ "true">
 				<cfoutput>
-					<script src="#application.url.farcry#/js/libraryPopup.js" type="text/javascript"></script>	</cfoutput>
+					<script src="#application.url.farcry#/js/farcryForm.js" type="text/javascript"></script>	</cfoutput>
 			</cfif>
 			
 			<cfif isDefined("variables.stPlaceInHead.flashWrapperToggle") and variables.stPlaceInHead.flashWrapperToggle EQ true>
@@ -511,6 +523,32 @@ $out:$
 					</cfoutput>
 				</cfif>
 			</cfloop>
+		</cfif>
+		
+			
+		<!--- any extjs onready stuff to be placed in the head, is put into an array aMisc --->
+		<cfparam name="request.inhead.stOnReady" default="#structNew()#" />
+		<cfparam name="request.inhead.aOnReadyIDs" default="#arrayNew(1)#" />
+		
+		<cfif arrayLen(request.inhead.aOnReadyIDs)>
+			<cfoutput>
+			<script type="text/javascript">
+				Ext.onReady(function(){			
+			</cfoutput>
+			
+			<cfloop from="1" to="#arrayLen(request.inHead.aOnReadyIDs)#" index="i">
+				<cfif structKeyExists(request.inHead.stOnReady, request.inHead.aOnReadyIDs[i])>
+					<cfoutput>
+					#request.inHead.stOnReady[request.inHead.aOnReadyIDs[i]]#
+					</cfoutput>
+				</cfif>
+			</cfloop>
+			
+			<cfoutput>
+				})
+			</script>
+			</cfoutput>
+			
 		</cfif>
 
 		
