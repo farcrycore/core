@@ -1,4 +1,28 @@
-						
+				function farcryButtonOnMouseOver(id) {
+					$(id + '-outer').addClassName('farcryButtonWrap-outer-hover');
+					$(id + '-inner').addClassName('farcryButtonWrap-inner-hover');
+				}
+				function farcryButtonOnClick(id) {
+					$(id + '-outer').addClassName('farcryButtonWrap-outer-click');
+					$(id + '-inner').addClassName('farcryButtonWrap-inner-click');
+				}
+				function farcryButtonOnMouseOut(id) {
+					$(id + '-outer').removeClassName('farcryButtonWrap-outer-hover');
+					$(id + '-inner').removeClassName('farcryButtonWrap-inner-hover');
+					$(id + '-outer').removeClassName('farcryButtonWrap-outer-click');
+					$(id + '-inner').removeClassName('farcryButtonWrap-inner-click');
+				}
+				function farcryButtonURL(id,url,target) {
+					if (target == 'undefined' || target == '_self'){
+						location.href=url;			
+						return false;
+					} else {
+						win = window.open('',target);	
+						win.location=url;	
+						win.focus;			
+						return false;
+					}
+				}						
 						
 							
 				function openLibrary(target,ftJoin,url) {
@@ -60,7 +84,7 @@
 							}
 														
 							$(fieldname + '-libraryCallback').innerHTML = 'PLEASE WAIT... CURRENTLY UPDATING';
-							new Ajax.Updater(fieldname + '-libraryCallback', virtualDir+'/farcry/facade/library.cfc?method=ajaxUpdateArray&noCache=' + Math.random(), {
+							new Ajax.Updater(fieldname + '-libraryCallback', virtualDir+'/webtop/facade/library.cfc?method=ajaxUpdateArray&noCache=' + Math.random(), {
 									//onLoading:function(request){Element.show('indicator')},
 									onComplete:function(request){
 										// <![CDATA[
@@ -129,7 +153,7 @@
 						
 						
 						
-						new Ajax.Updater(fieldname + '-libraryCallback', virtualDir+'/farcry/facade/library.cfc?method=ajaxUpdateArray&noCache=' + Math.random(), {
+						new Ajax.Updater(fieldname + '-libraryCallback', virtualDir+'/webtop/facade/library.cfc?method=ajaxUpdateArray&noCache=' + Math.random(), {
 							//onLoading:function(request){Element.show('indicator')},
 							parameters:sURLParams, evalScripts:true, asynchronous:true,
 							onComplete:function(request){
