@@ -1280,7 +1280,6 @@ function flutterDoAction() { eval( flutterAction ); }
 
 function documentClick()
 {
-	//alert(eval("hasPermission( lastSelectedId, #PermNavCreate#) > 0 "));
 	<cfif NOT arguments.bshowCheckBox>
 	var objectMenuDiv = document.getElementById( "ObjectMenu" );
 	if(objectMenuDiv)
