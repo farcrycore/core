@@ -20,11 +20,13 @@
 
 <cfparam name="attributes.webskinpermission" default="" />
 
+<cfparam name="attributes.require" default="all" /><!--- ALL => require all permissions to be granted, ANY => accept if any permissions granted --->
+
 <cfparam name="attributes.error" default="false" />
 <cfparam name="attributes.errormessage" default="You don't have permission to view this page" />
 
 <cfif thistag.ExecutionMode EQ "Start">
-	<cfset permitted = 0>
+	<cfset permitted = true />
 	
 	<!--- Get permissionname for backwards compatability and make sure a permission attribute was passed --->
 	<cfif structkeyexists(attributes,"permissionname")>
@@ -44,9 +46,11 @@
 	<cfif len(attributes.permission) and not len(attributes.typepermission) and not len(attributes.generalpermission) and not len(attributes.objectpermission) and not len(attributes.webskinpermission)>
 		<cfif len(attributes.type)>
 			<cfset attributes.typepermission = attributes.permission />
-		<cfelseif len(attributes.objectid)>
+		</cfif>
+		<cfif len(attributes.objectid)>
 			<cfset attributes.objectpermission = attributes.permission />
-		<cfelse>
+		</cfif>
+		<cfif not len(attributes.type) and not len(attributes.objectid)>
 			<cfset attributes.generalpermission = attributes.permission />
 		</cfif>
 	<cfelseif len(attributes.typepermission) and not len(attributes.type)>
@@ -55,37 +59,64 @@
 		<cfthrow message="ObjectID attribute must be provided when checking an object permission" />
 	</cfif>
 	
-	<!--- Check general permissions --->
-	<cfloop list="#attributes.generalpermission#" index="perm">
-		<cfif application.security.checkPermission(permission=perm)>
-			<!--- Permission granted - skip straight to content --->
+	<cfif attributes.logic eq "all">
+		<!--- Check general permissions --->
+		<cfloop list="#attributes.generalpermission#" index="perm">
+			<cfset permitted = permitted and application.security.checkPermission(permission=perm) />
+		</cfloop>
+		
+		<!--- Check object permissions --->
+		<cfloop list="#attributes.objectpermission#" index="perm">
+			<cfset permitted = permitted and application.security.checkPermission(permission=perm,object=attributes.objectid) />
+		</cfloop>
+		
+		<!--- Check type permissions --->
+		<cfloop list="#attributes.typepermission#" index="perm">
+			<cfset permitted = permitted and application.security.checkPermission(permission=perm,type=attributes.type) />
+		</cfloop>
+		
+		<!--- Check webskin permissions --->
+		<cfloop list="#attributes.webskinpermission#" index="perm">
+			<cfset permitted = permitted and application.security.checkPermission(webskin=perm) />
+		</cfloop>
+		
+		<cfif permitted>
+			<!--- Permission granted - skip to content --->
 			<cfexit method="exittemplate" />
 		</cfif>
-	</cfloop>
-	
-	<!--- Check object permissions --->
-	<cfloop list="#attributes.objectpermission#" index="perm">
-		<cfif application.security.checkPermission(permission=perm,object=attributes.objectid)>
-			<!--- Permission granted - skip straight to content --->
-			<cfexit method="exittemplate" />
-		</cfif>
-	</cfloop>
-	
-	<!--- Check type permissions --->
-	<cfloop list="#attributes.typepermission#" index="perm">
-		<cfif  application.security.checkPermission(permission=perm,type=attributes.type)>
-			<!--- Permission granted - skip straight to content --->
-			<cfexit method="exittemplate" />
-		</cfif>
-	</cfloop>
-	
-	<!--- Check webskin permissions --->
-	<cfloop list="#attributes.webskinpermission#" index="perm">
-		<cfif application.security.checkPermission(webskin=perm)>
-			<!--- Permission granted - skip straight to content --->
-			<cfexit method="exittemplate" />
-		</cfif>
-	</cfloop>
+	<cfelseif attributes.logic eq "and">
+		<!--- Check general permissions --->
+		<cfloop list="#attributes.generalpermission#" index="perm">
+			<cfif application.security.checkPermission(permission=perm)>
+				<!--- Permission granted - skip straight to content --->
+				<cfexit method="exittemplate" />
+			</cfif>
+		</cfloop>
+		
+		<!--- Check object permissions --->
+		<cfloop list="#attributes.objectpermission#" index="perm">
+			<cfif application.security.checkPermission(permission=perm,object=attributes.objectid)>
+				<!--- Permission granted - skip straight to content --->
+				<cfexit method="exittemplate" />
+			</cfif>
+		</cfloop>
+		
+		<!--- Check type permissions --->
+		<cfloop list="#attributes.typepermission#" index="perm">
+			<cfif  application.security.checkPermission(permission=perm,type=attributes.type)>
+				<!--- Permission granted - skip straight to content --->
+				<cfexit method="exittemplate" />
+			</cfif>
+		</cfloop>
+		
+		<!--- Check webskin permissions --->
+		<cfloop list="#attributes.webskinpermission#" index="perm">
+			<cfif application.security.checkPermission(webskin=perm)>
+				<!--- Permission granted - skip straight to content --->
+				<cfexit method="exittemplate" />
+			</cfif>
+		</cfloop>
+	</cfif>
 
 	<!--- If we get to this point, no permissions were granted - throw an error and exit the tag --->
 	<cfif attributes.error>

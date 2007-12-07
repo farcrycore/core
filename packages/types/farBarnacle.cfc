@@ -86,6 +86,8 @@
 		<cfset thisrole = "" />
 		<cfset result = -1 />
 		<cfset thisresult = -1 />
+		<cfset qSequred = "" />
+		<cfset typename = "" />
 		
 		<!--- Either barnacle or role+permission+object must be specified --->
 		<cfif isvalid("uuid",arguments.barnacle)><!--- Barnacle specified by objectid --->
@@ -108,11 +110,29 @@
 			<cfthrow message="farBarnacle.getRight: required arguments - barnacle or role + permission + object" />
 			
 		</cfif>
+		
+		<!--- If this type hasn't been secured (i.e. no object permissions) default to grant --->
+		<cfset typename = findType(arguments.object) />
+		<cfif not len(typename)>
+			<cfset thisobject = getData(objectid=arguments.object) />
+			<cfif structkeyexists(thisobject,"typename")>
+				<cfset typename = thisobject.typename />
+			</cfif>
+		</cfif>
+		<cfquery datasource="#application.dsn#" name="qSecured">
+			select	count(parentid) as secured
+			from	#application.dbowner#farPermission_relatedtypes
+			where	parentid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.permission#" />
+					and data=<cfqueryparam cfsqltype="cf_sql_varchar" value="#typename#" />
+		</cfquery>
+		<cfif not qSecured.secured>
+			<cfreturn true />
+		</cfif>
 			
 		<cfloop list="#arguments.role#" index="thisrole">
 			<!--- If possible use the cache, otherwise update cache --->
 			<cfif not arguments.forcerefresh and application.security.isCached(role=thisrole,permission=arguments.permission,object=arguments.object)>
-				<cfset thisresult = application.security.getCache(thisrole,arguments.permission,arguments.object) />
+				<cfset thisresult = application.security.getCache(role=thisrole,permission=arguments.permission,object=arguments.object) />
 			<cfelse>
 				<cfset thisresult = application.security.setCache(role=thisrole,permission=arguments.permission,object=arguments.object,right=getBarnacle(thisrole,arguments.permission,arguments.object).barnaclevalue) />
 			</cfif>
@@ -195,7 +215,9 @@
 		<cfargument name="permission" type="uuid" required="true" hint="The permission to check" />
 		<cfargument name="role" type="string" required="false" hint="List of roles to check" />
 		
-		<cfset var actual = getRight(role=arguments.role,permission=arguments.permission,object=arguments.object) />
+		<cfset var actual = -1 />
+		
+		<cfset actual = getRight(role=arguments.role,permission=arguments.permission,object=arguments.object) />
 		
 		<cfif actual eq 0>
 			<cfreturn getInheritedRight(role=arguments.role,permission=arguments.permission,object=arguments.object) />
