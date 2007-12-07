@@ -40,71 +40,16 @@ $DEVELOPER: Mat Bryant (mbryant@daemon.com.au)$
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<title>Edit Tab Overview</title>
 	<!-- Source File -->
-	<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.3.0/build/reset-fonts-grids/reset-fonts-grids.css">
-	
-	<style type="text/css">
-	body {text-align:left;}
-	
-	<!--- p {margin:5px 0px 10px 0px;} --->
-	/* =DEFINITION LISTS */
-	dl {margin: 0 0 1.5em}
-	dt {clear:left;font-weight:bold;margin:3px 0}
-	dd {margin:3px 0;padding:0}
-	dd.thumbnail {float:left;width:100px;margin-right:6px;border: 1px solid ##000;margin-bottom:0}
-	dd.thumbnail img {display:block}
+	<link rel="stylesheet" type="text/css" href="#application.url.farcry#/css/yui/reset-fonts.css">
 
-	dl.dl-style1 {border-top: 1px solid ##fff;font-size:86%}
-	.tab-panes dl.dl-style1 {margin-right:140px}
-	dl.dl-style1 dt {float:left;clear:left;width:130px;margin:0;_height:1.5em;min-height:1.5em;border:none;}
-	.tab-panes dl.dl-style1 dt {width:28%}
-	dl.dl-style1 dd {width: auto;margin: 0;border-bottom: 1px solid ##fff;padding: 1px 0;_height:1.5em;min-height:1.5em}
-	.tab-panes dl.dl-style1 dd {margin-left:28%;_margin-left:20%}
-
-	.tab-content {padding:25px;}
+	<link rel="stylesheet" type="text/css" href="#application.url.farcry#/css/webtopOverview.css">
 	
-	.icon {margin: 0 0 10px}
+	<script language="JavaScript" type="text/javascript" src="#application.url.farcry#/js/webtopOverview.cfm"></script>
 	
-	.webtopOverviewActions .farcryButtonWrap-outer {margin:5px 0px;}
-	.webtopOverviewActions .farcryButton {width:240px;}
-	</style>
 </head>
 <body>
 </cfoutput>
 
-
-<!--- javascript functions for object editing --->
-<cfsavecontent variable="jshead">
-<cfoutput>
-<script type="text/javascript">
-function confirmRestore(navid,draftObjectID)
-{
-	confirmmsg = "#application.adminBundle[session.dmProfile.locale].confirmRestoreLiveObjToDraft#";
-	if(confirm(confirmmsg))
-	{
-		strURL = "#application.url.farcry#/navajo/restoreDraft.cfm";
-		var req = new DataRequestor();
-		req.addArg(_GET,"navid",navid);
-		req.addArg(_GET,"objectid",draftObjectID);
-		req.onload = processReqChange;
-		req.onfail = function (status){alert("Sorry and error occured while restoring [" + status + "]")};
-		req.getURL(strURL,_RETURN_AS_TEXT);
-		return true;
-	}
-	else
-		return false;	
-}
-
-function processReqChange(data, obj){
-	var tmpmessage = JSON.parse(data);
-	message = tmpmessage;
-	alert(message);
-	// refresh self
-	self.window.location = self.window.location;
-}
-</script>
-</cfoutput>
-</cfsavecontent>
-<cfhtmlhead text="#jshead#" />
 
 
 <sec:CheckPermission error="true" permission="ObjectOverviewTab">
