@@ -103,7 +103,7 @@ Pseudo:
 	</cfif>
 	<cfset bHasPermission = application.security.checkPermission(permission="#permissionset#edit")>
 	<cfif NOT bHasPermission GTE 0>
-		<cfabort showerror="<strong>Error:</strong> #application.adminBundle[session.dmProfile.locale].noEditPermissions#">
+		<cfabort showerror="<strong>Error:</strong> #application.adminBundle[session.dmProfile.locale].noEditPermission#">
 	</cfif>
 </cfif>
 
