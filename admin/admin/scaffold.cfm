@@ -26,12 +26,12 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<title>Scaffold</title>
 	<!-- Source File -->
-	<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.3.0/build/reset-fonts-grids/reset-fonts-grids.css">
+	<link rel="stylesheet" type="text/css" href="#application.url.farcry#/css/yui/reset-fonts.css">
 	
 	<style type="text/css">
 		body {text-align:left;}
 		<cfif structkeyexists(url,"iframe")>
-			body { background:transparent url(#application.url.farcry#/admin/js/ext/resources/images/default/layout/gradient-bg.gif) repeat scroll 0%; }
+			body { background:transparent url(#application.url.farcry#/js/ext/resources/images/default/layout/gradient-bg.gif) repeat scroll 0%; }
 		</cfif>
 		
 		<!--- p {margin:5px 0px 10px 0px;} --->
