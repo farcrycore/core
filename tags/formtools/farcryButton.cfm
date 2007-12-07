@@ -91,88 +91,13 @@
 			<cfoutput><input name="FarcryFormSubmitButton" value="#attributes.Value#" type="#attributes.Type#" onclick="#attributes.Onclick#" class="#attributes.Class#" style="#attributes.Style#" src="#attributes.src#" /></cfoutput>
 		<cfelse>
 		
-			<skin:htmlhead id="farcryButtonHTMLHead">
-			<cfoutput>
-				<style type="text/css">
-				
-				div.farcryButtonWrap-outer{
-					background:transparent url(#application.url.farcry#/css/forms/images/farcryButtonSprite-left.gif) no-repeat top left;
-					border:0px;
-					padding:0px 15px 0px 0px;
-					margin:0px 0px 0px 0px;
-					height:21px;
-					float:left;
-					
-				}
-				div.farcryButtonWrap-inner{
-					background:transparent url(#application.url.farcry#/css/forms/images/farcryButtonSprite-right.gif) no-repeat top right;
-					border:0px solid green;
-					padding:0px 3px 0px 0px;
-					margin:0px 0px 0px 3px;
-					float:none;
-				}	
-				
-				button.farcryButton{
-					border:0px solid red;
-					padding:0px 0px 0px 0px;
-					margin:0px 0px 0px 0px;
-					vertical-align:middle;					
-					background:transparent;
-					background-image:none;
-					height:21px;
-					width:auto;
-					text-align:center;
-					overflow:hidden;
-					font-size:11px;
-				}			
-				div.farcryButtonWrap-outer-hover{
-					background-position: bottom left;					
-				}
-				div.farcryButtonWrap-inner-hover{
-					background-position: center right;
-				}
-				div.farcryButtonWrap-outer-click{
-					background-position: bottom left;					
-				}
-				div.farcryButtonWrap-inner-click{
-					background-position: bottom right;
-				}
-				</style>
-				
-				<script type="text/javascript">
-				function farcryButtonOnMouseOver(id) {
-					$(id + '-outer').addClassName('farcryButtonWrap-outer-hover');
-					$(id + '-inner').addClassName('farcryButtonWrap-inner-hover');
-				}
-				function farcryButtonOnClick(id) {
-					$(id + '-outer').addClassName('farcryButtonWrap-outer-click');
-					$(id + '-inner').addClassName('farcryButtonWrap-inner-click');
-				}
-				function farcryButtonOnMouseOut(id) {
-					$(id + '-outer').removeClassName('farcryButtonWrap-outer-hover');
-					$(id + '-inner').removeClassName('farcryButtonWrap-inner-hover');
-					$(id + '-outer').removeClassName('farcryButtonWrap-outer-click');
-					$(id + '-inner').removeClassName('farcryButtonWrap-inner-click');
-				}
-				function farcryButtonURL(id,url,target) {
-					if (target == 'undefined' || target == '_self'){
-						location.href=url;			
-						return false;
-					} else {
-						win = window.open('',target);	
-						win.location=url;	
-						win.focus;			
-						return false;
-					}
-				}
-				</script>
-			</cfoutput>
-			</skin:htmlhead>	
-						
+			<skin:htmlHead library="farcryForm" />
+			<skin:htmlHead library="extjs" />
+			
+									
 			<cfoutput>
 				<div id="#attributes.id#-outer" class="farcryButtonWrap-outer" onmouseover="farcryButtonOnMouseOver('#attributes.id#');" onmouseout="farcryButtonOnMouseOut('#attributes.id#');" onclick="farcryButtonOnClick('#attributes.id#');"><div id="#attributes.id#-inner" class="farcryButtonWrap-inner"><button id="#attributes.id#" type="#attributes.Type#" name="FarcryForm#attributes.Type#Button" onclick="#attributes.Onclick#" class="farcryButton #attributes.Class#" style="#attributes.Style#">#attributes.Value#</button></div></div>
 			</cfoutput>
-	
 			
 		</cfif>
 	<cfelse>
