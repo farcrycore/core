@@ -1,3 +1,6 @@
+<cfcontent type="text/javascript; charset=UTF-8" />
+
+<cfoutput>
 				function farcryButtonOnMouseOver(id) {
 					$(id + '-outer').addClassName('farcryButtonWrap-outer-hover');
 					$(id + '-inner').addClassName('farcryButtonWrap-inner-hover');
@@ -49,13 +52,13 @@
 
 						
 							function toggleOnArrayField(fieldname) {
-								aInputs = $$("#" + fieldname + "_list input");
+								aInputs = $$("##" + fieldname + "_list input");
 								aInputs.each(function(child) {
 									child.checked = true;
 								});
 							}
 							function toggleOffArrayField(fieldname) {
-								aInputs = $$("#" + fieldname + "_list input");
+								aInputs = $$("##" + fieldname + "_list input");
 								aInputs.each(function(child) {
 									child.checked = false;
 								});
@@ -63,7 +66,7 @@
 							
 							function deleteSelectedFromArrayField(fieldname,virtualDir){
 								if(virtualDir==null){virtualDir="";}							
-								aInputs = $$("#" + fieldname + "_list input");
+								aInputs = $$("##" + fieldname + "_list input");
 								aInputs.each(function(child) {
 									if(child.checked == true){
 										Element.remove(fieldname + '_' + child.value);
@@ -84,7 +87,7 @@
 							}
 														
 							$(fieldname + '-libraryCallback').innerHTML = 'PLEASE WAIT... CURRENTLY UPDATING';
-							new Ajax.Updater(fieldname + '-libraryCallback', virtualDir+'/webtop/facade/library.cfc?method=ajaxUpdateArray&noCache=' + Math.random(), {
+							new Ajax.Updater(fieldname + '-libraryCallback', virtualDir+'#application.url.webtop#/facade/library.cfc?method=ajaxUpdateArray&noCache=' + Math.random(), {
 									//onLoading:function(request){Element.show('indicator')},
 									onComplete:function(request){
 										// <![CDATA[
@@ -131,7 +134,7 @@
 									
 					function deleteSelectedFromUUIDField(fieldname){
 						
-						aInputs = $$("#" + fieldname + "_list input");
+						aInputs = $$("##" + fieldname + "_list input");
 						aInputs.each(function(child) {
 							if(child.checked == true){
 								Element.remove(fieldname + '_' + child.value);
@@ -153,7 +156,7 @@
 						
 						
 						
-						new Ajax.Updater(fieldname + '-libraryCallback', virtualDir+'/webtop/facade/library.cfc?method=ajaxUpdateArray&noCache=' + Math.random(), {
+						new Ajax.Updater(fieldname + '-libraryCallback', virtualDir+'#application.url.webtop#/facade/library.cfc?method=ajaxUpdateArray&noCache=' + Math.random(), {
 							//onLoading:function(request){Element.show('indicator')},
 							parameters:sURLParams, evalScripts:true, asynchronous:true,
 							onComplete:function(request){
@@ -168,4 +171,60 @@
 												
 					}
 					
+					
+function createFormtoolTree(fieldname,rootID,dataURL,rootNodeText,selectedIDs,iconCls){
+	// shorthand
+    var Tree = Ext.tree;
+    
+    tree = new Tree.TreePanel({
+        animate:true, 
+        loader: new Tree.TreeLoader({
+            dataUrl:dataURL,
+            baseAttrs: {checked:false,iconCls:'categoryIconCls'},
+            baseParams: {selectedObjectIDs:selectedIDs}
+        }),
+        enableDD:true,
+        containerScroll: true,
+        border:false
+    });
+
+	tree.on('checkchange', function(n,c) {
+		var newList = "";
+		var currentTreeList = Ext.getDom(fieldname).value;
+		if(c){ 
+			if(currentTreeList.length){
+		  		currentTreeList = currentTreeList + ','
+		  	}
+			Ext.getDom(fieldname).value = currentTreeList + n.id
+		} else {
+			var valueArray = currentTreeList.split(",");
+			for(var i=0; i<valueArray.length; i++){
+			  //do something by accessing valueArray[i];
+			  if(n.id != valueArray[i]){
+			  	if(newList.length){
+			  		newList = newList + ',';
+			  	}
+			  	newList = newList + valueArray[i]
+			  }
+			}
+			Ext.getDom(fieldname).value = newList;
+		}	
+
+	});
+    // set the root node
+    var root = new Tree.AsyncTreeNode({
+        text: rootNodeText,
+        draggable:false,
+        id:rootID,
+        iconCls:iconCls,
+        checked:false
+    });
+    tree.setRootNode(root);
+
+    // render the tree
+    tree.render(fieldname + '-tree-div');
+    root.expand();
+    
+}
+</cfoutput>		
 				
