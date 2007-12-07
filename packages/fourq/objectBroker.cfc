@@ -172,7 +172,7 @@
 						<cfloop list="#arguments.library#" index="iLibrary">
 							<cfset request.aAncestorWebskins[iWebskin].inHead[iLibrary] = arguments.libraryState />
 						</cfloop>
-					<cfelseif len(agruments.onReady)>
+					<cfelseif len(arguments.onReady)>
 						<!--- If we are currently inside of a webskin we need to add this id to the current webskin --->					
 						<cfif NOT structKeyExists(request.aAncestorWebskins[iWebskin].inhead.stOnReady, arguments.id)>
 							<cfset request.aAncestorWebskins[iWebskin].inHead.stOnReady[arguments.id] = arguments.onReady />
