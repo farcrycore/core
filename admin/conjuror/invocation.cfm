@@ -82,7 +82,7 @@ Pseudo:
 	<!--- determine inherited tree based permissions --->
 	<cfset bHasPermission = application.security.checkPermission(permission='edit',object=URL.objectid)>
 	<cfif NOT bHasPermission GTE 0>
-		<cfabort showerror="<strong>Error:</strong> #application.adminBundle[session.dmProfile.locale].noEditPermissions#">
+		<cfabort showerror="<strong>Error:</strong> #application.adminBundle[session.dmProfile.locale].noEditPermission#">
 	</cfif>
 <cfelse>
 	<!--- determine standard permissions for typename --->
