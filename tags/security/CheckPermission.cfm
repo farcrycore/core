@@ -59,7 +59,7 @@
 		<cfthrow message="ObjectID attribute must be provided when checking an object permission" />
 	</cfif>
 	
-	<cfif attributes.logic eq "all">
+	<cfif attributes.require eq "all">
 		<!--- Check general permissions --->
 		<cfloop list="#attributes.generalpermission#" index="perm">
 			<cfset permitted = permitted and application.security.checkPermission(permission=perm) />
