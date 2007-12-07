@@ -195,7 +195,8 @@
 				
 	
 					
-					<cfset request.inHead.libraryPopup = true />
+					<skin:htmlhead library="farcryForm" />
+					
 					<cfoutput>
 					<script type="text/javascript" language="javascript" charset="utf-8">
 					initUUIDField('#arguments.fieldname#','#application.url.webroot#');

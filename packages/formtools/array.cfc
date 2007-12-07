@@ -223,7 +223,7 @@
 					</cfoutput>
 
 
-					<cfset request.inHead.libraryPopup = true />
+					<skin:htmlhead library="farcryForm" />
 			
 	
 					<cfoutput>
