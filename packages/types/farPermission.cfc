@@ -27,15 +27,15 @@
 	
 		<cfset var qPermissions = "" />
 		
-		<cfif not application.security.hasLookup(permission=arguments.name)>
+		<cfif not application.security.hasLookup(permission=arguments.permission)>
 			<cfquery datasource="#application.dsn#" name="qPermissions">
 				select	objectid
 				from	#application.dbOwner#farPermission
-				where	lower(shortcut)=<cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(arguments.name)#" />
+				where	lower(shortcut)=<cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(arguments.permission)#" />
 			</cfquery>
 			
 			<cfif qPermissions.recordcount>
-				<cfset application.security.setLookup(permission=arguments.name,objectid=qPermissions.objectid[1]) />
+				<cfset application.security.setLookup(permission=arguments.permission,objectid=qPermissions.objectid[1]) />
 				<cfreturn true />
 			<cfelse>
 				<cfreturn false />
