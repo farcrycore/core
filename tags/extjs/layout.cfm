@@ -6,6 +6,7 @@
 <!--- @@author: Matthew Bryant (mbryant@daemon.com.au) --->
 
 <cfimport taglib="/farcry/core/tags/webskin/" prefix="skin">
+<cfimport taglib="/farcry/core/tags/extjs/" prefix="extjs">
 
 <cfif thistag.executionMode eq "Start">
 
@@ -156,9 +157,10 @@
 <cfif thistag.executionMode eq "End">
 	
 	 <cfif variables.primaryLayout>
+
+	 	<extjs:onReady>
 		<cfoutput>
-			<script type="text/javascript">
-			Ext.onReady(function(){
+
 				var #attributes.id# = new Ext.#attributes.container#({
 					dummysothatcommaswork:'x'
 		</cfoutput>
@@ -195,10 +197,8 @@
 					</cfif>
 		<cfoutput>
 				})
-			})
-			</script>
 		</cfoutput>
-		
+		</extjs:onReady>
 	<cfelse>
 	
 	</cfif>
