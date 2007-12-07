@@ -44,7 +44,7 @@ $in: libraryState -- used to turn predefined libraries on or off. Default turns 
 		</cfif>
 		
 		<cfif NOT structKeyExists(request.inhead.stCustom, attributes.id)>
-			<cfset request.inHead.stCustom[attributes.id] = thisTag.generatedContent />
+			<cfset request.inHead.stCustom[attributes.id] = attributes.text />
 			<cfset arrayAppend(request.inHead.aCustomIDs, attributes.id) />
 		</cfif>
 		
