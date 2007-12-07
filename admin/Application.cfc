@@ -54,24 +54,6 @@
 
 	</cffunction>
 
- 
 
-	<cffunction name="OnRequest" access="public" returntype="void" output="true" hint="Fires after pre page processing is complete.">
-		<!--- Define arguments. --->
-
-		<cfargument name="TargetPage" type="string" required="true" />
-		
-		<!--- Call the main farcry Application.cfc --->
-		<cfset super.OnRequest(argumentCollection=arguments) />
-		
-		<!--- Include the requested page. --->
-		<cfinclude template="#ARGUMENTS.TargetPage#" />
-
-		<!--- Return out. --->
-
-		<cfreturn />
-
-	</cffunction>
- 
 
 </cfcomponent>
