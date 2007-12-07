@@ -64,7 +64,7 @@ $out:$
 </cfif>
 
 <!--- First check tree permissions --->
-<sec:CheckPermission permission="edit" object="#attributes.objectid#" error="true" errormessage="You do not have permission to edit this item">
+<sec:CheckPermission typepermission="Edit" type="#url.typename#" objectpermission="edit" object="#attributes.objectid#" error="true" errormessage="You do not have permission to edit this item">
 
 	<!--- work out packagee path --->
 	<cfset oType = createObject("component", application.stCOAPI[attributes.typename].packagepath)>
