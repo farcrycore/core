@@ -97,6 +97,8 @@ $out:$
 					<cfset stCurrentView.inHead = structNew() />
 					<cfset stCurrentView.inHead.stCustom = structNew() />
 					<cfset stCurrentView.inHead.aCustomIDs = arrayNew(1) />
+					<cfset stCurrentView.inHead.stOnReady = structNew() />
+					<cfset stCurrentView.inHead.aOnReadyIDs = arrayNew(1) />
 					<cfset arrayAppend(request.aAncestorWebskins, stCurrentView) />
 	
 					<cfsavecontent variable="webskinHTML">

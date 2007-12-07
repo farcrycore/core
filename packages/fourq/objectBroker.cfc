@@ -94,6 +94,8 @@
 								<cfparam name="request.inHead" default="#structNew()#" />
 								<cfparam name="request.inhead.stCustom" default="#structNew()#" />
 								<cfparam name="request.inhead.aCustomIDs" default="#arrayNew(1)#" />
+								<cfparam name="request.inhead.stOnReady" default="#structNew()#" />
+								<cfparam name="request.inhead.aOnReadyIDs" default="#arrayNew(1)#" />
 								
 								<cfloop list="#structKeyList(stCacheWebskin.inHead)#" index="i">
 									<cfswitch expression="#i#">
@@ -111,6 +113,23 @@
 											<cfloop from="1" to="#arrayLen(stCacheWebskin.inHead.aCustomIDs)#" index="k">
 												<cfif NOT listFindNoCase(arrayToList(request.inHead.aCustomIDs), stCacheWebskin.inHead.aCustomIDs[k])>
 													<cfset arrayAppend(request.inHead.aCustomIDs,stCacheWebskin.inHead.aCustomIDs[k]) />
+												</cfif>
+											</cfloop>
+										</cfcase>
+										<cfcase value="stOnReady">
+											<cfloop list="#structKeyList(stCacheWebskin.inHead.stOnReady)#" index="j">
+												<cfif not structKeyExists(request.inHead.stOnReady, j)>
+													<cfset request.inHead.stOnReady[j] = stCacheWebskin.inHead.stOnReady[j] />
+												</cfif>
+												
+												<cfset application.coapi.objectbroker.addHTMLHeadToWebskins(id="#j#", onReady="#stCacheWebskin.inHead.stOnReady[j]#") />
+	
+											</cfloop>
+										</cfcase>
+										<cfcase value="aOnReadyIDs">
+											<cfloop from="1" to="#arrayLen(stCacheWebskin.inHead.aOnReadyIDs)#" index="k">
+												<cfif NOT listFindNoCase(arrayToList(request.inHead.aOnReadyIDs), stCacheWebskin.inHead.aOnReadyIDs[k])>
+													<cfset arrayAppend(request.inHead.aOnReadyIDs,stCacheWebskin.inHead.aOnReadyIDs[k]) />
 												</cfif>
 											</cfloop>
 										</cfcase>
@@ -141,6 +160,7 @@
 		<cfargument name="text" type="string" required="false" default="" />
 		<cfargument name="library" type="string" required="false" default="" />
 		<cfargument name="libraryState" type="boolean" required="false" default="true" />
+		<cfargument name="onReady" type="string" required="false" default="" />
 		
 		<cfset var iWebskin = "">
 		<cfset var iLibrary = "">
@@ -152,6 +172,12 @@
 						<cfloop list="#arguments.library#" index="iLibrary">
 							<cfset request.aAncestorWebskins[iWebskin].inHead[iLibrary] = arguments.libraryState />
 						</cfloop>
+					<cfelseif len(agruments.onReady)>
+						<!--- If we are currently inside of a webskin we need to add this id to the current webskin --->					
+						<cfif NOT structKeyExists(request.aAncestorWebskins[iWebskin].inhead.stOnReady, arguments.id)>
+							<cfset request.aAncestorWebskins[iWebskin].inHead.stOnReady[arguments.id] = arguments.onReady />
+							<cfset arrayAppend(request.aAncestorWebskins[iWebskin].inHead.aOnReadyIDs, arguments.id) />
+						</cfif>
 					<cfelse>
 						<!--- If we are currently inside of a webskin we need to add this id to the current webskin --->					
 						<cfif NOT structKeyExists(request.aAncestorWebskins[iWebskin].inhead.stCustom, arguments.id)>
