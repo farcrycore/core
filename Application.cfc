@@ -1,9 +1,10 @@
 <cfcomponent displayname="Application" output="true" hint="Handle the application.">
  
+	<cfsetting enablecfoutputonly="true" />
 	
 	<!--- LOCATE THE PROJECTS CONSTRUCTOR FILE --->
 	<cfset this.projectConstructorLocation = getProjectConstructorLocation(plugin="farcry") />
-		
+
 	<cfinclude template="#this.projectConstructorLocation#" />
 	
 	
@@ -128,39 +129,19 @@
 
 		<cfargument name="TargetPage" type="string" required="true" />
 
-
 		<!--- Update the farcry application if instructed --->
-		<cfset farcryUpdateApp() />
-		
+		<cfset farcryUpdateApp() />		
 		
 		<!--- Initialize the request as a farcry application --->
 		<cfset farcryRequestInit() />
-		
-
 	
 		<!--- Return out. --->
-
 		<cfreturn true />
 
 	</cffunction>
 
  
 
- 
-
-	<cffunction name="OnRequest" access="public" returntype="void" output="true" hint="Fires after pre page processing is complete.">
-		<!--- Define arguments. --->
-
-		<cfargument name="TargetPage" type="string" required="true" />
-
-		<!--- Including the requested page is up to the project or plugin. --->
-		<!--- <cfinclude template="#ARGUMENTS.TargetPage#" /> --->
-
-		<!--- Return out. --->
-
-		<cfreturn />
-
-	</cffunction>
 
  
 
