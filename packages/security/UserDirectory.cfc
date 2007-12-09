@@ -16,7 +16,7 @@
 			
 			<!--- If key isn't specified, use the name of the component --->
 			<cfif not structkeyexists(this,"key")>
-				<cfset this.key = listlast(stMetadata.fullname,".") />
+				<cfset this.key = listlast(stMetadata.path,".") />
 			</cfif>
 			
 			<!--- If title isn't specified, use the displayname --->
