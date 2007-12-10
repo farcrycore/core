@@ -22,6 +22,7 @@
 		<cfset var CategoryName = "" />
 		<cfset var oNav = createObject("component",application.stCOAPI.dmNavigation.packagepath) />
 		<cfset var stNav = structnew() />
+		<cfset var rootID = "" />
 		
 		<cfparam name="arguments.stMetadata.ftAlias" default="" type="string" />
 		<cfparam name="arguments.stMetadata.ftLegend" default="" type="string" />
@@ -33,12 +34,12 @@
 		<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
 		
 		<cfif structKeyExists(application.navid, arguments.stMetadata.ftAlias)>
-			<cfset navid = application.navid[arguments.stMetadata.ftAlias] >
+			<cfset rootID = application.navid[arguments.stMetadata.ftAlias] >
 		<cfelse>
-			<cfset navid = application.navid['root'] >
+			<cfset rootID = application.navid['root'] >
 		</cfif>
 
-		<cfset stNav = oNav.getData(objectid=navid) />
+		<cfset stNav = oNav.getData(objectid=rootID) />
 
 		<cfif isArray(arguments.stObject['#arguments.stMetadata.name#'])>
 			<cfset lSelectedNaviIDs = arrayToList(arguments.stObject['#arguments.stMetadata.name#']) />
@@ -51,7 +52,7 @@
 		<cfswitch expression="#arguments.stMetadata.ftRenderType#">
 			
 			<cfcase value="dropdownDoesNotWorkJustNow">
-				<cfset lCategoryBranch = oCategory.getCategoryBranchAsList(lCategoryIDs=navid) />
+				<cfset lCategoryBranch = oCategory.getCategoryBranchAsList(lCategoryIDs=rootID) />
 							
 				<cfsavecontent variable="html">
 					<cfoutput><fieldset>
@@ -65,7 +66,7 @@
 					<cfoutput><select id="#arguments.fieldname#" name="#arguments.fieldname#"  <cfif arguments.stMetadata.ftSelectMultiple>size="#arguments.stMetadata.ftSelectSize#" multiple="true"</cfif>></cfoutput>
 					<cfloop list="#lCategoryBranch#" index="i">
 						<!--- If the item is the actual alias requested then it is not selectable. --->
-						<cfif i EQ navid>
+						<cfif i EQ rootID>
 							<cfif len(arguments.stMetadata.ftDropdownFirstItem)>
 								<cfoutput><option value="">#arguments.stMetadata.ftDropdownFirstItem#</option></cfoutput>
 							<cfelse>
@@ -95,14 +96,7 @@
 													
 								<div class="fieldwrap">
 								</cfoutput>
-<!---									<ft:prototypeTree id="#arguments.fieldname#" navid="#navid#" depth="99" bIncludeHome=1 lSelectedItems="#lSelectedNaviIDs#" bSelectMultiple="#arguments.stMetadata.ftSelectMultiple#">
-										<ft:prototypeTreeNode>
-											<ft:prototypeTreeNode>
-											
-											</ft:prototypeTreeNode>
-										</ft:prototypeTreeNode>
-									</ft:prototypeTree> --->
-									<ft:NTMPrototypeTree id="#arguments.fieldname#" navid="#navid#" depth="99" bIncludeHome=1 lSelectedItems="#lSelectedNaviIDs#" bSelectMultiple="#arguments.stMetadata.ftSelectMultiple#">
+									<ft:NTMPrototypeTree id="#arguments.fieldname#" navid="#rootID#" depth="99" bIncludeHome=1 lSelectedItems="#lSelectedNaviIDs#" bSelectMultiple="#arguments.stMetadata.ftSelectMultiple#">
 								
 								<cfoutput>
 								</div>
@@ -117,19 +111,6 @@
 			
 			<cfdefaultcase>
 				<skin:htmlHead library="extjs" />
-				<skin:htmlHead id="navigationJS">
-					<cfoutput>
-						<style type="text/css">
-						li.x-tree-node {background-image:none;}
-						.x-tree-node img.categoryIconCls,  .x-tree-node-collapsed img.categoryIconCls, .x-tree-node-expanded img.categoryIconCls{
-						    background-image:url(/farcry/images/treeimages/customIcons/NavApproved.gif);
-						}
-						/*The following styles fix an IE bugs where some of the display is hidden*/
-						ul {position:static;}
-						.ext-ie ul.x-tree-node-ct{font-size:100%;line-height:100%;}
-						</style>
-					</cfoutput>
-				</skin:htmlHead>
 				
 				<cfsavecontent variable="html">
 					
@@ -149,65 +130,17 @@
 							</div>
 							<input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="#lSelectedNaviIDs#" />
 						</fieldset>
-						<script type="text/javascript">
-						Ext.onReady(function(){
-						    // shorthand
-						    var Tree = Ext.tree;
-						    
-						    tree = new Tree.TreePanel({
-						        animate:true, 
-						        loader: new Tree.TreeLoader({
-						            dataUrl:'#application.url.webroot#/farcry/facade/getNavigationNodes.cfm',
-						            baseAttrs: {checked:false,iconCls:'categoryIconCls'},
-						            baseParams: {selectedObjectIDs:'#lSelectedNaviIDs#'}
-						        }),
-						        enableDD:true,
-						        containerScroll: true,
-						        border:false
-						    });
-						
-							tree.on('checkchange', function(n,c) {
-								var newList = "";
-								var currentTreeList = Ext.getDom('#arguments.fieldname#').value;
-								if(c){ 
-									if(currentTreeList.length){
-								  		currentTreeList = currentTreeList + ','
-								  	}
-									Ext.getDom('#arguments.fieldname#').value = currentTreeList + n.id
-								} else {
-									var valueArray = currentTreeList.split(",");
-									for(var i=0; i<valueArray.length; i++){
-									  //do something by accessing valueArray[i];
-									  if(n.id != valueArray[i]){
-									  	if(newList.length){
-									  		newList = newList + ',';
-									  	}
-									  	newList = newList + valueArray[i]
-									  }
-									}
-									Ext.getDom('#arguments.fieldname#').value = newList;
-								}	
-		
-							});
-						    // set the root node
-						    var root = new Tree.AsyncTreeNode({
-						        text: '#rootNodeText#',
-						        draggable:false,
-						        id:'#navid#',
-						        iconCls:'categoryIconCls',
-						        checked:false
-						    });
-						    tree.setRootNode(root);
-						
-						    // render the tree
-						    tree.render('#arguments.fieldname#-tree-div');
-						    root.expand();
-						    
-						});
-						</script>								
-						</cfoutput>
-								
+						</cfoutput>		
 				</cfsavecontent>
+				
+
+			
+				<extjs:onReady>
+				<cfoutput>
+				    createFormtoolTree('#arguments.fieldname#','#rootID#', '#application.url.webtop#/facade/getNavigationNodes.cfm', '#rootNodeText#','#lSelectedNaviIDs#', 'categoryIconCls');											
+				</cfoutput>
+				</extjs:onReady>
+				
 			</cfdefaultcase>
 			
 		</cfswitch>
