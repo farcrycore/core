@@ -25,6 +25,8 @@
 <cfparam name="attributes.error" default="false" />
 <cfparam name="attributes.errormessage" default="You don't have permission to view this page" />
 
+<!--- <cfparam name="attributes.result" type="variablename" /> ---><!--- Set to a variable name to output result of check --->
+
 <cfif thistag.ExecutionMode EQ "Start">
 	<cfset permitted = true />
 	
@@ -80,6 +82,11 @@
 			<cfset permitted = permitted and application.security.checkPermission(webskin=perm) />
 		</cfloop>
 		
+		<!--- Save result of check --->
+		<cfif structkeyexists(attributes,"result")>
+			<cfset evaluate("caller.#attributes.result#=#permitted#") />
+		</cfif>
+		
 		<cfif permitted>
 			<!--- Permission granted - skip to content --->
 			<cfexit method="exittemplate" />
@@ -88,6 +95,11 @@
 		<!--- Check general permissions --->
 		<cfloop list="#attributes.generalpermission#" index="perm">
 			<cfif application.security.checkPermission(permission=perm)>
+				<!--- Save result of check --->
+				<cfif structkeyexists(attributes,"result")>
+					<cfset evaluate("caller.#attributes.result#=1") />
+				</cfif>
+				
 				<!--- Permission granted - skip straight to content --->
 				<cfexit method="exittemplate" />
 			</cfif>
@@ -96,6 +108,11 @@
 		<!--- Check object permissions --->
 		<cfloop list="#attributes.objectpermission#" index="perm">
 			<cfif application.security.checkPermission(permission=perm,object=attributes.objectid)>
+				<!--- Save result of check --->
+				<cfif structkeyexists(attributes,"result")>
+					<cfset evaluate("caller.#attributes.result#=1") />
+				</cfif>
+				
 				<!--- Permission granted - skip straight to content --->
 				<cfexit method="exittemplate" />
 			</cfif>
@@ -104,6 +121,11 @@
 		<!--- Check type permissions --->
 		<cfloop list="#attributes.typepermission#" index="perm">
 			<cfif  application.security.checkPermission(permission=perm,type=attributes.type)>
+				<!--- Save result of check --->
+				<cfif structkeyexists(attributes,"result")>
+					<cfset evaluate("caller.#attributes.result#=1") />
+				</cfif>
+				
 				<!--- Permission granted - skip straight to content --->
 				<cfexit method="exittemplate" />
 			</cfif>
@@ -112,6 +134,11 @@
 		<!--- Check webskin permissions --->
 		<cfloop list="#attributes.webskinpermission#" index="perm">
 			<cfif application.security.checkPermission(webskin=perm)>
+				<!--- Save result of check --->
+				<cfif structkeyexists(attributes,"result")>
+					<cfset evaluate("caller.#attributes.result#=1") />
+				</cfif>
+				
 				<!--- Permission granted - skip straight to content --->
 				<cfexit method="exittemplate" />
 			</cfif>
@@ -123,7 +150,12 @@
 		<!--- Translate and output error message --->
 		<cfoutput>#application.rb.getResource("general.errors.#rereplace(attributes.errormessage,'[^\w]','','ALL')#",attributes.errormessage)#</cfoutput>
 	</cfif>
-	<cfexit />
+	<!--- Save result of check --->
+	<cfif structkeyexists(attributes,"result")>
+		<cfset evaluate("caller.#attributes.result#=0") />
+	</cfif>
+	
+	<cfexit method="exittag" />
 </cfif>
 
 <cfsetting enablecfoutputonly="false" />
