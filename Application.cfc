@@ -500,6 +500,7 @@
 		 ---------------------------------------->
 		<cfset application.url.webroot = this.projectURL />
 		<cfset application.url.farcry = "#this.projectURL#/webtop" />
+		<cfset application.url.webtop = "#application.url.farcry#" />
 		<cfset application.url.imageRoot = "#application.url.webroot#">
 		<cfset application.url.fileRoot = "#application.url.webroot#/files">
 		
