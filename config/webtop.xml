@@ -73,7 +73,7 @@
 				<menuitem id="cacheauto" sequence="30" label="Auto Cache" link="/admin/cacheAll.cfm" />
 			</menu>
 			<menu id="menuscheduledtasks" sequence="60" label="Scheduled Tasks">
-				<menuitem id="scheduledtasks" sequence="10" label="Scheduled Tasks" link="/admin/scheduledTasks.cfm" relatedtype="dmCron" />
+				<menuitem id="scheduledtasks" sequence="10" label="Scheduled Tasks" link="/customadmin/customlists/dmCron.cfm" relatedtype="dmCron" />
 			</menu>
 			<menu id="messagecenter" sequence="70" label="Message Center">
 				<menuitem id="messages" sequence="10" label="Messages" link="/admin/messageCentre.cfm" />
