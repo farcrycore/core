@@ -105,21 +105,6 @@ $in: [bCacheControl] output cache control headers; default true. $
 		}
 	</script>
 	
-	<!--- qforms setup --->
-	<!--// load the qForm JavaScript API //-->
-	<script type="text/javascript" src="<cfoutput>#application.url.farcry#</cfoutput>/includes/lib/qforms.js"></script>
-	<!--// you do not need the code below if you plan on just
-		   using the core qForm API methods. //-->
-	<!--// [start] initialize all default extension libraries  //-->
-	<script type="text/javascript">
-	<!--//
-	// specify the path where the "/qforms/" subfolder is located
-	qFormAPI.setLibraryPath("<cfoutput>#application.url.farcry#</cfoutput>/includes/lib/");
-	// loads all default libraries
-	qFormAPI.include("*");
-	//-->
-	</script>
-	<!--// [ end ] initialize all default extension libraries  //-->
 </cfoutput>
 
 <cfoutput>
