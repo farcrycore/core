@@ -19,8 +19,8 @@ type properties
 
 <cfproperty ftseq="21" ftfieldset="Settings" name="parameters" type="string" hint="Url parameters for file" required="no" default="">
 <cfproperty ftseq="22" ftfieldset="Settings" name="frequency" type="string" hint="How often task is run" required="no" default="daily" fttype="list" ftlist="Once:Run once,Daily:Every day,Weekly:Every week,Monthly:Every month,3600:Every hour,1800:Every half-hour,900:Every 15. minute,60:Every minute">
-<cfproperty ftseq="23" ftfieldset="Settings" name="startDate" fttype="datetime" type="date" hint="Start date for task" required="no" default="">
-<cfproperty ftseq="24" ftfieldset="Settings" name="endDate" fttype="datetime" type="date" hint="End date for task" required="no" default="">
+<cfproperty ftseq="23" ftfieldset="Settings" name="startDate" fttype="datetime" type="date" hint="Start date for task" required="no" ftDefault="now()" ftDefaultType="evaluate">
+<cfproperty ftseq="24" ftfieldset="Settings" name="endDate" fttype="datetime" type="date" hint="End date for task" required="no">
 <cfproperty ftseq="25" ftfieldset="Settings" name="timeOut" type="numeric" hint="time out period" required="no" default="60" fttype="int">
 
 
