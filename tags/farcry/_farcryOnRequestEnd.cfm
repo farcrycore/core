@@ -469,7 +469,7 @@ $out:$
 	
 			<cfif isDefined("variables.stPlaceInHead.farcryFormJS") AND variables.stPlaceInHead.farcryFormJS EQ "true">
 				<cfoutput>
-					<script src="#application.url.farcry#/js/farcryForm.js" type="text/javascript"></script>	</cfoutput>
+					<script src="#application.url.farcry#/js/farcryForm.cfm" type="text/javascript"></script>	</cfoutput>
 			</cfif>
 			
 			<cfif isDefined("variables.stPlaceInHead.flashWrapperToggle") and variables.stPlaceInHead.flashWrapperToggle EQ true>
