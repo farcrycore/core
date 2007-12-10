@@ -13,7 +13,7 @@ FARCRY INCLUDE FILES
 <cfimport taglib="/farcry/core/tags/navajo" prefix="nj" />
 <cfimport taglib="/farcry/core/tags/extjs" prefix="extjs" />
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
-
+<cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
 
 
 <!--- Add the extjs iframe dialog to the head --->
@@ -40,24 +40,23 @@ START WEBSKIN
 <cfset stOverviewParams.stPermissions = StructNew()>
 
 <cfif StructKeyExists(application.stcoapi[stobj.typename], "bUseInTree") AND application.stcoapi[stobj.typename].bUseInTree AND len(stOverviewParams.parentID)>
-	<cfset stOverviewParams.stPermissions.iDeveloperPermission = application.security.checkPermission(permission="developer")>
-	<cfset stOverviewParams.stPermissions.iEdit = application.security.checkPermission(object=stOverviewParams.parentid,permission="edit")>
-	<cfset stOverviewParams.stPermissions.iRequest = application.security.checkPermission(object=stOverviewParams.parentid,permission="RequestApproval")>
-	<cfset stOverviewParams.stPermissions.iApprove = application.security.checkPermission(object=stOverviewParams.parentid,permission="Approve")>
-	<cfset stOverviewParams.stPermissions.iApproveOwn = application.security.checkPermission(object=stOverviewParams.parentid,permission="CanApproveOwnContent")>
-	<cfset stOverviewParams.stPermissions.iObjectDumpTab = application.security.checkPermission(object=stOverviewParams.parentid,permission="ObjectDumpTab")>
-	<cfset stOverviewParams.stPermissions.iDelete = application.security.checkPermission(object=stOverviewParams.parentid,permission="delete")>
-	<cfset stOverviewParams.stPermissions.iTreeSendToTrash = application.security.checkPermission(object=stOverviewParams.parentid,permission="SendToTrash")>
-	<cfset stOverviewParams.stPermissions.iCreate = application.security.checkPermission(object=stOverviewParams.parentid,permission="create")>
+	<sec:CheckPermission permission="developer" result="stOverviewParams.stPermissions.iDeveloperPermission" />
+	<sec:CheckPermission permission="Edit" type="#stOverviewParams.stParent.typename#" objectid="#stOverviewParams.parentid#" result="stOverviewParams.stPermissions.iEdit" />
+	<sec:CheckPermission permission="RequestApproval" type="#stOverviewParams.stParent.typename#" objectid="#stOverviewParams.parentid#" result="stOverviewParams.stPermissions.iRequest" />
+	<sec:CheckPermission permission="Approve" type="#stOverviewParams.stParent.typename#" objectid="#stOverviewParams.parentid#" result="stOverviewParams.stPermissions.iApprove" />
+	<sec:CheckPermission permission="CanApproveOwnContent" type="#stOverviewParams.stParent.typename#" objectid="#stOverviewParams.parentid#" result="stOverviewParams.stPermissions.iApproveOwn" />
+	<sec:CheckPermission permission="ObjectDumpTab" type="#stOverviewParams.stParent.typename#" objectid="#stOverviewParams.parentid#" result="stOverviewParams.stPermissions.iObjectDumpTab" />
+	<sec:CheckPermission permission="Delete" type="#stOverviewParams.stParent.typename#" objectid="#stOverviewParams.parentid#" result="stOverviewParams.stPermissions.iDelete" />
+	<sec:CheckPermission permission="Create" type="#stOverviewParams.stParent.typename#" objectid="#stOverviewParams.parentid#" result="stOverviewParams.stPermissions.iCreate" />
+	<sec:CheckPermission permission="SendToTrash" type="#stOverviewParams.stParent.typename#" objectid="#stOverviewParams.parentid#" result="stOverviewParams.stPermissions.iTreeSendToTrash" />
 <cfelse>
-	<cfset stOverviewParams.permissionSet = "news">
-	<cfset stOverviewParams.stPermissions.iDeveloperPermission = application.security.checkPermission(permission="developer")>
-	<cfset stOverviewParams.stPermissions.iEdit = application.security.checkPermission(permission="#stOverviewParams.permissionSet#Edit")>
-	<cfset stOverviewParams.stPermissions.iRequest = application.security.checkPermission(permission="#stOverviewParams.permissionSet#RequestApproval")>
-	<cfset stOverviewParams.stPermissions.iApprove = application.security.checkPermission(permission="#stOverviewParams.permissionSet#Approve")>
-	<cfset stOverviewParams.stPermissions.iApproveOwn = application.security.checkPermission(permission="#stOverviewParams.permissionSet#Approve")>
-	<cfset stOverviewParams.stPermissions.iObjectDumpTab = application.security.checkPermission(permission="#stOverviewParams.permissionSet#Approve")>	
-	<cfset stOverviewParams.stPermissions.iDelete = application.security.checkPermission(permission="#stOverviewParams.permissionSet#Delete")>
+	<sec:CheckPermission permission="developer" result="stOverviewParams.stPermissions.iDeveloperPermission" />
+	<sec:CheckPermission permission="Edit" type="#stObj.typename#" objectid="#stObj.objectid#" result="stOverviewParams.stPermissions.iEdit" />
+	<sec:CheckPermission permission="RequestApproval" type="#stObj.typename#" objectid="#stObj.objectid#" result="stOverviewParams.stPermissions.iRequest" />
+	<sec:CheckPermission permission="Approve" type="#stObj.typename#" objectid="#stObj.objectid#" result="stOverviewParams.stPermissions.iApprove" />
+	<sec:CheckPermission permission="CanApproveOwnContent" type="#stObj.typename#" objectid="#stObj.objectid#" result="stOverviewParams.stPermissions.iApproveOwn" />
+	<sec:CheckPermission permission="ObjectDumpTab" type="#stObj.typename#" objectid="#stObj.objectid#" result="stOverviewParams.stPermissions.iObjectDumpTab" />
+	<sec:CheckPermission permission="Delete" type="#stObj.typename#" objectid="#stObj.objectid#" result="stOverviewParams.stPermissions.iDelete" />
 	<cfset stOverviewParams.stPermissions.iTreeSendToTrash = 0>
 </cfif>
 

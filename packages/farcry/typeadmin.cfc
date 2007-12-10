@@ -282,19 +282,18 @@ environment references (might be nice to clean these up)
 </cffunction>
 
 <cffunction name="getBasePermissions">
-	<cfset var stpermissions=structnew()>
-	<cfscript>
-	// determine base permissions for this user
-	// todo: cache permission lookups.. at least remove double up for default button data 20050725 GB
-		stPermissions=structnew();
-		stPermissions.iCreate=application.security.checkPermission(permission="#attributes.permissionset#Create");
-		stPermissions.iDelete=application.security.checkPermission(permission="#attributes.permissionset#Delete");
-		stPermissions.iRequestApproval=application.security.checkPermission(permission="#attributes.permissionset#RequestApproval");
-		stPermissions.iApprove=application.security.checkPermission(permission="#attributes.permissionset#Approve");
-		stPermissions.iEdit=application.security.checkPermission(permission="#attributes.permissionset#Edit");
-		stPermissions.iDumpTab=application.security.checkPermission(permission="ObjectDumpTab");
-		stPermissions.iDeveloper=application.security.checkPermission(permission="developer");
-	</cfscript>
+	<cfset var stPermissions=structnew()>
+	
+	<cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
+	
+	<sec:CheckPermission permission="Create" type="#attributes.typename#" result="stPermissions.iCreate" />
+	<sec:CheckPermission permission="Delete" type="#attributes.typename#" result="stPermissions.iDelete" />
+	<sec:CheckPermission permission="RequestApproval" type="#attributes.typename#" result="stPermissions.iRequestApproval" />
+	<sec:CheckPermission permission="Approve" type="#attributes.typename#" result="stPermissions.iApprove" />
+	<sec:CheckPermission permission="Edit" type="#attributes.typename#" result="stPermissions.iEdit" />
+	<sec:CheckPermission permission="ObjectDumpTab" result="stPermissions.iDumpTab" />
+	<sec:CheckPermission permission="Developer" result="stPermissions.iDeveloper" />
+	
 	<cfreturn stPermissions />
 </cffunction>
 

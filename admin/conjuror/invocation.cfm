@@ -18,8 +18,9 @@ Pseudo:
  --->
 <cfprocessingDirective pageencoding="utf-8">
 <!--- include tag libraries --->
-<cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
-<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/core/tags/admin/" prefix="admin" />
+<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4" />
+<cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
 
 <!--- include function libraries 
 <cfinclude template="/farcry/core/admin/includes/utilityFunctions.cfm">
@@ -50,7 +51,7 @@ Pseudo:
 	
 	<cfset typename=form.typename>
 	<cfset objectid=form.objectid>
-	<cfset method=form.method>
+	<cfset method=form.method>85///7
 </cfif>
 
 <!--- auto-typename lookup if required --->
@@ -72,98 +73,67 @@ Pseudo:
 	</cfif>
 </cfif>
 
+<admin:header>
 
 <!--- 
 	check method permissions for this content and user 
 	worth noting that additional permission check should exist within the method being invoked
 	this step at least provides some blanquet security to protect people from themselves ;)
 --->
-<cfif structKeyExists(stPackage, "BUSEINTREE") AND stPackage.BUSEINTREE>
-	<!--- determine inherited tree based permissions --->
-	<cfset bHasPermission = application.security.checkPermission(permission='edit',object=URL.objectid)>
-	<cfif NOT bHasPermission GTE 0>
-		<cfabort showerror="<strong>Error:</strong> #application.adminBundle[session.dmProfile.locale].noEditPermission#">
-	</cfif>
-<cfelse>
-	<!--- determine standard permissions for typename --->
-	<!--- 
-		TODO: 	Nice in theory but current permission sets do not relate to permissionset/method
-				perhaps we could match types.cfc methods to current permissionset syntax and define
-				as a bonafide standard.
-				Currently works well for EDIT which is the only requirement at present.
-		 --->
-	<cfif structKeyExists(stPackage, "permissionset")>
-		<!--- grab permission set from component metadata --->
-		<cfset permissionset=stPackage.permissionset>
+<sec:CheckPermission permission="Edit" type="#typename#" objectid="#url.objectid#" error="true" errormessage="You do not have permission to edit this object">
+	<!--- get object instance --->
+	<cfset oType = createObject("component", PackagePath)>
+	<cfif ListLen(url.objectid) GT 1>
+		<admin:header>
+			<cfset evaluate("oType.#method#(objectid='#objectid#')")>
+		<admin:footer> 
 	<cfelse>
-		<!--- if no permission set specified default to news --->
-		<cfset permissionset="news">
-		<cftrace category="permissions" type="warning" text="No permission set specified for #typename#. Default permission set NEWS applied.">
-		<!--- TODO: should really log this somewhere as a warning --->
-	</cfif>
-	<cfset bHasPermission = application.security.checkPermission(permission="#permissionset#edit")>
-	<cfif NOT bHasPermission GTE 0>
-		<cfabort showerror="<strong>Error:</strong> #application.adminBundle[session.dmProfile.locale].noEditPermission#">
-	</cfif>
-</cfif>
-
-<!--- get object instance --->
-<cfset oType = createObject("component", PackagePath)>
-<cfif ListLen(url.objectid) GT 1>
-	<admin:header>
-		<cfset evaluate("oType.#method#(objectid='#objectid#')")>
-	<admin:footer> 
-<cfelse>
-	<cfset returnStruct = oType.getData(objectid=URL.objectid)>
-	<cfif StructKeyExists(returnStruct, "versionid") AND StructKeyExists(returnStruct, "status") AND ListContains("approved,pending",returnStruct.status)>
-		<!--- any pending/approve items should go to overview --->
-		<cflocation url="#application.url.farcry#/edittabOverview.cfm?objectid=#URL.objectid#">
-		<cfabort>
-	<cfelse>
-		<!--- go to edit --->
-
-		<!--- determine where the edit handler has been called from to provide the right return url --->
-		<cfparam name="url.ref" default="sitetree" type="string">
-		
-		<cfset stOnExit = StructNew() />
-		<cfif url.ref eq "typeadmin" AND (isDefined("url.module") AND Len(url.module))>
-			<!--- typeadmin redirect --->
-			<cfset stOnExit.Type = "URL" />
-			<cfset stOnExit.Content = "#application.url.farcry#/admin/customadmin.cfm?module=#url.module#" />
-			<cfif isDefined("URL.plugin")>
-				<cfset stOnExit.Content = stOnExit.Content & "&plugin=" & url.plugin />
-			</cfif>
-		<cfelseif url.ref eq "closewin"> 
-			<!--- close win has no official redirector as it closes open window --->
-			<cfset stOnExit.Type = "HTML" />
-			<cfsavecontent variable="stOnExit.Content">
-				<cfoutput>
-				<script type="text/javascript">
-					opener.location.href = opener.location.href;
-					window.close();
-				</script>
-				</cfoutput>
-			</cfsavecontent>
-		<cfelse> 
-			<!--- site tree redirect --->
-			<cfset stOnExit.Type = "HTML" />
-			<cfsavecontent variable="stOnExit.Content">
-				<!--- get parent to update tree --->
-				<nj:treeGetRelations typename="#returnStruct.typename#" objectId="#returnStruct.ObjectID#" get="parents" r_lObjectIds="ParentID" bInclusive="1">
-				<!--- update tree --->
-				<nj:updateTree objectId="#parentID#">
-				<cfoutput>
-				<script type="text/javascript">
-					parent['content'].location.href = '#application.url.farcry#/edittabOverview.cfm?objectid=#returnStruct.ObjectID#';
-				</script>
-				</cfoutput>
-			</cfsavecontent>
-		</cfif>
+		<cfset returnStruct = oType.getData(objectid=URL.objectid)>
+		<cfif StructKeyExists(returnStruct, "versionid") AND StructKeyExists(returnStruct, "status") AND ListContains("approved,pending",returnStruct.status)>
+			<!--- any pending/approve items should go to overview --->
+			<cflocation url="#application.url.farcry#/edittabOverview.cfm?objectid=#URL.objectid#">
+			<cfabort>
+		<cfelse>
+			<!--- go to edit --->
+	
+			<!--- determine where the edit handler has been called from to provide the right return url --->
+			<cfparam name="url.ref" default="sitetree" type="string">
 			
-
-
-		<admin:header>	
-		
+			<cfset stOnExit = StructNew() />
+			<cfif url.ref eq "typeadmin" AND (isDefined("url.module") AND Len(url.module))>
+				<!--- typeadmin redirect --->
+				<cfset stOnExit.Type = "URL" />
+				<cfset stOnExit.Content = "#application.url.farcry#/admin/customadmin.cfm?module=#url.module#" />
+				<cfif isDefined("URL.plugin")>
+					<cfset stOnExit.Content = stOnExit.Content & "&plugin=" & url.plugin />
+				</cfif>
+			<cfelseif url.ref eq "closewin"> 
+				<!--- close win has no official redirector as it closes open window --->
+				<cfset stOnExit.Type = "HTML" />
+				<cfsavecontent variable="stOnExit.Content">
+					<cfoutput>
+					<script type="text/javascript">
+						opener.location.href = opener.location.href;
+						window.close();
+					</script>
+					</cfoutput>
+				</cfsavecontent>
+			<cfelse> 
+				<!--- site tree redirect --->
+				<cfset stOnExit.Type = "HTML" />
+				<cfsavecontent variable="stOnExit.Content">
+					<!--- get parent to update tree --->
+					<nj:treeGetRelations typename="#returnStruct.typename#" objectId="#returnStruct.ObjectID#" get="parents" r_lObjectIds="ParentID" bInclusive="1">
+					<!--- update tree --->
+					<nj:updateTree objectId="#parentID#">
+					<cfoutput>
+					<script type="text/javascript">
+						parent['content'].location.href = '#application.url.farcry#/edittabOverview.cfm?objectid=#returnStruct.ObjectID#';
+					</script>
+					</cfoutput>
+				</cfsavecontent>
+			</cfif>
+							
    			<cfset html = oType.getView(stObject=returnStruct, template="#method#", OnExit="#stOnExit#", alternateHTML="") />
 			
 			<cfif len(html)>
@@ -176,10 +146,11 @@ Pseudo:
 			        <cfinvokeargument name="onExit" value="#stOnExit#" />
 			    </cfinvoke>
 			</cfif>
-
-			
-		<admin:footer> 
-	</cfif> 
-</cfif>
+	
+		</cfif> 
+	</cfif>
+</sec:CheckPermission>
+	
+<admin:footer> 
 
 <cfsetting enablecfoutputonly="No">

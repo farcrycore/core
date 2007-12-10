@@ -1,9 +1,12 @@
 <cfsetting enablecfoutputonly="Yes">
 <cfprocessingDirective pageencoding="utf-8">
-<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
-<cfimport taglib="/farcry/core/tags/navajo" prefix="nj">
+
+<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4" />
+<cfimport taglib="/farcry/core/tags/navajo" prefix="nj" />
+<cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
 
 <q4:contentobjectget objectid="#url.objectID#" r_stobject="stObj">
+
 <!--- Futzing the typeid here --->
 <cfscript>
 	typename = stObj.typename;
@@ -15,25 +18,14 @@
 	<cfset permObjectId=stObj.objectId>
 </cfif>
 
-<cfif len(permObjectId)>
-	<cfscript>
-		iObjectCreatePermission = application.security.checkPermission(permission="Edit",object=permObjectID);
-	</cfscript>
-
-<cfelse>
-	<cfscript>
-		iObjectCreatePermission = application.security.checkPermission(permission="RootNodeManagement");
-	</cfscript>
-</cfif>
-
-<cfif structCount(stObj) and iObjectCreatePermission>
-
-<cfoutput>
-	<script>
-	window.location='#application.url.farcry#/Navajo/edit.cfm?objectId=#url.objectID#&usingnavajo=1&type=#typename#';
-	</script>
-</cfoutput>
-
+<cfif structCount(stObj)>
+	<sec:CheckPermission generalpermission="RootNodeManagement" typepermission="Edit" type="#typename#" objectpermission="Edit" objectid="#permObjectID#">
+		<cfoutput>
+			<script>
+			window.location='#application.url.farcry#/Navajo/edit.cfm?objectId=#url.objectID#&usingnavajo=1&type=#typename#';
+			</script>
+		</cfoutput>
+	</sec:CheckPermission>
 </cfif>
 
 <cfsetting enablecfoutputonly="No">

@@ -1,17 +1,17 @@
+<cfsetting enablecfoutputonly="true" showdebugoutput="false" />
+
 <cfprocessingDirective pageencoding="utf-8">
 
-<cfsetting enablecfoutputonly="true" showdebugoutput="false">
-
 <cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
+
 <cfset resultmsg = "#application.adminBundle[session.dmProfile.locale].liveObjRestoredOK#">
 <cftry>
-	<!--- check permissions on objects nav parent --->
-	<cfset bEdit = application.security.checkPermission(object=URL.navid,permission="edit")>
-
 	<!--- Get draft object --->
-	<cfif bEdit>
-		<q4:contentobjectget objectId="#URL.objectId#" r_stObject="stObj">
+	<q4:contentobjectget objectId="#URL.objectId#" r_stObject="stObj">
 
+	<sec:CheckPermission permission="Edit" type="#stObj.typename#" objectid="#url.objectid#" error="true" errormessage="'You do not have permission to edit this object'">
+	
 		<!--- get live object --->
 		<cfif structKeyExists(stObj,'versionID') AND len(trim(stObj.versionID)) EQ 35>
 			<q4:contentobjectget objectId="#stObj.versionid#" r_stObject="stLiveObj">			
@@ -27,21 +27,19 @@
 			<cfset o = createObject('component',application.types[stobj.typename].typepath)>
 			<cfset o.setData(stProperties=stObj,auditNote='Live object data restored to draft',bAudit=true)>
 		</cfif>
-	</cfif>
+		
+		<!--- Need to try and delete the PLP if it exists - relies on people sticking to this naming convention though so not rock solid. --->
+		<cftry>
+			<cffile action="DELETE" file="#application.path.plpstorage#/#session.dmSec.authentication.userlogin#_#stObj.objectID#.plp">
+			<cfcatch><!--- dont do anything ---></cfcatch>
+		</cftry>
+	
+	</sec:CheckPermission>
 
 	<cfcatch>
 		<!--- do nothing --->
-		<cfset resultmsg = '#application.adminBundle[session.dmProfile.locale].draftObjRestoreFailed#'>
+		<cfoutput>'#application.adminBundle[session.dmProfile.locale].draftObjRestoreFailed#'</cfoutput>
 	</cfcatch>
 </cftry>
 
-<!--- Need to try and delete the PLP if it exists - relies on people sticking to this naming convention though so not rock solid. --->
-<cftry>
-	<cffile action="DELETE" file="#application.path.plpstorage#/#session.dmSec.authentication.userlogin#_#stObj.objectID#.plp">
-	<cfcatch><!--- dont do anything ---></cfcatch>
-</cftry>
-
-<cfinclude template="/farcry/core/admin/includes/json.cfm">
-<cfsetting enablecfoutputonly="false">
-<cfcontent type="text/plain"><cfoutput>
-#jsonencode(resultmsg)#</cfoutput>
+<cfsetting enablecfoutputonly="false" />

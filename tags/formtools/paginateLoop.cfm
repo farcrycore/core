@@ -25,7 +25,7 @@ $in: objectid -- $
 
 
 <cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" >
-
+<cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
 
 
 <cfif thistag.executionMode eq "Start">
@@ -46,9 +46,9 @@ $in: objectid -- $
 		<cfparam name="attributes.bIncludeObjects" default="true">
 		<cfparam name="attributes.BINCLUDEALLCOLUMNS" default="false">
 		<cfparam name="attributes.bTypeAdmin" default="true">
-		<cfparam name="attributes.stpermissions" default="#structNew()#">
+		<!--- <cfparam name="attributes.stpermissions" default="#structNew()#"> --->
 		<cfparam name="attributes.lCustomActions" default="">
-		
+				
 		<cfif structKeyExists(application.types, attributes.typename)>
 			<cfset PrimaryPackage = application.types[attributes.typename] />
 			<cfset PrimaryPackagePath = application.types[attributes.typename].typepath />
@@ -118,6 +118,19 @@ $in: objectid -- $
 					<cfset caller[attributes.r_stObject].flowLink = "<a href='#application.stPlugins.flow.url#/?startid=#attributes.qRecordSet.objectid[variables.currentrow]#&flushcache=1' target='_blank'><img src='#application.url.farcry#/images/treeImages/preview.gif' alt='flow' title='flow' /></a>" />
 				</cfif> --->
 				
+				<cfif structkeyexists(attributes,"stPermissions")>
+					<cfset thistag.stPermissions = duplicate(attributes.stPermissions) />
+				<cfelse>
+					<cfset thistag.stPermissions = structnew() />
+					<sec:CheckPermission permission="Create" type="#attributes.typename#" objectid="#attributes.qRecordSet.objectid[variables.currentrow]#" result="thistag.stPermissions.iCreate" />
+					<sec:CheckPermission permission="Delete" type="#attributes.typename#" objectid="#attributes.qRecordSet.objectid[variables.currentrow]#" result="thistag.stPermissions.iDelete" />
+					<sec:CheckPermission permission="RequestApproval" type="#attributes.typename#" objectid="#attributes.qRecordSet.objectid[variables.currentrow]#" result="thistag.stPermissions.iRequestApproval" />
+					<sec:CheckPermission permission="Approve" type="#attributes.typename#" objectid="#attributes.qRecordSet.objectid[variables.currentrow]#" result="thistag.stPermissions.iApprove" />
+					<sec:CheckPermission permission="Edit" type="#attributes.typename#" objectid="#attributes.qRecordSet.objectid[variables.currentrow]#" result="thistag.stPermissions.iEdit" />
+					<sec:CheckPermission permission="ObjectDumpTab" result="thistag.stPermissions.iDumpTab" />
+					<sec:CheckPermission permission="Developer" result="thistag.stPermissions.iDeveloper" />
+				</cfif>
+				
 				<cfsavecontent variable="ActionDropdown">
 					<cfset request.inhead.prototype = 1 />
 					<cfoutput>
@@ -127,10 +140,10 @@ $in: objectid -- $
 						<option value="overview">Overview</option>
 									
 						<cfif listFindNoCase(attributes.qRecordSet.columnlist,"locked") AND attributes.qRecordSet.locked[variables.currentRow] neq 0 AND attributes.qRecordSet.lockedby[variables.currentRow] neq '#session.dmSec.authentication.userlogin#_#session.dmSec.authentication.userDirectory#'>
-							<cfif structKeyExists(attributes.stPermissions, "iApprove") AND attributes.stPermissions.iApprove>
+							<cfif structKeyExists(thistag.stPermissions, "iApprove") AND thistag.stPermissions.iApprove>
 								<option value="unlock">Unlock</option>
 							</cfif>		
-						<cfelseif structKeyExists(attributes.stPermissions, "iEdit") AND attributes.stPermissions.iEdit>
+						<cfelseif structKeyExists(thistag.stPermissions, "iEdit") AND thistag.stPermissions.iEdit>
 							<cfif listContainsNoCase(attributes.qRecordSet.columnlist,"bHasMultipleVersion")>
 								<cfif NOT(attributes.qRecordSet.bHasMultipleVersion[variables.currentrow]) AND attributes.qRecordSet.status[variables.currentRow] EQ "approved">
 									<option value="createDraft">Create Draft Object</option>
@@ -149,15 +162,15 @@ $in: objectid -- $
 						</cfif>
 						
 						
-						<cfif structKeyExists(attributes.stPermissions, "iRequestApproval") 
-								AND attributes.stPermissions.iRequestApproval
+						<cfif structKeyExists(thistag.stPermissions, "iRequestApproval") 
+								AND thistag.stPermissions.iRequestApproval
 							AND listFindNoCase(attributes.qRecordSet.columnlist,"status") 
 							AND attributes.qRecordSet.status[variables.currentRow] EQ "draft">
 							<option value="requestApproval">Request Approval</option>
 						</cfif>
 						
-						<cfif structKeyExists(attributes.stPermissions, "iApprove") 
-							AND attributes.stPermissions.iApprove
+						<cfif structKeyExists(thistag.stPermissions, "iApprove") 
+							AND thistag.stPermissions.iApprove
 							AND listFindNoCase(attributes.qRecordSet.columnlist,"status")
 							AND (
 								attributes.qRecordSet.status[variables.currentRow] EQ "draft" 
@@ -245,6 +258,19 @@ $in: objectid -- $
 					<cfset caller[attributes.r_stObject].flowLink = "<a href='#application.stPlugins.flow.url#/?startid=#attributes.qRecordSet.objectid[variables.currentrow]#&flushcache=1' target='_blank'><img src='#application.url.farcry#/images/treeImages/preview.gif' alt='flow' title='flow' /></a>" />
 				</cfif> --->
 				
+				<cfif structkeyexists(attributes,"stPermissions")>
+					<cfset thistag.stPermissions = duplicate(attributes.stPermissions) />
+				<cfelse>
+					<cfset thistag.stPermissions = structnew() />
+					<sec:CheckPermission permission="Create" type="#attributes.typename#" objectid="#attributes.qRecordSet.objectid[variables.currentrow]#" result="thistag.stPermissions.iCreate" />
+					<sec:CheckPermission permission="Delete" type="#attributes.typename#" objectid="#attributes.qRecordSet.objectid[variables.currentrow]#" result="thistag.stPermissions.iDelete" />
+					<sec:CheckPermission permission="RequestApproval" type="#attributes.typename#" objectid="#attributes.qRecordSet.objectid[variables.currentrow]#" result="thistag.stPermissions.iRequestApproval" />
+					<sec:CheckPermission permission="Approve" type="#attributes.typename#" objectid="#attributes.qRecordSet.objectid[variables.currentrow]#" result="thistag.stPermissions.iApprove" />
+					<sec:CheckPermission permission="Edit" type="#attributes.typename#" objectid="#attributes.qRecordSet.objectid[variables.currentrow]#" result="thistag.stPermissions.iEdit" />
+					<sec:CheckPermission permission="ObjectDumpTab" result="thistag.stPermissions.iDumpTab" />
+					<sec:CheckPermission permission="Developer" result="thistag.stPermissions.iDeveloper" />
+				</cfif>
+				
 				<cfsavecontent variable="ActionDropdown">
 					<cfset request.inhead.prototype = 1 />
 					<cfoutput>
@@ -254,10 +280,10 @@ $in: objectid -- $
 						<option value="overview">Overview</option>
 									
 						<cfif listFindNoCase(attributes.qRecordSet.columnlist,"locked") AND attributes.qRecordSet.locked[variables.currentRow] neq 0 AND attributes.qRecordSet.lockedby[variables.currentRow] neq '#session.dmSec.authentication.userlogin#_#session.dmSec.authentication.userDirectory#'>
-							<cfif structKeyExists(attributes.stPermissions, "iApprove") AND attributes.stPermissions.iApprove>
+							<cfif structKeyExists(thistag.stPermissions, "iApprove") AND thistag.stPermissions.iApprove>
 								<option value="unlock">Unlock</option>
 							</cfif>		
-						<cfelseif structKeyExists(attributes.stPermissions, "iEdit") AND attributes.stPermissions.iEdit>
+						<cfelseif structKeyExists(thistag.stPermissions, "iEdit") AND thistag.stPermissions.iEdit>
 							<cfif listContainsNoCase(attributes.qRecordSet.columnlist,"bHasMultipleVersion")>
 								<cfif NOT(attributes.qRecordSet.bHasMultipleVersion[variables.currentrow]) AND attributes.qRecordSet.status[variables.currentRow] EQ "approved">
 									<option value="createDraft">Create Draft Object</option>
@@ -276,15 +302,15 @@ $in: objectid -- $
 						</cfif>
 						
 						
-						<cfif structKeyExists(attributes.stPermissions, "iRequestApproval") 
-								AND attributes.stPermissions.iRequestApproval
+						<cfif structKeyExists(thistag.stPermissions, "iRequestApproval") 
+								AND thistag.stPermissions.iRequestApproval
 							AND listFindNoCase(attributes.qRecordSet.columnlist,"status") 
 							AND attributes.qRecordSet.status[variables.currentRow] EQ "draft">
 							<option value="requestApproval">Request Approval</option>
 						</cfif>
 						
-						<cfif structKeyExists(attributes.stPermissions, "iApprove") 
-							AND attributes.stPermissions.iApprove
+						<cfif structKeyExists(thistag.stPermissions, "iApprove") 
+							AND thistag.stPermissions.iApprove
 							AND listFindNoCase(attributes.qRecordSet.columnlist,"status")
 							AND (
 								attributes.qRecordSet.status[variables.currentRow] EQ "draft" 

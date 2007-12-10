@@ -63,7 +63,7 @@ $out:$
 <admin:header />
 
 <!--- First check permissions --->
-<sec:CheckPermission typepermission="Edit" type="#url.typename#" objectpermission="Edit" objectid="#url.objectid#" error="true" errormessage="You do not have permission to edit this item">
+<sec:CheckPermission permission="Edit" type="#url.typename#" objectid="#url.objectid#" error="true" errormessage="You do not have permission to edit this item">
 
 	<!--- work out package epath --->
 	<cfset oType = createObject("component", application.types[url.typename].typePath) />

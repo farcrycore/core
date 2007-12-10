@@ -58,7 +58,7 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 <cfparam name="attributes.bFilterCategories" default="true" type="boolean">
 <cfparam name="attributes.bFilterDateRange" default="true" type="boolean">
 <cfparam name="attributes.bFilterProperties" default="true" type="boolean">
-<cfparam name="attributes.permissionset" default="news" type="string">
+<cfparam name="attributes.permissionset" default="#attributes.typename#" type="string">
 <!--- attributes.query type="query" CF7 specific --->
 <cfparam name="attributes.defaultorderby" default="datetimelastupdated" type="string">
 <cfparam name="attributes.defaultorder" default="desc" type="string">

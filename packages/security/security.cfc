@@ -111,8 +111,11 @@
 		
 			<cfif this.factory.permission.permissionExists("#arguments.type##arguments.permission#")>
 				<cfreturn this.factory.role.getRight(role=arguments.role, permission=this.factory.permission.getID("#arguments.type##arguments.permission#")) />
-			<cfelse>
+			<cfelseif this.factory.permission.permissionExists("generic#arguments.permission#")>
 				<cfreturn this.factory.role.getRight(role=arguments.role, permission=this.factory.permission.getID("generic#arguments.permission#")) />
+			<cfelse>
+				<!--- This should only happen for checks to object permissions that don't have corresponding type permissions --->
+				<cfreturn 1 />
 			</cfif>
 		
 		<cfelseif len(arguments.permission)>
