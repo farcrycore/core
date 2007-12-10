@@ -3,11 +3,11 @@
 
 <cfset hashedURL = hash(cgi.QUERY_STRING) />
 
-<cfparam name="application.combinedJS" default="#structNew()#" />
+<cfparam name="application.stCombinedFarcryJS" default="#structNew()#" />
 
-<cfif not structKeyExists(application.combinedJS, hashedURL)>
+<cfif not structKeyExists(application.stCombinedFarcryJS, hashedURL)>
 
-	<cfsavecontent variable="combinedJS">
+	<cfsavecontent variable="stCombinedFarcryJS">
 		<cfif structKeyExists(url, "library") AND  structKeyExists(url, "files") AND len(url.files)>
 			<cfloop list="#url.files#" index="i" >
 				<cfoutput>//-------------#i#-------------//</cfoutput>
@@ -16,7 +16,7 @@
 		</cfif>
 	</cfsavecontent>
 	
-	<cfset application.combinedJS[hashedURL] = combinedJS />
+	<cfset application.stCombinedFarcryJS[hashedURL] = stCombinedFarcryJS />
 </cfif>
 
-<cfoutput>#application.combinedJS[hashedURL]#</cfoutput>
+<cfoutput>#application.stCombinedFarcryJS[hashedURL]#</cfoutput>

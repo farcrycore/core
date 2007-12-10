@@ -5,10 +5,9 @@
 	<!--- LOCATE THE PROJECTS CONSTRUCTOR FILE --->
 	<cfset this.projectConstructorLocation = getProjectConstructorLocation(plugin="farcry") />
 
-	<cfinclude template="#this.projectConstructorLocation#" />
+	<cfinclude template="#this.projectConstructorLocation#" />	
 	
-	
-	
+	<cfsetting enablecfoutputonly="false" />
 	
 	
 	<cffunction name="OnApplicationStart" access="public" returntype="boolean" output="false" hint="Fires when the application is first created.">
@@ -523,6 +522,12 @@
 		 ------------------------------------------>
 		<cfset application.bObjectBroker = this.bObjectBroker />
 		<cfset application.ObjectBrokerMaxObjectsDefault = this.ObjectBrokerMaxObjectsDefault />
+			
+		
+		<!------------------------------------------ 
+		INITIALISE THE COMBINED JS STRUCTURE USED TO COMBINE MULTIPLE JS FILES
+		 ------------------------------------------>
+		<cfset application.stCombinedFarcryJS = structNew() />
 		
 		
 		<!------------------------------------------ 
