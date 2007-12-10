@@ -105,6 +105,10 @@
 			
 		<cfelseif len(arguments.type) and len(arguments.permission)>
 		
+			<cfif arguments.type eq "dmNews">
+				<cfset arguments.type = "news" />
+			</cfif>
+		
 			<cfif this.factory.permission.permissionExists("#arguments.type##arguments.permission#")>
 				<cfreturn this.factory.role.getRight(role=arguments.role, permission=this.factory.permission.getID("#arguments.type##arguments.permission#")) />
 			<cfelse>
