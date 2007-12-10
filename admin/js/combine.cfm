@@ -10,8 +10,10 @@
 	<cfsavecontent variable="stCombinedFarcryJS">
 		<cfif structKeyExists(url, "library") AND  structKeyExists(url, "files") AND len(url.files)>
 			<cfloop list="#url.files#" index="i" >
-				<cfoutput>//-------------#i#-------------//</cfoutput>
-				<cfinclude template="/farcry/core/admin/js/#url.library##i#" />			
+				<cfoutput>
+					//-------------#i#-------------//
+					<cfinclude template="/farcry/core/admin/js/#url.library##i#" />
+				</cfoutput>	
 			</cfloop>
 		</cfif>
 	</cfsavecontent>
