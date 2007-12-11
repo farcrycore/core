@@ -239,13 +239,8 @@ $TODO: This should respond to request.mode settings and not require a
 a whole new set of permission checks, have trapped any errors and suppressed GB 20031024 $
 ---------------------------->
 <cftry>
-<!--- begin: logged in user? --->
-<cfscript>
-	stLoggedInUser = application.oAuthentication.getUserAuthenticationData();
-	bLoggedIn = stLoggedInUser.bLoggedIn;
-</cfscript>
 
-<cfif bLoggedIn>
+<cfif len(application.security.getCurrentUserID())>
 	<!--- check they are admin --->
 	<!--- check they are able to comment --->
 	<cfscript>

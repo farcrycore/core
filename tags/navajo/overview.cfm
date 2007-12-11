@@ -1349,7 +1349,7 @@ o.bShowDisabled = 1;
 	approveMenu['ApproveItem'] = o;
 	o.text = "#application.adminBundle[session.dmProfile.locale].approve#";
 	o.js = "menuOption_Approve(\\'approved\\')";
-	o.jsvalidate = "((hasPermission( lastSelectedId, '#PermNavApprove#' )> 0 || (hasPermission(lastSelectedId,'#PermNavApproveOwn#') >0 && objects[lastSelectedId]['ATTR_LASTUPDATEDBY'].toLowerCase() == '#lCase(stUser.userlogin)#')) && (objects[lastSelectedId]['STATUS'] == 'draft' || objects[lastSelectedId]['STATUS'] == 'pending'))?1:0";
+	o.jsvalidate = "((hasPermission( lastSelectedId, '#PermNavApprove#' )> 0 || (hasPermission(lastSelectedId,'#PermNavApproveOwn#') >0 && objects[lastSelectedId]['ATTR_LASTUPDATEDBY'].toLowerCase() == '#lCase(application.security.getCurrentUserID())#')) && (objects[lastSelectedId]['STATUS'] == 'draft' || objects[lastSelectedId]['STATUS'] == 'pending'))?1:0";
 	o.bShowDisabled = 1;
 	
 	o = new Object();
@@ -1410,14 +1410,14 @@ o.bShowDisabled = 1;
 	approveMenu['Cancel'] = o;
 	o.text = "#application.adminBundle[session.dmProfile.locale].sendToDraft#";
 	o.js = "menuOption_Approve(\\'draft\\')";
-	o.jsvalidate = "((hasPermission( lastSelectedId, '#PermNavApprove#' )>=0 || (hasPermission(lastSelectedId,'#PermNavApproveOwn#') >=0 && objects[lastSelectedId]['ATTR_LASTUPDATEDBY'].toLowerCase() == '#lCase(stUser.userlogin)#'))&& !hasDraft(lastSelectedId) && (objects[lastSelectedId]['STATUS'] == 'approved' || objects[lastSelectedId]['STATUS'] == 'pending'))?1:0";
+	o.jsvalidate = "((hasPermission( lastSelectedId, '#PermNavApprove#' )>=0 || (hasPermission(lastSelectedId,'#PermNavApproveOwn#') >=0 && objects[lastSelectedId]['ATTR_LASTUPDATEDBY'].toLowerCase() == '#lCase(application.security.getCurrentUserID())#'))&& !hasDraft(lastSelectedId) && (objects[lastSelectedId]['STATUS'] == 'approved' || objects[lastSelectedId]['STATUS'] == 'pending'))?1:0";
 	o.bShowDisabled = 1;
 	
 	o = new Object();
 	approveMenu['CancelBranch'] = o;
 	o.text = "#application.adminBundle[session.dmProfile.locale].sendBranch2Draft#";
 	o.js = "menuOption_ApproveBranch(\\'draft\\')";
-	o.jsvalidate = "((hasPermission( lastSelectedId, '#PermNavApprove#' )>=0 || (hasPermission(lastSelectedId,'#PermNavApproveOwn#') >=0 && objects[lastSelectedId]['ATTR_LASTUPDATEDBY'].toLowerCase() == '#lCase(stUser.userlogin)#')) && (objects[lastSelectedId]['STATUS'] == 'approved' || objects[lastSelectedId]['STATUS'] == 'pending') && objects[lastSelectedId]['TYPENAME'].toLowerCase() == '#lCase(attributes.nodetype)#')?1:0";
+	o.jsvalidate = "((hasPermission( lastSelectedId, '#PermNavApprove#' )>=0 || (hasPermission(lastSelectedId,'#PermNavApproveOwn#') >=0 && objects[lastSelectedId]['ATTR_LASTUPDATEDBY'].toLowerCase() == '#lCase(application.security.getCurrentUserID())#')) && (objects[lastSelectedId]['STATUS'] == 'approved' || objects[lastSelectedId]['STATUS'] == 'pending') && objects[lastSelectedId]['TYPENAME'].toLowerCase() == '#lCase(attributes.nodetype)#')?1:0";
 	o.bShowDisabled = 1;
 
 	

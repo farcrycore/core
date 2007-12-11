@@ -118,13 +118,8 @@ the latter is the policy group for anonymous...
 	This should respond to request.mode settings and not require a
 	a whole new set of permission checks
 	---------------------------->
-	<!--- begin: logged in user? --->
-	<cfscript>
-		stLoggedInUser = application.factory.oAuthentication.getUserAuthenticationData();
-		bLoggedIn = stLoggedInUser.bLoggedIn;
-	</cfscript>
 	
-	<cfif bLoggedIn>
+	<cfif len(application.security.getCurrentUserID())>
 	<!--- check they are admin --->
 	<cfscript>
 		iAdmin = application.security.checkPermission(permission="Admin");

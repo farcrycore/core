@@ -174,11 +174,10 @@ function deSelectAll()
 	
 			<cfif isstruct(stNav)>
 				<cfscript>
-					stUser = application.factory.oAuthentication.getUserAuthenticationData();
 					for(x = 1;x LTE listLen(permission);x=x+1)
 					{
 						iState = application.security.checkPermission(permission=listGetAt(permission,x),object=stNav.objectId);	
-						if(listGetAt(permission,x) IS "canApproveOwnContent" AND iState EQ 1 AND NOT stObj.lastUpdatedBy IS stUser.userLogin)
+						if(listGetAt(permission,x) IS "canApproveOwnContent" AND iState EQ 1 AND NOT stObj.lastUpdatedBy IS application.security.getCurrentUserID())
 							iState = 0;
 						if(iState EQ 1)
 							break;

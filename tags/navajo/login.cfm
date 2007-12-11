@@ -62,10 +62,7 @@
     </cfif>
 </cfif>
 
-<cfset stLoggedIn = application.factory.oAuthentication.getUserAuthenticationData()>
-<cfset bLoggedin = stLoggedIn.bloggedIn>
-
-<cfif bLoggedIn>
+<cfif len(application.security.getCurrentUserID())>
     <!--- dmSecMX automatically sets up session.dmSec.authentication structure --->
     <!--- check for ADMIN permissions --->
     <cfset iAdminState = application.security.checkPermission(permission="Admin") />

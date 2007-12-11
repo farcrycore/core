@@ -92,10 +92,7 @@ $out:$
 	if (not len(trim(destNavObjectID)))
 		haspermission = application.security.checkPermission(permission="RootNodeManagement");
 	else
-		haspermission = application.security.checkPermission(permission="Create",object=destNavObjectID);	
-	//get logged in user
-	stuser = application.factory.oAuthentication.getUserAuthenticationData();
-
+		haspermission = application.security.checkPermission(permission="Create",object=destNavObjectID);
 </cfscript>
 
 <cfif haspermission>

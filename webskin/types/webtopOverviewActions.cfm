@@ -36,7 +36,6 @@ START WEBSKIN
 
 <!--- generate all data required for the overview html --->
 <!--- check/generate permission --->
-<cfset stOverviewParams.stUser = application.factory.oAuthentication.getUserAuthenticationData()>
 <cfset stOverviewParams.stPermissions = StructNew()>
 
 <cfif StructKeyExists(application.stcoapi[stobj.typename], "bUseInTree") AND application.stcoapi[stobj.typename].bUseInTree AND len(stOverviewParams.parentID)>
@@ -72,7 +71,7 @@ START WEBSKIN
 		<cfset stDraftObject = getData(qDraft.objectid)>
 		<cfset bHasDraft = true />
 		<!--- object tid of the current live version used by the delete function --->
-		<cfif stOverviewParams.stPermissions.iApproveOwn EQ 1 AND NOT stDraftObject.lastUpdatedBy EQ stOverviewParams.stUser.userLogin>
+		<cfif stOverviewParams.stPermissions.iApproveOwn EQ 1 AND NOT stDraftObject.lastUpdatedBy EQ application.security.getCurrentUserID()>
 			<cfset stOverviewParams.stPermissions.iApproveOwn = 0>
 		</cfif>
 	</cfif>

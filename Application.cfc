@@ -289,10 +289,9 @@
 		
 		<!--- set legacy logout/login parameters --->
 		<cfif isDefined("url.logout") and url.logout eq 1>
-			<cfset application.factory.oAuthentication.logout(bAudit=1) />
+			<cfset application.security.logout() />
 		</cfif>
-		<cfset stLoggedIn = application.factory.oAuthentication.getUserAuthenticationData() />
-		<cfset request.loggedin = stLoggedin.bLoggedIn />
+		<cfset request.loggedin = application.security.getCurrentUserID() />
 		
 		
 		<!-------------------------------------------------------
