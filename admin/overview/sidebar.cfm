@@ -3,14 +3,6 @@
 
 <cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
 
-<!--- profile details --->
-<cfset oProfile = createObject("component", application.types.dmProfile.typePath) />
-
-<!--- if profile is dead for user, create one and set to session scope --->
-<cfif not StructKeyExists(session.dmProfile,"firstname")>
-	<cfset session.dmprofile=oProfile.createprofile(session.dmprofile) />
-</cfif>
-
 <cfoutput>
 	<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 	<html xmlns="http://www.w3.org/1999/xhtml">
