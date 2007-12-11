@@ -136,7 +136,7 @@
 				where	lower(title)=<cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(arguments.name)#" />
 			</cfquery>
 			
-			<cfreturn application.security.setLookup(role=arguments.role,objectid=qRoles.objectid[1]) />
+			<cfreturn application.security.setLookup(role=arguments.name,objectid=qRoles.objectid[1]) />
 		<cfelse>
 			<cfreturn application.security.getLookup(role=arguments.name) />
 		</cfif>
@@ -190,7 +190,7 @@
 		
 		<!--- If the name of the role was passed in, get the objectid --->
 		<cfif not isvalid("uuid",arguments.role)>
-			<cfset arguments.objectid = getID(arguments.role) />
+			<cfset arguments.role = getID(arguments.role) />
 		</cfif>
 		
 		<!--- If the name of the permission was passed in, get the objectid --->
