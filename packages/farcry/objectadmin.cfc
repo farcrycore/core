@@ -403,7 +403,7 @@ environment references (might be nice to clean these up)
 			stBut.value="#application.adminBundle[session.dmProfile.locale].add#";
 			stBut.class="f-submit";
 			stBut.onClick="";
-			stBut.permission="#attributes.permissionset#Create";
+			stBut.permission=application.security.checkPermission(permission="Create",type=attributes.typename);
 			stBut.buttontype="add";
 			arrayAppend(aDefaultButtons,stBut);
 
@@ -416,7 +416,7 @@ environment references (might be nice to clean these up)
 			// todo: i18n
 			stBut.onClick="";
 			stBut.confirmText="Are you sure you wish to delete these objects?";
-			stBut.permission="#attributes.permissionset#Delete";
+			stBut.permission=application.security.checkPermission(permission="Delete",type=attributes.typename);
 			stBut.buttontype="delete";
 			arrayAppend(aDefaultButtons,stBut);
 
@@ -429,7 +429,7 @@ environment references (might be nice to clean these up)
 				stBut.value="#application.adminBundle[session.dmProfile.locale].requestApproval#";
 				stBut.class="f-submit";
 				stBut.onClick="";
-				stBut.permission="#attributes.permissionset#RequestApproval";
+				stBut.permission=application.security.checkPermission(permission="RequestApproval",type=attributes.typename);
 				stBut.buttontype="requestapproval";
 				arrayAppend(aDefaultButtons,stBut);
 			// set status to approved/draft
@@ -440,7 +440,7 @@ environment references (might be nice to clean these up)
 				stBut.value="#application.adminBundle[session.dmProfile.locale].approve#";
 				stBut.class="f-submit";
 				stBut.onClick="";
-				stBut.permission="#attributes.permissionset#Approve";
+				stBut.permission=application.security.checkPermission(permission="Approve",type=attributes.typename);
 				stBut.buttontype="approve";
 				arrayAppend(aDefaultButtons,stBut);
 				//send to draft
@@ -450,7 +450,7 @@ environment references (might be nice to clean these up)
 				stBut.value="#application.adminBundle[session.dmProfile.locale].sendToDraft#";
 				stBut.class="f-submit";
 				stBut.onClick="";
-				stBut.permission="#attributes.permissionset#Approve";
+				stBut.permission=application.security.checkPermission(permission="Approve",type=attributes.typename);
 				stBut.buttontype="sendtodraft";
 				arrayAppend(aDefaultButtons,stBut);
 

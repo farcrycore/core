@@ -583,7 +583,7 @@ user --->
 		
 		<cfif attributes.lButtons EQ "*" or listFindNoCase(attributes.lButtons,attributes.aButtons[i].value)>
 			<!--- (#attributes.aButtons[i].name#: #attributes.aButtons[i].permission#) --->
-			<cfif NOT len(attributes.aButtons[i].permission) OR application.security.checkPermission(permission=attributes.aButtons[i].permission) EQ 1>
+			<cfif not len(attributes.aButtons[i].permission) or (isboolean(attributes.aButtons[i].permission) and attributes.aButtons[i].permission) or (not isboolean(attributes.aButtons[i].permission) and application.security.checkPermission(permission=attributes.aButtons[i].permission) EQ 1)>
 				
 				<cfif len(attributes.aButtons[i].onclick)> 
 					<cfset onclickJS="#attributes.aButtons[i].onclick#" />
