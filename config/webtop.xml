@@ -147,14 +147,9 @@
 			</menu>
 		</subsection>
 		<subsection id="auditrpt" sequence="20" permission="ReportingStatsTab" label="Audit Reporting">
-			<menu id="loginactivity" sequence="10" label="Login Activity">
-				<menuitem id="loginall" sequence="10" label="All Logins" link="/reporting/auditLogins.cfm" />
-				<menuitem id="loginfailed" sequence="20" label="Failed Logins" link="/reporting/auditFailedLogins.cfm" />
-				<menuitem id="logindaily" sequence="30" label="Daily User Login Activity" link="/reporting/auditUserActivity.cfm?graph=day" />
-				<menuitem id="loginweekly" sequence="40" label="Weekly User Login Activity" link="/reporting/auditUserActivity.cfm?graph=week" />
-			</menu>
-			<menu id="menuuseractivity" sequence="20" label="User Activitiy">
-				<menuitem id="useractivity" sequence="10" label="User Activitiy" link="/reporting/auditUser.cfm" />
+			<menu id="securitylogs" sequence="10" label="">
+				<menuitem id="securitylogs" sequence="10" label="Security Logs" link="/admin/customadmin.cfm?module=customlists/farLog_security.cfm" />
+				<menuitem id="useractivityovertime" sequence="30" label="User Activity Over Time" link="/conjuror/invocation.cfm?typename=audituserovertime" />
 			</menu>
 		</subsection>
 	</section>
