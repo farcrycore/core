@@ -469,7 +469,7 @@ default handlers
 
 		<!--- log update --->
 		<cfif arguments.bAudit>
-			<farcry:logevent objectid="#arguments.stProperties.objectid#" type="types" event="update" notes="#arguments.auditNote#" />
+			<farcry:logevent object="#arguments.stProperties.objectid#" type="types" event="update" notes="#arguments.auditNote#" />
 		</cfif>
 		
 		<cfreturn stresult>
