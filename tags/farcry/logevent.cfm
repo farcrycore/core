@@ -11,7 +11,7 @@
 <cfparam name="attributes.object" type="string" default="" /><!--- The uuid of the associated object --->
 <cfparam name="attributes.type" type="string" default="" /><!--- The type of the associated object (can be non-coapi, e.g. security) --->
 <cfparam name="attributes.event" type="string" /><!--- The event that is being logged --->
-<cfparam name="attributes.location" type="string" default="#getCurrentTemplatePath()#" /><!--- The location of the event --->
+<cfparam name="attributes.location" type="string" default="#getPageContext().getPage().getCurrentTemplatePath()#" /><!--- The location of the event --->
 <cfparam name="attributes.userid" type="string" default="unknown" /><!--- The user associated with the event --->
 <cfparam name="attributes.ipaddress" type="string" default="#cgi.REMOTE_HOST#" /><!--- The ip of user --->
 <cfparam name="attributes.notes" type="string" default="" /><!--- Free text :D --->
