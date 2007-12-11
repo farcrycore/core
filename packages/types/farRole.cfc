@@ -100,6 +100,11 @@
 		<cfset var filter = "" />
 		
 		<cfloop list="#arguments.role#" index="thisrole">
+			<!--- If the name of the role was passed in, get the objectid --->
+			<cfif not isvalid("uuid",thisrole)>
+				<cfset thisrole = getID(thisrole) />
+			</cfif>
+			
 			<cfif not arguments.forcerefresh and application.security.isCached(role=thisrole,webskin="#arguments.type#.#arguments.webskin#")>
 				<cfif application.security.getCache(role=thisrole,webskin="#arguments.type#.#arguments.webskin#")>
 					<cfreturn true />
@@ -108,9 +113,9 @@
 				<cfset stRole = getData(thisrole) />
 				<cfloop list="#stRole.webskins#" index="filter" delimiters="#chr(10)##chr(13)#,">
 					<cfif (not find(".",filter) or listfirst(filter,".") eq "*" or listfirst(filter,".") eq arguments.type) and refind(replace(listlast(filter,"."),"*",".*","ALL"),arguments.webskin)>
-						<cfreturn application.security.setCache(role=thisrole,webskin="#arguments.type#.#arguments.webskin#", right=1) />
+						<cfreturn application.security.setCache(role=thisrole,webskin="#arguments.type#.#arguments.webskin#",right=1) />
 					<cfelse>
-						<cfset application.security.setCache(role=thisrole,webskin="#arguments.type#.#arguments.webskin#", right=0) />
+						<cfset application.security.setCache(role=thisrole,webskin="#arguments.type#.#arguments.webskin#",right=0) />
 					</cfif>
 				</cfloop>
 			</cfif>
