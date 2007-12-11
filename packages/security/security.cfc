@@ -190,7 +190,7 @@
 			
 			<cfif structkeyexists(stResult,"authenticated")>
 				<cfif not stResult.authenticated>
-					<farcry:logevent type="security" event="loginfailed" userid="#stResult.userid#_#ud#" notes="#ud#: #stResult.message#" />
+					<farcry:logevent type="security" event="loginfailed" userid="#stResult.userid#_#ud#" notes="#stResult.message#" />
 					<cfbreak />
 				</cfif>
 				
@@ -248,7 +248,7 @@
 				<!--- /DEPRECATED --->
 				
 				<!--- First login flag --->
-				<cfif application.factory.oAudit.getAuditLog(username=session.security.userid,auditType="dmSec.login").recordcount eq 0>
+				<cfif createObject("component", application.stcoapi["farLog"].packagePath).filterLog(userid=session.security.userid,type="security",event="login").recordcount eq 0>
 					<cfset session.security.firstlogin = false />
 					
 					<!--- DEPRECATED --->
@@ -262,9 +262,9 @@
 				
 				<!--- Log the result --->
 				<cfif session.firstLogin>
-					<farcry:logevent type="security" event="login" userid="#session.security.userid#" notes="#ud#: First login" />
+					<farcry:logevent type="security" event="login" userid="#session.security.userid#" notes="First login" />
 				<cfelse>
-					<farcry:logevent type="security" event="login" userid="#session.security.userid#" notes="#ud#" />
+					<farcry:logevent type="security" event="login" userid="#session.security.userid#" />
 				</cfif>
 				
 				<!--- Return 'success' --->
