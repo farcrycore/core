@@ -132,7 +132,7 @@
 		<cfloop list="#arguments.role#" index="thisrole">
 			<!--- If the name of the role was passed in, get the objectid --->
 			<cfif not isvalid("uuid",thisrole)>
-				<cfset thisrole = getID(thisrole) />
+				<cfset thisrole = application.security.factory.role.getID(thisrole) />
 			</cfif>
 			
 			<!--- If possible use the cache, otherwise update cache --->
