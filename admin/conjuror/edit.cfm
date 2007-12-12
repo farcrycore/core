@@ -97,7 +97,7 @@ $out:$
 	
 	<!--- See if we can edit this object --->
 	<cfset oVersioning = createObject("component","#application.packagepath#.farcry.versioning") />
-	<cfset createObject("component","#application.packagepath#.farcry.locking") />
+	<cfset oLocking = createObject("component","#application.packagepath#.farcry.locking") />
 	
 	<cfif structKeyExists(stObj,"versionID") AND structKeyExists(stObj,"status")>
 		<cfset stRules = oVersioning.getVersioningRules(objectid=url.objectid) />
