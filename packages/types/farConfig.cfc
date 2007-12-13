@@ -65,29 +65,34 @@
 			<cfwddx action="wddx2cfml" input="#qConfig.configdata[1]#" output="stResult" />
 		</cfif>
 		
-		<cfif not qConfig.recordcount or not isstruct(stResult)>
-			<!--- Set up the config item values --->
-			<cfif qConfig.recordcount>
-				<cfset stObj.objectid = qConfig.objectid[1] />
-			<cfelse>
-				<cfset stObj.objectid = createuuid() />
-			</cfif>
-			<cfset stObj.typename = "farConfig" />
-			<cfset stObj.configkey = arguments.key />
-			
-			<!--- If it doesn't, find the config form component with that key and get the default values --->
-			<cfloop list="#application.factory.oUtils.getComponents('forms')#" index="thisform">
-				<cfif left(thisform,6) eq "config" and application.stCOAPI[thisform].key eq arguments.key>
-					<cfset stResult = createobject("component",application.stCOAPI[thisform].packagepath).getData(createuuid()) />
-					<cfset stResult.typename = thisform />
-				</cfif>
-			</cfloop>
-			
-			<cfwddx action="cfml2wddx" input="#stresult#" output="stObj.configdata" />
-			
-			<!--- Save the config data --->
-			<cfset setData(stProperties=stObj,bAudit=arguments.bAudit) />
+		<!--- Make sure the result is a struct --->
+		<cfif not isstruct(stResult)>
+			<cfset stResult = structnew() />
 		</cfif>
+		
+		<!--- Find the config form component with that key and get the default values --->
+		<cfloop list="#application.factory.oUtils.getComponents('forms')#" index="thisform">
+			<cfif left(thisform,6) eq "config" and application.stCOAPI[thisform].key eq arguments.key>
+				<!--- Append defaults - ensures that new properties are picked up --->
+				<cfset structappend(stResult,createobject("component",application.stCOAPI[thisform].packagepath).getData(createuuid()),false) />
+				<cfset stResult.typename = thisform />
+			</cfif>
+		</cfloop>
+		
+		<!--- Copy the result back to an stObj --->
+		<cfwddx action="cfml2wddx" input="#stResult#" output="stObj.configdata" />
+		
+		<!--- Set up the config item values --->
+		<cfif qConfig.recordcount>
+			<cfset stObj.objectid = qConfig.objectid[1] />
+		<cfelse>
+			<cfset stObj.objectid = createuuid() />
+		</cfif>
+		<cfset stObj.typename = "farConfig" />
+		<cfset stObj.configkey = arguments.key />
+			
+		<!--- Save the config data (ensures that new configs and new properties are saved) --->
+		<cfset setData(stProperties=stObj,bAudit=arguments.bAudit) />
 		
 		<cfif structkeyexists(stResult,"typename")>
 			<cfset structdelete(stResult,"typename") />
