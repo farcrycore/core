@@ -53,7 +53,7 @@ $out:$
 	        if (makenavaliases)
 	            navaliaseslevel = form.navaliaseslevel;
 	
-	        createdBy = session.dmSec.authentication.userlogin;
+	        createdBy = application.security.getCurrentUserID();
 	        status = form.status;
 	
 	        structure = form.structure;
@@ -316,45 +316,44 @@ $out:$
 		}	
 		</script>	
 		
-			<b>Auto Create Children</b>
-
-			<cfset iCreate = request.dmSec.oAuthorisation.checkInheritedPermission(objectid="#application.navid.home#",permissionName="create")>
-			<cfif iCreate eq 1>
-				<cfset objType = CreateObject("component","#Application.stcoapi.dmNavigation.packagePath#")>
-				<cfset lPreferredTypeSeq = "dmHTML"> <!--- this list will determine preffered order of objects in create menu - maybe this should be configurable. --->
-				<!--- <cfset aTypesUseInTree = objType.buildTreeCreateTypes(lPreferredTypeSeq)> --->
-				<cfset lAllTypes = structKeyList(application.types)>
-				<!--- remove preffered types from *all* list --->
-				<cfset aPreferredTypeSeq = listToArray(lPreferredTypeSeq)>
-				<cfloop index="i" from="1" to="#arrayLen(aPreferredTypeSeq)#">
-					<cfset lAlltypes = listDeleteAt(lAllTypes,listFindNoCase(lAllTypes,aPreferredTypeSeq[i]))>
-				</cfloop>
-				<cfset lAlltypes = ListAppend(lPreferredTypeSeq,lAlltypes)>
-				<cfset aTypesUseInTree = objType.buildTreeCreateTypes(lAllTypes)>
-				<cfif ArrayLen(aTypesUseInTree)>
-					
-						<table>
-						<tr>
-							<td style="width:100px;">Type: </td>
-							<td>
-								<select name="makehtml" id="makehtml" onchange="getDisplayMethod(this)">
-									<option value="">NONE</option>
-									<cfloop index="i" from="1" to="#ArrayLen(aTypesUseInTree)#">								
-										<cfif aTypesUseInTree[i].typename NEQ "dmNavigation">
-											<option value="#aTypesUseInTree[i].typename#">#aTypesUseInTree[i].description#</option>
-										</cfif>						
-									</cfloop>	
-								</select>
-							</td>
-						</tr>
-						<tr>
-							<td>Webskin: </td>
-							<td id="displayMethods"></td>
-						</tr>
-						</table>
-					
-				</cfif>
+		<b>Auto Create Children</b>
+		
+		<sec:CheckPermission permission="Create" objectid="#application.navid.home#">
+			<cfset objType = CreateObject("component","#Application.stcoapi.dmNavigation.packagePath#")>
+			<cfset lPreferredTypeSeq = "dmHTML"> <!--- this list will determine preffered order of objects in create menu - maybe this should be configurable. --->
+			<!--- <cfset aTypesUseInTree = objType.buildTreeCreateTypes(lPreferredTypeSeq)> --->
+			<cfset lAllTypes = structKeyList(application.types)>
+			<!--- remove preffered types from *all* list --->
+			<cfset aPreferredTypeSeq = listToArray(lPreferredTypeSeq)>
+			<cfloop index="i" from="1" to="#arrayLen(aPreferredTypeSeq)#">
+				<cfset lAlltypes = listDeleteAt(lAllTypes,listFindNoCase(lAllTypes,aPreferredTypeSeq[i]))>
+			</cfloop>
+			<cfset lAlltypes = ListAppend(lPreferredTypeSeq,lAlltypes)>
+			<cfset aTypesUseInTree = objType.buildTreeCreateTypes(lAllTypes)>
+			<cfif ArrayLen(aTypesUseInTree)>
+				
+					<table>
+					<tr>
+						<td style="width:100px;">Type: </td>
+						<td>
+							<select name="makehtml" id="makehtml" onchange="getDisplayMethod(this)">
+								<option value="">NONE</option>
+								<cfloop index="i" from="1" to="#ArrayLen(aTypesUseInTree)#">								
+									<cfif aTypesUseInTree[i].typename NEQ "dmNavigation">
+										<option value="#aTypesUseInTree[i].typename#">#aTypesUseInTree[i].description#</option>
+									</cfif>						
+								</cfloop>	
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<td>Webskin: </td>
+						<td id="displayMethods"></td>
+					</tr>
+					</table>
+				
 			</cfif>
+		</sec:CheckPermission>
 		<!--- 	<fieldset>
 			 <nj:listTemplates typename="dmHTML" prefix="displayPage" r_qMethods="qDisplayTypes">
 			<label for="makehtml">
