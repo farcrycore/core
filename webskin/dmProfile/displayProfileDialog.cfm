@@ -5,7 +5,7 @@
 <cfoutput>
 	<script type="text/javascript">
 		alert('#jsstringformat(application.rb.formatRBString("coapi.dmProfile.general.firstlogin@alert",application.config.general.siteTitle,"This is the first time you've logged into {1}. Please complete the following profile form with your details."))#');
-		profileWin = window.open('#application.url.farcry#/conjuror/edit.cfm?objectID=#session.dmProfile.objectID#&method=displayUserEdit','edit_profile','width=550,height=500,left=200,top=100,scrollbars=1');
+		profileWin = window.open('#application.url.farcry#/conjuror/invocation.cfm?objectID=#session.dmProfile.objectID#&method=displayUserEdit#','edit_profile','width=550,height=500,left=200,top=100,scrollbars=1');
 	</script>
 </cfoutput>
 
