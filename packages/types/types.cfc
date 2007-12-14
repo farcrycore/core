@@ -178,6 +178,11 @@ default handlers
 								<cfset request.aAncestorWebskins[i].okToCache = 0 />
 							</cfif>
 							
+							<!--- If the timeout of this webskin is less than its parents, reset the parents timeout so timeout propogates upwards --->
+							<cfif stCurrentView.timeout LT request.aAncestorWebskins[i].timeout>
+								<cfset request.aAncestorWebskins[i].timeout = stCurrentView.timeout />
+							</cfif>
+							
 							<!--- If this webskin is to have its url hashed, make sure all ancestors also have their webskins hashed --->
 							<cfif stCurrentView.hashURL>
 								<cfset request.aAncestorWebskins[i].hashURL = true />

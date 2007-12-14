@@ -87,7 +87,7 @@
 						<cfif structKeyExists(stCacheWebskin, "datetimecreated")
 							AND structKeyExists(stCacheWebskin, "webskinHTML") >
 
-							<cfif DateDiff('n', stCacheWebskin.datetimecreated, now()) LT application.stcoapi[arguments.typename].stObjectBrokerWebskins[arguments.template].timeout >
+							<cfif DateDiff('n', stCacheWebskin.datetimecreated, now()) LT stCacheWebskin.timeout >
 								<cfset webskinHTML = stCacheWebskin.webskinHTML />
 								
 								<!--- Place any request.inHead variables back into the request scope from which it came. --->
@@ -196,6 +196,7 @@
 								<cfset stCacheWebskin.datetimecreated = now() />
 								<cfset stCacheWebskin.webskinHTML = trim(arguments.HTML) />	
 								<cfset stCacheWebskin.inHead = duplicate(arguments.stCurrentView.inHead) />
+								<cfset stCacheWebskin.timeout = arguments.stCurrentView.timeout />
 	
 								<cfif len(arguments.stCurrentView.hashKey)>
 									<cfset hashString = arguments.stCurrentView.hashKey />
