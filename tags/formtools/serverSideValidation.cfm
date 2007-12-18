@@ -26,8 +26,7 @@
 		<cfloop list="#form.FARCRYFORMPREFIXES#" index="prefix">
 			
 			<cfif structKeyExists(form, "#prefix#objectid")>
-					
-				<ft:validateFormObjects objectid="#ListGetAt(form['#prefix#objectid'],1)#" />
+				<ft:validateFormObjects typename="#ListGetAt(form['#prefix#typename'],1)#" objectid="#ListGetAt(form['#prefix#objectid'],1)#" />
 			
 			</cfif>
 		</cfloop>
