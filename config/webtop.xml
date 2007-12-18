@@ -31,6 +31,7 @@
 			<menu id="export" sequence="10" label="Export">
 				<menuitem id="exportrss" sequence="10" label="RSS Feeds" link="/content/xmlFeedList.cfm" />
 				<menuitem id="exportgeneral" sequence="20" label="Export" link="/content/export.cfm" />
+				<menuitem id="exportSkeleton" sequence="21" label="Export As Skeleton" link="/content/exportSkeleton.cfm" />
 			</menu>
 			<menu id="categorisation" sequence="20" permission="ContentCategorisationTab" label="Category Management">
 				<menuitem id="managekeywords" sequence="10" label="Manage Keywords" link="/navajo/keywords/hierarchyedit.cfm" />		
