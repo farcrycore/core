@@ -179,6 +179,14 @@ Library Request Processing
 <cfif fileExists("#application.path.project#/config/_serverSpecificRequestScope.cfm")>
 	<cfset arrayAppend(application.sysInfo.aServerSpecificRequestScope, "/farcry/projects/#application.projectDirectoryName#/config/_serverSpecificRequestScope.cfm") />
 </cfif>
+
+<!--- Add Server Specific Request Scope files --->
+<cfif directoryExists("#application.path.project#/config/#application.sysInfo.machineName#")>
+	<cfif fileExists("#application.path.project#/config/#application.sysInfo.machineName#/_serverSpecificRequestScope.cfm")>
+		<cfset arrayAppend(application.sysInfo.aServerSpecificRequestScope, "/farcry/projects/#application.projectDirectoryName#/config/#application.sysInfo.machineName#/_serverSpecificRequestScope.cfm") />
+	</cfif>
+</cfif>
+
 <!--- set flag for request processing --->
 <cfif arraylen(application.sysInfo.aServerSpecificRequestScope)>
 	<cfset application.sysInfo.bServerSpecificRequestScope = "true" />
