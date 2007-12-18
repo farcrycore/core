@@ -130,16 +130,28 @@
 		<!--- Variables --->
 		<cfset var prop = "" />
 		<cfset var stObj = structnew() />
+		<cfset var tempObjectStore = structNew() />
 		
 		<cfset init() />
 		
+		<!---------------------------------------------------------------
+		Create a reference to the tempObjectStore in the session.
+		This is done so that if the session doesn't exist yet (in the case of application.cfc applicationStart), we can trap the error and continue on our merry way.
+		 --------------------------------------------------------------->
+		<cftry>
+			<cfset tempObjectStore = Session.TempObjectStore />
+			<cfcatch type="any">
+				<!--- ignore the error and assume it just doesnt exist yet.  --->
+			</cfcatch>
+		</cftry>
+				
 		<cfset stObj.typename = variables.typename />
 		
 		<!--- Check to see if the object is in the temporary object store --->
-		<cfif structKeyExists(Session,"TempObjectStore") AND structKeyExists(Session.TempObjectStore,arguments.objectid) AND arguments.bUseInstanceCache AND NOT arguments.bArraysAsStructs>
+		<cfif structKeyExists(tempObjectStore,arguments.objectid) AND arguments.bUseInstanceCache AND NOT arguments.bArraysAsStructs>
 			
 			<!--- get from the temp object stroe --->
-			<cfset stObj = Session.TempObjectStore[arguments.objectid] />
+			<cfset stObj = tempObjectStore[arguments.objectid] />
 
 		<cfelse>
 			
