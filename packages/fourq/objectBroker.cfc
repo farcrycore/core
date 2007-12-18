@@ -21,7 +21,8 @@
 		<cflock name="objectBroker" type="exclusive" timeout="2" throwontimeout="true">			
 			<cfset application.objectbroker[arguments.typename]=structnew() />
 			<cfset application.objectbroker[arguments.typename].aobjects=arraynew(1) />
-			<cfset application.objectbroker[arguments.typename].maxobjects=arguments.MaxObjects />			
+			<cfset application.objectbroker[arguments.typename].maxobjects=arguments.MaxObjects />
+			<cfset application.objectbroker[arguments.typename].stTypeWebskins = structnew() />			
 		</cflock>
 		
 		<cfreturn bResult />
@@ -49,7 +50,7 @@
 	</cffunction>
 		
 	<cffunction name="getWebskin" access="public" output="false" returntype="string" hint="Searches the object broker in an attempt to locate the requested webskin template">
-		<cfargument name="ObjectID" required="yes" type="UUID">
+		<cfargument name="ObjectID" required="false" type="UUID">
 		<cfargument name="typename" required="true" type="string">
 		<cfargument name="template" required="true" type="string">
 		<cfargument name="hashKey" required="true" type="string">
@@ -71,19 +72,36 @@
 				<!--- DO NOT USE CACHE IF IN DESIGN MODE --->
 			<cfelse>
 				<cfif listFindNoCase(application.stcoapi[arguments.typename].lObjectBrokerWebskins, arguments.template)>
-					<cfif structKeyExists(application.objectbroker, arguments.typename)
-						AND 	structKeyExists(application.objectbroker[arguments.typename], arguments.objectid)
-						AND 	structKeyExists(application.objectbroker[arguments.typename][arguments.objectid], "stWebskins")
-						AND 	structKeyExists(application.objectbroker[arguments.typename][arguments.objectid].stWebskins, arguments.template)>
-											
-						<cfif len(arguments.hashKey) AND structKeyExists(application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template], hash("#arguments.hashKey#"))>							
-							<cfset stCacheWebskin = application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template]["#hash('#arguments.hashKey#')#"] />
-						<cfelseif structKeyExists(application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template], hash("#arguments.hashKey##cgi.http_host##cgi.script_name##cgi.query_string#"))>
-							<cfset stCacheWebskin = application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template]["#hash('#arguments.hashKey##cgi.http_host##cgi.script_name##cgi.query_string#')#"] />
-						<cfelseif structKeyExists(application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template], "standard") >
-							<cfset stCacheWebskin = application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template].standard />
+					<cfif structkeyexists(arguments,"objectid")>
+						<cfif structKeyExists(application.objectbroker, arguments.typename)
+							AND 	structKeyExists(application.objectbroker[arguments.typename], arguments.objectid)
+							AND 	structKeyExists(application.objectbroker[arguments.typename][arguments.objectid], "stWebskins")
+							AND 	structKeyExists(application.objectbroker[arguments.typename][arguments.objectid].stWebskins, arguments.template)>
+												
+							<cfif len(arguments.hashKey) AND structKeyExists(application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template], hash("#arguments.hashKey#"))>							
+								<cfset stCacheWebskin = application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template]["#hash('#arguments.hashKey#')#"] />
+							<cfelseif structKeyExists(application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template], hash("#arguments.hashKey##cgi.http_host##cgi.script_name##cgi.query_string#"))>
+								<cfset stCacheWebskin = application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template]["#hash('#arguments.hashKey##cgi.http_host##cgi.script_name##cgi.query_string#')#"] />
+							<cfelseif structKeyExists(application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template], "standard") >
+								<cfset stCacheWebskin = application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template].standard />
+							</cfif>
 						</cfif>
-							
+					<cfelse>
+						<cfif structKeyExists(application.objectbroker, arguments.typename)>
+								AND 	structKeyExists(application.objectbroker[arguments.typename], "stTypeWebskins")
+								AND 	structKeyExists(application.objectbroker[arguments.typename].stTypeWebskins, arguments.template)>
+													
+								<cfif len(arguments.hashKey) AND structKeyExists(application.objectbroker[arguments.typename].stTypeWebskins[arguments.template], hash("#arguments.hashKey#"))>							
+									<cfset stCacheWebskin = application.objectbroker[arguments.typename].stTypeWebskins[arguments.template]["#hash('#arguments.hashKey#')#"] />
+								<cfelseif structKeyExists(application.objectbroker[arguments.typename].stTypeWebskins[arguments.template], hash("#arguments.hashKey##cgi.http_host##cgi.script_name##cgi.query_string#"))>
+									<cfset stCacheWebskin = application.objectbroker[arguments.typename].stTypeWebskins[arguments.template]["#hash('#arguments.hashKey##cgi.http_host##cgi.script_name##cgi.query_string#')#"] />
+								<cfelseif structKeyExists(application.objectbroker[arguments.typename].stTypeWebskins[arguments.template], "standard") >
+									<cfset stCacheWebskin = application.objectbroker[arguments.typename].stTypeWebskins[arguments.template].standard />
+								</cfif>
+						</cfif>
+					</cfif>
+					
+					<cfif not structisempty(stCacheWebskin)>
 						<cfif structKeyExists(stCacheWebskin, "datetimecreated")
 							AND structKeyExists(stCacheWebskin, "webskinHTML") >
 
@@ -144,11 +162,8 @@
 							</cfif>	
 							
 						</cfif>	
-							
-					</cfif>		
-					
+					</cfif>
 				</cfif>
-				
 			</cfif>
 			
 		</cfif>
@@ -193,7 +208,7 @@
 	
 	
 	<cffunction name="addWebskin" access="public" output="true" returntype="boolean" hint="Adds webskin to object broker if all conditions are met">
-		<cfargument name="ObjectID" required="yes" type="UUID">
+		<cfargument name="ObjectID" required="false" type="UUID">
 		<cfargument name="typename" required="true" type="string">
 		<cfargument name="template" required="true" type="string">
 		<cfargument name="HTML" required="true" type="string">
@@ -210,34 +225,66 @@
 			<cfelse>
 				<cfif listFindNoCase(application.stcoapi[arguments.typename].lObjectBrokerWebskins, arguments.template) and len(arguments.HTML)>
 					<cfif application.stcoapi[arguments.typename].stObjectBrokerWebskins[arguments.template].timeout NEQ 0>
-						<cfif structKeyExists(application.objectbroker[arguments.typename], arguments.objectid)>
-							<cflock name="objectBroker" type="exclusive" timeout="2" throwontimeout="true">
-								<cfif not structKeyExists(application.objectbroker[arguments.typename][arguments.objectid], "stWebskins")>
-									<cfset application.objectbroker[arguments.typename][arguments.objectid].stWebskins = structNew() />
-								</cfif>			
-								
-								<!--- Add the current State of the request.inHead scope into the broker --->
-								<cfparam name="request.inHead" default="#structNew()#">
-								
-								<cfset stCacheWebskin.datetimecreated = now() />
-								<cfset stCacheWebskin.webskinHTML = trim(arguments.HTML) />	
-								<cfset stCacheWebskin.inHead = duplicate(arguments.stCurrentView.inHead) />
-	
-								<cfif len(arguments.stCurrentView.hashKey)>
-									<cfset hashString = arguments.stCurrentView.hashKey />
-								</cfif>
-								<cfif arguments.stCurrentView.hashURL>
-									<cfset hashString = "#hashString##cgi.http_host##cgi.script_name##cgi.query_string#" />
-								</cfif>
-								
-								<cfif len(hashString)>
-									<cfset application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template][hash("#hashString#")] = stCacheWebskin />
-								<cfelse>
-									<cfset application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template]["standard"] = stCacheWebskin />
-								</cfif>
-																
-								<cfset bAdded = true />
-							</cflock>
+						<cfif structkeyexists(arguments,"objectid")>
+							<cfif structkeyexists(arguments,"objectid") and structKeyExists(application.objectbroker[arguments.typename], arguments.objectid)>
+								<cflock name="objectBroker" type="exclusive" timeout="2" throwontimeout="true">
+									<cfif not structKeyExists(application.objectbroker[arguments.typename][arguments.objectid], "stWebskins")>
+										<cfset application.objectbroker[arguments.typename][arguments.objectid].stWebskins = structNew() />
+									</cfif>			
+									
+									<!--- Add the current State of the request.inHead scope into the broker --->
+									<cfparam name="request.inHead" default="#structNew()#">
+									
+									<cfset stCacheWebskin.datetimecreated = now() />
+									<cfset stCacheWebskin.webskinHTML = trim(arguments.HTML) />	
+									<cfset stCacheWebskin.inHead = duplicate(arguments.stCurrentView.inHead) />
+		
+									<cfif len(arguments.stCurrentView.hashKey)>
+										<cfset hashString = arguments.stCurrentView.hashKey />
+									</cfif>
+									<cfif arguments.stCurrentView.hashURL>
+										<cfset hashString = "#hashString##cgi.http_host##cgi.script_name##cgi.query_string#" />
+									</cfif>
+									
+									<cfif len(hashString)>
+										<cfset application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template][hash("#hashString#")] = stCacheWebskin />
+									<cfelse>
+										<cfset application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template]["standard"] = stCacheWebskin />
+									</cfif>
+																	
+									<cfset bAdded = true />
+								</cflock>
+							</cfif>
+						<cfelse>
+							<cfif structKeyExists(application.objectbroker, arguments.typename)>
+								<cflock name="objectBroker" type="exclusive" timeout="2" throwontimeout="true">
+									<cfif not structKeyExists(application.objectbroker[arguments.typename], "stTypeWebskins")>
+										<cfset application.objectbroker[arguments.typename].stTypeWebskins = structNew() />
+									</cfif>			
+									
+									<!--- Add the current State of the request.inHead scope into the broker --->
+									<cfparam name="request.inHead" default="#structNew()#">
+									
+									<cfset stCacheWebskin.datetimecreated = now() />
+									<cfset stCacheWebskin.webskinHTML = trim(arguments.HTML) />	
+									<cfset stCacheWebskin.inHead = duplicate(arguments.stCurrentView.inHead) />
+		
+									<cfif len(arguments.stCurrentView.hashKey)>
+										<cfset hashString = arguments.stCurrentView.hashKey />
+									</cfif>
+									<cfif arguments.stCurrentView.hashURL>
+										<cfset hashString = "#hashString##cgi.http_host##cgi.script_name##cgi.query_string#" />
+									</cfif>
+									
+									<cfif len(hashString)>
+										<cfset application.objectbroker[arguments.typename].stTypeWebskins[arguments.template][hash("#hashString#")] = stCacheWebskin />
+									<cfelse>
+										<cfset application.objectbroker[arguments.typename].stTypeWebskins[arguments.template]["standard"] = stCacheWebskin />
+									</cfif>
+																	
+									<cfset bAdded = true />
+								</cflock>
+							</cfif>
 						</cfif>
 					</cfif>
 				</cfif>
@@ -249,7 +296,7 @@
 	</cffunction>
 	
 	<cffunction name="removeWebskin" access="public" output="false" returntype="boolean" hint="Searches the object broker in an attempt to locate the requested webskin template">
-		<cfargument name="ObjectID" required="yes" type="UUID">
+		<cfargument name="ObjectID" required="false" type="UUID">
 		<cfargument name="typename" required="true" type="string">
 		<cfargument name="template" required="true" type="string">
 		
@@ -263,6 +310,12 @@
 					<cfif structKeyExists(application.objectbroker[arguments.typename][arguments.objectid], "stWebskins")>
 						<cflock name="objectBroker" type="exclusive" timeout="2" throwontimeout="true">
 							<cfset structDelete(application.objectbroker[arguments.typename][arguments.objectid].stWebskins, arguments.template) />
+						</cflock>
+					</cfif>
+				<cfelse>
+					<cfif structKeyExists(application.objectbroker[arguments.typename], "stTypeWebskins")>
+						<cflock name="objectBroker" type="exclusive" timeout="2" throwontimeout="true">
+							<cfset structDelete(application.objectbroker[arguments.typename].stTypeWebskins, arguments.template) />
 						</cflock>
 					</cfif>
 				</cfif>
