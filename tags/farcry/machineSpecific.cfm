@@ -13,9 +13,10 @@
 	<cfabort showerror="Does not have an end tag..." >
 
 </cfif>
+</cfsilent>
 
 <cfif thisTag.ExecutionMode EQ "Start">
-
+	
 	<cfparam name="attributes.name" type="string" /><!---  your local machine name  --->
 	
 	<cfset machineName = createObject("java", "java.net.InetAddress").localhost.getHostName() />
@@ -26,6 +27,4 @@
 	
 </cfif>
 
-
-</cfsilent>
 <cfsetting enablecfoutputonly="false">
