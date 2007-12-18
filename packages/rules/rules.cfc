@@ -122,7 +122,7 @@ $out:$
 						<cfloop from="1" to="#arrayLen(request.aAncestorWebskins)#" index="i">
 							
 							<!--- Add the ancestor records so we know where this webskin is located throughout the site. --->
-							<cfif stobj.objectid NEQ request.aAncestorWebskins[i].objectID>
+							<cfif not structkeyexists(request.aAncestorWebskins[i],"objectid") or stobj.objectid NEQ request.aAncestorWebskins[i].objectID>
 								<cftimer label="Indexing webskin: #request.aAncestorWebskins[i].typename#/request.aAncestorWebskins[i].template "/>
 							
 								<cfif listFindNoCase(application.stcoapi[request.aAncestorWebskins[i].typename].lObjectBrokerWebskins, request.aAncestorWebskins[i].template)>
@@ -133,7 +133,9 @@ $out:$
 										<cfif not bAncestorExists>
 											<cfset stProperties = structNew() />
 											<cfset stProperties.webskinObjectID = stobj.objectid />
-											<cfset stProperties.ancestorID = request.aAncestorWebskins[i].objectID />
+											<cfif structkeyexists(request.aAncestorWebskins[i],"objectid")>
+												<cfset stProperties.ancestorID = request.aAncestorWebskins[i].objectID />
+											</cfif>
 											<cfset stProperties.ancestorTypename = request.aAncestorWebskins[i].typename />
 											<cfset stProperties.ancestorTemplate = request.aAncestorWebskins[i].template />
 											

@@ -21,9 +21,20 @@
 
 	<cfparam name="session.tempObjectStore" default="#structNew()#">
 	
+	<!--- use template if its passed otherwise webskin. --->
+	<cfif len(attributes.template)>
+		<cfset attributes.webskin = attributes.template />
+	</cfif>
+	
+	<cfif len(attributes.typename) and len(attributes.template) and not len(attributes.objectid)>
+		<cfset bTypeWebskin = true />
+	<cfelse>
+		<cfset bTypeWebskin = false />
+	</cfif>
+	
 	<cfif not len(attributes.typename)>
 		<cfif structKeyExists(attributes.stObject, "typename")>
-			<cfset attributes.typename = stobject.typename />
+			<cfset attributes.typename = attributes.stobject.typename />
 		<cfelseif len(attributes.objectid)>
 			<cfset attributes.typename = application.coapi.coapiUtilities.findType(objectid=attributes.objectid) />
 		</cfif>
@@ -32,11 +43,6 @@
 	<cfif not len(attributes.typename) or not structKeyExists(application.stCoapi, attributes.typename)>
 		<cfabort showerror="invalid typename passed" />
 	</cfif>	
-	
-	<!--- use template if its passed otherwise webskin. --->
-	<cfif len(attributes.template)>
-		<cfset attributes.webskin = attributes.template />
-	</cfif>
 	
 	
 	<!--- Initialise variables --->
