@@ -448,11 +448,18 @@
 	
 			
 			
-			
-			<!--- Need to determine which method to run on the field --->		
-
+				
+					
+			<!--- Default fieldType to the formtool type --->
+			<cfset tFieldType = createObject("component", application.formtools[ftFieldMetadata.ftType].packagePath).init()>
+				
+				
+			<!--- Need to determine which method to run on the field --->	
 			<cfif structKeyExists(ftFieldMetadata,"ftValidateMethod")>
 				<cfset FieldMethod = ftFieldMetadata.ftValidateMethod>
+			<cfelseif structKeyExists(stType,"ftValidate#ftFieldMetadata.Name#")>
+				<cfset FieldMethod = "ftValidate#ftFieldMetadata.Name#">						
+				<cfset tFieldType = stType>
 			<cfelse>
 				<cfset FieldMethod = "validate">
 			</cfif>	
@@ -460,8 +467,7 @@
 			<cfif i EQ "ObjectID" or i EQ "typename">
 				<cfset "Caller.#attributes.r_stProperties#.#i#" = Request.farcryForm.stObjects[ProcessingFormObjectPrefix]['FormPost'][i].value>
 			<cfelse>
-				<cfset o = createObject("component", application.formtools[ftFieldMetadata.ftType].packagePath).init() />
-				<cfinvoke component="#o#" method="#FieldMethod#" returnvariable="stResult">
+				<cfinvoke component="#tFieldType#" method="#FieldMethod#" returnvariable="stResult">
 					<cfinvokeargument name="ObjectID" value="#FORM['#ProcessingFormObjectPrefix#objectid']#">
 					<cfinvokeargument name="Typename" value="#FORM['#ProcessingFormObjectPrefix#typename']#">			
 					<cfinvokeargument name="stFieldPost" value="#Request.farcryForm.stObjects[ProcessingFormObjectPrefix]['FormPost'][i]#">
