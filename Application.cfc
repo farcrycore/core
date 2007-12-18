@@ -3,15 +3,18 @@
 	<cfsetting enablecfoutputonly="true" />
 	
 	<!--- LOCATE THE PROJECTS CONSTRUCTOR FILE --->
-	<cfset this.projectConstructorLocation = getProjectConstructorLocation(plugin="farcry") />
+	<cfset this.projectConstructorLocation = getProjectConstructorLocation(plugin="webtop") />
 
 	<cfinclude template="#this.projectConstructorLocation#" />	
 	
 	<cfsetting enablecfoutputonly="false" />
 	
 	
-	<cffunction name="OnApplicationStart" access="public" returntype="boolean" output="false" hint="Fires when the application is first created.">
+	<cffunction name="OnApplicationStart" access="public" returntype="boolean" output="true" hint="Fires when the application is first created.">
 
+		<cfset var qServerSpecific = queryNew("blah") />
+		<cfset var qServerSpecificAfterInit = queryNew("blah") />
+		<cfset var machineName = "" />
 
 
 		<cfset initApplicationScope() />
@@ -20,6 +23,13 @@
 		<!--- CALL THE PROJECTS SERVER SPECIFIC VARIABLES. --->
 		<cfinclude template="/farcry/projects/#application.projectDirectoryName#/config/_serverSpecificVars.cfm" />
 		
+		<!--- Add Server Specific Request Scope files --->
+		<cfset machineName = createObject("java", "java.net.InetAddress").localhost.getHostName() />
+		<cfif directoryExists("#application.path.project#/config/#machineName#")>
+			<cfif fileExists("#application.path.project#/config/#machineName#/_serverSpecificVars.cfm")>
+				<cfinclude template="/farcry/projects/#application.projectDirectoryName#/config/#machineName#/_serverSpecificVars.cfm" />
+			</cfif>
+		</cfif>
 		
 		<!----------------------------------- 
 		INITIALISE THE REQUESTED PLUGINS
@@ -96,13 +106,20 @@
 		</cfloop>
 		
 		
-		<!--- CALL THE PROJECTS SERVER SPECIFIC AFTER INIT VARIABLES. --->
+		<!--- CALL THE PROJECTS AFTER INIT VARIABLES. --->
 		<cfif fileExists("#application.path.project#/config/_serverSpecificVarsAfterInit.cfm") >
 			<cfinclude template="/farcry/projects/#application.projectDirectoryName#/config/_serverSpecificVarsAfterInit.cfm" />
 		</cfif>
+
+
+		<!--- ADD SERVER SPECIFIC AFTER INIT VARIABLES --->
+		<cfset machineName = createObject("java", "java.net.InetAddress").localhost.getHostName() />
+		<cfif directoryExists("#application.path.project#/config/#machineName#")>
+			<cfif fileExists("#application.path.project#/config/#machineName#/_serverSpecificVarsAfterInit.cfm")>
+				<cfinclude template="/farcry/projects/#application.projectDirectoryName#/config/#machineName#/_serverSpecificVarsAfterInit.cfm" />
+			</cfif>
+		</cfif>
 		
-	
-	
 		<!--- Return out. --->
 		<cfreturn true />
 
@@ -280,7 +297,7 @@
 	
 	</cffunction>
 	
-	<cffunction name="farcryRequestInit" access="private" output="false" hint="Initialise farcry Application." returntype="void">
+	<cffunction name="farcryRequestInit" access="private" output="true" hint="Initialise farcry Application." returntype="void">
 	
 		<!---------------------------------------- 
 		GENERAL APPLICATION REQUEST PROCESSING
@@ -405,16 +422,35 @@
 	
 		<cfset var scriptName = cgi.SCRIPT_NAME />	
 		<cfset var loc = "" />
+		<cfset var virtual = "" />
 		<cfset var projectName = "" />
 		<cfset var pos = 0 />
 		
 		<!--- Try and determine if a webserver virtual has been used. --->
-		<cfset pos = findNoCase("/#arguments.plugin#/", scriptName) />
 		
-		<cfif pos GT 1>
+		<cfset pageName = listLast(scriptName, "/") />		
+		<cfset pagePos = findNoCase("/#pageName#", scriptName) />
+		<cfif pagePos GT 1>
+			<cfset scriptName = mid(scriptName, 1, pagePos - 1) />
+		<cfelse>
+			<cfset scriptName = "" />
+		</cfif>
+		
+		<cfset pluginPos = findNoCase("/#arguments.plugin#", scriptName) />	
+		<cfif pluginPos GT 1>
+			<cfset scriptName = mid(scriptName, 1, pluginPos - 1) />
+		</cfif>
+		
+		<cfif left(scriptName,1) EQ "/">
+			<cfset projectName = mid(scriptName, 2, len(scriptName)) />
+		<cfelse>
+			<cfset projectName = scriptName />
+		</cfif>
+		
+		<cfif len(projectName)>
 			<!--- It looks like a virtual has been used. We will assume the virtual is the name of the projects folder --->
-			<cfset projectName = mid(scriptName, 1, pos - 1) />
-			<cfset loc = trim("/farcry/projects/#projectName#/www/farcryConstructor.cfm") />
+			<!--- <cfset loc = trim("/farcry/projects/#projectName#/www/farcryConstructor.cfm") /> --->
+			<cfset loc = trim("/#projectName#/farcryConstructor.cfm") />
 		<cfelse>
 			<cfset loc = "/farcryConstructor.cfm" />
 		</cfif>
@@ -422,6 +458,11 @@
 		<cfif not fileExists(loc)>
 			<!--- check cookie caper --->
 			
+		</cfif>
+		
+		<cfif not fileExists(expandPath(loc))>
+			<cfoutput>CONSTRUCTOR DOES NOT EXIST. <a href="/farcry/core/admin/install">CLICK HERE</a> TO INSTALL A NEW PROJECT.</cfoutput>
+			<cfabort />
 		</cfif>
 	
 		<cfreturn loc />
