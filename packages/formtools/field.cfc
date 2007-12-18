@@ -60,7 +60,7 @@
 	</cffunction>
 	
 	
-	<cffunction name="failed" access="private" output="false" returntype="struct" hint="This will return a struct with stMessage">
+	<cffunction name="failed" access="public" output="false" returntype="struct" hint="This will return a struct with stMessage">
 		<cfargument name="value" required="true" type="any" hint="The value that is to be returned.">
 		<cfargument name="message" required="false" type="string" default="Not a valid value" hint="The message that will appear under the field.">
 		<cfargument name="class" required="false" type="string" default="validation-advice" hint="The class of the div wrapped around the message.">
@@ -75,7 +75,7 @@
 		<cfreturn r_stResult />
 	</cffunction>
 	
-	<cffunction name="passed" access="private" output="false" returntype="struct" hint="This will return a struct with stMessage">
+	<cffunction name="passed" access="public" output="false" returntype="struct" hint="This will return a struct with stMessage">
 		<cfargument name="value" required="true" type="any" hint="The value that is to be returned.">
 		
 		<cfset var r_stResult = structNew() />
