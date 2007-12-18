@@ -1,0 +1,93 @@
+/* =THE BIG GUYS */
+html {margin:0;padding:0}
+body {text-align:left;background: #5A7EB9 url("full_page_bg.gif") repeat-x 0 0;margin:0;padding:10px;color:#fff;font:76%/1.5 arial,tahoma,verdana,sans-serif}
+
+
+/* =LINKS */
+a,a:link,a:visited,a:hover,a:active {background:transparent;text-decoration:underline;cursor:pointer;padding:2px 0} 
+a:link, a:visited, a:hover, a:active {color:#E17000}
+a:hover {color:#fff;background:#E17000} 
+
+h2 {text-align:center;letter-spacing:1px;font-size:x-large;}
+
+ul {position:relative;margin: 0 .3em 1em 0;padding: 0;}/*list-style-type:none*/
+ol {margin: .5em .5em}
+ol li {margin-left: 2em;padding-left: 0;background: none; list-style-type: decimal}
+ul li {padding-left: 20px;list-style-type:none;list-style-position:inside;}
+ul.nomarker li {background:none;padding-left:0}
+
+#wrap {text-align:left;border: 8px solid #eee;background:#fff;width:660px;margin: 20px auto;padding: 10px;color:#000}
+#wrap img {border:none;padding:0 0 5px 5px;}
+
+.item {border-top: 1px dashed gray;}
+	.item img {cursor:help;border:none;}
+	.item label{width:42%;float:left;display:block;text-align:right;margin-top:10px;margin-bottom:10px;margin-right:10px;font-size:medium;}
+	.item input, select {margin-top:10px;margin-bottom:10px;font-size:medium;letter-spacing:.5px;}
+
+.itemGroup label{width:42%;text-align:right;margin:5px 10px 0 0;font-size:medium;}
+.itemGroup input {padding:0;font-size:medium;}
+.itemGroup {margin:0;}
+	
+.itemButtons {text-align:center;border-top: 1px dashed gray;padding-top:20px;}
+	.itemButtons input{padding:5px;margin-right:10px;}
+	
+.errorHeading {color:#B0171F;}
+
+.inputText {width:250px;}
+
+
+#footer {text-align:center;letter-spacing:0.5px;border-top: 1px dashed gray;padding-top:10px;margin-top:10px;}
+
+td {text-align:left}
+
+.logo {text-align:center}
+.logo img {margin:0 auto;padding-bottom:0px;}
+table {border-collapse:collapse;border:none;border: 1px solid #fff}
+table td {font-size: 135%;background:#fff;font-weight:bold;text-align:center;text-transform:uppercase;border-bottom: 1px solid #eee}
+table td table td {background:#fff;font-weight:bold;text-align:left;text-transform:none;font-size:76%}
+
+dl.error dt {font-weight:bold;font-size:medium;}
+
+table.errorDescription {width:100%;}
+table.errorDescription th {font-size:small;font-weight:normal;text-transform:none;border:1px solid #bbb;width:35%}
+table.errorDescription td {font-size:small;font-weight:normal;text-transform:none;border:1px solid #bbb;text-align:left;vertical-align:top;}
+
+
+form div {padding:10px;}
+
+
+/*a.help{
+    position:relative; --this is the key
+    z-index:24; 
+    color:#000;
+    text-decoration:none;
+	}
+
+a.help:hover{z-index:25;text-decoration:none;background:none;border:none;color:#fff;}
+
+a.help div.outer{margin:0;padding:28px 0 0 0;display:none;background:url("helpBGhead.gif") no-repeat top;}
+a.help p.inner{margin:0 0 0 0;padding:0 0 0 0;background:url("helpBGfoot.gif") no-repeat bottom;line-height:0.0em;font-size:0;display:block;height:12px;}
+a.help p.content{margin:0;padding:0 0 0 0;background-color:#D8E0F0;border-left:2px solid #8EA0C6;border-right:2px solid #8EA0C6;}
+
+a.help:hover div.outer{ --the span will display just on :hover state
+    display:block;
+    position:absolute;
+    top:1em; left:2em; width:199px;
+    color:#000;
+    text-align: center}
+*/
+	
+	
+.xstooltip 
+{
+    visibility: hidden; 
+    position: absolute; 
+    top: 0;  
+    left: 0; 
+    z-index: 50; 
+
+	margin:0;padding:28px 0 0 0;background:url("helpBGhead.gif") no-repeat top;width:200px;	
+}
+
+.xstooltip p.inner{margin:0 0 0 0;padding:0 0 0 0;background:url("helpBGfoot.gif") no-repeat bottom;line-height:0.0em;font-size:0;display:block;height:12px;}
+.xstooltip p.content{margin:0 0 0 0;padding:10px;background-color:#D8E0F0;border-left:2px solid #8EA0C6;border-right:2px solid #8EA0C6;}
