@@ -2,10 +2,15 @@
 
 
 <cffunction name="init" access="public" output="false" hint="Initialise component." returntype="coapiadmin">
+
+	<cfif structKeyExists(variables, "initialised")>
+		<cfthrow type="Application" detail="coapiAdmin instace already intialised">
+	<cfelse>
+		<cfset variables.qIncludedObjects = initializeIncludes() />
+		<cfset variables.initialised = true />
+	</cfif>
 	
-	<cfset variables.qIncludedObjects = initializeIncludes() />
-	
-	<cfreturn this />
+	<cfreturn this>
 </cffunction>
 
 <cffunction name="getCOAPIComponents" access="public" output="false" returntype="query" hint="Get query of COAPI components by package directory.">
