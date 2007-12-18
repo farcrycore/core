@@ -344,10 +344,24 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset var stobjDisplay = structNew() />
 		<cfset var oType = "" />
 		<cfset var addedtoBroker = "" />
+		<cfset var tempObjectStore = structNew() />
+		
 		<cfset instance = structNew() />
 		
 		<!--- init fourq --->
-		<cfset fourqInit() />
+		<cfset fourqInit() />	
+		
+		
+		<!---------------------------------------------------------------
+		Create a reference to the tempObjectStore in the session.
+		This is done so that if the session doesn't exist yet (in the case of application.cfc applicationStart), we can trap the error and continue on our merry way.
+		 --------------------------------------------------------------->
+		<cftry>
+			<cfset tempObjectStore = Session.TempObjectStore />
+			<cfcatch type="any">
+				<!--- ignore the error and assume it just doesnt exist yet.  --->
+			</cfcatch>
+		</cftry>
 		
 		
 		<cfif isdefined("instance.bgetdata") AND instance.bgetdata EQ arguments.objectid AND arguments.bUseInstanceCache AND NOT arguments.bArraysAsStructs>
@@ -355,9 +369,9 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			<cfset stObj = instance.stobj>
 
 		<!--- Check to see if the object is in the temporary object store --->
-		<cfelseif arguments.bUseInstanceCache AND NOT arguments.bArraysAsStructs AND structKeyExists(Session,"TempObjectStore") AND structKeyExists(Session.TempObjectStore,arguments.objectid)>
+		<cfelseif arguments.bUseInstanceCache AND NOT arguments.bArraysAsStructs AND structKeyExists(tempObjectStore,arguments.objectid)>
 			<!--- get from the temp object stroe --->
-			<cfset stObj = Session.TempObjectStore[arguments.objectid] />
+			<cfset stObj = tempObjectStore[arguments.objectid] />
 
 		<cfelse>
 			<cfif arguments.bUseInstanceCache AND NOT arguments.bArraysAsStructs>
