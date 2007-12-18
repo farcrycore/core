@@ -9,7 +9,7 @@
 	<cfreturn this />
 </cffunction>
 
-<cffunction name="getCOAPIComponents" access="public" output="false" returntype="query" hint="Get query of COAPI components by package directory.">
+<cffunction name="getCOAPIComponents" access="public" output="false" returntype="query" hint="Get query of COAPI components by package directory. Used by the installer.">
 	<cfargument name="project" required="true" type="string" />
 	<cfargument name="package" required="true" type="string" />
 	<cfargument name="plugins" default="" type="string" />
@@ -38,17 +38,17 @@
 
 		<!--- get directory listing of components --->
 		<cfif packagedir eq "projectpackage">
-			<cfset packagepath=GetDirectoryFromPath(GetBaseTemplatePath()) />
+			<cfset packagepath=expandpath("/farcry/projects/#arguments.project#/packages/#arguments.package#") />
 			<cfset typepath="farcry.projects.#arguments.project#.packages.#arguments.package#" />
 			<cfif directoryExists(packagepath)>
-				<cfdirectory directory="#packagepath#../../packages/#arguments.package#" name="qComps" filter="*.cfc" sort="name" />
+				<cfdirectory directory="#packagepath#" name="qComps" filter="*.cfc" sort="name" />
 				<!--- <cfdump var="#qcomps#" label="project: #packagepath#../../packages/#arguments.package#"> --->
 			</cfif>
 		<cfelseif packagedir eq "corepackage">
-			<cfset packagepath=GetDirectoryFromPath(expandpath("/farcry/core/packages/#arguments.package#")) />
+			<cfset packagepath=expandpath("/farcry/core/packages/#arguments.package#") />
 			<cfset typepath="farcry.core.packages.#arguments.package#" />
 			<cfif directoryExists(packagepath)>
-				<cfdirectory directory="#packagepath##arguments.package#" name="qComps" filter="*.cfc" sort="name" />
+				<cfdirectory directory="#packagepath#" name="qComps" filter="*.cfc" sort="name" />
 				<!--- <cfdump var="#qcomps#" label="core: #packagepath##arguments.package#"> --->
 			</cfif>
 		<cfelse>
