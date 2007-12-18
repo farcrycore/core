@@ -828,7 +828,6 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset var i=0 />
 		<cfset var j=0 />
 		<cfset var k=0 />		
-		<cfset var oCoapiAdmin = createObject("component", "farcry.core.packages.coapi.coapiadmin") />
 		<cfset var filteredWebskins = "" />
 		<cfset var filterWebskinName = "" />
 		<cfset var filterWebskinTimeout = "" />
@@ -907,7 +906,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		
 		
 		<!--- This sets up the array which will contain the name of all types this type extends --->
-		<cfset stReturnMetadata.aExtends = oCoapiAdmin.getExtendedTypeArray(packagePath=md.name)>
+		<cfset stReturnMetadata.aExtends = application.coapi.coapiadmin.getExtendedTypeArray(packagePath=md.name)>
 		
 		
 		<cfparam name="stReturnMetadata.bAutoSetLabel" default="true" />
@@ -916,12 +915,12 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfparam name="stReturnMetadata.ObjectBrokerWebskinTimeOut" default="1400" /> <!--- This a value in minutes (ie. 1 day) --->
  		<cfparam name="stReturnMetadata.excludeWebskins" default="" /> <!--- This enables projects to exclude webskins that may be contained in plugins. ---> 
 
-		<cfset stReturnMetadata.qWebskins = oCoapiAdmin.getWebskins(typename="#componentname#", bForceRefresh="true", excludeWebskins="#stReturnMetadata.excludeWebskins#") />
+		<cfset stReturnMetadata.qWebskins = application.coapi.coapiadmin.getWebskins(typename="#componentname#", bForceRefresh="true", excludeWebskins="#stReturnMetadata.excludeWebskins#") />
 		
 		<cfset qAllWebskins = stReturnMetadata.qWebskins />
 		
 		<cfloop list="#arrayToList(stReturnMetadata.aExtends)#" index="i">
-			<cfset qExtendedWebskin = oCoapiAdmin.getWebskins(typename=i, bForceRefresh="true", excludeWebskins="#stReturnMetadata.excludeWebskins#") />
+			<cfset qExtendedWebskin = application.coapi.coapiadmin.getWebskins(typename=i, bForceRefresh="true", excludeWebskins="#stReturnMetadata.excludeWebskins#") />
 			<cfloop query="qExtendedWebskin">
 				<cfset extendedWebskinName = qExtendedWebskin.name />
 
@@ -992,10 +991,10 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 				<cfif not structKeyExists(stReturnMetadata.stObjectBrokerWebskins, aFilteredWebskins[i].methodname)>
 					<cfset stReturnMetadata.stObjectBrokerWebskins[aFilteredWebskins[i].methodname] = structNew() />
 					<cfset stReturnMetadata.stObjectBrokerWebskins[aFilteredWebskins[i].methodname].timeout = aFilteredWebskins[i].webskinTimeout>
-					<cfset stReturnMetadata.stObjectBrokerWebskins[aFilteredWebskins[i].methodname].hashURL = oCoapiAdmin.getWebskinHashURL(typename="#componentname#", template="#aFilteredWebskins[i].methodname#") />
-					<cfset stReturnMetadata.stObjectBrokerWebskins[aFilteredWebskins[i].methodname].displayName = oCoapiAdmin.getWebskinDisplayname(typename="#componentname#", template="#aFilteredWebskins[i].methodname#") />
-					<cfset stReturnMetadata.stObjectBrokerWebskins[aFilteredWebskins[i].methodname].author = oCoapiAdmin.getWebskinAuthor(typename="#componentname#", template="#aFilteredWebskins[i].methodname#") />
-					<cfset stReturnMetadata.stObjectBrokerWebskins[aFilteredWebskins[i].methodname].description = oCoapiAdmin.getWebskinDescription(typename="#componentname#", template="#aFilteredWebskins[i].methodname#") />
+					<cfset stReturnMetadata.stObjectBrokerWebskins[aFilteredWebskins[i].methodname].hashURL = application.coapi.coapiadmin.getWebskinHashURL(typename="#componentname#", template="#aFilteredWebskins[i].methodname#") />
+					<cfset stReturnMetadata.stObjectBrokerWebskins[aFilteredWebskins[i].methodname].displayName = application.coapi.coapiadmin.getWebskinDisplayname(typename="#componentname#", template="#aFilteredWebskins[i].methodname#") />
+					<cfset stReturnMetadata.stObjectBrokerWebskins[aFilteredWebskins[i].methodname].author = application.coapi.coapiadmin.getWebskinAuthor(typename="#componentname#", template="#aFilteredWebskins[i].methodname#") />
+					<cfset stReturnMetadata.stObjectBrokerWebskins[aFilteredWebskins[i].methodname].description = application.coapi.coapiadmin.getWebskinDescription(typename="#componentname#", template="#aFilteredWebskins[i].methodname#") />
 					<cfset stReturnMetadata.lObjectBrokerWebskins = listAppend(stReturnMetadata.lObjectBrokerWebskins, aFilteredWebskins[i].methodname)>
 				</cfif>
 			</cfloop>
