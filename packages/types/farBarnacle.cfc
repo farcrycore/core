@@ -113,42 +113,39 @@
 		
 		<!--- If this type hasn't been secured (i.e. no object permissions) default to grant --->
 		<cfset typename = findType(arguments.object) />
-		<cfif not len(typename)>
-			<cfset thisobject = getData(objectid=arguments.object) />
-			<cfif structkeyexists(thisobject,"typename")>
-				<cfset typename = thisobject.typename />
+		<cfif len(typename)>
+			<cfquery datasource="#application.dsn#" name="qSecured">
+				select	count(parentid) as secured
+				from	#application.dbowner#farPermission_relatedtypes
+				where	parentid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.permission#" />
+						and data=<cfqueryparam cfsqltype="cf_sql_varchar" value="#typename#" />
+			</cfquery>
+			<cfif not qSecured.secured>
+				<cfreturn true />
 			</cfif>
+				
+			<cfloop list="#arguments.role#" index="thisrole">
+				<!--- If the name of the role was passed in, get the objectid --->
+				<cfif not isvalid("uuid",thisrole)>
+					<cfset thisrole = application.security.factory.role.getID(thisrole) />
+				</cfif>
+				
+				<!--- If possible use the cache, otherwise update cache --->
+				<cfif not arguments.forcerefresh and application.security.isCached(role=thisrole,permission=arguments.permission,object=arguments.object)>
+					<cfset thisresult = application.security.getCache(role=thisrole,permission=arguments.permission,object=arguments.object) />
+				<cfelse>
+					<cfset thisresult = application.security.setCache(role=thisrole,permission=arguments.permission,object=arguments.object,right=getBarnacle(thisrole,arguments.permission,arguments.object).barnaclevalue) />
+				</cfif>
+				
+				<!--- Result is the most permissable right. 1 is the most permissable, so if that is returned we don't need to check any more --->
+				<cfif thisresult eq 1>
+					<cfreturn 1 />
+				<cfelseif thisresult gt result>
+					<cfset result = thisresult />
+				</cfif>
+			</cfloop>
 		</cfif>
-		<cfquery datasource="#application.dsn#" name="qSecured">
-			select	count(parentid) as secured
-			from	#application.dbowner#farPermission_relatedtypes
-			where	parentid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.permission#" />
-					and data=<cfqueryparam cfsqltype="cf_sql_varchar" value="#typename#" />
-		</cfquery>
-		<cfif not qSecured.secured>
-			<cfreturn true />
-		</cfif>
-			
-		<cfloop list="#arguments.role#" index="thisrole">
-			<!--- If the name of the role was passed in, get the objectid --->
-			<cfif not isvalid("uuid",thisrole)>
-				<cfset thisrole = application.security.factory.role.getID(thisrole) />
-			</cfif>
-			
-			<!--- If possible use the cache, otherwise update cache --->
-			<cfif not arguments.forcerefresh and application.security.isCached(role=thisrole,permission=arguments.permission,object=arguments.object)>
-				<cfset thisresult = application.security.getCache(role=thisrole,permission=arguments.permission,object=arguments.object) />
-			<cfelse>
-				<cfset thisresult = application.security.setCache(role=thisrole,permission=arguments.permission,object=arguments.object,right=getBarnacle(thisrole,arguments.permission,arguments.object).barnaclevalue) />
-			</cfif>
-			
-			<!--- Result is the most permissable right. 1 is the most permissable, so if that is returned we don't need to check any more --->
-			<cfif thisresult eq 1>
-				<cfreturn 1 />
-			<cfelseif thisresult gt result>
-				<cfset result = thisresult />
-			</cfif>
-		</cfloop>
+
 		
 		<cfreturn result />
 	</cffunction>
