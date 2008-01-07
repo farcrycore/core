@@ -151,6 +151,7 @@
 	<cffunction name="checkDBType" access="public" returntype="struct" output="false" hint="Check to see whether the database is Oracle">
 		<cfargument name="DSN" type="string" required="true" hint="DSN to check" />
 		<cfargument name="DBType" type="string" required="true" hint="Type of DB to check" />
+		<cfargument name="DBOwner" type="string" required="true" hint="Database owner" />
 
 		<cfset var qCheckDSN = queryNew("blah") />
 		<cfset var bCorrectDB = true />
@@ -160,7 +161,6 @@
 		<cfset stResult.errorTitle = "" />
 		<cfset stResult.errorDescription = "" />
 
-		<cftry>
 			<cfswitch expression="#arguments.DBType#">
 			<cfcase value="ora">
 				<cfset databaseTypeName = "Oracle" />
@@ -174,16 +174,11 @@
 				<!--- run an MSSQL specific query --->
 				<cfquery name="qCheckDSN" datasource="#arguments.DSN#">
 				SELECT	count(*) AS theCount
-				FROM	#arguments.DSN#.sysobjects
+				FROM	#arguments.DBOwner#sysobjects
 				</cfquery>
 			</cfcase>
 			</cfswitch>
-			
-			<cfcatch type="database">
-				<cfset bCorrectDB = false />
-			</cfcatch>
-			
-		</cftry>
+
 		
 		<cfif not bCorrectDB>
 			

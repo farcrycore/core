@@ -10,9 +10,9 @@
 		<title>FARCRY INSTALLER. </title>
 		
 		<!--- EXT CSS & JS--->
-		<link rel="stylesheet" type="text/css" href="/farcry/core/admin/js/ext/resources/css/ext-all.css">
-		<script type="text/javascript" src="/farcry/core/admin/js/ext/adapter/ext/ext-base.js"></script>
-		<script type="text/javascript" src="/farcry/core/admin/js/ext/ext-all.js"></script>
+		<link rel="stylesheet" type="text/css" href="../js/ext/resources/css/ext-all.css">
+		<script type="text/javascript" src="../js/ext/adapter/ext/ext-base.js"></script>
+		<script type="text/javascript" src="../js/ext/ext-all.js"></script>
 		
 		<!--- INSTALL CSS & JS --->
 		<link rel="stylesheet" type="text/css" href="css/install.css">
@@ -96,7 +96,7 @@ SAVE AND CONTROL THE INSTAL PROCESS WIZARD
 	</cfif>
 	
 	
-	<cfset stResult = createObject("component", "flightCheck").checkDBType(dsn="#session.stFarcryInstall.stConfig.dsn#", DBType="#session.stFarcryInstall.stConfig.DBType#") />
+	<cfset stResult = createObject("component", "flightCheck").checkDBType(DBOwner="#session.stFarcryInstall.stConfig.DBOwner#",dsn="#session.stFarcryInstall.stConfig.dsn#", DBType="#session.stFarcryInstall.stConfig.DBType#") />
 	
 	<cfif not stResult.bSuccess>
 		<cf_redoStep field="DBType" errorTitle="#stResult.errorTitle#" errorDescription="#stResult.errorDescription#" />
