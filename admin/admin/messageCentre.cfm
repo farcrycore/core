@@ -33,7 +33,6 @@ $out:$
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 <sec:CheckPermission error="true" permission="AdminGeneralTab">
-	<cfimport taglib="/farcry/core/tags/display/" prefix="display">
 	
 	<cfparam name="stargs.typename" default="dmEmail">
 	

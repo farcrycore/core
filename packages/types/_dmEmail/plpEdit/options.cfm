@@ -21,7 +21,6 @@ $Developer: Brendan Sisson (brendan@dameon.com.au) $
 
 <cfimport taglib="/farcry/core/tags/widgets" prefix="widgets">
 <cfimport taglib="/farcry/core/tags/navajo" prefix="nj">
-<cfimport taglib="/farcry/core/tags/display/" prefix="display">
 
 <cfset thisstep.isComplete = 0>
 <cfset thisstep.name = stplp.currentstep>

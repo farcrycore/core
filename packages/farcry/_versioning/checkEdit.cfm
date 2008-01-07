@@ -22,7 +22,6 @@ $in: $
 $out:$
 --->
 
-<cfimport taglib="/farcry/core/tags/display/" prefix="display">
 
 <cfif NOT arguments.stRules.bEdit AND arguments.stRules.versioning>  <!--- User may not edit LIVE/Approved objects - a draft must be created first --->
 
