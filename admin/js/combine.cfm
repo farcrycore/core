@@ -12,7 +12,7 @@
 			<cfloop list="#url.files#" index="i" >
 				<cfoutput>
 					//-------------#i#-------------//
-					<cfinclude template="#application.url.webtop#/core/admin/js/#url.library##i#" />
+					<cfinclude template="/farcry/core/admin/js/#url.library##i#" />
 				</cfoutput>	
 			</cfloop>
 		</cfif>
