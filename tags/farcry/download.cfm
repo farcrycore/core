@@ -114,7 +114,7 @@ accommodate legacy implementations
 		<cfcatch><cfinvokeargument name="browser" value="Unknown"/></cfcatch>
 	</cftry>
 	<!--- check is a user is logged in --->
-	<cfif request.LoggedIn>
+	<cfif application.security.isLoggedIn()>
 		<cfinvokeargument name="userid" value="#session.dmSec.authentication.userlogin#"/>
 	<cfelse>
 		<cfinvokeargument name="userid" value="Anonymous"/>

@@ -308,7 +308,7 @@
 		<cfif isDefined("url.logout") and url.logout eq 1>
 			<cfset application.security.logout() />
 		</cfif>
-		<cfset request.loggedin = application.security.getCurrentUserID() />
+		
 		
 		
 		<!-------------------------------------------------------
@@ -435,16 +435,18 @@
 		<cfelse>
 			<cfset scriptName = "" />
 		</cfif>
+
 		
 		<cfset pluginPos = findNoCase("/#arguments.plugin#", scriptName) />	
+
 		<cfif pluginPos GT 1>
 			<cfset scriptName = mid(scriptName, 1, pluginPos - 1) />
-		</cfif>
-		
-		<cfif left(scriptName,1) EQ "/">
-			<cfset projectName = mid(scriptName, 2, len(scriptName)) />
-		<cfelse>
-			<cfset projectName = scriptName />
+	
+			<cfif left(scriptName,1) EQ "/">
+				<cfset projectName = mid(scriptName, 2, len(scriptName)) />
+			<cfelse>
+				<cfset projectName = scriptName />
+			</cfif>
 		</cfif>
 		
 		<cfif len(projectName)>

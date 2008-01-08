@@ -63,7 +63,7 @@ $out:$
 		<cftry>
 			<cfscript>
 			// check is a user is logged in
-			if (request.LoggedIn)
+			if (application.security.isLoggedIn())
 				userid = session.dmSec.authentication.userlogin;
 			else
 				userid="Anonymous";

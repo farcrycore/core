@@ -80,7 +80,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
     		<!--- request.mode.lValidStatus is typically approved, or draft, pending, approved in SHOWDRAFT mode --->
     		<cfif StructKeyExists(stObjTemp,"status") AND ListContains(request.mode.lValidStatus, stObjTemp.status)>
     			<!--- if in request.mode.showdraft=true mode grab underlying draft page (if it exists). Only display if user is loggedin --->
-    			<cfif IsDefined("stObjTemp.versionID") AND request.mode.showdraft AND request.loggedin>
+    			<cfif IsDefined("stObjTemp.versionID") AND request.mode.showdraft AND application.security.isLoggedIn()>
     				<cfquery datasource="#application.dsn#" name="qHasDraft">
     					SELECT objectID,status from #application.dbowner##stObjTemp.typename# where versionID = '#stObjTemp.objectID#'
     				</cfquery>
@@ -127,7 +127,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
     		<!--- check if object has status --->
     		<cfif StructKeyExists(stObjTemp,"status")>
     			<!--- check if logged in --->
-    			<cfif request.loggedIn>
+    			<cfif application.security.isLoggedIn()>
     				<!--- change to draft mode --->
     				<cflocation url="#cgi.script_name#?#cgi.query_string#&showdraft=1" addtoken="No">
     			<cfelse>
@@ -147,7 +147,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 <cfelse>
 	<!--- If the user is not logged in and are trying to view a draft - request login --->
 	<cfif isDefined("stobj.status")>
-		<cfif stObj.status IS "DRAFT" AND NOT request.loggedin>
+		<cfif stObj.status IS "DRAFT" AND NOT application.security.isLoggedIn()>
 			<cflocation url="#application.url.farcry#/login.cfm?returnUrl=#URLEncodedFormat(cgi.script_name&'?'&cgi.query_string)#&error=draft&showdraft=1" addtoken="No">
 		</cfif>
 	</cfif>
