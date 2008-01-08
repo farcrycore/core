@@ -82,12 +82,12 @@
 		<cfargument name="object" type="string" required="false" default="" hint="The object the barnacle is attached to" />
 		<cfargument name="forcerefresh" type="boolean" required="false" default="false" hint="Should the cache be forcably refreshed" />
 		
-		<cfset stBarnacle = structnew() />
-		<cfset thisrole = "" />
-		<cfset result = -1 />
-		<cfset thisresult = -1 />
-		<cfset qSequred = "" />
-		<cfset typename = "" />
+		<cfset var stBarnacle = structnew() />
+		<cfset var thisrole = "" />
+		<cfset var result = -1 />
+		<cfset var thisresult = -1 />
+		<cfset var qSequred = "" />
+		<cfset var typename = "" />
 		
 		<!--- Either barnacle or role+permission+object must be specified --->
 		<cfif isvalid("uuid",arguments.barnacle)><!--- Barnacle specified by objectid --->
