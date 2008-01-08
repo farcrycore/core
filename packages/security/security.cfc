@@ -87,6 +87,16 @@
 		</cfif>
 	</cffunction>
 
+
+	<!--- Current user queries --->
+	<cffunction name="isLoggedIn" access="public" output="false" returntype="boolean" hint="Returns true if a user has logged in.">
+		<cfif len(getCurrentUserID())>
+			<cfreturn true />
+		<cfelse>
+			<cfreturn false />
+		</cfif>
+	</cffunction>
+	
 	<cffunction name="checkPermission" access="public" output="true" returntype="boolean" hint="Returns true if a user has the specified permission">
 		<cfargument name="permission" type="string" required="false" default="" hint="The permission to check" />
 		<cfargument name="object" type="string" required="false" default="" hint="If specified, will check barnacle" />
