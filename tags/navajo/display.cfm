@@ -189,6 +189,10 @@ todo: 	versioning object will be deprecated..
 	    		</cfif>
 	    	</cfif>
 	    </cfif>
+	
+		<cfif NOT isDefined("request.navid")>
+			<cfset request.navid = stobj.objectid />
+		</cfif>
 		
 		
 	<!--- else get the navigation point from the URL --->
