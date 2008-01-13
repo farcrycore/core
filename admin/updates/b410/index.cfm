@@ -41,7 +41,7 @@
 	<body>
 
 <cfif structkeyexists(form,"submit")>
-	<cfapplication name="#form.projectname#" />
+	<cfapplication name="#form.projectname#_UpgradeV5" />
 	
 		<cfsetting requesttimeout="1620" />
 	<!--- Project directory name can be changed from the default which is the applicationname --->
@@ -182,12 +182,26 @@
 	
 	<cfquery datasource="#application.dsn#">
 		delete from #application.dbowner#farRole
+	</cfquery>
+	<cfquery datasource="#application.dsn#">
 		delete from #application.dbowner#farRole_groups
+	</cfquery>
+	<cfquery datasource="#application.dsn#">
 		delete from #application.dbowner#farRole_permissions
+	</cfquery>
+	<cfquery datasource="#application.dsn#">
 		delete from #application.dbowner#farUser
+	</cfquery>
+	<cfquery datasource="#application.dsn#">
 		delete from #application.dbowner#farUser_groups
+	</cfquery>
+	<cfquery datasource="#application.dsn#">
 		delete from #application.dbowner#farGroup
+	</cfquery>
+	<cfquery datasource="#application.dsn#">
 		delete from #application.dbowner#farPermission
+	</cfquery>
+	<cfquery datasource="#application.dsn#">
 		delete from #application.dbowner#farBarnacle
 	</cfquery>
 	
@@ -200,11 +214,80 @@
 		delete from #application.dbowner#farConfig
 	</cfquery>
 	
+	<!--- WORKFLOW --->
+	<cfif NOT alterType.isCFCDeployed(typename="farWorkflowDef")>
+		<cfset createobject("component","farcry.core.packages.types.farWorkflowDef").deployType(btestRun="false") />
+	</cfif>
+	<cfif NOT alterType.isCFCDeployed(typename="farWorkflow")>
+		<cfset createobject("component","farcry.core.packages.types.farWorkflow").deployType(btestRun="false") />
+	</cfif>
+	<cfif NOT alterType.isCFCDeployed(typename="farTaskDef")>
+		<cfset createobject("component","farcry.core.packages.types.farTaskDef").deployType(btestRun="false") />
+	</cfif>
+	<cfif NOT alterType.isCFCDeployed(typename="farTask")>
+		<cfset createobject("component","farcry.core.packages.types.farTask").deployType(btestRun="false") />
+	</cfif>
+	
+	<cfquery datasource="#application.dsn#">
+		delete from #application.dbowner#farWorkflowDef
+	</cfquery>
+	<cfquery datasource="#application.dsn#">
+		delete from #application.dbowner#farWorkflow
+	</cfquery>
+	<cfquery datasource="#application.dsn#">
+		delete from #application.dbowner#farTaskDef
+	</cfquery>
+	<cfquery datasource="#application.dsn#">
+		delete from #application.dbowner#farTask
+	</cfquery>
+	
+	
+	<!--- CATEGORIES --->
+	
+	<cfif NOT alterType.isCFCDeployed(typename="dmCategory")>
+		<cfset createobject("component","farcry.core.packages.types.dmCategory").deployType(btestRun="false") />
+	</cfif>
+
+	<cfquery datasource="#application.dsn#">
+		delete from #application.dbowner#dmCategory
+	</cfquery>
+	<cfquery datasource="#application.dsn#">
+	INSERT INTO  #application.dbowner#dmCategory(objectid,alias,categorylabel,createdby,ownedby,lastupdatedby,datetimecreated,datetimelastupdated,label)
+	SELECT categoryID,alias,categorylabel,'farcry','farcry','farcry','#dateFormat(now(),"yyyy-mm-dd")#','#dateFormat(now(),"yyyy-mm-dd")#',categorylabel
+	FROM categories
+	</cfquery>
+	
+	<cftry>
+		<!--- get objectId list for removal --->
+		<cfquery name="qTypes" datasource="#application.dsn#">
+			SELECT ObjectID 
+			FROM #application.dbowner#dmCategory
+		</cfquery>
+	
+		<cfif qTypes.recordCount GT 0>
+			
+			<!--- remove references from refObjects --->
+			<cfquery name="qDelRefs" datasource="#application.dsn#">
+				DELETE FROM #application.dbowner#refObjects
+				WHERE typename = 'dmCategory'
+			</cfquery>
+			<!--- Do bulk insert into refObjects --->
+			<cfquery name="qInsertRefs" datasource="#application.dsn#">
+				INSERT INTO refObjects (objectid, typename)
+					SELECT ObjectID as objectid, 'dmCategory' as typename
+					FROM #application.dbowner#dmCategory
+			</cfquery>
+		</cfif>
+		<cfcatch><cfoutput><p>Error indexing dmCategory into refObjects - perhaps type has not been deployed</p></cfoutput></cfcatch>
+	</cftry>
+		
 	<!--- ============ DATA MIGRATION ============ --->
 	
 	<cfapplication name="#form.projectname#" sessionmanagement="true" />
 	
 	<cfoutput><h1>Upgrade results</h1></cfoutput>
+	
+	<cfoutput>categories migrated<br/></cfoutput>
 	
 	<!--- SECURITY --->
 	<cfset application.security = createobject("component","farcry.core.packages.security.security").init() />
@@ -230,6 +313,7 @@
 	<cfoutput><p class="success"></cfoutput>
 	
 	<!--- Load config data --->
+	<cfparam name="application.config" default="#structNew()#" />
 	<cfset structclear(application.config) />
 	<cfloop list="#oConfig.getConfigKeys()#" index="configkey">
 		<cfset application.config[configkey] = oConfig.getConfig(configkey) />
@@ -248,6 +332,11 @@
 			<li>Migrates current security data</li>
 			<li>Migrates config data</li>
 			<li>Creates the new farLog table</li>
+			<li>Creates the new farWorkflowDef table</li>
+			<li>Creates the new farWorkflow table</li>
+			<li>Creates the new farTask table</li>
+			<li>Creates the new farTaskDef table</li>
+			<li>Migrates current category data</li>
 		</ul>
 		</p>
 		<p>NOTE: The old data will be left in place, but if the new tables already exist they will be wiped as part of the upgrade.</p>
