@@ -8,7 +8,9 @@
 
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<sec:CheckPermission error="true" permission="AdminCOAPITab">
+<sec:CheckPermission error="true" permission="AdminCOAPITab" result="bPermitted" />
+
+<cfif bPermitted>
 	<cfif isDefined("Form.submit")>
 		<cfparam name="Form.bProcessTypes" default=true >
 		<cfparam name="Form.bProcessRules" default=true >
@@ -155,7 +157,7 @@
 		</form>
 		</cfoutput>
 	</cfif>
-</sec:CheckPermission>
+</cfif>
 
 <admin:footer>
 <cfsetting enablecfoutputonly="No">
