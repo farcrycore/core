@@ -52,6 +52,23 @@
 		
 		<cfreturn result />
 	</cffunction>
+	
+	<cffunction name="listUnion" access="public" output="false" returntype="string" hint="Returns the items in list2 that are also in list2">
+		<cfargument name="list1" type="string" required="true" />
+		<cfargument name="list2" type="string" required="true" />
+		<cfargument name="delimiters" type="string" required="false" default="," />
+		
+		<cfset var result = "" />
+		<cfset var delimiter = left(arguments.delimiters,1) />
+		
+		<cfloop list="#arguments.list2#" index="item" delimiters="#arguments.delimiters#">
+			<cfif listcontainsnocase(arguments.list1,item,arguments.delimiters)>
+				<cfset result = listappend(result,item,delimiter) />
+			</cfif>
+		</cfloop>
+		
+		<cfreturn result />
+	</cffunction>
 
 	<cffunction name="listMerge" access="public" output="false" returntype="string" hint="Adds items from the second list to the first, where they aren't already present">
 		<cfargument name="list1" type="string" required="true" hint="The list being built on" />
