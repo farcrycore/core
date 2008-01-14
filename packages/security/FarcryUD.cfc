@@ -125,12 +125,6 @@
 		<cfreturn aGroups />
 	</cffunction>
 	
-	<cffunction name="getGroupUsers" access="public" output="false" returntype="array" hint="Returns all the users in a particular group">
-		<cfthrow message="The #variables.metadata.displayname# user directory needs to implement the getGroupUsers function" />
-		
-		<cfreturn arraynew(1) />
-	</cffunction>
-	
 	<cffunction name="getAllGroups" access="public" output="false" returntype="array" hint="Returns all the groups that this user directory supports">
 		<cfset var qGroups = "" />
 		<cfset var aGroups = arraynew(1) />

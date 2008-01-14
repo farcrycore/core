@@ -64,12 +64,12 @@
 			<cfquery datasource="#application.dsn#" name="qGroups">
 				select	*
 				from	#application.dbowner#farRole_groups
-				where	0=0
+				where	0=1
 				<cfloop list="#arguments.roles#" index="role">
-					<cfif isvalid("uuid",arguments.roles[i])>
+					<cfif isvalid("uuid",role)>
 						or parentid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#role#">
 					<cfelse>
-						or parentid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#getID(arguments.roles[i])#" />
+						or parentid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#getID(role)#" />
 					</cfif>
 				</cfloop>
 			</cfquery>
@@ -80,7 +80,7 @@
 		</cfif>
 	</cffunction>
 
-	<cffunction name="getAuthenticatedProfiles" access="public" output="false" returntype="string" hint="Returns an array of the profile ids of users with the specified roles">
+	<cffunction name="getAuthenticatedProfiles" access="public" output="true" returntype="string" hint="Returns an array of the profile ids of users with the specified roles">
 		<cfargument name="roles" type="string" required="true" hint="The roles to query" />
 		<cfargument name="requireall" type="string" required="false" default="false" hint="Set to true if this function should only return users with ALL specified roles" />
 		
@@ -91,23 +91,32 @@
 		<cfset var i = 0 />
 		<cfset var result = "" />
 		<cfset var qProfiles = querynew("empty") />
+		<cfset var userlist = "" />
 		
 		<cfloop list="#arguments.roles#" index="role">
+			<cfset arrayappend(users,"") />
 			<cfloop list="#rolesToGroups(role)#" index="group">
-				<cfset users[arraylen(users)+1] = application.security.userdirectories[listlast(group,'_')].getGroupsUsers(listfirst(group,'_')) />
+				<cfset userlist = arraytolist(application.security.userdirectories[listlast(group,'_')].getGroupUsers(listfirst(group,'_'))) />
+				<cfloop list="#userlist#" index="user">
+					<cfif not listcontains(users[arraylen(users)],"#user#_#listlast(group,'_')#")>
+						<cfset users[arraylen(users)] = listappend(users[arraylen(users)],"#user#_#listlast(group,'_')#") />
+					</cfif>
+				</cfloop>
 			</cfloop>
 		</cfloop>
 		
 		<cfif arraylen(users) eq 0>
 			<cfreturn "" />
 		<cfelse>
-			<cfloop from="1" to="#arraylen(users)-1#" index="i">
+			<cfloop from="1" to="#arraylen(users)#" index="i">
 				<cfif arguments.requireall and started>
 					<cfset result = application.factory.oUtils.listUnion(result,users[i]) />
 				<cfelse>
 					<cfset result = application.factory.oUtils.listMerge(result,users[i]) />
 				</cfif>
 			</cfloop>
+			
+			<cfset started = true />
 			
 			<cfif len(result)>
 				<cfquery datasource="#application.dsn#" name="qProfiles">
@@ -123,7 +132,7 @@
 		</cfif>
 	</cffunction>
 		
-	<cffunction name="getRight" access="public" output="true" returntype="numeric" hint="Returns the right for the specfied permission">
+	<cffunction name="getRight" access="public" output="false" returntype="numeric" hint="Returns the right for the specfied permission">
 		<cfargument name="role" type="string" required="true" hint="The roles to check" />
 		<cfargument name="permission" type="string" required="false" default="" hint="The permission to retrieve" />
 		<cfargument name="forcerefresh" type="boolean" required="false" default="false" hint="Should the cache be forcably refreshed" />
