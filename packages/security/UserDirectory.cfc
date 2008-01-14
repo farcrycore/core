@@ -62,13 +62,21 @@
 		
 		<cfthrow message="The #variables.metadata.displayname# user directory needs to implement the getUserGroups function" />
 		
-		<cfreturn "" />
+		<cfreturn arraynew(1) />
 	</cffunction>
 	
 	<cffunction name="getAllGroups" access="public" output="false" returntype="array" hint="Returns all the groups that this user directory supports">
 		<cfthrow message="The #variables.metadata.displayname# user directory needs to implement the getAllGroups function" />
 		
-		<cfreturn "" />
+		<cfreturn arraynew(1) />
+	</cffunction>
+	
+	<cffunction name="getGroupUsers" access="public" output="false" returntype="array" hint="Returns all the users in a particular group">
+		<cfargument name="group" type="string" required="true" hint="The group to query" />
+		
+		<cfthrow message="The #variables.metadata.displayname# user directory needs to implement the getGroupUsers function" />
+		
+		<cfreturn arraynew(1) />
 	</cffunction>
 	
 	<cffunction name="getProfile" access="public" output="false" returntype="struct" hint="Returns profile data available through the user directory">

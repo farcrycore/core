@@ -125,6 +125,12 @@
 		<cfreturn aGroups />
 	</cffunction>
 	
+	<cffunction name="getGroupUsers" access="public" output="false" returntype="array" hint="Returns all the users in a particular group">
+		<cfthrow message="The #variables.metadata.displayname# user directory needs to implement the getGroupUsers function" />
+		
+		<cfreturn arraynew(1) />
+	</cffunction>
+	
 	<cffunction name="getAllGroups" access="public" output="false" returntype="array" hint="Returns all the groups that this user directory supports">
 		<cfset var qGroups = "" />
 		<cfset var aGroups = arraynew(1) />
@@ -142,11 +148,7 @@
 		<cfreturn aGroups />
 	</cffunction>
 
-	
-	<!--- =================================
-	  DEPRECIATED - USED BY AUTHORISATION
-	================================== --->
-	<cffunction name="getGroupUsers" access="public" output="false" returntype="string" hint="Returns all the users in a specified group">
+	<cffunction name="getGroupUsers" access="public" output="false" returntype="array" hint="Returns all the users in a specified group">
 		<cfargument name="group" type="string" required="true" hint="The group to query" />
 		
 		<cfset var qUsers = "" />
@@ -165,7 +167,7 @@
 			where	g.title=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.group#" />
 		</cfquery>
 		
-		<cfreturn valuelist(qUsers.userid) />
+		<cfreturn listtoarray(valuelist(qUsers.userid)) />
 	</cffunction>
 	
 	<!--- =============================

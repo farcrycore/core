@@ -30,6 +30,7 @@
 		
 		<cfset var result = "" />
 		<cfset var i = "" />
+		<cfset var qRoles = querynew("empty") />
 		
 		<cfif not isarray(arguments.groups)>
 			<cfset arguments.groups = listtoarray(arguments.groups) />
@@ -47,7 +48,81 @@
 		
 		<cfreturn result />
 	</cffunction>
-	
+
+	<cffunction name="rolesToGroups" access="public" output="false" returntype="string" hint="Converts a list/array of FarCry roles to their equivilent user directory groups">
+		<cfargument name="roles" type="Any" required="true" hint="The roles to convert" />
+		
+		<cfset var result = "" />
+		<cfset var role = "" />
+		<cfset var qGroups = querynew("empty") />
+		
+		<cfif isarray(arguments.roles)>
+			<cfset arguments.roles = arraytolist(arguments.roles) />
+		</cfif>
+		
+		<cfif len(arguments.roles)>
+			<cfquery datasource="#application.dsn#" name="qGroups">
+				select	*
+				from	#application.dbowner#farRole_groups
+				where	0=0
+				<cfloop list="#arguments.roles#" index="role">
+					<cfif isvalid("uuid",arguments.roles[i])>
+						or parentid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#role#">
+					<cfelse>
+						or parentid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#getID(arguments.roles[i])#" />
+					</cfif>
+				</cfloop>
+			</cfquery>
+			
+			<cfreturn valuelist(qGroups.data) />
+		<cfelse>
+			<cfreturn "" />
+		</cfif>
+	</cffunction>
+
+	<cffunction name="getAuthenticatedProfiles" access="public" output="false" returntype="string" hint="Returns an array of the profile ids of users with the specified roles">
+		<cfargument name="roles" type="string" required="true" hint="The roles to query" />
+		<cfargument name="requireall" type="string" required="false" default="false" hint="Set to true if this function should only return users with ALL specified roles" />
+		
+		<cfset var role = "" />
+		<cfset var group = "" />
+		<cfset var started = false />
+		<cfset var users = arraynew(1) />
+		<cfset var i = 0 />
+		<cfset var result = "" />
+		<cfset var qProfiles = querynew("empty") />
+		
+		<cfloop list="#arguments.roles#" index="role">
+			<cfloop list="#rolesToGroups(role)#" index="group">
+				<cfset users[arraylen(users)+1] = application.security.userdirectories[listlast(group,'_')].getGroupsUsers(listfirst(group,'_')) />
+			</cfloop>
+		</cfloop>
+		
+		<cfif arraylen(users) eq 0>
+			<cfreturn "" />
+		<cfelse>
+			<cfloop from="1" to="#arraylen(users)-1#" index="i">
+				<cfif arguments.requireall and started>
+					<cfset result = application.factory.oUtils.listUnion(result,users[i]) />
+				<cfelse>
+					<cfset result = application.factory.oUtils.listMerge(result,users[i]) />
+				</cfif>
+			</cfloop>
+			
+			<cfif len(result)>
+				<cfquery datasource="#application.dsn#" name="qProfiles">
+					select	objectid
+					from	#application.dbowner#dmProfile
+					where	username in (<cfqueryparam cfsqltype="varchar" list="true" value="#result#" />)
+				</cfquery>
+				
+				<cfreturn valuelist(qProfiles.objectid) />
+			<cfelse>
+				<cfreturn "" />
+			</cfif>
+		</cfif>
+	</cffunction>
+		
 	<cffunction name="getRight" access="public" output="true" returntype="numeric" hint="Returns the right for the specfied permission">
 		<cfargument name="role" type="string" required="true" hint="The roles to check" />
 		<cfargument name="permission" type="string" required="false" default="" hint="The permission to retrieve" />
