@@ -45,6 +45,26 @@
 					</cfoutput>
 				</cfsavecontent>
 			</cfcase>
+			<cfcase value="confirmpassword">
+				<cfsavecontent variable="html">
+					<cfoutput>
+						<fieldset>
+							<legend>#arguments.stMetadata.ftLabel#</legend>							
+							<div class="fieldsection optional">
+								<label class="fieldsectionlabel" for="#arguments.fieldname#New">Password</label>
+								<div class="fieldwrap"><input type="password" name="#arguments.fieldname#" id="#arguments.fieldname#" value="" class="#arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" /></div>
+								<br class="fieldsectionbreak" />
+							</div>
+							
+							<div class="fieldsection optional">
+								<label class="fieldsectionlabel" for="#arguments.fieldname#Confirm">Confirm Password</label>
+								<div class="fieldwrap"><input type="password" name="#arguments.fieldname#Confirm" id="#arguments.fieldname#Confirm" value="" class="#arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" /></div>
+								<br class="fieldsectionbreak" />
+							</div>
+						</fieldset>
+					</cfoutput>
+				</cfsavecontent>
+			</cfcase>
 			<cfcase value="enterpassword">
 				<cfsavecontent variable="html">
 					<cfoutput><input type="password" name="#arguments.fieldname#" id="#arguments.fieldname#" value="" class="#arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" /></cfoutput>
@@ -105,6 +125,21 @@
 				<cfif arguments.stFieldPost.value EQ st[arguments.stMetadata.name]>
 					<cfif len(arguments.stFieldPost.stSupporting.New) AND arguments.stFieldPost.stSupporting.New EQ arguments.stFieldPost.stSupporting.Confirm>
 						<cfset stResult.value = arguments.stFieldPost.stSupporting.New>
+					</cfif>		
+				</cfif>
+			</cfcase>
+			<cfcase value="confirmpassword">
+				<cfset o = createObject("component",application.stCOAPI['#arguments.Typename#'].packagepath)>
+				<cfset st = o.getData(objectid=arguments.objectid)>
+				<!--- --------------------------- --->
+				<!--- Perform any validation here --->
+				<!--- --------------------------- --->
+		
+				<cfset stResult.value = st[arguments.stMetadata.name]>
+				
+				<cfif arguments.stFieldPost.value EQ st[arguments.stMetadata.name]>
+					<cfif len(arguments.stFieldPost.value) AND arguments.stFieldPost.value EQ arguments.stFieldPost.stSupporting.Confirm>
+						<cfset stResult.value = arguments.stFieldPost.value>
 					</cfif>		
 				</cfif>
 			</cfcase>
