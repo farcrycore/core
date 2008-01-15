@@ -202,7 +202,8 @@
 
 	<cfset Variables.CurrentCount = StructCount(request.farcryForm.stObjects) + 1>
 	<!--- <cfparam  name="variables.prefix" default="FFO#RepeatString('0', 3 - Len(Variables.CurrentCount))##Variables.CurrentCount#">	 --->
-	<cfparam  name="variables.prefix" default="#ReplaceNoCase(variables.ObjectID,'-', '', 'all')#">			
+	<cfparam  name="variables.prefix" default="#ReplaceNoCase(variables.ObjectID,'-', '', 'all')#">		
+	<cfoutput><input type="hidden" name="FarcryFormPrefixes" value="#variables.prefix#" /></cfoutput>
 	<cfset Request.farcryForm.stObjects[variables.prefix] = StructNew()>
 		
 	
@@ -375,7 +376,12 @@
 			<!--- If the field is supposed to be hidden --->
 		<cfif ListContainsNoCase(attributes.lHiddenFields,i)>
 			<cfsavecontent variable="variables.returnHTML">
-				<cfoutput><input type="hidden" id="#variables.prefix##ftFieldMetadata.Name#" name="#variables.prefix##ftFieldMetadata.Name#" value="#variables.stObj[i]#" /></cfoutput>
+				<cfif isArray(variables.stObj[i])>
+					<cfset hiddenValue = arrayToList(variables.stObj[i]) />
+				<cfelse>
+					<cfset hiddenValue = variables.stObj[i] />
+				</cfif>
+				<cfoutput><input type="hidden" id="#variables.prefix##ftFieldMetadata.Name#" name="#variables.prefix##ftFieldMetadata.Name#" value="#hiddenValue#" /></cfoutput>
 			</cfsavecontent>
 			
 			<cfif NOT len(Attributes.r_stFields)>

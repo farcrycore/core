@@ -194,7 +194,7 @@
 	<!--- <cfparam  name="variables.prefix" default="FFO#RepeatString('0', 3 - Len(Variables.CurrentCount))##Variables.CurrentCount#">	 --->
 	<cfparam  name="variables.prefix" default="#ReplaceNoCase(variables.ObjectID,'-', '', 'all')#">			
 	<cfset Request.farcryForm.stObjects[variables.prefix] = StructNew()>
-		
+	<cfoutput><input type="hidden" name="FarcryFormPrefixes" value="#variables.prefix#" /></cfoutput>	
 	
 	<!--- IF WE ARE RENDERING AN EXISTING OBJECT, ADD THE OBJECTID TO stObjects --->	
 	<cfif isDefined("variables.stObj") and not structIsEmpty(variables.stObj)>
@@ -362,6 +362,11 @@
 		
 		<!---If the field is supposed to be hidden --->
 		<cfif ListContainsNoCase(attributes.lHiddenFields,i)>
+			<cfif isArray(variables.stObj[i])>
+				<cfset hiddenValue = arrayToList(variables.stObj[i]) />
+			<cfelse>
+				<cfset hiddenValue = variables.stObj[i] />
+			</cfif>
 			<cfoutput><input type="hidden" id="#variables.prefix##ftFieldMetadata.Name#" name="#variables.prefix##ftFieldMetadata.Name#" value="#variables.stObj[i]#" /></cfoutput>
 		
 		<cfelse>
