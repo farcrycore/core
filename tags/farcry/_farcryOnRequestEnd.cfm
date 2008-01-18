@@ -24,8 +24,9 @@ $in: $
 $out:$
 --->
 
+<cfparam name="request.mode.ajax" default="false" />
 
-<cfif structKeyExists(Request,"inHead") AND len(structKeyList(Request.InHead))>		
+<cfif structKeyExists(Request,"inHead") AND len(structKeyList(Request.InHead)) AND NOT request.mode.ajax>		
 
 		<cfparam name="variables.stPlaceInHead" default="#StructNew()#">		
 		
