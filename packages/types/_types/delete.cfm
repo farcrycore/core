@@ -39,10 +39,13 @@ $Developer: Guy Phanvongsa (guy@daemon.com.au)$
 	<cfset oConfig = createObject("component", "#application.packagepath#.farcry.config")>
 	<cfset application.config.verity = oConfig.getConfig("verity")>
 </cfif>
-<cfset stCollections = application.config.verity.contenttype>
-<cfif structKeyExists(stCollections,stObj.typename) and application.config.verity.bUpdateCollectionOnDelete>
-	<cfset collectionName = lcase(application.applicationname & "_" & stObj.typename)>
-	<cfset application.factory.oVerity.deleteFromCollection(collection=collectionName,objectid=stObj.objectid)>
+<!--- TODO: THIS NEEDS TO CHANGE TO USE THE NEW verity plugin --->
+<cfif structKeyExists(application.config.verity, "contenttype")>
+	<cfset stCollections = application.config.verity.contenttype>
+	<cfif structKeyExists(stCollections,stObj.typename) and application.config.verity.bUpdateCollectionOnDelete>
+		<cfset collectionName = lcase(application.applicationname & "_" & stObj.typename)>
+		<cfset application.factory.oVerity.deleteFromCollection(collection=collectionName,objectid=stObj.objectid)>
+	</cfif>
 </cfif>
 
 <!--- if this objecttype is used in tree, then it may have been used as a related link in dmHTML_aRelatedIDs  --->
