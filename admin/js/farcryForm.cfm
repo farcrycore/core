@@ -87,7 +87,7 @@
 							}
 														
 							$(fieldname + '-libraryCallback').innerHTML = 'PLEASE WAIT... CURRENTLY UPDATING';
-							new Ajax.Updater(fieldname + '-libraryCallback', virtualDir+'#application.url.webtop#/facade/library.cfc?method=ajaxUpdateArray&noCache=' + Math.random(), {
+							new Ajax.Updater(fieldname + '-libraryCallback', '#application.url.webtop#/facade/library.cfc?method=ajaxUpdateArray&noCache=' + Math.random(), {
 									//onLoading:function(request){Element.show('indicator')},
 									onComplete:function(request){
 										// <![CDATA[
@@ -145,7 +145,7 @@
 						libraryCallbackUUID(fieldname,'remove',$(fieldname).value);
 					}
 					
-					function libraryCallbackUUID(fieldname,action,ids,virtualDir){
+					function libraryCallbackUUID(fieldname,action,ids,virtualDir,callingWindow){
 						if(virtualDir==null){virtualDir="";}	
 						$(fieldname).value = ids;	
 						var objParams = eval('obj' + fieldname);										
@@ -156,7 +156,7 @@
 						
 						
 						
-						new Ajax.Updater(fieldname + '-libraryCallback', virtualDir+'#application.url.webtop#/facade/library.cfc?method=ajaxUpdateArray&noCache=' + Math.random(), {
+						new Ajax.Updater(fieldname + '-libraryCallback', '#application.url.webtop#/facade/library.cfc?method=ajaxUpdateArray&noCache=' + Math.random(), {
 							//onLoading:function(request){Element.show('indicator')},
 							parameters:sURLParams, evalScripts:true, asynchronous:true,
 							onComplete:function(request){
@@ -165,6 +165,7 @@
 								} else {
 									Element.hide(fieldname + '-librarySummary')
 								}
+								if(callingWindow!=null){callingWindow.close();}	
 							}
 						})
 						
