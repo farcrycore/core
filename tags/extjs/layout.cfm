@@ -169,8 +169,8 @@
 						</cfoutput>
 					</cfif>
 					<cfloop list="#structKeyList(attributes)#" index="i">
-						<cfif not listContainsNoCase("id,container,layout",i)>
-							<cfoutput>,#stConfig[i]#:<cfif isNumeric(attributes[i])>#attributes[i]#<cfelse>'#attributes[i]#'</cfif>
+						<cfif not listFindNoCase("id,container,layout",i)>
+							<cfoutput>,#stConfig[i]#:<cfif isNumeric(attributes[i]) or left(trim(attributes[i]),1) EQ "{">#attributes[i]#<cfelse>'#attributes[i]#'</cfif>
 							</cfoutput>
 						</cfif>
 					</cfloop>
