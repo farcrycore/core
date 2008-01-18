@@ -103,7 +103,7 @@ TODO:
 <cfloop query="qRules">
 	<cfset oRule = createObject("component", qrules.typepath) />
 	<cftry>
-		<cfset stResult = oRule.deployType(dsn=application.dsn,bDropTable=true,bTestRun=false) />
+		<cfset stResult = oRule.deployType(dsn=application.dsn,bDropTable=true,bTestRun=false,dbtype=application.dbtype) />
 		<cfoutput><li>#listfirst(qrules.name,".")#</li></cfoutput>
 		<cfflush />
 	
@@ -118,6 +118,7 @@ TODO:
 
 <!--- // deploy type tables --->
 <cfset qTypes=oCOAPI.getCOAPIComponents(project=form.applicationName, package="types", plugins=form.plugins) />
+
 
 <cfoutput><p>Creating types tables.</p></cfoutput>
 <cfoutput><ul></cfoutput>
@@ -185,7 +186,19 @@ TODO:
 	<cfflush />
 	
 	
-	<cfset oSkeletonManifest = createObject("component", "farcry.skeletons.#form.skeleton#.install.manifest") />
+	
+	<!----------------------------------------------------------------------
+	Plugin
+	 - search and install Plugin install data
+	----------------------------------------------------------------------->
+	<cfset qInstalls=oCOAPI.getPluginInstallers(plugins=form.plugins) />
+	<cfloop query="qInstalls">
+		<cfinclude template="/farcry/plugins/#qinstalls.Plugin#/config/install/#qinstalls.name#" />
+	</cfloop>
+
+
+
+	<cfset oSkeletonManifest = createObject("component", "#form.skeleton#.install.manifest") />
 	<cfset result = oSkeletonManifest.install() />
 	<cfset application.navid = createObject("component", application.stcoapi["dmNavigation"].packagePath).getNavAlias() />
 	
@@ -205,14 +218,6 @@ TODO:
 	</cfoutput>
 	<cfflush />
 
-<!----------------------------------------------------------------------
-Plugin
- - search and install Plugin install data
------------------------------------------------------------------------>
-<cfset qInstalls=oCOAPI.getPluginInstallers(plugins=form.plugins) />
-<cfloop query="qInstalls">
-	<cfinclude template="/farcry/plugins/#qinstalls.Plugin#/config/install/#qinstalls.name#" />
-</cfloop>
 
 
 <cfsetting enablecfoutputonly="false" />

@@ -36,7 +36,8 @@
 	
 	<cffunction name="createContent" access="public" returntype="string" output="false">
 	
-		<cfset result = "" />
+		<cfset var result = "" />
+		<cfset var oContent = "" />
 		
 		<cffile action="read" file="#GetDirectoryFromPath(GetCurrentTemplatePath())#nested_tree_objects.wddx" variable="wddxTree" />
 		<cfwddx action="wddx2cfml" input="#wddxTree#" output="qTree" />
@@ -54,7 +55,13 @@
 			<cfloop from="1" to="#arrayLen(aTreeContent)#" index="i">
 				
 				<cfset stProperties = aTreeContent[i] />
-				<cfset oContent = createObject("component", application.stcoapi["#stProperties.typename#"].packagePath) />
+				
+				<cfif stProperties.typename EQ "container">
+					<cfset oContent = createObject("component", "farcry.core.packages.rules.container") />
+				<cfelse>
+					<cfset oContent = createObject("component", application.stcoapi["#stProperties.typeName#"].packagePath) />
+				</cfif>
+				
 				<cfset stResult = oContent.createData(stProperties=stProperties) />
 			</cfloop>
 		</cfif>

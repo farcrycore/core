@@ -17,13 +17,9 @@
 <cfset form.webtopInstallType = session.stFarcryInstall.stConfig.webtopInstallType />
 
 <!--- Skeletons --->
-<cfset skeletonPath = expandPath('/farcry/skeletons') />
-<cfdirectory action="list" directory="#skeletonPath#" name="qSkeletons" />
+<cfset form.skeletonPath = replaceNoCase(form.skeleton, ".", "/", "all") />
+<cfset form.skeletonPath = expandPath("/#form.skeletonPath#") />
 
-<cfif not qSkeletons.recordCount>
-	<cfoutput>You have no farcry skeleton projects to install.</cfoutput>
-	<cfabort>
-</cfif>
 
 <!--- Plugins --->
 <cfset pluginPath = expandPath('/farcry/plugins') />
@@ -48,18 +44,13 @@
 	<cfoutput><div>CREATING PROJECT...</cfoutput><cfflush>
 		
 	<cfset oZip = createObject("component", "farcry.core.packages.farcry.zip") />
-	
-	<cfset oZip.AddFiles(zipFilePath="#farcryProjectsPath#/#form.applicationName#-skeleton.zip", directory="#skeletonPath#/#form.skeleton#", recurse="true", compression=0, savePaths="false") />
+
+	<cfset oZip.AddFiles(zipFilePath="#farcryProjectsPath#/#form.applicationName#-skeleton.zip", directory="#form.skeletonPath#", recurse="true", compression=0, savePaths="false") />
 	<cfset oZip.Extract(zipFilePath="#farcryProjectsPath#/#form.applicationName#-skeleton.zip", extractPath="#farcryProjectsPath#/#form.applicationName#", overwriteFiles="true") />
 	<cffile action="delete" file="#farcryProjectsPath#/#form.applicationName#-skeleton.zip" />
-	
+
 
 	<cfset directoryRemoveSVN(source="#farcryProjectsPath#/#form.applicationName#") />
-	
-		<!--- 		
-	<cfset directoryCopy(source="#baseProjectPath#", destination="#farcryProjectsPath#/#form.applicationName#", nameconflict="overwrite") />
-	<cfset directoryCopy(source="#skeletonPath#/#form.skeleton#", destination="#farcryProjectsPath#/#form.applicationName#", nameconflict="overwrite") />
- --->
 
 
 
@@ -92,7 +83,7 @@
 		<cfset projectWebrootPath = "#webrootPath#/#form.applicationName#" />
 		<cfset projectWebrootURL = "http://#cgi.server_name#/#form.applicationName#" />
 		<cfdirectory action="create" directory="#webrootPath#/#form.applicationName#" mode="777" />
-		<cfset oZip = createObject("component", "Zip") />
+		<cfset oZip = createObject("component", "farcry.core.packages.farcry.zip") />
 		<cfset oZip.AddFiles(zipFilePath="#projectWebrootPath#/project-webroot.zip", directory="#farcryProjectsPath#/#form.applicationName#/www", recurse="true", compression=0, savePaths="false") />
 		<cfset oZip.Extract(zipFilePath="#projectWebrootPath#/project-webroot.zip", extractPath="#projectWebrootPath#", overwriteFiles="true") />
 		<cffile action="delete" file="#projectWebrootPath#/project-webroot.zip" />
@@ -108,11 +99,11 @@
 		<cfset projectWebrootPath = "#webrootPath#" />
 		<cfset projectWebrootURL = "http://#cgi.server_name#" />
 		
-		<cfset oZip = createObject("component", "Zip") />
+		<cfset oZip = createObject("component", "farcry.core.packages.farcry.zip") />
 		<cfset oZip.AddFiles(zipFilePath="#projectWebrootPath#/project-webroot.zip", directory="#farcryProjectsPath#/#form.applicationName#/www", recurse="true", compression=0, savePaths="false") />
 		<cfset oZip.Extract(zipFilePath="#projectWebrootPath#/project-webroot.zip", extractPath="#projectWebrootPath#", overwriteFiles="true") />
 		<cffile action="delete" file="#projectWebrootPath#/project-webroot.zip" />
-		<cfdirectory action="rename" directory="#farcryProjectsPath#/#form.applicationName#/www" newdirectory="wwwCopiedToWebroot" />
+		<cfdirectory action="rename" directory="#farcryProjectsPath#/#form.applicationName#/www" newdirectory="#farcryProjectsPath#/#form.applicationName#/wwwCopiedToWebroot" />
 		<!--- 
 		<cfset directoryCopy(source="#farcryProjectsPath#/#form.applicationName#/www", destination="#projectWebrootPath#", nameconflict="overwrite") /> --->
 		<cfoutput>COMPLETE</div></cfoutput><cfflush>
@@ -127,7 +118,7 @@
 	<cfswitch expression="#form.webtopInstallType#">
 	<cfcase value="project">
 		<cfoutput><div>COPYING WEBTOP TO PROJECT....</cfoutput><cfflush>
-		<cfset oZip = createObject("component", "Zip") />
+		<cfset oZip = createObject("component", "farcry.core.packages.farcry.zip") />
 		<cfset oZip.AddFiles(zipFilePath="#projectWebrootPath#/webtop.zip", directory="#webtopPath#", recurse="true", compression=0, savePaths="false") />
 		<cfset oZip.Extract(zipFilePath="#projectWebrootPath#/webtop.zip", extractPath="#projectWebrootPath#/webtop", overwriteFiles="true") />
 		<cffile action="delete" file="#projectWebrootPath#/webtop.zip" />
@@ -142,7 +133,6 @@
 		<!--- Leave as is --->
 	</cfcase>
 	</cfswitch>
-
 
 	
 	<!----------------------------------------------------------------------------------------
@@ -179,6 +169,11 @@
 			application.path.defaultImagePath = "#application.path.project#/www/images";
 		    application.path.defaultFilepath = "#application.path.project#/www/files";
 			application.path.core = expandPath("/farcry/core");
+			application.path.plugins = expandPath("/farcry/plugins");
+			
+			
+			
+			application.plugins = form.plugins;
 		    	    
 			// determing browser being used
 			if (cgi.http_user_agent contains "MSIE") browser = "IE"; else browser = "NS";				
@@ -226,7 +221,7 @@
 				<div class="itemButtons">
 					<form name="installComplete" id="installComplete" method="post" action="">
 						<input type="button" name="login" value="LOGIN TO FARCRY" onClick="alert('Your default Farcry login is\n\n u: farcry\n p: farcry');window.open('#projectWebrootURL#/webtop')" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle'" onMouseOut="this.className='normalbttnstyle'" />
-						<input type="button" name="view" value="VIEW SITE" onClick="window.open('#projectWebrootURL#')" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle'" onMouseOut="this.className='normalbttnstyle'" />
+						<input type="button" name="view" value="VIEW SITE" onClick="window.open('#projectWebrootURL#?updateapp=1')" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle'" onMouseOut="this.className='normalbttnstyle'" />
 					</form><br /> 
 				</div>
 			</div>

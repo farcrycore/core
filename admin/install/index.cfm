@@ -53,7 +53,7 @@ SETUP DEFAULTS FOR ALL INSTALLATION WIZARD FIELDS
 <cfparam name="session.stFarcryInstall.stConfig.DBType" default="" />
 <cfparam name="session.stFarcryInstall.stConfig.DBOwner" default="" />
 <cfparam name="session.stFarcryInstall.stConfig.skeleton" default="" />
-<cfparam name="session.stFarcryInstall.stConfig.plugins" default="farcrycms" />
+<cfparam name="session.stFarcryInstall.stConfig.plugins" default="" />
 <cfparam name="session.stFarcryInstall.stConfig.projectInstallType" default="subDirectory" />
 <cfparam name="session.stFarcryInstall.stConfig.webtopInstallType" default="project" />
 
@@ -110,13 +110,19 @@ SAVE AND CONTROL THE INSTAL PROCESS WIZARD
 	<cfif not len(session.stFarcryInstall.stConfig.skeleton)>
 		<cf_redoStep field="skeleton" errorTitle="Select Skeleton" errorDescription="You must select a skeleton in order to proceed." />
 	</cfif>
+	<cfset oManifest = createObject("component", "#session.stFarcryInstall.stConfig.skeleton#.install.manifest")>
+	
+	<cfif len(oManifest.lRequiredPlugins) AND not len(session.stFarcryInstall.stConfig.plugins)>
+		<cfset session.stFarcryInstall.stConfig.plugins =  oManifest.lRequiredPlugins />
+	</cfif>
+	
 </cf_processStep>
 
 
 
 <cf_processStep step="4">
 
-	<cfset oSkeletonManifest = createObject("component", "farcry.skeletons.#session.stFarcryInstall.stConfig.skeleton#.install.manifest")>
+	<cfset oSkeletonManifest = createObject("component", "#session.stFarcryInstall.stConfig.skeleton#.install.manifest")>
 
 	<cfif listContainsNoCase(oSkeletonManifest.lRequiredPlugins, qPlugins.name) AND NOT listContainsNoCase(session.stFarcryInstall.stConfig.plugins, qPlugins.name)>
 		
@@ -290,7 +296,16 @@ RENDER THE CURRENT STEP
 				<cfloop query="qSkeletons">
 					<cfif qSkeletons.type EQ "DIR" and fileExists("#skeletonPath#/#qSkeletons.name#/install/manifest.cfc")>
 						<cfset oManifest = createObject("component", "farcry.skeletons.#qSkeletons.name#.install.manifest")>
-						<option value="#qSkeletons.name#" <cfif qSkeletons.name EQ session.stFarcryInstall.stConfig.skeleton>selected</cfif>>
+						<option value="farcry.skeletons.#qSkeletons.name#" <cfif qSkeletons.name EQ session.stFarcryInstall.stConfig.skeleton>selected</cfif>>
+							#oManifest.name#
+							- Supported: #oManifest.isSupported(coreMajorVersion="#request.coreVersion.major#",coreMinorVersion="#request.coreVersion.minor#",corePatchVersion="#request.coreVersion.patch#")#
+						</option>
+					</cfif>
+				</cfloop>
+				<cfloop query="qProjectSkeletons">
+					<cfif qProjectSkeletons.type EQ "DIR" and fileExists("#projectsPath#/#qProjectSkeletons.name#/install/manifest.cfc")>
+						<cfset oManifest = createObject("component", "farcry.projects.#qProjectSkeletons.name#.install.manifest")>
+						<option value="farcry.projects.#qProjectSkeletons.name#" <cfif qProjectSkeletons.name EQ session.stFarcryInstall.stConfig.skeleton>selected</cfif>>
 							#oManifest.name#
 							- Supported: #oManifest.isSupported(coreMajorVersion="#request.coreVersion.major#",coreMinorVersion="#request.coreVersion.minor#",corePatchVersion="#request.coreVersion.patch#")#
 						</option>
@@ -319,18 +334,31 @@ RENDER THE CURRENT STEP
 			<cfloop query="qPlugins">
 				<cfif qPlugins.type EQ "DIR" and fileExists("#pluginPath#/#qPlugins.name#/install/manifest.cfc")>
 					<cfset oManifest = createObject("component", "farcry.plugins.#qPlugins.name#.install.manifest")>
-					<div id="plugin-#qPlugins.name#">
-						<input type="checkbox" name="plugins" value="#qPlugins.name#" <cfif listContainsNoCase(session.stFarcryInstall.stConfig.plugins, qPlugins.name)>checked</cfif>>
-						#oManifest.name# (#oManifest.description#)
-					</div>
-					
 					<cfset pluginSupported = oManifest.isSupported(coreMajorVersion="#request.coreVersion.major#",coreMinorVersion="#request.coreVersion.minor#",corePatchVersion="#request.coreVersion.patch#")>
+					
+					<div id="plugin-#qPlugins.name#">
+						<input type="hidden" name="plugins" value="" />
+						<table cellspacing="10" cellpadding="0">
+						<tr>
+							<td valign="top">
+								<input type="checkbox" name="plugins" value="#qPlugins.name#" <cfif listContainsNoCase(session.stFarcryInstall.stConfig.plugins, qPlugins.name)>checked</cfif>>
+							</td>
+							<td valign="top">
+								#oManifest.name# <cfif not pluginSupported>(UNSUPPORTED)</cfif> <br />
+								<em>#oManifest.description#</em>
+							</td>
+						</tr>
+						</table>
+					</div>
+					<hr />
+					
+				<!--- 	
 					<cfif not pluginSupported>
 						
 						<cf_redoStep field="plugin-#qPlugins.name#" errorTitle="Unsupported" errorDescription="This plugin is not supported on your current version of farcry. Please be aware you may experience problems with this plugin." />
 					
 					</cfif>
-						
+						 --->
 	
 				</cfif>
 			</cfloop>
@@ -437,18 +465,13 @@ RENDER THE CURRENT STEP
 	<cfset skeletonPath = expandPath('/farcry/skeletons') />
 	<cfdirectory action="list" directory="#skeletonPath#" name="qSkeletons" />
 	
-	<cfif not qSkeletons.recordCount>
-		<cfoutput>You have no farcry skeleton projects to install.</cfoutput>
-		<cfabort>
-	</cfif>
-	
 	<!--- Plugins --->
 	<cfset pluginPath = expandPath('/farcry/plugins') />
 	<cfdirectory action="list" directory="#pluginPath#" name="qPlugins" />
 	
 	<!--- Project --->
-	<cfset farcryProjectsPath = expandPath('/farcry/projects') />
-	<cfdirectory action="list" directory="#farcryProjectsPath#" name="qProjects" />
+	<cfset projectsPath = expandPath('/farcry/projects') />
+	<cfdirectory action="list" directory="#projectsPath#" name="qProjects" />
 	
 	
 	<!--- Base --->
@@ -459,6 +482,43 @@ RENDER THE CURRENT STEP
 	
 	<!--- Webtop --->
 	<cfset webtopPath = expandPath('/farcry/core/admin') />
+		
+	
+	
+	
+	<!--- FIND ANY PROJECTS THAT ARE SKELETONS --->
+
+	<cfloop query="qProjects">
+		<cfif qProjects.type EQ "DIR">
+
+			<cfif fileExists("#qProjects.directory#/#qProjects.name#/install/manifest.cfc")>
+				
+				<cfquery dbtype="query" name="qCurrentProject">
+				SELECT * FROM qProjects
+				WHERE name = '#qProjects.name#'
+				</cfquery>
+				
+				<cfif isDefined("qProjectSkeletons")>
+					<cfquery dbtype="query" name="qProjectSkeletons">
+					SELECT * FROM qProjectSkeletons
+					UNION
+					SELECT * FROM qCurrentProject
+					</cfquery>
+				<cfelse>
+					<cfquery dbtype="query" name="qProjectSkeletons">
+					SELECT * FROM qCurrentProject
+					</cfquery>
+				</cfif>
+
+			</cfif>
+		</cfif>
+	</cfloop>
+	
+	<cfif not qSkeletons.recordCount AND not qProjectSkeletons.recordCount>
+		<cfoutput>You have no farcry skeleton projects to install.</cfoutput>
+		<cfabort>
+	</cfif>
+
 </cffunction>
 
 <cffunction name="getCoreVersion" access="private" returntype="struct" hint="returns a structure containing the major, minor and patch version of farcry.">
