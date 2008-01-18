@@ -921,10 +921,10 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
  		<cfparam name="stReturnMetadata.excludeWebskins" default="" /> <!--- This enables projects to exclude webskins that may be contained in plugins. ---> 
 
 		<!--- Get webkins: webskins for this type, then webskins for extends types --->
-		<cfset stReturnMetadata.qWebskins = oCoapiAdmin.getWebskins(typename="#componentname#", bForceRefresh="true", excludeWebskins="#stReturnMetadata.excludeWebskins#") />
+		<cfset stReturnMetadata.qWebskins = application.coapi.coapiAdmin.getWebskins(typename="#componentname#", bForceRefresh="true", excludeWebskins="#stReturnMetadata.excludeWebskins#") />
 
 		<cfloop list="#arrayToList(stReturnMetadata.aExtends)#" index="i">
-			<cfset stReturnMetaData.qWebskins = mergeWebskins(stReturnMetaData.qWebskins, oCoapiAdmin.getWebskins(typename=i, bForceRefresh="true", excludeWebskins="#stReturnMetadata.excludeWebskins#")) />
+			<cfset stReturnMetaData.qWebskins = mergeWebskins(stReturnMetaData.qWebskins, application.coapi.coapiAdmin.getWebskins(typename=i, bForceRefresh="true", excludeWebskins="#stReturnMetadata.excludeWebskins#")) />
 		</cfloop>
 
 		<!--- 
