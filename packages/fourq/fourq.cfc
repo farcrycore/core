@@ -924,24 +924,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset stReturnMetadata.qWebskins = oCoapiAdmin.getWebskins(typename="#componentname#", bForceRefresh="true", excludeWebskins="#stReturnMetadata.excludeWebskins#") />
 
 		<cfloop list="#arrayToList(stReturnMetadata.aExtends)#" index="i">
-			<cfset qExtendedWebskin = application.coapi.coapiadmin.getWebskins(typename=i, bForceRefresh="true", excludeWebskins="#stReturnMetadata.excludeWebskins#") />
-			<cfloop query="qExtendedWebskin">
-				<cfset extendedWebskinName = qExtendedWebskin.name />
-
-				<cfquery dbtype="query" name="qDupe">
-				SELECT *
-				FROM qAllWebskins
-				WHERE cast(name as varchar) = '#extendedWebskinName#'
-				</cfquery>
-				
-				<cfif NOT qDupe.Recordcount>
-					<cfset queryaddrow(stReturnMetadata.qWebskins,1) />
-					<cfloop list="#qExtendedWebskin.columnlist#" index="col">
-						<cfset querysetcell(stReturnMetadata.qWebskins, col, qExtendedWebskin[col][qExtendedWebskin.currentrow]) />
-					</cfloop>
-				</cfif>
-				
-			</cfloop>
+			<cfset stReturnMetaData.qWebskins = mergeWebskins(stReturnMetaData.qWebskins, oCoapiAdmin.getWebskins(typename=i, bForceRefresh="true", excludeWebskins="#stReturnMetadata.excludeWebskins#")) />
 		</cfloop>
 
 		<!--- 
