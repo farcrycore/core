@@ -45,7 +45,7 @@ $in: objectid -- $
 		<cfparam name="attributes.bIncludeFields" default="false">
 		<cfparam name="attributes.bIncludeObjects" default="true">
 		<cfparam name="attributes.BINCLUDEALLCOLUMNS" default="false">
-		<cfparam name="attributes.bTypeAdmin" default="true">
+		<cfparam name="attributes.bTypeAdmin" default="false">
 		<!--- <cfparam name="attributes.stpermissions" default="#structNew()#"> --->
 		<cfparam name="attributes.lCustomActions" default="">
 				
@@ -71,6 +71,7 @@ $in: objectid -- $
 		<cfif len(attributes.r_stobject) and variables.currentRow LTE attributes.totalRecords AND attributes.totalRecords>
 	
 			<cfset caller[attributes.r_stobject] = structNew() />
+			<cfset caller[attributes.r_stobject].objectid = attributes.qRecordSet.objectid[variables.currentRow] />
 			<cfif attributes.bIncludeFields>
 				<cfset caller[attributes.r_stobject].stFields = oFormtoolUtil.getRecordsetObject(recordset=attributes.qRecordSet, row=variables.currentRow, typename=attributes.typename) />
 			</cfif>
@@ -210,6 +211,7 @@ $in: objectid -- $
 		<cfif len(attributes.r_stobject) and variables.currentRow LTE attributes.endRow>
 			
 			<cfset caller[attributes.r_stobject] = structNew() />
+			<cfset caller[attributes.r_stobject].objectid = attributes.qRecordSet.objectid[variables.currentRow] />
 			<cfif attributes.bIncludeFields>
 				<cfset caller[attributes.r_stobject].stFields = oFormtoolUtil.getRecordsetObject(recordset=attributes.qRecordSet, row=variables.currentRow, typename=attributes.typename) />
 			</cfif>

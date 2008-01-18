@@ -770,7 +770,7 @@ user --->
 	
 	
 		
-		<ft:paginateLoop r_stObject="st" bIncludeFields="true" bIncludeObjects="false" stpermissions="#stpermissions#" lCustomActions="#attributes.lCustomActions#">
+		<ft:paginateLoop r_stObject="st" bIncludeFields="true" bIncludeObjects="false" stpermissions="#stpermissions#" lCustomActions="#attributes.lCustomActions#" bTypeAdmin="true">
 			
 				<cfoutput>
 				<tr>
