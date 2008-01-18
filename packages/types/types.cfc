@@ -404,8 +404,8 @@ default handlers
 		
 		
 		<cfif not len(arguments.user)>
-			<cfif isDefined("session.dmSec.authentication.userlogin")>
-				<cfset arguments.user = session.dmSec.authentication.userlogin />
+			<cfif isDefined("session.security.userID")>
+				<cfset arguments.user = session.security.userID />
 			<cfelse>
 				<cfset arguments.user = 'anonymous' />			
 			</cfif>
@@ -489,7 +489,7 @@ default handlers
 		
 		<!--- ONLY RUN THROUGH IF SAVING TO DB --->
 		<cfif not arguments.bSessionOnly AND arguments.bAfterSave>				   	
-	   	 	<cfset stAfterSave = afterSave(stProperties=arguments.stProperties) />
+	   	 	<cfset stAfterSave = afterSave(argumentCollection=arguments) />
 		</cfif>
 		
 		<!--- set friendly url for content item,if applicable 
