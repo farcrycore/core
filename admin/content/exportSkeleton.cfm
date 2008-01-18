@@ -108,10 +108,16 @@
 			</cfquery>
 			<cfwddx action="cfml2wddx" input="#qTree#" output="wddxTree">			
 			<cffile action="write" file="#wddxLoc#/nested_tree_objects.wddx" output="#wddxTree#" addnewline="false" mode="777" >
+	
+						
 
-
-			<!--- ADD TREE CONTENT ITEMS --->			
-			<cfset typeNames = "dmNavigation,dmHTML,dmInclude,dmCSS,dmImage,dmFile" />
+			<!--- ADD CONTENT ITEMS --->	
+			<cfset typeNames = "container" />
+			<cfloop list="#structKeyList(application.stCoapi)#" index="i">
+				<cfif not listFindNoCase("farBarnacle,farGroup,farPermission,farRole,farUser,dmWebskinAncestor,dmWizard",i)><!--- NO CORE TYPES --->
+					<cfset typeNames = listAppend(typename, i) />
+				</cfif>
+			</cfloop>		
 			
 			<cfloop list="#typeNames#" index="typename" >
 				<cfquery datasource="#application.dsn#" name="q">
@@ -138,7 +144,7 @@
 			
 			
 			<!--- ADD SECURITY CONTENT ITEMS --->
-			<cfset typeNames = "farBarnacle,farGroup,farPermission,farRole,farUser" />
+			<cfset typeNames = "farBarnacle,farGroup,farPermission,farRole,farUser,container" />
 			
 			<cfloop list="#typeNames#" index="typename" >
 				<cfquery datasource="#application.dsn#" name="q">
