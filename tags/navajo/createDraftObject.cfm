@@ -39,11 +39,29 @@ Creates a draft object
 	<!--- //this will copy categories from live object to draft --->
 	<cfset oCategory = createobject("component","#application.packagepath#.farcry.category") />
 	<cfset oCategory.copyCategories(stObject.objectid,stProps.objectid) />
-		
-	<cfoutput>
-	<script type="text/javascript">
-		window.location="#application.url.farcry#/conjuror/invocation.cfm?objectid=#stProps.objectid#&method=#url.method#&ref=#url.ref#&finishurl=#url.finishurl#";
-	</script>
-	</cfoutput>
+	
+	
+	<!------------------------------------ 
+		IF WORKFLOW DEFINITION EXISTS, REDIRECT BACK TO THE OBJECT OVERVIEW PAGE
+	 ------------------------------------>	 
+	<cfset lWorkflowDefIDs = createObject("component", application.stcoapi.farWorkflow.packagePath).getWorkflowList(typename="#stObject.Typename#") />
+
+	
+	<cfif listLen(lWorkflowDefIDs)>		
+	
+		<cfoutput>
+		<script type="text/javascript">
+			window.location="#application.url.farcry#/editTabOverview.cfm?objectid=#stObject.objectid#";
+		</script>
+		</cfoutput>
+	<cfelse>
+		<cfoutput>
+		<script type="text/javascript">
+			window.location="#application.url.farcry#/conjuror/invocation.cfm?objectid=#stProps.objectid#&method=#url.method#&ref=#url.ref#&finishurl=#url.finishurl#";
+		</script>
+		</cfoutput>
+	</cfif>
+			
+
 </cfif>
 
