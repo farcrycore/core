@@ -340,6 +340,12 @@ $out:$
 	
 	<cfset var qRoot = queryNew("blah")>
 	<cfset var qReturn = queryNew("blah")>
+	
+	<!--- Change legacy table name to new category tablename --->
+	<cfif arguments.typename EQ "categories">
+		<cfset arguments.typename = "dmCategory">
+	</cfif>
+	
 	<cfinclude template="_tree/getRootNode.cfm">
 	<cfreturn qReturn>
 </cffunction>
