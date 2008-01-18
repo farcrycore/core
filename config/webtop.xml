@@ -152,4 +152,14 @@
 			</menu>
 		</subsection>
 	</section>
+	
+	<section id="workflow" sequence="6000" permission="MainNavAdminTab" label="Workflow">
+		<subsection id="manageworkflow" sequence="0" label="Manage Workflow">
+			<menu id="menuworkflowmanagement" sequence="90" label="Manage Workflow">
+				<menuitem id="farWorkflowDefs" sequence="10" label="Workflow Definitions" link="/admin/customadmin.cfm?module=customlists/farWorkflowDef.cfm" />
+				<menuitem id="farTaskDefs" sequence="20" label="Task Definitions" link="/admin/customadmin.cfm?module=customlists/farTaskDef.cfm" />
+				<menuitem id="farTaskMyTasks" sequence="30" label="My Tasks" link="/admin/customadmin.cfm?module=customlists/farMyTasks.cfm" />
+			</menu>
+		</subsection>
+	</section>
 </webtop>

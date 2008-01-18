@@ -1,0 +1,9 @@
+
+<cfset stWorkflow = createObject("component", application.stcoapi.farWorkflow.packagepath).hasInstance(referenceID="#stobj.objectid#") />
+
+<cfif stWorkflow.bTasksComplete AND stWorkflow.bWorkflowComplete>
+	
+	<farcry:logevent object="#stobj.objectid#" type="types" event="workflow" notes="workflow completed" />
+	
+	<cflocation url="#application.url.webtop#/navajo/approve.cfm?objectid=#stobj.objectid#&status=requestapproval" addToken="false" />
+</cfif>

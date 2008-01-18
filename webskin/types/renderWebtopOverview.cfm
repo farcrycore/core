@@ -45,6 +45,8 @@ START WEBSKIN
 	<extjs:layout id="webtopOverviewViewport" container="Viewport" layout="border">
 		<extjs:item region="center" container="TabPanel" activeTab="0">
 			
+			<cfset oWorkflow = createObject("component", application.stcoapi.farWorkflow.packagepath) />
+			
 			<cfif StructKeyExists(stobj,"status")>
 			
 				<cfif len(stobj.status)>
@@ -54,27 +56,41 @@ START WEBSKIN
 				</cfif>
 				
 				
+				
+						
+
+						
 				<cfif stobj.status NEQ "" AND NOT structIsEmpty(stDraftObject)>
 					<extjs:item title="#stDraftObject.status#" container="Panel" layout="border">
-	
+
  						<extjs:item region="center" container="Panel" layout="border">			
 							<extjs:item region="center" autoScroll="true">
+				
+								<cfset workflowHTML = oWorkflow.renderWorkflow(referenceID="#stDraftObject.objectid#", referenceTypename="#stDraftObject.typename#") />
+								<cfoutput>#workflowHTML#</cfoutput>
 								<skin:view objectid="#stDraftObject.objectid#" webskin="webtopOverviewSummary" />
 							</extjs:item>
 						</extjs:item>	
 						<extjs:item region="east" layout="accordion" width="250" cls="webtopOverviewActions">
 							<skin:view objectid="#stDraftObject.objectid#" webskin="webtopOverviewActions" />
-						</extjs:item>	
-						
+						</extjs:item>
+							
+
 						
 					</extjs:item>
 				</cfif>	
 			<cfelse>
 				<cfset mainTabStatus = "Approved/Live" />
 			</cfif>
+			
+
+	
+							
 			<extjs:item title="#mainTabStatus#" container="Panel" layout="border">
 				<extjs:item region="center" container="Panel" layout="border">			
 					<extjs:item region="center" autoScroll="true">
+						<cfset workflowHTML = oWorkflow.renderWorkflow(referenceID="#stobj.objectid#", referenceTypename="#stobj.typename#") />
+						<cfoutput>#workflowHTML#</cfoutput>
 						<skin:view objectid="#stobj.objectid#" webskin="webtopOverviewSummary" />
 					</extjs:item>
 				</extjs:item>			
@@ -87,102 +103,6 @@ START WEBSKIN
 		</extjs:item>		
 	</extjs:layout>
 
-<!--- 
-	<cfset iCounter = 1>
-	<cfoutput><!--- all good to display --->
-	<div class="tab-container" id="container1">
-		<!--- TODO: i18n --->
-		<ul class="tabs">
-		<cfif StructKeyExists(stobj,"status") AND stobj.status NEQ "">
-			<cfif NOT structIsEmpty(stDraftObject)>
-				<li onclick="return showPane('pane#iCounter#', this)" id="tab#iCounter#"><a href="##pane1-ref">#stDraftObject.status#</a></li>
-				<cfset iCounter = iCounter + 1>
-			</cfif>
-			<li onclick="return showPane('pane#iCounter#', this)" id="tab#iCounter#"><a href="##pane2-ref">#stobj.status#</a></li>
-		<cfelse>
-			<li onclick="return showPane('pane#iCounter#', this)" id="tab#iCounter#"><a href="##pane2-ref">Approved/Live</a></li>
-		</cfif>
-		</ul>
-		<div class="tab-panes"> <!--- panes tabs div --->
-		<cfset iCounter = 1>
-			<cfif NOT structIsEmpty(stDraftObject)>
-				<a name="pane#iCounter#-ref"></a> <!--- show draft pane --->
-				<div id="pane#iCounter#"> <!--- pane1 --->
-				
-					
-					<div style="float:right;width:200px;"> 
-						<skin:view objectid="#stDraftObject.objectid#" webskin="webtopOverviewActions" />
-					</div>
-					
-					<skin:view objectid="#stDraftObject.objectid#" webskin="webtopOverviewSummary" />
-
-					<br style="clear:both;" />
-<!--- 						<admin:objectOverview stObject="#stDraftObject#">
-							<admin:objectOverviewMenuGroup title="Draft Actions" collapsed="false" icon="/extAccordion/img/silk/accept.png">
-								<admin:objectOverviewMenuItem action="EDIT" url="" permissionname="delete" />
-								<admin:objectOverviewMenuItem action="APPROVE" url="http://www.news.com.au" />		
-							</admin:objectOverviewMenuGroup>
-							
-							<admin:objectOverviewMenuGroup title="Workflow" collapsed="true" icon="/extAccordion/img/silk/add.png">
-								<admin:objectOverviewMenuItem action="button 1" url="" />
-								<admin:objectOverviewMenuItem action="News" url="http://www.news.com.au" />	
-								<admin:objectOverviewMenuItem action="button 2" url="" />
-								<admin:objectOverviewMenuItem action="button 3" url="" />					
-							</admin:objectOverviewMenuGroup>
-							
-						</admin:objectOverview> --->
-					
-					<!--- #fDisplayObjectOverview(stDraftObject,stLocal.stPermissions)# --->
-					
-					
-				</div> <!--- // pane1 --->
-				<cfset iCounter = iCounter + 1>
-			</cfif>
-	
-			<a name="pane#iCounter#-ref"></a> <!--- show approved pane --->
-			<div id="pane#iCounter#">
-				
-				<div style="float:right;width:200px;"> 
-					<skin:view objectid="#stobj.objectid#" webskin="webtopOverviewActions" />
-				</div>
-				
-				<skin:view objectid="#stobj.objectid#" webskin="webtopOverviewSummary" />
-				
-				<br style="clear:both;" />
-				
-<!--- 					<admin:objectOverview stObject="#stobj#" summaryWebskin="webtopOveriewsomthing">
-					
-						<admin:objectOverviewMenuGroup title="Main Actions" collapsed="false" icon="/extAccordion/img/silk/accept.png">
-							<admin:objectOverviewMenuItem action="EDIT" url="" permissionname="delete" />
-							<admin:objectOverviewMenuItem action="APPROVE" url="http://www.news.com.au" />		
-						</admin:objectOverviewMenuGroup>
-						
-						<admin:objectOverviewMenuGroup title="Workflow" collapsed="true" icon="/extAccordion/img/silk/add.png">
-							<admin:objectOverviewMenuItem action="button 1" url="" />
-							<admin:objectOverviewMenuItem action="News" url="http://www.news.com.au" />	
-							<admin:objectOverviewMenuItem action="button 2" url="" />
-							<admin:objectOverviewMenuItem action="button 3" url="" />					
-						</admin:objectOverviewMenuGroup>
-						
-						<admin:objectOverviewMenuGroup title="Miscellaneous" collapsed="true" icon="/extAccordion/img/silk/anchor.png">
-							<admin:objectOverviewMenuItem action="button 1" url="" />
-							<admin:objectOverviewMenuItem action="News" url="http://www.news.com.au" />
-							<admin:objectOverviewMenuItem action="button 2" url="" />
-							<admin:objectOverviewMenuItem action="button 3" url="" />
-							<admin:objectOverviewMenuItem action="button 1" url="" />
-							<admin:objectOverviewMenuItem action="News" url="http://www.news.com.au" />
-							<admin:objectOverviewMenuItem action="button 2" url="" />
-							<admin:objectOverviewMenuItem action="button 3" url="" />
-							
-						</admin:objectOverviewMenuGroup>
-					</admin:objectOverview> --->
-				<!--- #fDisplayObjectOverview(stobj,stLocal.stPermissions)# --->
-			</div>
-		</div> <!--- //panes tabs div --->
-	</div>
-	</cfoutput> --->
-
-	
 </cfif>
 
 
