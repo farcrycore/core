@@ -85,7 +85,6 @@ function deSelectAll()
 </cfif>
 
 <cfif changestatus eq true>
-	<cfflush>
 
 	<cfif isDefined("form.submit")> <!--- check that they hit submit --->
 		<cfloop index="attributes.objectID" list="#attributes.lObjectIDs#">
@@ -251,7 +250,6 @@ function deSelectAll()
 			</cfif>
 									
 			<cfoutput>Changing status....<br></cfoutput>
-			<cfflush>
 			
 			<!--- update the structure data for object update --->
 			<cfloop list="#keyList#" index="key">
