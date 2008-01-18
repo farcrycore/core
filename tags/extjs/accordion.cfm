@@ -63,7 +63,7 @@ START TAG
 	<skin:htmlHead position="last">
 	<cfoutput>
 	<script type="text/javascript">
-	Ext.BLANK_IMAGE_URL = '/farcry/js/ext/resources/images/default/s.gif';
+	Ext.BLANK_IMAGE_URL = '#application.url.webtop#/js/ext/resources/images/default/s.gif';
 	
 	Ext.onReady(function() {
 
