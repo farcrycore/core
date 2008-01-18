@@ -22,6 +22,7 @@
 	<cfset machineName = createObject("java", "java.net.InetAddress").localhost.getHostName() />
 	
 	<cfif not listFindNoCase(attributes.name, machineName)>
+		<cfsetting enablecfoutputonly="false">
 		<cfexit>
 	</cfif>
 	
