@@ -171,7 +171,7 @@
 			</cfscript>
 			
 			<cfcatch type="any">
-				<cfdump var="#cfcatch#" expand="false" label="cfcatch" /><cfabort showerror="debugging" />
+				<cfdump var="#cfcatch#" expand="false" label="cfcatch" /><cfabort />
 				
 				<cfscript>
 				{
@@ -633,11 +633,16 @@
 				}
 			}
 
-			/* Return array */
-			return array;
+
 
 		</cfscript>
-
+		
+		<cfif not isArray(array)>
+			<cfset array = ArrayNew(1) />	
+		</cfif>
+		
+		<!--- /* Return array */ --->
+		<cfreturn array />
 	</cffunction>
 
 	<!--- -------------------------------------------------- --->
