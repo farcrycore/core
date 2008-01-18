@@ -34,6 +34,8 @@
 		<cfparam name="arguments.stMetadata.ftRenderType" default="Library">
 		<cfparam name="arguments.stMetadata.ftFirstListLabel" default="-- SELECT --">
 		<cfparam name="arguments.stMetadata.ftShowRemoveSelected" default="true">
+		<cfparam name="arguments.stMetadata.ftAllowLibraryEdit" default="false">
+		<cfparam name="arguments.stMetadata.ftLibraryEditWebskin" default="edit">
 
 		<!--- A UUID type MUST have a 'ftJoin' property --->
 		<cfif not structKeyExists(stMetadata,"ftJoin")>
@@ -53,13 +55,13 @@
 			<cfset uuidTypename = arguments.stMetadata.ftJoin />
 		</cfif>
 		
-		<cfif len(uuidTypename)>
-			<!--- Create the Linked Table Type as an object  --->
-			<cfset oData = createObject("component",application.stcoapi[uuidTypename].packagePath)>
-		<cfelse>		
-			<!--- Couldnt find the type so try the first type in the list. --->
-			<cfset oData = createObject("component",application.stcoapi[listFirst(arguments.stMetadata.ftJoin)].packagePath)>
+		<!--- Couldnt find the type so try the first type in the list. --->
+		<cfif not len(uuidTypename)>
+			<cfset uuidTypename = listFirst(arguments.stMetadata.ftJoin) />
 		</cfif>
+		
+		<!--- Create the Linked Table Type as an object  --->
+		<cfset oData = createObject("component",application.stcoapi[uuidTypename].packagePath)>
 		
 		
 		<!--------------------------------------------- 
@@ -88,9 +90,8 @@
 						<cfset qLibraryList = libraryData />
 					</cfif>
 				</cfif>
-			</cfif>
-			<!--- if nothing exists to generate library data then cobble something together --->
-			<cfif not qLibraryList.recordCount>
+			<cfelse>
+				<!--- if nothing exists to generate library data then cobble something together --->
 				<cfloop list="#arguments.stMetadata.ftJoin#" index="i">
 					<cfset oData = createObject("component", application.stcoapi[i].packagePath) />					
 					<cfinvoke component="#oData#" method="getLibraryData" returnvariable="qLibraryList#i#" />
@@ -111,7 +112,7 @@
 			<cfsavecontent variable="returnHTML">
 			<cfif qLibraryList.recordcount>
 				<cfoutput>
-				<select  id="#arguments.fieldname#" name="#arguments.fieldname#">
+				<select  id="#arguments.fieldname#" name="#arguments.fieldname#" class="#arguments.stMetadata.ftclass#" >
 				<cfif len(arguments.stMetadata.ftFirstListLabel)>
 					<option value="">#arguments.stMetadata.ftFirstListLabel#</option>
 				</cfif>
@@ -170,8 +171,9 @@
 							<cfoutput>
 							<li id="#arguments.fieldname#_#arguments.stObject[arguments.stMetaData.Name]#" class="#ULID#handle" style="<cfif len(arguments.stMetadata.ftLibraryListItemWidth)>width:#arguments.stMetadata.ftLibraryListItemWidth#;</cfif><cfif len(arguments.stMetadata.ftLibraryListItemheight)>height:#arguments.stMetadata.ftLibraryListItemHeight#;</cfif>">
 								<div class="buttonGripper"><p>&nbsp;</p></div>
-								<cfif arguments.stMetadata.ftShowRemoveSelected>
-									<input type="checkbox" name="#arguments.fieldname#Selected" id="#arguments.fieldname#Selected" class="formCheckbox" value="#arguments.stObject[arguments.stMetaData.Name]#" />
+								
+								<cfif arguments.stMetadata.ftShowRemoveSelected OR arguments.stMetadata.ftAllowLibraryEdit>
+									<input type="checkbox" name="#arguments.fieldname#Selected" id="#arguments.fieldname#Selected" class="formCheckbox #arguments.fieldname#Selected" value="#arguments.stObject[arguments.stMetaData.Name]#" />
 								</cfif>
 								<div class="#arguments.stMetadata.ftLibrarySelectedListClass#">
 									<p>#HTML#</p>
@@ -184,11 +186,17 @@
 					<cfoutput>
 							</ul>
 						</div>
-						<cfif arguments.stMetadata.ftShowRemoveSelected>
-							<div class="buttonGroup">
+						<div class="buttonGroup">
+							<cfif arguments.stMetadata.ftAllowLibraryEdit>
+								<skin:htmlhead library="extjs" />	
+							
+								<ft:farcryButton type="button" value="Edit Item" onclick="editLibrarySelected(Ext.query('.#arguments.fieldname#Selected'), '#arguments.stObject.objectid#', '#arguments.stObject.typename#', '#arguments.stMetadata.ftLibraryEditWebskin#', '#arguments.stMetaData.Name#', '#arguments.fieldname#', 'uuid');" />
+							</cfif>							
+							<cfif arguments.stMetadata.ftShowRemoveSelected>
 								<ft:farcryButton type="button" value="Remove Item" onclick="deleteSelectedFromUUIDField('#arguments.fieldname#');return false;" confirmText="Are you sure you want to remove the selected item" />						
-							</div>
-						</cfif>
+							</cfif>
+							
+						</div>
 						</div>
 						<br class="clearer" />
 					</cfoutput>
@@ -316,6 +324,9 @@
 		<cfparam name="arguments.stMetadata.ftRenderType" default="Library" type="string" />
 		<cfparam name="arguments.stMetadata.ftSelectSize" default="10" type="numeric" />
 		<cfparam name="arguments.stMetadata.ftSelectMultiple" default="true" type="string" />
+		<cfparam name="arguments.stMetadata.ftShowRemoveSelected" default="true">
+		<cfparam name="arguments.stMetadata.ftAllowLibraryEdit" default="false">
+		<cfparam name="arguments.stMetadata.ftLibraryEditWebskin" default="edit">
 
 
 		
@@ -335,6 +346,24 @@
 		<cfset Request.InHead.ScriptaculousEffects = 1>	
 
 		
+		<!--- Determine the the type we are using --->
+		<cfif listLen(arguments.stMetadata.ftJoin) GT 1>
+			<cfif len(arguments.stObject[arguments.stMetaData.Name])>
+				<cfset uuidTypename = createObject("component", "farcry.core.packages.fourq.fourq").findType(objectid=arguments.stObject[arguments.stMetaData.Name]) />
+			</cfif>
+		<cfelse>
+			<cfset uuidTypename = arguments.stMetadata.ftJoin />
+		</cfif>
+		
+		<!--- Couldnt find the type so try the first type in the list. --->
+		<cfif not len(uuidTypename)>
+			<cfset uuidTypename = listFirst(arguments.stMetadata.ftJoin) />
+		</cfif>
+		
+		<!--- Create the Linked Table Type as an object  --->
+		<cfset oData = createObject("component",application.stcoapi[uuidTypename].packagePath)>
+		
+				
 		<!--------------------------------------------- 
 		RENDER TYPE SWITCH
 			- select specific form element output
@@ -419,8 +448,11 @@
 						<cfoutput>
 						<li id="#arguments.fieldname#_#arguments.stObject[arguments.stMetaData.Name]#" class="#ULID#handle" style="<cfif len(arguments.stMetadata.ftLibraryListItemWidth)>width:#arguments.stMetadata.ftLibraryListItemWidth#;</cfif><cfif len(arguments.stMetadata.ftLibraryListItemheight)>height:#arguments.stMetadata.ftLibraryListItemHeight#;</cfif>">
 							<div class="buttonGripper"><p>&nbsp;</p></div>
-							<input type="checkbox" name="#arguments.fieldname#Selected" id="#arguments.fieldname#Selected" class="formCheckbox" value="#arguments.stObject[arguments.stMetaData.Name]#" />
-
+							
+							<cfif arguments.stMetadata.ftShowRemoveSelected OR arguments.stMetadata.ftAllowLibraryEdit>
+								<input type="checkbox" name="#arguments.fieldname#Selected" id="#arguments.fieldname#Selected" class="formCheckbox #arguments.fieldname#Selected" value="#arguments.stObject[arguments.stMetaData.Name]#" />
+							</cfif>
+							
 							<div class="#arguments.stMetadata.ftLibrarySelectedListClass#">
 								<p>#HTML#</p>
 							</div>

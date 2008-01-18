@@ -1,9 +1,8 @@
 <cfcomponent extends="field" name="array" displayname="array" hint="Used to liase with Array type fields"> 
 
-	<!---<cfimport taglib="/farcry/core/tags/webskin/" prefix="ws" > --->
 	<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" >
+	<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" >
 
-		
 	<cffunction name="init" access="public" returntype="farcry.core.packages.formtools.array" output="false" hint="Returns a copy of this initialised object">
 		<cfreturn this>
 	</cffunction>
@@ -39,6 +38,8 @@
 		<cfparam name="arguments.stMetadata.ftRenderType" default="Library" type="string" />
 		<cfparam name="arguments.stMetadata.ftSelectSize" default="10" type="numeric" />
 		<cfparam name="arguments.stMetadata.ftSelectMultiple" default="true" type="string" />
+		<cfparam name="arguments.stMetadata.ftAllowLibraryEdit" default="false">
+		<cfparam name="arguments.stMetadata.ftLibraryEditWebskin" default="edit">
 
 		<!--- An array type MUST have a 'ftJoin' property --->
 		<cfif not structKeyExists(arguments.stMetadata,"ftJoin") or not len(arguments.stMetadata.ftJoin)>
@@ -198,7 +199,8 @@
 										<cfoutput>
 										<li id="#arguments.fieldname#_#qArrayField.data#:#qArrayField.seq#" class="#ULID#handle" style="<cfif len(arguments.stMetadata.ftLibraryListItemWidth)>width:#arguments.stMetadata.ftLibraryListItemWidth#;</cfif><cfif len(arguments.stMetadata.ftLibraryListItemheight)>height:#arguments.stMetadata.ftLibraryListItemHeight#;</cfif>">
 											<div class="buttonGripper"><p>&nbsp;</p></div>
-											<input type="checkbox" name="#arguments.fieldname#Selected" id="#arguments.fieldname#Selected" class="formCheckbox" value="#qArrayField.data#:#qArrayField.seq#" />
+															
+											<input type="checkbox" name="#arguments.fieldname#Selected" id="#arguments.fieldname#Selected" class="formCheckbox #arguments.fieldname#Selected" value="#qArrayField.data#:#qArrayField.seq#" />
 		
 											<div class="#arguments.stMetadata.ftLibrarySelectedListClass#">
 												<p>#HTML#</p>
@@ -214,6 +216,13 @@
 							</ul>
 						</div>
 						<div class="buttonGroup">
+							
+							<cfif arguments.stMetadata.ftAllowLibraryEdit>
+								<skin:htmlhead library="extjs" />	
+							
+								<ft:farcryButton type="button" value="Edit Selected" onclick="editLibrarySelected(Ext.query('.#arguments.fieldname#Selected'), '#arguments.stObject.objectid#', '#arguments.stObject.typename#',  '#arguments.stMetadata.ftLibraryEditWebskin#', '#arguments.stMetaData.Name#', '#arguments.fieldname#', 'array');" />
+							</cfif>
+																		
 							<ft:farcryButton type="button" value="Select All" onclick="toggleOnArrayField('#arguments.fieldname#');return false;" />
 							<ft:farcryButton type="button" value="De-select All" onclick="toggleOffArrayField('#arguments.fieldname#');return false;" />
 							<ft:farcryButton type="button" value="Remove Selected" onclick="deleteSelectedFromArrayField('#arguments.fieldname#','#application.url.webroot#');return false;" confirmText="Are you sure you want to remove the selected item(s)" />
@@ -428,6 +437,8 @@
 		<cfparam name="arguments.stMetadata.ftRenderType" default="Library" type="string" />
 		<cfparam name="arguments.stMetadata.ftSelectSize" default="10" type="numeric" />
 		<cfparam name="arguments.stMetadata.ftSelectMultiple" default="true" type="string" />
+		<cfparam name="arguments.stMetadata.ftAllowLibraryEdit" default="false">
+		<cfparam name="arguments.stMetadata.ftLibraryEditWebskin" default="edit">
 
 		<!--- An array type MUST have a 'ftJoin' property --->
 		<cfif not structKeyExists(arguments.stMetadata,"ftJoin") or not len(arguments.stMetadata.ftJoin)>
@@ -543,7 +554,8 @@
 						<cfoutput>							
 						<li id="#arguments.fieldname#_#dataID#:#dataSEQ#" class="#ULID#handle" style="<cfif len(arguments.stMetadata.ftLibraryListItemWidth)>width:#arguments.stMetadata.ftLibraryListItemWidth#;</cfif><cfif len(arguments.stMetadata.ftLibraryListItemheight)>height:#arguments.stMetadata.ftLibraryListItemHeight#;</cfif>">
 							<div class="buttonGripper"><p>&nbsp;</p></div>
-							<input type="checkbox" name="#arguments.fieldname#Selected" id="#arguments.fieldname#Selected" class="formCheckbox" value="#dataID#:#dataSEQ#" />
+														
+							<input type="checkbox" name="#arguments.fieldname#Selected" id="#arguments.fieldname#Selected" class="formCheckbox #arguments.fieldname#Selected" value="#dataID#:#dataSEQ#" />
 
 							<div class="#arguments.stMetadata.ftLibrarySelectedListClass#">
 								<p>#HTML#</p>
