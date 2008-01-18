@@ -96,13 +96,13 @@
 
 		<!--- SETUP CATEGORY APPLICATION STRUCTURE --->
 		<cfquery datasource="#application.dsn#" name="qCategories">
-		SELECT categoryID, categoryLabel
-		FROM #application.dbowner#categories
+		SELECT objectid, categoryLabel
+		FROM #application.dbowner#dmCategory
 		</cfquery>
 		
 		<cfparam name="application.catid" default="#structNew()#" />
 		<cfloop query="qCategories">
-			<cfset application.catID[qCategories.categoryID] = qCategories.categoryLabel>
+			<cfset application.catID[qCategories.objectid] = qCategories.categoryLabel>
 		</cfloop>
 		
 		
