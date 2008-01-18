@@ -32,7 +32,6 @@ $out:$
 
 <cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4"> 
 <cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
-<cfimport taglib="/farcry/core/tags/display/" prefix="display">
 
 <!--- editing from site tree --->
 <cfset cancelCompleteURL = "#application.url.farcry#/edittabOverview.cfm?objectid=#stObj.ObjectID#">
@@ -136,7 +135,7 @@ parent['content'].location.href = "#cancelCompleteURL#"
 	<label for="title"><b>#application.adminBundle[session.dmProfile.locale].titleLabel#<span class="req">*</span></b>
 		<input type="text" name="title" id="title" value="#title#" maxlength="255" size="45" /><br />
 	</label>
-	<display:OpenLayer title="#application.adminBundle[session.dmProfile.locale].advancedOptions#" isClosed="Yes" border="no">
+
 	<label for="externalLink"><b>#application.adminBundle[session.dmProfile.locale].symbolicLinkLabel#</b>
 		<select name="externalLink">
 			<option value=""<cfif externalLink EQ "">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].noneForSelect#</option><cfloop from="1" to="#arraylen(aNavalias)#" index="i">
@@ -151,7 +150,7 @@ parent['content'].location.href = "#cancelCompleteURL#"
 	<label for="fu"><b>Friendly URL:</b>
 		<input type="text" name="fu" id="fu" value="#fu#" maxlength="255" size="45" /><br />
 	</label><br />
-	</display:OpenLayer>
+
 </fieldset>
 	<div class="f-submit-wrap">
 	<input type="submit" name="submit" value="OK" class="f-submit" />
