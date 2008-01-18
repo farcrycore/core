@@ -90,7 +90,7 @@
 					    useDisplay: true,
 					    callback: function() {
 							el.load({
-						        url: "/facade.cfc?method=renderWorkflowTasks",
+						        url: "#application.url.webtop#/facade/workflowFacade.cfc?method=renderWorkflowTasks",
 						        scripts: true,
 						        autoAbort:true,
 						        callback: function() {
