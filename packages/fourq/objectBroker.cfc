@@ -105,7 +105,7 @@
 						<cfif structKeyExists(stCacheWebskin, "datetimecreated")
 							AND structKeyExists(stCacheWebskin, "webskinHTML") >
 
-							<cfif DateDiff('n', stCacheWebskin.datetimecreated, now()) LT application.stcoapi[arguments.typename].stObjectBrokerWebskins[arguments.template].timeout >
+							<cfif DateDiff('n', stCacheWebskin.datetimecreated, now()) LT stCacheWebskin.timeout >
 								<cfset webskinHTML = stCacheWebskin.webskinHTML />
 								
 								<!--- Place any request.inHead variables back into the request scope from which it came. --->
@@ -225,66 +225,35 @@
 			<cfelse>
 				<cfif listFindNoCase(application.stcoapi[arguments.typename].lObjectBrokerWebskins, arguments.template) and len(arguments.HTML)>
 					<cfif application.stcoapi[arguments.typename].stObjectBrokerWebskins[arguments.template].timeout NEQ 0>
-						<cfif structkeyexists(arguments,"objectid")>
-							<cfif structkeyexists(arguments,"objectid") and structKeyExists(application.objectbroker[arguments.typename], arguments.objectid)>
-								<cflock name="objectBroker" type="exclusive" timeout="2" throwontimeout="true">
-									<cfif not structKeyExists(application.objectbroker[arguments.typename][arguments.objectid], "stWebskins")>
-										<cfset application.objectbroker[arguments.typename][arguments.objectid].stWebskins = structNew() />
-									</cfif>			
-									
-									<!--- Add the current State of the request.inHead scope into the broker --->
-									<cfparam name="request.inHead" default="#structNew()#">
-									
-									<cfset stCacheWebskin.datetimecreated = now() />
-									<cfset stCacheWebskin.webskinHTML = trim(arguments.HTML) />	
-									<cfset stCacheWebskin.inHead = duplicate(arguments.stCurrentView.inHead) />
-		
-									<cfif len(arguments.stCurrentView.hashKey)>
-										<cfset hashString = arguments.stCurrentView.hashKey />
-									</cfif>
-									<cfif arguments.stCurrentView.hashURL>
-										<cfset hashString = "#hashString##cgi.http_host##cgi.script_name##cgi.query_string#" />
-									</cfif>
-									
-									<cfif len(hashString)>
-										<cfset application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template][hash("#hashString#")] = stCacheWebskin />
-									<cfelse>
-										<cfset application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template]["standard"] = stCacheWebskin />
-									</cfif>
-																	
-									<cfset bAdded = true />
-								</cflock>
-							</cfif>
-						<cfelse>
-							<cfif structKeyExists(application.objectbroker, arguments.typename)>
-								<cflock name="objectBroker" type="exclusive" timeout="2" throwontimeout="true">
-									<cfif not structKeyExists(application.objectbroker[arguments.typename], "stTypeWebskins")>
-										<cfset application.objectbroker[arguments.typename].stTypeWebskins = structNew() />
-									</cfif>			
-									
-									<!--- Add the current State of the request.inHead scope into the broker --->
-									<cfparam name="request.inHead" default="#structNew()#">
-									
-									<cfset stCacheWebskin.datetimecreated = now() />
-									<cfset stCacheWebskin.webskinHTML = trim(arguments.HTML) />	
-									<cfset stCacheWebskin.inHead = duplicate(arguments.stCurrentView.inHead) />
-		
-									<cfif len(arguments.stCurrentView.hashKey)>
-										<cfset hashString = arguments.stCurrentView.hashKey />
-									</cfif>
-									<cfif arguments.stCurrentView.hashURL>
-										<cfset hashString = "#hashString##cgi.http_host##cgi.script_name##cgi.query_string#" />
-									</cfif>
-									
-									<cfif len(hashString)>
-										<cfset application.objectbroker[arguments.typename].stTypeWebskins[arguments.template][hash("#hashString#")] = stCacheWebskin />
-									<cfelse>
-										<cfset application.objectbroker[arguments.typename].stTypeWebskins[arguments.template]["standard"] = stCacheWebskin />
-									</cfif>
-																	
-									<cfset bAdded = true />
-								</cflock>
-							</cfif>
+						<cfif structKeyExists(application.objectbroker[arguments.typename], arguments.objectid)>
+							<cflock name="objectBroker" type="exclusive" timeout="2" throwontimeout="true">
+								<cfif not structKeyExists(application.objectbroker[arguments.typename][arguments.objectid], "stWebskins")>
+									<cfset application.objectbroker[arguments.typename][arguments.objectid].stWebskins = structNew() />
+								</cfif>			
+								
+								<!--- Add the current State of the request.inHead scope into the broker --->
+								<cfparam name="request.inHead" default="#structNew()#">
+								
+								<cfset stCacheWebskin.datetimecreated = now() />
+								<cfset stCacheWebskin.webskinHTML = trim(arguments.HTML) />	
+								<cfset stCacheWebskin.inHead = duplicate(arguments.stCurrentView.inHead) />
+								<cfset stCacheWebskin.timeout = arguments.stCurrentView.timeout />
+	
+								<cfif len(arguments.stCurrentView.hashKey)>
+									<cfset hashString = arguments.stCurrentView.hashKey />
+								</cfif>
+								<cfif arguments.stCurrentView.hashURL>
+									<cfset hashString = "#hashString##cgi.http_host##cgi.script_name##cgi.query_string#" />
+								</cfif>
+								
+								<cfif len(hashString)>
+									<cfset application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template][hash("#hashString#")] = stCacheWebskin />
+								<cfelse>
+									<cfset application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template]["standard"] = stCacheWebskin />
+								</cfif>
+																
+								<cfset bAdded = true />
+							</cflock>
 						</cfif>
 					</cfif>
 				</cfif>

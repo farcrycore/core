@@ -2,11 +2,12 @@
 
 
 <cffunction name="init" access="public" output="false" hint="Initialise component." returntype="coapiadmin">
-	
+
 	<cfset variables.qIncludedObjects = initializeIncludes() />
 	<cfset this.qIncludedObjects = variables.qIncludedObjects />
 	
 	<cfreturn this />
+
 </cffunction>
 
 <cffunction name="getCOAPIComponents" access="public" output="false" returntype="query" hint="Get query of COAPI components by package directory. Used by the installer.">

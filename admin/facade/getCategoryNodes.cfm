@@ -43,7 +43,7 @@
 		<cfif qTree.currentRow NEQ 1><cfoutput>,</cfoutput></cfif>
 
 		<cfoutput>
-			{ 'id': '#qTree.objectid#', 'text': '#qTree.objectname#', 'leaf':  </cfoutput>
+			{'id': '#qTree.objectid#', 'text': '#jsstringFormat(qTree.objectname)#', 'leaf':  </cfoutput>
 		<cfif qTree.nRight - qTree.nLeft EQ 1>
 			<cfoutput>true</cfoutput>
 		<cfelse>

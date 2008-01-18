@@ -20,6 +20,7 @@ $in: libraryState -- used to turn predefined libraries on or off. Default turns 
 	<cfparam name="attributes.id" default="#createUUID()#" />
 	<cfparam name="attributes.library" default="" />
 	<cfparam name="attributes.libraryState" default="true" />
+	<cfparam name="attributes.position" default="last" /><!--- first or last --->
 	
 	
 	<!--- Make sure the request.inhead.stCustom exists --->
@@ -45,7 +46,11 @@ $in: libraryState -- used to turn predefined libraries on or off. Default turns 
 		
 		<cfif NOT structKeyExists(request.inhead.stCustom, attributes.id)>
 			<cfset request.inHead.stCustom[attributes.id] = attributes.text />
-			<cfset arrayAppend(request.inHead.aCustomIDs, attributes.id) />
+			<cfif attributes.position EQ "first">
+				<cfset arrayPrepend(request.inHead.aCustomIDs, attributes.id) />
+			<cfelse>
+				<cfset arrayAppend(request.inHead.aCustomIDs, attributes.id) />
+			</cfif>
 		</cfif>
 		
 		<cfset application.coapi.objectbroker.addHTMLHeadToWebskins(id="#attributes.id#", text="#attributes.text#") />

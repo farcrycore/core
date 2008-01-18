@@ -1,23 +1,6 @@
-<!--- 
-|| LEGAL ||
-$Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
-$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
-
-|| VERSION CONTROL ||
-$Header: /cvs/farcry/core/packages/types/dmHTML.cfc,v 1.23.2.1 2005/12/02 05:13:46 guy Exp $
-$Author: guy $
-$Date: 2005/12/02 05:13:46 $
-$Name: milestone_3-0-1 $
-$Revision: 1.23.2.1 $
-
-|| DESCRIPTION || 
-$Description: dmHTML Content Type. Forms the basis of the content framework of the site.  HTML objects include containers and static information. $
-$TODO: <whatever todo's needed -- can be inline also>$
-
-|| DEVELOPER ||
-$Developer: Geoff Bowers (modius@daemon.com.au) $
---->
-
+<!--- @@License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php --->
+<!--- @@Description: HTML Page Content Type --->
+<!--- @@Developer: Geoff Bowers (modius@daemon.com.au) --->
 <cfcomponent extends="versions" displayname="HTML Page" hint="Forms the basis of the content framework of the site.  HTML objects include containers and static information." bObjectBroker="1" bSchedule="1" bUseInTree="1" bFriendly="1">
 <!------------------------------------------------------------------------
 type properties
@@ -45,8 +28,6 @@ type properties
 
 <cfproperty ftSeq="20" ftwizardStep="Categorisation" name="catHTML" type="nstring" hint="Topic." required="no" default="" ftType="Category" ftAlias="root" ftLabel="Categories" />
 
-<cfproperty name="status" type="string" hint="Status of the node (draft, pending, approved)." required="yes" default="draft">
-<cfproperty name="versionID" type="uuid" hint="objectID of live object - used for versioning" required="no" default="">
 <cfproperty name="commentlog" type="longchar" hint="Workflow comment log." required="no" default="">
 
 
@@ -54,15 +35,6 @@ type properties
 <!------------------------------------------------------------------------
 object methods 
 ------------------------------------------------------------------------->	
-
-<cffunction name="display" access="public" output="true">
-	<cfargument name="objectid" required="yes" type="UUID">
-	
-	<!--- getData for object edit --->
-	<cfset stObj = this.getData(arguments.objectid)>
-	<cfinclude template="_dmhtml/display.cfm">
-</cffunction>
-
 <cffunction name="deleteRelatedIds" hint="Deletes references to a given uuid in the dmHTML_relatedIds table">
 	<cfargument name="objectid" required="yes" type="uuid">
 	<cfargument name="dsn" required="no" default="#application.dsn#">

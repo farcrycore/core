@@ -19,6 +19,8 @@
 		<cfset variables.dataMappings.email = "varchar(255)" />
 		<cfset variables.dataMappings.longchar = "longtext" />
 		
+		<cfset variables.numericTypes = "boolean,numeric,integer" />
+
 		<cfreturn this />
 	</cffunction>
 
@@ -57,13 +59,6 @@
 				<cfswitch expression="#SQLArray[i].datatype#">
 					<cfcase value="blob,text,longtext,longchar">
 						<!--- No Default Allowed on BLOB fields --->
-					</cfcase>
-					<cfcase value="datetime,date,timestamp,time">
-							<cfif Len(SQLArray[i].defaultValue)>
-								<!--- Only put the default value on if there is a value.
-								MySQL only takes static values and requires quotes around the value --->
-								'#SQLArray[i].defaultValue#'
-							</cfif>
 					</cfcase>
 					<cfcase value="char,varchar">
 						'#SQLArray[i].defaultValue#'
@@ -201,6 +196,11 @@
 					</cfif>
 				<cfelseif defaultValue eq "NULL" OR not len(trim(defaultValue))>
 					<cfset defaultValue = "" />
+				<cfelseif fields[fieldArray[i]].type EQ "date">
+					<cfset defaultValue = "" />
+					<cfif IsDate(defaultValue)>
+						<cfset defaultValue = "default '#DateFormat(defaultValue,"yyyy-mm-dd")# #timeformat(defaultValue,"HH:MM:SS")#'">
+					</cfif>
 				<cfelse>
 					<cfset defaultValue = "default '#defaultValue#'">
 				</cfif>
