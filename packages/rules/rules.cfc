@@ -197,10 +197,18 @@ $out:$
 	
 	<cffunction name="createData" access="public" returntype="any" output="false" hint="Creates an instance of an object">
 		<cfargument name="stProperties" type="struct" required="true" hint="Structure of properties for the new object instance">
-		<cfargument name="user" type="string" required="true" hint="Username for object creator" default="#session.dmSec.authentication.userlogin#">
+		<cfargument name="user" type="string" required="true" hint="Username for object creator" default="">
 		<cfargument name="auditNote" type="string" required="true" hint="Note for audit trail" default="Created">
 		
 		<cfset var stNewObject = "" />
+		
+		<cfif not len(arguments.user)>
+			<cfif isDefined("session.security.userID")>
+				<cfset arguments.user = session.security.userID />
+			<cfelse>
+				<cfset arguments.user = 'anonymous' />			
+			</cfif>
+		</cfif>
 		
 		<cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry" />
 		
