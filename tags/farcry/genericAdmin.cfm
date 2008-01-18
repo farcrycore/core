@@ -38,7 +38,6 @@ $TODO: there shouldn't be anything scoped from outside of the tag! Make this an 
 
 <cfprocessingDirective pageencoding="utf-8">
 
-<cfimport taglib="/farcry/core/tags/display/" prefix="display">
 <cfinclude template="/farcry/core/admin/includes/cfFunctionWrappers.cfm">
 <cfinclude template="/farcry/core/admin/includes/utilityFunctions.cfm">
 
@@ -551,7 +550,7 @@ if (recordSet.recordCount GT 0)
 				<cfif isDefined("form.categoryid") OR isDefined("form.apply")>
 					<cfset isClosed = "No">
 				</cfif>
-				<display:OpenLayer width="400" title="#application.adminBundle[session.dmProfile.locale].restrictByCategories#" isClosed="#isClosed#" border="no">
+
 				<table id="tree">
 					<tr>
 						<td>
@@ -567,7 +566,7 @@ if (recordSet.recordCount GT 0)
 						<td align="center"><input type="Submit" value="#application.adminBundle[session.dmProfile.locale].restrict#" class="normalbttnstyle"></td>
 					</tr>
 				</table>
-				</display:OpenLayer>
+
 			</cfif>
 
 			</form>
