@@ -64,7 +64,7 @@
 		
 		<cfif application.bObjectBroker>
 		
-			<cfif request.mode.flushcache EQ 1>
+			<cfif request.mode.flushcache EQ 1 AND structKeyExists(arguments, "objectid")>
 				<cfset bFlushCache = removeWebskin(objectid=arguments.objectid, typename=arguments.typename, template=template) />
 			</cfif>
 		
