@@ -1,4 +1,11 @@
-<cfcontent type="text/javascript; charset=UTF-8" />
+<cfsetting enablecfoutputonly="true" />
+<cfsetting showdebugoutput="false" />
+<cfcontent type="application/x-javascript">
+	
+	<cfset offset = 315360000 />
+	<cfset expires = dateAdd('s', offset, now()) />	
+	<cfheader name="expires" value="#dateFormat(expires, 'ddd, d mmm yyyy')# #timeFormat(expires, 'HH:mm:ss')# GMT "> 
+	<cfheader name="cache-control" value="max-age=#offset#">
 
 <cfoutput>
 				function farcryButtonOnMouseOver(id) {
@@ -253,3 +260,4 @@ function createFormtoolTree(fieldname,rootID,dataURL,rootNodeText,selectedIDs,ic
 }
 </cfoutput>		
 				
+<cfsetting enablecfoutputonly="false" />				

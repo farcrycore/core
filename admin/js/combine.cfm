@@ -1,6 +1,14 @@
+<cfsetting enablecfoutputonly="true" />
 <cfsetting showdebugoutput="false" />
-<cfcontent type="text/javascript; charset=UTF-8">
+<cfcontent type="application/x-javascript">
 
+<cfset offset = 315360000 />
+<cfset expires = dateAdd('s', offset, now()) />	
+<cfheader name="expires" value="#dateFormat(expires, 'ddd, d mmm yyyy')# #timeFormat(expires, 'HH:mm:ss')# GMT "> 
+<cfheader name="cache-control" value="max-age=#offset#"> 
+
+
+<!---  type="text/javascript; charset=UTF-8" --->
 <cfset hashedURL = hash(cgi.QUERY_STRING) />
 
 <cfparam name="application.stCombinedFarcryJS" default="#structNew()#" />
@@ -22,3 +30,4 @@
 </cfif>
 
 <cfoutput>#application.stCombinedFarcryJS[hashedURL]#</cfoutput>
+<cfsetting enablecfoutputonly="false" />
