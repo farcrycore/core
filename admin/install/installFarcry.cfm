@@ -150,35 +150,61 @@
 			<h2>Installing your FarCry project</h2>
 		</cfoutput>
 	    <cfflush />
-			
-		<cfscript>
-			application.dsn = form.dsn;
-			application.dbType = form.DBType;
-			//check for valid dbOwner
-			if (len(form.DBOwner) and right(form.DBOwner,1) neq ".") {
-	        	application.dbowner = form.DBOwner & ".";
-			} else {
-				application.dbowner = form.DBOwner;
-			}
-			application.packagepath = "farcry.core.packages";
-		    application.securitypackagepath = application.packagepath & ".security";
-			application.path.project = expandPath("/farcry/projects/#form.applicationName#");
-			application.url.webroot = "";
-			application.url.farcry = "/farcry";
-			application.url.webtop = "/farcry";
-			application.path.defaultImagePath = "#application.path.project#/www/images";
-		    application.path.defaultFilepath = "#application.path.project#/www/files";
-			application.path.core = expandPath("/farcry/core");
-			application.path.plugins = expandPath("/farcry/plugins");
-			
-			
-			
-			application.plugins = form.plugins;
-		    	    
-			// determing browser being used
-			if (cgi.http_user_agent contains "MSIE") browser = "IE"; else browser = "NS";				
-		</cfscript>
+
 	
+	
+		<!--- Project directory name can be changed from the default which is the applicationname --->
+		<cfset application.projectDirectoryName =  form.applicationName />
+		
+		<!----------------------------------------
+		 SET THE DATABASE SPECIFIC INFORMATION 
+		---------------------------------------->
+		<cfset application.dsn = form.dsn />
+		<cfset application.dbtype = form.dbtype />
+		<cfset application.dbowner = form.dbowner />
+		<!--- <cfset application.locales = this.locales /> --->
+		
+		<cfif application.dbtype EQ "mssql" AND NOT len(this.dbowner)>
+			<cfset application.dbowner = "dbo." />
+		</cfif>
+		
+		<!----------------------------------------
+		 SET THE MAIN PHYSICAL PATH INFORMATION
+		 ---------------------------------------->
+		<cfset application.path.project = expandpath("/farcry/projects/#application.projectDirectoryName#") />
+		<cfset application.path.core = expandpath("/farcry/core") />
+		<cfset application.path.plugins = expandpath("/farcry/plugins") />
+		
+		<cfset application.path.defaultFilePath = "#application.path.project#/www/files">
+		<cfset application.path.secureFilePath = "#application.path.project#/securefiles">		
+		
+		<cfset application.path.imageRoot = "#application.path.project#/www">
+		
+		<cfset application.path.mediaArchive = "#application.path.project#/mediaArchive">
+		
+		
+	
+		<!----------------------------------------
+		SHORTCUT PACKAGE PATHS
+		 ---------------------------------------->
+		<cfset application.packagepath = "farcry.core.packages" />
+		<cfset application.custompackagepath = "farcry.projects.#application.projectDirectoryName#.packages" />
+		<cfset application.securitypackagepath = "farcry.core.packages.security" />
+		
+		<!----------------------------------------
+		PLUGINS TO INCLUDE
+		 ---------------------------------------->
+		<cfset application.plugins = form.plugins />
+		
+		
+		<!---------------------------------------------- 
+		INITIALISE THE COAPIUTILITIES SINGLETON
+		----------------------------------------------->
+		<cfset application.coapi = structNew() />
+		<cfset application.coapi.coapiUtilities = createObject("component", "farcry.core.packages.coapi.coapiUtilities").init() />
+		<cfset application.coapi.coapiadmin = createObject("component", "farcry.core.packages.coapi.coapiadmin").init() />
+		<cfset application.coapi.objectBroker = createObject("component", "farcry.core.packages.fourq.objectBroker").init() />
+
 		
 	    <!--- install farcry --->
 	    <cfinclude template="includes/_installFarcry.cfm" />

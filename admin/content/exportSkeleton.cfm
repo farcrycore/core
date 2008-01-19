@@ -49,10 +49,7 @@
 			<cfset oNav = createObject("component", application.stcoapi["dmNavigation"].packagePath)>
 			<cfset oCOAPI = createObject("component", "farcry.core.packages.coapi.coapiadmin") />
 			
-			<cfset aTreeContent = arrayNew(1) />
-			<cfset aSecurity = arrayNew(1) />
-			
-			
+				
 			<cfset oZip = createObject("component", "farcry.core.packages.farcry.zip") />
 			<cfset oZip.AddFiles(zipFilePath="#skeletonPath#/#stProperties.name#.zip", directory="#application.path.project#", recurse="true", compression=0, savePaths="false") />
 			<cfset oZip.Extract(zipFilePath="#skeletonPath#/#stProperties.name#.zip", extractPath="#skeletonPath#/#stProperties.name#", overwriteFiles="true") />
@@ -109,42 +106,51 @@
 			<cfwddx action="cfml2wddx" input="#qTree#" output="wddxTree">			
 			<cffile action="write" file="#wddxLoc#/nested_tree_objects.wddx" output="#wddxTree#" addnewline="false" mode="777" >
 	
-						
 
-			<!--- ADD CONTENT ITEMS --->	
-			<cfset typeNames = "container" />
-			<cfloop list="#structKeyList(application.stCoapi)#" index="i">
-				<cfif not listFindNoCase("farBarnacle,farGroup,farPermission,farRole,farUser,dmWebskinAncestor,dmWizard",i)><!--- NO CORE TYPES --->
-					<cfset typeNames = listAppend(typename, i) />
-				</cfif>
-			</cfloop>		
+			<cfset lTypenamesToExport = structKeyList(application.stCoapi) />
+			<cfif not stProperties.bIncludeLog>
+				<cfset lTypenamesToExport = listDeleteAt(lTypenamesToExport, listFindNoCase(lTypenamesToExport, "farLog")) />
+			</cfif>
+			<cfif not stProperties.bIncludeArchive>
+				<cfset lTypenamesToExport = listDeleteAt(lTypenamesToExport, listFindNoCase(lTypenamesToExport, "dmArchive")) />
+			</cfif>
 			
-			<cfloop list="#typeNames#" index="typename" >
-				<cfquery datasource="#application.dsn#" name="q">
-				SELECT *
-				FROM #application.dbowner##typeName#
-				</cfquery>
-				
-				<cfset o = createObject("component", application.stcoapi["#typeName#"].packagePath)>
-				
-				<cfloop query="q">
+			<cfloop list="#lTypenamesToExport#" index="typename" >
+				<cfset aContent = arrayNew(1) />
+				<cftry>
 					
-					<cfset st = o.getData(objectid="#q.objectid#", bArraysAsStructs="true") />
-				
-					<cfset arrayAppend(aTreeContent, st) />
 					
-				</cfloop>
+					<cfquery datasource="#application.dsn#" name="q">
+					SELECT *
+					FROM #application.dbowner##typeName#
+					</cfquery>
+					
+					<cfset o = createObject("component", application.stcoapi["#typeName#"].packagePath)>
+					
+					<cfloop query="q">
+						
+						<cfset st = o.getData(objectid="#q.objectid#", bArraysAsStructs="true") />
+					
+						<cfset arrayAppend(aContent, st) />
+						
+					</cfloop>
+					
+					<cfif arrayLen(aContent)>
+						<cfwddx action="cfml2wddx" input="#aContent#" output="wddxContent">
+						<cffile action="write" file="#wddxLoc#/#typename#.wddx" output="#wddxContent#" addnewline="false" mode="777" >
+					</cfif>
+				
+								
+					<cfcatch type="database"><!--- ignore ---></cfcatch>
+					<cfcatch type="any"><cfdump var="#cfcatch#" label="typename: #typename#"><cfabort></cfcatch>
+				</cftry>
 				
 			</cfloop>
+
 			
-			
-			<cfwddx action="cfml2wddx" input="#aTreeContent#" output="wddxTreeContent">
-			<cffile action="write" file="#wddxLoc#/treeContent.wddx" output="#wddxTreeContent#" addnewline="false" mode="777" >
-			
-			
-			
+			<!--- 
 			<!--- ADD SECURITY CONTENT ITEMS --->
-			<cfset typeNames = "farBarnacle,farGroup,farPermission,farRole,farUser,container" />
+			<cfset typeNames = "farBarnacle,farGroup,farPermission,farRole,farUser" />
 			
 			<cfloop list="#typeNames#" index="typename" >
 				<cfquery datasource="#application.dsn#" name="q">
@@ -166,7 +172,7 @@
 			
 			<cfwddx action="cfml2wddx" input="#aSecurity#" output="wddxSecurity">
 			<cffile action="write" file="#wddxLoc#/security.wddx" output="#wddxSecurity#" addnewline="false" mode="777" >
-			
+			 --->
 			
 			<!--- COMPLETE --->
 			<cfoutput><h1>DONE</h1></cfoutput>

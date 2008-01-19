@@ -10,12 +10,6 @@
 <cfparam name="failureMsg" default="<td><span class=""failure"">FAILED!</span></td></tr>#chr(13)##chr(10)#" />
 
 
-<!--- environment variables --->
-<cfparam name="form.applicationName" type="string" />
-<cfparam name="form.plugins" default="" type="string" />
-
-<cfset application.projectdirectoryname = application.applicationname />
-<cfset application.objectbrokermaxobjectsdefault = 100 />
 
 <!----------------------------------------------------------------------- 
 DEPLOY SYSTEM TABLES
@@ -29,12 +23,11 @@ DEPLOY SYSTEM TABLES
 <cfset stargs.dbtype=application.dbtype />
 <cfset stargs.dbowner=application.dbowner />
 
-<!--- instantiate COAPI utils --->
-<cfset oCOAPI=createobject("component", "farcry.core.packages.coapi.coapiadmin").init() />
 
 <!--- instantiate singletons needed for install --->
 <cfset application.factory.oUtils = createobject("component","farcry.core.packages.farcry.utils") />
 <cfset application.factory.oAudit = createObject("component","#application.packagepath#.farcry.audit") />
+
 
 <!--- build coapi metadata --->
 <cfset oAlterType = createObject("component", "#application.packagepath#.farcry.alterType") />
@@ -95,7 +88,7 @@ TODO:
 	Appear to be missing the container table deploy with the new aggregated rule deploy
 	May need to be built as an independent ./schema component
  --->	
-<cfset qRules=oCOAPI.getCOAPIComponents(project=form.applicationName, package="rules", plugins=form.plugins) />
+<cfset qRules=application.coapi.coapiadmin.getCOAPIComponents(project=form.applicationName, package="rules", plugins=form.plugins) />
 
 
 <cfoutput><p>Creating container and rule tables.</p></cfoutput>
@@ -117,7 +110,7 @@ TODO:
 
 
 <!--- // deploy type tables --->
-<cfset qTypes=oCOAPI.getCOAPIComponents(project=form.applicationName, package="types", plugins=form.plugins) />
+<cfset qTypes=application.coapi.coapiadmin.getCOAPIComponents(project=form.applicationName, package="types", plugins=form.plugins) />
 
 
 <cfoutput><p>Creating types tables.</p></cfoutput>
@@ -158,9 +151,6 @@ TODO:
 	<table border="0" cellpadding="1" cellspacing="0" width="600">
 		<tr><td colspan="2">&nbsp;</td></tr>
 		<tr><td colspan="2"><h4>[STEP 3] setup Daemon security (dmSec)</h4></td></tr>
-		<cfif browser eq "NS">
-			<tr><td colspan="2">&nbsp;</td></tr>
-		</cfif>
 	</cfoutput>
 	<cfflush />
 	
@@ -191,7 +181,7 @@ TODO:
 	Plugin
 	 - search and install Plugin install data
 	----------------------------------------------------------------------->
-	<cfset qInstalls=oCOAPI.getPluginInstallers(plugins=form.plugins) />
+	<cfset qInstalls=application.coapi.coapiadmin.getPluginInstallers(plugins=form.plugins) />
 	<cfloop query="qInstalls">
 		<cfinclude template="/farcry/plugins/#qinstalls.Plugin#/config/install/#qinstalls.name#" />
 	</cfloop>
