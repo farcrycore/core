@@ -607,6 +607,40 @@ $out:$
 	RULES
 	 --->
 	 
+	<!--- INIT THE CONTAINER OBJECT ---> 
+	<cfdirectory directory="#application.path.core#/packages/rules" name="qDir" filter="container.cfc" sort="name">
+
+	<cfloop query="qDir">
+		<cfif qDir.name NEQ "rules.cfc">
+
+				
+				<cfset typename = left(qDir.name, len(qDir.name)-4) /> <!---remove the .cfc from the filename --->
+				<cfset o = createObject("Component", "#application.packagepath#.rules.#typename#") />			
+				<cfset stMetaData = getMetaData(o) />
+				<cfif not structKeyExists(stMetadata,"bAbstract") or stMetadata.bAbstract EQ "False">			
+				
+					<cfset stTypeMD = structNew() />
+					<cfparam name="application.rules.#typename#" default="#structNew()#" />
+					<cfset stTypeMD = o.initmetadata(application.rules[typename]) />
+					<cfset stTypeMD.bCustomRule = 0 />
+					<cfset stTypeMD.bLibraryRule = 0 />
+					<cfset stTypeMD.rulePath = "#application.packagepath#.rules.#typename#" />					
+					<cfset stTypeMD.packagePath = "#application.packagepath#.rules.#typename#" />
+				
+					<cfparam name="stTypeMD.icon" default="#LCase(Right(typename,len(typename)-2))#" />
+					<cfset stTypeMD.icon = getIconPath(iconname=stTypeMD.icon) />
+				
+					<cfset stTypeMD.qMetadata = setupMetadataQuery(typename=typename,stProps=stTypeMD.stProps) />
+					<cfset application.rules[typename] = duplicate(stTypeMD) />
+				</cfif>
+
+		</cfif>
+	</cfloop>
+	
+
+
+	 
+	 
 	<!--- Init all CORE RULES --->
 	<cfdirectory directory="#application.path.core#/packages/rules" name="qDir" filter="rule*.cfc" sort="name">
 
