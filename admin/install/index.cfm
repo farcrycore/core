@@ -302,15 +302,17 @@ RENDER THE CURRENT STEP
 						</option>
 					</cfif>
 				</cfloop>
-				<cfloop query="qProjectSkeletons">
-					<cfif qProjectSkeletons.type EQ "DIR" and fileExists("#projectsPath#/#qProjectSkeletons.name#/install/manifest.cfc")>
-						<cfset oManifest = createObject("component", "farcry.projects.#qProjectSkeletons.name#.install.manifest")>
-						<option value="farcry.projects.#qProjectSkeletons.name#" <cfif qProjectSkeletons.name EQ session.stFarcryInstall.stConfig.skeleton>selected</cfif>>
-							#oManifest.name#
-							- Supported: #oManifest.isSupported(coreMajorVersion="#request.coreVersion.major#",coreMinorVersion="#request.coreVersion.minor#",corePatchVersion="#request.coreVersion.patch#")#
-						</option>
-					</cfif>
-				</cfloop>
+				<cfif isDefined("qProjectSkeletons")>
+					<cfloop query="qProjectSkeletons">
+						<cfif qProjectSkeletons.type EQ "DIR" and fileExists("#projectsPath#/#qProjectSkeletons.name#/install/manifest.cfc")>
+							<cfset oManifest = createObject("component", "farcry.projects.#qProjectSkeletons.name#.install.manifest")>
+							<option value="farcry.projects.#qProjectSkeletons.name#" <cfif qProjectSkeletons.name EQ session.stFarcryInstall.stConfig.skeleton>selected</cfif>>
+								#oManifest.name#
+								- Supported: #oManifest.isSupported(coreMajorVersion="#request.coreVersion.major#",coreMinorVersion="#request.coreVersion.minor#",corePatchVersion="#request.coreVersion.patch#")#
+							</option>
+						</cfif>
+					</cfloop>
+				</cfif>
 			</select>
 		</div>
 		<div class="clear"></div>
