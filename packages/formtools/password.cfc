@@ -137,11 +137,9 @@
 		
 				<cfset stResult.value = st[arguments.stMetadata.name]>
 				
-				<cfif arguments.stFieldPost.value EQ st[arguments.stMetadata.name]>
-					<cfif len(arguments.stFieldPost.value) AND arguments.stFieldPost.value EQ arguments.stFieldPost.stSupporting.Confirm>
-						<cfset stResult.value = arguments.stFieldPost.value>
-					</cfif>		
-				</cfif>
+				<cfif len(arguments.stFieldPost.value) AND arguments.stFieldPost.value EQ arguments.stFieldPost.stSupporting.Confirm>
+					<cfset stResult.value = arguments.stFieldPost.value>
+				</cfif>	
 			</cfcase>
 			<cfcase value="enterpassword">
 				<cfset stResult.value = arguments.stFieldPost.value />
