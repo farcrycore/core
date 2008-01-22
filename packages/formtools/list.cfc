@@ -92,6 +92,7 @@
 										#ListLast(i , ":")#
 										<br class="fieldsectionbreak" />
 									</cfloop>
+									<input type="hidden" name="#arguments.fieldname#" value=" ">
 								</div>										
 							</div>																					
 						</cfoutput>
@@ -118,7 +119,8 @@
 										<!--- MPS: styles aren't working so we are removing label for now until we have time to look at the css --->
 										#ListLast(i , ":")#
 										<br class="fieldsectionbreak" />
-									</cfloop>												
+									</cfloop>
+									<input type="hidden" name="#arguments.fieldname#" value=" ">
 								</div>
 							</div>
 						</cfoutput>
@@ -184,10 +186,20 @@
 		<cfset stResult.value = "#arguments.stFieldPost.Value#">
 		<cfset stResult.stError = StructNew()>			
 		
+		<cfparam name="arguments.stMetadata.ftRenderType" default="dropdown">
+		
 		<!--- --------------------------- --->
 		<!--- Perform any validation here --->
 		<!--- --------------------------- --->
-		<cfset stResult.value = stFieldPost.Value>
+		<cfif listcontains("checkbox,radio",arguments.stMetadata.ftRenderType)>
+			<cfif len(trim(stFieldPost.value))>
+				<cfset stResult.value = left(stFieldPost.Value,len(stFieldPost.value)-2) />
+			<cfelse>
+				<cfset stResult.value = "" />
+			</cfif>
+		<cfelse>
+			<cfset stResult.value = stFieldPost.Value />
+		</cfif>
 					
 		<!--- ----------------- --->
 		<!--- Return the Result --->
