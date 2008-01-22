@@ -193,7 +193,7 @@
 		<!--- --------------------------- --->
 		<cfif listcontains("checkbox,radio",arguments.stMetadata.ftRenderType)>
 			<cfif len(trim(stFieldPost.value))>
-				<cfset stResult.value = left(stFieldPost.Value,len(stFieldPost.value)-2) />
+				<cfset stResult.value = stFieldPost.Value />
 			<cfelse>
 				<cfset stResult.value = "" />
 			</cfif>
