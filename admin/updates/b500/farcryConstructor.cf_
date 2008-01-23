@@ -1,0 +1,50 @@
+<!--- Set up the application. --->	
+<cfset THIS.Name = "@@Name" />
+
+
+<cfset THIS.sessionmanagement = @@sessionmanagement  />
+
+<cfset THIS.sessiontimeout = @@sessiontimeout /><!--- usually a createTimeSpan() --->
+
+<cfset THIS.applicationtimeout = @@applicationtimeout /><!--- usually a createTimeSpan() --->
+
+<cfset THIS.clientmanagement = @@clientmanagement />
+
+<cfset THIS.clientstorage = "@@clientstorage" />
+
+<cfset THIS.loginstorage = "@@loginstorage" />
+
+<cfset THIS.scriptprotect = "@@scriptprotect" />
+
+<cfset THIS.setclientcookies = @@setclientcookies />
+
+<cfset THIS.setdomaincookies = @@setdomaincookies />
+
+
+<!--- FARCRY SPECIFIC --->
+<cfset THIS.locales = "@@locales" />
+
+<cfset THIS.dsn = "@@dsn" /> 
+
+<cfset THIS.dbType = "@@dbType" /> 
+
+<cfset THIS.dbOwner = "@@dbOwner" /> 
+
+<cfset THIS.plugins = "@@plugins" /> 
+
+<!--- 
+THE NAME OF THE FOLDER THAT CONTAINS YOUR FARCRY PROJECT
+ --->
+<cfset THIS.projectDirectoryName = "@@projectDirectoryName" /><!--- Defaults to application name --->
+
+<!--- 
+THE VIRTUAL WEBSERVER PROJECT FOLDER
+ --->
+<cfset THIS.projectURL = "@@projectURL" /><!--- Defaults to application name --->
+
+
+<!--- Define the page request properties. --->
+
+<!--- <cfsetting requesttimeout="30" /> --->
+<!--- <cfsetting showdebugoutput="true" /> --->
+<!--- <cfsetting enablecfoutputonly="true" /> --->
