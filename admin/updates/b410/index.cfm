@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>Update to 4.1</title>
+		<title>Update to 5.0</title>
 		<script type="text/javascript">
 			function blocking(nr, status)
 			{
@@ -343,10 +343,10 @@
 	
 <cfelse>
 
-	<cfparam name="url.name" default="" />
-	<cfparam name="url.dsn" default="" />
-	<cfparam name="url.dbType" default="" />
-	<cfparam name="url.dbOwner" default="" />
+	<cfparam name="url.name" type="string" />
+	<cfparam name="url.dsn" type="string" />
+	<cfparam name="url.dbType" type="string" />
+	<cfparam name="url.dbOwner" type="string" />
 	
 	<cfif url.dbtype EQ "mssql" AND NOT len(url.dbowner)>
 		<cfset url.dbowner = "dbo." />
@@ -392,7 +392,10 @@
 		      	<td>#url.dbOwner#</td>
 			</tr>
 		</table>
-
+		<input type="hidden" name="projectName" value="#url.name#" />
+		<input type="hidden" name="dsn" value="#url.dsn#" />
+		<input type="hidden" name="dbType" value="#url.dbType#" />
+		<input type="hidden" name="dbOwner" value="#url.dbOwner#" />
 		<input type="submit" name="submit" value="Upgrade" />
 	</form>
 	
