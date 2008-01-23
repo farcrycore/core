@@ -163,7 +163,7 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
 		
 		<cfset var oGroup = createObject("component", application.stcoapi["farGroup"].packagePath) />
 		<cfset var stGroup = structnew() />
-		<cfset var aUserGroups = "" />
+		<cfset var aUserGroups = arrayNew(1) />
 		<cfset var stResult = structnew() />
 		<cfset var aResult = arraynew(1) />
 		<cfset var aAllGroups = arraynew(1) />
@@ -171,22 +171,34 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
 		
 		<farcry:deprecated message="authentication.getMultipleGroups() should be replaced by application.security.userdirectories[ud].getUserGroups()" />
 		
-		<cfif findnocase(arguments.userdirectory,arguments.userlogin)>
-			<cfset arguments.userlogin = listfirst(arguments.userlogin,"_") />
+		
+		<cfif structKeyExists(application.security.userdirectories, arguments.userdirectory)>
+			<cfset aAllGroups = application.security.userdirectories[arguments.userdirectory].getAllGroups() />
+			
+			<cfif structKeyExists(arguments, "userLogin") and len(arguments.userLogin)>
+				<cfif findnocase(arguments.userdirectory,arguments.userlogin)>
+					<cfset arguments.userlogin = listfirst(arguments.userlogin,"_") />
+				</cfif>
+				
+				<cfset aUserGroups = application.security.userdirectories[arguments.userdirectory].getUserGroups(arguments.userlogin) />
+					
+				<cfif arguments.bInvert>
+					<cfloop from="1" to="#arraylen(aAllGroups)#" index="i">
+						<cfif not application.factory.oUtils.arrayFind(aUserGroups,aAllGroups[i])>
+							<cfset arrayAppend(aResult, aAllGroups[i]) />
+						</cfif>
+					</cfloop>	
+				<cfelse>
+					<cfset aResult = aUserGroups />
+				</cfif>
+			
+			<cfelse>
+				<cfset aResult = aAllGroups />
+			</cfif>
 		</cfif>
 		
-		<cfset aAllGroups = application.security.userdirectories.CLIENTUD.getAllGroups() />
-		<cfset aUserGroups = application.security.userdirectories.CLIENTUD.getUserGroups(arguments.userlogin) />
 		
-		<cfloop from="1" to="#arraylen(aAllGroups)#" index="i">
-			<cfif arguments.bInvert xor application.factory.oUtils.arrayFind(aUserGroups,aAllGroups[i])>
-				<cfset stGroup = oGroup.getData(oGroup.getID(aAllGroups[i])) />
-				<cfset stResult = structnew() />
-				<cfset stResult.groupName = stGroup.title />
-				<cfset stResult.groupNotes = "" />
-				<cfset arrayappend(aResult,stResult) />
-			</cfif>
-		</cfloop>
+
 		
 		<cfreturn aResult />
 	</cffunction> 
