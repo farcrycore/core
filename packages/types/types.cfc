@@ -94,16 +94,21 @@ default handlers
 			<cfset arguments.template = ReplaceNoCase(arguments.template,".cfm", "", "all") />
 		</cfif>
 		
+
 		<cfif isDefined("arguments.stobject")>
 			<cfset stobj=arguments.stobject />
 			<cfset instance.stobj = stObj />
 		<cfelse>
-			<!--- If the objectid has not been sent, we need to create a default object. --->
-			<cfparam name="arguments.objectid" default="#CreateUUID()#" type="uuid">
+			<cfif not structKeyExists(arguments, "objectid") or not len(arguments.objectid)>
+				<!--- If the objectid has not been sent, we need to create a default object. --->
+				<cfset arguments.objectid = createUUID() />
+				
+				<cfset bTypeWebskin = true />
+			</cfif>		
+			
 			<!--- get the data for this instance --->
 			<cfset stObj = getData(objectid=arguments.objectID,dsn=arguments.dsn)>
 			
-			<cfset bTypeWebskin = true />
 		</cfif>
 
 		<!--- Check permissions on this webskin --->
