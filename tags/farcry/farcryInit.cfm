@@ -86,8 +86,8 @@ This tag is now used to invoke the updater and can only be run from the local ma
 
 	<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@Name", "#attributes.name#") />
 	<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@sessionmanagement", "#attributes.sessionmanagement#") />
-	<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@sessiontimeout", "#attributes.sessiontimeout#") />
-	<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@applicationtimeout", "#attributes.applicationtimeout#") />
+	<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@sessiontimeout", "createTimeSpan(0,1,0,0)") />
+	<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@applicationtimeout", "createTimeSpan(2,0,0,0)") />
 	<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@clientmanagement", "#attributes.clientmanagement#") />
 	<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@clientstorage", "#attributes.clientstorage#") />
 	<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@loginstorage", "#attributes.loginstorage#") />
