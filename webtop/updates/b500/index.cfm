@@ -272,7 +272,7 @@
 	</cfquery>
 	<cfquery datasource="#application.dsn#">
 	INSERT INTO  #application.dbowner#dmCategory(objectid,alias,categorylabel,createdby,ownedby,lastupdatedby,datetimecreated,datetimelastupdated,label)
-	SELECT categoryID,alias,categorylabel,'farcry','farcry','farcry','#dateFormat(now(),"yyyy-mm-dd")#','#dateFormat(now(),"yyyy-mm-dd")#',categorylabel
+	SELECT categoryID,alias,categorylabel,'farcry','farcry','farcry', #createODBCDate(now())#, #createODBCDate(now())# ,categorylabel
 	FROM categories
 	</cfquery>
 	
