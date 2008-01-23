@@ -50,7 +50,9 @@
 			
 		</cfif>
 		
-
+		<!--- If no list items are selected, an empty field is posted. --->
+		<cfoutput><input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="" /></cfoutput>
+		
 		<cfif len(arguments.stMetadata.ftList)>
 			<cfswitch expression="#arguments.stMetadata.ftRenderType#">
 				
