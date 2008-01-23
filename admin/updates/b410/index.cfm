@@ -41,9 +41,14 @@
 	<body>
 
 <cfif structkeyexists(form,"submit")>
-	<cfapplication name="#form.projectname#_UpgradeV5" />
+	<cfapplication name="#form.projectname#_UpgradeV5" sessionmanagement="true" sessiontimeout="#createTimespan(0,0,2,0)#" />
 	
 		<cfsetting requesttimeout="1620" />
+		
+		
+		<cfoutput><h1>RUNNING MIGRATION.... PLEASE BE PATIENT...</h1></cfoutput><cfflush>
+	
+	
 	<!--- Project directory name can be changed from the default which is the applicationname --->
 		<cfset application.projectDirectoryName =  #form.projectname# />
 		
@@ -152,8 +157,9 @@
 	<cfset alterType = createObject("component","farcry.core.packages.farcry.alterType") />
 	<cfset migrateresult = "" />
 	
-	<!--- =========== DATABASE SCHEMA UPDATE ============= --->	
 	
+	<!--- =========== DATABASE SCHEMA UPDATE ============= --->	
+	<cfoutput><p>updating secuirty...</cfoutput><cfflush>
 	<!--- LOG --->
 	<cfif NOT alterType.isCFCDeployed(typename="farLog")>
 		<cfset createobject("component","farcry.core.packages.types.farLog").deployType(btestRun="false") />
@@ -205,7 +211,11 @@
 		delete from #application.dbowner#farBarnacle
 	</cfquery>
 	
+	<cfoutput>complete</p></cfoutput><cfflush>
+	
+	
 	<!--- CONFIG --->
+	<cfoutput><p>updating cofig...</cfoutput><cfflush>
 	<cfif NOT alterType.isCFCDeployed(typename="farConfig")>
 		<cfset createobject("component","farcry.core.packages.types.farConfig").deployType(btestRun="false") />
 	</cfif>
@@ -214,7 +224,12 @@
 		delete from #application.dbowner#farConfig
 	</cfquery>
 	
+	<cfoutput>complete</p></cfoutput><cfflush>
+	
+	
 	<!--- WORKFLOW --->
+	
+	<cfoutput><p>creating workflow...</cfoutput><cfflush>
 	<cfif NOT alterType.isCFCDeployed(typename="farWorkflowDef")>
 		<cfset createobject("component","farcry.core.packages.types.farWorkflowDef").deployType(btestRun="false") />
 	</cfif>
@@ -242,8 +257,12 @@
 	</cfquery>
 	
 	
+	<cfoutput>complete</p></cfoutput><cfflush>
+	
+	
 	<!--- CATEGORIES --->
 	
+	<cfoutput><p>updating categories...</cfoutput><cfflush>
 	<cfif NOT alterType.isCFCDeployed(typename="dmCategory")>
 		<cfset createobject("component","farcry.core.packages.types.dmCategory").deployType(btestRun="false") />
 	</cfif>
@@ -290,11 +309,11 @@
 		where typename = 'categories'
 	</cfquery>
 		
+	<cfoutput>complete</p></cfoutput><cfflush>
 	<!--- ============ DATA MIGRATION ============ --->
 	
-	<cfoutput><h1>Upgrade results</h1></cfoutput>
+	<cfoutput><h1>Upgrade results</h1></cfoutput><cfflush>
 	
-	<cfoutput>categories migrated<br/></cfoutput>
 	
 	<!--- SECURITY --->
 	<cfset application.security = createobject("component","farcry.core.packages.security.security").init() />
@@ -339,6 +358,18 @@
 	
 	<cfset application.bInit = true />
 	
+	<cfoutput>
+		<h3>UPGRADE COMPLETE</h3>
+		<p>Your old application.cfm is still in place. If you had code in the application.cfm you may wish to consider placing it in one of the relevent projects config files located in <strong>/projectdirectory/config</strong></p>
+		<p>
+			The files available are
+			<ul>
+				<li>serverSpecificVars.cfm - called only before application initialisation (ie. first time application is run after a restart or on application timeout). </li>
+				<li>serverSpecificVarsAfterInit.cfm - called only after application initialisation (ie. first time application is run after a restart or on application timeout). </li>
+				<li>serverSpecificRequestScope.cfm - called on every request.</li>
+			</ul>
+		</p>
+	</cfoutput>
 <cfelse>
 
 	<cfparam name="url.name" type="string" />
