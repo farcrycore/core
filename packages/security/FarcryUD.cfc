@@ -313,12 +313,26 @@
 			<cfset stResult[userid] = stObj.objectid />
 		</cfloop>
 		
-		<!--- Update profiles --->
-		<cfquery datasource="#application.dsn#">
-			update	#application.dbowner#dmProfile
-			set		username=username + '_' + userDirectory
-			where	username not like '%_%'
-		</cfquery>
+		
+		<cfswitch expression="#application.dbType#">
+		<cfcase value="mssql">
+			<!--- Update profiles --->
+			<cfquery datasource="#application.dsn#">
+				update	#application.dbowner#dmProfile
+				set		username=username + '_' + userDirectory
+				where	username not like '%[_]%'
+			</cfquery>
+		</cfcase>
+		<cfdefaultcase>
+			<!--- Update profiles --->
+			<cfquery datasource="#application.dsn#">
+				update	#application.dbowner#dmProfile
+				set		username=username + '_' + userDirectory
+				where	username not like '%_%'
+			</cfquery>
+		</cfdefaultcase>
+		</cfswitch>
+
 		
 		<cfreturn stResult />
 	</cffunction>
