@@ -310,6 +310,35 @@
 	</cfquery>
 		
 	<cfoutput>complete</p></cfoutput><cfflush>
+	
+	
+	
+	<!--- UPDATE dmWebskinAncestor --->
+	<cfoutput><p>updating dmWebskinAncestor Table...</cfoutput><cfflush>
+	<cftry>
+		<cfswitch expression="#application.dbtype#">
+			<cfcase value="ora">
+				<cfquery name="update" datasource="#application.dsn#">
+					ALTER TABLE #application.dbowner#dmWebskinAncestor ADD webskinTypename VARCHAR2(255) NULL
+				</cfquery>
+				<cfquery name="update" datasource="#application.dsn#">
+					ALTER TABLE #application.dbowner#dmWebskinAncestor ADD webskinTemplate VARCHAR2(255) NULL
+				</cfquery>
+			</cfcase>
+			<cfdefaultcase>
+				<cfquery name="update" datasource="#application.dsn#">
+					ALTER TABLE #application.dbowner#dmWebskinAncestor ADD webskinTypename VARCHAR(255) NULL
+				</cfquery>
+				<cfquery name="update" datasource="#application.dsn#">
+					ALTER TABLE #application.dbowner#dmWebskinAncestor ADD webskinTemplate VARCHAR(255) NULL
+				</cfquery>
+			</cfdefaultcase>
+		</cfswitch>
+
+		<cfcatch><cfset error=1><cfoutput><strong>field already exist.</strong></p></cfoutput></cfcatch>
+	</cftry>	
+	<cfoutput>complete</p></cfoutput><cfflush>
+	
 	<!--- ============ DATA MIGRATION ============ --->
 	
 	<cfoutput><h1>Upgrade results</h1></cfoutput><cfflush>
