@@ -1,5 +1,5 @@
 <cfprocessingDirective pageencoding="utf-8">
-<cfinclude template="/farcry/core/admin/includes/utilityFunctions.cfm">
+<cfinclude template="/farcry/core/webtop/includes/utilityFunctions.cfm">
 <cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
 
 <cfscript>

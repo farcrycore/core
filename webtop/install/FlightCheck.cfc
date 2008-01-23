@@ -216,7 +216,7 @@
 		
 		<cftry>
 			
-			<cfinclude template="/farcry/core/admin/ping/index.cfm" />
+			<cfinclude template="/farcry/core/webtop/ping/index.cfm" />
 			
 			<cfcatch type="missingInclude">
 				<cfset bSuccess = 0 />
@@ -661,7 +661,7 @@
 				<cfset stWebtop.title = "Missing ""/farcry"" web mapping" />
 				<cfsavecontent variable="sDescription">
 					<cfoutput>
-						<h3>The 'farcry' web mapping/virtual directory must point to <strong>#getTranslatedPath(expandPath("/farcry/core/admin"))#</strong></h3>
+						<h3>The 'farcry' web mapping/virtual directory must point to <strong>#getTranslatedPath(expandPath("/farcry/core/webtop"))#</strong></h3>
 						<p>
 							You must be able to access the Farcry Administration (webtop) using a web mapping/virtual directory in your web server 
 							config (Apache or IIS) of 'farcry'. 
@@ -679,7 +679,7 @@
 										#getProjectSubDirectory()#
 									</cfif>
 								</dt>
-								<dd>/farcry (<strong>virtual directory</strong> pointing to <strong>#getTranslatedPath(expandPath("/farcry/core/admin"))#</strong>)</dd>
+								<dd>/farcry (<strong>virtual directory</strong> pointing to <strong>#getTranslatedPath(expandPath("/farcry/core/webtop"))#</strong>)</dd>
 								<dd>/css</dd>	
 								<dd>/files</dd>
 								<dd>/images</dd>
@@ -744,7 +744,7 @@
 		<cfset var bFarcryMapping = 1 />
 		
 		<cftry>
-			<cfinclude template="/farcry/core/admin/ping/index.cfm" />
+			<cfinclude template="/farcry/core/webtop/ping/index.cfm" />
 			
 			<cfcatch type="missingInclude">
 				<!--- /farcry mapping not found or incorrect --->

@@ -11,7 +11,7 @@
 <cfparam name="bSearchFormSubmitted" default="No">
 <cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
 <cfimport taglib="/farcry/core/tags/widgets/" prefix="widgets">
-<cfinclude template="/farcry/core/admin/includes/libraryFunctions.cfm">
+<cfinclude template="/farcry/core/webtop/includes/libraryFunctions.cfm">
 <!--- if sumbitted then updtae the caller field and close window --->
 <cfif bFormSubmission EQ "yes">
 	<cfset objType = CreateObject("component","#application.types[typename].typepath#")>

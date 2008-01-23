@@ -4,7 +4,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/core/admin/admin/verityManage.cfm,v 1.10 2005/08/16 02:41:08 pottery Exp $
+$Header: /cvs/farcry/core/webtop/admin/verityManage.cfm,v 1.10 2005/08/16 02:41:08 pottery Exp $
 $Author: pottery $
 $Date: 2005/08/16 02:41:08 $
 $Name: milestone_3-0-1 $

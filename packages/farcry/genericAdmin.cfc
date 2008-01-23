@@ -24,7 +24,7 @@ $out:$
 --->
 
 <cfcomponent extends="farcry.core.packages.types.types" displayname="Generic Admin" hint="Functions used to display the Generic Admin section of Farcry. Any types that use the farcry generic admin facility MUST extend this component">
-<cfinclude template="/farcry/core/admin/includes/cfFunctionWrappers.cfm">
+<cfinclude template="/farcry/core/webtop/includes/cfFunctionWrappers.cfm">
 
 <cffunction name="renderSearchFields" hint="Returns HTML for seach fields in generic Admin" returntype="string">
 	<cfargument name="criteria" required="Yes">

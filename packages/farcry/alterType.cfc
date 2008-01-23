@@ -24,7 +24,7 @@ $out:$
 --->
 
 <cfcomponent>
-<cfinclude template="/farcry/core/admin/includes/cfFunctionWrappers.cfm">
+<cfinclude template="/farcry/core/webtop/includes/cfFunctionWrappers.cfm">
 
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 

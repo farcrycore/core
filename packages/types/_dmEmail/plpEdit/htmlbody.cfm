@@ -22,7 +22,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 
 <cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
 <cfimport taglib="/farcry/core/tags/widgets" prefix="widgets">
-<cfinclude template="/farcry/core/admin/includes/utilityFunctions.cfm">
+<cfinclude template="/farcry/core/webtop/includes/utilityFunctions.cfm">
 
 <!--- check for toggle option --->
 <cfif isdefined("form.toggle")>

@@ -362,7 +362,7 @@
 		<h3>UPGRADE COMPLETE</h3>
 		<p>Your old application.cfm is still in place. If you had code in the application.cfm you may wish to consider placing it in one of the relevent projects config files located in <strong>/projectdirectory/config</strong></p>
 	    <ul>
-	    	<li>webserver mappings will have to be updated after the upgrade is complete. You will need to rename the /farcry webserver mapping to /webtop and it now points to /farcry/core/webtop instead of /farcry/core/admin</li>
+	    	<li>webserver mappings will have to be updated after the upgrade is complete. You will need to rename the /farcry webserver mapping to /webtop and it now points to /farcry/core/webtop instead of /farcry/core/webtop</li>
 		    <li>You may experience errors on the upgraded website. The first suggestion after the upgrade is to login to the webtop (using /webtop) go to admin:coapi utilities and make sure any undeployed properties are deployed. This could occur if the project was an early version of 4.x</li>
 			<li>Security has been changed dramatically specifically the login.cfm. The most significant code change that may be required in your project is to replace any references to request.dmsec to application.factory.dmsec</li>
 		    <li>If you have implemented an ldap userdirectory, more information can be found here (http://docs.farcrycms.org/labels/addfavourite.action?entityId=1798)</li>

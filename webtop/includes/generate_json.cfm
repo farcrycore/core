@@ -4,7 +4,7 @@
 <cfparam name="typename" default="">
 <cfif objectid NEQ "" AND typename NEQ "" AND templatename NEQ "">
 	<!--- include the json encode/decode functions --->
-	<cfinclude template="/farcry/core/admin/includes/json.cfm">
+	<cfinclude template="/farcry/core/webtop/includes/json.cfm">
 	<cfset objTypes = CreateObject("component","#application.types[typename].typepath#")>
 	<!--- generate the html to insert --->
 	<cfsavecontent variable="json_content">

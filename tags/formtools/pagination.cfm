@@ -56,7 +56,7 @@ $Developer: Matthew Bryant (mat@daemon.com.au) $
 	</cfif>
 
 	<!--- import function libraries --->
-	<cfinclude template="/farcry/core/admin/includes/utilityFunctions.cfm" >
+	<cfinclude template="/farcry/core/webtop/includes/utilityFunctions.cfm" >
 	<cfset oFormtoolUtil = createObject("component", "farcry.core.packages.farcry.formtools") />
 	
 	<cfset attributes.currentPage = oFormtoolUtil.getCurrentPaginationPage(paginationID=attributes.paginationID, currentPage=attributes.currentPage) />

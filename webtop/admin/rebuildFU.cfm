@@ -5,7 +5,7 @@ $Copyright: Daemon Pty Limited 1995-2006, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/core/admin/admin/Attic/rebuildFU.cfm,v 1.1.2.3 2006/01/23 22:28:00 geoff Exp $
+$Header: /cvs/farcry/core/webtop/admin/Attic/rebuildFU.cfm,v 1.1.2.3 2006/01/23 22:28:00 geoff Exp $
 $Author: geoff $
 $Date: 2006/01/23 22:28:00 $
 $Name: milestone_3-0-1 $

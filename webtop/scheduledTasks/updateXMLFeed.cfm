@@ -6,7 +6,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/core/admin/scheduledTasks/updateXMLFeed.cfm,v 1.6.2.1 2006/05/06 11:29:14 geoff Exp $
+$Header: /cvs/farcry/core/webtop/scheduledTasks/updateXMLFeed.cfm,v 1.6.2.1 2006/05/06 11:29:14 geoff Exp $
 $Author: geoff $
 $Date: 2006/05/06 11:29:14 $
 $Name: p300_b113 $

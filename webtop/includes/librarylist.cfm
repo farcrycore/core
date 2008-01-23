@@ -15,7 +15,7 @@
 	<!--- <cfset returnstruct = objplp.fGetArrayObjects(primaryObjectID)> --->
 
 	<!--- JSON encode and decode functions [jsonencode(str), jsondecode(str)]--->
-	<cfinclude template="/farcry/core/admin/includes/json.cfm">
+	<cfinclude template="/farcry/core/webtop/includes/json.cfm">
 	<cfset arItems = objplp.fGenerateObjectsArray(primaryObjectID,libraryType)>
 <cfoutput><script type="text/javascript">
 var jsonData = '#jsonencode(arItems)#';

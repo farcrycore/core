@@ -24,7 +24,7 @@ $out:$
 
 <cfcomponent displayName="Object Versioning" hint="Functions to handle versioning of objects">
 
-<cfinclude template="/farcry/core/admin/includes/cfFunctionWrappers.cfm">
+<cfinclude template="/farcry/core/webtop/includes/cfFunctionWrappers.cfm">
 	
 	<cffunction name="archiveObject" access="public" returntype="struct" hint="Archives any farcry object">
 		<cfargument name="objectID" type="uuid" required="true">

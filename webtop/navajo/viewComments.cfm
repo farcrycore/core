@@ -2,7 +2,7 @@
 <!--- set up page header --->
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
 <cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
-<cfinclude template="/farcry/core/admin/includes/utilityFunctions.cfm">
+<cfinclude template="/farcry/core/webtop/includes/utilityFunctions.cfm">
 
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 

@@ -21,7 +21,7 @@
 
 		<!--- SETUP PATHS FOR LATER USE --->
 		<cfset skeletonPath = expandPath("/farcry/skeletons") />
-		<cfset installPath = expandPath("/farcry/core/admin/install") />
+		<cfset installPath = expandPath("/farcry/core/webtop/install") />
 
 		<cfif not directoryExists("#skeletonPath#")>
 			<cfdirectory action="create" directory="#skeletonPath#" mode="777" />

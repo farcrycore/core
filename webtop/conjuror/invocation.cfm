@@ -23,8 +23,8 @@ Pseudo:
 <cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
 
 <!--- include function libraries 
-<cfinclude template="/farcry/core/admin/includes/utilityFunctions.cfm">
-<cfinclude template="/farcry/core/admin/includes/cfFunctionWrappers.cfm">
+<cfinclude template="/farcry/core/webtop/includes/utilityFunctions.cfm">
+<cfinclude template="/farcry/core/webtop/includes/cfFunctionWrappers.cfm">
 --->
 
 <cfif isDefined("url.method")>

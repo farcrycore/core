@@ -6,7 +6,7 @@ Daemon Pty Limited 1995-2003
 http://www.daemon.com.au
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/core/admin/includes/countdown.cfm,v 1.4 2004/07/15 01:12:50 brendan Exp $
+$Header: /cvs/farcry/core/webtop/includes/countdown.cfm,v 1.4 2004/07/15 01:12:50 brendan Exp $
 $Author: brendan $
 $Date: 2004/07/15 01:12:50 $
 $Name: milestone_3-0-1 $

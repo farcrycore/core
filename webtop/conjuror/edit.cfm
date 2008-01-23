@@ -5,7 +5,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/core/admin/conjuror/edit.cfm,v 1.1 2005/06/11 07:55:24 geoff Exp $
+$Header: /cvs/farcry/core/webtop/conjuror/edit.cfm,v 1.1 2005/06/11 07:55:24 geoff Exp $
 $Author: geoff $
 $Date: 2005/06/11 07:55:24 $
 $Name: milestone_3-0-1 $
@@ -31,8 +31,8 @@ $out:$
 
 <cfprocessingDirective pageencoding="utf-8" />
 
-<cfinclude template="/farcry/core/admin/includes/utilityFunctions.cfm" />
-<cfinclude template="/farcry/core/admin/includes/cfFunctionWrappers.cfm" />
+<cfinclude template="/farcry/core/webtop/includes/utilityFunctions.cfm" />
+<cfinclude template="/farcry/core/webtop/includes/cfFunctionWrappers.cfm" />
 
 <!--- Legacy support for old pages referring to URL.type--->
 <cfif isDefined("URL.type") AND NOT isDefined("URL.typename")>

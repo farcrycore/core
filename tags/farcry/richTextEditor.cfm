@@ -24,7 +24,7 @@ $out:$
 <cfsetting enablecfoutputonly="yes">
 
 <cfimport taglib="/farcry/core/tags/farcry" prefix="tags">
-<cfinclude template="/farcry/core/admin/includes/utilityFunctions.cfm">
+<cfinclude template="/farcry/core/webtop/includes/utilityFunctions.cfm">
 <cfparam name="attributes.textareaname" default="body">
 <cfparam name="attributes.fieldLabel" default="">
 

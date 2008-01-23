@@ -33,7 +33,7 @@ $out:$
 <cfimport taglib="/farcry/core/tags/navajo/" prefix="nj" />
 <cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry" />
  
-<cfinclude template="/farcry/core/admin/includes/cfFunctionWrappers.cfm">
+<cfinclude template="/farcry/core/webtop/includes/cfFunctionWrappers.cfm">
 
 <cfparam name="url.srcObjectId" default="">
 <cfparam name="url.destObjectId" default="">

@@ -29,7 +29,7 @@ $out:$
 
 <cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
 <cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
-<cfinclude template="/farcry/core/admin/includes/utilityFunctions.cfm">
+<cfinclude template="/farcry/core/webtop/includes/utilityFunctions.cfm">
 
 
 <cfparam name="url.objectId" default="">

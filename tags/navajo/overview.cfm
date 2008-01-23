@@ -23,7 +23,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 <cfimport taglib="/farcry/core/tags/navajo" prefix="nj">
 
 <!--- include function library --->
-<cfinclude template="/farcry/core/admin/includes/cfFunctionWrappers.cfm">
+<cfinclude template="/farcry/core/webtop/includes/cfFunctionWrappers.cfm">
 
 <!--- optional attributes --->
 <cfparam name="attributes.zoom" default="16">

@@ -28,7 +28,7 @@ $Developer: $
 <cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" >
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin" >
 
-<cfinclude template="/farcry/core/admin/includes/utilityFunctions.cfm">
+<cfinclude template="/farcry/core/webtop/includes/utilityFunctions.cfm">
 
 
 <cfparam name="url.primaryObjectID" default="">

@@ -477,13 +477,13 @@ RENDER THE CURRENT STEP
 	
 	
 	<!--- Base --->
-	<cfset baseProjectPath = expandPath('/farcry/core/admin/install/base') />
+	<cfset baseProjectPath = expandPath('/farcry/core/webtop/install/base') />
 	
 	<!--- Webroot --->
 	<cfset webrootPath = expandPath('/') />
 	
 	<!--- Webtop --->
-	<cfset webtopPath = expandPath('/farcry/core/admin') />
+	<cfset webtopPath = expandPath('/farcry/core/webtop') />
 		
 	
 	

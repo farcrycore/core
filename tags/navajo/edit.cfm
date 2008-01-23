@@ -34,8 +34,8 @@ $out:$
 <cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
 
 <!--- import function libraries --->
-<cfinclude template="/farcry/core/admin/includes/utilityFunctions.cfm">
-<cfinclude template="/farcry/core/admin/includes/cfFunctionWrappers.cfm">
+<cfinclude template="/farcry/core/webtop/includes/utilityFunctions.cfm">
+<cfinclude template="/farcry/core/webtop/includes/cfFunctionWrappers.cfm">
 
 <!--- required attributes --->
 <!--- 	looks like refs to URL params are everywhere... 

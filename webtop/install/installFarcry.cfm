@@ -114,13 +114,13 @@ USE OBJECT BROKER?
 
 
 <!--- Base --->
-<cfset installPath = expandPath('/farcry/core/admin/install') />
+<cfset installPath = expandPath('/farcry/core/webtop/install') />
 
 <!--- Webroot --->
 <cfset webrootPath = expandPath('/') />
 
 <!--- Webtop --->
-<cfset webtopPath = expandPath('/farcry/core/admin') />
+<cfset webtopPath = expandPath('/farcry/core/webtop') />
 
 
 

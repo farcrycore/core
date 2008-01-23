@@ -54,7 +54,7 @@ if(NOT isDefined("form.submit") AND bPLPStorage EQ "yes")
 		<div id="utility">
 		<h2>Tips</h2>
 		<!--- <p> --->
-		<cfinclude template="/farcry/core/admin/includes/#displayLibraryType#_tips.cfm">
+		<cfinclude template="/farcry/core/webtop/includes/#displayLibraryType#_tips.cfm">
 		<!--- </p> --->		
 		</div>		
 		<div id="content">

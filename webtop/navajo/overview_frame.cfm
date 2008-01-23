@@ -6,7 +6,7 @@ $Copyright: Daemon Pty Limited 1995-2005, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/core/admin/navajo/overview_frame.cfm,v 1.10 2005/08/28 01:34:54 geoff Exp $
+$Header: /cvs/farcry/core/webtop/navajo/overview_frame.cfm,v 1.10 2005/08/28 01:34:54 geoff Exp $
 $Author: geoff $
 $Date: 2005/08/28 01:34:54 $
 $Name: milestone_3-0-1 $

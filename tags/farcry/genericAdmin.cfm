@@ -38,8 +38,8 @@ $TODO: there shouldn't be anything scoped from outside of the tag! Make this an 
 
 <cfprocessingDirective pageencoding="utf-8">
 
-<cfinclude template="/farcry/core/admin/includes/cfFunctionWrappers.cfm">
-<cfinclude template="/farcry/core/admin/includes/utilityFunctions.cfm">
+<cfinclude template="/farcry/core/webtop/includes/cfFunctionWrappers.cfm">
+<cfinclude template="/farcry/core/webtop/includes/utilityFunctions.cfm">
 
 <!--- default general attributes --->
 <cfparam name="attributes.typename" type="string">

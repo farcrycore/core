@@ -223,7 +223,7 @@ $Developer: Guy (guy@daemon.com.au)$
 		<nj:updateTree objectId="#parentID#">
 <cfif primaryObjectID NEQ "">
 	<!--- JSON encode and decode functions [jsonencode(str), jsondecode(str)]--->
-	<cfinclude template="/farcry/core/admin/includes/json.cfm">
+	<cfinclude template="/farcry/core/webtop/includes/json.cfm">
 	
 	<cfset objplp = CreateObject("component","#application.packagepath#.farcry.plpUtilities")>
 	<cfset objplp.fAddArrayObjects(primaryObjectID,stObj.objectid)>
@@ -384,7 +384,7 @@ function doSubmit(objForm){
 }
 </script><hr />
 <cfif primaryObjectID EQ "">
-<cfinclude template="/farcry/core/admin/includes/image_tips.cfm">
+<cfinclude template="/farcry/core/webtop/includes/image_tips.cfm">
 </cfif>
 <cfif Val(stObj.bAutoGenerateThumbnail) EQ 1>
 <script type="text/javascript">

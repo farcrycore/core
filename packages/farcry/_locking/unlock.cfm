@@ -26,7 +26,7 @@ $out:$
 <cfsetting enablecfoutputonly="yes">
 
 <cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
-<cfinclude template="/farcry/core/admin/includes/utilityFunctions.cfm">
+<cfinclude template="/farcry/core/webtop/includes/utilityFunctions.cfm">
 
 <cfset stLock.bSuccess=true>
 

@@ -122,7 +122,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au) $
 		<input type="hidden" name="plpAction" value="" />
 		<input style="display:none;" type="submit" name="buttonSubmit" value="submit" />
 	</form>
-	<cfinclude template="/farcry/core/admin/includes/QFormValidationJS.cfm"> --->
+	<cfinclude template="/farcry/core/webtop/includes/QFormValidationJS.cfm"> --->
 	</cfoutput>
 	</widgets:plpWrapper>
 <cfelse>

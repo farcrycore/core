@@ -463,7 +463,7 @@
 		</cfif>
 		
 		<cfif not fileExists(expandPath(loc))>
-			<cfoutput>CONSTRUCTOR DOES NOT EXIST. <a href="/farcry/core/admin/install">CLICK HERE</a> TO INSTALL A NEW PROJECT.</cfoutput>
+			<cfoutput>CONSTRUCTOR DOES NOT EXIST. <a href="/farcry/core/webtop/install">CLICK HERE</a> TO INSTALL A NEW PROJECT.</cfoutput>
 			<cfabort />
 		</cfif>
 	

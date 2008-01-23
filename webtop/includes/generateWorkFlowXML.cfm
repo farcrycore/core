@@ -5,7 +5,7 @@
 
 <cfif content_status NEQ "">
 	<!--- JSON encode and decode functions [jsonencode(str), jsondecode(str)]--->
-	<cfinclude template="/farcry/core/admin/includes/json.cfm">
+	<cfinclude template="/farcry/core/webtop/includes/json.cfm">
 	<cfset stForm = StructNew()>
 	<cfset stForm.lcontent_type = lcontent_type>
 	<cfset stForm.content_status = content_status>

@@ -23,9 +23,9 @@ should be provided by the invoked template. --->
 	<!--- load admin from the project --->
 	<cfmodule template="/farcry/projects/#application.projectDirectoryName#/customadmin/#URL.module#" attributecollection="#duplicate(url)#">
 
-<cfelseif fileExists(expandPath("/farcry/core/admin/customadmin/#URL.module#"))>
+<cfelseif fileExists(expandPath("/farcry/core/webtop/customadmin/#URL.module#"))>
 	<!--- load admin from the project --->
-	<cfmodule template="/farcry/core/admin/customadmin/#URL.module#" attributecollection="#duplicate(url)#">
+	<cfmodule template="/farcry/core/webtop/customadmin/#URL.module#" attributecollection="#duplicate(url)#">
 
 <cfelse>
 	<cfsavecontent variable="errorHTML">

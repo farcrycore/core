@@ -11,7 +11,7 @@
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin"> 
 <cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry"> 
 <cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
-<cfinclude template="/farcry/core/admin/includes/libraryFunctions.cfm">
+<cfinclude template="/farcry/core/webtop/includes/libraryFunctions.cfm">
 
 <cfset queryString = "libraryType=#libraryType#&primaryObjectID=#primaryObjectID#">
 <cfif libraryType NEQ "" AND primaryObjectID NEQ "">

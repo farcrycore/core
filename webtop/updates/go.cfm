@@ -5,7 +5,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/core/admin/updates/go.cfm,v 1.2 2005/10/14 00:59:39 geoff Exp $
+$Header: /cvs/farcry/core/webtop/updates/go.cfm,v 1.2 2005/10/14 00:59:39 geoff Exp $
 $Author: geoff $
 $Date: 2005/10/14 00:59:39 $
 $Name: milestone_3-0-1 $

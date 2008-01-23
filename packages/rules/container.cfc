@@ -24,7 +24,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	<cfproperty name="mirrorID" hint="The UUID of a shared container to be used instead of this container; a mirror container if you like." type="UUID" default="">
 	<cfproperty name="displayMethod" hint="The webskin that will encapsulate container content" type="nstring" default=""> 
 	
-	<cfinclude template="/farcry/core/admin/includes/cfFunctionWrappers.cfm">
+	<cfinclude template="/farcry/core/webtop/includes/cfFunctionWrappers.cfm">
 	
 	<cffunction name="createData" access="public" returntype="any" output="false" hint="Creates an instance of a container object.">
 		<cfargument name="stProperties" type="struct" required="true" hint="Structure of properties for the new container instance.">

@@ -79,7 +79,7 @@ $in: [bCacheControl] output cache control headers; default true. $
 
 <cfoutput>
 	<!--- setup javascript source --->
-	<cfinclude template="/farcry/core/admin/includes/countdown.cfm">
+	<cfinclude template="/farcry/core/webtop/includes/countdown.cfm">
 	<script>
 		//browser testing;
 		var ns6 = document.getElementById && ! document.all;

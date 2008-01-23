@@ -6,7 +6,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/core/admin/admin/coapiTypes.cfm,v 1.26 2005/10/13 09:14:53 geoff Exp $
+$Header: /cvs/farcry/core/webtop/admin/coapiTypes.cfm,v 1.26 2005/10/13 09:14:53 geoff Exp $
 $Author: geoff $
 $Date: 2005/10/13 09:14:53 $
 

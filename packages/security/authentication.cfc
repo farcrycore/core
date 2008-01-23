@@ -19,8 +19,8 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
 --->
 
 <cfcomponent displayName="Authentication" hint="Security authentication functions">
-	<cfinclude template="/farcry/core/admin/includes/cfFunctionWrappers.cfm">
-	<cfinclude template="/farcry/core/admin/includes/utilityFunctions.cfm">
+	<cfinclude template="/farcry/core/webtop/includes/cfFunctionWrappers.cfm">
+	<cfinclude template="/farcry/core/webtop/includes/utilityFunctions.cfm">
 	<cfimport taglib="/farcry/core/tags/farcry" prefix="farcry" />
 	
 	<cffunction name="addUserToGroup" hint="Adds a user to a given group in the preffered userdirectory" output="No">

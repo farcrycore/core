@@ -7,7 +7,7 @@
 <cfsetting showdebugoutput="false">
 <cfif action NEQ "" AND lObjectID NEQ "" AND libraryType NEQ "">
 	<!--- JSON encode and decode functions [jsonencode(str), jsondecode(str)]--->
-	<cfinclude template="/farcry/core/admin/includes/json.cfm">
+	<cfinclude template="/farcry/core/webtop/includes/json.cfm">
 	<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
 	<cfset objImage = CreateObject("component","#application.types.dmImage.typepath#")>
 	<cfswitch expression="#action#">

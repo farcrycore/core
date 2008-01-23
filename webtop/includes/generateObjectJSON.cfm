@@ -5,7 +5,7 @@
 
 <cfif objectID NEQ "" AND typename NEQ "">
 	<!--- JSON encode and decode functions [jsonencode(str), jsondecode(str)]--->
-	<cfinclude template="/farcry/core/admin/includes/json.cfm">
+	<cfinclude template="/farcry/core/webtop/includes/json.cfm">
 	<cfset objType = CreateObject("component","#application.types[typename].typepath#")>
 	<cfset stObject = objType.getData(objectid)>
 	<cfset stReturnObject = StructNew()>

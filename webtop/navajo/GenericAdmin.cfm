@@ -8,7 +8,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/core/admin/navajo/GenericAdmin.cfm,v 1.26 2004/07/15 01:51:08 brendan Exp $
+$Header: /cvs/farcry/core/webtop/navajo/GenericAdmin.cfm,v 1.26 2004/07/15 01:51:08 brendan Exp $
 $Author: brendan $
 $Date: 2004/07/15 01:51:08 $
 $Name: milestone_3-0-1 $

@@ -49,7 +49,7 @@ object methods
 	<cfloop query="qCore">
 		<cfset queryAddRow(qTemplates, 1)>
 		<cfset querySetCell(qTemplates, "displayname", "#displayname# #application.adminBundle[session.dmProfile.locale].core#")>
-		<cfset querySetCell(qTemplates, "path", "/farcry/core/admin/scheduledTasks/#methodName#.cfm")>
+		<cfset querySetCell(qTemplates, "path", "/farcry/core/webtop/scheduledTasks/#methodName#.cfm")>
 	</cfloop>
 	
 	<!--- get custom templates --->	

@@ -5,7 +5,7 @@ STEP 1. CHECK FOR CORRECT COLD FUSION [/FARCRY] MAPPING
  --->
 <cftry>
 	<cfsavecontent variable="ping">
-		<cfinclude template="/farcry/core/admin/ping.cfm" />
+		<cfinclude template="/farcry/core/webtop/ping.cfm" />
 	</cfsavecontent>
 	
 	<cfoutput><p>Your Coldfusion [ /farcry ] mapping is currently pointing to #expandpath("/farcry")#</p></cfoutput>

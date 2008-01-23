@@ -4,7 +4,7 @@ $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
 $License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
 
 || VERSION CONTROL ||
-$Header: /cvs/farcry/core/admin/conjuror/objectcomment.cfm,v 1.2 2005/07/14 23:49:33 guy Exp $
+$Header: /cvs/farcry/core/webtop/conjuror/objectcomment.cfm,v 1.2 2005/07/14 23:49:33 guy Exp $
 $Author: guy $
 $Date: 2005/07/14 23:49:33 $
 $Name: milestone_3-0-1 $
