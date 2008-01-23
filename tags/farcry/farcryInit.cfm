@@ -67,7 +67,7 @@ This tag is now used to invoke the updater and can only be run from the local ma
 <cfif structKeyExists(url, "upgrade") and url.upgrade EQ 1>
 	
 	<cfset varibles.projectPath = expandpath('/farcry/projects/#attributes.projectDirectoryName#/www') />
-	<cfset varibles.upgraderPath = expandpath('/farcry/core/admin/updates/b410') />
+	<cfset varibles.upgraderPath = expandpath('/farcry/core/admin/updates/b500') />
 	
 	<cfif directoryExists("#varibles.projectPath#/upgrader5.0.0")>
 		<cfdirectory action="delete" directory="#varibles.projectPath#/upgrader5.0.0" recurse="true" mode="777" />
