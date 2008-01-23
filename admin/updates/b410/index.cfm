@@ -292,8 +292,6 @@
 		
 	<!--- ============ DATA MIGRATION ============ --->
 	
-	<cfapplication name="#form.projectname#" sessionmanagement="true" />
-	
 	<cfoutput><h1>Upgrade results</h1></cfoutput>
 	
 	<cfoutput>categories migrated<br/></cfoutput>
