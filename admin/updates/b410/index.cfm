@@ -281,6 +281,15 @@
 		<cfcatch><cfoutput><p>Error indexing dmCategory into refObjects - perhaps type has not been deployed</p></cfoutput></cfcatch>
 	</cftry>
 		
+		
+	<!--- UPDATE dmCategory in NESTED_TREE_OBJECTS --->
+	
+	<cfquery datasource="#application.dsn#">
+		update #application.dbowner#nested_tree_objects
+		set typename = 'dmCategory'
+		where typename = 'categories'
+	</cfquery>
+		
 	<!--- ============ DATA MIGRATION ============ --->
 	
 	<cfapplication name="#form.projectname#" sessionmanagement="true" />
@@ -320,11 +329,32 @@
 		<cfoutput>Config #configkey# migrated<br/></cfoutput>
 	</cfloop>
 	
+	
+	
+	<!--- CREATE APPLICATION.CFC and FARCRYCONSTRUCTOR.CFM --->
+
+			
+	<cfset projectPathWebroot = expandpath("/farcry/projects/#url.name#/www") />
+	<cffile action="copy" source="#GetDirectoryFromPath(GetCurrentTemplatePath())#/Application.cf_" destination="#projectPathWebroot#/Application.cfc" mode="777" />
+	<cffile action="copy" source="#GetDirectoryFromPath(GetCurrentTemplatePath())#/proxyApplication.cf_" destination="#projectPathWebroot#/proxyApplication.cfc" mode="777" />
+	<cffile action="copy" source="#GetDirectoryFromPath(GetCurrentTemplatePath())#/farcryConstructor.cf_" destination="#projectPathWebroot#/farcryConstructor.cfm" mode="777" />
+	
 	<cfset application.bInit = true />
 	
 <cfelse>
+
+	<cfparam name="url.name" default="" />
+	<cfparam name="url.dsn" default="" />
+	<cfparam name="url.dbType" default="" />
+	<cfparam name="url.dbOwner" default="" />
+	
+	<cfif url.dbtype EQ "mssql" AND NOT len(url.dbowner)>
+		<cfset url.dbowner = "dbo." />
+	</cfif>
+
+	<cfoutput>
 	<form action="" method="POST" id="updateForm" name="updateForm">
-		<h1>Upgrade FarCry database to 4.1</h1>
+		<h1>Upgrade FarCry database to 5.0</h1>		
 		<p>
 		<strong>This script :</strong>
 		<ul>
@@ -343,36 +373,30 @@
 		
 		<table>
 			<tr>
-				<td><label for="projectname">Project name</label></td>
-				<td><input id="projectname" name="projectname" /></td>
+				<th><label for="projectname">Project name</label></th>
+				<td>#url.name#</td>
 			</tr>
 		
 			<tr>
-				<td><label for="dsn">Database</label></td>
-				<td><input id="dsn" name="dsn" /></td>
+				<th><label for="dsn">Database</label></th>
+				<td>#url.dsn#</td>
 			</tr>
 			
 			<tr>
-				<td><label for="dbType">Database Type <em>*</em></label></td>
-				<td>
-					<select name="dbType" id="dbType" class="selectOne" onchange="checkDBType(this.options[this.selectedIndex].value);">
-						<option value="">--Select</option>
-						<option value="mssql">Microsoft SQL Server</option>
-						<option value="ora">Oracle</option>
-						<option value="mysql">MySQL</option>
-						<option value="postgresql">PostgreSQL</option>
-					</select>
-				</td>
+				<th><label for="dbType">Database Type <em>*</em></label></th>
+				<td>#url.dbType#</td>
 			</tr>
 
 			<tr>
-				<td><label for="dbOwner">Database Owner</label></td>
-		      	<td><input type="text" name="dbOwner" id="dbOwner" size="15" maxlength="100" class="inputText" /></td>
+				<th><label for="dbOwner">Database Owner</label></th>
+		      	<td>#url.dbOwner#</td>
 			</tr>
 		</table>
 
-		<input type="submit" name="submit" value="Update" />
+		<input type="submit" name="submit" value="Upgrade" />
 	</form>
+	
+	</cfoutput>
 </cfif>
 
 	</body>

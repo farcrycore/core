@@ -46,6 +46,83 @@
 
 <!--- Option to archive --->
 <cfparam name="attributes.bUseMediaArchive" default="false" />
+	
+<cfif attributes.dbtype EQ "mssql" AND NOT len(attributes.dbowner)>
+	<cfset attributes.dbowner = "dbo." />
+</cfif>
+
+
+
+<!--- 
+FARCRY INIT WAS A 4.0 CUSTOM TAG USED TO INITIALIZE THE APPLICATION.
+5.0 is initialised via the application.cfc
+This tag is now used to invoke the updater and can only be run from the local machine
+
+ --->
+<cfset lAllowHosts = "127.0.0.1" />
+<cfif NOT listFind(lAllowHosts, cgi.remote_addr)>
+	<cfthrow errorcode="upgrade_invalid_host" detail="Your IP address (#cgi.remote_addr#) is not permitted to access the 5.0 updater" extendedinfo="By default, the 5.0 updater is only permitted to the following hosts : 127.0.0.1  To give access to other hosts, then append the desired IP address to the variable lAllowHosts in /farcry/core/tags/farcry/farcryInit.cfm">
+</cfif>
+
+<cfif structKeyExists(url, "upgrade") and url.upgrade EQ 1>
+	
+	<cfset varibles.projectPath = expandpath('/farcry/projects/#attributes.projectDirectoryName#/www') />
+	<cfset varibles.upgraderPath = expandpath('/farcry/core/admin/updates/b410') />
+	
+	<cfif directoryExists("#varibles.projectPath#/upgrader5.0.0")>
+		<cfdirectory action="delete" directory="#varibles.projectPath#/upgrader5.0.0" recurse="true" mode="777" />
+	</cfif>
+
+	<cfdirectory action="create" directory="#varibles.projectPath#/upgrader5.0.0" />
+	<cffile action="copy" source="#varibles.upgraderPath#/Application.cfm" destination="#varibles.projectPath#/upgrader5.0.0" mode="777" />
+	<cffile action="copy" source="#varibles.upgraderPath#/index.cfm" destination="#varibles.projectPath#/upgrader5.0.0" mode="777" />
+	<cffile action="copy" source="#varibles.upgraderPath#/readme.txt" destination="#varibles.projectPath#/upgrader5.0.0" mode="777" />
+	<cffile action="copy" source="#varibles.upgraderPath#/Application.cf_" destination="#varibles.projectPath#/upgrader5.0.0" mode="777" />
+	<cffile action="copy" source="#varibles.upgraderPath#/proxyApplication.cf_" destination="#varibles.projectPath#/upgrader5.0.0" mode="777" />
+	<cffile action="copy" source="#varibles.upgraderPath#/farcryConstructor.cf_" destination="#varibles.projectPath#/upgrader5.0.0" mode="777" />
+	
+	
+	<cffile action="read" file="#varibles.projectPath#/upgrader5.0.0/farcryConstructor.cf_" variable="sFarcryConstructor" />
+
+	<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@Name", "#attributes.name#") />
+	<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@sessionmanagement", "#attributes.sessionmanagement#") />
+	<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@sessiontimeout", "#attributes.sessiontimeout#") />
+	<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@applicationtimeout", "#attributes.applicationtimeout#") />
+	<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@clientmanagement", "#attributes.clientmanagement#") />
+	<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@clientstorage", "#attributes.clientstorage#") />
+	<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@loginstorage", "#attributes.loginstorage#") />
+	<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@scriptprotect", "#attributes.scriptprotect#") />
+	<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@setclientcookies", "#attributes.setclientcookies#") />
+	<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@setdomaincookies", "#attributes.setdomaincookies#") />
+	<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@locales", "#attributes.locales#") />
+	<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@dsn", "#attributes.dsn#") />
+	<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@dbType", "#attributes.dbType#") />
+	<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@dbOwner", "#attributes.dbOwner#") />
+	<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@plugins", "#attributes.plugins#") />
+	<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@projectDirectoryName", "#attributes.projectDirectoryName#") />
+	<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@projectURL", "#attributes.projectURL#") />
+	<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@dsn", "#attributes.dsn#") />
+	<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@dsn", "#attributes.dsn#") />
+	
+	<cffile action="write" file="#varibles.projectPath#/upgrader5.0.0/farcryConstructor.cf_" output="#sFarcryConstructor#" addnewline="false" mode="777" />
+			
+	<cflocation url="#attributes.projectURL#/upgrader5.0.0?Name=#attributes.name#&dsn=#attributes.dsn#&dbtype=#attributes.dbtype#&dbOwner=#attributes.dbOwner#" addtoken="false" />
+<cfelse>
+	<cfoutput>
+	<h1>You are trying to initialise a 4.0 application using a 5.0 core.</h1>
+	<p>
+		Would you like to setup and run the upgrader now now? <br />
+		This can only be run from an IP in the list (#lAllowHosts#)
+	</p>
+	
+	<a href="#cgi.SCRIPT_NAME#?upgrade=1">Continue to Upgrader</a>
+	</cfoutput>
+
+</cfif>
+
+
+<cfabort>
+
 
 
 <cfapplication name="#attributes.name#" 
