@@ -105,10 +105,7 @@ This tag is now used to invoke the updater and can only be run from the local ma
 <cfelse>
 	<cfoutput>
 	<h1>You are trying to initialise a 4.0 application using a 5.0 core.</h1>
-	<p>
-		Would you like to setup and run the upgrader now now? <br />
-		This can only be run from an IP in the list (#lAllowHosts#)
-	</p>
+	<p>Would you like to setup and run the upgrader now now?</p>
 	
 	<a href="#cgi.SCRIPT_NAME#?upgrade=1">Continue to Upgrader</a>
 	</cfoutput>
