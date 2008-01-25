@@ -34,6 +34,13 @@
 		<cfparam name="arguments.stMetadata.ftRenderType" default="Library">
 		<cfparam name="arguments.stMetadata.ftFirstListLabel" default="-- SELECT --">
 		<cfparam name="arguments.stMetadata.ftShowRemoveSelected" default="true">
+		
+		<cfif arguments.stMetadata.ftRenderType eq "Library">
+			<cfparam name="application.stCOAPI.#arguments.typename#.stProps.#arguments.stMetadata.name#.metadata.ftShowLibraryLink" default="true" />
+		<cfelse>
+			<cfparam name="application.stCOAPI.#arguments.typename#.stProps.#arguments.stMetadata.name#.metadata.ftShowLibraryLink" default="false" />
+		</cfif>
+		<cfparam name="arguments.stMetadata.ftShowLibraryLink" default="#application.stCOAPI[arguments.typename].stProps[arguments.stMetadata.name].metadata.ftShowLibraryLink#" />
 
 		<!--- A UUID type MUST have a 'ftJoin' property --->
 		<cfif not structKeyExists(stMetadata,"ftJoin")>

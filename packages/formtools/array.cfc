@@ -39,6 +39,13 @@
 		<cfparam name="arguments.stMetadata.ftRenderType" default="Library" type="string" />
 		<cfparam name="arguments.stMetadata.ftSelectSize" default="10" type="numeric" />
 		<cfparam name="arguments.stMetadata.ftSelectMultiple" default="true" type="string" />
+		
+		<cfif arguments.stMetadata.ftRenderType eq "Library">
+			<cfparam name="application.stCOAPI.#arguments.typename#.stProps.#arguments.stMetadata.name#.metadata.ftShowLibraryLink" default="true" />
+		<cfelse>
+			<cfparam name="application.stCOAPI.#arguments.typename#.stProps.#arguments.stMetadata.name#.metadata.ftShowLibraryLink" default="false" />
+		</cfif>
+		<cfparam name="arguments.stMetadata.ftShowLibraryLink" default="#application.stCOAPI[arguments.typename].stProps[arguments.stMetadata.name].metadata.ftShowLibraryLink#" />
 
 		<!--- An array type MUST have a 'ftJoin' property --->
 		<cfif not structKeyExists(arguments.stMetadata,"ftJoin") or not len(arguments.stMetadata.ftJoin)>
