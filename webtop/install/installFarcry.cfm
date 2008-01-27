@@ -7,6 +7,65 @@
 	<cflocation url="index.cfm" addtoken="false" />
 </cfif>
 
+<!--------------------------------------- 
+DETERMINE THE CURRENT VERSION OF FARCRY
+ --------------------------------------->
+<cfset request.coreVersion = getCoreVersion() />
+
+<cfoutput>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+	<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+	<head>
+		<title>FARCRY INSTALLER.</title>
+		
+		<!--- EXT CSS & JS--->
+		<link rel="stylesheet" type="text/css" href="../js/ext/resources/css/ext-all.css">
+		<script type="text/javascript" src="../js/ext/adapter/ext/ext-base.js"></script>
+		<script type="text/javascript" src="../js/ext/ext-all.js"></script>
+		
+		<!--- INSTALL CSS & JS --->
+		<link rel="stylesheet" type="text/css" href="css/install.css">
+		<script type="text/javascript" src="js/install.js"></script>
+		
+		<style type="text/css">
+		h1 {font-size:120%;color:##116EAF;margin-bottom: 5px;}
+		h2 {font-size:110%;font-weight:bold;margin-bottom: 25px;}
+		a {color: ##116EAF;}
+		body {color:##5A7EB9;font:76%/1.5 arial,tahoma,verdana,sans-serif;}
+		.projectInstallType {border:1px dotted ##e3e3e3;padding:10px;margin:10px;}
+		</style>
+		
+	</head>
+	<body style="background-color: ##5A7EB9;">
+		<div style="border: 8px solid ##eee;background:##fff;width:600px;margin: 50px auto;padding: 20px;color:##666">
+			
+			<h1>INSTALLING YOUR FARCRY APPLICATION</h1>
+			<div id="p2" style="width:100%;"></div>
+			
+			<div id="installComplete"></div>
+			
+			<script type="text/javascript">
+			var pbar = new Ext.ProgressBar({
+		        text:'Ready',
+		        id:'pbar2',
+		        cls:'left-align',
+		        renderTo:'p2'
+		    });
+		    
+			function updateProgressBar(pct, text){
+				pbar.updateProgress(pct, text);
+			}
+			</script>
+</cfoutput>
+
+	
+
+<cfoutput>
+		<p style="text-align:right;border-top:1px solid ##e3e3e3;margin-top:25px;"><small>You are currently running version <strong>#request.coreVersion.major#-#request.coreVersion.minor#-#request.coreVersion.patch#</strong> of Farcry Core.</small></p>
+	</div>
+</body>
+</html>
+</cfoutput>
 
 
 
@@ -133,9 +192,8 @@ USE OBJECT BROKER?
 <!--- Webtop --->
 <cfset webtopPath = expandPath('/farcry/core/webtop') />
 
-
-
-	<cfoutput><div>CREATING PROJECT...</cfoutput><cfflush>
+<cfoutput>#updateProgressBar(value="0.1", text="SETUP: Creating your project")#</cfoutput><cfflush>
+	
 		
 	<cfset oZip = createObject("component", "farcry.core.packages.farcry.zip") />
 
@@ -162,12 +220,12 @@ USE OBJECT BROKER?
 	
 	<cffile action="write" file="#farcryProjectsPath#/#form.applicationName#/www/farcryConstructor.cfm" output="#farcryConstructorContent#" addnewline="false" mode="777" />	
 
-	<cfoutput>COMPLETE</div></cfoutput><cfflush>
+
 
 
 	<cfswitch expression="#form.projectInstallType#">
 	<cfcase value="subDirectory">
-		<cfoutput><div>COPYING PROJECT TO SUBDIRECTORY UNDER THE WEBROOT...</cfoutput><cfflush>
+		<cfoutput>#updateProgressBar(value="0.2", text="SETUP: Copying your project to a subdirectory under the webroot")#</cfoutput><cfflush>
 		
 		
 		<cfset projectWebrootPath = "#webrootPath#/#form.applicationName#" />
@@ -182,10 +240,10 @@ USE OBJECT BROKER?
 				
 <!--- 	
 		<cfset directoryCopy(source="#farcryProjectsPath#/#form.applicationName#/www", destination="#projectWebrootPath#", nameconflict="overwrite") /> --->
-		<cfoutput>COMPLETE</div></cfoutput><cfflush>
+
 	</cfcase>
 	<cfcase value="standalone">
-		<cfoutput><div>COPYING PROJECT TO THE WEBROOT...</cfoutput><cfflush>
+		<cfoutput>#updateProgressBar(value="0.2", text="SETUP: Copying your project to the webroot")#</cfoutput><cfflush>
 		<cfset projectWebrootPath = "#webrootPath#" />
 		<cfset projectWebrootURL = "http://#cgi.server_name#" />
 		
@@ -196,7 +254,7 @@ USE OBJECT BROKER?
 		<cfdirectory action="rename" directory="#farcryProjectsPath#/#form.applicationName#/www" newdirectory="#farcryProjectsPath#/#form.applicationName#/wwwCopiedToWebroot" />
 		<!--- 
 		<cfset directoryCopy(source="#farcryProjectsPath#/#form.applicationName#/www", destination="#projectWebrootPath#", nameconflict="overwrite") /> --->
-		<cfoutput>COMPLETE</div></cfoutput><cfflush>
+
 	</cfcase>
 	<cfcase value="CFMapping">
 		<cfset projectWebrootURL = "http://#cgi.server_name#" />
@@ -238,16 +296,6 @@ USE OBJECT BROKER?
 	<cfset request.bSuccess = true />
 	
 	<cftry>
-			
-	    <cfoutput>
-			<div id="content">
-			<h2>Installing your FarCry project</h2>
-		</cfoutput>
-	    <cfflush />
-
-	
-
-
 		
 	    <!--- install farcry --->
 	    <cfinclude template="includes/_installFarcry.cfm" />
@@ -273,10 +321,22 @@ USE OBJECT BROKER?
 	</cfif>
 	
 	<cfif request.bSuccess>
+	
+		<!--- 
+		This sets up a cookie on the users system so that if they try and login to the webtop and the webtop can't determine which project it is trying to update,
+		it will know what projects they will be potentially trying to edit.  --->
+		<cfparam name="server.lFarcryProjects" default="" />
+		<cfif not listFindNoCase(server.lFarcryProjects, application.projectDirectoryName)>
+			<cfset server.lFarcryProjects = listAppend(server.lFarcryProjects, application.projectDirectoryName) />
+		</cfif>	
+		<cfset cookie.currentFarcryProject = application.projectDirectoryName />	
+	
+		<cfoutput>#updateProgressBar(value="1", text="INSTALLATION SUCCESS")#</cfoutput><cfflush>
+		
+		<cfsavecontent variable="installCompleteHTML">
 		<cfoutput>
 			<div>
 				<div class="item">
-					<h3>Installation Success!</h3>
 					<p>Default Farcry credentials (sa) are:</p>
 					<ul>
 						<li>U: farcry</li>
@@ -289,14 +349,25 @@ USE OBJECT BROKER?
 				</div>
 				<div class="itemButtons">
 					<form name="installComplete" id="installComplete" method="post" action="">
-						<input type="button" name="login" value="LOGIN TO FARCRY" onClick="alert('Your default Farcry login is\n\n u: farcry\n p: farcry');window.open('#projectWebrootURL#/webtop')" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle'" onMouseOut="this.className='normalbttnstyle'" />
-						<input type="button" name="view" value="VIEW SITE" onClick="window.open('#projectWebrootURL#?updateapp=1')" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle'" onMouseOut="this.className='normalbttnstyle'" />
+						<input type="button" name="login" value="LOGIN TO FARCRY" onClick="alert('Your default Farcry login is\n\n u: farcry\n p: farcry');window.open('#application.url.webtop#')" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle'" onMouseOut="this.className='normalbttnstyle'" />
+						<input type="button" name="view" value="VIEW SITE" onClick="window.open('#application.url.webroot#?updateapp=1')" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle'" onMouseOut="this.className='normalbttnstyle'" />
 					</form><br /> 
 				</div>
 			</div>
-		</div>
+
 		</cfoutput>
+		</cfsavecontent>
+		
+		<cfoutput>
+		<script type="text/javascript">
+			Ext.get('installComplete').dom.innerHTML = '#jsstringformat(installCompleteHTML)#';
+		</script>
+		</cfoutput>
+		
+		<cfset structDelete(session, "stFarcryInstall") />
 	</cfif>
+
+
 	
 	
 <!--- REMOVE .SVN FOLDERS FROM ENTIRE DIRECTORY --->
@@ -391,3 +462,42 @@ USE OBJECT BROKER?
 	
 </cffunction>
 
+
+<cffunction name="getCoreVersion" access="private" returntype="struct" hint="returns a structure containing the major, minor and patch version of farcry.">
+	
+	<cfset var coreVersion = structNew() />
+	
+	<cftry>	
+		<cffile action="read" file="#expandPath('/farcry/core/major.version')#" variable="coreVersion.major">
+		<cffile action="read" file="#expandPath('/farcry/core/minor.version')#" variable="coreVersion.minor">
+		<cffile action="read" file="#expandPath('/farcry/core/patch.version')#" variable="coreVersion.patch">
+
+		<cfcatch>		
+			<cfset coreVersion.major = 0 />
+			<cfset coreVersion.minor = 0 />
+			<cfset coreVersion.patch = 0 />
+		</cfcatch>
+	</cftry>
+	
+	<cfreturn coreVersion>
+</cffunction>
+
+
+
+<cffunction name="updateProgressBar" access="public" output="true" returntype="void" hint="Updates the installer progress bar">
+	<cfargument name="value" required="false" />
+	<cfargument name="text" required="false" />
+	
+	<cfparam name="request.stUpdateProgress" default="#structNew()#" />
+	<cfparam name="request.stUpdateProgress.value" default="0" />
+	<cfparam name="request.stUpdateProgress.text" default="" />
+	
+	<cfif structKeyExists(arguments, "value") AND isNumeric(arguments.value)>
+		<cfset request.stUpdateProgress.value = arguments.value />
+	</cfif>
+	<cfif structKeyExists(arguments, "text")>
+		<cfset request.stUpdateProgress.text = arguments.text />
+	</cfif>
+	
+	<cfoutput><script type="text/javascript">updateProgressBar(#request.stUpdateProgress.value#, '#request.stUpdateProgress.text#');</script></cfoutput><cfflush>
+</cffunction>

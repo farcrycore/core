@@ -34,6 +34,13 @@ $out:$
 	
 	<cfparam name="url.ud" default="#application.security.getDefaultUD()#" />
 	
+	
+	<cfif structKeyExists(url, "farcryProject") AND structKeyExists(server, "lFarcryProjects") AND structKeyExists(cookie, "currentFarcryProject") AND listFindNoCase(server.lFarcryProjects, url.farcryProject) AND cookie.currentFarcryProject NEQ url.farcryProject>
+		<cfset cookie.currentFarcryProject = url.farcryProject />
+		<cflocation url="#cgi.SCRIPT_NAME#?#cgi.query_string#" addtoken="false" />
+	</cfif>
+	
+	
 	<cfset stResult = application.security.authenticate() />
 	
 	<cfif structisempty(stResult) and isdefined("url.error") and url.error eq "draft">

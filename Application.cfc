@@ -6,6 +6,7 @@
 	<cfset this.projectConstructorLocation = getProjectConstructorLocation(plugin="webtop") />
 
 	<cfinclude template="#this.projectConstructorLocation#" />	
+
 	
 	<cfsetting enablecfoutputonly="false" />
 	
@@ -168,6 +169,15 @@
 		
 		<cfinclude template="/farcry/core/tags/farcry/_farcryOnRequestEnd.cfm">
 		
+		<!--- 
+		This sets up a cookie on the users system so that if they try and login to the webtop and the webtop can't determine which project it is trying to update,
+		it will know what projects they will be potentially trying to edit.  --->
+		<cfparam name="server.lFarcryProjects" default="" />
+		<cfif not listFindNoCase(server.lFarcryProjects, application.projectDirectoryName)>
+			<cfset server.lFarcryProjects = listAppend(server.lFarcryProjects, application.projectDirectoryName) />
+		</cfif>	
+		<cfset cookie.currentFarcryProject = application.projectDirectoryName />
+
 		<cfreturn />
 
 	</cffunction>
@@ -420,52 +430,40 @@
 		
 		<cfargument name="plugin" type="string" hint="The name of the plugin.">
 	
-		<cfset var scriptName = cgi.SCRIPT_NAME />	
+		
 		<cfset var loc = "" />
-		<cfset var virtual = "" />
-		<cfset var projectName = "" />
-		<cfset var pos = 0 />
+		<cfset var virtualDirectory = "" />
 		
-		<!--- Try and determine if a webserver virtual has been used. --->
-		
-		<cfset pageName = listLast(scriptName, "/") />		
-		<cfset pagePos = findNoCase("/#pageName#", scriptName) />
-		<cfif pagePos GT 1>
-			<cfset scriptName = mid(scriptName, 1, pagePos - 1) />
-		<cfelse>
-			<cfset scriptName = "" />
+		<!--- Get the first directory after the url if there is one (ie. if its just index.cfm then we know we are just under the webroot) --->
+		<cfif listLen(cgi.SCRIPT_NAME, "/") GT 1>
+			<cfset virtualDirectory = listFirst(cgi.SCRIPT_NAME, "/") />
+				
+			<!--- If the first directory name is the same name as the plugin, then we assume we are running the project from the webroot --->
+			<cfif virtualDirectory EQ arguments.plugin>
+				<cfset virtualDirectory = "" />
+			</cfif>					
 		</cfif>
 
-		
-		<cfset pluginPos = findNoCase("/#arguments.plugin#", scriptName) />	
+		<!--- If we ended up with a virtual directory we check to see if there is a farcryConstructor --->
+		<cfif len(virtualDirectory) AND fileExists(expandPath("/#virtualDirectory#/farcryConstructor.cfm"))>
+			<cfset loc = trim("/#virtualDirectory#/farcryConstructor.cfm") />
 
-		<cfif pluginPos GT 1>
-			<cfset scriptName = mid(scriptName, 1, pluginPos - 1) />
-	
-			<cfif left(scriptName,1) EQ "/">
-				<cfset projectName = mid(scriptName, 2, len(scriptName)) />
-			<cfelse>
-				<cfset projectName = scriptName />
+		<cfelseif fileExists(expandPath("/farcryConstructor.cfm"))>
+			<!--- Otherwise we check in the webroot --->
+			<cfset loc = trim("/farcryConstructor.cfm") />
+
+		<cfelseif arguments.plugin EQ "webtop" AND structKeyExists(cookie, "currentFarcryProject")>
+		
+			<cfif fileExists(expandPath("/#currentFarcryProject#/farcryConstructor.cfm"))>
+				<cfset loc = trim("/#currentFarcryProject#/farcryConstructor.cfm") />
 			</cfif>
 		</cfif>
 		
-		<cfif len(projectName)>
-			<!--- It looks like a virtual has been used. We will assume the virtual is the name of the projects folder --->
-			<!--- <cfset loc = trim("/farcry/projects/#projectName#/www/farcryConstructor.cfm") /> --->
-			<cfset loc = trim("/#projectName#/farcryConstructor.cfm") />
-		<cfelse>
-			<cfset loc = "/farcryConstructor.cfm" />
-		</cfif>
-		
-		<cfif not fileExists(loc)>
-			<!--- check cookie caper --->
-			
-		</cfif>
-		
-		<cfif not fileExists(expandPath(loc))>
+		<cfif not len(loc)>		
 			<cfoutput>CONSTRUCTOR DOES NOT EXIST. <a href="/farcry/core/webtop/install">CLICK HERE</a> TO INSTALL A NEW PROJECT.</cfoutput>
-			<cfabort />
+			<cfabort />		
 		</cfif>
+
 	
 		<cfreturn loc />
 	</cffunction>
@@ -496,6 +494,7 @@
 		<cfparam name="this.plugins" default="farcrycms"  />
 		
 		<cfparam name="this.projectURL" default="" />
+		<cfparam name="this.webtopURL" default="" />
 		
 		
 		<cfparam name="this.bObjectBroker" default="true" />
@@ -520,6 +519,20 @@
 		<cfif application.dbtype EQ "mssql" AND NOT len(this.dbowner)>
 			<cfset application.dbowner = "dbo." />
 		</cfif>
+
+		<!----------------------------------------
+		 WEB URL PATHS
+		 ---------------------------------------->
+		<cfset application.url.webroot = this.projectURL />
+		<cfif len(this.webtopURL)>
+			<cfset application.url.webtop = this.webtopURL />
+		<cfelse>
+			<cfset application.url.webtop = "#application.url.webroot#/webtop" />
+		</cfif>
+		<cfset application.url.farcry = "#application.url.webtop#" /><!--- Legacy variable. Developers should use application.url.webtop --->
+		<cfset application.url.imageRoot = "#application.url.webroot#">
+		<cfset application.url.fileRoot = "#application.url.webroot#/files">
+		
 		
 		<!----------------------------------------
 		 SET THE MAIN PHYSICAL PATH INFORMATION
@@ -528,22 +541,19 @@
 		<cfset application.path.core = expandpath("/farcry/core") />
 		<cfset application.path.plugins = expandpath("/farcry/plugins") />
 		
-		<cfset application.path.defaultFilePath = "#application.path.project#/www/files">
+		<cfif len(application.url.webroot)>
+			<cfset application.path.webroot = expandPath("#application.url.webroot#")>
+		<cfelse>
+			<cfset application.path.webroot = expandPath("/")><!--- Doesnt work if empty string. Have to set to  "/" otherwise it returns cf root --->
+		</cfif>
+		
+		<cfset application.path.defaultFilePath = "#application.path.webroot#/files">
 		<cfset application.path.secureFilePath = "#application.path.project#/securefiles">		
 		
-		<cfset application.path.imageRoot = "#application.path.project#/www">
+		<cfset application.path.imageRoot = "#application.path.webroot#">
 		
 		<cfset application.path.mediaArchive = "#application.path.project#/mediaArchive">
 		
-		
-		<!----------------------------------------
-		 WEB URL PATHS
-		 ---------------------------------------->
-		<cfset application.url.webroot = this.projectURL />
-		<cfset application.url.farcry = "#this.projectURL#/webtop" />
-		<cfset application.url.webtop = "#application.url.farcry#" />
-		<cfset application.url.imageRoot = "#application.url.webroot#">
-		<cfset application.url.fileRoot = "#application.url.webroot#/files">
 		
 		
 		<!----------------------------------------

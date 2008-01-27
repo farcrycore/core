@@ -3,7 +3,7 @@
 <!--- @@description: Creates a select list so that users can log into the supported user directories --->
 
 <cfif thistag.ExecutionMode eq "Start">
-	<cfif listlen(application.security.getAllUD())>
+	<cfif listlen(application.security.getAllUD()) GT 1>
 		<cfoutput><fieldset class="formSection"></cfoutput>
 		
 		<cfoutput><select id="selectuserdirectories" onchange="window.location='#application.url.farcry#/login.cfm?returnUrl=#urlencodedformat(url.returnUrl)#&ud='+this.value;"></cfoutput>

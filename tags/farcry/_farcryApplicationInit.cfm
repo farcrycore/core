@@ -34,7 +34,7 @@ test for the existance of each and act accordingly
 	<cfset application.path.defaultFilePath = application.defaultFilePath>
 <cfelse>
 	<!--- Defaults --->
-	<cfset application.path.defaultFilePath = "#application.path.project#/www/files">
+	<cfset application.path.defaultFilePath = "#application.path.webroot#/files">
 	<!--- Deprecated in b230; Use application.path.defaultFilePath instead --->
 	<cfset application.defaultFilePath = application.path.defaultFilePath>
 </cfif>		 
@@ -46,7 +46,7 @@ test for the existance of each and act accordingly
 	<cfset application.path.defaultImagePath = application.defaultImagePath>
 <cfelse>
 	<!--- Defaults --->
-	<cfset application.path.defaultImagePath = "#application.path.project#/www/images">
+	<cfset application.path.defaultImagePath = "#application.path.webroot#/images">
 	<!--- Deprecated in b230; Use application.path.defaultImagePath instead --->
 	<cfset application.defaultImagePath = application.path.defaultImagePath>
 </cfif>		 

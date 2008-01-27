@@ -167,8 +167,9 @@
 				<cfset databaseTypeName = "Oracle" />
 				<!--- run an oracle specific query --->
 				<cfquery name="qCheckDSN" datasource="#arguments.DSN#">
-				SELECT 'patrick' AS theMAN from dual
+				SELECT 'patrick' AS theMAN from #arguments.DBOwner#dual
 				</cfquery>
+				<cfdump var="#qCheckDSN#"><cfabort>
 			</cfcase>
 			<cfcase value="MSSQL">
 				<cfset databaseTypeName = "MSSQL" />
@@ -177,6 +178,19 @@
 				SELECT	count(*) AS theCount
 				FROM	#arguments.DBOwner#sysobjects
 				</cfquery>
+			</cfcase>
+			<cfcase value="MySQL">								
+				<!--- test temp table creation --->
+				<cfquery name="qTestPrivledges" datasource="#arguments.dsn#">
+					create temporary table tblTemp1
+					(
+					test  VARCHAR(255) NOT NULL
+					)
+				</cfquery>	
+				<!--- delete temp table --->
+				<cfquery name="qDeleteTemp" datasource="#arguments.dsn#">
+					DROP TABLE IF EXISTS tblTemp1
+				</cfquery>							
 			</cfcase>
 			</cfswitch>
 			

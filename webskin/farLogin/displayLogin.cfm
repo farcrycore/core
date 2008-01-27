@@ -61,11 +61,32 @@
 			</a>
 			#application.config.general.siteTitle#
 			<span>#application.config.general.siteTagLine#</span>
+
 		</h1>
+
 </cfoutput>
 		
 		<ft:form>
+			<cfif structKeyExists(server, "lFarcryProjects") and listLen(server.lFarcryProjects) GT 1>
+				<cfoutput><fieldset class="formSection"></cfoutput>
+				
+				<cfoutput>
+					<select id="selectFarcryProject" onchange="window.location='#application.url.webtop#/login.cfm?returnUrl=#urlencodedformat(url.returnUrl)#&farcryProject='+this.value;">						
+						<cfloop list="#server.lFarcryProjects#" index="thisProject">
+							<option value="#thisProject#"<cfif cookie.currentFarcryProject eq thisProject> selected</cfif>>LOGIN TO: #thisProject#</option>
+						</cfloop>						
+					</select>
+				</cfoutput>
+
+				
+				<cfoutput></fieldset></cfoutput>		
+			</cfif>
+			
+		
 			<sec:SelectUDLogin />
+			
+
+			
 			
 			<ft:object typename="farLogin" />
 			
@@ -81,9 +102,11 @@
 		</ft:form>
 
 <cfoutput>
+
 		<h3><img src="images/powered_by_farcry_watermark.gif" />Tell it to someone who cares</h3>
-	
+
 	</div>
+	
 </cfoutput>
 	
 </ft:form>

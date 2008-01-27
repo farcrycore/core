@@ -1,44 +1,21 @@
-<html>
-	<head>
-		<title>Update to 5.0</title>
-		<script type="text/javascript">
-			function blocking(nr, status)
-			{
-				var current;		
-				current = (status) ? 'block' : 'none';
-				
-				if (document.layers)
-				{
-					document.layers[nr].display = current;
-				}
-				else if (document.all)
-				{
-					document.all[nr].style.display = current;
-				}
-				else if (document.getElementById)
-				{
-					document.getElementById(nr).style.display = current;
-				}
-			}
-			
-			function checkDBType(dbType)
-			{
-				//alert(dbType);
-				if(dbType == "postgresql" || dbType == "mysql" || dbType == "")
-				{
-					document.updateForm.dbOwner.value='';
-					//hide DB Owner field for relevant db types
-					blocking('divDBOwner', 0);		
-				}
-				else
-				{
-					document.updateForm.dbOwner.value='dbo.';
-					blocking('divDBOwner', 1);
-				}
-			}
-		</script>
-	</head>
-	<body>
+<cfoutput>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head> 
+<title>FarCry 5.0 Updater</title>
+<style type="text/css">
+h1 {font-size:120%;color:##116EAF;margin-bottom: 20px;}
+h2 {font-size:110%;font-weight:bold;margin-bottom: 5px;}
+a {color: ##116EAF;}
+</style>
+</head>
+<body style="background-color: ##5A7EB9;">
+	<div style="border: 8px solid ##eee;background:##fff;width:37em;margin: 50px auto;padding: 20px;color:##666">
+		<h1>Upgrade FarCry database to 5.0</h1>	
+		<div style="margin-left:20px;">
+</cfoutput>				
+
+
 
 <cfif structkeyexists(form,"submit")>
 	<cfapplication name="#form.projectname#_UpgradeV5" sessionmanagement="true" sessiontimeout="#createTimespan(0,0,2,0)#" />
@@ -46,7 +23,7 @@
 		<cfsetting requesttimeout="1620" />
 		
 		
-		<cfoutput><h1>RUNNING MIGRATION.... PLEASE BE PATIENT...</h1></cfoutput><cfflush>
+		<cfoutput><h2>RUNNING MIGRATION.... PLEASE BE PATIENT...</h2></cfoutput><cfflush>
 	
 	
 	<!--- Project directory name can be changed from the default which is the applicationname --->
@@ -215,7 +192,7 @@
 	
 	
 	<!--- CONFIG --->
-	<cfoutput><p>updating cofig...</cfoutput><cfflush>
+	<cfoutput><p>updating config...</cfoutput><cfflush>
 	<cfif NOT alterType.isCFCDeployed(typename="farConfig")>
 		<cfset createobject("component","farcry.core.packages.types.farConfig").deployType(btestRun="false") />
 	</cfif>
@@ -341,7 +318,7 @@
 	
 	<!--- ============ DATA MIGRATION ============ --->
 	
-	<cfoutput><h1>Upgrade results</h1></cfoutput><cfflush>
+	<cfoutput><h1>Fetching results...</h1></cfoutput><cfflush>
 	
 	
 	<!--- SECURITY --->
@@ -388,12 +365,17 @@
 	<cfset application.bInit = true />
 	
 	<cfoutput>
-		<h3>UPGRADE COMPLETE</h3>
+		<h2>UPGRADE COMPLETE</h2>
 		<p>Your old application.cfm is still in place. If you had code in the application.cfm you may wish to consider placing it in one of the relevent projects config files located in <strong>/projectdirectory/config</strong></p>
 	    <ul>
 	    	<li>webserver mappings will have to be updated after the upgrade is complete. You will need to rename the /farcry webserver mapping to /webtop and it now points to /farcry/core/webtop instead of /farcry/core/webtop</li>
 		    <li>You may experience errors on the upgraded website. The first suggestion after the upgrade is to login to the webtop (using /webtop) go to admin:coapi utilities and make sure any undeployed properties are deployed. This could occur if the project was an early version of 4.x</li>
-			<li>Security has been changed dramatically specifically the login.cfm. The most significant code change that may be required in your project is to replace any references to request.dmsec to application.factory.dmsec</li>
+			<li>Security has been changed dramatically specifically the login.cfm. The most significant code change that may be required in your project is to replace any references to:
+				<ul>
+					<li><strong>request.dmsec</strong> to <strong>application.factory.dmsec</strong></li>
+					<li><strong>request.factory</strong> to <strong>application.factory</strong></li>
+				</ul>
+			</li>
 		    <li>If you have implemented an ldap userdirectory, more information can be found here (http://docs.farcrycms.org/labels/addfavourite.action?entityId=1798)</li>
 		    <li>If you had code in the application.cfm you may wish to consider placing it in one of the relevent projects config files located in /projectdirectory/config The files available are:
 		          <ul>
@@ -403,6 +385,8 @@
 		          </ul>
 			</li>
 		</ul>
+		
+		<p><a href="/index.cfm">Visit upgraded website</a></p>
 	</cfoutput>
 <cfelse>
 
@@ -417,53 +401,56 @@
 
 	<cfoutput>
 	<form action="" method="POST" id="updateForm" name="updateForm">
-		<h1>Upgrade FarCry database to 5.0</h1>		
+			
 		<p>
 		<strong>This script :</strong>
 		<ul>
-			<li>Deploys new security types</li>
-			<li>Migrates current security data</li>
-			<li>Migrates config data</li>
-			<li>Creates the new farLog table</li>
-			<li>Creates the new farWorkflowDef table</li>
-			<li>Creates the new farWorkflow table</li>
-			<li>Creates the new farTask table</li>
-			<li>Creates the new farTaskDef table</li>
-			<li>Migrates current category data</li>
+			<li>Deploys the new <strong>security</strong> types</li>
+			<li>Deploys the new <strong>Log</strong> types</li>
+			<li>Deploys the new <strong>Workflow</strong> types</li>
+			<li>Migrates the current <strong>security</strong> data</li>
+			<li>Migrates the current <strong>config</strong> data</li>
+			<li>Migrates the current <strong>category</strong> data</li>
 		</ul>
 		</p>
-		<p>NOTE: The old data will be left in place, but if the new tables already exist they will be wiped as part of the upgrade.</p>
-		
+		<p><strong>NOTE</strong>: The old data will be left in place, but if the new tables already exist they will be wiped as part of the upgrade.</p>
+		<div style="border:1px dotted ##e3e3e3;padding:10px;margin:10px;">
 		<table>
 			<tr>
-				<th><label for="projectname">Project name</label></th>
+				<td><strong>Project name</strong></td>
 				<td>#url.name#</td>
 			</tr>
 		
 			<tr>
-				<th><label for="dsn">Database</label></th>
+				<td><strong>Database DSN Name</strong></td>
 				<td>#url.dsn#</td>
 			</tr>
 			
 			<tr>
-				<th><label for="dbType">Database Type <em>*</em></label></th>
+				<td><strong>Database Type</strong></td>
 				<td>#url.dbType#</td>
 			</tr>
 
 			<tr>
-				<th><label for="dbOwner">Database Owner</label></th>
+				<td><strong>Database Owner</strong></td>
 		      	<td>#url.dbOwner#</td>
 			</tr>
 		</table>
-		<input type="hidden" name="projectName" value="#url.name#" />
-		<input type="hidden" name="dsn" value="#url.dsn#" />
-		<input type="hidden" name="dbType" value="#url.dbType#" />
-		<input type="hidden" name="dbOwner" value="#url.dbOwner#" />
-		<input type="submit" name="submit" value="Upgrade" />
+			<input type="hidden" name="projectName" value="#url.name#" />
+			<input type="hidden" name="dsn" value="#url.dsn#" />
+			<input type="hidden" name="dbType" value="#url.dbType#" />
+			<input type="hidden" name="dbOwner" value="#url.dbOwner#" />
+			<input type="submit" name="submit" value="Upgrade Now" />
+		</div>
 	</form>
 	
 	</cfoutput>
 </cfif>
 
-	</body>
+
+<cfoutput>
+		</div>
+	</div>
+</body>
 </html>
+</cfoutput>

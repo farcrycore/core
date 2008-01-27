@@ -28,7 +28,11 @@
 	</head>
 	<body style="background-color: ##5A7EB9;">
 		<div style="border: 8px solid ##eee;background:##fff;width:600px;margin: 50px auto;padding: 20px;color:##666">
+
 </cfoutput>
+
+
+
 
 
 
@@ -117,14 +121,16 @@ SAVE AND CONTROL THE INSTAL PROCESS WIZARD
 
 
 <cf_processStep step="3">
-	<cfif not len(session.stFarcryInstall.stConfig.skeleton)>
+	<cfif not len(trim(session.stFarcryInstall.stConfig.skeleton))>
 		<cf_redoStep field="skeleton" errorTitle="Select Skeleton" errorDescription="You must select a skeleton in order to proceed." />
+	<cfelse>
+		<cfset oManifest = createObject("component", "#session.stFarcryInstall.stConfig.skeleton#.install.manifest")>
+		
+		<cfif len(oManifest.lRequiredPlugins) AND not len(session.stFarcryInstall.stConfig.plugins)>
+			<cfset session.stFarcryInstall.stConfig.plugins =  oManifest.lRequiredPlugins />
+		</cfif>	
 	</cfif>
-	<cfset oManifest = createObject("component", "#session.stFarcryInstall.stConfig.skeleton#.install.manifest")>
 	
-	<cfif len(oManifest.lRequiredPlugins) AND not len(session.stFarcryInstall.stConfig.plugins)>
-		<cfset session.stFarcryInstall.stConfig.plugins =  oManifest.lRequiredPlugins />
-	</cfif>
 	
 </cf_processStep>
 
@@ -238,7 +244,7 @@ RENDER THE CURRENT STEP
 		</div>
 		<div class="clear"></div>
 	</div>
-	
+	<input type="hidden" name="DBOwner" value=""><!--- Think makes sure that at the very least, an empty string is set for dbowner --->
 	</cfoutput>
 	
 	<cfoutput>
@@ -256,7 +262,7 @@ RENDER THE CURRENT STEP
 			if(this.dom.value == "postgresql" || this.dom.value == "mysql" || this.dom.value == "")
 			{
 				var DBOwner = Ext.get('DBOwner');
-				DBOwner.set({value:''});			
+				DBOwner.dom.value = '';			
 				
 				var el = Ext.get('divDBOwner');	
 				el.ghost('b', {
@@ -270,7 +276,7 @@ RENDER THE CURRENT STEP
 			else if (this.dom.value == "ora")
 			{
 				var DBOwner = Ext.get('DBOwner');
-				DBOwner.set({value:'username'},false);			
+				DBOwner.dom.value = 'username';	
 					
 				var el = Ext.get('divDBOwner');	
 				el.slideIn('t', {
@@ -283,7 +289,7 @@ RENDER THE CURRENT STEP
 			{		
 				
 				var DBOwner = Ext.get('DBOwner');
-				DBOwner.set({value:'dbo.'},false);			
+				DBOwner.dom.value = 'dbo.';			
 					
 				var el = Ext.get('divDBOwner');	
 				el.slideIn('t', {
@@ -309,7 +315,7 @@ RENDER THE CURRENT STEP
 				<cfloop query="qSkeletons">
 					<cfif qSkeletons.type EQ "DIR" and fileExists("#skeletonPath#/#qSkeletons.name#/install/manifest.cfc")>
 						<cfset oManifest = createObject("component", "farcry.skeletons.#qSkeletons.name#.install.manifest")>
-						<option value="farcry.skeletons.#qSkeletons.name#" <cfif qSkeletons.name EQ session.stFarcryInstall.stConfig.skeleton>selected</cfif>>
+						<option value="farcry.skeletons.#qSkeletons.name#" <cfif session.stFarcryInstall.stConfig.skeleton EQ "farcry.skeletons.#qSkeletons.name#">selected</cfif>>
 							#oManifest.name#
 							- Supported: #oManifest.isSupported(coreMajorVersion="#request.coreVersion.major#",coreMinorVersion="#request.coreVersion.minor#",corePatchVersion="#request.coreVersion.patch#")#
 						</option>
@@ -319,7 +325,7 @@ RENDER THE CURRENT STEP
 					<cfloop query="qProjectSkeletons">
 						<cfif qProjectSkeletons.type EQ "DIR" and fileExists("#projectsPath#/#qProjectSkeletons.name#/install/manifest.cfc")>
 							<cfset oManifest = createObject("component", "farcry.projects.#qProjectSkeletons.name#.install.manifest")>
-							<option value="farcry.projects.#qProjectSkeletons.name#" <cfif qProjectSkeletons.name EQ session.stFarcryInstall.stConfig.skeleton>selected</cfif>>
+							<option value="farcry.projects.#qProjectSkeletons.name#" <cfif session.stFarcryInstall.stConfig.skeleton EQ "farcry.projects.#qProjectSkeletons.name#">selected</cfif>>
 								#oManifest.name#
 								- Supported: #oManifest.isSupported(coreMajorVersion="#request.coreVersion.major#",coreMinorVersion="#request.coreVersion.minor#",corePatchVersion="#request.coreVersion.patch#")#
 							</option>
@@ -384,13 +390,6 @@ RENDER THE CURRENT STEP
 	<cfoutput>
 	<h2>Project Install Type</h2>
 	
-	<div class="projectInstallType">		
-		<h3>
-			<input type="radio" id="projectInstallType" name="projectInstallType" value="Standalone" <cfif session.stFarcryInstall.stConfig.projectInstallType EQ "Standalone">checked</cfif>>
-			Standalone
-		</h3>
-		<p>Specifically aimed at one application per website. For standalone application deployment and/or shared hosting deployment that allows for a single project with a dedicated core framework and dedicated library of plugins.</p>
-	</div>
 	
 	<div class="projectInstallType">		
 		<h3>
@@ -398,6 +397,14 @@ RENDER THE CURRENT STEP
 			Sub-Directory
 		</h3>
 		<p>For multiple application deployment under a single webroot. Specifically aimed at one multiple applications per website.</p>
+	</div>
+	
+	<div class="projectInstallType">		
+		<h3>
+			<input type="radio" id="projectInstallType" name="projectInstallType" value="Standalone" <cfif session.stFarcryInstall.stConfig.projectInstallType EQ "Standalone">checked</cfif>>
+			Standalone
+		</h3>
+		<p>Specifically aimed at one application per website. For standalone application deployment and/or shared hosting deployment that allows for a single project with a dedicated core framework and dedicated library of plugins.</p>
 	</div>
 	
 	<div class="projectInstallType">		
