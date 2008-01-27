@@ -35,14 +35,18 @@
 <cfset THIS.plugins = "@@plugins@@" /> 
 
 <!--- 
-THE NAME OF THE FOLDER THAT CONTAINS YOUR FARCRY PROJECT
- --->
-<cfset THIS.projectDirectoryName = "@@applicationName@@" /><!--- Defaults to application name --->
-
-<!--- 
 THE VIRTUAL WEBSERVER PROJECT FOLDER
  --->
-<cfset THIS.projectURL = "@@projectURL@@" /><!--- Defaults to application name --->
+<cfset THIS.projectURL = "@@projectURL@@" />
+<cfset THIS.webtopURL = "@@webtopURL@@" />
+
+<!--- 
+THE NAME OF THE FOLDER THAT CONTAINS YOUR FARCRY PROJECT
+SET THIS VALUE IF IT IS DIFFERENT FROM THE APPLICATION NAME
+ --->
+<!--- <cfset THIS.projectDirectoryName = "@@applicationName@@" /> --->
+
+
 
 
 <!--- Define the page request properties. --->
