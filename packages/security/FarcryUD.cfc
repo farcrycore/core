@@ -355,17 +355,19 @@
 		
 		<!--- Add data --->
 		<cfoutput query="qUserGroups" group="userid">
-			<cfset stObj = oUser.getData(objectid=arguments.users[userid]) />
-			<cfparam name="stObj.groups" default="#arraynew(1)#" />
-			
-			<cfoutput>
-				<cfset arrayappend(stObj.groups,arguments.groups[groupid]) />
-				<cfset result = result + 1 />
-			</cfoutput>
-			
-			<cfset oUser.setData(stProperties=stObj,user="migratescript",auditNote="Data migrated from pre 4.1") />
+			<!--- Make sure user still exists before migrating --->
+			<cfif structKeyExists(arguments.users, qUserGroups.userid)>
+				<cfset stObj = oUser.getData(objectid=arguments.users[qUserGroups.userid]) />
+				<cfparam name="stObj.groups" default="#arraynew(1)#" />
+				
+				<cfoutput>
+					<cfset arrayappend(stObj.groups,arguments.groups[qUserGroups.groupid]) />
+					<cfset result = result + 1 />
+				</cfoutput>
+				
+				<cfset oUser.setData(stProperties=stObj,user="migratescript",auditNote="Data migrated from pre 4.1") />
+			</cfif>
 		</cfoutput>
-		
 		<cfreturn result />
 	</cffunction>
 
