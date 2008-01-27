@@ -2,12 +2,11 @@
 <cfsetting requesttimeout="600" />
 
 
-
 <cfoutput>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 	<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 	<head>
-		<title>FARCRY INSTALLER. </title>
+		<title>FARCRY INSTALLER.</title>
 		
 		<!--- EXT CSS & JS--->
 		<link rel="stylesheet" type="text/css" href="../js/ext/resources/css/ext-all.css">
@@ -18,9 +17,17 @@
 		<link rel="stylesheet" type="text/css" href="css/install.css">
 		<script type="text/javascript" src="js/install.js"></script>
 		
+		<style type="text/css">
+		h1 {font-size:120%;color:##116EAF;margin-bottom: 5px;}
+		h2 {font-size:110%;font-weight:bold;margin-bottom: 25px;}
+		a {color: ##116EAF;}
+		body {color:##5A7EB9;font:76%/1.5 arial,tahoma,verdana,sans-serif;}
+		.projectInstallType {border:1px dotted ##e3e3e3;padding:10px;margin:10px;}
+		</style>
+		
 	</head>
-	
-	<body>
+	<body style="background-color: ##5A7EB9;">
+		<div style="border: 8px solid ##eee;background:##fff;width:600px;margin: 50px auto;padding: 20px;color:##666">
 </cfoutput>
 
 
@@ -31,12 +38,11 @@ SETUP PATHS AND DIRECTORY LISTINGS
  ------------------------------------>
 <cfset getLocalEnvironmentVariables() />
 
-
+		
 <!--------------------------------------- 
 DETERMINE THE CURRENT VERSION OF FARCRY
  --------------------------------------->
 <cfset request.coreVersion = getCoreVersion() />
-<cfoutput><p>You are currently running version <strong>#request.coreVersion.major#-#request.coreVersion.minor#-#request.coreVersion.patch#</strong> of Farcry Core.</p></cfoutput>
 
 
 
@@ -44,19 +50,23 @@ DETERMINE THE CURRENT VERSION OF FARCRY
 SETUP DEFAULTS FOR ALL INSTALLATION WIZARD FIELDS 
 ------------------------------------------------>
 <!--- <cfset session.stFarcryInstall = structNew() /> --->
-<cfparam name="session.stFarcryInstall" default="#structNew()#" />
-<cfparam name="session.stFarcryInstall.currentStep" default="1" />
-<cfparam name="session.stFarcryInstall.lCompletedSteps" default="" />
-<cfparam name="session.stFarcryInstall.stConfig" default="#structNew()#" />
-<cfparam name="session.stFarcryInstall.stConfig.applicationName" default="" />
-<cfparam name="session.stFarcryInstall.stConfig.DSN" default="" />
-<cfparam name="session.stFarcryInstall.stConfig.DBType" default="" />
-<cfparam name="session.stFarcryInstall.stConfig.DBOwner" default="" />
-<cfparam name="session.stFarcryInstall.stConfig.skeleton" default="" />
-<cfparam name="session.stFarcryInstall.stConfig.plugins" default="" />
-<cfparam name="session.stFarcryInstall.stConfig.projectInstallType" default="subDirectory" />
-<cfparam name="session.stFarcryInstall.stConfig.webtopInstallType" default="project" />
 
+<cfif not structKeyExists(session, "stFarcryInstall")>
+	<cfset session.stFarcryInstall = "#structNew()#" />
+	<cfset session.stFarcryInstall.currentStep = "1" />
+	<cfset session.stFarcryInstall.lCompletedSteps = "" />
+	<cfset session.stFarcryInstall.stConfig = "#structNew()#" />
+	<cfset session.stFarcryInstall.stConfig.applicationName = "" />
+	<cfset session.stFarcryInstall.stConfig.DSN = "" />
+	<cfset session.stFarcryInstall.stConfig.DBType = "" />
+	<cfset session.stFarcryInstall.stConfig.DBOwner = "" />
+	<cfset session.stFarcryInstall.stConfig.skeleton = "" />
+	<cfset session.stFarcryInstall.stConfig.plugins = "" />
+	<cfset session.stFarcryInstall.stConfig.projectInstallType = "subDirectory" />
+	<cfset session.stFarcryInstall.stConfig.webtopInstallType = "project" />
+	
+	<cflocation url="#cgi.SCRIPT_NAME#?#cgi.query_string#" addtoken="false">
+</cfif>
 
 
 <!------------------------------------------ 
@@ -165,7 +175,10 @@ SETUP THE FORM AND HIDDEN FIELDS TO CONTROL THE WIZARD
 DISPLAY THE WIZARD NAVIGATION
  ------------------------------>
 <cfset wizardNav = getWizardNav() />
-<cfoutput>#wizardNav#</cfoutput>
+<cfoutput>
+<div style="margin-bottom:25px;">#wizardNav#</div>
+<h1>Farcry Installer</h1>
+</cfoutput>
 
 
 
@@ -176,7 +189,7 @@ RENDER THE CURRENT STEP
 	
 <cf_displayStep step="1">
 	<cfoutput>	
-	<h1>PROJECT NAME</h1>
+	<h2>PROJECT NAME</h2>
 	<div class="item">
       	<label for="applicationName">Project Name <em>*</em></label>
 		<div class="field">
@@ -189,7 +202,7 @@ RENDER THE CURRENT STEP
 
 <cf_displayStep step="2">
 	<cfoutput>
-	<h1>DATABASE SETUP</h1>
+	<h2>DATABASE SETUP</h2>
 	<div class="item">
       	<label for="DSN">Project DSN <em>*</em></label>
 		<div class="field">
@@ -287,7 +300,7 @@ RENDER THE CURRENT STEP
 
 <cf_displayStep step="3">
 	<cfoutput>
-	<h1>SKELETON</h1>
+	<h2>SKELETON</h2>
     <div class="item">
       	<label for="skeleton">Skeleton</label>
 		<div class="field">
@@ -328,54 +341,83 @@ RENDER THE CURRENT STEP
 	
 
 	<cfoutput>		
-	<h1>PLUGINS</h1>
-    <div class="item">
-      	<label>Plugins</label>
-		<div class="field">
-			
-			<cfloop query="qPlugins">
-				<cfif qPlugins.type EQ "DIR" and fileExists("#pluginPath#/#qPlugins.name#/install/manifest.cfc")>
-					<cfset oManifest = createObject("component", "farcry.plugins.#qPlugins.name#.install.manifest")>
-					<cfset pluginSupported = oManifest.isSupported(coreMajorVersion="#request.coreVersion.major#",coreMinorVersion="#request.coreVersion.minor#",corePatchVersion="#request.coreVersion.patch#")>
+	<h2>PLUGINS</h2>
+    
+		
+		<cfloop query="qPlugins">
+			<cfif qPlugins.type EQ "DIR" and fileExists("#pluginPath#/#qPlugins.name#/install/manifest.cfc")>
+				<cfset oManifest = createObject("component", "farcry.plugins.#qPlugins.name#.install.manifest")>
+				<cfset pluginSupported = oManifest.isSupported(coreMajorVersion="#request.coreVersion.major#",coreMinorVersion="#request.coreVersion.minor#",corePatchVersion="#request.coreVersion.patch#")>
+				
+				<div id="plugin-#qPlugins.name#">
+					<input type="hidden" name="plugins" value="" />
+					<table cellspacing="10" cellpadding="0">
+					<tr>
+						<td valign="top">
+							<input type="checkbox" name="plugins" value="#qPlugins.name#" <cfif listContainsNoCase(session.stFarcryInstall.stConfig.plugins, qPlugins.name)>checked</cfif>>
+						</td>
+						<td valign="top">
+							#oManifest.name# <cfif not pluginSupported>(UNSUPPORTED)</cfif> <br />
+							<em>#oManifest.description#</em>
+						</td>
+					</tr>
+					</table>
+				</div>
+				<hr />
+				
+			<!--- 	
+				<cfif not pluginSupported>
 					
-					<div id="plugin-#qPlugins.name#">
-						<input type="hidden" name="plugins" value="" />
-						<table cellspacing="10" cellpadding="0">
-						<tr>
-							<td valign="top">
-								<input type="checkbox" name="plugins" value="#qPlugins.name#" <cfif listContainsNoCase(session.stFarcryInstall.stConfig.plugins, qPlugins.name)>checked</cfif>>
-							</td>
-							<td valign="top">
-								#oManifest.name# <cfif not pluginSupported>(UNSUPPORTED)</cfif> <br />
-								<em>#oManifest.description#</em>
-							</td>
-						</tr>
-						</table>
-					</div>
-					<hr />
-					
-				<!--- 	
-					<cfif not pluginSupported>
-						
-						<cf_redoStep field="plugin-#qPlugins.name#" errorTitle="Unsupported" errorDescription="This plugin is not supported on your current version of farcry. Please be aware you may experience problems with this plugin." />
-					
-					</cfif>
-						 --->
-	
+					<cf_redoStep field="plugin-#qPlugins.name#" errorTitle="Unsupported" errorDescription="This plugin is not supported on your current version of farcry. Please be aware you may experience problems with this plugin." />
+				
 				</cfif>
-			</cfloop>
-			
-		</div>
-		<div class="clear"></div>
-	</div>	
+					 --->
+
+			</cfif>
+		</cfloop>
+
 	</cfoutput>		
 </cf_displayStep>
 
 
 <cf_displayStep step="5">
 	<cfoutput>
-	<h1>PLUGINS</h1>
-    <div class="item">
+	<h2>Project Install Type</h2>
+	
+	<div class="projectInstallType">		
+		<h3>
+			<input type="radio" id="projectInstallType" name="projectInstallType" value="Standalone" <cfif session.stFarcryInstall.stConfig.projectInstallType EQ "Standalone">checked</cfif>>
+			Standalone
+		</h3>
+		<p>Specifically aimed at one application per website. For standalone application deployment and/or shared hosting deployment that allows for a single project with a dedicated core framework and dedicated library of plugins.</p>
+	</div>
+	
+	<div class="projectInstallType">		
+		<h3>
+			<input type="radio" id="projectInstallType" name="projectInstallType" value="SubDirectory" <cfif session.stFarcryInstall.stConfig.projectInstallType EQ "SubDirectory">checked</cfif>>
+			Sub-Directory
+		</h3>
+		<p>For multiple application deployment under a single webroot. Specifically aimed at one multiple applications per website.</p>
+	</div>
+	
+	<div class="projectInstallType">		
+		<h3>
+			<input type="radio" id="projectInstallType" name="projectInstallType" value="CFMapping" <cfif session.stFarcryInstall.stConfig.projectInstallType EQ "CFMapping">checked</cfif>>
+			Advanced Configuration (ColdFusion Mapping)
+		</h3>
+		<p>An enterprise configuration that allows for an unlimited number of projects to share a single core framework and library of plugins. Sharing is done through common reference to specific ColdFusion mapping of /farcry.</p>
+	</div>
+	
+	<div class="projectInstallType">		
+		<h3>
+			<input type="radio" id="projectInstallType" name="projectInstallType" value="WebserverMapping" <cfif session.stFarcryInstall.stConfig.projectInstallType EQ "WebserverMapping">checked</cfif>>
+			Advanced Configuration (Webserver Mapping)
+		</h3>
+		<p>An enterprise configuration that allows for an unlimited number of projects to share a single core framework and library of plugins. Sharing is done through common reference to specific web server mapping (aka web virtual directory) of /farcry.</p>
+	</div>
+			
+	
+	<!--- <div class="item">
       	<label>Project Install Type</label>
 		<div class="field">
 
@@ -393,7 +435,9 @@ RENDER THE CURRENT STEP
 			<input type="radio" id="webtopInstallType-farcry" name="webtopInstallType" value="farcry" <cfif session.stFarcryInstall.stConfig.webtopInstallType EQ "farcry">checked</cfif>>Shared Webroot in core (Requires Webserver Mapping)<br />	
 		</div>
 		<div class="clear"></div>
-	</div>
+	</div> --->
+	
+	
 	</cfoutput>		
 </cf_displayStep>
 
@@ -412,6 +456,8 @@ RENDER THE CURRENT STEP
 
 
 <cfoutput>
+		<p style="text-align:right;border-top:1px solid ##e3e3e3;margin-top:25px;"><small>You are currently running version <strong>#request.coreVersion.major#-#request.coreVersion.minor#-#request.coreVersion.patch#</strong> of Farcry Core.</small></p>
+	</div>
 </body>
 </html>
 </cfoutput>
@@ -547,6 +593,7 @@ RENDER THE CURRENT STEP
 	<cfset var wizardNavHTML = "" />
 	
 	<cfsavecontent variable="wizardNavHTML">
+
 		<cfoutput>
 		<div style="background:url(images/dots.gif) repeat-x center;">
 		<table align="center">

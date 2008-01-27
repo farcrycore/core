@@ -17,7 +17,6 @@
 <cfset form.skeleton = session.stFarcryInstall.stConfig.skeleton />
 <cfset form.plugins = session.stFarcryInstall.stConfig.plugins />
 <cfset form.projectInstallType = session.stFarcryInstall.stConfig.projectInstallType />
-<cfset form.webtopInstallType = session.stFarcryInstall.stConfig.webtopInstallType />
 
 <!--- Skeletons --->
 <cfset form.skeletonPath = replaceNoCase(form.skeleton, ".", "/", "all") />
@@ -59,16 +58,28 @@
  WEB URL PATHS
  ---------------------------------------->
 <cfswitch expression="#form.projectInstallType#">
-<cfcase value="subDirectory">
+<cfcase value="SubDirectory">
 	<cfset application.url.webroot = "/#application.projectDirectoryName#" />
+	<cfset application.url.webtop = "/farcry/core/webtop" />
+</cfcase>
+<cfcase value="Standalone">
+	<cfset application.url.webroot = "" />
+	<cfset application.url.webtop = "/farcry/core/webtop" />
+</cfcase>
+<cfcase value="CFMapping">
+	<cfset application.url.webroot = "" />
+	<cfset application.url.webtop = "/webtop" />
+</cfcase>
+<cfcase value="WebserverMapping">
+	<cfset application.url.webroot = "" />
+	<cfset application.url.webtop = "/farcry/core/webtop" />
 </cfcase>
 <cfdefaultcase>
-	<cfset application.url.webroot = "" />
+	<cfabort showerror="INVALID Install Type.">
 </cfdefaultcase>
 </cfswitch>
 
 
-<cfset application.url.webtop = "#application.url.webroot#/webtop" />
 <cfset application.url.farcry = "#application.url.webtop#" />
 <cfset application.url.imageRoot = "#application.url.webroot#">
 <cfset application.url.fileRoot = "#application.url.webroot#/files">
@@ -145,13 +156,9 @@ USE OBJECT BROKER?
 	<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@DSN@@", "#form.DSN#", "all") />
 	<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@DBType@@", "#form.DBType#", "all") />
 	<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@DBOwner@@", "#form.DBOwner#", "all") />
-	<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@plugins@@", "#form.plugins#", "all") />
-	
-	<cfif form.projectInstallType EQ "subDirectory">
-		<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@projectURL@@", "/#form.applicationName#", "all") />
-	<cfelse>
-		<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@projectURL@@", "", "all") />
-	</cfif>
+	<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@plugins@@", "#form.plugins#", "all") />	
+	<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@projectURL@@", "#application.url.webroot#", "all") />
+	<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@webtopURL@@", "#application.url.webtop#", "all") />
 	
 	<cffile action="write" file="#farcryProjectsPath#/#form.applicationName#/www/farcryConstructor.cfm" output="#farcryConstructorContent#" addnewline="false" mode="777" />	
 
@@ -177,7 +184,7 @@ USE OBJECT BROKER?
 		<cfset directoryCopy(source="#farcryProjectsPath#/#form.applicationName#/www", destination="#projectWebrootPath#", nameconflict="overwrite") /> --->
 		<cfoutput>COMPLETE</div></cfoutput><cfflush>
 	</cfcase>
-	<cfcase value="webroot">
+	<cfcase value="standalone">
 		<cfoutput><div>COPYING PROJECT TO THE WEBROOT...</cfoutput><cfflush>
 		<cfset projectWebrootPath = "#webrootPath#" />
 		<cfset projectWebrootURL = "http://#cgi.server_name#" />
@@ -191,13 +198,17 @@ USE OBJECT BROKER?
 		<cfset directoryCopy(source="#farcryProjectsPath#/#form.applicationName#/www", destination="#projectWebrootPath#", nameconflict="overwrite") /> --->
 		<cfoutput>COMPLETE</div></cfoutput><cfflush>
 	</cfcase>
-	<cfcase value="farcry">
+	<cfcase value="CFMapping">
+		<cfset projectWebrootURL = "http://#cgi.server_name#" />
+		<!--- Leave as is --->
+	</cfcase>
+	<cfcase value="webserverMapping">
 		<cfset projectWebrootURL = "http://#cgi.server_name#" />
 		<!--- Leave as is --->
 	</cfcase>
 	</cfswitch>
 	
-	
+	<!--- 
 	<cfswitch expression="#form.webtopInstallType#">
 	<cfcase value="project">
 		<cfoutput><div>COPYING WEBTOP TO PROJECT....</cfoutput><cfflush>
@@ -215,7 +226,7 @@ USE OBJECT BROKER?
 	<cfcase value="farcry">
 		<!--- Leave as is --->
 	</cfcase>
-	</cfswitch>
+	</cfswitch> --->
 
 	
 	<!----------------------------------------------------------------------------------------

@@ -23,6 +23,7 @@
 </cfif>
 
 <cfif thistag.ExecutionMode EQ "End">
+	<cfoutput><div style="text-align:right;margin-top:25px;"></cfoutput>
 	<cfif attributes.step EQ 1>
 		<cfoutput>
 		<input type="submit" name="farcrySubmitButton" value="Next" />
@@ -38,7 +39,7 @@
 		<input type="submit" name="farcrySubmitButton" value="Next" />
 		</cfoutput>
 	</cfif>
-
+	<cfoutput></div></cfoutput>
 </cfif>
 
 
