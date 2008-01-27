@@ -60,58 +60,110 @@ This tag is now used to invoke the updater and can only be run from the local ma
 
  --->
 
+<cfoutput>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head> 
+<title>Farcry 5.0 Updater</title>
+<style type="text/css">
+h1 {font-size:120%;color:##116EAF;margin-bottom: 20px;}
+h2 {font-size:110%;font-weight:bold;margin-bottom: 5px;}
+a {color: ##116EAF;}
+</style>
+</head>
+<body style="background-color: ##5A7EB9;">
+	<div style="border: 8px solid ##eee;background:##fff;width:37em;margin: 50px auto;padding: 20px;color:##666">
+		<h1>FarCry 5.0 Updater</h1>
+		<div style="margin-left:20px;">
+</cfoutput>				
+				
 <cfif structKeyExists(url, "upgrade") and url.upgrade EQ 1>
-	
+
 	<cfset varibles.projectPath = expandpath('/farcry/projects/#attributes.projectDirectoryName#/www') />
 	<cfset varibles.upgraderPath = expandpath('/farcry/core/webtop/updates/b500') />
-	
-	<cfif not directoryExists("#varibles.projectPath#/upgrader5.0.0")>
-	
-		<cfdirectory action="create" directory="#varibles.projectPath#/upgrader5.0.0" />
-		<cffile action="copy" source="#varibles.upgraderPath#/Application.cfm" destination="#varibles.projectPath#/upgrader5.0.0" mode="777" />
-		<cffile action="copy" source="#varibles.upgraderPath#/index.cfm" destination="#varibles.projectPath#/upgrader5.0.0" mode="777" />
-		<cffile action="copy" source="#varibles.upgraderPath#/readme.txt" destination="#varibles.projectPath#/upgrader5.0.0" mode="777" />
-		<cffile action="copy" source="#varibles.upgraderPath#/Application.cf_" destination="#varibles.projectPath#/upgrader5.0.0" mode="777" />
-		<cffile action="copy" source="#varibles.upgraderPath#/proxyApplication.cf_" destination="#varibles.projectPath#/upgrader5.0.0" mode="777" />
-		<cffile action="copy" source="#varibles.upgraderPath#/farcryConstructor.cf_" destination="#varibles.projectPath#/upgrader5.0.0" mode="777" />
-		
-		
-		<cffile action="read" file="#varibles.projectPath#/upgrader5.0.0/farcryConstructor.cf_" variable="sFarcryConstructor" />
-	
-		<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@Name", "#attributes.name#") />
-		<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@sessionmanagement", "#attributes.sessionmanagement#") />
-		<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@sessiontimeout", "createTimeSpan(0,1,0,0)") />
-		<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@applicationtimeout", "createTimeSpan(2,0,0,0)") />
-		<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@clientmanagement", "#attributes.clientmanagement#") />
-		<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@clientstorage", "#attributes.clientstorage#") />
-		<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@loginstorage", "#attributes.loginstorage#") />
-		<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@scriptprotect", "#attributes.scriptprotect#") />
-		<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@setclientcookies", "#attributes.setclientcookies#") />
-		<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@setdomaincookies", "#attributes.setdomaincookies#") />
-		<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@locales", "#attributes.locales#") />
-		<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@dsn", "#attributes.dsn#") />
-		<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@dbType", "#attributes.dbType#") />
-		<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@dbOwner", "#attributes.dbOwner#") />
-		<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@plugins", "#attributes.plugins#") />
-		<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@projectDirectoryName", "#attributes.projectDirectoryName#") />
-		<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@projectURL", "#attributes.projectURL#") />
-		<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@dsn", "#attributes.dsn#") />
-		<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@dsn", "#attributes.dsn#") />
-		
-		<cffile action="write" file="#varibles.projectPath#/upgrader5.0.0/farcryConstructor.cf_" output="#sFarcryConstructor#" addnewline="false" mode="777" />
-	</cfif>
+
+	<cfif directoryExists("#varibles.projectPath#")>
+		<cfif directoryExists("#varibles.projectPath#/updater5.0.0")>
+			<cfdirectory action="delete" directory="#varibles.projectPath#/updater5.0.0" mode="777" recurse="true" />
+		</cfif>
+		<cfif not directoryExists("#varibles.projectPath#/updater5.0.0")>
 			
-	<cflocation url="#attributes.projectURL#/upgrader5.0.0?Name=#attributes.name#&dsn=#attributes.dsn#&dbtype=#attributes.dbtype#&dbOwner=#attributes.dbOwner#" addtoken="false" />
-<cfelse>
-	<cfoutput>
-	<h1>You are trying to initialise a 4.0 application using a 5.0 core.</h1>
-	<p>Would you like to setup and run the upgrader now now?</p>
+			<cfdirectory action="create" directory="#varibles.projectPath#/updater5.0.0" mode="777" />
+			<cffile action="copy" source="#varibles.upgraderPath#/Application.cfm" destination="#varibles.projectPath#/updater5.0.0" mode="777" />
+			<cffile action="copy" source="#varibles.upgraderPath#/index.cfm" destination="#varibles.projectPath#/updater5.0.0" mode="777" />
+			<cffile action="copy" source="#varibles.upgraderPath#/readme.txt" destination="#varibles.projectPath#/updater5.0.0" mode="777" />
+			<cffile action="copy" source="#varibles.upgraderPath#/Application.cf_" destination="#varibles.projectPath#/updater5.0.0" mode="777" />
+			<cffile action="copy" source="#varibles.upgraderPath#/proxyApplication.cf_" destination="#varibles.projectPath#/updater5.0.0" mode="777" />
+			<cffile action="copy" source="#varibles.upgraderPath#/farcryConstructor.cf_" destination="#varibles.projectPath#/updater5.0.0" mode="777" />
+			
+			
+			<cffile action="read" file="#varibles.projectPath#/updater5.0.0/farcryConstructor.cf_" variable="sFarcryConstructor" />
+		
+			<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@Name", "#attributes.name#") />
+			<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@sessionmanagement", "#attributes.sessionmanagement#") />
+			<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@sessiontimeout", "createTimeSpan(0,1,0,0)") />
+			<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@applicationtimeout", "createTimeSpan(2,0,0,0)") />
+			<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@clientmanagement", "#attributes.clientmanagement#") />
+			<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@clientstorage", "#attributes.clientstorage#") />
+			<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@loginstorage", "#attributes.loginstorage#") />
+			<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@scriptprotect", "#attributes.scriptprotect#") />
+			<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@setclientcookies", "#attributes.setclientcookies#") />
+			<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@setdomaincookies", "#attributes.setdomaincookies#") />
+			<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@locales", "#attributes.locales#") />
+			<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@dsn", "#attributes.dsn#") />
+			<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@dbType", "#attributes.dbType#") />
+			<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@dbOwner", "#attributes.dbOwner#") />
+			<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@plugins", "#attributes.plugins#") />
+			<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@projectDirectoryName", "#attributes.projectDirectoryName#") />
+			<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@projectURL", "#attributes.projectURL#") />
+			<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@dsn", "#attributes.dsn#") />
+			<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@dsn", "#attributes.dsn#") />
+			
+			<cffile action="write" file="#varibles.projectPath#/updater5.0.0/farcryConstructor.cf_" output="#sFarcryConstructor#" addnewline="false" mode="777" />
+		</cfif>
+				
+		<cflocation url="#attributes.projectURL#/updater5.0.0/index.cfm?Name=#attributes.name#&dsn=#attributes.dsn#&dbtype=#attributes.dbtype#&dbOwner=#attributes.dbOwner#" addtoken="false" />
+	<cfelse>
 	
-	<a href="#cgi.SCRIPT_NAME#?upgrade=1">Continue to Upgrader</a>
+		<cfset farcryProjectsPath = expandPath("/farcry/projects") />
+		<cfset farcryProjectsPath = replaceNoCase(farcryProjectsPath, "\", "/", "all") />
+		
+		<cfset currentProjectName = getDirectoryFromPath(GetBaseTemplatePath()) />
+		<cfset currentProjectName = replaceNoCase(currentProjectName, "\", "/", "all") />
+		
+		<cfset currentProjectName = replaceNoCase(currentProjectName, farcryProjectsPath, "", "all") />
+		<cfset currentProjectName = replaceNoCase(currentProjectName, "/www", "", "all") />
+		<cfset currentProjectName = replaceNoCase(currentProjectName, "/", "", "all") />
+
+		<cfoutput>
+			<h2>INVALID PROJECT DIRECTORY NAME</h2>
+			<p>It seems that the farcryInit tag for this project is not valid</p>
+			<p>Your ProjectDirectoryName is currently set to <strong>#attributes.projectDirectoryName#</strong> and I think it should be <strong>#currentProjectName#</strong></p>
+			<p>You may have changed the name of your projects folder.</p>
+			<p>Please change the value of the projectDirectoryName or if you are not passing this value, update the value of the name attribute.</p>
+
+			
+			<p><a href="#cgi.SCRIPT_NAME#?upgrade=1">Try Again</a></p>
+		</cfoutput>
+
+	</cfif>
+<cfelse>
+
+	<cfoutput>
+	<h2>You are trying to initialise a 4.0 application using a 5.0 core.</h2>
+	<p>Would you like to setup and run the updater now?</p>
+	
+	<a href="#cgi.SCRIPT_NAME#?upgrade=1">Continue to updater</a>
 	</cfoutput>
 
 </cfif>
 
+<cfoutput>
+		</div>
+	</div>
+</body>
+</html>
+</cfoutput>
 
 <cfabort>
 
