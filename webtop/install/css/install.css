@@ -1,8 +1,5 @@
 /* =THE BIG GUYS */
 html {margin:0;padding:0}
-body {text-align:left;background: #fff;margin:0;padding:10px;color:#5A7EB9;font:76%/1.5 arial,tahoma,verdana,sans-serif;
-	width:800px;
-}
 
 
 /* =LINKS */
@@ -10,7 +7,6 @@ a,a:link,a:visited,a:hover,a:active {background:transparent;text-decoration:unde
 a:link, a:visited, a:hover, a:active {color:#E17000}
 a:hover {color:#fff;background:#E17000} 
 
-h2 {text-align:center;letter-spacing:1px;font-size:x-large;}
 
 ul {position:relative;margin: 0 .3em 1em 0;padding: 0;}/*list-style-type:none*/
 ol {margin: .5em .5em}
