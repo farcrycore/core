@@ -1,5 +1,6 @@
 <!--- Set up the application. --->	
 <cfset THIS.Name = "@@applicationName@@" />
+<cfset THIS.displayName = "@@applicationDisplayName@@" />
 
 
 <cfset THIS.sessionmanagement = true  />

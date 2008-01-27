@@ -35,7 +35,7 @@ $out:$
 	<cfparam name="url.ud" default="#application.security.getDefaultUD()#" />
 	
 	
-	<cfif structKeyExists(url, "farcryProject") AND structKeyExists(server, "lFarcryProjects") AND structKeyExists(cookie, "currentFarcryProject") AND listFindNoCase(server.lFarcryProjects, url.farcryProject) AND cookie.currentFarcryProject NEQ url.farcryProject>
+	<cfif structKeyExists(url, "farcryProject") AND structKeyExists(server, "stFarcryProjects") AND structKeyExists(cookie, "currentFarcryProject") AND structKeyExists(server.stFarcryProjects, url.farcryProject) AND cookie.currentFarcryProject NEQ url.farcryProject>
 		<cfset cookie.currentFarcryProject = url.farcryProject />
 		<cflocation url="#cgi.SCRIPT_NAME#?#cgi.query_string#" addtoken="false" />
 	</cfif>
@@ -62,8 +62,8 @@ $out:$
 	
 	<cfif not structkeyexists(stResult,"authenticated") or not stResult.authenticated>
 	
-		<skin:view typename="#application.security.getLoginForm(url.ud)#" template="displayLogin" stParams="#stResult#" />
-		
+		<skin:view typename="#application.security.getLoginForm(url.ud)#" template="displayLogin" stParam="#stResult#" />
+
 	<cfelse>
 		<!--- relocate to original location --->
 		<cflocation url="#stResult.returnUrl#" addtoken="No">

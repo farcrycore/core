@@ -61,6 +61,7 @@ SETUP DEFAULTS FOR ALL INSTALLATION WIZARD FIELDS
 	<cfset session.stFarcryInstall.lCompletedSteps = "" />
 	<cfset session.stFarcryInstall.stConfig = "#structNew()#" />
 	<cfset session.stFarcryInstall.stConfig.applicationName = "" />
+	<cfset session.stFarcryInstall.stConfig.displayName = "" />
 	<cfset session.stFarcryInstall.stConfig.DSN = "" />
 	<cfset session.stFarcryInstall.stConfig.DBType = "" />
 	<cfset session.stFarcryInstall.stConfig.DBOwner = "" />
@@ -198,6 +199,13 @@ RENDER THE CURRENT STEP
 	<h2>PROJECT NAME</h2>
 	<div class="item">
       	<label for="applicationName">Project Name <em>*</em></label>
+		<div class="field">
+			<input type="text" id="displayName" name="displayName" value="#session.stFarcryInstall.stConfig.displayName#">
+		</div>
+		<div class="clear"></div>
+	</div>	
+	<div class="item">
+      	<label for="applicationName">Project Folder Name <em>*</em></label>
 		<div class="field">
 			<input type="text" id="applicationName" name="applicationName" value="#session.stFarcryInstall.stConfig.applicationName#">
 		</div>
@@ -401,8 +409,13 @@ RENDER THE CURRENT STEP
 	
 	<div class="projectInstallType">		
 		<h3>
-			<input type="radio" id="projectInstallType" name="projectInstallType" value="Standalone" <cfif session.stFarcryInstall.stConfig.projectInstallType EQ "Standalone">checked</cfif>>
-			Standalone
+			<cfif fileExists(expandPath("/farcryConstructor.cfm"))>
+				<input type="radio" id="projectInstallType" name="projectInstallType" disabled="true" value="Standalone" <cfif session.stFarcryInstall.stConfig.projectInstallType EQ "Standalone">checked</cfif>>
+				<span style="text-decoration:line-through;">Standalone (A FarCry project already exists in the webroot)</span>
+			<cfelse>
+				<input type="radio" id="projectInstallType" name="projectInstallType" value="Standalone" <cfif session.stFarcryInstall.stConfig.projectInstallType EQ "Standalone">checked</cfif>>
+				Standalone
+			</cfif>
 		</h3>
 		<p>Specifically aimed at one application per website. For standalone application deployment and/or shared hosting deployment that allows for a single project with a dedicated core framework and dedicated library of plugins.</p>
 	</div>

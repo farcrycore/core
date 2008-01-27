@@ -28,7 +28,7 @@ DEPLOY SYSTEM TABLES
 <cfset application.factory.oUtils = createobject("component","farcry.core.packages.farcry.utils") />
 <cfset application.factory.oAudit = createObject("component","#application.packagepath#.farcry.audit") />
 
-<cfoutput>#updateProgressBar(value="0.3", text="INITIALISING: Fetching projects metadata")#</cfoutput><cfflush>
+<cfoutput>#updateProgressBar(value="0.3", text="#form.displayName# (INITIALISING): Fetching projects metadata")#</cfoutput><cfflush>
 <!--- build coapi metadata --->
 <cfset oAlterType = createObject("component", "#application.packagepath#.farcry.alterType") />
 <cfset oAlterType.refreshAllCFCAppData() />
@@ -38,26 +38,26 @@ DEPLOY SYSTEM TABLES
 
 
 <!--- // create fqaudit table --->
-<cfoutput>#updateProgressBar(value="0.4", text="DATABASE: Creating audit table.")#</cfoutput><cfflush>
+<cfoutput>#updateProgressBar(value="0.4", text="#form.displayName# (DATABASE): Creating audit table.")#</cfoutput><cfflush>
 <cfset fqaudit = createObject("component", "farcry.core.packages.schema.fqaudit").init(argumentcollection=stargs) />
 <cfset stResult = fqaudit.createTable() />
 <cfflush />
 
 <!--- // create nested_tree_objects table --->
-<cfoutput>#updateProgressBar(value="0.4", text="DATABASE: Creating audit table.")#</cfoutput><cfflush>
+<cfoutput>#updateProgressBar(value="0.4", text="#form.displayName# (DATABASE): Creating audit table.")#</cfoutput><cfflush>
 <cfoutput><p>Creating nested tree model table.</p></cfoutput>
 <cfset nto = createObject("component", "farcry.core.packages.schema.nested_tree_objects").init(argumentcollection=stargs) />
 <cfset stResult = nto.createTable() />
 <cfflush />
 
 <!--- // setup refObjects table --->
-<cfoutput>#updateProgressBar(value="0.4", text="DATABASE: Creating refObjects table.")#</cfoutput><cfflush>	
+<cfoutput>#updateProgressBar(value="0.4", text="#form.displayName# (DATABASE): Creating refObjects table.")#</cfoutput><cfflush>	
 <cfset refobj = createObject("component", "farcry.core.packages.schema.refobjects").init(argumentcollection=stargs) />
 <cfset stResult = refobj.createTable() />
 <cfflush />
 
 <!--- // set up refContainers table --->
-<cfoutput>#updateProgressBar(value="0.4", text="DATABASE: Creating refContainers table.")#</cfoutput><cfflush>	
+<cfoutput>#updateProgressBar(value="0.4", text="#form.displayName# (DATABASE): Creating refContainers table.")#</cfoutput><cfflush>	
 <!--- 
 <cfset nto = createObject("component", "farcry.core.packages.schema.nested_tree_objects").init(argumentcollection=stargs) />
 <cfset stResult = nto.createTable() />
@@ -68,14 +68,14 @@ DEPLOY SYSTEM TABLES
 
 <!--- // setup metadata categories --->
 <!--- todo: build relevant schema component --->
-<cfoutput>#updateProgressBar(value="0.4", text="DATABASE: Creating categorisation table.")#</cfoutput><cfflush>
+<cfoutput>#updateProgressBar(value="0.4", text="#form.displayName# (DATABASE): Creating categorisation table.")#</cfoutput><cfflush>
 <cfset category = createObject("component", "#application.packagepath#.farcry.category") />
 <cfset stResult = category.deployCategories(dsn=application.dsn,bDropTables=true) />
 <cfflush />
 
 <!--- // setup stats table --->
 <!--- todo: build relevant schema component --->
-<cfoutput>#updateProgressBar(value="0.4", text="DATABASE: Creating table for site statistics.")#</cfoutput><cfflush>
+<cfoutput>#updateProgressBar(value="0.4", text="#form.displayName# (DATABASE): Creating table for site statistics.")#</cfoutput><cfflush>
 <cfset stats = createObject("component", "#application.packagepath#.farcry.stats") />
 <cfset stResult = stats.deploy(dsn=application.dsn,bDropTable=true) />
 <cfflush />
@@ -91,13 +91,13 @@ TODO:
  --->	
 <cfset qRules=application.coapi.coapiadmin.getCOAPIComponents(project=form.applicationName, package="rules", plugins=form.plugins) />
 
-<cfoutput>#updateProgressBar(value="0.5", text="RULES: Creating container and rule tables.")#</cfoutput><cfflush>
+<cfoutput>#updateProgressBar(value="0.5", text="#form.displayName# (RULES): Creating container and rule tables.")#</cfoutput><cfflush>
 
 <cfloop query="qRules">
 	<cfset oRule = createObject("component", qrules.typepath) />
 	<cftry>
 		<cfset stResult = oRule.deployType(dsn=application.dsn,bDropTable=true,bTestRun=false,dbtype=application.dbtype) />
-		<cfoutput>#updateProgressBar(value="0.5", text="RULES: Creating #listfirst(qrules.name,".")# table.")#</cfoutput><cfflush>
+		<cfoutput>#updateProgressBar(value="0.5", text="RULES): Creating #listfirst(qrules.name,".")# table.")#</cfoutput><cfflush>
 	
 		<cfcatch type="farcry.core.packages.fourq.tablemetadata.abstractTypeException">
 			<cfset stResult.bsucess="false" />
@@ -112,13 +112,13 @@ TODO:
 <cfset qTypes=application.coapi.coapiadmin.getCOAPIComponents(project=form.applicationName, package="types", plugins=form.plugins) />
 
 
-<cfoutput>#updateProgressBar(value="0.6", text="TYPES: Creating types tables.")#</cfoutput><cfflush>
+<cfoutput>#updateProgressBar(value="0.6", text="#form.displayName# (TYPES): Creating types tables.")#</cfoutput><cfflush>
 
 <cfloop query="qTypes">
 	<cfset oType = createObject("component", qtypes.typepath) />
 	<cftry>
 		<cfset stResult = oType.deployType(dsn=application.dsn,bDropTable=true,bTestRun=false,dbtype=application.dbtype) />
-		<cfoutput>#updateProgressBar(value="0.6", text="TYPES: Creating #listfirst(qtypes.name,".")# table.")#</cfoutput><cfflush>
+		<cfoutput>#updateProgressBar(value="0.6", text="#form.displayName# (TYPES): Creating #listfirst(qtypes.name,".")# table.")#</cfoutput><cfflush>
 
 		<cfcatch type="farcry.core.packages.fourq.tablemetadata.abstractTypeException">
 			<cfset stResult.bsucess="false" />
@@ -134,7 +134,7 @@ TODO:
 	GB 20061022
  --->
 	
-<cfoutput>#updateProgressBar(value="0.6", text="CONFIG: Loading config data")#</cfoutput><cfflush>
+<cfoutput>#updateProgressBar(value="0.6", text="#form.displayName# (CONFIG): Loading config data")#</cfoutput><cfflush>
 	<!--- Load config data --->
 	<cfset oConfig = createobject("component","farcry.core.packages.types.farConfig") />
 	<cfloop list="#application.factory.oUtils.getComponents('forms')#" index="configkey">
@@ -144,7 +144,7 @@ TODO:
 	</cfloop>
 
 
-	<cfoutput>#updateProgressBar(value="0.7", text="SECURITY: Setting up user directories")#</cfoutput><cfflush>
+	<cfoutput>#updateProgressBar(value="0.7", text="#form.displayName# (SECURITY): Setting up user directories")#</cfoutput><cfflush>
 
 	<!--- Get user directories --->
 	<cfset oUtils = createobject("component","farcry.core.packages.farcry.utils") />
@@ -159,7 +159,7 @@ TODO:
 
 	
 	
-	<cfoutput>#updateProgressBar(value="0.8", text="PLUGINS: Setting up plugins")#</cfoutput><cfflush>
+	<cfoutput>#updateProgressBar(value="0.8", text="#form.displayName# (PLUGINS): Setting up plugins")#</cfoutput><cfflush>
 	<!----------------------------------------------------------------------
 	Plugin
 	 - search and install Plugin install data
@@ -171,14 +171,14 @@ TODO:
 	</cfloop>
 
 
-	<cfoutput>#updateProgressBar(value="0.9", text="SKELETON: Installing Skeleton Data...")#</cfoutput><cfflush>
+	<cfoutput>#updateProgressBar(value="0.9", text="#form.displayName# (SKELETON): Installing Skeleton Data...")#</cfoutput><cfflush>
 	
 	<cfset oSkeletonManifest = createObject("component", "#form.skeleton#.install.manifest") />
 	<cfset result = oSkeletonManifest.install() />
 	<cfset application.navid = createObject("component", application.stcoapi["dmNavigation"].packagePath).getNavAlias() />
 	
 	
-	<cfoutput>#updateProgressBar(value="0.9", text="SKELETON: Remove the skelton instalation files")#</cfoutput><cfflush>
+	<cfoutput>#updateProgressBar(value="0.9", text="#form.displayName# (SKELETON): Removing the skelton instalation files")#</cfoutput><cfflush>
 	<!--- Remove the skelton instalation files --->
 	<cftry>
 		<cfdirectory action="delete" directory="#farcryProjectsPath#/#form.applicationName#/install" recurse="true" />

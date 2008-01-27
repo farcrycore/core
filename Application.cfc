@@ -172,9 +172,9 @@
 		<!--- 
 		This sets up a cookie on the users system so that if they try and login to the webtop and the webtop can't determine which project it is trying to update,
 		it will know what projects they will be potentially trying to edit.  --->
-		<cfparam name="server.lFarcryProjects" default="" />
-		<cfif not listFindNoCase(server.lFarcryProjects, application.projectDirectoryName)>
-			<cfset server.lFarcryProjects = listAppend(server.lFarcryProjects, application.projectDirectoryName) />
+		<cfparam name="server.stFarcryProjects" default="#structNew()#" />
+		<cfif not structKeyExists(server.stFarcryProjects, application.projectDirectoryName)>
+			<cfset server.stFarcryProjects[application.projectDirectoryName] = application.displayName />
 		</cfif>	
 		<cfset cookie.currentFarcryProject = application.projectDirectoryName />
 
@@ -485,6 +485,8 @@
 			<cfabort showerror="this.dbtype not defined in your projects farcryConstructor.">
 		</cfif>
 		
+		<cfparam name="this.displayName" default="#this.name#" />
+		
 
 		<cfparam name="this.dsn" default="#this.name#" />
 		<cfparam name="this.dbowner" default="" />
@@ -507,6 +509,7 @@
 		
 		<!--- Project directory name can be changed from the default which is the applicationname --->
 		<cfset application.projectDirectoryName =  this.projectDirectoryName />
+		<cfset application.displayName =  this.displayName />
 		
 		<!----------------------------------------
 		 SET THE DATABASE SPECIFIC INFORMATION 

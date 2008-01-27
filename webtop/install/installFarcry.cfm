@@ -40,7 +40,7 @@ DETERMINE THE CURRENT VERSION OF FARCRY
 		<div style="border: 8px solid ##eee;background:##fff;width:600px;margin: 50px auto;padding: 20px;color:##666">
 			
 			<h1>INSTALLING YOUR FARCRY APPLICATION</h1>
-			<div id="p2" style="width:100%;"></div>
+			<div id="p2" style="width:100%;text-align:left;"></div>
 			
 			<div id="installComplete"></div>
 			
@@ -70,6 +70,7 @@ DETERMINE THE CURRENT VERSION OF FARCRY
 
 
 <cfset form.applicationName = session.stFarcryInstall.stConfig.applicationName />
+<cfset form.displayName = session.stFarcryInstall.stConfig.displayName />
 <cfset form.DSN = session.stFarcryInstall.stConfig.DSN />
 <cfset form.DBType = session.stFarcryInstall.stConfig.DBType />
 <cfset form.DBOwner = session.stFarcryInstall.stConfig.DBOwner />
@@ -85,6 +86,7 @@ DETERMINE THE CURRENT VERSION OF FARCRY
 	
 <!--- Project directory name can be changed from the default which is the applicationname --->
 <cfset application.projectDirectoryName =  form.applicationName />
+<cfset application.displayName =  form.displayName />
 
 <!----------------------------------------
  SET THE DATABASE SPECIFIC INFORMATION 
@@ -192,7 +194,7 @@ USE OBJECT BROKER?
 <!--- Webtop --->
 <cfset webtopPath = expandPath('/farcry/core/webtop') />
 
-<cfoutput>#updateProgressBar(value="0.1", text="SETUP: Creating your project")#</cfoutput><cfflush>
+<cfoutput>#updateProgressBar(value="0.1", text="#form.displayName# (SETUP): Creating your project")#</cfoutput><cfflush>
 	
 		
 	<cfset oZip = createObject("component", "farcry.core.packages.farcry.zip") />
@@ -211,6 +213,7 @@ USE OBJECT BROKER?
 	<cffile action="read" file="#farcryConstructorLoc#" variable="farcryConstructorContent" />
 
 	<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@applicationName@@", "#form.applicationName#", "all") />
+	<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@displayName@@", "#form.displayName#", "all") />
 	<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@DSN@@", "#form.DSN#", "all") />
 	<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@DBType@@", "#form.DBType#", "all") />
 	<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@DBOwner@@", "#form.DBOwner#", "all") />
@@ -225,7 +228,7 @@ USE OBJECT BROKER?
 
 	<cfswitch expression="#form.projectInstallType#">
 	<cfcase value="subDirectory">
-		<cfoutput>#updateProgressBar(value="0.2", text="SETUP: Copying your project to a subdirectory under the webroot")#</cfoutput><cfflush>
+		<cfoutput>#updateProgressBar(value="0.2", text="#form.displayName# (SETUP): Copying your project to a subdirectory under the webroot")#</cfoutput><cfflush>
 		
 		
 		<cfset projectWebrootPath = "#webrootPath#/#form.applicationName#" />
@@ -243,7 +246,7 @@ USE OBJECT BROKER?
 
 	</cfcase>
 	<cfcase value="standalone">
-		<cfoutput>#updateProgressBar(value="0.2", text="SETUP: Copying your project to the webroot")#</cfoutput><cfflush>
+		<cfoutput>#updateProgressBar(value="0.2", text="#form.displayName# (SETUP): Copying your project to the webroot")#</cfoutput><cfflush>
 		<cfset projectWebrootPath = "#webrootPath#" />
 		<cfset projectWebrootURL = "http://#cgi.server_name#" />
 		
@@ -325,11 +328,11 @@ USE OBJECT BROKER?
 		<!--- 
 		This sets up a cookie on the users system so that if they try and login to the webtop and the webtop can't determine which project it is trying to update,
 		it will know what projects they will be potentially trying to edit.  --->
-		<cfparam name="server.lFarcryProjects" default="" />
-		<cfif not listFindNoCase(server.lFarcryProjects, application.projectDirectoryName)>
-			<cfset server.lFarcryProjects = listAppend(server.lFarcryProjects, application.projectDirectoryName) />
+		<cfparam name="server.stFarcryProjects" default="#structNew()#" />
+		<cfif not structKeyExists(server.stFarcryProjects, application.projectDirectoryName)>
+			<cfset server.stFarcryProjects[application.projectDirectoryName] = application.displayName />
 		</cfif>	
-		<cfset cookie.currentFarcryProject = application.projectDirectoryName />	
+		<cfset cookie.currentFarcryProject = application.projectDirectoryName />
 	
 		<cfoutput>#updateProgressBar(value="1", text="INSTALLATION SUCCESS")#</cfoutput><cfflush>
 		

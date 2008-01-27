@@ -23,18 +23,9 @@
 </cfif>
 
 <cfoutput>
-		<script type="text/javascript" src="#application.url.farcry#/js/fade.js"></script>
-		
-		<script type="text/javascript">
-			function ol()
-			{
-			    el=document.getElementById('userLogin');
-			    if ( el.value.length==0 ) el.focus();
-			}
-		</script>
 	</head>
 	
-	<body id="sec-login" onload="ol()">
+	<body id="sec-login">
 </cfoutput>
 		
 <ft:form css="forms.css" class="login">
@@ -67,13 +58,13 @@
 </cfoutput>
 		
 		<ft:form>
-			<cfif structKeyExists(server, "lFarcryProjects") and listLen(server.lFarcryProjects) GT 1>
+			<cfif structKeyExists(server, "stFarcryProjects") AND listLen(structKeyList(server.stFarcryProjects)) GT 1>
 				<cfoutput><fieldset class="formSection"></cfoutput>
 				
 				<cfoutput>
 					<select id="selectFarcryProject" onchange="window.location='#application.url.webtop#/login.cfm?returnUrl=#urlencodedformat(url.returnUrl)#&farcryProject='+this.value;">						
-						<cfloop list="#server.lFarcryProjects#" index="thisProject">
-							<option value="#thisProject#"<cfif cookie.currentFarcryProject eq thisProject> selected</cfif>>LOGIN TO: #thisProject#</option>
+						<cfloop list="#structKeyList(server.stFarcryProjects)#" index="thisProject">
+							<option value="#thisProject#"<cfif cookie.currentFarcryProject eq thisProject> selected</cfif>>LOGIN TO: #server.stFarcryProjects[thisProject]#</option>
 						</cfloop>						
 					</select>
 				</cfoutput>
@@ -89,15 +80,18 @@
 			
 			
 			<ft:object typename="farLogin" />
-			
-			<cfif isdefined("arguments.stParams.message") and len(arguments.stParams.message)>
-				<cfoutput>
-					<div class="error">#arguments.stParams.message#</div>
-				</cfoutput>
-			</cfif>
+
 
 			<cfoutput><fieldset class="formSection"></cfoutput>
-			<ft:farcrybutton value="Log In" />
+			
+
+				<cfif isdefined("arguments.stParam.message") and len(arguments.stParam.message)>
+					<cfoutput>
+						<div class="error">#arguments.stParam.message#</div>
+					</cfoutput>
+				</cfif>
+			
+				<ft:farcrybutton value="Log In" />
 			<cfoutput></fieldset></cfoutput>
 		</ft:form>
 
