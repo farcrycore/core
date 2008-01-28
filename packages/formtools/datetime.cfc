@@ -129,9 +129,8 @@
 			<cfparam name="arguments.stMetadata.ftTimeFormatMask" default="hh:mm tt">
 			<cfparam name="arguments.stMetadata.ftShowTime" default="true">		
 			<cfparam name="arguments.stMetadata.ftDateLocale" default="en-AU">		
-			<cfparam name="arguments.stMetadata.ftShowCalendar" default="true">	
-			<cfparam name="arguments.stMetadata.ftCalendarFormatMask" default="">
-			<cfparam name="arguments.stMetadata.ftCalendarShowTime" default="true">	
+			<cfparam name="arguments.stMetadata.ftShowCalendar" default="true">		
+			<cfparam name="arguments.stMetadata.ftShowSuggestions" default="true">	
 			
 			<cfset arguments.stMetadata.ftShowTime = true />
 			<!--- Just in case the developer has included lowercase mmmm or mmm which is not valid, we are changing to uppercase MMMM and MMM respectively. --->
@@ -247,7 +246,7 @@
 						<span id="#arguments.fieldname#Info" class="dateJSHiddenValue <cfif len(arguments.stMetadata.value)>dateAccept<cfelse>dateEmpty</cfif>">#DateFormat(arguments.stMetadata.value,arguments.stMetadata.ftDateFormatMask)# <cfif arguments.stMetadata.ftShowTime>#TimeFormat(arguments.stMetadata.value,arguments.stMetadata.ftTimeFormatMask)#</cfif></span>
 						<input type="text" id="#arguments.fieldname#Input" name="#arguments.fieldname#Input" value="Type in your date" />
 						<a id="#arguments.fieldname#DatePicker"><img src="#application.url.farcry#/js/dateTimePicker/cal.gif" width="16" height="16" border="0" alt="Pick a date"></a>
-						<div class="dateSuggestions">Examples: tomorrow; next tues at 5am; +5days;</div>
+						<cfif arguments.stMetadata.ftShowSuggestions><div class="dateSuggestions">Examples: tomorrow; next tues at 5am; +5days;</div></cfif>
 					</div>
 					<input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="#DateFormat(arguments.stMetadata.value,'yyyy/mmm/dd')# #TimeFormat(arguments.stMetadata.value, 'hh:mm tt')#">
 				</cfoutput>
