@@ -226,6 +226,14 @@
 					    	updateDateJSField('#arguments.fieldname#', '#arguments.stMetadata.ftDateFormatMask# #arguments.stMetadata.ftTimeFormatMask#');
 						 }
 					});
+					Ext.get("#arguments.fieldname#Input").on('focus', this.onClick, this, {
+					    buffer: 200,
+					    fn: function() { 
+					    	if (Ext.get("#arguments.fieldname#Input").dom.value == 'Type in your date') {
+					    		Ext.get("#arguments.fieldname#Input").dom.value = '';
+					    	}
+						 }
+					});
 				</cfoutput>			
 			</extjs:onReady>	
 			
