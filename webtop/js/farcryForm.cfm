@@ -230,7 +230,7 @@ function createFormtoolTree(fieldname,rootID,dataURL,rootNodeText,selectedIDs,ic
 			Ext.getDom(fieldname).value = currentTreeList + n.id
 		} else {
 			var valueArray = currentTreeList.split(",");
-			for(var i=0; i<valueArray.length; i++){
+			for(var i=0; i < valueArray.length; i++){
 			  //do something by accessing valueArray[i];
 			  if(n.id != valueArray[i]){
 			  	if(newList.length){
