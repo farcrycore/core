@@ -258,7 +258,7 @@
 				<!--- /DEPRECATED --->
 				
 				<!--- First login flag --->
-				<cfif createObject("component", application.stcoapi["farLog"].packagePath).filterLog(userid=session.security.userid,type="security",event="login").recordcount eq 0>
+				<cfif createObject("component", application.stcoapi["farLog"].packagePath).filterLog(userid=session.security.userid,type="security",event="login").recordcount>
 					<cfset session.security.firstlogin = false />
 					
 					<!--- DEPRECATED --->
