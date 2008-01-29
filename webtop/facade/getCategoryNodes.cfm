@@ -23,7 +23,7 @@
 <cfif len(form.selectedObjectIDs)>
 	<cfquery datasource="#application.dsn#" name="qTreeCategories">
 		SELECT * FROM nested_tree_objects
-		WHERE typename = 'categories'
+		WHERE typename = 'dmCategory'
 		AND ObjectID IN (#listQualify(form.selectedObjectIDs,"'")#)
 	</cfquery>
 </cfif>
