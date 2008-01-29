@@ -238,6 +238,9 @@ USE OBJECT BROKER?
 		<cfset oZip.AddFiles(zipFilePath="#projectWebrootPath#/project-webroot.zip", directory="#farcryProjectsPath#/#form.applicationName#/www", recurse="true", compression=0, savePaths="false") />
 		<cfset oZip.Extract(zipFilePath="#projectWebrootPath#/project-webroot.zip", extractPath="#projectWebrootPath#", overwriteFiles="true") />
 		<cffile action="delete" file="#projectWebrootPath#/project-webroot.zip" />
+		<cfif directoryExists("#farcryProjectsPath#/#form.applicationName#/wwwCopiedToFolderUnderWebroot")>
+			<cfdirectory action="delete" directory="#farcryProjectsPath#/#form.applicationName#/wwwCopiedToFolderUnderWebroot" recurse="true" />
+		</cfif>
 		<cfdirectory action="rename" directory="#farcryProjectsPath#/#form.applicationName#/www" newdirectory="wwwCopiedToFolderUnderWebroot" />
 		
 				
@@ -254,10 +257,11 @@ USE OBJECT BROKER?
 		<cfset oZip.AddFiles(zipFilePath="#projectWebrootPath#/project-webroot.zip", directory="#farcryProjectsPath#/#form.applicationName#/www", recurse="true", compression=0, savePaths="false") />
 		<cfset oZip.Extract(zipFilePath="#projectWebrootPath#/project-webroot.zip", extractPath="#projectWebrootPath#", overwriteFiles="true") />
 		<cffile action="delete" file="#projectWebrootPath#/project-webroot.zip" />
+		<cfif directoryExists("#farcryProjectsPath#/#form.applicationName#/wwwCopiedToWebroot")>
+			<cfdirectory action="delete" directory="#farcryProjectsPath#/#form.applicationName#/wwwCopiedToWebroot" recurse="true" />
+		</cfif>		
 		<cfdirectory action="rename" directory="#farcryProjectsPath#/#form.applicationName#/www" newdirectory="#farcryProjectsPath#/#form.applicationName#/wwwCopiedToWebroot" />
-		<!--- 
-		<cfset directoryCopy(source="#farcryProjectsPath#/#form.applicationName#/www", destination="#projectWebrootPath#", nameconflict="overwrite") /> --->
-
+	
 	</cfcase>
 	<cfcase value="CFMapping">
 		<cfset projectWebrootURL = "http://#cgi.server_name#" />
@@ -352,7 +356,7 @@ USE OBJECT BROKER?
 				</div>
 				<div class="itemButtons">
 					<form name="installComplete" id="installComplete" method="post" action="">
-						<input type="button" name="login" value="LOGIN TO FARCRY" onClick="alert('Your default Farcry login is\n\n u: farcry\n p: farcry');window.open('#application.url.webtop#')" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle'" onMouseOut="this.className='normalbttnstyle'" />
+						<input type="button" name="login" value="LOGIN TO THE FARCRY WEBTOP" onClick="alert('Your default Farcry login is\n\n u: farcry\n p: farcry');window.open('#application.url.webtop#/login.cfm?farcryProject=#application.projectDirectoryName#')" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle'" onMouseOut="this.className='normalbttnstyle'" />
 						<input type="button" name="view" value="VIEW SITE" onClick="window.open('#application.url.webroot#?updateapp=1')" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle'" onMouseOut="this.className='normalbttnstyle'" />
 					</form><br /> 
 				</div>

@@ -33,6 +33,7 @@ $out:$
 	<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
 	
 	<cfparam name="url.ud" default="#application.security.getDefaultUD()#" />
+	<cfparam name="url.returnURL" default="#application.url.webtop#/index.cfm" />
 	
 	
 	<cfif structKeyExists(url, "farcryProject") AND structKeyExists(server, "stFarcryProjects") AND structKeyExists(cookie, "currentFarcryProject") AND structKeyExists(server.stFarcryProjects, url.farcryProject) AND cookie.currentFarcryProject NEQ url.farcryProject>
@@ -50,7 +51,7 @@ $out:$
 	</cfif>
 	
 	<!--- set message [error], if user has logged out --->
-	<cfif structisempty(stResult) and returnUrl contains "logout=1">
+	<cfif structisempty(stResult) and url.returnUrl contains "logout=1">
 		<cfset application.security.logout() />
 		<cfset stResult.authenticated = false />
 	    <cfset stResult.message = "<b>OK:</b> You have successfully logged out." />

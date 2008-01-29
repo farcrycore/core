@@ -23,6 +23,8 @@
 		a {color: ##116EAF;}
 		body {color:##5A7EB9;font:76%/1.5 arial,tahoma,verdana,sans-serif;}
 		.projectInstallType {border:1px dotted ##e3e3e3;padding:10px;margin:10px;}
+		.fieldDisplay {font-weight:bold;}
+		.summary {border-top:1px dotted ##e3e3e3;}
 		</style>
 		
 	</head>
@@ -201,7 +203,7 @@ RENDER THE CURRENT STEP
       	<label for="applicationName">Project Name <em>*</em></label>
 		<div class="field">
 			<input type="text" id="displayName" name="displayName" value="#session.stFarcryInstall.stConfig.displayName#">
-			<div class="fieldHint">todo: hint</div>
+			<!---<div class="fieldHint">todo: hint</div>--->
 		</div>
 		<div class="clear"></div>
 	</div>	
@@ -424,17 +426,9 @@ RENDER THE CURRENT STEP
 	<div class="projectInstallType">		
 		<h3>
 			<input type="radio" id="projectInstallType" name="projectInstallType" value="CFMapping" <cfif session.stFarcryInstall.stConfig.projectInstallType EQ "CFMapping">checked</cfif>>
-			Advanced Configuration (ColdFusion Mapping)
+			Advanced Configuration (ColdFusion and/or Web Server Mappings)
 		</h3>
-		<p>An enterprise configuration that allows for an unlimited number of projects to share a single core framework and library of plugins. Sharing is done through common reference to specific ColdFusion mapping of /farcry.</p>
-	</div>
-	
-	<div class="projectInstallType">		
-		<h3>
-			<input type="radio" id="projectInstallType" name="projectInstallType" value="WebserverMapping" <cfif session.stFarcryInstall.stConfig.projectInstallType EQ "WebserverMapping">checked</cfif>>
-			Advanced Configuration (Webserver Mapping)
-		</h3>
-		<p>An enterprise configuration that allows for an unlimited number of projects to share a single core framework and library of plugins. Sharing is done through common reference to specific web server mapping (aka web virtual directory) of /farcry.</p>
+		<p>An enterprise configuration that allows for an unlimited number of projects to share a single core framework and library of plugins. Sharing is done through common reference to specific ColdFusion mapping or specific web server mapping (aka web virtual directory) of /farcry.</p>
 	</div>
 			
 	
@@ -464,7 +458,74 @@ RENDER THE CURRENT STEP
 
 
 <cf_displayStep step="6">
-	<cfdump var="#session.stFarcryInstall.stConfig#" expand="true" label="session.stFarcryInstall.stConfig" />	
+
+<cfoutput>
+<h2>Intallation Confirmation</h2>
+<div class="item summary">
+	<label>Project Name:</label>
+	<div class="field fieldDisplay">#session.stFarcryInstall.stConfig.displayName#</div>
+	<div class="clear"/>
+</div>
+<div class="item summary">
+	<label>Project Folder Name:</label>
+	<div class="field fieldDisplay">#session.stFarcryInstall.stConfig.applicationName#</div>
+	<div class="clear"/>
+</div>
+<div class="item summary">
+	<label>DSN:</label>
+	<div class="field fieldDisplay">#session.stFarcryInstall.stConfig.dsn#</div>
+	<div class="clear"/>
+</div>
+<div class="item summary">
+	<label>Database Type:</label>
+	<div class="field fieldDisplay">#session.stFarcryInstall.stConfig.dbType#</div>
+	<div class="clear"/>
+</div>
+<cfif len(session.stFarcryInstall.stConfig.dbOwner)>
+	<div class="item summary">
+		<label>Database Owner:</label>
+		<div class="field fieldDisplay">#session.stFarcryInstall.stConfig.dbOwner#</div>
+		<div class="clear"/>
+	</div>
+</cfif>
+<div class="item summary">
+	<label>Plugins:</label>
+	<div class="field fieldDisplay">
+		<cfloop list="#session.stFarcryInstall.stConfig.plugins#" index="PluginName">
+			<cfset oManifest = createObject("component", "farcry.plugins.#PluginName#.install.manifest")>
+			<div style="border-bottom:1px dotted ##e3e3e3;">
+				#oManifest.name# - #oManifest.description#
+			</div>
+		</cfloop>
+	</div>
+	<div class="clear"/>
+</div>
+<div class="item summary">
+	<label>Skeleton:</label>
+	<div class="field fieldDisplay">
+		<cfset oManifest = createObject("component", "#session.stFarcryInstall.stConfig.skeleton#.install.manifest")>
+		#oManifest.name#
+	</div>
+	<div class="clear"/>
+</div>
+<div class="item summary">
+	<label>Project Install Type:</label>
+	<div class="field fieldDisplay">
+		<cfswitch expression="#session.stFarcryInstall.stConfig.projectInstallType#">
+			<cfcase value="SubDirectory">
+				A sub-directory under the web root
+			</cfcase>
+			<cfcase value="webroot">
+				Directly into the web root
+			</cfcase>
+			<cfdefaultcase>
+				Into /farcry/projects/#session.stFarcryInstall.stConfig.applicationName#/www
+			</cfdefaultcase>
+		</cfswitch>
+	</div>
+	<div class="clear"/>
+</div>
+</cfoutput>	
 </cf_displayStep>
 
 
