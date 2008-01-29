@@ -25,7 +25,7 @@
 		<cfset var step=1>
 		
 		<cfparam name="arguments.stMetadata.ftRenderType" default="dateJS">	
-		<cfparam name="arguments.stMetadata.ftToggleOffDateTime" default="1">
+		<cfparam name="arguments.stMetadata.ftToggleOffDateTime" default="0">
 		
 			
 		<cfif arguments.stMetadata.ftToggleOffDateTime>
@@ -128,15 +128,23 @@
 			<cfparam name="arguments.stMetadata.ftDateFormatMask" default="dd MMM yyyy">
 			<cfparam name="arguments.stMetadata.ftTimeFormatMask" default="hh:mm tt">
 			<cfparam name="arguments.stMetadata.ftShowTime" default="true">		
-			<cfparam name="arguments.stMetadata.ftDateLocale" default="en-AU">		
+			<cfparam name="arguments.stMetadata.ftDateLocale" default="">		
 			<cfparam name="arguments.stMetadata.ftShowCalendar" default="true">		
-			<cfparam name="arguments.stMetadata.ftShowSuggestions" default="true">	
+			<cfparam name="arguments.stMetadata.ftShowSuggestions" default="false">	
 			
-			<cfset arguments.stMetadata.ftShowTime = true />
+			<!--- If no locale explicitly specified, set it to the dmProfile locale if available. Otherwise just use Australia. --->
+			<cfif not len(arguments.stMetadata.ftDateLocale)>
+				<cfif isDefined("session.dmProfile.locale") and len(session.dmProfile.locale)>
+					<cfset arguments.stMetadata.ftDateLocale = replaceNoCase(session.dmProfile.locale,"_", "-", "all") />
+				<cfelse>
+					<cfset arguments.stMetadata.ftDateLocale = "en-AU" />
+				</cfif>
+			</cfif>
+
 			<!--- Just in case the developer has included lowercase mmmm or mmm which is not valid, we are changing to uppercase MMMM and MMM respectively. --->
 			<cfset arguments.stMetadata.ftDateFormatMask = replaceNoCase(arguments.stMetadata.ftDateFormatMask, "mmmm", "MMMM", "all") />
 			<cfset arguments.stMetadata.ftDateFormatMask = replaceNoCase(arguments.stMetadata.ftDateFormatMask, "mmm", "MMM", "all") />			
-			
+			<cfset arguments.stMetadata.ftDateFormatMask = replaceNoCase(arguments.stMetadata.ftDateFormatMask, "mm", "MM", "all") />			
 
 			<!--- 
 			FormatSpecifiers   
