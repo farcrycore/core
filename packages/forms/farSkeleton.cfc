@@ -1,6 +1,7 @@
 <cfcomponent displayname="Farcry Skeleton Creation" hint="The Skeleton creation form" extends="forms" output="false">
 	<cfproperty ftSeq="1" ftFieldset="" name="name" type="string" default="" hint="The name of the new skeleton" ftLabel="Skeleton name" ftValidation="required" />
 	<cfproperty ftSeq="2" ftFieldset="" name="description" type="longchar" default="" hint="The description of the new skeleton" ftLabel="Description" />
+	<cfproperty ftSeq="3" ftFieldset="" name="bContentOnly" type="boolean" default="1" hint="unchecked will copy the project into the /farcry/skeleton folder. Checked will simply export the content wddx files into the project and create the manifest" ftLabel="Content Only" />
 	<cfproperty ftSeq="3" ftFieldset="" name="bIncludeLog" type="boolean" default="0" hint="Should they include the farLog Table" ftLabel="Include Log Table" />
 	<cfproperty ftSeq="4" ftFieldset="" name="bIncludeArchive" type="boolean" default="0" hint="Should they include the dmArchive Table" ftLabel="Include Archive Table" />
 	
