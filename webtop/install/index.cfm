@@ -201,6 +201,7 @@ RENDER THE CURRENT STEP
       	<label for="applicationName">Project Name <em>*</em></label>
 		<div class="field">
 			<input type="text" id="displayName" name="displayName" value="#session.stFarcryInstall.stConfig.displayName#">
+			<div class="fieldHint">todo: hint</div>
 		</div>
 		<div class="clear"></div>
 	</div>	
