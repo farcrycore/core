@@ -1,4 +1,4 @@
-<cfcomponent extends="farcry.core.admin.install.manifest" name="manifest">
+<cfcomponent extends="farcry.core.webtop.install.manifest" name="manifest">
 
 	<!--- IMPORT TAG LIBRARIES --->
 	<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
