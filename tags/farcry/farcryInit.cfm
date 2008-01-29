@@ -42,13 +42,31 @@
 <cfparam name="attributes.bObjectBroker" default="true" />
 <cfparam name="attributes.ObjectBrokerMaxObjectsDefault" default="100" />
 
-<cfparam name="attributes.locales" default="en_AU" />
+<cfparam name="attributes.locales" default="" />
 
 <!--- Option to archive --->
 <cfparam name="attributes.bUseMediaArchive" default="false" />
 	
 <cfif attributes.dbtype EQ "mssql" AND NOT len(attributes.dbowner)>
 	<cfset attributes.dbowner = "dbo." />
+</cfif>
+
+
+<!--- Determine Locales currently used in the project --->
+<cfif not len(attributes.locales)>
+	<cfswitch expression="#attributes.dbtype#">
+		<cfdefaultcase>
+			<cfquery datasource="#attributes.dsn#" name="qProfileLocales">
+			SELECT distinct(locale) as locale
+			from dmProfile
+			</cfquery>
+			
+			<cfif qProfileLocales.recordCount>
+				<cfset attributes.locales = valueList(qProfileLocales.locale) />
+			</cfif>
+		</cfdefaultcase>
+	</cfswitch>
+
 </cfif>
 
 
