@@ -359,7 +359,8 @@ RENDER THE CURRENT STEP
 
 	<cfoutput>		
 	<h2>PLUGINS</h2>
-    
+	<!--- set plugins to blank in case no plugins are listed at all and skeleton is requiring one --->
+    <input type="hidden" name="plugins" value="" />
 		
 		<cfloop query="qPlugins">
 			<cfif qPlugins.type EQ "DIR" and fileExists("#pluginPath#/#qPlugins.name#/install/manifest.cfc")>
@@ -367,7 +368,6 @@ RENDER THE CURRENT STEP
 				<cfset pluginSupported = oManifest.isSupported(coreMajorVersion="#request.coreVersion.major#",coreMinorVersion="#request.coreVersion.minor#",corePatchVersion="#request.coreVersion.patch#")>
 				
 				<div id="plugin-#qPlugins.name#">
-					<input type="hidden" name="plugins" value="" />
 					<table cellspacing="10" cellpadding="0">
 					<tr>
 						<td valign="top">
