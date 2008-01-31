@@ -186,15 +186,15 @@ $out: <separate entry for each variable>$
 	<cfscript> 
 		stStatus.status = true;
 		stStatus.message = stStatus.message & stReturn.message & '<br>' & 'categories, refCategory tables successfully created';
-	</cfscript>
+	</cfscript>--->
 	<cfcatch type="database">
 		<cfscript>
 			//TODO - put some details of the cfcatch.Message 
 			stStatus.status = false;
-			stStatus.message = 'Creat categories, refCategory tables failed';
+			stStatus.message = 'CreaterefCategory tables failed';
 		</cfscript>
 		<Cfdump var="#cfcatch#"><cfabort>
-	</cfcatch> --->
+	</cfcatch> 
 	 
 </cftry>	
 </cflock>
