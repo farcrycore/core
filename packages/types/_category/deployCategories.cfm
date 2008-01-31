@@ -37,7 +37,7 @@ $out: <separate entry for each variable>$
 
 	<cfswitch expression="#application.dbtype#">
 	<cfcase value="ora">
-		<cfquery datasource="#arguments.dsn#" name="qExists">
+<!--- 		<cfquery datasource="#arguments.dsn#" name="qExists">
 			SELECT * FROM USER_TABLES
 			WHERE TABLE_NAME = 'dmCategory'
 		</cfquery>
@@ -45,7 +45,7 @@ $out: <separate entry for each variable>$
 			<cfquery datasource="#arguments.dsn#">
 			DROP TABLE #application.dbowner#dmCategory
 			</cfquery>
-		</cfif>	
+		</cfif>	 --->
 		<cfquery datasource="#arguments.dsn#" name="qExists">
 			SELECT * FROM USER_TABLES
 			WHERE TABLE_NAME = 'REFCATEGORIES'
@@ -58,31 +58,31 @@ $out: <separate entry for each variable>$
 		</cfif>	
 	</cfcase>
 	<cfcase value="mysql,mysql5">
-		<cfquery datasource="#arguments.dsn#">
+<!--- 		<cfquery datasource="#arguments.dsn#">
         	DROP TABLE IF EXISTS dmCategory	
-		</cfquery>
+		</cfquery> --->
 		<cfquery datasource="#arguments.dsn#">
         	DROP TABLE IF EXISTS refCategories
 		</cfquery>
 	</cfcase>
 	<cfcase value="postgresql">
-		<cftry>
+<!--- 		<cftry>
       <cfquery datasource="#arguments.dsn#">
         	DROP TABLE dmCategory	
-		</cfquery><cfcatch></cfcatch></cftry>
+		</cfquery><cfcatch></cfcatch></cftry> --->
 		<cftry><cfquery datasource="#arguments.dsn#">
         	DROP TABLE refCategories
 		</cfquery><cfcatch></cfcatch></cftry>
 	</cfcase>
 	<cfdefaultcase>
 	<cftransaction>
-		<cfquery datasource="#arguments.dsn#">
+<!--- 		<cfquery datasource="#arguments.dsn#">
         if exists (select * from sysobjects where name = 'dmCategory')
 		DROP TABLE dmCategory	
 
     	-- return recordset to stop CF bombing out?!?
     	select count(*) as blah from sysobjects
-		</cfquery>
+		</cfquery> --->
 		<cfquery datasource="#arguments.dsn#">
         if exists (select * from sysobjects where name = 'refCategories')
         DROP TABLE refCategories
@@ -100,7 +100,7 @@ $out: <separate entry for each variable>$
 <cftry>
 	<cfswitch expression="#application.dbtype#">
 	<cfcase value="ora">
-		
+<!--- 		
 		<cfquery datasource="#arguments.dsn#">
 			CREATE TABLE #application.dbowner#dmCategory
 			(
@@ -108,7 +108,7 @@ $out: <separate entry for each variable>$
 			ALIAS VARCHAR2(50) NULL,
 			CATEGORYLABEL VARCHAR2(255) NOT NULL
 			)
-		</cfquery>
+		</cfquery> --->
 		<cfquery datasource="#arguments.dsn#">
 			CREATE TABLE #application.dbowner#REFCATEGORIES
 			(
@@ -119,14 +119,14 @@ $out: <separate entry for each variable>$
 		
 	</cfcase>
 	<cfcase value="mysql,mysql5">
-		<cfquery datasource="#arguments.dsn#">
+<!--- 		<cfquery datasource="#arguments.dsn#">
 		CREATE TABLE #application.dbowner#dmCategory
 		(
 			objectid VARCHAR(50) NOT NULL,
 			alias VARCHAR(50) NULL,
 			categoryLabel VARCHAR(255) NOT NULL
 		)
-		</cfquery>
+		</cfquery> --->
 		<cfquery datasource="#arguments.dsn#">
 		CREATE TABLE #application.dbowner#refCategories
 		(
@@ -136,14 +136,14 @@ $out: <separate entry for each variable>$
 		</cfquery>
 	</cfcase>
 	<cfcase value="postgresql">
-		<cfquery datasource="#arguments.dsn#">
+<!--- 		<cfquery datasource="#arguments.dsn#">
 		CREATE TABLE #application.dbowner#dmCategory
 		(
 			objectid VARCHAR (50) NOT NULL,
 			categoryLabel VARCHAR (255) NOT NULL,
 			alias VARCHAR (50) NULL
 		)
-		</cfquery>
+		</cfquery> --->
 		<cfquery datasource="#arguments.dsn#">
 		CREATE TABLE #application.dbowner#refCategories
 		(
@@ -155,14 +155,14 @@ $out: <separate entry for each variable>$
 	<cfdefaultcase>
 	<cftransaction>
 	<!--- Create category and refCategories Tables --->
-	<cfquery datasource="#arguments.dsn#">
+<!--- 	<cfquery datasource="#arguments.dsn#">
 	CREATE TABLE #application.dbowner#dmCategory
 	(
 		[objectid] [VARCHAR] (50) NOT NULL,
 		[alias] [VARCHAR] (50) NULL,
 		[categoryLabel] [NVARCHAR] (512) NOT NULL
 	);
-	</cfquery>
+	</cfquery> --->
 	<cfquery datasource="#arguments.dsn#">
 	CREATE TABLE #application.dbowner#refCategories
 	(
@@ -173,7 +173,7 @@ $out: <separate entry for each variable>$
 	</cftransaction>
 	</cfdefaultcase>
 	</cfswitch>
-	
+	<!--- 
 	<cfset rootUUID = createUUID()>
 	<cfquery datasource="#application.dsn#" name="qUpdate">
 		insert into #application.dbowner#dmCategory
@@ -194,7 +194,7 @@ $out: <separate entry for each variable>$
 			stStatus.message = 'Creat categories, refCategory tables failed';
 		</cfscript>
 		<Cfdump var="#cfcatch#"><cfabort>
-	</cfcatch>
+	</cfcatch> --->
 	 
 </cftry>	
 </cflock>

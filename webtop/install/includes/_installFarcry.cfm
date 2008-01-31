@@ -64,13 +64,13 @@ DEPLOY SYSTEM TABLES
 <cfset oCon = createObject("component","#application.packagepath#.rules.container") />
 <cfset oCon.deployRefContainers(dsn=application.dsn,dbtype=application.dbtype,dbowner=application.dbowner) />
 <cfflush />
-<!--- 
+
 <!--- // setup metadata categories --->
 <!--- todo: build relevant schema component --->
 <cfoutput>#updateProgressBar(value="0.4", text="#form.displayName# (DATABASE): Creating categorisation table.")#</cfoutput><cfflush>
 <cfset category = createObject("component", "#application.packagepath#.farcry.category") />
 <cfset stResult = category.deployCategories(dsn=application.dsn,bDropTables=true) />
-<cfflush /> --->
+<cfflush />
 
 <!--- // setup stats table --->
 <!--- todo: build relevant schema component --->
