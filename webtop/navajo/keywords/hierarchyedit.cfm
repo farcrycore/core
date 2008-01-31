@@ -57,7 +57,7 @@ $out:$
 </script>
 </cfoutput>
 <cfscript>
-	qrootObjectID = application.factory.oTree.getRootNode(typename='categories');
+	qrootObjectID = application.factory.oTree.getRootNode(typename='dmCategory');
 	catRootObjectID = qrootObjectID.objectID;
 </cfscript>
 
