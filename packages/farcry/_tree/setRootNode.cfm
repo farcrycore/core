@@ -49,6 +49,12 @@ $out:$
 		
 </cfscript>
 
+<cfset stProperties = structNew() />
+<cfset stProperties.objectid = arguments.objectid />
+<cfset stProperties.typename = arguments.typename />
+<cfset stProperties.alias = 'root' />
+
+<cfset stResult = createObject("component", application.stcoapi[arguments.typename].packagepath).createData(stproperties="#stproperties#") />
 
 <cfset stReturn=stTmp>
 

@@ -317,7 +317,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 		
 		<cfscript>
 			// Get root node
-			qRoot = application.factory.oTree.getRootNode(typename="categories");
+			qRoot = application.factory.oTree.getRootNode(typename="dmCategory");
 			if (not qRoot.recordcount) {
 				application.factory.oTree.setRootNode(typename="dmCategory",objectid=createUUID(),objectName="root");
 				qRoot = application.factory.oTree.getRootNode(typename="dmCategory");
