@@ -466,7 +466,9 @@
 		</cfif>
 
 		<cfif not len(loc)>				
-			<cfoutput>CONSTRUCTOR DOES NOT EXIST. <a href="/farcry/core/webtop/install">CLICK HERE</a> TO INSTALL A NEW PROJECT.</cfoutput>
+			<cfoutput><p>I can't find a FarCry project on this server to administer.</p>
+				<p><a href="/farcry/core/webtop/install">CLICK HERE</a> TO INSTALL A NEW PROJECT.</p>
+			</cfoutput>
 			<cfabort />		
 		</cfif>
 
@@ -496,7 +498,7 @@
 
 		<cfparam name="this.dsn" default="#this.name#" />
 		<cfparam name="this.dbowner" default="" />
-		<cfparam name="this.locales" default="en_AU" />
+		<cfparam name="this.locales" default="en_AU,en_US" />
 		
 		<cfparam name="this.projectDirectoryName" default="#this.name#"  />
 		<cfparam name="this.plugins" default="farcrycms"  />
@@ -523,7 +525,7 @@
 		<cfset application.dsn = this.dsn />
 		<cfset application.dbtype = this.dbtype />
 		<cfset application.dbowner = this.dbowner />
-		<cfset application.locales = this.locales />
+		<cfset application.locales = replaceNoCase(this.locales, " ","",  "all") />
 		
 		<cfif application.dbtype EQ "mssql" AND NOT len(this.dbowner)>
 			<cfset application.dbowner = "dbo." />
