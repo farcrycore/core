@@ -64,6 +64,7 @@ SETUP DEFAULTS FOR ALL INSTALLATION WIZARD FIELDS
 	<cfset session.stFarcryInstall.stConfig = "#structNew()#" />
 	<cfset session.stFarcryInstall.stConfig.applicationName = "" />
 	<cfset session.stFarcryInstall.stConfig.displayName = "" />
+	<cfset session.stFarcryInstall.stConfig.locales = "en_AU,en_US" />
 	<cfset session.stFarcryInstall.stConfig.DSN = "" />
 	<cfset session.stFarcryInstall.stConfig.DBType = "" />
 	<cfset session.stFarcryInstall.stConfig.DBOwner = "" />
@@ -197,6 +198,8 @@ RENDER THE CURRENT STEP
 
 	
 <cf_displayStep step="1">
+	
+
 	<cfoutput>	
 	<h2>PROJECT NAME</h2>
 	<div class="item">
@@ -211,6 +214,20 @@ RENDER THE CURRENT STEP
       	<label for="applicationName">Project Folder Name <em>*</em></label>
 		<div class="field">
 			<input type="text" id="applicationName" name="applicationName" value="#session.stFarcryInstall.stConfig.applicationName#">
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="item">
+      	<label for="applicationName">Locales <em>*</em></label>
+		<div class="field">
+			<cfset variables.aLocale = createObject("java","java.util.Locale").getAvailableLocales() />
+			<select name="locales" multiple="true">
+				<cfloop from="1" to="#arrayLen(variables.aLocale)#" index="i">
+					<cfif listLen(variables.aLocale[i],"_") EQ 2>
+						<option value="#variables.aLocale[i]#" <cfif listFindNoCase(session.stFarcryInstall.stConfig.locales, variables.aLocale[i])>selected</cfif>>#variables.aLocale[i].getDisplayName()#</option>
+					</cfif>
+				</cfloop>
+			</select>
 		</div>
 		<div class="clear"></div>
 	</div>			
@@ -469,6 +486,19 @@ RENDER THE CURRENT STEP
 <div class="item summary">
 	<label>Project Folder Name:</label>
 	<div class="field fieldDisplay">#session.stFarcryInstall.stConfig.applicationName#</div>
+	<div class="clear"/>
+</div>
+<div class="item summary">
+	<label>Locales:</label>
+	<div class="field fieldDisplay">
+		<cfset variables.aLocale = createObject("java","java.util.Locale").getAvailableLocales() />
+
+		<cfloop from="1" to="#arrayLen(variables.aLocale)#" index="i">
+			<cfif listFindNoCase(session.stFarcryInstall.stConfig.locales, variables.aLocale[i])>
+				#variables.aLocale[i].getDisplayName()#<br />
+			</cfif>
+		</cfloop>
+	</div>
 	<div class="clear"/>
 </div>
 <div class="item summary">

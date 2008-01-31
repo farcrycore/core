@@ -69,6 +69,7 @@ DETERMINE THE CURRENT VERSION OF FARCRY
 
 <cfset form.applicationName = session.stFarcryInstall.stConfig.applicationName />
 <cfset form.displayName = session.stFarcryInstall.stConfig.displayName />
+<cfset form.locales = session.stFarcryInstall.stConfig.locales />
 <cfset form.DSN = session.stFarcryInstall.stConfig.DSN />
 <cfset form.DBType = session.stFarcryInstall.stConfig.DBType />
 <cfset form.DBOwner = session.stFarcryInstall.stConfig.DBOwner />
@@ -263,6 +264,7 @@ USE OBJECT BROKER?
 
 	<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@applicationName@@", "#form.applicationName#", "all") />
 	<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@applicationDisplayName@@", "#form.displayName#", "all") />
+	<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@locales@@", "#form.locales#", "all") />
 	<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@DSN@@", "#form.DSN#", "all") />
 	<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@DBType@@", "#form.DBType#", "all") />
 	<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@DBOwner@@", "#form.DBOwner#", "all") />

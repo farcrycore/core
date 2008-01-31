@@ -27,7 +27,7 @@
 
 
 <!--- FARCRY SPECIFIC --->
-<cfset THIS.locales = "en_AU" />
+<cfset THIS.locales = "@@locales@@" />
 
 <cfset THIS.dsn = "@@dsn@@" /> 
 
