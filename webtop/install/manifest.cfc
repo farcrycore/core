@@ -33,22 +33,41 @@
 		<cfreturn bSupported />
 	</cffunction>
 	
+	<cffunction name="install">
+		
+		<cfset var result = "" />	
+		
+		<cfset result = createContent() />
+		
+		<cfreturn result />
+	</cffunction>
+	
 	
 	<cffunction name="createContent" access="public" returntype="string" output="false">
 	
-		<cfset var result = "" />
+		<cfset var result = "success" />
 		<cfset var oContent = "" />
+		<cfset var aContent = arrayNew(1) />
+		<cfset var stProperties = structNew() />
+		<cfset var stResult = structNew() />
+		<cfset var qTree = queryNew("blah") />
+		<cfset var qInsertTree = queryNew("blah") />
+		<cfset var qWDDX = queryNew("blah") />
+		<cfset var wddxTree = "" />
 		
-		<cffile action="read" file="#GetDirectoryFromPath(GetCurrentTemplatePath())#nested_tree_objects.wddx" variable="wddxTree" />
-		<cfwddx action="wddx2cfml" input="#wddxTree#" output="qTree" />
-		<cfloop query="qTree">
-			<cfquery datasource="#application.dsn#" name="qInsertTree">
-			INSERT INTO #application.dbowner#nested_tree_objects
-		  	(ObjectID, ParentID, ObjectName, TypeName, Nleft, Nright, Nlevel)
-		  	VALUES  ('#qTree.objectid#','#qTree.parentID#', '#qTree.objectName#','#qTree.typeName#',#qTree.nLeft#, #qTree.nRight#, #qTree.nLevel#)
-			</cfquery>
-		</cfloop>
+		<cfif fileExists("#GetDirectoryFromPath(GetCurrentTemplatePath())#nested_tree_objects.wddx")>
 
+			<cffile action="read" file="#GetDirectoryFromPath(GetCurrentTemplatePath())#nested_tree_objects.wddx" variable="wddxTree" />
+			<cfwddx action="wddx2cfml" input="#wddxTree#" output="qTree" />
+			<cfloop query="qTree">
+				<cfquery datasource="#application.dsn#" name="qInsertTree">
+				INSERT INTO #application.dbowner#nested_tree_objects
+			  	(ObjectID, ParentID, ObjectName, TypeName, Nleft, Nright, Nlevel)
+			  	VALUES  ('#qTree.objectid#','#qTree.parentID#', '#qTree.objectName#','#qTree.typeName#',#qTree.nLeft#, #qTree.nRight#, #qTree.nLevel#)
+				</cfquery>
+			</cfloop>
+
+		</cfif>
 
 		<cfdirectory directory="#GetDirectoryFromPath(GetCurrentTemplatePath())#" name="qWDDX" filter="*.wddx" sort="name">
 		
