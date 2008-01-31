@@ -94,14 +94,4 @@
 	
 </cftry>
 
-
-<cfoutput>
-	<table border="0" cellpadding="1" cellspacing="0" width="600">
-		<tr>
-			<td width="100%">Create Table Success: refFriendlyURL</td>
-			<td><span class="success">DONE</span></td>
-		</tr>
-	</table>
-</cfoutput>
-
 <cfsetting enablecfoutputonly="false">

@@ -45,7 +45,6 @@ DEPLOY SYSTEM TABLES
 
 <!--- // create nested_tree_objects table --->
 <cfoutput>#updateProgressBar(value="0.4", text="#form.displayName# (DATABASE): Creating audit table.")#</cfoutput><cfflush>
-<cfoutput><p>Creating nested tree model table.</p></cfoutput>
 <cfset nto = createObject("component", "farcry.core.packages.schema.nested_tree_objects").init(argumentcollection=stargs) />
 <cfset stResult = nto.createTable() />
 <cfflush />

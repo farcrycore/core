@@ -16,7 +16,7 @@ DETERMINE THE CURRENT VERSION OF FARCRY
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 	<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 	<head>
-		<title>FARCRY INSTALLER.</title>
+		<title>FARCRY INSTALLER....</title>
 		
 		<!--- EXT CSS & JS--->
 		<link rel="stylesheet" type="text/css" href="../js/ext/resources/css/ext-all.css">
@@ -62,9 +62,7 @@ DETERMINE THE CURRENT VERSION OF FARCRY
 
 <cfoutput>
 		<p style="text-align:right;border-top:1px solid ##e3e3e3;margin-top:25px;"><small>You are currently running version <strong>#request.coreVersion.major#-#request.coreVersion.minor#-#request.coreVersion.patch#</strong> of Farcry Core.</small></p>
-	</div>
-</body>
-</html>
+
 </cfoutput>
 
 
@@ -208,22 +206,6 @@ USE OBJECT BROKER?
 
 
 
-	<!--- read the master farcryConstructor file --->
-	<cfset farcryConstructorLoc = "#installPath#/config_files/farcryConstructor.cfm" />
-	<cffile action="read" file="#farcryConstructorLoc#" variable="farcryConstructorContent" />
-
-	<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@applicationName@@", "#form.applicationName#", "all") />
-	<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@displayName@@", "#form.displayName#", "all") />
-	<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@DSN@@", "#form.DSN#", "all") />
-	<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@DBType@@", "#form.DBType#", "all") />
-	<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@DBOwner@@", "#form.DBOwner#", "all") />
-	<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@plugins@@", "#form.plugins#", "all") />	
-	<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@projectURL@@", "#application.url.webroot#", "all") />
-	<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@webtopURL@@", "#application.url.webtop#", "all") />
-	
-	<cffile action="write" file="#farcryProjectsPath#/#form.applicationName#/www/farcryConstructor.cfm" output="#farcryConstructorContent#" addnewline="false" mode="777" />	
-
-
 
 
 	<cfswitch expression="#form.projectInstallType#">
@@ -273,6 +255,23 @@ USE OBJECT BROKER?
 	</cfcase>
 	</cfswitch>
 	
+	
+
+	<!--- read the master farcryConstructor file --->
+	<cfset farcryConstructorLoc = "#installPath#/config_files/farcryConstructor.cfm" />
+	<cffile action="read" file="#farcryConstructorLoc#" variable="farcryConstructorContent" />
+
+	<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@applicationName@@", "#form.applicationName#", "all") />
+	<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@applicationDisplayName@@", "#form.displayName#", "all") />
+	<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@DSN@@", "#form.DSN#", "all") />
+	<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@DBType@@", "#form.DBType#", "all") />
+	<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@DBOwner@@", "#form.DBOwner#", "all") />
+	<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@plugins@@", "#form.plugins#", "all") />	
+	<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@projectURL@@", "#application.url.webroot#", "all") />
+	<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@webtopURL@@", "#application.url.webtop#", "all") />
+
+	<cffile action="write" file="#farcryProjectsPath#/#form.applicationName#/www/farcryConstructor.cfm" output="#farcryConstructorContent#" addnewline="false" mode="777" />	
+	
 	<!--- 
 	<cfswitch expression="#form.webtopInstallType#">
 	<cfcase value="project">
@@ -317,11 +316,11 @@ USE OBJECT BROKER?
 		<!--- copied by bowden 7/23/2006. copied from b300.cfm. --->
 		<!--- FU updates --->
 		<cftry>
+			<cfoutput>#updateProgressBar(value="0.9", text="#form.displayName# (Friendly URL): Installing Friendly URLs")#</cfoutput><cfflush>
 		   	<cfinclude template="fu.cfm" />
 		   	<cfcatch>
 				<!--- display form with error message --->
 				<cfset errorMsg = "Problem building friendly URL table.">
-		 	   	<cfoutput>#errorMsg#</cfoutput>
 		 	   	<cfdump var="#cfcatch#">
 		    </cfcatch>
 		</cftry>
@@ -357,7 +356,7 @@ USE OBJECT BROKER?
 				<div class="itemButtons">
 					<form name="installComplete" id="installComplete" method="post" action="">
 						<input type="button" name="login" value="LOGIN TO THE FARCRY WEBTOP" onClick="alert('Your default Farcry login is\n\n u: farcry\n p: farcry');window.open('#application.url.webtop#/login.cfm?farcryProject=#application.projectDirectoryName#')" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle'" onMouseOut="this.className='normalbttnstyle'" />
-						<input type="button" name="view" value="VIEW SITE" onClick="window.open('#application.url.webroot#?updateapp=1')" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle'" onMouseOut="this.className='normalbttnstyle'" />
+						<input type="button" name="view" value="VIEW SITE" onClick="window.open('#application.url.webroot#/index.cfm?updateapp=1')" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle'" onMouseOut="this.className='normalbttnstyle'" />
 					</form><br /> 
 				</div>
 			</div>
@@ -374,7 +373,11 @@ USE OBJECT BROKER?
 		<cfset structDelete(session, "stFarcryInstall") />
 	</cfif>
 
-
+<cfoutput>
+	</div>
+</body>
+</html>
+</cfoutput>
 	
 	
 <!--- REMOVE .SVN FOLDERS FROM ENTIRE DIRECTORY --->
