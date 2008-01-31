@@ -334,8 +334,7 @@ USE OBJECT BROKER?
 		<cfparam name="server.stFarcryProjects" default="#structNew()#" />
 		<cfif not structKeyExists(server.stFarcryProjects, application.projectDirectoryName)>
 			<cfset server.stFarcryProjects[application.projectDirectoryName] = application.displayName />
-		</cfif>	
-		<cfset cookie.currentFarcryProject = application.projectDirectoryName />
+		</cfif>
 	
 		<cfoutput>#updateProgressBar(value="1", text="INSTALLATION SUCCESS")#</cfoutput><cfflush>
 		
