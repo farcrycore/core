@@ -270,7 +270,7 @@ USE OBJECT BROKER?
 	<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@projectURL@@", "#application.url.webroot#", "all") />
 	<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@webtopURL@@", "#application.url.webtop#", "all") />
 
-	<cffile action="write" file="#farcryProjectsPath#/#form.applicationName#/www/farcryConstructor.cfm" output="#farcryConstructorContent#" addnewline="false" mode="777" />	
+	<cffile action="write" file="#projectWebrootPath#/farcryConstructor.cfm" output="#farcryConstructorContent#" addnewline="false" mode="777" />	
 	
 	<!--- 
 	<cfswitch expression="#form.webtopInstallType#">
