@@ -97,7 +97,12 @@ SAVE AND CONTROL THE INSTAL PROCESS WIZARD
 	
 	<cfif directoryExists(expandPath("/farcry/projects/#session.stFarcryInstall.stConfig.applicationName#"))>
 		
-		<cf_redoStep field="applicationName" errorTitle="INVALID APPLICATION NAME" errorDescription="There is already project called #session.stFarcryInstall.stConfig.applicationName# on this server. Please delete this project or select a new name." />
+		<cf_redoStep field="applicationName" errorTitle="INVALID PROJECT FOLDER NAME" errorDescription="There is already project called #session.stFarcryInstall.stConfig.applicationName# on this server. Please delete this project or select a new name." />
+
+	</cfif>
+	<cfif not len(session.stFarcryInstall.stConfig.locales)>
+		
+		<cf_redoStep field="locales" errorTitle="INVALID LOCALE" errorDescription="You must select at lease 1 locale." />
 
 	</cfif>
 
@@ -220,12 +225,18 @@ RENDER THE CURRENT STEP
 	<div class="item">
       	<label for="applicationName">Locales <em>*</em></label>
 		<div class="field">
-			<cfset variables.aLocale = createObject("java","java.util.Locale").getAvailableLocales() />
-			<select name="locales" multiple="true">
-				<cfloop from="1" to="#arrayLen(variables.aLocale)#" index="i">
-					<cfif listLen(variables.aLocale[i],"_") EQ 2>
-						<option value="#variables.aLocale[i]#" <cfif listFindNoCase(session.stFarcryInstall.stConfig.locales, variables.aLocale[i])>selected</cfif>>#variables.aLocale[i].getDisplayName()#</option>
-					</cfif>
+			<cfset variables.aLocales = createObject("java","java.util.Locale").getAvailableLocales() />
+			<cfset variables.lLocales = "" />
+			<cfloop from="1" to="#arrayLen(variables.aLocales)#" index="i">
+				<cfif listLen(variables.aLocales[i],"_") EQ 2>
+					<cfset variables.lLocales = listAppend(variables.lLocales, "#variables.aLocales[i]#:#variables.aLocales[i].getDisplayName()#") />
+				</cfif>
+			</cfloop>
+			<cfset variables.lLocales = listSort(variables.lLocales,"textNoCase", "asc") />
+			<input type="hidden" name="locales" value="">
+			<select id="locales" name="locales" multiple="true">
+				<cfloop list="#variables.lLocales#" index="i">
+					<option value="#listFirst(i, ":")#" <cfif listFindNoCase(session.stFarcryInstall.stConfig.locales, listFirst(i, ":"))>selected</cfif>>#listLast(i, ":")#</option>
 				</cfloop>
 			</select>
 		</div>
@@ -491,13 +502,20 @@ RENDER THE CURRENT STEP
 <div class="item summary">
 	<label>Locales:</label>
 	<div class="field fieldDisplay">
-		<cfset variables.aLocale = createObject("java","java.util.Locale").getAvailableLocales() />
+			<cfset variables.aLocales = createObject("java","java.util.Locale").getAvailableLocales() />
+			<cfset variables.lLocales = "" />
+			<cfloop from="1" to="#arrayLen(variables.aLocales)#" index="i">
+				<cfif listLen(variables.aLocales[i],"_") EQ 2>
+					<cfset variables.lLocales = listAppend(variables.lLocales, "#variables.aLocales[i]#:#variables.aLocales[i].getDisplayName()#") />
+				</cfif>
+			</cfloop>
+			<cfset variables.lLocales = listSort(variables.lLocales,"textNoCase", "asc") />
+			<cfloop list="#variables.lLocales#" index="i">
+				<cfif listFindNoCase(session.stFarcryInstall.stConfig.locales, listFirst(i, ":"))>
+					#listLast(i, ":")#<br />
+				</cfif>
+			</cfloop>
 
-		<cfloop from="1" to="#arrayLen(variables.aLocale)#" index="i">
-			<cfif listFindNoCase(session.stFarcryInstall.stConfig.locales, variables.aLocale[i])>
-				#variables.aLocale[i].getDisplayName()#<br />
-			</cfif>
-		</cfloop>
 	</div>
 	<div class="clear"/>
 </div>
