@@ -202,7 +202,6 @@ user --->
 	
 
 	
-
 		<cfif not structKeyExists(session.objectadminFilterObjects[attributes.typename], "stObject")>
 			
 			<cfset session.objectadminFilterObjects[attributes.typename].stObject = oFilterType.getData(objectid="#createUUID()#") />
@@ -212,6 +211,13 @@ user --->
 			<cfset stResult = oFilterType.setData(stProperties=session.objectadminFilterObjects[attributes.typename].stObject, bSessionOnly=true) />
 	
 			<cfset session.objectadminFilterObjects[attributes.typename].stObject = oFilterType.getData(objectID = session.objectadminFilterObjects[attributes.typename].stObject.objectid) />
+			
+			<!--- The default filter doesn't incorporate the default values specified in stFilterMetadata. This loop handles that gap. --->
+			<cfloop collection="#attributes.stFilterMetadata#" item="prop">
+				<cfif structkeyexists(attributes.stFilterMetadata[prop],"ftDefault")>
+					<cfset session.objectadminFilterObjects[attributes.typename].stObject[prop] = attributes.stFilterMetadata[prop].ftDefault />
+				</cfif>
+			</cfloop>
 			
 		</cfif>
 		
