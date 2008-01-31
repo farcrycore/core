@@ -172,8 +172,8 @@ $out:$
 		
 		<!--- Create and add role --->
 		<cfset stObj.title = arguments.policyGroupName />
-		<cfset stObj.groups = arraynew(1) />
-		<cfset stObj.permissions = arraynew(1) />
+		<cfset stObj.aGroups = arraynew(1) />
+		<cfset stObj.aPermissions = arraynew(1) />
 		<cfset application.security.factory.role.createData(stProperties=stObj) />
 
 		<cfreturn stReturn />
@@ -215,15 +215,15 @@ $out:$
 		<cfset stReturn.returncode = 1 />
 		<cfset stReturn.returnmessage = application.rb.getResource('forms.message.policygroupadded','Policy Group Added') />
 		
-		<cfparam name="stRole.groups" default="#arraynew(1)#" />
-		<cfloop from="1" to="#arraylen(stRole.groups)#" index="i">
-			<cfif stRole.groups[i] eq "#arguments.groupname#_#arguments.userdirectory#">
+		<cfparam name="stRole.aGroups" default="#arraynew(1)#" />
+		<cfloop from="1" to="#arraylen(stRole.aGroups)#" index="i">
+			<cfif stRole.aGroups[i] eq "#arguments.groupname#_#arguments.userdirectory#">
 				<!--- Already there --->
 				<cfreturn stReturn />
 			</cfif>
 		</cfloop>
 		
-		<cfset arrayappend(stRole.groups,"#arguments.groupname#_#arguments.userdirectory#") />
+		<cfset arrayappend(stRole.aGroups,"#arguments.groupname#_#arguments.userdirectory#") />
 		<cfset application.security.factory.role.setData(stProperties=stRole) />
 		
 		<!--- Return message --->
@@ -285,10 +285,10 @@ $out:$
 		<cfset stReturn.returncode = 1 />
 		<cfset stReturn.returnmessage = "" />
 		
-		<cfparam name="stRole.groups" default="#arraynew(1)#" />
-		<cfloop from="#arraylen(stRole.groups)#" to="1" index="i" step="-1">
-			<cfif stRole.groups[i] eq "#arguments.groupname#_#arguments.userdirectory#">
-				<cfset arraydeleteat(stRole.groups,i) />
+		<cfparam name="stRole.aGroups" default="#arraynew(1)#" />
+		<cfloop from="#arraylen(stRole.aGroups)#" to="1" index="i" step="-1">
+			<cfif stRole.aGroups[i] eq "#arguments.groupname#_#arguments.userdirectory#">
+				<cfset arraydeleteat(stRole.aGroups,i) />
 			</cfif>
 		</cfloop>
 		<cfset application.security.factory.role.setData(stProperties=stRole) />
@@ -331,7 +331,7 @@ $out:$
 		<cfset var thisgroup = "" />
 		<cfset var groups = "" />
 		
-		<farcry:deprecated message="authorisation.getPolicyGroupMappings() should be replaced by queries on farRole_groups table" />
+		<farcry:deprecated message="authorisation.getPolicyGroupMappings() should be replaced by queries on farRole_aGroups table" />
 		
 		<!--- Convert group names --->
 		<cfloop list="#arguments.lGroupNames#" index="thisgroup">
@@ -340,7 +340,7 @@ $out:$
 		
 		<cfquery datasource="#application.dsn#" name="qMappings">
 			select distinct parentid
-			from	#application.dbowner#farRole_groups
+			from	#application.dbowner#farRole_aGroups
 			where	data in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#groups#" />)
 		</cfquery>
 		
@@ -363,13 +363,13 @@ $out:$
 		<cfset var stnew = structnew() />
 		<cfset var qMappings = "" />
 		
-		<farcry:deprecated message="authorisation.getMultiplePolicyGroupMappings() should be replaced by queries to farRole_groups" />
+		<farcry:deprecated message="authorisation.getMultiplePolicyGroupMappings() should be replaced by queries to farRole_aGroups" />
 		
 		<cfquery datasource="#application.dsn#" name="qMappings">
 			select	r.objectid, r.title, tg.data
 			from	#application.dbowner#farRole r
 					inner join
-					#application.dbowner#farRole_groups rg
+					#application.dbowner#farRole_aGroups rg
 					on r.objectid = rg.parentid
 			<cfif len(arguments.policyGroupId)>
 				where	parentid in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#arguments.policyGroupId#" />)
@@ -401,7 +401,7 @@ $out:$
 		
 		<cfquery datasource="#application.dsn#" name="qGroups">
 			select distinct data
-			from	farRole_groups
+			from	farRole_aGroups
 			where	parentid in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#arguments.lPolicyGroupIds#">)
 		</cfquery>
 		

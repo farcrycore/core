@@ -492,7 +492,7 @@
 		<!--- Get roles with that permission --->
 		<cfquery datasource="#application.dsn#" name="qRoles">
 			select	parentid
-			from	#application.dbowner#farRole_permissions
+			from	#application.dbowner#farRole_aPermissions
 			where	data=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.permission#" />
 		</cfquery>
 		
@@ -500,7 +500,7 @@
 			<!--- Get the groups for those roles --->
 			<cfquery datasource="#application.dsn#" name="qGroups">
 				select	data
-				from	#appliation.dbowner#farRole_groups
+				from	#appliation.dbowner#farRole_aGroups
 				where	parentid in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#valuelist(qRoles.parentid)#" />)
 			</cfquery>
 			

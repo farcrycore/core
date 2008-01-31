@@ -30,13 +30,13 @@
 		
 		<cfquery datasource="#application.dsn#" name="qUser">
 			select	*
-			from	#application.dbowner#farUser_groups
+			from	#application.dbowner#farUser_aGroups
 			where	data=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectid#" />
 		</cfquery>
 		
 		<cfloop query="qUser">
 			<cfset stUser = oUser.getData(parentid) />
-			<cfset arraydeleteat(stUser.groups,seq) />
+			<cfset arraydeleteat(stUser.aGroups,seq) />
 			<cfset oUser.setData(stProperties=stUser) />
 		</cfloop>
 		

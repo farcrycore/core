@@ -2,7 +2,7 @@
 	<cfproperty name="title" type="string" default="" hint="The name of this permission" bLabel="true" ftSeq="1" ftFieldset="" ftLabel="Title" ftType="string" />
 	<cfproperty name="shortcut" type="string" default="" hint="Shortcut for permission to use in code" ftSeq="2" ftFieldset="" ftLabel="Shortcut" ftType="string" />
 	<cfproperty name="relatedtypes" type="array" default="" hint="If this permission is item-specific set this field to the types that it can be applied to" ftSeq="3" ftFieldset="" ftLabel="Join on" ftType="array" ftJoin="farPermission" ftRenderType="list" ftLibraryData="getRelatedTypeList" ftShowLibraryLink="false" />
-	<cfproperty name="roles" type="string" default="" hint="Meta-property for managing this properties relationships with roles" ftSeq="4" ftFieldset="" ftLabel="Roles" ftType="reversearray" ftSelectMultiple="true" ftJoin="farRole" ftJoinProperty="permissions" bSave="false" />
+	<cfproperty name="aRoles" type="string" default="" hint="Meta-property for managing this properties relationships with roles" ftSeq="4" ftFieldset="" ftLabel="Roles" ftType="reversearray" ftSelectMultiple="true" ftJoin="farRole" ftJoinProperty="permissions" bSave="false" />
 	
 	<cffunction name="getRelatedTypeList" access="public" output="false" returntype="query" hint="Returns the types that can be associated with a permission. References the ftJoin attribute of the farBarnacle aObjects property.">
 		<cfset var qResult = querynew("objectid,label","varchar,varchar") />
@@ -92,7 +92,7 @@
 			<!--- Find related role-permissions --->
 			<cfquery datasource="#application.dsn#" name="qRoles">
 				select	parentid as objectid, seq
-				from	#application.dbowner#farRole_permissions
+				from	#application.dbowner#farRole_aPermissions
 				where	data=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectid#" />
 			</cfquery>
 			
@@ -100,7 +100,7 @@
 			<cfloop query="qRoles">
 				<!--- Delete the barnacle --->
 				<cfset stRole = application.security.factory.role.getData(qRoles.objectid[currentrow]) />
-				<cfset arraydeleteat(stRole.permissions,qRoles.seq[currentrow]) />
+				<cfset arraydeleteat(stRole.aPermissions,qRoles.seq[currentrow]) />
 				<cfset application.security.factory.role.setData(stRole) />
 				
 				<cfif application.security.isCached(role=qRoles.objectid[currentrow],permission=arguments.objectid)>
@@ -110,9 +110,9 @@
 			
 			<!--- Find barnacles with types not in the new list --->
 			<cfquery datasource="#application.dsn#" name="qBarnacles">
-				select	objectid,object,role
+				select	objectid,referenceid,roleid
 				from	#application.dbowner#farBarnacle
-				where	permission=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectid#" />
+				where	permissionid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectid#" />
 						objecttype not in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#arraytolist(arguments.stProperties.relatedtypes)#" />)
 			</cfquery>
 			
@@ -120,24 +120,24 @@
 			<cfloop query="qBarnacles">
 				<cfset application.security.factory.barnacle.delete(objectid=qBarnacles.objectid[currentrow]) />
 				
-				<cfif application.security.isCached(role=qBarnacles.role[currentrow],permission=arguments.objectid,object=qBarnacles.object[currentrow])>
-					<cfset application.security.deleteCache(role=qBarnacles.role[currentrow],permission=arguments.objectid,object=qBarnacles.object[currentrow]) />
+				<cfif application.security.isCached(role=qBarnacles.roleid[currentrow],permission=arguments.objectid,object=qBarnacles.referenceid[currentrow])>
+					<cfset application.security.deleteCache(role=qBarnacles.roleid[currentrow],permission=arguments.objectid,object=qBarnacles.referenceid[currentrow]) />
 				</cfif>
 			</cfloop>
 		<cfelse>
 			<!--- Find related barnacles --->
 			<cfquery datasource="#application.dsn#" name="qBarnacles">
-				select	objectid,object,role
+				select	objectid,referenceid,roleid
 				from	#application.dbowner#farBarnacle
-				where	permission=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.stProperties.objectid#" />
+				where	permissionid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.stProperties.objectid#" />
 			</cfquery>
 			
 			<!--- Remove barnacles --->
 			<cfloop query="qBarnacles">
 				<cfset application.security.factory.barnacle.delete(objectid=qBarnacles.objectid[currentrow]) />
 				
-				<cfif application.security.isCached(role=qBarnacles.role[currentrow],permission=arguments.objectid,object=qBarnacles.object[currentrow])>
-					<cfset application.security.deleteCache(role=qBarnacles.role[currentrow],permission=arguments.objectid,object=qBarnacles.object[currentrow]) />
+				<cfif application.security.isCached(role=qBarnacles.roleid[currentrow],permission=arguments.objectid,object=qBarnacles.referenceid[currentrow])>
+					<cfset application.security.deleteCache(role=qBarnacles.roleid[currentrow],permission=arguments.objectid,object=qBarnacles.referenceid[currentrow]) />
 				</cfif>
 			</cfloop>
 		</cfif>
@@ -200,7 +200,7 @@
 		<!--- Find related role-permissions --->
 		<cfquery datasource="#application.dsn#" name="qRoles">
 			select	parentid as objectid, seq
-			from	#application.dbowner#farRole_permissions
+			from	#application.dbowner#farRole_aPermissions
 			where	data=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectid#" />
 		</cfquery>		
 		
@@ -208,7 +208,7 @@
 		<cfloop query="qRoles">
 			<!--- Delete the barnacle --->
 			<cfset stRole = application.security.factory.role.getData(qRoles.objectid[currentrow]) />
-			<cfset arraydeleteat(stRole.permissions,qRoles.seq[currentrow]) />
+			<cfset arraydeleteat(stRole.aPermissions,qRoles.seq[currentrow]) />
 			<cfset application.security.factory.role.setData(stRole) />
 				
 			<cfif application.security.isCached(role=qRoles.objectid[currentrow],permission=arguments.objectid)>
@@ -218,17 +218,17 @@
 		
 		<!--- Find related barnacles --->
 		<cfquery datasource="#application.dsn#" name="qBarnacles">
-			select	objectid,object,role
+			select	objectid,referenceid,roleid
 			from	#application.dbowner#farBarnacle
-			where	permission=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectid#" />
+			where	permissionid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectid#" />
 		</cfquery>
 		
 		<!--- Remove barnacles --->
 		<cfloop query="qBarnacles">
 			<cfset application.security.factory.barnacle.delete(objectid=qBarnacles.objectid[currentrow]) />
 			
-			<cfif application.security.isCached(role=qBarnacles.role[currentrow],permission=arguments.objectid,object=qBarnacles.object[currentrow])>
-				<cfset application.security.deleteCache(role=qBarnacles.role[currentrow],permission=arguments.objectid,object=qBarnacles.object[currentrow]) />
+			<cfif application.security.isCached(role=qBarnacles.roleid[currentrow],permission=arguments.objectid,object=qBarnacles.referenceid[currentrow])>
+				<cfset application.security.deleteCache(role=qBarnacles.roleid[currentrow],permission=arguments.objectid,object=qBarnacles.referenceid[currentrow]) />
 			</cfif>
 		</cfloop>
 		

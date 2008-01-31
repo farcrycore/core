@@ -167,16 +167,16 @@ a {color: ##116EAF;}
 		delete from #application.dbowner#farRole
 	</cfquery>
 	<cfquery datasource="#application.dsn#">
-		delete from #application.dbowner#farRole_groups
+		delete from #application.dbowner#farRole_aGroups
 	</cfquery>
 	<cfquery datasource="#application.dsn#">
-		delete from #application.dbowner#farRole_permissions
+		delete from #application.dbowner#farRole_aPermissions
 	</cfquery>
 	<cfquery datasource="#application.dsn#">
 		delete from #application.dbowner#farUser
 	</cfquery>
 	<cfquery datasource="#application.dsn#">
-		delete from #application.dbowner#farUser_groups
+		delete from #application.dbowner#farUser_aGroups
 	</cfquery>
 	<cfquery datasource="#application.dsn#">
 		delete from #application.dbowner#farGroup

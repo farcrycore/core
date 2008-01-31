@@ -1,7 +1,7 @@
 <cfcomponent displayname="Barnacle" hint="Used to grant an item specific permissions." extends="types" output="false">
-	<cfproperty name="role" type="uuid" default="" hint="The role this barnacle is attached to" ftSeq="1" ftFieldset="" ftLabel="Role" ftType="uuid" ftJoin="farRole" />
-	<cfproperty name="permission" type="uuid" default="" hint="The permission this barnacle is controlling" ftSeq="2" ftFieldset="" ftLabel="Permission" ftType="uuid" ftJoin="farPermission" />
-	<cfproperty name="object" type="uuid" default="" hint="The object this barnacle is attached to" ftSeq="3" ftFieldset="" ftLabel="Object" ftType="uuid" ftJoin="dmNavigation" />
+	<cfproperty name="roleid" type="uuid" default="" hint="The role this barnacle is attached to" ftSeq="1" ftFieldset="" ftLabel="Role" ftType="uuid" ftJoin="farRole" />
+	<cfproperty name="permissionid" type="uuid" default="" hint="The permission this barnacle is controlling" ftSeq="2" ftFieldset="" ftLabel="Permission" ftType="uuid" ftJoin="farPermission" />
+	<cfproperty name="referenceid" type="uuid" default="" hint="The object this barnacle is attached to" ftSeq="3" ftFieldset="" ftLabel="Object" ftType="uuid" ftJoin="dmNavigation" />
 	<cfproperty name="objecttype" type="string" default="" hint="The type of the object" ftSeq="4" ftFieldset="" ftLabel="Type" ftType="string" />
 	<cfproperty name="barnaclevalue" type="numeric" default="0" hint="Deny: -1, Inherity (only for tree types): 0, Grant: 1. Absence of a barnacle implies deny." ftSeq="5" ftFieldset="" ftLabel="Right" ftType="list" ftList="-1:Deny,0:Inherit,1:Grant" />
 	
@@ -27,9 +27,9 @@
 		<cfquery datasource="#application.dsn#" name="qBarnacle">
 			select	*
 			from	#application.dbowner#farBarnacle
-			where	role=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.role#" />
-					and permission=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.permission#" />
-					and object=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.object#" />
+			where	roleid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.role#" />
+					and permissionid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.permission#" />
+					and referenceid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.object#" />
 		</cfquery>
 		
 		<cfif qBarnacle.recordcount>
@@ -39,9 +39,9 @@
 		<cfelse>
 			<!--- Barnacle didn't exist - create it --->
 			<cfset stBarnacle = getData(objectid=createuuid()) />
-			<cfset stBarnacle.role = arguments.role />
-			<cfset stBarnacle.permission = arguments.permission />
-			<cfset stBarnacle.object = arguments.object />
+			<cfset stBarnacle.roleid = arguments.role />
+			<cfset stBarnacle.permissionid = arguments.permission />
+			<cfset stBarnacle.referenceid = arguments.object />
 		</cfif>
 			
 		<cfreturn stBarnacle />
@@ -53,7 +53,7 @@
 		<cfset var qBarnacles = "" />
 		
 		<cfquery datasource="#application.dsn#" name="qBarnacles">
-			select		rp.role as role, rp.permission as permission, b.barnaclevalue
+			select		rp.role as roleid, rp.permission as permission, b.barnaclevalue
 			from		(
 							select	r.objectid as role, p.parentid as permission
 							from	#application.dbowner#farRole r, #application.dbowner#farPermission_relatedtypes pt
@@ -61,16 +61,16 @@
 						) rp
 						left outer join
 						#application.dbowner#farBarnacle b
-						on rp.role=b.role and rp.permission=b.permission
-			where		b.object=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.object#" />
+						on rp.role=b.roleid and rp.permission=b.permissionid
+			where		b.referenceid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.object#" />
 			order by	rp.role, rp.permission
 		</cfquery>
 		
 		<cfloop query="qBarnacles">
 			<cfif barnaclevalue eq "">
-				<cfset application.security.setCache(role=role,permission=permission,object=arguments.object,right=0) />
+				<cfset application.security.setCache(role=roleid,permission=permissionid,object=arguments.object,right=0) />
 			<cfelse>
-				<cfset application.security.setCache(role=role,permission=permission,object=arguments.object,right=barnaclevalue) />
+				<cfset application.security.setCache(role=roleid,permission=permissionid,object=arguments.object,right=barnaclevalue) />
 			</cfif>
 		</cfloop>
 	</cffunction>
@@ -94,9 +94,9 @@
 		
 			<!--- Get barnacle --->
 			<cfset stBarnacle = getData(arguments.barnacle) />
-			<cfset arguments.role = stBarnacle.role />
-			<cfset arguments.permission = stBarnacle.permission />
-			<cfset arguments.object = stBarnacle.object />
+			<cfset arguments.role = stBarnacle.roleid />
+			<cfset arguments.permission = stBarnacle.permissionid />
+			<cfset arguments.object = stBarnacle.referenceid />
 			
 		<cfelseif isvalid("uuid",arguments.permission) and isvalid("uuid",arguments.object)>
 			
@@ -169,9 +169,9 @@
 		
 			<!--- Get barnacle --->
 			<cfset stBarnacle = getData(arguments.barnacle).objectid />
-			<cfset arguments.role = stBarnacle.role />
-			<cfset arguments.permission = stBarnacle.permission />
-			<cfset arguments.object = stBarnacle.object />
+			<cfset arguments.role = stBarnacle.roleid />
+			<cfset arguments.permission = stBarnacle.permissionid />
+			<cfset arguments.object = stBarnacle.referenceid />
 			
 		<cfelseif not (len(arguments.role) and isvalid("uuid",arguments.permission) and isvalid("uuid",arguments.object))>
 		
@@ -260,7 +260,7 @@
 		<cfquery datasource="#application.dsn#">
 			delete
 			from	#application.dbowner#farBarnacle
-			where	object=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectid#" />
+			where	referenceid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectid#" />
 		</cfquery>
 	</cffunction>
 
@@ -268,10 +268,10 @@
 		<cfargument name="stProperties" type="struct" required="true" hint="The properties that have been saved" />
 
 		<!--- Update object type --->
-		<cfset arguments.stProperties.objecttype = findType(arguments.stProperties.object) />
+		<cfset arguments.stProperties.objecttype = findType(arguments.stProperties.referenceid) />
 		
 		<!--- Update permission cache --->
-		<cfset application.security.setCache(role=arguments.stProperties.role,permission=arguments.stProperties.permission,object=arguments.stProperties.object,right=arguments.stProperties.barnaclevalue) />
+		<cfset application.security.setCache(role=arguments.stProperties.roleid,permission=arguments.stProperties.permissionid,object=arguments.stProperties.referenceid,right=arguments.stProperties.barnaclevalue) />
 		
 		<cfreturn super.AfterSave(arguments.stProperties) />
 	</cffunction>

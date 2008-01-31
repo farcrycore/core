@@ -1,8 +1,8 @@
 <cfcomponent displayname="Role" hint="Used to group permission settings and associate them with user groups" extends="types" output="false" description="Categorises a set of permissions as being necessary for a particular role. This role can then be assigned to a group of users.">
 	<cfproperty name="title" type="string" default="" hint="The name of the role" bLabel="true" ftSeq="1" ftWizardStep="Groups" ftLabel="Title" ftType="string" />
 	<cfproperty name="isdefault" type="boolean" default="0" hint="True if this is a default role. Every user will be assigned these permissions." ftSeq="2" ftWizardStep="Groups" ftLabel="Default role" ftType="boolean" />
-	<cfproperty name="groups" type="array" default="" hint="The user directory groups that this role has been assigned to" ftSeq="3" ftWizardStep="Groups" ftLabel="Groups" ftType="array" ftJoin="farRole" ftRenderType="list" ftLibraryData="getGroups" ftShowLibraryLink="false" />
-	<cfproperty name="permissions" type="array" hint="The simple permissions that are granted as part of this role" ftSeq="11" ftWizardStep="Permissions" ftLabel="Permissions" ftJoin="farPermission" />
+	<cfproperty name="aGroups" type="array" default="" hint="The user directory groups that this role has been assigned to" ftSeq="3" ftWizardStep="Groups" ftLabel="Groups" ftType="array" ftJoin="farRole" ftRenderType="list" ftLibraryData="getGroups" ftShowLibraryLink="false" />
+	<cfproperty name="aPermissions" type="array" hint="The simple permissions that are granted as part of this role" ftSeq="11" ftWizardStep="Permissions" ftLabel="Permissions" ftJoin="farPermission" />
 	<cfproperty name="webskins" type="longchar" default="" hint="A list of wildcard items that match the webkins this role can access" ftSeq="21" ftWizardStep="Webskins" ftLabel="Webskins" ftType="webskinfilter" />
 	
 	<cffunction name="getGroups" access="public" output="false" returntype="query" hint="Returns a query of UD groups">
@@ -39,7 +39,7 @@
 		<cfloop from="1" to="#arraylen(arguments.groups)#" index="i">
 			<cfquery datasource="#application.dsn#" name="qRoles">
 				select	*
-				from	#application.dbowner#farRole_groups
+				from	#application.dbowner#farRole_aGroups
 				where	lower(data)=<cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(arguments.groups[i])#" />
 			</cfquery>
 			
@@ -63,7 +63,7 @@
 		<cfif len(arguments.roles)>
 			<cfquery datasource="#application.dsn#" name="qGroups">
 				select	*
-				from	#application.dbowner#farRole_groups
+				from	#application.dbowner#farRole_aGroups
 				where	0=1
 				<cfloop list="#arguments.roles#" index="role">
 					<cfif isvalid("uuid",role)>
@@ -154,7 +154,7 @@
 			<cfelse>
 				<cfquery datasource="#application.dsn#" name="qRole" result="stResult">
 					select	*
-					from	#application.dbowner#farRole_permissions
+					from	#application.dbowner#farRole_aPermissions
 					where	parentid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#thisrole#" />
 							and data=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.permission#" />
 				</cfquery>
@@ -288,7 +288,7 @@
 		<!--- Get the relevant permission --->
 		<cfquery datasource="#application.dsn#" name="qPermissions">
 			select	*
-			from	#application.dbowner#farRole_permissions
+			from	#application.dbowner#farRole_aPermissions
 			where	parentid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.role#" />
 					and data=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.permission#" />
 		</cfquery>
@@ -296,12 +296,12 @@
 		<!--- Update the permission --->
 		<cfif arguments.has and not qPermissions.recordcount>
 			<!--- Add the permission --->
-			<cfset arrayappend(stRole.permissions,arguments.permission) />
+			<cfset arrayappend(stRole.aPermissions,arguments.permission) />
 			<cfset setData(stProperties=stRole) />
 		</cfif>
 		<cfif not arguments.has and qPermissions.recordcount>
 			<!--- Remove the permission --->
-			<cfset arraydeleteat(stRole.permissions,qPermissions.seq) />
+			<cfset arraydeleteat(stRole.aPermissions,qPermissions.seq) />
 			<cfset setData(stProperties=stRole) />
 		</cfif>
 	</cffunction>
@@ -323,14 +323,14 @@
 		<cfquery datasource="#application.dsn#" name="qBarnacles">
 			select	objectid
 			from	#application.dbowner#farBarnacle
-			where	role=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectid#" />
+			where	roleid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectid#" />
 		</cfquery>
 		
 		<!--- Create copies of the barnacles for the new role --->
 		<cfloop query="qBarnacles">
 			<cfset stBarnacle = application.security.factory.barnacle.getData(qBarnacles.objectid[currentrow]) />
 			<cfset stBarnacle.objectid = createuuid() />
-			<cfset stBarnacle.role = stObj.objectid />
+			<cfset stBarnacle.roleid = stObj.objectid />
 			<cfset application.security.factory.barnacle.createData(stBarnacle) />
 		</cfloop>
 		
@@ -357,7 +357,7 @@
 		<cfquery datasource="#application.dsn#" name="qBarnacles">
 			delete
 			from	#application.dbowner#farBarnacle
-			where	role=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectid#" />
+			where	roleid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectid#" />
 		</cfquery>
 		
 		<cfreturn super.delete(objectid=arguments.objectid,user=arguments.user,audittype=arguments.audittype) />

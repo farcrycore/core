@@ -2,7 +2,7 @@ test<cfcomponent displayname="FarcryUD User" hint="Used by FarcryUD to store use
 	<cfproperty name="userid" type="string" default="" hint="The unique id for this user. Used for logging in" ftSeq="1" ftFieldset="" ftLabel="User ID" ftType="string" />
 	<cfproperty name="password" type="string" default="" hint="" ftSeq="2" ftFieldset="" ftLabel="Password" ftType="password" ftRenderType="confirmpassword" />
 	<cfproperty name="userstatus" type="string" default="invactive" hint="The status of this user" ftSeq="3" ftFieldset="" ftLabel="User status" ftType="list" ftList="active:Active,inactive:Inactive,pending:Pending" />
-	<cfproperty name="groups" type="array" default="" hint="The groups this member is a member of" ftSeq="4" ftFieldset="" ftLabel="Groups" ftType="array" ftJoin="farGroup" />
+	<cfproperty name="aGroups" type="array" default="" hint="The groups this member is a member of" ftSeq="4" ftFieldset="" ftLabel="Groups" ftType="array" ftJoin="farGroup" />
 	
 	<cffunction name="getByUserID" access="public" output="false" returntype="struct" hint="Returns the data struct for the specified user id">
 		<cfargument name="userid" type="string" required="true" hint="The user id" />
@@ -38,15 +38,15 @@ test<cfcomponent displayname="FarcryUD User" hint="Used by FarcryUD to store use
 		</cfif>
 		
 		<!--- Check to see if they are already a member of the group --->
-		<cfparam name="stUser.groups" default="#arraynew(1)#" />
-		<cfloop from="1" to="#arraylen(stUser.groups)#" index="i">
-			<cfif stUser.groups[i] eq arguments.group>
+		<cfparam name="stUser.aGroups" default="#arraynew(1)#" />
+		<cfloop from="1" to="#arraylen(stUser.aGroups)#" index="i">
+			<cfif stUser.aGroups[i] eq arguments.group>
 				<cfset arguments.group = "" />
 			</cfif>
 		</cfloop>
 		
 		<cfif len(arguments.group)>
-			<cfset arrayappend(stUser.groups,arguments.group) />
+			<cfset arrayappend(stUser.aGroups,arguments.group) />
 			<cfset oUser.setData(stProperties=stUser) />
 		</cfif>
 	</cffunction>
@@ -66,10 +66,10 @@ test<cfcomponent displayname="FarcryUD User" hint="Used by FarcryUD to store use
 		</cfif>
 		
 		<!--- Check to see if they are a member of the group --->
-		<cfparam name="stUser.groups" default="#arraynew(1)#" />
-		<cfloop from="#arraylen(stUser.groups)#" to="1" index="i" step="-1">
-			<cfif stUser.groups[i] eq arguments.group>
-				<cfset arraydeleteat(stUser.groups,i) />
+		<cfparam name="stUser.aGroups" default="#arraynew(1)#" />
+		<cfloop from="#arraylen(stUser.aGroups)#" to="1" index="i" step="-1">
+			<cfif stUser.aGroups[i] eq arguments.group>
+				<cfset arraydeleteat(stUser.aGroups,i) />
 			</cfif>
 		</cfloop>
 		

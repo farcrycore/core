@@ -109,7 +109,7 @@
 			from	(
 						#application.dbowner#farUser u
 						inner join
-						#application.dbowner#farUser_groups ug
+						#application.dbowner#farUser_aGroups ug
 						on u.objectid=ug.parentid
 					)
 					inner join
@@ -152,7 +152,7 @@
 			from	(
 						#application.dbowner#farUser u
 						inner join
-						#application.dbowner#farUser_groups ug
+						#application.dbowner#farUser_aGroups ug
 						on u.objectid=ug.parentid
 					)
 					inner join
@@ -358,10 +358,10 @@
 			<!--- Make sure user still exists before migrating --->
 			<cfif structKeyExists(arguments.users, qUserGroups.userid)>
 				<cfset stObj = oUser.getData(objectid=arguments.users[qUserGroups.userid]) />
-				<cfparam name="stObj.groups" default="#arraynew(1)#" />
+				<cfparam name="stObj.aGroups" default="#arraynew(1)#" />
 				
 				<cfoutput>
-					<cfset arrayappend(stObj.groups,arguments.groups[qUserGroups.groupid]) />
+					<cfset arrayappend(stObj.aGroups,arguments.groups[qUserGroups.groupid]) />
 					<cfset result = result + 1 />
 				</cfoutput>
 				
@@ -390,10 +390,10 @@
 		<!--- Add data --->
 		<cfoutput query="qMappings" group="PolicyGroupId">
 			<cfset stObj = oRole.getData(objectid=arguments.roles[PolicyGroupId]) />
-			<cfparam name="stObj.groups" default="#arraynew(1)#" />
+			<cfparam name="stObj.aGroups" default="#arraynew(1)#" />
 			
 			<cfoutput>
-				<cfset arrayappend(stObj.groups,"#externalgroupname#_#ucase(externalgroupuserdirectory)#") />
+				<cfset arrayappend(stObj.aGroups,"#externalgroupname#_#ucase(externalgroupuserdirectory)#") />
 				<cfset result = result + 1 />
 			</cfoutput>
 			
@@ -423,7 +423,7 @@
 		<!--- Add data --->
 		<cfoutput query="qBarnacles" group="PolicyGroupId">
 			<cfif structkeyexists(arguments.roles,PolicyGroupId)>
-				<cfparam name="stRole.permissions" default="#arraynew(1)#" />
+				<cfparam name="stRole.aPermissions" default="#arraynew(1)#" />
 				
 				<cfoutput>
 					<cfif structkeyexists(arguments.permissions,permissionid)>
