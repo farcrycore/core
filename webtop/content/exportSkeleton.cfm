@@ -117,6 +117,10 @@
 
 
 		<cfset lTypenamesToExport = structKeyList(application.stCoapi) />
+		
+		<!--- Never export dmWizard --->
+		<cfset lTypenamesToExport = listDeleteAt(lTypenamesToExport, listFindNoCase(lTypenamesToExport, "dmWizard")) />
+		
 		<cfif not stProperties.bIncludeLog>
 			<cfset lTypenamesToExport = listDeleteAt(lTypenamesToExport, listFindNoCase(lTypenamesToExport, "farLog")) />
 		</cfif>
