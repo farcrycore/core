@@ -39,7 +39,7 @@ $out:$
 			select	p.objectid,p.label
 			from	#application.dbowner#farPermission p
 					inner join
-					#application.dbowner#farPermission_relatedtypes pt
+					#application.dbowner#farPermission_aRelatedtypes pt
 					on p.objectid=pt.parentid
 			where	data=<cfqueryparam cfsqltype="cf_sql_varchar" value="#application.security.factory.barnacle.findType(arguments.objectid)#" />
 		</cfquery>
@@ -151,8 +151,8 @@ $out:$
 		
 		<!--- Create and add permission --->
 		<cfset stObj.title = arguments.permissionname />
-		<cfset stObj.relatedtypes = arraynew(1) />
-		<cfset stObj.relatedtypes[1] = arguments.permissiontype />
+		<cfset stObj.aRelatedtypes = arraynew(1) />
+		<cfset stObj.aRelatedtypes[1] = arguments.permissiontype />
 		<cfset application.security.factory.permission.createdata(stProperties=stObj) />
 
 		<cfreturn stLocal.streturn>
@@ -314,8 +314,8 @@ $out:$
 		<cfset stResult.permissionID = stPermission.objectid />
 		<cfset stResult.permissionName = stPermission.title />
 		<cfset stResult.permissionNotes = "" />
-		<cfif arraylen(stResult.relatedtypes)>
-			<cfset stResult.permissionType = arraytolist(stResult.relatedtypes) />
+		<cfif arraylen(stResult.aRelatedtypes)>
+			<cfset stResult.permissionType = arraytolist(stResult.aRelatedtypes) />
 		<cfelse>
 			<cfset stResult.permissionType = "PolicyGroup" />
 		</cfif>
@@ -428,7 +428,7 @@ $out:$
 				select	objectid, title
 				from	#application.dbowner#farPermission p
 						inner join
-						#application.dbowner#farPermission_relatedtypes pt
+						#application.dbowner#farPermission_aRelatedtypes pt
 						on p.objectid=pt.parentid
 				where	pt.data=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.permissionType#" />
 			</cfquery>
@@ -447,7 +447,7 @@ $out:$
 				from	#application.dbowner#farPermission
 				where	objectid not in (
 							select distinct parentid
-							from	farPermission_relatedtypes
+							from	farPermission_aRelatedtypes
 						)
 			</cfquery>
 			
@@ -586,9 +586,9 @@ $out:$
 		<cfset stPermission = application.security.factory.permission.getData(arguments.permissionID) />
 		
 		<cfset stPermission.title = arguments.permissionName />
-		<cfset stPermission.relatedtypes = arraynew(1) />
+		<cfset stPermission.aRelatedtypes = arraynew(1) />
 		<cfif len(arguments.permissionType)>
-			<cfset stPermission.relatedtypes[1] = arguments.permissionType />
+			<cfset stPermission.aRelatedtypes[1] = arguments.permissionType />
 		</cfif>
 		
 		<cfset application.security.factory.permission.setData(stProperties=stPermission) />

@@ -1,7 +1,7 @@
 <cfcomponent displayname="Permission" hint="A right that can be granted via a role" extends="types" output="false" description="This allows developers to add new permissions to the application. Each permission corresponds to a right to perform an action, access a section of the webtop, or view a webskin.">
 	<cfproperty name="title" type="string" default="" hint="The name of this permission" bLabel="true" ftSeq="1" ftFieldset="" ftLabel="Title" ftType="string" />
 	<cfproperty name="shortcut" type="string" default="" hint="Shortcut for permission to use in code" ftSeq="2" ftFieldset="" ftLabel="Shortcut" ftType="string" />
-	<cfproperty name="relatedtypes" type="array" default="" hint="If this permission is item-specific set this field to the types that it can be applied to" ftSeq="3" ftFieldset="" ftLabel="Join on" ftType="array" ftJoin="farPermission" ftRenderType="list" ftLibraryData="getRelatedTypeList" ftShowLibraryLink="false" />
+	<cfproperty name="aRelatedtypes" type="array" default="" hint="If this permission is item-specific set this field to the types that it can be applied to" ftSeq="3" ftFieldset="" ftLabel="Join on" ftType="array" ftJoin="farPermission" ftRenderType="list" ftLibraryData="getRelatedTypeList" ftShowLibraryLink="false" />
 	<cfproperty name="aRoles" type="string" default="" hint="Meta-property for managing this properties relationships with roles" ftSeq="4" ftFieldset="" ftLabel="Roles" ftType="reversearray" ftSelectMultiple="true" ftJoin="farRole" ftJoinProperty="permissions" bSave="false" />
 	
 	<cffunction name="getRelatedTypeList" access="public" output="false" returntype="query" hint="Returns the types that can be associated with a permission. References the ftJoin attribute of the farBarnacle aObjects property.">
@@ -88,7 +88,7 @@
 		<cfset var qBarnacles = "" />
 		<cfset var stRole = structnew() />
 		
-		<cfif arraylen(arguments.stProperties.relatedtypes)>
+		<cfif arraylen(arguments.stProperties.aRelatedtypes)>
 			<!--- Find related role-permissions --->
 			<cfquery datasource="#application.dsn#" name="qRoles">
 				select	parentid as objectid, seq
@@ -113,7 +113,7 @@
 				select	objectid,referenceid,roleid
 				from	#application.dbowner#farBarnacle
 				where	permissionid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectid#" />
-						objecttype not in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#arraytolist(arguments.stProperties.relatedtypes)#" />)
+						objecttype not in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#arraytolist(arguments.stProperties.aRelatedtypes)#" />)
 			</cfquery>
 			
 			<!--- Remove barnacles --->
@@ -167,7 +167,7 @@
 				from		#application.dbowner#farPermission
 				where		objectid not in (
 								select distinct parentid
-								from	#application.dbowner#farPermission_relatedtypes
+								from	#application.dbowner#farPermission_aRelatedtypes
 							)
 				order by	title asc
 			</cfquery>
@@ -177,7 +177,7 @@
 				select		p.objectid
 				from		#application.dbowner#farPermission p
 							inner join
-							#application.dbowner#farPermission_relatedtypes pt
+							#application.dbowner#farPermission_aRelatedtypes pt
 							on p.objectid=pt.parentid
 				where		pt.data=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.relatedtype#" />
 				order by	title asc

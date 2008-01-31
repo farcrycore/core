@@ -19,14 +19,14 @@
 		
 		<cfloop list="#this.factory.permission.getAllPermissions()#" index="permission">
 			<cfset stPermission = this.factory.permission.getData(objectid=permission,bUseInstanceCache=false) />
-			<cfif arraylen(stPermission.relatedtypes)>
-				<cfloop from="1" to="#arraylen(stPermission.relatedtypes)#" index="i">
-					<cfparam name="application.permission.#stPermission.relatedtypes[i]#" default="#structnew()#" />
-					<cfset application.permission[stPermission.relatedtypes[i]][stPermission.title] = structnew() />
-					<cfset application.permission[stPermission.relatedtypes[i]][stPermission.title].permissionID = stPermission.objectid />
-					<cfset application.permission[stPermission.relatedtypes[i]][stPermission.title].permissionName = stPermission.title />
-					<cfset application.permission[stPermission.relatedtypes[i]][stPermission.title].permissionNotes = "" />
-					<cfset application.permission[stPermission.relatedtypes[i]][stPermission.title].permissionType = stPermission.relatedtypes[i] />
+			<cfif arraylen(stPermission.aRelatedtypes)>
+				<cfloop from="1" to="#arraylen(stPermission.aRelatedtypes)#" index="i">
+					<cfparam name="application.permission.#stPermission.aRelatedtypes[i]#" default="#structnew()#" />
+					<cfset application.permission[stPermission.aRelatedtypes[i]][stPermission.title] = structnew() />
+					<cfset application.permission[stPermission.aRelatedtypes[i]][stPermission.title].permissionID = stPermission.objectid />
+					<cfset application.permission[stPermission.aRelatedtypes[i]][stPermission.title].permissionName = stPermission.title />
+					<cfset application.permission[stPermission.aRelatedtypes[i]][stPermission.title].permissionNotes = "" />
+					<cfset application.permission[stPermission.aRelatedtypes[i]][stPermission.title].permissionType = stPermission.aRelatedtypes[i] />
 				</cfloop>
 			<cfelse>
 				<cfparam name="application.permission.PolicyGroup" default="#structnew()#" />

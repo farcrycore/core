@@ -189,8 +189,8 @@
 			<cfset stObj.shortcut = permissionname />
 			<cfset stObj.label = permissionname />
 			<cfif permissiontype neq "PolicyGroup">
-				<cfparam name="stObj.relatedtypes" default="#arraynew(1)#" />
-				<cfset arrayappend(stObj.relatedtypes,permissiontype) />
+				<cfparam name="stObj.aRelatedtypes" default="#arraynew(1)#" />
+				<cfset arrayappend(stObj.aRelatedtypes,permissiontype) />
 			</cfif>
 			
 			<cfset oPermission.createData(stProperties=stObj,user="migratescript",auditNote="Data migrated from pre 4.1") />

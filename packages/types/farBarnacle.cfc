@@ -56,7 +56,7 @@
 			select		rp.role as roleid, rp.permission as permission, b.barnaclevalue
 			from		(
 							select	r.objectid as role, p.parentid as permission
-							from	#application.dbowner#farRole r, #application.dbowner#farPermission_relatedtypes pt
+							from	#application.dbowner#farRole r, #application.dbowner#farPermission_aRelatedtypes pt
 							where	pt=<cfqueryparam cfsqltype="cf_sql_varchar" value="#findType(arguments.object)#" />
 						) rp
 						left outer join
@@ -116,7 +116,7 @@
 		<cfif len(typename)>
 			<cfquery datasource="#application.dsn#" name="qSecured">
 				select	count(parentid) as secured
-				from	#application.dbowner#farPermission_relatedtypes
+				from	#application.dbowner#farPermission_aRelatedtypes
 				where	parentid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.permission#" />
 						and data=<cfqueryparam cfsqltype="cf_sql_varchar" value="#typename#" />
 			</cfquery>
