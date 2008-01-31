@@ -434,6 +434,7 @@
 		<cfset var loc = "" />
 		<cfset var virtualDirectory = "" />
 		
+
 		<!--- Get the first directory after the url if there is one (ie. if its just index.cfm then we know we are just under the webroot) --->
 		<cfif listLen(cgi.SCRIPT_NAME, "/") GT 1>
 			<cfset virtualDirectory = listFirst(cgi.SCRIPT_NAME, "/") />
@@ -451,15 +452,20 @@
 		<cfelseif fileExists(expandPath("/farcryConstructor.cfm"))>
 			<!--- Otherwise we check in the webroot --->
 			<cfset loc = trim("/farcryConstructor.cfm") />
-
-		<cfelseif arguments.plugin EQ "webtop" AND structKeyExists(cookie, "currentFarcryProject")>
+		<cfelse>
+			<!--- If all else fails, see if the user has a cookie telling us what project to look at. --->
+			<cfif structKeyExists(url, "farcryProject")>
+				<cfset cookie.currentFarcryProject = url.farcryProject />
+			</cfif>
+			<cfif arguments.plugin EQ "webtop" AND structKeyExists(cookie, "currentFarcryProject")>
 		
-			<cfif fileExists(expandPath("/#currentFarcryProject#/farcryConstructor.cfm"))>
-				<cfset loc = trim("/#currentFarcryProject#/farcryConstructor.cfm") />
+				<cfif fileExists(expandPath("/#currentFarcryProject#/farcryConstructor.cfm"))>
+					<cfset loc = trim("/#currentFarcryProject#/farcryConstructor.cfm") />
+				</cfif>
 			</cfif>
 		</cfif>
-		
-		<cfif not len(loc)>		
+
+		<cfif not len(loc)>				
 			<cfoutput>CONSTRUCTOR DOES NOT EXIST. <a href="/farcry/core/webtop/install">CLICK HERE</a> TO INSTALL A NEW PROJECT.</cfoutput>
 			<cfabort />		
 		</cfif>
