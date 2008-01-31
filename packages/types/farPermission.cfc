@@ -60,7 +60,7 @@
 			<cfif qPermissions.recordcount>
 				<cfreturn application.security.setLookup(permission=arguments.name,objectid=qPermissions.objectid[1]) />
 			<cfelse>
-				<cfthrow message="Permission '#arguments.name#' doesn't exist." />
+				<cfreturn "" />
 			</cfif>
 		<cfelse>
 			<cfreturn application.security.getLookup(permission=arguments.name) />

@@ -133,6 +133,9 @@
 			<!--- If the permission was specified by name, retrieve the objectid --->
 			<cfif not isvalid("uuid",arguments.permission)>
 				<cfset arguments.permission = this.factory.permission.getID(arguments.permission) />
+				<cfif not len(arguments.permission)>
+					<cfreturn false />
+				</cfif>
 			</cfif>
 			
 			<!--- If an object was provided check the barnacle for that object, otherwise check the basic permission --->
