@@ -16,7 +16,7 @@ DETERMINE THE CURRENT VERSION OF FARCRY
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 	<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 	<head>
-		<title>FARCRY INSTALLER....</title>
+		<title>FarCry Core Framework Installer</title>
 		
 		<!--- EXT CSS & JS--->
 		<link rel="stylesheet" type="text/css" href="../js/ext/resources/css/ext-all.css">
@@ -26,20 +26,15 @@ DETERMINE THE CURRENT VERSION OF FARCRY
 		<!--- INSTALL CSS & JS --->
 		<link rel="stylesheet" type="text/css" href="css/install.css">
 		<script type="text/javascript" src="js/install.js"></script>
-		
-		<style type="text/css">
-		h1 {font-size:120%;color:##116EAF;margin-bottom: 5px;}
-		h2 {font-size:110%;font-weight:bold;margin-bottom: 25px;}
-		a {color: ##116EAF;}
-		body {color:##5A7EB9;font:76%/1.5 arial,tahoma,verdana,sans-serif;}
-		.projectInstallType {border:1px dotted ##e3e3e3;padding:10px;margin:10px;}
-		</style>
+
 		
 	</head>
 	<body style="background-color: ##5A7EB9;">
 		<div style="border: 8px solid ##eee;background:##fff;width:600px;margin: 50px auto;padding: 20px;color:##666">
 			
-			<h1>INSTALLING YOUR FARCRY APPLICATION</h1>
+			<h1>Installing Your FarCry Application</h1>
+			<p>&nbsp;</p>
+			
 			<div id="p2" style="width:100%;text-align:left;"></div>
 			
 			<div id="installComplete"></div>
@@ -342,17 +337,22 @@ USE OBJECT BROKER?
 		
 		<cfsavecontent variable="installCompleteHTML">
 		<cfoutput>
+			<p>&nbsp;</p>
 			<div>
 				<div class="item">
-					<p>Default Farcry credentials (sa) are:</p>
+					<h2><strong>Congratualations!</strong>  Your application has sucessfully installed.</h2>
+					<p>The installer has created an administration account for you to logon to the FarCry webtop:</p>
+					<p>&nbsp;</p>
+					
 					<ul>
-						<li>U: farcry</li>
-						<li>P: farcry</li>
+						<li>Username: <strong>farcry</strong></li>
+						<li>Password: <strong>farcry</strong></li>
 					</ul>
-					<p>Please be sure to change this account information on your first login for security reasons</p>
-					<cfif isDefined("form.bDeleteApp")>
-						<p>Note that your installation directory is being deleted.</p>
-					</cfif>
+					
+					<p>&nbsp;</p>
+					<p class="warning">WARNING: Be sure to <strong>change this account</strong> information on your first login for security reasons.</p>
+					<p>&nbsp;</p>
+
 				</div>
 				<div class="itemButtons">
 					<form name="installComplete" id="installComplete" method="post" action="">

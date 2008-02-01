@@ -61,3 +61,24 @@ ul.nomarker li {background:none;padding-left:0}
 }
 * html .clear { height: 1%; }
 .clear { display: block; }
+
+
+/* transferred from index.cfm inline */
+h1 {font-size:160%;color:#116EAF;margin-bottom: 5px; border-bottom: solid 3px #116EAF; }
+h2 {font-size:110%;font-weight:bold;margin-bottom: 25px;}
+a {color: #116EAF;}
+body {color:#5A7EB9;font:76%/1.5 arial,tahoma,verdana,sans-serif;}
+label { color:#333; }
+
+.fieldDisplay {font-weight:bold;}
+.fieldHint { font-size: 70%; color: #666; font-style:italic; }
+.summary {border-top:1px dotted ##e3e3e3;}
+
+table.plugin { border-top: 1px dotted #116EAF; border-bottom: 1px dotted #116EAF; width: 90%; margin: 0 30px; }
+table.plugin strong { font-weight: bold; }
+table.plugin em { font-style: italic; }
+
+.projectInstallType {border:1px dotted #116EAF;padding:10px;margin:10px;}
+div.projectInstallType p { margin: 5px 30px; }
+
+.warning { color: #fff; font-weight:bold; border: #990000 solid 3px; background-color: #cc3333; padding: 15px; }

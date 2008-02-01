@@ -6,26 +6,18 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 	<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 	<head>
-		<title>FARCRY INSTALLER....</title>
+		<title>FarCry Core Framework Installer</title>
 		
 		<!--- EXT CSS & JS--->
-		<link rel="stylesheet" type="text/css" href="../js/ext/resources/css/ext-all.css">
+		<link rel="stylesheet" type="text/css" href="../js/ext/resources/css/ext-all.css" />
 		<script type="text/javascript" src="../js/ext/adapter/ext/ext-base.js"></script>
 		<script type="text/javascript" src="../js/ext/ext-all.js"></script>
 		
 		<!--- INSTALL CSS & JS --->
-		<link rel="stylesheet" type="text/css" href="css/install.css">
+		<link rel="stylesheet" type="text/css" href="css/install.css" />
 		<script type="text/javascript" src="js/install.js"></script>
 		
-		<style type="text/css">
-		h1 {font-size:120%;color:##116EAF;margin-bottom: 5px;}
-		h2 {font-size:110%;font-weight:bold;margin-bottom: 25px;}
-		a {color: ##116EAF;}
-		body {color:##5A7EB9;font:76%/1.5 arial,tahoma,verdana,sans-serif;}
-		.projectInstallType {border:1px dotted ##e3e3e3;padding:10px;margin:10px;}
-		.fieldDisplay {font-weight:bold;}
-		.summary {border-top:1px dotted ##e3e3e3;}
-		</style>
+
 		
 	</head>
 	<body style="background-color: ##5A7EB9;">
@@ -97,7 +89,7 @@ SAVE AND CONTROL THE INSTAL PROCESS WIZARD
 	
 	<cfif directoryExists(expandPath("/farcry/projects/#session.stFarcryInstall.stConfig.applicationName#"))>
 		
-		<cf_redoStep field="applicationName" errorTitle="INVALID PROJECT FOLDER NAME" errorDescription="There is already project called #session.stFarcryInstall.stConfig.applicationName# on this server. Please delete this project or select a new name." />
+		<cf_redoStep field="applicationName" errorTitle="INVALID PROJECT FOLDER NAME" errorDescription="The project folder name <b>#session.stFarcryInstall.stConfig.applicationName#</b> is invalid or already exists on this server. Please remove this project folder or select an alternative name." />
 
 	</cfif>
 	<cfif not len(session.stFarcryInstall.stConfig.locales)>
@@ -192,7 +184,7 @@ DISPLAY THE WIZARD NAVIGATION
 <cfset wizardNav = getWizardNav() />
 <cfoutput>
 <div style="margin-bottom:25px;">#wizardNav#</div>
-<h1>Farcry Installer</h1>
+<!---<h1>Farcry Core Installer</h1>--->
 </cfoutput>
 
 
@@ -206,19 +198,21 @@ RENDER THE CURRENT STEP
 	
 
 	<cfoutput>	
-	<h2>PROJECT NAME</h2>
+	<h1>Project Details</h1>
+	
 	<div class="item">
       	<label for="applicationName">Project Name <em>*</em></label>
 		<div class="field">
-			<input type="text" id="displayName" name="displayName" value="#session.stFarcryInstall.stConfig.displayName#">
-			<!---<div class="fieldHint">todo: hint</div>--->
+			<input type="text" id="displayName" name="displayName" value="#session.stFarcryInstall.stConfig.displayName#" />
+			<div class="fieldHint">Project name is for display purposes only, and can be just about anything you like.</div>
 		</div>
 		<div class="clear"></div>
 	</div>	
 	<div class="item">
       	<label for="applicationName">Project Folder Name <em>*</em></label>
 		<div class="field">
-			<input type="text" id="applicationName" name="applicationName" value="#session.stFarcryInstall.stConfig.applicationName#">
+			<input type="text" id="applicationName" name="applicationName" value="#session.stFarcryInstall.stConfig.applicationName#" />
+			<div class="fieldHint">Project folder name corresponds to the underlying installation folder and application name of your project.  It must adhere to the standard ColdFusion naming conventions for variables; namely start with a letter and consist of only letters, numbers and underscores.</div>
 		</div>
 		<div class="clear"></div>
 	</div>
@@ -234,11 +228,12 @@ RENDER THE CURRENT STEP
 			</cfloop>
 			<cfset variables.lLocales = listSort(variables.lLocales,"textNoCase", "asc") />
 			<input type="hidden" name="locales" value="">
-			<select id="locales" name="locales" multiple="true">
+			<select id="locales" name="locales" multiple="true" size="5">
 				<cfloop list="#variables.lLocales#" index="i">
 					<option value="#listFirst(i, ":")#" <cfif listFindNoCase(session.stFarcryInstall.stConfig.locales, listFirst(i, ":"))>selected</cfif>>#listLast(i, ":")#</option>
 				</cfloop>
 			</select>
+			<div class="fieldHint">Set the relevant locales for your application.  Just because the locale can be selected does not mean a relevant translation is available.  If in doubt just leave the defaults.</div>
 		</div>
 		<div class="clear"></div>
 	</div>			
@@ -247,11 +242,12 @@ RENDER THE CURRENT STEP
 
 <cf_displayStep step="2">
 	<cfoutput>
-	<h2>DATABASE SETUP</h2>
+	<h1>Database Configuration</h1>
 	<div class="item">
-      	<label for="DSN">Project DSN <em>*</em></label>
+      	<label for="DSN">Project Datasource (DSN) <em>*</em></label>
 		<div class="field">
-			<input type="text" id="DSN" name="DSN" value="#session.stFarcryInstall.stConfig.DSN#">
+			<input type="text" id="DSN" name="DSN" value="#session.stFarcryInstall.stConfig.DSN#" />
+			<div class="fieldHint">You must type in the name of a valid datasource, preconfigured in the ColdFusion Administrator.  The database must be empty otherwise the installer will not proceed.</div>
 		</div>
 		<div class="clear"></div>
 	</div>
@@ -267,6 +263,7 @@ RENDER THE CURRENT STEP
 		        <option value="mysql" <cfif session.stFarcryInstall.stConfig.dbType EQ "mysql"> selected="selected"</cfif>>MySQL</option>
 		        <option value="postgresql" <cfif session.stFarcryInstall.stConfig.dbType EQ "postgresql"> selected="selected"</cfif>>PostgreSQL</option>
 			</select>
+			<div class="fieldHint">Funnily enough, your choice of database type must reflect the database your datasource is pointing to.</div>
 		</div>
 		<div class="clear"></div>
 	</div>
@@ -345,33 +342,32 @@ RENDER THE CURRENT STEP
 
 <cf_displayStep step="3">
 	<cfoutput>
-	<h2>SKELETON</h2>
+	<h1>Project Skeleton</h1>
     <div class="item">
-      	<label for="skeleton">Skeleton</label>
+      	<label for="skeleton">Skeleton <em>*</em></label>
 		<div class="field">
 			<select id="skeleton" name="skeleton">
 				<option value="">-- Select Skeleton --</option>
 				<cfloop query="qSkeletons">
 					<cfif qSkeletons.type EQ "DIR" and fileExists("#skeletonPath#/#qSkeletons.name#/install/manifest.cfc")>
-						<cfset oManifest = createObject("component", "farcry.skeletons.#qSkeletons.name#.install.manifest")>
+						<cfset oManifest = createObject("component", "farcry.skeletons.#qSkeletons.name#.install.manifest") />
 						<option value="farcry.skeletons.#qSkeletons.name#" <cfif session.stFarcryInstall.stConfig.skeleton EQ "farcry.skeletons.#qSkeletons.name#">selected</cfif>>
-							#oManifest.name#
-							- Supported: #oManifest.isSupported(coreMajorVersion="#request.coreVersion.major#",coreMinorVersion="#request.coreVersion.minor#",corePatchVersion="#request.coreVersion.patch#")#
+							#oManifest.name# (#IIF(oManifest.isSupported(coreMajorVersion="#request.coreVersion.major#", coreMinorVersion="#request.coreVersion.minor#", corePatchVersion="#request.coreVersion.patch#"), de("Supported"), de("Unsupported"))#)
 						</option>
 					</cfif>
 				</cfloop>
 				<cfif isDefined("qProjectSkeletons")>
 					<cfloop query="qProjectSkeletons">
 						<cfif qProjectSkeletons.type EQ "DIR" and fileExists("#projectsPath#/#qProjectSkeletons.name#/install/manifest.cfc")>
-							<cfset oManifest = createObject("component", "farcry.projects.#qProjectSkeletons.name#.install.manifest")>
+							<cfset oManifest = createObject("component", "farcry.projects.#qProjectSkeletons.name#.install.manifest") />
 							<option value="farcry.projects.#qProjectSkeletons.name#" <cfif session.stFarcryInstall.stConfig.skeleton EQ "farcry.projects.#qProjectSkeletons.name#">selected</cfif>>
-								#oManifest.name#
-								- Supported: #oManifest.isSupported(coreMajorVersion="#request.coreVersion.major#",coreMinorVersion="#request.coreVersion.minor#",corePatchVersion="#request.coreVersion.patch#")#
+								#oManifest.name# (#IIF(oManifest.isSupported(coreMajorVersion="#request.coreVersion.major#", coreMinorVersion="#request.coreVersion.minor#", corePatchVersion="#request.coreVersion.patch#"), de("Supported"), de("Unsupported"))#)
 							</option>
 						</cfif>
 					</cfloop>
 				</cfif>
 			</select>
+			<div class="fieldHint">Skeletons are like sample applications.  They can contain specific templates, functionality and data.  Choose the skeleton that most closely resembles the application you are building.  If in doubt, select <strong>Mollio</strong> &##8212; its a simple web application.</div>
 		</div>
 		<div class="clear"></div>
 	</div>
@@ -385,8 +381,11 @@ RENDER THE CURRENT STEP
 
 	
 
-	<cfoutput>		
-	<h2>PLUGINS</h2>
+	<cfoutput>
+	<h1>Plugins</h1>
+	<p>Plugins are code libraries that can be added to your project to change the look and feel, extend existing functionality or even add completely new features.  Your choice of "skeleton" will have pre-selected those plugins required for your skeleton to work properly. Feel free to add additional plugins that you think might be useful &##8212; remember, you can always uninstall or install plugins at a later date.</p>
+	<p>&nbsp;</p>
+	
 	<!--- set plugins to blank in case no plugins are listed at all and skeleton is requiring one --->
     <input type="hidden" name="plugins" value="" />
 		
@@ -396,19 +395,21 @@ RENDER THE CURRENT STEP
 				<cfset pluginSupported = oManifest.isSupported(coreMajorVersion="#request.coreVersion.major#",coreMinorVersion="#request.coreVersion.minor#",corePatchVersion="#request.coreVersion.patch#")>
 				
 				<div id="plugin-#qPlugins.name#">
-					<table cellspacing="10" cellpadding="0">
+					<table cellspacing="10" cellpadding="0" class="plugin">
 					<tr>
 						<td valign="top">
 							<input type="checkbox" name="plugins" value="#qPlugins.name#" <cfif listContainsNoCase(session.stFarcryInstall.stConfig.plugins, qPlugins.name)>checked</cfif>>
 						</td>
 						<td valign="top">
-							#oManifest.name# <cfif not pluginSupported>(UNSUPPORTED)</cfif> <br />
+						<p>
+							<strong>#oManifest.name#</strong> <cfif not pluginSupported>(unsupported)</cfif> <br />
 							<em>#oManifest.description#</em>
+						</p>
 						</td>
 					</tr>
 					</table>
 				</div>
-				<hr />
+				
 				
 			<!--- 	
 				<cfif not pluginSupported>
@@ -427,7 +428,9 @@ RENDER THE CURRENT STEP
 
 <cf_displayStep step="5">
 	<cfoutput>
-	<h2>Project Install Type</h2>
+	<h1>Deployment Configuration</h1>
+	<p>FarCry Core can support a variety of different configurations for deployment.  The installer supports three options.  If you are after a custom deployment option select "Advanced Configuration".</p>
+	<p>&nbsp;</p>
 	
 	
 	<div class="projectInstallType">		
@@ -435,10 +438,11 @@ RENDER THE CURRENT STEP
 			<input type="radio" id="projectInstallType" name="projectInstallType" value="SubDirectory" <cfif session.stFarcryInstall.stConfig.projectInstallType EQ "SubDirectory">checked</cfif>>
 			Sub-Directory
 		</h3>
-		<p>For multiple application deployment under a single webroot. Specifically aimed at one multiple applications per website.</p>
+		<p>For multiple application deployment under a single webroot.  If you only have a single web site configured for your server, and would like to run multiple FarCry applications select me.</p>
+		<p>Note each application will run under its own sub-directory, for example: http://localhost:8500/myproject</p>
 	</div>
 	
-	<div class="projectInstallType">		
+	<div class="projectInstallType">	
 		<h3>
 			<cfif fileExists(expandPath("/farcryConstructor.cfm"))>
 				<input type="radio" id="projectInstallType" name="projectInstallType" disabled="true" value="Standalone" <cfif session.stFarcryInstall.stConfig.projectInstallType EQ "Standalone">checked</cfif>>
@@ -448,7 +452,8 @@ RENDER THE CURRENT STEP
 				Standalone
 			</cfif>
 		</h3>
-		<p>Specifically aimed at one application per website. For standalone application deployment and/or shared hosting deployment that allows for a single project with a dedicated core framework and dedicated library of plugins.</p>
+		<p>Specifically aimed at one application per website. For standalone application deployment and/or shared hosting deployment that allows for a single project select me.</p>
+		<p>Note the application will run directly under the webroot, for example: http://localhost/</p>
 	</div>
 	
 	<div class="projectInstallType">		
@@ -457,6 +462,7 @@ RENDER THE CURRENT STEP
 			Advanced Configuration (ColdFusion and/or Web Server Mappings)
 		</h3>
 		<p>An enterprise configuration that allows for an unlimited number of projects to share a single core framework and library of plugins. Sharing is done through common reference to specific ColdFusion mapping or specific web server mapping (aka web virtual directory) of /farcry.</p>
+		<p>Note this is an advanced option for custom configurations and deployments.  You may need to perform additional configuration to make your FarCry application operational.  Only select me if you know what you are doing.
 	</div>
 			
 	
@@ -488,7 +494,7 @@ RENDER THE CURRENT STEP
 <cf_displayStep step="6">
 
 <cfoutput>
-<h2>Intallation Confirmation</h2>
+<h1>Installation Confirmation</h1>
 <div class="item summary">
 	<label>Project Name:</label>
 	<div class="field fieldDisplay">#session.stFarcryInstall.stConfig.displayName#</div>

@@ -81,11 +81,11 @@
 					
 					<cfcatch type="database">
 						<cfset stResult.bSuccess = false />
-						<cfset stResult.errorTitle = "Invalid DSN" />
+						<cfset stResult.errorTitle = "Invalid Datasource (DSN)" />
 						<cfsavecontent variable="stResult.errorDescription">
 							<cfoutput>
 							<p>Your DSN (#arguments.DSN#) is invalid.</p>
-							<p>Please check it is setup and verifies ColdFusion Administrator</p>
+							<p>Please check it is setup and verifies within the ColdFusion Administrator.</p>
 							</cfoutput>			
 						</cfsavecontent>
 					</cfcatch>
@@ -132,11 +132,11 @@
 		<cfif bExists>
 			
 			<cfset stResult.bSuccess = false />
-			<cfset stResult.errorTitle = "Existing Farcry database found" />
+			<cfset stResult.errorTitle = "Existing Farcry Database Found" />
 			<cfsavecontent variable="stResult.errorDescription">
 				<cfoutput>
-				<p>Your database contains an existing Farcry application</p>
-				<p>You must install into an empty database</p>
+				<p>Your database contains an existing Farcry application.</p>
+				<p>You can only install into an empty database.</p>
 				</cfoutput>			
 			</cfsavecontent>
 		
@@ -179,7 +179,8 @@
 				FROM	#arguments.DBOwner#sysobjects
 				</cfquery>
 			</cfcase>
-			<cfcase value="MySQL">								
+			<cfcase value="MySQL">
+				<cfset databaseTypeName = "MySQL" />						
 				<!--- test temp table creation --->
 				<cfquery name="qTestPrivledges" datasource="#arguments.dsn#">
 					create temporary table tblTemp1
@@ -192,6 +193,11 @@
 					DROP TABLE IF EXISTS tblTemp1
 				</cfquery>							
 			</cfcase>
+			<cfcase value="Postgres">
+				<cfset databaseTypeName = "Postgres" />						
+				<!--- TODO: perform test to validate dbtype is postgres --->
+									
+			</cfcase>
 			</cfswitch>
 			
 			<cfcatch type="database">
@@ -203,10 +209,10 @@
 		<cfif not bCorrectDB>
 			
 			<cfset stResult.bSuccess = false />
-			<cfset stResult.errorTitle = "Not a valid #databaseTypeName# Database" />
+			<cfset stResult.errorTitle = "Not A #databaseTypeName# Database" />
 			<cfsavecontent variable="stResult.errorDescription">
 				<cfoutput>
-				<p>Your database does not seem to be #databaseTypeName#</p>
+				<p>Your database does not appear to be #databaseTypeName#.</p>
 				<p>Please check the database type and try again.</p>
 				</cfoutput>			
 			</cfsavecontent>
