@@ -74,9 +74,12 @@ label { color:#333; }
 .fieldHint { font-size: 70%; color: #666; font-style:italic; }
 .summary {border-top:1px dotted ##e3e3e3;}
 
-table.plugin { border-top: 1px dotted #116EAF; border-bottom: 1px dotted #116EAF; width: 90%; margin: 0 30px; }
+table.plugin { border-top: 1px dotted #116EAF;  width: 90%; margin: 0 30px; }
 table.plugin strong { font-weight: bold; }
 table.plugin em { font-style: italic; }
+
+div.plugins { border-bottom: 1px dotted #116EAF; }
+
 
 .projectInstallType {border:1px dotted #116EAF;padding:10px;margin:10px;}
 div.projectInstallType p { margin: 5px 30px; }

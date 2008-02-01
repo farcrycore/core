@@ -388,7 +388,7 @@ RENDER THE CURRENT STEP
 	
 	<!--- set plugins to blank in case no plugins are listed at all and skeleton is requiring one --->
     <input type="hidden" name="plugins" value="" />
-		
+		<div class="plugins">
 		<cfloop query="qPlugins">
 			<cfif qPlugins.type EQ "DIR" and fileExists("#pluginPath#/#qPlugins.name#/install/manifest.cfc")>
 				<cfset oManifest = createObject("component", "farcry.plugins.#qPlugins.name#.install.manifest")>
@@ -397,14 +397,14 @@ RENDER THE CURRENT STEP
 				<div id="plugin-#qPlugins.name#">
 					<table cellspacing="10" cellpadding="0" class="plugin">
 					<tr>
-						<td valign="top">
+						<td valign="top" width="25px;">
 							<input type="checkbox" name="plugins" value="#qPlugins.name#" <cfif listContainsNoCase(session.stFarcryInstall.stConfig.plugins, qPlugins.name)>checked</cfif>>
 						</td>
 						<td valign="top">
-						<p>
-							<strong>#oManifest.name#</strong> <cfif not pluginSupported>(unsupported)</cfif> <br />
-							<em>#oManifest.description#</em>
-						</p>
+							<p>
+								<strong>#oManifest.name#</strong> <cfif not pluginSupported>(unsupported)</cfif> <br />
+								<em>#oManifest.description#</em>
+							</p>
 						</td>
 					</tr>
 					</table>
@@ -421,6 +421,7 @@ RENDER THE CURRENT STEP
 
 			</cfif>
 		</cfloop>
+		</div>
 
 	</cfoutput>		
 </cf_displayStep>
