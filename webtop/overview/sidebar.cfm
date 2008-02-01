@@ -15,7 +15,6 @@
 <cfif session.firstLogin>
 	<!--- edit profile --->
 	<skin:view typename="dmProfile" objectid="#session.dmProfile.objectid#" webskin="displayProfileDialog" />
-    <cfset session.firstLogin = "false" />
 </cfif>
 		
 <cfoutput>

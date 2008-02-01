@@ -13,8 +13,13 @@
 			<cfoutput>
 				<span class="success">Profile saved</span>
 			</cfoutput>
+			<cfset session.firstLogin = false />
 		</ft:processformobjects>
 	</ft:processform>
+	
+	<cfif session.firstLogin>
+		<cfoutput><p class="success">This is the first time you've logged into the webtop. Please complete your profile form with your details.</p></cfoutput>
+	</cfif>
 	
 	<ft:form heading="#application.rb.getResource('coapi.dmProfile.general.editprofile@label','Edit your profile')#">
 		<ft:object objectid="#stObj.objectid#" typename="dmProfile" lfields="firstname,lastname,breceiveemail,emailaddress,phone,fax,position,department,locale" />
