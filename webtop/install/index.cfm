@@ -110,12 +110,21 @@ SAVE AND CONTROL THE INSTAL PROCESS WIZARD
 		<cf_redoStep field="DSN" errorTitle="#stResult.errorTitle#" errorDescription="#stResult.errorDescription#" />
 	</cfif>
 	
+	<cfif not len(session.stFarcryInstall.stConfig.dbType)>
+		
+		<cf_redoStep field="DBType" errorTitle="REQUIRED" errorDescription="You must select the database type." />
+
+	</cfif>
 	
+
 	<cfset stResult = createObject("component", "flightCheck").checkDBType(DBOwner="#session.stFarcryInstall.stConfig.DBOwner#",dsn="#session.stFarcryInstall.stConfig.dsn#", DBType="#session.stFarcryInstall.stConfig.DBType#") />
 	
 	<cfif not stResult.bSuccess>
 		<cf_redoStep field="DBType" errorTitle="#stResult.errorTitle#" errorDescription="#stResult.errorDescription#" />
 	</cfif>
+		
+
+	
 
 	
 </cf_processStep>
@@ -266,6 +275,7 @@ RENDER THE CURRENT STEP
 			<div class="fieldHint">Funnily enough, your choice of database type must reflect the database your datasource is pointing to.</div>
 		</div>
 		<div class="clear"></div>
+		<input type="hidden" name="DBType" value="">
 	</div>
 	
 	<cfif session.stFarcryInstall.stConfig.dbType EQ "mssql" OR session.stFarcryInstall.stConfig.dbType EQ "ora">
