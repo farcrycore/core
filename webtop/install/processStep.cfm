@@ -15,7 +15,7 @@
 	<cfif structKeyExists(form, "farcrySubmitButton")>
 		<cfif attributes.step EQ "ALL">
 			<cfset variables.EnterStepProcess = true>
-		<cfelseif structKeyExists(form, "currentStep") AND form.currentStep EQ attributes.step>
+		<cfelseif structKeyExists(form, "currentStep") AND listFindNoCase(attributes.step,form.currentStep)>
 			<cfset variables.EnterStepProcess = true>
 		</cfif>
 	</cfif>

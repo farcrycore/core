@@ -86,19 +86,15 @@ SAVE AND CONTROL THE INSTAL PROCESS WIZARD
 
 
 
-<cf_processStep step="1">
+<cf_processStep step="1,6">
 	
-	<cfif not len(session.stFarcryInstall.stConfig.displayName)>
-		
-		<cf_redoStep field="displayName" errorTitle="REQUIRED" errorDescription="You must select the project name." />
-
+	<cfif not len(session.stFarcryInstall.stConfig.displayName)>		
+		<cf_redoStep step="1" field="displayName" errorTitle="REQUIRED" errorDescription="You must select the project name." />
 	</cfif>
 		
 	<!--- Check Its not empty --->
-	<cfif not len(session.stFarcryInstall.stConfig.applicationName)>
-		
-		<cf_redoStep field="applicationName" errorTitle="REQUIRED" errorDescription="You must select the project folder name." />
-
+	<cfif not len(session.stFarcryInstall.stConfig.applicationName)>		
+		<cf_redoStep step="1" field="applicationName" errorTitle="REQUIRED" errorDescription="You must select the project folder name." />
 	<cfelse>
 		<!--- Check its a valid variable name --->
 		<cftry>
@@ -110,46 +106,33 @@ SAVE AND CONTROL THE INSTAL PROCESS WIZARD
 			</cfcatch>
 		</cftry>
 		<cfif not bValidApplicationName>
-			<cf_redoStep field="applicationName" errorTitle="INVALID PROJECT FOLDER NAME" errorDescription="- no spaces<br />- only alpha numerics and _ (underscore)<br />- must start with an alpha" />
-		
+			<cf_redoStep step="1" field="applicationName" errorTitle="INVALID PROJECT FOLDER NAME" errorDescription="- no spaces<br />- only alpha numerics and _ (underscore)<br />- must start with an alpha" />
 		<cfelse>
 			<!--- Check its not already created. --->
 			<cfif directoryExists(expandPath("/farcry/projects/#session.stFarcryInstall.stConfig.applicationName#"))>
-				
-				<cf_redoStep field="applicationName" errorTitle="INVALID PROJECT FOLDER NAME" errorDescription="The project folder name <b>#session.stFarcryInstall.stConfig.applicationName#</b> is invalid or already exists on this server. Please remove this project folder or select an alternative name." />
-		
+				<cf_redoStep step="1" field="applicationName" errorTitle="INVALID PROJECT FOLDER NAME" errorDescription="The project folder name <b>#session.stFarcryInstall.stConfig.applicationName#</b> is invalid or already exists on this server. Please remove this project folder or select an alternative name." />
 			</cfif>
 		</cfif>
-		
-		
-	
-
-	
-
 	</cfif>
-	
-	
-	<cfif not len(session.stFarcryInstall.stConfig.locales)>
-		
-		<cf_redoStep field="locales" errorTitle="INVALID LOCALE" errorDescription="You must select at lease 1 locale." />
 
+	<cfif not len(session.stFarcryInstall.stConfig.locales)>
+		<cf_redoStep step="1" field="locales" errorTitle="INVALID LOCALE" errorDescription="You must select at lease 1 locale." />
 	</cfif>
 
 </cf_processStep>
 
 
-
-<cf_processStep step="2">
+<cf_processStep step="2,6">
 
 	<cfset stResult = createObject("component", "flightCheck").checkDSN(session.stFarcryInstall.stConfig.dsn) />
 	
 	<cfif not stResult.bSuccess>
-		<cf_redoStep field="DSN" errorTitle="#stResult.errorTitle#" errorDescription="#stResult.errorDescription#" />
+		<cf_redoStep step="2" field="DSN" errorTitle="#stResult.errorTitle#" errorDescription="#stResult.errorDescription#" />
 	</cfif>
 	
 	<cfif not len(session.stFarcryInstall.stConfig.dbType)>
 		
-		<cf_redoStep field="DBType" errorTitle="REQUIRED" errorDescription="You must select the database type." />
+		<cf_redoStep step="2" field="DBType" errorTitle="REQUIRED" errorDescription="You must select the database type." />
 
 	</cfif>
 	
@@ -157,7 +140,7 @@ SAVE AND CONTROL THE INSTAL PROCESS WIZARD
 	<cfset stResult = createObject("component", "flightCheck").checkDBType(DBOwner="#session.stFarcryInstall.stConfig.DBOwner#",dsn="#session.stFarcryInstall.stConfig.dsn#", DBType="#session.stFarcryInstall.stConfig.DBType#") />
 	
 	<cfif not stResult.bSuccess>
-		<cf_redoStep field="DBType" errorTitle="#stResult.errorTitle#" errorDescription="#stResult.errorDescription#" />
+		<cf_redoStep step="2" field="DBType" errorTitle="#stResult.errorTitle#" errorDescription="#stResult.errorDescription#" />
 	</cfif>
 		
 
@@ -167,9 +150,9 @@ SAVE AND CONTROL THE INSTAL PROCESS WIZARD
 </cf_processStep>
 
 
-<cf_processStep step="3">
+<cf_processStep step="3,6">
 	<cfif not len(trim(session.stFarcryInstall.stConfig.skeleton))>
-		<cf_redoStep field="skeleton" errorTitle="Select Skeleton" errorDescription="You must select a skeleton in order to proceed." />
+		<cf_redoStep step="3" field="skeleton" errorTitle="Select Skeleton" errorDescription="You must select a skeleton in order to proceed." />
 	<cfelse>
 		<cfset oManifest = createObject("component", "#session.stFarcryInstall.stConfig.skeleton#.install.manifest")>
 		
@@ -183,20 +166,20 @@ SAVE AND CONTROL THE INSTAL PROCESS WIZARD
 
 
 
-<cf_processStep step="4">
+<cf_processStep step="4,6">
 
 	<cfset oSkeletonManifest = createObject("component", "#session.stFarcryInstall.stConfig.skeleton#.install.manifest")>
 
 	<cfif listContainsNoCase(oSkeletonManifest.lRequiredPlugins, qPlugins.name) AND NOT listContainsNoCase(session.stFarcryInstall.stConfig.plugins, qPlugins.name)>
 		
-		<cf_redoStep field="plugin-#qPlugins.name#" errorTitle="Required" errorDescription="This plugin is required by the selected skeleton." />
+		<cf_redoStep step="4" field="plugin-#qPlugins.name#" errorTitle="Required" errorDescription="This plugin is required by the selected skeleton." />
 	</cfif>
 	
 </cf_processStep>
 
 
 
-<cf_processStep step="5">
+<cf_processStep step="5,6">
 	
 </cf_processStep>
 
