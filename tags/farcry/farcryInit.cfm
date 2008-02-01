@@ -140,7 +140,7 @@ a {color: ##116EAF;}
 			<cffile action="write" file="#varibles.projectPath#/updater5.0.0/farcryConstructor.cf_" output="#sFarcryConstructor#" addnewline="false" mode="777" />
 		</cfif>
 				
-		<cflocation url="#attributes.projectURL#/updater5.0.0/index.cfm?Name=#attributes.name#&dsn=#attributes.dsn#&dbtype=#attributes.dbtype#&dbOwner=#attributes.dbOwner#" addtoken="false" />
+		<cflocation url="#attributes.projectURL#/updater5.0.0/index.cfm?Name=#attributes.name#&dsn=#attributes.dsn#&dbtype=#attributes.dbtype#&dbOwner=#attributes.dbOwner#&plugins=#attributes.plugins#" addtoken="false" />
 	<cfelse>
 	
 		<cfset farcryProjectsPath = expandPath("/farcry/projects") />

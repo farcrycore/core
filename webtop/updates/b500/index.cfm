@@ -75,7 +75,7 @@ a {color: ##116EAF;}
 		<!----------------------------------------
 		PLUGINS TO INCLUDE
 		 ---------------------------------------->
-		<cfset application.plugins = "" />
+		<cfset application.plugins = "#form.plugins#" />
 		
 		
 		<!------------------------------------------ 
@@ -435,11 +435,21 @@ a {color: ##116EAF;}
 				<td><strong>Database Owner</strong></td>
 		      	<td>#url.dbOwner#</td>
 			</tr>
+
+			<tr>
+				<td valign="top"><strong>Plugins</strong></td>
+		      	<td>
+					<cfloop list="#url.plugins#" index="i">
+						#i#<br />
+					</cfloop>
+				</td>
+			</tr>
 		</table>
 			<input type="hidden" name="projectName" value="#url.name#" />
 			<input type="hidden" name="dsn" value="#url.dsn#" />
 			<input type="hidden" name="dbType" value="#url.dbType#" />
 			<input type="hidden" name="dbOwner" value="#url.dbOwner#" />
+			<input type="hidden" name="plugins" value="#url.plugins#" />
 			<input type="submit" name="submit" value="Upgrade Now" />
 		</div>
 	</form>

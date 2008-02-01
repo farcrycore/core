@@ -290,6 +290,7 @@
 		<cfset var stObj = structnew() />
 		<cfset var typename = "" />
 		<cfset var property = "" />
+		<cfset var oAlterType = createObject("component", "farcry.core.packages.farcry.alterType") />
 		
 		<!--- Get data --->
 		<cfquery datasource="#application.dsn#" name="qUsers">
@@ -314,20 +315,23 @@
 			
 			<cfset stResult[userid] = stObj.objectid />
 		</cfloop>
-		
+
 		<cfloop collection="#application.types#" item="typename">
 			<cfloop list="createdby,lastupdatedby,lockedby" index="property">
 				<!--- Update ownedby --->
-				<cfquery datasource="#application.dsn#">
-					update	type
-					set		#property# = dmProfile.username + '_' + dmProfile.userDirectory
-					from	#application.dbowner##typename# type
-							inner join 
-							#application.dbowner#dmProfile
-							on type.#property#=dmProfile.username
-				</cfquery>
+				<cfif oAlterType.isCFCDeployed(typename="#typename#")>
+					<cfquery datasource="#application.dsn#">
+						update	type
+						set		#property# = dmProfile.username + '_' + dmProfile.userDirectory
+						from	#application.dbowner##typename# type
+								inner join 
+								#application.dbowner#dmProfile
+								on type.#property#=dmProfile.username
+					</cfquery>	
+				</cfif>
+				
 			</cfloop>
-		</cfloop>
+		</cfloop>	
 		
 		<cfswitch expression="#application.dbType#">
 			<cfcase value="mssql">
