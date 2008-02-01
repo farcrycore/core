@@ -573,7 +573,9 @@ user --->
 	</cfif>
 
 
-
+<cfif len(attributes.description)>
+	<cfoutput>#attributes.description#</cfoutput>
+</cfif>
 
 <ft:form style="width: 100%;" Name="objectadmin">
 
