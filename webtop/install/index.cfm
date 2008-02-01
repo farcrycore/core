@@ -47,10 +47,11 @@ DETERMINE THE CURRENT VERSION OF FARCRY
 <!------------------------------------------------ 
 SETUP DEFAULTS FOR ALL INSTALLATION WIZARD FIELDS 
 ------------------------------------------------>
-<!--- <cfset session.stFarcryInstall = structNew() /> --->
+<!--- <cfset structDelete(session, "stFarcryInstall") /> --->
 
 <cfif not structKeyExists(session, "stFarcryInstall")>
 	<cfset session.stFarcryInstall = "#structNew()#" />
+	<cfset session.stFarcryInstall.bComplete = false />
 	<cfset session.stFarcryInstall.currentStep = "1" />
 	<cfset session.stFarcryInstall.lCompletedSteps = "" />
 	<cfset session.stFarcryInstall.stConfig = "#structNew()#" />

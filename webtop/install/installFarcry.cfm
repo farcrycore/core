@@ -7,6 +7,11 @@
 	<cflocation url="index.cfm" addtoken="false" />
 </cfif>
 
+<cfif structKeyExists(url, "restartInstaller")>
+	<cfset structDelete(session, "stFarcryInstall") />
+	<cflocation url="index.cfm" addtoken="false" />
+</cfif>
+
 <!--------------------------------------- 
 DETERMINE THE CURRENT VERSION OF FARCRY
  --------------------------------------->
@@ -61,134 +66,134 @@ DETERMINE THE CURRENT VERSION OF FARCRY
 </cfoutput>
 
 
-
-<cfset form.applicationName = session.stFarcryInstall.stConfig.applicationName />
-<cfset form.displayName = session.stFarcryInstall.stConfig.displayName />
-<cfset form.locales = session.stFarcryInstall.stConfig.locales />
-<cfset form.DSN = session.stFarcryInstall.stConfig.DSN />
-<cfset form.DBType = session.stFarcryInstall.stConfig.DBType />
-<cfset form.DBOwner = session.stFarcryInstall.stConfig.DBOwner />
-<cfset form.skeleton = session.stFarcryInstall.stConfig.skeleton />
-<cfset form.plugins = session.stFarcryInstall.stConfig.plugins />
-<cfset form.projectInstallType = session.stFarcryInstall.stConfig.projectInstallType />
-
-<!--- Skeletons --->
-<cfset form.skeletonPath = replaceNoCase(form.skeleton, ".", "/", "all") />
-<cfset form.skeletonPath = expandPath("/#form.skeletonPath#") />
-
-
+<cfif not session.stFarcryInstall.bComplete>
+	<cfset form.applicationName = session.stFarcryInstall.stConfig.applicationName />
+	<cfset form.displayName = session.stFarcryInstall.stConfig.displayName />
+	<cfset form.locales = session.stFarcryInstall.stConfig.locales />
+	<cfset form.DSN = session.stFarcryInstall.stConfig.DSN />
+	<cfset form.DBType = session.stFarcryInstall.stConfig.DBType />
+	<cfset form.DBOwner = session.stFarcryInstall.stConfig.DBOwner />
+	<cfset form.skeleton = session.stFarcryInstall.stConfig.skeleton />
+	<cfset form.plugins = session.stFarcryInstall.stConfig.plugins />
+	<cfset form.projectInstallType = session.stFarcryInstall.stConfig.projectInstallType />
 	
-<!--- Project directory name can be changed from the default which is the applicationname --->
-<cfset application.projectDirectoryName =  form.applicationName />
-<cfset application.displayName =  form.displayName />
-
-<!----------------------------------------
- SET THE DATABASE SPECIFIC INFORMATION 
----------------------------------------->
-<cfset application.dsn = form.dsn />
-<cfset application.dbtype = form.dbtype />
-<cfset application.dbowner = form.dbowner />
-<!--- <cfset application.locales = this.locales /> --->
-
-<cfif application.dbtype EQ "mssql" AND NOT len(application.dbowner)>
-	<cfset application.dbowner = "dbo." />
-</cfif>
-
-<!----------------------------------------
- SET THE MAIN PHYSICAL PATH INFORMATION
- ---------------------------------------->
-<cfset application.path.project = expandpath("/farcry/projects/#application.projectDirectoryName#") />
-<cfset application.path.core = expandpath("/farcry/core") />
-<cfset application.path.plugins = expandpath("/farcry/plugins") />
-
-<cfset application.path.defaultFilePath = "#application.path.project#/www/files">
-<cfset application.path.secureFilePath = "#application.path.project#/securefiles">		
-
-<cfset application.path.imageRoot = "#application.path.project#/www">
-
-<cfset application.path.mediaArchive = "#application.path.project#/mediaArchive">
+	<!--- Skeletons --->
+	<cfset form.skeletonPath = replaceNoCase(form.skeleton, ".", "/", "all") />
+	<cfset form.skeletonPath = expandPath("/#form.skeletonPath#") />
+	
+	
 		
-		
-<!----------------------------------------
- WEB URL PATHS
- ---------------------------------------->
-<cfswitch expression="#form.projectInstallType#">
-<cfcase value="SubDirectory">
-	<cfset application.url.webroot = "/#application.projectDirectoryName#" />
-	<cfset application.url.webtop = "/farcry/core/webtop" />
-</cfcase>
-<cfcase value="Standalone">
-	<cfset application.url.webroot = "" />
-	<cfset application.url.webtop = "/farcry/core/webtop" />
-</cfcase>
-<cfcase value="CFMapping">
-	<cfset application.url.webroot = "" />
-	<cfset application.url.webtop = "/webtop" />
-</cfcase>
-<cfcase value="WebserverMapping">
-	<cfset application.url.webroot = "" />
-	<cfset application.url.webtop = "/farcry/core/webtop" />
-</cfcase>
-<cfdefaultcase>
-	<cfabort showerror="INVALID Install Type.">
-</cfdefaultcase>
-</cfswitch>
-
-
-<cfset application.url.farcry = "#application.url.webtop#" />
-<cfset application.url.imageRoot = "#application.url.webroot#">
-<cfset application.url.fileRoot = "#application.url.webroot#/files">
-
-
-
-<!----------------------------------------
-SHORTCUT PACKAGE PATHS
- ---------------------------------------->
-<cfset application.packagepath = "farcry.core.packages" />
-<cfset application.custompackagepath = "farcry.projects.#application.projectDirectoryName#.packages" />
-<cfset application.securitypackagepath = "farcry.core.packages.security" />
-
-<!----------------------------------------
-PLUGINS TO INCLUDE
- ---------------------------------------->
-<cfset application.plugins = form.plugins />
-
-
-<!---------------------------------------------- 
-INITIALISE THE COAPIUTILITIES SINGLETON
------------------------------------------------>
-<cfset application.coapi = structNew() />
-<cfset application.coapi.coapiUtilities = createObject("component", "farcry.core.packages.coapi.coapiUtilities").init() />
-<cfset application.coapi.coapiadmin = createObject("component", "farcry.core.packages.coapi.coapiadmin").init() />
-<cfset application.coapi.objectBroker = createObject("component", "farcry.core.packages.fourq.objectBroker").init() />
-
-
-<!------------------------------------------ 
-USE OBJECT BROKER?
- ------------------------------------------>
-<cfset application.bObjectBroker = false />
-<cfset application.ObjectBrokerMaxObjectsDefault = 0 />
-
-
-<!--- Plugins --->
-<cfset pluginPath = expandPath('/farcry/plugins') />
-<cfdirectory action="list" directory="#pluginPath#" name="qPlugins" />
-
-<!--- Project --->
-<cfset farcryProjectsPath = expandPath('/farcry/projects') />
-<cfdirectory action="list" directory="#farcryProjectsPath#" name="qProjects" />
-
-
-<!--- Base --->
-<cfset installPath = expandPath('/farcry/core/webtop/install') />
-
-<!--- Webroot --->
-<cfset webrootPath = expandPath('/') />
-
-<!--- Webtop --->
-<cfset webtopPath = expandPath('/farcry/core/webtop') />
-
-<cfoutput>#updateProgressBar(value="0.1", text="#form.displayName# (SETUP): Creating your project")#</cfoutput><cfflush>
+	<!--- Project directory name can be changed from the default which is the applicationname --->
+	<cfset application.projectDirectoryName =  form.applicationName />
+	<cfset application.displayName =  form.displayName />
+	
+	<!----------------------------------------
+	 SET THE DATABASE SPECIFIC INFORMATION 
+	---------------------------------------->
+	<cfset application.dsn = form.dsn />
+	<cfset application.dbtype = form.dbtype />
+	<cfset application.dbowner = form.dbowner />
+	<!--- <cfset application.locales = this.locales /> --->
+	
+	<cfif application.dbtype EQ "mssql" AND NOT len(application.dbowner)>
+		<cfset application.dbowner = "dbo." />
+	</cfif>
+	
+	<!----------------------------------------
+	 SET THE MAIN PHYSICAL PATH INFORMATION
+	 ---------------------------------------->
+	<cfset application.path.project = expandpath("/farcry/projects/#application.projectDirectoryName#") />
+	<cfset application.path.core = expandpath("/farcry/core") />
+	<cfset application.path.plugins = expandpath("/farcry/plugins") />
+	
+	<cfset application.path.defaultFilePath = "#application.path.project#/www/files">
+	<cfset application.path.secureFilePath = "#application.path.project#/securefiles">		
+	
+	<cfset application.path.imageRoot = "#application.path.project#/www">
+	
+	<cfset application.path.mediaArchive = "#application.path.project#/mediaArchive">
+			
+			
+	<!----------------------------------------
+	 WEB URL PATHS
+	 ---------------------------------------->
+	<cfswitch expression="#form.projectInstallType#">
+	<cfcase value="SubDirectory">
+		<cfset application.url.webroot = "/#application.projectDirectoryName#" />
+		<cfset application.url.webtop = "/farcry/core/webtop" />
+	</cfcase>
+	<cfcase value="Standalone">
+		<cfset application.url.webroot = "" />
+		<cfset application.url.webtop = "/farcry/core/webtop" />
+	</cfcase>
+	<cfcase value="CFMapping">
+		<cfset application.url.webroot = "" />
+		<cfset application.url.webtop = "/webtop" />
+	</cfcase>
+	<cfcase value="WebserverMapping">
+		<cfset application.url.webroot = "" />
+		<cfset application.url.webtop = "/farcry/core/webtop" />
+	</cfcase>
+	<cfdefaultcase>
+		<cfabort showerror="INVALID Install Type.">
+	</cfdefaultcase>
+	</cfswitch>
+	
+	
+	<cfset application.url.farcry = "#application.url.webtop#" />
+	<cfset application.url.imageRoot = "#application.url.webroot#">
+	<cfset application.url.fileRoot = "#application.url.webroot#/files">
+	
+	
+	
+	<!----------------------------------------
+	SHORTCUT PACKAGE PATHS
+	 ---------------------------------------->
+	<cfset application.packagepath = "farcry.core.packages" />
+	<cfset application.custompackagepath = "farcry.projects.#application.projectDirectoryName#.packages" />
+	<cfset application.securitypackagepath = "farcry.core.packages.security" />
+	
+	<!----------------------------------------
+	PLUGINS TO INCLUDE
+	 ---------------------------------------->
+	<cfset application.plugins = form.plugins />
+	
+	
+	<!---------------------------------------------- 
+	INITIALISE THE COAPIUTILITIES SINGLETON
+	----------------------------------------------->
+	<cfset application.coapi = structNew() />
+	<cfset application.coapi.coapiUtilities = createObject("component", "farcry.core.packages.coapi.coapiUtilities").init() />
+	<cfset application.coapi.coapiadmin = createObject("component", "farcry.core.packages.coapi.coapiadmin").init() />
+	<cfset application.coapi.objectBroker = createObject("component", "farcry.core.packages.fourq.objectBroker").init() />
+	
+	
+	<!------------------------------------------ 
+	USE OBJECT BROKER?
+	 ------------------------------------------>
+	<cfset application.bObjectBroker = false />
+	<cfset application.ObjectBrokerMaxObjectsDefault = 0 />
+	
+	
+	<!--- Plugins --->
+	<cfset pluginPath = expandPath('/farcry/plugins') />
+	<cfdirectory action="list" directory="#pluginPath#" name="qPlugins" />
+	
+	<!--- Project --->
+	<cfset farcryProjectsPath = expandPath('/farcry/projects') />
+	<cfdirectory action="list" directory="#farcryProjectsPath#" name="qProjects" />
+	
+	
+	<!--- Base --->
+	<cfset installPath = expandPath('/farcry/core/webtop/install') />
+	
+	<!--- Webroot --->
+	<cfset webrootPath = expandPath('/') />
+	
+	<!--- Webtop --->
+	<cfset webtopPath = expandPath('/farcry/core/webtop') />
+	
+	<cfoutput>#updateProgressBar(value="0.1", text="#form.displayName# (SETUP): Creating your project")#</cfoutput><cfflush>
 	
 		
 	<cfset oZip = createObject("component", "farcry.core.packages.farcry.zip") />
@@ -323,6 +328,11 @@ USE OBJECT BROKER?
 		</cftry>
 	</cfif>
 	
+<cfelse>
+	<cfset request.bSuccess = true>
+</cfif>
+	
+	
 	<cfif request.bSuccess>
 	
 		<!--- 
@@ -358,6 +368,7 @@ USE OBJECT BROKER?
 					<form name="installComplete" id="installComplete" method="post" action="">
 						<input type="button" name="login" value="LOGIN TO THE FARCRY WEBTOP" onClick="alert('Your default Farcry login is\n\n u: farcry\n p: farcry');window.open('#application.url.webtop#/login.cfm?farcryProject=#application.projectDirectoryName#')" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle'" onMouseOut="this.className='normalbttnstyle'" />
 						<input type="button" name="view" value="VIEW SITE" onClick="window.open('#application.url.webroot#/index.cfm?updateapp=1')" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle'" onMouseOut="this.className='normalbttnstyle'" />
+						<input type="button" name="install" value="INSTALL ANOTHER PROJECT" onClick="window.open('#cgi.script_name#?restartInstaller=1', '_self')" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle'" onMouseOut="this.className='normalbttnstyle'" />
 					</form><br /> 
 				</div>
 			</div>
@@ -370,8 +381,8 @@ USE OBJECT BROKER?
 			Ext.get('installComplete').dom.innerHTML = '#jsstringformat(installCompleteHTML)#';
 		</script>
 		</cfoutput>
+		<cfset session.stFarcryInstall.bComplete = true />
 		
-		<cfset structDelete(session, "stFarcryInstall") />
 	</cfif>
 
 <cfoutput>
