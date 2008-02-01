@@ -45,7 +45,7 @@
 		</cfif>
 	</cffunction>
 	
-	<cffunction name="getID" access="public" output="false" returntype="uuid" hint="Returns the objectid for the specified object">
+	<cffunction name="getID" access="public" output="false" returntype="string" hint="Returns the objectid for the specified object">
 		<cfargument name="name" type="string" required="true" hint="Pass in a permission name and the objectid will be returned" />
 		
 		<cfset var qPermissions = "" />
