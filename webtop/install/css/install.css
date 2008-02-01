@@ -39,8 +39,8 @@ ul.nomarker li {background:none;padding-left:0}
 
 .item {}
 	.item img {cursor:help;border:none;}
-	.item label{width:42%;float:left;display:block;text-align:right;margin-top:10px;margin-bottom:10px;margin-right:10px;font-size:medium;}
-	.item .field {width:55%;float:left;margin-top:10px;margin-bottom:10px;font-size:medium;letter-spacing:.5px;}
+	.item label{width:42%;float:left;display:block;text-align:right;margin-top:10px;margin-bottom:0px;margin-right:10px;font-size:medium;}
+	.item .field {width:55%;float:left;margin-top:10px;margin-bottom:0px;font-size:medium;letter-spacing:.5px;}
 
 .itemGroup label{width:42%;text-align:right;margin:5px 10px 0 0;font-size:medium;}
 .itemGroup input {padding:0;font-size:medium;}
@@ -81,7 +81,7 @@ table.plugin em { font-style: italic; }
 div.plugins { border-bottom: 1px dotted #116EAF; }
 
 
-.projectInstallType {border:1px dotted #116EAF;padding:10px;margin:10px;}
-div.projectInstallType p { margin: 5px 30px; }
+.section {border:1px dotted #116EAF;padding:10px;margin:10px;}
+div.section p { margin: 5px 30px; }
 
 .warning { color: #fff; font-weight:bold; border: #990000 solid 3px; background-color: #cc3333; padding: 15px; }

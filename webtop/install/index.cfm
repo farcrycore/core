@@ -434,22 +434,22 @@ RENDER THE CURRENT STEP
 	<p>&nbsp;</p>
 	
 	
-	<div class="projectInstallType">		
+	<div class="section">		
 		<h3>
-			<input type="radio" id="projectInstallType" name="projectInstallType" value="SubDirectory" <cfif session.stFarcryInstall.stConfig.projectInstallType EQ "SubDirectory">checked</cfif>>
+			<input type="radio" id="section" name="section" value="SubDirectory" <cfif session.stFarcryInstall.stConfig.projectInstallType EQ "SubDirectory">checked</cfif>>
 			Sub-Directory
 		</h3>
 		<p>For multiple application deployment under a single webroot.  If you only have a single web site configured for your server, and would like to run multiple FarCry applications select me.</p>
 		<p>Note each application will run under its own sub-directory, for example: http://localhost:8500/myproject</p>
 	</div>
 	
-	<div class="projectInstallType">	
+	<div class="section">	
 		<h3>
 			<cfif fileExists(expandPath("/farcryConstructor.cfm"))>
-				<input type="radio" id="projectInstallType" name="projectInstallType" disabled="true" value="Standalone" <cfif session.stFarcryInstall.stConfig.projectInstallType EQ "Standalone">checked</cfif>>
+				<input type="radio" id="section" name="section" disabled="true" value="Standalone" <cfif session.stFarcryInstall.stConfig.projectInstallType EQ "Standalone">checked</cfif>>
 				<span style="text-decoration:line-through;">Standalone (A FarCry project already exists in the webroot)</span>
 			<cfelse>
-				<input type="radio" id="projectInstallType" name="projectInstallType" value="Standalone" <cfif session.stFarcryInstall.stConfig.projectInstallType EQ "Standalone">checked</cfif>>
+				<input type="radio" id="section" name="section" value="Standalone" <cfif session.stFarcryInstall.stConfig.projectInstallType EQ "Standalone">checked</cfif>>
 				Standalone
 			</cfif>
 		</h3>
@@ -457,9 +457,9 @@ RENDER THE CURRENT STEP
 		<p>Note the application will run directly under the webroot, for example: http://localhost/</p>
 	</div>
 	
-	<div class="projectInstallType">		
+	<div class="section">		
 		<h3>
-			<input type="radio" id="projectInstallType" name="projectInstallType" value="CFMapping" <cfif session.stFarcryInstall.stConfig.projectInstallType EQ "CFMapping">checked</cfif>>
+			<input type="radio" id="section" name="section" value="CFMapping" <cfif session.stFarcryInstall.stConfig.projectInstallType EQ "CFMapping">checked</cfif>>
 			Advanced Configuration (ColdFusion and/or Web Server Mappings)
 		</h3>
 		<p>An enterprise configuration that allows for an unlimited number of projects to share a single core framework and library of plugins. Sharing is done through common reference to specific ColdFusion mapping or specific web server mapping (aka web virtual directory) of /farcry.</p>
@@ -471,9 +471,9 @@ RENDER THE CURRENT STEP
       	<label>Project Install Type</label>
 		<div class="field">
 
-			<input type="radio" id="projectInstallType-subDirectory" name="projectInstallType" value="subDirectory" <cfif session.stFarcryInstall.stConfig.projectInstallType EQ "subDirectory">checked</cfif>>Sub-Directory Under the web root<br />	
-			<input type="radio" id="projectInstallType-webroot" name="projectInstallType" value="webroot" <cfif session.stFarcryInstall.stConfig.projectInstallType EQ "webroot">checked</cfif>>Into the web root<br />	
-			<input type="radio" id="projectInstallType-farcry" name="projectInstallType" value="farcry" <cfif session.stFarcryInstall.stConfig.projectInstallType EQ "farcry">checked</cfif>>Keep in projects directory (Requires Webserver Mapping)<br />	
+			<input type="radio" id="section-subDirectory" name="section" value="subDirectory" <cfif session.stFarcryInstall.stConfig.projectInstallType EQ "subDirectory">checked</cfif>>Sub-Directory Under the web root<br />	
+			<input type="radio" id="section-webroot" name="section" value="webroot" <cfif session.stFarcryInstall.stConfig.projectInstallType EQ "webroot">checked</cfif>>Into the web root<br />	
+			<input type="radio" id="section-farcry" name="section" value="farcry" <cfif session.stFarcryInstall.stConfig.projectInstallType EQ "farcry">checked</cfif>>Keep in projects directory (Requires Webserver Mapping)<br />	
 		</div>
 		<div class="clear"></div>
 	</div>
@@ -496,15 +496,16 @@ RENDER THE CURRENT STEP
 
 <cfoutput>
 <h1>Installation Confirmation</h1>
+<div class="section">
 <div class="item summary">
 	<label>Project Name:</label>
 	<div class="field fieldDisplay">#session.stFarcryInstall.stConfig.displayName#</div>
-	<div class="clear"/>
+	<div class="clear">&nbsp;</div>
 </div>
 <div class="item summary">
 	<label>Project Folder Name:</label>
 	<div class="field fieldDisplay">#session.stFarcryInstall.stConfig.applicationName#</div>
-	<div class="clear"/>
+	<div class="clear">&nbsp;</div>
 </div>
 <div class="item summary">
 	<label>Locales:</label>
@@ -524,25 +525,31 @@ RENDER THE CURRENT STEP
 			</cfloop>
 
 	</div>
-	<div class="clear"/>
+	<div class="clear">&nbsp;</div>
 </div>
+</div>
+
+<div class="section">
 <div class="item summary">
 	<label>DSN:</label>
 	<div class="field fieldDisplay">#session.stFarcryInstall.stConfig.dsn#</div>
-	<div class="clear"/>
+	<div class="clear">&nbsp;</div>
 </div>
 <div class="item summary">
 	<label>Database Type:</label>
 	<div class="field fieldDisplay">#session.stFarcryInstall.stConfig.dbType#</div>
-	<div class="clear"/>
+	<div class="clear">&nbsp;</div>
 </div>
 <cfif len(session.stFarcryInstall.stConfig.dbOwner)>
 	<div class="item summary">
 		<label>Database Owner:</label>
 		<div class="field fieldDisplay">#session.stFarcryInstall.stConfig.dbOwner#</div>
-		<div class="clear"/>
+		<div class="clear">&nbsp;</div>
 	</div>
 </cfif>
+</div>
+
+<div class="section">
 <div class="item summary">
 	<label>Plugins:</label>
 	<div class="field fieldDisplay">
@@ -553,16 +560,20 @@ RENDER THE CURRENT STEP
 			</div>
 		</cfloop>
 	</div>
-	<div class="clear"/>
+	<div class="clear">&nbsp;</div>
 </div>
+</div>
+<div class="section">
 <div class="item summary">
 	<label>Skeleton:</label>
 	<div class="field fieldDisplay">
 		<cfset oManifest = createObject("component", "#session.stFarcryInstall.stConfig.skeleton#.install.manifest")>
 		#oManifest.name#
 	</div>
-	<div class="clear"/>
+	<div class="clear">&nbsp;</div>
 </div>
+</div>
+<div class="section">
 <div class="item summary">
 	<label>Project Install Type:</label>
 	<div class="field fieldDisplay">
@@ -578,7 +589,8 @@ RENDER THE CURRENT STEP
 			</cfdefaultcase>
 		</cfswitch>
 	</div>
-	<div class="clear"/>
+	<div class="clear">&nbsp;</div>
+</div>
 </div>
 </cfoutput>	
 </cf_displayStep>
