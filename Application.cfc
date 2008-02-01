@@ -152,6 +152,16 @@
 		<!--- Initialize the request as a farcry application --->
 		<cfset farcryRequestInit() />
 	
+		
+		<!--- 
+		This sets up a cookie on the users system so that if they try and login to the webtop and the webtop can't determine which project it is trying to update,
+		it will know what projects they will be potentially trying to edit.  --->
+		<cfparam name="server.stFarcryProjects" default="#structNew()#" />
+		<cfif not structKeyExists(server.stFarcryProjects, application.projectDirectoryName)>
+			<cfset server.stFarcryProjects[application.projectDirectoryName] = application.displayName />
+		</cfif>	
+		<cfset cookie.currentFarcryProject = application.projectDirectoryName />	
+	
 		<!--- Return out. --->
 		<cfreturn true />
 
@@ -168,15 +178,6 @@
 		<!--- Return out. --->
 		
 		<cfinclude template="/farcry/core/tags/farcry/_farcryOnRequestEnd.cfm">
-		
-		<!--- 
-		This sets up a cookie on the users system so that if they try and login to the webtop and the webtop can't determine which project it is trying to update,
-		it will know what projects they will be potentially trying to edit.  --->
-		<cfparam name="server.stFarcryProjects" default="#structNew()#" />
-		<cfif not structKeyExists(server.stFarcryProjects, application.projectDirectoryName)>
-			<cfset server.stFarcryProjects[application.projectDirectoryName] = application.displayName />
-		</cfif>	
-		<cfset cookie.currentFarcryProject = application.projectDirectoryName />
 
 		<cfreturn />
 
@@ -434,7 +435,7 @@
 		<cfset var loc = "" />
 		<cfset var virtualDirectory = "" />
 		
-
+		
 		<!--- Get the first directory after the url if there is one (ie. if its just index.cfm then we know we are just under the webroot) --->
 		<cfif listLen(cgi.SCRIPT_NAME, "/") GT 1>
 			<cfset virtualDirectory = listFirst(cgi.SCRIPT_NAME, "/") />
@@ -466,7 +467,8 @@
 		</cfif>
 
 		<cfif not len(loc)>				
-			<cfoutput><p>I can't find a FarCry project on this server to administer.</p>
+			<cfoutput>
+				<p>I can't find a FarCry project on this server to administer.</p>
 				<p><a href="/farcry/core/webtop/install">CLICK HERE</a> TO INSTALL A NEW PROJECT.</p>
 			</cfoutput>
 			<cfabort />		
@@ -530,6 +532,24 @@
 		<cfif application.dbtype EQ "mssql" AND NOT len(this.dbowner)>
 			<cfset application.dbowner = "dbo." />
 		</cfif>
+
+		<!--- Append Locales currently used in the project --->
+		<cfswitch expression="#application.dbtype#">
+			<cfdefaultcase>
+				<cfquery datasource="#application.dsn#" name="qProfileLocales">
+				SELECT distinct(locale) as locale
+				from #application.dbowner#dmProfile
+				</cfquery>
+				
+				<cfif qProfileLocales.recordCount>
+					<cfloop query="qProfileLocales">
+						<cfif not listFindNoCase(application.locales, qProfileLocales.locale)>
+							<cfset application.locales = listAppend(application.locales,qProfileLocales.locale) />
+						</cfif>
+					</cfloop>
+				</cfif>
+			</cfdefaultcase>
+		</cfswitch>
 
 		<!----------------------------------------
 		 WEB URL PATHS
