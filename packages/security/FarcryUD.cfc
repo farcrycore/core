@@ -288,6 +288,8 @@
 		<cfset var qUsers = "" />
 		<cfset var oUser = createObject("component", application.stcoapi["farUser"].packagePath) />
 		<cfset var stObj = structnew() />
+		<cfset var typename = "" />
+		<cfset var property = "" />
 		
 		<!--- Get data --->
 		<cfquery datasource="#application.dsn#" name="qUsers">
@@ -313,24 +315,37 @@
 			<cfset stResult[userid] = stObj.objectid />
 		</cfloop>
 		
+		<cfloop collection="#application.types#" item="typename">
+			<cfloop list="createdby,lastupdatedby,lockedby" index="property">
+				<!--- Update ownedby --->
+				<cfquery datasource="#application.dsn#">
+					update	type
+					set		#property# = dmProfile.username + '_' + dmProfile.userDirectory
+					from	#application.dbowner##typename# type
+							inner join 
+							#application.dbowner#dmProfile
+							on type.#property#=dmProfile.username
+				</cfquery>
+			</cfloop>
+		</cfloop>
 		
 		<cfswitch expression="#application.dbType#">
-		<cfcase value="mssql">
-			<!--- Update profiles --->
-			<cfquery datasource="#application.dsn#">
-				update	#application.dbowner#dmProfile
-				set		username=username + '_' + userDirectory
-				where	username not like '%[_]%'
-			</cfquery>
-		</cfcase>
-		<cfdefaultcase>
-			<!--- Update profiles --->
-			<cfquery datasource="#application.dsn#">
-				update	#application.dbowner#dmProfile
-				set		username=username + '_' + userDirectory
-				where	username not like '%_%'
-			</cfquery>
-		</cfdefaultcase>
+			<cfcase value="mssql">
+				<!--- Update profiles --->
+				<cfquery datasource="#application.dsn#">
+					update	#application.dbowner#dmProfile
+					set		username=username + '_' + userDirectory
+					where	username not like '%[_]%'
+				</cfquery>
+			</cfcase>
+			<cfdefaultcase>
+				<!--- Update profiles --->
+				<cfquery datasource="#application.dsn#">
+					update	#application.dbowner#dmProfile
+					set		username=username + '_' + userDirectory
+					where	username not like '%_%'
+				</cfquery>
+			</cfdefaultcase>
 		</cfswitch>
 
 		
