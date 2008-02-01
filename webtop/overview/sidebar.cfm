@@ -13,8 +13,12 @@
 </cfoutput>
 
 <cfif session.firstLogin>
-	<!--- edit profile --->
-	<skin:view typename="dmProfile" objectid="#session.dmProfile.objectid#" webskin="displayProfileDialog" />
+	<!--- edit profile --->	
+	<cfoutput>
+	<script type="text/javascript">
+		profileWin = window.open('#application.url.farcry#/conjuror/invocation.cfm?objectID=#session.dmProfile.objectID#&method=displayUserEdit','content');
+	</script>
+	</cfoutput>
 </cfif>
 		
 <cfoutput>

@@ -8,6 +8,9 @@
 <admin:header title="#application.rb.getResource('coapi.farUser.general.changepassword@label','Change password')#" />
 	
 <cfif listfirst(application.security.getCurrentUserID(),"_") eq stObj.userid>
+	
+	<ft:validateFormObjects objectid="#stobj.objectid#" />
+	
 	<ft:processform action="Save">
 		<ft:processformobjects objectid="#stobj.objectid#">
 			<cfoutput>
@@ -20,10 +23,10 @@
 	
 		<cfset stMetadata = structnew() />
 		<cfset stMetadata.password.ftRenderType = "changepassword" />
+		<cfset stMetadata.password.ftLabel = "Your Profile Password" />
 	
-		<ft:object objectid="#stObj.objectid#" typename="farUser" lfields="password" stPropMetadata="#stMetadata#" r_stFields="stFields" />
-		<cfoutput>#stFields.password.html#</cfoutput>
-		
+		<ft:object objectid="#stObj.objectid#" typename="farUser" lfields="password" stPropMetadata="#stMetadata#" IncludeFieldSet="false"  />
+	
 		<ft:farcrybuttonPanel>
 			<ft:farcrybutton value="Save" />
 			<ft:farcrybutton value="Cancel" onclick="window.close()" />

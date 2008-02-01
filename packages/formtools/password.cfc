@@ -103,51 +103,34 @@
 		<cfargument name="stFieldPost" required="true" type="struct" hint="The fields that are relevent to this field type.">
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		
-		<cfset var o = "" />
-		<cfset var st = "" />
-		<cfset var stResult = structNew()>		
-		<cfset stResult.bSuccess = true>
-		<cfset stResult.value = "">
-		<cfset stResult.stError = StructNew()>
+		<cfset var o = createObject("component",application.stCOAPI['#arguments.Typename#'].packagepath) />
+		<cfset var st = o.getData(objectid=arguments.objectid) />
 		
-		<cfparam name="arguments.stMetadata.ftRenderType" default="changepassord" />
+		<!--- Default the password to the current value --->
+		<cfset var stResult = passed(value=st[arguments.stMetadata.name]) />
+
 		
-		<cfswitch expression="#arguments.stMetadata.ftRenderType#">
-			<cfcase value="changepassword">
-				<cfset o = createObject("component",application.stCOAPI['#arguments.Typename#'].packagepath)>
-				<cfset st = o.getData(objectid=arguments.objectid)>
-				<!--- --------------------------- --->
-				<!--- Perform any validation here --->
-				<!--- --------------------------- --->
-		
-				<cfset stResult.value = st[arguments.stMetadata.name]>
-				
-				<cfif arguments.stFieldPost.value EQ st[arguments.stMetadata.name]>
-					<cfif len(arguments.stFieldPost.stSupporting.New) AND arguments.stFieldPost.stSupporting.New EQ arguments.stFieldPost.stSupporting.Confirm>
-						<cfset stResult.value = arguments.stFieldPost.stSupporting.New>
-					</cfif>		
-				</cfif>
-			</cfcase>
-			<cfcase value="confirmpassword">
-				<cfset o = createObject("component",application.stCOAPI['#arguments.Typename#'].packagepath)>
-				<cfset st = o.getData(objectid=arguments.objectid)>
-				<!--- --------------------------- --->
-				<!--- Perform any validation here --->
-				<!--- --------------------------- --->
-		
-				<cfset stResult.value = st[arguments.stMetadata.name]>
-				
-				<cfif len(arguments.stFieldPost.value) AND arguments.stFieldPost.value EQ arguments.stFieldPost.stSupporting.Confirm>
-					<cfset stResult.value = arguments.stFieldPost.value>
+		<cfif structKeyExists(arguments.stFieldPost.stSupporting, "New") AND structKeyExists(arguments.stFieldPost.stSupporting, "Confirm")>
+
+			<cfif arguments.stFieldPost.value EQ st[arguments.stMetadata.name]>
+				<cfif len(arguments.stFieldPost.stSupporting.New) AND arguments.stFieldPost.stSupporting.New EQ arguments.stFieldPost.stSupporting.Confirm>
+					<cfset stResult = passed(value=arguments.stFieldPost.stSupporting.New) />
+				<cfelse>
+					<cfset stResult = failed(value="#stResult.value#", message="Your new password confirmation did not match.") />
 				</cfif>	
-			</cfcase>
-			<cfcase value="enterpassword">
-				<cfset stResult.value = arguments.stFieldPost.value />
-			</cfcase>
-			<cfcase value="editpassword">
-				<cfset stResult.value = arguments.stFieldPost.value />
-			</cfcase>
-		</cfswitch>
+			<cfelse>
+				<cfset stResult = failed(value="#stResult.value#", message="The current password you entered was incorrect") />
+			</cfif>
+		<cfelseif structKeyExists(arguments.stFieldPost.stSupporting, "Confirm")>
+			
+			<cfif len(arguments.stFieldPost.value) AND arguments.stFieldPost.value EQ arguments.stFieldPost.stSupporting.Confirm>
+				<cfset stResult = passed(value=arguments.stFieldPost.value) />
+			<cfelse>
+				<cfset stResult = failed(value="#stResult.value#", message="Your password confirmation did not match.") />
+			</cfif>	
+		<cfelse>
+			<cfset stResult = passed(value=arguments.stFieldPost.value) />
+		</cfif>
 		
 		<!--- ----------------- --->
 		<!--- Return the Result --->
