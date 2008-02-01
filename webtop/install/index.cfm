@@ -87,11 +87,26 @@ SAVE AND CONTROL THE INSTAL PROCESS WIZARD
 
 <cf_processStep step="1">
 	
-	<cfif directoryExists(expandPath("/farcry/projects/#session.stFarcryInstall.stConfig.applicationName#"))>
+	<cfif not len(session.stFarcryInstall.stConfig.displayName)>
 		
-		<cf_redoStep field="applicationName" errorTitle="INVALID PROJECT FOLDER NAME" errorDescription="The project folder name <b>#session.stFarcryInstall.stConfig.applicationName#</b> is invalid or already exists on this server. Please remove this project folder or select an alternative name." />
+		<cf_redoStep field="displayName" errorTitle="REQUIRED" errorDescription="You must select the project name." />
 
 	</cfif>
+		
+	<cfif not len(session.stFarcryInstall.stConfig.applicationName)>
+		
+		<cf_redoStep field="applicationName" errorTitle="REQUIRED" errorDescription="You must select the project folder name." />
+
+	<cfelse>
+	
+		<cfif directoryExists(expandPath("/farcry/projects/#session.stFarcryInstall.stConfig.applicationName#"))>
+			
+			<cf_redoStep field="applicationName" errorTitle="INVALID PROJECT FOLDER NAME" errorDescription="The project folder name <b>#session.stFarcryInstall.stConfig.applicationName#</b> is invalid or already exists on this server. Please remove this project folder or select an alternative name." />
+	
+		</cfif>
+	</cfif>
+	
+	
 	<cfif not len(session.stFarcryInstall.stConfig.locales)>
 		
 		<cf_redoStep field="locales" errorTitle="INVALID LOCALE" errorDescription="You must select at lease 1 locale." />
@@ -210,7 +225,7 @@ RENDER THE CURRENT STEP
 	<h1>Project Details</h1>
 	
 	<div class="item">
-      	<label for="applicationName">Project Name <em>*</em></label>
+      	<label for="displayName">Project Name <em>*</em></label>
 		<div class="field">
 			<input type="text" id="displayName" name="displayName" value="#session.stFarcryInstall.stConfig.displayName#" />
 			<div class="fieldHint">Project name is for display purposes only, and can be just about anything you like.</div>
