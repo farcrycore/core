@@ -93,17 +93,38 @@ SAVE AND CONTROL THE INSTAL PROCESS WIZARD
 
 	</cfif>
 		
+	<!--- Check Its not empty --->
 	<cfif not len(session.stFarcryInstall.stConfig.applicationName)>
 		
 		<cf_redoStep field="applicationName" errorTitle="REQUIRED" errorDescription="You must select the project folder name." />
 
 	<cfelse>
-	
-		<cfif directoryExists(expandPath("/farcry/projects/#session.stFarcryInstall.stConfig.applicationName#"))>
-			
-			<cf_redoStep field="applicationName" errorTitle="INVALID PROJECT FOLDER NAME" errorDescription="The project folder name <b>#session.stFarcryInstall.stConfig.applicationName#</b> is invalid or already exists on this server. Please remove this project folder or select an alternative name." />
-	
+		<!--- Check its a valid variable name --->
+		<cftry>
+			<cfset "variables.#session.stFarcryInstall.stConfig.applicationName#" = 1 />
+			<cfset bValidApplicationName = true />
+			<cfcatch type="any">
+				<!--- Means it wasnt a valide application name --->
+				<cfset bValidApplicationName = false />
+			</cfcatch>
+		</cftry>
+		<cfif not bValidApplicationName>
+			<cf_redoStep field="applicationName" errorTitle="INVALID PROJECT FOLDER NAME" errorDescription="- no spaces<br />- only alpha numerics and _ (underscore)<br />- must start with an alpha" />
+		
+		<cfelse>
+			<!--- Check its not already created. --->
+			<cfif directoryExists(expandPath("/farcry/projects/#session.stFarcryInstall.stConfig.applicationName#"))>
+				
+				<cf_redoStep field="applicationName" errorTitle="INVALID PROJECT FOLDER NAME" errorDescription="The project folder name <b>#session.stFarcryInstall.stConfig.applicationName#</b> is invalid or already exists on this server. Please remove this project folder or select an alternative name." />
+		
+			</cfif>
 		</cfif>
+		
+		
+	
+
+	
+
 	</cfif>
 	
 	
