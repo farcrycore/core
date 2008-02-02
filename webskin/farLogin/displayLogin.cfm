@@ -4,6 +4,8 @@
 <cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" />
 <cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
 
+
+		
 <cfoutput>
 	<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 	<html xmlns="http://www.w3.org/1999/xhtml">
@@ -99,6 +101,7 @@
 
 		<h3><img src="images/powered_by_farcry_watermark.gif" />Tell it to someone who cares</h3>
 
+		<p style="text-align:right;border-top:1px solid ##e3e3e3;margin-top:25px;"><small>#createObject("component", "#application.packagepath#.farcry.sysinfo").getVersionTagline()#</small></p>
 	</div>
 	
 </cfoutput>

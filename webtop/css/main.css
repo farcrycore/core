@@ -386,7 +386,7 @@ body.iframed .refreshtree a:link, body.iframed .refreshtree a:visited, body.ifra
 .upone {position:absolute;top:48px;right:21px}
 
 /* =LAYOUT-FOOTER */
-#footer {position:absolute;bottom:0;right:5px;text-align:right;font-size: 86%;color:#999;background:#fff;width:400px}
+#footer {position:absolute;bottom:0;right:5px;text-align:right;font-size: 86%;color:#999;background:#fff;width:600px}
 #footer p {margin:0}
 
 /* =DEFINITION LISTS */

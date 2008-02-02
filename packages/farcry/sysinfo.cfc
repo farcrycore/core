@@ -16,7 +16,7 @@
 </cffunction>
 
 <cffunction name="getVersionTagline" access="public" output="false" hint="Returns a string detailing the current FarCry CMS build details." returntype="string">
-	<cfreturn "FarCry #getMajorVersion()#-#getMinorVersion()#-#getPatchVersion()# (#getBuildNumber()#)" />
+	<cfreturn "You are currently running version <strong>#getMajorVersion()#-#getMinorVersion()#-#getPatchVersion()# (#getBuildNumber()#)</strong> of Farcry Core." />
 </cffunction>
 
 <cffunction name="getBuildNumber" access="public" output="false" hint="Returns the contents of the build file if it exists, otherwise assumes it to be under subversion" returntype="string">
@@ -59,6 +59,21 @@
 	
 	<cfreturn returnVersion />
 </cffunction>
+
+
+
+<cffunction name="getCoreVersion" access="public" returntype="struct" hint="returns a structure containing the major, minor, patch and build version of farcry.">
+	
+	<cfset var coreVersion = structNew() />
+	
+	<cfset coreVersion.major = getMajorVersion() />
+	<cfset coreVersion.minor = getMinorVersion() />
+	<cfset coreVersion.patch = getPatchVersion() />
+	<cfset coreVersion.build = getBuildNumber() />
+
+	<cfreturn coreVersion>
+</cffunction>
+
 </cfcomponent>
 
 
