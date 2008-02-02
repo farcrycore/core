@@ -151,7 +151,7 @@
 		<cfif len(#arguments.stMetadata.value#)>
 			<cfoutput>
 				<div id="#arguments.fieldname#previewimage">
-					<img src="#arguments.stMetadata.value#" width="50px" title="#listLast(arguments.stMetadata.value,"/")#"><br>
+					<img src="#application.url.webroot##arguments.stMetadata.value#" width="50px" title="#listLast(arguments.stMetadata.value,"/")#"><br>
 					#listLast(arguments.stMetadata.value,"/")#
 					<ft:farcryButton type="button" value="Delete Image" onclick="if(confirm('Are you sure you want to remove this image?')) {} else {return false};$('#arguments.fieldname#DELETE').value=$('#arguments.fieldname#').value;$('#arguments.fieldname#').value='';Effect.Fade('#arguments.fieldname#previewimage');" />
 				</div>

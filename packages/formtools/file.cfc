@@ -63,7 +63,7 @@
 									<img src="#application.url.farcry#/images/crystal/22x22/actions/lock.png" />
 									#listLast(arguments.stMetadata.value, "/")#
 								<cfelse>
-									<a href="#application.url.fileRoot##arguments.stMetadata.value#" target="preview">#listlast(arguments.stMetadata.value, "/")#</a>
+									<a href="#application.url.webroot##application.url.fileRoot##arguments.stMetadata.value#" target="preview">#listlast(arguments.stMetadata.value, "/")#</a>
 								</cfif>
 								
 								<ft:farcryButton type="button" value="Delete File" onclick="if(confirm('Are you sure you want to remove this file?')) {} else {return false};$('#arguments.fieldname#DELETE').value=$('#arguments.fieldname#').value;$('#arguments.fieldname#').value='';Effect.Fade('#arguments.fieldname#previewfile');" />
