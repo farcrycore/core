@@ -21,9 +21,17 @@
 
 <cffunction name="getBuildNumber" access="public" output="false" hint="Returns the contents of the build file if it exists, otherwise assumes it to be under subversion" returntype="string">
 	<cfset var returnBuild = "SVN" /><!--- Return --->
+	<cfset var buildInfo = "" />
+	<cfset var pos = 0 />
 	
-	<cfif fileExists("#application.path.core#/build.number")>
-		<cffile action="read" file="#application.path.core#/build.number" variable="returnbuild">
+	<cfif fileExists("#application.path.core#/build.info")>
+		<cffile action="read" file="#application.path.core#/build.info" variable="buildInfo">
+		<cfset pos = findNoCase('Revision:', buildInfo)>
+		<cfif pos GT 0>
+			<cfset pos = pos + 10>
+			<cfset count = find(Chr(10), buildInfo, pos) - pos>
+			<cfset returnBuild = mid(buildInfo,  pos, count)>
+		</cfif>	
 	</cfif>
 	
 	<cfreturn returnBuild />
