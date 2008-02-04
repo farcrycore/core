@@ -466,7 +466,7 @@ RENDER THE CURRENT STEP
 	
 	<div class="section">		
 		<h3>
-			<input type="radio" id="section" name="section" value="SubDirectory" <cfif session.stFarcryInstall.stConfig.projectInstallType EQ "SubDirectory">checked</cfif>>
+			<input type="radio" id="projectInstallType" name="projectInstallType" value="SubDirectory" <cfif session.stFarcryInstall.stConfig.projectInstallType EQ "SubDirectory">checked</cfif>>
 			Sub-Directory
 		</h3>
 		<p>For multiple application deployment under a single webroot.  If you only have a single web site configured for your server, and would like to run multiple FarCry applications select me.</p>
@@ -476,10 +476,10 @@ RENDER THE CURRENT STEP
 	<div class="section">	
 		<h3>
 			<cfif fileExists(expandPath("/farcryConstructor.cfm"))>
-				<input type="radio" id="section" name="section" disabled="true" value="Standalone" <cfif session.stFarcryInstall.stConfig.projectInstallType EQ "Standalone">checked</cfif>>
+				<input type="radio" id="projectInstallType" name="projectInstallType" disabled="true" value="Standalone" <cfif session.stFarcryInstall.stConfig.projectInstallType EQ "Standalone">checked</cfif>>
 				<span style="text-decoration:line-through;">Standalone (A FarCry project already exists in the webroot)</span>
 			<cfelse>
-				<input type="radio" id="section" name="section" value="Standalone" <cfif session.stFarcryInstall.stConfig.projectInstallType EQ "Standalone">checked</cfif>>
+				<input type="radio" id="projectInstallType" name="projectInstallType" value="Standalone" <cfif session.stFarcryInstall.stConfig.projectInstallType EQ "Standalone">checked</cfif>>
 				Standalone
 			</cfif>
 		</h3>
@@ -489,7 +489,7 @@ RENDER THE CURRENT STEP
 	
 	<div class="section">		
 		<h3>
-			<input type="radio" id="section" name="section" value="CFMapping" <cfif session.stFarcryInstall.stConfig.projectInstallType EQ "CFMapping">checked</cfif>>
+			<input type="radio" id="projectInstallType" name="projectInstallType" value="CFMapping" <cfif session.stFarcryInstall.stConfig.projectInstallType EQ "CFMapping">checked</cfif>>
 			Advanced Configuration (ColdFusion and/or Web Server Mappings)
 		</h3>
 		<p>An enterprise configuration that allows for an unlimited number of projects to share a single core framework and library of plugins. Sharing is done through common reference to specific ColdFusion mapping or specific web server mapping (aka web virtual directory) of /farcry.</p>
