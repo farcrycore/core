@@ -77,9 +77,12 @@ SAVE AND CONTROL THE INSTAL PROCESS WIZARD
 <cf_processStep step="ALL">
 	
 	<cfloop collection="#form#" item="field">
-		<cfif structKeyExists(session.stFarcryInstall.stConfig, field)>
+		<cfif findNoCase("addWebrootMapping", field)>
+			<cfset session.stFarcryInstall.stConfig[field] = listFirst(form[field]) />
+		<cfelse>
 			<cfset session.stFarcryInstall.stConfig[field] = form[field] />
 		</cfif>
+		
 	</cfloop>
 	
 </cf_processStep>
@@ -410,7 +413,6 @@ RENDER THE CURRENT STEP
 <cf_displayStep step="4">
 
 	
-
 	<cfoutput>
 	<h1>Plugins</h1>
 	<p>Plugins are code libraries that can be added to your project to change the look and feel, extend existing functionality or even add completely new features.  Your choice of "skeleton" will have pre-selected those plugins required for your skeleton to work properly. Feel free to add additional plugins that you think might be useful &##8212; remember, you can always uninstall or install plugins at a later date.</p>
@@ -428,13 +430,41 @@ RENDER THE CURRENT STEP
 					<table cellspacing="10" cellpadding="0" class="plugin">
 					<tr>
 						<td valign="top" width="25px;">
-							<input type="checkbox" name="plugins" value="#qPlugins.name#" <cfif listContainsNoCase(session.stFarcryInstall.stConfig.plugins, qPlugins.name)>checked</cfif>>
+							<input type="checkbox" id="plugin#qPlugins.name#" name="plugins" value="#qPlugins.name#" <cfif listContainsNoCase(session.stFarcryInstall.stConfig.plugins, qPlugins.name)>checked</cfif>>
 						</td>
 						<td valign="top">
 							<p>
 								<strong>#oManifest.name#</strong> <cfif not pluginSupported>(unsupported)</cfif> <br />
 								<em>#oManifest.description#</em>
 							</p>
+							<cfif directoryExists("#pluginPath#/#qPlugins.name#/www") >
+								<cfif listContainsNoCase(session.stFarcryInstall.stConfig.plugins, qPlugins.name)>
+									<cfset pluginMappingDisplay = 'block' />
+								<cfelse>
+									<cfset pluginMappingDisplay = 'none' />
+								</cfif>
+								<table cellspacing="10" cellpadding="0" id="plugin#qPlugins.name#AddWebroot" style="display:#pluginMappingDisplay#;">
+								<tr>
+									<td valign="top" width="25px;">
+										<input type="checkbox" id="addWebrootMapping#qPlugins.name#" name="addWebrootMapping#qPlugins.name#" value="1" <cfif not isDefined("session.stFarcryInstall.stConfig.addWebrootMapping#qPlugins.name#") or session.stFarcryInstall.stConfig["addWebrootMapping#qPlugins.name#"]>checked</cfif>>
+									</td>
+									<td>
+										<p><strong>Copy Plugin Webroot to project</strong></p>
+										<div class="fieldHint">This plugin requires a webroot mapping. You can create the webroot mapping on your webserver, or alteratively you can select to have the webroot copied into your project to avoid having to create the mapping.</div>
+									</td>
+								</tr>
+								</table>
+								<input type="hidden" name="addWebrootMapping#qPlugins.name#" value="0" />
+									<script type="text/javascript">
+									Ext.onReady(function(){	
+										var field = Ext.get('plugin#qPlugins.name#');
+										field.on('change', checkPluginWebroot);
+										
+									})
+									</script>
+							</cfif>
+							
+
 						</td>
 					</tr>
 					</table>
@@ -453,7 +483,37 @@ RENDER THE CURRENT STEP
 		</cfloop>
 		</div>
 
-	</cfoutput>		
+	</cfoutput>	
+	
+	<cfoutput>
+	<script type="text/javascript">
+		
+		function checkPluginWebroot() {
+			
+			
+			
+			if(this.dom.checked)
+			{
+				Ext.get(this.id + 'AddWebroot').slideIn('t', {
+				    easing: 'easeIn',
+				    duration: .5,
+				    useDisplay: true
+				});	
+					
+			}
+			else 
+			{
+				
+				Ext.get(this.id + 'AddWebroot').ghost('b', {
+				    easing: 'easeOut',
+				    duration: .5,
+				    remove: false,
+				    useDisplay: true
+				});
+			}
+		}
+	</script>	
+	</cfoutput>
 </cf_displayStep>
 
 
@@ -581,20 +641,6 @@ RENDER THE CURRENT STEP
 
 <div class="section">
 <div class="item summary">
-	<label>Plugins:</label>
-	<div class="field fieldDisplay">
-		<cfloop list="#session.stFarcryInstall.stConfig.plugins#" index="PluginName">
-			<cfset oManifest = createObject("component", "farcry.plugins.#PluginName#.install.manifest")>
-			<div style="border-bottom:1px dotted ##e3e3e3;">
-				#oManifest.name# - #oManifest.description#
-			</div>
-		</cfloop>
-	</div>
-	<div class="clear">&nbsp;</div>
-</div>
-</div>
-<div class="section">
-<div class="item summary">
 	<label>Skeleton:</label>
 	<div class="field fieldDisplay">
 		<cfset oManifest = createObject("component", "#session.stFarcryInstall.stConfig.skeleton#.install.manifest")>
@@ -603,9 +649,30 @@ RENDER THE CURRENT STEP
 	<div class="clear">&nbsp;</div>
 </div>
 </div>
+
+
 <div class="section">
 <div class="item summary">
-	<label>Project Install Type:</label>
+	<label>Plugins:</label>
+	<div class="field fieldDisplay">
+		<cfloop list="#session.stFarcryInstall.stConfig.plugins#" index="PluginName">
+			<cfset oManifest = createObject("component", "farcry.plugins.#PluginName#.install.manifest")>
+			<div style="border:1px dotted ##e3e3e3;margin-bottom:10px;padding:5px;">
+				#oManifest.name# - #oManifest.description#
+				<cfif isDefined("session.stFarcryInstall.stConfig.addWebrootMapping#PluginName#") AND session.stFarcryInstall.stConfig["addWebrootMapping#PluginName#"]>
+					<div class="fieldHint">COPYING WEBROOT</div>
+				</cfif>
+			</div>
+		</cfloop>
+	</div>
+	<div class="clear">&nbsp;</div>
+</div>
+</div>
+
+
+<div class="section">
+<div class="item summary">
+	<label>Project Webroot Install Type:</label>
 	<div class="field fieldDisplay">
 		<cfswitch expression="#session.stFarcryInstall.stConfig.projectInstallType#">
 			<cfcase value="SubDirectory">

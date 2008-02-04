@@ -247,10 +247,12 @@ DETERMINE THE CURRENT VERSION OF FARCRY
 	
 	</cfcase>
 	<cfcase value="CFMapping">
+		<cfset projectWebrootPath = "#farcryProjectsPath#/#form.applicationName#/www" />
 		<cfset projectWebrootURL = "http://#cgi.server_name#" />
 		<!--- Leave as is --->
 	</cfcase>
 	<cfcase value="webserverMapping">
+		<cfset projectWebrootPath = "#farcryProjectsPath#/#form.applicationName#/www" />
 		<cfset projectWebrootURL = "http://#cgi.server_name#" />
 		<!--- Leave as is --->
 	</cfcase>
@@ -274,26 +276,26 @@ DETERMINE THE CURRENT VERSION OF FARCRY
 
 	<cffile action="write" file="#projectWebrootPath#/farcryConstructor.cfm" output="#farcryConstructorContent#" addnewline="false" mode="777" />	
 	
-	<!--- 
-	<cfswitch expression="#form.webtopInstallType#">
-	<cfcase value="project">
-		<cfoutput><div>COPYING WEBTOP TO PROJECT....</cfoutput><cfflush>
-		<cfset oZip = createObject("component", "farcry.core.packages.farcry.zip") />
-		<cfset oZip.AddFiles(zipFilePath="#projectWebrootPath#/webtop.zip", directory="#webtopPath#", recurse="true", compression=0, savePaths="false") />
-		<cfset oZip.Extract(zipFilePath="#projectWebrootPath#/webtop.zip", extractPath="#projectWebrootPath#/webtop", overwriteFiles="true") />
-		<cffile action="delete" file="#projectWebrootPath#/webtop.zip" />
-		
-		
-		<cfset directoryRemoveSVN(source="#projectWebrootPath#/webtop") />
-	
-		<cfoutput>COMPLETE</div></cfoutput><cfflush>
-		<!--- <cfset directoryCopy(source="#webtopPath#", destination="#projectWebrootPath#/webtop", nameconflict="overwrite") /> --->
-	</cfcase>
-	<cfcase value="farcry">
-		<!--- Leave as is --->
-	</cfcase>
-	</cfswitch> --->
+	<cfoutput>#updateProgressBar(value="0.2", text="#form.displayName# (SETUP): Copying your plugins under the webroot")#</cfoutput><cfflush>
+	<cfif listLen(session.stFarcryInstall.stConfig.plugins)>
+		<cfloop list="#session.stFarcryInstall.stConfig.plugins#" index="pluginName">
+			<cfif isDefined("session.stFarcryInstall.stConfig.addWebrootMapping#pluginName#") AND session.stFarcryInstall.stConfig["addWebrootMapping#pluginName#"]>
+				
+				<cfif directoryExists("#pluginPath#/#pluginName#/www")>
+					<cfdirectory action="create" directory="#projectWebrootPath#/#pluginName#" mode="777" />
+					<cfset oZip = createObject("component", "farcry.core.packages.farcry.zip") />
+					<cfset oZip.AddFiles(zipFilePath="#projectWebrootPath#/plugin-webroot.zip", directory="#pluginPath#/#pluginName#/www", recurse="true", compression=0, savePaths="false") />
+					<cfset oZip.Extract(zipFilePath="#projectWebrootPath#/plugin-webroot.zip", extractPath="#projectWebrootPath#/#pluginName#", overwriteFiles="true") />
+					<cffile action="delete" file="#projectWebrootPath#/plugin-webroot.zip" />
+					<cfset directoryRemoveSVN(source="#projectWebrootPath#/#pluginName#") />
+				</cfif>
+			</cfif>
+		</cfloop>
+	</cfif>
 
+
+	
+	
 	
 	<!----------------------------------------------------------------------------------------
 	DATABASE INSTALLATION: 
