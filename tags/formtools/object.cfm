@@ -224,11 +224,11 @@
 
 	<cfif attributes.IncludeFieldSet>
 		<cfoutput><fieldset class="formSection #attributes.class#"></cfoutput>
-	</cfif>
 	
-	<cfif isDefined("attributes.legend") and len(attributes.legend)>
-		<cfoutput><legend class="#attributes.class#">#attributes.legend#</legend></cfoutput>
-	</cfif>	
+		<cfif isDefined("attributes.legend") and len(attributes.legend)>
+			<cfoutput><legend class="#attributes.class#">#attributes.legend#</legend></cfoutput>
+		</cfif>	
+	</cfif>
 	
 	<cfif structKeyExists(attributes,"HelpSection") and len(attributes.HelpSection)>
 		<cfoutput>
