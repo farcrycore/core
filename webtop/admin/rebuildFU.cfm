@@ -79,7 +79,7 @@ $in: attribute -- description $
 	
 	<!--- set up page header --->
 	<admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
-	<cfhtmlhead text="#jsContent#">
+	<cfhtmlHead text="#jsContent#">
 	
 	<cfoutput>
 		<cfif successmessage NEQ ""><p class="success">#successmessage#</p></cfif>

@@ -192,7 +192,7 @@ $in: SessionID -- $
 		</script>
 		</cfoutput>
 	</cfsavecontent>
-	<cfhtmlhead text="#wizardSubmissionJS#" />
+	<cfhtmlHead text="#wizardSubmissionJS#" />
 	<cfoutput>
 	<div id="wizard-wrap">			
 		<div class="wizard-pagination">

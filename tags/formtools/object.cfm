@@ -495,7 +495,7 @@
 							<cfset stURLParams.ftShowRemoveSelected = "#ftFieldMetadata.ftShowRemoveSelected#">
 						</cfif>
 								
-						<ws:htmlhead library="farcryForm" />
+						<ws:htmlHead library="farcryForm" />
 						
 						<ws:buildLink href="#application.url.farcry#/facade/library.cfm" stParameters="#stURLParams#" r_url="libraryPopupURL" />
 	

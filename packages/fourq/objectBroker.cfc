@@ -123,7 +123,7 @@
 													<cfset request.inHead.stCustom[j] = stCacheWebskin.inHead.stCustom[j] />
 												</cfif>
 												
-												<cfset application.coapi.objectbroker.addHTMLHeadToWebskins(id="#j#", text="#stCacheWebskin.inHead.stCustom[j]#") />
+												<cfset application.coapi.objectbroker.addhtmlHeadToWebskins(id="#j#", text="#stCacheWebskin.inHead.stCustom[j]#") />
 	
 											</cfloop>
 										</cfcase>
@@ -140,7 +140,7 @@
 													<cfset request.inHead.stOnReady[j] = stCacheWebskin.inHead.stOnReady[j] />
 												</cfif>
 												
-												<cfset application.coapi.objectbroker.addHTMLHeadToWebskins(id="#j#", onReady="#stCacheWebskin.inHead.stOnReady[j]#") />
+												<cfset application.coapi.objectbroker.addhtmlHeadToWebskins(id="#j#", onReady="#stCacheWebskin.inHead.stOnReady[j]#") />
 	
 											</cfloop>
 										</cfcase>
@@ -152,7 +152,7 @@
 											</cfloop>
 										</cfcase>
 										<cfdefaultcase>
-											<cfset application.coapi.objectbroker.addHTMLHeadToWebskins(library=i) />
+											<cfset application.coapi.objectbroker.addhtmlHeadToWebskins(library=i) />
 											<cfset request.inHead[i] = stCacheWebskin.inHead[i] />
 										</cfdefaultcase>
 									</cfswitch>
@@ -170,7 +170,7 @@
 		<cfreturn webskinHTML />
 	</cffunction>
 			
-	<cffunction name="addHTMLHeadToWebskins" access="public" output="true" returntype="void" hint="Adds the result of a skin:htmlHead to all relevent webskin caches">
+	<cffunction name="addhtmlHeadToWebskins" access="public" output="true" returntype="void" hint="Adds the result of a skin:htmlHead to all relevent webskin caches">
 		<cfargument name="id" type="string" required="false" default="#createUUID()#" />
 		<cfargument name="text" type="string" required="false" default="" />
 		<cfargument name="library" type="string" required="false" default="" />

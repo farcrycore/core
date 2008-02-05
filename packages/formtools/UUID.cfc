@@ -188,7 +188,7 @@
 						</div>
 						<div class="buttonGroup">
 							<cfif arguments.stMetadata.ftAllowLibraryEdit>
-								<skin:htmlhead library="extjs" />	
+								<skin:htmlHead library="extjs" />	
 							
 								<ft:farcryButton type="button" value="Edit Item" onclick="editLibrarySelected(Ext.query('.#arguments.fieldname#Selected'), '#arguments.stObject.objectid#', '#arguments.stObject.typename#', '#arguments.stMetadata.ftLibraryEditWebskin#', '#arguments.stMetaData.Name#', '#arguments.fieldname#', 'uuid');" />
 							</cfif>							
@@ -203,7 +203,7 @@
 				
 	
 					
-					<skin:htmlhead library="farcryForm" />
+					<skin:htmlHead library="farcryForm" />
 					
 					<cfoutput>
 					<script type="text/javascript" language="javascript" charset="utf-8">

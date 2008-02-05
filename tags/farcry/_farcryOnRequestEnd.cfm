@@ -555,7 +555,7 @@ $out:$
 		
 	</cfsavecontent>
 	
-	<cfhtmlhead text="#variables.placeInHead#">
+	<cfhtmlHead text="#variables.placeInHead#">
 </cfif>
 
 

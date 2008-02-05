@@ -19,9 +19,9 @@ n0<cfsetting enablecfoutputonly="true">
 <cfif thistag.executionMode eq "start">
 	
 	
-	<skin:htmlhead library="extJS" />
+	<skin:htmlHead library="extJS" />
 
-	<skin:htmlhead id="iframedialog">
+	<skin:htmlHead id="iframedialog">
 	<cfoutput>
 		<script language="javascript">
 			
@@ -47,7 +47,7 @@ n0<cfsetting enablecfoutputonly="true">
 			}
 		</script>
 	</cfoutput>
-	</skin:htmlhead>
+	</skin:htmlHead>
 		
 
 	

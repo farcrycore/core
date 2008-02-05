@@ -1303,7 +1303,7 @@ Revision Information (Changelog):
 </cfscript>
 
 <cfif variables.PresetStyle neq 0>
-  <cfhtmlhead text="#search_stylesheet#" />
+  <cfhtmlHead text="#search_stylesheet#" />
 </cfif>
 <!---==[ END - Prepare Layout ]==--->
 

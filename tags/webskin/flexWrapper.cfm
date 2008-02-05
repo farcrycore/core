@@ -51,7 +51,7 @@ var requiredRevision = 0;
 </script>
 </cfoutput>
 </cfsavecontent>
-<cfhtmlhead text="#flexInHead#">
+<cfhtmlHead text="#flexInHead#">
 <cfoutput>
 <script language="JavaScript" type="text/javascript" src="#attributes.flexAssetsPath#/history.js"></script>
 

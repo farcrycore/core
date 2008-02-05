@@ -127,7 +127,7 @@ SAVE AND CONTROL THE INSTAL PROCESS WIZARD
 
 <cf_processStep step="2,6">
 
-	<cfset stResult = createObject("component", "flightCheck").checkDSN(session.stFarcryInstall.stConfig.dsn) />
+	<cfset stResult = createObject("component", "FlightCheck").checkDSN(session.stFarcryInstall.stConfig.dsn) />
 	
 	<cfif not stResult.bSuccess>
 		<cf_redoStep step="2" field="DSN" errorTitle="#stResult.errorTitle#" errorDescription="#stResult.errorDescription#" />
@@ -140,7 +140,7 @@ SAVE AND CONTROL THE INSTAL PROCESS WIZARD
 	</cfif>
 	
 
-	<cfset stResult = createObject("component", "flightCheck").checkDBType(DBOwner="#session.stFarcryInstall.stConfig.DBOwner#",dsn="#session.stFarcryInstall.stConfig.dsn#", DBType="#session.stFarcryInstall.stConfig.DBType#") />
+	<cfset stResult = createObject("component", "FlightCheck").checkDBType(DBOwner="#session.stFarcryInstall.stConfig.DBOwner#",dsn="#session.stFarcryInstall.stConfig.dsn#", DBType="#session.stFarcryInstall.stConfig.DBType#") />
 	
 	<cfif not stResult.bSuccess>
 		<cf_redoStep step="2" field="DBType" errorTitle="#stResult.errorTitle#" errorDescription="#stResult.errorDescription#" />

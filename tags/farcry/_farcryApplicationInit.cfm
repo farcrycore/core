@@ -211,7 +211,7 @@ Apps Processing
 Alert user that application scope has been refreshed
 -------------------------------------------------------->
 <cfif isDefined("URL.updateApp") AND URL.updateApp>
-	<cfhtmlhead text="<script language='JavaScript'>alert('Application Scope Refreshed!');</script>">
+	<cfhtmlHead text="<script language='JavaScript'>alert('Application Scope Refreshed!');</script>">
 </cfif>
 
 </cfsilent>

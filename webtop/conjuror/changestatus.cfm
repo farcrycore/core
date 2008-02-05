@@ -183,7 +183,7 @@ function deSelectAll()
 <!--- output page --->
 <!--- set up page header --->
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
-<cfhtmlhead text="#js#">
+<cfhtmlHead text="#js#">
 
 <cfoutput>
 <h3>Changing status of #stobj.label# (#stobj.status#): #status#</h3>

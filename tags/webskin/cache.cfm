@@ -96,7 +96,7 @@ r_output			: optional, return variable to put the cached content into.
 		</cfif>
 			<cfoutput><script>window.defaultStatus=window.defaultStatus + '<cfif request.cachedcontentblocknumber neq 1>,</cfif> #tempoutput#';</script></cfoutput>
 		</cfsavecontent>
-		<cfhtmlhead text="#jsScript#">
+		<cfhtmlHead text="#jsScript#">
 	<cfelse>
 		<cfset cacheread = true>
 	</cfif>

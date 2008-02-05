@@ -357,7 +357,7 @@ $out:$
 				<!-- // Finished loading HTMLEditor //-->
 				</cfoutput>
 			</cfsavecontent>
-			<cfhtmlhead text="#htmlAreaScript#">			
+			<cfhtmlHead text="#htmlAreaScript#">			
 			
 			<cfset uniqueId = replace(createUUID(),'-','','all')>
 			<!--- display text area --->
@@ -469,7 +469,7 @@ $out:$
 			</cfsavecontent>
 			
 			<!--- Write the script out to the HTML Head --->				
-			<cfhtmlhead text="#fckeditorscript#">	
+			<cfhtmlHead text="#fckeditorscript#">	
 			
 			<cfscript>
  	 			fckEditor = createObject("component", "farcry.core.admin.includes.lib.fckeditor.fckeditor");
@@ -689,7 +689,7 @@ $out:$
 				</script>
 				</cfoutput>
 			</cfsavecontent>				
-			<cfhtmlhead text="#tinyMCEjs#">
+			<cfhtmlHead text="#tinyMCEjs#">
 			<cfoutput>
 			<textarea id="#attributes.textareaname#" name="#attributes.textareaname#" cols="50" rows="15">#attributes.value#</textarea>
 			</cfoutput>
@@ -757,7 +757,7 @@ $out:$
 					</script>
 				</cfoutput>
 			</cfsavecontent>				
-			<cfhtmlhead text="#tinyMCEjs#">
+			<cfhtmlHead text="#tinyMCEjs#">
 			<cfoutput><textarea id="#attributes.textareaname#" name="#attributes.textareaname#" cols="50" rows="15">#attributes.value#</textarea></cfoutput>
 		</cfdefaultcase>>
 

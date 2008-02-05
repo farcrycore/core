@@ -62,7 +62,7 @@
 				</cfoutput>
 			</cfsavecontent>
 			
-			<cfhtmlhead text="#ToggleOffDateTimeJS#">
+			<cfhtmlHead text="#ToggleOffDateTimeJS#">
 		</cfif>		
 		
 		<cfswitch expression="#arguments.stMetadata.ftRenderType#">
@@ -268,7 +268,7 @@
 				</cfoutput>
 				
 				<cfif arguments.stMetadata.ftShowCalendar>
-					<skin:htmlhead library="calendar" />
+					<skin:htmlHead library="calendar" />
 					<cfoutput>
 						<script type="text/javascript">
 						  Calendar.setup(

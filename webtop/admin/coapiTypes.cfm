@@ -111,7 +111,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 	<!--- build page output --->
 	<admin:header title="COAPI Types" writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">	
 	
-	<skin:htmlhead library="extJS" />
+	<skin:htmlHead library="extJS" />
 	
 	<cfoutput>
 		

@@ -37,7 +37,7 @@ START TAG
 	<cfparam name="attributes.stConfig.fill" default="false">
 
 		
-	<skin:htmlhead library="extJS" />
+	<skin:htmlHead library="extJS" />
 
 		
 </cfif>

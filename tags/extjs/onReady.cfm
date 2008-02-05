@@ -2,7 +2,7 @@
 
 <!--- 
 || DESCRIPTION || 
-$Description: onREady tag - This tag reproduces the functionality of skin:htmlhead but aggregates all the generated contents and places them in the html head section of a page . $
+$Description: onREady tag - This tag reproduces the functionality of skin:htmlHead but aggregates all the generated contents and places them in the html head section of a page . $
 
 || DEVELOPER ||
 $Developer: Matthew Bryant (mbryant@daemon.com.au) $
@@ -46,7 +46,7 @@ $in: id -- an id for the content to be added to the head. If the key already exi
 			<cfset arrayAppend(request.inHead.aOnReadyIDs, attributes.id) />
 		</cfif>
 		
-		<cfset application.coapi.objectbroker.addHTMLHeadToWebskins(id="#attributes.id#", onReady="#thisTag.generatedContent#") />
+		<cfset application.coapi.objectbroker.addhtmlHeadToWebskins(id="#attributes.id#", onReady="#thisTag.generatedContent#") />
 	
 		
 		

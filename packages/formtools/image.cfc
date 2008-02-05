@@ -84,7 +84,7 @@
 								</cfoutput>
 							</cfsavecontent>
 							
-							<cfhtmlhead text="#ToggleOffGenerateImageJS#">
+							<cfhtmlHead text="#ToggleOffGenerateImageJS#">
 							
 							
 							<cfif arguments.stMetadata.ftCreateFromSourceDefault AND NOT len(arguments.stMetadata.value)>

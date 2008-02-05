@@ -99,7 +99,7 @@
 			
 			<cfdefaultcase>
 				<skin:htmlHead library="extjs" />
-				<skin:htmlhead library="farcryForm" />
+				<skin:htmlHead library="farcryForm" />
 				
 				<cfsavecontent variable="html">
 					

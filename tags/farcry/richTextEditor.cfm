@@ -353,7 +353,7 @@ $out:$
 				<!-- // Finished loading HTMLEditor //-->
 				</cfoutput>
 			</cfsavecontent>
-			<cfhtmlhead text="#htmlAreaScript#">
+			<cfhtmlHead text="#htmlAreaScript#">
 
 			<cfset uniqueId = replace(createUUID(),'-','','all')>
 			<!--- display text area --->
@@ -424,7 +424,7 @@ $out:$
 				</script>
 				</cfoutput>
 			</cfsavecontent>
-			<cfhtmlhead text="#fckeditorscript#">
+			<cfhtmlHead text="#fckeditorscript#">
 			<cfscript>
  	 			fckEditor = createObject("component", "#application.url.farcry#/includes/lib/fckeditor/fckeditor");
 				fckEditor.toolBarSet="#application.config.fckEditor.toolBarSet#";
@@ -637,7 +637,7 @@ $out:$
 				</script>
 				</cfoutput>
 			</cfsavecontent>
-			<cfhtmlhead text="#tinyMCEjs#">
+			<cfhtmlHead text="#tinyMCEjs#">
 			<cfoutput>
 			<textarea id="#attributes.textareaname#" name="#attributes.textareaname#" cols="50" rows="15">#attributes.value#</textarea>
 			</cfoutput>
@@ -705,7 +705,7 @@ $out:$
 					</script>
 				</cfoutput>
 			</cfsavecontent>
-			<cfhtmlhead text="#tinyMCEjs#">
+			<cfhtmlHead text="#tinyMCEjs#">
 			<cfoutput><textarea id="#attributes.textareaname#" name="#attributes.textareaname#" cols="50" rows="15">#attributes.value#</textarea></cfoutput>
 		</cfdefaultcase>>
 

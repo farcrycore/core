@@ -10,7 +10,7 @@
 
 <cfif thistag.executionMode eq "Start">
 
-	<skin:htmlhead library="extJS" />
+	<skin:htmlHead library="extJS" />
 	
 	<cfparam name="attributes.id" default="layout#randrange(1,9999999)#" /><!--- Generate unique javascript id if required --->
 	<cfparam name="attributes.container" default="" />

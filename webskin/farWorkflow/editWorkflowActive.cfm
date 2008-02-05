@@ -209,7 +209,7 @@
 <cfoutput></table></cfoutput>
 
 
-	<skin:htmlhead library="extjs" />
+	<skin:htmlHead library="extjs" />
 
 	<cfoutput>
 		<input type="hidden" id="logText" name="logText" value="" />

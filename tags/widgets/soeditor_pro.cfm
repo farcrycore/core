@@ -153,7 +153,7 @@
 
 <cfif NOT Val(Caller.EditorCount)>
 
-  <cfhtmlhead text="<?xml:namespace prefix=""so"" />
+  <cfhtmlHead text="<?xml:namespace prefix=""so"" />
   <script language=""javascript"" src=""#Attributes.ScriptPath#spch.js"" defer=""true""></script>
   <link rel=""stylesheet"" type=""text/css"" href=""#Attributes.ScriptPath#sotoolbar.css""></link>
   <style>
@@ -172,7 +172,7 @@
 
 <!--- Help window --->
 <cfif Attributes.Help>
-<cfhtmlhead text="
+<cfhtmlHead text="
 <script language=""javascript"">
   function openHelp#Attributes.Field#() {
     parent.showModalDialog(""#Attributes.ScriptPath#help.cfm?new=#Attributes.New#&save=#Attributes.Save#&cut=#Attributes.Cut#&copy=#Attributes.Copy#&paste=#Attributes.Paste#&delete=#Attributes.Delete#&find=#Attributes.Find#&undo=#Attributes.Undo#&redo=#Attributes.Redo#&hr=#Attributes.HR#&templatepath=#Val(Len(Attributes.TemplatePath))#&image=#Attributes.Image#&link=#Attributes.Link#&anchor=#Attributes.Anchor#&unlink=#Attributes.Unlink#&specialcharacter=#Attributes.SpecialCharacter#&spellcheck=#Attributes.SpellCheck#&help=#Attributes.Help#&align=#Attributes.Align#&list=#Attributes.List#&unindent=#Attributes.Unindent#&indent=#Attributes.Indent#&fontdialog=#Attributes.FontDialog#&format=#Attributes.Format#&font=#Attributes.Font#&size=#Attributes.Size#&bold=#Attributes.Bold#&italic=#Attributes.Italic#&underline=#Attributes.Underline#&superscript=#Attributes.SuperScript#&subscript=#Attributes.SubScript#&fgcolor=#Attributes.FgColor#&bgcolor=#Attributes.BgColor#&tables=#Attributes.Tables#&insertcell=#Attributes.InsertCell#&deletecell=#Attributes.DeleteCell#&insertrow=#Attributes.InsertRow#&deleterow=#Attributes.DeleteRow#&insertcolumn=#Attributes.InsertColumn#&deletecolumn=#Attributes.DeleteColumn#&splitcell=#Attributes.SplitCell#&mergecell=#Attributes.MergeCell#&cellprop=#Attributes.CellProp#&genericform=#Attributes.GenericForm#&mailform=#Attributes.MailForm#&textbox=#Attributes.TextBox#&textarea=#Attributes.TextArea#&radiobox=#Attributes.RadioBox#&checkbox=#Attributes.CheckBox#&selectbox=#Attributes.SelectBox#&hiddenbox=#Attributes.HiddenBox#&formbutton=#Attributes.FormButton#&resetbutton=#Attributes.ResetButton#&submitbutton=#Attributes.SubmitButton#&htmledit=#Attributes.HTMLEdit#&codesweeper=#Attributes.Codesweeper#&borders=#Attributes.Borders#&details=#Attributes.Details#&"",null,""dialogWidth:250px; dialogHeight:300px;help:0;status:no;"");  
@@ -184,7 +184,7 @@
 
 <cfoutput>
 <cfif Attributes.ShowBorders>
-<cfhtmlhead text="<script for=""window"" event=""onload"">soEditor#Attributes.Field#.toggleBorders();btnBorders#Attributes.Field#.isPressed = true;</script>">
+<cfhtmlHead text="<script for=""window"" event=""onload"">soEditor#Attributes.Field#.toggleBorders();btnBorders#Attributes.Field#.isPressed = true;</script>">
 </cfif>
 </cfoutput>
 

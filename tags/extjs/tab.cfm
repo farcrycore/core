@@ -42,7 +42,7 @@ START TAG
 
 		
 	
-	<skin:htmlhead library="extJS" />
+	<skin:htmlHead library="extJS" />
 	
 </cfif>
 
