@@ -1,4 +1,5 @@
 <cfsetting enablecfoutputonly="true" />
+<!--- @@displayname: Auto Approve --->
 
 <cfimport taglib="/farcry/core/tags/navajo" prefix="nj">
 

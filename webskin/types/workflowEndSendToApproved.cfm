@@ -1,4 +1,5 @@
-
+<cfsetting enablecfoutputonly="true" />
+<!--- @@displayname: Approve --->
 <cfset stWorkflow = createObject("component", application.stcoapi.farWorkflow.packagepath).hasInstance(referenceID="#stobj.objectid#") />
 
 <cfif stWorkflow.bTasksComplete AND stWorkflow.bWorkflowComplete>
@@ -7,3 +8,5 @@
 	
 	<cflocation url="#application.url.webtop#/navajo/approve.cfm?objectid=#stobj.objectid#&status=requestapproval" addToken="false" />
 </cfif>
+
+<cfsetting enablecfoutputonly="false" />

@@ -1,3 +1,5 @@
+<cfsetting enablecfoutputonly="true" />
+<!--- @@displayname: Delete Object --->
 
 <cfset stWorkflow = createObject("component", application.stcoapi.farWorkflow.packagepath).hasInstance(referenceID="#stobj.objectid#") />
 
@@ -16,3 +18,5 @@
 	<cfoutput><p>#stobj.label# was deleted.</p></cfoutput>
 	<cfabort>
 </cfif>
+
+<cfsetting enablecfoutputonly="false" />

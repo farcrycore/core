@@ -1,7 +1,7 @@
 <cfcomponent displayname="Farcry Task Definition" hint="Workflow definitions are used as template to create workflow instances" extends="types" output="false" description="Acts as a template for the creation of workflow instances">
 	<cfproperty ftSeq="1" ftFieldset="" name="title" type="string" default="" hint="Title of workflow definition" ftLabel="Title" ftType="string" />
 	<cfproperty ftSeq="2" ftFieldset="" name="description" type="longchar" default="" hint="Description of workflow definition" ftLabel="Description" />
-	<cfproperty ftSeq="3" ftFieldset="" name="aTaskDefs" type="array" default="" hint="An array of task definitions. These are the default tasks created for a workflow on start" ftLabel="Task Definitions" ftType="array" ftJoin="farTaskDef" />
+	<cfproperty ftSeq="3" ftFieldset="" name="aTaskDefs" type="array" default="" hint="An array of task definitions. These are the default tasks created for a workflow on start" ftLabel="Task Definitions" ftType="array" ftJoin="farTaskDef" ftAllowLibraryEdit="true" />
 	<cfproperty ftSeq="4" ftFieldset="" name="minToComplete" type="numeric" default="" hint="Minutes to complete. Default time for a specific workflow completion; triggers escalation if exceeded" ftLabel="Minutes to Complete" />
 	<cfproperty ftSeq="5" ftFieldset="" name="lTypenames" type="string" default="" hint="List of content types that can be assigned this workflow definition" ftLabel="Typenames" ftType="list" ftListData="getWorkflowTypenameList" ftSelectMultiple="true" />
 	<cfproperty ftSeq="6" ftFieldset="" name="workflowStart" type="string" default="" hint="Used to alert task owners on workflow start. View on underlying content type" ftLabel="Start Webskin" ftType="list" ftListData="getWorkflowStartWebskins" ftDefault="workflowStart" />
@@ -30,12 +30,16 @@
 		<cfset var result = "" />		
 		<cfset var iTypename = "" />	
 		<cfset var qWebskins = queryNew("blah") />
+		<cfset var lWebskins = "" /><!--- Keeps track of which webskins have already been included --->
 		
 		<cfloop list="#stWorkflowDef.lTypenames#" index="iTypename">
 			<cfset qWebskins = application.coapi.coapiadmin.getWebskins(typename="#iTypename#", prefix="workflowStart", excludeWebskins="#result#") />
 
 			<cfloop query="qWebskins">
-				<cfset result = listAppend(result, "#qWebskins.methodname#:#qWebskins.displayName#") />
+				<cfif not listFindNoCase(lWebskins, qWebskins.methodname)>
+					<cfset result = listAppend(result, "#qWebskins.methodname#:#qWebskins.displayName#") />
+					<cfset lWebskins = listAppend(lWebskins, qWebskins.methodname) />
+				</cfif>
 			</cfloop>
 			
 		</cfloop>
@@ -50,12 +54,16 @@
 		<cfset var result = "" />		
 		<cfset var iTypename = "" />	
 		<cfset var qWebskins = queryNew("blah") />
+		<cfset var lWebskins = "" /><!--- Keeps track of which webskins have already been included --->
 		
 		<cfloop list="#stWorkflowDef.lTypenames#" index="iTypename">
 			<cfset qWebskins = application.coapi.coapiadmin.getWebskins(typename="#iTypename#", prefix="workflowEnd", excludeWebskins="#result#") />
 
 			<cfloop query="qWebskins">
-				<cfset result = listAppend(result, "#qWebskins.methodname#:#qWebskins.displayName#") />
+				<cfif not listFindNoCase(lWebskins, qWebskins.methodname)>
+					<cfset result = listAppend(result, "#qWebskins.methodname#:#qWebskins.displayName#") />
+					<cfset lWebskins = listAppend(lWebskins, qWebskins.methodname) />
+				</cfif>
 			</cfloop>
 			
 		</cfloop>
