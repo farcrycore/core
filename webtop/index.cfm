@@ -58,7 +58,7 @@ $Developer: Pete Ottery (pot@daemon.com.au)$
 <meta content="text/html; charset=UTF-8" http-equiv="content-type">
 <title>[#application.applicationname#] #application.config.general.sitetitle# - FarCry Webtop</title>
 <style type="text/css" title="default" media="screen">@import url(#application.url.farcry#/css/main.css);</style>
-<script type="text/javascript" src="#application.url.farcry#/js/prototype.js"></script>
+<script type="text/javascript" src="#application.url.farcry#/js/prototype/prototype.js"></script>
 </head>
 <body id="sec-#url.sec#">
 
