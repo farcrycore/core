@@ -96,12 +96,12 @@
 			
 									
 			<cfoutput>
-				<div id="#attributes.id#-outer" class="farcryButtonWrap-outer" onmouseover="farcryButtonOnMouseOver('#attributes.id#');" onmouseout="farcryButtonOnMouseOut('#attributes.id#');" onclick="farcryButtonOnClick('#attributes.id#');"><div id="#attributes.id#-inner" class="farcryButtonWrap-inner"><button id="#attributes.id#" type="#attributes.Type#" name="FarcryForm#attributes.Type#Button" onclick="#attributes.Onclick#" class="farcryButton #attributes.Class#" style="#attributes.Style#">#attributes.Value#</button></div></div>
+				<div id="#attributes.id#-outer" class="farcryButtonWrap-outer" onmouseover="farcryButtonOnMouseOver('#attributes.id#');" onmouseout="farcryButtonOnMouseOut('#attributes.id#');" onclick="farcryButtonOnClick('#attributes.id#');"><div id="#attributes.id#-inner" class="farcryButtonWrap-inner"><button id="#attributes.id#" type="#attributes.Type#" name="FarcryForm#attributes.Type#Button" onclick="#attributes.Onclick#" class="farcryButton #attributes.Class#" style="#attributes.Style#" value="#attributes.value#">#attributes.Value#</button></div></div>
 			</cfoutput>
 			
 		</cfif>
 	<cfelse>
-		<cfoutput><button type="#attributes.Type#" name="FarcryForm#attributes.Type#Button" onclick="#attributes.Onclick#" class="formButton #attributes.Class#" style="#attributes.Style#">#attributes.Value#</button></cfoutput>
+		<cfoutput><button type="#attributes.Type#" name="FarcryForm#attributes.Type#Button" onclick="#attributes.Onclick#" class="formButton #attributes.Class#" style="#attributes.Style#" value="#attributes.value#">#attributes.Value#</button></cfoutput>
 	</cfif>
 	</cfsavecontent>
 
