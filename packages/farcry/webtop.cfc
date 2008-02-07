@@ -376,7 +376,7 @@ $Developer: Blair McKenzie (blair@daemon.com.au)$
 		<cfargument name="params" type="struct" required="false" default="#structnew()#" hint="Parameters to add to the query string" />
 	
 		<cfset var sReturn = "custom/#arguments.attr#.cfm" />  <!--- this seems like a good default url --->
-		<cfset var urlUtil = createobject("component","urlUtility") />
+		<cfset var urlUtil = createobject("component","UrlUtility") />
 		<cfset var stParams = StructNew() />
 		<cfset var id = "" />
 		<cfset var stItem = this.stWebtop />
