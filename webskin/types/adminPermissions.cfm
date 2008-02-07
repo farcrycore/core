@@ -51,11 +51,8 @@
 	
 		<extjs:layout id="roleAccordion" container="Panel" layout="accordion" width="400" height="500" renderTo="roleAccordion" autoScroll="true">
 			
-		
-			
-	<!--- 	<ext:accordion> --->
 			<cfloop list="#application.security.factory.role.getAllRoles()#" index="role">
-				<!--- <ext:accordionPanel title="#application.security.factory.role.getLabel(role)#"> --->
+
 				<extjs:item  title="#application.security.factory.role.getLabel(role)#" autoScroll="true">
 					<cfoutput>
 						<table>
