@@ -2,7 +2,7 @@
 
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin" />
 <cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
-<cfimport taglib="/farcry/core/tags/extjs/" prefix="ext" />
+<cfimport taglib="/farcry/core/tags/extjs/" prefix="extjs" />
 <cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" />
 
 <cfset permissiontypes = structnew() />
@@ -40,17 +40,23 @@
 		</script>
 		<style>
 			table { width: 100%; }
-			table, tr, td { background: transparent none; border: 0px none transparent; }
-			td { padding: 3px; font-size: larger; }
+			table, tr, td { background: transparent none;border:0px solid ##e3e3e3; border-bottom: 1px dotted ##e3e3e3; }
+			td { padding: 3px;  }
 		</style>
 		
 		<h3>Manage Permissions</h3>
 	</cfoutput>
 
 	<ft:form>
-		<ext:accordion>
+	
+		<extjs:layout id="roleAccordion" container="Panel" layout="accordion" width="400" height="500" renderTo="roleAccordion" autoScroll="true">
+			
+		
+			
+	<!--- 	<ext:accordion> --->
 			<cfloop list="#application.security.factory.role.getAllRoles()#" index="role">
-				<ext:accordionPanel title="#application.security.factory.role.getLabel(role)#">
+				<!--- <ext:accordionPanel title="#application.security.factory.role.getLabel(role)#"> --->
+				<extjs:item  title="#application.security.factory.role.getLabel(role)#" autoScroll="true">
 					<cfoutput>
 						<table>
 					</cfoutput>
@@ -72,9 +78,10 @@
 					<cfoutput>
 						</table>
 					</cfoutput>
-				</ext:accordionPanel>
+				</extjs:item>
 			</cfloop>
-		</ext:accordion>
+			
+		</extjs:layout>
 		
 		<ft:farcryButtonPanel>
 			<ft:farcryButton value="Save" />
