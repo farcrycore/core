@@ -20,10 +20,10 @@
 	</cfif>
 </cfloop>
 
-<cfif fileexists("#application.path.core#/admin/images/icons/#url.icon#.png")>
-	<cfcontent file="#application.path.core#/admin/images/icons/#url.icon#.png" />
+<cfif fileexists("#application.path.core#/webtop/images/icons/#url.icon#.png")>
+	<cfcontent file="#application.path.core#/webtop/images/icons/#url.icon#.png" />
 </cfif>
 
-<cfif url.usecustom and fileexists("#application.path.core#/admin/images/icons/custom.png")>
-	<cfcontent file="#application.path.core#/admin/images/icons/custom.png" />
+<cfif url.usecustom and fileexists("#application.path.core#/webtop/images/icons/custom.png")>
+	<cfcontent file="#application.path.core#/webtop/images/icons/custom.png" />
 </cfif>

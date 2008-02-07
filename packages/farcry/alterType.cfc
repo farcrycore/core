@@ -144,7 +144,7 @@ $out:$
 		<cfreturn "#application.url.webroot#/images/icons/#arguments.iconname#.png" />
 	</cfif>
 	
-	<cfif fileexists("#application.path.core#/admin/images/icons/#arguments.iconname#.png")>
+	<cfif fileexists("#application.path.core#/webtop/images/icons/#arguments.iconname#.png")>
 		<cfreturn "#application.url.farcry#/images/icons/#arguments.iconname#.png" />
 	</cfif>
 	

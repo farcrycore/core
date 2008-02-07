@@ -44,7 +44,7 @@ object methods
 	<cfset qTemplates = queryNew("displayName, path")>
 		
 	<!--- get core templates --->	
-	<nj:listTemplates typename="dmCron" path="#application.path.core#/admin/scheduledTasks" prefix="" r_qMethods="qCore">
+	<nj:listTemplates typename="dmCron" path="#application.path.core#/webtop/scheduledTasks" prefix="" r_qMethods="qCore">
 	
 	<cfloop query="qCore">
 		<cfset queryAddRow(qTemplates, 1)>

@@ -1,7 +1,7 @@
 <cfif structkeyexists(form,"generateTypeAdmin") and form.generateTypeAdmin>
 		
 	<!--- Webtop insertion --->
-	<cffile action="read" file="#application.path.core#/admin/admin/scaffolds/typeadmin/webtop.txt" variable="content" />
+	<cffile action="read" file="#application.path.core#/webtop/admin/scaffolds/typeadmin/webtop.txt" variable="content" />
 	<cfset values = structnew() />
 	<cfset values.sectionid = "content" />
 	<cfset values.subsectionid = "farcrycmsSubSection" />
@@ -14,7 +14,7 @@
 	<cffile action="write" file="#application.path.project#/customadmin/#url.typename#.xml" output="#content#" />
 	
 	<!--- Create object admin --->
-	<cffile action="read" file="#application.path.core#/admin/admin/scaffolds/typeadmin/objectadmin.txt" variable="content" />
+	<cffile action="read" file="#application.path.core#/webtop/admin/scaffolds/typeadmin/objectadmin.txt" variable="content" />
 	<cfset values = structnew() />
 	<cfset values.title = form.typeadminTitle />
 	<cfset values.columnlist = form.typeadminColumns />

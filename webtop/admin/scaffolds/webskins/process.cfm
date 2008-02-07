@@ -5,7 +5,7 @@
 	</cfif>
 	
 	<!--- Generate webskin --->
-	<cffile action="read" file="#application.path.core#/admin/admin/scaffolds/webskins/displayPageStandard.txt" variable="content" />
+	<cffile action="read" file="#application.path.core#/webtop/admin/scaffolds/webskins/displayPageStandard.txt" variable="content" />
 	<cfset values = structnew() />
 	<cfset values.projectname = application.ApplicationName />
 	<cfset values.typename = url.typename />
@@ -25,7 +25,7 @@
 	</cfif>
 	
 	<!--- Generate webskin --->
-	<cffile action="read" file="#application.path.core#/admin/admin/scaffolds/webskins/displayTeaserStandard.txt" variable="content" />
+	<cffile action="read" file="#application.path.core#/webtop/admin/scaffolds/webskins/displayTeaserStandard.txt" variable="content" />
 	<cfset values = structnew() />
 	<cfset values.projectname = application.ApplicationName />
 	<cfset values.typename = url.typename />

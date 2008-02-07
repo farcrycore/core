@@ -23,7 +23,7 @@
 		<!--- include update script --->
 		<!--- begin modification by Nelson Johnson --->
 		<!--- only if the script already exists --->
-		<cfdirectory action="LIST" filter="#script#.cfm" name="qUpdates" directory="#application.path.core#/admin/updates">
+		<cfdirectory action="LIST" filter="#script#.cfm" name="qUpdates" directory="#application.path.core#/webtop/updates">
 		<cfif len(qUpdates.name) gt 0>
 			<cfinclude template="/farcry/core/webtop/updates/#script#.cfm">
 		<cfelse>
@@ -47,7 +47,7 @@
 <cfelse>
 	<!--- show update form --->
 	<!--- get all files in updates directory --->
-	<cfdirectory action="LIST" filter="b*.cfm" name="qUpdates" directory="#application.path.core#/admin/updates">
+	<cfdirectory action="LIST" filter="b*.cfm" name="qUpdates" directory="#application.path.core#/webtop/updates">
 	<cfoutput>
 	<p></p>
 	<table cellpadding="5" cellspacing="0" border="1" style="margin-left:30px;">
@@ -61,7 +61,7 @@
 	<!--- loop over update scripts and get details --->
 	<cfloop query="qUpdates">
 		<!--- read file to get update description --->
-		<cffile action="READ" file="#application.path.core#/admin/updates/#qUpdates.name#" variable="script">
+		<cffile action="READ" file="#application.path.core#/webtop/updates/#qUpdates.name#" variable="script">
 		<cfset pos = findNoCase('@@description:', script)>
 		<cfif pos>
 			<cfset pos = pos + 8>

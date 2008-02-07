@@ -132,7 +132,7 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au)$
 				
 				<cftry>
 				<!--- Read core build text file --->
-				<cffile action="read" file="#application.path.core#/admin/build.txt" variable="buildFile">
+				<cffile action="read" file="#application.path.core#/webtop/build.txt" variable="buildFile">
 				
 				<!--- search for tag name --->
 				<cfset stBuild = reFindNoCase('(\Name:[^\$]+\$)',buildFile,1,true)>

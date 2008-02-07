@@ -144,11 +144,11 @@
 </cfif>
 
 <cfset GOFileLocation_to = "#application.path.project#/www/go.cfm">
-<cfset GOFileLocation_from = "#application.path.core#/admin/updates/go.cfm">
+<cfset GOFileLocation_from = "#application.path.core#/webtop/updates/go.cfm">
 <cfoutput>#GOFileLocation_from#<br /></cfoutput>
 <cfset message = "">
 <cfif fileExists(GOFileLocation_to)>
-	<cfset message = "NOTE: There is an existing #application.path.project#/www/go.cfm file, please ensure it is the same or similar to #application.path.core#/admin/admin/updates/go.cfm">
+	<cfset message = "NOTE: There is an existing #application.path.project#/www/go.cfm file, please ensure it is the same or similar to #application.path.core#/webtop/admin/updates/go.cfm">
 <cfelseif fileExists(GOFileLocation_from)>
 	<cftry>
 		<cffile action="copy" source="#GOFileLocation_from#" destination="#GOFileLocation_to#">
@@ -158,7 +158,7 @@
 		</cfcatch>
 	</cftry>
 <cfelse>
-	<cfset message = "ERROR: You need to download #application.path.core#/admin/admin/updates/go.cfm">
+	<cfset message = "ERROR: You need to download #application.path.core#/webtop/admin/updates/go.cfm">
 </cfif>
 
 <cfsetting enablecfoutputonly="false"><cfoutput>
