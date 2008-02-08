@@ -394,7 +394,12 @@ $out:$
 							<cfinvoke component="#application.packagepath#.farcry.versioning" method="sendObjectLive" objectID="#stObj.objectid#"  stDraftObject="#stObj#" returnvariable="stRules">
 							<cfset returnObjectID=stObj.objectid>
 						<cfelse>
-							<!--- a normal page, no underlying object --->
+							
+							<cfif stRules.bDraftVersionExists and url.status eq "draft">
+								<!--- sending a live object to draft, draft object already exists --->
+								<q4:contentobjectdelete objectid="#stRules.draftObjectID#">
+							</cfif>
+							
 							<cfscript>
 								oType = createobject("component", application.types[stObj.typename].typePath);
 								oType.setData(stProperties=stObj,auditNote="Status changed to #stObj.status#");
@@ -403,6 +408,7 @@ $out:$
 							<cfif stObj.typename neq "dmImage" and stObj.typename neq "dmFile">
 								<cfset returnObjectId = attributes.lObjectIDs>
 							</cfif>
+							
 						</cfif>
 						
 					</cfif> <!--- // incomplete items check  --->
