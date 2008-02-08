@@ -224,7 +224,7 @@ DETERMINE THE CURRENT VERSION OF FARCRY
 		<cfif directoryExists("#farcryProjectsPath#/#form.applicationName#/wwwCopiedToFolderUnderWebroot")>
 			<cfdirectory action="delete" directory="#farcryProjectsPath#/#form.applicationName#/wwwCopiedToFolderUnderWebroot" recurse="true" />
 		</cfif>
-		<cfdirectory action="rename" directory="#farcryProjectsPath#/#form.applicationName#/www" newdirectory="wwwCopiedToFolderUnderWebroot" />
+		<cfdirectory action="rename" directory="#farcryProjectsPath#/#form.applicationName#/www" newdirectory="#farcryProjectsPath#/#form.applicationName#/wwwCopiedToFolderUnderWebroot" />
 		
 				
 <!--- 	
