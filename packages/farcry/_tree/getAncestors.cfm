@@ -24,43 +24,51 @@ $out:$
 
 <cfsetting enablecfoutputonly="yes">
 
-<cfscript>
+
+	<!--- 
 	/*sql = "select nlevel, parentid from nested_tree_objects 
 	where objectid  = '#arguments.objectid#'";*/
-	qNode = getNode(objectid=arguments.objectid,dsn=arguments.dsn);
-	if (qNode.recordCount EQ 1 AND isDefined('qNode.nlevel'))
-	{	rowindex=1;
-		parentID = qNode.parentID;	
-		nlev = qNode.nlevel;
-		//new query object to hold the parentIDs of ancestors
-		qParentIDs = queryNew('parentID');
-		queryAddRow(qParentIDs,1);
-		querySetCell(qParentIDs,"parentID",parentID,rowindex);
-		if (len(qParentIDs.parentID[1]))
-			objID = qParentIDs.parentID[1];	
-		while(nLev GT 0)
-		{			
-			sql = "select parentid from #arguments.dbowner#nested_tree_objects	where objectid = '#objID#'";
-			q = query(sql=sql, dsn=arguments.dsn);
-			if (q.recordCount EQ 1)
-			{	
-				rowindex = rowindex + 1;
-				queryAddRow(qParentIDs,1);
-				querySetCell(qParentIDs,'parentID',q.parentID,rowindex);
-			}	
-			nLev = nLev - 1;
-			objID = q.parentID;
-		}
+	 --->
+	
+	<cfset qNode = getNode(objectid=arguments.objectid,dsn=arguments.dsn) />
+	<cfif qNode.recordCount EQ 1 AND isDefined('qNode.nlevel')>
+		<cfset rowindex=1 />
+		<cfset parentID = qNode.parentID />	
+		<cfset nlev = qNode.nlevel />
+		<!--- //new query object to hold the parentIDs of ancestors --->
+		<cfset qParentIDs = queryNew('parentID') />
+		<cfset queryAddRow(qParentIDs,1) />
+		<cfset querySetCell(qParentIDs,"parentID",parentID,rowindex) />
+		<cfif len(qParentIDs.parentID[1])>
+			<cfset objID = qParentIDs.parentID[1] />
+		</cfif>	
+		<cfloop condition="nLev GT 0">
+				
+					
+			<cfquery datasource="#arguments.dsn#" name="q">
+			select parentid from #arguments.dbowner#nested_tree_objects where objectid = '#objID#'
+			</cfquery>
 
-		sql = "select objectid, objectname, nlevel from #arguments.dbowner#nested_tree_objects where objectID IN (#quotedValueList(qParentIDs.parentID)#)";
-		// check if specific ancestor level is required
-		if (isdefined("arguments.nLevel") and isNumeric(arguments.nLevel))
-			sql = sql & "and nLevel = #arguments.nLevel#";
-		ancestors = query(sql=sql, dsn=arguments.dsn);
-	}
-	else 
-		ancestors = queryNew("objectid, objectname, nlevel");
-</cfscript>  
+			<cfif q.recordCount EQ 1>
+				<cfset rowindex = rowindex + 1 />
+				<cfset queryAddRow(qParentIDs,1) />
+				<cfset querySetCell(qParentIDs,'parentID',q.parentID,rowindex) />
+			</cfif>	
+			<cfset nLev = nLev - 1 />
+			<cfset objID = q.parentID />
+		</cfloop>
+
+		<cfquery datasource="#arguments.dsn#" name="ancestors">
+		select objectid, objectname, nlevel 
+		from #arguments.dbowner#nested_tree_objects 
+		where objectID IN (#quotedValueList(qParentIDs.parentID)#)		
+		<cfif isdefined("arguments.nLevel") and isNumeric(arguments.nLevel)>
+			and nLevel = #arguments.nLevel#
+		</cfif>
+		</cfquery>
+	<cfelse> 
+		<cfset ancestors = queryNew("objectid, objectname, nlevel") />'
+	</cfif>
 
 <cfif arguments.bIncludeSelf>
 	<cfquery datasource="#arguments.dsn#" name="qSelf">

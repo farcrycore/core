@@ -97,7 +97,7 @@
 			Append the default properties of this object into the properties that have been passed.
 			The overwrite flag is set to false so that the default properties do not overwrite the ones passed in.
 		 --->
-		<cfset structappend(arguments.stProperties,getData(objectid=arguments.stProperties.ObjectID,typename=variables.typename),false)/ >	
+		<cfset structappend(arguments.stProperties,getData(objectid=arguments.stProperties.ObjectID,typename=variables.typename),false) />	
 
 		<!--------------------------------------- 
 		If the object is to be stored in the session scope only.

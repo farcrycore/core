@@ -255,7 +255,7 @@ RENDER THE CURRENT STEP
 			<cfset variables.lLocales = "" />
 			<cfloop from="1" to="#arrayLen(variables.aLocales)#" index="i">
 				<cfif listLen(variables.aLocales[i],"_") EQ 2>
-					<cfset variables.lLocales = listAppend(variables.lLocales, "#variables.aLocales[i]#:#variables.aLocales[i].getDisplayName()#") />
+					<cfset variables.lLocales = listAppend(variables.lLocales, "#variables.aLocales[i].toString()#:#variables.aLocales[i].getDisplayName()#") />
 				</cfif>
 			</cfloop>
 			<cfset variables.lLocales = listSort(variables.lLocales,"textNoCase", "asc") />
@@ -604,7 +604,7 @@ RENDER THE CURRENT STEP
 			<cfset variables.lLocales = "" />
 			<cfloop from="1" to="#arrayLen(variables.aLocales)#" index="i">
 				<cfif listLen(variables.aLocales[i],"_") EQ 2>
-					<cfset variables.lLocales = listAppend(variables.lLocales, "#variables.aLocales[i]#:#variables.aLocales[i].getDisplayName()#") />
+					<cfset variables.lLocales = listAppend(variables.lLocales, "#variables.aLocales[i].toString()#:#variables.aLocales[i].getDisplayName()#") />
 				</cfif>
 			</cfloop>
 			<cfset variables.lLocales = listSort(variables.lLocales,"textNoCase", "asc") />

@@ -252,6 +252,10 @@ $out:$
 	<cfset var qDir = queryNew("name") /><!--- This will contain the directory listing --->
 	<cfset var qExtendedTypesDir = queryNew("name") /><!--- This will contain the directory listing --->
 	<cfset var qCustomTypesDir = queryNew("name") /><!--- This will contain the directory listing --->
+	<cfset var qCustomFormToolsTypesDir = queryNew("name") /><!--- This will contain the directory listing --->
+	<cfset var qFormsDir = queryNew("name") /><!--- This will contain the directory listing --->
+	<cfset var qCustomFormsTypesDir = queryNew("name") /><!--- This will contain the directory listing --->
+
 	<cfset var stTypeMD = structNew() />
 	
 	<cfset application.types = structNew() />
@@ -261,9 +265,16 @@ $out:$
 	<cfset application.stcoapi = structNew() />
 	 
 	<!--- Find all types, base, extended & custom --->
-	<cfdirectory action="list" directory="#application.path.core#/packages/types" name="qDir" filter="*.cfc" sort="name" />
-	<cfdirectory action="list" directory="#application.path.project#/packages/system" name="qExtendedTypesDir" filter="*.cfc" sort="name" />
-	<cfdirectory action="list" directory="#application.path.project#/packages/types" name="qCustomTypesDir" filter="*.cfc" sort="name" />
+	<cfif directoryExists("#application.path.core#/packages/types")>
+		<cfdirectory action="list" directory="#application.path.core#/packages/types" name="qDir" filter="*.cfc" sort="name" />
+	</cfif>
+	<cfif directoryExists("#application.path.project#/packages/system")>
+		<cfdirectory action="list" directory="#application.path.project#/packages/system" name="qExtendedTypesDir" filter="*.cfc" sort="name" />
+	</cfif>
+	<cfif directoryExists("#application.path.project#/packages/types")>
+		<cfdirectory action="list" directory="#application.path.project#/packages/types" name="qCustomTypesDir" filter="*.cfc" sort="name" />
+	</cfif>
+	
 
 	<!--------------------------------------------
 	// Init all CORE types 
@@ -424,7 +435,9 @@ $out:$
 	
 
 	<!--- FormTools specific Types --->
-	<cfdirectory directory="#application.path.core#/packages/formtools" name="qFormToolsTypesDir" filter="*.cfc" sort="name">
+	<cfif directoryExists("#application.path.core#/packages/formtools")>
+		<cfdirectory directory="#application.path.core#/packages/formtools" name="qFormToolsTypesDir" filter="*.cfc" sort="name">
+	</cfif>
 	
 	<!--- Init all CORE FormTools Types --->
 	<cfloop query="qFormToolsTypesDir">
@@ -495,8 +508,10 @@ $out:$
 	
 	
 	<!--- Init all PROJECCT FORMTOOL types --->
+	<cfif directoryExists("#application.path.project#/packages/formtools")>
+		<cfdirectory directory="#application.path.project#/packages/formtools" name="qCustomFormToolsTypesDir" filter="*.cfc" sort="name">
+	</cfif>
 	
-	<cfdirectory directory="#application.path.project#/packages/formtools" name="qCustomFormToolsTypesDir" filter="*.cfc" sort="name">
 	<cfloop query="qCustomFormToolsTypesDir">
 
 			<cfset formtoolname = left(qCustomFormToolsTypesDir.name, len(qCustomFormToolsTypesDir.name)-4) /><!--- //remove the .cfc from the filename --->	
@@ -523,26 +538,29 @@ $out:$
 	<!--- 
 	 FORMS
 	 --->
-	<cfdirectory directory="#application.path.core#/packages/forms" name="qFormsDir" filter="*.cfc" sort="name">
-	<!--- Init all CORE FORMS --->
-	<cfloop query="qFormsDir">
-
-			<cfset formname = left(qFormsDir.name, len(qFormsDir.name)-4) /><!--- //remove the .cfc from the filename --->			
-			<cfset oFactory = createObject("Component", "#application.packagepath#.forms.#formname#").init() />
-
-			<cfset stMetaData = getMetaData(oFactory) />
-			<cfif not structKeyExists(stMetadata,"bAbstract") or stMetadata.bAbstract EQ "False">
-				<cfset stTypeMD = structnew() />
-				<cfparam name="application.forms.#formname#" default="#structNew()#" />
-				<cfset stTypeMD = oFactory.initmetadata(application.forms[formname]) />
-				<cfset stTypeMD.bCustomForm = 0 />
-				<cfset stTypeMD.bLibraryForm = 0 />
-				<cfset stTypeMD.formPath = "#application.packagepath#.forms.#formname#" />
-				<cfset stTypeMD.packagePath = "#application.packagepath#.forms.#formname#" />
-				<cfset stTypeMD.qMetadata = setupMetadataQuery(typename=typename,stProps=stTypeMD.stProps) />
-				<cfset application.forms[formname] = duplicate(stTypeMD) />
-			</cfif>
-	</cfloop>	
+	<cfif directoryExists("#application.path.core#/packages/forms")>
+		<cfdirectory directory="#application.path.core#/packages/forms" name="qFormsDir" filter="*.cfc" sort="name">
+	
+		<!--- Init all CORE FORMS --->
+		<cfloop query="qFormsDir">
+	
+				<cfset formname = left(qFormsDir.name, len(qFormsDir.name)-4) /><!--- //remove the .cfc from the filename --->			
+				<cfset oFactory = createObject("Component", "#application.packagepath#.forms.#formname#").init() />
+	
+				<cfset stMetaData = getMetaData(oFactory) />
+				<cfif not structKeyExists(stMetadata,"bAbstract") or stMetadata.bAbstract EQ "False">
+					<cfset stTypeMD = structnew() />
+					<cfparam name="application.forms.#formname#" default="#structNew()#" />
+					<cfset stTypeMD = oFactory.initmetadata(application.forms[formname]) />
+					<cfset stTypeMD.bCustomForm = 0 />
+					<cfset stTypeMD.bLibraryForm = 0 />
+					<cfset stTypeMD.formPath = "#application.packagepath#.forms.#formname#" />
+					<cfset stTypeMD.packagePath = "#application.packagepath#.forms.#formname#" />
+					<cfset stTypeMD.qMetadata = setupMetadataQuery(typename=typename,stProps=stTypeMD.stProps) />
+					<cfset application.forms[formname] = duplicate(stTypeMD) />
+				</cfif>
+		</cfloop>	
+	</cfif>
 	
 	<cfif structKeyExists(application, "plugins") and listLen(application.plugins)>
 
@@ -583,94 +601,100 @@ $out:$
 	
 	<!--- Init all PROJECT FORMS --->
 	
-	<cfdirectory directory="#application.path.project#/packages/forms" name="qCustomFormsTypesDir" filter="*.cfc" sort="name">
-	<cfloop query="qCustomFormsTypesDir">
-
-		<cfset formname = left(qCustomFormsTypesDir.name, len(qCustomFormsTypesDir.name)-4) /><!--- //remove the .cfc from the filename --->	
-		<cfset oFactory = createObject("Component", "#application.custompackagepath#.forms.#formname#")>	
-		<cfset stMetaData = getMetaData(o) />
-		<cfif not structKeyExists(stMetadata,"bAbstract") or stMetadata.bAbstract EQ "False">
-			<cfset stTypeMD = structnew() />
-			<cfparam name="application.forms.#formname#" default="#structNew()#" />
-			<cfset stTypeMD = oFactory.initmetadata(application.forms[formname]) />
-			<cfset stTypeMD.bCustomForm = 1 />
-			<cfset stTypeMD.bLibraryForm = 0 />
-			<cfset stTypeMD.formPath = "#application.custompackagepath#.formtools.#formname#" />
-			<cfset stTypeMD.packagePath = "#application.custompackagepath#.formtools.#formname#" />
-			<cfset stTypeMD.qMetadata = setupMetadataQuery(typename=typename,stProps=stTypeMD.stProps) />
-			<cfset application.forms[formname] = duplicate(stTypeMD) />
-		</cfif>
-	</cfloop>		
-		
+	<cfif directoryExists("#application.path.project#/packages/forms")>
+		<cfdirectory directory="#application.path.project#/packages/forms" name="qCustomFormsTypesDir" filter="*.cfc" sort="name">
+	
+	
+		<cfloop query="qCustomFormsTypesDir">
+	
+			<cfset formname = left(qCustomFormsTypesDir.name, len(qCustomFormsTypesDir.name)-4) /><!--- //remove the .cfc from the filename --->	
+			<cfset oFactory = createObject("Component", "#application.custompackagepath#.forms.#formname#")>	
+			<cfset stMetaData = getMetaData(o) />
+			<cfif not structKeyExists(stMetadata,"bAbstract") or stMetadata.bAbstract EQ "False">
+				<cfset stTypeMD = structnew() />
+				<cfparam name="application.forms.#formname#" default="#structNew()#" />
+				<cfset stTypeMD = oFactory.initmetadata(application.forms[formname]) />
+				<cfset stTypeMD.bCustomForm = 1 />
+				<cfset stTypeMD.bLibraryForm = 0 />
+				<cfset stTypeMD.formPath = "#application.custompackagepath#.formtools.#formname#" />
+				<cfset stTypeMD.packagePath = "#application.custompackagepath#.formtools.#formname#" />
+				<cfset stTypeMD.qMetadata = setupMetadataQuery(typename=typename,stProps=stTypeMD.stProps) />
+				<cfset application.forms[formname] = duplicate(stTypeMD) />
+			</cfif>
+		</cfloop>		
+	</cfif>	
 	
 	<!---
 	RULES
 	 --->
 	 
 	<!--- INIT THE CONTAINER OBJECT ---> 
-	<cfdirectory directory="#application.path.core#/packages/rules" name="qDir" filter="container.cfc" sort="name">
-
-	<cfloop query="qDir">
-		<cfif qDir.name NEQ "rules.cfc">
-
-				
-				<cfset typename = left(qDir.name, len(qDir.name)-4) /> <!---remove the .cfc from the filename --->
-				<cfset o = createObject("Component", "#application.packagepath#.rules.#typename#") />			
-				<cfset stMetaData = getMetaData(o) />
-				<cfif not structKeyExists(stMetadata,"bAbstract") or stMetadata.bAbstract EQ "False">			
-				
-					<cfset stTypeMD = structNew() />
-					<cfparam name="application.rules.#typename#" default="#structNew()#" />
-					<cfset stTypeMD = o.initmetadata(application.rules[typename]) />
-					<cfset stTypeMD.bCustomRule = 0 />
-					<cfset stTypeMD.bLibraryRule = 0 />
-					<cfset stTypeMD.rulePath = "#application.packagepath#.rules.#typename#" />					
-					<cfset stTypeMD.packagePath = "#application.packagepath#.rules.#typename#" />
-				
-					<cfparam name="stTypeMD.icon" default="#LCase(Right(typename,len(typename)-2))#" />
-					<cfset stTypeMD.icon = getIconPath(iconname=stTypeMD.icon) />
-				
-					<cfset stTypeMD.qMetadata = setupMetadataQuery(typename=typename,stProps=stTypeMD.stProps) />
-					<cfset application.rules[typename] = duplicate(stTypeMD) />
-				</cfif>
-
-		</cfif>
-	</cfloop>
+	<cfif directoryExists("#application.path.core#/packages/rules")>
+		<cfdirectory directory="#application.path.core#/packages/rules" name="qDir" filter="container.cfc" sort="name">
 	
+		
+		<cfloop query="qDir">
+			<cfif qDir.name NEQ "rules.cfc">
+	
+					
+					<cfset typename = left(qDir.name, len(qDir.name)-4) /> <!---remove the .cfc from the filename --->
+					<cfset o = createObject("Component", "#application.packagepath#.rules.#typename#") />			
+					<cfset stMetaData = getMetaData(o) />
+					<cfif not structKeyExists(stMetadata,"bAbstract") or stMetadata.bAbstract EQ "False">			
+					
+						<cfset stTypeMD = structNew() />
+						<cfparam name="application.rules.#typename#" default="#structNew()#" />
+						<cfset stTypeMD = o.initmetadata(application.rules[typename]) />
+						<cfset stTypeMD.bCustomRule = 0 />
+						<cfset stTypeMD.bLibraryRule = 0 />
+						<cfset stTypeMD.rulePath = "#application.packagepath#.rules.#typename#" />					
+						<cfset stTypeMD.packagePath = "#application.packagepath#.rules.#typename#" />
+					
+						<cfparam name="stTypeMD.icon" default="#LCase(Right(typename,len(typename)-2))#" />
+						<cfset stTypeMD.icon = getIconPath(iconname=stTypeMD.icon) />
+					
+						<cfset stTypeMD.qMetadata = setupMetadataQuery(typename=typename,stProps=stTypeMD.stProps) />
+						<cfset application.rules[typename] = duplicate(stTypeMD) />
+					</cfif>
+	
+			</cfif>
+		</cfloop>
+	</cfif>
 
 
 	 
 	 
 	<!--- Init all CORE RULES --->
-	<cfdirectory directory="#application.path.core#/packages/rules" name="qDir" filter="rule*.cfc" sort="name">
-
-	<cfloop query="qDir">
-		<cfif qDir.name NEQ "rules.cfc">
-
-				
-				<cfset typename = left(qDir.name, len(qDir.name)-4) /> <!---remove the .cfc from the filename --->
-				<cfset o = createObject("Component", "#application.packagepath#.rules.#typename#") />			
-				<cfset stMetaData = getMetaData(o) />
-				<cfif not structKeyExists(stMetadata,"bAbstract") or stMetadata.bAbstract EQ "False">			
-				
-					<cfset stTypeMD = structNew() />
-					<cfparam name="application.rules.#typename#" default="#structNew()#" />
-					<cfset stTypeMD = o.initmetadata(application.rules[typename]) />
-					<cfset stTypeMD.bCustomRule = 0 />
-					<cfset stTypeMD.bLibraryRule = 0 />
-					<cfset stTypeMD.rulePath = "#application.packagepath#.rules.#typename#" />					
-					<cfset stTypeMD.packagePath = "#application.packagepath#.rules.#typename#" />
-				
-					<cfparam name="stTypeMD.icon" default="#LCase(Right(typename,len(typename)-2))#" />
-					<cfset stTypeMD.icon = getIconPath(iconname=stTypeMD.icon) />
-				
-					<cfset stTypeMD.qMetadata = setupMetadataQuery(typename=typename,stProps=stTypeMD.stProps) />
-					<cfset application.rules[typename] = duplicate(stTypeMD) />
-				</cfif>
-
-		</cfif>
-	</cfloop>
+	<cfif directoryExists("#application.path.core#/packages/rules")>
+		<cfdirectory directory="#application.path.core#/packages/rules" name="qDir" filter="rule*.cfc" sort="name">
+		
+		<cfloop query="qDir">
+			<cfif qDir.name NEQ "rules.cfc">
 	
+					
+					<cfset typename = left(qDir.name, len(qDir.name)-4) /> <!---remove the .cfc from the filename --->
+					<cfset o = createObject("Component", "#application.packagepath#.rules.#typename#") />			
+					<cfset stMetaData = getMetaData(o) />
+					<cfif not structKeyExists(stMetadata,"bAbstract") or stMetadata.bAbstract EQ "False">			
+					
+						<cfset stTypeMD = structNew() />
+						<cfparam name="application.rules.#typename#" default="#structNew()#" />
+						<cfset stTypeMD = o.initmetadata(application.rules[typename]) />
+						<cfset stTypeMD.bCustomRule = 0 />
+						<cfset stTypeMD.bLibraryRule = 0 />
+						<cfset stTypeMD.rulePath = "#application.packagepath#.rules.#typename#" />					
+						<cfset stTypeMD.packagePath = "#application.packagepath#.rules.#typename#" />
+					
+						<cfparam name="stTypeMD.icon" default="#LCase(Right(typename,len(typename)-2))#" />
+						<cfset stTypeMD.icon = getIconPath(iconname=stTypeMD.icon) />
+					
+						<cfset stTypeMD.qMetadata = setupMetadataQuery(typename=typename,stProps=stTypeMD.stProps) />
+						<cfset application.rules[typename] = duplicate(stTypeMD) />
+					</cfif>
+	
+			</cfif>
+		</cfloop>
+	</cfif>
 	
 	<!--- Init all PLUGIN RULES --->	
 	<cfif structKeyExists(application, "plugins") and listLen(application.plugins)>
@@ -714,30 +738,33 @@ $out:$
 
 
 	<!--- Init all PROJECT RULES --->
-	<cfdirectory directory="#application.path.project#/packages/rules" name="qDir" filter="rule*.cfc" sort="name">
-
-	<cfloop query="qDir">
-
-			
-			<cfset typename = left(qDir.name, len(qDir.name)-4) /> <!---remove the .cfc from the filename --->
-			<cfset o = createObject("Component", "#application.custompackagepath#.rules.#typename#") />			
-			<cfset stMetaData = getMetaData(o) />
-			<cfif not structKeyExists(stMetadata,"bAbstract") or stMetadata.bAbstract EQ "False">			
-				<cfset stTypeMD = structNew() />
-				<cfparam name="application.rules.#typename#" default="#structNew()#" />
-				<cfset stTypeMD = createObject("Component", "#application.custompackagepath#.rules.#typename#").initmetadata(application.rules[typename]) />
-				<cfset stTypeMD.bCustomRule = 1 />
-				<cfset stTypeMD.bLibraryRule = 0 />
-				<cfset stTypeMD.rulePath = "#application.custompackagepath#.rules.#typename#" />
-				<cfset stTypeMD.packagePath = "#application.custompackagepath#.rules.#typename#" />
+	<cfif directoryExists("#application.path.project#/packages/rules")>
+		<cfdirectory directory="#application.path.project#/packages/rules" name="qDir" filter="rule*.cfc" sort="name">
+	
+	
+		<cfloop query="qDir">
+	
 				
-				<cfparam name="stTypeMD.icon" default="#LCase(Right(typename,len(typename)-2))#" />
-				<cfset stTypeMD.icon = getIconPath(iconname=stTypeMD.icon) />
-				
-				<cfset stTypeMD.qMetadata = setupMetadataQuery(typename=typename,stProps=stTypeMD.stProps) />
-				<cfset application.rules[typename] = duplicate(stTypeMD) />
-			</cfif>
-	</cfloop>
+				<cfset typename = left(qDir.name, len(qDir.name)-4) /> <!---remove the .cfc from the filename --->
+				<cfset o = createObject("Component", "#application.custompackagepath#.rules.#typename#") />			
+				<cfset stMetaData = getMetaData(o) />
+				<cfif not structKeyExists(stMetadata,"bAbstract") or stMetadata.bAbstract EQ "False">			
+					<cfset stTypeMD = structNew() />
+					<cfparam name="application.rules.#typename#" default="#structNew()#" />
+					<cfset stTypeMD = createObject("Component", "#application.custompackagepath#.rules.#typename#").initmetadata(application.rules[typename]) />
+					<cfset stTypeMD.bCustomRule = 1 />
+					<cfset stTypeMD.bLibraryRule = 0 />
+					<cfset stTypeMD.rulePath = "#application.custompackagepath#.rules.#typename#" />
+					<cfset stTypeMD.packagePath = "#application.custompackagepath#.rules.#typename#" />
+					
+					<cfparam name="stTypeMD.icon" default="#LCase(Right(typename,len(typename)-2))#" />
+					<cfset stTypeMD.icon = getIconPath(iconname=stTypeMD.icon) />
+					
+					<cfset stTypeMD.qMetadata = setupMetadataQuery(typename=typename,stProps=stTypeMD.stProps) />
+					<cfset application.rules[typename] = duplicate(stTypeMD) />
+				</cfif>
+		</cfloop>
+	</cfif>
 	
 	<cfset application.stcoapi = structNew() />
 	<cfloop list="#structKeyList(application.types)#" index="i">
@@ -1256,7 +1283,7 @@ $out:$
 					<td>
 						<cftry>
 						#stTypes[arguments.typename][key].type#
-						<cfcatch type="any"><cfdump var="#cfcatch#" top="1"><cfdump var="#stTypes#" top="1"><cfabort></cfcatch>
+						<cfcatch type="any"><cfdump var="#cfcatch#"><cfabort></cfcatch>
 						</cftry>	
 						
 					</td>

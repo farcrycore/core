@@ -828,7 +828,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			<cfquery dbtype="query" name="qDupe">
 				SELECT	*
 				FROM	qResult
-				WHERE	cast(name as varchar) = '#arguments.query2.name[currentrow]#'
+				WHERE	name = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.query2.name[currentrow]#" />
 			</cfquery>
 			
 			<!--- If it doesn't, add it --->

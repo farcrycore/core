@@ -469,7 +469,7 @@
 		<cfif not len(loc)>				
 			<cfoutput>
 				<p>I can't find a FarCry project on this server to administer.</p>
-				<p><a href="/farcry/core/webtop/install">CLICK HERE</a> TO INSTALL A NEW PROJECT.</p>
+				<p><a href="/farcry/core/webtop/install/index.cfm">CLICK HERE</a> TO INSTALL A NEW PROJECT.</p>
 			</cfoutput>
 			<cfabort />		
 		</cfif>

@@ -35,12 +35,14 @@ $Developer: Blair McKenzie (blair@daemon.com.au)$
 		<!--- Look for custom admin files in each directory --->
 		<cfloop list="#dirlist#" index="thisdir">
 			<!--- If any custom admin xml files exist, we need to add them to our custom admin XML array --->
-			<cfdirectory action="list" directory="#thisdir#" filter="*.xml" name="qCustomAdmin" />
-			
-			<cfloop query="qCustomAdmin">
-				<!--- For each custom admin --->
-				<cfset mergeWebtopStruct(this.stWebtop,convertToStruct(loadWebtopFile("#thisdir#/#name#").webtop)) />
-			</cfloop>
+			<cfif directoryExists("#thisdir#")>
+				<cfdirectory action="list" directory="#thisdir#" filter="*.xml" name="qCustomAdmin" />
+				
+				<cfloop query="qCustomAdmin">
+					<!--- For each custom admin --->
+					<cfset mergeWebtopStruct(this.stWebtop,convertToStruct(loadWebtopFile("#thisdir#/#name#").webtop)) />
+				</cfloop>
+			</cfif>
 		</cfloop>
 		
 		<!--- Update the rb keys --->

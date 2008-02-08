@@ -11,7 +11,7 @@
 <cfparam name="attributes.object" type="string" default="" /><!--- The uuid of the associated object --->
 <cfparam name="attributes.type" type="string" default="" /><!--- The type of the associated object (can be non-coapi, e.g. security) --->
 <cfparam name="attributes.event" type="string" /><!--- The event that is being logged --->
-<cfparam name="attributes.location" type="string" default="#getPageContext().getPage().getCurrentTemplatePath()#" /><!--- The location of the event --->
+<cfparam name="attributes.location" type="string" default="" /><!--- The location of the event --->
 <cfparam name="attributes.userid" type="string" default="unknown" /><!--- The user associated with the event --->
 <cfparam name="attributes.ipaddress" type="string" default="#cgi.REMOTE_HOST#" /><!--- The ip of user --->
 <cfparam name="attributes.notes" type="string" default="" /><!--- Free text :D --->
@@ -19,6 +19,13 @@
 
 <cfif isDefined("application.security") AND attributes.userid eq "unknown">
 	<cfset attributes.userid = application.security.getCurrentUserID() />
+</cfif>
+
+<cfif not len(attributes.location)>
+	<cftry>
+		<cfset attributes.location = "#getPageContext().getPage().getCurrentTemplatePath()#" />
+		<cfcatch type="any"><!--- Ignore error and leave blank. Probably means that the CF Engine is not Adobe ---></cfcatch>
+	</cftry>
 </cfif>
 
 <cfset stObj = structnew() />
