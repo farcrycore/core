@@ -414,23 +414,22 @@ user --->
 	
 	<ft:processForm action="requestapproval">
 		<!--- TODO: Check Permissions. --->
-		<cfif listLen(form.objectid) EQ 1>
-			<cflocation URL="#application.url.farcry#/navajo/approve.cfm?objectid=#form.objectid#&status=requestapproval" addtoken="false" />
-		</cfif>
+		<cflocation URL="#application.url.farcry#/navajo/approve.cfm?objectid=#form.objectid#&status=requestapproval" addtoken="false" />
 	</ft:processForm>
 	
 	<ft:processForm action="approve">
 		<!--- TODO: Check Permissions. --->
-		<cfif listLen(form.objectid) EQ 1>
-			<cflocation URL="#application.url.farcry#/navajo/approve.cfm?objectid=#form.objectid#&status=approved" addtoken="false" />
-		</cfif>
+		<cflocation URL="#application.url.farcry#/navajo/approve.cfm?objectid=#form.objectid#&status=approved" addtoken="false" />
 	</ft:processForm>
 	
 	<ft:processForm action="createdraft">
 		<!--- TODO: Check Permissions. --->
-		<cfif listLen(form.objectid) EQ 1>
-			<cflocation URL="#application.url.farcry#/navajo/createDraftObject.cfm?objectID=#form.objectID#" addtoken="false" />
-		</cfif>
+		<cflocation URL="#application.url.farcry#/navajo/createDraftObject.cfm?objectID=#form.objectID#" addtoken="false" />
+	</ft:processForm>
+	
+	<ft:processForm action="Send to Draft">
+		<!--- TODO: Check Permissions. --->
+		<cflocation URL="#application.url.farcry#/navajo/approve.cfm?objectid=#form.objectid#&status=draft" addtoken="false" />
 	</ft:processForm>
 
 

@@ -37,15 +37,36 @@ $out:$
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
 <admin:header>
 
-<cfinvoke component="#application.packagepath#.farcry.versioning" method="getVersioningRules" objectID="#url.objectID#" returnvariable="stRules">
-
 <cfset changestatus = true>
 
 <!--- show comment form --->
-<cfif not isdefined("form.commentLog") and listlen(attributes.lObjectIDs) eq 1>
-	<!--- get object details --->
-	<q4:contentobjectget objectid="#attributes.lobjectIDs#" r_stobject="stObj">
-	<cfif isdefined("stObj.status")>
+<cfif not isdefined("form.commentLog")>
+
+	<cfset stApprovers = "*" />
+	<cfset astObj = arraynew(1) />
+	<cfset oWorkflow = createobject("component","#application.packagepath#.farcry.workflow") />
+	<cfloop list="#attributes.lObjectIDs#" index="thisobjectid">
+		<!--- Get object --->
+		<q4:contentobjectget objectid="#thisobjectid#" r_stobject="stObj">
+		<cfset arrayappend(astObj,stObj) />
+		
+		<!--- get list of approvers for this object --->
+		<cfset stApproversThisObject = oWorkflow.getObjectApprovers(objectID=thisobjectid) />
+		<cfif isstruct(stApprovers)>
+			<!--- Update stApprovers as the intersection of stApprovers and stApproversThisObject --->
+			<cfloop collection="#stApprovers#" item="approver">
+				<cfif not structkeyexists(stApproversThisObject,approver)>
+					<cfset structdelete(stApprovers,approver) />
+				</cfif>
+			</cfloop>
+		<cfelse>
+			<!--- The intersection of one set is that set :) --->
+			<cfset stApprovers = duplicate(stApproversThisObject) />
+		</cfif>
+	</cfloop>
+	
+	<!--- This code assumes all objects passed in are the same type, and therfore that the first item is representative of them all --->
+	<cfif structkeyexists(astObj[1],"status")>
 		<cfoutput>
 		<script type="text/javascript">	
 		function deSelectAll()
@@ -70,36 +91,39 @@ $out:$
 					<textarea name="commentLog" id="commentLog" cols="80" rows="10"></textarea><br />
 				</label>
 				<!--- if requesting approval, list approvers --->
-				<cfif url.status eq "requestApproval">
-				<label for="Log"><b>#application.adminBundle[session.dmProfile.locale].requestApprovalFrom#</b>
-					<input type="checkbox" onclick="if(this.checked)deSelectAll();" name="lApprovers" value="all" checked="checked">#application.adminBundle[session.dmProfile.locale].allApprovers#<br />
-						<!--- get list of approvers for this object --->
-						<cfinvoke component="#application.packagepath#.farcry.workflow" method="getObjectApprovers" returnvariable="stApprovers">
-							<cfinvokeargument name="objectID" value="#url.objectID#"/>
-						</cfinvoke>
-		
-						<!--- loop over approvers and display ones that have email profiles --->
-						<cfloop collection="#stApprovers#" item="item">
-						    <cfif stApprovers[item].emailAddress neq "" AND stApprovers[item].bReceiveEmail and stApprovers[item].userName neq session.dmSec.authentication.userLogin>
-								<input type="checkbox" name="lApprovers" onclick="if(this.checked)document.form.lApprovers[0].checked = false;" value="#stApprovers[item].userName#"><cfif len(stApprovers[item].firstName) gt 0>#stApprovers[item].firstName# #stApprovers[item].lastName#<cfelse>#stApprovers[item].userName#</cfif><br />
-							</cfif>
-						</cfloop>
-				</label>
+				<cfif url.status eq "requestApproval" and structcount(stApprovers)>
+					<label for="Log"><b>#application.adminBundle[session.dmProfile.locale].requestApprovalFrom#</b>
+						<input type="checkbox" onclick="if(this.checked)deSelectAll();" name="lApprovers" value="all" checked="checked">#application.adminBundle[session.dmProfile.locale].allApprovers#<br />
+							<!--- loop over approvers and display ones that have email profiles --->
+							<cfloop collection="#stApprovers#" item="item">
+							    <cfif stApprovers[item].emailAddress neq "" AND stApprovers[item].bReceiveEmail and stApprovers[item].userName neq session.dmSec.authentication.userLogin>
+									<input type="checkbox" name="lApprovers" onclick="if(this.checked)document.form.lApprovers[0].checked = false;" value="#stApprovers[item].userName#"><cfif len(stApprovers[item].firstName) gt 0>#stApprovers[item].firstName# #stApprovers[item].lastName#<cfelse>#stApprovers[item].userName#</cfif><br />
+								</cfif>
+							</cfloop>
+					</label>
+				<cfelseif url.status eq "requestApproval">
+					<p class="error">There are no users that have permission to approve all items. Request approval for items one at a time or manually notify potential approvers.</p>
 				</cfif>
 			</fieldset>
 		
 			<div class="f-submit-wrap">
-			<input type="submit" name="submit" value="#application.adminBundle[session.dmProfile.locale].submitUC#" class="f-submit" />
-			<input type="submit" name="cancel" value="#application.adminBundle[session.dmProfile.locale].cancel#" class="f-submit" onClick="location.href='../edittabOverview.cfm?objectid=#attributes.lobjectIDs#';" />
+				<input type="submit" name="submit" value="#application.adminBundle[session.dmProfile.locale].submitUC#" class="f-submit" />
+				<cfif listlen(attributes.lObjectIDs) gt 1 and len(cgi.HTTP_REFERER)>
+					<input type="submit" name="cancel" value="#application.adminBundle[session.dmProfile.locale].cancel#" class="f-submit" onClick="location.href='#cgi.http_referer#';" />
+				<cfelse>
+					<input type="submit" name="cancel" value="#application.adminBundle[session.dmProfile.locale].cancel#" class="f-submit" onClick="location.href='../edittabOverview.cfm?objectid=#attributes.lobjectIDs#';" />
+				</cfif>
 			</div>			
 		
 			<!--- display existing comments --->
-			<cfif structKeyExists(stObj,"commentLog")>
-				<cfif len(trim(stObj.commentLog)) AND structKeyExists(stObj,"commentLog")>
-					<label><b>#application.adminBundle[session.dmProfile.locale].previousComments#</b>
-						#htmlcodeformat(stObj.commentLog)#
-					</label>
-				</cfif>
+			<cfif structKeyExists(astObj[1],"commentLog")>
+				<cfloop from="1" to="#arraylen(astObj)#" index="i">
+					<cfif len(trim(astObj[i].commentLog)) AND structKeyExists(astObj[i],"commentLog")>
+						<label><b>#application.adminBundle[session.dmProfile.locale].previousComments#<cfif arraylen(astObj) neq 1> (#astObj[i].label#)</cfif></b>
+							#htmlcodeformat(astObj[i].commentLog)#
+						</label>
+					</cfif>
+				</cfloop>
 			</cfif>
 		</form>
 		</cfoutput>
@@ -354,7 +378,7 @@ $out:$
 							<cfset oType.setData(stProperties=stObj,auditNote="Status changed to #stObj.status#") />
 							
 							<cfif stObj.typename neq "dmImage" and stObj.typename neq "dmFile">
-								<cfset returnObjectId = url.objectid>
+								<cfset returnObjectId = attributes.lObjectIDs>
 							</cfif>
 						</cfif>
 						 --->
@@ -377,7 +401,7 @@ $out:$
 							</cfscript>
 							
 							<cfif stObj.typename neq "dmImage" and stObj.typename neq "dmFile">
-								<cfset returnObjectId = url.objectid>
+								<cfset returnObjectId = attributes.lObjectIDs>
 							</cfif>
 						</cfif>
 						
@@ -397,15 +421,27 @@ $out:$
 		</cfif>
 	</cfif><!--- // check that they hit submit --->
 
-	<cfparam name="returnObjectId" default="#url.objectId#"><cfoutput>
-<script type="text/javascript">
-if(window.opener && window.opener.parent)
-	window.close();
-else{
-	//if(parent['sidebar'].frames['sideTree'])
-	location.href = "#application.url.farcry#/edittabOverview.cfm?objectid=#returnObjectId#";
-}
-</script></cfoutput>
+	<cfif listlen(url.objectid) gt 1 and not find(cgi.SCRIPT_NAME,cgi.http_referer)>
+		<cfparam name="returnObjectId" default="#attributes.lObjectIDs#"><cfoutput>
+		<script type="text/javascript">
+		if(window.opener && window.opener.parent)
+			window.close();
+		else{
+			location.href = "#cgi.http_referer#;
+		}
+		</script></cfoutput>
+	<cfelseif listlen(url.objectid) gt 1>
+		<cfoutput><p class="success">Objects updated: #listlen(url.objectid)#</p></cfoutput>
+	<cfelse>
+		<cfparam name="returnObjectId" default="#attributes.lObjectIDs#"><cfoutput>
+		<script type="text/javascript">
+		if(window.opener && window.opener.parent)
+			window.close();
+		else{
+			location.href = "#application.url.farcry#/edittabOverview.cfm?objectid=#returnObjectId#";
+		}
+		</script></cfoutput>
+	</cfif>
 </cfif>                                                                                
 <cfoutput>
 </body>
