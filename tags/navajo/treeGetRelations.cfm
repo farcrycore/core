@@ -106,10 +106,20 @@ TODO
 this should be a COAPI call and *not* a straight SQL shortcut 
 --->
 
+<cfset lObjectIDs = "" />
+<cfif qChildren.recordCount GT 0>
+	<cfset lObjectIDs = valueList(qChildren.objectid) />
+</cfif>
+<cfif attributes.bInclusive>
+	<cfset lObjectIDs = listAppend(ObjectIDs, attributes.objectid) />
+</cfif>
+
 <cfquery datasource="#application.dsn#" name="qObjects">
 	SELECT objectid FROM #application.dbowner##attributes.typename#
-	WHERE
-	objectid IN (<cfif qChildren.recordCount GT 0>#QuotedValueList(qChildren.objectid)#</cfif><cfif attributes.bInclusive><cfif qChildren.recordCount GT 0>,</cfif>'#attributes.objectid#'</cfif>)
+	WHERE 1=1
+	<cfif listLen(lObjectIDs)>
+		AND objectid IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#lObjectIDs#" />)
+	</cfif>
 	<cfif len(attributes.lstatus)>
 		AND status = '#attributes.lstatus#'
 	</cfif>

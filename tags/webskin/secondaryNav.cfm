@@ -42,7 +42,7 @@ out:
 <!--- Get status of Nav Items --->
 <cfquery datasource="#application.dsn#" name="qStatus">
 SELECT objectid, status FROM #application.dbowner#dmNavigation
-WHERE objectID IN (#QuotedValueList(qSecondaryNav.objectid)#)
+WHERE objectID IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#valueList(qSecondaryNav.objectid)#" />)
 </cfquery>
 
 <!--- Add status of Nav Items to Secondary Nav query--->

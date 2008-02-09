@@ -31,6 +31,14 @@ $out:$
 
 	<!--- run the query to get counts of user activity by week --->
 
+<!--- Determine list of nav ids to search by --->
+<cfif qDescendants.recordcount>
+	<cfset lNavIDs = ValueList(qDescendants.objectid) />
+	<cfset lNavIDs = listAppend(lNavIDs, arguments.navid) />
+<cfelse>
+	<cfset lNavIDs = arguments.navid />
+</cfif>
+
 <cfswitch expression="#application.dbtype#"	>
 <cfcase value="ora">
 	<!--- THIS QUERY IS NOT COMPLETE - TODO --->
@@ -41,7 +49,7 @@ $out:$
 			select * from stats
 				where 1 = 1
 				<cfif not arguments.showAll>
-					AND navid IN (<cfif qDescendants.recordcount>#QuotedValueList(qDescendants.objectid)#,</cfif>'#arguments.navid#')
+					AND navid IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#lNavIDs#" />)
 				</cfif>
 		)fq on UPPER(TO_CHAR(fq.logdatetime,'dy')) = UPPER(SUBSTR(statsDays.day,1,3))
 		 and (fq.logdatetime - TO_DATE('#arguments.day#','dd/mon/yy') <=0) and (TO_DATE('#dateadd('d','7',arguments.day)#','dd/mon/yy') - fq.logdatetime >=0))
@@ -63,7 +71,7 @@ $out:$
 			SELECT * FROM stats
 			WHERE 1 = 1
 			<cfif not arguments.showAll>
-				AND navid IN (<cfif qDescendants.recordCount>#QuotedValueList(qDescendants.objectID)#,</cfif>'#arguments.navid#')
+				AND navid IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#lNavIDs#" />)
 			</cfif>
 		) fq ON (UPPER(TO_CHAR(fq.logdatetime, 'D')) = UPPER(SUBSTR(statsDays.day, 1, 3)))
 		AND (fq.logdatetime >= '#thisWeek#') AND ('#nextWeek#' >= fq.logdatetime)
@@ -89,7 +97,7 @@ $out:$
 			SELECT LOGID, LOGDATETIME FROM #application.dbowner#stats 
 			WHERE 1 = 1 
 			<CfIF not arguments.showAll>
-				AND navid IN (<cfif qDescendants.recordcount>#QuotedValueList(qDescendants.objectid)#,</cfif>'#arguments.navid#')
+				AND navid IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#lNavIDs#" />)
 			</CFIF>
 	</cfquery>
 	<!--- do main query --->
@@ -113,7 +121,7 @@ $out:$
 			select * from stats
 				where 1 = 1
 				<cfif not arguments.showAll>
-					AND navid IN (<cfif qDescendants.recordcount>#QuotedValueList(qDescendants.objectid)#,</cfif>'#arguments.navid#')
+					AND navid IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#lNavIDs#" />)
 				</cfif>
 	)fq on datepart(dw, fq.logdatetime) = statsDays.day
 	 and datediff(day,fq.logdatetime,#createodbcdate(arguments.day)#) <=0 and datediff(day,fq.logdatetime,#createodbcdate(arguments.day+7)#) >=0

@@ -22,7 +22,7 @@ qAncestors = application.factory.oTree.getAncestors(objectid=request.navid);
 	FROM #application.dbowner#dmCSS, #application.dbowner#dmNavigation_aObjectIDs
 	WHERE 
 	dmCSS.objectid = dmNavigation_aObjectIDs.data
-	AND dmNavigation_aObjectIDs.parentid IN (#quotedValueList(qAncestors.objectid)#)
+	AND dmNavigation_aObjectIDs.parentid IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#ValueList(qAncestors.objectid)#" />)
 </cfquery>
 </cfif>
 

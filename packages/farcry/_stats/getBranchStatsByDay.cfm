@@ -36,6 +36,14 @@ $out:$
 	qDescendants = application.factory.oTree.getDescendants(arguments.navId);
 </cfscript>
 
+<!--- Determine list of nav ids to search by --->
+<cfif qDescendants.recordcount>
+	<cfset lNavIDs = ValueList(qDescendants.objectid) />
+	<cfset lNavIDs = listAppend(lNavIDs, arguments.navid) />
+<cfelse>
+	<cfset lNavIDs = arguments.navid />
+</cfif>
+
 <!--- run the query to get counts of user activity by hour --->
 <cfswitch expression="#application.dbtype#">
 <cfcase value="ora">
@@ -46,7 +54,7 @@ $out:$
 				select * from stats
 				where 1 = 1
 				<cfif not arguments.showAll>
-					AND navid IN (<cfif qDescendants.recordcount>#QuotedValueList(qDescendants.objectid)#,</cfif>'#arguments.navid#')
+					AND navid IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#lNavIDs#" />)
 				</cfif>
 		)fq on TO_CHAR(fq.logdatetime,'hh') = statsHours.hour
 		and TO_CHAR(fq.logdatetime,'dd' ) = #DatePart("d", arguments.day)# and TO_CHAR(fq.logdatetime,'mm') = #DatePart("m", arguments.day)# and TO_CHAR(fq.logdatetime,'yyyy') = #DatePart("yyyy", arguments.day)#
@@ -66,7 +74,7 @@ $out:$
 				SELECT * FROM stats
 				WHERE 1 = 1
 				<cfif not arguments.showAll>
-					AND navid IN (<cfif qDescendants.recordcount>#QuotedValueList(qDescendants.objectid)#,</cfif>'#arguments.navid#')
+					AND navid IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#lNavIDs#" />)
 				</cfif>
 		) fq ON TO_CHAR(fq.logdatetime,'HH24') = statsHours.hour
 		AND TO_CHAR(fq.logdatetime,'DD' ) = '#DateFormat(arguments.day, "dd")#' AND TO_CHAR(fq.logdatetime, 'MM') = '#DateFormat(arguments.day, "mm")#' AND TO_CHAR(fq.logdatetime,'YYYY') = '#DateFormat(arguments.day, "yyyy")#'
@@ -92,7 +100,7 @@ $out:$
 			SELECT LOGID, LOGDATETIME FROM #application.dbowner#stats 
 			WHERE 1 = 1 
 			<CfIF not arguments.showAll>
-				AND navid IN (<cfif qDescendants.recordcount>#QuotedValueList(qDescendants.objectid)#,</cfif>'#arguments.navid#')
+				AND navid IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#lNavIDs#" />)
 			</CFIF>
 	</cfquery>
 	<!--- do main query --->
@@ -114,7 +122,7 @@ $out:$
 				select * from stats
 				where 1 = 1
 				<cfif not arguments.showAll>
-					AND navid IN (<cfif qDescendants.recordcount>#QuotedValueList(qDescendants.objectid)#,</cfif>'#arguments.navid#')
+					AND navid IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#lNavIDs#" />)
 				</cfif>
 		)fq on datepart(hh, fq.logdatetime) = statsHours.hour
 		and datepart(dd, fq.logdatetime) = #DatePart("d", arguments.day)# and datepart(mm, fq.logdatetime) = #DatePart("m", arguments.day)# and datepart(yyyy, fq.logdatetime) = #DatePart("yyyy", arguments.day)#

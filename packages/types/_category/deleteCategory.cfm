@@ -12,11 +12,11 @@
 		<cfif qDesc.recordcount>
 			<cfquery datasource="#arguments.dsn#">
 				DELETE FROM #application.dbowner#dmCategory
-				WHERE objectid IN (#quotedValueList(qDesc.objectid)#)
+				WHERE objectid IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#ValueList(qDesc.objectid)#" />)
 			</cfquery>
 			<cfquery datasource="#arguments.dsn#">
 				DELETE FROM #application.dbowner#refCategories
-				WHERE categoryID IN (#quotedValueList(qDesc.objectid)#)
+				WHERE categoryID IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#ValueList(qDesc.objectid)#" />)
 			</cfquery>
 		</cfif>
  	</cftransaction> 

@@ -27,6 +27,14 @@ $out:$
 	qDescendants = application.factory.oTree.getDescendants(arguments.navId);
 </cfscript>
 
+<!--- Determine list of nav ids to search by --->
+<cfif qDescendants.recordcount>
+	<cfset lNavIDs = ValueList(qDescendants.objectid) />
+	<cfset lNavIDs = listAppend(lNavIDs, arguments.navid) />
+<cfelse>
+	<cfset lNavIDs = arguments.navid />
+</cfif>
+
 <!--- get page log entries --->
 <cfswitch expression="#application.dbtype#">
 	<cfcase value="ora">
@@ -34,7 +42,7 @@ $out:$
 		select to_char(logdatetime,'yyyy-mm-dd') as viewday,count(logId) as count_views
 		from #application.dbowner#stats
 		where 1=1 
-		AND navid IN (<cfif qDescendants.recordcount>#QuotedValueList(qDescendants.objectid)#,</cfif>'#arguments.navid#')
+		AND navid IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#lNavIDs#" />)
 		<cfif isDefined("arguments.before")>
 		AND logdatetime < #arguments.before#
 		</cfif>
@@ -50,7 +58,7 @@ $out:$
 		select to_char(logdatetime,'yyyy-mm-dd') as viewday,count(logId) as count_views
 		from #application.dbowner#stats
 		where 1=1 
-		AND navid IN (<cfif qDescendants.recordcount>#QuotedValueList(qDescendants.objectid)#,</cfif>'#arguments.navid#')
+		AND navid IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#lNavIDs#" />)
 		<cfif isDefined("arguments.before")>
 		AND logdatetime < #arguments.before#
 		</cfif>
@@ -67,7 +75,7 @@ $out:$
 				count(logId) as count_views 
 		from #application.dbowner#stats
 		where 1=1 
-		AND navid IN (<cfif qDescendants.recordcount>#QuotedValueList(qDescendants.objectid)#,</cfif>'#arguments.navid#')
+		AND navid IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#lNavIDs#" />)
 		<cfif isDefined("arguments.before")>
 		AND logdatetime < #arguments.before#
 		</cfif>
@@ -88,7 +96,7 @@ $out:$
 		select convert(varchar,logdatetime,102) as viewday,count(logId) as count_views
 		from #application.dbowner#stats
 		where 1=1 
-		AND navid IN (<cfif qDescendants.recordcount>#QuotedValueList(qDescendants.objectid)#,</cfif>'#arguments.navid#')
+		AND navid IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#lNavIDs#" />)
 		<cfif isDefined("arguments.before")>
 		AND logdatetime < #arguments.before#
 		</cfif>

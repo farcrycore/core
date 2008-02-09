@@ -61,7 +61,7 @@ $out:$
 		<cfquery datasource="#arguments.dsn#" name="ancestors">
 		select objectid, objectname, nlevel 
 		from #arguments.dbowner#nested_tree_objects 
-		where objectID IN (#quotedValueList(qParentIDs.parentID)#)		
+		where objectID IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#ValueList(qParentIDs.parentID)#" />)
 		<cfif isdefined("arguments.nLevel") and isNumeric(arguments.nLevel)>
 			and nLevel = #arguments.nLevel#
 		</cfif>

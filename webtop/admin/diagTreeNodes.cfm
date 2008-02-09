@@ -46,7 +46,7 @@ $out:$
 				WHERE
 				typename = 'dmNavigation'
 				AND     objectid <> '#application.navid.root#'
-				AND parentid NOT IN (#quotedValueList(qOrphansTemp.objectid)#)
+				AND parentid NOT IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#ValueList(qOrphansTemp.objectid)#" />)
 				and parentid is not null
 			</cfquery>
 		</cfcase>
