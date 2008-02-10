@@ -84,14 +84,7 @@
 				<menuitem id="furebuild" sequence="20" label="Rebuild Friendly URLs" link="/admin/rebuildFU.cfm" />
 			</menu>
 		</subsection>
-		<subsection id="verity" sequence="20" permission="AdminSearchTab" label="Verity Management">
-			<menu id="freetextsearch" sequence="10" label="Free Text Search">
-				<menuitem id="managecollections" sequence="10" label="Manage Collections" link="/admin/verityManage.cfm" />
-				<menuitem id="buildupdateallcollections" sequence="20" label="Build/Update All Collections" link="/admin/verityBuild.cfm" />
-				<menuitem id="optimiseallcollections" sequence="30" label="Optimize All Collections" link="/admin/verityOptimise.cfm" />
-				<menuitem id="verityconfig" sequence="40" label="Verity Config" link="/admin/verityConfig.cfm" />
-			</menu>
-		</subsection>
+
 		<subsection id="coapi" sequence="30" permission="AdminCOAPITab" label="COAPI Management" >
 			<menu id="coapitools" sequence="10" label="COAPI Tools">
 				<menuitem id="typeclasses" sequence="10" label="Types" link="/admin/coapiTypes.cfm" />
