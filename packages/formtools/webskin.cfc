@@ -12,8 +12,9 @@
 		
 		<cfset var html = "" />
 		<cfset var oType = "" />
-		<cfset var qWebskins = queryNew("blah") />
-		
+		<cfset var qWebskins = "*" />
+		<cfset var qWebskinsTemp = querynew("empty") />
+		<cfset var thistype = "" />
 		
 		<cfparam name="arguments.stMetadata.ftPrefix" default="">
 		<cfparam name="arguments.stMetadata.ftTypename" default="#arguments.typename#"><!--- The typename that the webskin is to be selected for. It defaults to the typename of the object this field is contained in. --->
@@ -22,8 +23,28 @@
 			<cfset arguments.stMetadata.ftTypename = arguments.typename />
 		</cfif>
 
-		<cfset oType=createobject("component", application.stCoapi[arguments.stmetadata.fttypename].packagepath) />
-		<cfset qWebskins=oType.getWebskins(typename='#arguments.stmetadata.fttypename#', prefix=arguments.stMetadata.ftPrefix) />
+		<cfloop list="#arguments.stMetadata.ftTypename#" index="thistype">
+			<cfif isquery(qWebskins)>
+				<cfset oType=createobject("component", application.stCoapi[thistype].packagepath) />
+				<cfset qWebskinsTemp=oType.getWebskins(typename='#thistype#', prefix=arguments.stMetadata.ftPrefix) />
+				<cfif qWebskinsTemp.recordcount>
+					<cfquery dbtype="query" name="qWebskins">
+						select	*
+						from	qWebskins
+						where	name in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#valuelist(qWebskinsTemp.name)#">)
+					</cfquery>
+				<cfelse>
+					<cfquery dbtype="query" name="qWebskins">
+						select	*
+						from	qWebskins
+						where	name = 'select nothing here'
+					</cfquery>
+				</cfif>
+			<cfelse>
+				<cfset oType=createobject("component", application.stCoapi[thistype].packagepath) />
+				<cfset qWebskins=oType.getWebskins(typename='#thistype#', prefix=arguments.stMetadata.ftPrefix) />
+			</cfif>
+		</cfloop>
 
 		<cfsavecontent variable="html">
 			<!--- Place custom code here! --->
