@@ -67,7 +67,7 @@
 							</cfif>
 							<cfoutput><option value="#optionValue#" <cfif listFindNoCase(arguments.stMetadata.value, optionValue) or arguments.stMetadata.value eq optionValue> selected</cfif>>#ListLast(i , ":")#</option></cfoutput>
 						</cfloop>
-						<cfoutput></select><br style="clear: both;"/></cfoutput>
+						<cfoutput></select><input type="hidden" name="#arguments.fieldname#" value=" "><br style="clear: both;"/></cfoutput>
 						
 					</cfsavecontent>					
 				</cfcase>
@@ -92,6 +92,7 @@
 										#ListLast(i , ":")#
 										<br class="fieldsectionbreak" />
 									</cfloop>
+									<input type="hidden" name="#arguments.fieldname#" value=" ">
 								</div>										
 							</div>																					
 						</cfoutput>
@@ -118,7 +119,8 @@
 										<!--- MPS: styles aren't working so we are removing label for now until we have time to look at the css --->
 										#ListLast(i , ":")#
 										<br class="fieldsectionbreak" />
-									</cfloop>												
+									</cfloop>
+									<input type="hidden" name="#arguments.fieldname#" value=" ">
 								</div>
 							</div>
 						</cfoutput>
@@ -184,10 +186,16 @@
 		<cfset stResult.value = "#arguments.stFieldPost.Value#">
 		<cfset stResult.stError = StructNew()>			
 		
+		<cfparam name="arguments.stMetadata.ftRenderType" default="dropdown">
+		
 		<!--- --------------------------- --->
 		<!--- Perform any validation here --->
 		<!--- --------------------------- --->
-		<cfset stResult.value = stFieldPost.Value>
+		<cfif len(trim(stFieldPost.value))>
+			<cfset stResult.value = stFieldPost.Value />
+		<cfelse>
+			<cfset stResult.value = "" />
+		</cfif>
 					
 		<!--- ----------------- --->
 		<!--- Return the Result --->

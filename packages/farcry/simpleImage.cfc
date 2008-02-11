@@ -194,61 +194,100 @@
 		</cfscript>
 	</cffunction>
 
-<cffunction name="resize" access="public" output="false" returnType="boolean">
+	<cffunction name="resize" access="public" output="false" returnType="boolean">
 		<cfargument name="width" required="no" type="numeric" default="0">
 		<cfargument name="height" required="no" type="numeric" default="0">
+		
 		<cfscript>
-		var at = "";
-		var op = "";
-		var w = "";
-		var h = "";
-		var scale = 1;
-		var resizedImage = "";
-
-		if ( NOT isImageLoaded(myImage) ) {
-			/* no image to start with */
-			return false;
-		}
-		resizedImage = CreateObject("java", "java.awt.image.BufferedImage");
-		at = CreateObject("java", "java.awt.geom.AffineTransform");
-		op = CreateObject("java", "java.awt.image.AffineTransformOp");
-
-		w = myImage.getWidth();
-		h = myImage.getHeight();
-
-		if (width gt 0 and height eq 0) {
-			scale = width / w;
-			w = width;
-			h = round(h*scale);
-		} else if (height gt 0 and width eq 0) {
-			scale = height / h;
-			h = height;
-			w = round(w*scale);
-		} else if (height gt 0 and width gt 0) {
-			w = width;
-			h = height;
-		} else {
-			return false;
-		}
-		resizedImage.init(javacast("int",w),javacast("int",h),myImage.getType());
-
-		w = w / myImage.getWidth();
-		h = h / myImage.getHeight();
-
-		op.init(at.getScaleInstance(w,h), op.TYPE_BILINEAR);
-		op.filter(myImage, resizedImage);
-
-		if ( NOT isImageLoaded(resizedImage) ) {
-			/* resizing failed */
-			return false;
-		}
-
-		myImage = resizedImage;
-		return true;
+			var at = "";
+			var op = "";
+			var w = "";
+			var h = "";
+			var scale = 1;
+			var resizedImage = "";
+	
+			if ( NOT isImageLoaded(myImage) ) {
+				/* no image to start with */
+				return false;
+			}
+	
+			resizedImage = CreateObject("java", "java.awt.image.BufferedImage");
+			at = CreateObject("java", "java.awt.geom.AffineTransform");
+			op = CreateObject("java", "java.awt.image.AffineTransformOp");
+			
+			if ( myImage.getType() eq 0 ) {
+			  myImage = convertImageObject(myImage,myImage.TYPE_3BYTE_BGR);
+			}
+			
+			w = myImage.getWidth();
+			h = myImage.getHeight();
+	
+			if (width gt 0 and height eq 0) {
+				scale = width / w;
+				w = width;
+				h = round(h*scale);
+			} else if (height gt 0 and width eq 0) {
+				scale = height / h;
+				h = height;
+				w = round(w*scale);
+			} else if (height gt 0 and width gt 0) {
+				w = width;
+				h = height;
+			} else {
+				return false;
+			}
+			resizedImage.init(javacast("int",w),javacast("int",h),myImage.getType());
+	
+			w = w / myImage.getWidth();
+			h = h / myImage.getHeight();
+	
+			op.init(at.getScaleInstance(w,h), op.TYPE_BILINEAR);
+			op.filter(myImage, resizedImage);
+	
+			if ( NOT isImageLoaded(resizedImage) ) {
+				/* resizing failed */
+				return false;
+			}
+	
+			myImage = resizedImage;
+			return true;
 		</cfscript>
-</cffunction>
+		
+	</cffunction>
 
-<!--- JIM DEW'S ORIGINAL RESIZE CODE ONLY SCALED A CERTAIN WAY --->
+	<cffunction name="convertImageObject" access="private" output="false" returnType="any">
+		<cfargument name="bImage" type="Any" required="yes">
+		<cfargument name="type" type="numeric" required="yes">
+
+		<cfscript>
+	        // convert the image to a specified BufferedImage type and return it
+        	var width = bImage.getWidth();
+        	var height = bImage.getHeight();
+        	var newImage = createObject("java","java.awt.image.BufferedImage").init(javacast("int",width), javacast("int",height), javacast("int",type));
+        	var rgbArray = createobject("java","java.lang.reflect.Array").newInstance(createobject("java","java.lang.Integer").TYPE, javacast("int",width*height));
+	        bImage.getRGB(
+	                javacast("int",0),
+	                javacast("int",0),
+	                javacast("int",width),
+	                javacast("int",height),
+	                rgbArray,
+	                javacast("int",0),
+	                javacast("int",width)
+	                );
+	        newImage.setRGB(
+	                javacast("int",0),
+	                javacast("int",0),
+	                javacast("int",width),
+	                javacast("int",height),
+	                rgbArray,
+	                javacast("int",0),
+	                javacast("int",width)
+	                );
+	        return newImage;
+        </cfscript>
+	</cffunction>
+
+	<!--- JIM DEW'S ORIGINAL RESIZE CODE ONLY SCALED A CERTAIN WAY --->
 	<cffunction name="oldresize" access="public" output="false">
 		<cfargument name="side" required="yes" type="numeric">
 		<cfscript>
@@ -330,4 +369,5 @@
 			gfx.dispose();
 		</cfscript>
 	</cffunction>
+
 </cfcomponent>

@@ -200,7 +200,6 @@ user --->
 	
 
 	
-
 		<cfif not structKeyExists(session.objectadminFilterObjects[attributes.typename], "stObject")>
 			
 			<cfset session.objectadminFilterObjects[attributes.typename].stObject = oFilterType.getData(objectid="#createUUID()#") />
@@ -210,6 +209,13 @@ user --->
 			<cfset stResult = oFilterType.setData(stProperties=session.objectadminFilterObjects[attributes.typename].stObject, bSessionOnly=true) />
 	
 			<cfset session.objectadminFilterObjects[attributes.typename].stObject = oFilterType.getData(objectID = session.objectadminFilterObjects[attributes.typename].stObject.objectid) />
+			
+			<!--- The default filter doesn't incorporate the default values specified in stFilterMetadata. This loop handles that gap. --->
+			<cfloop collection="#attributes.stFilterMetadata#" item="prop">
+				<cfif structkeyexists(attributes.stFilterMetadata[prop],"ftDefault")>
+					<cfset session.objectadminFilterObjects[attributes.typename].stObject[prop] = attributes.stFilterMetadata[prop].ftDefault />
+				</cfif>
+			</cfloop>
 			
 		</cfif>
 		
@@ -406,23 +412,22 @@ user --->
 	
 	<ft:processForm action="requestapproval">
 		<!--- TODO: Check Permissions. --->
-		<cfif listLen(form.objectid) EQ 1>
-			<cflocation URL="#application.url.farcry#/navajo/approve.cfm?objectid=#form.objectid#&status=requestapproval" addtoken="false" />
-		</cfif>
+		<cflocation URL="#application.url.farcry#/navajo/approve.cfm?objectid=#form.objectid#&status=requestapproval" addtoken="false" />
 	</ft:processForm>
 	
 	<ft:processForm action="approve">
 		<!--- TODO: Check Permissions. --->
-		<cfif listLen(form.objectid) EQ 1>
-			<cflocation URL="#application.url.farcry#/navajo/approve.cfm?objectid=#form.objectid#&status=approved" addtoken="false" />
-		</cfif>
+		<cflocation URL="#application.url.farcry#/navajo/approve.cfm?objectid=#form.objectid#&status=approved" addtoken="false" />
 	</ft:processForm>
 	
 	<ft:processForm action="createdraft">
 		<!--- TODO: Check Permissions. --->
-		<cfif listLen(form.objectid) EQ 1>
-			<cflocation URL="#application.url.farcry#/navajo/createDraftObject.cfm?objectID=#form.objectID#" addtoken="false" />
-		</cfif>
+		<cflocation URL="#application.url.farcry#/navajo/createDraftObject.cfm?objectID=#form.objectID#" addtoken="false" />
+	</ft:processForm>
+	
+	<ft:processForm action="Send to Draft">
+		<!--- TODO: Check Permissions. --->
+		<cflocation URL="#application.url.farcry#/navajo/approve.cfm?objectid=#form.objectid#&status=draft" addtoken="false" />
 	</ft:processForm>
 
 
@@ -565,7 +570,9 @@ user --->
 	</cfif>
 
 
-
+<cfif len(attributes.description)>
+	<cfoutput>#attributes.description#</cfoutput>
+</cfif>
 
 <ft:form style="width: 100%;" Name="objectadmin">
 
