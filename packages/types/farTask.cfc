@@ -24,7 +24,7 @@
 
 		<cfif len(lProfileIDs)>
 			<cfquery datasource="#application.dsn#" name="q">
-			SELECT objectid, CONCAT(firstName, ' ', lastName) as label
+			SELECT objectid, firstName as label
 			FROM dmProfile
 			WHERE objectid IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#lProfileIDs#">)
 			order by username
