@@ -3,7 +3,7 @@
 	<cfproperty name="permissionid" type="uuid" default="" hint="The permission this barnacle is controlling" ftSeq="2" ftFieldset="" ftLabel="Permission" ftType="uuid" ftJoin="farPermission" />
 	<cfproperty name="referenceid" type="uuid" default="" hint="The object this barnacle is attached to" ftSeq="3" ftFieldset="" ftLabel="Object" ftType="uuid" ftJoin="dmNavigation" />
 	<cfproperty name="objecttype" type="string" default="" hint="The type of the object" ftSeq="4" ftFieldset="" ftLabel="Type" ftType="string" />
-	<cfproperty name="barnaclevalue" type="numeric" default="0" hint="Deny: -1, Inherity (only for tree types): 0, Grant: 1. Absence of a barnacle implies deny." ftSeq="5" ftFieldset="" ftLabel="Right" ftType="list" ftList="-1:Deny,0:Inherit,1:Grant" />
+	<cfproperty name="barnaclevalue" type="numeric" default="0" hint="Deny: -1, Inherity (only for tree types): 0, Grant: 1. Absence of a barnacle implies inherit. If the object can't inherit that is equivilent to deny." ftSeq="5" ftFieldset="" ftLabel="Right" ftType="list" ftList="-1:Deny,0:Inherit,1:Grant" />
 	
 	<!--- 
 		Content types like navigation have rights (permissions) that can be granted item by item. That
@@ -42,6 +42,7 @@
 			<cfset stBarnacle.roleid = arguments.role />
 			<cfset stBarnacle.permissionid = arguments.permission />
 			<cfset stBarnacle.referenceid = arguments.object />
+			<cfset stBarnacle.barnaclevalue = 0 />
 		</cfif>
 			
 		<cfreturn stBarnacle />
