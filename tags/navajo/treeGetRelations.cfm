@@ -111,7 +111,7 @@ this should be a COAPI call and *not* a straight SQL shortcut
 	<cfset lObjectIDs = valueList(qChildren.objectid) />
 </cfif>
 <cfif attributes.bInclusive>
-	<cfset lObjectIDs = listAppend(ObjectIDs, attributes.objectid) />
+	<cfset lObjectIDs = listAppend(lObjectIDs, attributes.objectid) />
 </cfif>
 
 <cfquery datasource="#application.dsn#" name="qObjects">
