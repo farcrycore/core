@@ -22,6 +22,7 @@
 	<cfset stWorkflowDef = createObject("component", application.stcoapi.farWorkflowDef.packagepath).getData(objectID="#stobj.workflowDefID#") />
 	<cfset qReferenceObjectWebskins = application.coapi.coapiAdmin.getWebskins(typename="#stReferenceObject.typename#") />
 	<cfset lReferenceObjectWebskins = valueList(qReferenceObjectWebskins.methodname) />
+	<cfset lReferenceObjectWebskins = listAppend(lReferenceObjectWebskins, "edit") />
 	
 	<cfoutput><div style="border:1px dotted grey;margin:25px;padding:25px;"></cfoutput>
 	<cfoutput>
@@ -65,7 +66,7 @@
 								
 								<cfset stResult = createObject("component", application.stcoapi.fartask.packagePath).setData(stProperties="#stProperties#", bSessionOnly="true") />
 							</cfif>
-							<div id="taskEdit#i#" style="<cfif not listFindNoCase(lSelectedTaskIDs, stTaskDef.objectid)>display:none;</cfif>"><!---  --->
+							<div id="taskEdit#i#" style="<cfif not listFindNoCase(lSelectedTaskIDs, stTaskDef.objectid)>display:none;</cfif>">asdf
 								<ft:object objectid="#taskID#" typename="farTask" lFields="title,description,userID" lHiddenFields="taskDefID" IncludeFieldSet="false" />
 							</div>
 						</fieldset>
