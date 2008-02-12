@@ -24,7 +24,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 
 <cftry>
 <!--- TODO: not sure how beneficial this lock is. not sure of its history either :( GB --->
-<cflock timeout="0" throwontimeout="Yes" name="refreshLockout_#session.cfid#_#session.cftoken#" type="EXCLUSIVE">
+<cflock timeout="0" throwontimeout="Yes" name="refreshLockout_#session.URLToken#" type="EXCLUSIVE">
 	<!--- include icon image paths. sets variables.customIcons (not great GB) --->
 	<cfinclude template="_customIcons.cfm">
 	
