@@ -20,9 +20,6 @@
 	
 	<cfset stProperties.objectid = arguments.workflowID />
 	<cfset stProperties.workflowDefID = arguments.workflowDefID />
-	<cfif isNumeric(stWorkflowDef.minToComplete)>
-		<cfset stProperties.completionDate = dateAdd("n", stWorkflowDef.minToComplete, now()) />
-	</cfif>
 	<cfset stResult = oWorkflow.setData(stProperties="#stProperties#") />
 	
 	<cfset html = oWorkflow.getView(objectid="#arguments.workflowID#", typename="farWorkflow", template="editTasks") />
