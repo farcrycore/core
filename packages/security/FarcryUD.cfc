@@ -408,15 +408,17 @@
 		
 		<!--- Add data --->
 		<cfoutput query="qMappings" group="PolicyGroupId">
-			<cfset stObj = oRole.getData(objectid=arguments.roles[PolicyGroupId]) />
-			<cfparam name="stObj.aGroups" default="#arraynew(1)#" />
-			
-			<cfoutput>
-				<cfset arrayappend(stObj.aGroups,"#externalgroupname#_#ucase(externalgroupuserdirectory)#") />
-				<cfset result = result + 1 />
-			</cfoutput>
-			
-			<cfset oRole.setData(stProperties=stObj,user="migratescript",auditNote="Data migrated from pre 4.1") />
+			<cfif structkeyexists(arguments.roles,PolicyGroupId)>
+				<cfset stObj = oRole.getData(objectid=arguments.roles[PolicyGroupId]) />
+				<cfparam name="stObj.aGroups" default="#arraynew(1)#" />
+				
+				<cfoutput>
+					<cfset arrayappend(stObj.aGroups,"#externalgroupname#_#ucase(externalgroupuserdirectory)#") />
+					<cfset result = result + 1 />
+				</cfoutput>
+				
+				<cfset oRole.setData(stProperties=stObj,user="migratescript",auditNote="Data migrated from pre 4.1") />
+			</cfif>
 		</cfoutput>
 		
 		<cfreturn result />
