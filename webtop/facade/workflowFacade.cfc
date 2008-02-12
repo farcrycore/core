@@ -31,5 +31,27 @@
 
 </cffunction>
 
+<cffunction name="renderWorkflowDefWebskins" access="remote" output="true" returntype="void">
+ 	<cfargument name="workflowDefID" required="yes" type="uuid" hint="ObjectID of the workflow Definition being created.">
+ 	<cfargument name="lTypenames" required="yes" type="string" hint="list of typenames that can use this workflow definition">
+
+	<cfset var oWorkflowDef = createObject("component", application.stcoapi.farWorkflowDef.packagePath) />
+	<cfset var stProperties = structNew() />
+	<cfset var stWorkflowDef = oWorkflowDef.getData(objectid="#arguments.workflowDefID#") />
+	<cfset var stResult = structNew() />
+	<cfset var html = structNew() />
+	
+	<cfset request.mode.ajax = true />
+	
+	<cfset stProperties.objectid = arguments.workflowDefID />
+	<cfset stProperties.lTypenames = arguments.lTypenames />
+	<cfset stResult = oWorkflowDef.setData(stProperties="#stProperties#") />
+	
+	<cfset html = oWorkflowDef.getView(objectid="#arguments.workflowDefID#", typename="farWorkflowDef", template="editWebskins") />
+	<cfoutput>#HTML#</cfoutput>
+	
+
+</cffunction>
+
 </cfcomponent> 
 
