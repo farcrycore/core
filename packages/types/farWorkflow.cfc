@@ -222,7 +222,8 @@
 		<cfset var stInstance = structNew() />
 		<cfset var stObject = createObject("component", application.stcoapi["#arguments.referenceTypename#"].packagepath).getData(objectid="#arguments.referenceID#") />
 		
-		<cfif stObject.status EQ "draft">
+		
+		<cfif structKeyExists(stobject, "status") AND stObject.status EQ "draft">
 			<cfset lWorkflowIDs = getWorkflowList(typename="#stObject.typename#") />
 			
 			<cfif listLen(lWorkflowIDs)>
