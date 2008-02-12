@@ -24,12 +24,11 @@ $out:$
 
 <cfsetting enablecfoutputonly="yes">
 
-<cfscript>
-sql = "select objectid, objectname,nLeft,nRight,nLevel from #arguments.dbowner#nested_tree_objects
-		where parentid =  '#arguments.objectid#'
-		order by nleft";
-children = query(sql=sql, dsn=arguments.dsn);		
-</cfscript>
+<cfquery datasource="#arguments.dsn#" name="children">
+select objectid, objectname,nLeft,nRight,nLevel from #arguments.dbowner#nested_tree_objects
+where parentid =  '#arguments.objectid#'
+order by nleft
+</cfquery>
 
 <!--- set return variable --->
 <cfset qReturn=children>
