@@ -253,7 +253,7 @@ todo: 	versioning object will be deprecated..
 	
 	<cfif attributes.method neq "display" AND  attributes.lmethods contains attributes.method>
 	
-		<cfset o = createObject("component", application.types[stObj.typename].typePath)>
+		<cfset o = createObject("component", application.stcoapi[stObj.typename].packagepath)>
 		<cfset HTML = o.getView(stobject=stObj, Template=attributes.method, alternateHtml="") />
 		<cfif len(trim(HTML))>
 			<cfoutput>#HTML#</cfoutput>
@@ -261,7 +261,7 @@ todo: 	versioning object will be deprecated..
 			<!--- ie. if a method has been passed in deliberately and is allowed use this --->
 			<cftrace var="attributes.method" text="Passed in attribute method used" />
 			<q4:contentobject
-				typename="#application.types[stObj.typename].typePath#"
+				typename="#application.stcoapi[stObj.typename].packagepath#"
 				objectid="#stObj.ObjectID#"
 				method="#attributes.method#">
 		</cfif>
@@ -284,14 +284,14 @@ todo: 	versioning object will be deprecated..
 				</cftry>
 			
 		<cfelse>
-			<cfset o = createObject("component", application.types[stObj.typename].typePath)>
+			<cfset o = createObject("component", application.stcoapi[stObj.typename].packagepath)>
 			<cfset HTML = o.getView(stobject=stObj, Template="#stObj.displayMethod#") />
 			<cfoutput>#HTML#</cfoutput>
 		</cfif>
 		
 	<cfelse>
 	
-		<cfset o = createObject("component", application.types[stObj.typename].typePath)>
+		<cfset o = createObject("component", application.stcoapi[stObj.typename].packagepath)>
 		<cfset HTML = o.getView(stobject=stObj, Template="displayPageStandard", alternateHtml="") />
 		<cfif len(trim(HTML))>
 			<cfoutput>#HTML#</cfoutput>
