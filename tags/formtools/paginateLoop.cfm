@@ -59,6 +59,9 @@ $in: objectid -- $
 		
 		<cfset variables.currentRow = attributes.startRow />
 	
+		<cfset variables.lWorkflowTypenames = createObject("component", application.stcoapi.farWorkflow.packagepath).getWorkflowList(typename="#attributes.typename#") />	
+		
+		
 		<cfset o = createObject("component", PrimaryPackagePath) />
 		<cfset oFormtoolUtil = createObject("component", "farcry.core.packages.farcry.formtools") />
 	
@@ -139,23 +142,26 @@ $in: objectid -- $
 						<option value="">-- action --</option>
 		
 						<option value="overview">Overview</option>
-									
-						<cfif listFindNoCase(attributes.qRecordSet.columnlist,"locked") AND attributes.qRecordSet.locked[variables.currentRow] neq 0 AND attributes.qRecordSet.lockedby[variables.currentRow] neq '#session.dmSec.authentication.userlogin#_#session.dmSec.authentication.userDirectory#'>
-							<cfif structKeyExists(thistag.stPermissions, "iApprove") AND thistag.stPermissions.iApprove>
-								<option value="unlock">Unlock</option>
-							</cfif>		
-						<cfelseif structKeyExists(thistag.stPermissions, "iEdit") AND thistag.stPermissions.iEdit>
-							<cfif listContainsNoCase(attributes.qRecordSet.columnlist,"bHasMultipleVersion")>
-								<cfif NOT(attributes.qRecordSet.bHasMultipleVersion[variables.currentrow]) AND attributes.qRecordSet.status[variables.currentRow] EQ "approved">
-									<option value="createDraft">Create Draft Object</option>
-								<cfelseif NOT(attributes.qRecordSet.bHasMultipleVersion[variables.currentrow])>
+						
+						
+						<!--- We do not include the Edit Link if workflow is available for this content item. The user must go to the overview page. --->
+						<cfif not listLen(variables.lWorkflowTypenames)>	
+							<cfif listFindNoCase(attributes.qRecordSet.columnlist,"locked") AND attributes.qRecordSet.locked[variables.currentRow] neq 0 AND attributes.qRecordSet.lockedby[variables.currentRow] neq '#session.dmSec.authentication.userlogin#_#session.dmSec.authentication.userDirectory#'>
+								<cfif structKeyExists(thistag.stPermissions, "iApprove") AND thistag.stPermissions.iApprove>
+									<option value="unlock">Unlock</option>
+								</cfif>		
+							<cfelseif structKeyExists(thistag.stPermissions, "iEdit") AND thistag.stPermissions.iEdit>
+								<cfif listContainsNoCase(attributes.qRecordSet.columnlist,"bHasMultipleVersion")>
+									<cfif NOT(attributes.qRecordSet.bHasMultipleVersion[variables.currentrow]) AND attributes.qRecordSet.status[variables.currentRow] EQ "approved">
+										<option value="createDraft">Create Draft Object</option>
+									<cfelseif NOT(attributes.qRecordSet.bHasMultipleVersion[variables.currentrow])>
+										<option value="edit">Edit</option>
+									</cfif>
+								<cfelse>
 									<option value="edit">Edit</option>
 								</cfif>
-							<cfelse>
-								<option value="edit">Edit</option>
 							</cfif>
 						</cfif>
-						
 						<option value="view">View</option>
 						
 						<cfif structKeyExists(application.stPlugins, "flow")>
@@ -281,19 +287,22 @@ $in: objectid -- $
 		
 						<option value="overview">Overview</option>
 									
-						<cfif listFindNoCase(attributes.qRecordSet.columnlist,"locked") AND attributes.qRecordSet.locked[variables.currentRow] neq 0 AND attributes.qRecordSet.lockedby[variables.currentRow] neq '#session.dmSec.authentication.userlogin#_#session.dmSec.authentication.userDirectory#'>
-							<cfif structKeyExists(thistag.stPermissions, "iApprove") AND thistag.stPermissions.iApprove>
-								<option value="unlock">Unlock</option>
-							</cfif>		
-						<cfelseif structKeyExists(thistag.stPermissions, "iEdit") AND thistag.stPermissions.iEdit>
-							<cfif listContainsNoCase(attributes.qRecordSet.columnlist,"bHasMultipleVersion")>
-								<cfif NOT(attributes.qRecordSet.bHasMultipleVersion[variables.currentrow]) AND attributes.qRecordSet.status[variables.currentRow] EQ "approved">
-									<option value="createDraft">Create Draft Object</option>
-								<cfelseif NOT(attributes.qRecordSet.bHasMultipleVersion[variables.currentrow])>
+						<!--- We do not include the Edit Link if workflow is available for this content item. The user must go to the overview page. --->
+						<cfif not listLen(variables.lWorkflowTypenames)>										
+							<cfif listFindNoCase(attributes.qRecordSet.columnlist,"locked") AND attributes.qRecordSet.locked[variables.currentRow] neq 0 AND attributes.qRecordSet.lockedby[variables.currentRow] neq '#session.dmSec.authentication.userlogin#_#session.dmSec.authentication.userDirectory#'>
+								<cfif structKeyExists(thistag.stPermissions, "iApprove") AND thistag.stPermissions.iApprove>
+									<option value="unlock">Unlock</option>
+								</cfif>		
+							<cfelseif structKeyExists(thistag.stPermissions, "iEdit") AND thistag.stPermissions.iEdit>
+								<cfif listContainsNoCase(attributes.qRecordSet.columnlist,"bHasMultipleVersion")>
+									<cfif NOT(attributes.qRecordSet.bHasMultipleVersion[variables.currentrow]) AND attributes.qRecordSet.status[variables.currentRow] EQ "approved">
+										<option value="createDraft">Create Draft Object</option>
+									<cfelseif NOT(attributes.qRecordSet.bHasMultipleVersion[variables.currentrow])>
+										<option value="edit">Edit</option>
+									</cfif>
+								<cfelse>
 									<option value="edit">Edit</option>
 								</cfif>
-							<cfelse>
-								<option value="edit">Edit</option>
 							</cfif>
 						</cfif>
 						

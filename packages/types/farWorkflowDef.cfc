@@ -2,7 +2,7 @@
 	<cfproperty ftSeq="1" ftFieldset="" name="title" type="string" default="" hint="Title of workflow definition" ftLabel="Title" ftType="string" />
 	<cfproperty ftSeq="2" ftFieldset="" name="description" type="longchar" default="" hint="Description of workflow definition" ftLabel="Description" />
 	<cfproperty ftSeq="3" ftFieldset="" name="aTaskDefs" type="array" default="" hint="An array of task definitions. These are the default tasks created for a workflow on start" ftLabel="Task Definitions" ftType="array" ftJoin="farTaskDef" ftAllowLibraryEdit="true" />
-	<cfproperty ftSeq="5" ftFieldset="" name="lTypenames" type="string" default="" hint="List of content types that can be assigned this workflow definition" ftLabel="Typenames" ftType="list" ftListData="getWorkflowTypenameList" ftSelectMultiple="true" />
+	<cfproperty ftSeq="5" ftFieldset="" name="lTypenames" type="longchar" default="" hint="List of content types that can be assigned this workflow definition" ftLabel="Typenames" ftType="list" ftListData="getWorkflowTypenameList" ftSelectMultiple="true" />
 	<cfproperty ftSeq="6" ftFieldset="" name="workflowStart" type="string" default="" hint="Used to alert task owners on workflow start. View on underlying content type" ftLabel="Start Webskin" ftType="list" ftListData="getWorkflowStartWebskins" ftDefault="workflowStart" />
 	<cfproperty ftSeq="7" ftFieldset="" name="workflowEnd" type="string" default="" hint="Used to alert task owners on workflow end. View on underlying content type" ftLabel="End Webskin" ftType="list" ftListData="getWorkflowEndWebskins" ftDefault="workflowEnd" />	
 	
@@ -18,6 +18,7 @@
 			</cfif>
 		</cfloop>
 		
+		<cfset lResult = listSort(lResult,"text") />
 		<cfreturn lResult />
 	</cffunction>
 	

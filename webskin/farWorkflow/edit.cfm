@@ -49,6 +49,15 @@
 		<cfloop list="#lSavedTasks#" index="j">
 			<cfset arrayAppend(stProperties.aTaskIDs, j) />
 		</cfloop>
+		
+		<!--- We also need to save the underlying related object. This needs to be done as at this stage it still might only be in memory and it needs to go into the DB at this stage. --->
+		<cfif structKeyExists(stProperties, "referenceID") and len(stProperties.referenceID)>
+			<cfset stReferenceObject = structNew() />
+			<cfset stRererenceObject.objectid = stProperties.referenceID />
+			<cfset referenceTypename = application.coapi.coapiadmin.findType(objectid="#stRererenceObject.objectid#") />
+			<cfset stResult = createObject("component", application.stcoapi[referenceTypename].packagePath).setData(stProperties="#stRererenceObject#") />
+		</cfif>
+		
 	</ft:processFormObjects>	
 	
 
@@ -59,7 +68,7 @@
 <ft:processForm action="Cancel" url="#application.url.farcry#/edittabOverview.cfm?objectid=#stobj.referenceID#" />
 
 <ft:form>
-	<ft:object objectid="#stobj.objectid#" lFields="workflowDefID,title,description,completionDate" lHiddenFields="aTaskIDs" r_stPrefix="prefix" />
+	<ft:object objectid="#stobj.objectid#" lFields="workflowDefID,title,description,completionDate" lHiddenFields="aTaskIDs,referenceID" r_stPrefix="prefix" />
 	
 	<cfoutput><div id="selectTasks"></cfoutput>
 		<cfif len(stobj.workflowDefID)>

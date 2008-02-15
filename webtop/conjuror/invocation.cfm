@@ -89,7 +89,10 @@ Pseudo:
 		<admin:footer> 
 	<cfelse>
 		<cfset returnStruct = oType.getData(objectid=URL.objectid)>
-		<cfif StructKeyExists(returnStruct, "versionid") AND StructKeyExists(returnStruct, "status") AND ListContains("approved,pending",returnStruct.status)>
+		
+		<!--- If the type uses workflow, then when we create the object, it needs to go directly to the overview page. --->
+		<cfset lWorkflowTypenames = createObject("component", application.stcoapi.farWorkflow.packagepath).getWorkflowList(typename="#typename#") />	
+		<cfif listLen(lWorkflowTypenames) OR (StructKeyExists(returnStruct, "versionid") AND StructKeyExists(returnStruct, "status") AND ListContains("approved,pending",returnStruct.status))>
 			<!--- any pending/approve items should go to overview --->
 			<cflocation url="#application.url.farcry#/edittabOverview.cfm?objectid=#URL.objectid#">
 			<cfabort>
