@@ -485,18 +485,17 @@
 				<cfset libraryLink = "">	
 			</cfif>
 			
-					
-			<cfsavecontent variable="FieldLabelStart">
-					
-				<cfoutput>
-					<label for="#variables.prefix##ftFieldMetadata.Name#" class="fieldsectionlabel #attributes.class#">
-						#oType.getI18Property(property=ftFieldMetadata.name,value='label')# :
-					</label>
-				</cfoutput>
-				
-			</cfsavecontent>
-			
-		
+			<cfif structkeyexists(ftFieldMetadata,"ftShowLabel") and not ftFieldMetadata.ftShowLabel>
+				<cfset FieldLabelStart = "" />
+			<cfelse>
+				<cfsavecontent variable="FieldLabelStart">
+					<cfoutput>
+						<label for="#variables.prefix##ftFieldMetadata.Name#" class="fieldsectionlabel #attributes.class#">
+							#oType.getI18Property(property=ftFieldMetadata.name,value='label')# :
+						</label>
+					</cfoutput>
+				</cfsavecontent>
+			</cfif>		
 						
 			<cfif len(LibraryLink) and attributes.IncludeLibraryWrapper>
 				<cfset variables.returnHTML = "<div id='#variables.prefix##ftFieldMetadata.Name#-wrapper' class='formfield-wrapper'>#variables.returnHTML#</div>">

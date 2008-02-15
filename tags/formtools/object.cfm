@@ -524,19 +524,18 @@
 				<cfset libraryLink = "">	
 			</cfif>
 			
-					
-			<cfsavecontent variable="FieldLabelStart">
-					
-				<cfoutput>
-					<label for="#variables.prefix##ftFieldMetadata.Name#" class="fieldsectionlabel #attributes.class# <cfif ftFieldMetadata.ftType EQ 'password'>passwordlabel</cfif>">
-						#ftFieldMetadata.ftlabel# :
-					</label>
-				</cfoutput>
+			<cfif structkeyexists(ftFieldMetadata,"ftShowLabel") and not ftFieldMetadata.ftShowLabel>
+				<cfset FieldLabelStart = "" />
+			<cfelse>
+				<cfsavecontent variable="FieldLabelStart">
+					<cfoutput>
+						<label for="#variables.prefix##ftFieldMetadata.Name#" class="fieldsectionlabel #attributes.class#">
+							#ftFieldMetadata.ftlabel# :
+						</label>
+					</cfoutput>
+				</cfsavecontent>
+			</cfif>
 				
-			</cfsavecontent>
-			
-		
-						
 			<cfif len(LibraryLink) and attributes.IncludeLibraryWrapper>
 				<cfset variables.returnHTML = "<div id='#variables.prefix##ftFieldMetadata.Name#-wrapper' class='formfield-wrapper'>#variables.returnHTML#</div>">
 			</cfif>

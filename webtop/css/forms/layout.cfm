@@ -168,7 +168,6 @@ form.formtool .notes p, form.formtool small {}
 form.formtool .wide small {margin: 0px 0px 5px 0px;}
 
 form.formtool .formSection .fieldAlign {float: left; margin: 0px; padding: 0px;}
-form.formtool .passwordlabel {display: none;}
 
 form.formtool .formSection .password .fieldAlign {float: none; margin: 0px 0px 0px #columnLeftWidth#; padding: 0px;}
 form.formtool .fieldSection .clearer {clear: both;}
