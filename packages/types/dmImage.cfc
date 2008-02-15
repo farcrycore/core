@@ -101,28 +101,40 @@ type properties
 	<cfset stReturn.message = "">
 		
 	<cfset stLocal.errormessage = "">
-	<!--- check if image is associated with any content items --->
-	<cfset stLocal.lrelatedContentTypes = "dmNews,dmNavigation,dmHTML,dmEvent">
 
-	<cfloop index="stLocal.relatedContentType" list="#stLocal.lrelatedContentTypes#">
-		
-		<cfif stLocal.relatedContentType IS "dmNews">
-			<cfset relatedTable = "#application.dbowner##stLocal.relatedContentType#_aObjectIds">
-		<cfelse>	
-			<cfset relatedTable = "#application.dbowner##stLocal.relatedContentType#_aObjectIDs">
-		</cfif>
-		
-		<cfquery name="stLocal.qCheck" datasource="#application.dsn#">
-		SELECT	parentId
-		FROM	#relatedTable#
-		WHERE	data = '#arguments.objectid#'
-		</cfquery>
-
-		<cfif stLocal.qCheck.recordcount GTE 1>
-			<cfset stReturn.bSuccess = false>
-			<cfset stReturn.message = stReturn.message & "Sorry image [#stObj.label#] cannot be delete because it is associated to <strong>#stLocal.qCheck.recordcount# #stLocal.relatedContentType#</strong> item(s).<br />">
-		</cfif>
+	<cfset stLocal.relatedQty = 0 />
+	
+	<cfloop collection="#application.stcoapi#" item="type">
+		<cfloop collection="#application.stcoapi[type].stProps#" item="prop">
+			<cfif application.stcoapi[type].stProps[prop].metadata.type EQ "array" AND structKeyExists(application.stcoapi[type].stProps[prop].metadata,"ftJoin") and listFindNoCase(application.stcoapi[type].stProps[prop].metadata.ftJoin, "dmimage")>
+				<cfquery name="stLocal.qCheck" datasource="#application.dsn#">
+				SELECT	parentId
+				FROM	#type#_#prop#
+				WHERE	data = '#arguments.objectid#'
+				</cfquery>
+				
+				<cfif stLocal.qCheck.recordCount>
+					<cfset stLocal.relatedQty = stLocal.relatedQty + stLocal.qCheck.recordCount />
+				</cfif>
+			<cfelseif application.stcoapi[type].stProps[prop].metadata.type EQ "uuid" AND structKeyExists(application.stcoapi[type].stProps[prop].metadata,"ftJoin") and listFindNoCase(application.stcoapi[type].stProps[prop].metadata.ftJoin, "dmimage")>
+				<cfquery name="stLocal.qCheck" datasource="#application.dsn#">
+				SELECT	objectid
+				FROM	#type#
+				WHERE	#prop# = '#arguments.objectid#'
+				</cfquery>
+				
+				<cfif stLocal.qCheck.recordCount>
+					<cfset stLocal.relatedQty = stLocal.relatedQty + stLocal.qCheck.recordCount />
+				</cfif>			
+			</cfif>
+		</cfloop>
 	</cfloop>
+
+	<cfif stLocal.relatedQty GTE 1>
+		<cfset stReturn.bSuccess = false>
+		<cfset stReturn.message = stReturn.message & "Sorry image [#stObj.label#] cannot be delete because it is associated to <strong>#stLocal.relatedQty#</strong> other item(s).<br />">
+	</cfif>
+			
 
 	<cfif stReturn.bSuccess EQ true>
 		<cfinclude template="_dmImage/delete.cfm">
