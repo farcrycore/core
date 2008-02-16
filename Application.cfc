@@ -435,10 +435,12 @@
 		<cfset var loc = "" />
 		<cfset var virtualDirectory = "" />
 		
-		
+		<!--- strip the context path first (for J2EE deployments) --->
+		<cfset var script_path = right( cgi.SCRIPT_NAME, len( cgi.SCRIPT_NAME ) - len( cgi.context_path ) )>
+
 		<!--- Get the first directory after the url if there is one (ie. if its just index.cfm then we know we are just under the webroot) --->
-		<cfif listLen(cgi.SCRIPT_NAME, "/") GT 1>
-			<cfset virtualDirectory = listFirst(cgi.SCRIPT_NAME, "/") />
+		<cfif listLen(script_path, "/") GT 1>
+			<cfset virtualDirectory = listFirst(script_path, "/") />
 				
 			<!--- If the first directory name is the same name as the plugin, then we assume we are running the project from the webroot --->
 			<cfif virtualDirectory EQ arguments.plugin>
@@ -469,7 +471,7 @@
 		<cfif not len(loc)>				
 			<cfoutput>
 				<p>I can't find a FarCry project on this server to administer.</p>
-				<p><a href="/farcry/core/webtop/install/index.cfm">CLICK HERE</a> TO INSTALL A NEW PROJECT.</p>
+				<p><a href="#cgi.context_path#/farcry/core/webtop/install/index.cfm">CLICK HERE</a> TO INSTALL A NEW PROJECT.</p>
 			</cfoutput>
 			<cfabort />		
 		</cfif>
