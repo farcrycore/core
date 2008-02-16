@@ -57,11 +57,14 @@ $out:$
 			<cfset nLev = nLev - 1 />
 			<cfset objID = q.parentID />
 		</cfloop>
-
+	
 		<cfquery datasource="#arguments.dsn#" name="ancestors">
 		select objectid, objectname, nlevel 
 		from #arguments.dbowner#nested_tree_objects 
-		where objectID IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#ValueList(qParentIDs.parentID)#" />)
+		where 1 = 1
+		<cfif listLen(ValueList(qParentIDs.parentID))>
+			AND objectID IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#ValueList(qParentIDs.parentID)#" />)
+		</cfif>
 		<cfif isdefined("arguments.nLevel") and isNumeric(arguments.nLevel)>
 			and nLevel = #arguments.nLevel#
 		</cfif>
