@@ -222,6 +222,25 @@ else
 	lStripFields="ORIGINALIMAGEPATH,OPTIMISEDIMAGEPATH,THUMBNAILIMAGEPATH,lNavidAlias,teaserimage,extendedmetadata,teaserimage,metakeywords,displayMethod,objecthistory,teaser,body,PATH,commentlog"
 	r_javascript="jscode">
 
+
+<!--- convert any lower case keys to uppercase for cfml engines that don't act like cfmx --->
+<cfset start = REFind("\[\'", jscode, 0) />
+<cfloop condition="#start GT 0#">
+	<cfset end = REFind("\'\]", jscode, start) />
+	<cfif end GT 0>
+		<cfset found =  Mid(jscode,start,end-start+3) />
+		<cfset jscode = Replace(jscode,found,UCase(found),"all") />
+		<cfset start = REFind("\[\'", jscode, end) />
+	<cfelse>
+		<cfset start = 0 />
+	</cfif>
+</cfloop>
+<cfset jscode = replace(jscode,"_TL1", "_tl1", "all") />
+<cfset jscode = replace(jscode,"_TL0", "_tl0", "all") />
+<cfset jscode = replace(jscode,"NEW OBJECT", "new Object", "all") />
+
+
+
 <cfset imageRoot = "nimages">
 <cfset customIcons = attributes.customIcons>
 
@@ -354,7 +373,8 @@ linkPending = new Image(16,16);linkPending.src="#cimages#/linkPending.gif";
 linkApproved = new Image(16,16);linkApproved.src="#cimages#/linkApproved.gif";
 
 </cfoutput>
-<cfwddx action="CFML2JS" input="#customIcons.type#" toplevelvariable="customIconMapType">
+<cfwddx action="CFML2JS" input="#customIcons.type#" output="customIconMap" toplevelvariable="customIconMapType">
+<cfoutput>#customIconMap#</cfoutput>
 <cfoutput>
 
 function renderObjectToDiv( objId, divId )

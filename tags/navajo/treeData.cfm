@@ -268,6 +268,23 @@ lAllowTypes list
 
 <nj:WDDXToJavascript input="#stAllObjects#" output="jsout" toplevelvariable="#attributes.topLevelVariable#">
 
+<!--- convert any lower case keys to uppercase for cfml engines that don't act like cfmx --->
+<cfset start = REFind("\[\'", jsout, 0) />
+<cfloop condition="#start GT 0#">
+	<cfset end = REFind("\'\]", jsout, start) />
+	<cfif end GT 0>
+		<cfset found =  Mid(jsout,start,end-start+3) />
+		<cfset jsout = Replace(jsout,found,UCase(found),"all") />
+		<cfset start = REFind("\[\'", jsout, end) />
+	<cfelse>
+		<cfset start = 0 />
+	</cfif>
+</cfloop>
+<cfset jsout = replace(jsout,"_TL1", "_tl1", "all") />
+<cfset jsout = replace(jsout,"_TL0", "_tl0", "all") />
+<cfset jsout = replace(jsout,"NEW OBJECT", "new Object", "all") />
+
+
 <!--- Generate the permissions data and append to jsout --->
 <!--- for all the navigation objectIds generated, get the permissions structures --->
 <!--- first get a list of filtered objectIds by navType --->
