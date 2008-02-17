@@ -31,7 +31,7 @@
 
 <!--- deprecated properties; backward compatability only --->
 	<cfproperty ftSeq="1000" ftFieldset="Deprecated Properties" name="teaserlimit" type="numeric" default="255" hint="???" ftLabel="Teaser limit" ftType="integer" />
-	<cfproperty ftSeq="1001" ftFieldset="Deprecated Properties" name="verityStoragePath" type="string" default="##Replace('##server.coldfusion.rootdir##/verity/collections/','\','/','All')##" ftDefaultType="evaluate" hint="???"  ftLabel="Verity storage path" />
+	<cfproperty ftSeq="1001" ftFieldset="Deprecated Properties" name="verityStoragePath" type="string" default="" ftdefault="##Replace('##server.coldfusion.rootdir##/verity/collections/','\','/','All')##" ftDefaultType="evaluate" hint="???"  ftLabel="Verity storage path" />
 	<cfproperty ftSeq="1002" ftFieldset="Deprecated Properties" name="newsexpiry" type="numeric" default="12" hint="???" ftLabel="News expiry" ftType="integer" />
 	<cfproperty ftSeq="1003" ftFieldset="Deprecated Properties" name="newsexpirytype" type="string" default="d" hint="???" ftLabel="News expiry type" ftType="string" />
 	<cfproperty ftSeq="1004" ftFieldset="Deprecated Properties" name="eventsexpiry" type="numeric" default="14" hint="???" ftLabel="Event expiry" ftType="integer" />
