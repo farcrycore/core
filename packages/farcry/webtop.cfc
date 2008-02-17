@@ -349,7 +349,7 @@ $Developer: Blair McKenzie (blair@daemon.com.au)$
 				<!--- Use the rbkey - this is automatically generated on load if it isn't explicitly defined --->
 				<cfif structkeyexists(stResult,attr)>
 					<cftry>
-						<cfif attr eq "label" and listcontains("evaluate,expression",stResult.labelType)>
+						<cfif attr eq "label" and len(stResult.labelType) and listcontains("evaluate,expression",stResult.labelType)>
 							<cfset stResult[attr] = application.rb.getResource("#stResult.rbkey#@#attr#",Evaluate(stResult[attr])) />
 						</cfif>
 						
