@@ -319,7 +319,7 @@
 		<cfloop collection="#application.types#" item="typename">
 			<cfloop list="createdby,lastupdatedby,lockedby" index="property">
 				<!--- Update ownedby --->
-				<cfif oAlterType.isCFCDeployed(typename="#typename#")>
+				<cfif oAlterType.isCFCDeployed(typename=typename) and not find("_",typename)>
 					<cfquery datasource="#application.dsn#">
 						update	type
 						set		#property# = dmProfile.username + '_' + dmProfile.userDirectory
