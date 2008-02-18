@@ -290,52 +290,29 @@ lAllowTypes list
 <!--- first get a list of filtered objectIds by navType --->
 <cfset lNavIds = "">
 
+<cfset permissionids = application.security.factory.permission.getAllPermissions("dmNavigation") />
+
 <cfloop index="objId" list="#structKeyList(stAllObjects)#">
 <!--- 
 TODO
 work out suitable solution for reserved names like "typename" 
 --->
 	<cfif stAllObjects[objId].typename IS attributes.nodetype>
-	
-	<!--- this may be slow, might have to pull from cache myself --->
-	<cfscript>
-	stObjectPermissions = application.factory.oAuthorisation.collateObjectPermissions(objectID=objID);
-	
-	mergePerms=StructNew();
-	
-	for( i=1; i lte ListLen( session.security.roles ); i=i+1 )
-	{
-		policyGroupId=ListGetAt(session.security.roles,i);
 		
-		if( structKeyExists( stObjectPermissions, policyGroupId) )
-			stPolicyGroup = stObjectPermissions[policyGroupId];
-			else continue;
+		<!--- this may be slow, might have to pull from cache myself --->
+			
+		<cfset jsout = "#jsout#pt=new Object();p['#objId#']=pt;" />
 		
-		for( permissionName in stPolicyGroup)
-		{	
-			if( not StructKeyExists(mergePerms,permissionName) )
-				 mergePerms[permissionName]=0;
-			if( mergePerms[permissionName] eq 0 )
-				 mergePerms[permissionName]=stPolicyGroup[permissionName].T;
-			if( mergePerms[permissionName] eq -1 AND stPolicyGroup[permissionName].T eq 1 )
-				mergePerms[permissionName]=1;
-		}
-	}
-	
-	outstring="";
-	
-	// only write out if the permission has been given or taken away, i.e. ignore inherited
-	for( code in mergePerms )
-	{
-		outstring=outstring&"pt['#code#']=#mergePerms[code]#;";
-	}
-	
-	if(len(outstring)) jsout=jsout&"pt=new Object();p['#objId#']=pt;"&outstring;
-	
-	</cfscript>
+		<cfloop list="#permissionids#" index="permissionName">
+			<cfif application.security.checkPermission(permission=permissionName,object=objId)>
+				<cfset jsout = "#jsout#pt['#permissionName#']=1;" />
+			<cfelse>
+				<cfset jsout = "#jsout#pt['#permissionName#']=-1;" />
+			</cfif>
+		</cfloop>
+
 	</cfif>
 </cfloop>
-
 
 <cfset "caller.#attributes.r_javascript#" = jsout>
 
