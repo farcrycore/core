@@ -287,7 +287,7 @@ the latter is the policy group for anonymous...
 	
 <cfelse>
 
-	<cfset o = createObject("component", application.types[stObj.typename].typePath)>
+	<cfset o = createObject("component", application.stCoapi[stObj.typename].packagepath) />
 	<cfset HTML = o.getView(stobject=stObj, Template="displayPageStandard", alternateHtml="") />
 	<cfif len(trim(HTML))>
 		<cfoutput>#HTML#</cfoutput>
