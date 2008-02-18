@@ -270,7 +270,7 @@ lAllowTypes list
 
 <!--- convert any lower case keys to uppercase for cfml engines that don't act like cfmx --->
 <cfset start = REFind("\[\'", jsout, 0) />
-<cfloop condition="#start GT 0#">
+<cfloop condition="start GT 0">
 	<cfset end = REFind("\'\]", jsout, start) />
 	<cfif end GT 0>
 		<cfset found =  Mid(jsout,start,end-start+3) />
