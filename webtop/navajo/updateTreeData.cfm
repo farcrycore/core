@@ -14,7 +14,7 @@
 
 <!--- convert any lower case keys to uppercase for cfml engines that don't act like cfmx --->
 <cfset start = REFind("\[\'", jscode, 0) />
-<cfloop condition="#start GT 0#">
+<cfloop condition="start GT 0">
 	<cfset end = REFind("\'\]", jscode, start) />
 	<cfif end GT 0>
 		<cfset found =  Mid(jscode,start,end-start+3) />
