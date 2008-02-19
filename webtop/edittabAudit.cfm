@@ -55,8 +55,8 @@ $DEVELOPER:Brendan Sisson (brendan@daemon.com.au)$
 						<td>#audittype#</td>
 						<td>#location#</td>
 						<td>
-							<cfif note neq "">
-								#note#
+							<cfif notes neq "">
+								#notes#
 							<cfelse>
 								<em>#application.adminBundle[session.dmProfile.locale].notAvailable#</em>
 							</cfif>
@@ -74,8 +74,8 @@ $DEVELOPER:Brendan Sisson (brendan@daemon.com.au)$
 					<td>#audittype#</td>
 					<td>#location#</td>
 					<td>
-						<cfif note neq "">
-							#note#
+						<cfif notes neq "">
+							#notes#
 						<cfelse>
 							<em>#application.adminBundle[session.dmProfile.locale].notAvailable#</em>
 						</cfif>
