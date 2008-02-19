@@ -39,14 +39,14 @@
 <nj:getNavigation objectid="#objectID#" r_stObject="stNav" bInclusive="1">
 <cfif StructKeyExists(application.types[stObj.typename],"bUseInTree") AND application.types[stObj.typename].bUseInTree>
 	<cfif StructIsEmpty(stNav)>
-		<cfset iCanCommentOnContent = applications.security.checkPermission(object=objectID,permission='view')>
+		<cfset iCanCommentOnContent = application.security.checkPermission(object=objectID,permission='view')>
 	<cfelse>
 		<cfset permsissionSet = "news">
-		<cfset iCanCommentOnContent = applications.security.checkPermission(permission="#permsissionSet#Edit")>
+		<cfset iCanCommentOnContent = application.security.checkPermission(permission="#permsissionSet#Edit")>
 	</cfif>
 <cfelse>
 	<cfset permsissionSet = "news">
-	<cfset iCanCommentOnContent = applications.security.checkPermission(permission="#permsissionSet#Edit")>
+	<cfset iCanCommentOnContent = application.security.checkPermission(permission="#permsissionSet#Edit")>
 </cfif>
 
 <cfif iCanCommentOnContent EQ false OR StructIsEmpty(stObj)>
