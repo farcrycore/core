@@ -260,6 +260,7 @@ $out:$
 				<link rel="stylesheet" type="text/css" href="#application.url.farcry#/js/ext/resources/css/ext-all.css">
 				
 				<script type="text/javascript" src="#application.url.farcry#/js/combine.cfm?library=ext&files=/adapter/ext/ext-base.js,/ext-all.js"></script>
+				<script type="text/javascript">Ext.BLANK_IMAGE_URL = '#application.url.webtop#/js/ext/resources/images/default/s.gif';</script>
 				<!--- <script type="text/javascript" src="#application.url.farcry#/js/ext/adapter/ext/ext-base.js"></script>
 				<script type="text/javascript" src="#application.url.farcry#/js/ext/ext-all.js"></script> ---></cfoutput>
 			</cfif>
