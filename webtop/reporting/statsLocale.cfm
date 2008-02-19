@@ -113,7 +113,6 @@ $out:$
 					seriesPlacement="default"
 					showBorder = "no"
 					fontsize="10"
-					font="arialunicodeMS" 
 					labelFormat = "number"
 					yAxisTitle = "#application.adminBundle[session.dmProfile.locale].referer#" 
 					show3D = "yes"
