@@ -218,7 +218,7 @@ need a bunch of functions to get audit data here
 	<farcry:deprecated message="getAuditLog should be replaced with ????" />
 	
 	<cfquery datasource="#arguments.dsn#" name="qLog" maxrows="#arguments.maxrows#">
-		SELECT 	object as objectid, type as auditType, userid as username, location, datetimecreated as datetimestamp
+		SELECT 	object as objectid, type as auditType, userid as username, location, datetimecreated as datetimestamp,notes
 		FROM 	#arguments.dbowner#farLog
 		WHERE 	1=1
 		<cfif isDefined("arguments.objectid")>
