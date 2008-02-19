@@ -70,7 +70,6 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au)$
 					showXGridlines = "no" 
 					showYGridlines = "no"
 					showBorder = "no"
-					font="arialunicodeMS"
 					fontsize="10" fontbold="no" fontitalic="no" 
 					labelFormat = "percent"
 					show3D = "yes" rotated="no" sortxaxis="yes"
