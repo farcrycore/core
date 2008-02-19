@@ -49,6 +49,7 @@ $out:$
 stObjectPermissions = application.factory.oAuthorisation.collateObjectPermissions(objectid=stObj.Objectid,  typename=stObj.typename);
 </cfscript>
 <!--- if parent returned --->
+<!--- 
 <cfif len(ParentID)>
 	
 	<!--- Get policy groups for that object --->
@@ -67,7 +68,7 @@ stObjectPermissions = application.factory.oAuthorisation.collateObjectPermission
 	</cfloop>
 
 </cfif>
-	
+--->
 
 <!--- get usernames for all members of approve policy groups --->
 <cfscript>
