@@ -1,7 +1,7 @@
-<cfcomponent displayname="Utilities" hint="Packages generic utilities" output="true">
+<cfcomponent displayname="Utilities" hint="Packages generic utilities" output="true" bDocument="true" scopelocation="application.factory.oUtils">
 
 	<!--- ARRAY utilities --->
-	<cffunction name="arrayFind" access="public" output="false" returntype="numeric" hint="Returns the index of the first element that matches the specified value. 0 if not found.">
+	<cffunction name="arrayFind" access="public" output="false" returntype="numeric" hint="Returns the index of the first element that matches the specified value. 0 if not found." bDocument="true">
 		<cfargument name="ar" type="array" required="true" hint="The array to search" />
 		<cfargument name="value" type="Any" required="true" hint="The value to find" />
 		
@@ -17,7 +17,7 @@
 	</cffunction>
 
 	<!--- LIST utilities --->
-	<cffunction name="listReverse" access="public" output="false" returntype="string" hint="Reverses a list">
+	<cffunction name="listReverse" access="public" output="false" returntype="string" hint="Reverses a list" bDocument="true">
 		<cfargument name="list" type="string" required="true" />
 		<cfargument name="delimiters" type="string" required="false" default="," />
 		
@@ -26,17 +26,13 @@
 		<cfset var delimiter = left(arguments.delimiters,1) />
 		
 		<cfloop list="#arguments.list#" index="item">
-			<cfif len(result)>
-				<cfset result = item & delimiter & result />
-			<cfelse>
-				<cfset result = item />
-			</cfif>
+			<cfset result = listprepend(result,item) />
 		</cfloop>
 		
 		<cfreturn result />
 	</cffunction>
 	
-	<cffunction name="listDiff" access="public" output="false" returntype="string" hint="Returns the items in list2 that aren't in list2">
+	<cffunction name="listDiff" access="public" output="false" returntype="string" hint="Returns the items in list2 that aren't in list2" bDocument="true">
 		<cfargument name="list1" type="string" required="true" />
 		<cfargument name="list2" type="string" required="true" />
 		<cfargument name="delimiters" type="string" required="false" default="," />
@@ -53,7 +49,7 @@
 		<cfreturn result />
 	</cffunction>
 	
-	<cffunction name="listUnion" access="public" output="false" returntype="string" hint="Returns the items in list2 that are also in list2">
+	<cffunction name="listUnion" access="public" output="false" returntype="string" hint="Returns the items in list2 that are also in list2" bDocument="true">
 		<cfargument name="list1" type="string" required="true" />
 		<cfargument name="list2" type="string" required="true" />
 		<cfargument name="delimiters" type="string" required="false" default="," />
@@ -70,7 +66,7 @@
 		<cfreturn result />
 	</cffunction>
 
-	<cffunction name="listMerge" access="public" output="false" returntype="string" hint="Adds items from the second list to the first, where they aren't already present">
+	<cffunction name="listMerge" access="public" output="false" returntype="string" hint="Adds items from the second list to the first, where they aren't already present" bDocument="true">
 		<cfargument name="list1" type="string" required="true" hint="The list being built on" />
 		<cfargument name="list2" type="string" required="true" hint="The list being added" />
 		<cfargument name="delimiters" type="string" required="false" default="," hint="The delimiters used the lists" />
@@ -88,7 +84,7 @@
 		<cfreturn lResult />
 	</cffunction>
 
-	<cffunction name="listSlice" access="public" output="false" returntype="string" hint="Returns the specified elements of the list">
+	<cffunction name="listSlice" access="public" output="false" returntype="string" hint="Returns the specified elements of the list" bDocument="true">
 		<cfargument name="list" type="string" required="true" hint="The list being sliced" />
 		<cfargument name="start" type="numeric" required="false" defaykt="1" hint="The start index of the slice. Negative numbers are reverse indexes: -1 is last item." />
 		<cfargument name="end" type="numeric" required="false" default="-1" hint="The end index of the slice. Negative values are reverse indexes: -1 is last item." />
@@ -129,7 +125,7 @@
 		<cfreturn "" />
 	</cffunction>
 
-	<cffunction name="listFilter" access="public" output="false" returntype="string" hint="Filters the items in a list though a regular expression">
+	<cffunction name="listFilter" access="public" output="false" returntype="string" hint="Filters the items in a list though a regular expression" bDocument="true">
 		<cfargument name="list" type="string" required="true" hint="The list being filtered" />
 		<cfargument name="filter" type="string" required="true" hint="The regular expression to filter by" />
 		<cfargument name="delimiters" type="string" required="false" default="," hint="Delimiters used by list" />
@@ -147,7 +143,7 @@
 	</cffunction>
 
 	<!--- STRUCT ulilities --->
-	<cffunction name="structMerge" access="public" output="false" returntype="struct" hint="Performs a deep merge on two structs">
+	<cffunction name="structMerge" access="public" output="false" returntype="struct" hint="Performs a deep merge on two structs" bDocument="true">
 		<cfargument name="struct1" type="struct" required="true" />
 		<cfargument name="struct2" type="struct" required="true" />
 		<cfargument name="replace" type="boolean" required="false" default="true" />
@@ -172,7 +168,7 @@
 	</cffunction>
 
 	<!--- PACKAGE utilities --->
-	<cffunction name="getPath" access="public" output="false" returntype="string" hint="Finds the component in core/plugins/project, and returns its path">
+	<cffunction name="getPath" access="public" output="false" returntype="string" hint="Finds the component in core/plugins/project, and returns its path" bDocument="true">
 		<cfargument name="package" type="string" required="true" />
 		<cfargument name="component" type="string" required="true" />
 		<cfargument name="locations" type="string" required="false" default="" />
@@ -222,7 +218,7 @@
 		<cfreturn "" />
 	</cffunction>
 
-	<cffunction name="getComponents" access="public" output="false" returntype="string" hint="Returns a list of components for a package">
+	<cffunction name="getComponents" access="public" output="false" returntype="string" hint="Returns a list of components for a package" bDocument="true">
 		<cfargument name="package" type="string" required="true" />
 		<cfargument name="locations" type="string" required="false" default="" />
 
@@ -266,7 +262,7 @@
 		<cfreturn list />
 	</cffunction>
 
-	<cffunction name="extends" access="public" output="false" returntype="boolean" hint="Returns true if the specified component extends another">
+	<cffunction name="extends" access="public" output="false" returntype="boolean" hint="Returns true if the specified component extends another" bDocument="true">
 		<cfargument name="desc" type="string" required="true" hint="The component to test" />
 		<cfargument name="anc" type="string" required="true" hint="The ancestor to check for" />
 		

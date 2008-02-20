@@ -1,4 +1,4 @@
-<cfcomponent displayName="Security Scope" hint="Encapsulates the generic higher-level security functions and variables" output="false">
+<cfcomponent displayName="Security Scope" hint="Encapsulates the generic higher-level security functions and variables" output="false" bDocument="true" scopelocation="application.security">
 
 	<cfimport taglib="/farcry/core/tags/farcry" prefix="farcry" />
 	
@@ -79,7 +79,7 @@
 
 
 	<!--- Current user queries --->
-	<cffunction name="getCurrentUserID" access="public" output="false" returntype="string" hint="Returns the id of the current user">
+	<cffunction name="getCurrentUserID" access="public" output="false" returntype="string" hint="Returns the id of the current user" bDocument="true">
 		<cfif isdefined("session.security.userid")>
 			<cfreturn session.security.userid />
 		<cfelse>
@@ -89,7 +89,7 @@
 
 
 	<!--- Current user queries --->
-	<cffunction name="isLoggedIn" access="public" output="false" returntype="boolean" hint="Returns true if a user has logged in.">
+	<cffunction name="isLoggedIn" access="public" output="false" returntype="boolean" hint="Returns true if a user has logged in." bDocument="true">
 		<cfif len(getCurrentUserID())>
 			<cfreturn true />
 		<cfelse>
@@ -97,7 +97,7 @@
 		</cfif>
 	</cffunction>
 	
-	<cffunction name="checkPermission" access="public" output="true" returntype="boolean" hint="Returns true if a user has the specified permission">
+	<cffunction name="checkPermission" access="public" output="true" returntype="boolean" hint="Returns true if a user has the specified permission" bDocument="true">
 		<cfargument name="permission" type="string" required="false" default="" hint="The permission to check" />
 		<cfargument name="object" type="string" required="false" default="" hint="If specified, will check barnacle" />
 		<cfargument name="role" type="string" required="false" default="" hint="List of roles to check" />
@@ -152,7 +152,7 @@
 		</cfif>
 	</cffunction>
 
-	<cffunction name="getCurrentRoles" access="public" output="true" returntype="string" hint="Returns the roles of the current logged in user">
+	<cffunction name="getCurrentRoles" access="public" output="true" returntype="string" hint="Returns the roles of the current logged in user" bDocument="true">
 		<cfif isdefined("session.security.roles")>
 			<cfreturn application.factory.oUtils.listMerge(this.factory.role.getDefaultRoles(),session.security.roles) />
 		<cfelse>
@@ -160,7 +160,7 @@
 		</cfif>
 	</cffunction>
 	
-	<cffunction name="getCurrentUD" access="public" output="false" returntype="string" hint="Returns the UD of the current user">
+	<cffunction name="getCurrentUD" access="public" output="false" returntype="string" hint="Returns the UD of the current user" bDocument="true">
 		<cfif isdefined("session.security.userid")>
 			<cfreturn listlast(session.security.userid,"_") />
 		<cfelse>
@@ -180,7 +180,7 @@
 		<cfreturn listfirst(this.userdirectoryorder) />
 	</cffunction>
 	
-	<cffunction name="getGroupUsers" access="public" returntype="array" description="Returns an array of the members of the specified groups" output="false">
+	<cffunction name="getGroupUsers" access="public" returntype="array" description="Returns an array of the members of the specified groups" output="false" bDocument="true">
 		<cfargument name="groups" type="any" required="true" hint="The list or array of groups" />
 		
 		<cfset var i = 0 />
@@ -318,7 +318,7 @@
 		<cfreturn stResult />
 	</cffunction>
 
-	<cffunction name="logout" access="public" output="false" returntype="void" hint="">
+	<cffunction name="logout" access="public" output="false" returntype="void" hint="" bDocument="true">
 		<cfset structdelete(session,"security") />
 		
 		<!--- DEPRECIATED VARIABLE --->
