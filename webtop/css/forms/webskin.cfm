@@ -139,6 +139,10 @@ form.formtool ##wizard-content table, form.formtool ##wizard-content table tr, f
 		form.formtool div.category table th,
 		form.formtool div.category table td {border: none;}
 
+/* formtool config webskin styles */
+	form.formtool div.longchar fieldset {border: 0 none #hexPrimaryLighter#;}
+	form.formtool div.longchar fieldset legend {font-weight:bold;}
+
 </cfoutput>
 <!--- end css output --->
 
