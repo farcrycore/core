@@ -180,6 +180,35 @@
 		<cfreturn listfirst(this.userdirectoryorder) />
 	</cffunction>
 	
+	<cffunction name="getGroupUsers" access="public" returntype="array" description="Returns an array of the members of the specified groups" output="false">
+		<cfargument name="groups" type="any" required="true" hint="The list or array of groups" />
+		
+		<cfset var i = 0 />
+		<cfset var j = 0 />
+		<cfset var aResult = arraynew(1) />
+		<cfset var ud = "" />
+		<cfset var group = "" />
+		<cfset var aUsers = arraynew(1) />
+		<cfset var user = "" />
+		
+		<cfif not isarray(arguments.groups)>
+			<cfset arguments.groups = listtoarray(arguments.groups) />
+		</cfif>
+		
+		<cfloop from="1" to="#arraylen(arguments.groups)#" index="i">
+			<cfset ud = listlast(arguments.groups[i],"_") />
+			<cfset group = listfirst(arguments.groups[i],"_") />
+			<cfif structkeyexists(this.userdirectories,ud)>
+				<cfset aUsers = this.userdirectories[ud].getGroupUsers(group=group) />
+				<cfloop from="1" to="#arraylen(aUsers)#" index="j">
+					<cfset arrayappend(aResult,"#aUsers[j]#_#ud#") />
+				</cfloop>
+			</cfif>
+		</cfloop>
+		
+		<cfreturn aResult />
+	</cffunction>
+	
 	<cffunction name="getLoginForm" access="public" output="false" returntype="string" hint="Returns the name of the login form component for the specified user directory">
 		<cfargument name="ud" type="string" required="true" hint="The user directory to query" />
 		
