@@ -458,7 +458,7 @@ if (isDefined("form.unlock") AND isDefined("form.objectid")) {
 
 <cfscript>
 // todo:refactoring... get rid of it, tests being done in cfc now GB
-oAuthorisation=request.dmsec.oAuthorisation;
+oAuthorisation=application.factory.oAuthorisation;
 </cfscript>
 <!--- button bar widget --->
 <cfsavecontent variable="html_buttonbar">
