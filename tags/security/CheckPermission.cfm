@@ -91,7 +91,7 @@
 			<!--- Permission granted - skip to content --->
 			<cfexit method="exittemplate" />
 		</cfif>
-	<cfelseif attributes.logic eq "and">
+	<cfelse><!--- attributes.require = "any" --->
 		<!--- Check general permissions --->
 		<cfloop list="#attributes.generalpermission#" index="perm">
 			<cfif application.security.checkPermission(permission=perm)>
