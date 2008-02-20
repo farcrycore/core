@@ -454,22 +454,28 @@
 			</cfloop>
 
 	
-			
-			
-			
-			<!--- Need to determine which method to run on the field --->		
-
-			<cfif structKeyExists(ftFieldMetadata,"ftValidationMethod")>
-				<cfset FieldMethod = ftFieldMetadata.ftValidationMethod>
+			<!--- Default fieldType to the object type --->
+			<cfset tFieldType = createobject("component",application.stCOAPI[FORM['#ProcessingFormObjectPrefix#typename']].packagepath) />
+				
+			<!--- Need to determine which method to run on the field --->
+			<cfif structKeyExists(ftFieldMetadata,"ftValidateMethod")>
+				<cfset FieldMethod = ftFieldMetadata.ftValidateMethod>
+				
+				<!--- Check to see if this method exists in the current oType CFC. If not hange o to the formtool --->
+				<cfif not structKeyExists(tFieldType,ftFieldMetadata.ftValidateMethod)>
+					<cfset tFieldType = application.formtools[ftFieldMetadata.ftType].oFactory.init() />
+				</cfif>
+			<cfelseif structKeyExists(tFieldType,"ftValidate#ftFieldMetadata.Name#")>
+				<cfset FieldMethod = "ftValidate#ftFieldMetadata.Name#" />
 			<cfelse>
-				<cfset FieldMethod = "validate">
-			</cfif>	
+				<cfset FieldMethod = "validate" />
+				<cfset tFieldType = application.formtools[ftFieldMetadata.ftType].oFactory.init() />
+			</cfif>
 
 			<cfif i EQ "ObjectID" or i EQ "typename">
 				<cfset "Caller.#attributes.r_stProperties#.#i#" = Request.farcryForm.stObjects[ProcessingFormObjectPrefix]['FormPost'][i].value>
 			<cfelse>
-				<cfset o = application.formtools[ftFieldMetadata.ftType].oFactory.init() />
-				<cfinvoke component="#o#" method="#FieldMethod#" returnvariable="stResult">
+				<cfinvoke component="#tFieldType#" method="#FieldMethod#" returnvariable="stResult">
 					<cfinvokeargument name="ObjectID" value="#FORM['#ProcessingFormObjectPrefix#objectid']#">
 					<cfinvokeargument name="Typename" value="#FORM['#ProcessingFormObjectPrefix#typename']#">			
 					<cfinvokeargument name="stFieldPost" value="#Request.farcryForm.stObjects[ProcessingFormObjectPrefix]['FormPost'][i]#">
