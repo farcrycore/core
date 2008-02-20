@@ -45,35 +45,14 @@ $out:$
 	r_lObjectIds="ParentID"
 	bInclusive="1">
 
-<cfscript>
-stObjectPermissions = application.factory.oAuthorisation.collateObjectPermissions(objectid=stObj.Objectid,  typename=stObj.typename);
-</cfscript>
-<!--- if parent returned --->
-<!--- 
-<cfif len(ParentID)>
-	
-	<!--- Get policy groups for that object --->
-	<cfscript>
-		stObjectPermissions = application.factory.oAuthorisation.collateObjectPermissions(objectid=ParentID);
-	</cfscript>
-	
-	<!--- Check policy groups can approve (T=1) --->
-	<cfloop collection="#stObjectPermissions#" item="policyGroupID">
-		<cfif stObjectPermissions[policyGroupID][application.permission.dmNavigation.Approve.permissionID].T eq 1>
-			<!--- add to list of policy groups allowed to approve pending object if not already entered --->
-			<cfif listFind(lApprovePGs, policyGroupID) eq 0>
-				<cfset lApprovePGs = listAppend(lApprovePGs, policyGroupID)>
-			</cfif>
-		</cfif>	
-	</cfloop>
-
-</cfif>
---->
-
-<!--- get usernames for all members of approve policy groups --->
-<cfscript>
-	aUsers = application.factory.oAuthorisation.getPolicyGroupUsers(lpolicygroupIDs=lApprovePGs);
-</cfscript>
+<!--- Get the roles that have permission to approve objects --->
+<cfset approverroles = "" />
+<cfloop list="#application.security.factory.role.getAllRoles()#" index="thisrole">
+	<cfif application.security.checkPermission(role=thisrole,permission="Approve",object=stObj.objectid)>
+		<cfset approverroles = listappend(approverroles,thisrole) />
+	</cfif>
+</cfloop>
+<cfset aUsers = application.security.getGroupUsers(groups=application.security.factory.role.rolesToGroups(roles=approverroles)) />
 
 <!--- build struct of dmProfile objects for each user --->
 <cfset stApprovers = structNew()>
