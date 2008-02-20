@@ -18,7 +18,7 @@
 		<cfset var html = "" />
 		<cfset var navid = "" />
 		<cfset var oCategory = createObject("component",'farcry.core.packages.farcry.category')>
-		<cfset var lSelectedCategoryID = oCategory.getCategories(objectid=arguments.stObject.ObjectID,bReturnCategoryIDs=true)>
+		<cfset var lSelectedCategoryID = "" >
 		<cfset var lCategoryBranch = "" />
 		<cfset var CategoryName = "" />
 		<cfset var i = "" />
@@ -38,6 +38,8 @@
 		<cfelse>
 			<cfset rootID = application.catid['root'] >
 		</cfif>
+		
+		<cfset lSelectedCategoryID = oCategory.getCategories(objectid=arguments.stObject.ObjectID,bReturnCategoryIDs=true,alias=arguments.stMetadata.ftAlias) />
 		
 		<cfset rootNodeText = oCategory.getCategoryNamebyID(categoryid=rootID) />
 
@@ -118,6 +120,7 @@
 							<br class="fieldsectionbreak" />
 						</div>
 						<input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="#lSelectedCategoryID#" />
+						<input type="hidden" name="#arguments.fieldname#" value="" />
 					</fieldset>
 					</cfoutput>
 				
@@ -194,7 +197,6 @@
 			<cfinvokeargument name="alias" value="#arguments.stMetadata.ftAlias#"/>
 			<cfinvokeargument name="dsn" value="#application.dsn#"/>
 		</cfinvoke>
-
 					
 		<!--- ----------------- --->
 		<!--- Return the Result --->

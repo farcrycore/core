@@ -460,7 +460,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 		
 		<!--- getCategories --->
 		<cfquery datasource="#application.dsn#" name="qGetCategories">
-			SELECT <cfif arguments.bReturnCategoryIDs>cat.objectid<cfelse>cat.categoryLabel</cfif>
+			SELECT DISTINCT <cfif arguments.bReturnCategoryIDs>cat.objectid<cfelse>cat.categoryLabel</cfif>
 			FROM #application.dbowner#dmCategory cat,#application.dbowner#refCategories ref
 			WHERE cat.objectid = ref.categoryID
 			AND ref.objectID = '#arguments.objectID#'
@@ -468,7 +468,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 				AND ref.categoryid IN (#ListQualify(lDescendents,"'")#)
 			</cfif>
 		</cfquery> 
-		
+
 		<cfif arguments.bReturnCategoryIDs>
 			<cfset lCategoryIDs = valueList(qGetCategories.objectid)>
 		<cfelse>
