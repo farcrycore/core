@@ -23,7 +23,7 @@
 	
 	<cfif not len(attributes.typename)>
 		<cfif structKeyExists(attributes.stObject, "typename")>
-			<cfset attributes.typename = stobject.typename />
+			<cfset attributes.typename = attributes.stobject.typename />
 		<cfelseif len(attributes.objectid)>
 			<cfset attributes.typename = application.coapi.coapiUtilities.findType(objectid=attributes.objectid) />
 		</cfif>
