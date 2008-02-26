@@ -18,11 +18,16 @@ $Developer: Blair McKenzie (blair@daemon.com.au) $
 <admin:header title="Permission Admin" />
 
 <cfset aCustomColumns = arraynew(1) />
+
 <cfset aCustomColumns[1] = structnew() />
 <cfset aCustomColumns[1].title = "Key" />
 <cfset aCustomColumns[1].sortable = true />
 <cfset aCustomColumns[1].property = "configkey" />
-<cfset aCustomColumns[1].webskin = "displayEditLink" />
+<cfset aCustomColumns[1].webskin = "displayCellEditLink" />
+
+<cfset aCustomColumns[2] = structnew() />
+<cfset aCustomColumns[2].title = "Description" />
+<cfset aCustomColumns[2].webskin = "displayCellHint" />
 
 <ft:objectadmin typename="farConfig" title="Manage Configuration" columnList="datetimelastupdated" sqlorderby="configkey asc" sortableColumns="datetimelastupdated" aCustomColumns="#aCustomColumns#" bSelectCol="false" bShowActionList="false" lButtons="" />
 
