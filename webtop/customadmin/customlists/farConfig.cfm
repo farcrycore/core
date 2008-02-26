@@ -17,23 +17,13 @@ $Developer: Blair McKenzie (blair@daemon.com.au) $
 <!--- set up page header --->
 <admin:header title="Permission Admin" />
 
-<cfquery datasource="#application.dsn#" name="qConfig">
-	select		*
-	from		#application.dbowner#farConfig
-	order by	configkey
-</cfquery>
+<cfset aCustomColumns = arraynew(1) />
+<cfset aCustomColumns[1] = structnew() />
+<cfset aCustomColumns[1].title = "Key" />
+<cfset aCustomColumns[1].sortable = true />
+<cfset aCustomColumns[1].property = "configkey" />
+<cfset aCustomColumns[1].webskin = "displayEditLink" />
 
-<cfoutput>
-	<h3>FarCry Internal Configuration</h3>
-	<ul>
-</cfoutput>
-<cfloop query="qConfig">
-	<cfoutput>
-		<li><a href="#application.url.farcry#/conjuror/invocation.cfm?objectid=#objectid#&typename=farConfig&method=edit&ref=typeadmin&module=customlists/farConfig.cfm">#configkey#</a></li>
-	</cfoutput>
-</cfloop>
-<cfoutput>
-	</ul>
-</cfoutput>
+<ft:objectadmin typename="farConfig" title="Manage Configuration" columnList="datetimelastupdated" sqlorderby="configkey asc" sortableColumns="datetimelastupdated" aCustomColumns="#aCustomColumns#" bSelectCol="false" bShowActionList="false" lButtons="" />
 
 <admin:footer />
