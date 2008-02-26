@@ -1,6 +1,147 @@
 <cfcomponent displayname="Configuration" hint="Encapsulates all config value sets" extends="types" output="false">
-	<cfproperty name="configkey" type="string" default="" hint="The variable used in the config struct" ftSeq="1" ftLabel="Key" ftType="string" ftValidation="required" bLabel="true" />
-	<cfproperty name="configdata" type="longchar" default="" hint="The config values encoded in WDDX" ftSeq="2" ftLabel="Config" ftType="WDDX" ftChangable="false" />
+	<cfproperty name="configkey" type="string" default="" hint="The variable used in the config struct" ftLabel="Key" ftType="string" ftValidation="required" bLabel="true" />
+	<cfproperty ftSeq="1" ftFieldSet="Config" name="configdata" type="longchar" default="" hint="The config values encoded in WDDX" ftLabel="Config" ftType="longchar" ftShowLabel="false" />
+	
+	<cffunction name="getForm" access="public" returntype="string" description="Returns the name of the form for the given key" output="false">
+		<cfargument name="key" type="string" required="true" hint="The key" />
+		
+		<cfset var thisform = "" />
+		
+		<cfloop collection="#application.stCOAPI#" item="thisform">
+			<cfif structkeyexists(application.stCOAPI[thisform],"key") and application.stCOAPI[thisform].key eq arguments.key>
+				<cfreturn thisform />
+			</cfif>
+		</cfloop>
+		
+		<cfreturn "" />
+	</cffunction>
+	
+	<cffunction name="ftEditConfigData" access="public" returntype="string" description="Provides edit functionality for config data" output="false">
+		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
+		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
+		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
+		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
+
+		<cfset var stObj = structnew() /><!--- Used to store the current set of values --->
+		<cfset var ReturnHTML = "" /><!--- The output for the field --->
+		<cfset var prefix = "" /><!--- The form id for this field --->
+		<cfset var thisform = "" /><!--- Loop variable for form names --->
+		<cfset var qMetadata = querynew("empty") /><!--- Config metadata --->
+		<cfset var qFieldSets = querynew("empty") /><!--- The fieldsets supported by the config --->
+		
+		<cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
+		
+		<!--- If the field already has a value then use that --->
+		<cfwddx action="wddx2cfml" input="#arguments.stMetadata.value#" output="stObj" />
+		
+		<!--- If the config is unknown, attempt to match it by form key --->
+		<cfif not structkeyexists(stObj,"typename")>
+			<cfset stObj.typename = getForm(key=arguments.stObject.configkey) />
+		</cfif>
+		
+		<cfif structkeyexists(stObj,"typename") and structkeyexists(application.stCOAPI,stObj.typename)>
+		
+			<cfset qMetadata = application.stCOAPI[stobj.typename].qMetadata />
+		
+			<cfsavecontent variable="ReturnHTML">				
+				<cfquery dbtype="query" name="qFieldSets">
+					SELECT		ftwizardStep, ftFieldset
+					FROM 		qMetadata
+					WHERE 		ftFieldset <> '#stobj.typename#'
+					Group By 	ftwizardStep, ftFieldset
+					ORDER BY 	ftSeq
+				</cfquery>
+				
+				<ft:form>
+					<cfif qFieldSets.recordcount GTE 1>
+						
+						<cfloop query="qFieldSets">
+							<cfquery dbtype="query" name="qFieldset">
+								SELECT 		*
+								FROM 		qMetadata
+								WHERE 		ftFieldset = '#qFieldsets.ftFieldset#'
+								ORDER BY 	ftSeq
+							</cfquery>
+							
+							<ft:object stObject="#stObj#" lExcludeFields="label" lFields="#valuelist(qFieldset.propertyname)#" inTable="false" IncludeFieldSet="true" Legend="#qFieldSets.ftFieldset#" helptitle="#qFieldset.fthelptitle#" helpsection="#qFieldset.fthelpsection#" />
+						</cfloop>
+						
+					<cfelse>
+					
+						<!--- All Fields: default edit handler --->
+						<ft:object stObject="#stObj#" lExcludeFields="label" IncludeFieldSet="true" Legend="#stObj.Label#" />
+						
+					</cfif>
+					
+				</ft:form>
+				
+				<cfoutput>
+					<input type="hidden" name="#arguments.fieldname#formname" value="#stObj.typename#" />
+					<input type="hidden" name="#arguments.fieldname#objectid" value="#stObj.objectid#" />
+					<input type="hidden" name="#arguments.fieldname#" value="#htmlEditFormat(arguments.stMetadata.value)#" />
+				</cfoutput>
+			</cfsavecontent>
+			
+		<cfelse>
+		
+			<cfsavecontent variable="ReturnHTML">
+				<cfoutput>
+					<p class="error">There is no form for this data. To allow it to be edited, create a form component prefixed with "config" and give it a key attribute matching the key for this config (e.g. key="general"). Add cfproperty tags to this component for the config variables that define formtool metadata and defaults.</p>
+				</cfoutput>
+			</cfsavecontent>
+		
+		</cfif>
+		
+			<cfreturn ReturnHTML>
+	</cffunction>
+
+	<cffunction name="ftValidateConfigData" access="public" returntype="struct" description="Validates configdata" output="false">
+		<cfargument name="stFieldPost" required="true" type="struct" hint="The fields that are relevent to this field type.">
+		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
+		
+		<cfset var stObj = structnew() /><!--- The object to be processed --->
+		<cfset var prop = "" /><!--- The current property being retrieved --->
+		<cfset var stResult = structNew() /><!--- The result of this validation --->
+		<cfset var stProperties = structnew() /><!--- The form property struct --->
+		
+		<cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
+		
+		<!--- Setup return struct --->
+		<cfset stResult.bSuccess = true />
+		<cfset stResult.value = "" />
+		<cfset stResult.stError = StructNew() />
+		
+		<!--- If no form was selected then abort --->
+		<cfif not len(arguments.stFieldPost.stSupporting.formname)>
+			<cfreturn stResult />
+		</cfif>
+		
+		<!--- If a previous version was passed in, get it, otherwise get the default for the new form --->
+		<cfif len(arguments.stFieldPost.value)>
+			<cfwddx action="wddx2cfml" input="#arguments.stFieldPost.value#" output="stObj" />
+			
+			<!--- Validate the data --->
+			<ft:validateFormObjects typename="#arguments.stFieldPost.stSupporting.formname#">
+				<cfloop collection="#stProperties#" item="prop">
+					<cfif not listcontains("typename,objectid",prop)>
+						<cfset stResult.bSuccess = stResult.bSuccess and request.stFarcryFormValidation[stProperties.objectid][prop].bSuccess />
+					</cfif>
+				</cfloop>
+				
+				<cfset stObj = duplicate(stProperties) />
+			</ft:validateFormObjects>
+		<cfelse>
+			<cfset stObj = createobject("component",application.stCOAPI[arguments.stFieldPost.stSupporting.formname].packagepath).getData(createuuid()) />
+			<cfset stObj.typename = arguments.stFieldPost.stSupporting.formname />
+			
+			<!--- No validation required --->
+		</cfif>
+		
+		<!--- Convert result back to WDDX --->
+		<cfwddx action="cfml2wddx" input="#stObj#" output="stResult.value" />
+		
+		<cfreturn stResult>
+	</cffunction>
 	
 	<cffunction name="migrateConfig" access="public" output="false" returntype="struct" hint="Creates a new config record based on pre 4.1 data">
 		<cfargument name="key" type="string" required="true" hint="The key of the old config record" />
@@ -140,4 +281,50 @@
 		<cfreturn arguments.stProperties />
 	</cffunction>
 	
+	<cffunction name="Edit" access="public" output="true" returntype="void" hint="Default edit handler.">
+		<cfargument name="ObjectID" required="yes" type="string" default="" />
+		<cfargument name="onExit" required="no" type="any" default="Refresh" />
+		
+		<cfset var stObj = getData(objectid=arguments.objectid) />
+		<cfset var qMetadata = application.types[stobj.typename].qMetadata />
+		<cfset var displayname = stObj.configkey />
+		<cfset var thisform = "" />
+		
+		<cfloop collection="#application.stCOAPI#" item="thisform">
+			<cfif left(thisform,6) eq "config" and structkeyexists(application.stCOAPI[thisform],"key") and application.stCOAPI[thisform].key eq stObj.configkey and structkeyexists(application.stCOAPI[thisform],"displayname")>
+				<cfset displayname = application.stCOAPI[thisform].displayname />
+			</cfif>
+		</cfloop>
+		
+		<cfquery dbtype="query" name="qFields">
+			SELECT 		propertyname
+			FROM 		qMetadata
+			WHERE 		ftFieldset = 'Config'
+			ORDER BY 	ftSeq
+		</cfquery>
+	
+		<!---------------------------------------
+		ACTION:
+		 - default form processing
+		---------------------------------------->
+		<ft:processForm action="Save" Exit="true">
+			<ft:processFormObjects typename="#stobj.typename#" />
+		</ft:processForm>
+	
+		<ft:processForm action="Cancel" Exit="true" />
+		
+		<ft:form>
+			
+			<!--- All Fields: default edit handler --->
+			<ft:object ObjectID="#arguments.ObjectID#" format="edit" lFields="#valuelist(qFields.propertyname)#" IncludeFieldSet=1 Legend="#displayname#" />
+			
+			<ft:farcryButtonPanel>
+				<ft:farcryButton value="Save" /> 
+				<ft:farcryButton value="Cancel" validate="false" />
+			</ft:farcryButtonPanel>
+			
+		</ft:form>
+	
+	</cffunction>
+
 </cfcomponent>

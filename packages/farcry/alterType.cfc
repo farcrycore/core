@@ -151,7 +151,7 @@ $out:$
 	<cfreturn arguments.default />
 </cffunction>
 
-<cffunction name="setupMetadataQuery" output="false" displayname="Sets up the metadata query containing formtool structure information" returntype="query" access="private">
+<cffunction name="setupMetadataQuery" output="true" displayname="Sets up the metadata query containing formtool structure information" returntype="query" access="private">
 	
 	<cfargument name="typename" type="string" required="true" />
 	<cfargument name="stProps" type="struct" required="true" />
@@ -227,7 +227,7 @@ $out:$
 	   <cfset Temp = QuerySetCell(qMetadataSetup,"ftType", Type) />
 	   <cfset querySetCell(qMetadataSetup,"ftHelpTitle", helpTitle) />
 	   <cfset querySetCell(qMetadataSetup,"ftHelpSection", helpSection) />
-		
+					
 		
 	</cfloop>
 	
@@ -556,7 +556,7 @@ $out:$
 					<cfset stTypeMD.bLibraryForm = 0 />
 					<cfset stTypeMD.formPath = "#application.packagepath#.forms.#formname#" />
 					<cfset stTypeMD.packagePath = "#application.packagepath#.forms.#formname#" />
-					<cfset stTypeMD.qMetadata = setupMetadataQuery(typename=typename,stProps=stTypeMD.stProps) />
+					<cfset stTypeMD.qMetadata = setupMetadataQuery(typename=formname,stProps=stTypeMD.stProps) />
 					<cfset application.forms[formname] = duplicate(stTypeMD) />
 				</cfif>
 		</cfloop>	
@@ -585,7 +585,7 @@ $out:$
 						<cfset stTypeMD.bLibraryForm = 1 />
 						<cfset stTypeMD.formPath = "farcry.plugins.#plugin#.packages.forms.#formname#" />
 						<cfset stTypeMD.packagePath = "farcry.plugins.#plugin#.packages.forms.#formname#" />
-						<cfset stTypeMD.qMetadata = setupMetadataQuery(typename=typename,stProps=stTypeMD.stProps) />
+						<cfset stTypeMD.qMetadata = setupMetadataQuery(typename=formname,stProps=stTypeMD.stProps) />
 						
 						<cfset application.forms[formname] = duplicate(stTypeMD) />
 					</cfif>
@@ -618,7 +618,7 @@ $out:$
 				<cfset stTypeMD.bLibraryForm = 0 />
 				<cfset stTypeMD.formPath = "#application.custompackagepath#.formtools.#formname#" />
 				<cfset stTypeMD.packagePath = "#application.custompackagepath#.formtools.#formname#" />
-				<cfset stTypeMD.qMetadata = setupMetadataQuery(typename=typename,stProps=stTypeMD.stProps) />
+				<cfset stTypeMD.qMetadata = setupMetadataQuery(typename=formname,stProps=stTypeMD.stProps) />
 				<cfset application.forms[formname] = duplicate(stTypeMD) />
 			</cfif>
 		</cfloop>		
