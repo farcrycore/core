@@ -78,7 +78,7 @@ $out:$
 			<cfset qGetChildren = application.factory.oTree.getChildren(dsn=application.dsn,objectid=parentObjectID) />
 			<cfset bottom = qGetChildren.recordCount />
 			<cfloop query="qGetChildren">
-				<cfif qGetChildren.objectid[currentrow] IS stObj.objectID)>
+				<cfif qGetChildren.objectid[currentrow] IS stObj.objectID>
 					<cfset thisPosition = currentrow />
 					<cfbreak />
 				</cfif>
