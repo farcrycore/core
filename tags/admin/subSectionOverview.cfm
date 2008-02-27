@@ -101,9 +101,9 @@ $Developer: Guy Phanvongsa (guy@daemon.com.au)$
 					<cfoutput></li></cfoutput>
 				</cfif>
 			</admin:loopwebtop>
-			
-			<cfoutput></ul></cfoutput>
 		</admin:loopwebtop>
+			
+		<cfoutput></ul></cfoutput>
 	</cfcase>
 </cfswitch>
 
