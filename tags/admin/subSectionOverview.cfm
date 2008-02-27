@@ -41,6 +41,7 @@ $Developer: Guy Phanvongsa (guy@daemon.com.au)$
 		<cfif len(subsection.description)>
 			<cfoutput><p>#subsection.description#</p></cfoutput>
 		</cfif>
+		<cfoutput><ul class="inlinedocs"></cfoutput>
 		
 		<!--- Loop through sections --->
 		<admin:loopwebtop parent="#subsection#" item="menu">

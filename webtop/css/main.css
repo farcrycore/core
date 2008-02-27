@@ -581,4 +581,6 @@ table.BorderTable td, table.BorderTable th {border:none;padding:0}
 table.objectAdmin {}
 table.objectAdmin th, table.objectAdmin td {padding:3px;}
 
-
+ /* GENERAL ADMIN CLASSES */
+ul.inlinedocs {list-style:none;}
+ul.inlinedocs li {background-image:none;}
