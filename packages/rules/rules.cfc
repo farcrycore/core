@@ -308,7 +308,7 @@ $out:$
 								<cfquery dbtype="query" name="qFieldset">
 								SELECT *
 								FROM qMetadata
-								WHERE ftFieldset = '#qFieldsets.ftFieldset#'
+								WHERE ftwizardStep = '#qwizardSteps.ftwizardStep#' and ftFieldset = '#qFieldsets.ftFieldset#'
 								ORDER BY ftSeq
 								</cfquery>
 								
