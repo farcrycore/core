@@ -1024,15 +1024,16 @@ default handlers
 											
 							<cfloop query="qFieldSets">
 							
-								<cfquery dbtype="query" name="qFieldset">
+								<cfquery dbtype="query" name="qFieldset" result="result">
 								SELECT *
 								FROM qMetadata
-								WHERE ftwizardStep = '#qwizardSteps.ftwizardStep#' and ftFieldset = '#qFieldsets.ftFieldset#'
+								WHERE ftwizardStep = '#qwizardSteps.ftwizardStep[qwizardSteps.currentrow]#' and ftFieldset = '#qFieldsets.ftFieldset#'
 								ORDER BY ftSeq
 								</cfquery>
 								
 								<wiz:object ObjectID="#stObj.ObjectID#" lfields="#valuelist(qFieldset.propertyname)#" format="edit" intable="false" legend="#qFieldset.ftFieldset#" helptitle="#qFieldset.fthelptitle#" helpsection="#qFieldset.fthelpsection#" />
 							</cfloop>
+							
 						<cfelse>
 							
 							<wiz:object ObjectID="#stObj.ObjectID#" lfields="#valuelist(qwizardStep.propertyname)#" format="edit" intable="false" />
