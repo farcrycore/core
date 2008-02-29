@@ -24,6 +24,11 @@
 				<cfset this.title = stMetadata.displayname />
 			</cfif>
 			
+			<!--- If seq isn't specified, use the 9999 --->
+			<cfif not structkeyexists(this,"seq")>
+				<cfset this.seq = 9999 />
+			</cfif>
+			
 			<!--- Do the same for ancestors --->
 			<cfif structkeyexists(stMetadata,"extends")>
 				<cfset stMetadata = stMetadata.extends />

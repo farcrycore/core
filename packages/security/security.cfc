@@ -60,7 +60,7 @@
 		<cfset this.userdirectoryorder = "" />
 		
 		<cfloop list="#application.factory.oUtils.getComponents('security')#" index="comp">
-			<cfif application.factory.oUtils.extends(application.factory.oUtils.getPath("security",comp),"farcry.core.packages.security.UserDirectory")>
+			<cfif comp neq "UserDirectory" and application.factory.oUtils.extends(application.factory.oUtils.getPath("security",comp),"farcry.core.packages.security.UserDirectory")>
 				<cfset ud = createobject("component",application.factory.oUtils.getPath("security",comp)).init() />
 				<cfset this.userdirectories[ud.key] = ud />
 				<cfset this.userdirectoryorder = listappend(this.userdirectoryorder,ud.key) />
@@ -223,10 +223,15 @@
 		<cfset var i = 0 />
 		<cfset var oProfile = createObject("component", application.stcoapi["dmProfile"].packagePath) />
 		<cfset var stDefaultProfile = structnew() />
+		<cfset var udlist = structsort(this.userdirectories,"numeric","asc","seq") />
 		
 		<cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry" />
 		
-		<cfloop list="#this.userdirectoryorder#" index="ud">
+		<cfif structkeyexists(url,"ud")>
+			<cfset udlist = url.ud />
+		</cfif>
+		
+		<cfloop list="#udlist#" index="ud">
 			<!--- Authenticate user --->
 			<cfset stResult = this.userdirectories[ud].authenticate() />
 			
@@ -255,7 +260,7 @@
 					<cfset structappend(session.dmProfile,stDefaultProfile,stDefaultProfile.override) />
 
 					<cfset session.dmProfile.userdirectory = ud />
-					<cfset session.dmProfile.username = stResult.userid />
+					<cfset session.dmProfile.username = "#stResult.userid#_#ud#" />
 					<cfset session.dmprofile = oProfile.createProfile(session.dmprofile) />
 				<cfelseif stDefaultProfile.override>
 					<cfset structappend(session.dmProfile,stDefaultProfile,true) />

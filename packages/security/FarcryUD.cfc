@@ -66,13 +66,14 @@
 		
 	        <cfset dateTolerance = DateAdd("n","-#application.config.general.loginAttemptsTimeOut#",Now()) />
 	        
-	        <cfquery name="qLogAudit" datasource="#application.dsn#">
-		        select		count(a.datetimeStamp) as numberOfLogin, max(a.datetimeStamp) as lastlogindate, a.username
-		        from		#application.dbowner#fqAudit a
-		        where		a.auditType = 'security.loginfailed'
-		            		and a.datetimeStamp >= <cfqueryparam value="#createODBCDateTime(dateTolerance)#" cfsqltype="cf_sql_timestamp" />
-		            		and a.username = <cfqueryparam cfsqltype="cf_sql_varchar" value="#qUser.userid#_#this.key#" />
-		        group by	a.username
+   			<cfquery name="qLogAudit" datasource="#application.dsn#">
+		        select		count(datetimecreated) as numberOfLogin, max(datetimecreated) as lastlogindate, userid
+		        from		#application.dbowner#farLog
+		        where		type='security'
+		       				and event='loginfailed'
+		            		and datetimecreated >= <cfqueryparam value="#createODBCDateTime(dateTolerance)#" cfsqltype="cf_sql_timestamp" />
+		            		and userid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#qUser.userid#_#this.key#" />
+		        group by	userid
 	        </cfquery>
 					
 			<!--- Set the result --->
@@ -86,7 +87,7 @@
 			<cfelseif qUser.recordcount>
 				<!--- User's account is disabled --->
 				<cfset stResult.authenticated = false />
-				<cfset stResult.message = "Your account is diabled" />
+				<cfset stResult.message = "Your account is disabled" />
 			<cfelse>
 				<!--- User login or password is incorrect --->
 				<cfset stResult.authenticated = false />

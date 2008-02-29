@@ -10,6 +10,7 @@
 <cfif application.security.getCurrentUserID() eq stObj.username>
 	<ft:processform action="Save">
 		<ft:processformobjects objectid="#stobj.objectid#">
+			<cfset structappend(session.dmProfile,stProperties,true) />
 			<cfoutput>
 				<span class="success">Profile saved</span>
 			</cfoutput>
