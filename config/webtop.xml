@@ -4,7 +4,7 @@
 		<subsection id="overview" sequence="100" sidebar="overview/sidebar.cfm" content="overview/home.cfm" label="Overview" />
 	</section>
 	<section id="site" sequence="2000" permission="MainNavSiteTab" label="Site">
-		<subsection id="tree" sequence="100" permission="MainNavAdminTab" sidebar="site/sidebar.cfm" content="inc/content_overview.html" label="Site" />
+		<subsection id="tree" sequence="100" permission="MainNavSiteTab" sidebar="site/sidebar.cfm" content="inc/content_overview.html" label="Site" />
 	</section>
 	<section id="content" sequence="3000" permission="MainNavContentTab" label="Content">
 		<subsection id="media" sequence="10" label="Media Library">

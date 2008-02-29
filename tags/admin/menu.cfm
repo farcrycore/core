@@ -21,8 +21,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 $Developer: Guy Phanvongsa (guy@daemon.com.au)$
 --->
 
-<cfswitch expression="#thistag.executionmode#">
-	<cfcase value="start">
+<cfif thistag.executionmode eq "start">
 	
 	<!--- optional attributes --->
 	<cfparam name="attributes.sectionid" type="string" />
@@ -37,8 +36,10 @@ $Developer: Guy Phanvongsa (guy@daemon.com.au)$
 	<!--- Default sub section is the first one --->
 	<cfif len(attributes.subsectionid) and structkeyexists(stSection.children,attributes.subsectionid)>
 		<cfset stSubSection = stSection.children[attributes.subsectionid] />
-	<cfelse>
+	<cfelseif len(stSection.childorder)>
 		<cfset stSubSection = stSection.children[listfirst(stSection.childorder)] />
+	<cfelse>
+		<cfset stSubSection = structnew() />
 	</cfif>
 	
 	<cfif structcount(stSection.children) gt 1>
@@ -61,33 +62,34 @@ $Developer: Guy Phanvongsa (guy@daemon.com.au)$
 		</cfoutput>
 	</cfif>
 	
-	<admin:loopwebtop parent="#stSubSection#" item="menu">
-		<cfoutput>
-			<h2>#menu.label#</h2>
-			<ul>
-		</cfoutput>
-		
-		<admin:loopwebtop parent="#menu#" item="menuitem">
-			<cfswitch expression="#menuitem.linkType#">
-				<cfcase value="External">
-					<cfoutput>
-						<li><a href="#menuitem.link#" target="content">#menuitem.label#</a></li>
-					</cfoutput>
-				</cfcase>
-				<cfdefaultcase>
-					<cfoutput>
-						<li><a href="#application.url.farcry##ReplaceNoCase(menuitem.link,'#application.url.farcry#','')#" target="content">#menuitem.label#</a></li>
-					</cfoutput>
-				</cfdefaultcase>
-			</cfswitch>
+	<cfif not structisempty(stSubSection)>
+		<admin:loopwebtop parent="#stSubSection#" item="menu">
+			<cfoutput>
+				<h2>#menu.label#</h2>
+				<ul>
+			</cfoutput>
+			
+			<admin:loopwebtop parent="#menu#" item="menuitem">
+				<cfswitch expression="#menuitem.linkType#">
+					<cfcase value="External">
+						<cfoutput>
+							<li><a href="#menuitem.link#" target="content">#menuitem.label#</a></li>
+						</cfoutput>
+					</cfcase>
+					<cfdefaultcase>
+						<cfoutput>
+							<li><a href="#application.url.farcry##ReplaceNoCase(menuitem.link,'#application.url.farcry#','')#" target="content">#menuitem.label#</a></li>
+						</cfoutput>
+					</cfdefaultcase>
+				</cfswitch>
+			</admin:loopwebtop>
+			
+			<cfoutput>
+				</ul>
+			</cfoutput>
 		</admin:loopwebtop>
-		
-		<cfoutput>
-			</ul>
-		</cfoutput>
-	</admin:loopwebtop>
+	</cfif>
 
-	</cfcase>
-</cfswitch>
+</cfif>
 
 <cfsetting enablecfoutputonly="false" />
