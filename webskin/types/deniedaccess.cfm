@@ -1,1 +1,1 @@
-<cfoutput>You have been denied access to #arguments.template#</cfoutput>
+<cfoutput>You have been denied access to this item</cfoutput>

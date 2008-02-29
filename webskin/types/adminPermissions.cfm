@@ -28,15 +28,21 @@
 		<script type="text/javascript">
 			var permissiontypevalue = { 
 				'#application.rb.getResource("forms.labels.deny","Deny")#':-1,  
-				'#application.rb.getResource("forms.labels.inherit","Inherit")#':0,  
+				<cfif stObj.typename eq "dmNavigation">'#application.rb.getResource("forms.labels.inherit","Inherit")#':0,</cfif>
 				'#application.rb.getResource("forms.labels.grant","Grant")#':1
 			}
-			
-			var nextpermissiontype = { 
-				'#application.rb.getResource("forms.labels.deny","Deny")#':'#application.rb.getResource("forms.labels.inherit","Inherit")#',  
-				'#application.rb.getResource("forms.labels.inherit","Inherit")#':'#application.rb.getResource("forms.labels.grant","Grant")#',  
-				'#application.rb.getResource("forms.labels.grant","Grant")#':'#application.rb.getResource("forms.labels.deny","Deny")#'
-			}
+			<cfif stObj.typename eq "dmNavigation">
+				var nextpermissiontype = { 
+					'#application.rb.getResource("forms.labels.deny","Deny")#':'#application.rb.getResource("forms.labels.inherit","Inherit")#',
+					'#application.rb.getResource("forms.labels.inherit","Inherit")#':'#application.rb.getResource("forms.labels.grant","Grant")#',  
+					'#application.rb.getResource("forms.labels.grant","Grant")#':'#application.rb.getResource("forms.labels.deny","Deny")#'
+				}
+			<cfelse>
+				var nextpermissiontype = { 
+					'#application.rb.getResource("forms.labels.inherit","Deny")#':'#application.rb.getResource("forms.labels.grant","Grant")#',  
+					'#application.rb.getResource("forms.labels.grant","Grant")#':'#application.rb.getResource("forms.labels.deny","Deny")#'
+				}
+			</cfif>  
 		</script>
 		<style>
 			table { width: 100%; }
@@ -60,6 +66,9 @@
 					
 					<cfloop list="#permissions#" index="permission">
 						<cfset right = application.security.factory.barnacle.getRight(role=role,permission=permission,object=stObj.objectid) />
+						<cfif stObj.typename neq "dmNavigation" and right eq 0>
+							<cfset right = -1 />
+						</cfif>
 						
 						<cfoutput>
 							<tr>
