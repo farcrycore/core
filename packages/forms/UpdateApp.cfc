@@ -4,7 +4,7 @@
 	<cfproperty name="reloadconfig" type="boolean" default="0" hint="Reloads config data" ftSeq="3" ftFieldset="Data" ftLabel="Config settings" ftType="boolean" />
 	<cfproperty name="resourcebundle" type="boolean" default="0" hint="Reloads resource bundles" ftSeq="4" ftFieldset="Data" ftLabel="Resource bundles" ftType="boolean" />
 	
-	<cfproperty name="typemetadata" type="boolean" default="0" hint="Reload type metadata" ftSeq="11" ftFieldset="COAPI" ftLabel="Type metadata" ftType="boolean" />
+	<cfproperty name="typemetadata" type="boolean" default="0" hint="Reload type metadata" ftSeq="11" ftFieldset="COAPI" ftLabel="COAPI metadata" ftType="boolean" />
 	
 	<cfproperty name="security" type="boolean" default="0" hint="Reload user directories" ftSeq="21" ftFieldset="Security" ftLabel="Security" ftType="boolean" />
 	
@@ -37,7 +37,7 @@
 		
 		<!--- User directories --->
 		<cfif structkeyexists(arguments.fields,"security") and arguments.fields.security>	
-			<cfset application.security = createobject("component",application.factory.oUtils.getPath("security","security")) />
+			<cfset application.security = createobject("component",application.factory.oUtils.getPath("security","security")).init() />
 		</cfif>
 		
 		<!--- Resource bundles --->
