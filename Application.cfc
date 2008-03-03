@@ -556,11 +556,11 @@
 		<!----------------------------------------
 		 WEB URL PATHS
 		 ---------------------------------------->
-		<cfset application.url.webroot = this.projectURL />
+		<cfset application.url.webroot = "#cgi.context_path##this.projectURL#" />
 		<cfif len(this.webtopURL)>
-			<cfset application.url.webtop = this.webtopURL />
+			<cfset application.url.webtop = "#cgi.context_path##this.webtopURL#" />
 		<cfelse>
-			<cfset application.url.webtop = "#application.url.webroot#/webtop" />
+			<cfset application.url.webtop = "#cgi.context_path##application.url.webroot#/webtop" />
 		</cfif>
 		<cfset application.url.farcry = "#application.url.webtop#" /><!--- Legacy variable. Developers should use application.url.webtop --->
 		<cfset application.url.imageRoot = "#application.url.webroot#">
