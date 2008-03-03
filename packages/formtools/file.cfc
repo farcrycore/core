@@ -18,46 +18,92 @@
 
 		<cfset var html = "" />
 		<cfset var previewURL = "" />
+		<cfset var uploadScript = "" />
+		<cfset var swftag = "" />
+		<cfset var browseScript = "" />
+		<cfset var i = 0 />
 		
-		<cfparam name="arguments.stMetadata.ftstyle" default="">
+		<cfparam name="arguments.stMetadata.ftstyle" default="" />
+		<cfparam name="arguments.stMetadata.ftRenderType" default="flash" />
 		
 		<cfset Request.inHead.Scriptaculous = 1>
 		
-		<skin:htmlHead id="ftCheckFileName">
-		<cfoutput>
-		<script type="text/javascript">
-			function ftCheckFileName(id){
-				var currentText = $(id).value;	
-				var aCurrentExt = currentText.split(".");	
-					
-				var newText = $(id + 'NEW').value;	
-				var aNewExt = newText.split(".");	
+		<cfswitch expression="#arguments.stMetadata.ftRenderType#">
+			<cfcase value="html">
+				<skin:htmlHead id="ftCheckFileName">
+					<cfoutput>
+						<script type="text/javascript">
+							function ftCheckFileName(id){
+								var currentText = $(id).value;	
+								var aCurrentExt = currentText.split(".");	
+									
+								var newText = $(id + 'NEW').value;	
+								var aNewExt = newText.split(".");	
+								
+								if (currentText.length > 0 && newText.length > 0) {
+									if (aCurrentExt.length > 1 && aNewExt.length > 1){						
+										if (aCurrentExt[aCurrentExt.length - 1] != aNewExt[aNewExt.length - 1]){
+											$(id + 'NEW').value = '';
+											alert('You must either delete the old file or upload a new one with the same extension (' + aCurrentExt[aCurrentExt.length - 1] + ')');
+										}
+									}
+								}
+							}
+						</script>
+					</cfoutput>
+				</skin:htmlHead>
 				
-				if (currentText.length > 0 && newText.length > 0) {
-					if (aCurrentExt.length > 1 && aNewExt.length > 1){						
-						if (aCurrentExt[aCurrentExt.length - 1] != aNewExt[aNewExt.length - 1]){
-							$(id + 'NEW').value = '';
-							alert('You must either delete the old file or upload a new one with the same extension (' + aCurrentExt[aCurrentExt.length - 1] + ')');
+				<cfsavecontent variable="html">
+					<cfoutput>
+						<table border="1">
+						<tr>
+							<td valign="top">
+								<input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#arguments.stMetadata.value#" />
+								<input type="hidden" name="#arguments.fieldname#DELETE" id="#arguments.fieldname#DELETE" value="" />
+								<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" value="" style="#arguments.stMetadata.ftstyle#" onchange="ftCheckFileName('#arguments.fieldname#');" />
+							</td>
+							
+							<cfif len(#arguments.stMetadata.value#)>
+								<td valign="top">
+									<div id="#arguments.fieldname#previewfile">
+										<cfif structKeyExists(arguments.stMetadata, "ftSecure") and arguments.stMetadata.ftSecure>
+											<img src="#application.url.farcry#/images/crystal/22x22/actions/lock.png" />
+											#listLast(arguments.stMetadata.value, "/")#
+										<cfelse>
+											<a href="#application.url.webroot##application.url.fileRoot##arguments.stMetadata.value#" target="preview">#listlast(arguments.stMetadata.value, "/")#</a>
+										</cfif>
+										
+										<ft:farcryButton type="button" value="Delete File" onclick="if(confirm('Are you sure you want to remove this file?')) {} else {return false};$('#arguments.fieldname#DELETE').value=$('#arguments.fieldname#').value;$('#arguments.fieldname#').value='';Effect.Fade('#arguments.fieldname#previewfile');" />
+									</div>
+								</td>
+							</cfif>				
+							
+						</tr>
+						</table>
+					</cfoutput>					
+				</cfsavecontent>
+			</cfcase>
+			
+			<cfdefaultcase><!--- value="flash" --->
+				<cfparam name="arguments.stMetadata.ftFacade" default="#application.url.farcry#/facade/fileUpload/upload.cfm?typename=#arguments.typename#&property=#arguments.stMetadata.name#&fieldname=#arguments.fieldname#&current=#urlencodedformat(arguments.stMetadata.value)#" />
+				<cfparam name="arguments.stMetadata.ftFileTypes" default="*.*" />
+				<cfparam name="arguments.stMetadata.ftFileDescription" default="File Types" />
+				<cfparam name="arguments.stMetadata.ftMaxSize" default="-1" />
+				<cfparam name="arguments.stMetadata.ftOnComplete" default="" />
+				
+				<skin:htmlHead id="flashfileupload"><cfoutput>
+					<script type="text/javascript">
+						function updateField(id,value) {
+							document.getElementByID(id).value = value;
 						}
-					}
-				}
-			}
-		</script>
-		</cfoutput>
-		</skin:htmlHead>
-		
-		<cfsavecontent variable="html">
-			<cfoutput>
-				<table border="1">
-				<tr>
-					<td valign="top">
+					</script>
+				</cfoutput></skin:htmlHead>
+				
+				<cfsavecontent variable="html">
+					<cfoutput>
 						<input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#arguments.stMetadata.value#" />
 						<input type="hidden" name="#arguments.fieldname#DELETE" id="#arguments.fieldname#DELETE" value="" />
-						<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" value="" style="#arguments.stMetadata.ftstyle#" onchange="ftCheckFileName('#arguments.fieldname#');" />
-					</td>
-					
-					<cfif len(#arguments.stMetadata.value#)>
-						<td valign="top">
+						<cfif len(arguments.stMetadata.value)>
 							<div id="#arguments.fieldname#previewfile">
 								<cfif structKeyExists(arguments.stMetadata, "ftSecure") and arguments.stMetadata.ftSecure>
 									<img src="#application.url.farcry#/images/crystal/22x22/actions/lock.png" />
@@ -68,14 +114,19 @@
 								
 								<ft:farcryButton type="button" value="Delete File" onclick="if(confirm('Are you sure you want to remove this file?')) {} else {return false};$('#arguments.fieldname#DELETE').value=$('#arguments.fieldname#').value;$('#arguments.fieldname#').value='';Effect.Fade('#arguments.fieldname#previewfile');" />
 							</div>
-						</td>
-					</cfif>				
-					
-				</tr>
-				</table>
-			</cfoutput>					
-		</cfsavecontent>
-		
+						</cfif>
+						<div style="width:420px;height:100px;">
+							<cfform name="myform" width="420" format="Flash" timeout="100">
+								<ft:flashUpload name="file" actionFile="#arguments.stMetadata.ftFacade#&#session.urltoken#" value="#arguments.stMetadata.value#" filetypes="#listchangedelims(arguments.stMetadata.ftFileTypes,';')#" fileDescription="#arguments.stMetadata.ftFileDescription#" maxsize="#arguments.stMetadata.ftMaxSize#" onComplete="getURL('javascript:updateField(\'#arguments.fieldname#\',#arguments.fieldname#.text)');#arguments.stMetadata.ftOnComplete#">
+									<ft:flashUploadInput chooseButtonLabel="Browse" uploadButtonLabel="Upload" />
+								</ft:flashUpload>
+							</cfform>
+						</div>
+					</cfoutput>
+				</cfsavecontent>
+			</cfdefaultcase>
+		</cfswitch>
+	
 		<cfreturn html>
 	</cffunction>
 
@@ -110,8 +161,9 @@
 		<cfset stResult.value = stFieldPost.value>
 		<cfset stResult.stError = StructNew()>
 		
-		<cfparam name="arguments.stMetadata.ftSecure" default="false">
-		<cfparam name="arguments.stMetadata.ftDestination" default="">
+		<cfparam name="arguments.stMetadata.ftSecure" default="false" />
+		<cfparam name="arguments.stMetadata.ftDestination" default="" />
+		<cfparam name="arguments.stMetadata.ftRenderType" default="flash" />
 		
 		<cfif len(arguments.stMetadata.ftDestination) and right(arguments.stMetadata.ftDestination,1) EQ "/">
 			<cfset arguments.stMetadata.ftDestination = left(arguments.stMetadata.ftDestination, (len(arguments.stMetadata.ftDestination) - 1)) />
@@ -149,60 +201,71 @@
 
 		</cfif>
 			
-		
-		<cfif len(FORM["#stMetadata.FormFieldPrefix##stMetadata.Name#New"])>
-	
-	
-			<cfif structKeyExists(form, "#stMetadata.FormFieldPrefix##stMetadata.Name#") AND  len(FORM["#stMetadata.FormFieldPrefix##stMetadata.Name#"])>
-				<!--- This means there is currently a file associated with this object. We need to override this file --->
-				
-				<cfset lFormField = replace(FORM["#stMetadata.FormFieldPrefix##stMetadata.Name#"], '\', '/')>			
-				<cfset uploadFileName = listLast(lFormField, "/") />
-				
-				<cffile action="UPLOAD"
-					filefield="#stMetadata.FormFieldPrefix##stMetadata.Name#New" 
-					destination="#filePath##arguments.stMetadata.ftDestination#"		        	
-					nameconflict="MakeUnique" />
-				<cffile action="rename" source="#filePath##arguments.stMetadata.ftDestination#/#File.ServerFile#" destination="#uploadFileName#" />
-				<cfset newFileName = uploadFileName>
-			<cfelse>
-				<!--- There is no image currently so we simply upload the image and make it unique  --->
-				<cffile action="UPLOAD"
-					filefield="#stMetadata.FormFieldPrefix##stMetadata.Name#New" 
-					destination="#filePath##arguments.stMetadata.ftDestination#"		        	
-					nameconflict="MakeUnique">
-				<cfset newFileName = File.ServerFile>
-			</cfif>
-
-	
+		<cfswitch expression="#arguments.stMetadata.ftRenderType#">
+			<cfcase value="html">
+				<cfif len(FORM["#stMetadata.FormFieldPrefix##stMetadata.Name#New"])>
 			
-			<!--- Replace all none alphanumeric characters --->
-			<cfset cleanFileName = reReplaceNoCase(newFileName, "[^a-z0-9.]", "", "all") />
 			
-			<!--- If the filename has changed, rename the file
-			Note: doing a quick check to make sure the cleanfilename doesnt exist. If it does, prepend the count+1 to the end.
-			 --->
-			<cfif cleanFileName NEQ newFileName>
-				<cfif fileExists("#filePath##arguments.stMetadata.ftDestination#/#cleanFileName#")>
-					<cfdirectory action="list" directory="#filePath##arguments.stMetadata.ftDestination#" filter="#listFirst(cleanFileName, '.')#*" name="qDuplicates" />
-					<cfif qDuplicates.RecordCount>
-						<cfset cleanFileName = "#listFirst(cleanFileName, '.')##qDuplicates.recordCount+1#.#listLast(cleanFileName,'.')#">
+					<cfif structKeyExists(form, "#stMetadata.FormFieldPrefix##stMetadata.Name#") AND  len(FORM["#stMetadata.FormFieldPrefix##stMetadata.Name#"])>
+						<!--- This means there is currently a file associated with this object. We need to override this file --->
+						
+						<cfset lFormField = replace(FORM["#stMetadata.FormFieldPrefix##stMetadata.Name#"], '\', '/')>			
+						<cfset uploadFileName = listLast(lFormField, "/") />
+						
+						<cffile action="UPLOAD"
+							filefield="#stMetadata.FormFieldPrefix##stMetadata.Name#New" 
+							destination="#filePath##arguments.stMetadata.ftDestination#"		        	
+							nameconflict="MakeUnique" />
+						<cffile action="rename" source="#filePath##arguments.stMetadata.ftDestination#/#File.ServerFile#" destination="#uploadFileName#" />
+						<cfset newFileName = uploadFileName>
+					<cfelse>
+						<!--- There is no image currently so we simply upload the image and make it unique  --->
+						<cffile action="UPLOAD"
+							filefield="#stMetadata.FormFieldPrefix##stMetadata.Name#New" 
+							destination="#filePath##arguments.stMetadata.ftDestination#"		        	
+							nameconflict="MakeUnique">
+						<cfset newFileName = File.ServerFile>
 					</cfif>
-					 
-				</cfif>
-				
-				<cffile action="rename" source="#filePath##arguments.stMetadata.ftDestination#/#newFileName#" destination="#cleanFileName#" />
-			</cfif>			
-									
-			<!--- </cfif> --->
-			<cfset stResult.value = "#arguments.stMetadata.ftDestination#/#cleanFileName#">
-
-			
-		</cfif>
 		
+			
+					
+					<!--- Replace all none alphanumeric characters --->
+					<cfset cleanFileName = reReplaceNoCase(newFileName, "[^a-z0-9.]", "", "all") />
+					
+					<!--- If the filename has changed, rename the file
+					Note: doing a quick check to make sure the cleanfilename doesnt exist. If it does, prepend the count+1 to the end.
+					 --->
+					<cfif cleanFileName NEQ newFileName>
+						<cfif fileExists("#filePath##arguments.stMetadata.ftDestination#/#cleanFileName#")>
+							<cfdirectory action="list" directory="#filePath##arguments.stMetadata.ftDestination#" filter="#listFirst(cleanFileName, '.')#*" name="qDuplicates" />
+							<cfif qDuplicates.RecordCount>
+								<cfset cleanFileName = "#listFirst(cleanFileName, '.')##qDuplicates.recordCount+1#.#listLast(cleanFileName,'.')#">
+							</cfif>
+							 
+						</cfif>
+						
+						<cffile action="rename" source="#filePath##arguments.stMetadata.ftDestination#/#newFileName#" destination="#cleanFileName#" />
+					</cfif>			
+											
+					<!--- </cfif> --->
+					<cfset stResult.value = "#arguments.stMetadata.ftDestination#/#cleanFileName#">
+		
+					
+				</cfif>
+			</cfcase>
+		
+			<cfdefaultcase><!--- value="flash" --->
+				<cfif structkeyexists(session,"#stMetadata.FormFieldPrefix##stMetadata.Name#") and len(session["#stMetadata.FormFieldPrefix##stMetadata.Name#"])>
+					<cfset stResult.value = session["#stMetadata.FormFieldPrefix##stMetadata.Name#"] />
+					<cfset structdelete(session,"#stMetadata.FormFieldPrefix##stMetadata.Name#") />
+				<cfelseif structkeyexists(form,"#stMetadata.FormFieldPrefix##stMetadata.Name#")>
+					<cfset stResult.value = form["#stMetadata.FormFieldPrefix##stMetadata.Name#"] />
+				</cfif>
+			</cfdefaultcase>
+		
+		</cfswitch>
 
 	
-<!--- 		 --->
 		<!--- ----------------- --->
 		<!--- Return the Result --->
 		<!--- ----------------- --->
