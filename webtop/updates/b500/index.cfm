@@ -249,7 +249,7 @@ a {color: ##116EAF;}
 	</cfquery>
 	<cfquery datasource="#application.dsn#">
 	INSERT INTO  #application.dbowner#dmCategory(objectid,alias,categorylabel,createdby,ownedby,lastupdatedby,datetimecreated,datetimelastupdated,label)
-	SELECT categoryID,alias,categorylabel,'farcry','farcry','farcry', #createODBCDate(now())#, #createODBCDate(now())# ,categorylabel
+	SELECT DISTINCT categoryID,alias,categorylabel,'farcry','farcry','farcry', #createODBCDate(now())#, #createODBCDate(now())# ,categorylabel
 	FROM categories
 	</cfquery>
 	
