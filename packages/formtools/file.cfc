@@ -22,6 +22,7 @@
 		<cfset var swftag = "" />
 		<cfset var browseScript = "" />
 		<cfset var i = 0 />
+		<cfset var facade = "" />
 		
 		<cfparam name="arguments.stMetadata.ftstyle" default="" />
 		<cfparam name="arguments.stMetadata.ftRenderType" default="flash" />
@@ -85,19 +86,13 @@
 			</cfcase>
 			
 			<cfdefaultcase><!--- value="flash" --->
-				<cfparam name="arguments.stMetadata.ftFacade" default="#application.url.farcry#/facade/fileUpload/upload.cfm?typename=#arguments.typename#&property=#arguments.stMetadata.name#&fieldname=#arguments.fieldname#&current=#urlencodedformat(arguments.stMetadata.value)#" />
+				<cfparam name="arguments.stMetadata.ftFacade" default="#mid(application.url.farcry,len(application.url.webroot)+1,len(application.url.farcry))#/facade/fileUpload/upload.cfm" />
 				<cfparam name="arguments.stMetadata.ftFileTypes" default="*.*" />
 				<cfparam name="arguments.stMetadata.ftFileDescription" default="File Types" />
 				<cfparam name="arguments.stMetadata.ftMaxSize" default="-1" />
 				<cfparam name="arguments.stMetadata.ftOnComplete" default="" />
 				
-				<skin:htmlHead id="flashfileupload"><cfoutput>
-					<script type="text/javascript">
-						function updateField(id,value) {
-							document.getElementByID(id).value = value;
-						}
-					</script>
-				</cfoutput></skin:htmlHead>
+				<cfset facade = "#application.url.webroot##arguments.stMetadata.ftFacade#?#session.urltoken#&typename=#arguments.typename#&property=#arguments.stMetadata.name#&fieldname=#arguments.fieldname#&current=#urlencodedformat(arguments.stMetadata.value)#">
 				
 				<cfsavecontent variable="html">
 					<cfoutput>
@@ -117,7 +112,7 @@
 						</cfif>
 						<div style="width:420px;height:100px;">
 							<cfform name="myform" width="420" format="Flash" timeout="100">
-								<ft:flashUpload name="file" actionFile="#arguments.stMetadata.ftFacade#&#session.urltoken#" value="#arguments.stMetadata.value#" filetypes="#listchangedelims(arguments.stMetadata.ftFileTypes,';')#" fileDescription="#arguments.stMetadata.ftFileDescription#" maxsize="#arguments.stMetadata.ftMaxSize#" onComplete="getURL('javascript:updateField(\'#arguments.fieldname#\',#arguments.fieldname#.text)');#arguments.stMetadata.ftOnComplete#">
+								<ft:flashUpload name="file" actionFile="#facade#" value="#arguments.stMetadata.value#" filetypes="#listchangedelims(arguments.stMetadata.ftFileTypes,';')#" fileDescription="#arguments.stMetadata.ftFileDescription#" maxsize="#arguments.stMetadata.ftMaxSize#" onComplete="getURL('javascript:updateField(\'#arguments.fieldname#\',#arguments.fieldname#.text)');#arguments.stMetadata.ftOnComplete#">
 									<ft:flashUploadInput chooseButtonLabel="Browse" uploadButtonLabel="Upload" />
 								</ft:flashUpload>
 							</cfform>
