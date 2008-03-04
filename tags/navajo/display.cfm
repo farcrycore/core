@@ -1,3 +1,4 @@
+<cfsetting enablecfoutputonly="Yes">
 <!---
 || LEGAL ||
 $Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
@@ -17,10 +18,24 @@ $TODO: This needs to be converted into a CFC! GB $
 || DEVELOPER ||
 $Developer: Geoff Bowers (modius@daemon.com.au)$
 --->
-<cfsetting enablecfoutputonly="Yes">
 <cfprocessingdirective pageencoding="utf-8" />
 
+<!--- Tag libraries --->
+<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4" />
+<cfimport taglib="/farcry/core/tags/navajo/" prefix="nj" />
+<cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry" />
+<cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
+<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
+
+<!--- run once only --->
+<cfif thistag.executionmode eq "end">
+	<cfexit method="exittag" />
+</cfif>
+
 <cftimer label="NAVAJO DISPLAY">
+	
+<cfparam name="attributes.objectid" default="" />
+<cfparam name="attributes.typename" default="" />
 	
 <!--- optional attributes --->
 <cfparam name="attributes.method" default="display" type="string">
@@ -32,56 +47,38 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 	<cfset attributes.method = "display">
 </cfif>
 
-
-<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
-<cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
 <cfparam name="request.bHideContextMenu" default="false">
 
-<cfif structkeyexists(url,"type")>
-	<cfset url.typename = url.type />
+<!--- Handle options for passing object/type in --->
+<cfif not len(attributes.typename) and structkeyexists(url,"type")>
+	<cfset attributes.typename = url.type />
 </cfif>
-<cfif structkeyexists(url,"view")>
-	<cfset url.method = url.view />
+<cfif not len(attributes.objectid) and structkeyexists(url,"objectid")>
+	<cfset attributes.objectid = url.objectid />
 </cfif>
-
-<!--- 
-todo: 	versioning object will be deprecated.. 
-		this needs to be *totally* revised.. ie. should never have been put here
-		20050317 GB
- --->
-<cfif isDefined("URL.archiveid") AND findNoCase("archive.cfm",CGI.HTTP_REFERER)>  
-	<cfset oArchive = createObject("component","#application.packagepath#.farcry.versioning")>
-	<cfset qArchive = oArchive.getArchiveDetail(objectid=url.archiveid)>
-
-	<cfif qArchive.recordCount EQ 1>
-		<cfwddx action="wddx2cfml" input="#qArchive.objectWDDX#" output="stArchive">
-		<cfset URL.objectid = stArchive.objectid>
-	</cfif>
+<cfif not len(attributes.objectid) and structkeyexists(url,"view")>
+	<cfset attributes.method = url.view />
 </cfif>
 
 <!--- method for dealing with the missing url param... redirect to home page --->
-<cfif not isDefined("url.objectId")>
-	<cfif structkeyexists(url,"typename")>
-		<cfset url.objectid = "" />
+<cfif not len(attributes.objectid)>
+	<cfif len(attributes.typename)>
+		<cfset attributes.objectid = "" />
 	<cfelse>
 		<cfif isDefined("application.navid.home")>
-			<cfset url.objectid = application.navid.home>
-			<cftrace var="application.navid.home" text="home UUID set" />
+			<cfset url.objectid = application.navid.home />
+			<cfset attributes.objectid = application.navid.home />
 		<cfelse>
 			<cflocation url="#application.url.webroot#/" addtoken="No">
 		</cfif>
 	</cfif>
 </cfif>
 
-<cfif len(url.objectid)>
+<cfif len(attributes.objectid)>
 
 	<!--- grab the object we are displaying --->
 	<cftry>
-		<cfif isDefined("stArchive")>
-			<cfset stObj = duplicate(stArchive)>
-		<cfelse>	
-			<q4:contentobjectget objectid="#url.ObjectID#" r_stobject="stObj">
-		</cfif>
+		<q4:contentobjectget objectid="#attributes.objectid#" r_stobject="stObj">
 		
 		<cftrace var="stobj.typename" text="object retrieved" />
 	
@@ -90,128 +87,38 @@ todo: 	versioning object will be deprecated..
 			<cfthrow message="#application.adminBundle[session.dmProfile.locale].badCOAPI#">
 		</cfif>
 		<cfcatch type="Any">
-			<cflocation url="#application.url.webroot#/" addtoken="No">
-			<!--- $TODO:
-			log this error if it occurs
-			or perhaps provide URL 404 type error for user$
-			--->
-			<cfabort>
+			<farcry:logevent object="#attributes.objectid#" type="display" event="404" />
+			<cfif fileexists("#application.path.project#/errors/404.cfm")>
+				<cfinclude template="#application.path.project#/errors/404.cfm" />
+				<cfexit method="exittag" />
+			<cfelseif isDefined("application.navid.home")>
+				<cflocation url="#application.url.conjurer#?objectid=#application.navid.home#" addtoken="No" />
+			<cfelse>
+				<cflocation url="#application.url.webroot#/" addtoken="No">
+			</cfif>
 		</cfcatch>
 	</cftry>
 	
-	<!--- if we are displaying a navigation point, get the first approved object to display --->
-	<cfif stObj.typename IS "dmNavigation">
-		<!--- check for sim link --->
-	    <cfif len(stObj.externalLink) gt 0>
-	        <q4:contentobjectget objectid="#stObj.externalLink#" r_stobject="stObj">
-	    	<cftrace var="url.objectid" text="Setting navid to URL.objectid as external link is specified" />
-			<cfset request.navid = URL.objectid>
-			<!--- It is often useful to know the navid of the externalLink for use on the page that is being rendered --->
-			<cfset request.externalLinkNavid = stObj.objectid>
-			
-			
-	    </cfif>	
+	<!--- CHECK TO SEE IF OBJECT IS IN DRAFT --->
+	<!--- If the current user is not permitted to see draft objects, then make them login --->
+	<cfif structkeyexists(stObj,"status") and stObj.status EQ "draft" and NOT ListContains(request.mode.lValidStatus, stObj.status)>
+		<!--- send to login page and return in draft mode --->
+		<cflocation url="#application.url.farcry#/login.cfm?returnUrl=#URLEncodedFormat(cgi.script_name&'?'&cgi.query_string)#&error=draft&showdraft=1" addtoken="No" />
+	</cfif>
 	
-		<!--- CHECK TO SEE IF NAV NODE IS IN DRAFT --->
-		<cfif stObj.status EQ "draft">
-			
-			<!--- If the current user is not permitted to see draft objects, then make them login --->
-		   	<cfif NOT ListContains(request.mode.lValidStatus, stObj.status)>
+	<!--- Get the navigation point from the URL --->
+	<cfif not structkeyexists(request,"navid") and structkeyexists(url,"navid")>
 	
-				<!--- send to login page and return in draft mode --->
-				<cflocation url="#application.url.farcry#/login.cfm?returnUrl=#URLEncodedFormat(cgi.script_name&'?'&cgi.query_string)#&error=draft&showdraft=1" addtoken="No">
-	
-			</cfif>
-		</cfif>
-	
-	    <cfif structKeyExists(stObj,"aObjectIds")
-		      AND arrayLen(stObj.aObjectIds)>
-	
-	    	<cfloop index="idIndex" from="1" to="#arrayLen(stObj.aObjectIds)#">
-	    		<q4:contentobjectget objectid="#stObj.aObjectIds[idIndex]#" r_stobject="stObjTemp">
-	    		<!--- request.mode.lValidStatus is typically approved, or draft, pending, approved in SHOWDRAFT mode --->
-	    		<cfif StructKeyExists(stObjTemp,"status") AND ListContains(request.mode.lValidStatus, stObjTemp.status)>
-	    			<!--- if in request.mode.showdraft=true mode grab underlying draft page (if it exists). Only display if user is loggedin --->
-	    			<cfif IsDefined("stObjTemp.versionID") AND request.mode.showdraft AND application.security.isLoggedIn()>
-	    				<cfquery datasource="#application.dsn#" name="qHasDraft">
-	    					SELECT objectID,status from #application.dbowner##stObjTemp.typename# where versionID = '#stObjTemp.objectID#'
-	    				</cfquery>
-	    				<cfif qHasDraft.recordcount gt 0>
-	    					<q4:contentobjectget objectid="#qHasDraft.objectid#" r_stobject="stObjDraft">
-	    					<!--- reset object structure to be DRAFT object --->
-	    					<cfset stObjTemp = stObjDraft>
-	    				</cfif>
-	    			</cfif>
-	    			<!--- set the navigation point for the child obj - unless its a symnolic link in which case wed have already set navid --->
-			
-					<cfif isDefined("URL.navid")>
-						<cftrace var="url.navid" text="URL.navid exists - setting request.navid = to url.navid" />
-						<cfset request.navid = URL.navID>
-					<cfelseif NOT isDefined("request.navid")>		
-		    			<cfset request.navid = stObj.objectID>
-		    			<cftrace var="stobj.objectid" text="URL.navid is not defined - setting to stObj.objectid" />
-					</cfif>	
-					
-	    			<!--- reset stObj to appropriate object to be displayed --->
-	    			<cfset stObj = stObjTemp>
-	    			<!--- end loop now --->
-	    			<cfbreak>
-	    		<cfelseif stObjTemp.typename neq "dmCSS">
-	    			<!--- no status so just show object --->
-	    			<!--- set the navigation point for the child obj --->
-	    			<cfif isDefined("URL.navid")>
-	    				<cfset request.navid = URL.navid>
-	    				<cftrace var="stobj.objectid" text="object type not CSS,URL.navid exists - setting navid = url.navid" />
-	    			<cfelse>
-	    				<cfset request.navid = stObj.objectID>		
-	    				<cftrace var="stobj.objectid" text="object type not CSS - setting navid = stobj.objectid" />
-	    			</cfif>
-	    			
-	    			<!--- reset stObj to appropriate object to be displayed --->
-	    			<cfset stObj = stObjTemp>
-	    			<!--- end loop now --->
-	    			<cfbreak>
-	    		</cfif>
-	    	</cfloop>
-		
-	    	<!--- if request.navid is not set, then no valid objects available for this node. --->
-	    	<cfif NOT isDefined("request.navid")>
-	    		<!--- check if object has status --->
-	    		<cfif StructKeyExists(stObjTemp,"status")>
-	    			<!--- check if logged in --->
-	    			<cfif application.security.isLoggedIn()>
-	    				<!--- change to draft mode --->
-	    				<cflocation url="#cgi.script_name#?#cgi.query_string#&showdraft=1" addtoken="No">
-	    			<cfelse>
-	    				<!--- send to login page and return in draft mode --->
-	    				<cflocation url="#application.url.farcry#/login.cfm?returnUrl=#URLEncodedFormat(cgi.script_name&'?'&cgi.query_string)#&error=draft&showdraft=1" addtoken="No">
-	    			</cfif>
-	    		</cfif>
-	    	</cfif>
-	    </cfif>
-	
-		<cfif NOT isDefined("request.navid")>
-			<cfset request.navid = stobj.objectid />
-		</cfif>
-		
-		
-	<!--- else get the navigation point from the URL --->
-	<cfelseif isDefined("url.navid")>
 		<!--- ie. this is a dynamic object looking for context --->
 		<cftrace var="url.navid" text="url.navid is defined for non dmNavigation object" />
-		<cfset request.navid = url.navid>
+		<cfset request.navid = url.navid />
 	
 	<!--- otherwise get the navigation point for this object --->
-	<cfelse>
-		<!--- If the user is not logged in and are trying to view a draft - request login --->
-		<cfif isDefined("stobj.status")>
-			<cfif stObj.status IS "DRAFT" AND NOT application.security.isLoggedIn()>
-				<cflocation url="#application.url.farcry#/login.cfm?returnUrl=#URLEncodedFormat(cgi.script_name&'?'&cgi.query_string)#&error=draft&showdraft=1" addtoken="No">
-			</cfif>
-		</cfif>
-		<nj:getNavigation objectId="#stObj.objectId#" r_stobject="stNav">
-		<!--- if the object is in the tree this will give us the node --->
+	<cfelseif not stObj.typename eq "dmNavigation" and not structkeyexists(request,"navid")>
 	
+		<nj:getNavigation objectId="#stObj.objectId#" r_stobject="stNav">
+		
+		<!--- if the object is in the tree this will give us the node --->
 		<cfif isDefined("stNav.objectid") AND len(stNav.objectid)>
 			<cfset request.navid = stNav.objectID>
 			<cftrace var="stNav.objectid" text="url.navid is not defined, getNavigation called to find navid" />
@@ -220,79 +127,70 @@ todo: 	versioning object will be deprecated..
 		<cfelse>
 			<cfset request.navid = application.navid.home>
 		</cfif>
+	<cfelse>
+	
+		<cfparam name="request.navid" default="#application.navid.home#">
+	
 	</cfif>
 	
-	<!---
-	check security,...
-	remember security is applied through the tree navigation point *not*
-	the individual object being rendered.
-	lpolicyGroupIds="#application.dmsec.ldefaultpolicygroups#"
-	the latter is the policy group for anonymous...
-	--->
+	<!--- Check security --->
+	<sec:CheckPermission permission="View" objectID="#attributes.objectid#" typename="#stObj.typename#" result="iHasViewPermission" />
 	
-	<!--- check permissions on the current nav node --->
-	<cfset iHasViewPermission = application.security.checkPermission(object=request.navid,permission="View") />
-	
-	<!--- if the user is unable to view the object, then logout and send to login form --->
+	<!--- if the user is unable to view the object, then show the denied access webskin --->
 	<cfif iHasViewPermission NEQ 1>
-		<!--- log out the user --->
-		<cfset application.factory.oAuthentication.logout()>
-		<cflocation url="#attributes.loginpath#" addtoken="No">
-		<cfabort>
+		<skin:view objectid="#attributes.objectid#" webskin="deniedaccess" />
+		<cfexit method="exittag" />
 	</cfif>
-	
+		
 	<!--- If we are in designmode then check the containermanagement permissions --->
 	<cfif request.mode.design>
 		<!--- set the users container management permission --->
-		<cfset request.mode.showcontainers = application.security.checkPermission(object=request.navid,permission="ContainerManagement")>
+		<sec:CheckPermission permission="ContainerManagement" objectid="#request.navid#" result="iShowContainers" />
+		<cfset request.mode.showcontainers = iShowContainers />
+	</cfif>
+	
+	<!--- if in request.mode.showdraft=true mode grab underlying draft page (if it exists). Only display if user is loggedin --->
+	<cfif structkeyexists(stObj,"versionID") AND request.mode.showdraft AND application.security.isLoggedIn()>
+		<cfquery datasource="#application.dsn#" name="qHasDraft">
+			select		objectID,status 
+			from 		#application.dbowner##stObj.typename# 
+			where 		versionID = '#stObj.objectID#'
+		</cfquery>
+		
+		<cfif qHasDraft.recordcount gt 0>
+			<!--- set the navigation point for the child obj - unless its a symnolic link in which case wed have already set navid --->
+			<cfif isDefined("URL.navid")>
+				<cftrace var="url.navid" text="URL.navid exists - setting request.navid = to url.navid" />
+				<cfset request.navid = URL.navID>
+			<cfelseif NOT isDefined("request.navid")>		
+				<cfset request.navid = stObj.objectID>
+				<cftrace var="stobj.objectid" text="URL.navid is not defined - setting to stObj.objectid" />
+			</cfif>
+			
+			<nj:display objectid="#qHasDraft.objectid[1]#" />
+			<cfexit method="exittemplate">
+		</cfif>
 	</cfif>
 	
 	<!--- determine display method for object --->
 	<cfset request.stObj = stObj>
-	<!--- $TODO: refactor object calls... for now put stOBj into request$ --->
-	
+
 	<cfif attributes.method neq "display" AND  attributes.lmethods contains attributes.method>
 	
-		<cfset o = createObject("component", application.stcoapi[stObj.typename].packagepath)>
-		<cfset HTML = o.getView(stobject=stObj, Template=attributes.method, alternateHtml="") />
-		<cfif len(trim(HTML))>
-			<cfoutput>#HTML#</cfoutput>
-		<cfelse>
-			<!--- ie. if a method has been passed in deliberately and is allowed use this --->
-			<cftrace var="attributes.method" text="Passed in attribute method used" />
-			<q4:contentobject
-				typename="#application.stcoapi[stObj.typename].packagepath#"
-				objectid="#stObj.ObjectID#"
-				method="#attributes.method#">
-		</cfif>
+		<!--- If a method has been passed in deliberately and is allowed use this --->
+		<cftrace var="attributes.method" text="Passed in attribute method used" />
+		<skin:view objectid="#attributes.objectid#" webskin="#attributes.method#" alternateHTML="" />
 		
 	<cfelseif IsDefined("stObj.displayMethod") AND len(stObj.displayMethod)>
+	
 		<!--- Invoke display method of page --->
 		<cftrace var="stObj.displayMethod" text="Object displayMethod used" />
-		
-		<cfif isDefined("stArchive")>
-			<cftry>
-					<cfinclude template="/farcry/projects/#application.projectDirectoryName#/#application.path.handler#/#stObj.typename#/#stObj.displayMethod#.cfm">
-					<cfcatch>
-						<!--- check to see if the displayMethod template exists --->
-						<cfif NOT fileExists("#application.path.webskin#/#stObj.typename#/#stObj.displayMethod#.cfm")>
-							 <cfabort showerror="Error: Template not found [#application.path.webskin#/#stObj.typename#/#stObj.displayMethod#.cfm]."> 
-						<cfelse>
-							<cfif isdefined("url.debug")><cfset request.cfdumpinited = false><cfoutput>#cfcatch.message#<br />#cfcatch.detail#</cfoutput><cfdump var="#cfcatch#"></cfif>
-						</cfif>
-					</cfcatch>
-				</cftry>
-			
-		<cfelse>
-			<cfset o = createObject("component", application.stcoapi[stObj.typename].packagepath)>
-			<cfset HTML = o.getView(stobject=stObj, Template="#stObj.displayMethod#") />
-			<cfoutput>#HTML#</cfoutput>
-		</cfif>
+		<skin:view objectid="#attributes.objectid#" webskin="#stObj.displayMethod#" />
 		
 	<cfelse>
 	
-		<cfset o = createObject("component", application.stcoapi[stObj.typename].packagepath)>
-		<cfset HTML = o.getView(stobject=stObj, Template="displayPageStandard", alternateHtml="") />
+		<skin:view objectid="#attributes.objectid#" webskin="displayPageStandard" r_html="HTML" />
+		
 		<cfif len(trim(HTML))>
 			<cfoutput>#HTML#</cfoutput>
 		<cfelse>
@@ -300,14 +198,14 @@ todo: 	versioning object will be deprecated..
 			<cftrace text="Default display method used" />
 			
 			<cftry>
-				<cfoutput>#o.display(objectid=stObj.objectId)#</cfoutput>
+				<cfset HTML = createObject("component", application.types[stObj.typename].typePath).display(objectid=stObj.objectId) />
+				<cfoutput>#HTML#</cfoutput>
+				
 				<cfcatch type="any">
 					<cfthrow type="core.tags.navajo.display" message="Default display method for object could not be found." />
 				</cfcatch>
 			</cftry>
-				
 		</cfif>
-	
 	</cfif>
 	
 	<!---------------------------
@@ -338,11 +236,14 @@ todo: 	versioning object will be deprecated..
 <cfelse>
 
 	<!--- Handle type webskins --->
-	<cfparam name="url.method" default="#attributes.method#" />
-	<cfset o = createObject("component", application.stCOAPI[url.typename].packagepath)>
-	<cfset HTML = o.getView(template="#url.method#") />
-	<cfoutput>#HTML#</cfoutput>
-
+	<sec:CheckPermission webskinpermission="#attributes.method#" result="bView" />
+	
+	<cfif bView>
+		<skin:view typename="#attributes.typename#" webskin="#attributes.method#" />
+	<cfelse>
+		<cflocation url="#application.url.farcry#/login.cfm?returnUrl=#URLEncodedFormat(cgi.script_name&'?'&cgi.query_string)#&error=restricted" addtoken="No" />
+	</cfif>
+	
 </cfif>
 
 </cftimer>

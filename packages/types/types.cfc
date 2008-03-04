@@ -112,7 +112,7 @@ default handlers
 		</cfif>
 
 		<!--- Check permissions on this webskin --->
-		<cfif not application.security.checkPermission(type=stObj.typename,webskin=arguments.template)>
+		<cfif arguments.template eq "deniedaccess" or not application.security.checkPermission(type=stObj.typename,webskin=arguments.template)>
 			<cfsavecontent variable="webskinHTML"><cfinclude template="#getWebskinPath(stObj.typename,'deniedaccess')#" /></cfsavecontent>
 			<cfreturn webskinHTML />
 		</cfif>
