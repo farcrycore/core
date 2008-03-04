@@ -914,7 +914,7 @@ function menuOption_Edit()
 
 o = new Object();
 objectMenu['Insert'] = o;
-o.text = "#application.adminBundle[session.dmProfile.locale].insert#";
+o.text = "#apapplication.rb.getResource("insert")#";
 o.js = "menuOption_Insert()";
 o.jsvalidate = "1";
 o.bShowDisabled = 1;
@@ -944,7 +944,7 @@ function menuOption_CreatePopup( id )
 
 o = new Object();
 objectMenu['Delete'] = o;
-o.text = "#application.adminBundle[session.dmProfile.locale].delete#";
+o.text = "#apapplication.rb.getResource("delete")#";
 o.js = "menuOption_Delete()"; //  && countObjects(lastSelectedId) <=0  && countNodes(lastSelectedId) <=0
 o.jsvalidate = "(objects[lastSelectedId]['OBJECTID'] != '#rootobjectid#')?1:0";
 o.bShowDisabled = 1;
@@ -959,7 +959,7 @@ function menuOption_Delete()
 
 o = new Object();
 objectMenu['Move'] = o;
-o.text = "#application.adminBundle[session.dmProfile.locale].move#";
+o.text = "#apapplication.rb.getResource("move")#";
 o.submenu = "Move";
 o.jsvalidate = 1;
 
@@ -972,14 +972,14 @@ o.bSeperator = 0;
 
 	o = new Object();
 	moveMenu['MoveUp'] = o;
-	o.text = "#application.adminBundle[session.dmProfile.locale].moveUp#";
+	o.text = "#apapplication.rb.getResource("moveUp")#";
 	o.js = "menuOption_MoveInternal(\\'up\\');";
 	o.jsvalidate = "objectIndex(lastSelectedId)>0||nodeIndex(lastSelectedId)>0";
 	o.bShowDisabled = 1;
 	
 	o = new Object();
 	moveMenu['MoveDown'] = o;
-	o.text = "#application.adminBundle[session.dmProfile.locale].moveDown#";
+	o.text = "#apapplication.rb.getResource("moveDown")#";
 	o.js = "menuOption_MoveInternal(\\'down\\');";
 	o.jsvalidate = 	"(objectIndex(lastSelectedId)!=-1 && objectIndex(lastSelectedId)+1 < countObjects(getParentObject(lastSelectedId)['OBJECTID'])) || "+
 					"(nodeIndex(lastSelectedId)!=-1 && nodeIndex(lastSelectedId)+1 < countNodes(getParentObject(lastSelectedId)['OBJECTID']))";
@@ -988,14 +988,14 @@ o.bSeperator = 0;
 	
 	o = new Object();
 	moveMenu['MoveToTop'] = o;
-	o.text = "#application.adminBundle[session.dmProfile.locale].moveToTop#";
+	o.text = "#apapplication.rb.getResource("moveToTop")#";
 	o.js = "menuOption_MoveInternal(\\'top\\');";
 	o.jsvalidate = "objectIndex(lastSelectedId)>0||nodeIndex(lastSelectedId)>0";
 	o.bShowDisabled = 1;
 	
 	o = new Object();
 	moveMenu['MoveToBottom'] = o;
-	o.text = "#application.adminBundle[session.dmProfile.locale].moveToBottom#";
+	o.text = "#apapplication.rb.getResource("moveToBottom")#";
 	o.js = "menuOption_MoveInternal(\\'bottom\\');";
 	o.jsvalidate = "(objectIndex(lastSelectedId)!=-1 && objectIndex(lastSelectedId)+1 < countObjects(getParentObject(lastSelectedId)['OBJECTID'])) || "+
 					"(nodeIndex(lastSelectedId)!=-1 && nodeIndex(lastSelectedId)+1 < countNodes(getParentObject(lastSelectedId)['OBJECTID']))";

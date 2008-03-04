@@ -42,9 +42,9 @@ $out:$
 
 	<!--- as long as we're not the first step, enable back button --->
 	<cfif Caller.thisstep.name NEQ CALLER.stPLP.Steps[1].name>
-		<cf_dmButton name="Back" value="&lt;&lt; #application.adminBundle[session.dmProfile.locale].Back#" width="80" onClick="#ATTRIBUTES.onClick#">
+		<cf_dmButton name="Back" value="&lt;&lt; #apapplication.rb.getResource("Back")#" width="80" onClick="#ATTRIBUTES.onClick#">
 	<cfelse>
-		<cf_dmButton name="Back" value="&lt;&lt; #application.adminBundle[session.dmProfile.locale].Back#" width="80" onClick="#ATTRIBUTES.onClick#" disabled="true">
+		<cf_dmButton name="Back" value="&lt;&lt; #apapplication.rb.getResource("Back")#" width="80" onClick="#ATTRIBUTES.onClick#" disabled="true">
 	</cfif>
 	
 	
@@ -60,22 +60,22 @@ $out:$
 	</cfif>
 
 <cfif Caller.thisstep.name NEQ CALLER.stPLP.Steps[#arraylen(CALLER.stPLP.Steps)# -1].name>
-	<cf_dmButton name="Submit" value="#application.adminBundle[session.dmProfile.locale].nextUC# &gt;&gt;" width="80" onClick="#ATTRIBUTES.onClick#">
+	<cf_dmButton name="Submit" value="#apapplication.rb.getResource("nextUC")# &gt;&gt;" width="80" onClick="#ATTRIBUTES.onClick#">
 <cfelse>
-	<cf_dmButton name="Submit" value="#application.adminBundle[session.dmProfile.locale].finish# &gt;&gt;" width="80" onClick="#ATTRIBUTES.onClick#">
+	<cf_dmButton name="Submit" value="#apapplication.rb.getResource("finish")# &gt;&gt;" width="80" onClick="#ATTRIBUTES.onClick#">
 </cfif>
 	<cfoutput>
 	<br><br>
-	<cf_dmButton name="Save" value="#application.adminBundle[session.dmProfile.locale].save#" width="80">
+	<cf_dmButton name="Save" value="#apapplication.rb.getResource("save")#" width="80">
 
 	<cfif attributes.cancelEvent neq "">
-		<input type="button" value="#application.adminBundle[session.dmProfile.locale].cancel#" width="80" onClick="document.location.href='#attributes.cancelEvent#'" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';">
+		<input type="button" value="#apapplication.rb.getResource("cancel")#" width="80" onClick="document.location.href='#attributes.cancelEvent#'" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';">
 	<cfelse>
 		<!--- if dmHTML run synchTab function --->
 		<cfif isdefined("caller.output.typename") and caller.output.typename eq "dmHTML">
-			<cf_dmButton name="Cancel" value="#application.adminBundle[session.dmProfile.locale].cancel#" width="80" onClick="parent.synchTab('editFrame','activesubtab','subtab','siteEditOverview');parent.synchTitle('Overview')">
+			<cf_dmButton name="Cancel" value="#apapplication.rb.getResource("cancel")#" width="80" onClick="parent.synchTab('editFrame','activesubtab','subtab','siteEditOverview');parent.synchTitle('Overview')">
 		<cfelse>
-			<cf_dmButton name="Cancel" value="#application.adminBundle[session.dmProfile.locale].cancel#" width="80">
+			<cf_dmButton name="Cancel" value="#apapplication.rb.getResource("cancel")#" width="80">
 		</cfif>
 	</cfif>
 	

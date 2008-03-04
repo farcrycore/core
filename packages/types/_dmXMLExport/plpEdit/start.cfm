@@ -34,68 +34,68 @@ Brendan Sisson (brendan@daemon.com.au)
 <widgets:plpWrapper><cfoutput>
 <form action="#cgi.script_name#?#cgi.query_string#" class="f-wrap-1 wider f-bg-medium" name="editform" method="post" enctype="multipart/form-data">
 <fieldset>
-<h3>#application.adminBundle[session.dmProfile.locale].generalInfo#: <span class="highlight">#output.label#</span></h3>
+<h3>#apapplication.rb.getResource("generalInfo")#: <span class="highlight">#output.label#</span></h3>
 
 <cfif errormessage NEQ "">
 <p id="fading1" class="fade"><span class="error">#errormessage#</span></p>
 </cfif>
-	<label for="Title"><b>#application.adminBundle[session.dmProfile.locale].titleLabel#</b>
+	<label for="Title"><b>#apapplication.rb.getResource("titleLabel")#</b>
 		<input type="text" name="Title" id="Title" value="#output.Title#" maxlength="255" size="45" /><br />
 	</label>
 
-	<label for="description"><b>#application.adminBundle[session.dmProfile.locale].description#</b>
+	<label for="description"><b>#apapplication.rb.getResource("description")#</b>
 		<textarea name="description">#output.description#</textarea><br />
 	</label>
 
-	<label for="language"><b>#application.adminBundle[session.dmProfile.locale].languageLabel#</b>
+	<label for="language"><b>#apapplication.rb.getResource("languageLabel")#</b>
 		<input type="text" name="language" id="language" value="#output.language#" maxlength="255" size="45" /><br />
 	</label>
 
-	<label for="creator"><b>#application.adminBundle[session.dmProfile.locale].creatorLabel#</b>
+	<label for="creator"><b>#apapplication.rb.getResource("creatorLabel")#</b>
 		<input type="text" name="creator" id="creator" value="#output.creator#" maxlength="255" size="45" /><br />
 	</label>
 
-	<label for="rights"><b>#application.adminBundle[session.dmProfile.locale].rightsLabel#</b>
+	<label for="rights"><b>#apapplication.rb.getResource("rightsLabel")#</b>
 		<input type="text" name="rights" id="rights" value="#output.rights#" maxlength="255" size="45" /><br />
 	</label>
 
-	<label for="generatorAgent"><b>#application.adminBundle[session.dmProfile.locale].generatorAgentLabel#</b>
+	<label for="generatorAgent"><b>#apapplication.rb.getResource("generatorAgentLabel")#</b>
 		<input type="text" name="generatorAgent" id="generatorAgent" value="#output.generatorAgent#" maxlength="255" size="45" /><br />
 	</label>
 
-	<label for="errorReportsTo"><b>#application.adminBundle[session.dmProfile.locale].errorReportsEmailLabel#</b>
+	<label for="errorReportsTo"><b>#apapplication.rb.getResource("errorReportsEmailLabel")#</b>
 		<input type="text" name="errorReportsTo" id="errorReportsTo" value="#output.errorReportsTo#" maxlength="255" size="45" /><br />
 	</label>
 
-	<label for="updatePeriod"><b>#application.adminBundle[session.dmProfile.locale].updatePeriodLabel#</b>
+	<label for="updatePeriod"><b>#apapplication.rb.getResource("updatePeriodLabel")#</b>
 		<select name="updatePeriod">
-			<option value="hourly" <cfif output.updatePeriod eq "hourly">selected</cfif>>#application.adminBundle[session.dmProfile.locale].Hourly#
-			<option value="daily" <cfif output.updatePeriod eq "daily">selected</cfif>>#application.adminBundle[session.dmProfile.locale].Daily#
-			<option value="weekly" <cfif output.updatePeriod eq "weekly">selected</cfif>>#application.adminBundle[session.dmProfile.locale].Weekly#
-			<option value="monthly" <cfif output.updatePeriod eq "monthly">selected</cfif>>#application.adminBundle[session.dmProfile.locale].Monthly#
-			<option value="yearly" <cfif output.updatePeriod eq "yearly">selected</cfif>>#application.adminBundle[session.dmProfile.locale].Yearly#
+			<option value="hourly" <cfif output.updatePeriod eq "hourly">selected</cfif>>#apapplication.rb.getResource("Hourly")#
+			<option value="daily" <cfif output.updatePeriod eq "daily">selected</cfif>>#apapplication.rb.getResource("Daily")#
+			<option value="weekly" <cfif output.updatePeriod eq "weekly">selected</cfif>>#apapplication.rb.getResource("Weekly")#
+			<option value="monthly" <cfif output.updatePeriod eq "monthly">selected</cfif>>#apapplication.rb.getResource("Monthly")#
+			<option value="yearly" <cfif output.updatePeriod eq "yearly">selected</cfif>>#apapplication.rb.getResource("Yearly")#
 		</select><br />
 	</label>
 
-	<label for="updateFrequency"><b>#application.adminBundle[session.dmProfile.locale].updateFrequencyLabel#</b>
+	<label for="updateFrequency"><b>#apapplication.rb.getResource("updateFrequencyLabel")#</b>
 		<input type="text" name="updateFrequency" size="5" id="updateFrequency" value="#output.updateFrequency#" maxlength="5" /><br />
 	</label>
 
-	<label for="updateBase"><b>#application.adminBundle[session.dmProfile.locale].updateBaseDateLabel#</b>
+	<label for="updateBase"><b>#apapplication.rb.getResource("updateBaseDateLabel")#</b>
 		<input type="text" name="updateBase" id="updateBase" value="#output.updateBase#" maxlength="255" size="45" /><br />
 	</label>
 
-	<label for="contentType"><b>#application.adminBundle[session.dmProfile.locale].contentType#</b>
+	<label for="contentType"><b>#apapplication.rb.getResource("contentType")#</b>
 		<select name="contentType"><cfloop collection="#application.types#" item="i"><!--- loop over types structure in memory -- populated on application init --->					
 			<option value="#i#"<cfif output.contentType eq i>selected="selected"</cfif>>#i#</option></cfloop>			
 		</select><br />
 	</label>
 
-	<label for="numberOfItems"><b>#application.adminBundle[session.dmProfile.locale].maxItemsLabel#</b>
+	<label for="numberOfItems"><b>#apapplication.rb.getResource("maxItemsLabel")#</b>
 		<input type="text" name="numberOfItems" size="5" id="numberOfItems" value="#output.numberOfItems#" maxlength="5" /><br />
 	</label>
 	
-	<label for="xmlFile"><b>#application.adminBundle[session.dmProfile.locale].exportFileLabel#</b>
+	<label for="xmlFile"><b>#apapplication.rb.getResource("exportFileLabel")#</b>
 		<input type="text" name="xmlFile" id="numberOfItems" value="#output.xmlFile#" /><br />
 	</label>
 	<input type="hidden" name="plpAction" value="" />
@@ -106,9 +106,9 @@ Brendan Sisson (brendan@daemon.com.au)
 <!--//
 document.editform.Title.focus();
 objForm = new qForm("editform");
-objForm.Title.validateNotNull("#application.adminBundle[session.dmProfile.locale].pleaseEnterTitle#");
-objForm.updateFrequency.validateNotNull("#application.adminBundle[session.dmProfile.locale].pleaseEnterUpdateFrequency#");
-objForm.errorReportsTo.validateNotNull("#application.adminBundle[session.dmProfile.locale].pleaseEnterErrorEmail#");
+objForm.Title.validateNotNull("#apapplication.rb.getResource("pleaseEnterTitle")#");
+objForm.updateFrequency.validateNotNull("#apapplication.rb.getResource("pleaseEnterUpdateFrequency")#");
+objForm.errorReportsTo.validateNotNull("#apapplication.rb.getResource("pleaseEnterErrorEmail")#");
 //-->
 </script>
 </form></cfoutput>

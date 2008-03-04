@@ -67,9 +67,9 @@ $out:$
 			<cfinvoke component="#application.packagepath#.farcry.category" method="getHierarchies"  returnvariable="qHierarchies">
 			<cfoutput>
 			<form action="" method="post">
-			#application.adminBundle[session.dmProfile.locale].existingHierarchies#
+			#apapplication.rb.getResource("existingHierarchies")#
 			<select name="hierarchyID" class="formfield" onchange="showTree(this.value);">
-			<option value="#catRootObjectID#">#application.adminBundle[session.dmProfile.locale].showAllHierarchies#
+			<option value="#catRootObjectID#">#apapplication.rb.getResource("showAllHierarchies")#
 			<cfloop query="qHierarchies">
 				<option value="#objectID#">#objectName#</option>
 			</cfloop>

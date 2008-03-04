@@ -47,9 +47,9 @@ $out:$
 <cfoutput>
 <span class="FormTitle">
 <cfif isDefined("URL.draftObjectID")>
-	#application.adminBundle[session.dmProfile.locale].objStatusRequest#
+	#apapplication.rb.getResource("objStatusRequest")#
 <cfelse>	
-	#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].setObjStatus,"#url.status#")#
+	#application.rb.formatRBString("setObjStatus","#url.status#")#
 </cfif>	
 </span><p></p>
 </cfoutput>
@@ -84,7 +84,7 @@ $out:$
 	<cfif isdefined("stObj.status")>
 		<cfoutput>
 			<form name="form" action="" method="post">
-			<span class="formLabel">#application.adminBundle[session.dmProfile.locale].addCommentsLabel#</span><br>
+			<span class="formLabel">#apapplication.rb.getResource("addCommentsLabel")#</span><br>
 			<textarea rows="8" cols="50"  name="commentLog"></textarea><br />
 			
 			<!--- if requesting approval, list approvers --->
@@ -93,12 +93,12 @@ $out:$
 			
 			</cfif>
 			
-			<input type="submit" name="submit" value="#application.adminBundle[session.dmProfile.locale].submitUC#" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';">
-			<input type="button" name="Cancel" value="#application.adminBundle[session.dmProfile.locale].cancel#" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';" onClick="location.href='../edittabOverview.cfm?objectid=#attributes.lobjectIDs#';"></div>     
+			<input type="submit" name="submit" value="#apapplication.rb.getResource("submitUC")#" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';">
+			<input type="button" name="Cancel" value="#apapplication.rb.getResource("cancel")#" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';" onClick="location.href='../edittabOverview.cfm?objectid=#attributes.lobjectIDs#';"></div>     
 			<!--- display existing comments --->
 			<cfif structKeyExists(stObj,"commentLog")>
 				<cfif len(trim(stObj.commentLog)) AND structKeyExists(stObj,"commentLog")>
-					<p></p><span class="formTitle">#application.adminBundle[session.dmProfile.locale].previousComments#</span><P></P>
+					<p></p><span class="formTitle">#apapplication.rb.getResource("previousComments")#</span><P></P>
 					#htmlcodeformat(stObj.commentLog)#
 				</cfif>
 			</cfif>
@@ -115,7 +115,7 @@ $out:$
 		
 		
 		<cfif not structkeyexists(stObj, "status")>
-			<cfoutput><script> alert("#application.adminBundle[session.dmProfile.locale].objNoApprovalProcess#");
+			<cfoutput><script> alert("#apapplication.rb.getResource("objNoApprovalProcess")#");
 				               window.close();
 			</script></cfoutput><cfabort>
 		</cfif>
@@ -157,7 +157,7 @@ $out:$
 			</cfif>
 				
 		<cfelse>
-			<cfoutput><b>#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].unknownStatusPassed,"#url.status#")#<b><br></cfoutput><cfabort>
+			<cfoutput><b>#application.rb.formatRBString("unknownStatusPassed","#url.status#")#<b><br></cfoutput><cfabort>
 		</cfif>
 		
 		<cfif isstruct(stNav)>
@@ -173,7 +173,7 @@ $out:$
 			</cfscript>
 			
 			<cfif iState neq 1>
-				<cfoutput><script> alert("#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].nosubNodeApprovalPermission,"#stNav.title#")#");
+				<cfoutput><script> alert("#application.rb.formatRBString("nosubNodeApprovalPermission","#stNav.title#")#");
 					               window.close();
 				</script></cfoutput><cfabort>
 			</cfif>
@@ -189,7 +189,7 @@ $out:$
 					<cfif session.security.userid eq stObj.attr_lastUpdatedBy>
 						<cfoutput>
 						<script>
-							alert("#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].canApproveOwnContent,stNav.title)#");
+							alert("#application.rb.formatRBString("canApproveOwnContent",stNav.title)#");
 							window.close();
 						</script>
 						</cfoutput>
@@ -198,7 +198,7 @@ $out:$
 				<cfelse>
 					<cfoutput>
 					<script>
-						alert("#application.adminBundle[session.dmProfile.locale].notLoggedIn#");
+						alert("#apapplication.rb.getResource("notLoggedIn")#");
 						window.close();
 					</script>
 					</cfoutput>

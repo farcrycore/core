@@ -27,7 +27,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 <widgets:typeadmin 
 	typename="dmCSS"
 	permissionset="news"
-	title="#application.adminBundle[session.dmProfile.locale].SiteTreeContentCSSAdministration#"
+	title="#apapplication.rb.getResource("SiteTreeContentCSSAdministration")#"
 	bdebug="0">
 </widgets:typeadmin>
 

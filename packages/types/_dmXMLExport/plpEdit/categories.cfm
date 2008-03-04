@@ -46,7 +46,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 
 <cfoutput>
 <form action="#cgi.script_name#?#cgi.query_string#" name="editform" method="post">
-<h3>#application.adminBundle[session.dmProfile.locale].categories#</h3>
+<h3>#apapplication.rb.getResource("categories")#</h3>
 <widgets:categoryAssociation typeName="#output.typename#" lSelectedCategoryID="#lSelectedCategoryID#">
 
 	<input type="hidden" name="bSubmitted" value="1"/>

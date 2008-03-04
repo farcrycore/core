@@ -36,7 +36,7 @@ out:
 
 	<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
 	<cfoutput>
-	<h3>#application.adminBundle[session.dmProfile.locale].sessionPerHourLast3Days#</h3>
+	<h3>#apapplication.rb.getResource("sessionPerHourLast3Days")#</h3>
 	</cfoutput>
 	
 	<!--- get page log entries --->
@@ -59,8 +59,8 @@ out:
 		showBorder = "no"
 		fontsize="12"
 		labelFormat = "number"
-		xAxisTitle = "#application.adminBundle[session.dmProfile.locale].Hour#" 
-		yAxisTitle = "#application.adminBundle[session.dmProfile.locale].sessionNumbers#" 
+		xAxisTitle = "#apapplication.rb.getResource("Hour")#" 
+		yAxisTitle = "#apapplication.rb.getResource("sessionNumbers")#" 
 		show3D = "yes"
 		xOffset = "0.15" 
 		yOffset = "0.15"
@@ -68,9 +68,9 @@ out:
 		showLegend = "yes" 
 		tipStyle = "MouseOver">
 		
-		<cfchartseries type="bar" query="q1" itemcolumn="hour" valuecolumn="count_Ip" serieslabel="#application.adminBundle[session.dmProfile.locale].Today#" paintstyle="shade"></cfchartseries>
-		<cfchartseries type="bar" query="q2" itemcolumn="hour" valuecolumn="count_Ip" serieslabel="#application.adminBundle[session.dmProfile.locale].Yesterday#" paintstyle="shade"></cfchartseries>
-		<cfchartseries type="bar" query="q3" itemcolumn="hour" valuecolumn="count_Ip" serieslabel="#application.adminBundle[session.dmProfile.locale].DayBefore#" paintstyle="shade"></cfchartseries>
+		<cfchartseries type="bar" query="q1" itemcolumn="hour" valuecolumn="count_Ip" serieslabel="#apapplication.rb.getResource("Today")#" paintstyle="shade"></cfchartseries>
+		<cfchartseries type="bar" query="q2" itemcolumn="hour" valuecolumn="count_Ip" serieslabel="#apapplication.rb.getResource("Yesterday")#" paintstyle="shade"></cfchartseries>
+		<cfchartseries type="bar" query="q3" itemcolumn="hour" valuecolumn="count_Ip" serieslabel="#apapplication.rb.getResource("DayBefore")#" paintstyle="shade"></cfchartseries>
 	</cfchart>
 	</cfoutput>
 	
@@ -104,7 +104,7 @@ out:
 
 	<hr />
 	
-	<h3>#application.adminBundle[session.dmProfile.locale].sessionsPerDayLast4Weeks#</h3>
+	<h3>#apapplication.rb.getResource("sessionsPerDayLast4Weeks")#</h3>
 	<div style="z-index:100">
 	<cfchart 
 		format="flash" 
@@ -117,18 +117,18 @@ out:
 		showBorder = "no"
 		fontsize="12"
 		labelFormat = "number"
-		xAxisTitle = "#application.adminBundle[session.dmProfile.locale].Day#" 
-		yAxisTitle = "#application.adminBundle[session.dmProfile.locale].sessionNumbers#" 
+		xAxisTitle = "#apapplication.rb.getResource("Day")#" 
+		yAxisTitle = "#apapplication.rb.getResource("sessionNumbers")#" 
 		show3D = "yes"
 		xOffset = "0.15" 
 		yOffset = "0.15"
 		rotated = "no" 
 		showLegend = "yes" 
 		tipStyle = "MouseOver">
-	<cfchartseries type="bar" query="q1" itemcolumn="name" valuecolumn="count_Ip" serieslabel="#application.adminBundle[session.dmProfile.locale].thisWeek#" paintstyle="shade"></cfchartseries>
-	<cfchartseries type="bar" query="q2" itemcolumn="name" valuecolumn="count_Ip" serieslabel="#application.adminBundle[session.dmProfile.locale].lastWeek#" paintstyle="shade"></cfchartseries>
-	<cfchartseries type="bar" query="q3" itemcolumn="name" valuecolumn="count_Ip" serieslabel="#application.adminBundle[session.dmProfile.locale].twoWeeksBefore#" paintstyle="shade"></cfchartseries>
-	<cfchartseries type="bar" query="q4" itemcolumn="name" valuecolumn="count_Ip" serieslabel="#application.adminBundle[session.dmProfile.locale].threeWeeksBefore#" paintstyle="shade"></cfchartseries>
+	<cfchartseries type="bar" query="q1" itemcolumn="name" valuecolumn="count_Ip" serieslabel="#apapplication.rb.getResource("thisWeek")#" paintstyle="shade"></cfchartseries>
+	<cfchartseries type="bar" query="q2" itemcolumn="name" valuecolumn="count_Ip" serieslabel="#apapplication.rb.getResource("lastWeek")#" paintstyle="shade"></cfchartseries>
+	<cfchartseries type="bar" query="q3" itemcolumn="name" valuecolumn="count_Ip" serieslabel="#apapplication.rb.getResource("twoWeeksBefore")#" paintstyle="shade"></cfchartseries>
+	<cfchartseries type="bar" query="q4" itemcolumn="name" valuecolumn="count_Ip" serieslabel="#apapplication.rb.getResource("threeWeeksBefore")#" paintstyle="shade"></cfchartseries>
 	</cfchart>
 	</div>
 	</cfoutput>
@@ -165,7 +165,7 @@ out:
 	<h3>
 	<cfset subS=listToArray('#application.thisCalendar.i18nDateFormat(form.after,session.dmProfile.locale,application.fullF)#^#application.thisCalendar.i18nDateFormat(form.before,session.dmProfile.locale,application.fullF)#',"^")>
 
-	#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].sessionsPerDayBetween,subS)#
+	#application.rb.formatRBString("sessionsPerDayBetween",subS)#
 	</h3>
 	
 	<cfif q1.qGetPageStats.recordcount>
@@ -181,8 +181,8 @@ out:
 			showBorder = "no"
 			fontsize="12"
 			labelFormat = "number"
-			xAxisTitle = "#application.adminBundle[session.dmProfile.locale].Date#" 
-			yAxisTitle = "#application.adminBundle[session.dmProfile.locale].sessionNumbers#" 
+			xAxisTitle = "#apapplication.rb.getResource("Date")#" 
+			yAxisTitle = "#apapplication.rb.getResource("sessionNumbers")#" 
 			show3D = "yes"
 			xOffset = "0.15" 
 			yOffset = "0.15"
@@ -190,10 +190,10 @@ out:
 			showLegend = "yes" 
 			tipStyle = "MouseOver"
 			gridlines = "#q1.max+1#">
-		<cfchartseries type="line" query="q1.qGetPageStats" itemcolumn="viewday" valuecolumn="count_Ip" serieslabel="#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].sessionsPerDayBetween,subS)#" paintstyle="shade"></cfchartseries>
+		<cfchartseries type="line" query="q1.qGetPageStats" itemcolumn="viewday" valuecolumn="count_Ip" serieslabel="#application.rb.formatRBString("sessionsPerDayBetween",subS)#" paintstyle="shade"></cfchartseries>
 		</cfchart>
 	<cfelse>
-		<cfoutput><div style="color:red">#application.adminBundle[session.dmProfile.locale].noStatsBetween#</div></cfoutput>
+		<cfoutput><div style="color:red">#apapplication.rb.getResource("noStatsBetween")#</div></cfoutput>
 	</cfif>
 	
 	<hr />
@@ -204,13 +204,13 @@ out:
 	
 		<h3>Edit range</h3>
 		<label>
-		<b>#application.adminBundle[session.dmProfile.locale].betweenLabel#</b>
+		<b>#apapplication.rb.getResource("betweenLabel")#</b>
 		<input type="text" id="afterDate" style="width:200px" name="after" value="#application.thisCalendar.i18nDateFormat(form.after,session.dmProfile.locale,application.fullF)#" />
 		<input type="button" id"afterDateButton" value="select" /><br />
 		</label>
 		
 		<label>
-		<b>#application.adminBundle[session.dmProfile.locale].andLabel#</b>
+		<b>#apapplication.rb.getResource("andLabel")#</b>
 		<input type="text" id="beforeDate" style="width:200px" name="before" value="#application.thisCalendar.i18nDateFormat(form.before,session.dmProfile.locale,application.fullF)#" />
 		<input type="button" id="beforeDateButton" value="select" /><br />
 		</label>

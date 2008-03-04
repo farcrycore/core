@@ -35,112 +35,112 @@ $out:$
 
 <table cellpadding="5" cellspacing="0" border="1" style="margin-left:30px;margin-top:10px">
 <tr class="dataheader">
-	<td>#application.adminBundle[session.dmProfile.locale].icon#</td>
-	<td>#application.adminBundle[session.dmProfile.locale].meaning#</td>
+	<td>#apapplication.rb.getResource("icon")#</td>
+	<td>#apapplication.rb.getResource("meaning")#</td>
 </tr>
 <tr>
 	<td align="center"><img src="#cimages#/defaultObjectDraft.gif" height="16" width="16" border="0"></td>
-	<td>#application.adminBundle[session.dmProfile.locale].defaultDraftHTMLobj#</td>
+	<td>#apapplication.rb.getResource("defaultDraftHTMLobj")#</td>
 </tr>
 <tr>
 	<td align="center"><img src="#cimages#/defaultObjectLiveDraft.gif" height="16" width="16" border="0"></td>
-	<td>#application.adminBundle[session.dmProfile.locale].defaultLiveHTMLobj#</td>
+	<td>#apapplication.rb.getResource("defaultLiveHTMLobj")#</td>
 </tr>
 <tr>
 	<td align="center"><img src="#cimages#/defaultObjectPending.gif" height="16" width="16" border="0"></td>
-	<td>#application.adminBundle[session.dmProfile.locale].defaulPendingHTMLobj#</td>
+	<td>#apapplication.rb.getResource("defaulPendingHTMLobj")#</td>
 </tr>
 <tr>
 	<td align="center"><img src="#cimages#/defaultObjectApproved.gif" height="16" width="16" border="0"></td>
-	<td>#application.adminBundle[session.dmProfile.locale].defaultApprovedHTMLobj#</td>
+	<td>#apapplication.rb.getResource("defaultApprovedHTMLobj")#</td>
 </tr>
 <tr>
 	<td align="center"><img src="#cimages#/webserver.gif" height="16" width="16" border="0"></td>
-	<td>#application.adminBundle[session.dmProfile.locale].webserver#</td>
+	<td>#apapplication.rb.getResource("webserver")#</td>
 </tr>
 <tr>
 	<td align="center"><img src="#cimages#/home.gif" height="16" width="16" border="0"></td>
-	<td>#application.adminBundle[session.dmProfile.locale].home#</td>
+	<td>#apapplication.rb.getResource("home")#</td>
 </tr>
 <tr>
 	<td align="center"><img src="#cimages#/rubbish.gif" height="16" width="16" border="0"></td>
-	<td>#application.adminBundle[session.dmProfile.locale].trashCan#</td>
+	<td>#apapplication.rb.getResource("trashCan")#</td>
 </tr>
 <tr>
 	<td align="center"><img src="#cimages#/NavDraft.gif" height="16" width="16" border="0"></td>
-	<td>#application.adminBundle[session.dmProfile.locale].draftNavigationObj#</td>
+	<td>#apapplication.rb.getResource("draftNavigationObj")#</td>
 </tr>
 <tr>
 	<td align="center"><img src="#cimages#/NavApproved.gif" height="16" width="16" border="0"></td>
-	<td>#application.adminBundle[session.dmProfile.locale].approvedNavigationObj#</td>
+	<td>#apapplication.rb.getResource("approvedNavigationObj")#</td>
 </tr>
 <tr>
 	<td align="center"><img src="#cimages#/NavPending.gif" height="16" width="16" border="0"></td>
-	<td>#application.adminBundle[session.dmProfile.locale].pendingNavigationObj#</td>
+	<td>#apapplication.rb.getResource("pendingNavigationObj")#</td>
 </tr>
 <tr>
 	<td align="center"><img src="#cimages#/images.gif" height="16" width="16" border="0"></td>
-	<td>#application.adminBundle[session.dmProfile.locale].Images#</td>
+	<td>#apapplication.rb.getResource("Images")#</td>
 </tr>
 <tr>
 	<td align="center"><img src="#cimages#/floppyDisk.gif" height="16" width="16" border="0"></td>
-	<td>#application.adminBundle[session.dmProfile.locale].Files#</td>
+	<td>#apapplication.rb.getResource("Files")#</td>
 </tr>
 <tr>
 	<td align="center"><img src="#cimages#/pictureDraft.gif" height="16" width="16" border="0"></td>
-	<td>#application.adminBundle[session.dmProfile.locale].draftImageObj#</td>
+	<td>#apapplication.rb.getResource("draftImageObj")#</td>
 </tr>
 <tr>
 	<td align="center"><img src="#cimages#/picturePending.gif" height="16" width="16" border="0"></td>
-	<td>#application.adminBundle[session.dmProfile.locale].pendingImageObj#</td>
+	<td>#apapplication.rb.getResource("pendingImageObj")#</td>
 </tr>
 <tr>
 	<td align="center"><img src="#cimages#/pictureApproved.gif" height="16" width="16" border="0"></td>
-	<td>#application.adminBundle[session.dmProfile.locale].approvedImageObj#</td>
+	<td>#apapplication.rb.getResource("approvedImageObj")#</td>
 </tr>
 <tr>
 	<td align="center"><img src="#cimages#/includeDraft.gif" height="16" width="16" border="0"></td>
-	<td>#application.adminBundle[session.dmProfile.locale].draftIncludedObj#</td>
+	<td>#apapplication.rb.getResource("draftIncludedObj")#</td>
 </tr>
 <tr>
 	<td align="center"><img src="#cimages#/includePending.gif" height="16" width="16" border="0"></td>
-	<td>#application.adminBundle[session.dmProfile.locale].pendingIncludedObj#</td>
+	<td>#apapplication.rb.getResource("pendingIncludedObj")#</td>
 </tr>
 <tr>
 	<td align="center"><img src="#cimages#/includeApproved.gif" height="16" width="16" border="0"></td>
-	<td>#application.adminBundle[session.dmProfile.locale].approvedIncludedObj#</td>
+	<td>#apapplication.rb.getResource("approvedIncludedObj")#</td>
 </tr>
 <tr>
 	<td align="center"><img src="#cimages#/fileDraft.gif" height="16" width="16" border="0"></td>
-	<td>#application.adminBundle[session.dmProfile.locale].draftFileObj#</td>
+	<td>#apapplication.rb.getResource("draftFileObj")#</td>
 </tr>
 <tr>
 	<td align="center"><img src="#cimages#/filePending.gif" height="16" width="16" border="0"></td>
-	<td>#application.adminBundle[session.dmProfile.locale].pendingFileObj#</td>
+	<td>#apapplication.rb.getResource("pendingFileObj")#</td>
 </tr>
 <tr>
 	<td align="center"><img src="#cimages#/fileApproved.gif" height="16" width="16" border="0"></td>
-	<td>#application.adminBundle[session.dmProfile.locale].approvedFileObj#</td>
+	<td>#apapplication.rb.getResource("approvedFileObj")#</td>
 </tr>
 <tr>
 	<td align="center"><img src="#cimages#/linkDraft.gif" height="16" width="16" border="0"></td>
-	<td>#application.adminBundle[session.dmProfile.locale].draftJoinObj#</td>
+	<td>#apapplication.rb.getResource("draftJoinObj")#</td>
 </tr>
 <tr>
 	<td align="center"><img src="#cimages#/linkPending.gif" height="16" width="16" border="0"></td>
-	<td>#application.adminBundle[session.dmProfile.locale].pendingLinkObj#</td>
+	<td>#apapplication.rb.getResource("pendingLinkObj")#</td>
 </tr>
 <tr>
 	<td align="center"><img src="#cimages#/linkApproved.gif" height="16" width="16" border="0"></td>
-	<td>#application.adminBundle[session.dmProfile.locale].approvedLinkObj#</td>
+	<td>#apapplication.rb.getResource("approvedLinkObj")#</td>
 </tr>
 <tr>
 	<td align="center"><img src="#cimages#/cssDraft.gif" height="16" width="16" border="0"></td>
-	<td>#application.adminBundle[session.dmProfile.locale].styleSheetObj#</td>
+	<td>#apapplication.rb.getResource("styleSheetObj")#</td>
 </tr>
 <tr>
 	<td align="center"><img src="#cimages#/flashApproved.gif" height="16" width="16" border="0"></td>
-	<td>#application.adminBundle[session.dmProfile.locale].flashObj#</td>
+	<td>#apapplication.rb.getResource("flashObj")#</td>
 </tr>
 </table>
 </cfoutput>

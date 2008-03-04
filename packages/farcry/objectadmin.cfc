@@ -313,7 +313,7 @@ environment references (might be nice to clean these up)
 		//select
 		stCol=structNew();
 		stCol.columnType="expression";
-		stCol.title="#application.adminBundle[session.dmProfile.locale].select#";
+		stCol.title="#apapplication.rb.getResource("select")#";
 		stCol.value="<input type=""checkbox"" class=""f-checkbox"" name=""objectid"" value=""##recordset.objectid##"" onclick=""setRowBackground(this);"" />";
 		stCol.style="text-align: center;";
 		//stCol.orderby="";
@@ -322,8 +322,8 @@ environment references (might be nice to clean these up)
 		//edit icon
 		stCol=structNew();
 		stCol.columnType="evaluate";
-		stCol.title="#application.adminBundle[session.dmProfile.locale].edit#";
-		stCol.value="iif(stPermissions.iEdit eq 1,DE(iif(locked and lockedby neq '##session.dmSec.authentication.userlogin##_##session.dmSec.authentication.userDirectory##',DE('<span style=""color:red"">Locked</span>'),DE('<a href=''#editObjectURL#''><img src=""#application.url.farcry#/images/treeImages/edit.gif"" alt=""#application.adminBundle[session.dmProfile.locale].edit#"" title=""#application.adminBundle[session.dmProfile.locale].edit#""/></a>'))),DE('-'))";
+		stCol.title="#apapplication.rb.getResource("edit")#";
+		stCol.value="iif(stPermissions.iEdit eq 1,DE(iif(locked and lockedby neq '##session.dmSec.authentication.userlogin##_##session.dmSec.authentication.userDirectory##',DE('<span style=""color:red"">Locked</span>'),DE('<a href=''#editObjectURL#''><img src=""#application.url.farcry#/images/treeImages/edit.gif"" alt=""#apapplication.rb.getResource("edit")#"" title=""#apapplication.rb.getResource("edit")#""/></a>'))),DE('-'))";
 		stCol.style="text-align: center;";
 		//stCol.orderby="";
 		arrayAppend(aDefaultColumns,stCol);
@@ -331,8 +331,8 @@ environment references (might be nice to clean these up)
 		//preview
 		stCol=structNew();
 		stCol.columnType="expression";
-		stCol.title="#application.adminBundle[session.dmProfile.locale].view#";
-		stCol.value="<a href=""#application.url.webroot#/index.cfm?objectID=##recordset.objectID##&flushcache=1"" target=""_blank""><img src=""#application.url.farcry#/images/treeImages/preview.gif"" alt=""#application.adminBundle[session.dmProfile.locale].view#"" title=""#application.adminBundle[session.dmProfile.locale].view#"" /></a>";
+		stCol.title="#apapplication.rb.getResource("view")#";
+		stCol.value="<a href=""#application.url.webroot#/index.cfm?objectID=##recordset.objectID##&flushcache=1"" target=""_blank""><img src=""#application.url.farcry#/images/treeImages/preview.gif"" alt=""#apapplication.rb.getResource("view")#"" title=""#apapplication.rb.getResource("view")#"" /></a>";
 		stCol.style="text-align: center;";
 		//stCol.orderby="";
 		arrayAppend(aDefaultColumns,stCol);
@@ -340,7 +340,7 @@ environment references (might be nice to clean these up)
 		//label and edit
 		stCol=structNew();
 		stCol.columnType="evaluate";
-		stCol.title="#application.adminBundle[session.dmProfile.locale].label#";
+		stCol.title="#apapplication.rb.getResource("label")#";
 		stCol.value = "iif(stPermissions.iEdit eq 1,DE(iif(locked and lockedby neq '#session.dmSec.authentication.userlogin#_#session.dmSec.authentication.userDirectory#',DE('##replace(recordset.label[recordset.currentrow],'####','','all')##'),DE('<a href=''#editObjectURL#''>##replace(recordset.label[recordset.currentrow],'####','','all')##</a>'))),DE('##replace(recordset.label[recordset.currentrow],'####','','all')##'))";
 		stCol.style="text-align: left;";
 		stCol.orderby="label";
@@ -349,7 +349,7 @@ environment references (might be nice to clean these up)
 		//datetimelastupdated
 		stCol=structNew();
 		stCol.columnType="evaluate";
-		stCol.title="#application.adminBundle[session.dmProfile.locale].lastUpdatedLC#";
+		stCol.title="#apapplication.rb.getResource("lastUpdatedLC")#";
 		stCol.value="application.thisCalendar.i18nDateFormat('##datetimelastupdated##',session.dmProfile.locale,application.mediumF)";
 		stCol.style="text-align: center;";
 		stCol.orderby="datetimelastupdated";
@@ -359,7 +359,7 @@ environment references (might be nice to clean these up)
 		if (structKeyExists(variables.PrimaryPackage.stprops, "status")) {
 			stCol=structNew();
 			stCol.columnType="value";
-			stCol.title="#application.adminBundle[session.dmProfile.locale].status#";
+			stCol.title="#apapplication.rb.getResource("status")#";
 			stCol.value="status";
 			stCol.style="text-align: center;";
 			stCol.orderby="status";
@@ -369,7 +369,7 @@ environment references (might be nice to clean these up)
 		//lastupdatedby
 		stCol=structNew();
 		stCol.columnType="value";
-		stCol.title="#application.adminBundle[session.dmProfile.locale].by#";
+		stCol.title="#apapplication.rb.getResource("by")#";
 		stCol.value="lastupdatedby";
 		stCol.style="text-align: center;";
 		stCol.orderby="lastupdatedby";
@@ -400,7 +400,7 @@ environment references (might be nice to clean these up)
 			stBut=structNew();
 			stBut.type="button";
 			stBut.name="add";
-			stBut.value="#application.adminBundle[session.dmProfile.locale].add#";
+			stBut.value="#apapplication.rb.getResource("add")#";
 			stBut.class="f-submit";
 			stBut.onClick="";
 			stBut.permission=application.security.checkPermission(permission="Create",type=attributes.typename);
@@ -411,7 +411,7 @@ environment references (might be nice to clean these up)
 			stBut=structNew();
 			stBut.type="button";
 			stBut.name="deleteAction";
-			stBut.value="#application.adminBundle[session.dmProfile.locale].delete#";
+			stBut.value="#apapplication.rb.getResource("delete")#";
 			stBut.class="f-submit";
 			// todo: i18n
 			stBut.onClick="";
@@ -426,7 +426,7 @@ environment references (might be nice to clean these up)
 				stBut=structNew();
 				stBut.type="submit";
 				stBut.name="status";
-				stBut.value="#application.adminBundle[session.dmProfile.locale].requestApproval#";
+				stBut.value="#apapplication.rb.getResource("requestApproval")#";
 				stBut.class="f-submit";
 				stBut.onClick="";
 				stBut.permission=application.security.checkPermission(permission="RequestApproval",type=attributes.typename);
@@ -437,7 +437,7 @@ environment references (might be nice to clean these up)
 				stBut=structNew();
 				stBut.type="submit";
 				stBut.name="status";
-				stBut.value="#application.adminBundle[session.dmProfile.locale].approve#";
+				stBut.value="#apapplication.rb.getResource("approve")#";
 				stBut.class="f-submit";
 				stBut.onClick="";
 				stBut.permission=application.security.checkPermission(permission="Approve",type=attributes.typename);
@@ -447,7 +447,7 @@ environment references (might be nice to clean these up)
 				stBut=structNew();
 				stBut.type="submit";
 				stBut.name="status";
-				stBut.value="#application.adminBundle[session.dmProfile.locale].sendToDraft#";
+				stBut.value="#apapplication.rb.getResource("sendToDraft")#";
 				stBut.class="f-submit";
 				stBut.onClick="";
 				stBut.permission=application.security.checkPermission(permission="Approve",type=attributes.typename);
@@ -459,7 +459,7 @@ environment references (might be nice to clean these up)
 			stBut=structNew();
 			stBut.type="submit";
 			stBut.name="dump";
-			stBut.value="#application.adminBundle[session.dmProfile.locale].dump#";
+			stBut.value="#apapplication.rb.getResource("dump")#";
 			stBut.class="f-submit";
 			stBut.onClick="";
 			stBut.permission="ObjectDumpTab";
@@ -471,7 +471,7 @@ environment references (might be nice to clean these up)
 			stBut=structNew();
 			stBut.type="Submit";
 			stBut.name="unlock";
-			stBut.value="#application.adminBundle[session.dmProfile.locale].unlockUC#";
+			stBut.value="#apapplication.rb.getResource("unlockUC")#";
 			stBut.class="f-submit";
 			stBut.onClick="";
 			stBut.permission="";

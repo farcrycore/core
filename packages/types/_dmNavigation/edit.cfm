@@ -128,22 +128,22 @@ parent['content'].location.href = "#cancelCompleteURL#"
 <form action="#cgi.script_name#?#cgi.query_string#" class="f-wrap-1 wider f-bg-medium" name="editform" method="post">
 <fieldset>
 	<div class="req"><b>*</b>Required</div>
-<h3>#application.adminBundle[session.dmProfile.locale].navigationNodeDetails#: <span class="highlight">#stObj.title#</span></h3>
+<h3>#apapplication.rb.getResource("navigationNodeDetails")#: <span class="highlight">#stObj.title#</span></h3>
 <cfif errormessage NEQ "">
 <p id="fading1" class="fade"><span class="error">#errormessage#</span></p><br />
 </cfif>
-	<label for="title"><b>#application.adminBundle[session.dmProfile.locale].titleLabel#<span class="req">*</span></b>
+	<label for="title"><b>#apapplication.rb.getResource("titleLabel")#<span class="req">*</span></b>
 		<input type="text" name="title" id="title" value="#title#" maxlength="255" size="45" /><br />
 	</label>
 
-	<label for="externalLink"><b>#application.adminBundle[session.dmProfile.locale].symbolicLinkLabel#</b>
+	<label for="externalLink"><b>#apapplication.rb.getResource("symbolicLinkLabel")#</b>
 		<select name="externalLink">
-			<option value=""<cfif externalLink EQ "">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].noneForSelect#</option><cfloop from="1" to="#arraylen(aNavalias)#" index="i">
+			<option value=""<cfif externalLink EQ "">selected="selected"</cfif>>#apapplication.rb.getResource("noneForSelect")#</option><cfloop from="1" to="#arraylen(aNavalias)#" index="i">
 			<option value="#application.navid[aNavalias[i]]#"<cfif externalLink EQ application.navid[aNavalias[i]]>selected="selected"</cfif>>#aNavalias[i]#</option></cfloop>
 		</select>
 	</label><br />
 
-	<label for="lNavIDAlias"><b>#application.adminBundle[session.dmProfile.locale].navAliases#</b>
+	<label for="lNavIDAlias"><b>#apapplication.rb.getResource("navAliases")#</b>
 		<input type="text" name="lNavIDAlias" id="lNavIDAlias" value="#lNavIDAlias#" maxlength="255" size="45" /><br />
 	</label><br />
 	
@@ -164,6 +164,6 @@ parent['content'].location.href = "#cancelCompleteURL#"
 	document.editform.title.focus();
 	qFormAPI.errorColor="##cc6633";
 	objForm = new qForm("editform");
-	objForm.title.validateNotNull("#application.adminBundle[session.dmProfile.locale].pleaseEnterTitle#");
+	objForm.title.validateNotNull("#apapplication.rb.getResource("pleaseEnterTitle")#");
 </script>
 </cfoutput>

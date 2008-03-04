@@ -46,7 +46,7 @@ ORDER BY bNotDeleted ASC
 	query="#qArchives#"
 	bFilterCategories="false"
 	bdebug="0">
-	<widgets:typeadmincolumn title="View" columntype="expression" value="<a href=""#application.url.webroot#/index.cfm?objectID=##recordset.objectID##&flushcache=1"" target=""_self""><img src=""#application.url.farcry#/images/treeImages/preview.gif"" alt=""#application.adminBundle[session.dmProfile.locale].view#"" title=""#application.adminBundle[session.dmProfile.locale].view#"" /></a>" style="text-align: center;" />
+	<widgets:typeadmincolumn title="View" columntype="expression" value="<a href=""#application.url.webroot#/index.cfm?objectID=##recordset.objectID##&flushcache=1"" target=""_self""><img src=""#application.url.farcry#/images/treeImages/preview.gif"" alt=""#apapplication.rb.getResource("view")#"" title=""#apapplication.rb.getResource("view")#"" /></a>" style="text-align: center;" />
 	<widgets:typeadmincolumn title="Label" columntype="value" value="label" orderby="label" />
 	<widgets:typeadmincolumn title="Created" columntype="value" value="datetimecreated" orderby="datetimecreated" />
 	<widgets:typeadmincolumn title="By" columntype="value" value="createdby" orderby="createdby" />

@@ -92,7 +92,7 @@ function BumpUp(box)
 }
 
 function confirmDelete(){
-	var msg = "#application.adminBundle[session.dmProfile.locale].confirmDeletePackage#";
+	var msg = "#apapplication.rb.getResource("confirmDeletePackage")#";
 	if (confirm(msg))
 		return true;
 	else
@@ -108,7 +108,7 @@ function selectAll(dest){
  
  function deleteRule(fbox)
  {
- 	if (confirm("#application.adminBundle[session.dmProfile.locale].confirmDeleteRuleInstance#"))
+ 	if (confirm("#apapplication.rb.getResource("confirmDeleteRuleInstance")#"))
 	{
 		 for(var i=0; i<fbox.options.length; i++)
 		 {

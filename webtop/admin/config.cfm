@@ -32,7 +32,7 @@ $out:$
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 <sec:CheckPermission error="true" permission="AdminCOAPITab">
-	<cfoutput><h3>#application.adminBundle[session.dmProfile.locale].farcryInternalConfigFiles#</h3></cfoutput>
+	<cfoutput><h3>#apapplication.rb.getResource("farcryInternalConfigFiles")#</h3></cfoutput>
 	<cfparam name="form.action" default="none">
 	
 	<cfif isDefined("URL.configName")>
@@ -42,7 +42,7 @@ $out:$
 				<cfinclude template="#stTemp.edithandler#">
 				<cfcatch>
 					<cfset subS=listToArray('#url.configName#, #stTemp.editHandler#')>
-					<cfoutput><h3>#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].customConfigTemplateMissing,subS)#</h3></cfoutput>
+					<cfoutput><h3>#application.rb.formatRBString("customConfigTemplateMissing",subS)#</h3></cfoutput>
 				</cfcatch>
 			</cftry>
 			<cfabort>
@@ -101,7 +101,7 @@ $out:$
 					<input type="Hidden" name="stName" value="#url.configName#">
 					<table class="table-4" cellspacing="0">
 					<tr>
-					<th scope="col" colspan="2">#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].configName,"#url.configName#")#</th>
+					<th scope="col" colspan="2">#application.rb.formatRBString("configName","#url.configName#")#</th>
 					</tr>
 					<!--- loop through config structure and set up form for editing --->
 					<cfloop list="#listOfKeys#" index="field">
@@ -121,7 +121,7 @@ $out:$
 					</table>
 
 					<div class="f-submit-wrap">
-					<input type="submit" value="#application.adminBundle[session.dmProfile.locale].updateConfig#" class="f-submit" />
+					<input type="submit" value="#apapplication.rb.getResource("updateConfig")#" class="f-submit" />
 					</div>
 					
 					<hr />
@@ -140,10 +140,10 @@ $out:$
 		<cfinvoke component="#application.packagepath#.farcry.config" method="list" returnvariable="qConfigs">
 		
 		<cfif qConfigs.RecordCount eq 0>
-			<cfoutput>#application.adminBundle[session.dmProfile.locale].noConfigFilesSpecified#
+			<cfoutput>#apapplication.rb.getResource("noConfigFilesSpecified")#
 			<form action="#cgi.script_name#" method="post">
-			<input type="Hidden" name="action" value="#application.adminBundle[session.dmProfile.locale].defaults#">
-			<input type="submit" value="#application.adminBundle[session.dmProfile.locale].installDefaultConfigs#" class="f-submit" />
+			<input type="Hidden" name="action" value="#apapplication.rb.getResource("defaults")#">
+			<input type="submit" value="#apapplication.rb.getResource("installDefaultConfigs")#" class="f-submit" />
 			</form></cfoutput>
 		<cfelse>
 			<cfoutput>
@@ -158,8 +158,8 @@ $out:$
 		
 		<cfcatch>
 			<cfoutput><form action="#cgi.script_name#" method="post">
-			<input type="Hidden" name="action" value="#application.adminBundle[session.dmProfile.locale].deploy#" class="f-submit" />
-			<input type="submit" value="#application.adminBundle[session.dmProfile.locale].deployConfigTable#" class="f-submit" />
+			<input type="Hidden" name="action" value="#apapplication.rb.getResource("deploy")#" class="f-submit" />
+			<input type="submit" value="#apapplication.rb.getResource("deployConfigTable")#" class="f-submit" />
 			</form></cfoutput>
 		</cfcatch>
 	</cftry>

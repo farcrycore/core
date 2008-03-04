@@ -31,7 +31,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 	<cfoutput>
 	<html dir="#session.writingDir#" lang="#session.userLanguage#">
 	<HEAD>
-	<TITLE>#application.adminBundle[session.dmProfile.locale].overviewTree#</TITLE>
+	<TITLE>#apapplication.rb.getResource("overviewTree")#</TITLE>
 	<LINK href="#application.url.farcry#/css/overviewFrame.css" rel="stylesheet" type="text/css">
 	<meta content="text/html; charset=UTF-8" http-equiv="content-type">
 	</HEAD>
@@ -49,7 +49,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 
 	<cfcatch type="Lock">
 		<cfoutput>
-		<p>#application.adminBundle[session.dmProfile.locale].overviewTreeLoadingBlurb#</p>
+		<p>#apapplication.rb.getResource("overviewTreeLoadingBlurb")#</p>
 		<p><a href="">Refresh Tree</a></p>
 		</cfoutput>
 	</cfcatch>

@@ -83,7 +83,7 @@ out:
 	<form name="editform" action="#cgi.script_name#?#cgi.query_string#" method="post" class="f-wrap-1 wider f-bg-long" onsubmit="return doSubmit(document.editform);">
 		<fieldset>
 			<div class="req"><b>*</b>Required</div>
-			<h3>#application.adminBundle[session.dmProfile.locale].clearStatsLog#</h3>
+			<h3>#apapplication.rb.getResource("clearStatsLog")#</h3>
 			<cfif isDefined("errormessage")>
 				<p id="fading1" class="fade"><span class="error">#errormessage#</span></p>			
 			<cfelseif isDefined("successmessage")>
@@ -97,7 +97,7 @@ out:
 		</fieldset>
 		<input type="hidden" name="bFormSubmitted" id="bFormSubmitted" value="yes">
 		<div class="f-submit-wrap">
-		<input type="Submit" name="Submit" value="#application.adminBundle[session.dmProfile.locale].OK#" class="f-submit">
+		<input type="Submit" name="Submit" value="#apapplication.rb.getResource("OK")#" class="f-submit">
 		</div>
 	</form></cfoutput>
 </sec:CheckPermission>

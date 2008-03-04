@@ -79,7 +79,7 @@ $out:$
 				<input type="hidden" name="approveURL" value="#URLEncodedFormat(url.approveURL)#">
 			</cfif>
 			
-			<span class="formTitle">#application.adminBundle[session.dmProfile.locale].addComment#:</span><br>
+			<span class="formTitle">#apapplication.rb.getResource("addComment")#:</span><br>
 			<textarea rows="8" cols="50"  name="commentLog"></textarea><br>
 			
 			<!--- if requesting approval, list approvers --->
@@ -87,13 +87,13 @@ $out:$
 	
 			</cfif>
 			
-			<input type="submit" name="submit" value="#application.adminBundle[session.dmProfile.locale].submitUC#" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';">
-			<input type="button" name="Cancel" value="#application.adminBundle[session.dmProfile.locale].cancel#" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';" onClick="location.href='#application.url.farcry#/navajo/GenericAdmin.cfm?typename=#stObj.typename#';"></div>     
+			<input type="submit" name="submit" value="#apapplication.rb.getResource("submitUC")#" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';">
+			<input type="button" name="Cancel" value="#apapplication.rb.getResource("cancel")#" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';" onClick="location.href='#application.url.farcry#/navajo/GenericAdmin.cfm?typename=#stObj.typename#';"></div>     
 			<cfif listlen(url.objectid) eq 1>
 				<!--- display existing comments --->
 				<cfif structKeyExists(stObj,"commentLog")>
 					<cfif len(trim(stObj.commentLog)) AND structKeyExists(stObj,"commentLog")>
-						<p></p><span class="formTitle">#application.adminBundle[session.dmProfile.locale].prevCommentLog#</span><P></P>
+						<p></p><span class="formTitle">#apapplication.rb.getResource("prevCommentLog")#</span><P></P>
 						#htmlcodeformat(stObj.commentLog)#
 					</cfif>
 				</cfif>

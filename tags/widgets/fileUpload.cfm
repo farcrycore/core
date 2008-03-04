@@ -10,19 +10,19 @@
 <cfparam name="attributes.fieldLabel" default="Upload File:">
 <cfparam name="attributes.bShowPreview" default="1">
 <cfparam name="caller.output" default="">
-<cfparam name="attributes.overWriteLabel" default="#application.adminBundle[session.dmProfile.locale].newFileOverwriteThisFile#">
+<cfparam name="attributes.overWriteLabel" default="#apapplication.rb.getResource("newFileOverwriteThisFile")#">
 
 <cfset previewURL = attributes.previewURL> <!--- specific url of where item stored --->
 <cfif previewURL EQ ""> <!--- set to default if not passed in --->
     <cfif attributes.uploadType EQ "file">
-        <cfparam name="attributes.fieldLabel" default="#application.adminBundle[session.dmProfile.locale].fileLabel#">  
+        <cfparam name="attributes.fieldLabel" default="#apapplication.rb.getResource("fileLabel")#">  
         <cfset previewUrl = "#application.url.webroot#/files/">
     <cfelseif attributes.uploadType EQ "flash">
-        <cfparam name="attributes.fieldLabel" default="#application.adminBundle[session.dmProfile.locale].fileLabel#">
+        <cfparam name="attributes.fieldLabel" default="#apapplication.rb.getResource("fileLabel")#">
         <cfset flashPath = replaceNoCase(application.config.file.folderpath_flash, "\", "/", "ALL")>
         <cfset previewUrl = application.url.webroot & replaceNoCase(flashPath, application.path.project & "/www", "", "ALL") & "/">
     <cfelse>
-        <cfparam name="attributes.fieldLabel" default="#application.adminBundle[session.dmProfile.locale].imageLabel#">
+        <cfparam name="attributes.fieldLabel" default="#apapplication.rb.getResource("imageLabel")#">
         <cfset previewUrl = "#application.url.webroot#/images/">
     </cfif>
 </cfif>
@@ -46,7 +46,7 @@
 <cfif fieldValue NEQ ""> <!--- shows current file --->
 <nj:getFileIcon filename="#fieldValue#" r_stIcon="fileicon">
 #overWriteLabel#<br />Existing #uploadType#: <img src="#application.url.farcry#/images/treeImages/#fileicon#"><cfif attributes.bShowPreview EQ 1>
-<a href="#previewUrl##fieldValue#" target="_blank">#application.adminBundle[session.dmProfile.locale].previewUC#</a></cfif> #fieldValue#
+<a href="#previewUrl##fieldValue#" target="_blank">#apapplication.rb.getResource("previewUC")#</a></cfif> #fieldValue#
 </cfif>
 <input type="hidden" name="#fileFieldPrefix#_file_original" value="#fieldValue#">
 </cfoutput></cfif>

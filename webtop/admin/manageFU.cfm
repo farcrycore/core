@@ -55,12 +55,12 @@ $out:$
 	<form method="post" class="f-wrap-1 f-bg-short" action="">
 	<fieldset>
 	
-		<h3>#application.adminBundle[session.dmProfile.locale].manageURLs#</h3>
+		<h3>#apapplication.rb.getResource("manageURLs")#</h3>
 
 		<label for="searchIn"><b>&nbsp;</b>
 		<select name="searchIn" id="searchIn">
-		<option value="#application.adminBundle[session.dmProfile.locale].alias#" <cfif form.searchIn eq "mapping">selected</cfif>>#application.adminBundle[session.dmProfile.locale].alias#
-		<option value="#application.adminBundle[session.dmProfile.locale].objectLC#" <cfif form.searchIn eq "object">selected</cfif>>#application.adminBundle[session.dmProfile.locale].objectLC#
+		<option value="#apapplication.rb.getResource("alias")#" <cfif form.searchIn eq "mapping">selected</cfif>>#apapplication.rb.getResource("alias")#
+		<option value="#apapplication.rb.getResource("objectLC")#" <cfif form.searchIn eq "object">selected</cfif>>#apapplication.rb.getResource("objectLC")#
 		</select>
 		<br />
 		</label>
@@ -70,7 +70,7 @@ $out:$
 		</label>
 		
 		<div class="f-submit-wrap">
-		<input type="submit" value="#application.adminBundle[session.dmProfile.locale].filter#" class="f-submit" />
+		<input type="submit" value="#apapplication.rb.getResource("filter")#" class="f-submit" />
 		</div>
 		
 	</fieldset>
@@ -80,9 +80,9 @@ $out:$
 	<!--- set up results table --->
 	<table class="table-2" cellspacing="0">
 	<tr>
-		<th style="text-align:center">#application.adminBundle[session.dmProfile.locale].delete#</th>
-		<th>#application.adminBundle[session.dmProfile.locale].alias#</th>
-		<th>#application.adminBundle[session.dmProfile.locale].objectLC#</th>
+		<th style="text-align:center">#apapplication.rb.getResource("delete")#</th>
+		<th>#apapplication.rb.getResource("alias")#</th>
+		<th>#apapplication.rb.getResource("objectLC")#</th>
 	</tr>
 	</cfoutput>
 
@@ -127,7 +127,7 @@ $out:$
 	<cfoutput>
 		</table>
 		
-		<input type="submit" value="#application.adminBundle[session.dmProfile.locale].delete#" class="f-submit" />
+		<input type="submit" value="#apapplication.rb.getResource("delete")#" class="f-submit" />
 		
 		
 		</form>

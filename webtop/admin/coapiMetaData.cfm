@@ -31,11 +31,11 @@ $out:$
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 <sec:CheckPermission error="true" permission="AdminCOAPITab">
-	<cfoutput><h3>#application.adminBundle[session.dmProfile.locale].COAPITypeMetaData#</h3></cfoutput>
+	<cfoutput><h3>#apapplication.rb.getResource("COAPITypeMetaData")#</h3></cfoutput>
 	<cfdump var="#application.types#" label="application.types" expand="no">
 	
 	<cfoutput>
-	<h3>#application.adminBundle[session.dmProfile.locale].COAPIRulesMetaData#</h3></cfoutput>
+	<h3>#apapplication.rb.getResource("COAPIRulesMetaData")#</h3></cfoutput>
 	
 	<cfdump var="#application.rules#" label="application.rules" expand="no">
 </sec:CheckPermission>

@@ -53,7 +53,7 @@ $out:$
 	}	
 	
 	function confirmDelete(objectID){
-		var msg = "#application.adminBundle[session.dmProfile.locale].confirmDeleteItem#";
+		var msg = "#apapplication.rb.getResource("confirmDeleteItem")#";
 		if (confirm(msg))
 		{	
 			return true;
@@ -62,7 +62,7 @@ $out:$
 			return false;
 	}				
 	function confirmApprove(action){
-		var msg = "#application.adminBundle[session.dmProfile.locale].confirmObjStatusChange#" + action;
+		var msg = "#apapplication.rb.getResource("confirmObjStatusChange")#" + action;
 		if (confirm(msg))
 			return true;
 		else
@@ -115,7 +115,7 @@ $out:$
 			<cflocation url="#application.url.farcry#/navajo/objectComment.cfm?status=#status#&objectID=#form.objectID#" addtoken="no">
 					
 		<cfelse>
-			<cfset msg = "#application.adminBundle[session.dmProfile.locale].noObjSelected#">			
+			<cfset msg = "#apapplication.rb.getResource("noObjSelected")#">			
 		</cfif>
 	</cfif>
 	
@@ -164,20 +164,20 @@ $out:$
 	</cfif>
 	
 
-			<h3>#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].items,"#recordSet.recordcount#")#</h3>
+			<h3>#application.rb.formatRBString("items","#recordSet.recordcount#")#</h3>
 					
 					<form action="" method="post" name="dynamicAdmin">
 						<cfif thisPage GT 1>
-							<input type="image" src="#application.url.farcry#/images/treeImages/leftarrownormal.gif" value="#application.adminBundle[session.dmProfile.locale].prev#" name="prev"  onclick="this.form.thisPage.selectedIndex--;this.form.submit();" >
+							<input type="image" src="#application.url.farcry#/images/treeImages/leftarrownormal.gif" value="#apapplication.rb.getResource("prev")#" name="prev"  onclick="this.form.thisPage.selectedIndex--;this.form.submit();" >
 						</cfif>
 						Page 
 						<select name="thisPage" onChange="this.form.submit();">
 							<cfloop from="1" to="#numPages#" index="i">
 								<option value="#i#" <cfif i eq thisPage>selected</cfif>>#i#
 							</cfloop>
-						</select> #application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].pageOfPages,"#numPages#")# 
+						</select> #application.rb.formatRBString("pageOfPages","#numPages#")# 
 						<cfif thisPage LT numpages>
-							<input name="next" type="image" src="#application.url.farcry#/images/treeImages/rightarrownormal.gif" value="#application.adminBundle[session.dmProfile.locale].next#" onclick="this.form.thisPage.selectedIndex++;this.form.submit();">
+							<input name="next" type="image" src="#application.url.farcry#/images/treeImages/rightarrownormal.gif" value="#apapplication.rb.getResource("next")#" onclick="this.form.thisPage.selectedIndex++;this.form.submit();">
 						</cfif>
 						<cfif isDefined("form.fieldnames")>
 						<cfloop list="#form.fieldnames#" index="element">
@@ -192,18 +192,18 @@ $out:$
 
 				<table class="table-2" cellspacing="0">
 				<tr>
-					<th>#application.adminBundle[session.dmProfile.locale].subject# </th>
-					<th>#application.adminBundle[session.dmProfile.locale].edit# </th>
-					<th>#application.adminBundle[session.dmProfile.locale].preview# </th>
-					<th>#application.adminBundle[session.dmProfile.locale].send# </th>
-					<th>#application.adminBundle[session.dmProfile.locale].delete# </th>
+					<th>#apapplication.rb.getResource("subject")# </th>
+					<th>#apapplication.rb.getResource("edit")# </th>
+					<th>#apapplication.rb.getResource("preview")# </th>
+					<th>#apapplication.rb.getResource("send")# </th>
+					<th>#apapplication.rb.getResource("delete")# </th>
 				</tr>
 	         </cfoutput>
 			<cfif recordSet.recordCount EQ 0 >
 				<cfoutput>
 				<tr>
 					<td colspan="8">
-						<strong>#application.adminBundle[session.dmProfile.locale].noRecsRecovered#</strong>
+						<strong>#apapplication.rb.getResource("noRecsRecovered")#</strong>
 					</td>	
 				</tr>
 				</cfoutput>
@@ -220,20 +220,20 @@ $out:$
 					<td>
 						
 						<input type="hidden" name="objectid" value="#recordset.objectid#">
-						<input class="f-submit" type="button" name="edit" value="#application.adminBundle[session.dmProfile.locale].Edit#" onClick="location.href='#editObjectURL#';" />
+						<input class="f-submit" type="button" name="edit" value="#apapplication.rb.getResource("Edit")#" onClick="location.href='#editObjectURL#';" />
 					</td>
 					<td>
-						<input class="f-submit" type="button" name="preview" value="#application.adminBundle[session.dmProfile.locale].preview#" onClick="window.open('#previewURL#');" />
+						<input class="f-submit" type="button" name="preview" value="#apapplication.rb.getResource("preview")#" onClick="window.open('#previewURL#');" />
 					</td>
 					<td>
 						<cfif bSent>
-							#application.adminBundle[session.dmProfile.locale].sent#
+							#apapplication.rb.getResource("sent")#
 						<cfelse>
-							<input class="f-submit" type="button" name="send" value="#application.adminBundle[session.dmProfile.locale].send#" onClick="location.href='#application.url.farcry#/admin/messageSend.cfm?objectid=#objectid#';" />	
+							<input class="f-submit" type="button" name="send" value="#apapplication.rb.getResource("send")#" onClick="location.href='#application.url.farcry#/admin/messageSend.cfm?objectid=#objectid#';" />	
 						</cfif>						
 					</td>
 					<td>
-						<input class="f-submit" type="submit" name="delete" value="#application.adminBundle[session.dmProfile.locale].delete#" onClick="return confirmDelete('#recordset.objectid#')" />
+						<input class="f-submit" type="submit" name="delete" value="#apapplication.rb.getResource("delete")#" onClick="return confirmDelete('#recordset.objectid#')" />
 						
 					</td>
 					</form>
@@ -248,7 +248,7 @@ $out:$
 					<!--- get permissions  --->
 						<form action="" method="post">
 						<cfset finishURL = URLEncodedFormat("#cgi.SCRIPT_NAME#?#CGI.QUERY_STRING#")><!--- navajo/createObject.cfm?typename=#stArgs.typename#&finishURL=#finishURL#' ---><!--- window.location='#application.url.farcry#/#application.url.conjurer#?typename=#stArgs.typename#&finishURL=#finishURL#'; --->
-						<input type="button" value="#application.adminBundle[session.dmProfile.locale].add#" name="add" class="f-submit" onclick="window.location='#application.url.farcry#/conjuror/evocation.cfm?typename=#stArgs.typename#&finishURL=#finishURL#';" />
+						<input type="button" value="#apapplication.rb.getResource("add")#" name="add" class="f-submit" onclick="window.location='#application.url.farcry#/conjuror/evocation.cfm?typename=#stArgs.typename#&finishURL=#finishURL#';" />
 						</form>					
 					
 				</form>		

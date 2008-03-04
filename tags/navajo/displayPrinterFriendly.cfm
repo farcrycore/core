@@ -58,7 +58,7 @@ DEPRECATED:  this code should no longer be used.
 	<!--- if request.navid is not set, then no valid objects available for 
 	this node. --->
 	<cfif NOT isDefined("request.navid")>
-		<cfabort showerror="#application.adminBundle[session.dmProfile.locale].errorNavNodeNoContent#">
+		<cfabort showerror="#apapplication.rb.getResource("errorNavNodeNoContent")#">
 	</cfif>
 
 <!--- else get the navigation point from the URL --->
@@ -153,7 +153,7 @@ the latter is the policy group for anonymous...
 	
 		
 <cfelse>
-	<cfabort showerror="#application.adminBundle[session.dmProfile.locale].badCOAPI#">
+	<cfabort showerror="#apapplication.rb.getResource("badCOAPI")#">
 </cfif> 
 <!--- end: of if object exists... --->
 

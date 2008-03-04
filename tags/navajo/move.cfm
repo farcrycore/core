@@ -48,8 +48,8 @@ $out:$
 <cfset lExclude = "dmImage,dmFile">
 
 <cfif listContainsNoCase(lExclude,destObj.typename)>
-	<cfoutput><h3>#application.adminBundle[session.dmProfile.locale].cantDragObjectsBelowFileImage# </h3>
-	<div align="center"> <input type="button" value="#application.adminBundle[session.dmProfile.locale].close#" class="normalBttnStyle" onClick="window.close();" ></div>
+	<cfoutput><h3>#apapplication.rb.getResource("cantDragObjectsBelowFileImage")# </h3>
+	<div align="center"> <input type="button" value="#apapplication.rb.getResource("close")#" class="normalBttnStyle" onClick="window.close();" ></div>
 	</cfoutput>
 	<cfabort>
 </cfif>
@@ -102,7 +102,7 @@ $out:$
 	<cfif url.srcObjectId eq url.destObjectId OR ListFind( lAncestorIds, url.srcObjectId )>
 		<cfoutput>
 			<script>
-			parent.alert("#application.adminBundle[session.dmProfile.locale].destinationNodeCantBeChild#");
+			parent.alert("#apapplication.rb.getResource("destinationNodeCantBeChild")#");
 			window.close();
 			</script>
 		</cfoutput>
@@ -153,10 +153,10 @@ $out:$
 			 <cfcatch>
 			 	<cfdump var="#cfcatch#">
 			 	<cfoutput>
-				<h2>#application.adminBundle[session.dmProfile.locale].moveBranchLockout#</h2>
-				<p>#application.adminBundle[session.dmProfile.locale].branchLockoutBlurb#</p>
+				<h2>#apapplication.rb.getResource("moveBranchLockout")#</h2>
+				<p>#apapplication.rb.getResource("branchLockoutBlurb")#</p>
 				<script>
-					top['frames']['treeFrame'].alert("#application.adminBundle[session.dmProfile.locale].branchLockoutBlurb#");
+					top['frames']['treeFrame'].alert("#apapplication.rb.getResource("branchLockoutBlurb")#");
 					top['frames']['treeFrame'].enableDragAndDrop();
 				</script>
 				</cfoutput>

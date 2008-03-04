@@ -82,7 +82,7 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
 			<input type="hidden" name="typename" value="#stObj.typename#">
 			<input type="hidden" name="finishURL" value="#url.finishURL#">
 <fieldset>
-	<label for="commentLog"><b>#application.adminBundle[session.dmProfile.locale].addComment#:</b>
+	<label for="commentLog"><b>#apapplication.rb.getResource("addComment")#:</b>
 		<textarea id="commentLog" name="commentLog"></textarea>
 	</label>
 
@@ -95,12 +95,12 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
 	</label>
 </fieldset>
 <div class="f-submit-wrap">
-	<input type="submit" name="submit" value="#application.adminBundle[session.dmProfile.locale].submitUC#" class="f-submit" />
-	<input type="submit" name="cancel" value="#application.adminBundle[session.dmProfile.locale].cancel#" class="f-submit">
+	<input type="submit" name="submit" value="#apapplication.rb.getResource("submitUC")#" class="f-submit" />
+	<input type="submit" name="cancel" value="#apapplication.rb.getResource("cancel")#" class="f-submit">
 </div>
 <cfif StructKeyExists(stObj,"commentLog")>
 <fieldset>
-	<label><b>#application.adminBundle[session.dmProfile.locale].prevCommentLog#</b>
+	<label><b>#apapplication.rb.getResource("prevCommentLog")#</b>
 		<xmp>#stObj.commentLog#</xmp>
 	</label>
 </fieldset></cfif>

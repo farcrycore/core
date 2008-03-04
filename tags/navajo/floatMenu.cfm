@@ -28,10 +28,10 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 <!--- check current design mode state --->
 <cfif isDefined("request.mode.design") and (request.mode.design eq "1")>
 	<cfset aItems[arrayLen(aItems)].href = "#application.url.conjurer#?objectID=#url.ObjectID#&designmode=0">
-	<cfset aItems[arrayLen(aItems)].text = "#application.adminBundle[session.dmProfile.locale].hidedesign#">
+	<cfset aItems[arrayLen(aItems)].text = "#apapplication.rb.getResource("hidedesign")#">
 <cfelse>
 	<cfset aItems[arrayLen(aItems)].href = "#application.url.conjurer#?objectID=#url.ObjectID#&designmode=1">
-	<cfset aItems[arrayLen(aItems)].text = "#application.adminBundle[session.dmProfile.locale].showdesign#">
+	<cfset aItems[arrayLen(aItems)].text = "#apapplication.rb.getResource("showdesign")#">
 </cfif>
 
 <!--- Show latest mode --->
@@ -40,10 +40,10 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 <!--- check current cache state --->
 <cfif isDefined("request.mode.flushcache") AND request.mode.flushcache eq 0>
 	<cfset aItems[arrayLen(aItems)].href = "#application.url.conjurer#?objectID=#url.ObjectID#&flushcache=1">
-	<cfset aItems[arrayLen(aItems)].text = "#application.adminBundle[session.dmProfile.locale].showlatest#">
+	<cfset aItems[arrayLen(aItems)].text = "#apapplication.rb.getResource("showlatest")#">
 <cfelse>
 	<cfset aItems[arrayLen(aItems)].href = "#application.url.conjurer#?objectID=#url.ObjectID#&flushcache=0">
-	<cfset aItems[arrayLen(aItems)].text = "#application.adminBundle[session.dmProfile.locale].showcached#">
+	<cfset aItems[arrayLen(aItems)].text = "#apapplication.rb.getResource("showcached")#">
 </cfif>
 
 <!--- Show Draft mode --->
@@ -52,14 +52,14 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 <!--- check current state of draft mode --->
 <cfif isDefined("request.mode.showdraft") AND request.mode.showdraft eq 0>
 	<cfset aItems[arrayLen(aItems)].href = "#application.url.conjurer#?objectID=#url.ObjectID#&flushcache=1&showdraft=1">
-	<cfset aItems[arrayLen(aItems)].text = "#application.adminBundle[session.dmProfile.locale].showDraft#">
+	<cfset aItems[arrayLen(aItems)].text = "#apapplication.rb.getResource("showDraft")#">
 <cfelse>
 	<cfset aItems[arrayLen(aItems)].href = "#application.url.conjurer#?objectID=#url.ObjectID#&flushcache=0&showdraft=0">
-	<cfset aItems[arrayLen(aItems)].text = "#application.adminBundle[session.dmProfile.locale].hideDraft#">
+	<cfset aItems[arrayLen(aItems)].text = "#apapplication.rb.getResource("hideDraft")#">
 </cfif>
 
 <cfset aItems[arrayLen(aItems)+1] = structNew()>
-<cfset aItems[arrayLen(aItems)].text = "#application.adminBundle[session.dmProfile.locale].adminPage#">
+<cfset aItems[arrayLen(aItems)].text = "#apapplication.rb.getResource("adminPage")#">
 <cfset aItems[arrayLen(aItems)].href = "#application.url.farcry#/index.cfm">
 <cfset aItems[arrayLen(aItems)].icon = "admin.gif">
 <cfset aItems[arrayLen(aItems)].target = "farcry_webtop">
@@ -67,7 +67,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 
 <cfset aItems[arrayLen(aItems)+1] = structNew()>
 <cfif structKeyExists(request, "stobj") and isDefined("application.stcoapi.#request.stobj.typename#.bUseInTree") AND application.stCoapi[request.stobj.typename].bUseInTree>
-	<cfset aItems[arrayLen(aItems)].text = "#application.adminBundle[session.dmProfile.locale].editPage#">
+	<cfset aItems[arrayLen(aItems)].text = "#apapplication.rb.getResource("editPage")#">
 	<cfset aItems[arrayLen(aItems)].target = "farcry_webtop">
 	<cfset aItems[arrayLen(aItems)].href = "#application.url.farcry#/index.cfm?sec=site&rootobjectid=#request.navid#">
 <cfelse>
@@ -79,7 +79,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 <cfset aItems[arrayLen(aItems)].target = "farcry_webtop">
 
 <cfset aItems[arrayLen(aItems)+1] = structNew()>
-<cfset aItems[arrayLen(aItems)].text = "#application.adminBundle[session.dmProfile.locale].logout#">
+<cfset aItems[arrayLen(aItems)].text = "#apapplication.rb.getResource("logout")#">
 <cfset aItems[arrayLen(aItems)].href = "#application.url.conjurer#?objectID=#url.ObjectID#&logout=1">
 <cfset aItems[arrayLen(aItems)].icon = "logout.gif">
 
@@ -88,7 +88,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 	if (isDeveloper EQ 1)
 	{
 		 aItems[arrayLen(aItems)+1] = structNew();
-		 aItems[arrayLen(aItems)].text = "#application.adminBundle[session.dmProfile.locale].refreshAppScope#";
+		 aItems[arrayLen(aItems)].text = "#apapplication.rb.getResource("refreshAppScope")#";
 		 aItems[arrayLen(aItems)].href = "#application.url.conjurer#?objectID=#url.ObjectID#&updateapp=1";
 	}	 
 </cfscript>

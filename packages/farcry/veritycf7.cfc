@@ -85,7 +85,7 @@ Update for individual content types to capture categories
 		<cfset arrayappend(subS, arrayToList(application.config.verity.contenttype[key].aprops))>
 		
 		<cfsavecontent variable="rpt1">
-		<cfoutput><span class="frameMenuBullet">&raquo;</span> #application.rB.formatRBString(application.adminBundle[session.dmProfile.locale].updatingRecsFor,subS)#<br></cfoutput>
+		<cfoutput><span class="frameMenuBullet">&raquo;</span> #application.rb.formatRBString("updatingRecsFor",subS)#<br></cfoutput>
 		</cfsavecontent>
 		
 		<!--- update collection --->
@@ -115,7 +115,7 @@ Update for individual content types to capture categories
 			<cfset arrayappend(subS, arrayToList(application.config.verity.contenttype[key].aprops))>
 
 			<cfsavecontent variable="rpt2">
-			<cfoutput><span class="frameMenuBullet">&raquo;</span> #application.rB.formatRBString(application.adminBundle[session.dmProfile.locale].purgingDeadRecsFor,subS)#<p></cfoutput>
+			<cfoutput><span class="frameMenuBullet">&raquo;</span> #application.rb.formatRBString("purgingDeadRecsFor",subS)#<p></cfoutput>
 			</cfsavecontent>
 			
 			<cfindex action="DELETE" collection="#application.applicationname#_#key#" query="q" key="objectid">

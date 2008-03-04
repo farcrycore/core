@@ -45,26 +45,26 @@ out:
 			<form method="post" class="f-wrap-1 f-bg-short" action="">
 			<fieldset>
 	
-				<h3>#application.adminBundle[session.dmProfile.locale].browserUsage#</h3>
+				<h3>#apapplication.rb.getResource("browserUsage")#</h3>
 				
 				<label for="dateRange">
 				<!--- drop down for date --->
-				<b>#application.adminBundle[session.dmProfile.locale].Date#</b>
+				<b>#apapplication.rb.getResource("Date")#</b>
 				<select name="dateRange" id="dateRange">
-					<option value="all" <cfif form.dateRange eq "all">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].allDates#</option>
-					<option value="d" <cfif form.dateRange eq "d">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].today#</option>
-					<option value="ww" <cfif form.dateRange eq "ww">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].lastWeek#</option>
-					<option value="m" <cfif form.dateRange eq "m">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].lastMonth#</option>
-					<option value="q" <cfif form.dateRange eq "q">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].lastQuarter#</option>
-					<option value="yyyy" <cfif form.dateRange eq "yyyy">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].lastYear#</option>
+					<option value="all" <cfif form.dateRange eq "all">selected="selected"</cfif>>#apapplication.rb.getResource("allDates")#</option>
+					<option value="d" <cfif form.dateRange eq "d">selected="selected"</cfif>>#apapplication.rb.getResource("today")#</option>
+					<option value="ww" <cfif form.dateRange eq "ww">selected="selected"</cfif>>#apapplication.rb.getResource("lastWeek")#</option>
+					<option value="m" <cfif form.dateRange eq "m">selected="selected"</cfif>>#apapplication.rb.getResource("lastMonth")#</option>
+					<option value="q" <cfif form.dateRange eq "q">selected="selected"</cfif>>#apapplication.rb.getResource("lastQuarter")#</option>
+					<option value="yyyy" <cfif form.dateRange eq "yyyy">selected="selected"</cfif>>#apapplication.rb.getResource("lastYear")#</option>
 				</select><br />
 				</label>
 				
 				<label for="maxRows">
 				<!--- drop down for max rows --->
-				<b>#application.adminBundle[session.dmProfile.locale].rows#</b>
+				<b>#apapplication.rb.getResource("rows")#</b>
 				<select name="maxRows" id="maxRows">
-					<option value="all" <cfif form.maxRows eq "all">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].allRows#</option>
+					<option value="all" <cfif form.maxRows eq "all">selected="selected"</cfif>>#apapplication.rb.getResource("allRows")#</option>
 					<cfloop from="10" to="200" step=10 index="rows">
 						<option value="#rows#" <cfif rows eq form.maxRows>selected="selected"</cfif>>#rows#</option>
 					</cfloop>
@@ -72,7 +72,7 @@ out:
 				</label>
 				
 				<div class="f-submit-wrap">
-				<input type="submit" value="#application.adminBundle[session.dmProfile.locale].update#" class="f-submit" />
+				<input type="submit" value="#apapplication.rb.getResource("update")#" class="f-submit" />
 				</div>
 			
 			</fieldset>
@@ -82,8 +82,8 @@ out:
 			
 			<table class="table-3" cellspacing="0">
 				<tr>
-					<th>#application.adminBundle[session.dmProfile.locale].browser#</th>
-					<th>#application.adminBundle[session.dmProfile.locale].sessions#</th>
+					<th>#apapplication.rb.getResource("browser")#</th>
+					<th>#apapplication.rb.getResource("sessions")#</th>
 				</tr>
 				
 				<!--- show stats with links to detail --->
@@ -108,7 +108,7 @@ out:
 				showBorder = "no"
 				fontsize="10"
 				labelFormat = "number"
-				yAxisTitle = "#application.adminBundle[session.dmProfile.locale].browserUsage#" 
+				yAxisTitle = "#apapplication.rb.getResource("browserUsage")#" 
 				show3D = "yes"
 				xOffset = "0.15" 
 				yOffset = "0.15"
@@ -117,12 +117,12 @@ out:
 				tipStyle = "MouseOver"
 				pieSliceStyle="solid">
 				
-				<cfchartseries type="pie" query="q1" itemcolumn="browser" valuecolumn="views" serieslabel="#application.adminBundle[session.dmProfile.locale].today#" paintstyle="shade"></cfchartseries>
+				<cfchartseries type="pie" query="q1" itemcolumn="browser" valuecolumn="views" serieslabel="#apapplication.rb.getResource("today")#" paintstyle="shade"></cfchartseries>
 			</cfchart>
 
 		</cfoutput>
 	<cfelse>
-		<cfoutput><h3>#application.adminBundle[session.dmProfile.locale].noStatsNow#</h3></cfoutput>
+		<cfoutput><h3>#apapplication.rb.getResource("noStatsNow")#</h3></cfoutput>
 	</cfif>
 </sec:CheckPermission>
 

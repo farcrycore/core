@@ -24,7 +24,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 
 <!--- check for existing collections with no app data --->
 <cfif not structKeyExists(application.config.verity.contenttype,"#key#") and not structKeyExists(application.config.verity.contenttype[key],"lastUpdated")>
-	<cfoutput>#application.adminBundle[session.dmProfile.locale].resetVerity#</cfoutput>
+	<cfoutput>#apapplication.rb.getResource("resetVerity")#</cfoutput>
 <cfelse>			
 	<!--- work out collection type --->
 	<cfif isArray(application.config.verity.contenttype[key].aprops)>
@@ -60,6 +60,6 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 	<!--- reset lastupdated timestamp --->
 	<cfset setLastupdated(arguments.collection, now())>
 	
-	<cfoutput><span class="frameMenuBullet">&raquo;</span> <strong></strong> #application.rB.formatRBString(application.adminBundle[session.dmProfile.locale].updated,"#arguments.collection#")#<p></p></cfoutput>
+	<cfoutput><span class="frameMenuBullet">&raquo;</span> <strong></strong> #application.rb.formatRBString("updated","#arguments.collection#")#<p></p></cfoutput>
 </cfif>
 

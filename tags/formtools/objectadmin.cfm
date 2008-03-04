@@ -492,11 +492,11 @@ user --->
 	statusurl="";
 	if (isDefined("form.status")) {
 		if (isDefined("form.objectID")) {
-			if (form.status contains application.adminBundle[session.dmProfile.locale].approve)
+			if (form.status contains apapplication.rb.getResource("approve"))
 				status = 'approved';
-			else if (form.status contains application.adminBundle[session.dmProfile.locale].sendToDraft)
+			else if (form.status contains apapplication.rb.getResource("sendToDraft"))
 				status = 'draft';
-			else if (form.status contains application.adminBundle[session.dmProfile.locale].requestApproval)
+			else if (form.status contains apapplication.rb.getResource("requestApproval"))
 				status = 'requestApproval';
 			else
 				status = 'unknown';
@@ -505,7 +505,7 @@ user --->
 			if (isDefined("stgrid.approveURL"))
 				statusurl = statusurl & "&approveURL=#URLEncodedFormat(stGrid.approveURL)#";
 		} else
-			response = "#application.adminBundle[session.dmProfile.locale].noObjSelected#";
+			response = "#apapplication.rb.getResource("noObjSelected")#";
 	}
 	</cfscript>
 	<!--- redirect user on status change --->
@@ -533,7 +533,7 @@ user --->
 					bAllowUnlock=true;
 				// if the user doesn't have permission, push error response
 				} else {
-					response=application.adminBundle[session.dmProfile.locale].noPermissionUnlockAll;
+					response=apapplication.rb.getResource("noPermissionUnlockAll");
 				}
 			}
 			if (bAllowUnlock) {

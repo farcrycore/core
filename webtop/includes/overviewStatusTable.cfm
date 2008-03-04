@@ -1,9 +1,9 @@
 <cfparam name="tableStatus_name" default="pending">
 <cfoutput>
 <cfif tableStatus_name EQ "pending">
-<h3><!--- #application.adminBundle[session.dmProfile.locale].objPendingApproval# --->Content Items Pending Approval</h3>
+<h3><!--- #apapplication.rb.getResource("objPendingApproval")# --->Content Items Pending Approval</h3>
 <cfelseif tableStatus_name EQ "draft">
-<h3><!--- #application.adminBundle[session.dmProfile.locale].draftObjects# --->Content Items In Draft</h3>
+<h3><!--- #apapplication.rb.getResource("draftObjects")# --->Content Items In Draft</h3>
 </cfif>
 
 <form name="frm_#tableStatus_name#" action="#cgi.script_name#?#cgi.query_string#" method="post">
@@ -22,9 +22,9 @@
 <br class="clear" />
 <table class="table-2" cellspacing="0" id="table_#tableStatus_name#">
 <tr>
-	<th scope="col">#application.adminBundle[session.dmProfile.locale].object#</th>
-	<th scope="col">#application.adminBundle[session.dmProfile.locale].createdBy#</th>
-	<th scope="col">#application.adminBundle[session.dmProfile.locale].lastUpdated#</th>
+	<th scope="col">#apapplication.rb.getResource("object")#</th>
+	<th scope="col">#apapplication.rb.getResource("createdBy")#</th>
+	<th scope="col">#apapplication.rb.getResource("lastUpdated")#</th>
 </tr>
 <tbody id="tbody_#tableStatus_name#">
 </tbody>

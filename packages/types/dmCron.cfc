@@ -48,7 +48,7 @@ object methods
 	
 	<cfloop query="qCore">
 		<cfset queryAddRow(qTemplates, 1)>
-		<cfset querySetCell(qTemplates, "displayname", "#displayname# #application.adminBundle[session.dmProfile.locale].core#")>
+		<cfset querySetCell(qTemplates, "displayname", "#displayname# #apapplication.rb.getResource("core")#")>
 		<cfset querySetCell(qTemplates, "path", "/farcry/core/webtop/scheduledTasks/#methodName#.cfm")>
 	</cfloop>
 	
@@ -71,7 +71,7 @@ object methods
 			<!--- ignore cvs file --->
 			<cfif methodName neq "_donotdelete">
 				<cfset queryAddRow(qTemplates, 1)>
-				<cfset querySetCell(qTemplates, "displayname", "#displayname# #application.adminBundle[session.dmProfile.locale].custom#")>
+				<cfset querySetCell(qTemplates, "displayname", "#displayname# #apapplication.rb.getResource("custom")#")>
 				<cfset querySetCell(qTemplates, "path", "/farcry/projects/#application.projectDirectoryName#/system/dmCron/#methodName#.cfm")>
 			</cfif>
 		</cfloop>

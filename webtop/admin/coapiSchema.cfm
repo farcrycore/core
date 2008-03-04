@@ -33,7 +33,7 @@ $out:$
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 <sec:CheckPermission error="true" permission="AdminCOAPITab">
-	<cfoutput><h3>#application.adminBundle[session.dmProfile.locale].COAPIschema#</h3></cfoutput>
+	<cfoutput><h3>#apapplication.rb.getResource("COAPIschema")#</h3></cfoutput>
 	
 	<!--
 	This page was generated using the CF_DBSchema custom tag from Coldron.

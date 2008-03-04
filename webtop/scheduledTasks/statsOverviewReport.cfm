@@ -44,7 +44,7 @@ $out:$
 	qSearches = application.factory.oStats.getSearchStatsMostPopular(dateRange=#url.dateRange#,maxRows=10);
 </cfscript>
 
-<cfset tS=application.rb.formatRBString(application.adminBundle[application.config.general.locale].emailStatReport,"#application.config.general.siteTitle#")>
+<cfset tS=application.rb.formatRBString("emailStatReport","#application.config.general.siteTitle#")>
 
 <cfmail to="#url.emailTo#" from="#application.config.general.adminEmail#" subject="#tS#" type="HTML">
 
@@ -78,9 +78,9 @@ table, td, div {
 <div class="formtitle">
 <cfif dateRange neq "all">
 	<cfset subS=listToArray('#application.thisCalendar.i18nDateFormat(dateAdd("#dateRange#",-1,now()),application.config.general.locale,application.fullF)#, #application.thisCalendar.i18nDateFormat(now(),application.config.general.locale,application.fullF)#, #numberformat(qSessions.sessions)#')>
-	#application.rb.formatRBString(application.adminBundle[application.config.general.locale].statsOverviewReport,subS)#
+	#application.rb.formatRBString("statsOverviewReport",subS)#
 <cfelse>
-	#application.rb.formatRBString(application.adminBundle[application.config.general.locale].allDatesOverviewReport,"#numberformat(qSessions.sessions)#")#
+	#application.rb.formatRBString("allDatesOverviewReport","#numberformat(qSessions.sessions)#")#
 </cfif> 
 </div>
 
@@ -89,9 +89,9 @@ table, td, div {
 	<div class="formtitle" style="margin-left:30px;padding-bottom:5px;">Most Popular Pages</div>
 	<table cellpadding="5" cellspacing="0" border="1" width="500" style="margin-left:30px;">
 	<tr>
-		<th class="dataheader" align="left">#application.adminBundle[application.config.general.locale].objectLC#</th>
-		<th class="dataheader">#application.adminBundle[application.config.general.locale].views#</th>
-		<th class="dataheader">#application.adminBundle[application.config.general.locale].typeLC#</th>
+		<th class="dataheader" align="left">#apapplication.rb.getResource("objectLC")#</th>
+		<th class="dataheader">#apapplication.rb.getResource("views")#</th>
+		<th class="dataheader">#apapplication.rb.getResource("typeLC")#</th>
 	</tr>
 	
 	<!--- show stats with links to detail --->
@@ -109,12 +109,12 @@ table, td, div {
 
 <!--- locales --->
 <cfif qLocales.recordcount>
-	<div class="formtitle" style="margin-left:30px;padding-bottom:5px;">#application.adminBundle[application.config.general.locale].mostPopularLocales#</div>
+	<div class="formtitle" style="margin-left:30px;padding-bottom:5px;">#apapplication.rb.getResource("mostPopularLocales")#</div>
 	<table cellpadding="5" cellspacing="0" border="1" width="500" style="margin-left:30px;">
 	<tr>
-		<th class="dataheader" align="left">#application.adminBundle[application.config.general.locale].country#</th>
-		<th class="dataheader">#application.adminBundle[application.config.general.locale].language#</th>
-		<th class="dataheader">#application.adminBundle[application.config.general.locale].sessions#</th>
+		<th class="dataheader" align="left">#apapplication.rb.getResource("country")#</th>
+		<th class="dataheader">#apapplication.rb.getResource("language")#</th>
+		<th class="dataheader">#apapplication.rb.getResource("sessions")#</th>
 	</tr>
 	
 	<!--- show stats with links to detail --->
@@ -132,11 +132,11 @@ table, td, div {
 
 <!--- browsers --->
 <cfif qBrowsers.recordcount>
-	<div class="formtitle" style="margin-left:30px;padding-bottom:5px;">#application.adminBundle[application.config.general.locale].mostPopularBrowsers#</div>
+	<div class="formtitle" style="margin-left:30px;padding-bottom:5px;">#apapplication.rb.getResource("mostPopularBrowsers")#</div>
 	<table cellpadding="5" cellspacing="0" border="1" width="500" style="margin-left:30px;">
 	<tr>
-		<th class="dataheader" align="left">#application.adminBundle[application.config.general.locale].browser#</th>
-		<th class="dataheader">#application.adminBundle[application.config.general.locale].sessions#</th>
+		<th class="dataheader" align="left">#apapplication.rb.getResource("browser")#</th>
+		<th class="dataheader">#apapplication.rb.getResource("sessions")#</th>
 	</tr>
 	
 	<!--- show stats with links to detail --->
@@ -153,11 +153,11 @@ table, td, div {
 
 <!--- operating systems --->
 <cfif qOs.recordcount>
-	<div class="formtitle" style="margin-left:30px;padding-bottom:5px;">#application.adminBundle[application.config.general.locale].mostPopularOS#</div>
+	<div class="formtitle" style="margin-left:30px;padding-bottom:5px;">#apapplication.rb.getResource("mostPopularOS")#</div>
 	<table cellpadding="5" cellspacing="0" border="1" width="500" style="margin-left:30px;">
 	<tr>
-		<th class="dataheader" align="left">#application.adminBundle[application.config.general.locale].OS#</th>
-		<th class="dataheader">#application.adminBundle[application.config.general.locale].sessions#</th>
+		<th class="dataheader" align="left">#apapplication.rb.getResource("OS")#</th>
+		<th class="dataheader">#apapplication.rb.getResource("sessions")#</th>
 	</tr>
 	
 	<!--- show stats with links to detail --->
@@ -174,11 +174,11 @@ table, td, div {
 
 <!--- referers --->
 <cfif qReferers.recordcount>
-	<div class="formtitle" style="margin-left:30px;padding-bottom:5px;">#application.adminBundle[application.config.general.locale].mostPopularReferers#</div>
+	<div class="formtitle" style="margin-left:30px;padding-bottom:5px;">#apapplication.rb.getResource("mostPopularReferers")#</div>
 	<table cellpadding="5" cellspacing="0" border="1" width="500" style="margin-left:30px;">
 	<tr>
-		<th class="dataheader" align="left">#application.adminBundle[application.config.general.locale].referer#</th>
-		<th class="dataheader">#application.adminBundle[application.config.general.locale].referals#</th>
+		<th class="dataheader" align="left">#apapplication.rb.getResource("referer")#</th>
+		<th class="dataheader">#apapplication.rb.getResource("referals")#</th>
 	</tr>
 	
 	<!--- show stats with links to detail --->
@@ -195,11 +195,11 @@ table, td, div {
 
 <!--- searches --->
 <cfif qSearches.recordcount>
-	<div class="formtitle" style="margin-left:30px;padding-bottom:5px;">#application.adminBundle[application.config.general.locale].mostPopularSearches#</div>
+	<div class="formtitle" style="margin-left:30px;padding-bottom:5px;">#apapplication.rb.getResource("mostPopularSearches")#</div>
 	<table cellpadding="5" cellspacing="0" border="1" width="500" style="margin-left:30px;">
 	<tr>
-		<th class="dataheader" align="left">#application.adminBundle[application.config.general.locale].searchString#</th>
-		<th class="dataheader">#application.adminBundle[application.config.general.locale].searches#</th>
+		<th class="dataheader" align="left">#apapplication.rb.getResource("searchString")#</th>
+		<th class="dataheader">#apapplication.rb.getResource("searches")#</th>
 	</tr>
 	
 	<!--- show stats with links to detail --->
@@ -216,5 +216,5 @@ table, td, div {
 </cfoutput>
 </cfmail>
 <cfoutput>
-#application.adminBundle[application.config.general.locale].emailSent#
+#apapplication.rb.getResource("emailSent")#
 </cfoutput>

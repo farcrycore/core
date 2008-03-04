@@ -261,15 +261,15 @@ $out:$
 	    <cfif form.debug eq 1>
 	        <!--- show debug only, don't fix tree --->
 	        <cfoutput>
-	        <div class="formtitle">#application.adminBundle[session.dmProfile.locale].debugComplete#</div>
-	        #application.adminBundle[session.dmProfile.locale].showNoDebugLook#<p></cfoutput>
+	        <div class="formtitle">#apapplication.rb.getResource("debugComplete")#</div>
+	        #apapplication.rb.getResource("showNoDebugLook")#<p></cfoutput>
 	        <cfquery name="qDisplayIndentedTree" datasource="#dsn#">
 	            SELECT objectname as a_objectname, objectid as b_objectID, parentid as c_parentid,
 	            nleft as d_nleft, nright as e_nright, nlevel as f_nlevel
 	            FROM #temptablename#
 	            order by nleft
 	        </cfquery>
-	        <cfdump var="#qDisplayIndentedTree#" label="#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].nestedTree,'#form.typename#')#">
+	        <cfdump var="#qDisplayIndentedTree#" label="#application.rb.formatRBString("nestedTree",'#form.typename#')#">
 	    <cfelse>
 	        <!--- update the real table --->
 	        <cfswitch expression="#application.dbtype#">
@@ -309,8 +309,8 @@ $out:$
 	            from #temptablename#
 	        </cfquery>
 	        <cfoutput>
-	        <div class="formtitle">#application.adminBundle[session.dmProfile.locale].treeFixed#</div>
-	        #application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].nestedTreeTableUpdated,"#form.typename#")#</cfoutput>
+	        <div class="formtitle">#apapplication.rb.getResource("treeFixed")#</div>
+	        #application.rb.formatRBString("nestedTreeTableUpdated","#form.typename#")#</cfoutput>
 	    </cfif>
 	
 	<cfelse><!--- show the form --->
@@ -322,7 +322,7 @@ $out:$
 		
 	    <cfif qTypeNames.recordCount eq 0>
 	        <cfoutput>
-	            #application.adminBundle[session.dmProfile.locale].noTreeItemsBadBlurb#
+	            #apapplication.rb.getResource("noTreeItemsBadBlurb")#
 	        </cfoutput>
 	    <cfelse>
 			<!--- show form --->
@@ -332,9 +332,9 @@ $out:$
 	            
 	            <form action="fixtree.cfm" method="post" class="f-wrap-1 f-bg-short wider">
 				<fieldset>
-				<h3>#application.adminBundle[session.dmProfile.locale].fixNestedTree#</h3>
+				<h3>#apapplication.rb.getResource("fixNestedTree")#</h3>
 				
-	            <label for="startPoint"><b>#application.adminBundle[session.dmProfile.locale].enterTreeTypeName#</b>
+	            <label for="startPoint"><b>#apapplication.rb.getResource("enterTreeTypeName")#</b>
 				<select name="typename">
 					<cfloop query="qTypeNames">
 						<option value="#qTypeNames.typename#" <cfif qTypeNames.typename eq defaultType>selected</cfif>>#qTypeNames.typename#</option>
@@ -347,19 +347,19 @@ $out:$
 						<fieldset>
 				  		<label for="debug">
 						<input type="checkbox" class="f-checkbox" name="debug" value="1" checked="checked" />
-						#application.adminBundle[session.dmProfile.locale].showDebugOnly#
+						#apapplication.rb.getResource("showDebugOnly")#
 						</label>
 	               		</fieldset>
 				    </fieldset>
 					
 					<div class="f-submit-wrap">
-					<input type="submit" name="submit" class="f-submit" value="#application.adminBundle[session.dmProfile.locale].submit#" />
+					<input type="submit" name="submit" class="f-submit" value="#apapplication.rb.getResource("submit")#" />
 					</div>
 					
 			    </fieldset>
 				</form>
 				<hr />
-				<p>#application.adminBundle[session.dmProfile.locale].nestedTreeFunctionBlurb#</p>
+				<p>#apapplication.rb.getResource("nestedTreeFunctionBlurb")#</p>
 	
 	        </cfoutput>
 	    </cfif>

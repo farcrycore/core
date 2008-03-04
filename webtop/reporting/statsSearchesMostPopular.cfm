@@ -49,26 +49,26 @@ $out:$
 				<form method="post" class="f-wrap-1 f-bg-short" action="">
 				<fieldset>
 					
-					<h3>#application.adminBundle[session.dmProfile.locale].mostPopularSiteSearches#</h3>
+					<h3>#apapplication.rb.getResource("mostPopularSiteSearches")#</h3>
 
 					<label for="dateRange">
 					<!--- drop down for date --->
-					<b>#application.adminBundle[session.dmProfile.locale].Date#</b>
+					<b>#apapplication.rb.getResource("Date")#</b>
 					<select name="dateRange" id="dateRange">
-						<option value="all" <cfif form.dateRange eq "all">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].allDates#</option>
-						<option value="d" <cfif form.dateRange eq "d">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].Today#</option>
-						<option value="ww" <cfif form.dateRange eq "ww">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].lastWeek#</option>
-						<option value="m" <cfif form.dateRange eq "m">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].lastMonth#</option>
-						<option value="q" <cfif form.dateRange eq "q">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].lastQuarter#</option>
-						<option value="yyyy" <cfif form.dateRange eq "yyyy">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].lastYear#</option>
+						<option value="all" <cfif form.dateRange eq "all">selected="selected"</cfif>>#apapplication.rb.getResource("allDates")#</option>
+						<option value="d" <cfif form.dateRange eq "d">selected="selected"</cfif>>#apapplication.rb.getResource("Today")#</option>
+						<option value="ww" <cfif form.dateRange eq "ww">selected="selected"</cfif>>#apapplication.rb.getResource("lastWeek")#</option>
+						<option value="m" <cfif form.dateRange eq "m">selected="selected"</cfif>>#apapplication.rb.getResource("lastMonth")#</option>
+						<option value="q" <cfif form.dateRange eq "q">selected="selected"</cfif>>#apapplication.rb.getResource("lastQuarter")#</option>
+						<option value="yyyy" <cfif form.dateRange eq "yyyy">selected="selected"</cfif>>#apapplication.rb.getResource("lastYear")#</option>
 					</select><br />
 					</label>
 					
 					<label for="maxRows">
 					<!--- drop down for max rows --->
-					<b>#application.adminBundle[session.dmProfile.locale].Rows#</b>
+					<b>#apapplication.rb.getResource("Rows")#</b>
 					<select name="maxRows" id="maxRows">
-						<option value="all" <cfif form.maxRows eq "all">selected="selected"</cfif>>#application.adminBundle[session.dmProfile.locale].allRows#</option>
+						<option value="all" <cfif form.maxRows eq "all">selected="selected"</cfif>>#apapplication.rb.getResource("allRows")#</option>
 						<cfloop from="10" to="200" step=10 index="rows">
 							<option value="#rows#" <cfif rows eq form.maxRows>selected="selected"</cfif>>#rows#</option>
 						</cfloop>
@@ -76,7 +76,7 @@ $out:$
 					</label>
 					
 					<div class="f-submit-wrap">
-					<input type="submit" value="#application.adminBundle[session.dmProfile.locale].Update#" class="f-submit" />
+					<input type="submit" value="#apapplication.rb.getResource("Update")#" class="f-submit" />
 					</div>
 					
 				</fieldset>
@@ -86,8 +86,8 @@ $out:$
 				
 				<table class="table-3" cellspacing="0">
 				<tr>
-					<th>#application.adminBundle[session.dmProfile.locale].searchString#</th>
-					<th>#application.adminBundle[session.dmProfile.locale].searchNumbers#</th>
+					<th>#apapplication.rb.getResource("searchString")#</th>
+					<th>#apapplication.rb.getResource("searchNumbers")#</th>
 				</tr>
 				
 				<!--- show stats with links to detail --->
@@ -101,7 +101,7 @@ $out:$
 				</table>
 
 	<cfelse>
-		<h3>#application.adminBundle[session.dmProfile.locale].noZeroResultSearches#</h3>
+		<h3>#apapplication.rb.getResource("noZeroResultSearches")#</h3>
 	</cfif>
 	</cfoutput>
 </sec:CheckPermission>

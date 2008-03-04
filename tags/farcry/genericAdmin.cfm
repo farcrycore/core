@@ -97,13 +97,13 @@ $TODO: there shouldn't be anything scoped from outside of the tag! Make this an 
 	//select
 
 	st.columnType = 'expression';
-	st.heading = '#application.adminBundle[session.dmProfile.locale].select#';
+	st.heading = '#apapplication.rb.getResource("select")#';
 	st.align = "center";
 	st.value = "<input type=""checkbox"" name=""objectid"" value=""##recordset.objectid##"">";
 	arrayAppend(stGrid.aTable,st);
 
 	st = structNew();
-	st.heading = '#application.adminBundle[session.dmProfile.locale].edit#';
+	st.heading = '#apapplication.rb.getResource("edit")#';
 	st.align = "center";
 	st.columnType = 'eval';
 	editobjectURL = "#application.url.farcry#/navajo/edit.cfm?objectid=##recordset.objectID[recordset.currentrow]##&type=#stGrid.typename#&finishURL=##URLEncodedFormat(stGrid.finishURL)##";
@@ -111,7 +111,7 @@ $TODO: there shouldn't be anything scoped from outside of the tag! Make this an 
 	arrayAppend(stGrid.aTable,st);
 
 	st = structNew();
-	st.heading = '#application.adminBundle[session.dmProfile.locale].view#';
+	st.heading = '#apapplication.rb.getResource("view")#';
 	st.align = "center";
 	st.columnType = 'expression';
 	st.value = "<a href=""#application.url.webroot#/index.cfm?objectID=##recordset.objectID##&flushcache=1"" target=""_blank""><img src=""#application.url.farcry#/images/treeImages/preview.gif"" border=""0""></a>";
@@ -119,7 +119,7 @@ $TODO: there shouldn't be anything scoped from outside of the tag! Make this an 
 
 
 	st = structNew();
-	st.heading = '#application.adminBundle[session.dmProfile.locale].label#';
+	st.heading = '#apapplication.rb.getResource("label")#';
 	st.columnType = 'eval';
 	st.value = "iif(iObjectEditPermission eq 1,DE(iif(locked and lockedby neq '#session.dmSec.authentication.userlogin#_#session.dmSec.authentication.userDirectory#',DE('##replace(recordset.label[recordset.currentrow],'####','','all')##'),DE('<a href=''#editObjectURL#''>##replace(recordset.label[recordset.currentrow],'####','','all')##</a>'))),DE('##replace(recordset.label[recordset.currentrow],'####','','all')##'))";
 	st.align = "left";
@@ -127,7 +127,7 @@ $TODO: there shouldn't be anything scoped from outside of the tag! Make this an 
 
 
 	st = structNew();
-	st.heading = '#application.adminBundle[session.dmProfile.locale].lastUpdatedLC#';
+	st.heading = '#apapplication.rb.getResource("lastUpdatedLC")#';
 	st.columnType = 'eval'; //this will default to objectid of row.
 	st.value = "application.thisCalendar.i18nDateFormat('##datetimelastupdated##',session.dmProfile.locale,application.mediumF)";
 	st.align='center';
@@ -135,7 +135,7 @@ $TODO: there shouldn't be anything scoped from outside of the tag! Make this an 
 
 	if (structKeyExists(application.types[attributes.typename].stprops, "status")) {
 	st = structNew();
-	st.heading = '#application.adminBundle[session.dmProfile.locale].status#';
+	st.heading = '#apapplication.rb.getResource("status")#';
 	st.columnType = 'expression'; //this will default to objectid of row.
 	st.value = "##status##";
 	st.align = "center";
@@ -143,7 +143,7 @@ $TODO: there shouldn't be anything scoped from outside of the tag! Make this an 
 	}
 
 	st = structNew();
-	st.heading = '#application.adminBundle[session.dmProfile.locale].by#';
+	st.heading = '#apapplication.rb.getResource("by")#';
 	st.columnType = 'expression'; //this will default to objectid of row.
 	st.value = "##lastupdatedby##";
 	st.align = 'center';
@@ -236,7 +236,7 @@ if (isDefined("form.unlock") AND isDefined("form.objectid"))
 				else
 				{
 					permission = false;
-					msg = "#application.adminBundle[session.dmProfile.locale].noPermissionUnlockAll#";
+					msg = "#apapplication.rb.getResource("noPermissionUnlockAll")#";
 				}
 			}
 
@@ -263,10 +263,10 @@ if (isDefined("form.delete") AND isDefined("form.objectid") AND form.delete EQ 1
 		{
 			o.delete(objectid=aObjectIds[i]);
 		}
-		msg = "#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].deleted,'#arrayLen(aObjectIDs)#')#";
+		msg = "#application.rb.formatRBString("deleted",'#arrayLen(aObjectIDs)#')#";
 	}
 	else
-		msg = "#application.adminBundle[session.dmProfile.locale].noObjSelectedForDeletion#";
+		msg = "#apapplication.rb.getResource("noObjSelectedForDeletion")#";
 	structDelete(form,'objectid');
 }
 
@@ -276,11 +276,11 @@ if (isDefined("form.status"))
 {
 	if (isDefined("form.objectID"))
 	{
-		if (form.status contains application.adminBundle[session.dmProfile.locale].approve)
+		if (form.status contains apapplication.rb.getResource("approve"))
 			status = 'approved';
-		else if (form.status contains application.adminBundle[session.dmProfile.locale].sendToDraft)
+		else if (form.status contains apapplication.rb.getResource("sendToDraft"))
 			status = 'draft';
-		else if (form.status contains application.adminBundle[session.dmProfile.locale].requestApproval)
+		else if (form.status contains apapplication.rb.getResource("requestApproval"))
 			status = 'requestApproval';
 		else
 			status = 'unknown';
@@ -293,7 +293,7 @@ if (isDefined("form.status"))
 		structDelete(form,'objectid');
 	}
 	else
-		msg = "#application.adminBundle[session.dmProfile.locale].noObjSelected#";
+		msg = "#apapplication.rb.getResource("noObjSelected")#";
 }
 
 //get the recordset to display
@@ -335,14 +335,14 @@ if (recordSet.recordCount GT 0)
 <!--- javascript functions --->
 <script>
 	function confirmDelete(){
-		var msg = "#application.adminBundle[session.dmProfile.locale].confirmDeleteItem#";
+		var msg = "#apapplication.rb.getResource("confirmDeleteItem")#";
 		if (confirm(msg))
 			return true;
 		else
 			return false;
 	}
 	function confirmApprove(action){
-		var msg = "#application.adminBundle[session.dmProfile.locale].confirmObjStatusChange#" + action;
+		var msg = "#apapplication.rb.getResource("confirmObjStatusChange")#" + action;
 		if (confirm(msg))
 			return true;
 		else
@@ -350,14 +350,14 @@ if (recordSet.recordCount GT 0)
 	}
 </script>
 
-<div class="FormTitle">#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].adminObj,"#attributes.typename#")#</div>
+<div class="FormTitle">#application.rb.formatRBString("adminObj","#attributes.typename#")#</div>
 <form action="" method="post" name="dynamicAdmin">
 <!--- check if object uses status --->
 
 <table width="100%" cellspacing="1">
 	<!--- show number of items returned --->
 	<tr>
-		<td>#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].items,"#recordSet.recordcount#")#</td>
+		<td>#application.rb.formatRBString("items","#recordSet.recordcount#")#</td>
 	</tr>
 	<tr>
 		<td>
@@ -373,16 +373,16 @@ if (recordSet.recordCount GT 0)
 				<td align="right" valign="middle">
 					<!--- pagination --->
 					<cfif thisPage GT 1>
-						<input type="image" src="#application.url.farcry#/images/treeImages/leftarrownormal.gif" value="#application.adminBundle[session.dmProfile.locale].prev#" name="prev"  onclick="this.form.thisPage.selectedIndex--;this.form.submit();" >
+						<input type="image" src="#application.url.farcry#/images/treeImages/leftarrownormal.gif" value="#apapplication.rb.getResource("prev")#" name="prev"  onclick="this.form.thisPage.selectedIndex--;this.form.submit();" >
 					</cfif>
-					#application.adminBundle[session.dmProfile.locale].pageLC#
+					#apapplication.rb.getResource("pageLC")#
 					<select name="thisPage" onChange="this.form.submit();">
 						<cfloop from="1" to="#numPages#" index="i">
 							<option value="#i#" <cfif i eq thisPage>selected</cfif>>#i#
 						</cfloop>
-					</select> #application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].pageOfPages,"#numPages#")#
+					</select> #application.rb.formatRBString("pageOfPages","#numPages#")#
 					<cfif thisPage LT numpages>
-						<input name="next" type="image" src="#application.url.farcry#/images/treeImages/rightarrownormal.gif" value="#application.adminBundle[session.dmProfile.locale].next#" onclick="this.form.thisPage.selectedIndex++;this.form.submit();">
+						<input name="next" type="image" src="#application.url.farcry#/images/treeImages/rightarrownormal.gif" value="#apapplication.rb.getResource("next")#" onclick="this.form.thisPage.selectedIndex++;this.form.submit();">
 					</cfif>
 				</td>
 			</tr>
@@ -409,7 +409,7 @@ if (recordSet.recordCount GT 0)
 				<cfoutput>
 				<tr>
 					<td colspan="8" align="center">
-						<strong>#application.adminBundle[session.dmProfile.locale].noRecsRecovered#</strong>
+						<strong>#apapplication.rb.getResource("noRecsRecovered")#</strong>
 					</td>
 				</tr>
 				</cfoutput>
@@ -444,7 +444,7 @@ if (recordSet.recordCount GT 0)
 										if (structKeyExists(stGrid.aTable[i],'value'))
 											writeoutput(evaluate(stGrid.aTable[i].value));
 										else
-											writeoutput("#application.adminBundle[session.dmProfile.locale].valueKeyRequired#");
+											writeoutput("#apapplication.rb.getResource("valueKeyRequired")#");
 										writeoutput("</td>");
 										break;
 									}
@@ -458,7 +458,7 @@ if (recordSet.recordCount GT 0)
 										if (structKeyExists(stGrid.aTable[i],'value'))
 											writeoutput(evaluate(DE(stGrid.aTable[i].value)));
 										else
-											writeoutput("#application.adminBundle[session.dmProfile.locale].valueKeyRequired#");
+											writeoutput("#apapplication.rb.getResource("valueKeyRequired")#");
 										writeoutput("</td>");
 										break;
 										break;
@@ -487,14 +487,14 @@ if (recordSet.recordCount GT 0)
 				<td nowrap valign="top">
 				<!--- add button --->
 				<cfif iObjectCreatePermission eq 1 eq 1>
-					<input type="button" value="#application.adminBundle[session.dmProfile.locale].add#" width="100" style="width:100;" class="normalbttnstyle"  onClick="#stGrid.submit.create.onClick#">
+					<input type="button" value="#apapplication.rb.getResource("add")#" width="100" style="width:100;" class="normalbttnstyle"  onClick="#stGrid.submit.create.onClick#">
 				</cfif>
 				</td>
 				<!--- delete object(s)	 --->
 				<cfif iObjectDeletePermission eq 1 eq 1>
 				<td>
 					<input name="delete" type="Hidden" value="0">
-					<input type="button" value="#application.adminBundle[session.dmProfile.locale].delete#" width="100" style="width:100;" class="normalbttnstyle" onClick="if(confirmDelete('delete')){document['dynamicAdmin']['delete'].value = 1;this.form.submit();}">
+					<input type="button" value="#apapplication.rb.getResource("delete")#" width="100" style="width:100;" class="normalbttnstyle" onClick="if(confirmDelete('delete')){document['dynamicAdmin']['delete'].value = 1;this.form.submit();}">
 				</td>
 				</cfif>
 				<!--- check if object uses status --->
@@ -502,29 +502,29 @@ if (recordSet.recordCount GT 0)
 					<!--- Set status to pending --->
 					<cfif iObjectRequestApprovalPermission eq 1>
 					<td>
-						<input type="submit" name="status" value="#application.adminBundle[session.dmProfile.locale].requestApproval#" width="100" style="width:100;" class="normalbttnstyle">
+						<input type="submit" name="status" value="#apapplication.rb.getResource("requestApproval")#" width="100" style="width:100;" class="normalbttnstyle">
 					</td>
 					</cfif>
 					<!--- set status to approved/draft --->
 					<cfif iObjectApprovePermission eq 1>
 					<td>
-						<input type="submit" name="status" value="#application.adminBundle[session.dmProfile.locale].approve#" width="100" style="width:100;" class="normalbttnstyle">
+						<input type="submit" name="status" value="#apapplication.rb.getResource("approve")#" width="100" style="width:100;" class="normalbttnstyle">
 					</td>
 					<td>
-						<input type="submit" name="status" value="#application.adminBundle[session.dmProfile.locale].sendToDraft#" width="100" style="width:100;" class="normalbttnstyle">
+						<input type="submit" name="status" value="#apapplication.rb.getResource("sendToDraft")#" width="100" style="width:100;" class="normalbttnstyle">
 					</td>
 					</cfif>
 				</cfif>
 				<!--- dump objects  --->
 				<cfif iObjectDumpTab eq 1>
 				<td>
-					<input type="submit" name="dump" value="#application.adminBundle[session.dmProfile.locale].dump#" width="100" style="width:100;" class="normalbttnstyle">
+					<input type="submit" name="dump" value="#apapplication.rb.getResource("dump")#" width="100" style="width:100;" class="normalbttnstyle">
 				</td>
 				</cfif>
 				<!--- check if there are locked objects --->
 				<cfif isdefined("bUnlock")>
 				<td>
-					<input type="Submit" name="unlock" value="#application.adminBundle[session.dmProfile.locale].unlockUC#" width="100" style="width:100;" class="normalbttnstyle" >
+					<input type="Submit" name="unlock" value="#apapplication.rb.getResource("unlockUC")#" width="100" style="width:100;" class="normalbttnstyle" >
 				</td>
 				</cfif>
 				<cfloop from="1" to="#arrayLen(stGrid.aCustomButtons)#" index="i">
@@ -563,7 +563,7 @@ if (recordSet.recordCount GT 0)
 						<td>&nbsp;</td>
 					</tr>
 					<tr>
-						<td align="center"><input type="Submit" value="#application.adminBundle[session.dmProfile.locale].restrict#" class="normalbttnstyle"></td>
+						<td align="center"><input type="Submit" value="#apapplication.rb.getResource("restrict")#" class="normalbttnstyle"></td>
 					</tr>
 				</table>
 

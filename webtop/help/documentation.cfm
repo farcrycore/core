@@ -34,28 +34,28 @@ $out:$
 
 <sec:CheckPermission error="true" permission="MainNavHelpTab">
 	<cfoutput>
-		<div class="formtitle">#application.adminBundle[session.dmProfile.locale].documentation#</div>
+		<div class="formtitle">#apapplication.rb.getResource("documentation")#</div>
 		
 		<div style="padding-left:30px;padding-bottom:30px;">
 		<!--- contributor guide --->
-		<strong>#application.adminBundle[session.dmProfile.locale].contributorsGuide#</strong><br />
-		<p>#application.adminBundle[session.dmProfile.locale].farcryIsEasyBlurb#</p>
-		<p><span class="frameMenuBullet">&raquo;</span> <a href="http://farcry.daemon.com.au/go/documentation/users">#application.adminBundle[session.dmProfile.locale].downloadContributorGuide#</a></p>
+		<strong>#apapplication.rb.getResource("contributorsGuide")#</strong><br />
+		<p>#apapplication.rb.getResource("farcryIsEasyBlurb")#</p>
+		<p><span class="frameMenuBullet">&raquo;</span> <a href="http://farcry.daemon.com.au/go/documentation/users">#apapplication.rb.getResource("downloadContributorGuide")#</a></p>
 		</div>
 	
 		<div style="padding-left:30px;padding-bottom:30px;">
 		<!--- admin guide --->
-		<strong>#application.adminBundle[session.dmProfile.locale].adminGuide#</strong><br />
-		<p>#application.adminBundle[session.dmProfile.locale].farcryAdminIsEasyBlurb#</p>
-		<p><span class="frameMenuBullet">&raquo;</span> <a href="http://farcry.daemon.com.au/go/documentation/developers/admin-guide">#application.adminBundle[session.dmProfile.locale].downloadAdminGuide#</a></p>
+		<strong>#apapplication.rb.getResource("adminGuide")#</strong><br />
+		<p>#apapplication.rb.getResource("farcryAdminIsEasyBlurb")#</p>
+		<p><span class="frameMenuBullet">&raquo;</span> <a href="http://farcry.daemon.com.au/go/documentation/developers/admin-guide">#apapplication.rb.getResource("downloadAdminGuide")#</a></p>
 		</div>
 		
 		<div style="padding-left:30px;padding-bottom:30px;">
 		<!--- developer guide --->
-		<strong>#application.adminBundle[session.dmProfile.locale].developerGuides#</strong><br />
+		<strong>#apapplication.rb.getResource("developerGuides")#</strong><br />
 		
-		<p><span class="frameMenuBullet">&raquo;</span> <a href="http://farcry.daemon.com.au/go/documentation/developers/how-to">#application.adminBundle[session.dmProfile.locale].howTo#</a></p>
-		<p><span class="frameMenuBullet">&raquo;</span> <a href="http://farcry.daemon.com.au/go/documentation/developers/tech-notes">#application.adminBundle[session.dmProfile.locale].techNotes#</a></p>
+		<p><span class="frameMenuBullet">&raquo;</span> <a href="http://farcry.daemon.com.au/go/documentation/developers/how-to">#apapplication.rb.getResource("howTo")#</a></p>
+		<p><span class="frameMenuBullet">&raquo;</span> <a href="http://farcry.daemon.com.au/go/documentation/developers/tech-notes">#apapplication.rb.getResource("techNotes")#</a></p>
 		</div>
 	</cfoutput>	
 </sec:CheckPermission>

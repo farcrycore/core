@@ -20,7 +20,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 <ft:objectadmin 
 	typename="dmImage"
 	permissionset="news"
-	title="#application.adminBundle[session.dmProfile.locale].MediaLibraryImageAdministration#"
+	title="#apapplication.rb.getResource("MediaLibraryImageAdministration")#"
 	columnList="title,datetimelastUpdated,status,ThumbnailImage" 
 	sortableColumns="title,datetimelastUpdated,status"
 	lFilterFields="title"

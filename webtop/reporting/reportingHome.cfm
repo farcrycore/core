@@ -33,7 +33,7 @@ $out:$
 
 <body>
 
-<div>#application.adminBundle[session.dmProfile.locale].reportingHomePage#</div>
+<div>#apapplication.rb.getResource("reportingHomePage")#</div>
 
 </body>
 </html>

@@ -47,7 +47,7 @@ stCollections = application.config.verity.contenttype;
 </cfloop>
 
 <!--- build indices... --->
-<cfoutput><span class="FormTitle">#application.adminBundle[application.config.general.locale].buildingCollections#</span><p></p></cfoutput>
+<cfoutput><span class="FormTitle">#apapplication.rb.getResource("buildingCollections")#</span><p></p></cfoutput>
 
 <!--- Empty aIndices Array --->
 <cfset aIndices = ArrayNew(1)>
@@ -74,7 +74,7 @@ stCollections = application.config.verity.contenttype;
 		--->
 		<cfif NOT structKeyExists(stVerity, "#application.applicationname#_#key#")>
 			<!--- if not, create colection --->
-			<cfoutput><span class="frameMenuBullet">&raquo;</span> #application.rb.formatRBString(application.adminBundle[application.config.general.locale].creatingKey,"#key#")#<br></cfoutput>
+			<cfoutput><span class="frameMenuBullet">&raquo;</span> #application.rb.formatRBString("creatingKey","#key#")#<br></cfoutput>
 			<cfflush />
 			<cfcollection action="CREATE" collection="#application.applicationname#_#key#" path="#application.config.general.verityStoragePath#" language="English">
 			<!--- clear lastupdated, if it exists --->
@@ -99,7 +99,7 @@ stCollections = application.config.verity.contenttype;
 			<cfoutput>
 			<span class="frameMenuBullet">&raquo;</span> 
 			<cfset subS=listToArray('#q.recordCount#,#key#,#arrayToList(application.config.verity.contenttype[key].aprops)#')>
-			#application.rb.formatRBString(application.adminBundle[application.config.general.locale].updatingRecsFor,subS)#
+			#application.rb.formatRBString("updatingRecsFor",subS)#
 			<br>
 			</cfoutput>
 			<cfflush />
@@ -123,7 +123,7 @@ stCollections = application.config.verity.contenttype;
 			<cfoutput>
 			<span class="frameMenuBullet">&raquo;</span> 
 			<cfset subS=listToArray('#q.recordCount#, #key#, #arrayToList(application.config.verity.contenttype[key].aprops)#')>
-			#application.rb.formatRBString(application.adminBundle[application.config.general.locale].purgingDeadRecsFor,subS)#
+			#application.rb.formatRBString("purgingDeadRecsFor",subS)#
 			<p>
 			</cfoutput>
 			<cfflush />
@@ -164,7 +164,7 @@ stCollections = application.config.verity.contenttype;
 				<cfoutput>
 				<span class="frameMenuBullet">&raquo;</span> 
 				<cfset subS=listToArray('#key#, #application.config.verity.contenttype[key].aprops.uncPath#')>
-				#application.rb.formatRBString(application.adminBundle[application.config.general.locale].updatingKey,subS)#
+				#application.rb.formatRBString("updatingKey",subS)#
 				<p></cfoutput>
 				<cfflush />
 
@@ -186,7 +186,7 @@ stCollections = application.config.verity.contenttype;
 </cfscript>
 
 <cfoutput>
-<p>#application.adminBundle[application.config.general.locale].verityConfigUpdated#</p>
-<p>#application.adminBundle[application.config.general.locale].allDone#</p>
+<p>#apapplication.rb.getResource("verityConfigUpdated")#</p>
+<p>#apapplication.rb.getResource("allDone")#</p>
 </cfoutput>
 

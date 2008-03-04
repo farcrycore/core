@@ -138,12 +138,12 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 		<h3>Custom Content Types</h3>
 		<table class="table-5" cellspacing="0">
 		<tr>
-			<th>#application.adminBundle[session.dmProfile.locale].integrity#</th>
-			<th>#application.adminBundle[session.dmProfile.locale].component#</th>
-			<th>#application.adminBundle[session.dmProfile.locale].component#</th>
+			<th>#apapplication.rb.getResource("integrity")#</th>
+			<th>#apapplication.rb.getResource("component")#</th>
+			<th>#apapplication.rb.getResource("component")#</th>
 			<!--- TODO: i18n remove property label --->
-			<!--- <th>#application.adminBundle[session.dmProfile.locale].deployed#</th> --->
-			<th>#application.adminBundle[session.dmProfile.locale].deploy#</th>
+			<!--- <th>#apapplication.rb.getResource("deployed")#</th> --->
+			<th>#apapplication.rb.getResource("deploy")#</th>
 			<!--- TODO: i18n --->
 			<!--- <th style="border-right:none">Permission Set</th> --->
 			<!--- TODO: i18n --->
@@ -164,7 +164,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 			<tr <cfif alterType.isCFCConflict(stConflicts=stConflicts,typename=componentName)>style='color:##000;'</cfif>>
 				<td>
 					<cfif alterType.isCFCConflict(stConflicts=stConflicts,typename=componentName)>
-						<img src="#application.url.farcry#/images/no.gif" /> #application.adminBundle[session.dmProfile.locale].seeBelow#
+						<img src="#application.url.farcry#/images/no.gif" /> #apapplication.rb.getResource("seeBelow")#
 					<cfelse>
 						<img src="#application.url.farcry#/images/yes.gif" />
 					</cfif>
@@ -190,7 +190,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 				<td>#componentName#</td>
 				<td>
 					<cfif NOT alterType.isCFCDeployed(typename=componentName)>
-						<a href="#CGI.SCRIPT_NAME#?deploy=#componentName#">#application.adminBundle[session.dmProfile.locale].deploy#</a>
+						<a href="#CGI.SCRIPT_NAME#?deploy=#componentName#">#apapplication.rb.getResource("deploy")#</a>
 					<cfelse>
 						<ft:farcryButton type="button" value="Scaffold" onclick="openScaffoldDialog('#application.url.farcry#/admin/scaffold.cfm?typename=#componentName#&iframe=1','Scaffold',500,400,true);" />
 					</cfif>
@@ -224,15 +224,15 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 	<cfoutput></table></cfoutput>
 	
 	<cfoutput>
-		<h3>#application.adminBundle[session.dmProfile.locale].typeClasses#</h3>
+		<h3>#apapplication.rb.getResource("typeClasses")#</h3>
 		<table class="table-5" cellspacing="0">
 		<tr>
-			<th>#application.adminBundle[session.dmProfile.locale].integrity#</th>
-			<th>#application.adminBundle[session.dmProfile.locale].component#</th>
-			<th>#application.adminBundle[session.dmProfile.locale].component#</th>
+			<th>#apapplication.rb.getResource("integrity")#</th>
+			<th>#apapplication.rb.getResource("component")#</th>
+			<th>#apapplication.rb.getResource("component")#</th>
 			<!--- TODO: i18n remove property label --->
-			<!--- <th>#application.adminBundle[session.dmProfile.locale].deployed#</th> --->
-			<th>#application.adminBundle[session.dmProfile.locale].deploy#</th>
+			<!--- <th>#apapplication.rb.getResource("deployed")#</th> --->
+			<th>#apapplication.rb.getResource("deploy")#</th>
 			<!--- TODO: i18n --->
 			<th style="border-right:none">Doc</th>
 		</tr>
@@ -251,7 +251,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 			<tr <cfif alterType.isCFCConflict(stConflicts=stConflicts,typename=componentName)>style='color:##000;'</cfif>>
 				<td>
 					<cfif alterType.isCFCConflict(stConflicts=stConflicts,typename=componentName)>
-						<img src="#application.url.farcry#/images/no.gif" /> #application.adminBundle[session.dmProfile.locale].seeBelow#
+						<img src="#application.url.farcry#/images/no.gif" /> #apapplication.rb.getResource("seeBelow")#
 					<cfelse>
 						<img src="#application.url.farcry#/images/yes.gif" />
 					</cfif>
@@ -260,7 +260,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 				<td>#componentName#</td>
 				<td>
 					<cfif NOT alterType.isCFCDeployed(typename=componentName)>
-						<a href="#CGI.SCRIPT_NAME#?deploy=#componentName#">#application.adminBundle[session.dmProfile.locale].deploy#</a>
+						<a href="#CGI.SCRIPT_NAME#?deploy=#componentName#">#apapplication.rb.getResource("deploy")#</a>
 					<cfelse>
 						<ft:farcryButton type="button" value="Scaffold" onclick="openScaffoldDialog('#application.url.farcry#/admin/scaffold.cfm?typename=#componentName#&iframe=1','Scaffold',500,400,true);" />
 					</cfif>

@@ -55,10 +55,10 @@ $out:$
 			<!--- permission check --->
 			<cfif iHelpTab eq 1>
 				<div class="frameMenuTitle">General</div>
-				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="documentation.cfm" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].documentation#</a></div>
-				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="mailingLists.cfm" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].mailingLists#</a></div>
-				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="support.cfm" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].commercialSupport#</a></div>
-				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="reportBug.cfm" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].reportBug#</a></div>
+				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="documentation.cfm" class="frameMenuItem" target="editFrame">#apapplication.rb.getResource("documentation")#</a></div>
+				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="mailingLists.cfm" class="frameMenuItem" target="editFrame">#apapplication.rb.getResource("mailingLists")#</a></div>
+				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="support.cfm" class="frameMenuItem" target="editFrame">#apapplication.rb.getResource("commercialSupport")#</a></div>
+				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="reportBug.cfm" class="frameMenuItem" target="editFrame">#apapplication.rb.getResource("reportBug")#</a></div>
 			</cfif>
 		</cfcase>
 	</cfswitch>

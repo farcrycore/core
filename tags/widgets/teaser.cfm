@@ -11,9 +11,9 @@
 <cfoutput>
 
 <div class="teaser-image">
-<h3>#application.adminBundle[session.dmProfile.locale].teaserImage#</h3>
+<h3>#apapplication.rb.getResource("teaserImage")#</h3>
 <select id="teaserImage" name="teaserImage" onchange="ftglTeaserImage(this);return false">
-	<option value="" class="subdued">#application.adminBundle[session.dmProfile.locale].None#</option>
+	<option value="" class="subdued">#apapplication.rb.getResource("None")#</option>
 	<cfloop list="#relatedItems#" index="id">
 		<q4:contentobjectget objectid="#id#" r_stobject="stImages">
 		<cfif isDefined("stImages.typeName") AND stImages.typeName eq "dmImage">

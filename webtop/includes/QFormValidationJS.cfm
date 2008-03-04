@@ -16,8 +16,8 @@ else if(objForm.label)
 	objTitle = objForm.label
 
 if(objTitle){
-	objTitle.validateNotNull("#application.adminBundle[session.dmProfile.locale].pleaseEnterTitle#");
-	objTitle.validateNotEmpty("#application.adminBundle[session.dmProfile.locale].pleaseEnterTitle#");
+	objTitle.validateNotNull("#apapplication.rb.getResource("pleaseEnterTitle")#");
+	objTitle.validateNotEmpty("#apapplication.rb.getResource("pleaseEnterTitle")#");
 }
 
 //-->

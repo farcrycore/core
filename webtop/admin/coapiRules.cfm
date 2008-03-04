@@ -29,10 +29,10 @@ $out:$
 
 <cfprocessingDirective pageencoding="utf-8">
 
-<admin:header title="#application.adminBundle[session.dmProfile.locale].COAPIrules#" writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
+<admin:header title="#apapplication.rb.getResource("COAPIrules")#" writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 <sec:CheckPermission error="true" permission="AdminCOAPITab">
-	<cfoutput><h3>#application.adminBundle[session.dmProfile.locale].ruleClasses#</h3></cfoutput>
+	<cfoutput><h3>#apapplication.rb.getResource("ruleClasses")#</h3></cfoutput>
 	
 	<cfparam name="FORM.action" default="">
 	
@@ -99,10 +99,10 @@ $out:$
 	
 	<table class="table-5" cellspacing="0">
 	<tr>
-		<th>#application.adminBundle[session.dmProfile.locale].integrity#</th>
-		<th>#application.adminBundle[session.dmProfile.locale].component#</th>
-		<th>#application.adminBundle[session.dmProfile.locale].deployed#</th>
-		<th style="border-right:none">#application.adminBundle[session.dmProfile.locale].deploy#</th>
+		<th>#apapplication.rb.getResource("integrity")#</th>
+		<th>#apapplication.rb.getResource("component")#</th>
+		<th>#apapplication.rb.getResource("deployed")#</th>
+		<th style="border-right:none">#apapplication.rb.getResource("deploy")#</th>
 	</tr>
 	</cfoutput>
 	
@@ -119,7 +119,7 @@ $out:$
 			<td align="center">
 				<!--- i18n:  yes/no images? check vs x ok across all locales?  --->
 				<cfif alterType.isCFCConflict(stConflicts=stConflicts,typename=componentName)>
-					<img src="#application.url.farcry#/images/no.gif" /> #application.adminBundle[session.dmProfile.locale].seeBelow#
+					<img src="#application.url.farcry#/images/no.gif" /> #apapplication.rb.getResource("seeBelow")#
 				<cfelse>
 					<img src="#application.url.farcry#/images/yes.gif" />
 				</cfif>
@@ -136,9 +136,9 @@ $out:$
 			
 			<td style="border-right:none">
 				<cfif NOT alterType.isCFCDeployed(typename=componentName)>
-					<a href="#CGI.SCRIPT_NAME#?deploy=#componentName#">#application.adminBundle[session.dmProfile.locale].Deploy#</a>
+					<a href="#CGI.SCRIPT_NAME#?deploy=#componentName#">#apapplication.rb.getResource("Deploy")#</a>
 				<cfelse>
-					#application.adminBundle[session.dmProfile.locale].notAvailable#
+					#apapplication.rb.getResource("notAvailable")#
 				</cfif>
 			</td>
 		</tr>

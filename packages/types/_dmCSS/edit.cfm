@@ -143,8 +143,8 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 <cfoutput>
 <form action="#cgi.script_name#?#cgi.query_string#" class="f-wrap-1 wider f-bg-medium" enctype="multipart/form-data" name="fileForm" method="post">
 	<fieldset>
-<h3>#application.adminBundle[session.dmProfile.locale].generalInfo#: <span class="highlight">#stObj.title#</span></h3>
-		<label for="title"><b>#application.adminBundle[session.dmProfile.locale].titleLabel#</b>
+<h3>#apapplication.rb.getResource("generalInfo")#: <span class="highlight">#stObj.title#</span></h3>
+		<label for="title"><b>#apapplication.rb.getResource("titleLabel")#</b>
 			<input type="text" name="title" id="title" value="#title#" maxlength="255" size="45" /><br />
 		</label>
 

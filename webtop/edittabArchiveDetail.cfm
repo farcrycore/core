@@ -11,7 +11,7 @@
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 <cfoutput>
-	<h3>#application.adminBundle[session.dmProfile.locale].archive#</h3>
+	<h3>#apapplication.rb.getResource("archive")#</h3>
 </cfoutput>
 
 <!--- todo: move this functionality to the dmArchive or auxillary component --->

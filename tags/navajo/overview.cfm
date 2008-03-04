@@ -303,7 +303,7 @@ function frameopen(a,b)
 	if(contentFrame && !heldEvent.ctrlKey ){
 		strLocation = "'" + contentFrame + "'";
 		if(b == 'content' && strLocation.toLowerCase().indexOf( "edit.cfm" ) != -1 )
-			alert("#application.adminBundle[session.dmProfile.locale].currentlyEditingObj#" );
+			alert("#apapplication.rb.getResource("currentlyEditingObj")#" );
 		else			
 			contentFrame.location = a;
 	}
@@ -473,14 +473,14 @@ function dropDrag(aDropObjectId)
 {	
 	if(!bEnableDragAndDrop)
 	{
-		alert("#application.adminBundle[session.dmProfile.locale].branchLockoutBlurb#");
+		alert("#apapplication.rb.getResource("branchLockoutBlurb")#");
 		return false;
 	}
 	<!--- eliminate default action of ondrop so we can customize: --->
 	//double checking here - shouldn't ever need to though
 	if (objects[dragObjectId]['TYPENAME'] == 'dmHTML' && objects[aDropObjectId]['TYPENAME'].toLowerCase() != '#lCase(attributes.nodetype)#')
 	{
-		alert('#application.adminBundle[session.dmProfile.locale].canOnlyDragHTMLObj#');
+		alert('#apapplication.rb.getResource("canOnlyDragHTMLObj")#');
 		window.event.returnValue = false;
 		return;
 	}
@@ -488,7 +488,7 @@ function dropDrag(aDropObjectId)
 			
 	if(aDropObjectId == getParentObject(dragObjectId)['OBJECTID'])
 	{
-		alert('#application.adminBundle[session.dmProfile.locale].parentDestinationSame#');
+		alert('#apapplication.rb.getResource("parentDestinationSame")#');
 		return;
 	}
 	
@@ -498,14 +498,14 @@ function dropDrag(aDropObjectId)
 		permcheck = "hasPermission( aDropObjectId, '#PermNavCreate#' ) > 0";
 	
 	if (eval(permcheck))
-	{	if( dragObjectId != aDropObjectId && confirm('#application.adminBundle[session.dmProfile.locale].confirmMoveObj#'))
+	{	if( dragObjectId != aDropObjectId && confirm('#apapplication.rb.getResource("confirmMoveObj")#'))
 		{		
 			disableDragAndDrop();	
 			popupopen('#application.url.farcry#/navajo/move.cfm?srcObjectId='+dragObjectId+'&destObjectId='+aDropObjectId,'NavajoExt','#smallPopupFeatures#');
 		}
 	}	
 	else
-		alert('#application.adminBundle[session.dmProfile.locale].noNodePermission#');	
+		alert('#apapplication.rb.getResource("noNodePermission")#');	
 	
 	window.event.returnValue = false;
 }
@@ -1055,7 +1055,7 @@ objectMenu.menuInfo.name = "ObjectMenu";
 <cfif isDefined("url.insertonly")>
 o = new Object();
 objectMenu['Insert'] = o;
-o.text = "#application.adminBundle[session.dmProfile.locale].insert#";
+o.text = "#apapplication.rb.getResource("insert")#";
 o.js = "menuOption_Insert()";
 o.jsvalidate = "(contentFrame.insertObjId || contentFrame.insertObjIds || contentFrame.insertHTML)?1:0";
 o.bShowDisabled = 1;
@@ -1123,7 +1123,7 @@ function menuOption_Insert()
 
 o = new Object();
 objectMenu['Edit'] = o;
-o.text = "#application.adminBundle[session.dmProfile.locale].Edit#";
+o.text = "#apapplication.rb.getResource("Edit")#";
 o.js = "menuOption_Edit();";
 o.jsvalidate = "hasPermission( lastSelectedId, '#PermNavEdit#' );";
 o.bShowDisabled = "1";
@@ -1138,7 +1138,7 @@ function menuOption_Edit()
 
 o = new Object();
 objectMenu['Copy'] = o;
-o.text = "#application.adminBundle[session.dmProfile.locale].copy#";
+o.text = "#apapplication.rb.getResource("copy")#";
 o.js = "menuOption_Copy();";
 o.jsvalidate = "(objects[lastSelectedId]['TYPENAME'].toLowerCase() == '#lCase(attributes.nodetype)#')?1:0";
 o.bShowDisabled = "0";
@@ -1166,7 +1166,7 @@ if( hasPermission( lastSelectedId, '#PermNavCreate#' ) > 0 )
 pasteAction = 'cut';
 return true; }
 else
-{ alert('#application.adminBundle[session.dmProfile.locale].noModifyNodePermission#');
+{ alert('#apapplication.rb.getResource("noModifyNodePermission")#');
 copyNodeId = 0;
 pasteAction = 'cut';
 return false; }
@@ -1175,7 +1175,7 @@ return false; }
 
 o = new Object();
 objectMenu['Paste'] = o;
-o.text = "#application.adminBundle[session.dmProfile.locale].Paste#";
+o.text = "#apapplication.rb.getResource("Paste")#";
 o.js = "menuOption_Paste();";
 o.jsvalidate = "(copyNodeId.length == 35 && objects[lastSelectedId]['TYPENAME'].toLowerCase() == '#lCase(attributes.nodetype)#')?1:0";
 o.bShowDisabled = "1";
@@ -1207,7 +1207,7 @@ function menuOption_Paste()
 		}
 		else
 		{
-			alert('#application.adminBundle[session.dmProfile.locale].noModifyNodePermission#');
+			alert('#apapplication.rb.getResource("noModifyNodePermission")#');
 		}
 	}
 }	
@@ -1216,7 +1216,7 @@ function menuOption_Paste()
 
 o = new Object();
 objectMenu['Preview'] = o;
-o.text = "#application.adminBundle[session.dmProfile.locale].preview#";
+o.text = "#apapplication.rb.getResource("preview")#";
 o.js = "menuOption_Preview()";
 o.jsvalidate = "hasPermission( lastSelectedId, '#PermNavView#' );";
 o.bShowDisabled = 1;
@@ -1229,7 +1229,7 @@ function menuOption_Preview()
 
 o = new Object();
 objectMenu['Preview Draft'] = o;
-o.text = "#application.adminBundle[session.dmProfile.locale].previewDraft#";
+o.text = "#apapplication.rb.getResource("previewDraft")#";
 o.js = "menuOption_PreviewDraft()";
 o.jsvalidate = "hasDraft(lastSelectedId);";
 o.bShowDisabled = 1;
@@ -1250,7 +1250,7 @@ function menuOption_PreviewDraft()
 
 o = new Object();
 objectMenu['Move'] = o;
-o.text = "#application.adminBundle[session.dmProfile.locale].move#";
+o.text = "#apapplication.rb.getResource("move")#";
 o.submenu = "Move";
 o.jsvalidate = "((objects[lastSelectedId]['TYPENAME'].toLowerCase()=='#lCase(attributes.nodetype)#' && hasPermission(getParentObject(lastSelectedId)['OBJECTID'], '#PermNavEdit#' ) && countNodes(getParentObject(lastSelectedId)['OBJECTID']) > 1) || (hasPermission(getParentObject(lastSelectedId)['OBJECTID'], '#PermNavEdit#' ) && countObjects(getParentObject(lastSelectedId)['OBJECTID']) > 1))?1:0";
 
@@ -1265,14 +1265,14 @@ o.bSeperator = 0;
 
 	o = new Object();
 	moveMenu['MoveUp'] = o;
-	o.text = "#application.adminBundle[session.dmProfile.locale].moveUp#";
+	o.text = "#apapplication.rb.getResource("moveUp")#";
 	o.js = "menuOption_MoveInternal(\\'up\\');";
 	o.jsvalidate = "objectIndex(lastSelectedId)>0||nodeIndex(lastSelectedId)>0";
 	o.bShowDisabled = 1;
 	
 	o = new Object();
 	moveMenu['MoveDown'] = o;
-	o.text = "#application.adminBundle[session.dmProfile.locale].moveDown#";
+	o.text = "#apapplication.rb.getResource("moveDown")#";
 	o.js = "menuOption_MoveInternal(\\'down\\');";
 	o.jsvalidate = 	"(objectIndex(lastSelectedId)!=-1 && objectIndex(lastSelectedId)+1 < countObjects(getParentObject(lastSelectedId)['OBJECTID'])) || "+
 					"(nodeIndex(lastSelectedId)!=-1 && nodeIndex(lastSelectedId)+1 < countNodes(getParentObject(lastSelectedId)['OBJECTID']))";
@@ -1281,14 +1281,14 @@ o.bSeperator = 0;
 	
 	o = new Object();
 	moveMenu['MoveToTop'] = o;
-	o.text = "#application.adminBundle[session.dmProfile.locale].moveToTop#";
+	o.text = "#apapplication.rb.getResource("moveToTop")#";
 	o.js = "menuOption_MoveInternal(\\'top\\');";
 	o.jsvalidate = "objectIndex(lastSelectedId)>0||nodeIndex(lastSelectedId)>0";
 	o.bShowDisabled = 1;
 	
 	o = new Object();
 	moveMenu['MoveToBottom'] = o;
-	o.text = "#application.adminBundle[session.dmProfile.locale].moveToBottom#";
+	o.text = "#apapplication.rb.getResource("moveToBottom")#";
 	o.js = "menuOption_MoveInternal(\\'bottom\\');";
 	o.jsvalidate = "(objectIndex(lastSelectedId)!=-1 && objectIndex(lastSelectedId)+1 < countObjects(getParentObject(lastSelectedId)['OBJECTID'])) || "+
 					"(nodeIndex(lastSelectedId)!=-1 && nodeIndex(lastSelectedId)+1 < countNodes(getParentObject(lastSelectedId)['OBJECTID']))";
@@ -1301,7 +1301,7 @@ o.bSeperator = 0;
 
 o = new Object();
 objectMenu['Create'] = o;
-o.text = "#application.adminBundle[session.dmProfile.locale].create#";
+o.text = "#apapplication.rb.getResource("create")#";
 o.submenu = "Create";
 o.jsvalidate = "((hasPermission( lastSelectedId, '#PermNavCreate#' ) >=0) &&  (objects[lastSelectedId]['TYPENAME'].toLowerCase()=='#lcase(attributes.nodetype)#'))";
 o.bShowDisabled = 1;
@@ -1354,7 +1354,7 @@ function menuOption_CreatePopup( id )
 
 o = new Object();
 objectMenu['Approve'] = o;
-o.text = "#application.adminBundle[session.dmProfile.locale].status#";
+o.text = "#apapplication.rb.getResource("status")#";
 o.submenu = "Approve";
 o.jsvalidate = "(objects[lastSelectedId]['STATUS'] && (objects[lastSelectedId]['TYPENAME'].toLowerCase() == '#lCase(attributes.nodetype)#' || objects[lastSelectedId]['TYPENAME'] == 'dmHTML'))?1:0";
 o.bShowDisabled = 1;
@@ -1365,21 +1365,21 @@ o.bShowDisabled = 1;
 
 	o = new Object();
 	approveMenu['ApproveItem'] = o;
-	o.text = "#application.adminBundle[session.dmProfile.locale].approve#";
+	o.text = "#apapplication.rb.getResource("approve")#";
 	o.js = "menuOption_Approve(\\'approved\\')";
 	o.jsvalidate = "((hasPermission( lastSelectedId, '#PermNavApprove#' )> 0 || (hasPermission(lastSelectedId,'#PermNavApproveOwn#') >0 && objects[lastSelectedId]['ATTR_LASTUPDATEDBY'].toLowerCase() == '#lCase(application.security.getCurrentUserID())#')) && (objects[lastSelectedId]['STATUS'] == 'draft' || objects[lastSelectedId]['STATUS'] == 'pending'))?1:0";
 	o.bShowDisabled = 1;
 	
 	o = new Object();
 	approveMenu['ApproveDraft'] = o;
-	o.text = "#application.adminBundle[session.dmProfile.locale].approveDraft#";
+	o.text = "#apapplication.rb.getResource("approveDraft")#";
 	o.js = "menuOption_Approve(\\'approved\\')";
     o.jsvalidate = "( hasPermission(lastSelectedId, '#PermNavApprove#')>0 && (hasDraft(lastSelectedId) && objects[lastSelectedId]['DRAFTSTATUS'] == 'pending') )?1:0";
 	o.bShowDisabled = 1;
 
 	o = new Object();
 	approveMenu['ApproveBranch'] = o;
-	o.text = "#application.adminBundle[session.dmProfile.locale].approveBranch#";
+	o.text = "#apapplication.rb.getResource("approveBranch")#";
 	o.js = "menuOption_ApproveBranch(\\'approved\\')";
 	o.jsvalidate = "(hasPermission( lastSelectedId, '#PermNavApprove#' )>0 && (objects[lastSelectedId]['STATUS'] == 'draft' || objects[lastSelectedId]['STATUS'] == 'pending') && objects[lastSelectedId]['TYPENAME'].toLowerCase() == '#lCase(attributes.nodetype)#')?1:0";
 	o.bShowDisabled = 1;
@@ -1397,14 +1397,14 @@ o.bShowDisabled = 1;
 	}
 
 	function menuOption_ApproveBranch( status ) {
-		if( confirm('#application.adminBundle[session.dmProfile.locale].confirmStatusChange#' + status))
+		if( confirm('#apapplication.rb.getResource("confirmStatusChange")#' + status))
 			//popupopen( 'approve.cfm?approveBranch=1&objectId='+lastSelectedId+'&status='+status, '_blank', '#smallpopupfeatures#' );
 			frameopen( '#application.url.farcry#/navajo/approve.cfm?approveBranch=1&objectId='+lastSelectedId+'&status='+status, 'editFrame' );
 	}
 	
 	o = new Object();
 	approveMenu['Request'] = o;
-	o.text = "#application.adminBundle[session.dmProfile.locale].request#";
+	o.text = "#apapplication.rb.getResource("request")#";
 	o.js = "menuOption_Approve(\\'requestApproval\\')";
 	o.jsvalidate = "(hasPermission( lastSelectedId, '#PermNavRequestApprove#' )>=0 && ((objects[lastSelectedId]['STATUS'] == 'draft') || (objects[lastSelectedId]['DRAFTOBJECTID'] && objects[lastSelectedId]['DRAFTSTATUS']=='draft')) )?1:0";
 	o.bShowDisabled = 1;
@@ -1412,28 +1412,28 @@ o.bShowDisabled = 1;
 	
 	o = new Object();
 	approveMenu['RequestBranch'] = o;
-	o.text = "#application.adminBundle[session.dmProfile.locale].requestApprovalForBranch#";
+	o.text = "#apapplication.rb.getResource("requestApprovalForBranch")#";
 	o.js = "menuOption_ApproveBranch(\\'requestApproval\\')";
 	o.jsvalidate = "(hasPermission( lastSelectedId, '#PermNavRequestApprove#' )>=0 && (objects[lastSelectedId]['STATUS'] == 'draft') && objects[lastSelectedId]['TYPENAME'].toLowerCase() == '#lCase(attributes.nodetype)#')?1:0";
 	o.bShowDisabled = 1;
 	
 	o = new Object();
 	approveMenu['Decline'] = o;
-	o.text = "#application.adminBundle[session.dmProfile.locale].declineDraft#";
+	o.text = "#apapplication.rb.getResource("declineDraft")#";
 	o.js = "menuOption_Approve(\\'draft\\')";
     o.jsvalidate = "( hasPermission(lastSelectedId, '#PermNavApprove#')>=0 && (hasDraft(lastSelectedId) && objects[lastSelectedId]['DRAFTSTATUS'] == 'pending') )?1:0";
 	o.bShowDisabled = 1;
 
 	o = new Object();
 	approveMenu['Cancel'] = o;
-	o.text = "#application.adminBundle[session.dmProfile.locale].sendToDraft#";
+	o.text = "#apapplication.rb.getResource("sendToDraft")#";
 	o.js = "menuOption_Approve(\\'draft\\')";
 	o.jsvalidate = "((hasPermission( lastSelectedId, '#PermNavApprove#' )>=0 || (hasPermission(lastSelectedId,'#PermNavApproveOwn#') >=0 && objects[lastSelectedId]['ATTR_LASTUPDATEDBY'].toLowerCase() == '#lCase(application.security.getCurrentUserID())#'))&& !hasDraft(lastSelectedId) && (objects[lastSelectedId]['STATUS'] == 'approved' || objects[lastSelectedId]['STATUS'] == 'pending'))?1:0";
 	o.bShowDisabled = 1;
 	
 	o = new Object();
 	approveMenu['CancelBranch'] = o;
-	o.text = "#application.adminBundle[session.dmProfile.locale].sendBranch2Draft#";
+	o.text = "#apapplication.rb.getResource("sendBranch2Draft")#";
 	o.js = "menuOption_ApproveBranch(\\'draft\\')";
 	o.jsvalidate = "((hasPermission( lastSelectedId, '#PermNavApprove#' )>=0 || (hasPermission(lastSelectedId,'#PermNavApproveOwn#') >=0 && objects[lastSelectedId]['ATTR_LASTUPDATEDBY'].toLowerCase() == '#lCase(application.security.getCurrentUserID())#')) && (objects[lastSelectedId]['STATUS'] == 'approved' || objects[lastSelectedId]['STATUS'] == 'pending') && objects[lastSelectedId]['TYPENAME'].toLowerCase() == '#lCase(attributes.nodetype)#')?1:0";
 	o.bShowDisabled = 1;
@@ -1441,7 +1441,7 @@ o.bShowDisabled = 1;
 	
 o = new Object();
 objectMenu['Insert'] = o;
-o.text = "#application.adminBundle[session.dmProfile.locale].insert#";
+o.text = "#apapplication.rb.getResource("insert")#";
 o.js = "menuOption_Insert()";
 o.jsvalidate = "(contentFrame.insertObjId || contentFrame.insertObjIds || contentFrame.insertHTML)?1:0";
 o.bShowDisabled = 1;
@@ -1505,7 +1505,7 @@ function menuOption_Insert()
 
 o = new Object();
 objectMenu['Permissions'] = o;
-o.text = "#application.adminBundle[session.dmProfile.locale].permissions#";
+o.text = "#apapplication.rb.getResource("permissions")#";
 o.js = "menuOption_Permissions()";
 o.jsvalidate = "(#iModifyPermissionsState# > -1 && objects[lastSelectedId]['TYPENAME'].toLowerCase()=='#lcase(attributes.nodetype)#')?1:0";
 o.bShowDisabled = 1;
@@ -1518,7 +1518,7 @@ function menuOption_Permissions()
 
 o = new Object();
 objectMenu['Dump'] = o;
-o.text = "#application.adminBundle[session.dmProfile.locale].dump#";
+o.text = "#apapplication.rb.getResource("dump")#";
 o.js = "menuOption_Dump();";
 o.jsvalidate = "#iDeveloperState#";
 o.bShowDisabled = 0;
@@ -1531,7 +1531,7 @@ function menuOption_Dump()
 
 o = new Object();
 objectMenu['Delete'] = o;
-o.text = "#application.adminBundle[session.dmProfile.locale].delete#";
+o.text = "#apapplication.rb.getResource("delete")#";
 o.js = "menuOption_Delete()"; //  && countObjects(lastSelectedId) <=0  && countNodes(lastSelectedId) <=0
 o.jsvalidate = "hasPermission(lastSelectedId, '#PermNavDelete#')";
 o.bShowDisabled = 1;
@@ -1540,13 +1540,13 @@ o.bSeperator = 0;
 function menuOption_Delete()
 {
 	// if( confirm('Are you sure you wish to delete this object(s)?') ) popupopen( 'delete.cfm?objectId='+lastSelectedId, '_blank', '#smallpopupfeatures#' );
-	if(confirm('#application.adminBundle[session.dmProfile.locale].confirmDeleteAllObj#') )
+	if(confirm('#apapplication.rb.getResource("confirmDeleteAllObj")#') )
 		frameopen('#application.url.farcry#/navajo/delete.cfm?objectId='+lastSelectedId,'content');
 }
 
 o = new Object();
 objectMenu['Trash'] = o;
-o.text = "#application.adminBundle[session.dmProfile.locale].sendToTrash#";
+o.text = "#apapplication.rb.getResource("sendToTrash")#";
 o.js = "menuOption_Trash()"; 
 o.jsvalidate = "hasPermission( lastSelectedId, '#PermSendToTrash#' );";
 o.bShowDisabled = 0;
@@ -1554,13 +1554,13 @@ o.bSeperator = 0;
 
 function menuOption_Trash()
 {
-	if( confirm('#application.adminBundle[session.dmProfile.locale].confirmSendToTrash#') ) popupopen( '#application.url.farcry#/navajo/move.cfm?srcObjectId='+lastSelectedId+'&destObjectId=#application.navid.rubbish#', '_blank', '#smallpopupfeatures#' );
+	if( confirm('#apapplication.rb.getResource("confirmSendToTrash")#') ) popupopen( '#application.url.farcry#/navajo/move.cfm?srcObjectId='+lastSelectedId+'&destObjectId=#application.navid.rubbish#', '_blank', '#smallpopupfeatures#' );
 }
 
 
 o = new Object();
 objectMenu['EmptyTrash'] = o;
-o.text = "#application.adminBundle[session.dmProfile.locale].emptyTrash#";
+o.text = "#apapplication.rb.getResource("emptyTrash")#";
 o.js = "menuOption_EmptyTrash()"; 
 o.jsvalidate = "(hasPermission( lastSelectedId, '#PermNavDelete#') > 0 && lastSelectedId == '#application.navid.rubbish#')?1:0";
 o.bShowDisabled = 0;
@@ -1568,14 +1568,14 @@ o.bSeperator = 0;
 
 function menuOption_EmptyTrash()
 {
-	if( confirm('#application.adminBundle[session.dmProfile.locale].confirmDeleteTrash#') ) popupopen( '#application.url.farcry#/navajo/treeEmptyTrash.cfm', '_blank', '#smallpopupfeatures#' );
+	if( confirm('#apapplication.rb.getResource("confirmDeleteTrash")#') ) popupopen( '#application.url.farcry#/navajo/treeEmptyTrash.cfm', '_blank', '#smallpopupfeatures#' );
 }
 
 
 
 o = new Object();
 objectMenu['Zoom'] = o;
-o.text = "#application.adminBundle[session.dmProfile.locale].zoom#";
+o.text = "#apapplication.rb.getResource("zoom")#";
 o.js = "menuOption_Zoom()"; 
 o.jsvalidate = "objects[lastSelectedId]['TYPENAME'].toLowerCase()=='#lcase(attributes.nodetype)#'?1:0";
 o.bShowDisabled = 0;

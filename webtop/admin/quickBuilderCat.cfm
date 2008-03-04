@@ -140,13 +140,13 @@ $out:$
 	    </cfscript>
 	
 	    <cfoutput>
-	        <div class="formTitle">#application.adminBundle[session.dmProfile.locale].catTreeQuickBuilder#</div>
+	        <div class="formTitle">#apapplication.rb.getResource("catTreeQuickBuilder")#</div>
 	        <p>
-	            #application.adminBundle[session.dmProfile.locale].followingItemsCreated#
+	            #apapplication.rb.getResource("followingItemsCreated")#
 	        </p>
 	        <ul>
 				<cfset subS=listToArray('#arrayLen(items)#,"Category"')>
-				<li>#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].objects,subS)#</li>
+				<li>#application.rb.formatRBString("objects",subS)#</li>
 	        </ul>
 	    </cfoutput>
 	<cfelse>
@@ -172,11 +172,11 @@ $out:$
 	<form method="post" class="f-wrap-1 f-bg-long wider" action="" name="theForm">
 	<fieldset>
 	
-		<h3>#application.adminBundle[session.dmProfile.locale].catTreeQuickBuilder#</h3>
+		<h3>#apapplication.rb.getResource("catTreeQuickBuilder")#</h3>
 		
-		<label for="startPoint"><b>#application.adminBundle[session.dmProfile.locale].createStructureWithin#</b>
+		<label for="startPoint"><b>#apapplication.rb.getResource("createStructureWithin")#</b>
 		<select name="startPoint" id="startPoint">
-		<option value="#application.catid.root#" selected>#application.adminBundle[session.dmProfile.locale].Root#</option>
+		<option value="#application.catid.root#" selected>#apapplication.rb.getResource("Root")#</option>
 		<cfloop query="qNodes">
 		<option value="#qNodes.objectId#">#RepeatString("&nbsp;&nbsp;|", qNodes.nlevel)#- #qNodes.objectName#</option>
 		</cfloop>
@@ -185,17 +185,17 @@ $out:$
 		
 		<fieldset class="f-checkbox-wrap">
 		
-			<b>#application.adminBundle[session.dmProfile.locale].navAliases#</b>
+			<b>#apapplication.rb.getResource("navAliases")#</b>
 			
 			<fieldset>
 			
 			<label for="makenavaliases">
 			<input type="checkbox" name="makenavaliases" id="makenavaliases" checked="checked" value="1" onclick="updateNavTreeDepthBox()" class="f-checkbox" />
-			#application.adminBundle[session.dmProfile.locale].createNavAliases#
+			#apapplication.rb.getResource("createNavAliases")#
 			</label>
 			
 			<select name="navaliaseslevel">
-	            <option value="0">#application.adminBundle[session.dmProfile.locale].all#</option>
+	            <option value="0">#apapplication.rb.getResource("all")#</option>
 	            <option value="1" selected >1</option>
 	            <option value="2">2</option>
 	            <option value="3">3</option>
@@ -203,25 +203,25 @@ $out:$
 	            <option value="5">5</option>
 	            <option value="6">6</option>
 	          </select><br />
-	          #application.adminBundle[session.dmProfile.locale].levels#
+	          #apapplication.rb.getResource("levels")#
 			  <script>updateNavTreeDepthBox()</script>
 			
 			</fieldset>
 		
 		</fieldset>
 		
-		<label for="levelToken"><b>#application.adminBundle[session.dmProfile.locale].levelToken#</b>
+		<label for="levelToken"><b>#apapplication.rb.getResource("levelToken")#</b>
 		<select name="levelToken" id="levelToken">
 		<option>#levelToken#</option>
 		</select><br />
 		</label>
 		
-		<label for="structure"><b>#application.adminBundle[session.dmProfile.locale].structure#</b>
+		<label for="structure"><b>#apapplication.rb.getResource("structure")#</b>
 		<textarea name="structure" id="structure" rows="10" cols="40" class="f-comments"></textarea><br />
 		</label>
 		
 		<div class="f-submit-wrap">
-		<input type="submit" value="#application.adminBundle[session.dmProfile.locale].buildSiteStructure#" name="submit" class="f-submit" /><br />
+		<input type="submit" value="#apapplication.rb.getResource("buildSiteStructure")#" name="submit" class="f-submit" /><br />
 		</div>
 		
 	</fieldset>
@@ -229,14 +229,14 @@ $out:$
 	
 	<hr />
 
-	<h4>#application.adminBundle[session.dmProfile.locale].instructions#</h4>
+	<h4>#apapplication.rb.getResource("instructions")#</h4>
 	<p>
-	#application.adminBundle[session.dmProfile.locale].quicklyBuildFarCrySiteBlurb#
+	#apapplication.rb.getResource("quicklyBuildFarCrySiteBlurb")#
 	</p>
 	
 	<hr />
 	
-	<h4>#application.adminBundle[session.dmProfile.locale].example#</h4>
+	<h4>#apapplication.rb.getResource("example")#</h4>
 	<p>
 	<pre>
 	Item 1
@@ -251,7 +251,7 @@ $out:$
 	</p>
 	
 	<p>
-	#application.adminBundle[session.dmProfile.locale].visualPurposesBlurb#
+	#apapplication.rb.getResource("visualPurposesBlurb")#
 	</p>
 	
 	<p>

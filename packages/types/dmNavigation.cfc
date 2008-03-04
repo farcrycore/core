@@ -41,7 +41,7 @@ $out:$
 	------------------------------------------------------------------------->
 	<cffunction name="getExternalLinks" access="public" returntype="string" output="false" hint="Returns a list of all navigation nodes in the system with an alias">
 	
-		<cfset var lResult = ":#application.adminBundle[session.dmProfile.locale].noneForSelect#" />
+		<cfset var lResult = ":#apapplication.rb.getResource("noneForSelect")#" />
 		<cfset var aNavalias = listToArray(listSort(structKeyList(application.navid),'textnocase'))>
 		
 	

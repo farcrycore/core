@@ -36,13 +36,13 @@ out:
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 <sec:CheckPermission error="true" permission="AdminGeneralTab">
-	<cfoutput><h3>#application.adminBundle[session.dmProfile.locale].autoCache#</h3>
+	<cfoutput><h3>#apapplication.rb.getResource("autoCache")#</h3>
 	
-	<p>#application.adminBundle[session.dmProfile.locale].generatingCaches#</p></cfoutput><cfflush>
+	<p>#apapplication.rb.getResource("generatingCaches")#</p></cfoutput><cfflush>
 	
 	<cfinvoke component="#application.packagepath#.farcry.cache" method="cacheAll" />
 	
-	<cfoutput><h4 class="fade success" id="fader1">#application.adminBundle[session.dmProfile.locale].allDone#</h4></cfoutput>
+	<cfoutput><h4 class="fade success" id="fader1">#apapplication.rb.getResource("allDone")#</h4></cfoutput>
 </sec:CheckPermission>
 
 <admin:footer>

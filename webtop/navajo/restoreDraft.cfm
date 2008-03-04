@@ -5,7 +5,7 @@
 <cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
 <cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
 
-<cfset resultmsg = "#application.adminBundle[session.dmProfile.locale].liveObjRestoredOK#">
+<cfset resultmsg = "#apapplication.rb.getResource("liveObjRestoredOK")#">
 <cftry>
 	<!--- Get draft object --->
 	<q4:contentobjectget objectId="#URL.objectId#" r_stObject="stObj">
@@ -38,7 +38,7 @@
 
 	<cfcatch>
 		<!--- do nothing --->
-		<cfoutput>'#application.adminBundle[session.dmProfile.locale].draftObjRestoreFailed#'</cfoutput>
+		<cfoutput>'#apapplication.rb.getResource("draftObjRestoreFailed")#'</cfoutput>
 	</cfcatch>
 </cftry>
 

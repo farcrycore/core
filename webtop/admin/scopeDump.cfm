@@ -39,26 +39,26 @@ $out:$
 	<form method="post" class="f-wrap-1 f-bg-short" action="">
 	<fieldset>
 	
-		<h3>#application.adminBundle[session.dmProfile.locale].scopeDump#</h3>
+		<h3>#apapplication.rb.getResource("scopeDump")#</h3>
 		
 		<label for="permname"><b>Choose scope:</b>
 		<select name="scope">
-			<option value="application" <cfif isdefined("form.scope") and form.scope eq "application">selected</cfif>>#application.adminBundle[session.dmProfile.locale].application#</option>
-			<option value="request" <cfif isdefined("form.scope") and form.scope eq "request">selected</cfif>>#application.adminBundle[session.dmProfile.locale].request#</option>
-			<option value="session" <cfif isdefined("form.scope") and form.scope eq "session">selected</cfif>>#application.adminBundle[session.dmProfile.locale].session#</option>
-			<option value="server" <cfif isdefined("form.scope") and form.scope eq "server">selected</cfif>>#application.adminBundle[session.dmProfile.locale].server#</option>
+			<option value="application" <cfif isdefined("form.scope") and form.scope eq "application">selected</cfif>>#apapplication.rb.getResource("application")#</option>
+			<option value="request" <cfif isdefined("form.scope") and form.scope eq "request">selected</cfif>>#apapplication.rb.getResource("request")#</option>
+			<option value="session" <cfif isdefined("form.scope") and form.scope eq "session">selected</cfif>>#apapplication.rb.getResource("session")#</option>
+			<option value="server" <cfif isdefined("form.scope") and form.scope eq "server">selected</cfif>>#apapplication.rb.getResource("server")#</option>
 		</select><br />
 		</label>
 		
 		<div class="f-submit-wrap">
-		<input type="submit" value="#application.adminBundle[session.dmProfile.locale].dump#" class="f-submit" />
+		<input type="submit" value="#apapplication.rb.getResource("dump")#" class="f-submit" />
 		</div>
 		
 		</form>
 	</cfoutput>
 	
 	<cfif isdefined("form.scope")>
-		<cfdump var="#evaluate(form.scope)#" label=" #application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].scopeLabel,'#form.scope#')#">
+		<cfdump var="#evaluate(form.scope)#" label=" #application.rb.formatRBString("scopeLabel",'#form.scope#')#">
 	</cfif>			
 </sec:CheckPermission>
 

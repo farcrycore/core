@@ -52,7 +52,7 @@ out:
 	</cfif>
 	
 	<!--- display form --->
-	<cfoutput><h3>#application.adminBundle[session.dmProfile.locale].contentCacheSummary#</h3></cfoutput>
+	<cfoutput><h3>#apapplication.rb.getResource("contentCacheSummary")#</h3></cfoutput>
 	
 	<!--- block caches --->
 	<!--- check a block cache exists --->
@@ -62,11 +62,11 @@ out:
 		<form action="" method="post" name="BlockForm">
 		<table class="table-4" cellspacing="0">
 		<tr>
-			<th>#application.adminBundle[session.dmProfile.locale].Block#</th>
-			<th>#application.adminBundle[session.dmProfile.locale].numberCaches#</th>
-			<th>#application.adminBundle[session.dmProfile.locale].expiredCaches#</th>
-			<th>#application.adminBundle[session.dmProfile.locale].clean#</th>
-			<th>#application.adminBundle[session.dmProfile.locale].flush#</th>
+			<th>#apapplication.rb.getResource("Block")#</th>
+			<th>#apapplication.rb.getResource("numberCaches")#</th>
+			<th>#apapplication.rb.getResource("expiredCaches")#</th>
+			<th>#apapplication.rb.getResource("clean")#</th>
+			<th>#apapplication.rb.getResource("flush")#</th>
 		</tr>
 		</cfoutput>
 		
@@ -128,7 +128,7 @@ out:
 		</form>
 		</cfoutput>
 	<cfelse>
-		<cfoutput><p>#application.adminBundle[session.dmProfile.locale].noBlockCachesNow#</p></cfoutput>
+		<cfoutput><p>#apapplication.rb.getResource("noBlockCachesNow")#</p></cfoutput>
 	</cfif>
 </sec:CheckPermission>
 

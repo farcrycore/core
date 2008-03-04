@@ -16,7 +16,7 @@ Intended for use with daemon dynamic data.
 
 
 <cfif len(attributes.lObjectIDs) eq 0>
-	<cfset "caller.#attributes.rMsg#" = "#application.adminBundle[session.dmProfile.locale].noObjSelectedForDeletion#">
+	<cfset "caller.#attributes.rMsg#" = "#apapplication.rb.getResource("noObjSelectedForDeletion")#">
 	<cfexit>
 </cfif>
 
@@ -40,7 +40,7 @@ Intended for use with daemon dynamic data.
 		</cfcase>
 	</cfswitch>
 	<q4:contentobjectdelete objectID="#i#">
-	<cfset "caller.#attributes.rMsg#" = "#application.rB.formatRBString(application.adminBundle[session.dmProfile.locale].objectsDeleted,listLen(attributes.lObjectIds))#"> 
+	<cfset "caller.#attributes.rMsg#" = "#application.rb.formatRBString("objectsDeleted",listLen(attributes.lObjectIds))#"> 
 </cfloop>
 
 

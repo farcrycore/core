@@ -34,7 +34,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au) $
 		<cfset errormessage = errormessage & "Please enter a Send To email address.<br />">
 	<cfelseif (NOT REFindNoCase('^[A-Za-z0-9_\.\-]+@([A-Za-z0-9_\.\-]+\.)+[A-Za-z]{2,4}$', sendTo))>
 		<cfset subS = listToArray('#application.path.project#,#application.config.general.exportPath#')>
-		<cfset errormessage = errormessage & "#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].exportDirNotExists,subS)#">
+		<cfset errormessage = errormessage & "#application.rb.formatRBString("exportDirNotExists",subS)#">
 	</cfif>
 
 	<cfif contentType EQ "">
@@ -76,7 +76,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au) $
 					<cffile action="write" file="#filePath#" output="#toString(stExport)#" addnewline="no" nameconflict="OVERWRITE">
 					<cfcatch>
 					<cfset subS=listToArray('#application.path.project#,#application.config.general.exportPath#')>			
-					<cfoutput>#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].exportDirNotExists,subS)#</cfoutput>
+					<cfoutput>#application.rb.formatRBString("exportDirNotExists",subS)#</cfoutput>
 					</cfcatch>
 				</cftry>
 			</cfcase>
@@ -84,10 +84,10 @@ $Developer: Brendan Sisson (brendan@daemon.com.au) $
 
 		<!--- send export file --->
 		<cfmail from="#form.sendTo#" to="#form.sendTo#" subject="#form.contentType# export" mimeattach="#filePath#">
-#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].exportAttached,"#form.contentType#")#		
+#application.rb.formatRBString("exportAttached","#form.contentType#")#		
 		</cfmail>
 		<!--- success message --->		
-		<cfset successmessage = application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].exportFileSent,"#sendTo#")>
+		<cfset successmessage = application.rb.formatRBString("exportFileSent","#sendTo#")>
 	</cfif>
 </cfif>
 
@@ -104,23 +104,23 @@ $Developer: Brendan Sisson (brendan@daemon.com.au) $
 <sec:CheckPermission error="true" permission="ContentExportTab"><cfoutput>
 	<form action="#cgi.script_name#?#cgi.query_string#" class="f-wrap-1 wider f-bg-medium" name="editform" method="post">
 		<fieldset>
-	<h3>#application.adminBundle[session.dmProfile.locale].xmlExport#</h3>
+	<h3>#apapplication.rb.getResource("xmlExport")#</h3>
 	<cfif errormessage NEQ "">
 	<p id="fading1" class="fade"><span class="error">#errormessage#</span></p>
 	<cfelseif successmessage NEQ "">
 	<p id="fading2" class="fade"><span class="success">#successmessage#</span></p>
 	</cfif>	
-			<label for="contentType"><b>#application.adminBundle[session.dmProfile.locale].contentType#</b>
+			<label for="contentType"><b>#apapplication.rb.getResource("contentType")#</b>
 				<select name="contentType" id="contentType"><cfloop list="#listOfKeys#" index="i">
 					<option value="#i#"<cfif contentType EQ i> selected="selected"</cfif>>#i#</option></cfloop>			
 				</select><br />
 			</label>
 			
-			<label for="sendTo"><b>#application.adminBundle[session.dmProfile.locale].sendTo#</b>
+			<label for="sendTo"><b>#apapplication.rb.getResource("sendTo")#</b>
 				<input type="text" name="sendTo" id="sendTo" value="#sendTo#" maxlength="255" size="45" /><br />
 			</label>
 	
-			<label for="exportType"><b>#application.adminBundle[session.dmProfile.locale].exportAs#</b>
+			<label for="exportType"><b>#apapplication.rb.getResource("exportAs")#</b>
 				<select name="exportType" id="exportType">
 					<option value="xml"<cfif exportType EQ "xml"> selected="selected"</cfif>>xml</option>
 				</select><br />

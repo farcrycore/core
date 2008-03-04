@@ -3,7 +3,7 @@
 <cfoutput>
 function confirmRestore(navid,draftObjectID)
 {
-	confirmmsg = "#application.adminBundle[session.dmProfile.locale].confirmRestoreLiveObjToDraft#";
+	confirmmsg = "#apapplication.rb.getResource("confirmRestoreLiveObjToDraft")#";
 	if(confirm(confirmmsg))
 	{
 		strURL = "#application.url.farcry#/navajo/restoreDraft.cfm";

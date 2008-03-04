@@ -129,7 +129,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	
 	<cfsavecontent variable="rpt1">
 	<cfoutput>
-		<span class="frameMenuBullet">&raquo;</span> #application.rB.formatRBString(application.adminBundle[session.dmProfile.locale].updatingRecsFor,subS)#<br>
+		<span class="frameMenuBullet">&raquo;</span> #application.rb.formatRBString("updatingRecsFor",subS)#<br>
 		<cfif structKeyExists(application.config.verity.contenttype[key], "custom3") AND  structKeyExists(application.config.verity.contenttype[key], "custom4")>
 			<cfif len(application.config.verity.contenttype[key].custom3) OR len(application.config.verity.contenttype[key].custom4)>
 			<span class="frameMenuBullet">&raquo;</span> Including Custom Fields (custom3: #application.config.verity.contenttype[key].custom3#, custom4:#application.config.verity.contenttype[key].custom4#)<br>
@@ -182,7 +182,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 		<cfset arrayappend(subS, arrayToList(application.config.verity.contenttype[key].aprops))>
 
 		<cfsavecontent variable="rpt2">
-		<cfoutput><span class="frameMenuBullet">&raquo;</span> #application.rB.formatRBString(application.adminBundle[session.dmProfile.locale].purgingDeadRecsFor,subS)#<p></cfoutput>
+		<cfoutput><span class="frameMenuBullet">&raquo;</span> #application.rb.formatRBString("purgingDeadRecsFor",subS)#<p></cfoutput>
 		</cfsavecontent>
 		
 		<!--- todo: verity bug.. passing blank collection to index kills thread and requires CF restart to recover --->

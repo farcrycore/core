@@ -19,7 +19,7 @@
 		
 	    <cfif qTypeNames.recordCount eq 0>
 	        <cfoutput>
-	            #application.adminBundle[session.dmProfile.locale].noTreeItemsBadBlurb#
+	            #apapplication.rb.getResource("noTreeItemsBadBlurb")#
 	        </cfoutput>
 	    <cfelse>
 			<!--- show form --->

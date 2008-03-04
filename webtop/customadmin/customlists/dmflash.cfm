@@ -20,7 +20,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 <ft:objectadmin 
 	typename="dmFlash"
 	permissionset="news"
-	title="#application.adminBundle[session.dmProfile.locale].MediaLibraryFlashAdministration#"
+	title="#apapplication.rb.getResource("MediaLibraryFlashAdministration")#"
 	columnList="label,datetimelastUpdated,status" 
 	sortableColumns="label,datetimelastUpdated,status"
 	lFilterFields="label"

@@ -9,7 +9,7 @@
 		<cfinvokeargument name="dsn" value="#application.dsn#"/>
 	</cfinvoke>
 		<!--- <cfdump var="#stStatus#"> --->
-		<cfset message = "#application.adminBundle[session.dmProfile.locale].deleteCategoryOK#">
+		<cfset message = "#apapplication.rb.getResource("deleteCategoryOK")#">
 		<cfoutput>
 		<script language="javascript">
 			parent.cattreeframe.location.reload();

@@ -28,6 +28,6 @@ $out:$
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
-<div><cfoutput>#application.adminBundle[session.dmProfile.locale].helpHomePage#</cfoutput></div>
+<div><cfoutput>#apapplication.rb.getResource("helpHomePage")#</cfoutput></div>
 
 <admin:footer>

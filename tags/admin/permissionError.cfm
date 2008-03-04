@@ -24,4 +24,4 @@ $out:$
 
 <cfprocessingDirective pageencoding="utf-8">
 
-<cfoutput>#application.adminBundle[session.dmProfile.locale].noPageViewPermissions#</cfoutput>
+<cfoutput>#apapplication.rb.getResource("noPageViewPermissions")#</cfoutput>

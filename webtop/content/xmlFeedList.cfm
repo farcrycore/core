@@ -13,7 +13,7 @@
 <widgets:typeadmin 
 	typename="dmXMLExport"
 	permissionset="news"
-	title="#application.adminBundle[session.dmProfile.locale].xmlExportAdministration#"
+	title="#apapplication.rb.getResource("xmlExportAdministration")#"
 	bdebug="0">
 </widgets:typeadmin>
 

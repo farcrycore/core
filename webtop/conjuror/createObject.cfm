@@ -63,7 +63,7 @@ $out:$
 <!--- make sure parent can hold an object before doing anything... --->	
 <cfif len(url.objectId) AND not structKeyExists(stParent,"aObjectIds")>
 	<cfoutput>
-		#application.adminBundle[session.dmProfile.locale].noaObjectIds#
+		#apapplication.rb.getResource("noaObjectIds")#
 	</cfoutput>
 	<cfabort>
 
@@ -98,7 +98,7 @@ $out:$
 		<cfif url.typename IS url.nodetype>
 			
 			<cfif NOT stParent.typename IS url.nodetype>
-				<cfoutput><b>#application.adminBundle[session.dmProfile.locale].cantCreateNavObj#</b></cfoutput>
+				<cfoutput><b>#apapplication.rb.getResource("cantCreateNavObj")#</b></cfoutput>
 				<cfabort>
 			<cfelse>
 				<!--- Insert this node into the tree --->

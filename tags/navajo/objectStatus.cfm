@@ -81,19 +81,19 @@ $out:$
 		<form action="#cgi.script_name#?#cgi.query_string#" class="f-wrap-1 wider f-bg-medium" name="form" method="post">
 		<h3>
 			<cfif isDefined("URL.draftObjectID")>
-				#application.adminBundle[session.dmProfile.locale].objStatusRequest#
+				#apapplication.rb.getResource("objStatusRequest")#
 			<cfelse>
-				#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].setObjStatus,"#url.status#")#
+				#application.rb.formatRBString("setObjStatus","#url.status#")#
 			</cfif>
 		</h3>
 			<fieldset>
-				<label for="commentLog"><b>#application.adminBundle[session.dmProfile.locale].addCommentsLabel#</b>
+				<label for="commentLog"><b>#apapplication.rb.getResource("addCommentsLabel")#</b>
 					<textarea name="commentLog" id="commentLog" cols="80" rows="10"></textarea><br />
 				</label>
 				<!--- if requesting approval, list approvers --->
 				<cfif url.status eq "requestApproval" and structcount(stApprovers)>
-					<label for="Log"><b>#application.adminBundle[session.dmProfile.locale].requestApprovalFrom#</b>
-						<input type="checkbox" onclick="if(this.checked)deSelectAll();" name="lApprovers" value="all" checked="checked">#application.adminBundle[session.dmProfile.locale].allApprovers#<br />
+					<label for="Log"><b>#apapplication.rb.getResource("requestApprovalFrom")#</b>
+						<input type="checkbox" onclick="if(this.checked)deSelectAll();" name="lApprovers" value="all" checked="checked">#apapplication.rb.getResource("allApprovers")#<br />
 							<!--- loop over approvers and display ones that have email profiles --->
 							<cfloop collection="#stApprovers#" item="item">
 							    <cfif stApprovers[item].emailAddress neq "" AND stApprovers[item].bReceiveEmail and stApprovers[item].userName neq session.dmSec.authentication.userLogin>
@@ -107,11 +107,11 @@ $out:$
 			</fieldset>
 		
 			<div class="f-submit-wrap">
-				<input type="submit" name="submit" value="#application.adminBundle[session.dmProfile.locale].submitUC#" class="f-submit" />
+				<input type="submit" name="submit" value="#apapplication.rb.getResource("submitUC")#" class="f-submit" />
 				<cfif listlen(attributes.lObjectIDs) gt 1 and len(cgi.HTTP_REFERER)>
-					<input type="submit" name="cancel" value="#application.adminBundle[session.dmProfile.locale].cancel#" class="f-submit" onClick="location.href='#cgi.http_referer#';" />
+					<input type="submit" name="cancel" value="#apapplication.rb.getResource("cancel")#" class="f-submit" onClick="location.href='#cgi.http_referer#';" />
 				<cfelse>
-					<input type="submit" name="cancel" value="#application.adminBundle[session.dmProfile.locale].cancel#" class="f-submit" onClick="location.href='../edittabOverview.cfm?objectid=#attributes.lobjectIDs#';" />
+					<input type="submit" name="cancel" value="#apapplication.rb.getResource("cancel")#" class="f-submit" onClick="location.href='../edittabOverview.cfm?objectid=#attributes.lobjectIDs#';" />
 				</cfif>
 			</div>			
 		
@@ -119,7 +119,7 @@ $out:$
 			<cfif structKeyExists(astObj[1],"commentLog")>
 				<cfloop from="1" to="#arraylen(astObj)#" index="i">
 					<cfif len(trim(astObj[i].commentLog)) AND structKeyExists(astObj[i],"commentLog")>
-						<label><b>#application.adminBundle[session.dmProfile.locale].previousComments#<cfif arraylen(astObj) neq 1> (#astObj[i].label#)</cfif></b>
+						<label><b>#apapplication.rb.getResource("previousComments")#<cfif arraylen(astObj) neq 1> (#astObj[i].label#)</cfif></b>
 							#htmlcodeformat(astObj[i].commentLog)#
 						</label>
 					</cfif>
@@ -142,7 +142,7 @@ $out:$
 			<cfif not structkeyexists(stObj, "status")>
 				<cfoutput>
 				<script type="text/javascript">
-					alert("#application.adminBundle[session.dmProfile.locale].objNoApprovalProcess#");
+					alert("#apapplication.rb.getResource("objNoApprovalProcess")#");
 					window.close();
 				</script>
 				</cfoutput>
@@ -215,7 +215,7 @@ $out:$
 				</cfif>
 				
 			<cfelse>
-				<cfoutput><b>#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].unknownStatusPassed,"#url.status#")#<b><br></cfoutput><cfabort>
+				<cfoutput><b>#application.rb.formatRBString("unknownStatusPassed","#url.status#")#<b><br></cfoutput><cfabort>
 			</cfif>
 	
 			<cfif isstruct(stNav)>
@@ -232,7 +232,7 @@ $out:$
 				
 				<cfif iState neq 1><cfoutput>
 					<script type="text/javascript">
-						alert("#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].nosubNodeApprovalPermission,"#stNav.title#")#");
+						alert("#application.rb.formatRBString("nosubNodeApprovalPermission","#stNav.title#")#");
 						window.close();
 					</script></cfoutput><cfabort>
 				</cfif>
@@ -247,13 +247,13 @@ $out:$
 					<cfif request.bLoggedIn>
 						<cfif session.security.userid eq stObj.attr_lastUpdatedBy><cfoutput>
 							<script type="text/javascript">
-								alert("#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].canApproveOwnContent,stNav.title)#");
+								alert("#application.rb.formatRBString("canApproveOwnContent",stNav.title)#");
 								window.close();
 							</script></cfoutput><cfabort>
 						</cfif>
 					<cfelse><cfoutput>
 						<script type="text/javascript">
-							alert("#application.adminBundle[session.dmProfile.locale].notLoggedIn#");
+							alert("#apapplication.rb.getResource("notLoggedIn")#");
 							window.close();
 						</script></cfoutput><cfabort>
 					</cfif>

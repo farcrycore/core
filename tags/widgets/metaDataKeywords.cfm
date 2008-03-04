@@ -5,8 +5,8 @@
 
 <cfparam name="attributes.fieldNameKeywords" default="metakeywords">
 <cfparam name="attributes.fieldNameExtendedMetadata" default="extendedmetadata">
-<cfparam name="attributes.fieldLabelKeywords" default="#application.adminBundle[session.dmProfile.locale].keywordsLabel#">
-<cfparam name="attributes.fieldLabelExtendedMetadata" default="#application.adminBundle[session.dmProfile.locale].extendedMetadata#">
+<cfparam name="attributes.fieldLabelKeywords" default="#apapplication.rb.getResource("keywordsLabel")#">
+<cfparam name="attributes.fieldLabelExtendedMetadata" default="#apapplication.rb.getResource("extendedMetadata")#">
 <cfparam name="attributes.FieldValueKeywords" default="">
 <cfparam name="attributes.FieldValueExtendedMetadata" default="">
 <cfparam name="attributes.bExtendedMetadata" default="1">
@@ -21,12 +21,12 @@
 </label></cfif>
 <cfif attributes.bExtendedMetadata>
 <label for="extendedmetadata" style="width:360px"><b>#attributes.fieldLabelExtendedMetadata#</b>
-	<a href="javascript:void(0);" onclick="doToggle('extendedmetadata','bHasMetaData');"><cfif trim(attributes.FieldValueExtendedMetadata) EQ ""><img src="#application.url.farcry#/images/no.gif" id="tglextendedmetadata_image" border="0" alt="#application.adminBundle[session.dmProfile.locale].extendedMetadata#"><cfelse>
-		<img src="#application.url.farcry#/images/yes.gif" id="tglextendedmetadata_image" border="0" alt="#application.adminBundle[session.dmProfile.locale].noExtendedMetadata#"></cfif>
+	<a href="javascript:void(0);" onclick="doToggle('extendedmetadata','bHasMetaData');"><cfif trim(attributes.FieldValueExtendedMetadata) EQ ""><img src="#application.url.farcry#/images/no.gif" id="tglextendedmetadata_image" border="0" alt="#apapplication.rb.getResource("extendedMetadata")#"><cfelse>
+		<img src="#application.url.farcry#/images/yes.gif" id="tglextendedmetadata_image" border="0" alt="#apapplication.rb.getResource("noExtendedMetadata")#"></cfif>
 	</a>
 	<span id="tglextendedmetadata" style="display:<cfif Trim(attributes.FieldValueExtendedMetadata) EQ ''>none<cfelse>inline</cfif>;">
 	<textarea name="#attributes.fieldNameExtendedMetadata#" id="extendedmetadata" wrap="off" class="f-comments f-comments2">#attributes.FieldValueExtendedMetadata#</textarea><br />
-	#application.adminBundle[session.dmProfile.locale].insertedInHeadBlurb#
+	#apapplication.rb.getResource("insertedInHeadBlurb")#
 	</span>
 	<input type="hidden" id="bHasMetaData" name="bHasMetaData" value="#Len(trim(attributes.FieldValueExtendedMetadata))#">
 </label></cfif>
@@ -42,13 +42,13 @@ function doToggle(prefix,bHiddenFieldName){
 	if(objTgl.style.display == "none"){
 		objTgl.style.display = "inline";
 		objTglImage.src = "#application.url.farcry#/images/yes.gif";
-//		objTglImage.alt = "#application.adminBundle[session.dmProfile.locale].noExtendedMetadata#";
+//		objTglImage.alt = "#apapplication.rb.getResource("noExtendedMetadata")#";
 		if(bHiddenFieldName)
 			objTglHiddenValue.value = 1;
 	}else {
 		objTgl.style.display = "none";
 		objTglImage.src = "#application.url.farcry#/images/no.gif";
-//		objTglImage.alt = "#application.adminBundle[session.dmProfile.locale].extendedMetadata#";
+//		objTglImage.alt = "#apapplication.rb.getResource("extendedMetadata")#";
 		if(bHiddenFieldName)
 			objTglHiddenValue.value = 0;
 	}	

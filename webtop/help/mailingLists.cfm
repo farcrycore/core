@@ -32,31 +32,31 @@ $out:$
 
 <sec:CheckPermission error="true" permission="MainNavHelpTab">
 	<cfoutput>
-		<div class="formtitle">#application.adminBundle[session.dmProfile.locale].mailingLists#</div>
+		<div class="formtitle">#apapplication.rb.getResource("mailingLists")#</div>
 		
 		<div style="padding-left:30px;padding-bottom:30px;padding-right:30px;">
-		<p>#application.adminBundle[session.dmProfile.locale].farcryListBlurb#</p>
+		<p>#apapplication.rb.getResource("farcryListBlurb")#</p>
 		<p>&nbsp;</p>
 		
 		<div class="formtitle">farcry-dev (public)</div>
 		
 		<span class="frameMenuBullet">&raquo;</span> <a href="mailto:farcry-dev@lists.daemon.com.au">farcry-dev@lists.daemon.com.au</a>
-		<p>#application.adminBundle[session.dmProfile.locale].farcryDevListBlurb#</p>
+		<p>#apapplication.rb.getResource("farcryDevListBlurb")#</p>
 		<ul>
-		    <li>#application.adminBundle[session.dmProfile.locale].joinDevList#</li>
-		    <li>#application.adminBundle[session.dmProfile.locale].webBasedDevList#</li>
-		    <li>#application.adminBundle[session.dmProfile.locale].nntpDevList#</li>
+		    <li>#apapplication.rb.getResource("joinDevList")#</li>
+		    <li>#apapplication.rb.getResource("webBasedDevList")#</li>
+		    <li>#apapplication.rb.getResource("nntpDevList")#</li>
 		</ul>
 		
 		<p>&nbsp;</p>
 		<div class="formtitle">farcry-user (public)</div>
 		
 		<span class="frameMenuBullet">&raquo;</span> <a href="mailto:farcry-user@lists.daemon.com.au">farcry-user@lists.daemon.com.au</a>
-		<p>#application.adminBundle[session.dmProfile.locale].farcryUserListBlurb#</p>
+		<p>#apapplication.rb.getResource("farcryUserListBlurb")#</p>
 		<ul>
-		    <li>#application.adminBundle[session.dmProfile.locale].joinUserList#</li>
-		    <li>#application.adminBundle[session.dmProfile.locale].webBasedUserList#</li>
-		    <li>#application.adminBundle[session.dmProfile.locale].nntpUserList#</li>
+		    <li>#apapplication.rb.getResource("joinUserList")#</li>
+		    <li>#apapplication.rb.getResource("webBasedUserList")#</li>
+		    <li>#apapplication.rb.getResource("nntpUserList")#</li>
 		</ul>
 		
 		</div>

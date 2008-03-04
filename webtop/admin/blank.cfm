@@ -2,7 +2,7 @@
 
 <div style="padding: 20px; margin: 20px; border: 2px dashed #333;">
 
-<cfoutput>#application.adminBundle[session.dmProfile.locale].blankPage#</cfoutput>
+<cfoutput>#apapplication.rb.getResource("blankPage")#</cfoutput>
 
 </div>
 

@@ -39,7 +39,7 @@ $in: $
 <cfoutput>
 <div style="padding: 5px; float: right; width: 150px; border: 1px ##333 solid;">
 <p>
-<b>#application.adminBundle[session.dmProfile.locale].primaryNav#</b><br>
+<b>#apapplication.rb.getResource("primaryNav")#</b><br>
 </cfoutput>
 <cfoutput query="qPrimary">
 <a href="index.cfm?objectid=#qPrimary.objectid#">#qPrimary.objectName#</a><br>
@@ -47,7 +47,7 @@ $in: $
 <cfoutput>
 </p>
 <p>
-<b>#application.adminBundle[session.dmProfile.locale].secondaryNav#</b><br>
+<b>#apapplication.rb.getResource("secondaryNav")#</b><br>
 </cfoutput>
 <cfoutput query="qSecondary">
 <a href="index.cfm?objectid=#qSecondary.objectid#">#qSecondary.objectName#</a><br>
@@ -55,7 +55,7 @@ $in: $
 <cfoutput>
 </p>
 <p>
-<b>#application.adminBundle[session.dmProfile.locale].breadcrumb#</b><br>
+<b>#apapplication.rb.getResource("breadcrumb")#</b><br>
 </cfoutput>
 <cfoutput query="qAncestors">
 <a href="index.cfm?objectid=#qAncestors.objectid#">#qAncestors.objectName#</a><br>
@@ -65,7 +65,7 @@ $in: $
 </div>
 
 <div style="padding: 5px;">
-<h2>#application.adminBundle[session.dmProfile.locale].teaser#</h2>
+<h2>#apapplication.rb.getResource("teaser")#</h2>
 <p>#stObj.Teaser#</p>
 </div>
 
@@ -75,7 +75,7 @@ $in: $
 </div>
 
 <div style="padding: 5px;">
-<cfdump var="#stObj#" label="#application.adminBundle[session.dmProfile.locale].completeObjInstance#" expand="no">
+<cfdump var="#stObj#" label="#apapplication.rb.getResource("completeObjInstance")#" expand="no">
 </div>
 </cfoutput>
 

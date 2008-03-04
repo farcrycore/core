@@ -29,17 +29,17 @@ $DEVELOPER:Brendan Sisson (brendan@daemon.com.au)$
 	<cfset oAudit = createObject("component", "#application.packagepath#.farcry.audit") />
 	<cfset qLog = oAudit.getAuditLog(objectid=url.objectid) />
 	
-	<cfoutput>	<h3>#application.adminBundle[session.dmProfile.locale].auditTrace#</h3></cfoutput>
+	<cfoutput>	<h3>#apapplication.rb.getResource("auditTrace")#</h3></cfoutput>
 	
 	<cfif qLog.recordcount gt 0>
 		<cfoutput>
 		<table cellspacing="0">
 		<tr>
-			<th>#application.adminBundle[session.dmProfile.locale].date#</th>
-			<th>#application.adminBundle[session.dmProfile.locale].changeType#</th>
-			<th>#application.adminBundle[session.dmProfile.locale].location#</th>
-			<th>#application.adminBundle[session.dmProfile.locale].notes#</th>
-			<th>#application.adminBundle[session.dmProfile.locale].user#</th>
+			<th>#apapplication.rb.getResource("date")#</th>
+			<th>#apapplication.rb.getResource("changeType")#</th>
+			<th>#apapplication.rb.getResource("location")#</th>
+			<th>#apapplication.rb.getResource("notes")#</th>
+			<th>#apapplication.rb.getResource("user")#</th>
 		</tr>
 		</cfoutput>
 		<cfloop query="qLog">
@@ -58,7 +58,7 @@ $DEVELOPER:Brendan Sisson (brendan@daemon.com.au)$
 							<cfif notes neq "">
 								#notes#
 							<cfelse>
-								<em>#application.adminBundle[session.dmProfile.locale].notAvailable#</em>
+								<em>#apapplication.rb.getResource("notAvailable")#</em>
 							</cfif>
 						</td>
 						<td><a href="edittabAudit.cfm?objectid=#objectid#&amp;user=#username#">#username#</a></td>
@@ -77,7 +77,7 @@ $DEVELOPER:Brendan Sisson (brendan@daemon.com.au)$
 						<cfif notes neq "">
 							#notes#
 						<cfelse>
-							<em>#application.adminBundle[session.dmProfile.locale].notAvailable#</em>
+							<em>#apapplication.rb.getResource("notAvailable")#</em>
 						</cfif>
 					</td>
 					<td><a href="edittabAudit.cfm?objectid=#objectid#&user=#username#">#username#</a></td>
@@ -88,7 +88,7 @@ $DEVELOPER:Brendan Sisson (brendan@daemon.com.au)$
 		<cfif structKeyExists(url, "user")>
 			<cfoutput>
 			<tr>
-				<td colspan="5" align="right"><span class="frameMenuBullet">&raquo;</span> <a href="edittabAudit.cfm?objectid=#url.objectid#">#application.adminBundle[session.dmProfile.locale].showAllUsers#</a></td>
+				<td colspan="5" align="right"><span class="frameMenuBullet">&raquo;</span> <a href="edittabAudit.cfm?objectid=#url.objectid#">#apapplication.rb.getResource("showAllUsers")#</a></td>
 			</tr></cfoutput>
 		</cfif>
 
@@ -99,7 +99,7 @@ $DEVELOPER:Brendan Sisson (brendan@daemon.com.au)$
 		<cfoutput>
 		<table cellpadding="5" cellspacing="0" border="0" style="margin-left:30px;">
 			<tr>
-				<td colspan="5">#application.adminBundle[session.dmProfile.locale].noTraceRecorded#</td>
+				<td colspan="5">#apapplication.rb.getResource("noTraceRecorded")#</td>
 			</tr>
 		</table></cfoutput>
 	</cfif>

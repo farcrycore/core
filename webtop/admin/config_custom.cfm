@@ -40,7 +40,7 @@ $out:$
 	</cfscript>
 	
 	<cfoutput>
-	<h3>#application.adminBundle[session.dmProfile.locale].customConfigTypes#</h3></cfoutput>
+	<h3>#apapplication.rb.getResource("customConfigTypes")#</h3></cfoutput>
 	
 	<cfif qConfigs.recordcount>
 		<cfoutput>
@@ -50,9 +50,9 @@ $out:$
 		</cfif>
 		<table class="table-3" cellspacing="0">
 		<tr>
-			<th scope="col">#application.adminBundle[session.dmProfile.locale].config#</th>
-			<th scope="col">#application.adminBundle[session.dmProfile.locale].deployed#</th>
-			<th scope="col">#application.adminBundle[session.dmProfile.locale].deploy#</th>
+			<th scope="col">#apapplication.rb.getResource("config")#</th>
+			<th scope="col">#apapplication.rb.getResource("deployed")#</th>
+			<th scope="col">#apapplication.rb.getResource("deploy")#</th>
 		</tr>
 		</cfoutput>
 		
@@ -73,9 +73,9 @@ $out:$
 				
 				<td align="center">
 					<cfif not structIsEmpty(stConfig)>
-						<a href="#CGI.SCRIPT_NAME#?deploy=#qConfigs.name#&type=redeploy">#application.adminBundle[session.dmProfile.locale].restoreDefault#</a>
+						<a href="#CGI.SCRIPT_NAME#?deploy=#qConfigs.name#&type=redeploy">#apapplication.rb.getResource("restoreDefault")#</a>
 					<cfelse>
-						<a href="#CGI.SCRIPT_NAME#?deploy=#qConfigs.name#&type=deploy">#application.adminBundle[session.dmProfile.locale].deploy#</a>
+						<a href="#CGI.SCRIPT_NAME#?deploy=#qConfigs.name#&type=deploy">#apapplication.rb.getResource("deploy")#</a>
 					</cfif>
 				</td>
 			</tr>
@@ -87,7 +87,7 @@ $out:$
 		</cfoutput>
 	
 	<cfelse>
-		<cfoutput><p>#application.adminBundle[session.dmProfile.locale].noCustomConfigNow#</p></cfoutput>
+		<cfoutput><p>#apapplication.rb.getResource("noCustomConfigNow")#</p></cfoutput>
 	</cfif>
 </sec:CheckPermission>
 

@@ -29,7 +29,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au) $
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 <sec:CheckPermission error="true" permission="ContentExportTab">
-	<cfoutput><span class="Formtitle">#application.adminBundle[session.dmProfile.locale].xmlExport#</span><p></p></cfoutput>
+	<cfoutput><span class="Formtitle">#apapplication.rb.getResource("xmlExport")#</span><p></p></cfoutput>
 
 	<cfset bShowForm=1>
 	
@@ -37,7 +37,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au) $
 	<cfif isdefined("form.submit")>		
 		<cfif (NOT REFindNoCase('^[A-Za-z0-9_\.\-]+@([A-Za-z0-9_\.\-]+\.)+[A-Za-z]{2,4}$', trim(form.sendTo)))>
 			<cfset subS=listToArray('#application.path.project#,#application.config.general.exportPath#')>
-			<cfset message = "#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].exportDirNotExists,subS)#">
+			<cfset message = "#application.rb.formatRBString("exportDirNotExists",subS)#">
 			<cfset bShowForm=1>
 		<cfelse>
 			<cfset bShowForm = 0>		
@@ -83,7 +83,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au) $
 					<cffile action="write" file="#filePath#" output="#toString(stExport)#" addnewline="no" nameconflict="OVERWRITE">
 					<cfcatch>
 					<cfset subS=listToArray('#application.path.project#,#application.config.general.exportPath#')>			
-					<cfoutput>#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].exportDirNotExists,subS)#</cfoutput>
+					<cfoutput>#application.rb.formatRBString("exportDirNotExists",subS)#</cfoutput>
 					</cfcatch>
 				</cftry>
 
@@ -92,11 +92,11 @@ $Developer: Brendan Sisson (brendan@daemon.com.au) $
 
 		<!--- send export file --->
 		<cfmail from="#form.sendTo#" to="#form.sendTo#" subject="#form.contentType# export" mimeattach="#filePath#">
-#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].exportAttached,"#form.contentType#")#		
+#application.rb.formatRBString("exportAttached","#form.contentType#")#		
 		</cfmail>
 		
 		<!--- success message --->
-		<cfoutput>#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].exportFileSent,"#form.sendTo#")#</cfoutput>
+		<cfoutput>#application.rb.formatRBString("exportFileSent","#form.sendTo#")#</cfoutput>
 		
 	</cfif>
 	
@@ -114,7 +114,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au) $
 				<table class="BorderTable" width="400" align="center">
 				<!--- contentType --->
 				<tr>
-					<td nowrap class="FormLabel">#application.adminBundle[session.dmProfile.locale].contentType# </span></td>
+					<td nowrap class="FormLabel">#apapplication.rb.getResource("contentType")# </span></td>
 					<td width="100%">
 						<!--- sort structure by Key name --->
 						<cfset listofKeys = structKeyList(application.types)>
@@ -129,12 +129,12 @@ $Developer: Brendan Sisson (brendan@daemon.com.au) $
 				</tr>
 				<!--- send xml file details --->
 				<tr>
-					<td nowrap class="FormLabel">#application.adminBundle[session.dmProfile.locale].sendTo#</span></td>
+					<td nowrap class="FormLabel">#apapplication.rb.getResource("sendTo")#</span></td>
 					<td width="100%"><input type="text" name="sendTo" class="formtextbox" maxlength="255" size="45"></td>
 				</tr>
 				<!--- export type --->
 				<tr>
-					<td nowrap class="FormLabel">#application.adminBundle[session.dmProfile.locale].exportAs#</span></td>
+					<td nowrap class="FormLabel">#apapplication.rb.getResource("exportAs")#</span></td>
 					<td width="100%">
 						<select name="exportType">
 							<option value="xml">XML
@@ -146,7 +146,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au) $
 				</tr>
 				</table>
 			</div>
-			<input type="submit" name="submit" value="#application.adminBundle[session.dmProfile.locale].export#" class="normalbttnstyle" style="margin-left:30px;">
+			<input type="submit" name="submit" value="#apapplication.rb.getResource("export")#" class="normalbttnstyle" style="margin-left:30px;">
 		</form>	
 		</cfoutput>
 	</cfif>

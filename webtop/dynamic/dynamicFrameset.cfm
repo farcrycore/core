@@ -7,7 +7,7 @@
 
 <html dir="#session.writingDir#" lang="#session.userLanguage#">
 <head>
-	<title>#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].appnameAdministration,"#application.applicationname#")# </title>
+	<title>#application.rb.formatRBString("appnameAdministration","#application.applicationname#")# </title>
 	<link href="#application.url.farcry#/css/admin.css" rel="stylesheet" type="text/css">
 	<meta content="text/html; charset=UTF-8" http-equiv="content-type">
 </head>

@@ -8,7 +8,7 @@
 
 <body>
 
-<div>#application.adminBundle[session.dmProfile.locale].dynamicHomePage#</div>
+<div>#apapplication.rb.getResource("dynamicHomePage")#</div>
 
 </body>
 </html>

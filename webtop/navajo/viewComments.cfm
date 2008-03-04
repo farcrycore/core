@@ -19,11 +19,11 @@
 		<br />
 		<!--- i18n: double check logic, geez i HATE compound rb string --->
 		<cfif stObj.label eq "">
-		#application.adminBundle[session.dmProfile.locale].comments#
+		#apapplication.rb.getResource("comments")#
 		<cfelseif stObj.label neq "" AND (NOT isdefined("stObj.versionId") OR stObj.versionID eq "")>
-		#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].commentsFor,"#stObj.label#")#
+		#application.rb.formatRBString("commentsFor","#stObj.label#")#
 		<cfelseif stObj.label neq "" AND (isdefined("stObj.versionId") AND stObj.versionID eq "")>
-		#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].draftCommentsFor,"#stObj.label#")#
+		#application.rb.formatRBString("draftCommentsFor","#stObj.label#")#
 		</cfif>
 		</td>
 		<td align="left"><a href="##" title="Close Window" onclick="window.close();">[X]</a></td>
@@ -34,7 +34,7 @@
 	<cfif isdefined("stObj.status") AND trim(stObj.commentLog) neq "">
         <cfoutput>#wrap(paragraphFormat2(stObj.commentLog),70)#</cfoutput>
     <cfelse>
-        <cfoutput><strong>#application.adminBundle[session.dmProfile.locale].noComments#</strong></cfoutput>
+        <cfoutput><strong>#apapplication.rb.getResource("noComments")#</strong></cfoutput>
     </cfif>
 		</td>
 	</tr>

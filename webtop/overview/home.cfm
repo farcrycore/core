@@ -184,14 +184,14 @@ function Mod(a, b) {
 <cfinclude template="/farcry/core/webtop/includes/overviewStatusTable.cfm">
 <!--- get all locked objects --->
 <cfif isDefined("qLockedObjects") AND isQuery(qLockedObjects) AND qLockedObjects.recordCount gt 0>
-<h3>#application.adminBundle[session.dmProfile.locale].lockedObjects#</h3>
+<h3>#apapplication.rb.getResource("lockedObjects")#</h3>
 <br class="clear" />
 <table class="table-2" cellspacing="0" id="table_#tableStatus_name#">
 <tr>
-    <th scope="col">#application.adminBundle[session.dmProfile.locale].object#</th>
-    <th scope="col">#application.adminBundle[session.dmProfile.locale].type#</th>
-    <th scope="col">#application.adminBundle[session.dmProfile.locale].createdBy#</th>
-    <th scope="col">#application.adminBundle[session.dmProfile.locale].lastUpdated#</th>
+    <th scope="col">#apapplication.rb.getResource("object")#</th>
+    <th scope="col">#apapplication.rb.getResource("type")#</th>
+    <th scope="col">#apapplication.rb.getResource("createdBy")#</th>
+    <th scope="col">#apapplication.rb.getResource("lastUpdated")#</th>
     <th scope="col">&nbsp;</th>
 </tr><cfloop query="qLockedObjects" startrow="1" endrow="#url.lockedEndRow#">
 <tr<cfif (qLockedObjects.currentrow MOD 2)> class="alt"</cfif>>
@@ -209,14 +209,14 @@ function Mod(a, b) {
     <td>#qLockedObjects.typename#</td>
     <td>#qLockedObjects.createdBy#</td>
     <td>#application.thisCalendar.i18nDateFormat(qLockedObjects.datetimelastupdated,session.dmProfile.locale,application.longF)#</td>
-    <td><a href="#application.url.farcry#/navajo/unlock.cfm?objectid=#qLockedObjects.objectid#&typename=#qLockedObjects.typename#&return=home" target="_parent">[#application.adminBundle[session.dmProfile.locale].unlock#]</a></td>
+    <td><a href="#application.url.farcry#/navajo/unlock.cfm?objectid=#qLockedObjects.objectid#&typename=#qLockedObjects.typename#&return=home" target="_parent">[#apapplication.rb.getResource("unlock")#]</a></td>
 </tr></cfloop>
 </table>
 <!--- show link to all locked Objects --->
 <cfif qLockedObjects.recordcount gt url.lockedEndRow>
-    <ul><li><strong><a href="#application.url.farcry#/overview/home.cfm?lockedEndRow=#qLockedObjects.recordcount#">#application.adminBundle[session.dmProfile.locale].showAll#</a></strong></li></ul>
+    <ul><li><strong><a href="#application.url.farcry#/overview/home.cfm?lockedEndRow=#qLockedObjects.recordcount#">#apapplication.rb.getResource("showAll")#</a></strong></li></ul>
 <cfelseif url.lockedEndRow neq 5>
-    <ul><li><strong><a href="#application.url.farcry#/overview/home.cfm?lockedEndRow=5">#application.adminBundle[session.dmProfile.locale].showRecent5#</a></strong></li></ul>
+    <ul><li><strong><a href="#application.url.farcry#/overview/home.cfm?lockedEndRow=5">#apapplication.rb.getResource("showRecent5")#</a></strong></li></ul>
 </cfif>
 </cfif>
 </cfoutput>

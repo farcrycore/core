@@ -34,7 +34,7 @@
 					<cfset permission = true>
 				<cfelse>
 					<cfset permission = false>
-					<cfset message = "#application.adminBundle[session.dmProfile.locale].noPermissionUnlockAll#">
+					<cfset message = "#apapplication.rb.getResource("noPermissionUnlockAll")#">
 				</cfif>
 			</cfif>
 			<!--- check permission --->
@@ -50,7 +50,7 @@
 	</cfloop>
 	<!--- set return message --->
 	<cfif count gt 0>
-		<cfset message = "#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].objectsUnlocked,'#count#')#">
+		<cfset message = "#application.rb.formatRBString("objectsUnlocked",'#count#')#">
 	</cfif>
 	<!--- return to dynamic page --->
 	<cflocation url="#application.url.farcry#/navajo/GenericAdmin.cfm?typename=#stObj.typename#&msg=#message#" addtoken="no">

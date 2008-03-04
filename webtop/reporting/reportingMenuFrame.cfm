@@ -56,30 +56,30 @@ $out:$
 		<cfcase value="stats">	
 			<!--- permission check --->
 			<cfif iStatsTab eq 1>
-				<div class="frameMenuTitle">#application.adminBundle[session.dmProfile.locale].general#</div>
-				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="statsOverview.cfm" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].overviewReport#</a></div>
-				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="statsMostPopular.cfm" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].viewSummary#</a></div>
-				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="statsReferer.cfm" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].refererSummary#</a></div>
-				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="statsLocale.cfm" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].localeSummary#</a></div>
-				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="statsOS.cfm" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].OSsummary#</a></div>
-				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="statsBrowsers.cfm" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].browserSummary#</a></div>		
+				<div class="frameMenuTitle">#apapplication.rb.getResource("general")#</div>
+				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="statsOverview.cfm" class="frameMenuItem" target="editFrame">#apapplication.rb.getResource("overviewReport")#</a></div>
+				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="statsMostPopular.cfm" class="frameMenuItem" target="editFrame">#apapplication.rb.getResource("viewSummary")#</a></div>
+				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="statsReferer.cfm" class="frameMenuItem" target="editFrame">#apapplication.rb.getResource("refererSummary")#</a></div>
+				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="statsLocale.cfm" class="frameMenuItem" target="editFrame">#apapplication.rb.getResource("localeSummary")#</a></div>
+				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="statsOS.cfm" class="frameMenuItem" target="editFrame">#apapplication.rb.getResource("OSsummary")#</a></div>
+				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="statsBrowsers.cfm" class="frameMenuItem" target="editFrame">#apapplication.rb.getResource("browserSummary")#</a></div>		
 				
-				<div class="frameMenuTitle">#application.adminBundle[session.dmProfile.locale].sessions#</div>
-				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="statsVisitors.cfm" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].sessionSummary#</a></div>
-				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="statsVisitorPaths.cfm" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].sessionPath#s</a></div>
-				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="statsWhosOn.cfm" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].whoOnNow#</a></div>
+				<div class="frameMenuTitle">#apapplication.rb.getResource("sessions")#</div>
+				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="statsVisitors.cfm" class="frameMenuItem" target="editFrame">#apapplication.rb.getResource("sessionSummary")#</a></div>
+				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="statsVisitorPaths.cfm" class="frameMenuItem" target="editFrame">#apapplication.rb.getResource("sessionPath")#s</a></div>
+				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="statsWhosOn.cfm" class="frameMenuItem" target="editFrame">#apapplication.rb.getResource("whoOnNow")#</a></div>
 				
-				<div class="frameMenuTitle">#application.adminBundle[session.dmProfile.locale].keyWordSearch#</div>
+				<div class="frameMenuTitle">#apapplication.rb.getResource("keyWordSearch")#</div>
 				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="statsGoogle.cfm" class="frameMenuItem" target="editFrame">Google</a></div>
 				
-				<div class="frameMenuTitle">#application.adminBundle[session.dmProfile.locale].inSiteSearches#</div>
-				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="statsSearches.cfm" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].recentSearches#</a></div>
-				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="statsSearchesNoResults.cfm" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].noResultSearches#</a></div>
-				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="statsSearchesMostPopular.cfm" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].mostPopularSearches#</a></div>
+				<div class="frameMenuTitle">#apapplication.rb.getResource("inSiteSearches")#</div>
+				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="statsSearches.cfm" class="frameMenuItem" target="editFrame">#apapplication.rb.getResource("recentSearches")#</a></div>
+				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="statsSearchesNoResults.cfm" class="frameMenuItem" target="editFrame">#apapplication.rb.getResource("noResultSearches")#</a></div>
+				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="statsSearchesMostPopular.cfm" class="frameMenuItem" target="editFrame">#apapplication.rb.getResource("mostPopularSearches")#</a></div>
 				
 				<cfif iDeveloper eq 1>
-					<div class="frameMenuTitle">#application.adminBundle[session.dmProfile.locale].maintenance#</div>
-					<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="statsClear.cfm" class="frameMenuItem" target="editFrame" onClick="return confirm('#application.adminBundle[session.dmProfile.locale].confirmDeleteAllRecs#');">#application.adminBundle[session.dmProfile.locale].clearStatsLog#</a></div>
+					<div class="frameMenuTitle">#apapplication.rb.getResource("maintenance")#</div>
+					<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="statsClear.cfm" class="frameMenuItem" target="editFrame" onClick="return confirm('#apapplication.rb.getResource("confirmDeleteAllRecs")#');">#apapplication.rb.getResource("clearStatsLog")#</a></div>
 				</cfif>
 			</cfif>
 		</cfcase>
@@ -87,14 +87,14 @@ $out:$
 		<cfcase value="audit">
 			<!--- permission check --->
 			<cfif iAuditTab eq 1>
-				<div class="frameMenuTitle">#application.adminBundle[session.dmProfile.locale].loginActivity#</div>
-				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="auditLogins.cfm" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].allLogins#</a></div>
-				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="auditFailedLogins.cfm" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].failedLogins#</a></div>
-				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="auditUserActivity.cfm?graph=day" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].dailyUserLoginActivity#</a></div>
-				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="auditUserActivity.cfm?graph=week" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].weeklyUserLoginActivity#</a></div>
+				<div class="frameMenuTitle">#apapplication.rb.getResource("loginActivity")#</div>
+				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="auditLogins.cfm" class="frameMenuItem" target="editFrame">#apapplication.rb.getResource("allLogins")#</a></div>
+				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="auditFailedLogins.cfm" class="frameMenuItem" target="editFrame">#apapplication.rb.getResource("failedLogins")#</a></div>
+				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="auditUserActivity.cfm?graph=day" class="frameMenuItem" target="editFrame">#apapplication.rb.getResource("dailyUserLoginActivity")#</a></div>
+				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="auditUserActivity.cfm?graph=week" class="frameMenuItem" target="editFrame">#apapplication.rb.getResource("weeklyUserLoginActivity")#</a></div>
 				
-				<div class="frameMenuTitle">#application.adminBundle[session.dmProfile.locale].userActivitiy#</div>
-				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="auditUser.cfm" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].userActivitiy#</a></div>
+				<div class="frameMenuTitle">#apapplication.rb.getResource("userActivitiy")#</div>
+				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="auditUser.cfm" class="frameMenuItem" target="editFrame">#apapplication.rb.getResource("userActivitiy")#</a></div>
 			</cfif>
 		</cfcase>
 	</cfswitch>

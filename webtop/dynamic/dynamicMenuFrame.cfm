@@ -69,18 +69,18 @@ $out:$
 		<cfcase value="general">
 			<!--- permission check --->
 			<cfif iContentTab eq 1>
-				<div class="frameMenuTitle">#application.adminBundle[session.dmProfile.locale].dynamicContent#</div>
+				<div class="frameMenuTitle">#apapplication.rb.getResource("dynamicContent")#</div>
 				<cfif iNews eq 1>
-					<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="#application.url.farcry#/navajo/GenericAdmin.cfm?typename=dmNews" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].news#</a></div>
+					<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="#application.url.farcry#/navajo/GenericAdmin.cfm?typename=dmNews" class="frameMenuItem" target="editFrame">#apapplication.rb.getResource("news")#</a></div>
 				</cfif>
 				<cfif iFact eq 1>
-					<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="#application.url.farcry#/navajo/GenericAdmin.cfm?typename=dmFacts" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].facts#</a></div>				
+					<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="#application.url.farcry#/navajo/GenericAdmin.cfm?typename=dmFacts" class="frameMenuItem" target="editFrame">#apapplication.rb.getResource("facts")#</a></div>				
 				</cfif>
 				<cfif iLink eq 1>					
-					<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="#application.url.farcry#/navajo/GenericAdmin.cfm?typename=dmLink" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].links#</a></div>				
+					<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="#application.url.farcry#/navajo/GenericAdmin.cfm?typename=dmLink" class="frameMenuItem" target="editFrame">#apapplication.rb.getResource("links")#</a></div>				
 				</cfif>
 				<cfif iEvent eq 1>
-					<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="#application.url.farcry#/navajo/GenericAdmin.cfm?typename=dmEvent" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].events#</a></div>				
+					<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="#application.url.farcry#/navajo/GenericAdmin.cfm?typename=dmEvent" class="frameMenuItem" target="editFrame">#apapplication.rb.getResource("events")#</a></div>				
 				</cfif>
 			</cfif>
 		</cfcase>
@@ -88,17 +88,17 @@ $out:$
 		<cfcase value="export">
 			<!--- permission check --->
 			<cfif iExportTab eq 1>		
-				<div class="frameMenuTitle">#application.adminBundle[session.dmProfile.locale].export#</div>
-				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="xmlFeedList.cfm" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].RSSFeeds#</a></div>		
-				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="export.cfm" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].export#</a></div>		
+				<div class="frameMenuTitle">#apapplication.rb.getResource("export")#</div>
+				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="xmlFeedList.cfm" class="frameMenuItem" target="editFrame">#apapplication.rb.getResource("RSSFeeds")#</a></div>		
+				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="export.cfm" class="frameMenuItem" target="editFrame">#apapplication.rb.getResource("export")#</a></div>		
 			</cfif>
 		</cfcase>
 		
 		<cfcase value="categorisation">
 			<!--- permission check --->
 			<cfif iCategorisationTab eq 1>
-				<div class="frameMenuTitle">#application.adminBundle[session.dmProfile.locale].categorization#</div>
-				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="../navajo/keywords/hierarchyedit.cfm" class="frameMenuItem" target="editFrame">#application.adminBundle[session.dmProfile.locale].manageKeywords#</a></div>		
+				<div class="frameMenuTitle">#apapplication.rb.getResource("categorization")#</div>
+				<div class="frameMenuItem"><span class="frameMenuBullet">&raquo;</span> <a href="../navajo/keywords/hierarchyedit.cfm" class="frameMenuItem" target="editFrame">#apapplication.rb.getResource("manageKeywords")#</a></div>		
 			</cfif>
 		</cfcase>
 	</cfswitch>

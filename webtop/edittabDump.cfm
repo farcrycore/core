@@ -29,7 +29,7 @@ $DEVELOPER:Brendan Sisson (brendan@daemon.com.au)$
 
 <sec:CheckPermission error="true" permission="ObjectDumpTab">
 	<cfoutput>
-	<h3>#application.adminBundle[session.dmProfile.locale].objectDump#</h3>
+	<h3>#apapplication.rb.getResource("objectDump")#</h3>
 	</cfoutput>
 	
 	<!--- get object details and dump results --->
