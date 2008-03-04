@@ -655,6 +655,9 @@ default handlers
 		<cfargument name="dsn" required="No" default="#application.dsn#"> 
 		<cfargument name="stobj" required="No" default="#StructNew()#"> 
 		
+		<cfset var stCurrentObject = structNew() />
+		<cfset var bSessionOnly = false />
+		
 		<!--- Determine who the record is being locked/unlocked by --->		
 		<cfif not len(arguments.lockedBy)>
 			<cfif isDefined("session.dmSec.authentication.userlogin") AND isDefined("session.dmSec.authentication.userDirectory")>
@@ -666,19 +669,16 @@ default handlers
 		
 		
 		<!--- if the properties struct not passed in grab the instance --->
-		<cfif StructIsEmpty(arguments.stObj)>
-			<!--- Default Objects should not be locked as this will create a record in the database. --->
-			<cfif structKeyExists(instance, "stobj") AND (NOT structKeyExists(instance.stobj, "bDefaultObject") OR NOT instance.stobj.bDefaultObject)>
-				<cfset instance.stobj.locked=arguments.locked>
-				<cfif arguments.locked>
-					<cfset instance.stobj.lockedby=arguments.lockedby>
-				<cfelse>
-					<cfset instance.stobj.lockedby="">
-				</cfif>
-				<!--- call fourq.setdata() (ie super) to bypass prepop of sys attributes by types.setdata() --->
-				<cfset setdata(instance.stobj, arguments.lockedby, 0)>
+		<cfif StructIsEmpty(arguments.stObj) AND structKeyExists(instance, "stobj")>
+			<cfset arguments.stobj = instance.obj />
+		</cfif>
+		
+		<cfif not StructIsEmpty(arguments.stObj)>
+			<!--- We need to get the object from memory to see if it is a default object. If so, we are only saving to the session. --->
+			<cfset stCurrentObject = getData(stobj.objectid) />
+			<cfif structKeyExists(stCurrentObject, "bDefaultObject") AND stCurrentObject.bDefaultObject>
+				<cfset bSessionOnly = true />
 			</cfif>
-		<cfelseif NOT structKeyExists(arguments.stobj, "bDefaultObject") or NOT arguments.stobj.bDefaultObject >
 			<cfset arguments.stobj.locked = arguments.locked>
 			<cfif arguments.locked>
 				<cfset arguments.stobj.lockedby=arguments.lockedby>
@@ -686,10 +686,10 @@ default handlers
 				<cfset arguments.stobj.lockedby="">
 			</cfif>
 			<!--- call fourq.setdata() (ie super) to bypass prepop of sys attributes by types.setdata() --->
-			<cfset setdata(stProperties="#arguments.stobj#", user="#arguments.lockedby#", bAudit="#arguments.bAudit#", dsn="#arguments.dsn#", bAfterSave="false")>
+			<cfset setdata(stProperties="#arguments.stobj#", user="#arguments.lockedby#", bAudit="#arguments.bAudit#", dsn="#arguments.dsn#", bAfterSave="false", bSessionOnly="#bSessionOnly#")>
+
 		</cfif>
 
-	
 		<!--- log event --->
 		<cfif arguments.bAudit and isDefined("instance.stobj.objectid")>
 			<farcry:logevent object="#arguments.stobj.objectid#" type="types" event="lock" notes="Locked: #yesnoformat(arguments.locked)#" />
@@ -1009,8 +1009,8 @@ default handlers
 		<cfset var qMetadata = application.types[stobj.typename].qMetadata />
 		
 		
-		
-		
+		<!--- We lock the item at the begining of the edit. Removing the wizard or exiting out of a processform will unlock --->
+		<cfset setLock(locked=true,stobj=stobj) />
 		
 		<!-------------------------------------------------- 
 		WIZARD:
@@ -1116,9 +1116,13 @@ default handlers
 			---------------------------------------->
 			<ft:processForm action="Save" Exit="true">
 				<ft:processFormObjects typename="#stobj.typename#" />
+				
+				<cfset setLock(locked=false,stobj=stobj) />
 			</ft:processForm>
 
-			<ft:processForm action="Cancel" Exit="true" />
+			<ft:processForm action="Cancel" Exit="true">
+				<cfset setLock(locked=false,stobj=stobj) />
+			</ft:processForm>
 			
 			
 			
