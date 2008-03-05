@@ -102,12 +102,24 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
     </cffunction>
 
     <cffunction name="getProfile" access="PUBLIC" hint="Retrieve profile data for given username">
-        <cfargument name="userName" type="string" required="yes">
+        <cfargument name="userName" type="string" required="yes" hint="The username unique for the user directory.">
+        <cfargument name="ud" type="string" required="no" default="clientUD" hint="The user directory to search for the profile.">
 
+		<cfset var stobj = structNew() />
+		<cfset var combinedUsername = "#arguments.username#_#arguments.ud#" />
+		
+		<!--- Use the  --->
 		<cfquery name="qProfile" datasource="#application.dsn#">
 		SELECT objectID FROM #application.dbowner#dmProfile
-		WHERE UPPER(userName) = '#UCase(arguments.userName)#'
+		WHERE UPPER(userName) = '#UCase(combinedUsername)#'
 		</cfquery>
+		
+		<cfif not qProfile.recordCount>
+			<cfquery name="qProfile" datasource="#application.dsn#">
+			SELECT objectID FROM #application.dbowner#dmProfile
+			WHERE UPPER(userName) = '#UCase(arguments.userName)#'
+			</cfquery>
+		</cfif>
 		
 		<cfif qProfile.recordCount>
 		    <cfset stObj = this.getData(qProfile.objectID)>
