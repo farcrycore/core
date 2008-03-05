@@ -28,14 +28,9 @@
 <!--- optional attributes --->
 <cfparam name="attributes.objectid" default="" />
 <cfparam name="attributes.typename" default="" />
-<cfparam name="attributes.method" default="display" type="string">
-<cfparam name="attributes.lmethods" default="display" type="string">
+<cfparam name="attributes.method" default="" type="string" />
 <cfparam name="attributes.loginpath" default="#application.url.farcry#/login.cfm?returnUrl=#URLEncodedFormat(cgi.script_name&'?'&cgi.query_string)#" type="string">
 
-<!--- make sure that the attributes.method variable is not empty --->
-<cfif not len(attributes.method)>
-	<cfset attributes.method = "display">
-</cfif>
 
 
 <!--- Handle options for passing object/type in --->
@@ -45,7 +40,7 @@
 <cfif not len(attributes.objectid) and structkeyexists(url,"objectid")>
 	<cfset attributes.objectid = url.objectid />
 </cfif>
-<cfif not len(attributes.objectid) and structkeyexists(url,"view")>
+<cfif structkeyexists(url,"view")>
 	<cfset attributes.method = url.view />
 </cfif>
 
@@ -181,7 +176,7 @@
 	<!--- determine display method for object --->
 	<cfset request.stObj = stObj>
 
-	<cfif attributes.method neq "display" AND  attributes.lmethods contains attributes.method>
+	<cfif len(attributes.method)>
 	
 		<!--- If a method has been passed in deliberately and is allowed use this --->
 		<cftrace var="attributes.method" text="Passed in attribute method used" />
@@ -242,7 +237,7 @@
 <cfelse>
 
 	<!--- Handle type webskins --->
-	<sec:CheckPermission webskinpermission="#attributes.method#" result="bView" />
+	<sec:CheckPermission type="#attributes.typename#" webskinpermission="#attributes.method#" result="bView" />
 	
 	<cfif bView>
 		<skin:view typename="#attributes.typename#" webskin="#attributes.method#" />
