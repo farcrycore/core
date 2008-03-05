@@ -3,6 +3,11 @@
 <cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
 <cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
 
+<!--- run once only --->
+<cfif thistag.executionmode eq "end">
+	<cfexit method="exittag" />
+</cfif>
+
 <cfparam name="attributes.objectId" default="">
 <cfparam name="attributes.stObject" default="#structNew()#">
 <cfparam name="attributes.r_objectId" default="">
