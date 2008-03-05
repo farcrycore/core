@@ -33,8 +33,8 @@ $Developer: Matthew Bryant (mat@daemon.com.au) $
 	<cfparam name="attributes.htmlPrevious" default="&lt;">
 	<cfparam name="attributes.htmlNext" default="&gt;">
 	<cfparam name="attributes.htmlLast" default="&raquo;">
-	<cfparam name="attributes.bShowResultTotal" default="true" type="boolean" />
-	<cfparam name="attributes.bShowPageDropdown" default="true" type="boolean" />
+	<cfparam name="attributes.bShowResultTotal" default="false" type="boolean" /><!--- Shows the details of the current rendered records instead of the page details --->
+	<cfparam name="attributes.bShowPageDropdown" default="false" type="boolean" /><!--- uses a dropdown instead of links. --->
 	<cfparam name="attributes.paginationID" default="" />	
 	<cfparam name="attributes.CurrentPage" default="0" />
 	<cfparam name="attributes.maxPages" default="0" type="numeric">
@@ -44,8 +44,9 @@ $Developer: Matthew Bryant (mat@daemon.com.au) $
 	<cfparam name="attributes.submissionType" default="url" type="string">
 	<cfparam name="attributes.actionURL" default="" type="string">
 	
-	<cfparam name="attributes.scrollPrefix" default="<div class=""ruleContentVanilla""><div class=""ruleListPagination"">" type="string" />
-	<cfparam name="attributes.scrollSuffix" default='</div></div><br class="clearer" />' type="string" />
+	<cfparam name="attributes.scrollPrefix" default="" type="string" />
+	<cfparam name="attributes.scrollSuffix" default="" type="string" />
+	<cfparam name="attributes.renderType" default="list" type="string" />
 	
 	
 	<cfif not isDefined("attributes.qRecordSet") or not isQuery(attributes.qRecordSet)>
@@ -131,10 +132,10 @@ $Developer: Matthew Bryant (mat@daemon.com.au) $
 				
 	<cfsavecontent variable="caller.paginationHTML">
 		<cfif bShowPaginate>
-			<cfoutput>#DisplayPaginationScroll(actionURL="#attributes.actionURL#", bShowResultTotal="#attributes.bShowResultTotal#",bShowPageDropdown="#attributes.bShowPageDropdown#")#</cfoutput>
+			<cfoutput>#DisplayPaginationScroll(actionURL="#attributes.actionURL#", bShowResultTotal="#attributes.bShowResultTotal#",bShowPageDropdown="#attributes.bShowPageDropdown#", renderType="#attributes.renderType#")#</cfoutput>
 			
 		<cfelse>
-			
+					
 			<cfif attributes.bShowResultTotal>
 				<cfif attributes.totalRecords GT 0>
 					<cfoutput><div class="pageDetails"><h2>Displaying <strong>1-#attributes.totalRecords#</strong> of <strong>#attributes.totalRecords#</strong> results</h2></div></cfoutput>
@@ -190,7 +191,8 @@ user defined functions
 	
 	<cfparam name="arguments.actionURL" default="" type="string" />
 	<cfparam name="arguments.bShowResultTotal" default="true" type="boolean" />
-	<cfparam name="arguments.bShowPageDropdown" default="true" type="boolean" />
+	<cfparam name="arguments.bShowPageDropdown" default="false" type="boolean" />
+	<cfparam name="arguments.renderType" default="list" type="string" />
 	
 	
 	
@@ -222,76 +224,148 @@ user defined functions
 	</cfif>
 
 	<cfif pTotalPages GT 1>
-		<cfif not isDefined("request.paginationpageInputFieldRendered")>
-			<skin:htmlHead library="prototypelite" />
-			
-			<skin:htmlHead>
-				<cfoutput>
-				<script type="text/javascript">
-				function paginationSubmission (page) {
-					<cfif attributes.submissionType EQ "form">
-						$('paginationpage').value=page;
-						$('#Request.farcryForm.Name#').submit();
-					<cfelseif attributes.submissionType eq "url">
-						window.location = '#arguments.actionURL#&page=' + page;
-					<cfelse>
-						// No js code nothing
-					</cfif>
-				}
-				</script>
-				</cfoutput>
-			</skin:htmlHead>
-			
-			<cfset request.paginationpageInputFieldRendered = 1 />
-		</cfif>			
+		<skin:htmlHead library="prototypelite" />
+		
+		<skin:htmlHead id="paginationpageInputFieldRendered">
+			<cfoutput>
+			<script type="text/javascript">
+			function paginationSubmission (page) {
+				<cfif attributes.submissionType EQ "form">
+					$('paginationpage').value=page;
+					$('#Request.farcryForm.Name#').submit();
+				<cfelseif attributes.submissionType eq "url">
+					window.location = '#arguments.actionURL#&page=' + page;
+				<cfelse>
+					// No js code nothing
+				</cfif>
+			}
+			</script>
+			</cfoutput>
+		</skin:htmlHead>
 	</cfif>
 	
 	<cfsavecontent variable="scrollinnards">
+	
 		<!--- required for JS pagination --->
 		<cfoutput><input type="hidden" name="paginationpage" id="paginationpage" value="" /></cfoutput>
-		
-		<cfif arguments.bShowResultTotal>
-			<cfoutput><div class="pageDetails"><h2>Displaying <strong>#fromRecord#-#toRecord#</strong> of <strong>#attributes.totalRecords#</strong> results</h2></div></cfoutput>
-		</cfif>
-		
-		<cfoutput><div class="pageList"><ul></cfoutput>			
-		<cfif attributes.currentPage EQ 1>
-			<cfif pTotalPages GT attributes.pageLinks>
-				<cfoutput><li><a href="javascript:void(0)">#attributes.htmlFirst#</a></li></cfoutput>
-			</cfif>
-			<cfoutput><li><a href="javascript:void(0)">#attributes.htmlPrevious#</a></li></cfoutput>
-		<cfelse>
-			<cfif pTotalPages GT attributes.pageLinks>
-				<cfoutput><li><a href="#arguments.actionURL#&amp;page=1" #IIF(attributes.submissionType neq "link",DE('onclick="javascript:paginationSubmission(1);return false;"'),DE(""))#>#attributes.htmlFirst#</a></li></cfoutput>
-		   	</cfif>
-		   	<cfoutput><li><a href="#arguments.actionURL#&amp;page=#attributes.currentPage-1#" #IIF(attributes.submissionType neq "link",DE('onclick="javascript:paginationSubmission(#attributes.currentPage-1#);return false;"'),DE(""))#>#attributes.htmlPrevious#</a></li></cfoutput>
-		</cfif>		
-		
-		<cfloop from="#pFirstPage#" to="#pLastPage#" index="i">
-		    <cfif attributes.currentPage EQ i>
-				<cfoutput><li class="active"><a href="javascript:void(0)">#i#</a></li></cfoutput>
-		   <cfelse>
-		   	<cfoutput><li><a href="#arguments.actionURL#&amp;page=#i#" #IIF(attributes.submissionType neq "link",DE('onclick="javascript:paginationSubmission(#i#);return false;"'),DE(""))#>#i#</a></li></cfoutput>	   
-		    </cfif>
-		</cfloop>
 	
-		<cfif attributes.currentPage * attributes.recordsPerPage LT attributes.totalRecords>
+		<cfswitch expression="#arguments.renderType#">
 		
-		   	<cfoutput><li><a href="#arguments.actionURL#&amp;page=#attributes.currentPage+1#" #IIF(attributes.submissionType neq "link",DE('onclick="javascript:paginationSubmission(#attributes.currentPage+1#);return false;"'),DE(""))#>#attributes.htmlNext#</a></li></cfoutput>
-		   <cfif pTotalPages GT attributes.pageLinks>
-			   <cfoutput><li><a href="#arguments.actionURL#&amp;page=#pTotalPages#" #IIF(attributes.submissionType neq "link",DE('onclick="javascript:paginationSubmission(#pTotalPages#);return false;"'),DE(""))#>#attributes.htmlLast#</a></li></cfoutput>
-		   	</cfif>
-		<cfelse>
-			<cfoutput><li><a href="javascript:void(0)">#attributes.htmlNext#</a></li></cfoutput>
-			<cfif pTotalPages GT attributes.pageLinks>
-				<cfoutput><li><a href="javascript:void(0)">#attributes.htmlLast#</a></li></cfoutput>
-		   	</cfif>
-		</cfif>
+			<cfcase value="inline">
+				
+				<cfoutput><div class="pagination"></cfoutput>			
+			
+					<cfoutput><p></cfoutput>
+					
+						<cfif attributes.currentPage EQ 1>
+							<cfif pTotalPages GT attributes.pageLinks>
+								<cfoutput><span><strong>#attributes.htmlFirst#</strong></span></cfoutput>
+							</cfif>
+							<cfoutput><span><strong>#attributes.htmlPrevious#</strong></span></cfoutput>
+						<cfelse>
+							<cfif pTotalPages GT attributes.pageLinks>
+								<cfoutput><a href="#arguments.actionURL#&amp;page=1" #IIF(attributes.submissionType neq "link",DE('onclick="javascript:paginationSubmission(1);return false;"'),DE(""))#>#attributes.htmlFirst#</a></cfoutput>
+						   	</cfif>
+						   	<cfoutput><a href="#arguments.actionURL#&amp;page=#attributes.currentPage-1#" #IIF(attributes.submissionType neq "link",DE('onclick="javascript:paginationSubmission(#attributes.currentPage-1#);return false;"'),DE(""))#>#attributes.htmlPrevious#</a></cfoutput>
+						</cfif>		
+						
+						<cfif arguments.bShowPageDropdown>
+							<cfoutput>
+							<select name="paginationDropdown" onchange="javascript:paginationSubmission(this.value);return false;">
+								<cfloop from="#pFirstPage#" to="#pLastPage#" index="i">
+									<option value="#i#" <cfif attributes.currentPage EQ i>selected</cfif> >&nbsp;#i#&nbsp;</option>
+								</cfloop>
+							</select>
+							</cfoutput>
+						<cfelse>
+							
+							<cfloop from="#pFirstPage#" to="#pLastPage#" index="i">
+							    <cfif attributes.currentPage EQ i>
+									<cfoutput><span>#i#</span></cfoutput>
+							   <cfelse>
+							   	<cfoutput><a href="#arguments.actionURL#&amp;page=#i#" #IIF(attributes.submissionType neq "link",DE('onclick="javascript:paginationSubmission(#i#);return false;"'),DE(""))#>#i#</a></cfoutput>	   
+							    </cfif>
+							</cfloop>
+						</cfif>
+
+
+					
+						<cfif attributes.currentPage * attributes.recordsPerPage LT attributes.totalRecords>
+						
+						   	<cfoutput><a href="#arguments.actionURL#&amp;page=#attributes.currentPage+1#" #IIF(attributes.submissionType neq "link",DE('onclick="javascript:paginationSubmission(#attributes.currentPage+1#);return false;"'),DE(""))#>#attributes.htmlNext#</a></cfoutput>
+						   <cfif pTotalPages GT attributes.pageLinks>
+							   <cfoutput><a href="#arguments.actionURL#&amp;page=#pTotalPages#" #IIF(attributes.submissionType neq "link",DE('onclick="javascript:paginationSubmission(#pTotalPages#);return false;"'),DE(""))#>#attributes.htmlLast#</a></cfoutput>
+						   	</cfif>
+						<cfelse>
+							<cfoutput><span>#attributes.htmlNext#</span></cfoutput>
+							<cfif pTotalPages GT attributes.pageLinks>
+								<cfoutput><span>#attributes.htmlLast#</span></cfoutput>
+						   	</cfif>
+						</cfif>
+				
+					<cfoutput><p></cfoutput>
 	
-		<cfoutput>
-			</ul>
-		</div>
-		</cfoutput>
+				
+					<cfif arguments.bShowResultTotal>
+						<cfoutput><h4>Displaying #fromRecord#-#toRecord# of #attributes.totalRecords# results</h4></cfoutput>
+					<cfelse>
+						<cfoutput><h4>Page #attributes.currentPage# of #pTotalPages#</h4></cfoutput>
+					</cfif>
+					
+								
+				<cfoutput>
+				</div>
+				</cfoutput>
+								
+			</cfcase>
+			
+			<cfdefaultcase>
+				
+				<cfif arguments.bShowResultTotal>
+					<cfoutput><div class="pageDetails"><h2>Displaying <strong>#fromRecord#-#toRecord#</strong> of <strong>#attributes.totalRecords#</strong> results</h2></div></cfoutput>
+				</cfif>
+				
+				<cfoutput><div class="pageList"><ul></cfoutput>			
+				<cfif attributes.currentPage EQ 1>
+					<cfif pTotalPages GT attributes.pageLinks>
+						<cfoutput><li><a href="javascript:void(0)">#attributes.htmlFirst#</a></li></cfoutput>
+					</cfif>
+					<cfoutput><li><a href="javascript:void(0)">#attributes.htmlPrevious#</a></li></cfoutput>
+				<cfelse>
+					<cfif pTotalPages GT attributes.pageLinks>
+						<cfoutput><li><a href="#arguments.actionURL#&amp;page=1" #IIF(attributes.submissionType neq "link",DE('onclick="javascript:paginationSubmission(1);return false;"'),DE(""))#>#attributes.htmlFirst#</a></li></cfoutput>
+				   	</cfif>
+				   	<cfoutput><li><a href="#arguments.actionURL#&amp;page=#attributes.currentPage-1#" #IIF(attributes.submissionType neq "link",DE('onclick="javascript:paginationSubmission(#attributes.currentPage-1#);return false;"'),DE(""))#>#attributes.htmlPrevious#</a></li></cfoutput>
+				</cfif>		
+				
+				<cfloop from="#pFirstPage#" to="#pLastPage#" index="i">
+				    <cfif attributes.currentPage EQ i>
+						<cfoutput><li class="active"><a href="javascript:void(0)">#i#</a></li></cfoutput>
+				   <cfelse>
+				   	<cfoutput><li><a href="#arguments.actionURL#&amp;page=#i#" #IIF(attributes.submissionType neq "link",DE('onclick="javascript:paginationSubmission(#i#);return false;"'),DE(""))#>#i#</a></li></cfoutput>	   
+				    </cfif>
+				</cfloop>
+			
+				<cfif attributes.currentPage * attributes.recordsPerPage LT attributes.totalRecords>
+				
+				   	<cfoutput><li><a href="#arguments.actionURL#&amp;page=#attributes.currentPage+1#" #IIF(attributes.submissionType neq "link",DE('onclick="javascript:paginationSubmission(#attributes.currentPage+1#);return false;"'),DE(""))#>#attributes.htmlNext#</a></li></cfoutput>
+				   <cfif pTotalPages GT attributes.pageLinks>
+					   <cfoutput><li><a href="#arguments.actionURL#&amp;page=#pTotalPages#" #IIF(attributes.submissionType neq "link",DE('onclick="javascript:paginationSubmission(#pTotalPages#);return false;"'),DE(""))#>#attributes.htmlLast#</a></li></cfoutput>
+				   	</cfif>
+				<cfelse>
+					<cfoutput><li><a href="javascript:void(0)">#attributes.htmlNext#</a></li></cfoutput>
+					<cfif pTotalPages GT attributes.pageLinks>
+						<cfoutput><li><a href="javascript:void(0)">#attributes.htmlLast#</a></li></cfoutput>
+				   	</cfif>
+				</cfif>
+			
+				<cfoutput>
+					</ul>
+				</div>
+				</cfoutput>
+			</cfdefaultcase>	
+		
+		</cfswitch>
 	</cfsavecontent>
 	
 	
