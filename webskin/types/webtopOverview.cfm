@@ -19,59 +19,59 @@ START WEBSKIN
 	
 <cfoutput>
 <dl class="dl-style1">
-	<dt>#apapplication.rb.getResource("objTitleLabel")#</dt>
+	<dt>#application.rb.getResource("objTitleLabel")#</dt>
 	<dd><cfif stobj.label NEQ "">
 		#stobj.label#<cfelse>
-		<i>#apapplication.rb.getResource("undefined")#</i></cfif>
+		<i>#application.rb.getResource("undefined")#</i></cfif>
 	</dd>
-	<dt>#apapplication.rb.getResource("objTypeLabel")#</dt>
+	<dt>#application.rb.getResource("objTypeLabel")#</dt>
 	<dd><cfif structKeyExists(application.types[stobj.typename],"displayname")>
 		#application.types[stobj.typename].displayname#<cfelse>
 		#stobj.typename#</cfif>
 	</dd><cfif StructKeyExists(stobj,"lnavidalias")>
 	<dt>Navigation Alias(es):</dt>
 	<dd>#stobj.lnavidalias#</dd></cfif>
-	<dt>#apapplication.rb.getResource("createdByLabel")#</dt>
+	<dt>#application.rb.getResource("createdByLabel")#</dt>
 	<dd>#stobj.createdby#</dd>
-	<dt>#apapplication.rb.getResource("dateCreatedLabel")#</dt>
+	<dt>#application.rb.getResource("dateCreatedLabel")#</dt>
 	<dd>#application.thisCalendar.i18nDateFormat(stobj.datetimecreated,session.dmProfile.locale,application.shortF)#</dd>
-	<dt>#apapplication.rb.getResource("lockingLabel")#</dt>
+	<dt>#application.rb.getResource("lockingLabel")#</dt>
 	<dd><cfif stobj.locked and stobj.lockedby eq session.security.userid>
 			<!--- locked by current user --->
 			<cfset tDT=application.thisCalendar.i18nDateTimeFormat(stobj.dateTimeLastUpdated,session.dmProfile.locale,application.mediumF)>
-		<span style="color:red">#application.rb.formatRBString("locked",tDT)#</span> <a href="navajo/unlock.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#">[#apapplication.rb.getResource("unLock")#]</a>
+		<span style="color:red">#application.rb.formatRBString("locked",tDT)#</span> <a href="navajo/unlock.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#">[#application.rb.getResource("unLock")#]</a>
 		<cfelseif stobj.locked>
 			<!--- locked by another user --->
 			<cfset subS=listToArray('#application.thisCalendar.i18nDateFormat(stobj.dateTimeLastUpdated,session.dmProfile.locale,application.mediumF)#,#stobj.lockedby#')>
 		#application.rb.formatRBString("lockedBy",subS)#
 			<!--- check if current user is a sysadmin so they can unlock --->
 			<cfif iDeveloperPermission eq 1><!--- show link to unlock --->
-			<a href="navajo/unlock.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#">[#apapplication.rb.getResource("unlockUC")#]</a>
+			<a href="navajo/unlock.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#">[#application.rb.getResource("unlockUC")#]</a>
 			</cfif><cfelse><!--- no locking --->
-			#apapplication.rb.getResource("unlocked")#</cfif>
+			#application.rb.getResource("unlocked")#</cfif>
 	</dd>
 	<cfif StructKeyExists(stobj, "datetimelastupdated")>
-		<dt>#apapplication.rb.getResource("lastUpdatedLabel")#</dt>
+		<dt>#application.rb.getResource("lastUpdatedLabel")#</dt>
 		<dd>#application.thisCalendar.i18nDateFormat(stobj.datetimelastupdated,session.dmProfile.locale,application.mediumF)#</dd>
 	</cfif>
 	<cfif StructKeyExists(stobj, "lastupdatedby")>
-		<dt>#apapplication.rb.getResource("lastUpdatedByLabel")#</dt>
+		<dt>#application.rb.getResource("lastUpdatedByLabel")#</dt>
 		<dd>#stobj.lastupdatedby#</dd>
 	</cfif>
 	<cfif StructKeyExists(stobj, "status")>	
-		<dt>#apapplication.rb.getResource("currentStatusLabel")#</dt>
+		<dt>#application.rb.getResource("currentStatusLabel")#</dt>
 		<dd>#stobj.status#</dd>
 	</cfif>
 	<cfif StructKeyExists(stobj, "displaymethod")>		
-		<dt>#apapplication.rb.getResource("templateLabel")#</dt>
+		<dt>#application.rb.getResource("templateLabel")#</dt>
 		<dd>#stobj.displaymethod#</dd>
 	</cfif>
 	<cfif StructKeyExists(stobj, "teaser")>
-		<dt>#apapplication.rb.getResource("teaserLabel")#</dt>
+		<dt>#application.rb.getResource("teaserLabel")#</dt>
 		<dd>#stobj.teaser#</dd>
 	</cfif>
 	<cfif StructKeyExists(stobj, "thumbnailimagepath") AND stobj.thumbnailimagepath NEQ "">
-		<dt>#apapplication.rb.getResource("thumbnailLabel")#</dt>
+		<dt>#application.rb.getResource("thumbnailLabel")#</dt>
 		<dd><img src="#application.url.webroot#/images/#stobj.thumbnail#"></dd>
 	</cfif>
 	<cfif iDeveloperPermission eq 1>

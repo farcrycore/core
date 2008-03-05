@@ -39,7 +39,7 @@ $in: $
 <cfoutput>
 <div style="padding: 5px; float: right; width: 150px; border: 1px ##333 solid;">
 <p>
-<b>#apapplication.rb.getResource("primaryNav")#</b><br>
+<b>#application.rb.getResource("primaryNav")#</b><br>
 </cfoutput>
 <cfoutput query="qPrimary">
 <a href="index.cfm?objectid=#qPrimary.objectid#">#qPrimary.objectName#</a><br>
@@ -47,7 +47,7 @@ $in: $
 <cfoutput>
 </p>
 <p>
-<b>#apapplication.rb.getResource("secondaryNav")#</b><br>
+<b>#application.rb.getResource("secondaryNav")#</b><br>
 </cfoutput>
 <cfoutput query="qSecondary">
 <a href="index.cfm?objectid=#qSecondary.objectid#">#qSecondary.objectName#</a><br>
@@ -55,7 +55,7 @@ $in: $
 <cfoutput>
 </p>
 <p>
-<b>#apapplication.rb.getResource("breadcrumb")#</b><br>
+<b>#application.rb.getResource("breadcrumb")#</b><br>
 </cfoutput>
 <cfoutput query="qAncestors">
 <a href="index.cfm?objectid=#qAncestors.objectid#">#qAncestors.objectName#</a><br>
@@ -65,7 +65,7 @@ $in: $
 </div>
 
 <div style="padding: 5px;">
-<h2>#apapplication.rb.getResource("teaser")#</h2>
+<h2>#application.rb.getResource("teaser")#</h2>
 <p>#stObj.Teaser#</p>
 </div>
 
@@ -75,7 +75,7 @@ $in: $
 </div>
 
 <div style="padding: 5px;">
-<cfdump var="#stObj#" label="#apapplication.rb.getResource("completeObjInstance")#" expand="no">
+<cfdump var="#stObj#" label="#application.rb.getResource("completeObjInstance")#" expand="no">
 </div>
 </cfoutput>
 

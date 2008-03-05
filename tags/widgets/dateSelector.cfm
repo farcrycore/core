@@ -113,11 +113,11 @@ $in: attribute -- description $
 	</select><br />
 	<cfif attributes.bShowTime>
 	<select name="#fieldNamePrefix#Hour" class="f-hours"><cfloop from="0" to="23" index="i">
-		<option value="#i#"<cfif Hour(selectedDate) EQ i> selected="selected"</cfif>>#i# #apapplication.rb.getResource("hrs")#</option></cfloop>
+		<option value="#i#"<cfif Hour(selectedDate) EQ i> selected="selected"</cfif>>#i# #application.rb.getResource("hrs")#</option></cfloop>
 	</select>
 
 	<select name="#fieldNamePrefix#Minutes" class="f-mins"><cfloop from="0" to="45" index="i" step="15">
-		<option value="#i#"<cfif Minute(selectedDate) EQ i> selected="selected"</cfif>>#i# #apapplication.rb.getResource("mins")#</option></cfloop>
+		<option value="#i#"<cfif Minute(selectedDate) EQ i> selected="selected"</cfif>>#i# #application.rb.getResource("mins")#</option></cfloop>
 	</select><br /></cfif>
 	<cfif attributes.bDateToggle>
 	</span></cfif>

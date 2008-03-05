@@ -63,7 +63,7 @@ $out:$
 		</cfdefaultcase>
 	</cfswitch>
 	
-	<cfoutput><h3>#apapplication.rb.getResource("diagOrphanNotes")#</h3></cfoutput>
+	<cfoutput><h3>#application.rb.getResource("diagOrphanNotes")#</h3></cfoutput>
 	
 	<!--- if requested, attach orphans to navnode in tree --->
 	<cfif isDefined("form.objectid")>
@@ -79,20 +79,20 @@ $out:$
 			<cfoutput>#listlen(form.objectid)# nav node orphan<cfif qOrphans.recordCount neq 1>s</cfif> attached to #form.navalias#.</cfoutput>
 		</cflock>
 			<cfcatch>
-				<cfoutput><h2>#apapplication.rb.getResource("moveBranchLockout")#</h2>
-				<p>#apapplication.rb.getResource("branchLockoutBlurb")#</p></cfoutput>
+				<cfoutput><h2>#application.rb.getResource("moveBranchLockout")#</h2>
+				<p>#application.rb.getResource("branchLockoutBlurb")#</p></cfoutput>
 				<cfabort>
 			</cfcatch>
 		</cftry>
 		
 	<cfelse>
 		<cfoutput>
-			<p>#apapplication.rb.getResource("noParentNestedTreeBlurb")#</p>
+			<p>#application.rb.getResource("noParentNestedTreeBlurb")#</p>
 		</cfoutput>
 		
 		<cfif qOrphans.recordcount>
 			<!--- show orphaned nodes --->
-			<cfoutput><p>#apapplication.rb.getResource("currentOrphanedNodes")#</p></cfoutput>
+			<cfoutput><p>#application.rb.getResource("currentOrphanedNodes")#</p></cfoutput>
 			<!--- <cfdump var="#qOrphans#" label="Orphaned Nodes"> --->
 			<!--- show form to attach orphans to a known node --->
 			<cfoutput>
@@ -102,9 +102,9 @@ $out:$
 				<tr>
 					<th>&nbsp;</th>
 					<!--- 18n: can these be localized?  --->
-					<th>#apapplication.rb.getResource("objID")#</th>
-					<th>#apapplication.rb.getResource("parentID")#</th>
-					<th>#apapplication.rb.getResource("title")#</th>
+					<th>#application.rb.getResource("objID")#</th>
+					<th>#application.rb.getResource("parentID")#</th>
+					<th>#application.rb.getResource("title")#</th>
 				</tr>
 				<cfloop query="qOrphans">
 					<tr class="#IIF(qOrphans.currentRow MOD 2, de("dataOddRow"), de("dataEvenRow"))#">
@@ -126,7 +126,7 @@ $out:$
 			</form>
 			</cfoutput>
 		<cfelse>
-			<cfoutput>#apapplication.rb.getResource("noOrphansNow")#</cfoutput>
+			<cfoutput>#application.rb.getResource("noOrphansNow")#</cfoutput>
 		</cfif>
 		
 	</cfif>

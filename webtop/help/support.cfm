@@ -32,12 +32,12 @@ $out:$
 
 <sec:CheckPermission error="true" permission="MainNavHelpTab">
 	<cfoutput>
-		<div class="formtitle">#apapplication.rb.getResource("commericalSupport")#</div>
+		<div class="formtitle">#application.rb.getResource("commericalSupport")#</div>
 		
 		<div style="padding-left:30px;padding-bottom:30px;">
 		<a href="http://www.daemon.com.au" target="_blank"><img src="../images/daemon_logo.gif" alt="Daemon Internet Consultants" border="0"></a>
-		#apapplication.rb.getResource("iLoveDaemonBlurb")#	
-		<p><span class="frameMenuBullet">&raquo;</span> <a href="http://www.daemon.com.au/go/farcry-support">#apapplication.rb.getResource("daemonCommercialFarcrySupport")#</a></p>
+		#application.rb.getResource("iLoveDaemonBlurb")#	
+		<p><span class="frameMenuBullet">&raquo;</span> <a href="http://www.daemon.com.au/go/farcry-support">#application.rb.getResource("daemonCommercialFarcrySupport")#</a></p>
 		</div>
 	</cfoutput>
 </sec:CheckPermission>

@@ -34,7 +34,7 @@ $out:$
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 <sec:CheckPermission error="true" permission="ObjectArchiveTab">
-	<cfoutput>	<h3>#apapplication.rb.getResource("archive")#</h3></cfoutput>
+	<cfoutput>	<h3>#application.rb.getResource("archive")#</h3></cfoutput>
 
 	<!--- check if rollback is required --->
 	<cfif structKeyExists(url, "archiveid")>
@@ -67,9 +67,9 @@ $out:$
 		<!--- setup table --->
 		<cfoutput>
 		<tr>
-			<th>#apapplication.rb.getResource("Date")#</th>
-			<th>#apapplication.rb.getResource("Label")#</th>
-			<th>#apapplication.rb.getResource("User")#</th>
+			<th>#application.rb.getResource("Date")#</th>
+			<th>#application.rb.getResource("Label")#</th>
+			<th>#application.rb.getResource("User")#</th>
 			<!--- <th>&nbsp;</th> --->
 			<th>&nbsp;</th>
 			<th>&nbsp;</th>
@@ -85,14 +85,14 @@ $out:$
 			</td>
 			<td>#label#</td>
 			<td>#lastupdatedby#</td>
-			<!--- <td><a href="edittabArchiveDetail.cfm?archiveid=#objectid#">#apapplication.rb.getResource("moreDetail")#</a></td> --->
-			<td><a href="#application.url.conjurer#?archiveid=#objectid#" target="_blank">#apapplication.rb.getResource("archivePreview")#</a></td>
+			<!--- <td><a href="edittabArchiveDetail.cfm?archiveid=#objectid#">#application.rb.getResource("moreDetail")#</a></td> --->
+			<td><a href="#application.url.conjurer#?archiveid=#objectid#" target="_blank">#application.rb.getResource("archivePreview")#</a></td>
 			<td>
 				<a href="archive.cfm?objectid=#url.objectid#&amp;archiveid=#objectid#&amp;finish_url=#cgi.http_referer#" onclick="return confirm('Are you sure you want to rollback to this version?')">Rollback</a></cfoutput>
 				<!--- check if archive has been rolled back successfully --->
 				<cfif isdefined("url.archiveid") and stRollback.result and url.archiveId eq objectid>
 					<cfoutput>
-					<span style="color:Red">#apapplication.rb.getResource("rolledBackOK")#</span></cfoutput>
+					<span style="color:Red">#application.rb.getResource("rolledBackOK")#</span></cfoutput>
 				</cfif>
 				<cfoutput>
 			</td>
@@ -101,7 +101,7 @@ $out:$
 	<cfelse>
 		<cfoutput>
 		<tr>
-			<td colspan="6">#apapplication.rb.getResource("noArchiveRecorded")#</td>
+			<td colspan="6">#application.rb.getResource("noArchiveRecorded")#</td>
 		</tr></cfoutput>
 	</cfif>
 	<cfoutput>

@@ -16,8 +16,8 @@ else if(objForm.label)
 	objTitle = objForm.label
 
 if(objTitle){
-	objTitle.validateNotNull("#apapplication.rb.getResource("pleaseEnterTitle")#");
-	objTitle.validateNotEmpty("#apapplication.rb.getResource("pleaseEnterTitle")#");
+	objTitle.validateNotNull("#application.rb.getResource("pleaseEnterTitle")#");
+	objTitle.validateNotEmpty("#application.rb.getResource("pleaseEnterTitle")#");
 }
 
 //-->

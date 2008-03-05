@@ -24,4 +24,4 @@ $out:$
 
 <cfprocessingDirective pageencoding="utf-8">
 
-<cfoutput>#apapplication.rb.getResource("noPageViewPermissions")#</cfoutput>
+<cfoutput>#application.rb.getResource("noPageViewPermissions")#</cfoutput>

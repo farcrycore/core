@@ -66,12 +66,12 @@ $out:$
 <cfsavecontent variable="variables.paginationButtons">
 	<!--- Previous button --->
 	<cfif stepPrev>
-		<cfoutput><li class="li-prev"><a href="#plpActionURL("prev")#">#apapplication.rb.getResource("Back")#</a></li></cfoutput>
+		<cfoutput><li class="li-prev"><a href="#plpActionURL("prev")#">#application.rb.getResource("Back")#</a></li></cfoutput>
 	</cfif>
 
 	<!--- Next button --->
 	<cfif stepNext>
-		<cfoutput><li class="li-next"><a href="#plpActionURL("next")#">#apapplication.rb.getResource("NextUC")#</a></li></cfoutput>
+		<cfoutput><li class="li-next"><a href="#plpActionURL("next")#">#application.rb.getResource("NextUC")#</a></li></cfoutput>
 	</cfif>
 </cfsavecontent>
 
@@ -118,7 +118,7 @@ $out:$
 			<cfoutput><a href="#plpActionURL("complete")#"></cfoutput>
 		</cfif> --->
 		
-		<cfoutput><a href="#plpActionURL("step:#arrayLen(caller.stPLP.Steps)#")#">#apapplication.rb.getResource("save")#</a></cfoutput>
+		<cfoutput><a href="#plpActionURL("step:#arrayLen(caller.stPLP.Steps)#")#">#application.rb.getResource("save")#</a></cfoutput>
 		
 		<!--- <cfif stepComplete>
 			<cfoutput></a></cfoutput>
@@ -133,7 +133,7 @@ $out:$
 			<cfoutput><a href="#plpActionURL("cancel")#" onclick="return fPLPCancelConfirm();"></cfoutput>
 		</cfif>
 		
-		<cfoutput>#apapplication.rb.getResource("cancel")#</cfoutput>
+		<cfoutput>#application.rb.getResource("cancel")#</cfoutput>
 		
 		<cfif stepCancel>
 			<cfoutput></a></cfoutput>

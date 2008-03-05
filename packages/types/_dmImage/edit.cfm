@@ -285,20 +285,20 @@ function tgl_thumbnail(){
 <form name="imageForm" action="#cgi.script_name#?#cgi.query_string#" method="post" class="f-wrap-1 wider f-bg-long" enctype="multipart/form-data" onsubmit="return doSubmit(document['forms']['imageForm']);">
 	<fieldset>
 		<div class="req"><b>*</b>Required</div>
-		<h3>#apapplication.rb.getResource("imageDetails")#...</h3>
+		<h3>#application.rb.getResource("imageDetails")#...</h3>
 		<cfif isDefined("errormessage")>
 			<p id="fading1" class="fade"><span class="error">#errormessage#</span></p>			
 		</cfif>
-		<label for="title"><b>#apapplication.rb.getResource("titleLabel")#<span class="req">*</span></b>
+		<label for="title"><b>#application.rb.getResource("titleLabel")#<span class="req">*</span></b>
 			<input type="text" name="title" id="title" value="#stObj.title#" /><br />
 		</label>
 		
-		<label for="alt"><b>#apapplication.rb.getResource("alternateTextLabel")#</b>
+		<label for="alt"><b>#application.rb.getResource("alternateTextLabel")#</b>
 			<textarea type="text" name="alt" rows="4">#stObj.alt#</textarea><br />
 		</label>
 		<!--- TODO: make the dafault and optimised image uploads use the fileupload widget --->
 		<cfif application.config.image.bAllowOverwrite EQ "true" OR trim(stObj.imageFile) EQ "">
-		<label for="defaultImage"><b>#apapplication.rb.getResource("defaultImage")#:<span class="req">*</span></b>
+		<label for="defaultImage"><b>#application.rb.getResource("defaultImage")#:<span class="req">*</span></b>
 			<input type="file" name="defaultImage" id="defaultImage" /><br />
 		</label><cfelse><input type="hidden" name="defaultImage" value="" /><br /></cfif>
 		<cfif len(stObj.imagefile)>
@@ -306,10 +306,10 @@ function tgl_thumbnail(){
 			<cfif application.config.image.bAllowOverwrite EQ "false">
 			Sorry you are not allowed to overwrite this file, please delete it and reupload OR change the image config settings in the admin<br />
 			<cfelse>
-			#apapplication.rb.getResource("newFileOverwriteThisFile")#<br />
+			#application.rb.getResource("newFileOverwriteThisFile")#<br />
 			</cfif>
-			<b>#apapplication.rb.getResource("existingDefaultImageLabel")#</b>
-			<a href="#objImage.getURLImagePath(stObj.objectID,'original')#" title="#apapplication.rb.getResource("previewUC")#" target="_blank"><img src="#objImage.getURLImagePath(stObj.objectID,'thumb')#" border="0" width="#application.config.image.thumbnailWidth#" height="#application.config.image.thumbnailHeight#"></a>
+			<b>#application.rb.getResource("existingDefaultImageLabel")#</b>
+			<a href="#objImage.getURLImagePath(stObj.objectID,'original')#" title="#application.rb.getResource("previewUC")#" target="_blank"><img src="#objImage.getURLImagePath(stObj.objectID,'thumb')#" border="0" width="#application.config.image.thumbnailWidth#" height="#application.config.image.thumbnailHeight#"></a>
 		</label>
 		</cfif>
 		
@@ -322,7 +322,7 @@ function tgl_thumbnail(){
 <cfoutput>
 
 		<cfif application.config.image.bAllowOverwrite EQ "true" OR trim(stObj.optimisedimage) EQ "">
-		<label for="optimisedImage"><b>#apapplication.rb.getResource("Highres")#:</b>
+		<label for="optimisedImage"><b>#application.rb.getResource("Highres")#:</b>
 			<input type="file" name="optimisedImage" /><br />
 		</label><cfelse><input type="hidden" name="optimisedImage" value="" /><br /></cfif>
 		
@@ -332,10 +332,10 @@ function tgl_thumbnail(){
 			<cfif application.config.image.bAllowOverwrite EQ "false">
 			Sorry you are not allowed to overwrite this file, please delete it and reupload OR change the image config settings in the admin<br />
 			<cfelse>
-			#apapplication.rb.getResource("newFileOverwriteThisFile")#<br />
+			#application.rb.getResource("newFileOverwriteThisFile")#<br />
 			</cfif>
 			Existing High Resolution Image:
-			<a href="#objImage.getURLImagePath(stObj.objectID,'optimised')#" target="_blank">#apapplication.rb.getResource("previewUC")#</a>
+			<a href="#objImage.getURLImagePath(stObj.objectID,'optimised')#" target="_blank">#application.rb.getResource("previewUC")#</a>
 		</label>
 		</cfif>
 
@@ -363,8 +363,8 @@ function tgl_thumbnail(){
 	<div class="f-submit-wrap"><cfif primaryObjectID NEQ "">
 		<input type="Submit" name="Submit" value="Insert" class="f-submit" />
 		<input type="Submit" name="Submit" value="Insert &amp; Upload Another" class="f-submit" /><cfelse>
-		<input type="Submit" name="Submit" value="#apapplication.rb.getResource("OK")#" class="f-submit">
-		<input type="Button" name="Cancel" value="#apapplication.rb.getResource("cancel")#" class="f-submit" onClick="fCancelAction();"></cfif>
+		<input type="Submit" name="Submit" value="#application.rb.getResource("OK")#" class="f-submit">
+		<input type="Button" name="Cancel" value="#application.rb.getResource("cancel")#" class="f-submit" onClick="fCancelAction();"></cfif>
 	</div>
 	
 	<input type="hidden" name="primaryObjectID" value="#primaryObjectID#">

@@ -89,20 +89,20 @@ $out:$
 		<cfif form.debug eq 1>
 			<!--- show debug only, don't fix tree --->
 			<cfoutput>
-			<h3>#apapplication.rb.getResource("debugComplete")#</h3>
-	     <p>#apapplication.rb.getResource("objRemovedList")#</p></cfoutput>
+			<h3>#application.rb.getResource("debugComplete")#</h3>
+	     <p>#application.rb.getResource("objRemovedList")#</p></cfoutput>
 	       	
 			<cfif qRogue.recordcount>
 				<!--- show dump --->
-	        	<cfdump var="#qRogue#" label="#apapplication.rb.getResource("rogueTreeObj")#"> 
+	        	<cfdump var="#qRogue#" label="#application.rb.getResource("rogueTreeObj")#"> 
 				<cfoutput>
 				<form action="cleanTree.cfm" method="post">
-		            <input type="submit" name="submit" class="f-submit" value="#apapplication.rb.getResource("removeObj")#" />
+		            <input type="submit" name="submit" class="f-submit" value="#application.rb.getResource("removeObj")#" />
 		        </form>
 				</cfoutput>
 			<cfelse>
 				<!--- no rogue objects --->
-				<cfoutput>#apapplication.rb.getResource("noRogueTreeObj")#</cfoutput>
+				<cfoutput>#application.rb.getResource("noRogueTreeObj")#</cfoutput>
 			</cfif>	
 	    <cfelse>                
 		   	<!--- delete rogue objects --->
@@ -115,8 +115,8 @@ $out:$
 				</cfquery>
 			</cfloop>
 	        <cfoutput>
-			<div class="formtitle">#apapplication.rb.getResource("treeFixed")#</div>
-			#apapplication.rb.getResource("rogueTreeDataRemoved")#</cfoutput>
+			<div class="formtitle">#application.rb.getResource("treeFixed")#</div>
+			#application.rb.getResource("rogueTreeDataRemoved")#</cfoutput>
 	    </cfif>
 	<cfelse>
 		<!--- show the form --->
@@ -127,20 +127,20 @@ $out:$
 	        <form action="cleanTree.cfm" method="post" class="f-wrap-1 f-bg-short wider">
 			<fieldset>
 			 	
-				<h3>#apapplication.rb.getResource("cleanNestedTree")#</h3>
+				<h3>#application.rb.getResource("cleanNestedTree")#</h3>
 				
 				<fieldset class="f-checkbox-wrap">
 					<b>&nbsp;</b>
 						<fieldset>
 						<label for="debug">
 						<input type="checkbox" name="debug" id="debug" value="1" checked="checked" />
-						#apapplication.rb.getResource("showDebugOnly")#
+						#application.rb.getResource("showDebugOnly")#
 						</label>
 						</fieldset>
 	        	</fieldset>
 				
 				<div class="f-submit-wrap">
-			    <input type="submit" name="submit" class="f-submit" value="#apapplication.rb.getResource("submit")#" />
+			    <input type="submit" name="submit" class="f-submit" value="#application.rb.getResource("submit")#" />
 	     		</div>
 				
 		 	</fieldset>
@@ -148,7 +148,7 @@ $out:$
 			
 			<hr />
 			
-			<p>#apapplication.rb.getResource("nestedTreeBlurb")#</p>
+			<p>#application.rb.getResource("nestedTreeBlurb")#</p>
 	    </cfoutput>
 	</cfif>
 </sec:CheckPermission>

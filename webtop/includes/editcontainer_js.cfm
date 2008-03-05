@@ -92,7 +92,7 @@ function BumpUp(box)
 }
 
 function confirmDelete(){
-	var msg = "#apapplication.rb.getResource("confirmDeletePackage")#";
+	var msg = "#application.rb.getResource("confirmDeletePackage")#";
 	if (confirm(msg))
 		return true;
 	else
@@ -108,7 +108,7 @@ function selectAll(dest){
  
  function deleteRule(fbox)
  {
- 	if (confirm("#apapplication.rb.getResource("confirmDeleteRuleInstance")#"))
+ 	if (confirm("#application.rb.getResource("confirmDeleteRuleInstance")#"))
 	{
 		 for(var i=0; i<fbox.options.length; i++)
 		 {

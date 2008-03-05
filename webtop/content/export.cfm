@@ -104,23 +104,23 @@ $Developer: Brendan Sisson (brendan@daemon.com.au) $
 <sec:CheckPermission error="true" permission="ContentExportTab"><cfoutput>
 	<form action="#cgi.script_name#?#cgi.query_string#" class="f-wrap-1 wider f-bg-medium" name="editform" method="post">
 		<fieldset>
-	<h3>#apapplication.rb.getResource("xmlExport")#</h3>
+	<h3>#application.rb.getResource("xmlExport")#</h3>
 	<cfif errormessage NEQ "">
 	<p id="fading1" class="fade"><span class="error">#errormessage#</span></p>
 	<cfelseif successmessage NEQ "">
 	<p id="fading2" class="fade"><span class="success">#successmessage#</span></p>
 	</cfif>	
-			<label for="contentType"><b>#apapplication.rb.getResource("contentType")#</b>
+			<label for="contentType"><b>#application.rb.getResource("contentType")#</b>
 				<select name="contentType" id="contentType"><cfloop list="#listOfKeys#" index="i">
 					<option value="#i#"<cfif contentType EQ i> selected="selected"</cfif>>#i#</option></cfloop>			
 				</select><br />
 			</label>
 			
-			<label for="sendTo"><b>#apapplication.rb.getResource("sendTo")#</b>
+			<label for="sendTo"><b>#application.rb.getResource("sendTo")#</b>
 				<input type="text" name="sendTo" id="sendTo" value="#sendTo#" maxlength="255" size="45" /><br />
 			</label>
 	
-			<label for="exportType"><b>#apapplication.rb.getResource("exportAs")#</b>
+			<label for="exportType"><b>#application.rb.getResource("exportAs")#</b>
 				<select name="exportType" id="exportType">
 					<option value="xml"<cfif exportType EQ "xml"> selected="selected"</cfif>>xml</option>
 				</select><br />

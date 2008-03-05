@@ -197,7 +197,7 @@ function deSelectAll()
 	<input type="hidden" name="finishURL" value="#finishURL#">
 
 <fieldset>
-<label for="commentLog"><b>#apapplication.rb.getResource("addComment")#:</b>
+<label for="commentLog"><b>#application.rb.getResource("addComment")#:</b>
 	<textarea id="commentLog" name="commentLog" rows="10" cols="60"></textarea>
 </label>
 </fieldset>
@@ -206,12 +206,12 @@ function deSelectAll()
 <cfif isDefined("approvers")>#approvers#</cfif>
 
 <div class="f-submit-wrap">
-<input type="submit" name="updatestatus" value="#apapplication.rb.getResource("submitUC")#" class="f-submit" />
-<input type="submit" name="cancel" value="#apapplication.rb.getResource("cancel")#" class="f-submit">
+<input type="submit" name="updatestatus" value="#application.rb.getResource("submitUC")#" class="f-submit" />
+<input type="submit" name="cancel" value="#application.rb.getResource("cancel")#" class="f-submit">
 </div>
 <cfif StructKeyExists(stObj,"commentLog") and len(stObj.commentLog)>
 <fieldset>
-	<label><b>#apapplication.rb.getResource("prevCommentLog")#</b>
+	<label><b>#application.rb.getResource("prevCommentLog")#</b>
 		<xmp>#stObj.commentLog#</xmp>
 	</label>
 </fieldset></cfif>

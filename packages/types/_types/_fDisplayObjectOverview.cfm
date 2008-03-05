@@ -12,27 +12,27 @@
 				<!--- check user can edit --->
 				<cfif stPermissions.iEdit EQ 1>
 					<!--- MJB: added url.ref so that the edit methods know they were initially called by the overview page and they can return here if they so desire. --->
-					<a href="edittabEdit.cfm?objectid=#stObject.objectid#&ref=overview&typename=#stObject.typeName#">#apapplication.rb.getResource("editObj")#</a><br />
+					<a href="edittabEdit.cfm?objectid=#stObject.objectid#&ref=overview&typename=#stObject.typeName#">#application.rb.getResource("editObj")#</a><br />
 					<cfif stObject.objectid NEQ stObject.objectid_previousversion>
-						<a onclick="confirmRestore('#stObject.parentid#','#stObject.objectid#');" href="javascript:void(0);">#apapplication.rb.getResource("restoreLiveObj")#</a><br />
+						<a onclick="confirmRestore('#stObject.parentid#','#stObject.objectid#');" href="javascript:void(0);">#application.rb.getResource("restoreLiveObj")#</a><br />
 					</cfif>
 				</cfif>
 	
 				<!--- Check user can request approval --->
 				<cfif stPermissions.iRequest eq 1>
 					<cfif stObject.objectid NEQ stObject.objectid_previousversion>
-						<a href="#application.url.farcry#/navajo/approve.cfm?objectid=#stObject.objectid#&status=requestapproval">#apapplication.rb.getResource("requestApproval")#</a><br />
+						<a href="#application.url.farcry#/navajo/approve.cfm?objectid=#stObject.objectid#&status=requestapproval">#application.rb.getResource("requestApproval")#</a><br />
 					<cfelse>
-						<a href="#application.url.farcry#/navajo/approve.cfm?objectid=#stObject.objectid#&status=requestapproval">#apapplication.rb.getResource("requestObjApproval")#</a><br />
+						<a href="#application.url.farcry#/navajo/approve.cfm?objectid=#stObject.objectid#&status=requestapproval">#application.rb.getResource("requestObjApproval")#</a><br />
 					</cfif>
 				</cfif>
 	
 				<!--- check user can approve object --->
 				<cfif stPermissions.iApprove eq 1 OR stPermissions.iApproveOwn EQ 1>
 					<cfif stObject.objectid NEQ stObject.objectid_previousversion>
-						<a href="#application.url.farcry#/navajo/approve.cfm?objectid=#stObject.objectid#&status=approved">#apapplication.rb.getResource("sendObjLive")#</a><br />
+						<a href="#application.url.farcry#/navajo/approve.cfm?objectid=#stObject.objectid#&status=approved">#application.rb.getResource("sendObjLive")#</a><br />
 					<cfelse>
-						<a href="#application.url.farcry#/navajo/approve.cfm?objectid=#stObject.objectid#&status=approved">#apapplication.rb.getResource("approveObjYourself")#</a><br />
+						<a href="#application.url.farcry#/navajo/approve.cfm?objectid=#stObject.objectid#&status=approved">#application.rb.getResource("approveObjYourself")#</a><br />
 					</cfif>
 				</cfif>
 	
@@ -42,16 +42,16 @@
 							<cfif listContains(application.navid.home,stObject.objectid) EQ 0 AND listContains(application.navid.root,stObject.objectid) eq 0>
 							<!--- check user can delete --->
 								<cfif stPermissions.iDelete eq 1>
-									<a href="navajo/delete.cfm?ObjectId=#stObject.objectId#" onClick="return confirm('#apapplication.rb.getResource("confirmDeleteObj")#');">#apapplication.rb.getResource("delete")#</a><br />
+									<a href="navajo/delete.cfm?ObjectId=#stObject.objectId#" onClick="return confirm('#application.rb.getResource("confirmDeleteObj")#');">#application.rb.getResource("delete")#</a><br />
 								</cfif>
 										
 								<!--- check user can move to trash and is a navigation obj--->
 								<cfif stPermissions.iTreeSendToTrash eq 1 and stObject.typeName eq "dmNavigation">
-									<a href="navajo/move.cfm?srcObjectId=#stObject.objectId#&destObjectId=#application.navid.rubbish#" onclick="return confirm('#apapplication.rb.getResource("confirmTrashObj")#');">#apapplication.rb.getResource("sendToTrash")#</a><br />
+									<a href="navajo/move.cfm?srcObjectId=#stObject.objectId#&destObjectId=#application.navid.rubbish#" onclick="return confirm('#application.rb.getResource("confirmTrashObj")#');">#application.rb.getResource("sendToTrash")#</a><br />
 								</cfif>
 							</cfif>
 						<cfelse>
-							<a href="edittabEdit.cfm?objectid=#stObject.objectID_PreviousVersion#&deleteDraftObjectID=#stObject.ObjectID#&typename=#stObject.typeName#" onClick="return confirm('#apapplication.rb.getResource("confirmDeleteObj")#');">#apapplication.rb.getResource("deleteDraftVersion")#</a><br />
+							<a href="edittabEdit.cfm?objectid=#stObject.objectID_PreviousVersion#&deleteDraftObjectID=#stObject.ObjectID#&typename=#stObject.typeName#" onClick="return confirm('#application.rb.getResource("confirmDeleteObj")#');">#application.rb.getResource("deleteDraftVersion")#</a><br />
 						</cfif>
 				</cfif>
 			</cfcase>
@@ -59,46 +59,46 @@
 			<cfcase value="pending"> <!--- PENDING STATUS --->
 				<!--- check user can edit --->
 				<cfif stPermissions.iEdit EQ 1 AND stObject.bAlwaysShowEdit EQ 1>
-					<a href="edittabEdit.cfm?objectid=#stObject.objectid#&ref=overview&typename=#stObject.typeName#">#apapplication.rb.getResource("editObj")#</a><br />
+					<a href="edittabEdit.cfm?objectid=#stObject.objectid#&ref=overview&typename=#stObject.typeName#">#application.rb.getResource("editObj")#</a><br />
 					<cfif stObject.objectid NEQ stObject.objectid_previousversion>
-						<a onclick="confirmRestore('#stObject.parentid#','#stObject.objectid#');" href="javascript:void(0);">#apapplication.rb.getResource("restoreLiveObj")#</a><br />
+						<a onclick="confirmRestore('#stObject.parentid#','#stObject.objectid#');" href="javascript:void(0);">#application.rb.getResource("restoreLiveObj")#</a><br />
 					</cfif>
 				</cfif>
 				
 				<cfif stPermissions.iApprove eq 1> <!--- check user can approve object --->
-					<a href="#application.url.farcry#/navajo/approve.cfm?objectid=#stObject.objectid#&status=approved">#apapplication.rb.getResource("sendObjLive")#</a><br />
+					<a href="#application.url.farcry#/navajo/approve.cfm?objectid=#stObject.objectid#&status=approved">#application.rb.getResource("sendObjLive")#</a><br />
 					<!--- send back to draft --->
-					<a href="#application.url.farcry#/navajo/approve.cfm?objectid=#stObject.objectid#&status=draft">#apapplication.rb.getResource("sendBackToDraft")#</a><br />
+					<a href="#application.url.farcry#/navajo/approve.cfm?objectid=#stObject.objectid#&status=draft">#application.rb.getResource("sendBackToDraft")#</a><br />
 				</cfif>
 			</cfcase>
 	
 			<cfcase value="approved">	
 				<!--- check user can edit --->
 				<cfif stPermissions.iEdit EQ 1 AND stObject.bAlwaysShowEdit EQ 1>
-					<a href="edittabEdit.cfm?objectid=#stObject.objectid#&ref=overview&typename=#stObject.typeName#">#apapplication.rb.getResource("editObj")#</a><br />
+					<a href="edittabEdit.cfm?objectid=#stObject.objectid#&ref=overview&typename=#stObject.typeName#">#application.rb.getResource("editObj")#</a><br />
 					<cfif stObject.objectid NEQ stObject.objectid_previousversion>
-						<a onclick="confirmRestore('#stObject.parentid#','#stObject.objectid#');" href="javascript:void(0);">#apapplication.rb.getResource("restoreLiveObj")#</a><br />
+						<a onclick="confirmRestore('#stObject.parentid#','#stObject.objectid#');" href="javascript:void(0);">#application.rb.getResource("restoreLiveObj")#</a><br />
 					</cfif>
 				</cfif>
 				
 				<!--- check if draft version exists --->
 				<cfset bDraftVersionAllowed = StructKeyExists(stObject,"versionid")>
 				<cfif stObject.bHasDraft EQ 0 AND stPermissions.iEdit eq 1 AND bDraftVersionAllowed>
-					<a href="#application.url.farcry#/navajo/createDraftObject.cfm?objectID=#stObject.objectID#&typename=#stObject.typeName#">#apapplication.rb.getResource("createEditableDraft")#</a><br />
+					<a href="#application.url.farcry#/navajo/createDraftObject.cfm?objectID=#stObject.objectID#&typename=#stObject.typeName#">#application.rb.getResource("createEditableDraft")#</a><br />
 				</cfif>
 				<cfif stPermissions.iApprove eq 1 OR stPermissions.iApproveOwn EQ 1>
-					<a href="#application.url.farcry#/navajo/approve.cfm?objectid=#stObject.objectid#&status=draft&typename=#stObject.typeName#">#apapplication.rb.getResource("sendBackToDraft")#<cfif structKeyExists(stObject,"versionID") AND stObject.bHasDraft> #apapplication.rb.getResource("deletingDraftVersion")#</cfif></a><br />
+					<a href="#application.url.farcry#/navajo/approve.cfm?objectid=#stObject.objectid#&status=draft&typename=#stObject.typeName#">#application.rb.getResource("sendBackToDraft")#<cfif structKeyExists(stObject,"versionID") AND stObject.bHasDraft> #application.rb.getResource("deletingDraftVersion")#</cfif></a><br />
 				</cfif>
 	
 				<cfif listContains(application.navid.home,stObject.objectid) EQ 0 AND listContains(application.navid.root,stObject.objectid) eq 0>
 					<!--- check user can delete --->
 					<cfif stPermissions.iDelete eq 1>
-						<a href="navajo/delete.cfm?ObjectId=#stObject.objectId#&typename=#stObject.typeName#" onClick="return confirm('#apapplication.rb.getResource("confirmDeleteObj")#');">#apapplication.rb.getResource("delete")#</a><br />
+						<a href="navajo/delete.cfm?ObjectId=#stObject.objectId#&typename=#stObject.typeName#" onClick="return confirm('#application.rb.getResource("confirmDeleteObj")#');">#application.rb.getResource("delete")#</a><br />
 					</cfif>
 					
 					<!--- check user can move to trash and is dmNavigation type--->
 					<cfif stPermissions.iTreeSendToTrash eq 1 and stObject.typeName eq "dmNavigation">
-						<a href="navajo/move.cfm?srcObjectId=#stObject.objectId#&destObjectId=#application.navid.rubbish#" onclick="return confirm('#apapplication.rb.getResource("confirmTrashObj")#');">#apapplication.rb.getResource("sendToTrash")#</a><br />
+						<a href="navajo/move.cfm?srcObjectId=#stObject.objectId#&destObjectId=#application.navid.rubbish#" onclick="return confirm('#application.rb.getResource("confirmTrashObj")#');">#application.rb.getResource("sendToTrash")#</a><br />
 					</cfif>
 				</cfif>
 			</cfcase>
@@ -106,16 +106,16 @@
 	<cfelse>	<!--- content items without a status --->
 		<!--- check user can edit --->
 		<cfif stPermissions.iEdit EQ 1>
-				<a href="edittabEdit.cfm?objectid=#stObject.objectid#&ref=overview&typename=#stObject.typeName#">#apapplication.rb.getResource("editObj")#</a><br />
+				<a href="edittabEdit.cfm?objectid=#stObject.objectid#&ref=overview&typename=#stObject.typeName#">#application.rb.getResource("editObj")#</a><br />
 		</cfif>
 		
 		<!--- check user can delete --->
 		<cfif stPermissions.iDelete eq 1>
-			<a href="navajo/delete.cfm?ObjectId=#stObject.objectId#&typename=#stObject.typeName#" onClick="return confirm('#apapplication.rb.getResource("confirmDeleteObj")#');">#apapplication.rb.getResource("delete")#</a><br />
+			<a href="navajo/delete.cfm?ObjectId=#stObject.objectId#&typename=#stObject.typeName#" onClick="return confirm('#application.rb.getResource("confirmDeleteObj")#');">#application.rb.getResource("delete")#</a><br />
 		</cfif>
 		<!--- check user can move to trash and is dmNavigation type--->
 		<cfif stPermissions.iTreeSendToTrash eq 1 and stObject.typeName eq "dmNavigation">
-			<a href="navajo/move.cfm?srcObjectId=#stObject.objectId#&destObjectId=#application.navid.rubbish#" onclick="return confirm('#apapplication.rb.getResource("confirmTrashObj")#');">#apapplication.rb.getResource("sendToTrash")#</a><br />
+			<a href="navajo/move.cfm?srcObjectId=#stObject.objectId#&destObjectId=#application.navid.rubbish#" onclick="return confirm('#application.rb.getResource("confirmTrashObj")#');">#application.rb.getResource("sendToTrash")#</a><br />
 		</cfif>
 	</cfif>
 	
@@ -138,7 +138,7 @@
 	</cfif>
 
 	<!--- preview object --->
-	<a href="#application.url.webroot#/index.cfm?objectid=#stObject.objectid#&flushcache=1&showdraft=1" target="_winPreview">#apapplication.rb.getResource("preview")#</a><br />
+	<a href="#application.url.webroot#/index.cfm?objectid=#stObject.objectid#&flushcache=1&showdraft=1" target="_winPreview">#application.rb.getResource("preview")#</a><br />
 	
 	</div>
 	<cfset tIconName = LCase(Right(stObject.typename,len(stObject.typename)-2))>
@@ -162,23 +162,23 @@
 		</li>
 </cfif>
 	<!--- view statistics --->
-	<li><a href="#application.url.farcry#/edittabStats.cfm?objectid=#stObject.objectid#">#apapplication.rb.getResource("stats")#</a></li>
+	<li><a href="#application.url.farcry#/edittabStats.cfm?objectid=#stObject.objectid#">#application.rb.getResource("stats")#</a></li>
 
 	<!--- view audit --->
-	<li><a href="#application.url.farcry#/edittabAudit.cfm?objectid=#stObject.objectid#">#apapplication.rb.getResource("audit")#</a></li>
+	<li><a href="#application.url.farcry#/edittabAudit.cfm?objectid=#stObject.objectid#">#application.rb.getResource("audit")#</a></li>
 	
 <cfif StructKeyExists(stObject,"commentLog")>
 		<!--- add comments --->
-		<li><a href="navajo/commentOnContent.cfm?objectid=#stObject.objectid#">#apapplication.rb.getResource("addComments")#</a></li>
+		<li><a href="navajo/commentOnContent.cfm?objectid=#stObject.objectid#">#application.rb.getResource("addComments")#</a></li>
 	<cfif Trim(stObject.commentLog) NEQ "">
 		<!--- view comments --->
-		<li><a href="##" onclick="return toggleDocumentItem('tgl_viewcomment_#stObject.objectid#');" target="_blank">#apapplication.rb.getResource("viewComments")#</a></li>
+		<li><a href="##" onclick="return toggleDocumentItem('tgl_viewcomment_#stObject.objectid#');" target="_blank">#application.rb.getResource("viewComments")#</a></li>
 		<li id="tgl_viewcomment_#stObject.objectid#" style="display:none;">#ReplaceNoCase(Trim(stObject.commentLog),"#chr(10)##chr(13)#","<br />")#</li>
 	</cfif>		
 </cfif>
 <cfif stPermissions.iObjectDumpTab>
 		<!--- dump content --->
-		<li><a href="#application.url.farcry#/object_dump.cfm?objectid=#stObject.objectid#" title="view object properties" target="_win_dumpObject">#apapplication.rb.getResource("dump")#</a></li>
+		<li><a href="#application.url.farcry#/object_dump.cfm?objectid=#stObject.objectid#" title="view object properties" target="_win_dumpObject">#application.rb.getResource("dump")#</a></li>
 		<!--- <li id="tgl_dumpobject_#stObject.objectid#" style="display:none;"><cfdump var="#stObject#"></li> --->
 </cfif>
 		<cfif (stPermissions.iApprove eq 1 OR stPermissions.iApproveOwn EQ 1) AND StructKeyExists(stObject,"versionid")>

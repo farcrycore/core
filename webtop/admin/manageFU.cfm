@@ -55,12 +55,12 @@ $out:$
 	<form method="post" class="f-wrap-1 f-bg-short" action="">
 	<fieldset>
 	
-		<h3>#apapplication.rb.getResource("manageURLs")#</h3>
+		<h3>#application.rb.getResource("manageURLs")#</h3>
 
 		<label for="searchIn"><b>&nbsp;</b>
 		<select name="searchIn" id="searchIn">
-		<option value="#apapplication.rb.getResource("alias")#" <cfif form.searchIn eq "mapping">selected</cfif>>#apapplication.rb.getResource("alias")#
-		<option value="#apapplication.rb.getResource("objectLC")#" <cfif form.searchIn eq "object">selected</cfif>>#apapplication.rb.getResource("objectLC")#
+		<option value="#application.rb.getResource("alias")#" <cfif form.searchIn eq "mapping">selected</cfif>>#application.rb.getResource("alias")#
+		<option value="#application.rb.getResource("objectLC")#" <cfif form.searchIn eq "object">selected</cfif>>#application.rb.getResource("objectLC")#
 		</select>
 		<br />
 		</label>
@@ -70,7 +70,7 @@ $out:$
 		</label>
 		
 		<div class="f-submit-wrap">
-		<input type="submit" value="#apapplication.rb.getResource("filter")#" class="f-submit" />
+		<input type="submit" value="#application.rb.getResource("filter")#" class="f-submit" />
 		</div>
 		
 	</fieldset>
@@ -80,9 +80,9 @@ $out:$
 	<!--- set up results table --->
 	<table class="table-2" cellspacing="0">
 	<tr>
-		<th style="text-align:center">#apapplication.rb.getResource("delete")#</th>
-		<th>#apapplication.rb.getResource("alias")#</th>
-		<th>#apapplication.rb.getResource("objectLC")#</th>
+		<th style="text-align:center">#application.rb.getResource("delete")#</th>
+		<th>#application.rb.getResource("alias")#</th>
+		<th>#application.rb.getResource("objectLC")#</th>
 	</tr>
 	</cfoutput>
 
@@ -127,7 +127,7 @@ $out:$
 	<cfoutput>
 		</table>
 		
-		<input type="submit" value="#apapplication.rb.getResource("delete")#" class="f-submit" />
+		<input type="submit" value="#application.rb.getResource("delete")#" class="f-submit" />
 		
 		
 		</form>

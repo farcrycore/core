@@ -29,7 +29,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au) $
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 <sec:CheckPermission error="true" permission="ContentExportTab">
-	<cfoutput><span class="Formtitle">#apapplication.rb.getResource("xmlExport")#</span><p></p></cfoutput>
+	<cfoutput><span class="Formtitle">#application.rb.getResource("xmlExport")#</span><p></p></cfoutput>
 
 	<cfset bShowForm=1>
 	
@@ -114,7 +114,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au) $
 				<table class="BorderTable" width="400" align="center">
 				<!--- contentType --->
 				<tr>
-					<td nowrap class="FormLabel">#apapplication.rb.getResource("contentType")# </span></td>
+					<td nowrap class="FormLabel">#application.rb.getResource("contentType")# </span></td>
 					<td width="100%">
 						<!--- sort structure by Key name --->
 						<cfset listofKeys = structKeyList(application.types)>
@@ -129,12 +129,12 @@ $Developer: Brendan Sisson (brendan@daemon.com.au) $
 				</tr>
 				<!--- send xml file details --->
 				<tr>
-					<td nowrap class="FormLabel">#apapplication.rb.getResource("sendTo")#</span></td>
+					<td nowrap class="FormLabel">#application.rb.getResource("sendTo")#</span></td>
 					<td width="100%"><input type="text" name="sendTo" class="formtextbox" maxlength="255" size="45"></td>
 				</tr>
 				<!--- export type --->
 				<tr>
-					<td nowrap class="FormLabel">#apapplication.rb.getResource("exportAs")#</span></td>
+					<td nowrap class="FormLabel">#application.rb.getResource("exportAs")#</span></td>
 					<td width="100%">
 						<select name="exportType">
 							<option value="xml">XML
@@ -146,7 +146,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au) $
 				</tr>
 				</table>
 			</div>
-			<input type="submit" name="submit" value="#apapplication.rb.getResource("export")#" class="normalbttnstyle" style="margin-left:30px;">
+			<input type="submit" name="submit" value="#application.rb.getResource("export")#" class="normalbttnstyle" style="margin-left:30px;">
 		</form>	
 		</cfoutput>
 	</cfif>

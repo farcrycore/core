@@ -250,11 +250,11 @@ if (isDefined("form.dump") AND isDefined("form.objectid"))
 statusurl="";
 if (isDefined("form.status")) {
 	if (isDefined("form.objectID")) {
-		if (form.status contains apapplication.rb.getResource("approve"))
+		if (form.status contains application.rb.getResource("approve"))
 			status = 'approved';
-		else if (form.status contains apapplication.rb.getResource("sendToDraft"))
+		else if (form.status contains application.rb.getResource("sendToDraft"))
 			status = 'draft';
-		else if (form.status contains apapplication.rb.getResource("requestApproval"))
+		else if (form.status contains application.rb.getResource("requestApproval"))
 			status = 'requestApproval';
 		else
 			status = 'unknown';
@@ -263,7 +263,7 @@ if (isDefined("form.status")) {
 		if (isDefined("stgrid.approveURL"))
 			statusurl = statusurl & "&approveURL=#URLEncodedFormat(stGrid.approveURL)#";
 	} else
-		response = "#apapplication.rb.getResource("noObjSelected")#";
+		response = "#application.rb.getResource("noObjSelected")#";
 }
 </cfscript>
 <!--- redirect user on status change --->
@@ -291,7 +291,7 @@ if (isDefined("form.unlock") AND isDefined("form.objectid")) {
 				bAllowUnlock=true;
 			// if the user doesn't have permission, push error response
 			} else {
-				response=apapplication.rb.getResource("noPermissionUnlockAll");
+				response=application.rb.getResource("noPermissionUnlockAll");
 			}
 		}
 		if (bAllowUnlock) {

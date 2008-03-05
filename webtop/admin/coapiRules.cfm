@@ -29,10 +29,10 @@ $out:$
 
 <cfprocessingDirective pageencoding="utf-8">
 
-<admin:header title="#apapplication.rb.getResource("COAPIrules")#" writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
+<admin:header title="#application.rb.getResource("COAPIrules")#" writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 <sec:CheckPermission error="true" permission="AdminCOAPITab">
-	<cfoutput><h3>#apapplication.rb.getResource("ruleClasses")#</h3></cfoutput>
+	<cfoutput><h3>#application.rb.getResource("ruleClasses")#</h3></cfoutput>
 	
 	<cfparam name="FORM.action" default="">
 	
@@ -99,10 +99,10 @@ $out:$
 	
 	<table class="table-5" cellspacing="0">
 	<tr>
-		<th>#apapplication.rb.getResource("integrity")#</th>
-		<th>#apapplication.rb.getResource("component")#</th>
-		<th>#apapplication.rb.getResource("deployed")#</th>
-		<th style="border-right:none">#apapplication.rb.getResource("deploy")#</th>
+		<th>#application.rb.getResource("integrity")#</th>
+		<th>#application.rb.getResource("component")#</th>
+		<th>#application.rb.getResource("deployed")#</th>
+		<th style="border-right:none">#application.rb.getResource("deploy")#</th>
 	</tr>
 	</cfoutput>
 	
@@ -119,7 +119,7 @@ $out:$
 			<td align="center">
 				<!--- i18n:  yes/no images? check vs x ok across all locales?  --->
 				<cfif alterType.isCFCConflict(stConflicts=stConflicts,typename=componentName)>
-					<img src="#application.url.farcry#/images/no.gif" /> #apapplication.rb.getResource("seeBelow")#
+					<img src="#application.url.farcry#/images/no.gif" /> #application.rb.getResource("seeBelow")#
 				<cfelse>
 					<img src="#application.url.farcry#/images/yes.gif" />
 				</cfif>
@@ -136,9 +136,9 @@ $out:$
 			
 			<td style="border-right:none">
 				<cfif NOT alterType.isCFCDeployed(typename=componentName)>
-					<a href="#CGI.SCRIPT_NAME#?deploy=#componentName#">#apapplication.rb.getResource("Deploy")#</a>
+					<a href="#CGI.SCRIPT_NAME#?deploy=#componentName#">#application.rb.getResource("Deploy")#</a>
 				<cfelse>
-					#apapplication.rb.getResource("notAvailable")#
+					#application.rb.getResource("notAvailable")#
 				</cfif>
 			</td>
 		</tr>

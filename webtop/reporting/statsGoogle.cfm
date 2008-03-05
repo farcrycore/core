@@ -48,26 +48,26 @@ $out:$
 				<form method="post" class="f-wrap-1 f-bg-short" action="">
 				<fieldset>
 
-					<h3>#apapplication.rb.getResource("googleKeyWords")#</h3>
+					<h3>#application.rb.getResource("googleKeyWords")#</h3>
 					
 					<label for="dateRange">
 					<!--- drop down for date --->
-					<b>#apapplication.rb.getResource("Date")#</b>
+					<b>#application.rb.getResource("Date")#</b>
 					<select name="dateRange" id="dateRange">
-						<option value="all" <cfif form.dateRange eq "all">selected="selected"</cfif>>#apapplication.rb.getResource("allDates")#</option>
-						<option value="d" <cfif form.dateRange eq "d">selected="selected"</cfif>>#apapplication.rb.getResource("today")#</option>
-						<option value="ww" <cfif form.dateRange eq "ww">selected="selected"</cfif>>#apapplication.rb.getResource("lastWeek")#</option>
-						<option value="m" <cfif form.dateRange eq "m">selected="selected"</cfif>>#apapplication.rb.getResource("lastMonth")#</option>
-						<option value="q" <cfif form.dateRange eq "q">selected="selected"</cfif>>#apapplication.rb.getResource("lastQuarter")#</option>
-						<option value="yyyy" <cfif form.dateRange eq "yyyy">selected="selected"</cfif>>#apapplication.rb.getResource("lastYear")#</option>
+						<option value="all" <cfif form.dateRange eq "all">selected="selected"</cfif>>#application.rb.getResource("allDates")#</option>
+						<option value="d" <cfif form.dateRange eq "d">selected="selected"</cfif>>#application.rb.getResource("today")#</option>
+						<option value="ww" <cfif form.dateRange eq "ww">selected="selected"</cfif>>#application.rb.getResource("lastWeek")#</option>
+						<option value="m" <cfif form.dateRange eq "m">selected="selected"</cfif>>#application.rb.getResource("lastMonth")#</option>
+						<option value="q" <cfif form.dateRange eq "q">selected="selected"</cfif>>#application.rb.getResource("lastQuarter")#</option>
+						<option value="yyyy" <cfif form.dateRange eq "yyyy">selected="selected"</cfif>>#application.rb.getResource("lastYear")#</option>
 					</select><br />
 					</label>
 					
 					<label for="maxRows">
 					<!--- drop down for max rows --->
-					<b>#apapplication.rb.getResource("rows")#</b>
+					<b>#application.rb.getResource("rows")#</b>
 					<select name="maxRows" id="maxRows">
-						<option value="all" <cfif form.maxRows eq "all">selected="selected"</cfif>>#apapplication.rb.getResource("allRows")#</option>
+						<option value="all" <cfif form.maxRows eq "all">selected="selected"</cfif>>#application.rb.getResource("allRows")#</option>
 						<cfloop from="10" to="200" step=10 index="rows">
 							<option value="#rows#" <cfif rows eq form.maxRows>selected="selected"</cfif>>#rows#</option>
 						</cfloop>
@@ -75,7 +75,7 @@ $out:$
 					<label>
 					
 					<div class="f-submit-wrap">
-					<input type="submit" value="#apapplication.rb.getResource("update")#" class="f-submit" />
+					<input type="submit" value="#application.rb.getResource("update")#" class="f-submit" />
 					</div>
 					
 				</fieldset>
@@ -84,8 +84,8 @@ $out:$
 				
 				<table class="table-3" cellspacing="0">
 				<tr>
-					<th>#apapplication.rb.getResource("keyWords")#</th>
-					<th>#apapplication.rb.getResource("Referals")#</th>
+					<th>#application.rb.getResource("keyWords")#</th>
+					<th>#application.rb.getResource("Referals")#</th>
 				</tr>
 				
 				<!--- show stats with links to search page --->
@@ -99,7 +99,7 @@ $out:$
 				</table>
 
 	<cfelse>
-		<h3>#apapplication.rb.getResource("noSearchesNow")#</h3>
+		<h3>#application.rb.getResource("noSearchesNow")#</h3>
 	</cfif>
 	</cfoutput>
 </sec:CheckPermission>

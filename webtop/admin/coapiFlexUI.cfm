@@ -5,7 +5,7 @@
 
 <cfprocessingDirective pageencoding="utf-8">
 
-<admin:header title="#apapplication.rb.getResource("COAPIrules")#" writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
+<admin:header title="#application.rb.getResource("COAPIrules")#" writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 <sec:CheckPermission error="true" permission="AdminCOAPITab">
 	<cfif len(application.url.webroot)>

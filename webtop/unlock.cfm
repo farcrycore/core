@@ -34,7 +34,7 @@
 					<cfset permission = true>
 				<cfelse>
 					<cfset permission = false>
-					<cfset message = "#apapplication.rb.getResource("noPermissionUnlockAll")#">
+					<cfset message = "#application.rb.getResource("noPermissionUnlockAll")#">
 				</cfif>
 			</cfif>
 			<!--- check permission --->

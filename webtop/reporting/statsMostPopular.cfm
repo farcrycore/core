@@ -51,13 +51,13 @@ $out:$
 		
 			<fieldset>
 			
-			<h3>#apapplication.rb.getResource("mostPopularObj")#</h3>
+			<h3>#application.rb.getResource("mostPopularObj")#</h3>
 			
 			<label for="typeName">
 			<!--- drop down for typeName --->
-			<b>#apapplication.rb.getResource("typeLC")#</b>
+			<b>#application.rb.getResource("typeLC")#</b>
 			<select name="typeName" id="typeName">
-				<option value="all" <cfif form.typeName eq "all">selected="selected"</cfif>>#apapplication.rb.getResource("allTypes")#</option>
+				<option value="all" <cfif form.typeName eq "all">selected="selected"</cfif>>#application.rb.getResource("allTypes")#</option>
 				<!--- sort structure by Key name --->
 				<cfset listofKeys = structKeyList(application.types)>
 				<cfset listofKeys = listsort(listofkeys,"textnocase")>
@@ -69,22 +69,22 @@ $out:$
 			
 			<label for="dateRange">
 			<!--- drop down for date --->
-			<b>#apapplication.rb.getResource("date")#</b>
+			<b>#application.rb.getResource("date")#</b>
 			<select name="dateRange" id="dateRange">
-				<option value="all" <cfif form.dateRange eq "all">selected="selected"</cfif>>#apapplication.rb.getResource("allDates")#</option>
-				<option value="d" <cfif form.dateRange eq "d">selected="selected"</cfif>>#apapplication.rb.getResource("Today")#</option>
-				<option value="ww" <cfif form.dateRange eq "ww">selected="selected"</cfif>>#apapplication.rb.getResource("lastWeek")#</option>
-				<option value="m" <cfif form.dateRange eq "m">selected="selected"</cfif>>#apapplication.rb.getResource("lastMonth")#</option>
-				<option value="q" <cfif form.dateRange eq "q">selected="selected"</cfif>>#apapplication.rb.getResource("lastQuarter")#</option>
-				<option value="yyyy" <cfif form.dateRange eq "yyyy">selected="selected"</cfif>>#apapplication.rb.getResource("lastYear")#</option>
+				<option value="all" <cfif form.dateRange eq "all">selected="selected"</cfif>>#application.rb.getResource("allDates")#</option>
+				<option value="d" <cfif form.dateRange eq "d">selected="selected"</cfif>>#application.rb.getResource("Today")#</option>
+				<option value="ww" <cfif form.dateRange eq "ww">selected="selected"</cfif>>#application.rb.getResource("lastWeek")#</option>
+				<option value="m" <cfif form.dateRange eq "m">selected="selected"</cfif>>#application.rb.getResource("lastMonth")#</option>
+				<option value="q" <cfif form.dateRange eq "q">selected="selected"</cfif>>#application.rb.getResource("lastQuarter")#</option>
+				<option value="yyyy" <cfif form.dateRange eq "yyyy">selected="selected"</cfif>>#application.rb.getResource("lastYear")#</option>
 			</select><br />
 			</label>
 			
 			<label for="maxRows">
 			<!--- drop down for max rows --->
-			<b>#apapplication.rb.getResource("rows")#</b>
+			<b>#application.rb.getResource("rows")#</b>
 			<select name="maxRows" id="maxRows">
-				<option value="all" <cfif form.maxRows eq "all">selected="selected"</cfif>>#apapplication.rb.getResource("allRows")#</option>
+				<option value="all" <cfif form.maxRows eq "all">selected="selected"</cfif>>#application.rb.getResource("allRows")#</option>
 				<cfloop from="10" to="200" step=10 index="rows">
 					<option value="#rows#" <cfif rows eq form.maxRows>selected="selected"</cfif>>#rows#</option>
 				</cfloop>
@@ -92,7 +92,7 @@ $out:$
 			</label>
 			
 			<div class="f-submit-wrap">
-			<input type="submit" value="#apapplication.rb.getResource("Update")#" class="f-submit" />
+			<input type="submit" value="#application.rb.getResource("Update")#" class="f-submit" />
 			</div>
 			
 			</fieldset>
@@ -103,9 +103,9 @@ $out:$
 		
 		<table class="table-3" cellspacing="0">
 		<tr>
-			<th>#apapplication.rb.getResource("objectLC")#</th>
-			<th>#apapplication.rb.getResource("views")#</th>
-			<th>#apapplication.rb.getResource("typeLC")#</th>
+			<th>#application.rb.getResource("objectLC")#</th>
+			<th>#application.rb.getResource("views")#</th>
+			<th>#application.rb.getResource("typeLC")#</th>
 			<th>&nbsp;</th>
 		</tr>
 		
@@ -115,13 +115,13 @@ $out:$
 				<td>#title#</td>
 				<td>#downloads#</td>
 				<td>#typename#</td>
-				<td><a href="#application.url.farcry#/edittabStats.cfm?objectid=#objectid#">#apapplication.rb.getResource("moreDetail")#</a></td>
+				<td><a href="#application.url.farcry#/edittabStats.cfm?objectid=#objectid#">#application.rb.getResource("moreDetail")#</a></td>
 			</tr>
 		</cfloop>
 		
 		</table>
 	<cfelse>
-		<h3>#apapplication.rb.getResource("noViewsNow")#</h3>
+		<h3>#application.rb.getResource("noViewsNow")#</h3>
 	</cfif>
 	</cfoutput>
 </sec:CheckPermission>

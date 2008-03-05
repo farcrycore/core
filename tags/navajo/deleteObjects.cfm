@@ -16,7 +16,7 @@ Intended for use with daemon dynamic data.
 
 
 <cfif len(attributes.lObjectIDs) eq 0>
-	<cfset "caller.#attributes.rMsg#" = "#apapplication.rb.getResource("noObjSelectedForDeletion")#">
+	<cfset "caller.#attributes.rMsg#" = "#application.rb.getResource("noObjSelectedForDeletion")#">
 	<cfexit>
 </cfif>
 

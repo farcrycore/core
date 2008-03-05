@@ -98,42 +98,42 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 <cfoutput>
 <form action="#cgi.script_name#?#cgi.query_string#" class="f-wrap-1 wider f-bg-medium" name="editform" method="post">
 <fieldset>
-<h3>#apapplication.rb.getResource("scheduledTaskDetails")#: <span class="highlight">#stObj.label#</span></h3>
+<h3>#application.rb.getResource("scheduledTaskDetails")#: <span class="highlight">#stObj.label#</span></h3>
 <cfif errormessage NEQ "">
 <p id="fading1" class="fade"><span class="error">#errormessage#</span></p>
 </cfif>
-	<label for="title"><b>#apapplication.rb.getResource("titleLabel")#</b>
+	<label for="title"><b>#application.rb.getResource("titleLabel")#</b>
 		<input type="text" name="title" id="title" value="#stObj.title#" maxlength="255" size="45" /><br />
 	</label>
 
-	<label for="description"><b>#apapplication.rb.getResource("descLabel")#</b>
+	<label for="description"><b>#application.rb.getResource("descLabel")#</b>
 		<textarea name="description" id="description">#stObj.description#</textarea><br />
 	</label>
 
-	<label for="template"><b>#apapplication.rb.getResource("templateLabel")#</b>
+	<label for="template"><b>#application.rb.getResource("templateLabel")#</b>
 		<select name="template" id="template"><cfloop query="qTemplates">
 			<option value="#qTemplates.path#" <cfif stObj.template eq qTemplates.path>selected="selected"</cfif>>#qTemplates.displayName#</option></cfloop>
 		</select><br />
 	</label>
 
-	<label for="parameters"><b>#apapplication.rb.getResource("parametersLabel")#</b>
+	<label for="parameters"><b>#application.rb.getResource("parametersLabel")#</b>
 		<input type="text" name="parameters" id="parameters" value="#stObj.parameters#" maxlength="255" size="45" /><br />
 	</label>
 
-	<label for="frequency"><b>#apapplication.rb.getResource("templateLabel")#</b>
+	<label for="frequency"><b>#application.rb.getResource("templateLabel")#</b>
 		<select name="frequency" id="frequency">
-			<option value="once"<cfif stObj.frequency eq "once"> selected="selected"</cfif>>#apapplication.rb.getResource("once")#</option>
-			<option value="daily"<cfif stObj.frequency eq "daily"> selected="selected"</cfif>>#apapplication.rb.getResource("daily")#</option>
-			<option value="weekly"<cfif stObj.frequency eq "weekly"> selected="selected"</cfif>>#apapplication.rb.getResource("weekly")#</option>
-			<option value="monthly"<cfif stObj.frequency eq "monthly"> selected="selected"</cfif>>#apapplication.rb.getResource("monthly")#</option>
+			<option value="once"<cfif stObj.frequency eq "once"> selected="selected"</cfif>>#application.rb.getResource("once")#</option>
+			<option value="daily"<cfif stObj.frequency eq "daily"> selected="selected"</cfif>>#application.rb.getResource("daily")#</option>
+			<option value="weekly"<cfif stObj.frequency eq "weekly"> selected="selected"</cfif>>#application.rb.getResource("weekly")#</option>
+			<option value="monthly"<cfif stObj.frequency eq "monthly"> selected="selected"</cfif>>#application.rb.getResource("monthly")#</option>
 		</select><br />
 	</label>
 	
-	<widgets:dateSelector fieldNamePrefix="start" fieldLabel="#apapplication.rb.getResource("startDateLabel")#" fieldValue="#stObj.startDate#">
+	<widgets:dateSelector fieldNamePrefix="start" fieldLabel="#application.rb.getResource("startDateLabel")#" fieldValue="#stObj.startDate#">
 
-	<widgets:dateSelector fieldNamePrefix="end" fieldLabel="#apapplication.rb.getResource("endDateLabel")#" fieldValue="#stObj.endDate#" bDateToggle="1">
+	<widgets:dateSelector fieldNamePrefix="end" fieldLabel="#application.rb.getResource("endDateLabel")#" fieldValue="#stObj.endDate#" bDateToggle="1">
 
-	<label for="timeOut"><b>#apapplication.rb.getResource("timeoutLabel")#</b>
+	<label for="timeOut"><b>#application.rb.getResource("timeoutLabel")#</b>
 		<input type="text" name="timeOut" id="timeOut" value="#stObj.timeOut#" maxlength="10" /><br />
 	</label>
 

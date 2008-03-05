@@ -172,18 +172,18 @@ $DEVELOPER: Geoff Bowers (modius@daemon.com.au)$
 			<cfoutput>
 			</ul>
 	
-			<h3>#apapplication.rb.getResource("externalFileCollection")#</h3>
+			<h3>#application.rb.getResource("externalFileCollection")#</h3>
 	
 			<table id="files" class="table-4" cellspacing="0">
 			<!--- allow for new file collection to be added --->
 			<input type="hidden" name="file__filecol" value="extFiles">
 			<tr>
-				<th class="alt">#apapplication.rb.getResource("UNCpath")#</th>
+				<th class="alt">#application.rb.getResource("UNCpath")#</th>
 				<td><input type="text" size="50" name="file__uncpath" <cfif structKeyExists("#application.config.verity.contenttype#", "extFiles")>value="#application.config.verity.contenttype.extFiles.aprops.uncpath#"</cfif>></td>
 			</tr>
 			<tr>
-				<th class="alt">#apapplication.rb.getResource("recursive")#</th>
-				<td><input type="checkbox" class="f-checkbox" name="file__recursive" value="#apapplication.rb.getResource("yes")#" <cfif structKeyExists("#application.config.verity.contenttype#", "extFiles") and application.config.verity.contenttype.extFiles.aprops.recursive eq "yes">checked</cfif>></td>
+				<th class="alt">#application.rb.getResource("recursive")#</th>
+				<td><input type="checkbox" class="f-checkbox" name="file__recursive" value="#application.rb.getResource("yes")#" <cfif structKeyExists("#application.config.verity.contenttype#", "extFiles") and application.config.verity.contenttype.extFiles.aprops.recursive eq "yes">checked</cfif>></td>
 			</tr>
 			<tr>
 				<th class="alt">File Types allowed</th>
@@ -191,7 +191,7 @@ $DEVELOPER: Geoff Bowers (modius@daemon.com.au)$
 			</tr>
 			<tr>
 				<th class="alt">&nbsp;</th>
-				<td><input type="submit" value="#apapplication.rb.getResource("updateConfig")#" class="f-submit" /></td>
+				<td><input type="submit" value="#application.rb.getResource("updateConfig")#" class="f-submit" /></td>
 			</tr>
 			</table>
 			</form>

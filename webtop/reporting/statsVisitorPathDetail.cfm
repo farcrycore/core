@@ -42,7 +42,7 @@ $out:$
 	</cfscript>
 	
 	<cfoutput>
-	<h3>#apapplication.rb.getResource("visitorPath")#</h3>
+	<h3>#application.rb.getResource("visitorPath")#</h3>
 	</cfoutput>
 	
 	<cfloop query="qVisitorPath">

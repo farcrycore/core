@@ -89,9 +89,9 @@ table, td, div {
 	<div class="formtitle" style="margin-left:30px;padding-bottom:5px;">Most Popular Pages</div>
 	<table cellpadding="5" cellspacing="0" border="1" width="500" style="margin-left:30px;">
 	<tr>
-		<th class="dataheader" align="left">#apapplication.rb.getResource("objectLC")#</th>
-		<th class="dataheader">#apapplication.rb.getResource("views")#</th>
-		<th class="dataheader">#apapplication.rb.getResource("typeLC")#</th>
+		<th class="dataheader" align="left">#application.rb.getResource("objectLC")#</th>
+		<th class="dataheader">#application.rb.getResource("views")#</th>
+		<th class="dataheader">#application.rb.getResource("typeLC")#</th>
 	</tr>
 	
 	<!--- show stats with links to detail --->
@@ -109,12 +109,12 @@ table, td, div {
 
 <!--- locales --->
 <cfif qLocales.recordcount>
-	<div class="formtitle" style="margin-left:30px;padding-bottom:5px;">#apapplication.rb.getResource("mostPopularLocales")#</div>
+	<div class="formtitle" style="margin-left:30px;padding-bottom:5px;">#application.rb.getResource("mostPopularLocales")#</div>
 	<table cellpadding="5" cellspacing="0" border="1" width="500" style="margin-left:30px;">
 	<tr>
-		<th class="dataheader" align="left">#apapplication.rb.getResource("country")#</th>
-		<th class="dataheader">#apapplication.rb.getResource("language")#</th>
-		<th class="dataheader">#apapplication.rb.getResource("sessions")#</th>
+		<th class="dataheader" align="left">#application.rb.getResource("country")#</th>
+		<th class="dataheader">#application.rb.getResource("language")#</th>
+		<th class="dataheader">#application.rb.getResource("sessions")#</th>
 	</tr>
 	
 	<!--- show stats with links to detail --->
@@ -132,11 +132,11 @@ table, td, div {
 
 <!--- browsers --->
 <cfif qBrowsers.recordcount>
-	<div class="formtitle" style="margin-left:30px;padding-bottom:5px;">#apapplication.rb.getResource("mostPopularBrowsers")#</div>
+	<div class="formtitle" style="margin-left:30px;padding-bottom:5px;">#application.rb.getResource("mostPopularBrowsers")#</div>
 	<table cellpadding="5" cellspacing="0" border="1" width="500" style="margin-left:30px;">
 	<tr>
-		<th class="dataheader" align="left">#apapplication.rb.getResource("browser")#</th>
-		<th class="dataheader">#apapplication.rb.getResource("sessions")#</th>
+		<th class="dataheader" align="left">#application.rb.getResource("browser")#</th>
+		<th class="dataheader">#application.rb.getResource("sessions")#</th>
 	</tr>
 	
 	<!--- show stats with links to detail --->
@@ -153,11 +153,11 @@ table, td, div {
 
 <!--- operating systems --->
 <cfif qOs.recordcount>
-	<div class="formtitle" style="margin-left:30px;padding-bottom:5px;">#apapplication.rb.getResource("mostPopularOS")#</div>
+	<div class="formtitle" style="margin-left:30px;padding-bottom:5px;">#application.rb.getResource("mostPopularOS")#</div>
 	<table cellpadding="5" cellspacing="0" border="1" width="500" style="margin-left:30px;">
 	<tr>
-		<th class="dataheader" align="left">#apapplication.rb.getResource("OS")#</th>
-		<th class="dataheader">#apapplication.rb.getResource("sessions")#</th>
+		<th class="dataheader" align="left">#application.rb.getResource("OS")#</th>
+		<th class="dataheader">#application.rb.getResource("sessions")#</th>
 	</tr>
 	
 	<!--- show stats with links to detail --->
@@ -174,11 +174,11 @@ table, td, div {
 
 <!--- referers --->
 <cfif qReferers.recordcount>
-	<div class="formtitle" style="margin-left:30px;padding-bottom:5px;">#apapplication.rb.getResource("mostPopularReferers")#</div>
+	<div class="formtitle" style="margin-left:30px;padding-bottom:5px;">#application.rb.getResource("mostPopularReferers")#</div>
 	<table cellpadding="5" cellspacing="0" border="1" width="500" style="margin-left:30px;">
 	<tr>
-		<th class="dataheader" align="left">#apapplication.rb.getResource("referer")#</th>
-		<th class="dataheader">#apapplication.rb.getResource("referals")#</th>
+		<th class="dataheader" align="left">#application.rb.getResource("referer")#</th>
+		<th class="dataheader">#application.rb.getResource("referals")#</th>
 	</tr>
 	
 	<!--- show stats with links to detail --->
@@ -195,11 +195,11 @@ table, td, div {
 
 <!--- searches --->
 <cfif qSearches.recordcount>
-	<div class="formtitle" style="margin-left:30px;padding-bottom:5px;">#apapplication.rb.getResource("mostPopularSearches")#</div>
+	<div class="formtitle" style="margin-left:30px;padding-bottom:5px;">#application.rb.getResource("mostPopularSearches")#</div>
 	<table cellpadding="5" cellspacing="0" border="1" width="500" style="margin-left:30px;">
 	<tr>
-		<th class="dataheader" align="left">#apapplication.rb.getResource("searchString")#</th>
-		<th class="dataheader">#apapplication.rb.getResource("searches")#</th>
+		<th class="dataheader" align="left">#application.rb.getResource("searchString")#</th>
+		<th class="dataheader">#application.rb.getResource("searches")#</th>
 	</tr>
 	
 	<!--- show stats with links to detail --->
@@ -216,5 +216,5 @@ table, td, div {
 </cfoutput>
 </cfmail>
 <cfoutput>
-#apapplication.rb.getResource("emailSent")#
+#application.rb.getResource("emailSent")#
 </cfoutput>

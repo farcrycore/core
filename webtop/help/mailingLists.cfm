@@ -32,31 +32,31 @@ $out:$
 
 <sec:CheckPermission error="true" permission="MainNavHelpTab">
 	<cfoutput>
-		<div class="formtitle">#apapplication.rb.getResource("mailingLists")#</div>
+		<div class="formtitle">#application.rb.getResource("mailingLists")#</div>
 		
 		<div style="padding-left:30px;padding-bottom:30px;padding-right:30px;">
-		<p>#apapplication.rb.getResource("farcryListBlurb")#</p>
+		<p>#application.rb.getResource("farcryListBlurb")#</p>
 		<p>&nbsp;</p>
 		
 		<div class="formtitle">farcry-dev (public)</div>
 		
 		<span class="frameMenuBullet">&raquo;</span> <a href="mailto:farcry-dev@lists.daemon.com.au">farcry-dev@lists.daemon.com.au</a>
-		<p>#apapplication.rb.getResource("farcryDevListBlurb")#</p>
+		<p>#application.rb.getResource("farcryDevListBlurb")#</p>
 		<ul>
-		    <li>#apapplication.rb.getResource("joinDevList")#</li>
-		    <li>#apapplication.rb.getResource("webBasedDevList")#</li>
-		    <li>#apapplication.rb.getResource("nntpDevList")#</li>
+		    <li>#application.rb.getResource("joinDevList")#</li>
+		    <li>#application.rb.getResource("webBasedDevList")#</li>
+		    <li>#application.rb.getResource("nntpDevList")#</li>
 		</ul>
 		
 		<p>&nbsp;</p>
 		<div class="formtitle">farcry-user (public)</div>
 		
 		<span class="frameMenuBullet">&raquo;</span> <a href="mailto:farcry-user@lists.daemon.com.au">farcry-user@lists.daemon.com.au</a>
-		<p>#apapplication.rb.getResource("farcryUserListBlurb")#</p>
+		<p>#application.rb.getResource("farcryUserListBlurb")#</p>
 		<ul>
-		    <li>#apapplication.rb.getResource("joinUserList")#</li>
-		    <li>#apapplication.rb.getResource("webBasedUserList")#</li>
-		    <li>#apapplication.rb.getResource("nntpUserList")#</li>
+		    <li>#application.rb.getResource("joinUserList")#</li>
+		    <li>#application.rb.getResource("webBasedUserList")#</li>
+		    <li>#application.rb.getResource("nntpUserList")#</li>
 		</ul>
 		
 		</div>

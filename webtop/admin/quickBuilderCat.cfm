@@ -140,9 +140,9 @@ $out:$
 	    </cfscript>
 	
 	    <cfoutput>
-	        <div class="formTitle">#apapplication.rb.getResource("catTreeQuickBuilder")#</div>
+	        <div class="formTitle">#application.rb.getResource("catTreeQuickBuilder")#</div>
 	        <p>
-	            #apapplication.rb.getResource("followingItemsCreated")#
+	            #application.rb.getResource("followingItemsCreated")#
 	        </p>
 	        <ul>
 				<cfset subS=listToArray('#arrayLen(items)#,"Category"')>
@@ -172,11 +172,11 @@ $out:$
 	<form method="post" class="f-wrap-1 f-bg-long wider" action="" name="theForm">
 	<fieldset>
 	
-		<h3>#apapplication.rb.getResource("catTreeQuickBuilder")#</h3>
+		<h3>#application.rb.getResource("catTreeQuickBuilder")#</h3>
 		
-		<label for="startPoint"><b>#apapplication.rb.getResource("createStructureWithin")#</b>
+		<label for="startPoint"><b>#application.rb.getResource("createStructureWithin")#</b>
 		<select name="startPoint" id="startPoint">
-		<option value="#application.catid.root#" selected>#apapplication.rb.getResource("Root")#</option>
+		<option value="#application.catid.root#" selected>#application.rb.getResource("Root")#</option>
 		<cfloop query="qNodes">
 		<option value="#qNodes.objectId#">#RepeatString("&nbsp;&nbsp;|", qNodes.nlevel)#- #qNodes.objectName#</option>
 		</cfloop>
@@ -185,17 +185,17 @@ $out:$
 		
 		<fieldset class="f-checkbox-wrap">
 		
-			<b>#apapplication.rb.getResource("navAliases")#</b>
+			<b>#application.rb.getResource("navAliases")#</b>
 			
 			<fieldset>
 			
 			<label for="makenavaliases">
 			<input type="checkbox" name="makenavaliases" id="makenavaliases" checked="checked" value="1" onclick="updateNavTreeDepthBox()" class="f-checkbox" />
-			#apapplication.rb.getResource("createNavAliases")#
+			#application.rb.getResource("createNavAliases")#
 			</label>
 			
 			<select name="navaliaseslevel">
-	            <option value="0">#apapplication.rb.getResource("all")#</option>
+	            <option value="0">#application.rb.getResource("all")#</option>
 	            <option value="1" selected >1</option>
 	            <option value="2">2</option>
 	            <option value="3">3</option>
@@ -203,25 +203,25 @@ $out:$
 	            <option value="5">5</option>
 	            <option value="6">6</option>
 	          </select><br />
-	          #apapplication.rb.getResource("levels")#
+	          #application.rb.getResource("levels")#
 			  <script>updateNavTreeDepthBox()</script>
 			
 			</fieldset>
 		
 		</fieldset>
 		
-		<label for="levelToken"><b>#apapplication.rb.getResource("levelToken")#</b>
+		<label for="levelToken"><b>#application.rb.getResource("levelToken")#</b>
 		<select name="levelToken" id="levelToken">
 		<option>#levelToken#</option>
 		</select><br />
 		</label>
 		
-		<label for="structure"><b>#apapplication.rb.getResource("structure")#</b>
+		<label for="structure"><b>#application.rb.getResource("structure")#</b>
 		<textarea name="structure" id="structure" rows="10" cols="40" class="f-comments"></textarea><br />
 		</label>
 		
 		<div class="f-submit-wrap">
-		<input type="submit" value="#apapplication.rb.getResource("buildSiteStructure")#" name="submit" class="f-submit" /><br />
+		<input type="submit" value="#application.rb.getResource("buildSiteStructure")#" name="submit" class="f-submit" /><br />
 		</div>
 		
 	</fieldset>
@@ -229,14 +229,14 @@ $out:$
 	
 	<hr />
 
-	<h4>#apapplication.rb.getResource("instructions")#</h4>
+	<h4>#application.rb.getResource("instructions")#</h4>
 	<p>
-	#apapplication.rb.getResource("quicklyBuildFarCrySiteBlurb")#
+	#application.rb.getResource("quicklyBuildFarCrySiteBlurb")#
 	</p>
 	
 	<hr />
 	
-	<h4>#apapplication.rb.getResource("example")#</h4>
+	<h4>#application.rb.getResource("example")#</h4>
 	<p>
 	<pre>
 	Item 1
@@ -251,7 +251,7 @@ $out:$
 	</p>
 	
 	<p>
-	#apapplication.rb.getResource("visualPurposesBlurb")#
+	#application.rb.getResource("visualPurposesBlurb")#
 	</p>
 	
 	<p>

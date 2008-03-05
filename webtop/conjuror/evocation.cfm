@@ -66,7 +66,7 @@ Parent Object: URL.OBJECTID
 	ie. by default checks aObjectIDs is a property
  --->	
 <cfif len(url.objectId) AND not structKeyExists(stParent,url.parentproperty)>
-	<cfthrow type="evocation" message="<strong>Error:</strong> #apapplication.rb.getResource("noaObjectIds")#">
+	<cfthrow type="evocation" message="<strong>Error:</strong> #application.rb.getResource("noaObjectIds")#">
 <cfelse>
 <!--- populate stproperties with default values from component metadata --->
 	<!--- default properties (common to all types) --->
@@ -154,7 +154,7 @@ Parent Object: URL.OBJECTID
 		<!--- relationship is same content type, eg dmnavigation and dmnavigation --->
 			<cfif NOT stParent.typename IS url.parenttype>
 				<!--- if content typs of parent is not actually the spcified parenttype then fail --->
-				<cfthrow type="evocation" message="#apapplication.rb.getResource("cantCreateNavObj")#">
+				<cfthrow type="evocation" message="#application.rb.getResource("cantCreateNavObj")#">
 			<cfelse>
 				<!--- TODO: 
 						we're assuming this is an NTM based content type and it might not be. 

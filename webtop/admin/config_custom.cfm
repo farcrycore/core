@@ -40,7 +40,7 @@ $out:$
 	</cfscript>
 	
 	<cfoutput>
-	<h3>#apapplication.rb.getResource("customConfigTypes")#</h3></cfoutput>
+	<h3>#application.rb.getResource("customConfigTypes")#</h3></cfoutput>
 	
 	<cfif qConfigs.recordcount>
 		<cfoutput>
@@ -50,9 +50,9 @@ $out:$
 		</cfif>
 		<table class="table-3" cellspacing="0">
 		<tr>
-			<th scope="col">#apapplication.rb.getResource("config")#</th>
-			<th scope="col">#apapplication.rb.getResource("deployed")#</th>
-			<th scope="col">#apapplication.rb.getResource("deploy")#</th>
+			<th scope="col">#application.rb.getResource("config")#</th>
+			<th scope="col">#application.rb.getResource("deployed")#</th>
+			<th scope="col">#application.rb.getResource("deploy")#</th>
 		</tr>
 		</cfoutput>
 		
@@ -73,9 +73,9 @@ $out:$
 				
 				<td align="center">
 					<cfif not structIsEmpty(stConfig)>
-						<a href="#CGI.SCRIPT_NAME#?deploy=#qConfigs.name#&type=redeploy">#apapplication.rb.getResource("restoreDefault")#</a>
+						<a href="#CGI.SCRIPT_NAME#?deploy=#qConfigs.name#&type=redeploy">#application.rb.getResource("restoreDefault")#</a>
 					<cfelse>
-						<a href="#CGI.SCRIPT_NAME#?deploy=#qConfigs.name#&type=deploy">#apapplication.rb.getResource("deploy")#</a>
+						<a href="#CGI.SCRIPT_NAME#?deploy=#qConfigs.name#&type=deploy">#application.rb.getResource("deploy")#</a>
 					</cfif>
 				</td>
 			</tr>
@@ -87,7 +87,7 @@ $out:$
 		</cfoutput>
 	
 	<cfelse>
-		<cfoutput><p>#apapplication.rb.getResource("noCustomConfigNow")#</p></cfoutput>
+		<cfoutput><p>#application.rb.getResource("noCustomConfigNow")#</p></cfoutput>
 	</cfif>
 </sec:CheckPermission>
 

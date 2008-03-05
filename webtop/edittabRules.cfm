@@ -93,7 +93,7 @@ function reinstateRuleListing()
 		</cfscript>
 		
 		<cfoutput>
-		<div align="center" class="formtitle">#apapplication.rb.getResource("publishingRuleDeleted")#</div>
+		<div align="center" class="formtitle">#application.rb.getResource("publishingRuleDeleted")#</div>
 		</cfoutput>
 	</cfcase>
 	
@@ -119,9 +119,9 @@ function reinstateRuleListing()
 					<span class="FormTitle" style="margin-left:30px;">#q.label#</span><br>
 					<table cellpadding="5" cellspacing="0" border="1" style="margin-left:30px;margin-top:5px" width="400">
 					<tr class="dataheader">
-						<td align="center"><strong>#apapplication.rb.getResource("ruleType")#</strong></td>
-						<td align="center" width="75"><strong>#apapplication.rb.getResource("edit")#</strong></td>
-						<td align="center" width="75"><strong>#apapplication.rb.getResource("delete")#</strong></td>
+						<td align="center"><strong>#application.rb.getResource("ruleType")#</strong></td>
+						<td align="center" width="75"><strong>#application.rb.getResource("edit")#</strong></td>
+						<td align="center" width="75"><strong>#application.rb.getResource("delete")#</strong></td>
 					</tr>
 					</cfoutput>
 					
@@ -133,10 +133,10 @@ function reinstateRuleListing()
 					<tr>
 						<td>#typename#</td>
 						<td align="center">
-							<a onclick="executeRuleUpdate('#typename#','#stCon.aRules[i]#')" href="javascript:void(0);">#apapplication.rb.getResource("edit")#</a> 
+							<a onclick="executeRuleUpdate('#typename#','#stCon.aRules[i]#')" href="javascript:void(0);">#application.rb.getResource("edit")#</a> 
 						</td>
 						<td align="center">
-							<a href="#cgi.script_name#?action=delete&ruleid=#stCon.aRules[i]#&containerid=#stCon.objectid#&typename=#typename#">#apapplication.rb.getResource("delete")#</a>
+							<a href="#cgi.script_name#?action=delete&ruleid=#stCon.aRules[i]#&containerid=#stCon.objectid#&typename=#typename#">#application.rb.getResource("delete")#</a>
 						</td>
 					</tr>
 					</cfoutput>
@@ -155,7 +155,7 @@ function reinstateRuleListing()
 <cfoutput>
 </div>
 <div id="editruleframe" style="display:none">
-	<span id="editrulemsg"></span>. <a onclick="reinstateRuleListing()" href="javascript:void(0)">#apapplication.rb.getResource("returnRuleList")#</a>
+	<span id="editrulemsg"></span>. <a onclick="reinstateRuleListing()" href="javascript:void(0)">#application.rb.getResource("returnRuleList")#</a>
 	<iframe name="ruleFrame" id="ruleFrame" src="#application.url.farcry#/admin/editrule.cfm" frameborder="0" width="100%" height="100%"></iframe>
 </div>
 </cfoutput>

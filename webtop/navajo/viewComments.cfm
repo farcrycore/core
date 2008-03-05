@@ -19,7 +19,7 @@
 		<br />
 		<!--- i18n: double check logic, geez i HATE compound rb string --->
 		<cfif stObj.label eq "">
-		#apapplication.rb.getResource("comments")#
+		#application.rb.getResource("comments")#
 		<cfelseif stObj.label neq "" AND (NOT isdefined("stObj.versionId") OR stObj.versionID eq "")>
 		#application.rb.formatRBString("commentsFor","#stObj.label#")#
 		<cfelseif stObj.label neq "" AND (isdefined("stObj.versionId") AND stObj.versionID eq "")>
@@ -34,7 +34,7 @@
 	<cfif isdefined("stObj.status") AND trim(stObj.commentLog) neq "">
         <cfoutput>#wrap(paragraphFormat2(stObj.commentLog),70)#</cfoutput>
     <cfelse>
-        <cfoutput><strong>#apapplication.rb.getResource("noComments")#</strong></cfoutput>
+        <cfoutput><strong>#application.rb.getResource("noComments")#</strong></cfoutput>
     </cfif>
 		</td>
 	</tr>

@@ -1,6 +1,6 @@
 <cfprocessingDirective pageencoding="utf-8">
 
-<cfabort showerror="#apapplication.rb.getResource("depreciatedDisplay")#.">
+<cfabort showerror="#application.rb.getResource("depreciatedDisplay")#.">
 <!--- 
 <cfsetting enablecfoutputonly="Yes">
 <cfimport taglib="/farcry/core/tags/navajo" prefix="nj">

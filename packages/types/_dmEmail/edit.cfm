@@ -39,11 +39,11 @@ $out: $
 	redirection="server"
 	r_bPLPIsComplete="bComplete">
 
-	<widgets:plpstep name="#apapplication.rb.getResource("start")#" template="start.cfm">
-	<widgets:plpstep name="#apapplication.rb.getResource("advancedOptions")#" template="options.cfm">
-	<widgets:plpstep name="#apapplication.rb.getResource("bodyLC")#" template="body.cfm">
-	<widgets:plpstep name="#apapplication.rb.getResource("htmlBody")#" template="htmlbody.cfm">
-	<widgets:plpstep name="#apapplication.rb.getResource("completeLC")#" template="complete.cfm" bFinishPLP="true">
+	<widgets:plpstep name="#application.rb.getResource("start")#" template="start.cfm">
+	<widgets:plpstep name="#application.rb.getResource("advancedOptions")#" template="options.cfm">
+	<widgets:plpstep name="#application.rb.getResource("bodyLC")#" template="body.cfm">
+	<widgets:plpstep name="#application.rb.getResource("htmlBody")#" template="htmlbody.cfm">
+	<widgets:plpstep name="#application.rb.getResource("completeLC")#" template="complete.cfm" bFinishPLP="true">
 	
 </widgets:plp> 
 

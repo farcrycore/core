@@ -30,7 +30,7 @@ $in: [url.typename]: object type $
 
 <cfif not IsDefined("url.typename")>
 	<cfoutput>
-	#apapplication.rb.getResource("errorMissingTypeName")#
+	#application.rb.getResource("errorMissingTypeName")#
 	</cfoutput>
 	<cfabort>
 </cfif>
@@ -76,13 +76,13 @@ $in: [url.typename]: object type $
 	//select
 	
 	st.columnType = 'expression'; 
-	st.heading = '#apapplication.rb.getResource("select")#';
+	st.heading = '#application.rb.getResource("select")#';
 	st.value = "<input type=""checkbox"" name=""objectid"" value=""##recordset.objectid##"">";
 	st.align = 'center';
 	arrayAppend(stGrid.aTable,st);
 	
 	st = structNew();
-	st.heading = '#apapplication.rb.getResource("edit")#';
+	st.heading = '#application.rb.getResource("edit")#';
 	st.align = "center";
 	st.columnType = 'eval'; 
 	editobjectURL = "#application.url.farcry#/navajo/edit.cfm?objectid=##recordset.objectID[recordset.currentrow]##&type=#stGrid.typename#";	
@@ -90,21 +90,21 @@ $in: [url.typename]: object type $
 	arrayAppend(stGrid.aTable,st);
 	
 	st = structNew();
-	st.heading = '#apapplication.rb.getResource("view")#';
+	st.heading = '#application.rb.getResource("view")#';
 	st.align = "center";
 	st.columnType = 'expression'; 
 	st.value = "<a href=""#application.url.webroot#/index.cfm?objectID=##recordset.objectID##&flushcache=1"" target=""_blank""><img src=""#application.url.farcry#/images/treeImages/preview.gif"" border=""0""></a>";
 	arrayAppend(stGrid.aTable,st);
 	
 	st = structNew();
-	st.heading = '#apapplication.rb.getResource("stats")#';
+	st.heading = '#application.rb.getResource("stats")#';
 	st.align = 'center';
 	st.columnType = 'expression'; 
 	st.value = "<a href=""javascript:void(0);"" onclick=""window.open('#application.url.farcry#/edittabStats.cfm?objectid=##recordset.objectid##','Stats','scrollbars,height=600,width=620');""><img src=""#application.url.farcry#/images/treeImages/stats.gif"" border=""0""></a>";
 	arrayAppend(stGrid.aTable,st);
 	
 	st = structNew();
-	st.heading = '#apapplication.rb.getResource("label")#';
+	st.heading = '#application.rb.getResource("label")#';
 	st.columnType = 'eval'; 
 	editobjectURL = "#application.url.farcry#/navajo/edit.cfm?objectid=##recordset.objectID[recordset.currentrow]##&type=#stGrid.typename#";	
 	st.value = "iif(iObjectEditPermission eq 1,DE(iif(locked and lockedby neq '#session.dmSec.authentication.userlogin#_#session.dmSec.authentication.userDirectory#',DE('##replace(recordset.label[recordset.currentrow],'####','','all')##'),DE('<a href=''#editObjectURL#''>##replace(recordset.label[recordset.currentrow],'####','','all')##</a>'))),DE('##replace(recordset.label[recordset.currentrow],'####','','all')##'))";
@@ -112,20 +112,20 @@ $in: [url.typename]: object type $
 	arrayAppend(stGrid.aTable,st);
 	
 	st = structNew();
-	st.heading = '#apapplication.rb.getResource("status")#';
+	st.heading = '#application.rb.getResource("status")#';
 	st.columnType = 'expression'; //this will default to objectid of row. 
 	st.value = "##status##";
 	st.align = "center";
 	arrayAppend(stGrid.aTable,st);
 		
 	st = structNew();
-	st.heading = '#apapplication.rb.getResource("lastUpdated")#';
+	st.heading = '#application.rb.getResource("lastUpdated")#';
 	st.columnType = 'eval'; //this will default to objectid of row. 
 	st.value = "application.thisCalendar.i18nDateFormat('##datetimelastupdated##',session.dmProfile.locale,application.mediumF)";
 	arrayAppend(stGrid.aTable,st);
 	
 	st = structNew();
-	st.heading = '#apapplication.rb.getResource("by")#';
+	st.heading = '#application.rb.getResource("by")#';
 	st.columnType = 'expression'; //this will default to objectid of row. 
 	st.value = "##lastupdatedby##";
 	st.align = 'center';
@@ -134,7 +134,7 @@ $in: [url.typename]: object type $
 	if (typename IS 'dmnews')
 	{
 	st = structNew();
-	st.heading = '#apapplication.rb.getResource("publishDate")#';
+	st.heading = '#application.rb.getResource("publishDate")#';
 	st.columnType = 'eval'; //this will default to objectid of row. 
 	st.value = "application.thisCalendar.i18nDateFormat('##publishdate##',session.dmProfile.locale,application.mediumF)";
 	arrayAppend(stGrid.aTable,st);

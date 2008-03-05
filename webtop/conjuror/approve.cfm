@@ -47,7 +47,7 @@ $out:$
 <cfoutput>
 <span class="FormTitle">
 <cfif isDefined("URL.draftObjectID")>
-	#apapplication.rb.getResource("objStatusRequest")#
+	#application.rb.getResource("objStatusRequest")#
 <cfelse>	
 	#application.rb.formatRBString("setObjStatus","#url.status#")#
 </cfif>	
@@ -84,7 +84,7 @@ $out:$
 	<cfif isdefined("stObj.status")>
 		<cfoutput>
 			<form name="form" action="" method="post">
-			<span class="formLabel">#apapplication.rb.getResource("addCommentsLabel")#</span><br>
+			<span class="formLabel">#application.rb.getResource("addCommentsLabel")#</span><br>
 			<textarea rows="8" cols="50"  name="commentLog"></textarea><br />
 			
 			<!--- if requesting approval, list approvers --->
@@ -93,12 +93,12 @@ $out:$
 			
 			</cfif>
 			
-			<input type="submit" name="submit" value="#apapplication.rb.getResource("submitUC")#" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';">
-			<input type="button" name="Cancel" value="#apapplication.rb.getResource("cancel")#" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';" onClick="location.href='../edittabOverview.cfm?objectid=#attributes.lobjectIDs#';"></div>     
+			<input type="submit" name="submit" value="#application.rb.getResource("submitUC")#" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';">
+			<input type="button" name="Cancel" value="#application.rb.getResource("cancel")#" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';" onClick="location.href='../edittabOverview.cfm?objectid=#attributes.lobjectIDs#';"></div>     
 			<!--- display existing comments --->
 			<cfif structKeyExists(stObj,"commentLog")>
 				<cfif len(trim(stObj.commentLog)) AND structKeyExists(stObj,"commentLog")>
-					<p></p><span class="formTitle">#apapplication.rb.getResource("previousComments")#</span><P></P>
+					<p></p><span class="formTitle">#application.rb.getResource("previousComments")#</span><P></P>
 					#htmlcodeformat(stObj.commentLog)#
 				</cfif>
 			</cfif>
@@ -115,7 +115,7 @@ $out:$
 		
 		
 		<cfif not structkeyexists(stObj, "status")>
-			<cfoutput><script> alert("#apapplication.rb.getResource("objNoApprovalProcess")#");
+			<cfoutput><script> alert("#application.rb.getResource("objNoApprovalProcess")#");
 				               window.close();
 			</script></cfoutput><cfabort>
 		</cfif>
@@ -198,7 +198,7 @@ $out:$
 				<cfelse>
 					<cfoutput>
 					<script>
-						alert("#apapplication.rb.getResource("notLoggedIn")#");
+						alert("#application.rb.getResource("notLoggedIn")#");
 						window.close();
 					</script>
 					</cfoutput>

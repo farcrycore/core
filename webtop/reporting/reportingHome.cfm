@@ -33,7 +33,7 @@ $out:$
 
 <body>
 
-<div>#apapplication.rb.getResource("reportingHomePage")#</div>
+<div>#application.rb.getResource("reportingHomePage")#</div>
 
 </body>
 </html>

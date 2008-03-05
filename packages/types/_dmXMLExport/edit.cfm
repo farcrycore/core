@@ -45,9 +45,9 @@ $in: url.killplp (optional)$
 	redirection="server"
 	r_bPLPIsComplete="bComplete">
 
-	<widgets:plpstep name="#apapplication.rb.getResource("start")#" template="start.cfm">
-	<widgets:plpstep name="#apapplication.rb.getResource("categoriesLC")#" template="categories.cfm">
-	<widgets:plpstep name="#apapplication.rb.getResource("completeLC")#" template="complete.cfm" bFinishPLP="true">
+	<widgets:plpstep name="#application.rb.getResource("start")#" template="start.cfm">
+	<widgets:plpstep name="#application.rb.getResource("categoriesLC")#" template="categories.cfm">
+	<widgets:plpstep name="#application.rb.getResource("completeLC")#" template="complete.cfm" bFinishPLP="true">
 </widgets:plp> 
 
 <cfif isDefined("bComplete") and bComplete>

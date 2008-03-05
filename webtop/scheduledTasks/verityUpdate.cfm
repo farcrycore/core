@@ -47,7 +47,7 @@ stCollections = application.config.verity.contenttype;
 </cfloop>
 
 <!--- build indices... --->
-<cfoutput><span class="FormTitle">#apapplication.rb.getResource("buildingCollections")#</span><p></p></cfoutput>
+<cfoutput><span class="FormTitle">#application.rb.getResource("buildingCollections")#</span><p></p></cfoutput>
 
 <!--- Empty aIndices Array --->
 <cfset aIndices = ArrayNew(1)>
@@ -186,7 +186,7 @@ stCollections = application.config.verity.contenttype;
 </cfscript>
 
 <cfoutput>
-<p>#apapplication.rb.getResource("verityConfigUpdated")#</p>
-<p>#apapplication.rb.getResource("allDone")#</p>
+<p>#application.rb.getResource("verityConfigUpdated")#</p>
+<p>#application.rb.getResource("allDone")#</p>
 </cfoutput>
 

@@ -47,7 +47,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 
 	<!--- check that an appropriate result was returned from COAPI --->
 	<cfif NOT IsStruct(stObj) OR StructIsEmpty(stObj)>
-		<cfthrow message="#apapplication.rb.getResource("badCOAPI")#">
+		<cfthrow message="#application.rb.getResource("badCOAPI")#">
 	</cfif>
 	<cfcatch type="Any">
 		<cflocation url="#application.url.webroot#/" addtoken="No">

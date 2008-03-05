@@ -93,15 +93,15 @@ START WEBSKIN
 					<!--- check user can edit --->
 					<cfif stOverviewParams.stPermissions.iEdit EQ 1>
 						<!--- MJB: added url.ref so that the edit methods know they were initially called by the overview page and they can return here if they so desire. --->
-						<ft:farcryButton style="" value="#apapplication.rb.getResource("editObj")#" bInPanel="true" url="edittabEdit.cfm?objectid=#stobj.objectid#&ref=overview&typename=#stobj.typeName#" />
+						<ft:farcryButton style="" value="#application.rb.getResource("editObj")#" bInPanel="true" url="edittabEdit.cfm?objectid=#stobj.objectid#&ref=overview&typename=#stobj.typeName#" />
 					</cfif>
 		
 					<!--- check user can approve object --->
 					<cfif stOverviewParams.stPermissions.iApprove eq 1 OR stOverviewParams.stPermissions.iApproveOwn EQ 1>
 						<cfif stobj.objectid NEQ stOverviewParams.objectid_previousversion>
-							<ft:farcryButton style="" value="#apapplication.rb.getResource("sendObjLive")#" bInPanel="true" url="#application.url.farcry#/navajo/approve.cfm?objectid=#stobj.objectid#&status=approved" />		
+							<ft:farcryButton style="" value="#application.rb.getResource("sendObjLive")#" bInPanel="true" url="#application.url.farcry#/navajo/approve.cfm?objectid=#stobj.objectid#&status=approved" />		
 						<cfelse>
-							<ft:farcryButton style="" value="#apapplication.rb.getResource("approveObjYourself")#" bInPanel="true" url="#application.url.farcry#/navajo/approve.cfm?objectid=#stobj.objectid#&status=approved" />
+							<ft:farcryButton style="" value="#application.rb.getResource("approveObjYourself")#" bInPanel="true" url="#application.url.farcry#/navajo/approve.cfm?objectid=#stobj.objectid#&status=approved" />
 						</cfif>
 					</cfif>
 
@@ -110,25 +110,25 @@ START WEBSKIN
 				<cfcase value="pending"> <!--- PENDING STATUS --->
 					<!--- check user can edit --->
 					<cfif stOverviewParams.stPermissions.iEdit EQ 1 AND stobj.bAlwaysShowEdit EQ 1>
-						<ft:farcryButton style="" value="#apapplication.rb.getResource("editObj")#" bInPanel="true" url="edittabEdit.cfm?objectid=#stobj.objectid#&ref=overview&typename=#stobj.typeName#" />
+						<ft:farcryButton style="" value="#application.rb.getResource("editObj")#" bInPanel="true" url="edittabEdit.cfm?objectid=#stobj.objectid#&ref=overview&typename=#stobj.typeName#" />
 					</cfif>
 				</cfcase>
 		
 				<cfcase value="approved">	
 					<!--- check user can edit --->
 					<cfif stOverviewParams.stPermissions.iEdit EQ 1 AND stobj.bAlwaysShowEdit EQ 1>
-						<ft:farcryButton style="" value="#apapplication.rb.getResource("editObj")#" bInPanel="true" url="edittabEdit.cfm?objectid=#stobj.objectid#&ref=overview&typename=#stobj.typeName#" />
+						<ft:farcryButton style="" value="#application.rb.getResource("editObj")#" bInPanel="true" url="edittabEdit.cfm?objectid=#stobj.objectid#&ref=overview&typename=#stobj.typeName#" />
 					</cfif>
 					
 					<!--- check if draft version exists --->
 					<cfset bDraftVersionAllowed = StructKeyExists(stobj,"versionid")>
 					<cfif bHasDraft EQ 0 AND stOverviewParams.stPermissions.iEdit eq 1 AND bDraftVersionAllowed>
-						<ft:farcryButton style="" value="#apapplication.rb.getResource("createEditableDraft")#" bInPanel="true" url="#application.url.farcry#/navajo/createDraftObject.cfm?objectID=#stobj.objectID#&typename=#stobj.typeName#" />
+						<ft:farcryButton style="" value="#application.rb.getResource("createEditableDraft")#" bInPanel="true" url="#application.url.farcry#/navajo/createDraftObject.cfm?objectID=#stobj.objectID#&typename=#stobj.typeName#" />
 					</cfif>
 					<cfif stOverviewParams.stPermissions.iApprove eq 1 OR stOverviewParams.stPermissions.iApproveOwn EQ 1>
-						<cfset buttonValue = apapplication.rb.getResource("sendBackToDraft") />
+						<cfset buttonValue = application.rb.getResource("sendBackToDraft") />
 						<cfif structKeyExists(stobj,"versionID") AND bHasDraft>
-							<cfset buttonValue = "#buttonValue# #apapplication.rb.getResource("deletingDraftVersion")#" />
+							<cfset buttonValue = "#buttonValue# #application.rb.getResource("deletingDraftVersion")#" />
 						</cfif>
 					
 						<ft:farcryButton style="" value="#buttonValue#" bInPanel="true" url="#application.url.farcry#/navajo/approve.cfm?objectid=#stobj.objectid#&status=draft&typename=#stobj.typeName#" />
@@ -138,14 +138,14 @@ START WEBSKIN
 		<cfelse>	<!--- content items without a status --->
 			<!--- check user can edit --->
 			<cfif stOverviewParams.stPermissions.iEdit EQ 1>
-				<ft:farcryButton style="" value="#apapplication.rb.getResource("editObj")#" bInPanel="true" url="edittabEdit.cfm?objectid=#stobj.objectid#&ref=overview&typename=#stobj.typeName#" />
+				<ft:farcryButton style="" value="#application.rb.getResource("editObj")#" bInPanel="true" url="edittabEdit.cfm?objectid=#stobj.objectid#&ref=overview&typename=#stobj.typeName#" />
 			</cfif>
 		</cfif>
 		
 		
 
 		<!--- preview object --->
-		<ft:farcryButton style="" value="#apapplication.rb.getResource("preview")#" bInPanel="true" url="#application.url.webroot#/index.cfm?objectid=#stobj.objectid#&flushcache=1&showdraft=1" target="_winPreview" />
+		<ft:farcryButton style="" value="#application.rb.getResource("preview")#" bInPanel="true" url="#application.url.webroot#/index.cfm?objectid=#stobj.objectid#&flushcache=1&showdraft=1" target="_winPreview" />
 		
 
 	</extjs:item>
@@ -162,16 +162,16 @@ START WEBSKIN
 					<cfif stOverviewParams.stPermissions.iEdit EQ 1>
 						<!--- MJB: added url.ref so that the edit methods know they were initially called by the overview page and they can return here if they so desire. --->
 						<cfif stobj.objectid NEQ stOverviewParams.objectid_previousversion>
-							<ft:farcryButton style="" value="#apapplication.rb.getResource("restoreLiveObj")#" bInPanel="true" onClick="confirmRestore('#stobj.parentid#','#stobj.objectid#');" />
+							<ft:farcryButton style="" value="#application.rb.getResource("restoreLiveObj")#" bInPanel="true" onClick="confirmRestore('#stobj.parentid#','#stobj.objectid#');" />
 						</cfif>
 					</cfif>
 		
 					<!--- Check user can request approval --->
 					<cfif stOverviewParams.stPermissions.iRequest eq 1>
 						<cfif stobj.objectid NEQ stOverviewParams.objectid_previousversion>
-							<ft:farcryButton style="" value="#apapplication.rb.getResource("requestApproval")#" bInPanel="true" url="#application.url.farcry#/navajo/approve.cfm?objectid=#stobj.objectid#&status=requestapproval" />
+							<ft:farcryButton style="" value="#application.rb.getResource("requestApproval")#" bInPanel="true" url="#application.url.farcry#/navajo/approve.cfm?objectid=#stobj.objectid#&status=requestapproval" />
 						<cfelse>
-							<ft:farcryButton style="" value="#apapplication.rb.getResource("requestObjApproval")#" bInPanel="true" url="#application.url.farcry#/navajo/approve.cfm?objectid=#stobj.objectid#&status=requestapproval" />	
+							<ft:farcryButton style="" value="#application.rb.getResource("requestObjApproval")#" bInPanel="true" url="#application.url.farcry#/navajo/approve.cfm?objectid=#stobj.objectid#&status=requestapproval" />	
 						</cfif>
 					</cfif>
 		
@@ -181,16 +181,16 @@ START WEBSKIN
 								<cfif listContains(application.navid.home,stobj.objectid) EQ 0 AND listContains(application.navid.root,stobj.objectid) eq 0>
 								<!--- check user can delete --->
 									<cfif stOverviewParams.stPermissions.iDelete eq 1>
-										<ft:farcryButton style="" value="#apapplication.rb.getResource("delete")#" bInPanel="true" url="navajo/delete.cfm?ObjectId=#stobj.objectId#" confirmText="#apapplication.rb.getResource("confirmDeleteObj")#" />
+										<ft:farcryButton style="" value="#application.rb.getResource("delete")#" bInPanel="true" url="navajo/delete.cfm?ObjectId=#stobj.objectId#" confirmText="#application.rb.getResource("confirmDeleteObj")#" />
 									</cfif>
 											
 									<!--- check user can move to trash and is a navigation obj--->
 									<cfif stOverviewParams.stPermissions.iTreeSendToTrash eq 1 and stobj.typeName eq "dmNavigation">
-										<ft:farcryButton style="" value="#apapplication.rb.getResource("sendToTrash")#" bInPanel="true" url="navajo/move.cfm?srcObjectId=#stobj.objectId#&destobjId=#application.navid.rubbish#" confirmText="#apapplication.rb.getResource("confirmTrashObj")#" />
+										<ft:farcryButton style="" value="#application.rb.getResource("sendToTrash")#" bInPanel="true" url="navajo/move.cfm?srcObjectId=#stobj.objectId#&destobjId=#application.navid.rubbish#" confirmText="#application.rb.getResource("confirmTrashObj")#" />
 									</cfif>
 								</cfif>
 							<cfelse>
-								<ft:farcryButton style="" value="#apapplication.rb.getResource("deleteDraftVersion")#" bInPanel="true" url="edittabEdit.cfm?objectid=#stOverviewParams.objectid_previousversion#&deleteDraftObjectID=#stobj.ObjectID#&typename=#stobj.typeName#" confirmText="#apapplication.rb.getResource("confirmDeleteObj")#" />
+								<ft:farcryButton style="" value="#application.rb.getResource("deleteDraftVersion")#" bInPanel="true" url="edittabEdit.cfm?objectid=#stOverviewParams.objectid_previousversion#&deleteDraftObjectID=#stobj.ObjectID#&typename=#stobj.typeName#" confirmText="#application.rb.getResource("confirmDeleteObj")#" />
 							</cfif>
 					</cfif>
 				</cfcase>
@@ -199,14 +199,14 @@ START WEBSKIN
 					<!--- check user can edit --->
 					<cfif stOverviewParams.stPermissions.iEdit EQ 1 AND stobj.bAlwaysShowEdit EQ 1>
 						<cfif stobj.objectid NEQ stOverviewParams.objectid_previousversion>
-							<ft:farcryButton style="" value="#apapplication.rb.getResource("restoreLiveObj")#" bInPanel="true" url="" onclick="confirmRestore('#stobj.parentid#','#stobj.objectid#')" />
+							<ft:farcryButton style="" value="#application.rb.getResource("restoreLiveObj")#" bInPanel="true" url="" onclick="confirmRestore('#stobj.parentid#','#stobj.objectid#')" />
 						</cfif>
 					</cfif>
 					
 					<cfif stOverviewParams.stPermissions.iApprove eq 1> <!--- check user can approve object --->
-						<ft:farcryButton style="" value="#apapplication.rb.getResource("sendObjLive")#" bInPanel="true" url="#application.url.farcry#/navajo/approve.cfm?objectid=#stobj.objectid#&status=approved" />
+						<ft:farcryButton style="" value="#application.rb.getResource("sendObjLive")#" bInPanel="true" url="#application.url.farcry#/navajo/approve.cfm?objectid=#stobj.objectid#&status=approved" />
 						<!--- send back to draft --->
-						<ft:farcryButton style="" value="#apapplication.rb.getResource("sendBackToDraft")#" bInPanel="true" url="#application.url.farcry#/navajo/approve.cfm?objectid=#stobj.objectid#&status=draft" />
+						<ft:farcryButton style="" value="#application.rb.getResource("sendBackToDraft")#" bInPanel="true" url="#application.url.farcry#/navajo/approve.cfm?objectid=#stobj.objectid#&status=draft" />
 					</cfif>
 				</cfcase>
 		
@@ -214,19 +214,19 @@ START WEBSKIN
 					<!--- check user can edit --->
 					<cfif stOverviewParams.stPermissions.iEdit EQ 1 AND stobj.bAlwaysShowEdit EQ 1>
 						<cfif stobj.objectid NEQ stOverviewParams.objectid_previousversion>
-							<ft:farcryButton style="" value="#apapplication.rb.getResource("restoreLiveObj")#" bInPanel="true" url="" onclick="confirmRestore('#stobj.parentid#','#stobj.objectid#');" />
+							<ft:farcryButton style="" value="#application.rb.getResource("restoreLiveObj")#" bInPanel="true" url="" onclick="confirmRestore('#stobj.parentid#','#stobj.objectid#');" />
 						</cfif>
 					</cfif>
 		
 					<cfif listContains(application.navid.home,stobj.objectid) EQ 0 AND listContains(application.navid.root,stobj.objectid) eq 0>
 						<!--- check user can delete --->
 						<cfif stOverviewParams.stPermissions.iDelete eq 1>
-							<ft:farcryButton style="" value="#apapplication.rb.getResource("delete")#" bInPanel="true" url="navajo/delete.cfm?ObjectId=#stobj.objectId#&typename=#stobj.typeName#" confirmText="#apapplication.rb.getResource("confirmDeleteObj")#" />
+							<ft:farcryButton style="" value="#application.rb.getResource("delete")#" bInPanel="true" url="navajo/delete.cfm?ObjectId=#stobj.objectId#&typename=#stobj.typeName#" confirmText="#application.rb.getResource("confirmDeleteObj")#" />
 						</cfif>
 						
 						<!--- check user can move to trash and is dmNavigation type--->
 						<cfif stOverviewParams.stPermissions.iTreeSendToTrash eq 1 and stobj.typeName eq "dmNavigation">
-							<ft:farcryButton style="" value="#apapplication.rb.getResource("sendToTrash")#" bInPanel="true" url="navajo/move.cfm?srcObjectId=#stobj.objectId#&destobjId=#application.navid.rubbish#" confirmText="#apapplication.rb.getResource("confirmTrashObj")#" />
+							<ft:farcryButton style="" value="#application.rb.getResource("sendToTrash")#" bInPanel="true" url="navajo/move.cfm?srcObjectId=#stobj.objectId#&destobjId=#application.navid.rubbish#" confirmText="#application.rb.getResource("confirmTrashObj")#" />
 						</cfif>
 					</cfif>
 				</cfcase>
@@ -235,11 +235,11 @@ START WEBSKIN
 			
 			<!--- check user can delete --->
 			<cfif stOverviewParams.stPermissions.iDelete eq 1>
-				<ft:farcryButton style="" value="#apapplication.rb.getResource("delete")#" bInPanel="true" url="navajo/delete.cfm?ObjectId=#stobj.objectId#&typename=#stobj.typeName#" confirmText="#apapplication.rb.getResource("confirmDeleteObj")#" />
+				<ft:farcryButton style="" value="#application.rb.getResource("delete")#" bInPanel="true" url="navajo/delete.cfm?ObjectId=#stobj.objectId#&typename=#stobj.typeName#" confirmText="#application.rb.getResource("confirmDeleteObj")#" />
 			</cfif>
 			<!--- check user can move to trash and is dmNavigation type--->
 			<cfif stOverviewParams.stPermissions.iTreeSendToTrash eq 1 and stobj.typeName eq "dmNavigation">
-				<ft:farcryButton style="" value="#apapplication.rb.getResource("sendToTrash")#" bInPanel="true" url="navajo/move.cfm?srcObjectId=#stobj.objectId#&destobjId=#application.navid.rubbish#" confirmText="#apapplication.rb.getResource("confirmTrashObj")#" />
+				<ft:farcryButton style="" value="#application.rb.getResource("sendToTrash")#" bInPanel="true" url="navajo/move.cfm?srcObjectId=#stobj.objectId#&destobjId=#application.navid.rubbish#" confirmText="#application.rb.getResource("confirmTrashObj")#" />
 			</cfif>
 		</cfif>
 
@@ -295,9 +295,9 @@ START WEBSKIN
 	<cfif StructKeyExists(stobj,"commentLog")>
 		<!--- add comments --->
 		
-		<extjs:item title="#apapplication.rb.getResource("viewComments")#" autoScroll="true">
+		<extjs:item title="#application.rb.getResource("viewComments")#" autoScroll="true">
 
-			<ft:farcryButton style="" value="#apapplication.rb.getResource("addComments")#" bInPanel="true" url="#application.url.farcry#/navajo/commentOnContent.cfm?objectid=#stobj.objectid#" />					
+			<ft:farcryButton style="" value="#application.rb.getResource("addComments")#" bInPanel="true" url="#application.url.farcry#/navajo/commentOnContent.cfm?objectid=#stobj.objectid#" />					
 			
 			<cfif Trim(stobj.commentLog) NEQ "">
 				<cfoutput><p style="margin-bottom:10px;">#ReplaceNoCase(Trim(stobj.commentLog),"#chr(10)##chr(13)#","<br />", "all")#</p></cfoutput>
@@ -309,17 +309,17 @@ START WEBSKIN
 	<extjs:item title="Miscellaneous" >	
 
 		<!--- view statistics --->	
-		<ft:farcryButton style="" type="button" value="#apapplication.rb.getResource("stats")#" url="#application.url.farcry#/edittabStats.cfm?objectid=#stobj.objectid#" target="objectStatistics" />		
+		<ft:farcryButton style="" type="button" value="#application.rb.getResource("stats")#" url="#application.url.farcry#/edittabStats.cfm?objectid=#stobj.objectid#" target="objectStatistics" />		
 			
 		<!--- view audit --->	
-		<ft:farcryButton style="" type="button" value="#apapplication.rb.getResource("audit")#" onclick="openScaffoldDialog('#application.url.farcry#/edittabAudit.cfm?objectid=#stobj.objectid#','Audit',400,400,true);" />		
+		<ft:farcryButton style="" type="button" value="#application.rb.getResource("audit")#" onclick="openScaffoldDialog('#application.url.farcry#/edittabAudit.cfm?objectid=#stobj.objectid#','Audit',400,400,true);" />		
 			
 
 		
 		<cfif stOverviewParams.stPermissions.iObjectDumpTab>
 			<!--- dump content --->
 			
-			<ft:farcryButton style="" type="button" value="#apapplication.rb.getResource("dump")#" onclick="openScaffoldDialog('#application.url.farcry#/object_dump.cfm?objectid=#stobj.objectid#','Properties',400,400,true);" />		
+			<ft:farcryButton style="" type="button" value="#application.rb.getResource("dump")#" onclick="openScaffoldDialog('#application.url.farcry#/object_dump.cfm?objectid=#stobj.objectid#','Properties',400,400,true);" />		
 			<!--- <li id="tgl_dumpobject_#stobj.objectid#" style="display:none;"><cfdump var="#stobj#"></li> --->
 		</cfif>
 		

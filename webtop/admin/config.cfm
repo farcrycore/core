@@ -32,7 +32,7 @@ $out:$
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 <sec:CheckPermission error="true" permission="AdminCOAPITab">
-	<cfoutput><h3>#apapplication.rb.getResource("farcryInternalConfigFiles")#</h3></cfoutput>
+	<cfoutput><h3>#application.rb.getResource("farcryInternalConfigFiles")#</h3></cfoutput>
 	<cfparam name="form.action" default="none">
 	
 	<cfif isDefined("URL.configName")>
@@ -121,7 +121,7 @@ $out:$
 					</table>
 
 					<div class="f-submit-wrap">
-					<input type="submit" value="#apapplication.rb.getResource("updateConfig")#" class="f-submit" />
+					<input type="submit" value="#application.rb.getResource("updateConfig")#" class="f-submit" />
 					</div>
 					
 					<hr />
@@ -140,10 +140,10 @@ $out:$
 		<cfinvoke component="#application.packagepath#.farcry.config" method="list" returnvariable="qConfigs">
 		
 		<cfif qConfigs.RecordCount eq 0>
-			<cfoutput>#apapplication.rb.getResource("noConfigFilesSpecified")#
+			<cfoutput>#application.rb.getResource("noConfigFilesSpecified")#
 			<form action="#cgi.script_name#" method="post">
-			<input type="Hidden" name="action" value="#apapplication.rb.getResource("defaults")#">
-			<input type="submit" value="#apapplication.rb.getResource("installDefaultConfigs")#" class="f-submit" />
+			<input type="Hidden" name="action" value="#application.rb.getResource("defaults")#">
+			<input type="submit" value="#application.rb.getResource("installDefaultConfigs")#" class="f-submit" />
 			</form></cfoutput>
 		<cfelse>
 			<cfoutput>
@@ -158,8 +158,8 @@ $out:$
 		
 		<cfcatch>
 			<cfoutput><form action="#cgi.script_name#" method="post">
-			<input type="Hidden" name="action" value="#apapplication.rb.getResource("deploy")#" class="f-submit" />
-			<input type="submit" value="#apapplication.rb.getResource("deployConfigTable")#" class="f-submit" />
+			<input type="Hidden" name="action" value="#application.rb.getResource("deploy")#" class="f-submit" />
+			<input type="submit" value="#application.rb.getResource("deployConfigTable")#" class="f-submit" />
 			</form></cfoutput>
 		</cfcatch>
 	</cftry>

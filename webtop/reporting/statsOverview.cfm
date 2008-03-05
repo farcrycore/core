@@ -63,17 +63,17 @@ $out:$
 		
 			<label for="dateRange"><b>Date:</b>
 			<select name="dateRange" id="dateRange">
-			<option value="all" <cfif form.dateRange eq "all">selected="selected"</cfif>>#apapplication.rb.getResource("allDates")#</option>
-			<option value="d" <cfif form.dateRange eq "d">selected="selected"</cfif>>#apapplication.rb.getResource("Today")#</option>
-			<option value="ww" <cfif form.dateRange eq "ww">selected="selected"</cfif>>#apapplication.rb.getResource("lastWeek")#</option>
-			<option value="m" <cfif form.dateRange eq "m">selected="selected"</cfif>>#apapplication.rb.getResource("lastMonth")#</option>
-			<option value="q" <cfif form.dateRange eq "q">selected="selected"</cfif>>#apapplication.rb.getResource("lastQuarter")#</option>
-			<option value="yyyy" <cfif form.dateRange eq "yyyy">selected="selected"</cfif>>#apapplication.rb.getResource("lastYear")#</option>
+			<option value="all" <cfif form.dateRange eq "all">selected="selected"</cfif>>#application.rb.getResource("allDates")#</option>
+			<option value="d" <cfif form.dateRange eq "d">selected="selected"</cfif>>#application.rb.getResource("Today")#</option>
+			<option value="ww" <cfif form.dateRange eq "ww">selected="selected"</cfif>>#application.rb.getResource("lastWeek")#</option>
+			<option value="m" <cfif form.dateRange eq "m">selected="selected"</cfif>>#application.rb.getResource("lastMonth")#</option>
+			<option value="q" <cfif form.dateRange eq "q">selected="selected"</cfif>>#application.rb.getResource("lastQuarter")#</option>
+			<option value="yyyy" <cfif form.dateRange eq "yyyy">selected="selected"</cfif>>#application.rb.getResource("lastYear")#</option>
 			</select><br />
 			</label>
 			
 			<div class="f-submit-wrap">
-			<input type="submit" value="#apapplication.rb.getResource("Update")#" class="f-submit" />
+			<input type="submit" value="#application.rb.getResource("Update")#" class="f-submit" />
 			</div>
 			
 		</fieldset>
@@ -85,13 +85,13 @@ $out:$
 	<!--- views --->
 	<cfif qViews.recordcount>
 	
-		<h3>#apapplication.rb.getResource("mostPopularPages")#</h3>
+		<h3>#application.rb.getResource("mostPopularPages")#</h3>
 		
 		<table class="table-3" cellspacing="0">
 		<tr>
-			<th style="width:33%">#apapplication.rb.getResource("objectLC")#</th>
-			<th style="width:34%">#apapplication.rb.getResource("views")#</th>
-			<th style="width:33%">#apapplication.rb.getResource("typeLC")#</th>
+			<th style="width:33%">#application.rb.getResource("objectLC")#</th>
+			<th style="width:34%">#application.rb.getResource("views")#</th>
+			<th style="width:33%">#application.rb.getResource("typeLC")#</th>
 		</tr>
 		
 		<!--- show stats with links to detail --->
@@ -109,13 +109,13 @@ $out:$
 	<!--- locales --->
 	<cfif qLocales.recordcount>
 	
-		<h3>#apapplication.rb.getResource("mostPopularLocales")#</h3>
+		<h3>#application.rb.getResource("mostPopularLocales")#</h3>
 		
 		<table class="table-3" cellspacing="0">
 		<tr>
-			<th style="width:33%">#apapplication.rb.getResource("country")#</th>
-			<th style="width:34%">#apapplication.rb.getResource("language")#</th>
-			<th style="width:33%">#apapplication.rb.getResource("sessions")#</th>
+			<th style="width:33%">#application.rb.getResource("country")#</th>
+			<th style="width:34%">#application.rb.getResource("language")#</th>
+			<th style="width:33%">#application.rb.getResource("sessions")#</th>
 		</tr>
 		
 		<!--- show stats with links to detail --->
@@ -132,11 +132,11 @@ $out:$
 	
 	<!--- browsers --->
 	<cfif qBrowsers.recordcount>
-		<h3>#apapplication.rb.getResource("mostPopularBrowsers")#</h3>
+		<h3>#application.rb.getResource("mostPopularBrowsers")#</h3>
 		<table class="table-3" cellspacing="0">
 		<tr>
-			<th style="width:67%">#apapplication.rb.getResource("Browser")#</th>
-			<th style="width:33%">#apapplication.rb.getResource("Sessions")#</th>
+			<th style="width:67%">#application.rb.getResource("Browser")#</th>
+			<th style="width:33%">#application.rb.getResource("Sessions")#</th>
 		</tr>
 		
 		<!--- show stats with links to detail --->
@@ -152,11 +152,11 @@ $out:$
 	
 	<!--- operating systems --->
 	<cfif qOs.recordcount>
-		<h3>#apapplication.rb.getResource("mostPopularOS")#</h3>
+		<h3>#application.rb.getResource("mostPopularOS")#</h3>
 		<table class="table-3" cellspacing="0">
 		<tr>
-			<th style="width:67%">#apapplication.rb.getResource("OS")#</th>
-			<th style="width:33%">#apapplication.rb.getResource("Sessions")#</th>
+			<th style="width:67%">#application.rb.getResource("OS")#</th>
+			<th style="width:33%">#application.rb.getResource("Sessions")#</th>
 		</tr>
 		
 		<!--- show stats with links to detail --->
@@ -176,8 +176,8 @@ $out:$
 		<h3>Most Popular Referers</h3>
 		<table class="table-3" cellspacing="0">
 		<tr>
-			<th style="width:67%">#apapplication.rb.getResource("Referer")#</th>
-			<th style="width:33%">#apapplication.rb.getResource("Referals")#</th>
+			<th style="width:67%">#application.rb.getResource("Referer")#</th>
+			<th style="width:33%">#application.rb.getResource("Referals")#</th>
 		</tr>
 		
 		<!--- show stats with links to detail --->
@@ -193,11 +193,11 @@ $out:$
 	
 	<!--- searches --->
 	<cfif qSearches.recordcount>
-		<h3>#apapplication.rb.getResource("mostPopularSearches")#</h3>
+		<h3>#application.rb.getResource("mostPopularSearches")#</h3>
 		<table class="table-3" cellspacing="0">
 		<tr>
-			<th style="width:67%">#apapplication.rb.getResource("searchString")#</th>
-			<th style="width:33%">#apapplication.rb.getResource("searches")#</th>
+			<th style="width:67%">#application.rb.getResource("searchString")#</th>
+			<th style="width:33%">#application.rb.getResource("searches")#</th>
 		</tr>
 		
 		<!--- show stats with links to detail --->

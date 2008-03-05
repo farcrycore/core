@@ -70,7 +70,7 @@ $out:$
 
 <cfif iState NEQ 1><cfoutput>
 <script type="text/javascript">
-	alert("#apapplication.rb.getResource("noModifyNodePermission")#");
+	alert("#application.rb.getResource("noModifyNodePermission")#");
 </script></cfoutput>
 <cfelse>
 	<cfif len(parentObjectID)>

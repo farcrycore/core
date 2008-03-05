@@ -47,29 +47,29 @@ $out:$
 			<form method="post" class="f-wrap-1 f-bg-short" action="">
 			<fieldset>
 
-				<h3>#apapplication.rb.getResource("whoOnNow")#</h3>
+				<h3>#application.rb.getResource("whoOnNow")#</h3>
 				
 				<label for="order">
 				<!--- drop down for ordering --->
-				<b>#apapplication.rb.getResource("orderBy")#</b>
+				<b>#application.rb.getResource("orderBy")#</b>
 				<select name="order" id="order">
-					<option value="sessionTime" <cfif form.order eq "sessionTime">selected="selected"</cfif>>#apapplication.rb.getResource("beenActiveFor")#</option>
-					<option value="lastActivity" <cfif form.order eq "lastActivity">selected="selected"</cfif>>#apapplication.rb.getResource("lastActivity")#</option>
-					<option value="views" <cfif form.order eq "views">selected="selected"</cfif>>#apapplication.rb.getResource("views")#</option>
-					<option value="locale" <cfif form.order eq "locale">selected="selected"</cfif>>#apapplication.rb.getResource("Locale")#</option>
+					<option value="sessionTime" <cfif form.order eq "sessionTime">selected="selected"</cfif>>#application.rb.getResource("beenActiveFor")#</option>
+					<option value="lastActivity" <cfif form.order eq "lastActivity">selected="selected"</cfif>>#application.rb.getResource("lastActivity")#</option>
+					<option value="views" <cfif form.order eq "views">selected="selected"</cfif>>#application.rb.getResource("views")#</option>
+					<option value="locale" <cfif form.order eq "locale">selected="selected"</cfif>>#application.rb.getResource("Locale")#</option>
 				</select><br />
 				</label>
 				
 				<label for="orderDirection">
-				<b>#apapplication.rb.getResource("orderDirection")#</b>
+				<b>#application.rb.getResource("orderDirection")#</b>
 				<select name="orderDirection" id="orderDirection">
-					<option value="asc" <cfif form.orderDirection eq "asc">selected="selected"</cfif>>#apapplication.rb.getResource("ascending")#</option>
-					<option value="desc" <cfif form.orderDirection eq "desc">selected="selected"</cfif>>#apapplication.rb.getResource("descending")#</option>
+					<option value="asc" <cfif form.orderDirection eq "asc">selected="selected"</cfif>>#application.rb.getResource("ascending")#</option>
+					<option value="desc" <cfif form.orderDirection eq "desc">selected="selected"</cfif>>#application.rb.getResource("descending")#</option>
 				</select><br />
 				</label>
 				
 				<div class="f-submit-wrap">
-				<input type="submit" value="#apapplication.rb.getResource("Update")#" class="f-submit" />
+				<input type="submit" value="#application.rb.getResource("Update")#" class="f-submit" />
 				</div>
 
 			</fieldset>
@@ -79,11 +79,11 @@ $out:$
 		
 		<table cellspacing="0">
 		<tr>
-			<th>#apapplication.rb.getResource("ipAddress")#</th>
-			<th>#apapplication.rb.getResource("Locale")#</th>
-			<th>#apapplication.rb.getResource("beenActiveFor")#</th>
-			<th>#apapplication.rb.getResource("lastActivity")#</th>
-			<th>#apapplication.rb.getResource("pagesViewed")#</th>
+			<th>#application.rb.getResource("ipAddress")#</th>
+			<th>#application.rb.getResource("Locale")#</th>
+			<th>#application.rb.getResource("beenActiveFor")#</th>
+			<th>#application.rb.getResource("lastActivity")#</th>
+			<th>#application.rb.getResource("pagesViewed")#</th>
 			<th>&nbsp;</td>
 		</tr>
 		
@@ -91,28 +91,28 @@ $out:$
 		<cfloop query="qActive">
 			<tr class="#IIF(qActive.currentrow MOD 2, de(""), de("alt"))#">
 				<td>#qActive.remoteIP#</td>
-				<td><cfif len(qActive.locale)>#qActive.locale#<cfelse>#apapplication.rb.getResource("Unknown")#</cfif></td>
+				<td><cfif len(qActive.locale)>#qActive.locale#<cfelse>#application.rb.getResource("Unknown")#</cfif></td>
 				<td>
 				<cfif qActive.sessionTime gte 1>
 				#application.rb.formatRBString("sessionMinutes","#qActive.sessionTime#")# 
 				<cfelse>
-				#apapplication.rb.getResource("sessionLTMinute")#
+				#application.rb.getResource("sessionLTMinute")#
 				</cfif>
 				</td>
 				<td>
 				<cfif qActive.lastActivity gte 1>
 				#application.rb.formatRBString("sessionMinutes","#qActive.lastActivity#")# 
 				<cfelse>
-				#apapplication.rb.getResource("sessionLTMinute")#
+				#application.rb.getResource("sessionLTMinute")#
 				</cfif> </td>
 				<td>#qActive.views#</td>
-				<td><a href="statsVisitorPathDetail.cfm?sessionId=#qActive.sessionId#">#apapplication.rb.getResource("viewPath")#</a></td>
+				<td><a href="statsVisitorPathDetail.cfm?sessionId=#qActive.sessionId#">#application.rb.getResource("viewPath")#</a></td>
 			</tr>
 		</cfloop>
 		
 		</table>
 	<cfelse>
-		<h3>#apapplication.rb.getResource("noActiveVisitorsNow")#</h3>
+		<h3>#application.rb.getResource("noActiveVisitorsNow")#</h3>
 	</cfif>
 	</cfoutput>
 </sec:CheckPermission>

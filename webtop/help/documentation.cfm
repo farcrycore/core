@@ -34,28 +34,28 @@ $out:$
 
 <sec:CheckPermission error="true" permission="MainNavHelpTab">
 	<cfoutput>
-		<div class="formtitle">#apapplication.rb.getResource("documentation")#</div>
+		<div class="formtitle">#application.rb.getResource("documentation")#</div>
 		
 		<div style="padding-left:30px;padding-bottom:30px;">
 		<!--- contributor guide --->
-		<strong>#apapplication.rb.getResource("contributorsGuide")#</strong><br />
-		<p>#apapplication.rb.getResource("farcryIsEasyBlurb")#</p>
-		<p><span class="frameMenuBullet">&raquo;</span> <a href="http://farcry.daemon.com.au/go/documentation/users">#apapplication.rb.getResource("downloadContributorGuide")#</a></p>
+		<strong>#application.rb.getResource("contributorsGuide")#</strong><br />
+		<p>#application.rb.getResource("farcryIsEasyBlurb")#</p>
+		<p><span class="frameMenuBullet">&raquo;</span> <a href="http://farcry.daemon.com.au/go/documentation/users">#application.rb.getResource("downloadContributorGuide")#</a></p>
 		</div>
 	
 		<div style="padding-left:30px;padding-bottom:30px;">
 		<!--- admin guide --->
-		<strong>#apapplication.rb.getResource("adminGuide")#</strong><br />
-		<p>#apapplication.rb.getResource("farcryAdminIsEasyBlurb")#</p>
-		<p><span class="frameMenuBullet">&raquo;</span> <a href="http://farcry.daemon.com.au/go/documentation/developers/admin-guide">#apapplication.rb.getResource("downloadAdminGuide")#</a></p>
+		<strong>#application.rb.getResource("adminGuide")#</strong><br />
+		<p>#application.rb.getResource("farcryAdminIsEasyBlurb")#</p>
+		<p><span class="frameMenuBullet">&raquo;</span> <a href="http://farcry.daemon.com.au/go/documentation/developers/admin-guide">#application.rb.getResource("downloadAdminGuide")#</a></p>
 		</div>
 		
 		<div style="padding-left:30px;padding-bottom:30px;">
 		<!--- developer guide --->
-		<strong>#apapplication.rb.getResource("developerGuides")#</strong><br />
+		<strong>#application.rb.getResource("developerGuides")#</strong><br />
 		
-		<p><span class="frameMenuBullet">&raquo;</span> <a href="http://farcry.daemon.com.au/go/documentation/developers/how-to">#apapplication.rb.getResource("howTo")#</a></p>
-		<p><span class="frameMenuBullet">&raquo;</span> <a href="http://farcry.daemon.com.au/go/documentation/developers/tech-notes">#apapplication.rb.getResource("techNotes")#</a></p>
+		<p><span class="frameMenuBullet">&raquo;</span> <a href="http://farcry.daemon.com.au/go/documentation/developers/how-to">#application.rb.getResource("howTo")#</a></p>
+		<p><span class="frameMenuBullet">&raquo;</span> <a href="http://farcry.daemon.com.au/go/documentation/developers/tech-notes">#application.rb.getResource("techNotes")#</a></p>
 		</div>
 	</cfoutput>	
 </sec:CheckPermission>

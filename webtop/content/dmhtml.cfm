@@ -27,7 +27,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 <widgets:typeadmin 
 	typename="dmHTML"
 	permissionset="news"
-	title="#apapplication.rb.getResource("SiteTreeContentHtmlAdministration")#"
+	title="#application.rb.getResource("SiteTreeContentHtmlAdministration")#"
 	bdebug="0">
 </widgets:typeadmin>
 

@@ -35,112 +35,112 @@ $out:$
 
 <table cellpadding="5" cellspacing="0" border="1" style="margin-left:30px;margin-top:10px">
 <tr class="dataheader">
-	<td>#apapplication.rb.getResource("icon")#</td>
-	<td>#apapplication.rb.getResource("meaning")#</td>
+	<td>#application.rb.getResource("icon")#</td>
+	<td>#application.rb.getResource("meaning")#</td>
 </tr>
 <tr>
 	<td align="center"><img src="#cimages#/defaultObjectDraft.gif" height="16" width="16" border="0"></td>
-	<td>#apapplication.rb.getResource("defaultDraftHTMLobj")#</td>
+	<td>#application.rb.getResource("defaultDraftHTMLobj")#</td>
 </tr>
 <tr>
 	<td align="center"><img src="#cimages#/defaultObjectLiveDraft.gif" height="16" width="16" border="0"></td>
-	<td>#apapplication.rb.getResource("defaultLiveHTMLobj")#</td>
+	<td>#application.rb.getResource("defaultLiveHTMLobj")#</td>
 </tr>
 <tr>
 	<td align="center"><img src="#cimages#/defaultObjectPending.gif" height="16" width="16" border="0"></td>
-	<td>#apapplication.rb.getResource("defaulPendingHTMLobj")#</td>
+	<td>#application.rb.getResource("defaulPendingHTMLobj")#</td>
 </tr>
 <tr>
 	<td align="center"><img src="#cimages#/defaultObjectApproved.gif" height="16" width="16" border="0"></td>
-	<td>#apapplication.rb.getResource("defaultApprovedHTMLobj")#</td>
+	<td>#application.rb.getResource("defaultApprovedHTMLobj")#</td>
 </tr>
 <tr>
 	<td align="center"><img src="#cimages#/webserver.gif" height="16" width="16" border="0"></td>
-	<td>#apapplication.rb.getResource("webserver")#</td>
+	<td>#application.rb.getResource("webserver")#</td>
 </tr>
 <tr>
 	<td align="center"><img src="#cimages#/home.gif" height="16" width="16" border="0"></td>
-	<td>#apapplication.rb.getResource("home")#</td>
+	<td>#application.rb.getResource("home")#</td>
 </tr>
 <tr>
 	<td align="center"><img src="#cimages#/rubbish.gif" height="16" width="16" border="0"></td>
-	<td>#apapplication.rb.getResource("trashCan")#</td>
+	<td>#application.rb.getResource("trashCan")#</td>
 </tr>
 <tr>
 	<td align="center"><img src="#cimages#/NavDraft.gif" height="16" width="16" border="0"></td>
-	<td>#apapplication.rb.getResource("draftNavigationObj")#</td>
+	<td>#application.rb.getResource("draftNavigationObj")#</td>
 </tr>
 <tr>
 	<td align="center"><img src="#cimages#/NavApproved.gif" height="16" width="16" border="0"></td>
-	<td>#apapplication.rb.getResource("approvedNavigationObj")#</td>
+	<td>#application.rb.getResource("approvedNavigationObj")#</td>
 </tr>
 <tr>
 	<td align="center"><img src="#cimages#/NavPending.gif" height="16" width="16" border="0"></td>
-	<td>#apapplication.rb.getResource("pendingNavigationObj")#</td>
+	<td>#application.rb.getResource("pendingNavigationObj")#</td>
 </tr>
 <tr>
 	<td align="center"><img src="#cimages#/images.gif" height="16" width="16" border="0"></td>
-	<td>#apapplication.rb.getResource("Images")#</td>
+	<td>#application.rb.getResource("Images")#</td>
 </tr>
 <tr>
 	<td align="center"><img src="#cimages#/floppyDisk.gif" height="16" width="16" border="0"></td>
-	<td>#apapplication.rb.getResource("Files")#</td>
+	<td>#application.rb.getResource("Files")#</td>
 </tr>
 <tr>
 	<td align="center"><img src="#cimages#/pictureDraft.gif" height="16" width="16" border="0"></td>
-	<td>#apapplication.rb.getResource("draftImageObj")#</td>
+	<td>#application.rb.getResource("draftImageObj")#</td>
 </tr>
 <tr>
 	<td align="center"><img src="#cimages#/picturePending.gif" height="16" width="16" border="0"></td>
-	<td>#apapplication.rb.getResource("pendingImageObj")#</td>
+	<td>#application.rb.getResource("pendingImageObj")#</td>
 </tr>
 <tr>
 	<td align="center"><img src="#cimages#/pictureApproved.gif" height="16" width="16" border="0"></td>
-	<td>#apapplication.rb.getResource("approvedImageObj")#</td>
+	<td>#application.rb.getResource("approvedImageObj")#</td>
 </tr>
 <tr>
 	<td align="center"><img src="#cimages#/includeDraft.gif" height="16" width="16" border="0"></td>
-	<td>#apapplication.rb.getResource("draftIncludedObj")#</td>
+	<td>#application.rb.getResource("draftIncludedObj")#</td>
 </tr>
 <tr>
 	<td align="center"><img src="#cimages#/includePending.gif" height="16" width="16" border="0"></td>
-	<td>#apapplication.rb.getResource("pendingIncludedObj")#</td>
+	<td>#application.rb.getResource("pendingIncludedObj")#</td>
 </tr>
 <tr>
 	<td align="center"><img src="#cimages#/includeApproved.gif" height="16" width="16" border="0"></td>
-	<td>#apapplication.rb.getResource("approvedIncludedObj")#</td>
+	<td>#application.rb.getResource("approvedIncludedObj")#</td>
 </tr>
 <tr>
 	<td align="center"><img src="#cimages#/fileDraft.gif" height="16" width="16" border="0"></td>
-	<td>#apapplication.rb.getResource("draftFileObj")#</td>
+	<td>#application.rb.getResource("draftFileObj")#</td>
 </tr>
 <tr>
 	<td align="center"><img src="#cimages#/filePending.gif" height="16" width="16" border="0"></td>
-	<td>#apapplication.rb.getResource("pendingFileObj")#</td>
+	<td>#application.rb.getResource("pendingFileObj")#</td>
 </tr>
 <tr>
 	<td align="center"><img src="#cimages#/fileApproved.gif" height="16" width="16" border="0"></td>
-	<td>#apapplication.rb.getResource("approvedFileObj")#</td>
+	<td>#application.rb.getResource("approvedFileObj")#</td>
 </tr>
 <tr>
 	<td align="center"><img src="#cimages#/linkDraft.gif" height="16" width="16" border="0"></td>
-	<td>#apapplication.rb.getResource("draftJoinObj")#</td>
+	<td>#application.rb.getResource("draftJoinObj")#</td>
 </tr>
 <tr>
 	<td align="center"><img src="#cimages#/linkPending.gif" height="16" width="16" border="0"></td>
-	<td>#apapplication.rb.getResource("pendingLinkObj")#</td>
+	<td>#application.rb.getResource("pendingLinkObj")#</td>
 </tr>
 <tr>
 	<td align="center"><img src="#cimages#/linkApproved.gif" height="16" width="16" border="0"></td>
-	<td>#apapplication.rb.getResource("approvedLinkObj")#</td>
+	<td>#application.rb.getResource("approvedLinkObj")#</td>
 </tr>
 <tr>
 	<td align="center"><img src="#cimages#/cssDraft.gif" height="16" width="16" border="0"></td>
-	<td>#apapplication.rb.getResource("styleSheetObj")#</td>
+	<td>#application.rb.getResource("styleSheetObj")#</td>
 </tr>
 <tr>
 	<td align="center"><img src="#cimages#/flashApproved.gif" height="16" width="16" border="0"></td>
-	<td>#apapplication.rb.getResource("flashObj")#</td>
+	<td>#application.rb.getResource("flashObj")#</td>
 </tr>
 </table>
 </cfoutput>

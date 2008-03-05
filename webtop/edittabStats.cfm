@@ -88,7 +88,7 @@ out:
 			<cfif stObj.typename eq "dmNavigation">
 			
 				<cfoutput>
-				<h3>#apapplication.rb.getResource("viewsPerHour")#</h3>
+				<h3>#application.rb.getResource("viewsPerHour")#</h3>
 				</cfoutput>
 				
 				<!--- get page log entries --->
@@ -111,8 +111,8 @@ out:
 					showBorder = "no"
 					fontsize="12"
 					labelFormat = "number"
-					xAxisTitle = "#apapplication.rb.getResource("hour")#" 
-					yAxisTitle = "#apapplication.rb.getResource("viewNumbers")#" 
+					xAxisTitle = "#application.rb.getResource("hour")#" 
+					yAxisTitle = "#application.rb.getResource("viewNumbers")#" 
 					show3D = "yes"
 					xOffset = "0.15" 
 					yOffset = "0.15"
@@ -120,9 +120,9 @@ out:
 					showLegend = "yes" 
 					tipStyle = "MouseOver">
 					
-					<cfchartseries type="bar" query="q1" itemcolumn="hour" valuecolumn="count_views" serieslabel="#apapplication.rb.getResource("today")#" paintstyle="shade"></cfchartseries>
-					<cfchartseries type="bar" query="q2" itemcolumn="hour" valuecolumn="count_views" serieslabel="#apapplication.rb.getResource("yesterday")#" paintstyle="shade"></cfchartseries>
-					<cfchartseries type="bar" query="q3" itemcolumn="hour" valuecolumn="count_views" serieslabel="#apapplication.rb.getResource("dayBefore")#" paintstyle="shade"></cfchartseries>
+					<cfchartseries type="bar" query="q1" itemcolumn="hour" valuecolumn="count_views" serieslabel="#application.rb.getResource("today")#" paintstyle="shade"></cfchartseries>
+					<cfchartseries type="bar" query="q2" itemcolumn="hour" valuecolumn="count_views" serieslabel="#application.rb.getResource("yesterday")#" paintstyle="shade"></cfchartseries>
+					<cfchartseries type="bar" query="q3" itemcolumn="hour" valuecolumn="count_views" serieslabel="#application.rb.getResource("dayBefore")#" paintstyle="shade"></cfchartseries>
 				</cfchart>
 				</cfoutput>
 				
@@ -154,7 +154,7 @@ out:
 				
 				<cfoutput>
 				<p></p>
-				<h3>#apapplication.rb.getResource("viewPerDay")#</h3>
+				<h3>#application.rb.getResource("viewPerDay")#</h3>
 				<cfchart 
 					format="flash" 
 					chartHeight="400" 
@@ -166,18 +166,18 @@ out:
 					showBorder = "no"
 					fontsize="12"
 					labelFormat = "number"
-					xAxisTitle = "#apapplication.rb.getResource("day")#" 
-					yAxisTitle = "#apapplication.rb.getResource("viewNumbers")#" 
+					xAxisTitle = "#application.rb.getResource("day")#" 
+					yAxisTitle = "#application.rb.getResource("viewNumbers")#" 
 					show3D = "yes"
 					xOffset = "0.15" 
 					yOffset = "0.15"
 					rotated = "no" 
 					showLegend = "yes" 
 					tipStyle = "MouseOver">
-				<cfchartseries type="bar" query="q1" itemcolumn="name" valuecolumn="count_logins" serieslabel="#apapplication.rb.getResource("thisWeek")#" paintstyle="shade"></cfchartseries>
-				<cfchartseries type="bar" query="q2" itemcolumn="name" valuecolumn="count_logins" serieslabel="#apapplication.rb.getResource("lastWeek")#" paintstyle="shade"></cfchartseries>
-				<cfchartseries type="bar" query="q3" itemcolumn="name" valuecolumn="count_logins" serieslabel="#apapplication.rb.getResource("twoWeeksBefore")#" paintstyle="shade"></cfchartseries>
-				<cfchartseries type="bar" query="q4" itemcolumn="name" valuecolumn="count_logins" serieslabel="#apapplication.rb.getResource("threeWeeksBefore")#" paintstyle="shade"></cfchartseries>
+				<cfchartseries type="bar" query="q1" itemcolumn="name" valuecolumn="count_logins" serieslabel="#application.rb.getResource("thisWeek")#" paintstyle="shade"></cfchartseries>
+				<cfchartseries type="bar" query="q2" itemcolumn="name" valuecolumn="count_logins" serieslabel="#application.rb.getResource("lastWeek")#" paintstyle="shade"></cfchartseries>
+				<cfchartseries type="bar" query="q3" itemcolumn="name" valuecolumn="count_logins" serieslabel="#application.rb.getResource("twoWeeksBefore")#" paintstyle="shade"></cfchartseries>
+				<cfchartseries type="bar" query="q4" itemcolumn="name" valuecolumn="count_logins" serieslabel="#application.rb.getResource("threeWeeksBefore")#" paintstyle="shade"></cfchartseries>
 				</cfchart>
 				</cfoutput>
 				
@@ -226,8 +226,8 @@ out:
 							showBorder = "no"
 							fontsize="12"
 							labelFormat = "number"
-							xAxisTitle = "#apapplication.rb.getResource("date")#" 
-							yAxisTitle = "#apapplication.rb.getResource("viewNumbers")#" 
+							xAxisTitle = "#application.rb.getResource("date")#" 
+							yAxisTitle = "#application.rb.getResource("viewNumbers")#" 
 							show3D = "yes"
 							xOffset = "0.15" 
 							yOffset = "0.15"
@@ -242,17 +242,17 @@ out:
 						<cfchartseries type="line" query="q1.qGetPageStats" itemcolumn="viewday" valuecolumn="count_views" serieslabel="#application.rb.formatRBString("totalViewsPerDay",subS)#" paintstyle="shade"></cfchartseries>
 						</cfchart>
 					<cfelse>
-						<cfoutput><div style="color:red">#apapplication.rb.getResource("noStatsLogged")#</div></cfoutput>
+						<cfoutput><div style="color:red">#application.rb.getResource("noStatsLogged")#</div></cfoutput>
 					</cfif>
 							
 				<!--- show form to change date range --->
 				<div style="margin-left:30px;margin-top:20px;">
 				<form action="" method="post">
-					#apapplication.rb.getResource("between")# 
+					#application.rb.getResource("between")# 
 					<input type="text" name="after" value="#application.thisCalendar.i18nDateFormat(form.after,session.dmProfile.locale,application.mediumF)#">
-					#apapplication.rb.getResource("andLabel")# 
+					#application.rb.getResource("andLabel")# 
 					<input type="text" name="before" value="#application.thisCalendar.i18nDateFormat(form.before,session.dmProfile.locale,application.mediumF)#">
-					<input type="submit" value="#apapplication.rb.getResource("changeDateRange")#">
+					<input type="submit" value="#application.rb.getResource("changeDateRange")#">
 				</form>
 				</div>
 				</cfoutput>
@@ -260,7 +260,7 @@ out:
 			<cfelse>
 			
 				<cfoutput>
-				<h3>#apapplication.rb.getResource("viewsPerHour")#</h3>
+				<h3>#application.rb.getResource("viewsPerHour")#</h3>
 				</cfoutput>
 				
 				<!--- get page log entries --->
@@ -283,8 +283,8 @@ out:
 					showBorder = "no"
 					fontsize="12"
 					labelFormat = "number"
-					xAxisTitle = "#apapplication.rb.getResource("hour")#" 
-					yAxisTitle = "#apapplication.rb.getResource("viewNumbers")#" 
+					xAxisTitle = "#application.rb.getResource("hour")#" 
+					yAxisTitle = "#application.rb.getResource("viewNumbers")#" 
 					show3D = "yes"
 					xOffset = "0.15" 
 					yOffset = "0.15"
@@ -292,9 +292,9 @@ out:
 					showLegend = "yes" 
 					tipStyle = "MouseOver">
 					
-					<cfchartseries type="bar" query="q1" itemcolumn="hour" valuecolumn="count_views" serieslabel="#apapplication.rb.getResource("today")#" paintstyle="shade"></cfchartseries>
-					<cfchartseries type="bar" query="q2" itemcolumn="hour" valuecolumn="count_views" serieslabel="#apapplication.rb.getResource("yesterday")#" paintstyle="shade"></cfchartseries>
-					<cfchartseries type="bar" query="q3" itemcolumn="hour" valuecolumn="count_views" serieslabel="#apapplication.rb.getResource("dayBefore")#" paintstyle="shade"></cfchartseries>
+					<cfchartseries type="bar" query="q1" itemcolumn="hour" valuecolumn="count_views" serieslabel="#application.rb.getResource("today")#" paintstyle="shade"></cfchartseries>
+					<cfchartseries type="bar" query="q2" itemcolumn="hour" valuecolumn="count_views" serieslabel="#application.rb.getResource("yesterday")#" paintstyle="shade"></cfchartseries>
+					<cfchartseries type="bar" query="q3" itemcolumn="hour" valuecolumn="count_views" serieslabel="#application.rb.getResource("dayBefore")#" paintstyle="shade"></cfchartseries>
 				</cfchart>
 				</cfoutput>
 				
@@ -324,7 +324,7 @@ out:
 				</cfscript>
 						
 				<cfoutput>
-				<h3>#apapplication.rb.getResource("viewPerDay")#</h3>
+				<h3>#application.rb.getResource("viewPerDay")#</h3>
 				<cfchart 
 					format="flash" 
 					chartHeight="400" 
@@ -336,18 +336,18 @@ out:
 					showBorder = "no"
 					fontsize="12"
 					labelFormat = "number"
-					xAxisTitle = "#apapplication.rb.getResource("day")#" 
-					yAxisTitle = "#apapplication.rb.getResource("viewNumbers")#" 
+					xAxisTitle = "#application.rb.getResource("day")#" 
+					yAxisTitle = "#application.rb.getResource("viewNumbers")#" 
 					show3D = "yes"
 					xOffset = "0.15" 
 					yOffset = "0.15"
 					rotated = "no" 
 					showLegend = "yes" 
 					tipStyle = "MouseOver">
-				<cfchartseries type="bar" query="q1" itemcolumn="name" valuecolumn="count_logins" serieslabel="#apapplication.rb.getResource("thisWeek")#" paintstyle="shade"></cfchartseries>
-				<cfchartseries type="bar" query="q2" itemcolumn="name" valuecolumn="count_logins" serieslabel="#apapplication.rb.getResource("lastWeek")#" paintstyle="shade"></cfchartseries>
-				<cfchartseries type="bar" query="q3" itemcolumn="name" valuecolumn="count_logins" serieslabel="#apapplication.rb.getResource("twoWeeksBefore")#" paintstyle="shade"></cfchartseries>
-				<cfchartseries type="bar" query="q4" itemcolumn="name" valuecolumn="count_logins" serieslabel="#apapplication.rb.getResource("threeWeeksBefore")#" paintstyle="shade"></cfchartseries>
+				<cfchartseries type="bar" query="q1" itemcolumn="name" valuecolumn="count_logins" serieslabel="#application.rb.getResource("thisWeek")#" paintstyle="shade"></cfchartseries>
+				<cfchartseries type="bar" query="q2" itemcolumn="name" valuecolumn="count_logins" serieslabel="#application.rb.getResource("lastWeek")#" paintstyle="shade"></cfchartseries>
+				<cfchartseries type="bar" query="q3" itemcolumn="name" valuecolumn="count_logins" serieslabel="#application.rb.getResource("twoWeeksBefore")#" paintstyle="shade"></cfchartseries>
+				<cfchartseries type="bar" query="q4" itemcolumn="name" valuecolumn="count_logins" serieslabel="#application.rb.getResource("threeWeeksBefore")#" paintstyle="shade"></cfchartseries>
 				</cfchart>
 				</cfoutput>
 				
@@ -391,8 +391,8 @@ out:
 						showBorder = "no"
 						fontsize="12"
 						labelFormat = "number"
-						xAxisTitle = "#apapplication.rb.getResource("date")#" 
-						yAxisTitle = "#apapplication.rb.getResource("viewNumbers")#" 
+						xAxisTitle = "#application.rb.getResource("date")#" 
+						yAxisTitle = "#application.rb.getResource("viewNumbers")#" 
 						show3D = "yes"
 						xOffset = "0.15" 
 						yOffset = "0.15"
@@ -407,17 +407,17 @@ out:
 					<cfchartseries type="line" query="q1.qGetPageStats" itemcolumn="viewday" valuecolumn="count_views" serieslabel="#application.rb.formatRBString("viewsBetween",subS)#" paintstyle="shade"></cfchartseries>
 					</cfchart>
 				<cfelse>
-					<cfoutput><div style="color:red">#apapplication.rb.getResource("noStatsLogged")#</div></cfoutput>
+					<cfoutput><div style="color:red">#application.rb.getResource("noStatsLogged")#</div></cfoutput>
 				</cfif>
 				
 				<!--- show form to change date range --->
 				<!--- <div style="margin-left:30px;margin-top:20px;">
 				<form action="" method="post">
-					#apapplication.rb.getResource("between")# 
+					#application.rb.getResource("between")# 
 					<input type="text" name="after" value="#application.thisCalendar.i18nDateFormat(form.after,session.dmProfile.locale,application.mediumF)#">
-					#apapplication.rb.getResource("andLabel")# 
+					#application.rb.getResource("andLabel")# 
 					<input type="text" name="before" value="#application.thisCalendar.i18nDateFormat(form.before,session.dmProfile.locale,application.mediumF)#">
-					<input type="submit" value="#apapplication.rb.getResource("changeDateRange")#">
+					<input type="submit" value="#application.rb.getResource("changeDateRange")#">
 				</form>
 				</div> --->
 				</cfoutput>

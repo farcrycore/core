@@ -36,12 +36,12 @@ $Developer: Brendan Sisson (brendan@dameon.com.au) $
 	<form action="#cgi.script_name#?#cgi.query_string#" name="editform" class="f-wrap-1 wider f-bg-short" method="post">
 	
 	<div class="FormSubTitle">#output.label#</div>
-	<div class="FormTitle">#apapplication.rb.getResource("generalInfo")#</div>
+	<div class="FormTitle">#application.rb.getResource("generalInfo")#</div>
 	<div class="FormTable">
 	<table class="BorderTable" width="400" align="center">
 	<!--- email subject --->
 	<tr>
-		<td nowrap class="FormLabel">#apapplication.rb.getResource("subjLabel")# </span></td>
+		<td nowrap class="FormLabel">#application.rb.getResource("subjLabel")# </span></td>
 		<td width="100%"><input type="text" name="Title" value="#output.Title#" class="formtextbox" maxlength="255" size="45"></td>
 	</tr>
 	<tr>
@@ -49,7 +49,7 @@ $Developer: Brendan Sisson (brendan@dameon.com.au) $
 	</tr>
 	<!--- send to which FarCry groups --->
 	<tr>
-		<td nowrap class="FormLabel" valign="top">#apapplication.rb.getResource("toLabel")# </span></td>
+		<td nowrap class="FormLabel" valign="top">#application.rb.getResource("toLabel")# </span></td>
 		<td>
 			<select name="lGroups" multiple size="8">
 				<cfloop from="1" to="#arrayLen(aPolicyGroups)#" index="group">
@@ -60,7 +60,7 @@ $Developer: Brendan Sisson (brendan@dameon.com.au) $
 	</tr>
 	<!--- from address for email --->
 	<tr>
-		<td nowrap class="FormLabel">#apapplication.rb.getResource("fromEmailLabel")# </span></td>
+		<td nowrap class="FormLabel">#application.rb.getResource("fromEmailLabel")# </span></td>
 		<td width="100%"><input type="text" name="fromEmail" value="#output.fromEmail#" class="formtextbox" maxlength="255" size="45"></td>
 	</tr>
 	</table>
@@ -71,9 +71,9 @@ $Developer: Brendan Sisson (brendan@dameon.com.au) $
 	<!--//
 	document.editform.Title.focus();
 	objForm = new qForm("editform");
-	objForm.Title.validateNotNull("#apapplication.rb.getResource("pleaseEnterTitle")#");
-	objForm.lGroups.validateNotNull("#apapplication.rb.getResource("pleaseSelectEmailGroup")#");
-	objForm.fromEmail.validateNotNull("#apapplication.rb.getResource("pleaseEnterEmail")#");
+	objForm.Title.validateNotNull("#application.rb.getResource("pleaseEnterTitle")#");
+	objForm.lGroups.validateNotNull("#application.rb.getResource("pleaseSelectEmailGroup")#");
+	objForm.fromEmail.validateNotNull("#application.rb.getResource("pleaseEnterEmail")#");
 	//-->
 	</SCRIPT>
 	<input type="hidden" name="plpAction" value="" />

@@ -37,7 +37,7 @@ $out:$
 		<cfif not structkeyexists(stObj, "status")>
 			<cfoutput>
 			<script>
-				 alert("#apapplication.rb.getResource("objNoApprovalProcess")#");
+				 alert("#application.rb.getResource("objNoApprovalProcess")#");
 			</script>
 			</cfoutput>
 			<cfexit>
@@ -130,7 +130,7 @@ $out:$
 				</cfif>	
 			</cfinvoke>
 		<cfelse>
-			<cfthrow errorcode="navajo" message="#apapplication.rb.getResource("passedUnknownStatus")#">
+			<cfthrow errorcode="navajo" message="#application.rb.getResource("passedUnknownStatus")#">
 		</cfif>
 
 		<!--- prepare date fields --->

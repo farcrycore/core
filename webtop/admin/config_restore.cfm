@@ -33,7 +33,7 @@ $out:$
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 <sec:CheckPermission error="true" permission="AdminGeneralTab">
-	<cfoutput><h3>#apapplication.rb.getResource("restoreDefaultConfig")#</h3></cfoutput>
+	<cfoutput><h3>#application.rb.getResource("restoreDefaultConfig")#</h3></cfoutput>
 	
 	<!--- drop tables and recreate --->
 	<cfinvoke component="#application.packagepath#.farcry.config" method="deployConfig" returnvariable="deployConfigRet">
@@ -131,7 +131,7 @@ $out:$
 	
 	<cfoutput></ul></cfoutput>
 	
-	<cfoutput><h3 class="fade success" id="fader1">#apapplication.rb.getResource("allDone")#</h3></cfoutput>
+	<cfoutput><h3 class="fade success" id="fader1">#application.rb.getResource("allDone")#</h3></cfoutput>
 </sec:CheckPermission>
 
 <!--- setup footer --->

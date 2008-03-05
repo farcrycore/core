@@ -11,7 +11,7 @@
 
 <cfparam name="attributes.typename" default="">
 <cfparam name="attributes.prefix" default="">
-<cfparam name="attributes.fieldLabel" default="#apapplication.rb.getResource("displayMethodLabel")#">
+<cfparam name="attributes.fieldLabel" default="#application.rb.getResource("displayMethodLabel")#">
 <cfparam name="caller.output" default="#StructNew()#">
 <cfparam name="caller.stObj" default="#StructNew()#">
 <cfparam name="attributes.fieldValue" default="">

@@ -24,7 +24,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 
 <!--- check for existing collections with no app data --->
 <cfif not structKeyExists(application.config.verity.contenttype,"#key#") and not structKeyExists(application.config.verity.contenttype[key],"lastUpdated")>
-	<cfoutput>#apapplication.rb.getResource("resetVerity")#</cfoutput>
+	<cfoutput>#application.rb.getResource("resetVerity")#</cfoutput>
 <cfelse>			
 	<!--- work out collection type --->
 	<cfif isArray(application.config.verity.contenttype[key].aprops)>

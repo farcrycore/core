@@ -8,7 +8,7 @@
 
 <body>
 
-<div>#apapplication.rb.getResource("dynamicHomePage")#</div>
+<div>#application.rb.getResource("dynamicHomePage")#</div>
 
 </body>
 </html>

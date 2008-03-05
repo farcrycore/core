@@ -19,7 +19,7 @@
 		
 	    <cfif qTypeNames.recordCount eq 0>
 	        <cfoutput>
-	            #apapplication.rb.getResource("noTreeItemsBadBlurb")#
+	            #application.rb.getResource("noTreeItemsBadBlurb")#
 	        </cfoutput>
 	    <cfelse>
 			<!--- show form --->

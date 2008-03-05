@@ -53,7 +53,7 @@ $out:$
 	}	
 	
 	function confirmDelete(objectID){
-		var msg = "#apapplication.rb.getResource("confirmDeleteItem")#";
+		var msg = "#application.rb.getResource("confirmDeleteItem")#";
 		if (confirm(msg))
 		{	
 			return true;
@@ -62,7 +62,7 @@ $out:$
 			return false;
 	}				
 	function confirmApprove(action){
-		var msg = "#apapplication.rb.getResource("confirmObjStatusChange")#" + action;
+		var msg = "#application.rb.getResource("confirmObjStatusChange")#" + action;
 		if (confirm(msg))
 			return true;
 		else
@@ -115,7 +115,7 @@ $out:$
 			<cflocation url="#application.url.farcry#/navajo/objectComment.cfm?status=#status#&objectID=#form.objectID#" addtoken="no">
 					
 		<cfelse>
-			<cfset msg = "#apapplication.rb.getResource("noObjSelected")#">			
+			<cfset msg = "#application.rb.getResource("noObjSelected")#">			
 		</cfif>
 	</cfif>
 	
@@ -168,7 +168,7 @@ $out:$
 					
 					<form action="" method="post" name="dynamicAdmin">
 						<cfif thisPage GT 1>
-							<input type="image" src="#application.url.farcry#/images/treeImages/leftarrownormal.gif" value="#apapplication.rb.getResource("prev")#" name="prev"  onclick="this.form.thisPage.selectedIndex--;this.form.submit();" >
+							<input type="image" src="#application.url.farcry#/images/treeImages/leftarrownormal.gif" value="#application.rb.getResource("prev")#" name="prev"  onclick="this.form.thisPage.selectedIndex--;this.form.submit();" >
 						</cfif>
 						Page 
 						<select name="thisPage" onChange="this.form.submit();">
@@ -177,7 +177,7 @@ $out:$
 							</cfloop>
 						</select> #application.rb.formatRBString("pageOfPages","#numPages#")# 
 						<cfif thisPage LT numpages>
-							<input name="next" type="image" src="#application.url.farcry#/images/treeImages/rightarrownormal.gif" value="#apapplication.rb.getResource("next")#" onclick="this.form.thisPage.selectedIndex++;this.form.submit();">
+							<input name="next" type="image" src="#application.url.farcry#/images/treeImages/rightarrownormal.gif" value="#application.rb.getResource("next")#" onclick="this.form.thisPage.selectedIndex++;this.form.submit();">
 						</cfif>
 						<cfif isDefined("form.fieldnames")>
 						<cfloop list="#form.fieldnames#" index="element">
@@ -192,18 +192,18 @@ $out:$
 
 				<table class="table-2" cellspacing="0">
 				<tr>
-					<th>#apapplication.rb.getResource("subject")# </th>
-					<th>#apapplication.rb.getResource("edit")# </th>
-					<th>#apapplication.rb.getResource("preview")# </th>
-					<th>#apapplication.rb.getResource("send")# </th>
-					<th>#apapplication.rb.getResource("delete")# </th>
+					<th>#application.rb.getResource("subject")# </th>
+					<th>#application.rb.getResource("edit")# </th>
+					<th>#application.rb.getResource("preview")# </th>
+					<th>#application.rb.getResource("send")# </th>
+					<th>#application.rb.getResource("delete")# </th>
 				</tr>
 	         </cfoutput>
 			<cfif recordSet.recordCount EQ 0 >
 				<cfoutput>
 				<tr>
 					<td colspan="8">
-						<strong>#apapplication.rb.getResource("noRecsRecovered")#</strong>
+						<strong>#application.rb.getResource("noRecsRecovered")#</strong>
 					</td>	
 				</tr>
 				</cfoutput>
@@ -220,20 +220,20 @@ $out:$
 					<td>
 						
 						<input type="hidden" name="objectid" value="#recordset.objectid#">
-						<input class="f-submit" type="button" name="edit" value="#apapplication.rb.getResource("Edit")#" onClick="location.href='#editObjectURL#';" />
+						<input class="f-submit" type="button" name="edit" value="#application.rb.getResource("Edit")#" onClick="location.href='#editObjectURL#';" />
 					</td>
 					<td>
-						<input class="f-submit" type="button" name="preview" value="#apapplication.rb.getResource("preview")#" onClick="window.open('#previewURL#');" />
+						<input class="f-submit" type="button" name="preview" value="#application.rb.getResource("preview")#" onClick="window.open('#previewURL#');" />
 					</td>
 					<td>
 						<cfif bSent>
-							#apapplication.rb.getResource("sent")#
+							#application.rb.getResource("sent")#
 						<cfelse>
-							<input class="f-submit" type="button" name="send" value="#apapplication.rb.getResource("send")#" onClick="location.href='#application.url.farcry#/admin/messageSend.cfm?objectid=#objectid#';" />	
+							<input class="f-submit" type="button" name="send" value="#application.rb.getResource("send")#" onClick="location.href='#application.url.farcry#/admin/messageSend.cfm?objectid=#objectid#';" />	
 						</cfif>						
 					</td>
 					<td>
-						<input class="f-submit" type="submit" name="delete" value="#apapplication.rb.getResource("delete")#" onClick="return confirmDelete('#recordset.objectid#')" />
+						<input class="f-submit" type="submit" name="delete" value="#application.rb.getResource("delete")#" onClick="return confirmDelete('#recordset.objectid#')" />
 						
 					</td>
 					</form>
@@ -248,7 +248,7 @@ $out:$
 					<!--- get permissions  --->
 						<form action="" method="post">
 						<cfset finishURL = URLEncodedFormat("#cgi.SCRIPT_NAME#?#CGI.QUERY_STRING#")><!--- navajo/createObject.cfm?typename=#stArgs.typename#&finishURL=#finishURL#' ---><!--- window.location='#application.url.farcry#/#application.url.conjurer#?typename=#stArgs.typename#&finishURL=#finishURL#'; --->
-						<input type="button" value="#apapplication.rb.getResource("add")#" name="add" class="f-submit" onclick="window.location='#application.url.farcry#/conjuror/evocation.cfm?typename=#stArgs.typename#&finishURL=#finishURL#';" />
+						<input type="button" value="#application.rb.getResource("add")#" name="add" class="f-submit" onclick="window.location='#application.url.farcry#/conjuror/evocation.cfm?typename=#stArgs.typename#&finishURL=#finishURL#';" />
 						</form>					
 					
 				</form>		

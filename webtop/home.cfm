@@ -43,7 +43,7 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au)$
 			<!--- #### left column #### --->
 			<td valign="top" width="33%">
 				<!--- user profile stuff --->
-				<span class="formTitle">#apapplication.rb.getResource("yourProfile")#</span>
+				<span class="formTitle">#application.rb.getResource("yourProfile")#</span>
 		        <p>
 				</cfoutput>
 				
@@ -61,7 +61,7 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au)$
 						
 				<!--- get all status breakdown --->
 				<cfinvoke component="#application.packagepath#.farcry.workflow" method="getStatusBreakdown" returnvariable="stStatus"></cfinvoke>
-				<cfoutput><span class="formTitle">#apapplication.rb.getResource("objStatusBreakdown")#</span><p style="margin-left: 5%;"></cfoutput>
+				<cfoutput><span class="formTitle">#application.rb.getResource("objStatusBreakdown")#</span><p style="margin-left: 5%;"></cfoutput>
 				<cfchart 
 					format="flash" 
 					chartHeight="100" 
@@ -92,7 +92,7 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au)$
 					<cfinvokeargument name="breakdown" value="7,14,21"/>
 				</cfinvoke>
 				
-				<cfoutput><span class="formTitle">#apapplication.rb.getResource("objAgeBreakdown")#</span><p style="margin-left: 5%;"></cfoutput>
+				<cfoutput><span class="formTitle">#application.rb.getResource("objAgeBreakdown")#</span><p style="margin-left: 5%;"></cfoutput>
 				<cfchart 
 					format="flash" 
 					chartHeight="100" 
@@ -126,7 +126,7 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au)$
 				<p></p>
 				
 				<!--- FarCry Build Details --->
-				<div class="formTitle">#apapplication.rb.getResource("buildDetails")#</div>
+				<div class="formTitle">#application.rb.getResource("buildDetails")#</div>
 				</cfoutput>
 				
 				<cftry>
@@ -157,8 +157,8 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au)$
 				</cftry>
 				<!--- display build details --->
 				<cfoutput>
-				FarCry: <cfif len(result) gt 2>#result#<cfelse>#apapplication.rb.getResource("unknown")#</cfif><br>
-				FourQ: <cfif len(fourqResult) gt 2>#fourqResult#<cfelse>#apapplication.rb.getResource("unknown")#</cfif>
+				FarCry: <cfif len(result) gt 2>#result#<cfelse>#application.rb.getResource("unknown")#</cfif><br>
+				FourQ: <cfif len(fourqResult) gt 2>#fourqResult#<cfelse>#application.rb.getResource("unknown")#</cfif>
 				
 			</td></cfoutput>
 			
@@ -174,13 +174,13 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au)$
 		
 				<!--- display objects needing approval --->
 				<cfif not structIsEmpty(stPendingObjects)>
-					<span class="formTitle">#apapplication.rb.getResource("objPendingApproval")#</span>
+					<span class="formTitle">#application.rb.getResource("objPendingApproval")#</span>
 					
 					<table width="100%" cellpadding="5" cellspacing="1" border="0" style="margin-left:0px;margin-top:10px;border:1px solid ##000;">
 					<tr class="dataheader">
-						<td width="100%"><strong>#apapplication.rb.getResource("object")#</strong></td>
-						<td nowrap align="center"><strong>#apapplication.rb.getResource("createdBy")#</strong></td>
-						<td nowrap align="center"><strong>#apapplication.rb.getResource("lastUpdated")#</strong></td>
+						<td width="100%"><strong>#application.rb.getResource("object")#</strong></td>
+						<td nowrap align="center"><strong>#application.rb.getResource("createdBy")#</strong></td>
+						<td nowrap align="center"><strong>#application.rb.getResource("lastUpdated")#</strong></td>
 					</tr>
 		            <cfset currentrow = 1>
 					<cfloop collection="#stPendingObjects#" item="i">
@@ -202,13 +202,13 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au)$
 				<!--- display news pending approval --->
 				<cfoutput>
 				<cfif not structisempty(stPendingNews)>
-					<span class="formTitle">#apapplication.rb.getResource("newsPendingApproval")#</span>
+					<span class="formTitle">#application.rb.getResource("newsPendingApproval")#</span>
 					
 					<table width="100%" cellpadding="5" cellspacing="1" border="0" style="margin-left:0px;margin-top:10px;border:1px solid ##000;">
 					<tr class="dataheader">
-						<td width="100%"><strong>#apapplication.rb.getResource("object")#</strong></td>
-						<td nowrap align="center"><strong>#apapplication.rb.getResource("createdBy")#</strong></td>
-						<td nowrap align="center"><strong>#apapplication.rb.getResource("lastUpdated")#</strong></td>
+						<td width="100%"><strong>#application.rb.getResource("object")#</strong></td>
+						<td nowrap align="center"><strong>#application.rb.getResource("createdBy")#</strong></td>
+						<td nowrap align="center"><strong>#application.rb.getResource("lastUpdated")#</strong></td>
 					</tr>
 		            <cfset currentrow = 1>
 					<cfloop collection="#stPendingNews#" item="i">
@@ -232,13 +232,13 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au)$
 				<!--- display all draft objects --->
 				<cfoutput>
 				<cfif qDraftObjects.recordcount gt 0>
-					<span class="formTitle">#apapplication.rb.getResource("draftObjects")#</span>
+					<span class="formTitle">#application.rb.getResource("draftObjects")#</span>
 					
 					<table width="100%" cellpadding="5" cellspacing="1" border="0" style="margin-left:0px;margin-top:10px;border:1px solid ##000;">
 					<tr class="dataheader">
-						<td width="!00%"><strong>#apapplication.rb.getResource("object")#</strong></td>
-						<td nowrap align="center"><strong>#apapplication.rb.getResource("type")#</strong></td>
-						<td nowrap align="center"><strong>#apapplication.rb.getResource("lastUpdated")#</strong></td>
+						<td width="!00%"><strong>#application.rb.getResource("object")#</strong></td>
+						<td nowrap align="center"><strong>#application.rb.getResource("type")#</strong></td>
+						<td nowrap align="center"><strong>#application.rb.getResource("lastUpdated")#</strong></td>
 					</tr>
 					<cfparam name="url.draftEndRow" default="5">
 					<cfloop query="qDraftObjects" startrow="1" endrow="#url.draftEndRow#">
@@ -255,9 +255,9 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au)$
 					</table>
 					<!--- show link to all draftObjects --->
 					<cfif qDraftObjects.recordcount gt url.draftEndRow>
-						<div align="left" style="margin-left:7px;margin-top:5px;"><span class="frameMenuBullet" >&raquo;</span> <a href="index.cfm?draftEndRow=#qDraftObjects.recordcount#">#apapplication.rb.getResource("showAll")#</a></div>
+						<div align="left" style="margin-left:7px;margin-top:5px;"><span class="frameMenuBullet" >&raquo;</span> <a href="index.cfm?draftEndRow=#qDraftObjects.recordcount#">#application.rb.getResource("showAll")#</a></div>
 					<cfelseif url.draftEndRow neq 5>
-						<div align="left" style="margin-left:7px;margin-top:5px;"><span class="frameMenuBullet" >&raquo;</span> <a href="index.cfm?draftEndRow=5">#apapplication.rb.getResource("showRecent5")#</a></div>
+						<div align="left" style="margin-left:7px;margin-top:5px;"><span class="frameMenuBullet" >&raquo;</span> <a href="index.cfm?draftEndRow=5">#application.rb.getResource("showRecent5")#</a></div>
 					</cfif>
 				 <p>
 				</cfif>
@@ -271,13 +271,13 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au)$
 				<!--- display all locked objects --->
 				<cfoutput>
 				<cfif qLockedObjects.recordcount gt 0>
-					<span class="formTitle">#apapplication.rb.getResource("lockedObjects")#</span>
+					<span class="formTitle">#application.rb.getResource("lockedObjects")#</span>
 					
 					<table width="100%" cellpadding="5" cellspacing="1" border="0" style="margin-left:0px;margin-top:10px;border:1px solid ##000;">
 					<tr class="dataheader">
-						<td width="!00%"><strong>#apapplication.rb.getResource("object")#</strong></td>
-						<td nowrap align="center"><strong>#apapplication.rb.getResource("type")#</strong></td>
-						<td nowrap align="center"><strong>#apapplication.rb.getResource("lastUpdated")#</strong></td>
+						<td width="!00%"><strong>#application.rb.getResource("object")#</strong></td>
+						<td nowrap align="center"><strong>#application.rb.getResource("type")#</strong></td>
+						<td nowrap align="center"><strong>#application.rb.getResource("lastUpdated")#</strong></td>
 						<td>&nbsp;</td>
 					</tr>
 					<cfparam name="url.lockedEndRow" default="5">
@@ -294,15 +294,15 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au)$
 							</cfif>
 							<td valign="top">#objectType#</td>
 							<td valign="top" align="center">#application.thisCalendar.i18nDateFormat(objectLastUpdated,session.dmProfile.locale,application.longF)#</td>
-							<td valign="top" align="center"><a href="navajo/unlock.cfm?objectid=#objectid#&typename=#objectType#&return=home">[#apapplication.rb.getResource("unlock")#]</a></td>
+							<td valign="top" align="center"><a href="navajo/unlock.cfm?objectid=#objectid#&typename=#objectType#&return=home">[#application.rb.getResource("unlock")#]</a></td>
 						</tr>
 					</cfloop>
 					</table>
 					<!--- show link to all locked Objects --->
 					<cfif qLockedObjects.recordcount gt url.lockedEndRow>
-						<div align="left" style="margin-left:7px;margin-top:5px;"><span class="frameMenuBullet" >&raquo;</span> <a href="index.cfm?lockedEndRow=<cfoutput>#qLockedObjects.recordcount#</cfoutput>">#apapplication.rb.getResource("showAll")#</div>
+						<div align="left" style="margin-left:7px;margin-top:5px;"><span class="frameMenuBullet" >&raquo;</span> <a href="index.cfm?lockedEndRow=<cfoutput>#qLockedObjects.recordcount#</cfoutput>">#application.rb.getResource("showAll")#</div>
 					<cfelseif url.lockedEndRow neq 5>
-						<div align="left" style="margin-left:7px;margin-top:5px;"><span class="frameMenuBullet" >&raquo;</span> <a href="index.cfm?lockedEndRow=5">#apapplication.rb.getResource("showRecent5")#</div>
+						<div align="left" style="margin-left:7px;margin-top:5px;"><span class="frameMenuBullet" >&raquo;</span> <a href="index.cfm?lockedEndRow=5">#application.rb.getResource("showRecent5")#</div>
 					</cfif>
 				</cfif>
 				<p>&nbsp;</p>
@@ -320,19 +320,19 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au)$
 				<!--- display recent HTML objects --->
 				<cfoutput>
 				<cfif structCount(stRecentHTMLObjects) gt 0>
-					<span class="formTitle">#apapplication.rb.getResource("recentlyAddedPages")#</span>
+					<span class="formTitle">#application.rb.getResource("recentlyAddedPages")#</span>
 					
 					<table width="100%" cellpadding="5" cellspacing="1" border="0" style="margin-left:0px;margin-top:10px;border:1px solid ##000;">
 					<tr class="dataheader">
-						<td width="100%"><strong>#apapplication.rb.getResource("page")#</strong></td>
-						<td nowrap align="center"><strong>#apapplication.rb.getResource("createdBy")#</strong></td>
-						<td nowrap align="center"><strong>#apapplication.rb.getResource("dateCreated")#</strong></td>
+						<td width="100%"><strong>#application.rb.getResource("page")#</strong></td>
+						<td nowrap align="center"><strong>#application.rb.getResource("createdBy")#</strong></td>
+						<td nowrap align="center"><strong>#application.rb.getResource("dateCreated")#</strong></td>
 					</tr>
 		            <cfset currentrow = 1>
 		    		<cfloop collection="#stRecentHTMLObjects#" item="item">
 		                <cfset stRecentObj = stRecentHTMLObjects[item]>
 					<tr class="#IIF(currentrow MOD 2, de("dataOddRow"), de("dataEvenRow"))#">
-						<td><span class="frameMenuBullet">&raquo;</span> <cfoutput><a href="index.cfm?section=site&rootobjectid=#stRecentObj.objectParent#"><cfif stRecentObj.title neq "">#stRecentObj.title#<cfelse><em>#apapplication.rb.getResource("undefined")#</em></cfif></cfoutput></td>
+						<td><span class="frameMenuBullet">&raquo;</span> <cfoutput><a href="index.cfm?section=site&rootobjectid=#stRecentObj.objectParent#"><cfif stRecentObj.title neq "">#stRecentObj.title#<cfelse><em>#application.rb.getResource("undefined")#</em></cfif></cfoutput></td>
 						<td valign="top"><cfoutput><cfif stRecentObj.userEmail neq ""><a href="mailto:#stRecentObj.userEmail#" title="#stRecentObj.userEmail#"></cfif>#stRecentObj.createdBy#<cfif stRecentObj.userEmail neq ""></a></cfif></cfoutput></td>
 						<td valign="top" align="center"><cfoutput>#application.thisCalendar.i18nDateFormat(stRecentObj.dateTimeCreated,session.dmProfile.locale,application.longF)#</cfoutput></td>
 					</tr>
@@ -353,13 +353,13 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au)$
 				<!--- display recent News objects --->
 				<cfif structCount(stRecentNewsObjects) gt 0>
 					<cfoutput>
-					<span class="formTitle">#apapplication.rb.getResource("recentNewsArticles")#</span>
+					<span class="formTitle">#application.rb.getResource("recentNewsArticles")#</span>
 					
 					<table width="100%" cellpadding="5" cellspacing="1" border="0" style="margin-left:0px;margin-top:10px;border:1px solid ##000;">
 					<tr class="dataheader">
-						<td width="100%"><strong>#apapplication.rb.getResource("newsArticle")#</strong></td>
-						<td nowrap align="center"><strong>#apapplication.rb.getResource("createdBy")#</strong></td>
-						<td nowrap align="center"><strong>#apapplication.rb.getResource("dateCreated")#</strong></td>
+						<td width="100%"><strong>#application.rb.getResource("newsArticle")#</strong></td>
+						<td nowrap align="center"><strong>#application.rb.getResource("createdBy")#</strong></td>
+						<td nowrap align="center"><strong>#application.rb.getResource("dateCreated")#</strong></td>
 					</tr>
 					</cfoutput>
 		            <cfset currentrow = 1>
@@ -367,7 +367,7 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au)$
 		                <cfset stRecentObj = stRecentNewsObjects[item]>
 					<cfoutput>
 					<tr class="#IIF(currentrow MOD 2, de("dataOddRow"), de("dataEvenRow"))#">
-						<td><span class="frameMenuBullet">&raquo;</span> <a href="index.cfm?section=dynamic&objectid=#stRecentObj.objectid#&status=all"><cfif stRecentObj.title neq "">#stRecentObj.title#<cfelse><em>#apapplication.rb.getResource("undefined")#</em></cfif></td>
+						<td><span class="frameMenuBullet">&raquo;</span> <a href="index.cfm?section=dynamic&objectid=#stRecentObj.objectid#&status=all"><cfif stRecentObj.title neq "">#stRecentObj.title#<cfelse><em>#application.rb.getResource("undefined")#</em></cfif></td>
 						<td valign="top"><cfif stRecentObj.userEmail neq ""><a href="mailto:#stRecentObj.userEmail#" title="#stRecentObj.userEmail#"></cfif>#stRecentObj.createdBy#<cfif stRecentObj.userEmail neq ""></a></cfif></td>
 						<td valign="top" align="center">#application.thisCalendar.i18nDateFormat(stRecentObj.dateTimeCreated,session.dmProfile.locale,application.longF)#</td>
 					</tr>
@@ -383,7 +383,7 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au)$
 				</cfscript>
 				
 				<cfif qStats.Max gt 0>
-					<cfoutput><p></p><span class="formTitle">#apapplication.rb.getResource("siteUsageLastMonth")#</span><p style="margin-left: 5%;">
+					<cfoutput><p></p><span class="formTitle">#application.rb.getResource("siteUsageLastMonth")#</span><p style="margin-left: 5%;">
 			    		<div align="center"></cfoutput>
 			    	<cfchart 
 						format="flash" 
@@ -398,15 +398,15 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au)$
 						font="arialunicodeMS"
 						fontsize="10" fontbold="no" fontitalic="no" 
 						labelFormat = "number"
-						xAxisTitle = "#apapplication.rb.getResource("date")#" 
-						yAxisTitle = "#apapplication.rb.getResource("totalViews")#" 
+						xAxisTitle = "#application.rb.getResource("date")#" 
+						yAxisTitle = "#application.rb.getResource("totalViews")#" 
 						show3D = "yes"
 						xOffset = "0.15" 
 						yOffset = "0.15"
 						rotated = "no" 
 						showLegend = "no" 
 						tipStyle = "MouseOver">
-					<cfchartseries type="line" query="qStats.qGetPageStats" itemcolumn="viewday" valuecolumn="count_views" serieslabel="#apapplication.rb.getResource("viewsInLastMonth")#" paintstyle="shade"></cfchartseries>
+					<cfchartseries type="line" query="qStats.qGetPageStats" itemcolumn="viewday" valuecolumn="count_views" serieslabel="#application.rb.getResource("viewsInLastMonth")#" paintstyle="shade"></cfchartseries>
 		
 					</cfchart>
 					<cfoutput></div></cfoutput>

@@ -39,19 +39,19 @@ $out:$
 	<form method="post" class="f-wrap-1 f-bg-short" action="">
 	<fieldset>
 	
-		<h3>#apapplication.rb.getResource("scopeDump")#</h3>
+		<h3>#application.rb.getResource("scopeDump")#</h3>
 		
 		<label for="permname"><b>Choose scope:</b>
 		<select name="scope">
-			<option value="application" <cfif isdefined("form.scope") and form.scope eq "application">selected</cfif>>#apapplication.rb.getResource("application")#</option>
-			<option value="request" <cfif isdefined("form.scope") and form.scope eq "request">selected</cfif>>#apapplication.rb.getResource("request")#</option>
-			<option value="session" <cfif isdefined("form.scope") and form.scope eq "session">selected</cfif>>#apapplication.rb.getResource("session")#</option>
-			<option value="server" <cfif isdefined("form.scope") and form.scope eq "server">selected</cfif>>#apapplication.rb.getResource("server")#</option>
+			<option value="application" <cfif isdefined("form.scope") and form.scope eq "application">selected</cfif>>#application.rb.getResource("application")#</option>
+			<option value="request" <cfif isdefined("form.scope") and form.scope eq "request">selected</cfif>>#application.rb.getResource("request")#</option>
+			<option value="session" <cfif isdefined("form.scope") and form.scope eq "session">selected</cfif>>#application.rb.getResource("session")#</option>
+			<option value="server" <cfif isdefined("form.scope") and form.scope eq "server">selected</cfif>>#application.rb.getResource("server")#</option>
 		</select><br />
 		</label>
 		
 		<div class="f-submit-wrap">
-		<input type="submit" value="#apapplication.rb.getResource("dump")#" class="f-submit" />
+		<input type="submit" value="#application.rb.getResource("dump")#" class="f-submit" />
 		</div>
 		
 		</form>

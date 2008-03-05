@@ -18,9 +18,9 @@ $Developer: Brendan Sisson (brendan@daemon.com.au) $
 <cfsetting enablecfoutputonly="yes">
 
 <cfoutput>
-<strong>#apapplication.rb.getResource("toLabel")#</strong><p></p>
-<strong>#apapplication.rb.getResource("fromLabel")#</strong> #stObj.fromEmail#<p></p>
-<strong>#apapplication.rb.getResource("subjLabel")#</strong> #stObj.title#<p></p>
+<strong>#application.rb.getResource("toLabel")#</strong><p></p>
+<strong>#application.rb.getResource("fromLabel")#</strong> #stObj.fromEmail#<p></p>
+<strong>#application.rb.getResource("subjLabel")#</strong> #stObj.title#<p></p>
 
 #stObj.body#
 </cfoutput>
