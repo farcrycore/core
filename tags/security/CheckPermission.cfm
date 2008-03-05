@@ -79,7 +79,7 @@
 		
 		<!--- Check webskin permissions --->
 		<cfloop list="#attributes.webskinpermission#" index="perm">
-			<cfset permitted = permitted and application.security.checkPermission(webskin=perm) />
+			<cfset permitted = permitted and application.security.checkPermission(webskin=perm,type=attributes.type) />
 		</cfloop>
 		
 		<!--- Save result of check --->
