@@ -1,26 +1,14 @@
-<cfsetting enablecfoutputonly="Yes">
-<!---
-|| LEGAL ||
-$Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
-$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$
+<cfsetting enablecfoutputonly="true" />
+<!--- @@Copyright: Daemon Pty Limited 1995-2008, http://www.daemon.com.au --->
+<!--- @@License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php --->
+<!--- @@displayname: ./navajo/display.cfm --->
+<!--- @@Description: Primary controller for invoking the object to be rendered for the website. --->
+<!--- @@Developer: Geoff Bowers (modius@daemon.com.au) --->
 
-|| VERSION CONTROL ||
-$Header: /cvs/farcry/core/tags/navajo/display.cfm,v 1.46.2.2 2006/03/17 06:45:42 geoff Exp $
-$Author: geoff $
-$Date: 2006/03/17 06:45:42 $
-$Name: milestone_3-0-1 $
-$Revision: 1.46.2.2 $
-
-|| DESCRIPTION ||
-$Description: Primary controller for invoking the object to be rendered for the website.$
-$TODO: This needs to be converted into a CFC! GB $
-
-|| DEVELOPER ||
-$Developer: Geoff Bowers (modius@daemon.com.au)$
---->
+<!--- directives --->
 <cfprocessingdirective pageencoding="utf-8" />
 
-<!--- Tag libraries --->
+<!--- import tag libraries --->
 <cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4" />
 <cfimport taglib="/farcry/core/tags/navajo/" prefix="nj" />
 <cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry" />
@@ -33,11 +21,13 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 </cfif>
 
 <cftimer label="NAVAJO DISPLAY">
-	
+
+<!--- environment variables --->
+<cfparam name="request.bHideContextMenu" default="false" type="boolean" />
+
+<!--- optional attributes --->
 <cfparam name="attributes.objectid" default="" />
 <cfparam name="attributes.typename" default="" />
-	
-<!--- optional attributes --->
 <cfparam name="attributes.method" default="display" type="string">
 <cfparam name="attributes.lmethods" default="display" type="string">
 <cfparam name="attributes.loginpath" default="#application.url.farcry#/login.cfm?returnUrl=#URLEncodedFormat(cgi.script_name&'?'&cgi.query_string)#" type="string">
@@ -47,7 +37,6 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 	<cfset attributes.method = "display">
 </cfif>
 
-<cfparam name="request.bHideContextMenu" default="false">
 
 <!--- Handle options for passing object/type in --->
 <cfif not len(attributes.typename) and structkeyexists(url,"type")>
@@ -80,57 +69,74 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 	<cftry>
 		<q4:contentobjectget objectid="#attributes.objectid#" r_stobject="stObj">
 		
-		<cftrace var="stobj.typename" text="object retrieved" />
+		<cftrace var="stobj.typename" text="Object typename determined." type="information" />
 	
 		<!--- check that an appropriate result was returned from COAPI --->
 		<cfif NOT IsStruct(stObj) OR StructIsEmpty(stObj)>
-			<cfthrow message="#application.rb.getResource("badCOAPI")#">
+			<cfthrow />
 		</cfif>
+		
 		<cfcatch type="Any">
 			<farcry:logevent object="#attributes.objectid#" type="display" event="404" />
+
 			<cfif fileexists("#application.path.project#/errors/404.cfm")>
 				<cfinclude template="#application.path.project#/errors/404.cfm" />
 				<cfexit method="exittag" />
+
 			<cfelseif isDefined("application.navid.home")>
 				<cflocation url="#application.url.conjurer#?objectid=#application.navid.home#" addtoken="No" />
+
 			<cfelse>
-				<cflocation url="#application.url.webroot#/" addtoken="No">
+				<cflocation url="#application.url.webroot#/" addtoken="No" />
 			</cfif>
 		</cfcatch>
 	</cftry>
 	
-	<!--- CHECK TO SEE IF OBJECT IS IN DRAFT --->
-	<!--- If the current user is not permitted to see draft objects, then make them login --->
+	<!--- 
+	CHECK TO SEE IF OBJECT IS IN DRAFT
+	- If the current user is not permitted to see draft objects, then make them login 
+	--->
 	<cfif structkeyexists(stObj,"status") and stObj.status EQ "draft" and NOT ListContains(request.mode.lValidStatus, stObj.status)>
 		<!--- send to login page and return in draft mode --->
 		<cflocation url="#application.url.farcry#/login.cfm?returnUrl=#URLEncodedFormat(cgi.script_name&'?'&cgi.query_string)#&error=draft&showdraft=1" addtoken="No" />
 	</cfif>
 	
-	<!--- Get the navigation point from the URL --->
-	<cfif not structkeyexists(request,"navid") and structkeyexists(url,"navid")>
+	<!--- 
+	DETERMINE request.navid
+	- Get the navigational context of the content object 
+	--->
+	<!--- passed on the url? --->
+	<cfif stObj.typename eq "dmNavigation">
+		<cfset request.navid = stobj.objectid />
+		<cftrace var="stobj.objectid" text="Content item is a navigation node." type="information" />	
 	
-		<!--- ie. this is a dynamic object looking for context --->
-		<cftrace var="url.navid" text="url.navid is defined for non dmNavigation object" />
+	<cfelseif not structkeyexists(request,"navid") and structkeyexists(url,"navid")>
+	
+		<!--- ie. this is a dynamic object looking for context, passing nav on the URL --->
 		<cfset request.navid = url.navid />
+		<cftrace var="url.navid" text="navid passed on the URL." />
 	
 	<!--- otherwise get the navigation point for this object --->
 	<cfelseif not stObj.typename eq "dmNavigation" and not structkeyexists(request,"navid")>
 	
-		<nj:getNavigation objectId="#stObj.objectId#" r_stobject="stNav">
+		<nj:getNavigation objectId="#stObj.objectId#" r_stobject="stNav" />
 		
 		<!--- if the object is in the tree this will give us the node --->
 		<cfif isDefined("stNav.objectid") AND len(stNav.objectid)>
 			<cfset request.navid = stNav.objectID>
-			<cftrace var="stNav.objectid" text="url.navid is not defined, getNavigation called to find navid" />
+			<cftrace var="stNav.objectid" text="url.navid is not defined, getNavigation called to find navid." type="information" />
 	
 		<!--- otherwise, use the home node as a last resort --->
 		<cfelse>
-			<cfset request.navid = application.navid.home>
+			<cfset request.navid = application.navid.home />
+			<cftrace var="application.navid.home" text="navid could not be determined; defaulting to application.navid.home." type="information" />
 		</cfif>
+
 	<cfelse>
-	
-		<cfparam name="request.navid" default="#application.navid.home#">
-	
+		<!--- otherwise, use the home node as a last resort --->
+		<cfparam name="request.navid" default="#application.navid.home#" type="uuid" />
+		<cftrace var="application.navid.home" text="nav object corrupt; defaulting to application.navid.home." type="information" />
+		
 	</cfif>
 	
 	<!--- Check security --->
