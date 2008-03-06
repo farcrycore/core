@@ -670,7 +670,7 @@ default handlers
 		
 		<!--- if the properties struct not passed in grab the instance --->
 		<cfif StructIsEmpty(arguments.stObj) AND structKeyExists(instance, "stobj")>
-			<cfset arguments.stobj = instance.obj />
+			<cfset arguments.stobj = instance.stobj />
 		</cfif>
 		
 		<cfif not StructIsEmpty(arguments.stObj)>
