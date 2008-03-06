@@ -194,18 +194,8 @@
 		
 		<cfif len(trim(HTML))>
 			<cfoutput>#HTML#</cfoutput>
-		<cfelse>
-			<!--- Invoke default display method of page --->
-			<cftrace text="Default display method used" />
-			
-			<cftry>
-				<cfoutput>#createObject("component", application.types[stObj.typename].typePath).display(objectid=stObj.objectId)#</cfoutput>
-				
-				<cfcatch type="any">
-					<cfdump var="#cfcatch#" expand="false" label="cfcatch" />
-					<cfthrow type="core.tags.navajo.display" message="Default display method for object could not be found." />
-				</cfcatch>
-			</cftry>
+		<cfelse>		
+			<cfthrow message="For the default view of an object, create a displayPageStandard webskin." />
 		</cfif>
 	</cfif>
 	
