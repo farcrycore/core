@@ -199,10 +199,10 @@
 			<cftrace text="Default display method used" />
 			
 			<cftry>
-				<cfset HTML = createObject("component", application.types[stObj.typename].typePath).display(objectid=stObj.objectId) />
-				<cfoutput>#HTML#</cfoutput>
+				<cfoutput>#createObject("component", application.types[stObj.typename].typePath).display(objectid=stObj.objectId)#</cfoutput>
 				
 				<cfcatch type="any">
+					<cfdump var="#cfcatch#" expand="false" label="cfcatch" />
 					<cfthrow type="core.tags.navajo.display" message="Default display method for object could not be found." />
 				</cfcatch>
 			</cftry>
