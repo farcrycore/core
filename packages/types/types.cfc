@@ -654,6 +654,7 @@ default handlers
 		<cfargument name="bAudit" type="boolean" required="No" default="1" hint="Pass in 0 if you wish no audit to take place">
 		<cfargument name="dsn" required="No" default="#application.dsn#"> 
 		<cfargument name="stobj" required="No" default="#StructNew()#"> 
+		<cfargument name="objectid" required="No" default=""><!--- objectid of the object to be locked/unlocked ---> 
 		
 		<cfset var stCurrentObject = structNew() />
 		<cfset var bSessionOnly = false />
@@ -667,6 +668,9 @@ default handlers
 			</cfif>
 		</cfif>
 		
+		<cfif len(arguments.objectid)>
+			<cfset arguments.stObj = getData(objectid="#arguments.objectid#") />
+		</cfif>
 		
 		<!--- if the properties struct not passed in grab the instance --->
 		<cfif StructIsEmpty(arguments.stObj) AND structKeyExists(instance, "stobj")>
@@ -1117,11 +1121,11 @@ default handlers
 			<ft:processForm action="Save" Exit="true">
 				<ft:processFormObjects typename="#stobj.typename#" />
 				
-				<cfset setLock(locked=false,stobj=stobj) />
+				<cfset setLock(locked=false,objectid=stobj.objectid) />
 			</ft:processForm>
 
 			<ft:processForm action="Cancel" Exit="true">
-				<cfset setLock(locked=false,stobj=stobj) />
+				<cfset setLock(locked=false,objectid=stobj.objectid) />
 			</ft:processForm>
 			
 			
