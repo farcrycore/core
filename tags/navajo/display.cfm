@@ -190,7 +190,7 @@
 		
 	<cfelse>
 	
-		<skin:view objectid="#attributes.objectid#" webskin="displayPageStandard" r_html="HTML" />
+		<skin:view objectid="#attributes.objectid#" webskin="displayPageStandard" r_html="HTML" alternateHTML="" />
 		
 		<cfif len(trim(HTML))>
 			<cfoutput>#HTML#</cfoutput>
