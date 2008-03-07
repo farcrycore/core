@@ -392,16 +392,18 @@
 	</cffunction>
 	
 		
-	<cffunction name="getWebskinTimeOut" returntype="string" access="public" output="false" hint="Returns the objectbroker timeout value of a webskin. A result of 0 will FORCE any ancestor webskins to NEVER cache.">
+	<cffunction name="getWebskinTimeOut" returntype="string" access="public" output="false" hint="Returns the objectbroker timeout value of a webskin. A result of 0 will FORCE any ancestor webskins to NEVER cache. The default value is the objectBrokerWebskinTimeout value set in the type cfc which defaults to 1400 minutes">
 		<cfargument name="typename" type="string" required="true" />
 		<cfargument name="template" type="string" required="true" />
 		
-		<cfset var webskinTimeOut = "" />
-	
-		<cfif structKeyExists(application.stcoapi[arguments.typename].stObjectBrokerWebskins, arguments.template)>
+		<cfset var webskinTimeOut = "1440" />
+
+ 		<cfif structKeyExists(application.stcoapi[arguments.typename].stObjectBrokerWebskins, arguments.template)>
 			<cfset webskinTimeOut = application.stcoapi[arguments.typename].stObjectBrokerWebskins[arguments.template].timeout />
+		<cfelseif structKeyExists(application.stcoapi[arguments.typename], "ObjectBrokerWebskinTimeOut")>
+			<cfset webskinTimeOut = application.stcoapi[arguments.typename].ObjectBrokerWebskinTimeOut />
 		</cfif>
-		
+				
 		<cfreturn webskinTimeOut>
 		
 	</cffunction>
