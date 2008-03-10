@@ -187,8 +187,8 @@ out:
 				<!--- #### graph of view per day between 2 chosen dates #### --->
 				
 				<!--- default values --->
-				<cfparam name="form.before" default="#now()+1#">
-				<cfparam name="form.after" default="#dateadd("m",-3,before)#">
+				<cfparam name="form.before" default="#dateAdd("d",1,now())#">
+				<cfparam name="form.after" default="#dateAdd("m",-3,before)#">
 				
 				<!--- make sure before is actually after "after" date --->
 				<cfif form.before lt form.after>
@@ -207,8 +207,8 @@ out:
 						
 					<p></p>
 					<!--- i18n: for readability --->
-					<cfset tA=application.thisCalendar.i18nDateFormat(form.after,session.dmProfile.locale,application.mediumF)>
-					<cfset tB=application.thisCalendar.i18nDateFormat(form.before,session.dmProfile.locale,application.mediumF)>
+					<cfset tA=application.thisCalendar.i18nDateFormat(createodbcdate(form.after),session.dmProfile.locale,application.mediumF)>
+					<cfset tB=application.thisCalendar.i18nDateFormat(createodbcdate(form.before),session.dmProfile.locale,application.mediumF)>
 					<cfset subS=listToArray('#stObj.title#,#tA#,#tB#')>
 					<h3>#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].totalViewsPerDay,subS)#</h3>
 					
@@ -237,8 +237,8 @@ out:
 							tipStyle = "MouseOver"
 							gridlines = "#q1.max+1#">
 						<!--- i18n: for readability --->
-						<cfset tA=application.thisCalendar.i18nDateFormat(form.after,session.dmProfile.locale,application.mediumF)>
-						<cfset tB=application.thisCalendar.i18nDateFormat(form.before,session.dmProfile.locale,application.mediumF)>
+						<cfset tA=application.thisCalendar.i18nDateFormat(createodbcdate(form.after),session.dmProfile.locale,application.mediumF)>
+						<cfset tB=application.thisCalendar.i18nDateFormat(createodbcdate(form.before),session.dmProfile.locale,application.mediumF)>
 						<cfset subS=listToArray('#stObj.title#,#tA#,#tB#')>
 						<cfchartseries type="line" query="q1.qGetPageStats" itemcolumn="viewday" valuecolumn="count_views" serieslabel="#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].totalViewsPerDay,subS)#" paintstyle="shade"></cfchartseries>
 						</cfchart>
@@ -250,9 +250,9 @@ out:
 				<div style="margin-left:30px;margin-top:20px;">
 				<form action="" method="post">
 					#application.adminBundle[session.dmProfile.locale].between# 
-					<input type="text" name="after" value="#application.thisCalendar.i18nDateFormat(form.after,session.dmProfile.locale,application.mediumF)#">
+					<input type="text" name="after" value="#application.thisCalendar.i18nDateFormat(createodbcdate(form.after),session.dmProfile.locale,application.mediumF)#">
 					#application.adminBundle[session.dmProfile.locale].andLabel# 
-					<input type="text" name="before" value="#application.thisCalendar.i18nDateFormat(form.before,session.dmProfile.locale,application.mediumF)#">
+					<input type="text" name="before" value="#application.thisCalendar.i18nDateFormat(createodbcdate(form.before),session.dmProfile.locale,application.mediumF)#">
 					<input type="submit" value="#application.adminBundle[session.dmProfile.locale].changeDateRange#">
 				</form>
 				</div>
@@ -357,7 +357,7 @@ out:
 				<!--- #### graph of view per day between 2 chosen dates #### --->
 				
 				<!--- default values --->
-				<cfparam name="form.before" default="#now()+1#">
+				<cfparam name="form.before" default="#dateAdd("d",1,now())#">
 				<cfparam name="form.after" default="#dateadd("m",-3,before)#">
 				
 				<!--- make sure before is actually after "after" date --->
@@ -375,8 +375,8 @@ out:
 				<cfoutput>
 				<!--- i18n: for readability --->
 
-				<cfset tA=application.thisCalendar.i18nDateFormat(form.after,session.dmProfile.locale,application.mediumF)>
-				<cfset tB=application.thisCalendar.i18nDateFormat(form.before,session.dmProfile.locale,application.mediumF)>
+				<cfset tA=application.thisCalendar.i18nDateFormat(createodbcdate(form.after),session.dmProfile.locale,application.mediumF)>
+				<cfset tB=application.thisCalendar.i18nDateFormat(createodbcdate(form.before),session.dmProfile.locale,application.mediumF)>
 				<cfset subS=listToArray('#tA#,#tB#')>
 				<h3>#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].viewsPerDayBetween,subS)#</h3>
 				<cfif q1.qGetPageStats.recordcount>
@@ -402,8 +402,8 @@ out:
 						tipStyle = "MouseOver"
 						gridlines = "#q1.max+1#">
 					<!--- i18n: for readability --->
-					<cfset tA=application.thisCalendar.i18nDateFormat(form.after,session.dmProfile.locale,application.mediumF)>
-					<cfset tB=application.thisCalendar.i18nDateFormat(form.before,session.dmProfile.locale,application.mediumF)>
+					<cfset tA=application.thisCalendar.i18nDateFormat(createodbcdate(form.after),session.dmProfile.locale,application.mediumF)>
+					<cfset tB=application.thisCalendar.i18nDateFormat(createodbcdate(form.before),session.dmProfile.locale,application.mediumF)>
 					<cfset subS=listToArray('#tA#,#tB#')>
 					<cfchartseries type="line" query="q1.qGetPageStats" itemcolumn="viewday" valuecolumn="count_views" serieslabel="#application.rb.formatRBString(application.adminBundle[session.dmProfile.locale].viewsBetween,subS)#" paintstyle="shade"></cfchartseries>
 					</cfchart>
