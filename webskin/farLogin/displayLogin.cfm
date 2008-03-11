@@ -3,6 +3,7 @@
 
 <cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" />
 <cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
+<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
 
 
 		
@@ -29,8 +30,7 @@
 	
 	<body id="sec-login">
 </cfoutput>
-		
-<ft:form css="forms.css" class="login">
+
 
 <cfoutput>
 	<div id="login">
@@ -56,10 +56,12 @@
 			<span>#application.config.general.siteTagLine#</span>
 
 		</h1>
-
+		
 </cfoutput>
 		
-		<ft:form>
+	<ft:form>
+			
+		<cfoutput><div class="loginInfo"></cfoutput>			
 			<cfif structKeyExists(server, "stFarcryProjects") AND listLen(structKeyList(server.stFarcryProjects)) GT 1>
 				<cfoutput><fieldset class="formSection"></cfoutput>
 				
@@ -81,10 +83,9 @@
 
 			
 			
-			<ft:object typename="farLogin" />
-
-
-			<cfoutput><fieldset class="formSection"></cfoutput>
+			<ft:object typename="farLogin" lFields="username,password,datetimelastupdated" />
+			
+			<ft:farcrybuttonPanel>
 			
 
 				<cfif isdefined("arguments.stParam.message") and len(arguments.stParam.message)>
@@ -92,21 +93,45 @@
 						<div class="error">#arguments.stParam.message#</div>
 					</cfoutput>
 				</cfif>
-			
+				
 				<ft:farcrybutton value="Log In" />
-			<cfoutput></fieldset></cfoutput>
-		</ft:form>
+			</ft:farcrybuttonPanel>
+			
+			
+			
+			<cfset stParameters = structNew() />
+			<cfset stParameters.returnUrl = "#url.returnUrl#" />
+			
+			<ft:farcrybuttonPanel>					
+				<cfoutput><ul class="fc"></cfoutput>
+					<sec:CheckPermission webskinpermission="forgotPassword" type="farUser">
+						<skin:buildLink type="farUser" view="forgotPassword" stParameters="#stParameters#"><cfoutput><li>Forgot Password</li></cfoutput></skin:buildLink>
+					</sec:CheckPermission>
+					<sec:CheckPermission webskinpermission="forgotUserID" type="farUser">
+						<skin:buildLink type="farUser" view="forgotUserID" stParameters="#stParameters#"><cfoutput><li>Forgot UserID</li></cfoutput></skin:buildLink>
+					</sec:CheckPermission>			
+					<sec:CheckPermission webskinpermission="registerNewUser" type="farUser">
+						<skin:buildLink type="farUser" view="registerNewUser" stParameters="#stParameters#"><cfoutput><li>Register New User</li></cfoutput></skin:buildLink>
+					</sec:CheckPermission>
+				<cfoutput></ul></cfoutput>
+				
+			</ft:farcrybuttonPanel>
+			
+			
+
+	<cfoutput></div></cfoutput>		
+			
+</ft:form>
 
 <cfoutput>
-
+		
+		<br style="clear:both;" />
 		<h3><img src="images/powered_by_farcry_watermark.gif" />Tell it to someone who cares</h3>
 
 		<p style="text-align:right;border-top:1px solid ##e3e3e3;margin-top:25px;"><small>#createObject("component", "#application.packagepath#.farcry.sysinfo").getVersionTagline()#</small></p>
 	</div>
 	
 </cfoutput>
-	
-</ft:form>
 
 <cfoutput>
 	</body>
