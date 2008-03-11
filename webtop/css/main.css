@@ -4,8 +4,10 @@ version:	18-01-06
 author:		pete ottery | daemon | pottery at daemon dot com dot au 
 			please speak to pete before making changes to this file 
 -------------------------------------------------------------------
-*/
+NOTE: a class of "fc" indicates that it is a farcry core class and helps alleviate the issue of external stylesheets
+overriding a required farcry core style.
 
+*/
 
 
 /* =THE BIG GUYS */
@@ -20,7 +22,7 @@ a:hover {color:#fff;background:#E17000}
 ul {position:relative;margin: 0 .3em 1em 0;padding: 0;list-style-type:none}
 ol {margin: .5em .5em}
 ol li {margin-left: 2em;padding-left: 0;background: none; list-style-type: decimal}
-li {line-height: 1.3em;padding-left: 20px;background: transparent url("images/sprites.gif") no-repeat 0 -100px}
+li, ul.fc li {line-height: 1.3em;padding-left: 20px;background: transparent url("images/sprites.gif") no-repeat 0 -100px}
 ul.nomarker li {background:none;padding-left:0}
 
 
@@ -117,23 +119,18 @@ p {margin: 0 0 1.5em}
 
 /* =LAYOUT-LOGIN PAGE */
 body#sec-login {background: #5A7EB9 url("images/full_page_bg.gif") repeat-x 0 0;height:auto}
-	#login {border: 8px solid #eee;background:#fff;width:37em;margin: 50px auto;padding: 20px;color:#999}
+	#login {border: 8px solid #eee;background:#fff;width:600px;margin: 50px auto;padding: 20px;color:#999}
 	
 	#login h1 {font-size:105%;color:#116EAF;margin: 0;float:left;display:inline;padding-bottom:10px}
 	#login h1 img {margin: 0 0 15px}
 	#login h1 img, #login h1 span {display:block;font: normal 80% arial;color:#999}
 	#login h3 {clear:both;font: normal 86% arial;text-align:right;margin: 15px 0 0 auto;padding: 15px 0 0;border-top: 1px solid #eee;color:#ccc}
 	#login h3 img {display:block;margin: 0 0 0 auto}
-	#login fieldset {font-weight:bold;margin-bottom: 10px;width:17em;float:right}
+	#login .loginInfo {font-weight:bold;margin-bottom: 10px;width:425px;float:right}
 	#login fieldset h5 {margin: 50px 0 0;padding:2px 5px}
-	#login label {width:17em}
-	#login fieldset input {margin-top:-1.6em;width:140px;float:right;font-weight:bold}
-	#login fieldset input.f-submit {margin: 5px 0;width:142px;_width:144px}
+	
+	#login .loginInfo form.formtool fieldset {border-style:none;}
 
-	form.login { width: 100%; }
-	#login div.fieldsection * { height: auto; margin: 0; padding: 0; }
-	#login br.clearer { display: none; }
-	#login .farcryButtonWrap-outer { float: right; margin-top: 15px; }
 	#login .error {clear:both;}
 
 /* =LAYOUT-CONTENT-AREA */
