@@ -357,7 +357,9 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		This is done so that if the session doesn't exist yet (in the case of application.cfc applicationStart), we can trap the error and continue on our merry way.
 		 --------------------------------------------------------------->
 		<cftry>
-			<cfset tempObjectStore = Session.TempObjectStore />
+			<cfif structKeyExists(session, "TempObjectStore")>
+				<cfset tempObjectStore = Session.TempObjectStore />
+			</cfif>
 			<cfcatch type="any">
 				<!--- ignore the error and assume it just doesnt exist yet.  --->
 			</cfcatch>
