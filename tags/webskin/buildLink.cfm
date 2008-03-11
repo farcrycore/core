@@ -30,6 +30,10 @@ $in: xCode -- eXtra code to be placed inside the anchor tag $
 
 <cfif thistag.executionMode eq "Start">
 
+	<cfparam name="attributes.href" default=""><!--- the actual href to link to --->
+	<cfparam name="attributes.objectid" default=""><!--- Added to url parameters --->
+	<cfparam name="attributes.type" default=""><!--- Added to url parameters: Typename used with type webskin views --->
+	<cfparam name="attributes.view" default=""><!--- Added to url parameters: Webskin name used with type webskin views --->
 	<cfparam name="attributes.linktext" default="">
 	<cfparam name="attributes.target" default="_self">
 	<cfparam name="attributes.bShowTarget" default="false">
@@ -79,7 +83,7 @@ $in: xCode -- eXtra code to be placed inside the anchor tag $
 		<cfset objFU = CreateObject("component","#Application.packagepath#.farcry.fu")>
 	</cfif>
 	
-	<cfif structKeyExists(attributes,"href")>
+	<cfif len(attributes.href)>
 		<cfset href = attributes.href>
 		
 		<cfif NOT FindNoCase(attributes.href,"?")>
@@ -100,7 +104,9 @@ $in: xCode -- eXtra code to be placed inside the anchor tag $
 			<cfelse>
 				<cfset href = href & application.url.conjurer & "?objectid=" & attributes.externallink>
 			</cfif>
-		<cfelse>
+		<cfelseif len(attributes.type) AND  len(attributes.view)>
+			<cfset href = href & application.url.conjurer & "?type=" & attributes.type & "&view=" & attributes.view>
+		<cfelseif len(attributes.objectid)>
 			<!--- check for friendly url --->
 			<cfif application.config.plugins.fu>
 				<cfset href = href & objFU.getFU(attributes.objectid)>
