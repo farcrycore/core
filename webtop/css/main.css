@@ -119,7 +119,7 @@ p {margin: 0 0 1.5em}
 
 /* =LAYOUT-LOGIN PAGE */
 body#sec-login {background: #5A7EB9 url("images/full_page_bg.gif") repeat-x 0 0;height:auto}
-	#login {border: 8px solid #eee;background:#fff;width:600px;margin: 50px auto;padding: 20px;color:#999}
+	#login {border: 8px solid #eee;background:#fff;width:700px;margin: 50px auto;padding: 20px;color:#999}
 	
 	#login h1 {font-size:105%;color:#116EAF;margin: 0;float:left;display:inline;padding-bottom:10px}
 	#login h1 img {margin: 0 0 15px}
