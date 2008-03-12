@@ -22,9 +22,7 @@
 		<cfif structKeyExists(arguments.stMetadata, "ftValidation") AND listFindNoCase(arguments.stMetadata.ftValidation, "required") AND NOT len(stFieldPost.Value)>
 			<cfset stResult = oField.failed(value="#arguments.stFieldPost.value#", message="This is a required field.") />
 		</cfif>
-		
-		<cfset stResult = oField.failed(value="#arguments.stFieldPost.value#", message="This is a required field.") />
-	<cfdump var="#stResult#" expand="false" label="stResult" /><cfabort showerror="debugging" />
+
 		<!--- ----------------- --->
 		<!--- Return the Result --->
 		<!--- ----------------- --->
