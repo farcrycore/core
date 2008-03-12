@@ -104,7 +104,7 @@ form.formtool .error p.error {margin: 0px 0px 0px 118px; width: 200px;}
 form.formtool input,
 	form.formtool textarea {margin: 0px 0px 0px 0px; padding: 1px 3px 1px 3px; width: 200px;}
 
-	form.formtool select  {margin: 0 5px 4px 0; padding: 0; width: auto; float: left;}
+	form.formtool select  {margin: 0 5px 4px 0; padding: 0; width: auto;}
 	form.formtool select.actionDropdown  {margin: 1px 0; width:110px;}
 	
 	form.formtool textarea {height: 8.0em;}
@@ -169,7 +169,6 @@ form.formtool .wide small {margin: 0px 0px 5px 0px;}
 
 form.formtool .formSection .fieldAlign {float: left; margin: 0px; padding: 0px;}
 
-form.formtool .formSection .password .fieldAlign {float: none; margin: 0px 0px 0px #columnLeftWidth#; padding: 0px;}
 form.formtool .fieldSection .clearer {clear: both;}
 
 form.formtool .formCheckbox {width: auto; border: none;}
