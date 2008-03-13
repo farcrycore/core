@@ -152,10 +152,8 @@
 		<cfparam name="arguments.stMetadata.ftAlias" default="">
 	
 		<cfif listLen(stObject[stMetadata.name])>
-			<cfloop list="#stObject[stMetadata.name]#" index="catid">
-				<cfif structKeyExists(application.catID, catid) >				
-					<cfset html = listAppend(html,application.catID[catid]) />
-				</cfif>
+			<cfloop list="#stObject[stMetadata.name]#" index="catid">		
+					<cfset html = listAppend(html,application.factory.oCategory.getCategoryNameByID(catid)) />
 			</cfloop>
 		</cfif>
 		
