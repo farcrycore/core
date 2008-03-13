@@ -125,6 +125,7 @@
 		<cfdefaultcase>
 			
 			<cfparam name="arguments.stMetadata.ftStyle" default="width:160px;">
+			<cfparam name="arguments.stMetadata.ftClass" default="">
 			<cfparam name="arguments.stMetadata.ftDateFormatMask" default="dd MMM yyyy">
 			<cfparam name="arguments.stMetadata.ftTimeFormatMask" default="hh:mm tt">
 			<cfparam name="arguments.stMetadata.ftShowTime" default="true">		
@@ -199,27 +200,24 @@
 					function updateDateJSField(fieldName, mask){
 				    	var el = Ext.get(fieldName + "Info");
 				    	var dateString = Ext.get(fieldName + "Input").dom.value;
-				    	
-				    	el.removeClass('dateEmpty');
-						el.removeClass('dateAccept');
-						el.removeClass('dateError');
-							
-				    	if (dateString.length > 0) {
+	
+					    	if (dateString.length > 0) {
 					    	var parsedValue = Date.parse(dateString)
 					    	if (parsedValue !== null) {
+					    		el.removeClass('dateEmpty');
+					    		el.removeClass('dateError');
 								el.addClass('dateAccept');	
 								Ext.get(fieldName + "Info").dom.innerHTML = parsedValue.toString(mask);
 								Ext.get(fieldName).dom.value = parsedValue.toString('yyyy/MMM/dd hh:mm tt');
 							} else {
+								el.removeClass('dateEmpty');
+								el.removeClass('dateAccept');
 								el.addClass('dateError');	
 								Ext.get(fieldName + "Info").dom.innerHTML = 'NOT A VALID DATE';
 								Ext.get(fieldName).dom.value = '';
 							}
 						} else {
-				
-							el.addClass('dateEmpty');					
-							Ext.get(fieldName + "Info").dom.innerHTML = 'Type in your date';
-							Ext.get(fieldName).dom.value = '';
+
 						}
 					}
 				</script>
@@ -259,12 +257,23 @@
 				
 				<cfoutput>
 					<div  id="#arguments.fieldname#DIV" style="float:left;#fieldstyle#">
-						<span id="#arguments.fieldname#Info" class="dateJSHiddenValue <cfif len(arguments.stMetadata.value)>dateAccept<cfelse>dateEmpty</cfif>">#DateFormat(arguments.stMetadata.value,arguments.stMetadata.ftDateFormatMask)# <cfif arguments.stMetadata.ftShowTime>#TimeFormat(arguments.stMetadata.value,arguments.stMetadata.ftTimeFormatMask)#</cfif></span>
-						<input type="text" id="#arguments.fieldname#Input" name="#arguments.fieldname#Input" value="Type in your date" />
+						<span id="#arguments.fieldname#Info" class="dateJSHiddenValue <cfif len(arguments.stMetadata.value)>dateAccept<cfelse>dateEmpty</cfif>">
+							<cfif len(arguments.stMetadata.value)>
+								#DateFormat(arguments.stMetadata.value,arguments.stMetadata.ftDateFormatMask)# <cfif arguments.stMetadata.ftShowTime>#TimeFormat(arguments.stMetadata.value,arguments.stMetadata.ftTimeFormatMask)#</cfif>
+							<cfelse>
+								Type in your date
+							</cfif>
+						</span>
+						<input type="text" id="#arguments.fieldname#Input" name="#arguments.fieldname#Input" value="" />
 						<a id="#arguments.fieldname#DatePicker"><img src="#application.url.farcry#/js/dateTimePicker/cal.gif" width="16" height="16" border="0" alt="Pick a date"></a>
 						<cfif arguments.stMetadata.ftShowSuggestions><div class="dateSuggestions">Examples: tomorrow; next tues at 5am; +5days;</div></cfif>
+						<cfif len(arguments.stMetadata.value)>
+							<input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="#DateFormat(arguments.stMetadata.value,'yyyy/mmm/dd')# #TimeFormat(arguments.stMetadata.value, 'hh:mm tt')#" class="#arguments.stMetadata.ftClass#">
+						<cfelse>
+							<input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="" class="#arguments.stMetadata.ftClass#">								
+						</cfif>						
 					</div>
-					<input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="#DateFormat(arguments.stMetadata.value,'yyyy/mmm/dd')# #TimeFormat(arguments.stMetadata.value, 'hh:mm tt')#">
+
 				</cfoutput>
 				
 				<cfif arguments.stMetadata.ftShowCalendar>
