@@ -64,26 +64,33 @@
 		<cfoutput><div class="loginInfo"></cfoutput>			
 			<cfif structKeyExists(server, "stFarcryProjects") AND listLen(structKeyList(server.stFarcryProjects)) GT 1>
 				<cfoutput><fieldset class="formSection"></cfoutput>
+				<cfoutput><legend>Project Selection</legend></cfoutput>
 				
 				<cfoutput>
-					<select id="selectFarcryProject" onchange="window.location='#application.url.webtop#/login.cfm?returnUrl=#urlencodedformat(url.returnUrl)#&farcryProject='+this.value;">						
-						<cfloop list="#structKeyList(server.stFarcryProjects)#" index="thisProject">
-							<option value="#thisProject#"<cfif cookie.currentFarcryProject eq thisProject> selected</cfif>>LOGIN TO: #server.stFarcryProjects[thisProject]#</option>
-						</cfloop>						
-					</select>
+					<div class="fieldSection string">
+						<label class="fieldsectionlabel" for="selectFarcryProject"> Project  : </label>
+						<div class="fieldAlign">
+							<select id="selectFarcryProject" onchange="window.location='#application.url.webtop#/login.cfm?returnUrl=#urlencodedformat(url.returnUrl)#&farcryProject='+this.value;">						
+								<cfloop list="#structKeyList(server.stFarcryProjects)#" index="thisProject">
+									<option value="#thisProject#"<cfif cookie.currentFarcryProject eq thisProject> selected</cfif>>#server.stFarcryProjects[thisProject]#</option>
+								</cfloop>						
+							</select>
+						</div>
+						<br class="clearer"/>
+					</div>					
+
 				</cfoutput>
 
 				
 				<cfoutput></fieldset></cfoutput>		
 			</cfif>
+
 			
-		
 			<sec:SelectUDLogin />
 			
 
-			
-			
-			<ft:object typename="farLogin" lFields="username,password,datetimelastupdated" />
+			<ft:object typename="farLogin" lFields="username,password,datetimelastupdated" legend="Login to #application.config.general.siteTitle#" />
+				
 			
 			<ft:farcrybuttonPanel>
 			

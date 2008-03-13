@@ -4,19 +4,29 @@
 
 <cfif thistag.ExecutionMode eq "Start">
 	<cfif listlen(application.security.getAllUD()) GT 1>
-		<cfoutput><fieldset class="formSection"></cfoutput>
-		
-		<cfoutput><select id="selectuserdirectories" onchange="window.location='#application.url.farcry#/login.cfm?returnUrl=#urlencodedformat(url.returnUrl)#&ud='+this.value;"></cfoutput>
-		
-		<cfloop list="#application.security.getAllUD()#" index="thisud">
+
 			<cfoutput>
-				<option value="#thisud#"<cfif url.ud eq thisud> selected</cfif>>#application.security.userdirectories[thisud].title#</option>
+			<div class="fieldSection string">
+				<label class="fieldsectionlabel" for="selectuserdirectories"> Select User Directory : </label>
+				<div class="fieldAlign">
 			</cfoutput>
-		</cfloop>
-		
-		<cfoutput></select></cfoutput>
-		
-		<cfoutput></fieldset></cfoutput>
+			
+					<cfoutput><select id="selectuserdirectories" onchange="window.location='#application.url.farcry#/login.cfm?returnUrl=#urlencodedformat(url.returnUrl)#&ud='+this.value;"></cfoutput>
+					
+					<cfloop list="#application.security.getAllUD()#" index="thisud">
+						<cfoutput>
+							<option value="#thisud#"<cfif url.ud eq thisud> selected</cfif>>#application.security.userdirectories[thisud].title#</option>
+						</cfoutput>
+					</cfloop>
+					
+					<cfoutput></select></cfoutput>
+			
+			<cfoutput>	
+				</div>
+				<br class="clearer"/>
+			</div>		
+			</cfoutput>
+
 	</cfif>
 </cfif>
 
