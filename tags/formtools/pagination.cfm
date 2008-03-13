@@ -44,6 +44,7 @@ $Developer: Matthew Bryant (mat@daemon.com.au) $
 	<cfparam name="attributes.submissionType" default="url" type="string">
 	<cfparam name="attributes.actionURL" default="" type="string">
 	
+
 	<cfparam name="attributes.scrollPrefix" default="" type="string" />
 	<cfparam name="attributes.scrollSuffix" default="" type="string" />
 	<cfparam name="attributes.renderType" default="list" type="string" />
@@ -321,8 +322,12 @@ user defined functions
 			
 			<cfdefaultcase>
 				
+				<cfoutput><div class="ruleContentVanilla"><div class="ruleListPagination"></cfoutput>
+				
 				<cfif arguments.bShowResultTotal>
 					<cfoutput><div class="pageDetails"><h2>Displaying <strong>#fromRecord#-#toRecord#</strong> of <strong>#attributes.totalRecords#</strong> results</h2></div></cfoutput>
+				<cfelse>
+					<cfoutput><div class="pageDetails"><h2>Displaying page <strong>#attributes.currentPage#</strong> of <strong>#pTotalPages#</strong> pages</h2></div></cfoutput>
 				</cfif>
 				
 				<cfoutput><div class="pageList"><ul></cfoutput>			
@@ -363,6 +368,8 @@ user defined functions
 					</ul>
 				</div>
 				</cfoutput>
+				
+				<cfoutput></div></div><br class="clearer" /></cfoutput>
 			</cfdefaultcase>	
 		
 		</cfswitch>
