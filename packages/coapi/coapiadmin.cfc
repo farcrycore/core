@@ -1,4 +1,4 @@
-<cfcomponent name="coapiadmin">
+<cfcomponent name="coapiadmin" bDocument="true" scopelocation="application.coapi.coapiadmin">
 
 
 <cffunction name="init" access="public" output="false" hint="Initialise component." returntype="coapiadmin">
@@ -13,7 +13,7 @@
 	<cfreturn this>
 </cffunction>
 
-<cffunction name="getCOAPIComponents" access="public" output="false" returntype="query" hint="Get query of COAPI components by package directory.">
+<cffunction name="getCOAPIComponents" access="public" output="false" returntype="query" hint="Get query of COAPI components by package directory." bDocument="true">
 	<cfargument name="project" required="true" type="string" />
 	<cfargument name="package" required="true" type="string" />
 	<cfargument name="plugins" default="" type="string" />
@@ -694,7 +694,9 @@
 		<cfset var includePath = "#arguments.directory#/#arguments.template#" />
 	
 		<cfset includePath = replaceNoCase(includePath, application.path.project, "/farcry/projects/#application.projectDirectoryName#") />
-		<cfset includePath = replaceNoCase(includePath, application.path.plugins, "/farcry/plugins") />
+		<cfif isdefined("application.path.plugins")>
+			<cfset includePath = replaceNoCase(includePath, application.path.plugins, "/farcry/plugins") />
+		</cfif>
 		<cfset includePath = replaceNoCase(includePath, expandPath("/farcry"), "/farcry") />
 		
 		<cfreturn includePath>
