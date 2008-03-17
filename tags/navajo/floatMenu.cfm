@@ -90,6 +90,9 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 		 aItems[arrayLen(aItems)+1] = structNew();
 		 aItems[arrayLen(aItems)].text = "#application.rb.getResource("refreshAppScope")#";
 		 aItems[arrayLen(aItems)].href = "#application.url.conjurer#?objectID=#url.ObjectID#&updateapp=1";
+		 if (isDefined("url.view")) {
+		 	aItems[arrayLen(aItems)].href = "#aItems[arrayLen(aItems)].href#&view=#url.view#";
+		 }
 	}	 
 </cfscript>
 
