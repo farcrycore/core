@@ -36,7 +36,12 @@ $out:$
 	<cfset objectTest = arguments.objectID>
 </cfif>
 
-		
+<cfscript>
+oAuthorisation = request.dmsec.oAuthorisation;
+stObjectPermissions = oAuthorisation.collateObjectPermissions(objectid=stObj.Objectid,  typename=stObj.typename);
+</cfscript>
+
+<cfif StructKeyExists(Application.stCOAPI[stObj.typename],"bUseInTree") AND Application.stCOAPI[stObj.typename].bUseInTree>	
 <!--- get navigation parent for permission checks --->
 <nj:treeGetRelations 
 	typename="#stObj.typename#"
@@ -45,10 +50,7 @@ $out:$
 	r_lObjectIds="ParentID"
 	bInclusive="1">
 
-<cfscript>
-oAuthorisation = request.dmsec.oAuthorisation;
-stObjectPermissions = oAuthorisation.collateObjectPermissions(objectid=stObj.Objectid,  typename=stObj.typename);
-</cfscript>
+
 <!--- if parent returned --->
 <cfif len(ParentID)>
 	
@@ -69,7 +71,19 @@ stObjectPermissions = oAuthorisation.collateObjectPermissions(objectid=stObj.Obj
 
 </cfif>
 	
+<cfelse>
+<!--- get list of policy groups with News Approve access --->
+<cfquery name="qGetPolicyGroups" datasource="#application.dsn#">
+SELECT b.PolicyGroupID FROM #application.dbowner#dmPermission a, #application.dbowner#dmPermissionBarnacle b
+WHERE a.PermissionName = 'NewsApprove'
+AND a.PermissionID = b.PermissionID
+AND b.Status = 1
+ORDER BY b.PolicyGroupID ASC
+</cfquery>
 
+<cfset lApprovePGs = ValueList(qGetPolicyGroups.PolicyGroupID)>
+
+</cfif>
 <!--- get usernames for all members of approve policy groups --->
 <cfscript>
 	aUsers = oAuthorisation.getPolicyGroupUsers(lpolicygroupIDs=lApprovePGs);
