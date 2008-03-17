@@ -1217,6 +1217,12 @@ default handlers
 			<cfset stReturn.message = "Content item (#arguments.objectid#) does not exsit.">
 			<cfreturn stReturn>
 		</cfif>
+		
+		<!--- write audit trail --->
+		<cfif not len(arguments.auditNote)>
+			<cfset arguments.auditNote = "#stObj.label# (#stObj.typename#) deleted.">
+		</cfif>
+		<cfset application.factory.oAudit.logActivity(auditType="Delete", username=arguments.user, location=cgi.remote_host, note=arguments.auditNote,objectid=arguments.objectid)>	
 
 		<!--- done first cause need to remove associtaion to library object --->
 		<cfinclude template="_types/delete.cfm">
@@ -1226,12 +1232,6 @@ default handlers
 			<cfset stLocal.archiveObject = createobject("component",application.types.dmArchive.typepath)>
 			<cfset stLocal.returnVar = stLocal.archiveObject.fArchiveObject(stObj)>
 		</cfif>
-
-		<!--- write audit trail --->
-		<cfif not len(arguments.auditNote)>
-			<cfset arguments.auditNote = "#stObj.label# (#stObj.typename#) deleted.">
-		</cfif>
-		<cfset application.factory.oAudit.logActivity(auditType="Delete", username=arguments.user, location=cgi.remote_host, note=arguments.auditNote,objectid=arguments.objectid)>	
 
 		<cfset stReturn.bSuccess = true>
 		<cfset stReturn.message = "#stObj.label# (#stObj.typename#) deleted.">
