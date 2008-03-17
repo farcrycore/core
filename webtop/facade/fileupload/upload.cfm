@@ -18,6 +18,10 @@
 <!--- Replace all none alphanumeric characters --->
 <cfset cleanFileName = reReplaceNoCase(form.filename, "[^a-z0-9.]", "", "all") />
 
+<cfif not directoryexists("#filePath##stMetadata.ftDestination#/")>
+	<cfdirectory action="create" directory="#filePath##stMetadata.ftDestination#/" />
+</cfif>
+
 <cfif structKeyExists(url,"current") AND len(url.current)>
 	<!--- This means there is currently a file associated with this object. We need to override this file --->
 	
