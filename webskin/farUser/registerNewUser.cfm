@@ -19,7 +19,6 @@
 		<cfset newUserName = stProperties.userid />
 		
 		<cfset createObject("component", application.stcoapi["farUser"].packagePath).addGroup(user="#newUserID#", group="member") />
-		<cfset createObject("component", application.stcoapi["farUser"].packagePath).addGroup(user="#newUserID#", group="sysadmin") />
 	</ft:processFormObjects>
 		
 	

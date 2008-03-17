@@ -1,88 +1,48 @@
 <cfsetting enablecfoutputonly="Yes">
+<!--- @@Copyright: Daemon Pty Limited 1995-2007, http://www.daemon.com.au --->
+<!--- @@License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php --->
 <!--- @@displayname: Farcry UD login form --->
+<!--- @@description:   --->
+<!--- @@author: Matthew Bryant (mbryant@daemon.com.au) --->
 
+
+<!------------------ 
+FARCRY IMPORT FILES
+ ------------------>
 <cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" />
 <cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
 <cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
 
 
-		
-<cfoutput>
-	<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-	<html xmlns="http://www.w3.org/1999/xhtml">
-	<head> 
-		<title>#application.config.general.siteTitle# :: #application.applicationname#</title>
-</cfoutput>
 
-<!--- check for custom Admin CSS in project codebase --->
-<cfif fileExists("#application.path.project#/www/css/customadmin/admin.css")>
-    <cfoutput>
-    	<link href="#application.url.webroot#/css/customadmin/admin.css" rel="stylesheet" type="text/css">
-    </cfoutput>
-<cfelse>
-    <cfoutput>
-    	<link href="#application.url.farcry#/css/main.css" rel="stylesheet" type="text/css">
-    </cfoutput>
-</cfif>
+<!------------------ 
+START WEBSKIN
+ ------------------>	
 
-<cfoutput>
-	</head>
-	
-	<body id="sec-login">
-</cfoutput>
-
-
-<cfoutput>
-	<div id="login">
-		
-		<h1>
-			<a href="#application.url.webroot#/">
-</cfoutput>
-
-<!--- if there is a site logo, use it instead of the default placeholder --->       
-<cfif structKeyExists(application.config.general,'siteLogoPath') and application.config.general.siteLogoPath NEQ "">
-	<cfoutput>
-		<img src="#application.config.general.siteLogoPath#" alt="#application.config.general.siteTitle#" />
-	</cfoutput>
-<cfelse>
-	<cfoutput>
-		<img src="images/logo_placeholder.gif" alt="#application.config.general.siteTitle#" />
-	</cfoutput>
-</cfif>
-
-<cfoutput>
-			</a>
-			#application.config.general.siteTitle#
-			<span>#application.config.general.siteTagLine#</span>
-
-		</h1>
-		
-</cfoutput>
-		
+<skin:view typename="farUser" template="displayHeaderLogin" />
 	<ft:form>
 			
-		<cfoutput><div class="loginInfo"></cfoutput>			
+		<cfoutput>
+		<div class="loginInfo">
+		</cfoutput>	
+				
 			<cfif structKeyExists(server, "stFarcryProjects") AND listLen(structKeyList(server.stFarcryProjects)) GT 1>
-				<cfoutput><fieldset class="formSection"></cfoutput>
-				<cfoutput><legend>Project Selection</legend></cfoutput>
-				
 				<cfoutput>
-					<div class="fieldSection string">
-						<label class="fieldsectionlabel" for="selectFarcryProject"> Project  : </label>
-						<div class="fieldAlign">
-							<select id="selectFarcryProject" onchange="window.location='#application.url.webtop#/login.cfm?returnUrl=#urlencodedformat(url.returnUrl)#&farcryProject='+this.value;">						
-								<cfloop list="#structKeyList(server.stFarcryProjects)#" index="thisProject">
-									<option value="#thisProject#"<cfif cookie.currentFarcryProject eq thisProject> selected</cfif>>#server.stFarcryProjects[thisProject]#</option>
-								</cfloop>						
-							</select>
-						</div>
-						<br class="clearer"/>
-					</div>					
-
-				</cfoutput>
-
-				
-				<cfoutput></fieldset></cfoutput>		
+					<fieldset class="formSection">
+						<legend>Project Selection</legend>
+						<div class="fieldSection string">
+							<label class="fieldsectionlabel" for="selectFarcryProject"> Project  : </label>
+							<div class="fieldAlign">
+								<select id="selectFarcryProject" onchange="window.location='#application.url.webtop#/login.cfm?returnUrl=#urlencodedformat(url.returnUrl)#&farcryProject='+this.value;">						
+									<cfloop list="#structKeyList(server.stFarcryProjects)#" index="thisProject">
+										<option value="#thisProject#"<cfif cookie.currentFarcryProject eq thisProject> selected</cfif>>#server.stFarcryProjects[thisProject]#</option>
+									</cfloop>						
+								</select>
+							</div>
+							<br class="clearer"/>
+						</div>	
+					</fieldset>
+				</cfoutput>		
 			</cfif>
 
 			
@@ -104,8 +64,6 @@
 				<ft:farcrybutton value="Log In" />
 			</ft:farcrybuttonPanel>
 			
-			
-			
 			<cfset stParameters = structNew() />
 			<cfset stParameters.returnUrl = "#url.returnUrl#" />
 			
@@ -123,24 +81,14 @@
 				<cfoutput></ul></cfoutput>
 				
 			</ft:farcrybuttonPanel>
-			
-			
-
-	<cfoutput></div></cfoutput>		
-			
-</ft:form>
-
-<cfoutput>
-		
-		<br style="clear:both;" />
-		<h3><img src="images/powered_by_farcry_watermark.gif" />Tell it to someone who cares</h3>
-
-		<p style="text-align:right;border-top:1px solid ##e3e3e3;margin-top:25px;"><small>#createObject("component", "#application.packagepath#.farcry.sysinfo").getVersionTagline()#</small></p>
-	</div>
 	
-</cfoutput>
+		<cfoutput>
+		</div>
+		</cfoutput>		
+				
+	</ft:form>
 
-<cfoutput>
-	</body>
-</html>
-</cfoutput>
+<skin:view typename="farUser" template="displayFooterLogin" />
+
+
+<cfsetting enablecfoutputonly="false">
