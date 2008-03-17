@@ -31,6 +31,7 @@ $out:$
 
 	<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft">	
 	<cfimport taglib="/farcry/core/tags/wizard/" prefix="wiz">	
+	<cfimport taglib="/farcry/core/tags/extjs/" prefix="extjs">	
 	
 
 	<cffunction name="getView" access="public" output="true" returntype="string" hint="Returns the HTML of a view from the webskin content type folder.">
@@ -133,6 +134,8 @@ $out:$
 										<cfif not bAncestorExists>
 											<cfset stProperties = structNew() />
 											<cfset stProperties.webskinObjectID = stobj.objectid />
+											<cfset stProperties.webskinTypename = "" />
+											<cfset stProperties.webskinTemplate = "" />
 											<cfif structkeyexists(request.aAncestorWebskins[i],"objectid")>
 												<cfset stProperties.ancestorID = request.aAncestorWebskins[i].objectID />
 											</cfif>
@@ -152,6 +155,9 @@ $out:$
 							
 							<!--- If the timeout of this webskin is less than its parents, reset the parents timeout so timeout propogates upwards --->
 							<cfif stCurrentView.timeout LT request.aAncestorWebskins[i].timeout>
+								<cfif stCurrentView.timeout EQ "">
+									<cfdump var="#stCurrentView#" expand="false" label="stCurrentView" />
+<cfabort showerror="debugging" />								</cfif>
 								<cfset request.aAncestorWebskins[i].timeout = stCurrentView.timeout />
 							</cfif>
 							
@@ -260,19 +266,10 @@ $out:$
 			<cfif listLen(structKeyList(application.rules[stobj.typename].stProps)) LTE 2>
 				<cfoutput><h3>No Parameters required</h3></cfoutput>
 			</cfif>
-			<cfif isDefined("url.saved")>
-				<cfset request.inhead.scriptaculousEffects = true />
-				<cfoutput>
-					<h3 id="ruleSaveMessage">Rule has been saved</h3>
-					<script type="text/javascript">
-					new Effect.Highlight($('ruleSaveMessage'), {startcolor:'##E17000',duration:3})
-					</script>
-				</cfoutput>
-			</cfif>
 			
 			<cfset onExit = StructNew() />		
 			<cfset onExit.Type = "URL" />
-			<cfset onExit.Content = "#cgi.SCRIPT_NAME#?#cgi.QUERY_STRING#&saved=1" />
+			<cfset onExit.Content = "#cgi.SCRIPT_NAME#?#cgi.QUERY_STRING#" />
 			
 			
 			
@@ -298,8 +295,16 @@ $out:$
 						
 				</wiz:processwizard>
 				
-				<wiz:processwizard action="Save" Savewizard="true" Exit="true" /><!--- Save wizard Data to Database and remove wizard --->
-				<wiz:processwizard action="Cancel" Removewizard="true" Exit="true" /><!--- remove wizard --->
+				<wiz:processwizard action="Save" Savewizard="true" Exit="true"><!--- Save wizard Data to Database and remove wizard --->
+					<extjs:bubble title="Rule Saved" bAutoHide="true">
+						<cfoutput>The changes you have made to this rule have been saved.</cfoutput>
+					</extjs:bubble>
+				</wiz:processwizard>
+				<wiz:processwizard action="Cancel" Removewizard="true" Exit="true"><!--- remove wizard --->
+					<extjs:bubble title="Changes Cancelled" bAutoHide="true">
+						<cfoutput>The changes you made to the rule were cancelled.</cfoutput>
+					</extjs:bubble>
+				</wiz:processwizard>
 				
 				
 				<wiz:wizard ReferenceID="#stobj.objectid#">
@@ -368,9 +373,18 @@ $out:$
 				---------------------------------------->
 				<ft:processForm action="Save" Exit="true">
 					<ft:processFormObjects typename="#stobj.typename#" PackageType="rules" />
+
+					<extjs:bubble title="Rule Saved" bAutoHide="true">
+						<cfoutput>The changes you have made to this rule have been saved.</cfoutput>
+					</extjs:bubble>
+					
 				</ft:processForm>
 				
-				<ft:processForm action="Cancel" Exit="true" />
+				<ft:processForm action="Cancel" Exit="true">				
+					<extjs:bubble title="Changes Cancelled" bAutoHide="true">
+						<cfoutput>The changes you made to the rule were cancelled.</cfoutput>
+					</extjs:bubble>
+				</ft:processForm>
 				
 				
 				

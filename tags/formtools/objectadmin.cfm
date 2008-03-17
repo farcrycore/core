@@ -154,15 +154,20 @@ user --->
 
 
 
-<ft:processform action="delete">
+<ft:processform action="delete" url="refresh">
 	<cfif isDefined("form.objectid") and len(form.objectID)>
 		
 		<cfloop list="#form.objectid#" index="i">
 			<cfset o = createObject("component", PrimaryPackagePath) />
+			<cfset stDeletingObject = o.getData(objectid=i) />
 			<cfset stResult = o.delete(objectid=i) />
 			
 			<cfif isDefined("stResult.bSuccess") AND not stResult.bSuccess>
-				<cfoutput><div class="error">#stResult.message#</div></cfoutput>
+				<extjs:bubble title="Error deleting - #stDeletingObject.label#" bAutoHide="true">
+					<cfoutput>#stResult.message#</cfoutput>
+				</extjs:bubble>
+			<cfelse>
+				<extjs:bubble title="Deleted - #stDeletingObject.label#" bAutoHide="true" />
 			</cfif>
 		</cfloop>
 	</cfif>
