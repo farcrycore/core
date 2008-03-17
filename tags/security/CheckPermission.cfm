@@ -84,7 +84,7 @@
 		
 		<!--- Save result of check --->
 		<cfif structkeyexists(attributes,"result")>
-			<cfset evaluate("caller.#attributes.result#=#permitted#") />
+			<cfset evaluate("caller.#attributes.result#=#iif(permitted,"1","0")#") />
 		</cfif>
 		
 		<cfif permitted>
