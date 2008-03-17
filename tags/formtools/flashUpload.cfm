@@ -51,7 +51,7 @@ Please keep this notice to comply with license
 <cfparam name="attributes.fileDescription" default="All types">
 <cfparam name="attributes.label" default="">
 <cfparam name="attributes.maxSize" default="-1">
-<cfparam name="attributes.swf" default="#application.url.webtop#/facade/fileUpload/fileUpload.swf">
+<cfparam name="attributes.swf" default="#application.url.farcry#/facade/fileUpload/fileUpload.swf">
 <cfparam name="attributes.onComplete" default="">
 
 <cfswitch expression="#ThisTag.ExecutionMode#">
