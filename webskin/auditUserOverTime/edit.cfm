@@ -29,7 +29,6 @@
 	
 	<cfif stObj.period eq "day">		
 		<cfchart 
-			format="flash" 
 			chartHeight="400" 
 			chartWidth="600" 
 			scaleFrom="0" 

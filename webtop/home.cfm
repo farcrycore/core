@@ -63,7 +63,6 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au)$
 				<cfinvoke component="#application.packagepath#.farcry.workflow" method="getStatusBreakdown" returnvariable="stStatus"></cfinvoke>
 				<cfoutput><span class="formTitle">#application.rb.getResource("objStatusBreakdown")#</span><p style="margin-left: 5%;"></cfoutput>
 				<cfchart 
-					format="flash" 
 					chartHeight="100" 
 					chartWidth="250" 
 					scaleFrom="0" 
@@ -94,7 +93,6 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au)$
 				
 				<cfoutput><span class="formTitle">#application.rb.getResource("objAgeBreakdown")#</span><p style="margin-left: 5%;"></cfoutput>
 				<cfchart 
-					format="flash" 
 					chartHeight="100" 
 					chartWidth="250" 
 					scaleFrom="0" 
@@ -386,7 +384,6 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au)$
 					<cfoutput><p></p><span class="formTitle">#application.rb.getResource("siteUsageLastMonth")#</span><p style="margin-left: 5%;">
 			    		<div align="center"></cfoutput>
 			    	<cfchart 
-						format="flash" 
 						chartHeight="300" 
 						chartWidth="300" 
 						scaleFrom="0"

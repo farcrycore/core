@@ -99,8 +99,7 @@ out:
 			<hr />
 		
 			<!--- show graph --->
-			<cfchart 
-				format="flash" 
+			<cfchart  
 				chartHeight="400" 
 				chartWidth="400" 
 				scaleFrom="0" 

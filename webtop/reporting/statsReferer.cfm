@@ -126,7 +126,6 @@ $out:$
 		
 		<!--- show graph --->
 		<cfchart 
-			format="flash" 
 			chartHeight="300" 
 			chartWidth="300" 
 			scaleFrom="0" 

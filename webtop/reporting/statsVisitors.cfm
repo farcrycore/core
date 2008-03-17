@@ -49,7 +49,6 @@ out:
 	<!--- show graph --->
 	<cfoutput>
 	<cfchart 
-		format="flash" 
 		chartHeight="400" 
 		chartWidth="600" 
 		scaleFrom="0" 
@@ -107,7 +106,6 @@ out:
 	<h3>#application.rb.getResource("sessionsPerDayLast4Weeks")#</h3>
 	<div style="z-index:100">
 	<cfchart 
-		format="flash" 
 		chartHeight="400" 
 		chartWidth="600" 
 		scaleFrom="0" 
@@ -171,7 +169,6 @@ out:
 	<cfif q1.qGetPageStats.recordcount>
 		<!--- ouput graph --->
 		<cfchart 
-			format="flash" 
 			chartHeight="400" 
 			chartWidth="600" 
 			scaleFrom="0" 
