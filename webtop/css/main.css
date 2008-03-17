@@ -226,6 +226,16 @@ body.popup #content {margin:0;background:transparent;padding:0}
 		div.ruleListPagination div.pageList ul li.active a {background-color: #d0def5; border: 1px solid #324e7c; color: #324e7c;}
 		
 		
+
+	.pagination {background: #f2f2f2;color:#666;padding: 4px 2px 4px 7px;border: 1px solid #ddd;margin: 0 0 1.5em}
+	.pagination p {position:relative;text-align:right}
+	.pagination p a:link, .pagination p a:visited, .pagination p a:hover, .pagination p a:active {text-decoration:none;background:#fff;padding:2px 5px;border: 1px solid #ccc}
+	.pagination p a:hover {background:#c00;color:#fff}
+	.pagination p span {text-decoration:none;background:#fff;padding:2px 5px;border: 1px solid #ccc;color:#ccc}
+	.pagination * {margin:0}
+	.pagination h4 {margin-top:-1.45em;padding:0;border:none}
+	
+			
 .utilBar a:hover, .utilBar a:active {background:#E17000;border: 1px solid #ccc}
 
 .utilBar input {padding: 2px 4px;_padding: 2px 0;background:#f5f5f5;color:#369;border: 1px solid #ddd;border-left: 1px solid #999;border-bottom: 1px solid #999;cursor:pointer}
