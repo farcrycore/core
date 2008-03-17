@@ -1,4 +1,4 @@
-<cfcomponent bAbstract="true" displayname="Base Form Component" hint="Abstract class. Provides default handlers and defines structure for a form." extends="farcry.core.packages.fourq.fourq" bObjectBroker="0">
+<cfcomponent bAbstract="true" displayname="Base Form Component" hint="Abstract class. Provides default handlers and defines structure for a form." extends="farcry.core.packages.types.types" bObjectBroker="0">
 	<cfproperty name="objectid" type="uuid" ftDefault="createuuid()" ftDefaultType="evaluate" />
 
 	<!--- 

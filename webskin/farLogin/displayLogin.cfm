@@ -19,7 +19,7 @@ FARCRY IMPORT FILES
 START WEBSKIN
  ------------------>	
 
-<skin:view typename="farUser" template="displayHeaderLogin" />
+<skin:view typename="farLogin" template="displayHeaderLogin" />
 	<ft:form>
 			
 		<cfoutput>
@@ -49,7 +49,7 @@ START WEBSKIN
 			<sec:SelectUDLogin />
 			
 
-			<ft:object typename="farLogin" lFields="username,password,datetimelastupdated" legend="Login to #application.config.general.siteTitle#" />
+			<ft:object typename="farLogin" lFields="username,password" legend="Login to #application.config.general.siteTitle#" />
 				
 			
 			<ft:farcrybuttonPanel>
@@ -88,7 +88,7 @@ START WEBSKIN
 				
 	</ft:form>
 
-<skin:view typename="farUser" template="displayFooterLogin" />
+<skin:view typename="farLogin" template="displayFooterLogin" />
 
 
 <cfsetting enablecfoutputonly="false">
