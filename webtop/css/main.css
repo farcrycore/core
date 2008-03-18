@@ -9,6 +9,15 @@ overriding a required farcry core style.
 
 */
 
+/* GENERAL CSS RESET CODE */
+html,body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,input,p,blockquote,th,td{margin:0;padding:0;}
+img,body,html{border:0;}
+address,caption,cite,code,dfn,em,strong,th,var{font-style:normal;font-weight:normal;}
+ol,ul{list-style:none;}
+caption,th{text-align:left;}
+h1,h2,h3,h4,h5,h6{font-size:100%;}
+q:before,q:after{content:'';}
+
 
 /* =THE BIG GUYS */
 html {margin:0;padding:0;height:100%}
@@ -591,3 +600,7 @@ table.objectAdmin th, table.objectAdmin td {padding:3px;}
  /* GENERAL ADMIN CLASSES */
 ul.inlinedocs {list-style:none;}
 ul.inlinedocs li {background-image:none;}
+
+/* EXT JS SPECIFIC MODIFICATIONS */
+ul.x-tab-strip{margin:0px;}
+ul.x-tab-strip li{padding-left:0px;}
