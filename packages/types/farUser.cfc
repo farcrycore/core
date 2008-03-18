@@ -3,6 +3,7 @@ test<cfcomponent displayname="FarcryUD User" hint="Used by FarcryUD to store use
 	<cfproperty name="password" type="string" default="" hint="" ftSeq="2" ftFieldset="" ftLabel="Password" ftType="password" ftRenderType="confirmpassword" ftShowLabel="false" />
 	<cfproperty name="userstatus" type="string" default="invactive" hint="The status of this user" ftSeq="3" ftFieldset="" ftLabel="User status" ftType="list" ftList="active:Active,inactive:Inactive,pending:Pending" />
 	<cfproperty name="aGroups" type="array" default="" hint="The groups this member is a member of" ftSeq="4" ftFieldset="" ftLabel="Groups" ftType="array" ftJoin="farGroup" />
+	<cfproperty name="lGroups" type="longchar" default="" hint="The groups this member is a member of (list generated automatically)" ftLabel="Groups" ftType="arrayList" ftArrayField="aGroups" ftJoin="farGroup" />
 	
 	<cffunction name="getByUserID" access="public" output="false" returntype="struct" hint="Returns the data struct for the specified user id">
 		<cfargument name="userid" type="string" required="true" hint="The user id" />
@@ -28,6 +29,9 @@ test<cfcomponent displayname="FarcryUD User" hint="Used by FarcryUD to store use
 		<cfargument name="group" type="string" required="true" hint="The group to add to" />
 		
 		<cfset var stUser = structnew() />
+		<cfset var stGroup = structnew() />
+		<cfset var oGroup = createObject("component", application.stcoapi["farGroup"].packagePath) />
+		<cfset var groupID = oGroup.getID(arguments.group) />
 		<cfset var i = 0 />
 		
 		<!--- Get the user by objectid or userid --->
@@ -36,6 +40,9 @@ test<cfcomponent displayname="FarcryUD User" hint="Used by FarcryUD to store use
 		<cfelse>
 			<cfset stUser = getByUserID(arguments.user) />
 		</cfif>
+	
+		<cfset stGroup = oGroup.getData(objectid="#groupID#") />
+		<cfset arguments.group = stGroup.objectid />
 		
 		<!--- Check to see if they are already a member of the group --->
 		<cfparam name="stUser.aGroups" default="#arraynew(1)#" />
@@ -47,7 +54,7 @@ test<cfcomponent displayname="FarcryUD User" hint="Used by FarcryUD to store use
 		
 		<cfif len(arguments.group)>
 			<cfset arrayappend(stUser.aGroups,arguments.group) />
-			<cfset oUser.setData(stProperties=stUser) />
+			<cfset setData(stProperties=stUser) />
 		</cfif>
 	</cffunction>
 
@@ -86,12 +93,25 @@ test<cfcomponent displayname="FarcryUD User" hint="Used by FarcryUD to store use
 		<cfargument name="bAfterSave" type="boolean" required="false" default="true" hint="This allows the developer to skip running the types afterSave function.">	
 		
 		<cfset var stUser = getData(objectid=arguments.stProperties.objectid) />
+		<cfset var oProfile = createObject("component", application.stcoapi["dmProfile"].packagePath) />
+		<cfset var stUsersProfile = structNew() />
 		
 		<cfif application.security.userdirectories.CLIENTUD.bEncrypted and arguments.stProperties.password neq stUser.password>
 			<cfset arguments.stProperties.password = hash(arguments.stProperties.password) />
 		</cfif>
 		
+		<!--- This will create the users default profile if one does not yet exist --->
+		<cfif not arguments.bSessionOnly>			
+			<cfset stUsersProfile = oProfile.getProfile(userName=stUser.userid) />
+			
+			<cfif not stUsersProfile.bInDB>
+				<cfset stUsersProfile.objectid = createUUID() />
+				<cfset oProfile.setData(stProperties=stUsersProfile) />
+			</cfif>
+		</cfif>		
+		
 		<cfreturn super.setData(arguments.stProperties,arguments.user,arguments.auditNote,arguments.bAudit,arguments.dsn,arguments.bSessionOnly,arguments.bAfterSave) />
+		
 	</cffunction>
 	
 	<cffunction name="createData" access="public" returntype="any" output="false" hint="Creates an instance of an object">
@@ -105,6 +125,36 @@ test<cfcomponent displayname="FarcryUD User" hint="Used by FarcryUD to store use
 		</cfif>
 		
 		<cfreturn super.createData(arguments.stProperties,arguments.user,arguments.auditNote,arguments.dsn) />
+	</cffunction>
+	
+	<cffunction name="ftValidateUserID" access="public" output="true" returntype="struct" hint="This will return a struct with bSuccess and stError">
+		<cfargument name="objectid" required="true" type="string" hint="The objectid of the object that this field is part of.">
+		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
+		<cfargument name="stFieldPost" required="true" type="struct" hint="The fields that are relevent to this field type.">
+		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
+		
+		<cfset var stResult = structNew()>	
+		<cfset var qDuplicate = queryNew("blah")>		
+		<cfset stResult = createObject("component", application.formtools["field"].packagePath).passed(value=stFieldPost.Value) />
+		
+		<!--- --------------------------- --->
+		<!--- Perform any validation here --->
+		<!--- --------------------------- --->	
+		<cfquery datasource="#application.dsn#" name="qDuplicate">
+		SELECT objectid from farUser
+		WHERE upper(userid) = '#ucase(stFieldPost.Value)#'
+		</cfquery>
+		
+		<cfif qDuplicate.RecordCount>
+			<!--- DUPLICATE USER --->
+			<cfset stResult = createObject("component", application.formtools["field"].packagePath).failed(value="#arguments.stFieldPost.value#", message="The userid you have selected is already taken.") />
+		</cfif>
+	
+		<!--- ----------------- --->
+		<!--- Return the Result --->
+		<!--- ----------------- --->
+		<cfreturn stResult>
+		
 	</cffunction>
 	
 </cfcomponent>
