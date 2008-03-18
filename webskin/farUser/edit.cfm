@@ -38,7 +38,7 @@
 		<h1>EDIT: <cfif len(stObj.userid)>#stObj.userid#<cfelse>(incomplete)</cfif></h1>
 	</cfoutput>
 
-	<ft:object stobject="#stObj#" format="edit" legend="Authentication" />
+	<ft:object stobject="#stObj#" format="edit" lfields="userid,password,groups,userstatus" legend="Authentication" />
 	
 	<skin:view stObject="#stProfile#" webskin="editProfile" />
 	
