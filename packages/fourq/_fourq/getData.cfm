@@ -27,6 +27,10 @@ $
  --->
 <cfprocessingdirective pageencoding="utf-8">
 
+
+<!--- IMPORT TAG LIBRARIES --->
+<cfimport taglib="/farcry/core/tags/farcry" prefix="farcry" />
+
 <cfscript>
 // get table name for db schema
 	tablename = getTablename();
@@ -53,12 +57,23 @@ $
 
 
 
-
-<cfquery datasource="#arguments.dsn#" name="qgetData">
-	SELECT #sqlSelect# 
-	FROM #arguments.dbowner##tablename#
-	WHERE ObjectID = '#arguments.objectID#'
-</cfquery>
+<cftry>
+	<cfquery datasource="#arguments.dsn#" name="qgetData">
+		SELECT #sqlSelect# 
+		FROM #arguments.dbowner##tablename#
+		WHERE ObjectID = '#arguments.objectID#'
+	</cfquery>
+	
+ 	<cfcatch type="database">
+		<!--- Looks like a property has not yet been deployed. If so, simply try a select * --->
+		<farcry:logevent object="#arguments.objectID#" type="#arguments.dbowner##tablename#" event="getData" notes="Error running getdata(). #cfcatch.detail#"  />
+		<cfquery datasource="#arguments.dsn#" name="qgetData">
+			SELECT *
+			FROM #arguments.dbowner##tablename#
+			WHERE ObjectID = '#arguments.objectID#'
+		</cfquery>
+	</cfcatch>
+</cftry>
 
 <cfif qGetData.recordCount>
 	<!--- convert query to structure --->
