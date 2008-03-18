@@ -5,6 +5,7 @@
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin" />
 <cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" />
 <cfimport taglib="/farcry/core/tags/extjs/" prefix="extjs" />
+<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
 
 <admin:header title="#application.rb.getResource('coapi.dmProfile.general.editprofile@label','Edit your profile')#" />
 	
@@ -28,7 +29,7 @@
 	</cfif>
 	
 	<ft:form heading="#application.rb.getResource('coapi.dmProfile.general.editprofile@label','Edit your profile')#">
-		<ft:object objectid="#stObj.objectid#" typename="dmProfile" lfields="firstname,lastname,breceiveemail,emailaddress,phone,fax,position,department,locale" includeFieldSet="false" />
+		<skin:view stobject="#stObj#" webskin="editProfile" />
 		
 		<ft:farcrybuttonPanel>
 			<ft:farcrybutton value="Save" />
