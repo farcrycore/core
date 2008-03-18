@@ -349,19 +349,13 @@ default handlers
 
 	<cffunction name="display" access="public" returntype="any" output="Yes">
 		<cfargument name="objectid" required="yes" type="UUID">
-		
-		
-		<!---<cfset var myObject = getData(arguments[1])>
-		<cfoutput><p>This is the default output of <strong>types.Display()</strong>:</p></cfoutput>
-		<cfdump var="#myObject#"> --->
-		
+
 		<cfset var stObj = getData(objectid=arguments.objectid) />
 		<cfset var HTML = "" />
 		<cfset var qMetadata = queryNew("objectID") />
 		
+		<farcry:deprecated message="types.display() should no longer be used. For the default view of an object, create a displayPageStandard webskin." />
 
-			
-		
 		<cfset qMetadata = application.types[stobj.typename].qMetadata >
 		
 		<ft:form>
@@ -1131,6 +1125,10 @@ default handlers
 			
 			
 			<ft:form>
+				
+					
+				<cfoutput><h1>#stobj.label#</h1></cfoutput>
+				
 				<cfif qFieldSets.recordcount GTE 1>
 					
 					<cfloop query="qFieldSets">
@@ -1148,7 +1146,7 @@ default handlers
 				<cfelse>
 				
 					<!--- All Fields: default edit handler --->
-					<ft:object ObjectID="#arguments.ObjectID#" format="edit" lExcludeFields="label" lFields="" IncludeFieldSet=1 Legend="#stObj.Label#" />
+					<ft:object ObjectID="#arguments.ObjectID#" format="edit" lExcludeFields="label" lFields="" IncludeFieldSet="false" />
 					
 				</cfif>
 				
