@@ -122,7 +122,7 @@
 						and data=<cfqueryparam cfsqltype="cf_sql_varchar" value="#typename#" />
 			</cfquery>
 			<cfif not qSecured.secured>
-				<cfreturn true />
+				<cfreturn 1 />
 			</cfif>
 				
 			<cfloop list="#arguments.role#" index="thisrole">
@@ -148,7 +148,7 @@
 		</cfif>
 
 		
-		<cfreturn result />
+		<cfreturn numberFormat(result) />
 	</cffunction>
 	
 	<cffunction name="getInheritedRight" access="public" output="false" returntype="numeric" hint="Returns the right that would be granted if this barnacle was set to inherit">
