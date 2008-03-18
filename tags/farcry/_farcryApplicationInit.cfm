@@ -6,6 +6,9 @@
 <!--- @@Developer: Mat Bryant (mat@daemon.com.au) --->
 
 
+<!--- IMPORT TAG LIBRARIES --->
+<cfimport taglib="/farcry/core/tags/extjs" prefix="extjs" />
+
 <!----------------------------------- 
 GENERAL CONFIG VARIABLES
 - merged _config.cfm
@@ -211,7 +214,9 @@ Apps Processing
 Alert user that application scope has been refreshed
 -------------------------------------------------------->
 <cfif isDefined("URL.updateApp") AND URL.updateApp>
-	<cfhtmlHead text="<script language='JavaScript'>alert('Application Scope Refreshed!');</script>">
+	<extjs:bubble title="Update App Complete" bAutoHide="false">
+		<cfoutput>The application scope has been refreshed</cfoutput>
+	</extjs:bubble>
 </cfif>
 
 </cfsilent>
