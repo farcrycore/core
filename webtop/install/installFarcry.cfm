@@ -342,7 +342,12 @@ DETERMINE THE CURRENT VERSION OF FARCRY
 		it will know what projects they will be potentially trying to edit.  --->
 		<cfparam name="server.stFarcryProjects" default="#structNew()#" />
 		<cfif not structKeyExists(server.stFarcryProjects, application.projectDirectoryName)>
-			<cfset server.stFarcryProjects[application.projectDirectoryName] = application.displayName />
+			<cfset server.stFarcryProjects[application.projectDirectoryName] = structnew() />
+			<cfset server.stFarcryProjects[application.projectDirectoryName].displayname = application.displayName />
+			<cfset server.stFarcryProjects[application.projectDirectoryName].domains = "" />
+		</cfif>
+		<cfif not listcontains(server.stFarcryProjects[application.projectDirectoryName].domains,cgi.http_host)>
+			<cfset server.stFarcryProjects[application.projectDirectoryName].domains = listappend(server.stFarcryProjects[application.projectDirectoryName].domains,cgi.http_host) />
 		</cfif>
 	
 		<cfoutput>#updateProgressBar(value="1", text="INSTALLATION SUCCESS")#</cfoutput><cfflush>

@@ -157,9 +157,14 @@
 		This sets up a cookie on the users system so that if they try and login to the webtop and the webtop can't determine which project it is trying to update,
 		it will know what projects they will be potentially trying to edit.  --->
 		<cfparam name="server.stFarcryProjects" default="#structNew()#" />
-		<cfif not structKeyExists(server.stFarcryProjects, application.projectDirectoryName)>
-			<cfset server.stFarcryProjects[application.projectDirectoryName] = application.displayName />
-		</cfif>	
+		<cfif not structKeyExists(server.stFarcryProjects, application.projectDirectoryName) or not isstruct(server.stFarcryProjects[application.projectDirectoryName])>
+			<cfset server.stFarcryProjects[application.projectDirectoryName] = structnew() />
+			<cfset server.stFarcryProjects[application.projectDirectoryName].displayname = application.displayName />
+			<cfset server.stFarcryProjects[application.projectDirectoryName].domains = "" />
+		</cfif>
+		<cfif not listcontains(server.stFarcryProjects[application.projectDirectoryName].domains,cgi.http_host)>
+			<cfset server.stFarcryProjects[application.projectDirectoryName].domains = listappend(server.stFarcryProjects[application.projectDirectoryName].domains,cgi.http_host) />
+		</cfif>
 		<cfset cookie.currentFarcryProject = application.projectDirectoryName />	
 	
 		<!--- Return out. --->
@@ -229,7 +234,6 @@
 
 		<cfargument name="Exception" type="any" required="true" />
 
- 
 
 		<cfargument name="EventName" type="string" required="false" default="" />
 
