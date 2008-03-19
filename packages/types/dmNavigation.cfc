@@ -30,6 +30,7 @@ $out:$
 	
 	<cfproperty ftSeq="5" ftFieldSet="Advanced" name="lNavIDAlias" type="string" hint="A Nav alias provides a human interpretable link to this navigation node.  Each Nav alias is set up as key in the structure application.navalias.<i>aliasname</i> with a value equal to the navigation node's UUID." required="no" default="" ftLabel="Alias" />
 	<cfproperty ftSeq="10" ftFieldSet="Advanced" name="ExternalLink" type="string" hint="URL to an external (ie. off site) link." required="no" default="" ftType="list" ftLabel="Redirect to" ftListData="getExternalLinks" />
+	<cfproperty ftSeq="15" ftFieldSet="Advanced" name="typewebskin" type="string" hint="Defines a type webskin in the form type.webskin" required="no" default="" ftLabel="Type webskin" />
 	
 	<cfproperty name="fu" type="string" hint="Friendly URL for this node." required="no" default="" ftLabel="Friendly URL" />
 	<cfproperty name="aObjectIDs" type="array" hint="Holds objects to be displayed at this particular node.  Can be of mixed types." required="no" default="" ftJoin="dmImage" />
@@ -348,4 +349,144 @@ $out:$
 		</cfif>
 		<cfreturn stType />
 	</cffunction>
+
+	<cffunction name="ftEditTypeWebskin" access="public" output="true" returntype="string" hint="This will return a string of formatted HTML text to enable the user to edit the data">
+		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
+		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
+		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
+		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
+
+		<cfset var html = "" />
+		<cfset var qTypes = querynew("typename,description","varchar,varchar") />
+		<cfset var thistype = "" />
+		
+		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
+		
+		<cfparam name="arguments.stMetadata.ftJoin" default="#structkeylist(application.types)#" /><!--- These types are allowed to be used for type webskins --->
+		<cfparam name="arguments.stMetadata.ftExcludeTypes" default="" /><!--- Remove this types --->
+		<cfparam name="arguments.stMetadata.ftPrefix" default="displayPage" /><!--- Webskin prefix --->
+		
+		<cfloop list="#arguments.stMetadata.ftJoin#" index="thistype">
+			<cfif not listcontains(arguments.stMetadata.ftExcludeTypes,thistype)>
+				<cfset queryaddrow(qTypes) />
+				<cfset querysetcell(qTypes,"typename",thistype) />
+				<cfif structkeyexists(application.stCOAPI[thistype],"displayname") and len(application.stCOAPI[thistype].displayname)>
+					<cfset querysetcell(qTypes,"description",application.stCOAPI[thistype].displayname) />
+				<cfelse>
+					<cfset querysetcell(qTypes,"description",thistype) />
+				</cfif>
+			</cfif>
+		</cfloop>
+		<cfquery dbtype="query" name="qTypes">
+			select		*
+			from		qTypes
+			order by	description
+		</cfquery>
+		
+		<cfif qTypes.recordcount>
+			<skin:htmlHead library="extjs" />
+			<skin:htmlHead id="typewebskinformtool"><cfoutput>
+				<script type="text/javascript">
+					function getDisplayMethod(typename,fieldname,property) {
+						
+						var type = Ext.get(fieldname+'typename');
+						var webskin = Ext.get(fieldname+'webskin');
+					
+						Ext.Ajax.request({
+							url: '#application.url.farcry#/facade/ftajax.cfm?formtool=string&typename='+typename+'&fieldname='+fieldname+'&property='+property,
+							success: function(response){
+								var el = Ext.get("displayMethods");
+								el.update(response.responseText);
+							},
+							params: { 
+								typename: type.getValue(),
+								value: webskin.getValue()
+							}
+						});
+					};
+				</script>
+			</cfoutput></skin:htmlHead>
+		
+			<cfsavecontent variable="html">
+				<cfoutput>
+					<input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#listfirst(arguments.stMetadata.value,'.')#" />
+					<select name="#arguments.fieldname#typename" id="#arguments.fieldname#typename" onchange="getDisplayMethod('#arguments.typename#','#arguments.fieldname#','#arguments.stMetadata.name#')">
+						<option value=""<cfif "" eq listfirst(arguments.stMetadata.value,'.')> selected="selected"</cfif>>None selected</option>
+						<cfloop query="qTypes">
+							<option value="#qTypes.typename#"<cfif qTypes.typename eq listfirst(arguments.stMetadata.value,'.')> selected="selected"</cfif>>#qTypes.description#</option>
+						</cfloop>	
+					</select><br/>
+					<div id="displayMethods">
+						<input type="hidden" name="#arguments.fieldname#webskin" id="#arguments.fieldname#webskin" value="#listlast(arguments.stMetadata.value,'.')#" />
+					</div>
+					<script type="text/javascript">
+						getDisplayMethod('#arguments.typename#','#arguments.fieldname#','#arguments.stMetadata.name#');
+					</script>
+				</cfoutput>
+			</cfsavecontent>
+		<cfelse>
+			<cfsavecontent variable="html">
+				<cfoutput>
+					<input type="hidden" name="#arguments.fieldname#webskin" id="#arguments.fieldname#webskin" value="" />
+					<div>No types available</div>
+				</cfoutput>
+			</cfsavecontent>
+		</cfif>
+		
+		<cfreturn html>
+	</cffunction>
+
+	<cffunction name="ftAjaxTypeWebskin" access="public" output="true" returntype="string" hint="his will return a string of formatted HTML text to enable the user to edit the data">
+		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
+		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
+		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
+
+		<cfset var html = "" />
+		<cfset var qDisplayTypes = querynew("empty") />
+		
+		<cfimport taglib="/farcry/core/tags/navajo" prefix="nj" />
+		
+		<cfparam name="form.typename" />
+		<cfparam name="form.value" />
+		
+		<cfif len(form.typename)>
+			<nj:listTemplates typename="#form.typename#" prefix="displayPage" r_qMethods="qDisplayTypes">
+		
+			<cfif qDisplayTypes.recordCount>
+				<cfsavecontent variable="html">
+					<cfoutput>
+						<select name="#arguments.fieldname#webskin" id="#arguments.fieldname#webskin">
+							<option value="">
+					</cfoutput>
+					
+					<cfloop query="qDisplayTypes">
+						<cfoutput>
+							<option value="#qDisplayTypes.methodName#"<cfif qDisplayTypes.methodName eq form.value> selected="selected"</cfif>>#qDisplayTypes.displayName#</option>
+						</cfoutput>
+					</cfloop>
+							
+					<cfoutput>
+						</select>
+					</cfoutput>
+				</cfsavecontent>
+			<cfelse>
+				<cfsavecontent variable="html">
+					<cfoutput>
+						<input type="hidden" name="#arguments.fieldname#webskin" id="#arguments.fieldname#webskin" value="" />
+						<div>No Webskins Available</div>
+					</cfoutput>
+				</cfsavecontent>
+			</cfif>
+		<cfelse>
+			<cfsavecontent variable="html">
+				<cfoutput>
+					<input type="hidden" name="#arguments.fieldname#webskin" id="#arguments.fieldname#webskin" value="" />
+					<div>No type selected</div>
+				</cfoutput>
+			</cfsavecontent>
+		</cfif>
+		
+		<cfreturn html>
+	</cffunction>
+
 </cfcomponent>

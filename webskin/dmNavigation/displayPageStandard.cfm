@@ -3,12 +3,13 @@
 
 <cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4" />
 <cfimport taglib="/farcry/core/tags/navajo/" prefix="nj" />
+<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
 
 <!--- check for sim link --->
 <cfif len(stObj.externalLink) gt 0>
 	
 	<cftrace var="attributes.objectid" text="Setting navid to attributes.objectid as external link is specified" />
-	<cfset request.navid = attributes.objectid>
+	<cfset request.navid = stObj.objectid>
 	
 	<!--- It is often useful to know the navid of the externalLink for use on the page that is being rendered --->
 	<cfset request.externalLinkNavid = stObj.objectid>
@@ -16,6 +17,14 @@
 	<nj:display objectid="#stObj.externalLink#" />
 	<cfexit method="exittemplate" />
 	
+<cfelseif structkeyexists(stObj,"typewebskin") and len(stObj.typewebskin)>
+
+	<cftrace var="attributes.objectid" text="Setting navid to attributes.objectid as type webskin is specified" />
+	<cfset request.navid = stObj.objectid>
+	
+	<skin:view typename="#listfirst(stObj.typewebskin,'.')#" webskin="#listlast(stObj.typewebskin,'.')#" />
+	<cfexit method="exittemplate" />
+
 <cfelseif structKeyExists(stObj,"aObjectIds") AND arrayLen(stObj.aObjectIds)>
 
 	<cfloop index="idIndex" from="1" to="#arrayLen(stObj.aObjectIds)#">
