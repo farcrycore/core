@@ -489,4 +489,66 @@ $out:$
 		<cfreturn html>
 	</cffunction>
 
+	<cffunction name="ftDisplayTypeWebskin" access="public" output="false" returntype="string" hint="This will return a string of formatted HTML text to display.">
+		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
+		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
+		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
+		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
+
+		<cfset var html = "" />
+		<cfset var qWebskin = querynew("empty") />
+		
+		<cfif len(arguments.stMetadata.value)>
+			<cfif structkeyexists(application.stCOAPI[listfirst(arguments.stMetadata.value,".")],"displayname")>
+				<cfset html = application.stCOAPI[listfirst(arguments.stMetadata.value,".")].displayname />
+			<cfelse>
+				<cfset html = listfirst(arguments.stMetadata.value,".") />
+			</cfif>
+			
+			<cfset qWebskin = application.stCOAPI[listfirst(arguments.stMetadata.value,".")].qWebskins />
+			<cfquery dbtype="query" name="qWebskin">
+				select	*
+				from	qWebskin
+				where	name='#listfirst(arguments.stMetadata.value,".")#'
+			</cfquery>
+			
+			<cfset html = "#html#: #qWebskins.displayname[1]#" />
+		</cfif>
+		
+		<cfreturn html>
+	</cffunction>
+
+	<cffunction name="ftValidateTypeWebskin" access="public" output="true" returntype="struct" hint="This will return a struct with bSuccess and stError">
+		<cfargument name="stFieldPost" required="true" type="struct" hint="The fields that are relevent to this field type.">
+		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
+		
+
+		<cfset var stResult = structnew() />
+		
+		<cfset stResult.value = "" />
+		<cfset stResult.bSuccess = true />
+		<cfset stResult.stError = structNew() />
+		<cfset stResult.stError.message = "" />
+		<cfset stResult.stError.class = "" />
+		
+		<!--- --------------------------- --->
+		<!--- Perform any validation here --->
+		<!--- --------------------------- --->
+		
+		<cfif structkeyexists(arguments.stFieldPost.stSupporting,"typename") and structkeyexists(arguments.stFieldPost.stSupporting,"webskin")>
+			<cfif len(arguments.stFieldPost.stSupporting.typename) and len(arguments.stFieldPost.stSupporting.webskin)>
+				<cfset stResult.value = "#arguments.stFieldPost.stSupporting.typename#.#arguments.stFieldPost.stSupporting.webskin#" />
+			<cfelse>
+				<cfset stResult.value = "" />
+			</cfif>
+		<cfelse>
+			<cfset stResult.value = arguments.stFieldPost.value />
+		</cfif>
+			
+		<!--- ----------------- --->
+		<!--- Return the Result --->
+		<!--- ----------------- --->
+		<cfreturn stResult>
+	</cffunction>
+
 </cfcomponent>
