@@ -127,10 +127,10 @@ $in: objectid -- $
 						<option value="overview">Overview</option>
 									
 						<cfif listFindNoCase(attributes.qRecordSet.columnlist,"locked") AND attributes.qRecordSet.locked[variables.currentRow] neq 0 AND attributes.qRecordSet.lockedby[variables.currentRow] neq '#session.dmSec.authentication.userlogin#_#session.dmSec.authentication.userDirectory#'>
-							<cfif structKeyExists(attributes.stPermissions, "iApprove") AND attributes.stPermissions.iApprove>
+							<cfif structKeyExists(attributes.stPermissions, "iApprove") AND attributes.stPermissions.iApprove eq 1>
 								<option value="unlock">Unlock</option>
 							</cfif>		
-						<cfelseif structKeyExists(attributes.stPermissions, "iEdit") AND attributes.stPermissions.iEdit>
+						<cfelseif structKeyExists(attributes.stPermissions, "iEdit") AND attributes.stPermissions.iEdit eq 1>
 							<cfif listContainsNoCase(attributes.qRecordSet.columnlist,"bHasMultipleVersion")>
 								<cfif NOT(attributes.qRecordSet.bHasMultipleVersion[variables.currentrow]) AND attributes.qRecordSet.status[variables.currentRow] EQ "approved">
 									<option value="createDraft">Create Draft Object</option>
@@ -150,14 +150,14 @@ $in: objectid -- $
 						
 						
 						<cfif structKeyExists(attributes.stPermissions, "iRequestApproval") 
-								AND attributes.stPermissions.iRequestApproval
+								AND attributes.stPermissions.iRequestApproval eq 1
 							AND listFindNoCase(attributes.qRecordSet.columnlist,"status") 
 							AND attributes.qRecordSet.status[variables.currentRow] EQ "draft">
 							<option value="requestApproval">Request Approval</option>
 						</cfif>
 						
 						<cfif structKeyExists(attributes.stPermissions, "iApprove") 
-							AND attributes.stPermissions.iApprove
+							AND attributes.stPermissions.iApprove eq 1
 							AND listFindNoCase(attributes.qRecordSet.columnlist,"status")
 							AND (
 								attributes.qRecordSet.status[variables.currentRow] EQ "draft" 
@@ -254,10 +254,10 @@ $in: objectid -- $
 						<option value="overview">Overview</option>
 									
 						<cfif listFindNoCase(attributes.qRecordSet.columnlist,"locked") AND attributes.qRecordSet.locked[variables.currentRow] neq 0 AND attributes.qRecordSet.lockedby[variables.currentRow] neq '#session.dmSec.authentication.userlogin#_#session.dmSec.authentication.userDirectory#'>
-							<cfif structKeyExists(attributes.stPermissions, "iApprove") AND attributes.stPermissions.iApprove>
+							<cfif structKeyExists(attributes.stPermissions, "iApprove") AND attributes.stPermissions.iApprove eq 1>
 								<option value="unlock">Unlock</option>
 							</cfif>		
-						<cfelseif structKeyExists(attributes.stPermissions, "iEdit") AND attributes.stPermissions.iEdit>
+						<cfelseif structKeyExists(attributes.stPermissions, "iEdit") AND attributes.stPermissions.iEdit eq 1>
 							<cfif listContainsNoCase(attributes.qRecordSet.columnlist,"bHasMultipleVersion")>
 								<cfif NOT(attributes.qRecordSet.bHasMultipleVersion[variables.currentrow]) AND attributes.qRecordSet.status[variables.currentRow] EQ "approved">
 									<option value="createDraft">Create Draft Object</option>
@@ -277,14 +277,14 @@ $in: objectid -- $
 						
 						
 						<cfif structKeyExists(attributes.stPermissions, "iRequestApproval") 
-								AND attributes.stPermissions.iRequestApproval
+								AND attributes.stPermissions.iRequestApproval eq 1
 							AND listFindNoCase(attributes.qRecordSet.columnlist,"status") 
 							AND attributes.qRecordSet.status[variables.currentRow] EQ "draft">
 							<option value="requestApproval">Request Approval</option>
 						</cfif>
 						
 						<cfif structKeyExists(attributes.stPermissions, "iApprove") 
-							AND attributes.stPermissions.iApprove
+							AND attributes.stPermissions.iApprove eq 1
 							AND listFindNoCase(attributes.qRecordSet.columnlist,"status")
 							AND (
 								attributes.qRecordSet.status[variables.currentRow] EQ "draft" 
@@ -307,19 +307,12 @@ $in: objectid -- $
 				
 				<cfset caller[attributes.r_stObject].action = ActionDropdown />
 			</cfif>
-			
-			
+		
 			<cfset variables.currentRow = variables.CurrentRow + 1 />
 			
 			<cfexit method="loop" />
 		</cfif>
 
-	
 </cfif>
 
-
-
 <cfsetting enablecfoutputonly="no">
-
-
-
