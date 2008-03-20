@@ -414,22 +414,30 @@ user --->
 	
 	<ft:processForm action="requestapproval">
 		<!--- TODO: Check Permissions. --->
-		<cflocation URL="#application.url.farcry#/navajo/approve.cfm?objectid=#form.objectid#&status=requestapproval" addtoken="false" />
+		<cfif structKeyExists(form,"objectid")>
+			<cflocation URL="#application.url.farcry#/navajo/approve.cfm?objectid=#form.objectid#&status=requestapproval" addtoken="false" />
+		</cfif>
 	</ft:processForm>
 	
 	<ft:processForm action="approve">
 		<!--- TODO: Check Permissions. --->
-		<cflocation URL="#application.url.farcry#/navajo/approve.cfm?objectid=#form.objectid#&status=approved" addtoken="false" />
+		<cfif structKeyExists(form,"objectid")>
+			<cflocation URL="#application.url.farcry#/navajo/approve.cfm?objectid=#form.objectid#&status=approved" addtoken="false" />
+		</cfif>
 	</ft:processForm>
 	
 	<ft:processForm action="createdraft">
 		<!--- TODO: Check Permissions. --->
-		<cflocation URL="#application.url.farcry#/navajo/createDraftObject.cfm?objectID=#form.objectID#" addtoken="false" />
+		<cfif structKeyExists(form,"objectid")>
+			<cflocation URL="#application.url.farcry#/navajo/createDraftObject.cfm?objectID=#form.objectID#" addtoken="false" />
+		</cfif>
 	</ft:processForm>
 	
 	<ft:processForm action="Send to Draft">
 		<!--- TODO: Check Permissions. --->
-		<cflocation URL="#application.url.farcry#/navajo/approve.cfm?objectid=#form.objectid#&status=draft" addtoken="false" />
+		<cfif structKeyExists(form,"objectid")>
+			<cflocation URL="#application.url.farcry#/navajo/approve.cfm?objectid=#form.objectid#&status=draft" addtoken="false" />
+		</cfif>
 	</ft:processForm>
 
 
@@ -437,7 +445,7 @@ user --->
 	
 	<ft:processForm action="properties">
 		
-		<cfif listLen(form.objectid) EQ 1>
+		<cfif structKeyExists(form,"objectid") AND listLen(form.objectid) EQ 1>
 			<extjs:iframeDialog />
 			
 			<skin:htmlHead>
