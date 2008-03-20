@@ -416,8 +416,9 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 	
 	<cffunction name="getCategories" returntype="string" access="public" hint="Returns list of categories for a given content object instance" output="false">
 		<cfargument name="objectID" required="true" type="uuid">
+		<cfargument name="dsn" required="no" default="#application.dsn#">
 		<cfargument name="bReturnCategoryIDs" required="false" type="boolean" default="false" hint="Set flag to true if you want category objectids instead of category labels.">
-		<cfargument name="alias" type="string" hint="The alias of the section of the category tree that is going to be re-asigned." required="false" default="">  
+		<cfargument name="alias" required="false" type="string" default="" hint="The alias of the section of the category tree that is going to be re-asigned." >  
 		
 		<cfset var qGetCategories="">
 		<cfset var lCategoryIDs="">
@@ -425,10 +426,9 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 		<cfif isDefined("arguments.Alias") and len(arguments.Alias) and structKeyExists(application.catid,arguments.Alias)>
 			<cfset lDescendents = getCategoryBranchAsList(lCategoryIDs=application.catid[arguments.Alias]) />
 		</cfif>
-
 		
 		<!--- getCategories --->
-		<cfquery datasource="#application.dsn#" name="qGetCategories">
+		<cfquery datasource="#arguments.dsn#" name="qGetCategories">
 			SELECT <cfif arguments.bReturnCategoryIDs>cat.categoryID<cfelse>cat.categoryLabel</cfif>
 			FROM #application.dbowner#categories cat,#application.dbowner#refCategories ref
 			WHERE cat.categoryID = ref.categoryID
