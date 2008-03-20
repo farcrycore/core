@@ -206,7 +206,7 @@
 									<select id="genericwebskin" name="genericwebskin" onchange="Element.setStyle('insertgeneric', {display:'none'});">
 										<option value="">--select a display type--</option>
 										<cfloop query="qObjectWebskins">
-											<option value="#ReplaceNoCase(qObjectWebskins.name, ".cfm", "", "all")#">#ReplaceNoCase(qObjectWebskins.name, ".cfm", "", "all")#</option>
+											<option value="#ReplaceNoCase(qObjectWebskins.name, ".cfm", "", "all")#">#ReplaceNoCase(qObjectWebskins.displayname, ".cfm", "", "all")#</option>
 										</cfloop>									
 									</select>
 								</td> 
