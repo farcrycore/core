@@ -134,7 +134,7 @@
 			<cfif not isvalid("uuid",arguments.permission)>
 				<cfset arguments.permission = this.factory.permission.getID(arguments.permission) />
 				<cfif not len(arguments.permission)>
-					<cfreturn false />
+					<cfreturn 0 />
 				</cfif>
 			</cfif>
 			

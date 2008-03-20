@@ -223,9 +223,15 @@
 		<cfset actual = getRight(role=arguments.role,permission=arguments.permission,object=arguments.object) />
 		
 		<cfif actual eq 0>
-			<cfreturn getInheritedRight(role=arguments.role,permission=arguments.permission,object=arguments.object) />
+			<cfif getInheritedRight(role=arguments.role,permission=arguments.permission,object=arguments.object) eq 1>
+				<cfreturn 1 />
+			<cfelse>
+				<cfreturn 0 />
+			</cfif>
+		<cfelseif actual eq 1>
+			<cfreturn 1 />
 		<cfelse>
-			<cfreturn actual />
+			<cfreturn 0 />
 		</cfif>
 	</cffunction>
 
